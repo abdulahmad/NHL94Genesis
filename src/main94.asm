@@ -19,7 +19,7 @@ RAMStart = $FF0000
 ;
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-Stack = $FFFFF6	
+InitialSP = $FFFFF6	;reset vector 0. 93 name, 24-bit form of IDA unk_FFFFF6. The game's Stack is $FFFFFFFE (ram_addrs.inc)
 
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;
@@ -29,31 +29,25 @@ Stack = $FFFFF6
 
 ;;	.region code
 	org	0
-	dc.l	Stack		; 0 initial stack pointer
-	dc.l	Start		; 4 initial program counter
-	dc.l	BusError
-	dc.l	AddError
-	dc.l	Illinst
-	dc.l	Zerodiv
+	dc.l	InitialSP	; 0 initial stack pointer
+	dc.l	Start		; 1 initial program counter (IDA: Reset, $200)
+	dc.l	AddError	; 2 bus error. 94 has no BusError: bus and address error share AddError (IDA: AdrErr)
+	dc.l	AddError	; 3 address error
+	dc.l	Illinst		; 4 illegal instruction (IDA: InvOpCode)
+	dc.l	ZeroDiv		; 5 zero divide (IDA: DivBy0)
+	dcb.b	72,$FF		; 6-23 ($18-$5F): CHK ... reserved, not used. $FF in 94 (93: $00)
 
-	org     $18
-	dcb.b   72,$00      ; $5E - $18 = 70 bytes
-	
-	org	$60
-	dc.l	Spurious	; level 0-3 interrupts are not implemented.
-	dc.l	Spurious	; level 0-3 interrupts are not implemented.
-	dc.l	Spurious	; level 0-3 interrupts are not implemented.
-	dc.l	Spurious	; level 0-3 interrupts are not implemented.
-	dc.l	HBlank		; level 4: horizontal retrace.
-	dc.l	0			; level 5: not used.
-	dc.l	VBjsr		; level 6: vertical retrace.
-	dc.l	Spurious	;
+	dc.l	IRQ7		; 24 ($60) spurious interrupt. IRQ7 is an rte
+	dc.l	IRQ7		; 25 ($64) level 1, not used
+	dc.l	IRQ7		; 26 ($68) level 2 (external), not used
+	dc.l	IRQ7		; 27 ($6C) level 3, not used
+	dc.l	IRQ7		; 28 ($70) level 4: horizontal retrace (not used)
+	dc.l	0		; 29 ($74) level 5: not used
+	dc.l	VBjsr		; 30 ($78) level 6: vertical retrace, jumps through vbint
+	dc.l	IRQ7		; 31 ($7C) level 7
 
-	org     $90
-	dcb.b   112,$00      ; $5E - $18 = 70 bytes
-
-ErrorStatus
-	dc.l	0,0,0,0
+	dc.l	0,0,0,0		; 32-35 ($80-$8F): trap #0-#3, not used. 0 in retail
+	dcb.b	112,$FF		; 36-63 ($90-$FF): trap #4-#15 and reserved, not used
 
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;
@@ -63,29 +57,16 @@ ErrorStatus
 
 	org	$100
 
-	include	sega\SegaIDTable94.asm
-Start
-	Include	sega\SegaInit.asm
-	; IF CHECKSUM=1
-		jsr ValidationRoutine
-		jsr KillCrowd
-; 	ELSE
-	;	nop
-	;	nop
-	;	nop
-;	ENDIF
-	
-; 	incbin ..\output\modified_EALogo.bin
-
-	bra	Begin
-
-	IF REV=0 ; RETAIL
-		HBlank:	
-			rte
-		Spurious:
-			rte
-	ELSE ; REV A
-		HBlank:
-		Spurious:	
-			rte
+	include	sega\SegaIDTable94.asm	;$100-$1FF cartridge header
+Start	;IDA: Reset ($200). Power on: the Sega hardware init, then the checksum, then the game
+	Include	sega\SegaInit.asm	;$200-$2FF SegaInit, falls into CHECK_VDP ($2FA)
+	IF CHECKSUM=1
+		jsr	ValidationRoutine	;IDA: Calc_Checksum ($FFAC0). jsr (x).l, 4EB9. Red screen and hang if the ROM sum is wrong
+	ELSE
+		nop
+		nop
+		nop
 	ENDIF
+	;94 has no jsr KillCrowd here (93 Start calls it after ValidationRoutine)
+
+	bra.w	Begin	;IDA: Begin ($76B8, hockey94_01). Last instruction of main94 ($306-$309). TeamData94 starts at $30A
