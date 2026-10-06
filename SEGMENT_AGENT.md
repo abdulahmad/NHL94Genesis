@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`hockey94_03`. Not matched. Starts at `checkcoll` `$138AC` (listing line 48484), the byte after penalty94_2. 93 hockey93_03 starts at checkcoll too; hockey94_04 (`checkfight`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`hockey94_04`. Not matched. Starts at `checkfight` `$1454A` (listing line 49544; an `rts` in 94, the bsr.w target at `$13B1E`), the byte after hockey94_03. 93 hockey93_04 starts at checkfight too (checkfight ... checkpuckcoll); hockey94_05 (`puckstick`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -75,7 +75,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | middle94_2 | matched | dobitmap | 2194 bytes, `$01169A-$011F2B`. dobitmap ... AddTeamBlock |
 | penalty94_1 | matched | AddPenalty | 3288 bytes, `$011F2C-$012C03`. AddPenalty ... SetHor |
 | penalty94_2 | matched | PrintScores1 | 3240 bytes, `$012C04-$0138AB`. PrintScores1 ... StartHL2 |
-| hockey94_03 | not matched | checkcoll | line 48484 |
+| hockey94_03 | matched | checkcoll | 3230 bytes, `$0138AC-$014549`. checkcoll ... setInjuryType |
 | hockey94_04 | not matched | checkfight | |
 | hockey94_05 | not matched | puckstick | |
 | video94_1 | not matched | VBlank | |
@@ -186,3 +186,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - RAM names for absolute operands: `#HmShots`, `#M68K_RAM`, `#SetupPauseScreen` (`#$7DCE`), and `#ScoreSum-6` for IDA `#$FFFFC46E` (ram_addrs.inc names that address `ChkCnt`, but the code adds ScoreSumbytes and reads the last ScoreSum entry).
   - Outside addresses: 53 stubs; all 59 address locals assemble at their own address. Every outside name in a matched range matches its owning segment. 4 EA `cmp` opcodes patched. Matched on the first verify; all 15 matched segments still match.
   - Full build to-do, new from this segment (not fixed here): logic94_1 `sub_12E66` (= linebar) and `sub_13508` (= PrintStringFromList); logic94_3 `sub_12EF6` (= AvgCline); logic94_4 and middle94_2 `sub_13508`; penalty94_1 `sub_12D70` (= EASNLogo) and `sub_12DA6` (= USBoard). Each is an equate by address in its stub, and some are also written in the segment file.
+- `hockey94_03` matched: 3230 bytes, `$0138AC-$014549`. `src/hockey94_03_stub.asm` is `org $138AC`, includes `macros\genesis.mac`, the three stubinc files and `hockey94_03.asm`. Run `npm.cmd run seg:hockey94_03`. A match must report 3230 bytes at `0x0138ac-0x014549`.
+  - Range: listing lines 48480-49542, `checkcoll` through `setInjuryType`, as 93 hockey93_03. `checkfight` is `$1454A`: the retail `bsr.w checkfight` at `$13B1E` points there, and it is an `rts` (94 has no fight code).
+  - Names: IDA names; this range has no IDA auto names. `checkint_ci` and `CCStart` (93 locals `.ci` / `.cc`) and `checkinglist` stay global, as IDA has them. IDA labels that would split a routine are locals: `.PlayerControlled` and `.CheckingCalc` in CCStart, `.CmpPlayerStk`, `.AddChktoPlayerStats` and `.FallList` (a table in the middle of FallDown, `movea.l #.FallList,a0`). IDA `_holdcheck?` is `.holdcheck`.
+  - No IDA gaps. `lsr (word_FFBF12).w` is written `lsr.w`. `movea.l #$FFFFB04A,a2` is `#SortCords`.
+  - SPA values stay numbers. Each comment gives the frames94 name, read from the frames94 table offsets: `$C90` SPAHold, `$1122` SPAhook, `$B24` SPAsweepchk, `$C5E` SPAburst, `$CC2` SPAHold2, `$1154` SPAhook2, `$CF4` SPAflail, `$DD8` / `$D26` SPAfallback / SPAfallfwd, `$11E6` SPAstumble, `$136A` SPAflip, `$1AF4` SPAinjury1, and the 94-only `SPA_xxxx` falls. holdcheck calls penalty `$24` after SPAHold2 and `$1E` after SPAhook2. The IDA comments ("PenHooking?", "PenHolding") name those the other way round; the comment gives both.
+  - Outside addresses: 17 stubs read from the retail operands; all 8 address locals assemble at their own address. Every outside name matches its owning segment, and hockey94_02's `checkcoll = $138AC` matches, so nothing is added to the full build to-do. 37 EA `cmp` opcodes patched. Matched on the first verify; all 16 matched segments still match.
