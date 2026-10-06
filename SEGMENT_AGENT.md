@@ -41,6 +41,8 @@ Still present from 93: Ottawa Senators, Tampa Bay Lightning, San Jose Sharks, Qu
 
 A MATCH of 0 bytes is a failure. The byte count must be the confirmed range.
 
+`sync.js` keeps the repo and GitHub in step (`npm run sync`; the `.claude/settings.json` hooks run it at session start, pull only, and after every turn). It commits uncommitted work on the current branch (on `main` it first moves it to a new `autosave/<date>` branch), fast-forwards branches that are behind, and pushes branches that are ahead, never with `--force`. Commits titled `Autosave uncommitted work on ...` are from it.
+
 ## Rules carried from 93
 
 - Write real `cmp`, `cmpi`, and `exg`. `fixopcodes.js` rewrites an EA `cmp.l` (`0Cxx` to `B0BC`) only. A real `cmpi.l #imm,d0` stays `0C80`. Do not revert that rule.

@@ -7,6 +7,7 @@
     "asm": "build94.bat",
     "fixopcodes": "node fixopcodes.js \"output\\nhl94 .lst\" output\\nhl94.bin",
     "build:retail": "set rev=0&& set checksum=1&& npm run asm && npm run fixopcodes",
+    "sync": "node sync.js",
     "build:seg": "buildseg.bat hockey94_11",
     "verify:seg": "node verifySegment.js hockey94_11 0x18CFC lst/nhl94.bin",
     "seg:main94": "buildseg.bat main94 && node fixopcodes.js \"output\\main94 .lst\" output\\main94.bin && node verifySegment.js main94 0x0 lst/nhl94.bin",
