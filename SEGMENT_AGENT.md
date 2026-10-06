@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`frames94`. Not matched. Starts at `SPAList` `$5B1C` (listing line 22741; `movea.l #$5B1C,a0` in the code), the byte after teamdata94. No file yet. `src/hockey94.asm` has no frames94 include (93 has `Frames93` after `TeamData93`); do not edit it. The ROM map note says SPAList ends near `unk_73A0`. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`ram94`. Not matched. Equates only, no ROM bytes (`src/ram94.asm`, included after `TeamData94.Asm` in `src/hockey94.asm`). The next ROM byte after frames94 is `VBjsr` `$76B2` (listing line 29709), the start of hockey94_01.
 
 ## Sources
 
@@ -61,7 +61,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 |---|---|---|---|
 | main94 | matched | org 0 | 778 bytes, `$000000-$000309`. vectors, header, Start, SegaInit |
 | teamdata94 | matched | after main94 | 22546 bytes, `$00030A-$005B1B`. TeamList, 28 team blocks, playoffseats, Credits |
-| frames94 | not matched | SPAList | no file yet. SPAList ends near unk_73A0 |
+| frames94 | matched | SPAList | 7062 bytes, `$005B1C-$0076B1`. SPAlist, 66 SPA tables |
 | ram94 | not matched | | equates only, no ROM bytes |
 | hockey94_01 | not matched | VBjsr | line 29709, next loc_76E8 |
 | attract94 | not matched | EASportsScreen | 94 only |
@@ -107,3 +107,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Each block keeps the 93 offset-word order and equates (`Playerdata` 0 ... `ScoreOdds` 10). Changes from 93: `.sr` is 4 bytes (93: 8), `.ls` has 8 lines (93: 7), and after city and abbreviation there are 2 more Strings, nickname and arena (empty nickname for ASE / ASW). The player list ends in an empty String (`dc.w 2`). Palettes are `dc.w`; `extractAssets94.js` has no 94 palette entries.
   - `Player` (the 93 `PLAYER` macro) was added to `src/macros/genesis.mac`. `seg:main94` still matches. No `cmp` / `exg`: 0 opcodes patched.
   - IDA labels inside the data are not created: `unk_400`, `runspeed_15`, `word_3244`, `byte_4240`, `byte_43FA`.
+- `frames94` matched: 7062 bytes, `$005B1C-$0076B1`. `src/frames94_stub.asm` is `org $5B1C`, includes the three stubinc files and `frames94.asm`. No outside addresses. Run `npm.cmd run seg:frames94`. A match must report 7062 bytes at `0x005b1c-0x0076b1`.
+  - Range: `SPAlist` `dc.w 0` at `$5B1C`, then 66 SPA tables that end exactly at `VBjsr` `$76B2`. The listing has only `SPAList` and `unk_73A0` (a direction start in `SPA_185A`, RAM xref) there. Transcribed from listing lines 22741-29708 by a script that reads only the `.lst`.
+  - Same table format as 93: 8 direction offsets from `.t`, a flag word, then frame,time pairs; a negative time ends a direction. `SPA<name> = *-SPAlist`. `wallright` / `wallleft` direction 7 points at the next table, as in 93 (`.7` is at the table end).
+  - Order: 93 `gready` ... `pump` (0-37), then `wallright` ... `flip` (38-50), then 14 tables new in 94 (51-64, named `SPA_<offset>`, e.g. `SPA_145C`; no 93 table to name them from), then `injury1` (65). The 9 93 fight tables (`fight` ... `finjury`) are not in 94.
+  - SPF bases: 93 names, 94 values. Same as 93 through `SPFgready` (539); `SPFSiren` and up are 93 + 8 (`SPFbglass` 653), because 94 `gready` has 3 frames per direction (93: 2). Found by comparing every 93 table frame by frame (evaluated from `frames93.asm`): each SPF group has one shift. Frames 658-837 are new in 94 and are written as numbers.
+  - Other changes from 93: `Hold2` and `flail` end with time -40 (93: -30). No `cmp` / `exg`: 0 opcodes patched. `src/hockey94.asm` still has no frames94 include; it was not edited.
