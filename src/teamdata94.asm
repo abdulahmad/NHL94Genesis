@@ -1,1448 +1,1955 @@
-TeamList
-	dc.l	Boston
-	dc.l	Buffalo
-	dc.l	Calgary
-	dc.l	Chicago
-	dc.l	Detroit
-	dc.l	Edmonton
-	dc.l	Hartford
-	dc.l	LosAngeles
-	dc.l	Minnesota
-	dc.l	Montreal
-	dc.l	NewJersey
-	dc.l	NewYorkI
-	dc.l	NewYorkR
-	dc.l	Ottawa ; NEW in 93!
-	dc.l	Philadelphia
-	dc.l	Pittsburgh
-	dc.l	Quebec
-	dc.l	SanJose
-	dc.l	StLouis
-	dc.l	TampaBay ; NEW in 93!
-	dc.l	Toronto
-	dc.l	Vancouver
-	dc.l	Washington
-	dc.l	Winnipeg
-	dc.l	Campbell
-	dc.l	Wales
+;	NHL 94 team data. Retail $00030A-$005B1B (22546 bytes), from the IDA listing lst/nhl94.bin.lst.
+;	Layout of 93 teamdata93.asm: the team address table, one block per team, playoffseats, Credits.
+;	94 has 26 teams plus the two all star teams (93: 24 plus two). Minnesota is now Dallas; Anaheim and
+;	Florida are new. 94 team blocks are not in TeamList order (ASE and ASW first, FLA and ANH last).
+;	IDA labels that fall inside this data are not created: unk_400 (ASE line 7), runspeed_15 ($BB8, BOS
+;	players), word_3244 (OTW players), byte_4240 (TB palette) and byte_43FA (TB players).
+
+	dc.l	0	;$30A. Not part of TeamList (93 has the same long before its list)
+
+TeamList	;$30E. IDA: Team List Pointer Table Start. Team number = index (ANH 0 ... WPG 25, ASE 26, ASW 27)
+	dc.l	Anaheim	;0 ANH
+	dc.l	Boston	;1 BOS
+	dc.l	Buffalo	;2 BUF
+	dc.l	Calgary	;3 CGY
+	dc.l	Chicago	;4 CHI
+	dc.l	Dallas	;5 DAL
+	dc.l	Detroit	;6 DET
+	dc.l	Edmonton	;7 EDM
+	dc.l	Florida	;8 FLA
+	dc.l	Hartford	;9 HFD
+	dc.l	LosAngeles	;10 LA
+	dc.l	Montreal	;11 MTL
+	dc.l	NewJersey	;12 NJ
+	dc.l	LongIsland	;13 NYI
+	dc.l	NewYork	;14 NYR
+	dc.l	Ottawa	;15 OTW
+	dc.l	Philadelphia	;16 PHI
+	dc.l	Pittsburgh	;17 PIT
+	dc.l	Quebec	;18 QUE
+	dc.l	SanJose	;19 SJ
+	dc.l	StLouis	;20 STL
+	dc.l	TampaBay	;21 TB
+	dc.l	Toronto	;22 TOR
+	dc.l	Vancouver	;23 VAN
+	dc.l	Washington	;24 WSH
+	dc.l	Winnipeg	;25 WPG
+	dc.l	AllStarsEast	;26 ASE
+	dc.l	AllStarsWest	;27 ASW
 
 NumofTeams	=	(*-TeamList)/4
 Playerdata	=	0
 Palettedata	=	2
 Teamname	=	4
-ScoutReport	=	6
-LineSets	=	8
+LineSets	=	6
+ScoutReport	=	8
 ScoreOdds	=	10
 
-Wales ; ASE
-.0
-	dc.w	.pld-.0
-	dc.w	.pad-.0
-	dc.w	.tn-.0
-	dc.w	.sr-.0
-	dc.w	.ls-.0
-	dc.w	.sodds-.0
-
-.sodds	dc.b	0,0
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\Walesh.pal
-	incbin ..\Extracted\Graphics\Pals\Walesv.pal
-.ls
-	dc.b	01,20,06,15,21,07,09,0	;line
-	dc.b	01,05,03,16,14,09,07,0	;line
-	dc.b	01,17,04,12,10,18,07,0	;line
-	dc.b	01,20,06,12,21,07,09,0	;line
-	dc.b	01,17,05,16,13,11,07,0	;line
-	dc.b	01,04,03,12,19,11,07,0	;line
-	dc.b	01,17,05,15,08,09,07,0	;line
-.pld
-	hex2	334e,ecc0,01dd,eef0	;1
-	hex2	351b,baa0,01bb,bbf0	;2
-	hex2	024e,ec68,51e4,faf4	;3
-	hex2	04ae,bb35,b085,add6	;4
-	hex2	05d5,58a5,8055,f8c6	;5
-	hex2	077f,fd1f,61f6,fdfa	;6
-	hex2	089f,feec,f06c,ff98	;7
-	hex2	094e,eb58,b1e7,ab93	;8
-	hex2	104f,9f6c,91fe,fac4	;9
-	hex2	115e,8e5b,e0eb,fbc8	;10
-	hex2	1575,8c8f,5059,fe7a	;11
-	hex2	1668,ec65,b08a,ac8d	;12
-	hex2	173d,fd4d,40ab,ac94	;13
-	hex2	194a,ae0a,41ac,fcb2	;14
-	hex2	2288,bc7b,f0bb,fc7a	;15
-	hex2	25b9,fc66,916a,ad9a	;16
-	hex2	2859,c569,9192,f797	;17
-	hex2	3089,6586,f038,f33e	;18
-	hex2	3959,c8a6,916d,f457	;19
-	hex2	779f,fdef,f1f3,fff7	;20
-    hex2  	669f,ffcf,90fd,fec3	;21
-.tn	
-	String	'Wales All Stars'
-.sr
-
-Campbell ; ASW
-.0
-	dc.w	.pld-.0
-	dc.w	.pad-.0
-	dc.w	.tn-.0
-	dc.w	.sr-.0
-	dc.w	.ls-.0
-	dc.w	.sodds-.0
-
-.sodds	dc.b	0,0
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\Campbellh.pal
-	incbin ..\Extracted\Graphics\Pals\Campbellv.pal
-.ls
-	dc.b	01,03,07,17,20,13,10,0	;line
-	dc.b	01,05,06,09,10,08,20,0	;line
-	dc.b	01,04,16,12,15,19,13,0	;line
-	dc.b	01,03,05,17,20,14,10,0	;line
-	dc.b	01,04,16,15,15,11,20,0	;line
-	dc.b	01,06,07,09,10,08,13,0	;line
-	dc.b	01,04,05,18,12,11,10,0	;line
-.pld
-    hex2  301d,a770,01aa,aa60	;1
-	hex2  011b,9990,01ae,aa80	;2
-	hex2  0266,ceff,9095,fff8	;3
-	hex2  03af,c8cc,f1c1,f9da	;4
-	hex2  05a8,89a8,e086,a5dc	;5
-	hex2  063a,ac37,41a6,fbe2	;6
-	hex2  075f,cacc,c0c3,faec	;7
-	hex2  088f,feef,c1cd,fda8	;8
-	hex2  1044,7b07,41d6,fc96	;9
-	hex2  119f,fdc5,b1e6,f9c3	;10
-	hex2  140f,cefc,c0fd,acaa	;11
-	hex2  153a,7d97,a17b,fc99	;12
-	hex2  1659,cfcf,609e,ff92	;13
-	hex2  1777,7a14,7078,fb86	;14
-	hex2  194f,de5f,d0da,ffa3	;15
-	hex2  205f,fbdc,f1f2,fde8	;16
-	hex2  2159,6dd6,61cc,fca6	;17
-	hex2  271f,fde6,c09d,faa7	;18
-	hex2  2859,9dec,919b,fba7	;19
-	hex2  991f,cfec,61fc,fbf1	;20
-.tn	
-	String	'Campbell All Stars'
-.sr
-
-Boston
-.0
-	dc.w	.pld-.0
-	dc.w	.pad-.0
-	dc.w	.tn-.0
-	dc.w	.sr-.0
-	dc.w	.ls-.0
-	dc.w	.sodds-.0
-
-.sodds	dc.b	3,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\Bruinsh.pal
-	incbin ..\Extracted\Graphics\Pals\Bruinsv.pal
-
-.ls
-	;goalie,defl,defr,wingl,center,wingr
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,08,0	;line 3
-	dc.b	01,04,05,06,08,07,03,0	;line 4
-	dc.b	01,14,19,20,03,22,08,0	;line 5
-	dc.b	01,05,10,21,18,07,03,0	;line 6
-	dc.b	01,19,09,16,13,12,03,0	;line 7
 ;------------------------
+; Team block: 6 offset words (the equates above), .pad home and visitor palettes (16 colours each),
+; .sr, .sodds, .ls 8 lines of 8 player numbers (1 = first .pld entry), .pld players ended by an
+; empty String, then 4 Strings: city, abbreviation, nickname, arena (93 has only city and abbreviation).
+;------------------------
+; Player ratings, 93 names (Player macro: name, then 16 nibbles unwl,sodp,chga,eytm):
 ;u - uniform # x10
 ;n - uniform # x1
 ;w - weight
 ;l - leg power
-
 ;s - speed
 ;o - offensive awareness
 ;d - defensive awareness
 ;p - shot power / NA for goalie
-
 ;c - checking strength / NA
 ;h - shooting hand / glove hand
 ;g - stickhandling / glove left saves
 ;a - shooting accuracy / glove right saves
-
 ;e - endurance / stick right saves
 ;y - shot/pass decision / stick left saves
 ;t - passing accuracy / consistency
 ;m - aggressiveness (PIM) / NA
 ;------------------------
-.pld	;	unwl,sodp,chga,eytm
-     hex2  351d,daa0,01cc,ccf0
-     hex2  0117,4550,0188,6690
-     hex2  235c,cda6,31fc,a7c0
-     hex2  779f,fdef,f1f3,fff7
-     hex2  2666,c769,61c3,aab7
-     hex2  2736,6989,60cb,f944
-     hex2  089f,feec,f06c,ff98
-     hex2  1079,ca99,909e,a871
-     hex2  3696,6573,6162,a5a6
-     hex2  3219,9379,6194,a456
-     hex2  123c,c6c6,6168,a734
-     hex2  182c,c749,6094,aa61
-     hex2  207c,c899,c1c7,a579
-     hex2  2859,c569,9192,f797
-     hex2  419c,61b3,6163,a138
-     hex2  1449,9596,6164,a646
-     hex2  3089,6586,f038,f33e
-     hex2  195f,f8a9,c198,5862
-     hex2  21a9,9276,9061,5447
-     hex2  115c,f77f,c199,5841
-     hex2  312c,c216,c1c3,5416
-     hex2  1666,6213,3066,5400
-.tn	
-	String	'Boston Bruins'
-.sr
 
-
-Buffalo
+AllStarsEast	;ASE, $37E
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
+	dc.w	$002A,$024C,$0420,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
+	dc.w	$002A,$024C,$0CCC,$0222,$0420,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$7720,$00E8
+.sodds
+	dc.b	203,192
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,07,04,16,09,00	;line 1
+	dc.b	01,19,18,07,04,16,10,00	;line 2
+	dc.b	01,22,20,11,10,17,07,00	;line 3
+	dc.b	01,23,24,05,12,14,07,00	;line 4
+	dc.b	01,19,22,07,04,16,09,00	;line 5
+	dc.b	01,18,21,08,09,17,07,00	;line 6
+	dc.b	01,19,23,13,05,06,15,00	;line 7
+	dc.b	01,24,25,15,06,05,13,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Patrick Roy',				3366,4446,0100,5566	;1
+	Player	'Grant Fuhr',				3175,4555,0000,4455	;2
+	Player	'Tom Barrasso',				35A4,4554,0000,4444	;3
+	Player	'Mario Lemieux',			66A5,4644,3366,6062	;4
+	Player	'Mark Messier',				11A5,4443,5453,4053	;5
+	Player	'Kirk Muller',				1094,4444,4444,4143	;6
+	Player	'Adam Oates',				1275,4653,3154,5061	;7
+	Player	'Joe Sakic',				1964,4544,2045,5252	;8
+	Player	'Pierre Turgeon',			7894,4534,3445,5141	;9
+	Player	'Pat LaFontaine',			1655,4643,3354,6052	;10
+	Player	'Kevin Stevens',			25B3,4533,3644,5344	;11
+	Player	'Jaromir Jagr',				68A5,4433,4453,4142	;12
+	Player	'Peter Bondra',				1364,6433,2044,4232	;13
+	Player	'Mike Gartner',				2275,5445,2353,5552	;14
+	Player	'Rick Tocchet',				2392,2544,3735,4134	;15
+	Player	'Alexnder Mogilny',			8976,6634,2455,4452	;16
+	Player	'Mark Recchi',				0865,4534,3445,4143	;17
+	Player	'Larry Murphy',				55A4,3454,3242,5143	;18
+	Player	'Ray Bourque',				77A5,4465,6055,6252	;19
+	Player	'Brian Leetch',				0266,3444,2651,5252	;20
+	Player	'Steve Duchesne',			2884,4444,2442,4142	;21
+	Player	'Al Iafrate',				34B4,4446,4642,4444	;22
+	Player	'Scott Stevens',			04B4,4344,5642,5043	;23
+	Player	'Zarley Zalapski',			03A5,4454,4442,5133	;24
+	Player	'Glen Wesley',				2685,4344,3641,4442	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'All Stars East'
+.ta	;abbreviation
+	String	'ASE'
+.tm	;nickname. 94 only
+	dc.w	2	;empty String
+.ar	;arena. 94 only
+	String	'Madison Square Garden'
 
-.sodds	dc.b	3,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\sabresh.pal
-	incbin ..\Extracted\Graphics\Pals\sabresv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,09,06,08,07,03,0	;line 4
-	dc.b	01,05,19,20,03,12,08,0	;line 5
-	dc.b	01,05,10,11,13,22,03,0	;line 6
-	dc.b	01,19,14,20,18,21,03,0	;line 7
-.pld
-     hex2  3188,8880,0088,88a0
-     hex2  3058,6990,0188,8cc0
-     hex2  104b,bc6e,518a,aaa3
-     hex2  04d5,58a5,8055,f8c6
-     hex2  0358,87ae,5154,a8b4
-     hex2  25a5,5a95,50b9,ac73
-     hex2  223b,899b,b0ba,a967
-     hex2  778e,8ca8,51eb,a992
-     hex2  087b,8635,5181,aab5
-     hex2  0558,83a5,8184,a464
-     hex2  895b,bca8,51b9,ad91
-     hex2  194b,b678,5154,a765
-     hex2  216b,b848,b1b6,a978
-     hex2  2688,8272,b025,a149
-     hex2  2495,5002,e151,a217
-     hex2  3292,2335,b129,a21f
-     hex2  1555,5262,b124,a025
-     hex2  3338,8848,5188,5766
-     hex2  074b,b5e2,21b1,58b1
-     hex2  426b,b558,81bf,5312
-     hex2  1258,8548,5089,5531
-     hex2  1815,5435,2154,5633
-.tn	
-	String	'Buffalo Sabres'
-.sr
-
-Calgary
+AllStarsWest	;ASW, $674
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
+	dc.w	$002A,$024C,$0420,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
+	dc.w	$002A,$024C,$0CCC,$0222,$0420,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$7720,$00E8
+.sodds
+	dc.b	237,144
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,20,22,11,04,15,14,00	;line 1
+	dc.b	01,24,22,11,04,15,13,00	;line 2
+	dc.b	01,20,23,14,06,13,04,00	;line 3
+	dc.b	01,18,21,10,08,12,04,00	;line 4
+	dc.b	01,20,19,11,09,13,04,00	;line 5
+	dc.b	01,18,22,06,04,15,09,00	;line 6
+	dc.b	01,25,21,08,12,09,17,00	;line 7
+	dc.b	01,23,24,09,17,08,12,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Ed Belfour',				3066,4665,0000,6655	;1
+	Player	'Tim Cheveldae',			3264,4444,0000,4344	;2
+	Player	'Felix Potvin',				2964,4664,0000,4444	;3
+	Player	'Steve Yzerman',			1966,5644,1155,6152	;4
+	Player	'Mike Modano',				0975,5445,2452,5243	;5
+	Player	'Jeremy Roenick',			2745,5445,2355,5253	;6
+	Player	'Brian Bradley',			2344,3434,3335,4233	;7
+	Player	'Doug Gilmour',				9345,4554,4444,6043	;8
+	Player	'Wayne Gretzky',			9946,4542,2262,6060	;9
+	Player	'Gary Roberts',				1174,4544,4845,5134	;10
+	Player	'Luc Robitaille',			2074,4534,2456,5243	;11
+	Player	'Theoren Fleury',			1435,5454,4743,6133	;12
+	Player	'Brett Hull',				1694,4536,3353,4432	;13
+	Player	'Pavel Bure',				1055,6544,2054,4442	;14
+	Player	'Teemu Selanne',			1365,6534,3345,5442	;15
+	Player	'Pat Falloon',				1874,4323,1342,4531	;16
+	Player	'Jari Kurri',				1784,3444,2143,4132	;17
+	Player	'Gary Suter',				2275,4454,4642,5243	;18
+	Player	'Jeff Brown',				2193,3445,2343,5142	;19
+	Player	'Paul Coffey',				7796,5434,2461,5153	;20
+	Player	'Chris Chelios',			0774,4465,4751,6245	;21
+	Player	'Phil Housley',				0666,5433,2462,4062	;22
+	Player	'Dave Manson',				2494,4355,4A41,5434	;23
+	Player	'Steve Smith',				05B4,4344,4641,5244	;24
+	Player	'Steve Chiasson',			0394,3444,3641,4234	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'All Stars West'
+.ta	;abbreviation
+	String	'ASW'
+.tm	;nickname. 94 only
+	dc.w	2	;empty String
+.ar	;arena. 94 only
+	String	'Madison Square Garden'
 
-.sodds	dc.b	0,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\flamesh.pal
-	incbin ..\Extracted\Graphics\Pals\flamesv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,16,03,07,08,0	;line 4
-	dc.b	01,10,14,22,18,12,03,0	;line 5
-	dc.b	01,10,20,11,03,07,08,0	;line 6
-	dc.b	01,09,21,23,08,24,03,0	;line 7
-.pld
-     hex2  3018,8770,0188,8860
-     hex2  3149,7990,01aa,aa40
-     hex2  256c,ccb9,f1fc,ab83
-     hex2  0266,ceff,9095,fff8
-     hex2  205f,fbdc,f1f2,fde8
-     hex2  105c,c9a9,f1ca,a66d
-     hex2  140f,cefc,c0fd,acaa
-     hex2  394c,6cd6,c1c9,a7ba
-     hex2  0696,9456,6093,a586
-     hex2  347f,f3d6,f163,a667
-     hex2  1236,6659,6166,a743
-     hex2  422f,fcac,61ff,a4a4
-     hex2  29b6,9759,f06a,a54b
-     hex2  0389,c496,9195,a37b
-     hex2  049c,92b9,6190,a17a
-     hex2  27a6,c6bf,916a,a445
-     hex2  2243,3213,c133,a31c
-     hex2  338c,c619,60c8,5551
-     hex2  264c,c8b9,3168,5851
-     hex2  214c,c6b3,61c5,53a4
-     hex2  0543,3143,6161,5344
-     hex2  2866,faf6,3067,5b70
-     hex2  0736,6566,313a,5330
-     hex2  235c,c6a9,9137,5548
-.tn	
-	String	'Calgary Flames'
-.sr
-
-Chicago
+Boston	;BOS, $966
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0202,$0224,$088C,$066A
+	dc.w	$008C,$008E,$0CCC,$0AAA,$0CCC,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0202,$0224,$088C,$066A
+	dc.w	$008C,$008E,$0CCC,$0202,$0224,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$4121,$21F8
+.sodds
+	dc.b	180,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,07,03,12,08,00	;line 1
+	dc.b	01,19,18,08,03,12,05,00	;line 2
+	dc.b	01,20,21,07,05,13,03,00	;line 3
+	dc.b	01,22,23,09,04,14,03,00	;line 4
+	dc.b	01,20,18,08,03,12,05,00	;line 5
+	dc.b	01,22,21,07,05,13,03,00	;line 6
+	dc.b	01,19,18,09,04,03,06,00	;line 7
+	dc.b	01,20,21,03,06,09,04,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Andy Moog',				3544,4224,0000,4343	;1
+	Player	'John Blue',				3963,4553,0000,4343	;2
+	Player	'Adam Oates',				1275,4653,3154,5061	;3
+	Player	'Dave Poulin',				1974,3343,4433,4142	;4
+	Player	'Vladimir Ruzicka',			38A4,4334,2643,3332	;5
+	Player	'Ted Donato',				2143,4343,3033,3332	;6
+	Player	'Joe Juneau',				4954,4434,2043,4041	;7
+	Player	'Dmitri Kvartalnov',		1064,4423,2043,4241	;8
+	Player	'Dave Reid',				1792,3333,1424,4420	;9
+	Player	'Gregori Pantaleyev',		1364,4222,1233,2431	;10
+	Player	'Brent Hughes',				4263,3132,3632,2534	;11
+	Player	'Cam Neely',				08A4,4544,4945,5344	;12
+	Player	'Stephen Leach',			2763,3333,3732,4533	;13
+	Player	'Stephen Heinze',			2363,3333,3333,3531	;14
+	Player	'C.J. Young',				1863,3223,2533,2322	;15
+	Player	'Darin Kimble',				2991,1211,2924,1315	;16
+	Player	'Peter Douris',				1683,4333,2533,2421	;17
+	Player	'Ray Bourque',				77A5,4465,6055,6252	;18
+	Player	'Don Sweeney',				3244,4344,4441,4142	;19
+	Player	'Glen Wesley',				2685,4344,3641,4442	;20
+	Player	'David Shaw',				3492,2242,3322,4523	;21
+	Player	'Gord Murphy',				2885,4234,4931,3333	;22
+	Player	'Gordie Roberts',			1473,2231,3423,3023	;23
+	Player	'Glen Feathrston',			06B3,3222,4823,2324	;24
+	Player	'Jim Wiemer',				36A2,1221,2820,2324	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Boston'
+.ta	;abbreviation
+	String	'BOS'
+.tm	;nickname. 94 only
+	String	'Bruins'
+.ar	;arena. 94 only
+	String	'Boston Garden'
 
-.sodds	dc.b	3,7
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\blackhawksh.pal
-	incbin ..\Extracted\Graphics\Pals\blackhawksv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,08,0	;line 3
-	dc.b	01,05,15,11,03,07,08,0	;line 4
-	dc.b	01,04,09,21,18,12,03,0	;line 5
-	dc.b	01,05,04,22,03,23,08,0	;line 6
-	dc.b	01,19,20,21,18,24,03,0	;line 7
-.pld
-     hex2  301e,edd0,01ee,eef0
-     hex2  3115,3440,0155,5500
-     hex2  271f,fde6,c09d,faa7
-     hex2  075f,cacc,c0c3,faec
-     hex2  245f,fafc,f1c4,add3
-     hex2  324c,ca9f,9165,ab8a
-     hex2  2859,9dec,919b,fba7
-     hex2  1969,c6ac,f066,a756
-     hex2  0866,6389,9163,a277
-     hex2  0649,9473,31c1,a693
-     hex2  11a6,970c,6168,a954
-     hex2  1666,9bdc,61ca,aa96
-     hex2  1266,6313,c132,a33a
-     hex2  2569,6089,c033,a21a
-     hex2  038c,95bc,f195,a97c
-     hex2  44c6,6159,c13d,a00f
-     hex2  173c,c699,6066,a849
-     hex2  2299,6966,91ca,577a
-     hex2  0469,c3ac,c090,5685
-     hex2  056f,c196,9190,5554
-     hex2  1469,9486,c136,5535
-     hex2  23b6,9049,9160,500b
-     hex2  3376,6799,9097,5a47
-     hex2  26a9,9249,f133,5519
-.tn	
-	String	'Chicago Blackhawks'
-.sr
-
-Detroit
+Buffalo	;BUF, $C4C
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0420,$0820,$0842,$088C,$066A
+	dc.w	$006C,$008E,$0820,$0AAA,$0CCC,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0420,$0820,$0842,$088C,$066A
+	dc.w	$006C,$008E,$0820,$0820,$0842,$0420,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$6410,$21E8
+.sodds
+	dc.b	178,80
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,18,19,05,04,13,06,00	;line 1
+	dc.b	01,18,20,09,04,13,05,00	;line 2
+	dc.b	01,19,22,11,05,15,04,00	;line 3
+	dc.b	01,21,23,08,06,14,04,00	;line 4
+	dc.b	01,18,19,05,04,13,06,00	;line 5
+	dc.b	01,21,22,08,06,15,04,00	;line 6
+	dc.b	01,20,22,09,06,08,04,00	;line 7
+	dc.b	01,18,19,08,04,09,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Grant Fuhr',				3175,4555,0100,4455	;1
+	Player	'Tom Draper',				3562,3332,0000,2222	;2
+	Player	'Dominik Hasek',			3943,3552,0000,2222	;3
+	Player	'Pat LaFontaine',			1655,4643,3354,6052	;4
+	Player	'Dale Hawerchuk',			1065,4443,2051,3052	;5
+	Player	'Bob Sweeney',				2094,2353,4734,4233	;6
+	Player	'Dave Hannan',				1462,2232,2623,2022	;7
+	Player	'Randy Wood',				1981,5332,3622,3423	;8
+	Player	'Yuri Khmylev',				1374,3344,3134,3332	;9
+	Player	'Brad May',					2792,2222,3A23,2514	;10
+	Player	'Bob Errey',				1264,4242,4432,4523	;11
+	Player	'Rob Ray',					32A3,4111,3A22,1514	;12
+	Player	'Alexnder Mogilny',			8976,6634,2455,4452	;13
+	Player	'Wayne Presley',			1863,3334,2723,3323	;14
+	Player	'Donald Audette',			2853,3333,2933,3523	;15
+	Player	'Bob Corkum',				29A2,2132,2322,3522	;16
+	Player	'Colin Patterson',			1784,4231,3523,2522	;17
+	Player	'Doug Bodger',				08A2,3342,3621,4133	;18
+	Player	'Petr Svoboda',				0754,4343,3640,4033	;19
+	Player	'Richard Smehlik',			42A3,3343,4431,3032	;20
+	Player	'Ken Sutton',				4182,2242,1412,3232	;21
+	Player	'Grant Ledyard',			0394,3231,3C10,2323	;22
+	Player	'Gord Donnelly',			3491,2231,3B11,2225	;23
+	Player	'Randy Moller',				24A3,2212,3921,1124	;24
+	Player	'Keith Carney',				0692,3212,3622,1424	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Buffalo'
+.ta	;abbreviation
+	String	'BUF'
+.tm	;nickname. 94 only
+	String	'Sabres'
+.ar	;arena. 94 only
+	String	'Memorial Auditorium'
 
-.sodds	dc.b	4,3
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\Redwingsh.pal
-	incbin ..\Extracted\Graphics\Pals\Redwingsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,03,07,08,0	;line 4
-	dc.b	01,14,22,11,18,17,03,0	;line 5
-	dc.b	01,22,09,24,19,07,03,0	;line 6
-	dc.b	01,21,23,16,20,25,03,0	;line 7
-.pld
-     hex2  3226,3660,0166,6270
-     hex2  0145,1aa0,00aa,6a70
-     hex2  194f,de5f,d0ba,ffa3
-     hex2  3954,4614,4154,a5b4
-     hex2  3344,4964,1183,a9e3
-     hex2  113a,a8aa,a127,a969
-     hex2  226a,47b7,a02b,a555
-     hex2  9167,7c9a,4197,ada6
-     hex2  0464,7454,a023,a285
-     hex2  05ba,a391,1153,a072
-     hex2  2151,1847,1129,a962
-     hex2  146a,a7c7,102e,a343
-     hex2  5541,1321,7115,a038
-     hex2  0387,766a,a171,aab7
-     hex2  0277,d284,a170,a177
-     hex2  1744,4897,d177,a769
-     hex2  24a4,4954,d1ab,a67f
-     hex2  104a,797d,70a7,5b63
-     hex2  254a,a524,107a,5422
-     hex2  2334,4954,414a,5866
-     hex2  20b1,1021,71a1,5223
-     hex2  3624,4641,11a0,52c1
-     hex2  0847,7181,1112,5321
-     hex2  1544,4757,114c,5451
-     hex2  2941,1111,a012,502b
-.tn	
-	String	'Detroit Red Wings'
-.sr
-
-Edmonton
+Calgary	;CGY, $F3A
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$008C,$00AE,$000A,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$008C,$0EEE,$0008,$0008,$000A,$0006,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$4200,$00DA
+.sodds
+	dc.b	197,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,16,17,07,03,12,04,00	;line 1
+	dc.b	01,20,17,07,03,13,04,00	;line 2
+	dc.b	01,16,22,08,04,12,03,00	;line 3
+	dc.b	01,18,23,10,05,15,03,00	;line 4
+	dc.b	01,16,17,07,03,13,04,00	;line 5
+	dc.b	01,23,22,04,05,12,03,00	;line 6
+	dc.b	01,16,22,08,12,07,05,00	;line 7
+	dc.b	01,23,19,07,05,08,12,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Mike Vernon',				3043,4444,0000,4433	;1
+	Player	'Jeff Reese',				3542,3442,0000,2233	;2
+	Player	'Joe Nieuwendyk',			2584,4434,3444,4322	;3
+	Player	'Robert Reichel',			2664,4434,2444,3242	;4
+	Player	'Joel Otto',				29B4,3352,5734,4124	;5
+	Player	'Brian Skrudland',			3984,2242,4633,4434	;6
+	Player	'Gary Roberts',				1074,4544,4845,5134	;7
+	Player	'Paul Ranheim',				2884,4343,1343,3431	;8
+	Player	'Brent Ashton',				15A3,3343,4632,4433	;9
+	Player	'Chris Lindberg',			1173,4232,2433,2321	;10
+	Player	'Craig Berube',				1692,3112,2A11,1414	;11
+	Player	'Theoren Fleury',			1435,5454,4743,6133	;12
+	Player	'Sergei Makarov',			4265,4422,1054,3052	;13
+	Player	'Greg Paslawski',			2372,2313,2134,2220	;14
+	Player	'Ronnie Stern',				2282,2212,3723,1324	;15
+	Player	'Gary Suter',				2075,4454,4642,5243	;16
+	Player	'Al MacInnis',				0284,4436,3541,5243	;17
+	Player	'Roger Johansson',			3474,3222,3431,2332	;18
+	Player	'Trent Yawney',				1873,2242,3630,3133	;19
+	Player	'Frank Musil',				0394,4232,3621,3523	;20
+	Player	'Michel Petit',				0793,3234,3941,3333	;21
+	Player	'Kevin Dahl',				0472,3242,3331,3132	;22
+	Player	'Chris Dahlquist',			0583,3143,3431,3523	;23
+	Player	'Alexnder Godynyuk',		21A2,3222,3822,3512	;24
+	Player	'Greg Smyth',				06A0,0100,1901,1404	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Calgary'
+.ta	;abbreviation
+	String	'CGY'
+.tm	;nickname. 94 only
+	String	'Flames'
+.ar	;arena. 94 only
+	String	'Olympic Saddledome'
 
-.sodds	dc.b	4,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\oilersh.pal
-	incbin ..\Extracted\Graphics\Pals\oilersv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,21,03,12,08,0	;line 4
-	dc.b	01,09,20,22,18,07,03,0	;line 5
-	dc.b	01,10,15,11,18,07,03,0	;line 6
-	dc.b	01,20,19,23,08,17,03,0	;line 7
-.pld
-     hex2  3019,9990,018c,8880
-     hex2  315a,7aa0,00bb,99e0
-     hex2  119f,fdc5,b1e6,f9c3
-     hex2  05a8,89a8,e086,a5dc
-     hex2  2298,877b,51b3,a7c3
-     hex2  107b,bbcb,b1b6,ac97
-     hex2  085b,8a6b,b18b,a773
-     hex2  133e,b8b5,b1e8,a298
-     hex2  0298,8672,50b4,a6a5
-     hex2  255b,52a8,5150,a375
-     hex2  855e,ebde,81bc,ac79
-     hex2  095e,f94b,e187,aa75
-     hex2  1278,b41b,b1b3,a64a
-     hex2  06a8,5182,b053,a13a
-     hex2  0468,5235,8183,a169
-     hex2  1685,5042,b123,a20b
-     hex2  3282,2132,5025,a00b
-     hex2  1465,b568,8159,5537
-     hex2  2875,5195,8150,5137
-     hex2  3638,8472,2184,5481
-     hex2  1868,5948,80ed,5866
-     hex2  206b,b748,51ba,5743
-     hex2  195b,b7c8,2159,5742
-.tn	
-	String	'Edmonton Oilers'
-.sr
-
-Hartford
+Chicago	;CHI, $1234
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
+	dc.w	$0000,$0222,$0008,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
+	dc.w	$0CCC,$0CCC,$0000,$0008,$022A,$0004,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$2010,$21F8
+.sodds
+	dc.b	228,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,07,03,12,05,00	;line 1
+	dc.b	01,19,18,07,03,12,04,00	;line 2
+	dc.b	01,20,21,09,04,14,03,00	;line 3
+	dc.b	01,22,24,10,05,13,03,00	;line 4
+	dc.b	01,19,18,07,03,12,04,00	;line 5
+	dc.b	01,20,21,04,05,14,03,00	;line 6
+	dc.b	01,19,18,05,12,03,13,00	;line 7
+	dc.b	01,21,23,03,13,05,12,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Ed Belfour',				3066,4665,0000,6655	;1
+	Player	'Jim Waite',				2963,3332,0000,2233	;2
+	Player	'Jeremy Roenick',			2745,5445,2355,5253	;3
+	Player	'Christan Ruuttu',			2284,4343,4442,4243	;4
+	Player	'Brent Sutter',				1263,2453,4343,5133	;5
+	Player	'Troy Murray',				1984,3242,4331,3533	;6
+	Player	'Michel Goulet',			1684,3332,2635,3312	;7
+	Player	'Stephane Matteau',			3282,2321,3623,3213	;8
+	Player	'Greg Gilbert',				1472,2332,4633,3112	;9
+	Player	'Jocelyn Lemieux',			2693,4334,2622,2213	;10
+	Player	'Stu Grimson',				23B1,1021,3A11,2514	;11
+	Player	'Steve Larmer',				2874,4464,4444,6342	;12
+	Player	'Dirk Graham',				3384,3353,4732,4534	;13
+	Player	'Brian Noonan',				1073,3334,3343,4533	;14
+	Player	'Dave Christian',			2583,3233,2331,3231	;15
+	Player	'Joe Murphy',				1774,4434,3233,4243	;16
+	Player	'Rob Brown',				4464,3322,2841,2024	;17
+	Player	'Chris Chelios',			0774,4465,4751,6245	;18
+	Player	'Steve Smith',				05B4,4344,4641,5244	;19
+	Player	'Bryan Marchment',			0283,3242,4621,3215	;20
+	Player	'Frantsek Kucera',			0692,2243,1321,3422	;21
+	Player	'Craig Muni',				0392,2132,4620,4223	;22
+	Player	'Keith Brown',				0472,2232,3931,3433	;23
+	Player	'Cam Russell',				0853,3132,3431,3524	;24
+	Player	'Adam Bennett',				4792,2111,2520,1412	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Chicago'
+.ta	;abbreviation
+	String	'CHI'
+.tm	;nickname. 94 only
+	String	'Blackhawks'
+.ar	;arena. 94 only
+	String	'Chicago Stadium'
 
-.sodds	dc.b	5,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\whalersh.pal
-	incbin ..\Extracted\Graphics\Pals\whalersv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,03,07,08,0	;line 4
-	dc.b	01,09,10,11,13,20,03,0	;line 5
-	dc.b	01,05,09,18,08,12,03,0	;line 6
-	dc.b	01,14,15,16,13,19,03,0	;line 7
-.pld
-     hex2  3035,4660,0155,5540
-     hex2  3126,2990,0188,8870
-     hex2  155e,8e5b,e0eb,fbc8
-     hex2  3218,8632,20e1,a7b3
-     hex2  038e,e98b,51b5,a9d6
-     hex2  2495,575b,8157,a949
-     hex2  1668,ec65,b08a,ac8d
-     hex2  1238,8545,5154,a35b
-     hex2  214b,b315,5052,a951
-     hex2  0668,5248,8182,a356
-     hex2  173b,8568,5186,a638
-     hex2  0445,5a48,818b,a78a
-     hex2  3842,2332,2022,a330
-     hex2  2755,5132,5051,a357
-     hex2  29b5,5032,5121,a119
-     hex2  1842,2548,8125,a739
-     hex2  22a2,5035,b028,a00c
-     hex2  2888,5335,8126,5315
-     hex2  1168,8a1b,b086,5b88
-     hex2  2688,b678,5057,564b
-.tn	
-	String	'Hartford Whalers'
-.sr
-
-LosAngeles
+Detroit	;DET, $152E
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$000A,$000C,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$0AAA,$0CCC,$000A,$0008,$000A,$0006,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$7321,$00F8
+.sodds
+	dc.b	212,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,04,03,13,08,00	;line 1
+	dc.b	01,21,25,11,03,13,04,00	;line 2
+	dc.b	01,18,23,08,04,14,03,00	;line 3
+	dc.b	01,19,20,09,05,15,03,00	;line 4
+	dc.b	01,18,20,08,03,13,15,00	;line 5
+	dc.b	01,19,21,15,04,14,03,00	;line 6
+	dc.b	01,19,23,08,04,03,05,00	;line 7
+	dc.b	01,21,25,05,03,08,04,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Tim Cheveldae',			3264,4444,0000,4344	;1
+	Player	'Vincent Riendeau',			3763,3222,0000,3223	;2
+	Player	'Steve Yzerman',			1966,5644,1155,6152	;3
+	Player	'Sergei Fedorov',			9175,4444,3254,4153	;4
+	Player	'Dallas Drake',				2844,4343,2033,4133	;5
+	Player	'Mike Sillinger',			2373,3332,2332,4021	;6
+	Player	'Vachslav Kozlov',			1354,3223,1233,3533	;7
+	Player	'Paul Ysebaert',			2174,4443,2644,3342	;8
+	Player	'Shawn Burr',				1162,2332,4622,3123	;9
+	Player	'Keith Primeau',			55B3,3343,1624,3124	;10
+	Player	'Gerard Gallant',			1762,2333,4633,3134	;11
+	Player	'John Ogrodnick',			2593,3333,3234,2130	;12
+	Player	'Dino Ciccarelli',			2255,4425,2355,4143	;13
+	Player	'Ray Sheppard',				2662,2433,3334,3222	;14
+	Player	'Bob Probert',				24B4,3333,4A22,4235	;15
+	Player	'Sheldon Kennedy',			1543,3322,2324,2522	;16
+	Player	'Jim Hiller',				1472,2212,3722,1424	;17
+	Player	'Paul Coffey',				7796,5434,2461,5153	;18
+	Player	'Steve Chiasson',			0394,3444,3641,4234	;19
+	Player	'Yves Racine',				3363,3344,3431,4233	;20
+	Player	'Nicklas Lidstrom',			0554,3344,3441,4241	;21
+	Player	'Mark Howe',				0463,3343,3231,3031	;22
+	Player	'Vladimir Konstantov',		1663,3243,4731,4233	;23
+	Player	'Steve Konroyd',			0883,3232,4421,3233	;24
+	Player	'Brad McCrimmon',			0283,2242,4610,3133	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Detroit'
+.ta	;abbreviation
+	String	'DET'
+.tm	;nickname. 94 only
+	String	'Red Wings'
+.ar	;arena. 94 only
+	String	'Joe Louis Sports Arena'
 
-.sodds	dc.b	0,5
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\Kingsh.pal
-	incbin ..\Extracted\Graphics\Pals\Kingsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,03,07,08,0	;line 4
-	dc.b	01,09,14,11,08,17,03,0	;line 5
-	dc.b	01,14,20,21,18,12,03,0	;line 6
-	dc.b	01,15,19,22,13,23,03,0	;line 7
-.pld
-     hex2  323d,dbb0,01ce,ecd0
-     hex2  360a,a990,01aa,aa80
-     hex2  991f,cfec,61fc,fbf1
-     hex2  0476,687c,90c4,a9c9
-     hex2  286c,fabf,61c7,a9d6
-     hex2  2059,6dd6,61cc,fca6
-     hex2  078f,feef,c1cd,fda8
-     hex2  0659,6ab9,61f8,a985
-     hex2  024f,c6a6,91c3,a8b9
-     hex2  19cc,c5d6,c1c0,a3a1
-     hex2  2129,fbd9,c0c9,ac8a
-     hex2  3779,9696,c06a,a824
-     hex2  4419,9386,c19f,a01a
-     hex2  33d6,98f6,f0c4,a6dc
-     hex2  7796,62b3,c062,a34b
-     hex2  2999,6496,c03e,a02d
-     hex2  1856,69d9,c09b,a77a
-     hex2  111c,957c,91c7,5353
-     hex2  053c,6093,c190,5128
-     hex2  227c,c1b3,c132,512a
-     hex2  2776,9579,613a,5435
-     hex2  476f,f5a9,919b,5235
-     hex2  097c,c449,31c4,5532
-.tn	
-	String	'Los Angeles Kings'
-.sr
-
-Minnesota
+Edmonton	;EDM, $1848
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
+	dc.w	$002A,$002C,$0600,$0CCC,$0EEE,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
+	dc.w	$0888,$0CCC,$002C,$0600,$0622,$0200,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$1602,$12F8
+.sodds
+	dc.b	213,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,18,19,09,03,15,10,00	;line 1
+	dc.b	01,18,19,10,03,15,04,00	;line 2
+	dc.b	01,21,20,09,04,16,03,00	;line 3
+	dc.b	01,22,23,11,12,05,03,00	;line 4
+	dc.b	01,18,19,10,09,15,07,00	;line 5
+	dc.b	01,22,20,11,07,16,10,00	;line 6
+	dc.b	01,18,20,09,05,12,03,00	;line 7
+	dc.b	01,21,23,12,03,09,05,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Bill Ranford',				3044,3334,0000,4454	;1
+	Player	'Ron Tugnutt',				0122,3331,0000,1112	;2
+	Player	'Doug Weight',				3963,3343,3443,3132	;3
+	Player	'Todd Elik',				3473,4332,2433,3123	;4
+	Player	'Craig MacTavish',			1484,3242,4432,5223	;5
+	Player	'Kevin Todd',				1553,4333,3632,3332	;6
+	Player	'Shjon Podein',				2692,2322,2624,2512	;7
+	Player	'Mike Hudson',				2093,3242,4820,3233	;8
+	Player	'Shayne Corson',			0994,4343,4642,4234	;9
+	Player	'Craig Simpson',			1883,3434,2345,3132	;10
+	Player	'Zdeno Ciger',				0874,3333,2033,3230	;11
+	Player	'Kelly Buchberger',			16A2,2232,4A13,3213	;12
+	Player	'Martin Gelinas',			0783,3223,2432,2422	;13
+	Player	'Louie DeBrusk',			29C1,1212,3C14,1515	;14
+	Player	'Petr Klima',				8575,5324,1355,4533	;15
+	Player	'Scott Mellanby',			2791,1333,4723,3324	;16
+	Player	'Steven Rice',				12B2,2212,1321,1223	;17
+	Player	'Dave Manson',				2494,4355,4A41,5434	;18
+	Player	'Igor Kravchuk',			2194,3343,3242,4432	;19
+	Player	'Brian Benning',			1982,2343,3622,4234	;20
+	Player	'Geoff Smith',				2594,3231,1431,3231	;21
+	Player	'Brian Glynn',				06B3,3234,3421,4323	;22
+	Player	'Luke Richardson',			22B3,3132,4630,2434	;23
+	Player	'Chris Joseph',				02A3,3313,3531,1233	;24
+	Player	'Brad Werenka',				3693,3223,2633,2523	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Edmonton'
+.ta	;abbreviation
+	String	'EDM'
+.tm	;nickname. 94 only
+	String	'Oilers'
+.ar	;arena. 94 only
+	String	'Northlands Coliseum'
 
-.sodds	dc.b	5,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\northstarsh.pal
-	incbin ..\Extracted\Graphics\Pals\northstarsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,03,07,08,0	;line 4
-	dc.b	01,15,20,11,13,12,03,0	;line 5
-	dc.b	01,09,10,21,18,23,03,0	;line 6
-	dc.b	01,20,19,22,08,17,03,0	;line 7
-.pld
-     hex2  300a,a990,01cc,aac0
-     hex2  012a,a880,01aa,aa80
-     hex2  153c,9d99,c19b,fc99
-     hex2  2496,6666,c163,a5bc
-     hex2  0646,6456,9164,a757
-     hex2  2369,6b3c,9096,ae84
-     hex2  095c,ca66,61c7,ac86
-     hex2  071f,cb56,31f4,aaa2
-     hex2  023c,9276,f164,a154
-     hex2  0476,6156,c133,a246
-     hex2  165c,cb8c,6199,a995
-     hex2  2266,6889,61ca,a940
-     hex2  189c,c83f,6197,f675
-     hex2  0556,6243,9061,a369
-     hex2  0859,9286,c160,a479
-     hex2  1783,6023,9161,a30c
-     hex2  2779,9063,c033,a20e
-     hex2  2159,c459,6069,5512
-     hex2  2679,9179,9190,5832
-     hex2  0353,3023,9131,5129
-     hex2  142f,c446,9164,5634
-     hex2  107c,c376,c165,5511
-     hex2  2033,3416,3038,5613
-.tn	
-	String	'Minnesota North Stars'
-.sr
-
-Montreal
+Hartford	;HFD, $1B44
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0620,$0820,$088C,$066A
+	dc.w	$0600,$0042,$0A00,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0620,$0820,$088C,$066A
+	dc.w	$0040,$0284,$0C20,$0800,$0C20,$0600,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$1702,$00F7
+.sodds
+	dc.b	163,96
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,20,09,04,14,05,00	;line 1
+	dc.b	01,19,25,09,04,14,05,00	;line 2
+	dc.b	01,24,20,11,05,15,04,00	;line 3
+	dc.b	01,21,23,10,06,16,04,00	;line 4
+	dc.b	01,19,20,09,04,14,06,00	;line 5
+	dc.b	01,21,22,10,05,06,04,00	;line 6
+	dc.b	01,24,20,16,15,09,04,00	;line 7
+	dc.b	01,19,25,09,04,16,15,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Sean Burke',				01A4,3224,0000,4444	;1
+	Player	'Mario Gosselin',			3132,3442,0000,1122	;2
+	Player	'Frank Pietrngelo',			4063,3113,0000,2222	;3
+	Player	'Andrew Cassels',			2173,3442,2034,4032	;4
+	Player	'Terry Yake',				2563,3433,3334,4032	;5
+	Player	'Mikael Nylander',			3654,3323,2232,3132	;6
+	Player	'Robert Kron',				3853,3342,2233,3432	;7
+	Player	'Robert Petrovicky',		3954,3223,2231,3433	;8
+	Player	'Geoff Sanderson',			0864,4434,2044,4331	;9
+	Player	'Patrick Poulin',			24A3,3323,3033,3232	;10
+	Player	'Yvon Corriveau',			1182,2232,3812,3311	;11
+	Player	'Jim McKenzie',				3392,2112,2422,2314	;12
+	Player	'Randy Cunnyworth',			0762,3232,3622,3533	;13
+	Player	'Pat Verbeek',				1673,4434,3744,4244	;14
+	Player	'Mark Janssens',			22B3,3333,4633,4124	;15
+	Player	'Nick Kypreos',				2082,2221,3624,3415	;16
+	Player	'Mark Greig',				1771,1210,1511,1013	;17
+	Player	'Jamie Leach',				3483,3212,3923,1520	;18
+	Player	'Zarley Zalapski',			03A5,4454,4442,5133	;19
+	Player	'Eric Weinrich',			04A3,4343,3432,4133	;20
+	Player	'Adam Burt',				0674,3234,3441,4334	;21
+	Player	'Dan Keczmer',				3772,2231,1622,2513	;22
+	Player	'Doug Houda',				2772,2122,2921,2414	;23
+	Player	'Randy Ladouceur',			29B3,3131,2421,3514	;24
+	Player	'Allen Pedersen',			41A2,3132,3621,2123	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Hartford'
+.ta	;abbreviation
+	String	'HFD'
+.tm	;nickname. 94 only
+	String	'Whalers'
+.ar	;arena. 94 only
+	String	'Hartford Civic Center'
 
-.sodds	dc.b	4,5
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\canadiensh.pal
-	incbin ..\Extracted\Graphics\Pals\canadiensv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,08,12,03,0	;line 4
-	dc.b	01,10,20,16,18,07,03,0	;line 5
-	dc.b	01,10,09,16,03,21,08,0	;line 6
-	dc.b	01,20,14,11,18,17,03,0	;line 7
-.pld
-     hex2  334f,fcc0,01cc,eef0
-     hex2  4009,9990,01aa,aa80
-     hex2  182f,fa5c,60f9,fb85
-     hex2  251c,c686,91c3,a3b5
-     hex2  0839,9689,6163,aa96
-     hex2  2729,9996,c198,aa6a
-     hex2  063c,fb7c,c095,aea3
-     hex2  4739,9979,60cc,a572
-     hex2  2879,9586,30c3,a892
-     hex2  0359,9526,9193,a493
-     hex2  3579,998c,c16b,a855
-     hex2  447f,fa6f,60f8,ac65
-     hex2  3959,c8a6,916d,f457
-     hex2  3499,9383,6093,a185
-     hex2  2499,9093,c130,a00d
-     hex2  3183,3436,3136,a533
-     hex2  36a9,6293,903e,a00a
-     hex2  213f,f769,c0c9,5756
-     hex2  057c,c2c3,3090,5272
-     hex2  4846,6553,31c2,55a3
-     hex2  1226,6676,9067,5655
-.tn	
-	String	'Montreal Canadiens'
-.sr
-
-NewJersey
+LosAngeles	;LA, $1E52
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0202,$0222,$088C,$066A
+	dc.w	$0202,$0000,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0202,$088C,$066A
+	dc.w	$0AAA,$0CCC,$0202,$0200,$0202,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$6612,$11D9
+.sodds
+	dc.b	150,32
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,17,18,08,04,13,05,00	;line 1
+	dc.b	01,17,19,08,04,13,05,00	;line 2
+	dc.b	01,18,21,09,05,14,04,00	;line 3
+	dc.b	01,20,22,10,06,15,04,00	;line 4
+	dc.b	01,19,17,08,04,14,05,00	;line 5
+	dc.b	01,20,18,09,05,13,04,00	;line 6
+	dc.b	01,21,18,09,15,04,14,00	;line 7
+	dc.b	01,19,22,04,14,09,15,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Kelly Hrudey',				3263,3444,0000,2223	;1
+	Player	'Robb Stauber',				3562,3553,0000,2222	;2
+	Player	'Rick Knickle',				0122,3332,0000,2221	;3
+	Player	'Wayne Gretzky',			9946,4542,2262,6060	;4
+	Player	'Jimmy Carson',				1294,4434,2345,4241	;5
+	Player	'Corey Millen',				2343,4432,1534,3333	;6
+	Player	'Gary Shuchuk',				1462,2201,2322,0322	;7
+	Player	'Luc Robitaille',			2074,4534,2456,5243	;8
+	Player	'Tony Granato',				2164,5443,3334,3334	;9
+	Player	'Lonnie Loach',				2962,3322,2623,2222	;10
+	Player	'Pat Conacher',				1572,2222,2423,2431	;11
+	Player	'Warren Rychel',			1072,2211,3612,1515	;12
+	Player	'Tomas Sandstrom',			0794,4535,3845,3233	;13
+	Player	'Jari Kurri',				1784,3444,2143,4132	;14
+	Player	'Mike Donnelly',			1164,4432,3423,4332	;15
+	Player	'Dave Taylor',				1873,2233,3532,3323	;16
+	Player	'Rob Blake',				04B4,4444,3341,4344	;17
+	Player	'Marty McSorley',			33E3,3343,3932,4436	;18
+	Player	'Alexei Zhitnik',			0254,4343,3432,4133	;19
+	Player	'Darryl Sydor',				2593,3233,3431,3232	;20
+	Player	'Charlie Huddy',			22A3,2243,3431,3132	;21
+	Player	'Mark Hardy',				2483,3231,3620,2123	;22
+	Player	'Brent Thompson',			0352,2121,2820,2114	;23
+	Player	'Tim Watters',				0562,2121,2620,2122	;24
+	Player	'Rene Chapdlaine',			0881,1010,1510,1313	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Los Angeles'
+.ta	;abbreviation
+	String	'LA'
+.tm	;nickname. 94 only
+	String	'Kings'
+.ar	;arena. 94 only
+	String	'Great Western Forum'
 
-.sodds	dc.b	4,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\devilsh.pal
-	incbin ..\Extracted\Graphics\Pals\devilsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,15,06,03,07,08,0	;line 4
-	dc.b	01,10,19,11,08,23,03,0	;line 5
-	dc.b	01,19,14,20,13,22,03,0	;line 6
-	dc.b	01,15,05,21,18,23,03,0	;line 7
-.pld
-     hex2  3105,5990,0177,9960
-     hex2  0193,2660,0166,4440
-     hex2  2645,5a68,8159,a695
-     hex2  234b,8898,51b2,abc6
-     hex2  079b,b7c5,81b4,a6b7
-     hex2  0985,5b68,8185,aba7
-     hex2  1575,8c8f,5059,fe7a
-     hex2  177e,b885,51ba,a574
-     hex2  028e,837e,51b2,a386
-     hex2  0598,8692,51b2,a4c4
-     hex2  3358,8775,2155,a760
-     hex2  1185,5b75,5059,aa8a
-     hex2  1645,5368,8157,a417
-     hex2  0398,5332,b152,a47d
-     hex2  2878,5485,8155,a46a
-     hex2  0888,8495,5127,a33a
-     hex2  25a2,2135,b027,a10b
-     hex2  202b,b7a5,205d,5263
-     hex2  0678,5462,5181,5594
-     hex2  325b,b4a5,2126,5232
-     hex2  1062,2132,b129,520b
-     hex2  243b,87c8,2056,5940
-     hex2  2295,884e,8056,5e38
-.tn	
-	String	'New Jersey Devils'
-.sr
-
-NewYorkI
+Dallas	;DAL, $214E. 93 Minnesota North Stars
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0444,$088C,$066A
+	dc.w	$0020,$0ACA,$0060,$0888,$0CCC,$0666,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0444,$088C,$066A
+	dc.w	$0020,$0ACA,$0060,$0000,$0222,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$1410,$00E9
+.sodds
+	dc.b	181,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,17,18,04,03,11,12,00	;line 1
+	dc.b	01,17,20,03,12,16,04,00	;line 2
+	dc.b	01,19,21,08,04,14,12,00	;line 3
+	dc.b	01,22,18,09,05,11,12,00	;line 4
+	dc.b	01,17,18,11,03,12,04,00	;line 5
+	dc.b	01,22,19,08,04,13,11,00	;line 6
+	dc.b	01,24,20,05,11,08,09,00	;line 7
+	dc.b	01,17,21,08,09,05,11,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Jon Casey',				3024,3443,0000,2234	;1
+	Player	'Darcy Wakaluk',			3562,3333,0000,2232	;2
+	Player	'Mike Modano',				0975,5445,2452,5243	;3
+	Player	'Dave Gagner',				1564,4443,2444,4244	;4
+	Player	'Neal Broten',				0744,4353,3032,4341	;5
+	Player	'Brent Gilchrist',			4164,3223,2042,2532	;6
+	Player	'Bobby Smith',				18A3,3232,2632,3440	;7
+	Player	'Mike McPhee',				1794,3333,4422,4422	;8
+	Player	'Gaetan Duchesne',			1093,4232,3423,3511	;9
+	Player	'Brian Propp',				1683,3323,3632,2530	;10
+	Player	'Russ Courtnall',			2665,6424,2133,3432	;11
+	Player	'Ulf Dahlen',				2283,4433,2044,4330	;12
+	Player	'Mike Craig',				2063,3333,3743,3223	;13
+	Player	'Trent Klatt',				2992,2312,1521,1122	;14
+	Player	'Shane Churla',				2791,2221,2922,2125	;15
+	Player	'Stewart Gavin',			1273,3221,2022,2513	;16
+	Player	'Mark Tinordi',				2493,3344,4433,4224	;17
+	Player	'Tommy Sjodin',				3364,3334,2131,3331	;18
+	Player	'Jim Johnson',				0672,3242,3631,4143	;19
+	Player	'Derian Hatcher',			0293,2232,2421,4224	;20
+	Player	'Craig Ludwig',				03C2,2132,3420,3424	;21
+	Player	'Richard Matvichuk',		0472,3133,3630,3522	;22
+	Player	'Mark Osiecki',				2392,2122,2520,1312	;23
+	Player	'Brad Berry',				0572,2032,3420,3514	;24
+	Player	'Enrico Ciccone',			3991,1022,2820,3525	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Dallas'
+.ta	;abbreviation
+	String	'DAL'
+.tm	;nickname. 94 only
+	String	'Stars'
+.ar	;arena. 94 only
+	String	'Reunion Arena'
 
-.sodds	dc.b	6,3
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\islandersh.pal
-	incbin ..\Extracted\Graphics\Pals\islandersv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,10,20,03,07,08,0	;line 4
-	dc.b	01,15,19,06,13,22,08,0	;line 5
-	dc.b	01,04,09,20,08,22,03,0	;line 6
-	dc.b	01,19,05,21,18,17,03,0	;line 7
-.pld
-     hex2  3525,7aa0,0199,7760
-     hex2  0121,0660,0144,4430
-     hex2  163d,fd4d,40ab,ac94
-     hex2  0867,a817,41a1,a8d1
-     hex2  3697,7447,7140,a598
-     hex2  254d,a937,4145,ac75
-     hex2  2674,7a54,7049,aa87
-     hex2  2134,4947,7146,aa74
-     hex2  17b4,4114,a140,a137
-     hex2  0641,1501,4173,a794
-     hex2  2784,4964,4179,a864
-     hex2  15a1,1511,1045,a252
-     hex2  334d,d734,41ac,a546
-     hex2  4784,4024,d111,a01a
-     hex2  29aa,a4b1,7172,a388
-     hex2  2471,4021,a111,a00e
-     hex2  1264,4021,7012,a10d
-     hex2  393a,a314,4147,5210
-     hex2  0251,1011,4114,5005
-     hex2  1164,a734,7177,5a34
-     hex2  0454,4454,4115,5426
-     hex2  1461,1321,1114,5512
-.tn	
-	String	'New York Islanders'
-.sr
-
-NewYorkR
+Montreal	;MTL, $243E
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0422,$0622,$0842,$088C,$066A
+	dc.w	$0622,$0842,$0008,$0CCC,$0EEE,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0422,$0622,$0842,$088C,$066A
+	dc.w	$0888,$0CCC,$0622,$0008,$020A,$0004,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$5211,$21E9
+.sodds
+	dc.b	197,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,18,17,07,03,12,04,00	;line 1
+	dc.b	01,23,18,07,03,12,04,00	;line 2
+	dc.b	01,22,17,08,04,14,03,00	;line 3
+	dc.b	01,19,20,09,05,13,03,00	;line 4
+	dc.b	01,18,17,07,03,12,05,00	;line 5
+	dc.b	01,19,20,08,04,05,03,00	;line 6
+	dc.b	01,17,23,07,06,03,13,00	;line 7
+	dc.b	01,22,19,03,13,07,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Patrick Roy',				3366,4446,0000,5566	;1
+	Player	'Andre Racicot',			3742,3333,0000,2222	;2
+	Player	'Kirk Muller',				1194,4444,4444,4143	;3
+	Player	'Stephan Lebeau',			4754,4433,2145,4031	;4
+	Player	'Denis Savard',				1855,4433,2353,3043	;5
+	Player	'Guy Carbonneau',			2164,3242,4141,3341	;6
+	Player	'Vincent Damphousse',		2564,4433,2053,4243	;7
+	Player	'Gilbert Dionne',			4583,4333,2433,3232	;8
+	Player	'John Leclair',				17B3,4333,3033,3222	;9
+	Player	'Benoit Brunet',			2262,2322,2223,2222	;10
+	Player	'Mario Roberge',			3261,1112,3813,1314	;11
+	Player	'Brian Bellows',			2384,4434,2344,4242	;12
+	Player	'Mike Keane',				1253,4432,3323,3033	;13
+	Player	'Gary Leeman',				2654,4323,2933,3232	;14
+	Player	'Todd Ewen',				36B1,1211,3712,2314	;15
+	Player	'Ed Ronan',					3182,2212,3322,1421	;16
+	Player	'Eric Desjardins',			2894,3343,4342,4233	;17
+	Player	'Matt Schneider',			2773,4333,3442,4243	;18
+	Player	'Patrice Brisebois',		4353,3333,3722,4323	;19
+	Player	'Kevin Haller',				1462,2231,2612,4523	;20
+	Player	'Rob Ramage',				0593,2233,4731,3534	;21
+	Player	'J.J. Daigneault',			4864,3244,3432,4422	;22
+	Player	'Lyle Odelein',				2493,2242,3620,3324	;23
+	Player	'Sean Hill',				3882,2222,3521,2314	;24
+	Player	'Donald Dufresne',			3492,2122,3921,2313	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Montreal'
+.ta	;abbreviation
+	String	'MTL'
+.tm	;nickname. 94 only
+	String	'Canadiens'
+.ar	;arena. 94 only
+	String	'Montreal Forum'
 
-.sodds	dc.b	3,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\rangersh.pal
-	incbin ..\Extracted\Graphics\Pals\rangersv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,08,07,03,0	;line 4
-	dc.b	01,14,19,21,18,23,03,0	;line 5
-	dc.b	01,09,15,21,08,23,03,0	;line 6
-	dc.b	01,19,20,16,18,22,03,0	;line 7
-.pld
-     hex2  354c,bbb0,01bb,bbc0
-     hex2  3438,6990,01aa,6aa0
-     hex2  0945,5c7e,e0e9,aaa8
-     hex2  024e,ec68,51e4,faf4
-     hex2  036f,fa5e,b0e4,a8e5
-     hex2  259b,b9ab,8187,ad50
-     hex2  225e,eb4e,b0bb,ad45
-     hex2  084e,eb58,b1e7,ab93
-     hex2  2788,818b,8081,a147
-     hex2  057b,b3a2,b185,a153
-     hex2  1298,8468,e156,a63a
-     hex2  193e,8a98,51b6,aa94
-     hex2  1565,5355,815c,a11b
-     hex2  249b,85ab,8082,a4ab
-     hex2  1882,2305,5052,a569
-     hex2  1655,8448,e187,a42d
-     hex2  2665,8138,b084,a40e
-     hex2  1135,8978,b0bc,5565
-     hex2  0655,5372,2182,5370
-     hex2  1468,b06b,81b0,5227
-     hex2  207e,86b5,81ea,5160
-     hex2  217b,b378,2085,5420
-     hex2  2338,8a9b,208b,5961
-.tn	
-	String	'New York Rangers'
-.sr
-
-Ottawa
+NewJersey	;NJ, $2740
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
+	dc.w	$0222,$0444,$0008,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0004,$0006,$0008,$088C,$066A
+	dc.w	$0888,$0CCC,$002C,$0000,$0222,$0200,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$3411,$12F8
+.sodds
+	dc.b	152,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,12,03,13,08,00	;line 1
+	dc.b	01,18,21,08,04,12,03,00	;line 2
+	dc.b	01,19,22,07,03,15,04,00	;line 3
+	dc.b	01,20,23,09,05,13,04,00	;line 4
+	dc.b	01,18,20,12,05,13,07,00	;line 5
+	dc.b	01,23,21,08,09,07,13,00	;line 6
+	dc.b	01,18,23,07,17,08,03,00	;line 7
+	dc.b	01,20,19,08,03,07,17,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Chris Terreri',			3124,4443,0000,3333	;1
+	Player	'Craig Billington',			0143,4221,0000,2222	;2
+	Player	'Alexnder Semak',			2064,3443,3144,3242	;3
+	Player	'Bernie Nicholls',			1963,3433,1342,3043	;4
+	Player	'Peter Stastny',			2694,3343,3044,3241	;5
+	Player	'Janne Ojanen',				3492,2322,2222,2232	;6
+	Player	'Valeri Zelepukin',			2564,4433,1043,3143	;7
+	Player	'John MacLean',				1593,3344,3733,4423	;8
+	Player	'Bobby Holik',				16A3,4333,3333,4533	;9
+	Player	'Tom Chorske',				0992,2321,2332,2232	;10
+	Player	'Troy Mallette',			08A2,2221,1824,1313	;11
+	Player	'Stephane Richer',			4494,4435,2143,4432	;12
+	Player	'Claude Lemieux',			22B4,4434,3732,4334	;13
+	Player	'Bill Guerin',				1292,2323,2333,2323	;14
+	Player	'Randy McKay',				2162,2222,2922,3424	;15
+	Player	'Scott Pellerin',			1862,3332,2623,2223	;16
+	Player	'Dave Barr',				1183,3233,3323,3222	;17
+	Player	'Scott Stevens',			04B4,4344,5642,5043	;18
+	Player	'Vachslav Fetisov',			02B4,2244,4441,3044	;19
+	Player	'Bruce Driver',				2363,3342,3432,4232	;20
+	Player	'Scott Niedrmayer',			2793,3333,3432,3132	;21
+	Player	'Alexei Kasatonov',			07B4,3234,4441,3142	;22
+	Player	'Ken Daneyko',				03A2,2141,4620,4414	;23
+	Player	'Tommy Albelin',			0673,2232,2230,3322	;24
+	Player	'Myles O''Connor',			0571,1011,1210,1303	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'New Jersey'
+.ta	;abbreviation
+	String	'NJ'
+.tm	;nickname. 94 only
+	String	'Devils'
+.ar	;arena. 94 only
+	String	'Byrne Meadowlands Arena'
 
-.sodds	dc.b	3,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\otth.pal
-	incbin ..\Extracted\Graphics\Pals\ottv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,08,07,03,0	;line 4
-	dc.b	01,14,19,21,18,23,03,0	;line 5
-	dc.b	01,09,15,21,08,23,03,0	;line 6
-	dc.b	01,19,20,16,18,22,03,0	;line 7
-.pld
-     hex2  354c,bbb0,01bb,bbc0
-     hex2  3438,6990,01aa,6aa0
-     hex2  0945,5c7e,e0e9,aaa8
-     hex2  024e,ec68,51e4,faf4
-     hex2  036f,fa5e,b0e4,a8e5
-     hex2  259b,b9ab,8187,ad50
-     hex2  225e,eb4e,b0bb,ad45
-     hex2  084e,eb58,b1e7,ab93
-     hex2  2788,818b,8081,a147
-     hex2  057b,b3a2,b185,a153
-     hex2  1298,8468,e156,a63a
-     hex2  193e,8a98,51b6,aa94
-     hex2  1565,5355,815c,a11b
-     hex2  249b,85ab,8082,a4ab
-     hex2  1882,2305,5052,a569
-     hex2  1655,8448,e187,a42d
-     hex2  2665,8138,b084,a40e
-     hex2  1135,8978,b0bc,5565
-     hex2  0655,5372,2182,5370
-     hex2  1468,b06b,81b0,5227
-     hex2  207e,86b5,81ea,5160
-     hex2  217b,b378,2085,5420
-     hex2  2338,8a9b,208b,5961
-.tn	
-	String	'New York Rangers'
-.sr
-
-Philadelphia
+LongIsland	;NYI, $2A58
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
+	dc.w	$0600,$0622,$020C,$0CCC,$0EEE,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
+	dc.w	$0888,$0CCC,$020C,$0600,$0622,$0200,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$5321,$00F8
+.sodds
+	dc.b	151,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,09,03,04,10,00	;line 1
+	dc.b	01,23,20,09,03,12,04,00	;line 2
+	dc.b	01,18,19,10,04,13,03,00	;line 3
+	dc.b	01,21,22,11,07,15,03,00	;line 4
+	dc.b	01,18,22,09,03,10,04,00	;line 5
+	dc.b	01,21,20,07,04,12,09,00	;line 6
+	dc.b	01,23,21,13,12,04,15,00	;line 7
+	dc.b	01,18,25,04,15,12,13,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Glenn Healy',				3552,4442,0000,2222	;1
+	Player	'Mark Fitzpatrik',			3072,4223,0000,2222	;2
+	Player	'Pierre Turgeon',			7794,4534,3445,5141	;3
+	Player	'Benoit Hogue',				3374,5433,2445,4143	;4
+	Player	'Marty McInnis',			1843,3322,2333,3022	;5
+	Player	'Travis Green',				3982,2322,3121,2322	;6
+	Player	'Ray Ferraro',				2063,3334,2643,4333	;7
+	Player	'Claude Loiselle',			1083,2211,3833,1524	;8
+	Player	'Steve Thomas',				3264,4433,4433,4243	;9
+	Player	'Derek King',				2793,2434,1445,4222	;10
+	Player	'Dave Volek',				2564,4322,1242,4532	;11
+	Player	'Patrick Flatley',			2683,2432,3342,4042	;12
+	Player	'Brian Mullen',				1663,3333,2433,4531	;13
+	Player	'Brad Dalgarno',			15B1,2321,1524,2123	;14
+	Player	'Tom Fitzgerald',			1482,2232,2122,3222	;15
+	Player	'Dan Marois',				1773,3213,1531,2423	;16
+	Player	'Mick Vukota',				1282,3111,1911,2414	;17
+	Player	'Vladimir Malakhov',		23A3,3434,3432,4233	;18
+	Player	'Darius Kasparitis',		1174,3233,4431,3234	;19
+	Player	'Jeff Norton',				0883,3432,2422,4132	;20
+	Player	'Uwe Krupp',				04E2,2343,3322,4132	;21
+	Player	'Tom Kurvers',				2883,3434,2631,4132	;22
+	Player	'Scott Lachance',			0782,2243,3432,4133	;23
+	Player	'Dennis Vaske',				37A1,1212,2611,1113	;24
+	Player	'Richard Pilon',			4793,3123,3821,2515	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'New York'
+.ta	;abbreviation
+	String	'NYI'
+.tm	;nickname. 94 only
+	String	'Islanders'
+.ar	;arena. 94 only
+	String	'Nassau Coliseum'
 
-.sodds	dc.b	5,4
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\flyersh.pal
-	incbin ..\Extracted\Graphics\Pals\flyersv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,15,06,18,07,03,0	;line 4
-	dc.b	01,10,20,11,03,23,08,0	;line 5
-	dc.b	01,05,09,22,13,17,03,0	;line 6
-	dc.b	01,20,14,21,19,23,03,0	;line 7
-.pld
-     hex2  2769,8990,0177,99c0
-     hex2  3563,1550,0135,5330
-     hex2  092e,8b55,21e8,a7a1
-     hex2  0355,b748,b083,aab5
-     hex2  28eb,8578,b055,a487
-     hex2  324b,ba58,51b6,a9a5
-     hex2  2288,bc7b,f0bb,fc7a
-     hex2  1435,8768,e056,a868
-     hex2  115b,b708,81b3,a6c0
-     hex2  0895,5358,b185,a446
-     hex2  4145,5645,2157,a442
-     hex2  2085,5568,80b7,a443
-     hex2  2515,b638,b156,a65a
-     hex2  06a5,5172,e050,a158
-     hex2  29a5,8525,b154,a4ac
-     hex2  1785,8345,b12a,a11f
-     hex2  1985,b785,b087,a95a
-     hex2  1858,883b,81ba,5756
-     hex2  2645,5362,2122,5431
-     hex2  3968,8162,2121,5233
-     hex2  1065,8355,b187,532c
-     hex2  24ab,b468,e126,5513
-     hex2  12d5,8b15,8088,5b90
-.tn	
-	String	'Philadelphia Flyers'
-.sr
-
-Pittsburgh
+NewYork	;NYR, $2D5C
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$0208,$020A,$0600,$0CCC,$0EEE,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$0888,$0CCC,$020A,$0600,$0622,$0200,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$3411,$11F8
+.sodds
+	dc.b	150,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,07,03,12,08,00	;line 1
+	dc.b	01,18,21,08,03,13,06,00	;line 2
+	dc.b	01,19,22,07,06,14,03,00	;line 3
+	dc.b	01,20,25,09,04,12,03,00	;line 4
+	dc.b	01,18,19,13,03,12,05,00	;line 5
+	dc.b	01,20,23,08,05,14,12,00	;line 6
+	dc.b	01,18,21,08,03,05,04,00	;line 7
+	dc.b	01,19,25,05,04,08,03,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'John Vanbiesbrk',			3453,4553,0000,3434	;1
+	Player	'Mike Richter',				3573,4443,0000,4444	;2
+	Player	'Mark Messier',				11A5,4443,5453,4053	;3
+	Player	'Sergei Nemchinov',			1364,3353,4034,5232	;4
+	Player	'Darren Turcotte',			0864,4433,2443,4432	;5
+	Player	'Ed Olczyk',				1294,3334,2443,3442	;6
+	Player	'Esa Tikkanen',				1095,5344,5442,4443	;7
+	Player	'Adam Graves',				0964,4432,3633,4534	;8
+	Player	'Phil Bourque',				2982,4232,4832,3222	;9
+	Player	'Jan Erixon',				2083,3232,2233,3031	;10
+	Player	'Steven King',				2572,2322,1323,3422	;11
+	Player	'Mike Gartner',				2275,5445,2353,5552	;12
+	Player	'Tony Amonte',				3364,4433,1333,4332	;13
+	Player	'Alexei Kovalev',			2774,3333,1034,3433	;14
+	Player	'Paul Broten',				3771,1231,2312,2312	;15
+	Player	'Joey Kocur',				2682,1132,3921,2424	;16
+	Player	'Mike Hartman',				1872,3101,3611,1514	;17
+	Player	'Brian Leetch',				0266,3444,2651,5252	;18
+	Player	'James Patrick',			0394,4344,4341,4243	;19
+	Player	'Sergei Zubov',				2173,3343,3332,3130	;20
+	Player	'Jeff Beukeboom',			23B2,2242,3720,3024	;21
+	Player	'Kevin Lowe',				0484,3243,4241,3133	;22
+	Player	'Peter Andersson',			0592,3322,2231,2432	;23
+	Player	'Jay Wells',				24A2,2222,3620,2124	;24
+	Player	'Joe Cirella',				06A3,3223,2922,3323	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'New York'
+.ta	;abbreviation
+	String	'NYR'
+.tm	;nickname. 94 only
+	String	'Rangers'
+.ar	;arena. 94 only
+	String	'Madison Square Garden'
 
-.sodds	dc.b	0,2
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\penguinsh.pal
-	incbin ..\Extracted\Graphics\Pals\penguinsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,03,07,08,0	;line 4
-	dc.b	01,09,20,16,08,22,03,0	;line 5
-	dc.b	01,10,14,16,13,17,03,0	;line 6
-	dc.b	01,20,19,21,18,22,03,0	;line 7
-.pld
-     hex2  359d,caa0,00af,aa50
-     hex2  4047,4770,0199,9950
-     hex2  669f,ffcf,90fd,fec3
-     hex2  777f,fd1f,61f6,fdfa
-     hex2  5599,c74c,90c2,aac6
-     hex2  25b9,fc66,916a,ad9a
-     hex2  084f,9f6c,91fe,fac4
-     hex2  097f,cc5f,61f8,a9b6
-     hex2  226c,949c,c094,a384
-     hex2  2869,63bc,c167,a077
-     hex2  123c,f796,6169,a749
-     hex2  6899,995c,90cc,a764
-     hex2  1556,c47c,9168,a615
-     hex2  056c,c4a3,f191,a69c
-     hex2  3276,62c9,c194,a158
-     hex2  2999,c686,c1ca,a628
-     hex2  345c,c749,60c4,ab54
-     hex2  1969,9786,9168,5462
-     hex2  2356,6146,c068,5013
-     hex2  03b3,3123,6133,5149
-     hex2  249c,c5b6,9038,5337
-     hex2  073f,9aaf,f0cc,5780
-.tn	
-	String	'Pittsburgh Penguins'
-.sr
-
-Quebec
+Ottawa	;OTW, $3054
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
+	dc.w	$002A,$002C,$002E,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0002,$0004,$088C,$066A
+	dc.w	$0028,$002C,$0002,$0222,$0444,$0002,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$0702,$13F8
+.sodds
+	dc.b	197,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,20,19,10,03,15,11,00	;line 1
+	dc.b	01,20,19,10,03,15,07,00	;line 2
+	dc.b	01,22,25,12,07,17,03,00	;line 3
+	dc.b	01,21,23,11,04,16,03,00	;line 4
+	dc.b	01,20,19,15,03,16,05,00	;line 5
+	dc.b	01,23,22,10,05,08,16,00	;line 6
+	dc.b	01,19,23,06,07,12,04,00	;line 7
+	dc.b	01,20,25,12,04,07,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Peter Sidorkwicz',			3162,3112,0000,2222	;1
+	Player	'Daniel Berthiaume',		3213,3112,0000,2222	;2
+	Player	'Jamie Baker',				1373,3333,2433,4232	;3
+	Player	'Mark Lamb',				0764,3242,3031,3333	;4
+	Player	'Neil Brady',				1292,2332,2622,3133	;5
+	Player	'Mark Freer',				1162,2332,2423,4322	;6
+	Player	'Laurie Boschman',			1664,2242,3432,3523	;7
+	Player	'David Archibald',			1572,2232,1622,3522	;8
+	Player	'Rob Murphy',				1891,2222,3621,2412	;9
+	Player	'Sylvain Turgeon',			6194,4333,2432,3523	;10
+	Player	'Mike Peluso',				4492,2232,3A13,3525	;11
+	Player	'Doug Smail',				0953,3232,2621,2423	;12
+	Player	'Jeff Lazaro',				2863,3312,2833,1522	;13
+	Player	'Darcy Loewen',				1062,2122,1612,2424	;14
+	Player	'Bob Kudelski',				2693,3333,2334,3432	;15
+	Player	'Jody Hull',				1792,2332,3122,3321	;16
+	Player	'Andrew McBain',			2092,2332,3522,2122	;17
+	Player	'Tomas Jelinek',			2572,2222,1632,2513	;18
+	Player	'Norm Maciver',				2263,3443,3022,4133	;19
+	Player	'Brad Shaw',				0473,2333,2331,3232	;20
+	Player	'Darren Rumble',			3492,2232,3420,3423	;21
+	Player	'Chris Luongo',				2362,2131,1320,2423	;22
+	Player	'Ken Hammond',				0573,2132,3621,3513	;23
+	Player	'Gord Dineen',				0681,1221,2311,2513	;24
+	Player	'Brad Marsh',				14B2,2031,3610,2522	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Ottawa'
+.ta	;abbreviation
+	String	'OTW'
+.tm	;nickname. 94 only
+	String	'Senators'
+.ar	;arena. 94 only
+	String	'Ottawa Civic Center'
 
-.sodds	dc.b	6,0
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\nordiquesh.pal
-	incbin ..\Extracted\Graphics\Pals\nordiquesv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,19,11,03,07,08,0	;line 4
-	dc.b	01,10,20,06,08,21,03,0	;line 5
-	dc.b	01,05,14,16,03,12,08,0	;line 6
-	dc.b	01,19,20,11,18,22,03,0	;line 7
-.pld
-     hex2  0102,0880,0195,5570
-     hex2  3212,0880,0155,7750
-     hex2  194a,ae0a,41ac,fcb2
-     hex2  437a,a917,4175,aac2
-     hex2  0684,1337,4142,a558
-     hex2  2241,1424,7019,a608
-     hex2  1341,191a,4179,a885
-     hex2  400a,7914,1177,a781
-     hex2  2774,4114,4112,a044
-     hex2  3747,7571,11a4,a5a1
-     hex2  2181,1401,1117,a424
-     hex2  1864,4747,7147,a759
-     hex2  2527,7a97,117d,a493
-     hex2  2971,4304,7143,a46c
-     hex2  1541,1031,7010,a008
-     hex2  1781,1001,1110,a303
-     hex2  1161,1211,7013,a229
-     hex2  2047,7481,1117,5230
-     hex2  0787,7207,4172,5344
-     hex2  0541,1441,1175,5380
-     hex2  1044,7624,1078,f640
-     hex2  1474,4284,a044,5317
-.tn	
-	String	'Quebec Nordiques'
-.sr
-
-SanJose
+Philadelphia	;PHI, $3348
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
+	dc.w	$002A,$002C,$002E,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
+	dc.w	$0AAA,$0CCC,$0EEE,$002A,$002C,$0028,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$3602,$22E8
+.sodds
+	dc.b	134,48
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,05,04,15,16,00	;line 1
+	dc.b	01,19,18,10,04,15,05,00	;line 2
+	dc.b	01,21,23,12,05,16,04,00	;line 3
+	dc.b	01,20,22,11,06,17,04,00	;line 4
+	dc.b	01,18,20,05,04,15,06,00	;line 5
+	dc.b	01,21,19,10,06,16,04,00	;line 6
+	dc.b	01,18,23,08,15,10,05,00	;line 7
+	dc.b	01,21,19,10,05,08,15,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Tommy Soderstrom',			3034,4554,0000,3434	;1
+	Player	'Dominic Roussel',			3363,3333,0000,3322	;2
+	Player	'Steph Beauregard',			3572,3001,0100,2222	;3
+	Player	'Eric Lindros',				88C4,3444,5946,5244	;4
+	Player	'Rod BrindAmour',			1794,3444,3444,4243	;5
+	Player	'Pelle Eklund',				0955,4433,3243,4041	;6
+	Player	'Josef Beranek',			4263,3332,1033,3433	;7
+	Player	'Keith Acton',				2542,2243,4032,4232	;8
+	Player	'Vachslav Butsayev',		2262,2222,2620,2123	;9
+	Player	'Brent Fedyk',				1882,2433,3323,3122	;10
+	Player	'Doug Evans',				1562,2222,2423,2223	;11
+	Player	'Andrei Lomakin',			2374,3323,1233,3242	;12
+	Player	'Dave Snuggerud',			1473,3222,2631,2531	;13
+	Player	'Claude Boivin',			1091,1212,2814,1214	;14
+	Player	'Mark Recchi',				0865,4534,3445,4143	;15
+	Player	'Kevin Dineen',				1174,5342,2733,4534	;16
+	Player	'Dave Brown',				2191,1021,2910,2513	;17
+	Player	'Garry Galley',				0372,2342,3631,3233	;18
+	Player	'Dimitri Yushkevich',		0274,3343,2431,4333	;19
+	Player	'Greg Hawgood',				2074,3333,2432,3133	;20
+	Player	'Terry Carkner',			29A2,2232,3621,3024	;21
+	Player	'Ric Nattress',				05A2,2332,2523,3322	;22
+	Player	'Ryan McGill',				2782,2232,2721,3414	;23
+	Player	'Gord Hynes',				2642,2221,3222,2522	;24
+	Player	'Shawn Cronin',				44A1,1111,2C13,1513	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Philadelphia'
+.ta	;abbreviation
+	String	'PHI'
+.tm	;nickname. 94 only
+	String	'Flyers'
+.ar	;arena. 94 only
+	String	'Spectrum'
 
-.sodds	dc.b	6,1
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\Sharksh.pal
-	incbin ..\Extracted\Graphics\Pals\Sharksv.pal
-.ls
-	dc.b	01,05,14,19,03,17,11,0	;line 1
-	dc.b	01,09,06,18,11,12,03,0	;line 2
-	dc.b	01,10,15,22,13,16,17,0	;line 3
-	dc.b	01,07,14,19,13,17,03,0	;line 4
-	dc.b	01,15,05,18,11,21,17,0	;line 5
-	dc.b	01,07,10,08,20,21,03,0	;line 6
-	dc.b	01,15,09,04,03,12,17,0	;line 7
-.pld
-     hex2  0142,0aa0,0088,4870	;1
-     hex2  3061,0220,0101,0070	;2
-     hex2  2514,a527,a145,a65a	;3
-     hex2  1784,7234,a119,a11f	;4
-     hex2  4845,5442,21b1,55a3	;5
-     hex2  29a9,93a0,6161,a388	;6
-     hex2  2867,419a,a146,a077	;7
-     hex2  249a,a394,7016,5337	;8
-     hex2  2673,3003,3101,a044	;9
-     hex2  445a,a194,a070,a277	;10
-     hex2  1834,4444,4143,5565	;11
-     hex2  1971,1234,c019,a20b	;12
-     hex2  2383,3543,603a,5444	;13
-     hex2  2294,7507,1075,5793	;14
-     hex2  3696,6573,6162,a5a6	;15
-     hex2  1555,5262,b124,a025	;16
-     hex2  1257,7437,4078,5531	;17
-     hex2  27a4,a49d,7148,a445	;18
-     hex2  11a4,750a,4146,a954	;19
-     hex2  2148,8302,0058,5422	;20
-     hex2  097a,a227,11a2,5532	;21
-     hex2  2097,4274,a01c,a02d	;22
-.tn	
-	String	'San Jose Sharks'
-.sr
-
-StLouis
+Pittsburgh	;PIT, $3646
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
+	dc.w	$004C,$00AE,$0EEE,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
+	dc.w	$0AAA,$0CCC,$00AE,$0000,$0222,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$7120,$21E9
+.sodds
+	dc.b	197,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,17,18,07,03,11,12,00	;line 1
+	dc.b	01,17,18,07,03,11,04,00	;line 2
+	dc.b	01,21,19,09,04,12,03,00	;line 3
+	dc.b	01,23,20,08,05,13,03,00	;line 4
+	dc.b	01,17,20,07,03,11,13,00	;line 5
+	dc.b	01,23,18,04,13,12,03,00	;line 6
+	dc.b	01,17,18,12,03,04,13,00	;line 7
+	dc.b	01,23,22,04,13,03,12,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Tom Barrasso',				35A4,4554,0100,4444	;1
+	Player	'Ken Wregget',				3182,3442,0000,3232	;2
+	Player	'Mario Lemieux',			66A5,4644,3366,6062	;3
+	Player	'Ron Francis',				1094,3444,4443,4042	;4
+	Player	'Shawn McEachern',			1573,3333,2433,4332	;5
+	Player	'Mike Stapleton',			2663,2222,2121,2530	;6
+	Player	'Kevin Stevens',			25B3,4533,3644,5344	;7
+	Player	'Dave Tippett',				1462,3232,2422,3122	;8
+	Player	'Troy Loney',				24A2,3232,4621,3213	;9
+	Player	'Jeff Daniels',				2092,2122,2623,2421	;10
+	Player	'Jaromir Jagr',				68A5,4433,4453,4142	;11
+	Player	'Rick Tocchet',				2292,2544,3735,4134	;12
+	Player	'Joe Mullen',				0764,3433,3145,4230	;13
+	Player	'Martin Straka',			8253,3322,2222,2032	;14
+	Player	'Mike Needham',				3962,2222,2523,2521	;15
+	Player	'Jay Caufield',				16E1,2011,3B10,1314	;16
+	Player	'Larry Murphy',				55A4,3454,3342,5143	;17
+	Player	'Ulf Samuelsson',			0584,4353,5630,4135	;18
+	Player	'Jim Paek',					0282,3222,2421,3122	;19
+	Player	'Paul Stanton',				2383,3234,3321,3543	;20
+	Player	'Peter Taglianeti',			3292,2233,4430,4324	;21
+	Player	'Mike Ramsey',				0683,2232,3622,3122	;22
+	Player	'Kjell Samuelsson',			28E2,2134,4731,4523	;23
+	Player	'Grant Jennings',			0392,2132,3820,2313	;24
+	Player	'Bryan Fogarty',			3381,1211,2220,1011	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Pittsburgh'
+.ta	;abbreviation
+	String	'PIT'
+.tm	;nickname. 94 only
+	String	'Penguins'
+.ar	;arena. 94 only
+	String	'Civic Arena'
 
-.sodds	dc.b	2,5
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\bluesh.pal
-	incbin ..\Extracted\Graphics\Pals\bluesv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,05,10,16,08,07,03,0	;line 4
-	dc.b	01,04,14,11,18,21,03,0	;line 5
-	dc.b	01,09,15,06,18,12,03,0	;line 6
-	dc.b	01,19,20,11,13,21,03,0	;line 7
-.pld
-     hex2  304a,a990,01d9,9970
-     hex2  3149,aaa0,01bb,bb90
-     hex2  1246,9fb9,60fb,fae3
-     hex2  02af,c8cc,f1c1,f9da
-     hex2  218c,cb7f,60f4,abe4
-     hex2  1029,96b6,c169,a64b
-     hex2  1659,cfcf,609e,ff92
-     hex2  073f,ca09,61c7,aa86
-     hex2  445c,c3b6,c091,a277
-     hex2  147c,c7c9,f195,a7b8
-     hex2  17a9,c676,f163,a767
-     hex2  2349,6479,c037,a729
-     hex2  284c,c5a9,c038,a63b
-     hex2  0576,6329,6064,a26e
-     hex2  36bc,c4c6,c195,a27c
-     hex2  197c,c86c,f196,a978
-     hex2  2946,6153,c036,a01d
-     hex2  1836,6666,6165,5565
-     hex2  205c,c3a3,3064,5460
-     hex2  2799,9073,f161,5125
-     hex2  1589,665f,90c6,5552
-.tn	
-	String	'St. Louis Blues'
-.sr
-
-TampaBay
+Quebec	;QUE, $393C
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0820,$0842,$088C,$066A
+	dc.w	$0820,$0842,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0820,$0842,$088C,$066A
+	dc.w	$0AAA,$0CCC,$0820,$0820,$0842,$0600,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$7521,$00F8
+.sodds
+	dc.b	166,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,03,14,15,17,00	;line 1
+	dc.b	01,19,18,07,03,14,04,00	;line 2
+	dc.b	01,20,21,08,04,15,03,00	;line 3
+	dc.b	01,22,23,06,05,16,03,00	;line 4
+	dc.b	01,19,18,04,03,15,16,00	;line 5
+	dc.b	01,20,21,07,14,16,03,00	;line 6
+	dc.b	01,20,22,03,17,05,14,00	;line 7
+	dc.b	01,19,18,05,14,03,17,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Ron Hextall',				2774,4444,0000,4433	;1
+	Player	'Stephane Fiset',			3553,4332,0000,2222	;2
+	Player	'Joe Sakic',				1964,4544,2045,5252	;3
+	Player	'Mike Ricci',				0974,4433,3435,3043	;4
+	Player	'Claude Lapointe',			4753,3342,2432,3123	;5
+	Player	'Martin Rucinsky',			2553,2323,1433,3132	;6
+	Player	'Valeri Kamensky',			3184,4435,2543,4142	;7
+	Player	'Mike Hough',				1873,2333,2432,3233	;8
+	Player	'Gino Cavallini',			44B1,3222,2423,2222	;9
+	Player	'Scott Pearson',			2292,2222,3624,3524	;10
+	Player	'Bill Lindsay',				2061,2222,2221,2321	;11
+	Player	'Chris Simon',				12D1,1101,2811,0515	;12
+	Player	'Tony Twist',				15A1,1101,1C10,1414	;13
+	Player	'Mats Sundin',				1374,4544,1345,4043	;14
+	Player	'Owen Nolan',				1184,4434,1744,4334	;15
+	Player	'Andrei Kovalenko',			5133,4433,3434,4132	;16
+	Player	'Scott Young',				4873,3343,2133,3431	;17
+	Player	'Steve Duchesne',			2884,4444,2442,4142	;18
+	Player	'Curtis Leschyshyn',		0793,4342,3423,4032	;19
+	Player	'Alexei Gusarov',			0563,3333,3033,4032	;20
+	Player	'Kerry Huffman',			0293,3333,3631,3223	;21
+	Player	'Adam Foote',				5262,2241,3321,3224	;22
+	Player	'Steven Finn',				2982,2233,3622,3424	;23
+	Player	'Mikhail Tatarinov',		0483,3225,4641,2443	;24
+	Player	'Craig Wolanin',			0692,2221,2811,2114	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Quebec'
+.ta	;abbreviation
+	String	'QUE'
+.tm	;nickname. 94 only
+	String	'Nordiques'
+.ar	;arena. 94 only
+	String	'Colisee de Quebec'
 
-.sodds	dc.b	5,1
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\tbh.pal
-	incbin ..\Extracted\Graphics\Pals\tbv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,20,07,03,0	;line 4
-	dc.b	01,09,14,16,19,12,03,0	;line 5
-	dc.b	01,04,05,11,03,22,08,0	;line 6
-	dc.b	01,10,15,21,18,17,03,0	;line 7
-.pld
-     hex2  0104,1880,0166,6670
-     hex2  3512,0550,0133,3340
-     hex2  267a,d86a,41aa,a565
-     hex2  228a,7704,a045,a7ab
-     hex2  0477,a84a,71a3,aac7
-     hex2  1044,7b07,41d6,fc96
-     hex2  3257,a52a,40d8,a819
-     hex2  441d,7837,40a5,a676
-     hex2  2894,4614,40a6,a3a7
-     hex2  2334,7451,71a0,a499
-     hex2  1484,4537,4148,a631
-     hex2  112a,a70a,70a7,aa34
-     hex2  0944,4634,7149,a357
-     hex2  087a,4567,a043,a99b
-     hex2  02a4,4107,a170,a23d
-     hex2  1764,474a,a145,ab4a
-     hex2  1871,1234,d01a,a20b
-     hex2  2784,4654,704b,5444
-     hex2  1247,7a84,107e,5670
-     hex2  256a,aa07,41af,5761
-     hex2  3441,1321,1016,5121
-     hex2  7164,4467,d048,5429
-.tn	
-	String	'Toronto Maple Leafs'
-.sr
-
-Toronto
+SanJose	;SJ, $3C42
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0202,$088C,$066A
+	dc.w	$0222,$0000,$0882,$0AAA,$0CCC,$0888,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0202,$088C,$066A
+	dc.w	$0888,$0CCC,$0882,$0660,$0882,$0440,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$0702,$12D9
+.sodds
+	dc.b	102,48
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,18,17,10,04,14,05,00	;line 1
+	dc.b	01,18,21,10,04,14,05,00	;line 2
+	dc.b	01,19,23,12,05,15,04,00	;line 3
+	dc.b	01,17,25,11,06,16,04,00	;line 4
+	dc.b	01,17,19,10,04,14,06,00	;line 5
+	dc.b	01,18,21,11,05,06,04,00	;line 6
+	dc.b	01,21,24,04,14,05,07,00	;line 7
+	dc.b	01,18,23,07,05,04,14,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Arturs Irbe',				3252,4443,0000,3322	;1
+	Player	'Jeff Hackett',				3052,3112,0000,2222	;2
+	Player	'Brian Hayward',			0162,3002,0000,2222	;3
+	Player	'Kelly Kisio',				1162,2443,3334,4033	;4
+	Player	'Rob Gaudreau',				3763,3333,2323,4531	;5
+	Player	'Dean Evason',				1261,1232,3323,3323	;6
+	Player	'Mike Sullivan',			4762,3232,1021,4521	;7
+	Player	'Perry Berezan',			1674,4222,3322,2533	;8
+	Player	'Robin Bawa',				26B2,2112,1514,1323	;9
+	Player	'Johan Garpenlov',			1063,3422,1033,3122	;10
+	Player	'Jeff Odgers',				3691,2322,2623,3415	;11
+	Player	'John Carter',				2042,2222,2821,2523	;12
+	Player	'David Maley',				2581,1112,3820,1414	;13
+	Player	'Pat Falloon',				1774,4323,1342,4531	;14
+	Player	'Ed Courtenay',				3992,2331,1313,2121	;15
+	Player	'Mark Pederson',			1882,2322,2623,2522	;16
+	Player	'Doug Wilson',				2474,3336,3641,3343	;17
+	Player	'Neil Wilkinson',			0573,3132,3530,4443	;18
+	Player	'Sandis Ozolinsh',			0673,3333,3632,4233	;19
+	Player	'Tom Pederson',				4141,2322,2522,2432	;20
+	Player	'Doug Zmolek',				19C2,2232,3621,3524	;21
+	Player	'David Williams',			0382,2222,2520,2213	;22
+	Player	'Jay More',					0473,2134,3331,3534	;23
+	Player	'Peter Ahola',				2192,2132,3621,3422	;24
+	Player	'Rob Zettler',				0272,2132,2430,3434	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'San Jose'
+.ta	;abbreviation
+	String	'SJ'
+.tm	;nickname. 94 only
+	String	'Sharks'
+.ar	;arena. 94 only
+	String	'San Jose Arena'
 
-.sodds	dc.b	5,1
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\mapleleafsh.pal
-	incbin ..\Extracted\Graphics\Pals\mapleleafsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,20,07,03,0	;line 4
-	dc.b	01,09,14,16,19,12,03,0	;line 5
-	dc.b	01,04,05,11,03,22,08,0	;line 6
-	dc.b	01,10,15,21,18,17,03,0	;line 7
-.pld
-     hex2  0104,1880,0166,6670
-     hex2  3512,0550,0133,3340
-     hex2  267a,d86a,41aa,a565
-     hex2  228a,7704,a045,a7ab
-     hex2  0477,a84a,71a3,aac7
-     hex2  1044,7b07,41d6,fc96
-     hex2  3257,a52a,40d8,a819
-     hex2  441d,7837,40a5,a676
-     hex2  2894,4614,40a6,a3a7
-     hex2  2334,7451,71a0,a499
-     hex2  1484,4537,4148,a631
-     hex2  112a,a70a,70a7,aa34
-     hex2  0944,4634,7149,a357
-     hex2  087a,4567,a043,a99b
-     hex2  02a4,4107,a170,a23d
-     hex2  1764,474a,a145,ab4a
-     hex2  1871,1234,d01a,a20b
-     hex2  2784,4654,704b,5444
-     hex2  1247,7a84,107e,5670
-     hex2  256a,aa07,41af,5761
-     hex2  3441,1321,1016,5121
-     hex2  7164,4467,d048,5429
-.tn	
-	String	'Toronto Maple Leafs'
-.sr
-
-Vancouver
+StLouis	;STL, $3F30
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0A00,$0600,$088C,$066A
+	dc.w	$002C,$006E,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0422,$088C,$066A
+	dc.w	$0AAA,$0CCC,$002C,$0400,$0422,$0200,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$2220,$21E9
+.sodds
+	dc.b	212,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,17,18,12,03,13,04,00	;line 1
+	dc.b	01,17,18,11,06,13,03,00	;line 2
+	dc.b	01,20,24,10,03,12,06,00	;line 3
+	dc.b	01,19,21,09,04,15,06,00	;line 4
+	dc.b	01,17,19,12,03,13,05,00	;line 5
+	dc.b	01,21,22,04,05,14,12,00	;line 6
+	dc.b	01,20,24,06,05,10,15,00	;line 7
+	dc.b	01,21,18,10,15,05,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Curtis Joseph',			3164,4664,0000,3344	;1
+	Player	'Guy Hebert',				2962,3332,0000,2222	;2
+	Player	'Craig Janney',				1574,3543,2044,4040	;3
+	Player	'Nelson Emerson',			0744,4433,2343,4132	;4
+	Player	'Ron Sutter',				2263,3342,4533,4343	;5
+	Player	'Ron Wilson',				1863,3241,2022,4322	;6
+	Player	'Bob Bassen',				2843,4222,4833,2323	;7
+	Player	'Philippe Bozon',			3662,2222,1621,2513	;8
+	Player	'Igor Korolev',				3872,2232,2021,3021	;9
+	Player	'Dave Lowry',				1082,2232,3622,3424	;10
+	Player	'Basil McRae',				1792,2222,2C21,3415	;11
+	Player	'Brendan Shanahan',			19A3,3544,2745,4244	;12
+	Player	'Brett Hull',				1694,4536,3353,4432	;13
+	Player	'Kevin Miller',				1474,3343,3733,4333	;14
+	Player	'Rich Sutter',				2373,3241,2322,4523	;15
+	Player	'Kelly Chase',				3981,1121,1911,2315	;16
+	Player	'Jeff Brown',				2193,3445,2343,5142	;17
+	Player	'Garth Butcher',			0592,3242,4731,4434	;18
+	Player	'Doug Crossman',			0672,2332,2623,4032	;19
+	Player	'Rick Zombo',				0482,2233,2320,4023	;20
+	Player	'Stephane Quintal',			33B2,2142,3730,4433	;21
+	Player	'Lee Norwood',				2082,2231,3822,3224	;22
+	Player	'Bret Hedican',				4482,2112,3620,1322	;23
+	Player	'Curt Giles',				0253,2131,2220,3312	;24
+	Player	'Murray Baron',				34A3,3122,2621,2513	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'St. Louis'
+.ta	;abbreviation
+	String	'STL'
+.tm	;nickname. 94 only
+	String	'Blues'
+.ar	;arena. 94 only
+	String	'St. Louis Arena'
 
-.sodds	dc.b	5,2
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\canucksh.pal
-	incbin ..\Extracted\Graphics\Pals\canucksv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,09,06,03,07,08,0	;line 4
-	dc.b	01,05,19,23,18,17,03,0	;line 5
-	dc.b	01,19,10,21,08,07,03,0	;line 6
-	dc.b	01,14,20,22,18,24,03,0	;line 7
-.pld
-     hex2  3561,1770,0155,5560
-     hex2  0142,0550,0166,4450
-     hex2  072d,a967,117a,a870
-     hex2  037a,7654,4072,a9b7
-     hex2  215a,a524,4141,a8a5
-     hex2  1067,aaaa,7147,ae76
-     hex2  1677,7a14,7078,fb86
-     hex2  1804,4754,107c,a351
-     hex2  248a,a80a,1172,a8d3
-     hex2  1551,1301,4171,a576
-     hex2  0844,4a47,4178,ab70
-     hex2  2341,1404,4016,a636
-     hex2  4481,1111,711f,a008
-     hex2  0494,724a,d042,a658
-     hex2  2244,4041,a014,a019
-     hex2  2941,1234,a01a,a20f
-     hex2  25b4,420d,4044,a619
-     hex2  1931,1304,1116,5611
-     hex2  067a,a224,4041,5546
-     hex2  0574,701a,7141,5513
-     hex2  5821,1537,1045,5641
-     hex2  2774,77a7,41a8,575b
-     hex2  2854,4967,117a,5484
-     hex2  3387,7677,101b,5631
-.tn	
-	String	'Vancouver Canucks'
-.sr
-
-Washington
+TampaBay	;TB, $4216
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0420,$088C,$066A
+	dc.w	$0200,$0C00,$0A22,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
+	dc.w	$0CA6,$0ECC,$0EEC,$0200,$0200,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$0502,$00F7
+.sodds
+	dc.b	104,64
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,20,19,12,04,05,06,00	;line 1
+	dc.b	01,22,23,13,04,15,06,00	;line 2
+	dc.b	01,21,24,12,06,17,04,00	;line 3
+	dc.b	01,19,20,14,05,16,04,00	;line 4
+	dc.b	01,20,21,13,04,15,05,00	;line 5
+	dc.b	01,19,22,12,06,05,04,00	;line 6
+	dc.b	01,22,19,12,17,15,16,00	;line 7
+	dc.b	01,20,21,16,15,12,17,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Wendell Young',			0163,3223,0000,3233	;1
+	Player	'Pat Jablonski',			3552,3222,0100,2222	;2
+	Player	'J.C. Bergeron',			3072,3222,0000,1111	;3
+	Player	'Brian Bradley',			1944,3434,3335,4233	;4
+	Player	'Chris Kontos',				1683,3433,3035,4330	;5
+	Player	'Adam Creighton',			10A3,2322,3422,3433	;6
+	Player	'Marc Bureau',				2873,3332,2132,3324	;7
+	Player	'Rob DiMaio',				1852,3332,2522,3223	;8
+	Player	'Steve Kasper',				1153,3132,4433,3231	;9
+	Player	'Jason Lafreniere',			1762,2332,1324,2212	;10
+	Player	'Randy Gilhen',				2072,2132,3221,3521	;11
+	Player	'Mikael Andersson',			3462,4232,1032,4530	;12
+	Player	'Rob Zamuner',				0792,3322,3432,3322	;13
+	Player	'Steve Maltais',			37A2,2232,3021,3422	;14
+	Player	'John Tucker',				1492,3333,2332,3233	;15
+	Player	'Danton Cole',				2473,3332,2122,3421	;16
+	Player	'Tim Bergland',				2182,2132,2321,3522	;17
+	Player	'Stan Drulia',				2771,2102,2312,0512	;18
+	Player	'Bob Beers',				0293,3332,2322,3323	;19
+	Player	'Roman Hamrlik',			4473,2233,2431,3423	;20
+	Player	'Shawn Chambers',			2292,2332,2221,3222	;21
+	Player	'Marc Bergevin',			2562,2223,3420,3322	;22
+	Player	'Joe Reekie',				29B3,2223,2630,3223	;23
+	Player	'Chris Lipuma',				4061,1211,0210,1114	;24
+	Player	'Matt Hervey',				2691,1211,2910,1304	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Tampa Bay'
+.ta	;abbreviation
+	String	'TB'
+.tm	;nickname. 94 only
+	String	'Lightning'
+.ar	;arena. 94 only
+	String	'Fairgrounds Expo Hall'
 
-.sodds	dc.b	5,5
-
-.pad
-	incbin ..\Extracted\Graphics\Pals\capitalsh.pal
-	incbin ..\Extracted\Graphics\Pals\capitalsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,10,06,13,07,03,0	;line 4
-	dc.b	01,05,14,11,08,21,03,0	;line 5
-	dc.b	01,04,14,06,03,21,08,0	;line 6
-	dc.b	01,05,19,20,18,17,03,0	;line 7
-.pld
-     hex2  330b,aaa0,01bb,7b30
-     hex2  0166,2220,0114,1170
-     hex2  1755,bb88,8089,a8a2
-     hex2  04ae,bb35,b085,add6
-     hex2  067b,b855,5085,a6d2
-     hex2  1048,e89b,818a,a853
-     hex2  1978,5975,8156,aa84
-     hex2  207b,ba7b,21b6,a9a3
-     hex2  05a5,51a2,8181,a042
-     hex2  0345,5455,8083,a987
-     hex2  2945,5958,205a,a861
-     hex2  223e,b91b,50b6,ae56
-     hex2  325b,8818,e159,a56c
-     hex2  34bb,e628,51b5,a5ad
-     hex2  084b,b2d2,8055,a059
-     hex2  1672,2132,e023,a30e
-     hex2  2138,8635,8054,a848
-     hex2  1438,8325,2155,5322
-     hex2  2668,8002,5120,5125
-     hex2  0965,5355,b129,511c
-     hex2  1242,2728,5057,5754
-.tn	
-	String	'Washington Capitals'
-.sr
-
-Winnipeg
+Toronto	;TOR, $4518
 .0
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
-	dc.w	.sr-.0
 	dc.w	.ls-.0
+	dc.w	.sr-.0
 	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
+	dc.w	$0200,$0600,$0622,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
+	dc.w	$0888,$0AAA,$0CCC,$0600,$0622,$0200,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$2020,$11E8
+.sodds
+	dc.b	150,16
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,09,04,13,15,00	;line 1
+	dc.b	01,22,18,09,04,13,06,00	;line 2
+	dc.b	01,24,23,11,06,14,04,00	;line 3
+	dc.b	01,19,20,10,05,15,04,00	;line 4
+	dc.b	01,19,18,09,04,13,15,00	;line 5
+	dc.b	01,20,22,15,05,14,04,00	;line 6
+	dc.b	01,19,24,06,04,12,07,00	;line 7
+	dc.b	01,22,18,12,07,04,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Felix Potvin',				2964,4664,0000,4444	;1
+	Player	'Daren Puppa',				0193,4552,0100,2233	;2
+	Player	'Rick Wamsley',				3062,3002,0000,2222	;3
+	Player	'Doug Gilmour',				9345,4554,4444,6043	;4
+	Player	'John Cullen',				1974,3433,2344,4143	;5
+	Player	'Mike Krushelski',			2693,3342,3434,4322	;6
+	Player	'Peter Zezel',				2593,3333,4033,4141	;7
+	Player	'Dave McLlwain',			0773,2231,3433,3532	;8
+	Player	'Dave Andreychuk',			14B3,3444,4334,5432	;9
+	Player	'Wendel Clark',				1783,3335,4643,4344	;10
+	Player	'Mark Osborne',				2192,2242,3422,4413	;11
+	Player	'Bill Berg',				1072,2232,3423,4523	;12
+	Player	'Nikolai Borshevsky',		1664,4423,2044,4241	;13
+	Player	'Glenn Anderson',			0974,4433,2643,4143	;14
+	Player	'Rob Pearson',				1262,2331,1123,4524	;15
+	Player	'Mike Foligno',				7182,2232,5533,3523	;16
+	Player	'Ken Baumgartnr',			2292,2021,2A10,2324	;17
+	Player	'Todd Gill',				2363,3332,4422,4123	;18
+	Player	'Dave Ellett',				0494,4345,4441,4242	;19
+	Player	'Dimitri Mironov',			1573,2333,1232,3132	;20
+	Player	'Drake Berehowsky',			55A2,2332,3522,3023	;21
+	Player	'Jamie Macoun',				3483,3244,4431,4442	;22
+	Player	'Bob Rouse',				03A3,3242,4320,4423	;23
+	Player	'Sylvain Lefebvre',			0292,2131,3420,4433	;24
+	Player	'Bob McGill',				0882,2023,3523,2324	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Toronto'
+.ta	;abbreviation
+	String	'TOR'
+.tm	;nickname. 94 only
+	String	'Maple Leafs'
+.ar	;arena. 94 only
+	String	'Maple Leaf Gardens'
 
-.sodds	dc.b	5,3
+Vancouver	;VAN, $481C
+.0
+	dc.w	.pld-.0
+	dc.w	.pad-.0
+	dc.w	.tn-.0
+	dc.w	.ls-.0
+	dc.w	.sr-.0
+	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
+	dc.w	$004E,$00AE,$0000,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
+	dc.w	$000A,$000C,$008C,$0200,$0400,$0000,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$6102,$11F8
+.sodds
+	dc.b	166,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,07,03,13,04,00	;line 1
+	dc.b	01,19,22,10,03,14,05,00	;line 2
+	dc.b	01,24,18,09,05,13,03,00	;line 3
+	dc.b	01,20,25,07,04,16,03,00	;line 4
+	dc.b	01,18,20,13,04,14,09,00	;line 5
+	dc.b	01,19,23,07,03,09,13,00	;line 6
+	dc.b	01,24,18,13,05,04,16,00	;line 7
+	dc.b	01,19,23,04,16,13,05,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Kirk McLean',				0184,4444,0000,4433	;1
+	Player	'Kay Whitmore',				3552,3552,0000,2323	;2
+	Player	'Cliff Ronning',			0755,5432,2043,5141	;3
+	Player	'Petr Nedved',				1952,2432,1036,4233	;4
+	Player	'Anatoli Semenov',			2073,3343,2033,4032	;5
+	Player	'Tom Fergus',				15A2,2332,2223,3022	;6
+	Player	'Geoff Courtnall',			1475,5433,1443,3244	;7
+	Player	'Murray Craven',			3263,3433,3434,3031	;8
+	Player	'Greg Adams',				0873,3443,3235,4131	;9
+	Player	'Sergio Momesso',			27B4,3333,4623,4424	;10
+	Player	'Gino Odjick',				29B2,2232,3A21,3326	;11
+	Player	'Garry Valk',				2372,2232,3623,3323	;12
+	Player	'Pavel Bure',				1055,6544,2054,4442	;13
+	Player	'Trevor Linden',			1694,4444,3344,4342	;14
+	Player	'Dixon Ward',				1792,3333,2125,3123	;15
+	Player	'Jim Sandlak',				25B1,2333,2922,3324	;16
+	Player	'Tim Hunter',				2692,2122,3923,2324	;17
+	Player	'Jyrki Lumme',				2174,3342,3441,4142	;18
+	Player	'Doug Lidster',				0393,3233,4341,4142	;19
+	Player	'Adrien Plavsic',			0672,2332,3622,3023	;20
+	Player	'Jiri Slegr',				24A3,3333,2631,4134	;21
+	Player	'Gerald Diduck',			04A3,3234,4731,3434	;22
+	Player	'Dave Babych',				44B2,2343,2630,4233	;23
+	Player	'Dana Murzyn',				0592,3234,4621,4424	;24
+	Player	'Robert Dirk',				22B2,2132,3632,3324	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Vancouver'
+.ta	;abbreviation
+	String	'VAN'
+.tm	;nickname. 94 only
+	String	'Canucks'
+.ar	;arena. 94 only
+	String	'Pacific Coliseum'
 
-.pad
-	incbin ..\Extracted\Graphics\Pals\jetsh.pal
-	incbin ..\Extracted\Graphics\Pals\jetsv.pal
-.ls
-	dc.b	01,04,05,06,03,07,08,0	;line 1
-	dc.b	01,09,10,11,08,12,03,0	;line 2
-	dc.b	01,14,15,16,13,17,03,0	;line 3
-	dc.b	01,04,05,06,03,07,08,0	;line 4
-	dc.b	01,09,20,22,08,17,03,0	;line 5
-	dc.b	01,04,20,11,18,12,03,0	;line 6
-	dc.b	01,15,21,22,19,23,03,0	;line 7
-.pld
-     hex2  3505,3aa0,0188,8880
-     hex2  3141,1660,0144,4460
-     hex2  1677,7b0a,71a8,ab97
-     hex2  063a,ac37,41a6,fbe2
-     hex2  047d,d71d,a0a4,aab2
-     hex2  0797,a837,7176,a765
-     hex2  1547,aa3d,707d,a876
-     hex2  256a,ad57,71a9,a9b4
-     hex2  275a,a524,1072,a8a3
-     hex2  0874,4787,7176,a7b4
-     hex2  1721,1437,411b,a225
-     hex2  205a,a527,4078,a724
-     hex2  1151,7434,a113,a437
-     hex2  4491,1031,a011,a12b
-     hex2  3481,4121,d015,a12e
-     hex2  3944,4664,7145,a369
-     hex2  2387,7744,d04a,a55a
-     hex2  2451,1527,1017,5622
-     hex2  3641,1221,7010,5337
-     hex2  2294,7507,1075,5793
-     hex2  0371,1121,7114,5228
-     hex2  1284,a52a,7147,5636
-     hex2  2151,1224,1016,5400
-.tn	
-	String	'Winnipeg Jets'
-.sr
+Winnipeg	;WPG, $4B0A
+.0
+	dc.w	.pld-.0
+	dc.w	.pad-.0
+	dc.w	.tn-.0
+	dc.w	.ls-.0
+	dc.w	.sr-.0
+	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$040C,$042C,$0A20,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
+	dc.w	$040C,$042C,$0CCC,$0820,$0842,$0400,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$4511,$11F8
+.sodds
+	dc.b	214,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,19,18,04,03,13,09,00	;line 1
+	dc.b	01,22,18,08,03,13,04,00	;line 2
+	dc.b	01,19,21,09,04,14,03,00	;line 3
+	dc.b	01,20,24,10,06,17,03,00	;line 4
+	dc.b	01,20,18,08,03,13,04,00	;line 5
+	dc.b	01,19,21,09,04,14,03,00	;line 6
+	dc.b	01,19,21,10,06,05,16,00	;line 7
+	dc.b	01,24,22,05,16,10,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Bob Essensa',				3534,4554,0000,4444	;1
+	Player	'Jim Hrivnak',				3062,3222,0000,2222	;2
+	Player	'Alexei Zhamnov',			1075,3433,3054,4152	;3
+	Player	'Thomas Steen',				2584,3433,3444,4053	;4
+	Player	'Luciano Borsato',			3843,3332,3134,3232	;5
+	Player	'Mike Eagles',				3673,3242,5422,5123	;6
+	Player	'Stu Barnes',				1452,3332,2323,3421	;7
+	Player	'Darrin Shannon',			3492,2343,4034,4033	;8
+	Player	'Keith Tkachuk',			0793,2334,3623,4424	;9
+	Player	'Kris King',				17A3,3242,3622,4324	;10
+	Player	'Russ Romaniuk',			2163,2122,3623,2522	;11
+	Player	'Andy Brickley',			2392,2221,3220,2030	;12
+	Player	'Teemu Selanne',			1365,6534,3345,5442	;13
+	Player	'Evgeny Davydov',			1164,4334,1334,3532	;14
+	Player	'John Druce',				1592,2332,3322,3122	;15
+	Player	'Bryan Erickson',			1852,3332,3322,3121	;16
+	Player	'Tie Domi',					2092,2232,3923,4126	;17
+	Player	'Phil Housley',				0666,5433,2462,4062	;18
+	Player	'Teppo Numminen',			2774,3353,3142,4132	;19
+	Player	'Fredrik Olausson',			0494,3434,1142,3141	;20
+	Player	'Sergei Bautin',			0363,3243,4431,4233	;21
+	Player	'Igor Ulanov',				0592,2242,3621,4024	;22
+	Player	'Mike Lalor',				2293,2132,2420,4523	;23
+	Player	'Dean Kennedy',				2692,2132,3320,4423	;24
+	Player	'Randy Carlyle',			0892,2122,3621,2522	;25
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Winnipeg'
+.ta	;abbreviation
+	String	'WPG'
+.tm	;nickname. 94 only
+	String	'Jets'
+.ar	;arena. 94 only
+	String	'Winnipeg Arena'
 
-playoffseats
-	dc.b	3,8,17,4, 7,19,2,5, 0,6,9,1, 14,10,12,20
-	dc.b	3,4,17,8, 7,5,2,16, 0,1,9,15, 14,20,12,10
-	dc.b	3,8,17,4, 7,16,2,5, 0,15,9,6, 14,10,12,20
-	dc.b	3,18,17,4, 7,19,2,16, 0,6,9,15, 14,13,12,20
-	dc.b	3,4,17,18, 7,5,2,19, 0,1,9,6, 14,20,12,13
-	dc.b	3,18,17,8, 7,19,2,5, 0,6,9,1, 14,13,12,10
-	dc.b	3,8,17,18, 7,21,2,5, 0,15,9,1, 14,10,12,13
-	dc.b	3,4,17,8, 7,5,2,21, 0,1,9,15, 14,11,12,10
+Washington	;WSH, $4DFC
+.0
+	dc.w	.pld-.0
+	dc.w	.pad-.0
+	dc.w	.tn-.0
+	dc.w	.ls-.0
+	dc.w	.sr-.0
+	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
+	dc.w	$0008,$000A,$022C,$0CCC,$0EEE,$0AAA,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
+	dc.w	$0888,$0AAA,$0CCC,$000A,$022A,$0008,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$5220,$11E8
+.sodds
+	dc.b	181,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,18,17,04,03,12,13,00	;line 1
+	dc.b	01,18,17,10,04,14,03,00	;line 2
+	dc.b	01,19,20,09,03,12,04,00	;line 3
+	dc.b	01,21,22,11,05,13,04,00	;line 4
+	dc.b	01,20,17,04,03,12,06,00	;line 5
+	dc.b	01,18,19,06,05,13,04,00	;line 6
+	dc.b	01,21,17,03,14,10,06,00	;line 7
+	dc.b	01,19,20,10,06,03,14,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Don Beaupre',				3343,4333,0000,3333	;1
+	Player	'Rick Tabaracci',			3162,3112,0000,3322	;2
+	Player	'Mike Ridley',				1794,4433,2044,4042	;3
+	Player	'Dimitri Khristich',		0873,3434,3146,4142	;4
+	Player	'Dale Hunter',				3282,2443,4624,4044	;5
+	Player	'Michal Pivonka',			2083,3433,3443,4043	;6
+	Player	'Steve Konowlchuk',			2262,2222,3222,2222	;7
+	Player	'Reggie Savage',			1572,2212,2622,1322	;8
+	Player	'Bob Carpenter',			1174,4333,2432,3443	;9
+	Player	'Todd Krygier',				2162,3232,2422,3512	;10
+	Player	'Alan May',					1692,2233,3722,3425	;11
+	Player	'Peter Bondra',				1264,6433,2044,4232	;12
+	Player	'Pat Elynuik',				1963,3333,2335,3122	;13
+	Player	'Kelly Miller',				1084,4333,2043,3241	;14
+	Player	'Keith Jones',				2672,2222,3323,2234	;15
+	Player	'Paul MacDermid',			2392,2232,4724,3323	;16
+	Player	'Kevin Hatcher',			04C3,3445,4342,4443	;17
+	Player	'Al Iafrate',				34B4,4446,4642,4444	;18
+	Player	'Sylvain Cote',				0363,3343,3132,4432	;19
+	Player	'Calle Johansson',			0694,3344,3441,4142	;20
+	Player	'Paul Cavallini',			14A3,3233,3431,3532	;21
+	Player	'Shawn Anderson',			3692,2122,3621,2331	;22
+	Player	'Jason Woolley',			2562,2111,2220,1212	;23
+	Player	'Rod Langway',				05B3,2022,3230,2323	;24
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Washington'
+.ta	;abbreviation
+	String	'WSH'
+.tm	;nickname. 94 only
+	String	'Capitals'
+.ar	;arena. 94 only
+	String	'Capital Centre'
 
-	dc.b	3,8,17,4, 7,21,2,19, 0,15,9,6, 14,13,12,11
-	dc.b	3,18,17,4, 7,19,2,21, 0,6,9,15, 14,11,12,13
-	dc.b	3,4,17,18, 7,16,2,19, 0,1,9,6, 14,20,12,11
-	dc.b	3,18,17,8, 7,21,2,16, 0,6,9,1, 14,11,12,20
-	dc.b	3,8,17,18, 7,16,2,21, 0,15,9,1, 14,10,12,11
-	dc.b	3,18,17,4, 7,19,2,16, 0,6,9,15, 14,13,12,20	;
-	dc.b	3,8,17,18, 7,21,2,5, 0,15,9,1, 14,10,12,13	;
-	dc.b	3,4,17,18, 7,16,2,19, 0,1,9,6, 14,20,12,11	;
+Florida	;FLA, $50E6. new in 94
+.0
+	dc.w	.pld-.0
+	dc.w	.pad-.0
+	dc.w	.tn-.0
+	dc.w	.ls-.0
+	dc.w	.sr-.0
+	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0600,$088C,$066A
+	dc.w	$002A,$004C,$0008,$0888,$0CCC,$0666,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0600,$088C,$066A
+	dc.w	$004A,$006C,$0400,$0004,$0008,$0002,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$0702,$1396
+.sodds
+	dc.b	214,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,14,12,08,05,04,07,00	;line 1
+	dc.b	01,14,17,08,05,03,04,00	;line 2
+	dc.b	01,16,12,06,10,11,05,00	;line 3
+	dc.b	01,13,15,07,09,04,05,00	;line 4
+	dc.b	01,14,12,08,05,04,10,00	;line 5
+	dc.b	01,13,17,06,10,03,05,00	;line 6
+	dc.b	01,14,12,09,05,07,08,00	;line 7
+	dc.b	01,13,17,07,08,09,05,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'John Vanbiesbrk',			3453,4553,0000,3434	;1
+	Player	'Mark Fitzpatrik',			3072,4223,0000,2222	;2
+	Player	'Tom Fitzgerald',			1482,2232,2122,3222	;3
+	Player	'Scott Mellanby',			2791,1333,4723,3324	;4
+	Player	'Brian Skrudland',			3984,2242,4633,4434	;5
+	Player	'Mike Hough',				1873,2333,2432,3233	;6
+	Player	'Dave Lowry',				1082,2232,3622,3424	;7
+	Player	'Andrei Lomakin',			2374,3323,1233,3242	;8
+	Player	'Randy Gilhen',				2072,2132,3221,3521	;9
+	Player	'Jesse Belanger',			2941,2312,2022,1421	;10
+	Player	'Bill Lindsay',				2271,2222,2022,2421	;11
+	Player	'Joe Cirella',				06A3,3223,2922,3323	;12
+	Player	'Alexnder Godynyuk',		21A2,3222,3822,3512	;13
+	Player	'Gord Murphy',				2885,4234,4931,3333	;14
+	Player	'Gord Hynes',				2642,2221,3222,2522	;15
+	Player	'Milan Tichy',				4383,2112,3821,2224	;16
+	Player	'Stephane Richer',			2593,3333,3332,3322	;17
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Florida'
+.ta	;abbreviation
+	String	'FLA'
+.tm	;nickname. 94 only
+	String	'Panthers'
+.ar	;arena. 94 only
+	String	'Miami Arena'
 
-	dc.b	8,3,4,17, 19,7,5,2, 6,0,1,9, 10,14,20,12
-	dc.b	4,3,8,17, 5,7,16,2, 1,0,15,9, 20,14,10,12
-	dc.b	8,3,4,17, 16,7,5,2, 15,0,6,9, 10,14,20,12
-	dc.b	8,3,4,17, 19,7,16,2, 6,0,15,9, 13,14,20,12
-	dc.b	4,3,18,17, 5,7,19,2, 1,0,6,9, 20,14,13,12
-	dc.b	18,3,8,17, 19,7,5,2, 6,0,1,9, 13,14,10,12
-	dc.b	8,3,18,17, 21,7,5,2, 15,0,1,9, 10,14,13,12
-	dc.b	4,3,8,17, 5,7,21,2, 1,0,15,9, 11,14,10,12
+Anaheim	;ANH, $5330. new in 94
+.0
+	dc.w	.pld-.0
+	dc.w	.pad-.0
+	dc.w	.tn-.0
+	dc.w	.ls-.0
+	dc.w	.sr-.0
+	dc.w	.sodds-.0
+.pad	;home colours (93: incbin <team>h.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
+	dc.w	$0040,$0260,$0240,$0AAA,$0EEE,$0444,$048C,$0A84
+	;visitor colours (93: incbin <team>v.pal)
+	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
+	dc.w	$02A6,$0ACA,$0040,$0000,$0222,$0222,$048C,$0A84
+.sr	;4 bytes in 94 (93: 8, hex2)
+	dc.w	$0702,$1397
+.sodds
+	dc.b	214,0
+.ls	;		-G,LD,RD,LW,-C,RW,XA,00. 8 lines in 94 (93: 7)
+	dc.b	01,12,14,04,06,08,03,00	;line 1
+	dc.b	01,12,16,03,06,11,04,00	;line 2
+	dc.b	01,14,15,09,08,07,03,00	;line 3
+	dc.b	01,13,18,04,10,05,03,00	;line 4
+	dc.b	01,12,16,04,06,08,04,00	;line 5
+	dc.b	01,13,15,03,09,11,03,00	;line 6
+	dc.b	01,12,14,06,07,04,08,00	;line 7
+	dc.b	01,17,16,04,08,07,06,00	;line 8
+.pld	;							unwl,sodp,chga,eytm
+	Player	'Guy Hebert',				2962,3332,0000,2222	;1
+	Player	'Ron Tugnutt',				0122,3331,0000,1112	;2
+	Player	'Steven King',				2772,2322,1323,3422	;3
+	Player	'Troy Loney',				24A2,3232,4621,3213	;4
+	Player	'Stu Grimson',				23B1,1021,3A11,2514	;5
+	Player	'Terry Yake',				2563,3433,3334,4032	;6
+	Player	'Bob Corkum',				30A2,2132,2322,3522	;7
+	Player	'Anatoli Semenov',			2073,3343,2033,4032	;8
+	Player	'Lonnie Loach',				2862,3322,2623,2222	;9
+	Player	'Robin Bawa',				26B2,2112,1514,1323	;10
+	Player	'Tim Sweeney',				4152,2322,1022,1411	;11
+	Player	'Alexei Kasatonov',			07B4,3234,4441,3142	;12
+	Player	'Sean Hill',				3882,2222,3521,2314	;13
+	Player	'Randy Ladouceur',			39B3,3131,2421,3514	;14
+	Player	'David Williams',			0382,2222,2520,2213	;15
+	Player	'Bill Houlder',				33B3,2332,3422,2421	;16
+	Player	'Bobby Dollas',				32B2,1121,2110,2111	;17
+	Player	'Dennis Vial',				17B1,1121,3810,2113	;18
+	dc.w	2	;end of the player list: an empty String (93: dc.b 0,2)
+.tn	;city
+	String	'Anaheim'
+.ta	;abbreviation
+	String	'ANH'
+.tm	;nickname. 94 only
+	String	'Mighty Ducks'
+.ar	;arena. 94 only
+	String	'Pond'
 
-	dc.b	8,3,4,17, 21,7,19,2, 15,0,6,9, 13,14,11,12
-	dc.b	18,3,4,17, 19,7,21,2, 6,0,15,9, 11,14,13,12
-	dc.b	4,3,18,17, 16,7,19,2, 1,0,6,9, 20,14,11,12
-	dc.b	18,3,8,17, 21,7,16,2, 6,0,1,9, 11,14,20,12
-	dc.b	8,3,18,17, 16,7,21,2, 15,0,1,9, 10,14,11,12
-	dc.b	18,3,4,17, 19,7,16,2, 6,0,15,9, 13,14,20,12	;
-	dc.b	8,3,18,17, 21,7,5,2, 15,0,1,9, 10,14,13,12	;
-	dc.b	4,3,18,17, 16,7,19,2, 1,0,6,9, 20,14,11,12	;
+playoffseats	;$5576. 93 name. movea.l #$5576 in the playoff tree setup. 32 rows of 16 team numbers (93: 34)
+	dc.b	2,1,11,18, 13,24,12,17, 22,6,20,4, 10,3,25,23
+	dc.b	13,2,21,11, 18,17,14,1, 3,22,10,23, 20,6,5,4
+	dc.b	12,17,16,2, 9,11,24,1, 5,22,7,4, 19,23,10,6
+	dc.b	9,17,18,11, 24,1,12,2, 10,22,7,6, 5,4,3,23
+	dc.b	18,2,12,17, 9,11,16,1, 3,6,19,22, 5,23,7,4
+	dc.b	15,1,9,11, 13,17,14,2, 19,23,3,6, 5,4,7,22
+	dc.b	16,11,15,17, 21,2,13,1, 20,6,25,4, 0,23,3,22
+	dc.b	12,1,18,17, 16,11,13,2, 0,6,3,4, 5,23,10,22
+
+	dc.b	15,17,9,1, 8,11,24,2, 3,22,5,23, 25,4,10,6
+	dc.b	14,2,16,1, 18,11,9,17, 25,4,19,6, 20,23,3,22
+	dc.b	16,11,18,1, 12,17,13,2, 19,6,25,22, 10,23,3,4
+	dc.b	13,17,15,11, 14,2,12,1, 5,6,10,4, 19,22,20,23
+	dc.b	18,1,14,2, 15,11,16,17, 5,23,19,22, 7,4,3,6
+	dc.b	12,11,14,17, 15,1,9,2, 20,22,19,4, 5,6,7,23
+	dc.b	24,13,14,11, 16,2,21,17, 22,20,0,10, 25,4,19,23
+	dc.b	18,2,21,13, 12,11,9,17, 7,20,5,10, 19,23,6,4
+
+	dc.b	1,21,15,2, 12,11,18,17, 22,20,19,10, 5,23,25,4
+	dc.b	9,13,12,2, 15,11,1,17, 3,23,5,10, 22,4,7,20
+	dc.b	15,17,9,11, 8,2,14,13, 22,20,25,4, 6,23,7,10
+	dc.b	24,13,12,17, 14,2,1,11, 6,23,5,10, 7,4,25,20
+	dc.b	15,11,18,2, 1,13,24,17, 7,20,3,10, 25,23,6,4
+	dc.b	15,17,21,11, 18,13,12,2, 19,10,3,4, 25,20,7,23
+	dc.b	15,11,16,2, 12,8,18,17, 5,4,22,10, 25,20,19,23
+	dc.b	12,11,18,17, 15,13,16,2, 6,23,19,10, 22,20,7,4
+
+	dc.b	9,17,18,13, 15,11,1,2, 6,4,7,20, 3,10,22,23
+	dc.b	14,13,1,2, 24,11,15,17, 6,4,5,23, 7,10,25,20
+	dc.b	9,2,15,13, 12,17,1,11, 22,10,3,20, 6,23,19,4
+	dc.b	18,13,21,2, 1,11,8,17, 7,10,25,20, 3,4,5,23
+	dc.b	9,11,12,13, 24,2,18,17, 19,20,0,23, 3,4,6,10
+	dc.b	14,2,8,21, 24,17,1,11, 22,4,25,23, 5,10,0,20
+	dc.b	12,11,15,2, 21,17,14,13, 7,10,19,4, 0,23,6,20
+	dc.b	24,8,12,17, 1,11,21,2, 19,20,6,4, 0,10,25,23
 
 
-Credits
-	String	'Team names and logos'
-	String	'depicted are Officially'
-	String	'Licensed Trademarks of the'
-	String	'National Hockey League'
-	String	'$ NHL 1991'
+Credits	;$5776. 93 name. Title screen scroller: movea.l #Credits (copyright lines), then #Credits+$42 ($57B8)
+	String	'$ 1993 Electronic Arts'
+	String	'Licensed by'
+	String	'Sega Enterprises Ltd.'
 	String	-1
 
-	String	'Designed by'
-	String	'Scott Orr'
-	String	'Richard Hilleman'
+	String	'Design adapted by'
 	String	'Michael Brook'
-	String	'Jim Simmons'
-	String	-1
-
-	String	'Developed by'
-	String	'Park Place Production Team'
 	String	-1
 
 	String	'Programmed by'
+	String	'Mark Lesser'
+	String	-1
+
+	String	'Graphics by'
+	String	'Doug Wike'
+	String	-1
+
+	String	'Based on NHLPA 93 by'
 	String	'Jim Simmons'
-	String	-1
-
-	String	'Graphics Design by'
-	String	'Brian O''Hara'
-	String	'Steve Quinn'
-	String	'Curt Toumanian'
-	String	-1
-
-	String	'Production Assistance by'
-	String	'Michael Knox'
-	String	'Troy Lyndon'
-	String	'Jim Haldy'
-	String	'for Park Place Production Team'
 	String	-1
 
 	String	'Music and Sound by'
 	String	'Rob Hubbard'
 	String	-1
 
+	String	'Organ Music by'
+	String	'Dieter Ruehle'
+	String	-1
+
 	String	'Executive Producer'
-	String	'Richard Hilleman'
+	String	'Scott Orr'
 	String	-1
 
 	String	'Produced by'
 	String	'Michael Brook'
 	String	-1
 
-	String	'Technical Director'
-	String	'Scott Cronce'
+	String	'Assistant Producer'
+	String	'Kevin Hogan'
 	String	-1
 
-	String	'Assistant Producer'
-	String	'Ed Gwynn'
+	String	'Technical Directors'
+	String	'Rob Harris'
+	String	'Lon Meinecke'
+	String	-1
+
+	String	'Testing by'
+	String	'Yun Shin'
+	String	'Ken Rogers'
+	String	'Craig Wike'
+	String	-1
+
+	String	'Testing by'
+	String	'John Boerio'
+	String	'Jed Garvey'
+	String	'Gabe Boys'
+	String	-1
+
+	String	'Player Ratings by'
+	String	'Igor Kuperman'
+	String	-1
+
+	String	'Player Card Photos by'
+	String	'Steve Babineau'
 	String	-1
 
 	String	'Special Thanks to'
-	IF REV=0 ; RETAIL
-		String	'Mark Hughes and Scooter Hanson'
-	ELSE ; REV A
-		String	'Mark Hughes and Scooter Henson'
-	ENDIF
-	String	'of the San Diego Gulls'
-
-	String	''
+	String	'Bob Borgen'
+	String	'Dan Brook'
+	String	'Julie Cressa'
 	String	-1
+
+	String	'Special Thanks to'
+	String	'Randy Delucchi'
+	String	'Jeff Fennel'
+	String	'Chip Lange'
+	String	-1
+
+	String	'Special Thanks to'
+	String	'Barry Melrose'
+	String	'Scott Probin'
+	String	'Ian Pulver'
+	String	-1
+
+	String	'Special Thanks to'
+	String	'Mike Rubinelli'
+	String	'Kyra Woody'
+	String	-1
+
+	String	'EA Hockey League Champion'
+	String	'Kevin Hogan'
+	String	-1
+
+	dc.w	2	;empty String (93: String '')
+	String	-1
+
 	String	-1
