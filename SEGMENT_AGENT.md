@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`middle94_1`. Not matched. Starts at `remap` `$10EE0` (listing line 44006; `bra.w remap` at `$11766` = sub_1173C+$2A), the byte after logic94_5. 93 middle93_1 starts at remap too; middle94_2 (`dobitmap`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`middle94_2`. Not matched. Starts at `dobitmap` `$1169A` (listing line 44878; the byte after middle94_1). 93 middle93_2 starts at dobitmap too; penalty94_1 (`AddPenalty`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -71,7 +71,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | logic94_3 | matched | asswingo | 5522 bytes, `$00D09C-$00E62D`. asswingo ... chk4pass, EvadePC |
 | logic94_4 | matched | checkob | 6588 bytes, `$00E62E-$00FFE9`. checkob ... pucknorm |
 | logic94_5 | matched | ChkOffsides | 3830 bytes, `$00FFEA-$010EDF`. ChkOffsides ... WeightedRandomSelect |
-| middle94_1 | not matched | remap | |
+| middle94_1 | matched | remap | 1978 bytes, `$010EE0-$011699`. remap ... Vmaddr |
 | middle94_2 | not matched | dobitmap | |
 | penalty94_1 | not matched | AddPenalty | |
 | penalty94_2 | not matched | printscores1 | |
@@ -159,3 +159,8 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Range: listing lines 42598-43998, `ChkOffsides` through `WeightedRandomSelect`, as 93 logic93_5. `remap` is `$10EE0` (`bra.w` at `$11766`).
   - Names: IDA names except `ClearOffsidesIfAllPlayers` (`sub_100A6`), `UnpackNibbles` (`sub_10E88`), `WeightedRandomSelect` (`sub_10EB4`), the 93 names (attract94 and other stubs still say `sub_10E88` / `sub_10EB4` by address). The unpack / weight buffer is `dword_FFD036` (93 `dword_FFCACA`). `MaxSpeed` is written as the 93 expressions `((n+20)*275)*((n+20)*275)`, n = 0-15; the listing has the numbers.
   - No IDA gaps in this range. Outside addresses: 9 stubs read from the retail operands. 47 EA `cmp` opcodes patched. Matched on the first verify.
+- `middle94_1` matched: 1978 bytes, `$010EE0-$011699`. `src/middle94_1_stub.asm` is `org $10EE0`, includes `macros\genesis.mac`, the three stubinc files and `middle94_1.asm`. Run `npm.cmd run seg:middle94_1`. A match must report 1978 bytes at `0x010ee0-0x011699`.
+  - Range: listing lines 44006-44864, `remap` through `Vmaddr`, as 93 middle93_1. `dobitmap` (`$1169A`) is next.
+  - Names: IDA names except `CopyPaletteToCRAM` (`sub_11044`), `ProcessInputWithRepeat` (`sub_11318`), `DoDMA_nd2` (`sub_114B8`), the 93 names. `waitxsr` is the 92 name (93 `IntermissionLoop`). IDA `dd` / `nd` (globals inside DoDMA) are the locals `.dd` / `.nd`. IDA `dmaram?` is `dmaram`; `stubinc/ram_addrs.inc` spells it `dmaram?`, so the stub has `dmaram = $FFFFD06A`.
+  - `jsr updatecrowdf` and `jsr sub_7E88` are `jsr (x).w` (`4EB8`) in retail: both targets are below `$8000`. IDA writes them with no size, and SNASM picks `.l` when the target is not known as a word address, so they are written `(x).w` (the first stub build was 4 bytes long until this was fixed). The stub has their retail values `$7A9E` (hockey94_01 `updatecrowdf`) and `$7E88`.
+  - No IDA gaps. Outside addresses: 8 stubs. 6 EA `cmp` opcodes patched. Matched on the first verify.
