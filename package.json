@@ -7,8 +7,14 @@
     "asm": "build94.bat",
     "fixopcodes": "node fixopcodes.js \"output\\nhl94 .lst\" output\\nhl94.bin",
     "build:retail": "set rev=0&& set checksum=1&& npm run asm && npm run fixopcodes",
-    "build:seg": "echo segment not started",
-    "verify:seg": "echo segment not started"
+    "build:seg": "buildseg.bat hockey94_02",
+    "verify:seg": "node verifySegment.js hockey94_02 0x9FD0 lst/nhl94.bin",
+    "seg:main94": "buildseg.bat main94 && node fixopcodes.js \"output\\main94 .lst\" output\\main94.bin && node verifySegment.js main94 0x0 lst/nhl94.bin",
+    "seg:teamdata94": "buildseg.bat teamdata94 && node fixopcodes.js \"output\\teamdata94 .lst\" output\\teamdata94.bin && node verifySegment.js teamdata94 0x30A lst/nhl94.bin",
+    "seg:frames94": "buildseg.bat frames94 && node fixopcodes.js \"output\\frames94 .lst\" output\\frames94.bin && node verifySegment.js frames94 0x5B1C lst/nhl94.bin",
+    "seg:hockey94_01": "buildseg.bat hockey94_01 && node fixopcodes.js \"output\\hockey94_01 .lst\" output\\hockey94_01.bin && node verifySegment.js hockey94_01 0x76B2 lst/nhl94.bin",
+    "seg:attract94": "buildseg.bat attract94 && node fixopcodes.js \"output\\attract94 .lst\" output\\attract94.bin && node verifySegment.js attract94 0x17A18 lst/nhl94.bin",
+    "seg:hockey94_02": "buildseg.bat hockey94_02 && node fixopcodes.js \"output\\hockey94_02 .lst\" output\\hockey94_02.bin && node verifySegment.js hockey94_02 0x9FD0 lst/nhl94.bin"
   },
   "devDependencies": {
     "crc-32": "^1.2.2"
