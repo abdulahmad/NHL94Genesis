@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`logic94_2`. Not matched. Starts at `assbench` `$C710` (listing line 37886; the `asstab` entry at `$18DA8` holds `$C710`), the byte after logic94_1. 93 logic93_2 is assbench, asseben, asspenalty, ... Confirm the end against `lst/nhl94.bin` before writing instructions.
+`logic94_3`. Not matched. Starts at `asswingo` `$D09C` (listing line 38682; the `asstab` entry at `$18D8C` holds `$D09C`), the byte after logic94_2. 93 logic93_3 starts at asswingo too. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -67,7 +67,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | attract94 | matched | EASportsScreen | 602 bytes, `$017A18-$017C71`. EASportsScreen ... sub_17BE4, VBlank_SetOptions. HiScoreScreen is not here |
 | hockey94_02 | matched | ReplayMode | 4376 bytes, `$009FD0-$00B0E7`. ReplayMode (no IDA label) ... checkwindow |
 | logic94_1 | matched | doinput | 5672 bytes, `$00B0E8-$00C70F`. doinput ... setpads, check4bench |
-| logic94_2 | not matched | assbench | |
+| logic94_2 | matched | assbench | 2444 bytes, `$00C710-$00D09B`. assbench ... asswingd |
 | logic94_3 | not matched | asswingo | |
 | logic94_4 | not matched | checkob | |
 | logic94_5 | not matched | ChkOffsides | |
@@ -139,3 +139,8 @@ The first row that is not matched is the current segment. Ranges are provisional
   - IDA gaps written from the retail bytes: `setlccords` `String $BF,$16,0,0` then `add.w d0,(printy).w` and `moveq #2,d0` (IDA ori.b / ori.b / cmp.b); `Findhittype` `btst d0,#$F0` / `rts` and `btst d0,#$1E` / `rts` (IDA prints a bare `d0`, as 93 wrote them). The `dc.b` block at `$B602` is 10 SPA words (`SPAgglover` ... `SPAgstickl`, `SPA_148E` ... `SPA_1544`) with no reference.
   - IDA operator: `cmp.l #256^2,d0` means 256 squared; SNASM `^` is xor ($102). Written as `#$10000`. Verify 1 failed on this (3 bytes at `$BD3D`); check every IDA immediate with `^`.
   - Outside addresses: 43 stubs read from the retail operands; all 108 address locals and promoted labels assemble at their own address. 20 EA `cmp` opcodes patched.
+- `logic94_2` matched: 2444 bytes, `$00C710-$00D09B`. `src/logic94_2_stub.asm` is `org $C710`, includes `macros\genesis.mac`, the three stubinc files and `logic94_2.asm`. Run `npm.cmd run seg:logic94_2`. A match must report 2444 bytes at `0x00c710-0x00d09b`.
+  - Range: listing lines 37886-38681, `assbench` (`$C710`) through `asswingd`, as 93 logic93_2. `asswingo` (`$D09C`) is next. Both ends come from the `asstab` entries (`$18DA8`, `$18D8C`).
+  - 94 has no fight code: `assfight` and `assfwatch` are an `rts`; the 93 `chkhit`, `ShowInjuryMsg`, `banner`, `addinfo` are not in 94. `assgoaliebreakwait` is new (asstab `$18DFC`).
+  - Names: IDA names except `asseben` (IDA `assben`) and `assfaceoffp1` (IDA `assfaceoffpl`), the 93 names. IDA `_clrplayer` stays the local `.clrplayer` (93 made it global). IDA `exit` is the local `.exit`: a global would split assfaceoffp1. Calls to logic94_1 use its names (`setpads`, `check4bench`, `changeplayer`, `rtss3`). `movea.l #$E594,a0` is `#EvadePC`.
+  - Outside addresses: 20 stubs read from the retail operands (`EvadePC` from a `lea (x,pc)` displacement). 14 EA `cmp` opcodes patched. No IDA gaps in this range. Matched on the first verify.
