@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`main94`. Not matched. `org 0`: vectors, header, `Start`, `SegaInit`. The file already exists. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`teamdata94`. Not matched. Starts at `$30A`, the byte after main94's `bra.w Begin`. Retail has `dc.l 0` at `$30A` (93 `teamdata93.asm` also starts with `dc.l $0000`), then the team pointer list at `$30E` (no IDA label; listing comment `Team List Pointer Table Start`, ANH first). The draft starts at `TeamList` with no `dc.l 0` and uses the 93 team order. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -59,7 +59,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 
 | File | Status | Start | Note |
 |---|---|---|---|
-| main94 | not matched | org 0 | vectors, header, Start, SegaInit |
+| main94 | matched | org 0 | 778 bytes, `$000000-$000309`. vectors, header, Start, SegaInit |
 | teamdata94 | not matched | after main94 | existing draft |
 | frames94 | not matched | SPAList | no file yet. SPAList ends near unk_73A0 |
 | ram94 | not matched | | equates only, no ROM bytes |
@@ -93,4 +93,10 @@ The first row that is not matched is the current segment. Ranges are provisional
 
 ## History
 
-No segment has matched.
+- `main94` matched: 778 bytes, `$000000-$000309`. `src/main94_stub.asm` is `org 0`, includes `stubinc\ports.inc`, `equals.inc`, `ram_addrs.inc` and `main94.asm`. Run `npm.cmd run seg:main94`. A match must report 778 bytes at `0x000000-0x000309`.
+  - Range: vectors `$0-$FF`, header `$100-$1FF` (`sega\SegaIDTable94.asm`), `SegaInit` `$200-$2FF` (`sega\SegaInit.asm`, unchanged), `Start` tail `jsr ValidationRoutine` `$300` and `bra.w Begin` `$306`. 94 has no `jsr KillCrowd` in `Start`.
+  - Outside addresses, from the retail bytes: `AddError` `$18BFC` (IDA `AdrErr`, vectors 2 and 3), `Illinst` `$18C22` (`InvOpCode`), `ZeroDiv` `$18C4C` (`DivBy0`), `IRQ7` `$15E6C` (vectors `$60-$70`, `$7C`), `VBjsr` `$76B2` (`$78`), `ValidationRoutine` `$FFAC0` (IDA `Calc_Checksum`, `jsr (x).l` at `$300`), `Begin` `$76B8` (`bra.w` displacement `$73B0` at `$308`).
+  - Reset SP is `InitialSP` `$FFFFF6`, defined in `main94.asm` (93 name). `Stack` is `$FFFFFFFE` in `ram_addrs.inc`; the old `Stack = $FFFFF6` clashed with it. Unused vectors `$18-$5F` and `$90-$FF` are `$FF` (93: `$00`); `$74` and `$80-$8F` are 0.
+  - Header fixes to `SegaIDTable94.asm`: overseas title at `$150` padded to 48 bytes (the draft was 2 bytes short), ROM end `$000FFFFF` (1 MB), backup RAM `'RA',$F8,$20` `$200001-$203FFF` at `$1B0`, country `UE`. Checksum word `$5512`.
+  - No `cmp` / `cmpi` / `exg`: 0 opcodes patched. `fixopcodes.js` now writes `output/modified_<name>.bin` with 0 patches too (as the 93 copy does); before, `verifySegment.js` failed with ENOENT. `fixopcodes.js` still has a `cmpi.l` `0C80` to `B0BC` rule (the 93 copy removed it). main94 has no `cmpi.l`, so it was left as is.
+  - Linux only: Wine 9 `cmd` takes the `||` after a good `cd /d` in `buildseg.bat` and exits 1 with no log. Under Wine, run a copy of `buildseg.bat` without `|| exit /b 1`. Windows is not affected.

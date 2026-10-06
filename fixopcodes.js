@@ -127,8 +127,8 @@ async function main() {
         console.log(`Found ${matches.length} instructions to modify`);
 
         if (matches.length === 0) {
+            // Still write modified_<name>.bin: verifySegment.js reads that file, not the raw assembler output
             console.log('No modifications needed.');
-            return;
         }
 
         console.log(`Modifying binary file: ${binFilePath}`);
