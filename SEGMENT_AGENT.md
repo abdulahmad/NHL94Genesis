@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`video94_2`. Not matched. Starts at `showclock` `$162FE` (listing line 52289; hockey94_01 `jsr (x).l` operand), the byte after video94_1. 93 video93_2 starts at showclock too (showclock, checksso, setsortcords, setffo, uppads, addframe, addframe2, find3d, updatesound, KillCrowd); hockey94_06 (`setupice`, listing line 53024) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`hockey94_06`. Not matched. Starts at `setupice` `$169FA` (listing line 53024; hockey94_01 `jsr (x).l` operand), the byte after video94_2. 93 hockey93_06 starts at setupice too; hockey94_07 (`ScoutingReport`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -79,7 +79,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | hockey94_04 | matched | checkfight | 2970 bytes, `$01454A-$0150E3`. checkfight ... checkpuckcoll |
 | hockey94_05 | matched | puckstick | 3254 bytes, `$0150E4-$015D99`. puckstick ... checkattriblimits |
 | video94_1 | matched | VBlank | 1380 bytes, `$015D9A-$0162FD`. VBlank ... showcrowd |
-| video94_2 | not matched | showclock | |
+| video94_2 | matched | showclock | 1788 bytes, `$0162FE-$0169F9`. showclock ... KillCrowd |
 | hockey94_06 | not matched | setupice | line 53024 |
 | hockey94_07 | not matched | ScoutingReport | 94 screens |
 | hockey94_08 | not matched | setoptions | |
@@ -211,3 +211,10 @@ The first row that is not matched is the current segment. Ranges are provisional
   - No IDA gaps. `moveq #$FFFFFFC0` is written `moveq #-$40` (93 form). RAM names for absolute operands: `#DMAList`, `#Satt`, `#(Satt-M68K_RAM)`. IDA `Crowd_Noise?` is `Crowd_Noise`. ZamFrameList is `$A8922`, so penalty94_2's `unk_A892A` is ZamFrameList+8 (93 ZamSprites+8).
   - Outside addresses: 17 stubs read from the retail operands; all 30 address locals assemble at their own address. Every outside name matches its owning segment. 6 EA `cmp` opcodes patched. Matched on the first verify; all 19 matched segments still match.
   - Full build to-do, new from this segment (not fixed here): attract94 `loc_15E4C` (= vb2) and `sub_15E72` (= DumpSprites2), middle94_1 `loc_15E4C`. Each is an equate by address in its stub, and they are also written in `attract94.asm` / `middle94_1.asm`.
+- `video94_2` matched: 1788 bytes, `$0162FE-$0169F9`. `src/video94_2_stub.asm` is `org $162FE`, includes `macros\genesis.mac`, the three stubinc files and `video94_2.asm`. Run `npm.cmd run seg:video94_2`. A match must report 1788 bytes at `0x0162fe-0x0169f9`.
+  - Range: listing lines 52287-53021, `showclock` through `KillCrowd`, as 93 video93_2. `setupice` is `$169FA` (hockey94_01 `jsr (x).l` operand).
+  - Names: 93 names for the IDA auto names: `FormatControllerDisplay` (`sub_166E6`), `RenderSmallFontChar` (`sub_1674A`), `ButtonLabelCharTable` (`unk_1677A`). The IDA routines 93 writes as locals are locals: showclock `.char` (`sub_16468`), checksso `.ca` (`sub_164D6`) and `.tab` (`unk_165BC`).
+  - showclock: 94 puts a horizontal-rink clock in front of the 93 body. It prints the time with printz / print and a digit string table; IDA `sub_16384` and `unk_16396` are written as the locals `.digit` and `.digits`. The 93 dma body (IDA `loc_163BE`) is then the local `.163BE` in the same routine. It also shows word_FFD454 in a penalty shot / shootout.
+  - IDA gaps written from the retail bytes: the two strings after `jsr (printz).l` in showclock (IDA `ori.b` / `btst d2,d0`) are `String $BE,$D,5` and `String $BD,$D,5`. The dc.b tables are `String '0'` ... `'9'`, `dc.w` (`.tab`, the 93 rows) and `dc.b ' DDLCRX',$FF` (94 pad byte `$FF`, 93 retail `$10`). `moveq #$FFFFFFF0` is `moveq #-$10`.
+  - `addi.l #Spritetiles,d2` (`0682`) is not an operand form mkstub reads, so the stub has the value `$5DE84` read from the retail long.
+  - Outside addresses: 8 stubs; all 33 address locals assemble at their own address. Every outside name matches its owning segment. Every other stub's name for this range matches (`showclock`, `checksso`, `setsortcords`, `setffo`, `updatesound`, `KillCrowd`), so nothing is added to the full build to-do. 15 EA `cmp` opcodes patched. Matched on the first verify; all 20 matched segments still match.
