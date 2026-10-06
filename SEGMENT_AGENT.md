@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`hockey94_02`. Not matched. Start label `ReplayMode` is not in the listing. 93 hockey93_02 is ReplayMode, getpzjoy, ..., updatereplay, updateplayers, updateanim, freezewindow, checkwindow. In 94 `getpzjoy` is `$A41E`, `updatereplay` listing line 35236 (`$A8CA`), `updateplayers` `$A9D6`, `freezewindow` `$AFB6`, `checkwindow` `$AFCA` (from the hockey94_01 stub). Confirm the start (the routine before `getpzjoy`) and the end against `lst/nhl94.bin` before writing instructions.
+`logic94_1`. Not matched. Starts at `doinput` `$B0E8` (listing line 35886; `bsr.w doinput` at `$AD22` in updateplayers), the byte after hockey94_02. The ROM map note says it ends before `loc_B470`. 93 logic93_1 starts at doinput too. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -65,7 +65,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | ram94 | skipped | | equates only, no ROM bytes: no byte verify is possible. Skipped by the user; the queue goes past it |
 | hockey94_01 | matched | VBjsr | 1924 bytes, `$0076B2-$007E35`. VBjsr, Begin ... Pausemode, SetupPauseScreen, seta2 |
 | attract94 | matched | EASportsScreen | 602 bytes, `$017A18-$017C71`. EASportsScreen ... sub_17BE4, VBlank_SetOptions. HiScoreScreen is not here |
-| hockey94_02 | not matched | ReplayMode | before doinput, if present |
+| hockey94_02 | matched | ReplayMode | 4376 bytes, `$009FD0-$00B0E7`. ReplayMode (no IDA label) ... checkwindow |
 | logic94_1 | not matched | doinput | line 35886, before loc_B470 |
 | logic94_2 | not matched | assbench | |
 | logic94_3 | not matched | asswingo | |
@@ -127,3 +127,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Routines: `EASportsScreen`, `sub_17AC8`, `sub_17AF4`, `sub_17B78` (IDA). `$17B98-$17C41` is IDA `dc.b`; it is code with no xref, written as instructions from the listing bytes: `sub_17B98`, `sub_17BBA`, `sub_17BCA`, `sub_17BE4` (IDA-style names). The bytes before `$17A18` (`sub_179D2`, a 94 scroll routine) are not 93 code.
   - IDA hid instructions in printz strings: `EASportsScreen` is `String $FE,0,0,0` then `movea.l #unk_B425A,a2` (IDA `ori.b` x3); `sub_17AF4` has `String $BF,7,1,0` and `String $BF,$16,1,0`; `sub_17BCA` has `String $BF,2,$A,0`.
   - Outside addresses: 19 stubs read from the retail operands. `printz` is `$11B92`. `rtss2` is the `rts` at `$15464` (also the target of the undecoded `bne.w`). `sub_17E42` and `unk_B425A` have no IDA label. `#$30E` in `sub_17BE4` is TeamList. No `cmp #imm,Dn`: 0 opcodes patched.
+- `hockey94_02` matched: 4376 bytes, `$009FD0-$00B0E7`. `src/hockey94_02_stub.asm` is `org $9FD0`, includes `macros\genesis.mac`, the three stubinc files and `hockey94_02.asm`. Run `npm.cmd run seg:hockey94_02`. A match must report 4376 bytes at `0x009fd0-0x00b0e7`.
+  - Range: listing lines 34505-35879. `ReplayMode` has no IDA label: it is the code after `_rjoy` (`$9FB8-$9FCF`, the end of the code before it), first instruction `bclr #0,(word_FFC2F6).w` at `$9FD0`, found by instruction sizes back from `loc_A02A`. It ends with `checkwindow`; `doinput` (`$B0E8`) is next. The code between hockey94_01 (`$7E36`) and `$9FCF` (93 menu93 / stats93) has no row yet.
+  - Names: 93 names where 93 has the routine: `suba4` (`sub_A4F6`), `adda4` (`sub_A528`; 94 adds the reverse angle switch at the top), `adda42` (`loc_A5F4`), `adda43` (`sub_A600`), `UpdateCameraPos` (`sub_A616`), `RestoreReplayFrame` (`SetRCords`). Kept IDA names: `getpzjoy`, `RevReplayAdj`, `sub_A448`, `sub_A48A`, `sub_A4A8`, `sub_A4D8`, `sub_A88C`, `updatereplay`, `rtss8` (93 calls this rts `rtss2`, but 94 `rtss2` is `$15464`), `updateplayers`, `updateanim`, `freezewindow`, `checkwindow`. Locals are the IDA local names (`_top` -> `.top`) or the IDA address (`loc_A058` -> `.A058`); all 87 address locals assemble at their own address. `unk_A23E` is the local `.dirtab` (8 x/y word pairs).
+  - Hidden instructions after `printz`: `sub_A448` `String $BD,2,2` + `moveq #$20,d0`; `sub_A48A` `String $BD,2,2` + `move.w #8,d0` / `#4,d1` / `#$7FF,d2`; `sub_A4A8` `String $BD,2,0` + `moveq #0,d0`; `sub_A4D8` `String $BD,2,2` + `move.w #$10,d0` / `#$B,d1` / `#$7FF,d2` (IDA shows ori.b / andi.b and a bare `d3` line).
+  - The `cmpi.w #$xxxx,$58(a3)` checks in updateplayers are frames94 SPA offsets (`SPA_193E`, `SPA_1A00`, `SPA_18CC`, `SPA_17E8`, `SPA_1776`, `SPA_185A`, `SPA_145C`, `SPAinjury1` `$1AF4`); written as numbers with the name in the comment. `#$5B1C` is `SPAlist` (stub).
+  - Outside addresses: 38 stubs read from the retail operands. 30 EA `cmp` opcodes patched (`cmp.w #imm` on d0 / d1 / d2 / d6, one `cmp.l #4,d0`). Matched on the first verify.
