@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`hockey94_05`. Not matched. Starts at `puckstick` `$150E4` (listing line 50534; the bsr.w target at `$14EC8`), the byte after hockey94_04. 93 hockey93_05 starts at puckstick too (puckstick ... deflect, then the roster code makepde ... setplayer); video94_1 (`VBlank`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`video94_1`. Not matched. Starts at the vblank handler `$15D9A` (listing line 51766). IDA has no `VBlank` label: it is `loc_15D9A`, stored as vbint by setupice+194; `loc_15E4C` is 93 vb2 and `IRQ7` (`$15E6C`) follows it. This is the byte after hockey94_05. 93 video93_1 starts at VBlank too (VBlank, vb2, IRQ7, DumpSprites ... setvideo); video94_2 (`showclock`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -77,7 +77,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | penalty94_2 | matched | PrintScores1 | 3240 bytes, `$012C04-$0138AB`. PrintScores1 ... StartHL2 |
 | hockey94_03 | matched | checkcoll | 3230 bytes, `$0138AC-$014549`. checkcoll ... setInjuryType |
 | hockey94_04 | matched | checkfight | 2970 bytes, `$01454A-$0150E3`. checkfight ... checkpuckcoll |
-| hockey94_05 | not matched | puckstick | |
+| hockey94_05 | matched | puckstick | 3254 bytes, `$0150E4-$015D99`. puckstick ... checkattriblimits |
 | video94_1 | not matched | VBlank | |
 | video94_2 | not matched | showclock | |
 | hockey94_06 | not matched | setupice | line 53024 |
@@ -199,3 +199,8 @@ The first row that is not matched is the current segment. Ranges are provisional
   - No IDA gaps. RAM names for absolute operands: `#SortCords`, `#AwShots`, `#HmShots`, `#(HmShots-M68K_RAM)`.
   - Outside addresses: 22 stubs read from the retail operands; all 45 address locals assemble at their own address. Every outside name matches its owning segment. hockey94_03 `checkfight` / `checkwallcoll2` and logic94_4 `checkpuckcoll` match. 29 EA `cmp` opcodes patched. Matched on the first verify; all 17 matched segments still match.
   - Full build to-do, new from this segment (not fixed here): penalty94_1 `sub_14A94` (= GetPeriodTimeRemaining), in its stub and in `penalty94_1.asm`.
+- `hockey94_05` matched: 3254 bytes, `$0150E4-$015D99`. `src/hockey94_05_stub.asm` is `org $150E4`, includes `macros\genesis.mac`, the three stubinc files and `hockey94_05.asm`. Run `npm.cmd run seg:hockey94_05`. A match must report 3254 bytes at `0x0150e4-0x015d99`.
+  - Range: listing lines 50532-51764, `puckstick` through `checkattriblimits`, as 93 hockey93_05. The next byte `$15D9A` is the vblank handler (93 VBlank). It has no IDA label (`loc_15D9A`, DATA XREF setupice+194) and starts with `movem.l d0-d7/a0-a6,-(sp)`. `rtss2` (`$15464`, the shared rts most stubs name) is in this range, at the end of puckbody.
+  - Names: IDA names. IDA `_glue` (a puckstick local that puckgoalie also branches to) is the 93 global `puckglue`. IDA `ClockLength` is hockey94_01's `GetPeriodTime`. IDA labels that would split a routine are locals: `.CheckStkForContactWithSkater` and `.PlayerPassOrLoosePuckStkLoad` in puckstick, `.AwayTeam` in setplayer. `.setd0player` stays local (93 setd0player is a global; in 94 only puckglue reaches it). 93 TryAddPlayerToList / ClampNibble are the IDA `findAvailablePlayer` / `checkattriblimits` (94 clamps to `$1E`); `sub_1592C` (penalty shot set up) is 94 only.
+  - `jsr ClockLength` is `jsr (GetPeriodTime).w` (`4EB8 784E`), written with the size. The stub has the value `$784E` (from the hockey94_01 listing), because a `(x).w` operand cannot take the mkstub placeholder. `jmp setc1player` / `setc2player` are `4EF9` (the targets are above `$7FFF`). No IDA gaps; `#SortCords` and `#(HmShots-M68K_RAM)` for the absolute operands.
+  - Outside addresses: 23 stubs read from the retail operands; all 27 address locals assemble at their own address. Every outside name matches its owning segment. All other stubs' names for this range match (`rtss2` in 11 stubs, `SetPersonel`, `Setplass`, `setplayer`, `ResetBench`, `forcepldata`, `makepde` / `getpde` / `setpde`, `puckstick` / `puckbody` / `puckgoalie`, `sub_1592C`), so nothing is added to the full build to-do. 12 EA `cmp` opcodes patched. Matched on the first verify; all 18 matched segments still match.
