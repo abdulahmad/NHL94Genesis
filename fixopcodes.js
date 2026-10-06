@@ -25,6 +25,13 @@ const opcodeReplacements = [
     { instruction: 'cmp.l', existingOpcode: '0C80', newOpcode: 'B0BC' },
     { instruction: 'cmpi.l', existingOpcode: '0C81', newOpcode: 'B2BC' },
     { instruction: 'cmpi.l', existingOpcode: '0C83', newOpcode: 'B6BC' },
+    { instruction: 'cmp', existingOpcode: '0C81', newOpcode: 'B2BC' },
+    { instruction: 'cmp', existingOpcode: '0C82', newOpcode: 'B4BC' },
+    { instruction: 'cmp', existingOpcode: '0C83', newOpcode: 'B6BC' },
+    { instruction: 'cmp', existingOpcode: '0C84', newOpcode: 'B8BC' },
+    { instruction: 'cmp', existingOpcode: '0C85', newOpcode: 'BABC' },
+    { instruction: 'cmp', existingOpcode: '0C86', newOpcode: 'BCBC' },
+    { instruction: 'cmp', existingOpcode: '0C87', newOpcode: 'BEBC' },
     { instruction: 'exg', existingOpcode: 'C34A', newOpcode: 'C549', operandCondition: (operands) => /^\s*a2\s*,\s*a1\s*$/.test(operands) },
     { instruction: 'exg', existingOpcode: 'C141', newOpcode: 'C340', operandCondition: (operands) => /^\s*d1\s*,\s*d0\s*$/.test(operands) },
     // do not change: exg	d0,d1

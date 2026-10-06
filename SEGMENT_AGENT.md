@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`logic94_3`. Not matched. Starts at `asswingo` `$D09C` (listing line 38682; the `asstab` entry at `$18D8C` holds `$D09C`), the byte after logic94_2. 93 logic93_3 starts at asswingo too. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`logic94_4`. Not matched. Starts at `checkob` `$E62E` (listing line 40493; `bsr.w checkob` at `$E04A` in logic94_3), the byte after logic94_3. 93 logic93_4 starts at checkob too; logic94_5 (`ChkOffsides`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -68,7 +68,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | hockey94_02 | matched | ReplayMode | 4376 bytes, `$009FD0-$00B0E7`. ReplayMode (no IDA label) ... checkwindow |
 | logic94_1 | matched | doinput | 5672 bytes, `$00B0E8-$00C70F`. doinput ... setpads, check4bench |
 | logic94_2 | matched | assbench | 2444 bytes, `$00C710-$00D09B`. assbench ... asswingd |
-| logic94_3 | not matched | asswingo | |
+| logic94_3 | matched | asswingo | 5522 bytes, `$00D09C-$00E62D`. asswingo ... chk4pass, EvadePC |
 | logic94_4 | not matched | checkob | |
 | logic94_5 | not matched | ChkOffsides | |
 | middle94_1 | not matched | remap | |
@@ -144,3 +144,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - 94 has no fight code: `assfight` and `assfwatch` are an `rts`; the 93 `chkhit`, `ShowInjuryMsg`, `banner`, `addinfo` are not in 94. `assgoaliebreakwait` is new (asstab `$18DFC`).
   - Names: IDA names except `asseben` (IDA `assben`) and `assfaceoffp1` (IDA `assfaceoffpl`), the 93 names. IDA `_clrplayer` stays the local `.clrplayer` (93 made it global). IDA `exit` is the local `.exit`: a global would split assfaceoffp1. Calls to logic94_1 use its names (`setpads`, `check4bench`, `changeplayer`, `rtss3`). `movea.l #$E594,a0` is `#EvadePC`.
   - Outside addresses: 20 stubs read from the retail operands (`EvadePC` from a `lea (x,pc)` displacement). 14 EA `cmp` opcodes patched. No IDA gaps in this range. Matched on the first verify.
+- `logic94_3` matched: 5522 bytes, `$00D09C-$00E62D`. `src/logic94_3_stub.asm` is `org $D09C`, includes `macros\genesis.mac`, the three stubinc files and `logic94_3.asm`. Run `npm.cmd run seg:logic94_3`. A match must report 5522 bytes at `0x00d09c-0x00e62d`.
+  - Range: listing lines 38682-40488, `asswingo` through `EvadePC`, as 93 logic93_3. `checkob` (`$E62E`) is next.
+  - Names: IDA names except `ClampYPosition` (`sub_DB3E`) and `AdjustFacingDirection` (`sub_DB68`), the 93 names. IDA `_checkanim` (a local of assgoaliecpu) is the global `checkanim`: assgoaliectrl branches to it across assgoaliecpu. IDA `compshoot?` is `compshoot` (`?` stripped; SNASM accepts `?` in a symbol, so a missed one still builds). IDA `_saveanim` is the local `.saveanim` (93 `GoalieSaveList`; the same 10 SPA words as the unreferenced logic94_1 table at `$B602`).
+  - IDA gap: `AdjustFacingDirection` has three `btst d1,#imm` (`#$42`, `#$83`, `#$38`) that IDA cannot show, so it also lost the branch targets `.t` (`$DBA6`) and `.set` (`$DBB0`). Written from the retail bytes in the 93 form.
+  - `fixopcodes.js` got the 93 `cmp` long rules `0C81`-`0C87` (`B2BC`-`BEBC`); it only had `cmpi.l` rules for d1 and d3. Verify 1 failed on `cmp.l #$2710,d1` at `$E35E` (built `0C81`, retail `B2BC`). All earlier segments still match. The `cmpi.l` `0C80` / `0C81` / `0C83` rules are still in the table; no segment so far has a real `cmpi.l #imm,Dn`.
+  - Outside addresses: 27 stubs read from the retail operands; all 105 address locals assemble at their own address. 56 EA `cmp` opcodes patched.
