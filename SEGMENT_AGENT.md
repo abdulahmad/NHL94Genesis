@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`logic94_5`. Not matched. Starts at `ChkOffsides` `$FFEA` (listing line 42598; `bsr.w ChkOffsides` at `$FF8A` = pucknorm+$7E), the byte after logic94_4. 93 logic93_5 starts at ChkOffsides too; middle94_1 (`remap`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`middle94_1`. Not matched. Starts at `remap` `$10EE0` (listing line 44006; `bra.w remap` at `$11766` = sub_1173C+$2A), the byte after logic94_5. 93 middle93_1 starts at remap too; middle94_2 (`dobitmap`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -70,7 +70,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | logic94_2 | matched | assbench | 2444 bytes, `$00C710-$00D09B`. assbench ... asswingd |
 | logic94_3 | matched | asswingo | 5522 bytes, `$00D09C-$00E62D`. asswingo ... chk4pass, EvadePC |
 | logic94_4 | matched | checkob | 6588 bytes, `$00E62E-$00FFE9`. checkob ... pucknorm |
-| logic94_5 | not matched | ChkOffsides | |
+| logic94_5 | matched | ChkOffsides | 3830 bytes, `$00FFEA-$010EDF`. ChkOffsides ... WeightedRandomSelect |
 | middle94_1 | not matched | remap | |
 | middle94_2 | not matched | dobitmap | |
 | penalty94_1 | not matched | AddPenalty | |
@@ -155,3 +155,7 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Names: IDA names; 94-only routines keep the IDA auto names (`sub_EE58`, `sub_F2F4`, `sub_F37C`, `sub_F590`, `sub_F5C6`, `sub_F64E`). `setchgplayer` is 93 `ResetAndSelectPlayers` (IDA name kept). IDA `gmclock` (a 92 equate name used as a label inside assnearest) is the local `.gmclock`. `loc_F612` and `locret_F3E2` stay global (used across a global label). `loc_7B5C` is hockey94_01 `clockcont_0`.
   - IDA gaps written from the retail bytes: three printz / printz2 strings. At `$FBC2` (`String $FA,$A,$FE,4`) and `$FBE8` (`String $FB,1,$FA,$FE`) the listing shows `ori.b` and drops a whole word; at `$FDE6` (`String $BF,0,0,0`) it hides `move.w (fodropx).w,d0` / `subi.w #$2E,d0` / `asr.w #3,d0` / `move.w d0,(printx).w` / `moveq #$64,d0`. The 16 `dc.b` at `$EC72` are code with no xref, written as `sub_EC72` (temp3 / temp4 to skateto, `lea rtss2(pc),a0`; 93 asspenalty `.st`).
   - Outside addresses: 77 stubs read from the retail operands; all 99 address locals assemble at their own address. 25 EA `cmp` opcodes patched. Matched on the first verify.
+- `logic94_5` matched: 3830 bytes, `$00FFEA-$010EDF`. `src/logic94_5_stub.asm` is `org $FFEA`, includes `macros\genesis.mac`, the three stubinc files and `logic94_5.asm`. Run `npm.cmd run seg:logic94_5`. A match must report 3830 bytes at `0x00ffea-0x010edf`.
+  - Range: listing lines 42598-43998, `ChkOffsides` through `WeightedRandomSelect`, as 93 logic93_5. `remap` is `$10EE0` (`bra.w` at `$11766`).
+  - Names: IDA names except `ClearOffsidesIfAllPlayers` (`sub_100A6`), `UnpackNibbles` (`sub_10E88`), `WeightedRandomSelect` (`sub_10EB4`), the 93 names (attract94 and other stubs still say `sub_10E88` / `sub_10EB4` by address). The unpack / weight buffer is `dword_FFD036` (93 `dword_FFCACA`). `MaxSpeed` is written as the 93 expressions `((n+20)*275)*((n+20)*275)`, n = 0-15; the listing has the numbers.
+  - No IDA gaps in this range. Outside addresses: 9 stubs read from the retail operands. 47 EA `cmp` opcodes patched. Matched on the first verify.
