@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`teamdata94`. Not matched. Starts at `$30A`, the byte after main94's `bra.w Begin`. Retail has `dc.l 0` at `$30A` (93 `teamdata93.asm` also starts with `dc.l $0000`), then the team pointer list at `$30E` (no IDA label; listing comment `Team List Pointer Table Start`, ANH first). The draft starts at `TeamList` with no `dc.l 0` and uses the 93 team order. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`frames94`. Not matched. Starts at `SPAList` `$5B1C` (listing line 22741; `movea.l #$5B1C,a0` in the code), the byte after teamdata94. No file yet. `src/hockey94.asm` has no frames94 include (93 has `Frames93` after `TeamData93`); do not edit it. The ROM map note says SPAList ends near `unk_73A0`. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -60,7 +60,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | File | Status | Start | Note |
 |---|---|---|---|
 | main94 | matched | org 0 | 778 bytes, `$000000-$000309`. vectors, header, Start, SegaInit |
-| teamdata94 | not matched | after main94 | existing draft |
+| teamdata94 | matched | after main94 | 22546 bytes, `$00030A-$005B1B`. TeamList, 28 team blocks, playoffseats, Credits |
 | frames94 | not matched | SPAList | no file yet. SPAList ends near unk_73A0 |
 | ram94 | not matched | | equates only, no ROM bytes |
 | hockey94_01 | not matched | VBjsr | line 29709, next loc_76E8 |
@@ -100,3 +100,10 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Header fixes to `SegaIDTable94.asm`: overseas title at `$150` padded to 48 bytes (the draft was 2 bytes short), ROM end `$000FFFFF` (1 MB), backup RAM `'RA',$F8,$20` `$200001-$203FFF` at `$1B0`, country `UE`. Checksum word `$5512`.
   - No `cmp` / `cmpi` / `exg`: 0 opcodes patched. `fixopcodes.js` now writes `output/modified_<name>.bin` with 0 patches too (as the 93 copy does); before, `verifySegment.js` failed with ENOENT. `fixopcodes.js` still has a `cmpi.l` `0C80` to `B0BC` rule (the 93 copy removed it). main94 has no `cmpi.l`, so it was left as is.
   - Linux only: Wine 9 `cmd` takes the `||` after a good `cd /d` in `buildseg.bat` and exits 1 with no log. Under Wine, run a copy of `buildseg.bat` without `|| exit /b 1`. Windows is not affected.
+- `teamdata94` matched: 22546 bytes, `$00030A-$005B1B`. `src/teamdata94_stub.asm` is `org $30A`, includes `macros\genesis.mac`, the three stubinc files and `teamdata94.asm`. No outside addresses. Run `npm.cmd run seg:teamdata94`. A match must report 22546 bytes at `0x00030a-0x005b1b`.
+  - Range: `dc.l 0` at `$30A`, `TeamList` `$30E` (28 longs), the team blocks `$37E-$5575`, `playoffseats` `$5576` (512 bytes), `Credits` `$5776` to the byte before `SPAList` `$5B1C`. The listing has no labels there; the code has `movea.l #$5576` (playoffseats), `#$5776` and `#$57B8` (`Credits`, `Credits+$42`) and `#$5B1C` (SPAList).
+  - The old draft (92 Wales/Campbell teams, 92 offsets, `.pal` incbins) was replaced in place. Transcribed from the listing bytes, lines 278-22740, by a script that reads only the `.lst`.
+  - TeamList order: ANH, BOS, BUF, CGY, CHI, DAL, DET, EDM, FLA, HFD, LA, MTL, NJ, NYI, NYR, OTW, PHI, PIT, QUE, SJ, STL, TB, TOR, VAN, WSH, WPG, ASE, ASW. The blocks are in a different order in the ROM: ASE, ASW, BOS, BUF, CGY, CHI, DET, EDM, HFD, LA, DAL, MTL, NJ, NYI, NYR, OTW, PHI, PIT, QUE, SJ, STL, TB, TOR, VAN, WPG, WSH, FLA, ANH. Labels are 93 names (`LongIsland` = NYI, `NewYork` = NYR); `Dallas`, `Florida`, `Anaheim` are new. Ottawa's abbreviation is `OTW`. The listing comments on TeamList swap PIT / PHI and STL / SJ: `$3348` is PHI, `$3646` PIT, `$3C42` SJ, `$3F30` STL (read from the city and abbreviation Strings).
+  - Each block keeps the 93 offset-word order and equates (`Playerdata` 0 ... `ScoreOdds` 10). Changes from 93: `.sr` is 4 bytes (93: 8), `.ls` has 8 lines (93: 7), and after city and abbreviation there are 2 more Strings, nickname and arena (empty nickname for ASE / ASW). The player list ends in an empty String (`dc.w 2`). Palettes are `dc.w`; `extractAssets94.js` has no 94 palette entries.
+  - `Player` (the 93 `PLAYER` macro) was added to `src/macros/genesis.mac`. `seg:main94` still matches. No `cmp` / `exg`: 0 opcodes patched.
+  - IDA labels inside the data are not created: `unk_400`, `runspeed_15`, `word_3244`, `byte_4240`, `byte_43FA`.
