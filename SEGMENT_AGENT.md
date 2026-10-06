@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`logic94_1`. Not matched. Starts at `doinput` `$B0E8` (listing line 35886; `bsr.w doinput` at `$AD22` in updateplayers), the byte after hockey94_02. The ROM map note says it ends before `loc_B470`. 93 logic93_1 starts at doinput too. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`logic94_2`. Not matched. Starts at `assbench` `$C710` (listing line 37886; the `asstab` entry at `$18DA8` holds `$C710`), the byte after logic94_1. 93 logic93_2 is assbench, asseben, asspenalty, ... Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -66,7 +66,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | hockey94_01 | matched | VBjsr | 1924 bytes, `$0076B2-$007E35`. VBjsr, Begin ... Pausemode, SetupPauseScreen, seta2 |
 | attract94 | matched | EASportsScreen | 602 bytes, `$017A18-$017C71`. EASportsScreen ... sub_17BE4, VBlank_SetOptions. HiScoreScreen is not here |
 | hockey94_02 | matched | ReplayMode | 4376 bytes, `$009FD0-$00B0E7`. ReplayMode (no IDA label) ... checkwindow |
-| logic94_1 | not matched | doinput | line 35886, before loc_B470 |
+| logic94_1 | matched | doinput | 5672 bytes, `$00B0E8-$00C70F`. doinput ... setpads, check4bench |
 | logic94_2 | not matched | assbench | |
 | logic94_3 | not matched | asswingo | |
 | logic94_4 | not matched | checkob | |
@@ -133,3 +133,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Hidden instructions after `printz`: `sub_A448` `String $BD,2,2` + `moveq #$20,d0`; `sub_A48A` `String $BD,2,2` + `move.w #8,d0` / `#4,d1` / `#$7FF,d2`; `sub_A4A8` `String $BD,2,0` + `moveq #0,d0`; `sub_A4D8` `String $BD,2,2` + `move.w #$10,d0` / `#$B,d1` / `#$7FF,d2` (IDA shows ori.b / andi.b and a bare `d3` line).
   - The `cmpi.w #$xxxx,$58(a3)` checks in updateplayers are frames94 SPA offsets (`SPA_193E`, `SPA_1A00`, `SPA_18CC`, `SPA_17E8`, `SPA_1776`, `SPA_185A`, `SPA_145C`, `SPAinjury1` `$1AF4`); written as numbers with the name in the comment. `#$5B1C` is `SPAlist` (stub).
   - Outside addresses: 38 stubs read from the retail operands. 30 EA `cmp` opcodes patched (`cmp.w #imm` on d0 / d1 / d2 / d6, one `cmp.l #4,d0`). Matched on the first verify.
+- `logic94_1` matched: 5672 bytes, `$00B0E8-$00C70F`. `src/logic94_1_stub.asm` is `org $B0E8`, includes `macros\genesis.mac`, the three stubinc files and `logic94_1.asm`. Run `npm.cmd run seg:logic94_1`. A match must report 5672 bytes at `0x00b0e8-0x00c70f`.
+  - Range: listing lines 35886-37885, `doinput` through `check4bench`, as 93 logic93_1. `assbench` (`$C710`) is next. The ROM map note "before loc_B470" was not a boundary: `loc_B470` is a branch target inside doinput.
+  - Names: IDA names (the 92 / 93 names here) except `SetLCmode2` (`sub_B92E`), `setpads` (`sub_C656`) and `restorepl` (IDA `restorep1`). Locals are IDA local names (`_x` -> `.x`) or the IDA address. IDA labels that would clash or split a routine are locals: `loop` -> `.loop`, `even` -> `.even` (an SNASM directive), `chkgoalie` -> `.chkgoalie` (inside restorepl). `loc_B470`, `loc_B616`, `loc_B6BA`, `loc_B72E`, `loc_B81A` stay global: doinput branches to them across a global label. IDA prints `glb_B8AA` (and others) twice; the second line is dropped. `loc_7CDC` / `loc_7CEA` are hockey94_01 `startpause3` / `startpause4`.
+  - IDA gaps written from the retail bytes: `setlccords` `String $BF,$16,0,0` then `add.w d0,(printy).w` and `moveq #2,d0` (IDA ori.b / ori.b / cmp.b); `Findhittype` `btst d0,#$F0` / `rts` and `btst d0,#$1E` / `rts` (IDA prints a bare `d0`, as 93 wrote them). The `dc.b` block at `$B602` is 10 SPA words (`SPAgglover` ... `SPAgstickl`, `SPA_148E` ... `SPA_1544`) with no reference.
+  - IDA operator: `cmp.l #256^2,d0` means 256 squared; SNASM `^` is xor ($102). Written as `#$10000`. Verify 1 failed on this (3 bytes at `$BD3D`); check every IDA immediate with `^`.
+  - Outside addresses: 43 stubs read from the retail operands; all 108 address locals and promoted labels assemble at their own address. 20 EA `cmp` opcodes patched.
