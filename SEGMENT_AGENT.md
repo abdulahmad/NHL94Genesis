@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`middle94_2`. Not matched. Starts at `dobitmap` `$1169A` (listing line 44878; the byte after middle94_1). 93 middle93_2 starts at dobitmap too; penalty94_1 (`AddPenalty`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`penalty94_1`. Not matched. Starts at `AddPenalty` `$11F2C` (listing line 45939; it falls into `AddPenalty2` `$11F62`), the byte after middle94_2. 93 penalty93_1 starts at AddPenalty too; penalty94_2 (`printscores1`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -72,7 +72,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | logic94_4 | matched | checkob | 6588 bytes, `$00E62E-$00FFE9`. checkob ... pucknorm |
 | logic94_5 | matched | ChkOffsides | 3830 bytes, `$00FFEA-$010EDF`. ChkOffsides ... WeightedRandomSelect |
 | middle94_1 | matched | remap | 1978 bytes, `$010EE0-$011699`. remap ... Vmaddr |
-| middle94_2 | not matched | dobitmap | |
+| middle94_2 | matched | dobitmap | 2194 bytes, `$01169A-$011F2B`. dobitmap ... AddTeamBlock |
 | penalty94_1 | not matched | AddPenalty | |
 | penalty94_2 | not matched | printscores1 | |
 | hockey94_03 | not matched | checkcoll | line 48484 |
@@ -164,3 +164,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Names: IDA names except `CopyPaletteToCRAM` (`sub_11044`), `ProcessInputWithRepeat` (`sub_11318`), `DoDMA_nd2` (`sub_114B8`), the 93 names. `waitxsr` is the 92 name (93 `IntermissionLoop`). IDA `dd` / `nd` (globals inside DoDMA) are the locals `.dd` / `.nd`. IDA `dmaram?` is `dmaram`; `stubinc/ram_addrs.inc` spells it `dmaram?`, so the stub has `dmaram = $FFFFD06A`.
   - `jsr updatecrowdf` and `jsr sub_7E88` are `jsr (x).w` (`4EB8`) in retail: both targets are below `$8000`. IDA writes them with no size, and SNASM picks `.l` when the target is not known as a word address, so they are written `(x).w` (the first stub build was 4 bytes long until this was fixed). The stub has their retail values `$7A9E` (hockey94_01 `updatecrowdf`) and `$7E88`.
   - No IDA gaps. Outside addresses: 8 stubs. 6 EA `cmp` opcodes patched. Matched on the first verify.
+- `middle94_2` matched: 2194 bytes, `$01169A-$011F2B`. `src/middle94_2_stub.asm` is `org $1169A`, includes `macros\genesis.mac`, the three stubinc files and `middle94_2.asm`. Run `npm.cmd run seg:middle94_2`. A match must report 2194 bytes at `0x01169a-0x011f2b`.
+  - Range: listing lines 44878-45933, `dobitmap` through `AddTeamBlock`, as 93 middle93_2. `AddPenalty` is `$11F2C` (`$11F62` AddPenalty2 minus its `$36` bytes).
+  - Names: 93 names for the IDA auto names: `DecompressGraphicsWithCallback` (`sub_1172C`), `DoDMA_clearCallbackPointer` (`sub_11738`), `DecompressGraphics` (`sub_1173C`), `DecompressBytecode` (`sub_1177A`), `FlushOutputBuffer` (`sub_11924`), `ControlCode_SetMap` / `SetAttribute` / `SetX` / `SetY` (`sub_11B28` / `sub_11B3C` / `sub_11B4C` / `loc_11B5A`), `FormatAndPrintTime` (`sub_11C72`), `PushNumberWidth` (`DeterStrLength?`), `printbigz` (`sub_11DE2`), `AddSmallFont` / `AddFramer` / `AddTeamBlock` (`sub_11F04` / `sub_11F12` / `sub_11F20`). `printz2` / `print2` keep the IDA names the earlier segments call (93 `printsmallz` / `printsmall`). `sub_11E8E` and `sub_11EDA` are 94 only.
+  - Tables in the 93 form: `jump_table` (IDA `unk_117B2`) is `dc.w Opcode_X-jump_table`, `ControlCodeJumpTable` (`unk_11AF4`) is `dc.l` labels, `PeriodLabelTable` (`unk_11C92`) is `dc.w 4` / `dc.b ' 1'`. The `Opcode_*` handlers and `ControlCode_SetMapAndPosition` / `AddX` / `AddY` / `SetFont` have no IDA label; each label sits at the address its table entry gives (checked against the assembler listing). The shared loops `CopyBackwardRun` (`loc_11840`) and `CopyBackwardReverseRun` (`loc_118CE`) are globals. `Opcode_CopyBackwardExtended2` (`$1189E`) is IDA `dc.b`; written as instructions from the retail bytes (the same code as 93).
+  - Outside addresses: 13 stubs (`rtss2` is a `dc.l` table entry). 7 EA `cmp` opcodes patched. Matched on the first verify.
+  - Full build to-do (not fixed here; each segment still matches): some stubs use names a later segment renamed or made local, so a full build will not resolve them. hockey94_01 `sub_11318` (= ProcessInputWithRepeat); hockey94_02 `sub_11738` (= DoDMA_clearCallbackPointer) and `sub_C656` (= setpads); logic94_4 `sub_11738` and `sub_B92E` (= SetLCmode2); logic94_5 `sub_DB68` (= AdjustFacingDirection); attract94 `sub_11044` (= CopyPaletteToCRAM), `sub_10E88` (= UnpackNibbles), `sub_10EB4` (= WeightedRandomSelect) and `loc_115AA` (a local `.115AA` in middle94_1; make it global there). Each is an equate by address in its stub, and some are also written in the segment file.
