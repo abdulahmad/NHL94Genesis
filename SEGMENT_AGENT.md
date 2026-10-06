@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`logic94_4`. Not matched. Starts at `checkob` `$E62E` (listing line 40493; `bsr.w checkob` at `$E04A` in logic94_3), the byte after logic94_3. 93 logic93_4 starts at checkob too; logic94_5 (`ChkOffsides`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`logic94_5`. Not matched. Starts at `ChkOffsides` `$FFEA` (listing line 42598; `bsr.w ChkOffsides` at `$FF8A` = pucknorm+$7E), the byte after logic94_4. 93 logic93_5 starts at ChkOffsides too; middle94_1 (`remap`) follows it. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -69,7 +69,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | logic94_1 | matched | doinput | 5672 bytes, `$00B0E8-$00C70F`. doinput ... setpads, check4bench |
 | logic94_2 | matched | assbench | 2444 bytes, `$00C710-$00D09B`. assbench ... asswingd |
 | logic94_3 | matched | asswingo | 5522 bytes, `$00D09C-$00E62D`. asswingo ... chk4pass, EvadePC |
-| logic94_4 | not matched | checkob | |
+| logic94_4 | matched | checkob | 6588 bytes, `$00E62E-$00FFE9`. checkob ... pucknorm |
 | logic94_5 | not matched | ChkOffsides | |
 | middle94_1 | not matched | remap | |
 | middle94_2 | not matched | dobitmap | |
@@ -150,3 +150,8 @@ The first row that is not matched is the current segment. Ranges are provisional
   - IDA gap: `AdjustFacingDirection` has three `btst d1,#imm` (`#$42`, `#$83`, `#$38`) that IDA cannot show, so it also lost the branch targets `.t` (`$DBA6`) and `.set` (`$DBB0`). Written from the retail bytes in the 93 form.
   - `fixopcodes.js` got the 93 `cmp` long rules `0C81`-`0C87` (`B2BC`-`BEBC`); it only had `cmpi.l` rules for d1 and d3. Verify 1 failed on `cmp.l #$2710,d1` at `$E35E` (built `0C81`, retail `B2BC`). All earlier segments still match. The `cmpi.l` `0C80` / `0C81` / `0C83` rules are still in the table; no segment so far has a real `cmpi.l #imm,Dn`.
   - Outside addresses: 27 stubs read from the retail operands; all 105 address locals assemble at their own address. 56 EA `cmp` opcodes patched.
+- `logic94_4` matched: 6588 bytes, `$00E62E-$00FFE9`. `src/logic94_4_stub.asm` is `org $E62E`, includes `macros\genesis.mac`, the three stubinc files and `logic94_4.asm`. Run `npm.cmd run seg:logic94_4`. A match must report 6588 bytes at `0x00e62e-0x00ffe9`.
+  - Range: listing lines 40493-42593, `checkob` through `pucknorm`, as 93 logic93_4 plus the 94 shootout / penalty shot code (`puckshootout`, `puckpenshot`). The end comes from the code: assignment `$18` is pucknorm (`asstab` entry `$18DDC` = `$FF0C`), and pucknorm+$7E is `bsr.w ChkOffsides` = `$FFEA`.
+  - Names: IDA names; 94-only routines keep the IDA auto names (`sub_EE58`, `sub_F2F4`, `sub_F37C`, `sub_F590`, `sub_F5C6`, `sub_F64E`). `setchgplayer` is 93 `ResetAndSelectPlayers` (IDA name kept). IDA `gmclock` (a 92 equate name used as a label inside assnearest) is the local `.gmclock`. `loc_F612` and `locret_F3E2` stay global (used across a global label). `loc_7B5C` is hockey94_01 `clockcont_0`.
+  - IDA gaps written from the retail bytes: three printz / printz2 strings. At `$FBC2` (`String $FA,$A,$FE,4`) and `$FBE8` (`String $FB,1,$FA,$FE`) the listing shows `ori.b` and drops a whole word; at `$FDE6` (`String $BF,0,0,0`) it hides `move.w (fodropx).w,d0` / `subi.w #$2E,d0` / `asr.w #3,d0` / `move.w d0,(printx).w` / `moveq #$64,d0`. The 16 `dc.b` at `$EC72` are code with no xref, written as `sub_EC72` (temp3 / temp4 to skateto, `lea rtss2(pc),a0`; 93 asspenalty `.st`).
+  - Outside addresses: 77 stubs read from the retail operands; all 99 address locals assemble at their own address. 25 EA `cmp` opcodes patched. Matched on the first verify.
