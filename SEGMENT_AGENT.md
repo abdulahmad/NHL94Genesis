@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`hockey94_04`. Not matched. Starts at `checkfight` `$1454A` (listing line 49544; an `rts` in 94, the bsr.w target at `$13B1E`), the byte after hockey94_03. 93 hockey93_04 starts at checkfight too (checkfight ... checkpuckcoll); hockey94_05 (`puckstick`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`hockey94_05`. Not matched. Starts at `puckstick` `$150E4` (listing line 50534; the bsr.w target at `$14EC8`), the byte after hockey94_04. 93 hockey93_05 starts at puckstick too (puckstick ... deflect, then the roster code makepde ... setplayer); video94_1 (`VBlank`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -76,7 +76,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | penalty94_1 | matched | AddPenalty | 3288 bytes, `$011F2C-$012C03`. AddPenalty ... SetHor |
 | penalty94_2 | matched | PrintScores1 | 3240 bytes, `$012C04-$0138AB`. PrintScores1 ... StartHL2 |
 | hockey94_03 | matched | checkcoll | 3230 bytes, `$0138AC-$014549`. checkcoll ... setInjuryType |
-| hockey94_04 | not matched | checkfight | |
+| hockey94_04 | matched | checkfight | 2970 bytes, `$01454A-$0150E3`. checkfight ... checkpuckcoll |
 | hockey94_05 | not matched | puckstick | |
 | video94_1 | not matched | VBlank | |
 | video94_2 | not matched | showclock | |
@@ -192,3 +192,10 @@ The first row that is not matched is the current segment. Ranges are provisional
   - No IDA gaps. `lsr (word_FFBF12).w` is written `lsr.w`. `movea.l #$FFFFB04A,a2` is `#SortCords`.
   - SPA values stay numbers. Each comment gives the frames94 name, read from the frames94 table offsets: `$C90` SPAHold, `$1122` SPAhook, `$B24` SPAsweepchk, `$C5E` SPAburst, `$CC2` SPAHold2, `$1154` SPAhook2, `$CF4` SPAflail, `$DD8` / `$D26` SPAfallback / SPAfallfwd, `$11E6` SPAstumble, `$136A` SPAflip, `$1AF4` SPAinjury1, and the 94-only `SPA_xxxx` falls. holdcheck calls penalty `$24` after SPAHold2 and `$1E` after SPAhook2. The IDA comments ("PenHooking?", "PenHolding") name those the other way round; the comment gives both.
   - Outside addresses: 17 stubs read from the retail operands; all 8 address locals assemble at their own address. Every outside name matches its owning segment, and hockey94_02's `checkcoll = $138AC` matches, so nothing is added to the full build to-do. 37 EA `cmp` opcodes patched. Matched on the first verify; all 16 matched segments still match.
+- `hockey94_04` matched: 2970 bytes, `$01454A-$0150E3`. `src/hockey94_04_stub.asm` is `org $1454A`, includes `macros\genesis.mac`, the three stubinc files and `hockey94_04.asm`. Run `npm.cmd run seg:hockey94_04`. A match must report 2970 bytes at `0x01454a-0x0150e3`.
+  - Range: listing lines 49543-50531, `checkfight` through `checkpuckcoll`, as 93 hockey93_04. `puckstick` is `$150E4`: the retail `bsr.w puckstick` at `$14EC8` points there, and the bytes are `tst.w $34(a2)`.
+  - 94 differences from 93: `checkfight` is an `rts` and 93 SetInst is gone. `.goal` (93 Goal) first handles the penalty shot / shootout end, ChooseSong replaces the 93 home goal song, ScoreSum holds 60 entries (93 30), and there are new goal stats ($342, $356, $35A, $35E, $362). `setass` also clears the one-timer bit and calls sub_FEFF0. `checkpuckcoll` lets only the shooter and the goalie touch the puck in a penalty shot, and takes the goalie reach from the `.cbg` / `.cbgsq` tables.
+  - Names: IDA names, plus `GetPeriodTimeRemaining` (IDA `sub_14A94`, 93 name). `checkwallcoll2`, `wallcollb2` and `setass` keep the IDA names (93 checkwallcoll, wallcollb, Goal .setass). IDA `_sfx` sits before `checkpuckcoll` and is entered from it, so it cannot stay a local. It is the global `checkpuckcoll_sfx`: a global `sfx` would clash with the middle94_1 routine. Calls to penalty94_1 use its name `PenGoalStuff` (IDA `sub_1284A`).
+  - No IDA gaps. RAM names for absolute operands: `#SortCords`, `#AwShots`, `#HmShots`, `#(HmShots-M68K_RAM)`.
+  - Outside addresses: 22 stubs read from the retail operands; all 45 address locals assemble at their own address. Every outside name matches its owning segment. hockey94_03 `checkfight` / `checkwallcoll2` and logic94_4 `checkpuckcoll` match. 29 EA `cmp` opcodes patched. Matched on the first verify; all 17 matched segments still match.
+  - Full build to-do, new from this segment (not fixed here): penalty94_1 `sub_14A94` (= GetPeriodTimeRemaining), in its stub and in `penalty94_1.asm`.
