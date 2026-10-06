@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`attract94`. Not matched. 94 only: `EASportsScreen` `$17A18` (listing line 54528), `LoadDefMenuOptions` `$17C72` (line 54836) and `HiScoreScreen` `$FED70` (line 974979), from the `jsr (x).l` operands in `Begin`. The three are not next to each other, so confirm one contiguous range from `EASportsScreen` before writing instructions. The ROM after hockey94_01 (`$7E36`, IDA `sub_7E36` = 93 menu93 `InitMenuState`) has no row in the ROM map yet.
+`hockey94_02`. Not matched. Start label `ReplayMode` is not in the listing. 93 hockey93_02 is ReplayMode, getpzjoy, ..., updatereplay, updateplayers, updateanim, freezewindow, checkwindow. In 94 `getpzjoy` is `$A41E`, `updatereplay` listing line 35236 (`$A8CA`), `updateplayers` `$A9D6`, `freezewindow` `$AFB6`, `checkwindow` `$AFCA` (from the hockey94_01 stub). Confirm the start (the routine before `getpzjoy`) and the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -64,7 +64,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | frames94 | matched | SPAList | 7062 bytes, `$005B1C-$0076B1`. SPAlist, 66 SPA tables |
 | ram94 | skipped | | equates only, no ROM bytes: no byte verify is possible. Skipped by the user; the queue goes past it |
 | hockey94_01 | matched | VBjsr | 1924 bytes, `$0076B2-$007E35`. VBjsr, Begin ... Pausemode, SetupPauseScreen, seta2 |
-| attract94 | not matched | EASportsScreen | 94 only |
+| attract94 | matched | EASportsScreen | 602 bytes, `$017A18-$017C71`. EASportsScreen ... sub_17BE4, VBlank_SetOptions. HiScoreScreen is not here |
 | hockey94_02 | not matched | ReplayMode | before doinput, if present |
 | logic94_1 | not matched | doinput | line 35886, before loc_B470 |
 | logic94_2 | not matched | assbench | |
@@ -121,3 +121,9 @@ The first row that is not matched is the current segment. Ranges are provisional
   - The inline string after `jsr (printz2).l` in `SetupPauseScreen` (`$7DFA`) is `String $FF,3,$FD,0,$FC,0` (retail bytes); IDA shows it as `ori.b #3,a0`.
   - Outside addresses: 63 stubs, each read from the retail operand (`jsr` / `jmp (x).l`, `movea.l #x`, or `bsr.w` / `Bcc.w` displacement); the stub comment gives the instruction address. Each symbol had one address at every use.
   - `cmp.b #$E0,d3` and `cmp.w #imm,d0` (3) are EA `cmp`: 4 opcodes patched. `fixopcodes.js` got the 93 byte rules `0C01`-`0C06` (`B23C`-`BC3C`), takes the binary org from the first listing line that emits bytes (optional third argument), and patches each address once. Before, it used ROM addresses as file offsets, so no patch landed on a segment above org 0 (verify 1 failed on the 4 `cmp` opcodes). main94, teamdata94 and frames94 still match.
+- `attract94` matched: 602 bytes, `$017A18-$017C71`. `src/attract94_stub.asm` is `org $17A18`, includes `macros\genesis.mac`, the three stubinc files and `attract94.asm`. Run `npm.cmd run seg:attract94`. A match must report 602 bytes at `0x017a18-0x017c71`.
+  - Range: listing lines 54528-54846. 94 put the EA screen code just before the 93 hockey93_08 vblank handler `VBlank_SetOptions` (IDA `loc_17C42`, `$17C42-$17C71`), so the handler ends this segment. The next byte `$17C72` is `LoadDefMenuOptions`, which is 93 `DefaultMenus` (same `st demoflag` and option copy; 9 words in 94, 7 in 93), followed by `sub_17CA0` = 93 `NewPO`, `MakeTree`, `FigureJoy`: the hockey94_09 row (`DefaultMenus`) starts at `$17C72`, not in attract94.
+  - `HiScoreScreen` is at `$FED70` (listing line 974979), in the 94 code near the end of the ROM, not next to this code. It is not in this segment and has no row yet.
+  - Routines: `EASportsScreen`, `sub_17AC8`, `sub_17AF4`, `sub_17B78` (IDA). `$17B98-$17C41` is IDA `dc.b`; it is code with no xref, written as instructions from the listing bytes: `sub_17B98`, `sub_17BBA`, `sub_17BCA`, `sub_17BE4` (IDA-style names). The bytes before `$17A18` (`sub_179D2`, a 94 scroll routine) are not 93 code.
+  - IDA hid instructions in printz strings: `EASportsScreen` is `String $FE,0,0,0` then `movea.l #unk_B425A,a2` (IDA `ori.b` x3); `sub_17AF4` has `String $BF,7,1,0` and `String $BF,$16,1,0`; `sub_17BCA` has `String $BF,2,$A,0`.
+  - Outside addresses: 19 stubs read from the retail operands. `printz` is `$11B92`. `rtss2` is the `rts` at `$15464` (also the target of the undecoded `bne.w`). `sub_17E42` and `unk_B425A` have no IDA label. `#$30E` in `sub_17BE4` is TeamList. No `cmp #imm,Dn`: 0 opcodes patched.
