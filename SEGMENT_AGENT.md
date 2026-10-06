@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`ram94`. Not matched. Equates only, no ROM bytes (`src/ram94.asm`, included after `TeamData94.Asm` in `src/hockey94.asm`). The next ROM byte after frames94 is `VBjsr` `$76B2` (listing line 29709), the start of hockey94_01.
+`attract94`. Not matched. 94 only: `EASportsScreen` `$17A18` (listing line 54528), `LoadDefMenuOptions` `$17C72` (line 54836) and `HiScoreScreen` `$FED70` (line 974979), from the `jsr (x).l` operands in `Begin`. The three are not next to each other, so confirm one contiguous range from `EASportsScreen` before writing instructions. The ROM after hockey94_01 (`$7E36`, IDA `sub_7E36` = 93 menu93 `InitMenuState`) has no row in the ROM map yet.
 
 ## Sources
 
@@ -62,8 +62,8 @@ The first row that is not matched is the current segment. Ranges are provisional
 | main94 | matched | org 0 | 778 bytes, `$000000-$000309`. vectors, header, Start, SegaInit |
 | teamdata94 | matched | after main94 | 22546 bytes, `$00030A-$005B1B`. TeamList, 28 team blocks, playoffseats, Credits |
 | frames94 | matched | SPAList | 7062 bytes, `$005B1C-$0076B1`. SPAlist, 66 SPA tables |
-| ram94 | not matched | | equates only, no ROM bytes |
-| hockey94_01 | not matched | VBjsr | line 29709, next loc_76E8 |
+| ram94 | skipped | | equates only, no ROM bytes: no byte verify is possible. Skipped by the user; the queue goes past it |
+| hockey94_01 | matched | VBjsr | 1924 bytes, `$0076B2-$007E35`. VBjsr, Begin ... Pausemode, SetupPauseScreen, seta2 |
 | attract94 | not matched | EASportsScreen | 94 only |
 | hockey94_02 | not matched | ReplayMode | before doinput, if present |
 | logic94_1 | not matched | doinput | line 35886, before loc_B470 |
@@ -113,3 +113,11 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Order: 93 `gready` ... `pump` (0-37), then `wallright` ... `flip` (38-50), then 14 tables new in 94 (51-64, named `SPA_<offset>`, e.g. `SPA_145C`; no 93 table to name them from), then `injury1` (65). The 9 93 fight tables (`fight` ... `finjury`) are not in 94.
   - SPF bases: 93 names, 94 values. Same as 93 through `SPFgready` (539); `SPFSiren` and up are 93 + 8 (`SPFbglass` 653), because 94 `gready` has 3 frames per direction (93: 2). Found by comparing every 93 table frame by frame (evaluated from `frames93.asm`): each SPF group has one shift. Frames 658-837 are new in 94 and are written as numbers.
   - Other changes from 93: `Hold2` and `flail` end with time -40 (93: -30). No `cmp` / `exg`: 0 opcodes patched. `src/hockey94.asm` still has no frames94 include; it was not edited.
+- `ram94` skipped: `src/ram94.asm` has no active lines (all commented out) and no ROM bytes, so a segment verify cannot report a non-zero MATCH. The user chose to skip it. Stubs keep using `src/stubinc`.
+- `hockey94_01` matched: 1924 bytes, `$0076B2-$007E35`. `src/hockey94_01_stub.asm` is `org $76B2`, includes `macros\genesis.mac`, the three stubinc files and `hockey94_01.asm`. Run `npm.cmd run seg:hockey94_01`. A match must report 1924 bytes at `0x0076b2-0x007e35`.
+  - Range: listing lines 29709-30309. Same split as 93 hockey93_01: `VBjsr` through `seta2`. The next byte, `$7E36`, is IDA `sub_7E36` = 93 menu93 `InitMenuState`.
+  - Names: 93 names where 93 has the routine, IDA name in an `;IDA:` comment: `ClearShotData` (`sub_77E4`), `GetPeriodTime` (`ClockLength`), `periodicevents` (`periodiceevents`), `CheckInjury` (`loc_79EA`), `UpdateLineChange` (`loc_79F8`), `CheckPeriodEnd` (`sub_7A34`), `clockcont_0` (`loc_7B5C`, also entered from puckfaceoff+B2), `HandleJoy1` (`loc_7CB0`), `SetupPauseScreen` (`sub_7DCE`), `seta2` (`sub_7E0E`). 94 only, named from behaviour: `startpause3` (`loc_7CDC`) and `startpause4` (`loc_7CEA`), the 4 way play pads (doinput+A4 / +A8 jump to them). IDA `start` in updatecrowdf is the local `.dec`: a global `start` is the same symbol as main94 `Start`.
+  - 94 differences from 93: `Begin` saves the VDP PAL bit and calls `EASportsScreen`, `InitSaveRAM`, `HiScoreScreen`, `LoadDefMenuOptions`; `StartGame` has the pad 1 `$E0` check inline (93 `ChkShortPeriods`); `demoread` and `startpause` handle pads 3 and 4; `Pausemode` has a third item list (`unk_19664`). IDA calls VDP status bit 0 "DMA busy"; it is `PAL_MODE`.
+  - The inline string after `jsr (printz2).l` in `SetupPauseScreen` (`$7DFA`) is `String $FF,3,$FD,0,$FC,0` (retail bytes); IDA shows it as `ori.b #3,a0`.
+  - Outside addresses: 63 stubs, each read from the retail operand (`jsr` / `jmp (x).l`, `movea.l #x`, or `bsr.w` / `Bcc.w` displacement); the stub comment gives the instruction address. Each symbol had one address at every use.
+  - `cmp.b #$E0,d3` and `cmp.w #imm,d0` (3) are EA `cmp`: 4 opcodes patched. `fixopcodes.js` got the 93 byte rules `0C01`-`0C06` (`B23C`-`BC3C`), takes the binary org from the first listing line that emits bytes (optional third argument), and patches each address once. Before, it used ROM addresses as file offsets, so no patch landed on a segment above org 0 (verify 1 failed on the 4 `cmp` opcodes). main94, teamdata94 and frames94 still match.

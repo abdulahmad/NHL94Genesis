@@ -4,6 +4,12 @@ const path = require('path');
 // Define the opcode replacement table
 const opcodeReplacements = [
     { instruction: 'cmp', existingOpcode: '0C00', newOpcode: 'B03C' },
+    { instruction: 'cmp', existingOpcode: '0C01', newOpcode: 'B23C' },
+    { instruction: 'cmp', existingOpcode: '0C02', newOpcode: 'B43C' },
+    { instruction: 'cmp', existingOpcode: '0C03', newOpcode: 'B63C' },
+    { instruction: 'cmp', existingOpcode: '0C04', newOpcode: 'B83C' },
+    { instruction: 'cmp', existingOpcode: '0C05', newOpcode: 'BA3C' },
+    { instruction: 'cmp', existingOpcode: '0C06', newOpcode: 'BC3C' },
     { instruction: 'cmp.w', existingOpcode: '0C40', newOpcode: 'B07C' },
     { instruction: 'cmpi.w', existingOpcode: '0C40', newOpcode: 'B07C' },
     { instruction: 'cmp', existingOpcode: '0C40', newOpcode: 'B07C' },
@@ -59,6 +65,8 @@ async function parseListingFile(lines, opcodeReplacements) {
 
                 // Check if the opcode matches and operand condition (if any) is satisfied
                 if (opcode === existingOpcode.toUpperCase()) {
+                    // 'cmp' and 'cmp.w' rules both match a cmp.w line; patch each address once
+                    if (matches.some((m) => m.offset === offset)) continue;
                     if (!operandCondition || operandCondition(operands)) {
                         matches.push({ offset, newOpcode });
                         console.log(
@@ -76,14 +84,24 @@ async function parseListingFile(lines, opcodeReplacements) {
     return matches;
 }
 
-// Function to modify the binary file
-async function modifyBinaryFile(binFilePath, matches) {
+// org of the binary: the address of the first listing line that emits bytes (0 for the full ROM, the stub org for a segment)
+function listingOrg(lines) {
+    for (const line of lines) {
+        const m = line.match(/^([0-9A-Fa-f]{8}) ([0-9A-Fa-f]{2,4})(?:\s|$)/);
+        if (m) return parseInt(m[1], 16);
+    }
+    return 0;
+}
+
+// Function to modify the binary file. Listing offsets are ROM addresses; org is the address of the first byte of the binary
+async function modifyBinaryFile(binFilePath, matches, org) {
     const binaryData = await fs.readFile(binFilePath);
     const buffer = Buffer.from(binaryData);
 
-    for (const { offset, newOpcode } of matches) {
-        if (offset + 2 > buffer.length) {
-            console.warn(`Warning: Offset 0x${offset.toString(16).padStart(8, '0').toUpperCase()} is beyond binary file length. Skipping.`);
+    for (const { offset: address, newOpcode } of matches) {
+        const offset = address - org;
+        if (offset < 0 || offset + 2 > buffer.length) {
+            console.warn(`Warning: Address 0x${address.toString(16).padStart(8, '0').toUpperCase()} is outside the binary (org 0x${org.toString(16).toUpperCase()}). Skipping.`);
             continue;
         }
         const currentOpcode = buffer.readUInt16BE(offset);
@@ -95,11 +113,11 @@ async function modifyBinaryFile(binFilePath, matches) {
             const newOpcodeValue = parseInt(newOpcode, 16);
             buffer.writeUInt16BE(newOpcodeValue, offset);
             console.log(
-                `Modified opcode at offset 0x${offset.toString(16).padStart(8, '0').toUpperCase()} from ${currentOpcode.toString(16).padStart(4, '0').toUpperCase()} to ${newOpcode.toUpperCase()}`
+                `Modified opcode at 0x${address.toString(16).padStart(8, '0').toUpperCase()} from ${currentOpcode.toString(16).padStart(4, '0').toUpperCase()} to ${newOpcode.toUpperCase()}`
             );
         } else {
             console.warn(
-                `Warning: Opcode at offset 0x${offset.toString(16).padStart(8, '0').toUpperCase()} is 0x${currentOpcode.toString(16).padStart(4, '0').toUpperCase()}, expected 0x${expectedOpcode.toString(16).padStart(4, '0').toUpperCase()}. Skipping.`
+                `Warning: Opcode at 0x${address.toString(16).padStart(8, '0').toUpperCase()} is 0x${currentOpcode.toString(16).padStart(4, '0').toUpperCase()}, expected 0x${expectedOpcode.toString(16).padStart(4, '0').toUpperCase()}. Skipping.`
             );
         }
     }
@@ -112,15 +130,21 @@ async function modifyBinaryFile(binFilePath, matches) {
 // Main function
 async function main() {
     try {
-        const [lstFilePath, binFilePath] = process.argv.slice(2);
+        const [lstFilePath, binFilePath, orgArg] = process.argv.slice(2);
 
         if (!lstFilePath || !binFilePath) {
-            console.error('Usage: node script.js <listing.lst> <binary.bin>');
+            console.error('Usage: node fixopcodes.js <listing.lst> <binary.bin> [org]');
             process.exit(1);
         }
 
         const data = await fs.readFile(lstFilePath, 'utf8');
         const lines = data.split('\n');
+        const org = orgArg === undefined ? listingOrg(lines) : Number(orgArg);
+        if (!Number.isInteger(org) || org < 0) {
+            console.error('org must be a hex or decimal address, for example 0x76B2');
+            process.exit(1);
+        }
+        console.log(`Binary org: 0x${org.toString(16).toUpperCase()}`);
 
         console.log(`Parsing listing file: ${lstFilePath} with ${lines.length} lines`);
         const matches = await parseListingFile(lines, opcodeReplacements);
@@ -132,7 +156,7 @@ async function main() {
         }
 
         console.log(`Modifying binary file: ${binFilePath}`);
-        await modifyBinaryFile(binFilePath, matches);
+        await modifyBinaryFile(binFilePath, matches, org);
         console.log(`Modified ${matches.length} instructions`);
     } catch (error) {
         console.error('Script failed:', error.message);
