@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`sram94`. Not matched. It starts at `InitSaveRAM` `$1A050` (listing line 61322; retail `23FC 0001 A148 FFFF B03A` = `move.l #VBcount,(vbint).l`), the byte after hockey94_11, and runs to `AllSndOff` (listing line 61529, the sound94 row). 93 sram93 is the serial backup RAM driver (BackupRAM_Read, BitsToPW, BackupRAM_Load, ClearRAMBuffer, BackupRAM_DetectDevice); 94 InitSaveRAM sets a0 = `$200000` (IDA: the SRAM address) and checks for Start+A+C / Start+B+C held. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`sound94`. Not matched. It starts at `AllSndOff` `$1A264` (listing line 61529; IDA name, 93 p_turnoff; retail `48E7 FFE0` = `movem.l d0-d7/a0-a2,-(sp)`), the byte after sram94. 93 sound93 is the 68k side of the sound driver (p_turnoff ... ClearAllTrackAndSFXSlots), then the Z80 program and the PCM / music data as incbins of files extracted from the ROM (`Extracted/Sound`, made by the extract script; `Extracted/` is in .gitignore). Find the 94 driver's end and the extent of the Z80 / sound data, and check what `extractAssets94.js` extracts, before writing instructions.
 
 ## Sources
 
@@ -88,7 +88,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | hockey94_09 | matched | DefaultMenus | 1806 bytes, `$017C72-$01837F`. LoadDefMenuOptions ... ReadTeamStats |
 | hockey94_10 | matched | ResolveGames | 2428 bytes, `$018380-$018CFB`. ResolveGames ... crash |
 | hockey94_11 | matched | cd0 | 4948 bytes, `$018CFC-$01A04F`. cd0 ... ExitAttribText (data) |
-| sram94 | not matched | InitSaveRAM | |
+| sram94 | matched | InitSaveRAM | 532 bytes, `$01A050-$01A263`. InitSaveRAM ... ReadSRAM |
 | sound94 | not matched | AllSndOff | 68k driver, then incbin |
 | graphics94 | not matched | | incbin from extractAssets94.js |
 | checksum94 | not matched | ValidationRoutine | existing draft |
@@ -259,3 +259,7 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Code addresses: asstab is written with the logic94 / hockey94_05 labels (IDA `assben` / `assfaceoffpl` are logic94_2's `asseben` / `assfaceoffp1`). The menu handlers in matched segments are `rtss2`, `ReplayMode` and `InitTeamSructure+$10` (93 form); the others are in the stats code (`$80D4-$9DE6`, no ROM map row) or the 94 high ROM, have no IDA label, and are IDA-style `sub_xxxx` with the 93 name in the comment.
   - Stub: mkstub does not read `dc.l` operands, so all 56 outside addresses are fixed values taken from the retail longs (InitTeamSructure is hockey94_06's `$171BE`). No address locals. 0 EA `cmp` opcodes. Matched on the first verify; all 26 matched segments still match.
   - Full build to-do, new from this segment (not fixed here): hockey94_01 `unk_19700` (= PauseText) and `unk_1988C` (= PauseText2); hockey94_06 `unk_1928E` (= PlayoffTreeSetup); middle94_2 `unk_1916A` (= bfasciicon); penalty94_2 `unk_191E4` (= PerLabels), `unk_19A84` (= StartGameText), `unk_19B38` (= StartGameTextPO), `unk_19C04` (= IntermissionText), `unk_19D60` (= ExitGameText), `unk_19E74` (= ExitGameTextPO). Each is an equate by address in its stub, and is also written in the segment file.
+- `sram94` matched: 532 bytes, `$01A050-$01A263`. `src/sram94_stub.asm` is `org $1A050`, includes `macros\genesis.mac`, the three stubinc files and `sram94.asm`. Run `npm.cmd run seg:sram94`. A match must report 532 bytes at `0x01a050-0x01a263`.
+  - Range: listing lines 61322-61528, `InitSaveRAM` through `ReadSRAM`. It starts at the byte after hockey94_11 and ends before `AllSndOff` (`$1A264`, sound94). 94 only: 93 sram93 drives a serial EEPROM; 94 has $2000 bytes of battery save RAM on the odd bytes at `$200000`, copied to M68K_RAM at power on and checked with a sum / complement checksum in bytes `$1FFE-$1FFF`. InitSaveRAM also has two power-on save RAM tests (Start+A+C, Start+B+C).
+  - Names: IDA names (`InitSaveRAM`, `VBcount`, `ValidateSRAM`, `ClearSRAM`, `WriteSRAM`, `MakeSRAMChecksum`, `ReadSRAM`, `sub_1A140`); locals are the IDA local names or addresses. No IDA gaps. RAM names: `#M68K_RAM`, `#byte_FF1FFE`; the SRAM base `$200000` stays a number.
+  - Outside addresses: 2 stubs (`ReadJoy1`, middle94_1; `vcountwait`, the unmatched `$80BA`); all 9 address locals assemble at their own address. No other stub names an address in this range differently. 3 EA `cmp` opcodes patched (`cmp.b` x2, `cmp.l`). Matched on the first verify, with the comments in; all 27 matched segments still match.

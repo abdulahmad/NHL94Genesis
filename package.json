@@ -8,8 +8,8 @@
     "fixopcodes": "node fixopcodes.js \"output\\nhl94 .lst\" output\\nhl94.bin",
     "build:retail": "set rev=0&& set checksum=1&& npm run asm && npm run fixopcodes",
     "sync": "node sync.js",
-    "build:seg": "buildseg.bat hockey94_11",
-    "verify:seg": "node verifySegment.js hockey94_11 0x18CFC lst/nhl94.bin",
+    "build:seg": "buildseg.bat sram94",
+    "verify:seg": "node verifySegment.js sram94 0x1A050 lst/nhl94.bin",
     "seg:main94": "buildseg.bat main94 && node fixopcodes.js \"output\\main94 .lst\" output\\main94.bin && node verifySegment.js main94 0x0 lst/nhl94.bin",
     "seg:teamdata94": "buildseg.bat teamdata94 && node fixopcodes.js \"output\\teamdata94 .lst\" output\\teamdata94.bin && node verifySegment.js teamdata94 0x30A lst/nhl94.bin",
     "seg:frames94": "buildseg.bat frames94 && node fixopcodes.js \"output\\frames94 .lst\" output\\frames94.bin && node verifySegment.js frames94 0x5B1C lst/nhl94.bin",
@@ -35,7 +35,8 @@
     "seg:hockey94_08": "buildseg.bat hockey94_08 && node fixopcodes.js \"output\\hockey94_08 .lst\" output\\hockey94_08.bin && node verifySegment.js hockey94_08 0xF739E lst/nhl94.bin",
     "seg:hockey94_09": "buildseg.bat hockey94_09 && node fixopcodes.js \"output\\hockey94_09 .lst\" output\\hockey94_09.bin && node verifySegment.js hockey94_09 0x17C72 lst/nhl94.bin",
     "seg:hockey94_10": "buildseg.bat hockey94_10 && node fixopcodes.js \"output\\hockey94_10 .lst\" output\\hockey94_10.bin && node verifySegment.js hockey94_10 0x18380 lst/nhl94.bin",
-    "seg:hockey94_11": "buildseg.bat hockey94_11 && node fixopcodes.js \"output\\hockey94_11 .lst\" output\\hockey94_11.bin && node verifySegment.js hockey94_11 0x18CFC lst/nhl94.bin"
+    "seg:hockey94_11": "buildseg.bat hockey94_11 && node fixopcodes.js \"output\\hockey94_11 .lst\" output\\hockey94_11.bin && node verifySegment.js hockey94_11 0x18CFC lst/nhl94.bin",
+    "seg:sram94": "buildseg.bat sram94 && node fixopcodes.js \"output\\sram94 .lst\" output\\sram94.bin && node verifySegment.js sram94 0x1A050 lst/nhl94.bin"
   },
   "devDependencies": {
     "crc-32": "^1.2.2"
