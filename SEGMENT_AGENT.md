@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-`video94_1`. Not matched. Starts at the vblank handler `$15D9A` (listing line 51766). IDA has no `VBlank` label: it is `loc_15D9A`, stored as vbint by setupice+194; `loc_15E4C` is 93 vb2 and `IRQ7` (`$15E6C`) follows it. This is the byte after hockey94_05. 93 video93_1 starts at VBlank too (VBlank, vb2, IRQ7, DumpSprites ... setvideo); video94_2 (`showclock`) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
+`video94_2`. Not matched. Starts at `showclock` `$162FE` (listing line 52289; hockey94_01 `jsr (x).l` operand), the byte after video94_1. 93 video93_2 starts at showclock too (showclock, checksso, setsortcords, setffo, uppads, addframe, addframe2, find3d, updatesound, KillCrowd); hockey94_06 (`setupice`, listing line 53024) is the next row. Confirm the end against `lst/nhl94.bin` before writing instructions.
 
 ## Sources
 
@@ -78,7 +78,7 @@ The first row that is not matched is the current segment. Ranges are provisional
 | hockey94_03 | matched | checkcoll | 3230 bytes, `$0138AC-$014549`. checkcoll ... setInjuryType |
 | hockey94_04 | matched | checkfight | 2970 bytes, `$01454A-$0150E3`. checkfight ... checkpuckcoll |
 | hockey94_05 | matched | puckstick | 3254 bytes, `$0150E4-$015D99`. puckstick ... checkattriblimits |
-| video94_1 | not matched | VBlank | |
+| video94_1 | matched | VBlank | 1380 bytes, `$015D9A-$0162FD`. VBlank ... showcrowd |
 | video94_2 | not matched | showclock | |
 | hockey94_06 | not matched | setupice | line 53024 |
 | hockey94_07 | not matched | ScoutingReport | 94 screens |
@@ -204,3 +204,10 @@ The first row that is not matched is the current segment. Ranges are provisional
   - Names: IDA names. IDA `_glue` (a puckstick local that puckgoalie also branches to) is the 93 global `puckglue`. IDA `ClockLength` is hockey94_01's `GetPeriodTime`. IDA labels that would split a routine are locals: `.CheckStkForContactWithSkater` and `.PlayerPassOrLoosePuckStkLoad` in puckstick, `.AwayTeam` in setplayer. `.setd0player` stays local (93 setd0player is a global; in 94 only puckglue reaches it). 93 TryAddPlayerToList / ClampNibble are the IDA `findAvailablePlayer` / `checkattriblimits` (94 clamps to `$1E`); `sub_1592C` (penalty shot set up) is 94 only.
   - `jsr ClockLength` is `jsr (GetPeriodTime).w` (`4EB8 784E`), written with the size. The stub has the value `$784E` (from the hockey94_01 listing), because a `(x).w` operand cannot take the mkstub placeholder. `jmp setc1player` / `setc2player` are `4EF9` (the targets are above `$7FFF`). No IDA gaps; `#SortCords` and `#(HmShots-M68K_RAM)` for the absolute operands.
   - Outside addresses: 23 stubs read from the retail operands; all 27 address locals assemble at their own address. Every outside name matches its owning segment. All other stubs' names for this range match (`rtss2` in 11 stubs, `SetPersonel`, `Setplass`, `setplayer`, `ResetBench`, `forcepldata`, `makepde` / `getpde` / `setpde`, `puckstick` / `puckbody` / `puckgoalie`, `sub_1592C`), so nothing is added to the full build to-do. 12 EA `cmp` opcodes patched. Matched on the first verify; all 18 matched segments still match.
+- `video94_1` matched: 1380 bytes, `$015D9A-$0162FD`. `src/video94_1_stub.asm` is `org $15D9A`, includes `macros\genesis.mac`, the three stubinc files and `video94_1.asm`. Run `npm.cmd run seg:video94_1`. A match must report 1380 bytes at `0x015d9a-0x0162fd`.
+  - Range: listing lines 51765-52286, the vblank handler through showcrowd, as 93 video93_1. `showclock` (`$162FE`) is next.
+  - Names: 93 names for the IDA auto names: `VBlank` (`loc_15D9A`; IDA has no label), `vb2` (`loc_15E4C`), `DumpSprites` (`sub_15E6E`), `DumpSprites2` (`sub_15E72`), `SetScroll2` (`sub_15EA4`). Kept IDA names: `IRQ7`, `DoDMAlist` (93 DoDMAList, the same symbol case-insensitively), `setvideo`, `updatescroll` (92 name; 93 show_rink), `showref`, `checkfo` (93 checkfo + checkfo2; 94 has no checkfo2 label), `showzam`, `SetSframe`, `showcrowd`. The routines 93 writes as locals are locals: showzam `.ftab` (`unk_1615E`, written as `dc.w`), showcrowd `.pb` (`sub_16226`) and `.sc` (`sub_16246`); `locret_162FC` (showcrowd branches to it) is then the local `.162FC`.
+  - 94 differences from 93: VBlank keeps the clock running after the whistle when word_FFC2FA bit 2 is set, and runs the penalty shot / shootout clock (word_FFD454 / word_FFD456) when bit 1 is set. setvideo adds sub_FD78A and Crowd_Noise. updatescroll takes RevRinkTilelist in a reverse angle replay, and showcrowd draws no crowd then.
+  - No IDA gaps. `moveq #$FFFFFFC0` is written `moveq #-$40` (93 form). RAM names for absolute operands: `#DMAList`, `#Satt`, `#(Satt-M68K_RAM)`. IDA `Crowd_Noise?` is `Crowd_Noise`. ZamFrameList is `$A8922`, so penalty94_2's `unk_A892A` is ZamFrameList+8 (93 ZamSprites+8).
+  - Outside addresses: 17 stubs read from the retail operands; all 30 address locals assemble at their own address. Every outside name matches its owning segment. 6 EA `cmp` opcodes patched. Matched on the first verify; all 19 matched segments still match.
+  - Full build to-do, new from this segment (not fixed here): attract94 `loc_15E4C` (= vb2) and `sub_15E72` (= DumpSprites2), middle94_1 `loc_15E4C`. Each is an equate by address in its stub, and they are also written in `attract94.asm` / `middle94_1.asm`.
