@@ -107,10 +107,10 @@ assnearest
 	btst	#1,$64(a3)	;check if breakaway
 	beq.w	.nobreak	;jump if not
 	movem.l	a2,-(sp)	;push a2 to stack
-	movea.l	#$FFFFC6CE,a2	;put Home Team Struct into a2
+	movea.l	#HmShots,a2	;put Home Team Struct into a2
 	btst	#6,$62(a3)	;pfteam - check home or away
 	beq.w	.addcrowd	;jump if home
-	movea.l	#$FFFFCA32,a2	;put Away Team Struct into a2
+	movea.l	#AwShots,a2	;put Away Team Struct into a2
 .addcrowd
 	addq.w	#1,$358(a2)	;add to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to excite level
@@ -515,10 +515,10 @@ puckshootout
 .startattempt	;IDA: loc_ECEC
 	jsr	(StartShootoutPath).l
 	move.l	a2,-(sp)
-	movea.l	#$FFFFC6CE,a2
+	movea.l	#HmShots,a2
 	tst.w	(BA_Team).w
 	beq.w	.countattempt
-	movea.l	#$FFFFCA32,a2
+	movea.l	#AwShots,a2
 .countattempt	;IDA: loc_ED08
 	addq.w	#1,$360(a2)
 	movea.l	(sp)+,a2
@@ -574,7 +574,7 @@ puckshootout
 .checkgoalie	;IDA: loc_EDE0
 	movem.w	d1-d2,-(sp)
 	move.w	(BA_Goalie_SCnum).w,d0
-	movea.l	#$FFFFB04A,a2
+	movea.l	#SortCords,a2
 	asl.w	#7,d0
 	adda.w	d0,a2
 	tst.w	$34(a2)
@@ -596,7 +596,7 @@ puckshootout
 	bne.w	.checkcandidate
 	move.w	#$B,d0
 .checkcandidate	;IDA: loc_EE2A
-	movea.l	#$FFFFB04A,a2
+	movea.l	#SortCords,a2
 	move.w	d0,d1
 	asl.w	#7,d1
 	adda.w	d1,a2
@@ -612,10 +612,10 @@ puckshootout
 	bra.w	assreplace
 SelectPenaltyShotSkater	;IDA: sub_EE58
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$FFFFC6CE,a0
+	movea.l	#HmShots,a0
 	tst.w	(BA_Team).w
 	beq.w	.hometeam
-	movea.l	#$FFFFCA32,a0
+	movea.l	#AwShots,a0
 .hometeam	;IDA: loc_EE70
 	move.w	#0,d1
 	move.w	#$FFFF,d6
@@ -699,7 +699,7 @@ SelectPenaltyShotSkater	;IDA: sub_EE58
 .loadskater	;IDA: loc_EF6A
 	move.w	(BA_Sktr_SCnum).w,d0
 	asl.w	#7,d0
-	movea.l	#$FFFFB04A,a3
+	movea.l	#SortCords,a3
 	adda.w	d0,a3
 	move.w	(BA_Skater_Offset).w,d3
 	bra.w	.eligible
@@ -776,7 +776,7 @@ puckpenshot
 	bsr.w	SetupPenaltyShot
 	jsr	(resetplstuff).l
 	move.l	a3,-(sp)
-	movea.l	#$FFFFB5CA,a3	;away goalie SCstruct
+	movea.l	#SortCords+(11*SCstruct),a3	;away goalie SCstruct
 	move.w	#$B,d2	;11 = # of player SCstructs
 .playerloop	;IDA: loc_F0A8
 	cmp.w	(BA_Sktr_SCnum).w,d2
@@ -983,7 +983,7 @@ EndPenaltyShotPlay	;IDA: sub_F37C
 	bclr	#4,(BA_PS_flags).w
 	bclr	#6,(BA_PS_flags).w
 	movem.l	d0/a0,-(sp)
-	movea.l	#$FFFFB04A,a0
+	movea.l	#SortCords,a0
 	move.w	(BA_Sktr_SCnum).w,d0
 	asl.w	#7,d0
 	move.b	(savednewpnum).w,$61(a0,d0.w)
@@ -1604,7 +1604,7 @@ puckfaceoff2
 .time
 	move.w	d0,temp1(a3)	;time for puck drop
 	move.w	#$18,(palcount).w
-	movea.l	#$FFFFBDA8,a0	;#fofdata
+	movea.l	#fofdata2,a0
 	move.w	#1,(a0)
 	move.w	#$8000,2(a0)
 	move.w	#4,4(a0)

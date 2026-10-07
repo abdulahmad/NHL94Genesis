@@ -9,7 +9,7 @@
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 ;	Inline print strings after printz use the String macro (length word includes itself, odd data is padded).
-;	Replay frames are $62 bytes from $FFFF0000 (replaystart) to $FFFFAF54 (replayend); recbpr is the record
+;	Replay frames are $62 bytes from M68K_RAM (92 replaystart) to replayend ($FFFFAF54); recbpr is the record
 ;	pointer. SortCords objects are $80 bytes (SCstruct).
 
 ReplayMode	;no IDA label ($9FD0). Instant replay play-back control and display code. Called from the pause menu.
@@ -58,9 +58,9 @@ ReplayMode	;no IDA label ($9FD0). Instant replay play-back control and display c
 	jsr	(EraseReplayIcon).l
 .0	;IDA: loc_A084
 	movem.l	d0/a3,-(sp)
-	movea.l	#$FFFFB64A,a3
+	movea.l	#SortCords+(12*SCstruct),a3
 	move.w	#1,8(a3)
-	movea.l	#$FFFFB6CA,a3
+	movea.l	#SortCords+(13*SCstruct),a3
 	move.w	#1,8(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#1,d7
@@ -354,7 +354,7 @@ suba4	;IDA: sub_A4F6. a4 = current replay frame. Back up 1 frame and set video p
 	bne.w	.1
 	btst	#sfwrap,(sflags).w
 	beq.w	.end
-	movea.l	#$FFFFAF54,a4
+	movea.l	#replayend,a4
 .1	;IDA: loc_A510
 	suba.w	#$62,a4
 	cmpa.l	(recbpr).w,a4
@@ -391,7 +391,7 @@ adda4	;IDA: sub_A528. Step forward 1 frame (93 adda4). 94 first handles a revers
 	jsr	(vcountwait).l
 	dbf	d0,.loop2
 	movem.l	a0,-(sp)
-	movea.l	#$FFFFB64A,a0
+	movea.l	#SortCords+(12*SCstruct),a0
 	move.w	#1,8(a0)
 	adda.w	#$80,a0
 	move.w	#1,8(a0)
@@ -417,9 +417,9 @@ adda42	;IDA: loc_A5F4. adda4 without the sf2drec look-ahead: stop at the record 
 	cmpa.l	(recbpr).w,a4
 	beq.w	rtss8
 	bsr.w	RestoreReplayFrame
-adda43	;IDA: sub_A600. a4 += replay frame size ($62), wrapping from $FFFFAF54 (replayend) to $FFFF0000 (replaystart)
+adda43	;IDA: sub_A600. a4 += replay frame size ($62), wrapping from replayend to M68K_RAM (92 replaystart)
 	adda.w	#$62,a4
-	cmpa.l	#$FFFFAF54,a4
+	cmpa.l	#replayend,a4
 	bne.w	rtss8
 	movea.l	#M68K_RAM,a4
 	rts
@@ -659,7 +659,7 @@ updatereplay	;called every frame to save replay events, d7 = elapsed frames
 	bra.w	.rec
 .0	;IDA: loc_A8F6
 	addi.l	#$62,(recbpr).w
-	cmpi.l	#$FFFFAF54,(recbpr).w
+	cmpi.l	#replayend,(recbpr).w
 	bne.w	.rec
 	bset	#sfwrap,(sflags).w
 	move.l	#M68K_RAM,(recbpr).w
@@ -767,7 +767,7 @@ updateplayers	;this routine calls all collision/animation/assignment code for al
 	bclr	#1,(sflags6).w
 	move.w	(puckc).w,d0	;move puckc SCnum into d0
 	asl.w	#7,d0
-	movea.l	#$FFFFB04A,a3	;start of player SCstructs (SortCords)
+	movea.l	#SortCords,a3	;start of player SCstructs
 	adda.w	d0,a3	;add offset to a3
 	btst	#1,$64(a3)	;checks if there is a breakaway
 	beq.w	.scload	;branch if no breakaway

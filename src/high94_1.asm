@@ -508,27 +508,27 @@ Detect4WayPlay	;IDA: Unk_ControlsSetRelated. 94 only: detect the 4 way play adap
 	rts
 Read4WayPad1	;no IDA label (was sub_F6DC6) (IDA dc.b, no xref). 94 only, unused: read 4 way play pad 1 (ReadJoy1 with the pad word swapped in)
 	move.b	#0,(IO_CT2_DATA+1).l	;4 way play: select pad
-	move.w	($FFFFBEFE).w,($FFFFBEFA).w
+	move.w	(pad4waysave1).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
-	move.w	($FFFFBEFA).w,($FFFFBEFE).w
+	move.w	(pad4wayword).w,(pad4waysave1).w
 	rts
 Read4WayPad2	;no IDA label (was sub_F6DE2) (IDA dc.b, no xref). 94 only, unused: the same for pad 2
 	move.b	#$10,(IO_CT2_DATA+1).l	;4 way play: select pad
-	move.w	($FFFFBF00).w,($FFFFBEFA).w
+	move.w	(pad4waysave2).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
-	move.w	($FFFFBEFA).w,($FFFFBF00).w
+	move.w	(pad4wayword).w,(pad4waysave2).w
 	rts
 Read4WayPad3	;no IDA label (was sub_F6DFE) (IDA dc.b, no xref). 94 only, unused: the same for pad 3
 	move.b	#$20,(IO_CT2_DATA+1).l	;4 way play: select pad
-	move.w	($FFFFBF02).w,($FFFFBEFA).w
+	move.w	(pad4waysave3).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
-	move.w	($FFFFBEFA).w,($FFFFBF02).w
+	move.w	(pad4wayword).w,(pad4waysave3).w
 	rts
 Read4WayPad4	;no IDA label (was sub_F6E1A) (IDA dc.b, no xref). 94 only, unused: the same for pad 4
 	move.b	#$30,(IO_CT2_DATA+1).l	;4 way play: select pad
-	move.w	($FFFFBF04).w,($FFFFBEFA).w
+	move.w	(pad4waysave4).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
-	move.w	($FFFFBEFA).w,($FFFFBF04).w
+	move.w	(pad4wayword).w,(pad4waysave4).w
 	rts
 	rts	;IDA dc.b, no xref
 Set4WayPlayerStub	;IDA: nullsub_2. An empty Set4WayPlayer (just rts): forcepldata (hockey94_05) calls it with SCnum $F when a goalie is pulled
@@ -797,9 +797,9 @@ AttributeCalc	;IDA name (and comments). 94 only: attribute d3 of player a3 * 5 p
 	andi.w	#$FF,d3	;pass only lower byte
 	movem.l	(sp)+,d0-d2/a1
 	rts
-NextHomeHotPlayer	;IDA: sub_F7144. 94 only. d1 = the next home hot player (homehotidx index into the list at $FFBF5E), a1 = HmShots. Called from ScoutTextPlayer (hockey94_06, the MATCHUPS text)
+NextHomeHotPlayer	;IDA: sub_F7144. 94 only. d1 = the next home hot player (homehotidx index into the list at homehotplayer), a1 = HmShots. Called from ScoutTextPlayer (hockey94_06, the MATCHUPS text)
 	movem.l	d0/a0,-(sp)
-	movea.l	#$FFFFBF5E,a0
+	movea.l	#homehotplayer,a0
 	move.w	(homehotidx).w,d0
 	add.w	d0,d0
 	move.w	0(a0,d0.w),d1
@@ -810,9 +810,9 @@ NextHomeHotPlayer	;IDA: sub_F7144. 94 only. d1 = the next home hot player (homeh
 	movem.l	(sp)+,d0/a0
 	movea.l	#HmShots,a1
 	rts
-NextAwayHotPlayer	;IDA: sub_F7172. 94 only. The same for the away team ($FFBF5C, awayhotidx), a1 = AwShots. Called from ScoutTextPlayer
+NextAwayHotPlayer	;IDA: sub_F7172. 94 only. The same for the away team (awayhotplayer, awayhotidx), a1 = AwShots. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
-	movea.l	#$FFFFBF5C,a0
+	movea.l	#awayhotplayer,a0
 	move.w	(awayhotidx).w,d0
 	add.w	d0,d0
 	move.w	0(a0,d0.w),d1
@@ -830,25 +830,25 @@ BuildHotColdLists	;IDA: sub_F71A2. 94 only. Build the hot / cold player lists of
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#HmShots,a0
 	bsr.w	SortHotColdStarters
-	movea.l	#$FFFFBF5E,a0
+	movea.l	#homehotplayer,a0
 	bsr.w	CopyHottestPlayer
-	movea.l	#$FFFFBF62,a0
+	movea.l	#homecoldplayer,a0
 	bsr.w	CopyColdestPlayer
 	movea.l	#AwShots,a0
 	bsr.w	SortHotColdStarters
-	movea.l	#$FFFFBF5C,a0
+	movea.l	#awayhotplayer,a0
 	bsr.w	CopyHottestPlayer
-	movea.l	#$FFFFBF60,a0
+	movea.l	#awaycoldplayer,a0
 	bsr.w	CopyColdestPlayer
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6 starters of team a0 into $FFBF20 (byte pairs: player, sum), then sort them by sum
+SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6 starters of team a0 into TempBuffer (byte pairs: player, sum), then sort them by sum
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
 	adda.l	#$1A2,a2
 	movea.l	$1E(a0),a0
 	adda.w	6(a0),a0
-	movea.l	#$FFFFBF20,a1
+	movea.l	#TempBuffer,a1
 	move.w	#5,d0
 .player	;IDA: loc_F720E
 	move.b	(a0)+,d1
@@ -875,7 +875,7 @@ SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6
 	tst.b	(a1)+
 	dbf	d0,.player
 .sort	;IDA: loc_F7248
-	movea.l	#$FFFFBF20,a1
+	movea.l	#TempBuffer,a1
 	clr.w	d1
 	move.w	#4,d0
 .cmp	;IDA: loc_F7254
@@ -893,9 +893,9 @@ SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6
 	bne.s	.sort
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-NextHomeColdPlayer	;IDA: sub_F727C. 94 only. d1 = the next home cold player (homecoldidx, $FFBF62), a1 = HmShots. Called from ScoutTextPlayer
+NextHomeColdPlayer	;IDA: sub_F727C. 94 only. d1 = the next home cold player (homecoldidx, homecoldplayer), a1 = HmShots. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
-	movea.l	#$FFFFBF62,a0
+	movea.l	#homecoldplayer,a0
 	move.w	(homecoldidx).w,d0
 	add.w	d0,d0
 	move.w	0(a0,d0.w),d1
@@ -906,9 +906,9 @@ NextHomeColdPlayer	;IDA: sub_F727C. 94 only. d1 = the next home cold player (hom
 	movem.l	(sp)+,d0/a0
 	movea.l	#HmShots,a1
 	rts
-NextAwayColdPlayer	;IDA: sub_F72AA. 94 only. The same for the away team (awaycoldidx, $FFBF60), a1 = AwShots. Called from ScoutTextPlayer
+NextAwayColdPlayer	;IDA: sub_F72AA. 94 only. The same for the away team (awaycoldidx, awaycoldplayer), a1 = AwShots. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
-	movea.l	#$FFFFBF60,a0
+	movea.l	#awaycoldplayer,a0
 	move.w	(awaycoldidx).w,d0
 	add.w	d0,d0
 	move.w	0(a0,d0.w),d1
@@ -920,9 +920,9 @@ NextAwayColdPlayer	;IDA: sub_F72AA. 94 only. The same for the away team (awaycol
 	movea.l	#AwShots,a1
 	rts
 	rts	;IDA dc.b, no xref
-CopyHottestPlayer	;IDA: sub_F72DA. 94 only. Copy the hottest player of $FFBF20 to the list at a0
+CopyHottestPlayer	;IDA: sub_F72DA. 94 only. Copy the hottest player of TempBuffer to the list at a0
 	movem.l	d0-d1/a0-a1,-(sp)
-	movea.l	#$FFFFBF20,a1
+	movea.l	#TempBuffer,a1
 	move.w	#0,d0
 .copy	;IDA: loc_F72E8
 	clr.b	(a0)+
@@ -932,9 +932,9 @@ CopyHottestPlayer	;IDA: sub_F72DA. 94 only. Copy the hottest player of $FFBF20 t
 	dbf	d0,.copy
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-CopyColdestPlayer	;IDA: sub_F72FA. 94 only. Copy the coldest player ($FFBF2A) to the list at a0
+CopyColdestPlayer	;IDA: sub_F72FA. 94 only. Copy the coldest player (TempBuffer+10) to the list at a0
 	movem.l	d0/a0-a1,-(sp)
-	movea.l	#$FFFFBF2A,a1
+	movea.l	#TempBuffer+10,a1
 	move.w	#0,d0
 .copy	;IDA: loc_F7308
 	clr.b	(a0)+
@@ -977,7 +977,7 @@ CompareHotColdTotals	;IDA: sub_F7318. 94 only. Compare the teams' hot / cold tot
 GetHotColdTotal	;IDA: sub_F737E. 94 only. d1 = the hot / cold total of the starters of team a0 (SortHotColdStarters)
 	bsr.w	SortHotColdStarters
 	move.w	#6,d0
-	movea.l	#$FFFFBF20,a0
+	movea.l	#TempBuffer,a0
 	clr.w	d1
 .sum	;IDA: loc_F738E
 	move.b	1(a0),d2

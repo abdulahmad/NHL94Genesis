@@ -80,7 +80,7 @@ assbench
 	clr.w	d0
 	move.b	pnum(a3),d0
 	add.w	d0,d0
-	movea.l	#$FFFFC6CE,a0
+	movea.l	#HmShots,a0
 	btst	#6,pflags(a3)
 	beq.w	.t0
 	adda.w	#tmsize,a0
@@ -286,7 +286,7 @@ assgoaliebreakwait	;94 only (asstab entry $18DFC)
 	clr.w	$28(a3)	;clear Xvel
 	clr.w	$2A(a3)	;clear Yvel
 	movem.l	d0/a0,-(sp)	;push d0 and a0 on stack
-	movea.l	#$FFFFB04A,a0	;Home SC Sctruct start
+	movea.l	#SortCords,a0	;Home SC Sctruct start
 	move.w	(BA_Goalie_SCnum).w,d0	;move Goalie SCNum into d0
 	asl.w	#7,d0	;shift d0 7 bits left
 	adda.w	d0,a0	;add d0 to address a0
@@ -317,7 +317,7 @@ assfaceoffp1	;IDA: assfaceoffpl (93 assfaceoffp1). Face off player
 	beq.w	.nna
 	clr.w	temp1(a3)
 .nna
-	movea.l	#$FFFFBDA8,a0
+	movea.l	#fofdata2,a0
 	btst	#6,pflags(a3)
 	beq.w	.0
 	addq.w	#4,a0

@@ -622,7 +622,7 @@ checkanim	;IDA: _checkanim, a local of assgoaliecpu. Global here: assgoaliectrl 
 	cmp.w	(puckc).w,d0
 	beq.w	.11
 	move.l	a0,-(sp)
-	movea.l	#$FFFFB04A,a0
+	movea.l	#SortCords,a0
 	move.w	(puckc).w,d0
 	asl.w	#7,d0
 	adda.w	d0,a0
@@ -1014,10 +1014,10 @@ breakaway
 	move.w	#1,-(sp)	;ding SFX
 	jsr	(sfx).l
 	movem.l	a2,-(sp)	;push a2 on stack
-	movea.l	#$FFFFC6CE,a2	;move Home Team Struct into a2
+	movea.l	#HmShots,a2	;move Home Team Struct into a2
 	btst	#6,$62(a3)	;pfteam - check if home or away
 	beq.w	.c0	;jump if home
-	movea.l	#$FFFFCA32,a2	;move Away Team Struct into a2
+	movea.l	#AwShots,a2	;move Away Team Struct into a2
 .c0
 	addq.w	#1,$358(a2)	;add one to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to CwdExcite
@@ -1066,7 +1066,7 @@ BreakawayOffsidesFlagSet
 .offzone
 	bclr	#0,$64(a3)	;clear offside bit
 	beq.w	.nogood	;branch if on the blue line
-	movea.l	#$FFFFB5CA,a0	;loads last SCScruct player struct (Away pos #6)
+	movea.l	#SortCords+(11*SCstruct),a0	;loads last SCScruct player struct (Away pos #6)
 	move.w	#$B,d0	;B = # of player structs to check (12)
 	tst.w	d1	;checks if d1 is negative (determines what zone to check)
 	bmi.w	.checkYpos
@@ -1151,10 +1151,10 @@ asspuckc
 	btst	#1,$64(a3)
 	beq.w	.6
 	movem.l	a2,-(sp)
-	movea.l	#$FFFFC6CE,a2
+	movea.l	#HmShots,a2
 	btst	#6,$62(a3)
 	beq.w	.5
-	movea.l	#$FFFFCA32,a2
+	movea.l	#AwShots,a2
 .5	;IDA: loc_DFDC
 	addq.w	#1,$358(a2)
 	addi.w	#$14,(CwdExciteLvl).w

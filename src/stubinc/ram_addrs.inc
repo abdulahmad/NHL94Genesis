@@ -2,6 +2,7 @@
 M68K_RAM equ $FFFF0000
 sramcleared equ $FFFF1FFE	;IDA: byte_FF1FFE
 ;$FFFF55BF: IDA word_FF55BF, not used
+replayend equ $FFFFAF54	;no IDA label. 93 name: end of the replay frames ($62 bytes each from M68K_RAM); suba4, adda43 and the record step wrap here
 ;$FFFFAFCA is SortCords-SCstruct (IDA unk_FFAFCA)
 VSCRLPM equ $FFFFB000
 VSPRITES equ $FFFFB002
@@ -41,6 +42,7 @@ periodendtime equ $FFFFB048	;IDA: word_FFB048
 SortCords equ $FFFFB04A
 ;$FFFFB066 is SortCords+OldXpos (IDA word_FFB066)
 ;$FFFFB366 is SortCords+(6*SCstruct)+OldXpos (IDA word_FFB366)
+;$FFFFB5CA is SortCords+(11*SCstruct) (no IDA label), the away goalie SCstruct
 ;$FFFFB64A is SortCords+(12*SCstruct) (IDA unk_FFB64A)
 ;$FFFFB6CA is SortCords+(13*SCstruct) (IDA unk_FFB6CA)
 puckx equ $FFFFB74A
@@ -91,6 +93,7 @@ palfadenew equ $FFFFBD28
 ;$FFFFBD68 is palfadenew+$40 (IDA CardPalette). IDA: unk_FFBD68
 ;$FFFFBD6A is palfadenew+$42 (IDA word_FFBD6A)
 ;$FFFFBD82 is palfadenew+$5A (IDA word_FFBD82)
+;$FFFFBD88 is palfadenew+$60 (no IDA label)
 ;$FFFFBDA2 is palfadenew+$7A (IDA word_FFBDA2)
 fofdata2 equ $FFFFBDA8	;IDA: dword_FFBDA8
 ;$FFFFBDAC is fofdata2+4 (IDA word_FFBDAC)
@@ -127,6 +130,11 @@ pad4way1 equ $FFFFBEF6	;IDA: byte_FFBEF6
 pad4way2 equ $FFFFBEF7	;IDA: byte_FFBEF7
 pad4way3 equ $FFFFBEF8	;IDA: byte_FFBEF8
 pad4way4 equ $FFFFBEF9	;IDA: byte_FFBEF9
+pad4wayword equ $FFFFBEFA	;no IDA label. the pad word the unused Read4WayPad1-4 (high94_1) swap a pad's saved word into around ReadJoy1
+pad4waysave1 equ $FFFFBEFE	;no IDA label. Read4WayPad1 saved pad word
+pad4waysave2 equ $FFFFBF00	;no IDA label. Read4WayPad2 saved pad word
+pad4waysave3 equ $FFFFBF02	;no IDA label. Read4WayPad3 saved pad word
+pad4waysave4 equ $FFFFBF04	;no IDA label. Read4WayPad4 saved pad word
 bholdtimer equ $FFFFBF06	;IDA: word_FFBF06. B button hold timers of pads 1 / 2 (one byte each); bholdtimer34 for pads 3 / 4
 bholdtimer34 equ $FFFFBF08	;IDA: word_FFBF08
 padword3 equ $FFFFBF0A	;IDA: word_FFBF0A
@@ -139,6 +147,8 @@ TempRawSpd equ $FFFFBF16
 TempMaxSpd equ $FFFFBF18
 TempEnergySpd equ $FFFFBF1C
 TempLegSpd equ $FFFFBF1E
+TempBuffer equ $FFFFBF20	;no IDA label. 40 byte scratch buffer: String buffer (AppendNumber, names, "(played by NAME)"), hot / cold player, sum byte pairs
+;$FFFFBF2A is TempBuffer+10 (no IDA label), the 6th (coldest) SortHotColdStarters pair
 scorergoalies equ $FFFFBF48	;IDA: word_FFBF48
 recties equ $FFFFBF4A	;IDA: word_FFBF4A
 reclosses equ $FFFFBF4C	;IDA: word_FFBF4C
@@ -149,6 +159,10 @@ awayhotidx equ $FFFFBF54	;IDA: word_FFBF54
 homehotidx equ $FFFFBF56	;IDA: word_FFBF56
 awaycoldidx equ $FFFFBF58	;IDA: word_FFBF58
 homecoldidx equ $FFFFBF5A	;IDA: word_FFBF5A
+awayhotplayer equ $FFFFBF5C	;no IDA label. the away team's hottest starter (BuildHotColdLists)
+homehotplayer equ $FFFFBF5E	;no IDA label. the home team's hottest starter
+awaycoldplayer equ $FFFFBF60	;no IDA label. the away team's coldest starter
+homecoldplayer equ $FFFFBF62	;no IDA label. the home team's coldest starter
 ChkBodyG equ $FFFFBF64
 ChkBodySqG equ $FFFFBF66
 NegChkBodyG equ $FFFFBF6A
@@ -276,6 +290,8 @@ ThirdPBonus equ $FFFFCF30
 HmAwBonus equ $FFFFCF31
 callbackPtr equ $FFFFCF32	;IDA: dword_FFCF32
 ThreeStars equ $FFFFCF36
+;$FFFFCF38 is ThreeStars+2 (no IDA label), the text after a String length word at ThreeStars
+teamrecbuf equ $FFFFCFFE	;no IDA label. SRAM team record buffer: the 16 byte record of a team (clrCrowdRAM), byte 8 crowd record, byte 9 its name number
 nibblebuffer equ $FFFFD036	;IDA: dword_FFD036
 ;$FFFFD03A is nibblebuffer+4 (IDA dword_FFD03A)
 homeuser equ $FFFFD042	;IDA: word_FFD042
@@ -359,7 +375,9 @@ cardlogochars2 equ $FFFFD452	;IDA: word_FFD452
 shootoutclock equ $FFFFD454	;IDA: word_FFD454
 shootoutjiffy equ $FFFFD456	;IDA: word_FFD456
 ValidSRAM equ $FFFFD458
+namelog equ $FFFFD45A	;no IDA label. the user name log: $80 bytes from save RAM $DA0 (NameLogIO), 12 bytes per name, namelogsel the entry
 nameentrybuf equ $FFFFD4DA	;IDA: word_FFD4DA
+;$FFFFD4DC is nameentrybuf+2 (no IDA label), the text after its length word
 namelength equ $FFFFD4E8	;IDA: word_FFD4E8
 namelogsel equ $FFFFD4EA	;IDA: word_FFD4EA
 namelogarrows equ $FFFFD4EC	;IDA: word_FFD4EC
@@ -369,13 +387,24 @@ awaycardidx equ $FFFFD4F2	;IDA: word_FFD4F2
 cardindex equ $FFFFD4F4	;IDA: word_FFD4F4
 cardvis equ $FFFFD4F6	;IDA: word_FFD4F6
 cardcount equ $FFFFD4F8	;IDA: word_FFD4F8
+homecardlist equ $FFFFD4FA	;no IDA label. the home player card order (BuildCardPlayerLists), read by GetCardPlayer
+awaycardlist equ $FFFFD514	;no IDA label. the away player card order
 cardplayer equ $FFFFD52E	;IDA: word_FFD52E
 nameframechars equ $FFFFD530	;IDA: word_FFD530
+recsort1 equ $FFFFD532	;no IDA label. Record Holders row order sorted on record byte 0 (ReadTeamRecords), read by PrintPlayerRecords
+recsort2 equ $FFFFD53A	;no IDA label. Record Holders row order sorted on record byte 4 (ReadTeamRecords, sflags6 bit 6)
+winsort equ $FFFFD542	;no IDA label. Record Holders win row order (CalcWinPercents), read by PrintWinRecords
+winpcts equ $FFFFD54A	;no IDA label. the win % byte of each of the 8 records (CalcWinPercents)
+winties equ $FFFFD552	;no IDA label. the ties word of each record (record bytes $C-$D)
+wingames equ $FFFFD562	;no IDA label. the games word of each record (record bytes $A-$B)
+shootoutstate equ $FFFFD572	;no IDA label. first of the 19 words ClearGameStats clears ($FFD572-$FFD597: shootout goals, playoffround, shooter lists ...)
 homeshootgoals equ $FFFFD574	;IDA: word_FFD574
 awayshootgoals equ $FFFFD576	;IDA: word_FFD576
 playoffround equ $FFFFD578	;IDA: word_FFD578
+homeshooters equ $FFFFD57A	;no IDA label. the home shootout shooter list (6 words, homeshootnum the index)
 ;$FFFFD585 is homeshootnum-1 (IDA byte_FFD585)
 homeshootnum equ $FFFFD586	;IDA: word_FFD586
+awayshooters equ $FFFFD588	;no IDA label. the away shootout shooter list (6 words)
 ;$FFFFD593 is shootoutteam-1 (IDA byte_FFD593)
 shootoutteam equ $FFFFD594	;IDA: word_FFD594
 matchup equ $FFFFD598	;IDA: word_FFD598
@@ -410,18 +439,23 @@ HmTeam equ $FFFFD6CA
 SongIndex equ $FFFFD6CC
 OvrDivisor equ $FFFFD6CE
 OvrDividend equ $FFFFD6D0
+homehotcoldsave equ $FFFFD6D2	;no IDA label. clearTeamStats keeps the first $1A0 bytes of the home hot / cold table (HmShots+$1A2) here
+awayhotcoldsave equ $FFFFD872	;no IDA label. the same for AwShots+$1A2
 sopath equ $FFFFDA12	;IDA: word_FFDA12
 sopathpoint equ $FFFFDA14	;IDA: word_FFDA14
 sopathx equ $FFFFDA16	;IDA: word_FFDA16
 sopathy equ $FFFFDA18	;IDA: word_FFDA18
 sopathdir equ $FFFFDA1A	;IDA: word_FFDA1A
 sopathend equ $FFFFDA1C	;IDA: word_FFDA1C
+picturebuf equ $FFFFDA1E	;no IDA label. UnpackPicture output: tile count word, then the 4 bit tiles (DrawMatchupBitmap, dobitmap read it)
+picturebits equ $FFFFDEA0	;no IDA label. UnpackPicture: the 3 packed bytes of the row being unpacked
 homepresses equ $FFFFDEA4	;IDA: dword_FFDEA4
 homedirpresses equ $FFFFDEA8	;IDA: dword_FFDEA8
 awaypresses equ $FFFFDEAC	;IDA: dword_FFDEAC
 awaydirpresses equ $FFFFDEB0	;IDA: dword_FFDEB0
 replayicontimer equ $FFFFDEB4	;IDA: word_FFDEB4
 TmpPuckX equ $FFFFDEB6
+lognametext equ $FFFFDEBA	;no IDA label. the unused TerminateLogName's GetLogName String text (length word at -2)
 songdelay equ $FFFFDECC	;IDA: word_FFDECC
 delayedsong equ $FFFFDECE	;IDA: word_FFDECE
 shootoutdelay equ $FFFFDED0	;IDA: word_FFDED0

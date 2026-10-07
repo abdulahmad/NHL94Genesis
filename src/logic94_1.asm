@@ -87,7 +87,7 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	beq.w	.8
 	move.w	(passplayer).w,d0
 	asl.w	#7,d0
-	movea.l	#$FFFFB04A,a3
+	movea.l	#SortCords,a3
 	adda.w	d0,a3
 	tst.w	$34(a3)
 	beq.w	.8
@@ -241,7 +241,7 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	tst.w	d0
 	bmi.w	rtss15
 	movem.l	d0/a3,-(sp)
-	movea.l	#$FFFFB04A,a3
+	movea.l	#SortCords,a3
 	asl.w	#7,d0
 	adda.w	d0,a3
 	btst	#3,$62(a3)
@@ -361,7 +361,7 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	bset	#1,$63(a3)
 	bne.w	doinput_chkanim
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$FFFFBEE6,a0	;puckcross
+	movea.l	#puckcross,a0
 	move.w	#$108,d3
 	btst	#7,$62(a3)	;check which net shooting on
 	beq.w	.8	;branch if bottom net
@@ -443,7 +443,7 @@ doinput_onetimer	;IDA: loc_B6BA. Global: doinput branches here across doinput_ch
 	movem.l	d7-a0,-(sp)
 	move.w	(lastplayer).w,d7
 	asl.w	#7,d7
-	movea.l	#$FFFFB04A,a0
+	movea.l	#SortCords,a0
 	adda.w	d7,a0
 	tst.w	$34(a0)
 	movem.l	(sp)+,d7-a0
@@ -546,7 +546,7 @@ doinput_islocked	;IDA: loc_B81A. Global: doinput branches here across doinput_is
 	tst.w	d0
 	bmi.w	.x
 	asl.w	#7,d0
-	movea.l	#$FFFFB04A,a0
+	movea.l	#SortCords,a0
 	adda.w	d0,a0
 	bset	#6,$64(a0)
 .x	;IDA: loc_B864
@@ -557,7 +557,7 @@ rtss7
 ; If no goalie, store FFFF in d0
 getGoalieSCnum
 	movem.l	d1/a0,-(sp)
-	movea.l	#$FFFFB04A,a0
+	movea.l	#SortCords,a0
 	asl.w	#7,d0
 	adda.w	d0,a0
 	move.w	#5,d1
@@ -1352,7 +1352,7 @@ prepshot
 	bmi.w	.nogoalie
 	movem.l	a0,-(sp)
 	asl.w	#7,d0
-	movea.l	#$FFFFB04A,a0
+	movea.l	#SortCords,a0
 	cmpi.w	#$250,$58(a0,d0.w)	;Checking goalie animations - pad stack right
 	beq.w	.svgoalie
 	cmpi.w	#$2A2,$58(a0,d0.w)	;Checking another goalie animation - pad stack left

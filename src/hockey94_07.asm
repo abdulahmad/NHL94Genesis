@@ -16,16 +16,16 @@
 ;	printz String first byte, negated: low 2 bits = map, the rest << 9 = printa ($FF / $FE map 1 / 2, $DF / $DE the same with printa
 ;	$4000). printz2 (93 printsmallz) codes: $F8 attribute,map,x,y; $F9 char set. Pad bits: dbut 1, cbut 5, abut 6, sbut 7.
 
-ScoutCrowdRecord	;IDA: sub_FCB9A. 94 only. The text player's '@' (ScoutTextPlayer): return a1 = the home team's crowd record in dB as a String at $FFBF20 (SRAM team record
+ScoutCrowdRecord	;IDA: sub_FCB9A. 94 only. The text player's '@' (ScoutTextPlayer): return a1 = the home team's crowd record in dB as a String at TempBuffer (SRAM team record
 	;byte 8, 80 if 0). clrCrowdRAM (IDA name) reads the 16 byte SRAM record of team d1 ($B60 + d1 * 16) to a0
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
-	movea.l	#$FFFFCFFE,a0	;SRAM team record buffer
+	movea.l	#teamrecbuf,a0	;SRAM team record buffer
 	move.l	a0,-(sp)
 	jsr	(clrCrowdRAM).l	;read the HomeTeam record
 	movea.l	(sp)+,a0
-	movea.l	#$FFFFBF20,a1	;String buffer
+	movea.l	#TempBuffer,a1	;String buffer
 	clr.w	d0
 	move.b	8(a0),d0	;crowd record
 	bne.w	.0
@@ -37,24 +37,24 @@ ScoutCrowdRecord	;IDA: sub_FCB9A. 94 only. The text player's '@' (ScoutTextPlaye
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutCrowdRecordBy	;no IDA label (was sub_FCBD8) (IDA dc.b, no xref). 94 only, unused: return a1 = 'by <name> ' for the home team's crowd record (SRAM record byte 9 =
-	;name number, AppendUserName reads that 12 char name from the $FFD45A list), or an empty String if byte 9 is 0
+	;name number, AppendUserName reads that 12 char name from namelog), or an empty String if byte 9 is 0
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
-	movea.l	#$FFFFCFFE,a0
+	movea.l	#teamrecbuf,a0
 	move.l	a0,-(sp)
 	jsr	(clrCrowdRAM).l
 	movea.l	(sp)+,a0
 	tst.b	9(a0)	;name number
 	beq.w	.0
-	movea.l	#$FFFFCF36,a3	;String buffer (ram_addrs.inc ThreeStars)
+	movea.l	#ThreeStars,a3	;String buffer
 	movea.l	#ScoutByTxt,a1
 	move.l	a3,-(sp)
 	jsr	(StartText).l	;copy the String at a1 to a3: 'by '
 	movea.l	(sp)+,a3
 	clr.w	d2
 	move.b	9(a0),d2
-	movea.l	#$FFFFBF20,a1	;name String buffer
+	movea.l	#TempBuffer,a1	;name String buffer
 	bset	#7,(sflags6).w
 	bsr.w	AppendUserName
 	jsr	(appstring).l	;append the name
@@ -373,7 +373,7 @@ DrawMatchupPicture	;IDA: sub_FD14A. 94 only. Draw player picture a0 at printx / 
 	adda.l	(a2)+,a1
 .1	;IDA: loc_FD170
 	bsr.w	UnpackPicture
-	movea.l	#$FFFFDA1E,a2	;tiles
+	movea.l	#picturebuf,a2	;tiles
 	bra.w	DrawMatchupBitmap
 DrawMatchupLogo	;IDA: sub_FD17E. 94 only. Draw team logo a0 at printx / printy, palette TeamLogoPalettes + team d3 * 8 - $20 (d5 = 4: - $40). Falls into DrawMatchupBitmap
 	movea.l	a0,a1

@@ -1280,7 +1280,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	adda.l	(a2)+,a1
 .7	;IDA: loc_F8982
 	bsr.w	UnpackPicture
-	movea.l	#$FFFFDA1E,a2	;tiles
+	movea.l	#picturebuf,a2	;tiles
 	move.w	(vcount).w,d3
 .loop	;IDA: loc_F8990
 	cmp.w	(vcount).w,d3

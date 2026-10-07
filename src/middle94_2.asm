@@ -290,7 +290,7 @@ xyVmMap
 	movem.l	d0-d2,-(sp)
 	move.w	(printx).w,d0
 	move.w	(printy).w,d1
-	movea.l	#$FFFFB004,a0	;#VmMap1
+	movea.l	#VmMap1,a0
 	adda.w	(printm).w,a0
 	move.w	2(a0),d2
 	asl.w	d2,d1
@@ -844,7 +844,7 @@ PutBigTile	;IDA: sub_11EDA
 	add.w	d6,d3
 	movem.l	d1/a0,-(sp)
 	move.w	d5,d0
-	movea.l	#$FFFFB004,a0
+	movea.l	#VmMap1,a0
 	adda.w	(printm).w,a0
 	move.w	2(a0),d1
 	asl.w	d1,d0

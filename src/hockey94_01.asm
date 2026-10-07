@@ -62,9 +62,9 @@ StartGame	;reset game state for a new game, then start the first period
 	btst	#0,(gmode2).w
 	beq.w	.2			;IDA: loc_77B8
 	move.l	a0,-(sp)
-	movea.l	#$FFFFC6CE,a0
+	movea.l	#HmShots,a0
 	jsr	(Create_HotCold_Table).l
-	movea.l	#$FFFFCA32,a0
+	movea.l	#AwShots,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
 .2	clr.w	(ScoreSumbytes).w

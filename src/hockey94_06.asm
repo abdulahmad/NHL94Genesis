@@ -623,15 +623,15 @@ resetplstuff	;reset team variables/and players on both teams. Called from puckfa
 	dbf	d2,.loop
 	rts
 clearTeamStats	;clear both team structs (2 x tmsize) but keep the first $1A0 bytes of each hot / cold table (HmShots+$1A2 / AwShots+$1A2, saved to
-	;$FFFFD6D2 / $FFFFD872 and back) and HmShots+tmgoalie / AwShots+tmgoalie. Falls into setteams
+	;homehotcoldsave / awayhotcoldsave and back) and HmShots+tmgoalie / AwShots+tmgoalie. Falls into setteams
 	move.w	(HmShots+tmgoalie).w,-(sp)
 	move.w	(AwShots+tmgoalie).w,-(sp)
 	movem.l	a1-a3,-(sp)
 	move.w	#$19F,d0
 	movea.l	#AwShots+$1A2,a1	;Hot/Cold table Away Team
 	movea.l	#HmShots+$1A2,a0	;Hot/Cold table Home Team
-	movea.l	#$FFFFD6D2,a2
-	movea.l	#$FFFFD872,a3
+	movea.l	#homehotcoldsave,a2
+	movea.l	#awayhotcoldsave,a3
 .loop	;IDA: loc_1712A
 	move.b	(a0)+,(a2)+
 	move.b	(a1)+,(a3)+
@@ -651,8 +651,8 @@ clearTeamStats	;clear both team structs (2 x tmsize) but keep the first $1A0 byt
 	move.w	#$19F,d0
 	movea.l	#AwShots+$1A2,a1
 	movea.l	#HmShots+$1A2,a0
-	movea.l	#$FFFFD6D2,a2
-	movea.l	#$FFFFD872,a3
+	movea.l	#homehotcoldsave,a2
+	movea.l	#awayhotcoldsave,a3
 .loop4	;IDA: loc_17174
 	move.b	(a2)+,(a0)+
 	move.b	(a3)+,(a1)+

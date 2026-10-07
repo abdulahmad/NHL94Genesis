@@ -89,10 +89,10 @@ PositionBoxes	;no IDA label (was unk_FD71C). ClampPositionBox boxes: min / max o
 	dc.w	$FFB5,0,0,$108,0,$4B,0,$108
 PositionBoxesTop	;no IDA label (was unk_FD72C). ClampPositionBox boxes, top net
 	dc.w	$FFB5,0,$FEF8,0,0,$4B,$FEF8,0
-ClearGameStats	;IDA: sub_FD73C. 94 only. Clear the game stats: word_FFD572 (19 words), both team structs (HmShots, AwShots), PenBuf, BA_PS_flags, sflags4 / F8 /
+ClearGameStats	;IDA: sub_FD73C. 94 only. Clear the game stats: shootoutstate (19 words), both team structs (HmShots, AwShots), PenBuf, BA_PS_flags, sflags4 / F8 /
 	;FA and setupcardflags / featuredplayer. Called from GameSetUp (hockey94_08)
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$FFFFD572,a0
+	movea.l	#shootoutstate,a0
 	moveq	#$12,d0
 .loop	;IDA: loc_FD748
 	clr.w	(a0)+
@@ -283,7 +283,7 @@ PeriodStatsScreen	;no IDA label (was sub_FD90C) (IDA left it as data; 93 has no 
 	moveq	#4,d5
 	jsr	(dobitmap).l
 	movea.l	#palfadenew+$40,a0
-	movea.l	#$FFFFBD88,a1
+	movea.l	#palfadenew+$60,a1
 	move.w	#7,d0
 .loop
 	move.l	(a0)+,(a1)+
@@ -1029,7 +1029,7 @@ ReadLineData	;IDA: sub_FE660. 94 only. Read the $100 bytes at save RAM $1EF6 to 
 	jsr	(ReadSRAM).l
 	bclr	#4,(sflags).w
 	move.w	#$FFFF,(lastsfx).w
-	move.l	#$FFFF0000,(recbpr).w
+	move.l	#M68K_RAM,(recbpr).w
 	movem.l	(sp)+,d0-d1/a0
 	rts
 WriteLineData	;IDA: sub_FE696. 94 only. Write databuffer back to save RAM $1EF6 (WriteSRAM, MakeSRAMChecksum); as ReadLineData after. Called from EncodePW (hockey94_09) and EncodePlayerAttributes
@@ -1042,7 +1042,7 @@ WriteLineData	;IDA: sub_FE696. 94 only. Write databuffer back to save RAM $1EF6 
 	jsr	(MakeSRAMChecksum).l
 	bclr	#4,(sflags).w
 	move.w	#$FFFF,(lastsfx).w
-	move.l	#$FFFF0000,(recbpr).w
+	move.l	#M68K_RAM,(recbpr).w
 	movem.l	(sp)+,d0-d1/a0
 	rts
 ClearWinRecords	;IDA: sub_FE6D2. 94 only. Clear bytes 8-$B of the 8 ThreeStars records and write the $80 bytes to save RAM $D20 (WriteSRAM, MakeSRAMChecksum). Called from RecordHoldersScreen
@@ -1246,11 +1246,11 @@ ShootoutShootCheck	;IDA: sub_FE8EC. 94 only. Shootout, skater a3 has the puck (g
 .x	;IDA: loc_FE984
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-UnpackPicture	;IDA: sub_FE98A. 94 only. Unpack a picture a2: count.w, then 3 bytes per row of 8 pixels to 4 bit pixels + 5 at $FFFFDA1E (count first). Called from
+UnpackPicture	;IDA: sub_FE98A. 94 only. Unpack a picture a2: count.w, then 3 bytes per row of 8 pixels to 4 bit pixels + 5 at picturebuf (count first). Called from
 	;DrawPictureBox (high94_2), DrawMatchupPicture (hockey94_07) and PlayerCardScreen (hockey94_08)
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$FFFFDA1E,a0
-	movea.l	#$FFFFDEA0,a1
+	movea.l	#picturebuf,a0
+	movea.l	#picturebits,a1
 	move.w	(a2)+,d0
 	move.w	d0,(a0)+
 	asl.w	#3,d0
@@ -1522,7 +1522,7 @@ DrawPlayoffSprite	;IDA: sub_FED2A. 94 only. The PlayoffSprite sprite at playoffs
 .0	;IDA: loc_FED5C
 	clr.b	-5(a6)
 	move.l	a6,d0
-	subi.l	#$FFFFC018,d0
+	subi.l	#Satt,d0
 	lsr.w	#1,d0
 	move.w	d0,(Sattsize).w
 	rts
@@ -1611,9 +1611,9 @@ CountButtonPress	;IDA: sub_FEE60. 94 only. Not in gmode bit 0: add 1 to homepres
 .x	;IDA: loc_FEE9A
 	movem.l	(sp)+,d1-d7/a0
 	rts
-TerminateLogName	;no IDA label (was sub_FEEA0), and nothing calls it (IDA left it as data). The GetLogName String at $FFFFDEBA, ended with 0 at namelength and its length word made even
+TerminateLogName	;no IDA label (was sub_FEEA0), and nothing calls it (IDA left it as data). The GetLogName String at lognametext, ended with 0 at namelength and its length word made even
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$FFFFDEBA,a1
+	movea.l	#lognametext,a1
 	bsr.w	GetLogName
 	move.w	(namelength).w,d0
 	move.b	#0,(a1,d0.w)
@@ -1628,7 +1628,7 @@ PlayedByHome	;IDA: sub_FEEC8. 94 only. a1 = String "(played by NAME)" for homeus
 PlayedByText	;IDA: loc_FEED0. IDA label. PlayedByHome / PlayedByAway body
 	tst.w	d0
 	beq.w	PlayedByNone
-	movea.l	#$FFFFD4DC,a1
+	movea.l	#nameentrybuf+2,a1
 	move.w	d0,(namelogsel).w
 	bsr.w	GetLogName
 	adda.w	(namelength).w,a1
@@ -1639,16 +1639,16 @@ PlayedByText	;IDA: loc_FEED0. IDA label. PlayedByHome / PlayedByAway body
 	move.w	(namelength).w,(nameentrybuf).w
 	movea.l	#nameentrybuf,a1
 	move.l	a1,-(sp)
-	movea.l	#$FFFFBF20,a3
+	movea.l	#TempBuffer,a3
 	movea.l	#PlayedByTxt,a1
 	bsr.w	StartText
 	movea.l	(sp)+,a1
-	movea.l	#$FFFFBF20,a3
+	movea.l	#TempBuffer,a3
 	jsr	(appstring).l
-	movea.l	#$FFFFBF20,a3
+	movea.l	#TempBuffer,a3
 	jsr	(appendz).l
 	String	')'
-	movea.l	#$FFFFBF20,a1
+	movea.l	#TempBuffer,a1
 PlayedByExit	;IDA: loc_FEF3C. IDA label. Exit
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
@@ -2108,14 +2108,14 @@ clrTmPdst	;IDA name (and comments). 94 only
 	dbf	d0,.loop
 	move.w	#$FFFF,(a0)	;-1 = ice
 	rts
-HotColdIcon	;IDA: sub_FF8DE. 94 only. The icon by the name of player iconplayer of team a2 at x iconx, y $19: HotIconMap when he is in $FFFFBF5C /
-	;$FFFFBF5E, ColdIconMap in $FFFFBF60 / $FFFFBF62, else clear it (eraser)
+HotColdIcon	;IDA: sub_FF8DE. 94 only. The icon by the name of player iconplayer of team a2 at x iconx, y $19: HotIconMap when he is awayhotplayer /
+	;homehotplayer, ColdIconMap when awaycoldplayer / homecoldplayer, else clear it (eraser)
 	movem.l	d0/a0-a1,-(sp)
-	movea.l	#$FFFFBF5C,a0
+	movea.l	#awayhotplayer,a0
 	move.w	#2,(iconx).w
 	cmpa.l	#HmShots,a2
 	bne.w	.0
-	movea.l	#$FFFFBF5E,a0
+	movea.l	#homehotplayer,a0
 	move.w	#$20,(iconx).w
 .0	;IDA: loc_FF904
 	move.w	#0,d0
@@ -2124,10 +2124,10 @@ HotColdIcon	;IDA: sub_FF8DE. 94 only. The icon by the name of player iconplayer 
 	cmp.w	(iconplayer).w,d1
 	beq.w	.2
 	dbf	d0,.loop
-	movea.l	#$FFFFBF60,a0
+	movea.l	#awaycoldplayer,a0
 	cmpa.l	#HmShots,a2
 	bne.w	.1
-	movea.l	#$FFFFBF62,a0
+	movea.l	#homecoldplayer,a0
 .1	;IDA: loc_FF92C
 	move.w	#0,d0
 .loop2	;IDA: loc_FF930
