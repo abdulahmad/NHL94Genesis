@@ -23,4 +23,11 @@ Segment builds use `buildseg.bat` and `npm run seg:<name>` once a segment has a 
 
 `npm run extractassets` runs `extractAssets94.js` against `lst/nhl94.bin`. That is for the graphics and sound data pass, not for the code segments.
 
-The full `npm run build:retail` path is not ready. It still points at `src/hockey94.asm`, which is the queue.
+Full ROM builds assemble `src/hockey94.asm`. The opcode-corrected output is `output/modified_nhl94.bin`.
+
+| Script | Flags | Result |
+| --- | --- | --- |
+| `npm run build:retail` | `rev=0`, `checksum=1` | Retail, validation included, verified byte for byte against `lst/nhl94.bin`. |
+| `npm run build:dev` | `rev=0`, `checksum=0` | No validation and no retail verify. Use this while editing. |
+
+`build:dev` (`checksum=0`): `Start` skips `jsr ValidationRoutine` (3 `nop`s instead) and the header checksum at `$18E` is 0, so changed code still boots. With `checksum=1` the validation routine sums the ROM, and any change turns the screen red. `ValidationRoutine` stays in the ROM but is never called.
