@@ -44,7 +44,8 @@ ScoutReport	=	8
 ScoreOdds	=	10
 
 ;------------------------
-; Team block: 6 offset words (the equates above), .pad home and visitor palettes (16 colours each),
+; Team block: 6 offset words (the equates above), .pad home and visitor palettes (16 colours each, incbin <team>h.pal / <team>v.pal
+; as 93; files from extractAssets94.js, 94 in the name where the colours differ from 93),
 ; .sr, .sodds, .ls 8 lines of 8 player numbers (1 = first .pld entry), .pld players ended by an
 ; empty String, then 4 Strings: city, abbreviation, nickname, arena (93 has only city and abbreviation).
 ;------------------------
@@ -75,12 +76,9 @@ AllStarsEast	;ASE, $37E
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
-	dc.w	$002A,$024C,$0420,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
-	dc.w	$002A,$024C,$0CCC,$0222,$0420,$0000,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\ASEh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\ASEv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$7720,$00E8
 .sodds
@@ -138,12 +136,9 @@ AllStarsWest	;ASW, $674
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
-	dc.w	$002A,$024C,$0420,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0420,$088C,$066A
-	dc.w	$002A,$024C,$0CCC,$0222,$0420,$0000,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\ASWh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\ASWv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$7720,$00E8
 .sodds
@@ -201,12 +196,9 @@ Boston	;BOS, $966
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0202,$0224,$088C,$066A
-	dc.w	$008C,$008E,$0CCC,$0AAA,$0CCC,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0202,$0224,$088C,$066A
-	dc.w	$008C,$008E,$0CCC,$0202,$0224,$0000,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\BOSh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\BOSv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$4121,$21F8
 .sodds
@@ -264,12 +256,9 @@ Buffalo	;BUF, $C4C
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0420,$0820,$0842,$088C,$066A
-	dc.w	$006C,$008E,$0820,$0AAA,$0CCC,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0420,$0820,$0842,$088C,$066A
-	dc.w	$006C,$008E,$0820,$0820,$0842,$0420,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\BUFh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\BUFv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$6410,$21E8
 .sodds
@@ -327,12 +316,9 @@ Calgary	;CGY, $F3A
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$008C,$00AE,$000A,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$008C,$0EEE,$0008,$0008,$000A,$0006,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\CGYh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\CGYv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$4200,$00DA
 .sodds
@@ -390,12 +376,9 @@ Chicago	;CHI, $1234
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
-	dc.w	$0000,$0222,$0008,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
-	dc.w	$0CCC,$0CCC,$0000,$0008,$022A,$0004,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\CHIh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\CHIv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$2010,$21F8
 .sodds
@@ -453,12 +436,9 @@ Detroit	;DET, $152E
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$000A,$000C,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$0AAA,$0CCC,$000A,$0008,$000A,$0006,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\DETh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\DETv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$7321,$00F8
 .sodds
@@ -516,12 +496,9 @@ Edmonton	;EDM, $1848
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
-	dc.w	$002A,$002C,$0600,$0CCC,$0EEE,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
-	dc.w	$0888,$0CCC,$002C,$0600,$0622,$0200,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\EDMh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\EDMv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$1602,$12F8
 .sodds
@@ -579,12 +556,9 @@ Hartford	;HFD, $1B44
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0620,$0820,$088C,$066A
-	dc.w	$0600,$0042,$0A00,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0620,$0820,$088C,$066A
-	dc.w	$0040,$0284,$0C20,$0800,$0C20,$0600,$048C,$0A84
+.pad	;both 94 colours (differ from 93 HFDh.pal / HFDv.pal)
+	incbin	..\Extracted\NHL94\Graphics\Pals\HFDh94.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\HFDv94.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$1702,$00F7
 .sodds
@@ -642,12 +616,9 @@ LosAngeles	;LA, $1E52
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0202,$0222,$088C,$066A
-	dc.w	$0202,$0000,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0202,$088C,$066A
-	dc.w	$0AAA,$0CCC,$0202,$0200,$0202,$0000,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\LAh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\LAv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$6612,$11D9
 .sodds
@@ -705,12 +676,9 @@ Dallas	;DAL, $214E. 93 Minnesota North Stars
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0444,$088C,$066A
-	dc.w	$0020,$0ACA,$0060,$0888,$0CCC,$0666,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0444,$088C,$066A
-	dc.w	$0020,$0ACA,$0060,$0000,$0222,$0000,$048C,$0A84
+.pad	;93 Minnesota palettes, unchanged in 94
+	incbin	..\Extracted\NHL94\Graphics\Pals\MINh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\MINv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$1410,$00E9
 .sodds
@@ -768,12 +736,9 @@ Montreal	;MTL, $243E
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0422,$0622,$0842,$088C,$066A
-	dc.w	$0622,$0842,$0008,$0CCC,$0EEE,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0422,$0622,$0842,$088C,$066A
-	dc.w	$0888,$0CCC,$0622,$0008,$020A,$0004,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\MTLh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\MTLv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$5211,$21E9
 .sodds
@@ -831,12 +796,9 @@ NewJersey	;NJ, $2740
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
-	dc.w	$0222,$0444,$0008,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0004,$0006,$0008,$088C,$066A
-	dc.w	$0888,$0CCC,$002C,$0000,$0222,$0200,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\NJh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\NJv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$3411,$12F8
 .sodds
@@ -894,12 +856,9 @@ LongIsland	;NYI, $2A58
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
-	dc.w	$0600,$0622,$020C,$0CCC,$0EEE,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0600,$0622,$088C,$066A
-	dc.w	$0888,$0CCC,$020C,$0600,$0622,$0200,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\LIh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\LIv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$5321,$00F8
 .sodds
@@ -957,12 +916,9 @@ NewYork	;NYR, $2D5C
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$0208,$020A,$0600,$0CCC,$0EEE,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$0888,$0CCC,$020A,$0600,$0622,$0200,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\NYh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\NYv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$3411,$11F8
 .sodds
@@ -1020,12 +976,9 @@ Ottawa	;OTW, $3054
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
-	dc.w	$002A,$002C,$002E,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0002,$0004,$088C,$066A
-	dc.w	$0028,$002C,$0002,$0222,$0444,$0002,$048C,$0A84
+.pad	;visitor 94 colours (93 OTWv.pal differs)
+	incbin	..\Extracted\NHL94\Graphics\Pals\OTWh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\OTWv94.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$0702,$13F8
 .sodds
@@ -1083,12 +1036,9 @@ Philadelphia	;PHI, $3348
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
-	dc.w	$002A,$002C,$002E,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
-	dc.w	$0AAA,$0CCC,$0EEE,$002A,$002C,$0028,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\PHIh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\PHIv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$3602,$22E8
 .sodds
@@ -1146,12 +1096,9 @@ Pittsburgh	;PIT, $3646
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
-	dc.w	$004C,$00AE,$0EEE,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
-	dc.w	$0AAA,$0CCC,$00AE,$0000,$0222,$0000,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\PITh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\PITv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$7120,$21E9
 .sodds
@@ -1209,12 +1156,9 @@ Quebec	;QUE, $393C
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0820,$0842,$088C,$066A
-	dc.w	$0820,$0842,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0820,$0842,$088C,$066A
-	dc.w	$0AAA,$0CCC,$0820,$0820,$0842,$0600,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\QUEh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\QUEv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$7521,$00F8
 .sodds
@@ -1272,12 +1216,9 @@ SanJose	;SJ, $3C42
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0202,$088C,$066A
-	dc.w	$0222,$0000,$0882,$0AAA,$0CCC,$0888,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0202,$088C,$066A
-	dc.w	$0888,$0CCC,$0882,$0660,$0882,$0440,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\SJh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\SJv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$0702,$12D9
 .sodds
@@ -1335,12 +1276,9 @@ StLouis	;STL, $3F30
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0A00,$0600,$088C,$066A
-	dc.w	$002C,$006E,$0CCC,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0422,$088C,$066A
-	dc.w	$0AAA,$0CCC,$002C,$0400,$0422,$0200,$048C,$0A84
+.pad	;home 94 colours (93 STLh.pal differs)
+	incbin	..\Extracted\NHL94\Graphics\Pals\STLh94.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\STLv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$2220,$21E9
 .sodds
@@ -1398,12 +1336,9 @@ TampaBay	;TB, $4216
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0420,$088C,$066A
-	dc.w	$0200,$0C00,$0A22,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0222,$088C,$066A
-	dc.w	$0CA6,$0ECC,$0EEC,$0200,$0200,$0000,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\TBYh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\TBYv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$0502,$00F7
 .sodds
@@ -1461,12 +1396,9 @@ Toronto	;TOR, $4518
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
-	dc.w	$0200,$0600,$0622,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
-	dc.w	$0888,$0AAA,$0CCC,$0600,$0622,$0200,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\TORh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\TORv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$2020,$11E8
 .sodds
@@ -1524,12 +1456,9 @@ Vancouver	;VAN, $481C
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
-	dc.w	$004E,$00AE,$0000,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0200,$0400,$088C,$066A
-	dc.w	$000A,$000C,$008C,$0200,$0400,$0000,$048C,$0A84
+.pad	;home 94 colours (93 VANh.pal differs)
+	incbin	..\Extracted\NHL94\Graphics\Pals\VANh94.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\VANv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$6102,$11F8
 .sodds
@@ -1587,12 +1516,9 @@ Winnipeg	;WPG, $4B0A
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$040C,$042C,$0A20,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0006,$0008,$000A,$088C,$066A
-	dc.w	$040C,$042C,$0CCC,$0820,$0842,$0400,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\WPGh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\WPGv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$4511,$11F8
 .sodds
@@ -1650,12 +1576,9 @@ Washington	;WSH, $4DFC
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
-	dc.w	$0008,$000A,$022C,$0CCC,$0EEE,$0AAA,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0600,$0622,$0844,$088C,$066A
-	dc.w	$0888,$0AAA,$0CCC,$000A,$022A,$0008,$048C,$0A84
+.pad
+	incbin	..\Extracted\NHL94\Graphics\Pals\WSHh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\WSHv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$5220,$11E8
 .sodds
@@ -1712,12 +1635,9 @@ Florida	;FLA, $50E6. new in 94
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0600,$088C,$066A
-	dc.w	$002A,$004C,$0008,$0888,$0CCC,$0666,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0200,$0400,$0600,$088C,$066A
-	dc.w	$004A,$006C,$0400,$0004,$0008,$0002,$048C,$0A84
+.pad	;new in 94
+	incbin	..\Extracted\NHL94\Graphics\Pals\FLAh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\FLAv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$0702,$1396
 .sodds
@@ -1767,12 +1687,9 @@ Anaheim	;ANH, $5330. new in 94
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.sodds-.0
-.pad	;home colours (93: incbin <team>h.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
-	dc.w	$0040,$0260,$0240,$0AAA,$0EEE,$0444,$048C,$0A84
-	;visitor colours (93: incbin <team>v.pal)
-	dc.w	$0EE8,$0222,$0000,$0000,$0222,$0222,$088C,$066A
-	dc.w	$02A6,$0ACA,$0040,$0000,$0222,$0222,$048C,$0A84
+.pad	;new in 94
+	incbin	..\Extracted\NHL94\Graphics\Pals\ANHh.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\ANHv.pal
 .sr	;4 bytes in 94 (93: 8, hex2)
 	dc.w	$0702,$1397
 .sodds

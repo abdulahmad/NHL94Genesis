@@ -5,54 +5,64 @@ const crc32 = require('crc-32'); // Requires 'crc-32' package: npm install crc-3
 // Asset definitions from the .lst file
 const assets = [
     // { name: 'EALogo.bin', folder: 'NHL94/Graphics', start: 0x00000306, end: 0x00001164 },
-    // { name: 'Bruinsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x000011DA, end: 0x000011FA },
-    // { name: 'Bruinsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000011FA, end: 0x0000121A },
-    // { name: 'sabresh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001320, end: 0x00001340 },
-    // { name: 'sabresv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001340, end: 0x00001360 },
-    // { name: 'flamesh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001466, end: 0x00001486 },
-    // { name: 'flamesv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001486, end: 0x000014A6 },
-    // { name: 'blackhawksh.pal', folder: 'NHL94/Graphics/Pals', start: 0x000015BC, end: 0x000015DC },
-    // { name: 'blackhawksv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000015DC, end: 0x000015FC },
-    // { name: 'Redwingsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001716, end: 0x00001736 },
-    // { name: 'Redwingsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001736, end: 0x00001756 },
-    // { name: 'oilersh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001878, end: 0x00001898 },
-    // { name: 'oilersv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001898, end: 0x000018B8 },
-    // { name: 'whalersh.pal', folder: 'NHL94/Graphics/Pals', start: 0x000019C8, end: 0x000019E8 },
-    // { name: 'whalersv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000019E8, end: 0x00001A08 },
-    // { name: 'Kingsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001B00, end: 0x00001B20 },
-    // { name: 'Kingsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001B20, end: 0x00001B40 },
-    // { name: 'northstarsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001C52, end: 0x00001C72 },
-    // { name: 'northstarsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001C72, end: 0x00001C92 },
-    // { name: 'canadiensh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001DA8, end: 0x00001DC8 },
-    // { name: 'canadiensv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001DC8, end: 0x00001DE8 },
-    // { name: 'devilsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001EEA, end: 0x00001F0A },
-    // { name: 'devilsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001F0A, end: 0x00001F2A },
-    // { name: 'islandersh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000203C, end: 0x0000205C },
-    // { name: 'islandersv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000205C, end: 0x0000207C },
-    // { name: 'rangersh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002186, end: 0x000021A6 },
-    // { name: 'rangersv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000021A6, end: 0x000021C6 },
-    // { name: 'flyersh.pal', folder: 'NHL94/Graphics/Pals', start: 0x000022D6, end: 0x000022F6 },
-    // { name: 'flyersv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000022F6, end: 0x00002316 },
-    // { name: 'penguinsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000242A, end: 0x0000244A },
-    // { name: 'penguinsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000244A, end: 0x0000246A },
-    // { name: 'nordiquesh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002576, end: 0x00002596 },
-    // { name: 'nordiquesv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002596, end: 0x000025B6 },
-    // { name: 'Sharksh.pal', folder: 'NHL94/Graphics/Pals', start: 0x000026BE, end: 0x000026DE },
-    // { name: 'Sharksv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000026DE, end: 0x000026FE },
-    // { name: 'bluesh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002806, end: 0x00002826 },
-    // { name: 'bluesv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002826, end: 0x00002846 },
-    // { name: 'mapleleafsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002946, end: 0x00002966 },
-    // { name: 'mapleleafsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002966, end: 0x00002986 },
-    // { name: 'canucksh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002A92, end: 0x00002AB2 },
-    // { name: 'canucksv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002AB2, end: 0x00002AD2 },
-    // { name: 'capitalsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002BEC, end: 0x00002C0C },
-    // { name: 'capitalsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002C0C, end: 0x00002C2C },
-    // { name: 'jetsh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002D30, end: 0x00002D50 },
-    // { name: 'jetsv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002D50, end: 0x00002D70 },
-    // { name: 'Campbellh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002E7E, end: 0x00002E9E },
-    // { name: 'Campbellv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002E9E, end: 0x00002EBE },
-    // { name: 'Walesh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002FB8, end: 0x00002FD8 },
-    // { name: 'Walesv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002FD8, end: 0x00002FF8 },
+    // NHL 94 team palettes, src/teamdata94.asm .pad of each team block (block + $C): home then visitor, 32 bytes each, in ROM order.
+    // The 93 file name (extractAssets93-1.1.js) where the bytes equal 93's, 94 added where they differ; Dallas keeps the 93 Minnesota palettes.
+    { name: 'ASEh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000038A, end: 0x000003AA }, // ASE home
+    { name: 'ASEv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000003AA, end: 0x000003CA }, // ASE visitor
+    { name: 'ASWh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000680, end: 0x000006A0 }, // ASW home
+    { name: 'ASWv.pal', folder: 'NHL94/Graphics/Pals', start: 0x000006A0, end: 0x000006C0 }, // ASW visitor
+    { name: 'BOSh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000972, end: 0x00000992 }, // BOS home
+    { name: 'BOSv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000992, end: 0x000009B2 }, // BOS visitor
+    { name: 'BUFh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000C58, end: 0x00000C78 }, // BUF home
+    { name: 'BUFv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000C78, end: 0x00000C98 }, // BUF visitor
+    { name: 'CGYh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000F46, end: 0x00000F66 }, // CGY home
+    { name: 'CGYv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00000F66, end: 0x00000F86 }, // CGY visitor
+    { name: 'CHIh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001240, end: 0x00001260 }, // CHI home
+    { name: 'CHIv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001260, end: 0x00001280 }, // CHI visitor
+    { name: 'DETh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000153A, end: 0x0000155A }, // DET home
+    { name: 'DETv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000155A, end: 0x0000157A }, // DET visitor
+    { name: 'EDMh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001854, end: 0x00001874 }, // EDM home
+    { name: 'EDMv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001874, end: 0x00001894 }, // EDM visitor
+    { name: 'HFDh94.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001B50, end: 0x00001B70 }, // HFD home
+    { name: 'HFDv94.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001B70, end: 0x00001B90 }, // HFD visitor
+    { name: 'LAh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001E5E, end: 0x00001E7E }, // LA home
+    { name: 'LAv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00001E7E, end: 0x00001E9E }, // LA visitor
+    { name: 'MINh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000215A, end: 0x0000217A }, // DAL home
+    { name: 'MINv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000217A, end: 0x0000219A }, // DAL visitor
+    { name: 'MTLh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000244A, end: 0x0000246A }, // MTL home
+    { name: 'MTLv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000246A, end: 0x0000248A }, // MTL visitor
+    { name: 'NJh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000274C, end: 0x0000276C }, // NJ home
+    { name: 'NJv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000276C, end: 0x0000278C }, // NJ visitor
+    { name: 'LIh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002A64, end: 0x00002A84 }, // NYI home
+    { name: 'LIv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002A84, end: 0x00002AA4 }, // NYI visitor
+    { name: 'NYh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002D68, end: 0x00002D88 }, // NYR home
+    { name: 'NYv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00002D88, end: 0x00002DA8 }, // NYR visitor
+    { name: 'OTWh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003060, end: 0x00003080 }, // OTW home
+    { name: 'OTWv94.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003080, end: 0x000030A0 }, // OTW visitor
+    { name: 'PHIh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003354, end: 0x00003374 }, // PHI home
+    { name: 'PHIv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003374, end: 0x00003394 }, // PHI visitor
+    { name: 'PITh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003652, end: 0x00003672 }, // PIT home
+    { name: 'PITv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003672, end: 0x00003692 }, // PIT visitor
+    { name: 'QUEh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003948, end: 0x00003968 }, // QUE home
+    { name: 'QUEv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003968, end: 0x00003988 }, // QUE visitor
+    { name: 'SJh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003C4E, end: 0x00003C6E }, // SJ home
+    { name: 'SJv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003C6E, end: 0x00003C8E }, // SJ visitor
+    { name: 'STLh94.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003F3C, end: 0x00003F5C }, // STL home
+    { name: 'STLv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00003F5C, end: 0x00003F7C }, // STL visitor
+    { name: 'TBYh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004222, end: 0x00004242 }, // TB home
+    { name: 'TBYv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004242, end: 0x00004262 }, // TB visitor
+    { name: 'TORh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004524, end: 0x00004544 }, // TOR home
+    { name: 'TORv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004544, end: 0x00004564 }, // TOR visitor
+    { name: 'VANh94.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004828, end: 0x00004848 }, // VAN home
+    { name: 'VANv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004848, end: 0x00004868 }, // VAN visitor
+    { name: 'WPGh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004B16, end: 0x00004B36 }, // WPG home
+    { name: 'WPGv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004B36, end: 0x00004B56 }, // WPG visitor
+    { name: 'WSHh.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004E08, end: 0x00004E28 }, // WSH home
+    { name: 'WSHv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00004E28, end: 0x00004E48 }, // WSH visitor
+    { name: 'FLAh.pal', folder: 'NHL94/Graphics/Pals', start: 0x000050F2, end: 0x00005112 }, // FLA home
+    { name: 'FLAv.pal', folder: 'NHL94/Graphics/Pals', start: 0x00005112, end: 0x00005132 }, // FLA visitor
+    { name: 'ANHh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000533C, end: 0x0000535C }, // ANH home
+    { name: 'ANHv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000535C, end: 0x0000537C }, // ANH visitor
     // { name: 'Hockey.snd', folder: 'NHL94/Sound', start: 0x0000F4C8, end: 0x00024214 },
     // NHL 94 $1AD90-$F66ED, the incbins of src/sound94.asm ($1AD90-$4B5BF) and src/graphics94.asm: one slice per IDA label (the 92 / 93 file name where the asset
     // lines up, else the label), contiguous, end exclusive. Labels IDA made from constants or from data read as code are not slice
