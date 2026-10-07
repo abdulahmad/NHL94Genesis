@@ -4,8 +4,9 @@
 ;	p_music_vblank), UploadCommandBufferToZ80, ProcessOneMusicTrack and the event handlers, UpdateChannelFrequencyAndVolume, the 94
 ;	volume routine SetChannelVolume, Z80_LoadROM (93 p_initialZ80) and ClearAllTrackAndSFXSlots. Then, as 93 sound93 (incbins after the
 ;	driver), the sound data from $1AD90 to $4B5BF: the Z80 program (Z80_Program_Code, loaded by Z80_LoadROM), the PCM sample table and
-;	samples (pcm_sample_table), the FM patches (fm_instrument_patches), the sound pointer tables (MusicTrackPointerTable, SongPointerTable)
-;	and the song event streams (SongStreams), each a slice of lst/nhl94.bin written by npm run extractassets (extractAssets94.js).
+;	the 12 samples (pcm_sample_table), the FM patches (fm_instrument_patches), the pointer table of sounds 0-$7A (MusicTrackPointerTable,
+;	songs from SongPointerTable) and the 122 sound and song event streams, each incbin a file written by npm run extractassets
+;	(extractAssets94.js), split as 93 (93 file names where the bytes are the same: the Z80 driver, samples, patches and sounds 0-$2F).
 ;	94 changes from 93: sounds 0-$7A (93 0-$37) through a long pointer table (93 word offsets), 8 byte channel structs (93 6), a voice
 ;	volume word (+4) and the controller event handle_command_30, the vblank pad reading, and the Rev A 93 50 Hz tempo block.
 ;	Transcribed from lst/nhl94.bin.lst lines 61529-63138. Global names are the IDA names, or the 93 sound93 name where IDA has an auto
@@ -482,7 +483,7 @@ UpdateChannelFrequencyAndVolume	;93 name. Set the frequency of channel struct a2
 	bge.w	.0
 	move.b	3(a2),d1
 	asl.w	#5,d1
-	lea	($2C248).l,a4	;93 fm_instrument_patches: 32 bytes per patch
+	lea	(fm_instrument_patches).l,a4	;32 bytes per patch
 	move.b	$1E(a4,d1.w),d1	;byte $1E = pitch bend scale
 	ext.w	d1
 .0
@@ -725,26 +726,563 @@ ClearAllTrackAndSFXSlots	;93 name. Free the 8 track slots and reset the 6 channe
 	dbf	d0,.chan
 	rts
 
-;	Sound data (incbin, as 93 sound93): $1AD90-$4B5BF
-Z80_Program_Code		;retail $1AD90-$1B01B (652 bytes). the Z80 sound program. Z80_LoadROM copies $295 bytes from here into Z80 RAM (through $1B024, into the sample table, as 93
-	;does)
-	incbin	..\Extracted\NHL94\Sound\z80_snd_drv94.bin
+;	Sound data, as 93 sound93: $1AD90-$4B5BF. The Z80 driver, the PCM samples and the FM patches are the 93 files (same bytes); the pointer
+;	tables are written with the labels; each sound and song event stream is its own file (loop pointers written as dc.l).
+Z80_Program_Code	;IDA name. First byte of the Z80 program ($1AD90, movea.l in Z80_LoadROM); the rest of the Z80 blob from $1AD91 and the data
+	;after it are the incbins below. Z80_LoadROM copies $295 bytes from here (through $1B024, into pcm_sample_table, as 93 does)
+	dc.b	$18
+	incbin	..\Extracted\NHL94\Sound\z80_snd_drv93.bin	;retail $1AD91-$1B007. the 93 Z80 driver after its first byte, up to the ld bc of the FM patch bank address
+	dc.b	fm_instrument_patches&$FF,((fm_instrument_patches>>8)&$7F)|$80	;Z80 ld bc,$8000+(fm_instrument_patches&$7FFF): bank window address of the FM patches
+	dc.b	$09,$3E,fm_instrument_patches>>15	;Z80 add hl,bc / ld a,bank (32K bank) of the FM patches
+	incbin	..\Extracted\NHL94\Sound\z80_snd_drv93_end.bin	;retail $1B00D-$1B01A. rest of the Z80 driver
+	dc.b	$FF			;pad: retail leftover byte (93 $83)
+pcm_sample_table	;93 name: (sample address, 0) for PCM patches $60-$6E (lea in handle_command_10)
+	dc.l	sfx_puckget_pcm,0		;patch $60
+	dc.l	sfx_pass_pcm,0		;patch $61
+	dc.l	sfx_shotbh_pcm,0		;patch $62
+	dc.l	sfx_shotfh_pcm,0		;patch $63
+	dc.l	sfx_check2_pcm,0		;patch $64
+	dc.l	sfx_check_pcm,0		;patch $65
+	dc.l	sfx_playerwall_pcm,0		;patch $66
+	dc.l	sfx_hithigh_pcm,0		;patch $67
+	dc.l	0,0		;patch $68
+	dc.l	0,0		;patch $69
+	dc.l	sfx_hithigh_pcm,0		;patch $6A
+	dc.l	sfx_crowdboo_pcm,0		;patch $6B
+	dc.l	sfx_oooh_pcm,0		;patch $6C
+	dc.l	sfx_crowdcheer_pcm,0		;patch $6D
+	dc.l	sfx_id_0E_pcm,0		;patch $6E
+sfx_shotbh_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_shotbh_pcm.bin	;retail $1B094-$1B287. sample 2: shotbh
 	even
-pcm_sample_table		;retail $1B01C-$2C247 (70188 bytes). the PCM sample table (handle_command_10; 93 pcm_sample_table), 15 entries
-	;of 8 bytes, then the PCM samples from $1B094
-	incbin	..\Extracted\NHL94\Sound\pcm_sample_table.bin
+sfx_pass_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_pass_pcm.bin	;retail $1B288-$1BFB4. sample 1: pass
+	dc.b	$FF			;pad: retail leftover byte
+sfx_oooh_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_oooh_pcm.bin	;retail $1BFB6-$1F1F9. sample 12: oooh, sfx_id_0D, sfx_id_0E
 	even
-fm_instrument_patches		;retail $2C248-$2C647 (1024 bytes). 32 FM patches of 32 bytes (93 fm_instrument_patches;
-	;UpdateChannelFrequencyAndVolume reads byte $1E, the pitch bend scale)
-	incbin	..\Extracted\NHL94\Sound\fm_instrument_patches.bin
+sfx_crowdboo_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_crowdboo_pcm.bin	;retail $1F1FA-$21746. sample 11: crowdboo
+	dc.b	$FF			;pad: retail leftover byte
+sfx_check_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_check_pcm.bin	;retail $21748-$23699. sample 5: check1, check3
 	even
-MusicTrackPointerTable		;retail $2C648-$2C707 (192 bytes). the event stream pointers of sounds 0-$2F (p_initfx; 93 word offsets)
-	incbin	..\Extracted\NHL94\Sound\MusicTrackPointerTable.bin
+sfx_crowdcheer_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_crowdcheer_pcm.bin	;retail $2369A-$26579. sample 13: crowdcheer, homewin
 	even
-SongPointerTable		;retail $2C708-$2CEF1 (2026 bytes). the pointers of sounds $30-$7A, the songs (play_new_song reads the first), then the event streams of sounds 0-$2F from $2C834
-	incbin	..\Extracted\NHL94\Sound\SongPointerTable.bin
+sfx_id_0E_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_id_0E_pcm.bin	;retail $2657A-$29FF8. sample 14: sfx_id_0E
+	dc.b	$FF			;pad: retail leftover byte
+sfx_playerwall_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_playerwall_pcm.bin	;retail $29FFA-$2A4A9. sample 6: playerwall, sfx_id_21-23
 	even
-SongStreams		;retail $2CEF2-$4B5BF (124622 bytes). the song event streams, song $30 (the first SongPointerTable pointer) to song
-	;$7A ($490E2)
-	incbin	..\Extracted\NHL94\Sound\SongStreams.bin
+sfx_check2_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_check2_pcm.bin	;retail $2A4AA-$2AED8. sample 4: check2, check4
+	dc.b	$FF			;pad: retail leftover byte
+sfx_hithigh_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_hithigh_pcm.bin	;retail $2AEDA-$2B42F. samples 7 and 10: hithigh, hitlow, check1-4, songs $32 and $35-$37
 	even
+sfx_shotfh_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_shotfh_pcm.bin	;retail $2B430-$2BFE7. sample 3: shotfh
+	even
+sfx_puckget_pcm
+	incbin	..\Extracted\NHL94\Sound\sfx_puckget_pcm.bin	;retail $2BFE8-$2C247. sample 0: puckget
+	even
+fm_instrument_patches	;93 name: 32 FM patches x 32 bytes, byte $1E = pitch bend scale (UpdateChannelFrequencyAndVolume)
+	incbin	..\Extracted\NHL94\Sound\fm_instrument_patches.bin	;retail $2C248-$2C647. 32 FM patches x 32 bytes (byte $1E = pitch bend scale)
+	even
+MusicTrackPointerTable	;IDA name: event stream of sounds 0-$7A as long pointers (p_initfx; 93 word offsets from the table, sounds 0-$37)
+	dc.l	sfx_siren_cmdstream	;sound $0
+	dc.l	sfx_beep1_cmdstream	;sound $1
+	dc.l	sfx_beep2_cmdstream	;sound $2
+	dc.l	sfx_whistle_cmdstream	;sound $3
+	dc.l	sfx_horn_cmdstream	;sound $4
+	dc.l	sfx_shotwiff_cmdstream	;sound $5
+	dc.l	sfx_stdef_cmdstream	;sound $6
+	dc.l	sfx_puckget_cmdstream	;sound $7
+	dc.l	sfx_oooh_cmdstream	;sound $8
+	dc.l	sfx_hithigh_cmdstream	;sound $9
+	dc.l	sfx_hitlow_cmdstream	;sound $A
+	dc.l	sfx_crowdcheer_cmdstream	;sound $B
+	dc.l	sfx_crowdboo_cmdstream	;sound $C
+	dc.l	sfx_id_0D_cmdstream	;sound $D
+	dc.l	sfx_id_0E_cmdstream	;sound $E
+	dc.l	sfx_homewin_cmdstream	;sound $F
+	dc.l	sfx_pass1_cmdstream	;sound $10
+	dc.l	sfx_pass2_cmdstream	;sound $11
+	dc.l	sfx_pass3_cmdstream	;sound $12
+	dc.l	sfx_pass4_cmdstream	;sound $13
+	dc.l	sfx_shotbh1_cmdstream	;sound $14
+	dc.l	sfx_shotbh2_cmdstream	;sound $15
+	dc.l	sfx_shotbh3_cmdstream	;sound $16
+	dc.l	sfx_shotbh4_cmdstream	;sound $17
+	dc.l	sfx_shotfh1_cmdstream	;sound $18
+	dc.l	sfx_shotfh2_cmdstream	;sound $19
+	dc.l	sfx_shotfh3_cmdstream	;sound $1A
+	dc.l	sfx_shotfh4_cmdstream	;sound $1B
+	dc.l	sfx_check1_cmdstream	;sound $1C
+	dc.l	sfx_check2_cmdstream	;sound $1D
+	dc.l	sfx_check3_cmdstream	;sound $1E
+	dc.l	sfx_check4_cmdstream	;sound $1F
+	dc.l	sfx_playerwall_cmdstream	;sound $20
+	dc.l	sfx_id_21_cmdstream	;sound $21
+	dc.l	sfx_id_22_cmdstream	;sound $22
+	dc.l	sfx_id_23_cmdstream	;sound $23
+	dc.l	sfx_puckbody_cmdstream	;sound $24
+	dc.l	sfx_puckpost_cmdstream	;sound $25
+	dc.l	sfx_id_26_27_cmdstream	;sound $26
+	dc.l	sfx_id_26_27_cmdstream	;sound $27
+	dc.l	sfx_puckwall1_cmdstream	;sound $28
+	dc.l	sfx_puckwall2_cmdstream	;sound $29
+	dc.l	sfx_puckwall3_cmdstream	;sound $2A
+	dc.l	sfx_puckwall4_cmdstream	;sound $2B
+	dc.l	sfx_puckice1_cmdstream	;sound $2C
+	dc.l	sfx_puckice2_cmdstream	;sound $2D
+	dc.l	sfx_puckice3_cmdstream	;sound $2E
+	dc.l	sfx_puckice4_cmdstream	;sound $2F
+SongPointerTable	;the songs $30-$7A of MusicTrackPointerTable (play_new_song reads the first)
+	dc.l	fmtune_id_30_cmdstream	;song $30
+	dc.l	fmtune_id_31_cmdstream	;song $31
+	dc.l	fmtune_id_32_cmdstream	;song $32
+	dc.l	fmtune_id_33_cmdstream	;song $33
+	dc.l	fmtune_id_34_cmdstream	;song $34
+	dc.l	fmtune_id_35_cmdstream	;song $35
+	dc.l	fmtune_id_36_cmdstream	;song $36
+	dc.l	fmtune_id_37_cmdstream	;song $37
+	dc.l	fmtune_id_38_cmdstream	;song $38
+	dc.l	fmtune_id_39_cmdstream	;song $39
+	dc.l	fmtune_id_3A_cmdstream	;song $3A
+	dc.l	fmtune_id_3B_cmdstream	;song $3B
+	dc.l	fmtune_id_3C_cmdstream	;song $3C
+	dc.l	fmtune_id_3D_cmdstream	;song $3D
+	dc.l	fmtune_id_3E_cmdstream	;song $3E
+	dc.l	fmtune_id_3F_cmdstream	;song $3F
+	dc.l	fmtune_id_40_cmdstream	;song $40
+	dc.l	fmtune_id_41_cmdstream	;song $41
+	dc.l	fmtune_id_42_cmdstream	;song $42
+	dc.l	fmtune_id_43_cmdstream	;song $43
+	dc.l	fmtune_id_44_cmdstream	;song $44
+	dc.l	fmtune_id_45_cmdstream	;song $45
+	dc.l	fmtune_id_46_cmdstream	;song $46
+	dc.l	fmtune_id_47_cmdstream	;song $47
+	dc.l	fmtune_id_48_cmdstream	;song $48
+	dc.l	fmtune_id_49_cmdstream	;song $49
+	dc.l	fmtune_id_4A_cmdstream	;song $4A
+	dc.l	fmtune_id_4B_cmdstream	;song $4B
+	dc.l	fmtune_id_4C_cmdstream	;song $4C
+	dc.l	fmtune_id_4D_cmdstream	;song $4D
+	dc.l	fmtune_id_4E_cmdstream	;song $4E
+	dc.l	fmtune_id_4F_cmdstream	;song $4F
+	dc.l	fmtune_id_50_cmdstream	;song $50
+	dc.l	fmtune_id_51_cmdstream	;song $51
+	dc.l	fmtune_id_52_cmdstream	;song $52
+	dc.l	fmtune_id_53_cmdstream	;song $53
+	dc.l	fmtune_id_54_cmdstream	;song $54
+	dc.l	fmtune_id_55_cmdstream	;song $55
+	dc.l	fmtune_id_56_cmdstream	;song $56
+	dc.l	fmtune_id_57_cmdstream	;song $57
+	dc.l	fmtune_id_58_cmdstream	;song $58
+	dc.l	fmtune_id_59_cmdstream	;song $59
+	dc.l	fmtune_id_5A_cmdstream	;song $5A
+	dc.l	fmtune_id_5B_cmdstream	;song $5B
+	dc.l	fmtune_id_5C_cmdstream	;song $5C
+	dc.l	fmtune_id_5D_cmdstream	;song $5D
+	dc.l	fmtune_id_5E_cmdstream	;song $5E
+	dc.l	fmtune_id_5F_cmdstream	;song $5F
+	dc.l	fmtune_id_60_cmdstream	;song $60
+	dc.l	fmtune_id_61_cmdstream	;song $61
+	dc.l	fmtune_id_62_cmdstream	;song $62
+	dc.l	fmtune_id_63_cmdstream	;song $63
+	dc.l	fmtune_id_64_cmdstream	;song $64
+	dc.l	fmtune_id_65_cmdstream	;song $65
+	dc.l	fmtune_id_66_cmdstream	;song $66
+	dc.l	fmtune_id_67_cmdstream	;song $67
+	dc.l	fmtune_id_68_cmdstream	;song $68
+	dc.l	fmtune_id_69_cmdstream	;song $69
+	dc.l	fmtune_id_6A_cmdstream	;song $6A
+	dc.l	fmtune_id_6B_cmdstream	;song $6B
+	dc.l	fmtune_id_6C_cmdstream	;song $6C
+	dc.l	fmtune_id_6D_cmdstream	;song $6D
+	dc.l	fmtune_id_6E_cmdstream	;song $6E
+	dc.l	fmtune_id_6F_cmdstream	;song $6F
+	dc.l	fmtune_id_70_cmdstream	;song $70
+	dc.l	fmtune_id_71_cmdstream	;song $71
+	dc.l	fmtune_id_72_cmdstream	;song $72
+	dc.l	fmtune_id_73_cmdstream	;song $73
+	dc.l	fmtune_id_74_cmdstream	;song $74
+	dc.l	fmtune_id_75_cmdstream	;song $75
+	dc.l	fmtune_id_76_cmdstream	;song $76
+	dc.l	fmtune_id_77_cmdstream	;song $77
+	dc.l	fmtune_title_cmdstream	;song $78
+	dc.l	fmtune_eog_cmdstream	;song $79
+	dc.l	fmtune_scouting_cmdstream	;song $7A
+sfx_beep1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_beep1_cmdstream.bin	;retail $2C834-$2C83F. sound $1 (SFXbeep1)
+	even
+sfx_id_26_27_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_id_26_27_cmdstream.bin	;retail $2C840-$2C843. sound $26, sound $27
+	even
+sfx_beep2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_beep2_cmdstream.bin	;retail $2C844-$2C853. sound $2 (SFXbeep2)
+	even
+sfx_horn_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_horn_cmdstream.bin	;retail $2C854-$2C8CF. sound $4 (92 SFXhorn)
+	even
+sfx_stdef_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_stdef_cmdstream.bin	;retail $2C8D0-$2C8EB. sound $6 (92 SFXstdef)
+	even
+sfx_puckget_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckget_cmdstream.bin	;retail $2C8EC-$2C907. sound $7 (92 SFXpuckget)
+	even
+sfx_puckice1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckice1_cmdstream.bin	;retail $2C908-$2C917. sound $2C (92 SFXpuckice)
+	even
+sfx_puckice2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckice2_cmdstream.bin	;retail $2C918-$2C927. sound $2D
+	even
+sfx_puckice3_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckice3_cmdstream.bin	;retail $2C928-$2C937. sound $2E
+	even
+sfx_puckice4_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckice4_cmdstream.bin	;retail $2C938-$2C947. sound $2F
+	even
+sfx_puckbody_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckbody_cmdstream.bin	;retail $2C948-$2C963. sound $24 (92 SFXpuckbody)
+	even
+sfx_oooh_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_oooh_cmdstream.bin	;retail $2C964-$2C97F. sound $8 (92 SFXoooh)
+	even
+sfx_puckpost_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckpost_cmdstream.bin	;retail $2C980-$2C98F. sound $25 (92 SFXpuckpost)
+	even
+sfx_playerwall_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_playerwall_cmdstream.bin	;retail $2C990-$2C9AB. sound $20 (92 SFXplayerwall)
+	even
+sfx_id_21_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_id_21_cmdstream.bin	;retail $2C9AC-$2C9C7. sound $21
+	even
+sfx_id_22_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_id_22_cmdstream.bin	;retail $2C9C8-$2C9E3. sound $22
+	even
+sfx_id_23_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_id_23_cmdstream.bin	;retail $2C9E4-$2C9FF. sound $23
+	even
+sfx_puckwall1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckwall1_cmdstream.bin	;retail $2CA00-$2CA0F. sound $28
+	even
+sfx_puckwall2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckwall2_cmdstream.bin	;retail $2CA10-$2CA1F. sound $29
+	even
+sfx_puckwall3_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckwall3_cmdstream.bin	;retail $2CA20-$2CA2F. sound $2A
+	even
+sfx_puckwall4_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_puckwall4_cmdstream.bin	;retail $2CA30-$2CA3F. sound $2B
+	even
+sfx_whistle_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_whistle_cmdstream.bin	;retail $2CA40-$2CADB. sound $3 (92 SFXwhistle)
+	even
+	dc.b	$FF,$FF			;pad: retail leftover bytes (93 has none here)
+sfx_shotwiff_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotwiff_cmdstream.bin	;retail $2CADE-$2CAED. sound $5 (92 SFXshotwiff)
+	even
+sfx_check1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_check1_cmdstream.bin	;retail $2CAEE-$2CB09. sound $1C (92 SFXcheck)
+	even
+sfx_check2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_check2_cmdstream.bin	;retail $2CB0A-$2CB25. sound $1D
+	even
+sfx_check3_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_check3_cmdstream.bin	;retail $2CB26-$2CB41. sound $1E
+	even
+sfx_check4_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_check4_cmdstream.bin	;retail $2CB42-$2CB65. sound $1F
+	even
+sfx_pass1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_pass1_cmdstream.bin	;retail $2CB66-$2CB75. sound $10 (92 SFXpass)
+	even
+sfx_pass2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_pass2_cmdstream.bin	;retail $2CB76-$2CB85. sound $11
+	even
+sfx_pass3_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_pass3_cmdstream.bin	;retail $2CB86-$2CB95. sound $12
+	even
+sfx_pass4_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_pass4_cmdstream.bin	;retail $2CB96-$2CBA5. sound $13
+	even
+sfx_shotbh1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotbh1_cmdstream.bin	;retail $2CBA6-$2CBB5. sound $14 (92 SFXshotbh)
+	even
+sfx_shotbh2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotbh2_cmdstream.bin	;retail $2CBB6-$2CBC5. sound $15
+	even
+sfx_shotbh3_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotbh3_cmdstream.bin	;retail $2CBC6-$2CBD5. sound $16
+	even
+sfx_shotbh4_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotbh4_cmdstream.bin	;retail $2CBD6-$2CBE5. sound $17
+	even
+sfx_shotfh1_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotfh1_cmdstream.bin	;retail $2CBE6-$2CBF5. sound $18 (92 SFXshotfh)
+	even
+sfx_shotfh2_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotfh2_cmdstream.bin	;retail $2CBF6-$2CC05. sound $19
+	even
+sfx_shotfh3_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotfh3_cmdstream.bin	;retail $2CC06-$2CC15. sound $1A
+	even
+sfx_shotfh4_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_shotfh4_cmdstream.bin	;retail $2CC16-$2CC25. sound $1B
+	even
+sfx_hithigh_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_hithigh_cmdstream.bin	;retail $2CC26-$2CC35. sound $9 (SFXhithigh)
+	even
+sfx_hitlow_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_hitlow_cmdstream.bin	;retail $2CC36-$2CC45. sound $A (SFXhitlow)
+	even
+sfx_homewin_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_homewin_cmdstream.bin	;retail $2CC46-$2CC7D. sound $F
+	even
+sfx_crowdcheer_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_crowdcheer_cmdstream.bin	;retail $2CC7E-$2CC8D. sound $B (SFXcrowdcheer)
+	even
+sfx_crowdboo_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_crowdboo_cmdstream.bin	;retail $2CC8E-$2CC9D. sound $C (SFXcrowdboo)
+	even
+sfx_id_0E_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_id_0E_cmdstream.bin	;retail $2CC9E-$2CCB9. sound $E
+	even
+sfx_id_0D_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_id_0D_cmdstream.bin	;retail $2CCBA-$2CCC9. sound $D
+	even
+sfx_siren_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_siren_cmdstream.bin	;retail $2CCCA-$2CEF1. sound $0 (92 SFXsiren)
+	even
+fmtune_id_30_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_30_cmdstream.bin	;retail $2CEF2-$2D29D. song $30: ChooseSong, TeamSongs BOS
+	even
+fmtune_id_31_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_31_cmdstream.bin	;retail $2D29E-$2D6C9. song $31: ChooseSong, TeamSongs BOS
+	even
+fmtune_id_32_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_32_cmdstream.bin	;retail $2D6CA-$2D965. song $32: ChooseSong, TeamSongs BOS
+	even
+fmtune_id_33_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_33_cmdstream.bin	;retail $2D966-$2DD35. song $33: ChooseSong, TeamSongs BUF
+	even
+fmtune_id_34_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_34_cmdstream.bin	;retail $2DD36-$2E6F9. song $34: ChooseSong, TeamSongs BUF, RandomSongs
+	even
+fmtune_id_35_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_35_cmdstream.bin	;retail $2E6FA-$2EBBD. song $35: ChooseSong, TeamSongs CGY
+	even
+fmtune_id_36_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_36_cmdstream.bin	;retail $2EBBE-$2F221. song $36: ChooseSong, TeamSongs CGY
+	even
+fmtune_id_37_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_37_cmdstream.bin	;retail $2F222-$2F739. song $37: ChooseSong, TeamSongs CGY
+	even
+fmtune_id_38_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_38_cmdstream.bin	;retail $2F73A-$2FD6D. song $38: ChooseSong, TeamSongs CHI
+	even
+fmtune_id_39_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_39_cmdstream.bin	;retail $2FD6E-$302B9. song $39: ChooseSong, TeamSongs CHI
+	even
+fmtune_id_3A_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_3A_cmdstream.bin	;retail $302BA-$30695. song $3A: ChooseSong, TeamSongs CHI
+	even
+fmtune_id_3B_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_3B_cmdstream.bin	;retail $30696-$30C09. song $3B: ChooseSong, TeamSongs DET
+	even
+fmtune_id_3C_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_3C_cmdstream.bin	;retail $30C0A-$31075. song $3C: ChooseSong, TeamSongs DET
+	even
+fmtune_id_3D_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_3D_cmdstream.bin	;retail $31076-$313C9. song $3D: ChooseSong, TeamSongs DET
+	even
+fmtune_id_3E_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_3E_cmdstream.bin	;retail $313CA-$3184D. song $3E: ChooseSong, TeamSongs EDM
+	even
+fmtune_id_3F_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_3F_cmdstream.bin	;retail $3184E-$31BA9. song $3F: ChooseSong, TeamSongs EDM
+	even
+fmtune_id_40_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_40_cmdstream.bin	;retail $31BAA-$323AD. song $40: ChooseSong, TeamSongs HFD, RandomSongs
+	even
+fmtune_id_41_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_41_cmdstream.bin	;retail $323AE-$329E9. song $41: ChooseSong, TeamSongs HFD
+	even
+fmtune_id_42_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_42_cmdstream.bin	;retail $329EA-$33065. song $42: ChooseSong, TeamSongs HFD, RandomSongs
+	even
+fmtune_id_43_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_43_cmdstream.bin	;retail $33066-$33471. song $43: ChooseSong, TeamSongs LA
+	even
+fmtune_id_44_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_44_cmdstream.bin	;retail $33472-$33AC5. song $44: ChooseSong, TeamSongs LA
+	even
+fmtune_id_45_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_45_cmdstream.bin	;retail $33AC6-$34119. song $45: ChooseSong, TeamSongs LA
+	even
+fmtune_id_46_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_46_cmdstream.bin	;retail $3411A-$34631. song $46: ChooseSong, TeamSongs LA
+	even
+fmtune_id_47_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_47_cmdstream.bin	;retail $34632-$34C91. song $47: ChooseSong, TeamSongs NYI
+	even
+fmtune_id_48_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_48_cmdstream.bin	;retail $34C92-$34E9D. song $48: ChooseSong, TeamSongs NYI
+	even
+fmtune_id_49_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_49_cmdstream.bin	;retail $34E9E-$35549. song $49: ChooseSong, TeamSongs NYI, RandomSongs
+	even
+fmtune_id_4A_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_4A_cmdstream.bin	;retail $3554A-$358D5. song $4A: ChooseSong, TeamSongs DAL
+	even
+fmtune_id_4B_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_4B_cmdstream.bin	;retail $358D6-$35B39. song $4B: ChooseSong, TeamSongs DAL
+	even
+fmtune_id_4C_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_4C_cmdstream.bin	;retail $35B3A-$362BD. song $4C: ChooseSong, TeamSongs MTL
+	even
+fmtune_id_4D_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_4D_cmdstream.bin	;retail $362BE-$366D1. song $4D: ChooseSong, TeamSongs MTL
+	even
+fmtune_id_4E_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_4E_cmdstream.bin	;retail $366D2-$36B4D. song $4E: ChooseSong, TeamSongs MTL
+	even
+fmtune_id_4F_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_4F_cmdstream.bin	;retail $36B4E-$36F11. song $4F: ChooseSong, TeamSongs MTL
+	even
+fmtune_id_50_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_50_cmdstream.bin	;retail $36F12-$374F1. song $50: ChooseSong, TeamSongs NJ
+	even
+fmtune_id_51_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_51_cmdstream.bin	;retail $374F2-$37A7D. song $51: ChooseSong, TeamSongs NJ
+	even
+fmtune_id_52_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_52_cmdstream.bin	;retail $37A7E-$37FB1. song $52: ChooseSong, TeamSongs NJ
+	even
+fmtune_id_53_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_53_cmdstream.bin	;retail $37FB2-$38459. song $53: ChooseSong, TeamSongs NYR / ASE / ASW
+	even
+fmtune_id_54_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_54_cmdstream.bin	;retail $3845A-$38875. song $54: ChooseSong, TeamSongs NYR / ASE / ASW
+	even
+fmtune_id_55_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_55_cmdstream.bin	;retail $38876-$38B39. song $55: ChooseSong, TeamSongs NYR / ASE / ASW
+	even
+fmtune_id_56_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_56_cmdstream.bin	;retail $38B3A-$3901D. song $56: ChooseSong, TeamSongs PHI
+	even
+fmtune_id_57_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_57_cmdstream.bin	;retail $3901E-$39561. song $57: ChooseSong, TeamSongs PHI
+	even
+fmtune_id_58_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_58_cmdstream.bin	;retail $39562-$39FCD. song $58: ChooseSong, TeamSongs PHI, RandomSongs
+	even
+fmtune_id_59_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_59_cmdstream.bin	;retail $39FCE-$3A571. song $59: ChooseSong, TeamSongs PIT
+	even
+fmtune_id_5A_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_5A_cmdstream.bin	;retail $3A572-$3A81D. song $5A: ChooseSong, TeamSongs (25 teams: all but CGY, PHI and SJ)
+	even
+fmtune_id_5B_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_5B_cmdstream.bin	;retail $3A81E-$3AE59. song $5B: ChooseSong, TeamSongs PIT
+	even
+fmtune_id_5C_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_5C_cmdstream.bin	;retail $3AE5A-$3B5CD. song $5C: ChooseSong, TeamSongs PIT, RandomSongs
+	even
+fmtune_id_5D_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_5D_cmdstream.bin	;retail $3B5CE-$3BE11. song $5D: ChooseSong, TeamSongs QUE
+	even
+fmtune_id_5E_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_5E_cmdstream.bin	;retail $3BE12-$3C60D. song $5E: ChooseSong, TeamSongs QUE
+	even
+fmtune_id_5F_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_5F_cmdstream.bin	;retail $3C60E-$3CC31. song $5F: ChooseSong, TeamSongs SJ
+	even
+fmtune_id_60_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_60_cmdstream.bin	;retail $3CC32-$3D395. song $60: ChooseSong, TeamSongs SJ
+	even
+fmtune_id_61_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_61_cmdstream.bin	;retail $3D396-$3DA2D. song $61: ChooseSong, TeamSongs SJ
+	even
+fmtune_id_62_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_62_cmdstream.bin	;retail $3DA2E-$3E1A5. song $62: ChooseSong, not in TeamSongs or RandomSongs
+	even
+fmtune_id_63_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_63_cmdstream.bin	;retail $3E1A6-$3E84D. song $63: ChooseSong, TeamSongs SJ
+	even
+fmtune_id_64_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_64_cmdstream.bin	;retail $3E84E-$3EDE1. song $64: ChooseSong, TeamSongs SJ
+	even
+fmtune_id_65_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_65_cmdstream.bin	;retail $3EDE2-$3F615. song $65: ChooseSong, TeamSongs CHI / SJ, RandomSongs
+	even
+fmtune_id_66_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_66_cmdstream.bin	;retail $3F616-$3FF29. song $66: ChooseSong, RandomSongs
+	even
+fmtune_id_67_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_67_cmdstream.bin	;retail $3FF2A-$403CD. song $67: ChooseSong, TeamSongs STL
+	even
+fmtune_id_68_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_68_cmdstream.bin	;retail $403CE-$408D9. song $68: ChooseSong, TeamSongs STL
+	even
+fmtune_id_69_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_69_cmdstream.bin	;retail $408DA-$40EA5. song $69: ChooseSong, TeamSongs STL
+	even
+fmtune_id_6A_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_6A_cmdstream.bin	;retail $40EA6-$412D5. song $6A: ChooseSong, TeamSongs TB
+	even
+fmtune_id_6B_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_6B_cmdstream.bin	;retail $412D6-$414B1. song $6B: ChooseSong, TeamSongs TB
+	even
+fmtune_id_6C_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_6C_cmdstream.bin	;retail $414B2-$4196D. song $6C: ChooseSong, TeamSongs TOR
+	even
+fmtune_id_6D_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_6D_cmdstream.bin	;retail $4196E-$41E51. song $6D: ChooseSong, TeamSongs TOR
+	even
+fmtune_id_6E_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_6E_cmdstream.bin	;retail $41E52-$423ED. song $6E: ChooseSong, TeamSongs VAN
+	even
+fmtune_id_6F_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_6F_cmdstream.bin	;retail $423EE-$426B5. song $6F: ChooseSong, TeamSongs VAN
+	even
+fmtune_id_70_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_70_cmdstream.bin	;retail $426B6-$42851. song $70: ChooseSong, TeamSongs VAN
+	even
+fmtune_id_71_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_71_cmdstream.bin	;retail $42852-$42CDD. song $71: ChooseSong, TeamSongs WSH
+	even
+fmtune_id_72_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_72_cmdstream.bin	;retail $42CDE-$431E5. song $72: ChooseSong, not in TeamSongs or RandomSongs
+	even
+fmtune_id_73_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_73_cmdstream.bin	;retail $431E6-$437B5. song $73: ChooseSong, TeamSongs WSH
+	even
+fmtune_id_74_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_74_cmdstream.bin	;retail $437B6-$43F31. song $74: ChooseSong, TeamSongs WSH
+	even
+fmtune_id_75_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_75_cmdstream.bin	;retail $43F32-$442BD. song $75: ChooseSong, TeamSongs ANH / FLA / OTW / WPG
+	even
+fmtune_id_76_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_76_cmdstream.bin	;retail $442BE-$44B11. song $76: ChooseSong, TeamSongs ANH / FLA / OTW / WPG
+	even
+fmtune_id_77_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_id_77_cmdstream.bin	;retail $44B12-$45079. song $77: ChooseSong, TeamSongs ANH / FLA / OTW / WPG
+	even
+fmtune_title_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_title_cmdstream94.bin	;retail $4507A-$46D87. song $78 (93 $35): ExitToOpening, newTitleScreen. 94: one stream that loops to its start (93: intro, loop body)
+	even
+	dc.l	fmtune_title_cmdstream	;loop pointer
+fmtune_eog_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_eog_cmdstream94.bin	;retail $46D8C-$490DD. song $79 (93 $36): IntermissionStart, StartHL2 (penalty94_2) (differs from 93)
+	even
+	dc.l	fmtune_eog_cmdstream+4	;loop pointer (past the first event)
+fmtune_scouting_cmdstream
+	incbin	..\Extracted\NHL94\Sound\fmtune_scouting_cmdstream94.bin	;retail $490E2-$4B5BB. song $7A (93 $37): ScoutingReport (hockey94_07) (differs from 93)
+	even
+	dc.l	fmtune_scouting_cmdstream+4	;loop pointer (past the first event)

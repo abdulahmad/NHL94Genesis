@@ -67,12 +67,145 @@ const assets = [
     // NHL 94 $1AD90-$F66ED, the incbins of src/sound94.asm ($1AD90-$4B5BF) and src/graphics94.asm: one slice per IDA label (the 92 / 93 file name where the asset
     // lines up, else the label), contiguous, end exclusive. Labels IDA made from constants or from data read as code are not slice
     // boundaries (see graphics94.asm). Replaces the 94 draft entries $4B7A0-$C0D12 (unknown6, unknown7, unknown9 broken; logos overlapping).
-    { name: 'z80_snd_drv94.bin', folder: 'NHL94/Sound', start: 0x0001AD90, end: 0x0001B01C }, // unk_1AD90
-    { name: 'pcm_sample_table.bin', folder: 'NHL94/Sound', start: 0x0001B01C, end: 0x0002C248 }, // unk_1B01C
-    { name: 'fm_instrument_patches.bin', folder: 'NHL94/Sound', start: 0x0002C248, end: 0x0002C648 }, // unk_2C248
-    { name: 'MusicTrackPointerTable.bin', folder: 'NHL94/Sound', start: 0x0002C648, end: 0x0002C708 }, // unk_2C648
-    { name: 'SongPointerTable.bin', folder: 'NHL94/Sound', start: 0x0002C708, end: 0x0002CEF2 }, // off_2C708
-    { name: 'SongStreams.bin', folder: 'NHL94/Sound', start: 0x0002CEF2, end: 0x0004B5C0 }, // unk_2CEF2
+    // NHL 94 sound data ($1AD90-$4B5BF, src/sound94.asm): split as 93 sound93. The Z80 driver, PCM samples and FM patches are byte-identical to 93
+    // and keep the 93 file names; sounds 0-$2F are the 93 streams; the songs ($30-$7A) are 94. Pad bytes and the pointer tables are in the source.
+    { name: 'z80_snd_drv93.bin', folder: 'NHL94/Sound', start: 0x0001AD91, end: 0x0001B008 }, // Z80 driver after its first byte ($1AD90 is Z80_Program_Code dc.b $18), up to the ld bc of the FM patch bank address (93 file, same bytes)
+    { name: 'z80_snd_drv93_end.bin', folder: 'NHL94/Sound', start: 0x0001B00D, end: 0x0001B01B }, // rest of the Z80 driver (93 file, same bytes)
+    { name: 'sfx_shotbh_pcm.bin', folder: 'NHL94/Sound', start: 0x0001B094, end: 0x0001B288 }, // sample 2: shotbh (93 file, same bytes)
+    { name: 'sfx_pass_pcm.bin', folder: 'NHL94/Sound', start: 0x0001B288, end: 0x0001BFB5 }, // sample 1: pass (93 file, same bytes)
+    { name: 'sfx_oooh_pcm.bin', folder: 'NHL94/Sound', start: 0x0001BFB6, end: 0x0001F1FA }, // sample 12: oooh, sfx_id_0D, sfx_id_0E (93 file, same bytes)
+    { name: 'sfx_crowdboo_pcm.bin', folder: 'NHL94/Sound', start: 0x0001F1FA, end: 0x00021747 }, // sample 11: crowdboo (93 file, same bytes)
+    { name: 'sfx_check_pcm.bin', folder: 'NHL94/Sound', start: 0x00021748, end: 0x0002369A }, // sample 5: check1, check3 (93 file, same bytes)
+    { name: 'sfx_crowdcheer_pcm.bin', folder: 'NHL94/Sound', start: 0x0002369A, end: 0x0002657A }, // sample 13: crowdcheer, homewin (93 file, same bytes)
+    { name: 'sfx_id_0E_pcm.bin', folder: 'NHL94/Sound', start: 0x0002657A, end: 0x00029FF9 }, // sample 14: sfx_id_0E (93 file, same bytes)
+    { name: 'sfx_playerwall_pcm.bin', folder: 'NHL94/Sound', start: 0x00029FFA, end: 0x0002A4AA }, // sample 6: playerwall, sfx_id_21-23 (93 file, same bytes)
+    { name: 'sfx_check2_pcm.bin', folder: 'NHL94/Sound', start: 0x0002A4AA, end: 0x0002AED9 }, // sample 4: check2, check4 (93 file, same bytes)
+    { name: 'sfx_hithigh_pcm.bin', folder: 'NHL94/Sound', start: 0x0002AEDA, end: 0x0002B430 }, // samples 7 and 10: hithigh, hitlow, check1-4, songs $32 and $35-$37 (93 file, same bytes)
+    { name: 'sfx_shotfh_pcm.bin', folder: 'NHL94/Sound', start: 0x0002B430, end: 0x0002BFE8 }, // sample 3: shotfh (93 file, same bytes)
+    { name: 'sfx_puckget_pcm.bin', folder: 'NHL94/Sound', start: 0x0002BFE8, end: 0x0002C248 }, // sample 0: puckget (93 file, same bytes)
+    { name: 'fm_instrument_patches.bin', folder: 'NHL94/Sound', start: 0x0002C248, end: 0x0002C648 }, // 32 FM patches x 32 bytes (93 file, same bytes)
+    { name: 'sfx_beep1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C834, end: 0x0002C840 }, // sound $1 (SFXbeep1)
+    { name: 'sfx_id_26_27_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C840, end: 0x0002C844 }, // sound $26, sound $27
+    { name: 'sfx_beep2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C844, end: 0x0002C854 }, // sound $2 (SFXbeep2)
+    { name: 'sfx_horn_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C854, end: 0x0002C8D0 }, // sound $4 (92 SFXhorn)
+    { name: 'sfx_stdef_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C8D0, end: 0x0002C8EC }, // sound $6 (92 SFXstdef)
+    { name: 'sfx_puckget_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C8EC, end: 0x0002C908 }, // sound $7 (92 SFXpuckget)
+    { name: 'sfx_puckice1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C908, end: 0x0002C918 }, // sound $2C (92 SFXpuckice)
+    { name: 'sfx_puckice2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C918, end: 0x0002C928 }, // sound $2D
+    { name: 'sfx_puckice3_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C928, end: 0x0002C938 }, // sound $2E
+    { name: 'sfx_puckice4_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C938, end: 0x0002C948 }, // sound $2F
+    { name: 'sfx_puckbody_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C948, end: 0x0002C964 }, // sound $24 (92 SFXpuckbody)
+    { name: 'sfx_oooh_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C964, end: 0x0002C980 }, // sound $8 (92 SFXoooh)
+    { name: 'sfx_puckpost_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C980, end: 0x0002C990 }, // sound $25 (92 SFXpuckpost)
+    { name: 'sfx_playerwall_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C990, end: 0x0002C9AC }, // sound $20 (92 SFXplayerwall)
+    { name: 'sfx_id_21_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C9AC, end: 0x0002C9C8 }, // sound $21
+    { name: 'sfx_id_22_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C9C8, end: 0x0002C9E4 }, // sound $22
+    { name: 'sfx_id_23_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C9E4, end: 0x0002CA00 }, // sound $23
+    { name: 'sfx_puckwall1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CA00, end: 0x0002CA10 }, // sound $28
+    { name: 'sfx_puckwall2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CA10, end: 0x0002CA20 }, // sound $29
+    { name: 'sfx_puckwall3_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CA20, end: 0x0002CA30 }, // sound $2A
+    { name: 'sfx_puckwall4_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CA30, end: 0x0002CA40 }, // sound $2B
+    { name: 'sfx_whistle_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CA40, end: 0x0002CADC }, // sound $3 (92 SFXwhistle)
+    { name: 'sfx_shotwiff_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CADE, end: 0x0002CAEE }, // sound $5 (92 SFXshotwiff)
+    { name: 'sfx_check1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CAEE, end: 0x0002CB0A }, // sound $1C (92 SFXcheck)
+    { name: 'sfx_check2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB0A, end: 0x0002CB26 }, // sound $1D
+    { name: 'sfx_check3_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB26, end: 0x0002CB42 }, // sound $1E
+    { name: 'sfx_check4_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB42, end: 0x0002CB66 }, // sound $1F
+    { name: 'sfx_pass1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB66, end: 0x0002CB76 }, // sound $10 (92 SFXpass)
+    { name: 'sfx_pass2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB76, end: 0x0002CB86 }, // sound $11
+    { name: 'sfx_pass3_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB86, end: 0x0002CB96 }, // sound $12
+    { name: 'sfx_pass4_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CB96, end: 0x0002CBA6 }, // sound $13
+    { name: 'sfx_shotbh1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CBA6, end: 0x0002CBB6 }, // sound $14 (92 SFXshotbh)
+    { name: 'sfx_shotbh2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CBB6, end: 0x0002CBC6 }, // sound $15
+    { name: 'sfx_shotbh3_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CBC6, end: 0x0002CBD6 }, // sound $16
+    { name: 'sfx_shotbh4_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CBD6, end: 0x0002CBE6 }, // sound $17
+    { name: 'sfx_shotfh1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CBE6, end: 0x0002CBF6 }, // sound $18 (92 SFXshotfh)
+    { name: 'sfx_shotfh2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CBF6, end: 0x0002CC06 }, // sound $19
+    { name: 'sfx_shotfh3_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC06, end: 0x0002CC16 }, // sound $1A
+    { name: 'sfx_shotfh4_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC16, end: 0x0002CC26 }, // sound $1B
+    { name: 'sfx_hithigh_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC26, end: 0x0002CC36 }, // sound $9 (SFXhithigh)
+    { name: 'sfx_hitlow_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC36, end: 0x0002CC46 }, // sound $A (SFXhitlow)
+    { name: 'sfx_homewin_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC46, end: 0x0002CC7E }, // sound $F
+    { name: 'sfx_crowdcheer_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC7E, end: 0x0002CC8E }, // sound $B (SFXcrowdcheer)
+    { name: 'sfx_crowdboo_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC8E, end: 0x0002CC9E }, // sound $C (SFXcrowdboo)
+    { name: 'sfx_id_0E_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CC9E, end: 0x0002CCBA }, // sound $E
+    { name: 'sfx_id_0D_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CCBA, end: 0x0002CCCA }, // sound $D
+    { name: 'sfx_siren_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CCCA, end: 0x0002CEF2 }, // sound $0 (92 SFXsiren)
+    { name: 'fmtune_id_30_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002CEF2, end: 0x0002D29E }, // song $30: ChooseSong, TeamSongs BOS
+    { name: 'fmtune_id_31_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002D29E, end: 0x0002D6CA }, // song $31: ChooseSong, TeamSongs BOS
+    { name: 'fmtune_id_32_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002D6CA, end: 0x0002D966 }, // song $32: ChooseSong, TeamSongs BOS
+    { name: 'fmtune_id_33_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002D966, end: 0x0002DD36 }, // song $33: ChooseSong, TeamSongs BUF
+    { name: 'fmtune_id_34_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002DD36, end: 0x0002E6FA }, // song $34: ChooseSong, TeamSongs BUF, RandomSongs
+    { name: 'fmtune_id_35_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002E6FA, end: 0x0002EBBE }, // song $35: ChooseSong, TeamSongs CGY
+    { name: 'fmtune_id_36_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002EBBE, end: 0x0002F222 }, // song $36: ChooseSong, TeamSongs CGY
+    { name: 'fmtune_id_37_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002F222, end: 0x0002F73A }, // song $37: ChooseSong, TeamSongs CGY
+    { name: 'fmtune_id_38_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002F73A, end: 0x0002FD6E }, // song $38: ChooseSong, TeamSongs CHI
+    { name: 'fmtune_id_39_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002FD6E, end: 0x000302BA }, // song $39: ChooseSong, TeamSongs CHI
+    { name: 'fmtune_id_3A_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000302BA, end: 0x00030696 }, // song $3A: ChooseSong, TeamSongs CHI
+    { name: 'fmtune_id_3B_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00030696, end: 0x00030C0A }, // song $3B: ChooseSong, TeamSongs DET
+    { name: 'fmtune_id_3C_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00030C0A, end: 0x00031076 }, // song $3C: ChooseSong, TeamSongs DET
+    { name: 'fmtune_id_3D_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00031076, end: 0x000313CA }, // song $3D: ChooseSong, TeamSongs DET
+    { name: 'fmtune_id_3E_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000313CA, end: 0x0003184E }, // song $3E: ChooseSong, TeamSongs EDM
+    { name: 'fmtune_id_3F_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003184E, end: 0x00031BAA }, // song $3F: ChooseSong, TeamSongs EDM
+    { name: 'fmtune_id_40_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00031BAA, end: 0x000323AE }, // song $40: ChooseSong, TeamSongs HFD, RandomSongs
+    { name: 'fmtune_id_41_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000323AE, end: 0x000329EA }, // song $41: ChooseSong, TeamSongs HFD
+    { name: 'fmtune_id_42_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000329EA, end: 0x00033066 }, // song $42: ChooseSong, TeamSongs HFD, RandomSongs
+    { name: 'fmtune_id_43_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00033066, end: 0x00033472 }, // song $43: ChooseSong, TeamSongs LA
+    { name: 'fmtune_id_44_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00033472, end: 0x00033AC6 }, // song $44: ChooseSong, TeamSongs LA
+    { name: 'fmtune_id_45_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00033AC6, end: 0x0003411A }, // song $45: ChooseSong, TeamSongs LA
+    { name: 'fmtune_id_46_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003411A, end: 0x00034632 }, // song $46: ChooseSong, TeamSongs LA
+    { name: 'fmtune_id_47_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00034632, end: 0x00034C92 }, // song $47: ChooseSong, TeamSongs NYI
+    { name: 'fmtune_id_48_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00034C92, end: 0x00034E9E }, // song $48: ChooseSong, TeamSongs NYI
+    { name: 'fmtune_id_49_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00034E9E, end: 0x0003554A }, // song $49: ChooseSong, TeamSongs NYI, RandomSongs
+    { name: 'fmtune_id_4A_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003554A, end: 0x000358D6 }, // song $4A: ChooseSong, TeamSongs DAL
+    { name: 'fmtune_id_4B_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000358D6, end: 0x00035B3A }, // song $4B: ChooseSong, TeamSongs DAL
+    { name: 'fmtune_id_4C_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00035B3A, end: 0x000362BE }, // song $4C: ChooseSong, TeamSongs MTL
+    { name: 'fmtune_id_4D_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000362BE, end: 0x000366D2 }, // song $4D: ChooseSong, TeamSongs MTL
+    { name: 'fmtune_id_4E_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000366D2, end: 0x00036B4E }, // song $4E: ChooseSong, TeamSongs MTL
+    { name: 'fmtune_id_4F_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00036B4E, end: 0x00036F12 }, // song $4F: ChooseSong, TeamSongs MTL
+    { name: 'fmtune_id_50_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00036F12, end: 0x000374F2 }, // song $50: ChooseSong, TeamSongs NJ
+    { name: 'fmtune_id_51_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000374F2, end: 0x00037A7E }, // song $51: ChooseSong, TeamSongs NJ
+    { name: 'fmtune_id_52_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00037A7E, end: 0x00037FB2 }, // song $52: ChooseSong, TeamSongs NJ
+    { name: 'fmtune_id_53_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00037FB2, end: 0x0003845A }, // song $53: ChooseSong, TeamSongs NYR / ASE / ASW
+    { name: 'fmtune_id_54_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003845A, end: 0x00038876 }, // song $54: ChooseSong, TeamSongs NYR / ASE / ASW
+    { name: 'fmtune_id_55_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00038876, end: 0x00038B3A }, // song $55: ChooseSong, TeamSongs NYR / ASE / ASW
+    { name: 'fmtune_id_56_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00038B3A, end: 0x0003901E }, // song $56: ChooseSong, TeamSongs PHI
+    { name: 'fmtune_id_57_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003901E, end: 0x00039562 }, // song $57: ChooseSong, TeamSongs PHI
+    { name: 'fmtune_id_58_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00039562, end: 0x00039FCE }, // song $58: ChooseSong, TeamSongs PHI, RandomSongs
+    { name: 'fmtune_id_59_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00039FCE, end: 0x0003A572 }, // song $59: ChooseSong, TeamSongs PIT
+    { name: 'fmtune_id_5A_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003A572, end: 0x0003A81E }, // song $5A: ChooseSong, TeamSongs (25 teams: all but CGY, PHI and SJ)
+    { name: 'fmtune_id_5B_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003A81E, end: 0x0003AE5A }, // song $5B: ChooseSong, TeamSongs PIT
+    { name: 'fmtune_id_5C_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003AE5A, end: 0x0003B5CE }, // song $5C: ChooseSong, TeamSongs PIT, RandomSongs
+    { name: 'fmtune_id_5D_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003B5CE, end: 0x0003BE12 }, // song $5D: ChooseSong, TeamSongs QUE
+    { name: 'fmtune_id_5E_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003BE12, end: 0x0003C60E }, // song $5E: ChooseSong, TeamSongs QUE
+    { name: 'fmtune_id_5F_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003C60E, end: 0x0003CC32 }, // song $5F: ChooseSong, TeamSongs SJ
+    { name: 'fmtune_id_60_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003CC32, end: 0x0003D396 }, // song $60: ChooseSong, TeamSongs SJ
+    { name: 'fmtune_id_61_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003D396, end: 0x0003DA2E }, // song $61: ChooseSong, TeamSongs SJ
+    { name: 'fmtune_id_62_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003DA2E, end: 0x0003E1A6 }, // song $62: ChooseSong, not in TeamSongs or RandomSongs
+    { name: 'fmtune_id_63_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003E1A6, end: 0x0003E84E }, // song $63: ChooseSong, TeamSongs SJ
+    { name: 'fmtune_id_64_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003E84E, end: 0x0003EDE2 }, // song $64: ChooseSong, TeamSongs SJ
+    { name: 'fmtune_id_65_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003EDE2, end: 0x0003F616 }, // song $65: ChooseSong, TeamSongs CHI / SJ, RandomSongs
+    { name: 'fmtune_id_66_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003F616, end: 0x0003FF2A }, // song $66: ChooseSong, RandomSongs
+    { name: 'fmtune_id_67_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0003FF2A, end: 0x000403CE }, // song $67: ChooseSong, TeamSongs STL
+    { name: 'fmtune_id_68_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000403CE, end: 0x000408DA }, // song $68: ChooseSong, TeamSongs STL
+    { name: 'fmtune_id_69_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000408DA, end: 0x00040EA6 }, // song $69: ChooseSong, TeamSongs STL
+    { name: 'fmtune_id_6A_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00040EA6, end: 0x000412D6 }, // song $6A: ChooseSong, TeamSongs TB
+    { name: 'fmtune_id_6B_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000412D6, end: 0x000414B2 }, // song $6B: ChooseSong, TeamSongs TB
+    { name: 'fmtune_id_6C_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000414B2, end: 0x0004196E }, // song $6C: ChooseSong, TeamSongs TOR
+    { name: 'fmtune_id_6D_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0004196E, end: 0x00041E52 }, // song $6D: ChooseSong, TeamSongs TOR
+    { name: 'fmtune_id_6E_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00041E52, end: 0x000423EE }, // song $6E: ChooseSong, TeamSongs VAN
+    { name: 'fmtune_id_6F_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000423EE, end: 0x000426B6 }, // song $6F: ChooseSong, TeamSongs VAN
+    { name: 'fmtune_id_70_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000426B6, end: 0x00042852 }, // song $70: ChooseSong, TeamSongs VAN
+    { name: 'fmtune_id_71_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00042852, end: 0x00042CDE }, // song $71: ChooseSong, TeamSongs WSH
+    { name: 'fmtune_id_72_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00042CDE, end: 0x000431E6 }, // song $72: ChooseSong, not in TeamSongs or RandomSongs
+    { name: 'fmtune_id_73_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000431E6, end: 0x000437B6 }, // song $73: ChooseSong, TeamSongs WSH
+    { name: 'fmtune_id_74_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000437B6, end: 0x00043F32 }, // song $74: ChooseSong, TeamSongs WSH
+    { name: 'fmtune_id_75_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00043F32, end: 0x000442BE }, // song $75: ChooseSong, TeamSongs ANH / FLA / OTW / WPG
+    { name: 'fmtune_id_76_cmdstream.bin', folder: 'NHL94/Sound', start: 0x000442BE, end: 0x00044B12 }, // song $76: ChooseSong, TeamSongs ANH / FLA / OTW / WPG
+    { name: 'fmtune_id_77_cmdstream.bin', folder: 'NHL94/Sound', start: 0x00044B12, end: 0x0004507A }, // song $77: ChooseSong, TeamSongs ANH / FLA / OTW / WPG
+    { name: 'fmtune_title_cmdstream94.bin', folder: 'NHL94/Sound', start: 0x0004507A, end: 0x00046D88 }, // song $78 (93 $35): ExitToOpening, newTitleScreen. 94: one stream that loops to its start (93: intro, loop body)
+    { name: 'fmtune_eog_cmdstream94.bin', folder: 'NHL94/Sound', start: 0x00046D8C, end: 0x000490DE }, // song $79 (93 $36): IntermissionStart, StartHL2 (penalty94_2) (differs from 93)
+    { name: 'fmtune_scouting_cmdstream94.bin', folder: 'NHL94/Sound', start: 0x000490E2, end: 0x0004B5BC }, // song $7A (93 $37): ScoutingReport (hockey94_07) (differs from 93)
     { name: 'ScoutTextScript.bin', folder: 'NHL94/Text', start: 0x0004B5C0, end: 0x0004B7A0 }, // unk_4B5C0
     { name: 'GameSetUp94-1.map.jim', folder: 'NHL94/Graphics', start: 0x0004B7A0, end: 0x0004DEEE }, // unk_4B7A0
     { name: 'GameSetUp94-2.map.jim', folder: 'NHL94/Graphics', start: 0x0004DEEE, end: 0x0004E45C }, // unk_4DEEE
