@@ -1,6 +1,6 @@
 # NHL 94 Genesis
 
-Bitwise rebuild of NHL 94 for the Sega Genesis. The segment pass has not started.
+Bitwise rebuild of NHL 94 for the Sega Genesis.
 
 The listing is `lst/nhl94.bin.lst`. The ROM it was generated from is `lst/nhl94.bin`. That file is the reference for every segment verify. Do not use a different ROM.
 
