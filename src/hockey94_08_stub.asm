@@ -64,5 +64,34 @@ LogoBoxMap = $BF702		;#x at $F87A0
 PicturePalette = $C63F8		;#x at $F8962
 TeamLogoPalettes = $FF462		;#x at $F8692
 
+logoANA = $BF8D0		;dc.l x in TeamLogoBitmaps (graphics94)
+logoBOS = $BFD66		;dc.l x in TeamLogoBitmaps (graphics94)
+logoBUF = $C00BC		;dc.l x in TeamLogoBitmaps (graphics94)
+logoCGY = $C0412		;dc.l x in TeamLogoBitmaps (graphics94)
+logoCHI = $C08A8		;dc.l x in TeamLogoBitmaps (graphics94)
+logoDET = $C0CDE		;dc.l x in TeamLogoBitmaps (graphics94)
+logoEDM = $C1034		;dc.l x in TeamLogoBitmaps (graphics94)
+logoFLA = $C142A		;dc.l x in TeamLogoBitmaps (graphics94)
+logoHFD = $C1900		;dc.l x in TeamLogoBitmaps (graphics94)
+logoNYI = $C1B96		;dc.l x in TeamLogoBitmaps (graphics94)
+logoLA = $C1FEC		;dc.l x in TeamLogoBitmaps (graphics94)
+logoDAL = $C2362		;dc.l x in TeamLogoBitmaps (graphics94)
+logoMTL = $C2638		;dc.l x in TeamLogoBitmaps (graphics94)
+logoNJ = $C29AE		;dc.l x in TeamLogoBitmaps (graphics94)
+logoNYR = $C2E64		;dc.l x in TeamLogoBitmaps (graphics94)
+logoOTW = $C333A		;dc.l x in TeamLogoBitmaps (graphics94)
+logoPHI = $C3750		;dc.l x in TeamLogoBitmaps (graphics94)
+logoPIT = $C3B06		;dc.l x in TeamLogoBitmaps (graphics94)
+logoQUE = $C3E7C		;dc.l x in TeamLogoBitmaps (graphics94)
+logoSJ = $C41D2		;dc.l x in TeamLogoBitmaps (graphics94)
+logoSTL = $C4608		;dc.l x in TeamLogoBitmaps (graphics94)
+logoTB = $C49DE		;dc.l x in TeamLogoBitmaps (graphics94)
+logoTOR = $C4DF4		;dc.l x in TeamLogoBitmaps (graphics94)
+logoVAN = $C514A		;dc.l x in TeamLogoBitmaps (graphics94)
+logoWSH = $C5560		;dc.l x in TeamLogoBitmaps (graphics94)
+logoWPG = $C57D6		;dc.l x in TeamLogoBitmaps (graphics94)
+logoASE = $C5C4C		;dc.l x in TeamLogoBitmaps (graphics94)
+logoASW = $C6022		;dc.l x in TeamLogoBitmaps (graphics94)
+
 ; Main segment code
 	include	hockey94_08.asm

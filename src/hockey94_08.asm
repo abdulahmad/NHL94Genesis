@@ -1133,10 +1133,10 @@ DrawTeamLogo	;Draw the logo of team logoteam (TeamLogoBitmaps) at printx, y 6, 6
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 TeamLogoBitmaps	;Team logo bitmaps by team number (TeamList order); also used by hockey94_07 GetTeamLogo
-	dc.l	$BF8D0,$BFD66,$C00BC,$C0412,$C08A8,$C2362,$C0CDE,$C1034
-	dc.l	$C142A,$C1900,$C1FEC,$C2638,$C29AE,$C1B96,$C2E64,$C333A
-	dc.l	$C3750,$C3B06,$C3E7C,$C41D2,$C4608,$C49DE,$C4DF4,$C514A
-	dc.l	$C5560,$C57D6,$C5C4C,$C6022
+	dc.l	logoANA,logoBOS,logoBUF,logoCGY,logoCHI,logoDAL,logoDET,logoEDM
+	dc.l	logoFLA,logoHFD,logoLA,logoMTL,logoNJ,logoNYI,logoNYR,logoOTW
+	dc.l	logoPHI,logoPIT,logoQUE,logoSJ,logoSTL,logoTB,logoTOR,logoVAN
+	dc.l	logoWSH,logoWPG,logoASE,logoASW
 LogoBoxRight	;94 only. Logo box (LogoBoxMap, 8 x 8) at x $1C, y 5 with the logobox1chars tiles. Called from PlayerCardScreen
 	move.w	(logobox1chars).w,d4
 	move.w	#$1C,(printx).w

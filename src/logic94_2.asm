@@ -94,7 +94,7 @@ assbench
 	bne.s	.x
 	move.w	temp3(a3),d0
 	move.w	temp4(a3),d1
-	movea.l	#$E594,a0
+	movea.l	#EvadePC,a0
 	bra.w	skateto
 .nobench
 	bclr	#2,pflags2(a3)

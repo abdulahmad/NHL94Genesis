@@ -1770,12 +1770,13 @@ playoffseats	;$5576. 93 name. movea.l #$5576 in the playoff tree setup. 32 rows 
 	dc.b	24,8,12,17, 1,11,21,2, 19,20,6,4, 0,10,25,23
 
 
-Credits	;$5776. 93 name. Title screen scroller: movea.l #Credits (copyright lines), then #Credits+$42 ($57B8)
+Credits	;$5776. 93 name. Title screen scroller: movea.l #Credits (copyright lines), then #CreditsList
 	String	'$ 1993 Electronic Arts'
 	String	'Licensed by'
 	String	'Sega Enterprises Ltd.'
 	String	-1
 
+CreditsList	;$57B8 (93 Credits+$42). The credits after the copyright lines
 	String	'Design adapted by'
 	String	'Michael Brook'
 	String	-1

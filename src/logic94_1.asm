@@ -278,7 +278,7 @@ doinput_cbut	;Global: doinput branches here across the global rtss15
 	btst	#7,$63(a3)
 	beq.w	doinput_chkanim
 	movem.l	d0-d3/a0-a3,-(sp)
-	movea.l	#$5B1C,a0
+	movea.l	#SPAlist,a0
 	adda.w	$58(a3),a0
 	move.w	$54(a3),d0
 	btst	#3,4(a3)

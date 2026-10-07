@@ -121,481 +121,481 @@ FeaturedPictures	;The featured player pictures
 	dc.l	.20,.21,.22,.23
 	dc.l	.24,.25,.26,.27
 .0
-	dc.l	$C726C
+	dc.l	PlayerPictures
 	dc.w	0
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	13
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	11
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	7
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	4
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	3
 	dc.l	0
 .1
-	dc.l	$C726C
+	dc.l	PlayerPictures
 	dc.w	0
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	11
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	13
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	3
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	5
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	7
 	dc.l	0
 .2
-	dc.l	$C75D6
+	dc.l	PlayerPictures+$36A
 	dc.w	0
-	dc.l	$C8014
+	dc.l	PlayerPictures+$DA8
 	dc.w	18
-	dc.l	$C7940
+	dc.l	PlayerPictures+$6D4
 	dc.w	17
-	dc.l	$C837E
+	dc.l	PlayerPictures+$1112
 	dc.w	6
-	dc.l	$C7CAA
+	dc.l	PlayerPictures+$A3E
 	dc.w	2
-	dc.l	$C86E8
+	dc.l	PlayerPictures+$147C
 	dc.w	11
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	19
 	dc.l	0
 .3
-	dc.l	$C97FA
+	dc.l	PlayerPictures+$258E
 	dc.w	0
-	dc.l	$C9490
+	dc.l	PlayerPictures+$2224
 	dc.w	17
-	dc.l	$C9B64
+	dc.l	PlayerPictures+$28F8
 	dc.w	18
-	dc.l	$C9126
+	dc.l	PlayerPictures+$1EBA
 	dc.w	4
-	dc.l	$C8DBC
+	dc.l	PlayerPictures+$1B50
 	dc.w	3
-	dc.l	$C8A52
+	dc.l	PlayerPictures+$17E6
 	dc.w	12
 	dc.l	0
 .4
-	dc.l	$C9ECE
+	dc.l	PlayerPictures+$2C62
 	dc.w	0
-	dc.l	$CA90C
+	dc.l	PlayerPictures+$36A0
 	dc.w	15
-	dc.l	$CAC76
+	dc.l	PlayerPictures+$3A0A
 	dc.w	16
-	dc.l	$CA238
+	dc.l	PlayerPictures+$2FCC
 	dc.w	6
-	dc.l	$CAFE0
+	dc.l	PlayerPictures+$3D74
 	dc.w	2
-	dc.l	$CA5A2
+	dc.l	PlayerPictures+$3336
 	dc.w	11
 	dc.l	0
 .5
-	dc.l	$CB34A
+	dc.l	PlayerPictures+$40DE
 	dc.w	0
-	dc.l	$CC0F2
+	dc.l	PlayerPictures+$4E86
 	dc.w	18
-	dc.l	$CBD88
+	dc.l	PlayerPictures+$4B1C
 	dc.w	17
-	dc.l	$CC45C
+	dc.l	PlayerPictures+$51F0
 	dc.w	6
-	dc.l	$CB6B4
+	dc.l	PlayerPictures+$4448
 	dc.w	2
-	dc.l	$CBA1E
+	dc.l	PlayerPictures+$47B2
 	dc.w	11
 	dc.l	0
 .6
-	dc.l	$D2FEE
+	dc.l	PlayerPictures+$BD82
 	dc.w	0
-	dc.l	$D36C2
+	dc.l	PlayerPictures+$C456
 	dc.w	16
-	dc.l	$D3A2C
+	dc.l	PlayerPictures+$C7C0
 	dc.w	17
-	dc.l	$D3D96
+	dc.l	PlayerPictures+$CB2A
 	dc.w	3
-	dc.l	$D3358
+	dc.l	PlayerPictures+$C0EC
 	dc.w	2
-	dc.l	$D4100
+	dc.l	PlayerPictures+$CE94
 	dc.w	10
 	dc.l	0
 .7
-	dc.l	$CC7C6
+	dc.l	PlayerPictures+$555A
 	dc.w	0
-	dc.l	$CD56E
+	dc.l	PlayerPictures+$6302
 	dc.w	18
-	dc.l	$CD204
+	dc.l	PlayerPictures+$5F98
 	dc.w	17
-	dc.l	$CCE9A
+	dc.l	PlayerPictures+$5C2E
 	dc.w	3
-	dc.l	$CCB30
+	dc.l	PlayerPictures+$58C4
 	dc.w	2
-	dc.l	$CD8D8
+	dc.l	PlayerPictures+$666C
 	dc.w	12
 	dc.l	0
 .8
-	dc.l	$CDC42
+	dc.l	PlayerPictures+$69D6
 	dc.w	0
-	dc.l	$CDFAC
+	dc.l	PlayerPictures+$6D40
 	dc.w	17
-	dc.l	$CE316
+	dc.l	PlayerPictures+$70AA
 	dc.w	18
-	dc.l	$CE680
+	dc.l	PlayerPictures+$7414
 	dc.w	8
-	dc.l	$CE9EA
+	dc.l	PlayerPictures+$777E
 	dc.w	2
-	dc.l	$CEDF0
+	dc.l	PlayerPictures+$7B84
 	dc.w	14
 	dc.l	0
 .9
-	dc.l	$CF15A
+	dc.l	PlayerPictures+$7EEE
 	dc.w	0
-	dc.l	$CFF02
+	dc.l	PlayerPictures+$8C96
 	dc.w	18
-	dc.l	$D026C
+	dc.l	PlayerPictures+$9000
 	dc.w	19
-	dc.l	$CF82E
+	dc.l	PlayerPictures+$85C2
 	dc.w	8
-	dc.l	$CF4C4
+	dc.l	PlayerPictures+$8258
 	dc.w	3
-	dc.l	$CFB98
+	dc.l	PlayerPictures+$892C
 	dc.w	13
 	dc.l	0
 .10
-	dc.l	$D1AEE
+	dc.l	PlayerPictures+$A882
 	dc.w	0
-	dc.l	$D291A
+	dc.l	PlayerPictures+$B6AE
 	dc.w	16
-	dc.l	$D2C84
+	dc.l	PlayerPictures+$BA18
 	dc.w	17
-	dc.l	$D2246
+	dc.l	PlayerPictures+$AFDA
 	dc.w	7
-	dc.l	$D1EDC
+	dc.l	PlayerPictures+$AC70
 	dc.w	3
-	dc.l	$D25B0
+	dc.l	PlayerPictures+$B344
 	dc.w	12
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	13
 	dc.l	0
 .11
-	dc.l	$D446A
+	dc.l	PlayerPictures+$D1FE
 	dc.w	0
-	dc.l	$D4B3E
+	dc.l	PlayerPictures+$D8D2
 	dc.w	17
-	dc.l	$D47D4
+	dc.l	PlayerPictures+$D568
 	dc.w	16
-	dc.l	$D527E
+	dc.l	PlayerPictures+$E012
 	dc.w	6
-	dc.l	$D4F14
+	dc.l	PlayerPictures+$DCA8
 	dc.w	2
-	dc.l	$D55E8
+	dc.l	PlayerPictures+$E37C
 	dc.w	11
 	dc.l	0
 .12
-	dc.l	$D5CBC
+	dc.l	PlayerPictures+$EA50
 	dc.w	0
-	dc.l	$D6026
+	dc.l	PlayerPictures+$EDBA
 	dc.w	18
-	dc.l	$D5952
+	dc.l	PlayerPictures+$E6E6
 	dc.w	17
-	dc.l	$D6390
+	dc.l	PlayerPictures+$F124
 	dc.w	11
-	dc.l	$D66FA
+	dc.l	PlayerPictures+$F48E
 	dc.w	2
-	dc.l	$D6A64
+	dc.l	PlayerPictures+$F7F8
 	dc.w	12
 	dc.l	0
 .13
-	dc.l	$D1014
+	dc.l	PlayerPictures+$9DA8
 	dc.w	0
-	dc.l	$D137E
+	dc.l	PlayerPictures+$A112
 	dc.w	18
-	dc.l	$D16E8
+	dc.l	PlayerPictures+$A47C
 	dc.w	17
-	dc.l	$D0940
+	dc.l	PlayerPictures+$96D4
 	dc.w	8
-	dc.l	$D0CAA
+	dc.l	PlayerPictures+$9A3E
 	dc.w	2
-	dc.l	$D05D6
+	dc.l	PlayerPictures+$936A
 	dc.w	3
 	dc.l	0
 .14
-	dc.l	$D6DCE
+	dc.l	PlayerPictures+$FB62
 	dc.w	0
-	dc.l	$D750E
+	dc.l	PlayerPictures+$102A2
 	dc.w	18
-	dc.l	$D7BE2
+	dc.l	PlayerPictures+$10976
 	dc.w	17
-	dc.l	$D7F4C
+	dc.l	PlayerPictures+$10CE0
 	dc.w	6
-	dc.l	$D71A4
+	dc.l	PlayerPictures+$FF38
 	dc.w	2
-	dc.l	$D7878
+	dc.l	PlayerPictures+$1060C
 	dc.w	11
 	dc.l	0
 .15
-	dc.l	$D82B6
+	dc.l	PlayerPictures+$1104A
 	dc.w	0
-	dc.l	$D8D60
+	dc.l	PlayerPictures+$11AF4
 	dc.w	19
-	dc.l	$D89F6
+	dc.l	PlayerPictures+$1178A
 	dc.w	18
-	dc.l	$D868C
+	dc.l	PlayerPictures+$11420
 	dc.w	9
-	dc.l	$D90CA
+	dc.l	PlayerPictures+$11E5E
 	dc.w	2
-	dc.l	$D9434
+	dc.l	PlayerPictures+$121C8
 	dc.w	14
 	dc.l	0
 .16
-	dc.l	$DA546
+	dc.l	PlayerPictures+$132DA
 	dc.w	0
-	dc.l	$DA8B0
+	dc.l	PlayerPictures+$13644
 	dc.w	18
-	dc.l	$D9E72
+	dc.l	PlayerPictures+$12C06
 	dc.w	17
-	dc.l	$D9B08
+	dc.l	PlayerPictures+$1289C
 	dc.w	4
-	dc.l	$D979E
+	dc.l	PlayerPictures+$12532
 	dc.w	3
-	dc.l	$DA1DC
+	dc.l	PlayerPictures+$12F70
 	dc.w	14
 	dc.l	0
 .17
-	dc.l	$DAC1A
+	dc.l	PlayerPictures+$139AE
 	dc.w	0
-	dc.l	$DB9C2
+	dc.l	PlayerPictures+$14756
 	dc.w	16
-	dc.l	$DBD2C
+	dc.l	PlayerPictures+$14AC0
 	dc.w	17
-	dc.l	$DB2EE
+	dc.l	PlayerPictures+$14082
 	dc.w	6
-	dc.l	$DAF84
+	dc.l	PlayerPictures+$13D18
 	dc.w	2
-	dc.l	$DB658
+	dc.l	PlayerPictures+$143EC
 	dc.w	10
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	11
-	dc.l	$C6F02
+	dc.l	NoPicGoalie1
 	dc.w	1
 	dc.l	0
 .18
-	dc.l	$DC096
+	dc.l	PlayerPictures+$14E2A
 	dc.w	0
-	dc.l	$DCEAA
+	dc.l	PlayerPictures+$15C3E
 	dc.w	18
-	dc.l	$DC7D6
+	dc.l	PlayerPictures+$1556A
 	dc.w	17
-	dc.l	$DCB40
+	dc.l	PlayerPictures+$158D4
 	dc.w	2
-	dc.l	$DD214
+	dc.l	PlayerPictures+$15FA8
 	dc.w	13
-	dc.l	$DC46C
+	dc.l	PlayerPictures+$15200
 	dc.w	14
 	dc.l	0
 .19
-	dc.l	$DDFBC
+	dc.l	PlayerPictures+$16D50
 	dc.w	0
-	dc.l	$DE326
+	dc.l	PlayerPictures+$170BA
 	dc.w	17
-	dc.l	$DD8E8
+	dc.l	PlayerPictures+$1667C
 	dc.w	16
-	dc.l	$DE690
+	dc.l	PlayerPictures+$17424
 	dc.w	9
-	dc.l	$DD57E
+	dc.l	PlayerPictures+$16312
 	dc.w	3
-	dc.l	$DDC52
+	dc.l	PlayerPictures+$169E6
 	dc.w	13
 	dc.l	0
 .20
-	dc.l	$DE9FA
+	dc.l	PlayerPictures+$1778E
 	dc.w	0
-	dc.l	$DF7A2
+	dc.l	PlayerPictures+$18536
 	dc.w	16
-	dc.l	$DF438
+	dc.l	PlayerPictures+$181CC
 	dc.w	17
-	dc.l	$DFB0C
+	dc.l	PlayerPictures+$188A0
 	dc.w	11
-	dc.l	$DED64
+	dc.l	PlayerPictures+$17AF8
 	dc.w	2
-	dc.l	$DF0CE
+	dc.l	PlayerPictures+$17E62
 	dc.w	12
 	dc.l	0
 .21
-	dc.l	$E01E0
+	dc.l	PlayerPictures+$18F74
 	dc.w	0
-	dc.l	$E054A
+	dc.l	PlayerPictures+$192DE
 	dc.w	19
-	dc.l	$E08B4
+	dc.l	PlayerPictures+$19648
 	dc.w	18
-	dc.l	$E0C1E
+	dc.l	PlayerPictures+$199B2
 	dc.w	11
-	dc.l	$DFE76
+	dc.l	PlayerPictures+$18C0A
 	dc.w	3
-	dc.l	$E0F88
+	dc.l	PlayerPictures+$19D1C
 	dc.w	4
 	dc.l	0
 .22
-	dc.l	$E12F2
+	dc.l	PlayerPictures+$1A086
 	dc.w	0
-	dc.l	$E1D30
+	dc.l	PlayerPictures+$1AAC4
 	dc.w	18
-	dc.l	$E209A
+	dc.l	PlayerPictures+$1AE2E
 	dc.w	17
-	dc.l	$E2404
+	dc.l	PlayerPictures+$1B198
 	dc.w	8
-	dc.l	$E165C
+	dc.l	PlayerPictures+$1A3F0
 	dc.w	3
-	dc.l	$E19C6
+	dc.l	PlayerPictures+$1A75A
 	dc.w	12
 	dc.l	0
 .23
-	dc.l	$E280A
+	dc.l	PlayerPictures+$1B59E
 	dc.w	0
-	dc.l	$E35B2
+	dc.l	PlayerPictures+$1C346
 	dc.w	18
-	dc.l	$E3248
+	dc.l	PlayerPictures+$1BFDC
 	dc.w	17
-	dc.l	$E2B74
+	dc.l	PlayerPictures+$1B908
 	dc.w	6
-	dc.l	$E391C
+	dc.l	PlayerPictures+$1C6B0
 	dc.w	2
-	dc.l	$E2EDE
+	dc.l	PlayerPictures+$1BC72
 	dc.w	12
 	dc.l	0
 .24
-	dc.l	$E3C86
+	dc.l	PlayerPictures+$1CA1A
 	dc.w	0
-	dc.l	$E4D98
+	dc.l	PlayerPictures+$1DB2C
 	dc.w	17
-	dc.l	$E4A2E
+	dc.l	PlayerPictures+$1D7C2
 	dc.w	16
-	dc.l	$E435A
+	dc.l	PlayerPictures+$1D0EE
 	dc.w	3
-	dc.l	$E3FF0
+	dc.l	PlayerPictures+$1CD84
 	dc.w	2
-	dc.l	$E46C4
+	dc.l	PlayerPictures+$1D458
 	dc.w	11
-	dc.l	$C682E
+	dc.l	NoPicSkater1
 	dc.w	18
 	dc.l	0
 .25
-	dc.l	$E5B40
+	dc.l	PlayerPictures+$1E8D4
 	dc.w	0
-	dc.l	$E5EAA
+	dc.l	PlayerPictures+$1EC3E
 	dc.w	18
-	dc.l	$E57D6
+	dc.l	PlayerPictures+$1E56A
 	dc.w	17
-	dc.l	$E5102
+	dc.l	PlayerPictures+$1DE96
 	dc.w	3
-	dc.l	$E62C8
+	dc.l	PlayerPictures+$1F05C
 	dc.w	2
-	dc.l	$E546C
+	dc.l	PlayerPictures+$1E200
 	dc.w	12
 	dc.l	0
 .26
-	dc.l	$D446A
+	dc.l	PlayerPictures+$D1FE
 	dc.w	0
-	dc.l	$C7940
+	dc.l	PlayerPictures+$6D4
 	dc.w	18
-	dc.l	$DB9C2
+	dc.l	PlayerPictures+$14756
 	dc.w	17
-	dc.l	$C7CAA
+	dc.l	PlayerPictures+$A3E
 	dc.w	6
-	dc.l	$DAF84
+	dc.l	PlayerPictures+$13D18
 	dc.w	3
-	dc.l	$C8A52
+	dc.l	PlayerPictures+$17E6
 	dc.w	15
-	dc.l	$C97FA
+	dc.l	PlayerPictures+$258E
 	dc.w	1
-	dc.l	$DAC1A
+	dc.l	PlayerPictures+$139AE
 	dc.w	2
-	dc.l	$D71A4
+	dc.l	PlayerPictures+$FF38
 	dc.w	4
-	dc.l	$D4F14
+	dc.l	PlayerPictures+$DCA8
 	dc.w	5
-	dc.l	$DCB40
+	dc.l	PlayerPictures+$158D4
 	dc.w	7
-	dc.l	$D0CAA
+	dc.l	PlayerPictures+$9A3E
 	dc.w	8
-	dc.l	$C8DBC
+	dc.l	PlayerPictures+$1B50
 	dc.w	9
-	dc.l	$DB2EE
+	dc.l	PlayerPictures+$14082
 	dc.w	10
-	dc.l	$DB658
+	dc.l	PlayerPictures+$143EC
 	dc.w	11
-	dc.l	$E46C4
+	dc.l	PlayerPictures+$1D458
 	dc.w	12
-	dc.l	$D7878
+	dc.l	PlayerPictures+$1060C
 	dc.w	13
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	14
-	dc.l	$DA1DC
+	dc.l	PlayerPictures+$12F70
 	dc.w	16
-	dc.l	$D7BE2
+	dc.l	PlayerPictures+$10976
 	dc.w	19
-	dc.l	$DC7D6
+	dc.l	PlayerPictures+$1556A
 	dc.w	20
-	dc.l	$E4D98
+	dc.l	PlayerPictures+$1DB2C
 	dc.w	21
-	dc.l	$D5952
+	dc.l	PlayerPictures+$E6E6
 	dc.w	22
-	dc.l	$CFF02
+	dc.l	PlayerPictures+$8C96
 	dc.w	23
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	24
 	dc.l	0
 .27
-	dc.l	$CB34A
+	dc.l	PlayerPictures+$40DE
 	dc.w	0
-	dc.l	$CD204
+	dc.l	PlayerPictures+$5F98
 	dc.w	19
-	dc.l	$E57D6
+	dc.l	PlayerPictures+$1E56A
 	dc.w	21
-	dc.l	$D2246
+	dc.l	PlayerPictures+$AFDA
 	dc.w	10
-	dc.l	$CCB30
+	dc.l	PlayerPictures+$58C4
 	dc.w	3
-	dc.l	$E546C
+	dc.l	PlayerPictures+$1E200
 	dc.w	14
-	dc.l	$CC7C6
+	dc.l	PlayerPictures+$555A
 	dc.w	1
-	dc.l	$E12F2
+	dc.l	PlayerPictures+$1A086
 	dc.w	2
-	dc.l	$D3358
+	dc.l	PlayerPictures+$C0EC
 	dc.w	4
-	dc.l	$CB6B4
+	dc.l	PlayerPictures+$4448
 	dc.w	5
-	dc.l	$DFE76
+	dc.l	PlayerPictures+$18C0A
 	dc.w	6
-	dc.l	$E165C
+	dc.l	PlayerPictures+$1A3F0
 	dc.w	7
-	dc.l	$D1EDC
+	dc.l	PlayerPictures+$AC70
 	dc.w	8
-	dc.l	$CA238
+	dc.l	PlayerPictures+$2FCC
 	dc.w	9
-	dc.l	$CA5A2
+	dc.l	PlayerPictures+$3336
 	dc.w	11
-	dc.l	$DF0CE
+	dc.l	PlayerPictures+$17E62
 	dc.w	12
-	dc.l	$E2EDE
+	dc.l	PlayerPictures+$1BC72
 	dc.w	13
-	dc.l	$DDC52
+	dc.l	PlayerPictures+$169E6
 	dc.w	15
-	dc.l	$C6B98
+	dc.l	NoPicSkater2
 	dc.w	16
-	dc.l	$CA90C
+	dc.l	PlayerPictures+$36A0
 	dc.w	17
-	dc.l	$DF7A2
+	dc.l	PlayerPictures+$18536
 	dc.w	18
-	dc.l	$CBD88
+	dc.l	PlayerPictures+$4B1C
 	dc.w	20
-	dc.l	$CDFAC
+	dc.l	PlayerPictures+$6D40
 	dc.w	22
-	dc.l	$CC0F2
+	dc.l	PlayerPictures+$4E86
 	dc.w	23
-	dc.l	$CD56E
+	dc.l	PlayerPictures+$6302
 	dc.w	24
 	dc.l	0
 PrintRecordValue	;94 only. Record line for a player card (hockey94_08 PlayerCardScreen): copy RecordTxt to a3, then the record value of player d1 (GetRecordValue) and goals / goal or
@@ -1279,7 +1279,7 @@ PlayerCards	;93 has no counterpart. "Player Cards" menu item (hockey94_11 menu l
 	dc.l	$05234167,$89ABCDEF	;remap table (IDA: code)
 	jsr	(printz).l
 	String	$FD,0,0
-	movea.l	#$E6632,a0	;a picture in graphics94 PlayerPictures
+	movea.l	#PlayerPictures+$1F3C6,a0	;a picture in graphics94 PlayerPictures
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0

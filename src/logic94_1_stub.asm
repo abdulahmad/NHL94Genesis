@@ -60,5 +60,7 @@ ShortenMsgTimer = $FE1AA		;jsr (x).l at $B152
 CountButtonPress = $FEE60		;jsr (x).l at $B760
 vtoa = $10676			;jsr (x).l at $B4EC
 
+SPAlist = $5B1C		;#x at $B498 (frames94)
+
 ; Main segment code
 	include	logic94_1.asm

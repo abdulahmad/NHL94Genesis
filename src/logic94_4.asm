@@ -1469,11 +1469,11 @@ puckfaceoff2
 	neg.w	d4
 	addq.w	#6,d4
 	asl.w	#3,d4
-	movea.l	#$FCEE,a1	;#.apl
+	movea.l	#.apl,a1
 	adda.w	d4,a1
 	move.b	0(a1,d1.w),d4
 	asl.w	#2,d4
-	movea.l	#$FD06,a1	;#.ptab
+	movea.l	#.ptab,a1
 	move.w	0(a1,d4.w),d0
 	move.w	2(a1,d4.w),d1
 	btst	#pfgoal,pflags(a3)	;#pfgoal - 0=bottom, 1=top
@@ -1738,7 +1738,7 @@ Endfaceoff
 	bset	#4,(sflags3).w
 	move.w	(fodir1).w,d3
 	move.w	#$800,d4
-	movea.l	#$FF06,a0
+	movea.l	#.ftab,a0
 	movea.w	#(fofdata2-M68K_RAM),a1
 	moveq	#$10,d2
 	move.w	(a1),d1

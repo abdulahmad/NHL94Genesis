@@ -898,14 +898,14 @@ NextArenaFrame	;94 only. Read frame arenaframeidx of the list: arenaframe = fram
 .x
 	rts
 ArenaAnims	;The 8 arena animations (StartArenaAnim d0): frame list, then the graphics in graphics94 ArenaGfxBank (sprite list at 4(x), tiles at 8(x))
-	dc.l	ArenaFrames8,$EA2EC
-	dc.l	ArenaFrames6,$EAB10
-	dc.l	ArenaFrames7,$EAB10
-	dc.l	ArenaFrames5,$EB816
-	dc.l	ArenaFrames4,$EC284
-	dc.l	ArenaFrames3,$EC284
-	dc.l	ArenaFrames2,$ED1B0
-	dc.l	ArenaFrames1,$ED1B0
+	dc.l	ArenaFrames8,ArenaGfxBank+$416
+	dc.l	ArenaFrames6,ArenaGfxBank+$C3A
+	dc.l	ArenaFrames7,ArenaGfxBank+$C3A
+	dc.l	ArenaFrames5,ArenaGfxBank+$1940
+	dc.l	ArenaFrames4,ArenaGfxBank+$23AE
+	dc.l	ArenaFrames3,ArenaGfxBank+$23AE
+	dc.l	ArenaFrames2,ArenaGfxBank+$32DA
+	dc.l	ArenaFrames1,ArenaGfxBank+$32DA
 ArenaFrames1	;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
 	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
 	dc.b	9,$A,$A,$A,1,$A,2,$A,3,$A,4,$A,5,$A,6,$A
@@ -1319,13 +1319,13 @@ LoadHomeTeamGfx	;94 only. Load the HomeTeam graphics of TeamGfxList to VRAM d4 -
 	move.w	(sp)+,d0
 	rts
 TeamGfxList	;LoadHomeTeamGfx: one address per team (TeamList order) in graphics94 ArenaGfxBank
-	dc.l	$EDE8A,$F2A84,$EE194,$EE49E
-	dc.l	$EE7A8,$EEAB2,$EEDBC,$EF0C6
-	dc.l	$EF3D0,$EF6DA,$EF9E4,$EFCEE
-	dc.l	$EFFF8,$F0302,$F060C,$F0916
-	dc.l	$F0C20,$F0F2A,$F1234,$F153E
-	dc.l	$F1848,$F1B52,$F1E5C,$F2166
-	dc.l	$F2470,$F277A,$F2D8E,$F2D8E
+	dc.l	ArenaGfxBank+$3FB4,ArenaGfxBank+$8BAE,ArenaGfxBank+$42BE,ArenaGfxBank+$45C8
+	dc.l	ArenaGfxBank+$48D2,ArenaGfxBank+$4BDC,ArenaGfxBank+$4EE6,ArenaGfxBank+$51F0
+	dc.l	ArenaGfxBank+$54FA,ArenaGfxBank+$5804,ArenaGfxBank+$5B0E,ArenaGfxBank+$5E18
+	dc.l	ArenaGfxBank+$6122,ArenaGfxBank+$642C,ArenaGfxBank+$6736,ArenaGfxBank+$6A40
+	dc.l	ArenaGfxBank+$6D4A,ArenaGfxBank+$7054,ArenaGfxBank+$735E,ArenaGfxBank+$7668
+	dc.l	ArenaGfxBank+$7972,ArenaGfxBank+$7C7C,ArenaGfxBank+$7F86,ArenaGfxBank+$8290
+	dc.l	ArenaGfxBank+$859A,ArenaGfxBank+$88A4,ArenaGfxBank+$8EB8,ArenaGfxBank+$8EB8
 PrintPlayerAssists	;94 only. Print " (n)": byte $CE + d0 of team a2, then the next row at x $E. Called from DisplayPlayerAttributeMenu (hockey94_10)
 	movem.l	d0/a2,-(sp)
 	jsr	(printz).l
@@ -1545,7 +1545,7 @@ HiScoreScreen	;IDA name. 94 only: vb2, the $F4378 bitmap and HiScoreImg, then wa
 	jsr	(setVram_0).l
 	jsr	(printz).l
 	String	$BE,$E,3
-	movea.l	#$F4378,a2
+	movea.l	#PlayoffSprite+$12E0,a2
 	movea.l	a2,a0
 	movea.l	a2,a1
 	adda.l	(a2)+,a0
@@ -1732,7 +1732,7 @@ EndOneTimer	;94 only. End a one-timer for a3: bits cleared, onetimerplayer = -1,
 	movem.l	(sp)+,d0/a0
 	rts
 newTitleScreen	;IDA name. 94 only: the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, TitleImg) with the vblank TitleVBlank, song $78, then the
-	;scrolling credits ($5776, $57B8 text; CreditsPrintRow, CreditsWait) until start. Called from Opening (hockey94_06)
+	;scrolling credits (Credits, CreditsList text; CreditsPrintRow, CreditsWait) until start. Called from Opening (hockey94_06)
 	move	#$2700,sr
 	move.w	(VDP_CNTR).l,(RNGseed).w
 	move.w	(VDP_CNTR).l,(RNGseed+2).w
@@ -1846,7 +1846,7 @@ newTitleScreen	;IDA name. 94 only: the title screen (TitleScreenImg, NHLShieldIm
 	dc.l	$0D104567,$89ABCDEF	;remap table. FF210 + FF211 = Palette assignment for scrolling credits
 	jsr	(printz).l
 	String	$EF,0,0
-	movea.l	#$5776,a1	;start of credits for scrolling
+	movea.l	#Credits,a1	;start of credits for scrolling
 	jsr	(CreditsPrintRow).l
 	addi.w	#$20,(Vscroll).w
 	move.w	#$104,(clampcounter).w
@@ -1869,7 +1869,7 @@ newTitleScreen	;IDA name. 94 only: the title screen (TitleScreenImg, NHLShieldIm
 	dbf	d3,.loop2
 	jsr	(printz).l
 	String	$EF,0,0
-	movea.l	#$57B8,a1
+	movea.l	#CreditsList,a1
 .loop3
 	jsr	(CreditsPrintRow).l
 	adda.w	(a1),a1
