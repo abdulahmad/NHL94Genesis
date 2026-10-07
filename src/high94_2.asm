@@ -7,8 +7,8 @@
 ;	names and the entries IDA has no label for are named for what they do.
 ;	Locals are in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment; the IDA _x locals keep their
 ;	name. IDA gaps written from the retail bytes: the inline Strings after the print calls and the remap tables (IDA
-;	code), the code IDA hid behind them (;IDA hid this), and the palettes / picture lists IDA read as code ($F8BF4-$F98C5). The IDA
-;	labels inside Strings are not labels.
+;	code), the code IDA hid behind them (;IDA hid this), and the picture lists IDA read as code ($F92F4-$F98C5). The palettes IDA read
+;	as code ($F8BF4-$F92F3, TeamPalettes) are .pal incbins. The IDA labels inside Strings are not labels.
 
 wallcollduringcheck	;IDA name (and comments). 94 only: during a check, a skater a2 (not a goalie) near the wall: test the wall at his position
 	;with his size + $17 (checkcornercoll94, high94_1). Called from CCStart (hockey94_03)
@@ -54,63 +54,64 @@ setSlotBit	;IDA name (and comments). 94 only: sflags6 bit 5 (the slot) = the puc
 	movem.l	(sp)+,d0/a0
 .ex
 	rts
-TeamPalettes	;Team palettes: 56 of 16 colors (two per team, 28 teams). Used by attract94 DrawMatchupBitmaps and the player cards
-	dc.w	$EEA,$0,$42,$EEA,$EEA,$EEE,$0,$888,$AAA,$68,$8A,$CE,$260,$40,$664,$E8E
-	dc.w	$EEA,$EEA,$EEA,$0,$42,$EEE,$0,$888,$AAA,$68,$8A,$CE,$260,$40,$664,$E8E
-	dc.w	$EE8,$0,$8C,$EE8,$EE8,$EEE,$0,$C8C,$8C,$888,$68,$846,$44,$422,$8CE,$2AE
-	dc.w	$EE8,$EE8,$EE8,$0,$8C,$EEE,$0,$C8C,$8C,$888,$68,$846,$44,$422,$8CE,$2AE
-	dc.w	$EE8,$822,$8C,$EE8,$EE8,$EEE,$0,$EC8,$48C,$C88,$6C,$866,$268,$224,$620,$CE
-	dc.w	$EE8,$EE8,$EE8,$822,$8C,$EEE,$0,$EC8,$48C,$C88,$6C,$866,$268,$224,$620,$CE
-	dc.w	$EE8,$6,$8C,$EE8,$EE8,$EEE,$0,$8EE,$2CE,$2AE,$26E,$C,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$6,$8C,$EEE,$0,$8EE,$2CE,$2AE,$26E,$C,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$0,$6,$EE8,$EE8,$EEE,$0,$8EE,$A8E,$4AC,$A88,$46C,$226,$644,$22E,$262
-	dc.w	$EE8,$EE8,$EE8,$0,$6,$EEE,$0,$8EE,$A8E,$4AC,$A88,$46C,$226,$644,$22E,$262
-	dc.w	$EE8,$0,$42,$EE8,$EE8,$EEE,$0,$8AA,$688,$488,$466,$244,$260,$20,$ACC,$0
-	dc.w	$EE8,$EE8,$EE8,$0,$42,$EEE,$0,$8AA,$688,$488,$466,$244,$260,$20,$ACC,$0
-	dc.w	$EE8,$6,$6,$EE8,$EE8,$EEE,$0,$C8E,$86E,$44E,$82E,$20E,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$6,$6,$EEE,$0,$C8E,$86E,$44E,$82E,$20E,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$600,$4A,$EE8,$EE8,$EEE,$0,$CEA,$A8E,$8A8,$44E,$488,$2E,$440,$400,$EE8
-	dc.w	$EE8,$EE8,$EE8,$600,$4A,$EEE,$0,$CEA,$A8E,$8A8,$44E,$488,$2E,$440,$400,$EE8
-	dc.w	$EEA,$4A,$600,$EEA,$EEA,$EEE,$0,$A,$4,$46,$8E,$CEE,$466,$442,$EC6,$200
-	dc.w	$EEA,$EEA,$EEA,$4A,$600,$EEE,$0,$A,$4,$46,$8E,$CEE,$466,$442,$EC6,$200
-	dc.w	$EE8,$42,$822,$EE8,$EE8,$EEE,$0,$E8,$4C4,$A8A,$A2,$466,$600,$224,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$42,$822,$EEE,$0,$E8,$4C4,$A8A,$A2,$466,$600,$224,$EE8,$EE8
-	dc.w	$EE8,$0,$0,$EE8,$EE8,$EEE,$0,$AAA,$888,$666,$444,$222,$CCC,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$0,$0,$EEE,$0,$AAA,$888,$666,$444,$222,$CCC,$EE8,$EE8,$EE8
-	dc.w	$EE8,$600,$6,$EE8,$EE8,$EEE,$0,$88E,$26E,$C68,$2E,$A24,$EAA,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$600,$6,$EEE,$0,$88E,$26E,$C68,$2E,$A24,$EAA,$EE8,$EE8,$EE8
-	dc.w	$EE8,$20,$6,$EE8,$EE8,$EEE,$0,$AAA,$A,$888,$C,$22,$6,$CCC,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$20,$6,$EEE,$0,$AAA,$A,$888,$C,$22,$6,$CCC,$EE8,$EE8
-	dc.w	$EE8,$822,$4A,$EE8,$EE8,$EEE,$0,$AA8,$66E,$864,$22C,$62A,$8,$622,$222,$A8E
-	dc.w	$EE8,$EE8,$EE8,$822,$4A,$EEE,$0,$AA8,$66E,$864,$22C,$62A,$8,$622,$222,$A8E
-	dc.w	$EE8,$600,$6,$EE8,$EE8,$EEE,$0,$AAA,$C86,$2E,$C60,$844,$444,$840,$8,$EC8
-	dc.w	$EE8,$EE8,$EE8,$600,$6,$EEE,$0,$AAA,$C86,$2E,$C60,$844,$444,$840,$8,$EC8
-	dc.w	$EE8,$6,$6A,$EE8,$EE8,$EEE,$0,$68A,$688,$466,$244,$22C,$228,$8,$AAA,$4
-	dc.w	$EE8,$EE8,$EE8,$6,$6A,$EEE,$0,$68A,$688,$466,$244,$22C,$228,$8,$AAA,$4
-	dc.w	$EE8,$0,$4A,$EE8,$EE8,$EEE,$0,$CCC,$88E,$AAA,$46E,$6E,$888,$666,$2E,$444
-	dc.w	$EE8,$EE8,$EE8,$0,$4A,$EEE,$0,$CCC,$88E,$AAA,$46E,$6E,$888,$666,$2E,$444
-	dc.w	$EE8,$0,$8C,$EE8,$EE8,$EEE,$0,$AAA,$88A,$66A,$4EE,$464,$440,$2CE,$244,$AEE
-	dc.w	$EE8,$EE8,$EE8,$0,$8C,$EEE,$0,$AAA,$88A,$66A,$4EE,$464,$440,$2CE,$244,$AEE
-	dc.w	$EE8,$600,$6,$EE8,$EE8,$EEE,$0,$C00,$E,$E44,$ECE,$E80,$88E,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$600,$6,$EEE,$0,$C00,$E,$E44,$ECE,$E80,$88E,$EE8,$EE8,$EE8
-	dc.w	$EE8,$0,$860,$EE8,$EE8,$EEE,$0,$860,$642,$888,$CA8,$ACC,$2AE,$6E,$48,$46A
-	dc.w	$EE8,$EE8,$EE8,$0,$860,$EEE,$0,$860,$642,$888,$CA8,$ACC,$2AE,$6E,$48,$46A
-	dc.w	$EE8,$822,$6A,$EE8,$EE8,$EEE,$0,$602,$24C,$2,$26,$68,$428,$86E,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$822,$6A,$EEE,$0,$602,$24C,$2,$26,$68,$428,$86E,$EE8,$EE8
-	dc.w	$EE8,$0,$600,$EE8,$EE8,$EEE,$0,$C86,$E84,$A84,$C44,$822,$E20,$600,$A00,$EA8
-	dc.w	$EE8,$EE8,$EE8,$0,$600,$EEE,$0,$C86,$E84,$A84,$C44,$822,$E20,$600,$A00,$EA8
-	dc.w	$EE8,$600,$600,$EE8,$EE8,$EEE,$0,$ECA,$AAA,$C66,$822,$CCC,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$600,$600,$EEE,$0,$ECA,$AAA,$C66,$822,$CCC,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$0,$8C,$EE8,$EE8,$EEE,$0,$CE,$6A,$4E,$28,$22,$20,$8E,$888,$6CE
-	dc.w	$EE8,$EE8,$EE8,$0,$8C,$EEE,$0,$CE,$6A,$4E,$28,$22,$20,$8E,$888,$6CE
-	dc.w	$EE8,$6,$600,$EE8,$EE8,$EEE,$0,$22C,$C86,$EA8,$88E,$842,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$EE8,$EE8,$6,$600,$EEE,$0,$22C,$C86,$EA8,$88E,$842,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$600,$6,$EE8,$EE8,$EEE,$0,$22C,$422,$AAC,$666,$CAA,$444,$66E,$8CE,$226
-	dc.w	$EE8,$EE8,$EE8,$600,$6,$EEE,$0,$22C,$422,$AAC,$666,$CAA,$444,$66E,$8CE,$226
-	dc.w	$EE8,$0,$4A,$EE8,$EE8,$EEE,$0,$688,$464,$244,$222,$4E,$A,$22,$AAA,$0
-	dc.w	$EE8,$EE8,$EE8,$0,$4A,$EEE,$0,$688,$464,$244,$222,$4E,$A,$22,$AAA,$0
-	dc.w	$EE8,$0,$4A,$EE8,$EE8,$EEE,$0,$688,$464,$244,$222,$4E,$A,$22,$AAA,$0
-	dc.w	$EE8,$EE8,$EE8,$0,$4A,$EEE,$0,$688,$464,$244,$222,$4E,$A,$22,$AAA,$0
+TeamPalettes	;Matchup and player card palettes: 56 of 16 colors, two per team (28 teams, TeamList order). A is the matchup logo palette (the TeamLogoPalettes
+	;entry, except BOS, FLA, HFD, SJ), B the other side (A with colors 1-2 and 3-4 swapped). Used by attract94 DrawMatchupBitmaps and the player cards
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalANHA.pal	;ANH matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalANHB.pal	;ANH other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalBOSA.pal	;BOS matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalBOSB.pal	;BOS other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalBUFA.pal	;BUF matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalBUFB.pal	;BUF other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalCGYA.pal	;CGY matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalCGYB.pal	;CGY other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalCHIA.pal	;CHI matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalCHIB.pal	;CHI other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalDALA.pal	;DAL matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalDALB.pal	;DAL other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalDETA.pal	;DET matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalDETB.pal	;DET other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalEDMA.pal	;EDM matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalEDMB.pal	;EDM other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalFLAA.pal	;FLA matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalFLAB.pal	;FLA other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalHFDA.pal	;HFD matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalHFDB.pal	;HFD other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalLAA.pal	;LA matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalLAB.pal	;LA other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalMTLA.pal	;MTL matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalMTLB.pal	;MTL other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNJA.pal	;NJ matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNJB.pal	;NJ other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNYIA.pal	;NYI matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNYIB.pal	;NYI other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNYRA.pal	;NYR matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNYRB.pal	;NYR other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalOTWA.pal	;OTW matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalOTWB.pal	;OTW other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalPHIA.pal	;PHI matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalPHIB.pal	;PHI other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalPITA.pal	;PIT matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalPITB.pal	;PIT other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalQUEA.pal	;QUE matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalQUEB.pal	;QUE other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalSJA.pal	;SJ matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalSJB.pal	;SJ other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalSTLA.pal	;STL matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalSTLB.pal	;STL other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalTBA.pal	;TB matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalTBB.pal	;TB other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalTORA.pal	;TOR matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalTORB.pal	;TOR other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalVANA.pal	;VAN matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalVANB.pal	;VAN other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWSHA.pal	;WSH matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWSHB.pal	;WSH other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWPGA.pal	;WPG matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWPGB.pal	;WPG other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASEA.pal	;ASE matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASEB.pal	;ASE other side
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWA.pal	;ASW matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWB.pal	;ASW other side
 FeaturedPictures	;The featured player pictures
 	;of each team (TeamList order): a list of picture.l (graphics94 PicturePalette ... PlayerPictures) and roster index.w, 0 ends
 	dc.l	.1,.2,.3,.4

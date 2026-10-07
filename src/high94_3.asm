@@ -2009,34 +2009,35 @@ CreditsScrollStep	;94 only. Credits: line scroll step, every TempWord2 frames
 	movem.l	(sp)+,d0-d2/a0
 	rts
 TeamLogoPalettes	;Team logo palettes, 16 colors per team. Used by PeriodStatsScreen, ClearCardText (high94_2), DrawMatchupLogo (hockey94_07) and DrawTeamLogo (hockey94_08)
-	dc.w	$EEA,0,$42,$EEA,$EEA,$EEE,0,$888,$AAA,$68,$8A,$CE,$260,$40,$664,$E8E
-	dc.w	$EE8,$8C,0,$A0A,$A0A,$EEE,0,$C8C,$8C,$888,$68,$846,$44,$422,$8CE,$2AE
-	dc.w	$EE8,$822,$8C,$EE8,$EE8,$EEE,0,$EC8,$48C,$C88,$6C,$866,$268,$224,$620,$CE
-	dc.w	$EE8,6,$8C,$EE8,$EE8,$EEE,0,$8EE,$2CE,$2AE,$26E,$C,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,0,6,$EE8,$EE8,$EEE,0,$8EE,$A8E,$4AC,$A88,$46C,$226,$644,$22E,$262
-	dc.w	$EE8,0,$42,$EE8,$EE8,$EEE,0,$8AA,$688,$488,$466,$244,$260,$20,$ACC,0
-	dc.w	$EE8,6,6,$EE8,$EE8,$EEE,0,$C8E,$86E,$44E,$82E,$20E,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$600,$4A,$EE8,$EE8,$EEE,0,$CEA,$A8E,$8A8,$44E,$488,$2E,$440,$400,$EE8
-	dc.w	$EEA,$4A,$600,$EEA,$EEA,$EEE,0,$8AE,$4AE,$66,$88,$220,$A84,$842,$200,$2E
-	dc.w	$EE8,$42,$822,$EE8,$EE8,$EEE,0,$20,$40,$A8A,$20,$466,$200,$224,$888,$422
-	dc.w	$EE8,0,0,$EE8,$EE8,$EEE,0,$AAA,$888,$666,$444,$222,$CCC,$EE8,$EE8,$EE8
-	dc.w	$EE8,$600,6,$EE8,$EE8,$EEE,0,$88E,$26E,$C68,$2E,$A24,$EAA,$EE8,$EE8,$EE8
-	dc.w	$EE8,$20,6,$EE8,$EE8,$EEE,0,$AAA,$A,$888,$C,$22,6,$CCC,$EE8,$EE8
-	dc.w	$EE8,$822,$4A,$EE8,$EE8,$EEE,0,$AA8,$66E,$864,$22C,$62A,8,$622,$222,$A8E
-	dc.w	$EE8,$600,6,$EE8,$EE8,$EEE,0,$AAA,$C86,$2E,$C60,$844,$444,$840,8,$EC8
-	dc.w	$EE8,6,$6A,$EE8,$EE8,$EEE,0,$68A,$688,$466,$244,$22C,$228,8,$AAA,4
-	dc.w	$EE8,0,$4A,$EE8,$EE8,$EEE,0,$CCC,$88E,$AAA,$46E,$6E,$888,$666,$2E,$444
-	dc.w	$EE8,0,$8C,$EE8,$EE8,$EEE,0,$AAA,$88A,$66A,$4EE,$464,$440,$2CE,$244,$AEE
-	dc.w	$EE8,$600,6,$EE8,$EE8,$EEE,0,$C00,$E,$E44,$ECE,$E80,$88E,$EE8,$EE8,$EE8
-	dc.w	$EE8,0,$822,$EE8,$EE8,$EEE,0,$860,$642,$888,$CA8,$ACC,$2AE,$6E,$48,$46A
-	dc.w	$EE8,$822,$6A,$EE8,$EE8,$EEE,0,$602,$24C,2,$26,$68,$428,$86E,$EE8,$EE8
-	dc.w	$EE8,0,$600,$EE8,$EE8,$EEE,0,$C86,$E84,$A84,$C44,$822,$E20,$600,$A00,$EA8
-	dc.w	$EE8,$600,$600,$EE8,$EE8,$EEE,0,$ECA,$AAA,$C66,$822,$CCC,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,0,$8C,$EE8,$EE8,$EEE,0,$CE,$6A,$4E,$28,$22,$20,$8E,$888,$6CE
-	dc.w	$EE8,6,$600,$EE8,$EE8,$EEE,0,$22C,$C86,$EA8,$88E,$842,$EE8,$EE8,$EE8,$EE8
-	dc.w	$EE8,$600,6,$EE8,$EE8,$EEE,0,$22C,$422,$AAC,$666,$CAA,$444,$66E,$8CE,$226
-	dc.w	$EE8,0,$4A,$EE8,$EE8,$EEE,0,$688,$464,$244,$222,$4E,$A,$22,$AAA,0
-	dc.w	$EE8,0,$4A,$EE8,$EE8,$EEE,0,$688,$464,$244,$222,$4E,$A,$22,$AAA,0
+	;24 are the matchup logo palettes of TeamPalettes (high94_2) and incbin those files; BOS, FLA, HFD and SJ differ and have their own
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalANHA.pal	;ANH, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\TeamLogoPalBOS.pal	;BOS: differs from MatchupPalBOSA.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalBUFA.pal	;BUF, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalCGYA.pal	;CGY, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalCHIA.pal	;CHI, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalDALA.pal	;DAL, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalDETA.pal	;DET, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalEDMA.pal	;EDM, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\TeamLogoPalFLA.pal	;FLA: differs from MatchupPalFLAA.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\TeamLogoPalHFD.pal	;HFD: differs from MatchupPalHFDA.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalLAA.pal	;LA, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalMTLA.pal	;MTL, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNJA.pal	;NJ, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNYIA.pal	;NYI, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalNYRA.pal	;NYR, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalOTWA.pal	;OTW, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalPHIA.pal	;PHI, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalPITA.pal	;PIT, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalQUEA.pal	;QUE, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\TeamLogoPalSJ.pal	;SJ: differs from MatchupPalSJA.pal
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalSTLA.pal	;STL, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalTBA.pal	;TB, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalTORA.pal	;TOR, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalVANA.pal	;VAN, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWSHA.pal	;WSH, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWPGA.pal	;WPG, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASEA.pal	;ASE, the TeamPalettes (high94_2) matchup logo palette
+	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWA.pal	;ASW, the TeamPalettes (high94_2) matchup logo palette
 LeadSong	;94 only. Not in a shootout (gmode2 bit 1), scores not level: once (sflags2 bit 5), ChooseSong with SongIndex 1 (home ahead) or 4
 	;and sflags8 bit 6; sflags2 is put back on exit. Called from puckfaceoff2 (logic94_4)
 	movem.l	d0/a0-a3,-(sp)

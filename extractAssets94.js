@@ -283,6 +283,69 @@ const assets = [
     { name: 'HotIconMap.bin', folder: 'NHL94/Graphics', start: 0x000F5AF6, end: 0x000F5D1C }, // unk_F5AF6
     { name: 'ColdIconMap.bin', folder: 'NHL94/Graphics', start: 0x000F5D1C, end: 0x000F600E }, // unk_F5D1C
     { name: 'revframetbl.bin', folder: 'NHL94/Graphics', start: 0x000F600E, end: 0x000F66EE }, // revframetbl
+    // NHL 94 matchup / player card palettes, src/high94_2.asm TeamPalettes ($F8BF4): two 16 color palettes per team in TeamList order.
+    // A is the matchup logo palette (the TeamLogoPalettes entry, except BOS, FLA, HFD, SJ), B is the other side (A with colors 1-2 and 3-4 swapped).
+    { name: 'MatchupPalANHA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8BF4, end: 0x000F8C14 }, // ANH matchup logo
+    { name: 'MatchupPalANHB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8C14, end: 0x000F8C34 }, // ANH other side
+    { name: 'MatchupPalBOSA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8C34, end: 0x000F8C54 }, // BOS matchup logo
+    { name: 'MatchupPalBOSB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8C54, end: 0x000F8C74 }, // BOS other side
+    { name: 'MatchupPalBUFA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8C74, end: 0x000F8C94 }, // BUF matchup logo
+    { name: 'MatchupPalBUFB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8C94, end: 0x000F8CB4 }, // BUF other side
+    { name: 'MatchupPalCGYA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8CB4, end: 0x000F8CD4 }, // CGY matchup logo
+    { name: 'MatchupPalCGYB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8CD4, end: 0x000F8CF4 }, // CGY other side
+    { name: 'MatchupPalCHIA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8CF4, end: 0x000F8D14 }, // CHI matchup logo
+    { name: 'MatchupPalCHIB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8D14, end: 0x000F8D34 }, // CHI other side
+    { name: 'MatchupPalDALA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8D34, end: 0x000F8D54 }, // DAL matchup logo
+    { name: 'MatchupPalDALB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8D54, end: 0x000F8D74 }, // DAL other side
+    { name: 'MatchupPalDETA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8D74, end: 0x000F8D94 }, // DET matchup logo
+    { name: 'MatchupPalDETB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8D94, end: 0x000F8DB4 }, // DET other side
+    { name: 'MatchupPalEDMA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8DB4, end: 0x000F8DD4 }, // EDM matchup logo
+    { name: 'MatchupPalEDMB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8DD4, end: 0x000F8DF4 }, // EDM other side
+    { name: 'MatchupPalFLAA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8DF4, end: 0x000F8E14 }, // FLA matchup logo
+    { name: 'MatchupPalFLAB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8E14, end: 0x000F8E34 }, // FLA other side
+    { name: 'MatchupPalHFDA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8E34, end: 0x000F8E54 }, // HFD matchup logo
+    { name: 'MatchupPalHFDB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8E54, end: 0x000F8E74 }, // HFD other side
+    { name: 'MatchupPalLAA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8E74, end: 0x000F8E94 }, // LA matchup logo
+    { name: 'MatchupPalLAB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8E94, end: 0x000F8EB4 }, // LA other side
+    { name: 'MatchupPalMTLA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8EB4, end: 0x000F8ED4 }, // MTL matchup logo
+    { name: 'MatchupPalMTLB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8ED4, end: 0x000F8EF4 }, // MTL other side
+    { name: 'MatchupPalNJA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8EF4, end: 0x000F8F14 }, // NJ matchup logo
+    { name: 'MatchupPalNJB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8F14, end: 0x000F8F34 }, // NJ other side
+    { name: 'MatchupPalNYIA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8F34, end: 0x000F8F54 }, // NYI matchup logo
+    { name: 'MatchupPalNYIB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8F54, end: 0x000F8F74 }, // NYI other side
+    { name: 'MatchupPalNYRA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8F74, end: 0x000F8F94 }, // NYR matchup logo
+    { name: 'MatchupPalNYRB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8F94, end: 0x000F8FB4 }, // NYR other side
+    { name: 'MatchupPalOTWA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8FB4, end: 0x000F8FD4 }, // OTW matchup logo
+    { name: 'MatchupPalOTWB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8FD4, end: 0x000F8FF4 }, // OTW other side
+    { name: 'MatchupPalPHIA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8FF4, end: 0x000F9014 }, // PHI matchup logo
+    { name: 'MatchupPalPHIB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9014, end: 0x000F9034 }, // PHI other side
+    { name: 'MatchupPalPITA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9034, end: 0x000F9054 }, // PIT matchup logo
+    { name: 'MatchupPalPITB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9054, end: 0x000F9074 }, // PIT other side
+    { name: 'MatchupPalQUEA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9074, end: 0x000F9094 }, // QUE matchup logo
+    { name: 'MatchupPalQUEB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9094, end: 0x000F90B4 }, // QUE other side
+    { name: 'MatchupPalSJA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F90B4, end: 0x000F90D4 }, // SJ matchup logo
+    { name: 'MatchupPalSJB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F90D4, end: 0x000F90F4 }, // SJ other side
+    { name: 'MatchupPalSTLA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F90F4, end: 0x000F9114 }, // STL matchup logo
+    { name: 'MatchupPalSTLB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9114, end: 0x000F9134 }, // STL other side
+    { name: 'MatchupPalTBA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9134, end: 0x000F9154 }, // TB matchup logo
+    { name: 'MatchupPalTBB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9154, end: 0x000F9174 }, // TB other side
+    { name: 'MatchupPalTORA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9174, end: 0x000F9194 }, // TOR matchup logo
+    { name: 'MatchupPalTORB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9194, end: 0x000F91B4 }, // TOR other side
+    { name: 'MatchupPalVANA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F91B4, end: 0x000F91D4 }, // VAN matchup logo
+    { name: 'MatchupPalVANB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F91D4, end: 0x000F91F4 }, // VAN other side
+    { name: 'MatchupPalWSHA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F91F4, end: 0x000F9214 }, // WSH matchup logo
+    { name: 'MatchupPalWSHB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9214, end: 0x000F9234 }, // WSH other side
+    { name: 'MatchupPalWPGA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9234, end: 0x000F9254 }, // WPG matchup logo
+    { name: 'MatchupPalWPGB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9254, end: 0x000F9274 }, // WPG other side
+    { name: 'MatchupPalASEA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9274, end: 0x000F9294 }, // ASE matchup logo
+    { name: 'MatchupPalASEB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9294, end: 0x000F92B4 }, // ASE other side
+    { name: 'MatchupPalASWA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F92B4, end: 0x000F92D4 }, // ASW matchup logo
+    { name: 'MatchupPalASWB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F92D4, end: 0x000F92F4 }, // ASW other side
+    // src/high94_3.asm TeamLogoPalettes ($FF462): the 4 team logo palettes that differ from MatchupPal<team>A.pal; the other 24 incbin that file.
+    { name: 'TeamLogoPalBOS.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF482, end: 0x000FF4A2 }, // BOS team logo
+    { name: 'TeamLogoPalFLA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF562, end: 0x000FF582 }, // FLA team logo
+    { name: 'TeamLogoPalHFD.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF582, end: 0x000FF5A2 }, // HFD team logo
+    { name: 'TeamLogoPalSJ.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF6C2, end: 0x000FF6E2 }, // SJ team logo
 
     // { name: 'Title1.map.jim', folder: 'NHL94/Graphics', start: 0x00025642, end: 0x0002ADF0 },
     // { name: 'Title2.map.jim', folder: 'NHL94/Graphics', start: 0x0002ADF0, end: 0x0002C0FE },

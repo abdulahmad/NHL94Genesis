@@ -44,8 +44,8 @@
     "seg:menu94": "buildseg.bat menu94 && node fixopcodes.js \"output\\menu94 .lst\" output\\menu94.bin && node verifySegment.js menu94 0x7E36 lst/nhl94.bin",
     "seg:stats94": "buildseg.bat stats94 && node fixopcodes.js \"output\\stats94 .lst\" output\\stats94.bin && node verifySegment.js stats94 0x80D4 lst/nhl94.bin",
     "seg:high94_1": "buildseg.bat high94_1 && node fixopcodes.js \"output\\high94_1 .lst\" output\\high94_1.bin && node verifySegment.js high94_1 0xF66EE lst/nhl94.bin",
-    "seg:high94_2": "buildseg.bat high94_2 && node fixopcodes.js \"output\\high94_2 .lst\" output\\high94_2.bin && node verifySegment.js high94_2 0xF8B5A lst/nhl94.bin",
-    "seg:high94_3": "buildseg.bat high94_3 && node fixopcodes.js \"output\\high94_3 .lst\" output\\high94_3.bin && node verifySegment.js high94_3 0xFD618 lst/nhl94.bin",
+    "seg:high94_2": "npm run extractassets && buildseg.bat high94_2 && node fixopcodes.js \"output\\high94_2 .lst\" output\\high94_2.bin && node verifySegment.js high94_2 0xF8B5A lst/nhl94.bin",
+    "seg:high94_3": "npm run extractassets && buildseg.bat high94_3 && node fixopcodes.js \"output\\high94_3 .lst\" output\\high94_3.bin && node verifySegment.js high94_3 0xFD618 lst/nhl94.bin",
     "seg:checksum94": "buildseg.bat checksum94 && node fixopcodes.js \"output\\checksum94 .lst\" output\\checksum94.bin && node verifySegment.js checksum94 0xFFAC0 lst/nhl94.bin"
   },
   "devDependencies": {
