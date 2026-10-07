@@ -113,7 +113,7 @@ TeamPalettes	;Matchup and player card palettes: 56 of 16 colors, two per team (2
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWA.pal	;ASW matchup logo palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWB.pal	;ASW other side
 FeaturedPictures	;The featured player pictures
-	;of each team (TeamList order): a list of picture.l (graphics94 PicturePalette ... PlayerPictures) and roster index.w, 0 ends
+	;of each team (TeamList order): a list of picture.l (graphics94 NoPicSkater1 ... Card<player>) and roster index.w, 0 ends
 	dc.l	.1,.2,.3,.4
 	dc.l	.5,.6,.7,.8
 	dc.l	.0,.9,.10,.11
@@ -122,7 +122,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	.20,.21,.22,.23
 	dc.l	.24,.25,.26,.27
 .0
-	dc.l	PlayerPictures
+	dc.l	NoPicGoalie2
 	dc.w	0
 	dc.l	NoPicSkater2
 	dc.w	13
@@ -136,7 +136,7 @@ FeaturedPictures	;The featured player pictures
 	dc.w	3
 	dc.l	0
 .1
-	dc.l	PlayerPictures
+	dc.l	NoPicGoalie2
 	dc.w	0
 	dc.l	NoPicSkater1
 	dc.w	11
@@ -150,231 +150,231 @@ FeaturedPictures	;The featured player pictures
 	dc.w	7
 	dc.l	0
 .2
-	dc.l	PlayerPictures+$36A
+	dc.l	CardAndyMoog
 	dc.w	0
-	dc.l	PlayerPictures+$DA8
+	dc.l	CardDonSweeney
 	dc.w	18
-	dc.l	PlayerPictures+$6D4
+	dc.l	CardRayBourque
 	dc.w	17
-	dc.l	PlayerPictures+$1112
+	dc.l	CardJoeJuneau
 	dc.w	6
-	dc.l	PlayerPictures+$A3E
+	dc.l	CardAdamOates
 	dc.w	2
-	dc.l	PlayerPictures+$147C
+	dc.l	CardCamNeely
 	dc.w	11
 	dc.l	NoPicSkater2
 	dc.w	19
 	dc.l	0
 .3
-	dc.l	PlayerPictures+$258E
+	dc.l	CardGrantFuhr
 	dc.w	0
-	dc.l	PlayerPictures+$2224
+	dc.l	CardDougBodger
 	dc.w	17
-	dc.l	PlayerPictures+$28F8
+	dc.l	CardPetrSvoboda
 	dc.w	18
-	dc.l	PlayerPictures+$1EBA
+	dc.l	CardDaleHawerchuk
 	dc.w	4
-	dc.l	PlayerPictures+$1B50
+	dc.l	CardPatLaFontaine
 	dc.w	3
-	dc.l	PlayerPictures+$17E6
+	dc.l	CardAlexnderMogilny
 	dc.w	12
 	dc.l	0
 .4
-	dc.l	PlayerPictures+$2C62
+	dc.l	CardMikeVernon
 	dc.w	0
-	dc.l	PlayerPictures+$36A0
+	dc.l	CardGarySuter
 	dc.w	15
-	dc.l	PlayerPictures+$3A0A
+	dc.l	CardAlMacInnis
 	dc.w	16
-	dc.l	PlayerPictures+$2FCC
+	dc.l	CardGaryRoberts
 	dc.w	6
-	dc.l	PlayerPictures+$3D74
+	dc.l	CardJoeNieuwendyk
 	dc.w	2
-	dc.l	PlayerPictures+$3336
+	dc.l	CardTheorenFleury
 	dc.w	11
 	dc.l	0
 .5
-	dc.l	PlayerPictures+$40DE
+	dc.l	CardEdBelfour
 	dc.w	0
-	dc.l	PlayerPictures+$4E86
+	dc.l	CardSteveSmith
 	dc.w	18
-	dc.l	PlayerPictures+$4B1C
+	dc.l	CardChrisChelios
 	dc.w	17
-	dc.l	PlayerPictures+$51F0
+	dc.l	CardMichelGoulet
 	dc.w	6
-	dc.l	PlayerPictures+$4448
+	dc.l	CardJeremyRoenick
 	dc.w	2
-	dc.l	PlayerPictures+$47B2
+	dc.l	CardSteveLarmer
 	dc.w	11
 	dc.l	0
 .6
-	dc.l	PlayerPictures+$BD82
+	dc.l	CardJonCasey
 	dc.w	0
-	dc.l	PlayerPictures+$C456
+	dc.l	CardMarkTinordi
 	dc.w	16
-	dc.l	PlayerPictures+$C7C0
+	dc.l	CardTommySjodin
 	dc.w	17
-	dc.l	PlayerPictures+$CB2A
+	dc.l	CardDaveGagner
 	dc.w	3
-	dc.l	PlayerPictures+$C0EC
+	dc.l	CardMikeModano
 	dc.w	2
-	dc.l	PlayerPictures+$CE94
+	dc.l	CardRussCourtnall
 	dc.w	10
 	dc.l	0
 .7
-	dc.l	PlayerPictures+$555A
+	dc.l	CardTimCheveldae
 	dc.w	0
-	dc.l	PlayerPictures+$6302
+	dc.l	CardSteveChiasson
 	dc.w	18
-	dc.l	PlayerPictures+$5F98
+	dc.l	CardPaulCoffey
 	dc.w	17
-	dc.l	PlayerPictures+$5C2E
+	dc.l	CardSergeiFedorov
 	dc.w	3
-	dc.l	PlayerPictures+$58C4
+	dc.l	CardSteveYzerman
 	dc.w	2
-	dc.l	PlayerPictures+$666C
+	dc.l	CardDinoCiccarelli
 	dc.w	12
 	dc.l	0
 .8
-	dc.l	PlayerPictures+$69D6
+	dc.l	CardBillRanford
 	dc.w	0
-	dc.l	PlayerPictures+$6D40
+	dc.l	CardDaveManson
 	dc.w	17
-	dc.l	PlayerPictures+$70AA
+	dc.l	CardIgorKravchuk
 	dc.w	18
-	dc.l	PlayerPictures+$7414
+	dc.l	CardShayneCorson
 	dc.w	8
-	dc.l	PlayerPictures+$777E
+	dc.l	CardDougWeight
 	dc.w	2
-	dc.l	PlayerPictures+$7B84
+	dc.l	CardPetrKlima
 	dc.w	14
 	dc.l	0
 .9
-	dc.l	PlayerPictures+$7EEE
+	dc.l	CardSeanBurke
 	dc.w	0
-	dc.l	PlayerPictures+$8C96
+	dc.l	CardZarleyZalapski
 	dc.w	18
-	dc.l	PlayerPictures+$9000
+	dc.l	CardEricWeinrich
 	dc.w	19
-	dc.l	PlayerPictures+$85C2
+	dc.l	CardGeoffSanderson
 	dc.w	8
-	dc.l	PlayerPictures+$8258
+	dc.l	CardAndrewCassels
 	dc.w	3
-	dc.l	PlayerPictures+$892C
+	dc.l	CardPatVerbeek
 	dc.w	13
 	dc.l	0
 .10
-	dc.l	PlayerPictures+$A882
+	dc.l	CardKellyHrudey
 	dc.w	0
-	dc.l	PlayerPictures+$B6AE
+	dc.l	CardRobBlake
 	dc.w	16
-	dc.l	PlayerPictures+$BA18
+	dc.l	CardMartyMcSorley
 	dc.w	17
-	dc.l	PlayerPictures+$AFDA
+	dc.l	CardLucRobitaille
 	dc.w	7
-	dc.l	PlayerPictures+$AC70
+	dc.l	CardWayneGretzky
 	dc.w	3
-	dc.l	PlayerPictures+$B344
+	dc.l	CardTomasSandstrom
 	dc.w	12
 	dc.l	NoPicSkater2
 	dc.w	13
 	dc.l	0
 .11
-	dc.l	PlayerPictures+$D1FE
+	dc.l	CardPatrickRoy
 	dc.w	0
-	dc.l	PlayerPictures+$D8D2
+	dc.l	CardMattSchneider
 	dc.w	17
-	dc.l	PlayerPictures+$D568
+	dc.l	CardEricDesjardins
 	dc.w	16
-	dc.l	PlayerPictures+$E012
+	dc.l	CardVincentDamphousse
 	dc.w	6
-	dc.l	PlayerPictures+$DCA8
+	dc.l	CardKirkMuller
 	dc.w	2
-	dc.l	PlayerPictures+$E37C
+	dc.l	CardBrianBellows
 	dc.w	11
 	dc.l	0
 .12
-	dc.l	PlayerPictures+$EA50
+	dc.l	CardChrisTerreri
 	dc.w	0
-	dc.l	PlayerPictures+$EDBA
+	dc.l	CardVachslavFetisov
 	dc.w	18
-	dc.l	PlayerPictures+$E6E6
+	dc.l	CardScottStevens
 	dc.w	17
-	dc.l	PlayerPictures+$F124
+	dc.l	CardStephaneRicher
 	dc.w	11
-	dc.l	PlayerPictures+$F48E
+	dc.l	CardAlexnderSemak
 	dc.w	2
-	dc.l	PlayerPictures+$F7F8
+	dc.l	CardClaudeLemieux
 	dc.w	12
 	dc.l	0
 .13
-	dc.l	PlayerPictures+$9DA8
+	dc.l	CardGlennHealy
 	dc.w	0
-	dc.l	PlayerPictures+$A112
+	dc.l	CardDariusKasparitis
 	dc.w	18
-	dc.l	PlayerPictures+$A47C
+	dc.l	CardVladimirMalakhov
 	dc.w	17
-	dc.l	PlayerPictures+$96D4
+	dc.l	CardSteveThomas
 	dc.w	8
-	dc.l	PlayerPictures+$9A3E
+	dc.l	CardPierreTurgeon
 	dc.w	2
-	dc.l	PlayerPictures+$936A
+	dc.l	CardBenoitHogue
 	dc.w	3
 	dc.l	0
 .14
-	dc.l	PlayerPictures+$FB62
+	dc.l	CardJohnVanbiesbrk
 	dc.w	0
-	dc.l	PlayerPictures+$102A2
+	dc.l	CardJamesPatrick
 	dc.w	18
-	dc.l	PlayerPictures+$10976
+	dc.l	CardBrianLeetch
 	dc.w	17
-	dc.l	PlayerPictures+$10CE0
+	dc.l	CardEsaTikkanen
 	dc.w	6
-	dc.l	PlayerPictures+$FF38
+	dc.l	CardMarkMessier
 	dc.w	2
-	dc.l	PlayerPictures+$1060C
+	dc.l	CardMikeGartner
 	dc.w	11
 	dc.l	0
 .15
-	dc.l	PlayerPictures+$1104A
+	dc.l	CardPeterSidorkwicz
 	dc.w	0
-	dc.l	PlayerPictures+$11AF4
+	dc.l	CardBradShaw
 	dc.w	19
-	dc.l	PlayerPictures+$1178A
+	dc.l	CardNormMaciver
 	dc.w	18
-	dc.l	PlayerPictures+$11420
+	dc.l	CardSylvainTurgeon
 	dc.w	9
-	dc.l	PlayerPictures+$11E5E
+	dc.l	CardJamieBaker
 	dc.w	2
-	dc.l	PlayerPictures+$121C8
+	dc.l	CardBobKudelski
 	dc.w	14
 	dc.l	0
 .16
-	dc.l	PlayerPictures+$132DA
+	dc.l	CardTommySoderstrom
 	dc.w	0
-	dc.l	PlayerPictures+$13644
+	dc.l	CardDimitriYushkevich
 	dc.w	18
-	dc.l	PlayerPictures+$12C06
+	dc.l	CardGarryGalley
 	dc.w	17
-	dc.l	PlayerPictures+$1289C
+	dc.l	CardRodBrindAmour
 	dc.w	4
-	dc.l	PlayerPictures+$12532
+	dc.l	CardEricLindros
 	dc.w	3
-	dc.l	PlayerPictures+$12F70
+	dc.l	CardMarkRecchi
 	dc.w	14
 	dc.l	0
 .17
-	dc.l	PlayerPictures+$139AE
+	dc.l	CardTomBarrasso
 	dc.w	0
-	dc.l	PlayerPictures+$14756
+	dc.l	CardLarryMurphy
 	dc.w	16
-	dc.l	PlayerPictures+$14AC0
+	dc.l	CardUlfSamuelsson
 	dc.w	17
-	dc.l	PlayerPictures+$14082
+	dc.l	CardKevinStevens
 	dc.w	6
-	dc.l	PlayerPictures+$13D18
+	dc.l	CardMarioLemieux
 	dc.w	2
-	dc.l	PlayerPictures+$143EC
+	dc.l	CardJaromirJagr
 	dc.w	10
 	dc.l	NoPicSkater2
 	dc.w	11
@@ -382,221 +382,221 @@ FeaturedPictures	;The featured player pictures
 	dc.w	1
 	dc.l	0
 .18
-	dc.l	PlayerPictures+$14E2A
+	dc.l	CardRonHextall
 	dc.w	0
-	dc.l	PlayerPictures+$15C3E
+	dc.l	CardCurtisLeschyshyn
 	dc.w	18
-	dc.l	PlayerPictures+$1556A
+	dc.l	CardSteveDuchesne
 	dc.w	17
-	dc.l	PlayerPictures+$158D4
+	dc.l	CardJoeSakic
 	dc.w	2
-	dc.l	PlayerPictures+$15FA8
+	dc.l	CardMatsSundin
 	dc.w	13
-	dc.l	PlayerPictures+$15200
+	dc.l	CardOwenNolan
 	dc.w	14
 	dc.l	0
 .19
-	dc.l	PlayerPictures+$16D50
+	dc.l	CardArtursIrbe
 	dc.w	0
-	dc.l	PlayerPictures+$170BA
+	dc.l	CardNeilWilkinson
 	dc.w	17
-	dc.l	PlayerPictures+$1667C
+	dc.l	CardDougWilson
 	dc.w	16
-	dc.l	PlayerPictures+$17424
+	dc.l	CardJohanGarpenlov
 	dc.w	9
-	dc.l	PlayerPictures+$16312
+	dc.l	CardKellyKisio
 	dc.w	3
-	dc.l	PlayerPictures+$169E6
+	dc.l	CardPatFalloon
 	dc.w	13
 	dc.l	0
 .20
-	dc.l	PlayerPictures+$1778E
+	dc.l	CardCurtisJoseph
 	dc.w	0
-	dc.l	PlayerPictures+$18536
+	dc.l	CardJeffBrown
 	dc.w	16
-	dc.l	PlayerPictures+$181CC
+	dc.l	CardGarthButcher
 	dc.w	17
-	dc.l	PlayerPictures+$188A0
+	dc.l	CardBrendanShanahan
 	dc.w	11
-	dc.l	PlayerPictures+$17AF8
+	dc.l	CardCraigJanney
 	dc.w	2
-	dc.l	PlayerPictures+$17E62
+	dc.l	CardBrettHull
 	dc.w	12
 	dc.l	0
 .21
-	dc.l	PlayerPictures+$18F74
+	dc.l	CardWendellYoung
 	dc.w	0
-	dc.l	PlayerPictures+$192DE
+	dc.l	CardRomanHamrlik
 	dc.w	19
-	dc.l	PlayerPictures+$19648
+	dc.l	CardBobBeers
 	dc.w	18
-	dc.l	PlayerPictures+$199B2
+	dc.l	CardMikaelAndersson
 	dc.w	11
-	dc.l	PlayerPictures+$18C0A
+	dc.l	CardBrianBradley
 	dc.w	3
-	dc.l	PlayerPictures+$19D1C
+	dc.l	CardChrisKontos
 	dc.w	4
 	dc.l	0
 .22
-	dc.l	PlayerPictures+$1A086
+	dc.l	CardFelixPotvin
 	dc.w	0
-	dc.l	PlayerPictures+$1AAC4
+	dc.l	CardDaveEllett
 	dc.w	18
-	dc.l	PlayerPictures+$1AE2E
+	dc.l	CardToddGill
 	dc.w	17
-	dc.l	PlayerPictures+$1B198
+	dc.l	CardDaveAndreychuk
 	dc.w	8
-	dc.l	PlayerPictures+$1A3F0
+	dc.l	CardDougGilmour
 	dc.w	3
-	dc.l	PlayerPictures+$1A75A
+	dc.l	CardNikolaiBorshevsky
 	dc.w	12
 	dc.l	0
 .23
-	dc.l	PlayerPictures+$1B59E
+	dc.l	CardKirkMcLean
 	dc.w	0
-	dc.l	PlayerPictures+$1C346
+	dc.l	CardDougLidster
 	dc.w	18
-	dc.l	PlayerPictures+$1BFDC
+	dc.l	CardJyrkiLumme
 	dc.w	17
-	dc.l	PlayerPictures+$1B908
+	dc.l	CardGeoffCourtnall
 	dc.w	6
-	dc.l	PlayerPictures+$1C6B0
+	dc.l	CardCliffRonning
 	dc.w	2
-	dc.l	PlayerPictures+$1BC72
+	dc.l	CardPavelBure
 	dc.w	12
 	dc.l	0
 .24
-	dc.l	PlayerPictures+$1CA1A
+	dc.l	CardDonBeaupre
 	dc.w	0
-	dc.l	PlayerPictures+$1DB2C
+	dc.l	CardAlIafrate
 	dc.w	17
-	dc.l	PlayerPictures+$1D7C2
+	dc.l	CardKevinHatcher
 	dc.w	16
-	dc.l	PlayerPictures+$1D0EE
+	dc.l	CardDimitriKhristich
 	dc.w	3
-	dc.l	PlayerPictures+$1CD84
+	dc.l	CardMikeRidley
 	dc.w	2
-	dc.l	PlayerPictures+$1D458
+	dc.l	CardPeterBondra
 	dc.w	11
 	dc.l	NoPicSkater1
 	dc.w	18
 	dc.l	0
 .25
-	dc.l	PlayerPictures+$1E8D4
+	dc.l	CardBobEssensa
 	dc.w	0
-	dc.l	PlayerPictures+$1EC3E
+	dc.l	CardTeppoNumminen
 	dc.w	18
-	dc.l	PlayerPictures+$1E56A
+	dc.l	CardPhilHousley
 	dc.w	17
-	dc.l	PlayerPictures+$1DE96
+	dc.l	CardThomasSteen
 	dc.w	3
-	dc.l	PlayerPictures+$1F05C
+	dc.l	CardAlexeiZhamnov
 	dc.w	2
-	dc.l	PlayerPictures+$1E200
+	dc.l	CardTeemuSelanne
 	dc.w	12
 	dc.l	0
 .26
-	dc.l	PlayerPictures+$D1FE
+	dc.l	CardPatrickRoy
 	dc.w	0
-	dc.l	PlayerPictures+$6D4
+	dc.l	CardRayBourque
 	dc.w	18
-	dc.l	PlayerPictures+$14756
+	dc.l	CardLarryMurphy
 	dc.w	17
-	dc.l	PlayerPictures+$A3E
+	dc.l	CardAdamOates
 	dc.w	6
-	dc.l	PlayerPictures+$13D18
+	dc.l	CardMarioLemieux
 	dc.w	3
-	dc.l	PlayerPictures+$17E6
+	dc.l	CardAlexnderMogilny
 	dc.w	15
-	dc.l	PlayerPictures+$258E
+	dc.l	CardGrantFuhr
 	dc.w	1
-	dc.l	PlayerPictures+$139AE
+	dc.l	CardTomBarrasso
 	dc.w	2
-	dc.l	PlayerPictures+$FF38
+	dc.l	CardMarkMessier
 	dc.w	4
-	dc.l	PlayerPictures+$DCA8
+	dc.l	CardKirkMuller
 	dc.w	5
-	dc.l	PlayerPictures+$158D4
+	dc.l	CardJoeSakic
 	dc.w	7
-	dc.l	PlayerPictures+$9A3E
+	dc.l	CardPierreTurgeon
 	dc.w	8
-	dc.l	PlayerPictures+$1B50
+	dc.l	CardPatLaFontaine
 	dc.w	9
-	dc.l	PlayerPictures+$14082
+	dc.l	CardKevinStevens
 	dc.w	10
-	dc.l	PlayerPictures+$143EC
+	dc.l	CardJaromirJagr
 	dc.w	11
-	dc.l	PlayerPictures+$1D458
+	dc.l	CardPeterBondra
 	dc.w	12
-	dc.l	PlayerPictures+$1060C
+	dc.l	CardMikeGartner
 	dc.w	13
 	dc.l	NoPicSkater2
 	dc.w	14
-	dc.l	PlayerPictures+$12F70
+	dc.l	CardMarkRecchi
 	dc.w	16
-	dc.l	PlayerPictures+$10976
+	dc.l	CardBrianLeetch
 	dc.w	19
-	dc.l	PlayerPictures+$1556A
+	dc.l	CardSteveDuchesne
 	dc.w	20
-	dc.l	PlayerPictures+$1DB2C
+	dc.l	CardAlIafrate
 	dc.w	21
-	dc.l	PlayerPictures+$E6E6
+	dc.l	CardScottStevens
 	dc.w	22
-	dc.l	PlayerPictures+$8C96
+	dc.l	CardZarleyZalapski
 	dc.w	23
 	dc.l	NoPicSkater2
 	dc.w	24
 	dc.l	0
 .27
-	dc.l	PlayerPictures+$40DE
+	dc.l	CardEdBelfour
 	dc.w	0
-	dc.l	PlayerPictures+$5F98
+	dc.l	CardPaulCoffey
 	dc.w	19
-	dc.l	PlayerPictures+$1E56A
+	dc.l	CardPhilHousley
 	dc.w	21
-	dc.l	PlayerPictures+$AFDA
+	dc.l	CardLucRobitaille
 	dc.w	10
-	dc.l	PlayerPictures+$58C4
+	dc.l	CardSteveYzerman
 	dc.w	3
-	dc.l	PlayerPictures+$1E200
+	dc.l	CardTeemuSelanne
 	dc.w	14
-	dc.l	PlayerPictures+$555A
+	dc.l	CardTimCheveldae
 	dc.w	1
-	dc.l	PlayerPictures+$1A086
+	dc.l	CardFelixPotvin
 	dc.w	2
-	dc.l	PlayerPictures+$C0EC
+	dc.l	CardMikeModano
 	dc.w	4
-	dc.l	PlayerPictures+$4448
+	dc.l	CardJeremyRoenick
 	dc.w	5
-	dc.l	PlayerPictures+$18C0A
+	dc.l	CardBrianBradley
 	dc.w	6
-	dc.l	PlayerPictures+$1A3F0
+	dc.l	CardDougGilmour
 	dc.w	7
-	dc.l	PlayerPictures+$AC70
+	dc.l	CardWayneGretzky
 	dc.w	8
-	dc.l	PlayerPictures+$2FCC
+	dc.l	CardGaryRoberts
 	dc.w	9
-	dc.l	PlayerPictures+$3336
+	dc.l	CardTheorenFleury
 	dc.w	11
-	dc.l	PlayerPictures+$17E62
+	dc.l	CardBrettHull
 	dc.w	12
-	dc.l	PlayerPictures+$1BC72
+	dc.l	CardPavelBure
 	dc.w	13
-	dc.l	PlayerPictures+$169E6
+	dc.l	CardPatFalloon
 	dc.w	15
 	dc.l	NoPicSkater2
 	dc.w	16
-	dc.l	PlayerPictures+$36A0
+	dc.l	CardGarySuter
 	dc.w	17
-	dc.l	PlayerPictures+$18536
+	dc.l	CardJeffBrown
 	dc.w	18
-	dc.l	PlayerPictures+$4B1C
+	dc.l	CardChrisChelios
 	dc.w	20
-	dc.l	PlayerPictures+$6D40
+	dc.l	CardDaveManson
 	dc.w	22
-	dc.l	PlayerPictures+$4E86
+	dc.l	CardSteveSmith
 	dc.w	23
-	dc.l	PlayerPictures+$6302
+	dc.l	CardSteveChiasson
 	dc.w	24
 	dc.l	0
 PrintRecordValue	;94 only. Record line for a player card (hockey94_08 PlayerCardScreen): copy RecordTxt to a3, then the record value of player d1 (GetRecordValue) and goals / goal or
@@ -1280,7 +1280,7 @@ PlayerCards	;93 has no counterpart. "Player Cards" menu item (hockey94_11 menu l
 	dc.l	$05234167,$89ABCDEF	;remap table (IDA: code)
 	jsr	(printz).l
 	String	$FD,0,0
-	movea.l	#PlayerPictures+$1F3C6,a0	;a picture in graphics94 PlayerPictures
+	movea.l	#PlayerCardsScreenPic,a0	;the Player Cards screen picture (graphics94)
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -2256,7 +2256,7 @@ PrintSaves	;94 only. Player card "Saves" / "Save %" (GetCardTeam)
 	jsr	(printsmall).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-DrawPlayerPicture	;94 only. Draw the player picture (graphics94 NoPicSkater1 ... PlayerPictures)
+DrawPlayerPicture	;94 only. Draw the player picture (graphics94 NoPicSkater1 ... NoPicGoalie2, Card<player>)
 	movem.l	d0-d7/a1-a6,-(sp)
 	movea.l	#FeaturedPictures,a0
 	move.w	d1,d2
@@ -2298,7 +2298,7 @@ DrawPlayerPicture	;94 only. Draw the player picture (graphics94 NoPicSkater1 ...
 	movea.l	#NoPicGoalie1,a0
 	btst	#0,4(a6)
 	bne.w	.3
-	movea.l	#PlayerPictures,a0
+	movea.l	#NoPicGoalie2,a0
 .3
 	cmp.w	d3,d0
 	blt.w	.x
