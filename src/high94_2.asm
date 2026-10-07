@@ -114,14 +114,14 @@ TeamPalettes	;Matchup and player card palettes: 56 of 16 colors, two per team (2
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWB.pal	;ASW other side
 FeaturedPictures	;The featured player pictures
 	;of each team (TeamList order): a list of picture.l (graphics94 NoPicSkater1 ... Card<player>) and roster index.w, 0 ends
-	dc.l	.1,.2,.3,.4
-	dc.l	.5,.6,.7,.8
-	dc.l	.0,.9,.10,.11
-	dc.l	.12,.13,.14,.15
-	dc.l	.16,.17,.18,.19
-	dc.l	.20,.21,.22,.23
-	dc.l	.24,.25,.26,.27
-.0
+	dc.l	.ANH,.BOS,.BUF,.CGY
+	dc.l	.CHI,.DAL,.DET,.EDM
+	dc.l	.FLA,.HFD,.LA,.MTL
+	dc.l	.NJ,.NYI,.NYR,.OTW
+	dc.l	.PHI,.PIT,.QUE,.SJ
+	dc.l	.STL,.TB,.TOR,.VAN
+	dc.l	.WSH,.WPG,.ASE,.ASW
+.FLA
 	dc.l	NoPicGoalie2
 	dc.w	0
 	dc.l	NoPicSkater2
@@ -135,7 +135,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicSkater2
 	dc.w	3
 	dc.l	0
-.1
+.ANH
 	dc.l	NoPicGoalie2
 	dc.w	0
 	dc.l	NoPicSkater1
@@ -149,7 +149,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicSkater1
 	dc.w	7
 	dc.l	0
-.2
+.BOS
 	dc.l	CardAndyMoog
 	dc.w	0
 	dc.l	CardDonSweeney
@@ -165,7 +165,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicSkater2
 	dc.w	19
 	dc.l	0
-.3
+.BUF
 	dc.l	CardGrantFuhr
 	dc.w	0
 	dc.l	CardDougBodger
@@ -179,7 +179,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardAlexnderMogilny
 	dc.w	12
 	dc.l	0
-.4
+.CGY
 	dc.l	CardMikeVernon
 	dc.w	0
 	dc.l	CardGarySuter
@@ -193,7 +193,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardTheorenFleury
 	dc.w	11
 	dc.l	0
-.5
+.CHI
 	dc.l	CardEdBelfour
 	dc.w	0
 	dc.l	CardSteveSmith
@@ -207,7 +207,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardSteveLarmer
 	dc.w	11
 	dc.l	0
-.6
+.DAL
 	dc.l	CardJonCasey
 	dc.w	0
 	dc.l	CardMarkTinordi
@@ -221,7 +221,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardRussCourtnall
 	dc.w	10
 	dc.l	0
-.7
+.DET
 	dc.l	CardTimCheveldae
 	dc.w	0
 	dc.l	CardSteveChiasson
@@ -235,7 +235,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardDinoCiccarelli
 	dc.w	12
 	dc.l	0
-.8
+.EDM
 	dc.l	CardBillRanford
 	dc.w	0
 	dc.l	CardDaveManson
@@ -249,7 +249,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardPetrKlima
 	dc.w	14
 	dc.l	0
-.9
+.HFD
 	dc.l	CardSeanBurke
 	dc.w	0
 	dc.l	CardZarleyZalapski
@@ -263,7 +263,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardPatVerbeek
 	dc.w	13
 	dc.l	0
-.10
+.LA
 	dc.l	CardKellyHrudey
 	dc.w	0
 	dc.l	CardRobBlake
@@ -279,7 +279,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicSkater2
 	dc.w	13
 	dc.l	0
-.11
+.MTL
 	dc.l	CardPatrickRoy
 	dc.w	0
 	dc.l	CardMattSchneider
@@ -293,7 +293,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardBrianBellows
 	dc.w	11
 	dc.l	0
-.12
+.NJ
 	dc.l	CardChrisTerreri
 	dc.w	0
 	dc.l	CardVachslavFetisov
@@ -307,7 +307,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardClaudeLemieux
 	dc.w	12
 	dc.l	0
-.13
+.NYI
 	dc.l	CardGlennHealy
 	dc.w	0
 	dc.l	CardDariusKasparitis
@@ -321,7 +321,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardBenoitHogue
 	dc.w	3
 	dc.l	0
-.14
+.NYR
 	dc.l	CardJohnVanbiesbrk
 	dc.w	0
 	dc.l	CardJamesPatrick
@@ -335,7 +335,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardMikeGartner
 	dc.w	11
 	dc.l	0
-.15
+.OTW
 	dc.l	CardPeterSidorkwicz
 	dc.w	0
 	dc.l	CardBradShaw
@@ -349,7 +349,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardBobKudelski
 	dc.w	14
 	dc.l	0
-.16
+.PHI
 	dc.l	CardTommySoderstrom
 	dc.w	0
 	dc.l	CardDimitriYushkevich
@@ -363,7 +363,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardMarkRecchi
 	dc.w	14
 	dc.l	0
-.17
+.PIT
 	dc.l	CardTomBarrasso
 	dc.w	0
 	dc.l	CardLarryMurphy
@@ -381,7 +381,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicGoalie1
 	dc.w	1
 	dc.l	0
-.18
+.QUE
 	dc.l	CardRonHextall
 	dc.w	0
 	dc.l	CardCurtisLeschyshyn
@@ -395,7 +395,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardOwenNolan
 	dc.w	14
 	dc.l	0
-.19
+.SJ
 	dc.l	CardArtursIrbe
 	dc.w	0
 	dc.l	CardNeilWilkinson
@@ -409,7 +409,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardPatFalloon
 	dc.w	13
 	dc.l	0
-.20
+.STL
 	dc.l	CardCurtisJoseph
 	dc.w	0
 	dc.l	CardJeffBrown
@@ -423,7 +423,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardBrettHull
 	dc.w	12
 	dc.l	0
-.21
+.TB
 	dc.l	CardWendellYoung
 	dc.w	0
 	dc.l	CardRomanHamrlik
@@ -437,7 +437,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardChrisKontos
 	dc.w	4
 	dc.l	0
-.22
+.TOR
 	dc.l	CardFelixPotvin
 	dc.w	0
 	dc.l	CardDaveEllett
@@ -451,7 +451,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardNikolaiBorshevsky
 	dc.w	12
 	dc.l	0
-.23
+.VAN
 	dc.l	CardKirkMcLean
 	dc.w	0
 	dc.l	CardDougLidster
@@ -465,7 +465,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardPavelBure
 	dc.w	12
 	dc.l	0
-.24
+.WSH
 	dc.l	CardDonBeaupre
 	dc.w	0
 	dc.l	CardAlIafrate
@@ -481,7 +481,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicSkater1
 	dc.w	18
 	dc.l	0
-.25
+.WPG
 	dc.l	CardBobEssensa
 	dc.w	0
 	dc.l	CardTeppoNumminen
@@ -495,7 +495,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	CardTeemuSelanne
 	dc.w	12
 	dc.l	0
-.26
+.ASE
 	dc.l	CardPatrickRoy
 	dc.w	0
 	dc.l	CardRayBourque
@@ -547,7 +547,7 @@ FeaturedPictures	;The featured player pictures
 	dc.l	NoPicSkater2
 	dc.w	24
 	dc.l	0
-.27
+.ASW
 	dc.l	CardEdBelfour
 	dc.w	0
 	dc.l	CardPaulCoffey
