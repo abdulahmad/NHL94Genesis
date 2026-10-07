@@ -24,7 +24,7 @@ randomd0 = $11086		;bsr.w / Bcc.w at $10ECA
 rtss2 = $15464			;bsr.w / Bcc.w at $FFF0
 setpde = $1577A			;bsr.w / Bcc.w at $10D48
 stopna2 = $F6F8C			;jsr / jmp (x).l at $10A2A
-AdjustFacingDirection = $DB68			;bsr.w / Bcc.w at $109AC. IDA: sub_DB68
+AdjustFacingDirection = $DB68			;bsr.w / Bcc.w at $109AC
 
 ; Main segment code
 	include	logic94_5.asm

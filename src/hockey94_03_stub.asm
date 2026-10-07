@@ -30,7 +30,7 @@ randomd0 = $11086		;bsr.w / Bcc.w at $13BB6. middle94_1
 rtss2 = $15464			;bsr.w / Bcc.w at $13BEC. an rts
 sfx = $11132			;bsr.w / Bcc.w at $13BCE. middle94_1
 song = $11156			;bsr.w / Bcc.w at $144A6. middle94_1
-StartArenaAnim = $FE510		;jsr / jmp (x).l at $142D6 (IDA: sub_FE510)
+StartArenaAnim = $FE510		;jsr / jmp (x).l at $142D6
 vtoa = $10676			;bsr.w / Bcc.w at $13D22. logic94_5
 wallcollduringcheck = $F8B5A	;jsr / jmp (x).l at $13D7E
 

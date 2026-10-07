@@ -9,8 +9,8 @@
 ;	94 changes from 93: sounds 0-$7A (93 0-$37) through a long pointer table (93 word offsets), 8 byte channel structs (93 6), a voice
 ;	volume word (+4) and the controller event handle_command_30, the vblank pad reading, and the Rev A 93 50 Hz tempo block.
 ;	Transcribed from lst/nhl94.bin.lst lines 61529-63138. Global names are the IDA names, or the 93 sound93 name where IDA has an auto
-;	name or no label (IDA name in an ;IDA: comment). Locals are the 93 local where the code matches (.fnum, .bendtab, .veltab), else in
-;	the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment. IDA gaps: handle_command_30 ($1AC82-$1ACBF) is IDA
+;	name or no label. Locals are the 93 local where the code matches (.fnum, .bendtab, .veltab), else in
+;	the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment. IDA gaps: handle_command_30 ($1AC82-$1ACBF) is IDA
 ;	dc.b, written as instructions; the tables are written as in 93.
 ;	RAM (ram_addrs.inc IDA names, 93 names): fm_track_slots (8 x 6 bytes), fm_channel_structs (94: 6 x 8 bytes:
 ;	+0 key, +1 note, +2 volume, +3 patch, +4 output channel, +5 age, +6 bit 0 on), fm_voice_usage_table (8 bytes per key:
@@ -27,13 +27,13 @@ AllSndOff	;IDA name (93 p_turnoff, 92 audio stop). Silence everything: free all 
 	move.b	#$77,(Z80_command_buffer+2).w	;volume change on 0-2, 4-6
 	moveq	#6,d0
 	movea.w	#(per_channel_attenuation_table-M68K_RAM),a0	;93 per_channel_attenuation_table: 7 volume bytes
-.loop	;IDA: loc_1A27E
+.loop
 	move.b	#$7F,(a0)+	;$7F = silent
 	dbf	d0,.loop
 	bsr.w	UploadCommandBufferToZ80
 	bsr.w	ClearZ80SpecialEffectsFlags
 	movem.l	(sp)+,d0-d7/a0-a2
-rtsfx	;IDA: locret_1A292. IDA label. The shared rts; p_initfx and ProcessOneMusicTrack branch to it
+rtsfx	;The shared rts; p_initfx and ProcessOneMusicTrack branch to it
 	rts
 p_initfx	;IDA name (93 play_sfx_or_music_track). Start sound d0 (0-$7A; 93 0-$37) in the track slot with the lowest pointer. $30 and up are
 	;songs: the song already playing is stopped first (play_new_song). 94 takes the event stream from the long pointer table MusicTrackPointerTable (93 word
@@ -44,14 +44,14 @@ p_initfx	;IDA name (93 play_sfx_or_music_track). Start sound d0 (0-$7A; 93 0-$37
 	cmp.w	#$30,d0
 	blt.w	.0
 	bsr.w	play_new_song	;song: stop the current song
-.0	;IDA: loc_1A2AA
+.0
 	lea	(fm_track_slots).w,a1	;93 fm_track_slots: 8 x 6 bytes
 	moveq	#7,d3
-.loop	;IDA: loc_1A2B0
+.loop
 	move.l	(a1),d1
 	move.w	d3,d2
 	movea.w	a1,a2
-.loop2	;IDA: loc_1A2B6
+.loop2
 	cmp.l	(a1),d1
 	bgt.s	.loop
 	addq.w	#6,a1
@@ -68,17 +68,17 @@ p_initfx	;IDA name (93 play_sfx_or_music_track). Start sound d0 (0-$7A; 93 0-$37
 	asl.w	#3,d2
 	adda.w	d2,a0
 	moveq	#7,d0	;the 8 midi channels of this track
-.loop3	;IDA: loc_1A2E6
+.loop3
 	clr.w	(a0)
 	clr.b	2(a0)
 	clr.b	3(a0)
 	move.w	#$7F,4(a0)
 	adda.w	#$40,a0
 	dbf	d0,.loop3
-.x	;IDA: loc_1A2FE
+.x
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
-play_new_song	;IDA: sub_1A304 (93 name). Stop the song in progress: free the first slot whose pointer is at or past the first song ($30, SongPointerTable)
+play_new_song	;93 name. Stop the song in progress: free the first slot whose pointer is at or past the first song ($30, SongPointerTable)
 	;and key off its channels. Called from p_initfx, DoGameFrame (hockey94_01) and others
 	movem.l	d0-d3/a0-a3,-(sp)
 	move	sr,-(sp)
@@ -86,7 +86,7 @@ play_new_song	;IDA: sub_1A304 (93 name). Stop the song in progress: free the fir
 	lea	(fm_track_slots).w,a1
 	moveq	#7,d3
 	movea.l	(SongPointerTable).l,a0
-.find	;IDA: loc_1A31A
+.find
 	cmpa.l	(a1),a0
 	addq.w	#6,a1
 	dble	d3,.find
@@ -96,7 +96,7 @@ play_new_song	;IDA: sub_1A304 (93 name). Stop the song in progress: free the fir
 	move.l	#-1,-6(a1)	;free the slot
 	moveq	#5,d1
 	lea	(fm_channel_structs).w,a2	;93 fm_channel_structs (94: 6 x 8 bytes)
-.kill	;IDA: loc_1A33C
+.kill
 	move.b	(a2),d2
 	andi.w	#7,d2
 	cmp.w	d2,d3
@@ -106,11 +106,11 @@ play_new_song	;IDA: sub_1A304 (93 name). Stop the song in progress: free the fir
 	lea	(per_channel_attenuation_table).w,a1
 	move.b	#$7F,0(a1,d0.w)
 	bset	d0,(Z80_command_buffer+2).w
-.next	;IDA: loc_1A35E
+.next
 	addq.w	#8,a2
 	dbf	d1,.kill
 	bsr.w	UploadCommandBufferToZ80
-.0	;IDA: loc_1A368
+.0
 	move	(sp)+,sr
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
@@ -128,77 +128,77 @@ ReadJoyData	;IDA name. 94 only: read the pads every vblank (MusicVB). With FourW
 	bsr.w	ReadPad4Way4
 	move.b	d0,(pad4way4).w
 	bra.w	.x
-.0	;IDA: loc_1A39C
+.0
 	bsr.w	ReadPad1
 	move.b	d0,(pad4way1).w
 	bsr.w	ReadPad2
 	move.b	d0,(pad4way2).w
-.x	;IDA: loc_1A3AC
+.x
 	movem.l	(sp)+,d1/a0
 	rts
-ReadPad4Way1	;IDA: sub_1A3B2. 94 only. 4 way play pad 1: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 1 on port 2 and read it on port 1 (ReadPad4WayPort1)
+ReadPad4Way1	;94 only. 4 way play pad 1: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 1 on port 2 and read it on port 1 (ReadPad4WayPort1)
 	move.w	#$100,(IO_Z80BUS).l
 	move.w	#$64,d0
-.loop	;IDA: loc_1A3BE
+.loop
 	btst	#0,(IO_Z80BUS).l
 	beq.s	.0
 	dbf	d0,.loop
 	bsr.w	ResetZ80Bus
-.0	;IDA: loc_1A3D0
+.0
 	move.b	#$C,(IO_CT2_DATA+1).l
 	bra.w	ReadPad4WayPort1
-ReadPad4Way2	;IDA: sub_1A3DC. 94 only. 4 way play pad 2: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 2 on port 2 and read it on port 1 (ReadPad4WayPort1)
+ReadPad4Way2	;94 only. 4 way play pad 2: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 2 on port 2 and read it on port 1 (ReadPad4WayPort1)
 	move.w	#$100,(IO_Z80BUS).l
 	move.w	#$64,d0
-.loop	;IDA: loc_1A3E8
+.loop
 	btst	#0,(IO_Z80BUS).l
 	beq.s	.0
 	dbf	d0,.loop
 	bsr.w	ResetZ80Bus
-.0	;IDA: loc_1A3FA
+.0
 	move.b	#$1C,(IO_CT2_DATA+1).l
 	bra.w	ReadPad4WayPort1
-ReadPad4Way3	;IDA: sub_1A406. 94 only. 4 way play pad 3: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 3 on port 2 and read it on port 1 (ReadPad4WayPort1)
+ReadPad4Way3	;94 only. 4 way play pad 3: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 3 on port 2 and read it on port 1 (ReadPad4WayPort1)
 	move.w	#$100,(IO_Z80BUS).l
 	move.w	#$64,d0
-.loop	;IDA: loc_1A412
+.loop
 	btst	#0,(IO_Z80BUS).l
 	beq.s	.0
 	dbf	d0,.loop
 	bsr.w	ResetZ80Bus
-.0	;IDA: loc_1A424
+.0
 	move.b	#$2C,(IO_CT2_DATA+1).l
 	bra.w	ReadPad4WayPort1
-ReadPad4Way4	;IDA: sub_1A430. 94 only. 4 way play pad 4: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 4 on port 2 and read it on port 1 (ReadPad4WayPort1)
+ReadPad4Way4	;94 only. 4 way play pad 4: take the Z80 bus (ResetZ80Bus if it is not granted), select pad 4 on port 2 and read it on port 1 (ReadPad4WayPort1)
 	move.w	#$100,(IO_Z80BUS).l
 	move.w	#$64,d0
-.loop	;IDA: loc_1A43C
+.loop
 	btst	#0,(IO_Z80BUS).l
 	beq.s	.0
 	dbf	d0,.loop
 	bsr.w	ResetZ80Bus
-.0	;IDA: loc_1A44E
+.0
 	move.b	#$3C,(IO_CT2_DATA+1).l
-ReadPad4WayPort1	;IDA: loc_1A456. IDA label. Read the pad on port 1; branched to from ReadPad4Way1 ... ReadPad4Way4
+ReadPad4WayPort1	;Read the pad on port 1; branched to from ReadPad4Way1 ... ReadPad4Way4
 	movem.l	d1/a0,-(sp)
 	lea	(IO_CT1_DATA+1).l,a0
 	bra.w	ReadPad3Button
-ReadPad2	;IDA: sub_1A464. 94 only. Read pad 2 (port 2). Falls into ReadPadA0
+ReadPad2	;94 only. Read pad 2 (port 2). Falls into ReadPadA0
 	movem.l	d1/a0,-(sp)
 	lea	(IO_CT2_DATA+1).l,a0
 	bra.s	ReadPadA0
-ReadPad1	;IDA: sub_1A470. 94 only. Read pad 1 (port 1)
+ReadPad1	;94 only. Read pad 1 (port 1)
 	movem.l	d1/a0,-(sp)
 	lea	(IO_CT1_DATA+1).l,a0
-ReadPadA0	;IDA: loc_1A47A. IDA label. Take the Z80 bus (ResetZ80Bus if it is not granted), then ReadPad3Button
+ReadPadA0	;Take the Z80 bus (ResetZ80Bus if it is not granted), then ReadPad3Button
 	move.w	#$100,(IO_Z80BUS).l
 	move.w	#$64,d0
-.loop	;IDA: loc_1A486
+.loop
 	btst	#0,(IO_Z80BUS).l
 	beq.s	ReadPad3Button
 	dbf	d0,.loop
 	bsr.w	ResetZ80Bus
-ReadPad3Button	;IDA: loc_1A498. IDA label. Read a 3 button pad at a0 (TH low, then high), release the bus and return d0 = the buttons, the directions through PadDirTable
+ReadPad3Button	;Read a 3 button pad at a0 (TH low, then high), release the bus and return d0 = the buttons, the directions through PadDirTable
 	moveq	#0,d0
 	move.b	#0,(a0)
 	nop
@@ -222,12 +222,12 @@ ReadPad3Button	;IDA: loc_1A498. IDA label. Read a 3 button pad at a0 (TH low, th
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-PadDirTable	;IDA: unk_1A4DE. Direction nibble table for ReadPad3Button: remaps the nibble when opposite directions are pressed together
+PadDirTable	;Direction nibble table for ReadPad3Button: remaps the nibble when opposite directions are pressed together
 	dc.b	0,1,2,1,4,5,6,6,8,9,$A,$A,8,9,$A,0
-ResetZ80Bus	;IDA: sub_1A4EE. 94 only. Reset the Z80 and wait for its bus
+ResetZ80Bus	;94 only. Reset the Z80 and wait for its bus
 	move.w	#$100,(IO_Z80RES).l
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1A4FE
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	rts
@@ -238,10 +238,10 @@ MusicVB	;IDA name (93 p_music_vblank, 92 vblank handler). Read the pads (ReadJoy
 	clr.b	(music_needs_z80_update).w	;93 music_needs_z80_update
 	clr.l	(Z80_command_buffer).w	;key off/on, volume, frequency bits
 	clr.b	(Z80_command_buffer+4).w	;patch bits
-.loop	;IDA: loc_1A51A
+.loop
 	lea	(fm_track_slots).w,a5
 	moveq	#7,d7
-.loop2	;IDA: loc_1A520
+.loop2
 	bsr.w	ProcessOneMusicTrack
 	addq.w	#6,a5
 	dbf	d7,.loop2
@@ -251,29 +251,29 @@ MusicVB	;IDA name (93 p_music_vblank, 92 vblank handler). Read the pads (ReadJoy
 	bpl.w	.0
 	addq.w	#6,(music_tick_divider).w
 	bra.s	.loop
-.0	;IDA: loc_1A542
+.0
 	tst.b	(music_needs_z80_update).w
 	beq.w	.1	;nothing changed
 	bsr.w	UploadCommandBufferToZ80
-.1	;IDA: loc_1A54E
+.1
 	movea.w	#(fm_channel_structs-M68K_RAM),a0
 	moveq	#5,d0
-.loop3	;IDA: loc_1A554
+.loop3
 	addq.b	#1,5(a0)	;age
 	bne.w	.2
 	subq.b	#1,5(a0)	;hold at $FF
-.2	;IDA: loc_1A560
+.2
 	addq.w	#8,a0
 	dbf	d0,.loop3
 	rts
-z80_bus_release_delay	;IDA: loc_1A568 (93 name). Z80 busy: give the bus back, wait, then falls into UploadCommandBufferToZ80 to retry
+z80_bus_release_delay	;93 name. Z80 busy: give the bus back, wait, then falls into UploadCommandBufferToZ80 to retry
 	clr.w	(IO_Z80BUS).l
 	moveq	#$64,d0
-.delay	;IDA: loc_1A570
+.delay
 	dbf	d0,.delay
-UploadCommandBufferToZ80	;IDA: sub_1A574 (93 name). Copy the 33 byte command buffer (Z80_command_buffer) to Z80 RAM $02 once the Z80 is idle (Z80 RAM $97 = 0, $96 = $7D)
+UploadCommandBufferToZ80	;93 name. Copy the 33 byte command buffer (Z80_command_buffer) to Z80 RAM $02 once the Z80 is idle (Z80 RAM $97 = 0, $96 = $7D)
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1A57C
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	movea.l	#Z80_RAM,a0
@@ -286,17 +286,17 @@ UploadCommandBufferToZ80	;IDA: sub_1A574 (93 name). Copy the 33 byte command buf
 	adda.w	#2,a0
 	movea.w	#(Z80_command_buffer-M68K_RAM),a1
 	moveq	#$20,d0
-.copy	;IDA: loc_1A5B2
+.copy
 	move.b	(a1)+,(a0)+
 	dbf	d0,.copy
 	clr.w	(IO_Z80BUS).l
-rtscmd10	;IDA: locret_1A5BE. IDA label. The shared rts; handle_command_10 branches to it
+rtscmd10	;The shared rts; handle_command_10 branches to it
 	rts
-ProcessOneMusicTrack	;IDA: sub_1A5C0 (93 name). Count down track slot a5 (track d7) and run every event that is due through command_jump_table. A 0
+ProcessOneMusicTrack	;93 name. Count down track slot a5 (track d7) and run every event that is due through command_jump_table. A 0
 	;status ends the stream; a non-negative long at +2 is a loop pointer. Called from MusicVB
 	subq.w	#1,4(a5)
 	bpl.w	rtsfx
-.event	;IDA: loc_1A5C8
+.event
 	tst.w	(a5)
 	bmi.w	rtsfx
 	movea.l	(a5),a0
@@ -310,7 +310,7 @@ ProcessOneMusicTrack	;IDA: sub_1A5C0 (93 name). Count down track slot a5 (track 
 	bmi.w	rtsfx
 	move.l	2(a0),(a5)
 	bra.s	.event
-.cmd	;IDA: loc_1A5F4
+.cmd
 	move.b	1(a0),d0
 	andi.w	#$70,d0	;status bits 6-4
 	lsr.w	#3,d0
@@ -318,7 +318,7 @@ ProcessOneMusicTrack	;IDA: sub_1A5C0 (93 name). Count down track slot a5 (track 
 	adda.w	0(a2,d0.w),a2
 	jsr	(a2)
 	bra.s	ProcessOneMusicTrack
-command_jump_table	;IDA: unk_1A60A (93 name). Event handlers by status bits 6-4, as offsets from the table. 94 adds handle_command_30
+command_jump_table	;93 name. Event handlers by status bits 6-4, as offsets from the table. 94 adds handle_command_30
 	dc.w	handle_command_00-command_jump_table
 	dc.w	handle_command_10-command_jump_table
 	dc.w	handle_command_skip-command_jump_table
@@ -327,7 +327,7 @@ command_jump_table	;IDA: unk_1A60A (93 name). Event handlers by status bits 6-4,
 	dc.w	handle_command_skip-command_jump_table
 	dc.w	handle_command_60-command_jump_table
 	dc.w	handle_command_skip-command_jump_table
-handle_command_00	;IDA: loc_1A61A (93 name). Event $0x: key off note +2 on channel +1 bits 3-0 of track d7. Also entered from handle_command_10 (volume 0). Falls into ReleaseChannelAndNote
+handle_command_00	;93 name. Event $0x: key off note +2 on channel +1 bits 3-0 of track d7. Also entered from handle_command_10 (volume 0). Falls into ReleaseChannelAndNote
 	move.b	1(a0),d0
 	andi.w	#$F,d0
 	asl.w	#3,d0
@@ -336,7 +336,7 @@ handle_command_00	;IDA: loc_1A61A (93 name). Event $0x: key off note +2 on chann
 	move.b	2(a0),d0
 	movea.w	#(fm_track_slots-M68K_RAM),a2
 	moveq	#5,d1
-.find	;IDA: loc_1A632
+.find
 	subq.w	#8,a2
 	cmp.w	(a2),d0
 	dbeq	d1,.find
@@ -344,7 +344,7 @@ handle_command_00	;IDA: loc_1A61A (93 name). Event $0x: key off note +2 on chann
 	btst	#0,6(a2)
 	dbne	d1,.find
 	beq.w	rtsfx
-ReleaseChannelAndNote	;IDA: sub_1A64C (93 name). Key off channel struct a2 if it is on. The PCM patches ($60 up) stop the PCM channel (ClearZ80SpecialEffectsFlags)
+ReleaseChannelAndNote	;93 name. Key off channel struct a2 if it is on. The PCM patches ($60 up) stop the PCM channel (ClearZ80SpecialEffectsFlags)
 	bclr	#0,6(a2)
 	beq.w	rtsfx
 	cmpi.b	#$60,3(a2)
@@ -353,15 +353,15 @@ ReleaseChannelAndNote	;IDA: sub_1A64C (93 name). Key off channel struct a2 if it
 	bset	d0,(Z80_command_buffer).w
 	st	(music_needs_z80_update).w
 	rts
-ClearZ80SpecialEffectsFlags	;IDA: sub_1A66E (93 name). Clear Z80 RAM $8E (Z80_RAM+$8E, the PCM rate byte written by UpdateChannelFrequencyAndVolume): stops the PCM channel
+ClearZ80SpecialEffectsFlags	;93 name. Clear Z80 RAM $8E (Z80_RAM+$8E, the PCM rate byte written by UpdateChannelFrequencyAndVolume): stops the PCM channel
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1A676
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	clr.b	(Z80_RAM+$8E).l
 	clr.w	(IO_Z80BUS).l
 	rts
-handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +3 on channel +1 bits 3-0 of track d7 (volume 0 = key off). An FM
+handle_command_10	;93 name. Event $1x: key on note +2 at volume +3 on channel +1 bits 3-0 of track d7 (volume 0 = key off). An FM
 	;patch takes a free channel or the oldest one; a PCM patch ($60 up) sets the sample start / end (pcm_sample_table, 93 name) in Z80 RAM
 	;$23-$28. Then the volume (SetChannelVolume) and the frequency (UpdateChannelFrequencyAndVolume)
 	tst.b	3(a0)
@@ -380,18 +380,18 @@ handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +
 	subq.w	#8,a2
 	moveq	#4,d1
 	bra.w	.setold
-.old	;IDA: loc_1A6C0
+.old
 	cmp.b	5(a2),d2
 	bhi.w	.nextold
-.setold	;IDA: loc_1A6C8
+.setold
 	movea.w	a2,a4
 	move.b	5(a4),d2
-.nextold	;IDA: loc_1A6CE
+.nextold
 	subq.w	#8,a2
 	dbf	d1,.old
 	moveq	#4,d1
 	movea.w	#(fm_channel_struct6-M68K_RAM),a2
-.free	;IDA: loc_1A6DA
+.free
 	subq.w	#8,a2
 	btst	#0,6(a2)
 	dbeq	d1,.free
@@ -401,12 +401,12 @@ handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +
 	dbeq	d1,.free
 	beq.w	.keyon
 	bra.w	.patch
-.0	;IDA: loc_1A6FC
+.0
 	cmp.b	3(a4),d0
 	beq.w	.keyon
-.patch	;IDA: loc_1A704
+.patch
 	movea.w	a4,a2
-.1	;IDA: loc_1A706
+.1
 	move.b	d0,3(a2)
 	clr.w	d1
 	move.b	4(a2),d1
@@ -414,7 +414,7 @@ handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +
 	movea.w	#(per_channel_patch_table-M68K_RAM),a4
 	move.b	d0,0(a4,d1.w)
 	st	(music_needs_z80_update).w
-.keyon	;IDA: loc_1A720
+.keyon
 	clr.b	5(a2)
 	bset	#0,6(a2)
 	move.b	d6,(a2)
@@ -426,12 +426,12 @@ handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +
 	bset	d1,(Z80_command_buffer+1).w
 	bsr.w	SetChannelVolume
 	bra.w	UpdateChannelFrequencyAndVolume
-.pcm	;IDA: loc_1A74E
+.pcm
 	bset	#0,6(a2)
 	beq.w	.pcmon
 	cmp.b	3(a2),d0
 	ble.w	rtscmd10
-.pcmon	;IDA: loc_1A760
+.pcmon
 	move.b	d0,3(a2)
 	clr.b	5(a2)
 	move.b	d6,(a2)
@@ -444,7 +444,7 @@ handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +
 	move.l	4(a1,d0.w),d1
 	move.l	0(a1,d0.w),d0
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1A792
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	movea.l	#Z80_RAM,a1
@@ -462,7 +462,7 @@ handle_command_10	;no IDA label (93 name). Event $1x: key on note +2 at volume +
 	move.b	#0,$97(a1)
 	clr.w	(IO_Z80BUS).l
 	bsr.w	SetChannelVolume
-UpdateChannelFrequencyAndVolume	;IDA: sub_1A7D8 (93 name). Set the frequency of channel struct a2 from its note and the pitch bend of its key (a3 =
+UpdateChannelFrequencyAndVolume	;93 name. Set the frequency of channel struct a2 from its note and the pitch bend of its key (a3 =
 	;voice table, word +0 = bend). Called from handle_command_60 and handle_command_10
 	clr.l	d3
 	move.b	1(a2),d3
@@ -483,9 +483,9 @@ UpdateChannelFrequencyAndVolume	;IDA: sub_1A7D8 (93 name). Set the frequency of 
 	move.b	3(a2),d1
 	asl.w	#5,d1
 	lea	($2C248).l,a4	;93 fm_instrument_patches: 32 bytes per patch
-	move.b	$1E(a4,d1.w),d1	;byte $1E = pitch bend scale (IDA: byte_2C266-fm_instrument_patches)
+	move.b	$1E(a4,d1.w),d1	;byte $1E = pitch bend scale
 	ext.w	d1
-.0	;IDA: loc_1A81C
+.0
 	muls.w	d1,d3
 	asr.l	#2,d3
 	asr.w	#7,d3
@@ -495,7 +495,7 @@ UpdateChannelFrequencyAndVolume	;IDA: sub_1A7D8 (93 name). Set the frequency of 
 	mulu.w	0(a4,d3.w),d2
 	asl.l	#1,d2
 	swap	d2
-.nobend	;IDA: loc_1A834
+.nobend
 	move.w	(sp)+,d3
 	cmpi.b	#$60,3(a2)
 	bge.w	.1
@@ -510,11 +510,11 @@ UpdateChannelFrequencyAndVolume	;IDA: sub_1A7D8 (93 name). Set the frequency of 
 	move.w	d2,0(a4,d3.w)
 	st	(music_needs_z80_update).w
 	rts
-.1	;IDA: loc_1A860
+.1
 	btst	#0,6(a2)
 	beq.w	.x
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1A872
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	neg.w	d3
@@ -522,11 +522,11 @@ UpdateChannelFrequencyAndVolume	;IDA: sub_1A7D8 (93 name). Set the frequency of 
 	lsr.w	d3,d2
 	move.b	d2,(Z80_RAM+$8E).l
 	clr.w	(IO_Z80BUS).l
-.x	;IDA: locret_1A88E
+.x
 	rts
-.fnum	;IDA: unk_1A890. frequency number of each note in the octave
+.fnum	;frequency number of each note in the octave
 	dc.w	$0146,$0159,$016E,$0184,$019B,$01B3,$01CD,$01E8,$0205,$0224,$0245,$0268
-.bendtab	;IDA: unk_1A8A8. 385 factors, entry $C0 = $8000 (no bend)
+.bendtab	;385 factors, entry $C0 = $8000 (no bend)
 	dc.w	$4000,$403B,$4076,$40B2,$40EE,$412A,$4166,$41A3,$41E0,$421D
 	dc.w	$425A,$4297,$42D5,$4313,$4351,$438F,$43CE,$440D,$444C,$448B
 	dc.w	$44CA,$450A,$454A,$458A,$45CA,$460B,$464C,$468D,$46CE,$4710
@@ -566,7 +566,7 @@ UpdateChannelFrequencyAndVolume	;IDA: sub_1A7D8 (93 name). Set the frequency of 
 	dc.w	$EAC0,$EB9A,$EC74,$ED4F,$EE2A,$EF07,$EFE4,$F0C2,$F1A1,$F281
 	dc.w	$F361,$F443,$F525,$F608,$F6EC,$F7D0,$F8B6,$F99C,$FA83,$FB6B
 	dc.w	$FC54,$FD3E,$FE28,$FF13,$FF13
-SetChannelVolume	;IDA: sub_1ABAA. 94 only. Set the volume of channel struct a2: note volume (+2) * the voice volume (voice table +4) / 128. FM: attenuation from
+SetChannelVolume	;94 only. Set the volume of channel struct a2: note volume (+2) * the voice volume (voice table +4) / 128. FM: attenuation from
 	;.veltab (volume / 8); PCM: Z80 RAM $83 (Z80_RAM+$83, at least 3). Called from handle_command_10 and handle_command_30
 	movem.l	d0,-(sp)
 	clr.w	d0
@@ -589,23 +589,23 @@ SetChannelVolume	;IDA: sub_1ABAA. 94 only. Set the volume of channel struct a2: 
 	st	(music_needs_z80_update).w
 	movem.l	(sp)+,d0
 	rts
-.veltab	;IDA: unk_1ABF0. attenuation by volume / 8 (93 handle_command_10 .veltab)
+.veltab	;attenuation by volume / 8 (93 handle_command_10 .veltab)
 	dc.b	$1A,$18,$16,$14,$12,$10,$0E,$0C,$0A,$08,$06,$04,$03,$02,$01,$00
-.0	;IDA: loc_1AC00
+.0
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1AC08
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	lsr.b	#2,d0
 	cmp.w	#3,d0
 	bgt.w	.1
 	moveq	#3,d0
-.1	;IDA: loc_1AC1E
+.1
 	move.b	d0,(Z80_RAM+$83).l
 	clr.w	(IO_Z80BUS).l
 	movem.l	(sp)+,d0
 	rts
-handle_command_40	;no IDA label (93 name). Event $4x: set the patch of channel +1 bits 3-0 of track d7 to +2 (voice table +3)
+handle_command_40	;93 name. Event $4x: set the patch of channel +1 bits 3-0 of track d7 to +2 (voice table +3)
 	lea	(fm_voice_usage_table).w,a3
 	move.b	1(a0),d0
 	andi.w	#$F,d0
@@ -614,7 +614,7 @@ handle_command_40	;no IDA label (93 name). Event $4x: set the patch of channel +
 	asl.w	#3,d0
 	move.b	2(a0),3(a3,d0.w)
 	rts
-handle_command_60	;no IDA label (93 name). Event $6x: set the pitch bend of channel +1 bits 3-0 of track d7 to word +2 - $2000, and update the frequency of every channel with that key
+handle_command_60	;93 name. Event $6x: set the pitch bend of channel +1 bits 3-0 of track d7 to word +2 - $2000, and update the frequency of every channel with that key
 	lea	(fm_voice_usage_table).w,a3
 	move.b	1(a0),d0
 	andi.w	#$F,d0
@@ -626,15 +626,15 @@ handle_command_60	;no IDA label (93 name). Event $6x: set the pitch bend of chan
 	subi.w	#$2000,0(a3,d0.w)
 	movea.w	#(fm_channel_structs-M68K_RAM),a2
 	moveq	#5,d0
-.loop	;IDA: loc_1AC70
+.loop
 	cmp.b	(a2),d4
 	bne.w	.next
 	bsr.w	UpdateChannelFrequencyAndVolume
-.next	;IDA: loc_1AC7A
+.next
 	addq.w	#8,a2
 	dbf	d0,.loop
 	rts
-handle_command_30	;no IDA label (IDA dc.b). 94 only: event $3x, controller +2 = +3 on channel +1 bits 3-0 of track d7. Only controller 7
+handle_command_30	;IDA dc.b. 94 only: event $3x, controller +2 = +3 on channel +1 bits 3-0 of track d7. Only controller 7
 	;(volume) is used: set the voice volume (voice table +5) and update the volume of every channel with that key (SetChannelVolume)
 	cmpi.b	#7,2(a0)
 	beq.w	.0
@@ -658,7 +658,7 @@ handle_command_30	;no IDA label (IDA dc.b). 94 only: event $3x, controller +2 = 
 	addq.w	#8,a2
 	dbf	d0,.loop
 	rts
-handle_command_skip	;no IDA label (93 name). Events $2x, $5x and $7x: ignored
+handle_command_skip	;93 name. Events $2x, $5x and $7x: ignored
 	rts
 Z80_LoadROM	;IDA name (93 p_initialZ80, 92 initialization). Free all slots, load the Z80 program (Z80_Program_Code, $295 bytes) into Z80 RAM, build 29
 	;tables of 256 bytes below Z80 RAM $2000 (Z80_RAM+$2000; (x - $80) * 8 / n + $80 for n = 8-$24), then reset and start the Z80. Called from Begin
@@ -666,21 +666,21 @@ Z80_LoadROM	;IDA name (93 p_initialZ80, 92 initialization). Free all slots, load
 	bsr.w	ClearAllTrackAndSFXSlots
 	move.w	#$100,(IO_Z80RES).l
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_1ACDA
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	movea.l	#Z80_Program_Code,a1
 	movea.l	#Z80_RAM,a2
 	move.w	#$294,d0	;$295 bytes
-.loop2	;IDA: loc_1ACF4
+.loop2
 	move.b	(a1)+,(a2)+
 	dbf	d0,.loop2
 	movea.l	#Z80_RAM+$2000,a2
 	moveq	#8,d2
 	move.l	#$1C,d3
-.loop3	;IDA: loc_1AD08
+.loop3
 	move.w	#$FF,d0
-.loop4	;IDA: loc_1AD0C
+.loop4
 	move.w	d0,d1
 	subi.w	#$80,d1
 	asl.w	#3,d1
@@ -695,29 +695,29 @@ Z80_LoadROM	;IDA name (93 p_initialZ80, 92 initialization). Free all slots, load
 	move.w	#0,(IO_Z80RES).l
 	move.w	#0,(IO_Z80BUS).l
 	move.w	#$1F4,d0
-.loop5	;IDA: loc_1AD3E
+.loop5
 	dbf	d0,.loop5
 	move.w	#$100,(IO_Z80RES).l
 	clr.b	(music_needs_z80_update).w
 	movem.l	(sp)+,d0-d2/a0-a2
 	rts
-ClearAllTrackAndSFXSlots	;IDA: sub_1AD54 (93 name). Free the 8 track slots and reset the 6 channel structs (output channels 0, 1, 2, 4, 5, 6). Called from AllSndOff and Z80_LoadROM
+ClearAllTrackAndSFXSlots	;93 name. Free the 8 track slots and reset the 6 channel structs (output channels 0, 1, 2, 4, 5, 6). Called from AllSndOff and Z80_LoadROM
 	lea	(fm_track_slots).w,a0
 	moveq	#7,d0
 	moveq	#-1,d1
-.trk	;IDA: loc_1AD5C
+.trk
 	move.l	d1,(a0)
 	addq.w	#6,a0
 	dbf	d0,.trk
 	moveq	#5,d0
 	movea.w	#(fm_track_slots-M68K_RAM),a0
-.chan	;IDA: loc_1AD6A
+.chan
 	subq.w	#8,a0
 	move.b	d0,4(a0)
 	cmp.w	#3,d0
 	blt.w	.set
 	addq.b	#1,4(a0)
-.set	;IDA: loc_1AD7C
+.set
 	st	3(a0)
 	st	(a0)
 	clr.b	1(a0)
@@ -726,27 +726,25 @@ ClearAllTrackAndSFXSlots	;IDA: sub_1AD54 (93 name). Free the 8 track slots and r
 	rts
 
 ;	Sound data (incbin, as 93 sound93): $1AD90-$4B5BF
-Z80_Program_Code		;retail $1AD90-$1B01B (652 bytes). IDA unk_1AD90: the Z80 sound program. Z80_LoadROM copies $295 bytes from here into Z80 RAM (through $1B024, into the sample table, as 93
+Z80_Program_Code		;retail $1AD90-$1B01B (652 bytes). the Z80 sound program. Z80_LoadROM copies $295 bytes from here into Z80 RAM (through $1B024, into the sample table, as 93
 	;does)
 	incbin	..\Extracted\NHL94\Sound\z80_snd_drv94.bin
 	even
-pcm_sample_table		;retail $1B01C-$2C247 (70188 bytes). IDA unk_1B01C: the PCM sample table (handle_command_10; 93 pcm_sample_table), 15 entries
-	;of 8 bytes, then the PCM samples from $1B094. IDA unk_1C000 (an andi.l constant in the high ROM), unk_1D491 (data in hockey94_10 read as a
-	;bcs.w), unk_2000A (an attribute long in hockey94_11) and unk_2000D (data in the high ROM read as code) are not labels
+pcm_sample_table		;retail $1B01C-$2C247 (70188 bytes). the PCM sample table (handle_command_10; 93 pcm_sample_table), 15 entries
+	;of 8 bytes, then the PCM samples from $1B094
 	incbin	..\Extracted\NHL94\Sound\pcm_sample_table.bin
 	even
-fm_instrument_patches		;retail $2C248-$2C647 (1024 bytes). IDA unk_2C248: 32 FM patches of 32 bytes (93 fm_instrument_patches;
-	;UpdateChannelFrequencyAndVolume reads byte $1E, the pitch bend scale). IDA byte_2C266 (+$1E, from that label difference) is not a label
+fm_instrument_patches		;retail $2C248-$2C647 (1024 bytes). 32 FM patches of 32 bytes (93 fm_instrument_patches;
+	;UpdateChannelFrequencyAndVolume reads byte $1E, the pitch bend scale)
 	incbin	..\Extracted\NHL94\Sound\fm_instrument_patches.bin
 	even
-MusicTrackPointerTable		;retail $2C648-$2C707 (192 bytes). IDA unk_2C648: the event stream pointers of sounds 0-$2F (p_initfx; 93 word offsets)
+MusicTrackPointerTable		;retail $2C648-$2C707 (192 bytes). the event stream pointers of sounds 0-$2F (p_initfx; 93 word offsets)
 	incbin	..\Extracted\NHL94\Sound\MusicTrackPointerTable.bin
 	even
-SongPointerTable		;retail $2C708-$2CEF1 (2026 bytes). IDA off_2C708: the pointers of sounds $30-$7A, the songs (play_new_song reads the first), then the event streams of sounds 0-$2F from $2C834
+SongPointerTable		;retail $2C708-$2CEF1 (2026 bytes). the pointers of sounds $30-$7A, the songs (play_new_song reads the first), then the event streams of sounds 0-$2F from $2C834
 	incbin	..\Extracted\NHL94\Sound\SongPointerTable.bin
 	even
-SongStreams		;retail $2CEF2-$4B5BF (124622 bytes). IDA unk_2CEF2: the song event streams, song $30 (the first SongPointerTable pointer) to song
-	;$7A ($490E2). IDA unk_3000C, unk_40EE8 (data in the high ROM read as code), unk_3FEB0 (the Calc_Checksum long count), unk_4082A, byte_408AA
-	;(the offsets in Sprites) and unk_44120 (the string long #$44120 in SetLCmode2, logic94_1) are not labels
+SongStreams		;retail $2CEF2-$4B5BF (124622 bytes). the song event streams, song $30 (the first SongPointerTable pointer) to song
+	;$7A ($490E2)
 	incbin	..\Extracted\NHL94\Sound\SongStreams.bin
 	even

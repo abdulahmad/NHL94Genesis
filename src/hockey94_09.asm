@@ -2,13 +2,13 @@
 ;	92 hockey.asm DefaultMenus, NewPO, MakeTree, FigureJoy and the playoff password code, as 93 hockey93_09: LoadDefMenuOptions (93
 ;	DefaultMenus), ContinuePlayoffs (93 NewPO), NewPO (93 SelectRandomPlayoffTree), MakeTree, FigureJoy, InitializeGameStructures, OptionRNG,
 ;	ReadPassBits ... SuperDiv, GetShifter, and the playoff stat packing (AddPOStats, BitWidthTable, ReadTeamStats). It follows
-;	attract94 ($17C71) with no gap. sub_18380 (93 ResolveGames) starts hockey94_10.
+;	attract94 ($17C71) with no gap. ResolveGames starts hockey94_10.
 ;	94 keeps the playoff bits in pwddatabuffer (93 name) and saves them through WriteLineData (where 93 calls BitsToPW).
 ;	94 adds FourWayPlay (cont3team / cont4team, the Three and Four player choices) and Shootout, and has 9 menu options (93 7).
-;	Transcribed from lst/nhl94.bin.lst lines 54836-55537. Global names are the IDA names, or the 93 name where IDA has an auto name
-;	(IDA name in an ;IDA: comment). Locals are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label
+;	Transcribed from lst/nhl94.bin.lst lines 54836-55537. Global names are the IDA names, or the 93 name where IDA has an auto name.
+;	Locals are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic,
 ;	in an ;IDA: comment.
-;	The only IDA gap is BitWidthTable (IDA unk_18336, dc.b).
+;	The only IDA gap is BitWidthTable (IDA dc.b).
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
 ;	RAM (IDA names, 93 names): potree, WinBits, pojoy (93 playoffroundoffset), statsbuffer,
@@ -20,7 +20,7 @@ LoadDefMenuOptions	;IDA name (93 DefaultMenus). Set the default menu choices for
 	movea.l	#OptPlayMode,a0	;Start of Menu Options in RAM
 	movea.l	#defmenuoptions,a1
 	move.w	#8,d0	;9 options (93 6)
-.loop	;IDA: loc_17C86
+.loop
 	move.w	(a1)+,(a0)+
 	dbf	d0,.loop
 	rts
@@ -35,7 +35,7 @@ defmenuoptions	;IDA name (93 DefaultMenus .defom). Regular Season, One - Home, M
 	dc.w	1	;User Records
 	dc.w	0	;Penalties
 	dc.w	1	;Line Changes
-ContinuePlayoffs	;IDA: sub_17CA0. IDA name, kept: this is 93 NewPO, but IDA gives the name NewPO to the next routine (93 SelectRandomPlayoffTree). Continue playoffs:
+ContinuePlayoffs	;IDA name, kept: this is 93 NewPO, but IDA gives the name NewPO to the next routine (93 SelectRandomPlayoffTree). Continue playoffs:
 	;read the playoff state back from the saved bits at pwddatabuffer (93 name), rebuild the tree and set OptNOP from pojoy (93 playofflevel
 	;= 7 - playoffroundoffset; 94 7 or $B with FourWayPlay, pojoy adjusted to the pad set-ups). Called from hockey94_08 (GoContinuePlayoffs, GameSetUp_3)
 	movem.l	d0-d7/a0-a3,-(sp)
@@ -49,26 +49,26 @@ ContinuePlayoffs	;IDA: sub_17CA0. IDA name, kept: this is 93 NewPO, but IDA give
 	tst.w	(FourWayPlay).w
 	beq.w	.0
 	move.w	#$B,d0
-.0	;IDA: loc_17CCA
+.0
 	tst.w	(FourWayPlay).w
 	bne.w	.1
 	cmpi.w	#2,(pojoy).w
 	blt.w	.3
 	subq.w	#2,(pojoy).w
 	bra.w	.3
-.1	;IDA: loc_17CE4
+.1
 	cmpi.w	#1,(pojoy).w
 	bne.w	.2
 	move.w	#3,(pojoy).w
 	bra.w	.3
-.2	;IDA: loc_17CF8
+.2
 	cmpi.w	#2,(pojoy).w
 	bne.w	.3
 	move.w	#4,(pojoy).w
-.3	;IDA: loc_17D08
+.3
 	sub.w	(pojoy).w,d0
 	move.w	d0,(OptNOP).w
-.x	;IDA: loc_17D10
+.x
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 NewPO	;IDA name (92 NewPO, 93 SelectRandomPlayoffTree). New playoff generates tree with same team 1. Called from hockey94_08 (j_NewPO). Falls into MakeTree
@@ -121,7 +121,7 @@ MakeTree	;IDA name (93 maketree, 92 MakeTree). Make the playoff tree (potree, 93
 	lea	$10(a0),a1
 	moveq	#$E,d2	;15 winners
 	move.w	(WinBits).w,d0
-.0	;IDA: loc_17DB4
+.0
 	move.w	d0,d1
 	andi.w	#1,d1	;winbit picks the top or bottom team of the pair
 	move.b	0(a0,d1.w),(a1)+
@@ -135,19 +135,19 @@ MakeTree	;IDA name (93 maketree, 92 MakeTree). Make the playoff tree (potree, 93
 	adda.w	d2,a0
 	adda.w	d2,a0
 	movea.w	#(gsstruct-M68K_RAM),a1
-.loop	;IDA: loc_17DDC
+.loop
 	clr.w	gss1(a1)	;gsstruct: gss1
 	clr.w	gss2(a1)	;gss2
 	clr.w	gsper(a1)	;gsper
 	bclr	#1,gsflags(a1)	;hilite requested (92 gsfhl)
-	bsr.w	.sett	;IDA: sub_17E04 (93 local .sett)
+	bsr.w	.sett	;93 local .sett
 	adda.w	#gssize,a1
 	dbf	d1,.loop
 	bsr.w	FigureJoy
-.nogames	;IDA: loc_17DFE
+.nogames
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
-.sett	;IDA: sub_17E04 (93 .sett). Series games 2, 3, 5: tree order, others swapped
+.sett	;93 .sett. Series games 2, 3, 5: tree order, others swapped
 	cmpi.w	#2,(bosgames).w
 	beq.w	.1
 	cmpi.w	#3,(bosgames).w
@@ -158,7 +158,7 @@ MakeTree	;IDA name (93 maketree, 92 MakeTree). Make the playoff tree (potree, 93
 	move.b	(a0)+,gst2+1(a1)
 	move.b	(a0)+,gst1+1(a1)
 	rts
-.1	;IDA: loc_17E32
+.1
 	bclr	#0,gsflags(a1)	;(93 .flip) gsftf
 	move.b	(a0)+,gst1+1(a1)
 	move.b	(a0)+,gst2+1(a1)
@@ -219,7 +219,7 @@ FigureJoy	;IDA name (92 / 93 FigureJoy). Set contteams appropriately: cont1team 
 	tst.w	(FourWayPlay).w
 	beq.w	.0
 	lea	.pojoylist2(pc),a0
-.0	;IDA: loc_17EF6
+.0
 	move.w	0(a0,d0.w),(cont1team).w
 	move.w	2(a0,d0.w),(cont2team).w
 	tst.w	(FourWayPlay).w
@@ -229,17 +229,17 @@ FigureJoy	;IDA name (92 / 93 FigureJoy). Set contteams appropriately: cont1team 
 	cmp.w	#$18,d0
 	beq.w	.1
 	bra.w	.2
-.1	;IDA: loc_17F1E
+.1
 	move.w	(cont1team).w,(cont3team).w
 	move.w	(cont2team).w,(cont4team).w
 	bra.w	.ex
-.2	;IDA: loc_17F2E
+.2
 	cmp.w	#8,d0
 	beq.w	.3	;pojoy 2: cont3team = cont1team, cont4team 0
 	cmp.w	#$1C,d0
 	beq.w	.3
 	bra.w	.ex
-.3	;IDA: loc_17F42
+.3
 	move.w	(cont1team).w,(cont3team).w
 	move.w	#0,(cont4team).w
 	bra.w	.ex
@@ -292,14 +292,14 @@ FigureJoy	;IDA name (92 / 93 FigureJoy). Set contteams appropriately: cont1team 
 	move.w	(cont1team).w,(cont3team).w
 	move.w	#0,(cont4team).w
 	bra.w	.init
-.4	;IDA: loc_17FC8
+.4
 	cmp.w	#$18,d0	;Four
 	bne.w	.init
 	move.w	(cont1team).w,(cont3team).w
 	move.w	(cont2team).w,(cont4team).w
-.init	;IDA: loc_17FDC
+.init
 	bsr.w	InitializeGameStructures	;(93 .init)
-.ex	;IDA: loc_17FE0
+.ex
 	movem.l	(sp)+,d0-d3/a0-a1
 	rts
 .noplist	dc.w	0	;IDA: _noplist. cont1team, cont2team by OptNOP 0-6 (93 0-4)
@@ -316,7 +316,7 @@ FigureJoy	;IDA name (92 / 93 FigureJoy). Set contteams appropriately: cont1team 
 	dc.w	2
 	dc.w	1
 	dc.w	2
-InitializeGameStructures	;IDA: sub_18002 (93 name). Random team pairs for all 8 gsstruct games, none of them HomeTeam or VisTeam. Called from FigureJoy
+InitializeGameStructures	;93 name. Random team pairs for all 8 gsstruct games, none of them HomeTeam or VisTeam. Called from FigureJoy
 	st	(gamenum).w
 	clr.l	d3	;d3 = used team bits
 	move.w	(HomeTeam).w,d1
@@ -325,7 +325,7 @@ InitializeGameStructures	;IDA: sub_18002 (93 name). Random team pairs for all 8 
 	bset	d1,d3
 	movea.w	#(gsstruct-M68K_RAM),a1
 	moveq	#7,d2
-.loop	;IDA: loc_1801A
+.loop
 	bsr.w	OptionRNG
 	move.w	d0,(a1)
 	bsr.w	OptionRNG
@@ -339,16 +339,16 @@ OptionRNG	;IDA name (93 GetRandomUnusedTeam). Calls randomd0 when changing optio
 	bset	d0,d3
 	bne.s	OptionRNG
 	rts
-ReadPassBits	;IDA: sub_1803E (93 name). Translate the saved bits at a3 (5 words) to the playoff variables; the 5 words are kept. 94: pojoy has 8
+ReadPassBits	;93 name. Translate the saved bits at a3 (5 words) to the playoff variables; the 5 words are kept. 94: pojoy has 8
 	;values (93 4), and without FourWayPlay pojoy 1 / 2 become 4. Called from ContinuePlayoffs, EncodePW and hockey94_08 GameSetUp
 	moveq	#4,d0
 	lea	$A(a3),a0
-.save	;IDA: loc_18044
+.save
 	move.w	-(a0),-(sp)	;SuperDiv destroys the bits
 	dbf	d0,.save
 	moveq	#7,d2
 	movea.w	#(gsstruct+(7*$10)-M68K_RAM),a1	;last gsstruct game (gsstruct + 7 * $10)
-.loop	;IDA: loc_18050
+.loop
 	bclr	#2,gsflags(a1)	;series over (92 gsfso)
 	moveq	#5,d0
 	bsr.w	SuperDiv
@@ -356,14 +356,14 @@ ReadPassBits	;IDA: sub_1803E (93 name). Translate the saved bits at a3 (5 words)
 	cmp.w	#4,d0
 	bne.w	.nsf0
 	bset	#2,gsflags(a1)
-.nsf0	;IDA: loc_1806E
+.nsf0
 	moveq	#5,d0
 	bsr.w	SuperDiv
 	move.w	d0,gspotwins(a1)	;gspotwins
 	cmp.w	#4,d0
 	bne.w	.nsf1
 	bset	#2,gsflags(a1)
-.nsf1	;IDA: loc_18086
+.nsf1
 	suba.w	#gssize,a1
 	dbf	d2,.loop
 	move.w	#$4000,d0
@@ -378,9 +378,9 @@ ReadPassBits	;IDA: sub_1803E (93 name). Translate the saved bits at a3 (5 words)
 	beq.w	.0
 	cmpi.w	#2,(pojoy).w
 	bne.w	.1
-.0	;IDA: loc_180C2
+.0
 	move.w	#4,(pojoy).w
-.1	;IDA: loc_180C8
+.1
 	moveq	#$10,d0
 	bsr.w	SuperDiv
 	move.w	d0,(potreeteam).w
@@ -395,11 +395,11 @@ ReadPassBits	;IDA: sub_1803E (93 name). Translate the saved bits at a3 (5 words)
 	move.w	d0,(postarts).w
 	moveq	#4,d0
 	lea	(a3),a0
-.restore	;IDA: loc_180F4
+.restore
 	move.w	(sp)+,(a0)+	;put the bits back
 	dbf	d0,.restore
 	rts
-EncodePW	;IDA: sub_180FC (93 name). After a playoff game compute winners and save the bits if needed. 94 returns at once for Demo, Regular
+EncodePW	;93 name. After a playoff game compute winners and save the bits if needed. 94 returns at once for Demo, Regular
 	;Season and Shootout, and sets TempOptPlayMode with OptPlayMode. The bits are pwddatabuffer (93 name); WriteLineData (not matched yet) is
 	;where 93 calls BitsToPW. Called from GameOver (hockey94_06)
 	tst.w	(OptNOP).w
@@ -424,7 +424,7 @@ EncodePW	;IDA: sub_180FC (93 name). After a playoff game compute winners and sav
 	movea.w	#(tpassbits-M68K_RAM),a3	;bits before all games resolved (93 tpassbits)
 	bsr.w	ReadPassBits
 	bra.w	MakeTree
-.0	;IDA: loc_18160
+.0
 	movea.w	#(pwddatabuffer-M68K_RAM),a3
 	bsr.w	ClrPassBits
 	jsr	(WriteLineData).l
@@ -435,7 +435,7 @@ EncodePW	;IDA: sub_180FC (93 name). After a playoff game compute winners and sav
 	move.w	#3,(OptPlayMode).w	;new playoffs best of 7
 	move.w	#3,(TempOptPlayMode).w
 	rts
-WritePassBits	;IDA: sub_18192 (93 name). Transfer the game variables to the bits at a3 (pojoy range 8, 93 4). Called from EncodePW and sub_18380 (93 ResolveGames, hockey94_10)
+WritePassBits	;93 name. Transfer the game variables to the bits at a3 (pojoy range 8, 93 4). Called from EncodePW and ResolveGames (hockey94_10)
 	bsr.w	ClrPassBits
 	move.w	(postarts).w,d0
 	moveq	#$20,d1
@@ -458,7 +458,7 @@ WritePassBits	;IDA: sub_18192 (93 name). Transfer the game variables to the bits
 	moveq	#5,d1
 	moveq	#7,d2
 	movea.w	#(gsstruct-M68K_RAM),a1
-.loop	;IDA: loc_181DC
+.loop
 	move.w	gspotwins(a1),d0
 	bsr.w	PushBits
 	move.w	gspobwins(a1),d0
@@ -466,7 +466,7 @@ WritePassBits	;IDA: sub_18192 (93 name). Transfer the game variables to the bits
 	adda.w	#gssize,a1
 	dbf	d2,.loop
 	rts
-PushBits	;IDA: sub_181F6 (93 name). bits = bits * d1 + d0. d1 = range 2^1-2^15, d0 = data
+PushBits	;93 name. bits = bits * d1 + d0. d1 = range 2^1-2^15, d0 = data
 	movem.l	d0-d1,-(sp)
 	exg	d0,d1
 	bsr.w	SuperMult
@@ -475,35 +475,35 @@ PushBits	;IDA: sub_181F6 (93 name). bits = bits * d1 + d0. d1 = range 2^1-2^15, 
 	bsr.w	SuperAdd
 	movem.l	(sp)+,d0-d1
 	rts
-ClrPassBits	;IDA: sub_1820E (93 name). Clear the 5 words of bits at a3
+ClrPassBits	;93 name. Clear the 5 words of bits at a3
 	movea.w	a3,a0
 	moveq	#4,d0
-.0	;IDA: loc_18212
+.0
 	clr.w	(a0)+
 	dbf	d0,.0
 	rts
-SuperAdd	;IDA: sub_1821A (93 name). 1 long (d0.L) added to the 5 words at a3
+SuperAdd	;93 name. 1 long (d0.L) added to the 5 words at a3
 	movem.l	d1/a0,-(sp)
 	lea	$A(a3),a0
 	moveq	#3,d1
 	add.l	d0,-(a0)
 	bra.w	.2
-.1	;IDA: loc_1822A
+.1
 	addq.w	#1,-(a0)	;carry into the next word up
-.2	;IDA: loc_1822C
+.2
 	dbcc	d1,.1
 	movem.l	(sp)+,d1/a0
 	rts
-SuperMult	;IDA: sub_18236 (93 name). 1 word (d0) multiplied by the 5 words at a3
+SuperMult	;93 name. 1 word (d0) multiplied by the 5 words at a3
 	movem.l	d1-d4/a0,-(sp)
 	movea.w	a3,a0
 	moveq	#4,d4
-.0	;IDA: loc_1823E
+.0
 	move.w	(a0),-(sp)
 	clr.w	(a0)+
 	dbf	d4,.0
 	moveq	#4,d4
-.1	;IDA: loc_18248
+.1
 	move.w	d0,d1
 	mulu.w	(sp)+,d1
 	lea	2(a3),a0
@@ -512,19 +512,19 @@ SuperMult	;IDA: sub_18236 (93 name). 1 word (d0) multiplied by the 5 words at a3
 	move.w	d4,d2
 	add.l	d1,-(a0)
 	bra.w	.3
-.2	;IDA: loc_1825C
+.2
 	addq.w	#1,-(a0)
-.3	;IDA: loc_1825E
+.3
 	dbcc	d2,.2
 	dbf	d4,.1
 	movem.l	(sp)+,d1-d4/a0
 	rts
-SuperDiv	;IDA: sub_1826C (93 name). 5 words at a3 divided by 1 word (d0); d0 = remainder on exit
+SuperDiv	;93 name. 5 words at a3 divided by 1 word (d0); d0 = remainder on exit
 	movem.l	d1-d2/a0,-(sp)
 	movea.w	a3,a0
 	moveq	#4,d1
 	clr.l	d2
-.0	;IDA: loc_18276
+.0
 	move.w	(a0),d2
 	divu.w	d0,d2
 	move.w	d2,(a0)+
@@ -538,7 +538,7 @@ GetShifter	;IDA name (92 / 93 GetShifter). Returns d1 = number of games - 1, d2 
 	moveq	#-$10,d2
 	moveq	#$10,d1
 	move.w	(gamelevel).w,d0
-.3	;IDA: loc_18294
+.3
 	add.w	d1,d2
 	lsr.w	#1,d1
 	dbf	d0,.3
@@ -558,11 +558,11 @@ AddPOStats	;IDA name (93 DisplayTeamStatsForPlayoffs). Add the po team's game st
 	cmp.w	$28(a2),d2
 	beq.w	.0
 	adda.w	#$364,a2	;tmsize: the po team is the visitor
-.0	;IDA: loc_182CC
+.0
 	adda.w	#$B4,a2
 	moveq	#$67,d0	;$68 stats
 	movea.w	#(statsbuffer-M68K_RAM),a1	;93 statsbuffer
-.loop	;IDA: loc_182D6
+.loop
 	clr.w	d1
 	move.b	(a2)+,d1
 	add.w	d1,(a1)+
@@ -572,7 +572,7 @@ AddPOStats	;IDA name (93 DisplayTeamStatsForPlayoffs). Add the po team's game st
 	movea.w	#(outputbuffer-M68K_RAM),a2
 	moveq	#$67,d0
 	clr.w	d4
-.loop2	;IDA: loc_182F2
+.loop2
 	clr.l	d1
 	move.w	(a0)+,d1
 	move.w	d0,d2
@@ -584,7 +584,7 @@ AddPOStats	;IDA name (93 DisplayTeamStatsForPlayoffs). Add the po team's game st
 	cmp.w	d3,d1
 	ble.w	.1
 	move.w	d3,d1	;clamp
-.1	;IDA: loc_1830E
+.1
 	not.l	d3
 	move.w	d4,d5
 	andi.w	#$F,d5
@@ -600,15 +600,15 @@ AddPOStats	;IDA name (93 DisplayTeamStatsForPlayoffs). Add the po team's game st
 	add.w	d2,d4
 	dbf	d0,.loop2
 	rts
-BitWidthTable	;IDA: unk_18336 (93 name). Playoff stat bit widths, indexed by stat number & 3 (93 8, $A, 6, 6)
+BitWidthTable	;93 name. Playoff stat bit widths, indexed by stat number & 3 (93 8, $A, 6, 6)
 	dc.b	$C,$E,$A,$A
-ReadTeamStats	;IDA: sub_1833A (93 name). Unpack the $68 playoff stat totals from the bit stream into statsbuffer (93 name) words. Called from AddPOStats and sub_9428
+ReadTeamStats	;93 name. Unpack the $68 playoff stat totals from the bit stream into statsbuffer (93 name) words. Called from AddPOStats and DisplayTeamStats
 	movea.w	#(statsbuffer-M68K_RAM),a0
 	movea.l	#BitWidthTable,a1
 	movea.w	#(outputbuffer-M68K_RAM),a2
 	moveq	#$67,d0
 	clr.w	d4
-.loop	;IDA: loc_1834C
+.loop
 	move.w	d4,d5
 	lsr.w	#4,d5
 	add.w	d5,d5

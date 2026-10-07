@@ -4,8 +4,9 @@
 ;	assinsert / assreplace, vtoa, GetHot, SetSPA, doplayeracc, goalieacc, noturn0 / noturn, playeracc, MaxSpeed,
 ;	dostop, stopna, dirtab, UnpackNibbles, WeightedRandomSelect. remap (middle94_1) follows at $10EE0.
 ;	Transcribed from lst/nhl94.bin.lst lines 42598-43998. Global names are the IDA names except
-;	ClearOffsidesIfAllPlayers (IDA sub_100A6), UnpackNibbles (sub_10E88) and WeightedRandomSelect (sub_10EB4), the
-;	93 names. Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	ClearOffsidesIfAllPlayers, UnpackNibbles and WeightedRandomSelect, the
+;	93 names. Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop,
+;	numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 ;	SortCords offsets (93 names): Xpos 0, attribute 4, Ypos $14, Zpos $18, Xvel $28, Yvel $2A, position $34,
@@ -30,21 +31,21 @@ ChkOffsides
 	btst	#gmdir,(gmode).w
 	beq.w	.t0
 	exg	a2,a1
-.t0	;IDA: loc_10034
+.t0
 	moveq	#5,d2
 	movea.w	tmsort(a2),a0
-.0	;IDA: loc_10B1C
+.0
 	tst.w	position(a0)
 	bmi.w	.1
 	cmp.w	Ypos(a0),d0
 	bge.w	.1
 	bset	#4,tmflags(a2)
 	rts
-.1	;IDA: loc_1011A
+.1
 	adda.w	#SCstruct,a0
 	dbf	d2,.0
 	rts
-.neg	;IDA: loc_1005C
+.neg
 	neg.w	d0
 	cmp.w	Ypos(a3),d0
 	blt.w	rtss2
@@ -54,33 +55,33 @@ ChkOffsides
 	btst	#gmdir,(gmode).w
 	bne.w	.t1
 	exg	a2,a1
-.t1	;IDA: loc_1007E
+.t1
 	moveq	#5,d2
 	movea.w	tmsort(a2),a0
-.2	;IDA: loc_10084
+.2
 	tst.w	position(a0)
 	bmi.w	.3
 	cmp.w	Ypos(a0),d0
 	ble.w	.3
 	bset	#4,tmflags(a2)
 	rts
-.3	;IDA: loc_1009C
+.3
 	adda.w	#SCstruct,a0
 	dbf	d2,.2
 	rts
-ClearOffsidesIfAllPlayers	;IDA: sub_100A6 (93 name). a2 = team struct: clear the team offsides flag once no skater is past the line
+ClearOffsidesIfAllPlayers	;93 name. a2 = team struct: clear the team offsides flag once no skater is past the line
 	btst	#4,tmflags(a2)
 	beq.w	rtss2
 	movea.w	tmsort(a2),a0
 	moveq	#5,d1
-.top	;IDA: loc_100B6
+.top
 	tst.w	position(a0)
 	bmi.w	.next
 	move.w	Ypos(a0),d0
 	btst	#pfgoal,pflags(a0)
 	bne.w	.next
 	neg.w	d0
-.next	;IDA: loc_10EAA
+.next
 	adda.w	#SCstruct,a0
 	cmp.w	#$58,d0
 	dbgt	d1,.top
@@ -94,14 +95,14 @@ a2offsides
 	btst	#pfgoal,pflags(a2)
 	bne.w	.0
 	neg.w	d0
-.0	;IDA: loc_10B1C
+.0
 	cmp.w	#$68,d0
 	blt.w	rtss2
 	movea.w	#(HmShots-M68K_RAM),a0
 	btst	#pfteam,pflags(a2)
 	beq.w	.1
 	adda.w	#tmsize,a0
-.1	;IDA: loc_1011A
+.1
 	btst	#4,tmflags(a0)
 	beq.w	rtss2
 	btst	#gmhl,(gmode).w
@@ -121,25 +122,25 @@ a2touchpuck
 	btst	#pfteam,pflags(a2)	;check if home or away
 	beq.w	.t	;branch if home
 	lea	tmsize(a0),a0	;add to a0 if away
-.t	;IDA: loc_10160
+.t
 	clr.w	d0
 	move.b	pnum(a2),d0	;move pnum into d0
 	btst	#3,$64(a2)	;check if one timer
 	beq.w	.checklast	;branch if not
 	bset	#7,(sflags8).w	;set if one timer
-.checklast	;IDA: loc_10176
+.checklast
 	cmp.w	$18(a0),d0	;compare value in C6E6 (home) to d0
 	beq.w	.same	;branch if equal
 	bclr	#3,tmflags(a0)	;clear bit 3
 	bne.w	.st	;branch if not cleared before
 	move.w	$1A(a0),$1C(a0)	;move current player to assist slot
 	move.w	$18(a0),$1A(a0)	;move current player to last player slot
-.st	;IDA: loc_10194
+.st
 	move.w	d0,$18(a0)	;move pnum into current player
 	cmp.w	$1C(a0),d0	;compare if same player as assist slot
 	bne.w	.same	;branch if not
 	st	$1C(a0)	;set FFFF to assist slot
-.same	;IDA: loc_101A4
+.same
 	bclr	#sf2shot,(sflags2).w	;clear shot taken
 	bsr.w	a2offsides
 	btst	#2,(iflags).w	;check if icing
@@ -174,14 +175,14 @@ a2touchpuck
 	beq.w	.0	;branch if down
 	bset	#1,(iflags).w	;set icing direction up
 	neg.w	d0	;negate d0
-.0	;IDA: loc_10B1C
+.0
 	bmi.w	rtss2	;exit if minus
 	move.w	(HmShots+tmap).w,d0	;IDA (tmap).w
 	sub.w	(AwShots+tmap).w,d0	;IDA (tmsize).w
 	btst	#pfteam,pflags(a2)	;check home or away
 	beq.w	.1	;branch if home
 	neg.w	d0	;negate d0
-.1	;IDA: loc_1011A
+.1
 	bmi.w	rtss2	;exit if minus
 	bset	#2,(iflags).w	;set icing flag
 	rts
@@ -200,7 +201,7 @@ puckIChk
 	cmp.w	(pucky).w,d0	;check other goalline
 	bgt.w	.chkx
 	rts
-.0	;IDA: loc_10B1C
+.0
 	cmp.w	(pucky).w,d0
 	bgt.w	rtss2
 .chkx
@@ -210,7 +211,7 @@ puckIChk
 	blt.w	.set
 	bclr	#2,(iflags).w	;#ifok cleared
 	rts
-.set	;IDA: loc_102A0
+.set
 	bset	#0,(iflags).w	;#ifcgl
 	rts
 ; stop spinning puck
@@ -311,7 +312,7 @@ findpc
 	bra.w	.next
 .nocross
 	move.w	#$FFFF,2(a1)	;move -1 into puckcross y
-.next	;IDA: loc_10EAA
+.next
 	addq.w	#4,a1	;add 4 to puckcross (to move to the other goal line)
 	rts
 ; a0 = extra routine for collision avoidance
@@ -408,9 +409,9 @@ avdgoal
 	blt.w	.1
 	cmpi.w	#$FE,Ypos(a3)	;.gl, Ypos
 	bgt.w	.2
-.1	;IDA: loc_1011A
+.1
 	move.w	#$B8,d3	;.gl-.yr-.ye
-.2	;IDA: loc_10084
+.2
 	sub.w	d2,d3
 	move.w	d3,(deltay).w
 	bra.w	.chbar
@@ -425,7 +426,7 @@ avdgoal
 	blt.w	.3
 	cmpi.w	#$FF02,Ypos(a3)	;-.gl, Ypos
 	bgt.w	.4
-.3	;IDA: loc_1009C
+.3
 	move.w	#$FEBC,d3	;-.gl-.yr-.ye
 .4
 	sub.w	d2,d3
@@ -462,10 +463,10 @@ avdgoal
 	tst.w	d4
 	bne.w	.ch2
 	tst.w	(a3)	;Xpos
-.ch2	;IDA: loc_1057A
+.ch2
 	bpl.w	.ch3
 	neg.w	d3
-.ch3	;IDA: loc_10580
+.ch3
 	sub.w	d4,d3
 	move.w	d3,(deltax).w
 	rts
@@ -558,23 +559,23 @@ vtoa
 	bpl.w	.0
 	neg.w	d0
 	bset	#0,d2
-.0	;IDA: loc_10B1C
+.0
 	tst.w	d1
 	bpl.w	.1
 	neg.w	d1
 	bset	#1,d2
-.1	;IDA: loc_1011A
+.1
 	asl.w	#1,d1
 	cmp.w	d1,d0
 	bhi.w	.2
 	bset	#2,d2
-.2	;IDA: loc_10084
+.2
 	lsr.w	#1,d1
 	asl.w	#1,d0
 	cmp.w	d0,d1
 	bhi.w	.3
 	bset	#3,d2
-.3	;IDA: loc_1009C
+.3
 	movea.l	#.dt,a0	;#.dt
 	clr.w	d0
 	move.b	0(a0,d2.w),d0
@@ -781,12 +782,12 @@ goalieacc
 	cmpi.w	#$FEFA,$14(a3)
 	blt.w	.normalgoalie
 	bra.w	.facepuck
-.checkbottom	;IDA: loc_10950
+.checkbottom
 	cmpi.w	#$C0,$14(a3)
 	blt.w	.normalgoalie
 	cmpi.w	#$106,$14(a3)
 	bgt.w	.normalgoalie
-.facepuck	;IDA: loc_10964
+.facepuck
 	movem.w	d0-d1,-(sp)
 	move.w	(puckx).w,d0
 	sub.w	(a3),d0
@@ -802,22 +803,22 @@ goalieacc
 	blt.w	.usevtoa
 	move.w	$54(a3),d0
 	bra.w	.checkadjust
-.usevtoa	;IDA: loc_1099E
+.usevtoa
 	bsr.w	vtoa
-.checkadjust	;IDA: loc_109A2
+.checkadjust
 	btst	#0,(sflags4).w
 	bne.w	.adjustkeepdir
 	bsr.w	AdjustFacingDirection
 	movem.w	(sp)+,d0-d1
 	bra.w	.setready
-.adjustkeepdir	;IDA: loc_109B8
+.adjustkeepdir
 	movem.w	(sp)+,d0-d1
 	cmp.w	#8,d0
 	beq.w	.setready
 	movem.w	d0-d1,-(sp)
 	bsr.w	AdjustFacingDirection
 	movem.w	(sp)+,d0-d1
-.setready	;IDA: loc_109D0
+.setready
 	move.w	#2,d1
 	btst	#1,$63(a3)
 	bne.w	.exit
@@ -833,7 +834,7 @@ goalieacc
 	btst	#7,$62(a3)
 	beq.w	.topstay
 	neg.w	d0
-.topstay	;IDA: loc_10A0E
+.topstay
 	cmp.w	#$D8,d0
 	blt.w	.stopandrestore
 	move.w	(a3),d0
@@ -844,13 +845,13 @@ goalieacc
 	move.w	(sp)+,d0
 	jsr	(stopna2).l
 	bra.w	.playermove
-.stopandrestore	;IDA: loc_10A34
+.stopandrestore
 	jsr	(stopna2).l
 	move.w	(sp)+,d0
-.playermove	;IDA: loc_10A3C
+.playermove
 	move.w	d0,d2
 	bra.w	playeracc
-.normalgoalie	;IDA: loc_10A42
+.normalgoalie
 	move.w	#2,d1
 	btst	#3,$62(a3)
 	beq.w	.goalieacc2
@@ -865,7 +866,7 @@ goalieacc
 	btst	#7,$62(a3)
 	beq.w	.topstop
 	neg.w	d0
-.topstop	;IDA: loc_10A7C
+.topstop
 	cmp.w	#$D8,d0
 	blt.w	.restoreidle
 	move.w	(a3),d0
@@ -876,10 +877,10 @@ goalieacc
 	move.w	(sp)+,d0
 	bsr.w	stopna
 	bra.w	.cgl
-.restoreidle	;IDA: loc_10AA0
+.restoreidle
 	move.w	(sp)+,d0
 	bra.w	.cgl
-.turnskater	;IDA: loc_10AA6
+.turnskater
 	bra.w	.d1
 .goalieacc2
 	andi.w	#$F,d0
@@ -894,7 +895,7 @@ goalieacc
 .cgl
 	btst	#pf2aip,pflags2(a3)
 	beq.w	SetSPA
-.exit	;IDA: loc_10ADA
+.exit
 	rts
 .d1
 	sub.w	facedir(a3),d0
@@ -917,7 +918,7 @@ noturn0
 	beq.w	.0
 	addq.w	#4,d4
 	eori.w	#8,d0
-.0	;IDA: loc_10B1C
+.0
 	tst.w	d0
 	beq.w	.nochg
 	move.w	Xvel(a3),d0
@@ -930,19 +931,19 @@ noturn0
 	andi.w	#7,d0
 	cmp.w	#4,d0
 	blt.w	dostop
-.nostop	;IDA: loc_10B48
+.nostop
 	addq.w	#1,facedir(a3)
 	btst	#3,attribute(a3)
 	beq.w	.nos0
 	subq.w	#2,facedir(a3)
-.nos0	;IDA: loc_10B5A
+.nos0
 	andi.w	#7,facedir(a3)
 	move.w	#$50C,d1
 	btst	#pfrev,pflags(a3)
 	beq.w	SetSPA
 	move.w	#$A60,d1
 	bra.w	SetSPA
-.nochg	;IDA: loc_10B76
+.nochg
 	move.w	#$A92,d1
 	btst	#pfrev,pflags(a3)
 	bne.w	.ns
@@ -950,12 +951,12 @@ noturn0
 	btst	#6,pflags2(a3)
 	beq.w	.nb6
 	move.w	#$11E6,d1
-.nb6	;IDA: loc_10B96
+.nb6
 	move.w	(puckc).w,d4
 	cmp.w	SCnum(a3),d4
 	bne.w	.ns
 	move.w	#$53E,d1
-.ns	;IDA: loc_10BA6
+.ns
 	btst	#pf2aip,pflags2(a3)
 	bne.w	noturn
 	bsr.w	SetSPA
@@ -1135,13 +1136,13 @@ dostop
 	bne.w	stopna
 	jmp	stopna2
 	bra.w	stopna
-.set	;IDA: loc_102A0
+.set
 	move.w	#$50C,d1	;#SPAglide
 	btst	#pfrev,pflags(a3)	;#pfrev - skating backwards
 	bne.w	.0
 	bset	#pf2aip,pflags2(a3)	;#pf2aip
 	move.w	#$6C6,d1	;#SPAstop
-.0	;IDA: loc_10B1C
+.0
 	bsr.w	SetSPA
 	tst.w	$34(a3)
 	bne.w	stopna
@@ -1188,36 +1189,36 @@ dirtab	dc.w	0
 	dc.w	$8D
 	dc.w	0
 	dc.w	0
-UnpackNibbles	;IDA: sub_10E88 (93 name). a0 = packed data, d0 = count: unpack 4-bit values into words at nibblebuffer
+UnpackNibbles	;93 name. a0 = packed data, d0 = count: unpack 4-bit values into words at nibblebuffer
 	movem.l	d0-d2/a0-a1,-(sp)
 	movea.w	#(nibblebuffer-M68K_RAM),a1
 	clr.w	d2
 	bra.w	.next
-.loop	;IDA: loc_10E96
+.loop
 	move.b	(a0)+,d1
 	bchg	#0,d2
 	bne.w	.lo
 	subq.w	#1,a0
 	lsr.w	#4,d1
-.lo	;IDA: loc_10EA4
+.lo
 	andi.w	#$F,d1
 	move.w	d1,(a1)+
-.next	;IDA: loc_10EAA
+.next
 	dbf	d0,.loop
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-WeightedRandomSelect	;IDA: sub_10EB4 (93 name). d0 = number of word weights at nibblebuffer: return a weighted random index
+WeightedRandomSelect	;93 name. d0 = number of word weights at nibblebuffer: return a weighted random index
 	movem.l	d1/a1,-(sp)
 	movea.w	#(nibblebuffer-M68K_RAM),a1
 	clr.w	d1
 	bra.w	.pick
-.sumloop	;IDA: loc_10EC2
+.sumloop
 	add.w	(a1)+,d1
-.pick	;IDA: loc_10EC4
+.pick
 	dbf	d0,.sumloop
 	move.w	d1,d0
 	bsr.w	randomd0
-.findloop	;IDA: loc_10ECE
+.findloop
 	sub.w	-(a1),d0
 	bpl.s	.findloop
 	suba.w	#$D036,a1

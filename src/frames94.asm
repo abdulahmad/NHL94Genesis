@@ -1408,7 +1408,7 @@ SPAboardbot_table:	;$7376. Frames 292-785
 .0
 .1	dc.w	770,6,771,6,772,6,773,60,SPFfallfwd+3,8,SPFduck,-8
 .2
-;IDA: unk_73A0 (RAM xref)
+;RAM xref
 .3	dc.w	774,6,775,6,776,6,777,60,SPFfallfwd+11,8,SPFduck+2,-8
 .4
 .5	dc.w	778,6,779,6,780,6,781,60,SPFfallback+19,8,SPFduck+4,-8

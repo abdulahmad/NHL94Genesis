@@ -27,7 +27,7 @@ appstring = $11D9E		;bsr.w / Bcc.w at $18AB8
 dobitmap = $1169A		;bsr.w / Bcc.w at $18586
 eraser = $1197E			;bsr.w / Bcc.w at $18A6A
 lcfound2 = $BB36			;jsr / jmp (x).l at $188B2
-PlayoffRoundScreen = $FC320		;jsr / jmp (x).l at $187C8 (IDA: loc_FC320)
+PlayoffRoundScreen = $FC320		;jsr / jmp (x).l at $187C8
 prefmes = $1277A			;jsr / jmp (x).l at $187D6
 print = $11BA4			;bsr.w / Bcc.w at $185AE
 printbig = $11DF4		;bsr.w / Bcc.w at $187F2
@@ -36,11 +36,11 @@ printz = $11B92			;bsr.w / Bcc.w at $1853A
 randomd0 = $11086		;jsr / jmp (x).l at $1845E
 rtss2 = $15464			;bsr.w / Bcc.w at $1841C
 song = $11156			;jsr / jmp (x).l at $185D4
-ReadAttributeNibble = $9F40			;jsr / jmp (x).l at $1868C. IDA: sub_9F40
-CountGoalies = $F9FC0		;jsr / jmp (x).l at $188F2 (IDA: sub_F9FC0)
-StartArenaAnim = $FE510		;jsr / jmp (x).l at $18966 (IDA: sub_FE510)
-PrintPlayerAssists = $FEAE4		;jsr / jmp (x).l at $189DC (IDA: sub_FEAE4)
-PrintPlayerGoals = $FEAFA		;jsr / jmp (x).l at $189A0 (IDA: sub_FEAFA)
+ReadAttributeNibble = $9F40			;jsr / jmp (x).l at $1868C
+CountGoalies = $F9FC0		;jsr / jmp (x).l at $188F2
+StartArenaAnim = $FE510		;jsr / jmp (x).l at $18966
+PrintPlayerAssists = $FEAE4		;jsr / jmp (x).l at $189DC
+PrintPlayerGoals = $FEAFA		;jsr / jmp (x).l at $189A0
 
 ; Main segment code
 	include	hockey94_10.asm

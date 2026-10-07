@@ -26,7 +26,7 @@ randomd0s = $1107A		;jsr / jmp (x).l at $F70AE
 setc1player = $C0BC		;jsr / jmp (x).l at $F69EE
 setc2player = $C0DA		;jsr / jmp (x).l at $F69AA
 sroot = $110BE			;jsr / jmp (x).l at $F678E
-EndOneTimer = $FEFF0		;jsr / jmp (x).l at $F6C02 (IDA: sub_FEFF0)
+EndOneTimer = $FEFF0		;jsr / jmp (x).l at $F6C02
 vtoa = $10676			;jsr / jmp (x).l at $F6C2A
 wallcollb2 = $14BC2		;jsr / jmp (x).l at $F709C
 

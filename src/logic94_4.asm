@@ -4,7 +4,7 @@
 ;	puckfaceoff2, ResetAndSelectPlayers, updatefaceoff, Endfaceoff, pucknorm. ChkOffsides (logic94_5) follows at $FFEA.
 ;	Transcribed from lst/nhl94.bin.lst lines 40493-42593. Global names are the IDA names; 94-only routines keep the
 ;	IDA auto names. Local labels are the IDA local names (_x -> .x, gmclock -> .gmclock) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the
-;	IDA label in an ;IDA: comment. WaitForFaceoffLineChanges and PenaltyShotEndReturn stay global: they are used across a global label.
+;	IDA label, unless generic, in an ;IDA: comment. WaitForFaceoffLineChanges and PenaltyShotEndReturn stay global: they are used across a global label.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 ;	Inline print strings after printz / printz2 use the String macro (length word includes itself).
@@ -22,46 +22,46 @@ checkob
 	cmpi.w	#6,SCnum(a3)
 	blt.w	.0
 	adda.w	#6*SCstruct,a0
-.0	;IDA: loc_E65A
+.0
 	moveq	#$5C,d1
 	btst	#pfgoal,pflags(a3)
 	bne.w	.top
 	neg.w	d1
 	cmp.w	(pucky).w,d1
 	bgt.w	.nob
-.bottom	;IDA: loc_E670
+.bottom
 	tst.w	position(a0)
 	bmi.w	.bn
 	cmp.w	Ypos(a0),d1
 	bgt.w	.ob
-.bn	;IDA: loc_E680
+.bn
 	adda.w	#SCstruct,a0
 	dbf	d0,.bottom
-.nob	;IDA: loc_E688
+.nob
 	moveq	#$40,d0
 	bclr	#sf2offsig,(sflags2).w
 	bne.w	.dref
-.ex	;IDA: loc_E694
+.ex
 	movem.l	(sp)+,d0-d1/a0
 	rts
-.ob	;IDA: loc_E69A
+.ob
 	moveq	#6,d0
 	bset	#sf2offsig,(sflags2).w
 	bne.s	.ex
-.dref	;IDA: loc_E6A4
+.dref
 	tst.w	(RefCnt).w
 	bpl.s	.ex
 	bsr.w	PushRef
 	bra.s	.ex
-.top	;IDA: loc_E6B0
+.top
 	cmp.w	(pucky).w,d1
 	blt.s	.nob
-.top1	;IDA: loc_E6B6
+.top1
 	tst.w	position(a0)
 	bmi.w	.tn
 	cmp.w	Ypos(a0),d1
 	blt.s	.ob
-.tn	;IDA: loc_E6C4
+.tn
 	adda.w	#SCstruct,a0
 	dbf	d0,.top1
 	bra.s	.nob
@@ -340,7 +340,7 @@ assnearest
 .chkx
 	cmp.w	#$F,d0	;compare F (15 dec) with Xpos difference
 	blt.w	.chkcont	;branch if less than (within 15 pix in X direction)
-.exit	;IDA: loc_FDBC
+.exit
 	rts
 .chkcont
 	btst	#5,(sflags6).w	;check if puckc is in the slot
@@ -381,7 +381,7 @@ check4check
 	cmpi.w	#6,SCnum(a3)	;check if player on home team
 	bge.w	.0	;branch if away
 	adda.w	#6*SCstruct,a0	;add if home (checks opposite team in loop)
-.0	;IDA: loc_E65A
+.0
 	tst.w	position(a0)	;check if goalie
 	beq.w	.next	;branch if goalie
 	btst	#pfalock,pflags(a0)	;check if locked in anim
@@ -433,7 +433,7 @@ asspassrec
 	addq.w	#1,$46(a3)	;add to temp4
 	beq.w	.0	;branch if temp4 is zero
 	bpl.w	.ex2	;branch if temp4 is positive
-.0	;IDA: loc_E65A
+.0
 	tst.w	(onetimerplayer).w
 	bpl.w	.ex2
 	tst.w	$34(a3)	;test if goalie
@@ -476,10 +476,10 @@ asspassrec
 .ex2
 	sub.b	d7,temp1(a3)
 	bpl.w	rtss2
-.exit	;IDA: loc_FDBC
+.exit
 	bclr	#pfdoff,pflags(a3)
 	bra.w	assexit
-SkateToTempTarget	;no xref (IDA dc.b at $EC72). Skate to temp3 / temp4, then rts (as 93 asspenalty .st)	;IDA: sub_EC72
+SkateToTempTarget	;no xref (IDA dc.b at $EC72). Skate to temp3 / temp4, then rts (as 93 asspenalty .st)
 	move.w	$44(a3),d0		;temp3
 	move.w	$46(a3),d1		;temp4
 	lea	rtss2(pc),a0
@@ -512,17 +512,17 @@ puckshootout
 	beq.w	.startattempt
 	jsr	(NextShooter).l
 	bra.w	.initflags
-.startattempt	;IDA: loc_ECEC
+.startattempt
 	jsr	(StartShootoutPath).l
 	move.l	a2,-(sp)
 	movea.l	#HmShots,a2
 	tst.w	(BA_Team).w
 	beq.w	.countattempt
 	movea.l	#AwShots,a2
-.countattempt	;IDA: loc_ED08
+.countattempt
 	addq.w	#1,$360(a2)
 	movea.l	(sp)+,a2
-.initflags	;IDA: loc_ED0E
+.initflags
 	bclr	#2,(BA_PS_flags).w
 	bclr	#4,(BA_PS_flags).w
 	bclr	#5,(BA_PS_flags).w
@@ -542,14 +542,14 @@ puckshootout
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)
 	bra.w	.playsong
-.selectsong	;IDA: loc_ED70
+.selectsong
 	move.w	(HomeTeam).w,(HmTeam).w
 	move.w	#2,(SongIndex).w
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)
-.playsong	;IDA: loc_ED86
+.playsong
 	bsr.w	song
-.setstopped	;IDA: loc_ED8A
+.setstopped
 	bset	#0,(gmode).w
 	bset	#1,(gmode2).w
 	clr.w	(puckvx).w
@@ -558,20 +558,20 @@ puckshootout
 	bsr.w	ReturnGoalies
 	st	$40(a3)
 	st	$42(a3)
-.selectskater	;IDA: loc_EDB0
+.selectskater
 	bset	#2,(BA_PS_flags).w
 	movem.w	d1-d2,-(sp)
 	jsr	(SelectPenaltyShotSkater).l
 	bmi.w	.noeligible
 	movem.w	(sp)+,d1-d2
 	bra.w	.checkgoalie
-.noeligible	;IDA: loc_EF80
+.noeligible
 	movem.w	(sp)+,d1-d2
 	bclr	#2,(BA_PS_flags).w
 	move.w	#$1B,d0	;puckfaceoff
 	bsr.w	assreplace
 	rts
-.checkgoalie	;IDA: loc_EDE0
+.checkgoalie
 	movem.w	d1-d2,-(sp)
 	move.w	(BA_Goalie_SCnum).w,d0
 	movea.l	#SortCords,a2
@@ -581,21 +581,21 @@ puckshootout
 	bne.w	.findgoalie
 	btst	#2,$63(a2)
 	beq.w	.startpenshot
-.findgoalie	;IDA: loc_EE04
+.findgoalie
 	move.w	(BA_Goalie_SCnum).w,d0
 	move.w	#6,d2
-.goalieloop	;IDA: loc_EE0C
+.goalieloop
 	subq.w	#1,d2
 	bmi.s	.noeligible
 	subq.w	#1,d0
 	bpl.w	.wraphome
 	move.w	#5,d0
 	bra.w	.checkcandidate
-.wraphome	;IDA: loc_EE1E
+.wraphome
 	cmp.w	#5,d0
 	bne.w	.checkcandidate
 	move.w	#$B,d0
-.checkcandidate	;IDA: loc_EE2A
+.checkcandidate
 	movea.l	#SortCords,a2
 	move.w	d0,d1
 	asl.w	#7,d1
@@ -605,24 +605,24 @@ puckshootout
 	btst	#2,$63(a2)
 	bne.s	.goalieloop
 	move.w	d0,(BA_Goalie_SCnum).w
-.startpenshot	;IDA: loc_EE48
+.startpenshot
 	movem.w	(sp)+,d1-d2
 	movea.w	#(HmShots-M68K_RAM),a2
 	move.w	#$1F,d0	;puckpenshot
 	bra.w	assreplace
-SelectPenaltyShotSkater	;IDA: sub_EE58
+SelectPenaltyShotSkater
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#HmShots,a0
 	tst.w	(BA_Team).w
 	beq.w	.hometeam
 	movea.l	#AwShots,a0
-.hometeam	;IDA: loc_EE70
+.hometeam
 	move.w	#0,d1
 	move.w	#$FFFF,d6
 	move.w	#$FFFF,d5
 	movea.l	$1E(a0),a2
 	adda.w	(a2),a2
-.playerloop	;IDA: loc_F0A8
+.playerloop
 	cmpi.w	#2,(a2)
 	beq.w	.doneplayers
 	adda.w	(a2),a2
@@ -638,7 +638,7 @@ SelectPenaltyShotSkater	;IDA: sub_EE58
 	beq.w	.scorecandidate
 	cmpi.w	#$FFFF,$66(a0,d7.w)
 	bne.w	.nextplayer
-.scorecandidate	;IDA: loc_EEBE
+.scorecandidate
 	clr.w	d3
 	clr.w	d0
 	move.b	1(a2),d0
@@ -676,39 +676,39 @@ SelectPenaltyShotSkater	;IDA: sub_EE58
 	cmp.w	(BA_Skater_Offset).w,d1
 	bne.w	.comparebest
 	move.w	#$7FFF,d3
-.comparebest	;IDA: loc_EF32
+.comparebest
 	cmp.w	d6,d3
 	blt.w	.nextplayer
 	move.w	d3,d6
 	move.w	d1,d5
 	bra.w	*+4
-.nextplayer	;IDA: loc_F1FC
+.nextplayer
 	addq.l	#8,a2
 	addq.w	#1,d1
 	cmp.w	#$1A,d1
 	blt.w	.playerloop
-.doneplayers	;IDA: loc_EF4C
+.doneplayers
 	tst.w	d5
 	bmi.w	.noeligible
 	move.w	d5,(BA_Skater_Offset).w
-.setskaterscnum	;IDA: loc_EF56
+.setskaterscnum
 	move.w	#0,(BA_Sktr_SCnum).w
 	tst.w	(BA_Team).w
 	beq.w	.loadskater
 	move.w	#6,(BA_Sktr_SCnum).w
-.loadskater	;IDA: loc_EF6A
+.loadskater
 	move.w	(BA_Sktr_SCnum).w,d0
 	asl.w	#7,d0
 	movea.l	#SortCords,a3
 	adda.w	d0,a3
 	move.w	(BA_Skater_Offset).w,d3
 	bra.w	.eligible
-.noeligible	;IDA: loc_EF80
+.noeligible
 	move.w	#$FFFF,d0
 	bra.w	.exit
-.eligible	;IDA: loc_EF88
+.eligible
 	move.w	#1,d0
-.exit	;IDA: loc_FDBC
+.exit
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; puck start for penalty shot/shootout
@@ -717,14 +717,14 @@ puckpenshot
 	beq.w	.resumeplay
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	forceblack
-.waitvblank	;IDA: loc_EFA4
+.waitvblank
 	btst	#0,(disflags).w
 	bne.s	.waitvblank
 	cmpi.w	#$258,(crowdlevel).w
 	bls.w	.setuprink
 	move.w	#$258,(crowdlevel).w
 	addi.w	#$14,(CwdExciteLvl).w
-.setuprink	;IDA: loc_EFC2
+.setuprink
 	move.w	(ExtraChars).w,d4
 	movea.l	#RefsMap+8,a2
 	jsr	(DoDMA_clearCallbackPointer).l
@@ -763,7 +763,7 @@ puckpenshot
 	clr.w	(SortCords+(puckscnum*SCstruct)+attribute).w
 	bclr	#6,(sflags).w
 	moveq	#$64,d4
-.scrollloop	;IDA: loc_F06C
+.scrollloop
 	bsr.w	checkwindow
 	dbf	d4,.scrollloop
 	move.w	#$3C,(yleader).w
@@ -778,7 +778,7 @@ puckpenshot
 	move.l	a3,-(sp)
 	movea.l	#SortCords+(11*SCstruct),a3	;away goalie SCstruct
 	move.w	#$B,d2	;11 = # of player SCstructs
-.playerloop	;IDA: loc_F0A8
+.playerloop
 	cmp.w	(BA_Sktr_SCnum).w,d2
 	beq.w	.setupskater
 	cmp.w	(BA_Goalie_SCnum).w,d2
@@ -789,7 +789,7 @@ puckpenshot
 	move.w	#$20,d0
 	bsr.w	assinsert
 	bra.w	.nextplayer
-.setupskater	;IDA: loc_F0D0
+.setupskater
 	tst.w	$34(a3)
 	bpl.w	.placeskater
 	bclr	#2,$63(a3)
@@ -802,9 +802,9 @@ puckpenshot
 	tst.w	$34(a3)
 	beq.w	.skaterready
 	bpl.w	.placeskater
-.skaterready	;IDA: loc_F102
+.skaterready
 	nop
-.placeskater	;IDA: loc_F104
+.placeskater
 	move.w	(puckx).w,d0
 	subi.w	#0,d0
 	move.w	d0,(a3)
@@ -814,10 +814,10 @@ puckpenshot
 	addi.w	#$10,d0
 	move.w	#4,$54(a3)
 	bra.w	.setskaterpos
-.skaterattop	;IDA: loc_F12A
+.skaterattop
 	addi.w	#-$10,d0
 	move.w	#0,$54(a3)
-.setskaterpos	;IDA: loc_F134
+.setskaterpos
 	move.w	d0,$14(a3)
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
@@ -825,7 +825,7 @@ puckpenshot
 	move.w	#$11,d0
 	bsr.w	assinsert
 	bra.w	.nextplayer
-.setupgoalie	;IDA: loc_F150
+.setupgoalie
 	btst	#0,(gmode2).w
 	beq.w	.goalieactive
 	move.b	(shootoutteam-1).w,$66(a3)
@@ -833,12 +833,12 @@ puckpenshot
 	beq.w	.loadgoalieplayer
 	move.b	(homeshootnum-1).w,$66(a3)
 	bra.w	.loadgoalieplayer
-.goalieactive	;IDA: loc_F172
+.goalieactive
 	tst.w	$34(a3)
 	bpl.w	.placegoalie
 	bclr	#2,$63(a3)
 	beq.w	.placegoalie
-.loadgoalieplayer	;IDA: loc_F184
+.loadgoalieplayer
 	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
@@ -847,16 +847,16 @@ puckpenshot
 	tst.w	$34(a3)
 	bne.w	.goalieok
 	bpl.w	.placegoalie
-.goalieok	;IDA: loc_F1A4
+.goalieok
 	nop
-.placegoalie	;IDA: loc_F1A6
+.placegoalie
 	bclr	#2,$63(a3)
 	move.w	#0,d0
 	move.w	#$E5,d1
 	btst	#7,$62(a3)
 	bne.w	.goalieattop
 	move.w	#$FF1B,d1
-.goalieattop	;IDA: loc_F1C2
+.goalieattop
 	move.w	d0,(a3)
 	move.w	d1,$14(a3)
 	clr.w	$28(a3)
@@ -872,7 +872,7 @@ puckpenshot
 	bclr	#5,$62(a3)
 	move.w	#$50C,d1
 	bsr.w	SetSPA
-.nextplayer	;IDA: loc_F1FC
+.nextplayer
 	suba.l	#$80,a3
 	dbf	d2,.playerloop	;cycle to next player
 	bsr.w	SprSort
@@ -887,22 +887,22 @@ puckpenshot
 	btst	#7,$62(a3)
 	bne.w	.goalieatbottom
 	move.w	#$FA,$14(a3)
-.goalieatbottom	;IDA: loc_F236
+.goalieatbottom
 	move.w	(BA_Goalie_SCnum).w,d0
 	move.w	#1,d1
 	btst	#6,$62(a3)
 	beq.w	.checkcont1
 	move.w	#2,d1
-.checkcont1	;IDA: loc_F24C
+.checkcont1
 	cmp.w	(cont1team).w,d1
 	bne.w	.checkcont2
 	jsr	(setc1player).l
 	bra.w	.setgoalieassignment
-.checkcont2	;IDA: loc_FD3C
+.checkcont2
 	cmp.w	(cont2team).w,d1
 	bne.w	.setgoalieassignment
 	jsr	(setc2player).l
-.setgoalieassignment	;IDA: loc_F26C
+.setgoalieassignment
 	move.w	#$E,d0	;assignment D51C?
 	bsr.w	assreplace
 	bset	#7,(BA_PS_flags).w
@@ -913,11 +913,11 @@ puckpenshot
 	tst.w	(cont2team).w
 	bne.w	.finishsetup
 	move.w	#$64,(msgtimer).w
-.finishsetup	;IDA: loc_F29C
+.finishsetup
 	move.w	#$18,(palcount).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.resumeplay	;IDA: loc_F2A8
+.resumeplay
 	bset	#2,(gmode2).w
 	move.w	#$18,d0	;pucknorm
 	bsr.w	assreplace
@@ -931,7 +931,7 @@ puckpenshot
 	dc.b	$FF,$CE,$FF,$CE,$FF,$F6,0,0,$FF,$F1,0
 	dc.b	$32	;2
 	dc.b	$FF,$F6,0,0,$FF,$C4
-UpdatePenaltyShotEnd	;IDA: sub_F2F4
+UpdatePenaltyShotEnd
 	movem.w	d0,-(sp)
 	move.w	(puckc).w,d0
 	cmp.w	(BA_Goalie_SCnum).w,d0
@@ -944,37 +944,37 @@ UpdatePenaltyShotEnd	;IDA: sub_F2F4
 	tst.w	(puckc).w
 	bpl.w	.countdown
 	bset	#5,(gmode2).w
-.puckloose	;IDA: loc_F32A
+.puckloose
 	tst.w	(puckc).w
 	bpl.w	.setended
-.countdown	;IDA: loc_F684
+.countdown
 	tst.w	(passmodetimer).w
 	bmi.w	.setended
 	subq.w	#1,(passmodetimer).w
 	bra.w	.checktimer
-.setended	;IDA: loc_F342
+.setended
 	bset	#4,(BA_PS_flags).w
-.checktimer	;IDA: loc_F348
+.checktimer
 	tst.w	(shootoutclock).w
 	bne.w	.checkended
 	bset	#4,(BA_PS_flags).w
-.checkended	;IDA: loc_F356
+.checkended
 	btst	#4,(BA_PS_flags).w
 	bne.w	.finishshot
 	rts
-.finishshot	;IDA: loc_F362
+.finishshot
 	btst	#6,(BA_PS_flags).w
 	bne.w	PenaltyShotEndReturn
 	bset	#6,(BA_PS_flags).w
 	move.w	#$A,d0
 	jsr	(AddPenalty2).l
-EndPenaltyShotPlay	;IDA: sub_F37C
+EndPenaltyShotPlay
 	jsr	(freezewindow).l
 	btst	#0,(gmode2).w
 	bne.w	.stopplay
 	move.w	#$A,(replaydelay).w
 	bset	#2,(sflags2).w
-.stopplay	;IDA: loc_F398
+.stopplay
 	bset	#0,(gmode).w
 	bclr	#2,(gmode2).w
 	bclr	#2,(BA_PS_flags).w
@@ -989,7 +989,7 @@ EndPenaltyShotPlay	;IDA: sub_F37C
 	move.b	(savednewpnum).w,$61(a0,d0.w)
 	movem.l	(sp)+,d0/a0
 	jsr	(CountShootoutGoals).l
-PenaltyShotEndReturn	;IDA: locret_F3E2
+PenaltyShotEndReturn
 	rts
 ; this is where the action starts
 puckfaceoff
@@ -1000,14 +1000,14 @@ puckfaceoff
 	clr.w	(puckvy).w
 	move.w	#$1E,d0	;assignment ECB6?
 	bra.w	assreplace
-.normalfaceoff	;IDA: loc_F404
+.normalfaceoff
 	bclr	#1,$62(a3)
 	beq.w	WaitForFaceoffLineChanges
 	bclr	#0,(sflags8).w
 	beq.w	.resetpads
 	clr.w	(fox).w
 	clr.w	(foy).w
-.resetpads	;IDA: loc_F420
+.resetpads
 	bclr	#7,(sflags7).w
 	clr.l	(padcont).w
 	clr.l	(padcont+4).w
@@ -1019,13 +1019,13 @@ puckfaceoff
 	bmi.w	.choosefaceoffspot
 	move.w	(faceoffanim).w,d0
 	bra.w	.handlefaceoffspot
-.choosefaceoffspot	;IDA: loc_F454
+.choosefaceoffspot
 	jsr	(RandomFaceoffAnim).l
 	tst.w	d0
 	bmi.w	.checkperiod
-.handlefaceoffspot	;IDA: loc_F460
+.handlefaceoffspot
 	jsr	(SetFaceoffAnim).l
-.checkperiod	;IDA: loc_F466
+.checkperiod
 	bclr	#1,(sflags6).w
 	bclr	#1,(gmode2).w
 	tst.w	(gameclock).w
@@ -1056,7 +1056,7 @@ puckfaceoff
 	move.w	#2,(SongIndex).w
 	jsr	(ChooseSong).l
 	bset	#4,(sflags8).w
-.returngoalies	;IDA: loc_F4F2
+.returngoalies
 	bsr.w	ReturnGoalies
 	st	temp1(a3)
 	st	temp2(a3)
@@ -1066,7 +1066,7 @@ puckfaceoff
 	bclr	#1,(AwShots+tmflags).w
 	movea.w	#(SortCords-M68K_RAM),a0
 	moveq	#$B,d0
-.clearlcmloop	;IDA: loc_F518
+.clearlcmloop
 	bclr	#3,pflags2(a0)
 	adda.w	#SCstruct,a0
 	dbf	d0,.clearlcmloop
@@ -1084,21 +1084,21 @@ puckfaceoff
 	btst	#4,(sflags7).w
 	beq.w	.checkc1line
 	clr.w	(palcount).w
-.checkc1line	;IDA: loc_F566
+.checkc1line
 	move.w	(c1playernum).w,d0
 	bmi.w	.checkc2line
 	bsr.w	StartFaceoffLineChange
-.checkc2line	;IDA: loc_F572
+.checkc2line
 	move.w	(c2playernum).w,d0
 	bmi.w	.checkcomputerline
 	bsr.w	StartFaceoffLineChange
-.checkcomputerline	;IDA: loc_F57E
+.checkcomputerline
 	movea.w	#(HmShots-M68K_RAM),a1
 	lea	tmsize(a1),a2
 	moveq	#2,d0
 	bsr.w	SetFaceoffComputerLine
 	bra.w	WaitForFaceoffLineChanges
-SetFaceoffComputerLine	;IDA: sub_F590
+SetFaceoffComputerLine
 	tst.w	(OptLine).w
 	bne.w	rtss2
 	btst	#4,(sflags7).w
@@ -1107,13 +1107,13 @@ SetFaceoffComputerLine	;IDA: sub_F590
 	beq.w	rtss2
 	cmp.w	(cont2team).w,d0
 	beq.w	rtss2
-.dochange	;IDA: loc_F5B2
+.dochange
 	bsr.w	CompLine
 	bsr.w	SetPersonel
 	bsr.w	PrintScores1
 	move.w	#$2710,(crowdnoisedelay).w
 	rts
-StartFaceoffLineChange	;IDA: sub_F5C6
+StartFaceoffLineChange
 	exg	a2,a3
 	asl.w	#7,d0
 	movea.w	#(SortCords-M68K_RAM),a3
@@ -1129,13 +1129,13 @@ StartFaceoffLineChange	;IDA: sub_F5C6
 	move.w	#$168,$42(a2)
 	move.w	$52(a3),$46(a2)
 	bra.w	.exit
-.homeplayer	;IDA: loc_F602
+.homeplayer
 	move.w	#$258,$40(a2)
 	move.w	$52(a3),$44(a2)
-.exit	;IDA: loc_FDBC
+.exit
 	exg	a2,a3
 	rts
-WaitForFaceoffLineChanges	;IDA: loc_F612
+WaitForFaceoffLineChanges
 	move.w	#$40,d0
 	bsr.w	UpdateFaceoffLineChangeTimer
 	move.w	#$42,d0
@@ -1151,7 +1151,7 @@ WaitForFaceoffLineChanges	;IDA: loc_F612
 	move.w	#$FFFF,(facelcwait).w
 	move.w	#$1C,d0	;puckfaceoff2
 	bra.w	assreplace
-UpdateFaceoffLineChangeTimer	;IDA: sub_F64E
+UpdateFaceoffLineChangeTimer
 	tst.w	0(a3,d0.w)
 	bmi.w	rtss2
 	move.w	4(a3,d0.w),d1
@@ -1161,12 +1161,12 @@ UpdateFaceoffLineChangeTimer	;IDA: sub_F64E
 	btst	#6,$62(a0,d1.w)
 	beq.w	.checkactive
 	adda.w	#$364,a2
-.checkactive	;IDA: loc_F672
+.checkactive
 	btst	#3,$63(a0,d1.w)
 	bne.w	.countdown
 	st	0(a3,d0.w)
 	bra.w	SetLCmode2
-.countdown	;IDA: loc_F684
+.countdown
 	sub.w	d7,0(a3,d0.w)
 	bpl.w	rtss2
 	move.l	a3,-(sp)
@@ -1176,7 +1176,7 @@ UpdateFaceoffLineChangeTimer	;IDA: sub_F64E
 	clr.w	d2
 	bsr.w	lcfound
 	bsr.w	SetLCmode2
-.exit	;IDA: loc_FDBC
+.exit
 	movea.l	(sp)+,a3
 	rts
 ; computer pulls goalie on delayed penalty
@@ -1247,7 +1247,7 @@ CPgoalie
 	movea.l	(sp)+,a0
 	bne.w	.0
 	neg.w	d1	;if shooting on bottom goal, make d1 negative
-.0	;IDA: loc_E65A
+.0
 	tst.w	d1
 	bmi.w	rtss2	;exit if d1 negative (faceoff in own zone)
 	st	tmgoalie(a2)	;set to FFFF (no goalie)
@@ -1261,7 +1261,7 @@ CompLine
 	beq.w	.nopwr
 	bpl.w	.0
 	addq.w	#2,d0
-.0	;IDA: loc_E65A
+.0
 	move.w	d0,-(sp)	;find pk/pp line
 	bsr.w	getlinee
 	move.w	d0,d1
@@ -1273,7 +1273,7 @@ CompLine
 	addq.w	#1,(sp)
 .1
 	move.w	(sp)+,tmline(a2)	;tmline
-.ex	;IDA: loc_E694
+.ex
 	movem.l	(sp)+,d0-d2/a0
 	rts
 .nopwr
@@ -1372,9 +1372,9 @@ puckfaceoff2
 	bne.w	.lockinterrupts
 	move.w	#$FFFF,(faceoffanim).w
 	bra.w	.limitcrowd
-.lockinterrupts	;IDA: loc_F8F4
+.lockinterrupts
 	move	#$2700,sr
-.limitcrowd	;IDA: loc_F8F8
+.limitcrowd
 	cmpi.w	#$258,(crowdlevel).w
 	bls.w	.ntm
 	move.w	#$258,(crowdlevel).w	;limit crowd level
@@ -1531,7 +1531,7 @@ puckfaceoff2
 	move.w	(faceoffanim).w,d0
 	bmi.w	.drawfaceoffwindow
 	jsr	(StartArenaAnim).l
-.drawfaceoffwindow	;IDA: loc_FB54
+.drawfaceoffwindow
 	bsr.w	printz
 	dc.b	0,6,$FF,0,0,0
 	moveq	#$36,d0	;'6'   ; X Position of the faceoff window
@@ -1574,7 +1574,7 @@ puckfaceoff2
 	btst	#gmdir,(gmode).w
 	bne.w	.printline2
 	exg	d0,d1
-.printline2	;IDA: loc_FBE4
+.printline2
 	bsr.w	printz2
 	String	$FB,1,$FA,$FE		;$FBE8. IDA shows ori.b #1,d6 and drops the $FAFE word
 	movea.l	#linelist,a1
@@ -1583,7 +1583,7 @@ puckfaceoff2
 	move.w	d1,d0
 	movea.l	#linelist,a1
 	bsr.w	PrintStringFromList
-.setdroptime	;IDA: loc_FC08
+.setdroptime
 	move.w	#$78,d0
 	bsr.w	randomd0
 	addi.w	#$B4,d0
@@ -1623,11 +1623,11 @@ puckfaceoff2
 	bne.w	.playqueuedsong
 	bclr	#4,(sflags8).w
 	beq.w	.restorestate
-.playqueuedsong	;IDA: loc_FCC0
+.playqueuedsong
 	bclr	#4,(sflags8).w
 	move.w	(SongNum).w,-(sp)
 	bsr.w	song
-.restorestate	;IDA: loc_FCCE
+.restorestate
 	move.w	#$18,(palcount).w
 	move	(sp)+,sr
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -1662,12 +1662,12 @@ ResetAndSelectPlayers	;IDA name (93 ResetAndSelectPlayers). c1playernum / c2play
 	beq.w	.checkcont2
 	clr.w	d4
 	bsr.w	changeplayer
-.checkcont2	;IDA: loc_FD3C
+.checkcont2
 	tst.w	(cont2team).w
 	beq.w	.checkcont3
 	moveq	#2,d4
 	bsr.w	changeplayer
-.checkcont3	;IDA: loc_FD4A
+.checkcont3
 	tst.w	(cont3team).w
 	beq.w	.checkcont4
 	move.w	(cont1team).w,-(sp)
@@ -1680,7 +1680,7 @@ ResetAndSelectPlayers	;IDA name (93 ResetAndSelectPlayers). c1playernum / c2play
 	move.w	(cont1team).w,(cont3team).w
 	move.w	(sp)+,(c1playernum).w
 	move.w	(sp)+,(cont1team).w
-.checkcont4	;IDA: loc_FD82
+.checkcont4
 	tst.w	(cont4team).w
 	beq.w	.exit
 	move.w	(cont2team).w,-(sp)
@@ -1693,7 +1693,7 @@ ResetAndSelectPlayers	;IDA name (93 ResetAndSelectPlayers). c1playernum / c2play
 	move.w	(cont2team).w,(cont4team).w
 	move.w	(sp)+,(c2playernum).w
 	move.w	(sp)+,(cont2team).w
-.exit	;IDA: loc_FDBC
+.exit
 	rts
 updatefaceoff
 	move.w	temp1(a3),d0
@@ -1706,7 +1706,7 @@ updatefaceoff
 	addi.w	#$A,d0
 	move.w	d0,(fofdata).w
 	rts
-.erase	;IDA: loc_FDDE
+.erase
 	bclr	#4,(disflags).w
 	bsr.w	printz
 	String	$BF,0,0,0		;$FDE6. IDA hid this and the next five instructions in ori.b / cmp.b
@@ -1780,7 +1780,7 @@ Endfaceoff
 	move.w	2(a0,d0.w),d1
 	asl.w	#5,d1
 	add.w	d4,d1
-.setpuckvy	;IDA: loc_FEE2
+.setpuckvy
 	move.w	d1,Yvel(a3)
 	move.w	#$800,d0
 	bsr.w	randomd0
@@ -1798,7 +1798,7 @@ pucknorm
 	btst	#2,(BA_PS_flags).w	;check if flag is clear (normal play)
 	beq.w	.normalplay
 	bsr.w	UpdatePenaltyShotEnd
-.normalplay	;IDA: loc_FF1A
+.normalplay
 	bclr	#pfna,pflags(a3)	;#pfna clear
 	beq.w	.nna
 	clr.w	temp1(a3)	;temp1
@@ -1811,7 +1811,7 @@ pucknorm
 	bpl.w	.0
 	addq.w	#5,temp1(a3)
 	bsr.w	findpc
-.0	;IDA: loc_E65A
+.0
 	move.w	(puckc).w,d0
 	bmi.w	.nothandled
 	asl.w	#7,d0	;#scsize
@@ -1845,12 +1845,12 @@ pucknorm
 	bne.w	.resetstilltimer
 	move.l	#6,d0
 	subq.w	#1,temp2(a3)	;temp3
-.maybepenalty	;IDA: loc_FFC0
+.maybepenalty
 	bpl.w	.stillpuckdone
 	bsr.w	AddPenalty2
-.stillpuckdone	;IDA: loc_FFC8
+.stillpuckdone
 	bra.w	.end
-.resetstilltimer	;IDA: loc_FFCC
+.resetstilltimer
 	move.w	#$78,temp2(a3)	;'x' ; move 78 hex into temp2
 .end
 	tst.b	Zvel(a3)	;Zvel

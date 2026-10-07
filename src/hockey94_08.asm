@@ -9,11 +9,12 @@
 ;	FigureJoy are hockey94_09. This range is in the 94 code at the end of the ROM, after the hot / cold player code (GetHotColdTotal) and
 ;	before wallcollduringcheck ($F8B5A).
 ;	Transcribed from lst/nhl94.bin.lst lines 960187-963038. Global names are the IDA names (GameSetUp ... GameSetUp_4 are IDA names);
-;	locals are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment. IDA labels
+;	locals are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label,
+;	unless generic, in an ;IDA: comment. IDA labels
 ;	reached across a global label stay
 ;	global (PrintOptTeamName, SetupDemo, SetupStart, DrawTeamLogo, DrawLogoBox, rtsSetup).
 ;	IDA gaps written from the retail bytes: unreferenced code IDA left as dc.b ($F7666-$F76BD and the rts at $F76C6 in GameSetUp,
-;	SetFrameRectUnused) or unlabeled (CheckNOPUnused); LoadSetupTiles (IDA unk_F84D0, dc.b and code); the five DecompressGraphicsWithCallback remap
+;	SetFrameRectUnused) or unlabeled (CheckNOPUnused); LoadSetupTiles (IDA dc.b and code); the five DecompressGraphicsWithCallback remap
 ;	tables; the printz Strings (IDA ori.b, some with a word dropped) and the instructions IDA hid in them; the menu text as String
 ;	tables; TeamLogoBitmaps as dc.l. PlayerCardScreen continues past IDA's end of function.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
@@ -73,18 +74,18 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	bsr.w	DrawVisBlock	;visitors team block
 	move.w	#$18,(palcount).w	;24
 	bclr	#2,(disflags).w	;dfng: fade in graphics now
-.loop	;IDA: loc_F7464
+.loop
 	cmpi.w	#4,(OptPlayMode).w	;Shootout: line changes Off, penalties Off, user records Off
 	bne.w	.0
 	move.w	#1,(OptLine).w
 	move.w	#0,(OptPen).w
 	move.w	#1,(OptUserRec).w
-.0	;IDA: loc_F7480
+.0
 	bsr.w	GameSetUp_2	;d1 = new presses, 0 after $5460 frames
 	tst.w	d1
 	bne.w	.1
 	bra.w	SetupDemo	;none: demo
-.1	;IDA: loc_F748E
+.1
 	btst	#7,d1	;sbut
 	bne.w	SetupStart	;start the game
 	btst	#1,d1	;dbut: next line, past the lines that do not apply (Demo: Goalies, User Records; Shootout: Per. Length, nothing after Goalies; no SRAM: User Records)
@@ -95,9 +96,9 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	bne.w	.2
 	move.w	#4,d0
 	bra.w	.3
-.2	;IDA: loc_F74B6
+.2
 	move.w	#2,d0
-.3	;IDA: loc_F74BA
+.3
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.4
 	tst.w	(OptNOP).w
@@ -106,7 +107,7 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	bne.w	.4
 	move.w	#6,d0
 	bra.w	.8
-.4	;IDA: loc_F74DC
+.4
 	cmp.w	#6,d7
 	bne.w	.5
 	cmpi.w	#4,(OptPlayMode).w
@@ -115,23 +116,23 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	bne.w	.7
 	clr.w	d0
 	bra.w	.8
-.5	;IDA: loc_F74FC
+.5
 	cmp.w	#$A,d7
 	bne.w	.8
 	cmpi.w	#4,(OptPlayMode).w
 	bne.w	.6
 	clr.w	d0
 	bra.w	.8
-.6	;IDA: loc_F7514
+.6
 	tst.w	(ValidSRAM).w
 	bpl.w	.8
-.7	;IDA: loc_F751C
+.7
 	move.w	#4,d0
-.8	;IDA: loc_F7520
+.8
 	bsr.w	MoveMenuFrame
 	bsr.w	FixModeOptions
 	bra.w	.loop
-.9	;IDA: loc_F752C
+.9
 	btst	#0,d1	;ubut: previous line, the same skips
 	beq.w	.15
 	tst.w	(OptNOP).w
@@ -140,7 +141,7 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	bne.w	.10
 	move.w	#$FFFC,d0
 	bra.w	.11
-.10	;IDA: loc_F754C
+.10
 	move.w	#$FFFE,d0
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.11
@@ -150,36 +151,36 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	bne.w	.11
 	move.w	#$FFFA,d0
 	bra.w	.14
-.11	;IDA: loc_F7572
+.11
 	cmp.w	#$A,d7
 	bne.w	.12
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.13
-.12	;IDA: loc_F7584
+.12
 	cmp.w	#$E,d7
 	bne.w	.14
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.13
 	tst.w	(ValidSRAM).w
 	bpl.w	.14
-.13	;IDA: loc_F759E
+.13
 	move.w	#$FFFC,d0
-.14	;IDA: loc_F75A2
+.14
 	bsr.w	MoveMenuFrame
 	bsr.w	FixModeOptions
 	bra.w	.loop
-.15	;IDA: loc_F75AE
+.15
 	moveq	#1,d2
 	btst	#3,d1	;rbut
 	bne.w	.16
 	btst	#2,d1	;lbut
 	beq.w	.loop
 	moveq	#-1,d2
-.16	;IDA: loc_F75C2
+.16
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.17
 	jsr	(FigureJoy).l
-.17	;IDA: loc_F75D2
+.17
 	move.w	(Opt2Team).w,-(sp)
 	move.w	(Opt1Team).w,-(sp)
 	bsr.w	GameSetUp_3	;change the option by d2
@@ -188,10 +189,10 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	beq.w	.18
 	tst.w	(OptPlayMode).w
 	bne.w	.19
-.18	;IDA: loc_F75F2
+.18
 	move.w	(Opt1Team).w,(HomeTeam).w	;Regular Season and Shootout: the menu teams
 	move.w	(Opt2Team).w,(VisTeam).w
-.19	;IDA: loc_F75FE
+.19
 	move.w	(HomeTeam).w,(logoteam).w
 	btst	#6,(setupcardflags).w	;home logo shown?
 	beq.w	.20
@@ -200,10 +201,10 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	cmp.w	(HomeTeam).w,d0
 	movem.w	(sp)+,d0
 	beq.w	.21
-.20	;IDA: loc_F7622
+.20
 	move.w	(HomeTeam).w,(setuphome).w
 	bsr.w	DrawHomeBlock
-.21	;IDA: loc_F762C
+.21
 	btst	#7,(setupcardflags).w	;visitors logo shown?
 	beq.w	.22
 	movem.w	d0,-(sp)
@@ -211,12 +212,12 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	cmp.w	(VisTeam).w,d0
 	movem.w	(sp)+,d0
 	beq.w	.23
-.22	;IDA: loc_F764A
+.22
 	move.w	(VisTeam).w,(setupvis).w
 	move.w	(VisTeam).w,(logoteam).w
 	bsr.w	DrawVisBlock
 	move.w	(HomeTeam).w,(logoteam).w
-.23	;IDA: loc_F7660
+.23
 	tst.w	(sp)+
 	bra.w	.25	;redraw
 	move.w	(sp)+,d0	;IDA dc.b, no xref: an older copy of the team block update above
@@ -240,15 +241,15 @@ GameSetUp	;IDA name. 94 game setup screen, called from PeriodOver (93 PeriodOver
 	move.w	(HomeTeam).w,(logoteam).w
 	bsr.w	DrawHomeBlock
 	move.w	(VisTeam).w,(logoteam).w
-.25	;IDA: loc_F76BE
+.25
 	bsr.w	FixModeOptions
 	bra.w	.loop
 	rts	;IDA dc.b, no xref
 j_NewPO	;IDA name. New playoffs: jmp NewPO (hockey94_09; 93 SelectRandomPlayoffTree). Called from GameSetUp and GameSetUp_3
 	jmp	NewPO
-GoContinuePlayoffs	;IDA: sub_F76CE. 94 only. Continue playoffs: jmp ContinuePlayoffs (hockey94_09; 93 NewPO). Called from GameSetUp
+GoContinuePlayoffs	;94 only. Continue playoffs: jmp ContinuePlayoffs (hockey94_09; 93 NewPO). Called from GameSetUp
 	jmp	ContinuePlayoffs
-MoveMenuFrame	;IDA: sub_F76D4. 93 setoptions .nms: move the menu frame by d0 (+2 / -2 lines). 94 shows 6 of the 9 lines and scrolls: setupfirstline = first line shown
+MoveMenuFrame	;93 setoptions .nms: move the menu frame by d0 (+2 / -2 lines). 94 shows 6 of the 9 lines and scrolls: setupfirstline = first line shown
 	;(0-3), setupprevline = the one before (sflags5 bit 2 set on a scroll; FixModeOptions reprints the names when they differ). Continue playoffs
 	;skips lines 1-3, new playoffs line 3 (Team 2). The old frame is erased by redrawing the SetupMenuMap background under it. Called from GameSetUp
 	move.w	d7,d3
@@ -273,7 +274,7 @@ MoveMenuFrame	;IDA: sub_F76D4. 93 setoptions .nms: move the menu frame by d0 (+2
 	add.w	d0,d7
 	bpl.w	.0
 	clr.w	d7
-.0	;IDA: loc_F7716
+.0
 	tst.w	d0
 	bmi.w	.3
 	move.w	d0,-(sp)
@@ -293,17 +294,17 @@ MoveMenuFrame	;IDA: sub_F76D4. 93 setoptions .nms: move the menu frame by d0 (+2
 	cmp.w	#5,d0
 	ble.w	.1
 	addq.w	#1,(setupfirstline).w
-.1	;IDA: loc_F7756
+.1
 	cmpi.w	#3,(setupfirstline).w
 	ble.w	.2
 	move.w	#3,(setupfirstline).w
-.2	;IDA: loc_F7766
+.2
 	move.w	(sp)+,d0
-.3	;IDA: loc_F7768
+.3
 	btst	#2,(sflags5).w
 	bne.w	.4
 	move.w	(setupfirstline).w,(setupprevline).w
-.4	;IDA: loc_F7778
+.4
 	cmp.w	#$12,d7	;past the last line (Line Changes)
 	blt.w	.contplayoffs
 	sub.w	d0,d7
@@ -321,7 +322,7 @@ MoveMenuFrame	;IDA: sub_F76D4. 93 setoptions .nms: move the menu frame by d0 (+2
 	beq.w	.5
 	cmp.w	#6,d7
 	beq.w	.optionup
-.5	;IDA: loc_F77B6
+.5
 	bsr.w	SetMenuArea	;printx $10, printy $E, 23 x 13
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(setupmenuchars).w,d4
@@ -345,13 +346,13 @@ MoveMenuFrame	;IDA: sub_F76D4. 93 setoptions .nms: move the menu frame by d0 (+2
 	bsr.w	SetFrameRect	;the new frame
 	move.w	#$6000,(printa).w
 	jmp	Framer
-SetMenuArea	;IDA: sub_F780C. 94 only. Set the menu area for MoveMenuFrame: printx $10, printy $E, d0 = 23 x d1 = 13
+SetMenuArea	;94 only. Set the menu area for MoveMenuFrame: printx $10, printy $E, d0 = 23 x d1 = 13
 	jsr	(printz).l
 	String	$FF,$10,$E	;IDA: ori.b (and dropped a word)
 	move.w	#$17,d0
 	move.w	#$D,d1
 	rts
-SetFrameRectUnused	;no IDA label (was sub_F7822) (IDA dc.b, no xref). An unused copy of SetFrameRect without its printz that uses setupprevline and stops at row $18
+SetFrameRectUnused	;IDA dc.b, no xref. An unused copy of SetFrameRect without its printz that uses setupprevline and stops at row $18
 	add.w	d3,(printy).w
 	move.w	(setupprevline).w,d0
 	add.w	d0,d0
@@ -370,7 +371,7 @@ SetFrameRectUnused	;no IDA label (was sub_F7822) (IDA dc.b, no xref). An unused 
 	bne.w	rtsSetup
 	moveq	#5,d1
 	rts
-SetFrameRect	;IDA: sub_F7864. 93 setoptions .setrect: frame position for line d3 (row $E + d3 - setupfirstline * 2), 23 x 3, or 23 x 5 for Team 1 in new playoffs (93 22 x 3 / 5). Called from
+SetFrameRect	;93 setoptions .setrect: frame position for line d3 (row $E + d3 - setupfirstline * 2), 23 x 3, or 23 x 5 for Team 1 in new playoffs (93 22 x 3 / 5). Called from
 	;MoveMenuFrame
 	jsr	(printz).l
 	String	$FF,$10,$E	;IDA: ori.b (and dropped a word)
@@ -387,20 +388,20 @@ SetFrameRect	;IDA: sub_F7864. 93 setoptions .setrect: frame position for line d3
 	cmp.w	#4,d3
 	bne.w	rtsSetup
 	moveq	#5,d1
-rtsSetup	;IDA: locret_F78A0. IDA label. The shared rts; GameSetUp_3, GameSetUp_4, SetFrameRectUnused and WrapOption branch to it
+rtsSetup	;The shared rts; GameSetUp_3, GameSetUp_4, SetFrameRectUnused and WrapOption branch to it
 	rts
-FixModeOptions	;IDA: sub_F78A2. 94 only. Fix the options a mode does not allow, then print them: Shootout and Demo set User Records Off, Demo sets both goalies to
+FixModeOptions	;94 only. Fix the options a mode does not allow, then print them: Shootout and Demo set User Records Off, Demo sets both goalies to
 	;Auto Control. Reprint the option names (PrintOptionNames) after a scroll, then the values (PrintOptions) in the setup font (sflags6 bit 3: print2
 	;uses setupfontchars). Called from GameSetUp
 	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.w	#4,(OptPlayMode).w
 	bne.w	.0
 	move.w	#1,(OptUserRec).w	;Off
-.0	;IDA: loc_F78B6
+.0
 	tst.w	(OptNOP).w
 	bne.w	.1
 	move.w	#1,(OptUserRec).w	;Off
-.1	;IDA: loc_F78C4
+.1
 	tst.w	(OptNOP).w
 	bne.w	.2
 	move.w	#0,(OptGoalie).w
@@ -411,20 +412,20 @@ FixModeOptions	;IDA: sub_F78A2. 94 only. Fix the options a mode does not allow, 
 	move.w	#1,(OptGoalie).w	;Auto Control
 	move.w	#1,(goaliemode1).w	;both teams
 	move.w	#1,(goaliemode2).w
-.2	;IDA: loc_F78F8
+.2
 	move.w	(setupfirstline).w,d0
 	cmp.w	(setupprevline).w,d0
 	beq.w	.3
 	bsr.w	PrintOptionNames
-.3	;IDA: loc_F7908
+.3
 	bset	#3,(sflags6).w
 	bsr.w	PrintOptions
 	bclr	#3,(sflags6).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OptionLimits	;IDA: unk_F791E. Number of values of each option (93 setoptions .pslim)
+OptionLimits	;Number of values of each option (93 setoptions .pslim)
 	dc.w	5,8,$1C,$1C,3,2,2,3,3
-OptionLimits4Way	;IDA: unk_F7930. The same with FourWayPlay (12 player choices)
+OptionLimits4Way	;The same with FourWayPlay (12 player choices)
 	dc.w	5,$C,$1C,$1C,3,2,2,3,3
 GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only limit it) and wrap it in its range (WrapOption). 94: entering
 	;Shootout saves User Records, Penalties and Line Changes (TmpOptUserRec ...), leaving restores them; Team 1 in new playoffs has $1A teams; the
@@ -439,13 +440,13 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	add.w	d2,d0
 	bpl.w	.0
 	move.w	#4,d0
-.0	;IDA: loc_F7960
+.0
 	cmp.w	#4,d0
 	bne.w	.1
 	move.w	(OptUserRec).w,(TmpOptUserRec).w
 	move.w	(OptPen).w,(TmpOptPen).w
 	move.w	(OptLine).w,(TmpOptLine).w
-.1	;IDA: loc_F797A
+.1
 	movem.w	(sp)+,d0/d2
 	tst.w	d7
 	bne.w	.2
@@ -456,13 +457,13 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	move.w	(TmpOptUserRec).w,(OptUserRec).w
 	move.w	(TmpOptPen).w,(OptPen).w
 	move.w	(TmpOptLine).w,(OptLine).w
-.2	;IDA: loc_F79A6
+.2
 	movea.w	#(OptPlayMode-M68K_RAM),a2
 	movea.l	#OptionLimits,a3
 	tst.w	(FourWayPlay).w
 	beq.w	.3
 	movea.l	#OptionLimits4Way,a3
-.3	;IDA: loc_F79BE
+.3
 	clr.w	d5
 	move.w	0(a3,d7.w),d4
 	move.w	0(a2,d7.w),d3
@@ -473,7 +474,7 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	cmp.w	#4,d7
 	bne.w	.4
 	moveq	#$1A,d4	;26 teams in new playoffs
-.4	;IDA: loc_F79E6
+.4
 	cmp.w	#2,d7
 	bne.w	.12
 	cmpi.w	#4,(OptPlayMode).w
@@ -482,7 +483,7 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	add.w	(OptNOP).w,d2
 	bpl.w	.5
 	addq.w	#7,d2
-.5	;IDA: loc_F7A06
+.5
 	cmp.w	#4,d2
 	movem.w	(sp)+,d2
 	ble.w	.7
@@ -490,10 +491,10 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	bpl.w	.6
 	move.w	#4,d2
 	bra.w	.9
-.6	;IDA: loc_F7A20
+.6
 	addq.w	#2,d2
 	bra.w	.9
-.7	;IDA: loc_F7A26
+.7
 	movem.w	d2,-(sp)
 	add.w	(OptNOP).w,d2
 	cmp.w	#3,d2
@@ -503,27 +504,27 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	bpl.w	.8
 	subq.w	#1,d2
 	bra.w	.9
-.8	;IDA: loc_F7A46
+.8
 	addq.w	#1,d2
-.9	;IDA: loc_F7A48
+.9
 	moveq	#5,d5
 	tst.w	(FourWayPlay).w
 	beq.w	.10
 	move.w	#$A,d4
 	addq.w	#2,d5
-.10	;IDA: loc_F7A58
+.10
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.11
 	tst.w	(OptPlayMode).w
 	bne.w	.loop
-.11	;IDA: loc_F7A6A
+.11
 	clr.w	d5
 	moveq	#5,d4
-.loop	;IDA: loc_F7A6E
+.loop
 	tst.w	(FourWayPlay).w
 	beq.w	.12
 	addq.w	#2,d4
-.12	;IDA: loc_F7A78
+.12
 	bsr.w	WrapOption	;wrap d3
 	tst.w	(FourWayPlay).w
 	beq.w	.15
@@ -536,14 +537,14 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	cmp.w	#$A,d3
 	beq.w	.14
 	bra.w	.15
-.13	;IDA: loc_F7AA6
+.13
 	cmp.w	#$A,d3
 	bne.w	.15
 	move.w	#8,d3
 	bra.w	.15
-.14	;IDA: loc_F7AB6
+.14
 	move.w	#$B,d3
-.15	;IDA: loc_F7ABA
+.15
 	move.w	d3,0(a2,d7.w)
 	tst.w	d2
 	beq.w	rtsSetup
@@ -556,7 +557,7 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	or.w	(bosgames).w,d0
 	beq.s	.loop
 	rts
-.16	;IDA: loc_F7AE6
+.16
 	cmpi.w	#2,(OptPlayMode).w
 	blt.w	rtsSetup
 	cmpi.w	#4,(OptPlayMode).w
@@ -566,22 +567,22 @@ GameSetUp_3	;IDA name. 93 setoptions .IncItem: add d2 to option d7 (d2 = 0: only
 	cmp.w	#4,d7
 	beq.w	j_NewPO
 	rts
-WrapOption	;IDA: sub_F7B0A. 93 setoptions .iilimit: d3 + d2, wrapped into d5 ... d4-1. Called from GameSetUp_3
+WrapOption	;93 setoptions .iilimit: d3 + d2, wrapped into d5 ... d4-1. Called from GameSetUp_3
 	add.w	d2,d3
 	cmp.w	d5,d3
 	bge.w	.0
 	move.w	d4,d3
 	subq.w	#1,d3
-.0	;IDA: loc_F7B16
+.0
 	cmp.w	d4,d3
 	blt.w	rtsSetup
 	move.w	d5,d3
 	rts
-PrintOptions	;IDA: sub_F7B20. 93 setoptions .ps: limit each option (GameSetUp_3 with d2 = 0) and print the lines shown (GameSetUp_4), the scroll marks (PrintScrollMarks),
+PrintOptions	;93 setoptions .ps: limit each option (GameSetUp_3 with d2 = 0) and print the lines shown (GameSetUp_4), the scroll marks (PrintScrollMarks),
 	;the team bitmaps (attract94 DrawMatchupBitmaps) and, unless a player card is up, reset the card timer (ResetCardTimer). Called from FixModeOptions
 	move.w	d7,d6
 	moveq	#-2,d7
-.loop	;IDA: loc_F7B24
+.loop
 	addq.w	#2,d7
 	clr.w	d2
 	bsr.w	GameSetUp_3
@@ -591,7 +592,7 @@ PrintOptions	;IDA: sub_F7B20. 93 setoptions .ps: limit each option (GameSetUp_3 
 	movem.l	(sp)+,d7
 	blt.w	.0
 	bsr.w	GameSetUp_4
-.0	;IDA: loc_F7B42
+.0
 	cmp.w	#$10,d7
 	bne.s	.loop
 	bsr.w	PrintScrollMarks
@@ -600,7 +601,7 @@ PrintOptions	;IDA: sub_F7B20. 93 setoptions .ps: limit each option (GameSetUp_3 
 	btst	#0,(setupcardflags).w
 	bne.w	.x
 	jsr	(ResetCardTimer).l
-.x	;IDA: locret_F7B64
+.x
 	rts
 GameSetUp_4	;IDA name. 93 setoptions .psd: print the value of option d7 at x $11 on its line (past row $1B: nothing). Team 1 / 2 go to PrintOptTeamName;
 	;Per. Length in Shootout prints 'N/A'; Players with FourWayPlay uses the second list (+$B0). Called from PrintOptions
@@ -628,18 +629,18 @@ GameSetUp_4	;IDA name. 93 setoptions .psd: print the value of option d7 at x $11
 	bne.w	.0
 	movea.l	#NATxt,a1
 	jmp	print
-.0	;IDA: loc_F7BD8
+.0
 	tst.w	(FourWayPlay).w
 	beq.w	.loop
 	cmp.w	#2,d7
 	bne.w	.loop
 	adda.w	#$B0,a0	;4 way Players list
-.loop	;IDA: loc_F7BEC
+.loop
 	movea.l	a0,a1
 	adda.w	(a0),a0
 	dbf	d3,.loop
 	jmp	print
-PrintScrollMarks	;IDA: sub_F7BFA. 94 only. Print the scroll marks at x 2: '}' at row $19 when more lines follow (first line < 3), '{' at row $F when lines are above (first line > 0), else a space
+PrintScrollMarks	;94 only. Print the scroll marks at x 2: '}' at row $19 when more lines follow (first line < 3), '{' at row $F when lines are above (first line > 0), else a space
 	move.w	#$19,(printy).w
 	movea.l	#ScrollClearTxt,a1
 	cmpi.w	#3,(setupfirstline).w
@@ -647,7 +648,7 @@ PrintScrollMarks	;IDA: sub_F7BFA. 94 only. Print the scroll marks at x 2: '}' at
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.0
 	movea.l	#ScrollDownTxt,a1
-.0	;IDA: loc_F7C20
+.0
 	move.w	#2,(printx).w
 	jsr	(print).l
 	movea.l	#ScrollClearTxt,a1
@@ -655,13 +656,13 @@ PrintScrollMarks	;IDA: sub_F7BFA. 94 only. Print the scroll marks at x 2: '}' at
 	tst.w	(setupfirstline).w
 	beq.w	.1
 	movea.l	#ScrollUpTxt,a1
-.1	;IDA: loc_F7C46
+.1
 	move.w	#2,(printx).w
 	jmp	print
-ScrollUpTxt	String	'{'	;IDA: unk_F7C52. Scroll marks for PrintScrollMarks
-ScrollDownTxt	String	'}'	;IDA: unk_F7C56
-ScrollClearTxt	String	' '	;IDA: unk_F7C5A
-PrintOptTeamName	;IDA: loc_F7C5E. IDA label. 93 setoptions .psdtp: print team name d3 of option d7 (TeamList city; 'New York Islanders' / 'New York Rangers' for teams $D / $E). Branched to from
+ScrollUpTxt	String	'{'	;Scroll marks for PrintScrollMarks
+ScrollDownTxt	String	'}'
+ScrollClearTxt	String	' '
+PrintOptTeamName	;93 setoptions .psdtp: print team name d3 of option d7 (TeamList city; 'New York Islanders' / 'New York Rangers' for teams $D / $E). Branched to from
 	;GameSetUp_4
 	move.w	(printx).w,-(sp)
 	movea.l	#BlankValueTxt,a1
@@ -678,26 +679,26 @@ PrintOptTeamName	;IDA: loc_F7C5E. IDA label. 93 setoptions .psdtp: print team na
 	bne.w	.0
 	movea.l	#RangersTxt,a1
 	bra.w	.1
-.0	;IDA: loc_F7C9E
+.0
 	cmp.w	#$D,d3
 	bne.w	.1
 	movea.l	#IslandersTxt,a1
-.1	;IDA: loc_F7CAC
+.1
 	jmp	print
-IslandersTxt	String	'New York Islanders'	;IDA: unk_F7CB2. Full names for the two New York teams (TeamList has only the city)
-RangersTxt	String	'New York Rangers'	;IDA: unk_F7CC6
-BlankValueTxt	String	'                    '	;IDA: unk_F7CD8. A blank value
-NATxt	String	'N/A                 '	;IDA: unk_F7CEE. Per. Length in Shootout
-OptionValueOffsets	;IDA: unk_F7D04. Offsets of each option's value Strings (93 setoptions .pl). Team 1 / 2 are not read (PrintOptTeamName); User Records uses the On / Off list
+IslandersTxt	String	'New York Islanders'	;Full names for the two New York teams (TeamList has only the city)
+RangersTxt	String	'New York Rangers'
+BlankValueTxt	String	'                    '	;A blank value
+NATxt	String	'N/A                 '	;Per. Length in Shootout
+OptionValueOffsets	;Offsets of each option's value Strings (93 setoptions .pl). Team 1 / 2 are not read (PrintOptTeamName); User Records uses the On / Off list
 	dc.w	PlayModeValues-OptionValueOffsets,PlayersValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,PerLengthValues-OptionValueOffsets
 	dc.w	GoaliesValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,PenaltiesValues-OptionValueOffsets,LineChangeValues-OptionValueOffsets
-PlayModeValues	;no IDA label (was unk_F7D16). Play Mode: OptPlayMode 0-4
+PlayModeValues	;Play Mode: OptPlayMode 0-4
 	String	'Regular Season      '
 	String	'Continue Playoffs   '
 	String	'New Playoffs        '
 	String	'New Playoffs/7 game '
 	String	'Shootout            '
-PlayersValues	;no IDA label (was unk_F7D84). Players: OptNOP 0-7, then the FourWayPlay list (+$B0)
+PlayersValues	;Players: OptNOP 0-7, then the FourWayPlay list (+$B0)
 	String	'Demo                '
 	String	'One - Home          '
 	String	'One - Visitor       '
@@ -718,26 +719,26 @@ PlayersValues	;no IDA label (was unk_F7D84). Players: OptNOP 0-7, then the FourW
 	String	'Three               '
 	String	'Four                '
 	String	'One                 '
-PerLengthValues	;IDA: unk_F7F3C. Per. Length
+PerLengthValues	;Per. Length
 	String	'5 Minutes           '
 	String	'10 Minutes          '
 	String	'20 Minutes          '
 	String	'30 Seconds          '
-GoaliesValues	;no IDA label (was unk_F7F94). Goalies (94 only)
+GoaliesValues	;Goalies (94 only)
 	String	'Manual Control      '
 	String	'Auto Control        '
-PenaltiesValues	;no IDA label (was unk_F7FC0). Penalties (93 'Off, Except fighting', 'On', 'On, Except Off-sides')
+PenaltiesValues	;Penalties (93 'Off, Except fighting', 'On', 'On, Except Off-sides')
 	String	'Off                 '
 	String	'On                  '
 	String	'On, Except Off-sides'
-UserRecValues	;no IDA label (was unk_F8002). User Records (94 only), and the unread Team 1 / 2 entries
+UserRecValues	;User Records (94 only), and the unread Team 1 / 2 entries
 	String	'On                  '
 	String	'Off                 '
-LineChangeValues	;no IDA label (was unk_F802E). Line Changes (94 adds Auto)
+LineChangeValues	;Line Changes (94 adds Auto)
 	String	'On                  '
 	String	'Off                 '
 	String	'Auto                '
-PrintOptionNames	;IDA: sub_F8070. 94 only. Print the option names from OptionNames at x 3, 2 rows apart from row $F - setupfirstline * 2, rows $F-$19 only (93 printed setoptions .text once). Called
+PrintOptionNames	;94 only. Print the option names from OptionNames at x 3, 2 rows apart from row $F - setupfirstline * 2, rows $F-$19 only (93 printed setoptions .text once). Called
 	;from
 	;GameSetUp and FixModeOptions
 	movem.l	d0-d1,-(sp)
@@ -748,26 +749,26 @@ PrintOptionNames	;IDA: sub_F8070. 94 only. Print the option names from OptionNam
 	add.w	d1,d1
 	sub.w	d1,d0
 	move.w	d0,(printy).w
-.loop	;IDA: loc_F8090
+.loop
 	cmpi.w	#$F,(printy).w
 	bge.w	.0
 	adda.w	(a1),a1
 	bra.w	.1
-.0	;IDA: loc_F80A0
+.0
 	cmpi.w	#$19,(printy).w
 	bgt.w	.2
 	move.w	#3,(printx).w
 	move.w	#0,(printa).w
 	move.w	#0,(printm).w
 	jsr	(print2).l
-.1	;IDA: loc_F80C2
+.1
 	addq.w	#2,(printy).w
 	bra.s	.loop
-.2	;IDA: loc_F80C8
+.2
 	bclr	#3,(sflags6).w
 	movem.l	(sp)+,d0-d1
 	rts
-OptionNames	;IDA: unk_F80D4. Option names (93 setoptions .text, which had positions); the last entry is 93 dc.w 4,0 (92 String 0)
+OptionNames	;Option names (93 setoptions .text, which had positions); the last entry is 93 dc.w 4,0 (92 String 0)
 	String	'Play Mode    '
 	String	'Players      '
 	String	'Team 1       '
@@ -878,7 +879,7 @@ GameSetUp_2	;IDA name. 93 setoptions .top / .wait: wait up to $5460 frames (6 mi
 	;player card) redraws the team blocks. For the first $E10 frames of the wait, and while a card is up, runs the player cards (PlayerCardTimer), else
 	;resets their timer (ResetCardTimer). Called from GameSetUp
 	move.l	#$5460,d6	;21600 frames
-.loop	;IDA: loc_F830A
+.loop
 	move.w	(vcount).w,d1
 	sub.w	(oldvcount).w,d1
 	beq.s	.loop
@@ -894,9 +895,9 @@ GameSetUp_2	;IDA name. 93 setoptions .top / .wait: wait up to $5460 frames (6 mi
 	btst	#5,d2
 	beq.w	.0
 	move.w	#$53,(cardtimer).l
-.0	;IDA: loc_F8350
+.0
 	bset	#5,(setupcardflags).w
-.1	;IDA: loc_F8356
+.1
 	jsr	(ReadJoy2).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
@@ -904,7 +905,7 @@ GameSetUp_2	;IDA name. 93 setoptions .top / .wait: wait up to $5460 frames (6 mi
 	btst	#5,d1
 	beq.w	.x
 	bset	#5,(setupcardflags).w
-.2	;IDA: loc_F8376
+.2
 	tst.w	(FourWayPlay).w
 	beq.w	.4
 	jsr	(ReadJoy3).l
@@ -914,7 +915,7 @@ GameSetUp_2	;IDA name. 93 setoptions .top / .wait: wait up to $5460 frames (6 mi
 	btst	#5,d1
 	beq.w	.x
 	bset	#5,(setupcardflags).w
-.3	;IDA: loc_F839E
+.3
 	jsr	(ReadJoy4).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
@@ -922,32 +923,32 @@ GameSetUp_2	;IDA name. 93 setoptions .top / .wait: wait up to $5460 frames (6 mi
 	btst	#5,d1
 	beq.w	.x
 	bset	#5,(setupcardflags).w
-.4	;IDA: loc_F83BE
+.4
 	btst	#6,(setupcardflags).w
 	beq.w	.5
 	btst	#7,(setupcardflags).w
 	bne.w	.6
 	move.w	(setupvis).w,(logoteam).w
 	bsr.w	DrawVisBlock
-.5	;IDA: loc_F83DC
+.5
 	btst	#7,(setupcardflags).w
 	beq.w	.6
 	move.w	(setuphome).w,(logoteam).w
 	bsr.w	DrawHomeBlock
-.6	;IDA: loc_F83F0
+.6
 	cmp.w	#$4650,d6	;the first $E10 frames (a minute)?
 	bgt.w	.7
 	btst	#0,(setupcardflags).w
 	bne.w	.7
 	jsr	(ResetCardTimer).l
 	bra.w	.8
-.7	;IDA: loc_F840C
+.7
 	jsr	(PlayerCardTimer).l	;player cards
-.8	;IDA: loc_F8412
+.8
 	dbf	d6,.loop
-.x	;IDA: locret_F8416
+.x
 	rts
-SetupDemo	;IDA: loc_F8418. IDA label. 93 setoptions .demo: no press for $5460 frames. Clear demoflag, seed RNGseed, Regular Season, Demo, line changes On,
+SetupDemo	;93 setoptions .demo: no press for $5460 frames. Clear demoflag, seed RNGseed, Regular Season, Demo, line changes On,
 	;penalties On. Falls into SetupStart. Branched to from GameSetUp
 	clr.w	(demoflag).w
 	move.w	(VDP_CNTR).l,(RNGseed).w
@@ -956,7 +957,7 @@ SetupDemo	;IDA: loc_F8418. IDA label. 93 setoptions .demo: no press for $5460 fr
 	clr.w	(OptNOP).w	;Demo
 	clr.w	(OptLine).w
 	move.w	#1,(OptPen).w	;On
-SetupStart	;IDA: loc_F843E. IDA label. 93 setoptions .ex: start. Copy Goalies to both teams, set pojoy (SetPojoyMode), seed RNGseed, and keep OptLine / OptPlayMode
+SetupStart	;93 setoptions .ex: start. Copy Goalies to both teams, set pojoy (SetPojoyMode), seed RNGseed, and keep OptLine / OptPlayMode
 	;in TmpOptLine2 / TempOptPlayMode: Auto line changes play as On with sflags7 bit 4, Shootout as Regular Season with gmode2 bit 0
 	;(ClearShootout). Then jmp MakeTree. Branched to from GameSetUp
 	move.w	(OptGoalie).w,-(sp)
@@ -970,16 +971,16 @@ SetupStart	;IDA: loc_F843E. IDA label. 93 setoptions .ex: start. Copy Goalies to
 	bne.w	.0
 	clr.w	(OptLine).w
 	bset	#4,(sflags7).w
-.0	;IDA: loc_F847A
+.0
 	move.w	(OptPlayMode).w,(TempOptPlayMode).w
 	cmpi.w	#4,(OptPlayMode).w
 	bne.w	.1
 	move.w	#0,(OptPlayMode).w
 	bset	#0,(gmode2).w
 	jsr	(ClearShootout).l
-.1	;IDA: loc_F849C
+.1
 	jmp	MakeTree	;hockey94_09
-CheckNOPUnused	;no IDA label (was sub_F84A2), no xref. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no effect
+CheckNOPUnused	;no xref. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no effect
 	tst.w	(OptNOP).w
 	beq.w	.x
 	cmpi.w	#5,(OptNOP).w
@@ -989,9 +990,9 @@ CheckNOPUnused	;no IDA label (was sub_F84A2), no xref. Tests OptNOP for 0, 5, 6,
 	cmpi.w	#9,(OptNOP).w
 	beq.w	.x
 	cmpi.w	#$A,(OptNOP).w
-.x	;IDA: locret_F84CE
+.x
 	rts
-LoadSetupTiles	;IDA: sub_F84D0. IDA: unk_F84D0 (IDA dc.b and code). 94 only: load the TeamBitmaps+8 tiles from char 2 (where 93 setoptions called AddTeamBlock), then again remapped at
+LoadSetupTiles	;IDA dc.b and code. 94 only: load the TeamBitmaps+8 tiles from char 2 (where 93 setoptions called AddTeamBlock), then again remapped at
 	;teambitmapchars.
 	;Called
 	;from setoptions
@@ -1003,10 +1004,10 @@ LoadSetupTiles	;IDA: sub_F84D0. IDA: unk_F84D0 (IDA dc.b and code). 94 only: loa
 	jsr	(DecompressGraphicsWithCallback).l
 	dc.l	$03412567,$89ABCDEF	;remap table (IDA: bchg / move.l / dc.b)
 	rts
-UpdateBothTeamDisplays	;IDA: nullsub_3. An empty routine, called from GameSetUp_2 (93 bsr UpdateBothTeamDisplays). An unused rts follows
+UpdateBothTeamDisplays	;An empty routine, called from GameSetUp_2 (93 bsr UpdateBothTeamDisplays). An unused rts follows
 	rts
 	rts
-EraseCard	;IDA: sub_F84FC. 94 only. If a player card is up (setupcardflags bit 0, cleared here), clear both logo flags (bits 6 / 7) and erase the card: its logo
+EraseCard	;94 only. If a player card is up (setupcardflags bit 0, cleared here), clear both logo flags (bits 6 / 7) and erase the card: its logo
 	;box and its 25 x 8 box. Called from DrawHomeBlock and DrawVisBlock
 	movem.l	d0-d7,-(sp)
 	bclr	#0,(setupcardflags).w
@@ -1029,11 +1030,11 @@ EraseCard	;IDA: sub_F84FC. 94 only. If a player card is up (setupcardflags bit 0
 	move.w	#5,(printy).w
 	move.w	#$19,d0
 	move.w	#8,d1
-.0	;IDA: loc_F8566
+.0
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	bra.w	.x
-.1	;IDA: loc_F8574
+.1
 	move.w	#$1C,(printx).w
 	jsr	(eraser).l
 	jsr	(printz).l
@@ -1044,10 +1045,10 @@ EraseCard	;IDA: sub_F84FC. 94 only. If a player card is up (setupcardflags bit 0
 	move.w	#8,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-.x	;IDA: loc_F85AA
+.x
 	movem.l	(sp)+,d0-d7
 	rts
-DrawHomeBlock	;IDA: sub_F85B0. 94 only. Draw the home team block: the logo box (LogoBoxHome) and the HomeTeam logo (logoteam) at x $19, y 6. setupcardflags bit 2:
+DrawHomeBlock	;94 only. Draw the home team block: the logo box (LogoBoxHome) and the HomeTeam logo (logoteam) at x $19, y 6. setupcardflags bit 2:
 	;home drawn, bit 6: home logo shown. Called from GameSetUp and GameSetUp_2
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	EraseCard
@@ -1063,12 +1064,12 @@ DrawHomeBlock	;IDA: sub_F85B0. 94 only. Draw the home team block: the logo box (
 	moveq	#8,d0
 	moveq	#8,d1
 	move.w	#$7FF,d2
-.0	;IDA: loc_F85F2
+.0
 	jsr	(printz).l
 	String	$FF,0,0	;IDA: ori.b x3
 	move.w	#$19,(printx).w	;IDA hid this in the string
 	bra.w	DrawTeamLogo
-DrawVisBlock	;IDA: sub_F8608. 94 only. The same for the visitors: logo box (LogoBoxVis), logo at x 9. setupcardflags bit 3, bit 7. Called from GameSetUp and GameSetUp_2
+DrawVisBlock	;94 only. The same for the visitors: logo box (LogoBoxVis), logo at x 9. setupcardflags bit 3, bit 7. Called from GameSetUp and GameSetUp_2
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	EraseCard
 	bset	#3,(setupcardflags).w
@@ -1083,11 +1084,11 @@ DrawVisBlock	;IDA: sub_F8608. 94 only. The same for the visitors: logo box (Logo
 	moveq	#8,d0
 	moveq	#8,d1
 	move.w	#$7FF,d2
-.0	;IDA: loc_F864A
+.0
 	jsr	(printz).l
 	String	$CF,0,0	;IDA dc.b
 	move.w	#9,(printx).w
-DrawTeamLogo	;IDA: loc_F865C. IDA label. Draw the logo of team logoteam (TeamLogoBitmaps) at printx, y 6, 6 x 6, palette TeamLogoPalettes + team * 8 - $20 (home, color fam
+DrawTeamLogo	;Draw the logo of team logoteam (TeamLogoBitmaps) at printx, y 6, 6 x 6, palette TeamLogoPalettes + team * 8 - $20 (home, color fam
 	;2) or - $40 (visitors, color fam 3), then wait $B4 frames before a player card (carddelay). Branched to from DrawHomeBlock
 	move.w	#$B4,(carddelay).w	;180 frames
 	move.w	#6,(printy).w
@@ -1095,7 +1096,7 @@ DrawTeamLogo	;IDA: loc_F865C. IDA label. Draw the logo of team logoteam (TeamLog
 	btst	#2,(setupcardflags).w
 	bne.w	.0
 	move.w	(vispicchars).w,d4
-.0	;IDA: loc_F867A
+.0
 	move.w	(logoteam).w,d3
 	asl.w	#2,d3
 	movea.l	#TeamLogoBitmaps,a0
@@ -1109,9 +1110,9 @@ DrawTeamLogo	;IDA: loc_F865C. IDA label. Draw the logo of team logoteam (TeamLog
 	beq.w	.1
 	subi.w	#$20,d3
 	bra.w	.2
-.1	;IDA: loc_F86AA
+.1
 	subi.w	#$40,d3
-.2	;IDA: loc_F86AE
+.2
 	adda.w	d3,a0
 	adda.l	(a2)+,a1
 	move.w	#6,d3
@@ -1124,34 +1125,34 @@ DrawTeamLogo	;IDA: loc_F865C. IDA label. Draw the logo of team logoteam (TeamLog
 	btst	#2,(setupcardflags).w
 	beq.w	.3
 	move.w	#2,d5
-.3	;IDA: loc_F86D8
+.3
 	jsr	(dobitmap).l
 	move.l	(sp)+,(palfadenew+$26).w
 	move.l	(sp)+,(palfadenew+$22).w
 	move.w	#$64,(palcount).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-TeamLogoBitmaps	;IDA: unk_F86F2. Team logo bitmaps by team number (TeamList order); also used by hockey94_07 GetTeamLogo
+TeamLogoBitmaps	;Team logo bitmaps by team number (TeamList order); also used by hockey94_07 GetTeamLogo
 	dc.l	$BF8D0,$BFD66,$C00BC,$C0412,$C08A8,$C2362,$C0CDE,$C1034
 	dc.l	$C142A,$C1900,$C1FEC,$C2638,$C29AE,$C1B96,$C2E64,$C333A
 	dc.l	$C3750,$C3B06,$C3E7C,$C41D2,$C4608,$C49DE,$C4DF4,$C514A
 	dc.l	$C5560,$C57D6,$C5C4C,$C6022
-LogoBoxRight	;IDA: sub_F8762. 94 only. Logo box (LogoBoxMap, 8 x 8) at x $1C, y 5 with the logobox1chars tiles. Called from PlayerCardScreen
+LogoBoxRight	;94 only. Logo box (LogoBoxMap, 8 x 8) at x $1C, y 5 with the logobox1chars tiles. Called from PlayerCardScreen
 	move.w	(logobox1chars).w,d4
 	move.w	#$1C,(printx).w
 	bra.w	DrawLogoBox
-LogoBoxHome	;IDA: sub_F8770. 94 only. Logo box at x $18 (home block). Called from DrawHomeBlock
+LogoBoxHome	;94 only. Logo box at x $18 (home block). Called from DrawHomeBlock
 	move.w	(logobox1chars).w,d4
 	move.w	#$18,(printx).w
 	bra.w	DrawLogoBox
-LogoBoxLeft	;IDA: sub_F877E. 94 only. Logo box at x 3 with the logobox2chars tiles. Called from PlayerCardScreen
+LogoBoxLeft	;94 only. Logo box at x 3 with the logobox2chars tiles. Called from PlayerCardScreen
 	move.w	(logobox2chars).w,d4
 	move.w	#3,(printx).w
 	bra.w	DrawLogoBox
-LogoBoxVis	;IDA: sub_F878C. 94 only. Logo box at x 8 (visitors block). Called from DrawVisBlock
+LogoBoxVis	;94 only. Logo box at x 8 (visitors block). Called from DrawVisBlock
 	move.w	(logobox2chars).w,d4
 	move.w	#8,(printx).w
-DrawLogoBox	;IDA: loc_F8796. IDA label. Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to from LogoBoxRight ... LogoBoxVis
+DrawLogoBox	;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to from LogoBoxRight ... LogoBoxVis
 	clr.w	(printa).w
 	move.w	#5,(printy).w
 	movea.l	#LogoBoxMap,a0
@@ -1168,14 +1169,14 @@ DrawLogoBox	;IDA: loc_F8796. IDA label. Draw the LogoBoxMap box at printx, y 5 (
 	jsr	(dobitmap).l
 	bclr	#0,(sflags6).w
 	rts
-ResetCardTimer	;IDA: sub_F87D2. 94 only. Reset the player card timer cardtimer to $AA ($53 if C was pressed). Called from GameSetUp_2, PrintOptions and PlayerCardTimer
+ResetCardTimer	;94 only. Reset the player card timer cardtimer to $AA ($53 if C was pressed). Called from GameSetUp_2, PrintOptions and PlayerCardTimer
 	move.w	#$AA,(cardtimer).w
 	btst	#5,(setupcardflags).w
 	beq.w	.x
 	move.w	#$53,(cardtimer).w
-.x	;IDA: locret_F87E8
+.x
 	rts
-PlayerCardTimer	;IDA: sub_F87EA. 94 only. Player cards, called each frame from GameSetUp_2 in the first minute of its wait. When carddelay runs out set setupcardflags
+PlayerCardTimer	;94 only. Player cards, called each frame from GameSetUp_2 in the first minute of its wait. When carddelay runs out set setupcardflags
 	;bit 0; then count cardtimer down (C skips $50); at $52 switch sides (bit 1), forget the logos and draw the next card (PlayerCardScreen); below 0
 	;restart the timer (ResetCardTimer)
 	subq.w	#1,(carddelay).w
@@ -1189,7 +1190,7 @@ PlayerCardTimer	;IDA: sub_F87EA. 94 only. Player cards, called each frame from G
 	cmpi.w	#$52,(cardtimer).w
 	bge.w	.0
 	subi.w	#$50,(cardtimer).w
-.0	;IDA: loc_F8822
+.0
 	subq.w	#1,(cardtimer).w
 	bmi.w	.1
 	cmpi.w	#$52,(cardtimer).w
@@ -1202,12 +1203,12 @@ PlayerCardTimer	;IDA: sub_F87EA. 94 only. Player cards, called each frame from G
 	bclr	#6,(setupcardflags).w
 	bclr	#7,(setupcardflags).w
 	jsr	(PlayerCardScreen).l
-.x	;IDA: locret_F8860
+.x
 	rts
-.1	;IDA: loc_F8862
+.1
 	jmp	ResetCardTimer
-PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setupcardflags bit 1: visitors on the left, else home on the right): erase the team block, a
-	;logo box, the picture of featured player featuredplayer (0-5, from the loc_F92F0+4 list of the team; next one after each visitors card), a
+PlayerCardScreen	;94 only. Draw a player card on one side (setupcardflags bit 1: visitors on the left, else home on the right): erase the team block, a
+	;logo box, the picture of featured player featuredplayer (0-5, from the FeaturedPictures list of the team; next one after each visitors card), a
 	;framed box with the player's number and name, and with SRAM his user records (PrintRecordValue, PrintRecordHolder, PrintRecordVs; not matched yet). IDA ends the
 	;routine at the last printz; the rest is IDA code with no label. Called from PlayerCardTimer
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -1217,7 +1218,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	btst	#1,(setupcardflags).w
 	bne.w	.0
 	move.w	#3,(printx).w
-.0	;IDA: loc_F888E
+.0
 	move.w	#5,(printy).w
 	move.w	#8,d0
 	move.w	#8,d1
@@ -1229,7 +1230,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	btst	#1,(setupcardflags).w
 	bne.w	.1
 	move.w	#$B,(printx).w
-.1	;IDA: loc_F88C8
+.1
 	move.w	#5,(printy).w
 	move.w	#$19,d0
 	move.w	#8,d1
@@ -1239,29 +1240,29 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	bne.w	.2
 	bsr.w	LogoBoxRight
 	bra.w	.3
-.2	;IDA: loc_F88F2
+.2
 	bsr.w	LogoBoxLeft
 	addq.w	#1,(featuredplayer).w
-.3	;IDA: loc_F88FA
+.3
 	jsr	(printz).l
 	String	$FF,0,0	;IDA: ori.b x3 / add.b
 	cmpi.w	#6,(featuredplayer).l	;IDA hid this in the string
 	blt.w	.4
 	clr.w	(featuredplayer).w
-.4	;IDA: loc_F8916
+.4
 	move.w	(HomeTeam).w,d0
 	move.w	#$1D,(printx).w
 	btst	#1,(setupcardflags).w
 	beq.w	.5
 	move.w	(VisTeam).w,d0
 	move.w	#4,(printx).w
-.5	;IDA: loc_F8934
+.5
 	move.w	#6,(printy).w
 	move.w	(homepicchars).w,d4
 	move.w	(featuredplayer).w,d3
 	mulu.w	#6,d3
 	asl.w	#2,d0
-	movea.l	#FeaturedPictures,a0	;IDA #(loc_F92F0+4). pictures of each team: picture.l, roster index.w entries
+	movea.l	#FeaturedPictures,a0	;pictures of each team: picture.l, roster index.w entries
 	movea.l	0(a0,d0.w),a0
 	move.w	4(a0,d3.w),(cardroster).w	;roster index
 	movea.l	0(a0,d3.w),a0
@@ -1276,13 +1277,13 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	adda.l	4(a1),a1
 	tst.l	(a2)+
 	bra.w	.7
-.6	;IDA: loc_F8980
+.6
 	adda.l	(a2)+,a1
-.7	;IDA: loc_F8982
+.7
 	bsr.w	UnpackPicture
 	movea.l	#picturebuf,a2	;tiles
 	move.w	(vcount).w,d3
-.loop	;IDA: loc_F8990
+.loop
 	cmp.w	(vcount).w,d3
 	beq.s	.loop
 	move.w	#6,d3
@@ -1304,7 +1305,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	beq.w	.8
 	move.w	#$B,(printx).w
 	move.w	#$19,d0
-.8	;IDA: loc_F89EC
+.8
 	move.w	#5,(printy).w
 	move.w	#8,d1
 	move.w	(printx).w,(cardprintx).w
@@ -1320,7 +1321,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	btst	#1,(setupcardflags).w
 	beq.w	.9
 	move.w	(VisTeam).w,d0
-.9	;IDA: loc_F8A3A
+.9
 	move.w	d0,(cardteamnum).w
 	movea.l	#TeamList,a2
 	asl.w	#2,d0
@@ -1328,10 +1329,10 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	adda.w	(a2),a2
 	move.w	(cardroster).w,d0
 	bra.w	.10
-.loop2	;IDA: loc_F8A54
+.loop2
 	adda.w	(a2),a2
 	addq.w	#8,a2
-.10	;IDA: loc_F8A58
+.10
 	dbf	d0,.loop2
 	movea.l	#mesarea,a3
 	lea	2(a3),a1
@@ -1373,7 +1374,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	bset	#3,(sflags6).w
 	jsr	(print2).l
 	bclr	#3,(sflags6).w
-.11	;IDA: loc_F8B18
+.11
 	movea.l	#mesarea,a1
 	move.w	(cardteamnum).w,d0
 	move.w	(cardroster).w,d1
@@ -1384,7 +1385,7 @@ PlayerCardScreen	;IDA: sub_F8868. 94 only. Draw a player card on one side (setup
 	bset	#3,(sflags6).w
 	jsr	(print2).l
 	bclr	#3,(sflags6).w
-.12	;IDA: loc_F8B4E
+.12
 	move.w	#$64,(palcount).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

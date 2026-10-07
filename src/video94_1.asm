@@ -3,14 +3,14 @@
 ;	setvideo and the sprite builders it calls (updatescroll, showref, checkfo, showzam, SetSframe, showcrowd). showclock
 ;	(video94_2) follows at $162FE.
 ;	Transcribed from lst/nhl94.bin.lst lines 51765-52286. Global names are the IDA names, or the 93 name where IDA has an
-;	auto name (IDA name in an ;IDA: comment); VBlank and vb2 have no IDA label. The IDA routines 93 writes as locals are
-;	locals: showzam .ftab (unk_1615E), showcrowd .pb (sub_16226) and .sc (sub_16246). Local labels are the IDA local names
-;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	auto name. The IDA routines 93 writes as locals are
+;	locals: showzam .ftab, showcrowd .pb and .sc. Local labels are the IDA local names
+;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
 ;	Bits: disflags 0 dfok, 2 dfng, 3 dfclock, 4 face off; sflags 0 sfpz, 7 sfhor; sflags2 1 sf2refref.
 
-VBlank	;IDA: loc_15D9A (93 name; 93 IDA VBlank_org). Main vblank code for game play (vbint target, set by setupice and sub_16BAC). DumpSprites when
+VBlank	;93 name; 93 IDA VBlank_org. Main vblank code for game play (vbint target, set by setupice and setupice_highlight). DumpSprites when
 	;dfok is set, cramfade, then the game clock. 94: gmode2 bit 2 keeps the clock running after the whistle, and with gmode2 bit 1
 	;(penalty shot / shootout) shootoutclock counts down instead (shootoutjiffy jiffies, not while gmode2 bit 7 is set)
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -19,16 +19,16 @@ VBlank	;IDA: loc_15D9A (93 name; 93 IDA VBlank_org). Main vblank code for game p
 	bclr	#dfok,(disflags).w	;dfok
 	beq.w	.01
 	bsr.w	DumpSprites
-.01	;IDA: loc_15DB6
+.01
 	bsr.w	cramfade
-.nograph	;IDA: loc_15DBA
+.nograph
 	btst	#sfpz,(sflags).w	;sfpz
 	bne.w	.c
 	btst	#2,(gmode2).w	;94 only
 	bne.w	.0
 	btst	#0,(gmode).w	;gmclock: game clock stopped
 	bne.w	.c
-.0	;IDA: loc_15DD8
+.0
 	btst	#1,(gmode2).w	;94 only: penalty shot / shootout clock
 	bne.w	.1
 	tst.w	(gameclock).w
@@ -43,12 +43,12 @@ VBlank	;IDA: loc_15D9A (93 name; 93 IDA VBlank_org). Main vblank code for game p
 	blt.w	.c
 	move.w	#2,-(sp)	;SFXbeep2, played when gameclock reaches 60
 	bsr.w	sfx
-.c	;IDA: loc_15E1A
+.c
 	addq.w	#1,(vcount).w	;92 Vcount
 	jsr	(MusicVB).l	;93 p_music_vblank
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
-.1	;IDA: loc_15E2A
+.1
 	tst.w	(shootoutclock).w
 	beq.s	.c
 	subi.w	#$AAA,(shootoutjiffy).w
@@ -58,20 +58,20 @@ VBlank	;IDA: loc_15D9A (93 name; 93 IDA VBlank_org). Main vblank code for game p
 	bne.s	.c
 	subq.w	#1,(shootoutclock).w
 	bra.s	.c
-vb2	;IDA: loc_15E4C (93 name). Vblank used for palfades only, no dmas (vbint target). No rte here: falls into IRQ7
+vb2	;93 name. Vblank used for palfades only, no dmas (vbint target). No rte here: falls into IRQ7
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).w
 	bne.w	.nograph
 	bsr.w	cramfade
-.nograph	;IDA: loc_15E5E
+.nograph
 	addq.w	#1,(vcount).w
 	jsr	(MusicVB).l	;93 p_music_vblank
 	movem.l	(sp)+,d0-d7/a0-a6
 IRQ7	;rte only. vb2 falls in; the vector table ($60, $64, ...) points here
 	rte
-DumpSprites	;IDA: sub_15E6E (93 name). Transfer (by dma) scroll stuff, sprite table, vram data in dmalist. Called from VBlank when dfok was set. Falls into DumpSprites2
+DumpSprites	;93 name. Transfer (by dma) scroll stuff, sprite table, vram data in dmalist. Called from VBlank when dfok was set. Falls into DumpSprites2
 	bsr.w	SetScroll2
-DumpSprites2	;IDA: sub_15E72 (93 name). Transfer sprite table, then the dma list. Falls into DoDMAlist. Also called from VBlank_SetOptions (attract94)
+DumpSprites2	;93 name. Transfer sprite table, then the dma list. Falls into DoDMAlist. Also called from VBlank_SetOptions (attract94)
 	movea.w	#(Satt-M68K_RAM),a0
 	move.w	(Sattsize).w,d0	;93 Sattsize: words
 	move.w	(VSPRITES).w,d1
@@ -80,7 +80,7 @@ DoDMAlist	;IDA name (93 DoDMAList; symbols are case-insensitive). Transfer data 
 	movea.l	(DMAlistend).w,a6
 	cmpa.l	#DMAList,a6
 	beq.w	rtss2	;list empty
-.0	;IDA: loc_15E90
+.0
 	move.w	-(a6),d1	;vram address
 	move.w	-(a6),d0	;words
 	movea.l	-(a6),a0	;source
@@ -88,7 +88,7 @@ DoDMAlist	;IDA name (93 DoDMAList; symbols are case-insensitive). Transfer data 
 	cmpa.l	#DMAList,a6
 	bne.s	.0
 	rts
-SetScroll2	;IDA: sub_15EA4 (93 name; 93 IDA DoScroller). Write Hscroll / Vscroll to the vdp. Called from DumpSprites
+SetScroll2	;93 name; 93 IDA DoScroller. Write Hscroll / Vscroll to the vdp. Called from DumpSprites
 	move.w	(VSCRLPM).w,d0
 	addq.w	#2,d0
 	bsr.w	Vmaddr
@@ -98,7 +98,7 @@ SetScroll2	;IDA: sub_15EA4 (93 name; 93 IDA DoScroller). Write Hscroll / Vscroll
 	rts
 setvideo	;this is not vblank code but sets up ram for vblank transfers. Called once per game frame (DoGameFrame, PauseMode, ...). 94 adds AddArenaAnimSprite and Crowd_Noise
 	movem.l	d0-d7/a0-a6,-(sp)
-.p	;IDA: loc_15EC4
+.p
 	btst	#dfok,(disflags).w	;dfok: wait for vblank to take the last frame
 	bne.s	.p
 	movea.w	#(DMAList-M68K_RAM),a5	;dma transfer list
@@ -119,7 +119,7 @@ setvideo	;this is not vblank code but sets up ram for vblank transfers. Called o
 	bne.w	.n
 	clr.l	(a6)+
 	clr.l	(a6)+
-.n	;IDA: loc_15F12
+.n
 	clr.b	-5(a6)	;end sprite list
 	move.l	a6,d0
 	subi.l	#Satt,d0
@@ -150,7 +150,7 @@ updatescroll	;IDA name (92 name; 93 show_rink). Using hpos and vpos set scroll c
 	btst	#4,(sflags4).w	;94 only: reverse angle replay
 	beq.w	.0
 	movea.l	#RevRinkTilelist,a0
-.0	;IDA: loc_15F7C
+.0
 	adda.l	4(a0),a0	;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda leave the cmp flags)
 	blt.w	.su0	;row went up
 .sd
@@ -203,7 +203,7 @@ showref	;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link counter.
 	btst	#sfhor,(sflags).w
 	beq.w	.1
 	moveq	#$F,d0	;Ypos on scoreboard screen
-.1	;IDA: loc_16014
+.1
 	asl.w	d2,d0
 	moveq	#2,d1
 	asl.w	d2,d1
@@ -211,11 +211,11 @@ showref	;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link counter.
 	btst	#sfhor,(sflags).w
 	beq.w	.2
 	addi.w	#$B,d0
-.2	;IDA: loc_1602A
+.2
 	asl.w	#1,d0
 	add.w	(a1),d0
 	moveq	#7,d2
-.0	;IDA: loc_16030
+.0
 	move.l	a0,(a5)+
 	move.w	#7,(a5)+
 	move.w	d0,(a5)+
@@ -230,7 +230,7 @@ checkfo	;check for face off sprites (93 checkfo and checkfo2; 94 has no checkfo2
 	beq.w	rtss2
 	movea.w	#(fofdata2-M68K_RAM),a3
 	moveq	#2,d0
-.loop	;IDA: loc_1605E
+.loop
 	move.w	(a3),d4
 	bmi.w	.1
 	beq.w	.1
@@ -242,7 +242,7 @@ checkfo	;check for face off sprites (93 checkfo and checkfo2; 94 has no checkfo2
 	lsr.w	#3,d5
 	subq.w	#1,d5
 	adda.w	0(a2,d4.w),a2
-.loop2	;IDA: loc_16084
+.loop2
 	move.w	2(a2),d2
 	addi.w	#$80,d2
 	add.w	(fodropy).w,d2
@@ -256,7 +256,7 @@ checkfo	;check for face off sprites (93 checkfo and checkfo2; 94 has no checkfo2
 	asl.w	#1,d2
 	neg.w	d2
 	sub.w	(a2),d2
-.0	;IDA: loc_160AE
+.0
 	addi.w	#$80,d2
 	add.w	(fodropx).w,d2
 	move.w	d2,6(a6)
@@ -275,7 +275,7 @@ checkfo	;check for face off sprites (93 checkfo and checkfo2; 94 has no checkfo2
 	addq.w	#8,a2
 	dbf	d5,.loop2
 	addq.w	#4,a3
-.1	;IDA: loc_160EE
+.1
 	dbf	d0,.loop
 	rts
 showzam	;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draws frame 1, frame 2-4 picked by x, then frame 5 (home score not ahead) or a .ftab frame. Called from setvideo
@@ -302,17 +302,17 @@ showzam	;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draws fra
 	subi.w	#$DA,d2
 	bpl.w	.pos
 	clr.w	d2
-.pos	;IDA: loc_1613E
+.pos
 	lsr.w	#2,d2
 	add.w	d2,d2
 	cmp.w	#$1A,d2
 	blt.w	.get
 	move.l	#$18,d2
-.get	;IDA: loc_16150
+.get
 	movea.l	#.ftab,a1
 	move.w	0(a1,d2.w),d2
 	bra.w	SetSframe
-.ftab	dc.w	5,6,7,8,7,8,7,8,7,8,7,6,5	;IDA: unk_1615E (93 .ftab). Frame by (x-$DA)/4
+.ftab	dc.w	5,6,7,8,7,8,7,8,7,8,7,6,5	;93 .ftab. Frame by (x-$DA)/4
 SetSframe	;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = frame to setup (from 0), d3 = start char in vram, a6 = sprite table,
 	;d6 = link counter. Called from showzam and from code outside this segment
 	cmp.w	#$40,d6	;MaxSprites
@@ -325,7 +325,7 @@ SetSframe	;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = frame 
 	lsr.w	#3,d4
 	subq.w	#1,d4	;number of sprites in frame
 	adda.w	0(a0,d2.w),a0
-.loop	;IDA: loc_1619A
+.loop
 	move.w	2(a0),(a6)
 	add.w	d1,(a6)+
 	move.b	7(a0),(a6)+
@@ -342,7 +342,7 @@ SetSframe	;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = frame 
 	beq.w	.ex
 	addq.w	#8,a0
 	dbf	d4,.loop
-.ex	;IDA: loc_161CA
+.ex
 	movem.l	(sp)+,d0-d5/a0
 	rts
 showcrowd	;draw crowd sprites: up to 3 frames per PBnum nibble, then the two crowdframe frames. a5 = dma list, a6 = sprite table, d6 = link
@@ -357,7 +357,7 @@ showcrowd	;draw crowd sprites: up to 3 frames per PBnum nibble, then the two cro
 	beq.w	.v
 	moveq	#-$40,d4	;(IDA #$FFFFFFC0)
 	move.l	#$100,d5
-.v	;IDA: loc_161FE
+.v
 	clr.w	d0
 	move.b	(PBnum).w,d2
 	moveq	#$1A,d3	;frames 26+ (low nibble)
@@ -370,27 +370,27 @@ showcrowd	;draw crowd sprites: up to 3 frames per PBnum nibble, then the two cro
 	bsr.w	.sc
 	move.b	(crowdframe+1).w,d0
 	bra.w	.sc
-.pb	;IDA: sub_16226 (93 .pb, IDA showcrowd_pb). d2 = count, d3 = first frame
+.pb	;93 .pb, IDA showcrowd_pb. d2 = count, d3 = first frame
 	andi.w	#$F,d2
 	cmp.w	#3,d2
 	bls.w	.pb0
 	moveq	#3,d2	;max 3
-.pb0	;IDA: loc_16234
+.pb0
 	bra.w	.nextpb
-.pbt	;IDA: loc_16238
+.pbt
 	move.w	d3,d0
 	add.w	d2,d0
 	bsr.w	.sc
-.nextpb	;IDA: loc_16240
+.nextpb
 	dbf	d2,.pbt
 	rts
-.sc	;IDA: sub_16246 (93 .sc, IDA showcrowd_sc). d0 = frame, 0 = none
+.sc	;93 .sc, IDA showcrowd_sc. d0 = frame, 0 = none
 	ext.w	d0
 	beq.w	rtss2
 	btst	#sfhor,(sflags).w
 	beq.w	.chk
 	addi.w	#$1F,d0	;horizontal frames are 31 later
-.chk	;IDA: loc_1625A
+.chk
 	cmp.w	#$40,d6	;MaxSprites
 	bge.w	rtss2
 	movem.l	d0-d5,-(sp)
@@ -413,7 +413,7 @@ showcrowd	;draw crowd sprites: up to 3 frames per PBnum nibble, then the two cro
 	subi.w	#$80,d2
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
-.loop	;IDA: loc_1629E
+.loop
 	cmp.w	2(a0),d2
 	bgt.w	.next
 	cmp.w	2(a0),d3
@@ -440,10 +440,10 @@ showcrowd	;draw crowd sprites: up to 3 frames per PBnum nibble, then the two cro
 	addq.w	#1,d6
 	cmp.w	#$40,d6
 	beq.w	.ex
-.next	;IDA: loc_162F2
+.next
 	addq.w	#8,a0
 	dbf	d4,.loop
-.ex	;IDA: loc_162F8
+.ex
 	movem.l	(sp)+,d0-d5
-.x	;IDA: locret_162FC
+.x
 	rts

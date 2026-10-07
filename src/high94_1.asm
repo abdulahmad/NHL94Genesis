@@ -4,10 +4,10 @@
 ;	stopna2, the 92 corner wall check (checkwallcoll, wallcollb), the hot / cold tables (Create_HotCold_Table, AttributeCalc) and the
 ;	hot / cold player lists for the MATCHUPS text (NextHomeHotPlayer ... GetHotColdTotal). 94 only; 93 has no code here.
 ;	Transcribed from lst/nhl94.bin.lst lines 958869-960186. Names and most comments are the IDA ones (this IDA database is
-;	commented); IDA auto names (sub_, word_) and the IDA placeholders (Unk_ControlsSetRelated, noidea, nullsub_2) are named for what the
-;	code does, with the IDA name in an ;IDA: comment. IDA gaps written from the retail bytes: unused code IDA left as dc.b (Read4WayPad1
+;	commented); IDA auto names and the IDA placeholders are named for what the
+;	code does. IDA gaps written from the retail bytes: unused code IDA left as dc.b (Read4WayPad1
 ;	... Read4WayPad4, Set4WayPlayer, Clamp0to100 and three rts), and labels for the branches IDA wrote as $F66FC / $F6772 / *+4. Locals
-;	are named for what they do (the IDA _x locals keep their name), with the IDA label in an ;IDA: comment.
+;	are named for what they do (the IDA _x locals keep their name), with the IDA label, unless generic, in an ;IDA: comment.
 
 puckvzadj	;IDA name. 94 only: set puckvz for a top shelf shot from the distance to the goal line ($108) over puckvy, at most $7FFF. Called from doshot (logic94_1)
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -26,19 +26,19 @@ puckvzadj	;IDA name. 94 only: set puckvz for a top shelf shot from the distance 
 	beq.w	.x	;branch if zero
 	bpl.w	.speed	;branch if positive
 	neg.w	d1	;negate d1
-.speed	;IDA: loc_F671C
+.speed
 	move.w	#$11,d2	;move 11 into d2
 	tst.w	(music_global_tick_counter).w	;This byte is never set
 	beq.w	.div	;branch if equal (always is)
 	move.w	#$16,d2	;move 16 into d2
-.div	;IDA: loc_F672C
+.div
 	divu.w	d1,d0	;divide d1 into d0
 	andi.l	#$FFFF,d0	;pass lower word of d0
 	divu.w	d2,d0	;divide d2 into d0
 	tst.w	d0	;check d0
 	bne.w	.calc	;branch if not zero
 	move.w	#1,d0	;move 1 into d0
-.calc	;IDA: loc_F6740
+.calc
 	move.l	#$A0000,d1
 	move.w	d0,d3	;move d0 into d3
 	mulu.w	d2,d0	;mult d2 and d0
@@ -50,17 +50,17 @@ puckvzadj	;IDA name. 94 only: set puckvz for a top shelf shot from the distance 
 	cmp.l	#$7FFF,d2	;compare to d2
 	blt.w	.addvz	;branch if less than
 	move.w	#$7FFF,d2	;move 7FFF into d2
-.addvz	;IDA: loc_F6762
+.addvz
 	add.w	d2,d1	;add d2 to d1
 	tst.w	d1	;test d1
 	bpl.w	.setvz	;branch if positive
 	move.w	#$7FFF,d1	;move 7FFF into d1
-.setvz	;IDA: loc_F676E
+.setvz
 	move.w	d1,(puckvz).w	;move d1 into puckvz
 .x
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OneTimerPass	;IDA: sub_F6778. 94 only. One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy toward the target onetimertargetx / onetimertargety in puckvz
+OneTimerPass	;94 only. One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy toward the target onetimertargetx / onetimertargety in puckvz
 	;/ 3 frames; flip the puck (puckflip, a3 = the puck at puckx). Called from passmode (logic94_1)
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$C,d0
@@ -80,7 +80,7 @@ OneTimerPass	;IDA: sub_F6778. 94 only. One-timer pass: puckvz = sqrt(12 * onetim
 	tst.w	d0
 	bne.w	.setv
 	move.w	#1,d0
-.setv	;IDA: loc_F67B6
+.setv
 	divs.w	d0,d1
 	move.w	d1,(puckvx).w
 	clr.l	d1
@@ -94,7 +94,7 @@ OneTimerPass	;IDA: sub_F6778. 94 only. One-timer pass: puckvz = sqrt(12 * onetim
 	jsr	(puckflip).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OneTimerTarget	;IDA: sub_F67E4. 94 only. One-timer pass target for receiver a3: an offset by facing from OneTimerNearTbl / OneTimerFarTbl (skater, near or far from the goal)
+OneTimerTarget	;94 only. One-timer pass target for receiver a3: an offset by facing from OneTimerNearTbl / OneTimerFarTbl (skater, near or far from the goal)
 	;or OneTimerGoalieTbl (goalie), +-10 at random, into onetimertargetx / onetimertargety; sflags6 bit 2 = near. Called from passmode
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#2,(sflags6).w
@@ -102,25 +102,25 @@ OneTimerTarget	;IDA: sub_F67E4. 94 only. One-timer pass target for receiver a3: 
 	bne.w	.skater
 	movea.l	#OneTimerGoalieTbl,a0
 	bra.w	.facing
-.skater	;IDA: loc_F6800
+.skater
 	move.w	$14(a3),d0
 	btst	#7,$62(a3)
 	bne.w	.near
 	neg.w	d0
-.near	;IDA: loc_F6810
+.near
 	bset	#2,(sflags6).w
 	movea.l	#OneTimerNearTbl,a0
 	cmp.w	#$58,d0
 	blt.w	.facing
 	movea.l	#OneTimerFarTbl,a0
 	bclr	#2,(sflags6).w
-.facing	;IDA: loc_F6830
+.facing
 	move.w	$54(a3),d0
 	btst	#7,$62(a3)
 	bne.w	.offset
 	addq.w	#4,d0
 	andi.w	#7,d0
-.offset	;IDA: loc_F6844
+.offset
 	asl.w	#2,d0
 	move.w	0(a0,d0.w),d1
 	move.w	2(a0,d0.w),d2
@@ -129,22 +129,22 @@ OneTimerTarget	;IDA: sub_F67E4. 94 only. One-timer pass target for receiver a3: 
 	move.w	$14(a3),d0
 	bpl.w	.chky
 	neg.w	d0
-.chky	;IDA: loc_F6862
+.chky
 	cmp.w	#$8A,d0
 	blt.w	.side
 	move.w	(a3),d0
 	bpl.w	.chkx
 	neg.w	d0
-.chkx	;IDA: loc_F6872
+.chkx
 	cmp.w	#$37,d0
 	bgt.w	.side
 	move.w	#$103,d2
-.side	;IDA: loc_F687E
+.side
 	btst	#7,$62(a3)
 	bne.w	.rand
 	neg.w	d1
 	neg.w	d2
-.rand	;IDA: loc_F688C
+.rand
 	move.w	#$A,d0
 	jsr	(randomd0).l
 	add.w	d0,d1
@@ -161,21 +161,21 @@ OneTimerTarget	;IDA: sub_F67E4. 94 only. One-timer pass target for receiver a3: 
 	neg.w	d1
 	add.w	d1,(onetimertargetx).w
 	bra.w	.sety
-.left	;IDA: loc_F68C8
+.left
 	addi.w	#$3C,d1
 	bmi.w	.sety
 	sub.w	d1,(onetimertargetx).w
-.sety	;IDA: loc_F68D4
+.sety
 	move.w	d2,(onetimertargety).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OneTimerNearTbl	;IDA: word_F68DE. OneTimerTarget target offsets (x, y) by facing, receiver near the goal
+OneTimerNearTbl	;OneTimerTarget target offsets (x, y) by facing, receiver near the goal
 	dc.w	$74,$C2,$74,$C2,$74,$C2,$74,$C2
 	dc.w	$FF8C,$C2,$FF8C,$C2,$FF8C,$C2,$FF8C,$C2
-OneTimerFarTbl	;IDA: word_F68FE. OneTimerTarget target offsets (x, y) by facing, receiver far from the goal
+OneTimerFarTbl	;OneTimerTarget target offsets (x, y) by facing, receiver far from the goal
 	dc.w	$FFFB,$AB,$FFFB,$AB,$FFFB,$AB,$FFFB,$AB
 	dc.w	$FFFB,$AB,$FFFB,$AB,$FFFB,$AB,$FFFB,$AB
-OneTimerGoalieTbl	;IDA: word_F691E. OneTimerTarget target offsets (x, y) by facing, goalie
+OneTimerGoalieTbl	;OneTimerTarget target offsets (x, y) by facing, goalie
 	dc.w	$FFFB,$FFF7,$32,$FFF7,$32,$FFF7,$32,$FFF7
 	dc.w	$FFFB,$FFF7,$FFCE,$FFF7,$FFCE,$FFF7,$FFCE,$FFF7
 assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_11), player a3 shooting a one-timer: take control of him
@@ -252,7 +252,7 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	move.w	(puckvx).w,d1	;move puckvx into d1
 	eor.w	d1,d0	;EOR d1 with d0
 	bmi.w	.chkypos	;branch if minus
-.notcoming	;IDA: loc_F6A6A
+.notcoming
 	movem.w	(sp)+,d0-d1	;pop from stack d0 and d1
 	bra.w	.cancel
 .chkypos
@@ -266,15 +266,15 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	move.w	(puckvy).w,d1	;move puckvy into d0
 	eor.w	d1,d0	;EOR d1 with d0
 	bpl.s	.notcoming	;branch if positive
-.coming	;IDA: loc_F6A92
+.coming
 	movem.w	(sp)+,d0-d1	;pop d0 and d1 from stack
-.chkcarrier	;IDA: loc_F6A96
+.chkcarrier
 	tst.w	(puckc).w	;check if puck carrier
 	bmi.w	.loose	;branch if no puck carrier
-.cancel	;IDA: loc_F6A9E
+.cancel
 	bclr	#7,(sflags8).w	;clear bit 7
 	bra.w	.shoot
-.loose	;IDA: loc_F6AA8
+.loose
 	btst	#0,(gmode).w	;check if game clock
 	bne.w	.shoot	;branch if clock stopped
 	movem.l	d0-d1,-(sp)	;push to stack
@@ -287,36 +287,36 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	sub.w	d1,d0	;sub d1 from d0
 	bpl.w	.dy	;branch if positive
 	neg.w	d0	;negate d0
-.dy	;IDA: loc_F6AD8
+.dy
 	move.w	$14(a3),d1	;move Ypos into d1
 	move.w	(pucky).w,d2	;move pucky into d2
 	sub.w	d2,d1	;sub d2 from d1
 	bpl.w	.vel	;branch if positive
 	neg.w	d1	;negate d1
-.vel	;IDA: loc_F6AE8
+.vel
 	move.w	(puckvx).w,d2	;move puckvx into d2
 	beq.w	.usey	;branch if d2 is 0
 	cmp.w	d0,d1	;compare d0 to d1
 	ble.w	.frames	;branch if less than or equal
-.usey	;IDA: loc_F6AF6
+.usey
 	move.w	(puckvy).w,d2
 	move.w	d1,d0
-.frames	;IDA: loc_F6AFC
+.frames
 	swap	d0
 	andi.l	#$FFFF0000,d0
 	tst.w	d2
 	bpl.w	.speed
 	neg.w	d2
-.speed	;IDA: loc_F6B0C
+.speed
 	move.w	#$11,d1
 	tst.w	(music_global_tick_counter).w
 	beq.w	.chkzero
 	move.w	#$16,d1
-.chkzero	;IDA: loc_F6B1C
+.chkzero
 	tst.w	d2
 	bne.w	.div
 	move.w	#1,d2
-.div	;IDA: loc_F6B26
+.div
 	divu.w	d2,d0
 	andi.l	#$FFFF,d0
 	divu.w	d1,d0
@@ -330,10 +330,10 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	neg.w	$5A(a3)
 	addi.w	#$18,$5A(a3)
 	bra.w	.chkanim
-.wait	;IDA: loc_F6B50
+.wait
 	add.w	d7,(onetimerclock).w
 	bra.w	.chkhold
-.windup	;IDA: loc_F6B58
+.windup
 	bset	#2,(onetimerflags).w
 	btst	#1,(onetimerflags).w
 	bne.w	.chkhold
@@ -341,7 +341,7 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	bne.w	.chkhold
 	addi.w	#$30,$5C(a3)
 	bset	#1,(onetimerflags).w
-.chkhold	;IDA: loc_F6B7E
+.chkhold
 	btst	#1,(onetimerflags).w
 	beq.w	.chkshot
 	cmpi.w	#$18,$5A(a3)
@@ -350,7 +350,7 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	bne.w	.chkshot
 	movem.l	(sp)+,d0-d1
 	bra.w	.shoot
-.chkshot	;IDA: loc_F6BA4
+.chkshot
 	btst	#0,(onetimerflags).w
 	beq.w	.chkanim
 	cmpi.w	#$18,$5A(a3)
@@ -358,24 +358,24 @@ assonetimer	;IDA name (and comments). 94 only: assignment $23 (asstab, hockey94_
 	cmpi.w	#1,$5C(a3)
 	ble.w	.chkanim
 	move.w	#1,$5C(a3)
-.chkanim	;IDA: loc_F6BC8
+.chkanim
 	btst	#1,$63(a3)
 	bne.w	.animon
 	movem.l	(sp)+,d0-d1
 	bra.w	.chkdone
-.animon	;IDA: loc_F6BDA
+.animon
 	move.w	$5A(a3),d0
 	movem.l	(sp)+,d0-d1
 	btst	#0,(onetimerflags).w
 	beq.w	.nop
 	bclr	#5,$62(a3)
 	bra.w	.chkdone
-.nop	;IDA: loc_F6BF6
+.nop
 	nop
-.chkdone	;IDA: loc_F6BF8
+.chkdone
 	btst	#1,$63(a3)
 	bne.w	.ex
-.shoot	;IDA: loc_F6C02
+.shoot
 	jsr	(EndOneTimer).l
 .ex
 	rts
@@ -388,7 +388,7 @@ setonetimeranim	;IDA name. 94 only: the one-timer animation: d1 = $7FC or $92E f
 	btst	#7,$62(a3)	;check which goal shooting at
 	bne.w	.top	;branch if top
 	neg.w	d1	;negate d1
-.top	;IDA: loc_F6C26
+.top
 	sub.w	$14(a3),d1	;sub Ypos from d1
 	jsr	(vtoa).l
 	jsr	(CheckOneTimerFacing).l	;code doesnt save any changes
@@ -397,7 +397,7 @@ setonetimeranim	;IDA name. 94 only: the one-timer animation: d1 = $7FC or $92E f
 	move.w	#$92E,d1
 .ex
 	rts
-PuckOnAttackHalf	;IDA: sub_F6C44. 94 only. d0 = 1 when the puck is on the half of the goal player a3 shoots at, else 0 (the code after the bra is never used). Called from doinput (logic94_1) and
+PuckOnAttackHalf	;94 only. d0 = 1 when the puck is on the half of the goal player a3 shoots at, else 0 (the code after the bra is never used). Called from doinput (logic94_1) and
 	;logic94_4
 	movem.w	d0-d1,-(sp)
 	move.w	(pucky).w,d0
@@ -447,7 +447,7 @@ onetimershot	;IDA name (and comments). 94 only: do the one-timer shot (doshot), 
 	btst	#6,$62(a3)	;check if home or away
 	beq.w	.home	;branch if home
 	lea	$364(a0),a0	;add if away
-.home	;IDA: loc_F6CDE
+.home
 	clr.w	d0
 	move.b	$66(a3),d0	;player offset in roster
 	move.w	$1A(a0),$1C(a0)	;move assist 1 player to assist 2
@@ -462,7 +462,7 @@ onetimershot	;IDA name (and comments). 94 only: do the one-timer shot (doshot), 
 	bset	#1,$63(a3)	;set animation in progress
 	bset	#1,(sflags6).w	;set bit 1
 	rts
-CheckOneTimerFacing	;IDA: noidea. 94 only, called from setonetimeranim. IDA comment: it does nothing, d0 and d1 are restored at the end; it seems meant to
+CheckOneTimerFacing	;94 only, called from setonetimeranim. IDA comment: it does nothing, d0 and d1 are restored at the end; it seems meant to
 	;change the way the one-timer player faces
 	movem.w	d0-d1,-(sp)	;push d0 and d1 on stack
 	neg.w	d0	;negate d0
@@ -483,7 +483,7 @@ CheckOneTimerFacing	;IDA: noidea. 94 only, called from setonetimeranim. IDA comm
 .ex
 	movem.w	(sp)+,d0-d1	;pop from stack
 	rts
-Detect4WayPlay	;IDA: Unk_ControlsSetRelated. 94 only: detect the 4 way play adaptor (EA 4 Way Play) on port 2: FourWayPlay = 1 when found. Called from Begin (hockey94_01)
+Detect4WayPlay	;94 only: detect the 4 way play adaptor (EA 4 Way Play) on port 2: FourWayPlay = 1 when found. Called from Begin (hockey94_01)
 	move.w	#0,(IO_Z80RES).l
 	move.b	#$40,(IO_CT1_CTRL+1).l
 	move.b	#$43,(IO_CT2_CTRL+1).l
@@ -500,40 +500,40 @@ Detect4WayPlay	;IDA: Unk_ControlsSetRelated. 94 only: detect the 4 way play adap
 	bne.s	.none
 	move.w	#1,(FourWayPlay).w
 	bra.s	.x
-.none	;IDA: loc_F6DAE
+.none
 	move.w	#0,(FourWayPlay).w
 	move.b	#$40,(IO_CT2_CTRL+1).l
-.x	;IDA: loc_F6DBC
+.x
 	move.w	#$100,(IO_Z80RES).l
 	rts
-Read4WayPad1	;no IDA label (was sub_F6DC6) (IDA dc.b, no xref). 94 only, unused: read 4 way play pad 1 (ReadJoy1 with the pad word swapped in)
+Read4WayPad1	;IDA dc.b, no xref. 94 only, unused: read 4 way play pad 1 (ReadJoy1 with the pad word swapped in)
 	move.b	#0,(IO_CT2_DATA+1).l	;4 way play: select pad
 	move.w	(pad4waysave1).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave1).w
 	rts
-Read4WayPad2	;no IDA label (was sub_F6DE2) (IDA dc.b, no xref). 94 only, unused: the same for pad 2
+Read4WayPad2	;IDA dc.b, no xref. 94 only, unused: the same for pad 2
 	move.b	#$10,(IO_CT2_DATA+1).l	;4 way play: select pad
 	move.w	(pad4waysave2).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave2).w
 	rts
-Read4WayPad3	;no IDA label (was sub_F6DFE) (IDA dc.b, no xref). 94 only, unused: the same for pad 3
+Read4WayPad3	;IDA dc.b, no xref. 94 only, unused: the same for pad 3
 	move.b	#$20,(IO_CT2_DATA+1).l	;4 way play: select pad
 	move.w	(pad4waysave3).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave3).w
 	rts
-Read4WayPad4	;no IDA label (was sub_F6E1A) (IDA dc.b, no xref). 94 only, unused: the same for pad 4
+Read4WayPad4	;IDA dc.b, no xref. 94 only, unused: the same for pad 4
 	move.b	#$30,(IO_CT2_DATA+1).l	;4 way play: select pad
 	move.w	(pad4waysave4).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave4).w
 	rts
 	rts	;IDA dc.b, no xref
-Set4WayPlayerStub	;IDA: nullsub_2. An empty Set4WayPlayer (just rts): forcepldata (hockey94_05) calls it with SCnum $F when a goalie is pulled
+Set4WayPlayerStub	;An empty Set4WayPlayer (just rts): forcepldata (hockey94_05) calls it with SCnum $F when a goalie is pulled
 	rts
-Set4WayPlayer	;no IDA label (was sub_F6E3A) (IDA dc.b, no xref). 94 only, unused: put player a3's number ($52) in the home or away nibble of PadControlBits34 (unless PadControlBits is -1)
+Set4WayPlayer	;IDA dc.b, no xref. 94 only, unused: put player a3's number ($52) in the home or away nibble of PadControlBits34 (unless PadControlBits is -1)
 	cmpi.w	#$FFFF,(PadControlBits).w
 	beq.w	.x
 	movem.l	d0-d2,-(sp)
@@ -568,7 +568,7 @@ LoadCrowdRec	;IDA name. 94 only: CrowdRecord = the arena record of HomeTeam from
 	beq.w	.none
 	andi.w	#$FF,d0
 	bra.w	.ex
-.none	;IDA: loc_F6EB0
+.none
 	move.w	#$50,d0
 .ex
 	move.w	d0,(CrowdRecord).w
@@ -591,7 +591,7 @@ Crowd_Noise	;IDA name (Crowd_Noise?). 94 only: the crowd meter each frame: crowd
 	clr.w	(crowdnoisedelay).w
 .ex2
 	rts
-.chkon	;IDA: loc_F6EFC
+.chkon
 	move.w	(CrowdRecord).w,d0
 	move.w	d0,(CrowdAvg).w
 	subi.w	#$B,(CrowdAvg).w
@@ -603,7 +603,7 @@ Crowd_Noise	;IDA name (Crowd_Noise?). 94 only: the crowd meter each frame: crowd
 	bgt.w	.ex1
 	bset	#7,(sflags5).w
 	rts
-.chkoff	;IDA: loc_F6F24
+.chkoff
 	move.w	(CrowdAvg).w,d0
 	subi.w	#$41,d0
 	muls.w	d0,d0
@@ -611,7 +611,7 @@ Crowd_Noise	;IDA name (Crowd_Noise?). 94 only: the crowd meter each frame: crowd
 	cmp.w	(CwdExciteLvl).w,d0
 	blt.w	.meter
 	bclr	#7,(sflags5).w
-.meter	;IDA: loc_F6F3E
+.meter
 	sub.w	d7,(CwdChkCntr).w
 	bpl.w	.ex1
 	move.w	#$14,(CwdChkCntr).w
@@ -625,7 +625,7 @@ Crowd_Noise	;IDA name (Crowd_Noise?). 94 only: the crowd meter each frame: crowd
 	cmp.w	(CrowdPeak).w,d0
 	ble.w	.chkrec
 	move.w	d0,(CrowdPeak).w
-.chkrec	;IDA: loc_F6F72
+.chkrec
 	move.w	(CurCrowdMeter).w,d0
 	cmp.w	(CrowdRecord).w,d0
 	blt.w	.stack
@@ -748,7 +748,7 @@ HotColdLoop	;IDA name. The Create_HotCold_Table loop
 	dbf	d1,HotColdLoop
 	movem.l	(sp)+,d0-d7
 	rts
-Clamp0to100	;no IDA label (was sub_F70CC) (IDA dc.b, no xref). 94 only, unused: clamp d3 to 0 ... 100
+Clamp0to100	;IDA dc.b, no xref. 94 only, unused: clamp d3 to 0 ... 100
 	tst.w	d3
 	bpl.w	.chkmax
 	clr.w	d3
@@ -797,7 +797,7 @@ AttributeCalc	;IDA name (and comments). 94 only: attribute d3 of player a3 * 5 p
 	andi.w	#$FF,d3	;pass only lower byte
 	movem.l	(sp)+,d0-d2/a1
 	rts
-NextHomeHotPlayer	;IDA: sub_F7144. 94 only. d1 = the next home hot player (homehotidx index into the list at homehotplayer), a1 = HmShots. Called from ScoutTextPlayer (hockey94_06, the MATCHUPS text)
+NextHomeHotPlayer	;94 only. d1 = the next home hot player (homehotidx index into the list at homehotplayer), a1 = HmShots. Called from ScoutTextPlayer (hockey94_06, the MATCHUPS text)
 	movem.l	d0/a0,-(sp)
 	movea.l	#homehotplayer,a0
 	move.w	(homehotidx).w,d0
@@ -806,11 +806,11 @@ NextHomeHotPlayer	;IDA: sub_F7144. 94 only. d1 = the next home hot player (homeh
 	cmpi.w	#0,(homehotidx).w
 	bge.w	.x
 	addq.w	#1,(homehotidx).w
-.x	;IDA: loc_F7166
+.x
 	movem.l	(sp)+,d0/a0
 	movea.l	#HmShots,a1
 	rts
-NextAwayHotPlayer	;IDA: sub_F7172. 94 only. The same for the away team (awayhotplayer, awayhotidx), a1 = AwShots. Called from ScoutTextPlayer
+NextAwayHotPlayer	;94 only. The same for the away team (awayhotplayer, awayhotidx), a1 = AwShots. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
 	movea.l	#awayhotplayer,a0
 	move.w	(awayhotidx).w,d0
@@ -819,12 +819,12 @@ NextAwayHotPlayer	;IDA: sub_F7172. 94 only. The same for the away team (awayhotp
 	cmpi.w	#0,(awayhotidx).w
 	bge.w	.x
 	addq.w	#1,(awayhotidx).w
-.x	;IDA: loc_F7194
+.x
 	movem.l	(sp)+,d0/a0
 	movea.l	#AwShots,a1
 	rts
 	rts	;IDA dc.b, no xref
-BuildHotColdLists	;IDA: sub_F71A2. 94 only. Build the hot / cold player lists of both teams (SortHotColdStarters, CopyHottestPlayer, CopyColdestPlayer). Called from ScoutingReport
+BuildHotColdLists	;94 only. Build the hot / cold player lists of both teams (SortHotColdStarters, CopyHottestPlayer, CopyColdestPlayer). Called from ScoutingReport
 	clr.w	(awayhotidx).w
 	clr.w	(homehotidx).w
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -842,7 +842,7 @@ BuildHotColdLists	;IDA: sub_F71A2. 94 only. Build the hot / cold player lists of
 	bsr.w	CopyColdestPlayer
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6 starters of team a0 into TempBuffer (byte pairs: player, sum), then sort them by sum
+SortHotColdStarters	;94 only. Sum the hot / cold values of the 6 starters of team a0 into TempBuffer (byte pairs: player, sum), then sort them by sum
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
 	adda.l	#$1A2,a2
@@ -850,7 +850,7 @@ SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6
 	adda.w	6(a0),a0
 	movea.l	#TempBuffer,a1
 	move.w	#5,d0
-.player	;IDA: loc_F720E
+.player
 	move.b	(a0)+,d1
 	subq.b	#1,d1
 	move.b	d1,(a1)+
@@ -859,7 +859,7 @@ SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6
 	clr.b	(a1)
 	addq.w	#3,d1
 	move.w	#3,d7
-.attrib	;IDA: loc_F7220
+.attrib
 	clr.w	d2
 	move.b	0(a2,d1.w),d2
 	cmp.b	#9,d7
@@ -867,18 +867,18 @@ SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6
 	cmp.b	#$D,d7
 	beq.w	.nextattr
 	add.b	d2,(a1)
-.nextattr	;IDA: loc_F7238
+.nextattr
 	addq.w	#1,d1
 	addq.w	#1,d7
 	cmp.b	#$10,d7
 	bne.s	.attrib
 	tst.b	(a1)+
 	dbf	d0,.player
-.sort	;IDA: loc_F7248
+.sort
 	movea.l	#TempBuffer,a1
 	clr.w	d1
 	move.w	#4,d0
-.cmp	;IDA: loc_F7254
+.cmp
 	move.b	3(a1),d6
 	cmp.b	1(a1),d6
 	ble.w	.next
@@ -886,14 +886,14 @@ SortHotColdStarters	;IDA: sub_F71F0. 94 only. Sum the hot / cold values of the 6
 	move.w	2(a1),d2
 	move.w	(a1),2(a1)
 	move.w	d2,(a1)
-.next	;IDA: loc_F726C
+.next
 	tst.w	(a1)+
 	dbf	d0,.cmp
 	tst.w	d1
 	bne.s	.sort
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-NextHomeColdPlayer	;IDA: sub_F727C. 94 only. d1 = the next home cold player (homecoldidx, homecoldplayer), a1 = HmShots. Called from ScoutTextPlayer
+NextHomeColdPlayer	;94 only. d1 = the next home cold player (homecoldidx, homecoldplayer), a1 = HmShots. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
 	movea.l	#homecoldplayer,a0
 	move.w	(homecoldidx).w,d0
@@ -902,11 +902,11 @@ NextHomeColdPlayer	;IDA: sub_F727C. 94 only. d1 = the next home cold player (hom
 	cmpi.w	#0,(homecoldidx).w
 	bge.w	.x
 	addq.w	#1,(homecoldidx).w
-.x	;IDA: loc_F729E
+.x
 	movem.l	(sp)+,d0/a0
 	movea.l	#HmShots,a1
 	rts
-NextAwayColdPlayer	;IDA: sub_F72AA. 94 only. The same for the away team (awaycoldidx, awaycoldplayer), a1 = AwShots. Called from ScoutTextPlayer
+NextAwayColdPlayer	;94 only. The same for the away team (awaycoldidx, awaycoldplayer), a1 = AwShots. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
 	movea.l	#awaycoldplayer,a0
 	move.w	(awaycoldidx).w,d0
@@ -915,16 +915,16 @@ NextAwayColdPlayer	;IDA: sub_F72AA. 94 only. The same for the away team (awaycol
 	cmpi.w	#0,(awaycoldidx).w
 	bge.w	.x
 	addq.w	#1,(awaycoldidx).w
-.x	;IDA: loc_F72CC
+.x
 	movem.l	(sp)+,d0/a0
 	movea.l	#AwShots,a1
 	rts
 	rts	;IDA dc.b, no xref
-CopyHottestPlayer	;IDA: sub_F72DA. 94 only. Copy the hottest player of TempBuffer to the list at a0
+CopyHottestPlayer	;94 only. Copy the hottest player of TempBuffer to the list at a0
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	#TempBuffer,a1
 	move.w	#0,d0
-.copy	;IDA: loc_F72E8
+.copy
 	clr.b	(a0)+
 	move.b	(a1),d1
 	move.b	d1,(a0)+
@@ -932,18 +932,18 @@ CopyHottestPlayer	;IDA: sub_F72DA. 94 only. Copy the hottest player of TempBuffe
 	dbf	d0,.copy
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-CopyColdestPlayer	;IDA: sub_F72FA. 94 only. Copy the coldest player (TempBuffer+10) to the list at a0
+CopyColdestPlayer	;94 only. Copy the coldest player (TempBuffer+10) to the list at a0
 	movem.l	d0/a0-a1,-(sp)
 	movea.l	#TempBuffer+10,a1
 	move.w	#0,d0
-.copy	;IDA: loc_F7308
+.copy
 	clr.b	(a0)+
 	move.b	(a1),(a0)+
 	tst.w	-(a1)
 	dbf	d0,.copy
 	movem.l	(sp)+,d0/a0-a1
 	rts
-CompareHotColdTotals	;IDA: sub_F7318. 94 only. Compare the teams' hot / cold totals (GetHotColdTotal into TempWord1 / TempWord2): awayhotter = 1 when the away total is
+CompareHotColdTotals	;94 only. Compare the teams' hot / cold totals (GetHotColdTotal into TempWord1 / TempWord2): awayhotter = 1 when the away total is
 	;higher; d0 = -1, $22 or $23 by the difference (ScoutingReport text "Lately ... has been playing (extremely) well")
 	movem.l	d1-d7/a0-a6,-(sp)
 	movea.l	#HmShots,a0
@@ -959,11 +959,11 @@ CompareHotColdTotals	;IDA: sub_F7318. 94 only. Compare the teams' hot / cold tot
 	tst.w	d2
 	bmi.w	.abs
 	move.w	#1,(awayhotter).w
-.abs	;IDA: loc_F7354
+.abs
 	tst.w	d2
 	bpl.w	.level
 	neg.w	d2
-.level	;IDA: loc_F735C
+.level
 	move.w	#$FFFF,d0
 	cmp.w	#$5E,d2
 	blt.w	.x
@@ -971,15 +971,15 @@ CompareHotColdTotals	;IDA: sub_F7318. 94 only. Compare the teams' hot / cold tot
 	cmp.w	#$BD,d2
 	blt.w	.x
 	move.w	#$23,d0
-.x	;IDA: loc_F7378
+.x
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
-GetHotColdTotal	;IDA: sub_F737E. 94 only. d1 = the hot / cold total of the starters of team a0 (SortHotColdStarters)
+GetHotColdTotal	;94 only. d1 = the hot / cold total of the starters of team a0 (SortHotColdStarters)
 	bsr.w	SortHotColdStarters
 	move.w	#6,d0
 	movea.l	#TempBuffer,a0
 	clr.w	d1
-.sum	;IDA: loc_F738E
+.sum
 	move.b	1(a0),d2
 	ext.w	d2
 	add.w	d2,d1

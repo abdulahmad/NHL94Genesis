@@ -2,7 +2,7 @@
 ;	92 Logic.Asm part 1, as 93 logic93_1.asm: controller input for skaters (doinput ... setpads) and
 ;	check4bench. assbench (logic94_2) follows at $C710.
 ;	Transcribed from lst/nhl94.bin.lst lines 35886-37885. Global names are the IDA names, which are the
-;	92 / 93 names here, except SetLCmode2 (IDA sub_B92E), setpads (IDA sub_C656) and restorepl (IDA restorep1).
+;	92 / 93 names here, except SetLCmode2, setpads and restorepl (IDA restorep1).
 ;	Local labels are the IDA local names (_x -> .x, loop -> .loop, even -> .even) or the IDA address
 ;	(doinput_cbut -> .B470, glb_B8AA -> .0).
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
@@ -21,11 +21,11 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	bclr	#4,d1
 	bset	#6,$64(a3)
 	bra.w	.5
-.1	;IDA: loc_B106
+.1
 	btst	#4,d1
 	beq.w	.2
 	bclr	#6,$64(a3)
-.2	;IDA: loc_B114
+.2
 	btst	#4,d2
 	beq.w	.5
 	bclr	#6,$64(a3)
@@ -34,17 +34,17 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	bne.w	.3
 	move.b	#$11,(bholdtimer).w
 	bra.w	.4
-.3	;IDA: loc_B136
+.3
 	move.b	#$11,(bholdtimer+1).w
-.4	;IDA: loc_B13C
+.4
 	bclr	#4,d2
-.5	;IDA: loc_B140
+.5
 	btst	#7,(gmode2).w
 	beq.w	.6
 	cmp.b	#8,d0
 	beq.w	.6
 	jsr	(ShortenMsgTimer).l
-.6	;IDA: loc_B158
+.6
 	move.w	d0,(TempWord1).w
 	andi.w	#$F,(TempWord1).w
 	bsr.w	setpads
@@ -55,13 +55,13 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	tst.w	d4
 	beq.w	startpause1
 	bra.w	startpause2
-.7	;IDA: loc_B180
+.7
 	btst	#7,d1
 	beq.w	.0
 	tst.w	(joypuckcarrier).w
 	beq.w	startpause3
 	bra.w	startpause4
-.0	;IDA: loc_B194
+.0
 	btst	#sfhor,(sflags).w
 	beq.w	.nhor
 	btst	#3,d0
@@ -103,13 +103,13 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	jsr	(assreplace).l
 	movem.l	(sp)+,d0-d2/a0/a3
 	rts
-.8	;IDA: loc_B240
+.8
 	movem.l	(sp)+,d0-d2/a0/a3
 	btst	#3,$64(a3)
 	bne.w	.9
 	btst	#5,$62(a3)
 	bne.w	doinput_islocked
-.9	;IDA: loc_B258
+.9
 	btst	#0,$63(a3)	;fighting in progress
 	bne.w	fightinput
 	move.w	(puckc).w,d5
@@ -120,25 +120,25 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	btst	#3,$64(a3)
 	beq.w	.10
 	bra.w	.11
-.10	;IDA: loc_B284
+.10
 	btst	#6,d1
 	bne.w	holdplayer
-.11	;IDA: loc_B28C
+.11
 	tst.w	$34(a3)
 	beq.w	.12
 	btst	#2,(BA_PS_flags).w
 	bne.w	.33
 	bra.w	.15
-.12	;IDA: loc_B2A2
+.12
 	btst	#6,(sflags5).w
 	bne.w	.15
 	tst.w	d4
 	beq.w	.13
 	tst.w	(goaliemode2).w
 	bra.w	.14
-.13	;IDA: loc_B2BA
+.13
 	tst.w	(goaliemode1).w
-.14	;IDA: loc_B2BE
+.14
 	beq.w	.15
 	movem.w	d0,-(sp)
 	move.w	$52(a3),d0
@@ -146,7 +146,7 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	movem.w	(sp)+,d0
 	beq.w	.15
 	bra.w	changeplayer
-.15	;IDA: loc_B2DA
+.15
 	btst	#4,d3
 	beq.w	.23
 	tst.w	(holdreset).w
@@ -158,46 +158,46 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	subq.b	#1,(bholdtimer+1).w
 	bpl.w	.16
 	move.b	#0,(bholdtimer+1).w
-.16	;IDA: loc_B306
+.16
 	tst.b	(bholdtimer+1).w
 	bne.w	.23
 	tst.w	d4
 	beq.w	.17
 	tst.w	(goaliemode2).w
 	bra.w	.18
-.17	;IDA: loc_B31C
+.17
 	tst.w	(goaliemode1).w
-.18	;IDA: loc_B320
+.18
 	bne.w	.23
 	bra.w	.31
-.19	;IDA: loc_B328
+.19
 	tst.b	(bholdtimer).w
 	beq.w	.33
 	subq.b	#1,(bholdtimer).w
 	bpl.w	.20
 	move.b	#0,(bholdtimer).w
-.20	;IDA: loc_B33E
+.20
 	tst.w	d4
 	beq.w	.21
 	tst.w	(goaliemode2).w
 	bra.w	.22
-.21	;IDA: loc_B34C
+.21
 	tst.w	(goaliemode1).w
-.22	;IDA: loc_B350
+.22
 	bne.w	.23
 	tst.b	(bholdtimer).w
 	beq.w	.31
-.23	;IDA: loc_B35C
+.23
 	btst	#4,d1
 	beq.w	.25
 	tst.w	d4
 	bne.w	.24
 	move.b	#$11,(bholdtimer).w
 	bra.w	.33
-.24	;IDA: loc_B374
+.24
 	move.b	#$11,(bholdtimer+1).w
 	bra.w	.33
-.25	;IDA: loc_B37E
+.25
 	btst	#4,d2
 	beq.w	.33
 	btst	#4,d3
@@ -212,12 +212,12 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	beq.w	.26
 	tst.w	(goaliemode2).w
 	bra.w	.27
-.26	;IDA: loc_B3B4
+.26
 	tst.w	(goaliemode1).w
-.27	;IDA: loc_B3B8
+.27
 	bne.w	changeplayer
 	bra.w	.31
-.28	;IDA: loc_B3C0
+.28
 	move.b	#$11,(bholdtimer).w
 	andi.w	#$FF00,d0
 	bne.w	changeplayer
@@ -225,18 +225,18 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	beq.w	.29
 	tst.w	(goaliemode2).w
 	bra.w	.30
-.29	;IDA: loc_B3DC
+.29
 	tst.w	(goaliemode1).w
-.30	;IDA: loc_B3E0
+.30
 	bne.w	changeplayer
-.31	;IDA: loc_B3E4
+.31
 	tst.w	(holdreset).w
 	bne.w	changeplayer
 	move.w	#5,d0
 	cmp.w	#5,d6
 	ble.w	.32
 	move.w	#$B,d0
-.32	;IDA: loc_B3FC
+.32
 	jsr	(getGoalieSCnum).l
 	tst.w	d0
 	bmi.w	rtss15
@@ -250,7 +250,7 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	tst.w	d4
 	beq.w	setc1player
 	bra.w	setc2player
-.33	;IDA: loc_B42E
+.33
 	tst.w	$34(a3)
 	bne.w	doinput_onetimer
 	btst	#6,d1
@@ -267,14 +267,14 @@ doinput	;process controller input: d0 = dpad, d1 = new buttons, d2 = changed but
 	addi.w	#$96,(crowdlevel).w
 rtss15
 	rts
-doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rtss15
+doinput_cbut	;Global: doinput branches here across the global rtss15
 	btst	#5,d1
 	bne.w	.2
 	btst	#5,d3
 	bne.w	.0
 	bclr	#7,$63(a3)
 	bra.w	doinput_chkanim
-.0	;IDA: loc_B48A
+.0
 	btst	#7,$63(a3)
 	beq.w	doinput_chkanim
 	movem.l	d0-d3/a0-a3,-(sp)
@@ -286,7 +286,7 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	neg.w	d0
 	addq.w	#8,d0
 	andi.w	#7,d0
-.1	;IDA: loc_B4B8
+.1
 	asl.w	#1,d0
 	adda.w	0(a0,d0.w),a0
 	tst.b	$5B(a3)
@@ -294,7 +294,7 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	bpl.s	rtss15
 	move.w	#$A,$5C(a3)
 	rts
-.2	;IDA: loc_B4D0
+.2
 	btst	#5,$62(a3)
 	bne.w	doinput_chkanim
 	movem.w	d0-d1,-(sp)
@@ -315,9 +315,9 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	bgt.w	.3
 	cmpi.w	#$FF25,(pucky).w
 	bgt.w	.4
-.3	;IDA: loc_B524
+.3
 	subi.w	#$40,d0
-.4	;IDA: loc_B528
+.4
 	move.w	d0,d1
 	muls.w	(puckvx).w,d0
 	swap	d0
@@ -334,7 +334,7 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	bhi.w	.5
 	movem.w	(sp)+,d0-d1
 	bra.w	.7
-.5	;IDA: loc_B55E
+.5
 	bsr.w	sroot
 	moveq	#1,d2
 	add.w	d0,d2
@@ -342,14 +342,14 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	btst	#3,(sflags).w
 	beq.w	.6
 	addq.w	#8,d4
-.6	;IDA: loc_B574
+.6
 	movem.w	(sp)+,d0-d1
 	muls.w	d4,d1
 	addq.w	#8,d4
 	muls.w	d4,d0
 	divs.w	d2,d0
 	divs.w	d2,d1
-.7	;IDA: loc_B582
+.7
 	add.w	d3,d1
 	move.w	d1,d2
 	cmpi.w	#$22,2(a0)
@@ -367,34 +367,34 @@ doinput_cbut	;IDA: loc_B470. Global: doinput branches here across the global rts
 	beq.w	.8	;branch if bottom net
 	neg.w	d3	;negate d3 (-108 hex)
 	addq.w	#4,a0	;puckcross+4 (for bottom goalie)
-.8	;IDA: loc_B5CC
+.8
 	jsr	(goaliesave).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-ClampTargetY	;IDA: sub_B5D8
+ClampTargetY
 	move.w	(puckc).w,d2
 	cmp.w	$52(a3),d2
 	bne.w	.0
 	clr.w	d0
-.0	;IDA: loc_B5E6
+.0
 	cmp.w	#$103,d1
 	blt.w	.1
 	move.w	#$103,d1
-.1	;IDA: loc_B5F2
+.1
 	cmp.w	#$FEFD,d1
 	bgt.w	.2
 	move.w	#$FEFD,d1
-.2	;IDA: loc_B5FE
+.2
 	sub.w	d3,d1
 	rts
 	;$B602: 10 SPA offsets (frames94), no reference in the listing: SPAgglover, SPAgglovel, SPAgstackr, SPAgstackl,
 	;SPAgstickr, SPAgstickl (93 goalie saves), then the 94 tables SPAghighr, SPAghighl, SPAgstick2r, SPAgstick2l
 	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0,$14F2,$1544
-doinput_chkanim	;IDA: loc_B616. Global: doinput branches here across ClampTargetY
+doinput_chkanim	;Global: doinput branches here across ClampTargetY
 	btst	#1,$63(a3)
 	beq.w	.0
 	rts
-.0	;IDA: loc_B622
+.0
 	tst.w	$34(a3)
 	bne.w	doplayeracc
 	bclr	#1,(BA_PS_flags).w
@@ -405,20 +405,20 @@ doinput_chkanim	;IDA: loc_B616. Global: doinput branches here across ClampTarget
 	beq.w	.1
 	bset	#1,(BA_PS_flags).w
 	clr.w	$28(a3)
-.1	;IDA: loc_B64E
+.1
 	cmpi.w	#$FFDC,(a3)
 	bge.w	.2
 	tst.w	$28(a3)
 	bpl.w	.2
 	bset	#1,(BA_PS_flags).w
 	clr.w	$28(a3)
-.2	;IDA: loc_B668
+.2
 	cmpi.w	#$E7,$14(a3)
 	bgt.w	.4
 	cmpi.w	#$FF19,$14(a3)
 	ble.w	.4
 	bra.w	*+4
-.3	;IDA: loc_B680
+.3
 	movem.w	d0-d1,-(sp)
 	move.w	$14(a3),d0
 	move.w	$2A(a3),d1
@@ -429,12 +429,12 @@ doinput_chkanim	;IDA: loc_B616. Global: doinput branches here across ClampTarget
 	beq.w	.4
 	bset	#1,(BA_PS_flags).w
 	clr.w	$2A(a3)
-.4	;IDA: loc_B6A8
+.4
 	btst	#1,(BA_PS_flags).w
 	bne.w	rtss15
 	move.w	(TempWord1).w,d0
 	bra.w	doplayeracc
-doinput_onetimer	;IDA: loc_B6BA. Global: doinput branches here across doinput_chkanim
+doinput_onetimer	;Global: doinput branches here across doinput_chkanim
 	move.w	(TempWord1).w,d0
 	btst	#3,$64(a3)
 	bne.w	rtss7
@@ -464,13 +464,13 @@ doinput_onetimer	;IDA: loc_B6BA. Global: doinput branches here across doinput_ch
 	jsr	(assreplace).l
 	move.w	(sp)+,d0
 	rts
-doinput_ispc	;IDA: loc_B72E. Global: doinput branches here across doinput_onetimer
+doinput_ispc	;Global: doinput branches here across doinput_onetimer
 	bsr.w	checkob
 	tst.w	$34(a3)
 	bne.w	.0
 	btst	#1,$63(a3)
 	bne.w	rtss15
-.0	;IDA: loc_B744
+.0
 	btst	#2,(sflags).w
 	bne.w	passmode
 	btst	#3,(sflags).w
@@ -479,16 +479,16 @@ doinput_ispc	;IDA: loc_B72E. Global: doinput branches here across doinput_onetim
 	beq.w	.1
 	jsr	(CountButtonPress).l
 	bra.w	setpassmode
-.1	;IDA: loc_B76A
+.1
 	btst	#6,d1
 	beq.w	.3
 	tst.w	d4
 	beq.w	.2
 	move.b	#$F,(aholdtimer+1).w
 	bra.w	.3
-.2	;IDA: loc_B782
+.2
 	move.b	#$F,(aholdtimer).w
-.3	;IDA: loc_B788
+.3
 	btst	#6,d3
 	beq.w	.7
 	tst.w	d4
@@ -496,39 +496,39 @@ doinput_ispc	;IDA: loc_B72E. Global: doinput branches here across doinput_onetim
 	subq.b	#1,(aholdtimer+1).w
 	bpl.w	.4
 	move.b	#0,(aholdtimer+1).w
-.4	;IDA: loc_B7A4
+.4
 	tst.b	(aholdtimer+1).w
 	bne.w	.7
 	bset	#3,(sflags5).w
 	jsr	(setpassmode).l
 	bra.w	SetLCmode
-.5	;IDA: loc_B7BC
+.5
 	subq.b	#1,(aholdtimer).w
 	bpl.w	.6
 	move.b	#0,(aholdtimer).w
-.6	;IDA: loc_B7CA
+.6
 	tst.b	(aholdtimer).w
 	bne.w	.7
 	bset	#3,(sflags5).w
 	jsr	(setpassmode).l
 	bra.w	SetLCmode
-.7	;IDA: loc_B7E2
+.7
 	btst	#6,d3
 	bne.w	.8
 	btst	#6,d2
 	beq.w	.8
 	bset	#3,(sflags5).w
 	bra.w	setpassmode
-.8	;IDA: loc_B7FC
+.8
 	tst.w	$34(a3)
 	bne.w	.9
 	bra.w	doplayeracc
-.9	;IDA: loc_B808
+.9
 	btst	#5,d1
 	beq.w	doplayeracc
 	jsr	(CountButtonPress).l
 	bra.w	SetShotMode
-doinput_islocked	;IDA: loc_B81A. Global: doinput branches here across doinput_ispc
+doinput_islocked	;Global: doinput branches here across doinput_ispc
 	move.w	(puckc).w,d5
 	cmp.w	$52(a3),d5
 	beq.w	rtss15
@@ -542,14 +542,14 @@ doinput_islocked	;IDA: loc_B81A. Global: doinput branches here across doinput_is
 	tst.w	d4
 	beq.w	.0
 	move.w	(c2playernum).w,d0
-.0	;IDA: loc_B84E
+.0
 	tst.w	d0
 	bmi.w	.x
 	asl.w	#7,d0
 	movea.l	#SortCords,a0
 	adda.w	d0,a0
 	bset	#6,$64(a0)
-.x	;IDA: loc_B864
+.x
 	movem.l	(sp)+,d0/a0
 rtss7
 	rts
@@ -614,25 +614,25 @@ SetLCmode
 	btst	#3,(sflags5).w
 	bne.w	.0
 	bclr	#2,(sflags).w
-.0	;IDA: loc_B922
+.0
 	bclr	#3,(sflags).w
 	bset	#3,pflags2(a3)
-SetLCmode2	;IDA: sub_B92E (93 name; 93 IDA showfaceoff). a2 = team struct. Draw the line change box
+SetLCmode2	;93 name; 93 IDA showfaceoff. a2 = team struct. Draw the line change box
 	bsr.w	setlccords
 	cmpi.w	#$F,(printy).w
 	blt.w	.box
 	bset	#sf3llcs,(sflags3).w
 	bra.w	.frame
-.box	;IDA: loc_B946
+.box
 	jsr	(box).l
 	bsr.w	setlccords
-.frame	;IDA: loc_B950
+.frame
 	bsr.w	Framer
 	subq.w	#2,(printy).w
-.0	;IDA: loc_B958
+.0
 	addq.w	#1,(printx).w
 	moveq	#2,d4
-.loop	;IDA: loc_B95E
+.loop
 	move.w	d4,d0
 	bsr.w	getlchoice
 	tst.w	d0
@@ -642,9 +642,9 @@ SetLCmode2	;IDA: sub_B92E (93 name; 93 IDA showfaceoff). a2 = team struct. Draw 
 	cmp.w	$2E(a2),d4
 	bne.w	.up
 	move.w	tmline(a2),d0
-.pr	;IDA: loc_B980
+.pr
 	movea.w	#(mesarea-M68K_RAM),a1
-	move.l	#$44120,(a1)	;String length 4, 'A ' (93 showfaceoff #$44120). IDA unk_44120 is not an address
+	move.l	#$44120,(a1)	;String length 4, 'A ' (93 showfaceoff #$44120)
 	add.b	d4,2(a1)
 	bsr.w	print
 	move.w	d0,-(sp)
@@ -653,9 +653,9 @@ SetLCmode2	;IDA: sub_B92E (93 name; 93 IDA showfaceoff). a2 = team struct. Draw 
 	move.w	(sp)+,d0
 	bsr.w	linebar
 	subq.w	#5,(printx).w
-.up	;IDA: loc_B9A8
+.up
 	subq.w	#1,(printy).w
-.next	;IDA: loc_B9AC
+.next
 	dbf	d4,.loop
 	movea.l	tmdata(a2),a1
 	adda.w	4(a1),a1
@@ -667,11 +667,11 @@ setlccords
 	cmpa.w	#$C6CE,a2
 	bne.w	.0
 	eori.w	#$16,d0
-.0	;IDA: loc_B9D0
+.0
 	btst	#gmdir,(gmode).w
 	beq.w	.noflip
 	eori.w	#$16,d0
-.noflip	;IDA: loc_B9DE
+.noflip
 	bsr.w	printz
 	String	$BF,$16,0,0		;IDA hid this, add.w and moveq in ori.b / ori.b / cmp.b
 	add.w	d0,(printy).w
@@ -682,7 +682,7 @@ setlccords
 	bpl.w	.ex
 	subq.w	#1,d1
 	addq.w	#1,(printy).w
-.ex	;IDA: loc_BA00
+.ex
 	moveq	#9,d0
 	rts
 getlchoice
@@ -698,7 +698,7 @@ getlchoice2
 	tst.w	d2
 	bmi.w	.0
 	addi.w	#$15,d0
-.0	;IDA: loc_BA2E
+.0
 	move.w	$16(a2),d1
 	add.w	d1,d0
 	add.w	d1,d0
@@ -721,18 +721,18 @@ lineinput
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(passmode).l
 	movem.l	(sp)+,d0-d7/a0-a6
-.0	;IDA: loc_BAA0
+.0
 	move.w	d1,-(sp)
 	movea.w	#(HmShots-M68K_RAM),a2
 	btst	#pfteam,pflags(a3)
 	beq.w	.2
 	adda.w	#tmsize,a2
-.2	;IDA: loc_BAB4
+.2
 	bclr	#0,tmflags(a2)
 	beq.w	.1
 	bsr.w	lcfound2
 	bsr.w	SetLCmode2
-.1	;IDA: loc_BAC6
+.1
 	move.w	(sp)+,d1
 	clr.w	d2
 	btst	#6,d1
@@ -749,7 +749,7 @@ lineinput
 	bne.w	.x
 	btst	#pf2fight,pflags2(a3)
 	beq.w	doplayeracc
-.x	;IDA: locret_BB04
+.x
 	rts
 ; d2 = choice made 0-2
 lcfound
@@ -840,7 +840,7 @@ setpassmode
 	bne.w	rtss7
 	bclr	#5,(gmode2).w
 	move.w	#$64,(passmodetimer).w
-.0	;IDA: loc_BC38
+.0
 	bset	#2,(sflags).w	;#sfspdir - set pass dir mode
 rtss
 	rts
@@ -868,10 +868,10 @@ dopass
 	btst	#2,(sflags6).w
 	beq.w	.1
 	move.w	#$3A,(onetimerheight).w
-.1	;IDA: loc_BCA4
+.1
 	jsr	(OneTimerPass).l
 	bra.w	.exit
-.2	;IDA: loc_BCAE
+.2
 	moveq	#8,d0	;moves 8 into d0
 	tst.w	position(a3)	;checks if goalie
 	beq.w	.calc	;jump if goalie
@@ -1019,7 +1019,7 @@ passto
 	btst	#6,$62(a3)	;check if home or away team
 	beq.w	.0	;branch if home
 	move.w	#2,d1	;away team
-.0	;IDA: loc_BE8E
+.0
 	move.w	$52(a0),d0	;move SCnum of receiver into d0
 	cmp.w	(cont1team).w,d1	;compare cont1 team with d1 (1=home, 2=away)
 	bne.w	.diffteam
@@ -1146,9 +1146,9 @@ changeplayer
 	cmpi.w	#1,0(a1,d4.w)
 	beq.w	.t1
 	adda.w	#6*SCstruct,a0
-.t1	;IDA: loc_C002
+.t1
 	movea.w	#(c1playernum-M68K_RAM),a1
-.loop	;IDA: loc_C006
+.loop
 	tst.w	position(a0)
 	ble.w	.next
 	btst	#2,pflags2(a0)
@@ -1167,7 +1167,7 @@ changeplayer
 	cmp.w	$52(a0),d0
 	movem.l	(sp)+,d0
 	bne.w	.next
-.0	;IDA: loc_C054
+.0
 	btst	#5,$62(a0)
 	bne.w	.next
 	movem.w	(sp),d0-d1
@@ -1183,7 +1183,7 @@ changeplayer
 	beq.w	.next
 	move.l	d0,d5
 	move.w	d1,d6
-.next	;IDA: loc_C084
+.next
 	adda.w	#SCstruct,a0
 	dbf	d2,.loop
 	addq.w	#4,sp
@@ -1194,9 +1194,9 @@ changeplayer
 	tst.w	d4
 	beq.w	setc1player
 	bra.w	setc2player
-.ex	;IDA: loc_C0A8
+.ex
 	movem.l	(sp)+,d0-d6/a0-a1
-.x	;IDA: locret_C0AC
+.x
 	rts
 Sweepcheck
 	bset	#pfalock,pflags(a3)
@@ -1260,17 +1260,17 @@ restorepl	;IDA: restorep1 (93 restorepl)
 	beq.w	.0
 	tst.w	(goaliemode2).w
 	bra.w	.1
-.0	;IDA: loc_C172
+.0
 	tst.w	(goaliemode1).w
-.1	;IDA: loc_C176
+.1
 	beq.w	.3
 	move.w	#0,d0	;first position of home SCNum
 	btst	#6,$62(a0,d1.w)	;check if home or away
 	beq.w	.2
 	move.w	#6,d0	;first position of away SCNum
-.2	;IDA: loc_C18C
+.2
 	bra.w	.ex
-.3	;IDA: loc_C190
+.3
 	bset	#3,$62(a0,d1.w)	;set pfjoycon for SCNum
 .ex
 	rts
@@ -1284,7 +1284,7 @@ Findhittype
 	beq.w	.1
 	btst	d0,#$F0			;%11110000: beq forehand, bne backhand. IDA cannot show btst Dn,#imm
 	rts
-.1	btst	d0,#$1E	;IDA: loc_C1B2. %00011110
+.1	btst	d0,#$1E	;%00011110
 	rts
 ; initiate shot by player a3
 SetShotMode
@@ -1524,14 +1524,14 @@ doshot
 	btst	#7,$62(a3)	;check direction of shooting net
 	beq.w	.2	;branch if bottom goal
 	clr.w	d1
-.2	;IDA: loc_C4D8
+.2
 	eor.w	d2,d1	;EOR - checking to see if exceeding maximum puckvy
 	bpl.w	.3	;branch if positive
 	move.w	#$3810,(puckvy).w	;move into puckvy
 	btst	#7,$62(a3)	;check net shooting on
 	bne.w	.3	;branch if top
 	move.w	#$C7F0,(puckvy).w	;move into puckvy (shooting on bottom net)
-.3	;IDA: loc_C4F4
+.3
 	move.w	(sp)+,d1	;pix height in goal
 	beq.w	.ex	;exit if zero
 	mulu.w	(passspeed).w,d1
@@ -1581,7 +1581,7 @@ shotdiradj
 	bne.w	.0	;jump if shooting one timer
 	btst	#3,$62(a3)	;pfjoycon - checks if player is joystick controlled
 	bne.w	.ex	;exit if joystick
-.0	;IDA: loc_C57A
+.0
 	moveq	#8,d0
 	moveq	#5,d1
 	movea.w	#(SortCords-SCstruct-M68K_RAM),a0	;SC Struct start - 80
@@ -1664,7 +1664,7 @@ shotdirmath
 	divs.w	d2,d4	;divide d2 into d4
 	rts
 ; copy info into pad cont so graphics know which player/number
-setpads	;IDA: sub_C656. Put SCnum of a3 in the d4 nibble of PadControlBits (93 name); d4 = -2 puck
+setpads	;Put SCnum of a3 in the d4 nibble of PadControlBits (93 name); d4 = -2 puck
 	;carrier, 0 / 2 pads, 4 replay target. Falls into rtss3
 	movem.l	d0-d1,-(sp)
 	moveq	#2,d0
@@ -1690,7 +1690,7 @@ check4bench
 	bpl.w	.0
 	tst.b	newpnum(a3)
 	bmi.s	rtss3
-.0	;IDA: loc_C6A0
+.0
 	move.b	newpnum(a3),d0
 	cmp.b	pnum(a3),d0
 	beq.w	.samepl
@@ -1705,7 +1705,7 @@ check4bench
 	clr.w	temp1(a3)
 	move.l	#$B,d0	;assbench
 	bra.w	assreplace
-.samepl	;IDA: loc_C6D8
+.samepl
 	addq.w	#4,sp
 	bclr	#2,pflags2(a3)
 	bclr	#pfnc,pflags(a3)
@@ -1715,7 +1715,7 @@ check4bench
 	tst.b	newpos(a3)
 	bpl.w	.1
 	jmp	Setplass
-.1	;IDA: loc_C700
+.1
 	move.b	newpos(a3),d0
 	ext.w	d0
 	move.w	d0,position(a3)

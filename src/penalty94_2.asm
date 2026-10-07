@@ -5,7 +5,7 @@
 ;	NewTicker3, NewTicker3pt2, GameLabels, ClearTickerArea, SetTickerAreaPosition, PrintStringFromList, Adda1Offset,
 ;	DoHiLights, StartHL, StartHL2. checkcoll (hockey94_03) follows at $138AC.
 ;	Transcribed from lst/nhl94.bin.lst lines 47136-48479. Global names are the IDA names, or the 93 name where IDA has an
-;	auto name (IDA name in an ;IDA: comment). 94 IDA NewTicker3 is 93 CheckGameTickerStatus and NewTicker3pt2 is 93
+;	auto name. 94 IDA NewTicker3 is 93 CheckGameTickerStatus and NewTicker3pt2 is 93
 ;	NewTicker3; the IDA names are kept. The IDA sub_ routines that 93 writes as locals are locals here too (.dispen, .r, .tn,
 ;	.setteam, .ranres, .sv, .lo). Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA
 ;	label in an ;IDA: comment.
@@ -20,7 +20,7 @@
 ;	(bit 1 gsfhl, bit 2 gsfso).
 
 PrintScores1	;IDA name (93 printscores1). Draw scoreboard. Vertical rink: period box and the score box (team names and scores). Horizontal rink
-	;(.sbscreen, 93 .sbscreen): period and both team logos with big scores. 94: the period name is gsp of unk_191E4, or name 4 of PenShotPenalties2
+	;(.sbscreen, 93 .sbscreen): period and both team logos with big scores. 94: the period name is gsp of PerLabels, or name 4 of PenShotPenalties2
 	;when gmode2 bit 1 is set; the horizontal rink uses PenShotPenalties2 (name 4 when bit 0 is set). sflags5 bit 7 sets crowdnoisedelay = $78.
 	;Called from USBoard, Pausemode, lcfound2 and others
 	movem.l	d0-d2/a0-a3,-(sp)
@@ -29,7 +29,7 @@ PrintScores1	;IDA name (93 printscores1). Draw scoreboard. Vertical rink: period
 	bclr	#7,(sflags5).w	;94 only
 	beq.w	.0
 	move.w	#$78,(crowdnoisedelay).w
-.0	;IDA: loc_12C22
+.0
 	bsr.w	printz
 	String	$BF,0,$17
 	moveq	#9,d0
@@ -44,7 +44,7 @@ PrintScores1	;IDA name (93 printscores1). Draw scoreboard. Vertical rink: period
 	beq.w	.1
 	move.w	#4,d0
 	movea.l	#PenShotPenalties2,a1
-.1	;IDA: loc_12C62
+.1
 	bsr.w	PrintStringFromList
 	bsr.w	EASNLogo
 	btst	#sf3llcs,(sflags3).w	;sf3llcs: lower line change box is up
@@ -62,17 +62,17 @@ PrintScores1	;IDA name (93 printscores1). Draw scoreboard. Vertical rink: period
 	String	$BF,$18,$18		;IDA: ori.b / move.b d0,d4
 	adda.w	#tmsize,a2	;tmsize
 	bsr.w	PrintTeamNameAndScore
-.ex	;IDA: loc_12CAA
+.ex
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
-.sbscreen	;IDA: loc_12CB0
+.sbscreen
 	bsr.w	printz
 	String	$BE,$11,2
 	move.w	(gsp).w,d0	;IDA hid this in the string (ori.b / andi.b / and.w)
 	btst	#0,(gmode2).w
 	beq.w	.2
 	move.w	#4,d0
-.2	;IDA: loc_12CCC
+.2
 	movea.l	#PenShotPenalties2,a1	;94: the horizontal rink always takes the name from PenShotPenalties2
 	bsr.w	Adda1Offset
 	move.w	(a1),d0
@@ -90,7 +90,7 @@ PrintScores1	;IDA name (93 printscores1). Draw scoreboard. Vertical rink: period
 	move.w	#$2C,d0	;visitor logo data offset (93 $30)
 	bsr.w	PrintTeamLogoAndScore
 	bra.s	.ex
-PrintTeamNameAndScore	;IDA: sub_12D0E (93 name). Print the team name of team a2 at printx/printy, then its score as 2 digits at x $1C. Called twice from PrintScores1
+PrintTeamNameAndScore	;93 name. Print the team name of team a2 at printx/printy, then its score as 2 digits at x $1C. Called twice from PrintScores1
 	movea.l	tmdata(a2),a1	;tmdata
 	adda.w	4(a1),a1
 	adda.w	(a1),a1	;skip the first string to the team name
@@ -100,7 +100,7 @@ PrintTeamNameAndScore	;IDA: sub_12D0E (93 name). Print the team name of team a2 
 	moveq	#2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print
-PrintTeamLogoAndScore	;IDA: sub_12D30 (93 name). Draw the team logo map (sub_8078, 93 PrintTeamData, d0 = offset) 5 columns left of printx (93 6),
+PrintTeamLogoAndScore	;93 name. Draw the team logo map (PrintTeamData, d0 = offset) 5 columns left of printx (93 6),
 	;then the score of team a2 in big font, centered 2 rows lower; 94 moves a 2 digit score one more left. Called twice from PrintScores1
 	move.w	(printx).w,-(sp)
 	subq.w	#5,(printx).w
@@ -111,9 +111,9 @@ PrintTeamLogoAndScore	;IDA: sub_12D30 (93 name). Draw the team logo map (sub_807
 	cmp.w	#$A,d0	;94 only
 	bge.w	.0
 	bra.w	.1
-.0	;IDA: loc_12D56
+.0
 	subq.w	#1,(printx).w
-.1	;IDA: loc_12D5A
+.1
 	bsr.w	PushNumber
 	move.w	(a1),d0	;center on the old printx
 	subq.w	#2,d0
@@ -121,7 +121,7 @@ PrintTeamLogoAndScore	;IDA: sub_12D30 (93 name). Draw the team logo map (sub_807
 	sub.w	d0,(printx).w
 	addq.w	#1,(printx).w
 	bra.w	printbig
-EASNLogo	;IDA: sub_12D70 (93 name). Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power play. 94 has no DrawEASNMap entry. Called from PrintScores1 and updatepwrplay
+EASNLogo	;93 name. Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power play. 94 has no DrawEASNMap entry. Called from PrintScores1 and updatepwrplay
 	btst	#sf2pwrplay,(sflags2).w	;sf2pwrplay
 	bne.w	rtss2
 	bsr.w	printz
@@ -136,7 +136,7 @@ EASNLogo	;IDA: sub_12D70 (93 name). Draw the EASN logo map at x 1, y $19 on the 
 	move.w	(EASNcset).w,d4	;93 EASNcset
 	clr.w	d5
 	bra.w	dobitmap
-USBoard	;IDA: sub_12DA6 (93 name). Update score board, including the players in the penalty box and their time remaining. Called from InProgress and SetHor
+USBoard	;93 name. Update score board, including the players in the penalty box and their time remaining. Called from InProgress and SetHor
 	movem.l	d0-d7/a0-a3,-(sp)
 	bset	#dfclock,(disflags).w	;dfclock
 	bsr.w	PrintScores1
@@ -150,9 +150,9 @@ USBoard	;IDA: sub_12DA6 (93 name). Update score board, including the players in 
 	bsr.w	.dispen
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-.dispen	;IDA: sub_12DDE (93 .dispen, IDA USBoard_dispen). Penalty box list of team a2: the players without a coincidental penalty first, then those with one
+.dispen	;93 .dispen, IDA USBoard_dispen. Penalty box list of team a2: the players without a coincidental penalty first, then those with one
 	lea	$9A(a2),a0
-.l1	;IDA: loc_12DE2
+.l1
 	clr.w	d0
 	move.b	(a0)+,d0
 	bmi.w	.p2	;end of list
@@ -160,9 +160,9 @@ USBoard	;IDA: sub_12DA6 (93 name). Update score board, including the players in 
 	bne.s	.l1
 	bsr.w	pplpen
 	bra.s	.l1
-.p2	;IDA: loc_12DF8
+.p2
 	lea	$9A(a2),a0
-.l2	;IDA: loc_12DFC
+.l2
 	clr.w	d0
 	move.b	(a0)+,d0
 	bmi.w	rtss2
@@ -170,7 +170,7 @@ USBoard	;IDA: sub_12DA6 (93 name). Update score board, including the players in 
 	beq.s	.l2
 	bsr.w	pplpen
 	bra.s	.l2
-pplpen	;IDA: sub_12E12 (93 IDA pplpen?). Print one penalty box line: player number and time remaining. a2 = team, d0 = roster offset (player*2). Only
+pplpen	;93 IDA pplpen?. Print one penalty box line: player number and time remaining. a2 = team, d0 = roster offset (player*2). Only
 	;rows up to y $A are printed; printy += 1. Called from USBoard .dispen
 	cmpi.w	#$A,(printy).w
 	bhi.w	rtss2	;no room for more rows
@@ -179,8 +179,8 @@ pplpen	;IDA: sub_12E12 (93 IDA pplpen?). Print one penalty box line: player numb
 	movea.l	tmdata(a2),a1	;tmdata
 	adda.w	(a1),a1
 	lsr.w	#1,d0
-.find	;IDA: loc_12E2C
-	adda.w	(a1),a1	;IDA: loc_12E2C. skip d0+1 roster entries (name string + 8 bytes)
+.find
+	adda.w	(a1),a1	;skip d0+1 roster entries (name string + 8 bytes)
 	addq.w	#8,a1
 	dbf	d0,.find
 	clr.w	d0
@@ -197,7 +197,7 @@ pplpen	;IDA: sub_12E12 (93 IDA pplpen?). Print one penalty box line: player numb
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printy).w
 	rts
-linebar	;IDA: sub_12E66 (93 name). Draw the energy bar of line d0 for team a2 at printx/printy (bitmap from the bar map, 16 steps). Called from SetLCmode2
+linebar	;93 name. Draw the energy bar of line d0 for team a2 at printx/printy (bitmap from the bar map, 16 steps). Called from SetLCmode2
 	movem.l	d0-d5/a0-a2,-(sp)
 	bsr.w	getlinee
 	move.w	(printa).w,-(sp)
@@ -207,8 +207,8 @@ linebar	;IDA: sub_12E66 (93 name). Draw the energy bar of line d0 for team a2 at
 	cmp.w	#$F,d0
 	bls.w	.ok
 	moveq	#$F,d0
-.ok	;IDA: loc_12E88
-	moveq	#$F,d1	;IDA: loc_12E88. d1 = bar frame (15 = empty)
+.ok
+	moveq	#$F,d1	;d1 = bar frame (15 = empty)
 	sub.w	d0,d1
 	clr.w	d0
 	movea.l	#EnergyBarMap,a1	;93 EnergyBarMap
@@ -232,7 +232,7 @@ getlinee	;d0 = line number, a2 = team struct. Return d0 = energy level of this l
 	movea.l	#priolist,a0
 	move.w	tmap(a2),d4	;tmap
 	bra.w	.next
-.loop	;IDA: loc_12ED2
+.loop
 	clr.w	d5
 	move.b	0(a0,d4.w),d5	;position
 	beq.w	.next	;goalie energy doesn't count
@@ -241,18 +241,18 @@ getlinee	;d0 = line number, a2 = team struct. Return d0 = energy level of this l
 	asl.w	#1,d3
 	addq.w	#1,d1
 	add.w	tmpde-2(a2,d3.w),d0	;tmpde-2
-.next	;IDA: loc_12EEA
+.next
 	dbf	d4,.loop
 	divu.w	d1,d0
 	movem.l	(sp)+,d1-d5/a0-a3
 	rts
-AvgCline	;IDA: sub_12EF6 (93 name). Return d0 = average energy of current line on team a2
+AvgCline	;93 name. Return d0 = average energy of current line on team a2
 	movem.l	d1-d3/a0,-(sp)
 	clr.l	d0
 	clr.w	d1
 	moveq	#5,d2
 	movea.w	tmsort(a2),a0	;tmsort
-.loop	;IDA: loc_12F04
+.loop
 	tst.w	position(a0)	;position
 	ble.w	.next
 	clr.w	d3
@@ -260,13 +260,13 @@ AvgCline	;IDA: sub_12EF6 (93 name). Return d0 = average energy of current line o
 	add.w	d3,d3
 	add.w	tmpde(a2,d3.w),d0	;tmpde
 	addq.w	#1,d1
-.next	;IDA: loc_12F1A
+.next
 	adda.w	#SCstruct,a0
 	dbf	d2,.loop
 	tst.w	d1
 	beq.w	.ex
 	divu.w	d1,d0
-.ex	;IDA: loc_12F2A
+.ex
 	movem.l	(sp)+,d1-d3/a0
 	rts
 ChkShotStat	;determine if shot taken, add to appropriate stats. As 93: crowd, team, shooter and goalie shots against. 94 adds: nothing while the
@@ -284,7 +284,7 @@ ChkShotStat	;determine if shot taken, add to appropriate stats. As 93: crowd, te
 	bne.w	.0
 	bset	#3,(sflags8).w
 	bra.w	rtss2
-.0	;IDA: loc_12F6C
+.0
 	movem.l	d0-d1/a1-a3,-(sp)
 	move.l	a4,-(sp)
 	movea.l	#ScoreSum-6,a4	;IDA: #$FFFFC46E (ChkCnt). +ScoreSumbytes, then 2(a4) = the last ScoreSum entry
@@ -328,10 +328,10 @@ ChkShotStat	;determine if shot taken, add to appropriate stats. As 93: crowd, te
 .PPshot
 	addq.w	#1,$354(a2)	;power play shots
 	bra.w	.2
-.1	;IDA: loc_13004
+.1
 	btst	#6,$62(a3)	;pfteam
 	bne.s	.PPshot
-.2	;IDA: loc_1300C
+.2
 	move.l	a2,-(sp)
 	move.w	(gsp).w,d0	;period
 	add.w	d0,d0
@@ -356,14 +356,14 @@ loadTeamStruct	;return a2 = team struct of player a3, a1 = the other team's stru
 	beq.w	rtss2
 	exg	a1,a2
 	rts
-SetupTeamForIntermission	;IDA: sub_13056 (93 name). Reset the bench, then for each team refill energy and pick the starting line: 92 Pw1 (3)
+SetupTeamForIntermission	;93 name. Reset the bench, then for each team refill energy and pick the starting line: 92 Pw1 (3)
 	;for the team with more players on ice, PK1 (5) for the team with fewer, else 0. Called from Intermission
 	bsr.w	ResetBench
 	movea.w	#(HmShots-M68K_RAM),a2
 	lea	tmsize(a2),a3
 	bsr.w	.r
 	exg	a2,a3	;falls in for the other team
-.r	;IDA: sub_13068 (93 .r)
+.r	;93 .r
 	bsr.w	reenergizeteam
 	clr.w	tmline(a3)	;tmline
 	tst.w	(OptLine).w
@@ -376,32 +376,32 @@ SetupTeamForIntermission	;IDA: sub_13056 (93 name). Reset the bench, then for ea
 	bpl.w	rtss2
 	move.w	#5,tmline(a3)	;PK1
 	rts
-RestoreTeamEnergy	;IDA: sub_13098. 94 only. a2 = team: max energy (tmpde $1000) for every player. The skip needs tmpdst to be both -3 and -4, so it never happens.
+RestoreTeamEnergy	;94 only. a2 = team: max energy (tmpde $1000) for every player. The skip needs tmpdst to be both -3 and -4, so it never happens.
 	;Called from $9DD0 / $9DDA (the menu code before ReplayMode)
 	moveq	#$32,d0	;(MaxRos-1)*2
-.loop	;IDA: loc_1309A
+.loop
 	cmpi.w	#$FFFD,$66(a2,d0.w)
 	bne.w	.0
 	cmpi.w	#$FFFC,$66(a2,d0.w)
 	bne.w	.0
 	bra.w	.1
-.0	;IDA: loc_130B2
+.0
 	move.w	#$1000,$32(a2,d0.w)	;tmpde
-.1	;IDA: loc_130B8
+.1
 	subq.w	#2,d0
 	bpl.s	.loop
 	rts
-reenergizeteam	;IDA: sub_130BE (93 name). Set all players to max energy on team a2 except those at tmpdst -4 (94); players marked -3 in tmpdst go to
+reenergizeteam	;93 name. Set all players to max energy on team a2 except those at tmpdst -4 (94); players marked -3 in tmpdst go to
 	;the bench (-2). Called from SetupTeamForIntermission and StartHL2 .setteam
 	moveq	#$32,d0	;(MaxRos-1)*2
-.loop	;IDA: loc_130C0
+.loop
 	cmpi.w	#$FFFC,$66(a2,d0.w)	;94 only
 	beq.w	.nb
 	move.w	#$1000,tmpde(a2,d0.w)	;tmpde
 	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
 	bne.w	.nb
 	move.w	#$FFFE,tmpdst(a2,d0.w)	;on bench
-.nb	;IDA: loc_130E0
+.nb
 	subq.w	#2,d0
 	bpl.s	.loop
 	rts
@@ -412,11 +412,11 @@ Intermission	;end of period junk (zamboni/stats). As 93: opens the pause menu sc
 	bne.w	.1
 	move.w	#0,(gameclock).w
 	jsr	(UpdateRecords).l	;94 only
-.1	;IDA: loc_130FC
+.1
 	bsr.w	SetupTeamForIntermission
 	moveq	#$F,d0
 	movea.w	#(SortCords-M68K_RAM),a0
-.0	;IDA: loc_13106
+.0
 	clr.w	(a0)	;Xpos
 	adda.w	#SCstruct,a0	;SCstruct
 	dbf	d0,.0
@@ -428,20 +428,20 @@ Intermission	;end of period junk (zamboni/stats). As 93: opens the pause menu sc
 	tst.w	(OptPlayMode).w
 	beq.w	.ss
 	addq.w	#5,d0	;playoffs
-.ss	;IDA: loc_13132
+.ss
 	asl.w	#2,d0
 	lea	.sslist(pc),a0
 	movea.l	0(a0,d0.w),a0
 	btst	#0,(gmode2).w	;94 only
 	beq.w	.2
 	movea.l	#ShootoutIntermissionMenu,a0
-.2	;IDA: loc_1314C
+.2
 	bset	#sfpz,(sflags).w	;sfpz
 	movea.l	#SetupPauseScreen,a1
 	jsr	(InitMenuState).w	;93 InitMenuState
 	bsr.w	GetShifter
 	move.w	d1,(TickerNum).w
-.top	;IDA: loc_13164
+.top
 	tst.w	(TickerNum).w
 	bmi.w	.doh	;no more ticker games
 	bsr.w	NewTicker2
@@ -455,13 +455,13 @@ Intermission	;end of period junk (zamboni/stats). As 93: opens the pause menu sc
 	bsr.w	waitxsr
 	btst	#7,d1
 	beq.s	.top
-.clrh	;IDA: loc_13196
+.clrh
 	bset	#sf3sbut,(sflags3).w	;sf3sbut
-.doh	;IDA: loc_1319C
+.doh
 	bsr.w	DoHiLights
 	bclr	#sf3sbut,(sflags3).w
 	bne.w	.clrz
-.wait	;IDA: loc_131AA
+.wait
 	move.w	#$1E0,d0	;480 frames
 	bsr.w	waitxsr
 	btst	#7,d1
@@ -470,10 +470,10 @@ Intermission	;end of period junk (zamboni/stats). As 93: opens the pause menu sc
 	bne.s	.wait	;keep waiting while a pad is on a team
 	tst.w	(cont2team).w
 	bne.s	.wait
-.clrz	;IDA: loc_131C6
+.clrz
 	st	(zamx).w
 	rts
-.sslist	;IDA: unk_131CC (93 .sslist). Menu item lists by period, then playoff period. The targets have no IDA labels
+.sslist	;93 .sslist. Menu item lists by period, then playoff period
 	dc.l	StartGameText,IntermissionText,IntermissionText,IntermissionText,ExitGameText
 	dc.l	StartGameTextPO,IntermissionText,IntermissionText,IntermissionText,ExitGameTextPO
 InitScores	;initialize other games scores/period in playoffs. Called from StartGame
@@ -484,7 +484,7 @@ InitScores	;initialize other games scores/period in playoffs. Called from StartG
 	moveq	#$10,d0	;gssize
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.top	;IDA: loc_1320C
+.top
 	cmp.w	(gamenum).w,d1
 	beq.w	.next
 	btst	#2,$E(a0)	;gsfso
@@ -493,11 +493,11 @@ InitScores	;initialize other games scores/period in playoffs. Called from StartG
 	moveq	#3,d0
 	bsr.w	randomd0
 	bra.w	.1
-.0	;IDA: loc_1322C
+.0
 	bsr.w	SetScore
-.1	;IDA: loc_13230
+.1
 	dbf	d0,.0
-.next	;IDA: loc_13234
+.next
 	suba.w	#$10,a0	;gssize
 	dbf	d1,.top
 	rts
@@ -557,8 +557,8 @@ getscore	;IDA name (93 SetScore .getscore). d0 = scoring team, d1 = other team. 
 	andi.w	#$70,d0
 	lsr.w	#1,d0	;row * 8
 	lea	sctab(pc),a1
-	move.l	0(a1,d0.w),(nibblebuffer).w	;93 dword_FFCACA
-	move.l	4(a1,d0.w),(nibblebuffer+4).w	;93 dword_FFCACE
+	move.l	0(a1,d0.w),(nibblebuffer).w
+	move.l	4(a1,d0.w),(nibblebuffer+4).w
 	asl.w	#2,d1
 	movea.w	#$30E,a1	;TeamList
 	movea.l	0(a1,d1.w),a1
@@ -620,7 +620,7 @@ NewTicker3pt2	;IDA name (93 NewTicker3). Display ticker score for game d3 (a0 = 
 	tst.w	(OptPlayMode).w
 	bne.w	.0
 	clr.w	d0	;not playoffs: 'EA Hockey Night'
-.0	;IDA: loc_13408
+.0
 	lea	GameLabels(pc),a1
 	bsr.w	PrintStringFromList
 	move.w	8(a0),d0	;gsper
@@ -643,7 +643,7 @@ NewTicker3pt2	;IDA name (93 NewTicker3). Display ticker score for game d3 (a0 = 
 	bsr.w	.tn
 	addq.w	#2,sp
 	rts
-.tn	;IDA: sub_13454 (93 .tn, IDA NewTicker3_tn). Print team d0 name and score d1 on the next row
+.tn	;93 .tn, IDA NewTicker3_tn. Print team d0 name and score d1 on the next row
 	move.w	4(sp),(printx).w
 	addq.w	#1,(printy).w
 	movea.w	#$30E,a1	;TeamList (93 $314)
@@ -657,16 +657,16 @@ NewTicker3pt2	;IDA name (93 NewTicker3). Display ticker score for game d3 (a0 = 
 	moveq	#2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print
-GameLabels	;IDA: unk_13488 (93 name). Ticker titles, by OptPlayMode and gamelevel
+GameLabels	;93 name. Ticker titles, by OptPlayMode and gamelevel
 	String	'EA Hockey Night'
 	String	'Stanley Cup Qualifier'
 	String	'Quarterfinal'
 	String	'Stanley Cup Semifinal'
-ClearTickerArea	;IDA: sub_134D8 (93 name). Erase the ticker box. Called from Intermission and StartHL2
+ClearTickerArea	;93 name. Erase the ticker box. Called from Intermission and StartHL2
 	bsr.w	SetTickerAreaPosition
 	move.w	#$7FF,d2	;blank char
 	bra.w	eraser
-SetTickerAreaPosition	;IDA: sub_134E4 (93 name). Set printx/printy/printm for the ticker box (x 3, y $17; the $BD map in pause mode). Return d0 =
+SetTickerAreaPosition	;93 name. Set printx/printy/printm for the ticker box (x 3, y $17; the $BD map in pause mode). Return d0 =
 	;$1A wide, d1 = 5 high. Called from NewTicker3pt2 and ClearTickerArea
 	bsr.w	printz
 	String	$BD,3,$17		;IDA: ori.b / move.b d0,-(a3)
@@ -674,40 +674,40 @@ SetTickerAreaPosition	;IDA: sub_134E4 (93 name). Set printx/printy/printm for th
 	bne.w	.1
 	bsr.w	printz
 	String	$BF,3,$17		;IDA: ori.b / move.b d0,-(a3)
-.1	;IDA: loc_13502
+.1
 	moveq	#$1A,d0
 	moveq	#5,d1
 	rts
-PrintStringFromList	;IDA: sub_13508 (93 name). Print string d0 of the String list a1 with print2 (93 printsmall)
+PrintStringFromList	;93 name. Print string d0 of the String list a1 with print2 (93 printsmall)
 	bsr.w	Adda1Offset
 	bra.w	print2
 Adda1Offset	;IDA name (93 AdvanceStringPtr). Return a1 = string d0 of the String list a1 (92 Fprint without the print)
 	bra.w	.0
-.loop	;IDA: loc_13514
+.loop
 	adda.w	(a1),a1
-.0	;IDA: loc_13516
+.0
 	dbf	d0,.loop
 	rts
-DoHiLights	;IDA: sub_1351C (93 name). Hilites logic: search for hilite game and show hilite. Called from Intermission
+DoHiLights	;93 name. Hilites logic: search for hilite game and show hilite. Called from Intermission
 	bsr.w	GetShifter
 	moveq	#$10,d3	;gssize
 	mulu.w	d1,d3
 	movea.w	#(gsstruct-M68K_RAM),a0
 	adda.w	d3,a0
-.top	;IDA: loc_1352A
+.top
 	btst	#2,$E(a0)	;gsfso
 	bne.w	.next
 	bclr	#1,$E(a0)	;gsfhl
 	beq.w	.next
 	bsr.w	StartHL
-.next	;IDA: loc_13542
+.next
 	suba.w	#$10,a0	;gssize
 	dbf	d1,.top
 	rts
-StartHL	;IDA: sub_1354C (93 name). Play hilite for game a0, d1 = game. Called from DoHiLights. Falls into StartHL2
+StartHL	;93 name. Play hilite for game a0, d1 = game. Called from DoHiLights. Falls into StartHL2
 	movem.l	d0-d7/a0-a6,-(sp)
-StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with a random result. A tied game is replayed (beq StartHL2). 94:
-	;song $79 (93 $36), sub_16BAC (93 setupice_highlight), SetTeamColors (93 setplayercolors)
+StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result. A tied game is replayed (beq StartHL2). 94:
+	;song $79 (93 $36), setupice_highlight, SetTeamColors (93 setplayercolors)
 	btst	#sf3sbut,(sflags3).w	;sf3sbut
 	bne.w	.nhl0
 	bsr.w	.sv
@@ -734,8 +734,8 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	move.w	(a0),(HomeTeam).w	;set up teams for game in a0
 	move.w	2(a0),(VisTeam).w
 	move.l	a0,-(sp)
-	clr.w	(HmShots+tmgoalie).w	;93 word_FFC50C
-	clr.w	(AwShots+tmgoalie).w	;93 word_FFC6AE
+	clr.w	(HmShots+tmgoalie).w
+	clr.w	(AwShots+tmgoalie).w
 	jsr	(clearTeamStats).l
 	jsr	(restoreteams).w
 	st	(c1playernum).w
@@ -755,7 +755,7 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	btst	#0,(gsp+1).w
 	beq.w	.ndi
 	bset	#gmdir,(gmode).w	;gmdir
-.ndi	;IDA: loc_13628
+.ndi
 	clr.b	(sflags).w
 	move.b	#4,(sflags2).w	;1<<sf2drec
 	clr.b	(sflags3).w
@@ -786,12 +786,12 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	moveq	#$B,d0
 	movea.l	#.postab,a0
 	movea.w	#(SortCords-M68K_RAM),a1
-.loop	;IDA: loc_136B0
-	move.w	position(a1),d1	;IDA: loc_136B0. position
+.loop
+	move.w	position(a1),d1	;position
 	btst	#pfgoal,pflags(a1)	;pfgoal
 	bne.w	.pl0
 	addq.w	#6,d1
-.pl0	;IDA: loc_136C0
+.pl0
 	asl.w	#2,d1
 	move.w	0(a0,d1.w),(a1)	;Xpos
 	move.w	2(a0,d1.w),Ypos(a1)	;Ypos
@@ -803,20 +803,20 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	move.w	#$18,(palcount).w
 	move.w	(vcount).w,(oldvcount).w
 	move.w	#$B4,-(sp)	;180 frames after the clock stops
-.0	;IDA: loc_136F0
+.0
 	jsr	(DoGameFrame).w
 	btst	#gmclock,(gmode).w	;gmclock
 	beq.w	.1
 	subq.w	#1,(sp)
 	bmi.w	.endhl
-.1	;IDA: loc_13704
+.1
 	bsr.w	orjoy
 	btst	#5,d1	;cbut
 	bne.w	.2
 	btst	#7,d1	;sbut
 	beq.s	.0
-.2	;IDA: loc_13716
-	move.w	(HmGoals).w,d0	;IDA: loc_13716. tied: random winner
+.2
+	move.w	(HmGoals).w,d0	;tied: random winner
 	cmp.w	(AwGoals).w,d0
 	bne.w	.endhl
 	move.w	(VDP_CNTR).l,d0	;hvcount
@@ -824,7 +824,7 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	add.w	d0,(HmGoals).w
 	eori.w	#1,d0
 	add.w	d0,(AwGoals).w
-.endhl	;IDA: loc_13738
+.endhl
 	addq.w	#2,sp
 	movea.l	(sp)+,a0
 	movem.l	d1/a0,-(sp)
@@ -836,7 +836,7 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	bsr.w	forceblack
 	moveq	#$F,d0
 	movea.w	#(SortCords-M68K_RAM),a0
-.clr	;IDA: loc_13766
+.clr
 	clr.w	(a0)
 	adda.w	#SCstruct,a0
 	dbf	d0,.clr
@@ -867,19 +867,19 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	bsr.w	waitxsr
 	btst	#7,d1
 	beq.w	.exit
-.exit2	;IDA: loc_137E0
-	bset	#sf3sbut,(sflags3).w	;IDA: loc_137E0 (93 .exit2). sf3sbut
-.exit	;IDA: loc_137E6
-	movem.l	(sp)+,d0-d7/a0-a6	;IDA: loc_137E6 (93 .exit)
+.exit2
+	bset	#sf3sbut,(sflags3).w	;93 .exit2. sf3sbut
+.exit
+	movem.l	(sp)+,d0-d7/a0-a6	;93 .exit
 	rts
-.nhl1	;IDA: loc_137EC
-	bsr.w	.lo	;IDA: loc_137EC (93 .nhl1)
+.nhl1
+	bsr.w	.lo	;93 .nhl1
 	bsr.w	.ranres
 	bra.s	.exit2
-.nhl0	;IDA: loc_137F6
-	bsr.w	.ranres	;IDA: loc_137F6 (93 .nhl0)
+.nhl0
+	bsr.w	.ranres	;93 .nhl0
 	bra.s	.exit
-.setteam	;IDA: sub_137FC (93 .setteam, IDA SetupTeamForReplay). Refill energy, set personnel; 94 also clears sflags8 bit 7
+.setteam	;93 .setteam, IDA SetupTeamForReplay. Refill energy, set personnel; 94 also clears sflags8 bit 7
 	jsr	(reenergizeteam).l
 	bsr.w	SetPersonel
 	bsr.w	forcepldata
@@ -888,7 +888,7 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	st	$1A(a2)
 	st	$1C(a2)
 	rts
-.ranres	;IDA: sub_1381E (93 .ranres). Random resolve of game (if tied = random score)
+.ranres	;93 .ranres. Random resolve of game (if tied = random score)
 	move.w	$A(a0),d0
 	cmp.w	$C(a0),d0
 	bne.w	.rr0
@@ -897,27 +897,27 @@ StartHL2	;IDA: loc_13550 (93 name). Play hilite for game a0. Start skips it with
 	add.w	d0,$A(a0)
 	eori.w	#1,d0
 	add.w	d0,$C(a0)
-.rr0	;IDA: loc_13840
+.rr0
 	move.w	#5,8(a0)	;gsper: final
 	rts
-.sv	;IDA: sub_13848 (93 .sv). Save $5BE words from gmode to M68K_RAM (93 $37F), then ScoreSumbytes
+.sv	;93 .sv. Save $5BE words from gmode to M68K_RAM (93 $37F), then ScoreSumbytes
 	move.w	#$5BD,d0
 	movea.w	#(gmode-M68K_RAM),a1
 	movea.l	#M68K_RAM,a2
-.sv1	;IDA: loc_13856
+.sv1
 	move.w	(a1)+,(a2)+
 	dbf	d0,.sv1
 	move.w	(ScoreSumbytes).w,(a2)+
 	rts
-.lo	;IDA: sub_13862 (93 .lo). Restore what .sv saved
+.lo	;93 .lo. Restore what .sv saved
 	move.w	#$5BD,d0
 	movea.w	#(gmode-M68K_RAM),a2
 	movea.l	#M68K_RAM,a1
-.lo1	;IDA: loc_13870
+.lo1
 	move.w	(a1)+,(a2)+
 	dbf	d0,.lo1
 	move.w	(a1)+,(ScoreSumbytes).w
 	rts
-.postab	;IDA: unk_1387C. Xpos,Ypos by position (goalie, l.def, r.def, l.wing, center, r.wing), pfgoal set, then clear (93 .postab)
+.postab	;Xpos,Ypos by position (goalie, l.def, r.def, l.wing, center, r.wing), pfgoal set, then clear (93 .postab)
 	dc.w	0,-240,-70,-140,20,-110,-100,-60,25,-40,70,-80
 	dc.w	0,240,34,90,-55,80,100,40,-10,10,-50,0

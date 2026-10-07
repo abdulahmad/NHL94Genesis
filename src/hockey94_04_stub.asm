@@ -20,7 +20,7 @@ AddPenalty2 = $11F62		;bsr.w / Bcc.w at $14A4C. penalty94_1
 ChkShotStat = $12F30		;bsr.w / Bcc.w at $14724. penalty94_2
 ChooseSong = $FE556		;jsr / jmp (x).l at $1490A
 GetHot = $106E0			;bsr.w / Bcc.w at $14E7C. logic94_5
-PenGoalStuff = $1284A		;bsr.w / Bcc.w at $149BE. penalty94_1 (IDA sub_1284A)
+PenGoalStuff = $1284A		;bsr.w / Bcc.w at $149BE. penalty94_1
 PrintScores1 = $12C04		;bsr.w / Bcc.w at $149C8. penalty94_2
 SetSPA = $1073A			;bsr.w / Bcc.w at $14A3E. logic94_5
 assinsert = $10658		;bsr.w / Bcc.w at $14A84. logic94_5
@@ -35,9 +35,9 @@ randomd0s = $1107A		;bsr.w / Bcc.w at $14764. middle94_1
 rtss2 = $15464			;bsr.w / Bcc.w at $145F2. an rts
 sfx = $11132			;bsr.w / Bcc.w at $14746. middle94_1
 sroot = $110BE			;bsr.w / Bcc.w at $145D0. middle94_1
-play_new_song = $1A304		;bsr.w / Bcc.w at $14838. IDA: sub_1A304
-EndPenaltyShotPlay = $F37C		;jsr / jmp (x).l at $14814. logic94_4 (IDA: sub_F37C)
-EndOneTimer = $FEFF0		;jsr / jmp (x).l at $14A7E (IDA: sub_FEFF0)
+play_new_song = $1A304		;bsr.w / Bcc.w at $14838
+EndPenaltyShotPlay = $F37C		;jsr / jmp (x).l at $14814. logic94_4
+EndOneTimer = $FEFF0		;jsr / jmp (x).l at $14A7E
 
 ; Main segment code
 	include	hockey94_04.asm

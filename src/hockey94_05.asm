@@ -2,11 +2,11 @@
 ;	92 hockey.asm part 2 tail, then the 92 part 3 player-roster code, as 93 hockey93_05.asm: puckstick, puckglue, puckbody,
 ;	rtss2 (the shared rts), puckgoalie, deflect, makepde, getpde, setpde, SetPersonel, SetPlList, findAvailablePlayer, the
 ;	94-only SetupPenaltyShot, forcepldata, ResetBench, Setplass, setplayer, checkattriblimits. The vblank handler (93 VBlank,
-;	IDA loc_15D9A, video94_1) follows at $15D9A.
+;	video94_1) follows at $15D9A.
 ;	Transcribed from lst/nhl94.bin.lst lines 50532-51764. Global names are the IDA names. IDA _glue (puckstick, also
 ;	entered from puckgoalie) is the 93 global puckglue. IDA labels that would split a routine are locals:
 ;	.CheckStkForContactWithSkater and .PlayerPassOrLoosePuckStkLoad in puckstick, .AwayTeam in setplayer. Local labels are
-;	the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
 ;	Sort struct (SortCords, $80 each): 0 Xpos, 4 attribute, 6 frame, $14 Ypos, $18 Zpos, $28 Xvel, $2A Yvel, $2C Zvel,
@@ -46,7 +46,7 @@ puckstick	;puck collides with stick. a2 = player who collided, a3 = puck, d0 = d
 .noslot
 	cmp.l	#$24,d0
 	bhi.w	rtss2
-.1	;IDA: loc_15140
+.1
 	tst.w	position(a2)	;check if colliding player is goalie
 	beq.w	.steal	;branch if goalie
 	tst.w	position(a0)	;check if goalie
@@ -71,7 +71,7 @@ puckstick	;puck collides with stick. a2 = player who collided, a3 = puck, d0 = d
 	cmp.w	#4,d0	;compare 4 to d0
 	bhi.w	rtss2	;exit if higher (not losing puck)
 	bra.w	.steal
-.2	;IDA: loc_1518C
+.2
 	cmp.w	#2,d0	;compare 2 to d0
 	bhi.w	rtss2	;exit if higher (not losing puck)
 .steal
@@ -123,7 +123,7 @@ puckstick	;puck collides with stick. a2 = player who collided, a3 = puck, d0 = d
 .PlayerPassOrLoosePuckStkLoad	;IDA: PlayerPassOrLoosePuckStkLoad (no xref; a label inside puckstick)
 	move.b	stickhand(a2),d1
 	mulu.w	#$15E,d1
-.nohand	;IDA: loc_15246
+.nohand
 	addi.w	#$32C8,d1
 	mulu.w	d1,d1
 	cmp.l	d1,d0
@@ -135,7 +135,7 @@ puckstick	;puck collides with stick. a2 = player who collided, a3 = puck, d0 = d
 	jsr	(onetimershot).l	;94 only
 	exg	a2,a3
 	rts
-.3	;IDA: loc_15268
+.3
 	cmp.l	#$144,d0
 	bhi.w	.ex2
 	cmpi.w	#$18,$5A(a2)
@@ -153,7 +153,7 @@ puckglue	;IDA: _glue, a local of puckstick that puckgoalie also branches to (93 
 	btst	#pfteam,pflags(a2)	;check if player is home or away
 	bne.w	.tm	;branch if away
 	exg	a0,a1	;swap struct addresses
-.tm	;IDA: loc_152A4
+.tm
 	st	$1A(a0)	;FF into assist 1
 	st	$1C(a0)	;FF into assist 2
 	bset	#3,tmflags(a0)	;set a flag (not sure what)
@@ -166,13 +166,13 @@ puckglue	;IDA: _glue, a local of puckstick that puckgoalie also branches to (93 
 	bne.w	.snd	;branch if not
 	addi.w	#$A,(CwdExciteLvl).w	;add to CwdExciteLvl
 	move.w	#$B,(sp)	;Move B into stack
-.snd	;IDA: loc_152DC
+.snd
 	bsr.w	song
 	move.w	SCnum(a2),d0	;move SCnum into d0
 	cmp.w	(passplayer).w,d0	;compare to d0
 	bne.w	.nrec	;branch if not equal
 	addq.w	#1,$14(a1)	;add 1 to pass completed
-.nrec	;IDA: loc_152F0
+.nrec
 	st	(passplayer).w	;set to FFFF
 	bclr	#sfspdir,(sflags).w	;clear pass dir mode
 	bclr	#sfssdir,(sflags).w	;clear shot dir mode
@@ -197,12 +197,12 @@ puckglue	;IDA: _glue, a local of puckstick that puckgoalie also branches to (93 
 	beq.w	.0	;branch if 0
 	cmp.w	(c4playernum).w,d0
 	beq.w	rtss2	;exit if player controlled
-.0	;IDA: loc_15352
+.0
 	tst.w	(cont3team).w
 	bne.w	.1	;branch if no team
 	tst.w	(cont4team).w
 	beq.w	.setd0player2	;branch if no team
-.1	;IDA: loc_15362
+.1
 	movem.l	d0/a3,-(sp)
 	asl.w	#7,d0
 	movea.l	#SortCords,a3
@@ -212,7 +212,7 @@ puckglue	;IDA: _glue, a local of puckstick that puckgoalie also branches to (93 
 	beq.w	.2	;branch if not
 	movem.l	(sp)+,d0/a3	;exit if player controlled
 	rts
-.2	;IDA: loc_15386
+.2
 	movem.l	(sp)+,d0/a3
 .setd0player2
 	cmp.w	#6,d0
@@ -225,11 +225,11 @@ puckglue	;IDA: _glue, a local of puckstick that puckgoalie also branches to (93 
 	cmp.w	(cont1team).w,d1
 	bne.w	.3
 	jmp	setc1player	;logic94_1
-.3	;IDA: loc_153AE
+.3
 	cmp.w	(cont2team).w,d1
 	bne.w	.4
 	jmp	setc2player	;logic94_1
-.4	;IDA: loc_153BC
+.4
 	cmp.w	(cont1team).w,d1
 	bne.w	rtss2
 	jmp	setc1player	;logic94_1
@@ -255,7 +255,7 @@ puckbody	;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckcoll .c
 	bne.w	.0
 	move.l	a2,-(sp)
 	bsr.w	GetHot
-.0	;IDA: loc_15414
+.0
 	move.w	Xvel(a3),d2
 	move.w	Yvel(a3),d3
 	move.b	d0,Xvel(a3)
@@ -271,7 +271,7 @@ puckbody	;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckcoll .c
 	cmpi.w	#$C,Zpos(a3)
 	bgt.w	FallDown
 	rts
-.1	;IDA: loc_1544E
+.1
 	bset	#pfalock,pflags(a2)
 	bne.w	rtss2
 	move.w	#$10D0,d1	;SPAcatch
@@ -341,9 +341,9 @@ puckgoalie	;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The save 
 	btst	#pfteam,pflags(a2)	;check home or away
 	beq.w	.song	;branch if home
 	move.w	#$D,(sp)	;away song
-.song	;IDA: loc_15522
+.song
 	bsr.w	song
-.nosong	;IDA: loc_15526
+.nosong
 	move.w	#$24,-(sp)	;#SFXpuckbody
 	bsr.w	sfx
 	move.w	(puckc).w,d2	;move puckc into d2
@@ -367,7 +367,7 @@ puckgoalie	;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The save 
 	bne.w	.0	;branch if not equal
 	move.l	a2,-(sp)	;pop onto stack
 	bsr.w	GetHot
-.0	;IDA: loc_15580
+.0
 	move.b	d0,Xvel(a3)	;move d0 into puck Xvel
 	move.b	d1,Yvel(a3)	;move d1 into puck Yvel
 	bra.w	puckflip	;flip puck
@@ -673,7 +673,7 @@ SetPersonel	;IDA name (93 setpersonel). This will set personnel on team a2 accor
 	dbmi	d3,.4
 	bpl.w	.0
 	movea.w	a3,a0
-.0	;IDA: loc_15812
+.0
 	tst.w	position(a3)
 	dbpl	d3,.4
 	move.b	6(a4,d4.w),newpos(a0)
@@ -684,7 +684,7 @@ SetPersonel	;IDA name (93 setpersonel). This will set personnel on team a2 accor
 	movem.l	(sp)+,d0-d5/a0-a4
 	rts
 SetPlList	;create PlList of players who we want on the ice now. a2 = team struct. Takes the current line (tmline) by priolist; an unavailable
-	;player (in the box or injured, -3 / -4) is replaced from sublist (findAvailablePlayer), or from the whole roster (sub_9F9A)
+	;player (in the box or injured, -3 / -4) is replaced from sublist (findAvailablePlayer), or from the whole roster
 	movea.w	#(PlList-M68K_RAM),a4
 	clr.l	(a4)	;clear 6 bytes (PlList)
 	clr.w	4(a4)
@@ -744,7 +744,7 @@ SetPlList	;create PlList of players who we want on the ice now. a2 = team struct
 .error
 	jsr	(GetPlayerCount).l	;then try the players from d0 down
 	move.w	d0,d3
-.try	;IDA: loc_158E4
+.try
 	move.w	d3,d0
 	subq.w	#1,d3
 	bmi.s	.next1
@@ -763,21 +763,21 @@ findAvailablePlayer	;IDA name (93 TryAddPlayerToList). d0 = player number (1 bas
 	cmpi.w	#$FFFC,$66(a2,d0.w)
 	beq.w	.0
 	moveq	#5,d0
-.loop	;IDA: loc_15916
+.loop
 	cmp.b	0(a4,d0.w),d1
 	dbeq	d0,.loop
 	beq.w	.0
 	move.b	d1,0(a4,d4.w)
 	rts
-.0	;IDA: loc_15928
+.0
 	clr.w	d1
 	rts
-SetupPenaltyShot	;IDA: sub_1592C. 94 only. Penalty shot set up for team a2 (called from puckpenshot): the shooter (BA_Sktr_SCnum) plays center from BA_Skater_Offset,
+SetupPenaltyShot	;94 only. Penalty shot set up for team a2 (called from puckpenshot): the shooter (BA_Sktr_SCnum) plays center from BA_Skater_Offset,
 	;the goalie (BA_Goalie_SCnum) stays; every other player is made unavailable with assignment $20 (assgoaliebreakwait)
 	movem.l	d0-d5/a0-a3,-(sp)
 	movea.w	$22(a2),a3
 	moveq	#5,d4
-.loop	;IDA: loc_15936
+.loop
 	move.w	$52(a3),d0
 	cmp.w	(BA_Sktr_SCnum).w,d0
 	beq.w	.0
@@ -787,23 +787,23 @@ SetupPenaltyShot	;IDA: sub_1592C. 94 only. Penalty shot set up for team a2 (call
 	move.w	#$20,d0	;assgoaliebreakwait (asstab $18DFC)
 	bsr.w	assreplace
 	bra.w	.3
-.0	;IDA: loc_1595C
+.0
 	bsr.w	Setplass
 	move.b	$61(a3),(savednewpnum).w
 	move.b	(BA_Skater_Offset+1).w,$61(a3)
 	move.w	#4,$34(a3)
 	bra.w	.2
-.1	;IDA: loc_15976
+.1
 	bsr.w	Setplass
 	clr.w	$34(a3)
-.2	;IDA: loc_1597E
+.2
 	clr.w	d3
 	move.b	$61(a3),d3
 	add.w	d3,d3
 	move.w	#$FFFF,$66(a2,d3.w)
 	lsr.w	#1,d3
 	bsr.w	setplayer
-.3	;IDA: loc_15992
+.3
 	st	$61(a3)
 	st	$60(a3)
 	adda.w	#$80,a3
@@ -825,7 +825,7 @@ forcepldata	;no skating on/off: force players to correct data (for faceoffs only
 	move.w	#$F,$52(a3)	;put F into SCNum
 	jsr	(Set4WayPlayerStub).l	;IDA nullsub: an rts
 	move.w	(sp)+,$52(a3)	;pop original SCNum back into SCNum
-.0	;IDA: loc_159DA
+.0
 	move.w	d0,position(a3)	;move newpos(d0) into position
 	bmi.w	.next
 	bsr.w	Setplass

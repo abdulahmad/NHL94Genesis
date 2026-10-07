@@ -26,7 +26,7 @@ a2touchpuck = $1013E		;bsr.w / Bcc.w at $151D6. logic94_5
 assinsert = $10658		;bsr.w / Bcc.w at $159F6. logic94_5
 assreplace = $10662		;bsr.w / Bcc.w at $15954. logic94_5
 chkpk2 = $E274			;bsr.w / Bcc.w at $15B16. logic94_3
-Set4WayPlayerStub = $F6E38		;jsr / jmp (x).l at $159D0 (IDA: nullsub_2)
+Set4WayPlayerStub = $F6E38		;jsr / jmp (x).l at $159D0
 onetimershot = $F6CBA		;jsr / jmp (x).l at $1525E
 priolist = $19286		;#x at $1583C
 puckflip = $102D2		;bsr.w / Bcc.w at $15424. logic94_5
@@ -36,7 +36,7 @@ setc1player = $C0BC		;jsr / jmp (x).l at $153A8. logic94_1
 setc2player = $C0DA		;jsr / jmp (x).l at $153B6. logic94_1
 sfx = $11132			;bsr.w / Bcc.w at $151D2. middle94_1
 song = $11156			;bsr.w / Bcc.w at $152DC. middle94_1
-GetPlayerCount = $9F9A			;jsr / jmp (x).l at $158DC. IDA: sub_9F9A
+GetPlayerCount = $9F9A			;jsr / jmp (x).l at $158DC
 sublist = $1921C			;#x at $158BA
 vtoa = $10676			;bsr.w / Bcc.w at $15480. logic94_5
 

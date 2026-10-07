@@ -1,6 +1,6 @@
 ;	NHL 94 (retail) segment $17A18-$17C71
 ;	94 only: the EA Sports screen (EASportsScreen, called from Begin) and the 94 helpers after it, then the
-;	93 setoptions vblank handler (93 hockey93_08 VBlank_SetOptions, IDA loc_17C42). 94 put this code just
+;	93 setoptions vblank handler (93 hockey93_08 VBlank_SetOptions). 94 put this code just
 ;	before that handler, so the handler ends this segment and LoadDefMenuOptions ($17C72, 93 DefaultMenus,
 ;	hockey94_09) follows. HiScoreScreen ($FED70) is not next to this code and is not in this segment.
 ;	Transcribed from lst/nhl94.bin.lst lines 54528-54846. IDA left $17B98-$17C41 as dc.b; it is code with
@@ -22,7 +22,7 @@ EASportsScreen	;94 only. Called from Begin. Show the EA Sports screen until a bu
 	move.w	#$FC00,(VSCRLPM).w
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$1F,d1			;32 longs: all 64 colours black
-.clr	clr.l	(a0)+			;IDA: loc_17A5C
+.clr	clr.l	(a0)+
 	dbf	d1,.clr
 	bsr.w	CopyPaletteToCRAM
 	bsr.w	setVram_0
@@ -45,34 +45,34 @@ EASportsScreen	;94 only. Called from Begin. Show the EA Sports screen until a bu
 	move.w	#$18,(palcount).w	;fade in
 	move	#$2500,sr		;vblank on
 	move.w	#$50,(RNGseed).w	;frame count down in the random seed word
-.wait	moveq	#4,d0			;IDA: loc_17AB0
+.wait	moveq	#4,d0
 	bsr.w	waitx			;4 frames; d1 = buttons
 	tst.w	d1
-	bne.w	.ex			;IDA: loc_17AC2. Button pressed
+	bne.w	.ex			;Button pressed
 	subq.w	#1,(RNGseed).w
 	bpl.s	.wait
 .ex	move	#$2700,sr
 	rts
 
-SetPojoyMode	;IDA: sub_17AC8. 94 only. Set pojoy from the number of players for play modes 2 and 3. Called from $F844A
+SetPojoyMode	;94 only. Set pojoy from the number of players for play modes 2 and 3. Called from $F844A
 	cmpi.w	#2,(OptPlayMode).w
 	blt.w	rtss2
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	rtss2
 	moveq	#7,d0
 	tst.w	(FourWayPlay).w
-	beq.w	.set			;IDA: loc_17AEA
+	beq.w	.set
 	move.w	#$B,d0			;4 way play
 .set	sub.w	(OptNOP).w,d0
 	move.w	d0,(pojoy).w
 	rts
 
-DrawMatchupBitmaps	;IDA: sub_17AF4. 94 only. Called from PrintOptions. Draw the VisTeam and HomeTeam bitmaps (DrawTeamBitmap)
+DrawMatchupBitmaps	;94 only. Called from PrintOptions. Draw the VisTeam and HomeTeam bitmaps (DrawTeamBitmap)
 	movem.l	d0-d7/a0-a2,-(sp)
 	cmpi.w	#4,(OptPlayMode).w
-	beq.w	.opt			;IDA: loc_17B0A
+	beq.w	.opt
 	tst.w	(OptPlayMode).w
-	bne.w	.draw			;IDA: loc_17B16
+	bne.w	.draw
 .opt	move.w	(Opt1Team).w,(HomeTeam).w
 	move.w	(Opt2Team).w,(VisTeam).w
 .draw	bsr.w	printz
@@ -99,7 +99,7 @@ DrawMatchupBitmaps	;IDA: sub_17AF4. 94 only. Called from PrintOptions. Draw the 
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 
-DrawTeamBitmap	;IDA: sub_17B78. 94 only. dobitmap entry d1 of TeamBitmaps (d4 from the caller)
+DrawTeamBitmap	;94 only. dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	clr.w	d0
 	asl.w	#1,d1
 	movea.l	#TeamBitmaps,a0
@@ -112,7 +112,7 @@ DrawTeamBitmap	;IDA: sub_17B78. 94 only. dobitmap entry d1 of TeamBitmaps (d4 fr
 	moveq	#0,d5
 	bra.w	dobitmap
 
-DrawTeamBlockBitmap	;IDA: sub_17B98. 94 only, no xref (IDA dc.b). Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
+DrawTeamBlockBitmap	;94 only, no xref (IDA dc.b). Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
 	clr.w	d0
 	asl.w	#1,d1
 	movea.l	#Teamblocksmap,a0
@@ -126,14 +126,14 @@ DrawTeamBlockBitmap	;IDA: sub_17B98. 94 only, no xref (IDA dc.b). Like DrawTeamB
 	moveq	#2,d5
 	bra.w	dobitmap
 
-ClearTextBox	;IDA: sub_17BBA. 94 only, no xref (IDA dc.b). Set the print position, then erase 12 x 2 at it
+ClearTextBox	;94 only, no xref (IDA dc.b). Set the print position, then erase 12 x 2 at it
 	bsr.w	SetTeamPrintPos
 	moveq	#$C,d0			;12
 	moveq	#2,d1			;2
 	move.w	#$7FF,d2
 	bra.w	eraser
 
-SetTeamPrintPos	;IDA: sub_17BCA. 94 only (IDA dc.b). printz position string, then printx = $1A when a2 is the home team
+SetTeamPrintPos	;94 only (IDA dc.b). printz position string, then printx = $1A when a2 is the home team
 	bsr.w	printz
 	String	$BF,2,$A,0
 	cmpa.w	#(HmShots-M68K_RAM),a2	;home team struct?
@@ -141,7 +141,7 @@ SetTeamPrintPos	;IDA: sub_17BCA. 94 only (IDA dc.b). printz position string, the
 	move.w	#$1A,(printx).w
 	rts
 
-SetGoalieMode	;IDA: sub_17BE4. 94 only, no xref (IDA dc.b). $26(a2) = 0 if a pad has team a2, else (gamelevel <= 2, line changes on)
+SetGoalieMode	;94 only, no xref (IDA dc.b). $26(a2) = 0 if a pad has team a2, else (gamelevel <= 2, line changes on)
 	;a value from the team's .sodds
 	movem.l	d0/a0,-(sp)
 	clr.w	$26(a2)
@@ -171,13 +171,13 @@ SetGoalieMode	;IDA: sub_17BE4. 94 only, no xref (IDA dc.b). $26(a2) = 0 if a pad
 .x	movem.l	(sp)+,d0/a0
 	rts
 
-VBlank_SetOptions	;IDA: loc_17C42. 93 hockey93_08 name: vbint handler stored by setoptions (also ROM $FB024).
-	;92 vb2 (cramfade unless dfng), plus sub_15E72 (93 DumpSprites2) when dfok is set
+VBlank_SetOptions	;93 hockey93_08 name: vbint handler stored by setoptions (also ROM $FB024).
+	;92 vb2 (cramfade unless dfng), plus DumpSprites2 when dfok is set
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).w		;dfng
-	bne.w	.nograph		;IDA: loc_17C62
+	bne.w	.nograph
 	bclr	#dfok,(disflags).w		;dfok
-	beq.w	.fade			;IDA: loc_17C5E
+	beq.w	.fade
 	bsr.w	DumpSprites2		;93 DumpSprites2
 .fade	bsr.w	cramfade
 .nograph	addq.w	#1,(vcount).w

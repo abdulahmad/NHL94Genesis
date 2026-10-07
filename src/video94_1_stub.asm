@@ -31,8 +31,8 @@ setffo = $1661A			;bsr.w / Bcc.w at $15EE6. video94_2
 setsortcords = $165FC		;bsr.w / Bcc.w at $15EE2. video94_2
 sfx = $11132			;bsr.w / Bcc.w at $15E16. middle94_1
 showclock = $162FE		;bsr.w / Bcc.w at $15EEA. video94_2
-AddArenaAnimSprite = $FD78A		;jsr / jmp (x).l at $15EF2 (IDA: sub_FD78A)
-FaceOffSprites = $A78AE		;#x at $16068. 93 FaceOffSprites (IDA: unk_A78AE)
+AddArenaAnimSprite = $FD78A		;jsr / jmp (x).l at $15EF2
+FaceOffSprites = $A78AE		;#x at $16068. 93 FaceOffSprites
 
 ; Main segment code
 	include	video94_1.asm

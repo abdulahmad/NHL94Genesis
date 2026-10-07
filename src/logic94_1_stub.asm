@@ -49,15 +49,15 @@ sfx = $11132			;bsr.w at $BE1C
 sroot = $110BE			;bsr.w at $B55E
 startpause1 = $7CBC		;bne.w at $B178 (hockey94_01)
 startpause2 = $7CCA		;bne.w at $B17C (hockey94_01)
-startpause3 = $7CDC		;beq.w at $B18C. IDA loc_7CDC (hockey94_01)
-startpause4 = $7CEA		;bra.w at $B190. IDA loc_7CEA (hockey94_01)
-linebar = $12E66		;bsr.w at $B9A0. IDA: sub_12E66
-PrintStringFromList = $13508		;bsr.w at $B99A. IDA: sub_13508
-OneTimerPass = $F6778		;jsr (x).l at $BCA4 (IDA: sub_F6778)
-OneTimerTarget = $F67E4		;jsr (x).l at $BC88 (IDA: sub_F67E4)
-PuckOnAttackHalf = $F6C44		;jsr (x).l at $B208 (IDA: sub_F6C44)
-ShortenMsgTimer = $FE1AA		;jsr (x).l at $B152 (IDA: sub_FE1AA)
-CountButtonPress = $FEE60		;jsr (x).l at $B760 (IDA: sub_FEE60)
+startpause3 = $7CDC		;beq.w at $B18C. hockey94_01
+startpause4 = $7CEA		;bra.w at $B190. hockey94_01
+linebar = $12E66		;bsr.w at $B9A0
+PrintStringFromList = $13508		;bsr.w at $B99A
+OneTimerPass = $F6778		;jsr (x).l at $BCA4
+OneTimerTarget = $F67E4		;jsr (x).l at $BC88
+PuckOnAttackHalf = $F6C44		;jsr (x).l at $B208
+ShortenMsgTimer = $FE1AA		;jsr (x).l at $B152
+CountButtonPress = $FEE60		;jsr (x).l at $B760
 vtoa = $10676			;jsr (x).l at $B4EC
 
 ; Main segment code

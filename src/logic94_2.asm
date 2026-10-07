@@ -4,7 +4,7 @@
 ;	banner and addinfo are not here. assgoaliebreakwait is new.
 ;	Transcribed from lst/nhl94.bin.lst lines 37886-38681. Global names are the IDA names except asseben (IDA
 ;	assben) and assfaceoffp1 (IDA assfaceoffpl), the 93 names. Local labels are the IDA local names (_x -> .x,
-;	exit -> .exit, inside assfaceoffp1) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	exit -> .exit, inside assfaceoffp1) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 ;	SortCords offsets (93 names): Xpos 0, Ypos $14, position $34, assnum $36, asslist $38, temp3 $44, temp4 $46,
@@ -73,7 +73,7 @@ assbench
 	bsr.w	SetSPA
 	bset	#pfalock,pflags(a3)
 	move.w	#$64,temp1(a3)
-.x	;IDA: locret_C812
+.x
 	rts
 .done
 	clr.w	frame(a3)
@@ -119,7 +119,7 @@ asseben	;IDA: assben (93 asseben). Player a3 should exit the bench area
 	subq.w	#6,d0
 	bmi.w	.0
 	addq.w	#1,d0
-.0	;IDA: loc_C8A8
+.0
 	muls.w	#$E,d0
 	move.w	d0,Ypos(a3)
 	move.w	#$88,(a3)
@@ -128,7 +128,7 @@ asseben	;IDA: assben (93 asseben). Player a3 should exit the bench area
 	bset	#5,pflags(a3)
 	move.w	#$F6E,d1
 	bra.w	SetSPA
-.1	;IDA: loc_C8CA
+.1
 	move.w	#4,facedir(a3)
 	bclr	#pfnc,pflags(a3)
 	bclr	#5,pflags2(a3)
@@ -412,14 +412,14 @@ assscore
 	subq.w	#1,(shootoutdelay).w
 	bne.w	.2
 	bset	#2,(sflags2).w
-.2	;IDA: loc_CCB0
+.2
 	cmpi.w	#$88,(a3)
 	bgt.w	.3
 	cmpi.w	#$FF78,(a3)
 	bgt.w	.4
-.3	;IDA: loc_CCC0
+.3
 	clr.w	d1	;end of code not in 92
-.4	;IDA: loc_CCC2
+.4
 	sub.w	d7,temp1(a3)
 	bpl.w	.ckcon
 	bset	#5,pflags(a3)

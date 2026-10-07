@@ -5,7 +5,7 @@
 ;	Transcribed from lst/nhl94.bin.lst lines 48480-49542. Global names are the IDA names (this range has no IDA auto names).
 ;	IDA labels that would split a routine are locals: .PlayerControlled and .CheckingCalc in CCStart, .CmpPlayerStk,
 ;	.AddChktoPlayerStats and .FallList in FallDown. Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop,
-;	numbered), with the IDA label in an ;IDA: comment.
+;	numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	SPA values are frames94 table offsets, written as numbers with the frames94 name in the comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
@@ -768,7 +768,7 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	clr.w	$28(a3)	;clear Xvel
 	clr.w	$2A(a3)	;clear Yvel
 	move.w	(sp)+,d1	;pop from stack
-.0	;IDA: loc_14264
+.0
 	movem.l	d0/a0,-(sp)	;push to stack
 	cmpi.w	#$10C,$14(a2)	;check player Ypos with top goal line
 	bgt.w	.playerabovetopgoalline	;branch if above
@@ -807,7 +807,7 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	beq.w	.6
 	move.w	#$1A00,d1	;SPAboardmidr
 	bra.w	.6
-.1	;IDA: loc_142F4
+.1
 	cmp.w	#$17E8,d1	;SPAboardright. player right of center
 	bne.w	.4	;branch if not
 	cmpi.w	#$38,$14(a2)	;compare $38 to Ypos
@@ -819,7 +819,7 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	beq.w	.6	;branch if zero
 	move.w	#$193E,d1	;SPAboardmidl. change anim value
 	bra.w	.6
-.4	;IDA: loc_14326
+.4
 	btst	#3,4(a2)	;check bit 3 of frame
 	beq.w	.6	;branch if zero
 	cmp.w	#$17E8,d1	;SPAboardright. right of center
@@ -828,9 +828,9 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	bne.w	.6	;branch if not left of center
 	move.w	#$17E8,d1	;SPAboardright. change anim to same as right of center
 	bra.w	.6
-.5	;IDA: loc_14348
+.5
 	move.w	#$18CC,d1	;SPAboardleft. change anim
-.6	;IDA: loc_1434C
+.6
 	clr.w	$28(a2)	;clear Xvel
 	clr.w	$2A(a2)	;clear Yvel
 	bset	#5,$64(a2)	;set falldown bit
@@ -846,7 +846,7 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	dc.w	$185A	;SPAboardbot
 	dc.w	$18CC	;SPAboardleft
 	dc.w	$18CC	;SPAboardleft
-.7	;IDA: loc_14378
+.7
 	move.w	#$DD8,d1	;SPAfallback
 	sub.w	facedir(a2),d0	;facedir
 	addq.w	#1,d0
@@ -854,7 +854,7 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	cmp.w	#2,d0
 	bls.w	.2
 	move.w	#$D26,d1	;SPAfallfwd
-.8	;IDA: loc_14392
+.8
 	move.w	facedir(a2),d0	;facedir
 	andi.w	#3,d0
 	bne.w	.2	;branch if first 2 bits of d0 arent zero
@@ -908,7 +908,7 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 	move.w	#$1AF4,d1	;SPAinjury1. set injury animation
 	bsr.w	SetSPA
 	exg	a2,a3
-.9	;IDA: loc_1446A
+.9
 	move.w	#4,(InjCntDown).w
 	move.l	#$14,d0	;move 14 into d0 - Pen ???
 	tst.w	position(a3)	;check if a3 goalie

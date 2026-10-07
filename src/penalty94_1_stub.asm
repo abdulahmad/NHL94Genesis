@@ -16,7 +16,7 @@
 
 ; External addresses outside $011F2C-$012C03, read from lst/nhl94.bin: jsr / jmp (x).l, movea.l / move.l #x and
 ; lea (x).l carry the address; bsr.w / bra.w / Bcc.w is the displacement word address + displacement. IDA names.
-DoDMA_clearCallbackPointer = $11738	;bsr.w / Bcc.w at $120D6. middle94_2 (IDA sub_11738)
+DoDMA_clearCallbackPointer = $11738	;bsr.w / Bcc.w at $120D6. middle94_2
 DoFill = $11544			;bsr.w / Bcc.w at $12BFA. middle94_1
 Framer = $119B8			;bsr.w / Bcc.w at $127E2. middle94_2
 NewTicker = $13378		;bsr.w / Bcc.w at $120DA
@@ -37,7 +37,7 @@ eraser = $1197E			;jsr / jmp (x).l at $12058. middle94_2
 forceblack = $10F32		;bsr.w / Bcc.w at $120C0. middle94_1
 getGoalieSCnum = $B86A		;jsr / jmp (x).l at $121A4. logic94_1
 icerinkmap = $BC064		;#x at $12BC6
-DisplayPlayerAttributeMenu = $1889A		;bsr.w / Bcc.w at $12656. 93 DisplayPlayerAttributeMenu. IDA: loc_1889A
+DisplayPlayerAttributeMenu = $1889A		;bsr.w / Bcc.w at $12656. 93 DisplayPlayerAttributeMenu
 print = $11BA4			;bsr.w / Bcc.w at $12634. middle94_2
 printz = $11B92			;bsr.w / Bcc.w at $12036. middle94_2
 priolist = $19286		;#x at $12A00
@@ -45,18 +45,18 @@ rtss2 = $15464			;bsr.w / Bcc.w at $11F32. an rts
 setplayer = $15AA4		;bsr.w / Bcc.w at $12A1E
 sfx = $11132			;bsr.w / Bcc.w at $12572. middle94_1
 song = $11156			;middle94_1 (bsr.w at $11F96; a fixed value because the .song local also matches the name)
-EASNLogo = $12D70		;bsr.w / Bcc.w at $12B3C. 93 EASNLogo. IDA: sub_12D70
-USBoard = $12DA6		;bsr.w / Bcc.w at $12386. 93 USBoard. IDA: sub_12DA6
-GetPeriodTimeRemaining = $14A94		;bsr.w / Bcc.w at $1229E. 93 GetPeriodTimeRemaining. IDA: sub_14A94
-DisplayPeriodOver = $1850A		;bsr.w / Bcc.w at $12608. 93 DisplayPeriodOver. IDA: sub_1850A
-PenaltyShotBox = $187B8		;jsr / jmp (x).l at $12066 (IDA: sub_187B8)
-GetTempPlayerName = $18A6E		;bsr.w / Bcc.w at $12628. 93 GetPlayerName (IDA: sub_18A6E)
-play_new_song = $1A304		;jsr / jmp (x).l at $12568. IDA: sub_1A304
-ShootoutWonBy = $FC5AE		;jsr / jmp (x).l at $1266E (IDA: sub_FC5AE)
-LoadHomeTeamGfx = $FEA52		;jsr / jmp (x).l at $12B60 (IDA: sub_FEA52)
-PenShotPenalties = $1913A		;#x at $1213A. penalty shot penalty per penalty number (IDA: unk_1913A)
-RefMap2 = $5CF64		;#x at $12718. 93 RefMap2 (IDA: unk_5CF64)
-HorRinkMap = $BC05C		;#x at $12BBC. no IDA label (hidden in the SetHor string). 93 IceRinkMap; icerinkmap is +8 (IDA: unk_BC05C)
+EASNLogo = $12D70		;bsr.w / Bcc.w at $12B3C. 93 EASNLogo
+USBoard = $12DA6		;bsr.w / Bcc.w at $12386. 93 USBoard
+GetPeriodTimeRemaining = $14A94		;bsr.w / Bcc.w at $1229E. 93 GetPeriodTimeRemaining
+DisplayPeriodOver = $1850A		;bsr.w / Bcc.w at $12608. 93 DisplayPeriodOver
+PenaltyShotBox = $187B8		;jsr / jmp (x).l at $12066
+GetTempPlayerName = $18A6E		;bsr.w / Bcc.w at $12628. 93 GetPlayerName
+play_new_song = $1A304		;jsr / jmp (x).l at $12568
+ShootoutWonBy = $FC5AE		;jsr / jmp (x).l at $1266E
+LoadHomeTeamGfx = $FEA52		;jsr / jmp (x).l at $12B60
+PenShotPenalties = $1913A		;#x at $1213A. penalty shot penalty per penalty number
+RefMap2 = $5CF64		;#x at $12718. 93 RefMap2
+HorRinkMap = $BC05C		;#x at $12BBC. hidden in the SetHor string. 93 IceRinkMap; icerinkmap is +8
 updatePPTeamTime = $FE14C	;jsr / jmp (x).l at $128DA
 
 ; Main segment code

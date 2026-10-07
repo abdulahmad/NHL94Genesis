@@ -3,10 +3,10 @@
 ;	RenderSmallFontChar, ButtonLabelCharTable, addframe, addframe2, find3d, updatesound and KillCrowd. setupice
 ;	(hockey94_06) follows at $169FA.
 ;	Transcribed from lst/nhl94.bin.lst lines 52287-53021. Global names are the IDA names, or the 93 name where IDA has an
-;	auto name (IDA name in an ;IDA: comment). The IDA routines 93 writes as locals are locals: showclock .char (sub_16468),
-;	checksso .ca (sub_164D6) and .tab (unk_165BC); the 94 horizontal clock code's .digit (sub_16384) and .digits (unk_16396)
-;	sit inside showclock too, so the 93 body (loc_163BE) stays the local .3. Local labels are the IDA local names
-;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	auto name. The IDA routines 93 writes as locals are locals: showclock .char,
+;	checksso .ca and .tab; the 94 horizontal clock code's .digit and .digits
+;	sit inside showclock too, so the 93 body stays the local .3. Local labels are the IDA local names
+;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	IDA shows the two clock strings after printz as ori.b / btst; they are written with the String macro. The tables IDA
 ;	left as dc.b (.digits, .tab, ButtonLabelCharTable) are String / dc.w / dc.b.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
@@ -32,9 +32,9 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	bne.w	.1
 	addq.w	#1,(printx).w
 	bra.w	.2
-.1	;IDA: loc_1633A
+.1
 	jsr	(.digit).l
-.2	;IDA: loc_16340
+.2
 	move.l	(sp)+,d0
 	swap	d0
 	ext.l	d0
@@ -55,15 +55,15 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	movea.l	(sp)+,a1
 	jsr	(printz).l
 	String	$BD,$D,5		;IDA: ori.b / btst d2,d0
-.x	;IDA: locret_16382
+.x
 	rts
-.digit	;IDA: sub_16384. Print digit d0 from .digits
+.digit	;Print digit d0 from .digits
 	movea.l	#.digits,a1
 	asl.w	#2,d0
 	adda.w	d0,a1
 	jsr	(print).l
 	rts
-.digits	;IDA: unk_16396. Strings '0' .. '9' for .digit (4 bytes each)
+.digits	;Strings '0' .. '9' for .digit (4 bytes each)
 	String	'0'
 	String	'1'
 	String	'2'
@@ -74,7 +74,7 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	String	'7'
 	String	'8'
 	String	'9'
-.3	;IDA: loc_163BE. The 93 showclock body: returns unless dfclock is set
+.3	;The 93 showclock body: returns unless dfclock is set
 	bclr	#3,(disflags).w	;dfclock
 	beq.w	rtss2
 	btst	#3,(sflags2).w	;94 only
@@ -92,7 +92,7 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	btst	#1,(gmode2).w	;94 only: penalty shot / shootout clock
 	beq.w	.4
 	move.w	(shootoutclock).w,d0
-.4	;IDA: loc_1640C
+.4
 	ext.l	d0
 	divu.w	#$A,d0
 	bsr.w	.char	;seconds ones
@@ -106,7 +106,7 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	bne.w	.0
 	moveq	#-$10,d0	;' '-'0': blank leading zero (IDA #$FFFFFFF0)
 	swap	d0
-.0	;IDA: loc_16434
+.0
 	bsr.w	.char	;minutes tens
 	move.l	a0,(a5)+
 	move.w	#5,(a5)+	;words to transfer
@@ -118,7 +118,7 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	movea.w	#(VmMap2-M68K_RAM),a1
 	moveq	#5,d0	;.clocky2 (93 4)
 	moveq	#$D,d2	;.clockx2 = 13
-.cv	;IDA: loc_16458
+.cv
 	move.w	2(a1),d1
 	asl.w	d1,d0
 	add.w	d2,d0
@@ -126,7 +126,7 @@ showclock	;put the game clock on screen. Called from setvideo and PauseMode. 94:
 	add.w	(a1),d0
 	move.w	d0,(a5)+	;vram destination
 	rts
-.char	;IDA: sub_16468 (93 .char, IDA showclock_char). d0 high word = digit, write its tile to -(a0)
+.char	;93 .char, IDA showclock_char. d0 high word = digit, write its tile to -(a0)
 	swap	d0
 	asl.w	#1,d0
 	move.w	$64(a1,d0.w),d0	;4+('0'*2)
@@ -160,7 +160,7 @@ checksso	;do graphics for sso structure: arrows for the players when they are of
 	movea.w	#(Joy4Struct-M68K_RAM),a0
 	adda.w	#$14,a3
 	move.w	#$349,d3
-.ca	;IDA: sub_164D6 (93 .ca, IDA checksso_ca). a0 = object, a3 = sso, d3 = first arrow frame. 94: in a shootout, with sflags2 bit 3 or in a penalty shot, no arrow for a player beyond x $A6
+.ca	;93 .ca, IDA checksso_ca. a0 = object, a3 = sso, d3 = first arrow frame. 94: in a shootout, with sflags2 bit 3 or in a penalty shot, no arrow for a player beyond x $A6
 	tst.w	Zpos(a0)
 	bmi.w	rtss2	;not on the ice
 	st	frame(a3)
@@ -171,19 +171,19 @@ checksso	;do graphics for sso structure: arrows for the players when they are of
 	bne.w	.0
 	btst	#2,(BA_PS_flags).w
 	beq.w	.7
-.0	;IDA: loc_16502
+.0
 	move.w	d0,-(sp)
 	tst.w	d0
 	bpl.w	.2
 	neg.w	d0
-.2	;IDA: loc_1650C
+.2
 	cmp.w	#$A6,d0
 	blt.w	.6
 	move.w	(sp)+,d0
 	rts
-.6	;IDA: loc_16518
+.6
 	move.w	(sp)+,d0
-.7	;IDA: loc_1651A
+.7
 	move.w	Ypos(a0),d1
 	btst	#sfhor,(sflags).w
 	beq.w	.nhor
@@ -191,27 +191,27 @@ checksso	;do graphics for sso structure: arrows for the players when they are of
 	neg.w	d0
 	subi.w	#$C5,d1	;horoff
 	bra.w	.hord
-.nhor	;IDA: loc_16534
+.nhor
 	sub.w	(Hpos).w,d0
 	sub.w	(Vpos).w,d1
-.hord	;IDA: loc_1653C
+.hord
 	clr.w	d2
 	cmp.w	#$74,d0	;.xoff = 116
 	blt.w	.8
 	bset	#3,d2
-.8	;IDA: loc_1654A
+.8
 	cmp.w	#$FF8C,d0	;-.xoff
 	bgt.w	.1
 	bset	#2,d2
-.1	;IDA: loc_16556
+.1
 	cmp.w	#$64,d1	;.yoff = 100
 	blt.w	.9
 	bset	#0,d2
-.9	;IDA: loc_16562
+.9
 	cmp.w	#$FF9C,d1	;-.yoff
 	bgt.w	.3
 	bset	#1,d2
-.3	;IDA: loc_1656E
+.3
 	tst.w	d2
 	beq.w	rtss2
 	movea.l	#jdtab,a1
@@ -221,13 +221,13 @@ checksso	;do graphics for sso structure: arrows for the players when they are of
 	move.w	0(a1,d2.w),d4
 	beq.w	.4
 	move.w	d4,d0
-.4	;IDA: loc_16590
+.4
 	addi.w	#$100,d0	;128+128
 	move.w	d0,(a3)
 	move.w	2(a1,d2.w),d4
 	beq.w	.5
 	move.w	d4,d1
-.5	;IDA: loc_165A0
+.5
 	neg.w	d1
 	addi.w	#$F0,d1	;112+128
 	move.w	d1,2(a3)
@@ -235,7 +235,7 @@ checksso	;do graphics for sso structure: arrows for the players when they are of
 	move.w	d3,frame(a3)
 	move.w	6(a1,d2.w),attribute(a3)
 	bra.w	addframe2
-.tab	;IDA: unk_165BC (93 .tab). x spot, y spot, frame add, attribute per direction
+.tab	;93 .tab. x spot, y spot, frame add, attribute per direction
 	dc.w	0,$64,0,$0000
 	dc.w	$74,$64,1,$0000
 	dc.w	$74,0,2,$0000
@@ -260,7 +260,7 @@ setffo	;draw the 7 objects tied to icerink scrolling (gloves and pads), moving e
 	bsr.w	uppads
 	move.w	#6,d0	;ffo obj -1
 	movea.w	#(pads-M68K_RAM),a3	;move start of struct into a3
-.top	;IDA: loc_16626
+.top
 	movea.w	a6,a0
 	bsr.w	addframe
 	cmpa.w	a6,a0
@@ -268,7 +268,7 @@ setffo	;draw the 7 objects tied to icerink scrolling (gloves and pads), moving e
 	move.w	2(a3),d1
 	add.w	d1,6(a0)
 	add.w	d1,$E(a0)
-.next	;IDA: loc_1663E
+.next
 	adda.w	#$1C,a3	;move to next struct
 	dbf	d0,.top
 	rts
@@ -286,7 +286,7 @@ uppads	;update the gloves object and the 6 pad objects, and queue new pad labels
 	asl.w	#2,d1
 	move.w	d1,Ypos(a0)	;move d1 into Ypos
 	clr.w	Zpos(a0)	;clear Zpos
-.0	;IDA: loc_1666E
+.0
 	move.w	#5,d4
 	movea.w	#(pads-M68K_RAM),a0
 	movea.w	#(padcont-M68K_RAM),a1
@@ -298,7 +298,7 @@ uppads	;update the gloves object and the 6 pad objects, and queue new pad labels
 	move.w	(PadControlBits34).w,d3
 	lsr.w	#4,d3
 	bra.w	*+4	;to the next instruction
-.nibble	;IDA: loc_16694
+.nibble
 	move.w	d3,d0
 	andi.w	#$F,d0
 	move.w	#$F,d1
@@ -314,18 +314,18 @@ uppads	;update the gloves object and the 6 pad objects, and queue new pad labels
 	move.b	position+1(a2,d0.w),d1
 	asl.w	#8,d1
 	move.b	rostnum(a2,d0.w),d1
-.chg	;IDA: loc_166CC
+.chg
 	cmp.w	(a1),d1
 	beq.w	.next
 	move.w	d1,(a1)
 	bsr.w	FormatControllerDisplay
-.next	;IDA: loc_166D8
+.next
 	lsr.w	#4,d3
 	adda.w	#$1C,a0
 	addq.w	#2,a1
 	dbf	d4,.top
 	rts
-FormatControllerDisplay	;IDA: sub_166E6 (93 name). Queue the 3 character label of a pad object. d1 = label code: bits 7-4 and 3-0 are digits ($F =
+FormatControllerDisplay	;93 name. Queue the 3 character label of a pad object. d1 = label code: bits 7-4 and 3-0 are digits ($F =
 	;blank), bits 10-8 index ButtonLabelCharTable (94: none while sflags7 bit 7 is set). a0 = pad object, a5 = dma list. Falls into
 	;RenderSmallFontChar for the last char
 	lea	ButtonLabelCharTable(pc),a4
@@ -336,7 +336,7 @@ FormatControllerDisplay	;IDA: sub_166E6 (93 name). Queue the 3 character label o
 	bne.w	.hi
 	move.w	#$FFF0,d2	;' '-'0': blank leading zero
 	subq.w	#4,2(a0)
-.hi	;IDA: loc_16702
+.hi
 	addi.w	#$30,d2
 	clr.w	d0
 	bsr.w	RenderSmallFontChar
@@ -345,7 +345,7 @@ FormatControllerDisplay	;IDA: sub_166E6 (93 name). Queue the 3 character label o
 	cmp.w	#$F,d2
 	bne.w	.lo
 	move.w	#$FFF0,d2	;$F: blank
-.lo	;IDA: loc_1671E
+.lo
 	addi.w	#$30,d2
 	moveq	#1,d0
 	bsr.w	RenderSmallFontChar
@@ -353,15 +353,15 @@ FormatControllerDisplay	;IDA: sub_166E6 (93 name). Queue the 3 character label o
 	btst	#7,(sflags7).w	;94 only
 	beq.w	.0
 	clr.w	d2
-.0	;IDA: loc_16736
+.0
 	lsr.w	#8,d2
 	andi.w	#7,d2
 	bne.w	.1
 	addq.w	#4,2(a0)
-.1	;IDA: loc_16744
+.1
 	move.b	0(a4,d2.w),d2
 	moveq	#2,d0
-RenderSmallFontChar	;IDA: sub_1674A (93 name). Dma one small font tile (SmallFontMap, 93 smallfontmap) to the object's chars. d2 = ascii char, d0 = char slot, a0 = object (VRchar), a5 = dma list
+RenderSmallFontChar	;93 name. Dma one small font tile (SmallFontMap, 93 smallfontmap) to the object's chars. d2 = ascii char, d0 = char slot, a0 = object (VRchar), a5 = dma list
 	movea.l	#SmallFontMap,a3
 	adda.l	4(a3),a3
 	add.w	d2,d2
@@ -376,7 +376,7 @@ RenderSmallFontChar	;IDA: sub_1674A (93 name). Dma one small font tile (SmallFon
 	asl.w	#5,d0
 	move.w	d0,(a5)+
 	rts
-ButtonLabelCharTable	;IDA: unk_1677A (93 name). Third label character by bits 10-8 of the label code
+ButtonLabelCharTable	;93 name. Third label character by bits 10-8 of the label code
 	dc.b	' DDLCRX',$FF	;94 pad byte $FF (93 retail $10)
 addframe	;a3 = sort cord object. Project it with find3d, then addframe2. a5 = dma trans, a6 = sprite attribute table. Called from setsortcords and setffo
 	movem.l	d0-d2,-(sp)
@@ -522,10 +522,10 @@ find3d	;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 = xsc
 	neg.w	d0
 	subi.w	#$C5,d1
 	bra.w	.crange
-.nhor	;IDA: loc_16936
+.nhor
 	sub.w	(Hpos).w,d0
 	sub.w	(Vpos).w,d1
-.crange	;IDA: loc_1693E
+.crange
 	cmp.w	#$90,d0
 	bgt.w	.offscr
 	cmp.w	#$FF70,d0
@@ -541,7 +541,7 @@ find3d	;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 = xsc
 	neg.w	d1
 	addi.w	#$F0,d1
 	rts
-.offscr	;IDA: loc_16970
+.offscr
 	move.w	#$4E20,d1
 	rts
 updatesound	;move the crowd noise volume (psg noise channel, asv) toward crowdlevel. Called from periodicevents
@@ -559,7 +559,7 @@ updatesound	;move the crowd noise volume (psg noise channel, asv) toward crowdle
 	neg.w	d2
 	cmp.w	d2,d0
 	bge.w	.non
-.iasv	;IDA: loc_169A0
+.iasv
 	add.w	d2,(asv).w
 	bpl.w	.non
 	clr.w	(asv).w

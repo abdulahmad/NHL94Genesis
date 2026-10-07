@@ -5,8 +5,8 @@
 ;	updatepentime, ProcessPenaltyList, RemovePlayerFromList, chkatop, releasepl, CalcPenTime, updatepwrplay, ClrHor,
 ;	SetHor. PrintScores1 (penalty94_2) follows at $12C04. The PenaltyList data is at $18E0C.
 ;	Transcribed from lst/nhl94.bin.lst lines 45937-47135. Global names are the IDA names, or the 93 name where IDA has
-;	an auto name or a spelling variant (IDA name in an ;IDA: comment). Local labels are the IDA local names (_x -> .x)
-;	or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	an auto name or a spelling variant (IDA name, unless generic, in an ;IDA: comment). Local labels are the IDA local names (_x -> .x)
+;	or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	IDA shows the printz / appendz strings as dc.b or ori.b; they are written with the String macro (length word
 ;	includes itself and the 0 pad). The instruction IDA hid in the SetHor string is written out.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
@@ -99,7 +99,7 @@ chkprogress	;control progress of ref and game control thru penalty events. 94: w
 	btst	#0,(gmode2).w
 	beq.w	.0
 	move.w	#$C,d1	;12 rows when gmode2 bit 0 is set
-.0	;IDA: loc_12052
+.0
 	move.l	#$7FF,d2	;blank tile
 	jsr	(eraser).l
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -118,8 +118,8 @@ chkprogress	;control progress of ref and game control thru penalty events. 94: w
 	bpl.w	rtss2
 	bclr	#gmpendel,(gmode).w	;gmpendel
 	movea.w	#(PenBuf-M68K_RAM),a0
-.find	;IDA: loc_12098
-	tst.w	(a0)+	;IDA: loc_12098. any penalty with minutes
+.find
+	tst.w	(a0)+	;any penalty with minutes
 	beq.w	rtss2
 	clr.w	d0
 	move.b	-2(a0),d0
@@ -159,10 +159,10 @@ PenShotChk	;94 only. a3 = checker, a2 = player hit, d0 = penalty. If a2 is on a 
 	beq.w	.loop
 	btst	#3,(BA_PS_flags).w	;penalty shot pending
 	beq.w	.0
-.loop	;IDA: loc_12132
+.loop
 	move.w	#$FFFF,d1
 	bra.w	.end
-.0	;IDA: loc_1213A
+.0
 	movea.l	#PenShotPenalties,a0
 	move.w	0(a0,d0.w),d1	;penalty shot penalty for d0, -1 = none
 	bmi.w	.end
@@ -174,7 +174,7 @@ PenShotChk	;94 only. a3 = checker, a2 = player hit, d0 = penalty. If a2 is on a 
 	bpl.w	.1	;N clear: penalty shot set up
 	bclr	#3,(BA_PS_flags).w
 	bra.s	.loop
-.1	;IDA: loc_12168
+.1
 	move.w	d1,(pspenalty).w
 	move.w	d1,d0	;return the penalty shot penalty
 .end
@@ -213,7 +213,7 @@ getBAplayerInfo	;94 only. d0 = SCnum (0-5 home team, 6-11 away team) of the play
 	btst	#6,$62(a1,d3.w)	;pfteam
 	beq.w	.0	;branch if home
 	move.w	#1,(BA_Team).w
-.0	;IDA: loc_121E6
+.0
 	move.w	#0,(BA_Skater_Offset).w
 	move.b	$66(a1,d3.w),(BA_Skater_Offset+1).w	;store BA player's team position offset
 	move.w	d1,(BA_Goalie_SCnum).w
@@ -236,11 +236,11 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	tst.w	(RefStep).w
 	bpl.w	rtss2
 	movem.l	d0/a0-a3,-(sp)
-.top	;IDA: loc_12230
-	movea.w	#(PenBuf-M68K_RAM),a0	;IDA: loc_12230 (93 .top)
+.top
+	movea.w	#(PenBuf-M68K_RAM),a0	;93 .top
 	tst.w	(a0)+
 	beq.w	.4
-.0	;IDA: loc_1223A
+.0
 	tst.w	(a0)+
 	bne.s	.0	;find end of list
 	subq.w	#4,a0
@@ -257,7 +257,7 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	bpl.w	.ex	;still on the ice
 	clr.w	(a0)
 	bra.w	.ex
-.Sa	;IDA: loc_1226A
+.Sa
 	clr.w	d0
 	move.b	(a0),d0
 	movea.l	#PenaltyList,a1
@@ -270,15 +270,15 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	cmp.b	#5,d2
 	bne.w	.1
 	bset	#5,(sflags5).w
-.1	;IDA: loc_1229A
+.1
 	movem.l	d0-d1/a1-a4,-(sp)
 	bsr.w	GetPeriodTimeRemaining	;93 GetPeriodTimeRemaining. Log time, penalty and player
-	movea.w	#(PenSum-M68K_RAM),a4	;93 unk_FFC3F6
-	adda.w	(PenSumLength).w,a4	;93 word_FFC3F4
+	movea.w	#(PenSum-M68K_RAM),a4
+	adda.w	(PenSumLength).w,a4
 	cmpi.w	#$EC,(PenSumLength).w	;log full: keep overwriting the last entry
 	beq.w	.full
 	addq.w	#4,(PenSumLength).w
-.full	;IDA: loc_122B8
+.full
 	move.w	d0,(a4)+	;time
 	move.b	(a0),(a4)+	;penalty
 	clr.w	d1
@@ -294,7 +294,7 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	bset	#7,-1(a4)	;log: visitors
 	move.w	#$8000,d0
 	exg	a1,a2
-.2	;IDA: loc_122EA
+.2
 	addq.w	#1,tmPenalties(a2)	;tmPenalties
 	add.w	d2,tmPenmin(a2)	;tmPenmin
 	move.b	pnum(a3),d0	;pnum
@@ -313,12 +313,12 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	btst	#4,tmpdst(a2,d0.w)
 	beq.w	.3
 	bset	#$C,d2	;keep byte bit 4 (word bit 12) of an old penalty time
-.3	;IDA: loc_1232C
+.3
 	move.w	d2,tmpdst(a2,d0.w)
 	andi.w	#$EFFF,d2
 	moveq	#$34,d1	;(MaxRos-1)*2+2
-.ctop	;IDA: loc_12336
-	subq.w	#2,d1	;IDA: loc_12336. same time on the other team
+.ctop
+	subq.w	#2,d1	;same time on the other team
 	bmi.w	.nocoin
 	move.w	tmpdst(a1,d1.w),d3
 	andi.w	#$EFFF,d3
@@ -328,11 +328,11 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	beq.s	.ctop
 	bset	#6,tmpdst(a1,d1.w)	;coincidental (byte bit 6, word bit 14)
 	bset	#6,tmpdst(a2,d0.w)
-.nocoin	;IDA: loc_1235C
+.nocoin
 	movem.l	a0,-(sp)
 	lea	$9A(a2),a0	;add player to penalty box list
 	moveq	#$18,d1
-.pl	;IDA: loc_12366
+.pl
 	tst.b	(a0)+
 	dbmi	d1,.pl	;find end of list
 	move.b	d0,-1(a0)
@@ -344,14 +344,14 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	bsr.w	SetPA
 	bsr.w	USBoard	;93 USBoard
 	bra.w	.ex
-.sa2	;IDA: loc_1238E
+.sa2
 	clr.w	(a0)	;93 .sa2
 	btst	#sfhor,(sflags).w	;sfhor
 	bne.w	.top
 	bsr.w	SetPA
 	bra.w	.ex
-.4	;IDA: loc_123A2
-	movea.w	#(HmShots-M68K_RAM),a2	;IDA: loc_123A2 (93 .exit). home team struct
+.4
+	movea.w	#(HmShots-M68K_RAM),a2	;93 .exit. home team struct
 	bsr.w	coinsearch
 	adda.w	#tmsize,a2	;tmsize
 	bsr.w	coinsearch
@@ -362,16 +362,16 @@ InProgress	;ref in progress-- update graphics and stats and penalty information.
 	btst	#3,(BA_PS_flags).w
 	beq.w	.5
 	move.w	#$1E,d0	;puckshootout (asstab $18DF4): penalty shot
-.5	;IDA: loc_123D4
+.5
 	bsr.w	assreplace
-.ex	;IDA: loc_123D8
+.ex
 	movem.l	(sp)+,d0/a0-a3
 	rts
-coinsearch	;IDA: sub_123DE (93 IDA name). a2 = team. Clears tmpdst bit 5, counts players kept off the ice by penalties (coincidental and bit 4
+coinsearch	;93 IDA name. a2 = team. Clears tmpdst bit 5, counts players kept off the ice by penalties (coincidental and bit 4
 	;times do not count, at most 2) and sets tmap. Called twice from InProgress
 	moveq	#6,d1
 	moveq	#$32,d0	;(MaxRos-1)*2
-.loop	;IDA: loc_123E2
+.loop
 	tst.w	tmpdst(a2,d0.w)
 	ble.w	.nap
 	bclr	#5,tmpdst(a2,d0.w)
@@ -382,7 +382,7 @@ coinsearch	;IDA: sub_123DE (93 IDA name). a2 = team. Clears tmpdst bit 5, counts
 	cmp.w	#4,d1	;never below 4 players
 	beq.w	.nap
 	subq.w	#1,d1
-.nap	;IDA: loc_1240E
+.nap
 	subq.w	#2,d0
 	bpl.s	.loop
 	move.w	d1,tmap(a2)	;tmap
@@ -391,7 +391,7 @@ checkfornewpen	;look for new penalty (entered thru addpenalty(2)). Stops play at
 	;have the puck, otherwise starts a delayed penalty call
 	btst	#sfhor,(sflags).w	;sfhor
 	bne.w	rtss2
-.0	;IDA: loc_12422. IDA label, no xref
+.0	;no xref
 	movea.w	#(PenBuf-M68K_RAM),a0
 .next
 	tst.w	(a0)+
@@ -434,7 +434,7 @@ checkfornewpen	;look for new penalty (entered thru addpenalty(2)). Stops play at
 	move.w	#$2C,d0	;delayed penalty (92 PenDelay = $24)
 	bsr.w	SetPA
 	bra.s	.next
-Stop4Pen	;a0 = penaltylist penalty +2. Stop the clock, set the face off spot from the penalty type, blow the whistle. 94 adds sub_1A304 before the whistle. Also entered from puckfaceoff
+Stop4Pen	;a0 = penaltylist penalty +2. Stop the clock, set the face off spot from the penalty type, blow the whistle. 94 adds play_new_song before the whistle. Also entered from puckfaceoff
 	bset	#gmclock,(gmode).w	;gmclock
 	bne.w	.skipfo
 	clr.w	d0
@@ -501,14 +501,14 @@ Stop4Pen	;a0 = penaltylist penalty +2. Stop the clock, set the face off spot fro
 limitfo	;limit face off to 5-20 feet from walls of rink. Checks every player in PenBuf
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.w	#(PenBuf-M68K_RAM),a0
-.loop	;IDA: loc_12586
+.loop
 	bsr.w	.lf	;93 .lf
 	addq.w	#2,a0
 	tst.w	(a0)
 	bne.s	.loop
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-.lf	;IDA: loc_12596
+.lf
 	move.b	1(a0),d0
 	andi.w	#$7F,d0
 	asl.w	#7,d0	;scsize
@@ -521,29 +521,29 @@ limitfo	;limit face off to 5-20 feet from walls of rink. Checks every player in 
 	blt.w	rtss2
 	move.w	#$FFBF,(foy).w	;-.nuy = -65
 	bra.w	.sx
-.0	;IDA: loc_125C6
+.0
 	cmp.w	(foy).w,d1
 	bgt.w	rtss2
 	move.w	#$41,(foy).w	;.nuy = 65
-.sx	;IDA: loc_125D4
+.sx
 	move.w	#$46,d0	;.nux = 70
 	tst.w	(fox).w
 	bpl.w	.1
 	neg.w	d0
-.1	;IDA: loc_125E2
+.1
 	move.w	d0,(fox).w
 	rts
-UpdatePA	;animate ref in ref window. As 93: DisplayPeriodOver (94 sub_1850A) for game over, and the horizontal penalty message line is reprinted when penmsgtimer (93 word_FFC2BA) runs out
+UpdatePA	;animate ref in ref window. As 93: DisplayPeriodOver for game over, and the horizontal penalty message line is reprinted when penmsgtimer runs out
 	tst.w	(RefCnt).w
 	bmi.w	rtss2
 	sub.w	d7,(RefCnt).w
 	bpl.w	.0
 	bsr.w	SetPA2
-.0	;IDA: loc_125FC
+.0
 	cmpi.w	#4,(RefPen).l	;game over (92 PenEOG = 4)
 	bne.w	.1
 	bsr.w	DisplayPeriodOver	;93 DisplayPeriodOver
-.1	;IDA: loc_1260C
+.1
 	sub.w	d7,(penmsgtimer).w
 	bpl.w	rtss2
 	move.w	#$7FFF,(penmsgtimer).w
@@ -556,24 +556,24 @@ UpdatePA	;animate ref in ref window. As 93: DisplayPeriodOver (94 sub_1850A) for
 	sub.w	d0,(printx).w	;center it
 	bra.w	print
 SetPA	;start ref animation. d0 = animation (penalty number). 94: animations from $2E up are ignored, and ShootoutWonBy is called when gmode2 bits 0
-	;and 3 are set. Goal calls loc_1889A (93 DisplayPlayerAttributeMenu). Falls into SetPA2
+	;and 3 are set. Goal calls DisplayPlayerAttributeMenu. Falls into SetPA2
 	move.w	d0,(RefPen).w
 	cmp.w	#$2E,d0	;94 only: not on the penalty list
 	blt.w	.1
 	rts
-.1	;IDA: loc_12646
+.1
 	clr.w	(RefStep).w
 	bsr.w	prefmes
 	cmp.w	#$E,d0	;goal (92 PenGoal = 6)
 	bne.w	.2
 	bsr.w	DisplayPlayerAttributeMenu	;93 DisplayPlayerAttributeMenu
-.2	;IDA: loc_1265A
+.2
 	btst	#0,(gmode2).w	;94 only
 	beq.w	.0
 	btst	#3,(gmode2).w
 	beq.w	.0
 	jsr	(ShootoutWonBy).l
-.0	;IDA: loc_12674
+.0
 	move.w	#$7FFF,(penmsgtimer).w
 	btst	#sfhor,(sflags).w	;sfhor
 	beq.w	SetPA2
@@ -595,7 +595,7 @@ SetPA2	;IDA: setPA2 (93 SetPA2). update animation for ref. Next frame/delay pair
 	bpl.w	.0
 	neg.w	d0	;negative = last frame
 	st	(RefStep).w
-.0	;IDA: loc_126C0
+.0
 	clr.w	d1
 	move.b	d0,d1
 	asl.w	#3,d1
@@ -609,9 +609,9 @@ SetPA2	;IDA: setPA2 (93 SetPA2). update animation for ref. Next frame/delay pair
 	add.w	d0,d0
 	move.w	d0,(RefCnt).w
 	move.w	(sp)+,d0
-.1	;IDA: loc_126EC
+.1
 	lsr.w	#8,d0
-.pr	;IDA: loc_126EE
+.pr
 	bsr.w	PushRef
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
@@ -624,7 +624,7 @@ PushRef	;tell vblank what to display. d0 = ref frame, $40 clears the window. The
 	btst	#sfhor,(sflags).w	;sfhor
 	beq.w	.m1
 	movea.l	#RefMap2,a0	;93 RefMap2
-.m1	;IDA: loc_1271E
+.m1
 	adda.l	4(a0),a0
 	addq.w	#4,a0
 	adda.w	d0,a0
@@ -633,9 +633,9 @@ PushRef	;tell vblank what to display. d0 = ref frame, $40 clears the window. The
 	btst	#sfhor,(sflags).w
 	bne.w	.4
 	ori.w	#$8000,d2	;priority
-.4	;IDA: loc_1273C
+.4
 	moveq	#$37,d0	;(refheight*refwidth)-1
-.1	;IDA: loc_1273E
+.1
 	move.w	(a0)+,(a1)
 	add.w	d2,(a1)+
 	dbf	d0,.1
@@ -650,10 +650,10 @@ PushRef	;tell vblank what to display. d0 = ref frame, $40 clears the window. The
 	move.w	#$7FF,(a1)+	;blank tile
 	dbf	d0,.2
 	bset	#sf2refref,(sflags2).w	;sf2refref
-.cl	;IDA: loc_1276E
+.cl
 	moveq	#-1,d0	;clear line
 	bsr.w	prefmes
-.ex	;IDA: loc_12774
+.ex
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 prefmes	;print message for penalty d0 (negative clears it). Vertical mode: framed under the ref. Horizontal mode: one centered line on row $B
@@ -710,23 +710,23 @@ prefmes	;print message for penalty d0 (negative clears it). Vertical mode: frame
 .ex
 	movem.l	(sp)+,d0-d2/a1
 	rts
-PrintPenaltyMessagesString	;IDA: sub_12828 (93 name). Blank the horizontal mode penalty message line (22 spaces at x 5, y $B). Called from UpdatePA and prefmes
+PrintPenaltyMessagesString	;93 name. Blank the horizontal mode penalty message line (22 spaces at x 5, y $B). Called from UpdatePA and prefmes
 	bsr.w	printz
 	String	$BF,5,$B,'                      ',0	;22 spaces
 	rts
-PenGoalStuff	;IDA: sub_1284A (93 name). do this stuff after a goal. a1 = scored on team, a2 = scoring team. 94 clears PenBuf only when the scored
+PenGoalStuff	;93 name. do this stuff after a goal. a1 = scored on team, a2 = scoring team. 94 clears PenBuf only when the scored
 	;on team has 6 on the ice. If the scoring team had more players on ice, the first scored on player in the box without a coincidental penalty
 	;is released (94 also sets DelayedPen bit 0)
 	movem.l	d0-d2/a0,-(sp)
 	cmpi.w	#6,$24(a1)	;94 only: tmap
 	bne.w	.1
 	bsr.w	clrPenBuf
-.1	;IDA: loc_1285C
+.1
 	move.w	tmap(a2),d2	;end p.killing by scored on team
 	cmp.w	tmap(a1),d2
 	ble.w	.ex
 	lea	$9A(a1),a0
-.0	;IDA: loc_1286C
+.0
 	clr.w	d2
 	move.b	(a0)+,d2
 	bmi.w	.ex
@@ -739,7 +739,7 @@ PenGoalStuff	;IDA: sub_1284A (93 name). do this stuff after a goal. a1 = scored 
 	addq.w	#1,tmPwrGoals(a2)	;tmPwrGoals
 	bset	#0,(HmShots+tmflags).w	;home tmflags: tmflcc
 	bset	#0,(AwShots+tmflags).w	;visitors tmflags: tmflcc
-.ex	;IDA: loc_1289E
+.ex
 	movem.l	(sp)+,d0-d2/a0
 	rts
 clrPenBuf	;clear PenBuf (93 ClearPenaltyBuffer). Called from clockcont and PenGoalStuff
@@ -762,14 +762,14 @@ updatepentime	;update the time remaining on all penalized players, once a second
 	movea.w	#(HmShots-M68K_RAM),a2
 	bsr.w	ProcessPenaltyList
 	adda.w	#tmsize,a2	;tmsize
-ProcessPenaltyList	;IDA: loc_128EC (93 name). a2 = team. Walks the penalty box list ($9A): the first two players without a coincidental penalty
+ProcessPenaltyList	;93 name. a2 = team. Walks the penalty box list ($9A): the first two players without a coincidental penalty
 	;count down one second and the rest wait. Beeps when the first served time gets to 5 or less and releases the player at 0. Coincidental
 	;penalties count down on their own
 	lea	$9A(a2),a0	;penalty box list
 	movea.w	#(mesarea-M68K_RAM),a1	;serving players
 	moveq	#2,d1	;two can serve at once
 	moveq	#2,d3
-.next	;IDA: loc_128F8
+.next
 	clr.w	d0
 	move.b	(a0)+,d0
 	bmi.w	.done
@@ -781,9 +781,9 @@ ProcessPenaltyList	;IDA: loc_128EC (93 name). a2 = team. Walks the penalty box l
 	subq.w	#1,tmpdst(a2,d0.w)
 	bne.w	.cont
 	bsr.w	RemovePlayerFromList	;time is up
-.cont	;IDA: loc_1291C
+.cont
 	bra.s	.next
-.done	;IDA: loc_1291E
+.done
 	move.w	(mesarea).w,d0	;first serving player
 	cmp.w	#1,d1	;one serving
 	beq.w	.0
@@ -791,12 +791,12 @@ ProcessPenaltyList	;IDA: loc_128EC (93 name). a2 = team. Walks the penalty box l
 	bne.w	.n1
 	bsr.w	.0	;two serving: check the first, then the second
 	bra.w	.two
-.n1	;IDA: loc_12938
+.n1
 	cmp.w	#$FFFF,d1	;exactly three in the list: check the second only
 	bne.w	rtss2
-.two	;IDA: loc_12940
+.two
 	move.w	(TextBuffer).w,d0	;second serving player (mesarea+2, 93 TextBuffer)
-.0	;IDA: loc_12944
+.0
 	cmpi.w	#5,tmpdst(a2,d0.w)
 	bgt.w	rtss2
 	move.w	#1,-(sp)	;SFXbeep1
@@ -804,23 +804,23 @@ ProcessPenaltyList	;IDA: loc_128EC (93 name). a2 = team. Walks the penalty box l
 	bne.w	.snd
 	bsr.w	releasepl
 	move.w	#2,(sp)	;SFXbeep2
-.snd	;IDA: loc_12962
+.snd
 	bsr.w	sfx
 	rts
-.1	;IDA: loc_12968
-	subq.w	#1,tmpdst(a2,d0.w)	;IDA: loc_12968. coincidental penalty
+.1
+	subq.w	#1,tmpdst(a2,d0.w)	;coincidental penalty
 	btst	#3,tmpdst(a2,d0.w)
 	beq.s	.next
 	btst	#4,tmpdst(a2,d0.w)
 	bne.w	.2
 	move.w	#$1000,tmpdst(a2,d0.w)
 	bra.w	RemovePlayerFromList
-.2	;IDA: loc_12988
+.2
 	clr.w	tmpdst(a2,d0.w)	;falls into RemovePlayerFromList
-RemovePlayerFromList	;IDA: loc_1298C (93 name). Remove the entry before a0 from a penalty box list by shifting the rest down (list ends with a
+RemovePlayerFromList	;93 name. Remove the entry before a0 from a penalty box list by shifting the rest down (list ends with a
 	;negative byte). Return a0 = removed slot. Called from PenGoalStuff, ProcessPenaltyList
 	moveq	#-1,d2
-.shift	;IDA: loc_1298E
+.shift
 	addq.w	#1,d2
 	move.b	0(a0,d2.w),-1(a0,d2.w)
 	bpl.s	.shift
@@ -835,20 +835,20 @@ chkatop	;attack time of possession stat update. Called once a second from update
 	neg.w	d0
 	cmp.w	#$58,d0	;92 blueline
 	blt.w	rtss2
-.1	;IDA: loc_129BA
+.1
 	btst	#gmdir,(gmode).w	;gmdir
 	beq.w	.0
 	eori.w	#tmsize,d1
-.0	;IDA: loc_129C8
+.0
 	movea.w	#(HmShots-M68K_RAM),a2
 	addq.w	#1,tmATOP(a2,d1.w)	;attack time
 	rts
-releasepl	;IDA: sub_129D2 (93 name). player's penalty time is up so let him out (if appropriate). a2 = team, d0 = player*2. Called from ProcessPenaltyList
+releasepl	;93 name. player's penalty time is up so let him out (if appropriate). a2 = team, d0 = player*2. Called from ProcessPenaltyList
 	movem.l	d0-d3/a0-a3,-(sp)
 	movea.w	tmsort(a2),a3	;tmsort
 	suba.w	#SCstruct,a3
-.0	;IDA: loc_129DE
-	adda.w	#SCstruct,a3	;IDA: loc_129DE. first sort obj not on the ice
+.0
+	adda.w	#SCstruct,a3	;first sort obj not on the ice
 	tst.w	position(a3)
 	bpl.s	.0
 	move.w	d0,d3
@@ -861,7 +861,7 @@ releasepl	;IDA: sub_129D2 (93 name). player's penalty time is up so let him out 
 	tst.w	tmgoalie(a2)	;tmgoalie
 	bpl.w	.1
 	addq.w	#1,a0
-.1	;IDA: loc_12A10
+.1
 	clr.w	position(a3)	;position
 	move.b	0(a0,d1.w),$35(a3)
 	bsr.w	Setplass
@@ -975,7 +975,7 @@ ClrHor	;revert the graphics back to vertical ice rink mode. 94 reloads Rinktiles
 SetHor	;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#sfhor,(sflags).w	;sfhor
-.p	;IDA: loc_12B9E
+.p
 	btst	#dfok,(disflags).w	;dfok
 	bne.s	.p
 	clr.w	(Hscroll).w
@@ -1000,6 +1000,6 @@ SetHor	;switch graphics to horizontal ice rink graphics mode
 	move.w	(VmMap1).w,d1
 	move.w	#$7FF,d2	;blank tile
 	bsr.w	DoFill
-.ex	;IDA: loc_12BFE
+.ex
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

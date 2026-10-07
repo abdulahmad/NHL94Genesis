@@ -3,7 +3,7 @@
 ;	them to M68K_RAM at power on (InitSaveRAM) and protects them with a sum / complement checksum in bytes $1FFE-$1FFF.
 ;	InitSaveRAM, VBcount, ValidateSRAM, ClearSRAM, WriteSRAM, MakeSRAMChecksum, ReadSRAM; AllSndOff (sound94) follows at $1A264.
 ;	Transcribed from lst/nhl94.bin.lst lines 61322-61528. Global names are the IDA names; locals are the IDA local names
-;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment. No IDA gaps.
+;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment. No IDA gaps.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp;
 ;	fixopcodes.js patches the cmp encoding after assembly.
 
@@ -78,7 +78,7 @@ InitSaveRAM	;IDA name. Called from Begin. Copy the $2000 byte save RAM (the odd 
 	move.w	#$E0,d3	;green
 	move.w	#$20,d4
 	bra.s	.loadcolor	;branch (screen flashes green)
-SRAMWaitVblank	;IDA: sub_1A140. 94 only. Wait for the next vblank (vcountwait, 93 MenuWaitVblank). Called from InitSaveRAM
+SRAMWaitVblank	;94 only. Wait for the next vblank (vcountwait, 93 MenuWaitVblank). Called from InitSaveRAM
 	jsr	(vcountwait).l
 	rts
 VBcount	;IDA name. vbint handler while InitSaveRAM runs: vcount + 1 only
@@ -95,34 +95,34 @@ ValidateSRAM	;IDA name. Check the save RAM copy in M68K_RAM: byte $1FFF must be 
 	cmp.b	1(a0),d0	;compare data at 1+a0 ($1FFF RAM address) to d0
 	beq.w	.0	;branch if equal
 	addq.w	#1,d1	;add 1 to d1
-.0	;IDA: loc_1A16C
+.0
 	not.w	d0	;toggle bits in d0 from 1->0 and vice-versa
 	cmp.b	(a0),d0	;compare byte at a0 ($1FFE) with d0
 	beq.w	.1	;branch if equal
 	addq.w	#1,d1	;add 1 to d1 if not
-.1	;IDA: loc_1A176
+.1
 	swap	d0	;swap d0 word size
 	move.b	(a0),d0	;move data at a0 into d0
 	not.b	d0	;toggle bits
 	cmp.b	1(a0),d0	;compare data a0+1 with d0
 	beq.w	.2	;branch if equal
 	addq.w	#1,d1	;add 1 to d1 if not
-.2	;IDA: loc_1A186
+.2
 	swap	d0	;swap d0 word size
 	tst.w	d1	;test d1
 	bne.w	.3	;branch if d1 not 0
 	clr.w	(ValidSRAM).w	;clear
 	bra.w	.x	;branch to exit
-.3	;IDA: loc_1A196
+.3
 	st	(ValidSRAM).w	;set
-.x	;IDA: locret_1A19A
+.x
 	rts
 ClearSRAM	;IDA name. Clears first $2000 of RAM and SaveRAM: zero M68K_RAM $0-$1FFF with byte $1FFE = $FF (the checksum of zeros), write it to
 	;the save RAM, set byte 1 to 1, then MakeSRAMChecksum. Called from InitSaveRAM
 	lea	(M68K_RAM).l,a0
 	move.w	#$1FFF,d0
 	clr.l	d1
-.loop	;IDA: loc_1A1A8
+.loop
 	move.b	d1,(a0)+
 	dbf	d0,.loop
 	move.b	#$FF,(sramcleared).l
@@ -144,7 +144,7 @@ WriteSRAM	;IDA name. Write data from a0 into SaveRAM: d1 = number of bytes, d0 =
 	add.l	d0,d0
 	subq.l	#1,d1
 	clr.w	d2
-.loop	;IDA: loc_1A1F4
+.loop
 	move.b	(a0)+,d2
 	move.w	d2,0(a1,d0.w)
 	addq.w	#2,d0
@@ -160,7 +160,7 @@ MakeSRAMChecksum	;IDA name. Read the whole save RAM to M68K_RAM, put the sum of 
 	lea	(M68K_RAM).l,a0
 	clr.w	d0
 	move.w	#$1FFD,d1
-.loop	;IDA: loc_1A224
+.loop
 	add.b	(a0)+,d0
 	dbf	d1,.loop
 	move.b	d0,1(a0)
@@ -176,7 +176,7 @@ ReadSRAM	;IDA name. move into a0 location and increment: copy d1 save RAM bytes 
 	movea.l	#$200000,a1
 	add.l	d0,d0
 	subq.l	#1,d1
-.loop	;IDA: loc_1A252
+.loop
 	move.b	1(a1,d0.w),d2
 	move.b	d2,(a0)+
 	addq.w	#2,d0

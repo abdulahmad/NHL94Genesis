@@ -1,9 +1,9 @@
 ;	NHL 94 (retail) segment $76B2-$7E35
 ;	VBjsr / Begin through seta2: 92 hockey.asm part 1 up to the end of Pausemode, plus the pause
 ;	screen draw routine and seta2, the same split as 93 hockey93_01.asm. The menu engine Pausemode
-;	calls (93 menu93.asm InitMenuState, IDA sub_7E36) follows at $7E36.
+;	calls (93 menu93.asm InitMenuState) follows at $7E36.
 ;	Transcribed from lst/nhl94.bin.lst lines 29709-30309. Global names are the 93 names where 93 has
-;	the same routine (IDA name in an ;IDA: comment); 94-only routines keep the IDA name.
+;	the same routine (IDA name, unless generic, in an ;IDA: comment); 94-only routines keep the IDA name.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real
 ;	cmp / cmpi; fixopcodes.js patches the cmp encoding after assembly.
 ;	Inline print strings after printz2 use the String macro (length word includes itself).
@@ -23,7 +23,7 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 	move.w	(VDP_CTRL).l,d0
 	andi.w	#1<<PAL_MODE,d0		;VDP status bit 0 = PAL (50 Hz). IDA calls it DMA busy; that is bit 1
 	move.w	d0,(music_global_tick_counter).w
-	beq.w	.ntsc			;IDA: loc_76E8
+	beq.w	.ntsc
 	bset	#0,(PALflag).w	;PAL
 .ntsc	jsr	(Z80_LoadROM).l		;sound stuff (93 p_initialZ80)
 	jsr	(AllSndOff).l		;93 p_turnoff
@@ -49,18 +49,18 @@ StartGame	;reset game state for a new game, then start the first period
 	clr.l	(awaydirpresses).w
 	jsr	(ReadJoy1).l		;pad 1 = $E0 at game start forces 30 second periods (93 ChkShortPeriods)
 	cmp.b	#$E0,d3
-	bne.w	.chkpen			;IDA: loc_776A
+	bne.w	.chkpen
 	move.w	#3,(OptPerlen).w	;period length index 3 = 30 seconds
 .chkpen	clr.b	(gmode).w
 	cmpi.w	#1,(OptPen).w
 	bne.w	.0
 	bset	#gmoffs,(gmode).w		;gmoffs: offsides pen. is active
 .0	cmpi.w	#1,(OptPlayMode).w
-	ble.w	.1			;IDA: loc_778C. OptPlayMode 0-1 keep the shot buffer
+	ble.w	.1			;OptPlayMode 0-1 keep the shot buffer
 	bsr.w	ClearShotData
 .1	jsr	(clearTeamStats).l
 	btst	#0,(gmode2).w
-	beq.w	.2			;IDA: loc_77B8
+	beq.w	.2
 	move.l	a0,-(sp)
 	movea.l	#HmShots,a0
 	jsr	(Create_HotCold_Table).l
@@ -77,10 +77,10 @@ StartGame	;reset game state for a new game, then start the first period
 	jsr	(LoadCrowdRec).l
 	jmp	IntermissionStart		;on to period start (93 IntermissionStart)
 
-ClearShotData	;IDA: sub_77E4. Clear $E4 words at $FFD092 (93: 49 words at $FFCB0A)
+ClearShotData	;Clear $E4 words at $FFD092 (93: 49 words at $FFCB0A)
 	move.w	#$E3,d0
 	movea.w	#(outputbuffer-M68K_RAM),a0
-.0	clr.w	(a0)+			;IDA: loc_77EC
+.0	clr.w	(a0)+
 	dbf	d0,.0
 	rts
 
@@ -123,7 +123,7 @@ GetPeriodTime	;IDA: ClockLength. Return d0 = period length in seconds for the pe
 
 StartPer	;start a period: reset stack, rink and clock, face off, run the game loop
 	cmpi.w	#3,(gsp).w
-	bne.w	.reg			;IDA: loc_7876
+	bne.w	.reg
 	bset	#1,(sflags7).w	;overtime
 .reg	st	(faceoffanim).w
 	movea.w	#(Stack-M68K_RAM),sp
@@ -137,11 +137,11 @@ StartPer	;start a period: reset stack, rink and clock, face off, run the game lo
 	clr.w	(fox).w			;face off at center ice
 	clr.w	(foy).w
 	btst	#0,(gmode2).w
-	beq.w	.fo			;IDA: loc_78C4
+	beq.w	.fo
 	move.w	#$1E,d0
 	move.w	#8,(BA_Skater_Offset).w
 	move.w	#$B,(BA_Goalie_SCnum).w
-	bra.w	.ass			;IDA: loc_78CA
+	bra.w	.ass
 .fo	move.l	#$1B,d0			;pfaceoff
 .ass	jsr	(assreplace).l		;face off starts period
 	bset	#sf2drec,(sflags2).w		;sf2drec: don't record
@@ -181,7 +181,7 @@ DoGameFrame	;wait for at least one vblank, then run one frame of game logic
 	bsr.w	periodicevents
 	bsr.w	updateplayers		;apply velocity and check collisions
 	tst.w	(songdelay).w		;delayed song countdown
-	beq.w	.nosong			;IDA: loc_798A
+	beq.w	.nosong
 	bmi.w	.nosong
 	subq.w	#1,(songdelay).w
 	bne.w	.nosong
@@ -211,12 +211,12 @@ periodicevents	;IDA: periodiceevents. Called every time thru game loop with d7 =
 	bsr.w	CheckInjury
 	jmp	updatepwrplay
 
-CheckInjury	;IDA: loc_79EA. Called once per second. Count down InjCntDown, act on it at zero
+CheckInjury	;Called once per second. Count down InjCntDown, act on it at zero
 	subq.w	#1,(InjCntDown).w
 	bne.w	rtss8
 	jmp	ShowInjuryBox		;countdown expired (93 ShowInjuryBox)
 
-UpdateLineChange	;IDA: loc_79F8. Called once per second. Restore energy for players on the bench
+UpdateLineChange	;Called once per second. Restore energy for players on the bench
 	tst.w	(OptLine).w
 	bne.w	.ex			;exit if line changes are off
 	movea.w	#(HmShots-M68K_RAM),a2	;team 1
@@ -234,10 +234,10 @@ UpdateLineChange	;IDA: loc_79F8. Called once per second. Restore energy for play
 	bpl.s	.b0
 .ex	rts
 
-CheckPeriodEnd	;IDA: sub_7A34. Called once per second. 3rd period: choose and play a song once at the
+CheckPeriodEnd	;Called once per second. 3rd period: choose and play a song once at the
 		;random trigger time set by ResetClock
 	cmpi.w	#2,(gsp).w		;3rd period only
-	bne.w	.x			;IDA: locret_7A74
+	bne.w	.x
 	btst	#4,(gmode).w
 	bne.w	.x
 	move.w	(gameclock).w,d0
@@ -314,7 +314,7 @@ clockcont	;monitor period clock and initiate various clock activated events
 	move.w	#4,-(sp)		;horn
 	jsr	(sfx).l
 	bsr.w	freezewindow
-clockcont_0	;IDA: loc_7B5C. End of period. Also entered from puckfaceoff+B2
+clockcont_0	;End of period. Also entered from puckfaceoff+B2
 	movea.w	#(puckx-M68K_RAM),a3	;puck
 	move.l	#$18,d0			;pucknothing assignment
 	jsr	(assinsert).l
@@ -399,7 +399,7 @@ demoread	;monitor joystick if in demo mode (called every game loop)
 	bne.w	startpause4
 	;falls into HandleJoy1 with pad 4 in d1
 
-HandleJoy1	;IDA: loc_7CB0. Any button on the pad just read (d1) ends the demo
+HandleJoy1	;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
 	beq.w	rtss8			;nothing pressed
 	jmp	ExitToOpening		;exit demo (93 ExitToOpening)
@@ -415,11 +415,11 @@ startpause
 	bset	#0,(sflags).w		;sfpz
 	rts
 
-startpause3	;IDA: loc_7CDC. 94 only: pause initiated by cont 3 (4 way play). Also from doinput+A4
+startpause3	;94 only: pause initiated by cont 3 (4 way play). Also from doinput+A4
 	move.w	#3,(pausepad).w
 	bclr	#1,(sflags).w		;sfpj
 	bra.s	startpause
-startpause4	;IDA: loc_7CEA. 94 only: pause initiated by cont 4 (4 way play). Also from doinput+A8
+startpause4	;94 only: pause initiated by cont 4 (4 way play). Also from doinput+A8
 	move.w	#4,(pausepad).w
 	bset	#1,(sflags).w		;sfpj
 	bra.s	startpause
@@ -428,7 +428,7 @@ Pausemode	;IDA: PauseMode. Game is in pause mode now
 	jsr	(forceblack).l		;fade screen to black
 	move.w	d0,-(sp)
 	move.w	(vcount).w,d0
-.vb	cmp.w	(vcount).w,d0		;IDA: loc_7D04. Wait for the next vblank
+.vb	cmp.w	(vcount).w,d0		;Wait for the next vblank
 	beq.s	.vb
 	move.w	(sp)+,d0
 	jsr	(AllSndOff).l		;shut off sound (93 p_turnoff)
@@ -437,14 +437,14 @@ Pausemode	;IDA: PauseMode. Game is in pause mode now
 	movea.l	#PauseText,a0		;menu item list (93 PauseText)
 	lea	SetupPauseScreen(pc),a1	;screen draw routine
 	btst	#0,(gmode2).w
-	beq.w	.chk2			;IDA: loc_7D38
+	beq.w	.chk2
 	movea.l	#PauseMenuItems,a0		;94 only: third item list
 	bra.w	.0
 .chk2	btst	#2,tmflags(a2)		;tmflags
-	beq.w	.0			;IDA: loc_7D48
+	beq.w	.0
 	movea.l	#PauseText2,a0		;alternate item list (93 PauseText2)
 .0	bsr.w	InitMenuState		;93 InitMenuState
-.1	bsr.w	vcountwait		;IDA: loc_7D4C. 93 MenuWaitVblank
+.1	bsr.w	vcountwait		;93 MenuWaitVblank
 	bsr.w	getpzjoy
 	jsr	(showclock).l
 	jsr	(ProcessInputWithRepeat).l
@@ -455,10 +455,10 @@ Pausemode	;IDA: PauseMode. Game is in pause mode now
 	jsr	(forceblack).l
 	move.w	(sp)+,(sflags).w
 	btst	#7,(sflags).w		;sfhor
-	beq.w	.clr			;IDA: loc_7D8A
+	beq.w	.clr
 	jsr	(ReloadRefHorTiles).l
 	jsr	(SetHor).l
-	bra.w	.hor			;IDA: loc_7D90
+	bra.w	.hor
 .clr	jsr	(ClrHor).l
 .hor	movea.l	#VDP_DATA,a0
 	move.w	#$9100,4(a0)
@@ -468,12 +468,12 @@ Pausemode	;IDA: PauseMode. Game is in pause mode now
 	jsr	(PrintScores1).l
 	jsr	(setvideo).l
 	move.w	#$18,(palcount).w
-.wait	tst.w	(palcount).w		;IDA: loc_7DC0
+.wait	tst.w	(palcount).w
 	bpl.s	.wait
 	move.w	(vcount).w,(oldvcount).w
 	rts
 
-SetupPauseScreen	;IDA: sub_7DCE. Draw routine for the pause menu (92 Pausemode .pall / .top).
+SetupPauseScreen	;Draw routine for the pause menu (92 Pausemode .pall / .top).
 	;also called from $13780
 	movea.l	#VDP_DATA,a0
 	move.w	#$9100,4(a0)		;playfield 3 width
@@ -488,14 +488,14 @@ SetupPauseScreen	;IDA: sub_7DCE. Draw routine for the pause menu (92 Pausemode .
 	move.w	#$7FF,d2
 	jmp	eraser
 
-seta2	;IDA: sub_7E0E. Set a2 to the team struct of the pause joystick
-	;also called from sub_7E88 (93 HandleMenuInput)
+seta2	;Set a2 to the team struct of the pause joystick
+	;also called from HandleMenuInput
 	movea.w	#(HmShots-M68K_RAM),a2
 	btst	#sfpj,(sflags).w		;sfpj
-	beq.w	.seta20			;IDA: loc_7E26
+	beq.w	.seta20
 	cmpi.w	#1,(cont2team).w
-	bra.w	.seta21			;IDA: loc_7E2C
+	bra.w	.seta21
 .seta20	cmpi.w	#1,(cont1team).w
-.seta21	beq.w	.x			;IDA: locret_7E34
+.seta21	beq.w	.x
 	adda.w	#tmsize,a2		;tmsize
 .x	rts

@@ -39,9 +39,9 @@ skateto = $103C8			;bsr.w / Bcc.w at $D1E2
 skatetopuck = $105A2		;bsr.w / Bcc.w at $DDC0
 sroot = $110BE			;bsr.w / Bcc.w at $D972
 stopna = $10E1A			;bsr.w / Bcc.w at $DAB2
-AvgCline = $12EF6		;bsr.w / Bcc.w at $E248. IDA: sub_12EF6
-SkatePath = $FE864		;jsr / jmp (x).l at $E0EE (IDA: sub_FE864)
-ShootoutShootCheck = $FE8EC		;jsr / jmp (x).l at $E0A4 (IDA: sub_FE8EC)
+AvgCline = $12EF6		;bsr.w / Bcc.w at $E248
+SkatePath = $FE864		;jsr / jmp (x).l at $E0EE
+ShootoutShootCheck = $FE8EC		;jsr / jmp (x).l at $E0A4
 vtoa = $10676			;bsr.w / Bcc.w at $D85C
 
 ; Main segment code

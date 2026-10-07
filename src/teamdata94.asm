@@ -2,8 +2,6 @@
 ;	Layout of 93 teamdata93.asm: the team address table, one block per team, playoffseats, Credits.
 ;	94 has 26 teams plus the two all star teams (93: 24 plus two). Minnesota is now Dallas; Anaheim and
 ;	Florida are new. 94 team blocks are not in TeamList order (ASE and ASW first, FLA and ANH last).
-;	IDA labels that fall inside this data are not created: unk_400 (ASE line 7), runspeed_15 ($BB8, BOS
-;	players), word_3244 (OTW players), byte_4240 (TB palette) and byte_43FA (TB players).
 
 	dc.l	0	;$30A. Not part of TeamList (93 has the same long before its list)
 

@@ -3,8 +3,8 @@
 ;	checkgoal (with the 93 Goal code as .goal), setass, GetPeriodTimeRemaining, checkgoalp, CheckBump, wallcollb2, wallcoll,
 ;	checkpuckcoll_sfx and checkpuckcoll. puckstick (hockey94_05) follows at $150E4 (bsr.w displacement at $14EC8).
 ;	Transcribed from lst/nhl94.bin.lst lines 49543-50531. Global names are the IDA names, or the 93 name where IDA has an auto
-;	name (IDA name in an ;IDA: comment). IDA _sfx (before checkpuckcoll, entered from it) is the global checkpuckcoll_sfx.
-;	Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	name. IDA _sfx (before checkpuckcoll, entered from it) is the global checkpuckcoll_sfx.
+;	Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
 ;	Sort struct (SortCords, $80 each): 0 Xpos, 4 attribute, 6 frame, $14 Ypos, $18 Zpos, $1C OldXpos, $20 OldYpos,
@@ -38,7 +38,7 @@ checkwallcoll2	;IDA name (93 checkwallcoll). d2/d3 = x/y to test, a3 = object, w
 	movea.w	#(SortCords+(13*SCstruct)-M68K_RAM),a2
 	bsr.w	checkgoal
 	bra.w	.2
-.0	;IDA: loc_14592
+.0
 	neg.w	d5
 	cmp.w	d5,d3
 	blt.w	.2
@@ -50,7 +50,7 @@ checkwallcoll2	;IDA name (93 checkwallcoll). d2/d3 = x/y to test, a3 = object, w
 	movea.w	#(SortCords+(12*SCstruct)-M68K_RAM),a2
 	bsr.w	checkgoal
 	bra.w	.2
-.1	;IDA: loc_145B4
+.1
 	sub.w	d4,d2
 	sub.w	d5,d3
 	move.w	d3,d0
@@ -71,7 +71,7 @@ checkwallcoll2	;IDA name (93 checkwallcoll). d2/d3 = x/y to test, a3 = object, w
 	asl.l	#8,d1
 	divs.w	d3,d1
 	bsr.w	wallcollb2
-.2	;IDA: loc_145E6
+.2
 	movem.w	(sp)+,d2-d5
 	move.w	$4E(a3),d0	;wallcos: already hit
 	or.w	$50(a3),d0	;wallsin
@@ -225,39 +225,39 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	movem.l	(sp)+,d0/a0
 	bne.w	.2
 	bra.w	.3
-.1	;IDA: loc_147D8
+.1
 	tst.w	(shootoutteam).w
 	bne.w	.3
-.2	;IDA: loc_147E0
+.2
 	tst.w	(pucky).w
 	bmi.w	rtss2
 	bra.w	.4
-.3	;IDA: loc_147EC
+.3
 	tst.w	(pucky).w
 	bpl.w	rtss2
-.4	;IDA: loc_147F4
+.4
 	bset	#5,(sflags4).w	;94 only: penalty shot / shootout goal
 	tst.w	(shootoutteam).w
 	beq.w	.5
 	addq.w	#1,(awayshootgoals).w
 	bra.w	.6
-.5	;IDA: loc_1480A
+.5
 	addq.w	#1,(homeshootgoals).w
-.6	;IDA: loc_1480E
+.6
 	bset	#0,(sflags8).w
-	jsr	(EndPenaltyShotPlay).l	;IDA: sub_F37C
+	jsr	(EndPenaltyShotPlay).l
 	bra.w	.8
-.7	;IDA: loc_1481E
+.7
 	btst	#0,(gmode).w
 	bne.w	rtss2
-.8	;IDA: loc_14828
+.8
 	bset	#0,(sflags4).w	;94 only
 	bclr	#3,(sflags8).w
 	bsr.w	ChkShotStat
 	bsr.w	play_new_song	;94 only
 	move.w	d0,-(sp)
 	move.w	(vcount).w,d0
-.loop	;IDA: loc_14842
+.loop
 	cmp.w	(vcount).w,d0	;wait for the next vblank
 	beq.s	.loop
 	move.w	(sp)+,d0
@@ -270,35 +270,35 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	tst.w	$14(a3)
 	bpl.w	.9
 	exg	a2,a1
-.9	;IDA: loc_14870
+.9
 	btst	#1,(gmode).w	;gmdir
 	beq.w	.10
 	exg	a2,a1
-.10	;IDA: loc_1487C
+.10
 	addq.w	#1,$C(a2)	;tmscore: add to Goals
 	btst	#5,(sflags4).w	;94 only: goal stats
 	beq.w	.11
 	btst	#0,(gmode2).w	;94: no new assignments in a shootout
 	bne.w	.11
 	addq.w	#1,$362(a2)	;add to SH Goals (IDA comment)
-.11	;IDA: loc_14898
+.11
 	bclr	#4,(gmode2).w
 	beq.w	.12
 	addq.w	#1,$35A(a2)	;add to BA Goals (IDA comment)
-.12	;IDA: loc_148A6
+.12
 	btst	#5,(sflags2).w	;sf2pwrplay
 	beq.w	.14
 	btst	#6,(sflags2).w	;sf2pwrtm: 0 home, 1 visitors
 	bne.w	.13
 	cmpa.l	#AwShots,a2
 	bne.w	.14
-.loop2	;IDA: loc_148C4
+.loop2
 	addq.w	#1,$356(a2)	;power play goals
 	bra.w	.14
-.13	;IDA: loc_148CC
+.13
 	cmpa.l	#HmShots,a2
 	beq.s	.loop2
-.14	;IDA: loc_148D4
+.14
 	movem.l	d0/a2,-(sp)
 	move.w	(gsp).w,d0
 	add.w	d0,d0
@@ -308,7 +308,7 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	bclr	#7,(sflags8).w
 	beq.w	.15
 	addq.w	#1,$35E(a2)	;sflags8 bit 7 goals
-.15	;IDA: loc_148F6
+.15
 	cmpa.w	#(HmShots-M68K_RAM),a2	;home goal: ChooseSong (93 song $30)
 	bne.w	.16
 	move.w	(HomeTeam).w,(HmTeam).w
@@ -317,11 +317,11 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	move.w	#$78,(songdelay).w
 	move.w	(SongNum).w,-(sp)
 	move.w	(sp)+,(delayedsong).w
-.16	;IDA: loc_1491E
+.16
 	cmpi.w	#$168,(ScoreSumbytes).w	;60 entries of 6 bytes full? (93 $B4, 30)
 	bne.w	.17
 	subq.w	#6,(ScoreSumbytes).w	;overwrite the last entry
-.17	;IDA: loc_1492C
+.17
 	movea.w	#(ScoreSum-M68K_RAM),a0
 	adda.w	(ScoreSumbytes).w,a0
 	addq.w	#6,(ScoreSumbytes).w
@@ -336,7 +336,7 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	beq.w	.18
 	subi.w	#$14,(CwdExciteLvl).w	;less for an away goal
 	bset	#7,-1(a0)	;byte 2 bit 7 = away team scored
-.18	;IDA: loc_14964
+.18
 	move.w	$18(a2),d0	;scorer
 	move.b	d0,(a0)+
 	move.w	#$FFFF,(a0)	;no assists yet
@@ -356,24 +356,24 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	move.b	d0,(a0)
 	addi.w	#$CE,d0
 	addq.b	#1,0(a2,d0.w)
-.19	;IDA: loc_149AA
+.19
 	move.w	$26(a1),d0	;tmgoalie of the other team
 	bmi.w	.20
 	addi.w	#$B4,d0
 	addq.b	#1,0(a1,d0.w)
-.20	;IDA: loc_149BA
+.20
 	bsr.w	ChkShotStat
-	bsr.w	PenGoalStuff	;penalty94_1 (IDA sub_1284A)
+	bsr.w	PenGoalStuff	;penalty94_1
 	bclr	#3,(BA_PS_flags).w
 	bsr.w	PrintScores1
 	move.w	#$2710,(crowdnoisedelay).w	;94 only
 	btst	#0,(gmode2).w
 	beq.w	.21
 	bra.w	.22
-.21	;IDA: loc_149E0
+.21
 	move.l	#7,d0	;assignment 7 (92 ascore = 8)
 	bsr.w	setass
-.22	;IDA: loc_149EA
+.22
 	clr.w	(collflag).w
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
@@ -381,13 +381,13 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	tst.w	(a3)
 	bpl.w	.23
 	neg.w	d0
-.23	;IDA: loc_14A00
+.23
 	move.w	d0,(a3)
 	move.w	#$110,d0	;92 blueline+goalline+8
 	tst.w	$14(a3)
 	bpl.w	.24
 	neg.w	d0
-.24	;IDA: loc_14A10
+.24
 	move.w	d0,$14(a3)
 	move.w	#$600,$2C(a3)	;Zvel
 	clr.w	$18(a3)
@@ -410,7 +410,7 @@ setass	;IDA name (93 Goal .setass, IDA ResetTeamPlayerAssignments). d0 = assignm
 	move.l	a3,-(sp)
 	movea.w	$22(a2),a3	;tmsort
 	moveq	#5,d3
-.loop	;IDA: loc_14A5C
+.loop
 	tst.w	$34(a3)	;position
 	ble.w	.1
 	btst	#0,$63(a3)	;pf2fight
@@ -419,14 +419,14 @@ setass	;IDA name (93 Goal .setass, IDA ResetTeamPlayerAssignments). d0 = assignm
 	bclr	#3,$64(a3)	;94 only
 	beq.w	.0
 	jsr	(EndOneTimer).l
-.0	;IDA: loc_14A84
+.0
 	bsr.w	assinsert
-.1	;IDA: loc_14A88
+.1
 	adda.w	#$80,a3
 	dbf	d3,.loop
 	movea.l	(sp)+,a3
 	rts
-GetPeriodTimeRemaining	;IDA: sub_14A94 (93 name). Return d0 = (gsp << 14 | PerTimeTotal) - gameclock. Called from checkgoal (ScoreSum entry) and InProgress (penalty94_1)
+GetPeriodTimeRemaining	;93 name. Return d0 = (gsp << 14 | PerTimeTotal) - gameclock. Called from checkgoal (ScoreSum entry) and InProgress (penalty94_1)
 	move.w	(gsp).w,d0
 	swap	d0
 	clr.w	d0
@@ -477,7 +477,7 @@ checkgoalp	;check for player a3 collision with goal/net a2. Entered from checkgo
 	bset	#4,(sflags6).w	;wallcoll: do not set the wall collision bit
 	bsr.w	wallcoll
 	bclr	#4,(sflags6).w
-.exit	;IDA: loc_14B32
+.exit
 	movem.w	(sp)+,d2-d3
 	rts
 CheckBump	;supply minimum separation velocity for coll with walls/goal/net. a2 = goal, a3 = player. On one frame in 32, a player near the puck
@@ -503,10 +503,10 @@ CheckBump	;supply minimum separation velocity for coll with walls/goal/net. a2 =
 	bgt.w	.bb
 	cmp.w	#$E000,d1
 	blt.w	.bb
-.ex	;IDA: loc_14B8A
+.ex
 	movem.l	(sp)+,d0-d1
 	rts
-.bb	;IDA: loc_14B90
+.bb
 	adda.w	#$C,sp	;drop the saved d0-d1 and the return to checkgoalp: return to checkgoal's caller
 	asr.w	#2,d0
 	asr.w	#2,d1
@@ -604,7 +604,7 @@ wallcoll	;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = object. B
 	addq.w	#4,d0
 	bpl.w	.sf0
 	clr.w	d0
-.sf0	;IDA: loc_14CE2
+.sf0
 	andi.w	#3,d0
 	addi.w	#$28,d0
 	move.w	d0,-(sp)
@@ -622,7 +622,7 @@ wallcoll	;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = object. B
 	bclr	#4,(sflags6).w	;94 only: set by checkgoalp
 	bne.w	.0
 	bset	#4,$64(a3)	;set wall collision bit
-.0	;IDA: loc_14D16
+.0
 	cmp.w	#$F000,d2	;$-1000
 	bgt.w	.nosfx
 	cmpi.w	#$A,impact(a3)	;impact(a3)
@@ -783,7 +783,7 @@ checkpuckcoll	;look for puck coll with players. a3 = puck. Clears Yvel past the 
 	cmp.l	#$40,d0	;compare cbody squared to d0
 	bhi.w	.exit	;exit if higher
 	bsr.w	puckbody
-.ret	;IDA: loc_14F22 and _exit (two names)
+.ret	;IDA: _exit
 .exit
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
@@ -868,16 +868,16 @@ checkpuckcoll	;look for puck coll with players. a3 = puck. Clears Yvel past the 
 	move.w	#$C,(ChkBodyG).w
 	move.l	#$90,(ChkBodySqG).w
 	move.w	#$FFF4,(NegChkBodyG).w
-.2	;IDA: loc_1500A
+.2
 	cmpi.w	#$250,$58(a2)	;check animation (pad stack)
 	beq.w	.3	;branch if equal
 	cmpi.w	#$2A2,$58(a2)	;check animation (pad stack)
 	bne.w	.4	;branch if not equal
-.3	;IDA: loc_1501E
+.3
 	move.w	#$12,(ChkBodyG).w
 	move.l	#$144,(ChkBodySqG).w
 	move.w	#$FFEE,(NegChkBodyG).w
-.4	;IDA: loc_15032
+.4
 	movea.l	(sp)+,a0	;pop stack into a0
 	cmpi.w	#$F,(puckz).w	;compare F to puckz
 	bgt.w	.exit2	;exit if higher
@@ -890,17 +890,17 @@ checkpuckcoll	;look for puck coll with players. a3 = puck. Clears Yvel past the 
 	bra.w	.5
 .neg
 	move.w	#$FFFA,d1	;move -6 into d1
-.5	;IDA: loc_15060
+.5
 	btst	#7,$62(a2)	;check which goal shooting at
 	bne.w	.6	;branch if top
 	neg.w	d1	;negate d1
-.6	;IDA: loc_1506C
+.6
 	btst	#0,$76(a2)	;check bit zero of handedness
 	beq.w	.7	;branch if equal
 	neg.w	d1	;negate d1
-.7	;IDA: loc_15078
+.7
 	add.w	d1,d0	;add d1 to d0
-.8	;IDA: loc_1507A
+.8
 	sub.w	(a3),d0	;sub Xpos a3 from d0
 	cmp.w	(ChkBodyG).w,d0	;compare to d0
 	bgt.w	.exit2	;exit if greater than

@@ -4,9 +4,9 @@
 ;	ProcessInputWithRepeat, ReadJoy1-4 (94: pads 3 and 4), ReadJoy, jdtab, DoDMApro, DoDMA, DoDMA_nd2, DoFill,
 ;	WaitDMA, setvram, Vmaddr. dobitmap (middle94_2) follows at $1169A.
 ;	Transcribed from lst/nhl94.bin.lst lines 44006-44864. Global names are the IDA names except CopyPaletteToCRAM
-;	(IDA sub_11044), ProcessInputWithRepeat (sub_11318) and DoDMA_nd2 (sub_114B8), the 93 names. waitxsr is the 92
+;, ProcessInputWithRepeat and DoDMA_nd2, the 93 names. waitxsr is the 92
 ;	name (93 IntermissionLoop). IDA dd / nd (inside DoDMA) are the locals .dd / .nd. IDA dmaram? is dmaram (? stripped).
-;	Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
+;	Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
@@ -46,14 +46,14 @@ forceblack
 	movem.l	d0/a0,-(sp)
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$1F,d0
-.0	;IDA: loc_10F3C
+.0
 	move.l	(a0),-(sp)
 	clr.l	(a0)+
 	dbf	d0,.0
 	move.w	#$18,(palcount).w
 	bsr.w	forcefade
 	moveq	#$1F,d0
-.1	;IDA: loc_10F50
+.1
 	move.l	(sp)+,-(a0)
 	dbf	d0,.1
 	movem.l	(sp)+,d0/a0
@@ -62,14 +62,14 @@ forceblack2
 	movem.l	d0/a0,-(sp)
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$1F,d0
-.loop	;IDA: loc_10F66
+.loop
 	move.l	(a0),-(sp)
 	clr.l	(a0)+
 	dbf	d0,.loop
 	move.w	#$64,(palcount).w
 	bsr.w	forcefade
 	moveq	#$1F,d0
-.loop2	;IDA: loc_10F7A
+.loop2
 	move.l	(sp)+,-(a0)
 	dbf	d0,.loop2
 	movem.l	(sp)+,d0/a0
@@ -81,7 +81,7 @@ forcefade
 	bclr	#dfng,(disflags).w
 	move.l	#vb2,(vbint).l
 	move	#$2500,sr
-.1	;IDA: loc_10FA4
+.1
 	tst.w	(palcount).w
 	bpl.s	.1
 	move.w	(sp)+,(disflags).w
@@ -113,7 +113,7 @@ cramfade
 	movea.l	#palfadenew,a1
 	movea.l	#VDP_DATA,a0
 	clr.w	d6
-.top	;IDA: loc_11000
+.top
 	move.w	d3,d2
 	move.w	d6,d0
 	swap	d0
@@ -128,7 +128,7 @@ cramfade
 	beq.w	.next
 	blt.w	.nn
 	neg.w	d2
-.nn	;IDA: loc_11024
+.nn
 	add.w	d2,d0
 	and.w	d4,d7
 	or.w	d0,d7
@@ -137,12 +137,12 @@ cramfade
 	swap	d0
 	move.l	d0,4(a0)
 	move.w	d7,(a0)
-.next	;IDA: loc_1103A
+.next
 	addq.w	#2,d6
 	cmp.w	#$80,d6
 	bne.s	.top
 	rts
-CopyPaletteToCRAM	;IDA: sub_11044 (93 name). Copy all 64 palfadenew colours to colour ram, protected from vblank
+CopyPaletteToCRAM	;93 name. Copy all 64 palfadenew colours to colour ram, protected from vblank
 	movem.l	d0/a0-a1,-(sp)
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w
@@ -150,7 +150,7 @@ CopyPaletteToCRAM	;IDA: sub_11044 (93 name). Copy all 64 palfadenew colours to c
 	movea.l	#VDP_DATA,a0
 	move.l	#$C0000000,4(a0)
 	moveq	#$1F,d0
-.0	;IDA: loc_11066
+.0
 	move.l	(a1)+,(a0)
 	dbf	d0,.0
 	st	(palcount).w
@@ -220,14 +220,14 @@ sroot
 	lsr.w	#1,d1
 	cmp.w	d1,d2
 	dbeq	d3,.top
-.done	;IDA: loc_1110A
+.done
 	move.w	d1,d0
 	movem.l	(sp)+,d1-d4
 	rts
-.big	;IDA: loc_11112
+.big
 	moveq	#0,d1
 	moveq	#-1,d2
-.bs	;IDA: loc_11116
+.bs
 	move.w	d1,d3
 	add.w	d2,d3
 	roxr.w	#1,d3
@@ -239,7 +239,7 @@ sroot
 	bcc.w	.lo
 	move.w	d4,d2
 	bra.s	.bs
-.lo	;IDA: loc_1112E
+.lo
 	move.w	d4,d1
 	bra.s	.bs
 ; play sound effect number
@@ -294,7 +294,7 @@ waitx
 	or.w	d3,(waitxpad).w
 	tst.w	d1
 	bne.w	rtss2
-.1	;IDA: loc_111C0
+.1
 	move.w	(vcount).w,d0
 .0
 	cmp.w	(vcount).w,d0
@@ -309,11 +309,11 @@ waitxsr	;92 name (93 IntermissionLoop). Wait d0 vblanks while the zamboni crosse
 	movem.l	d4-d7/a0-a3,-(sp)
 	neg.w	d0
 	move.w	d0,(vcount).w
-.loop	;IDA: loc_111DA
+.loop
 	cmpi.w	#$708,(zamx).w
 	bhi.w	.0
 	addq.w	#1,(zamx).w
-.0	;IDA: loc_111E8
+.0
 	moveq	#1,d7
 	jsr	(updatecrowdf).w		;4EB8: target below $8000 (hockey94_01)
 	jsr	(RunArenaAnim).l
@@ -345,29 +345,29 @@ waitxsr	;92 name (93 IntermissionLoop). Wait d0 vblanks while the zamboni crosse
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	beq.w	.4
-.1	;IDA: loc_11268
+.1
 	move.w	(vcount).w,d0
 	cmp.w	#$FF88,d0
 	blt.w	.2
 	moveq	#$FFFFFF88,d0
-.2	;IDA: loc_11276
+.2
 	movem.w	d0,-(sp)
 	jsr	(HandleMenuInput).w		;4EB8: target below $8000 (93 HandleMenuInput)
 	bne.w	.3
 	addq.w	#2,sp
 	bset	#7,d1
 	bra.w	.x
-.3	;IDA: loc_1128C
+.3
 	move.w	(sp)+,(vcount).w
-.4	;IDA: loc_11290
+.4
 	bsr.w	setvideo
 	move.w	(vcount).w,d0
-.loop2	;IDA: loc_11298
+.loop2
 	cmp.w	(vcount).w,d0
 	beq.s	.loop2
 	tst.w	d0
 	bmi.w	.loop
-.x	;IDA: loc_112A4
+.x
 	movem.l	(sp)+,d4-d7/a0-a3
 	rts
 ; wait for either joystick input
@@ -418,7 +418,7 @@ nodiag
 .ok
 	movem.l	(sp)+,d0/d4-d5
 	rts
-ProcessInputWithRepeat	;IDA: sub_11318 (93 name). nodiag, then key repeat on d1-d3
+ProcessInputWithRepeat	;93 name. nodiag, then key repeat on d1-d3
 	bsr.s	nodiag
 	tst.w	d3
 	beq.w	rtss2
@@ -429,7 +429,7 @@ ProcessInputWithRepeat	;IDA: sub_11318 (93 name). nodiag, then key repeat on d1-
 	move.w	#4,(repeatdelayframes).w
 	move.w	d3,d1
 	rts
-.chg	;IDA: loc_11338
+.chg
 	move.w	#$F,(repeatdelayframes).w
 	rts
 ; Read controller 1
@@ -561,7 +561,7 @@ DoDMA
 	move	sr,-(sp)
 	move	#$2700,sr
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_11478
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	move.w	(dmaram+2).w,(a1)
@@ -576,11 +576,11 @@ DoDMA
 	andi.w	#3,d3
 	move.l	d3,(a1)
 	move.w	(a0),-4(a1)
-.0	;IDA: loc_114B0
+.0
 	move	(sp)+,sr
 	movem.l	(sp)+,d2-d3/a1
 	rts
-DoDMA_nd2	;IDA: sub_114B8 (93 name). vram to vram copy by dma, protected from vblank
+DoDMA_nd2	;93 name. vram to vram copy by dma, protected from vblank
 	movem.l	d0-d3/a1,-(sp)
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w
@@ -610,7 +610,7 @@ DoDMA_nd2	;IDA: sub_114B8 (93 name). vram to vram copy by dma, protected from vb
 	ori.w	#$C0,d0
 	move.l	d0,(dmaram).w
 	move.w	#$100,(IO_Z80BUS).l
-.loop	;IDA: loc_11516
+.loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	move.w	(dmaram).w,(a1)
@@ -662,7 +662,7 @@ setvram
 	dbf	d1,.0
 	move.w	#$18,(palcount).w
 	bsr.w	forcefade
-setVram_0	;IDA: loc_115AA. 93 name: second half of 92 setVram (no fade): clear vram and set the VDP registers from disflags, Map1col, VmMap1-3, VSPRITES and VSCRLPM.
+setVram_0	;93 name: second half of 92 setVram (no fade): clear vram and set the VDP registers from disflags, Map1col, VmMap1-3, VSPRITES and VSCRLPM.
 	;Falls in from setvram, called from EASportsScreen (attract94) and HiScoreScreen (high94_3)
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w	;#dfng
