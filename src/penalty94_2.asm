@@ -678,9 +678,9 @@ SetTickerAreaPosition	;93 name. Set printx/printy/printm for the ticker box (x 3
 	moveq	#$1A,d0
 	moveq	#5,d1
 	rts
-PrintStringFromList	;93 name. Print string d0 of the String list a1 with print2 (93 printsmall)
+PrintStringFromList	;93 name. Print string d0 of the String list a1 with printsmall
 	bsr.w	AdvanceStringPtr
-	bra.w	print2
+	bra.w	printsmall
 AdvanceStringPtr	;IDA: Adda1Offset. Return a1 = string d0 of the String list a1 (92 Fprint without the print)
 	bra.w	.0
 .loop

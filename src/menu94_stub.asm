@@ -17,7 +17,7 @@
 ; External addresses outside $007E36-$0080D3, read from lst/nhl94.bin: jsr / jmp (x).l, movea.l / move.l #x and
 ; lea (x).l carry the address; bsr.w / bra.w / Bcc.w is the displacement word address + displacement. IDA names.
 Framer = $119B8			;jsr / jmp (x).l at $7E60
-print2 = $11A48			;jsr / jmp (x).l at $7F4A
+printsmall = $11A48			;jsr / jmp (x).l at $7F4A
 printz2 = $11A36			;jsr / jmp (x).l at $7E4C
 rtss8 = $A9D4			;bsr.w / Bcc.w at $7E7E
 seta2 = $7E0E			;bsr.w / Bcc.w at $7EB8. hockey94_01 name

@@ -1,9 +1,9 @@
 ;	NHL 94 (retail) segment $1454A-$150E3
-;	92 hockey.asm part 2, second half, as 93 hockey93_04.asm: checkfight (an rts in 94; 93 SetInst is gone), checkwallcoll2,
-;	checkgoal (with the 93 Goal code as .goal, and the 93 Goal local .setass), GetPeriodTimeRemaining, checkgoalp, CheckBump, wallcollb2, wallcoll,
+;	92 hockey.asm part 2, second half, as 93 hockey93_04.asm: checkfight (an rts in 94; 93 SetInst is gone), checkwallcoll,
+;	checkgoal (with the 93 Goal code as .goal, and the 93 Goal local .setass), GetPeriodTimeRemaining, checkgoalp, CheckBump, wallcollb, wallcoll,
 ;	checkpuckcoll_sfx and checkpuckcoll. puckstick (hockey94_05) follows at $150E4 (bsr.w displacement at $14EC8).
 ;	Transcribed from lst/nhl94.bin.lst lines 49543-50531. Global names are the IDA names, or the 93 name where IDA has an auto
-;	name. IDA _sfx (before checkpuckcoll, entered from it) is the global checkpuckcoll_sfx.
+;	name or a 2 suffix (checkwallcoll, wallcollb). IDA _sfx (before checkpuckcoll, entered from it) is the global checkpuckcoll_sfx.
 ;	Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
@@ -15,8 +15,8 @@
 
 checkfight	;94: an rts. 93 checkfight looked for the start of a fight between players a2 and a3 (94 has no fight code). Called from checkcx (hockey94_03)
 	rts
-checkwallcoll2	;IDA name (93 checkwallcoll). d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radius. Check the corner circles, the goals
-	;(checkgoal with a2 = SortCords+(13*SCstruct) top, SortCords+(12*SCstruct) bottom) and then the side and end boards. Calls wallcollb2 on a hit, with d0/d1 = cos/sin of
+checkwallcoll	;IDA: checkwallcoll2. 93 name. d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radius. Check the corner circles, the goals
+	;(checkgoal with a2 = SortCords+(13*SCstruct) top, SortCords+(12*SCstruct) bottom) and then the side and end boards. Calls wallcollb on a hit, with d0/d1 = cos/sin of
 	;the wall. Called from checkcoll (hockey94_03)
 	bclr	#4,$64(a3)	;wall collision bit
 	move.w	#$88,d4	;92 Sideline (a RAM word); 136
@@ -70,7 +70,7 @@ checkwallcoll2	;IDA name (93 checkwallcoll). d2/d3 = x/y to test, a3 = object, w
 	ext.l	d1
 	asl.l	#8,d1
 	divs.w	d3,d1
-	bsr.w	wallcollb2
+	bsr.w	wallcollb
 .2
 	movem.w	(sp)+,d2-d5
 	move.w	$4E(a3),d0	;wallcos: already hit
@@ -79,21 +79,21 @@ checkwallcoll2	;IDA name (93 checkwallcoll). d2/d3 = x/y to test, a3 = object, w
 	move.w	#$100,d0
 	clr.w	d1
 	cmp.w	d5,d3
-	bge.w	wallcollb2
+	bge.w	wallcollb
 	neg.w	d5
 	neg.w	d0
 	cmp.w	d5,d3
-	ble.w	wallcollb2
+	ble.w	wallcollb
 	exg	d0,d1
 	cmp.w	d4,d2
-	bge.w	wallcollb2
+	bge.w	wallcollb
 	neg.w	d4
 	neg.w	d1
 	cmp.w	d4,d2
-	ble.w	wallcollb2
+	ble.w	wallcollb
 	rts
 checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x/y. A puck under the crossbar hits a post or the net (deflect,
-	;sfx $25 or 8 and crowd) or goes in (.goal); a player goes to checkgoalp. Called from checkwallcoll2
+	;sfx $25 or 8 and crowd) or goes in (.goal); a player goes to checkgoalp. Called from checkwallcoll
 	cmpi.w	#$D,Zpos(a3)	;13 pix for zside = height of goal (puck only check)
 	bgt.w	rtss2	;over goal
 	cmpi.w	#$E,SCnum(a3)	;puckSCnum
@@ -519,10 +519,10 @@ CheckBump	;supply minimum separation velocity for coll with walls/goal/net. a2 =
 	bne.w	rtss2
 	move.l	#8,d0
 	bra.w	AddPenalty2
-wallcollb2	;IDA name (93 wallcollb). Check for puck over wall. a3 = object, d0/d1 = cos/sin of the wall. Not the puck, or Zpos up to $12:
+wallcollb	;IDA: wallcollb2. 93 name. Check for puck over wall. a3 = object, d0/d1 = cos/sin of the wall. Not the puck, or Zpos up to $12:
 	;wallcoll. Zpos above $1D, or above $12 with Ypos below $118: out of play. Otherwise only at x $D-$F with Yvel >= $FA0 (else wallcoll): halve
 	;Yvel, SPA $1078 on the next struct, sfx $E and crowd, then out of play. Out of play: sfslock, pfnc, and while the clock runs penalty 6
-	;(PenOOP) for ltplayer. Called from checkwallcoll2
+	;(PenOOP) for ltplayer. Called from checkwallcoll
 	cmpi.w	#$E,$52(a3)	;#puckSCnum
 	bne.w	wallcoll	;not puck so wall coll
 	cmpi.w	#$1D,$18(a3)	;#12*8/3, Zpos
@@ -568,7 +568,7 @@ wallcollb2	;IDA name (93 wallcollb). Check for puck over wall. a3 = object, d0/d
 	rts
 wallcoll	;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = object. Bounce a3 off the wall: the puck loses speed, flips and plays
 	;sfx $28-$2B; a player sets the wall collision bit (unless sflags6 bit 4) and plays SFXplayerwall on a hard hit. Called from checkgoal,
-	;checkgoalp and wallcollb2
+	;checkgoalp and wallcollb
 	move.w	d0,Wallcos(a3)	;wallcos
 	move.w	d1,Wallsin(a3)	;wallsin
 	movem.l	d2-d3,-(sp)

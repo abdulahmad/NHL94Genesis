@@ -11,7 +11,7 @@
 ;	labels inside Strings are not labels.
 
 wallcollduringcheck	;IDA name (and comments). 94 only: during a check, a skater a2 (not a goalie) near the wall: test the wall at his position
-	;with his size + $17 (checkwallcoll, high94_1). Called from CCStart (hockey94_03)
+	;with his size + $17 (checkcornercoll94, high94_1). Called from CCStart (hockey94_03)
 	tst.w	$34(a2)	;check if goalie
 	beq.w	.end
 	movem.l	d0-d7,-(sp)
@@ -23,7 +23,7 @@ wallcollduringcheck	;IDA name (and comments). 94 only: during a check, a skater 
 	addi.w	#$17,(wcradiusy).l	;add $17 to BD24
 	movem.l	a0-a6,-(sp)
 	exg	a2,a3	;swap a2 and a3
-	jsr	(checkwallcoll).l
+	jsr	(checkcornercoll94).l
 	exg	a2,a3	;swap a2 and a3
 	movem.l	(sp)+,a0-a6
 	movem.l	(sp)+,d0-d7
@@ -1489,7 +1489,7 @@ DrawPlayerCard	;94 only. Draw a player card: picture (DrawPictureBox), name, "Re
 	movea.l	a3,a1
 	move.w	#8,(printx).l
 	move.w	#$B,(printy).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	bsr.w	GetCardPlayer
 	movea.l	#HmShots,a2
 	tst.w	(cardvis).w
@@ -1499,7 +1499,7 @@ DrawPlayerCard	;94 only. Draw a player card: picture (DrawPictureBox), name, "Re
 	jsr	(FormatPlayerNameLast).l
 	move.w	#8,(printx).l
 	move.w	#$C,(printy).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	#8,d1
 	jsr	(PrintCardTeam).l
 	move.w	#$15,(printx).l
@@ -1801,7 +1801,7 @@ PrintCardRecordLine	;Print a player card record line: label (appstring), value (
 	jsr	(appstring).l
 	move.w	(printx).w,-(sp)
 	movea.l	#mesarea,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printy).w
 	movea.l	#mesarea,a1
@@ -1814,7 +1814,7 @@ PrintCardRecordLine	;Print a player card record line: label (appstring), value (
 	jsr	(appstring).l
 	move.w	(printx).w,-(sp)
 	movea.l	#mesarea,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printy).w
 	move.w	d4,d2
@@ -1829,7 +1829,7 @@ PrintCardRecordLine	;Print a player card record line: label (appstring), value (
 	movea.l	#mesarea,a1
 	jsr	(AppendTeamName).l
 	movea.l	#mesarea,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	rts
 CardVsTxt	dc.b	0	;PrintCardRecordLine text
 	dc.b	6,$20
@@ -1881,7 +1881,7 @@ PrintOverallRating	;94 only. Player card "Overall Rating" (CalcAttrib, AttribAdj
 	movea.l	#mesarea,a1
 	bsr.w	AppendNumber
 	movea.l	#mesarea,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movem.l	(sp)+,d0-d7/a0-a6
 CardStub	;An rts with no caller (IDA nullsub)
 	rts
@@ -1916,12 +1916,12 @@ PrintStartingLine	;Player card "Starting Line": the line slots the player starts
 	beq.w	.2
 	move.w	(sp),(printx).w
 	move.l	a1,-(sp)
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.b	(a0)+,d0
 	ext.w	d0
 	subq.w	#1,d0
 	jsr	(FormatPlayerNameShort).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	move.w	(a1),d0
 	ext.l	d0
@@ -2059,7 +2059,7 @@ PrintCardPosition	;Player card position: Goalie, Forward or Defenseman (from the
 	bsr.w	GetJerseyString
 	move.w	d1,(printx).w
 	move.w	d2,(printy).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movea.l	#HmShots,a2
 	tst.w	(cardvis).w
 	beq.w	.0
@@ -2110,7 +2110,7 @@ PrintTeamRating	;94 only. Player card "Team Rating" (GetTeamRating, high ROM)
 	move.w	#2,d1
 	jsr	(PushNumberWidth).l
 .3
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movem.l	(sp)+,d0-d7/a0-a6
 .x
 	rts
@@ -2133,14 +2133,14 @@ PrintCardTeam	;94 only. Player card: the city and nickname of the card's team (G
 .x
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-PrintCentered	;94 only. print2 String a0 centred on column $14
+PrintCentered	;94 only. printsmall String a0 centred on column $14
 	move.w	#$14,(printx).w
 	move.w	(a0),d0
 	subq.w	#2,d0
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
 	movea.l	a0,a1
-	jmp	print2
+	jmp	printsmall
 GetJerseyString	;94 only. Player d0 of the card's team: his jersey number as a 2 digit String at a1 (space for a leading 0)
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#HmShots,a0
@@ -2198,7 +2198,7 @@ PrintGoalsAssists	;94 only. Player card "Goals" / "Assists" (GetCardTeam)
 	bsr.w	AppendNumber
 	move.w	(sp)+,d0
 	movea.l	#mesarea,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printy).w
 	jsr	(printz2).l
@@ -2207,7 +2207,7 @@ PrintGoalsAssists	;94 only. Player card "Goals" / "Assists" (GetCardTeam)
 	movea.l	#mesarea,a1
 	bsr.w	AppendNumber
 	movea.l	#mesarea,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PrintSaves	;94 only. Player card "Saves" / "Save %" (GetCardTeam)
@@ -2234,7 +2234,7 @@ PrintSaves	;94 only. Player card "Saves" / "Save %" (GetCardTeam)
 	move.l	a1,-(sp)
 	bsr.w	AppendNumber
 	movea.l	(sp)+,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printy).w
 	jsr	(printz2).l
@@ -2252,7 +2252,7 @@ PrintSaves	;94 only. Player card "Saves" / "Save %" (GetCardTeam)
 	move.l	a1,-(sp)
 	bsr.w	AppendNumber
 	movea.l	(sp)+,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 DrawPlayerPicture	;94 only. Draw the player picture (graphics94 NoPicSkater1 ... PlayerPictures)
@@ -3373,7 +3373,7 @@ PrintRecordTitles	;94 only. Record Holders: the record titles (WinRecTitles, Goa
 	beq.w	.0
 	movea.l	#GoalRecTitles,a1
 .0
-	jsr	(print2).l
+	jsr	(printsmall).l
 	rts
 WinRecTitles	dc.b	0	;PrintRecordTitles Strings
 	dc.b	$52	;R
@@ -3572,17 +3572,17 @@ PrintWinRecords	;94 only. Record Holders: the rows (PrintRecordName)
 	move.w	d5,d0
 	move.w	#3,d1
 	jsr	(PushNumberWidth).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	#$1A,(printx).w
 	move.w	(recwins).w,d0
 	move.w	#4,d1
 	jsr	(PushNumberWidth).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	#$1F,(printx).w
 	move.w	(reclosses).w,d0
 	move.w	#4,d1
 	jsr	(PushNumberWidth).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	#$24,(printx).w
 	move.w	(recties).w,d0
 	move.w	#3,d1
@@ -3592,7 +3592,7 @@ PrintWinRecords	;94 only. Record Holders: the rows (PrintRecordName)
 .0
 	movea.l	#RecParenTxt,a1
 .1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	addq.w	#2,(printy).w
 	dbf	d7,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -3648,7 +3648,7 @@ PrintPlayerRecords	;Record Holders: the rows of the other page (PrintRecordName)
 	andi.w	#$FF,d0
 	move.w	#3,d1
 	jsr	(PushNumberWidth).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,d0
 	move.w	#$19,(printx).w
 	movea.l	#RecHolderByTxt,a1
@@ -3683,7 +3683,7 @@ PrintPlayerRecords	;Record Holders: the rows of the other page (PrintRecordName)
 .8
 	movea.l	#RecParenTxt,a1
 .9
-	jsr	(print2).l
+	jsr	(printsmall).l
 	addq.w	#2,(printy).w
 	dbf	d7,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -3715,14 +3715,14 @@ PrintRecordName	;94 only. Record Holders: print a value (AppendUserName)
 	move.b	#$2E,3(a1)
 	move.b	#$20,4(a1)
 	move.b	#0,5(a1)
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,d7
 	move.b	-1(a0),d2
 	ext.w	d2
 	movea.l	#mesarea,a1
 	bclr	#7,(sflags6).w
 	bsr.w	AppendUserName
-	jmp	print2
+	jmp	printsmall
 CalcWinPercents	;94 only. Record Holders: for the 8 user record blocks at ThreeStars, the win % (winpcts), games (wingames) and ties (winties), then sort the rows (winsort)
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
@@ -4384,7 +4384,7 @@ PrintShooterBox	;94 only. Shootout shooters: the selected player box (getname)
 	move.w	(a1),d0
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	clr.w	(printfontset).w
 	rts
 PrintShooterNames	;94 only. Shootout shooters: the shooters' names (FormatPlayerNameShort)
@@ -4412,7 +4412,7 @@ PrintShooterNames	;94 only. Shootout shooters: the shooters' names (FormatPlayer
 	move.w	#$19,(printx).w
 	move.w	#$E,(printy).w
 .2
-	jsr	(print2).l
+	jsr	(printsmall).l
 	clr.w	(printfontset).w
 	move.w	(sp)+,(printx).w
 	addq.w	#2,(printy).w

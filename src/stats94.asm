@@ -2,7 +2,7 @@
 ;	The stats screens, as 93 stats93: Scores (ShowScores), Line Editor, Team Roster, Scoring Summary, Penalty Summary, Player Stats /
 ;	Playoff Stats, Crowd Meter, the Timeout and goalie select menu items, and their helpers (SetupScreen, ExitAttributeScreen2,
 ;	ReadAttributeNibble ... WaitVSyncAndReadInput). The screens are menu item handlers (the hockey94_11 menu lists) run from the pause menu (menu94).
-;	94 changes from 93: 94 RAM (PenSum, ScoreSum, VertLineScrolling ...), printz2 / print2 for the small text, the OptLine line icon
+;	94 changes from 93: 94 RAM (PenSum, ScoreSum, VertLineScrolling ...), printz2 / printsmall for the small text, the OptLine line icon
 ;	entries (MenuIconPosTable-6, the byte before AttributeMenuTable), the crowd meter arena / league records (save RAM), GetDefenseStart and
 ;	ReloadRinkGraphics; the 93 Game Statistics screen is not here.
 ;	Transcribed from lst/nhl94.bin.lst lines 30583-34504. Global names are the 93 stats93 names where IDA has an auto name or no label, or where
@@ -383,7 +383,7 @@ DrawAttributeMenu	;93 name. Line editor: draw the line icons for the cursor's li
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
 	move.w	d7,(printa).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	clr.w	(printfontset).w
 	rts
 	dc.b	1	;94: the entry before AttributeMenuTable (read with OptLine set)
@@ -427,7 +427,7 @@ DrawMenuIcon	;93 name. Line editor: draw line d5 (its name from linelist, 93 lin
 	move.w	(printa).w,d7
 	move.w	#2,(printfontset).w
 .2
-	jsr	(print2).l
+	jsr	(printsmall).l
 	clr.w	(printfontset).w
 	addq.w	#1,d4
 	dbf	d3,.1
@@ -796,7 +796,7 @@ DisplayPlayerList	;93 name. Draw roster page SelectedPlayerIdx (0 goalies, 1-7 l
 	move.w	(SelectedPlayerIdx).w,d0
 	lea	PlayerStatMenuTxt(pc),a1
 	jsr	(AdvanceStringPtr).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	jsr	(printz2).l
 	String	$FD,$16,$FC,9
 .0
@@ -816,7 +816,7 @@ DisplayPlayerList	;93 name. Draw roster page SelectedPlayerIdx (0 goalies, 1-7 l
 	subq.w	#1,(DispAttribCtr).w
 	bra.s	.0
 .3
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.l	(a1),d4
 	jsr	(printz2).l
 	String	$F8,4,2,0,0,$F9,0
@@ -1491,7 +1491,7 @@ DisplayAttributeMenu	;93 name. Stats screen: column headers (sort column highlig
 	bne.w	.1
 	move.w	#$C000,(printa).w
 .1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	addq.w	#1,d3
 	cmp.w	#5,d3
 	blt.s	.0

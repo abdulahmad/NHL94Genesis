@@ -80,7 +80,7 @@ BigFontMap		;retail $A9A10-$AAC51 (4674 bytes). 93 BigFontMap: the big font (Pri
 	incbin	..\Extracted\NHL94\Graphics\BigFont94.map.jim
 	even
 ;BigFontMap+8: retail $A9A18. the tiles (setupice, ScoutingReport, BuildCardPlayerList)
-SmallFontMap		;retail $AAC52-$AB91F (3278 bytes). 93 SmallFontMap, same size: the small font (print, print2, showclock, RenderSmallFontChar)
+SmallFontMap		;retail $AAC52-$AB91F (3278 bytes). 93 SmallFontMap, same size: the small font (print, printsmall, showclock, RenderSmallFontChar)
 	incbin	..\Extracted\NHL94\Graphics\SmallFont.map.jim
 	even
 ;SmallFontMap+8: retail $AAC5A. the tiles (AddSmallFont, setupice, ScoutingReport, setoptions)
@@ -126,7 +126,7 @@ HorRinkMap	;retail $BC05C-$BE269 (8718 bytes). SetHor (93 IceRinkMap)
 	incbin	..\Extracted\NHL94\Graphics\PauseScreen.map.jim
 	even
 icerinkmap	equ	HorRinkMap+8	;retail $BC064. IDA icerinkmap: the tiles (SetHor)
-PrintFont2Map		;retail $BE26A-$BEFB7 (3406 bytes). the second print font (print, print2)
+PrintFont2Map		;retail $BE26A-$BEFB7 (3406 bytes). the second print font (print, printsmall)
 	incbin	..\Extracted\NHL94\Graphics\SmallFont94.map.jim
 	even
 ;PrintFont2Map+8: retail $BE272. the tiles (setoptions: the setup screen font)

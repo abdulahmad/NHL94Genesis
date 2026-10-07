@@ -1,8 +1,8 @@
 ;	NHL 94 (retail) segment $7E36-$80D3
 ;	The menu engine, as 93 menu93: InitMenuState through vcountwait (93 MenuWaitVblank). The scrolling menu of the pause screen
 ;	(PauseMode in hockey94_01), also used from penalty94_2, middle94_1 and the stats code after it (stats94).
-;	94 changes from 93: the menu state is menuitem-menudraw; printz2 / print2 (93
-;	printsmallz / printsmall); a handler can keep its own screen (sflags5 bit 1); the 94 item printer PrintMenuItem (the Manual /
+;	94 changes from 93: the menu state is menuitem-menudraw; printz2 (93
+;	printsmallz); a handler can keep its own screen (sflags5 bit 1); the 94 item printer PrintMenuItem (the Manual /
 ;	Auto Goalie item); PrintTeamData copies 11 words from TeamBlockMap (93 12 words); vcountwait reads oldvcount twice.
 ;	Transcribed from lst/nhl94.bin.lst lines 30310-30582. Global names are the 93 menu93 names where IDA has an auto name (IDA name, unless generic,
 ;	in an ;IDA: comment); PrintMenuItem is 94 only; vcountwait is the IDA name. Locals are the 93 menu93 locals, with
@@ -104,7 +104,7 @@ UpdateMenuSelection	;93 name. Clamp the selection, scroll the 4 rows shown and p
 	bsr.w	SetMenuPrintX
 	move.w	#$D,(printy).w
 	movea.l	(menulist).w,a1
-	jsr	(print2).l	;the menu title (93 printsmall)
+	jsr	(printsmall).l	;the menu title
 	jsr	(printz2).l	;clear the 4 item rows (93 printsmallz)
 	dc.w	$0026	;String length, 36 bytes: too many for the macro (as 93). IDA: ori.b / move.l / btst
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01
@@ -131,10 +131,10 @@ UpdateMenuSelection	;93 name. Clamp the selection, scroll the 4 rows shown and p
 	String	$FB,2,$FA,1	;IDA: ori.b
 	move.l	a1,-(sp)
 	movea.l	(menulist).w,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	cmp.w	(menuitem).w,d0
 	bne.w	.8
-	jsr	(print2).l	;the selected item marker
+	jsr	(printsmall).l	;the selected item marker
 .8
 	movea.l	(sp)+,a1
 	bsr.w	PrintMenuItem	;the item text
@@ -165,12 +165,12 @@ PrintMenuItem	;94 only. Print menu item a1 and step a1 past it. An item whose te
 	beq.w	.print
 	movea.l	#.auto,a1
 .print
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1	;skip the 'x' item text
 	bra.w	.x
 .plain
-	jsr	(print2).l
+	jsr	(printsmall).l
 .x
 	rts
 .manual

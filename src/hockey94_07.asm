@@ -285,18 +285,18 @@ PrintMatchupRating	;94 only. Print the team rating of team a0 (GetTeamRating: th
 	move.l	d0,-(sp)
 	move.w	#2,d1	;2 digits
 	jsr	(PushNumberWidth).l
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.l	(sp)+,d0
 	rts
 PrintTwoSpaces	;94 only. Print 2 spaces at printx / printy (TwoSpacesTxt) and keep printx
 	move.l	a1,-(sp)
 	move.w	(printx).w,-(sp)
 	movea.l	#TwoSpacesTxt,a1
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).w
 	movea.l	(sp)+,a1
 	rts
-TwoSpacesTxt	;A two space String (print2 by PrintTwoSpaces)
+TwoSpacesTxt	;A two space String (printsmall by PrintTwoSpaces)
 	String	'  '
 StatsText	;93 name. The 93 rating names (93 StatsText). 94 prints only '    Overall     ' (PrintMatchupRatings, matchup 0); -1 ends the list
 	String	'Shooting'
@@ -438,7 +438,7 @@ PrintMatchupRatings	;94 only. Print the matchup ratings. Matchup 0: 'Overall' at
 	move.w	#2,(printfontset).w
 	move.w	(printy).w,-(sp)
 	subq.w	#3,(printy).w	;y $13
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	(sp)+,(printy).w
 .1
 	addq.w	#1,d7
@@ -471,7 +471,7 @@ PrintMatchupRatings	;94 only. Print the matchup ratings. Matchup 0: 'Overall' at
 	dbf	d0,.loop2
 	jsr	(printz2).l
 	String	$F8,0,1,$D,$13,$F9,1	;IDA: ori.b / movep.w / btst
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	#$16,(printy).w
 	move.w	#2,(printfontset).w
 	movea.l	#HmShots,a2
@@ -496,7 +496,7 @@ PrintMatchupRatings	;94 only. Print the matchup ratings. Matchup 0: 'Overall' at
 	jsr	(printz).l
 	String	$FF,$22,$16	;IDA: ori.b / move.b d0,d3
 	bsr.w	PrintTwoSpaces
-	jsr	(print2).l
+	jsr	(printsmall).l
 	movea.l	#AwShots,a2
 	move.l	(PAttribOverallMask).l,d4
 	tst.w	(matchupslot).w
@@ -517,7 +517,7 @@ PrintMatchupRatings	;94 only. Print the matchup ratings. Matchup 0: 'Overall' at
 	jsr	(printz).l
 	String	$FF,4,$16	;IDA: ori.b / move.b d0,d3
 	bsr.w	PrintTwoSpaces
-	jsr	(print2).l
+	jsr	(printsmall).l
 .x
 	rts
 MatchupPosNames	;Position names of matchups 1-6
@@ -586,7 +586,7 @@ PrintAdvantageMarks	;94 only. Called every frame by ScoutingReport. Print the ad
 	move.w	#2,(printfontset).w
 	jsr	(printz).l
 	String	$FF,$13,$16	;IDA: ori.b / move.b d0,d3
-	jsr	(print2).l
+	jsr	(printsmall).l
 	move.w	#0,(printfontset).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

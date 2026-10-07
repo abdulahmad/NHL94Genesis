@@ -391,7 +391,7 @@ SetFrameRect	;93 setoptions .setrect: frame position for line d3 (row $E + d3 - 
 rtsSetup	;The shared rts; GameSetUp_3, GameSetUp_4, SetFrameRectUnused and WrapOption branch to it
 	rts
 FixModeOptions	;94 only. Fix the options a mode does not allow, then print them: Shootout and Demo set User Records Off, Demo sets both goalies to
-	;Auto Control. Reprint the option names (PrintOptionNames) after a scroll, then the values (PrintOptions) in the setup font (sflags6 bit 3: print2
+	;Auto Control. Reprint the option names (PrintOptionNames) after a scroll, then the values (PrintOptions) in the setup font (sflags6 bit 3: printsmall
 	;uses setupfontchars). Called from GameSetUp
 	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.w	#4,(OptPlayMode).w
@@ -760,7 +760,7 @@ PrintOptionNames	;94 only. Print the option names from OptionNames at x 3, 2 row
 	move.w	#3,(printx).w
 	move.w	#0,(printa).w
 	move.w	#0,(printm).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 .1
 	addq.w	#2,(printy).w
 	bra.s	.loop
@@ -808,7 +808,7 @@ setoptions	;options screen display and input (IDA comment). 94: build the game s
 	jsr	(DecompressGraphicsWithCallback).l
 	dc.l	$0FC04567,$89ABCDEF	;remap table (IDA: bset / or.l)
 	move.w	d4,(setupfontchars).w
-	movea.l	#PrintFont2Map+8,a2	;setup screen font (print2 with sflags6 bit 3)
+	movea.l	#PrintFont2Map+8,a2	;setup screen font (printsmall with sflags6 bit 3)
 	jsr	(DecompressGraphicsWithCallback).l
 	dc.l	$01234567,$89ABCDEF	;remap table (IDA: btst / or.l)
 	jsr	(printz).l
@@ -1347,7 +1347,7 @@ PlayerCardScreen	;94 only. Draw a player card on one side (setupcardflags bit 1:
 	jsr	(appstring).l	;and the name
 	movea.l	a3,a1
 	bset	#3,(sflags6).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	bclr	#3,(sflags6).w
 	movea.l	#mesarea,a1
 	move.w	(cardteamnum).w,d0
@@ -1360,7 +1360,7 @@ PlayerCardScreen	;94 only. Draw a player card on one side (setupcardflags bit 1:
 	move.w	(cardprintx).w,(printx).w
 	addq.w	#2,(printy).w
 	bset	#3,(sflags6).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	bclr	#3,(sflags6).w
 	movea.l	#mesarea,a1
 	move.w	(cardteamnum).w,d0
@@ -1372,7 +1372,7 @@ PlayerCardScreen	;94 only. Draw a player card on one side (setupcardflags bit 1:
 	beq.w	.11
 	addq.w	#1,(printy).w
 	bset	#3,(sflags6).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	bclr	#3,(sflags6).w
 .11
 	movea.l	#mesarea,a1
@@ -1383,7 +1383,7 @@ PlayerCardScreen	;94 only. Draw a player card on one side (setupcardflags bit 1:
 	move.w	(cardprintx).w,(printx).w
 	addq.w	#1,(printy).w
 	bset	#3,(sflags6).w
-	jsr	(print2).l
+	jsr	(printsmall).l
 	bclr	#3,(sflags6).w
 .12
 	move.w	#$64,(palcount).w

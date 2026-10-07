@@ -8,7 +8,7 @@
 ;	PAttribOverallMask, GAttribOverall, GAttribOverallMask). Two attribute column longs IDA read as offsets are dc.w pairs.
 ;	Code addresses in the tables are the routines in the earlier segments (asstab, the menu handlers); handlers in the stats code
 ;	and the high ROM that no matched segment owns are equated by name in hockey94_11_stub.asm.
-;	Menu item lists (as 93): two print2 control Strings, then per item a String and the handler address (dc.l). Item 0 leaves the menu,
+;	Menu item lists (as 93): two printsmall control Strings, then per item a String and the handler address (dc.l). Item 0 leaves the menu,
 ;	its handler is rtss2. String $FF ends.
 
 cd0	;IDA: _cd0. $fftt = frame/time for various levels of crowd excitement. 92 updatecrowdf .cd0, same bytes as 93.

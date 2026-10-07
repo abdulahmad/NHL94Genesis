@@ -909,7 +909,7 @@ PlayoffScreen	;bring up playoff screen if in playoff mode. Called from GameOver 
 	move.w	(a1),d0
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
-	bsr.w	print2
+	bsr.w	printsmall
 	tst.w	(gamelevel).w
 	beq.w	.nopage
 	bsr.w	printz
@@ -1063,7 +1063,7 @@ PlayoffScreenDataTable	;93 name; 93 IDA left it undecoded. The PlayoffScreen vbl
 	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
-PlayoffScreenText	;93 name. Round titles by gamelevel, printed with print2
+PlayoffScreenText	;93 name. Round titles by gamelevel, printed with printsmall
 	String	'Playoffs'
 	String	'Quarterfinals'
 	String	'Semifinals'

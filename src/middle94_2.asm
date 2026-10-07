@@ -1,13 +1,13 @@
 ;	NHL 94 (retail) segment $1169A-$11F2B
 ;	92 Middle.Asm part 2, as 93 middle93_2.asm: dobitmap, the graphics decompressor (DecompressGraphicsWithCallback,
 ;	DoDMA_clearCallbackPointer, DecompressGraphics, DecompressBytecode, jump_table, the Opcode_* handlers,
-;	FlushOutputBuffer), xyVmMap, eraser, Framer, printz2 / print2 and the control codes, printz / print,
+;	FlushOutputBuffer), xyVmMap, eraser, Framer, printz2 / printsmall and the control codes, printz / print,
 ;	FormatAndPrintTime, PeriodLabelTable, PushTime, PushNumber, PushNumberWidth, appendz / appstring, printbigz /
 ;	printbig, the 94 PrintBigChar / PutBigTile, AddSmallFont, AddFramer, AddTeamBlock. AddPenalty (penalty94_1) follows
 ;	at $11F2C.
 ;	Transcribed from lst/nhl94.bin.lst lines 44878-45933. Global names are the 93 names where 93 has the routine
-;	(IDA name, unless generic, in an ;IDA: comment); printz2 / print2 keep the IDA names that the earlier segments call (93
-;	printsmallz / printsmall). The decompressor handler and four control code labels are
+;	(IDA name, unless generic, in an ;IDA: comment); printz2 keeps the IDA name that the earlier segments call (93
+;	printsmallz). The decompressor handler and four control code labels are
 ;	placed at the addresses in jump_table and ControlCodeJumpTable. Local labels are the IDA local names (_x -> .x)
 ;	or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
@@ -375,7 +375,7 @@ Framer
 printz2	;IDA name (93 printsmallz). String macro follows the call
 	move.l	a1,-(sp)
 	movea.l	4(sp),a1
-	bsr.w	print2
+	bsr.w	printsmall
 	move.l	a1,4(sp)
 	movea.l	(sp)+,a1
 	rts
@@ -390,7 +390,7 @@ printz2	;IDA name (93 printsmallz). String macro follows the call
 ; b = color/priority (0-3 = color fam,prio off), (4-7 = color fam, prio on)
 ; xx = x coord to print at
 ; yy = y coord to print at
-print2	;IDA name (93 printsmall)
+printsmall	;IDA: print2. 93 name. Print string macro a1 at printx/y/m with printa; 94 uses the setup font (setupfontchars) when sflags6 bit 3 is set
 	move.w	(disflags).w,-(sp)
 	bset	#2,(disflags).w
 	movem.l	d0-d3/a0/a2-a3,-(sp)
@@ -445,7 +445,7 @@ print2	;IDA name (93 printsmall)
 	addq.w	#1,(printx).w
 	bsr.w	xyVmMap
 	bra.s	.1
-ControlCodeJumpTable	;93 name. print2 control codes, indexed by -byte
+ControlCodeJumpTable	;93 name. printsmall control codes, indexed by -byte
 	dc.l	rtss2		;0: padding, no-op
 	dc.l	ControlCode_SetMap		;-1: map
 	dc.l	ControlCode_SetAttribute		;-2: palette/priority
@@ -455,7 +455,7 @@ ControlCodeJumpTable	;93 name. print2 control codes, indexed by -byte
 	dc.l	ControlCode_AddY		;-6: y offset
 	dc.l	ControlCode_SetFont		;-7: char set
 	dc.l	ControlCode_SetMapAndPosition		;-8: attribute, map, x, y
-ControlCode_SetMapAndPosition	;93: print2 control code -8, next 4 bytes = attribute, map, x, y
+ControlCode_SetMapAndPosition	;93: printsmall control code -8, next 4 bytes = attribute, map, x, y
 	bsr.w	ControlCode_SetAttribute
 	bsr.w	ControlCode_SetMap
 	bsr.w	ControlCode_SetX

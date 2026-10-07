@@ -1,7 +1,7 @@
 ;	NHL 94 (retail) segment $F66EE-$F739D
 ;	94 code in the high ROM, after the graphics: the one-timer (puckvzadj, OneTimerPass / OneTimerTarget pass target, assonetimer,
 ;	setonetimeranim, onetimershot), the 4 way play adaptor test (Detect4WayPlay), the crowd meter (LoadCrowdRec, Crowd_Noise),
-;	stopna2, the 92 corner wall check (checkwallcoll, wallcollb), the hot / cold tables (Create_HotCold_Table, AttributeCalc) and the
+;	stopna2, the 94 corner wall check (checkcornercoll94, cornercollb94), the hot / cold tables (Create_HotCold_Table, AttributeCalc) and the
 ;	hot / cold player lists for the MATCHUPS text (NextHomeHotPlayer ... GetHotColdTotal). 94 only; 93 has no code here.
 ;	Transcribed from lst/nhl94.bin.lst lines 958869-960186. Names and most comments are the IDA ones (this IDA database is
 ;	commented); IDA auto names and the IDA placeholders are named for what the
@@ -657,9 +657,9 @@ stopna2	;IDA name (92 / 93 name). Slow the velocity at $28 / $2A of a3 toward 0 
 	clr.w	$2A(a3)
 .ex
 	rts
-checkwallcoll	;IDA name (and comments; 92 name). IDA: ywall 210 = blue line to the end of the rink, corner radius 64. Corner circles and side walls
+checkcornercoll94	;IDA: checkwallcoll. 94 only (and IDA comments). IDA: ywall 210 = blue line to the end of the rink, corner radius 64. Corner circles and side walls
 	;for object a3 at d2 / d3 (wcradiusx / wcradiusy); a hit goes to
-	;wallcollb. Called from wallcollduringcheck (high94_2). 93 checkwallcoll is checkwallcoll2 (hockey94_04)
+	;cornercollb94. Called from wallcollduringcheck (high94_2). 93 checkwallcoll is in hockey94_04
 	bclr	#4,$64(a3)	;clears bit 4 in pflags3 (not used in 92)
 	move.w	#$88,d4	;sideline
 	sub.w	(wcradiusx).w,d4	;BD22 = wcradiusx
@@ -708,7 +708,7 @@ checkwallcoll	;IDA name (and comments; 92 name). IDA: ywall 210 = blue line to t
 	ext.l	d1
 	asl.l	#8,d1
 	divs.w	d3,d1
-	bsr.w	wallcollb
+	bsr.w	cornercollb94
 .exit
 	movem.w	(sp)+,d2-d5
 	move.w	$4E(a3),d0	;wallcos(a3)
@@ -717,22 +717,22 @@ checkwallcoll	;IDA name (and comments; 92 name). IDA: ywall 210 = blue line to t
 	move.w	#$100,d0	;now check side walls
 	clr.w	d1
 	cmp.w	d5,d3
-	bge.w	wallcollb
+	bge.w	cornercollb94
 	neg.w	d5
 	neg.w	d0
 	cmp.w	d5,d3
-	ble.w	wallcollb
+	ble.w	cornercollb94
 	exg	d0,d1
 	cmp.w	d4,d2
-	bge.w	wallcollb
+	bge.w	cornercollb94
 	neg.w	d4
 	neg.w	d1
 	cmp.w	d4,d2
-	ble.w	wallcollb
+	ble.w	cornercollb94
 .rtss3	;IDA: rtss3 (a second IDA rtss3; the global one is logic94_1's). 93 checkwallcoll branches to the shared rtss here
 	rts
-wallcollb	;IDA name (92 name). Thunk: jmp wallcollb2 (hockey94_04)
-	jmp	wallcollb2
+cornercollb94	;IDA: wallcollb. 94 only. Thunk: jmp wallcollb (hockey94_04)
+	jmp	wallcollb
 Create_HotCold_Table	;IDA name (and comments). 94 only: fill the hot / cold table at $1A2 of team struct a0 with 416 random values (-9 ... 8,
 	;randomd0s). Called from StartGame (hockey94_01) and ScoutingReport (hockey94_07)
 	movem.l	d0-d7,-(sp)

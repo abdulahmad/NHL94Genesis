@@ -29,7 +29,7 @@ checkcoll	;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check wall
 	move.w	Ypos(a3),d3	;Ypos - check coll around hot spot with wall
 	move.w	radiusx(a3),(wcradiusx).w	;wall coll radius X
 	move.w	radiusy(a3),(wcradiusy).w	;wall coll radius Y
-	bsr.w	checkwallcoll2
+	bsr.w	checkwallcoll
 	move.w	Wallcos(a3),d0	;wallcos
 	or.w	Wallsin(a3),d0	;wallsin
 	bne.w	.xx	;coll didnt happen
@@ -44,7 +44,7 @@ checkcoll	;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check wall
 	add.w	d1,d3	;check coll around end of stick with wall
 	move.w	#1,(wcradiusx).w
 	move.w	#1,(wcradiusy).w
-	bsr.w	checkwallcoll2
+	bsr.w	checkwallcoll
 .xx
 	movem.l	(sp)+,d0-d7
 	bsr.w	checkplcoll	;check coll with other players
