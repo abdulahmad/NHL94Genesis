@@ -19,7 +19,7 @@
 CrowdFrameList = $A4B54		;#x at $161DA. 93 CrowdSprites
 Crowd_Noise = $F6EBE		;jsr / jmp (x).l at $15F00
 DoDMA = $113E4			;bsr.w / Bcc.w at $15E7E. middle94_1
-MusicVB = $1A50A			;jsr / jmp (x).l at $15E1E. 93 p_music_vblank
+p_music_vblank = $1A50A			;jsr / jmp (x).l at $15E1E. sound94
 RevRinkTilelist = $B5180		;#x at $15F76
 Rinktilelist = $5605A		;#x at $15F66. 93 IceRinkMap
 Vmaddr = $11680			;bsr.w / Bcc.w at $15EAA. middle94_1

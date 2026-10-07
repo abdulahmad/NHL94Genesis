@@ -1,9 +1,9 @@
 ;	NHL 94 (retail) segment $138AC-$14549
-;	92 hockey.asm part 2, first half, as 93 hockey93_03.asm: checkcoll, checkplcoll, checkcx, newcheck, checkint and
-;	checkint_ci, checkcheck and CCStart, checkinglist, checkagr, holdcheck, Bcheck, FallDown, setInjuryType. checkfight
+;	92 hockey.asm part 2, first half, as 93 hockey93_03.asm: checkcoll, checkplcoll, checkcx, newcheck, checkint (with
+;	.ci, IDA checkint_ci), checkcheck and CCStart, checkinglist, checkagr, holdcheck, Bcheck, FallDown, setInjuryType. checkfight
 ;	(hockey94_04, an rts in 94) follows at $1454A (bsr.w displacement at $13B1E).
 ;	Transcribed from lst/nhl94.bin.lst lines 48480-49542. Global names are the IDA names (this range has no IDA auto names).
-;	IDA labels that would split a routine are locals: .PlayerControlled and .CheckingCalc in CCStart, .CmpPlayerStk,
+;	IDA labels that would split a routine are locals: .ci in checkint (93 .ci), .PlayerControlled and .CheckingCalc in CCStart, .CmpPlayerStk,
 ;	.AddChktoPlayerStats and .FallList in FallDown. Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop,
 ;	numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	SPA values are frames94 table offsets, written as numbers with the frames94 name in the comment.
@@ -280,13 +280,13 @@ newcheck	;start a new check sound: one of 4 sounds $1C-$1F, never the last one a
 	rts
 checkint	;check for interference penalty. player a2 interferes with a3 or vice-versa; goalie is only player who can cause an interference call. Called from checkcx
 	move.l	d0,-(sp)
-	bsr.w	checkint_ci
+	bsr.w	.ci
 	exg	a2,a3
-	bsr.w	checkint_ci
+	bsr.w	.ci
 	exg	a2,a3
 	move.l	(sp)+,d0
 	rts
-checkint_ci	;IDA name (93 checkint .ci). a2 = goalie, a3 = player interfering with goalie. a3 falls. 94: the interference penalty ($22) needs a3
+.ci	;IDA: checkint_ci. 93 checkint .ci. a2 = goalie, a3 = player interfering with goalie. a3 falls. 94: the interference penalty ($22) needs a3
 	;in the crease area (y $EF-$10A toward a2's goal, x within $14), a CPU player or a pad player's joystick player, and randomd0($28 - aggres) <=
 	;4 (93: randomd0($14 - byte $73) <= 2)
 	tst.w	$34(a2)	;test for goalie
@@ -622,7 +622,7 @@ Bcheck	;a2 = player that is B checking (SPAsweepchk), a3 = player being checked.
 FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in some anims, or the same pair as the last call. A skater hitter
 	;adds check stats (team $10, player $11C, ChkCnt). 94: a hit into the wall picks a fall anim from .FallList by where a2 is (the SPAboardright /
 	;SPAboardleft falls near center ice (|Ypos| up to $59 / $38) become SPAboardmidl / SPAboardmidr), a strong Stk player may just stumble, and an injury
-	;(setInjuryType) adds penalty $12 (or $14) and stops play. Then the crowd and a check sound (newcheck). Called from checkint_ci, CCStart and
+	;(setInjuryType) adds penalty $12 (or $14) and stops play. Then the crowd and a check sound (newcheck). Called from checkint (.ci), CCStart and
 	;Bcheck
 	cmpi.w	#$B,$52(a2)	;0-11 are player structs
 	bgt.w	rtss2	;exit if not a player struct

@@ -1,11 +1,11 @@
 ;	NHL 94 (retail) segment $10EE0-$11699
 ;	92 Middle.Asm part 1, as 93 middle93_1.asm: remap, forceblack / forceblack2, forcefade, cramfade,
-;	CopyPaletteToCRAM, randomd0s / randomd0, sroot, sfx, song, waitx, waitxsr, waitjoy, orjoy, nodiag,
+;	CopyPaletteToCRAM, randomd0s / randomd0, sroot, sfx, song, waitx, IntermissionLoop, waitjoy, orjoy, nodiag,
 ;	ProcessInputWithRepeat, ReadJoy1-4 (94: pads 3 and 4), ReadJoy, jdtab, DoDMApro, DoDMA, DoDMA_nd2, DoFill,
 ;	WaitDMA, setvram, Vmaddr. dobitmap (middle94_2) follows at $1169A.
 ;	Transcribed from lst/nhl94.bin.lst lines 44006-44864. Global names are the IDA names except CopyPaletteToCRAM
-;, ProcessInputWithRepeat and DoDMA_nd2, the 93 names. waitxsr is the 92
-;	name (93 IntermissionLoop). IDA dd / nd (inside DoDMA) are the locals .dd / .nd. IDA dmaram? is dmaram (? stripped).
+;, ProcessInputWithRepeat, DoDMA_nd2 and IntermissionLoop (92 and IDA waitxsr), the 93 names.
+;	IDA dd / nd (inside DoDMA) are the locals .dd / .nd. IDA dmaram? is dmaram (? stripped).
 ;	Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
@@ -250,7 +250,7 @@ sfx
 	move.w	$40(sp),d0	;$40 = 16*4
 	bmi.w	.none
 	move.w	d0,(lastsfx).w
-	jsr	(p_initfx).l
+	jsr	(play_sfx_or_music_track).l
 .none
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	(sp),2(sp)
@@ -263,7 +263,7 @@ song
 	clr.l	d0
 	move.w	$40(sp),d0	;$40 = 16*4
 	bmi.w	.none
-	jsr	(p_initfx).l
+	jsr	(play_sfx_or_music_track).l
 .none
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	(sp),2(sp)
@@ -305,7 +305,7 @@ waitx
 ; special version of waitx for zamboni crossing
 ; wait d0 vblanks or until input from either joystick
 ; retrun joystick variables (d0-d3) if any
-waitxsr	;92 name (93 IntermissionLoop). Wait d0 vblanks while the zamboni crosses
+IntermissionLoop	;IDA: waitxsr (92 name). Wait d0 vblanks while the zamboni crosses
 	movem.l	d4-d7/a0-a3,-(sp)
 	neg.w	d0
 	move.w	d0,(vcount).w

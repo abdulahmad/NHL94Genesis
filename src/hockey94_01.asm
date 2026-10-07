@@ -25,9 +25,9 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 	move.w	d0,(music_global_tick_counter).w
 	beq.w	.ntsc
 	bset	#0,(PALflag).w	;PAL
-.ntsc	jsr	(Z80_LoadROM).l		;sound stuff (93 p_initialZ80)
-	jsr	(AllSndOff).l		;93 p_turnoff
-	jsr	(MusicVB).l		;93 p_music_vblank
+.ntsc	jsr	(p_initialZ80).l		;sound stuff
+	jsr	(p_turnoff).l
+	jsr	(p_music_vblank).l
 	jsr	(KillCrowd).l
 	jsr	(Detect4WayPlay).l
 	move.w	#$FFFF,(PadControlBits34).w
@@ -35,7 +35,7 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 	jsr	(InitSaveRAM).l		;94 only (sram94)
 	jsr	(ReadLineData).l
 	jsr	(HiScoreScreen).l	;94 only (attract94)
-	jsr	(LoadDefMenuOptions).l	;94 only (attract94). 93: DefaultMenus
+	jsr	(DefaultMenus).l	;hockey94_09
 	move.w	(OptLine).w,(TmpOptLine2).w
 	move.w	(OptPlayMode).w,(TempOptPlayMode).w
 	jsr	(orjoy).l		;clear any previous button presses
@@ -127,7 +127,7 @@ StartPer	;start a period: reset stack, rink and clock, face off, run the game lo
 	bset	#1,(sflags7).w	;overtime
 .reg	st	(faceoffanim).w
 	movea.w	#(Stack-M68K_RAM),sp
-	jsr	(AllSndOff).l		;sound off
+	jsr	(p_turnoff).l		;sound off
 	jsr	(setupice).l
 	bsr.s	ResetClock
 	ori.w	#$F000,(PadControlBits).w
@@ -361,7 +361,7 @@ clockcont_0	;End of period. Also entered from puckfaceoff+B2
 	move.l	#7,d0			;score assignment
 .n2	adda.w	#SCstruct,a3			;SCstruct
 	dbf	d2,.t2
-.eog	jsr	(clrPenBuf).l		;end of game (93 ClearPenaltyBuffer)
+.eog	jsr	(ClearPenaltyBuffer).l	;end of game
 	addi.w	#$3E8,(crowdlevel).w	;1000
 	bset	#0,(gmode).w		;gmclock: stop clock
 	bset	#6,(gmode).w		;set at end of game
@@ -431,7 +431,7 @@ Pausemode	;IDA: PauseMode. Game is in pause mode now
 .vb	cmp.w	(vcount).w,d0		;Wait for the next vblank
 	beq.s	.vb
 	move.w	(sp)+,d0
-	jsr	(AllSndOff).l		;shut off sound (93 p_turnoff)
+	jsr	(p_turnoff).l		;shut off sound
 	move.w	(sflags).w,-(sp)
 	bsr.w	seta2			;a2 = team of pausing controller
 	movea.l	#PauseText,a0		;menu item list (93 PauseText)

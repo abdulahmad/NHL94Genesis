@@ -1,13 +1,13 @@
 ;	NHL 94 (retail) segment $80D4-$9FCF
 ;	The stats screens, as 93 stats93: Scores (ShowScores), Line Editor, Team Roster, Scoring Summary, Penalty Summary, Player Stats /
 ;	Playoff Stats, Crowd Meter, the Timeout and goalie select menu items, and their helpers (SetupScreen, ExitAttributeScreen2,
-;	ReadAttributeNibble ... _rjoy). The screens are menu item handlers (the hockey94_11 menu lists) run from the pause menu (menu94).
+;	ReadAttributeNibble ... WaitVSyncAndReadInput). The screens are menu item handlers (the hockey94_11 menu lists) run from the pause menu (menu94).
 ;	94 changes from 93: 94 RAM (PenSum, ScoreSum, VertLineScrolling ...), printz2 / print2 for the small text, the OptLine line icon
 ;	entries (MenuIconPosTable-6, the byte before AttributeMenuTable), the crowd meter arena / league records (save RAM), GetDefenseStart and
 ;	ReloadRinkGraphics; the 93 Game Statistics screen is not here.
-;	Transcribed from lst/nhl94.bin.lst lines 30583-34504. Global names are the 93 stats93 names where IDA has an auto name or no label
-;	(IDA name, unless generic, in an ;IDA: comment); kept IDA names: PrintAttribHeader, getNameandAttrib, attribjmp, DispAttribValue, Handedlist,
-;	_rjoy. 94 only routines are named for what they do (ReloadRinkGraphics, GetDefenseStart). Locals are the 93 stats93
+;	Transcribed from lst/nhl94.bin.lst lines 30583-34504. Global names are the 93 stats93 names where IDA has an auto name or no label, or where
+;	the routine is the 93 one (AttribRating, HandedTextTbl, WaitVSyncAndReadInput) (IDA name, unless generic, in an ;IDA: comment); kept IDA
+;	names: PrintAttribHeader, getNameandAttrib, attribjmp. 94 only routines are named for what they do (ReloadRinkGraphics, GetDefenseStart). Locals are the 93 stats93
 ;	locals where the code matches, else named for what they do, with the IDA label, unless generic, in an ;IDA: comment. LineEditorMenu,
 ;	SelectAttributeItem and DisplayPlayerSelectMenu are 93 globals that IDA left as labels inside the routine before. IDA gaps written from the retail bytes:
 ;	the inline Strings after printz / printz2 / printbigz and the remap tables after DecompressGraphicsWithCallback (IDA code), the
@@ -795,7 +795,7 @@ DisplayPlayerList	;93 name. Draw roster page SelectedPlayerIdx (0 goalies, 1-7 l
 	String	$F8,7,3,2,9,$F9,1
 	move.w	(SelectedPlayerIdx).w,d0
 	lea	PlayerStatMenuTxt(pc),a1
-	jsr	(Adda1Offset).l
+	jsr	(AdvanceStringPtr).l
 	jsr	(print2).l
 	jsr	(printz2).l
 	String	$FD,$16,$FC,9
@@ -897,7 +897,7 @@ attribjmp	;IDA name. getNameandAttrib column handlers, offsets from attribjmp
 	dc.w	AttribHanded-attribjmp
 	dc.w	AttribWeight-attribjmp
 	dc.w	AttribFighting-attribjmp
-	dc.w	DispAttribValue-attribjmp
+	dc.w	AttribRating-attribjmp
 AttribStatus	;93 name. Player d0's status word at $66(a2): Ice, Bench, injured, or penalty time
 	add.w	d0,d0	;jump for status
 	move.w	tmpdst(a2,d0.w),d0
@@ -946,7 +946,7 @@ AttribEnergy	;93 name. Energy: word $32(a2) / 40, at most 100 (AttribPrintPct)
 AttribFighting	;93 name. Bit 0 of the nibble is the handedness: drop it, then a rating out of d1 - 1
 	andi.w	#$E,d0	;jump for fighting attrib - ignore bit 0 (remove Handedness)
 	subq.w	#1,d1	;sub 1 from d1
-DispAttribValue	;IDA name (93 AttribRating). d0 * 100 / d1, adjusted (AttribAdjust, high ROM); falls into AttribPrintPct
+AttribRating	;IDA: DispAttribValue. d0 * 100 / d1, adjusted (AttribAdjust, high ROM); falls into AttribPrintPct
 	mulu.w	#$64,d0	;'d'   ; mult by 100 dec
 	divu.w	d1,d0	;divide by d1 (usually 100 dec)
 	jsr	(AttribAdjust).l
@@ -957,12 +957,12 @@ AttribPrintPct	;93 name. Print d0 4 wide, then 4 blanks
 	jsr	(printz).l
 	String	'    '
 	rts
-AttribHanded	;93 name. Bit 0 of the sum: Righty / Lefty (Handedlist)
+AttribHanded	;93 name. Bit 0 of the sum: Righty / Lefty (HandedTextTbl)
 	andi.w	#1,d0
 	eori.w	#1,d0
-	lea	Handedlist(pc),a1
+	lea	HandedTextTbl(pc),a1
 	jmp	PrintStringFromList
-Handedlist	;IDA name (93 HandedTextTbl). AttribHanded Strings
+HandedTextTbl	;IDA: Handedlist. AttribHanded Strings
 	String	'Righty  '
 	String	'Lefty   '
 AttribWeight	;93 name. Weight: 140 + 8 * rating lb
@@ -1766,7 +1766,7 @@ CrowdMeterScreen	;93 name. "Crowd Meter": current, average and peak level (Displ
 	bsr.w	PrintTeamData
 	bsr.w	DisplayGameStats
 .loop
-	bsr.w	_rjoy
+	bsr.w	WaitVSyncAndReadInput
 	btst	#7,d1
 	bne.w	ExitAttributeScreen2
 	bra.s	.loop
@@ -1914,7 +1914,7 @@ SetupScreen	;93 name. Common start of the stats screens: blank, 40 cell mode, th
 ExitAttributeScreen2	;93 name. Leave a stats screen: blank, then ReloadRinkGraphics
 	bsr.w	forceblack
 ReloadRinkGraphics	;93 ExitAttributeScreen2 after its forceblack (no 93 label): back to 32 cell mode and reload the rink (Rinktiles,
-	;or RevRinkTiles in a reverse angle replay), font, framer, EASN and team graphics. Falls out through SetTeamColors. Also called from the
+	;or RevRinkTiles in a reverse angle replay), font, framer, EASN and team graphics. Falls out through setplayercolors. Also called from the
 	;replay code (hockey94_02)
 	move.w	(disflags).w,-(sp)
 	bset	#2,(disflags).w
@@ -1947,7 +1947,7 @@ ReloadRinkGraphics	;93 ExitAttributeScreen2 after its forceblack (no 93 label): 
 	jsr	(ReloadEnergyBarTiles).l
 	jsr	(ReloadCrowdTiles).l
 	jsr	(setupIceRinkMap).l
-	jmp	SetTeamColors
+	jmp	setplayercolors
 TimeoutMenu	;93 name. Pause menu "Timeout" for team a2: switch the menu to PauseText2, show the team name, rest both teams
 	;(RestoreTeamEnergy, penalty94_2), wait $78 frames (waitx). Menu item handler
 	subq.w	#1,(menuitem).w
@@ -1994,7 +1994,7 @@ SelectGoalieMenu	;93 name; IDA hid it in TimeoutMenu's String. Pick team a2's go
 .loop
 	bsr.w	DisplayPlayerSelectMenu
 .pad
-	bsr.w	_rjoy
+	bsr.w	WaitVSyncAndReadInput
 	btst	#7,d1
 	bne.w	.done
 	btst	#5,d1
@@ -2123,7 +2123,7 @@ GetPlayerCount	;93 name. d0 = players on team a2 (records until a length word of
 	bne.s	.loop
 	movem.l	(sp)+,a0
 	rts
-_rjoy	;IDA name (93 WaitVSyncAndReadInput). Wait for vcount to change and for a new button press (d1)
+WaitVSyncAndReadInput	;IDA: _rjoy. Wait for vcount to change and for a new button press (d1)
 	move.w	(vcount).w,d1
 .rj0
 	cmp.w	(vcount).w,d1
@@ -2131,5 +2131,5 @@ _rjoy	;IDA name (93 WaitVSyncAndReadInput). Wait for vcount to change and for a 
 	bsr.w	getpzjoy
 	bsr.w	nodiag
 	tst.b	d1
-	beq.s	_rjoy
+	beq.s	WaitVSyncAndReadInput
 	rts

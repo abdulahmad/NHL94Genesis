@@ -1,6 +1,6 @@
 ;	NHL 94 (retail) segment $1454A-$150E3
 ;	92 hockey.asm part 2, second half, as 93 hockey93_04.asm: checkfight (an rts in 94; 93 SetInst is gone), checkwallcoll2,
-;	checkgoal (with the 93 Goal code as .goal), setass, GetPeriodTimeRemaining, checkgoalp, CheckBump, wallcollb2, wallcoll,
+;	checkgoal (with the 93 Goal code as .goal, and the 93 Goal local .setass), GetPeriodTimeRemaining, checkgoalp, CheckBump, wallcollb2, wallcoll,
 ;	checkpuckcoll_sfx and checkpuckcoll. puckstick (hockey94_05) follows at $150E4 (bsr.w displacement at $14EC8).
 ;	Transcribed from lst/nhl94.bin.lst lines 49543-50531. Global names are the IDA names, or the 93 name where IDA has an auto
 ;	name. IDA _sfx (before checkpuckcoll, entered from it) is the global checkpuckcoll_sfx.
@@ -372,7 +372,7 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	bra.w	.22
 .21
 	move.l	#7,d0	;assignment 7 (92 ascore = 8)
-	bsr.w	setass
+	bsr.w	.setass
 .22
 	clr.w	(collflag).w
 	clr.w	$28(a3)
@@ -405,25 +405,25 @@ checkgoal	;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x
 	bsr.w	AddPenalty2
 	movea.l	(sp)+,a3
 	rts
-setass	;IDA name (93 Goal .setass, IDA ResetTeamPlayerAssignments). d0 = assignment, a2 = team. Give each skater of team a2 that is not fighting
-	;assignment d0, clear pfnc. 94 also clears $64 bit 3 (one-timer) and then calls EndOneTimer. Called from checkgoal
+.setass	;IDA: setass. 93 Goal .setass (93 IDA ResetTeamPlayerAssignments). d0 = assignment, a2 = team. Give each skater of team a2 that is not fighting
+	;assignment d0, clear pfnc. 94 also clears $64 bit 3 (one-timer) and then calls EndOneTimer. Called from checkgoal (.goal)
 	move.l	a3,-(sp)
 	movea.w	$22(a2),a3	;tmsort
 	moveq	#5,d3
-.loop
+.loop3	;93 .loop
 	tst.w	$34(a3)	;position
-	ble.w	.1
+	ble.w	.nl
 	btst	#0,$63(a3)	;pf2fight
-	bne.w	.1
+	bne.w	.nl
 	bclr	#2,$62(a3)	;pfnc
 	bclr	#3,$64(a3)	;94 only
-	beq.w	.0
+	beq.w	.insert
 	jsr	(EndOneTimer).l
-.0
+.insert
 	bsr.w	assinsert
-.1
+.nl
 	adda.w	#$80,a3
-	dbf	d3,.loop
+	dbf	d3,.loop3
 	movea.l	(sp)+,a3
 	rts
 GetPeriodTimeRemaining	;93 name. Return d0 = (gsp << 14 | PerTimeTotal) - gameclock. Called from checkgoal (ScoreSum entry) and InProgress (penalty94_1)

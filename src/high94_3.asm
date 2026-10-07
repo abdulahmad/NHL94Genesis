@@ -335,7 +335,7 @@ PeriodStatsScreen	;IDA left it as data; 93 has no counterpart. "Period Stats" me
 	bsr.w	.7
 	move.w	#$18,(palcount).w
 .loop2
-	jsr	(_rjoy).l	;left (bit 2) goals, right (bit 3) shots, start exits
+	jsr	(WaitVSyncAndReadInput).l	;left (bit 2) goals, right (bit 3) shots, start exits
 	btst	#7,d1
 	bne.w	.4
 	btst	#2,d1
@@ -850,7 +850,7 @@ ManualGoalieMenu	;IDA left it as data; 93 has no counterpart. "x Manual Goalie" 
 	rts
 RunArenaAnim	;94 only. Run the arena animation arenaanim (negative: none): the first time, its frame list and graphics from ArenaAnims
 	;(arenaframelist / arenaspritelist, tiles to VRAM d4 = arenaanimchars: DoDMA_clearCallbackPointer); then count down the frame time arenaframetime by d7
-	;and step (NextArenaFrame). Called from periodicevents (hockey94_01) and waitxsr (middle94_1)
+	;and step (NextArenaFrame). Called from periodicevents (hockey94_01) and IntermissionLoop (middle94_1)
 	tst.w	(arenaanim).w
 	bmi.w	.x2
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -1670,7 +1670,7 @@ set_bit1_C2FE	;IDA name (and comments). 94 only. Called from updateplayers (hock
 	bset	#1,(sflags8).w	;set bit 1 of C2FE
 .ex
 	rts
-AttribAdjust	;IDA name (and comments). 94 only: an attribute under $32 becomes d0 / 2 + $19. Called from DispAttribValue (stats94), PrintOverallRating (high94_2) and PrintMatchupRatings (hockey94_07)
+AttribAdjust	;IDA name (and comments). 94 only: an attribute under $32 becomes d0 / 2 + $19. Called from AttribRating (stats94), PrintOverallRating (high94_2) and PrintMatchupRatings (hockey94_07)
 	cmp.w	#$32,d0	;'2'   ; compare $32 to d0
 	bge.w	.exit	;branch if greater than
 	asr.w	#1,d0	;divide by 2
@@ -1708,7 +1708,7 @@ ReadGoaliePulled	;IDA name (and comments). 94 only: Z clear when the team of a3 
 	tst.w	$26(a1)
 	movem.l	(sp)+,a1
 	rts
-EndOneTimer	;94 only. End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA $50C, then assexit (goalie) or Setplass. Called from assonetimer (high94_1) and setass
+EndOneTimer	;94 only. End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA $50C, then assexit (goalie) or Setplass. Called from assonetimer (high94_1) and checkgoal (.setass, hockey94_04)
 	;(hockey94_04)
 	movem.l	d0/a0,-(sp)
 	bclr	#3,$64(a3)
@@ -1928,7 +1928,7 @@ CreditsWait	;94 only. Credits: wait for vcount, run the clampcounter count down;
 	addq.w	#4,sp
 .x
 	rts
-TitleVBlank	;newTitleScreen vblank: line scroll table (SortCords) and Vscroll, sprites, cramfade, CreditsScrollStep, MusicVB
+TitleVBlank	;newTitleScreen vblank: line scroll table (SortCords) and Vscroll, sprites, cramfade, CreditsScrollStep, p_music_vblank
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#2,(disflags).w
 	bne.w	.1
@@ -1950,7 +1950,7 @@ TitleVBlank	;newTitleScreen vblank: line scroll table (SortCords) and Vscroll, s
 .1
 	addq.w	#1,(vcount).w
 	jsr	(CreditsScrollStep).l
-	jsr	(MusicVB).l
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
 CreditsLineScroll	;94 only. Credits: the line scroll table at SortCords

@@ -1,7 +1,7 @@
 ;	NHL 94 (retail) segment $17A18-$17C71
 ;	94 only: the EA Sports screen (EASportsScreen, called from Begin) and the 94 helpers after it, then the
 ;	93 setoptions vblank handler (93 hockey93_08 VBlank_SetOptions). 94 put this code just
-;	before that handler, so the handler ends this segment and LoadDefMenuOptions ($17C72, 93 DefaultMenus,
+;	before that handler, so the handler ends this segment and DefaultMenus ($17C72, IDA LoadDefMenuOptions,
 ;	hockey94_09) follows. HiScoreScreen ($FED70) is not next to this code and is not in this segment.
 ;	Transcribed from lst/nhl94.bin.lst lines 54528-54846. IDA left $17B98-$17C41 as dc.b; it is code with
 ;	no xref and is written as instructions (DrawTeamBlockBitmap, ClearTextBox, SetTeamPrintPos, SetGoalieMode).
@@ -181,6 +181,6 @@ VBlank_SetOptions	;93 hockey93_08 name: vbint handler stored by setoptions (also
 	bsr.w	DumpSprites2		;93 DumpSprites2
 .fade	bsr.w	cramfade
 .nograph	addq.w	#1,(vcount).w
-	jsr	(MusicVB).l		;93 p_music_vblank
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte

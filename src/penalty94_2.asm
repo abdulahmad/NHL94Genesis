@@ -1,14 +1,14 @@
 ;	NHL 94 (retail) segment $12C04-$138AB
 ;	92 Penalty.Asm part 2, as 93 penalty93_2.asm: PrintScores1, PrintTeamNameAndScore, PrintTeamLogoAndScore, EASNLogo,
 ;	USBoard, pplpen, linebar, getlinee, AvgCline, ChkShotStat, loadTeamStruct, SetupTeamForIntermission, the 94-only
-;	RestoreTeamEnergy, reenergizeteam, Intermission, InitScores, UpdateScores, SetScore, getscore, sctab, NewTicker, NewTicker2,
-;	NewTicker3, NewTicker3pt2, GameLabels, ClearTickerArea, SetTickerAreaPosition, PrintStringFromList, Adda1Offset,
+;	RestoreTeamEnergy, reenergizeteam, Intermission, InitScores, UpdateScores, SetScore, sctab, NewTicker, NewTicker2,
+;	NewTicker3, NewTicker3pt2, GameLabels, ClearTickerArea, SetTickerAreaPosition, PrintStringFromList, AdvanceStringPtr,
 ;	DoHiLights, StartHL, StartHL2. checkcoll (hockey94_03) follows at $138AC.
 ;	Transcribed from lst/nhl94.bin.lst lines 47136-48479. Global names are the IDA names, or the 93 name where IDA has an
-;	auto name. 94 IDA NewTicker3 is 93 CheckGameTickerStatus and NewTicker3pt2 is 93
-;	NewTicker3; the IDA names are kept. The IDA sub_ routines that 93 writes as locals are locals here too (.dispen, .r, .tn,
-;	.setteam, .ranres, .sv, .lo). Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA
-;	label in an ;IDA: comment.
+;	auto name or where the routine is the 93 one (AdvanceStringPtr, IDA Adda1Offset). 94 IDA NewTicker3 is 93 CheckGameTickerStatus and
+;	NewTicker3pt2 is 93 NewTicker3; the IDA names are kept. The IDA sub_ routines that 93 writes as locals are locals here too (.dispen, .r, .tn,
+;	.setteam, .ranres, .sv, .lo), and IDA getscore is the 93 SetScore .getscore. Local labels are the IDA local names (_x -> .x) or the 93
+;	local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label in an ;IDA: comment.
 ;	IDA shows the printz strings as dc.b, ori.b or (in StartHL2) as code; they are written with the String macro (length
 ;	word includes itself and the 0 pad). Five instructions IDA hid in strings are written out. The tables IDA left as dc.b
 ;	(.sslist, sctab, GameLabels, .postab) are written as dc.l / dc.w / String.
@@ -74,7 +74,7 @@ PrintScores1	;IDA name (93 printscores1). Draw scoreboard. Vertical rink: period
 	move.w	#4,d0
 .2
 	movea.l	#PenShotPenalties2,a1	;94: the horizontal rink always takes the name from PenShotPenalties2
-	bsr.w	Adda1Offset
+	bsr.w	AdvanceStringPtr
 	move.w	(a1),d0
 	lsr.w	#1,d0	;center the period name on x $11
 	sub.w	d0,(printx).w
@@ -447,12 +447,12 @@ Intermission	;end of period junk (zamboni/stats). As 93: opens the pause menu sc
 	bsr.w	NewTicker2
 	bsr.w	NewTicker3pt2	;93 NewTicker3
 	move.w	#$96,d0	;150 frames
-	bsr.w	waitxsr	;93 IntermissionLoop
+	bsr.w	IntermissionLoop
 	btst	#7,d1	;sbut
 	bne.w	.clrh
 	bsr.w	ClearTickerArea
 	move.w	#$3C,d0	;60 frames
-	bsr.w	waitxsr
+	bsr.w	IntermissionLoop
 	btst	#7,d1
 	beq.s	.top
 .clrh
@@ -463,7 +463,7 @@ Intermission	;end of period junk (zamboni/stats). As 93: opens the pause menu sc
 	bne.w	.clrz
 .wait
 	move.w	#$1E0,d0	;480 frames
-	bsr.w	waitxsr
+	bsr.w	IntermissionLoop
 	btst	#7,d1
 	bne.w	.clrz
 	tst.w	(cont1team).w
@@ -539,16 +539,16 @@ SetScore	;add to score for game in a0. After period 3 a game within one goal goe
 	addq.w	#1,8(a0)
 	move.w	(a0),d0	;gst1
 	move.w	2(a0),d1	;gst2
-	bsr.w	getscore
+	bsr.w	.getscore
 	add.w	d0,$A(a0)	;gss1
 	move.w	2(a0),d0
 	move.w	(a0),d1
-	bsr.w	getscore
+	bsr.w	.getscore
 	add.w	d0,$C(a0)	;gss2
 .ex
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-getscore	;IDA name (93 SetScore .getscore). d0 = scoring team, d1 = other team. Adds the scoring team's (bits 4-6) and the other team's (bits 0-2) sctab rows as weights. Return d0 = goals 0-3
+.getscore	;IDA: getscore. 93 SetScore .getscore. d0 = scoring team, d1 = other team. Adds the scoring team's (bits 4-6) and the other team's (bits 0-2) sctab rows as weights. Return d0 = goals 0-3
 	asl.w	#2,d0
 	movea.w	#$30E,a1	;TeamList (93 $314)
 	movea.l	0(a1,d0.w),a1
@@ -626,7 +626,7 @@ NewTicker3pt2	;IDA name (93 NewTicker3). Display ticker score for game d3 (a0 = 
 	move.w	8(a0),d0	;gsper
 	subq.w	#1,d0
 	movea.l	#PerLabels,a1	;93 PerLabels
-	bsr.w	Adda1Offset
+	bsr.w	AdvanceStringPtr
 	move.w	(a1),d0	;period name centered on x+$17
 	lsr.w	#1,d0
 	neg.w	d0
@@ -679,9 +679,9 @@ SetTickerAreaPosition	;93 name. Set printx/printy/printm for the ticker box (x 3
 	moveq	#5,d1
 	rts
 PrintStringFromList	;93 name. Print string d0 of the String list a1 with print2 (93 printsmall)
-	bsr.w	Adda1Offset
+	bsr.w	AdvanceStringPtr
 	bra.w	print2
-Adda1Offset	;IDA name (93 AdvanceStringPtr). Return a1 = string d0 of the String list a1 (92 Fprint without the print)
+AdvanceStringPtr	;IDA: Adda1Offset. Return a1 = string d0 of the String list a1 (92 Fprint without the print)
 	bra.w	.0
 .loop
 	adda.w	(a1),a1
@@ -707,7 +707,7 @@ DoHiLights	;93 name. Hilites logic: search for hilite game and show hilite. Call
 StartHL	;93 name. Play hilite for game a0, d1 = game. Called from DoHiLights. Falls into StartHL2
 	movem.l	d0-d7/a0-a6,-(sp)
 StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result. A tied game is replayed (beq StartHL2). 94:
-	;song $79 (93 $36), setupice_highlight, SetTeamColors (93 setplayercolors)
+	;song $79 (93 $36), setupice_highlight, setplayercolors
 	btst	#sf3sbut,(sflags3).w	;sf3sbut
 	bne.w	.nhl0
 	bsr.w	.sv
@@ -726,7 +726,7 @@ StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result.
 	bsr.w	printz
 	String	'Highlight from game:'	;IDA decoded the text as code
 	move.w	#$B4,d0	;180 frames
-	bsr.w	waitxsr	;93 IntermissionLoop
+	bsr.w	IntermissionLoop
 	btst	#7,d1	;sbut
 	bne.w	.nhl1
 	st	(zamx).w
@@ -766,7 +766,7 @@ StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result.
 	st	(RefCnt).w
 	st	(puckcross2).w
 	st	(puckcross6).w
-	jsr	(AllSndOff).l	;93 p_turnoff
+	jsr	(p_turnoff).l
 	bsr.w	setupice_highlight	;93 setupice_highlight
 	bsr.w	ClrHor
 	movea.l	#VDP_DATA,a0
@@ -829,7 +829,7 @@ StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result.
 	movea.l	(sp)+,a0
 	movem.l	d1/a0,-(sp)
 	jsr	(KillCrowd).l
-	jsr	(AllSndOff).l
+	jsr	(p_turnoff).l
 	movem.l	(sp)+,d1/a0
 	move.w	(HmGoals).w,$A(a0)	;gss1
 	move.w	(AwGoals).w,$C(a0)	;gss2
@@ -841,7 +841,7 @@ StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result.
 	adda.w	#SCstruct,a0
 	dbf	d0,.clr
 	bsr.w	.lo
-	bsr.w	SetTeamColors	;93 setplayercolors
+	bsr.w	setplayercolors
 	bsr.w	SetHor
 	bsr.w	setvideo
 	jsr	(SetupPauseScreen).w	;pause menu screen
@@ -859,12 +859,12 @@ StartHL2	;93 name. Play hilite for game a0. Start skips it with a random result.
 	bsr.w	NewTicker3
 	bsr.w	NewTicker3pt2
 	move.w	#$B4,d0
-	bsr.w	waitxsr
+	bsr.w	IntermissionLoop
 	btst	#7,d1
 	bne.w	.exit2
 	bsr.w	ClearTickerArea
 	move.w	#$3C,d0
-	bsr.w	waitxsr
+	bsr.w	IntermissionLoop
 	btst	#7,d1
 	beq.w	.exit
 .exit2

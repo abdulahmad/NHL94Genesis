@@ -1,16 +1,16 @@
 ;	NHL 94 (retail) segment $1A264-$4B5BF
-;	68k side of the sound driver, as 93 sound93 (same driver, revised): AllSndOff (93 p_turnoff), p_initfx (93
-;	play_sfx_or_music_track), play_new_song, the 94 pad readers (ReadJoyData ... ResetZ80Bus, run from MusicVB), MusicVB (93
-;	p_music_vblank), UploadCommandBufferToZ80, ProcessOneMusicTrack and the event handlers, UpdateChannelFrequencyAndVolume, the 94
-;	volume routine SetChannelVolume, Z80_LoadROM (93 p_initialZ80) and ClearAllTrackAndSFXSlots. Then, as 93 sound93 (incbins after the
-;	driver), the sound data from $1AD90 to $4B5BF: the Z80 program (Z80_Program_Code, loaded by Z80_LoadROM), the PCM sample table and
+;	68k side of the sound driver, as 93 sound93 (same driver, revised): p_turnoff (IDA AllSndOff), play_sfx_or_music_track (IDA
+;	p_initfx), play_new_song, the 94 pad readers (ReadJoyData ... ResetZ80Bus, run from p_music_vblank), p_music_vblank (IDA
+;	MusicVB), UploadCommandBufferToZ80, ProcessOneMusicTrack and the event handlers, UpdateChannelFrequencyAndVolume, the 94
+;	volume routine SetChannelVolume, p_initialZ80 (IDA Z80_LoadROM) and ClearAllTrackAndSFXSlots. Then, as 93 sound93 (incbins after the
+;	driver), the sound data from $1AD90 to $4B5BF: the Z80 program (Z80_Program_Code, loaded by p_initialZ80), the PCM sample table and
 ;	the 12 samples (pcm_sample_table), the FM patches (fm_instrument_patches), the pointer table of sounds 0-$7A (MusicTrackPointerTable,
 ;	songs from SongPointerTable) and the 122 sound and song event streams, each incbin a file written by npm run extractassets
 ;	(extractAssets94.js), split as 93 (93 file names where the bytes are the same: the Z80 driver, samples, patches and sounds 0-$2F).
 ;	94 changes from 93: sounds 0-$7A (93 0-$37) through a long pointer table (93 word offsets), 8 byte channel structs (93 6), a voice
 ;	volume word (+4) and the controller event handle_command_30, the vblank pad reading, and the Rev A 93 50 Hz tempo block.
-;	Transcribed from lst/nhl94.bin.lst lines 61529-63138. Global names are the IDA names, or the 93 sound93 name where IDA has an auto
-;	name or no label. Locals are the 93 local where the code matches (.fnum, .bendtab, .veltab), else in
+;	Transcribed from lst/nhl94.bin.lst lines 61529-63138. Global names are the 93 sound93 names where the routine is the 93 one or IDA has
+;	an auto name or no label (IDA name in an ;IDA: comment), else the IDA names. Locals are the 93 local where the code matches (.fnum, .bendtab, .veltab), else in
 ;	the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment. IDA gaps: handle_command_30 ($1AC82-$1ACBF) is IDA
 ;	dc.b, written as instructions; the tables are written as in 93.
 ;	RAM (ram_addrs.inc IDA names, 93 names): fm_track_slots (8 x 6 bytes), fm_channel_structs (94: 6 x 8 bytes:
@@ -20,7 +20,7 @@
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp / cmpi;
 ;	fixopcodes.js patches the cmp encoding after assembly.
 
-AllSndOff	;IDA name (93 p_turnoff, 92 audio stop). Silence everything: free all slots, key off and mute every output channel, send the buffer
+p_turnoff	;IDA: AllSndOff. 92 name (audio stop). Silence everything: free all slots, key off and mute every output channel, send the buffer
 	;and stop the PCM channel. Called from Begin and the game screens
 	movem.l	d0-d7/a0-a2,-(sp)
 	bsr.w	ClearAllTrackAndSFXSlots
@@ -34,9 +34,9 @@ AllSndOff	;IDA name (93 p_turnoff, 92 audio stop). Silence everything: free all 
 	bsr.w	UploadCommandBufferToZ80
 	bsr.w	ClearZ80SpecialEffectsFlags
 	movem.l	(sp)+,d0-d7/a0-a2
-rtsfx	;The shared rts; p_initfx and ProcessOneMusicTrack branch to it
+rtsfx	;The shared rts; play_sfx_or_music_track and ProcessOneMusicTrack branch to it
 	rts
-p_initfx	;IDA name (93 play_sfx_or_music_track). Start sound d0 (0-$7A; 93 0-$37) in the track slot with the lowest pointer. $30 and up are
+play_sfx_or_music_track	;IDA: p_initfx. Start sound d0 (0-$7A; 93 0-$37) in the track slot with the lowest pointer. $30 and up are
 	;songs: the song already playing is stopped first (play_new_song). 94 takes the event stream from the long pointer table MusicTrackPointerTable (93 word
 	;offsets) and also sets each voice volume (+4) to $7F. Called from sfx and song
 	cmp.w	#$7A,d0
@@ -80,7 +80,7 @@ p_initfx	;IDA name (93 play_sfx_or_music_track). Start sound d0 (0-$7A; 93 0-$37
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
 play_new_song	;93 name. Stop the song in progress: free the first slot whose pointer is at or past the first song ($30, SongPointerTable)
-	;and key off its channels. Called from p_initfx, DoGameFrame (hockey94_01) and others
+	;and key off its channels. Called from play_sfx_or_music_track, DoGameFrame (hockey94_01) and others
 	movem.l	d0-d3/a0-a3,-(sp)
 	move	sr,-(sp)
 	move	#$2700,sr	;94: no interrupts while the slots change
@@ -115,7 +115,7 @@ play_new_song	;93 name. Stop the song in progress: free the first slot whose poi
 	move	(sp)+,sr
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
-ReadJoyData	;IDA name. 94 only: read the pads every vblank (MusicVB). With FourWayPlay, pads 1-4 through the 4 way adaptor (ReadPad4Way1 ...
+ReadJoyData	;IDA name. 94 only: read the pads every vblank (p_music_vblank). With FourWayPlay, pads 1-4 through the 4 way adaptor (ReadPad4Way1 ...
 	;ReadPad4Way4) to pad4way1-pad4way4, else pads 1 and 2 (ReadPad1, ReadPad2)
 	movem.l	d1/a0,-(sp)
 	tst.w	(FourWayPlay).w
@@ -232,7 +232,7 @@ ResetZ80Bus	;94 only. Reset the Z80 and wait for its bus
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	rts
-MusicVB	;IDA name (93 p_music_vblank, 92 vblank handler). Read the pads (ReadJoyData, 94), clear the change bits, run the 8 track slots (d7 = track
+p_music_vblank	;IDA: MusicVB. 92 name (vblank handler). Read the pads (ReadJoyData, 94), clear the change bits, run the 8 track slots (d7 = track
 	;7-0), send the buffer if anything changed and age the channels. 94 keeps the Rev A 93 50 Hz block: with PALflag bit 0 set the slots run
 	;again every 6th frame (music_tick_divider). Called from the vblank handlers
 	bsr.w	ReadJoyData
@@ -294,7 +294,7 @@ UploadCommandBufferToZ80	;93 name. Copy the 33 byte command buffer (Z80_command_
 rtscmd10	;The shared rts; handle_command_10 branches to it
 	rts
 ProcessOneMusicTrack	;93 name. Count down track slot a5 (track d7) and run every event that is due through command_jump_table. A 0
-	;status ends the stream; a non-negative long at +2 is a loop pointer. Called from MusicVB
+	;status ends the stream; a non-negative long at +2 is a loop pointer. Called from p_music_vblank
 	subq.w	#1,4(a5)
 	bpl.w	rtsfx
 .event
@@ -661,7 +661,7 @@ handle_command_30	;IDA dc.b. 94 only: event $3x, controller +2 = +3 on channel +
 	rts
 handle_command_skip	;93 name. Events $2x, $5x and $7x: ignored
 	rts
-Z80_LoadROM	;IDA name (93 p_initialZ80, 92 initialization). Free all slots, load the Z80 program (Z80_Program_Code, $295 bytes) into Z80 RAM, build 29
+p_initialZ80	;IDA: Z80_LoadROM. 92 name (initialization). Free all slots, load the Z80 program (Z80_Program_Code, $295 bytes) into Z80 RAM, build 29
 	;tables of 256 bytes below Z80 RAM $2000 (Z80_RAM+$2000; (x - $80) * 8 / n + $80 for n = 8-$24), then reset and start the Z80. Called from Begin
 	movem.l	d0-d2/a0-a2,-(sp)
 	bsr.w	ClearAllTrackAndSFXSlots
@@ -702,7 +702,7 @@ Z80_LoadROM	;IDA name (93 p_initialZ80, 92 initialization). Free all slots, load
 	clr.b	(music_needs_z80_update).w
 	movem.l	(sp)+,d0-d2/a0-a2
 	rts
-ClearAllTrackAndSFXSlots	;93 name. Free the 8 track slots and reset the 6 channel structs (output channels 0, 1, 2, 4, 5, 6). Called from AllSndOff and Z80_LoadROM
+ClearAllTrackAndSFXSlots	;93 name. Free the 8 track slots and reset the 6 channel structs (output channels 0, 1, 2, 4, 5, 6). Called from p_turnoff and p_initialZ80
 	lea	(fm_track_slots).w,a0
 	moveq	#7,d0
 	moveq	#-1,d1
@@ -728,8 +728,8 @@ ClearAllTrackAndSFXSlots	;93 name. Free the 8 track slots and reset the 6 channe
 
 ;	Sound data, as 93 sound93: $1AD90-$4B5BF. The Z80 driver, the PCM samples and the FM patches are the 93 files (same bytes); the pointer
 ;	tables are written with the labels; each sound and song event stream is its own file (loop pointers written as dc.l).
-Z80_Program_Code	;IDA name. First byte of the Z80 program ($1AD90, movea.l in Z80_LoadROM); the rest of the Z80 blob from $1AD91 and the data
-	;after it are the incbins below. Z80_LoadROM copies $295 bytes from here (through $1B024, into pcm_sample_table, as 93 does)
+Z80_Program_Code	;IDA name. First byte of the Z80 program ($1AD90, movea.l in p_initialZ80); the rest of the Z80 blob from $1AD91 and the data
+	;after it are the incbins below. p_initialZ80 copies $295 bytes from here (through $1B024, into pcm_sample_table, as 93 does)
 	dc.b	$18
 	incbin	..\Extracted\NHL94\Sound\z80_snd_drv93.bin	;retail $1AD91-$1B007. the 93 Z80 driver after its first byte, up to the ld bc of the FM patch bank address
 	dc.b	fm_instrument_patches&$FF,((fm_instrument_patches>>8)&$7F)|$80	;Z80 ld bc,$8000+(fm_instrument_patches&$7FFF): bank window address of the FM patches
@@ -791,7 +791,7 @@ sfx_puckget_pcm
 fm_instrument_patches	;93 name: 32 FM patches x 32 bytes, byte $1E = pitch bend scale (UpdateChannelFrequencyAndVolume)
 	incbin	..\Extracted\NHL94\Sound\fm_instrument_patches.bin	;retail $2C248-$2C647. 32 FM patches x 32 bytes (byte $1E = pitch bend scale)
 	even
-MusicTrackPointerTable	;IDA name: event stream of sounds 0-$7A as long pointers (p_initfx; 93 word offsets from the table, sounds 0-$37)
+MusicTrackPointerTable	;IDA name: event stream of sounds 0-$7A as long pointers (play_sfx_or_music_track; 93 word offsets from the table, sounds 0-$37)
 	dc.l	sfx_siren_cmdstream	;sound $0
 	dc.l	sfx_beep1_cmdstream	;sound $1
 	dc.l	sfx_beep2_cmdstream	;sound $2

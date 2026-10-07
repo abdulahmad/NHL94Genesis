@@ -1,13 +1,13 @@
 ;	NHL 94 (retail) segment $169FA-$17A17
 ;	92 hockey.asm part 3, first half, as 93 hockey93_06.asm: setupice, setupice_highlight, setupIceRinkMap, setupEASNmap, the
 ;	94-only tile reloads (ReloadEnergyBarTiles ... ReloadFaceOffMap), setupTeamBlocksMap, CopyTeamBlockMapData, defaultsprites, defaultsprites2,
-;	SprSort, resetplstuff, clearTeamStats, setteams, InitTeamSructure, SetTeamColors, PeriodOver, IntermissionStart, GameOver,
+;	SprSort, resetplstuff, clearTeamStats, setteams, InitTeamSructure, setplayercolors, PeriodOver, IntermissionStart, GameOver,
 ;	ExitToOpening, Opening, Opening2, PlayoffScreen and its helpers, PlayoffScreenText, then the 94-only text player
 ;	(StartScoutText, ScoutTextPlayer, ScoutTextNextLine) that ScoutingReport (hockey94_07) uses. EASportsScreen (attract94) follows at $17A18.
 ;	There is no 93 ScoutingReport (hockey93_07) here: the listing has no ScoutingReport label.
 ;	Transcribed from lst/nhl94.bin.lst lines 53022-54525. Global names are the IDA names, or the 93 name where IDA has an auto
-;	name. Local labels are the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the
-;	IDA label, unless generic, in an ;IDA: comment.
+;	name or where the routine is the 93 one (setplayercolors, IDA SetTeamColors). Local labels are the IDA local names (_x -> .x) or the 93
+;	local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	IDA gaps written from the retail bytes: each DecompressGraphicsWithCallback is followed by its 8 byte remap table (IDA shows
 ;	only the second long, as or.l d4,-$3211(a3)); the PlayoffScreen printz / printz2 strings (IDA ori.b / andi.b / cmp.b, and
 ;	the 'Press [ or ] to page' text as code) and the instructions IDA hid in them are written out.
@@ -83,7 +83,7 @@ setupice	;set all variables, send non purgeable graphics, build sprite frame lis
 	adda.w	#SCstruct,a3
 	dbf	d0,.loop
 .gok
-	bsr.w	SetTeamColors
+	bsr.w	setplayercolors
 	move.w	#$FFFF,(PadControlBits).w
 	move.w	#$FFFF,(PadControlBits34).w
 	clr.l	(padcont).w
@@ -140,7 +140,7 @@ setupice_highlight	;93 name. Rebuild the rink sprites after a highlight replay w
 	adda.w	#SCstruct,a3
 	dbf	d0,.loop
 .gok
-	bsr.w	SetTeamColors
+	bsr.w	setplayercolors
 	move.w	#$FFFF,(PadControlBits).w
 	move.w	#$FFFF,(PadControlBits34).w
 	clr.l	(padcont).w
@@ -703,7 +703,7 @@ InitTeamSructure	;93 name. Set up team struct a2 for team d0: store the team num
 	move.l	(a0)+,(a1)+
 	dbf	d0,.copy
 	rts
-SetTeamColors	;IDA name (93 setplayercolors). Copy in correct color data for each team: .team for the home team, then falls in for the visitors.
+setplayercolors	;IDA: SetTeamColors. Copy in correct color data for each team: .team for the home team, then falls in for the visitors.
 	;Called from setupice, setupice_highlight, StartHL2 and ReloadRinkGraphics
 	clr.w	d1
 	movea.w	#(HmShots-M68K_RAM),a0
@@ -747,7 +747,7 @@ IntermissionStart	;93 name; 93 IDA _sp. PeriodOver tail: reset the clock, song $
 .loop
 	cmp.w	(vcount).w,d0
 	beq.s	.loop
-	jsr	(AllSndOff).l
+	jsr	(p_turnoff).l
 	move.w	d0,-(sp)
 	move.w	(vcount).w,d0
 .loop2
@@ -905,7 +905,7 @@ PlayoffScreen	;bring up playoff screen if in playoff mode. Called from GameOver 
 	String	$F8,1,1,$41,$1A	;IDA: ori.b / bchg / move.b
 	lea	PlayoffScreenText(pc),a1
 	move.w	(gamelevel).w,d0
-	bsr.w	Adda1Offset
+	bsr.w	AdvanceStringPtr
 	move.w	(a1),d0
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
@@ -1041,7 +1041,7 @@ DrawTeamBlocks	;93 name. Draw team block d1 (team*2) from the TeamBlocks map (Te
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 PlayoffScreenDataTable	;93 name; 93 IDA left it undecoded. The PlayoffScreen vblank handler (vbint): dma the sprite table, write
-	;$FEA0+DispAttribCtr to the hscroll, cramfade. Always vcount+1, MusicVB, rte
+	;$FEA0+DispAttribCtr to the hscroll, cramfade. Always vcount+1, p_music_vblank, rte
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).w
 	bne.w	.nograph
@@ -1060,7 +1060,7 @@ PlayoffScreenDataTable	;93 name; 93 IDA left it undecoded. The PlayoffScreen vbl
 	bsr.w	cramfade
 .nograph
 	addq.w	#1,(vcount).w
-	jsr	(MusicVB).l
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
 PlayoffScreenText	;93 name. Round titles by gamelevel, printed with print2

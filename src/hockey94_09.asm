@@ -1,6 +1,6 @@
 ;	NHL 94 (retail) segment $17C72-$1837F
-;	92 hockey.asm DefaultMenus, NewPO, MakeTree, FigureJoy and the playoff password code, as 93 hockey93_09: LoadDefMenuOptions (93
-;	DefaultMenus), ContinuePlayoffs (93 NewPO), NewPO (93 SelectRandomPlayoffTree), MakeTree, FigureJoy, InitializeGameStructures, OptionRNG,
+;	92 hockey.asm DefaultMenus, NewPO, MakeTree, FigureJoy and the playoff password code, as 93 hockey93_09: DefaultMenus (IDA
+;	LoadDefMenuOptions), ContinuePlayoffs (93 NewPO), NewPO (93 SelectRandomPlayoffTree), MakeTree, FigureJoy, InitializeGameStructures, OptionRNG,
 ;	ReadPassBits ... SuperDiv, GetShifter, and the playoff stat packing (AddPOStats, BitWidthTable, ReadTeamStats). It follows
 ;	attract94 ($17C71) with no gap. ResolveGames starts hockey94_10.
 ;	94 keeps the playoff bits in pwddatabuffer (93 name) and saves them through WriteLineData (where 93 calls BitsToPW).
@@ -15,7 +15,7 @@
 ;	tpassbits. gsstruct game ($10 bytes, 93 gstruct): 0 gst1, 2 gst2, 4 gspotwins, 6 gspobwins, 8 gsper, $A gss1, $C gss2,
 ;	$E gsflags (bits 0 gsftf teams flipped, 1 gsfhl hilite, 2 gsfso series over).
 
-LoadDefMenuOptions	;IDA name (93 DefaultMenus). Set the default menu choices for the beginning of the game: the 9 option words from defmenuoptions (93: 7). Called once from Begin
+DefaultMenus	;IDA: LoadDefMenuOptions. Set the default menu choices for the beginning of the game: the 9 option words from defmenuoptions (93: 7). Called once from Begin
 	st	(demoflag).w	;no demo has run yet
 	movea.l	#OptPlayMode,a0	;Start of Menu Options in RAM
 	movea.l	#defmenuoptions,a1

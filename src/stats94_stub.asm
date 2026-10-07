@@ -18,7 +18,7 @@
 ; lea (x).l carry the address; bsr.w / bra.w / Bcc.w is the displacement word address + displacement. IDA names.
 AddFramer = $11F12		;jsr / jmp (x).l at $9D56
 AddSmallFont = $11F04		;jsr / jmp (x).l at $9C40
-Adda1Offset = $13510		;jsr / jmp (x).l at $8BBE
+AdvanceStringPtr = $13510	;jsr / jmp (x).l at $8BBE
 AttribAdjust = $FEF7C		;jsr / jmp (x).l at $8E46
 AttributeScreenText = $19F88	;#x at $882E
 CalcAttrib = $FA9F8		;jsr / jmp (x).l at $8D70
@@ -50,7 +50,7 @@ ReadTeamStats = $1833A		;jsr / jmp (x).l at $942C
 RevRinkTiles = $B5188		;#x at $9D2C
 Rinktiles = $56062		;#x at $9D1C
 SetPersonel = $15788		;jsr / jmp (x).l at $9E76
-SetTeamColors = $1720C		;jsr / jmp (x).l at $9D74
+setplayercolors = $1720C		;jsr / jmp (x).l at $9D74
 Vmaddr = $11680			;bsr.w / Bcc.w at $9BF4
 clrCrowdRAM = $F9BE2		;jsr / jmp (x).l at $9B02
 dobitmap = $1169A		;jsr / jmp (x).l at $8120

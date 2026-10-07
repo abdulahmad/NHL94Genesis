@@ -1,7 +1,7 @@
 ;	NHL 94 (retail) segment $1A050-$1A263
 ;	94 only (93 sram93 drives a serial EEPROM): the battery save RAM. 94 keeps $2000 bytes on the odd bytes at $200000, copies
 ;	them to M68K_RAM at power on (InitSaveRAM) and protects them with a sum / complement checksum in bytes $1FFE-$1FFF.
-;	InitSaveRAM, VBcount, ValidateSRAM, ClearSRAM, WriteSRAM, MakeSRAMChecksum, ReadSRAM; AllSndOff (sound94) follows at $1A264.
+;	InitSaveRAM, VBcount, ValidateSRAM, ClearSRAM, WriteSRAM, MakeSRAMChecksum, ReadSRAM; p_turnoff (sound94) follows at $1A264.
 ;	Transcribed from lst/nhl94.bin.lst lines 61322-61528. Global names are the IDA names; locals are the IDA local names
 ;	(_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment. No IDA gaps.
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp;

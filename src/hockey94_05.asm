@@ -1,9 +1,9 @@
 ;	NHL 94 (retail) segment $150E4-$15D99
 ;	92 hockey.asm part 2 tail, then the 92 part 3 player-roster code, as 93 hockey93_05.asm: puckstick, puckglue, puckbody,
-;	rtss2 (the shared rts), puckgoalie, deflect, makepde, getpde, setpde, SetPersonel, SetPlList, findAvailablePlayer, the
-;	94-only SetupPenaltyShot, forcepldata, ResetBench, Setplass, setplayer, checkattriblimits. The vblank handler (93 VBlank,
+;	rtss2 (the shared rts), puckgoalie, deflect, makepde, getpde, setpde, SetPersonel, SetPlList, TryAddPlayerToList, the
+;	94-only SetupPenaltyShot, forcepldata, ResetBench, Setplass, setplayer, ClampNibble. The vblank handler (93 VBlank,
 ;	video94_1) follows at $15D9A.
-;	Transcribed from lst/nhl94.bin.lst lines 50532-51764. Global names are the IDA names. IDA _glue (puckstick, also
+;	Transcribed from lst/nhl94.bin.lst lines 50532-51764. Global names are the IDA names, or the 93 name where the routine is the 93 one (TryAddPlayerToList, ClampNibble). IDA _glue (puckstick, also
 ;	entered from puckgoalie) is the 93 global puckglue. IDA labels that would split a routine are locals:
 ;	.CheckStkForContactWithSkater and .PlayerPassOrLoosePuckStkLoad in puckstick, .AwayTeam in setplayer. Local labels are
 ;	the IDA local names (_x -> .x) or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
@@ -684,7 +684,7 @@ SetPersonel	;IDA name (93 setpersonel). This will set personnel on team a2 accor
 	movem.l	(sp)+,d0-d5/a0-a4
 	rts
 SetPlList	;create PlList of players who we want on the ice now. a2 = team struct. Takes the current line (tmline) by priolist; an unavailable
-	;player (in the box or injured, -3 / -4) is replaced from sublist (findAvailablePlayer), or from the whole roster
+	;player (in the box or injured, -3 / -4) is replaced from sublist (TryAddPlayerToList), or from the whole roster
 	movea.w	#(PlList-M68K_RAM),a4
 	clr.l	(a4)	;clear 6 bytes (PlList)
 	clr.w	4(a4)
@@ -736,7 +736,7 @@ SetPlList	;create PlList of players who we want on the ice now. a2 = team struct
 	move.b	(a0)+,d0
 	bmi.w	.error
 	move.b	0(a1,d0.w),d0
-	bsr.w	findAvailablePlayer
+	bsr.w	TryAddPlayerToList
 	beq.s	.s1
 .next1
 	dbf	d4,.1
@@ -748,10 +748,10 @@ SetPlList	;create PlList of players who we want on the ice now. a2 = team struct
 	move.w	d3,d0
 	subq.w	#1,d3
 	bmi.s	.next1
-	bsr.w	findAvailablePlayer
+	bsr.w	TryAddPlayerToList
 	beq.s	.try
 	bra.s	.next1
-findAvailablePlayer	;IDA name (93 TryAddPlayerToList). d0 = player number (1 based), d4 = PlList slot. Put d0 in the slot if he is on the bench or
+TryAddPlayerToList	;IDA: findAvailablePlayer. d0 = player number (1 based), d4 = PlList slot. Put d0 in the slot if he is on the bench or
 	;ice (not in the box, not injured) and not in PlList yet; return d1 = 0 (Z set) if not
 	move.w	d0,d1
 	subq.w	#1,d0
@@ -902,7 +902,7 @@ Setplass	;set players (a3) initial assignment from .alist by position
 	dc.b	$FF
 setplayer	;bring player onto the ice and set his attributes. d3 = offset of player on roster, a3 = sortcord of player. Reads the roster bytes
 	;through AttributeCalc (attribute number in TempWord2). 94 adds the PP / PK, home / away and third period bonuses (team ScoreOdds bytes) to
-	;some attributes and clamps them with checkattriblimits
+	;some attributes and clamps them with ClampNibble
 	bclr	#6,pflags2(a3)	;clear line change mode? (I believe pflags2 are 1 off because of fighting missing)
 	movea.w	#(HmShots-M68K_RAM),a0	;Start of Team Struct
 	btst	#pfteam,pflags(a3)	;checks if home or away (if 0, home)
@@ -1006,7 +1006,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	add.b	(PKBonus).w,d3
 	add.b	(HmAwBonus).w,d3
 	add.b	(ThirdPBonus).w,d3
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	lsr.b	#1,d3	;shift right 1 bit (divide by 2)
 	eori.b	#$F,d3	;XOR d3 with F
 	addi.b	#$F,d3	;add F to d3
@@ -1017,7 +1017,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	move.w	#6,(TempWord2).w
 	jsr	(AttributeCalc).l
 	add.b	(HmAwBonus).w,d3
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	lsr.b	#1,d3
 	eori.b	#$F,d3
 	addi.b	#$F,d3
@@ -1034,7 +1034,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	move.w	#8,(TempWord2).w
 	jsr	(AttributeCalc).l
 	add.b	(ThirdPBonus).w,d3	;Chk gets 3rd P bonus only
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	move.b	d3,$75(a3)	;move Chk into player struct
 	bclr	#3,attribute(a3)	;clear bit 3 in attribute of player struct
 	move.b	4(a0),handed(a3)	;move Chk/Hnd byte to Hnd in player struct
@@ -1053,7 +1053,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	add.b	(PPBonus).w,d3
 	add.b	(PKBonus).w,d3
 	add.b	(HmAwBonus).w,d3
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	move.b	d3,stickhand(a3)	;Stk gets PP/PK/Tm Bonus
 	move.b	5(a0),d3
 	andi.b	#$F,d3
@@ -1062,7 +1062,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	add.b	(PPBonus).w,d3
 	add.b	(PKBonus).w,d3
 	add.b	(HmAwBonus).w,d3
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	move.b	d3,shotacc(a3)	;ShA gets PP/PK/Tm Bonus
 	move.b	6(a0),d3	;move End/PS Bias byte into d3
 	lsr.b	#4,d3
@@ -1075,7 +1075,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	jsr	(AttributeCalc).l
 	add.b	(ThirdPBonus).w,d3
 	add.b	(ThirdPBonus).w,d3
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	move.b	d3,spodds(a3)	;PS Bias gets a double 3rd P bonus
 	move.b	7(a0),d3	;move Pas/Agr byte into d3
 	lsr.b	#4,d3
@@ -1083,7 +1083,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	jsr	(AttributeCalc).l
 	add.b	(PPBonus).w,d3
 	add.b	(HmAwBonus).w,d3
-	bsr.w	checkattriblimits
+	bsr.w	ClampNibble
 	move.b	d3,passacc(a3)	;Pas gets PP and Tm bonus
 	move.b	7(a0),$73(a3)	;moves Pas/Agr into Agr byte in player struct
 	move.b	$73(a3),d3	;moves Pas/Agr byte into d3 (weird way to do it)
@@ -1093,7 +1093,7 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	move.b	d3,$73(a3)	;Agr gets no bonus
 	andi.b	#$F,$73(a3)	;mask Agr byte with F, so max is 15 decimal
 	rts
-checkattriblimits	;IDA name (93 ClampNibble clamps 0-15). Clamp byte d3 to 0-$1E. Called by setplayer
+ClampNibble	;IDA: checkattriblimits. Clamp byte d3 to 0-$1E (93 0-15). Called by setplayer
 	tst.b	d3	;test if d3 is zero or higher
 	bpl.w	.pos
 	clr.w	d3	;if negative, clear

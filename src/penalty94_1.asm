@@ -1,11 +1,11 @@
 ;	NHL 94 (retail) segment $11F2C-$12C03
 ;	92 Penalty.Asm part 1, as 93 penalty93_1.asm: AddPenalty, AddPenalty2, PenaltyManager, chkprogress, the 94-only
 ;	PenShotChk and getBAplayerInfo (penalty shot on a breakaway), InProgress, coinsearch, checkfornewpen, Stop4Pen,
-;	limitfo, UpdatePA, SetPA, SetPA2, PushRef, prefmes, PrintPenaltyMessagesString, PenGoalStuff, clrPenBuf,
-;	updatepentime, ProcessPenaltyList, RemovePlayerFromList, chkatop, releasepl, CalcPenTime, updatepwrplay, ClrHor,
+;	limitfo, UpdatePA, SetPA, SetPA2, PushRef, prefmes, PrintPenaltyMessagesString, PenGoalStuff, ClearPenaltyBuffer,
+;	updatepentime, ProcessPenaltyList, RemovePlayerFromList, chkatop, releasepl, GetLowestPen, updatepwrplay, ClrHor,
 ;	SetHor. PrintScores1 (penalty94_2) follows at $12C04. The PenaltyList data is at $18E0C.
 ;	Transcribed from lst/nhl94.bin.lst lines 45937-47135. Global names are the IDA names, or the 93 name where IDA has
-;	an auto name or a spelling variant (IDA name, unless generic, in an ;IDA: comment). Local labels are the IDA local names (_x -> .x)
+;	an auto name, a spelling variant or the 93 routine (ClearPenaltyBuffer, GetLowestPen) (IDA name, unless generic, in an ;IDA: comment). Local labels are the IDA local names (_x -> .x)
 ;	or the 93 local where the code matches, else in the 93 style (.x exit, .loop, numbered), with the IDA label, unless generic, in an ;IDA: comment.
 ;	IDA shows the printz / appendz strings as dc.b or ori.b; they are written with the String macro (length word
 ;	includes itself and the 0 pad). The instruction IDA hid in the SetHor string is written out.
@@ -720,7 +720,7 @@ PenGoalStuff	;93 name. do this stuff after a goal. a1 = scored on team, a2 = sco
 	movem.l	d0-d2/a0,-(sp)
 	cmpi.w	#6,$24(a1)	;94 only: tmap
 	bne.w	.1
-	bsr.w	clrPenBuf
+	bsr.w	ClearPenaltyBuffer
 .1
 	move.w	tmap(a2),d2	;end p.killing by scored on team
 	cmp.w	tmap(a1),d2
@@ -742,7 +742,7 @@ PenGoalStuff	;93 name. do this stuff after a goal. a1 = scored on team, a2 = sco
 .ex
 	movem.l	(sp)+,d0-d2/a0
 	rts
-clrPenBuf	;clear PenBuf (93 ClearPenaltyBuffer). Called from clockcont and PenGoalStuff
+ClearPenaltyBuffer	;IDA: clrPenBuf. Clear PenBuf. Called from clockcont and PenGoalStuff
 	moveq	#$1F,d0	;MaxPen-1
 	movea.w	#(PenBuf-M68K_RAM),a0
 .loop
@@ -869,7 +869,7 @@ releasepl	;93 name. player's penalty time is up so let him out (if appropriate).
 	bset	#2,pflags2(a3)	;pflags2 bit 2 (93: 92 pf2unav, bit 4 in 92)
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
-CalcPenTime	;93 GetLowestPen. a2 = shorthanded team, a3 = team on the power play. Return d0 = power play time left from the penalty box times. Called from updatepwrplay
+GetLowestPen	;IDA: CalcPenTime. a2 = shorthanded team, a3 = team on the power play. Return d0 = power play time left from the penalty box times. Called from updatepwrplay
 	clr.w	d0
 	clr.w	d3
 	lea	$9A(a2),a0	;penalty box list
@@ -933,7 +933,7 @@ updatepwrplay	;show graphic and time remaining for power plays. 94: nothing when
 .uppt
 	bsr.w	printz
 	String	$BF,1,$19,'   ',$16,$17,$18,$19,$BF,1,$1A,'  ',0
-	bsr.w	CalcPenTime
+	bsr.w	GetLowestPen
 	bsr.w	PushTime
 	bsr.w	print
 	movea.l	tmdata(a3),a0	;tmdata

@@ -17,7 +17,7 @@
 ; External addresses outside $0076B2-$007E35, read from lst/nhl94.bin: jsr / jmp (x).l and movea.l #x carry the
 ; address; bsr.w / Bcc.w is the displacement word address + displacement. IDA names (93 name in the comment).
 AddPenalty2 = $11F62		;jmp (x).l at $7C38
-AllSndOff = $1A264		;jsr (x).l at $76EE. 93 p_turnoff
+p_turnoff = $1A264		;jsr (x).l at $76EE. sound94
 ChkGoalies = $F6AA		;bsr.w at $79D0
 ChooseSong = $FE556		;jsr (x).l at $7918
 ClrHor = $12B40			;jsr (x).l at $7D8A
@@ -28,8 +28,8 @@ InitSaveRAM = $1A050		;jsr (x).l at $7712. sram94
 InitScores = $131F4		;jsr (x).l at $77CC
 KillCrowd = $169D0		;jsr (x).l at $76FA
 LoadCrowdRec = $F6E8A		;jsr (x).l at $77D8
-LoadDefMenuOptions = $17C72	;jsr (x).l at $7724. attract94
-MusicVB = $1A50A			;jsr (x).l at $76F4. 93 p_music_vblank
+DefaultMenus = $17C72		;jsr (x).l at $7724. hockey94_09
+p_music_vblank = $1A50A			;jsr (x).l at $76F4. sound94
 Opening = $172F0			;jmp (x).l at $773C
 PenaltyManager = $11FF2		;jsr (x).l at $799E
 PrintScores1 = $12C04		;jsr (x).l at $7DAE
@@ -39,13 +39,13 @@ ReadJoy3 = $11370		;jsr (x).l at $7C90
 ReadJoy4 = $11388		;jsr (x).l at $7CA2
 SetHor = $12B94			;jsr (x).l at $7D80
 Detect4WayPlay = $F6D5E	;jsr (x).l at $7700
-Z80_LoadROM = $1ACC2		;jsr (x).l at $76E8. 93 p_initialZ80
+p_initialZ80 = $1ACC2		;jsr (x).l at $76E8. sound94
 cd0 = $18CFC			;movea.l #x at $7AE2. IDA _cd0 (hockey94_11)
 assinsert = $10658		;jsr (x).l at $7B66
 assreplace = $10662		;jsr (x).l at $78CA
 checkwindow = $AFCA		;bsr.w at $7990
 clearTeamStats = $17102		;jsr (x).l at $778C
-clrPenBuf = $128A4		;jsr (x).l at $7C16. 93 ClearPenaltyBuffer
+ClearPenaltyBuffer = $128A4	;jsr (x).l at $7C16. penalty94_1
 eraser = $1197E			;jmp (x).l at $7E08
 forceblack = $10F32		;jsr (x).l at $7CF8
 freezewindow = $AFB6		;bsr.w at $7B58

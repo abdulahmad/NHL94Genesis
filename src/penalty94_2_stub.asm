@@ -16,7 +16,7 @@
 
 ; External addresses outside $012C04-$0138AB, read from lst/nhl94.bin: jsr / jmp (x).l, movea.l / move.l #x and
 ; lea (x).l carry the address; bsr.w / bra.w / Bcc.w is the displacement word address + displacement. IDA names.
-AllSndOff = $1A264		;jsr / jmp (x).l at $13656. 93 p_turnoff
+p_turnoff = $1A264		;jsr / jmp (x).l at $13656. sound94
 ClrHor = $12B40			;bsr.w / Bcc.w at $13660. penalty94_1
 DoDMA_clearCallbackPointer = $11738	;bsr.w / Bcc.w at $1311A. middle94_2
 DoGameFrame = $794E		;jsr (x).w at $136F0. hockey94_01
@@ -29,7 +29,7 @@ PushTime = $11CA2		;bsr.w / Bcc.w at $12E54
 ResetBench = $15A24		;bsr.w / Bcc.w at $13056
 SetHor = $12B94			;bsr.w / Bcc.w at $13778. penalty94_1
 SetPersonel = $15788		;bsr.w / Bcc.w at $13802
-SetTeamColors = $1720C		;bsr.w / Bcc.w at $13774. 93 setplayercolors
+setplayercolors = $1720C		;bsr.w / Bcc.w at $13774. hockey94_06
 SetupPauseScreen = $7DCE		;jsr (x).w at $13780. hockey94_01 (also movea.l #x at $1314E)
 SprSort = $1702E			;bsr.w / Bcc.w at $136DC
 WeightedRandomSelect = $10EB4	;bsr.w / Bcc.w at $13334. logic94_5
@@ -68,7 +68,7 @@ RefsMap = $5C408		;#x at $1367A. 93 RefsMap+8 (logic94_4 uses this name)
 ZamFrameList = $A8922		;#x at $13114. 93 ZamSprites+8
 EnergyBarMap = $AB920		;#x at $12E8E. 93 EnergyBarMap
 EASNmap = $B3530		;#x at $12D84. 93 EASNmap
-waitxsr = $111D0			;bsr.w / Bcc.w at $13178. middle94_1 (93 IntermissionLoop)
+IntermissionLoop = $111D0		;bsr.w / Bcc.w at $13178. middle94_1
 
 ; Main segment code
 	include	penalty94_2.asm

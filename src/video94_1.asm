@@ -45,7 +45,7 @@ VBlank	;93 name; 93 IDA VBlank_org. Main vblank code for game play (vbint target
 	bsr.w	sfx
 .c
 	addq.w	#1,(vcount).w	;92 Vcount
-	jsr	(MusicVB).l	;93 p_music_vblank
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
 .1
@@ -65,7 +65,7 @@ vb2	;93 name. Vblank used for palfades only, no dmas (vbint target). No rte here
 	bsr.w	cramfade
 .nograph
 	addq.w	#1,(vcount).w
-	jsr	(MusicVB).l	;93 p_music_vblank
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 IRQ7	;rte only. vb2 falls in; the vector table ($60, $64, ...) points here
 	rte
