@@ -15,7 +15,7 @@ FIFO_EMPTY equ 9
 
 
 ; ------------- 93 structure and flag equates (ram93.asm names, 94 values) -------------
-; Included by every *_stub.asm and by hockey94.asm. Names are the NHLPA93Genesis ram93.asm names; the value is 94's.
+; Included by every *_stub.asm and by nhl94.asm. Names are the NHLPA93Genesis ram93.asm names; the value is 94's.
 
 Sortobjs equ 16		;number of sorted graphics objects
 SCstruct equ $80		;ram for each sortobj (SortCords entry)

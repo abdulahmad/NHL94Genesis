@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-REM Usage: buildseg.bat game94
+REM Usage: buildseg.bat hockey94
 REM Assembles src\<name>_stub.asm to output\<name>.bin
 
 if "%~1"=="" (

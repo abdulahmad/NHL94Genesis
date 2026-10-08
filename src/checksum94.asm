@@ -1,6 +1,6 @@
 ; $0FFAC0  Adapted from checksum93.asm: checksum
 ;	NHL 94 (retail) segment $FFAC0-$FFB0F
-;	92 checksum.asm / 93 checksum93: ValidationRoutine, the last code in the ROM. The $FF fill $FFB10-$FFFFF follows (hockey94.asm
+;	92 checksum.asm / 93 checksum93: ValidationRoutine, the last code in the ROM. The $FF fill $FFB10-$FFFFF follows (nhl94.asm
 ;	dcb.b after this include). 94 has no SecurityCheck word before it (93 retail has a $FFFF word; 93 Rev A has none), and its own long
 ;	count and sum. Transcribed from lst/nhl94.bin.lst lines 976745-976783. The IDA ROM segment ends at $FFE00, so the fill comes from the retail bytes.
 

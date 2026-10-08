@@ -15,7 +15,7 @@
     "seg:main94": "buildseg.bat main94 && node fixopcodes.js \"output\\main94 .lst\" output\\main94.bin && node verifySegment.js main94 0x0 lst/nhl94.bin",
     "seg:teamdata94": "npm run extractassets && buildseg.bat teamdata94 && node fixopcodes.js \"output\\teamdata94 .lst\" output\\teamdata94.bin && node verifySegment.js teamdata94 0x30A lst/nhl94.bin",
     "seg:frames94": "buildseg.bat frames94 && node fixopcodes.js \"output\\frames94 .lst\" output\\frames94.bin && node verifySegment.js frames94 0x5B1C lst/nhl94.bin",
-    "seg:game94": "buildseg.bat game94 && node fixopcodes.js \"output\\game94 .lst\" output\\game94.bin && node verifySegment.js game94 0x76B2 lst/nhl94.bin",
+    "seg:hockey94": "buildseg.bat hockey94 && node fixopcodes.js \"output\\hockey94 .lst\" output\\hockey94.bin && node verifySegment.js hockey94 0x76B2 lst/nhl94.bin",
     "seg:attract94": "buildseg.bat attract94 && node fixopcodes.js \"output\\attract94 .lst\" output\\attract94.bin && node verifySegment.js attract94 0x17A18 lst/nhl94.bin",
     "seg:replay94": "buildseg.bat replay94 && node fixopcodes.js \"output\\replay94 .lst\" output\\replay94.bin && node verifySegment.js replay94 0x9FD0 lst/nhl94.bin",
     "seg:input94": "buildseg.bat input94 && node fixopcodes.js \"output\\input94 .lst\" output\\input94.bin && node verifySegment.js input94 0xB0E8 lst/nhl94.bin",

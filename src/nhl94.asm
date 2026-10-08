@@ -1,13 +1,19 @@
 ;
-;	NHL 94 ROM include list, in ROM order. hockey94.asm (the full build, build94.bat, npm run build:retail) includes it.
-;	Each file assembles at the address after the one before it. The org for a segment build is in its _stub.asm (main94.asm keeps its org 0 / org $100).
-;	The address on each line is the retail lst/nhl94.bin start address. See SEGMENT_AGENT.md "ROM map".
+;	Top level of the full NHL 94 ROM build (build94.bat, npm run build:retail). The listing is output\nhl94 .lst.
+;	The includes are in ROM order: each file assembles at the address after the one before it. The org for a segment
+;	build is in its _stub.asm (main94.asm keeps its org 0 / org $100).
+;	The address on each include line is the retail lst/nhl94.bin start address. See SEGMENT_AGENT.md "ROM map".
+;	ram94.asm has no active lines; the ports, VDP status bits and RAM names are in stubinc, as in each *_stub.asm.
 ;
+	include	stubinc\ports.inc	;IO_* / VDP_* ports. Equates only
+	include	stubinc\equals.inc	;VDP status bits. Equates only
+	include	stubinc\ram_addrs.inc	;RAM names. Equates only
+
 	include	main94.asm		; $000000  Adapted from main93.asm: header, startup, vectors
 	include	teamdata94.asm		; $00030A  Adapted from teamdata93.asm: teams, palettes, credits text
 	include	frames94.asm		; $005B1C  Adapted from frames93.asm: sprite animation tables
 	include	ram94.asm		;          Adapted from ram93.asm: equates only
-	include	game94.asm		; $0076B2  Adapted from hockey93.asm: game loop, pause
+	include	hockey94.asm		; $0076B2  Adapted from hockey93.asm: game loop, pause
 	include	menu94.asm		; $007E36  Adapted from menu93.asm: menu core
 	include	stats94.asm		; $0080D4  Adapted from stats93.asm: scores, line editor, roster, scoring and penalty summaries, player stats, crowd meter, goalie select
 	include	replay94.asm		; $009FD0  Adapted from hockey93.asm: replay

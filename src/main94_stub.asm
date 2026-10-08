@@ -1,7 +1,7 @@
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;
 ;	main94 segment stub. Retail $000000-$000309.
-;	main94.asm includes macros\genesis.mac itself (it is the first file in hockey94.asm), so this stub does not.
+;	main94.asm includes macros\genesis.mac itself (it is the first file in nhl94.asm), so this stub does not.
 ;
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

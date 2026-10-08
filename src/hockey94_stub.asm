@@ -2,7 +2,7 @@
 
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;
-;	game94 segment stub. Retail $0076B2-$007E35.
+;	hockey94 segment stub. Retail $0076B2-$007E35.
 ;
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -81,4 +81,4 @@ updatesound = $16976		;jsr (x).l at $79AE
 vcountwait = $80BA		;bsr.w at $7D4C. 93 MenuWaitVblank
 
 ; Main segment code
-	include	game94.asm
+	include	hockey94.asm

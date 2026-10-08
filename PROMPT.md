@@ -11,7 +11,7 @@ lst/nhl94.bin.lst
 
 Search it for the start label named in SEGMENT_AGENT.md. The listing has no address column. loc_ and sub_ names are the address. If it does not open, stop and say the path you tried.
 
-Do not disassemble lst/nhl94.bin. Do not write a disassembler. Do not edit hockey94.asm. Do not delete an asm file. Edit the segment file in place. Do not rewrite SEGMENT_AGENT.md as a whole file. Edit the current-segment line, the matched row, and the history in place.
+Do not disassemble lst/nhl94.bin. Do not write a disassembler. Do not edit nhl94.asm. Do not delete an asm file. Edit the segment file in place. Do not rewrite SEGMENT_AGENT.md as a whole file. Edit the current-segment line, the matched row, and the history in place.
 
 Follow the rules already in SEGMENT_AGENT.md. The reference ROM is lst/nhl94.bin. Style source is the matching file in https://github.com/abdulahmad/NHLPA93Genesis.
 

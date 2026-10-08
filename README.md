@@ -10,7 +10,7 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 
 ## Segment queue
 
-`src/hockey94.asm` is the include list. `SEGMENT_AGENT.md` is the rule file. `PROMPT.md` is the first Copilot prompt. Placeholder files are comments only.
+`src/nhl94.asm` is the top level and the include list, in ROM order. `SEGMENT_AGENT.md` is the rule file. `PROMPT.md` is the first Copilot prompt. Placeholder files are comments only.
 
 94-only files that 93 did not have:
 
@@ -23,7 +23,7 @@ Segment builds use `buildseg.bat` and `npm run seg:<name>` once a segment has a 
 
 `npm run extractassets` runs `extractAssets94.js` against `lst/nhl94.bin`. That is for the graphics and sound data pass, not for the code segments.
 
-Full ROM builds assemble `src/hockey94.asm`. The opcode-corrected output is `output/modified_nhl94.bin`.
+Full ROM builds assemble `src/nhl94.asm`. The listing is `output/nhl94 .lst`. The opcode-corrected output is `output/modified_nhl94.bin`.
 
 | Script | Flags | Result |
 | --- | --- | --- |
