@@ -1,3 +1,4 @@
+; $01A264  Adapted from sound93.asm: sound driver, then the sound data
 ;	NHL 94 (retail) segment $1A264-$4B5BF
 ;	68k side of the sound driver, as 93 sound93 (same driver, revised): p_turnoff (IDA AllSndOff), play_sfx_or_music_track (IDA
 ;	p_initfx), play_new_song, the 94 pad readers (ReadJoyData ... ResetZ80Bus, run from p_music_vblank), p_music_vblank (IDA

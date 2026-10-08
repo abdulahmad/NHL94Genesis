@@ -1,3 +1,4 @@
+;          Adapted from ram93.asm: equates only
 ; ;Variables
 ; Asound	=	$c00011 	;analog sound
 ; Vdata	=	$c00000	;video ports

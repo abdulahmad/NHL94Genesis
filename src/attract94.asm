@@ -1,3 +1,4 @@
+; $017A18  NEW in 94: EA Sports attract screen
 ;	NHL 94 (retail) segment $17A18-$17C71
 ;	94 only: the EA Sports screen (EASportsScreen, called from Begin) and the 94 helpers after it, then the
 ;	93 setoptions vblank handler (93 hockey93_08 VBlank_SetOptions). 94 put this code just

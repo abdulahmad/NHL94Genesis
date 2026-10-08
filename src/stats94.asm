@@ -1,3 +1,4 @@
+; $0080D4  Adapted from stats93.asm: scores, line editor, roster, scoring and penalty summaries, player stats, crowd meter, goalie select
 ;	NHL 94 (retail) segment $80D4-$9FCF
 ;	The stats screens, as 93 stats93: Scores (ShowScores), Line Editor, Team Roster, Scoring Summary, Penalty Summary, Player Stats /
 ;	Playoff Stats, Crowd Meter, the Timeout and goalie select menu items, and their helpers (SetupScreen, ExitAttributeScreen2,

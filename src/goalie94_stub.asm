@@ -1,0 +1,26 @@
+	include	macros\genesis.mac	;String (main94.asm includes it in the full build)
+
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;
+;	goalie94 segment stub. Retail $0FE1D8-$0FE555.
+;
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+; .region code
+	org	$FE1D8
+
+; includes for stubs to replace removed code
+	include	stubinc\ports.inc	;IO_* / VDP_* ports
+	include	stubinc\equals.inc	;VDP status bits
+	include	stubinc\ram_addrs.inc	;RAM names
+
+; External addresses outside $0FE1D8-$0FE555, read from lst/nhl94.bin: jsr / jmp (x).l, movea.l / move.l #x and
+; lea (x).l carry the address; bsr.w / bra.w / Bcc.w is the displacement word address + displacement. IDA names.
+DoDMA_clearCallbackPointer = $11738	;jsr / jmp (x).l at $FE2FE
+setc1player = $C0BC		;jsr / jmp (x).l at $FE280
+setc2player = $C0DA		;jsr / jmp (x).l at $FE2BC
+
+ArenaGfxBank = $E9ED6		;dc.l x+n in ArenaAnims and TeamGfxList (graphics94)
+
+; Main segment code
+	include	goalie94.asm

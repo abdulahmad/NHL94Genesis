@@ -1,3 +1,4 @@
+; $01A050  Adapted from sram93.asm: save data
 ;	NHL 94 (retail) segment $1A050-$1A263
 ;	94 only (93 sram93 drives a serial EEPROM): the battery save RAM. 94 keeps $2000 bytes on the odd bytes at $200000, copies
 ;	them to M68K_RAM at power on (InitSaveRAM) and protects them with a sum / complement checksum in bytes $1FFE-$1FFF.

@@ -1,3 +1,4 @@
+; $005B1C  Adapted from frames93.asm: sprite animation tables
 ;	NHL 94 sprite animation tables (92 / 93 Frames.asm). Retail $005B1C-$0076B1 (7062 bytes), from lst/nhl94.bin.lst.
 ;	SPAlist is a word, then one table per animation. A table is 8 direction offsets (from .t), a flag word, then
 ;	frame,time word pairs per direction; a negative time ends the direction. SPA<name> is the table offset from

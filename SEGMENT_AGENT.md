@@ -4,7 +4,7 @@ This file is the queue and the history. Do not rewrite it as a whole file. Edit 
 
 ## Current segment
 
-None. Every ROM map row is matched, every `seg:` script matches its ROM map range, and the full build (`npm.cmd run build:retail`, `output/modified_nhl94.bin`) is byte-identical to `lst/nhl94.bin` (1048576 bytes), re-verified after the naming pass. See the last History entry.
+None. Every ROM map row is matched, every `seg:` script matches its ROM map range, and the full build (`npm.cmd run build:retail`, `output/modified_nhl94.bin`) is byte-identical to `lst/nhl94.bin` (1048576 bytes), re-verified after the file reorganization. See the last History entry.
 
 ## Sources
 
@@ -12,7 +12,7 @@ None. Every ROM map row is matched, every `seg:` script matches its ROM map rang
 - The listing was exported from IDA as an LST in ASM68K / MRI mode. It has no address column. A `loc_`, `sub_`, or `unk_` name is the address. A named routine is at the instruction before the next address-bearing label. Confirm the org against `lst/nhl94.bin` before the first verify.
 - Style source: the matching file in https://github.com/abdulahmad/NHLPA93Genesis. 93 is the closer source.
 - Reference ROM: `lst/nhl94.bin`. This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
-- `src/hockey94.asm` is the full ROM include list, in address order (every row of the ROM map, high ROM included). Keep it in address order: a full build needs each file at the address after the one before it.
+- `src/nhl94.asm` is the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. `src/hockey94.asm` is the full build top level: the three stubinc files, then `include nhl94.asm`. Keep the list in address order: a full build needs each file at the address after the one before it.
 - Stub includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`). `hockey94.asm` includes the same three for the full build.
 
 
@@ -43,7 +43,7 @@ A MATCH of 0 bytes is a failure. The byte count must be the confirmed range.
 
 Full build check (`npm.cmd run build:retail`): delete `output/nhl94.bin` and `output/modified_nhl94.bin` first. A failed assembly writes no `nhl94.bin`, fixopcodes then fails with ENOENT, and an old `modified_nhl94.bin` stays behind and can look like a pass. Read `output/Build94.log` for errors (an undefined symbol is reported there, not as a MISMATCH). Then compare `output/modified_nhl94.bin` to `lst/nhl94.bin`: the same length (1048576) and every byte equal. Only a compare made this session counts; do not carry "byte-identical" forward from History or from Current segment.
 
-Run the full build after every segment once `src/hockey94.asm` includes it, and after every global rename. A `seg:` MATCH only proves the names the stub equates; a name another file still uses under the old spelling breaks only the full build.
+Run the full build after every segment once `src/nhl94.asm` includes it, and after every global rename. A `seg:` MATCH only proves the names the stub equates; a name another file still uses under the old spelling breaks only the full build.
 
 `sync.js` keeps the repo and GitHub in step (`npm run sync`; the `.claude/settings.json` hooks run it at session start, pull only, and after every turn). It commits uncommitted work on the current branch (on `main` it first moves it to a new `autosave/<date>` branch), fast-forwards branches that are behind, and pushes branches that are ahead, never with `--force`. Commits titled `Autosave uncommitted work on ...` are from it.
 
@@ -59,7 +59,7 @@ Run the full build after every segment once `src/hockey94.asm` includes it, and 
 - A global label ends local-label scope. Strip `?` from IDA names. Keep each comment line under 200 characters.
 - Do not delete an asm file. Edit it in place. Do not add a file except the stub and the segment asm.
 - Data goes in the segment of the code that owns it, as 93 does: the Z80 program and sound data incbins follow the 68k driver in the sound segment, not the graphics segment. Put each data row in the ROM map with its owner from the start; moving a boundary later means changing two stubs, two `seg:` scripts and the ROM map.
-- A new ROM map row gets its `include` line in `src/hockey94.asm` (in address order) in the same session. Do not leave "Full build to-do" items: a name another segment's stub equates by its IDA name, or a label another segment needs global, is fixed in that segment and its stub before the row is marked matched.
+- A new ROM map row gets its `include` line in `src/nhl94.asm` (in address order) in the same session. Do not leave "Full build to-do" items: a name another segment's stub equates by its IDA name, or a label another segment needs global, is fixed in that segment and its stub before the row is marked matched.
 - Asset files (`extractAssets94.js`, `incbin`): name each file with the 92 / 93 file name where the asset is the same one (add 94 when it differs, as `BigFont94.map.jim`), else with its label. Never an IDA address name (`unk_1AD90.bin`) or a draft name (`unknown5`). Change the extractor entry and the `incbin` line together, and check that every `incbin` path is an extractor output (old files can stay in the gitignored `Extracted` and hide a stale path).
 - A map's tiles start past its 8 byte header. Write the reference as 93 does, `#SmallFontMap+8`, not an alias equate for the IDA label there. A stub that needs it equates the base (`SmallFontMap = $AAC52`).
 - Team palettes are `.pal` files, as 92 / 93 teamdata: each block's `.pad` is two `incbin` lines (`..\Extracted\NHL94\Graphics\Pals\BOSh.pal`, then `BOSv.pal`, 32 bytes each, home then visitor), not `dc.w` copied from the listing. Each palette has its own extractor entry in ROM order. Name it with the 93 file name (`extractAssets93-1.1.js`: `LIh.pal` for NYI, `NYh.pal` for NYR, `TBYh.pal`, `MINh.pal`) when the bytes equal 93's (compare against the 93 ROM, not a possibly stale `Extracted` file), add 94 when they differ (`HFDh94.pal`), and use the abbreviation for a new team (`ANHh.pal`). A `seg:` script for a segment with an `incbin` runs `npm run extractassets` first.
@@ -101,46 +101,43 @@ For the next game (NHL 95), copy this file and change 94 to 95 throughout. Keep 
 
 The first row that is not matched is the current segment. Ranges are provisional until that row is matched.
 
-The rows are in ROM address order, the same order as the includes in `src/hockey94.asm`. hockey94_08 and hockey94_07 sit between the high94 rows. The `Org` column is the stub `org` and the `seg:` verify address.
+The rows are in ROM address order, the same order as the includes in `src/nhl94.asm` (the include list `src/hockey94.asm` includes). Each file is one contiguous range and starts at a global label; its end is the byte before the next row's org. The `Org` column is the stub `org` and the `seg:` verify address.
 
 | File | Status | Org, start label | Note |
 |---|---|---|---|
 | main94 | matched | org 0 | 778 bytes, `$000000-$000309`. vectors, header, Start, SegaInit |
 | teamdata94 | matched | org $30A | 22546 bytes, `$00030A-$005B1B`. TeamList, 28 team blocks, playoffseats, Credits |
 | frames94 | matched | org $5B1C, SPAList | 7062 bytes, `$005B1C-$0076B1`. SPAlist, 66 SPA tables |
-| ram94 | skipped | no org (equates only) | equates only, no ROM bytes: no byte verify is possible. Skipped by the user; the queue goes past it. Included in hockey94.asm after frames94 |
-| hockey94_01 | matched | org $76B2, VBjsr | 1924 bytes, `$0076B2-$007E35`. VBjsr, Begin ... Pausemode, SetupPauseScreen, seta2 |
+| ram94 | skipped | no org (equates only) | equates only, no ROM bytes: no byte verify is possible. Skipped by the user; the queue goes past it. Included in nhl94.asm after frames94 |
+| game94 | matched | org $76B2, VBjsr | 1924 bytes, `$0076B2-$007E35`. VBjsr, Begin ... Pausemode, SetupPauseScreen, seta2. Was hockey94_01 |
 | menu94 | matched | org $7E36, InitMenuState | 670 bytes, `$007E36-$0080D3`. InitMenuState (IDA sub_7E36) ... PrintTeamData, vcountwait, as 93 menu93 |
 | stats94 | matched | org $80D4, ShowScores | 7932 bytes, `$0080D4-$009FCF`. ShowScores ... _rjoy, as 93 stats93: the stats screens (menu item handlers) |
-| hockey94_02 | matched | org $9FD0, ReplayMode | 4376 bytes, `$009FD0-$00B0E7`. ReplayMode (no IDA label) ... checkwindow |
-| logic94_1 | matched | org $B0E8, doinput | 5672 bytes, `$00B0E8-$00C70F`. doinput ... setpads, check4bench |
-| logic94_2 | matched | org $C710, assbench | 2444 bytes, `$00C710-$00D09B`. assbench ... asswingd |
-| logic94_3 | matched | org $D09C, asswingo | 5522 bytes, `$00D09C-$00E62D`. asswingo ... chk4pass, EvadePC |
-| logic94_4 | matched | org $E62E, checkob | 6588 bytes, `$00E62E-$00FFE9`. checkob ... pucknorm |
-| logic94_5 | matched | org $FFEA, ChkOffsides | 3830 bytes, `$00FFEA-$010EDF`. ChkOffsides ... WeightedRandomSelect |
-| middle94_1 | matched | org $10EE0, remap | 1978 bytes, `$010EE0-$011699`. remap ... Vmaddr |
-| middle94_2 | matched | org $1169A, dobitmap | 2194 bytes, `$01169A-$011F2B`. dobitmap ... AddTeamBlock |
-| penalty94_1 | matched | org $11F2C, AddPenalty | 3288 bytes, `$011F2C-$012C03`. AddPenalty ... SetHor |
-| penalty94_2 | matched | org $12C04, PrintScores1 | 3240 bytes, `$012C04-$0138AB`. PrintScores1 ... StartHL2 |
-| hockey94_03 | matched | org $138AC, checkcoll | 3230 bytes, `$0138AC-$014549`. checkcoll ... setInjuryType |
-| hockey94_04 | matched | org $1454A, checkfight | 2970 bytes, `$01454A-$0150E3`. checkfight ... checkpuckcoll |
-| hockey94_05 | matched | org $150E4, puckstick | 3254 bytes, `$0150E4-$015D99`. puckstick ... checkattriblimits |
-| video94_1 | matched | org $15D9A, VBlank | 1380 bytes, `$015D9A-$0162FD`. VBlank ... showcrowd |
-| video94_2 | matched | org $162FE, showclock | 1788 bytes, `$0162FE-$0169F9`. showclock ... KillCrowd |
-| hockey94_06 | matched | org $169FA, setupice | 4126 bytes, `$0169FA-$017A17`. setupice ... sub_179D2 |
+| replay94 | matched | org $9FD0, ReplayMode | 4376 bytes, `$009FD0-$00B0E7`. ReplayMode (no IDA label) ... checkwindow. Was hockey94_02 |
+| input94 | matched | org $B0E8, doinput | 5672 bytes, `$00B0E8-$00C70F`. doinput ... setpads, check4bench. Was logic94_1 |
+| assign94 | matched | org $C710, assbench | 2444 bytes, `$00C710-$00D09B`. assbench ... asswingd. Was logic94_2 |
+| checks94 | matched | org $D09C, asswingo | 15940 bytes, `$00D09C-$010EDF`. asswingo ... EvadePC, checkob ... pucknorm, ChkOffsides ... WeightedRandomSelect. Was logic94_3 (`$D09C-$E62D`), logic94_4 (`$E62E-$FFE9`), logic94_5 (`$FFEA-$10EDF`) |
+| video94 | matched | org $10EE0, remap | 4172 bytes, `$010EE0-$011F2B`. remap ... Vmaddr, dobitmap ... AddTeamBlock. Was middle94_1 (`$10EE0-$11699`), middle94_2 (`$1169A-$11F2B`) |
+| penalty94 | matched | org $11F2C, AddPenalty | 6528 bytes, `$011F2C-$0138AB`. AddPenalty ... SetHor, PrintScores1 ... StartHL2. Was penalty94_1 (`$11F2C-$12C03`), penalty94_2 (`$12C04-$138AB`) |
+| collide94 | matched | org $138AC, checkcoll | 9454 bytes, `$0138AC-$015D99`. checkcoll ... setInjuryType, checkfight ... checkpuckcoll, puckstick ... ClampNibble. Was hockey94_03 (`$138AC-$14549`), hockey94_04 (`$1454A-$150E3`), hockey94_05 (`$150E4-$15D99`) |
+| display94 | matched | org $15D9A, VBlank | 3168 bytes, `$015D9A-$0169F9`. VBlank ... showcrowd, showclock ... KillCrowd. Was video94_1 (`$15D9A-$162FD`), video94_2 (`$162FE-$169F9`) |
+| setup94 | matched | org $169FA, setupice | 4126 bytes, `$0169FA-$017A17`. setupice ... ScoutTextNextLine. Was hockey94_06 |
 | attract94 | matched | org $17A18, EASportsScreen | 602 bytes, `$017A18-$017C71`. EASportsScreen ... sub_17BE4, VBlank_SetOptions. HiScoreScreen is not here |
-| hockey94_09 | matched | org $17C72, DefaultMenus | 1806 bytes, `$017C72-$01837F`. LoadDefMenuOptions ... ReadTeamStats |
-| hockey94_10 | matched | org $18380, ResolveGames | 2428 bytes, `$018380-$018CFB`. ResolveGames ... crash |
-| hockey94_11 | matched | org $18CFC, cd0 | 4948 bytes, `$018CFC-$01A04F`. cd0 ... ExitAttribText (data) |
+| data94 | matched | org $17C72, DefaultMenus | 9182 bytes, `$017C72-$01A04F`. DefaultMenus ... ReadTeamStats, ResolveGames ... crash, cd0 ... ExitAttribText (data). Was hockey94_09 (`$17C72-$1837F`), hockey94_10 (`$18380-$18CFB`), hockey94_11 (`$18CFC-$1A04F`) |
 | sram94 | matched | org $1A050, InitSaveRAM | 532 bytes, `$01A050-$01A263`. InitSaveRAM ... ReadSRAM |
 | sound94 | matched | org $1A264, AllSndOff | 201564 bytes, `$01A264-$04B5BF`: the 68k driver, AllSndOff ... ClearAllTrackAndSFXSlots (`$1A264-$1AD8F`), then the sound data incbins as 93 sound93 (Z80_Program_Code ... SongStreams, `$1AD90-$4B5BF`, 6 slices from extractAssets94.js) |
 | graphics94 | matched | org $4B5C0, ScoutTextScript | 700718 bytes, `$04B5C0-$0F66ED`. incbin only: 77 slices from extractAssets94.js, one per IDA label (the MATCHUPS script, then the graphics) |
-| high94_1 | matched | org $F66EE, puckvzadj | 3248 bytes, `$0F66EE-$0F739D`. puckvzadj ... sub_F737E: one-timer, 4 way adaptor test, crowd meter, hot / cold. 94 high ROM code |
-| hockey94_08 | matched | org $F739E, setoptions | 6076 bytes, `$0F739E-$0F8B59`. GameSetUp ... sub_F8868; setoptions is `$F8168`. 94 game setup screen. Out of address order |
-| high94_2 | matched | org $F8B5A, wallcollduringcheck | 16448 bytes, `$0F8B5A-$0FCB99`. wallcollduringcheck ... sub_FCB1A: save RAM records, Player Cards, NAME ENTRY, Record Holders, shootout. 94 high ROM code |
-| hockey94_07 | matched | org $FCB9A, ScoutingReport | 2686 bytes, `$0FCB9A-$0FD617`. sub_FCB9A ... sub_FD60E; ScoutingReport (IDA sub_FCC76) is the 94 MATCHUPS screen. Out of address order |
-| high94_3 | matched | org $FD618, sub_FD618 | 9384 bytes, `$0FD618-$0FFABF`. sub_FD618 ... j_setc2player: arena animations, Period Stats / Game Statistics, Manual Goalie, ChooseSong, shootout paths, title screen and credits, chgplayer. 94 high ROM code |
-| checksum94 | matched | org $FFAC0, ValidationRoutine | 80 bytes, `$0FFAC0-$0FFB0F`. ValidationRoutine (IDA Calc_Checksum), as 93 checksum93. The `$FF` fill `$FFB10-$FFFFF` after it is the hockey94.asm `dcb.b` |
+| onetimer94 | matched | org $F66EE, puckvzadj | 1648 bytes, `$0F66EE-$0F6D5D`. puckvzadj ... CheckOneTimerFacing: one-timer. First part of high94_1 |
+| fourway94 | matched | org $F6D5E, Detect4WayPlay | 300 bytes, `$0F6D5E-$0F6E89`. Detect4WayPlay ... Set4WayPlayer: 4 way play adaptor. Second part of high94_1 |
+| crowd94 | matched | org $F6E8A, LoadCrowdRec | 1300 bytes, `$0F6E8A-$0F739D`. LoadCrowdRec ... GetHotColdTotal: crowd meter, hot / cold. Last part of high94_1 |
+| optsetup94 | matched | org $F739E, GameSetUp | 6076 bytes, `$0F739E-$0F8B59`. GameSetUp ... PlayerCardScreen; setoptions is `$F8168`. 94 game setup screen. Was hockey94_08 |
+| cards94 | matched | org $F8B5A, wallcollduringcheck | 12334 bytes, `$0F8B5A-$0FBB87`. wallcollduringcheck ... WriteNameRecord: TeamPalettes (incbin), save RAM records, Player Cards. First part of high94_2 |
+| records94 | matched | org $FBB88, UserNameEntry | 2292 bytes, `$0FBB88-$0FC47B`. UserNameEntry ... RoundBigTxt: NAME ENTRY, Record Holders. Second part of high94_2 |
+| shootout94 | matched | org $FC47C, ClearShootout | 1822 bytes, `$0FC47C-$0FCB99`. ClearShootout ... PrintShooterNames: shootout. Last part of high94_2 |
+| scout94 | matched | org $FCB9A, ScoutCrowdRecord | 2686 bytes, `$0FCB9A-$0FD617`. ScoutCrowdRecord ... ScoutStub; ScoutingReport (`$FCC76`) is the 94 MATCHUPS screen. Was hockey94_07 |
+| period94 | matched | org $FD618, EndShootout | 3008 bytes, `$0FD618-$0FE1D7`. EndShootout ... ShortenMsgTimer: shootout end, arena animations, Period Stats / Game Statistics. First part of high94_3 |
+| goalie94 | matched | org $FE1D8, ManualGoalieMenu | 894 bytes, `$0FE1D8-$0FE555`. ManualGoalieMenu ... EndArenaAnim: Manual Goalie. Second part of high94_3 |
+| title94 | matched | org $FE556, ChooseSong | 5482 bytes, `$0FE556-$0FFABF`. ChooseSong ... j_setc2player: ChooseSong, shootout paths, title screen and credits, TeamLogoPalettes (incbin), chgplayer. Last part of high94_3 |
+| checksum94 | matched | org $FFAC0, ValidationRoutine | 80 bytes, `$0FFAC0-$0FFB0F`. ValidationRoutine (IDA Calc_Checksum), as 93 checksum93. The `$FF` fill `$FFB10-$FFFFF` after it is the nhl94.asm `dcb.b` |
 
 ## History
 
@@ -376,3 +373,4 @@ The rows are in ROM address order, the same order as the includes in `src/hockey
 - Matchup palettes as `.pal` files (no byte changed; PlayerPictures / FeaturedPictures not changed, left for a later pass): high94_2 `TeamPalettes` (`$F8BF4-$F92F3`, the matchup and player card palettes, 28 teams in TeamList order, two each) is 56 `incbin` lines instead of `dc.w`: `MatchupPal<team>A.pal` (the matchup logo palette) and `MatchupPal<team>B.pal` (the other side: A with colors 1-2 and 3-4 swapped), `MatchupPalANHA.pal` ... `MatchupPalASWB.pal`. None of them is in the teamdata range. high94_3 `TeamLogoPalettes` (`$FF462`) is 28 `incbin` lines: 24 teams incbin their `MatchupPal<team>A.pal` (same bytes); BOS, FLA, HFD and SJ differ and have their own files, `TeamLogoPalBOS.pal`, `TeamLogoPalFLA.pal`, `TeamLogoPalHFD.pal`, `TeamLogoPalSJ.pal`. `extractAssets94.js` has the 60 new entries (folder `NHL94/Graphics/Pals`, after `revframetbl.bin`, ROM order), and `seg:high94_2` / `seg:high94_3` now run `npm run extractassets` first. All 354 `incbin` paths are extractor outputs. Verified: `seg:high94_2` MATCH 16448 bytes `$F8B5A-$FCB99`, `seg:high94_3` MATCH 9384 bytes `$FD618-$FFABF` (same as before), and `npm.cmd run build:retail` (outputs deleted first, no Build94.log errors) is byte-identical to `lst/nhl94.bin` (1048576 bytes).
 - Player cards sliced (no byte changed; supersedes the `PlayerPictures.bin` slice of "Sound data moved and asset files renamed"): the graphics94 `PlayerPictures` incbin (`$C726C-$E9A7F`, IDA `unk_C726C`) is 146 labelled incbins, one per card, and the label `PlayerPictures` is gone. Card 0 is `NoPicGoalie2.bin` (the generic goalie card: DrawPlayerPicture uses it for a goalie with no card whose hand rating bit 0 is clear, NoPicGoalie1 when set; FeaturedPictures also lists it for ANH 0 and FLA 0). The 144 player cards are `Graphics\PlayerCards\Card<player>.bin`, label = file name, the player from the roster String in teamdata94 with spaces and punctuation removed, ROM spelling (`CardMarioLemieux`, `CardAlexnderMogilny`, `CardJohnVanbiesbrk` is his NYR 0 card); every card has one player, ASE / ASW reuse the team cards (50 shared uses). 9 cards carry their own palette and tile layout (`CardDougWeight`, `CardVladimirMalakhov`, `CardKellyHrudey`, `CardMattSchneider`, `CardJohnVanbiesbrk`, `CardPeterSidorkwicz`, `CardRonHextall`, `CardDaveAndreychuk`, `CardTeppoNumminen`; 982 / 1006 / 1030 / 1054 bytes); the rest are 874 bytes (10 byte header 00000000 00000000 0024, 36 tiles). The 13390 bytes at the end are `PlayerCardsScreenPic.bin` (the 40 x 28 Player Cards screen picture, `movea.l #PlayerCardsScreenPic` in PlayerCards, was `#PlayerPictures+$1F3C6`). high94_2 FeaturedPictures `dc.l PlayerPictures+$xxxx` (193) are `dc.l Card<player>` / `NoPicGoalie2`; DrawPlayerPicture `#PlayerPictures` is `#NoPicGoalie2`; `src/high94_2_stub.asm` equates the 146 labels instead of `PlayerPictures`. `extractAssets94.js`: 146 entries replace `PlayerPictures.bin`. All 499 `incbin` paths are extractor outputs. Verified: `seg:graphics94` MATCH 700718 bytes `$4B5C0-$F66ED`, `seg:high94_2` MATCH 16448 bytes `$F8B5A-$FCB99`, `seg:high94_3` MATCH 9384 bytes `$FD618-$FFABF` (same as before), and `npm.cmd run build:retail` (outputs deleted first, no Build94.log errors) is byte-identical to `lst/nhl94.bin` (1048576 bytes).
 - FeaturedPictures team lists named (no byte changed): the 28 high94_2 locals `.0` ... `.27` are the TeamList abbreviations, `.ANH` ... `.ASW` (the pointer table is in TeamList order; the FLA list, `.0`, is first in ROM). Verified: `seg:high94_2` MATCH 16448 bytes `$F8B5A-$FCB99`, and `npm.cmd run build:retail` (outputs deleted first, no Build94.log errors) is byte-identical to `lst/nhl94.bin` (1048576 bytes).
+- File reorganization (a move, no instruction, label or routine comment changed): the 36 ROM map files (35 with a `seg:` script) are 33 files (32 with a `seg:` script) named for what they hold. `src/hockey94.asm` includes the stubinc files and `src/nhl94.asm`, the include list in ROM order with the same `dcb.b $100000-*,$FF` fill; the listing is still `output/nhl94 .lst`. Merged in ROM order: checks94 = logic94_3-5, video94 = middle94_1-2, penalty94 = penalty94_1-2, collide94 = hockey94_03-05, display94 = video94_1-2, data94 = hockey94_09-11. Renamed: game94 (hockey94_01), replay94 (02), setup94 (06), scout94 (07), optsetup94 (08), input94 (logic94_1), assign94 (logic94_2). Split at the first byte of a global label, no address moved: high94_1 into onetimer94 / fourway94 (`Detect4WayPlay` `$F6D5E`) / crowd94 (`LoadCrowdRec` `$F6E8A`), high94_2 into cards94 / records94 (`UserNameEntry` `$FBB88`) / shootout94 (`ClearShootout` `$FC47C`), high94_3 into period94 / goalie94 (`ManualGoalieMenu` `$FE1D8`) / title94 (`ChooseSong` `$FE556`). Each file has its header line, the same text as its include comment. Stubs: the old stubs' equates moved to the new file's stub, minus names now defined in the file; a split stub keeps the equates its part uses and equates the 8 labels now in a sibling part (records94: StartText, ReadNameLog, AppendUserName, AppendTeamName, NameEntryScreen; cards94: SkipOtherUserName; period94: TeamLogoPalettes, HotColdIcon). Each file's text without its header line is the old file text (or the old files joined, or the three parts rejoin to the old file), checked against git HEAD. The old files, stubs and `seg:` scripts were deleted after the new file verified; cards94 and title94 `seg:` run extractassets. Equate comments in the stubs and comments inside routines still name the old files (`hockey94_06`, `logic94_4` ...). Verified: all 32 `seg:` scripts MATCH their ROM map ranges (fixopcodes patches per file add to 473), and `npm.cmd run build:retail` (outputs deleted first, no Build94.log errors) gives `output/modified_nhl94.bin` byte-identical to `lst/nhl94.bin` (1048576 bytes, 473 opcodes patched).

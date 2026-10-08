@@ -1,3 +1,4 @@
+; $000000  Adapted from main93.asm: header, startup, vectors
 	include	macros\genesis.mac
 
 ;	68000

@@ -1,3 +1,4 @@
+; $007E36  Adapted from menu93.asm: menu core
 ;	NHL 94 (retail) segment $7E36-$80D3
 ;	The menu engine, as 93 menu93: InitMenuState through vcountwait (93 MenuWaitVblank). The scrolling menu of the pause screen
 ;	(PauseMode in hockey94_01), also used from penalty94_2, middle94_1 and the stats code after it (stats94).

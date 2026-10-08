@@ -1,3 +1,4 @@
+; $00030A  Adapted from teamdata93.asm: teams, palettes, credits text
 ;	NHL 94 team data. Retail $00030A-$005B1B (22546 bytes), from the IDA listing lst/nhl94.bin.lst.
 ;	Layout of 93 teamdata93.asm: the team address table, one block per team, playoffseats, Credits.
 ;	94 has 26 teams plus the two all star teams (93: 24 plus two). Minnesota is now Dallas; Anaheim and

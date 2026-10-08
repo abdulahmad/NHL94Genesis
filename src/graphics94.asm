@@ -1,3 +1,4 @@
+; $04B5C0  Adapted from graphics93.asm: graphics only
 ;	graphics94.asm: retail $4B5C0-$F66ED (700718 bytes), the data after the sound data (sound94 ends with the sound incbins,
 ;	$1AD90-$4B5BF): the MATCHUPS script and the graphics, up to the 94 code in the high ROM. incbin only, no gap and no overlap. Each file
 ;	is a slice of lst/nhl94.bin written by npm run extractassets (extractAssets94.js) into Extracted\NHL94\Graphics and Text. One slice
