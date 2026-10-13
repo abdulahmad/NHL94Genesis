@@ -29,8 +29,18 @@ play_sfx_or_music_track	;Start sound d0 (0-$7A) in the track slot with the lowes
 	movem.l	d0-d3/a0-a2,-(sp)
 	cmp.w	#$30,d0
 	blt.w	.0
+	IF MSU=1
+		cmp.w	(MsuLastId).w,d0
+		bne.s	.stopcd
+		tst.w	(MsuMusic).w
+		bne.s	.stopcd		;FM mode still pauses the loop
+		cmpi.w	#$12,(MsuHold).w
+		beq.s	.cdon		;this loop is already on the CD
+.stopcd
+	ENDIF
 	bsr.w	stop_current_song	;song: stop the current song
 	IF MSU=1
+.cdon
 		jsr	(MsuHandleSong).l	;CD music, or leave d0 for the FM stream
 	ENDIF
 .0

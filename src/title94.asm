@@ -768,6 +768,9 @@ EndOneTimer	;End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA S
 newTitleScreen	;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, TitleImg) with the vblank TitleVBlank, song $78, then the
 	;scrolling credits (Credits, CreditsList text; CreditsPrintRow, CreditsWait) until start. Called from Opening
 	move	#$2700,sr
+	IF MSU=1
+		jsr	(MsuPrimeTitle).l	;CD track 4 while the pictures are drawn, before the fade
+	ENDIF
 	move.w	(VDP_CNTR).l,(seed).w
 	move.w	(VDP_CNTR).l,(seed+2).w
 	move.l	#VBlank_TitleScreen,(vbint).l

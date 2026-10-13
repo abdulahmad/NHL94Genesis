@@ -8,8 +8,11 @@
 ;	The faceoff whistle and the goal's stop_current_song do not pause that recording,
 ;	and the FM stream ending does not hand the voice to the crowd. It plays out until
 ;	a later song replaces it or p_turnoff pauses it. $78 (title) loops track 4, the
-;	splash and main menu song. VLC lists that recording as track 3 because track 1
-;	is data. $79 (end of game) loops track 5, the intermission. The menu MSCPLAYR
+;	splash and main menu song. newTitleScreen asks for it before the pictures are
+;	drawn, so the seek overlaps that work and the track is going when the fade
+;	starts. The later song call still starts the FM arrangement then, and does not
+;	restart a loop that is already playing. VLC lists that recording as track 3
+;	because track 1 is data. $79 (end of game) loops track 5, the intermission. The menu MSCPLAYR
 ;	stores 5 and cdstart stores 4; on this disc those two recordings are the other
 ;	way around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
 ;	the second music track.
@@ -169,15 +172,20 @@ MsuArmOnce	;d0 = track, d1 = command. One-shot songs get a frame count. Loops do
 	movem.l	(sp)+,d0-d2/a0
 	rts
 
+MsuPrimeTitle	;newTitleScreen, before the pictures. No FM stream. The seek runs while the art is drawn
+	move.w	#SngTitle,d0
+	bra.w	MsuHandleSong
+
 MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs.
 	;MsuTryReady returns 0 or 1 in d0, so the song id is kept in d3 and passed to MsuStartSong.
+	;A $12 loop that is already this song is left playing. The title screen asks twice.
 	movem.l	d0-d4/a0-a2,-(sp)
 	move.w	d0,d3
 	cmpi.w	#2,(MsuReady).w
 	bne.s	.try
 	move.w	d3,(MsuLastId).w	;the splash asks before the TOC read has finished
 	move.w	#1,(MsuMuteFm).w	;hold the FM arrangement until the CD track can start
-	moveq	#64,d2			;about sixteen seconds; the title screen has not started yet
+	moveq	#64,d2			;about sixteen seconds; the pictures are not up yet
 .wait
 	move.w	#$FFFF,d1
 .spin
@@ -186,11 +194,17 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	dbf	d1,.spin
 	dbf	d2,.wait
 .try
-	move.w	(MsuHold).w,d4		;nonzero if a play-once track was left running
+	move.w	(MsuHold).w,d4		;nonzero if a track was left running
 	bsr.w	MsuTryReady
 	bne.s	.fm
 	tst.w	d4
-	bne.s	.go			;this request replaces that track
+	beq.s	.fresh
+	cmpi.w	#$12,d4
+	bne.s	.go			;a play-once track is replaced
+	cmp.w	(MsuLastId).w,d3
+	beq.s	.x			;this loop is already on the CD
+	bra.s	.go
+.fresh
 	tst.w	(MsuHold).w
 	bne.s	.x			;late init already started this song
 .go

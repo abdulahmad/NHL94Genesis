@@ -12,7 +12,7 @@ node tools/fixopcodes.js "output/nhl94 .lst" output/nhl94.bin
 
 The ROM is `output/modified_nhl94.bin`. Checksum validation is off, the same as `build:dev`, so the expanded ROM boots. The header ROM end is `$1FFFFF`.
 
-Boot can sit on a black screen for a few seconds while the driver looks for the Mega CD and reads the track list. The splash asks for its song before that read finishes. The FM arrangement stays silent, and the CD track starts when the list is done, still on the splash. The same track keeps playing into the main menu. If CD Music is still Off after the title has been up for a while, the cue's `FILE` lines do not match the bin filenames in that folder. Renaming the cue does not rename the files it points at.
+Boot can sit on a black screen for a few seconds while the driver looks for the Mega CD and reads the track list. The title screen asks for the CD song before it draws the pictures, so the seek runs during that work and the track is going when the image fades in. The FM arrangement still starts at the later song call, the same moment as the retail ROM, and that call does not restart a loop that is already playing. If the track list is still being read, the FM arrangement stays silent and the CD track starts when the list is done. The same track keeps playing into the main menu. If CD Music is still Off after the title has been up for a while, the cue's `FILE` lines do not match the bin filenames in that folder. Renaming the cue does not rename the files it points at.
 
 The options screen has a **CD Music** line under Line Changes (scroll down; Shootout jumps there from Goalies). **On** plays the disc. **Off** is the cartridge FM. The choice is kept for the session. If the driver does not find a Mega CD, the line stays Off and FM plays.
 
@@ -23,7 +23,7 @@ The hook is `play_sfx_or_music_track`. Sound effects stay on the FM driver. A so
 | Song | Where | Track | How |
 | --- | --- | --- | --- |
 | `$30`–`$77` | in-game organ, from `ChooseSong` | `id - $29` (7–78) | play once. Same numbers `cdrequest.asm` stores, and the same `MSCPLAY1` the disc uses |
-| `$78` | title | 4 | loop. Splash and main menu. VLC lists this recording as track 3 |
+| `$78` | title | 4 | loop. Asked for before the pictures are drawn, so the seek overlaps that work. Splash and main menu. VLC lists this recording as track 3 |
 | `$79` | intermission / end of game | 5 | loop. VLC lists this recording as track 4 |
 | `$7A` | scouting report | 3 | loop. The disc ignores `$7A`. Track 3 is the second music track; track 1 is data |
 
