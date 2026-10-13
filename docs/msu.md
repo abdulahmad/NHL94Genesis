@@ -38,5 +38,3 @@ Those lengths are the USA redump (serial T-50015, 79 tracks). The time is `secto
 ## Disc layout
 
 The play argument is the cue track number, decimal, the same numbering as the Sega CD: track 1 is the data track and is never played. Point the MegaSD MSU cue at that disc (or a cue with the same track numbers). The driver binary is `src/msu/msu-drv.bin` from krikzz/msu-md, MIT, included in the ROM and called from `Begin`.
-
-Each audio track on that redump has about two seconds of pregap in front of the music. VLC plays the audio file, which starts at the music. The drive starts at the pregap, so the game would sit in silence and then play the same recording, and a loop would do it again because it restarts at that same point. The driver adds that track's pregap to the seek, and stores the result as the loop point. The menu song (track 4, pregap `00:02:03`) and the other tracks start on the music, including when they repeat.
