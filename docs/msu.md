@@ -18,18 +18,22 @@ The options screen has a **CD Music** line under Line Changes (scroll down; Shoo
 
 ## What plays
 
-The hook is `play_sfx_or_music_track`. Sound effects stay on the FM driver. A song (`$30`–`$7A`) still runs its event stream, so it ends when the cartridge song ends, but while CD Music is On those events do not key the FM chip. The CD track loops until that stream ends or `stop_current_song` / `p_turnoff` runs.
+The hook is `play_sfx_or_music_track`. Sound effects stay on the FM driver. A song (`$30`–`$7A`) still runs its event stream, so the cartridge arrangement ends on its own, but while CD Music is On those events do not key the FM chip.
 
 | Song | Where | Track | How |
 | --- | --- | --- | --- |
-| `$30`–`$77` | in-game organ, from `ChooseSong` | `id - $29` (7–78) | loop until the FM stream ends. Same numbers `cdrequest.asm` stores |
+| `$30`–`$77` | in-game organ, from `ChooseSong` | `id - $29` (7–78) | play once. Same numbers `cdrequest.asm` stores, and the same `MSCPLAY1` the disc uses |
 | `$78` | title | 4 | loop. Splash and main menu. VLC lists this recording as track 3 |
 | `$79` | intermission / end of game | 5 | loop. VLC lists this recording as track 4 |
 | `$7A` | scouting report | 3 | loop. The disc ignores `$7A`. Track 3 is the second music track; track 1 is data |
 
-Track 2 is the crowd bed from `cdtrack.asm` (the track it forces when the playing number is below 7). `updatesound` still writes the PSG noise channel on every call, whether CD Music is On or Off, and it also loops track 2 whenever no song owns the CD voice. Both crowds are heard together during play. The CD voice is sent at volume 255, the top of the 0–255 range, for the song and for the bed. MSU-MD has one CD-DA voice, so a song replaces the bed until the song stream ends, and the PSG crowd keeps going under the song.
+The opening faceoff and the goal song are in `$30`–`$77`. The whistle (`Stop4Pen`) and the goal's `stop_current_song` do not pause them, and the FM arrangement ending does not start the crowd over them. The recording plays out until another song replaces it, or until `p_turnoff` (pause and the other full silences). Title, intermission, and scouting still loop, and `stop_current_song` still pauses those.
 
-`p_turnoff` (pause, period start, silence) pauses the CD voice. The bed starts again from `updatesound` once play resumes and no song is running.
+Track 2 is the crowd bed from `cdtrack.asm` (the track it forces when the playing number is below 7). `updatesound` still writes the PSG noise channel on every call, whether CD Music is On or Off, and it also loops track 2 whenever no song owns the CD voice. Both crowds are heard together during play. The CD voice is sent at volume 255, the top of the 0–255 range, for the song and for the bed. MSU-MD has one CD-DA voice, so a song replaces the bed, and the PSG crowd keeps going under the song.
+
+A play-once track keeps the voice after the disc recording has finished. Status `$A12020` only says whether a command is in progress, so the crowd bed does not return on its own. It returns at the next pause, or when the next song ends and that song was a loop. The PSG crowd is still there the whole time.
+
+`p_turnoff` pauses the CD voice, including a play-once track. The bed starts again from `updatesound` once play resumes and no song is running.
 
 ## Disc layout
 

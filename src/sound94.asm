@@ -101,7 +101,7 @@ stop_current_song	;Stop the song in progress: free the first slot whose pointer 
 	bsr.w	UploadCommandBufferToZ80
 .0
 	IF MSU=1
-		jsr	(MsuRelease).l	;a song was using the CD voice: give it back
+		jsr	(MsuRelease).l	;pause a looping song; a play-once track keeps the voice
 	ENDIF
 	move	(sp)+,sr
 	movem.l	(sp)+,d0-d3/a0-a3

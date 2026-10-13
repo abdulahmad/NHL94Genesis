@@ -4,15 +4,20 @@
 ;	of the clock at $A1201F. Status $A12020 is 0 ready, 1 init, 2 busy.
 ;
 ;	Song ids $30-$77 use the disc's own numbers, track = id - $29 (tracks 7-$4E), the
-;	same window cdrequest.asm writes. $78 (title) loops track 4, the splash and
-;	main menu song. VLC lists that recording as track 3 because track 1 is data.
-;	$79 (end of game) loops track 5, the intermission. The menu MSCPLAYR stores 5
-;	and cdstart stores 4; on this disc those two recordings are the other way
-;	around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
+;	same window cdrequest.asm writes, and they play once ($11), the way MSCPLAY1 does.
+;	The faceoff whistle and the goal's stop_current_song do not pause that recording,
+;	and the FM stream ending does not hand the voice to the crowd. It plays out until
+;	a later song replaces it or p_turnoff pauses it. $78 (title) loops track 4, the
+;	splash and main menu song. VLC lists that recording as track 3 because track 1
+;	is data. $79 (end of game) loops track 5, the intermission. The menu MSCPLAYR
+;	stores 5 and cdstart stores 4; on this disc those two recordings are the other
+;	way around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
 ;	the second music track.
-;	Track 2 is the crowd bed. It loops whenever no song stream is running. The PSG crowd
-;	in updatesound is never removed, so both crowds play together. One CD-DA voice cannot
-;	play the bed under a song; the bed returns when that song's FM stream ends or is stopped.
+;	Track 2 is the crowd bed. It loops while no song owns the CD voice. A play-once
+;	song keeps the voice after the recording itself has ended, because status $A12020
+;	does not report playback end, so the bed stays off until the next pause or the
+;	next song. The PSG crowd in updatesound is never removed. One CD-DA voice cannot
+;	play the bed under a song.
 
 MsuCmd	;d0 = command word. Wait out status 2, write $A12010, bump $A1201F
 	move.w	d1,-(sp)
@@ -132,19 +137,19 @@ MsuMap	;song id d0 -> track d0, command d1. $30-$77 become id-$29
 	rts
 .song
 	subi.w	#$29,d0
-	moveq	#$12,d1
+	moveq	#$11,d1		;play once, same as MSCPLAY1
 	rts
 
-MsuStartSong	;d0 = song id. Loop that track until the FM stream ends or the song is stopped
+MsuStartSong	;d0 = song id. MsuHold keeps the play command: $11 once, $12 loop
 	move.w	d0,(MsuLastId).w
 	bsr.w	MsuMap
-	move.w	#1,(MsuHold).w
+	move.w	d1,(MsuHold).w
 	bsr.w	MsuPlay
 	rts
 
 MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs.
 	;MsuTryReady returns 0 or 1 in d0, so the song id is kept in d3 and passed to MsuStartSong.
-	movem.l	d0-d3/a0-a2,-(sp)
+	movem.l	d0-d4/a0-a2,-(sp)
 	move.w	d0,d3
 	cmpi.w	#2,(MsuReady).w
 	bne.s	.try
@@ -159,10 +164,14 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	dbf	d1,.spin
 	dbf	d2,.wait
 .try
+	move.w	(MsuHold).w,d4		;nonzero if a play-once track was left running
 	bsr.w	MsuTryReady
 	bne.s	.fm
+	tst.w	d4
+	bne.s	.go			;this request replaces that track
 	tst.w	(MsuHold).w
 	bne.s	.x			;late init already started this song
+.go
 	tst.w	(MsuMusic).w
 	bne.s	.fm
 	move.w	#1,(MsuMuteFm).w
@@ -173,8 +182,11 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	cmpi.w	#2,(MsuReady).w
 	beq.s	.x			;still waiting: leave the FM arrangement muted
 	clr.w	(MsuMuteFm).w
+	tst.w	(MsuMusic).w
+	beq.s	.x			;CD is on: a failed init has nothing to pause
+	bsr.w	MsuSilence		;FM mode: a play-once track was not paused by MsuRelease
 .x
-	movem.l	(sp)+,d0-d3/a0-a2
+	movem.l	(sp)+,d0-d4/a0-a2
 	rts
 
 MsuSilence	;Pause the CD voice now. p_turnoff
@@ -187,16 +199,20 @@ MsuSilence	;Pause the CD voice now. p_turnoff
 	bsr.w	MsuCmd
 .x	rts
 
-MsuRelease	;stop_current_song. Pause only when a song owns the voice, so the crowd bed stays
+MsuRelease	;stop_current_song. A loop pauses. A play-once organ keeps going through the whistle
+	cmpi.w	#$11,(MsuHold).w
+	beq.s	.x
 	tst.w	(MsuHold).w
 	beq.s	.x
 	bsr.w	MsuSilence
 .x	rts
 
-MsuStreamEnded	;A stream hit its end marker (a0). A song gives the CD voice back to the crowd bed
+MsuStreamEnded	;A stream hit its end marker (a0). A loop gives the voice back. A play-once track does not
 	cmpa.l	#fmtune_id_30_cmdstream,a0
 	bcs.s	.x
 	clr.w	(MsuMuteFm).w
+	cmpi.w	#$11,(MsuHold).w
+	beq.s	.x
 	clr.w	(MsuHold).w
 .x	rts
 
@@ -210,7 +226,7 @@ MsuFilterCmd	;ProcessOneMusicTrack. While MsuMuteFm is set, song events do not r
 MsuDoNothing
 	rts
 
-MsuCrowdBed	;updatesound. Loop track 2 while CD music is on and no song stream is running
+MsuCrowdBed	;updatesound. Loop track 2 while CD music is on and no song owns the voice
 	movem.l	d0-d2,-(sp)
 	bsr.w	MsuTryReady
 	bne.s	.x
