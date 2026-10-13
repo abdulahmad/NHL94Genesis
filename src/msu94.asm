@@ -14,13 +14,14 @@
 ;	way around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
 ;	the second music track.
 ;	Track 2 is the crowd bed. It loops while no song owns the CD voice. A play-once
-;	song keeps the voice through the whistle and the FM stream. The play command
-;	runs until the drive position reaches the start of the next disc track, which
-;	is where MSCPLAY1 pauses. The driver then seeks to track 2 and loops it, the
-;	handoff cdtrack.asm makes once that organ track is no longer playing. Looping
-;	songs keep the driver's own end check. The main CPU reads 2 from $A12021 and
-;	does not send a second play. A new command clears that byte. The PSG crowd in
-;	updatesound is never removed. One CD-DA voice cannot play the bed under a song.
+;	song keeps the voice through the whistle and the FM stream. The driver already
+;	pauses a $11 track (the same idea as MSCPLAY1). It does that about two seconds
+;	before the next disc track, writes 1 to $A12021, and leaves the voice stopped.
+;	It does not pick the next track. The next updatesound sees that 1, drops the
+;	hold, and sends a normal play-loop of track 2, which is what cdtrack.asm does
+;	after the BIOS has paused. Looping songs keep the driver's own end check. A
+;	new command clears the byte. The PSG crowd in updatesound is never removed.
+;	One CD-DA voice cannot play the bed under a song.
 
 MsuCmd	;d0 = command word. Wait out status 2, write $A12010, bump $A1201F
 	move.w	d1,-(sp)
@@ -285,17 +286,16 @@ MsuApplyChoice	;Replay the current song in the mode just chosen. No song: FM mod
 	bsr.w	MsuSilence
 .x	rts
 
-MsuPollEnd	;Play-once: the driver writes 2 to $A12021 after it has started the crowd bed
+MsuPollEnd	;Play-once: the driver pauses at the end and writes 1 to $A12021. It does not start the crowd.
 	cmpi.w	#$11,(MsuHold).w
 	bne.s	.x
-	cmpi.b	#2,$A12021.l
-	bne.s	.x			;the organ track is still the one playing
-	clr.w	(MsuHold).w
-	move.w	#2,(MsuTrack).w		;already playing; a second play would restart it
+	cmpi.b	#1,$A12021.l
+	bne.s	.x
+	clr.w	(MsuHold).w		;voice is free; the bed play below sends track 2
 .x	rts
 
 	even
-MsuDriver	;krikzz msu-drv.bin. A play-once track ends at the next disc track and seeks to track 2. See docs/msu.md.
+MsuDriver	;krikzz msu-drv.bin. A play-once track pauses before the next disc track. See docs/msu.md.
 	;Returns 0 in d0, or 1 if $400100 is not the Mega CD BIOS
 	incbin	msu\msu-drv.bin
 	even
