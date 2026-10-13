@@ -480,6 +480,7 @@ MsuMuteFm equ $FFFFDEFA	;1: song events advance but do not touch the FM chip
 MsuTrack equ $FFFFDEFC	;CD track now playing, 0 if none
 MsuLastId equ $FFFFDEFE	;last song id $30-$7A
 MsuLeft equ $FFFFDF00	;NTSC frames left in a play-once track; 0 if none
+MsuLatch equ $FFFFDF02	;song id already started for this period; 0 if none
 Stack equ $FFFFFFFE
 Z80_RAM equ $A00000
 Z80_YM2612 equ $A04000

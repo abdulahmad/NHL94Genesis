@@ -47,6 +47,7 @@ MsuInit	;Called from Begin after the RAM clear. CD music On if the driver loads,
 	clr.w	(MsuTrack).w
 	clr.w	(MsuLastId).w
 	clr.w	(MsuLeft).w
+	clr.w	(MsuLatch).w
 	move.w	#1,(MsuMusic).w
 	movem.l	d0-d2,-(sp)
 	bsr.w	MsuDriver
@@ -176,6 +177,20 @@ MsuPrimeTitle	;newTitleScreen, before the pictures. No FM stream. The seek runs 
 	move.w	#SngTitle,d0
 	bra.w	MsuHandleSong
 
+MsuPrimeFaceoff	;StartPer, after p_turnoff, before the rink. No FM stream. The seek runs while the screen fades
+	tst.w	(MsuMusic).w
+	bne.s	.x
+	cmpi.w	#1,(MsuReady).w
+	bne.s	.x
+	move.w	(HomeTeam).w,(HmTeam).w
+	clr.w	(SongIndex).w
+	jsr	(ChooseSong).l
+	move.w	(SongNum).w,d0
+	bmi.s	.x			;no song in this mode
+	move.w	d0,(MsuLatch).w		;the later song call must not start it again
+	bra.w	MsuHandleSong
+.x	rts
+
 MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs.
 	;MsuTryReady returns 0 or 1 in d0, so the song id is kept in d3 and passed to MsuStartSong.
 	;A $12 loop that is already this song is left playing. The title screen asks twice.
@@ -199,6 +214,15 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	bne.s	.fm
 	tst.w	d4
 	beq.s	.fresh
+	cmp.w	(MsuLatch).w,d3
+	bne.s	.replace
+	clr.w	(MsuLatch).w
+	tst.w	(MsuMusic).w
+	bne.s	.go			;FM mode still pauses it
+	cmp.w	(MsuLastId).w,d3
+	beq.s	.x			;this period's song is already on the CD
+.replace
+	clr.w	(MsuLatch).w
 	cmpi.w	#$12,d4
 	bne.s	.go			;a play-once track is replaced
 	cmp.w	(MsuLastId).w,d3
@@ -232,6 +256,7 @@ MsuSilence	;Pause the CD voice now. p_turnoff
 	clr.w	(MsuMuteFm).w
 	clr.w	(MsuTrack).w
 	clr.w	(MsuLeft).w
+	clr.w	(MsuLatch).w
 	move.w	#$1300,d0	;PAUSE, fade 0
 	bsr.w	MsuCmd
 .x	rts

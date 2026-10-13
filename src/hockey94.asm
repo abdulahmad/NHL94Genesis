@@ -125,6 +125,9 @@ StartPer	;start a period: reset stack, rink and clock, face off, run the game lo
 .reg	st	(faceoffanim).w
 	movea.w	#(Stack-M68K_RAM),sp
 	jsr	(p_turnoff).l		;sound off
+	IF MSU=1
+		jsr	(MsuPrimeFaceoff).l	;CD organ before the fade; the seek runs while the rink is drawn
+	ENDIF
 	jsr	(setupice).l
 	bsr.s	ResetClock
 	ori.w	#$F000,(PadControlBits).w
@@ -155,7 +158,14 @@ StartPer	;start a period: reset stack, rink and clock, face off, run the game lo
 	clr.w	(CurCrowdMeter).w
 	move.w	(HomeTeam).w,(HmTeam).w
 	move.w	#0,(SongIndex).w
+	IF MSU=1
+		tst.w	(MsuLatch).w
+		bne.s	.hassong		;already chosen, and already on the CD
+	ENDIF
 	jsr	(ChooseSong).l
+	IF MSU=1
+.hassong
+	ENDIF
 	move.w	(SongNum).w,-(sp)	;period start tune
 	jsr	(song).l
 	cmpi.w	#2,(gsp).w
