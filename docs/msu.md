@@ -12,6 +12,8 @@ node tools/fixopcodes.js "output/nhl94 .lst" output/nhl94.bin
 
 The ROM is `output/modified_nhl94.bin`. Checksum validation is off, the same as `build:dev`, so the expanded ROM boots. The header ROM end is `$1FFFFF`.
 
+Boot can sit on a black screen for a few seconds. That is the driver looking for the Mega CD, then reading the disc's track list. This disc has about 80 tracks, so the list often finishes after the title is already up. CD Music stays Off until that read finishes, then it switches On by itself. If it is still Off after the title has been up for a while, the cue's `FILE` lines do not match the bin filenames in that folder. Renaming the cue does not rename the files it points at.
+
 The options screen has a **CD Music** line under Line Changes (scroll down; Shootout jumps there from Goalies). **On** plays the disc. **Off** is the cartridge FM. The choice is kept for the session. If the driver does not find a Mega CD, the line stays Off and FM plays.
 
 ## What plays

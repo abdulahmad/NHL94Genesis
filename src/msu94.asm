@@ -55,7 +55,12 @@ MsuInit	;Called from Begin after the RAM clear. CD music On if the driver loads,
 	bne.s	.ready
 	dbf	d1,.inner2
 	dbf	d2,.outer2
-	bra.w	.fail
+	;Status reached 1, so the sub CPU is up, but it is still reading the TOC.
+	;This disc has about 80 tracks, and that read runs longer than the boot wait.
+	;Leave ready at 2 so a later poll can finish init. 0 means no Mega CD at all.
+	move.w	#2,(MsuReady).w
+	move.w	#1,(MsuMusic).w
+	bra.w	.out
 .ready
 	move.w	#1,(MsuReady).w
 	clr.w	(MsuMusic).w	;On
@@ -67,6 +72,29 @@ MsuInit	;Called from Begin after the RAM clear. CD music On if the driver loads,
 	move.w	#1,(MsuMusic).w
 .out
 	movem.l	(sp)+,d0-d2
+	rts
+
+MsuTryReady	;Z set if the driver is ready. Finishes init if the TOC completed after the boot wait
+	cmpi.w	#1,(MsuReady).w
+	beq.s	.yes
+	cmpi.w	#2,(MsuReady).w
+	bne.s	.no
+	cmpi.b	#1,$A12020.l
+	beq.s	.no
+	move.w	#1,(MsuReady).w
+	clr.w	(MsuMusic).w
+	move.w	#$1601,d0
+	bsr.w	MsuCmd
+	cmpi.w	#$30,(MsuLastId).w
+	blt.s	.yes
+	move.w	#1,(MsuMuteFm).w
+	move.w	(MsuLastId).w,d0
+	bsr.w	MsuStartSong
+.yes
+	moveq	#0,d0
+	rts
+.no
+	moveq	#1,d0
 	rts
 
 MsuPlay	;d0 = track 1-99, d1 = $11 play once or $12 loop. Full volume, then the play command
@@ -113,8 +141,14 @@ MsuStartSong	;d0 = song id. Loop that track until the FM stream ends or the song
 
 MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs
 	movem.l	d0-d3/a0-a2,-(sp)
-	tst.w	(MsuReady).w
-	beq.s	.fm
+	cmpi.w	#2,(MsuReady).w
+	bne.s	.try
+	move.w	d0,(MsuLastId).w	;remember the song if the TOC is still being read
+.try
+	bsr.w	MsuTryReady
+	bne.s	.fm
+	tst.w	(MsuHold).w
+	bne.s	.x			;late init already started this song
 	tst.w	(MsuMusic).w
 	bne.s	.fm
 	move.w	#1,(MsuMuteFm).w
@@ -127,8 +161,8 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	rts
 
 MsuSilence	;Pause the CD voice now. p_turnoff
-	tst.w	(MsuReady).w
-	beq.s	.x
+	cmpi.w	#1,(MsuReady).w
+	bne.s	.x
 	clr.w	(MsuHold).w
 	clr.w	(MsuMuteFm).w
 	clr.w	(MsuTrack).w
@@ -161,8 +195,8 @@ MsuDoNothing
 
 MsuCrowdBed	;updatesound. Loop track 2 while CD music is on and no song stream is running
 	movem.l	d0-d2,-(sp)
-	tst.w	(MsuReady).w
-	beq.s	.x
+	bsr.w	MsuTryReady
+	bne.s	.x
 	tst.w	(MsuMusic).w
 	bne.s	.x
 	tst.w	(MsuHold).w
@@ -178,8 +212,8 @@ MsuCrowdBed	;updatesound. Loop track 2 while CD music is on and no song stream i
 
 MsuChangeOption	;Left / right on the CD Music line. d2 is the step (0 = redraw only)
 	movem.l	d0-d3,-(sp)
-	tst.w	(MsuReady).w
-	beq.s	.off
+	bsr.w	MsuTryReady
+	bne.s	.off
 	move.w	(MsuMusic).w,d3
 	add.w	d2,d3
 	bpl.s	.hi
@@ -201,8 +235,8 @@ MsuChangeOption	;Left / right on the CD Music line. d2 is the step (0 = redraw o
 	rts
 
 MsuApplyChoice	;Replay the current song in the mode just chosen. No song: FM mode pauses the bed
-	tst.w	(MsuReady).w
-	beq.s	.x
+	cmpi.w	#1,(MsuReady).w
+	bne.s	.x
 	move.w	(MsuLastId).w,d0
 	cmpi.w	#$30,d0
 	blt.s	.idle
