@@ -23,8 +23,8 @@ The hook is `play_sfx_or_music_track`. Sound effects stay on the FM driver. A so
 | Song | Where | Track | How |
 | --- | --- | --- | --- |
 | `$30`–`$77` | in-game organ, from `ChooseSong` | `id - $29` (7–78) | loop until the FM stream ends. Same numbers `cdrequest.asm` stores |
-| `$78` | title | 5 | loop. The disc's menu `MSCPLAYR` |
-| `$79` | intermission / end of game | 4 | loop. The `MSCPLAYR` in `cdstart.asm` |
+| `$78` | title | 4 | loop. Splash and main menu. VLC lists this recording as track 3 |
+| `$79` | intermission / end of game | 5 | loop. VLC lists this recording as track 4 |
 | `$7A` | scouting report | 3 | loop. The disc ignores `$7A`. Track 3 is the second music track; track 1 is data |
 
 Track 2 is the crowd bed from `cdtrack.asm` (the track it forces when the playing number is below 7). `updatesound` still writes the PSG noise channel, and it also loops track 2 whenever no song owns the CD voice. Both crowds are heard together during play. MSU-MD has one CD-DA voice, so a song replaces the bed until the song stream ends, and the PSG crowd keeps going under the song.

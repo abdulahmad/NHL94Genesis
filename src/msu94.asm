@@ -4,9 +4,12 @@
 ;	of the clock at $A1201F. Status $A12020 is 0 ready, 1 init, 2 busy.
 ;
 ;	Song ids $30-$77 use the disc's own numbers, track = id - $29 (tracks 7-$4E), the
-;	same window cdrequest.asm writes. $78 (title) loops track 5, the menu MSCPLAYR.
-;	$79 (end of game) loops track 4, the MSCPLAYR in cdstart.asm. $7A (scouting) loops
-;	track 3: the disc ignores $7A, and track 3 is the second music track (track 1 is data).
+;	same window cdrequest.asm writes. $78 (title) loops track 4, the splash and
+;	main menu song. VLC lists that recording as track 3 because track 1 is data.
+;	$79 (end of game) loops track 5, the intermission. The menu MSCPLAYR stores 5
+;	and cdstart stores 4; on this disc those two recordings are the other way
+;	around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
+;	the second music track.
 ;	Track 2 is the crowd bed. It loops whenever no song stream is running. The PSG crowd
 ;	in updatesound is never removed, so both crowds play together. One CD-DA voice cannot
 ;	play the bed under a song; the bed returns when that song's FM stream ends or is stopped.
@@ -118,13 +121,13 @@ MsuMap	;song id d0 -> track d0, command d1. $30-$77 become id-$29
 .eog
 	cmpi.w	#SngEOG,d0
 	bne.s	.title
-	moveq	#4,d0
+	moveq	#5,d0
 	moveq	#$12,d1
 	rts
 .title
 	cmpi.w	#SngTitle,d0
 	bne.s	.song
-	moveq	#5,d0
+	moveq	#4,d0
 	moveq	#$12,d1
 	rts
 .song
