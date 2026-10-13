@@ -19,8 +19,9 @@
 ;	USA redump length (NTSC frames, one second short) and then sends a normal
 ;	play-loop of track 2. That is the handoff cdtrack.asm makes after MSCPLAY1.
 ;	Looping songs are not on that timer and keep the driver's own end check. The
-;	PSG crowd in updatesound is never removed. One CD-DA voice cannot play the
-;	bed under a song.
+;	driver seeks past each track's USA redump pregap, and a loop restarts at that
+;	same point, so the gap in front of the recording is not played. The PSG crowd
+;	in updatesound is never removed. One CD-DA voice cannot play the bed under a song.
 
 MsuCmd	;d0 = command word. Wait out status 2, write $A12010, bump $A1201F
 	move.w	d1,-(sp)
@@ -330,7 +331,7 @@ MsuLengths	;NTSC frames for USA redump T-50015 tracks 7-78. sectors*60/75, minus
 	dc.w	812,926,1686,1304,1776,1019,1405,1304	;71
 
 	even
-MsuDriver	;krikzz msu-drv.bin. Looping tracks end themselves. A play-once track does not. See docs/msu.md.
+MsuDriver	;krikzz msu-drv.bin. Seeks past the redump pregap. Looping tracks end themselves. See docs/msu.md.
 	;Returns 0 in d0, or 1 if $400100 is not the Mega CD BIOS
 	incbin	msu\msu-drv.bin
 	even
