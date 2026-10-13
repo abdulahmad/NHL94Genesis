@@ -476,6 +476,7 @@ PALflag equ $FFFFDEF2
 MsuMusic equ $FFFFDEF4	;0 CD music, 1 FM. Past the Begin clear ($B000-$DEF3)
 MsuReady equ $FFFFDEF6	;1 after the MSU-MD driver loads
 MsuHold equ $FFFFDEF8	;$11 play once or $12 loop while a song owns the CD voice; 0 free
+MsuArmed equ $FFFFDF00	;1 once the current play-once command has been accepted
 MsuMuteFm equ $FFFFDEFA	;1: song events advance but do not touch the FM chip
 MsuTrack equ $FFFFDEFC	;CD track now playing, 0 if none
 MsuLastId equ $FFFFDEFE	;last song id $30-$7A

@@ -14,10 +14,11 @@
 ;	way around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
 ;	the second music track.
 ;	Track 2 is the crowd bed. It loops while no song owns the CD voice. A play-once
-;	song keeps the voice after the recording itself has ended, because status $A12020
-;	does not report playback end, so the bed stays off until the next pause or the
-;	next song. The PSG crowd in updatesound is never removed. One CD-DA voice cannot
-;	play the bed under a song.
+;	song keeps the voice through the whistle and the FM stream. The driver image is
+;	patched so the end-of-track pause writes 1 to $FF8021, which the main CPU reads
+;	as $A12021, and the bed starts on the next updatesound. A new command clears it.
+;	The PSG crowd in updatesound is never removed. One CD-DA voice cannot play the
+;	bed under a song.
 
 MsuCmd	;d0 = command word. Wait out status 2, write $A12010, bump $A1201F
 	move.w	d1,-(sp)
@@ -37,6 +38,7 @@ MsuCmd	;d0 = command word. Wait out status 2, write $A12010, bump $A1201F
 MsuInit	;Called from Begin after the RAM clear. CD music On if the driver loads, otherwise Off
 	clr.w	(MsuReady).w
 	clr.w	(MsuHold).w
+	clr.w	(MsuArmed).w
 	clr.w	(MsuMuteFm).w
 	clr.w	(MsuTrack).w
 	clr.w	(MsuLastId).w
@@ -143,6 +145,7 @@ MsuMap	;song id d0 -> track d0, command d1. $30-$77 become id-$29
 MsuStartSong	;d0 = song id. MsuHold keeps the play command: $11 once, $12 loop
 	move.w	d0,(MsuLastId).w
 	bsr.w	MsuMap
+	clr.w	(MsuArmed).w	;ignore a 1 left by the track this one replaces
 	move.w	d1,(MsuHold).w
 	bsr.w	MsuPlay
 	rts
@@ -193,6 +196,7 @@ MsuSilence	;Pause the CD voice now. p_turnoff
 	cmpi.w	#1,(MsuReady).w
 	bne.s	.x
 	clr.w	(MsuHold).w
+	clr.w	(MsuArmed).w
 	clr.w	(MsuMuteFm).w
 	clr.w	(MsuTrack).w
 	move.w	#$1300,d0	;PAUSE, fade 0
@@ -232,6 +236,7 @@ MsuCrowdBed	;updatesound. Loop track 2 while CD music is on and no song owns the
 	bne.s	.x
 	tst.w	(MsuMusic).w
 	bne.s	.x
+	bsr.w	MsuPollEnd
 	tst.w	(MsuHold).w
 	bne.s	.x
 	cmpi.w	#2,(MsuTrack).w
@@ -281,7 +286,22 @@ MsuApplyChoice	;Replay the current song in the mode just chosen. No song: FM mod
 	bsr.w	MsuSilence
 .x	rts
 
+MsuPollEnd	;Play-once: $A12021 is set by the patched driver when the recording ends
+	cmpi.w	#$11,(MsuHold).w
+	bne.s	.x
+	tst.b	$A12021.l
+	bne.s	.ended
+	move.w	#1,(MsuArmed).w	;this play was accepted; a later 1 means the track ended
+	rts
+.ended
+	tst.w	(MsuArmed).w
+	beq.s	.x		;1 left over from the previous track
+	clr.w	(MsuHold).w
+	clr.w	(MsuArmed).w
+.x	rts
+
 	even
-MsuDriver	;krikzz msu-drv.bin. Returns 0 in d0, or 1 if $400100 is not the Mega CD BIOS
+MsuDriver	;krikzz msu-drv.bin, with the end-of-track flag patched in. See docs/msu.md.
+	;Returns 0 in d0, or 1 if $400100 is not the Mega CD BIOS
 	incbin	msu\msu-drv.bin
 	even
