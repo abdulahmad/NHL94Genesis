@@ -14,9 +14,10 @@
 ;	way around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
 ;	the second music track.
 ;	Track 2 is the crowd bed. It loops while no song owns the CD voice. A play-once
-;	song keeps the voice through the whistle and the FM stream. When that recording
-;	reaches the end of its disc track, the driver starts track 2 looped, the handoff
-;	cdtrack.asm makes once the drive is no longer on a track at or above 7. Looping
+;	song keeps the voice through the whistle and the FM stream. The play command
+;	runs until the drive position reaches the start of the next disc track, which
+;	is where MSCPLAY1 pauses. The driver then seeks to track 2 and loops it, the
+;	handoff cdtrack.asm makes once that organ track is no longer playing. Looping
 ;	songs keep the driver's own end check. The main CPU reads 2 from $A12021 and
 ;	does not send a second play. A new command clears that byte. The PSG crowd in
 ;	updatesound is never removed. One CD-DA voice cannot play the bed under a song.
@@ -294,7 +295,7 @@ MsuPollEnd	;Play-once: the driver writes 2 to $A12021 after it has started the c
 .x	rts
 
 	even
-MsuDriver	;krikzz msu-drv.bin. A play-once track ends on the TOC time and starts track 2. See docs/msu.md.
+MsuDriver	;krikzz msu-drv.bin. A play-once track ends at the next disc track and seeks to track 2. See docs/msu.md.
 	;Returns 0 in d0, or 1 if $400100 is not the Mega CD BIOS
 	incbin	msu\msu-drv.bin
 	even
