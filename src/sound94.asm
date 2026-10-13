@@ -15,6 +15,9 @@ p_turnoff	;(audio stop). Silence everything: free all slots, key off and mute ev
 	dbf	d0,.loop
 	bsr.w	UploadCommandBufferToZ80
 	bsr.w	StopPCMChannel
+	IF MSU=1
+		jsr	(MsuSilence).l
+	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a2
 rtsfx	;The shared rts; play_sfx_or_music_track and ProcessOneMusicTrack branch to it
 	rts
@@ -27,6 +30,9 @@ play_sfx_or_music_track	;Start sound d0 (0-$7A) in the track slot with the lowes
 	cmp.w	#$30,d0
 	blt.w	.0
 	bsr.w	stop_current_song	;song: stop the current song
+	IF MSU=1
+		jsr	(MsuHandleSong).l	;CD music, or leave d0 for the FM stream
+	ENDIF
 .0
 	lea	(fm_track_slots).w,a1	;8 x 6 bytes
 	moveq	#7,d3
@@ -94,6 +100,9 @@ stop_current_song	;Stop the song in progress: free the first slot whose pointer 
 	dbf	d1,.kill
 	bsr.w	UploadCommandBufferToZ80
 .0
+	IF MSU=1
+		jsr	(MsuRelease).l	;a song was using the CD voice: give it back
+	ENDIF
 	move	(sp)+,sr
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
@@ -290,15 +299,27 @@ ProcessOneMusicTrack	;Count down track slot a5 (track d7) and run every event th
 	bne.w	.cmd
 	st	(a5)
 	tst.w	2(a0)
-	bmi.w	rtsfx
+	IF MSU=1
+		bmi.w	.streamend
+	ELSE
+		bmi.w	rtsfx
+	ENDIF
 	move.l	2(a0),(a5)
 	bra.s	.event
+	IF MSU=1
+.streamend
+		jsr	(MsuStreamEnded).l
+		bra.w	rtsfx
+	ENDIF
 .cmd
 	move.b	1(a0),d0
 	andi.w	#$70,d0	;status bits 6-4
 	lsr.w	#3,d0
 	lea	command_jump_table(pc),a2
 	adda.w	0(a2,d0.w),a2
+	IF MSU=1
+		jsr	(MsuFilterCmd).l	;muted song: a2 becomes an rts
+	ENDIF
 	jsr	(a2)
 	bra.s	ProcessOneMusicTrack
 command_jump_table	;Event handlers by status bits 6-4, as offsets from the table, including handle_command_30

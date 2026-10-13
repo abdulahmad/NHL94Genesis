@@ -13,6 +13,9 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 .0	clr.l	(a0)+			;clear RAM $B000-$DEF3
 	cmpa.w	#$DEF4,a0
 	blt.s	.0
+	IF MSU=1
+		jsr	(MsuInit).l
+	ENDIF
 	clr.w	(PALflag).w		;clear the PAL flag
 	move.w	(VDP_CTRL).l,d0
 	andi.w	#1<<PAL_MODE,d0		;VDP status bit 0 = PAL (50 Hz). it DMA busy; that is bit 1

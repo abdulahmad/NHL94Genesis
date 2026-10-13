@@ -40,11 +40,15 @@ if "%checksum%"=="0" (
     set checksumFlag="/e CHECKSUM=1"
 )
 
+REM MSU=1 builds the MegaSD / MSU-MD ROM (src\msu94.asm). Default is the retail ROM
+if not defined MSU set MSU=0
+set msuFlag="/e MSU=%MSU%"
+
 REM Run the assembler with all flags
 "%workspaceFolder%assembler\Assembler.exe" ^
   /p /m /g ^
   /o d- /o s- /o r+ /o l+ /o l. /o ow+ /o op- /o os+ /o oz+ /o omq- /o oaq+ /o osq+ ^
-  %revFlag% %checksumFlag% ^
+  %revFlag% %checksumFlag% %msuFlag% ^
   "%workspaceFolder%src\nhl94.asm,%workspaceFolder%output\nhl94.bin,%workspaceFolder%output\nhl94,%workspaceFolder%output\nhl94" ^
   > "%workspaceFolder%output\Build94.log"
 

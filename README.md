@@ -51,8 +51,11 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/nhl94 .lst`. Th
 | --- | --- | --- |
 | `npm run build:retail` | `rev=0`, `checksum=1` | Retail, validation included, verified byte for byte against `lst/nhl94.bin`. |
 | `npm run build:dev` | `rev=0`, `checksum=0` | No validation and no retail verify. Use this while editing. |
+| `npm run build:msu` | `rev=0`, `checksum=0`, `MSU=1` | 2 MB MSU-MD ROM. CD music instead of FM. See `docs/msu.md`. |
 
 `build:dev` (`checksum=0`): `Start` skips `jsr ValidationRoutine` (3 `nop`s instead) and the header checksum at `$18E` is 0, so changed code still boots. With `checksum=1` the validation routine sums the ROM, and any change turns the screen red. `ValidationRoutine` stays in the ROM but is never called.
+
+`build:retail` stays the retail image. The MSU-MD player is assembled only when `MSU=1`.
 
 ## Sega CD
 

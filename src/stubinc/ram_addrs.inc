@@ -473,6 +473,12 @@ iconx equ $FFFFDEEA
 scoutwait equ $FFFFDEEC
 replaydelay equ $FFFFDEF0
 PALflag equ $FFFFDEF2
+MsuMusic equ $FFFFDEF4	;0 CD music, 1 FM. Past the Begin clear ($B000-$DEF3)
+MsuReady equ $FFFFDEF6	;1 after the MSU-MD driver loads
+MsuHold equ $FFFFDEF8	;1 while a song owns the CD voice
+MsuMuteFm equ $FFFFDEFA	;1: song events advance but do not touch the FM chip
+MsuTrack equ $FFFFDEFC	;CD track now playing, 0 if none
+MsuLastId equ $FFFFDEFE	;last song id $30-$7A
 Stack equ $FFFFFFFE
 Z80_RAM equ $A00000
 Z80_YM2612 equ $A04000
