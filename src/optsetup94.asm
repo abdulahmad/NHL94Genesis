@@ -105,7 +105,11 @@ GameSetUp	;Game setup screen, called from PeriodOver. Builds the screen (setopti
 	bne.w	.8
 	cmpi.w	#4,(OptPlayMode).w
 	bne.w	.6
-	clr.w	d0
+	IF MSU=1
+		move.w	#8,d0	;Shootout stops at Goalies; step down to CD Music
+	ELSE
+		clr.w	d0
+	ENDIF
 	bra.w	.8
 .6
 	tst.w	(ValidSRAM).w
@@ -150,6 +154,14 @@ GameSetUp	;Game setup screen, called from PeriodOver. Builds the screen (setopti
 .13
 	move.w	#$FFFC,d0
 .14
+	IF MSU=1
+		cmp.w	#$12,d7
+		bne.w	.msuup
+		cmpi.w	#4,(OptPlayMode).w
+		bne.w	.msuup
+		move.w	#$FFF8,d0	;CD Music back to Goalies in Shootout
+.msuup
+	ENDIF
 	bsr.w	MoveMenuFrame
 	bsr.w	FixModeOptions
 	bra.w	.loop
@@ -279,9 +291,28 @@ MoveMenuFrame	;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 lines
 	ble.w	.1
 	addq.w	#1,(setupfirstline).w
 .1
-	cmpi.w	#3,(setupfirstline).w
-	ble.w	.2
-	move.w	#3,(setupfirstline).w
+	IF MSU=1
+		move.w	d7,d0
+		asr.w	#1,d0
+		sub.w	(setupfirstline).w,d0
+		cmp.w	#5,d0
+		ble.w	.msu1
+		addq.w	#1,(setupfirstline).w
+		move.w	d7,d0
+		asr.w	#1,d0
+		sub.w	(setupfirstline).w,d0
+		cmp.w	#5,d0
+		ble.w	.msu1
+		addq.w	#1,(setupfirstline).w
+.msu1
+		cmpi.w	#4,(setupfirstline).w
+		ble.w	.2
+		move.w	#4,(setupfirstline).w
+	ELSE
+		cmpi.w	#3,(setupfirstline).w
+		ble.w	.2
+		move.w	#3,(setupfirstline).w
+	ENDIF
 .2
 	move.w	(sp)+,d0
 .3
@@ -289,7 +320,11 @@ MoveMenuFrame	;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 lines
 	bne.w	.4
 	move.w	(setupfirstline).w,(setupprevline).w
 .4
-	cmp.w	#$12,d7	;past the last line (Line Changes)
+	IF MSU=1
+		cmp.w	#$14,d7	;past CD Music
+	ELSE
+		cmp.w	#$12,d7	;past the last line (Line Changes)
+	ENDIF
 	blt.w	.contplayoffs
 	sub.w	d0,d7
 .contplayoffs
@@ -414,6 +449,13 @@ OptionLimits4Way	;The same with FourWayPlay (12 player choices)
 ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its range (WrapOption). Entering Shootout saves User Records, Penalties and
 	;Line Changes (TmpOptUserRec ...), leaving restores them; Team 1 in new playoffs has $1A teams; the Players range depends on the mode and
 	;FourWayPlay. A new play mode starts the playoffs (ContinuePlayoffs / GoNewPlayoffs). Called from GameSetUp and PrintOptions
+	IF MSU=1
+		cmp.w	#$12,d7
+		bne.w	.msuline
+		jsr	(MsuChangeOption).l	;CD Music is not in the OptPlayMode array
+		rts
+.msuline
+	ENDIF
 	tst.w	d7
 	bne.w	.2
 	movem.w	d0/d2,-(sp)
@@ -576,7 +618,11 @@ PrintOptions	;Limit each option (ChangeOption with d2 = 0) and print the lines s
 	blt.w	.0
 	bsr.w	PrintOptionValue
 .0
-	cmp.w	#$10,d7
+	IF MSU=1
+		cmp.w	#$12,d7
+	ELSE
+		cmp.w	#$10,d7
+	ENDIF
 	bne.s	.loop
 	bsr.w	PrintScrollMarks
 	move.w	d6,d7
@@ -598,6 +644,14 @@ PrintOptionValue	;print the value of option d7 at x $11 on its line (past row $1
 	bgt.w	rtsSetup
 	subq.w	#1,(printy).w
 	move.w	#$11,(printx).w
+	IF MSU=1
+		cmp.w	#$12,d7
+		bne.w	.nomsu
+		move.w	(MsuMusic).w,d3	;0 On (CD), 1 Off (FM), same list as User Records
+		movea.l	#UserRecValues,a0
+		bra.w	.loop
+.nomsu
+	ENDIF
 	cmp.w	#4,d7
 	beq.w	PrintOptTeamName
 	cmp.w	#6,d7
@@ -626,7 +680,11 @@ PrintOptionValue	;print the value of option d7 at x $11 on its line (past row $1
 PrintScrollMarks	;Print the scroll marks at x 2: '}' at row $19 when more lines follow (first line < 3), '{' at row $F when lines are above (first line > 0), else a space
 	move.w	#$19,(printy).w
 	movea.l	#ScrollClearTxt,a1
-	cmpi.w	#3,(setupfirstline).w
+	IF MSU=1
+		cmpi.w	#4,(setupfirstline).w
+	ELSE
+		cmpi.w	#3,(setupfirstline).w
+	ENDIF
 	beq.w	.0
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.0
@@ -761,6 +819,9 @@ OptionNames	;Option names; the last entry is an empty String (dc.w 4,0)
 	String	'User Records '
 	String	'Penalties    '
 	String	'Line Changes '
+	IF MSU=1
+		String	'CD Music     '
+	ENDIF
 	dc.w	4,0
 setoptions	;options screen display: build the game setup screen only: vblank
 	;vram maps, the TeamBitmaps+8 tiles (LoadSetupTiles), framer, small font and setup font tiles, the screen and menu bitmaps, the logo box tiles and

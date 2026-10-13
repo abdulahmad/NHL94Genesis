@@ -1004,6 +1004,9 @@ updatesound	;move the crowd noise volume (psg noise channel, asv) toward crowdle
 	eori.b	#$F,d0
 	ori.b	#$F0,d0
 	move.b	d0,(VDP_PSG).l
+	IF MSU=1
+		jsr	(MsuCrowdBed).l	;PSG crowd above, CD crowd when no song owns the voice
+	ENDIF
 	rts
 KillCrowd	;silence the crowd noise (psg). Called from Begin, SetupPauseScreen, StartHL2, ...
 	move.b	#$E7,(VDP_PSG).l

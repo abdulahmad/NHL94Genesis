@@ -15,6 +15,9 @@ p_turnoff	;(audio stop). Silence everything: free all slots, key off and mute ev
 	dbf	d0,.loop
 	bsr.w	UploadCommandBufferToZ80
 	bsr.w	StopPCMChannel
+	IF MSU=1
+		jsr	(MsuSilence).l
+	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a2
 rtsfx	;The shared rts; play_sfx_or_music_track and ProcessOneMusicTrack branch to it
 	rts
@@ -26,7 +29,20 @@ play_sfx_or_music_track	;Start sound d0 (0-$7A) in the track slot with the lowes
 	movem.l	d0-d3/a0-a2,-(sp)
 	cmp.w	#$30,d0
 	blt.w	.0
+	IF MSU=1
+		cmp.w	(MsuLastId).w,d0
+		bne.s	.stopcd
+		tst.w	(MsuMusic).w
+		bne.s	.stopcd		;FM mode still pauses the loop
+		cmpi.w	#$12,(MsuHold).w
+		beq.s	.cdon		;this loop is already on the CD
+.stopcd
+	ENDIF
 	bsr.w	stop_current_song	;song: stop the current song
+	IF MSU=1
+.cdon
+		jsr	(MsuHandleSong).l	;CD music, or leave d0 for the FM stream
+	ENDIF
 .0
 	lea	(fm_track_slots).w,a1	;8 x 6 bytes
 	moveq	#7,d3
@@ -94,6 +110,9 @@ stop_current_song	;Stop the song in progress: free the first slot whose pointer 
 	dbf	d1,.kill
 	bsr.w	UploadCommandBufferToZ80
 .0
+	IF MSU=1
+		jsr	(MsuRelease).l	;pause a looping song; a play-once track keeps the voice
+	ENDIF
 	move	(sp)+,sr
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
@@ -248,6 +267,9 @@ p_music_vblank	;(vblank handler). Read the pads (ReadJoyData), clear the change 
 .next
 	addq.w	#8,a0
 	dbf	d0,.loop3
+	IF MSU=1
+		jsr	(MsuTryReady).l	;splash vblank does not call updatesound, so finish CD init here
+	ENDIF
 	rts
 z80_bus_release_delay	;Z80 busy: give the bus back, wait, then falls into UploadCommandBufferToZ80 to retry
 	clr.w	(IO_Z80BUS).l
@@ -290,15 +312,27 @@ ProcessOneMusicTrack	;Count down track slot a5 (track d7) and run every event th
 	bne.w	.cmd
 	st	(a5)
 	tst.w	2(a0)
-	bmi.w	rtsfx
+	IF MSU=1
+		bmi.w	.streamend
+	ELSE
+		bmi.w	rtsfx
+	ENDIF
 	move.l	2(a0),(a5)
 	bra.s	.event
+	IF MSU=1
+.streamend
+		jsr	(MsuStreamEnded).l
+		bra.w	rtsfx
+	ENDIF
 .cmd
 	move.b	1(a0),d0
 	andi.w	#$70,d0	;status bits 6-4
 	lsr.w	#3,d0
 	lea	command_jump_table(pc),a2
 	adda.w	0(a2,d0.w),a2
+	IF MSU=1
+		jsr	(MsuFilterCmd).l	;muted song: a2 becomes an rts
+	ENDIF
 	jsr	(a2)
 	bra.s	ProcessOneMusicTrack
 command_jump_table	;Event handlers by status bits 6-4, as offsets from the table, including handle_command_30

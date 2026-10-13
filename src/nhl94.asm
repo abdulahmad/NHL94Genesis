@@ -38,4 +38,9 @@
 	include	goalie94.asm		; $0FE1D8  NEW in 94: manual goalie
 	include	title94.asm		; $0FE556  NEW in 94: song select, title, credits
 	include	checksum94.asm		; $0FFAC0 checksum
-	dcb.b	$100000-*,$FF
+	IF MSU=1
+		include	msu94.asm
+		dcb.b	$200000-*,$FF
+	ELSE
+		dcb.b	$100000-*,$FF
+	ENDIF
