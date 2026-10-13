@@ -146,7 +146,16 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	movem.l	d0-d3/a0-a2,-(sp)
 	cmpi.w	#2,(MsuReady).w
 	bne.s	.try
-	move.w	d0,(MsuLastId).w	;remember the song if the TOC is still being read
+	move.w	d0,(MsuLastId).w	;the splash asks before the TOC read has finished
+	move.w	#1,(MsuMuteFm).w	;hold the FM arrangement until the CD track can start
+	moveq	#64,d2			;about sixteen seconds; the title screen has not started yet
+.wait
+	move.w	#$FFFF,d1
+.spin
+	cmpi.b	#1,$A12020.l
+	bne.s	.try
+	dbf	d1,.spin
+	dbf	d2,.wait
 .try
 	bsr.w	MsuTryReady
 	bne.s	.fm
@@ -158,6 +167,8 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	bsr.w	MsuStartSong
 	bra.s	.x
 .fm
+	cmpi.w	#2,(MsuReady).w
+	beq.s	.x			;still waiting: leave the FM arrangement muted
 	clr.w	(MsuMuteFm).w
 .x
 	movem.l	(sp)+,d0-d3/a0-a2

@@ -257,6 +257,9 @@ p_music_vblank	;(vblank handler). Read the pads (ReadJoyData), clear the change 
 .next
 	addq.w	#8,a0
 	dbf	d0,.loop3
+	IF MSU=1
+		jsr	(MsuTryReady).l	;splash vblank does not call updatesound, so finish CD init here
+	ENDIF
 	rts
 z80_bus_release_delay	;Z80 busy: give the bus back, wait, then falls into UploadCommandBufferToZ80 to retry
 	clr.w	(IO_Z80BUS).l
