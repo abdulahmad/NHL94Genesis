@@ -100,7 +100,7 @@ MsuTryReady	;Z set if the driver is ready. Finishes init if the TOC completed af
 	moveq	#1,d0
 	rts
 
-MsuPlay	;d0 = track 1-99, d1 = $11 play once or $12 loop. Full volume, then the play command
+MsuPlay	;d0 = track 1-99, d1 = $11 play once or $12 loop. Volume $FF (255, the top of 0-255), then the play command
 	movem.l	d0-d2,-(sp)
 	move.w	#$15FF,d0
 	bsr.w	MsuCmd
@@ -142,11 +142,13 @@ MsuStartSong	;d0 = song id. Loop that track until the FM stream ends or the song
 	bsr.w	MsuPlay
 	rts
 
-MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs
+MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs.
+	;MsuTryReady returns 0 or 1 in d0, so the song id is kept in d3 and passed to MsuStartSong.
 	movem.l	d0-d3/a0-a2,-(sp)
+	move.w	d0,d3
 	cmpi.w	#2,(MsuReady).w
 	bne.s	.try
-	move.w	d0,(MsuLastId).w	;the splash asks before the TOC read has finished
+	move.w	d3,(MsuLastId).w	;the splash asks before the TOC read has finished
 	move.w	#1,(MsuMuteFm).w	;hold the FM arrangement until the CD track can start
 	moveq	#64,d2			;about sixteen seconds; the title screen has not started yet
 .wait
@@ -164,6 +166,7 @@ MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. P
 	tst.w	(MsuMusic).w
 	bne.s	.fm
 	move.w	#1,(MsuMuteFm).w
+	move.w	d3,d0			;song id, not the 0 MsuTryReady left in d0
 	bsr.w	MsuStartSong
 	bra.s	.x
 .fm

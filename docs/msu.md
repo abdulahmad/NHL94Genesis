@@ -27,7 +27,7 @@ The hook is `play_sfx_or_music_track`. Sound effects stay on the FM driver. A so
 | `$79` | intermission / end of game | 5 | loop. VLC lists this recording as track 4 |
 | `$7A` | scouting report | 3 | loop. The disc ignores `$7A`. Track 3 is the second music track; track 1 is data |
 
-Track 2 is the crowd bed from `cdtrack.asm` (the track it forces when the playing number is below 7). `updatesound` still writes the PSG noise channel, and it also loops track 2 whenever no song owns the CD voice. Both crowds are heard together during play. MSU-MD has one CD-DA voice, so a song replaces the bed until the song stream ends, and the PSG crowd keeps going under the song.
+Track 2 is the crowd bed from `cdtrack.asm` (the track it forces when the playing number is below 7). `updatesound` still writes the PSG noise channel on every call, whether CD Music is On or Off, and it also loops track 2 whenever no song owns the CD voice. Both crowds are heard together during play. The CD voice is sent at volume 255, the top of the 0–255 range, for the song and for the bed. MSU-MD has one CD-DA voice, so a song replaces the bed until the song stream ends, and the PSG crowd keeps going under the song.
 
 `p_turnoff` (pause, period start, silence) pauses the CD voice. The bed starts again from `updatesound` once play resumes and no song is running.
 
