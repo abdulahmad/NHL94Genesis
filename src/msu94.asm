@@ -14,14 +14,13 @@
 ;	way around. $7A (scouting) loops track 3: the disc ignores $7A, and track 3 is
 ;	the second music track.
 ;	Track 2 is the crowd bed. It loops while no song owns the CD voice. A play-once
-;	song keeps the voice through the whistle and the FM stream. The driver already
-;	pauses a $11 track (the same idea as MSCPLAY1). It does that about two seconds
-;	before the next disc track, writes 1 to $A12021, and leaves the voice stopped.
-;	It does not pick the next track. The next updatesound sees that 1, drops the
-;	hold, and sends a normal play-loop of track 2, which is what cdtrack.asm does
-;	after the BIOS has paused. Looping songs keep the driver's own end check. A
-;	new command clears the byte. The PSG crowd in updatesound is never removed.
-;	One CD-DA voice cannot play the bed under a song.
+;	song keeps the voice through the whistle and the FM stream. BlastEm does not
+;	let the cartridge read the CD position, so the game times the song from the
+;	USA redump length (NTSC frames, one second short) and then sends a normal
+;	play-loop of track 2. That is the handoff cdtrack.asm makes after MSCPLAY1.
+;	Looping songs are not on that timer and keep the driver's own end check. The
+;	PSG crowd in updatesound is never removed. One CD-DA voice cannot play the
+;	bed under a song.
 
 MsuCmd	;d0 = command word. Wait out status 2, write $A12010, bump $A1201F
 	move.w	d1,-(sp)
@@ -44,6 +43,7 @@ MsuInit	;Called from Begin after the RAM clear. CD music On if the driver loads,
 	clr.w	(MsuMuteFm).w
 	clr.w	(MsuTrack).w
 	clr.w	(MsuLastId).w
+	clr.w	(MsuLeft).w
 	move.w	#1,(MsuMusic).w
 	movem.l	d0-d2,-(sp)
 	bsr.w	MsuDriver
@@ -148,7 +148,25 @@ MsuStartSong	;d0 = song id. MsuHold keeps the play command: $11 once, $12 loop
 	move.w	d0,(MsuLastId).w
 	bsr.w	MsuMap
 	move.w	d1,(MsuHold).w
+	bsr.w	MsuArmOnce
 	bsr.w	MsuPlay
+	rts
+
+MsuArmOnce	;d0 = track, d1 = command. One-shot songs get a frame count. Loops do not
+	movem.l	d0-d2/a0,-(sp)
+	clr.w	(MsuLeft).w
+	cmpi.w	#$11,d1
+	bne.s	.x
+	move.w	d0,d2
+	subi.w	#7,d2			;table is disc tracks 7-78
+	bmi.s	.x
+	cmpi.w	#72,d2
+	bcc.s	.x
+	add.w	d2,d2
+	lea	MsuLengths(pc),a0
+	move.w	(a0,d2.w),(MsuLeft).w
+.x
+	movem.l	(sp)+,d0-d2/a0
 	rts
 
 MsuHandleSong	;play_sfx_or_music_track, after stop_current_song, d0 = song id. Preserves regs.
@@ -199,6 +217,7 @@ MsuSilence	;Pause the CD voice now. p_turnoff
 	clr.w	(MsuHold).w
 	clr.w	(MsuMuteFm).w
 	clr.w	(MsuTrack).w
+	clr.w	(MsuLeft).w
 	move.w	#$1300,d0	;PAUSE, fade 0
 	bsr.w	MsuCmd
 .x	rts
@@ -286,16 +305,32 @@ MsuApplyChoice	;Replay the current song in the mode just chosen. No song: FM mod
 	bsr.w	MsuSilence
 .x	rts
 
-MsuPollEnd	;Play-once: the driver pauses at the end and writes 1 to $A12021. It does not start the crowd.
+MsuPollEnd	;d7 = vblanks since the last game frame. A finished one-shot frees the voice
 	cmpi.w	#$11,(MsuHold).w
 	bne.s	.x
-	cmpi.b	#1,$A12021.l
-	bne.s	.x
+	move.w	(MsuLeft).w,d0
+	sub.w	d7,d0
+	bhi.s	.keep
 	clr.w	(MsuHold).w		;voice is free; the bed play below sends track 2
+	clr.w	(MsuLeft).w
+	rts
+.keep
+	move.w	d0,(MsuLeft).w
 .x	rts
 
+MsuLengths	;NTSC frames for USA redump T-50015 tracks 7-78. sectors*60/75, minus 60
+	dc.w	1359,1349,1527,948,1561,1245,1380,1432	;7
+	dc.w	1406,1038,868,1439,1631,848,1204,1320	;15
+	dc.w	1792,1600,1258,1163,1315,1561,1270,1504	;23
+	dc.w	1317,1509,976,1116,1036,1034,823,1080	;31
+	dc.w	1420,1228,1258,1181,1315,1195,992,1066	;39
+	dc.w	1629,862,872,1362,1059,1065,1556,1544	;47
+	dc.w	1528,1432,1860,1848,1328,2049,1626,1294	;55
+	dc.w	1682,1073,951,824,1179,1060,787,980	;63
+	dc.w	812,926,1686,1304,1776,1019,1405,1304	;71
+
 	even
-MsuDriver	;krikzz msu-drv.bin. A play-once track pauses before the next disc track. See docs/msu.md.
+MsuDriver	;krikzz msu-drv.bin. Looping tracks end themselves. A play-once track does not. See docs/msu.md.
 	;Returns 0 in d0, or 1 if $400100 is not the Mega CD BIOS
 	incbin	msu\msu-drv.bin
 	even
