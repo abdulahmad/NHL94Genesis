@@ -1073,15 +1073,16 @@ SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, 
 	bra.w	.backmenu
 .trade
 	bset	#2,(sflags10).w
-	bra.w	.backmenu
+	jmp	(TradePlayers).l
 .create
 	bset	#4,(sflags10).w
 	jmp	(CreatePlayer).l
 .sign
 	bset	#5,(sflags10).w
-	bra.w	.backmenu
+	jmp	(SignFreeAgents).l
 .release
 	bset	#6,(sflags10).w
+	jmp	(ReleasePlayers).l
 .backmenu
 	jmp	Opening2
 .teamdata

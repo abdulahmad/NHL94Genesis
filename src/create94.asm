@@ -2442,17 +2442,883 @@ StickHandTable	;setplayer: the stick handling nibble 0-15 to 0-6, before Attribu
 	dc.b	0,1,3,6,9,$C,$F,$FF	;CrScaleLookup (StickHandTable+$10)
 
 
-GetCreatedName	;a1 = the record of created player id d0
-	movem.l	d0-d1/a0,-(sp)
-	andi.w	#$FF,d0
-	asl.w	#5,d0
-	ext.l	d0
-	addi.l	#SRCreatedPlayers,d0
-	moveq	#$20,d1
-	movea.l	#CreatedPlayerBuf+2,a0
-	jsr	(ReadSRAM).l
+SignFreeAgents	;Sign Free Agents screen: draw, input loop
+	jsr	(forceblack).l
+	jsr	(TradeGfx).l
+	jsr	(printz).l
+	String	-TXMAP2,$9,$6,$0
+	movea.l	#FreeAgentMap1,a0
 	movea.l	a0,a1
-	movem.l	(sp)+,d0-d1/a0
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
+	adda.l	(a2)+,a1
+	clr.w	d0
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	2(a1),d3
+	moveq	#0,d5
+	jsr	(dobitmap).l
+	jsr	(printz).l
+	String	-TXMAP2,$9,$15,$0
+	movea.l	#FreeAgentMap2,a0
+	movea.l	a0,a1
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
+	adda.l	(a2)+,a1
+	clr.w	d0
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	2(a1),d3
+	moveq	#0,d5
+	jsr	(dobitmap).l
+	jsr	(printbigz).l
+	String	-(TXPRI+TXMAP1),$7,$2,'Sign Free Agent'
+	jsr	(printsmallz).l
+	dc.w	$18	;String length
+	dc.b	$F9,$1,$FD,$7,$FC,$19,'A,B',$FD
+	dc.b	$17,'C',$FD,$1F,'Start',$FA,$1,$0
+	jsr	(printsmallz).l
+	String	CC_SetX,$3,'Switch Team',CC_SetX,$12,'Sign Player',CC_SetX,' Exit',CC_SetFont,$0
+	move.w	#3,d0
+	movea.l	#AttribDeltas,a0
+.loop
+	clr.l	(a0)+
+	dbf	d0,.loop
+.1
+	clr.w	(TradeData+$C).l
+.2
+	clr.w	(TradeData).l
+	bsr.w	FreeAgentTeamBlock
+	move.w	#$18,(palcount).w
+	bclr	#2,(disflags).w
+
+FreeAgentRedraw	;SignFreeAgents: redraw the lists
+	jsr	(MarkSeasonRosters).l
+	bsr.w	TestFreeAgents
+	beq.w	FreeAgentsEmpty
+	clr.w	(TradeData+$4).l
+	move.w	(SaveRAM+2*SRFreeAgentCount).l,d0
+	subq.b	#1,d0
+.0
+	andi.w	#$FF,d0
+.1
+	cmp.w	#5,d0
+	ble.w	.3
+.2
+	move.w	#5,d0
+.3
+	move.w	d0,(TradeData+$6).l
+	movea.l	#TradeRoster1,a0
+	bsr.w	BuildFreeAgentList
+.4
+	bsr.w	rtsCreate4
+	move.w	#$FFFF,(setupdir).w
+
+FreeAgentLoop	;SignFreeAgents: input loop
+	bsr.w	FreeAgentTeamBlock
+	bsr.w	DrawFreeAgents
+	bsr.w	FreeAgentArrows
+.check
+	cmpi.w	#$FFFF,(setupdir).w
+	beq.w	.input
+	bsr.w	FreeAgentTeamBlock
+	bsr.w	DrawFreeAgents
+	bsr.w	FreeAgentArrows
+.input
+	move.w	#$FFFF,(setupdir).w
+	bsr.w	ReadFreeAgentPads
+	tst.w	d1
+	beq.w	FreeAgentExit
+	btst	#0,d1
+	beq.w	.3
+	tst.w	(TradeData).l
+	beq.w	.2
+	subq.w	#1,(TradeData).l
+	bra.s	FreeAgentLoop
+.2
+	tst.w	(TradeData+$4).l
+	beq.s	.input
+	subq.w	#1,(TradeData+$4).l
+	subq.w	#1,(TradeData+$6).l
+	bra.s	FreeAgentLoop
+.3
+	btst	#1,d1
+	beq.w	.5
+	move.w	(TradeData).l,d0
+	add.w	(TradeData+$4).l,d0
+	cmp.w	(TradeData+$6).l,d0
+	beq.w	.4
+	addq.w	#1,(TradeData).l
+	bra.w	FreeAgentLoop
+.4
+	move.w	(SaveRAM+2*SRFreeAgentCount).l,d0
+	andi.w	#$FF,d0
+	subq.w	#1,d0
+	cmp.w	(TradeData+$6).l,d0
+	ble.s	.input
+	addq.w	#1,(TradeData+$4).l
+	addq.w	#1,(TradeData+$6).l
+	bra.w	FreeAgentLoop
+.5
+	btst	#4,d1
+	beq.w	.6
+	addq.w	#1,(TradeData+$C).l
+	cmpi.w	#$1A,(TradeData+$C).l
+	blt.w	FreeAgentLoop
+	clr.w	(TradeData+$C).l
+	bra.w	FreeAgentLoop
+.6
+	btst	#6,d1
+	beq.w	.7
+	subq.w	#1,(TradeData+$C).l
+	bpl.w	FreeAgentLoop
+	move.w	#$19,(TradeData+$C).l
+	bra.w	FreeAgentLoop
+.7
+	btst	#7,d1
+	bne.w	FreeAgentExit
+	btst	#5,d1
+	beq.w	.9
+	move.w	(TradeData+$C).l,d7
+	jsr	(GetPlayerCountD7).l
+	cmp.w	#$19,d0
+	beq.w	FreeAgentViolation
+	movea.l	#TradeRoster1,a0
+	move.w	(TradeData+$4).l,d0
+	add.w	(TradeData).l,d0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d0
+	move.w	#$D,d2
+	lsr.w	d2,d0
+	andi.w	#3,d0
+	asl.w	#2,d0
+	movea.l	#PositionMaxChecks,a0
+	movea.l	(a0,d0.w),a0
+	jsr	(a0)
+	beq.w	FreeAgentViolation
+	movea.l	#TradeRoster2,a0
+	move.w	(TradeData+$4).l,d0
+	add.w	(TradeData).l,d0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d0
+	move.w	d0,(TempWord1).w
+	move.w	#$1C,d7
+	move.w	(TempWord1).w,d0
+	jsr	(GetJerseyNumber).l
+	move.b	(jerseynum).w,(TempWord1).w
+	movea.l	#M68K_RAM,a2
+	move.w	(TempWord1).w,-(sp)
+	jsr	(DeleteCreatedPlayer).l
+	move.w	(sp)+,(TempWord1).w
+	move.w	(TradeData+$C).l,(TempMaxSpd).w
+	move.w	(TempWord1).w,d0
+	andi.w	#$FF,d0
+	movea.l	#TradeRoster1,a0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d0
+	move.w	#$D,d2
+	lsr.w	d2,d0
+	andi.w	#3,d0
+	move.w	d0,(PenBuf).w
+	move.w	(TradeData+$C).l,d7
+	asl.w	#2,d0
+	movea.l	#PositionCountFns,a0
+	movea.l	(a0,d0.w),a0
+	jsr	(a0)
+	move.w	(PenBuf).w,d1
+	lsl.w	#8,d1
+	or.w	d1,d0
+	move.w	d0,(TempWord2).w
+	move.w	(TradeData+$C).l,(TempMaxSpd).w
+	movea.l	#M68K_RAM,a2
+	move.w	(TempWord1).w,-(sp)
+	move.w	(TempWord2).w,-(sp)
+	move.w	(TempMaxSpd).w,-(sp)
+	jsr	(InsertTradedPlayer).l
+	move.w	(sp)+,(TempMaxSpd).w
+	move.w	(sp)+,(TempWord2).w
+	move.w	(sp)+,(TempWord1).w
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$B,$9,$0
+	move.w	#$7FF,d2
+	move.w	#$1C,d0
+	move.w	#$B,d1
+	jsr	(eraser).l
+	tst.w	(TradeData).l
+	beq.w	.8
+	subq.w	#1,(TradeData).l
+.8
+	bra.w	FreeAgentRedraw
+.9
+	bra.w	.check
+
+PositionCountFns	;Per-position roster index routines (end of the position group in the roster)
+	dc.l	GetGoalieCountD7
+	dc.l	GetDefenseStartD7
+	dc.l	GetPlayerCountD7
+
+PositionMaxChecks	;Per-position check routines
+	dc.l	CheckMaxGoalies
+	dc.l	CheckMaxForwards
+	dc.l	CheckMaxDefense
+
+CheckMaxGoalies	;Compare GetGoalieCountD7 result with 3
+	jsr	(GetGoalieCountD7).l
+	cmp.w	#3,d0
+	rts
+
+CheckMaxForwards	;Compare GetForwardCountD7 result with $F
+	jsr	(GetForwardCountD7).l
+	cmp.w	#$F,d0
+	rts
+
+CheckMaxDefense	;Compare GetPlayerCountD7 - GetDefenseStartD7 with $F
+	jsr	(GetDefenseStartD7).l
+	move.w	d0,-(sp)
+	jsr	(GetPlayerCountD7).l
+	sub.w	(sp)+,d0
+	cmp.w	#$F,d0
+	rts
+
+FreeAgentArrows	;Draw scroll up/down arrows for the list
+	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	(printsmallz).l
+	String	CC_SetFont,$1
+	move.w	(TradeData+$4).l,d0
+	add.w	(TradeData).l,d0
+	beq.w	.0
+	jsr	(printsmallz).l
+	String	CC_SetX,$9,CC_SetY,$9,'{',$0
+	bra.w	.1
+.0
+	jsr	(printsmallz).l
+	String	CC_SetX,$9,CC_SetY,$9,' ',$0
+.1
+	move.w	(TradeData).l,d1
+	add.w	(TradeData+$4).l,d1
+	move.w	(SaveRAM+2*SRFreeAgentCount).l,d0
+	andi.w	#$FF,d0
+	subq.w	#1,d0
+	cmp.w	d0,d1
+	bge.w	.2
+	jsr	(printsmallz).l
+	String	CC_SetX,$9,CC_SetY,$13,'}',$0
+	bra.w	.3
+.2
+	jsr	(printsmallz).l
+	String	CC_SetX,$9,CC_SetY,$13,' ',$0
+.3
+	jsr	(printsmallz).l
+	String	CC_SetFont,$0
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+FreeAgentViolation	;Show VIOLATION OF ROSTER RULES message, wait, erase
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$5,$A,$0
+	move.w	#$1F,d0
+	move.w	#$E,d1
+	jsr	(Framer).l
+	jsr	(printsmallz).l
+	String	CC_SetFont,$3,CC_SetX,$7,CC_SetY,$B,'VIOLATION OF ROSTER RULES',$0
+	movea.l	#TradeRulesText,a1
+	jsr	(printsmall).l
+	bsr.w	ReadFreeAgentPads
+	move.w	#$7FF,d2
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$5,$A,$0
+	move.w	#$1F,d0
+	move.w	#$E,d1
+	jsr	(eraser).l
+	jsr	(printsmallz).l
+	String	CC_SetFont,$0
+	bra.w	FreeAgentLoop
+
+FreeAgentTeamBlock	;Draw team header (DrawTradeLogo) for team TradeData+$C
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	(TradeData+$C).l,d1
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$19,$15,$0
+	jsr	(DrawTradeLogo).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+DrawFreeAgents	;Draw visible free agent rows (pos, name, rating)
+	move.w	(TradeData).l,d5
+	movea.l	#TradeData+$4,a5
+	movea.l	#TradeRoster1,a4
+	movea.l	#TradeRoster2,a3
+	move.w	#9,(printy).w
+	move.w	#$1C,d7
+	move.w	(printy).w,-(sp)
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$0,$0,$0
+	move.w	(sp)+,(printy).w
+	clr.w	d6
+	move.w	(a5),d0
+	asl.w	#1,d0
+	ext.l	d0
+	adda.l	d0,a4
+	adda.l	d0,a3
+.loop
+	jsr	(printsmallz).l
+	String	CC_SetX,$0,'                                       ',$0
+	move.w	#$B,(printx).w
+	jsr	(printsmallz).l
+	String	CC_SetFont,$0
+	cmp.w	d5,d6
+	bne.w	.1
+	jsr	(printsmallz).l
+	String	CC_SetFont,$1
+.1
+	move.w	(a3)+,d0
+	move.w	#$1C,d7
+	jsr	(FormatPlayerNameD7).l
+	jsr	(printsmall).l
+	move.w	#$1C,(printx).w
+	movea.l	#PositionLetters3,a1
+	move.w	(a4),d0
+	move.w	#$D,d2
+	lsr.w	d2,d0
+	andi.w	#3,d0
+	move.w	d0,(PenBuf).w
+	jsr	(PrintSmallListItem).l
+	move.w	#$21,(printx).w
+	move.w	(a4),d0
+	jsr	(GetCreatedName).l
+	adda.w	(a1),a1
+	addq.w	#8,a1
+	movea.l	a1,a0
+	movem.l	a4,-(sp)
+	movea.l	#FieldTextBuf,a4
+	movea.l	#OvrGoalWgtList,a6
+	move.l	(GAttribOverallMask).l,d4
+	tst.w	(PenBuf).w
+	beq.w	.2
+	movea.l	#OvrPlayerWgtList,a6
+	move.l	(PAttribOverallMask).l,d4
+.2
+	jsr	(CalcAttribRating).l
+	movem.l	(sp)+,a4
+	mulu.w	#$64,d0
+	divu.w	d1,d0
+	move.w	#2,d1
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
+	addq.l	#2,a4
+	addq.w	#2,(printy).w
+	addq.w	#1,d6
+	move.w	(TradeData+$4).l,d0
+	add.w	d6,d0
+	cmp.w	(TradeData+$6).l,d0
+	ble.w	.loop
+	rts
+
+PositionLetters3	;Position letters G/F/D
+	String	'G',0
+	String	'F',0
+	String	'D',0
+
+ReadFreeAgentPads	;Wait for a joypad press (polls both pads via ReadJoy1/ReadJoy2 + ProcessInputWithRepeat each frame); d1 = buttons
+	move.l	#$5460,d6
+.wait
+	move.w	#$64,d6
+	move.w	(vcount).w,d1
+	sub.w	(oldvcount).w,d1
+	beq.s	.wait
+	move.w	(vcount).w,(oldvcount).w
+	jsr	(ReadJoy1).l
+	jsr	(ProcessInputWithRepeat).l
+	tst.w	d1
+	beq.w	.1
+	bra.w	.exit
+.1
+	jsr	(ReadJoy2).l
+	jsr	(ProcessInputWithRepeat).l
+	tst.w	d1
+	beq.w	.2
+	bra.w	.exit
+.2
+	dbf	d6,.wait
+.exit
+	rts
+
+FreeAgentExit	;Exit free-agent screen: set bit 6 of setupcardflags, jump to Opening2
+	bset	#6,(setupcardflags).w
+	jmp	(Opening2).l
+
+FreeAgentsEmpty	;"Free agent list is now empty." message box, wait for a key, then exit
+	clr.w	d0
+	bra.w	.freeAgentMessage
+
+.freeAgentMessage	;Show message box (string list FreeAgentMsgText, index d0), wait for key, exit via FreeAgentExit
+	move.w	d0,-(sp)
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),5,$A,0
+	move.w	#$1F,d0
+	move.w	#$E,d1
+	jsr	(Framer).l
+	move.w	(sp)+,d0
+	movea.l	#FreeAgentMsgText,a1
+	jsr	(PrintSmallListItem).l
+	bsr.w	ReadFreeAgentPads
+	bra.s	FreeAgentExit
+
+FreeAgentMsgText	;Message string list for PrintSmallListItem
+	String	$F9,3,$FD,6,$FC,$D,'Free agent list is now empty.',0
+	rts
+
+BuildFreeAgentList	;Copy the free agent list (SRFreeAgentList, count in SRFreeAgentCount) to work table TradeRoster1 and index list TradeRoster2
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	(SaveRAM+2*SRFreeAgentCount).l,d0
+	andi.w	#$FF,d0
+	subq.w	#1,d0
+	movea.l	#SaveRAM+2*SRFreeAgentList,a0
+	movea.l	#TradeRoster1,a1
+	movea.l	#TradeRoster2,a5
+	clr.w	d6
+.loop
+	move.l	(a0)+,d1
+	move.b	d1,d2
+	andi.w	#$FF,d2
+	swap	d1
+	lsl.w	#8,d1
+	or.w	d1,d2
+	move.w	d2,(a1)+
+	move.w	d6,(a5)+
+	addq.w	#1,d6
+	dbf	d0,.loop
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+rtsCreate4	;Empty routine
+	rts
+
+TestFreeAgents	;Test free-agent count byte (SRFreeAgentCount+1), flags only, d0 preserved
+	movem.w	d0,-(sp)
+	move.w	(SaveRAM+2*SRFreeAgentCount).l,d0
+	tst.b	d0
+	movem.w	(sp)+,d0
+	rts
+
+ReleasePlayers	;Release Player screen: up/down scroll roster, switch team, release highlighted player to the free-agent list (exits if list full)
+	jsr	(forceblack).l
+	jsr	(TradeGfx).l
+	jsr	(printbigz).l
+	String	-(TXPRI+TXMAP1),7,2,'Release Player',0
+	jsr	(printsmallz).l
+	String	CC_SetFont,1,CC_SetX,6,CC_SetY,$19,'A,B',CC_SetX,$16,'C',CC_SetX,' Start',CC_AddY,1,0
+	jsr	(printsmallz).l
+	String	CC_SetX,2,'Switch Team',CC_SetX,$10,'Release Player',CC_SetX,'!Exit',CC_SetFont,0,0
+	jsr	(printsmallz).l
+	String	CC_SetFont,2,CC_SetX,$1B,CC_SetY,7,'POS.',CC_SetX,' RTG.',CC_SetFont,0
+	clr.w	(TradeData+$C).l
+	clr.w	(TradeData).l
+	move.w	#0,(HomeTeam).w
+	move.w	#0,(VisTeam).w
+	jsr	(clearTeamStats).l
+	bsr.w	ReleaseTeamBlock
+	move.w	#$18,(palcount).w
+	bclr	#2,(disflags).w
+
+ReleaseRedraw	;ReleasePlayers: redraw the roster
+	move.w	(SaveRAM+2*SRFreeAgentCount).l,d0
+	andi.w	#$FF,d0
+	cmp.w	#$1A,d0
+	bge.w	FreeAgentsFull
+	clr.w	(TradeData+$4).l
+	move.w	(TradeData+$C).l,d7
+	move.w	d7,(HomeTeam).w
+	move.w	d7,(VisTeam).w
+	jsr	(clearTeamStats).l
+	jsr	(GetPlayerCountD7).l
+	subq.w	#1,d0
+	cmp.w	#5,d0
+	ble.w	.0
+	move.w	#5,d0
+.0
+	move.w	d0,(TradeData+$6).l
+	movea.l	#TradeRoster1,a0
+	movea.l	#TradeWork,a1
+	bsr.w	BuildTradeRoster
+	bsr.w	rtsCreate5
+	move.w	#$FFFF,(setupdir).w
+
+ReleaseLoop	;ReleasePlayers: input loop
+	bsr.w	ReleaseTeamBlock
+	bsr.w	DrawReleaseRoster
+	bsr.w	ReleaseArrows
+.check
+	cmpi.w	#$FFFF,(setupdir).w
+	beq.w	.input
+	bsr.w	ReleaseTeamBlock
+	bsr.w	DrawReleaseRoster
+.input
+	move.w	#$FFFF,(setupdir).w
+	bsr.w	ReadReleasePads
+	tst.w	d1
+	beq.w	ReleaseExit
+	btst	#0,d1
+	beq.w	.3
+	tst.w	(TradeData).l
+	beq.w	.2
+	subq.w	#1,(TradeData).l
+	bra.s	ReleaseLoop
+.2
+	tst.w	(TradeData+$4).l
+	beq.s	.input
+	subq.w	#1,(TradeData+$4).l
+	subq.w	#1,(TradeData+$6).l
+	bra.s	ReleaseLoop
+.3
+	btst	#1,d1
+	beq.w	.5
+	move.w	(TradeData).l,d0
+	add.w	(TradeData+$4).l,d0
+	cmp.w	(TradeData+$6).l,d0
+	beq.w	.4
+	addq.w	#1,(TradeData).l
+	bra.w	ReleaseLoop
+.4
+	move.w	(TradeData+$C).l,d7
+	jsr	(GetPlayerCountD7).l
+	subq.w	#1,d0
+	cmp.w	(TradeData+$6).l,d0
+	ble.s	.input
+	addq.w	#1,(TradeData+$4).l
+	addq.w	#1,(TradeData+$6).l
+	bra.w	ReleaseLoop
+.5
+	btst	#4,d1
+	beq.w	.6
+	clr.w	(TradeData).l
+	clr.w	(TradeData+$4).l
+	move.w	#5,(TradeData+$6).l
+	addq.w	#1,(TradeData+$C).l
+	cmpi.w	#$1A,(TradeData+$C).l
+	blt.w	ReleaseRedraw
+	clr.w	(TradeData+$C).l
+	bra.w	ReleaseRedraw
+.6
+	btst	#6,d1
+	beq.w	.7
+	clr.w	(TradeData).l
+	clr.w	(TradeData+$4).l
+	move.w	#5,(TradeData+$6).l
+	subq.w	#1,(TradeData+$C).l
+	bpl.w	ReleaseRedraw
+	move.w	#$19,(TradeData+$C).l
+	bra.w	ReleaseRedraw
+.7
+	btst	#7,d1
+	bne.w	ReleaseExit
+	btst	#5,d1
+	beq.w	.16
+	move.w	(TradeData+$C).l,d7
+	jsr	(GetPlayerCountD7).l
+	cmp.w	#$11,d0
+	beq.w	ReleaseViolation
+	movea.l	#TradeRoster1,a0
+	move.w	(TradeData+$4).l,d0
+	add.w	(TradeData).l,d0
+	asl.w	#2,d0
+	adda.w	d0,a0
+	clr.w	d0
+	move.b	1(a0),d0
+	asl.w	#2,d0
+	movea.l	#PositionMinChecks,a0
+	movea.l	(a0,d0.w),a0
+	jsr	(a0)
+	beq.w	ReleaseViolation
+	movea.l	#TradeRoster1,a0
+	move.w	(TradeData+$4).l,d0
+	add.w	(TradeData).l,d0
+	asl.w	#2,d0
+	adda.w	d0,a0
+	move.b	1(a0),(TempWord1).w
+	move.b	2(a0),(TempWord1+1).w
+	move.w	(TradeData+$C).l,(TempRawSpd).w
+	movea.l	#M68K_RAM,a2
+	jsr	(ExtractTradedPlayer).l
+	move.w	(TradeData+$C).l,(tradeteam1).w
+	move.w	(TradeData+$C).l,(tradeteam2).w
+	jsr	(CheckSavedLines).l
+	movea.l	#SaveRAM+2*SRFreeAgentList,a0
+	clr.w	(rosterscroll).w
+.find
+	tst.b	1(a0)
+	bmi.w	.9
+	addq.l	#4,a0
+	addq.w	#1,(rosterscroll).w
+	bra.s	.find
+.9
+	move.w	(M68K_RAM).l,d0
+	andi.w	#$1FFF,d0
+	move.b	(TempWord1).w,d1
+	andi.w	#3,d1
+	move.w	#$D,d2
+	lsl.w	d2,d1
+	or.w	d1,d0
+	move.w	d0,d1
+	lsr.w	#8,d1
+	andi.w	#$FF,d1
+	move.w	d1,(a0)
+	andi.w	#$FF,d0
+	move.w	d0,2(a0)
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	#$1A,d7
+	jsr	(ReadTeamPlayerStats).l
+	movea.l	#StatBuf,a3
+	movea.l	#M68K_RAM+4,a2
+.10
+	move.w	#4,d6
+.block
+	move.w	(rosterscroll).w,d0
+	andi.w	#$FF,d0
+	add.w	d0,d0
+	move.w	#$34,d3
+	bra.w	.13
+.shift
+	move.w	-2(a3,d3.w),d1
+	move.w	d1,(a3,d3.w)
+.13
+	subq.w	#2,d3
+	cmp.w	d0,d3
+	ble.w	.14
+	bra.s	.shift
+.14
+	move.w	(a2)+,d1
+	move.w	d1,(a3,d3.w)
+	adda.w	#$34,a3
+	dbf	d6,.block
+	jsr	(WriteTeamPlayerStats).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	movea.l	#SaveRAM+2*SRFreeAgentJerseys,a0
+	move.w	(rosterscroll).w,d0
+	add.w	d0,d0
+	adda.w	d0,a0
+	move.w	(M68K_RAM+2).l,d1
+	move.w	d1,(a0)
+	addq.w	#1,(SaveRAM+2*SRFreeAgentCount).l
+	jsr	(MakeSRAMChecksum).l
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$B,9,0
+	move.w	#$7FF,d2
+	move.w	#$1C,d0
+	move.w	#6,d1
+	jsr	(eraser).l
+	tst.w	(TradeData).l
+	beq.w	.15
+	subq.w	#1,(TradeData).l
+.15
+	bra.w	ReleaseRedraw
+.16
+	bra.w	.check
+	dc.l	GetGoalieCountD7,GetDefenseStartD7,GetPlayerCountD7	;unused pointers
+
+PositionMinChecks	;Roster-minimum check per position code (0 G, 1 F, 2 D); Z set = cannot release
+	dc.l	CheckMinGoalies,CheckMinForwards,CheckMinDefense
+
+CheckMinGoalies	;Position 0 (G): count from GetGoalieCountD7, Z if == 2
+	jsr	(GetGoalieCountD7).l
+	cmp.w	#2,d0
+	rts
+
+CheckMinForwards	;Position 1 (F): count from GetForwardCountD7, Z if == 9
+	jsr	(GetForwardCountD7).l
+	cmp.w	#9,d0
+	rts
+
+CheckMinDefense	;Position 2 (D): GetPlayerCountD7 roster size minus GetDefenseStartD7 count, Z if == 6
+	jsr	(GetDefenseStartD7).l
+	move.w	d0,-(sp)
+	jsr	(GetPlayerCountD7).l
+	sub.w	(sp)+,d0
+	cmp.w	#6,d0
+	rts
+
+ReleaseArrows	;Draw scroll arrows ({ above / } below) beside the roster list
+	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	(printsmallz).l
+	String	CC_SetFont,1
+	move.w	(TradeData+$4).l,d0
+	add.w	(TradeData).l,d0
+	beq.w	.0
+	jsr	(printsmallz).l
+	String	CC_SetX,9,CC_SetY,9,'{',0
+	bra.w	.1
+.0
+	jsr	(printsmallz).l
+	String	CC_SetX,9,CC_SetY,9,' ',0
+.1
+	move.w	(TradeData).l,d1
+	add.w	(TradeData+$4).l,d1
+	move.w	(TradeData+$C).l,d7
+	jsr	(GetPlayerCountD7).l
+	subq.w	#1,d0
+	cmp.w	d0,d1
+	bge.w	.2
+	jsr	(printsmallz).l
+	String	CC_SetX,9,CC_SetY,$15,'}',0
+	bra.w	.3
+.2
+	jsr	(printsmallz).l
+	String	CC_SetX,9,CC_SetY,$15,' ',0
+.3
+	jsr	(printsmallz).l
+	String	CC_SetFont,0
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+ReleaseViolation	;"VIOLATION OF ROSTER RULES" message box, wait for key, close it, back to the screen loop
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),5,$A,0
+	move.w	#$1E,d0
+	move.w	#$E,d1
+	jsr	(Framer).l
+	jsr	(printsmallz).l
+	String	CC_SetFont,3,CC_SetX,7,CC_SetY,$B,'VIOLATION OF ROSTER RULES',0
+	movea.l	#TradeRulesText,a1
+	jsr	(printsmall).l
+	bsr.w	ReadReleasePads
+	move.w	#$7FF,d2
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),5,$A,0
+	move.w	#$1E,d0
+	move.w	#$E,d1
+	jsr	(eraser).l
+	jsr	(printsmallz).l
+	String	CC_SetFont,0
+	bra.w	ReleaseLoop
+
+ReleaseTeamBlock	;Print team block for team TradeData+$C (DrawTradeLogo)
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	(TradeData+$C).l,d1
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),$B,6,0
+	jsr	(DrawTradeLogo).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+DrawReleaseRoster	;Draw the visible roster rows (pos letter, name, rating) with highlight on cursor row
+	move.w	(TradeData).l,d5
+	movea.l	#TradeData+$4,a5
+	movea.l	#TradeRoster1,a4
+	move.w	#9,(printy).w
+	move.w	(TradeData+$C).l,d7
+	move.w	(printy).w,-(sp)
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),0,0,0
+	move.w	(sp)+,(printy).w
+	clr.w	d6
+	move.w	(a5),d0
+	asl.w	#2,d0
+	ext.l	d0
+	adda.l	d0,a4
+.loop
+	jsr	(printsmallz).l
+	String	CC_SetX,0,'                                       ',0
+	move.w	#$B,(printx).w
+	jsr	(printsmallz).l
+	String	CC_SetFont,0
+	cmp.w	d5,d6
+	bne.w	.1
+	jsr	(printsmallz).l
+	String	CC_SetFont,1
+.1
+	clr.w	d0
+	move.b	2(a4),d0
+	jsr	(FormatPlayerNameD7).l
+	jsr	(printsmall).l
+	move.w	#$1C,(printx).w
+	movea.l	#PositionLetters4,a1
+	clr.w	d0
+	move.b	1(a4),d0
+	move.w	d0,(PenBuf).w
+	jsr	(PrintSmallListItem).l
+	move.w	#$21,(printx).w
+	clr.w	d0
+	move.b	3(a4),d0
+	move.w	#2,d1
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
+	addq.l	#4,a4
+	addq.w	#2,(printy).w
+	addq.w	#1,d6
+	move.w	(TradeData+$4).l,d0
+	add.w	d6,d0
+	cmp.w	(TradeData+$6).l,d0
+	ble.w	.loop
+	rts
+
+PositionLetters4	;Position letter strings G/F/D for PrintSmallListItem
+	String	'G',0
+	String	'F',0
+	String	'D',0
+
+ReadReleasePads	;Wait for a joypad press on any of up to 4 pads (4-way play if FourWayPlay); d1 = buttons
+	move.l	#$5460,d6
+.wait
+	move.w	#$64,d6
+	move.w	(vcount).w,d1
+	sub.w	(oldvcount).w,d1
+	beq.s	.wait
+	move.w	(vcount).w,(oldvcount).w
+	jsr	(ReadJoy1).l
+	jsr	(ProcessInputWithRepeat).l
+	tst.w	d1
+	beq.w	.1
+	bra.w	.exit
+.1
+	jsr	(ReadJoy2).l
+	jsr	(ProcessInputWithRepeat).l
+	tst.w	d1
+	beq.w	.2
+	bra.w	.exit
+.2
+	tst.w	(FourWayPlay).w
+	beq.w	.4
+	jsr	(ReadJoy3).l
+	jsr	(ProcessInputWithRepeat).l
+	tst.w	d1
+	beq.w	.3
+	bra.w	.exit
+.3
+	jsr	(ReadJoy4).l
+	jsr	(ProcessInputWithRepeat).l
+	tst.w	d1
+	beq.w	.4
+	bra.w	.exit
+.4
+	dbf	d6,.wait
+.exit
+	rts
+
+ReleaseExit	;Exit Release Player screen: set bit 6 of setupcardflags, jump to Opening2
+	bset	#6,(setupcardflags).w
+	jmp	(Opening2).l
+
+FreeAgentsFull	;"Free agent list is full." message box, wait for key, then exit
+	clr.w	d0
+	bra.w	.releaseMessage
+
+.releaseMessage	;Show message box (string list ReleaseMsgText, index d0), wait for key, exit via ReleaseExit
+	move.w	d0,-(sp)
+	jsr	(printz).l
+	String	-(TXPRI+TXMAP1),5,$A,0
+	move.w	#$1E,d0
+	move.w	#$E,d1
+	jsr	(Framer).l
+	move.w	(sp)+,d0
+	movea.l	#ReleaseMsgText,a1
+	jsr	(PrintSmallListItem).l
+	bsr.w	ReadReleasePads
+	bra.s	ReleaseExit
+
+ReleaseMsgText	;Message string list for PrintSmallListItem
+	String	$F9,3,$FD,6,$FC,$D,'Free agent list is full.'
+
+rtsCreate5	;Empty routine
 	rts
 
 SeasonFramerMap	;Use the map a screen stored, or FramerMap when none is stored
@@ -2461,13 +3327,6 @@ SeasonFramerMap	;Use the map a screen stored, or FramerMap when none is stored
 	movea.l	(framermapptr).w,a1
 	rts
 .def	movea.l	#FramerMap,a1
-	rts
-
-GetJerseyNumber	;filled in with the roster code
-	rts
-ReadTeamPlayerStats	;filled in with the season stat code
-	rts
-WriteTeamPlayerStats	;filled in with the season stat code
 	rts
 
 CreateBgMap

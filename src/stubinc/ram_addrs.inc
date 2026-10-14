@@ -42,6 +42,14 @@ StatBuf equ $FFFF80CA	;create and season stat scratch
 StatWork equ $FFFF81CA	;create name scratch, $40 bytes
 linemarkbuf equ StatWork	;the name string is stored at StatWork+2
 AttribDeltas equ $FFFF820A	;sixteen attribute changes on the rating screen
+setupdir equ $FFFF821A	;last menu direction: 0 up, 1 down, 2 left, 3 right
+jerseynum equ $FFFF821C	;jersey number byte read with a roster id
+rosterscroll equ $FFFF821E	;first roster row on the sign and release screens
+TradeFromTeam equ $FFFF8220	;club giving up the player
+TradeToTeam equ $FFFF8222	;club receiving the player
+SeasonGameCount equ $FFFF8224	;human games counted in the season goal total
+rosterteam equ $FFFF8226	;team number while a roster name is built
+screenarg equ $FFFF8228	;team number or background address for a roster screen
 tradeteam1 equ $FFFF8072	;first trade club, word plus its 8 byte block
 tradeteam2 equ $FFFF807A	;second trade club
 TradeRoster2 equ $FFFF88B8	;visitor trade rows

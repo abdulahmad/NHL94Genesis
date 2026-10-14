@@ -133,7 +133,7 @@ ValidateSRAM	;Check the save RAM copy in M68K_RAM: the byte after the checksum m
 .x
 	rts
 ClearSRAM	;Clears the save RAM. Retail: zero $2000 bytes, byte $1FFE = $FF, write it, set byte 1 to 1, then MakeSRAMChecksum.
-	;Season: zero $8000 bytes and write the checksum at the end of that window. Called from InitSaveRAM
+	;Season: zero $8000 bytes, rebuild the default rosters and lines, clear created players, then write the checksum. Called from InitSaveRAM
 	IF SEASON=1
 	lea	(M68K_RAM).l,a0
 	move.l	#$1FFF,d0
@@ -141,6 +141,9 @@ ClearSRAM	;Clears the save RAM. Retail: zero $2000 bytes, byte $1FFE = $FF, writ
 .loop
 	move.l	d1,(a0)+
 	dbf	d0,.loop
+	jsr	(DefaultRosters).l
+	jsr	(DefaultLineData).l
+	jsr	(ClearCreatedPlayers).l
 	moveq	#0,d0
 	move.l	#$8000,d1
 	movea.l	#M68K_RAM,a0
