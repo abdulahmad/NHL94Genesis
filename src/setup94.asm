@@ -760,6 +760,12 @@ IntermissionStart	;reset the clock, song $79, ticker scores, playoff stats at th
 	absjmp	StartPer
 GameOver	;EncodePW (save the password), then in playoff mode PlayoffStatsScreen (the playoff stats) and the playoff screen. Falls into ExitToOpening
 	bsr.w	EncodePW
+	IF SEASON=1
+	btst	#2,(sflags13).w
+	beq.w	.nocup
+	jsr	(StanleyCupScreen).l
+.nocup
+	ENDIF
 	tst.w	(OptPlayMode).w
 	beq.w	.po
 	bclr	#sfpj,(sflags).w

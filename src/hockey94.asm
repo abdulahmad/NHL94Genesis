@@ -344,7 +344,18 @@ clockcont_0	;End of period. Also entered from puckfaceoff
 .ns1	cmpi.w	#3,4(a0,d3.w)		;gspotwins(a0,d3)
 	bne.w	.t3
 
-.sc	move.l	#8,d0			;stanley cup assignment
+.sc	IF SEASON=1
+	btst	#3,(GameFlags).w
+	beq.w	.sc0
+	bset	#2,(sflags13).w
+	move.w	(tmstruct+$28).w,(cupwinner).w
+	move.w	(HmGoals).w,d2
+	cmp.w	(AwGoals).w,d2
+	bgt.w	.sc0
+	move.w	(AwShots+$28).w,(cupwinner).w
+.sc0
+	ENDIF
+	move.l	#8,d0			;stanley cup assignment
 	moveq	#$B,d2			;all 12 players lose joystick control
 .t0	bclr	#pfjoycon,pflags(a3)		;pfjoycon, pflags(a3)
 	adda.w	#SCstruct,a3			;SCstruct

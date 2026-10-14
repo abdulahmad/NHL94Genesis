@@ -589,6 +589,10 @@ AwardWinner equ $FFFFDFB4
 AwardHilite equ $FFFFDFB6
 AwardCycle equ $FFFFDFB8
 AwardWait equ $FFFFDFBA
+awardpicchars equ $FFFFBADC	;vram base for award pictures during SeasonAwards
+awardpanelchars equ $FFFFBADE	;finalists and winner panels
+cupframe equ picturebits	;StanleyCupScreen animation frame
+cupticks equ $FFFFDEA2	;frames between cup sprite steps
 PlayoffSchedule equ $FFFFDFBC	;scratch copy of the playoff schedule, 239 bytes plus one pad byte
 LeaderTeamTbls equ $FFFFDA1E	;league leaders: seven team tables of $1A bytes (menu only, overlays picturebuf)
 TeamLeaderValues equ $FFFFDAD4	;league leaders: sorted team values, one word a team

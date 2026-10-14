@@ -40,6 +40,20 @@ const spans = [
   ['PadIconMap2.map.jim', 0x16b1c8, 0x16b2de],
   ['PadIconMap3.map.jim', 0x16b2de, 0x16b3f4],
   ['PadIconMap4.map.jim', 0x16b3f4, 0x16b50a],
+  ['AwardsBgMap.map.jim', 0x17409a, 0x1787c8],
+  ['FinalistsPanelMap.map.jim', 0x1787c8, 0x178b12],
+  ['WinnerPanelMap.map.jim', 0x178b12, 0x178ec6],
+  ['HartPic.map.jim', 0x178ec6, 0x179690],
+  ['NorrisPic.map.jim', 0x179690, 0x17a94a],
+  ['VezinaPic.map.jim', 0x17a94a, 0x17b2e8],
+  ['ArtRossPic.map.jim', 0x17b2e8, 0x17bf00],
+  ['SelkePic.map.jim', 0x17bf00, 0x17e0d6],
+  ['JenningsPic.map.jim', 0x17e0d6, 0x17ee8e],
+  ['PresidentsPic.map.jim', 0x17ee8e, 0x17f76c],
+  ['ConnSmythePic.map.jim', 0x17f76c, 0x18022a],
+  ['PearsonPic.map.jim', 0x18022a, 0x180b4e],
+  ['StanleyCupImg.map.jim', 0x196c4c, 0x19a0fa],
+  ['CupSprites.map.jim', 0x19a0fa, 0x19a992],
 ];
 
 const romPath = candidates.find((p) => fs.existsSync(p));

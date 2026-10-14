@@ -107,9 +107,19 @@ SeasonMain	;While GameFlags bit 3 is set. Bit 4 is a new season: the setup scree
 	jsr	(SetupPlayoffs).l
 	bra.w	.day
 .over
-	bclr	#3,(GameFlags).w
-	jmp	(Opening2).l
+	bset	#1,(sflags11).w
+	btst	#1,(SimFlags).w
+	bne.w	.11
+	jsr	(GamesToday).l
+.11
+	bclr	#1,(sflags11).w
+	btst	#0,(SimFlags).w
+	beq.w	.awards
+	move.w	(SaveRAM+2*SRCupWinner).l,(cupwinner).w
+	andi.w	#$FF,(cupwinner).w
+	jsr	(StanleyCupScreen).l
 .awards
+	jsr	(SeasonAwards).l
 	bclr	#3,(GameFlags).w
 	jmp	(Opening2).l
 .exit
