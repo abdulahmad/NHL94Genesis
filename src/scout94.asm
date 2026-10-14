@@ -77,12 +77,22 @@ ScoutingReport	;pregame MATCHUPS screen, called from Opening2. Draws the Ron Bar
 	move.l	#vb2,(vbint).w
 	jsr	(clearTeamStats).l
 	move.l	a0,-(sp)
+	IF SEASON=1
+	btst	#3,(GameFlags).w
+	beq.w	.randomhc
+	btst	#6,(sflags11).w
+	bne.w	.randomhc
+	movea.l	(sp)+,a0
+	bra.w	.skiphcregen
+.randomhc
+	ENDIF
 	movea.l	#tmstruct,a0
 	jsr	(Create_HotCold_Table).l	;new random hot / cold tables ($1A2(a0))
 	movea.l	#AwShots,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
 	jsr	(BuildHotColdLists).l	;again with the new tables
+.skiphcregen
 	bclr	#df32c,(disflags).w	;df32c
 	move.w	#6,(Map1col1).w
 	move.w	#6,(Map2col1).w
@@ -474,7 +484,13 @@ PrintMatchupRatings	;Print the matchup ratings. Matchup 0: 'Overall' at y $13, t
 	bsr.w	CalcAttrib
 	mulu.w	#$64,d0	;* 100
 	divu.w	d1,d0
+	IF SEASON=1
+	move.w	(matchuphome).w,d1
+	move.w	(HomeTeam).w,d7
+	jsr	(SeasonAttribAdjust).l
+	ELSE
 	bsr.w	AttribAdjust
+	ENDIF
 	move.w	#2,d1
 	move.w	d0,(homerating).w
 	jsr	(PushNumberWidth).l
@@ -495,7 +511,13 @@ PrintMatchupRatings	;Print the matchup ratings. Matchup 0: 'Overall' at y $13, t
 	bsr.w	CalcAttrib
 	mulu.w	#$64,d0	;* 100
 	divu.w	d1,d0
+	IF SEASON=1
+	move.w	(matchupvis).w,d1
+	move.w	(VisTeam).w,d7
+	jsr	(SeasonAttribAdjust).l
+	ELSE
 	bsr.w	AttribAdjust
+	ENDIF
 	move.w	d0,(visrating).w
 	move.w	#2,d1
 	jsr	(PushNumberWidth).l

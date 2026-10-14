@@ -2100,7 +2100,17 @@ PrintOverallRating	;Player card "Overall Rating" (CalcAttrib, AttribAdjust)
 	bsr.w	CalcAttrib
 	mulu.w	#$64,d0
 	divu.w	d1,d0
+	IF SEASON=1
+	move.w	(cardplayer).w,d1
+	move.w	(HomeTeam).w,d7
+	tst.w	(cardvis).w
+	beq.w	.overteam
+	move.w	(VisTeam).w,d7
+.overteam
+	jsr	(SeasonAttribAdjust).l
+	ELSE
 	bsr.w	AttribAdjust
+	ENDIF
 	movea.l	#mesarea,a1
 	bsr.w	AppendNumber
 	movea.l	#mesarea,a1

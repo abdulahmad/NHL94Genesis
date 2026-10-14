@@ -1,5 +1,5 @@
 ;	Controller setup before name entry and the scouting report. Ported from NHL 95 goal95.asm (new in 95).
-;	Runs from Opening2 when SEASON=1. Practice Mode strings stay in the file but are not wired in 94.
+;	Runs from Opening2 when SEASON=1. Practice Mode UI only appears when sflags9 bit 7 is set (never in this port).
 
 SetContTeams	;Pick the team of each pad (cont1team ... cont4team). A demo or a timeout clears all pads
 	tst.w	(demoflag).w

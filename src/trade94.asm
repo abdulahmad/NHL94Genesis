@@ -2397,6 +2397,46 @@ LoadTeamLines	;Line sets of team struct a2 ($16A) from save RAM (SRLines + team 
 	dbf	d0,.loop2
 	rts
 
+SaveTeamLines	;Write team a2's line sets at $16A to save RAM SRLines (season games with saved rosters)
+	btst	#3,(GameFlags).w
+	beq.w	.rts
+	btst	#6,(sflags11).w
+	bne.w	.rts
+	tst.w	(ValidSRAM).w
+	bmi.w	.rts
+	movem.l	d0-d2/a0-a1,-(sp)
+	lea	$16A(a2),a0
+	movea.l	#ThreeStars,a1
+	move.w	#$40,d0
+.copy
+	move.b	(a0)+,(a1)+
+	dbf	d0,.copy
+	move.l	#SRLines,d0
+	move.w	Xvel(a2),d2
+	mulu.w	#$41,d2
+	add.l	d2,d0
+	moveq	#$41,d1
+	movea.l	#ThreeStars,a0
+	jsr	(WriteSRAM).l
+	jsr	(MakeSRAMChecksum).l
+	movem.l	(sp)+,d0-d2/a0-a1
+.rts
+	rts
+
+SeasonAttribAdjust	;d0 = rating, d1 = player index, d7 = team; AttribAdjust unless the player is out
+	btst	#3,(GameFlags).w
+	beq.w	AttribAdjust
+	btst	#6,(sflags11).w
+	bne.w	AttribAdjust
+	move.w	d0,-(sp)
+	move.w	d1,d0
+	jsr	(SeasonPlayerOut).l
+	move.w	(sp)+,d0
+	beq.w	.rts
+	jsr	(AttribAdjust).l
+.rts
+	rts
+
 SeasonSetPlayerRecord	;setplayer, saved roster: a0 = the attribute bytes of player d3 on rosterteam, and rostnum is his jersey
 	movem.l	d0/d7/a1,-(sp)
 	move.w	d3,d0

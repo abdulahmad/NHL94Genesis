@@ -67,10 +67,15 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | ID | Fix | Prove |
 | --- | --- | --- |
 | E1 | `SeasonPlayerOut` calls `GetInjuryGames` | Step 11 + trade roster attrib line |
+| E2 | `SeasonAttribAdjust` on scouting matchups and player cards | Injured starter shows unadjusted overall on MATCHUPS / pause card |
+| E3 | `SaveTeamLines` from `SaveSimGame` after human/sim games | Line change in game persists next season start (same clubs) |
+| E4 | Season scouting skips random `Create_HotCold_Table` regen | Hot/cold text follows starters from `SRLines`, not new RNG |
+| E5 | Documented: season `.play` sets User Records on, goalies Auto | Pads still from controller screen; not full setup menu |
 | E6 | Season `GameOver` skips `EncodePW` / `PlayoffScreen` | Step 7 returns to season menu, not password tree |
+| E8 | `TryTeamRecordHighlight` (type 4) when human club has 5+ wins | Highlights may show team W-L-T line after a streak game |
 | E9 | Start on **Create Player** with 20 slots full returns to menu; scroll skips mode 9 when full | Create 20 players, mode line jumps past Create |
 
-Remaining edge cases: **`docs/season_mode_port_plan.md` section 10** (E2–E5, E7–E8, E3 line save-back, E4 scouting).
+Remaining edge cases: **`docs/season_mode_port_plan.md` section 10** (E7 practice UI if `sflags9` bit 7 ever set, E10 fighting/injury, E2 stats `AttribRating` without player context).
 
 ## Quick regression
 

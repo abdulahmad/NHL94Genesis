@@ -87,7 +87,7 @@ SeasonMain	;While GameFlags bit 3 is set. Bit 4 is a new season: the setup scree
 	clr.w	(OptLine).w
 	move.b	(SeasonLine).w,(OptLine+1).w
 	clr.w	(OptNOP).w
-	move.w	#1,(OptUserRec).w
+	move.w	#1,(OptUserRec).w	;season human games: user records on, auto goalies (see SEASON_SMOKE E5)
 	move.w	#1,(OptGoalie).w
 	bset	#5,(GameFlags).w
 	rts
@@ -1050,6 +1050,10 @@ SaveSimGame	;Save the player lines and the team lines of the game just finished
 	movea.l	#AwShots,a1
 	movea.l	#tmstruct,a2
 	bsr.w	AddTeamSeasonStats
+	movea.l	#tmstruct,a2
+	jsr	(SaveTeamLines).l
+	movea.l	#AwShots,a2
+	jsr	(SaveTeamLines).l
 	move.w	(tmstruct+$28).w,d0
 	move.w	(AwShots+$28).w,d1
 	jsr	(TickTeamInjuries).l

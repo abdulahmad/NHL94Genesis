@@ -76,7 +76,7 @@ SaveGameHighlights	;Pick today's highlight of HomeTeam's game and save at GetHig
 	ori.w	#$4000,d0
 	bsr.w	AddHighlight
 .8
-	nop
+	bsr.w	TryTeamRecordHighlight
 	move.w	(StatBuf).w,d0
 	andi.w	#$E000,d0
 	bne.w	.9
@@ -208,6 +208,43 @@ CompareHighlight	;Compare highlight d0 with d1; d3 = 1 and Z clear when d1 is em
 	move.w	#1,d3
 
 rtsHighlight	;rts (SaveGameHighlights in the playoffs)
+	rts
+
+TryTeamRecordHighlight	;Type-4 team standing line when the human club has a long win streak (5+ wins)
+	tst.w	(StatBuf).w
+	bne.w	.rts
+	btst	#3,(GameFlags).w
+	beq.w	.rts
+	btst	#0,(SimFlags).w
+	beq.w	.rts
+	btst	#3,(SeasonFlags).w
+	bne.w	.rts
+	move.w	(HmGoals).w,d0
+	cmp.w	(AwGoals).w,d0
+	bgt.w	.home
+	blt.w	.rts
+	bset	#1,(BA_PS_flags).w
+.home
+	move.w	(HomeTeam).w,d7
+	btst	#1,(BA_PS_flags).w
+	beq.w	.1
+	move.w	(VisTeam).w,d7
+.1
+	move.w	d7,d0
+	mulu.w	#3,d0
+	addi.l	#SRStandings,d0
+	movea.l	#StatWork,a0
+	moveq	#3,d1
+	jsr	(ReadSRAM).l
+	clr.w	d0
+	move.b	(StatWork).w,d0
+	cmpi.w	#5,d0
+	blt.w	.rts
+	move.w	d7,d0
+	ori.w	#$8000,d0
+	move.w	d0,(StatBuf).w
+	clr.w	(StatBuf+2).w
+.rts
 	rts
 
 HighlightsScreen	;Season NHL HIGHLIGHTS screen
