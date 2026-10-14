@@ -2816,6 +2816,9 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 .nda
 	move.w	#$FFFF,tmpdst(a0,d3.w)	;clear out temp space
 	lsr.w	#1,d3	;shift d3 back to its original value
+	IF SEASON=1
+	move.w	Xvel(a0),(rosterteam).w
+	ENDIF
 	movea.l	tmdata(a0),a0	;Offset 1E from Team Struct = The address where the team's data is stored (roster, etc)
 	move.l	a0,-(sp)	;pushes starting position onto the stack
 	adda.w	8(a0),a0	;moves to offset where Off/Def byte is
@@ -2866,6 +2869,13 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	move.b	#2,(ThirdPBonus).w	;move 2 into 3rd Per Bonus
 .playdatamove
 	movea.l	(sp)+,a0	;moves Team Data start to a0
+	IF SEASON=1
+	btst	#6,(sflags11).w
+	bne.w	.romroster
+	jsr	(SeasonSetPlayerRecord).l
+	bra.w	.attrs
+.romroster
+	ENDIF
 	adda.w	(a0),a0	;moves to player data offset (byte 0 and 1 of Team Data)
 .skiploop
 	adda.w	(a0),a0	;skips the player's name length (current byte is name length)
@@ -2873,6 +2883,9 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	dbf	d3,.skiploop	;loops until current player index is met (which was stored in d3)
 	subq.w	#8,a0	;Jump back to start of players attributes
 	move.b	(a0),rostnum(a3)	;Jersey Number
+	IF SEASON=1
+.attrs
+	ENDIF
 	move.b	1(a0),d3	;move Wgt/Agl byte to d3
 	andi.w	#$F0,d3	;Mask Wgt nibble
 	lsr.w	#1,d3	;shift d3 1 bit right (This is taking Wgt and mult by 8)

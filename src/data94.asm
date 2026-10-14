@@ -1132,21 +1132,35 @@ GetPlayerName	;but that is the same symbol as getplayername (SNASM symbols are c
 	movem.l	(sp)+,d0/a2
 	rts
 getname	;gets player number and name, appends to string: a1 = mesarea "NN First Last" for player d0 (roster offset) of team struct a2. The number is the bcd byte after the name
+	IF SEASON=1
+	movem.l	d0-d3/d7/a0/a2-a3,-(sp)
+	ELSE
 	movem.l	d0-d3/a0/a2-a3,-(sp)	;push to stack
+	ENDIF
 	bsr.w	GetPlayerNamePointer	;get to start of player name
 	move.l	a0,-(sp)	;push a0 (address to start of player name) to stack
 	movea.w	#(mesarea-M68K_RAM),a3	;move mesarea to a3 address
 	move.w	#4,(a3)	;move 4 into a3 address location
 	lea	2(a3),a1	;move long address at a3+2 into a1
+	IF SEASON=1
+	move.w	Xvel(a2),d7
+	jsr	(GetJerseyNumber).l
+	move.b	(jerseynum).w,d0
+	ELSE
 	adda.w	(a0),a0	;add data at a0 (player name length) to a0
 	move.b	(a0),d0	;move a0 data (jersey #) to d0
+	ENDIF
 	bsr.w	ConvertByteToDigits	;convert JNo to ascii
 	bsr.w	appendz	;add space after JNo
 	String	' '
 	movea.l	(sp)+,a1	;pop from stack into a1 (address to start of player name)
 	bsr.w	appstring	;add player name to string a3
 	movea.w	#(mesarea-M68K_RAM),a1	;move mesarea address into a1
+	IF SEASON=1
+	movem.l	(sp)+,d0-d3/d7/a0/a2-a3
+	ELSE
 	movem.l	(sp)+,d0-d3/a0/a2-a3	;pop from stack
+	ENDIF
 	rts
 GetPlayerNumInitial	;a1 = mesarea "NN F. Last" (FormatPlayerNumInitial) for player TempPlOffset (bit 15 set: away team). Called from ShowInjuryBox
 	movem.l	d0/a2,-(sp)
@@ -1160,12 +1174,22 @@ GetPlayerNumInitial	;a1 = mesarea "NN F. Last" (FormatPlayerNumInitial) for play
 	movem.l	(sp)+,d0/a2
 	rts
 FormatPlayerNumInitial	;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in TextBuffer. Called from PenaltyShotBox and others
+	IF SEASON=1
+	movem.l	d0-d3/d7/a0/a2,-(sp)
+	ELSE
 	movem.l	d0-d3/a0/a2,-(sp)
+	ENDIF
 	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.w	#(TextBuffer-M68K_RAM),a1
+	IF SEASON=1
+	move.w	Xvel(a2),d7
+	jsr	(GetJerseyNumber).l
+	move.b	(jerseynum).w,d0
+	ELSE
 	adda.w	(a0),a0
 	move.b	(a0),d0
+	ENDIF
 	bsr.w	ConvertByteToDigits
 	move.b	#$20,(a1)+
 	movea.l	(sp)+,a0
@@ -1181,15 +1205,29 @@ FormatPlayerNumInitial	;a1 = mesarea string "NN F. Last" for player d0 of team a
 	cmpa.l	a0,a2
 	bne.s	.copy
 	bsr.w	FinalizeTextBuffer
+	IF SEASON=1
+	movem.l	(sp)+,d0-d3/d7/a0/a2
+	ELSE
 	movem.l	(sp)+,d0-d3/a0/a2
+	ENDIF
 	rts
 FormatPlayerName	;a1 = mesarea string "NN Last" for player d0 of team a2, built in TextBuffer. Called from ShowGoalBox and others
+	IF SEASON=1
+	movem.l	d0-d3/d7/a0/a2,-(sp)
+	ELSE
 	movem.l	d0-d3/a0/a2,-(sp)
+	ENDIF
 	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.w	#(TextBuffer-M68K_RAM),a1
+	IF SEASON=1
+	move.w	Xvel(a2),d7
+	jsr	(GetJerseyNumber).l
+	move.b	(jerseynum).w,d0
+	ELSE
 	adda.w	(a0),a0
 	move.b	(a0),d0
+	ENDIF
 	bsr.w	ConvertByteToDigits
 	move.b	#$20,(a1)+
 	movea.l	(sp)+,a0
@@ -1203,7 +1241,11 @@ FormatPlayerName	;a1 = mesarea string "NN Last" for player d0 of team a2, built 
 	cmpa.l	a0,a2
 	bne.s	.copy
 	bsr.w	FinalizeTextBuffer
+	IF SEASON=1
+	movem.l	(sp)+,d0-d3/d7/a0/a2
+	ELSE
 	movem.l	(sp)+,d0-d3/a0/a2
+	ENDIF
 	rts
 FormatPlayerNameLast	;FormatPlayerNameShort without the leading space ("Last", space padded). Branches into FormatLastName
 	movem.l	d0-d3/a0/a2,-(sp)
@@ -1248,7 +1290,15 @@ FinalizeTextBuffer	;mesarea length word = a1 - mesarea, with a 0 pad byte when o
 	move.w	d0,(a1)
 	rts
 GetPlayerNamePointer	;loops through team roster to get to d0 player: a0 = name string of player d0 (roster offset) of
-	;team struct a2. Each record is a length word String and 8 more bytes
+	;team struct a2. Each record is a length word String and 8 more bytes. The season image asks GetRosterName
+	IF SEASON=1
+	movem.l	d0/d7/a1,-(sp)
+	move.w	Xvel(a2),d7
+	jsr	(GetRosterName).l
+	movea.l	a1,a0
+	movem.l	(sp)+,d0/d7/a1
+	rts
+	ENDIF
 	movea.l	$1E(a2),a0	;offset $1E - ROM address of team data?
 	adda.w	(a0),a0	;add offset (player data start) to a0 address
 	bra.w	.loop

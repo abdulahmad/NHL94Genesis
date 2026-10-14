@@ -667,6 +667,12 @@ InitTeamStructure	;Set up team struct a2 for team d0: store the team number at $
 	movea.w	#$30E,a0	;TeamList
 	asl.w	#2,d0
 	move.l	0(a0,d0.w),$1E(a2)
+	IF SEASON=1
+	btst	#6,(sflags11).w
+	bne.w	.romlines
+	jmp	(LoadTeamLines).l
+.romlines
+	ENDIF
 	tst.w	(OptLine).w
 	beq.w	.0
 	movea.l	$1E(a2),a0

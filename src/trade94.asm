@@ -223,6 +223,7 @@ GetJerseyNumber	;jerseynum = the jersey number byte of player d0 of team d7 (Tea
 	movea.l	#CreatedPlayerBuf,a0
 	clr.b	(a0)+
 	jsr	(ReadSRAM).l
+	move.b	(a0),(jerseynum).w
 .done
 	movem.l	(sp)+,d0-d1/a0
 	rts
@@ -2279,8 +2280,165 @@ InsertInjurySlot
 	rts
 DeleteInjurySlot
 	rts
-SeasonPlayerOut	;Z clear: the player is available. The injury check replaces this
-	moveq	#1,d0
+GoalieCountHook	;GetGoalieCount: saved roster when sflags11 bit 6 is clear, else the team-data nibbles
+	btst	#6,(sflags11).w
+	bne.w	.rom
+	move.w	Xvel(a2),d7
+	jmp	(GetGoalieCountD7).l
+.rom
+	movem.l	d1/a0,-(sp)
+	movea.l	tmdata(a2),a0
+	adda.w	$A(a0),a0
+	move.w	(a0),d1
+	clr.w	d0
+.count
+	addq.w	#1,d0
+	asl.w	#4,d1
+	bne.s	.count
+	movem.l	(sp)+,d1/a0
+	rts
+
+DefenseStartHook	;GetDefenseStart: saved roster when sflags11 bit 6 is clear, else goalies plus the forward nibble
+	btst	#6,(sflags11).w
+	bne.w	.rom
+	move.w	Xvel(a2),d7
+	jmp	(GetDefenseStartD7).l
+.rom
+	movem.l	a0,-(sp)
+	jsr	(GetGoalieCount).l
+	move.w	d0,-(sp)
+	movea.l	tmdata(a2),a0
+	adda.w	8(a0),a0
+	move.b	3(a0),d0
+	lsr.w	#4,d0
+	andi.w	#$F,d0
+	add.w	(sp)+,d0
+	movem.l	(sp)+,a0
+	rts
+
+ForwardCountHook	;GetForwardCount: saved roster when sflags11 bit 6 is clear, else the team-data nibble
+	btst	#6,(sflags11).w
+	bne.w	.rom
+	move.w	Xvel(a2),d7
+	jmp	(GetForwardCountD7).l
+.rom
+	movem.l	a0,-(sp)
+	movea.l	tmdata(a2),a0
+	adda.w	8(a0),a0
+	move.b	3(a0),d0
+	lsr.w	#4,d0
+	andi.w	#$F,d0
+	movem.l	(sp)+,a0
+	rts
+
+PlayerCountHook	;GetPlayerCount: saved roster when sflags11 bit 6 is clear, else the team-data records
+	btst	#6,(sflags11).w
+	bne.w	.rom
+	move.w	Xvel(a2),d7
+	jmp	(GetPlayerCountD7).l
+.rom
+	movem.l	a0,-(sp)
+	movea.l	tmdata(a2),a0
+	adda.w	(a0),a0
+	clr.w	d0
+.loop
+	addq.w	#1,d0
+	adda.w	(a0),a0
+	addq.w	#8,a0
+	cmpi.w	#2,(a0)
+	bne.s	.loop
+	movem.l	(sp)+,a0
+	rts
+
+LoadTeamLines	;Line sets of team struct a2 ($16A) from save RAM (SRLines + team * $41) when that copy is valid.
+	;Line changes on also falls back to team data when sflags11 bit 6 is set. Jumped to from InitTeamStructure
+	tst.w	(OptLine).w
+	beq.w	.nolc
+	tst.w	(ValidSRAM).w
+	bmi.w	.teamdata
+	movem.l	d0-d2,-(sp)
+	move.l	#SRLines,d0
+	move.w	Xvel(a2),d2
+	mulu.w	#$41,d2
+	add.l	d2,d0
+	moveq	#$41,d1
+	movea.l	#ThreeStars,a0
+	jsr	(ReadSRAM).l
+	movem.l	(sp)+,d0-d2
+	btst	#6,(sflags11).w
+	bne.w	.teamdata
+	bra.w	.copy
+.teamdata
+	movea.l	$1E(a2),a0
+	adda.w	6(a0),a0
+.copy
+	lea	$16A(a2),a1
+	move.l	(a0)+,(a1)+
+	move.l	(a0)+,(a1)+
+	addq.w	#8,a0
+	move.w	#$B,d0
+.loop
+	move.l	(a0)+,(a1)+
+	dbf	d0,.loop
+	rts
+.nolc
+	tst.w	(ValidSRAM).w
+	bmi.w	.teamdata2
+	movem.l	d0-d2,-(sp)
+	move.l	#SRLines,d0
+	move.w	Xvel(a2),d2
+	mulu.w	#$41,d2
+	add.l	d2,d0
+	moveq	#$41,d1
+	movea.l	#ThreeStars,a0
+	jsr	(ReadSRAM).l
+	movem.l	(sp)+,d0-d2
+	bra.w	.copy2
+.teamdata2
+	movea.l	$1E(a2),a0
+	adda.w	6(a0),a0
+.copy2
+	moveq	#$D,d0
+	addq.w	#8,a0
+	lea	$16A(a2),a1
+.loop2
+	move.l	(a0)+,(a1)+
+	dbf	d0,.loop2
+	rts
+
+SeasonSetPlayerRecord	;setplayer, saved roster: a0 = the attribute bytes of player d3 on rosterteam, and rostnum is his jersey
+	movem.l	d0/d7/a1,-(sp)
+	move.w	d3,d0
+	move.w	(rosterteam).w,d7
+	jsr	(GetRosterName).l
+	movea.l	a1,a0
+	adda.w	(a0),a0
+	addq.w	#8,a0
+	movem.l	(sp)+,d0/d7/a1
+	subq.w	#8,a0
+	movem.w	d0/d7,-(sp)
+	move.w	(rosterteam).w,d7
+	move.w	d3,d0
+	jsr	(GetJerseyNumber).l
+	move.b	(jerseynum).w,rostnum(a3)
+	movem.w	(sp)+,d0/d7
+	rts
+
+SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (SRRosters, low 5 bits $1E)
+	btst	#6,(sflags11).w
+	bne.w	.exit
+	movem.l	d0/d7-a0,-(sp)
+	asl.w	#2,d0
+	ext.l	d0
+	movea.l	#SaveRAM+2*SRRosters,a0
+	mulu.w	#$38,d7
+	add.l	d7,d7
+	add.l	d0,d7
+	move.w	(a0,d7.l),d0
+	andi.w	#$1F,d0
+	cmp.w	#$1E,d0
+	movem.l	(sp)+,d0/d7-a0
+.exit
 	rts
 
 NumInitialBody	;Shared body of FormatPlayerNumInitial

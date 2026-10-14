@@ -1019,7 +1019,8 @@ SetupDemo	;Demo after no press for $5460 frames. Clear demoflag, seed RNGseed, R
 	move.w	#1,(OptPen).w	;On
 SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, and keep OptLine / OptPlayMode
 	;in TmpOptLine2 / TempOptPlayMode: Auto line changes play as On with sflags7 bit 4, Shootout as Regular Season with gmode2 bit 0
-	;(ClearShootout). Then jmp MakeTree. On the season image, modes 5-11 set their flags and return to the menu. Branched to from GameSetUp
+	;(ClearShootout). Then jmp MakeTree. On the season image, Game With Trades plays as Regular Season with sflags11 bit 6
+	;clear. Modes 6-11 set their flags and return to the menu. Branched to from GameSetUp
 	move.w	(OptGoalie).w,-(sp)
 	move.w	(sp),(goaliemode1).w
 	move.w	(sp)+,(goaliemode2).w
@@ -1050,6 +1051,7 @@ SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, 
 	bclr	#6,(sflags10).w
 	bclr	#6,(sflags11).w
 	cmp.w	#5,d0
+	beq.w	.gtrades
 	blt.w	.teamdata
 	cmp.w	#6,d0
 	beq.w	.newseason
@@ -1083,6 +1085,9 @@ SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, 
 .release
 	bset	#6,(sflags10).w
 	jmp	(ReleasePlayers).l
+.gtrades
+	clr.w	(OptPlayMode).w
+	jmp	maketree
 .backmenu
 	jmp	Opening2
 .teamdata
