@@ -100,9 +100,12 @@ SeasonMain	;While GameFlags bit 3 is set. Bit 4 is a new season: the setup scree
 	clr.b	(AutoplayDay).w
 	jsr	(GamesToday).l
 	bclr	#0,(sflags11).w
+	jsr	(StandingsScreen).l
 .playoffs
-	bclr	#3,(GameFlags).w
-	jmp	(Opening2).l
+	jsr	(InitPlayoffs).l
+	jsr	(WriteSeasonHeader).l
+	jsr	(SetupPlayoffs).l
+	bra.w	.day
 .over
 	bclr	#3,(GameFlags).w
 	jmp	(Opening2).l
@@ -192,9 +195,6 @@ FindDayGames	;a0 = the schedule entry of SeasonDay (count byte, then 2 bytes a g
 	dbf	d5,.loop2
 .6
 	movem.l	(sp)+,d0-d7/a1-a6
-	rts
-
-ReadPlayoffSchedule	;The playoff schedule copy waits for the playoff chunk
 	rts
 
 ClearSeasonData	;New season: clear the game results, standings and the header-save area. Rosters and created players stay
@@ -782,7 +782,7 @@ PrevSeasonDay	;SeasonDay - 1, not below 0
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 
-NextSeasonDay	;SeasonDay + 1. At SeasonLength set SeasonFlags bit 3. A playoff day waits for the playoff schedule
+NextSeasonDay	;SeasonDay + 1; at SeasonLength set SeasonFlags bit 3. In the playoffs advance the day and round
 	btst	#5,(SeasonFlags).w
 	bne.w	.2
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -802,8 +802,29 @@ NextSeasonDay	;SeasonDay + 1. At SeasonLength set SeasonFlags bit 3. A playoff d
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .2
+	movem.l	d0-d7/a0-a6,-(sp)
+	bset	#7,(GameFlags).w
+	addq.b	#1,(SeasonDay).w
+	move.l	(SaveRAM+2*SRPODay).l,d0
+	addq.b	#1,d0
+	move.l	d0,(SaveRAM+2*SRPODay).l
+	jsr	(WriteSeasonHeader).l
+	jsr	(BuildPlayoffDayGames).l
+	bne.w	.4
+	move.l	(SaveRAM+2*SRPORound).l,d0
+	cmp.b	#3,d0
+	bge.w	.3
+	addq.b	#1,d0
+	move.l	d0,(SaveRAM+2*SRPORound).l
+	jsr	(NextPlayoffRound).l
+	bra.w	.4
+.3
 	bset	#4,(SeasonFlags).w
 	jsr	(WriteSeasonHeader).l
+.4
+	bclr	#7,(GameFlags).w
+	jsr	(MakeSRAMChecksum).l
+	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 
 NextSeasonTeam	;seasonteamsel = offset of the first unplayed human game in SeasonTeams after it, -1 none
@@ -901,9 +922,6 @@ SimDayGames	;Simulate every computer game of the day (flags bit 0 set, bit 1 cle
 	rts
 
 SimGameStats	;Player lines for a simulated game wait until a human game records them
-	rts
-
-RecordPlayoffGame	;A playoff series result waits for the playoff schedule
 	rts
 
 GameSetUpSeason	;GameSetUp: a human season game skips the menu. Otherwise the menu runs as usual
@@ -2396,7 +2414,8 @@ MenuStandings	;NHL Standings
 	jsr	(StandingsScreen).l
 	bra.w	MenuStay
 
-MenuPlayoffTree	;The playoff tree waits for the playoff screens
+MenuPlayoffTree	;Playoff tree from save RAM, then the existing PlayoffScreen
+	jsr	(PlayoffTreeScreen).l
 	bra.w	MenuStay
 
 MenuStay	;d0 = 1: stay in the menu

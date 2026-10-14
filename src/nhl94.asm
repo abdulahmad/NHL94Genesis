@@ -48,6 +48,7 @@
 	include	trade94.asm		;rosters, trades, sign and release helpers
 	include	season94.asm		;season setup and header
 	include	controller94.asm	;controller setup before a game
+	include	playoff94.asm	;playoff seeding, schedule, and tree
 	ENDIF
 ; Pad to the next size the cartridge hardware accepts: 1MB, 1.5MB, 2MB or 4MB.
 ; Content past the backup RAM window still builds, with a warning. Past 4MB the build stops.
