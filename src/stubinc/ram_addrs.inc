@@ -28,6 +28,20 @@ NameEntryLen equ $FFFF806A	;create-player name length
 NameEntryMode equ $FFFF806C	;0 list, else the letter grid
 CreateListRow equ $FFFF806E	;create-player list row
 CreateListOldRow equ $FFFF8070	;row that holds the list markers
+CreateNameBuf equ $FFFF8082	;create-player name, 18 characters
+FieldTextBuf equ $FFFF8096	;rating field text
+smallfont3chars equ energybarchars	;third small font sits in the font-2 slot while the create screen is up
+smallfont4chars equ rinkvrcset	;fourth small font sits in the font-3 slot
+smallfontptr equ $FFFF80BA	;small font map the create screen loads
+framermapptr equ $FFFF80BE	;frame map Framer reads when this is set
+teamblocksmapptr equ $FFFF80C2	;team block tiles on the create screen
+SRAMbyte equ $FFFF80C4	;one save-RAM byte while a roster id is read
+attribsum equ $FFFF80C6	;CalcAttribRating sum
+attribcount equ $FFFF80C8	;CalcAttribRating count
+StatBuf equ $FFFF80CA	;create and season stat scratch
+StatWork equ $FFFF81CA	;create name scratch, $40 bytes
+linemarkbuf equ StatWork	;the name string is stored at StatWork+2
+AttribDeltas equ $FFFF820A	;sixteen attribute changes on the rating screen
 tradeteam1 equ $FFFF8072	;first trade club, word plus its 8 byte block
 tradeteam2 equ $FFFF807A	;second trade club
 TradeRoster2 equ $FFFF88B8	;visitor trade rows
@@ -549,6 +563,7 @@ StandingsBuf equ $FFFFE0AC	;26 teams, 3 bytes, filled by ReadStandings
 CreatedPlayerBuf equ $FFFFE0FA	;created player record read while a name is printed
 Stack equ $FFFFFFFE
 Z80_RAM equ $A00000
+SaveRAM equ $200000	;cartridge save RAM, odd bytes
 Z80_YM2612 equ $A04000
 ;	Save RAM offsets. The retail routines keep their own lower offsets.
 SRSeasonHeader equ $E22

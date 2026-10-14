@@ -768,6 +768,9 @@ Opening	;title screen (newTitleScreen), then into Opening2. Jumped to from Begin
 	bsr.w	KillCrowd
 	jsr	(newTitleScreen).l
 Opening2	;reset the stack and clear the variables, then options (GameSetUp, UserNameEntry), playoff screen and (not in a shootout) ScoutingReport, then StartGame
+	IF SEASON=1
+	clr.l	(framermapptr).w
+	ENDIF
 	bsr.w	KillCrowd
 	move	#$2700,sr
 	movea.w	#(Stack-M68K_RAM),sp

@@ -41,6 +41,7 @@
 	IF SEASON=1
 	dcb.b	$100000-*,$FF
 	include	schedule94.asm		;season schedule, no caller yet
+	include	create94.asm		;create player, sign and release
 	dcb.b	$200000-*,$FF		;season image fills out to 2 MB
 	ELSE
 	dcb.b	$100000-*,$FF

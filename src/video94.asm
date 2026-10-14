@@ -1093,7 +1093,11 @@ Framer
 	movem.w	d0-d1,-(sp)
 	move.w	(printa).w,d2
 	add.w	(framercset).w,d2
+	IF SEASON=1
+	jsr	(SeasonFramerMap).l
+	ELSE
 	movea.l	#FramerMap,a1
+	ENDIF
 	adda.l	4(a1),a1
 	addq.w	#4,a1
 	clr.w	d4

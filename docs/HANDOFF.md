@@ -59,7 +59,8 @@ Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run b
 - Chunk 3: `schedule94.asm` at the start of the second megabyte, `Day` macro, no caller. Season image is 2 MB. Retail verify_all MATCH.
 - Chunk 4: season save window is `$8000` bytes, checksum at `$7FFE`, header backup end `$0020FFFF`. A retail checksum keeps the records and moves the line block to `SRLineData`. Retail verify_all MATCH. The season image is not compared to the retail ROM.
 - Chunk 5: seven play mode lines after Shootout. Start on those lines sets the mode flags and returns to the menu. Continue Season is skipped until a header is stored. New playoffs are still modes 2 and 3. Retail verify_all MATCH.
-- Unsure: none. The season image was not booted in an emulator.
+- Chunk 6: Create Player in the second megabyte. Start on that line opens the screen. The create name is `CreateNameBuf`; the record-holders buffer keeps its name. Retail verify_all MATCH.
+- Unsure: the season image was not booted. Jersey numbers and the team stat blocks are stubs until the roster code lands.
 
 ## Current state / Next
 - Comment review: done in 93, 94, 95 and NHLPA93SNES.

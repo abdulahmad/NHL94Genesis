@@ -17,6 +17,9 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 	cmpa.w	#$DEF4,a0
 	ENDIF
 	blt.s	.0
+	IF SEASON=1
+	clr.l	(framermapptr).w	;Framer uses FramerMap until a screen sets this
+	ENDIF
 	clr.w	(PALflag).w		;clear the PAL flag
 	move.w	(VDP_CTRL).l,d0
 	andi.w	#1<<PAL_MODE,d0		;VDP status bit 0 = PAL (50 Hz). it DMA busy; that is bit 1
