@@ -505,7 +505,7 @@ iconx equ $FFFFDEEA
 scoutwait equ $FFFFDEEC
 replaydelay equ $FFFFDEF0
 PALflag equ $FFFFDEF2
-;	Season state. Begin clears through PALflag, so a power-on zeros this block.
+;	Season state. On the season image Begin clears this block. The retail image stops at PALflag.
 ;	Opening2 stops at $D03E, so the block is still here when a game returns to the menu.
 GameFlags equ $FFFFDEF4	;bit 3 season, bit 4 new season, bit 5 human season game, bit 6 random schedule, bit 7 checksum batch
 sflags9 equ $FFFFDEF6	;left clear

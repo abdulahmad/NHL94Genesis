@@ -10,8 +10,12 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 	move	#$2700,sr		;interrupts off
 	movea.w	#(Stack-M68K_RAM),sp	;stack pointer to RAM $FFFE
 	movea.w	#(VSCRLPM-M68K_RAM),a0	;clear out ram
-.0	clr.l	(a0)+			;clear RAM $B000-$DEF3
+.0	clr.l	(a0)+			;clear RAM from $B000 through PALflag
+	IF SEASON=1
+	cmpa.w	#$E11C,a0		;season state through CreatedPlayerBuf
+	ELSE
 	cmpa.w	#$DEF4,a0
+	ENDIF
 	blt.s	.0
 	clr.w	(PALflag).w		;clear the PAL flag
 	move.w	(VDP_CTRL).l,d0

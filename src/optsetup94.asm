@@ -3,7 +3,9 @@
 ;	Play, and team logos on the setup screen.
 
 ;	Options (d7 = line * 2, the offset from OptPlayMode): 0 OptPlayMode (Regular Season,
-;	Continue Playoffs, New Playoffs, New Playoffs/7 game, Shootout), 2 OptNOP, 4 Opt1Team,
+;	Continue Playoffs, New Playoffs, New Playoffs/7 game, Shootout; the season image adds
+;	Game With Trades, New Season, Continue Season, Trade Players, Create Player, Sign Free
+;	Agents and Release Players), 2 OptNOP, 4 Opt1Team,
 ;	6 Opt2Team, 8 OptPerlen, $A OptGoalie, $C OptUserRec (0 On), $E OptPen (0 Off), $10
 ;	OptLine (0 On, 2 Auto). setupcardflags bits: 0 player card up, 1 card side (visitors),
 ;	2 / 3 home / visitors block drawn, 5 C pressed, 6 / 7 home / visitors logo shown.
@@ -40,6 +42,10 @@ GameSetUp	;Game setup screen, called from PeriodOver. Builds the screen (setopti
 .newplay
 	cmpi.w	#2,(OptPlayMode).w	;check if new playoffs
 	blt.w	.contplay	;branch if cont. playoffs or reg season
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	.reggame	;season lines are not a playoff tree
+	ENDIF
 	bsr.w	GoNewPlayoffs	;new playoffs: random tree
 .contplay
 	cmpi.w	#1,(OptPlayMode).w	;check if cont playoffs
@@ -171,6 +177,10 @@ GameSetUp	;Game setup screen, called from PeriodOver. Builds the screen (setopti
 	move.w	(sp)+,d0
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.18
+	IF SEASON=1
+	cmpi.w	#5,(OptPlayMode).w
+	beq.w	.18	;Game With Trades uses the menu teams
+	ENDIF
 	tst.w	(OptPlayMode).w
 	bne.w	.19
 .18
@@ -304,6 +314,10 @@ MoveMenuFrame	;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 lines
 	blt.w	.5
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.5
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	.5	;only new playoffs skip Team 2
+	ENDIF
 	cmp.w	#6,d7
 	beq.w	.optionup
 .5
@@ -351,6 +365,10 @@ SetFrameRectUnused	;An unused copy of SetFrameRect without its printz that uses 
 	blt.w	rtsSetup
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	rtsSetup
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	rtsSetup
+	ENDIF
 	cmp.w	#4,d3
 	bne.w	rtsSetup
 	moveq	#5,d1
@@ -369,6 +387,10 @@ SetFrameRect	;Frame position for line d3 (row $E + d3 - setupfirstline * 2), 23 
 	blt.w	rtsSetup
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	rtsSetup
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	rtsSetup
+	ENDIF
 	cmp.w	#4,d3
 	bne.w	rtsSetup
 	moveq	#5,d1
@@ -408,9 +430,17 @@ FixModeOptions	;Fix the options a mode does not allow, then print them: Shootout
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 OptionLimits	;Number of values of each option
+	IF SEASON=1
+	dc.w	12,8,$1C,$1C,3,2,2,3,3
+	ELSE
 	dc.w	5,8,$1C,$1C,3,2,2,3,3
+	ENDIF
 OptionLimits4Way	;The same with FourWayPlay (12 player choices)
+	IF SEASON=1
+	dc.w	12,$C,$1C,$1C,3,2,2,3,3
+	ELSE
 	dc.w	5,$C,$1C,$1C,3,2,2,3,3
+	ENDIF
 ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its range (WrapOption). Entering Shootout saves User Records, Penalties and
 	;Line Changes (TmpOptUserRec ...), leaving restores them; Team 1 in new playoffs has $1A teams; the Players range depends on the mode and
 	;FourWayPlay. A new play mode starts the playoffs (ContinuePlayoffs / GoNewPlayoffs). Called from GameSetUp and PrintOptions
@@ -422,7 +452,11 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 	move.w	(OptPlayMode).w,d0
 	add.w	d2,d0
 	bpl.w	.0
+	IF SEASON=1
+	move.w	#11,d0	;wrap onto Release Players
+	ELSE
 	move.w	#4,d0
+	ENDIF
 .0
 	cmp.w	#4,d0
 	bne.w	.1
@@ -454,6 +488,10 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 	blt.w	.4
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.4
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	.4	;season lines keep the full team list
+	ENDIF
 	cmp.w	#4,d7
 	bne.w	.4
 	moveq	#$1A,d4	;26 teams in new playoffs
@@ -498,6 +536,10 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 .10
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.11
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	.11	;season lines use the exhibition player list
+	ENDIF
 	tst.w	(OptPlayMode).w
 	bne.w	.loop
 .11
@@ -529,6 +571,24 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 	move.w	#$B,d3
 .set
 	move.w	d3,0(a2,d7.w)
+	IF SEASON=1
+	tst.w	d7
+	bne.w	.seasondone
+	cmpi.w	#7,(OptPlayMode).w
+	bne.w	.seasondone
+	tst.b	(SeasonLength).w
+	bne.w	.seasondone
+	tst.b	(M68K_RAM+SRSeasonHeader+1).l	;saved header length
+	bne.w	.seasondone
+	tst.w	d2
+	bmi.s	.seasonleft
+	addq.w	#1,(OptPlayMode).w	;no header: skip Continue Season
+	bra.w	rtsSetup
+.seasonleft
+	subq.w	#1,(OptPlayMode).w
+	bra.w	rtsSetup
+.seasondone
+	ENDIF
 	tst.w	d2
 	beq.w	rtsSetup
 	cmpi.w	#1,(OptPlayMode).w
@@ -538,13 +598,21 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 	jsr	(ContinuePlayoffs).l	;continue playoffs
 	move.w	(gamelevel).w,d0
 	or.w	(bosgames).w,d0
+	IF SEASON=1
+	beq.w	.loop
+	ELSE
 	beq.s	.loop
+	ENDIF
 	rts
 .16
 	cmpi.w	#2,(OptPlayMode).w
 	blt.w	rtsSetup
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	rtsSetup
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	rtsSetup	;only new playoffs build a tree
+	ENDIF
 	tst.w	d7
 	beq.w	GoNewPlayoffs
 	cmp.w	#4,d7
@@ -675,12 +743,21 @@ NATxt	String	'N/A                 '	;Per. Length in Shootout
 OptionValueOffsets	;Offsets of each option's value Strings. Team 1 / 2 are not read (PrintOptTeamName); User Records uses the On / Off list
 	dc.w	PlayModeValues-OptionValueOffsets,PlayersValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,PerLengthValues-OptionValueOffsets
 	dc.w	GoaliesValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,PenaltiesValues-OptionValueOffsets,LineChangeValues-OptionValueOffsets
-PlayModeValues	;Play Mode: OptPlayMode 0-4
+PlayModeValues	;Play Mode: OptPlayMode 0-4, and 5-11 on the season image
 	String	'Regular Season      '
 	String	'Continue Playoffs   '
 	String	'New Playoffs        '
 	String	'New Playoffs/7 game '
 	String	'Shootout            '
+	IF SEASON=1
+	String	'Game With Trades    '
+	String	'New Season          '
+	String	'Continue Season     '
+	String	'Trade Players       '
+	String	'Create Player       '
+	String	'Sign Free Agents    '
+	String	'Release Players     '
+	ENDIF
 PlayersValues	;Players: OptNOP 0-7, then the FourWayPlay list (+$B0)
 	String	'Demo                '
 	String	'One - Home          '
@@ -942,7 +1019,7 @@ SetupDemo	;Demo after no press for $5460 frames. Clear demoflag, seed RNGseed, R
 	move.w	#1,(OptPen).w	;On
 SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, and keep OptLine / OptPlayMode
 	;in TmpOptLine2 / TempOptPlayMode: Auto line changes play as On with sflags7 bit 4, Shootout as Regular Season with gmode2 bit 0
-	;(ClearShootout). Then jmp MakeTree. Branched to from GameSetUp
+	;(ClearShootout). Then jmp MakeTree. On the season image, modes 5-11 set their flags and return to the menu. Branched to from GameSetUp
 	move.w	(OptGoalie).w,-(sp)
 	move.w	(sp),(goaliemode1).w
 	move.w	(sp)+,(goaliemode2).w
@@ -962,6 +1039,54 @@ SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, 
 	bset	#0,(gmode2).w
 	jsr	(ClearShootout).l
 .1
+	IF SEASON=1
+	move.w	(TempOptPlayMode).w,d0
+	bclr	#3,(GameFlags).w
+	bclr	#4,(GameFlags).w
+	bclr	#5,(GameFlags).w
+	bclr	#2,(sflags10).w
+	bclr	#4,(sflags10).w
+	bclr	#5,(sflags10).w
+	bclr	#6,(sflags10).w
+	bclr	#6,(sflags11).w
+	cmp.w	#5,d0
+	blt.w	.teamdata
+	cmp.w	#6,d0
+	beq.w	.newseason
+	cmp.w	#7,d0
+	beq.w	.contseason
+	cmp.w	#8,d0
+	beq.w	.trade
+	cmp.w	#9,d0
+	beq.w	.create
+	cmp.w	#$A,d0
+	beq.w	.sign
+	cmp.w	#$B,d0
+	beq.w	.release
+	bra.w	.backmenu
+.newseason
+	bset	#3,(GameFlags).w
+	bset	#4,(GameFlags).w
+	bra.w	.backmenu
+.contseason
+	bset	#3,(GameFlags).w
+	bra.w	.backmenu
+.trade
+	bset	#2,(sflags10).w
+	bra.w	.backmenu
+.create
+	bset	#4,(sflags10).w
+	bra.w	.backmenu
+.sign
+	bset	#5,(sflags10).w
+	bra.w	.backmenu
+.release
+	bset	#6,(sflags10).w
+.backmenu
+	jmp	Opening2
+.teamdata
+	bset	#6,(sflags11).w
+	ENDIF
 	jmp	maketree
 CheckNOPUnused	;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no effect
 	tst.w	(OptNOP).w
