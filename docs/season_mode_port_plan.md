@@ -1,6 +1,6 @@
 # Season mode port plan (95G into 94G)
 
-Phase 1 only. No port code until this plan is approved.
+Phase 1 only. The decisions in section 8 are closed. No port code until that work is started separately.
 
 Sources read for this plan:
 
@@ -446,20 +446,15 @@ Confirmed:
 10. **Season ROM.** 2 MB. Retail stays 1 MB and MATCHes.
 11. **Play Mode order.** Existing five lines keep their numbers. Appended order: Game With Trades, New Season, Continue Season, Trade Players, Create Player, Sign Free Agents, Release Players.
 12. **Names.** 94 keeps `AppendNumber`, `PrintCentered`, `FramerMap`, `NameEntryFramer`, and `PrintOverallRating`. Season copies are `HighlightAppendNumber` and `AwardPrintCentered`. The brought frame is `CreateFramerMap`.
+13. **Where the new RAM lives.** Persistent season state is at `$FFFFDEF4`. Menu scratch overlays the replay buffer at `$FFFF0000`. Existing 94 variables stay where they are.
 14. **Roster flag.** `sflags11` bit 6 selects team data. Clear selects `SRRosters`, for Game With Trades and season games.
 15. **Chunk order.** Create, sign, release, and the trade screen are chunks 6 through 8. Game With Trades is chunk 9, the first on-ice check. Cup and awards stay after the playoffs. Injuries and highlights follow the cup.
-
-Still open:
-
-13. **Where the new RAM lives.** Recommendation below. The rest of this plan uses it. Confirm or say to change it.
-
-Put persistent season state at `$FFFFDEF4`, and put menu scratch on top of the replay buffer.
 
 `$FFFFDEF4` holds `GameFlags`, `sflags9` through `sflags13`, the season header image, `SeasonTeams`, `CreatedPlayerBuf`, and the small screen cursors that have to survive a game. That block is about 1 KB. `Begin` clears through `$DEF3`, so a power-on zeros it. `Opening2` clears only through `$D03E`, so the block survives from one game to the next. The stack stays at `$FFFFFFFE`. `$FFFFF000` and above stay stack.
 
 Menu scratch (`TradeBuf`, the trade rosters, the create list, award and leader sorts) overlays `$FFFF0000` while that screen is up. Those screens return to the menu before a game. `ClearSRAM` is the one case that keeps 95's low offsets: `RosterTable`, the line image, and the free-agent list sit at `M68K_RAM` plus their save-RAM offsets so the `$8000` dump lands on the right records. `CreatedPlayerBuf` stays in the `$DEF4` block because `GetCreatedName` runs during a game, while the replay buffer holds that game.
 
-The 95 addresses are the ones to avoid. 95's `GameFlags` is `$FFFFBF08`, which in 94 is `bholdtimer34`. 95's `SeasonStartDay` is `$FFFFD1A4`, which in 94 is `fm_voice_usage_table`. Copying the 95 map would overwrite the pad timers and the FM driver. Retail `SEASON=0` does not assemble these equates into the ROM, and the season build does not move any existing 94 variable.
+The 95 addresses stay unused. 95's `GameFlags` is `$FFFFBF08`, which in 94 is `bholdtimer34`. 95's `SeasonStartDay` is `$FFFFD1A4`, which in 94 is `fm_voice_usage_table`. Those bytes stay the pad timers and the FM driver. Retail `SEASON=0` does not assemble the new equates into the ROM, and the season build does not move any existing 94 variable.
 
 Watch items, not choices:
 
