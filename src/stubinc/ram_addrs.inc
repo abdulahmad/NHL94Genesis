@@ -50,6 +50,7 @@ jerseynum equ $FFFF821C	;jersey number byte read with a roster id
 rosterscroll equ $FFFF821E	;first roster row on the sign and release screens
 TradeFromTeam equ $FFFF8220	;club giving up the player
 TradeToTeam equ $FFFF8222	;club receiving the player
+SeasonGoalSum equ TradeFromTeam	;long goal sum of the human games. The next word is SeasonGameCount. A sim reads the 6 byte save record here
 SeasonGameCount equ $FFFF8224	;human games counted in the season goal total
 rosterteam equ $FFFF8226	;team number while a roster name is built
 screenarg equ $FFFF8228	;team number or background address for a roster screen
@@ -535,7 +536,7 @@ PALflag equ $FFFFDEF2
 GameFlags equ $FFFFDEF4	;bit 3 season, bit 4 new season, bit 5 human season game, bit 6 random schedule, bit 7 checksum batch
 sflags9 equ $FFFFDEF6	;left clear
 sflags10 equ $FFFFDEF8	;bit 2 Trade Players, bit 4 Create Player, bit 5 Sign Free Agents, bit 6 Release Players
-sflags11 equ $FFFFDEFA	;bit 6 set: use team data. Clear: saved rosters (Game With Trades and a season game)
+sflags11 equ $FFFFDEFA	;bit 0 games-today end view, bit 1 previous day, bit 6 set: use team data. Clear: saved rosters (Game With Trades and a season game)
 sflags12 equ $FFFFDEFC	;bit 1 multi-game injury just set, bit 5 end-of-season menu select
 sflags13 equ $FFFFDEFE	;bit 2 Stanley Cup won
 cupwinner equ $FFFFDF00	;champion team number
@@ -551,6 +552,8 @@ SeasonPen equ $FFFFDF0D
 SeasonLine equ $FFFFDF0E
 seasonteamsel equ $FFFFDF10	;index into SeasonTeams, or -1
 SeasonTeams equ $FFFFDF12	;today's games: day, count, then 5 bytes a game
+padcursorchars equ $FFFFDF6E	;vram base of the games-today pad icon
+DateStringBuf equ $FFFFDF70	;MakeDateString builds "Month day" here, through the byte before injurygames
 injurygames equ $FFFFDF98	;length of the last injury
 StandingsMode equ $FFFFDF9A	;which division the standings are showing
 CalTeam equ $FFFFDF9C	;which club the calendar is showing

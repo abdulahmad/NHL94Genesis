@@ -14,6 +14,10 @@ const candidates = [
 const spans = [
   ['CreateFramerMap.map.jim', 0x14c148, 0x14c308],
   ['ControllerBgMap.map.jim', 0x164ac8, 0x165a36],
+  ['GamesTodayLogoMap.map.jim', 0x165a36, 0x167524],
+  ['GamesTodayMap1.map.jim', 0x167524, 0x16767e],
+  ['GamesTodayMap2.map.jim', 0x16767e, 0x16781e],
+  ['GamesTodayMap3.map.jim', 0x16781e, 0x167a44],
   ['CreateBgMap.map.jim', 0x1703fe, 0x172ccc],
   ['TradeBgMap.map.jim', 0x172ccc, 0x17409a],
   ['GMDecisionMap.map.jim', 0x180d54, 0x181078],
