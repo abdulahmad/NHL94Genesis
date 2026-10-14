@@ -759,22 +759,24 @@ IntermissionStart	;reset the clock, song $79, ticker scores, playoff stats at th
 	beq.w	GameOver
 	absjmp	StartPer
 GameOver	;EncodePW (save the password), then in playoff mode PlayoffStatsScreen (the playoff stats) and the playoff screen. Falls into ExitToOpening
-	bsr.w	EncodePW
 	IF SEASON=1
+	btst	#3,(GameFlags).w
+	beq.w	.notseason
 	btst	#2,(sflags13).w
 	beq.w	.nocup
 	jsr	(StanleyCupScreen).l
 .nocup
+	jsr	(SeasonGameOver).l
+	bra.w	ExitToOpening
+.notseason
 	ENDIF
+	bsr.w	EncodePW
 	tst.w	(OptPlayMode).w
 	beq.w	.po
 	bclr	#sfpj,(sflags).w
 	jsr	(PlayoffStatsScreen).l
 .po
 	bsr.w	PlayoffScreen
-	IF SEASON=1
-	jsr	(SeasonGameOver).l
-	ENDIF
 ExitToOpening	;Song $78, then restart at Opening2. Also jumped to from demoread and NextShooter
 	move.w	#SngTitle,-(sp)
 	bsr.w	song

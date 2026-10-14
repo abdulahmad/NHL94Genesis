@@ -2415,19 +2415,38 @@ SeasonSetPlayerRecord	;setplayer, saved roster: a0 = the attribute bytes of play
 	movem.w	(sp)+,d0/d7
 	rts
 
-SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (SRRosters, low 5 bits $1E)
+SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (roster $1E or SRInjuries games left)
 	btst	#6,(sflags11).w
 	bne.w	.exit
 	movem.l	d0/d7-a0,-(sp)
-	asl.w	#2,d0
-	ext.l	d0
+	move.w	d0,d4
+	move.w	d7,d5
+	asl.w	#2,d4
+	ext.l	d4
 	movea.l	#SaveRAM+2*SRRosters,a0
-	mulu.w	#$38,d7
+	move.w	d5,d6
+	mulu.w	#$38,d6
+	move.l	d6,d7
 	add.l	d7,d7
-	add.l	d0,d7
+	add.l	d4,d7
 	move.w	(a0,d7.l),d0
 	andi.w	#$1F,d0
 	cmp.w	#$1E,d0
+	beq.w	.out
+	move.w	d4,d1
+	lsr.w	#2,d1
+	move.w	d5,d7
+	jsr	(GetInjuryGames).l
+	tst.w	d0
+	beq.w	.in
+.out
+	moveq	#0,d0
+	tst.b	d0
+	movem.l	(sp)+,d0/d7-a0
+	rts
+.in
+	moveq	#1,d0
+	tst.b	d0
 	movem.l	(sp)+,d0/d7-a0
 .exit
 	rts

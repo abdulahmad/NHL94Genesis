@@ -577,6 +577,14 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 	move.w	d3,0(a2,d7.w)
 	IF SEASON=1
 	tst.w	d7
+	bne.w	.skcp
+	cmpi.w	#9,d3
+	bne.w	.skcp
+	cmpi.w	#$14,(createdcount).l
+	blo.w	.skcp
+	move.w	#10,(OptPlayMode).w
+.skcp
+	tst.w	d7
 	bne.w	.seasondone
 	cmpi.w	#7,(OptPlayMode).w
 	bne.w	.seasondone
@@ -1081,6 +1089,8 @@ SetupStart	;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, 
 	bset	#2,(sflags10).w
 	jmp	(TradePlayers).l
 .create
+	cmpi.w	#$14,(createdcount).l
+	bge.w	.backmenu
 	bset	#4,(sflags10).w
 	jmp	(CreatePlayer).l
 .sign

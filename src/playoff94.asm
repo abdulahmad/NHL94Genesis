@@ -142,26 +142,26 @@ SetupPlayoffs	;Start the playoffs: save the season header (SRSeasonHeaderSave), 
 	bset	#5,(SeasonDay+1).w
 	jsr	(WriteSeasonHeader).l
 	movea.l	#SaveRAM+2*SRGameResults,a0
-	move.w	#$CCC,d0
-	subq.w	#1,d0
+	move.l	#SRGameResultsBytes,d0
+	subq.l	#1,d0
 .clrres
 	clr.w	(a0)+
 	dbf	d0,.clrres
 	movea.l	#SaveRAM+2*SRPOStandings,a0
-	move.w	#$4E,d0
-	subq.w	#1,d0
+	move.l	#SRStandingsBytes,d0
+	subq.l	#1,d0
 .clrpost
 	clr.w	(a0)+
 	dbf	d0,.clrpost
 	movea.l	#SaveRAM+2*SRPOGoals,a0
-	move.w	#$1B6C,d0
-	subq.w	#1,d0
+	move.l	#SeasonPlayerStatsClear,d0
+	subq.l	#1,d0
 .clrgoals
 	clr.w	(a0)+
 	dbf	d0,.clrgoals
 	movea.l	#SaveRAM+2*SRPOTeamStats,a0
-	move.w	#$104,d0
-	subq.w	#1,d0
+	move.l	#SRTeamStatsBytes,d0
+	subq.l	#1,d0
 .clrteam
 	clr.w	(a0)+
 	dbf	d0,.clrteam
