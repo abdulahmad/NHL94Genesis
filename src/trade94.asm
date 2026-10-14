@@ -2425,15 +2425,16 @@ SaveTeamLines	;Write team a2's line sets at $16A to save RAM SRLines (season gam
 
 SeasonAttribAdjust	;d0 = rating, d1 = player index, d7 = team; AttribAdjust unless the player is out
 	btst	#3,(GameFlags).w
-	beq.w	AttribAdjust
+	beq.w	.adj
 	btst	#6,(sflags11).w
-	bne.w	AttribAdjust
+	bne.w	.adj
 	move.w	d0,-(sp)
 	move.w	d1,d0
 	jsr	(SeasonPlayerOut).l
 	move.w	(sp)+,d0
 	beq.w	.rts
-	jsr	(AttribAdjust).l
+.adj
+	jmp	(AttribAdjust).l
 .rts
 	rts
 
