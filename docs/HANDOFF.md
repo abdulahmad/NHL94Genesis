@@ -63,7 +63,8 @@ Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run b
 - Chunk 7: Sign Free Agents and Release Players open from the menu.
 - Chunk 8: Trade Players opens from the menu. Clearing the battery rebuilds the default rosters and lines and drops created players. Retail verify_all MATCH.
 - Chunk 9: Game With Trades starts an exhibition with the menu clubs and the saved roster. `sflags11` bit 6 stays clear, so lines, names, jersey numbers, and roster counts come from the battery. Regular Season, password playoffs, and Shootout still set the bit and use team data. `GetJerseyNumber` stores the battery jersey in `jerseynum` (95 aliased that byte with the create buffer). Retail verify_all MATCH. Season image is 2 MB, ROM end `$001FFFFF`, SRAM end `$0020FFFF`.
-- Unsure: the season image was not booted. A trade does not move a multi-game injury yet. `SeasonPlayerOut` now reads the roster word; nothing marks a player out for more than the current game.
+- Chunk 10: New Season opens SEASON SETUP from `SeasonMain` before the menu is drawn again. Start writes the 8 byte header, clears results and player stats, and leaves rosters and created players. Continue Season appears once `SeasonLength` or the saved header byte is nonzero. Retail verify_all MATCH.
+- Unsure: the season image was not booted. A trade does not move a multi-game injury yet. `SeasonPlayerOut` reads the roster word; nothing marks a player out for more than the current game. Continue Season returns to the menu until the day loop is in. The setup screen shows five lines; the schedule byte is stored as Normal.
 
 ## Current state / Next
 - Comment review: done in 93, 94, 95 and NHLPA93SNES.
