@@ -257,6 +257,10 @@ ASW equ 27
 ; all-star number: a new playoff team is inserted before ASE and both all-star numbers move up.
 NumTeams equ ASW+1
 NumPlayoffTeams equ ASE
+; Roster slots per team (skaters in card lists, three-stars tables, etc.), not the league count.
+RosterSlots equ 26
+; Season trade/create: team index for the unsigned free-agent list (was hardcoded $1C when NumTeams was 28).
+FreeAgentTeam equ NumTeams
 PlayoffRows equ 32
 PlayoffRowTeams equ 16
 ; Crowd records are NumTeams blocks of CrowdRecBytes at CrowdRecBase. The stock league

@@ -2,7 +2,7 @@
 
 The mod-safe build already pads the ROM, patches the boot checksum, slides team save blocks when `NumTeams` grows, and warns when assembled content passes the backup-RAM window. This plan finishes what chaos asked for: save read/write that follow the chip and the ROM size, not only the team-block offsets.
 
-Stock bytes stay identical until a modder actually needs the new paths. Every phase ends with `tools/verify_all.sh` printing **ALL MATCH** on the retail tree.
+Stock bytes stay identical until a modder actually needs the new paths. Every phase ends with `tools/verify_all.sh` printing **ALL MATCH** on the retail tree. Large-ROM and mod-league builds target **flash carts and emulators** (32 KB season saves where applicable), not original 8 KB cartridges.
 
 ## Phase 1 — Save chip equates (done)
 

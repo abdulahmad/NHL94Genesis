@@ -50,6 +50,8 @@ The records block itself is eight 16-byte records (`RecordsBytes`). It is not on
 
 Leave the backup RAM window alone if the save data should keep working. The build warns when the image passes that window, and it still builds. Past 4MB the assemble stops. When that warning appears, `build94.bat` runs again with `SRAMTOGGLE=1` so `ReadSRAM` / `WriteSRAM` flip the backup-RAM map at `$A130F1` (see `docs/PLAN_DYNAMIC_SAVE_SRAM.md`). Team save offsets still come from `equals.inc` (`CrowdRecBase`, `TeamRecBase`, `NameLogBase`).
 
+**Flash carts and emulators** use the same save chip window as a large ROM image; you are not targeting original 8 KB NHL 94 cartridges. A 34-team league is normally **32 playoff teams plus two all-star teams** (`NumPlayoffTeams` must stay at or below 32). Run `node tools/checkSaveLayout.js` or `bash tools/verify_mod_league.sh` after changing team counts. Season mode has extra rules; see `docs/SEASON_LARGE_LEAGUE.md` on the season branch.
+
 `absjsr` and `absjmp` keep calls working when a routine moves from below `$8000` to above it. The target has to be defined before the call. A forward call is written `jsr (name).l` or `jmp (name).l`. If the startup branch to `Begin` can no longer reach, `build94.bat` assembles a second time with a long jump.
 
 ## Build and test
