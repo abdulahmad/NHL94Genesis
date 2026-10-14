@@ -5,7 +5,7 @@ Phase 1 only. No port code until this plan is approved.
 Sources read for this plan:
 
 - 94G `main` at `881e45c`. `SEGMENT_AGENT.md` ("Current rules (Oct 2026)"), `docs/HANDOFF.md`.
-- 95G `main` at `518a1b0` (public repo, cloned read-only). `SEGMENT_AGENT.md` ("Current rules (Oct 2026)"), `docs/HANDOFF.md`, and the season, schedule, save, playoff, awards, stats, and menu source.
+- 95G `main` at `518a1b0` (public repo, cloned read-only). `SEGMENT_AGENT.md` ("Current rules (Oct 2026)"), `docs/HANDOFF.md`, and the season, schedule, save, playoff, awards, stats, trade, create, and menu source.
 - `START_HERE.md` is not in either repo on `main`. Nothing in this plan depends on a file that is not there.
 
 This is a feature port. The season build will differ from the retail ROM. `main` stays untouched. Retail `npm run build:retail` keeps producing MATCH. The port lives behind `SEASON=1` on `feature/season-mode`.
@@ -16,7 +16,7 @@ This is a feature port. The season build will differ from the retail ROM. `main`
 
 From the player's side, 95G season mode is a saved campaign around the existing game.
 
-Power-on is the same shape as 94: title, then the game setup menu. 95's Play Mode list adds **New Season** and **Continue Season** beside Regular Game, the playoff modes, and Shootout. Trade Players, Create Player, Sign Free Agents, and Release Players are separate Play Mode lines. They are not items inside the season menu.
+Power-on is the same shape as 94: title, then the game setup menu. 95's Play Mode list adds **New Season** and **Continue Season** beside Regular Game, the playoff modes, and Shootout. **Trade Players**, **Create Player**, **Sign Free Agents**, and **Release Players** are separate Play Mode lines. They are not items inside the season menu. This port includes those four lines. They write the rosters and the created-player records that a season game reads. Practice Mode and Game With Trades stay out.
 
 **New Season** opens **SEASON SETUP**. Six lines, changed with left and right, stored with Start:
 
@@ -54,7 +54,15 @@ When the last day is done the menu becomes **On To Playoffs**, plus standings, c
 
 The champion's screen is the Stanley Cup, then nine awards (Hart, Norris, Vezina, Art Ross, Jennings, Pearson, Selke, Presidents', Conn Smythe), each with three finalists and a winner. Start leaves an award early. After the last award the game returns to the title and the setup menu. **Continue Season** reloads the battery header and resumes the saved day. A season game in progress is marked in battery RAM so a reset during the game comes back to the playoffs or the day correctly (`SRSeasonMark`).
 
-Where it sits in 95's flow: `Begin` still runs the title. `Opening2` draws the setup menu (`GameSetUp`). Choosing a season sets `GameFlags` bit 3, and a new season also sets bit 4. `SeasonMain` then owns the loop. A human game sets bit 5 and jumps back into `GameSetUp`, which skips the menu and uses the season's period length, penalties, line changes, and the two clubs from today's list. `GameOver` writes the result (`SeasonGameOver`) and returns to `Opening2`, which calls `SeasonMain` again. The cup flag (`sflags13` bit 2) makes `GameOver` show the cup before that.
+**Create Player** is its own screen. The list holds 20 players, 32 bytes each. The letter grid takes a first and last name. A one-word name shows "Invalid Name" and does not save. Ratings come out of a point pool. Start writes the record and puts the player on the free-agent list. With all 20 slots full, the setup menu skips Create Player when the list is also empty, and a save attempt on a full list shows the full message.
+
+**Sign Free Agents** puts one of those players on a club. The roster stops at 3 goalies, 15 forwards, and 15 defense. **Release Players** sends one back to the free-agent list and will not drop a club under its minimum. The team is chosen on that screen, not on the setup menu.
+
+**Trade Players** starts on the setup menu with two clubs, which have to be different and in the 26-team list. The trade screen marks players on each side. An illegal trade shows the rules text and writes nothing. A legal one goes to the GM screen. Accept runs `ExecuteTrade`: the roster slots swap, and the lines, jersey numbers, injuries, and season stat blocks move with the players. Cancel writes nothing.
+
+A new season clears results and standings. It leaves rosters and created players alone. The battery-clear button rebuilds default rosters and clears created players. Regular Season, the exhibition, keeps the original team-data rosters. A season game uses the saved rosters, so a signed created player and a traded player are the ones on the ice.
+
+Where it sits in 95's flow: `Begin` still runs the title. `Opening2` draws the setup menu (`GameSetUp`). Choosing a season sets `GameFlags` bit 3, and a new season also sets bit 4. `SeasonMain` then owns the loop. A human game sets bit 5 and jumps back into `GameSetUp`, which skips the menu and uses the season's period length, penalties, line changes, and the two clubs from today's list. `GameOver` writes the result (`SeasonGameOver`) and returns to `Opening2`, which calls `SeasonMain` again. The cup flag (`sflags13` bit 2) makes `GameOver` show the cup before that. After `SeasonMain` returns, `Opening2` tests `sflags10` and jumps to `TradePlayers` (bit 2), `CreatePlayer` (bit 4), `SignFreeAgents` (bit 5), or `ReleasePlayers` (bit 6). Each of those screens jumps back to `Opening2` when it is done.
 
 94's matching loop is `Opening2` in `setup94.asm`: `GameSetUp`, name entry, the playoff screen, the scouting report, `StartGame`. `GameOver` runs `EncodePW` (the playoff password) and the playoff screen, then `ExitToOpening`. Exhibition, password playoffs, and the shootout stay on that path. Season is a branch beside them.
 
@@ -64,11 +72,11 @@ Counts below are global labels (routines and the tables they own). Locals are no
 
 | Class | Labels |
 | --- | --- |
-| Straight port | 374 |
-| Adaptation | 25 |
-| Replaced by a 94 routine | 91 |
+| Straight port | 602 |
+| Adaptation | 26 |
+| Replaced by a 94 routine | 92 |
 
-The 25 adaptations are 10 copied routines that need a change (`StanleyCupScreen`, `PrintCentered`, `AppendNumber`, `setInjuryType`, `CheckInjury`, `GetRosterName`, `GetCreatedName`, `SaveTeamLines`, `CopyTeamLines`, `TeamLinesOffset`), the 8 save-RAM routines, and 7 existing hooks (`GameSetUp`, `FixModeOptions`, `Opening2`, `GameOver`, the period-end cup flag, `ReadLineData`, `WriteLineData`). The 91 replacements are the demo readers, the playoff tree screen, the stats, period, line-editor, and three-stars screens, four injury helpers, the three unused leader builders, and the title, credits, and high-score labels in `title95.asm`. Left out of those totals: the trade screen and Create Player, 40 labels (section 8).
+The 26 adaptations are 8 copied routines that need a change (`StanleyCupScreen`, `PrintCentered`, `AppendNumber`, `setInjuryType`, `CheckInjury`, `SaveTeamLines`, `CopyTeamLines`, `TeamLinesOffset`), the 8 save-RAM routines, and 10 existing hooks (`GameSetUp`, `FixModeOptions`, `SetupStart`, `Opening2`, `GameOver`, the period-end cup flag, `ReadLineData`, `WriteLineData`, `InitTeamStructure`, `GetPlayerName`). The 92 replacements are the demo readers, the playoff tree screen, the stats, period, line-editor, and three-stars screens, four injury helpers, the three unused leader builders, the title, credits, and high-score labels in `title95.asm`, and `NameEntryFramer` (the same routine `records94` already has). `GetRosterName` and `GetCreatedName` are straight ports now that Create Player is in. Left out on purpose: `PrintOverallRating` in `create95.asm` (unreferenced, and `cards94` already owns that name), Practice Mode, and Game With Trades.
 
 ### Menus and screens (`front/season95.asm`, 16,772 bytes in 95)
 
@@ -142,13 +150,23 @@ Adaptation: `setInjuryType` (a season injury stores a games-out count) and `Chec
 
 Replaced: `getFgtbyte`, `chkFgtBit1` (`title94`), `updatepwrplay`, `GetLowestPen` (`penalty94`).
 
-### Roster reads (`front/trade95.asm`, the top of the file only)
+### Rosters and trades (`front/trade95.asm`, 6,340 bytes, 48 labels)
 
-Straight port, needed so season stats name the right players: `DefaultRosters`, `GetRosterId`, `ReadTeamRoster`, `WriteTeamRoster`, `GetJerseyNumber`, `FixJerseyNumber`.
+Straight port, the whole file. Roster storage: `DefaultRosters`, `GetRosterId`, `GetCreatedName`, `GetRosterName`, `GetRosterNameTail`, `ReadTeamRoster`, `WriteTeamRoster`, `GetJerseyNumber`, `FixJerseyNumber`. The trade itself: `ExecuteTrade`, `TagTradePositions`, `ShiftTradeUp`, `ShiftTradeDown`, `ExtractTradedPlayer`, `FixLinesRemoved`, `InsertTradedPlayer`, `FixLinesInserted`, `TeamRecordSRAM`, and the two `TradeCountOffsets` tables. The screens: `TradePlayers`, `BuildTradeRoster`, `DrawHomeTradeRoster`, `DrawVisTradeRoster`, `DrawTradeRosterRows`, `DrawTradeLogo`, `TradeGfx`, `ReadTradePads`, `TradeDone`, `TradeExit`, `CheckTrade`, `CountChosen`, `BuildTradeList`, `EvaluateTrade`, `PrintTradeNames`, `ReadEvalTradePads`, `GMDecisionScreen`, `GMDecisionGfx`, `PrintTradedPlayers`, `ReadGMDecisionPads`, `TradeValue`, plus `InvalidTradeText`, `TradeRulesText`, `PositionLetters`, `PositionLetters2`, `TradeRatingSteps`, `TradeRatingValues`, and `rtsTrade`.
 
-Adaptation: `GetRosterName` and `GetCreatedName`. With Create Player left out, `GetCreatedName` returns the team-data record and the created-player branch is skipped.
+`GetRosterName` reads `TeamList` when `sflags11` bit 6 is set (Regular Season) and `SRRosters` otherwise. Team `$1C` is the free-agent list. A roster id of `$1E00` is a created player, and `GetCreatedName` loads that record from `SRCreatedPlayers`. `ExecuteTrade` updates rosters, lines, jerseys, injuries, and the stat blocks, then writes the checksum.
 
-The trade screen itself (`TradePlayers` through `TradeRatingValues`, about 6,340 bytes for the whole file) stays out.
+`ClearSRAM` in the season build calls `DefaultRosters`, `DefaultLineData`, and `ClearCreatedPlayers` before it writes the `$8000` image. `DefaultLineData` (one routine in `lines95.asm`) copies each club's default lines from `TeamList` into the RAM image at `SRLines`. 94 has no routine that fills that block. It is a straight port. `NullSaveClear` in 95 is an empty return and is not copied.
+
+### Create Player, sign, and release (`front/create95.asm`, 12,434 bytes, 187 labels)
+
+Straight port, 185 labels. The screen: `CreatePlayer`, `CreateScreenGfx`, `CreateRatingsGfx`, `DrawCreateList`, `ReadCreatedPlayers`, `ModifyRatings`, `CommitCreatedPlayer`, and the rating editors and field tables (`FieldSpeed` through `EditChecking`, `SkaterFieldTbls`, `GoalieFieldTbls`, the label lists). The name grid: `NameEntry`, `NameEntryBg`, `NameEntryDone`, `CreateLetterGrid`, `GetCreateName`, `SaveCreateName`, `SaveNewName`, `InvalidName`, `BuildEnteredName`, `FormatNameRecord`, `NewCreateRecord`, `InitCreateRecord`. This `NameEntry` is the create-player grid. 94's `NameEntryScreen` stays the record-holders screen.
+
+Sign and release: `SignFreeAgents`, `BuildFreeAgentList`, `DrawFreeAgents`, `CheckMaxGoalies`, `CheckMaxForwards`, `CheckMaxDefense`, `FreeAgentViolation`, `ReleasePlayers`, `DrawReleaseRoster`, `CheckMinGoalies`, `CheckMinForwards`, `CheckMinDefense`, `ReleaseViolation`, `DeleteCreatedPlayer`, `CheckCreateSlots`, `ClearCreatedPlayers`, `GetCreatedId`, `ReadCreateList`, `WriteCreateList`.
+
+Replaced by `records94`: `NameEntryFramer`. The body is the same three instructions, and 94 already has the name.
+
+Not copied: `PrintOverallRating`. 95 marks it unreferenced, and `cards94` already uses that name for the player-card rating.
 
 ### Hooks into game start and game end
 
@@ -156,12 +174,14 @@ These are edits to 94 routines, also counted in the adaptation total:
 
 | 94 routine | Change under `SEASON=1` |
 | --- | --- |
-| `optsetup94` `GameSetUp`, `FixModeOptions`, the Play Mode strings | Add New Season and Continue Season. On a human season game (`GameFlags` bit 5), skip the menu and take period, penalties, lines, and the two teams from the season header and `SeasonTeams`. |
-| `setup94` `Opening2` | After `GameSetUp`, `jsr SeasonMain`. A human game comes back through `GameSetUp` with bit 5 set. |
+| `optsetup94` `GameSetUp`, `FixModeOptions`, `SetupStart`, the Play Mode strings | Append New Season, Continue Season, Trade Players, Create Player, Sign Free Agents, and Release Players. The new lines use new `OptPlayMode` numbers. 95's mode numbers are not copied, because 94's 0 through 4 already mean Regular Season, Continue Playoffs, New Playoffs, New Playoffs/7 game, and Shootout. `SetupStart` sets `GameFlags` bits 3 and 4 for the season lines and `sflags10` bits 2, 4, 5, and 6 for trade, create, sign, and release. On a human season game (`GameFlags` bit 5), skip the menu and take period, penalties, lines, and the two teams from the season header and `SeasonTeams`. |
+| `setup94` `Opening2` | After `GameSetUp`, `jsr SeasonMain`. Then, on the `sflags10` bits above, jump to `TradePlayers`, `CreatePlayer`, `SignFreeAgents`, or `ReleasePlayers`. A human game comes back through `GameSetUp` with bit 5 set. |
 | `setup94` `GameOver` | After `EncodePW`, `jsr SeasonGameOver`. `EncodePW` already returns immediately for a non-playoff mode. |
 | `hockey94` period end / `clockcont_0` | When the last playoff series ends, set `sflags13` bit 2 and `cupwinner` so `GameOver` shows the cup. |
 | `title94` `ReadLineData`, `WriteLineData` | Season build uses offset `SRLineData`. |
-| `sram94` the eight routines above | `$8000` bytes, checksum at `$7FFE`. |
+| `sram94` the eight routines above | `$8000` bytes, checksum at `$7FFE`. Season `ClearSRAM` calls `DefaultRosters`, `DefaultLineData`, and `ClearCreatedPlayers` before the write. |
+| `setup94` `InitTeamStructure` | A season game copies lines from `SRLines` (`LoadTeamLines`'s job) and takes players through `GetRosterName`. Regular Season still copies `teamdata94`. |
+| `data94` `GetPlayerName` | A season game calls `GetRosterName`, so a created or traded player prints the saved name. Regular Season still walks `TeamList`. |
 
 `Begin`, the title screen, `StartGame`, the scouting report, and the intermission stay. `AddPlayoffTeamStats` in `data94.asm` remains the password-playoff stat packer. Season player totals go through `SaveSimGame` and `AddPlayerSeasonStats`.
 
@@ -169,13 +189,13 @@ These are edits to 94 routines, also counted in the adaptation total:
 
 Same edits as the table above, from the player's path:
 
-1. **Setup menu** (`optsetup94`). Retail Play Mode values stay Regular Season, Continue Playoffs, New Playoffs, New Playoffs/7 game, Shootout. The season build appends New Season and Continue Season. Continue Season is omitted when the battery header is empty (`SeasonLength` 0), matching `FixModeOptions` in `setup95.asm`. Choosing New Season sets `GameFlags` bits 3 and 4. Continue Season sets bit 3 only.
-2. **After the menu** (`setup94` `Opening2`). `SeasonMain` runs while bit 3 is set. It returns only when it is about to start a human game or the season is over.
-3. **Game setup for a season game.** `GameSetUp` sees bit 5, copies `SeasonPerlen`, `SeasonPen`, and `SeasonLine` into the option words, and sets `HomeTeam` and `VisTeam` from the selected `SeasonTeams` entry. Name entry, the scouting report, and `StartGame` then run as they do now.
+1. **Setup menu** (`optsetup94`). Retail Play Mode values stay Regular Season, Continue Playoffs, New Playoffs, New Playoffs/7 game, Shootout. The season build appends, in order, New Season, Continue Season, Trade Players, Create Player, Sign Free Agents, Release Players. Those are `OptPlayMode` 5 through 10. Continue Season is skipped when the battery header is empty (`SeasonLength` 0) or the battery is invalid. Create Player is skipped when all 20 slots are full and no created player is stored. Trade Players shows the mode plus the two team lines, and the two clubs are kept different. Create, Sign, and Release show the mode line only. The team for a signing or a release is chosen on that screen. Choosing New Season sets `GameFlags` bits 3 and 4. Continue Season sets bit 3 only. Trade, Create, Sign, and Release set `sflags10` bits 2, 4, 5, and 6.
+2. **After the menu** (`setup94` `Opening2`). `SeasonMain` runs while bit 3 is set. It returns only when it is about to start a human game or the season is over. The `sflags10` bits then enter the trade, create, sign, or release screen. Those screens return to `Opening2`.
+3. **Game setup for a season game.** `GameSetUp` sees bit 5, copies `SeasonPerlen`, `SeasonPen`, and `SeasonLine` into the option words, and sets `HomeTeam` and `VisTeam` from the selected `SeasonTeams` entry. Name entry, the scouting report, and `StartGame` then run as they do now. `InitTeamStructure` and `GetPlayerName` read the saved roster for that game.
 4. **Game end** (`setup94` `GameOver`, and the period-end path in `hockey94`). `SeasonGameOver` writes the score into the day's record, updates standings, and calls `SaveSimGame`. The cup flag sends the champion to `StanleyCupScreen` before `SeasonMain` runs the awards.
 5. **Playoffs.** `PlayoffTreeScreen` feeds the existing `PlayoffScreen`. The password tree (`playoffseats`, `EncodePW`) is unchanged and still serves Continue Playoffs and New Playoffs.
-6. **Stats screens.** The pause-menu stats, period stats, line editor, and three stars stay the 94 screens. The season menu calls the new season screens. No change to the pause menu is required for the season to be playable.
-7. **Injuries.** `CheckInjury` and `setInjuryType` gain a season branch. One Game Only keeps today's "out for the game" behavior.
+6. **Stats screens.** The pause-menu stats, period stats, line editor, and three stars stay the 94 screens. The season menu calls the new season screens. No change to the pause menu is required for the season to be playable. Season player names come from `GetRosterName`.
+7. **Injuries.** `CheckInjury` and `setInjuryType` gain a season branch. One Game Only keeps today's "out for the game" behavior. A trade moves the injury nibble with the player.
 
 `main94.asm` `Start` is unchanged apart from the existing `CHECKSUM` switch. The season build passes `CHECKSUM=0`, so `Start` skips `ValidationRoutine` the same way `build:dev` does.
 
@@ -195,7 +215,9 @@ Same edits as the table above, from the player's path:
 
 A password cannot hold this feature. 94's password is the playoff bracket (`pwddatabuffer`, five words). One season is the header, `$CCC` bytes of game results, standings, a roster per team, five stat words per player, playoff series, and the same stat blocks again for the playoffs. 95's season region from `SRSeasonHeader` through the checksum is about 29 KB.
 
-**Recommendation:** the season build widens battery RAM to `$8000` data bytes, header end `$0020FFFF`, the same window 95 declares. Emulators and flash carts size the save from the header. A real NHL 94 cart has the 8 KB chip, so that cart would keep exhibition records only. Retail build keeps `$203FFF` and `$2000`.
+**Decision:** the season build widens battery RAM to `$8000` data bytes, header end `$0020FFFF`, the same window 95 declares. Emulators and flash carts size the save from the header. A real NHL 94 cart has the 8 KB chip, so that cart would keep exhibition records only. Retail build keeps `$203FFF` and `$2000`.
+
+The 8 KB gap is about 4,310 bytes. Trades, created players, and free agents need `SRRosters` (`$38` a team), the line sets, the jersey numbers, and `SRCreatedPlayers` (20 records of `$20`). Those records sit past the gap. A season that kept the retail battery would have to drop trades and Create Player. They are in, so the season build uses the 32 KB window.
 
 95's low save map is two bytes off 94's (`SRCrowdRecords` is `$B62`, the name log is `$DA2`). Keep 94's offsets for player records, crowd, team records, and the name log so those routines stay byte-identical in the retail build and correct in the season build. From `SRSeasonHeader` upward, use 95's offsets and 95's names. That region starts at `$E22`, just past the name log. It overlaps the line block at `$1EF6`, so the season build moves the line block to `SRLineData` (`$7EF6`). `ReadLineData` and `WriteLineData` take the new offset under the flag.
 
@@ -219,11 +241,11 @@ Season save names, at the 95 offsets:
 | `SRSavedLines2` | `$4B6C` | Extra line sets |
 | `SRSavedLines3` | `$5136` | Extra line sets |
 | `SRJerseyNums` | `$5700` | Jersey numbers |
-| `SRFreeAgentJerseys` | `$5A80` | Reserved so later offsets stay put |
-| `SRCreatedPlayers` | `$5AA0` | Reserved, unused while Create Player is out |
-| `SRCreateCount` | `$5D21` | Reserved |
-| `SRFreeAgentList` | `$5D22` | Reserved |
-| `SRFreeAgentCount` | `$5D57` | Reserved |
+| `SRFreeAgentJerseys` | `$5A80` | Jersey numbers of the free-agent slots |
+| `SRCreatedPlayers` | `$5AA0` | 20 created-player records, `$20` each |
+| `SRCreateCount` | `$5D21` | How many created players are stored |
+| `SRFreeAgentList` | `$5D22` | Free-agent roster ids, 2 bytes a slot |
+| `SRFreeAgentCount` | `$5D57` | How many free agents are unsigned |
 | `SRTeamBlock2` | `$5D58` | Cleared by `InitSeasonStats`, no other reader |
 | `SRInjuries` | `$5E5C` | Games remaining, one nibble a player |
 | `SRSeasonHeaderSave` | `$5FD6` | Header saved across the playoff reset |
@@ -253,7 +275,8 @@ New work variables, 95 names, placed at `$FFFFDEF4` upward. The stack stays at `
 | --- | --- |
 | `GameFlags` | Bit 3 season, bit 4 new season, bit 5 human season game, bit 6 random schedule, bit 7 checksum batch |
 | `sflags9` | Left clear. 95 uses bit 7 for Practice Mode, which this port does not add |
-| `sflags10` | Left clear. 95 uses it for Trade and Create |
+| `sflags10` | Bit 2 Trade Players, bit 4 Create Player, bit 5 Sign Free Agents, bit 6 Release Players. 95's address is `padword3` in 94, so this byte lives here |
+| `CreatedPlayerBuf` | The `$20` byte record `GetCreatedName` reads out of `SRCreatedPlayers`. Callers use it immediately, including during a game, so it stays in this block |
 | `sflags11` | Bit 0 previous day, bit 1 cup day, bit 2 inside `PlayoffScreen`, bit 3 playoff stat page, bit 5 end-of-season menu, bit 6 kept across the `Opening2` clear |
 | `sflags12` | Bit 1 multi-game injury just set, bit 5 end-of-season menu select |
 | `sflags13` | Bit 2 Stanley Cup won |
@@ -273,6 +296,10 @@ New work variables, 95 names, placed at `$FFFFDEF4` upward. The stack stays at `
 
 Large sort buffers use `M68K_RAM` (`$FFFF0000`) while a menu is up, which is the replay frame buffer. 95 does the same (`AwardIds` is an equate on `M68K_RAM`). They are not live during a game. Names: `AwardIds`, `AwardScores`, `RosterTable`, `LeaderPlayers`, `LeaderValues`, `SeedPoints`, `SeedGames`, `SeedCount`. `SeasonTeams` and the header bytes stay in the `$DEF4` block, because `SeasonGameOver` runs at the end of a game, while the replay buffer still holds that game.
 
+Trade and create scratch uses that same overlay, and only while those screens are up: `TradeBuf`, `TradeData`, `TradeWork`, `TradeRoster1`, `TradeRoster2`, `RosterRatings`, `CreatedIds`, `createdcount`, `CreateListTop`, `CreateListSel`, `CreateRecord`, `CreatePoints`, `CreateType`, `CreateCursorX`, `CreateCursorY`, `CreatedList`, `NameEntryMode`, `NameEntryLen`. 95's addresses for these sit on top of 94's pad timers, the FM driver, and `namelogsel`. The port gives them new addresses in the overlay. Create-player name entry does not use 94's `namelog` or `namelength`.
+
+One case keeps 95's low-RAM offsets. Season `ClearSRAM` zeros the first `$8000` bytes of `M68K_RAM` and writes that image to battery RAM. `DefaultRosters` builds `RosterTable` at `M68K_RAM+SRRosters`, `DefaultLineData` writes `M68K_RAM+SRLines`, and `ClearCreatedPlayers` writes `M68K_RAM+SRFreeAgentList`, so the dump lands on the right save records. Those three equates are the SRAM offset plus `M68K_RAM`. The screens can reuse the same storage after that, because a trade or a create returns to the menu before a game starts. `CreatedPlayerBuf` is the exception and stays at `$FFFFDEF4`, as listed above.
+
 ## 5. Assets
 
 ### Reused from 94
@@ -288,6 +315,8 @@ Large sort buffers use `M68K_RAM` (`$FFFF0000`) while a menu is up, which is the
 | `SetupMenuMap`, `SetupFramerMap`, `LogoBoxMap` | The 95 setup-menu art for the exhibition menu | The human game still enters through 94's game setup. Those screens keep their own art |
 | `PrintFont2Map` (`SmallFont94.map.jim`) | The 95 setup-screen font | Already what `GameSetUp` prints with |
 | `SngTitle`, `SngEOG`, `SFXhorn`, the rest of `sound94` | 95 `SoundCmd` songs on the cup and between games | Season screens do not add a new driver. The cup uses `SngEOG` |
+| `SmallFontMap`, `Teamblocksmap`, `BigFontMap` | The same three on the trade, create, GM, and free-agent screens | Those screens remap `SmallFontMap`, draw team blocks, and title with the big font. Same reuse rule as the season screens |
+| `NameEntryScreen`, `NameEntryFramer`, the name log | 94's record-holders name entry | Create Player has its own grid (`NameEntry`). The record-holders screen stays |
 
 In-game rinks, sprites, crowds, and the pause screen are unchanged and stay the 94 files.
 
@@ -326,8 +355,17 @@ In-game rinks, sprites, crowds, and the pause screen are unchanged and stay the 
 | `PearsonPic.map.jim` | 2,340 | Award picture | `0x18022A-0x180B4E` |
 | `StanleyCupImg.map.jim` | 13,486 | Cup picture | `0x196C4C-0x19A0FA` |
 | `CupSprites.map.jim` | 2,200 | Cup sprite frames | `0x19A0FA-0x19A992` |
+| `CreateBgMap.map.jim` | 10,446 | Create Player page. 94's name-entry art is the record-holders screen | `0x1703FE-0x172CCC` |
+| `NameEntryBgMap.map.jim` | 226 | The create-player letter-grid background | `0x1834F4-0x1835D6` |
+| `TradeBgMap.map.jim` | 5,070 | Trade Player page | `0x172CCC-0x17409A` |
+| `GMDecisionMap.map.jim` | 804 | GM decision page | `0x180D54-0x181078` |
+| `TradeAdvantageMap1.map.jim` | 3,448 | Which side the trade favors | `0x18277C-0x1834F4` |
+| `TradeAdvantageMap2.map.jim` | 3,192 | The other advantage panel | `0x181B04-0x18277C` |
+| `FreeAgentMap1.map.jim` | 1,662 | Sign Free Agents page | `0x181486-0x181B04` |
+| `FreeAgentMap2.map.jim` | 1,038 | Release Players page | `0x181078-0x181486` |
+| `Framermap.map.jim` | 448 | Frame tiles those screens load. 94's `FramerMap` is the in-game frame (120 bytes) and `SetupFramerMap` is the options frame. The symbol `Framermap` would collide with `FramerMap`, so the brought file is named `CreateFramerMap` | `0x14C148-0x14C308` |
 
-29 files, 105,170 bytes. The award pictures and the cup are 67,578 bytes of that. Dropping awards and the cup (section 8) leaves 15 files and 37,592 bytes.
+38 files, 131,504 bytes. The award pictures and the cup are 67,578 bytes of that. The trade and create art is 26,334 bytes. Dropping awards and the cup (section 8) leaves 24 files and 63,926 bytes.
 
 How they are built. `tools/extractAssets94.js` accepts only `lst/nhl94.bin` and writes `Extracted/NHL94/`. Season slices are not in that ROM. A season extract step, run by the season prebuild and skipped by retail, reads `lst/nhl95.bin` (gitignored, SHA-1 `09e87b076aa4cd6f057a1d65bb50fd889b509b44`, 2,097,152 bytes) and writes `Extracted/NHL94/Season/` using the same slice-table style as `extractAssets94.js`. The new asm `incbin`s those paths. `Extracted/` stays gitignored. Retail prebuild does not ask for the 95 ROM.
 
@@ -352,7 +390,7 @@ Divisions, from `StandingsGroup0` through `StandingsGroup3` and the conference s
 
 West is Pacific plus Central (12). East is Northeast plus Atlantic (14). Playoff seeds take the top 8 of each. 94's `playoffseats` is a different table: 32 preset 16-team brackets for the password mode. Season standings do not read it. City and nickname strings, player lists, and abbreviations come from `teamdata94.asm` whenever a screen prints a name (`GetRosterName` walks `TeamList`).
 
-`#$1A` in the season source is 26 clubs. `#$1C` in the demo team roller is 28, All-Stars included. Both numbers are already correct for 94.
+`#$1A` in the season source is 26 clubs. `#$1C` in the demo team roller is 28, All-Stars included. Both numbers are already correct for 94. `GetRosterName` also uses team number `$1C` as the free-agent list, one past the All-Star teams.
 
 ## 7. ROM space
 
@@ -366,11 +404,14 @@ Retail is 1,048,576 bytes. The only pad is `dcb.b $100000-*,$FF` after `Validati
 | Cup screen | 674 |
 | Season stats, leaders | ~8,900 |
 | Highlights | ~1,640 |
-| Roster readers and injury routines | ~1,500 |
-| Hooks inside existing files | ~1,000 |
-| Code subtotal | ~37,000 |
-| Assets | 105,170 |
-| Together | ~142 KB |
+| Injury routines | 1,406 |
+| Rosters, trades, and the GM screen (`trade95`) | 6,340 |
+| Create Player, sign, and release (`create95`) | 12,434 |
+| Default lines for a fresh battery (`DefaultLineData`) | under 100 |
+| Hooks inside existing files | ~1,200 |
+| Code subtotal | ~56,000 |
+| Assets | 131,504 |
+| Together | ~187 KB |
 
 The season build appends this at `$100000` and pads to `$200000` (2 MB). `jsr (name).l` reaches it from the first megabyte. `bsr.w` does not, so every new call from an old file is a long `jsr`.
 
@@ -382,40 +423,62 @@ Header, season build only, in `SegaIDTable94.asm`:
 
 `ValidationRoutine` sums the ROM only up to itself, so bytes at `$100000` would not change that sum. The hooks inside the first megabyte would. The retail target does not assemble the hooks, does not change the header, and does not append. `verify_all` on that target still MATCHes `lst/nhl94.bin`. The season image is not compared to the retail ROM.
 
-`src/nhl94.asm` keeps the retail include list and the pad to `$100000`. Under `SEASON=1` it then includes the new files and pads to `$200000`. New files, 95 names: `schedule94.asm` is the wrong name for this data. The new modules keep the 95 file roles with a 94 suffix so they sit next to the rest of this repo: `src/season94.asm`, `src/schedule94.asm`, `src/awards94.asm`, and the season stat block in `src/seasonstats94.asm`. Names of routines inside them stay the 95 names.
+`src/nhl94.asm` keeps the retail include list and the pad to `$100000`. Under `SEASON=1` it then includes the new files and pads to `$200000`. New files, 95 names: `schedule94.asm` is the wrong name for this data. The new modules keep the 95 file roles with a 94 suffix so they sit next to the rest of this repo: `src/season94.asm`, `src/schedule94.asm`, `src/awards94.asm`, `src/trade94.asm`, `src/create94.asm`, and the season stat block in `src/seasonstats94.asm`. Names of routines inside them stay the 95 names. `Framermap` is the exception in section 5: the asset is `CreateFramerMap`.
 
 ## 8. Risks and open questions
 
-1. **Battery size.** Recommended: `$8000` bytes in the season build, 95's layout from `SRSeasonHeader` up, 94's record blocks left where they are, lines moved to `SRLineData`. Alternate: stay inside the retail 8 KB. The free gap is about 4,310 bytes, enough for the header, the `$CCC` result bytes, and standings, and not enough for per-player stats, rosters, or playoff stat blocks. That alternate drops leaders, player stats, highlights, and multi-game injuries. A password is not a third option for the full season.
-2. **Trades and Create Player.** Recommended out of this port. They are separate Play Mode lines in 95, with their own screens (`trade95.asm` 6,340 bytes, `create95.asm` 12,434 bytes) and their own save records. The season loop runs with `DefaultRosters` copied from `teamdata94`. Say if you want them in this branch.
+1. **Battery size.** Decided with trades and Create Player: `$8000` bytes in the season build, 95's layout from `SRSeasonHeader` up, 94's record blocks left where they are, lines moved to `SRLineData`. The retail 8 KB gap cannot hold rosters and created players. A password cannot hold them either.
+2. **Trades and Create Player.** Decided in, including Sign Free Agents and Release Players. A created player is not on a club until Sign Free Agents puts them there, and Release is how they come off. Say if you want Sign and Release held back. Practice Mode and Game With Trades stay out. Game With Trades is the 95 exhibition that uses the saved rosters. Without it, a traded or signed player shows up on the ice in a season game (chunk 11), and Regular Season keeps the original team data.
 3. **Awards and the cup.** Recommended in. `SeasonMain` always ends there, and they are about 68 KB of the assets. The port still boots and plays a season if we stop after the playoff tree and return to the title. Say if you want that cut.
 4. **Multi-game injuries.** Recommended in, because SEASON SETUP has the line. One Game Only is the 94 behavior and can ship first if you want the injury chunk later.
 5. **Highlights.** A season-menu item, about 1.6 KB plus a 646-byte header. Recommended in. Easy to drop without touching the rest.
-6. **Big font.** First try is 94 `BigFontMap` for `BigFontMap2`. If the titles look wrong, bring the 4,514-byte 95 font.
+6. **Big font.** First try is 94 `BigFontMap` for `BigFontMap2`. If the titles look wrong, bring the 4,514-byte 95 font. The trade and create titles use the same font.
 7. **Cup song.** Recommended: play `SngEOG`. Bringing 95's song means porting a song out of the 95 driver, which this plan does not otherwise touch.
-8. **2 MB season ROM.** Recommended. 142 KB fits in the extra megabyte with room. The retail file stays 1 MB.
-9. **Two name clashes.** `AppendNumber` and `PrintCentered` already mean something else in 94. The season copies get `HighlightAppendNumber` and `AwardPrintCentered`. Any further clash found while porting follows the same rule and is logged in `docs/name_map.csv`.
-10. **`Opening2` clears `$B000-$D03E`.** Season state that has to survive a game lives at `$FFFFDEF4` and in battery RAM. Putting it at the 95 addresses would overwrite the FM driver and the pad timers.
-11. **Human-game re-entry.** `SeasonMain` jumps to `GameSetUp` with `GameFlags` bit 5 set. Getting that branch wrong would either show the exhibition menu mid-season or skip it for a normal game. Chunk 6 is the one that proves this, and it is the chunk to watch.
-12. **Continue Season on a bad battery.** `ValidSRAM` already fails closed. Continue Season stays off the menu when the header length is 0, including after `ClearSRAM`.
+8. **2 MB season ROM.** Recommended. About 187 KB fits in the extra megabyte with room. The retail file stays 1 MB.
+9. **Name clashes.** `AppendNumber` and `PrintCentered` already mean something else in 94. The season copies get `HighlightAppendNumber` and `AwardPrintCentered`. `Framermap` collides with `FramerMap`, so the brought frame is `CreateFramerMap`. `NameEntryFramer` is reused from `records94`. `PrintOverallRating` is not copied. Any further clash found while porting follows the same rule and is logged in `docs/name_map.csv`.
+10. **`Opening2` clears `$B000-$D03E`.** Season state that has to survive a game lives at `$FFFFDEF4` and in battery RAM. Putting it at the 95 addresses would overwrite the FM driver and the pad timers. `sflags10` is in that new block so the trade and create jumps still see the bits `SetupStart` set.
+11. **Human-game re-entry.** `SeasonMain` jumps to `GameSetUp` with `GameFlags` bit 5 set. Getting that branch wrong would either show the exhibition menu mid-season or skip it for a normal game. Chunk 11 is the one that proves this.
+12. **Continue Season on a bad battery.** `ValidSRAM` already fails closed. Continue Season stays off the menu when the header length is 0, including after `ClearSRAM`. That same clear rebuilds default rosters and wipes created players.
+13. **Roster identity.** `GetRosterName` has to be the season path in `InitTeamStructure` and `GetPlayerName`, and the team-data path for Regular Season. A miss on the flag puts a traded player into an exhibition, or leaves a season game on the original roster. Chunks 8 and 11 are the pair that prove both.
 
-## 9. Implementation steps
+## 9. Implementation and test plan
 
-Each chunk is behind `SEASON=1`. After every chunk: retail `tools/verify_all.sh` prints MATCH, and the season target assembles to a 2 MB image whose header ROM end is `$1FFFFF`. The season build always passes `CHECKSUM=0`. New comments are plain English. No rename history, no source-file notes, no hardcoded ROM addresses. Routine names stay the 95 names. `docs/HANDOFF.md` is updated on this branch after each chunk. Anything still unclear after about 10 minutes goes on an Unsure list in that handoff and the chunk moves on.
+Each chunk is behind `SEASON=1`, builds, and can be played or checked on its own before the next one starts. After every chunk: retail `tools/verify_all.sh` prints MATCH, and the season target assembles to a 2 MB image whose header ROM end is `$1FFFFF` and whose checksum word is `$0000`. The season build always passes `CHECKSUM=0`. From the menu chunk on, the same boot also starts Regular Season, New Playoffs, and Shootout far enough to reach the next screen, so a bad mode number shows up immediately. New comments are plain English. No rename history, no source-file notes, no hardcoded ROM addresses. Routine names stay the 95 names. `docs/HANDOFF.md` is updated on this branch after each chunk. Anything still unclear after about 10 minutes goes on an Unsure list in that handoff and the chunk moves on.
 
-1. **Flag and empty image.** `SEASON` defaults to 0 in `build94.bat`. `npm run build:season` sets `SEASON=1` and `CHECKSUM=0`. Header ROM end and the pad to `$200000` switch with the flag. No season code yet. Retail MATCH. Season image boots to the current title.
-2. **RAM names.** Equates only, at `$FFFFDEF4` as in section 4. No ROM bytes change. Retail MATCH.
-3. **Schedule.** `Day` macro, `schedule94.asm` at `$100000`, team equates already in `equals.inc`. No caller yet. Both targets build. Retail MATCH.
-4. **Battery window.** Season-build `sram94` uses `$8000` and checksum `$7FFE`. Line block moves to `SRLineData`. Existing record offsets stay. Boot, confirm a retail-style save still loads exhibition records, and confirm a fresh season save clears.
-5. **Menu lines.** New Season and Continue Season set `GameFlags` and return to the old menu. No season loop yet. Boot and move the cursor onto the new lines.
-6. **Season setup and the header.** `SeasonSetup` through `WriteSeasonHeader` and `ClearSeasonData`. Start on New Season shows SEASON SETUP, Start stores the header, and the game returns to the menu. Continue Season appears on the next visit.
-7. **Games today and the day loop.** `SeasonMain`, `GamesToday`, `BuildSeasonTeamList`, `NextSeasonDay`. Human and Computer toggles work. Play Games with every game set to Computer simulates the day (`SimDayGames`) and advances the date.
-8. **One human game.** `GameSetUp` bit 5 branch, `SeasonGameOver`, `RecordGameResult`, `SaveSimGame`. Pick a human game, play it, and see the score on Games Today the next day.
-9. **Standings and calendar.** `StandingsScreen`, `CalendarScreen`, `CountTeamGames`. Both update from the result just saved.
-10. **Season stats.** Player stats, team stats, league leaders. `InitSeasonStats` and the stat writers are already in from chunk 8. This chunk is the screens.
-11. **Playoffs.** `InitPlayoffs`, `SetupPlayoffs`, the series scheduler, `PlayoffTreeScreen` calling the existing `PlayoffScreen`. End the regular season and play a series through to a champion.
-12. **Cup and awards.** `StanleyCupScreen` with `SngEOG`, then `SeasonAwards`, then back to the title.
-13. **Injuries and highlights.** `SetInjuryGames` and the season menu highlights page. Multi-game injuries carry across days. Highlights shows the saved line from the last human game.
-14. **Pass over the branch.** Retail MATCH again. Season build boots from a cold start, a new season, a continued season, a simulated day, a played game, the playoffs, and the cup.
+Trades and Create Player land before the season loop. They only need the menu and the battery. A created player is reviewed on the create screen, then on the sign screen, then on the ice in the first human season game.
 
-Chunks 12 and 13 can swap or drop if you cut awards, the cup, or highlights in section 8. Chunks 1 through 11 are the season itself.
+1. **Flag and empty image.** `SEASON` defaults to 0 in `build94.bat`. `npm run build:season` sets `SEASON=1` and `CHECKSUM=0`. Header ROM end and the pad to `$200000` switch with the flag. No season code yet. **Proves:** retail MATCH. The season image boots to the current title. The Play Mode list is unchanged.
+
+2. **RAM names.** Equates only, at `$FFFFDEF4` and in the menu overlay, as in section 4. **Proves:** retail MATCH. The season image still boots to the current title.
+
+3. **Schedule.** `Day` macro, `schedule94.asm` at `$100000`, team equates already in `equals.inc`. No caller yet. **Proves:** both targets build. Boot looks the same as chunk 2.
+
+4. **Battery window.** Season-build `sram94` uses `$8000` and checksum `$7FFE`. Line block moves to `SRLineData`. Record, crowd, team, and name-log offsets stay. The season save names exist. `ClearSRAM` can call `DefaultRosters` and `DefaultLineData` once those routines exist in chunk 8; until then the new area is zero. **Proves:** cold boot. Exhibition records and the name log still load. The existing clear-battery button still clears them. A second boot after a good save still validates. `build:retail` still uses the 8 KB window and MATCHes.
+
+5. **Menu lines.** Append the six lines. `SetupStart` sets the flags. Choosing a new line returns to the menu. No screens yet. **Proves:** the cursor reaches New Season, Continue Season, Trade Players, Create Player, Sign Free Agents, and Release Players. Continue Season is skipped when no header is stored. Start on each new line returns to the menu and does not drop into a game. Regular Season still reaches the scouting report. Continue Playoffs and New Playoffs still reach the password tree. Shootout still starts. Record holders and the old name entry still open.
+
+6. **Create Player.** `create94.asm`: the list, the letter grid, the rating pool, and the save into `SRCreatedPlayers` and `SRFreeAgentList`. **Proves:** enter a first and last name, set ratings, Start. Power cycle and the player is still in the list. A one-word name shows Invalid Name and does not add a record. The 20th player fills the list, and another save shows the full message. Leaving without Start adds nothing. The record-holders name entry still stores a user name.
+
+7. **Sign Free Agents and Release Players.** The rest of `create94.asm`. **Proves:** sign the player from chunk 6 onto a club. A side that already has 3 goalies, 15 forwards, or 15 defense refuses another of that position. Release puts the player back on the free-agent list and refuses to drop a club under its minimum. Power cycle keeps the signing. Cancel writes nothing.
+
+8. **Trade Players.** `trade94.asm`, including `DefaultRosters`, `GetRosterName`, `GetCreatedName`, and `ExecuteTrade`. `ClearSRAM` now rebuilds default rosters and default lines, and clears created players. **Proves:** two different clubs. An illegal selection shows the rules text and the rosters are unchanged after a power cycle. A legal trade reaches the GM screen. Accept swaps the players, and a power cycle still shows the swap. Cancel on the GM screen leaves the old rosters. The created player from chunk 7 can be one side of the trade once that player is signed. Regular Season still uses the original team-data rosters. The battery-clear button restores the default rosters and removes the created player.
+
+9. **Season setup and the header.** `SeasonSetup` through `WriteSeasonHeader` and `ClearSeasonData`. **Proves:** New Season shows SEASON SETUP. Start stores the six lines and returns to the menu. Continue Season is present on the next visit and after a power cycle. The trade and the created player from chunks 6 through 8 are still in the battery. New Season does not put the rosters back to the team-data defaults.
+
+10. **Games today and a simulated day.** `SeasonMain`, `GamesToday`, `BuildSeasonTeamList`, `NextSeasonDay`, `SimDayGames`. **Proves:** A toggles Human and Computer. Left and right change the day. Play Games with every game on Computer advances the date, and the games-today list shows simulated scores. Play Until A Day can be cancelled and the day stays put.
+
+11. **One human season game.** `GameSetUp` bit 5 branch, `InitTeamStructure` and `GetPlayerName` reading `SRRosters`, `SeasonGameOver`, `RecordGameResult`, `SaveSimGame`. **Proves:** set one game to Human and play it. Games Today shows that score the next day. The traded player and the signed created player are on the ice and in the names. Quit to the title and start Regular Season with the same two clubs: those players are back to the original team data. Continue Season returns to the saved day.
+
+12. **Standings and calendar.** `StandingsScreen`, `CalendarScreen`, `CountTeamGames`. **Proves:** the game from chunk 11 changes that club's W, L, or T, and the calendar cell shows the opponent and the result. The other three division pages scroll. A simulated day from chunk 10 is on the calendar too.
+
+13. **Season stats.** Player stats, team stats, league leaders. The stat writers are already in from chunk 11. This chunk is the screens. **Proves:** the human game is in the player line, the team line, and the leaders. The created player's line uses the name entered in chunk 6.
+
+14. **Playoffs.** `InitPlayoffs`, `SetupPlayoffs`, the series scheduler, `PlayoffTreeScreen` calling the existing `PlayoffScreen`. **Proves:** end the regular season. The menu becomes On To Playoffs. The tree is the top 8 of each conference, 1 vs 8. Play a series on the existing playoff screen through to a champion. The password playoff modes still use `playoffseats`.
+
+15. **Cup and awards.** `StanleyCupScreen` with `SngEOG`, then `SeasonAwards`, then the title. **Proves:** the champion's cup screen, then the nine awards. Start leaves an award early. After the last award the title is back. Continue Season follows whatever 95 does with a finished header (the header length is what the menu tests).
+
+16. **Injuries and highlights.** `SetInjuryGames` on the season branch of `CheckInjury`, and the highlights page. **Proves:** with Injuries set to Multi-game, a player hurt in one game is still out the next day, and a trade takes that injury with him. One Game Only clears it after the game. Highlights shows a line saved from the last human game.
+
+17. **Full pass.** Retail MATCH again. One season image, from a cold start: create a player, sign him, trade him, start a season, simulate a day, play a day, read the standings, finish the playoffs, see the cup. Power cycle in the middle and Continue Season resumes the saved day.
+
+Chunks 15 and 16 can swap or drop if you cut awards, the cup, or highlights in section 8. Chunks 6, 7, and 8 are reviewable before any season day exists. Chunks 1 through 5 are the shared floor: every later chunk still has a matching retail ROM and a bootable season image.
