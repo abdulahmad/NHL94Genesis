@@ -39,6 +39,8 @@
 	include	title94.asm		; $0FE556  NEW in 94: song select, title, credits
 	include	checksum94.asm		; $0FFAC0 checksum
 	IF SEASON=1
+	dcb.b	$100000-*,$FF
+	include	schedule94.asm		;season schedule, no caller yet
 	dcb.b	$200000-*,$FF		;season image fills out to 2 MB
 	ELSE
 	dcb.b	$100000-*,$FF
