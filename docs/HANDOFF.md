@@ -50,6 +50,13 @@ Follow 92G (EA source): ~31% of its locals are number-only (.0, .1 ...), the res
 - Renames are scope-aware (routine scope, code part only, never comments); diff-review every commit.
   Tools on the box: /workspace/tools_ll/ll.py (rename/list), prop.py (copy parent local names).
 
+## Season mode port
+
+Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run build:season` (or `set season=1&& set checksum=0&& build94.bat`) builds the 2 MB season image with `CHECKSUM=0`. Segment builds pass `SEASON=0`.
+
+- Chunk 1: the flag, the season header ROM end, and the fill to 2 MB. No season code yet.
+- Unsure: none.
+
 ## Current state / Next
 - Comment review: done in 93, 94, 95 and NHLPA93SNES.
 - Name pass (full body read), records in docs/name_review_93.md / _94.md / _95.md:

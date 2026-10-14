@@ -38,4 +38,8 @@
 	include	goalie94.asm		; $0FE1D8  NEW in 94: manual goalie
 	include	title94.asm		; $0FE556  NEW in 94: song select, title, credits
 	include	checksum94.asm		; $0FFAC0 checksum
+	IF SEASON=1
+	dcb.b	$200000-*,$FF		;season image fills out to 2 MB
+	ELSE
 	dcb.b	$100000-*,$FF
+	ENDIF

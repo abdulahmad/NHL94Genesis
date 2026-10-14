@@ -7,6 +7,7 @@ set "workspaceFolder=%~dp0"
 REM Set default values for rev and checksum if not provided
 if not defined rev set rev=0
 if not defined checksum set checksum=1
+if not defined season set season=0
 
 REM Pre-step: tools\prebuild.js checks the ROM and Extracted/ and extracts the assets if they are missing
 REM or incomplete; it stops the build with the ROM path, SHA-1 and size if the ROM is missing. The npm
@@ -40,11 +41,18 @@ if "%checksum%"=="0" (
     set checksumFlag="/e CHECKSUM=1"
 )
 
+REM Season mode is a separate image. Retail leaves this at 0.
+if "%season%"=="1" (
+    set seasonFlag="/e SEASON=1"
+) else (
+    set seasonFlag="/e SEASON=0"
+)
+
 REM Run the assembler with all flags
 "%workspaceFolder%assembler\Assembler.exe" ^
   /p /m /g ^
   /o d- /o s- /o r+ /o l+ /o l. /o ow+ /o op- /o os+ /o oz+ /o omq- /o oaq+ /o osq+ ^
-  %revFlag% %checksumFlag% ^
+  %revFlag% %checksumFlag% %seasonFlag% ^
   "%workspaceFolder%src\nhl94.asm,%workspaceFolder%output\nhl94.bin,%workspaceFolder%output\nhl94,%workspaceFolder%output\nhl94" ^
   > "%workspaceFolder%output\Build94.log"
 
