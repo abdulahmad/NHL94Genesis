@@ -2455,6 +2455,37 @@ SeasonSetPlayerRecord	;setplayer, saved roster: a0 = the attribute bytes of play
 	movem.w	(sp)+,d0/d7
 	rts
 
+SeasonStarterListPtr	;a0 = team struct, a0 = pointer to the 6 starter slots (SRLines copy at $172 or ROM lines)
+	btst	#3,(GameFlags).w
+	beq.w	.rom
+	btst	#6,(sflags11).w
+	bne.w	.rom
+	lea	$172(a0),a0
+	rts
+.rom
+	movea.l	$1E(a0),a0
+	adda.w	6(a0),a0
+	rts
+
+SeasonAttribRatingHook	;Z to skip AttribAdjust on pause/stats overall when player d0 is out
+	btst	#3,(GameFlags).w
+	beq.w	.notout
+	btst	#6,(sflags11).w
+	bne.w	.notout
+	movem.l	d0/d7,-(sp)
+	move.w	Xvel(a2),d7
+	jsr	(SeasonPlayerOut).l
+	movem.l	(sp)+,d0/d7
+	beq.w	.isout
+.notout
+	moveq	#1,d0
+	cmp.w	#0,d0
+	rts
+.isout
+	clr.w	d0
+	tst.w	d0
+	rts
+
 SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (roster $1E or SRInjuries games left)
 	btst	#6,(sflags11).w
 	bne.w	.exit

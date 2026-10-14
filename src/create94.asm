@@ -67,6 +67,8 @@ CreateScreenGfx	;Set up VDP planes and load create-player graphics/palettes
 
 CreatePlayer	;Create Player screen entry: load graphics, draw title, init player list and name editor
 	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	CheckCreateSlots
+	bmi.w	.createPlayerExit
 	bclr	#1,(BA_PS_flags).w
 	bsr.w	CreateRatingsGfx
 	move.w	d4,(BigFontChars).w

@@ -50,6 +50,25 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 - **Playoff Tree** menu item opens `PlayoffTreeScreen` → `PlayoffScreen`.
 - Password **Continue / New Playoffs** still use `playoffseats` and are unchanged.
 
+## Integration edge cases (E1–E11)
+
+| ID | Prove in emulator |
+|----|-------------------|
+| E1 | Trade screen overall for a multi-game injured star matches “out” (no `AttribAdjust` bump); same as manual OUT slot. |
+| E2 | In-game player stats **Overall** column matches trade screen for injured/out players. |
+| E3 | Change lines in a human season game, finish game, start another day with same club — starters follow saved `SRLines`. |
+| E4 | Scouting report hot/cold lists reflect season line set, not stock ROM lines. |
+| E5 | Human season game: user records on, auto goalies (by design; no setup menu). |
+| E6 | Season human `GameOver` returns to day loop without password encode or retail playoff tree. |
+| E7 | Controller screen: practice player list is empty (stub); pads still assign. |
+| E9 | With 20 created players, **Create Player** from main menu does nothing (returns to menu). |
+| E10 | *(Likely N/A — re-verify vs 95 ROM)* Plan once tied a missing `setInjuryType` prologue to “fighting”; **Genesis 95 has no fist-fight mode** (`checkfight` is `rts`). Season setup is **Injuries** (multi-game vs one game), not Fighting. Deferred hook was dropped for **1MB `checks94`↔`rtss2` branch limit**; only pursue if 95 disassembly shows real behavior we still miss. |
+| E8 | Type-4 standing highlights still optional; goal/assist/save highlights unchanged. |
+| E11 | Retail ROM still MATCH; season hooks stay `jsr (Routine).l` in collide/setup. |
+| E14 | Team with **128+** points (e.g. 164) stays at **top** of division standings and qualifies for playoffs (`SortStandings` / `SortSeeds` use unsigned byte compares; Pts column uses word math). |
+
+Full notes: **`docs/season_mode_port_plan.md` section 10**. E12 hardware / E13 merge are release tasks.
+
 ## Cup and awards (chunk 18)
 
 - Last playoff game: optional cup during `GameOver` when `sflags13` bit 2 is set.
@@ -76,6 +95,10 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | E9 | Start on **Create Player** with 20 slots full returns to menu; scroll skips mode 9 when full | Create 20 players, mode line jumps past Create |
 
 Remaining edge cases: **`docs/season_mode_port_plan.md` section 10** (E7 practice UI if `sflags9` bit 7 ever set, E10 fighting/injury, E2 stats `AttribRating` without player context).
+| Item | Behavior today |
+|------|----------------|
+| Hardware boot | Season 2 MB image not verified on real Genesis hardware in this repo. |
+| Highlights type 4 | `PrintRecordHighlight` exists; standing-streak saves not ported from 95. |
 
 ## Quick regression
 

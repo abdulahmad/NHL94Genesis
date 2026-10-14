@@ -937,6 +937,10 @@ AttribFighting	;Bit 0 of the nibble is the handedness: drop it, then a rating ou
 AttribRating	;d0 * 100 / d1, adjusted (AttribAdjust, high ROM); falls into AttribPrintPct
 	mulu.w	#$64,d0	;'d'   ; mult by 100 dec
 	divu.w	d1,d0	;divide by d1 (usually 100 dec)
+	IF SEASON=1
+	jsr	(SeasonAttribRatingHook).l
+	beq.w	AttribPrintPct
+	ENDIF
 	jsr	(AttribAdjust).l
 AttribPrintPct	;Print d0 4 wide, then 4 blanks
 	moveq	#4,d1

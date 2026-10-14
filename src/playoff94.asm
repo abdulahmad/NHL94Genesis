@@ -60,13 +60,13 @@ SortSeeds	;Bubble sort the SeedCount team bytes at a0 by SeedPoints, then SeedGa
 	move.b	(a1,d6.w),d0
 	move.b	1(a0,d7.w),d6
 	cmp.b	(a1,d6.w),d0
-	bgt.w	.next
-	blt.w	.swap
+	bhi.w	.next
+	blo.w	.swap
 	move.b	(a0,d7.w),d6
 	move.b	(a2,d6.w),d0
 	move.b	1(a0,d7.w),d6
 	cmp.b	(a2,d6.w),d0
-	ble.w	.next
+	bls.w	.next
 .swap
 	bset	#6,(sflags6).w
 	move.b	(a0,d7.w),d5
