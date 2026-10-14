@@ -855,7 +855,7 @@ CalcStarScores	;Star score for every roster slot of both teams to ThreeStars (26
 	clr.w	d0
 	btst	#7,2(a0)
 	beq.w	.slot
-	addi.w	#RosterSlots,d0	;away goal: second rosterSlots entries
+	addi.w	#RosterSlots,d0	;away goal: second RosterSlots entries
 .slot
 	add.b	3(a0),d0
 	asl.w	#2,d0
