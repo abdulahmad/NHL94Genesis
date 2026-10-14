@@ -55,7 +55,7 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | E6 | Season human `GameOver` returns to day loop without password encode or retail playoff tree. |
 | E7 | Controller screen: practice player list is empty (stub); pads still assign. |
 | E9 | With 20 created players, **Create Player** from main menu does nothing (returns to menu). |
-| E10 | *(Deferred)* Season **Fighting: Off** should force period-only fight injuries; needs a short `setInjuryType` hook without growing 1MB `checks94`↔`rtss2` span. |
+| E10 | *(Likely N/A — re-verify vs 95 ROM)* Plan once tied a missing `setInjuryType` prologue to “fighting”; **Genesis 95 has no fist-fight mode** (`checkfight` is `rts`). Season setup is **Injuries** (multi-game vs one game), not Fighting. Deferred hook was dropped for **1MB `checks94`↔`rtss2` branch limit**; only pursue if 95 disassembly shows real behavior we still miss. |
 | E8 | Type-4 standing highlights still optional; goal/assist/save highlights unchanged. |
 | E11 | Retail ROM still MATCH; season hooks stay `jsr (Routine).l` in collide/setup. |
 | E14 | *(Planned, critical)* Team with **128+** regular-season points stays at **top** of division standings and qualifies for playoffs (95 had signed-byte sort bug; see plan §10 and [forum fix write-up](https://forum.nhl94.com/index.php?/topic/26073-nhl95-bug-fix-make-the-playoffs-with-128-points/)). |
