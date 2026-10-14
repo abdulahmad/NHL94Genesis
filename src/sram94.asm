@@ -18,22 +18,39 @@ InitSaveRAM	;Called from Begin. Copy the $2000 byte save RAM (the odd bytes) to 
 	cmp.b	#$B0,d0	;Start+B+C buttons held down
 	beq.w	.setiterator2	;branch if held down
 	moveq	#0,d0	;move 0 into d0
+	IF SEASON=1
+	move.l	#$8000,d1
+	ELSE
 	move.l	#$2000,d1	;$2000 into d1
+	ENDIF
 	movea.l	#M68K_RAM,a0	;start of RAM into a0
 	bsr.w	ReadSRAM	;Writes SRAM to RAM
 	bsr.w	ValidateSRAM
 	tst.w	(ValidSRAM).w
 	bpl.w	.ex
+	IF SEASON=1
+	bsr.w	KeepRetailSave	;a retail checksum keeps the records and moves the line block
+	tst.w	(ValidSRAM).w
+	bpl.w	.ex
+	ENDIF
 	bsr.w	ClearSRAM
 	moveq	#0,d0
+	IF SEASON=1
+	move.l	#$8000,d1
+	ELSE
 	move.l	#$2000,d1
+	ENDIF
 	movea.l	#M68K_RAM,a0
 	bsr.w	ReadSRAM	;Writes SRAM to RAM
 	bsr.w	ValidateSRAM
 .ex
 	rts
 .setiterator
+	IF SEASON=1
+	move.w	#$7FFF,d2	;$8000 bytes
+	ELSE
 	move.w	#$1FFF,d2	;$2000 bytes
+	ENDIF
 .SRAMloop
 	move.w	#1,d1	;bit 0, then up to bit 7
 	move.w	#7,d0
@@ -78,8 +95,12 @@ SRAMWaitVblank	;Wait for the next vblank. Called from InitSaveRAM
 VBcount	;vbint handler while InitSaveRAM runs: vcount + 1 only
 	addq.w	#1,(vcount).w	;vblank with counter only
 	rte
-ValidateSRAM	;Check the save RAM copy in M68K_RAM: byte $1FFF must be the sum of bytes 0-$1FFD, byte $1FFE its complement. ValidSRAM = 0 if they match, -1 if not. Called from InitSaveRAM
+ValidateSRAM	;Check the save RAM copy in M68K_RAM: the byte after the checksum must be the sum, and the checksum byte its complement. ValidSRAM = 0 if they match, -1 if not. Called from InitSaveRAM
+	IF SEASON=1
+	move.w	#$7FFD,d1
+	ELSE
 	move.w	#$1FFD,d1	;set iterator to  $1FFD
+	ENDIF
 	clr.w	d0	;clear d0
 	lea	(M68K_RAM).l,a0	;set a0 to start of RAM
 .loop
@@ -111,8 +132,22 @@ ValidateSRAM	;Check the save RAM copy in M68K_RAM: byte $1FFF must be the sum of
 	st	(ValidSRAM).w	;set
 .x
 	rts
-ClearSRAM	;Clears first $2000 of RAM and SaveRAM: zero M68K_RAM $0-$1FFF with byte $1FFE = $FF (the checksum of zeros), write it to
-	;the save RAM, set byte 1 to 1, then MakeSRAMChecksum. Called from InitSaveRAM
+ClearSRAM	;Clears the save RAM. Retail: zero $2000 bytes, byte $1FFE = $FF, write it, set byte 1 to 1, then MakeSRAMChecksum.
+	;Season: zero $8000 bytes and write the checksum at the end of that window. Called from InitSaveRAM
+	IF SEASON=1
+	lea	(M68K_RAM).l,a0
+	move.l	#$1FFF,d0
+	clr.l	d1
+.loop
+	move.l	d1,(a0)+
+	dbf	d0,.loop
+	moveq	#0,d0
+	move.l	#$8000,d1
+	movea.l	#M68K_RAM,a0
+	bsr.w	WriteSRAM
+	bsr.w	MakeSRAMChecksum
+	rts
+	ELSE
 	lea	(M68K_RAM).l,a0
 	move.w	#$1FFF,d0
 	clr.l	d1
@@ -131,6 +166,7 @@ ClearSRAM	;Clears first $2000 of RAM and SaveRAM: zero M68K_RAM $0-$1FFF with by
 	bsr.w	WriteSRAM
 	bsr.w	MakeSRAMChecksum
 	rts
+	ENDIF
 WriteSRAM	;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = first save RAM byte (each byte is the odd byte of a word at
 	;Called from ClearSRAM, MakeSRAMChecksum and the save code (ReadCrowdRecord ...)
 	movem.l	d0-d2/a0-a1,-(sp)
@@ -140,13 +176,40 @@ WriteSRAM	;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = first sav
 	clr.w	d2
 .loop
 	move.b	(a0)+,d2
+	IF SEASON=1
+	move.w	d2,(a1,d0.l)
+	addq.l	#2,d0
+	ELSE
 	move.w	d2,0(a1,d0.w)
 	addq.w	#2,d0
+	ENDIF
 	dbf	d1,.loop
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-MakeSRAMChecksum	;Read the whole save RAM to M68K_RAM, put the sum of bytes 0-$1FFD in byte $1FFF and its complement in byte $1FFE
-	;and write those two bytes back. Called from ClearSRAM and the save code (UpdateRecords ...)
+MakeSRAMChecksum	;Sum the save RAM and write the checksum bytes back. Called from ClearSRAM and the save code (UpdateRecords ...)
+	IF SEASON=1
+	btst	#7,(GameFlags).l
+	bne.w	.x
+	movem.l	d0-d2/a0-a1,-(sp)
+	movea.l	#$200000,a1
+	move.l	#$7FFD,d1
+	clr.l	d0
+	clr.l	d2
+.loop
+	add.b	1(a1,d0.l),d2
+	addq.l	#2,d0
+	dbf	d1,.loop
+	lea	(M68K_RAM+SRChecksum).l,a0
+	move.b	d2,1(a0)
+	not.w	d2
+	move.b	d2,(a0)
+	move.l	#SRChecksum,d0
+	moveq	#2,d1
+	bsr.w	WriteSRAM
+	movem.l	(sp)+,d0-d2/a0-a1
+.x
+	rts
+	ELSE
 	lea	(M68K_RAM).l,a0
 	move.l	#$2000,d1
 	clr.l	d0
@@ -165,15 +228,72 @@ MakeSRAMChecksum	;Read the whole save RAM to M68K_RAM, put the sum of bytes 0-$1
 	move.l	#$1FFE,d0
 	bsr.s	WriteSRAM
 	rts
+	ENDIF
+	IF SEASON=1
+KeepRetailSave	;The low window still has a retail checksum: keep the records, move the line block, and write the long checksum
+	move.w	#$1FFD,d1
+	clr.w	d0
+	lea	(M68K_RAM).l,a0
+.loop
+	add.b	(a0)+,d0
+	dbf	d1,.loop
+	clr.w	d1
+	cmp.b	1(a0),d0
+	beq.s	.0
+	addq.w	#1,d1
+.0
+	not.w	d0
+	cmp.b	(a0),d0
+	beq.s	.1
+	addq.w	#1,d1
+.1
+	swap	d0
+	move.b	(a0),d0
+	not.b	d0
+	cmp.b	1(a0),d0
+	beq.s	.2
+	addq.w	#1,d1
+.2
+	swap	d0
+	tst.w	d1
+	bne.s	.bad
+	lea	(M68K_RAM+$1EF6).l,a0
+	lea	(M68K_RAM+SRLineData).l,a1
+	move.w	#$FF,d0
+.copy
+	move.b	(a0)+,(a1)+
+	dbf	d0,.copy
+	lea	(M68K_RAM+SRSeasonHeader).l,a0
+	move.w	#SRLineData-SRSeasonHeader-1,d0
+.zero
+	clr.b	(a0)+
+	dbf	d0,.zero
+	moveq	#0,d0
+	move.l	#$8000,d1
+	movea.l	#M68K_RAM,a0
+	bsr.w	WriteSRAM
+	bsr.w	MakeSRAMChecksum
+	clr.w	(ValidSRAM).w
+	rts
+.bad
+	st	(ValidSRAM).w
+	rts
+	ENDIF
 ReadSRAM	;Copy d1 save RAM bytes from byte d0 (the odd bytes + d0 * 2) to (a0)+. Called from InitSaveRAM, MakeSRAMChecksum and the save code
 	movem.l	d0-d2/a0-a1,-(sp)
 	movea.l	#$200000,a1
 	add.l	d0,d0
 	subq.l	#1,d1
 .loop
+	IF SEASON=1
+	move.b	1(a1,d0.l),d2
+	move.b	d2,(a0)+
+	addq.l	#2,d0
+	ELSE
 	move.b	1(a1,d0.w),d2
 	move.b	d2,(a0)+
 	addq.w	#2,d0
+	ENDIF
 	dbf	d1,.loop
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
