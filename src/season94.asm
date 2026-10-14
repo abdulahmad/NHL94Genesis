@@ -216,7 +216,7 @@ ClearSeasonData	;New season: clear the game results, standings and the header-sa
 	move.b	d1,(a0)+
 	dbf	d0,.loop
 	move.l	#SRGameResults,d0
-	move.l	#$CCC,d1
+	move.l	#SRGameResultsBytes,d1
 	lea	(M68K_RAM).l,a0
 	jsr	(WriteSRAM).l
 	lea	(M68K_RAM).l,a0
@@ -226,7 +226,7 @@ ClearSeasonData	;New season: clear the game results, standings and the header-sa
 	move.b	d1,(a0)+
 	dbf	d0,.loop2
 	move.l	#SRStandings,d0
-	moveq	#$4E,d1
+	move.l	#SRStandingsBytes,d1
 	lea	(M68K_RAM).l,a0
 	jsr	(WriteSRAM).l
 	move.l	#$24,(M68K_RAM).l
@@ -259,7 +259,7 @@ InitSeasonStats	;New season: clear the player stat blocks, the extra team block,
 	move.l	d1,(a0)+
 	dbf	d0,.loop
 	move.l	#SRGoals,d0
-	move.l	#$1B6C,d1
+	move.l	#SeasonPlayerStatsClear,d1
 	movea.l	#M68K_RAM,a0
 	jsr	(WriteSRAM).l
 	lea	(LeaderValues).w,a0
@@ -269,7 +269,7 @@ InitSeasonStats	;New season: clear the player stat blocks, the extra team block,
 	move.l	d1,(a0)+
 	dbf	d0,.loop2
 	move.l	#SRTeamBlock2,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#LeaderValues,a0
 	jsr	(WriteSRAM).l
 	lea	(M68K_RAM).l,a0
@@ -279,7 +279,7 @@ InitSeasonStats	;New season: clear the player stat blocks, the extra team block,
 	move.b	d1,(a0)+
 	dbf	d0,.loop3
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#M68K_RAM,a0
 	jsr	(WriteSRAM).l
 	jsr	(MakeSRAMChecksum).l
@@ -2826,6 +2826,11 @@ SimGoalsHome	;26 teams, 10 weights each: home offense
 	dc.b	0,5,9,$D,8,3,4,0,0,0
 	dc.b	2,4,$B,$D,5,2,5,0,0,0
 	dc.b	4,4,6,$B,8,3,3,1,1,1
+	IF 26<NumPlayoffTeams
+	REPT	NumPlayoffTeams-26
+	dc.b	4,4,6,$B,8,3,3,1,1,1
+	ENDM
+	ENDIF
 
 SimGoalsAwayDef	;26 teams, 10 weights each: away defense
 	dc.b	6,5,9,$A,5,2,4,1,0,0
@@ -2854,6 +2859,11 @@ SimGoalsAwayDef	;26 teams, 10 weights each: away defense
 	dc.b	1,5,7,9,9,5,4,1,1,0
 	dc.b	4,9,7,7,7,5,1,0,1,1
 	dc.b	1,5,8,7,$D,5,3,0,0,0
+	IF 26<NumPlayoffTeams
+	REPT	NumPlayoffTeams-26
+	dc.b	1,5,8,7,$D,5,3,0,0,0
+	ENDM
+	ENDIF
 
 SimGoalsAway	;26 teams, 10 weights each: away offense
 	dc.b	1,7,7,$C,7,5,2,1,0,0
@@ -2882,6 +2892,11 @@ SimGoalsAway	;26 teams, 10 weights each: away offense
 	dc.b	2,6,6,$C,7,4,3,1,1,0
 	dc.b	2,4,8,9,6,5,0,6,2,0
 	dc.b	1,6,$A,$B,7,2,4,1,0,0
+	IF 26<NumPlayoffTeams
+	REPT	NumPlayoffTeams-26
+	dc.b	1,6,$A,$B,7,2,4,1,0,0
+	ENDM
+	ENDIF
 
 SimGoalsHomeDef	;26 teams, 10 weights each: home defense
 	dc.b	2,6,9,9,$A,5,1,0,0,0
@@ -2910,6 +2925,11 @@ SimGoalsHomeDef	;26 teams, 10 weights each: home defense
 	dc.b	1,5,$A,$A,5,5,2,3,1,0
 	dc.b	0,2,4,7,7,8,9,4,0,1
 	dc.b	3,7,9,7,4,3,6,2,1,0
+	IF 26<NumPlayoffTeams
+	REPT	NumPlayoffTeams-26
+	dc.b	3,7,9,7,4,3,6,2,1,0
+	ENDM
+	ENDIF
 
 SimTieTbl	;Tie break weights, 3 a team
 	dc.b	6,4,0
@@ -2938,6 +2958,11 @@ SimTieTbl	;Tie break weights, 3 a team
 	dc.b	0,9,1
 	dc.b	2,7,2
 	dc.b	2,7,2
+	IF 26<NumPlayoffTeams
+	REPT	NumPlayoffTeams-26
+	dc.b	2,7,2
+	ENDM
+	ENDIF
 
 GamesTodayLogoMap
 	incbin	..\Extracted\NHL94\Season\GamesTodayLogoMap.map.jim

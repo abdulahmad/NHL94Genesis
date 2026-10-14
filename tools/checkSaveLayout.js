@@ -12,7 +12,40 @@ const CrowdRecBase = 0xb60;
 const CrowdRecBytes = 16;
 const LineDataBase = 0x1ef6;
 const SaveMirrorRetail = 0x2000;
-const SRSeasonHeader = 0xe22;
+function seasonHeaderBase(nameLogEnd) {
+  return Math.max(nameLogEnd, 0xe22);
+}
+
+function seasonSaveEnd(numTeams) {
+  const numPlayoff = numTeams - 2;
+  const L = retailLayout(numTeams);
+  const h = seasonHeaderBase(L.nameLogEnd);
+  const ps = numPlayoff * 54;
+  const srGoals = h + 8 + 0xccc + numPlayoff * 3 + 8 + numTeams * 0x38 + 0x38;
+  const srTeamStats = srGoals + 5 * ps;
+  let o = srTeamStats + numPlayoff * 10;
+  o +=
+    0x71c +
+    0x63c +
+    0x5ca +
+    0x5ca +
+    0x380 +
+    0x20 +
+    0x281 +
+    1 +
+    0x35 +
+    1 +
+    0x104 +
+    0x17a +
+    0xa +
+    0x20 +
+    2 +
+    2 +
+    0x80 +
+    0xef;
+  o += numPlayoff * 3 + 5 * ps + (0x7ee6 - 0x7d2d);
+  return o + 16 + 0x108 + 2;
+}
 
 function retailLayout(numTeams) {
   const crowdRecEnd = CrowdRecBase + numTeams * CrowdRecBytes;
@@ -34,12 +67,17 @@ for (const n of teamCounts) {
   if (L.nameLogEnd > SaveMirrorRetail) {
     issues.push(`name log end past retail mirror $${SaveMirrorRetail.toString(16)}`);
   }
-  if (seasonMode && L.nameLogEnd > SRSeasonHeader) {
-    issues.push(`name log end $${L.nameLogEnd.toString(16)} overlaps season header $${SRSeasonHeader.toString(16)} (season build)`);
-  } else if (!seasonMode && L.nameLogEnd > SRSeasonHeader) {
+  const seasonHdr = seasonHeaderBase(L.nameLogEnd);
+  if (!seasonMode && L.nameLogEnd > 0xe22) {
     console.log(
-      `  note: name log would overlap season header $${SRSeasonHeader.toString(16)} if SEASON=1 (ok for exhibition-only mods)`,
+      `  note: name log ends past $e22; season build places SRSeasonHeader at $${seasonHdr.toString(16)}`,
     );
+  }
+  if (seasonMode) {
+    const saveEnd = seasonSaveEnd(n);
+    if (saveEnd > 0x8000) {
+      issues.push(`season save map end $${saveEnd.toString(16)} exceeds $8000 mirror`);
+    }
   }
   if (playoffTeams > 32) {
     issues.push(`playoff teams ${playoffTeams} > 32 (playoff draw limit)`);

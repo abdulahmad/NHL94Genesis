@@ -662,17 +662,7 @@ StandingsGroups	;StandingsList = the teams of group StandingsMode
 StandingsGroupTbl	;Team lists of the 4 divisions (count, teams)
 	dc.l	StandingsGroup0,StandingsGroup1,StandingsGroup2,StandingsGroup3
 
-StandingsGroup0
-	dc.b	6,0,3,7,$A,$13,$17
-
-StandingsGroup1
-	dc.b	6,4,5,6,$14,$16,$19
-
-StandingsGroup2
-	dc.b	7,1,2,9,$B,$F,$11,$12
-
-StandingsGroup3
-	dc.b	7,8,$C,$D,$E,$10,$15,$18
+	include	stubinc\season_divisions.inc
 
 StandingsGfx	;Standings screen video set up and graphics
 	move.l	#VBlank_SetOptions,(vbint).w

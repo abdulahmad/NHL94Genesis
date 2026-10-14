@@ -366,6 +366,8 @@ TeamScoring24
 	dc.b	$E,$19,$1D,$1D,7,7,$19,$11,$18,$13,$C,$E,$C,$12,$10,$13
 	dc.b	$B,$12,$10,$18,1,$10,$10,$23,9,$21,0,7,0,9,7,9
 
+	include	stubinc\sim_team_scoring_extra.inc
+
 TeamScoringTbls	;Per team: the goal / assist weights (2 bytes a player) used by SimScorers
 	dc.l	TeamScoring0,TeamScoring1,TeamScoring2,TeamScoring3
 	dc.l	TeamScoring4,TeamScoring5,TeamScoring6,TeamScoring7
@@ -374,6 +376,24 @@ TeamScoringTbls	;Per team: the goal / assist weights (2 bytes a player) used by 
 	dc.l	TeamScoring16,TeamScoring17,TeamScoring18,TeamScoring19
 	dc.l	TeamScoring20,TeamScoring21,TeamScoring22,TeamScoring23
 	dc.l	TeamScoring24,TeamScoring25
+	IF 26<NumPlayoffTeams
+	dc.l	TeamScoring26
+	ENDIF
+	IF 27<NumPlayoffTeams
+	dc.l	TeamScoring27
+	ENDIF
+	IF 28<NumPlayoffTeams
+	dc.l	TeamScoring28
+	ENDIF
+	IF 29<NumPlayoffTeams
+	dc.l	TeamScoring29
+	ENDIF
+	IF 30<NumPlayoffTeams
+	dc.l	TeamScoring30
+	ENDIF
+	IF 31<NumPlayoffTeams
+	dc.l	TeamScoring31
+	ENDIF
 
 SimShots	;d0 = d0 + 7 + a random pick from SimShotsTbl (46 weights)
 	movem.l	d1-d7/a0-a6,-(sp)

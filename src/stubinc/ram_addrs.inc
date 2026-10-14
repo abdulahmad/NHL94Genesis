@@ -594,16 +594,23 @@ awardpanelchars equ $FFFFBADE	;finalists and winner panels
 cupframe equ picturebits	;StanleyCupScreen animation frame
 cupticks equ $FFFFDEA2	;frames between cup sprite steps
 PlayoffSchedule equ $FFFFDFBC	;scratch copy of the playoff schedule, 239 bytes plus one pad byte
+	IF SEASON=1
+	include	stubinc\season_work_ram.inc
+	ELSE
 LeaderTeamTbls equ $FFFFDA1E	;league leaders: seven team tables of $1A bytes (menu only, overlays picturebuf)
 TeamLeaderValues equ $FFFFDAD4	;league leaders: sorted team values, one word a team
 StandingsRecs equ $FFFFE0AC	;ReadStandings buffer for league leaders (same as StandingsBuf)
 StandingsBuf equ $FFFFE0AC	;26 teams, 3 bytes, filled by ReadStandings
 CreatedPlayerBuf equ $FFFFE0FA	;created player record read while a name is printed
+	ENDIF
 Stack equ $FFFFFFFE
 Z80_RAM equ $A00000
 SaveRAM equ $200000	;cartridge save RAM, odd bytes
 Z80_YM2612 equ $A04000
 ;	Save RAM offsets. The retail routines keep their own lower offsets.
+	IF SEASON=1
+	include	stubinc\season_save_layout.inc
+	ELSE
 SRSeasonHeader equ $E22
 SRGameResults equ $E2A
 SRStandings equ $1AF6
@@ -645,6 +652,7 @@ SRSeasonMark equ $7EE6
 SRCupWinner equ $7EEE
 SRLineData equ $7EF6
 SRChecksum equ $7FFE
+	ENDIF
 ; ----------------------------------
 
 

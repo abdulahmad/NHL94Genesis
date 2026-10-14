@@ -354,7 +354,7 @@ SeasonStatsListDraw	;Draw the season player stats screen for team d7 (SeasonStat
 .prev
 	subq.w	#1,d7
 	bpl.w	.team
-	move.w	#$19,d7
+	move.w	#NumPlayoffTeams-1,d7
 	bra.w	.team
 .next
 	addq.w	#1,d7
@@ -767,7 +767,7 @@ SeasonTeamStatsRun	;Season (or playoff, sflags11 bit 3) team stats screen: team 
 .prev
 	subq.w	#1,d7
 	bpl.w	.team
-	move.w	#$19,d7
+	move.w	#NumPlayoffTeams-1,d7
 	bra.w	.team
 
 PrintSeasonTeamStats	;print the team stat rows from the record at StatBuf (a6): W,L,T,Pts, then per-game / percentage stats
@@ -1233,7 +1233,7 @@ TeamLeaderJumps
 LeadersPoints	;Points: 2*wins+ties per team, sort descending
 	movea.l	#StatBuf,a0
 	jsr	(ReadStandings).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
 	movea.l	#picturebuf,a0
 	movea.l	#TeamLeaderValues,a1
@@ -1254,14 +1254,14 @@ LeadersPoints	;Points: 2*wins+ties per team, sort descending
 
 LeadersGoalsAvg	;Goals Avg: goals*100/games per team, sort descending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
 	movea.l	#StandingsRecs,a0
 	jsr	(ReadStandings).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$1A,a0
+	movea.l	#LeaderTeamTbls+LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 	movea.l	#StandingsRecs,a3
@@ -1281,20 +1281,20 @@ LeadersGoalsAvg	;Goals Avg: goals*100/games per team, sort descending
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$1A,a0
+	movea.l	#LeaderTeamTbls+LeaderTeamTblStride,a0
 	bsr.w	SortLeadersDown
 	bra.w	BuildLeadersDone
 
 LeadersGoalsAllowed	;Goals Allowed Avg: goals against*100/games per team, sort ascending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
 	movea.l	#StandingsRecs,a0
 	jsr	(ReadStandings).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$34,a0
+	movea.l	#LeaderTeamTbls+2*LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 	movea.l	#StandingsRecs,a3
@@ -1314,20 +1314,20 @@ LeadersGoalsAllowed	;Goals Allowed Avg: goals against*100/games per team, sort a
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$34,a0
+	movea.l	#LeaderTeamTbls+2*LeaderTeamTblStride,a0
 	bsr.w	SortLeadersUp
 	bra.w	BuildLeadersDone
 
 LeadersPenMinAvg	;Unreferenced: penalty minutes*100/games per team, sort descending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
 	movea.l	#StandingsRecs,a0
 	jsr	(ReadStandings).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$4E,a0
+	movea.l	#LeaderTeamTbls+3*LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 	movea.l	#StandingsRecs,a3
@@ -1347,18 +1347,18 @@ LeadersPenMinAvg	;Unreferenced: penalty minutes*100/games per team, sort descend
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$4E,a0
+	movea.l	#LeaderTeamTbls+3*LeaderTeamTblStride,a0
 	bsr.w	SortLeadersDown
 	bra.w	BuildLeadersDone
 
 LeadersSavePct	;Save Percentage: (shots against - goals against)*100/shots against per team, sort descending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$68,a0
+	movea.l	#LeaderTeamTbls+4*LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 .loop
@@ -1377,18 +1377,18 @@ LeadersSavePct	;Save Percentage: (shots against - goals against)*100/shots again
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$68,a0
+	movea.l	#LeaderTeamTbls+4*LeaderTeamTblStride,a0
 	bsr.w	SortLeadersDown
 	bra.w	BuildLeadersDone
 
 LeadersShootPct	;Shooting Percentage: goals*100/shots per team, sort descending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$82,a0
+	movea.l	#LeaderTeamTbls+5*LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 .loop
@@ -1408,20 +1408,20 @@ LeadersShootPct	;Shooting Percentage: goals*100/shots per team, sort descending
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$82,a0
+	movea.l	#LeaderTeamTbls+5*LeaderTeamTblStride,a0
 	bsr.w	SortLeadersDown
 	bra.w	BuildLeadersDone
 
 LeadersShotsAvg	;Shots Avg: shots*100/games per team, sort descending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
 	movea.l	#StandingsRecs,a0
 	jsr	(ReadStandings).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$9C,a0
+	movea.l	#LeaderTeamTbls+6*LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 	movea.l	#StandingsRecs,a3
@@ -1441,20 +1441,20 @@ LeadersShotsAvg	;Shots Avg: shots*100/games per team, sort descending
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$9C,a0
+	movea.l	#LeaderTeamTbls+6*LeaderTeamTblStride,a0
 	bsr.w	SortLeadersDown
 	bra.w	BuildLeadersDone
 
 LeadersShotsAllowed	;Shots Allowed Avg: shots against*100/games per team, sort ascending
 	move.l	#SRTeamStats,d0
-	move.l	#$104,d1
+	move.l	#SRTeamStatsBytes,d1
 	movea.l	#StatBuf,a0
 	jsr	(ReadSRAM).l
 	movea.l	#StandingsRecs,a0
 	jsr	(ReadStandings).l
-	move.w	#$19,d3
+	move.w	#NumPlayoffTeams-1,d3
 	clr.w	d4
-	movea.l	#LeaderTeamTbls+$B6,a0
+	movea.l	#LeaderTeamTbls+7*LeaderTeamTblStride,a0
 	movea.l	#TeamLeaderValues,a1
 	movea.l	#StatBuf,a2
 	movea.l	#StandingsRecs,a3
@@ -1474,7 +1474,7 @@ LeadersShotsAllowed	;Shots Allowed Avg: shots against*100/games per team, sort a
 	adda.w	#$A,a2
 	addq.w	#1,d4
 	dbf	d3,.loop
-	movea.l	#LeaderTeamTbls+$B6,a0
+	movea.l	#LeaderTeamTbls+7*LeaderTeamTblStride,a0
 	bsr.w	SortLeadersUp
 	bra.w	BuildLeadersDone
 
@@ -1587,7 +1587,7 @@ BuildLeaderListSum	;Goals plus assists for points
 	movem.l	d0-d5/a0-a3,-(sp)
 	movea.l	#SaveRAM,a1
 	move.l	d0,d4
-	addi.l	#$57C,d4
+	addi.l	#SeasonPlayerStatSpan,d4
 	add.l	d4,d4
 	add.l	d0,d0
 	asr.w	#1,d1
@@ -1685,7 +1685,7 @@ BuildLeaderListPct	;Goalie GAA from goals against and minutes
 
 PlayerLeadersGoals	;Category 0: gather with BuildLeaderList (d0 = SRGoals, d1 = $548), sort descending
 	move.l	#SRGoals,d0
-	move.l	#$548,d1
+	move.l	#SeasonPlayerStatSpan,d1
 	movea.l	#BuildLeaderList,a5
 	bclr	#1,(BA_PS_flags).w
 	bsr.w	GatherAndSort
@@ -1693,7 +1693,7 @@ PlayerLeadersGoals	;Category 0: gather with BuildLeaderList (d0 = SRGoals, d1 = 
 
 PlayerLeadersAssists	;Category 1: gather with BuildLeaderList (d0 = SRAssists, d1 = $548), sort descending
 	move.l	#SRAssists,d0
-	move.l	#$548,d1
+	move.l	#SeasonPlayerStatSpan,d1
 	movea.l	#BuildLeaderList,a5
 	bclr	#1,(BA_PS_flags).w
 	bsr.w	GatherAndSort
@@ -1701,7 +1701,7 @@ PlayerLeadersAssists	;Category 1: gather with BuildLeaderList (d0 = SRAssists, d
 
 PlayerLeadersPoints	;Category 2: gather with BuildLeaderListSum (d0 = SRGoals, d1 = $548), sort descending
 	move.l	#SRGoals,d0
-	move.l	#$548,d1
+	move.l	#SeasonPlayerStatSpan,d1
 	movea.l	#BuildLeaderListSum,a5
 	bclr	#1,(BA_PS_flags).w
 	bsr.w	GatherAndSort
@@ -1709,7 +1709,7 @@ PlayerLeadersPoints	;Category 2: gather with BuildLeaderListSum (d0 = SRGoals, d
 
 PlayerLeadersGAA	;Category 3: gather with BuildLeaderListPct (d0 = SRGoals, d1 = $548), sort ascending (bit 1 of BA_PS_flags set)
 	move.l	#SRGoals,d0
-	move.l	#$548,d1
+	move.l	#SeasonPlayerStatSpan,d1
 	movea.l	#BuildLeaderListPct,a5
 	bset	#1,(BA_PS_flags).w
 	bsr.w	GatherAndSort
@@ -1968,12 +1968,12 @@ rtsLeaderRows	;rts (DrawLeaderRows)
 
 LeaderTables	;RAM tables (team order) per category for DrawLeaderRows
 	dc.l	LeaderTeamTbls
-	dc.l	LeaderTeamTbls+$1A
-	dc.l	LeaderTeamTbls+$34
-	dc.l	LeaderTeamTbls+$68
-	dc.l	LeaderTeamTbls+$82
-	dc.l	LeaderTeamTbls+$9C
-	dc.l	LeaderTeamTbls+$B6
+	dc.l	LeaderTeamTbls+LeaderTeamTblStride
+	dc.l	LeaderTeamTbls+2*LeaderTeamTblStride
+	dc.l	LeaderTeamTbls+4*LeaderTeamTblStride
+	dc.l	LeaderTeamTbls+5*LeaderTeamTblStride
+	dc.l	LeaderTeamTbls+6*LeaderTeamTblStride
+	dc.l	LeaderTeamTbls+7*LeaderTeamTblStride
 
 DrawLeaderLogo	;Draw small team logo d1 from Teamblocksmap at printx / printy. Saves all
 	movem.l	d0-d7/a0-a6,-(sp)

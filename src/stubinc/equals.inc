@@ -292,13 +292,12 @@ LineDataBase equ $1EF6
 	IF 32<NumPlayoffTeams
 		inform	3,"The playoff draw only keeps 32 team bits"
 	ENDIF
-SeasonHeaderBase equ $E22
+EXPANDED_SCHEDULE equ 0
 	IF SEASON=1
-	IF NameLogEnd>SeasonHeaderBase
-		inform	3,"Name log overlaps season header; use stock 28 teams or relayout SR*"
-	ENDIF
 	IF 26<NumPlayoffTeams
-		inform	3,"Season standings buffer and SR map not yet sized past 26 playoff teams"
+	IF EXPANDED_SCHEDULE=0
+		inform	3,"Season schedule is 26-team stock data; set EXPANDED_SCHEDULE=1 after extending schedule94.asm"
+	ENDIF
 	ENDIF
 	ENDIF
 ; Cartridge backup RAM (odd byte of each word at SaveRamBase). The power-on mirror in M68K_RAM
