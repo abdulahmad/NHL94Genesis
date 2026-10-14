@@ -26,13 +26,10 @@ routine's origin: 94G for 94 code, else 93G, else 92G; SNES-only code goes in a 
 Work in small steps: every change is built and checked byte for byte against the reference ROM, then committed and pushed to main
 (no force push, no PRs). Keep `docs/HANDOFF.md` current after each push.
 
-Mod-safe build (the stock ROM stays byte-identical; see docs/ADDING_A_TEAM.md):
-- `absjsr` / `absjmp` in `src/macros/genesis.mac` emit a short absolute call when the target is below $8000 and a long one otherwise. The target has to be defined already. A forward call stays `jsr` / `jmp (name).l`.
-- `NoTiles` is the zero long before `TeamList`. Loads of the team list use those labels.
-- The build fills $FF up to 1MB, then to 1.5MB, 2MB or 4MB if the image is larger. The header end is `RomEnd`. An include placed after the 1MB fill starts at the 1MB boundary. Content past backup RAM warns; past 4MB the assemble stops.
-- `build94.bat` passes `LONGBRA=0`. If `bra.w Begin` cannot reach, it assembles again with a long jump.
-- `tools/patchchecksum.js` runs after `fixopcodes` and writes the sum ValidationRoutine compares against. The source keeps the retail immediate. `tools/verify_all.sh` prints `ALL MATCH`.
-- `NumTeams` and `NumPlayoffTeams` live in `src/stubinc/equals.inc`. Per-team tables are checked while assembling. A larger league moves the records block and the name log up in save RAM; the stock league does not. `TeamRatings` is aligned after its length check. Banner rows go at the new team's index. A 29-team ROM that reuses an existing record reaches the ice.
+What main is:
+- main is a faithful disassembly of the retail game. It keeps only good-practice changes that emit identical bytes: equates and labels instead of hardcoded values, assemble-time checks, and build tooling (the computed checksum and ROM size in `tools/fixrom.js`, `src/shortcalls.inc`, the CHECKSUM/REV flags).
+- Mod-specific fixes (long calls instead of the retail short ones, save-RAM moves, mapper code) do not go on main. They are documented in `docs/EXPANDING_THE_ROM.md` or live on mod branches.
+- `NumTeams` / `NumPlayoffTeams` in `src/stubinc/equals.inc` and the per-team length checks stay; `NoTiles` and `TeamList` replace the `#$30A` / `#$30E` loads.
 
 ## Current segment
 
@@ -44,7 +41,7 @@ None. Every ROM map row is matched, every `seg:` script matches its ROM map rang
 - The listing was exported from IDA as an LST in ASM68K / MRI mode. It has no address column. A `loc_`, `sub_`, or `unk_` name is the address. A named routine is at the instruction before the next address-bearing label. Confirm the org against `lst/nhl94.bin` before the first verify.
 - Style source: the matching file in https://github.com/abdulahmad/NHLPA93Genesis. 93 is the closer source.
 - Reference ROM: `lst/nhl94.bin`. This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
-- `src/nhl94.asm` is the full build top level (`build94.bat`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
+- `src/nhl94.asm` is the full build top level (`npm run build:retail`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
 - Stub includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`). `nhl94.asm` includes the same three for the full build.
 
 
@@ -67,9 +64,7 @@ Still present from 93: Ottawa Senators, Tampa Bay Lightning, San Jose Sharks, Qu
 
 ## Build
 
-`buildseg.bat <name>` assembles `src/stubinc/<name>_stub.asm`. The stub is `org` at the confirmed start, includes `src/stubinc`, and includes `src/<name>.asm`.
-
-`npm run seg:<name>` runs buildseg, then `tools/fixopcodes.js` on `output/<name> .lst` and `output/<name>.bin` with the org, then `tools/verifySegment.js`. The assembler listing name has a space before `.lst`.
+`npm run seg -- <name>` (or `node tools/build.js --seg <name>`) assembles `src/stubinc/<name>_stub.asm`, runs `tools/fixopcodes.js` with the org, then `tools/verifySegment.js`. The stub is `org` at the confirmed start, includes `src/stubinc`, and includes `src/<name>.asm`. Each segment's org is in `tools/segments.json`; a new segment is one line there. The assembler listing name has a space before `.lst`.
 
 A MATCH of 0 bytes is a failure. The byte count must be the confirmed range.
 

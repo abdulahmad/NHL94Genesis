@@ -314,7 +314,6 @@ SaveChecksumSum equ $1FFF
 	ENDIF
 SaveMirrorLast equ SaveMirrorBytes-1
 SaveSumDb equ SaveChecksumSum-2
-SaveRamMapPort equ $A130F1
 	IF LineDataBase>SaveMirrorBytes
 		inform	3,"Save mirror too small for the save layout"
 	ENDIF

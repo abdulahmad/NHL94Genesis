@@ -1,22 +1,10 @@
-# HANDOFF: comment and name cleanup (NHL94)
+# HANDOFF: NHL94 Genesis
 
 ## Purpose
-Make this bit-perfect 68000 SNASM disassembly read like clean original source: accurate names that follow the
-NHL92 Genesis (EA original) lineage, and comments without disassembler or porting artifacts. Code, data and
-bytes never change: every build must still MATCH the retail ROM.
+A byte-matching 68000 SNASM disassembly of the retail cartridge that reads like clean original source: accurate names that follow the NHL92 Genesis (EA original) lineage, and comments without disassembler or porting artifacts. Every build must still MATCH `lst/nhl94.bin`. `main` keeps only changes that emit identical bytes (Current rules in SEGMENT_AGENT.md).
 
-## Setup
-ROMs (gitignored, never commit): lst/nhl94.bin.
-Windows: `npm run build:retail` (tools/prebuild.js, build94.bat, fixopcodes, verify);
-segments: `npm run seg:<name>` (all keys in package.json `seg:*`).
-Linux (wine): `apt install wine wine32` (dpkg --add-architecture i386), `export WINEDEBUG=-all`, then
-1. `node tools/prebuild.js retail` (checks the ROM, extracts into Extracted/ if missing or incomplete; same as `node tools/extractAssets94.js lst/nhl94.bin`), then `export NHL_PREBUILD_DONE=1` so the .bat files skip their own pre-step (no node under wine). Accepts the one retail ROM (SHA-1 7b1489ab...); other ROMs are refused.
-2. `wine cmd /c "set rev=0&& set checksum=1&& build94.bat"`
-3. `node tools/fixopcodes.js "output/nhl94 .lst" output/nhl94.bin`
-4. `node tools/verifyRom.js output/modified_nhl94.bin <reference ROM>` must print MATCH
-5. Segments: run each package.json `seg:*` chain the same way (`wine cmd /c "buildseg.bat <seg>"`, then its node steps); tools/verifySegment.js must MATCH.
-Failed-assembly detection: delete output/*.bin first, then check the bin exists and is fresh and that output/Build*.log has no
-`^[1-9][0-9]* error` line. tools/verify_all.sh does all of this (top ROM + every segment).
+## Build
+`npm run build:retail` (or `node tools/build.js retail`) on Windows, or on Linux with wine (`apt install wine wine32`, i386 enabled). It prints one line per step: prebuild, assemble, fixopcodes, fixrom, verify. `npm run build:dev` builds with CHECKSUM=0 and skips the verify. One segment: `npm run seg -- <name>` (orgs in `tools/segments.json`). `--verbose` shows each step's full output. `tools/verify_all.sh` extracts fresh and checks the full ROM and every segment; it must end in `ALL MATCH` before every commit.
 
 ## Naming lineage
 - 92G (abdulahmad/NHL92Genesis, EA source) is the root. 93 -> 92; 94 -> 93 -> 92; 95 -> 94 -> 93 -> 92.
@@ -34,7 +22,6 @@ value-difference notes like "(94 $58)" / "92 used bit 6". Every routine has a he
 
 ## Records
 - docs/name_map.csv: every rename (old -> new, source/reason). History lives here, not in comments.
-- docs/name_review_9x.md: name-accuracy checklist (name, verdict) per module.
 
 ## Conventions
 Small commits per module; builds MATCH before every push; `git pull --rebase origin main` then push to main.
@@ -121,3 +108,10 @@ Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run b
 - onetimer94: 2 immediates, #SPAshotf and #SPAshotb. setonetimeranim says d1 is SPAshotf or SPAshotb. The $FFCE words in OneTimerGoalieTbl are target offsets, not the turn expression. Full ROM and onetimer94 MATCH.
 - Unsure (left numeric): checks94 doplayeracc cmp.w #$180,d4 and move.w #$180,d4 (speed clamp); checks94 cmp.w #-50,d1 (Y difference; 93 writes #-50. The turn expression is only eori.w #SPAturnl-SPAturnr, and addi.w #SPAturnr); display94 showcrowd moveq #$1A, moveq #$1D, addi.w #$1F; display94 showzam moveq #1, addq.w #2, and .ftab dc.w 5,6,7,8...; setup94 .listffo dc.w $34C and $34D; replay94 cmp.w #$34E. Counts: frames94 32 words, checks94 42, collide94 61, input94 26, assign94 12, replay94 13, title94 7, display94 2, setup94 10, onetimer94 2.
 - 93 alignment: every shared site uses the 93 symbol (SPAglide, SPAgready, SPAturnl-SPAturnr, SPFpad+2 / SPFpad / SPFpad+1 / SPFreplay / SPFgloves, SPFgoal / SPFgoal+1 / SPFpuck+1 / SPFpuck, SPFarrow / SPFarrow+3, SPFGoalie, the save and check lists). 93 notes restored on those instructions: SPAhook "this anim also holds", SPAsweepchk "this anim goes to Bcheck", SPAhook2 "holding anim after SPAhook", SPAflip "third fall anim", SPAfallback "injury: only from a fall back", SPAcatch "on a2", SPFarrow "frame numbers are 6 higher than 92", SPAglide "92 $346", SPFgoal "92 used $18E", SPFpuck "92 used $183, 4 chars". Acheck stays "start SPAhook, or SPAHold if a0 is ahead" (93's header names them the other way around; the load is SPAhook, then SPAHold). New in 94, so no 93 name: SPFslamtop, SPFslambot, SPFghighr, the board animations, the extra save anims, and the glass range written SPFbglass+5 (93's glass frames run SPFbglass through SPFbglass+4).
+
+## Current state (main)
+- Every segment and the full ROM MATCH. The comment review, the name pass, the local label pass and the file header rewrites are done for 94G (renames are in docs/name_map.csv).
+- Oct 14 cleanup: main is a faithful retail disassembly again (SRAMTOGGLE, absjsr/absjmp and LONGBRA removed; plain 1MB fill). Kept: NumTeams equates and table checks, the NoTiles/TeamList labels, CHECKSUM/REV, `tools/fixrom.js` (size, header ROM end, checksum) and `src/shortcalls.inc`. Mod fixes and the team checklist: docs/EXPANDING_THE_ROM.md.
+- Left numeric on purpose (no safe name): checks94 `cmp.w #$180,d4` / `move.w #$180,d4` (speed clamp) and `cmp.w #-50,d1`; display94 showcrowd and showzam constants and the pad arrow frames `#$346` / `#$349`; setup94 `.listffo` `$34C` / `$34D`; replay94 `cmp.w #$34E`.
+- Next: the same local label pass for 95G.
+- feature/season-mode after merging main: build with `npm run build:season` (tools/build.js season -> output/nhl94-season.bin, SEASON=1, needs NHL95_ROM; not verified). Retail `npm run build:retail` passes SEASON=0 and must MATCH. Season sram94 keeps SaveMirrorBytes/SaveRamBase equates (no SRAMTOGGLE map port); 2MB ROM with save RAM at $200000 needs no mapping.

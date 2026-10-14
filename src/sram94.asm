@@ -1,20 +1,6 @@
 ;	New in 94: battery save RAM. At power on the save RAM is copied into work RAM and checked,
 ;	and this file holds the routines that check, clear, read and write it.
 
-	IF SRAMTOGGLE=1
-MapSaveChipOn macro
-	move.b	#1,(SaveRamMapPort).l
-	endm
-MapSaveChipOff macro
-	clr.b	(SaveRamMapPort).l
-	endm
-	ELSE
-MapSaveChipOn macro
-	endm
-MapSaveChipOff macro
-	endm
-	ENDIF
-
 InitSaveRAM	;Called from Begin. Copy the save RAM mirror (the odd bytes) to M68K_RAM and check its checksum
 	;(ValidateSRAM; ValidSRAM 0 = good, -1 = bad). A bad save RAM is cleared (ClearSRAM) and read again. Two power-on tests that never return:
 	;Start+A+C held writes and reads back every bit of every byte, writes $12,$34,$56,$78 to bytes 0-3 and flashes the screen green, or red at the
@@ -52,7 +38,6 @@ InitSaveRAM	;Called from Begin. Copy the save RAM mirror (the odd bytes) to M68K
 .ex
 	rts
 .setiterator
-	MapSaveChipOn
 	move.w	#SaveMirrorLast,d2
 .SRAMloop
 	move.w	#1,d1	;bit 0, then up to bit 7
@@ -81,7 +66,6 @@ InitSaveRAM	;Called from Begin. Copy the save RAM mirror (the odd bytes) to M68K
 	sub.w	d4,d0
 	bra.s	.flashscreen
 .setiterator2
-	MapSaveChipOn
 	move.w	#3,d1
 .SRAMloop2
 	adda.w	#1,a0	;odd byte
@@ -173,7 +157,6 @@ ClearSRAM	;Clears the save RAM. Retail: zero the mirror, byte SaveChecksumByte =
 WriteSRAM	;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = first save RAM byte (each byte is the odd byte of a word at
 	;Called from ClearSRAM, MakeSRAMChecksum and the save code (ReadCrowdRecord ...)
 	movem.l	d0-d2/a0-a1,-(sp)
-	MapSaveChipOn
 	movea.l	#SaveRamBase,a1
 	add.l	d0,d0
 	subq.l	#1,d1
@@ -188,7 +171,6 @@ WriteSRAM	;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = first sav
 	addq.w	#2,d0
 	ENDIF
 	dbf	d1,.loop
-	MapSaveChipOff
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 MakeSRAMChecksum	;Sum the save RAM and write the checksum bytes back. Called from ClearSRAM and the save code (UpdateRecords ...)
@@ -286,7 +268,6 @@ KeepRetailSave	;The low window still has a retail checksum: keep the records, mo
 	ENDIF
 ReadSRAM	;Copy d1 save RAM bytes from byte d0 (the odd bytes + d0 * 2) to (a0)+. Called from InitSaveRAM, MakeSRAMChecksum and the save code
 	movem.l	d0-d2/a0-a1,-(sp)
-	MapSaveChipOn
 	movea.l	#SaveRamBase,a1
 	add.l	d0,d0
 	subq.l	#1,d1
@@ -301,6 +282,5 @@ ReadSRAM	;Copy d1 save RAM bytes from byte d0 (the odd bytes + d0 * 2) to (a0)+.
 	addq.w	#2,d0
 	ENDIF
 	dbf	d1,.loop
-	MapSaveChipOff
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
