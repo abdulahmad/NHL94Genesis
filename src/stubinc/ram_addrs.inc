@@ -1,6 +1,38 @@
 ;	RAM map. These equates give the name and address of every game variable.
 
 M68K_RAM equ $FFFF0000
+AwardIds equ M68K_RAM	;award candidates, over the replay frames while the award screen is up
+AwardScores equ $FFFF0548	;award scores, paired with AwardIds
+TradeBuf equ $FFFF1388	;trade work buffer, menu only
+RosterTable equ $FFFF1B4C	;roster image ($38 bytes a team) written with the save RAM
+TradeData equ $FFFF2710	;trade screen counts and cursors
+TradeWork equ $FFFF2AF8	;trade screen work words
+TradeRoster1 equ $FFFF3A98	;home trade rows
+CreatedIds equ $FFFF4E20	;created player ids
+createdcount equ $FFFF55F0	;created players read from save RAM
+CreateListTop equ $FFFF55F4	;first create-player row shown
+CreateListSel equ $FFFF55F8	;selected create-player row
+CreateWork equ $FFFF55FC	;create-player name count
+CreateIndex equ $FFFF55FE	;created record being edited
+RosterRatings equ $FFFF5700	;default roster ratings ($20 bytes a team)
+CreatedList equ $FFFF5D22	;free-agent list ($36 bytes)
+CreateCursorX equ $FFFF7530	;rating cursor column
+CreateCursorY equ $FFFF7532	;rating cursor row
+CreateType equ $FFFF7534	;0 goalie, else skater
+CreatePoints equ $FFFF7536	;rating points left to spend
+CreateRecord equ $FFFF7538	;created player record, 32 bytes, name at +2
+SeedCount equ $FFFF8000	;teams in the playoff seed list
+SeedPoints equ $FFFF8002	;2 * wins + ties, one word a team
+SeedGames equ $FFFF8036	;games played, one word a team
+NameEntryLen equ $FFFF806A	;create-player name length
+NameEntryMode equ $FFFF806C	;0 list, else the letter grid
+CreateListRow equ $FFFF806E	;create-player list row
+CreateListOldRow equ $FFFF8070	;row that holds the list markers
+tradeteam1 equ $FFFF8072	;first trade club, word plus its 8 byte block
+tradeteam2 equ $FFFF807A	;second trade club
+TradeRoster2 equ $FFFF88B8	;visitor trade rows
+LeaderPlayers equ $FFFF9C60	;leader player ids
+LeaderValues equ $FFFFA1AA	;leader values, paired with LeaderPlayers
 sramcleared equ $FFFF1FFE
 replayend equ $FFFFAF54	;end of the replay frames ($62 bytes each from M68K_RAM); suba4, adda43 and the record step wrap here
 ;$FFFFAFCA is SortCords-SCstruct
@@ -473,9 +505,93 @@ iconx equ $FFFFDEEA
 scoutwait equ $FFFFDEEC
 replaydelay equ $FFFFDEF0
 PALflag equ $FFFFDEF2
+;	Season state. Begin clears through PALflag, so a power-on zeros this block.
+;	Opening2 stops at $D03E, so the block is still here when a game returns to the menu.
+GameFlags equ $FFFFDEF4	;bit 3 season, bit 4 new season, bit 5 human season game, bit 6 random schedule, bit 7 checksum batch
+sflags9 equ $FFFFDEF6	;left clear
+sflags10 equ $FFFFDEF8	;bit 2 Trade Players, bit 4 Create Player, bit 5 Sign Free Agents, bit 6 Release Players
+sflags11 equ $FFFFDEFA	;bit 6 set: use team data. Clear: saved rosters (Game With Trades and a season game)
+sflags12 equ $FFFFDEFC	;bit 1 multi-game injury just set, bit 5 end-of-season menu select
+sflags13 equ $FFFFDEFE	;bit 2 Stanley Cup won
+cupwinner equ $FFFFDF00	;champion team number
+SimFlags equ $FFFFDF02	;bit 0 a user club won the cup, bit 1 this game was simulated
+seasonsetupreq equ $FFFFDF04	;nonzero: the next menu open is Continue Season
+AutoplayDay equ $FFFFDF06	;Play Until A Day target, 0 when off
+SeasonStartDay equ $FFFFDF08	;header image, 8 bytes through the pad after SeasonLine
+SeasonLength equ $FFFFDF09
+SeasonDay equ $FFFFDF0A
+SeasonFlags equ $FFFFDF0B	;bit 1 best of seven, bit 2 multi-game injuries, bit 3 regular season over, bit 4 playoffs over, bit 5 playoffs
+SeasonPerlen equ $FFFFDF0C
+SeasonPen equ $FFFFDF0D
+SeasonLine equ $FFFFDF0E
+seasonteamsel equ $FFFFDF10	;index into SeasonTeams, or -1
+SeasonTeams equ $FFFFDF12	;today's games: day, count, then 5 bytes a game
+injurygames equ $FFFFDF98	;length of the last injury
+StandingsMode equ $FFFFDF9A	;which division the standings are showing
+CalTeam equ $FFFFDF9C	;which club the calendar is showing
+optbgchars equ $FFFFDF9E	;vram base for the season options screen
+gamestoday1chars equ $FFFFDFA0
+gamestoday3chars equ $FFFFDFA2
+calbgchars equ $FFFFDFA4
+calresultchars equ $FFFFDFA6
+GamesTodayDay equ $FFFFDFA8	;schedule day on entry to Games Today
+AwardIndex equ $FFFFDFAA	;award on screen. SimWeights uses the same storage
+SimWeights equ AwardIndex
+AwardTimer equ $FFFFDFAC	;frames this award has been up
+AwardFlashTimer equ $FFFFDFB0
+AwardCount equ $FFFFDFB2
+AwardWinner equ $FFFFDFB4
+AwardHilite equ $FFFFDFB6
+AwardCycle equ $FFFFDFB8
+AwardWait equ $FFFFDFBA
+PlayoffSchedule equ $FFFFDFBC	;scratch copy of the playoff schedule, 239 bytes plus one pad byte
+StandingsBuf equ $FFFFE0AC	;26 teams, 3 bytes, filled by ReadStandings
+CreatedPlayerBuf equ $FFFFE0FA	;created player record read while a name is printed
 Stack equ $FFFFFFFE
 Z80_RAM equ $A00000
 Z80_YM2612 equ $A04000
+;	Save RAM offsets. The retail routines keep their own lower offsets.
+SRSeasonHeader equ $E22
+SRGameResults equ $E2A
+SRStandings equ $1AF6
+SRGoalTotal equ $1B44
+SRRosters equ $1B4C
+SRGoals equ $21A4
+SRAssists equ $2720
+SRShots equ $2C9C
+SRGamesPlayed equ $3218
+SRPenMin equ $3794
+SRTeamStats equ $3D10
+SRLines equ $3E14
+SRSavedLines1 equ $4530
+SRSavedLines2 equ $4B6C
+SRSavedLines3 equ $5136
+SRJerseyNums equ $5700
+SRFreeAgentJerseys equ $5A80
+SRCreatedPlayers equ $5AA0
+SRCreateCount equ $5D21
+SRFreeAgentList equ $5D22
+SRFreeAgentCount equ $5D57
+SRTeamBlock2 equ $5D58
+SRInjuries equ $5E5C
+SRSeasonHeaderSave equ $5FD6
+SRHighlights equ $5FD6
+SRPOPairings equ $5FE0
+SRPORound equ $6000
+SRPODay equ $6002
+SRPOSeries equ $6004
+SRPOSchedule equ $6084
+SRPOStandings equ $6173
+SRPOGoals equ $61C1
+SRPOAssists equ $673D
+SRPOShots equ $6CB9
+SRPOGamesPlayed equ $7235
+SRPOPenMin equ $77B1
+SRPOTeamStats equ $7D2D
+SRSeasonMark equ $7EE6
+SRCupWinner equ $7EEE
+SRLineData equ $7EF6
+SRChecksum equ $7FFE
 ; ----------------------------------
 
 

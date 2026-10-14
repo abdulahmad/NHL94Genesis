@@ -54,7 +54,8 @@ Follow 92G (EA source): ~31% of its locals are number-only (.0, .1 ...), the res
 
 Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run build:season` (or `set season=1&& set checksum=0&& build94.bat`) builds the 2 MB season image with `CHECKSUM=0`. Segment builds pass `SEASON=0`.
 
-- Chunk 1: the flag, the season header ROM end, and the fill to 2 MB. No season code yet.
+- Chunk 1: the flag, the season header ROM end, and the fill to 2 MB. No season code yet. Retail verify_all MATCH.
+- Chunk 2: season work-RAM names at `$FFFFDEF4`, menu scratch over the replay buffer, and the save-RAM offset names. Equates only. Retail verify_all MATCH.
 - Unsure: none.
 
 ## Current state / Next
