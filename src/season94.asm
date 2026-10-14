@@ -2361,19 +2361,28 @@ MenuEndSeason	;End the regular season after today
 	jsr	(WriteSeasonHeader).l
 	bra.w	MenuStay
 
-MenuLeagueLeaders	;League leaders wait for the stats screens
+MenuLeagueLeaders	;League Leaders
+	jsr	(LeagueLeadersScreen).l
 	bra.w	MenuStay
 
-MenuPlayoffTeamStats	;Playoff team stats wait for the stats screens
+MenuPlayoffTeamStats	;Playoff Team Stats (sflags11 bit 3)
+	bset	#3,(sflags11).w
+	jsr	(SeasonTeamStats).l
+	bclr	#3,(sflags11).w
 	bra.w	MenuStay
 
-MenuTeamStats	;Team stats wait for the stats screens
+MenuTeamStats	;Team Stats
+	jsr	(SeasonTeamStats).l
 	bra.w	MenuStay
 
-MenuPlayoffPlayerStats	;Playoff player stats wait for the stats screens
+MenuPlayoffPlayerStats	;Playoff Player Stats (sflags11 bit 3)
+	bset	#3,(sflags11).w
+	jsr	(SeasonPlayerStats).l
+	bclr	#3,(sflags11).w
 	bra.w	MenuStay
 
-MenuPlayerStats	;Player stats wait for the stats screens
+MenuPlayerStats	;Player Stats
+	jsr	(SeasonPlayerStats).l
 	bra.w	MenuStay
 
 MenuHighlights	;Highlights wait for that screen
@@ -2383,7 +2392,8 @@ MenuGamesToday	;Games Today
 	jsr	(GamesToday).l
 	bra.w	MenuStay
 
-MenuStandings	;Standings wait for that screen
+MenuStandings	;NHL Standings
+	jsr	(StandingsScreen).l
 	bra.w	MenuStay
 
 MenuPlayoffTree	;The playoff tree waits for the playoff screens
@@ -2393,7 +2403,8 @@ MenuStay	;d0 = 1: stay in the menu
 	move.w	#1,d0
 	rts
 
-MenuCalendar	;The calendar waits for that screen
+MenuCalendar	;Team schedule calendar
+	jsr	(CalendarScreen).l
 	bra.s	MenuStay
 
 MenuPlayGames	;Play the computer games. d0 = 0
@@ -2759,6 +2770,9 @@ SeasonOptionsGfx	;Season options video setup and graphics
 	jsr	(dobitmap).l
 	move.w	d4,(optbgchars).w
 	rts
+
+	include	seasonstandcal94.asm
+	include	seasonstats94.asm
 
 ZeroLong	;A zero word: dobitmap transfers no extra tiles
 	dc.l	0

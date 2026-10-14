@@ -556,8 +556,25 @@ padcursorchars equ $FFFFDF6E	;vram base of the games-today pad icon
 DateStringBuf equ $FFFFDF70	;MakeDateString builds "Month day" here, through the byte before injurygames
 injurygames equ $FFFFDF98	;length of the last injury
 StandingsMode equ $FFFFDF9A	;which division the standings are showing
-CalTeam equ $FFFFDF9C	;which club the calendar is showing
+CalTeam equ $FFFFDF9C	;calendar team index
+StandTeamCount equ $FFFFDF9D	;standings lines on screen, one byte
 optbgchars equ $FFFFDF9E	;vram base for the season options screen
+CalMonthIdx equ $FFFFDF78	;calendar month index while the schedule is on screen
+CalDay equ $FFFFDF60	;calendar schedule day while the month is drawn
+CalX equ $FFFFDF62
+CalY equ $FFFFDF64
+CalMonths equ $FFFFDF66	;last month index of the season
+CalFirst equ $FFFFDF68	;first day column shown in the month
+CalLast equ $FFFFDF6A	;last day column shown in the month
+CalGamePtr equ $FFFFDF6C	;calendar game entry for the day cell
+CalGames equ TradeRoster2	;day game list while the calendar is up
+StandingsList equ $FFFF8918	;team numbers of the division on screen
+CalMonth equ LeaderValues	;standings points scratch, 26 bytes
+StandingsOrder equ $FFFFA1C4	;standings games played scratch, 26 bytes
+padiconchars1 equ AwardTimer
+padiconchars2 equ AwardFlashTimer
+padiconchars3 equ AwardCount
+padiconchars4 equ AwardWinner
 gamestoday1chars equ $FFFFDFA0
 gamestoday3chars equ $FFFFDFA2
 calbgchars equ $FFFFDFA4
@@ -573,6 +590,9 @@ AwardHilite equ $FFFFDFB6
 AwardCycle equ $FFFFDFB8
 AwardWait equ $FFFFDFBA
 PlayoffSchedule equ $FFFFDFBC	;scratch copy of the playoff schedule, 239 bytes plus one pad byte
+LeaderTeamTbls equ $FFFFDA1E	;league leaders: seven team tables of $1A bytes (menu only, overlays picturebuf)
+TeamLeaderValues equ $FFFFDAD4	;league leaders: sorted team values, one word a team
+StandingsRecs equ $FFFFE0AC	;ReadStandings buffer for league leaders (same as StandingsBuf)
 StandingsBuf equ $FFFFE0AC	;26 teams, 3 bytes, filled by ReadStandings
 CreatedPlayerBuf equ $FFFFE0FA	;created player record read while a name is printed
 Stack equ $FFFFFFFE
