@@ -60,7 +60,9 @@ Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run b
 - Chunk 4: season save window is `$8000` bytes, checksum at `$7FFE`, header backup end `$0020FFFF`. A retail checksum keeps the records and moves the line block to `SRLineData`. Retail verify_all MATCH. The season image is not compared to the retail ROM.
 - Chunk 5: seven play mode lines after Shootout. Start on those lines sets the mode flags and returns to the menu. Continue Season is skipped until a header is stored. New playoffs are still modes 2 and 3. Retail verify_all MATCH.
 - Chunk 6: Create Player in the second megabyte. Start on that line opens the screen. The create name is `CreateNameBuf`; the record-holders buffer keeps its name. Retail verify_all MATCH.
-- Unsure: the season image was not booted. Jersey numbers and the team stat blocks are stubs until the roster code lands.
+- Chunk 7: Sign Free Agents and Release Players open from the menu.
+- Chunk 8: Trade Players opens from the menu. Clearing the battery rebuilds the default rosters and lines and drops created players. Retail verify_all MATCH.
+- Unsure: the season image was not booted. A trade does not move a multi-game injury yet. A player is treated as available until that check is in.
 
 ## Current state / Next
 - Comment review: done in 93, 94, 95 and NHLPA93SNES.
