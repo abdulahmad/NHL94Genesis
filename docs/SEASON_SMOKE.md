@@ -43,16 +43,30 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | 12 | Finish regular season → playoffs → series | Tree and playoff screen behave; not password playoffs |
 | 13 | Win championship | Stanley Cup screen, then awards, then title |
 
-## Planned follow-ups (integration edge cases)
+## Integration edge cases (E1–E11)
 
-Full table with 95 vs 94 notes and priority: **`docs/season_mode_port_plan.md` section 10** (E1–E13). Examples: injury state vs trade-screen “OUT” (`SeasonPlayerOut`), saving line sets to `SRLines` after a season game, season scouting report data, and skipping password playoff UI on season `GameOver`.
+| ID | Prove in emulator |
+|----|-------------------|
+| E1 | Trade screen overall for a multi-game injured star matches “out” (no `AttribAdjust` bump); same as manual OUT slot. |
+| E2 | In-game player stats **Overall** column matches trade screen for injured/out players. |
+| E3 | Change lines in a human season game, finish game, start another day with same club — starters follow saved `SRLines`. |
+| E4 | Scouting report hot/cold lists reflect season line set, not stock ROM lines. |
+| E5 | Human season game: user records on, auto goalies (by design; no setup menu). |
+| E6 | Season human `GameOver` returns to day loop without password encode or retail playoff tree. |
+| E7 | Controller screen: practice player list is empty (stub); pads still assign. |
+| E9 | With 20 created players, **Create Player** from main menu does nothing (returns to menu). |
+| E10 | *(Deferred)* Season **Fighting: Off** should force period-only fight injuries; needs a short `setInjuryType` hook without growing 1MB `checks94`↔`rtss2` span. |
+| E8 | Type-4 standing highlights still optional; goal/assist/save highlights unchanged. |
+| E11 | Retail ROM still MATCH; season hooks stay `jsr (Routine).l` in collide/setup. |
+
+Full notes: **`docs/season_mode_port_plan.md` section 10**. E12 hardware / E13 merge are release tasks.
 
 ## Known gaps (not blocking retail MATCH)
 
 | Item | Behavior today |
 |------|----------------|
 | Hardware boot | Season 2 MB image not verified on real Genesis hardware in this repo. |
-| `SeasonPlayerOut` | Roster word `$1E` only; multi-game outs use `SetSeasonInjuries` / SRAM `SRInjuries` at game time, not this helper. |
+| Highlights type 4 | `PrintRecordHighlight` exists; standing-streak saves not ported from 95. |
 
 ## Quick regression
 

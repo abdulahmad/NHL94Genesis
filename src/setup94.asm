@@ -759,6 +759,12 @@ IntermissionStart	;reset the clock, song $79, ticker scores, playoff stats at th
 	beq.w	GameOver
 	absjmp	StartPer
 GameOver	;EncodePW (save the password), then in playoff mode PlayoffStatsScreen (the playoff stats) and the playoff screen. Falls into ExitToOpening
+	IF SEASON=1
+	btst	#3,(GameFlags).w
+	beq.w	.retailgameover
+	jmp	(SeasonGameOverFromGame).l
+.retailgameover
+	ENDIF
 	bsr.w	EncodePW
 	IF SEASON=1
 	btst	#2,(sflags13).w

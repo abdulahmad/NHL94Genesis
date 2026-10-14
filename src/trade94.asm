@@ -2415,10 +2415,42 @@ SeasonSetPlayerRecord	;setplayer, saved roster: a0 = the attribute bytes of play
 	movem.w	(sp)+,d0/d7
 	rts
 
-SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (SRRosters, low 5 bits $1E)
+SeasonStarterListPtr	;a0 = team struct, a0 = pointer to the 6 starter slots (SRLines copy at $172 or ROM lines)
+	btst	#3,(GameFlags).w
+	beq.w	.rom
 	btst	#6,(sflags11).w
-	bne.w	.exit
-	movem.l	d0/d7-a0,-(sp)
+	bne.w	.rom
+	lea	$172(a0),a0
+	rts
+.rom
+	movea.l	$1E(a0),a0
+	adda.w	6(a0),a0
+	rts
+
+SeasonAttribRatingHook	;Z to skip AttribAdjust on pause/stats overall when player d0 is out
+	btst	#3,(GameFlags).w
+	beq.w	.notout
+	btst	#6,(sflags11).w
+	bne.w	.notout
+	movem.l	d0/d7,-(sp)
+	move.w	Xvel(a2),d7
+	jsr	(SeasonPlayerOut).l
+	movem.l	(sp)+,d0/d7
+	beq.w	.isout
+.notout
+	moveq	#1,d0
+	cmp.w	#0,d0
+	rts
+.isout
+	clr.w	d0
+	tst.w	d0
+	rts
+
+SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (SRRosters low 5 bits $1E, or SRInjuries games left)
+	btst	#6,(sflags11).w
+	bne.w	.notout
+	movem.l	d0-d1/d7/a0,-(sp)
+	move.w	d0,d1
 	asl.w	#2,d0
 	ext.l	d0
 	movea.l	#SaveRAM+2*SRRosters,a0
@@ -2428,8 +2460,41 @@ SeasonPlayerOut	;Unless sflags11 bit 6: Z set when player d0 of team d7 is out (
 	move.w	(a0,d7.l),d0
 	andi.w	#$1F,d0
 	cmp.w	#$1E,d0
-	movem.l	(sp)+,d0/d7-a0
-.exit
+	beq.w	.isout
+	move.w	d1,d1
+	clr.w	d0
+	jsr	(GetInjuryGames).l
+	tst.w	d0
+	beq.w	.notout
+.isout
+	clr.w	d0
+	tst.w	d0
+	bra.w	.done
+.notout
+	moveq	#1,d0
+	cmp.w	#0,d0
+.done
+	movem.l	(sp)+,d0-d1/d7/a0
+	rts
+
+SaveTeamLines	;Write team struct a2 line sets at $16A into save RAM SRLines when in a season game (inverse of LoadTeamLines)
+	tst.w	(ValidSRAM).w
+	bmi.w	.rts
+	btst	#6,(sflags11).w
+	bne.w	.rts
+	btst	#3,(GameFlags).w
+	beq.w	.rts
+	movem.l	d0-d2/a0-a1,-(sp)
+	move.l	#SRLines,d0
+	move.w	Xvel(a2),d2
+	mulu.w	#$41,d2
+	add.l	d2,d0
+	moveq	#$41,d1
+	lea	$16A(a2),a0
+	jsr	(WriteSRAM).l
+	jsr	(MakeSRAMChecksum).l
+	movem.l	(sp)+,d0-d2/a0-a1
+.rts
 	rts
 
 NumInitialBody	;Shared body of FormatPlayerNumInitial

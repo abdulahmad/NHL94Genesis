@@ -290,8 +290,12 @@ SortHotColdStarters	;Sum the hot / cold values of the 6 starters of team a0 into
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
 	adda.l	#$1A2,a2
+	IF SEASON=1
+	jsr	(SeasonStarterListPtr).l
+	ELSE
 	movea.l	$1E(a0),a0
 	adda.w	6(a0),a0
+	ENDIF
 	movea.l	#TempBuffer,a1
 	move.w	#5,d0
 .player

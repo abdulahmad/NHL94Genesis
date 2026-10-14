@@ -87,6 +87,7 @@ SeasonMain	;While GameFlags bit 3 is set. Bit 4 is a new season: the setup scree
 	clr.w	(OptLine).w
 	move.b	(SeasonLine).w,(OptLine+1).w
 	clr.w	(OptNOP).w
+	;Human season games skip GameSetUp; defaults match 95 (user records on, auto goalies).
 	move.w	#1,(OptUserRec).w
 	move.w	#1,(OptGoalie).w
 	bset	#5,(GameFlags).w
@@ -960,6 +961,14 @@ SeasonGameStart	;Start the human season game already stored in the option words.
 	bclr	#5,(GameFlags).w
 	jmp	(maketree).l
 
+SeasonGameOverFromGame	;Human season GameOver: cup if flagged, then season result (no password / retail playoff tree)
+	btst	#2,(sflags13).w
+	beq.w	.nocup
+	jsr	(StanleyCupScreen).l
+.nocup
+	jsr	(SeasonGameOver).l
+	jmp	(ExitToOpening).l
+
 SeasonGameOver	;After a human season game, copy the score into today's list and save the result
 	clr.w	(seasonsetupreq).w
 	btst	#3,(GameFlags).w
@@ -989,6 +998,10 @@ SeasonGameOver	;After a human season game, copy the score into today's list and 
 	bset	#1,4(a0)
 	jsr	(RecordPlayoffGame).l
 	bset	#7,(GameFlags).w
+	movea.l	#tmstruct,a2
+	jsr	(SaveTeamLines).l
+	movea.l	#AwShots,a2
+	jsr	(SaveTeamLines).l
 	bsr.w	AddSeasonGoals
 	bsr.w	WriteDayGames
 	bsr.w	RecordGameResult
