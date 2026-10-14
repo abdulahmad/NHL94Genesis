@@ -2271,15 +2271,6 @@ FormatPlayerNumInitialD7	;FormatPlayerNumInitial for team d7
 	bra.w	NumInitialBody
 
 
-SetInjuryGames	;filled in with the injury code
-	rts
-GetInjuryGames	;no multi-game injury until that code is in
-	clr.w	d0
-	rts
-InsertInjurySlot
-	rts
-DeleteInjurySlot
-	rts
 GoalieCountHook	;GetGoalieCount: saved roster when sflags11 bit 6 is clear, else the team-data nibbles
 	btst	#6,(sflags11).w
 	bne.w	.rom

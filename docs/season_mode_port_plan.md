@@ -481,7 +481,7 @@ Watch items, not choices:
 
 Each chunk is behind `SEASON=1`, builds, and can be played or checked on its own before the next one starts. After every chunk: retail `tools/verify_all.sh` prints MATCH, and the season target assembles to a 2 MB image whose header ROM end is `$1FFFFF` and whose checksum word is `$0000` (until chunk 15 reconciles sizing with `RomEnd` on `main`). The season build always passes `CHECKSUM=0`. From the menu chunk on, the same boot also starts Regular Season, New Playoffs, and Shootout far enough to reach the next screen, so a bad mode number shows up immediately. New comments are plain English. No rename history, no source-file notes, no hardcoded ROM addresses. Routine names stay the 95 names. `docs/HANDOFF.md` is updated on this branch after each chunk. Anything still unclear after about 10 minutes goes on an Unsure list in that handoff and the chunk moves on.
 
-**Branch status (`feature/season-mode`):** chunks 1 through 18 are implemented. **Do chunk 19 next** (injuries and highlights), then chunk 20 below.
+**Branch status (`feature/season-mode`):** chunks 1 through 19 are implemented. **Do chunk 20 next** (full pass notes and final HANDOFF), then re-run retail MATCH and a season smoke checklist.
 
 Trades and Create Player land before the season loop. They only need the menu and the battery. A created player is reviewed on the create screen, then on the sign screen, then on the ice in Game With Trades, then again in the first human season game.
 

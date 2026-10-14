@@ -923,6 +923,9 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 setInjuryType	;determines if injury will be for period or game. a2 = player injured, a3 = player checking. Marks a2 unavailable, pumps up the crowd,
 	;plays sfx $D, locks the scroll on a2 and sets TempPlOffset (pnum, bit 15 set for the away team). a2's tmpdst becomes $FFFD (injured for the
 	;period) or, from a3's Fgt byte (getFgtbyte, chkFgtBit1), $FFFC (injured for the game, sflags7 bit 5). Called from FallDown
+	IF SEASON=1
+	bclr	#1,(sflags12).w
+	ENDIF
 	move.w	d0,-(sp)
 	bset	#2,pflags2(a2)	;set player unavailable
 	addi.w	#$12C,(crowdlevel).w
@@ -961,6 +964,9 @@ setInjuryType	;determines if injury will be for period or game. a2 = player inju
 .injurygame
 	bset	#5,(sflags7).w	;set injury game bit
 	move.w	#$FFFC,$66(a0,d1.w)	;update status of player
+	IF SEASON=1
+	jsr	(SeasonMultiGameInjury).l
+	ENDIF
 .exit
 	move.w	(sp)+,d0
 	rts

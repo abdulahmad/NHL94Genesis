@@ -1229,12 +1229,6 @@ WriteStatBlock	;Write StatBuf back to the block ReadStatBlock read
 	movem.l	(a5)+,d0-d1/a0
 	jmp	(WriteSRAM).l
 
-SaveGameHighlights	;A highlight line waits for the highlights screen
-	rts
-
-TickTeamInjuries	;Multi-game injury ticks wait for the injury chunk
-	rts
-
 AddSeasonGoals	;Add the game's goals to the season goal total and count the game
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	a0,-(sp)
@@ -2413,7 +2407,8 @@ MenuPlayerStats	;Player Stats
 	jsr	(SeasonPlayerStats).l
 	bra.w	MenuStay
 
-MenuHighlights	;Highlights wait for that screen
+MenuHighlights	;Highlights
+	jsr	(HighlightsScreen).l
 	bra.w	MenuStay
 
 MenuGamesToday	;Games Today

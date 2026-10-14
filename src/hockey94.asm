@@ -95,6 +95,9 @@ restoreteams	;Put both teams' rosters on the bench
 .0	move.w	#$FFFE,tmpdst(a2,d0.w)	;tmpdst: -2 = all players on bench
 	subq.w	#2,d0
 	bpl.s	.0
+	IF SEASON=1
+	jsr	(SetSeasonInjuries).l
+	ENDIF
 	rts
 
 ResetClock	;set period length and stop clock
@@ -215,6 +218,9 @@ periodicevents	;Called every time thru game loop with d7 = elapsed frames
 CheckInjury	;Called once per second. Count down InjCntDown, act on it at zero
 	subq.w	#1,(InjCntDown).w
 	bne.w	rtss8
+	IF SEASON=1
+	jmp	(SeasonShowInjury).l
+	ENDIF
 	jmp	ShowInjuryBox		;countdown expired
 
 RestoreBenchEnergy	;Called once per second. Restore energy for players on the bench

@@ -26,6 +26,7 @@ const spans = [
   ['CalResultMap.map.jim', 0x16a8bc, 0x16cc82],
   ['PlayerStatsBgMap.map.jim', 0x16b50a, 0x16c438],
   ['PlayerStatsTitleMap.map.jim', 0x16c438, 0x16c776],
+  ['HighlightsBgMap.map.jim', 0x16c9fc, 0x16cc82],
   ['CreateBgMap.map.jim', 0x1703fe, 0x172ccc],
   ['TradeBgMap.map.jim', 0x172ccc, 0x17409a],
   ['GMDecisionMap.map.jim', 0x180d54, 0x181078],

@@ -45,6 +45,8 @@
 	IF SEASON=1
 	include	schedule94.asm		;season schedule
 	include	create94.asm		;create player, sign and release
+	include	injury94.asm		;multi-game injuries
+	include	highlights94.asm	;game highlights save and screen
 	include	trade94.asm		;rosters, trades, sign and release helpers
 	include	season94.asm		;season setup and header
 	include	controller94.asm	;controller setup before a game
