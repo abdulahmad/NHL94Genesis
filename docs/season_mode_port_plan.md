@@ -481,7 +481,7 @@ Watch items, not choices:
 
 Each chunk is behind `SEASON=1`, builds, and can be played or checked on its own before the next one starts. After every chunk: retail `tools/verify_all.sh` prints MATCH, and the season target assembles to a 2 MB image whose header ROM end is `$1FFFFF` and whose checksum word is `$0000` (until chunk 15 reconciles sizing with `RomEnd` on `main`). The season build always passes `CHECKSUM=0`. From the menu chunk on, the same boot also starts Regular Season, New Playoffs, and Shootout far enough to reach the next screen, so a bad mode number shows up immediately. New comments are plain English. No rename history, no source-file notes, no hardcoded ROM addresses. Routine names stay the 95 names. `docs/HANDOFF.md` is updated on this branch after each chunk. Anything still unclear after about 10 minutes goes on an Unsure list in that handoff and the chunk moves on.
 
-**Branch status (`feature/season-mode`):** chunks 1 through 20 are implemented, including `simgame94.asm` (`SimGameStats`). Retail `tools/verify_all.sh` MATCH. Manual season QA: `docs/SEASON_SMOKE.md`.
+**Branch status (`feature/season-mode`):** chunks 1–20 are implemented, including `simgame94.asm` (`SimGameStats`). Retail `tools/verify_all.sh` MATCH. Manual season QA: `docs/SEASON_SMOKE.md`. Remaining gaps are integration polish (section 10), not missing menu chunks.
 
 Trades and Create Player land before the season loop. They only need the menu and the battery. A created player is reviewed on the create screen, then on the sign screen, then on the ice in Game With Trades, then again in the first human season game.
 
@@ -526,3 +526,27 @@ Trades and Create Player land before the season loop. They only need the menu an
 20. **Full pass.** Retail MATCH again. One season image, from a cold start: create a player, sign that player, trade that player, play Game With Trades, start a season, simulate a day, play a day with a chosen pad side, read the standings, finish the playoffs, see the cup. Power cycle in the middle and Continue Season resumes the saved day.
 
 Chunks 6 through 9 are reviewable before any season day exists. Chunks 1 through 5 are the shared floor: every later chunk still has a matching retail ROM and a bootable season image.
+
+## 10. Integration edge cases (follow-up work)
+
+These are not separate “chunks” in the original 1–20 plan. They are places where 95 ties two save-RAM or UI systems together and the port either implements only one side or was never smoke-tested. Each item should get a short **prove** line in `docs/SEASON_SMOKE.md` when fixed. Retail `SEASON=0` must keep MATCHing.
+
+| ID | Area | 95 intent | 94 today | Suggested work | Priority |
+| --- | --- | --- | --- | --- | --- |
+| E1 | **Injuries vs roster “OUT”** | Multi-game injuries in `SRInjuries`; roster id low 5 bits `$1E` mean “out” for trade/UI (`SeasonPlayerOut`). | `SetInjuryGames` / `SetSeasonInjuries` work on ice; `SeasonPlayerOut` only reads `SRRosters`, not injuries. Trade overalls use `AttribAdjust` for injured stars. | On set/clear injury, mirror into `SRRosters` low bits (or teach `SeasonPlayerOut` to OR in `GetInjuryGames`). | High |
+| E2 | **`SeasonPlayerOut` callers** | `AttribRating` in 95 skips `AttribAdjust` when out (`setup95.asm`). | Only `BuildTradeRoster` calls it; scouting / pause / cards still always `AttribAdjust`. | Add the same guard to season paths in `stats94.asm` / `scout94.asm` (or shared `AttribRating` hook). | Medium |
+| E3 | **Line sets in battery** | `SRLines` loaded for season games; 95 `lines95.asm` maintains them. | `LoadTeamLines` / `DefaultLineData` on load; **no write** of in-game line changes back to `SRLines` after a season game. | Port save path from 95 (line editor / period end) when `GameFlags` bit 3 and `sflags11` bit 6 clear. | High |
+| E4 | **Scouting report vs season** | Hot/cold and starters use save RAM lines/rosters (`scout95.asm` + `SRLines`). | `scout94.asm` has no season branch; may show ROM-line hot/cold during a season human game. | Season branch: read starters from `SRLines` + season roster like 95. | Medium |
+| E5 | **Season game setup defaults** | Player picks goalies / user records on setup or controller screen. | `SeasonMain` `.play` forces `OptUserRec = 1`, `OptGoalie = 1` (Auto); only pads come from `SetContTeams`. | Either document as intentional or expose season-appropriate options without returning to the full menu. | Low |
+| E6 | **`GameOver` vs season** | Season result written in `SeasonGameOver`; not confused with password playoffs. | `EncodePW` and `PlayoffScreen` still run before `SeasonGameOver`; `OptPlayMode` cleared in `SeasonGameStart` but playoff UI path is easy to break. | Season-only `GameOver` branch: skip password encode / `PlayoffScreen` when `GameFlags` bit 3; add smoke test if `OptPlayMode` nonzero. | Medium |
+| E7 | **Controller Practice Mode** | Full practice strings and player list on controller screen. | `controller94.asm`: `PrintPracticePlayers` and related paths are `rts` stubs (called out in chunk 16). | Port practice helpers from 95 `goal95.asm` or hide practice UI entirely in season build. | Low |
+| E8 | **Highlights type 4** | Rare “team record” highlight (`PrintRecordHighlight`). | `SaveGameHighlights` only picks goals / assists / saves; type 4 path exists but may never be saved. | Port 95 conditions that write standing-streak highlights (if any); verify in smoke. | Low |
+| E9 | **Create Player menu** | Skip Create Player when 20 slots full; full-list message on save. | Create screen enforces 20; **menu** may still offer the line when list is full (95 skips). | Match 95 `optsetup` gating on `SRCreatedPlayers` count. | Low |
+| E10 | **`setInjuryType` / fighting** | When fighting disabled (`sflags13` bit 1), 95 injury path differs before `getFgtbyte`. | Season multi-game block ported; fighting-disable branch at top of 95 `injury95.asm` not fully mirrored in `collide94.asm`. | Compare 95 `setInjuryType` prologue; port if season “No Fighting” setup exists. | Low |
+| E11 | **ROM size / `Begin` branch** | N/A | Large `IF SEASON=1` inlines in `collide94.asm` pushed `rtss2` out of range and broke LONGBRA retry. | Keep season hooks as **`jsr (Routine).l`** in the 1 MB ROM; document in HANDOFF. | Process |
+| E12 | **Hardware / 2 MB cart** | Season ROM boots on Genesis. | Emulator-only verification in repo. | Real hardware or flash-cart smoke; not a code port task. | QA |
+| E13 | **Merge to `main`** | Single tree with mod-safe retail build + season flag. | Lives on `feature/season-mode`. | Rebase/merge; re-run `verify_all.sh` and season build after conflict resolution. | Release |
+
+**Suggested chunk 21+ ordering (if continuing code):** E1 → E3 → E6 → E2 → E4, then E5–E11 as needed. E12–E13 are process/release, not feature ports.
+
+**Regression rule for any E-item:** `bash tools/verify_all.sh` → ALL MATCH; season build 0 errors; add one row to the smoke checklist proving the fixed behavior.

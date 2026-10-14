@@ -43,6 +43,10 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | 12 | Finish regular season → playoffs → series | Tree and playoff screen behave; not password playoffs |
 | 13 | Win championship | Stanley Cup screen, then awards, then title |
 
+## Planned follow-ups (integration edge cases)
+
+Full table with 95 vs 94 notes and priority: **`docs/season_mode_port_plan.md` section 10** (E1–E13). Examples: injury state vs trade-screen “OUT” (`SeasonPlayerOut`), saving line sets to `SRLines` after a season game, season scouting report data, and skipping password playoff UI on season `GameOver`.
+
 ## Known gaps (not blocking retail MATCH)
 
 | Item | Behavior today |
