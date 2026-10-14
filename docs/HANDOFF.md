@@ -56,7 +56,8 @@ Branch `feature/season-mode`. Retail stays `SEASON=0` and must MATCH. `npm run b
 
 - Chunk 1: the flag, the season header ROM end, and the fill to 2 MB. No season code yet. Retail verify_all MATCH.
 - Chunk 2: season work-RAM names at `$FFFFDEF4`, menu scratch over the replay buffer, and the save-RAM offset names. Equates only. Retail verify_all MATCH.
-- Unsure: none.
+- Chunk 3: `schedule94.asm` at the start of the second megabyte, `Day` macro, no caller. Season image is 2 MB. Retail verify_all MATCH.
+- Unsure: none. The season image was not booted in an emulator. Header ROM end is `$001FFFFF`, checksum word is `$0000`, and the schedule's first byte is the 192-day count.
 
 ## Current state / Next
 - Comment review: done in 93, 94, 95 and NHLPA93SNES.
