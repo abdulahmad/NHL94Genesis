@@ -40,6 +40,9 @@ attribsum equ $FFFF80C6	;CalcAttribRating sum
 attribcount equ $FFFF80C8	;CalcAttribRating count
 StatBuf equ $FFFF80CA	;create and season stat scratch
 StatWork equ $FFFF81CA	;create name scratch, $40 bytes
+setupvalues equ StatWork	;season setup line bytes while SEASON SETUP is up
+setuplines equ StatWork+$10	;season setup line count
+setupshown equ StatWork+$12	;season setup lines on screen
 linemarkbuf equ StatWork	;the name string is stored at StatWork+2
 AttribDeltas equ $FFFF820A	;sixteen attribute changes on the rating screen
 setupdir equ $FFFF821A	;last menu direction: 0 up, 1 down, 2 left, 3 right
