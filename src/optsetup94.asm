@@ -13,7 +13,11 @@
 
 GameSetUp	;Game setup screen, called from PeriodOver. Builds the screen (setoptions), then runs the menu: up / down move the frame, left /
 	;right change the option (ChangeOption) and redraw (FixModeOptions), start begins the game (SetupStart), and $5460 frames without a
-	;press start a demo (SetupDemo).
+	;press start a demo (SetupDemo). A human season game skips this menu.
+	IF SEASON=1
+	jmp	(GameSetUpSeason).l
+GameSetUpMenu
+	ENDIF
 	jsr	(ReadLineData).l
 	movea.l	#pwddatabuffer,a3	;saved playoff state
 	jsr	(ReadPassBits).l

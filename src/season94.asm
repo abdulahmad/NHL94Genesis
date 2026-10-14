@@ -72,8 +72,25 @@ SeasonMain	;While GameFlags bit 3 is set. Bit 4 is a new season: the setup scree
 	bne.w	.seasonend
 	bra.w	.day
 .play
+	jsr	(ReadSeasonHeader).l
+	jsr	(BuildSeasonTeamList).l
+	move.w	(seasonteamsel).w,d0
+	movea.l	#SeasonTeams,a0
+	clr.w	(Opt1Team).w
+	clr.w	(Opt2Team).w
+	move.b	0(a0,d0.w),(Opt1Team+1).w
+	move.b	1(a0,d0.w),(Opt2Team+1).w
+	clr.w	(OptPerlen).w
+	move.b	(SeasonPerlen).w,(OptPerlen+1).w
+	clr.w	(OptPen).w
+	move.b	(SeasonPen).w,(OptPen+1).w
+	clr.w	(OptLine).w
+	move.b	(SeasonLine).w,(OptLine+1).w
+	move.w	#1,(OptNOP).w
+	move.w	#1,(OptUserRec).w
+	move.w	#1,(OptGoalie).w
 	bset	#5,(GameFlags).w
-	jmp	(GameSetUp).l
+	rts
 .seasonend
 	btst	#4,(SeasonFlags).w
 	bne.w	.over
@@ -887,6 +904,307 @@ SimGameStats	;Player lines for a simulated game wait until a human game records 
 	rts
 
 RecordPlayoffGame	;A playoff series result waits for the playoff schedule
+	rts
+
+GameSetUpSeason	;GameSetUp: a human season game skips the menu. Otherwise the menu runs as usual
+	btst	#5,(GameFlags).w
+	bne.w	SeasonGameStart
+	jmp	(GameSetUpMenu).l
+
+SeasonGameStart	;Start the human season game already stored in the option words. The saved roster stays in use
+	jsr	(ClearGameStats).l
+	jsr	(ReadNameLog).l
+	st	(demoflag).w
+	move.w	(Opt1Team).w,(HomeTeam).w
+	move.w	(Opt2Team).w,(VisTeam).w
+	move.w	(OptLine).w,(TmpOptLine2).w
+	cmpi.w	#2,(OptLine).w
+	bne.w	.0
+	clr.w	(OptLine).w
+	bset	#4,(sflags7).w
+.0
+	move.w	(OptGoalie).w,-(sp)
+	move.w	(sp),(goaliemode1).w
+	move.w	(sp)+,(goaliemode2).w
+	jsr	(UpdatePlayoffLevel).l
+	move.w	(VDP_CNTR).l,(seed).w
+	move.w	(VDP_CNTR).l,(seed+2).w
+	move.w	(OptPlayMode).w,(TempOptPlayMode).w
+	clr.w	(OptPlayMode).w
+	bclr	#6,(sflags11).w
+	bclr	#5,(GameFlags).w
+	jmp	(maketree).l
+
+SeasonGameOver	;After a human season game, copy the score into today's list and save the result
+	clr.w	(seasonsetupreq).w
+	btst	#3,(GameFlags).w
+	beq.w	.exit
+	st	(seasonsetupreq).w
+	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	ReadSeasonHeader
+	bsr.w	BuildSeasonTeamList
+	move.w	(HomeTeam).w,d1
+	movea.l	#SeasonTeams+1,a0
+	clr.w	d0
+	move.b	(a0)+,d0
+	beq.w	.3
+	bra.w	.1
+.loop
+	cmp.b	(a0),d1
+	beq.w	.2
+	addq.w	#5,a0
+.1
+	dbf	d0,.loop
+	bra.w	.3
+.2
+	movea.l	#tmstruct,a1
+	move.b	$D(a1),2(a0)
+	adda.w	#tmsize,a1
+	move.b	$D(a1),3(a0)
+	bset	#1,4(a0)
+	jsr	(RecordPlayoffGame).l
+	bset	#7,(GameFlags).w
+	bsr.w	AddSeasonGoals
+	bsr.w	WriteDayGames
+	bsr.w	RecordGameResult
+	bset	#1,(SimFlags).w
+	jsr	(SaveSimGame).l
+	bclr	#7,(GameFlags).w
+	jsr	(MakeSRAMChecksum).l
+.3
+	movem.l	(sp)+,d0-d7/a0-a6
+.exit
+	rts
+
+SaveSimGame	;Save the player lines and the team lines of the game just finished
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	(tmstruct+$28).w,(SaveRAM+2*SRCupWinner).l
+	move.w	(HmGoals).w,d7
+	cmp.w	(AwGoals).w,d7
+	bgt.w	.0
+	move.w	(AwShots+$28).w,(SaveRAM+2*SRCupWinner).l
+.0
+	bclr	#0,(SimFlags).w
+	move.w	#1,d0
+	move.w	(HmGoals).w,d7
+	cmp.w	(AwGoals).w,d7
+	bgt.w	.1
+	beq.w	.3
+	move.w	#2,d0
+.1
+	cmp.w	(cont1team).w,d0
+	beq.w	.2
+	cmp.w	(cont2team).w,d0
+	beq.w	.2
+	cmp.w	(cont3team).w,d0
+	beq.w	.2
+	cmp.w	(cont4team).w,d0
+	bne.w	.3
+.2
+	btst	#1,(SimFlags).w
+	beq.w	.3
+	bset	#0,(SimFlags).w
+.3
+	move.w	(HomeTeam).w,d7
+	jsr	(GetGoalieCountD7).l
+	move.w	d0,d6
+	subq.w	#1,d6
+	add.w	d6,d6
+	move.w	d7,d0
+	movea.l	#tmstruct,a1
+	bsr.w	AddPlayerSeasonStats
+	move.w	(VisTeam).w,d0
+	movea.l	#AwShots,a1
+	bsr.w	AddPlayerSeasonStats
+	bsr.w	SaveGameHighlights
+	move.w	(HomeTeam).w,d0
+	movea.l	#tmstruct,a1
+	movea.l	#AwShots,a2
+	bsr.w	AddTeamSeasonStats
+	move.w	(VisTeam).w,d0
+	movea.l	#AwShots,a1
+	movea.l	#tmstruct,a2
+	bsr.w	AddTeamSeasonStats
+	move.w	(tmstruct+$28).w,d0
+	move.w	(AwShots+$28).w,d1
+	jsr	(TickTeamInjuries).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+AddTeamSeasonStats	;Add team a1's totals (a2 is the other team) to team d0's season record
+	mulu.w	#$A,d0
+	btst	#5,(SeasonFlags).w
+	beq.w	.0
+	addi.l	#SRPOTeamStats,d0
+	bra.w	.1
+.0
+	addi.l	#SRTeamStats,d0
+.1
+	movea.l	#StatBuf,a0
+	moveq	#$A,d1
+	movem.l	d0-d1/a0,-(sp)
+	jsr	(ReadSRAM).l
+	movea.l	#StatBuf,a0
+	move.w	$C(a1),d5
+	add.w	d5,(a0)
+	move.w	$C(a2),d5
+	add.w	d5,2(a0)
+	move.w	8(a1),d5
+	add.w	d5,4(a0)
+	move.w	(a1),d5
+	add.w	d5,6(a0)
+	move.w	(a2),d5
+	add.w	d5,8(a0)
+	movem.l	(sp)+,d0-d1/a0
+	jsr	(WriteSRAM).l
+	jsr	(MakeSRAMChecksum).l
+	rts
+
+AddPlayerSeasonStats	;Add goals, assists, shots, penalty minutes and games played for team d0, stats at a1
+	move.l	#SRGoals,d2
+	btst	#5,(SeasonFlags).w
+	beq.w	.0
+	move.l	#SRPOGoals,d2
+.0
+	movem.l	d0/a1,-(sp)
+	bsr.w	ReadStatBlock
+.loop
+	clr.w	d2
+	move.b	$B4(a1),d2
+	andi.w	#$7FFF,(a0,d0.w)
+	add.w	d2,(a0,d0.w)
+	cmp.w	d6,d0
+	bgt.w	.2
+	ori.w	#$8000,(a0,d0.w)
+.2
+	addq.w	#1,a1
+	addq.w	#2,d0
+	dbf	d7,.loop
+	bsr.w	WriteStatBlock
+	movem.l	(sp),d0/a1
+	move.l	#SRAssists,d2
+	btst	#5,(SeasonFlags).w
+	beq.w	.3
+	move.l	#SRPOAssists,d2
+.3
+	bsr.w	ReadStatBlock
+.loop2
+	clr.w	d2
+	move.b	$CE(a1),d2
+	add.w	d2,(a0,d0.w)
+	addq.w	#1,a1
+	addq.w	#2,d0
+	dbf	d7,.loop2
+	bsr.w	WriteStatBlock
+	movem.l	(sp),d0/a1
+	move.l	#SRShots,d2
+	btst	#5,(SeasonFlags).w
+	beq.w	.5
+	move.l	#SRPOShots,d2
+.5
+	bsr.w	ReadStatBlock
+.loop3
+	clr.w	d2
+	move.b	$E8(a1),d2
+	andi.w	#$7FFF,(a0,d0.w)
+	add.w	d2,(a0,d0.w)
+	cmp.w	d6,d0
+	bgt.w	.7
+	ori.w	#$8000,(a0,d0.w)
+.7
+	addq.w	#1,a1
+	addq.w	#2,d0
+	dbf	d7,.loop3
+	bsr.w	WriteStatBlock
+	movem.l	(sp),d0/a1
+	move.l	a4,-(sp)
+	movea.l	a1,a4
+	move.l	#SRPenMin,d2
+	btst	#5,(SeasonFlags).w
+	beq.w	.8
+	move.l	#SRPOPenMin,d2
+.8
+	bsr.w	ReadStatBlock
+.loop4
+	clr.w	d2
+	cmp.w	d6,d0
+	bgt.w	.skater
+	move.b	$B4(a1),d2
+	movem.l	d4-d5,-(sp)
+	move.w	(PerTimeTotal).w,d4
+	add.w	(PerTimeTotal).w,d4
+	add.w	(PerTimeTotal).w,d4
+	move.w	$136(a4),d5
+	beq.w	.12
+	ext.l	d4
+	divu.w	d5,d4
+	cmp.w	#1,d4
+	bge.w	.10
+	move.w	#1,d4
+.10
+	mulu.w	d4,d2
+	cmp.l	#$7FFF,d2
+	blt.w	.11
+	move.w	#$7FFF,d2
+.11
+	add.w	d2,(a0,d0.w)
+.12
+	movem.l	(sp)+,d4-d5
+	bra.w	.14
+.skater
+	move.b	$102(a1),d2
+	add.w	d2,(a0,d0.w)
+.14
+	addq.w	#1,a1
+	addq.w	#2,a4
+	addq.w	#2,d0
+	dbf	d7,.loop4
+	bsr.w	WriteStatBlock
+	movea.l	(sp)+,a4
+	movem.l	(sp),d0/a1
+	move.l	#SRGamesPlayed,d2
+	btst	#5,(SeasonFlags).w
+	beq.w	.15
+	move.l	#SRPOGamesPlayed,d2
+.15
+	bsr.w	ReadStatBlock
+.loop5
+	clr.w	d2
+	tst.w	$136(a1)
+	beq.w	.17
+	cmp.w	d6,d0
+	bgt.w	.17
+	addq.w	#1,(a0,d0.w)
+.17
+	addq.w	#2,a1
+	addq.w	#2,d0
+	dbf	d7,.loop5
+	bsr.w	WriteStatBlock
+	movem.l	(sp)+,d0/a1
+	jsr	(MakeSRAMChecksum).l
+	rts
+
+ReadStatBlock	;Read team d0's $34 byte block at save RAM d2 into StatBuf. d0 = 0 and d7 = $19 on return
+	mulu.w	#$34,d0
+	add.l	d2,d0
+	movea.l	#StatBuf,a0
+	moveq	#$34,d1
+	movea.l	#StatWork+$14,a5
+	movem.l	d0-d1/a0,-(a5)
+	jsr	(ReadSRAM).l
+	movea.l	#StatBuf,a0
+	clr.w	d0
+	move.w	#$19,d7
+	rts
+
+WriteStatBlock	;Write StatBuf back to the block ReadStatBlock read
+	movem.l	(a5)+,d0-d1/a0
+	jmp	(WriteSRAM).l
+
+SaveGameHighlights	;A highlight line waits for the highlights screen
+	rts
+
+TickTeamInjuries	;Multi-game injury ticks wait for the injury chunk
 	rts
 
 AddSeasonGoals	;Add the game's goals to the season goal total and count the game

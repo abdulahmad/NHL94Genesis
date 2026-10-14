@@ -766,6 +766,9 @@ GameOver	;EncodePW (save the password), then in playoff mode PlayoffStatsScreen 
 	jsr	(PlayoffStatsScreen).l
 .po
 	bsr.w	PlayoffScreen
+	IF SEASON=1
+	jsr	(SeasonGameOver).l
+	ENDIF
 ExitToOpening	;Song $78, then restart at Opening2. Also jumped to from demoread and NextShooter
 	move.w	#SngTitle,-(sp)
 	bsr.w	song
