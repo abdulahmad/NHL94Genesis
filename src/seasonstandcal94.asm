@@ -592,13 +592,13 @@ SortStandings	;Sort StandingsList by points, then by fewer games played
 	move.b	(a1,d6.w),d0
 	move.b	1(a0,d7.w),d6
 	cmp.b	(a1,d6.w),d0
-	bgt.w	.next
-	blt.w	.swap
+	bhi.w	.next
+	blo.w	.swap
 	move.b	(a0,d7.w),d6
 	move.b	(a2,d6.w),d0
 	move.b	1(a0,d7.w),d6
 	cmp.b	(a2,d6.w),d0
-	ble.w	.next
+	bls.w	.next
 .swap
 	bset	#6,(sflags6).w
 	move.b	(a0,d7.w),d5
@@ -777,16 +777,24 @@ PrintStandingsLine	;Print W, L, T, Pts, GP and games remaining of team d1 on lin
 	jsr	(PushNumberWidth).l
 	move.w	#$15,(printx).w
 	jsr	(print).l
+	clr.w	d0
 	move.b	(a4,d5.w),d0
-	add.b	d0,d0
-	add.b	1(a4,d5.w),d0
+	add.w	d0,d0
+	clr.w	d1
+	move.b	1(a4,d5.w),d1
+	add.w	d1,d0
 	move.w	#3,d1
 	jsr	(PushNumberWidth).l
 	move.w	#$19,(printx).w
 	jsr	(print).l
+	clr.w	d0
 	move.b	(a4,d5.w),d0
-	add.b	1(a4,d5.w),d0
-	add.b	2(a4,d5.w),d0
+	clr.w	d1
+	move.b	1(a4,d5.w),d1
+	add.w	d1,d0
+	clr.w	d1
+	move.b	2(a4,d5.w),d1
+	add.w	d1,d0
 	move.w	#2,d1
 	jsr	(PushNumberWidth).l
 	move.w	#$1E,(printx).w
