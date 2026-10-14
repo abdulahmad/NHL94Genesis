@@ -58,6 +58,7 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | E10 | *(Deferred)* Season **Fighting: Off** should force period-only fight injuries; needs a short `setInjuryType` hook without growing 1MB `checks94`↔`rtss2` span. |
 | E8 | Type-4 standing highlights still optional; goal/assist/save highlights unchanged. |
 | E11 | Retail ROM still MATCH; season hooks stay `jsr (Routine).l` in collide/setup. |
+| E14 | *(Planned, critical)* Team with **128+** regular-season points stays at **top** of division standings and qualifies for playoffs (95 had signed-byte sort bug; see plan §10 and [forum fix write-up](https://forum.nhl94.com/index.php?/topic/26073-nhl95-bug-fix-make-the-playoffs-with-128-points/)). |
 
 Full notes: **`docs/season_mode_port_plan.md` section 10**. E12 hardware / E13 merge are release tasks.
 
@@ -67,6 +68,7 @@ Full notes: **`docs/season_mode_port_plan.md` section 10**. E12 hardware / E13 m
 |------|----------------|
 | Hardware boot | Season 2 MB image not verified on real Genesis hardware in this repo. |
 | Highlights type 4 | `PrintRecordHighlight` exists; standing-streak saves not ported from 95. |
+| Standings ≥128 pts | **Same as NHL 95:** signed sort on points byte can drop a elite team to last / miss playoffs until **E14** fix (`SortStandings`, `SortSeeds`). |
 
 ## Quick regression
 
