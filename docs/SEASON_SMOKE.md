@@ -39,7 +39,7 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | 8 | **NHL Standings** / **Calendar** | W-L-T and game result match step 7 |
 | 9 | **Player Stats** / **Team Stats** / **League Leaders** | Human and simulated games reflected in stats |
 | 10 | **Highlights** | Line from last played game; change day / game with `[]` / `{}` |
-| 11 | SEASON SETUP **Injuries: Multi-game** → hurt player in human game | Next day roster shows out; trade moves injury nibble |
+| 11 | SEASON SETUP **Injuries: Multi-game** (default) → game-length check injury in a **human** season game | Injury box says “Out for *n* games”; next day(s) player stays out (`SetSeasonInjuries`); `TickTeamInjuries` after each game; trade keeps injury (`GetInjuryGames`). **One Game Only** clears header bit 2—no new SRAM multi-game outs. |
 | 12 | Finish regular season → playoffs → series | Tree and playoff screen behave; not password playoffs |
 | 13 | Win championship | Stanley Cup screen, then awards, then title |
 

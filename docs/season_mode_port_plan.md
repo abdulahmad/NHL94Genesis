@@ -160,6 +160,16 @@ Straight port: `SetSeasonInjuries`, `TickTeamInjuries`, `TickInjuries`, `SetInju
 
 Adaptation: `setInjuryType` (a season injury stores a games-out count) and `CheckInjury` in `hockey94.asm` (call `SetInjuryGames` when the season header says multi-game). `restoreteams` / the lineup build calls `SetSeasonInjuries` when `GameFlags` bit 3 is set, the way `players95` does.
 
+**Multi-game injuries in season mode (required behavior, implemented in `injury94.asm`):**
+
+1. **SEASON SETUP → Injuries:** `Multi-game` (default) sets `SeasonFlags` bit 2 in the 8-byte header; `One Game Only` clears bit 2. This is **not** 93-style fighting—there is no fight mode on Genesis 95/94.
+2. **During a season game** (`GameFlags` bit 3 set for the whole season loop; bit 5 only marks “about to start a human game” until `SeasonGameStart`): a **game-length** check injury (`setInjuryType` → `.injurygame`) may call `SeasonMultiGameInjury`, which rolls duration and writes `SRInjuries` via `SetInjuryGames` when bit 2 is set.
+3. **Injury box:** `CheckInjury` → `SeasonShowInjury` shows “Out for *n* games” when `sflags12` bit 1 was set by `SetInjuryGames`.
+4. **Next games:** `restoreteams` → `SetSeasonInjuries` marks those players out (`$FFFC`); `SeasonPlayerOut` / `GetInjuryGames` cover trade and stats UI (E1).
+5. **After each played day:** `SaveSimGame` → `TickTeamInjuries` decrements every team’s injury nibbles in SRAM.
+
+Exhibition **Game With Trades** does not set `GameFlags` bit 3, so step 2 does not persist multi-game injuries to SRAM (on-ice game injuries can still occur). **Simulated** computer games tick injuries down but do not run `setInjuryType` (same as 95).
+
 Replaced: `getFgtbyte`, `chkFgtBit1` (`title94`), `updatepwrplay`, `GetLowestPen` (`penalty94`).
 
 ### Rosters and trades (`front/trade95.asm`, 6,340 bytes, 48 labels)
