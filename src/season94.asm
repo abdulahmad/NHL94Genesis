@@ -931,9 +931,6 @@ SimDayGames	;Simulate every computer game of the day (flags bit 0 set, bit 1 cle
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 
-SimGameStats	;Player lines for a simulated game wait until a human game records them
-	rts
-
 GameSetUpSeason	;GameSetUp: a human season game skips the menu. Otherwise the menu runs as usual
 	btst	#5,(GameFlags).w
 	bne.w	SeasonGameStart
@@ -2795,6 +2792,7 @@ SeasonOptionsGfx	;Season options video setup and graphics
 	move.w	d4,(optbgchars).w
 	rts
 
+	include	simgame94.asm
 	include	seasonstandcal94.asm
 	include	seasonstats94.asm
 

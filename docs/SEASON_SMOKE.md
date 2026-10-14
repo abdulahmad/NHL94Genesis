@@ -37,7 +37,7 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 | 6 | Games Today: all **Computer** → **Play Games** | Day advances; scores written |
 | 7 | One game **Human** → controller screen → play | Score saved; return to day loop |
 | 8 | **NHL Standings** / **Calendar** | W-L-T and game result match step 7 |
-| 9 | **Player Stats** / **Team Stats** / **League Leaders** | Human game reflected (sim-only days: see gaps) |
+| 9 | **Player Stats** / **Team Stats** / **League Leaders** | Human and simulated games reflected in stats |
 | 10 | **Highlights** | Line from last played game; change day / game with `[]` / `{}` |
 | 11 | SEASON SETUP **Injuries: Multi-game** → hurt player in human game | Next day roster shows out; trade moves injury nibble |
 | 12 | Finish regular season → playoffs → series | Tree and playoff screen behave; not password playoffs |
@@ -47,7 +47,6 @@ Work top to bottom. Power-cycle after step 10 and confirm **Continue Season** re
 
 | Item | Behavior today |
 |------|----------------|
-| `SimGameStats` | Stub (`rts`). Simulated days update scores and team W-L-T via `RecordGameResult`, but not per-player season stat lines from sim games. |
 | Hardware boot | Season 2 MB image not verified on real Genesis hardware in this repo. |
 | `SeasonPlayerOut` | Roster word `$1E` only; multi-game outs use `SetSeasonInjuries` / SRAM `SRInjuries` at game time, not this helper. |
 
