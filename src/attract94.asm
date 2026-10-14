@@ -106,7 +106,7 @@ DrawTeamBitmap	;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	4(a1),a1
-	movea.w	#$30A,a2
+	movea.w	#NoTiles,a2
 	move.w	(a1),d2
 	moveq	#2,d3
 	moveq	#0,d5
@@ -119,7 +119,7 @@ dotb	;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	4(a1),a1
-	movea.w	#$30A,a2
+	movea.w	#NoTiles,a2
 	move.w	(a1),d2
 	moveq	#2,d3
 	moveq	#2,d4
@@ -159,7 +159,7 @@ PickStartingGoalie	;unreferenced. $26(a2) = 0 if a pad has team a2, else (gamele
 	bgt.w	.set
 	tst.w	(OptLine).w
 	bne.w	.set
-	movea.w	#$30E,a0		;TeamList
+	movea.w	#TeamList,a0
 	move.w	(a2),d0
 	asl.w	#2,d0
 	movea.l	0(a0,d0.w),a0		;team block

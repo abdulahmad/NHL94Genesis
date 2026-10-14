@@ -34,6 +34,12 @@ const spans = [
   ['TradeAdvantageMap2.map.jim', 0x181b04, 0x18277c],
   ['TradeAdvantageMap1.map.jim', 0x18277c, 0x1834f4],
   ['NameEntryBgMap.map.jim', 0x1834f4, 0x1835d6],
+  ['ControllerTitleMap.map.jim', 0x16aa7c, 0x16ad5a],
+  ['PadCursorMap.map.jim', 0x16ad5a, 0x16b0b2],
+  ['PadIconMap1.map.jim', 0x16b0b2, 0x16b1c8],
+  ['PadIconMap2.map.jim', 0x16b1c8, 0x16b2de],
+  ['PadIconMap3.map.jim', 0x16b2de, 0x16b3f4],
+  ['PadIconMap4.map.jim', 0x16b3f4, 0x16b50a],
 ];
 
 const romPath = candidates.find((p) => fs.existsSync(p));
@@ -44,6 +50,11 @@ if (!romPath) {
 const rom = fs.readFileSync(romPath);
 fs.mkdirSync(outDir, { recursive: true });
 for (const [name, start, end] of spans) {
-  fs.writeFileSync(path.join(outDir, name), rom.subarray(start, end));
+  const data = rom.subarray(start, end);
+  fs.writeFileSync(path.join(outDir, name), data);
+  const lower = name.toLowerCase();
+  if (lower !== name) {
+    fs.writeFileSync(path.join(outDir, lower), data);
+  }
 }
 console.log(`season assets ${spans.length} files from ${romPath}`);

@@ -664,7 +664,7 @@ setteams	;Use hometeam/visteam to set team structures (InitTeamStructure for eac
 InitTeamStructure	;Set up team struct a2 for team d0: store the team number at $28, the team data address
 	;at $1E (tmdata), and copy the line sets to $16A (two layouts by OptLine)
 	move.w	d0,Xvel(a2)
-	movea.w	#$30E,a0	;TeamList
+	movea.w	#TeamList,a0
 	asl.w	#2,d0
 	move.l	0(a0,d0.w),$1E(a2)
 	IF SEASON=1
@@ -734,7 +734,7 @@ PeriodOver	;what to do if period over. Branched to from puckfaceoff when the clo
 	bsr.w	forceblack
 IntermissionStart	;reset the clock, song $79, ticker scores, playoff stats at the end
 	;(AddPOStats), Intermission, then StartPer or GameOver. Also jumped to from StartGame
-	jsr	(ResetClock).w
+	absjsr	ResetClock
 	move.w	d0,-(sp)
 	move.w	(vcount).w,d0
 .loop
@@ -757,7 +757,7 @@ IntermissionStart	;reset the clock, song $79, ticker scores, playoff stats at th
 	bsr.w	Intermission
 	cmpi.w	#4,(gsp).w
 	beq.w	GameOver
-	jmp	(StartPer).w
+	absjmp	StartPer
 GameOver	;EncodePW (save the password), then in playoff mode PlayoffStatsScreen (the playoff stats) and the playoff screen. Falls into ExitToOpening
 	bsr.w	EncodePW
 	tst.w	(OptPlayMode).w
@@ -790,13 +790,16 @@ Opening2	;reset the stack and clear the variables, then options (GameSetUp, User
 	cmpa.w	#$D03E,a0	;clear from VSCRLPM to $FFFFD03E
 	blt.s	.0
 	jsr	(GameSetUp).l
+	IF SEASON=1
+	jsr	(SetContTeams).l
+	ENDIF
 	jsr	(UserNameEntry).l
 Opening3	bsr.w	PlayoffScreen
 	btst	#0,(gmode2).w
 	bne.w	.1
 	jsr	(ScoutingReport).l	;skipped in shootouts, so no global label here (.1 below is local to Opening3)
 .1
-	jmp	(StartGame).w
+	absjmp	StartGame
 PlayoffScreen	;bring up playoff screen if in playoff mode. Called from GameOver and Opening2. Runs its own vblank and
 	;scrolls the tree a page ($70 pixels) at a time. Returns when start is pressed (PlayoffScreenExit)
 	tst.w	(OptPlayMode).w
@@ -1009,7 +1012,7 @@ DrawTreeArrow	;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/prin
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	4(a1),a1
-	movea.w	#$30A,a2
+	movea.w	#NoTiles,a2
 	clr.w	d1
 	moveq	#2,d2
 	moveq	#$17,d3
@@ -1031,7 +1034,7 @@ DrawTeamBlocks	;Draw team block d1 (team*2) from the TeamBlocks map (Teamblocksm
 .nohi
 	movea.l	#Teamblocksmap,a1
 	adda.l	4(a1),a1
-	movea.w	#$30A,a2
+	movea.w	#NoTiles,a2
 	clr.w	d0
 	move.w	(a1),d2
 	moveq	#2,d3

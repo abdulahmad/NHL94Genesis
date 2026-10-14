@@ -32,10 +32,10 @@ GameSetUpMenu
 	bsr.w	PrintOptionNames	;option names
 	tst.w	(demoflag).w	;clear after a demo
 	bne.w	.shootout	;keep the teams
-	moveq	#$1C,d0
+	moveq	#NumTeams,d0
 	jsr	(randomd0).l
-	move.w	d0,(Opt1Team).w	;random teams after a demo (0-27)
-	moveq	#$1C,d0
+	move.w	d0,(Opt1Team).w	;random teams after a demo (0 through NumTeams-1)
+	moveq	#NumTeams,d0
 	jsr	(randomd0).l
 	move.w	d0,(Opt2Team).w
 .shootout
@@ -435,18 +435,18 @@ FixModeOptions	;Fix the options a mode does not allow, then print them: Shootout
 	rts
 OptionLimits	;Number of values of each option
 	IF SEASON=1
-	dc.w	12,8,$1C,$1C,3,2,2,3,3
+	dc.w	12,8,NumTeams,NumTeams,3,2,2,3,3
 	ELSE
-	dc.w	5,8,$1C,$1C,3,2,2,3,3
+	dc.w	5,8,NumTeams,NumTeams,3,2,2,3,3
 	ENDIF
 OptionLimits4Way	;The same with FourWayPlay (12 player choices)
 	IF SEASON=1
-	dc.w	12,$C,$1C,$1C,3,2,2,3,3
+	dc.w	12,$C,NumTeams,NumTeams,3,2,2,3,3
 	ELSE
-	dc.w	5,$C,$1C,$1C,3,2,2,3,3
+	dc.w	5,$C,NumTeams,NumTeams,3,2,2,3,3
 	ENDIF
 ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its range (WrapOption). Entering Shootout saves User Records, Penalties and
-	;Line Changes (TmpOptUserRec ...), leaving restores them; Team 1 in new playoffs has $1A teams; the Players range depends on the mode and
+	;Line Changes (TmpOptUserRec ...), leaving restores them; Team 1 in new playoffs has NumPlayoffTeams teams; the Players range depends on the mode and
 	;FourWayPlay. A new play mode starts the playoffs (ContinuePlayoffs / GoNewPlayoffs). Called from GameSetUp and PrintOptions
 	tst.w	d7
 	bne.w	.2
@@ -498,7 +498,7 @@ ChangeOption	;add d2 to option d7 (d2 = 0: only limit it) and wrap it in its ran
 	ENDIF
 	cmp.w	#4,d7
 	bne.w	.4
-	moveq	#$1A,d4	;26 teams in new playoffs
+	moveq	#NumPlayoffTeams,d4	;playoff teams, the all-stars excluded
 .4
 	cmp.w	#2,d7
 	bne.w	.wrap
@@ -1255,6 +1255,10 @@ TeamLogoBitmaps	;Team logo bitmaps by team number (TeamList order); also used by
 	dc.l	logoFLA,logoHFD,logoLA,logoMTL,logoNJ,logoNYI,logoNYR,logoOTW
 	dc.l	logoPHI,logoPIT,logoQUE,logoSJ,logoSTL,logoTB,logoTOR,logoVAN
 	dc.l	logoWSH,logoWPG,logoASE,logoASW
+TeamLogoBitmapsEnd
+	IF (TeamLogoBitmapsEnd-TeamLogoBitmaps)<>(NumTeams*4)
+		inform	3,"TeamLogoBitmaps needs one entry per team"
+	ENDIF
 LogoBoxRight	;Logo box (LogoBoxMap, 8 x 8) at x $1C, y 5 with the logobox1chars tiles. Called from PlayerCardScreen
 	move.w	(logobox1chars).w,d4
 	move.w	#$1C,(printx).w

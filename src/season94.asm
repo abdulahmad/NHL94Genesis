@@ -86,7 +86,7 @@ SeasonMain	;While GameFlags bit 3 is set. Bit 4 is a new season: the setup scree
 	move.b	(SeasonPen).w,(OptPen+1).w
 	clr.w	(OptLine).w
 	move.b	(SeasonLine).w,(OptLine+1).w
-	move.w	#1,(OptNOP).w
+	clr.w	(OptNOP).w
 	move.w	#1,(OptUserRec).w
 	move.w	#1,(OptGoalie).w
 	bset	#5,(GameFlags).w
