@@ -620,8 +620,8 @@ SortStandings	;Sort StandingsList by points, then by fewer games played
 	bne.s	.pass
 	rts
 
-StandingsPoints	;Points and games of the 26 teams from StandingsBuf
-	move.w	#$1A,d0
+StandingsPoints	;Points and games of the playoff teams from StandingsBuf
+	move.w	#NumPlayoffTeams,d0
 	movea.l	#StandingsBuf,a1
 	movea.l	#CalMonth,a2
 	movea.l	#StandingsOrder,a3

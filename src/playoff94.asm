@@ -84,8 +84,8 @@ SortSeeds	;Bubble sort the SeedCount team bytes at a0 by SeedPoints, then SeedGa
 	bne.s	.pass
 	rts
 
-CalcSeedPoints	;SeedPoints = 2 * wins + ties and SeedGames = wins + losses + ties of the 26 teams (StandingsBuf)
-	move.w	#$1A,d0
+CalcSeedPoints	;SeedPoints = 2 * wins + ties and SeedGames = wins + losses + ties of the playoff teams (StandingsBuf)
+	move.w	#NumPlayoffTeams,d0
 	movea.l	#StandingsBuf,a1
 	movea.l	#SeedPoints,a2
 	movea.l	#SeedGames,a3

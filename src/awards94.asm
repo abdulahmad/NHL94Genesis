@@ -229,7 +229,7 @@ PrintFinalists	;"FINALISTS:" and the 3 finalists (player names, or teams for a t
 .player
 	move.w	(a0,d1.w),d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	move.w	d0,d7
 	swap	d0
 	movem.w	d0/d7,-(sp)
@@ -584,7 +584,7 @@ ScanAllPlayers	;Every player d1 of the 26 teams (d7): when the score routine a6 
 .team
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	move.w	d0,-(sp)
 	jsr	(GetGoalieCountD7).l
@@ -610,10 +610,10 @@ ScanAllPlayers	;Every player d1 of the 26 teams (d7): when the score routine a6 
 .nextteam
 	tst.w	(sp)+
 	addq.w	#1,d7
-	cmp.w	#$1A,d7
+	cmp.w	#NumPlayoffTeams,d7
 	bge.w	.exit
 	move.w	d7,d1
-	mulu.w	#$1A,d1
+	mulu.w	#RosterSlots,d1
 	bra.s	.team
 .exit
 	rts
@@ -621,7 +621,7 @@ ScanAllPlayers	;Every player d1 of the 26 teams (d7): when the score routine a6 
 ConnSmytheScore	;Score: skaters (from d2, the goalie count), playoff goals + assists (sflags11 bit 3)
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	cmp.w	d0,d2
 	bgt.w	AwardNotQualified
@@ -652,7 +652,7 @@ SelkeScore	;Score: forwards (d2 up to GetDefenseStartD7) with 10 goals per 100 g
 	;goal rate high nibble plus rating byte 3 (GetRosterName)
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	move.w	d0,d6
 	cmp.w	d2,d6
@@ -696,7 +696,7 @@ SelkeScore	;Score: forwards (d2 up to GetDefenseStartD7) with 10 goals per 100 g
 PearsonScore	;Score: skaters, goals + assists
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	cmp.w	d0,d2
 	bgt.w	AwardNotQualified
@@ -710,7 +710,7 @@ PearsonScore	;Score: skaters, goals + assists
 JenningsScore	;Score: goalies who played half the games or more, 100 * goals against / minutes (GetGoalieAwardStats)
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	move.w	d0,d6
 	jsr	(GetGoalieCountD7).l
@@ -740,7 +740,7 @@ JenningsScore	;Score: goalies who played half the games or more, 100 * goals aga
 ArtRossScore	;Score: skaters, goals + assists
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	move.w	d0,d6
 	jsr	(GetGoalieCountD7).l
@@ -755,7 +755,7 @@ ArtRossScore	;Score: skaters, goals + assists
 VezinaScore	;Score: goalies who played a quarter of the games or more, (600 - min(100 * goals against / minutes, 600)) / 10
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	move.w	d0,d6
 	jsr	(GetGoalieCountD7).l
@@ -792,7 +792,7 @@ VezinaScore	;Score: goalies who played a quarter of the games or more, (600 - mi
 NorrisScore	;Score: defensemen, 100 * (6 - min(penalty minutes per game, 6)) + 10 * goals + assists
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	move.w	d0,d6
 	jsr	(GetDefenseStartD7).l
@@ -845,7 +845,7 @@ NorrisScore	;Score: defensemen, 100 * (6 - min(penalty minutes per game, 6)) + 1
 HartScore	;Score: goalies 10 * (3 - min(goals against / minutes, 3)), skaters 2 * goals + assists
 	move.w	d1,d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	swap	d0
 	cmp.w	d0,d2
 	ble.w	.1

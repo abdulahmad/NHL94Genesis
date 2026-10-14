@@ -1460,7 +1460,7 @@ CountTeamGames	;d1 = number of season games of team d0
 	movem.l	(sp)+,d2-d7/a0-a6
 	rts
 
-ReadStandings	;Read the 26 teams' standings records (3 bytes: wins, ties, losses) into a0
+ReadStandings	;Read playoff teams' standings records (3 bytes: wins, ties, losses) into a0
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	#SRStandings,d0
 	btst	#5,(SeasonFlags).w
@@ -1468,7 +1468,7 @@ ReadStandings	;Read the 26 teams' standings records (3 bytes: wins, ties, losses
 	move.l	#SRPOStandings,d0
 .0
 	moveq	#3,d1
-	mulu.w	#$1A,d1
+	mulu.w	#NumPlayoffTeams,d1
 	jsr	(ReadSRAM).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

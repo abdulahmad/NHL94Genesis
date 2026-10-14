@@ -358,7 +358,7 @@ SeasonStatsListDraw	;Draw the season player stats screen for team d7 (SeasonStat
 	bra.w	.team
 .next
 	addq.w	#1,d7
-	cmp.w	#$1A,d7
+	cmp.w	#NumPlayoffTeams,d7
 	bne.w	.team
 	clr.w	d7
 	bra.w	.team
@@ -760,7 +760,7 @@ SeasonTeamStatsRun	;Season (or playoff, sflags11 bit 3) team stats screen: team 
 	bra.s	.wait
 .next
 	addq.w	#1,d7
-	cmp.w	#$1A,d7
+	cmp.w	#NumPlayoffTeams,d7
 	bne.s	.team
 	clr.w	d7
 	bra.s	.team
@@ -1916,7 +1916,7 @@ DrawPlayerLeaderRows	;Sorted list rows: rank, player name (TeamList, d7 = value 
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
 	ext.l	d0
-	divu.w	#$1A,d0
+	divu.w	#RosterSlots,d0
 	move.w	d0,d7
 	swap	d0
 	jsr	(FormatPlayerNameD7).l

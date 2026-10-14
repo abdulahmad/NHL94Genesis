@@ -257,6 +257,10 @@ ASW equ 27
 ; all-star number: a new playoff team is inserted before ASE and both all-star numbers move up.
 NumTeams equ ASW+1
 NumPlayoffTeams equ ASE
+; Roster slots per team (skaters in card lists, three-stars tables, etc.), not the league count.
+RosterSlots equ 26
+; Season trade/create: team index for the unsigned free-agent list (was hardcoded $1C when NumTeams was 28).
+FreeAgentTeam equ NumTeams
 PlayoffRows equ 32
 PlayoffRowTeams equ 16
 ; Crowd records are NumTeams blocks of CrowdRecBytes at CrowdRecBase. The stock league
@@ -287,4 +291,31 @@ LineDataBase equ $1EF6
 	ENDIF
 	IF 32<NumPlayoffTeams
 		inform	3,"The playoff draw only keeps 32 team bits"
+	ENDIF
+SeasonHeaderBase equ $E22
+	IF SEASON=1
+	IF NameLogEnd>SeasonHeaderBase
+		inform	3,"Name log overlaps season header; use stock 28 teams or relayout SR*"
+	ENDIF
+	IF 26<NumPlayoffTeams
+		inform	3,"Season standings buffer and SR map not yet sized past 26 playoff teams"
+	ENDIF
+	ENDIF
+; Cartridge backup RAM (odd byte of each word at SaveRamBase). The power-on mirror in M68K_RAM
+; is SaveMirrorBytes; checksum bytes sit at the end of that mirror.
+SaveRamBase equ $200000
+	IF SEASON=1
+SaveMirrorBytes equ $8000
+SaveChecksumByte equ $7FFE
+SaveChecksumSum equ $7FFF
+	ELSE
+SaveMirrorBytes equ $2000
+SaveChecksumByte equ $1FFE
+SaveChecksumSum equ $1FFF
+	ENDIF
+SaveMirrorLast equ SaveMirrorBytes-1
+SaveSumDb equ SaveChecksumSum-2
+SaveRamMapPort equ $A130F1
+	IF LineDataBase>SaveMirrorBytes
+		inform	3,"Save mirror too small for the save layout"
 	ENDIF
