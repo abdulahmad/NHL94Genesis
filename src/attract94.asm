@@ -75,6 +75,7 @@ DrawMatchupBitmaps	;Called from PrintOptions. Draw the VisTeam and HomeTeam bitm
 	movea.l	#TeamPalettes,a0
 	move.l	$26(a0,d0.w),(palfadenew+$26).w
 	move.w	(teambitmapchars).w,d4
+	jsr	(LoadTeamBitmapRemap).l	;patch/teamblock-vram: this team's tiles only
 	bsr.w	DrawTeamBitmap
 	bsr.w	printz
 	String	-(TXPRI+TXMAP1),$16,1,0
@@ -85,16 +86,17 @@ DrawMatchupBitmaps	;Called from PrintOptions. Draw the VisTeam and HomeTeam bitm
 	move.l	2(a0,d0.w),(palfadenew+$22).w
 	move.w	#$EEE,(palfadenew+$2A).w
 	move.w	#2,d4
+	jsr	(LoadTeamBitmapPlain).l	;patch/teamblock-vram
 	bsr.w	DrawTeamBitmap
 	bsr.w	setteams
 	move.w	#$64,(palcount).w
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 
-DrawTeamBitmap	;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
+DrawTeamBitmap	;dobitmap entry d1 of TBP_Bitmap (per-team rebased TeamBitmaps, patch/teamblock-vram; d4 from the caller)
 	clr.w	d0
 	asl.w	#1,d1
-	movea.l	#TeamBitmaps,a0
+	movea.l	#TBP_Bitmap,a0
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	4(a1),a1

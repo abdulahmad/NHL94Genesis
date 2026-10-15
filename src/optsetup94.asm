@@ -975,17 +975,14 @@ CheckNOPUnused	;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no
 	cmpi.w	#$A,(OptNOP).w
 .x
 	rts
-LoadSetupTiles	;Load the TeamBitmaps+8 tiles from char 2, then again remapped
-	;teambitmapchars.
-	;Called
-	;from setoptions
-	moveq	#2,d4	;vram char 2
-	movea.l	#TeamBitmaps+8,a2
-	jsr	(DecompressGraphicsPlain).l
-	move.w	d4,(teambitmapchars).w
-	movea.l	#TeamBitmaps+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
-	dc.l	$03412567,$89ABCDEF	;remap table (/ move.l / dc.b)
+LoadSetupTiles	;patch/teamblock-vram: no tiles loaded here. DrawMatchupBitmaps loads the home team's tiles (plain) at char 2
+	;and the visitor's (remapped) at teambitmapchars = 2+TBP_Max on each draw. d4 returned as retail (2 + 2 x TeamBitmaps tiles)
+	;so the framer and fonts keep their chars. Called from setoptions
+	move.w	#2+TBP_Max,(teambitmapchars).w
+	move.w	(TeamBitmaps+8).l,d4
+	andi.w	#$7FFF,d4
+	add.w	d4,d4
+	addq.w	#2,d4
 	rts
 UpdateRosterPlayers	;An empty routine, called from ReadSetupPads. An unused rts follows
 	rts
