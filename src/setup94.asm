@@ -202,50 +202,45 @@ ReloadFaceOffMap	;Reload the FaceOffMap+8 tiles at ExtraChars. Called from the r
 	move.w	(ExtraChars).w,d4
 	movea.l	#FaceOffMap+8,a2
 	bra.w	DecompressGraphicsPlain
-setupTeamBlocksMap	;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C and copy the home and visitor team
-	;blocks to vram at basetileoffset and basetileoffset+$16. d4 = 1st vram char; return d4 = basetileoffset+$2C. Called from setupice
+setupTeamBlocksMap	;patch/teamblock-vram: DMA the home and visitor teams' 22 block chars each straight from the ROM tiles
+	;(Teamblocksmap+10, unpacked, 32 bytes each) to basetileoffset and basetileoffset+$16. No scratch load of the whole set.
+	;d4 = 1st vram char; return d4 = basetileoffset+$2C. Map words at TeamBlockMap. Called from setupice
 	move.w	d4,(basetileoffset).w
-	addi.w	#$2C,d4
 	movea.w	#(TeamBlockMap-M68K_RAM),a1
-	movea.l	#Teamblocksmap,a0
-	lea	8(a0),a2
-	bsr.w	DecompressGraphicsPlain
-	adda.l	4(a0),a0
-	move.l	a0,-(sp)
 	move.w	(HomeTeam).w,d0
 	move.w	(basetileoffset).w,d1
-	asl.w	#5,d1
 	bsr.w	CopyTeamBlockMapData
-	movea.l	(sp)+,a0
 	move.w	(VisTeam).w,d0
 	move.w	(basetileoffset).w,d1
 	addi.w	#$16,d1
-	asl.w	#5,d1
 	bsr.w	CopyTeamBlockMapData
 	move.w	(basetileoffset).w,d4
 	addi.w	#$2C,d4
 	rts
-CopyTeamBlockMapData	;Copy one team's 22 block chars from the loaded tile set to vram at d1 by vram dma
-	;(DoDMA_nd2), and store their map words at (a1)+. a0 = map data, d0 = team, d1 = vram address
+CopyTeamBlockMapData	;d0 = team, d1 = 1st vram char, a1 = map word output (+$2C). Per char: map word = attr bits | $8000 | char,
+	;tile DMA'd from ROM (DoDMApro, vblank protected)
+	movea.l	#Teamblocksmap,a3
+	movea.l	a3,a2
+	adda.l	4(a2),a2
 	mulu.w	#$2C,d0
-	lea	4(a0,d0.w),a0
+	lea	4(a2,d0.w),a2	;team's 22 map words
 	move.w	#$15,d3
 .row
-	moveq	#$20,d0
-	move.w	d1,-(sp)
-	move.b	(a0),(a1)
-	andi.w	#$F800,(a1)
-	lsr.w	#5,d1
-	ori.w	#$8000,d1
-	or.w	d1,(a1)+
-	move.w	(sp)+,d1
-	move.w	(a0)+,d2
-	andi.w	#$7FF,d2
-	add.w	(basetileoffset).w,d2
-	addi.w	#$2C,d2
-	asl.w	#5,d2
-	bsr.w	DoDMA_nd2
-	addi.w	#$20,d1
+	move.w	(a2)+,d2
+	move.w	d2,d0
+	andi.w	#$7800,d0	;flip/palette bits, priority forced as retail
+	or.w	d1,d0
+	ori.w	#$8000,d0
+	move.w	d0,(a1)+
+	andi.l	#$7FF,d2
+	asl.l	#5,d2
+	lea	10(a3,d2.l),a0	;ROM tile
+	movem.l	d1/d3/a1-a3,-(sp)
+	asl.w	#5,d1
+	moveq	#$10,d0
+	bsr.w	DoDMApro
+	movem.l	(sp)+,d1/d3/a1-a3
+	addq.w	#1,d1
 	dbf	d3,.row
 	rts
 defaultsprites	;allocate vram and assign char area for graphic structures. d4 = char area for data. Sets up the sso (4) and ffo (7) objects from
