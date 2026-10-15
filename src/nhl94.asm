@@ -41,3 +41,18 @@
 	dcb.b	$100000-*,$FF	;fill the retail 1MB image. Includes for a larger ROM go after this line;
 				;tools/fixrom.js pads the image and sets the header ROM end (docs/EXPANDING_THE_ROM.md)
 	include	shortcalls.inc		; checks only: the routines the retail code calls with .w stay below $8000
+	IF SEASON=1
+	include	schedule94.asm		;season schedule
+	include	create94.asm		;create player, sign and release
+	include	injury94.asm		;multi-game injuries
+	include	highlights94.asm	;game highlights save and screen
+	include	trade94.asm		;rosters, trades, sign and release helpers
+	include	season94.asm		;season setup and header
+	include	controller94.asm	;controller setup before a game
+	include	playoff94.asm	;playoff seeding, schedule, and tree
+	include	awards94.asm	;end-of-season awards
+	include	cup94.asm		;Stanley Cup screen
+		IF $200000<*
+		inform	3,"Season ROM content overlaps backup RAM at $200000"
+		ENDIF
+	ENDIF

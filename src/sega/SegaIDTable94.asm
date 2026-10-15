@@ -25,7 +25,11 @@
 	dc.l	$00000000,$000FFFFF	; 08	$1A0	cartridge size (start and end address) (8 bytes). 1 MB; tools/fixrom.js sets it for a larger image
 	dc.l	$00FF0000,$00FFFFFF	; 09	$1A8	RAM size (start and end address) (8 bytes)
 	dc.b	'RA',$F8,$20		; 10	$1B0	external RAM info. (12 bytes): backup RAM, odd bytes (93: 12 spaces)
+	IF SEASON=1
+	dc.l	$00200001,$0020FFFF	; 		$1B4	backup RAM start and end address
+	ELSE
 	dc.l	$00200001,$00203FFF	; 		$1B4	backup RAM start and end address
+	ENDIF
 	dc.b	'            '		; 11	$1BC	modem info. (12 bytes)
 	dc.b	'        '			; 12	$1C8	inhibit to use (40 bytes)
 	dc.b	'                '	; 		$1D0

@@ -259,21 +259,61 @@ NumTeams equ ASW+1
 NumPlayoffTeams equ ASE
 ; Roster slots per team (skaters in card lists, three-stars tables, etc.), not the league count.
 RosterSlots equ 26
+; Season trade/create: team index for the unsigned free-agent list (was hardcoded $1C when NumTeams was 28).
+FreeAgentTeam equ NumTeams
 PlayoffRows equ 32
 PlayoffRowTeams equ 16
-; Save RAM layout (retail addresses). Crowd records are NumTeams blocks of CrowdRecBytes at
-; CrowdRecBase and must end before the records block; see docs/EXPANDING_THE_ROM.md.
+; Crowd records are NumTeams blocks of CrowdRecBytes at CrowdRecBase. The stock league
+; ends on the records block. A larger league starts that block after the crowd records,
+; and starts the name log after the records block. Line data stays where it is.
 CrowdRecBase equ $B60
 CrowdRecBytes equ 16
 CrowdRecEnd equ CrowdRecBase+NumTeams*CrowdRecBytes
+	IF CrowdRecEnd<$D21
 TeamRecBase equ $D20
+	ENDIF
+	IF $D20<CrowdRecEnd
+TeamRecBase equ CrowdRecEnd
+	ENDIF
 RecordsBytes equ $80
+RecordsEnd equ TeamRecBase+RecordsBytes
+	IF RecordsEnd<$DA1
 NameLogBase equ $DA0
+	ENDIF
+	IF $DA0<RecordsEnd
+NameLogBase equ RecordsEnd
+	ENDIF
 NameLogBytes equ $80
+NameLogEnd equ NameLogBase+NameLogBytes
 LineDataBase equ $1EF6
-	IF TeamRecBase<CrowdRecEnd
-		inform	3,"The crowd records run into the records block (see docs/EXPANDING_THE_ROM.md)"
+	IF LineDataBase<NameLogEnd
+		inform	3,"The name log runs into the line data"
 	ENDIF
 	IF 32<NumPlayoffTeams
 		inform	3,"The playoff draw only keeps 32 team bits"
+	ENDIF
+EXPANDED_SCHEDULE equ 0
+	IF SEASON=1
+	IF 26<NumPlayoffTeams
+	IF EXPANDED_SCHEDULE=0
+		inform	3,"Season schedule is 26-team stock data; set EXPANDED_SCHEDULE=1 after extending schedule94.asm"
+	ENDIF
+	ENDIF
+	ENDIF
+; Cartridge backup RAM (odd byte of each word at SaveRamBase). The power-on mirror in M68K_RAM
+; is SaveMirrorBytes; checksum bytes sit at the end of that mirror.
+SaveRamBase equ $200000
+	IF SEASON=1
+SaveMirrorBytes equ $8000
+SaveChecksumByte equ $7FFE
+SaveChecksumSum equ $7FFF
+	ELSE
+SaveMirrorBytes equ $2000
+SaveChecksumByte equ $1FFE
+SaveChecksumSum equ $1FFF
+	ENDIF
+SaveMirrorLast equ SaveMirrorBytes-1
+SaveSumDb equ SaveChecksumSum-2
+	IF LineDataBase>SaveMirrorBytes
+		inform	3,"Save mirror too small for the save layout"
 	ENDIF

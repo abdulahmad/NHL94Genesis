@@ -66,7 +66,11 @@ ReadLineData	;Read the $100 bytes at save RAM LineDataBase to databuffer; sflags
 	;GameSetUp
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
+	IF SEASON=1
+	move.l	#SRLineData,d0
+	ELSE
 	move.l	#LineDataBase,d0
+	ENDIF
 	movea.l	#databuffer,a0
 	jsr	(ReadSRAM).l
 	bclr	#4,(sflags).w
@@ -77,7 +81,11 @@ ReadLineData	;Read the $100 bytes at save RAM LineDataBase to databuffer; sflags
 WriteLineData	;Write databuffer back to save RAM at LineDataBase (WriteSRAM, MakeSRAMChecksum); as ReadLineData after. Called from EncodePW and EncodeTeamLines
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
+	IF SEASON=1
+	move.l	#SRLineData,d0
+	ELSE
 	move.l	#LineDataBase,d0
+	ENDIF
 	movea.l	#databuffer,a0
 	jsr	(WriteSRAM).l
 	jsr	(MakeSRAMChecksum).l

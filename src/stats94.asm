@@ -937,6 +937,10 @@ AttribFighting	;Bit 0 of the nibble is the handedness: drop it, then a rating ou
 AttribRating	;d0 * 100 / d1, adjusted (AttribAdjust, high ROM); falls into AttribPrintPct
 	mulu.w	#$64,d0	;'d'   ; mult by 100 dec
 	divu.w	d1,d0	;divide by d1 (usually 100 dec)
+	IF SEASON=1
+	jsr	(SeasonAttribRatingHook).l
+	beq.w	AttribPrintPct
+	ENDIF
 	jsr	(AttribAdjust).l
 AttribPrintPct	;Print d0 4 wide, then 4 blanks
 	moveq	#4,d1
@@ -2063,6 +2067,9 @@ DrawGoalieSelectList	;Draw the goalie list, row menuitem highlighted, each goali
 	dbf	d1,.row
 	rts
 GetGoalieCount	;d0 = goalies on team a2 (nibbles in the team data word at +$A)
+	IF SEASON=1
+	jmp	(GoalieCountHook).l
+	ELSE
 	movem.l	d1/a0,-(sp)
 	movea.l	tmdata(a2),a0
 .word
@@ -2075,8 +2082,12 @@ GetGoalieCount	;d0 = goalies on team a2 (nibbles in the team data word at +$A)
 	bne.s	.count
 	movem.l	(sp)+,d1/a0
 	rts
+	ENDIF
 GetDefenseStart	;d0 = goalies + forwards of team a2 (GetGoalieCount + GetForwardCount), the roster index of the
 	;first defenseman (roster order is goalies, forwards, defense). Called from the high ROM player cards
+	IF SEASON=1
+	jmp	(DefenseStartHook).l
+	ELSE
 	movem.l	a0,-(sp)
 	bsr.s	GetGoalieCount
 	move.w	d0,-(sp)
@@ -2088,7 +2099,11 @@ GetDefenseStart	;d0 = goalies + forwards of team a2 (GetGoalieCount + GetForward
 	add.w	(sp)+,d0
 	movem.l	(sp)+,a0
 	rts
+	ENDIF
 GetForwardCount	;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
+	IF SEASON=1
+	jmp	(ForwardCountHook).l
+	ELSE
 	movem.l	a0,-(sp)
 	movea.l	tmdata(a2),a0
 	adda.w	8(a0),a0
@@ -2097,7 +2112,11 @@ GetForwardCount	;d0 = forwards on team a2 (high nibble of team data byte 3 at +8
 	andi.w	#$F,d0
 	movem.l	(sp)+,a0
 	rts
+	ENDIF
 GetPlayerCount	;d0 = players on team a2 (records until a length word of 2)
+	IF SEASON=1
+	jmp	(PlayerCountHook).l
+	ELSE
 	movem.l	a0,-(sp)
 	movea.l	tmdata(a2),a0
 	adda.w	(a0),a0
@@ -2110,6 +2129,7 @@ GetPlayerCount	;d0 = players on team a2 (records until a length word of 2)
 	bne.s	.loop
 	movem.l	(sp)+,a0
 	rts
+	ENDIF
 WaitVSyncAndReadInput	;Wait for vcount to change and for a new button press (d1)
 	move.w	(vcount).w,d1
 .wait

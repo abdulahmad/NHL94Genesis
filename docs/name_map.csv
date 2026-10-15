@@ -154,3 +154,4 @@ SPAboardbot,SPAboardback,behavior
 SPAboardmidl,SPAbenchcheckl,behavior
 SPAboardmidr,SPAbenchcheckr,behavior
 SPAboardchk,SPAcrosscheck,behavior
+NameEntryBuf,CreateNameBuf,95 create; 94 nameentrybuf is the record-holders name

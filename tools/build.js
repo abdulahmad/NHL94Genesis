@@ -31,7 +31,9 @@ const paint = (t) => t
     .replace(/not verified \([^)]*\)/, (m) => c.yellow(m));
 const segIdx = args.indexOf('--seg');
 const seg = segIdx >= 0 ? args[segIdx + 1] : null;
-const mode = args.find((a) => a === 'retail' || a === 'dev') || 'retail';
+const mode = args.find((a) => a === 'retail' || a === 'dev' || a === 'season') || 'retail';
+// season: SEASON=1 image (season mode, needs NHL95_ROM for extractSeasonAssets), not verified.
+const season = !seg && mode === 'season' ? 1 : 0;
 const env = (k) => process.env[k] ?? process.env[k.toUpperCase()] ?? process.env[k.toLowerCase()];
 const rev = env('rev') === '1' ? 1 : 0;
 const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' && !seg ? 0 : 1);
@@ -193,7 +195,7 @@ const bin = path.join(BUILD, `${name}.raw.bin`);
 const lst = path.join(BUILD, `${name} .lst`);
 const fixed = path.join(BUILD, `modified_${name}.raw.bin`);
 const logPath = path.join(BUILD, `Build_${name}.log`);
-const final = seg ? `${seg}.bin` : `nhl94${rev ? '-revA' : ''}${mode === 'dev' ? '-dev' : ''}.bin`;
+const final = seg ? `${seg}.bin` : `nhl94${rev ? '-revA' : ''}${mode === 'dev' ? '-dev' : ''}${season ? '-season' : ''}.bin`;
 const mod = path.join(OUT, final);
 
 // 1. prebuild: ROM check and Extracted/ assets.
@@ -205,6 +207,11 @@ const mod = path.join(OUT, final);
     try { count = JSON.parse(fs.readFileSync(path.join(ROOT, 'Extracted', '.extract-complete.json'), 'utf8')).files.length; } catch (e) { /* keep ? */ }
     step('prebuild', `ROM OK, ${count} assets extracted`);
     detail(r.out);
+    if (season) {
+        const s2 = await node('extractSeasonAssets.js', []);
+        if (s2.status !== 0) fail('prebuild', 'season assets (extractSeasonAssets.js; set NHL95_ROM)', s2.out);
+        detail(s2.out);
+    }
 }
 
 // 2. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
@@ -216,7 +223,7 @@ const mod = path.join(OUT, final);
     const o = `..\\output\\build\\${name}`;
     const asmArgs = ['/p', '/m', '/g', '/o', 'd-', '/o', 's-', '/o', 'r+', '/o', 'l+', '/o', 'l.', '/o', 'ow+', '/o', 'op-',
         '/o', 'os+', '/o', 'oz+', '/o', 'omq-', '/o', 'oaq+', '/o', 'osq+',
-        '/e', `REV=${rev}`, '/e', `CHECKSUM=${checksum}`, `${src},${o}.raw.bin,${o},${o}`];
+        '/e', `REV=${rev}`, '/e', `CHECKSUM=${checksum}`, '/e', `SEASON=${season}`, `${src},${o}.raw.bin,${o},${o}`];
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
     const r = await (WIN ? run(exe, asmArgs, { cwd: path.join(ROOT, 'src') })
         : run('wine', [exe, ...asmArgs], { cwd: path.join(ROOT, 'src'), env: { ...process.env, WINEDEBUG: '-all' } }));
@@ -264,7 +271,9 @@ if (seg) {
 }
 
 // 5. verify against the retail ROM.
-if (!seg && mode === 'dev') {
+if (!seg && season) {
+    step('verify', `${rel(mod)} not verified (season build)`);
+} else if (!seg && mode === 'dev') {
     step('verify', `${rel(mod)} not verified (dev build)`);
 } else if (!seg && rev) {
     step('verify', `${rel(mod)} not verified (no REV A reference ROM)`);

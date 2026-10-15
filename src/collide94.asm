@@ -923,6 +923,9 @@ FallDown	;player a2 falls down, player a3 is the hitting player. Skips a2 in som
 setInjuryType	;determines if injury will be for period or game. a2 = player injured, a3 = player checking. Marks a2 unavailable, pumps up the crowd,
 	;plays sfx $D, locks the scroll on a2 and sets TempPlOffset (pnum, bit 15 set for the away team). a2's tmpdst becomes $FFFD (injured for the
 	;period) or, from a3's Fgt byte (getFgtbyte, chkFgtBit1), $FFFC (injured for the game, sflags7 bit 5). Called from FallDown
+	IF SEASON=1
+	bclr	#1,(sflags12).w
+	ENDIF
 	move.w	d0,-(sp)
 	bset	#2,pflags2(a2)	;set player unavailable
 	addi.w	#$12C,(crowdlevel).w
@@ -961,6 +964,9 @@ setInjuryType	;determines if injury will be for period or game. a2 = player inju
 .injurygame
 	bset	#5,(sflags7).w	;set injury game bit
 	move.w	#$FFFC,$66(a0,d1.w)	;update status of player
+	IF SEASON=1
+	jsr	(SeasonMultiGameInjury).l
+	ENDIF
 .exit
 	move.w	(sp)+,d0
 	rts
@@ -2816,6 +2822,9 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 .nda
 	move.w	#$FFFF,tmpdst(a0,d3.w)	;clear out temp space
 	lsr.w	#1,d3	;shift d3 back to its original value
+	IF SEASON=1
+	move.w	Xvel(a0),(rosterteam).w
+	ENDIF
 	movea.l	tmdata(a0),a0	;Offset 1E from Team Struct = The address where the team's data is stored (roster, etc)
 	move.l	a0,-(sp)	;pushes starting position onto the stack
 	adda.w	8(a0),a0	;moves to offset where Off/Def byte is
@@ -2866,6 +2875,13 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	move.b	#2,(ThirdPBonus).w	;move 2 into 3rd Per Bonus
 .playdatamove
 	movea.l	(sp)+,a0	;moves Team Data start to a0
+	IF SEASON=1
+	btst	#6,(sflags11).w
+	bne.w	.romroster
+	jsr	(SeasonSetPlayerRecord).l
+	bra.w	.attrs
+.romroster
+	ENDIF
 	adda.w	(a0),a0	;moves to player data offset (byte 0 and 1 of Team Data)
 .skiploop
 	adda.w	(a0),a0	;skips the player's name length (current byte is name length)
@@ -2873,6 +2889,9 @@ setplayer	;bring player onto the ice and set his attributes. d3 = offset of play
 	dbf	d3,.skiploop	;loops until current player index is met (which was stored in d3)
 	subq.w	#8,a0	;Jump back to start of players attributes
 	move.b	(a0),rostnum(a3)	;Jersey Number
+	IF SEASON=1
+.attrs
+	ENDIF
 	move.b	1(a0),d3	;move Wgt/Agl byte to d3
 	andi.w	#$F0,d3	;Mask Wgt nibble
 	lsr.w	#1,d3	;shift d3 1 bit right (This is taking Wgt and mult by 8)

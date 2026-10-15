@@ -10,9 +10,16 @@ Begin	;cold start, entered from Start. Clear RAM, init sound and menus, go to ti
 	move	#$2700,sr		;interrupts off
 	movea.w	#(Stack-M68K_RAM),sp	;stack pointer to RAM $FFFE
 	movea.w	#(VSCRLPM-M68K_RAM),a0	;clear out ram
-.0	clr.l	(a0)+			;clear RAM $B000-$DEF3
+.0	clr.l	(a0)+			;clear RAM from $B000 through PALflag
+	IF SEASON=1
+	cmpa.w	#$E11C,a0		;season state through CreatedPlayerBuf
+	ELSE
 	cmpa.w	#$DEF4,a0
+	ENDIF
 	blt.s	.0
+	IF SEASON=1
+	clr.l	(framermapptr).w	;Framer uses FramerMap until a screen sets this
+	ENDIF
 	clr.w	(PALflag).w		;clear the PAL flag
 	move.w	(VDP_CTRL).l,d0
 	andi.w	#1<<PAL_MODE,d0		;VDP status bit 0 = PAL (50 Hz). it DMA busy; that is bit 1
@@ -88,6 +95,9 @@ restoreteams	;Put both teams' rosters on the bench
 .0	move.w	#$FFFE,tmpdst(a2,d0.w)	;tmpdst: -2 = all players on bench
 	subq.w	#2,d0
 	bpl.s	.0
+	IF SEASON=1
+	jsr	(SetSeasonInjuries).l
+	ENDIF
 	rts
 
 ResetClock	;set period length and stop clock
@@ -208,6 +218,9 @@ periodicevents	;Called every time thru game loop with d7 = elapsed frames
 CheckInjury	;Called once per second. Count down InjCntDown, act on it at zero
 	subq.w	#1,(InjCntDown).w
 	bne.w	rtss8
+	IF SEASON=1
+	jmp	(SeasonShowInjury).l
+	ENDIF
 	jmp	ShowInjuryBox		;countdown expired
 
 RestoreBenchEnergy	;Called once per second. Restore energy for players on the bench
@@ -337,7 +350,18 @@ clockcont_0	;End of period. Also entered from puckfaceoff
 .ns1	cmpi.w	#3,4(a0,d3.w)		;gspotwins(a0,d3)
 	bne.w	.t3
 
-.sc	move.l	#8,d0			;stanley cup assignment
+.sc	IF SEASON=1
+	btst	#3,(GameFlags).w
+	beq.w	.sc0
+	bset	#2,(sflags13).w
+	move.w	(tmstruct+$28).w,(cupwinner).w
+	move.w	(HmGoals).w,d2
+	cmp.w	(AwGoals).w,d2
+	bgt.w	.sc0
+	move.w	(AwShots+$28).w,(cupwinner).w
+.sc0
+	ENDIF
+	move.l	#8,d0			;stanley cup assignment
 	moveq	#$B,d2			;all 12 players lose joystick control
 .t0	bclr	#pfjoycon,pflags(a3)		;pfjoycon, pflags(a3)
 	adda.w	#SCstruct,a3			;SCstruct

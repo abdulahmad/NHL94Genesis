@@ -51,6 +51,10 @@ UpdatePlayoffLevel	;Set pojoy from the number of players for play modes 2 and 3.
 	blt.w	rtss2
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	rtss2
+	IF SEASON=1
+	cmpi.w	#4,(OptPlayMode).w
+	bgt.w	rtss2
+	ENDIF
 	moveq	#7,d0
 	tst.w	(FourWayPlay).w
 	beq.w	.set
@@ -63,6 +67,10 @@ DrawMatchupBitmaps	;Called from PrintOptions. Draw the VisTeam and HomeTeam bitm
 	movem.l	d0-d7/a0-a2,-(sp)
 	cmpi.w	#4,(OptPlayMode).w
 	beq.w	.opt
+	IF SEASON=1
+	cmpi.w	#5,(OptPlayMode).w
+	beq.w	.opt	;Game With Trades uses the menu teams
+	ENDIF
 	tst.w	(OptPlayMode).w
 	bne.w	.draw
 .opt	move.w	(Opt1Team).w,(HomeTeam).w

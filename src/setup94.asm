@@ -667,6 +667,12 @@ InitTeamStructure	;Set up team struct a2 for team d0: store the team number at $
 	movea.w	#TeamList,a0
 	asl.w	#2,d0
 	move.l	0(a0,d0.w),$1E(a2)
+	IF SEASON=1
+	btst	#6,(sflags11).w
+	bne.w	.romlines
+	jmp	(LoadTeamLines).l
+.romlines
+	ENDIF
 	tst.w	(OptLine).w
 	beq.w	.0
 	movea.l	$1E(a2),a0
@@ -753,6 +759,17 @@ IntermissionStart	;reset the clock, song $79, ticker scores, playoff stats at th
 	beq.w	GameOver
 	jmp	(StartPer).w
 GameOver	;EncodePW (save the password), then in playoff mode PlayoffStatsScreen (the playoff stats) and the playoff screen. Falls into ExitToOpening
+	IF SEASON=1
+	btst	#3,(GameFlags).w
+	beq.w	.notseason
+	btst	#2,(sflags13).w
+	beq.w	.nocup
+	jsr	(StanleyCupScreen).l
+.nocup
+	jsr	(SeasonGameOver).l
+	bra.w	ExitToOpening
+.notseason
+	ENDIF
 	bsr.w	EncodePW
 	tst.w	(OptPlayMode).w
 	beq.w	.po
@@ -768,6 +785,10 @@ Opening	;title screen (newTitleScreen), then into Opening2. Jumped to from Begin
 	bsr.w	KillCrowd
 	jsr	(newTitleScreen).l
 Opening2	;reset the stack and clear the variables, then options (GameSetUp, UserNameEntry), playoff screen and (not in a shootout) ScoutingReport, then StartGame
+	IF SEASON=1
+	clr.l	(framermapptr).w
+	jsr	(SeasonMain).l
+	ENDIF
 	bsr.w	KillCrowd
 	move	#$2700,sr
 	movea.w	#(Stack-M68K_RAM),sp
@@ -777,6 +798,9 @@ Opening2	;reset the stack and clear the variables, then options (GameSetUp, User
 	cmpa.w	#$D03E,a0	;clear from VSCRLPM to $FFFFD03E
 	blt.s	.0
 	jsr	(GameSetUp).l
+	IF SEASON=1
+	jsr	(SetContTeams).l
+	ENDIF
 	jsr	(UserNameEntry).l
 Opening3	bsr.w	PlayoffScreen
 	btst	#0,(gmode2).w
