@@ -129,6 +129,7 @@ function writeTeamCounts() {
     ].join('\n');
     fs.mkdirSync(path.join(ROOT, 'output'), { recursive: true });
     fs.writeFileSync(path.join(ROOT, 'output', 'teamcounts.inc'), text);
+    require('./packTeamBitmaps.js')();	// patch/teamblock-vram: per-team setup banner tiles
 }
 
 if (!why) {
