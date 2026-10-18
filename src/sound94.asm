@@ -853,8 +853,8 @@ SoundStreamTable					;event stream of sounds 0-$7A as long pointers (play_sfx_or
 	dc.l	sfx_playerwall4_cmdstream	;sound $23
 	dc.l	sfx_puckbody_cmdstream	;sound $24
 	dc.l	sfx_puckpost_cmdstream	;sound $25
-	dc.l	sfx_id_26_27_cmdstream	;sound $26
-	dc.l	sfx_id_26_27_cmdstream	;sound $27
+	dc.l	sfx_empty_cmdstream		;sound $26
+	dc.l	sfx_empty_cmdstream		;sound $27
 	dc.l	sfx_puckwall1_cmdstream	;sound $28
 	dc.l	sfx_puckwall2_cmdstream	;sound $29
 	dc.l	sfx_puckwall3_cmdstream	;sound $2A
@@ -942,8 +942,8 @@ SongPointerTable					;the songs $30-$7A of SoundStreamTable (stop_current_song r
 sfx_beep1_cmdstream
 	incbin	..\Extracted\NHL94\Sound\sfx_beep1_cmdstream.bin	;sound $1 (SFXbeep1)
 	even
-sfx_id_26_27_cmdstream
-	incbin	..\Extracted\NHL94\Sound\sfx_id_26_27_cmdstream.bin	;sound $26, sound $27
+sfx_empty_cmdstream
+	incbin	..\Extracted\NHL94\Sound\sfx_empty_cmdstream.bin	;sound $26, sound $27
 	even
 sfx_beep2_cmdstream
 	incbin	..\Extracted\NHL94\Sound\sfx_beep2_cmdstream.bin	;sound $2 (SFXbeep2)

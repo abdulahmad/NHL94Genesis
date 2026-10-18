@@ -85,7 +85,7 @@ const assets = [
     { name: 'sfx_puckget_pcm.bin', folder: 'NHL94/Sound', start: 0x0002BFE8, end: 0x0002C248 }, // sample 0: puckget (93 file, same bytes)
     { name: 'fm_instrument_patches.bin', folder: 'NHL94/Sound', start: 0x0002C248, end: 0x0002C648 }, // 32 FM patches x 32 bytes (93 file, same bytes)
     { name: 'sfx_beep1_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C834, end: 0x0002C840 }, // sound $1 (SFXbeep1)
-    { name: 'sfx_id_26_27_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C840, end: 0x0002C844 }, // sound $26, sound $27
+    { name: 'sfx_empty_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C840, end: 0x0002C844 }, // sound $26, sound $27
     { name: 'sfx_beep2_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C844, end: 0x0002C854 }, // sound $2 (SFXbeep2)
     { name: 'sfx_horn_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C854, end: 0x0002C8D0 }, // sound $4 (92 SFXhorn)
     { name: 'sfx_stdef_cmdstream.bin', folder: 'NHL94/Sound', start: 0x0002C8D0, end: 0x0002C8EC }, // sound $6 (92 SFXstdef)
