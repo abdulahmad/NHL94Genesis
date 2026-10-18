@@ -2367,170 +2367,109 @@ puckgoalie							;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The
 	bne.w	.bounceoff				;branch if so
 	clr.w	Zvel(a3)				;clear puck Zvel
 	bra.w	puckglue
-.list	dc.w	$73					;Save attribute offsets: GGSleft
-	;GGSleft
-	dc.w	$6E						;GGSright
-	dc.w	$70						;GSSleft
-	dc.w	$72						;GSSright
-.list2	dc.b	$55					;2 bit save odds per quadrant, one byte per goalie frame from SPFgoalie
+.list	dc.w	$73,$6E				;save attribute offsets: aggress, passacc (92 had stickhand, shotacc)
+	dc.w	$70,$72					;spodds, endurance
+.list2								;2 bit save odds per quadrant, one byte per goalie frame from SPFgoalie
 									;odds for stopping puck in each quadrant for each possible goalie frame
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0
-	dc.b	$55						;U
-	dc.b	$F0,$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$D5
-	dc.b	$75						;u
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$55						;U
-	dc.b	$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0
-	dc.b	$57						;W
-	dc.b	$57						;W
-	dc.b	$57						;W
-	dc.b	$57						;W
-	dc.b	$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5
-	dc.b	$A5,$A5,$A5,$A5,$A5,$A5,$A5,$A5
-.list3	dc.b	$9D					;the same for the newer goalie frames from $292
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$9D
-	dc.b	$67						;g
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
-	dc.b	$D5,$D5
-	dc.b	$75						;u
-	dc.b	$75						;u
+	pix	1111,2131,1213				;ready/glover/glovel
+	pix	1111,2131,1213
+	pix	1111,2131,1213
+	pix	1111,2131,1213
+	pix	1111,2131,1213
+	pix	1111,2131,1213
+	pix	1111,2131,1213
+	pix	1111,2131,1213
+	pix	1111,1111					;goalie swing
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,3300					;goalie stack right/left
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	1111,3300
+	pix	3111,1311					;goalie stick right/left
+	pix	3111,1311
+	pix	3111,1311
+	pix	3111,1311
+	pix	3111,1311
+	pix	3111,1311
+	pix	3111,1311
+	pix	3111,1311
+	pix	1111,1111					;from here
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	1111,1111
+	pix	3300,3300
+	pix	3300,3300
+	pix	3300,3300
+	pix	3300,3300
+	pix	3300,3300
+	pix	3300,3300
+	pix	3300,3300
+	pix	3300,3300
+	pix	1113,1113
+	pix	1113,1113
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+	pix	2211,2211
+.list3								;the same for the newer goalie frames from $292
+	pix	2131,1213
+	pix	2131,1213
+	pix	2131,1213
+	pix	2131,1213
+	pix	2131,1213
+	pix	2131,1213
+	pix	2131,1213
+	pix	2131,1213
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
+	pix	3111,3111
+	pix	1311,1311
 deflect								;random puck direction on deflection, puck = a3. Entered from puckstick
 	st	(puckc).w
 	move.w	#$1000,d0
