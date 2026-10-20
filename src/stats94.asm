@@ -150,13 +150,13 @@ LineEditor							;"Line Editor" screen for team a2: line slot cursor (TestList),
 									;player for the slot from the list, start runs the exit menu
 									;(LineEditorExit). OptLine (manual lines off) limits the cursor. Menu item
 									;handler
-	bset	#tmflcc,tmflags(a2)
+	bset	#tmflcc,tmflags(a2)		;set on entry to the line editor
 	moveq	#0,d0
 	moveq	#$1C,d1
 	bsr.w	SetupScreen
 	clr.w	(DispAttribCtr).w
 	clr.w	(PlayerScrollCtr).w
-	move.w	#1,(TestList).w
+	move.w	#1,(TestList).w			;cursor = first slot
 LineEditorRedraw					;Clear the screen and redraw everything. Also entered from LineEditorExit
 	jsr	(printsmallz).l
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY
@@ -492,9 +492,9 @@ ClearMenuFlags						;Clear palfadenew+$5A and palfadenew+$7A
 	clr.w	(palfadenew+$7A).w
 	rts
 	;LineIconPosTable-6: the line icon entry used with OptLine set (x, y, slot count - 1)
-	dc.w	$10,$C,4
+	dc.w	$10,$C,4				;Entry used when OptLine is set
 LineIconPosTable					;Line icons: x, y, slot count - 1 per line
-	dc.w	4,$C,4
+	dc.w	4,$C,4					;at +2
 	dc.w	$10,$C,4
 	dc.w	$1C,$C,4
 	dc.w	4,$C,4
@@ -1494,12 +1494,12 @@ SetStatsListScrollReg				;VSRAM = VertLineScrolling - $68
 	rts
 DrawStatsRowUp						;Draw the top row of the window
 	move.w	(VertLineScrolling).w,d3
-	lsr.w	#4,d3
+	lsr.w	#4,d3					;d3 = first visible Satt row (16 pixels per row)
 	bra.w	DrawStatsRow
 DrawStatsRowDown					;Draw the row below the window
 	move.w	(VertLineScrolling).w,d3
-	lsr.w	#4,d3
-	addq.w	#6,d3
+	lsr.w	#4,d3					;first visible Satt row
+	addq.w	#6,d3					;6 rows further down
 	bra.w	DrawStatsRow
 DrawStatsList						;Stats screen: column headers (sort column highlighted), the title of the
 									;sort column (StatSortTitles), then the players sorted by it into Satt and
@@ -2145,7 +2145,7 @@ GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 
 	movea.l	tmdata(a2),a0
 	adda.w	8(a0),a0
 	move.b	3(a0),d0
-	lsr.w	#4,d0
+	lsr.w	#4,d0					;high nibble = forward count
 	andi.w	#$F,d0
 	movem.l	(sp)+,a0
 	rts

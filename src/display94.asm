@@ -70,7 +70,7 @@ DumpSprites							;Transfer (by dma) scroll stuff, sprite table, vram data in dm
 	bsr.w	SetScroll2
 DumpSprites2						;Transfer sprite table, then the dma list. Falls into DoDMAlist. Also
 									;called from VBlank_SetOptions
-	movea.w	#(Satt-M68K_RAM),a0
+	movea.w	#(Satt-M68K_RAM),a0		;transfer sprite table
 	move.w	(Sattsize).w,d0			;words
 	move.w	(VSPRITES).w,d1
 	bsr.w	DoDMA
@@ -1042,5 +1042,5 @@ KillCrowd							;silence the crowd noise (psg). Called from Begin, SetupPauseScr
 	move.b	#$DF,(Asound).l
 	move.b	#$C8,(Asound).l
 	move.b	#1,(Asound).l
-	move.b	#$FF,(Asound).l
+	move.b	#$FF,(Asound).l			;noise channel off
 	rts

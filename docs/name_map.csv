@@ -157,3 +157,4 @@ SPAboardchk,SPAcrosscheck,behavior
 GameStatisticsScreen,StatsReport,92G
 DisplayTeamStatsScreen,DisplayStats,92G
 PlayoffScreen_waitvsync,waitxc1,92G
+SngScout,SngScouting,92G/93G

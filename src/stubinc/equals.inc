@@ -268,7 +268,7 @@ SFXpuckice equ $2C					;+0-3
 ;song numbers
 SngTitle equ $78
 SngEOP equ $79
-SngScout equ $7A
+SngScouting equ $7A
 
 
 ; team numbers (TeamList order in teamdata): schedule, playoffseats and other team-indexed tables

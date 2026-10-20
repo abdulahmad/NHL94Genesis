@@ -194,17 +194,17 @@ CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected f
 ; return d0 = random number (-range < d0 < range)
 randomd0s
 	move.w	d0,-(sp)
-	asl.w	#1,d0
-	bsr.w	randomd0
-	sub.w	(sp)+,d0
+	asl.w	#1,d0					;range*2
+	bsr.w	randomd0				;0 .. 2*range-1
+	sub.w	(sp)+,d0				;shift down to -range+1 .. range-1
 	rts
 ; d0 = range
 ; return random number in d0 (0 <= d0 < range)
 randomd0
 	movem.l	d0-d2,-(sp)
-	move.w	(seed+2).w,d0
+	move.w	(seed+2).w,d0			;seed+2 (92)
 	move.w	d0,d1
-	move.w	(seed).w,d2
+	move.w	(seed).w,d2				;seed
 	mulu.w	#$E62D,d0
 	mulu.w	#$BB40,d1
 	mulu.w	#$E62D,d2
@@ -213,11 +213,11 @@ randomd0
 	add.w	d1,d0
 	swap	d0
 	addq.l	#1,d0
-	move.l	d0,(seed).w
+	move.l	d0,(seed).w				;seed
 	asr.l	#8,d0
 	mulu.w	2(sp),d0
-	swap	d0
-	addq.w	#4,sp
+	swap	d0						;d0 = result 0 <= d0 < range
+	addq.w	#4,sp					;skip the saved d0 so the result survives
 	movem.l	(sp)+,d1-d2
 	rts
 ; returns d0.L^.5 in d0
@@ -682,8 +682,8 @@ DoFill
 	movem.l	(sp)+,d3/a1
 	rts
 WaitDMA								;wait for dma completion
-	move.w	(Vctrl).l,-(sp)
-	btst	#1,1(sp)
+	move.w	(Vctrl).l,-(sp)			;read the vdp status
+	btst	#1,1(sp)				;status bit 1 = dma busy
 	addq.w	#2,sp
 	bne.s	WaitDMA
 	rts
@@ -828,7 +828,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 DecompressGraphicsWithCallback		;DecompressGraphics, then return 8 bytes past the call (callback data)
 	move.l	(sp),(callbackPtr).w
 	bsr.w	DecompressGraphics
-	addq.l	#8,(sp)
+	addq.l	#8,(sp)					;skip the inline remap table
 	rts
 DecompressGraphicsPlain				;Clear callbackPtr, fall into DecompressGraphics
 	clr.l	(callbackPtr).w
@@ -927,11 +927,11 @@ Opcode_Fillbytes					;opcode 3, write the next data byte (low 4 bits)+3 times
 Opcode_CopyBackwardShort			;opcodes 4-7, copy from back in the output buffer
 	move.b	-1(a0),d0
 	andi.w	#7,d0
-	addq.w	#1,d0
+	addq.w	#1,d0					;count-1
 	move.b	-1(a0),d2
 	lsr.w	#3,d2
 	andi.w	#7,d2
-	addq.w	#1,d2
+	addq.w	#1,d2					;distance
 CopyBackwardRun						;shared copy loop, d0 = count-1, d2 = distance back
 	neg.b	d2
 	add.b	d1,d2
@@ -952,7 +952,7 @@ Opcode_CopyBackwardMedium			;opcode 8
 	bra.s	CopyBackwardRun
 Opcode_CopyBackwardLong				;opcode 9
 	move.b	(a0),d0
-	asl.b	#1,d0
+	asl.b	#1,d0					;x = bit 7 of the next byte
 	move.b	-1(a0),d0
 	roxl.b	#1,d0
 	andi.w	#$1F,d0
@@ -1137,9 +1137,9 @@ Framer
 ; string macro should follow jsr to this routine
 printsmallz							;String macro follows the call
 	move.l	a1,-(sp)
-	movea.l	4(sp),a1
+	movea.l	4(sp),a1				;string after the call
 	bsr.w	printsmall
-	move.l	a1,4(sp)
+	move.l	a1,4(sp)				;return past the string
 	movea.l	(sp)+,a1
 	rts
 ; a1 = string macro
@@ -1274,9 +1274,9 @@ ControlCode_SetFont					;control code -7, next byte = char set index
 ; string macro should follow jsr to this routine
 printz
 	move.l	a1,-(sp)
-	movea.l	4(sp),a1
+	movea.l	4(sp),a1				;string after the call
 	bsr.w	print
-	move.l	a1,4(sp)
+	move.l	a1,4(sp)				;return past the string
 	movea.l	(sp)+,a1
 	rts
 ; a1 = string macro
@@ -1360,12 +1360,12 @@ print
 FormatAndPrintTime					;d0 bits 14-15 = period, bits 0-13 = seconds
 	swap	d0
 	clr.w	d0
-	rol.l	#2,d0
+	rol.l	#2,d0					;d0.w = period
 	movea.l	#PeriodLabelTable,a1
 	bsr.w	Fprintsmall
 	addq.w	#2,(printx).w
 	swap	d0
-	lsr.w	#2,d0
+	lsr.w	#2,d0					;seconds
 	bsr.w	PushTime
 	bra.w	print
 PeriodLabelTable					;String list for FormatAndPrintTime: " 1", " 2", " 3", "OT"
@@ -1520,9 +1520,9 @@ appstring
 	rts
 printbigz							;String macro follows the call
 	move.l	a1,-(sp)
-	movea.l	4(sp),a1
+	movea.l	4(sp),a1				;string after the call
 	bsr.w	printbig
-	move.l	a1,4(sp)
+	move.l	a1,4(sp)				;return past the string
 	movea.l	(sp)+,a1
 	rts
 printbig

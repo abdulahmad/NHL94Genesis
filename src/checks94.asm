@@ -3730,10 +3730,10 @@ puckunflip
 puckflip
 	andi.w	#1,d0
 	eor.w	d0,facedir(a3)			;facedir
-	andi.w	#3,facedir(a3)
+	andi.w	#3,facedir(a3)			;keep 0-3
 	st	SPAcnt(a3)					;SPAcnt
 	move.w	#SPApflip,d1
-	bra.w	SetSPA
+	bra.w	SetSPA					;start the puck flip animation
 ; assignment for puck shadow
 ; a3 = puck shadow
 puckshadow
@@ -3970,14 +3970,14 @@ avdgoal
 	rts
 ; find where the puck is going to be
 skatetopuckinit
-	move.b	(puckvx).w,d0
-	asr.b	#1,d0
+	move.b	(puckvx).w,d0			;high byte of the puck x velocity (signed)
+	asr.b	#1,d0					;halved
 	ext.w	d0
-	add.w	(puckx).w,d0
+	add.w	(puckx).w,d0			;d0 = puck x + vx/2
 	move.b	(puckvy).w,d1
 	asr.b	#1,d1
 	ext.w	d1
-	add.w	(pucky).w,d1
+	add.w	(pucky).w,d1			;d1 = puck y + vy/2
 	rts
 ; player a3 should skate to puck
 skatetopuck
@@ -4463,7 +4463,7 @@ noturn								;reverse the acc. direction when skating backwards, then falls int
 									;playeracc
 	btst	#pfrev,pflags(a3)
 	beq.w	playeracc
-	eori.w	#4,d2
+	eori.w	#4,d2					;opposite direction
 ; d2 = direction of acc
 playeracc
 	asl.w	#2,d2

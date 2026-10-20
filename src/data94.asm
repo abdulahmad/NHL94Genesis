@@ -1637,15 +1637,15 @@ sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
 
 .defl	dc.b	0+1,8+1,16+1,24+1,32+1,40+1,48+1	;list of players in there lines/each line = 8 bytes
 	dc.b	0+2,8+2,16+2,24+2,32+2,40+2,48+2
-.defr	dc.b	0+2,8+2,16+2,24+2,32+2,40+2,48+2
+.defr	dc.b	0+2,8+2,16+2,24+2,32+2,40+2,48+2	;defensive RD slots first, then LD slots
 	dc.b	0+1,8+1,16+1,24+1,32+1,40+1,48+1
-.wingl	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3
+.wingl	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3	;left wing slots, then right wing, then center
 	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5
 	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4
-.wingr	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5
+.wingr	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5	;right wing slots, then left wing, then center
 	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3
 	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4
-.center	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4
+.center	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4	;center slots, then left wing, then right wing; -1 ends
 	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3
 	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5
 	dc.b	-1
