@@ -61,10 +61,10 @@ AddPenalty2							;forced penalties like face off and game over. d0 = penalty nu
 	movem.l	(sp)+,d1/a0-a1
 	rts
 PenaltyManager						;called periodically. d7 = elapsed time since last call
-	bsr.w	updatepentime
-	bsr.w	checkfornewpen
-	bsr.w	chkprogress
-	bra.w	UpdatePA
+	bsr.w	updatepentime			;count down the penalty clocks (once a second)
+	bsr.w	checkfornewpen			;call any newly queued penalty
+	bsr.w	chkprogress				;step the stoppage / ref / penalty box sequence
+	bra.w	UpdatePA				;animate the ref and return
 chkprogress							;control progress of ref and game control thru penalty events. While
 									;BA_PS_flags bit 2 is set (penalty shot), bit 7 calls PenaltyShotBox and
 									;msgtimer counts down; when it runs out the message area is erased. Then,
@@ -1114,11 +1114,11 @@ PrintTeamNameAndScore				;Print the team name of team a2 at printx/printy, then 
 	adda.w	4(a1),a1
 	adda.w	(a1),a1					;skip the first string to the team name
 	bsr.w	print
-	move.w	#$1C,(printx).w
+	move.w	#$1C,(printx).w			;score column
 	move.w	tmscore(a2),d0			;tmscore
-	moveq	#2,d1
+	moveq	#2,d1					;2 digits
 	bsr.w	PushNumberWidth
-	bra.w	print
+	bra.w	print					;print the score and return
 PrintTeamLogoAndScore				;Draw the team logo map (PutTeamBlock, d0 = offset) 5 columns left of
 									;printx then the score of team a2 in big font, centered 2 rows lower; a 2
 									;digit score is moved one more left.

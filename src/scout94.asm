@@ -80,7 +80,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(ReadNameLog).l				;read the $80 byte SRAM name list at NameLogBase to namelog
 	jsr	(BuildHotColdLists).l		;hot / cold players for the text
 	clr.w	(advframe).w			;advantage mark frame
-	move.w	#SngScout,-(sp)			;song $7A
+	move.w	#SngScouting,-(sp)		;song $7A
 	jsr	(song).l
 	move.l	#vb2,(VBint).w
 	jsr	(clearTeamStats).l

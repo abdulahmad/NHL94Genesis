@@ -1,5 +1,5 @@
 ; HOCKEY.BIN scouting screen open, $D2B6-$D397.
-; Points the stack at $1745C, then starts song $7A (cartridge SngScout).
+; Points the stack at $1745C, then starts song $7A (cartridge SngScouting).
 ; $371D2 is song. The body is in the $37xxx library, outside these files.
 
 	org	$D2B6
