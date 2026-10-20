@@ -1,5 +1,13 @@
 # HANDOFF: NHL94 Genesis
 
+## Status (2026-10-20)
+
+- Everything is merged and `tools/verify_all.sh -q` prints ALL MATCH.
+- `SngScout` is now `SngScouting` (as in 93G; recorded in `docs/name_map.csv`). Fifty trailing comments came over from identical NHLPA93Genesis code.
+- This repo is the layout reference for NHL94SNES: its `src/routines` folders mirror the files here. NHL94SNES is the repo with open work (the comment pass); see its `docs/HANDOFF.md`.
+- NHL9XStudio lists this game's pictures in the 93 group order and names the shared songs `SngTitle`, `SngEOP`, `SngScouting`.
+
+
 ## Purpose
 A byte-matching 68000 SNASM disassembly of the retail cartridge that reads like clean original source: accurate names that follow the NHL92 Genesis (EA original) lineage, and comments without disassembler or porting artifacts. Every build must still MATCH `lst/nhl94.bin`. `main` keeps only changes that emit identical bytes (Current rules in SEGMENT_AGENT.md).
 
