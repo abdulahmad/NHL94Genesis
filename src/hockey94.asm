@@ -11,8 +11,8 @@ Begin								;cold start, entered from Start. Clear RAM, init sound and menus, g
 	move	#$2700,sr				;interrupts off
 	movea.w	#(Stack-M68K_RAM),sp	;stack pointer to Stack
 	movea.w	#(VSCRLPM-M68K_RAM),a0	;clear out ram
-.0	clr.l	(a0)+					;clear the RAM from VSCRLPM through replaydelay
-	cmpa.w	#$DEF4,a0
+.0	clr.l	(a0)+					;clear the RAM from VSCRLPM through PALflag
+	cmpa.w	#(PALflag+2-M68K_RAM),a0
 	blt.s	.0
 	clr.w	(PALflag).w				;clear the PAL flag
 	move.w	(Vctrl).l,d0

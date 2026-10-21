@@ -36,7 +36,7 @@ WeightedRandomSelect				;d0 = number of word weights at nibblebuffer:
 .findloop
 	sub.w	-(a1),d0
 	bpl.s	.findloop
-	suba.w	#$D036,a1
+	suba.w	#(nibblebuffer-M68K_RAM),a1
 	move.w	a1,d0
 	lsr.w	#1,d0
 	movem.l	(sp)+,d1/a1
