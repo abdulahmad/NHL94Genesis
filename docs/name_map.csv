@@ -193,3 +193,4 @@ animchars,crowdvrcset,92G
 (alias),GGSleft,92G (goalie glove save left; aggress in 93/94)
 (raw offset),tmfslide,93G (= tmftimeout)
 NoTiles,null,92G
+InitialSP,Stack,92G/93G

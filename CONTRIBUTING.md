@@ -92,7 +92,8 @@ A comment-only or rename-only change must not change a single byte. Never commit
 
 - `nhl94.asm` includes the files in ROM order. There are no segment stubs: every build is the full ROM, and a segment check
   (`npm run seg -- <name>`) compares that file's address range.
-- The RAM equates are included before `main94.asm`, so `InitialSP` (the reset vector value) keeps its own name; 92 reuses `Stack` for it.
+- `ram94.asm` is included after `main94.asm`, as in 92 and 93: `main94.asm` sets `Stack = $FFFFF6` for the reset vector and
+  `ram94.asm` redefines `Stack` with `=` as the game stack, so `Stack` is not an `rs` label.
 - Names and routines that exist in 93 use the 93 name; a routine that is new in 94 says so in its comment.
 
 ## 7. Commits and pull requests

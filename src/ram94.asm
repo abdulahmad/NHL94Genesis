@@ -489,7 +489,8 @@ iconx	rs.w	1
 scoutwait	rs.l	1
 replaydelay	rs.w	1
 PALflag	rs.w	4230
-Stack	rs.w	1
+Stack	=	$FFFFFFFE				;game stack (Begin, StartPer, Opening2)
+	rs.w	1						;the word at Stack
 Z80_RAM equ $A00000
 Z80_YM2612 equ $A04000
 ; ----------------------------------
