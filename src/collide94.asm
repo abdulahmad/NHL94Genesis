@@ -676,7 +676,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 									;decimal) a2's Stk value. Compares to 18 (24 decimal)
 	cmpi.b	#$18,stickhand(a2)		;Start of toddle check
 	blt.w	.cont2					;jump if less than
-	tst.b	nopuck+1(a2)			;check if puck collision possible
+	tst.b	nopuckb(a2)				;check if puck collision possible
 	bne.w	.cont2					;jump if not
 	move.w	(HVcount).l,d0			;frame counter
 	andi.w	#$F,d0					;pass 1st byte of d0
@@ -684,7 +684,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	cmp.w	impact(a2),d0			;compare impact value to d0.
 	;d0 will be 10-1F hex (16-31 decimal)
 	ble.w	.cont2					;no toddle if d0 <= impact
-	move.b	#$3C,nopuck+1(a2)		;move 3C (60 decimal) into nopuck
+	move.b	#$3C,nopuckb(a2)		;move 3C (60 decimal) into nopuck
 	bra.w	.hitter
 .cont2
 	tst.w	position(a3)			;check for goalie
@@ -694,11 +694,11 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	beq.w	.AddChktoPlayerStats
 	adda.w	#tmsize,a0				;Change to Away Team Stats
 .AddChktoPlayerStats				;(a label inside FallDown)
-	addq.w	#1,$10(a0)				;Add 1 Chk to Team Total
+	addq.w	#1,tmchecks(a0)			;Add 1 Chk to Team Total
 	clr.w	d0
 	move.b	pnum(a3),d0				;Index of Player
 	adda.w	d0,a0
-	addq.b	#1,$11C(a0)				;Add 1 Chk to Player Stats
+	addq.b	#1,pchecks(a0)			;Add 1 Chk to Player Stats
 	addq.w	#1,(ChkCnt).w			;Add 1 to ChkCnt
 	tst.b	fighting(a3)			;checks fight attribute?
 	bne.w	.chkpos					;jump if fight attribute not 0
@@ -1336,21 +1336,21 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	subi.w	#$14,(CwdExciteLvl).w	;less for an away goal
 	bset	#7,-1(a0)				;byte 2 bit 7 = away team scored
 .18
-	move.w	$18(a2),d0				;scorer
+	move.w	tmtouch1(a2),d0			;scorer
 	move.b	d0,(a0)+
 	move.w	#$FFFF,(a0)				;no assists yet
 	addi.w	#$B4,d0
 	addq.b	#1,0(a2,d0.w)			;team byte $B4 + scorer +1
-	move.w	$1A(a2),d0				;first assist
+	move.w	tmtouch2(a2),d0			;first assist
 	bmi.w	.19
-	cmp.w	$18(a2),d0
+	cmp.w	tmtouch1(a2),d0
 	beq.w	.19
 	move.b	d0,(a0)+
 	addi.w	#$CE,d0
 	addq.b	#1,0(a2,d0.w)
-	move.w	$1C(a2),d0				;second assist
+	move.w	tmtouch3(a2),d0			;second assist
 	bmi.w	.19
-	cmp.w	$18(a2),d0
+	cmp.w	tmtouch1(a2),d0
 	beq.w	.19
 	move.b	d0,(a0)
 	addi.w	#$CE,d0
@@ -2101,12 +2101,12 @@ puckglue							;part of puckstick that puckgoalie also branches to. Player a2 ta
 	bne.w	.tm						;branch if away
 	exg	a0,a1						;swap struct addresses
 .tm
-	st	$1A(a0)						;FF into assist 1
-	st	$1C(a0)						;FF into assist 2
+	st	tmtouch2(a0)				;FF into assist 1
+	st	tmtouch3(a0)				;FF into assist 2
 	bset	#tmflast,tmflags(a0)	;set a flag (not sure what)
 	bclr	#sf3fo,(sflags3).w		;clear flag (not sure what, might have to do with faceoff)
 	beq.w	.snd					;branch if it was cleared already
-	addq.w	#1,$E(a1)				;add 1 to faceoff won
+	addq.w	#1,tmfowon(a1)			;add 1 to faceoff won
 	addi.w	#$C8,(Crowdlevel).w		;add to Crowdlevel
 	move.w	#$C,(sp)				;move C to stack
 	cmpa.w	#(tmstruct-M68K_RAM),a1	;compare if a1 is home
@@ -2118,7 +2118,7 @@ puckglue							;part of puckstick that puckgoalie also branches to. Player a2 ta
 	move.w	SCnum(a2),d0			;move SCnum into d0
 	cmp.w	(passplayer).w,d0		;compare to d0
 	bne.w	.nrec					;branch if not equal
-	addq.w	#1,$14(a1)				;add 1 to pass completed
+	addq.w	#1,tmpasscomp(a1)		;add 1 to pass completed
 .nrec
 	st	(passplayer).w				;set to FFFF
 	bclr	#sfspdir,(sflags).w		;clear pass dir mode
@@ -2589,7 +2589,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 	bpl.w	.gin					;branch if theres a goalie
 	addq.w	#1,a0					;add 1 to a0
 .gin
-	lea	$16A(a2),a1					;moves address of team lines list into a1
+	lea	tmlines(a2),a1				;moves address of team lines list into a1
 	move.w	tmline(a2),d0			;current line selected
 	asl.w	#3,d0					;mult by 8
 	adda.w	d0,a1					;add to a1 to set a1 to currently selected line
@@ -2620,7 +2620,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 	tst.w	tmpdst(a2,d3.w)
 	ble.w	.next1					;player is ok
 .unavail
-	lea	$16A(a2),a1					;now find a player of similar position who is available move Line Lists
+	lea	tmlines(a2),a1				;now find a player of similar position who is available move Line Lists
 									;again into d0
 	move.b	6(a4,d4.w),d0			;move 6+a4+d4 into d0 (previous d5)
 	ext.w	d0						;extend d0

@@ -78,14 +78,14 @@ ReplayMode							;Instant replay play-back control and display code.
 	move.w	#0,(a5)
 	bra.w	*+4
 .3
-	cmpi.w	#$FED0,$14(a5)
+	cmpi.w	#$FED0,Ypos(a5)
 	bgt.w	.4
-	move.w	#0,$14(a5)
+	move.w	#0,Ypos(a5)
 .4
 	bset	#sfscrl,(sflags).w
 	bne.w	.man
 	move.w	(Hpos).w,(a5)
-	move.w	(Vpos).w,$14(a5)
+	move.w	(Vpos).w,Ypos(a5)
 .man
 	move.w	d0,d5
 	andi.w	#7,d5
@@ -94,10 +94,10 @@ ReplayMode							;Instant replay play-back control and display code.
 	st	d3
 	bclr	#sf3track,(sflags3).w
 	beq.w	.find
-	move.w	$16(a5),d3
+	move.w	camtrack(a5),d3
 .find
 	move.w	(a5),d0
-	move.w	$14(a5),d1
+	move.w	Ypos(a5),d1
 	moveq	#$B,d2
 	move.l	#$100,d4
 	movem.w	d0-d1,-(sp)
@@ -126,7 +126,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	cmp.l	d4,d0
 	bhi.w	.skip
 	move.l	d0,d4
-	move.w	SCnum(a1),$16(a5)
+	move.w	SCnum(a1),camtrack(a5)
 	bset	#sf3track,(sflags3).w
 .skip
 	adda.w	#SCstruct,a1
@@ -134,7 +134,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	addq.w	#4,sp
 	btst	#sf3track,(sflags3).w
 	beq.w	.scrl
-	move.w	$16(a5),d0
+	move.w	camtrack(a5),d0
 	asl.w	#7,d0
 	movea.w	#(SortCords-M68K_RAM),a3
 	adda.w	d0,a3
@@ -157,15 +157,15 @@ ReplayMode							;Instant replay play-back control and display code.
 	move.w	d0,(a5)
 .nox
 	move.w	2(a0,d5.w),d1
-	add.w	$14(a5),d1
+	add.w	Ypos(a5),d1
 	cmp.w	#$126,d1
 	bgt.w	.noy
 	cmp.w	#$FEDA,d1
 	blt.w	.noy
-	move.w	d1,$14(a5)
+	move.w	d1,Ypos(a5)
 .noy
 	movea.w	a5,a3
-	clr.w	$18(a5)
+	clr.w	camidle(a5)
 	andi.w	#$FFF,(PadControlBits).w
 	ori.w	#$E000,(PadControlBits).w
 	bsr.w	UpdateCameraPos
@@ -177,7 +177,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	dc.w	0,-2, -2,-2
 	dc.w	-2,0, -2,2
 .nomans
-	st	$18(a5)
+	st	camidle(a5)
 	btst	#5,d1
 	beq.w	.00
 	btst	#0,(sflags5).w
@@ -432,7 +432,7 @@ UpdateCameraPos						;Camera struct a5 = object a3 x/y (negated for the reverse 
 	beq.w	.2
 	neg.w	d1
 .2
-	move.w	d1,$14(a5)
+	move.w	d1,Ypos(a5)
 	cmp.w	#$3C,d0
 	blt.w	.4
 	move.w	#$3C,d0
@@ -599,8 +599,8 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	movea.w	a5,a3
 	btst	#sf3track,(sflags3).w
 	beq.w	.cam
-	clr.w	$18(a5)
-	move.w	$16(a5),d0
+	clr.w	camidle(a5)
+	move.w	camtrack(a5),d0
 	asl.w	#7,d0
 	movea.w	#(SortCords-M68K_RAM),a3
 	adda.w	d0,a3
@@ -1089,7 +1089,7 @@ updateanim							;frame switch control on struct a3
 .ia
 	movea.l	#SPAlist,a0				;animation data tables
 	adda.w	SPA(a3),a0				;add SPA to a0 address
-	move.w	$10(a0),d1				;16 dec - attributes for anim
+	move.w	SPAattr(a0),d1			;16 dec - attributes for anim
 	move.w	facedir(a3),d0			;facedir into d0
 	btst	#sfhor,(sflags).w		;check if horizontal mode
 	beq.w	.nhor					;branch if not

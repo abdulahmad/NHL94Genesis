@@ -327,7 +327,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	bset	#6,tmpdst(a2,d0.w)
 .nocoin
 	movem.l	a0,-(sp)
-	lea	$9A(a2),a0					;add player to penalty box list
+	lea	tmboxlist(a2),a0			;add player to penalty box list
 	moveq	#$18,d1
 .pl
 	tst.b	(a0)+
@@ -736,7 +736,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	move.w	tmap(a2),d2				;end p.killing by scored on team
 	cmp.w	tmap(a1),d2
 	ble.w	.ex
-	lea	$9A(a1),a0
+	lea	tmboxlist(a1),a0
 .0
 	clr.w	d2
 	move.b	(a0)+,d2
@@ -779,7 +779,7 @@ ProcessPenaltyList					;a2 = team. Walks the penalty box list ($9A): the first t
 									;without a coincidental penalty count down one second and the rest wait.
 									;Beeps when the first served time gets to 5 or less and releases the
 									;player at 0. Coincidental penalties count down on their own
-	lea	$9A(a2),a0					;penalty box list
+	lea	tmboxlist(a2),a0			;penalty box list
 	movea.w	#(mesarea-M68K_RAM),a1	;serving players
 	moveq	#2,d1					;two can serve at once
 	moveq	#2,d3
@@ -890,7 +890,7 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 									;play time left from the penalty box times. Called from updatepwrplay
 	clr.w	d0
 	clr.w	d3
-	lea	$9A(a2),a0					;penalty box list
+	lea	tmboxlist(a2),a0			;penalty box list
 .getstatus
 	clr.w	d2
 	move.b	(a0)+,d2
@@ -906,7 +906,7 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 	cmpi.w	#6,OldZpos(a3)			;tmap: 6 on ice, done
 	beq.w	rtss2
 	sub.w	d3,d0
-	lea	$9A(a3),a0
+	lea	tmboxlist(a3),a0
 	clr.w	d2
 .getstatusopp
 	move.b	(a0)+,d2
@@ -1175,7 +1175,7 @@ USBoard								;Update score board, including the players in the penalty box and
 	rts
 .dispen								;penalty box list of team a2: the players without a coincidental penalty
 									;first, then those with one
-	lea	$9A(a2),a0
+	lea	tmboxlist(a2),a0
 .l1
 	clr.w	d0
 	move.b	(a0)+,d0
@@ -1185,7 +1185,7 @@ USBoard								;Update score board, including the players in the penalty box and
 	bsr.w	pplpen
 	bra.s	.l1
 .p2
-	lea	$9A(a2),a0
+	lea	tmboxlist(a2),a0
 .l2
 	clr.w	d0
 	move.b	(a0)+,d0
@@ -1250,7 +1250,7 @@ linebar								;Draw the energy bar of line d0 for team a2 at printx/printy (bit
 	rts
 getlinee							;d0 = line number, a2 = team struct. Return d0 = energy level of this line
 	movem.l	d1-d5/a0-a3,-(sp)
-	lea	$16A(a2),a1					;line sets
+	lea	tmlines(a2),a1				;line sets
 	asl.w	#3,d0
 	adda.w	d0,a1
 	clr.l	d0
@@ -1931,10 +1931,10 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	jsr	(reenergizeteam).l
 	bsr.w	setpersonel
 	bsr.w	forcepldata
-	st	$18(a2)
+	st	tmtouch1(a2)
 	bclr	#7,(sflags8).w
-	st	$1A(a2)
-	st	$1C(a2)
+	st	tmtouch2(a2)
+	st	tmtouch3(a2)
 	rts
 .ranres								;random resolve of game (if tied = random score)
 	move.w	$A(a0),d0

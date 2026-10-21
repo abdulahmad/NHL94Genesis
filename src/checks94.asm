@@ -764,9 +764,9 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	beq.w	.23
 	exg	a1,a2
 .23
-	cmpi.l	#$1324,$2A(a1)
+	cmpi.l	#$1324,tmnear(a1)
 	blt.w	.de5
-	cmpi.l	#$9C4,Yvel(a2)
+	cmpi.l	#$9C4,tmnear(a2)
 	blt.w	.de5
 	cmpi.w	#$E0,(pucky).w
 	bgt.w	.24
@@ -991,9 +991,9 @@ assgoalietopuck
 	beq.w	.t0						;branch if home
 	exg	a1,a2						;swap if away
 .t0
-	cmpi.l	#$E10,$2A(a1)
+	cmpi.l	#$E10,tmnear(a1)
 	blt.w	assexit
-	cmpi.l	#$640,Yvel(a2)
+	cmpi.l	#$640,tmnear(a2)
 	blt.w	assexit
 .go
 	bra.w	skatetopuck
@@ -1797,7 +1797,7 @@ assnearest
 	btst	#pfteam,pflags(a3)		;pfteam - 0 home, 1 away
 	beq.s	.tmnopc					;jump if home
 .nopc3
-	clr.l	Yvel(a2)				;Calculated future Ypos of the player closest to the puck
+	clr.l	tmnear(a2)				;Calculated future Ypos of the player closest to the puck
 	move.w	(puckc).w,d1			;move puck carrier SCnum into d1
 	bmi.w	.np						;branch if no puck carrier
 	asl.w	#scsize,d1				;scsize
@@ -1846,7 +1846,7 @@ assnearest
 	dbf	d4,.de0						;iterate through loop
 	tst.l	d2						;check if 0
 	bmi.w	.de1					;branch if less (no one near puck)
-	move.l	d2,Yvel(a2)				;moves d2 into $2A(a2)
+	move.l	d2,tmnear(a2)			;moves d2 into $2A(a2)
 .switch
 	cmpa.w	a1,a3					;a1 = closest to the puck, or puckc (if on same team)
 	beq.w	.de1					;branch if same
@@ -3091,11 +3091,11 @@ puckfaceoff2
 	beq.w	.clr
 	adda.w	#tmsize,a2
 .clr
-	clr.w	$18(a2)
-	move.b	pnum(a3),$19(a2)		;66(a3) = player offset on roster 19(a2) = player who touches puck
+	clr.w	tmtouch1(a2)
+	move.b	pnum(a3),tmtouch1+1(a2)	;66(a3) = player offset on roster 19(a2) = player who touches puck
 	bclr	#7,(sflags8).w
-	st	$1A(a2)						;clear last player to touch puck (assist 1)
-	st	$1C(a2)						;clear second last player to touch puck (assist 2)
+	st	tmtouch2(a2)				;clear last player to touch puck (assist 1)
+	st	tmtouch3(a2)				;clear second last player to touch puck (assist 2)
 	bclr	#tmflast,tmflags(a2)
 	move.l	#$17,d0					;#afaceoffpl - faceoff player assignment
 .11
@@ -3627,17 +3627,17 @@ a2touchpuck
 	beq.w	.checklast				;branch if not
 	bset	#7,(sflags8).w			;set if one timer
 .checklast
-	cmp.w	$18(a0),d0				;compare value in C6E6 (home) to d0
+	cmp.w	tmtouch1(a0),d0			;compare value in C6E6 (home) to d0
 	beq.w	.same					;branch if equal
 	bclr	#tmflast,tmflags(a0)	;clear bit 3
 	bne.w	.st						;branch if not cleared before
-	move.w	$1A(a0),$1C(a0)			;move current player to assist slot
-	move.w	$18(a0),$1A(a0)			;move current player to last player slot
+	move.w	tmtouch2(a0),tmtouch3(a0)	;move current player to assist slot
+	move.w	tmtouch1(a0),tmtouch2(a0)	;move current player to last player slot
 .st
-	move.w	d0,$18(a0)				;move pnum into current player
-	cmp.w	$1C(a0),d0				;compare if same player as assist slot
+	move.w	d0,tmtouch1(a0)			;move pnum into current player
+	cmp.w	tmtouch3(a0),d0			;compare if same player as assist slot
 	bne.w	.same					;branch if not
-	st	$1C(a0)						;set FFFF to assist slot
+	st	tmtouch3(a0)				;set FFFF to assist slot
 .same
 	bclr	#sf2shot,(sflags2).w	;clear shot taken
 	bsr.w	a2offsides

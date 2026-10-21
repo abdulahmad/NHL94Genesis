@@ -766,7 +766,7 @@ updatePPTeamTime					;One more second of power play time ($352 of the team struc
 GetTeamRating						;d0 = the TeamRatings byte of team $28(a2). Called from PrintTeamRating
 									;(the player card "Team Rating") and PrintMatchupRating
 	movem.l	d1-d7/a0-a6,-(sp)
-	move.w	Xvel(a2),d0
+	move.w	tmteam(a2),d0
 	movea.l	#TeamRatings,a0
 	clr.w	d1
 	move.b	0(a0,d0.w),d1

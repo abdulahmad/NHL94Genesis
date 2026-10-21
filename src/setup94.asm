@@ -683,7 +683,7 @@ setteams							;Use hometeam/visteam to set team structures (InitTeamStructure f
 InitTeamStructure					;Set up team struct a2 for team d0: store the team number at $28, the team
 									;data address at $1E (tmdata), and copy the line sets to $16A (two layouts
 									;by OptLine)
-	move.w	d0,Xvel(a2)
+	move.w	d0,tmteam(a2)
 	movea.w	#TeamList,a0
 	asl.w	#2,d0
 	move.l	0(a0,d0.w),$1E(a2)
@@ -691,7 +691,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	beq.w	.0
 	movea.l	$1E(a2),a0
 	adda.w	6(a0),a0
-	lea	$16A(a2),a1
+	lea	tmlines(a2),a1
 	move.l	(a0)+,(a1)+
 	move.l	(a0)+,(a1)+
 	addq.w	#8,a0
@@ -705,7 +705,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	movea.l	tmdata(a2),a0
 	adda.w	6(a0),a0
 	addq.w	#8,a0
-	lea	$16A(a2),a1
+	lea	tmlines(a2),a1
 .copy
 	move.l	(a0)+,(a1)+
 	dbf	d0,.copy

@@ -572,7 +572,7 @@ CheckScoreLeader					;Compare the scores ($24 of HmShots / AwShots) and test $28
 	bpl.w	.0
 	exg	a0,a1
 .0
-	cmpi.w	#$13,$28(a0)
+	cmpi.w	#$13,tmteam(a0)
 	bne.w	*+4
 .x
 	movem.l	(sp)+,d0-d2/a0-a2
@@ -661,7 +661,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not $28 of HmShots.
 									;Called from PrintStartingLine
 	movea.l	#tmstruct,a2
-	cmp.w	Xvel(a2),d2
+	cmp.w	tmteam(a2),d2
 	beq.w	.x
 	movea.l	#AwShots,a2
 .x

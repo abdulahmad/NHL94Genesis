@@ -101,7 +101,9 @@ facedir equ $54						;direction of facing
 SPA equ $58							;animation (SPA offset)
 SPAnum equ $5A						;index into animation
 SPAcnt equ $5C						;count down to next frame of animation
+SPAattr equ $10						;SPA table: attribute word after the 8 direction offsets (bit 0 = loop)
 nopuck equ $5E						;no puck coll until zero
+nopuckb equ $5F						;second count down (low byte of nopuck)
 newpos equ $60						;requested next position of this player
 newpnum equ $61						;requested next player (from roster) for this player
 pflags equ $62
@@ -187,14 +189,31 @@ tmPenalties equ $6					;penalties stat
 tmPenmin equ $8						;penalty min. stat
 tmATOP equ $A						;attack time of possesion stat
 tmscore equ $C						;score
+tmfowon equ $E						;face-offs won stat
+tmchecks equ $10					;checks stat
+tmpasses equ $12					;passes stat
+tmpasscomp equ $14					;completed passes stat
 tmline equ $16						;current line
+tmtouch1 equ $18					;last touch (team/pnum word): the scorer
+tmtouch2 equ $1A					;second last touch (first assist)
+tmtouch3 equ $1C					;third last touch (second assist)
 tmdata equ $1E						;team data address
 tmsort equ $22						;address of first sort obj (word)
 tmap equ $24						;active players on ice 4-6
 tmgoalie equ $26					;goalie 1/2/none
+tmteam equ $28						;team number (TeamList index) of this team struct
+tmnear equ $2A						;long: nearest skater's distance^2 to the puck (assnearest)
+tmlcchoice equ $2E					;line change box row chosen (0-2)
 tmflags equ $30						;flags
 tmpde equ $32						;energy level of each roster player
 tmpdst equ $66						;-2=bench/-1=ice/0+=penalty box
+tmboxlist equ tmpdst+(2*maxros)		;penalty box list of roster players (bytes, negative ends)
+tmgoals equ $B4						;goals per roster player (goalies: goals against), bytes
+tmassists equ tmgoals+maxros		;assists per roster player (bytes)
+tmpshots equ tmgoals+(2*maxros)		;shots per roster player (goalies: shots against), bytes
+pchecks equ $11C					;checks per roster player (bytes)
+tmpice equ $136						;frames on ice per roster player (words)
+tmlines equ $16A					;line sets copied from the team data (LineSets), 7 lines x 8 bytes
 tmsize equ $364						;93 $1A2: 94 adds the hot / cold table at $1A2
 
 ;game structure variables (one per playoff matchup, gsstruct)
@@ -207,6 +226,13 @@ gss1 equ $A							;team 1 score
 gss2 equ $C							;team 2 score
 gsflags equ $E						;flags
 gssize equ $10
+
+;replay camera struct (ReplayStarStruct, 93 CameraPosStruct): stands in for a sort object, Xpos / Ypos
+;are its position (UpdateCameraPos)
+camtrack equ $16					;SCnum of the object tracked in replay
+camidle equ $18						;$FF while the replay d-pad is idle, cleared on scroll/track (never read)
+;JIM graphics files
+jimtiles equ $A						;header size: the tile data starts here
 ; ----------------------------------
 
 ;text control codes in Strings

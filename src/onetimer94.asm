@@ -452,9 +452,9 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 .home
 	clr.w	d0
 	move.b	pnum(a3),d0				;player offset in roster
-	move.w	$1A(a0),$1C(a0)			;move assist 1 player to assist 2
-	move.w	$18(a0),$1A(a0)			;move last player to touch puck to assist 1
-	move.w	d0,$18(a0)				;move d0 into player touching puck
+	move.w	tmtouch2(a0),tmtouch3(a0)	;move assist 1 player to assist 2
+	move.w	tmtouch1(a0),tmtouch2(a0)	;move last player to touch puck to assist 1
+	move.w	d0,tmtouch1(a0)			;move d0 into player touching puck
 	bset	#7,(sflags8).w			;set bit 7
 	addi.w	#$96,(Crowdlevel).w		;add to Crowdlevel
 	addi.w	#$A,(CwdExciteLvl).w	;add to Excite Level

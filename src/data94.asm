@@ -567,7 +567,7 @@ AddPlayoffTeamStats					;Add the po team's game stats to its packed playoff tota
 	move.w	(potreeteam).w,d2
 	move.b	0(a0,d2.w),d2			;po team
 	movea.w	#(tmstruct-M68K_RAM),a2
-	cmp.w	Xvel(a2),d2
+	cmp.w	tmteam(a2),d2
 	beq.w	.0
 	adda.w	#tmsize,a2				;tmsize: the po team is the visitor
 .0
@@ -908,33 +908,33 @@ CalcTeamStarScores					;Star scores of team a2 (a3 = other team) to (a4)+, one l
 	cmp.w	d0,d4
 	bhi.w	.goalie					;goalie slot
 	clr.w	d1
-	move.b	$B4(a2),d1
+	move.b	tmgoals(a2),d1
 	mulu.w	#$2AF8,d1				;goals * 11000
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	$CE(a2),d1
+	move.b	tmassists(a2),d1
 	mulu.w	#$2774,d1				;assists * 10100
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	$E8(a2),d1
+	move.b	tmpshots(a2),d1
 	mulu.w	#$A,d1
 	tst.w	d3
 	bne.w	.add					;not tied: shots * 10
 	mulu.w	#$64,d1					;tied: shots * 1000
 	add.l	d1,(a4)
 	clr.l	d1
-	add.w	$136(a1),d1				;+ frames on ice
+	add.w	tmpice(a1),d1			;+ frames on ice
 .add
 	add.l	d1,(a4)
 	bra.w	.next
 .goalie
-	cmp.w	$136(a1),d5
+	cmp.w	tmpice(a1),d5
 	bhi.w	.next					;not on ice long enough
 	clr.w	d1
-	move.b	$B4(a2),d1
+	move.b	tmgoals(a2),d1
 	mulu.w	#$64,d1
 	clr.w	d2
-	move.b	$E8(a2),d2
+	move.b	tmpshots(a2),d2
 	beq.w	.next
 	divu.w	d2,d1
 	cmp.w	#4,d1
@@ -1094,7 +1094,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	blt.w	.print
 	adda.w	(a1),a1					;HAT TRICK!
 	move.w	d0,-(sp)
-	move.w	Xvel(a2),d0
+	move.w	tmteam(a2),d0
 	cmp.w	(HomeTeam).w,d0
 	bne.w	.3
 	move.w	#0,d0

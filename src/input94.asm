@@ -634,7 +634,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 	bmi.w	.next
 	btst	#tmflcm,tmflags(a2)
 	bne.w	.pr
-	cmp.w	$2E(a2),d4
+	cmp.w	tmlcchoice(a2),d4
 	bne.w	.up
 	move.w	tmline(a2),d0
 .pr
@@ -750,7 +750,7 @@ lineinput
 ; d2 = choice made 0-2
 lcfound
 	move.w	d2,d0
-	move.w	d2,$2E(a2)
+	move.w	d2,tmlcchoice(a2)
 	bsr.w	getlchoice				;translate choice 0-2 into line number 0-6
 	tst.w	d0
 	bmi.w	rtss8
@@ -1028,7 +1028,7 @@ passto
 	movem.l	(sp)+,d0-d1
 passtoa0							;pass puck to player a0
 	bsr.w	loadTeamStruct
-	addq.w	#1,$12(a2)				;add 1 to total pass attempts
+	addq.w	#1,tmpasses(a2)			;add 1 to total pass attempts
 	move.w	SCnum(a0),(passplayer).w	;Moves index number for a0 player
 	move.w	(passspeed).w,d5		;passspeed = pix/sec
 	asr.w	#2,d5					;divides pass speed by 4

@@ -412,7 +412,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	addq.w	#1,d4
 	move.w	2(a0),(printy).w
 	move.w	4(a0),d3
-	lea	$16A(a2),a3
+	lea	tmlines(a2),a3
 .slot
 	move.w	(a0),(printx).w
 	jsr	(printsmallz).l
@@ -524,7 +524,7 @@ LineEditorExit						;Line editor: start pressed. Run the exit menu
 	movea.l	#rtss2,a1
 	movea.l	#LineEditorMenuText,a0
 	movea.w	#(databuffer-M68K_RAM),a3
-	move.w	Xvel(a2),d0
+	move.w	tmteam(a2),d0
 	addq.w	#1,d0
 	cmp.b	(a3),d0
 	beq.w	.0
@@ -554,7 +554,7 @@ LineEditorExit						;Line editor: start pressed. Run the exit menu
 SetLineSlot							;Put player d0 (1 based) in line slot d2 of team a2; if he is already in
 									;another slot of the same line, the old occupant of d2 moves there (swap)
 	movem.l	d0-d2/a0-a1,-(sp)
-	lea	$16A(a2),a0
+	lea	tmlines(a2),a0
 	move.w	d2,d1
 	andi.w	#$FFF8,d1
 	lea	0(a0,d1.w),a1
@@ -611,10 +611,10 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 									;convert it (WriteLineData, high ROM). Menu item handler
 	movem.l	d0-d4/a0-a3,-(sp)
 	movea.w	#(databuffer-M68K_RAM),a0
-	move.w	Xvel(a2),d0
+	move.w	tmteam(a2),d0
 	addq.w	#1,d0
 	move.b	d0,(a0)+
-	lea	$16A(a2),a1
+	lea	tmlines(a2),a1
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
 	bsr.w	GetForwardCount
@@ -851,7 +851,7 @@ DisplayPlayerList					;Draw roster page SelectedPlayerIdx (0 goalies, 1-7 lines)
 	subq.w	#1,d0
 	bmi.w	.row
 	asl.w	#3,d0
-	lea	$16A(a2),a3
+	lea	tmlines(a2),a3
 	lea	1(a3,d0.w),a3
 	movea.l	#PlayerPositionText,a5
 	moveq	#4,d1
@@ -1366,7 +1366,7 @@ PlayoffStatsScreen					;"Playoff Stats": the playoff totals (ReadTeamStats) of t
 	move.w	(potreeteam).w,d0
 	move.b	0(a0,d0.w),d0
 	movea.w	#(tmstruct-M68K_RAM),a2
-	cmp.w	Xvel(a2),d0
+	cmp.w	tmteam(a2),d0
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0
