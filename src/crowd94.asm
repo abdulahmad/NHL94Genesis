@@ -157,7 +157,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	asl.l	#8,d1
 	divs.w	d3,d1
 	bsr.w	cornercollb
-.exit								;exit: restore the registers
+.exit								;pop the d2-d5 saved above
 	movem.w	(sp)+,d2-d5
 	move.w	Wallcos(a3),d0			;wallcos(a3)
 	or.w	Wallsin(a3),d0			;wallsin(a3)
@@ -254,7 +254,7 @@ NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the 
 	cmpi.w	#0,(homehotidx).w
 	bge.w	.x
 	addq.w	#1,(homehotidx).w
-.x									;exit: restore the registers
+.x									;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
@@ -268,7 +268,7 @@ NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a
 	cmpi.w	#0,(awayhotidx).w
 	bge.w	.x
 	addq.w	#1,(awayhotidx).w
-.x									;exit: restore the registers
+.x									;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
 	movea.l	#AwShots,a1
 	rts
@@ -354,7 +354,7 @@ NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldpla
 	cmpi.w	#0,(homecoldidx).w
 	bge.w	.x
 	addq.w	#1,(homecoldidx).w
-.x									;exit: restore the registers
+.x									;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
@@ -368,7 +368,7 @@ NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer)
 	cmpi.w	#0,(awaycoldidx).w
 	bge.w	.x
 	addq.w	#1,(awaycoldidx).w
-.x									;exit: restore the registers
+.x									;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
 	movea.l	#AwShots,a1
 	rts

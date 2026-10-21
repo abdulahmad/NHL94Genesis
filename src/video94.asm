@@ -290,7 +290,7 @@ sfx									;play sound effect number. One word passed on stack
 	bmi.w	.none					;negative = no sound
 	move.w	d0,(lastsfx).w			;remember the last effect
 	jsr	(play_sfx_or_music_track).l
-.none								;exit: restore the registers
+.none								;pop the d0-d7/a0-a6 saved above
 	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp					;(callee pops its own argument)
@@ -303,7 +303,7 @@ song								;play song number. One word passed on stack
 	move.w	sfxarg(sp),d0			;sound number
 	bmi.w	.none					;negative = no song
 	jsr	(play_sfx_or_music_track).l	;same call as sfx, without lastsfx
-.none								;exit: restore the registers
+.none								;pop the d0-d7/a0-a6 saved above
 	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp
@@ -837,7 +837,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	btst	#0,(sflags6).w
 	bne.w	.0
 	bsr.w	DecompressGraphicsPlain
-.0									;exit: restore the registers
+.0									;pop the d0-d3/d5-d6/a0-a3 saved above
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,(disflags).w
 	move.w	(sp)+,(printy).w

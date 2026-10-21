@@ -270,7 +270,7 @@ setSlotBit							;Sflags6 bit 5 (the slot) = the puck carrier is in the slot in 
 	cmpi.w	#$FFB9,(a0)				;compare X position to -$47
 	blt.w	.restore				;branch if less than -47
 	bset	#5,(sflags6).w			;set bit
-.restore							;exit: restore the registers
+.restore							;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
 .ex									;exit (also the end of the code above)
 	rts
@@ -1321,7 +1321,7 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 	move.b	d0,urwins+1(a0)
 	lsr.w	#8,d0
 	move.b	d0,urwins(a0)
-.1									;exit: restore the registers
+.1									;pop the d0 saved above
 	movem.w	(sp)+,d0
 	movem.w	d0,-(sp)
 	move.w	tmscore(a1),d0
@@ -1648,7 +1648,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	bsr.w	WrapCardIndex
 	bsr.w	DrawPlayerCard
 	bra.w	.loop
-.exit								;exit: restore the registers
+.exit								;pop the d0-d7/a0-a6 saved above
 	movem.l	(sp)+,d0-d7/a0-a6
 	jmp	ExitStatsScreen
 WrapCardIndex						;Wrap the card index (a0) into 0 ... cardcount - 1
@@ -2268,7 +2268,7 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	dbf	d5,.attribadd				;loop until d5 is 0
 	asr.w	#1,d3					;divide d3 by 2
 	tst.w	(sp)+					;test stack and increment
-.000								;exit: restore the registers
+.000								;pop the d5-d7 saved above
 	movem.l	(sp)+,d5-d7				;pop off stack into d5-d7
 	cmpa.l	#AttribWgtList,a6		;check if a6 is AttribWgtList
 	beq.w	.2						;branch if equal

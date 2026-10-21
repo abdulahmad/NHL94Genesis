@@ -446,7 +446,7 @@ ChangeOption						;add d2 to option d7 (d2 = 0: only limit it) and wrap it in it
 	move.w	(OptUserRec).w,(TmpOptUserRec).w
 	move.w	(OptPen).w,(TmpOptPen).w
 	move.w	(OptLine).w,(TmpOptLine).w
-.1									;exit: restore the registers
+.1									;pop the d0/d2 saved above
 	movem.w	(sp)+,d0/d2
 	tst.w	d7
 	bne.w	.2

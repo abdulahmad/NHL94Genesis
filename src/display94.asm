@@ -452,7 +452,7 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 .next
 	addq.w	#8,a0
 	dbf	d4,.loop
-.ex									;exit: restore the registers
+.ex									;pop the d0-d5 saved above
 	movem.l	(sp)+,d0-d5
 .x									;exit (also the end of the code above)
 	rts
@@ -977,7 +977,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	addq.w	#8,a6					;add 8 to a6
 	addq.w	#8,a2					;add 8 to a2
 	dbf	d5,.sloop					;loop if still sprites in frame
-.exit								;exit: restore the registers
+.exit								;pop the d0-d5/a0-a2 saved above
 	movem.l	(sp)+,d0-d5/a0-a2		;also reached when frame is 0, negative or past the table
 	move.w	(sp)+,attribute(a3)		;restore attribute
 	rts

@@ -198,7 +198,7 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 .next
 	addq.w	#8,a0
 	dbf	d4,.loop2
-.x									;exit: restore the registers
+.x									;pop the d0-d5 saved above
 	movem.l	(sp)+,d0-d5
 .x2									;exit (also the end of the code above)
 	rts
@@ -358,7 +358,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bsr.w	.title
 	bsr.w	.lines
 	bra.s	.loop2
-.exit								;exit: restore the registers
+.exit								;pop the d0-d7/a0-a6 saved above
 	movem.l	(sp)+,d0-d7/a0-a6
 	jmp	(ExitStatsScreen).l
 .title								;local subroutine

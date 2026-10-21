@@ -94,7 +94,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	jsr	(assreplace).l
 	movem.l	(sp)+,d0-d2/a0/a3
 	rts
-.noot								;exit: restore the registers
+.noot								;pop the d0-d2/a0/a3 saved above
 	movem.l	(sp)+,d0-d2/a0/a3
 	btst	#pf3onetimer,pflags3(a3)
 	bne.w	.chkfight
@@ -335,7 +335,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 	btst	#sfssdir,(sflags).w
 	beq.w	.6
 	addq.w	#8,d4
-.6									;exit: restore the registers
+.6									;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1
 	muls.w	d4,d1
 	addq.w	#8,d4
@@ -1028,7 +1028,7 @@ passto								;pass the puck to player a0: a3 = passer
 	bra.w	.stack
 .diffteam							;d1 <> cont1team
 	jsr	(setc2player).l
-.stack								;exit: restore the registers
+.stack								;pop the d0-d1 saved above
 	movem.l	(sp)+,d0-d1
 passtoa0							;pass puck to player a0
 	bsr.w	loadTeamStruct
@@ -1200,7 +1200,7 @@ changeplayer						;switch controller d4 (0/2) to the teammate nearest the puck, 
 	tst.w	d4
 	beq.w	setc1player
 	bra.w	setc2player
-.ex									;exit: restore the registers
+.ex									;pop the d0-d6/a0-a1 saved above
 	movem.l	(sp)+,d0-d6/a0-a1
 .x									;exit (also the end of the code above)
 	rts
@@ -1368,7 +1368,7 @@ prepshot							;check the conditions before a shot: d0 = SCnum of the opposing g
 	cmpi.w	#SPAgstackr,SPA(a0,d0.w)	;Checking goalie animations - pad stack right
 	beq.w	.svgoalie
 	cmpi.w	#SPAgstackl,SPA(a0,d0.w)	;Checking another goalie animation - pad stack left
-.svgoalie							;exit: restore the registers
+.svgoalie							;pop the a0 saved above
 	movem.l	(sp)+,a0				;pop stack value into a0
 	bne.w	.cont
 .nogoalie							;d0 negative, or from above

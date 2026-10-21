@@ -37,7 +37,7 @@ checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Chec
 	move.w	#1,(wcradiusx).w
 	move.w	#1,(wcradiusy).w
 	bsr.w	checkwallcoll
-.xx									;exit: restore the registers
+.xx									;pop the d0-d7 saved above
 	movem.l	(sp)+,d0-d7
 	bsr.w	checkplcoll				;check coll with other players
 .ex									;pfnc set, or from above
@@ -752,10 +752,10 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	bmi.w	.chktowardcenterice		;branch if negative
 									;player lower than checker
 	bra.w	.chkawayfromcenterice	;player higher than checker
-.chktowardcenterice					;exit: restore the registers
+.chktowardcenterice					;pop the d1-d4 saved above
 	movem.l	(sp)+,d1-d4
 	bra.w	.7
-.chkawayfromcenterice				;exit: restore the registers
+.chkawayfromcenterice				;pop the d1-d4 saved above
 	movem.l	(sp)+,d1-d4				;pop from stack
 	bra.w	*+4						;to the next instruction (.playerpos)
 .playerpos
@@ -1059,7 +1059,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	asl.l	#8,d1
 	divs.w	d3,d1
 	bsr.w	wallcollb
-.2									;exit: restore the registers
+.2									;pop the d2-d5 saved above
 	movem.w	(sp)+,d2-d5				;restore d2-d5
 	move.w	Wallcos(a3),d0			;wallcos: already hit
 	or.w	Wallsin(a3),d0			;wallsin
@@ -2147,7 +2147,7 @@ puckglue							;part of puckstick that puckgoalie also branches to. Player a2 ta
 	beq.w	.2						;branch if not
 	movem.l	(sp)+,d0/a3				;exit if player controlled
 	rts
-.2									;exit: restore the registers
+.2									;pop the d0/a3 saved above
 	movem.l	(sp)+,d0/a3
 .setd0player2						;cont4team = 0, or from above
 	cmp.w	#6,d0
@@ -2479,7 +2479,7 @@ makepde								;pass d0 as value to be scaled by player a0's energy level (full 
 	btst	#4,(sflags7).w
 	beq.w	.0
 	move.w	#$1000,d0
-.0									;exit: restore the registers
+.0									;pop the d1/a2-a3 saved above
 	movem.l	(sp)+,d1/a2-a3
 	muls.w	(sp)+,d0
 	asl.l	#4,d0
