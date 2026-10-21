@@ -10,12 +10,12 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#df32c,(disflags).w		;df32c
 	move.w	#$C000,(VmMAP2).w
-	move.w	#6,(Map2col1).w
+	move.w	#6,(Map2col).w
 	move.w	#$DC00,(VSPRITES).w
 	move.w	#$E000,(VmMAP1).w
-	move.w	#6,(Map1col1).w
+	move.w	#6,(Map1col).w
 	move.w	#$F000,(VmMAP3).w
-	move.w	#5,(Map3col1).w
+	move.w	#5,(Map3col).w
 	move.w	#$FC00,(VSCRLPM).w
 	moveq	#0,d0
 	bsr.w	setVram
@@ -44,7 +44,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	move.w	d4,(energybarchars).w	;energy bar chars
 	movea.l	#EnergyBarMap+8,a2
 	bsr.w	DecompressGraphicsPlain
-	move.w	d4,(animchars).w		;crowd chars
+	move.w	d4,(crowdvrcset).w		;crowd chars
 	movea.l	#Crowdframelist+8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	d4,(arenaanimchars).w
@@ -188,9 +188,9 @@ ReloadEnergyBarTiles				;Reload the energy bar tiles (EnergyBarMap+8) at energyb
 	move.w	(energybarchars).w,d4
 	movea.l	#EnergyBarMap+8,a2
 	bra.w	DecompressGraphicsPlain
-ReloadCrowdTiles					;Reload the crowd tiles (Crowdframelist+8) at animchars. Called from the
+ReloadCrowdTiles					;Reload the crowd tiles (Crowdframelist+8) at crowdvrcset. Called from the
 									;replay code and ReloadRinkGraphics
-	move.w	(animchars).w,d4
+	move.w	(crowdvrcset).w,d4
 	movea.l	#Crowdframelist+8,a2
 	bra.w	DecompressGraphicsPlain
 ReloadRefHorTiles					;Reload the horizontal ref tiles (RefMap2+8) at
@@ -824,11 +824,11 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	#0,(VSCRLPM).w
 	move.w	#$BC00,(VSPRITES).w
 	move.w	#$B000,(VmMAP3).w
-	move.w	#6,(Map3col1).w
+	move.w	#6,(Map3col).w
 	move.w	#$C000,(VmMAP2).w
-	move.w	#7,(Map2col1).w
+	move.w	#7,(Map2col).w
 	move.w	#$E000,(VmMAP1).w
-	move.w	#7,(Map1col1).w
+	move.w	#7,(Map1col).w
 	move.w	#0,d0
 	bsr.w	setVram
 	bsr.w	printz

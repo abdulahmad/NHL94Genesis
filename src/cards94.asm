@@ -1519,7 +1519,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	jsr	(Vmaddr).l
 	move.l	#0,(a0)
 	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)
-	move.w	#6,(Map3col1).w
+	move.w	#6,(Map3col).w
 	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)
 	clr.w	d0
 	jsr	(Vmaddr).l

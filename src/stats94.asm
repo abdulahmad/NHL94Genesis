@@ -1891,7 +1891,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	move.l	#0,(a0)
 .vdpregs
 	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)
-	move.w	#6,(Map3col1).w
+	move.w	#6,(Map3col).w
 	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)
 	clr.w	d0
 	bsr.w	Vmaddr
@@ -1961,7 +1961,7 @@ ReloadRinkGraphics					;after the forceblack: back to 32 cell mode and reload th
 	lsr.b	#2,d0
 	move.w	d0,Vctrl-Vdata(a0)
 	move.w	#VDPR_MODE4,Vctrl-Vdata(a0)
-	move.w	#5,(Map3col1).w
+	move.w	#5,(Map3col).w
 	move.w	(sp)+,(disflags).w
 	bset	#df32c,(disflags).w
 	move.w	(rinkvrcset).w,d4

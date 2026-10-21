@@ -173,3 +173,7 @@ assgoaliecpu,assgoalie,92G/93G (asstab entry; assgoaliecpu and assgoaliectrl kep
 (raw offset),tmOneTimerGoals,94S
 (raw offset),tmPenShots,94S
 (raw offset),tmPenShotGoals,94S
+Map1col1,Map1col,92G
+Map2col1,Map2col,92G
+Map3col1,Map3col,92G
+animchars,crowdvrcset,92G

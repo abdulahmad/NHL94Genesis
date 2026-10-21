@@ -440,7 +440,7 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 	move.w	6(a0),d5
 	andi.w	#$F800,d5
 	add.w	4(a0),d5
-	add.w	(animchars).w,d5		;crowd start char
+	add.w	(crowdvrcset).w,d5		;crowd start char
 	move.w	d5,(a6)+
 	move.w	(a0),d5
 	addi.w	#$70,d5
