@@ -7,110 +7,110 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 									;Decompresses the tile sets with DecompressGraphicsPlain /
 									;DecompressGraphicsWithCallback. Loads RevRinkTiles in a reverse angle
 									;replay (sflags4 bit 4) and calls LoadHomeTeamGfx
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save
 	bset	#df32c,(disflags).w		;df32c
 	move.w	#$C000,(VmMAP2).w		;map 2 address
 	move.w	#6,(Map2col).w			;map 2 width
 	move.w	#$DC00,(VSPRITES).w		;sprites address
 	move.w	#$E000,(VmMAP1).w		;map 1 address
 	move.w	#6,(Map1col).w			;map 1 width (same as 2 always)
-	move.w	#$F000,(VmMAP3).w
+	move.w	#$F000,(VmMAP3).w		;map 3 address
 	move.w	#5,(Map3col).w			;map 3 width (dependent on df32c mode)
-	move.w	#$FC00,(VSCRLPM).w
+	move.w	#$FC00,(VSCRLPM).w		;scroll table address
 	moveq	#0,d0					;color to fade to
-	bsr.w	setVram
+	bsr.w	setVram					;clear vram
 	bclr	#sfpz,(sflags).w		;sfpz
-	move.w	(disflags).w,-(sp)
+	move.w	(disflags).w,-(sp)		;save the flags
 	bset	#dfng,(disflags).w		;dfng
-	clr.w	(Hpos).w
-	clr.w	(Vpos).w
+	clr.w	(Hpos).w				;view X 0
+	clr.w	(Vpos).w				;view Y 0
 	move.w	#$7D0,(Oldrow).w		;2000
-	st	(Zamx).w
-	move.w	#$800,d0
-	move.w	(VmMAP1).w,d1
-	move.w	#$7FF,d2
+	st	(Zamx).w					;no zamboni
+	move.w	#$800,d0				;$800 cells
+	move.w	(VmMAP1).w,d1			;map 1
+	move.w	#$7FF,d2				;blank char
 	bsr.w	DoFill					;erase map 1
-	clr.w	d4
+	clr.w	d4						;first char 0
 	move.w	d4,(rinkvrcset).w		;1st vram char for rink map tiles
-	movea.l	#Rinktiles,a2
+	movea.l	#Rinktiles,a2			;rink tiles
 	btst	#4,(sflags4).w			;reverse angle replay
 	beq.w	.0						;branch if not
-	movea.l	#RevRinkTiles,a2
+	movea.l	#RevRinkTiles,a2		;reverse rink tiles
 .0									;normal or reverse rink tiles chosen
 	bsr.w	DecompressGraphicsPlain	;tiles to vram at d4, d4 advanced past them
-	jsr	(LoadHomeTeamGfx).l
+	jsr	(LoadHomeTeamGfx).l			;home team graphics
 	move.w	d4,(EASNcset).w			;1st vram char for easn logo tiles
-	bsr.w	setupEASNmap
+	bsr.w	setupEASNmap			;EASN logo
 	move.w	d4,(energybarchars).w	;energy bar chars
-	movea.l	#EnergyBarMap+8,a2
-	bsr.w	DecompressGraphicsPlain
+	movea.l	#EnergyBarMap+8,a2		;energy bar tiles
+	bsr.w	DecompressGraphicsPlain	;send them
 	move.w	d4,(crowdvrcset).w		;crowd chars
-	movea.l	#Crowdframelist+8,a2
-	bsr.w	DecompressGraphicsPlain
-	move.w	d4,(arenaanimchars).w
-	addi.w	#$32,d4
+	movea.l	#Crowdframelist+8,a2	;crowd tiles
+	bsr.w	DecompressGraphicsPlain	;send them
+	move.w	d4,(arenaanimchars).w	;arena animation chars
+	addi.w	#$32,d4					;$32 chars on
 	move.w	d4,(spritechars).w		;sprite char start, reused by setupice_highlight
-	bsr.w	defaultsprites
+	bsr.w	defaultsprites			;default sprites
 	bsr.w	setupIceRinkPal			;transfer pal 0&1
-	bsr.w	AddFramer
+	bsr.w	AddFramer				;frame tiles
 	move.w	d4,(smallfontchars).w	;1st vram char for smallfont tiles
-	movea.l	#SmallFontMap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	movea.l	#SmallFontMap+8,a2		;small font tiles
+	bsr.w	DecompressGraphicsWithCallback	;send them
 	dc.l	$43434567,$89ABCDEF		;remap table
 	move.w	d4,(BigFontchars).w		;1st vram char for Bigfont tiles
-	movea.l	#BigFontMap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	movea.l	#BigFontMap+8,a2		;big font tiles
+	bsr.w	DecompressGraphicsWithCallback	;send them
 	dc.l	$71234567,$89ABCDEF		;remap table
 	bsr.w	setupTeamBlocksMap		;team blocks for both teams
 	move.w	d4,(ExtraChars).w		;char space for extra graphics
 	btst	#gmdir,(gmode).w		;gmdir: flip pfgoal for the 12 players
-	beq.w	.gok
-	movea.w	#(SortCords-M68K_RAM),a3
+	beq.w	.gok					;no
+	movea.w	#(SortCords-M68K_RAM),a3	;objects
 	moveq	#$B,d0					;12 players
 .loop								;flip each player's goal
-	bchg	#pfgoal,pflags(a3)
-	adda.w	#SCstruct,a3
-	dbf	d0,.loop
+	bchg	#pfgoal,pflags(a3)		;flip it
+	adda.w	#SCstruct,a3			;next player
+	dbf	d0,.loop					;loop
 .gok								;goals set for this period's direction
-	bsr.w	setplayercolors
+	bsr.w	setplayercolors			;team colours
 	move.w	#$FFFF,(PadControlBits).w	;no pad assignments
-	move.w	#$FFFF,(PadControlBits34).w
-	clr.l	(padcont).w
+	move.w	#$FFFF,(PadControlBits34).w	;pads 3 and 4 off
+	clr.l	(padcont).w				;no pad input
 	clr.l	(padcont+4).w
 	clr.l	(padcont+8).w
-	st	(c1playernum).w
-	st	(c2playernum).w
+	st	(c1playernum).w				;no player for pad 1
+	st	(c2playernum).w				;no player for pad 2
 	movea.w	#(DMAList-M68K_RAM),a5	;dump pad sprites so numbers
 	movea.w	#(Satt-M68K_RAM),a6		;aren't written over later.
-	moveq	#1,d6
-	movea.w	#(pads-M68K_RAM),a3
-	clr.w	d0
-	clr.w	d1
+	moveq	#1,d6					;1 frame
+	movea.w	#(pads-M68K_RAM),a3		;pad sprites
+	clr.w	d0						;x 0
+	clr.w	d1						;y 0
 	bsr.w	addframe2				;pads1 addframe
-	adda.w	#$1C,a3
+	adda.w	#$1C,a3					;next pad sprite
 	bsr.w	addframe2				;pads2 addframe
-	adda.w	#$1C,a3
+	adda.w	#$1C,a3					;next pad sprite
 	bsr.w	addframe2				;pads3 addframe
-	adda.w	#$1C,a3
+	adda.w	#$1C,a3					;next pad sprite
 	bsr.w	addframe2				;center ice logo addframe
-	adda.w	#$1C,a3
+	adda.w	#$1C,a3					;next pad sprite
 	bsr.w	addframe2				;stick/gloves addframe?
-	adda.w	#$1C,a3
+	adda.w	#$1C,a3					;next pad sprite
 	bsr.w	addframe2				;?? addframe
-	move.l	a5,(DMAlistend).w
-	bsr.w	dodmalist
+	move.l	a5,(DMAlistend).w		;end of the DMA list
+	bsr.w	dodmalist				;send it
 	move.w	(sp)+,(disflags).w		;(palcount is set in setupice_highlight only)
-	move.l	#VBlank,(VBint).w
-	bclr	#dfok,(disflags).w
-	bclr	#dfng,(disflags).w
-	move	#$2300,sr
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.l	#VBlank,(VBint).w		;vblank routine
+	bclr	#dfok,(disflags).w		;graphics not ready
+	bclr	#dfng,(disflags).w		;graphics on
+	move	#$2300,sr				;interrupts on
+	movem.l	(sp)+,d0-d7/a0-a6		;restore
+	rts								;return
 setupice_highlight					;Rebuild the rink sprites after a highlight replay without reloading
 									;tiles, then fade in. Uses the sprite char start saved by setupice in
 									;spritechars. Called from StartHL2
-	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	forceblack
+	movem.l	d0-d7/a0-a6,-(sp)		;save
+	bsr.w	forceblack				;screen off
 	bclr	#sfpz,(sflags).w
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w
