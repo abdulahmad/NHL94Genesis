@@ -1403,7 +1403,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	String	CC_SetMapAndPosition,6,3,$C,$1A,CC_SetFont,1,'A^-^Switch^Teams',CC_SetFont,0
 	jsr	(printbigz).l
 	String	-(TXPRI+TXMAP3),8,4,'Player  Stats',-(TXPRI+TXMAP3),$E,1
-.team								;(not branched to)
+.team								;print the team
 	clr.w	d0						;TeamBlockMap offset: 0 for the home struct, $30 for the away struct
 	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	.home

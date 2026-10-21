@@ -1287,7 +1287,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	movea.w	#(tmstruct-M68K_RAM),a1
 .24									;team struct chosen
 	move.w	tmgoalie(a1),d1
-.roster								;(not branched to)
+.roster								;roster of team a1
 	movea.l	tmdata(a1),a1
 	adda.w	(a1),a1
 	bra.w	.26
