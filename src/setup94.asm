@@ -87,15 +87,15 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	clr.w	d0						;x 0
 	clr.w	d1						;y 0
 	bsr.w	addframe2				;pads1 addframe
-	adda.w	#$1C,a3					;next pad sprite
+	adda.w	#ffosize,a3				;next pad sprite
 	bsr.w	addframe2				;pads2 addframe
-	adda.w	#$1C,a3					;next pad sprite
+	adda.w	#ffosize,a3				;next pad sprite
 	bsr.w	addframe2				;pads3 addframe
-	adda.w	#$1C,a3					;next pad sprite
+	adda.w	#ffosize,a3				;next pad sprite
 	bsr.w	addframe2				;center ice logo addframe
-	adda.w	#$1C,a3					;next pad sprite
+	adda.w	#ffosize,a3				;next pad sprite
 	bsr.w	addframe2				;stick/gloves addframe?
-	adda.w	#$1C,a3					;next pad sprite
+	adda.w	#ffosize,a3				;next pad sprite
 	bsr.w	addframe2				;?? addframe
 	move.l	a5,(DMAlistend).w		;end of the DMA list
 	bsr.w	dodmalist				;send it
@@ -146,15 +146,15 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	clr.w	d0						;screen x
 	clr.w	d1						;screen y
 	bsr.w	addframe2				;first pad
-	adda.w	#$1C,a3					;next pad (ffosize)
+	adda.w	#ffosize,a3				;next pad
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
 	move.l	a5,(DMAlistend).w		;end of the queued dma
 	bsr.w	dodmalist				;send the tiles
@@ -289,7 +289,7 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 	move.w	(a2)+,attribute(a3)
 	move.w	d4,VRchar(a3)
 	add.w	(a2)+,d4				;vram char size
-	adda.w	#$1C,a3					;#ffosize
+	adda.w	#ffosize,a3				;next pad object
 	dbf	d0,.ffotop
 	bra.w	defaultsprites2
 .listsso							;start values of the screen objects

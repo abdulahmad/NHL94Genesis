@@ -141,8 +141,8 @@ VBlank_SetOptions					;VBint handler stored by setoptions: cramfade unless dfng)
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;RAM: potree, WinBits, pojoy, statsbuffer
-;tpassbits. gsstruct game ($10 bytes): 0 gst1, 2 gst2, 4 gspotwins, 6 gspobwins, 8 gsper, $A gss1, $C gss2
-;$E gsflags (bits 0 gsftf teams flipped, 1 gsfhl hilite, 2 gsfso series over).
+;tpassbits. gsstruct game (gssize bytes): gst1, gst2, gspotwins, gspobwins, gsper, gss1, gss2, gsflags
+;(gsflags bits 0 gsftf teams flipped, 1 gsfhl hilite, 2 gsfso series over).
 
 DefaultMenus						;Set the default menu choices for the beginning of the game: the 9 option
 									;words from defmenuoptions (93 had 7). Called once from Begin
@@ -706,7 +706,7 @@ AddPlayoffTeamStats					;Add the po team's game stats to its packed playoff tota
 	beq.w	.0
 	adda.w	#tmsize,a2				;tmsize: the po team is the visitor
 .0									;team struct chosen
-	adda.w	#$B4,a2					;tmgoals: the per-player stats
+	adda.w	#tmgoals,a2				;the per-player stats
 	moveq	#$67,d0					;$68 stats
 	movea.w	#(statsbuffer-M68K_RAM),a1
 .loop								;add each stat
@@ -1217,7 +1217,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 .2									;goal or power play goal text chosen
 	clr.w	d0						;clear
 	move.b	ssscorer(a4),d0			;scorer
-	addi.w	#$B4,d0					;tmgoals: goals of the scorer
+	addi.w	#tmgoals,d0				;goals of the scorer
 	cmpi.b	#3,0(a2,d0.w)			;goals
 	bne.w	.print					;not a hat trick
 	movem.w	d1,-(sp)				;save

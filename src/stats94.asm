@@ -98,14 +98,14 @@ DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current 
 	bne.w	rtss8					;(flag bit 1: game not shown)
 	btst	#2,gsflags(a0)
 	bne.w	rtss8					;(flag bit 2: game not shown)
-	move.w	2(a0),d0				;first team / score
+	move.w	gst2(a0),d0				;first team / score
 	move.w	gss2(a0),d1
 	bsr.w	PrintGameInfo			;print it
 	addq.w	#1,(printy).w			;next row
 	move.w	(a0),d0					;second team / score
 	move.w	gss1(a0),d1
 	bsr.w	PrintGameInfo			;print it
-	move.w	8(a0),d0				;period, 1 based
+	move.w	gsper(a0),d0			;period, 1 based
 	subq.w	#1,d0
 	movea.l	#PerLabels,a1			;period names
 	move.w	#$1C,(printx).w			;column $1C
