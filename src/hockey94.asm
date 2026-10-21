@@ -50,10 +50,10 @@ StartGame							;reset game state for a new game, then start the first period
 	cmpi.w	#1,(OptPen).w
 	bne.w	.0
 	bset	#gmoffs,(gmode).w		;gmoffs: offsides pen. is active
-.0	cmpi.w	#1,(OptPlayMode).w
+.0	cmpi.w	#1,(OptPlayMode).w		;OptPlayMode test (shot buffer)
 	ble.w	.1						;OptPlayMode 0-1 keep the shot buffer
 	bsr.w	ClearShotData
-.1	jsr	(clearTeamStats).l
+.1	jsr	(clearTeamStats).l			;reset team stats
 	btst	#0,(gmode2).w
 	beq.w	.noso
 	move.l	a0,-(sp)
@@ -74,8 +74,8 @@ StartGame							;reset game state for a new game, then start the first period
 
 ClearShotData						;Clear $E4 words of outputbuffer
 	move.w	#$E3,d0
-	movea.w	#(outputbuffer-M68K_RAM),a0
-.0	clr.w	(a0)+
+	movea.w	#(outputbuffer-M68K_RAM),a0	;shot data buffer
+.0	clr.w	(a0)+					;clear one word
 	dbf	d0,.0
 	rts
 
@@ -225,7 +225,7 @@ RestoreBenchEnergy					;Called once per second. Restore energy for players on th
 	cmpi.w	#$1000,tmpde(a2,d0.w)
 	blt.w	.next
 	move.w	#$1000,tmpde(a2,d0.w)	;max energy
-.next	subq.w	#2,d0
+.next	subq.w	#2,d0				;next roster slot
 	bpl.s	.b0
 .ex	rts
 
@@ -266,10 +266,10 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	cmpi.w	#$15E,(Crowdlevel).w
 	blt.w	.dec
 	subq.w	#3,(Crowdlevel).w		;loud crowd calms down faster
-.dec	sub.w	d7,(Crowdlevel).w
+.dec	sub.w	d7,(Crowdlevel).w	;crowd level decays by the elapsed frames
 	bpl.w	.0
 	clr.w	(Crowdlevel).w
-.0	sub.w	d7,(Crowdcnt).w
+.0	sub.w	d7,(Crowdcnt).w			;count down to the next crowd animation step
 	bpl.w	.cf
 	move.w	(Crowdlevel).w,d0
 	lsr.w	#1,d0
@@ -288,7 +288,7 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	and.w	d1,d2					;random 0..time
 	add.w	d2,d1
 	move.w	d1,(Crowdcnt).w			;Crowdcnt = time + random
-.cf	clr.b	(Crowdframe).w
+.cf	clr.b	(Crowdframe).w			;no extra frame unless the crowd is loud
 	cmpi.w	#$118,(Crowdlevel).w	;280
 	bls.w	rtss8
 	move.w	(HVcount).l,d0			;HVcount
@@ -439,7 +439,7 @@ Pausemode							;Game is in pause mode now
 .chk2	btst	#tmftimeout,tmflags(a2)	;tmflags
 	beq.w	.0
 	movea.l	#PauseText2,a0			;alternate item list
-.0	bsr.w	InitMenuState
+.0	bsr.w	InitMenuState			;build menu from list a0, draw routine a1
 .loop	bsr.w	vcountwait
 	bsr.w	getpzjoy
 	jsr	(showclock).l
@@ -464,7 +464,7 @@ Pausemode							;Game is in pause mode now
 	jsr	(printscores1).l
 	jsr	(setvideo).l
 	move.w	#$18,(palcount).w
-.wait	tst.w	(palcount).w
+.wait	tst.w	(palcount).w		;wait for the palette fade to finish
 	bpl.s	.wait
 	move.w	(Vcount).w,(OldVcount).w
 	rts
@@ -491,7 +491,7 @@ seta2								;Set a2 to the team struct of the pause joystick also called from
 	beq.w	.seta20
 	cmpi.w	#1,(cont2team).w
 	bra.w	.seta21
-.seta20	cmpi.w	#1,(cont1team).w
-.seta21	beq.w	.x
+.seta20	cmpi.w	#1,(cont1team).w	;pad 1 paused
+.seta21	beq.w	.x					;a2 stays home if the pausing pad controls team 1
 	adda.w	#tmsize,a2				;tmsize
 .x	rts

@@ -9,23 +9,23 @@ ReplayMode							;Instant replay play-back control and display code.
 	bclr	#0,(sflags5).w
 	bsr.w	forceblack
 	move.w	(disflags).w,-(sp)
-	bset	#sf2replay,(sflags2).w
+	bset	#sf2replay,(sflags2).w	;flag that replay is on
 	bclr	#4,(sflags4).w
 	jsr	(ClrHor).l
 	move.w	#$400,d0
 	move.w	(VmMAP3).w,d1
 	move.w	#$7FF,d2
-	bsr.w	DoFill
+	bsr.w	DoFill					;clear map 3
 	move.w	(ExtraChars).w,d4
 	movea.l	#ReplayMap+8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	(ShowReplayIcon).l
-	bclr	#sfscrl,(sflags).w
-	bclr	#sf3track,(sflags3).w
+	bclr	#sfscrl,(sflags).w		;manual scroll is off
+	bclr	#sf3track,(sflags3).w	;no tracked object
 	st	(replayactive).w
-	movea.l	(recbpr).w,a4
+	movea.l	(recbpr).w,a4			;record buffer pointer (current frame)
 .rwd
-	bsr.w	suba4
+	bsr.w	suba4					;Rewind to first frame
 	tst.w	d7
 	bne.s	.rwd
 	jsr	(SprSort).l
@@ -37,10 +37,10 @@ ReplayMode							;Instant replay play-back control and display code.
 	move.w	#$18,(palcount).w
 	moveq	#1,d7
 .top
-	move.w	(Vcount).w,d0
+	move.w	(Vcount).w,d0			;wait until d7 frames have passed
 	sub.w	(OldVcount).w,d0
 	cmp.w	d0,d7
-	bhi.s	.top
+	bhi.s	.top					;wait d7 frames
 	move.w	(Vcount).w,(OldVcount).w
 	tst.w	(replayicontimer).w
 	bmi.w	.0
@@ -65,11 +65,11 @@ ReplayMode							;Instant replay play-back control and display code.
 	andi.w	#$FFF0,d3
 .2
 	movea.w	#(CameraPosStruct-M68K_RAM),a5
-	btst	#sf3track,(sflags3).w
+	btst	#sf3track,(sflags3).w	;tracking an object?
 	beq.w	.dir
 	move.w	d1,d5
-	andi.w	#$F,d5
-	beq.w	.nomans
+	andi.w	#$F,d5					;new d-pad press?
+	beq.w	.nomans					;no: keep tracking
 .dir
 	btst	#3,d0
 	bne.w	.nomans
@@ -82,39 +82,39 @@ ReplayMode							;Instant replay play-back control and display code.
 	bgt.w	.4
 	move.w	#0,Ypos(a5)
 .4
-	bset	#sfscrl,(sflags).w
+	bset	#sfscrl,(sflags).w		;manual scrolling is on
 	bne.w	.man
-	move.w	(Hpos).w,(a5)
+	move.w	(Hpos).w,(a5)			;first frame: camera starts at the screen
 	move.w	(Vpos).w,Ypos(a5)
 .man
-	move.w	d0,d5
+	move.w	d0,d5					;d5 = d-pad direction
 	andi.w	#7,d5
 	eori.w	#4,d5
 	movea.w	#(SortCords-M68K_RAM),a1
-	st	d3
+	st	d3							;no object to skip
 	bclr	#sf3track,(sflags3).w
 	beq.w	.find
-	move.w	camtrack(a5),d3
+	move.w	camtrack(a5),d3			;skip the object tracked now
 .find
-	move.w	(a5),d0
+	move.w	(a5),d0					;camera position d0/d1: search 12 players
 	move.w	Ypos(a5),d1
-	moveq	#$B,d2
-	move.l	#$100,d4
+	moveq	#$B,d2					;12 players
+	move.l	#$100,d4				;nearest distance squared so far
 	movem.w	d0-d1,-(sp)
 .loop
-	cmp.w	SCnum(a1),d3
+	cmp.w	SCnum(a1),d3			;loop over the 12 players, skipping the tracked one
 	beq.w	.skip
 	movem.w	(sp),d0-d1
 	sub.w	(a1),d0
 	sub.w	Ypos(a1),d1
-	jsr	(vtoa).l
+	jsr	(vtoa).l					;direction to object
 	btst	#3,d0
 	bne.w	.skip
 	sub.w	d5,d0
 	addq.w	#1,d0
 	andi.w	#7,d0
 	cmp.w	#2,d0
-	bhi.w	.skip
+	bhi.w	.skip					;not within 45 degrees of the d-pad
 	movem.w	(sp),d0-d1
 	sub.w	(a1),d0
 	sub.w	Ypos(a1),d1
@@ -122,18 +122,18 @@ ReplayMode							;Instant replay play-back control and display code.
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmp.l	#4,d0
-	bls.w	.skip
+	bls.w	.skip					;too close
 	cmp.l	d4,d0
-	bhi.w	.skip
+	bhi.w	.skip					;not nearer
 	move.l	d0,d4
-	move.w	SCnum(a1),camtrack(a5)
+	move.w	SCnum(a1),camtrack(a5)	;new target
 	bset	#sf3track,(sflags3).w
 .skip
 	adda.w	#SCstruct,a1
 	dbf	d2,.loop
 	addq.w	#4,sp
 	btst	#sf3track,(sflags3).w
-	beq.w	.scrl
+	beq.w	.scrl					;nothing found: scroll by hand
 	move.w	camtrack(a5),d0
 	asl.w	#7,d0
 	movea.w	#(SortCords-M68K_RAM),a3
@@ -144,7 +144,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	jsr	(setvideo).l
 	bra.w	.top
 .scrl
-	bset	#sfscrl,(sflags).w
+	bset	#sfscrl,(sflags).w		;no object found: scroll the camera by hand
 	eori.w	#4,d5
 	asl.w	#2,d5
 	lea	.dirtab(pc),a0
@@ -156,7 +156,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	blt.w	.nox
 	move.w	d0,(a5)
 .nox
-	move.w	2(a0,d5.w),d1
+	move.w	2(a0,d5.w),d1			;y step
 	add.w	Ypos(a5),d1
 	cmp.w	#$126,d1
 	bgt.w	.noy
@@ -164,7 +164,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	blt.w	.noy
 	move.w	d1,Ypos(a5)
 .noy
-	movea.w	a5,a3
+	movea.w	a5,a3					;camera struct is the object to follow
 	clr.w	camidle(a5)
 	andi.w	#$FFF,(PadControlBits).w
 	ori.w	#$E000,(PadControlBits).w
@@ -188,14 +188,14 @@ ReplayMode							;Instant replay play-back control and display code.
 	beq.w	.5
 	btst	#0,(sflags5).w
 	bne.w	.5
-	bsr.w	suba4
+	bsr.w	suba4					;fast rewind
 	bsr.w	suba4
 	bsr.w	suba4
 	bsr.w	suba4
 	jsr	(SprSort).l
 	jsr	(setvideo).l
 	moveq	#1,d7
-	bclr	#sf3rmplay,(sflags3).w
+	bclr	#sf3rmplay,(sflags3).w	;turn off play mode
 .5
 	btst	#0,(sflags5).w
 	bne.w	.1
@@ -204,7 +204,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	btst	#6,d3
 	beq.w	.f1
 	bclr	#sf3track,(sflags3).w
-	bclr	#sfscrl,(sflags).w
+	bclr	#sfscrl,(sflags).w		;a+b but = manual scroll off (hidden feature)
 	move.w	d0,-(sp)
 	move.w	(PadControlBits).w,d0
 	andi.w	#$FFF,d0
@@ -216,14 +216,14 @@ ReplayMode							;Instant replay play-back control and display code.
 	bsr.w	adda4
 	jsr	(SprSort).l
 	jsr	(setvideo).l
-	asl.w	#1,d7
-	bclr	#sf3rmplay,(sflags3).w
+	asl.w	#1,d7					;double delay time between frames = 1/2 speed slow motion
+	bclr	#sf3rmplay,(sflags3).w	;turn off play mode
 .1
-	btst	#sf3rmplay,(sflags3).w
+	btst	#sf3rmplay,(sflags3).w	;play mode on?
 	beq.w	.noplay
-	st	(lastsfx).w
+	st	(lastsfx).w					;play mode is on = advance one frame at original speed
 	bsr.w	adda4
-	move.w	(lastsfx).w,-(sp)
+	move.w	(lastsfx).w,-(sp)		;play sound effects
 	bsr.w	sfx
 	jsr	(SprSort).l
 .noplay
@@ -261,7 +261,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	bsr.w	forceblack
 	ori.w	#$F000,(PadControlBits).w
 	bclr	#sfscrl,(sflags).w
-	movea.l	(recbpr).w,a4
+	movea.l	(recbpr).w,a4			;back to the current frame
 	bclr	#4,(sflags4).w
 	bsr.w	RestoreReplayFrame
 	jsr	(SprSort).l
@@ -278,9 +278,9 @@ ReplayMode							;Instant replay play-back control and display code.
 	jsr	(ReloadFaceOffTiles).l
 .10
 	jsr	(SetHor).l
-	jsr	(setvideo).l
+	jsr	(setvideo).l				;restore old video
 	move.w	#$18,(palcount).w
-	rts
+	rts								;exit replay mode
 getpzjoy							;read the joystick of the pad that paused. pads 3 and 4 when FourWayPlay
 									;(pausepad = 3 or 4)
 	tst.w	(FourWayPlay).w
@@ -355,7 +355,7 @@ suba4								;a4 = current replay frame. Back up 1 frame and set video parameter
 	bne.w	RestoreReplayFrame
 	adda.w	#$62,a4
 .end
-	bsr.w	RestoreReplayFrame
+	bsr.w	RestoreReplayFrame		;at either end of the replay: show frame, d7 = 0
 	clr.w	d7
 	rts
 adda4								;Step forward 1 frame. First handles a reverse
@@ -450,7 +450,7 @@ UpdateCameraPos						;Camera struct a5 = object a3 x/y (negated for the reverse 
 	bgt.w	.3
 	move.w	#$FF38,d1
 .3
-	move.w	d1,(Vpos).w
+	move.w	d1,(Vpos).w				;set Vpos
 	movem.l	(sp)+,d0-d2
 	rts
 ; set flag for reverse replay setup if needed
@@ -468,7 +468,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	moveq	#$F,d1					;16 objects to convert (12 players/2 nets/puck/puck shadow)
 	movea.w	#(SortCords-M68K_RAM),a3
 .top
-	move.w	2(a0),d2
+	move.w	2(a0),d2				;loop over the 16 objects: x from word 1
 	andi.w	#$3FF,d2
 	btst	#9,d2
 	beq.w	.chkrevx
@@ -529,7 +529,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	move.w	(a0),d2
 	asr.w	#3,d2
 	andi.w	#$1800,d2
-	andi.w	#$E7FF,attribute(a3)
+	andi.w	#$E7FF,attribute(a3)	;flip bits
 	or.w	d2,attribute(a3)
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	beq.w	.4						;branch if not
@@ -543,17 +543,17 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	addq.w	#4,a0
 	adda.w	#SCstruct,a3
 	dbf	d1,.top						;loop to next object
-	moveq	#5,d2
+	moveq	#5,d2					;6 pairs of players
 	movea.w	#(SortCords-M68K_RAM),a3
 .loop
-	move.b	(a0)+,rostnum(a3)
+	move.b	(a0)+,rostnum(a3)		;loop over the 6 pairs of players
 	move.b	(a0),d0
 	andi.w	#$F,d0
 	cmp.w	#$F,d0
 	bne.w	.5
 	moveq	#-1,d0
 .5
-	move.w	d0,position(a3)
+	move.w	d0,position(a3)			;position of the first player of the pair
 	adda.w	#SCstruct,a3
 	move.b	(a0)+,d0
 	lsr.b	#4,d0
@@ -573,15 +573,15 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	dbf	d2,.loop
 	move.b	(a0)+,d0
 	ext.w	d0
-	move.w	d0,(puckz).w
+	move.w	d0,(puckz).w			;puck z cord
 	move.b	(a0)+,d0
 	ext.w	d0
 	move.w	d0,(SortCords+((puckscnum+1)*SCstruct)+Zpos).w
 	move.b	(a0)+,d0
 	ext.w	d0
-	move.w	d0,(lastsfx).w
+	move.w	d0,(lastsfx).w			;sound effect cue
 	clr.w	d7
-	move.b	(a0)+,d7
+	move.b	(a0)+,d7				;frame delay
 	move.w	(a0)+,d0
 	andi.w	#$FFF,d0
 	andi.w	#$F000,(PadControlBits).w
@@ -597,7 +597,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	btst	#sfscrl,(sflags).w
 	beq.w	.pos
 	movea.w	a5,a3
-	btst	#sf3track,(sflags3).w
+	btst	#sf3track,(sflags3).w	;tracking an object?
 	beq.w	.cam
 	clr.w	camidle(a5)
 	move.w	camtrack(a5),d0
@@ -656,17 +656,18 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	bra.w	.rec
 .0
 	addi.l	#$62,(recbpr).w
-	cmpi.l	#replayend,(recbpr).w
+	cmpi.l	#replayend,(recbpr).w	;replayend
 	bne.w	.rec
 	bset	#sfwrap,(sflags).w
 	move.l	#M68K_RAM,(recbpr).w
 .rec
-	movea.l	(recbpr).w,a0
-	moveq	#$F,d2
+	movea.l	(recbpr).w,a0			;from 92 updatereplay2 (also: 92 record, run here for all 16 objects
+									;below)
+	moveq	#$F,d2					;16 objects
 	movea.w	#(SortCords-M68K_RAM),a3
 .top
-	clr.l	(a0)
-	move.w	(a3),d1
+	clr.l	(a0)					;loop over the 16 objects: pack x, y, frame, flip bits
+	move.w	(a3),d1					;Xpos
 	andi.w	#$3FF,d1
 	move.w	d1,2(a0)
 	clr.l	d1
@@ -684,15 +685,15 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	addq.w	#4,a0
 	adda.w	#SCstruct,a3
 	dbf	d2,.top
-	moveq	#5,d2
+	moveq	#5,d2					;6 pairs of players
 	movea.w	#(SortCords-M68K_RAM),a3
 .loop
-	move.b	rostnum(a3),(a0)+
+	move.b	rostnum(a3),(a0)+		;loop over the 6 pairs of players
 	move.w	position(a3),d0
 	bpl.w	.n0
-	moveq	#$F,d0
+	moveq	#$F,d0					;not on ice
 .n0
-	andi.w	#$F,d0
+	andi.w	#$F,d0					;position nibble
 	move.b	d0,(a0)
 	adda.w	#SCstruct,a3
 	move.b	rostnum(a3),d0
@@ -705,15 +706,15 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	bpl.w	.n1
 	moveq	#$F,d0
 .n1
-	asl.w	#4,d0
+	asl.w	#4,d0					;(misplaced name)
 	or.b	d0,(a0)+
 	adda.w	#SCstruct,a3
 	dbf	d2,.loop
 	move.b	(puckz+1).w,(a0)+
 	move.b	(SortCords+((puckscnum+1)*SCstruct)+Zpos+1).w,(a0)+
-	move.b	(lastsfx+1).w,(a0)+
+	move.b	(lastsfx+1).w,(a0)+		;sound effect cue
 	bset	#7,(lastsfx+1).w
-	move.b	d7,(a0)+
+	move.b	d7,(a0)+				;save elapsed frames
 	move.w	(PadControlBits).w,(a0)+
 	move.w	(Crowdframe).w,(a0)+
 	move.w	(glovecords).w,(a0)+
@@ -1149,7 +1150,7 @@ freezewindow						;lock scrolling to the current position
 	rts
 checkwindow							;set Hpos and Vpos according to how the screen should follow the puck
 	move.w	(yc1).w,d2
-	move.w	(xc1).w,d3
+	move.w	(xc1).w,d3				;if locked, use these cordinates
 	btst	#sfslock,(sflags).w
 	bne.w	.dd
 	movea.w	#(puckx-M68K_RAM),a3
@@ -1163,7 +1164,7 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	btst	#pfgoal,pflags(a3)
 	beq.w	.gd
 	add.w	d0,(yleader).w
-	cmpi.w	#$32,(yleader).w
+	cmpi.w	#$32,(yleader).w		;.ylmax = 50
 	blt.w	.0
 	move.w	#$32,(yleader).w
 	bra.w	.0
@@ -1173,11 +1174,11 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	bgt.w	.0
 	move.w	#$FFCE,(yleader).w
 .0
-	move.w	Yvel(a3),d2
+	move.w	Yvel(a3),d2				;target y = Ypos + Yvel/128 + yleader
 	asr.w	#7,d2
 	add.w	Ypos(a3),d2
 	add.w	(yleader).w,d2
-	move.w	(a3),d3
+	move.w	(a3),d3					;Xpos
 	move.w	d2,(yc1).w
 	move.w	d3,(xc1).w
 .dd
@@ -1186,7 +1187,7 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	cmp.w	#$FFF6,d0
 	bge.w	.1
 	move.w	d2,d1
-	subi.w	#$FFF6,d1
+	subi.w	#$FFF6,d1				;-.ylim
 	cmp.w	#$FF38,d1
 	bgt.w	.2
 	move.w	#$FF38,d1
@@ -1200,7 +1201,7 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	blt.w	.2
 	move.w	#$100,d1
 .2
-	sub.w	(Vpos).w,d1
+	sub.w	(Vpos).w,d1				;d1 = distance to scroll
 	beq.w	.2x
 	asr.w	#4,d1
 	bne.w	.v2

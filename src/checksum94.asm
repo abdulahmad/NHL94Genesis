@@ -12,7 +12,7 @@ ValidationLoop	cmpa.w	#$18C,a0	;header long $18C-$18F holds the checksum word $1
 	bne.s	SkipIncrement
 	addq.w	#4,a0					;skip it, not summed
 	bra.s	ContinueValidation
-SkipIncrement	add.l	(a0)+,d0
+SkipIncrement	add.l	(a0)+,d0	;sum += next ROM long (a0 advances)
 ContinueValidation	subq.l	#1,d1
 	bgt.s	ValidationLoop
 	cmpi.l	#$8AB9F121,d0			;retail sum. Real CMPI (0C80), not EA cmp

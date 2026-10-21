@@ -37,7 +37,7 @@ TeamList							;List Pointer Table Start. Team number = index (ANH 0 ... WPG 25,
 	dc.l	AllStarsEast			;26 ASE
 	dc.l	AllStarsWest			;27 ASW
 
-NumofTeams	=	(*-TeamList)/4
+NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList (26)
 	IF NumofTeams<>NumTeams
 		inform	3,"TeamList needs one entry per team"
 	ENDIF

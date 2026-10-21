@@ -1020,7 +1020,7 @@ VBlank_TitleScreen					;newTitleScreen vblank: line scroll table (SortCords) and
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).w
 	bne.w	.1
-	movea.w	#(SortCords-M68K_RAM),a0
+	movea.w	#(SortCords-M68K_RAM),a0	;line scroll table
 	move.w	(VSCRLPM).w,d1
 	move.w	#$1C0,d0
 	jsr	(DoDMA).l

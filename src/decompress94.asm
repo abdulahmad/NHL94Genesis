@@ -10,21 +10,21 @@ DecompressGraphicsPlain				;Clear callbackPtr, fall into DecompressGraphics
 	clr.l	(callbackPtr).w
 DecompressGraphics					;a2 = graphics data, d4 = start char
 	movem.l	d0-d1/a0-a6,-(sp)
-	movea.l	a2,a0
+	movea.l	a2,a0					;a0 = compressed data
 	move.w	d4,d1
-	asl.w	#5,d1
-	move.w	(a0)+,d0
-	beq.w	.done
-	bmi.w	.packed
+	asl.w	#5,d1					;d1 = vram address of start char
+	move.w	(a0)+,d0				;tile count
+	beq.w	.done					;no tiles
+	bmi.w	.packed					;bit 15: compressed
 	add.w	d0,d4
-	asl.w	#4,d0
+	asl.w	#4,d0					;words to transfer
 	pea	(.done).l
 	tst.l	(callbackPtr).w
 	beq.w	DoDMApro
-	movea.l	(callbackPtr).w,a1
+	movea.l	(callbackPtr).w,a1		;remap table
 	bra.w	remap
 .packed
-	andi.w	#$7FFF,d0
+	andi.w	#$7FFF,d0				;tile count
 	add.w	d0,d4
 	bsr.w	DecompressBytecode
 .done
@@ -37,13 +37,13 @@ DecompressBytecode					;Unpack a0 into the 256 byte ring buffer at ThreeStars
 	movea.l	#remap,a5
 	movea.l	#DoDMApro,a6
 	movem.l	d0-d3/a0-a2,-(sp)
-	move.w	d1,d3
-	clr.w	d1
+	move.w	d1,d3					;d3 = vram address
+	clr.w	d1						;d1 = output buffer offset
 	clr.w	d2
 .loop
-	move.b	(a0)+,d0
+	move.b	(a0)+,d0				;read opcode
 	andi.w	#$F0,d0
-	lsr.w	#3,d0
+	lsr.w	#3,d0					;upper nibble * 2
 	lea	jump_table(pc),a2
 	move.w	0(a2,d0.w),d0
 	jsr	0(a2,d0.w)
@@ -70,9 +70,9 @@ Opcode_CopyLiteral					;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
 	andi.w	#$1F,d0
 .loop
 	move.b	(a0)+,0(a1,d1.w)
-	addq.b	#1,d1
+	addq.b	#1,d1					;d1 is a byte index: wraps to 0 after 256 bytes
 	bne.w	.next
-	bsr.w	FlushOutputBuffer
+	bsr.w	FlushOutputBuffer		;buffer full
 .next
 	dbf	d0,.loop
 	rts
@@ -83,7 +83,7 @@ Opcode_ClearBytes					;opcode 2, write (low 4 bits)+1 zero bytes
 	clr.b	0(a1,d1.w)
 	addq.b	#1,d1
 	bne.w	.next
-	bsr.w	FlushOutputBuffer
+	bsr.w	FlushOutputBuffer		;buffer full
 .next
 	dbf	d0,.loop
 	rts
@@ -96,7 +96,7 @@ Opcode_Fillbytes					;opcode 3, write the next data byte (low 4 bits)+3 times
 	move.b	d2,0(a1,d1.w)
 	addq.b	#1,d1
 	bne.w	.next
-	bsr.w	FlushOutputBuffer
+	bsr.w	FlushOutputBuffer		;buffer full
 .next
 	dbf	d0,.loop
 	rts
@@ -110,13 +110,13 @@ Opcode_CopyBackwardShort			;opcodes 4-7, copy from back in the output buffer
 	addq.w	#1,d2					;distance
 CopyBackwardRun						;shared copy loop, d0 = count-1, d2 = distance back
 	neg.b	d2
-	add.b	d1,d2
+	add.b	d1,d2					;source offset in the ring buffer
 .loop
 	move.b	0(a1,d2.w),0(a1,d1.w)
 	addq.b	#1,d2
 	addq.b	#1,d1
 	bne.w	.next
-	bsr.w	FlushOutputBuffer
+	bsr.w	FlushOutputBuffer		;buffer full
 .next
 	dbf	d0,.loop
 	rts
@@ -175,7 +175,7 @@ CopyBackwardReverseRun				;shared reverse copy loop
 	subq.b	#1,d2
 	addq.b	#1,d1
 	bne.w	.next
-	bsr.w	FlushOutputBuffer
+	bsr.w	FlushOutputBuffer		;buffer full
 .next
 	dbf	d0,.loop
 	rts
@@ -185,11 +185,11 @@ Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
 	addq.w	#2,d0
 	move.b	(a0)+,d2
 	bne.s	CopyBackwardReverseRun
-	tst.w	d1
-	beq.w	.fin
+	tst.w	d1						;end of data
+	beq.w	.fin					;buffer empty
 	bsr.w	FlushOutputBuffer
 .fin
-	addq.w	#4,sp
+	addq.w	#4,sp					;drop the return into DecompressBytecode
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
 Opcode_CopyBackwardReverseLong		;opcode F
@@ -207,17 +207,17 @@ FlushOutputBuffer					;Write the full ring buffer to vram
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	d1,d0
 	bne.w	.size
-	move.w	#$100,d0
+	move.w	#$100,d0				;full buffer
 .size
-	lsr.w	#1,d0
-	move.w	d3,d1
+	lsr.w	#1,d0					;bytes to words
+	move.w	d3,d1					;vram address
 	add.w	d0,d3
 	add.w	d0,d3
 	movea.l	a1,a0
 	tst.l	(a4)
 	beq.w	.dma
-	movea.l	(a4),a1
-	jsr	(a5)
+	movea.l	(a4),a1					;remap table
+	jsr	(a5)						;remap
 	bra.w	.done
 .dma
 	jsr	(a6)

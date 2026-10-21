@@ -14,11 +14,12 @@ check4bench							;check if player a3 should go to bench
 	tst.b	newpnum(a3)
 	bmi.s	rtss3
 .0
-	move.b	newpnum(a3),d0
+	move.b	newpnum(a3),d0			;new player number differs from current -> go to the bench; else only
+									;change position
 	cmp.b	pnum(a3),d0
-	beq.w	.samepl
+	beq.w	.samepl					;player should just change positions
 	move.w	assnum(a3),d0
-	cmpi.b	#$B,asslist(a3,d0.w)
+	cmpi.b	#$B,asslist(a3,d0.w)	;already going to bench
 	beq.s	rtss3
 	move.w	SCnum(a3),d0
 	cmp.w	(puckc).w,d0
@@ -29,7 +30,7 @@ check4bench							;check if player a3 should go to bench
 	move.l	#$B,d0					;assbench
 	bra.w	assreplace
 .samepl
-	addq.w	#4,sp
+	addq.w	#4,sp					;drop return address (takes over the assignment); apply new position now
 	bclr	#pf2unav,pflags2(a3)
 	bclr	#pfnc,pflags(a3)
 	st	newpnum(a3)
@@ -48,15 +49,15 @@ check4bench							;check if player a3 should go to bench
 assbench							;player a3 should goto bench
 	btst	#pfalock,pflags(a3)
 	bne.w	rtss3
-	cmpi.w	#$64,temp1(a3)
+	cmpi.w	#$64,temp1(a3)			;temp1 = 100 flag: at the bench door
 	beq.w	.done
 	bsr.w	check4bench
-	btst	#pf2pen,pflags2(a3)
+	btst	#pf2pen,pflags2(a3)		;pf2pen
 	bne.w	assexit
 	bclr	#pfna,pflags(a3)
 	beq.w	.nna
 	move.w	#8,temp2(a3)
-	moveq	#$50,d0
+	moveq	#$50,d0					;80
 	btst	#pfteam,pflags(a3)
 	bne.w	.0
 	neg.w	d0
@@ -64,12 +65,12 @@ assbench							;player a3 should goto bench
 	move.w	d0,temp4(a3)
 	move.w	#$88,temp3(a3)
 	neg.w	temp3(a3)
-	subq.w	#8,temp3(a3)
+	subq.w	#8,temp3(a3)			;temp3 = bench x
 	clr.w	temp1(a3)
 .nna
-	move.b	newpnum(a3),d0
+	move.b	newpnum(a3),d0			;same player? just change position
 	cmp.b	pnum(a3),d0
-	beq.w	.nobench
+	beq.w	.nobench				;same player, just change position
 	sub.w	d7,temp1(a3)
 	bpl.w	.nodec
 	addq.w	#8,temp1(a3)
@@ -88,11 +89,11 @@ assbench							;player a3 should goto bench
 	bne.w	.gli
 	move.w	#SPAgready,d1
 .gli
-	bsr.w	SetSPA
+	bsr.w	SetSPA					;glide (goalie: ready) animation
 	bset	#pfnc,pflags(a3)
 	cmpi.w	#4,facedir(a3)
 	beq.w	.ok
-	addq.w	#1,facedir(a3)
+	addq.w	#1,facedir(a3)			;turn toward the bench
 	andi.w	#7,facedir(a3)
 .ok
 	clr.w	Yvel(a3)
@@ -107,11 +108,12 @@ assbench							;player a3 should goto bench
 	move.w	#SPAwallleft,d1
 	bsr.w	SetSPA
 	bset	#pfalock,pflags(a3)
-	move.w	#$64,temp1(a3)
+	move.w	#$64,temp1(a3)			;100
 .x
 	rts
 .done
-	clr.w	frame(a3)
+	clr.w	frame(a3)				;at the bench door: mark this roster slot on the bench (tmpdst -2),
+									;install the new player (d3)
 	clr.w	d0
 	move.b	pnum(a3),d0
 	add.w	d0,d0
@@ -120,7 +122,7 @@ assbench							;player a3 should goto bench
 	beq.w	.t0
 	adda.w	#tmsize,a0
 .t0
-	move.w	#$FFFE,tmpdst(a0,d0.w)
+	move.w	#$FFFE,tmpdst(a0,d0.w)	;tmpdst: put used player on bench
 	move.b	newpnum(a3),d3
 	bsr.w	.nobench2
 	jmp	setplayer
@@ -134,7 +136,7 @@ assbench							;player a3 should goto bench
 .nobench
 	bclr	#pf2unav,pflags2(a3)
 .nobench2
-	move.b	newpos(a3),d0
+	move.b	newpos(a3),d0			;position = newpos; clear newpos and newpnum
 	ext.w	d0
 	move.w	d0,position(a3)
 	jsr	(Setplass).l
@@ -164,15 +166,15 @@ asseben								;Player a3 should exit the bench area
 	move.w	#SPAwallright,d1
 	bra.w	SetSPA
 .nna
-	move.w	#4,facedir(a3)
+	move.w	#4,facedir(a3)			;after the wall animation
 	bclr	#pfnc,pflags(a3)
-	bclr	#pf2npc,pflags2(a3)
-	bclr	#pf2unav,pflags2(a3)
+	bclr	#pf2npc,pflags2(a3)		;pf2npc
+	bclr	#pf2unav,pflags2(a3)	;pf2unav
 	clr.w	SPA(a3)
 	move.w	#$1000,Xvel(a3)
 	bra.w	assexit
 ; player a3 should go to penalty box
-asspenalty
+asspenalty							;player a3 should goto penalty box
 	btst	#pfalock,pflags(a3)
 	bne.s	rtss4
 	bclr	#pfna,pflags(a3)
@@ -225,7 +227,7 @@ asspenalty
 	beq.w	.left
 	moveq	#2,d2
 .left
-	cmp.w	facedir(a3),d2
+	cmp.w	facedir(a3),d2			;turn one step toward d2
 	beq.w	.ok
 	addq.w	#1,facedir(a3)
 	andi.w	#7,facedir(a3)
@@ -241,7 +243,7 @@ asspenalty
 	move.w	#2,facedir(a3)
 	move.w	#SPAwallright,d1
 	bsr.w	SetSPA
-	bclr	#pf2pen,pflags2(a3)
+	bclr	#pf2pen,pflags2(a3)		;pf2pen
 	move.l	#$D,d0					;assdopen
 	bra.w	assreplace
 .st
@@ -259,7 +261,7 @@ asspenalty
 	moveq	#2,d4
 	bra.w	changeplayer
 ; add player a3 to penalty box
-assdopen
+assdopen							;add player a3 to penalty box
 	btst	#pfalock,pflags(a3)
 	bne.w	rtss4
 	moveq	#$10,d0
@@ -267,12 +269,12 @@ assdopen
 	beq.w	.1
 	moveq	#1,d0
 .1
-	add.b	d0,(PBnum).w
+	add.b	d0,(PBnum).w			;Players in penalty box
 	st	position(a3)
 	clr.w	frame(a3)
 	rts
 ; player a3 should exit penalty area
-assepen
+assepen								;player a3 should exit penalty area
 	btst	#pfalock,pflags(a3)
 	bne.w	rtss4
 	bclr	#pfna,pflags(a3)
@@ -286,7 +288,7 @@ assepen
 	moveq	#1,d0
 	neg.w	d1
 .0
-	sub.b	d0,(PBnum).w
+	sub.b	d0,(PBnum).w			;Players in penalty box
 	move.w	d1,Ypos(a3)
 	clr.w	Xvel(a3)
 	clr.w	Yvel(a3)
@@ -302,8 +304,8 @@ assepen
 	st	newpos(a3)
 	bclr	#pfjoycon,pflags(a3)
 	bclr	#pfnc,pflags(a3)
-	bclr	#pf2npc,pflags2(a3)
-	bclr	#pf2unav,pflags2(a3)
+	bclr	#pf2npc,pflags2(a3)		;pf2npc
+	bclr	#pf2unav,pflags2(a3)	;pf2unav
 	move.w	#$F000,Xvel(a3)
 	bra.w	assexit
 ; moves the goalie not being used during shootout/pen shot off the screen
@@ -335,7 +337,7 @@ assgoaliebreakwait					;asstab entry. In a shootout or penalty shot park the idl
 .exit
 	rts
 ; players do nothing until faceoff is over
-assfaceoff
+assfaceoff							;players do nothing until faceoff is over
 	btst	#pfalock,pflags(a3)
 	bne.w	.exit
 	btst	#sf2faceoff,(sflags2).w
@@ -353,12 +355,12 @@ assfaceoffpl						;Face off player
 	beq.w	.nna
 	clr.w	temp1(a3)
 .nna
-	movea.l	#fofdata2,a0
+	movea.l	#fofdata2,a0			;a0 = fofdata2 (home) or +4 (visitor): big faceoff sprite data
 	btst	#pfteam,pflags(a3)
 	beq.w	.0
 	addq.w	#4,a0
 .0
-	move.w	SPAnum(a3),d0
+	move.w	SPAnum(a3),d0			;d0 = SPAnum/4 + 1, +3 for right handed: frame code for the big sprite
 	lsr.w	#2,d0
 	addq.w	#1,d0
 	tst.b	handed(a3)
@@ -391,7 +393,7 @@ assfight							;rts only: there is no fighting
 assfwatch							;rts only: there is no fighting
 	rts								;assfwatch - possible location where players watching fight
 ; player should do nothing
-donothing
+donothing							;player should do nothing
 	btst	#pfalock,pflags(a3)		;#pfalock
 	bne.s	assfwatch
 	btst	#pfjoycon,pflags(a3)	;#pfjoycon
@@ -399,21 +401,21 @@ donothing
 	moveq	#8,d0
 	bra.w	doplayeracc
 ; player skates with stanley cup overhead
-assstanley
+assstanley							;player a3 skates with stanley cup overhead
 	btst	#pfalock,pflags(a3)
 	bne.s	assfwatch
 	bclr	#pfna,pflags(a3)
 	beq.w	.nna
-	move.w	#$5A,temp3(a3)
+	move.w	#$5A,temp3(a3)			;90
 	tst.w	(Hpos).w
 	bpl.w	.0
 	neg.w	temp3(a3)
 .0
-	move.w	(Vpos).w,temp4(a3)
+	move.w	(Vpos).w,temp4(a3)		;temp4 = y from Vpos
 	move.w	#SPAstanley,d1
 	bsr.w	SetSPA
 .nna
-	move.w	temp3(a3),d0
+	move.w	temp3(a3),d0			;face and accelerate toward the target
 	sub.w	(a3),d0
 	move.w	temp4(a3),d1
 	sub.w	Ypos(a3),d1
@@ -424,7 +426,7 @@ assstanley
 	move.w	d2,facedir(a3)
 	bra.w	playeracc
 ; player a3 celebrates, if scoreing player then do arm pump
-assscore
+assscore							;player a3 celebrates, if scoring player then do arm pump
 	btst	#pfalock,pflags(a3)
 	bne.s	assfwatch
 	bclr	#pfna,pflags(a3)
@@ -467,7 +469,7 @@ assscore
 .nopump
 	bsr.w	SetSPA
 .1
-	moveq	#$78,d0
+	moveq	#$78,d0					;120
 	bsr.w	randomd0
 	move.w	d0,temp1(a3)
 	rts
@@ -477,7 +479,7 @@ assscore
 rtss6
 	rts
 ; player a3 is defensive player on offense
-assdefo
+assdefo								;player a3 is defensive player on offense
 	btst	#pfalock,pflags(a3)
 	bne.s	rtss6
 	btst	#gmclock,(gmode).w		;#gmclock
@@ -543,7 +545,7 @@ assdefo
 	add.w	d2,d0					;add d2 to d0
 	bra.w	skateto					;skateto routine
 ; player a3 is defensive player on defense
-assdefd
+assdefd								;player a3 is defensive player on defense
 	btst	#pfalock,pflags(a3)		;check if locked in animiation
 	bne.w	rtss6					;exit if so
 	btst	#gmclock,(gmode).w		;check if clock running
@@ -675,7 +677,7 @@ assdefd
 rtss21
 	rts
 ; player a3 is winger on defense
-asswingd
+asswingd							;player a3 is wing on defense
 	btst	#pfalock,pflags(a3)		;check if locked in animation
 	bne.s	rtss21					;exit if so
 	btst	#gmclock,(gmode).w		;check if clock is running
