@@ -567,7 +567,7 @@ AddPlayoffTeamStats					;Add the po team's game stats to its packed playoff tota
 	move.w	(potreeteam).w,d2
 	move.b	0(a0,d2.w),d2			;po team
 	movea.w	#(tmstruct-M68K_RAM),a2
-	cmp.w	Xvel(a2),d2
+	cmp.w	tmteam(a2),d2
 	beq.w	.0
 	adda.w	#tmsize,a2				;tmsize: the po team is the visitor
 .0
@@ -908,33 +908,33 @@ CalcTeamStarScores					;Star scores of team a2 (a3 = other team) to (a4)+, one l
 	cmp.w	d0,d4
 	bhi.w	.goalie					;goalie slot
 	clr.w	d1
-	move.b	$B4(a2),d1
+	move.b	tmgoals(a2),d1
 	mulu.w	#$2AF8,d1				;goals * 11000
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	$CE(a2),d1
+	move.b	tmassists(a2),d1
 	mulu.w	#$2774,d1				;assists * 10100
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	$E8(a2),d1
+	move.b	tmpshots(a2),d1
 	mulu.w	#$A,d1
 	tst.w	d3
 	bne.w	.add					;not tied: shots * 10
 	mulu.w	#$64,d1					;tied: shots * 1000
 	add.l	d1,(a4)
 	clr.l	d1
-	add.w	$136(a1),d1				;+ frames on ice
+	add.w	tmpice(a1),d1			;+ frames on ice
 .add
 	add.l	d1,(a4)
 	bra.w	.next
 .goalie
-	cmp.w	$136(a1),d5
+	cmp.w	tmpice(a1),d5
 	bhi.w	.next					;not on ice long enough
 	clr.w	d1
-	move.b	$B4(a2),d1
+	move.b	tmgoals(a2),d1
 	mulu.w	#$64,d1
 	clr.w	d2
-	move.b	$E8(a2),d2
+	move.b	tmpshots(a2),d2
 	beq.w	.next
 	divu.w	d2,d1
 	cmp.w	#4,d1
@@ -1006,7 +1006,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	$66(a2),d0				;roster slot
+	move.b	pnum(a2),d0				;roster slot
 	movea.l	#tmstruct,a2
 	tst.w	(BA_Team).w
 	beq.w	.6
@@ -1094,7 +1094,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	blt.w	.print
 	adda.w	(a1),a1					;HAT TRICK!
 	move.w	d0,-(sp)
-	move.w	Xvel(a2),d0
+	move.w	tmteam(a2),d0
 	cmp.w	(HomeTeam).w,d0
 	bne.w	.3
 	move.w	#0,d0
@@ -1147,7 +1147,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 GoalBigTxt	String	$BF,$F,3,'GOAL!',$BF,$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
 	String	$BF,$C,3,'HAT TRICK!',$BF,$C,5
 PPGoalBigTxt	String	$BF,$D,3,'PP GOAL!',$BF,$C,5	;The same after DelayedPen bit 0:
-	;PP GOAL!, then HAT TRICK!
+									;PP GOAL!, then HAT TRICK!
 	String	$BF,$C,3,'HAT TRICK!',$BF,$C,5
 box									;Fill a $13 x 8 rectangle at printz position $FF,$B,2 with char $7FF
 									;(eraser). Called from SetLCmode2
@@ -1299,7 +1299,7 @@ FinalizeTextBuffer					;mesarea length word = a1 - mesarea, with a 0 pad byte wh
 GetPlayerNamePointer				;loops through team roster to get to d0 player: a0 = name string of player
 									;d0 (roster offset) of team struct a2. Each record is a length word String
 									;and 8 more bytes
-	movea.l	$1E(a2),a0				;offset $1E - ROM address of team data?
+	movea.l	tmdata(a2),a0			;ROM address of the team data
 	adda.w	(a0),a0					;add offset (player data start) to a0 address
 	bra.w	.loop
 .skip
@@ -1609,7 +1609,7 @@ PlayerPositionText	String	'LD'	;position names for the line slots. Used by Displ
 	String	'RW'
 
 PerLabels	String	'1',$12			;text list for periods; ' F' is the final. Used
-	;by printscores1, NewTicker3
+									;by printscores1, NewTicker3
 	String	'2',$13
 	String	'3',$14
 	String	'OT'
@@ -1651,7 +1651,7 @@ sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
 	dc.b	-1
 
 priolist	dc.b	0,1,2,4,3,5,6	;positions in order of importance. Used by
-	;SetPlList, releasepl and getlinee
+									;SetPlList, releasepl and getlinee
 	dc.b	$FF						;pad
 
 PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Used by

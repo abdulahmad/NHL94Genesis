@@ -589,7 +589,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	PrintStatValue
 	move.w	#9,(printx).w
-	lea	$364(a2),a2
+	lea	tmsize(a2),a2
 	bsr.w	PrintStatValue
 	lea	4(a0),a1
 	addq.w	#2,(printy).w
@@ -763,10 +763,10 @@ updatePPTeamTime					;One more second of power play time ($352 of the team struc
 	addq.w	#1,$352(a2)				;add 1 to PP team total
 .x
 	rts
-GetTeamRating						;d0 = the TeamRatings byte of team $28(a2). Called from PrintTeamRating
+GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 									;(the player card "Team Rating") and PrintMatchupRating
 	movem.l	d1-d7/a0-a6,-(sp)
-	move.w	Xvel(a2),d0
+	move.w	tmteam(a2),d0
 	movea.l	#TeamRatings,a0
 	clr.w	d1
 	move.b	0(a0,d0.w),d1

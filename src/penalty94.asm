@@ -204,16 +204,16 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 	move.w	d0,d3
 	asl.w	#scsize,d3				;scsize
 	move.w	#0,(BA_Team).w
-	btst	#pfteam,$62(a1,d3.w)	;pfteam
+	btst	#pfteam,pflags(a1,d3.w)	;pfteam
 	beq.w	.0						;branch if home
 	move.w	#1,(BA_Team).w
 .0
 	move.w	#0,(BA_Skater_Offset).w
-	move.b	$66(a1,d3.w),(BA_Skater_Offset+1).w	;store BA player's team position offset
+	move.b	pnum(a1,d3.w),(BA_Skater_Offset+1).w	;store BA player's team position offset
 	move.w	d1,(BA_Goalie_SCnum).w
 	asl.w	#scsize,d1				;scsize
 	move.w	#0,(BA_Goalie_Offset).w
-	move.b	$66(a1,d1.w),(BA_Goalie_Offset+1).w	;store goalie's team position offset
+	move.b	pnum(a1,d1.w),(BA_Goalie_Offset+1).w	;store goalie's team position offset
 	move.w	#0,(BA_Checker_Offset).w
 	move.b	pnum(a3),(BA_Checker_Offset+1).w	;store checker's team position offset
 .end
@@ -327,7 +327,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	bset	#6,tmpdst(a2,d0.w)
 .nocoin
 	movem.l	a0,-(sp)
-	lea	$9A(a2),a0					;add player to penalty box list
+	lea	tmboxlist(a2),a0			;add player to penalty box list
 	moveq	#$18,d1
 .pl
 	tst.b	(a0)+
@@ -736,7 +736,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	move.w	tmap(a2),d2				;end p.killing by scored on team
 	cmp.w	tmap(a1),d2
 	ble.w	.ex
-	lea	$9A(a1),a0
+	lea	tmboxlist(a1),a0
 .0
 	clr.w	d2
 	move.b	(a0)+,d2
@@ -779,7 +779,7 @@ ProcessPenaltyList					;a2 = team. Walks the penalty box list ($9A): the first t
 									;without a coincidental penalty count down one second and the rest wait.
 									;Beeps when the first served time gets to 5 or less and releases the
 									;player at 0. Coincidental penalties count down on their own
-	lea	$9A(a2),a0					;penalty box list
+	lea	tmboxlist(a2),a0			;penalty box list
 	movea.w	#(mesarea-M68K_RAM),a1	;serving players
 	moveq	#2,d1					;two can serve at once
 	moveq	#2,d3
@@ -890,7 +890,7 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 									;play time left from the penalty box times. Called from updatepwrplay
 	clr.w	d0
 	clr.w	d3
-	lea	$9A(a2),a0					;penalty box list
+	lea	tmboxlist(a2),a0			;penalty box list
 .getstatus
 	clr.w	d2
 	move.b	(a0)+,d2
@@ -903,17 +903,17 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 	move.w	d2,d3
 	bra.s	.getstatus
 .endoflist
-	cmpi.w	#6,OldZpos(a3)			;tmap: 6 on ice, done
+	cmpi.w	#6,tmap(a3)				;tmap: 6 on ice, done
 	beq.w	rtss2
 	sub.w	d3,d0
-	lea	$9A(a3),a0
+	lea	tmboxlist(a3),a0
 	clr.w	d2
 .getstatusopp
 	move.b	(a0)+,d2
 	bmi.w	rtss2
-	btst	#6,$66(a3,d2.w)			;coincidental (byte bit 6, word bit 14)
+	btst	#6,tmpdst(a3,d2.w)		;coincidental (byte bit 6, word bit 14)
 	bne.s	.getstatusopp
-	cmp.w	$66(a3,d2.w),d0
+	cmp.w	tmpdst(a3,d2.w),d0
 	blt.w	rtss2
 	add.w	d3,d0
 	rts
@@ -1175,7 +1175,7 @@ USBoard								;Update score board, including the players in the penalty box and
 	rts
 .dispen								;penalty box list of team a2: the players without a coincidental penalty
 									;first, then those with one
-	lea	$9A(a2),a0
+	lea	tmboxlist(a2),a0
 .l1
 	clr.w	d0
 	move.b	(a0)+,d0
@@ -1185,7 +1185,7 @@ USBoard								;Update score board, including the players in the penalty box and
 	bsr.w	pplpen
 	bra.s	.l1
 .p2
-	lea	$9A(a2),a0
+	lea	tmboxlist(a2),a0
 .l2
 	clr.w	d0
 	move.b	(a0)+,d0
@@ -1250,7 +1250,7 @@ linebar								;Draw the energy bar of line d0 for team a2 at printx/printy (bit
 	rts
 getlinee							;d0 = line number, a2 = team struct. Return d0 = energy level of this line
 	movem.l	d1-d5/a0-a3,-(sp)
-	lea	$16A(a2),a1					;line sets
+	lea	tmlines(a2),a1				;line sets
 	asl.w	#3,d0
 	adda.w	d0,a1
 	clr.l	d0
@@ -1411,9 +1411,9 @@ RestoreTeamEnergy					;a2 = team: max energy (tmpde $1000) for every player. The
 									;Called from the menu code before ReplayMode
 	moveq	#(maxros-1)*2,d0		;(MaxRos-1)*2
 .loop
-	cmpi.w	#$FFFD,$66(a2,d0.w)
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
 	bne.w	.0
-	cmpi.w	#$FFFC,$66(a2,d0.w)
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	bne.w	.0
 	bra.w	.1
 .0
@@ -1428,7 +1428,7 @@ reenergizeteam						;Set all players to max energy on team a2 except those at tm
 									;.setteam
 	moveq	#(maxros-1)*2,d0		;(MaxRos-1)*2
 .loop
-	cmpi.w	#$FFFC,$66(a2,d0.w)
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	beq.w	.nb
 	move.w	#$1000,tmpde(a2,d0.w)	;tmpde
 	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
@@ -1523,7 +1523,7 @@ InitScores							;initialize other games scores/period in playoffs. Called from 
 .top
 	cmp.w	(gamenum).w,d1
 	beq.w	.next
-	btst	#gsfso,$E(a0)			;gsfso
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.w	.next
 	clr.w	gsper(a0)				;gsper
 	moveq	#3,d0
@@ -1547,8 +1547,8 @@ UpdateScores						;update ticker score values. Called from PeriodOver
 .top
 	cmp.w	(gamenum).w,d1
 	beq.w	.next
-	bclr	#gsfhl,$E(a0)			;gsfhl
-	btst	#gsfso,$E(a0)			;gsfso
+	bclr	#gsfhl,gsflags(a0)		;gsfhl
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.w	.next
 	bsr.w	SetScore
 .next
@@ -1570,7 +1570,7 @@ SetScore							;add to score for game in a0. After period 3 a game within one go
 	cmp.w	#$FFFF,d0
 	blt.w	.ex
 	move.w	#3,8(a0)				;close game: overtime
-	bset	#gsfhl,$E(a0)			;gsfhl
+	bset	#gsfhl,gsflags(a0)		;gsfhl
 	bra.w	.ex
 .o
 	addq.w	#1,8(a0)
@@ -1639,9 +1639,9 @@ CheckGameTickerStatus				;d3 = game. Return a0 = its gstruct; skip to the next t
 	mulu.w	d3,d0
 	movea.w	#(gsstruct-M68K_RAM),a0
 	adda.w	d0,a0
-	btst	#gsfhl,$E(a0)			;gsfhl
+	btst	#gsfhl,gsflags(a0)		;gsfhl
 	bne.s	NewTicker2				;don't show if hilite coming up
-	btst	#gsfso,$E(a0)			;gsfso
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.s	NewTicker2				;don't show if the series is over for this game
 	rts
 NewTicker3							;Display ticker score for game d3 (a0 = gstruct entry), skip if d3 is
@@ -1741,9 +1741,9 @@ DoHiLights							;Hilites logic: search for hilite game and show
 	movea.w	#(gsstruct-M68K_RAM),a0
 	adda.w	d3,a0
 .top
-	btst	#gsfso,$E(a0)			;gsfso
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.w	.next
-	bclr	#gsfhl,$E(a0)			;gsfhl
+	bclr	#gsfhl,gsflags(a0)		;gsfhl
 	beq.w	.next
 	bsr.w	StartHL
 .next
@@ -1899,8 +1899,8 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	bsr.w	song
 	movem.l	(sp),d0-d7/a0-a6
 	move.w	#4,gsper(a0)			;gsper: OT
-	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	beq.w	StartHL2				;still tied: play another hilite
 	move.w	#5,8(a0)				;final
 	move.w	d1,d3
@@ -1931,20 +1931,20 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	jsr	(reenergizeteam).l
 	bsr.w	setpersonel
 	bsr.w	forcepldata
-	st	$18(a2)
+	st	tmtouch1(a2)
 	bclr	#7,(sflags8).w
-	st	$1A(a2)
-	st	$1C(a2)
+	st	tmtouch2(a2)
+	st	tmtouch3(a2)
 	rts
 .ranres								;random resolve of game (if tied = random score)
-	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	bne.w	.rr0
 	move.w	(HVcount).l,d0			;hvcount
 	andi.w	#1,d0
-	add.w	d0,$A(a0)
+	add.w	d0,gss1(a0)
 	eori.w	#1,d0
-	add.w	d0,$C(a0)
+	add.w	d0,gss2(a0)
 .rr0
 	move.w	#5,gsper(a0)			;gsper: final
 	rts

@@ -327,7 +327,7 @@ assgoaliebreakwait					;asstab entry. In a shootout or penalty shot park the idl
 	asl.w	#7,d0					;shift d0 7 bits left
 	adda.w	d0,a0					;add d0 to address a0
 	move.w	#$191,Ypos(a3)			;move 401 decimal into Ypos
-	btst	#7,$62(a0)				;check if shooting up or down (a0 is goalie being shot on)
+	btst	#7,pflags(a0)			;check if shooting up or down (a0 is goalie being shot on)
 	bne.w	.popstack				;branch if shooting up
 	move.w	#$FE6F,Ypos(a3)			;move -191 decimal into Ypos (goalie not being shot on)
 .popstack
@@ -718,8 +718,8 @@ asswingd
 	neg.w	d1						;negate d1
 	moveq	#$FFFFFFB2,d2			;move into d2 (slightly above bottom blue line)
 	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30 (currently offside)
-	;Home - C6FE
-	;Away - CA62
+									;Home - C6FE
+									;Away - CA62
 	bne.w	.dg11					;branch if set
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	bgt.w	.ug1					;branch if puck in defensive zone
@@ -733,10 +733,10 @@ asswingd
 	bra.w	.z1
 .0
 	moveq	#$4E,d2					;'N'   ; defending top goal
-	;4E - slightly below top blue line
+									;4E - slightly below top blue line
 	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30
-	;Home - C6FE
-	;Away - CA62
+									;Home - C6FE
+									;Away - CA62
 	bne.w	.dg11					;branch if set
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	blt.w	.dg1					;branch if puck in defensive zone

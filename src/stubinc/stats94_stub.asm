@@ -81,6 +81,7 @@ waitx = $11176						;bsr.w / Bcc.w at $9DE2
 
 NoTiles = $30A
 TeamList = $30E
+GoalieOdds = 10						;team block offset word (teamdata94)
 
 ; Main segment code
 	include	stats94.asm

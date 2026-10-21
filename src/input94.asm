@@ -438,7 +438,7 @@ doinput_onetimer					;a3 is set for a one-timer: C (bit 5) starts the one-timer 
 	asl.w	#7,d7
 	movea.l	#SortCords,a0
 	adda.w	d7,a0
-	tst.w	$34(a0)
+	tst.w	position(a0)
 	movem.l	(sp)+,d7-a0
 	beq.w	burst
 	movem.w	d7,-(sp)
@@ -557,7 +557,7 @@ getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 	adda.w	d0,a0
 	move.w	#5,d1
 .loop
-	tst.w	$34(a0)
+	tst.w	position(a0)
 	beq.w	.goalie
 	suba.w	#$80,a0
 	dbf	d1,.loop
@@ -573,8 +573,7 @@ faceoffinput						;controller processing for faceoff
 	beq.w	.0
 	rts
 .0
-	;move assnum into d4
-	move.w	assnum(a3),d4
+	move.w	assnum(a3),d4			;move assnum into d4
 	cmpi.b	#$17,asslist(a3,d4.w)	;check if afaceoffpl is in asslist at assnum position
 	bne.s	rtss7					;exit if this is not a faceoff player
 	movea.w	#(fodir1-M68K_RAM),a0	;faceoff direction of puck control variable
@@ -582,8 +581,7 @@ faceoffinput						;controller processing for faceoff
 	beq.w	.2						;branch if bottom goal
 	movea.w	#(fodir2-M68K_RAM),a0
 .2
-	;store dpad for faceoff pull
-	move.w	d0,(a0)
+	move.w	d0,(a0)					;store dpad for faceoff pull
 	btst	#pf2aip,pflags2(a3)		;check if anim in progress
 	bne.s	rtss7					;exit if anim in progress
 	btst	#4,d1					;test for b button press
@@ -592,8 +590,7 @@ faceoffinput						;controller processing for faceoff
 	bset	#pf2aip,pflags2(a3)		;set anim in progress
 	bra.w	SetSPA
 .1
-	;#SPAfaceoffr anim
-	move.w	#SPAfaceoffr,d1
+	move.w	#SPAfaceoffr,d1			;#SPAfaceoffr anim
 	bra.w	SetSPA
 fightinput
 	rts								;controller processing for fighting
@@ -634,7 +631,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 	bmi.w	.next
 	btst	#tmflcm,tmflags(a2)
 	bne.w	.pr
-	cmp.w	$2E(a2),d4
+	cmp.w	tmlcchoice(a2),d4
 	bne.w	.up
 	move.w	tmline(a2),d0
 .pr
@@ -659,7 +656,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 	bra.w	print
 setlccords							;set printx/y to cords for lc box on team a2
 	clr.w	d0
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	bne.w	.0
 	eori.w	#$16,d0
 .0
@@ -683,19 +680,19 @@ setlccords							;set printx/y to cords for lc box on team a2
 getlchoice							;d0 = 0-2 (a2 = team)
 	movem.l	d1-d2,-(sp)
 	move.w	tmsize+tmap(a2),d2
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	getlchoice2
 	move.w	tmap-tmsize(a2),d2
 getlchoice2							;add $15 to d0 for each player more or fewer than the other team has on
 									;the ice
-	sub.w	$24(a2),d2
+	sub.w	tmap(a2),d2
 	beq.w	.0
 	addi.w	#$15,d0
 	tst.w	d2
 	bmi.w	.0
 	addi.w	#$15,d0
 .0
-	move.w	$16(a2),d1
+	move.w	tmline(a2),d1
 	add.w	d1,d0
 	add.w	d1,d0
 	add.w	d1,d0
@@ -750,7 +747,7 @@ lineinput
 ; d2 = choice made 0-2
 lcfound
 	move.w	d2,d0
-	move.w	d2,$2E(a2)
+	move.w	d2,tmlcchoice(a2)
 	bsr.w	getlchoice				;translate choice 0-2 into line number 0-6
 	tst.w	d0
 	bmi.w	rtss8
@@ -784,7 +781,7 @@ burst
 	move.w	#$1000,d0
 .0
 	lsr.w	#7,d0					;d0 will be $1000 with lines off
-	;d0 / 64 will be 20 hex if max energy
+									;d0 / 64 will be 20 hex if max energy
 	move.w	d0,d1					;energy = speed increase (check violence)
 	move.w	facedir(a3),d2			;facedir
 	asl.w	#2,d2
@@ -872,13 +869,12 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	tst.w	position(a3)			;checks if goalie
 	beq.w	.calc					;jump if goalie
 .LoadPassAttribForPassStart
-	;Passacc
-	move.b	passacc(a3),d0
+	move.b	passacc(a3),d0			;Passacc
 .calc
 	asl.w	#2,d0					;d0 = passacc for player, 8 for goalie
 	asr.w	#1,d0					;change from NHL Hockey Source,
-	;because max passacc can be 30
-	;(15 in 92)
+									;because max passacc can be 30
+									;(15 in 92)
 	addi.w	#$A0,d0
 	move.w	d0,(passspeed).w		;Passspeed = PassAcc (0 to 30 decimal) * 2 + A0 (160 decimal)
 	btst	#0,passacc(a3)			;Checks to see if bit 0 in Passacc is 0
@@ -979,7 +975,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	bsr.w	SetSPA
 	bset	#pfalock,pflags(a3)		;#pfalock, $62 = pflags
 	moveq	#$C,d0					;Rest to rts, not in NHL Hockey Source
-	;Used to make puck sound
+									;Used to make puck sound
 	sub.b	(puckvz).w,d0
 	lsr.w	#2,d0
 	andi.w	#3,d0
@@ -996,7 +992,7 @@ passto
 	tst.w	position(a3)
 	bne.w	passtoa0
 	movem.l	d0-d1,-(sp)
-	btst	#3,$62(a0)
+	btst	#3,pflags(a0)
 	bne.w	.stack
 	bset	#6,pflags3(a0)			;pflags3 bit 6
 	move.w	(cont1team).w,d1
@@ -1028,7 +1024,7 @@ passto
 	movem.l	(sp)+,d0-d1
 passtoa0							;pass puck to player a0
 	bsr.w	loadTeamStruct
-	addq.w	#1,$12(a2)				;add 1 to total pass attempts
+	addq.w	#1,tmpasses(a2)			;add 1 to total pass attempts
 	move.w	SCnum(a0),(passplayer).w	;Moves index number for a0 player
 	move.w	(passspeed).w,d5		;passspeed = pix/sec
 	asr.w	#2,d5					;divides pass speed by 4
@@ -1166,7 +1162,7 @@ changeplayer
 	movem.l	(sp)+,d0
 	bne.w	.next
 .0
-	btst	#5,$62(a0)
+	btst	#5,pflags(a0)
 	bne.w	.next
 	movem.w	(sp),d0-d1
 	sub.w	(a0),d0
@@ -1252,9 +1248,9 @@ restorepl
 	btst	#0,(gmode2).w
 	beq.w	.3
 .chkgoalie							;Local: only restorepl uses it, and a global here would split restorepl
-	tst.w	$34(a0,d1.w)
+	tst.w	position(a0,d1.w)
 	bne.w	.3
-	btst	#6,$62(a0,d1.w)			;check if home or away
+	btst	#6,pflags(a0,d1.w)		;check if home or away
 	beq.w	.0
 	tst.w	(goaliemode2).w
 	bra.w	.1
@@ -1263,13 +1259,13 @@ restorepl
 .1
 	beq.w	.3
 	move.w	#0,d0					;first position of home SCNum
-	btst	#6,$62(a0,d1.w)			;check if home or away
+	btst	#6,pflags(a0,d1.w)		;check if home or away
 	beq.w	.2
 	move.w	#6,d0					;first position of away SCNum
 .2
 	bra.w	.ex
 .3
-	bset	#pfjoycon,$62(a0,d1.w)	;set pfjoycon for SCNum
+	bset	#pfjoycon,pflags(a0,d1.w)	;set pfjoycon for SCNum
 .ex
 	rts
 ; look for type of swing (forehand or backhand)
@@ -1588,7 +1584,7 @@ shotdiradj
 	adda.w	#$300,a0				;add 300 to a0 (start on away team)
 .loop
 	adda.w	#$80,a0					;move to next player struct
-	tst.w	$34(a0)					;check if goalie. Find opponents goalie
+	tst.w	position(a0)			;check if goalie. Find opponents goalie
 	dbeq	d1,.loop
 	bne.w	.setpassdir				;branches if no goalie
 	move.b	Xvel(a0),d0				;Opponent's G is A0. Move Xvel into d0

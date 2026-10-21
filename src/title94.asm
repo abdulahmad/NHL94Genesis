@@ -561,18 +561,19 @@ RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when
 	rts
 FaceoffAnims						;RandomFaceoffAnim animations
 	dc.w	3,5,3,1,5,2,3,3,$FFFF
-CheckScoreLeader					;Compare the scores ($24 of HmShots / AwShots) and test $28 of the leader
-									;for $13; the result is not used (bne.w *+4). Called from puckfaceoff
+CheckScoreLeader					;Compare tmap (players on ice) of HmShots / AwShots and test tmteam of
+									;the team with more for $13 (SJ); the result is not used (bne.w *+4).
+									;Called from puckfaceoff
 	movem.l	d0-d2/a0-a2,-(sp)
 	movea.l	#tmstruct,a0
 	movea.l	#AwShots,a1
-	move.w	$24(a0),d0
-	sub.w	$24(a1),d0
+	move.w	tmap(a0),d0
+	sub.w	tmap(a1),d0
 	beq.w	.x
 	bpl.w	.0
 	exg	a0,a1
 .0
-	cmpi.w	#$13,$28(a0)
+	cmpi.w	#$13,tmteam(a0)
 	bne.w	*+4
 .x
 	movem.l	(sp)+,d0-d2/a0-a2
@@ -658,10 +659,10 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 .0
 	move	#$2700,sr
 	rts
-GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not $28 of HmShots.
+GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not tmteam of HmShots.
 									;Called from PrintStartingLine
 	movea.l	#tmstruct,a2
-	cmp.w	Xvel(a2),d2
+	cmp.w	tmteam(a2),d2
 	beq.w	.x
 	movea.l	#AwShots,a2
 .x
@@ -786,7 +787,7 @@ ReadGoaliePulled					;Z clear when the team of a3 pulled its goalie ($26 of the 
 	beq.w	.chkgoalie
 	movea.l	#AwShots,a1
 .chkgoalie
-	tst.w	$26(a1)
+	tst.w	tmgoalie(a1)
 	movem.l	(sp)+,a1
 	rts
 EndOneTimer							;End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA
@@ -1139,9 +1140,9 @@ LeadSong							;Not in a shootout (gmode2 bit 1), scores not level: once (sflags
 	btst	#1,(gmode2).w
 	bne.w	LeadSongExit
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	$364(a2),a3
-	move.w	$24(a2),d0
-	sub.w	OldZpos(a3),d0
+	lea	tmsize(a2),a3
+	move.w	tmap(a2),d0
+	sub.w	tmap(a3),d0
 	beq.w	LeadSongExit
 	bpl.w	.0
 	btst	#sf2pwrtm,(sflags2).w
@@ -1158,7 +1159,7 @@ LeadSong							;Not in a shootout (gmode2 bit 1), scores not level: once (sflags
 .1
 	bset	#sf2pwrplay,(sflags2).w
 	bne.w	LeadSongExit
-	cmpa.w	#$C6CE,a3
+	cmpa.w	#(tmstruct-M68K_RAM),a3
 	bne.w	.2
 	move.w	(HomeTeam).w,(HmTeam).w
 	move.w	#1,(SongIndex).w
@@ -1299,7 +1300,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	cmp.w	0(a1,d4.w),d1
 	movem.w	(sp)+,d1
 	beq.w	.0
-	btst	#3,$62(a0)				;is player controlled?
+	btst	#3,pflags(a0)			;is player controlled?
 	bne.w	.next					;yes branch
 .0
 	btst	#2,(BA_PS_flags).w
@@ -1315,7 +1316,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	movem.l	(sp)+,d0
 	bne.w	.next
 .1
-	btst	#pfalock,$62(a0)		;#pfalock
+	btst	#pfalock,pflags(a0)		;#pfalock
 	bne.w	.next					;player is locked
 	movem.w	(sp),d0-d1
 	sub.w	(a0),d0					;Xpos

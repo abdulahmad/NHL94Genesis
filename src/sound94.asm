@@ -1390,7 +1390,7 @@ fmtune_id_77_cmdstream
 	even
 fmtune_title_cmdstream
 	incbin	..\Extracted\NHL94\Sound\fmtune_title_cmdstream94.bin	;song $78: ExitToOpening, newTitleScreen.
-	;One stream that loops to its start
+									;One stream that loops to its start
 	even
 	dc.l	fmtune_title_cmdstream	;loop pointer
 fmtune_eop_cmdstream

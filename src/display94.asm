@@ -832,7 +832,7 @@ RenderSmallFontChar					;Dma one small font tile (SmallFontMap) to the object's 
 	andi.w	#$7FF,d2
 	asl.w	#5,d2					;32 bytes per tile
 	movea.l	#SmallFontMap,a3
-	lea	$A(a3,d2.w),a3
+	lea	jimtiles(a3,d2.w),a3
 	move.l	a3,(a5)+
 	move.w	#$10,(a5)+				;words to transfer
 	add.w	VRchar(a0),d0
@@ -926,7 +926,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	movem.w	(sp)+,d0-d4				;pop from stack
 .dup
 	move.b	d3,VRoffs(a3,d5.w)		;move d3 into VRoffs of sprite
-	;This and VRChar are for VRAM access
+									;This and VRChar are for VRAM access
 .noref
 	move.w	(sp)+,d0				;pop from stack
 	movem.w	d0-d2,-(sp)				;push to stack

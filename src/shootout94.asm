@@ -32,7 +32,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	$66(a2),d0
+	move.b	pnum(a2),d0
 	movea.l	#AwShots,a2
 	tst.w	(BA_Team).w
 	beq.w	.1
@@ -43,7 +43,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),4,9
 	movea.l	#tmstruct,a1
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	4(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).w
@@ -54,7 +54,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),4,$A
 	movea.l	#AwShots,a1
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	4(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).w
@@ -479,7 +479,7 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	jsr	(printbigz).l
 	String	-(TXPRI+TXMAP2),$A,4,'  Shootout  ',-(TXPRI+TXMAP2),$F,1
 	clr.w	d0
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	.0
 	move.w	#$2C,d0
 .0

@@ -50,7 +50,7 @@ asswingo							;player a3 is winger on offense
 	cmp.w	#$58,d0					;'X'   ; compare top blue line with d0
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30 (currently offside)
-	;(C6FE Home, CA62 Away)
+									;(C6FE Home, CA62 Away)
 	bne.w	.de2					;branch if set
 	addq.w	#8,d2					;add 8 to d2 (d2 = $10)
 	cmp.w	#$108,d3				;compare top goal line with d3
@@ -62,7 +62,7 @@ asswingo							;player a3 is winger on offense
 	move.w	(HVcount).l,d0			;move frame counter into d0
 	andi.w	#$7F,d0					;pass first 7 bits
 	bne.w	.nodec					;branch if not equal to 0 - this allows random
-	;movement in zone while waiting
+									;movement in zone while waiting
 .de3
 	move.w	d2,temp5(a3)			;move d2 into temp5
 	lea	.dedata(pc),a0				;move zonedata address into a0
@@ -77,7 +77,7 @@ asswingo							;player a3 is winger on offense
 	bra.w	.nodec
 .dedata
 	dc.w	$50						;Skating zones:
-	;Defensive zone
+									;Defensive zone
 	dc.w	$14
 	dc.w	$FFBA
 	dc.w	$A
@@ -206,8 +206,8 @@ asscentero
 	cmp.w	#$58,d0					;'X'   ; check opponents blue line
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;Checks if currently offside
-	;C6FE - Home
-	;CA62 - Away
+									;C6FE - Home
+									;CA62 - Away
 	bne.w	.de2					;branch if offside
 	addq.w	#8,d2
 	cmp.w	#$108,d0				;check opponents goal line
@@ -217,7 +217,7 @@ asscentero
 	cmp.w	temp5(a3),d2			;compare temp5 to d2
 	bne.w	.de3
 	move.w	(HVcount).l,d0			;move frame counter into d0.
-	;This allows a chance for random movement in zone when waiting
+									;This allows a chance for random movement in zone when waiting
 	andi.w	#$7F,d0					;pass bottom 7 bits
 	bne.w	.nodec
 .de3
@@ -234,7 +234,7 @@ asscentero
 	bra.w	.nodec
 .dedata
 	dc.w	0						;Skating Zones
-	;puck location = defensive zone
+									;puck location = defensive zone
 	dc.w	$3C
 	dc.w	$FFBA
 	dc.w	$A
@@ -759,14 +759,14 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	btst	#ifok,(iflags).w
 	bne.s	.de5
 	movea.w	#(tmstruct-M68K_RAM),a1
-	lea	$364(a1),a2
+	lea	tmsize(a1),a2
 	btst	#pfteam,pflags(a3)
 	beq.w	.23
 	exg	a1,a2
 .23
-	cmpi.l	#$1324,$2A(a1)
+	cmpi.l	#$1324,tmnear(a1)
 	blt.w	.de5
-	cmpi.l	#$9C4,Yvel(a2)
+	cmpi.l	#$9C4,tmnear(a2)
 	blt.w	.de5
 	cmpi.w	#$E0,(pucky).w
 	bgt.w	.24
@@ -991,9 +991,9 @@ assgoalietopuck
 	beq.w	.t0						;branch if home
 	exg	a1,a2						;swap if away
 .t0
-	cmpi.l	#$E10,$2A(a1)
+	cmpi.l	#$E10,tmnear(a1)
 	blt.w	assexit
-	cmpi.l	#$640,Yvel(a2)
+	cmpi.l	#$640,tmnear(a2)
 	blt.w	assexit
 .go
 	bra.w	skatetopuck
@@ -1066,7 +1066,7 @@ BreakawayOffsidesFlagSet			;On a new assignment clear the offsides and breakaway
 .checkYpos2
 	cmp.w	Ypos(a0),d1				;compare Ypos of a0 player to d1 (Ypos puckc)
 	bge.w	.substruct2				;branch if d1 greater than or equal
-	tst.w	$34(a0)					;check if goalie
+	tst.w	position(a0)			;check if goalie
 	beq.w	.substruct2				;branch if goalie
 	bra.w	.nogood
 .substruct2
@@ -1084,7 +1084,7 @@ BreakawayOffsidesFlagSet			;On a new assignment clear the offsides and breakaway
 .checkYpos
 	cmp.w	Ypos(a0),d1				;check Ypos with d1 (d1 = blue line Y)
 	ble.w	.substruct
-	tst.w	$34(a0)					;checks if goalie (who would be below blue line)
+	tst.w	position(a0)			;checks if goalie (who would be below blue line)
 	beq.w	.substruct
 	bra.s	.nogood
 .substruct
@@ -1327,7 +1327,7 @@ chk4lc								;see if computer should call line change
 	btst	#pf2lcm,pflags2(a3)
 	bne.w	rtss2
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	$364(a2),a1
+	lea	tmsize(a2),a1
 	btst	#pfteam,pflags(a3)
 	beq.w	.1
 	exg	a2,a1
@@ -1797,7 +1797,7 @@ assnearest
 	btst	#pfteam,pflags(a3)		;pfteam - 0 home, 1 away
 	beq.s	.tmnopc					;jump if home
 .nopc3
-	clr.l	Yvel(a2)				;Calculated future Ypos of the player closest to the puck
+	clr.l	tmnear(a2)				;no nearest skater yet
 	move.w	(puckc).w,d1			;move puck carrier SCnum into d1
 	bmi.w	.np						;branch if no puck carrier
 	asl.w	#scsize,d1				;scsize
@@ -1846,7 +1846,7 @@ assnearest
 	dbf	d4,.de0						;iterate through loop
 	tst.l	d2						;check if 0
 	bmi.w	.de1					;branch if less (no one near puck)
-	move.l	d2,Yvel(a2)				;moves d2 into $2A(a2)
+	move.l	d2,tmnear(a2)			;nearest skater's distance^2 to the puck
 .switch
 	cmpa.w	a1,a3					;a1 = closest to the puck, or puckc (if on same team)
 	beq.w	.de1					;branch if same
@@ -2213,7 +2213,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	movea.l	#SortCords,a2
 	asl.w	#7,d0
 	adda.w	d0,a2
-	tst.w	$34(a2)
+	tst.w	position(a2)
 	bne.w	.findgoalie
 	btst	#2,pflags2(a2)
 	beq.w	.startpenshot
@@ -2236,7 +2236,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	move.w	d0,d1
 	asl.w	#7,d1
 	adda.w	d1,a2
-	tst.w	$34(a2)
+	tst.w	position(a2)
 	bne.s	.goalieloop
 	btst	#2,pflags2(a2)
 	bne.s	.goalieloop
@@ -2256,7 +2256,7 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	move.w	#0,d1
 	move.w	#$FFFF,d6
 	move.w	#$FFFF,d5
-	movea.l	$1E(a0),a2
+	movea.l	tmdata(a0),a2
 	adda.w	(a2),a2
 .playerloop
 	cmpi.w	#2,(a2)
@@ -2270,9 +2270,9 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	ble.w	.nextplayer
 	btst	#0,(gmode2).w
 	bne.w	.setskaterscnum
-	cmpi.w	#$FFFE,$66(a0,d7.w)
+	cmpi.w	#$FFFE,tmpdst(a0,d7.w)
 	beq.w	.scorecandidate
-	cmpi.w	#$FFFF,$66(a0,d7.w)
+	cmpi.w	#$FFFF,tmpdst(a0,d7.w)
 	bne.w	.nextplayer
 .scorecandidate
 	clr.w	d3
@@ -2383,18 +2383,18 @@ puckpenshot
 	clr.w	(puckvz).w
 	st	(puckc).w
 	movea.w	#(SortCords+(12*SCstruct)-M68K_RAM),a0	;goal net SCstruct
-	clr.w	$28(a0)
-	clr.w	$2A(a0)
+	clr.w	Xvel(a0)
+	clr.w	Yvel(a0)
 	clr.w	(a0)
-	move.w	#$10C,$14(a0)
+	move.w	#$10C,Ypos(a0)
 	adda.w	#$80,a0					;move to second goal net SCstruct
-	clr.w	$28(a0)
-	clr.w	$2A(a0)
+	clr.w	Xvel(a0)
+	clr.w	Yvel(a0)
 	clr.w	(a0)
-	move.w	#$FEF4,$14(a0)
+	move.w	#$FEF4,Ypos(a0)
 	movea.w	#(SortCords+((puckscnum+1)*SCstruct)-M68K_RAM),a0	;puck shadow SCstruct
 	move.w	#SPFpuck,6(a0)
-	clr.w	$58(a0)
+	clr.w	SPA(a0)
 	clr.w	4(a0)
 	clr.w	(SortCords+(puckscnum*SCstruct)+attribute).w
 	bclr	#sfslock,(sflags).w
@@ -2407,7 +2407,7 @@ puckpenshot
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	setpersonel
 	bsr.w	SetupPenaltyShot
-	adda.w	#$364,a2
+	adda.w	#tmsize,a2
 	bsr.w	setpersonel
 	bsr.w	SetupPenaltyShot
 	jsr	(resetplstuff).l
@@ -2785,7 +2785,7 @@ WaitForFaceoffLineChanges			;run both teams' faceoff line change timers (temp1 /
 	tst.w	temp2(a3)
 	bpl.w	rtss2
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	$364(a2),a1
+	lea	tmsize(a2),a1
 	moveq	#1,d0
 	bsr.w	SetFaceoffComputerLine
 	move.w	#$FFFF,(facelcwait).w
@@ -2798,9 +2798,9 @@ UpdateFaceoffLineChangeTimer		;count down one team's faceoff line change timer a
 	asl.w	#7,d1
 	movea.w	#(SortCords-M68K_RAM),a0
 	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#6,$62(a0,d1.w)
+	btst	#6,pflags(a0,d1.w)
 	beq.w	.checkactive
-	adda.w	#$364,a2
+	adda.w	#tmsize,a2
 .checkactive
 	btst	#3,$63(a0,d1.w)
 	bne.w	.countdown
@@ -2835,7 +2835,7 @@ ChkGoalies
 	move.w	(puckc).w,d1			;move puck carrier SCnum into d1
 	bmi.w	rtss2
 	subq.w	#6,d1
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	.chkpen
 	not.w	d1						;makes d1 negative if away team
 .chkpen
@@ -2917,7 +2917,7 @@ CompLine
 	movem.l	(sp)+,d0-d2/a0
 	rts
 .nopwr
-	cmpa.w	#$C6CE,a2				;find normal line
+	cmpa.w	#(tmstruct-M68K_RAM),a2	;find normal line
 	bne.w	.away
 	moveq	#2,d1
 	lea	.hl1(pc),a0
@@ -3091,11 +3091,11 @@ puckfaceoff2
 	beq.w	.clr
 	adda.w	#tmsize,a2
 .clr
-	clr.w	$18(a2)
-	move.b	pnum(a3),$19(a2)		;66(a3) = player offset on roster 19(a2) = player who touches puck
+	clr.w	tmtouch1(a2)
+	move.b	pnum(a3),tmtouch1+1(a2)	;this player is the last touch
 	bclr	#7,(sflags8).w
-	st	$1A(a2)						;clear last player to touch puck (assist 1)
-	st	$1C(a2)						;clear second last player to touch puck (assist 2)
+	st	tmtouch2(a2)				;clear last player to touch puck (assist 1)
+	st	tmtouch3(a2)				;clear second last player to touch puck (assist 2)
 	bclr	#tmflast,tmflags(a2)
 	move.l	#$17,d0					;#afaceoffpl - faceoff player assignment
 .11
@@ -3627,17 +3627,17 @@ a2touchpuck
 	beq.w	.checklast				;branch if not
 	bset	#7,(sflags8).w			;set if one timer
 .checklast
-	cmp.w	$18(a0),d0				;compare value in C6E6 (home) to d0
+	cmp.w	tmtouch1(a0),d0			;already the last touch?
 	beq.w	.same					;branch if equal
 	bclr	#tmflast,tmflags(a0)	;clear bit 3
 	bne.w	.st						;branch if not cleared before
-	move.w	$1A(a0),$1C(a0)			;move current player to assist slot
-	move.w	$18(a0),$1A(a0)			;move current player to last player slot
+	move.w	tmtouch2(a0),tmtouch3(a0)	;first assist becomes second assist
+	move.w	tmtouch1(a0),tmtouch2(a0)	;last touch becomes first assist
 .st
-	move.w	d0,$18(a0)				;move pnum into current player
-	cmp.w	$1C(a0),d0				;compare if same player as assist slot
+	move.w	d0,tmtouch1(a0)			;this player is the last touch
+	cmp.w	tmtouch3(a0),d0			;also the second assist?
 	bne.w	.same					;branch if not
-	st	$1C(a0)						;set FFFF to assist slot
+	st	tmtouch3(a0)				;then clear the second assist
 .same
 	bclr	#sf2shot,(sflags2).w	;clear shot taken
 	bsr.w	a2offsides
@@ -4471,7 +4471,7 @@ playeracc
 	move.w	2(a0,d2.w),d1			;Y Inc
 	move.w	0(a0,d2.w),d0			;x Inc
 	move.w	Wallsin(a3),d2			;check acc dir and dont push wall
-	;wallsin
+									;wallsin
 	beq.w	.nox
 	eor.w	d0,d2
 	bpl.w	.nox
