@@ -561,8 +561,9 @@ RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when
 	rts
 FaceoffAnims						;RandomFaceoffAnim animations
 	dc.w	3,5,3,1,5,2,3,3,$FFFF
-CheckScoreLeader					;Compare the scores ($24 of HmShots / AwShots) and test $28 of the leader
-									;for $13; the result is not used (bne.w *+4). Called from puckfaceoff
+CheckScoreLeader					;Compare tmap (players on ice) of HmShots / AwShots and test tmteam of
+									;the team with more for $13 (SJ); the result is not used (bne.w *+4).
+									;Called from puckfaceoff
 	movem.l	d0-d2/a0-a2,-(sp)
 	movea.l	#tmstruct,a0
 	movea.l	#AwShots,a1
@@ -658,7 +659,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 .0
 	move	#$2700,sr
 	rts
-GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not $28 of HmShots.
+GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not tmteam of HmShots.
 									;Called from PrintStartingLine
 	movea.l	#tmstruct,a2
 	cmp.w	tmteam(a2),d2

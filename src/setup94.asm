@@ -680,9 +680,9 @@ setteams							;Use hometeam/visteam to set team structures (InitTeamStructure f
 	bsr.w	InitTeamStructure
 	movem.l	(sp)+,d0/a0-a2
 	rts
-InitTeamStructure					;Set up team struct a2 for team d0: store the team number at $28, the team
-									;data address at $1E (tmdata), and copy the line sets to $16A (two layouts
-									;by OptLine)
+InitTeamStructure					;Set up team struct a2 for team d0: store the team number (tmteam), the
+									;team data address (tmdata), and copy the line sets to tmlines (two
+									;layouts by OptLine)
 	move.w	d0,tmteam(a2)
 	movea.w	#TeamList,a0
 	asl.w	#2,d0

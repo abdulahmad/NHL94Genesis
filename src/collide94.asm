@@ -684,7 +684,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	cmp.w	impact(a2),d0			;compare impact value to d0.
 	;d0 will be 10-1F hex (16-31 decimal)
 	ble.w	.cont2					;no toddle if d0 <= impact
-	move.b	#$3C,nopuckb(a2)		;move 3C (60 decimal) into nopuck
+	move.b	#$3C,nopuckb(a2)		;$3C (60) into nopuckb
 	bra.w	.hitter
 .cont2
 	tst.w	position(a3)			;check for goalie

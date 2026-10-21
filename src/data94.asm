@@ -1299,7 +1299,7 @@ FinalizeTextBuffer					;mesarea length word = a1 - mesarea, with a 0 pad byte wh
 GetPlayerNamePointer				;loops through team roster to get to d0 player: a0 = name string of player
 									;d0 (roster offset) of team struct a2. Each record is a length word String
 									;and 8 more bytes
-	movea.l	tmdata(a2),a0			;offset $1E - ROM address of team data?
+	movea.l	tmdata(a2),a0			;ROM address of the team data
 	adda.w	(a0),a0					;add offset (player data start) to a0 address
 	bra.w	.loop
 .skip

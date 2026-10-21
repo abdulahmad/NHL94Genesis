@@ -763,7 +763,7 @@ updatePPTeamTime					;One more second of power play time ($352 of the team struc
 	addq.w	#1,$352(a2)				;add 1 to PP team total
 .x
 	rts
-GetTeamRating						;d0 = the TeamRatings byte of team $28(a2). Called from PrintTeamRating
+GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 									;(the player card "Team Rating") and PrintMatchupRating
 	movem.l	d1-d7/a0-a6,-(sp)
 	move.w	tmteam(a2),d0
