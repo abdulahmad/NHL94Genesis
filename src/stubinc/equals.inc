@@ -51,6 +51,7 @@ tmfoside equ 4						;team is offsides (92 flagged the player with pf3oside)
 tmftimeout equ 2					;timeout used (the pause menu drops Timeout from then on). Same bit as
 									;tmfmid and tmfslide
 tmfmid equ tmftimeout				;nearest player always takes the in-between spot (assnearest)
+tmfslide equ tmftimeout				;93 roster screen name slide; unused here (UpdateRosterPlayers is empty)
 sf3fosong equ 7						;set for periods 1 and 2: play the face off tune once, at the first face
 									;off past half the period
 gmstars equ 7						;the Stars of the Game box was already shown
@@ -142,6 +143,7 @@ pf3onetimer equ 3					;doing a one-timer
 pf3wall equ 4						;wall collision
 pf3fall equ 5						;falling down
 aggress equ $73						;aggression (Agr; goalie: glove left)
+GGSleft equ aggress					;goalie glove save left (92 name; 92 put it on stickhand)
 fighting equ $74					;fighting (Fgt; from the Chk/Hnd byte, always even)
 checking equ $75					;checking (Chk)
 
