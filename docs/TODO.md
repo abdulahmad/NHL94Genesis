@@ -2,21 +2,21 @@
 
 ## Cleanup / 93G alignment (user, Oct 20 2026; to prioritize)
 
-- initialsp becomes stack
-- look into teamdata null/notiles -- how was it in 92
-- RAM: src/ram94.asm is the 93G rs form; size the gaps (each name runs to the next one)
-- where did 93G stats report go?
+- initialsp becomes stack: OPEN, needs a call. 92 and 93 use `Stack = $FFFFF6` for vector 0 and then redefine Stack with `=`; 94G includes ram94.asm (Stack rs) before main94.asm, so the 92 name cannot be reused without moving the RAM include or hardcoding the game stack value
+- look into teamdata null/notiles -- how was it in 92: done, `NoTiles` is now 92/93 `null`
+- RAM: src/ram94.asm is the 93G rs form; size the gaps (each name runs to the next one). Partly done: SortCords (puck fields as 93G equates), tmstruct / AwShots (tmsize), puckcross, gsstruct. Still sized to the next name: Joy1Struct, sso, pads, TempBuffer, ThreeStars, picturebuf, PALflag (to Stack) and others with no 93G counterpart
+- where did 93G stats report go? Answer: 92 penalty.asm and 93 stats93.asm `StatsReport` is in period94.asm (`StatsReport`, the Game Statistics screen), in the new-in-94 code near the end of the ROM
 - move 93G replay to its own file?
 - does input make sense, and if so, bring it to 93g?
 - does assign make sense, and if so bring to 93g?
   - assign ends early, checks stuff goes into assign
 - does video make sense, and if so bring to 93g?
-- bring decompress and print to 94G!
+- bring decompress and print to 94G: done, decompress94.asm and print94.asm (included at the end of video94 as 93G middle93 does)
 - does collide make sense, and bring to 93G?
 - does display make sense, and if so bring to 93G?
   - what differentiates video and display? hardware level?
 - bring setup94 to 93G?
-- attract94 -- not really a clean separation... some attract stuff before it
+- attract94: done, it holds EASportsScreen only; the option screen helpers open data94. The routine before it (setup94 ScrollDisplayUp, scouting text) is not attract code
 - is data.asm make sense, and if do bring to 93G
 - equate SRAM functions
 - ReadJoyData isn't matching from 94G to 93G
