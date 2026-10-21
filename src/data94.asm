@@ -1303,7 +1303,7 @@ GetPlayerNamePointer				;loops through team roster to get to d0 player: a0 = nam
 	bra.w	.loop
 .skip
 	adda.w	(a0),a0					;add player name length to a0
-	addq.w	#8,a0					;add 8 to a0 (player attributes field)
+	addq.w	#pldsize,a0				;add 8 to a0 (player attributes field)
 .loop
 	dbf	d0,.skip					;loop until at player offset
 	rts

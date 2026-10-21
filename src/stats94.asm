@@ -2091,7 +2091,7 @@ DrawGoalieSelectList				;Draw the goalie list, row menuitem highlighted, each go
 	bra.w	.3
 .skip
 	adda.w	(a1),a1
-	addq.w	#8,a1
+	addq.w	#pldsize,a1
 .3
 	dbf	d2,.skip
 	move.w	#8,(printx).w
@@ -2157,7 +2157,7 @@ GetPlayerCount						;d0 = players on team a2 (records until a length word of 2)
 .loop
 	addq.w	#1,d0
 	adda.w	(a0),a0
-	addq.w	#8,a0
+	addq.w	#pldsize,a0
 	cmpi.w	#2,(a0)
 	bne.s	.loop
 	movem.l	(sp)+,a0
