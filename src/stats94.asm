@@ -961,7 +961,7 @@ AttribFighting						;Bit 0 of the nibble is the handedness: drop it, then a rati
 	subq.w	#1,d1					;sub 1 from d1
 AttribRating						;d0 * 100 / d1, adjusted (AttribAdjust, high ROM); falls into
 									;AttribPrintPct
-	mulu.w	#$64,d0					;'d'   ; mult by 100 dec
+	mulu.w	#$64,d0					;mult by 100 dec
 	divu.w	d1,d0					;divide by d1 (usually 100 dec)
 	jsr	(AttribAdjust).l
 AttribPrintPct						;Print d0 4 wide, then 4 blanks

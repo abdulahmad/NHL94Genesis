@@ -91,7 +91,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(Create_HotCold_Table).l	;its tables
 	movea.l	(sp)+,a0				;restore
 	jsr	(BuildHotColdLists).l		;again with the new tables
-	bclr	#df32c,(disflags).w		;df32c
+	bclr	#df32c,(disflags).w		;40 cell mode
 	move.w	#6,(Map1col).w			;map 1 width
 	move.w	#6,(Map2col).w			;map 2 width
 	move.w	#0,d0					;fade to color
@@ -210,11 +210,11 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$10E,(matchuptimer).l	;restart
 .2									;timer counted
 	bsr.w	PrintAdvantageMarks		;advantage marks
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	bne.w	.exit					;start leaves
 	cmpi.w	#$10E,(matchuptimer).w
 	beq.w	.3						;timer ran out: next matchup
-	btst	#cbut,d1				;cbut
+	btst	#cbut,d1				;C?
 	beq.w	.4						;no
 	move.w	#$7FFF,(screentimer).w	;restart the screen timer
 	move.l	#$8CA0,(scoutwait).w	;and the wait
@@ -224,7 +224,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bsr.w	PageMatchup
 	bra.w	.6
 .4									;cbut clear
-	btst	#abut,d1				;abut
+	btst	#abut,d1				;A?
 	beq.w	.5						;no
 	move.w	#$7FFF,(screentimer).w	;restart the screen timer
 	move.l	#$8CA0,(scoutwait).w	;and the wait
@@ -234,7 +234,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bra.w	.6						;show it
 .5									;abut clear
 	clr.w	(asv).w					;normal text speed
-	btst	#dbut,d1				;dbut
+	btst	#dbut,d1				;down?
 	beq.w	.6						;no
 	st	(asv).w						;down: type the rest without delays
 .6									;down held?

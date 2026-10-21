@@ -661,8 +661,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	bset	#sfwrap,(sflags).w		;wrapped
 	move.l	#M68K_RAM,(recbpr).w	;back to the start
 .rec								;record into the next slot
-	movea.l	(recbpr).w,a0			;from 92 updatereplay2 (also: 92 record, run here for all 16 objects
-									;below)
+	movea.l	(recbpr).w,a0			;a0 = the record slot
 	moveq	#$F,d2					;16 objects
 	movea.w	#(SortCords-M68K_RAM),a3	;objects
 .top								;pack each of the 16 objects
@@ -705,8 +704,8 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.w	position(a3),d0			;position
 	bpl.w	.n1						;on the ice
 	moveq	#$F,d0					;not on ice
-.n1									;off the ice: $F
-	asl.w	#4,d0					;(misplaced name)
+.n1									;position nibble ready
+	asl.w	#4,d0					;position to the high nibble
 	or.b	d0,(a0)+				;merge it
 	adda.w	#SCstruct,a3			;next object
 	dbf	d2,.loop					;loop
@@ -941,7 +940,7 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 .chkpuck							;bounce sound strength
 	cmp.w	#3,d0					;compare d0 to 3
 	bhi.w	.done					;branch if higher than 3
-	addi.w	#SFXpuckice,d0			;','   ; #SFXpuckice
+	addi.w	#SFXpuckice,d0			;#SFXpuckice
 	move.w	d0,-(sp)				;sound
 	bsr.w	sfx						;play it
 .done								;movement done
