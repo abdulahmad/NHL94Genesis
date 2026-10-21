@@ -448,7 +448,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	movea.l	#tmstruct,a0			;Home Stats
 	btst	#pfteam,pflags(a3)		;check if home or away
 	beq.w	.home					;branch if home
-	lea	$364(a0),a0					;add if away
+	lea	tmsize(a0),a0				;add if away
 .home
 	clr.w	d0
 	move.b	pnum(a3),d0				;player offset in roster

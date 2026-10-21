@@ -204,16 +204,16 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 	move.w	d0,d3
 	asl.w	#scsize,d3				;scsize
 	move.w	#0,(BA_Team).w
-	btst	#pfteam,$62(a1,d3.w)	;pfteam
+	btst	#pfteam,pflags(a1,d3.w)	;pfteam
 	beq.w	.0						;branch if home
 	move.w	#1,(BA_Team).w
 .0
 	move.w	#0,(BA_Skater_Offset).w
-	move.b	$66(a1,d3.w),(BA_Skater_Offset+1).w	;store BA player's team position offset
+	move.b	pnum(a1,d3.w),(BA_Skater_Offset+1).w	;store BA player's team position offset
 	move.w	d1,(BA_Goalie_SCnum).w
 	asl.w	#scsize,d1				;scsize
 	move.w	#0,(BA_Goalie_Offset).w
-	move.b	$66(a1,d1.w),(BA_Goalie_Offset+1).w	;store goalie's team position offset
+	move.b	pnum(a1,d1.w),(BA_Goalie_Offset+1).w	;store goalie's team position offset
 	move.w	#0,(BA_Checker_Offset).w
 	move.b	pnum(a3),(BA_Checker_Offset+1).w	;store checker's team position offset
 .end
@@ -903,7 +903,7 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 	move.w	d2,d3
 	bra.s	.getstatus
 .endoflist
-	cmpi.w	#6,OldZpos(a3)			;tmap: 6 on ice, done
+	cmpi.w	#6,tmap(a3)				;tmap: 6 on ice, done
 	beq.w	rtss2
 	sub.w	d3,d0
 	lea	tmboxlist(a3),a0
@@ -911,9 +911,9 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 .getstatusopp
 	move.b	(a0)+,d2
 	bmi.w	rtss2
-	btst	#6,$66(a3,d2.w)			;coincidental (byte bit 6, word bit 14)
+	btst	#6,tmpdst(a3,d2.w)		;coincidental (byte bit 6, word bit 14)
 	bne.s	.getstatusopp
-	cmp.w	$66(a3,d2.w),d0
+	cmp.w	tmpdst(a3,d2.w),d0
 	blt.w	rtss2
 	add.w	d3,d0
 	rts
@@ -1411,9 +1411,9 @@ RestoreTeamEnergy					;a2 = team: max energy (tmpde $1000) for every player. The
 									;Called from the menu code before ReplayMode
 	moveq	#(maxros-1)*2,d0		;(MaxRos-1)*2
 .loop
-	cmpi.w	#$FFFD,$66(a2,d0.w)
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
 	bne.w	.0
-	cmpi.w	#$FFFC,$66(a2,d0.w)
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	bne.w	.0
 	bra.w	.1
 .0
@@ -1428,7 +1428,7 @@ reenergizeteam						;Set all players to max energy on team a2 except those at tm
 									;.setteam
 	moveq	#(maxros-1)*2,d0		;(MaxRos-1)*2
 .loop
-	cmpi.w	#$FFFC,$66(a2,d0.w)
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	beq.w	.nb
 	move.w	#$1000,tmpde(a2,d0.w)	;tmpde
 	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
@@ -1523,7 +1523,7 @@ InitScores							;initialize other games scores/period in playoffs. Called from 
 .top
 	cmp.w	(gamenum).w,d1
 	beq.w	.next
-	btst	#gsfso,$E(a0)			;gsfso
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.w	.next
 	clr.w	gsper(a0)				;gsper
 	moveq	#3,d0
@@ -1547,8 +1547,8 @@ UpdateScores						;update ticker score values. Called from PeriodOver
 .top
 	cmp.w	(gamenum).w,d1
 	beq.w	.next
-	bclr	#gsfhl,$E(a0)			;gsfhl
-	btst	#gsfso,$E(a0)			;gsfso
+	bclr	#gsfhl,gsflags(a0)		;gsfhl
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.w	.next
 	bsr.w	SetScore
 .next
@@ -1570,7 +1570,7 @@ SetScore							;add to score for game in a0. After period 3 a game within one go
 	cmp.w	#$FFFF,d0
 	blt.w	.ex
 	move.w	#3,8(a0)				;close game: overtime
-	bset	#gsfhl,$E(a0)			;gsfhl
+	bset	#gsfhl,gsflags(a0)		;gsfhl
 	bra.w	.ex
 .o
 	addq.w	#1,8(a0)
@@ -1639,9 +1639,9 @@ CheckGameTickerStatus				;d3 = game. Return a0 = its gstruct; skip to the next t
 	mulu.w	d3,d0
 	movea.w	#(gsstruct-M68K_RAM),a0
 	adda.w	d0,a0
-	btst	#gsfhl,$E(a0)			;gsfhl
+	btst	#gsfhl,gsflags(a0)		;gsfhl
 	bne.s	NewTicker2				;don't show if hilite coming up
-	btst	#gsfso,$E(a0)			;gsfso
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.s	NewTicker2				;don't show if the series is over for this game
 	rts
 NewTicker3							;Display ticker score for game d3 (a0 = gstruct entry), skip if d3 is
@@ -1741,9 +1741,9 @@ DoHiLights							;Hilites logic: search for hilite game and show
 	movea.w	#(gsstruct-M68K_RAM),a0
 	adda.w	d3,a0
 .top
-	btst	#gsfso,$E(a0)			;gsfso
+	btst	#gsfso,gsflags(a0)		;gsfso
 	bne.w	.next
-	bclr	#gsfhl,$E(a0)			;gsfhl
+	bclr	#gsfhl,gsflags(a0)		;gsfhl
 	beq.w	.next
 	bsr.w	StartHL
 .next
@@ -1899,8 +1899,8 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	bsr.w	song
 	movem.l	(sp),d0-d7/a0-a6
 	move.w	#4,gsper(a0)			;gsper: OT
-	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	beq.w	StartHL2				;still tied: play another hilite
 	move.w	#5,8(a0)				;final
 	move.w	d1,d3
@@ -1937,14 +1937,14 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	st	tmtouch3(a2)
 	rts
 .ranres								;random resolve of game (if tied = random score)
-	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	bne.w	.rr0
 	move.w	(HVcount).l,d0			;hvcount
 	andi.w	#1,d0
-	add.w	d0,$A(a0)
+	add.w	d0,gss1(a0)
 	eori.w	#1,d0
-	add.w	d0,$C(a0)
+	add.w	d0,gss2(a0)
 .rr0
 	move.w	#5,gsper(a0)			;gsper: final
 	rts

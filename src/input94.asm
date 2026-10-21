@@ -438,7 +438,7 @@ doinput_onetimer					;a3 is set for a one-timer: C (bit 5) starts the one-timer 
 	asl.w	#7,d7
 	movea.l	#SortCords,a0
 	adda.w	d7,a0
-	tst.w	$34(a0)
+	tst.w	position(a0)
 	movem.l	(sp)+,d7-a0
 	beq.w	burst
 	movem.w	d7,-(sp)
@@ -557,7 +557,7 @@ getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 	adda.w	d0,a0
 	move.w	#5,d1
 .loop
-	tst.w	$34(a0)
+	tst.w	position(a0)
 	beq.w	.goalie
 	suba.w	#$80,a0
 	dbf	d1,.loop
@@ -659,7 +659,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 	bra.w	print
 setlccords							;set printx/y to cords for lc box on team a2
 	clr.w	d0
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	bne.w	.0
 	eori.w	#$16,d0
 .0
@@ -683,19 +683,19 @@ setlccords							;set printx/y to cords for lc box on team a2
 getlchoice							;d0 = 0-2 (a2 = team)
 	movem.l	d1-d2,-(sp)
 	move.w	tmsize+tmap(a2),d2
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	getlchoice2
 	move.w	tmap-tmsize(a2),d2
 getlchoice2							;add $15 to d0 for each player more or fewer than the other team has on
 									;the ice
-	sub.w	$24(a2),d2
+	sub.w	tmap(a2),d2
 	beq.w	.0
 	addi.w	#$15,d0
 	tst.w	d2
 	bmi.w	.0
 	addi.w	#$15,d0
 .0
-	move.w	$16(a2),d1
+	move.w	tmline(a2),d1
 	add.w	d1,d0
 	add.w	d1,d0
 	add.w	d1,d0
@@ -996,7 +996,7 @@ passto
 	tst.w	position(a3)
 	bne.w	passtoa0
 	movem.l	d0-d1,-(sp)
-	btst	#3,$62(a0)
+	btst	#3,pflags(a0)
 	bne.w	.stack
 	bset	#6,pflags3(a0)			;pflags3 bit 6
 	move.w	(cont1team).w,d1
@@ -1166,7 +1166,7 @@ changeplayer
 	movem.l	(sp)+,d0
 	bne.w	.next
 .0
-	btst	#5,$62(a0)
+	btst	#5,pflags(a0)
 	bne.w	.next
 	movem.w	(sp),d0-d1
 	sub.w	(a0),d0
@@ -1252,9 +1252,9 @@ restorepl
 	btst	#0,(gmode2).w
 	beq.w	.3
 .chkgoalie							;Local: only restorepl uses it, and a global here would split restorepl
-	tst.w	$34(a0,d1.w)
+	tst.w	position(a0,d1.w)
 	bne.w	.3
-	btst	#6,$62(a0,d1.w)			;check if home or away
+	btst	#6,pflags(a0,d1.w)		;check if home or away
 	beq.w	.0
 	tst.w	(goaliemode2).w
 	bra.w	.1
@@ -1263,13 +1263,13 @@ restorepl
 .1
 	beq.w	.3
 	move.w	#0,d0					;first position of home SCNum
-	btst	#6,$62(a0,d1.w)			;check if home or away
+	btst	#6,pflags(a0,d1.w)		;check if home or away
 	beq.w	.2
 	move.w	#6,d0					;first position of away SCNum
 .2
 	bra.w	.ex
 .3
-	bset	#pfjoycon,$62(a0,d1.w)	;set pfjoycon for SCNum
+	bset	#pfjoycon,pflags(a0,d1.w)	;set pfjoycon for SCNum
 .ex
 	rts
 ; look for type of swing (forehand or backhand)
@@ -1588,7 +1588,7 @@ shotdiradj
 	adda.w	#$300,a0				;add 300 to a0 (start on away team)
 .loop
 	adda.w	#$80,a0					;move to next player struct
-	tst.w	$34(a0)					;check if goalie. Find opponents goalie
+	tst.w	position(a0)			;check if goalie. Find opponents goalie
 	dbeq	d1,.loop
 	bne.w	.setpassdir				;branches if no goalie
 	move.b	Xvel(a0),d0				;Opponent's G is A0. Move Xvel into d0

@@ -94,16 +94,16 @@ DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current 
 	mulu.w	d3,d0
 	movea.w	#(gsstruct-M68K_RAM),a0
 	adda.w	d0,a0
-	btst	#1,$E(a0)
+	btst	#1,gsflags(a0)
 	bne.w	rtss8
-	btst	#2,$E(a0)
+	btst	#2,gsflags(a0)
 	bne.w	rtss8
 	move.w	2(a0),d0
-	move.w	$C(a0),d1
+	move.w	gss2(a0),d1
 	bsr.w	PrintGameInfo
 	addq.w	#1,(printy).w
 	move.w	(a0),d0
-	move.w	$A(a0),d1
+	move.w	gss1(a0),d1
 	bsr.w	PrintGameInfo
 	move.w	8(a0),d0
 	subq.w	#1,d0
@@ -2005,7 +2005,7 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	bsr.w	print
 	movea.w	#(tmstruct-M68K_RAM),a2
 	jsr	(RestoreTeamEnergy).l
-	adda.w	#$364,a2
+	adda.w	#tmsize,a2
 	jsr	(RestoreTeamEnergy).l
 	moveq	#$78,d0
 	bra.w	waitx
@@ -2117,7 +2117,7 @@ GetGoalieCount						;d0 = goalies on team a2 (nibbles in the team data word at +
 	movem.l	d1/a0,-(sp)
 	movea.l	tmdata(a2),a0
 .word
-	adda.w	$A(a0),a0
+	adda.w	GoalieOdds(a0),a0
 	move.w	(a0),d1
 	clr.w	d0
 .count
@@ -2132,7 +2132,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 	movem.l	a0,-(sp)
 	bsr.s	GetGoalieCount
 	move.w	d0,-(sp)
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	8(a0),a0
 	move.b	3(a0),d0
 	lsr.w	#4,d0

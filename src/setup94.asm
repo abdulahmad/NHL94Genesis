@@ -686,10 +686,10 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	move.w	d0,tmteam(a2)
 	movea.w	#TeamList,a0
 	asl.w	#2,d0
-	move.l	0(a0,d0.w),$1E(a2)
+	move.l	0(a0,d0.w),tmdata(a2)
 	tst.w	(OptLine).w
 	beq.w	.0
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	6(a0),a0
 	lea	tmlines(a2),a1
 	move.l	(a0)+,(a1)+
@@ -717,9 +717,9 @@ setplayercolors						;Copy in correct color data for each team:.team for the hom
 	movea.w	#(tmstruct-M68K_RAM),a0
 	bsr.w	.team
 	moveq	#$20,d1
-	adda.w	#$364,a0
+	adda.w	#tmsize,a0
 .team								;a0 = team struct, d1 = palette offset ($20 for the visitors)
-	movea.l	$1E(a0),a2
+	movea.l	tmdata(a0),a2
 	adda.w	2(a2),a2
 	adda.w	d1,a2
 	movea.w	#(palfadenew+$40-M68K_RAM),a1
@@ -1277,7 +1277,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	beq.w	.21
 	movea.l	#AwShots,a1
 .21
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	4(a1),a1
 	bra.w	.append
 .22
@@ -1286,9 +1286,9 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .23
 	movea.w	#(tmstruct-M68K_RAM),a1
 .24
-	move.w	$26(a1),d1
+	move.w	tmgoalie(a1),d1
 .roster
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	(a1),a1
 	bra.w	.26
 .loop5

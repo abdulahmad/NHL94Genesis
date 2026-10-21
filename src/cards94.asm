@@ -231,7 +231,7 @@ PlayerCardScreen					;Draw a player card on one side (setupcardflags bit 1: visi
 
 wallcollduringcheck					;during a check, a skater a2 (not a goalie) near the wall: test the wall
 									;at his position with his size + $17. Called from CCStart
-	tst.w	$34(a2)					;check if goalie
+	tst.w	position(a2)			;check if goalie
 	beq.w	.end
 	movem.l	d0-d7,-(sp)
 	move.w	(a2),d2					;Xpos of checking player
@@ -259,7 +259,7 @@ setSlotBit							;Sflags6 bit 5 (the slot) = the puck carrier is in the slot in 
 	asl.w	#7,d0					;mult by 128 decimal
 	adda.w	d0,a0					;move to start of puckc SCstruct
 	move.w	Ypos(a0),d0				;Ypos
-	btst	#pfgoal,$62(a0)			;pfgoal - which goal shooting at
+	btst	#pfgoal,pflags(a0)		;pfgoal - which goal shooting at
 	bne.w	.checkpos				;jump if top goal
 	neg.w	d0						;negative d0
 .checkpos
@@ -986,7 +986,7 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	movea.l	#TeamList,a5
 	asl.w	#2,d4
 	movea.l	0(a5,d4.w),a5
-	adda.w	$A(a5),a5
+	adda.w	GoalieOdds(a5),a5
 	move.w	(a5),d1
 	movem.w	d0,-(sp)
 	clr.w	d0
@@ -1299,8 +1299,8 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 	move.b	d0,$B(a0)
 	lsr.w	#8,d0
 	move.b	d0,$A(a0)
-	move.w	$C(a1),d0
-	cmp.w	$C(a2),d0
+	move.w	tmscore(a1),d0
+	cmp.w	tmscore(a2),d0
 	bgt.w	.0
 	blt.w	.1
 	clr.w	d0
@@ -1324,11 +1324,11 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 .1
 	movem.w	(sp)+,d0
 	movem.w	d0,-(sp)
-	move.w	$C(a1),d0
-	cmp.w	$C(a2),d0
+	move.w	tmscore(a1),d0
+	cmp.w	tmscore(a2),d0
 	movem.w	(sp)+,d0
 	ble.w	.write
-	move.w	$C(a1),d5
+	move.w	tmscore(a1),d5
 	cmp.b	(a0),d5
 	ble.w	.2
 	st	d7
@@ -1337,7 +1337,7 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 	move.b	d4,2(a0)
 	move.b	d2,3(a0)
 .2
-	move.w	$C(a2),d5
+	move.w	tmscore(a2),d5
 	move.w	(a2),d6
 	sub.w	d5,d6
 	cmp.b	4(a0),d6
@@ -2221,7 +2221,7 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	bne.w	.11						;branch if not equal
 	movea.l	#OvrGoalWgtList,a6		;move address FAB2C into a6
 .11
-	movea.l	$1E(a2),a0				;move ROM address of Team Data into a0
+	movea.l	tmdata(a2),a0			;move ROM address of Team Data into a0
 	lea	$1A2(a2),a4					;move start of Hot/Cold table to a4
 	clr.l	d1						;clear d1
 	move.w	d0,d1					;move d0 into d1. d0 is the offset of the player
@@ -2392,7 +2392,7 @@ PrintCardTeam						;Player card: the city and nickname of the card's team (GetCa
 	beq.w	.0
 	movea.l	#AwShots,a0
 .0
-	movea.l	$1E(a0),a0
+	movea.l	tmdata(a0),a0
 	adda.w	4(a0),a0
 .1
 	bsr.w	PrintCentered
@@ -2419,7 +2419,7 @@ GetJerseyString						;Player d0 of the card's team: his jersey number as a 2 dig
 	beq.w	.0
 	movea.l	#AwShots,a0
 .0
-	movea.l	$1E(a0),a0
+	movea.l	tmdata(a0),a0
 	move.w	(a0),d1
 	ext.l	d1
 	adda.l	d1,a0
@@ -2674,7 +2674,7 @@ BuildCardPlayerLists				;Build the player card order of both teams: home at home
 	rts
 BuildCardPlayerList					;Player card order of team a0 into a1: the 6 starters (TeamList line at
 									;+6) first, the other roster slots after them
-	movea.l	$1E(a0),a0
+	movea.l	tmdata(a0),a0
 	adda.w	6(a0),a0
 	movea.l	a1,a2
 	addq.w	#6,a2

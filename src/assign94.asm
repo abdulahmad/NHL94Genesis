@@ -327,7 +327,7 @@ assgoaliebreakwait					;asstab entry. In a shootout or penalty shot park the idl
 	asl.w	#7,d0					;shift d0 7 bits left
 	adda.w	d0,a0					;add d0 to address a0
 	move.w	#$191,Ypos(a3)			;move 401 decimal into Ypos
-	btst	#7,$62(a0)				;check if shooting up or down (a0 is goalie being shot on)
+	btst	#7,pflags(a0)			;check if shooting up or down (a0 is goalie being shot on)
 	bne.w	.popstack				;branch if shooting up
 	move.w	#$FE6F,Ypos(a3)			;move -191 decimal into Ypos (goalie not being shot on)
 .popstack

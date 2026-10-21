@@ -292,7 +292,7 @@ checkint							;check for interference penalty. player a2 interferes with a3 or
 									;in the crease area (y $EF-$10A toward a2's goal, x within $14), a CPU
 									;player or a pad player's joystick player, and randomd0($28 - aggres) <= 4
 									;(($14 - byte $73) <= 2)
-	tst.w	$34(a2)					;test for goalie
+	tst.w	position(a2)			;test for goalie
 	bne.w	rtss2					;exits if not goalie
 	btst	#gmclock,(gmode).w		;test gmclock(gmode). Is there play
 	bne.w	rtss2					;no fall downs during celebration
@@ -311,7 +311,7 @@ checkint							;check for interference penalty. player a2 interferes with a3 or
 	ble.w	rtss2					;exit if impact is less than 30 decimal
 	btst	#pf2pen,pflags2(a3)		;pf2pen(pflags2) - Check if player already committed a penalty
 	bne.w	rtss2					;exit if player is already penalized
-	tst.w	$34(a2)					;test if goalie
+	tst.w	position(a2)			;test if goalie
 	bne.w	rtss2					;double check to make sure player is goalie
 	move.w	#1,d0					;set d0 to team1 value
 	btst	#pfteam,pflags(a3)		;check if home or away
@@ -394,7 +394,7 @@ CCStart								;Player a3 is checking player a2. Holds (SPAHold, SPAhook) go to
 	move.w	0(a0,d0.w),d1			;moves check anim. value into d1, based on d0 offset
 	bset	#pfalock,pflags(a3)		;pfalock - lock until animation done
 	bsr.w	SetSPA
-	tst.w	$34(a2)					;check if a2 is goalie
+	tst.w	position(a2)			;check if a2 is goalie
 	beq.w	rtss2
 	cmp.w	#$14,d4					;d4 = impact value
 	blt.w	rtss2
@@ -710,7 +710,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	move.w	Ypos(a3),d1				;Ypos
 	sub.w	Ypos(a2),d1				;sub Ypos
 	bsr.w	vtoa
-	tst.w	$34(a2)					;check if goalie a2
+	tst.w	position(a2)			;check if goalie a2
 	beq.w	.7						;branch if goalie
 	jsr	(wallcollduringcheck).l		;check for wall collision
 	btst	#pf3wall,pflags3(a2)	;check wall collision bit
@@ -892,7 +892,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	exg	a2,a3						;swap back a2 and a3
 	tst.w	position(a3)			;check if checking player is goalie
 	beq.w	.21						;jump if goalie
-	tst.w	$34(a2)					;check if player checked is goalie
+	tst.w	position(a2)			;check if player checked is goalie
 	beq.w	.21						;jump if goalie
 	addi.w	#$12C,(Crowdlevel).w	;add to crowd level
 	addi.w	#$F,(CwdExciteLvl).w	;add to crowd excite level
@@ -978,18 +978,18 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	tst.w	d0						;check if d0 is zero
 	bne.w	.not0					;branch if H/F was more than 3
 	bclr	#5,(sflags7).w			;clear injury game bit
-	move.w	#$FFFD,$66(a0,d1.w)		;update status of player
+	move.w	#$FFFD,tmpdst(a0,d1.w)	;update status of player
 	bra.w	.exit
 .not0
 	cmp.w	#3,d0					;compare d0 to 3 (if H/F was 12, d0 = 3)
 	beq.w	.injurygame
 	bclr	#5,(sflags7).w
-	move.w	#$FFFD,$66(a0,d1.w)		;update status of player
+	move.w	#$FFFD,tmpdst(a0,d1.w)	;update status of player
 	jsr	(chkFgtBit1).l				;check Fgt bit 1 of player.
 	beq.w	.exit					;jump if Fgt not 2,6,A
 .injurygame
 	bset	#5,(sflags7).w			;set injury game bit
-	move.w	#$FFFC,$66(a0,d1.w)		;update status of player
+	move.w	#$FFFC,tmpdst(a0,d1.w)	;update status of player
 .exit
 	move.w	(sp)+,d0
 	rts
@@ -1220,7 +1220,7 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	asl.w	#7,d0
 	movea.l	#SortCords,a0
 	adda.w	d0,a0
-	btst	#7,$62(a0)
+	btst	#7,pflags(a0)
 	movem.l	(sp)+,d0/a0
 	bne.w	.2
 	bra.w	.3
@@ -1265,7 +1265,7 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	jsr	(freezewindow).l
 	addi.w	#$1F4,(Crowdlevel).w	;add 500 (92 800)
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	$364(a2),a1					;tmsize
+	lea	tmsize(a2),a1				;tmsize
 	tst.w	Ypos(a3)
 	bpl.w	.9
 	exg	a2,a1
@@ -1327,8 +1327,8 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	bsr.w	GetPeriodTimeRemaining
 	move.w	d0,(a0)+				;entry word 0 = period/time
 	moveq	#2,d0
-	add.w	$24(a2),d0
-	sub.w	$24(a1),d0
+	add.w	tmap(a2),d0
+	sub.w	tmap(a1),d0
 	move.b	d0,(a0)+				;byte 2 = 2 + tmap(a2) - tmap(a1)
 	addi.w	#$1E,(CwdExciteLvl).w
 	cmpa.w	#(tmstruct-M68K_RAM),a2
@@ -1399,7 +1399,7 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	adda.w	#$80,a3					;SCstruct
 	move.w	#SPAsiren,d1			;92 used $FE8
 	bsr.w	SetSPA
-	movea.w	$22(a1),a3				;first sort obj of the other team
+	movea.w	tmsort(a1),a3			;first sort obj of the other team
 	move.l	#$E,d0					;penalty $E (92 used 6)
 	bsr.w	AddPenalty2
 	movea.l	(sp)+,a3
@@ -1564,7 +1564,7 @@ wallcollb							;Check for puck over wall. a3 = object, d0/d1 = cos/sin of the w
 	bpl.w	.1
 	ori.w	#$8000,attribute(a3)	;attribute(a3)
 .1
-	clr.w	$86(a3)					;frame+SCstruct(a3)
+	clr.w	frame+SCstruct(a3)		;frame+SCstruct(a3)
 	btst	#gmclock,(gmode).w		;#gmclock
 	bne.w	rtss2
 	move.l	a3,-(sp)
@@ -2021,7 +2021,7 @@ puckstick							;puck collides with stick. a2 = player who collided, a3 = puck, 
 	cmp.w	#2,d0					;compare 2 to d0
 	bhi.w	rtss2					;exit if higher (not losing puck)
 .steal
-	move.b	$71(a0),d0				;Stk of puckc
+	move.b	stickhand(a0),d0		;Stk of puckc
 	lsr.b	#1,d0					;divide by 2
 	bsr.w	makepde					;adj for energy
 	addi.w	#$14,d0					;add 14 hex (20 dec)
@@ -2154,9 +2154,9 @@ puckglue							;part of puckstick that puckgoalie also branches to. Player a2 ta
 	movem.l	d0/a3,-(sp)
 	asl.w	#7,d0
 	movea.l	#SortCords,a3
-	tst.w	$34(a3,d0.w)			;check if goalie
+	tst.w	position(a3,d0.w)		;check if goalie
 	bne.w	.2						;branch if not
-	btst	#3,$62(a3,d0.w)			;check if d0 player controlled
+	btst	#3,pflags(a3,d0.w)		;check if d0 player controlled
 	beq.w	.2						;branch if not
 	movem.l	(sp)+,d0/a3				;exit if player controlled
 	rts
@@ -2615,7 +2615,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 	add.w	d3,d3
 	cmpi.w	#$FFFD,tmpdst(a2,d3.w)	;check if player injured for period
 	beq.w	.unavail
-	cmpi.w	#$FFFC,$66(a2,d3.w)		;check if player injured for game
+	cmpi.w	#$FFFC,tmpdst(a2,d3.w)	;check if player injured for game
 	beq.w	.unavail
 	tst.w	tmpdst(a2,d3.w)
 	ble.w	.next1					;player is ok
@@ -2653,11 +2653,11 @@ TryAddPlayerToList					;d0 = player number (1 based), d4 = PlList slot. Put d0 i
 	move.w	d0,d1
 	subq.w	#1,d0
 	add.w	d0,d0
-	tst.w	$66(a2,d0.w)
+	tst.w	tmpdst(a2,d0.w)
 	bgt.w	.0
-	cmpi.w	#$FFFD,$66(a2,d0.w)
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
 	beq.w	.0
-	cmpi.w	#$FFFC,$66(a2,d0.w)
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	beq.w	.0
 	moveq	#5,d0
 .loop
@@ -2674,7 +2674,7 @@ SetupPenaltyShot					;Penalty shot set up for team a2 (called from puckpenshot):
 									;the goalie (BA_Goalie_SCnum) stays; every other player is made
 									;unavailable with assignment $20 (assgoaliebreakwait)
 	movem.l	d0-d5/a0-a3,-(sp)
-	movea.w	$22(a2),a3
+	movea.w	tmsort(a2),a3
 	moveq	#5,d4
 .loop
 	move.w	SCnum(a3),d0
@@ -2699,7 +2699,7 @@ SetupPenaltyShot					;Penalty shot set up for team a2 (called from puckpenshot):
 	clr.w	d3
 	move.b	newpnum(a3),d3
 	add.w	d3,d3
-	move.w	#$FFFF,$66(a2,d3.w)
+	move.w	#$FFFF,tmpdst(a2,d3.w)
 	lsr.w	#1,d3
 	bsr.w	setplayer
 .3

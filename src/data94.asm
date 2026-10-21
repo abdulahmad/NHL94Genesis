@@ -1006,7 +1006,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	$66(a2),d0				;roster slot
+	move.b	pnum(a2),d0				;roster slot
 	movea.l	#tmstruct,a2
 	tst.w	(BA_Team).w
 	beq.w	.6
@@ -1299,7 +1299,7 @@ FinalizeTextBuffer					;mesarea length word = a1 - mesarea, with a 0 pad byte wh
 GetPlayerNamePointer				;loops through team roster to get to d0 player: a0 = name string of player
 									;d0 (roster offset) of team struct a2. Each record is a length word String
 									;and 8 more bytes
-	movea.l	$1E(a2),a0				;offset $1E - ROM address of team data?
+	movea.l	tmdata(a2),a0			;offset $1E - ROM address of team data?
 	adda.w	(a0),a0					;add offset (player data start) to a0 address
 	bra.w	.loop
 .skip

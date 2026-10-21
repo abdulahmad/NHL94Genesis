@@ -216,7 +216,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	beq.w	.attribmath
 .away
 	;shift to start of Away Team struct
-	adda.l	#$364,a1
+	adda.l	#tmsize,a1
 .attribmath
 	clr.w	d1
 	move.b	pnum(a3),d1				;move roster offset into d1
@@ -300,7 +300,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
 	adda.l	#$1A2,a2
-	movea.l	$1E(a0),a0
+	movea.l	tmdata(a0),a0
 	adda.w	6(a0),a0
 	movea.l	#TempBuffer,a1
 	move.w	#5,d0

@@ -759,7 +759,7 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	btst	#ifok,(iflags).w
 	bne.s	.de5
 	movea.w	#(tmstruct-M68K_RAM),a1
-	lea	$364(a1),a2
+	lea	tmsize(a1),a2
 	btst	#pfteam,pflags(a3)
 	beq.w	.23
 	exg	a1,a2
@@ -1066,7 +1066,7 @@ BreakawayOffsidesFlagSet			;On a new assignment clear the offsides and breakaway
 .checkYpos2
 	cmp.w	Ypos(a0),d1				;compare Ypos of a0 player to d1 (Ypos puckc)
 	bge.w	.substruct2				;branch if d1 greater than or equal
-	tst.w	$34(a0)					;check if goalie
+	tst.w	position(a0)			;check if goalie
 	beq.w	.substruct2				;branch if goalie
 	bra.w	.nogood
 .substruct2
@@ -1084,7 +1084,7 @@ BreakawayOffsidesFlagSet			;On a new assignment clear the offsides and breakaway
 .checkYpos
 	cmp.w	Ypos(a0),d1				;check Ypos with d1 (d1 = blue line Y)
 	ble.w	.substruct
-	tst.w	$34(a0)					;checks if goalie (who would be below blue line)
+	tst.w	position(a0)			;checks if goalie (who would be below blue line)
 	beq.w	.substruct
 	bra.s	.nogood
 .substruct
@@ -1327,7 +1327,7 @@ chk4lc								;see if computer should call line change
 	btst	#pf2lcm,pflags2(a3)
 	bne.w	rtss2
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	$364(a2),a1
+	lea	tmsize(a2),a1
 	btst	#pfteam,pflags(a3)
 	beq.w	.1
 	exg	a2,a1
@@ -2213,7 +2213,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	movea.l	#SortCords,a2
 	asl.w	#7,d0
 	adda.w	d0,a2
-	tst.w	$34(a2)
+	tst.w	position(a2)
 	bne.w	.findgoalie
 	btst	#2,pflags2(a2)
 	beq.w	.startpenshot
@@ -2236,7 +2236,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	move.w	d0,d1
 	asl.w	#7,d1
 	adda.w	d1,a2
-	tst.w	$34(a2)
+	tst.w	position(a2)
 	bne.s	.goalieloop
 	btst	#2,pflags2(a2)
 	bne.s	.goalieloop
@@ -2256,7 +2256,7 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	move.w	#0,d1
 	move.w	#$FFFF,d6
 	move.w	#$FFFF,d5
-	movea.l	$1E(a0),a2
+	movea.l	tmdata(a0),a2
 	adda.w	(a2),a2
 .playerloop
 	cmpi.w	#2,(a2)
@@ -2270,9 +2270,9 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	ble.w	.nextplayer
 	btst	#0,(gmode2).w
 	bne.w	.setskaterscnum
-	cmpi.w	#$FFFE,$66(a0,d7.w)
+	cmpi.w	#$FFFE,tmpdst(a0,d7.w)
 	beq.w	.scorecandidate
-	cmpi.w	#$FFFF,$66(a0,d7.w)
+	cmpi.w	#$FFFF,tmpdst(a0,d7.w)
 	bne.w	.nextplayer
 .scorecandidate
 	clr.w	d3
@@ -2383,18 +2383,18 @@ puckpenshot
 	clr.w	(puckvz).w
 	st	(puckc).w
 	movea.w	#(SortCords+(12*SCstruct)-M68K_RAM),a0	;goal net SCstruct
-	clr.w	$28(a0)
-	clr.w	$2A(a0)
+	clr.w	Xvel(a0)
+	clr.w	Yvel(a0)
 	clr.w	(a0)
-	move.w	#$10C,$14(a0)
+	move.w	#$10C,Ypos(a0)
 	adda.w	#$80,a0					;move to second goal net SCstruct
-	clr.w	$28(a0)
-	clr.w	$2A(a0)
+	clr.w	Xvel(a0)
+	clr.w	Yvel(a0)
 	clr.w	(a0)
-	move.w	#$FEF4,$14(a0)
+	move.w	#$FEF4,Ypos(a0)
 	movea.w	#(SortCords+((puckscnum+1)*SCstruct)-M68K_RAM),a0	;puck shadow SCstruct
 	move.w	#SPFpuck,6(a0)
-	clr.w	$58(a0)
+	clr.w	SPA(a0)
 	clr.w	4(a0)
 	clr.w	(SortCords+(puckscnum*SCstruct)+attribute).w
 	bclr	#sfslock,(sflags).w
@@ -2407,7 +2407,7 @@ puckpenshot
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	setpersonel
 	bsr.w	SetupPenaltyShot
-	adda.w	#$364,a2
+	adda.w	#tmsize,a2
 	bsr.w	setpersonel
 	bsr.w	SetupPenaltyShot
 	jsr	(resetplstuff).l
@@ -2785,7 +2785,7 @@ WaitForFaceoffLineChanges			;run both teams' faceoff line change timers (temp1 /
 	tst.w	temp2(a3)
 	bpl.w	rtss2
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	$364(a2),a1
+	lea	tmsize(a2),a1
 	moveq	#1,d0
 	bsr.w	SetFaceoffComputerLine
 	move.w	#$FFFF,(facelcwait).w
@@ -2798,9 +2798,9 @@ UpdateFaceoffLineChangeTimer		;count down one team's faceoff line change timer a
 	asl.w	#7,d1
 	movea.w	#(SortCords-M68K_RAM),a0
 	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#6,$62(a0,d1.w)
+	btst	#6,pflags(a0,d1.w)
 	beq.w	.checkactive
-	adda.w	#$364,a2
+	adda.w	#tmsize,a2
 .checkactive
 	btst	#3,$63(a0,d1.w)
 	bne.w	.countdown
@@ -2835,7 +2835,7 @@ ChkGoalies
 	move.w	(puckc).w,d1			;move puck carrier SCnum into d1
 	bmi.w	rtss2
 	subq.w	#6,d1
-	cmpa.w	#$C6CE,a2
+	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	.chkpen
 	not.w	d1						;makes d1 negative if away team
 .chkpen
@@ -2917,7 +2917,7 @@ CompLine
 	movem.l	(sp)+,d0-d2/a0
 	rts
 .nopwr
-	cmpa.w	#$C6CE,a2				;find normal line
+	cmpa.w	#(tmstruct-M68K_RAM),a2	;find normal line
 	bne.w	.away
 	moveq	#2,d1
 	lea	.hl1(pc),a0

@@ -589,7 +589,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	PrintStatValue
 	move.w	#9,(printx).w
-	lea	$364(a2),a2
+	lea	tmsize(a2),a2
 	bsr.w	PrintStatValue
 	lea	4(a0),a1
 	addq.w	#2,(printy).w
