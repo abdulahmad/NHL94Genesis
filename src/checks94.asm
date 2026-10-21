@@ -355,7 +355,8 @@ assgoaliectrl
 .ex
 	rts
 ; a3 = goalie
-assgoaliecpu
+assgoalie							;Player a3 is goalie (92 name; asstab agoalie and assnearest)
+assgoaliecpu						;CPU goalie logic (a joypad goalie goes to assgoaliectrl)
 	btst	#pfjoycon,pflags(a3)	;is goalie joystick controlled?
 	bne.w	assgoaliectrl			;branch if so
 checkanim							;Goalie animation check; assgoaliectrl branches here too
@@ -1760,7 +1761,7 @@ assnearest
 	cmp.w	(puckc).w,d1
 	bne.w	.nopc					;jumps if not
 	tst.w	position(a3)			;check if goalie
-	beq.w	assgoaliecpu			;branch if goalie
+	beq.w	assgoalie				;branch if goalie
 	move.l	#$10,d0					;10 = asspuckc
 	btst	#pfjoycon,pflags(a3)	;pfjoycon - check if controlled
 	beq.w	assinsert				;jump if not

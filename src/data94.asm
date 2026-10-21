@@ -1424,7 +1424,7 @@ asstab								;jump table of all the player logic assignments. Entries $1D-$23 a
 	dc.l	assbench				;$B abench
 	dc.l	asspenalty				;$C apenalty
 	dc.l	assdopen				;$D adopen
-	dc.l	assgoaliecpu			;$E agoalie
+	dc.l	assgoalie				;$E agoalie
 	dc.l	assgoalietopuck			;$F
 	dc.l	asspuckc				;$10 apuckc
 	dc.l	assnearest				;$11 anearest

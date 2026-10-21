@@ -1082,7 +1082,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	rts
 checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x/y.
 									;A puck under the crossbar hits a post or the net (deflect,
-									;sfx $25 or 8 and crowd) or goes in (.goal); a player goes to checkgoalp.
+									;sfx $25 or 8 and crowd) or goes in (Goal); a player goes to checkgoalp.
 									;Called from checkwallcoll
 	cmpi.w	#$D,Zpos(a3)			;13 pix for zside = height of goal (puck only check)
 	bgt.w	rtss2					;over goal
@@ -1162,7 +1162,7 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	bgt.w	.deflectsf
 	neg.w	d4
 	cmp.w	d4,d2
-	bge.w	.goal
+	bge.w	Goal
 .deflectsf
 	bsr.w	ChkShotStat				;deflection: count the shot
 	move.w	#$25,-(sp)				;sfx $25 when the clock is stopped (92 used 9)
@@ -1200,7 +1200,7 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 	bmi.w	wallcoll
 	neg.w	d1
 	bra.w	wallcoll
-.goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit 2)
+Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit 2)
 									;only the shooter's end counts (gmode2 bit 0
 									;shootout, shootoutteam picks the end); it counts the shootout goal
 									;(homeshootgoals / awayshootgoals) and calls EndPenaltyShotPlay
@@ -1400,7 +1400,7 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 .setass								;d0 = assignment, a2 = team. Give each skater of team a2 that is not
 									;fighting assignment d0, clear pfnc. Also clears $64 bit 3 (one-timer) and
 									;then calls EndOneTimer.
-									;Called from checkgoal (.goal)
+									;Called from Goal
 	move.l	a3,-(sp)
 	movea.w	tmsort(a2),a3			;tmsort
 	moveq	#5,d3
