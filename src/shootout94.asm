@@ -44,7 +44,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	String	-(TXPRI+TXMAP1),4,9
 	movea.l	#tmstruct,a1
 	movea.l	tmdata(a1),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).w
 	move.w	(homeshootgoals).w,d0
@@ -55,7 +55,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	String	-(TXPRI+TXMAP1),4,$A
 	movea.l	#AwShots,a1
 	movea.l	tmdata(a1),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).w
 	move.w	(awayshootgoals).w,d0
@@ -165,7 +165,7 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 	movea.l	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
-	adda.w	6(a1),a1
+	adda.w	LineSets(a1),a1
 	move.w	#5,d0
 .loop
 	clr.w	d1
@@ -193,7 +193,7 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	asl.w	#2,d1
 	movea.l	#TeamList,a1
 	movea.l	0(a1,d1.w),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	#2,(printx).w
 	jsr	(printbig).l
 	movem.l	(sp)+,d0-d7/a0-a6
