@@ -7,31 +7,31 @@ puckvzadj							;set puckvz for a top shelf shot from the distance to the goal l
 	move.w	(pucky).w,d0			;move pucky into d0
 	bpl.w	.dist					;branch if positive
 	neg.w	d0						;negate d0
-.dist								;d0 >= 0, or from above
+.dist								;|pucky|
 	subi.w	#$108,d0
 	;sub top goal line from d0
 	bpl.w	.0						;branch if positive
 	neg.w	d0						;negate d0
-.0
+.0									;distance to the goal line
 	swap	d0						;swap d0 words
 	andi.l	#$FFFF0000,d0			;pass upper word of d0
 	move.w	(puckvy).w,d1			;move puckvy into d1
 	beq.w	.x						;branch if zero
 	bpl.w	.speed					;branch if positive
 	neg.w	d1						;negate d1
-.speed
+.speed								;|puckvy|
 	move.w	#$11,d2					;move 11 into d2
 	tst.w	(PalMode).w				;This byte is never set
 	beq.w	.div					;branch if equal (always is)
 	move.w	#$16,d2					;move 16 into d2
-.div								;PalMode = 0, or from above
+.div								;speed scale for NTSC or PAL
 	divu.w	d1,d0					;divide d1 into d0
 	andi.l	#$FFFF,d0				;pass lower word of d0
 	divu.w	d2,d0					;divide d2 into d0
 	tst.w	d0						;check d0
 	bne.w	.calc					;branch if not zero
 	move.w	#1,d0					;move 1 into d0
-.calc								;d0 <> 0, or from above
+.calc								;at least 1 frame
 	move.l	#$A0000,d1
 	move.w	d0,d3					;move d0 into d3
 	mulu.w	d2,d0					;mult d2 and d0
@@ -43,12 +43,12 @@ puckvzadj							;set puckvz for a top shelf shot from the distance to the goal l
 	cmp.l	#$7FFF,d2				;compare to d2
 	blt.w	.addvz					;branch if less than
 	move.w	#$7FFF,d2				;move 7FFF into d2
-.addvz
+.addvz								;clamped
 	add.w	d2,d1					;add d2 to d1
 	tst.w	d1						;test d1
 	bpl.w	.setvz					;branch if positive
 	move.w	#$7FFF,d1				;move 7FFF into d1
-.setvz								;d1 >= 0, or from above
+.setvz								;clamped
 	move.w	d1,(puckvz).w			;move d1 into puckvz
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -74,7 +74,7 @@ OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puck
 	tst.w	d0
 	bne.w	.setv
 	move.w	#1,d0
-.setv								;d0 <> 0, or from above
+.setv								;at least 1
 	divs.w	d0,d1
 	move.w	d1,(puckvx).w
 	clr.l	d1
@@ -98,25 +98,25 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	bne.w	.skater
 	movea.l	#OneTimerGoalieTbl,a0
 	bra.w	.facing
-.skater
+.skater								;a skater
 	move.w	Ypos(a3),d0
 	btst	#pfgoal,pflags(a3)
 	bne.w	.near
 	neg.w	d0
-.near								;pfgoal set, or from above
+.near								;distance from his goal line
 	bset	#2,(sflags6).w
 	movea.l	#OneTimerNearTbl,a0
 	cmp.w	#$58,d0
 	blt.w	.facing
 	movea.l	#OneTimerFarTbl,a0
 	bclr	#2,(sflags6).w
-.facing
+.facing								;table chosen
 	move.w	facedir(a3),d0
 	btst	#pfgoal,pflags(a3)
 	bne.w	.offset
 	addq.w	#4,d0
 	andi.w	#7,d0
-.offset								;pfgoal set, or from above
+.offset								;direction for his end
 	asl.w	#2,d0
 	move.w	0(a0,d0.w),d1
 	move.w	2(a0,d0.w),d2
@@ -125,22 +125,22 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	move.w	Ypos(a3),d0
 	bpl.w	.chky
 	neg.w	d0
-.chky								;d0 >= 0, or from above
+.chky								;|Ypos|
 	cmp.w	#$8A,d0
 	blt.w	.side
 	move.w	(a3),d0
 	bpl.w	.chkx
 	neg.w	d0
-.chkx								;d0 >= 0, or from above
+.chkx								;|Xpos|
 	cmp.w	#$37,d0
 	bgt.w	.side
 	move.w	#$103,d2
-.side
+.side								;side check
 	btst	#pfgoal,pflags(a3)
 	bne.w	.rand
 	neg.w	d1
 	neg.w	d2
-.rand								;pfgoal set, or from above
+.rand								;random offset to the target
 	move.w	#$A,d0
 	jsr	(randomd0).l
 	add.w	d0,d1
@@ -161,7 +161,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	addi.w	#$3C,d1
 	bmi.w	.sety
 	sub.w	d1,(onetimertargetx).w
-.sety
+.sety								;target Y set
 	move.w	d2,(onetimertargety).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -211,7 +211,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .setplayer2							;TmpJoyPuckCarrier <> 1
 	jsr	(setc2player).l
 	bra.w	.setanim
-.cont1or3
+.cont1or3							;controller 1 or 3
 	tst.w	(TmpJoyPuckCarrier).w	;check if puck carrier is player 3
 	bne.w	.setplayer1				;branch if not
 	move.w	(cont1team).w,-(sp)
@@ -227,7 +227,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .setplayer1							;TmpJoyPuckCarrier <> 0
 	jsr	(setc1player).l
 	bra.w	.setanim				;*+4
-.setanim
+.setanim							;set the one timer animation
 	move.w	d0,-(sp)
 	bsr.w	setonetimeranim			;sets the one timer animation
 	clr.w	SPAnum(a3)				;clear SPAnum
@@ -247,30 +247,30 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bgt.w	.chkxvel				;branch if greater than
 	cmp.w	#$FFC4,d0				;compare to -60 pixels
 	bgt.w	.chkypos				;branch if greater than
-.chkxvel							;d0 > $3C, or from above
+.chkxvel							;puck X velocity toward him?
 	move.w	(puckvx).w,d1			;move puckvx into d1
 	eor.w	d1,d0					;EOR d1 with d0
 	bmi.w	.chkypos				;branch if minus
 .notcoming							;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;pop from stack d0 and d1
 	bra.w	.cancel
-.chkypos
+.chkypos							;puck within 60 pixels in X: check Y
 	move.w	(pucky).w,d0			;move pucky into d0
 	sub.w	Ypos(a3),d0				;sub Ypos from d0
 	cmp.w	#$3C,d0					;'<'   ; compare diff to 60 pix
 	bgt.w	.chkyvel				;branch if greater than
 	cmp.w	#$FFC4,d0				;check with -60 pix
 	bgt.w	.coming					;branch if greater than
-.chkyvel							;d0 > $3C, or from above
+.chkyvel							;puck Y velocity toward him?
 	move.w	(puckvy).w,d1			;move puckvy into d0
 	eor.w	d1,d0					;EOR d1 with d0
 	bpl.s	.notcoming				;branch if positive
 .coming								;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;pop d0 and d1 from stack
-.chkcarrier							;bit 0 of onetimerflags set, or from above
+.chkcarrier							;does anyone carry the puck?
 	tst.w	(puckc).w				;check if puck carrier
 	bmi.w	.loose					;branch if no puck carrier
-.cancel
+.cancel								;cancel the one timer
 	bclr	#7,(sflags8).w			;clear bit 7
 	bra.w	.shoot
 .loose								;puckc negative
@@ -286,36 +286,36 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	sub.w	d1,d0					;sub d1 from d0
 	bpl.w	.dy						;branch if positive
 	neg.w	d0						;negate d0
-.dy									;d0 >= 0, or from above
+.dy									;|dx|
 	move.w	Ypos(a3),d1				;move Ypos into d1
 	move.w	(pucky).w,d2			;move pucky into d2
 	sub.w	d2,d1					;sub d2 from d1
 	bpl.w	.vel					;branch if positive
 	neg.w	d1						;negate d1
-.vel								;d1 >= 0, or from above
+.vel								;|dy|
 	move.w	(puckvx).w,d2			;move puckvx into d2
 	beq.w	.usey					;branch if d2 is 0
 	cmp.w	d0,d1					;compare d0 to d1
 	ble.w	.frames					;branch if less than or equal
-.usey								;d2 = 0, or from above
+.usey								;use the Y distance and speed
 	move.w	(puckvy).w,d2
 	move.w	d1,d0
-.frames								;d1 <= d0, or from above
+.frames								;frames for the puck to arrive
 	swap	d0
 	andi.l	#$FFFF0000,d0
 	tst.w	d2
 	bpl.w	.speed
 	neg.w	d2
-.speed								;d2 >= 0, or from above
+.speed								;|speed|
 	move.w	#$11,d1
 	tst.w	(PalMode).w
 	beq.w	.chkzero
 	move.w	#$16,d1
-.chkzero							;PalMode = 0, or from above
+.chkzero							;speed scale for NTSC or PAL
 	tst.w	d2
 	bne.w	.div
 	move.w	#1,d2
-.div								;d2 <> 0, or from above
+.div								;d2 at least 1
 	divu.w	d2,d0
 	andi.l	#$FFFF,d0
 	divu.w	d1,d0
@@ -332,7 +332,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .wait								;d0 > d2
 	add.w	d7,(onetimerclock).w
 	bra.w	.chkhold
-.windup
+.windup								;wind-up frames
 	bset	#2,(onetimerflags).w
 	btst	#1,(onetimerflags).w
 	bne.w	.chkhold
@@ -340,7 +340,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bne.w	.chkhold
 	addi.w	#$30,SPAcnt(a3)
 	bset	#1,(onetimerflags).w
-.chkhold
+.chkhold							;shot held?
 	btst	#1,(onetimerflags).w
 	beq.w	.chkshot
 	cmpi.w	#$18,SPAnum(a3)
@@ -349,7 +349,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bne.w	.chkshot
 	movem.l	(sp)+,d0-d1
 	bra.w	.shoot
-.chkshot
+.chkshot							;shot pressed?
 	btst	#0,(onetimerflags).w
 	beq.w	.chkanim
 	cmpi.w	#$18,SPAnum(a3)
@@ -357,7 +357,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	cmpi.w	#1,SPAcnt(a3)
 	ble.w	.chkanim
 	move.w	#1,SPAcnt(a3)
-.chkanim
+.chkanim							;animation check
 	btst	#pf2aip,pflags2(a3)
 	bne.w	.animon
 	movem.l	(sp)+,d0-d1
@@ -371,10 +371,10 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bra.w	.chkdone
 .nop								;bit 0 of onetimerflags clear
 	nop
-.chkdone
+.chkdone							;animation done?
 	btst	#pf2aip,pflags2(a3)
 	bne.w	.ex
-.shoot
+.shoot								;end the one timer
 	jsr	(EndOneTimer).l
 .ex									;exit (also the end of the code above)
 	rts
@@ -388,7 +388,7 @@ setonetimeranim						;the one-timer animation: d1 = SPAshotf or SPAshotb from th
 	btst	#pfgoal,pflags(a3)		;check which goal shooting at
 	bne.w	.top					;branch if top
 	neg.w	d1						;negate d1
-.top								;pfgoal set, or from above
+.top								;goal line Y for his end
 	sub.w	Ypos(a3),d1				;sub Ypos from d1
 	jsr	(vtoa).l
 	jsr	(CheckOneTimerFacing).l		;code doesnt save any changes
@@ -404,7 +404,7 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	btst	#pfgoal,pflags(a3)		;pfgoal - check which goal shooting at
 	bne.w	.cont					;branch if top goal
 	neg.w	d0
-.cont								;pfgoal set, or from above
+.cont								;puck Y for his end
 	tst.w	d0						;check if d0 is 0
 	bpl.w	.plus					;branch if higher
 	bra.w	.minus
@@ -430,10 +430,10 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	subq.w	#1,d1
 	andi.w	#7,d1
 	beq.w	.plus
-.minus
+.minus								;turn the other way
 	move.w	#0,d0
 	bra.w	.ex
-.plus
+.plus								;turn this way
 	move.w	#1,d0
 .ex									;exit: restore the registers
 	movem.w	(sp)+,d0-d1
@@ -449,7 +449,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	btst	#pfteam,pflags(a3)		;check if home or away
 	beq.w	.home					;branch if home
 	lea	tmsize(a0),a0				;add if away
-.home								;pfteam clear, or from above
+.home								;team struct chosen
 	clr.w	d0
 	move.b	pnum(a3),d0				;player offset in roster
 	move.w	tmtouch2(a0),tmtouch3(a0)	;move assist 1 player to assist 2
