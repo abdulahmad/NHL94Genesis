@@ -36,7 +36,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	btst	#4,(sflags4).w			;reverse angle replay
 	beq.w	.0						;branch if not
 	movea.l	#RevRinkTiles,a2
-.0
+.0									;bit 4 of sflags4 clear, or from above
 	bsr.w	DecompressGraphicsPlain
 	jsr	(LoadHomeTeamGfx).l
 	move.w	d4,(EASNcset).w			;1st vram char for easn logo tiles
@@ -71,7 +71,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	bchg	#pfgoal,pflags(a3)
 	adda.w	#SCstruct,a3
 	dbf	d0,.loop
-.gok
+.gok								;gmdir clear, or from above
 	bsr.w	setplayercolors
 	move.w	#$FFFF,(PadControlBits).w
 	move.w	#$FFFF,(PadControlBits34).w
@@ -129,7 +129,7 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	bchg	#pfgoal,pflags(a3)
 	adda.w	#SCstruct,a3
 	dbf	d0,.loop
-.gok
+.gok								;gmdir clear, or from above
 	bsr.w	setplayercolors
 	move.w	#$FFFF,(PadControlBits).w
 	move.w	#$FFFF,(PadControlBits34).w
@@ -364,7 +364,7 @@ defaultsprites2						;objects which are tied to screen scrolling and have veloci
 	lea	.list(pc),a2
 	movea.w	#(SortCords-M68K_RAM),a3
 	movea.w	#(OOlistpos-M68K_RAM),a4
-.0
+.0									;loop
 	moveq	#$1F,d0
 	movea.w	a3,a0
 .1
@@ -568,12 +568,12 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	btst	#sfhor,(sflags).w
 	beq.w	.101
 	move.w	(a0),d4
-.101
+.101								;sfhor clear, or from above
 	move.w	d4,(a1)+				;update ylist
 	adda.w	#SCstruct,a0
 	dbf	d3,.loop0
 	movea.l	#Ylist,a1
-.loop
+.loop								;loop
 	clr.w	d4						;one bubble pass over OOlist; d4 = swapped flag
 	movea.l	#OOlist,a0
 	move.w	#$E,d3					;Sortobjs-2
@@ -608,7 +608,7 @@ resetplstuff						;reset team variables/and players on both teams. Called from p
 	bsr.w	.top
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
-.top
+.top								;local subroutine
 	bclr	#tmfoside,tmflags(a2)	;clear team offside bit
 	moveq	#5,d2
 	movea.w	tmsort(a2),a3			;tmsort
@@ -700,7 +700,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	move.l	(a0)+,(a1)+
 	dbf	d0,.loop
 	rts
-.0
+.0									;OptLine = 0
 	moveq	#$D,d0
 	movea.l	tmdata(a2),a0
 	adda.w	LineSets(a0),a0
@@ -747,7 +747,7 @@ PeriodOver							;what to do if period over. Branched to from puckfaceoff when t
 	sub.w	(AwGoals).w,d0
 	beq.w	.0
 	move.w	#4,(gsp).w
-.0
+.0									;gsp < 3 or d0 = 0, or from above
 	bsr.w	forceblack
 IntermissionStart					;reset the clock, song $79, ticker scores, playoff stats at the end
 									;(AddPOStats), Intermission, then StartPer or GameOver. Also jumped to
@@ -755,13 +755,13 @@ IntermissionStart					;reset the clock, song $79, ticker scores, playoff stats a
 	jsr	(ResetClock).w
 	move.w	d0,-(sp)
 	move.w	(Vcount).w,d0
-.loop
+.loop								;loop
 	cmp.w	(Vcount).w,d0
 	beq.s	.loop
 	jsr	(p_turnoff).l
 	move.w	d0,-(sp)
 	move.w	(Vcount).w,d0
-.loop2
+.loop2								;loop
 	cmp.w	(Vcount).w,d0
 	beq.s	.loop2
 	move.w	(sp)+,d0
@@ -771,7 +771,7 @@ IntermissionStart					;reset the clock, song $79, ticker scores, playoff stats a
 	cmpi.w	#4,(gsp).w
 	bne.w	.1						;not game over
 	bsr.w	AddPlayoffTeamStats
-.1
+.1									;gsp <> 4, or from above
 	bsr.w	Intermission			;intermission screen
 	cmpi.w	#4,(gsp).w
 	beq.w	GameOver
@@ -783,7 +783,7 @@ GameOver							;EncodePW (save the password), then in playoff mode PlayoffStatsS
 	beq.w	.po						;regular season
 	bclr	#sfpj,(sflags).w
 	jsr	(PlayoffStatsScreen).l
-.po
+.po									;OptPlayMode = 0, or from above
 	bsr.w	PlayoffScreen
 ExitToOpening						;Song $78, then restart at Opening2. Also jumped to from demoread and
 									;NextShooter
@@ -800,7 +800,7 @@ Opening2							;reset the stack and clear the variables, then options (GameSetUp
 	move	#$2700,sr
 	movea.w	#(Stack-M68K_RAM),sp
 	movea.w	#(VSCRLPM-M68K_RAM),a0
-.0
+.0									;loop
 	clr.l	(a0)+
 	cmpa.w	#(nibblebuffer+8-M68K_RAM),a0	;clear from VSCRLPM up to it
 	blt.s	.0
@@ -811,7 +811,7 @@ Opening3	bsr.w	PlayoffScreen	;playoff tree (returns at once outside playoff mode
 	bne.w	.1
 	jsr	(ScoutingReport).l			;skipped in shootouts, so no global label here (.1 below is local to
 									;Opening3)
-.1
+.1									;bit 0 of gmode2 set, or from above
 	jmp	(StartGame).w
 PlayoffScreen						;bring up playoff screen if in playoff mode. Called from GameOver and
 									;Opening2. Runs its own vblank and
@@ -918,7 +918,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	bsr.w	PrintSeriesScore		;series scores
 	adda.w	#$10,a2
 	dbf	d4,.top3
-.noscr
+.noscr								;bosgames = 7 or d4 negative, or from above
 	bsr.w	printsmallz
 	String	CC_SetMapAndPosition,1,1,$41,$1A
 	lea	PlayoffScreenText(pc),a1
@@ -932,7 +932,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	beq.w	.nopage					;one page only
 	bsr.w	printz
 	String	-(TXPAL3+TXMAP3),$A,1,'Press [ or ] to page',0	;the text as code
-.nopage
+.nopage								;gamelevel = 0
 	move.w	#$18,(palcount).w		;after the string
 	move.w	#SngEOP,-(sp)
 	bsr.w	song
@@ -941,7 +941,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	#$FFFF,(PlayerScrollCtr).w	;scroll step (RAM shared with the stats screens)
 	move.w	#1,(DispAttribCtr).w	;scroll position
 	bsr.w	UpdatePlayoffScroll
-.input
+.input								;loop
 	bsr.w	waitxc1
 	movea.l	#rtss2,a0
 	jsr	(DrawPlayoffSprite).l
@@ -958,7 +958,7 @@ HandlePlayoffInput					;Read both pads: start leaves PlayoffScreen, right/left s
 	btst	#3,d3
 	beq.w	.nr
 	move.w	#$FFFE,(PlayerScrollCtr).w
-.nr
+.nr									;bit 3 of d3 clear, or from above
 	btst	#2,d3
 	beq.w	UpdatePlayoffScroll
 	move.w	#2,(PlayerScrollCtr).w
@@ -973,7 +973,7 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	cmp.w	#3,d1
 	bls.w	.lim
 	moveq	#3,d1					;at most 3 pages each way
-.lim
+.lim								;d1 <= 3, or from above
 	mulu.w	#$70,d1
 	cmp.w	d1,d0
 	bgt.w	rtss2
@@ -989,7 +989,7 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	cmp.w	#$200,d1
 	bgt.w	.nox
 	move.w	d1,(playoffspritex).w
-.nox
+.nox								;d1 < $40 or d1 > $200, or from above
 	ext.l	d0						;is the new position on a page boundary?
 	divs.w	#$70,d0
 	swap	d0						;remainder
@@ -1007,7 +1007,7 @@ waitxc1								;Each time palcount runs out, eor the color
 	bpl.w	.wait					;palcount still counting
 	eori.w	#$EE,(palfadenew+$42).w
 	move.w	#$18,(palcount).w
-.wait
+.wait								;loop; palcount >= 0, or from above
 	move.w	(Vcount).w,d0			;wait until the vblank handler bumps Vcount
 	cmp.w	(OldVcount).w,d0
 	beq.s	.wait
@@ -1052,7 +1052,7 @@ DrawTeamBlocks						;Draw team block d1 (team*2) from the TeamBlocks map (Teambl
 	cmp.b	d0,d1
 	bne.w	.nohi
 	move.w	#$6000,(printa).w		;palette 3
-.nohi
+.nohi								;d1 <> d0, or from above
 	movea.l	#Teamblocksmap,a1		;a1 = map header of the team blocks
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2				;no tiles
@@ -1081,9 +1081,9 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	move.w	#$FEA0,d0
 	add.w	(DispAttribCtr).w,d0
 	move.w	d0,(a0)
-.nosat
+.nosat								;d0 = 0, or from above
 	bsr.w	cramfade
-.nograph
+.nograph							;dfng set, or from above
 	addq.w	#1,(Vcount).w			;frame counter
 	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -1115,7 +1115,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bmi.w	.0
 	subq.w	#1,(typedelay).w
 	bpl.w	rtss2
-.0
+.0									;asv negative, or from above
 	movea.l	#ScoutTextScript,a1
 	move.w	(PlayerScrollCtr).w,d0
 	bpl.w	.3
@@ -1128,18 +1128,18 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	move.w	#$7FFF,(typedelay).w
 	move.w	#$1E0,(screentimer).w
 	rts
-.1
+.1									;d0 >= 0
 	bsr.w	ScrollDisplayUp
 	movea.l	a1,a2
 	bra.w	.2
-.loop
+.loop								;loop
 	cmpi.b	#$D,(a2)+
 	bne.s	.loop
 .2
 	dbf	d0,.loop
 	suba.l	a1,a2
 	move.w	a2,d0
-.3
+.3									;d0 >= 0, or from above
 	lea	0(a1,d0.w),a2
 	move.w	#$A,(typedelay).w
 	move.w	(DispAttribCtr).w,d0
@@ -1182,20 +1182,20 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	st	(PlayerScrollCtr).w
 	movea.w	#(TextBuffer-M68K_RAM),a0
 	clr.w	d1
-.loop2
+.loop2								;loop
 	cmpi.b	#$D,(a2)
 	beq.w	.print
 	addq.w	#1,d0
-.loop3
+.loop3								;loop
 	move.b	(a2),(a0)+
 	addq.w	#1,d1
 	cmpi.b	#$2C,(a2)
 	beq.w	.4
 	cmpi.b	#$2E,(a2)
 	bne.w	.5
-.4
+.4									;a2 = $2C, or from above
 	addi.w	#$28,(typedelay).w
-.5
+.5									;a2 <> $2E, or from above
 	cmpi.b	#$20,(a2)+
 	bne.s	.loop2
 	cmpi.b	#$20,(a2)
@@ -1203,20 +1203,20 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	subq.w	#1,d0
 	suba.w	a1,a2
 	move.w	a2,(PlayerScrollCtr).w
-.print
+.print								;a2 = $D, or from above
 	move.w	d1,(mesarea).w
 	addq.w	#2,(mesarea).w
 	btst	#0,d1
 	beq.w	.7
 	clr.b	(a0)
 	addq.w	#1,(mesarea).w
-.7
+.7									;bit 0 of d1 clear, or from above
 	movea.w	#(mesarea-M68K_RAM),a1
-.loop4
+.loop4								;loop
 	cmp.w	#$1D,d0
 	ble.w	.8
 	bsr.w	ScrollDisplayUp
-.8
+.8									;d0 <= $1D, or from above
 	bsr.w	printz
 	String	-TXMAP1,9,4
 	move.w	(DispAttribCtr).w,d0
@@ -1226,64 +1226,64 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bsr.w	print
 	add.w	d1,(DispAttribCtr).w
 	rts
-.9
+.9									;a2 = $40
 	jsr	(ScoutCrowdRecord).l
 	bra.w	.append
-.10
+.10									;a2 = $23
 	jsr	(PlayedByHome).l
 	bra.w	.append
-.11
+.11									;a2 = $25
 	jsr	(PlayedByAway).l
 	bra.w	.append
-.12
+.12									;a2 = $3D
 	move.l	a2,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetTeamNickname).l
 	movea.l	(sp)+,a2
 	bra.w	.append
-.13
+.13									;a2 = $2A
 	move.l	a2,-(sp)
 	movea.l	#AwShots,a2
 	jsr	(GetTeamNickname).l
 	movea.l	(sp)+,a2
 	bra.w	.append
-.14
+.14									;a2 = $5E
 	move.l	a2,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetTeamArena).l
 	movea.l	(sp)+,a2
 	bra.w	.append
-.15
+.15									;a2 = $3B
 	move.l	a2,-(sp)
 	movea.l	#AwShots,a2
 	jsr	(GetTeamArena).l
 	movea.l	(sp)+,a2
 	bra.w	.append
-.16
+.16									;a2 = $3C
 	jsr	(NextHomeHotPlayer).l
 	bra.w	.roster
-.17
+.17									;a2 = $3E
 	jsr	(NextAwayHotPlayer).l
 	bra.w	.roster
-.18
+.18									;a2 = $7C
 	jsr	(NextHomeColdPlayer).l
 	bra.w	.roster
-.19
+.19									;a2 = $5C
 	jsr	(NextAwayColdPlayer).l
 	bra.w	.roster
-.20
+.20									;a2 = $24
 	movea.l	#tmstruct,a1
 	tst.w	(awayhotter).w
 	beq.w	.21
 	movea.l	#AwShots,a1
-.21
+.21									;awayhotter = 0, or from above
 	movea.l	tmdata(a1),a1
 	adda.w	Teamname(a1),a1
 	bra.w	.append
-.22
+.22									;a2 = $5D
 	movea.w	#(AwShots-M68K_RAM),a1
 	bra.w	.24
-.23
+.23									;a2 = $5B
 	movea.w	#(tmstruct-M68K_RAM),a1
 .24
 	move.w	tmgoalie(a1),d1
@@ -1297,14 +1297,14 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .26
 	dbf	d1,.loop5
 	bra.w	.append
-.27
+.27									;a2 = $2B
 	movea.l	(AwayTeamRosterPtr).w,a1
 	adda.w	Teamname(a1),a1
 	bra.w	.append
-.28
+.28									;a2 = $7D
 	movea.l	(AwayTeamRosterPtr).w,a1
 	bra.w	.30
-.29
+.29									;a2 = $5F or a2 = $7B
 	movea.l	(HomeTeamRosterPtr).w,a1
 .30
 	adda.w	Teamname(a1),a1
