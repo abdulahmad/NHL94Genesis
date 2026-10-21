@@ -5,13 +5,13 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 									;pick a name from the name log or enter a new one (NameLetterGrid ...
 									;SkipOtherUserName). Called from UserNameEntry
 	movem.l	d0-d7/a0-a6,-(sp)
-	move	#$2700,sr
+	move	#$2700,sr				;interrupts off while the screen is set up
 	move.w	#2,d4
-	move.l	#VBlank_SetOptions,(VBint).w
+	move.l	#VBlank_SetOptions,(VBint).w	;this screen's own vblank handler
 	bclr	#dfok,(disflags).w
-	bset	#dfng,(disflags).w
+	bset	#dfng,(disflags).w		;no game drawing while the screen is built
 	bclr	#df32c,(disflags).w
-	move.w	#0,(VSCRLPM).w
+	move.w	#0,(VSCRLPM).w			;plain scroll and the map / sprite table layout of the setup screens
 	move.w	#$B400,(VSPRITES).w
 	move.w	#$B800,(VmMAP3).w
 	move.w	#5,(Map3col).w
@@ -19,11 +19,11 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	move.w	#6,(Map2col).w
 	move.w	#$E000,(VmMAP1).w
 	move.w	#6,(Map1col).w
-	move.w	#0,d0
+	move.w	#0,d0					;clear VRAM
 	jsr	(setVram).l
-	move	#$2500,sr
-	jsr	(orjoy).l
-	move.w	d4,(framercset).w
+	move	#$2500,sr				;interrupts back on
+	jsr	(orjoy).l					;forget any held button
+	move.w	d4,(framercset).w		;d4 = next free tile: frame, font and logo tiles follow
 	movea.l	#FramerMap+8,a2
 	jsr	(DecompressGraphicsWithCallback).l
 	dc.l	$91234567,$89ABCDEF		;remap table
@@ -35,14 +35,14 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(AddSmallFont).l
 	jsr	(printz).l
 	String	-TXMAP1,0,0
-	moveq	#$28,d0
+	moveq	#$28,d0					;clear the text map
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-	jsr	(setupIceRinkPal).l
+	jsr	(setupIceRinkPal).l			;rink colors
 	jsr	(printz).l
 	String	-TXMAP2,0,0
-	movea.l	#ScoutMap,a0			;(and printz Strings)
+	movea.l	#ScoutMap,a0			;the background picture
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -53,50 +53,50 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	moveq	#$1C,d3
 	moveq	#$D,d5
 	jsr	(dobitmap).l
-	move.w	d4,(homepicchars).w
+	move.w	d4,(homepicchars).w		;tile base for the team logo
 	addi.w	#$24,d4
 	move.w	d4,(logobox1chars).w
 	movea.l	#LogoBoxMap+8,a2
 	jsr	(DecompressGraphicsPlain).l
-	move.w	d4,(BigFontchars).w
+	move.w	d4,(BigFontchars).w		;the big font for the title
 	movea.l	#BigFontMap+8,a2
 	jsr	(DecompressGraphicsWithCallback).l
 	dc.l	$71234567,$89ABCDEF		;remap table
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),$1F,6
-	move.w	(HomeTeam).w,d0
+	move.w	(HomeTeam).w,d0			;team of this name entry (nameentryvis: 0 home, 1 visitors)
 	tst.w	(nameentryvis).w
 	beq.w	.0
 	move.w	(VisTeam).w,d0
-.0									;nameentryvis = 0, or from above
+.0									;team chosen: print its name centred over the logo
 	movea.l	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
 	adda.w	Teamname(a1),a1
 	move.w	(a1),d0
-	subq.w	#2,d0
+	subq.w	#2,d0					;half the name length left of column $1F
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
 	jsr	(print).l
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),$1B,7
-	move.w	#8,d0
+	move.w	#8,d0					;8 x 8 frame round the logo
 	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	-(TXPRI+TXPAL3+TXMAP1),$1C,8
-	move.w	(HomeTeam).w,d3
+	move.w	(HomeTeam).w,d3			;the same team for the logo
 	tst.w	(nameentryvis).w
 	beq.w	.1
 	move.w	(VisTeam).w,d3
-.1									;nameentryvis = 0, or from above
+.1									;team chosen: draw its logo
 	asl.w	#2,d3
 	movea.l	#TeamLogoBitmaps,a0		;team logo maps
 	movea.l	0(a0,d3.w),a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
-	asl.w	#3,d3
+	asl.w	#3,d3					;32 bytes of logo palette per team
 	movea.l	#TeamLogoPalettes,a0
 	subi.w	#$40,d3
 	adda.w	d3,a0
@@ -110,29 +110,29 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(dobitmap).l
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),2,0
-	move.w	#$24,d0
+	move.w	#$24,d0					;frame round the whole screen
 	move.w	#6,d1
 	jsr	(Framer).l
 	jsr	(printbigz).l
 	String	-(TXPRI+TXMAP1),$A,2,'NAME  ENTRY'
-	bsr.w	ReadNameLog
+	bsr.w	ReadNameLog				;the saved names
 	clr.w	(namelogarrows).w
-	move.w	#1,(namelogsel).w
+	move.w	#1,(namelogsel).w		;start on log slot 1
 	clr.w	d0
-	bsr.w	SkipOtherUserName
-	movea.l	#nameentrybuf,a1
+	bsr.w	SkipOtherUserName		;move off the other user's name if it is there
+	movea.l	#nameentrybuf,a1		;load the selected name for editing
 	bsr.w	GetLogName
 	bsr.w	PrintNameLog
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),7,6,'Name Log'
-	move.w	#$18,(palcount).w
+	move.w	#$18,(palcount).w		;fade in over $18 frames
 	bclr	#dfng,(disflags).w
-	clr.w	d4
-	bsr.w	SyncLetterCursor
+	clr.w	d4						;d4 = cursor position in the name (0-11)
+	bsr.w	SyncLetterCursor		;d5 = grid letter under the first character
 	bsr.w	PrintNameCursor
 	bsr.w	LetterGridPos
-.2
-	move.w	(printx).w,-(sp)
+.2									;(not branched to)
+	move.w	(printx).w,-(sp)		;frame the selected grid letter
 	move.w	(printy).w,-(sp)
 	jsr	(NameEntryFramer).l
 	move.w	(sp)+,(printy).w
@@ -140,98 +140,98 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printx).w
 	bsr.w	PrintCurLetter
-	move.w	#1,(cursoron).w
+	move.w	#1,(cursoron).w			;start in edit mode; NameLetterGrid flips it to log mode
 	bsr.w	NameLetterGrid
-	clr.w	d0
+	clr.w	d0						;d0 = 0: put the name cursor on position 0
 	bra.w	.11
-.loop								;loop
+.loop								;each pass: redraw the name and prompt
 	bsr.w	GetNameLength
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),5,$12
-	tst.w	(cursoron).w
+	tst.w	(cursoron).w			;log mode: no name field or prompt
 	beq.w	.3
 	movea.l	#nameentrybuf,a1
 	bsr.w	PrintNameField
 	bsr.w	PrintNamePrompt
-.3									;cursoron = 0, or from above
+.3									;then move the ] [ arrows if the log selection changed
 	bsr.w	MoveLogArrows
-.loop2								;loop
+.loop2								;wait for a press
 	move.w	(Vcount).w,d0
-.loop3								;loop
+.loop3								;wait for the next vblank
 	cmp.w	(Vcount).w,d0
 	beq.s	.loop3
 	movem.w	d1,-(sp)
-	move.w	(cont1team).w,d1
+	move.w	(cont1team).w,d1		;the pad of this team: controller 1 if it is on this side
 	subq.w	#1,d1
 	cmp.w	(nameentryvis).w,d1
 	movem.w	(sp)+,d1
-	beq.w	.input
-	jsr	(ReadJoy2).l
+	beq.w	.input					;controller 1 owns this team
+	jsr	(ReadJoy2).l				;otherwise controller 2
 	tst.w	d1
 	beq.s	.loop2
 	bra.w	.5
-.input								;d1 = 0
+.input								;controller 1's team: read pad 1
 	jsr	(ReadJoy1).l
 	tst.w	d1
 	beq.s	.loop2
-.5
+.5									;a button pressed
 	btst	#7,d1
-	bne.w	.14
+	bne.w	.14						;start: done
 	tst.w	(cursoron).w
-	bne.w	.6
-	move.w	#1,d0
+	bne.w	.6						;edit mode: the letter controls
+	move.w	#1,d0					;log mode: down = next name
 	btst	#1,d1
 	bne.w	.7
-	move.w	#$FFFF,d0
+	move.w	#$FFFF,d0				;up = previous name
 	btst	#0,d1
 	bne.w	.7
-	btst	#4,d1
+	btst	#4,d1					;B: switch to editing
 	beq.w	.loop
 	bsr.w	NameLetterGrid
 	clr.w	d0
-	bra.w	.7
-.6									;cursoron <> 0
-	moveq	#-1,d0
+	bra.w	.7						;(d0 = 0 just reloads the name)
+.6									;edit mode
+	moveq	#-1,d0					;A: cursor back one
 	btst	#6,d1
 	bne.w	.11
-	neg.w	d0
+	neg.w	d0						;C: cursor forward one
 	btst	#5,d1
 	bne.w	.11
-	btst	#3,d1
+	btst	#3,d1					;right: next grid letter
 	bne.w	.12
-	neg.w	d0
+	neg.w	d0						;left: previous grid letter
 	btst	#2,d1
 	bne.w	.12
-	moveq	#6,d0
+	moveq	#6,d0					;down: grid letter one row lower
 	btst	#1,d1
 	bne.w	.12
-	neg.w	d0
+	neg.w	d0						;up: one row higher
 	btst	#0,d1
 	bne.w	.12
-	btst	#4,d1
+	btst	#4,d1					;B: back to the name log
 	beq.w	.loop
 	bsr.w	NameLetterGrid
 	bra.w	.loop
-.7
+.7									;log mode: move the selection by d0
 	add.w	d0,(namelogsel).w
-.loop4								;loop
+.loop4								;wrap into slots 1-7
 	cmpi.w	#7,(namelogsel).w
 	ble.w	.8
 	move.w	#1,(namelogsel).w
-.8									;namelogsel <= 7, or from above
+.8									;at or below 7
 	tst.w	(namelogsel).w
 	bne.w	.9
 	move.w	#7,(namelogsel).w
-.9									;namelogsel <> 0, or from above
+.9									;slot in range: skip the other user's name
 	bsr.w	SkipOtherUserName
-	beq.s	.loop4
+	beq.s	.loop4					;that slot is the other user: move on
 	movea.l	#nameentrybuf,a1
 	bsr.w	GetLogName
-	tst.w	(cursoron).w
+	tst.w	(cursoron).w			;edit mode: show the letters again
 	bne.w	.10
-	jsr	(NameEntryHelp).l
+	jsr	(NameEntryHelp).l			;log mode: the help text
 	bra.w	.loop
-.10									;cursoron <> 0
+.10									;edit mode: clear the cursor and the old grid frame
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),4,$13
 	add.w	d4,(printx).w
@@ -248,28 +248,28 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	addq.w	#1,(printx).w
 	bsr.w	PrintCurLetter
 	bsr.w	SyncLetterCursor
-	move.w	d4,d0
+	move.w	d4,d0					;d0 = -d4: the cursor goes back to position 0
 	neg.w	d0
-	bra.w	*+4
-.11
+	bra.w	*+4						;(branches to the next line)
+.11									;move the name cursor by d0
 	add.w	d4,d0
 	cmp.w	#$B,d0
-	bhi.w	.loop
+	bhi.w	.loop					;outside 0-11: ignore
 	move.w	d0,d4
 	bsr.w	PrintNameCursor
 	movea.l	#nameentrybuf,a0
 	clr.w	d0
-	cmpi.b	#$2D,0(a0,d4.w)
+	cmpi.b	#$2D,0(a0,d4.w)			;a "-" keeps the grid letter where it is
 	beq.w	.12
 	move.b	0(a0,d4.w),d0
 	ext.w	d0
-	bsr.w	FindLetter
-	sub.w	d5,d0
-.12
+	bsr.w	FindLetter				;grid index of the letter under the cursor
+	sub.w	d5,d0					;d0 = that index - d5, so .12 lands on it
+.12									;move the grid cursor by d0
 	add.w	d5,d0
-	cmp.w	#$1D,d0
+	cmp.w	#$1D,d0					;outside the 30 letters: ignore
 	bhi.w	.loop
-	move.w	d0,-(sp)
+	move.w	d0,-(sp)				;erase the frame of the old letter
 	bsr.w	LetterGridPos
 	moveq	#1,d2
 	move.w	(printx).w,-(sp)
@@ -280,25 +280,25 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printx).w
 	bsr.w	PrintCurLetter
-	move.w	(sp)+,d5
+	move.w	(sp)+,d5				;d5 = new grid letter
 	bsr.w	LetterGridPos
 	move.w	(printx).w,-(sp)
 	move.w	(printy).w,-(sp)
 	tst.w	(cursoron).w
-	beq.w	.13
+	beq.w	.13						;log mode: no frame
 	jsr	(NameEntryFramer).l
-.13									;cursoron = 0, or from above
+.13									;frame drawn (edit mode only): print the letter
 	move.w	(sp)+,(printy).w
 	addq.w	#1,(printy).w
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printx).w
 	bsr.w	PrintCurLetter
 	movea.l	#nameentrybuf,a0
-	movea.l	#LetterGrid,a1
+	movea.l	#LetterGrid,a1			;the chosen letter goes into the name at the cursor
 	move.b	0(a1,d5.w),d0
 	move.b	d0,0(a0,d4.w)
 	bra.w	.loop
-.14									;bit 7 of d1 set
+.14									;start: save the name and leave
 	bsr.w	StoreUserName
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -311,24 +311,24 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	move.w	#7,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-	bchg	#0,(cursoron+1).w
-	bne.w	.1
+	bchg	#0,(cursoron+1).w		;flip between edit and log mode
+	bne.w	.1						;now log mode: show the help instead
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),$19,$11
-	movea.l	#LetterGrid,a0
+	movea.l	#LetterGrid,a0			;print the 5 rows of 6 letters
 	moveq	#4,d0
-.loop
+.loop								;each row
 	moveq	#5,d1
 	movea.l	#mesarea,a1
-	move.w	#$E,(a1)+
-.loop2
+	move.w	#$E,(a1)+				;String of 6 letters with spaces: 12 bytes + header
+.loop2								;letter and a space
 	move.b	(a0)+,(a1)+
 	move.b	#$20,(a1)+
 	dbf	d1,.loop2
 	movea.w	#(mesarea-M68K_RAM),a1
 	jsr	(print).l
 	addq.w	#2,(printy).w
-	subi.w	#$C,(printx).w
+	subi.w	#$C,(printx).w			;back to the row start
 	dbf	d0,.loop
 	jsr	(printz).l
 	String	-TXMAP2,1,$14
@@ -352,32 +352,32 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	String	'B to cancel.'
 	move.w	(sp)+,(printx).w
 	addq.w	#1,(printy).w
-.0
+.0									;(not branched to)
 	jsr	(printz).l
 	String	'START when done.'
-.x									;pop the d0-d7/a0-a6 saved above
+.x									;pop the registers saved at entry
 	movem.l	(sp)+,d0-d7/a0-a6
-.x2									;exit (also the end of the code above)
+.x2									;(not branched to)
 	rts
-.1
+.1									;log mode: reload the name, clear the field area, frame the help box
 	movea.l	#nameentrybuf,a1
-.2
+.2									;(not branched to)
 	bsr.w	GetLogName
 	move.w	#0,(printx).w
-.3
+.3									;(not branched to)
 	move.w	#$F,(printy).w
 	move.w	#$28,d0
-.4
+.4									;(not branched to)
 	move.w	#$D,d1
 	move.w	#$7FF,d2
-.5
+.5									;(not branched to)
 	jsr	(eraser).l
-.6
+.6									;(not branched to)
 	jsr	(printz).l
 	String	-TXMAP2,1,$14
 	moveq	#$16,d0
 	moveq	#7,d1
-.7
+.7									;(not branched to)
 	jsr	(Framer).l
 	bsr.w	NameEntryHelp
 	bra.s	.x
@@ -407,13 +407,13 @@ PrintNamePrompt						;Name entry: "Enter new name:" for an empty name log slot n
 									;"Select or replace:"
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(namelogsel).w,d0
-	mulu.w	#$C,d0
+	mulu.w	#$C,d0					;12 bytes per name
 	movea.l	#namelog,a0
 	movea.l	#EnterNameTxt,a1
-	tst.b	0(a0,d0.w)
+	tst.b	0(a0,d0.w)				;empty slot: "Enter new name:"
 	beq.w	.0
 	movea.l	#SelectNameTxt,a1
-.0
+.0									;text chosen: print it
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -422,14 +422,14 @@ SyncLetterCursor					;Name entry: the letter grid cursor d5 = the grid index of 
 	movem.l	d0-d4/a0-a6,-(sp)
 	move.b	(nameentrybuf).w,d0
 	bsr.w	FindLetter
-	cmp.w	#$1E,d0
+	cmp.w	#$1E,d0					;not in the grid: cursor on the first letter
 	blt.w	.0
 	clr.w	d5
 	bra.w	.x
-.0									;d0 < $1E
+.0									;letter found: d5 = its index
 	move.w	d0,d5
 	movea.l	#LetterGrid,a0
-	move.b	0(a0,d5.w),(nameentrybuf).w
+	move.b	0(a0,d5.w),(nameentrybuf).w	;unknown letters are turned into the first grid letter
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d4/a0-a6
 	rts
@@ -439,11 +439,11 @@ FindLetter							;d0 = index of letter d0 in LetterGrid, $1E when not found
 	move.b	d0,d1
 	clr.w	d0
 	move.w	#$1E,d3
-.loop
+.loop								;compare with each grid letter
 	cmp.b	0(a0,d0.w),d1
 	beq.w	.x
 	addq.w	#1,d0
-	dbf	d3,.loop
+	dbf	d3,.loop					;all 31 tried: not found
 	move.w	#$1E,d0
 .x									;exit: restore the registers
 	movem.l	(sp)+,d1-d3/a0-a6
@@ -453,16 +453,16 @@ PrintNameCursor						;Name entry: the " < " cursor
 	String	-(TXPRI+TXMAP1),4,$13
 	add.w	d4,(printx).w
 	tst.w	(cursoron).w
-	beq.w	rtsNameCursor
+	beq.w	rtsNameCursor			;cursor off: print nothing
 	jsr	(printz).l
 	String	' < '
-rtsNameCursor						;The shared rts of PrintNameCursor
+rtsNameCursor						;(the shared rts here)
 	rts
 PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, cursoron)
 	tst.w	(cursoron).w
 	beq.s	rtsNameCursor
 	movea.l	#ThreeStars,a1
-	move.w	#4,(a1)
+	move.w	#4,(a1)					;String of 1 letter (length 4)
 	move.b	#0,3(a1)
 	movea.l	#LetterGrid,a0
 	move.b	0(a0,d5.w),d0
@@ -474,11 +474,11 @@ LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a r
 	String	-(TXPRI+TXMAP1),$18,$10
 	move.w	d5,d0
 	ext.l	d0
-	divu.w	#6,d0
-	asl.w	#1,d0
+	divu.w	#6,d0					;row = index / 6, column = remainder
+	asl.w	#1,d0					;rows are 2 apart
 	add.w	d0,(printy).w
 	swap	d0
-	asl.w	#1,d0
+	asl.w	#1,d0					;columns are 2 apart
 	add.w	d0,(printx).w
 	moveq	#3,d0
 	moveq	#3,d1
@@ -528,10 +528,10 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	move.w	(namelogsel).w,-(sp)
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),5,8
-	move.w	#6,d7
-	move.w	#1,(namelogsel).w
+	move.w	#6,d7					;7 log slots
+	move.w	#1,(namelogsel).w		;from slot 1
 	movea.l	#TempBuffer,a1
-.loop
+.loop								;print each slot's name on its own row
 	bsr.w	GetLogName
 	move.w	(printx).w,-(sp)
 	bsr.w	PrintNameField
@@ -539,7 +539,7 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	addq.w	#1,(printy).w
 	addq.w	#1,(namelogsel).w
 	dbf	d7,.loop
-	move.w	(sp)+,(namelogsel).w
+	move.w	(sp)+,(namelogsel).w	;put back the caller's selection
 	move.w	(sp)+,(namelength).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -548,7 +548,7 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(namelogsel).w,d0
 	cmp.w	(namelogarrows).w,d0
-	beq.w	.x
+	beq.w	.x						;same row: nothing to do
 	movea.l	#LogArrowsClrTxt,a1
 	bsr.w	PrintLogArrows
 	movea.l	#LogArrowsTxt,a1
@@ -559,19 +559,19 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 PrintLogArrows						;Name entry: print the two arrow Strings at a1 on name log row
 									;namelogarrows, then namelogarrows = namelogsel
 	tst.w	(namelogarrows).w
-	beq.w	.0
+	beq.w	.0						;no arrows drawn yet: nothing to erase
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),3,8
 	move.w	(namelogarrows).w,d0
-	subq.w	#1,d0
+	subq.w	#1,d0					;rows from 1
 	add.w	d0,(printy).w
 	move.l	a1,-(sp)
 	jsr	(print).l
 	movea.l	(sp)+,a1
-	adda.w	(a1),a1
+	adda.w	(a1),a1					;the second String (right arrow) follows the first
 	move.w	#$12,(printx).w
 	jsr	(print).l
-.0									;namelogarrows = 0, or from above
+.0									;old arrows handled: remember the new row
 	move.w	(namelogsel).w,(namelogarrows).w
 	rts
 LogArrowsTxt	dc.b	0			;MoveLogArrows data
@@ -585,13 +585,13 @@ LogArrowsClrTxt	dc.b	0			;MoveLogArrows data
 GetNameLength						;namelength = length of the name being entered
 									;(up to '-' or 0, at most 12)
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	#$B,d3
+	move.w	#$B,d3					;at most 12 characters
 	movea.l	#nameentrybuf,a0
 	clr.w	(namelength).w
-.loop
-	cmpi.b	#$2D,(a0)
+.loop								;check each character
+	cmpi.b	#$2D,(a0)				;a '-' ends the name
 	beq.w	.x
-	tst.b	(a0)+
+	tst.b	(a0)+					;so does a 0
 	beq.w	.x
 	addq.w	#1,(namelength).w
 	dbf	d3,.loop
@@ -602,18 +602,18 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 									;length namelength
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
-	move.w	(namelength).w,d0
+	move.w	(namelength).w,d0		;(d0 unused)
 	move.w	#0,d3
-	move.w	#$E,(a0)+
-.loop								;loop
+	move.w	#$E,(a0)+				;String of 12 characters
+.loop								;each character of the field
 	move.b	0(a1,d3.w),d1
 	cmp.w	(namelength).w,d3
-	blt.w	.0
+	blt.w	.0						;inside the name: print it
 	move.b	#$2D,d1
-.0									;d3 < namelength, or from above
+.0									;past the name: '-'
 	move.b	d1,(a0)+
 	addq.w	#1,d3
-	cmp.w	#$C,d3
+	cmp.w	#$C,d3					;12 characters
 	blt.s	.loop
 	movea.l	#ThreeStars,a1
 	jsr	(print).l
@@ -653,7 +653,7 @@ LetterGrid	dc.b	$41				;Name entry data
 	dc.b	0
 NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
 	move.w	(framercset).w,-(sp)
-	move.w	(nameframechars).w,(framercset).w
+	move.w	(nameframechars).w,(framercset).w	;use the name entry frame tiles
 	jsr	(Framer).l
 	move.w	(sp)+,(framercset).w
 	rts
@@ -662,17 +662,17 @@ GetLogName							;Copy name log entry namelogsel to a1 ('-' for
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#namelog,a0
 	move.w	(namelogsel).w,d2
-	mulu.w	#$C,d2
+	mulu.w	#$C,d2					;12 bytes per name
 	move.w	#0,(namelength).w
 	move.w	#$B,d3
-.loop
+.loop								;each character
 	move.b	0(a0,d2.w),d0
-	beq.w	.0
-	bra.w	.1
-.0									;d0 = 0
+	beq.w	.0						;0 = unused character
+	bra.w	.1						;a letter: copy it
+.0									;empty: '-' and not counted
 	move.b	#$2D,d0
 	subq.w	#1,(namelength).w
-.1
+.1									;character ready
 	move.b	d0,(a1)+
 	addq.w	#1,(namelength).w
 	addq.w	#1,d2
@@ -684,122 +684,122 @@ StoreUserName						;Name entry: store the name in save RAM
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#namelog,a0
 	move.w	(namelogsel).w,d0
-	mulu.w	#$C,d0
+	mulu.w	#$C,d0					;12 bytes per name
 	adda.w	d0,a0
 	movea.l	#nameentrybuf,a1
 	move.w	#$B,d4
-.loop
+.loop								;compare the entered name with the logged one
 	cmpi.b	#$2D,(a1)
 	bne.w	.0
-	move.b	#0,(a1)
-.0									;a1 <> $2D, or from above
+	move.b	#0,(a1)					;'-' means an unused character: 0 in the log
+.0									;character ready
 	move.b	(a1)+,d1
 	cmp.b	(a0)+,d1
-	bne.w	.1
+	bne.w	.1						;a difference: store the new name
 	dbf	d4,.loop
-	bra.w	.3
-.1
+	bra.w	.3						;same name: nothing to write
+.1									;new name: copy it into the log slot
 	movea.l	#namelog,a0
 	move.w	(namelogsel).w,d0
 	mulu.w	#$C,d0
 	adda.w	d0,a0
 	movea.l	#nameentrybuf,a1
 	move.w	#$B,d4
-.loop2
+.loop2								;copy 12 characters
 	move.b	(a1)+,d1
 	cmp.b	#$2D,d1
 	bne.w	.2
-	move.b	#0,d1
-.2									;d1 <> $2D, or from above
+	move.b	#0,d1					;'-' becomes 0
+.2									;character ready
 	move.b	d1,(a0)+
 	dbf	d4,.loop2
-	bsr.w	WriteNameLog
+	bsr.w	WriteNameLog			;save the log, then drop the old name's records
 	jsr	(WriteNameRecord).l
 	jsr	(MakeSRAMChecksum).l
-.3
+.3									;name stored or unchanged: this side's user number
 	movea.l	#homeuser,a5
 	tst.w	(nameentryvis).w
 	beq.w	.4
-	movea.l	#awayuser,a5
-.4									;nameentryvis = 0, or from above
+	movea.l	#awayuser,a5			;visitors side: awayuser
+.4									;user field chosen
 	tst.b	(nameentrybuf).w
-	bne.w	.5
-	clr.w	(namelogsel).w
-.5									;nameentrybuf <> 0, or from above
+	bne.w	.5						;a name was entered
+	clr.w	(namelogsel).w			;empty name: no user (0)
+.5									;user number = log slot
 	move.w	(namelogsel).w,(a5)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	#$2D7,d7
+	move.w	#$2D7,d7				;$2D8 player records of 4 bytes
 	moveq	#0,d0
 	moveq	#4,d1
 	movea.l	#recordbuf,a0
-	move.w	(namelogsel).w,d6
-.loop
+	move.w	(namelogsel).w,d6		;d6 = the slot whose name was replaced
+.loop								;each player record: clear the old holder
 	clr.w	d5
 	jsr	(ReadSRAM).l
-	cmp.b	1(a0),d6
+	cmp.b	1(a0),d6				;byte 1 = record holder
 	bne.w	.0
 	clr.b	1(a0)
 	st	d5
-.0
+.0									;byte 3 = the other user
 	cmp.b	3(a0),d6
 	bne.w	.1
 	clr.b	3(a0)
 	st	d5
-.1
+.1									;write back only when changed
 	tst.w	d5
 	beq.w	.2
 	jsr	(WriteSRAM).l
-.2									;d5 = 0, or from above
+.2									;next record
 	addq.l	#4,d0
 	dbf	d7,.loop
-	move.w	#NumTeams-1,d7
+	move.w	#NumTeams-1,d7			;each team's crowd record block
 	move.l	#CrowdRecBase,d0
 	moveq	#$10,d1
 	movea.l	#recordbuf,a0
 	move.w	(namelogsel).w,d6
-.loop2
-	clr.w	d5
+.loop2								;clear the old user from each crowd record
+	clr.w	d5						;(holder and opponent of the goals, saves and peak records)
 	jsr	(ReadSRAM).l
 	cmp.b	1(a0),d6
 	bne.w	.3
 	clr.b	1(a0)
 	st	d5
-.3
+.3									;goals holder done: goals opponent
 	cmp.b	3(a0),d6
 	bne.w	.4
 	clr.b	3(a0)
 	st	d5
-.4
+.4									;saves holder
 	cmp.b	5(a0),d6
 	bne.w	.5
 	clr.b	5(a0)
 	st	d5
-.5
+.5									;saves opponent
 	cmp.b	7(a0),d6
 	bne.w	.6
 	clr.b	7(a0)
 	st	d5
-.6
+.6									;peak holder
 	cmp.b	9(a0),d6
 	bne.w	.7
 	clr.b	9(a0)
 	st	d5
-.7
+.7									;peak opponent
 	cmp.b	$B(a0),d6
 	bne.w	.8
 	clr.b	$B(a0)
 	st	d5
-.8
+.8									;write back only when changed
 	tst.w	d5
 	beq.w	.9
 	jsr	(WriteSRAM).l
-.9									;d5 = 0, or from above
+.9									;next block
 	addi.l	#CrowdRecBytes,d0
 	dbf	d7,.loop2
-	move.l	#TeamRecBase,d0
+	move.l	#TeamRecBase,d0			;and wipe the new slot's own 16 byte user record
 	move.w	(namelogsel).w,d3
 	asl.w	#4,d3
 	ext.l	d3
@@ -809,7 +809,7 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 	jsr	(ReadSRAM).l
 	move.l	a0,-(sp)
 	move.w	#$F,d3
-.loop3
+.loop3								;clear 16 bytes
 	clr.b	(a0)+
 	dbf	d3,.loop3
 	movea.l	(sp)+,a0
@@ -821,22 +821,22 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEntryScreen) for
 									;the pads in use. Called from PeriodOver
 	tst.w	(OptUserRec).w
-	bne.w	.x
+	bne.w	.x						;user records off: no name entry
 	clr.w	(homeuser).w
 	clr.w	(awayuser).w
-	tst.w	(cont1team).w
+	tst.w	(cont1team).w			;controller 1 on a team: enter its name
 	beq.w	.0
 	move.w	(cont1team).w,(nameentryvis).w
-	subq.w	#1,(nameentryvis).w
+	subq.w	#1,(nameentryvis).w		;nameentryvis = 0 home, 1 visitors
 	jsr	(NameEntryScreen).l
-.0									;cont1team = 0, or from above
+.0									;controller 1 done or unused: now controller 2
 	tst.w	(cont2team).w
-	beq.w	.x
+	beq.w	.x						;controller 2 not on a team
 	movem.w	d0,-(sp)
 	move.w	(cont1team).w,d0
 	cmp.w	(cont2team).w,d0
 	movem.w	(sp)+,d0
-	beq.w	.x
+	beq.w	.x						;both pads on the same team: one name only
 	move.w	(cont2team).w,(nameentryvis).w
 	subq.w	#1,(nameentryvis).w
 	jsr	(NameEntryScreen).l
@@ -844,27 +844,27 @@ UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEnt
 	rts
 SkipOtherUserName					;Name entry: step the selection namelogsel past the name the other pad
 									;picked (homeuser / awayuser), in the direction on the stack
-	movem.w	d0,-(sp)
-	move.w	(awayuser).w,d0
+	movem.w	d0,-(sp)				;d0 = the step direction (passed on the stack)
+	move.w	(awayuser).w,d0			;the other side's user
 	tst.w	(nameentryvis).w
 	beq.w	.0
 	move.w	(homeuser).w,d0
-.0									;nameentryvis = 0, or from above
+.0									;other user chosen
 	cmp.w	(namelogsel).w,d0
-	bne.w	.x
-	move.w	#1,d0
+	bne.w	.x						;not his slot: keep it
+	move.w	#1,d0					;his slot: step past it (+1, or -1 when the stack word is negative)
 	tst.w	(sp)
 	bpl.w	.1
 	move.w	#$FFFF,d0
-.1									;sp >= 0, or from above
+.1									;direction chosen
 	add.w	d0,(namelogsel).w
-	clr.w	d0
+	clr.w	d0						;d0 = 0 tells the caller to check the slot again
 .x									;exit: restore the registers
 	movem.w	(sp)+,d0
 	rts
 RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM record holders
 									;(PrintRecordTitles ... ReadTeamRecords)
-	move.w	#0,d0
+	move.w	#0,d0					;setup screen with the frame layout
 	move.w	#$1A,d1
 	jsr	(SetupScreen).l
 	jsr	(printz).l
@@ -884,7 +884,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	String	-(TXPRI+TXMAP2),'!',1
 	movea.l	#ArenaGfxBank,a0
 	movea.l	a0,a1
-.0
+.0									;(not branched to)
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
 	adda.l	(a2)+,a1
@@ -903,37 +903,37 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	String	-(TXPRI+TXMAP3),$E,2,'Record',-(TXPRI+TXMAP3),$D,5,'Holders',-(TXPRI+TXMAP3),1,9
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,6,3,5,8,CC_SetFont,1,'Name',CC_SetFont,0
-	bsr.w	ReadNameLog
-	clr.w	(TempWord1).w
-	bclr	#6,(sflags6).w
+	bsr.w	ReadNameLog				;the user names
+	clr.w	(TempWord1).w			;page 0: win records
+	bclr	#6,(sflags6).w			;the goals sort (sflags6 bit 6 clear)
 	bsr.w	ReadTeamRecords
-	bset	#6,(sflags6).w
+	bset	#6,(sflags6).w			;then the saves sort
 	bsr.w	ReadTeamRecords
 	bsr.w	CalcWinPercents
-	bsr.w	PrintRecordTitles
+	bsr.w	PrintRecordTitles		;first page: titles and win records
 	bsr.w	PrintWinRecords
-.loop								;loop
+.loop								;each frame: read the pad
 	jsr	(vcountwait).l
 	jsr	(getpzjoy).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#7,d3
-	beq.w	.1
+	beq.w	.1						;start leaves the screen
 	jmp	ExitStatsScreen
-.1									;bit 7 of d3 clear
+.1									;page 0: A + C clears the win records
 	tst.w	(TempWord1).w
-.2
+.2									;(not branched to)
 	bne.w	.right
 	btst	#6,d3
 	beq.w	.right
-.3
+.3									;(not branched to)
 	btst	#5,d3
 	beq.w	.right
 	bsr.w	ClearWinRecords
 	bsr.w	CalcWinPercents
-.show
+.show								;(not branched to)
 	bsr.w	PrintWinRecords
 	bra.s	.loop
-.right
+.right								;right: next page (up to page 2)
 	btst	#3,d1
 	beq.w	.left
 	cmpi.w	#2,(TempWord1).w
@@ -943,7 +943,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	bsr.w	PrintRecordTitles
 	bsr.w	PrintRecordPage
 	bra.s	.loop
-.left								;bit 3 of d1 clear
+.left								;left: previous page
 	btst	#2,d1
 	beq.s	.loop
 	tst.w	(TempWord1).w
@@ -956,20 +956,20 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	dc.b	$4E						;N
 	dc.b	$75						;u
 PrintRecordPage						;Record Holders: print page TempWord1 (0:
-									;PrintWinRecords, else PrintPlayerRecords)
+									;(TempWord1 = page: 0 wins, 1 goals, 2 saves)
 	tst.w	(TempWord1).w
 	beq.w	PrintWinRecords
 	bra.w	PrintPlayerRecords
 PrintRecordTitles					;Record Holders: the record titles (WinRecTitles, GoalRecTitles,
 									;SaveRecTitles)
 	movea.l	#WinRecTitles,a1
-	tst.w	(TempWord1).w
+	tst.w	(TempWord1).w			;page 0: the win titles
 	beq.w	.0
 	movea.l	#SaveRecTitles,a1
 	cmpi.w	#2,(TempWord1).w
-	beq.w	.0
+	beq.w	.0						;page 2: the saves titles
 	movea.l	#GoalRecTitles,a1
-.0									;TempWord1 = 0 or TempWord1 = 2, or from above
+.0									;page titles chosen
 	jsr	(printsmall).l
 	rts
 WinRecTitles	dc.b	0			;PrintRecordTitles Strings
@@ -1134,16 +1134,16 @@ PrintWinRecords						;Record Holders: the rows (PrintRecordName)
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,2,2,$A,CC_SetFont,0
-	move.w	#6,d7
+	move.w	#6,d7					;7 rows
 	movea.l	#winsort,a0
 	movea.l	#winpcts,a2
 	movea.l	#recordbuf,a5
-.loop
+.loop								;each row: the user in sort order
 	move.w	#2,(printx).w
 	move.b	(a0)+,d0
 	ext.w	d0
-	move.b	0(a2,d0.w),d5
-	asl.w	#4,d0
+	move.b	0(a2,d0.w),d5			;his win %
+	asl.w	#4,d0					;16 bytes per user record
 	move.b	urgames(a5,d0.w),d4
 	lsl.w	#8,d4
 	move.b	urgames+1(a5,d0.w),d4
@@ -1156,15 +1156,15 @@ PrintWinRecords						;Record Holders: the rows (PrintRecordName)
 	lsl.w	#8,d4
 	move.b	urwins+1(a5,d0.w),d4
 	move.w	d4,(recwins).w
-	add.w	(recties).w,d4
+	add.w	(recties).w,d4			;losses = games - wins - ties
 	sub.w	(sp),d4
 	neg.w	d4
 	move.w	d4,(reclosses).w
 	move.w	(sp)+,d4
-	tst.w	d4
+	tst.w	d4						;no games: "( )" instead
 	beq.w	.0
 	bsr.w	PrintRecordName
-	move.w	#$13,(printx).w
+	move.w	#$13,(printx).w			;win %, wins, losses and ties columns
 	move.w	d0,-(sp)
 	move.w	d5,d0
 	move.w	#3,d1
@@ -1186,11 +1186,11 @@ PrintWinRecords						;Record Holders: the rows (PrintRecordName)
 	jsr	(PushNumberWidth).l
 	move.w	(sp)+,d0
 	bra.w	.1
-.0									;d4 = 0
+.0									;user has no games
 	movea.l	#RecParenTxt,a1
-.1
+.1									;print the last part
 	jsr	(printsmall).l
-	addq.w	#2,(printy).w
+	addq.w	#2,(printy).w			;rows are 2 apart
 	dbf	d7,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -1215,72 +1215,72 @@ PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordN
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,2,2,$A,CC_SetFont,0
 	move.w	#6,d7
-	movea.l	#recsort1,a0
+	movea.l	#recsort1,a0			;page 1: the goals sort
 	cmpi.w	#1,(TempWord1).w
 	beq.w	.0
 	movea.l	#recsort2,a0
-.0									;TempWord1 = 1, or from above
+.0									;sort list chosen
 	movea.l	#recordbuf,a2
-.loop
+.loop								;each row
 	move.w	#2,(printx).w
 	move.b	(a0)+,d0
 	ext.w	d0
-	asl.w	#4,d0
-	move.b	0(a2,d0.w),d5
+	asl.w	#4,d0					;16 bytes per user record
+	move.b	0(a2,d0.w),d5			;goals record, or the saves one on page 2
 	cmpi.w	#1,(TempWord1).w
 	beq.w	.1
 	move.b	ursaves(a2,d0.w),d5
-.1									;TempWord1 = 1, or from above
+.1									;record value chosen
 	tst.b	d5
-	beq.w	.none
+	beq.w	.none					;no record: "( )"
 	bsr.w	PrintRecordName
 	move.w	#$12,(printx).w
 	move.w	d0,-(sp)
 	cmpi.w	#1,(TempWord1).w
-	bne.w	.2
+	bne.w	.2						;page 2: saves
 	move.b	0(a2,d0.w),d0
 	bra.w	.3
-.2									;TempWord1 <> 1
+.2									;page 2: the saves value
 	move.b	ursaves(a2,d0.w),d0
-.3
+.3									;value chosen: print it
 	andi.w	#$FF,d0
 	move.w	#3,d1
 	jsr	(PushNumberWidth).l
 	jsr	(printsmall).l
 	move.w	(sp)+,d0
 	move.w	#$19,(printx).w
-	movea.l	#RecHolderByTxt,a1
+	movea.l	#RecHolderByTxt,a1		;"by" the team
 	movea.l	#mesarea,a3
 	bsr.w	CopyString
 	move.w	d0,-(sp)
 	cmpi.w	#1,(TempWord1).w
-	bne.w	.4
+	bne.w	.4						;page 2: the saves team
 	move.b	urgoalsteam(a2,d0.w),d0
 	bra.w	.5
-.4									;TempWord1 <> 1
+.4									;page 2: the saves team
 	move.b	ursavesteam(a2,d0.w),d0
-.5
+.5									;team chosen
 	andi.w	#$FF,d0
 	movea.l	#mesarea,a1
 	bsr.w	AppendTeamName
-	movea.l	#RecHolderVsTxt,a1
+	movea.l	#RecHolderVsTxt,a1		;"vs." the opponent
 	movea.l	#mesarea,a3
 	jsr	(appstring).l
 	movea.l	#mesarea,a1
 	move.w	(sp)+,d0
 	cmpi.w	#1,(TempWord1).w
-	bne.w	.6
+	bne.w	.6						;page 2: the saves opponent
 	move.b	urgoalsopp(a2,d0.w),d0
 	bra.w	.7
-.6									;TempWord1 <> 1
+.6									;page 2: the saves opponent
 	move.b	ursavesopp(a2,d0.w),d0
-.7
+.7									;opponent chosen
 	andi.w	#$FF,d0
 	bsr.w	AppendTeamName
-	bra.w	.print
-.none								;d5 = 0
+	bra.w	.print					;print the line
+.none								;no record: "( )"
 	movea.l	#RecParenTxt,a1
-.print
+.print								;print the row
 	jsr	(printsmall).l
 	addq.w	#2,(printy).w
 	dbf	d7,.loop
@@ -1304,9 +1304,9 @@ RecHolderVsTxt	dc.b	0			;PrintPlayerRecords data
 	dc.b	$20,0
 PrintRecordName						;Record Holders: print a value (AppendUserName)
 	move.w	d7,-(sp)
-	neg.w	d7
+	neg.w	d7						;row number = 7 - d7
 	addq.w	#7,d7
-	addi.w	#$30,d7
+	addi.w	#$30,d7					;"N. "
 	movea.l	#mesarea,a1
 	move.w	#6,(a1)
 	move.b	d7,2(a1)
@@ -1315,10 +1315,10 @@ PrintRecordName						;Record Holders: print a value (AppendUserName)
 	move.b	#0,5(a1)
 	jsr	(printsmall).l
 	move.w	(sp)+,d7
-	move.b	-1(a0),d2
+	move.b	-1(a0),d2				;user number of this row
 	ext.w	d2
 	movea.l	#mesarea,a1
-	bclr	#7,(sflags6).w
+	bclr	#7,(sflags6).w			;bit 7 clear: AppendUserName does not trim
 	bsr.w	AppendUserName
 	jmp	printsmall
 CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars, the win %
@@ -1329,8 +1329,8 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	movea.l	#winpcts,a1
 	movea.l	#winties,a6
 	movea.l	#wingames,a5
-	move.w	#7,d7
-.loop
+	move.w	#7,d7					;8 user blocks
+.loop								;each user record
 	move.b	urwins(a0),d0
 	lsl.w	#8,d0
 	move.b	urwins+1(a0),d0
@@ -1338,24 +1338,24 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	lsl.w	#8,d1
 	move.b	urgames+1(a0),d1
 	move.w	d1,(a5)+
-	tst.w	d1
+	tst.w	d1						;no games: 0%
 	bne.w	.0
 	clr.w	d0
 	bra.w	.1
-.0									;d1 <> 0
+.0									;games played: win % = wins * 100 / games
 	mulu.w	#$64,d0
 	divu.w	d1,d0
-.1
+.1									;% ready
 	move.b	d0,(a1)+
 	move.b	urties(a0),(a6)+
 	move.b	urties+1(a0),(a6)+
-	adda.w	#$10,a0
+	adda.w	#$10,a0					;next 16 byte block
 	dbf	d7,.loop
 	movea.l	#winsort,a1
 	move.l	a1,-(sp)
-	move.w	#1,d0
+	move.w	#1,d0					;the sort list starts as users 1-7
 	move.w	#6,d7
-.loop2
+.loop2								;fill in users 1-7
 	move.b	d0,(a1)+
 	addq.w	#1,d0
 	dbf	d7,.loop2
@@ -1363,11 +1363,11 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	movea.l	#winpcts,a0
 	movea.l	#winties,a6
 	movea.l	#wingames,a5
-.loop3								;loop
+.loop3								;bubble sort: win %, then ties, then games
 	movea.l	(sp),a1
 	move.w	#5,d7
 	clr.w	d6
-.loop4
+.loop4								;compare a pair with the next
 	move.b	(a1)+,d1
 	ext.w	d1
 	move.b	(a1),d2
@@ -1375,7 +1375,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	move.b	0(a0,d1.w),d0
 	move.b	0(a0,d2.w),d3
 	cmp.b	d3,d0
-	bgt.w	.next
+	bgt.w	.next					;higher % first
 	blt.w	.swap
 	movem.l	d1-d3,-(sp)
 	add.w	d1,d1
@@ -1384,7 +1384,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	move.w	0(a6,d2.w),d3
 	cmp.w	d3,d0
 	movem.l	(sp)+,d1-d3
-	bgt.w	.next
+	bgt.w	.next					;same %: more ties first
 	blt.w	.swap
 	movem.l	d1-d3,-(sp)
 	add.w	d1,d1
@@ -1393,69 +1393,69 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	move.w	0(a5,d2.w),d3
 	cmp.w	d3,d0
 	movem.l	(sp)+,d1-d3
-	bge.w	.next
-.swap
+	bge.w	.next					;same ties: more games first
+.swap								;out of order: swap
 	move.b	(a1),d0
 	move.b	-1(a1),d1				;previous entry
 	move.b	d0,-1(a1)
 	move.b	d1,(a1)
 	st	d6
-.next
+.next								;next pair
 	dbf	d7,.loop4
 	tst.w	d6
-	bne.s	.loop3
+	bne.s	.loop3					;repeat until no swap
 	movea.l	(sp)+,a1
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	#TeamRecBase,d0
-	move.l	#$80,d1
+	move.l	#$80,d1					;all 8 user blocks
 	movea.l	#recordbuf,a0
 	jsr	(ReadSRAM).l
-	movea.l	#recsort1,a1
+	movea.l	#recsort1,a1			;the goals sort list, or the saves one (bit 6)
 	btst	#6,(sflags6).w
 	beq.w	.0
 	movea.l	#recsort2,a1
-.0									;bit 6 of sflags6 clear, or from above
+.0									;list chosen
 	move.l	a1,-(sp)
-	move.w	#1,d0
+	move.w	#1,d0					;start with users 1-7
 	move.w	#6,d7
-.loop
+.loop								;fill in users 1-7
 	move.b	d0,(a1)+
 	addq.w	#1,d0
 	dbf	d7,.loop
 	movea.l	(sp),a1
 	movea.l	#recordbuf,a0
-.loop2								;loop
+.loop2								;bubble sort by the record value
 	movea.l	(sp),a1
 	move.w	#5,d7
 	clr.w	d6
-.loop3
+.loop3								;compare a pair with the next
 	move.b	(a1)+,d1
 	ext.w	d1
 	move.b	(a1),d2
 	ext.w	d2
 	asl.w	#4,d1
 	asl.w	#4,d2
-	move.b	0(a0,d1.w),d0
+	move.b	0(a0,d1.w),d0			;byte 0 = goals record
 	move.b	0(a0,d2.w),d3
-	btst	#6,(sflags6).w
+	btst	#6,(sflags6).w			;bit 6: sort by saves instead
 	beq.w	.1
 	move.b	ursaves(a0,d1.w),d0
 	move.b	ursaves(a0,d2.w),d3
-.1									;bit 6 of sflags6 clear, or from above
+.1									;values chosen
 	cmp.b	d3,d0
-	bge.w	.next
+	bge.w	.next					;in order
 	move.b	(a1),d0
 	move.b	-1(a1),d1				;previous entry
 	move.b	d0,-1(a1)
 	move.b	d1,(a1)
 	st	d6
-.next								;d0 >= d3, or from above
+.next								;in order or swapped
 	dbf	d7,.loop3
 	tst.w	d6
-	bne.s	.loop2
+	bne.s	.loop2					;repeat until no swap
 	movea.l	(sp)+,a1
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
