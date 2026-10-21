@@ -626,8 +626,8 @@ resetplstuff						;reset team variables/and players on both teams. Called from p
 	dbf	d2,.loop
 	rts
 clearTeamStats						;clear both team structs (2 x tmsize) but keep the first $1A0 bytes of
-									;each hot / cold table (HmShots+$1A2 / AwShots+$1A2, saved to
-									;homehotcoldsave / awayhotcoldsave and back) and HmShots+tmgoalie /
+									;each hot / cold table (the table at the end of each team struct, saved to
+									;homehotcoldsave / awayhotcoldsave and back) and tmstruct+tmgoalie /
 									;AwShots+tmgoalie. Falls into setteams
 	move.w	(tmstruct+tmgoalie).w,-(sp)
 	move.w	(AwShots+tmgoalie).w,-(sp)
@@ -802,7 +802,7 @@ Opening2							;reset the stack and clear the variables, then options (GameSetUp
 	movea.w	#(VSCRLPM-M68K_RAM),a0
 .0
 	clr.l	(a0)+
-	cmpa.w	#$D03E,a0				;clear from VSCRLPM to $FFFFD03E
+	cmpa.w	#$D03E,a0				;clear from VSCRLPM to nibblebuffer+8
 	blt.s	.0
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
@@ -1107,7 +1107,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 									;word with a typing delay (typedelay, longer
 									;after , and .). $D ends a line; special characters ( _ + $ { } [ ] < > |
 									;\ @ # % = * ^ ; ) insert team data through the $FCxxx-$FExxx routines
-									;(GetTeamNickname / GetTeamArena for HmShots / AwShots). Line breaks
+									;(GetTeamNickname / GetTeamArena for tmstruct / AwShots). Line breaks
 									;scroll the text box. Called from ScoutingReport
 	cmpi.w	#$1000,(typedelay).w
 	bgt.w	rtss2

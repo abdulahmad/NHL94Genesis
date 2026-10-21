@@ -110,9 +110,9 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 									;goes to Called from wallcollduringcheck.
 	bclr	#pf3wall,pflags3(a3)	;clear the wall collision bit
 	move.w	#Sideline,d4			;sideline
-	sub.w	(wcradiusx).w,d4		;BD22 = wcradiusx
+	sub.w	(wcradiusx).w,d4		;wcradiusx
 	move.w	#$12A,d5				;ywall
-	sub.w	(wcradiusy).w,d5		;BD24 = wcradiusy
+	sub.w	(wcradiusy).w,d5		;wcradiusy
 	movem.w	d2-d5,-(sp)
 	neg.w	d4
 	neg.w	d5
@@ -210,7 +210,7 @@ Clamp0to100							;unused: clamp d3 to 0 ... 100
 AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3, limited to 0
 									;... $1E. Called from setplayer
 	movem.l	d0-d2/a1,-(sp)
-	move.w	(TempWord2).w,d1		;BF14 goes to d1
+	move.w	(TempWord2).w,d1		;TempWord2 goes to d1
 	movea.l	#tmstruct,a1			;Start of Home Team struct
 	btst	#pfteam,pflags(a3)		;Check if home or away
 	beq.w	.attribmath
@@ -244,7 +244,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	movem.l	(sp)+,d0-d2/a1
 	rts
 NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the list at
-									;homehotplayer), a1 = HmShots. Called from ScoutTextPlayer (the MATCHUPS
+									;homehotplayer), a1 = tmstruct. Called from ScoutTextPlayer (the MATCHUPS
 									;text)
 	movem.l	d0/a0,-(sp)
 	movea.l	#homehotplayer,a0
@@ -345,7 +345,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldplayer), a1 =
-									;HmShots. Called from ScoutTextPlayer
+									;tmstruct. Called from ScoutTextPlayer
 	movem.l	d0/a0,-(sp)
 	movea.l	#homecoldplayer,a0
 	move.w	(homecoldidx).w,d0

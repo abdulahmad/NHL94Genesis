@@ -708,7 +708,7 @@ setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOli
 	clr.w	d1
 	move.b	(a4)+,d1				;move next sortcord into d1
 	asl.w	#6,d1					;mult by 64
-	movea.w	#(SortCords-M68K_RAM),a3	;Sort Cord struct start into a3 (FFB04A)
+	movea.w	#(SortCords-M68K_RAM),a3	;SortCords into a3
 	adda.w	d1,a3					;add offset to next struct
 	bsr.w	addframe
 	dbf	d0,.top						;loop until done
@@ -870,7 +870,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	movea.l	#Sprites,a2				;sprite frame list
 	adda.l	4(a2),a2				;add long word at offset 4 to a2 address. a2 now
 	add.w	d4,d4					;add d4 to itself
-	cmp.w	2(a2),d4				;compare offset 2 of a2 to d4. Offset 2 = $69E
+	cmp.w	2(a2),d4				;compare the word at 2(a2) to d4
 	bge.w	.exit					;branch if greater than or equal
 	move.w	2(a2,d4.w),d5			;move data at 2+a2+d4 into d5
 	sub.w	0(a2,d4.w),d5			;sub data at a2+d4 from d5

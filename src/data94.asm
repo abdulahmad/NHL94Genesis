@@ -648,9 +648,8 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-;gsstruct game ($10 bytes): 0 gst1, 2 gst2, 4 gspotwins, 6 gspobwins, 8 gsper, $A gss1, $C gss2, $E gsflags.
-;Team struct: $C goals, $28 team, $B4 / $CE / $E8 goals / assists / shots bytes per roster slot,
-;$136 frames on ice; tmsize $364.
+;Game struct (gsstruct, gssize each) and team struct (tmstruct / AwShots): the fields are named in
+;stubinc/equals.inc.
 
 ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
 	move.w	(gamenum).w,d0

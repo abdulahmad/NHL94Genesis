@@ -44,9 +44,9 @@ EndShootout							;Shootout over (CountShootoutGoals): freezewindow, then the 5 
 	dbf	d2,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-ClampPositionBox					;Unreferenced. Clamp $44 / $46(a3) to the box for position $34(a3) in
+ClampPositionBox					;Unreferenced. Clamp temp3 / temp4(a3) to the box for position(a3) in
 									;PositionBoxes (PositionBoxesTop when bit 7 of
-									;$62(a3), the top net)
+									;pflags(a3), the top net)
 	movem.l	d0-d7/a0,-(sp)
 	move.w	position(a3),d7
 	subq.w	#1,d7
@@ -83,7 +83,7 @@ PositionBoxes						;ClampPositionBox boxes: min / max of $44, then of $46, per p
 PositionBoxesTop					;ClampPositionBox boxes, top net
 	dc.w	$FFB5,0,$FEF8,0,0,$4B,$FEF8,0
 ClearGameStats						;Clear the game stats: shootoutstate (19 words), both team structs
-									;(HmShots, AwShots), PenBuf, BA_PS_flags, sflags4 / F8 / FA and
+									;(tmstruct, AwShots), PenBuf, BA_PS_flags, sflags4 / F8 / FA and
 									;setupcardflags / featuredplayer. Called from GameSetUp
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#shootoutstate,a0
@@ -245,7 +245,7 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	String	' . '
 PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (TeamLogoBitmaps,
 									;TeamLogoPalettes palettes), then the goals (matchup 0) or shots of each
-									;team by period ($342 / $34A of the team struct; OT when sflags7 bit 1)
+									;team by period (at the end of the team struct; OT when sflags7 bit 1)
 									;and the total. Left / right switch, start exits (ExitStatsScreen)
 	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	(matchup).w

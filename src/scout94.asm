@@ -58,7 +58,7 @@ ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's cro
 ScoutEmptyTxt	String	''
 ScoutByTxt	String	'by '
 ScoutSpaceTxt	String	' '
-GetTeamCity							;unused: return a1 = the city String of team byte $A(a0) (TeamList,
+GetTeamCity							;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
 									;Teamname offset)
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	clr.w	d2
@@ -86,7 +86,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(clearTeamStats).l
 	move.l	a0,-(sp)
 	movea.l	#tmstruct,a0
-	jsr	(Create_HotCold_Table).l	;new random hot / cold tables ($1A2(a0))
+	jsr	(Create_HotCold_Table).l	;new random hot / cold tables (end of the team structs)
 	movea.l	#AwShots,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
@@ -271,7 +271,7 @@ PageMatchup							;Page the matchup by d0 (+1 / -1, 0-6 wrapping), restart the p
 	bsr.w	PrintMatchupRatings
 	rts
 PrintMatchupRating					;Print the team rating of team a0 (GetTeamRating: the TeamRatings byte for
-									;team number $28(a0)) as 2 digits at printx / printy; return d0 = the
+									;team number tmteam(a0)) as 2 digits at printx / printy; return d0 = the
 									;rating.
 									;Called from PrintMatchupRatings
 	bsr.w	PrintTwoSpaces			;clear the old number
@@ -358,7 +358,7 @@ DrawMatchupPictures					;Draw the matchup's 6 x 6 pictures, visitors at x 2, hom
 	rts
 DrawMatchupPicture					;Draw player picture a0 at printx / printy with the PicturePalette
 									;palette. A picture with no map (offset 0) uses the PicturePalette map.
-									;UnpackPicture, then the $FFDA1E tiles. Falls into DrawMatchupBitmap
+									;UnpackPicture, then the picturebuf tiles. Falls into DrawMatchupBitmap
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -617,7 +617,7 @@ VisAdv1Txt	String	'  ['
 VisAdv2Txt	String	' [['
 VisAdv3Txt	String	'[[['
 EvenAdvTxt	String	'   '			;Even teams
-GetTeamNickname						;The text player's '=' (a2 = HmShots) and '*' (AwShots): return a1 = the
+GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (AwShots): return a1 = the
 									;team nickname String, or 'Home' / 'Visitors' when it is empty (the all
 									;star teams)
 	movem.l	d0/a0/a2,-(sp)
@@ -637,7 +637,7 @@ GetTeamNickname						;The text player's '=' (a2 = HmShots) and '*' (AwShots): re
 	rts
 HomeTxt	String	'Home'
 VisitorsTxt	String	'Visitors'
-GetTeamArena						;The text player's '^' (a2 = HmShots) and ';' (AwShots): return a1 = the
+GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (AwShots): return a1 = the
 									;team arena String
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1

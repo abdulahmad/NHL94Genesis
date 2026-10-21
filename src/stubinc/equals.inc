@@ -181,7 +181,7 @@ sf3rmplay equ 1						;play mode on for replay
 sf3alttree equ 2					;alt. tree
 sf3sbut equ 3						;flag for start button
 
-;team variables (HmShots / AwShots = the home / away team struct)
+;team variables (tmstruct / AwShots = the home / away team struct)
 tmshots equ $0						;shots stat
 tmPwrGoals equ $2					;power play goals stat
 tmPwrPlays equ $4					;power plays stat

@@ -910,7 +910,7 @@ attribjmp							;getNameandAttrib column handlers, offsets from attribjmp
 	dc.w	AttribWeight-attribjmp
 	dc.w	AttribFighting-attribjmp
 	dc.w	AttribRating-attribjmp
-AttribStatus						;Player d0's status word at $66(a2): Ice, Bench, injured, or penalty time
+AttribStatus						;Player d0's tmpdst word: Ice, Bench, injured, or penalty time
 	add.w	d0,d0					;jump for status
 	move.w	tmpdst(a2,d0.w),d0
 	bpl.w	.pen
@@ -946,7 +946,7 @@ StatusTextTbl						;AttribStatus Strings
 	String	'Injury G'
 	String	'    '
 	String	' C  '
-AttribEnergy						;Energy: word $32(a2) / 40, at most 100 (AttribPrintPct)
+AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	add.w	d0,d0					;jump for energy
 	move.w	tmpde(a2,d0.w),d0
 	ext.l	d0
@@ -2010,7 +2010,7 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	moveq	#$78,d0
 	bra.w	waitx
 SelectGoalieMenu					;it in TimeoutMenu's String. Pick team a2's goalie (or no goalie) from a
-									;list (DrawGoalieSelectList) with up / down, C or start; sets $26(a2) and
+									;list (DrawGoalieSelectList) with up / down, C or start; sets tmgoalie and
 									;SetPersonel. Menu item handler
 	move.w	(menuitem).w,-(sp)
 	move.w	(menuitem+2).w,-(sp)
@@ -2113,7 +2113,7 @@ DrawGoalieSelectList				;Draw the goalie list, row menuitem highlighted, each go
 	addq.w	#1,d0
 	dbf	d1,.row
 	rts
-GetGoalieCount						;d0 = goalies on team a2 (nibbles in the team data word at +$A)
+GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
 	movem.l	d1/a0,-(sp)
 	movea.l	tmdata(a2),a0
 .word

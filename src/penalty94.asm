@@ -175,7 +175,7 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 									;breakaway, a3 = checker. If penalties are on and the other team has a
 									;goalie in, set BA_PS_flags bit 3 and save BA_Sktr_SCnum, BA_Team,
 									;BA_Goalie_SCnum and the skater, goalie and checker team position offsets
-									;($66). Returns N clear when the penalty shot is set up
+									;(pnum). Returns N clear when the penalty shot is set up
 	movem.l	d1-d3/a1,-(sp)
 	tst.w	(OptPen).w
 	beq.w	.noPen
@@ -775,7 +775,7 @@ updatepentime						;update the time remaining on all penalized players, once a s
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	ProcessPenaltyList
 	adda.w	#tmsize,a2				;tmsize
-ProcessPenaltyList					;a2 = team. Walks the penalty box list ($9A): the first two players
+ProcessPenaltyList					;a2 = team. Walks the penalty box list (tmboxlist): the first two players
 									;without a coincidental penalty count down one second and the rest wait.
 									;Beeps when the first served time gets to 5 or less and releases the
 									;player at 0. Coincidental penalties count down on their own
@@ -1029,10 +1029,8 @@ SetHor								;switch graphics to horizontal ice rink graphics mode
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-;Team struct from HmShots / AwShots (tmsize $364): 0 tmshots, $C tmscore, $16 tmline, $1E tmdata, $22
-;tmsort, $24 tmap, $26 tmgoalie, $32 tmpde, $66 tmpdst, $9A penalty box list, $E8 per-player shot bytes,
-;$16A line sets, $34A shots by period, $354 power play shots. Game struct (gsstruct, $10 each): 0 gst1, 2
-;gst2, 8 gsper, $A gss1, $C gss2, $E gsflags (bit 1 gsfhl, bit 2 gsfso).
+;Team struct (tmstruct / AwShots, tmsize bytes) and game struct (gsstruct, gssize each): fields named in
+;stubinc/equals.inc. 94 adds shots by period and power play shots at the end of the team struct.
 
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
 									;and scores). Horizontal rink .sbscreen: period and both team logos with
@@ -1297,8 +1295,8 @@ AvgCline							;Return d0 = average energy of current line on team a2
 	rts
 ChkShotStat							;determine if shot taken, add to appropriate stats: crowd, team, shooter
 									;and goalie shots against. Nothing while the
-									;clock is stopped or in a highlight, PP shots ($354) and period shots
-									;($34A), and a second path (sflags4 bit 0, sflags8 bit 3 every second
+									;clock is stopped or in a highlight, PP shots and period shots
+									;and a second path (sflags4 bit 0, sflags8 bit 3 every second
 									;call) that counts the shot for the player in the last ScoreSum entry
 	btst	#gmclock,(gmode).w		;gmclock: clock stopped
 	bne.w	rtss2					;exit if so
@@ -1315,7 +1313,7 @@ ChkShotStat							;determine if shot taken, add to appropriate stats: crowd, tea
 .0
 	movem.l	d0-d1/a1-a3,-(sp)
 	move.l	a4,-(sp)
-	movea.l	#ScoreSum-6,a4			;#$FFFFC46E (ChkCnt). +ScoreSumbytes, then 2(a4) = the last ScoreSum entry
+	movea.l	#ScoreSum-6,a4			;ChkCnt. +ScoreSumbytes, then 2(a4) = the last ScoreSum entry
 	adda.w	(ScoreSumbytes).w,a4
 	movea.l	#tmstruct,a2			;home team
 	btst	#7,2(a4)				;entry flag: visitors
