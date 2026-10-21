@@ -8,16 +8,16 @@ UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words
 	movea.w	#(nibblebuffer-M68K_RAM),a1	;a1 = output words
 	clr.w	d2						;d2 bit 0 = which nibble is next
 	bra.w	.next
-.loop
+.loop								;each nibble
 	move.b	(a0)+,d1				;next nibble (one count per pass)
 	bchg	#0,d2					;toggle high/low nibble
 	bne.w	.lo
 	subq.w	#1,a0					;high nibble: read the same byte again next time
 	lsr.w	#4,d1
-.lo
+.lo									;nibble in the low bits
 	andi.w	#$F,d1
 	move.w	d1,(a1)+
-.next
+.next								;loop d0 times
 	dbf	d0,.loop					;loop count in d0
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
@@ -27,9 +27,9 @@ WeightedRandomSelect				;d0 = number of word weights at nibblebuffer:
 	movea.w	#(nibblebuffer-M68K_RAM),a1
 	clr.w	d1						;d1 = running total of the weights
 	bra.w	.pick
-.sumloop
+.sumloop							;add each weight
 	add.w	(a1)+,d1
-.pick
+.pick								;loop d0 times
 	dbf	d0,.sumloop
 	move.w	d1,d0
 	bsr.w	randomd0
@@ -52,11 +52,11 @@ remap								;a0 = data (char set), d0 = size in words, d1 = vram dest, a1 = map
 	movea.l	a0,a2					;a2 = source tile words
 	bsr.w	Vmaddr					;set vram write address; a0 = Vdata
 	subq.w	#1,d1					;d1 = word count - 1
-.1
+.1									;each source word
 	moveq	#3,d0					;4 pixels per word (one pass per source word)
 	move.w	(a2)+,d2
 	clr.w	d3						;d3 = remapped word being built
-.11
+.11									;each pixel
 	move.w	d2,d4					;one pixel (low nibble of d2) per pass
 	andi.w	#$F,d4
 	lsr.w	#1,d4					;map byte = color/2
@@ -64,7 +64,7 @@ remap								;a0 = data (char set), d0 = size in words, d1 = vram dest, a1 = map
 	btst	#0,d2
 	bne.w	.2
 	lsr.w	#4,d4
-.2									;bit 0 of d2 set, or from above
+.2									;map nibble chosen
 	andi.w	#$F,d4
 	or.b	d4,d3					;put the new color into the result
 	ror.w	#4,d3
@@ -80,14 +80,14 @@ forceblack							;fade all colors to black but don't upset palfadenew
 	movem.l	d0/a0,-(sp)
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$1F,d0					;31
-.0
+.0									;black out each target color, saving it
 	move.l	(a0),-(sp)				;save the target palette while blacking it
 	clr.l	(a0)+
 	dbf	d0,.0
 	move.w	#$18,(palcount).w		;24
 	bsr.w	forcefade				;fade to the all-black palfadenew
 	moveq	#$1F,d0
-.1
+.1									;put each color back
 	move.l	(sp)+,-(a0)				;put the saved palette back (reverse order)
 	dbf	d0,.1
 	movem.l	(sp)+,d0/a0
@@ -96,14 +96,14 @@ forceblack2							;fade to black, keeping palfadenew (saved on the stack and res
 	movem.l	d0/a0,-(sp)
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$1F,d0
-.loop
+.loop								;black out each target color, saving it
 	move.l	(a0),-(sp)
 	clr.l	(a0)+
 	dbf	d0,.loop
 	move.w	#$64,(palcount).w
 	bsr.w	forcefade
 	moveq	#$1F,d0
-.loop2
+.loop2								;put each color back
 	move.l	(sp)+,-(a0)
 	dbf	d0,.loop2
 	movem.l	(sp)+,d0/a0
@@ -165,7 +165,7 @@ cramfade							;fade from current color in color ram to color held in palfadenew
 	beq.w	.next					;component already at target
 	blt.w	.nn						;below target: step up
 	neg.w	d2						;above target: step down
-.nn
+.nn									;component stepped
 	add.w	d2,d0					;apply the step to the component
 	and.w	d4,d7
 	or.w	d0,d7					;merge the new component into the color
@@ -174,7 +174,7 @@ cramfade							;fade from current color in color ram to color held in palfadenew
 	swap	d0
 	move.l	d0,Vctrl-Vdata(a0)
 	move.w	d7,(a0)
-.next								;d0 = d1, or from above
+.next								;next color
 	addq.w	#2,d6					;next color
 	cmp.w	#$80,d6					;64 colors done?
 	bne.s	.top
@@ -187,7 +187,7 @@ CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected f
 	movea.l	#Vdata,a0
 	move.l	#CRAM_W,Vctrl-Vdata(a0)
 	moveq	#$1F,d0
-.0
+.0									;copy each color pair
 	move.l	(a1)+,(a0)				;two colors per long
 	dbf	d0,.0
 	st	(palcount).w				;fade done
@@ -250,7 +250,7 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	move.l	d0,d1
 	lsr.l	#8,d1					;first guess = d0/256 + 2
 	addq.w	#2,d1
-.top
+.top								;Newton steps until the guess settles
 	move.w	d1,d2					;Newton step: d1 = (d0/guess + guess)/2
 	move.l	d0,d1
 	divu.w	d2,d1
@@ -262,7 +262,7 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	move.w	d1,d0					;d1 = root (shared exit of both methods)
 	movem.l	(sp)+,d1-d4
 	rts
-.big
+.big								;binary search for large values
 	moveq	#0,d1
 	moveq	#-1,d2
 .bs									;loop
@@ -335,7 +335,7 @@ waitx								;wait d0 vblanks or until input from either joystick. Return joysti
 	or.w	d3,(waitxpad).w
 	tst.w	d1
 	bne.w	rtss2
-.1									;FourWayPlay = 0, or from above
+.1									;read pad 1 (and the others)
 	move.w	(Vcount).w,d0
 .0									;loop
 	cmp.w	(Vcount).w,d0			;wait for the next vblank to change Vcount
@@ -354,7 +354,7 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	cmpi.w	#$708,(Zamx).w
 	bhi.w	.nz						;zamboni past $708: stop moving it
 	addq.w	#1,(Zamx).w
-.nz									;Zamx > $708, or from above
+.nz									;zamboni moved
 	moveq	#1,d7
 	jsr	(updatecrowdf).w			;4EB8: target below $8000
 	jsr	(RunArenaAnim).l
@@ -386,21 +386,21 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	beq.w	.vid
-.key								;d1 <> 0, or from above
+.key								;a button: run the menu
 	move.w	(Vcount).w,d0
 	cmp.w	#$FF88,d0
 	blt.w	.menu
 	moveq	#$FFFFFF88,d0
-.menu
+.menu								;timer clamped
 	movem.w	d0,-(sp)
 	jsr	(HandleMenuInput).w			;4EB8: target below $8000
 	bne.w	.resume					;menu did not end the screen: carry on waiting
 	addq.w	#2,sp
 	bset	#7,d1					;tell the caller the menu ended it
 	bra.w	.ex
-.resume
+.resume								;menu left the screen up
 	move.w	(sp)+,(Vcount).w
-.vid								;FourWayPlay = 0 or d1 = 0, or from above
+.vid								;redraw and keep waiting
 	bsr.w	setvideo
 	move.w	(Vcount).w,d0
 .0									;loop
@@ -451,7 +451,7 @@ nodiag								;eliminate diagonal direction presses: if held directions (d3 bits
 	move.w	d3,d0
 	andi.w	#$F,d0					;held directions
 	beq.w	.ok						;none held
-.0
+.0									;each direction bit
 	clr.w	d5						;test each single-bit direction against the held set
 	bset	d4,d5
 	cmp.w	d5,d0
@@ -575,7 +575,7 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	bra.w	.nd
 .dd									;(a global in ; local here, only DoDMA uses it)
 	movem.l	d2-d3/a1,-(sp)
-.nd
+.nd									;DMA the part
 	lea	(Vctrl).l,a1
 	move.w	#VDPR_MODE2+$54,(a1)
 	move.w	#VDPR_AUTOINC+$02,(a1)
@@ -625,7 +625,7 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	andi.w	#3,d3
 	move.l	d3,(a1)					;vram write command, no dma
 	move.w	(a0),-4(a1)
-.0									;a0 >= 0, or from above
+.0									;DMA or single word done
 	move	(sp)+,sr
 	movem.l	(sp)+,d2-d3/a1
 	rts
@@ -690,7 +690,7 @@ DoFill								;fill vram. d0 = words to fill, d1 = vram address, d2 = data to fi
 	move.w	d2,d3					;d3 = fill word twice, for long writes
 	lsr.w	#1,d0					;words -> longs
 	subq.w	#1,d0
-.0
+.0									;each long of the fill
 	move.l	d3,(dmaram).w
 	move.w	(dmaram).w,(a1)
 	move.w	(dmaram+2).w,(a1)
@@ -708,7 +708,7 @@ setVram								;initialize all necesary video parameters based on my variables. 
 									;color to fade to. Falls into setVram_0
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$3F,d1					;63
-.0
+.0									;fill each target color
 	move.w	d0,(a0)+				;fill the 64 target colors with d0
 	dbf	d1,.0
 	move.w	#$18,(palcount).w		;24
@@ -723,14 +723,14 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 	bsr.w	Vmaddr					;vram address 0, a0 = Vdata
 	move.w	#$3FFF,d0
 	clr.l	d1
-.9
+.9									;clear each long of VRAM
 	move.l	d1,(a0)					;clear vram
 	dbf	d0,.9
 	move.w	#$8C00,d0				;8 for shadow mode
 	btst	#df32c,(disflags).w		;#df32c
 	bne.w	.i32					;32 column flag set: leave bits 0 and 7 clear
 	ori.w	#$81,d0					;%10000001
-.i32								;df32c set, or from above
+.i32								;column mode set
 	move.w	d0,Vctrl-Vdata(a0)		;40 col mode, no interlace, normal brightness
 	move.w	#VDPR_MODE1+$04,Vctrl-Vdata(a0)	;512 color palette enable
 	move.w	#VDPR_MODE2+$64,Vctrl-Vdata(a0)
@@ -738,7 +738,7 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 	cmpi.w	#6,(Map1col).w
 	beq.w	.i64					;Map1col 6 = 64 columns wide
 	move.w	#$9003,d0				;otherwise 128x32
-.i64								;Map1col = 6, or from above
+.i64								;map width set
 	move.w	d0,Vctrl-Vdata(a0)
 	move.w	#$8200,d0
 	move.b	(VmMAP1).w,d0
@@ -807,7 +807,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 .02									;loop
 	adda.l	#$20,a0
 	adda.l	#$20,a3
-.00
+.00									;copy each palette line chosen in d5
 	moveq	#$1F,d0					;31
 	lsr.w	#1,d5					;d5 bit n = copy palette line n; stop when no bits left
 	bcs.s	.01
@@ -816,7 +816,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	andi.w	#$F800,d5
 	move.w	$E(sp),d2				;width y
 	subq.w	#1,d2
-.loop2
+.loop2								;each map row
 	bsr.w	xyVmMap					;set vram address from printx/printy/printm, a0 = Vdata
 	move.w	d6,d0					;y start
 	mulu.w	(a1),d0					;map width
@@ -824,7 +824,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	asl.w	#1,d0					;d0 = byte offset of the first map word wanted
 	move.w	$A(sp),d1				;width x
 	subq.w	#1,d1
-.loop1
+.loop1								;each map word of the row
 	move.w	4(a1,d0.w),d3			;map word (map data starts 4 bytes in)
 	add.w	d4,d3					;add the start char
 	eor.w	d5,d3					;xor the attribute bits
