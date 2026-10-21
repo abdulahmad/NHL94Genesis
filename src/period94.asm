@@ -15,7 +15,7 @@ EndShootout							;Shootout over (CountShootoutGoals): freezewindow, then the 5 
 	cmp.w	(awayshootgoals).w,d2
 	bgt.w	.0
 	move.w	#6,d0
-.0
+.0									;d2 > awayshootgoals, or from above
 	asl.w	#7,d0
 	adda.w	d0,a3
 	move.w	#4,d2
@@ -29,7 +29,7 @@ EndShootout							;Shootout over (CountShootoutGoals): freezewindow, then the 5 
 	tst.w	(Vpos).w
 	bmi.w	.1
 	move.w	#$FF10,d0
-.1
+.1									;Vpos negative, or from above
 	add.w	(Vpos).w,d0
 	move.w	d0,Ypos(a3)
 	move.w	#0,(a3)
@@ -54,7 +54,7 @@ ClampPositionBox					;Unreferenced. Clamp temp3 / temp4(a3) to the box for posit
 	btst	#pfgoal,pflags(a3)
 	beq.w	.0
 	movea.l	#PositionBoxesTop,a0
-.0
+.0									;pfgoal clear, or from above
 	add.w	d7,d7
 	move.w	(a0,d7.w),d0
 	cmp.w	temp3(a3),d0
@@ -75,7 +75,7 @@ ClampPositionBox					;Unreferenced. Clamp temp3 / temp4(a3) to the box for posit
 	cmp.w	temp4(a3),d0
 	bgt.w	.x
 	move.w	d0,temp4(a3)
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0
 	rts
 PositionBoxes						;ClampPositionBox boxes: min / max of $44, then of $46, per position
@@ -134,7 +134,7 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 	cmp.w	#3,d2
 	bls.w	.0
 	moveq	#3,d2
-.0
+.0									;d2 <= 3, or from above
 	bra.w	.1
 .loop
 	move.w	d3,d0
@@ -198,9 +198,9 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 .next
 	addq.w	#8,a0
 	dbf	d4,.loop2
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d5
-.x2
+.x2									;exit (also the end of the code above)
 	rts
 PrintPlayerNameRight				;Print the name of player d0 of team a2 (FormatPlayerName), moved left so
 									;it ends before column $29 (a trailing pad byte or
@@ -324,7 +324,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	dc.w	$001C					;String length: too many arguments for the String macro
 	dc.b	$BE,$C,$A,'<',$BE,$11,$A,'<',$BE,$16,$A,'<',$BE,$1A,$A,'<<',$BE,' ',$A,'<<<<<',0
 	bra.w	.1
-.0
+.0									;bit 1 of sflags7 clear
 	jsr	(printz).l
 	dc.w	$0016					;String length: too many arguments for the String macro
 	dc.b	$BE,$C,9,'1',$BE,$11,9,'2',$BE,$16,9,'3',$BE,' ',9,'Total'
@@ -335,7 +335,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bsr.w	.title
 	bsr.w	.lines
 	move.w	#$18,(palcount).w
-.loop2
+.loop2								;loop
 	jsr	(WaitVSyncAndReadInput).l	;left (bit 2) goals, right (bit 3) shots, start exits
 	btst	#7,d1
 	bne.w	.exit
@@ -344,34 +344,34 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	btst	#3,d1
 	bne.w	.2
 	bra.s	.loop2
-.2
+.2									;bit 3 of d1 set
 	tst.w	(matchup).w
 	bne.s	.loop2
 	st	(matchup).w
 	bsr.w	.title
 	bsr.w	.lines
 	bra.s	.loop2
-.3
+.3									;bit 2 of d1 set
 	tst.w	(matchup).w
 	beq.s	.loop2
 	clr.w	(matchup).w
 	bsr.w	.title
 	bsr.w	.lines
 	bra.s	.loop2
-.exit
+.exit								;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	jmp	(ExitStatsScreen).l
-.title
+.title								;local subroutine
 	tst.w	(matchup).w
 	beq.w	.6
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP2),$12,7,'Shots',-(TXPRI+TXMAP2),$F,$1A,'[ For Goals'
 	rts
-.6
+.6									;matchup = 0
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP2),$12,7,'Goals',-(TXPRI+TXMAP2),$F,$1A,'For Shots ]'
 	rts
-.lines
+.lines								;local subroutine
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP2),0,0
@@ -383,12 +383,12 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bsr.w	.team
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.team
+.team								;local subroutine
 	lea	tmPerGoals(a2),a0
 	tst.w	(matchup).w
 	beq.w	.9
 	lea	tmPerShots(a2),a0
-.9
+.9									;matchup = 0, or from above
 	clr.w	(matchuptimer).w
 	move.w	#$B,(printx).w
 	bsr.w	.num
@@ -416,11 +416,11 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	cmp.w	#$64,d0
 	blt.w	.11
 	move.w	#3,d1
-.11
+.11									;d0 < $64, or from above
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	rts
-.num
+.num								;local subroutine
 	move.w	(a0)+,d0
 	add.w	d0,(matchuptimer).w
 	jsr	(printz).l
@@ -430,7 +430,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	cmp.w	#$64,d0
 	blt.w	.13
 	move.w	#3,d1
-.13
+.13									;d0 < $64, or from above
 	jsr	(PushNumberWidth).l
 	jmp	(print).l
 StatsReport							;"Game Statistics" menu item (menu lists): both
@@ -459,16 +459,16 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	tst.w	(OptPen).w
 	bne.w	.0
 	move.w	#$30,(matchupvis).w		;11 rows
-.0
+.0									;OptPen <> 0, or from above
 	bsr.w	DisplayStats
 	bsr.w	PrintStatScrollArrows
-.loop
+.loop								;loop
 	jsr	(vcountwait).l
 	jsr	(getpzjoy).l
 	btst	#7,d3
 	beq.w	.1
 	jmp	(ExitStatsScreen).l
-.1
+.1									;bit 7 of d3 clear
 	jsr	(nodiag).l
 	move.w	#$FFFE,d0
 	btst	#0,d3
@@ -476,13 +476,13 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	neg.w	d0
 	btst	#1,d3
 	beq.w	.3
-.2
+.2									;bit 0 of d3 set, or from above
 	move.w	d0,(PlayerScrollCtr).w
-.3
+.3									;bit 1 of d3 clear, or from above
 	bsr.w	.scroll
 	bsr.w	PrintStatScrollArrows
 	bra.s	.loop
-.scroll
+.scroll								;local subroutine
 	move.w	(PlayerScrollCtr).w,d0
 	beq.w	rtsStatTables
 	add.w	(VertLineScrolling).w,d0
@@ -494,14 +494,14 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	andi.w	#$F,d0
 	bne.w	.5
 	clr.w	(PlayerScrollCtr).w
-.5
+.5									;d0 <> 0, or from above
 	andi.w	#$F,d1
 	bne.w	SetStatScroll
 	move.w	d0,-(sp)
 	cmp.w	#$E,d0
 	bne.w	.6
 	bsr.w	StatScrollRow
-.6
+.6									;d0 <> $E, or from above
 	move.w	(sp)+,d0
 	cmp.w	#2,d0
 	bne.w	SetStatScroll
@@ -538,7 +538,7 @@ PrintStatScrollArrows				;StatsReport scroll arrows (printz2): up ($7B) when Ver
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',8,CC_SetFont,1,'{'
 	bra.w	.1
-.0
+.0									;VertLineScrolling = 0
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',8,CC_SetFont,1,' '
 .1
@@ -548,7 +548,7 @@ PrintStatScrollArrows				;StatsReport scroll arrows (printz2): up ($7B) when Ver
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',$1A,CC_SetFont,1,'}'
 	bra.w	.3
-.2
+.2									;d0 = VertLineScrolling
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',$1A,CC_SetFont,1,' '
 .3
@@ -577,7 +577,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	bne.w	.row
 	move.w	#$A,d6
 	lea	TeamStatTextTblNoPen(pc),a1
-.row
+.row								;OptPen <> 0, or from above
 	move.w	(a1),d0					;label length word
 	lsr.w	#1,d0					;half the label width
 	neg.w	d0
@@ -610,7 +610,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a2,d1.w),d1
 	beq.w	.0
 	divu.w	d1,d0
-.0
+.0									;d1 = 0, or from above
 	jsr	(PushNumber).l
 	jsr	(appstring).l
 	jsr	(appendz).l
@@ -623,11 +623,11 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	bne.w	.2
 	bsr.w	.8
 	bra.w	.4
-.2
+.2									;a0 <> #tmPwrPlayTime
 	cmpi.w	#$A,(a0)
 	beq.w	.3
 	bsr.w	.7
-.3
+.3									;a0 = $A, or from above
 	cmpi.w	#$A,(a0)
 	bne.w	.4
 	bsr.w	.8
@@ -651,7 +651,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a2,d1.w),d1
 	beq.w	.5
 	divu.w	d1,d0
-.5
+.5									;d1 = 0, or from above
 	jsr	(PushNumber).l
 	jsr	(appstring).l
 	jsr	(appendz).l
@@ -662,9 +662,9 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
 	jmp	(print).l
-.7
+.7									;local subroutine
 	jmp	(PushNumber).l
-.8
+.8									;local subroutine
 	jmp	(PushTime).l
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
@@ -759,9 +759,9 @@ updatePPTeamTime					;One more second of power play time (tmPwrPlayTime) for the
 	btst	#sf2pwrtm,(sflags2).w	;check who's on PP
 	beq.w	.0						;branch if home (team 1)
 	movea.l	#AwShots,a2				;move away team struct into a2
-.0
+.0									;sf2pwrtm clear, or from above
 	addq.w	#1,tmPwrPlayTime(a2)	;one more second of power play time
-.x
+.x									;exit (also the end of the code above)
 	rts
 GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 									;(the player card "Team Rating") and PrintMatchupRating
@@ -789,10 +789,10 @@ ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) a
 	move.w	SCnum(a3),d0
 	cmp.w	(puckc).w,d0
 	bne.w	.x
-.0
+.0									;cont2team = 0, or from above
 	cmpi.w	#2,(msgtimer).w
 	ble.w	.x
 	move.w	#2,(msgtimer).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0
 	rts

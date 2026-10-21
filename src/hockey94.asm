@@ -46,7 +46,7 @@ StartGame							;reset game state for a new game, then start the first period
 	cmp.b	#$E0,d3
 	bne.w	.chkpen
 	move.w	#3,(Optperlen).w		;period length index 3 = 30 seconds
-.chkpen	clr.b	(gmode).w
+.chkpen	clr.b	(gmode).w			;d3 <> $E0, or from above
 	cmpi.w	#1,(OptPen).w
 	bne.w	.0
 	bset	#gmoffs,(gmode).w		;gmoffs: offsides pen. is active
@@ -62,7 +62,7 @@ StartGame							;reset game state for a new game, then start the first period
 	movea.l	#AwShots,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
-.noso	clr.w	(ScoreSumbytes).w
+.noso	clr.w	(ScoreSumbytes).w	;bit 0 of gmode2 clear, or from above
 	clr.w	(PenSumLength).w
 	clr.w	(gsp).w					;first period
 	clr.w	(ChkCnt).w
@@ -98,7 +98,7 @@ ResetClock							;set period length and stop clock
 	tst.w	(OptPlayMode).w
 	bne.w	.0
 	move.w	#$258,d0				;OptPlayMode 0 overtime is always 10:00
-.0	move.w	d0,(gameclock).w
+.0	move.w	d0,(gameclock).w		;gsp < 3 or OptPlayMode <> 0, or from above
 	move.w	d0,(PerTimeTotal).w
 	move.w	d0,(periodendtime).w	;CheckLateGameSong trigger time =
 	asr.w	#1,d0
@@ -120,7 +120,7 @@ StartPer							;start a period: reset stack, rink and clock, face off, run the g
 	cmpi.w	#3,(gsp).w
 	bne.w	.reg
 	bset	#1,(sflags7).w			;overtime
-.reg	st	(faceoffanim).w
+.reg	st	(faceoffanim).w			;gsp <> 3, or from above
 	movea.w	#(Stack-M68K_RAM),sp
 	jsr	(p_turnoff).l				;sound off
 	jsr	(setupice).l
@@ -217,7 +217,7 @@ RestoreBenchEnergy					;Called once per second. Restore energy for players on th
 	movea.w	#(tmstruct-M68K_RAM),a2	;team 1
 	bsr.w	.notinprog
 	lea	tmsize(a2),a2				;team 2 (tmsize)
-.notinprog
+.notinprog							;local subroutine
 	moveq	#(maxros-1)*2,d0		;(maxros-1)*2
 .b0	cmpi.w	#$FFFE,tmpdst(a2,d0.w)	;tmpdst: -2 = bench, -1 = ice, 0+ = pen box
 	bne.w	.next
@@ -227,7 +227,7 @@ RestoreBenchEnergy					;Called once per second. Restore energy for players on th
 	move.w	#$1000,tmpde(a2,d0.w)	;max energy
 .next	subq.w	#2,d0				;next roster slot
 	bpl.s	.b0
-.ex	rts
+.ex	rts								;exit (also the end of the code above)
 
 CheckLateGameSong					;Called once per second. 3rd period: choose and play a song once at the
 									;random trigger time set by ResetClock
@@ -244,7 +244,7 @@ CheckLateGameSong					;Called once per second. 3rd period: choose and play a son
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)
 	jsr	(song).l
-.x	rts
+.x	rts								;exit (also the end of the code above)
 
 UpdateCwdExcite						;called once per second. Track peak and running total of crowd excitement,
 									;then
@@ -253,13 +253,13 @@ UpdateCwdExcite						;called once per second. Track peak and running total of cr
 	cmp.w	(MaxCwdExciteLvl).w,d0
 	bls.w	.less
 	move.w	d0,(MaxCwdExciteLvl).w	;new peak
-.less	ext.l	d0
+.less	ext.l	d0					;d0 <= MaxCwdExciteLvl, or from above
 	add.l	d0,(SumCwdExciteLvl).w	;running total
 	addq.w	#1,(NumCwdExciteLvl).w	;sample count
 	subq.w	#1,(CwdExciteLvl).w		;decay
 	bpl.w	.ex
 	clr.w	(CwdExciteLvl).w
-.ex	rts
+.ex	rts								;exit (also the end of the code above)
 
 updatecrowdf						;this is called every game loop with d7 = elapsed frames this will update
 									;the current frame of crowd animation
@@ -332,7 +332,7 @@ clockcont_0							;End of period. Also entered from puckfaceoff
 	btst	#gsftf,gsflags(a0)		;gsftf, gsflags(a0): teams are flipped
 	beq.w	.nf
 	eori.w	#2,d3					;gspobwins-gspotwins
-.nf	move.w	(HmGoals).w,d1
+.nf	move.w	(HmGoals).w,d1			;gsftf clear, or from above
 	sub.w	(AwGoals).w,d1
 	bpl.w	.ns1
 	eori.w	#2,d3					;gspobwins-gspotwins
@@ -369,7 +369,7 @@ clockcont_0							;End of period. Also entered from puckfaceoff
 	bne.w	.eop_ex
 	tst.w	(OptPlayMode).w
 	beq.s	.eog					;gsp 3 with OptPlayMode 0 ends the game
-.eop_ex	move.w	#PenEOP,d0
+.eop_ex	move.w	#PenEOP,d0			;gsp <> 3, or from above
 	jmp	AddPenalty2
 
 demoread							;monitor joystick if in demo mode (called every game loop)
@@ -440,7 +440,7 @@ Pausemode							;Game is in pause mode now
 	beq.w	.0
 	movea.l	#PauseText2,a0			;alternate item list
 .0	bsr.w	InitMenuState			;build menu from list a0, draw routine a1
-.loop	bsr.w	vcountwait
+.loop	bsr.w	vcountwait			;loop
 	bsr.w	getpzjoy
 	jsr	(showclock).l
 	jsr	(ProcessInputWithRepeat).l
@@ -455,7 +455,7 @@ Pausemode							;Game is in pause mode now
 	jsr	(ReloadRefHorTiles).l
 	jsr	(SetHor).l
 	bra.w	.hor
-.clr	jsr	(ClrHor).l
+.clr	jsr	(ClrHor).l				;sfhor clear
 .hor	movea.l	#Vdata,a0
 	move.w	#VDPR_WINX,Vctrl-Vdata(a0)
 	move.w	#VDPR_WINY,Vctrl-Vdata(a0)
@@ -494,4 +494,4 @@ seta2								;Set a2 to the team struct of the pause joystick also called from
 .seta20	cmpi.w	#1,(cont1team).w	;pad 1 paused
 .seta21	beq.w	.x					;a2 stays home if the pausing pad controls team 1
 	adda.w	#tmsize,a2				;tmsize
-.x	rts
+.x	rts								;exit (also the end of the code above)

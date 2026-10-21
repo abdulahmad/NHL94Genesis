@@ -27,7 +27,7 @@ eraser								;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = cha
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;#dfng
 	movem.w	d0-d1,-(sp)				;(sp) = width, 2(sp) = rows left
-.1
+.1									;loop
 	bsr.s	xyVmMap					;one row: a0 = vram port at printx/y
 	move.w	(sp),d0					;width
 	subq.w	#1,d0
@@ -60,7 +60,7 @@ Framer								;frame and fill (uses framer.map graphics and assums tiles are alr
 	clr.w	d4						;d4 = offset of the frame map row (6 bytes per row: left, middle, right)
 	bsr.w	.tbline					;top row
 	subq.w	#3,2(sp)				;height-3: loop counter for the middle rows
-.mtop
+.mtop								;loop
 	bsr.w	.tbline					;middle row (height-2 times)
 	subq.w	#6,d4					;stay on the middle map row
 	subq.w	#1,2(sp)
@@ -71,7 +71,7 @@ Framer								;frame and fill (uses framer.map graphics and assums tiles are alr
 	move.w	(sp)+,(disflags).w
 	movem.l	(sp)+,d0-d4/a0-a1
 	rts
-.tbline
+.tbline								;local subroutine
 	bsr.w	xyVmMap					;draw one frame row: left cell, width-2 middle cells, right cell
 	addq.w	#1,(printy).w
 	bsr.w	.setter					;left cell
@@ -85,7 +85,7 @@ Framer								;frame and fill (uses framer.map graphics and assums tiles are alr
 	bsr.w	.setter					;right cell
 	addq.w	#2,d4					;d4 = next map row
 	rts
-.setter
+.setter								;local subroutine
 	move.w	0(a1,d4.w),d3
 	add.w	d2,d3
 	move.w	d3,(a0)
@@ -119,7 +119,7 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	btst	#3,(sflags6).w
 	beq.w	.start
 	movea.w	#(setupfontchars-M68K_RAM),a3
-.start
+.start								;bit 3 of sflags6 clear, or from above
 	bsr.w	xyVmMap
 	move.w	(printa).w,d2
 	move.w	(a1)+,d3				;string length
@@ -140,7 +140,7 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	bne.w	.noblank
 	move.w	#$7FF,d0
 	bra.w	.p
-.noblank
+.noblank							;d0 <> $40
 	cmp.b	#$5E,d0
 	beq.w	.skip
 	asl.w	#1,d0					;ascii -> word index into the font map
@@ -148,7 +148,7 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	btst	#3,(sflags6).w
 	beq.w	.4
 	movea.l	#PrintFont2Map,a2
-.4
+.4									;bit 3 of sflags6 clear, or from above
 	adda.l	jimdata(a2),a2
 	move.w	mapwords(a2,d0.w),d0
 	move.w	(printfontset).w,d1
@@ -162,7 +162,7 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	movem.l	(sp)+,d0-d3/a0/a2-a3
 	move.w	(sp)+,(disflags).w
 	rts
-.skip
+.skip								;d0 = $5E
 	addq.w	#1,(printx).w			;'^': skip a column
 	bsr.w	xyVmMap
 	bra.s	.1
@@ -284,12 +284,12 @@ print								;a1 = string macro, printx/y = x/y cordinate on map for printing, p
 	bsr.w	xyVmMap
 	subq.w	#2,d3
 	bra.w	.1
-.nocom
+.nocom								;d0 >= 0
 	cmp.b	#$40,d0
 	bne.w	.noblank
 	move.w	#$7FF,d0
 	bra.w	.p
-.noblank
+.noblank							;d0 <> $40
 	cmp.b	#$5E,d0
 	beq.w	.skip
 	asl.w	#1,d0					;ascii -> word index into the font map
@@ -297,14 +297,14 @@ print								;a1 = string macro, printx/y = x/y cordinate on map for printing, p
 	btst	#3,(sflags6).w
 	beq.w	.2
 	movea.l	#PrintFont2Map,a2
-.2
+.2									;bit 3 of sflags6 clear, or from above
 	adda.l	jimdata(a2),a2
 	move.w	mapwords(a2,d0.w),d0
 	btst	#3,(sflags6).w
 	beq.w	.3
 	add.w	(setupfontchars).w,d0
 	bra.w	.p
-.3
+.3									;bit 3 of sflags6 clear
 	add.w	(smallfontchars).w,d0
 .p
 	add.w	d2,d0					;for alternate palettes
@@ -315,7 +315,7 @@ print								;a1 = string macro, printx/y = x/y cordinate on map for printing, p
 	movem.l	(sp)+,d0-d3/a0/a2
 	move.w	(sp)+,(disflags).w
 	rts
-.skip
+.skip								;d0 = $5E
 	addq.w	#1,(printx).w			;'^': skip a column
 	bsr.w	xyVmMap
 	bra.s	.1
@@ -369,7 +369,7 @@ PushTime							;convert d0 into string format of minutes:seconds. Return a1 = st
 	beq.w	.noz
 	addi.w	#$30,d0
 	move.b	d0,(a1)
-.noz
+.noz								;d0 = 0, or from above
 	move.l	(sp)+,d0				;d0 = end address of the string
 	sub.l	a1,d0
 	addq.w	#2,d0					;length incl. the length word
@@ -377,7 +377,7 @@ PushTime							;convert d0 into string format of minutes:seconds. Return a1 = st
 	beq.w	.1
 	clr.b	-(a1)					;pad to an even length
 	addq.w	#1,d0
-.1
+.1									;bit 0 of d0 clear, or from above
 	move.w	d0,-(a1)				;string length word in front
 	move.l	(sp)+,d0
 	rts
@@ -386,7 +386,7 @@ PushNumber							;convert d0 into string format of base 10 number, no leading ze
 	movea.w	#(PushNumberBuf-M68K_RAM),a1
 	move.l	d0,-(sp)
 	move.l	a1,-(sp)
-.0
+.0									;loop
 	ext.l	d0
 	divu.w	#$A,d0
 	swap	d0
@@ -402,7 +402,7 @@ PushNumber							;convert d0 into string format of base 10 number, no leading ze
 	beq.w	.1
 	clr.b	-(a1)					;pad to an even length
 	addq.w	#1,d0
-.1
+.1									;bit 0 of d0 clear, or from above
 	move.w	d0,-(a1)				;string length word in front
 	move.l	(sp)+,d0
 	rts
@@ -417,7 +417,7 @@ PushNumberWidth						;right-justified number
 .loop
 	dbf	d1,.mul						;exit when d1 is 0
 	moveq	#$20,d3					;' '   ; move 20 into d3
-.loop2
+.loop2								;loop
 	ext.l	d0						;sign extend d0
 	divu.w	d2,d0					;divide d2 into d0
 	bne.w	.0						;branch if not equal
@@ -440,7 +440,7 @@ PushNumberWidth						;right-justified number
 	beq.w	.00
 	clr.b	(a1)+					;clear byte at a1 and increment
 	addq.w	#1,d0					;add 1 to d0
-.00
+.00									;bit 0 of d0 clear, or from above
 	movea.w	#(PushWidthBuf-M68K_RAM),a1	;a1 = PushWidthBuf again
 	move.w	d0,(a1)					;move d0 into a1 address location
 	movem.l	(sp)+,d0-d3				;push from stack
@@ -460,7 +460,7 @@ appstring							;append string a1 to string a3
 	addq.w	#1,a0					;next byte of the destination
 	tst.b	(a0)
 	dbeq	d0,.0					;stop at the zero byte
-.1
+.1									;d0 negative, or from above
 	move.w	(a1)+,d0				;a1 length word
 	subq.w	#3,d0
 	bmi.w	.ex						;empty source: nothing to append
@@ -475,10 +475,10 @@ appstring							;append string a1 to string a3
 	beq.w	.4
 	clr.b	(a0)+					;pad to an even length
 	addq.l	#1,d0
-.4
+.4									;bit 0 of d0 clear, or from above
 	sub.l	a3,d0
 	move.w	d0,(a3)
-.ex
+.ex									;exit: restore the registers
 	movem.l	(sp)+,d0/a0
 	rts
 printbigz							;String macro follows the call
@@ -527,13 +527,13 @@ printbig							;same as print, only use bigfont.map graphics. a1 = string macro,
 	move.w	d5,(printy).w
 	subq.w	#2,d3					;two extra bytes consumed
 	bra.w	.1
-.nocom
+.nocom								;d0 >= 0
 	cmp.b	#$61,d0
 	blt.w	.2
 	cmp.b	#$7A,d0
 	bgt.w	.2
 	addi.b	#-$20,d0
-.2
+.2									;d0 < $61 or d0 > $7A, or from above
 	move.w	d3,-(sp)
 	bsr.w	PrintBigChar
 	move.w	(sp)+,d3
@@ -553,7 +553,7 @@ PrintBigChar						;print big font char d0 (ascii) through bfasciicon
 	bpl.w	.0
 	neg.w	d1
 	clr.w	d2
-.0
+.0									;d1 >= 0, or from above
 	asl.w	#1,d1
 	movea.l	#BigFontMap,a0
 	adda.l	jimdata(a0),a0

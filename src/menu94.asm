@@ -38,12 +38,12 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	beq.w	.up
 	addq.w	#1,(menuitem).w			;next lower item
 	bra.w	UpdateMenuSelection
-.up
+.up									;dbut clear
 	btst	#ubut,d1				;ubut
 	beq.w	.sel
 	subq.w	#1,(menuitem).w			;next higher item
 	bra.w	UpdateMenuSelection
-.sel
+.sel								;ubut clear
 	btst	#cbut,d1				;cbut
 	beq.w	.flip					;nothing: Z set, flipped to ne
 	bsr.w	seta2
@@ -62,10 +62,10 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	bclr	#1,(sflags5).w			;the handler drew its own screen
 	bne.w	.noredraw
 	bsr.w	DrawMenuScreen
-.noredraw
+.noredraw							;1 was set, or from above
 	tst.w	(menuitem).w			;item 0 (resume) leaves the menu
 	rts
-.flip
+.flip								;sbut set or cbut clear
 	eori	#4,ccr					;invert Z
 	rts
 UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print the menu:
@@ -77,7 +77,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	bpl.w	.0
 	clr.w	(menuitem).w			;no item above the first
 	clr.w	d0
-.0
+.0									;d0 >= 0, or from above
 	movea.l	(menulist).w,a0			;walk the item list d0 entries, stopping at the last one
 	adda.w	(a0),a0
 	adda.w	(a0),a0
@@ -94,12 +94,12 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	cmp.w	(menuitem+2).w,d0
 	bge.w	.3
 	move.w	d0,(menuitem+2).w		;scroll up
-.3
+.3									;d0 >= (menuitem+2).w, or from above
 	subq.w	#3,d0					;selection - 3 = first visible item if it is on the bottom row
 	cmp.w	(menuitem+2).w,d0
 	ble.w	.print
 	move.w	d0,(menuitem+2).w		;scroll down
-.print
+.print								;d0 <= (menuitem+2).w, or from above
 	bsr.w	SetMenuPrintX			;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).w
 	movea.l	(menulist).w,a1
@@ -124,7 +124,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	beq.w	.row
 	jsr	(printsmallz).l				;more items above
 	String	CC_SetAttribute,5,CC_AddX,1,CC_AddY,1,'{',CC_AddY,$FF	;(and hid the rest)
-.row
+.row								;d0 = 0
 	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l				;start of an item row
 	String	CC_AddX,2,CC_AddY,1
@@ -134,7 +134,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	cmp.w	(menuitem).w,d0
 	bne.w	.nosel
 	jsr	(printsmall).l				;the selected item marker
-.nosel
+.nosel								;d0 <> menuitem, or from above
 	movea.l	(sp)+,a1
 	bsr.w	PrintMenuItem			;the item text
 	addq.w	#1,d0
@@ -145,7 +145,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l				;more items below
 	String	CC_SetAttribute,5,CC_AddX,1,'}'	;(and hid the rest)
-.x
+.x									;exit
 	rts
 PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text starts with
 									;'x' is the goalie option: it prints Manual Goalie
@@ -160,19 +160,19 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	beq.w	.homegoalie
 	tst.w	(goaliemode2).w
 	bra.w	.chkgoalie
-.homegoalie
+.homegoalie							;sfpj clear
 	tst.w	(goaliemode1).w
 .chkgoalie
 	beq.w	.print
 	movea.l	#.auto,a1
-.print
+.print								;goaliemode1 = 0, or from above
 	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1					;skip the 'x' item text
 	bra.w	.x
 .plain
 	jsr	(printsmall).l
-.x
+.x									;exit (also the end of the code above)
 	rts
 .manual
 	String	'  Manual Goalie   '	;no label
@@ -205,7 +205,7 @@ vcountwait							;wait till Vcount changes, then resync Vcount. Saves d0. Reads 
 	move.w	d0,-(sp)
 	move.w	(OldVcount).w,d0
 	move.w	(OldVcount).w,d0
-.wait
+.wait								;loop
 	cmp.w	(Vcount).w,d0
 	beq.s	.wait
 	move.w	(OldVcount).w,(Vcount).w
