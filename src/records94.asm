@@ -1396,7 +1396,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	bge.w	.next
 .swap
 	move.b	(a1),d0
-	move.b	-1(a1),d1
+	move.b	-1(a1),d1				;previous entry
 	move.b	d0,-1(a1)
 	move.b	d1,(a1)
 	st	d6
@@ -1448,7 +1448,7 @@ ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	cmp.b	d3,d0
 	bge.w	.next
 	move.b	(a1),d0
-	move.b	-1(a1),d1
+	move.b	-1(a1),d1				;previous entry
 	move.b	d0,-1(a1)
 	move.b	d1,(a1)
 	st	d6

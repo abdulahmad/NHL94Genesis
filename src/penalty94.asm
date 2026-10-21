@@ -111,7 +111,7 @@ chkprogress							;control progress of ref and game control thru penalty events.
 	tst.w	(a0)+					;any penalty with minutes
 	beq.w	rtss2
 	clr.w	d0
-	move.b	-2(a0),d0
+	move.b	-2(a0),d0				;step back: penalty byte of the entry just read
 	movea.l	#Penaltylist,a1
 	adda.w	0(a1,d0.w),a1
 	tst.b	1(a1)					;penalty minutes
@@ -399,7 +399,7 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	btst	#gmpen,(gmode).w		;gmpen
 	bne.w	.iscalled
 	clr.w	d0
-	move.b	-2(a0),d0
+	move.b	-2(a0),d0				;step back: penalty byte of the entry just read
 	movea.l	#Penaltylist,a1
 	adda.w	0(a1,d0.w),a1
 	tst.b	1(a1)					;time for penalty
@@ -453,7 +453,7 @@ Stop4Pen							;a0 = penaltylist penalty +2. Stop the clock, set the face off sp
 	bne.w	.noticing
 	move.l	a3,-(sp)
 	movea.w	#(SortCords-M68K_RAM),a3
-	move.b	-1(a0),d1
+	move.b	-1(a0),d1				;step back: player byte of the entry just read
 	ext.w	d1
 	asl.w	#scsize,d1				;scsize
 	adda.w	d1,a3

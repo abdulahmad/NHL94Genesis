@@ -58,8 +58,8 @@ checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Chec
 	ble.w	.cl2
 	addq.w	#1,0(a0,d0.w)
 	subq.w	#1,0(a0,d4.w)
-	move.b	d4,0(a1,d1.w)
-	move.b	d0,1(a1,d1.w)
+	move.b	d4,0(a1,d1.w)			;next higher object into this entry
+	move.b	d0,1(a1,d1.w)			;this object into the next entry
 	addq.w	#1,d1
 	bra.s	.2
 .cl2
@@ -72,8 +72,8 @@ checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Chec
 	bge.w	.ex2
 	subq.w	#1,0(a0,d0.w)
 	addq.w	#1,0(a0,d4.w)
-	move.b	d4,0(a1,d1.w)
-	move.b	d0,-1(a1,d1.w)
+	move.b	d4,0(a1,d1.w)			;next lower object into this entry
+	move.b	d0,-1(a1,d1.w)			;this object into the previous entry
 	subq.w	#1,d1
 	bne.s	.3
 .ex2

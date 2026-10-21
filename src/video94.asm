@@ -891,7 +891,7 @@ jump_table							;DecompressBytecode handler offsets, one per opcode high nibble
 	dc.w	Opcode_CopyBackwardReverseMedium-jump_table	;E
 	dc.w	Opcode_CopyBackwardReverseLong-jump_table	;F
 Opcode_CopyLiteral					;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$1F,d0
 .loop
 	move.b	(a0)+,0(a1,d1.w)
@@ -902,7 +902,7 @@ Opcode_CopyLiteral					;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
 	dbf	d0,.loop
 	rts
 Opcode_ClearBytes					;opcode 2, write (low 4 bits)+1 zero bytes
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$F,d0
 .loop
 	clr.b	0(a1,d1.w)
@@ -913,7 +913,7 @@ Opcode_ClearBytes					;opcode 2, write (low 4 bits)+1 zero bytes
 	dbf	d0,.loop
 	rts
 Opcode_Fillbytes					;opcode 3, write the next data byte (low 4 bits)+3 times
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$F,d0
 	addq.w	#2,d0
 	move.b	(a0)+,d2
@@ -926,10 +926,10 @@ Opcode_Fillbytes					;opcode 3, write the next data byte (low 4 bits)+3 times
 	dbf	d0,.loop
 	rts
 Opcode_CopyBackwardShort			;opcodes 4-7, copy from back in the output buffer
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#7,d0
 	addq.w	#1,d0					;count-1
-	move.b	-1(a0),d2
+	move.b	-1(a0),d2				;step back to the opcode byte just read
 	lsr.w	#3,d2
 	andi.w	#7,d2
 	addq.w	#1,d2					;distance
@@ -946,7 +946,7 @@ CopyBackwardRun						;shared copy loop, d0 = count-1, d2 = distance back
 	dbf	d0,.loop
 	rts
 Opcode_CopyBackwardMedium			;opcode 8
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$F,d0
 	addq.w	#2,d0
 	move.b	(a0)+,d2
@@ -954,7 +954,7 @@ Opcode_CopyBackwardMedium			;opcode 8
 Opcode_CopyBackwardLong				;opcode 9
 	move.b	(a0),d0
 	asl.b	#1,d0					;x = bit 7 of the next byte
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	roxl.b	#1,d0
 	andi.w	#$1F,d0
 	addq.w	#2,d0
@@ -963,7 +963,7 @@ Opcode_CopyBackwardLong				;opcode 9
 	addq.w	#1,d2
 	bra.s	CopyBackwardRun
 Opcode_CopyBackwardExtended1		;opcode A
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	asl.w	#8,d0
 	move.b	(a0),d0
 	lsr.w	#6,d0
@@ -974,7 +974,7 @@ Opcode_CopyBackwardExtended1		;opcode A
 	addq.w	#1,d2
 	bra.s	CopyBackwardRun
 Opcode_CopyBackwardExtended2		;opcode B
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	asl.w	#8,d0
 	move.b	(a0),d0
 	lsr.w	#5,d0
@@ -985,10 +985,10 @@ Opcode_CopyBackwardExtended2		;opcode B
 	addq.w	#1,d2
 	bra.s	CopyBackwardRun
 Opcode_CopyBackwardReverseShort		;opcodes C-D, copy backwards through the source
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#3,d0
 	addq.w	#1,d0
-	move.b	-1(a0),d2
+	move.b	-1(a0),d2				;step back to the opcode byte just read
 	lsr.w	#2,d2
 	andi.w	#7,d2
 	addq.w	#1,d2
@@ -1005,7 +1005,7 @@ CopyBackwardReverseRun				;shared reverse copy loop
 	dbf	d0,.loop
 	rts
 Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$F,d0
 	addq.w	#2,d0
 	move.b	(a0)+,d2
@@ -1020,7 +1020,7 @@ Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
 Opcode_CopyBackwardReverseLong		;opcode F
 	move.b	(a0),d0
 	asl.b	#1,d0
-	move.b	-1(a0),d0
+	move.b	-1(a0),d0				;step back to the opcode byte just read
 	roxl.b	#1,d0
 	andi.w	#$1F,d0
 	addq.w	#2,d0
