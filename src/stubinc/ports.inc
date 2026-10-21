@@ -1,5 +1,5 @@
 ;	Hardware ports. These equates name the controller ports, the Z80 bus control and the video
-;	chip ports.
+;	chip ports, and the save RAM.
 
 IO_CT1_CTRL equ $A10008
 IO_CT1_DATA equ $A10002
@@ -7,6 +7,8 @@ IO_CT2_CTRL equ $A1000A
 IO_CT2_DATA equ $A10004
 IO_Z80BUS equ $A11100
 IO_Z80RES equ $A11200
+SaveRAM equ $200000					;battery save RAM (InitSaveRAM): $2000 bytes, the odd byte of each word.
+									;93 had a serial backup RAM port here (BackupRAM_Port)
 
 Vdata equ $C00000					;video ports. Control port offset from a0 = Vdata: move.w
 									;#x,Vctrl-Vdata(a0) with a0 = Vdata
