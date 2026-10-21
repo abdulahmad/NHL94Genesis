@@ -107,7 +107,7 @@ asswingo							;player a3 is winger on offense
 .0
 	lea	EvadePC(pc),a0				;add EvadePC as aux routine
 	bra.w	skateto					;skate to d0/d1 position
-rtss11
+rtss11								;shared rts for the early exits nearby
 	rts
 ; player a3 is center on defense
 ; d7 = elapsed frames
@@ -261,7 +261,8 @@ asscentero							;player a3 is center on offense
 	bra.w	skateto
 ; joypad controlled goalie control
 ; a3 = goalie
-assgoaliectrl
+assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not on the
+									;joystick leaves through assexit
 	btst	#pfjoycon,pflags(a3)	;is player joystick controlled?
 	bne.w	.goaliectrl				;branch is so
 	bra.w	assexit
@@ -837,7 +838,8 @@ AdjustFacingDirection				;Turn facedir one step toward direction d0
 ; a3 = goalie
 ; a0 = puckcross
 ; d3 = goalline of goalie
-goaliesave
+goaliesave							;pick the goalie save for a puck crossing the goal line: a0 = puckcross,
+									;d3 = goal line of goalie
 	move.w	(a0),d0					;puckcross x frames into d0
 	sub.w	(a3),d0					;sub goalie Xpos from d0
 	move.w	d3,d1					;move goalline into d1
@@ -1708,7 +1710,8 @@ checkob								;bring up little warning ref if a player on your team is over blu
 	dbf	d0,.top1
 	bra.s	.nob
 ; assignment for breakaway
-assbreakaway
+assbreakaway						;assignment for a breakaway: the puck carrier skates in, anyone else goes
+									;back to assnearest
 	move.w	SCnum(a3),d0			;Move SCnum into d0
 	cmp.w	(puckc).w,d0			;compare puck carrier SCnum with d0
 	beq.w	.puckc					;branch if puck carrier
@@ -2062,7 +2065,7 @@ check4check							;look for good opportunity for checking opponent. Falls in fro
 	dbf	d2,.0
 	rts
 ; assignment for catching pass
-asspassrec
+asspassrec							;assignment for catching a pass (apassrec)
 	btst	#pfalock,pflags(a3)		;pfalock - animation lock
 	bne.w	rtss2					;exit if locked
 	btst	#gmclock,(gmode).w		;gmclock - check if clock running
@@ -2361,7 +2364,8 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; puck start for penalty shot/shootout
-puckpenshot
+puckpenshot							;puck start for a penalty shot or shootout: on the first call (pfna) black
+									;the screen and set up the shot
 	bclr	#pfna,pflags(a3)
 	beq.w	.resumeplay
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -2640,10 +2644,11 @@ EndPenaltyShotPlay					;stop play after a penalty shot or shootout attempt: free
 	move.b	(savednewpnum).w,newpnum(a0,d0.w)
 	movem.l	(sp)+,d0/a0
 	jsr	(CountShootoutGoals).l
-PenaltyShotEndReturn
+PenaltyShotEndReturn				;penalty shot already finished: return without adding another
 	rts
 ; this is where the action starts
-puckfaceoff
+puckfaceoff							;puck controller for the face off: a3 = the face off controller (shootout
+									;mode skips to its own setup)
 	bclr	#4,(sflags8).w
 	btst	#0,(gmode2).w
 	beq.w	.normalfaceoff
@@ -4709,7 +4714,8 @@ stopna								;slow player a3 by 150 on each axis, no animation change. Falls in
 	clr.w	Yvel(a3)
 	rts
 runspeed	equ	200					;acc speed equate for table below
-dirtab	dc.w	0
+dirtab	dc.w	0					;x,y speed for each direction 0-7 (8 x,y word pairs); diagonals are
+									;runspeed/1.414
 	;X/Y acc speed for each direction 0-7
 	dc.w	runspeed
 	dc.w	runspeed*1000/1414		;runspeed / sqrt(2)

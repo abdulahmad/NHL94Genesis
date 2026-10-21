@@ -229,7 +229,8 @@ ControlCode_SetFont					;control code -7, next byte = char set index
 	rts
 ; see print
 ; string macro should follow jsr to this routine
-printz
+printz								;print the String that follows the bsr/jsr to this routine, then return
+									;past it
 	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
 	movea.l	4(sp),a1				;string after the call
 	bsr.w	print

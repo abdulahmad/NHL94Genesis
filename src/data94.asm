@@ -1645,7 +1645,8 @@ PenDataoffsides	dc.w	$0100		;ttmm: slow down 1, 0 minutes
 PenDataGhold	dc.w	$0100		;ttmm: slow down 1, 0 minutes (also used for out of play / PenOOP)
 	String	'Face Off'
 	dc.w	-$050a
-PenDataGhold2	dc.w	$0000
+PenDataGhold2	dc.w	$0000		;face off text with ttmm 0 (no slow down, 0 minutes), Penaltylist entry
+									;for a face off
 	String	'Face Off'
 	dc.w	-$050a
 PenDatadelay	dc.w	$0000		;ttmm: no slow down, 0 minutes
@@ -1657,19 +1658,22 @@ PenDatawhistle	dc.w	$0000		;ttmm: no slow down, 0 minutes; empty text
 PenDatacharge	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Charging'
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
-PenDatachargeps	dc.w	$04ff
+PenDatachargeps	dc.w	$04ff		;penalty shot form of PenDatacharge: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Charging'
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
 PenDataslash	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Slashing'
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
-PenDataslashps	dc.w	$04ff
+PenDataslashps	dc.w	$04ff		;penalty shot form of PenDataslash: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Slashing'
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
 PenDatatrip	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Tripping'
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
-PenDatatripps	dc.w	$04ff
+PenDatatripps	dc.w	$04ff		;penalty shot form of PenDatatrip: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Tripping'
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
 PenDatarough2	dc.w	$0a02		;ttmm: slow down $0a, 2 minutes
@@ -1678,25 +1682,29 @@ PenDatarough2	dc.w	$0a02		;ttmm: slow down $0a, 2 minutes
 PenDatarough	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
-PenDataroughps	dc.w	$04ff
+PenDataroughps	dc.w	$04ff		;penalty shot form of PenDatarough: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDatahook	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Hooking'
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
-PenDatahookps	dc.w	$04ff
+PenDatahookps	dc.w	$04ff		;penalty shot form of PenDatahook: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Hooking'
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
 PenDatacross	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Cross Check'
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
-PenDatacrossps	dc.w	$04ff
+PenDatacrossps	dc.w	$04ff		;penalty shot form of PenDatacross: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Cross Check'
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
 PenDataint	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Interference'
 	dc.w	$0004,$0101,$0c06,-$0101
-PenDataintps	dc.w	$04ff
+PenDataintps	dc.w	$04ff		;penalty shot form of PenDataint: ttmm $04FF (slow down 4; minutes $FF
+									;probably marks the penalty shot)
 	String	'Interference'
 	dc.w	$0004,$0101,$0c06,-$0101
 PenDataHold	dc.w	$0402			;ttmm: slow down 4, 2 minutes
@@ -1862,8 +1870,10 @@ PAttribColumns						;Skater attribute columns for PrintAttribHeader / the player
 									;Overall entry) are read by PrintShooterList, PrintOverallRating
 	String	'     Status    ]'
 	dc.w	$0000,$0				;status
-PAttribOverall	String	'[   Overall    ]'
-PAttribOverallMask	dc.w	$1fba,$a
+PAttribOverall	String	'[   Overall    ]'	;skater Overall column title (the rating is computed from the mask
+									;below)
+PAttribOverallMask	dc.w	$1fba,$a	;skater Overall: attribute weight bits and column value, read as one
+									;long by CalcAttrib callers
 	String	'[   Energy     ]'
 	dc.w	$0000,$2				;energy
 	String	'[   Agility    ]'
@@ -1899,8 +1909,10 @@ GAttribColumns						;Goalie attribute columns, same format as PAttribColumns. GA
 									;PrintOverallRating
 	String	'     Status    ]'
 	dc.w	$0000,$0				;status
-GAttribOverall	String	'[   Overall    ]'
-GAttribOverallMask	dc.w	$130f,$a
+GAttribOverall	String	'[   Overall    ]'	;goalie Overall column title (the rating is computed from the mask
+									;below)
+GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and column value, read as one
+									;long by CalcAttrib callers
 	String	'[   Agility    ]'
 	dc.w	$1000,$a
 	String	'[    Speed     ]'

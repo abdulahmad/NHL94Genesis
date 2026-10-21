@@ -726,7 +726,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.w	(sp)+,d0
 	move.w	(Hpos).w,(a0)+
 	move.w	(Vpos).w,(a0)+
-rtss8
+rtss8								;shared rts for the early exits nearby
 	rts
 ; this routine calls all collision/animation/assignment code for all players
 ; d7 = elapse frames since last call

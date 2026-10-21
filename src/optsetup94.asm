@@ -666,8 +666,8 @@ PrintScrollMarks					;Print the scroll marks at x 2: '}' at row $19 when more li
 	move.w	#2,(printx).w
 	jmp	print
 ScrollUpTxt	String	'{'				;Scroll marks for PrintScrollMarks
-ScrollDownTxt	String	'}'
-ScrollClearTxt	String	' '
+ScrollDownTxt	String	'}'			;scroll down mark
+ScrollClearTxt	String	' '			;blank to clear a scroll mark
 PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; 'New York Islanders' /
 									;'New York Rangers' for teams $D / $E).
 									;PrintOptionValue
@@ -694,7 +694,7 @@ PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; 'New York 
 	jmp	print
 IslandersTxt	String	'New York Islanders'	;Full names for the two New York teams (TeamList has only the
 												;city)
-RangersTxt	String	'New York Rangers'
+RangersTxt	String	'New York Rangers'	;full name for the Rangers
 BlankValueTxt	String	'                    '	;A blank value
 NATxt	String	'N/A                 '	;Per. Length in Shootout
 OptionValueOffsets					;Offsets of each option's value Strings. Team 1 / 2 are not read
@@ -1162,7 +1162,7 @@ TeamLogoBitmaps						;Team logo bitmaps by team number (TeamList
 	dc.l	logoFLA,logoHFD,logoLA,logoMTL,logoNJ,logoNYI,logoNYR,logoOTW
 	dc.l	logoPHI,logoPIT,logoQUE,logoSJ,logoSTL,logoTB,logoTOR,logoVAN
 	dc.l	logoWSH,logoWPG,logoASE,logoASW
-TeamLogoBitmapsEnd
+TeamLogoBitmapsEnd					;end of TeamLogoBitmaps (size check below)
 	IF (TeamLogoBitmapsEnd-TeamLogoBitmaps)<>(NumTeams*4)
 		inform	3,"TeamLogoBitmaps needs one entry per team"
 	ENDIF

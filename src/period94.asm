@@ -776,7 +776,7 @@ GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from Pr
 TeamRatings							;GetTeamRating values, one byte per team (TeamList order)
 	dc.b	$33,$4C,$49,$4B,$4E,$43,$4B,$43,$34,$42,$4A,$49,$44,$42
 	dc.b	$4A,$37,$45,$4B,$47,$38,$45,$38,$48,$47,$48,$46,$5B,$59
-TeamRatingsEnd
+TeamRatingsEnd						;end of TeamRatings (size check below)
 	IF (TeamRatingsEnd-TeamRatings)<>NumTeams
 		inform	3,"TeamRatings needs one byte per team"
 	ENDIF

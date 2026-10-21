@@ -78,7 +78,7 @@ SPAgready_table:					;3 gready frames per direction (93 used 2) and new times
 .7	dc.w	SPFGoalie+21,180,SPFgready+21,10,SPFGoalie+21,10,SPFgready+22,10,SPFGoalie+21,240,SPFgready+23,10,SPFGoalie+21,10,SPFgready+21,-10
 
 SPAgready2	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgready2_table:
+SPAgready2_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -100,7 +100,7 @@ SPAgready2_table:
 .7	dc.w	SPFGoalie+21,-30
 
 SPAgglover	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgglover_table:
+SPAgglover_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -122,7 +122,7 @@ SPAgglover_table:
 .7	dc.w	SPFGoalie+22,-32
 
 SPAgglovel	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgglovel_table:
+SPAgglovel_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -166,7 +166,7 @@ SPAgglovel2_table:					;table of the animation above: direction offsets, flags, 
 .7	dc.w	SPFGoalie+23,-32
 
 SPAgstickr	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgstickr_table:
+SPAgstickr_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -188,7 +188,7 @@ SPAgstickr_table:
 .7	dc.w	SPFGoalie+78,-32
 
 SPAgstickl	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgstickl_table:
+SPAgstickl_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -254,7 +254,7 @@ SPAgstackl_table:					;table of the animation above: direction offsets, flags, f
 .7	dc.w	SPFGoalie+62,8,SPFGoalie+63,-32
 
 SPAgdive	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgdive_table:
+SPAgdive_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -276,7 +276,7 @@ SPAgdive_table:
 .7	dc.w	SPFgdive+14,8,SPFgdive+15,48,SPFgdive+14,-8
 
 SPAgswing	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgswing_table:
+SPAgswing_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -298,7 +298,7 @@ SPAgswing_table:
 .7	dc.w	SPFGoalie+38,5,SPFGoalie+39,8,SPFGoalie+38,-16
 
 SPAgskate	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgskate_table:
+SPAgskate_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -342,7 +342,7 @@ SPApflip_table:						;table of the animation above: direction offsets, flags, fr
 .7	dc.w	SPFpuck+5,-4096
 
 SPAglide	=	*-SPAlist			;animation number: offset into SPAlist
-SPAglide_table:
+SPAglide_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -364,7 +364,7 @@ SPAglide_table:
 .7	dc.w	SPFskatewp+35,-8
 
 SPAskatewp	=	*-SPAlist			;animation number: offset into SPAlist
-SPAskatewp_table:
+SPAskatewp_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -386,7 +386,7 @@ SPAskatewp_table:
 .7	dc.w	SPFskatewp+36,10,SPFskatewp+37,10,SPFskatewp+38,10,SPFskatewp+39,-10
 
 SPAskate	=	*-SPAlist			;animation number: offset into SPAlist
-SPAskate_table:
+SPAskate_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -408,7 +408,7 @@ SPAskate_table:
 .7	dc.w	SPFskate+36,10,SPFskate+37,10,SPFskate+38,10,SPFskate+39,-10
 
 SPAturnl	=	*-SPAlist			;animation number: offset into SPAlist
-SPAturnl_table:
+SPAturnl_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -430,7 +430,7 @@ SPAturnl_table:
 .7	dc.w	SPFturnl+7,-8
 
 SPAturnr	=	*-SPAlist			;animation number: offset into SPAlist
-SPAturnr_table:
+SPAturnr_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -452,7 +452,7 @@ SPAturnr_table:
 .7	dc.w	SPFturnr+7,-8
 
 SPAstop	=	*-SPAlist				;animation number: offset into SPAlist
-SPAstop_table:
+SPAstop_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -474,7 +474,7 @@ SPAstop_table:
 .7	dc.w	SPFstop+14,4,SPFstop+15,-4
 
 SPApassf	=	*-SPAlist			;animation number: offset into SPAlist
-SPApassf_table:
+SPApassf_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -496,7 +496,7 @@ SPApassf_table:
 .7	dc.w	SPFswing+45,4,SPFswing+46,4,SPFswing+47,-20
 
 SPApassb	=	*-SPAlist			;animation number: offset into SPAlist
-SPApassb_table:
+SPApassb_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -518,7 +518,7 @@ SPApassb_table:
 .7	dc.w	SPFswing+45,4,SPFswing+44,4,SPFswing+43,-20
 
 SPAshotf	=	*-SPAlist			;animation number: offset into SPAlist
-SPAshotf_table:
+SPAshotf_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -548,7 +548,7 @@ SPAshotf_table:
 	dc.w	SPFswing+47,-20
 
 SPAshotb	=	*-SPAlist			;animation number: offset into SPAlist
-SPAshotb_table:
+SPAshotb_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -578,7 +578,7 @@ SPAshotb_table:
 	dc.w	SPFswing+43,-20
 
 SPAglideback	=	*-SPAlist		;animation number: offset into SPAlist
-SPAglideback_table:
+SPAglideback_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -600,7 +600,7 @@ SPAglideback_table:
 .7	dc.w	SPFskateb+21,-8
 
 SPAskateback	=	*-SPAlist		;animation number: offset into SPAlist
-SPAskateback_table:
+SPAskateback_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -622,7 +622,7 @@ SPAskateback_table:
 .7	dc.w	SPFskateb+21,10,SPFskateb+22,10,SPFskateb+21,10,SPFskateb+23,-10
 
 SPAsweepchk	=	*-SPAlist			;animation number: offset into SPAlist
-SPAsweepchk_table:
+SPAsweepchk_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -644,7 +644,7 @@ SPAsweepchk_table:
 .7	dc.w	SPFsweep+14,4,SPFsweep+15,8,SPFsweep+14,-4
 
 SPAshoulderchkl	=	*-SPAlist		;animation number: offset into SPAlist
-SPAshoulderchkl_table:
+SPAshoulderchkl_table:				;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -666,7 +666,7 @@ SPAshoulderchkl_table:
 .7	dc.w	SPFshoulderl+7,-24
 
 SPAshoulderchkr	=	*-SPAlist		;animation number: offset into SPAlist
-SPAshoulderchkr_table:
+SPAshoulderchkr_table:				;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -688,7 +688,7 @@ SPAshoulderchkr_table:
 .7	dc.w	SPFshoulderr+7,-24
 
 SPAhipchkl	=	*-SPAlist			;animation number: offset into SPAlist
-SPAhipchkl_table:
+SPAhipchkl_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -710,7 +710,7 @@ SPAhipchkl_table:
 .7	dc.w	SPFhipl+7,-24
 
 SPAhipchkr	=	*-SPAlist			;animation number: offset into SPAlist
-SPAhipchkr_table:
+SPAhipchkr_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -732,7 +732,7 @@ SPAhipchkr_table:
 .7	dc.w	SPFhipr+7,-24
 
 SPAburst	=	*-SPAlist			;animation number: offset into SPAlist
-SPAburst_table:
+SPAburst_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -754,7 +754,7 @@ SPAburst_table:
 .7	dc.w	SPFskate+35,-24
 
 SPAHold	=	*-SPAlist				;animation number: offset into SPAlist
-SPAHold_table:
+SPAHold_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -820,7 +820,7 @@ SPAflail_table:						;last time -40 in every direction (93 used -30)
 .7	dc.w	SPFskate+35,-40
 
 SPAfallfwd	=	*-SPAlist			;animation number: offset into SPAlist
-SPAfallfwd_table:
+SPAfallfwd_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -842,7 +842,7 @@ SPAfallfwd_table:
 .7	dc.w	SPFfallfwd+28,6,SPFfallfwd+29,6,SPFfallfwd+30,100,SPFfallfwd+31,8,SPFduck+7,-8
 
 SPAfallback	=	*-SPAlist			;animation number: offset into SPAlist
-SPAfallback_table:
+SPAfallback_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -864,7 +864,7 @@ SPAfallback_table:
 .7	dc.w	SPFfallback+28,6,SPFfallback+29,6,SPFfallback+30,100,SPFfallback+31,8,SPFduck+7,-8
 
 SPAcelebrate	=	*-SPAlist		;animation number: offset into SPAlist
-SPAcelebrate_table:
+SPAcelebrate_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -886,7 +886,7 @@ SPAcelebrate_table:
 .7	dc.w	SPFcelebrate+14,12,SPFcelebrate+15,40,SPFcelebrate+14,-5
 
 SPApump	=	*-SPAlist				;animation number: offset into SPAlist
-SPApump_table:
+SPApump_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1041,7 +1041,7 @@ SPAbglass_table:					;table of the animation above: direction offsets, flags, fr
 .7	dc.w	SPFbglass,8,SPFbglass+1,8,SPFbglass+2,8,SPFbglass+3,8,SPFbglass+4,-1000
 
 SPAstanley	=	*-SPAlist			;animation number: offset into SPAlist
-SPAstanley_table:
+SPAstanley_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1063,7 +1063,7 @@ SPAstanley_table:
 .7	dc.w	SPFcup+7,-30
 
 SPAcatch	=	*-SPAlist			;animation number: offset into SPAlist
-SPAcatch_table:
+SPAcatch_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1085,7 +1085,7 @@ SPAcatch_table:
 .7	dc.w	SPFcatch+14,6,SPFcatch+15,-6
 
 SPAhook	=	*-SPAlist				;animation number: offset into SPAlist
-SPAhook_table:
+SPAhook_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1107,7 +1107,7 @@ SPAhook_table:
 .7	dc.w	SPFhook+14,-30
 
 SPAhook2	=	*-SPAlist			;animation number: offset into SPAlist
-SPAhook2_table:
+SPAhook2_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1129,7 +1129,7 @@ SPAhook2_table:
 .7	dc.w	SPFhook+14,9,SPFhook+15,9,SPFhook+14,9,SPFhook+15,-9
 
 SPAstumble	=	*-SPAlist			;animation number: offset into SPAlist
-SPAstumble_table:
+SPAstumble_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1173,7 +1173,7 @@ SPAfake_table:						;table of the animation above: direction offsets, flags, fra
 .7	dc.w	SPFturnl+7,4,SPFturnl+6,4,SPFsweep+10,20,SPFturnr+6,4,SPFturnr+7,4,SPFturnr,-4
 
 SPAflip	=	*-SPAlist				;animation number: offset into SPAlist
-SPAflip_table:
+SPAflip_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t

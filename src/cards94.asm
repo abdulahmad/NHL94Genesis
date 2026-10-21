@@ -335,7 +335,7 @@ TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per te
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASEB.pal	;ASE other side
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWA.pal	;ASW matchup logo palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWB.pal	;ASW other side
-TeamPalettesEnd
+TeamPalettesEnd						;end of TeamPalettes (size check below)
 	IF (TeamPalettesEnd-TeamPalettes)<>(NumTeams*64)
 		inform	3,"TeamPalettes needs two palettes per team"
 	ENDIF

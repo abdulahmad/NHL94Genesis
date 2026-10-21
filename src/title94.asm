@@ -57,7 +57,7 @@ TeamSongs							;ChooseSong: 6 songs per team (TeamList order), 0 = random (Rand
 	dc.b	$77,$75,$76,0,$5A,0
 	dc.b	$54,$55,$53,0,$5A,0
 	dc.b	$54,$55,$53,0,$5A,0
-TeamSongsEnd
+TeamSongsEnd						;end of TeamSongs (size check below)
 	IF (TeamSongsEnd-TeamSongs)<>(NumTeams*6)
 		inform	3,"TeamSongs needs 6 songs per team"
 	ENDIF
@@ -389,7 +389,7 @@ TeamGfxList							;LoadHomeTeamGfx: one address per team (TeamList order) in Are
 	dc.l	ArenaGfxBank+$6D4A,ArenaGfxBank+$7054,ArenaGfxBank+$735E,ArenaGfxBank+$7668
 	dc.l	ArenaGfxBank+$7972,ArenaGfxBank+$7C7C,ArenaGfxBank+$7F86,ArenaGfxBank+$8290
 	dc.l	ArenaGfxBank+$859A,ArenaGfxBank+$88A4,ArenaGfxBank+$8EB8,ArenaGfxBank+$8EB8
-TeamGfxListEnd
+TeamGfxListEnd						;end of TeamGfxList (size check below)
 	IF (TeamGfxListEnd-TeamGfxList)<>(NumTeams*4)
 		inform	3,"TeamGfxList needs one entry per team"
 	ENDIF
@@ -1128,7 +1128,7 @@ TeamLogoPalettes					;Team logo palettes, 16 colors per team. Used by PeriodStat
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalWPGA.pal	;WPG, the TeamPalettes matchup logo palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASEA.pal	;ASE, the TeamPalettes matchup logo palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalASWA.pal	;ASW, the TeamPalettes matchup logo palette
-TeamLogoPalettesEnd
+TeamLogoPalettesEnd					;end of TeamLogoPalettes (size check below)
 	IF (TeamLogoPalettesEnd-TeamLogoPalettes)<>(NumTeams*32)
 		inform	3,"TeamLogoPalettes needs one palette per team"
 	ENDIF
