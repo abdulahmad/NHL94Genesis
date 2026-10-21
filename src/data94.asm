@@ -71,11 +71,11 @@ dotb								;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
+	movea.w	#null,a2				;tile data: word 0 at $310 = no tiles
 	move.w	(a1),d2
 	moveq	#2,d3
 	moveq	#2,d4
-	moveq	#2,d5
+	moveq	#2,d5					;color fam 2
 	bra.w	dobitmap
 
 ClearRosterName						;unreferenced. Set the print position, then erase 12 x 2 at it
@@ -97,30 +97,30 @@ PickStartingGoalie					;unreferenced. tmgoalie = 0 if a pad has team a2, else (g
 									;line changes on) a value from the team's .godds
 	movem.l	d0/a0,-(sp)
 	clr.w	tmgoalie(a2)
-	bsr.w	FigureJoy
+	bsr.w	FigureJoy				;sets cont1team / cont2team
 	cmpa.w	#(tmstruct-M68K_RAM),a2
 	seq	d0
 	ext.w	d0
 	addq.w	#2,d0					;1 for the home team, 2 for the away team
 	cmp.w	(cont1team).w,d0
-	beq.w	.x
+	beq.w	.x						;pad 1 on this team
 	cmp.w	(cont2team).w,d0
 	beq.w	.x						;a pad has this team: leave tmgoalie(a2) = 0
 	moveq	#0,d0
 	cmpi.w	#2,(gamelevel).w
 	bgt.w	.set
 	tst.w	(OptLine).w
-	bne.w	.set
-	movea.w	#TeamList,a0
-	move.w	(a2),d0
+	bne.w	.set					;line changes off
+	movea.w	#TeamList,a0			;team address table
+	move.w	(a2),d0					;team shown
 	asl.w	#2,d0
 	movea.l	0(a0,d0.w),a0			;team block
 	adda.w	GoalieOdds(a0),a0		;GoalieOdds offset: a0 = .godds
 	moveq	#4,d0
 	bsr.w	UnpackNibbles
-	bsr.w	WeightedRandomSelect
-.set	move.w	d0,tmgoalie(a2)
-.x	movem.l	(sp)+,d0/a0
+	bsr.w	WeightedRandomSelect	;d0 = index 0-3
+.set	move.w	d0,tmgoalie(a2)		;store the pick (0 = first goalie)
+.x	movem.l	(sp)+,d0/a0				;restore registers
 	rts
 
 VBlank_SetOptions					;VBint handler stored by setoptions: cramfade unless dfng), plus
@@ -131,8 +131,8 @@ VBlank_SetOptions					;VBint handler stored by setoptions: cramfade unless dfng)
 	bclr	#dfok,(disflags).w		;dfok
 	beq.w	.fade
 	bsr.w	DumpSprites2
-.fade	bsr.w	cramfade
-.nograph	addq.w	#1,(Vcount).w
+.fade	bsr.w	cramfade			;palette fade step
+.nograph	addq.w	#1,(Vcount).w	;frame counter
 	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
@@ -223,7 +223,7 @@ NewPO								;New playoff generates tree with same team 1. Called from GoNewPlay
 .loop
 	cmp.b	(a0)+,d2				;compare team at a0+ to d2 (looks at second byte of a0)
 	dbeq	d1,.loop				;iterate through loop until team is found
-	bne.s	.top
+	bne.s	.top					;not in this tree, try the next one
 	eori.w	#PlayoffRowTeams-1,d1
 	move.w	d1,(potreeteam).w		;which team are you on the initial playoff tree
 	move.w	d0,(postarts).w			;0-31 for which playoff tree to use as frame
@@ -257,7 +257,7 @@ MakeTree							;Make the playoff tree (potree) from playoffseats and WinBits, cl
 	moveq	#$E,d2					;15 winners
 	move.w	(WinBits).w,d0
 .0
-	move.w	d0,d1
+	move.w	d0,d1					;d1 = lowest WinBits bit: pick the pair member
 	andi.w	#1,d1					;winbit picks the top or bottom team of the pair
 	move.b	0(a0,d1.w),(a1)+
 	addq.w	#2,a0
@@ -466,8 +466,8 @@ InitializeGameStructures			;Random team pairs for all 8 gsstruct games, none of 
 	movea.w	#(gsstruct-M68K_RAM),a1
 	moveq	#7,d2
 .loop
-	bsr.w	GetRandomUnusedTeam
-	move.w	d0,(a1)
+	bsr.w	GetRandomUnusedTeam		;both teams of game d2
+	move.w	d0,(a1)					;gst1
 	bsr.w	GetRandomUnusedTeam
 	move.w	d0,gst2(a1)
 	adda.w	#gssize,a1
@@ -479,7 +479,7 @@ GetRandomUnusedTeam					;return d0 = a random playoff team not yet set in d3, an
 	moveq	#NumPlayoffTeams,d0
 	bsr.w	randomd0
 	bset	d0,d3
-	bne.s	GetRandomUnusedTeam
+	bne.s	GetRandomUnusedTeam		;already used, pick again
 	rts
 ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff variables; the 5
 									;words are kept. pojoy has 8 values (93 had 4),
@@ -490,7 +490,7 @@ ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff varia
 .save
 	move.w	-(a0),-(sp)				;SuperDiv destroys the bits
 	dbf	d0,.save
-	moveq	#7,d2
+	moveq	#7,d2					;set gspobwins/gspotwins
 	movea.w	#(gsstruct+(7*$10)-M68K_RAM),a1	;last gsstruct game (gsstruct + 7 * $10)
 .loop
 	bclr	#gsfso,gsflags(a1)		;series over
@@ -499,14 +499,14 @@ ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff varia
 	move.w	d0,gspobwins(a1)		;gspobwins
 	cmp.w	#4,d0
 	bne.w	.nsf0
-	bset	#gsfso,gsflags(a1)
+	bset	#gsfso,gsflags(a1)		;4 wins: gsfso
 .nsf0
-	moveq	#5,d0
+	moveq	#5,d0					;second variable: gspotwins
 	bsr.w	SuperDiv
 	move.w	d0,gspotwins(a1)		;gspotwins
 	cmp.w	#4,d0
 	bne.w	.nsf1
-	bset	#gsfso,gsflags(a1)
+	bset	#gsfso,gsflags(a1)		;gsfso
 .nsf1
 	suba.w	#gssize,a1
 	dbf	d2,.loop
@@ -525,16 +525,16 @@ ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff varia
 .0
 	move.w	#4,(pojoy).w
 .1
-	moveq	#$10,d0
+	moveq	#$10,d0					;set POTreeTeam
 	bsr.w	SuperDiv
 	move.w	d0,(potreeteam).w
-	moveq	#4,d0
+	moveq	#4,d0					;set gamelevel
 	bsr.w	SuperDiv
 	move.w	d0,(gamelevel).w
-	moveq	#8,d0
+	moveq	#8,d0					;set bosgames
 	bsr.w	SuperDiv
 	move.w	d0,(bosgames).w
-	moveq	#$20,d0
+	moveq	#$20,d0					;set PoStarts
 	bsr.w	SuperDiv
 	move.w	d0,(postarts).w
 	moveq	#4,d0
@@ -605,7 +605,7 @@ WritePassBits						;Transfer the game variables to the bits at a3 (pojoy range 8
 	moveq	#7,d2
 	movea.w	#(gsstruct-M68K_RAM),a1
 .loop
-	move.w	gspotwins(a1),d0
+	move.w	gspotwins(a1),d0		;per game: push both win counts (range 5)
 	bsr.w	PushBits
 	move.w	gspobwins(a1),d0
 	bsr.w	PushBits
@@ -625,7 +625,7 @@ ClrPassBits							;Clear the 5 words of bits at a3
 	movea.w	a3,a0
 	moveq	#4,d0
 .0
-	clr.w	(a0)+
+	clr.w	(a0)+					;5 words
 	dbf	d0,.0
 	rts
 SuperAdd							;1 long (d0.L) added to the 5 words at a3
@@ -637,7 +637,7 @@ SuperAdd							;1 long (d0.L) added to the 5 words at a3
 .1
 	addq.w	#1,-(a0)				;carry into the next word up
 .2
-	dbcc	d1,.1
+	dbcc	d1,.1					;loop while no carry out of the word
 	movem.l	(sp)+,d1/a0
 	rts
 SuperMult							;1 word (d0) multiplied by the 5 words at a3
@@ -645,12 +645,12 @@ SuperMult							;1 word (d0) multiplied by the 5 words at a3
 	movea.w	a3,a0
 	moveq	#4,d4
 .0
-	move.w	(a0),-(sp)
+	move.w	(a0),-(sp)				;stack the 5 words, clearing the buffer
 	clr.w	(a0)+
 	dbf	d4,.0
 	moveq	#4,d4
 .1
-	move.w	d0,d1
+	move.w	d0,d1					;multiply a stacked word by d0, add into the buffer
 	mulu.w	(sp)+,d1
 	lea	2(a3),a0
 	adda.w	d4,a0
@@ -661,7 +661,7 @@ SuperMult							;1 word (d0) multiplied by the 5 words at a3
 .2
 	addq.w	#1,-(a0)
 .3
-	dbcc	d2,.2
+	dbcc	d2,.2					;loop while a carry remains
 	dbf	d4,.1
 	movem.l	(sp)+,d1-d4/a0
 	rts
@@ -671,7 +671,7 @@ SuperDiv							;5 words at a3 divided by 1 word (d0); d0 = remainder on exit
 	moveq	#4,d1
 	clr.l	d2
 .0
-	move.w	(a0),d2
+	move.w	(a0),d2					;one word: d2 = remainder:word, divide by d0
 	divu.w	d0,d2
 	move.w	d2,(a0)+
 	dbf	d1,.0
@@ -685,7 +685,7 @@ GetShifter							;Returns d1 = number of games - 1, d2 = first bit of WinBits
 	moveq	#$10,d1
 	move.w	(gamelevel).w,d0
 .3
-	add.w	d1,d2
+	add.w	d1,d2					;d2 = sum of the halving sizes (bit offset of the round)
 	lsr.w	#1,d1
 	dbf	d0,.3
 	subq.w	#1,d1
@@ -702,7 +702,7 @@ AddPlayoffTeamStats					;Add the po team's game stats to its packed playoff tota
 	move.w	(potreeteam).w,d2
 	move.b	0(a0,d2.w),d2			;po team
 	movea.w	#(tmstruct-M68K_RAM),a2
-	cmp.w	tmteam(a2),d2
+	cmp.w	tmteam(a2),d2			;team number of the home team struct
 	beq.w	.0
 	adda.w	#tmsize,a2				;tmsize: the po team is the visitor
 .0
@@ -710,17 +710,17 @@ AddPlayoffTeamStats					;Add the po team's game stats to its packed playoff tota
 	moveq	#$67,d0					;$68 stats
 	movea.w	#(statsbuffer-M68K_RAM),a1
 .loop
-	clr.w	d1
+	clr.w	d1						;add stat byte to its statsbuffer word
 	move.b	(a2)+,d1
 	add.w	d1,(a1)+
 	dbf	d0,.loop
 	movea.w	#(statsbuffer-M68K_RAM),a0
 	movea.l	#BitWidthTable,a1
-	movea.w	#(outputbuffer-M68K_RAM),a2
+	movea.w	#(outputbuffer-M68K_RAM),a2	;bit stream base
 	moveq	#$67,d0
-	clr.w	d4
+	clr.w	d4						;d4 = bit position
 .loop2
-	clr.l	d1
+	clr.l	d1						;one stat: d1 = total, d2 = width, d3 = max
 	move.w	(a0)+,d1
 	move.w	d0,d2
 	andi.w	#3,d2
@@ -732,7 +732,7 @@ AddPlayoffTeamStats					;Add the po team's game stats to its packed playoff tota
 	ble.w	.1
 	move.w	d3,d1					;clamp
 .1
-	not.l	d3
+	not.l	d3						;rotate mask and value to bit position d4, clear field then insert
 	move.w	d4,d5
 	andi.w	#$F,d5
 	rol.l	d5,d3
@@ -753,11 +753,11 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 									;words. Called from AddPOStats and PlayoffStatsScreen
 	movea.w	#(statsbuffer-M68K_RAM),a0
 	movea.l	#BitWidthTable,a1
-	movea.w	#(outputbuffer-M68K_RAM),a2
-	moveq	#$67,d0
-	clr.w	d4
+	movea.w	#(outputbuffer-M68K_RAM),a2	;bit stream base
+	moveq	#$67,d0					;$68 stats
+	clr.w	d4						;d4 = bit position
 .loop
-	move.w	d4,d5
+	move.w	d4,d5					;d4 = bit position of the stat
 	lsr.w	#4,d5
 	add.w	d5,d5
 	neg.w	d5
@@ -768,12 +768,12 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 	lsr.l	d5,d1
 	move.w	d0,d2
 	andi.w	#3,d2
-	move.b	0(a1,d2.w),d2
+	move.b	0(a1,d2.w),d2			;d2 = bit width
 	add.w	d2,d4
 	clr.w	d3
 	bset	d2,d3
 	subq.w	#1,d3
-	and.w	d3,d1
+	and.w	d3,d1					;mask to width
 	move.w	d1,(a0)+
 	dbf	d0,.loop
 	rts
@@ -838,7 +838,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	mulu.w	d1,d3
 	adda.w	d3,a0
 .cr0
-	cmp.w	(gamenum).w,d1
+	cmp.w	(gamenum).w,d1			;skip the game just played
 	beq.w	.crn
 	cmpi.w	#4,gspotwins(a0)
 	beq.w	.crn
@@ -853,7 +853,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	addq.w	#1,gspobwins(a0)
 	bra.s	.cr0
 .crn
-	suba.w	#gssize,a0
+	suba.w	#gssize,a0				;previous game
 	dbf	d1,.cr0
 	movea.w	#(tpassbits-M68K_RAM),a3	;bits before advancing to next round
 	bsr.w	WritePassBits
@@ -871,7 +871,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.2
 	bset	d1,d3
 .2
-	clr.w	gspotwins(a0)
+	clr.w	gspotwins(a0)			;reset win counts for the next round
 	clr.w	gspobwins(a0)
 	suba.w	#gssize,a0
 	dbf	d1,.loop2
@@ -891,7 +891,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	bhi.w	.3
 	bset	d1,d3
 .3
-	btst	#gsftf,gsflags(a0)
+	btst	#gsftf,gsflags(a0)		;teams flipped
 	beq.w	.nb2
 	bchg	d1,d3
 .nb2
@@ -933,7 +933,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	movea.l	#Rinktilelist,a1		;map at offset 4
 	movea.w	#null,a2
 	adda.l	jimdata(a1),a1
-	moveq	#$D,d0
+	moveq	#$D,d0					;dobitmap d0-d5
 	moveq	#$5B,d1
 	moveq	#6,d2
 	moveq	#4,d3
@@ -948,7 +948,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bsr.w	TakeTopStarScore		;a2 = team, d0 = player
 	move.w	#$1A,(printx).w
 	addq.w	#1,(printy).w
-	movea.l	tmdata(a2),a1
+	movea.l	tmdata(a2),a1			;string at team data offset 4, then its first offset
 	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	bsr.w	print
@@ -973,13 +973,13 @@ TakeTopStarScore					;Take the highest of the 52 star scores at ThreeStars and c
 	clr.l	d0
 	moveq	#$33,d2
 .find
-	cmp.l	(a4)+,d0
+	cmp.l	(a4)+,d0				;scan for the highest score
 	bge.w	.next					;not higher
-	lea	-4(a4),a1
+	lea	-4(a4),a1					;a1 = best entry
 	move.l	(a1),d0
 .next
-	dbf	d2,.find
-	clr.l	(a1)
+	dbf	d2,.find					;next entry
+	clr.l	(a1)					;taken
 	move.w	a1,d0
 	subi.w	#(ThreeStars-M68K_RAM),d0
 	lsr.w	#2,d0					;entry number
@@ -1001,7 +1001,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	move.w	d0,d5
 	add.w	d2,d5
 	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	tmsize(a2),a3
+	lea	tmsize(a2),a3				;a3 = other team
 	bsr.w	CalcTeamStarScores		;home
 	movea.w	a3,a2
 	lea	-tmsize(a2),a3
@@ -1014,7 +1014,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	adda.w	(ScoreSumbytes).w,a0
 	clr.w	d0
 	btst	#7,ssflags(a0)
-	beq.w	.slot
+	beq.w	.slot					;home goal
 	addi.w	#RosterSlots,d0			;away goal: second RosterSlots entries
 .slot
 	add.b	ssscorer(a0),d0
@@ -1036,21 +1036,21 @@ CalcTeamStarScores					;Star scores of team a2 (a3 = other team) to (a4)+, one l
 	moveq	#$19,d4					;26 slots
 	jsr	(GetGoalieCount).l			;d0 = goalies on the team
 	neg.w	d0
-	add.w	d4,d0
+	add.w	d4,d0					;d4 above $19 - goalies: goalie slot
 .loop
-	move.l	d3,(a4)
+	move.l	d3,(a4)					;slot d4: start at the goal difference
 	cmp.w	d0,d4
 	bhi.w	.goalie					;goalie slot
 	clr.w	d1
-	move.b	tmgoals(a2),d1
+	move.b	tmgoals(a2),d1			;goals
 	mulu.w	#$2AF8,d1				;goals * 11000
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	tmassists(a2),d1
+	move.b	tmassists(a2),d1		;assists
 	mulu.w	#$2774,d1				;assists * 10100
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	tmpshots(a2),d1
+	move.b	tmpshots(a2),d1			;shots
 	mulu.w	#$A,d1
 	tst.w	d3
 	bne.w	.add					;not tied: shots * 10
@@ -1062,13 +1062,13 @@ CalcTeamStarScores					;Star scores of team a2 (a3 = other team) to (a4)+, one l
 	add.l	d1,(a4)
 	bra.w	.next
 .goalie
-	cmp.w	tmpice(a1),d5
+	cmp.w	tmpice(a1),d5			;goalie slot: needs enough frames on ice
 	bhi.w	.next					;not on ice long enough
 	clr.w	d1
-	move.b	tmgoals(a2),d1
+	move.b	tmgoals(a2),d1			;goals against
 	mulu.w	#$64,d1
 	clr.w	d2
-	move.b	tmpshots(a2),d2
+	move.b	tmpshots(a2),d2			;shots against
 	beq.w	.next
 	divu.w	d2,d1
 	cmp.w	#4,d1
@@ -1078,7 +1078,7 @@ CalcTeamStarScores					;Star scores of team a2 (a3 = other team) to (a4)+, one l
 	bne.w	.next
 	addi.l	#$124F8,(a4)			;75000 for a shutout
 .next
-	addq.w	#2,a1
+	addq.w	#2,a1					;next slot (word, byte, long tables)
 	addq.w	#1,a2
 	addq.w	#4,a4
 	dbf	d4,.loop
@@ -1236,7 +1236,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 .3
 	move.w	(sp)+,d0
 .print
-	bsr.w	printbig
+	bsr.w	printbig				;big text, then scorer
 	clr.w	d0
 	move.b	ssscorer(a4),d0
 	move.w	d0,-(sp)
@@ -1287,7 +1287,7 @@ box									;Fill a $13 x 8 rectangle at printz position $FF,$B,2 with char $7FF
 									;(eraser). Called from SetLCmode2
 	bsr.w	printz
 	String	-TXMAP1,$B,2
-	moveq	#$13,d0
+	moveq	#$13,d0					;in the string
 	moveq	#8,d1
 	move.l	#$7FF,d2
 	bra.w	eraser
@@ -1302,7 +1302,7 @@ GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols 
 	andi.w	#$FF,d0
 	adda.w	#tmsize,a2				;away team (tmsize)
 .0
-	bsr.w	getname
+	bsr.w	getname					;name for d0 of team a2
 	movem.l	(sp)+,d0/a2
 	rts
 getname								;gets player number and name, appends to string: a1 = mesarea "NN First
@@ -1331,9 +1331,9 @@ GetPlayerNumInitial					;a1 = mesarea "NN F. Last" (FormatPlayerNumInitial) for 
 	move.w	(TempPlOffset).w,d0
 	bpl.w	.get
 	andi.w	#$FF,d0
-	adda.w	#tmsize,a2
+	adda.w	#tmsize,a2				;away team
 .get
-	bsr.w	FormatPlayerNumInitial
+	bsr.w	FormatPlayerNumInitial	;name for d0 of team a2
 	movem.l	(sp)+,d0/a2
 	rts
 FormatPlayerNumInitial				;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in
@@ -1342,20 +1342,20 @@ FormatPlayerNumInitial				;a1 = mesarea string "NN F. Last" for player d0 of tea
 	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.w	#(TextBuffer-M68K_RAM),a1
-	adda.w	(a0),a0
+	adda.w	(a0),a0					;byte after the name: number
 	move.b	(a0),d0
 	bsr.w	ConvertByteToDigits
-	move.b	#$20,(a1)+
+	move.b	#$20,(a1)+				;' '
 	movea.l	(sp)+,a0
-	move.w	(a0)+,d0
-	lea	-2(a0,d0.w),a2
+	move.w	(a0)+,d0				;string length
+	lea	-2(a0,d0.w),a2				;end of the name
 	move.b	(a0)+,(a1)+				;first initial
 	move.w	#$2E20,(a1)+			;'. '
 .skip
 	cmpi.b	#$20,(a0)+
 	bne.s	.skip
 .copy
-	move.b	(a0)+,(a1)+
+	move.b	(a0)+,(a1)+				;last name
 	cmpa.l	a0,a2
 	bne.s	.copy
 	bsr.w	FinalizeTextBuffer
@@ -1367,18 +1367,18 @@ FormatPlayerName					;a1 = mesarea string "NN Last" for player d0 of team a2, bu
 	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.w	#(TextBuffer-M68K_RAM),a1
-	adda.w	(a0),a0
+	adda.w	(a0),a0					;byte after the name: number
 	move.b	(a0),d0
 	bsr.w	ConvertByteToDigits
-	move.b	#$20,(a1)+
+	move.b	#$20,(a1)+				;' '
 	movea.l	(sp)+,a0
-	move.w	(a0)+,d0
-	lea	-2(a0,d0.w),a2
+	move.w	(a0)+,d0				;string length
+	lea	-2(a0,d0.w),a2				;end of the name
 .skip
 	cmpi.b	#$20,(a0)+
 	bne.s	.skip
 .copy
-	move.b	(a0)+,(a1)+
+	move.b	(a0)+,(a1)+				;last name
 	cmpa.l	a0,a2
 	bne.s	.copy
 	bsr.w	FinalizeTextBuffer
@@ -1427,7 +1427,7 @@ FinalizeTextBuffer					;mesarea length word = a1 - mesarea, with a 0 pad byte wh
 	clr.b	(a1)+
 	addq.w	#1,d0
 .even
-	movea.w	#(mesarea-M68K_RAM),a1
+	movea.w	#(mesarea-M68K_RAM),a1	;a1 = mesarea
 	move.w	d0,(a1)
 	rts
 GetPlayerNamePointer				;loops through team roster to get to d0 player: a0 = name string of player
@@ -1510,15 +1510,15 @@ crash								;printbig d1 then d0 as hex, set the vdp up, copy 8 longs from the
 .ri									;d0 as 8 hex digits to (a0)+
 	moveq	#7,d2
 .top
-	rol.l	#4,d0
+	rol.l	#4,d0					;next hex digit (high nibble first)
 	move.w	d0,d1
 	andi.w	#$F,d1
-	addi.w	#$30,d1
-	cmp.w	#$39,d1
+	addi.w	#$30,d1					;'0'
+	cmp.w	#$39,d1					;'9'
 	ble.w	.t1
 	addq.w	#7,d1					;'A'-'0'-10
 .t1
-	move.b	d1,(a0)+
+	move.b	d1,(a0)+				;store the digit
 	dbf	d2,.top
 	rts
 ;	Data tables: crowd frames, player logic assignments, penalties, menus and the playoff tree layout.
@@ -1623,91 +1623,92 @@ Penaltylist							;Penalty number = word offset into this table. Entries $2E-$3C
 ;	String  'penalty text' dc.w     $ffdd,$ffdd,$ffdd,... ;ff =
 ;	frame,dd=delay (neg for end)
 
-PenDataEOP	dc.w	$0100
+PenDataEOP	dc.w	$0100			;ttmm: slow down 1 half sec, 0 minutes; then the text and frame/delay
+									;words
 	String	'Period Over'
 	dc.w	-$0510
-PenDataEOG	dc.w	$0100
+PenDataEOG	dc.w	$0100			;ttmm: slow down 1, 0 minutes
 	String	'Game Over'
 	dc.w	$0510,-$4060
-PenDataGoal	dc.w	$0100
+PenDataGoal	dc.w	$0100			;ttmm: slow down 1, 0 minutes; empty text
 	dc.w	2						;String with no text
 	dc.w	$050a,-$4018
-PenDataNoText	dc.w	$0100
+PenDataNoText	dc.w	$0100		;ttmm: slow down 1, 0 minutes; empty text
 	dc.w	2						;String with no text
 	dc.w	$0510,-$4018
-PenDataice	dc.w	$0100
+PenDataice	dc.w	$0100			;ttmm: slow down 1, 0 minutes
 	String	'Icing'
 	dc.w	$0002,$0101,-$0206
-PenDataoffsides	dc.w	$0100
+PenDataoffsides	dc.w	$0100		;ttmm: slow down 1, 0 minutes
 	String	'Off-side'
 	dc.w	$0002,$0301,-$040f
-PenDataGhold	dc.w	$0100
+PenDataGhold	dc.w	$0100		;ttmm: slow down 1, 0 minutes (also used for out of play / PenOOP)
 	String	'Face Off'
 	dc.w	-$050a
 PenDataGhold2	dc.w	$0000
 	String	'Face Off'
 	dc.w	-$050a
-PenDatadelay	dc.w	$0000
+PenDatadelay	dc.w	$0000		;ttmm: no slow down, 0 minutes
 	String	'Penalty'
 	dc.w	$0003,$0301,-$040f
-PenDatawhistle	dc.w	$0000
+PenDatawhistle	dc.w	$0000		;ttmm: no slow down, 0 minutes; empty text
 	dc.w	2						;String with no text
 	dc.w	-$050a
-PenDatacharge	dc.w	$0402
+PenDatacharge	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Charging'
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
 PenDatachargeps	dc.w	$04ff
 	String	'Charging'
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
-PenDataslash	dc.w	$0402
+PenDataslash	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Slashing'
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
 PenDataslashps	dc.w	$04ff
 	String	'Slashing'
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
-PenDatatrip	dc.w	$0402
+PenDatatrip	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Tripping'
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
 PenDatatripps	dc.w	$04ff
 	String	'Tripping'
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
-PenDatarough2	dc.w	$0a02
+PenDatarough2	dc.w	$0a02		;ttmm: slow down $0a, 2 minutes
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
-PenDatarough	dc.w	$0402
+PenDatarough	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDataroughps	dc.w	$04ff
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
-PenDatahook	dc.w	$0402
+PenDatahook	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Hooking'
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
 PenDatahookps	dc.w	$04ff
 	String	'Hooking'
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
-PenDatacross	dc.w	$0402
+PenDatacross	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Cross Check'
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
 PenDatacrossps	dc.w	$04ff
 	String	'Cross Check'
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
-PenDataint	dc.w	$0402
+PenDataint	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Interference'
 	dc.w	$0004,$0101,$0c06,-$0101
 PenDataintps	dc.w	$04ff
 	String	'Interference'
 	dc.w	$0004,$0101,$0c06,-$0101
-PenDataHold	dc.w	$0402
+PenDataHold	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Holding'
 	dc.w	$0004,$0101,$0706,-$0101
-PenDatafight	dc.w	$2805
+PenDatafight	dc.w	$2805		;ttmm: slow down $28, 5 minutes
 	String	'Fighting'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
-PenDatafight2	dc.w	$2805
+PenDatafight2	dc.w	$2805		;ttmm: slow down $28, 5 minutes
 	String	'Fighting *'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
-PenDataInst	dc.w	$2802
+PenDataInst	dc.w	$2802			;ttmm: slow down $28, 2 minutes
 	String	'Fight Instigator'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 
@@ -1798,14 +1799,14 @@ PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Us
 
 	;tree graphics for level 0: teams-1 then x,y per team (DrawTeamBlocks), arrows-1 then x,d0 per arrow
 	;(DrawTreeArrow), scores-1 then x,y per score (PrintSeriesScore, negative: none)
-.l0	dc.b	16-1
+.l0	dc.b	16-1					;level 0: 16 team blocks, then arrows and series scores
 	dc.b	46,2,46,5,46,8,46,11,46,14,46,17,46,20,46,23
 	dc.b	71,2,71,5,71,8,71,11,71,14,71,17,71,20,71,23
 	dc.b	1,57,0,69,10
 	dc.b	7,50,4,50,10,50,16,50,22,75,4,75,10,75,16,75,22
 
 	;tree graphics for level 1
-.l1	dc.b	16+8-1
+.l1	dc.b	16+8-1					;level 1: 16+8 team blocks
 	dc.b	32,2,32,5,32,8,32,11,32,14,32,17,32,20,32,23
 	dc.b	85,2,85,5,85,8,85,11,85,14,85,17,85,20,85,23
 	dc.b	46,4,46,10,46,15,46,21
@@ -1814,7 +1815,7 @@ PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Us
 	dc.b	3,50,8,50,18,75,8,75,18
 
 	;tree graphics for level 2
-.l2	dc.b	16+8+4-1
+.l2	dc.b	16+8+4-1				;level 2: 16+8+4 team blocks
 	dc.b	18,2,18,5,18,8,18,11,18,14,18,17,18,20,18,23
 	dc.b	99,2,99,5,99,8,99,11,99,14,99,17,99,20,99,23
 	dc.b	32,4,32,10,32,15,32,21
@@ -1825,7 +1826,7 @@ PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Us
 	dc.b	1,50,13,75,13
 
 	;tree graphics for level 3
-.l3	dc.b	16+8+4+2-1
+.l3	dc.b	16+8+4+2-1				;level 3: 16+8+4+2 team blocks
 	dc.b	4,2,4,5,4,8,4,11,4,14,4,17,4,20,4,23
 	dc.b	113,2,113,5,113,8,113,11,113,14,113,17,113,20,113,23
 	dc.b	18,4,18,10,18,15,18,21
@@ -1838,7 +1839,7 @@ PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Us
 	dc.b	0,63,23
 
 	;tree graphics for level 4
-.l4	dc.b	16+8+4+2+1-1
+.l4	dc.b	16+8+4+2+1-1			;level 4: 16+8+4+2+1 team blocks
 	dc.b	4,2,4,5,4,8,4,11,4,14,4,17,4,20,4,23
 	dc.b	113,2,113,5,113,8,113,11,113,14,113,17,113,20,113,23
 	dc.b	18,4,18,10,18,15,18,21
