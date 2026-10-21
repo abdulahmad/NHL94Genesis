@@ -2265,7 +2265,7 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	adda.w	(a2),a2
 	move.w	d1,d7
 	asl.w	#1,d7
-	move.b	5(a2),d0
+	move.b	pldstick(a2),d0
 	andi.w	#$F,d0
 	cmp.b	#1,d0
 	ble.w	.nextplayer
@@ -2278,35 +2278,35 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 .scorecandidate
 	clr.w	d3
 	clr.w	d0
-	move.b	1(a2),d0
+	move.b	pldweight(a2),d0
 	andi.w	#$F,d0
 	add.w	d0,d3
-	move.b	2(a2),d0
+	move.b	pldlegspd(a2),d0
 	andi.w	#$F,d0
 	add.w	d0,d3
-	move.b	2(a2),d0
+	move.b	pldlegspd(a2),d0
 	andi.w	#$F0,d0
 	lsr.w	#4,d0
 	add.w	d0,d3
-	move.b	3(a2),d0
+	move.b	pldaidef(a2),d0
 	andi.w	#$F,d0
 	add.w	d0,d3
-	move.b	3(a2),d0
+	move.b	pldaidef(a2),d0
 	andi.w	#$F0,d0
 	lsr.w	#4,d0
 	add.w	d0,d3
-	move.b	5(a2),d0
+	move.b	pldstick(a2),d0
 	andi.w	#$F,d0
 	add.w	d0,d3
-	move.b	5(a2),d0
+	move.b	pldstick(a2),d0
 	andi.w	#$F0,d0
 	lsr.w	#4,d0
 	add.w	d0,d3
-	move.b	6(a2),d0
+	move.b	pldendur(a2),d0
 	andi.w	#$F0,d0
 	lsr.w	#4,d0
 	add.w	d0,d3
-	move.b	7(a2),d0
+	move.b	pldpass(a2),d0
 	andi.w	#$F0,d0
 	lsr.w	#4,d0
 	add.w	d0,d3
@@ -2320,7 +2320,7 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	move.w	d1,d5
 	bra.w	*+4
 .nextplayer
-	addq.l	#8,a2
+	addq.l	#pldsize,a2
 	addq.w	#1,d1
 	cmp.w	#$1A,d1
 	blt.w	.playerloop
