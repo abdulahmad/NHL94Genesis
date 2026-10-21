@@ -921,11 +921,11 @@ SPAwallright_table:					;first table after pump: there are no fight tables
 	dc.w	0
 
 .0	dc.w	SPFPen+4,8,SPFPen+5,8,SPFPen+6,-8
-.1
+.1									;direction 1: uses the next list
 .2	dc.w	SPFPen,8,SPFPen+1,8,SPFPen+2,8,SPFPen+3,-8
-.3
-.4
-.5
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
 .6	dc.w	SPFPen+3,8,SPFPen+2,8,SPFPen+1,8,SPFPen,-8
 .7									;invalid direction: points at the next table
 
@@ -943,11 +943,11 @@ SPAwallleft_table:					;table of the animation above: direction offsets, flags, 
 	dc.w	0
 
 .0	dc.w	SPFPen+6,8,SPFPen+5,8,SPFPen+4,-8
-.1
+.1									;direction 1: uses the next list
 .2	dc.w	SPFPen+3,8,SPFPen+2,8,SPFPen+1,8,SPFPen,-8
-.3
-.4
-.5
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
 .6	dc.w	SPFPen,8,SPFPen+1,8,SPFPen+2,8,SPFPen+3,-8
 .7									;invalid direction: points at the next table
 
@@ -965,12 +965,12 @@ SPAfaceoff_table:					;table of the animation above: direction offsets, flags, f
 	dc.w	0
 
 .0	dc.w	SPFskatewp,2,SPFsweep+1,10,SPFsweep,-6
-.1
-.2
-.3
-.4
-.5
-.6
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
+.6									;direction 6: uses the next list
 .7	dc.w	SPFskatewp+20,2,SPFsweep+9,10,SPFsweep+8,-6
 
 SPAfaceoffr	=	*-SPAlist			;animation number: offset into SPAlist
@@ -987,12 +987,12 @@ SPAfaceoffr_table:					;table of the animation above: direction offsets, flags, 
 	dc.w	0
 
 .0	dc.w	SPFskatewp,-5
-.1
-.2
-.3
-.4
-.5
-.6
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
+.6									;direction 6: uses the next list
 .7	dc.w	SPFskatewp+20,-5
 
 SPAsiren	=	*-SPAlist			;animation number: offset into SPAlist
@@ -1008,13 +1008,13 @@ SPAsiren_table:						;table of the animation above: direction offsets, flags, fr
 	dc.w	.7-.t
 	dc.w	1
 
-.0
-.1
-.2
-.3
-.4
-.5
-.6
+.0									;direction 0: uses the next list
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
+.6									;direction 6: uses the next list
 .7	dc.w	SPFSiren,3,SPFSiren+1,3,SPFSiren+2,3,SPFSiren+3,3,SPFSiren+4,3,SPFSiren+5,3,SPFSiren+6,3,SPFSiren+7,3
 	dc.w	SPFSiren+8,3,SPFSiren+9,3,SPFSiren+10,3,SPFSiren+11,3,SPFSiren+12,3,SPFSiren+13,-3
 
@@ -1031,13 +1031,13 @@ SPAbglass_table:					;table of the animation above: direction offsets, flags, fr
 	dc.w	.7-.t
 	dc.w	0
 
-.0
-.1
-.2
-.3
-.4
-.5
-.6
+.0									;direction 0: uses the next list
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
+.6									;direction 6: uses the next list
 .7	dc.w	SPFbglass,8,SPFbglass+1,8,SPFbglass+2,8,SPFbglass+3,8,SPFbglass+4,-1000
 
 SPAstanley	=	*-SPAlist			;animation number: offset into SPAlist
@@ -1208,13 +1208,13 @@ SPAinjuryfall_table:				;Frames 273-291
 	dc.w	.7-.t
 	dc.w	0
 
-.0
-.1
-.2
+.0									;direction 0: uses the next list
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
 .7	dc.w	SPFfallback,6,SPFfallback+1,6,SPFfallback+2,30,SPFfallback+2,-1024
-.3
-.4
-.5
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
 .6	dc.w	SPFfallback+16,6,SPFfallback+17,6,SPFfallback+18,30,SPFfallback+18,-1024
 
 SPAghighr	=	*-SPAlist			;Goalie high shoulder save right (goaliesave.saveanim 6)
@@ -1367,13 +1367,13 @@ SPAboardfront_table:				;Frames 276-753
 	dc.w	.7-.t
 	dc.w	0
 
-.0
+.0									;direction 0: uses the next list
 .1	dc.w	738,6,739,6,740,6,741,60,SPFfallback+3,8,SPFduck,-8
-.2
+.2									;direction 2: uses the next list
 .3	dc.w	742,6,743,6,744,6,745,60,SPFfallfwd+11,8,SPFduck+2,-8
-.4
+.4									;direction 4: uses the next list
 .5	dc.w	746,6,747,6,748,6,749,60,SPFfallfwd+19,8,SPFduck+4,-8
-.6
+.6									;direction 6: uses the next list
 .7	dc.w	750,6,751,6,752,6,753,60,SPFfallfwd+27,8,SPFduck+6,-8
 
 SPAboardright	=	*-SPAlist		;Checked into the right side boards (FallDown.FallList 1; flipped
@@ -1390,13 +1390,13 @@ SPAboardright_table:				;Frames 284-769
 	dc.w	.7-.t
 	dc.w	0
 
-.0
+.0									;direction 0: uses the next list
 .1	dc.w	754,6,755,6,756,6,757,60,SPFfallfwd+3,8,SPFduck,-8
-.2
+.2									;direction 2: uses the next list
 .3	dc.w	758,6,759,6,760,6,761,60,SPFfallback+11,8,SPFduck+2,-8
-.4
+.4									;direction 4: uses the next list
 .5	dc.w	762,6,763,6,764,6,765,60,SPFfallfwd+19,8,SPFduck+4,-8
-.6
+.6									;direction 6: uses the next list
 .7	dc.w	766,6,767,6,768,6,769,60,SPFfallback+27,8,SPFduck+6,-8
 
 SPAboardback	=	*-SPAlist		;Checked into the end boards behind the bottom goal line
@@ -1413,14 +1413,14 @@ SPAboardback_table:					;Frames 292-785
 	dc.w	.7-.t
 	dc.w	0
 
-.0
+.0									;direction 0: uses the next list
 .1	dc.w	770,6,771,6,772,6,773,60,SPFfallfwd+3,8,SPFduck,-8
-.2
+.2									;direction 2: uses the next list
 ;RAM xref
 .3	dc.w	774,6,775,6,776,6,777,60,SPFfallfwd+11,8,SPFduck+2,-8
-.4
+.4									;direction 4: uses the next list
 .5	dc.w	778,6,779,6,780,6,781,60,SPFfallback+19,8,SPFduck+4,-8
-.6
+.6									;direction 6: uses the next list
 .7	dc.w	782,6,783,6,784,6,785,60,SPFfallfwd+27,8,SPFduck+6,-8
 
 SPAboardleft	=	*-SPAlist		;Checked into the left side boards (FallDown.FallList 3; flipped
@@ -1437,13 +1437,13 @@ SPAboardleft_table:					;Frames 284-801
 	dc.w	.7-.t
 	dc.w	0
 
-.0
+.0									;direction 0: uses the next list
 .1	dc.w	786,6,787,6,788,6,789,60,SPFfallfwd+3,8,SPFduck,-8
-.2
+.2									;direction 2: uses the next list
 .3	dc.w	790,6,791,6,792,6,793,60,SPFfallback+11,8,SPFduck+2,-8
-.4
+.4									;direction 4: uses the next list
 .5	dc.w	794,6,795,6,796,6,797,60,SPFfallfwd+19,8,SPFduck+4,-8
-.6
+.6									;direction 6: uses the next list
 .7	dc.w	798,6,799,6,800,6,801,60,SPFfallback+27,8,SPFduck+6,-8
 
 SPAbenchcheckl	=	*-SPAlist		;Checked into the left boards near center ice (FallDown, from
@@ -1462,14 +1462,14 @@ SPAbenchcheckl_table:				;Frames 284-815
 
 .0	dc.w	802,6,803,6,804,6,805,6,806,6,807,6,808,6,800,6
 	dc.w	769,6,SPFfallback+27,80,SPFduck+6,-8
-.1
-.2
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
 .3	dc.w	790,6,809,6,810,6,811,6,812,6,813,6,809,6,792,6
 	dc.w	761,6,SPFfallback+11,80,SPFduck+2,-8
 .4	dc.w	814,6,815,6,804,6,805,6,806,6,807,6,808,6,800,6
 	dc.w	769,6,SPFfallback+27,80,SPFduck+6,-8
-.5
-.6
+.5									;direction 5: uses the next list
+.6									;direction 6: uses the next list
 .7	dc.w	798,6,815,6,804,6,805,6,806,6,807,6,808,6,800,6
 	dc.w	769,6,SPFfallback+27,80,SPFduck+6,-8
 
@@ -1489,14 +1489,14 @@ SPAbenchcheckr_table:				;Frames 284-829
 
 .0	dc.w	816,6,817,6,818,6,819,6,820,6,821,6,822,6,792,6
 	dc.w	761,6,SPFfallback+11,80,SPFduck+2,-8
-.1
-.2
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
 .3	dc.w	758,6,823,6,818,6,819,6,820,6,821,6,822,6,792,6
 	dc.w	761,6,SPFfallback+11,80,SPFduck+2,-8
 .4	dc.w	824,6,823,6,818,6,819,6,820,6,821,6,822,6,792,6
 	dc.w	761,6,SPFfallback+11,80,SPFduck+2,-8
-.5
-.6
+.5									;direction 5: uses the next list
+.6									;direction 6: uses the next list
 .7	dc.w	766,6,825,6,826,6,827,6,828,6,829,6,825,6,800,6
 	dc.w	769,6,SPFfallback+27,80,SPFduck+6,-8
 
@@ -1536,15 +1536,15 @@ SPAinjury1_table:					;last table (93 had it right after flip)
 	dc.w	.7-.t
 	dc.w	0
 
-.0
-.1
-.2
+.0									;direction 0: uses the next list
+.1									;direction 1: uses the next list
+.2									;direction 2: uses the next list
 .7	dc.w	SPFfallback,6,SPFfallback+1,6,SPFfallback+2,30,SPFinjury1,10,SPFinjury1+1,10,SPFinjury1+2,10,SPFinjury1+3,8,SPFinjury1+4,8
 	dc.w	SPFinjury1+5,8,SPFinjury1+3,8,SPFinjury1+4,8,SPFinjury1+5,8,SPFinjury1+3,8,SPFinjury1+4,8,SPFinjury1+5,8,SPFinjury1+3,8
 	dc.w	SPFinjury1+4,8,SPFinjury1+5,-900
-.3
-.4
-.5
+.3									;direction 3: uses the next list
+.4									;direction 4: uses the next list
+.5									;direction 5: uses the next list
 .6	dc.w	SPFfallback+16,6,SPFfallback+17,6,SPFfallback+18,30,SPFinjury1+6,10,SPFinjury1+7,10,SPFinjury1+8,10,SPFinjury1+9,8,SPFinjury1+10,8
 	dc.w	SPFinjury1+11,8,SPFinjury1+9,8,SPFinjury1+10,8,SPFinjury1+11,8,SPFinjury1+9,8,SPFinjury1+10,8,SPFinjury1+11,8,SPFinjury1+9,8
 	dc.w	SPFinjury1+10,8,SPFinjury1+11,-900
