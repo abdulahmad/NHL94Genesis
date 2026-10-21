@@ -814,7 +814,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	move.w	#$1A,(printx).w
 	addq.w	#1,(printy).w
 	movea.l	tmdata(a2),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	bsr.w	print
 	bsr.w	getname					;a1 = number and name of player d0
