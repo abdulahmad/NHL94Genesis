@@ -3,7 +3,7 @@
 
 	include	stubinc\ports.inc		;IO_* / VDP_* ports. Equates only
 	include	stubinc\equals.inc		;VDP status bits. Equates only
-	include	stubinc\ram_addrs.inc	;RAM names. Equates only
+	include	ram94.asm				;RAM map (rs). Equates only
 
 	include	main94.asm				; $000000 header, startup, vectors
 	include	teamdata94.asm			; $00030A teams, palettes, credits text

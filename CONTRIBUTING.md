@@ -36,7 +36,7 @@ A comment-only or rename-only change must not change a single byte. Never commit
 
 - A value that 92 (or an earlier game) names must use the name: sizes, counts, bit numbers, flags, penalty and
   sound numbers, offsets into structures. Define the constant in `src/stubinc/equals.inc` (constants and
-  structure offsets) or with the RAM.
+  structure offsets) or in `src/ram94.asm` (RAM).
 - The address of a labelled table or routine is written as the label, never as a number
   (`#TeamList`, not `#$314`). Offsets inside data are `label-base` expressions, defined or used next to the data
   they point into.

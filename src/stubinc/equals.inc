@@ -421,7 +421,7 @@ fosize equ 4
 ; PlList: 6 wanted roster players, then their positions
 plpos equ 6
 ; Save RAM records, read and written through recordbuf. Each record is a value, its holder, the
-; opponent team and the opponent user (recordbuf, ram_addrs.inc).
+; opponent team and the opponent user (recordbuf, ram94.asm).
 ; User record block (TeamRecBase + user * 16)
 urgoals equ 0						;most goals in a game
 urgoalsteam equ 1					;the user's team in that game

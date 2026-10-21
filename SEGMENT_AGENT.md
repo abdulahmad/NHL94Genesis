@@ -48,7 +48,7 @@ None. Every ROM map row is matched, every `seg:` script matches its ROM map rang
 - Style source: the matching file in https://github.com/abdulahmad/NHLPA93Genesis. 93 is the closer source.
 - Reference ROM: `lst/nhl94.bin`. This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
 - `src/nhl94.asm` is the full build top level (`npm run build:retail`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
-- Shared includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`); `nhl94.asm` includes them.
+- Shared includes live in `src/stubinc` (`ports.inc`, `equals.inc`); `nhl94.asm` includes them and `src/ram94.asm` (the RAM map, `rs` from `varstart`).
 
 
 ## Teams
