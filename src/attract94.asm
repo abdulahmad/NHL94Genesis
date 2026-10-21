@@ -29,7 +29,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	clr.w	d4
 	moveq	#$F,d5
 	bsr.w	dobitmap

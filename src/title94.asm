@@ -629,7 +629,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	clr.w	d4
 	moveq	#$F,d5
 	jsr	(dobitmap).l
@@ -643,7 +643,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
 	move.w	#$18,(palcount).w
@@ -893,7 +893,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#8,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
@@ -906,7 +906,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
@@ -919,7 +919,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#8,d5
 	jsr	(dobitmap).l
 	clr.w	(palfadenew).w
@@ -1259,7 +1259,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
 .x

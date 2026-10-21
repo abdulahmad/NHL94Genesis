@@ -157,7 +157,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$C,d5					;color fam 3-4
 	jsr	(dobitmap).l
 	movea.l	#HotIconMap+8,a2

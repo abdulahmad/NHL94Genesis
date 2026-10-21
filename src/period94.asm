@@ -169,23 +169,23 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
 .loop2
-	cmp.w	2(a0),d2
+	cmp.w	seY(a0),d2
 	bgt.w	.next
-	cmp.w	2(a0),d3
+	cmp.w	seY(a0),d3
 	blt.w	.next
 	cmp.w	(a0),d0
 	bgt.w	.next
 	cmp.w	(a0),d1
 	blt.w	.next
-	move.w	2(a0),d5
+	move.w	seY(a0),d5
 	addi.w	#$70,d5
 	sub.w	d2,d5
 	move.w	d5,(a6)+
-	move.b	7(a0),(a6)+
+	move.b	seSize(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	6(a0),d5
+	move.w	seAttr(a0),d5
 	andi.w	#$F800,d5
-	add.w	4(a0),d5
+	add.w	seTile(a0),d5
 	add.w	(arenaanimchars).w,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5

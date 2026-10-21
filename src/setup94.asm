@@ -858,11 +858,11 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#3,d5
 	bsr.w	dobitmap
 	movea.l	#PlayoffSprite,a1
-	lea	8(a1),a2
+	lea	jimtilecount(a1),a2
 	adda.l	(a1),a1
 	moveq	#7,d0
 	movea.w	#(palfadenew+$40-M68K_RAM),a0
