@@ -10,7 +10,7 @@ ChooseSong							;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, o
 	beq.w	.0
 	move.w	#$FFFF,d1
 	bra.w	.1
-.0
+.0									;gmhl clear
 	bclr	#6,(sflags8).w
 	movea.l	#TeamSongs,a0
 	movea.l	#RandomSongs,a1
@@ -121,7 +121,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	movea.l	#passdirlist,a0
 	add.w	d0,d0
 	move.w	0(a0,d0.w),d0
-.0
+.0									;pfgoal set, or from above
 	move.w	d0,(passdir).w			;move d0 into passdir
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -138,7 +138,7 @@ StartShootoutPath					;Shootout: pick one of the 7 skate paths (ShootoutPaths) a
 									;(sopath) and start it (NextPathPoint). Called from NextShooter and
 									;puckshootout
 	movem.l	d0-d7/a0-a6,-(sp)
-.loop
+.loop								;loop
 	move.w	#7,d0
 	jsr	(randomd0).l
 	cmp.w	#6,d0
@@ -204,7 +204,7 @@ NextPathPoint						;Next point of shootout path sopath: sopathx / sopathy = x (t
 	clr.w	(sopathend).w
 	move.b	5(a0,d0.w),(sopathend+1).w
 	move.w	6(a0,d0.w),(sopathdir).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bottom net);
@@ -219,11 +219,11 @@ SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bott
 	bne.w	.0
 	neg.w	d0
 	neg.w	d1
-.0
+.0									;pfgoal set, or from above
 	sub.w	(a3),d0
 	bpl.w	.1
 	neg.w	d0
-.1
+.1									;d0 >= 0, or from above
 	tst.w	Xvel(a3)
 	bne.w	.2
 	tst.w	Yvel(a3)
@@ -233,11 +233,11 @@ SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bott
 .2
 	cmp.w	#$A,d0
 	bgt.w	.7
-.3
+.3									;d0 <= $12, or from above
 	sub.w	Ypos(a3),d1
 	bpl.w	.4
 	neg.w	d1
-.4
+.4									;d1 >= 0, or from above
 	tst.w	Xvel(a3)
 	bne.w	.5
 	tst.w	Yvel(a3)
@@ -247,12 +247,12 @@ SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bott
 .5
 	cmp.w	#$A,d1
 	bgt.w	.7
-.nextpt
+.nextpt								;d1 <= $12, or from above
 	bsr.w	NextPathPoint
-.7
+.7									;d0 > $A or d1 > $A, or from above
 	move.w	(sopathx).w,d0
 	move.w	(sopathy).w,d1
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d2-d7/a0-a6
 	rts
 ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (d0 is restored) =
@@ -278,22 +278,22 @@ ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (
 	cmpi.w	#$F,(shootoutclock).w
 	blt.w	.no
 	bra.w	.yes
-.0
+.0									;bit 3 of sflags7 set
 	move.w	(sopathx).w,d0
 	move.w	(sopathy).w,d1
 	btst	#pfgoal,pflags(a3)
 	bne.w	.1
 	neg.w	d0
 	neg.w	d1
-.1
+.1									;pfgoal set, or from above
 	sub.w	(a3),d0
 	bpl.w	.2
 	neg.w	d0
-.2
+.2									;d0 >= 0, or from above
 	sub.w	Ypos(a3),d1
 	bpl.w	.3
 	neg.w	d1
-.3
+.3									;d1 >= 0, or from above
 	cmp.w	(sopathend).w,d0
 	bgt.w	.yes
 	cmp.w	(sopathend).w,d1
@@ -303,7 +303,7 @@ ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (
 	bra.w	.x
 .yes
 	move.w	#1,d0
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixels to 4 bit
@@ -416,7 +416,7 @@ PrintParenNumber					;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3 
 	cmp.w	#$63,d0
 	ble.w	.0
 	move.w	#3,d1
-.0
+.0									;d0 <= 9 or d0 <= $63, or from above
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
@@ -449,7 +449,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	bgt.w	.1
 	cmpi.w	#$FFAA,(FallXPos).w
 	bgt.w	.2
-.1
+.1									;FallXPos > $56, or from above
 	move.w	#$116,d0
 .2
 	sub.w	Ypos(a3),d0
@@ -463,7 +463,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	bgt.w	.4
 	cmpi.w	#$FFAA,(FallXPos).w
 	bgt.w	.5
-.4
+.4									;FallXPos > $56, or from above
 	move.w	#$FEEA,d0
 .5
 	sub.w	Ypos(a3),d0
@@ -510,7 +510,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	sub.w	(a3),d0
 	asr.w	#1,d0
 	add.w	d0,(a3)
-.x
+.x									;exit (also the end of the code above)
 	rts
 GetLeagueCrowdRecord				;d0 = the team (of NumTeams) with the highest crowd record byte 8
 									;(ReadCrowdRecord; 0 counts as $50). Called from PrintCrowdMeter
@@ -525,12 +525,12 @@ GetLeagueCrowdRecord				;d0 = the team (of NumTeams) with the highest crowd reco
 	move.b	8(a0),d2
 	bne.w	.0
 	move.w	#$50,d2
-.0
+.0									;d2 <> 0, or from above
 	cmp.w	d7,d2
 	ble.w	.next
 	move.w	d2,d7
 	move.w	d1,d0
-.next
+.next								;d2 <= d7, or from above
 	dbf	d1,.loop
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
@@ -556,7 +556,7 @@ RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when
 	cmpi.w	#$C0,(foy).w
 	bgt.w	.x
 	move.w	#6,d0
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,a0
 	rts
 FaceoffAnims						;RandomFaceoffAnim animations
@@ -575,7 +575,7 @@ CheckScoreLeader					;Compare tmap (players on ice) of tmstruct / AwShots and te
 .0
 	cmpi.w	#$13,tmteam(a0)
 	bne.w	*+4
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d2/a0-a2
 	rts
 DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffspritey in Satt, then
@@ -593,7 +593,7 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	bne.w	.0
 	clr.l	(a6)+
 	clr.l	(a6)+
-.0
+.0									;a6 <> Satt, or from above
 	clr.b	satLink-satLen(a6)
 	move.l	a6,d0
 	subi.l	#Satt,d0
@@ -649,14 +649,14 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	move.w	#$18,(palcount).w
 	move	#$2500,sr
 	move.w	#$50,(seed).w
-.loop2
+.loop2								;loop
 	moveq	#4,d0
 	jsr	(waitx).l
 	tst.w	d1
 	bne.w	.0
 	subq.w	#1,(seed).w
 	bpl.s	.loop2
-.0
+.0									;d1 <> 0, or from above
 	move	#$2700,sr
 	rts
 GetTeamStruct						;a2 = tmstruct, or AwShots when team d2 is not tmteam of tmstruct.
@@ -665,7 +665,7 @@ GetTeamStruct						;a2 = tmstruct, or AwShots when team d2 is not tmteam of tmst
 	cmp.w	tmteam(a2),d2
 	beq.w	.x
 	movea.l	#AwShots,a2
-.x
+.x									;exit (also the end of the code above)
 	rts
 CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for d4), and to the
 									;next long unless TempWord1 is 8 or facedir(a3). Called from doinput_ispc
@@ -677,14 +677,14 @@ CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for 
 	tst.w	d4
 	beq.w	.0
 	movea.l	#awaypresses,a0
-.0
+.0									;d4 = 0, or from above
 	addq.l	#1,(a0)
 	cmp.w	#8,d1
 	beq.w	.x
 	cmp.w	facedir(a3),d1
 	beq.w	.x
 	addq.l	#1,4(a0)
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d1-d7/a0
 	rts
 TerminateLogName					;Unreferenced. The GetLogName String at lognametext, ended with 0 at
@@ -748,7 +748,7 @@ SetSflags8Bit1						;Always sets sflags8 bit 1 (the bclr is skipped).
 	bra.w	.ex
 .set
 	bset	#1,(sflags8).w			;set bit 1 of sflags8
-.ex
+.ex									;exit (also the end of the code above)
 	rts
 AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from AttribRating,
 									;PrintOverallRating and PrintMatchupRatings
@@ -756,7 +756,7 @@ AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from Attr
 	bge.w	.exit					;branch if greater than
 	asr.w	#1,d0					;divide by 2
 	addi.w	#$19,d0					;add $19 (25 dec)
-.exit
+.exit								;exit (also the end of the code above)
 	rts
 PuckComingToward					;nothing calls it. Z clear when the puck is within $1E of player a3 and
 									;moving toward him (x, then y); d0-d1 kept
@@ -776,7 +776,7 @@ PuckComingToward					;nothing calls it. Z clear when the puck is within $1E of p
 	move.w	(puckvy).w,d1
 	eor.w	d1,d0
 	andi.w	#$8000,d0
-.x
+.x									;exit: restore the registers
 	movem.w	(sp)+,d0-d1
 	rts
 ReadGoaliePulled					;Z clear when the team of a3 pulled its goalie ($26 of the team struct).
@@ -786,7 +786,7 @@ ReadGoaliePulled					;Z clear when the team of a3 pulled its goalie ($26 of the 
 	btst	#pfteam,pflags(a3)		;check if home or away 0=home 1=away
 	beq.w	.chkgoalie
 	movea.l	#AwShots,a1
-.chkgoalie
+.chkgoalie							;pfteam clear, or from above
 	tst.w	tmgoalie(a1)
 	movem.l	(sp)+,a1
 	rts
@@ -944,7 +944,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	jsr	(song).l
 	bsr.w	CreditsLineScroll
 	move	#$2500,sr
-.loop
+.loop								;loop
 	jsr	(CreditsWait).l
 	tst.w	(clampcounter).w
 	bne.s	.loop
@@ -955,7 +955,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	jsr	(printz).l
 	String	-(TXPAL1+TXMAP1),0,0
 	movea.l	#CreditsList,a1
-.loop3
+.loop3								;loop
 	jsr	(CreditsPrintRow).l
 	adda.w	(a1),a1
 	moveq	#$27,d4
@@ -985,7 +985,7 @@ CreditsPrintRow						;Credits: clear the row below the screen (Vscroll / 8 + $1C
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	move.w	(sp)+,(printy).w
-.loop
+.loop								;loop
 	move.w	(a1),d0
 	asr.w	#1,d0
 	neg.w	d0
@@ -1001,19 +1001,19 @@ CreditsWait							;Credits: wait for Vcount, run the clampcounter count down; st
 									;bit 7) returns from the caller too
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(Vcount).w,d0
-.loop
+.loop								;loop
 	cmp.w	(Vcount).w,d0
 	beq.s	.loop
 	subq.w	#2,(clampcounter).w
 	bpl.w	.0
 	clr.w	(clampcounter).w
-.0
+.0									;clampcounter >= 0, or from above
 	jsr	(orjoy).l
 	btst	#7,d1
 	movem.l	(sp)+,d0-d7/a0-a6
 	beq.w	.x
 	addq.w	#4,sp
-.x
+.x									;exit (also the end of the code above)
 	rts
 VBlank_TitleScreen					;newTitleScreen vblank: line scroll table (SortCords) and Vscroll,
 									;sprites, cramfade, CreditsScrollStep, p_music_vblank
@@ -1033,9 +1033,9 @@ VBlank_TitleScreen					;newTitleScreen vblank: line scroll table (SortCords) and
 	clr.w	(Sattsize).w
 	move.w	(VSPRITES).w,d1
 	jsr	(DoDMA).l
-.0
+.0									;d0 = 0, or from above
 	jsr	(cramfade).l
-.1
+.1									;dfng set, or from above
 	addq.w	#1,(Vcount).w
 	jsr	(CreditsScrollStep).l
 	jsr	(p_music_vblank).l
@@ -1053,7 +1053,7 @@ CreditsLineScroll					;Credits: the line scroll table at SortCords
 	btst	#0,d0
 	bne.w	.0
 	subq.w	#1,d1
-.0
+.0									;bit 0 of d0 set, or from above
 	dbf	d0,.loop
 	move.w	#$60,d0
 	move.l	#$100,d1
@@ -1067,7 +1067,7 @@ CreditsScrollStep					;Credits: line scroll step, every TempWord2 frames
 	subq.w	#1,(TempWord2).w
 	bmi.w	.0
 	rts
-.0
+.0									;TempWord2 negative
 	clr.w	(TempWord2).w
 	movem.l	d0-d2/a0,-(sp)
 	move.w	#$DF,d0
@@ -1088,7 +1088,7 @@ CreditsScrollStep					;Credits: line scroll step, every TempWord2 frames
 	beq.w	.2
 	move.w	#0,-2(a0)
 	bra.w	.2
-.1
+.1									;d0 < $8F
 	sub.w	d1,-2(a0)
 	bpl.w	.2
 	clr.w	-2(a0)
@@ -1164,10 +1164,10 @@ LeadSong							;Not in a shootout (gmode2 bit 1), scores not level: once (sflags
 	move.w	(HomeTeam).w,(HmTeam).w
 	move.w	#1,(SongIndex).w
 	jsr	(ChooseSong).l
-.loop
+.loop								;loop
 	bset	#6,(sflags8).w
 	bra.w	LeadSongExit
-.2
+.2									;a3 <> tmstruct
 	move.w	(HomeTeam).w,(HmTeam).w
 	move.w	#4,(SongIndex).w
 	jsr	(ChooseSong).l
@@ -1216,7 +1216,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	bne.w	.0
 	movea.l	#homehotplayer,a0
 	move.w	#$20,(iconx).w
-.0
+.0									;a2 <> #tmstruct, or from above
 	move.w	#0,d0
 .loop
 	move.w	(a0)+,d1
@@ -1227,7 +1227,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	cmpa.l	#tmstruct,a2
 	bne.w	.1
 	movea.l	#homecoldplayer,a0
-.1
+.1									;a2 <> #tmstruct, or from above
 	move.w	#0,d0
 .loop2
 	move.w	(a0)+,d1
@@ -1241,11 +1241,11 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	bra.w	.x
-.hot
+.hot								;d1 = iconplayer
 	move.w	(hoticonchars).w,d4
 	movea.l	#HotIconMap,a0
 	bra.w	.draw
-.cold
+.cold								;d1 = iconplayer
 	move.w	(coldiconchars).w,d4
 	movea.l	#ColdIconMap,a0
 .draw
@@ -1262,7 +1262,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0/a0-a1
 	rts
 chgplayer							;The pad d4 takes the nearest free skater to where the puck is going (not
@@ -1302,7 +1302,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	beq.w	.0
 	btst	#3,pflags(a0)			;is player controlled?
 	bne.w	.next					;yes branch
-.0
+.0									;d1 = 0, or from above
 	btst	#2,(BA_PS_flags).w
 	beq.w	.1
 	movem.l	d0,-(sp)
@@ -1315,7 +1315,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	bne.w	.next
-.1
+.1									;bit 2 of BA_PS_flags clear or d0 = 0, or from above
 	btst	#pfalock,pflags(a0)		;#pfalock
 	bne.w	.next					;player is locked
 	movem.w	(sp),d0-d1
@@ -1342,7 +1342,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	tst.w	d4
 	beq.w	j_setc1player
 	bra.w	j_setc2player
-.ex
+.ex									;exit: restore the registers
 	movem.l	(sp)+,d0-d6/a0-a1
 rtsChgplayer						;shared rts
 	rts

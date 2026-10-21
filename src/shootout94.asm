@@ -18,7 +18,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	tst.w	(BA_Team).w
 	beq.w	.0
 	movea.l	#AwShots,a2
-.0
+.0									;BA_Team = 0, or from above
 	jsr	(FormatPlayerNumInitial).l
 	move.w	(printx).w,-(sp)
 	jsr	(print).l
@@ -37,7 +37,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	tst.w	(BA_Team).w
 	beq.w	.1
 	movea.l	#tmstruct,a2
-.1
+.1									;BA_Team = 0, or from above
 	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	jsr	(printz).l
@@ -111,7 +111,7 @@ NextShooter							;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSh
 	btst	#3,(gmode2).w
 	beq.w	.0
 	jmp	ExitToOpening
-.0
+.0									;bit 3 of gmode2 clear
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	StartShootoutPath
 	move.w	(shootoutteam).w,(BA_Team).w
@@ -121,7 +121,7 @@ NextShooter							;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSh
 	beq.w	.1
 	move.w	#5,(BA_Goalie_SCnum).w
 	movea.l	#awayshooters,a0
-.1
+.1									;shootoutteam = 0, or from above
 	move.w	(homeshootnum).w,d0
 	add.w	d0,d0
 	move.w	0(a0,d0.w),(BA_Skater_Offset).w
@@ -148,9 +148,9 @@ CountShootoutGoals					;Shootout: count the goals and end it when one team canno
 	cmpi.w	#5,(homeshootnum).w
 	blt.w	.1
 	clr.w	(homeshootnum).w
-.1
+.1									;homeshootnum < 5, or from above
 	addq.w	#1,(shootoutround).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away team as the
@@ -161,7 +161,7 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 	beq.w	.0
 	move.w	(VisTeam).w,d0
 	movea.l	#shootoutteam,a0
-.0
+.0									;shootoutteam = 0, or from above
 	movea.l	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
@@ -189,7 +189,7 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	cmp.w	(awayshootgoals).w,d0
 	bgt.w	.0
 	move.w	(VisTeam).w,d1
-.0
+.0									;d0 > awayshootgoals, or from above
 	asl.w	#2,d1
 	movea.l	#TeamList,a1
 	movea.l	0(a1,d1.w),a1
@@ -250,7 +250,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	cmpa.l	#tmstruct,a2
 	beq.w	.0
 	movea.l	#awayshooters,a0
-.0
+.0									;a2 = #tmstruct, or from above
 	move.w	(TestList).w,d0
 	asl.w	#1,d0
 	move.w	0(a0,d0.w),d6
@@ -264,7 +264,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	move.w	d1,d0
 	subq.w	#1,d0
 	clr.w	d1
-.1
+.1									;TestList <> 5, or from above
 	move.w	d0,(screentimer).w
 	clr.w	(PlayerScrollCtr).w
 	clr.w	(VertLineScrolling).w
@@ -275,7 +275,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	cmp.w	d1,d6
 	bne.w	.2
 	move.w	d2,(VertLineScrolling).w
-.2
+.2									;d6 <> d1, or from above
 	addq.w	#1,d1
 	addq.w	#1,d2
 	dbf	d0,.loop
@@ -294,7 +294,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	String	CC_SetMapAndPosition,4,2,2,1,'{Select Player}'
 	clr.w	d0
 	bra.w	.scroll
-.loop2
+.loop2								;loop
 	jsr	(vcountwait).l
 	jsr	(getpzjoy).l
 	jsr	(ProcessInputWithRepeat).l
@@ -313,7 +313,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	btst	#2,d1
 	bne.w	.page
 	bra.s	.loop2
-.page
+.page								;bit 3 of d1 set or bit 2 of d1 set
 	add.w	(DispAttribCtr).w,d0
 	bmi.s	.loop2
 	move.w	d0,(DispAttribCtr).w
@@ -331,15 +331,15 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	cmp.w	(PlayerScrollCtr).w,d0
 	bgt.w	.8
 	move.w	d0,(PlayerScrollCtr).w
-.8
+.8									;d0 > PlayerScrollCtr, or from above
 	subq.w	#5,d0
 	cmp.w	(PlayerScrollCtr).w,d0
 	ble.w	.9
 	move.w	d0,(PlayerScrollCtr).w
-.9
+.9									;d0 <= PlayerScrollCtr, or from above
 	bsr.w	PrintShooterList
 	bra.w	.loop2
-.pick
+.pick								;bit 5 of d1 set
 	movea.w	#(Satt-M68K_RAM),a3
 	adda.w	(VertLineScrolling).w,a3
 	clr.w	d0
@@ -349,19 +349,19 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	cmpa.l	#tmstruct,a2
 	beq.w	.11
 	movea.l	#awayshooters,a0
-.11
+.11									;a2 = #tmstruct, or from above
 	asl.w	#1,d2
 	move.w	d0,0(a0,d2.w)
 	bra.w	ShootersRedraw
 PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP2),$16,1
-.loop
+.loop								;loop
 	movea.l	#PAttribOverall,a1
 	cmpi.w	#5,(TestList).w
 	bne.w	.0
 	movea.l	#GAttribOverall,a1
-.0
+.0									;TestList <> 5, or from above
 	move.w	(DispAttribCtr).w,d0
 	bra.w	.1
 .loop2
@@ -377,11 +377,11 @@ PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	cmpa.l	#PAttribOverall,a1
 	bne.w	.3
 	movea.l	#ShooterOverallTxt,a1
-.3
+.3									;a1 <> #PAttribOverall, or from above
 	cmpa.l	#GAttribOverall,a1
 	bne.w	.4
 	movea.l	#ShooterOverallTxt2,a1
-.4
+.4									;a1 <> #GAttribOverall, or from above
 	jsr	(print).l
 	move.l	(a1),d4
 	movea.w	#(Satt-M68K_RAM),a3
@@ -391,7 +391,7 @@ PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	cmp.w	#5,d1
 	bls.w	.5
 	moveq	#5,d1
-.5
+.5									;d1 <= 5, or from above
 	move.w	#2,(printy).w
 .loop3
 	jsr	(printsmallz).l
@@ -399,7 +399,7 @@ PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	cmp.w	(VertLineScrolling).w,d2
 	bne.w	.6
 	move.w	d7,(printa).w
-.6
+.6									;d2 <> VertLineScrolling, or from above
 	clr.w	d0
 	move.b	0(a3,d2.w),d0
 	jsr	(GetNameandAttrib).l
@@ -447,7 +447,7 @@ ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 
 	blt.w	ShootersSelect
 	clr.w	d0
 	bra.w	ShootersSelect
-.0
+.0									;d0 negative
 	move.w	#4,d0
 ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the player box,
 									;back to the loop
@@ -482,7 +482,7 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	cmpa.w	#(tmstruct-M68K_RAM),a2
 	beq.w	.0
 	move.w	#$2C,d0
-.0
+.0									;a2 = tmstruct, or from above
 	jmp	PutTeamBlock
 ClearShooterScreen					;Shootout shooters: erase the screen
 	jsr	(printz).l
@@ -529,7 +529,7 @@ PrintShooterBox						;Shootout shooters: the selected player box
 	cmpa.l	#tmstruct,a2
 	beq.w	.0
 	movea.l	#awayshooters,a1
-.0
+.0									;a2 = #tmstruct, or from above
 	move.w	(TestList).w,d0
 	asl.w	#1,d0
 	move.w	0(a1,d0.w),d0
@@ -550,7 +550,7 @@ PrintShooterNames					;Shootout shooters: the shooters' names (FormatPlayerNameS
 	cmpa.l	#tmstruct,a2
 	beq.w	.loop
 	movea.l	#awayshooters,a0
-.loop
+.loop								;loop; a2 = #tmstruct, or from above
 	move.w	d1,d0
 	asl.w	#1,d0
 	move.w	0(a0,d0.w),d0
@@ -559,12 +559,12 @@ PrintShooterNames					;Shootout shooters: the shooters' names (FormatPlayerNameS
 	cmp.w	(TestList).w,d1
 	bne.w	.1
 	move.w	#2,(printfontset).w
-.1
+.1									;d1 <> TestList, or from above
 	cmp.w	#5,d1
 	bne.w	.2
 	move.w	#$19,(printx).w
 	move.w	#$E,(printy).w
-.2
+.2									;d1 <> 5, or from above
 	jsr	(printsmall).l
 	clr.w	(printfontset).w
 	move.w	(sp)+,(printx).w

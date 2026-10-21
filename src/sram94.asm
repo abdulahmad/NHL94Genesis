@@ -34,9 +34,9 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	movea.l	#M68K_RAM,a0
 	bsr.w	ReadSRAM				;Writes SRAM to RAM
 	bsr.w	ValidateSRAM
-.ex
+.ex									;exit (also the end of the code above)
 	rts
-.setiterator
+.setiterator						;d0 = $E0
 	move.w	#$1FFF,d2				;$2000 bytes
 .SRAMloop
 	move.w	#1,d1					;bit 0, then up to bit 7
@@ -57,7 +57,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	move.w	#$20,d4
 .loadcolor
 	move.w	d3,d0					;move d3 (color of flashing screen) to d0
-.flashscreen
+.flashscreen						;loop
 	move.l	#CRAM_W,(Vctrl).l		;cram write 0: the background colour
 	move.w	d0,d1
 	and.w	d3,d1
@@ -65,7 +65,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	bsr.w	SRAMWaitVblank			;wait a vblank
 	sub.w	d4,d0
 	bra.s	.flashscreen
-.setiterator2
+.setiterator2						;d0 = $B0
 	move.w	#3,d1
 .SRAMloop2
 	adda.w	#1,a0					;odd byte
@@ -101,7 +101,7 @@ ValidateSRAM						;Check the save RAM copy in M68K_RAM: byte $1FFF must be the s
 	cmp.b	(a0),d0					;compare byte at a0 ($1FFE) with d0
 	beq.w	.1						;branch if equal
 	addq.w	#1,d1					;add 1 to d1 if not
-.1
+.1									;d0 = a0, or from above
 	swap	d0						;swap d0 word size
 	move.b	(a0),d0					;move data at a0 into d0
 	not.b	d0						;toggle bits
@@ -114,9 +114,9 @@ ValidateSRAM						;Check the save RAM copy in M68K_RAM: byte $1FFF must be the s
 	bne.w	.bad					;branch if d1 not 0
 	clr.w	(ValidSRAM).w			;clear
 	bra.w	.x						;branch to exit
-.bad
+.bad								;d1 <> 0
 	st	(ValidSRAM).w				;set
-.x
+.x									;exit (also the end of the code above)
 	rts
 ClearSRAM							;Clears first $2000 of RAM and SaveRAM: zero M68K_RAM $0-$1FFF with byte
 									;$1FFE = $FF (the checksum of zeros), write it to

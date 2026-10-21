@@ -33,7 +33,7 @@ WeightedRandomSelect				;d0 = number of word weights at nibblebuffer:
 	dbf	d0,.sumloop
 	move.w	d1,d0
 	bsr.w	randomd0
-.findloop
+.findloop							;loop
 	sub.w	-(a1),d0
 	bpl.s	.findloop
 	suba.w	#(nibblebuffer-M68K_RAM),a1
@@ -64,7 +64,7 @@ remap								;a0 = data (char set), d0 = size in words, d1 = vram dest, a1 = map
 	btst	#0,d2
 	bne.w	.2
 	lsr.w	#4,d4
-.2
+.2									;bit 0 of d2 set, or from above
 	andi.w	#$F,d4
 	or.b	d4,d3					;put the new color into the result
 	ror.w	#4,d3
@@ -116,7 +116,7 @@ forcefade							;regardless of interupts/disflags fade in new palettes, don't up
 	bclr	#dfng,(disflags).w
 	move.l	#vb2,(VBint).l			;minimal vblank handler (vb2) that runs the fade
 	move	#$2500,sr
-.1
+.1									;loop
 	tst.w	(palcount).w			;wait until the fade has finished (palcount < 0)
 	bpl.s	.1
 	move.w	(sp)+,(disflags).w
@@ -150,7 +150,7 @@ cramfade							;fade from current color in color ram to color held in palfadenew
 	movea.l	#palfadenew,a1			;a1 = destination colors
 	movea.l	#Vdata,a0				;Vdata
 	clr.w	d6						;d6 = cram address, 2 per color
-.top
+.top								;loop
 	move.w	d3,d2					;d2 = signed step for this color
 	move.w	d6,d0
 	swap	d0
@@ -174,7 +174,7 @@ cramfade							;fade from current color in color ram to color held in palfadenew
 	swap	d0
 	move.l	d0,Vctrl-Vdata(a0)
 	move.w	d7,(a0)
-.next
+.next								;d0 = d1, or from above
 	addq.w	#2,d6					;next color
 	cmp.w	#$80,d6					;64 colors done?
 	bne.s	.top
@@ -233,7 +233,7 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	bhi.w	.m2						;large value: Newton iteration / binary search below
 	move.l	d1,-(sp)				;find square root of d0
 	moveq	#-1,d1					;-1
-.0
+.0									;loop
 	addq.w	#2,d1					;next odd number
 	sub.w	d1,d0
 	bcc.s	.0
@@ -241,7 +241,7 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	move.w	d1,d0
 	move.l	(sp)+,d1
 	rts
-.m2
+.m2									;d0 > $640
 	movem.l	d1-d4,-(sp)
 	moveq	#9,d3					;max number of reps
 	move.w	#$8000,d1
@@ -258,14 +258,14 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	lsr.w	#1,d1
 	cmp.w	d1,d2					;stop when the guess stops changing, or after 10 steps
 	dbeq	d3,.top
-.done
+.done								;loop
 	move.w	d1,d0					;d1 = root (shared exit of both methods)
 	movem.l	(sp)+,d1-d4
 	rts
 .big
 	moveq	#0,d1
 	moveq	#-1,d2
-.bs
+.bs									;loop
 	move.w	d1,d3					;d3 = (low+high)/2, carry shifted back in
 	add.w	d2,d3
 	roxr.w	#1,d3
@@ -277,7 +277,7 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	bcc.w	.lo						;d0 >= mid^2: raise low
 	move.w	d4,d2					;else lower high
 	bra.s	.bs
-.lo
+.lo									;d0 >= d3
 	move.w	d4,d1
 sfxarg = 16*4						;sfx / song: stack offset of the number word after the movem
 	bra.s	.bs
@@ -290,7 +290,7 @@ sfx									;play sound effect number. One word passed on stack
 	bmi.w	.none					;negative = no sound
 	move.w	d0,(lastsfx).w			;remember the last effect
 	jsr	(play_sfx_or_music_track).l
-.none
+.none								;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp					;(callee pops its own argument)
@@ -303,7 +303,7 @@ song								;play song number. One word passed on stack
 	move.w	sfxarg(sp),d0			;sound number
 	bmi.w	.none					;negative = no song
 	jsr	(play_sfx_or_music_track).l	;same call as sfx, without lastsfx
-.none
+.none								;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp
@@ -316,7 +316,7 @@ waitx								;wait d0 vblanks or until input from either joystick. Return joysti
 	clr.w	(waitxpad).w
 	neg.w	d0
 	move.w	d0,(Vcount).w
-.wait
+.wait								;loop
 	bsr.w	ReadJoy1
 	move.w	d3,(waitxpad).w
 	tst.w	d1
@@ -335,9 +335,9 @@ waitx								;wait d0 vblanks or until input from either joystick. Return joysti
 	or.w	d3,(waitxpad).w
 	tst.w	d1
 	bne.w	rtss2
-.1
+.1									;FourWayPlay = 0, or from above
 	move.w	(Vcount).w,d0
-.0
+.0									;loop
 	cmp.w	(Vcount).w,d0			;wait for the next vblank to change Vcount
 	beq.s	.0
 	tst.w	d0
@@ -350,11 +350,11 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	movem.l	d4-d7/a0-a3,-(sp)
 	neg.w	d0						;Vcount counts up from -d0 to 0
 	move.w	d0,(Vcount).w
-.wait
+.wait								;loop
 	cmpi.w	#$708,(Zamx).w
 	bhi.w	.nz						;zamboni past $708: stop moving it
 	addq.w	#1,(Zamx).w
-.nz
+.nz									;Zamx > $708, or from above
 	moveq	#1,d7
 	jsr	(updatecrowdf).w			;4EB8: target below $8000
 	jsr	(RunArenaAnim).l
@@ -386,7 +386,7 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	beq.w	.vid
-.key
+.key								;d1 <> 0, or from above
 	move.w	(Vcount).w,d0
 	cmp.w	#$FF88,d0
 	blt.w	.menu
@@ -400,15 +400,15 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	bra.w	.ex
 .resume
 	move.w	(sp)+,(Vcount).w
-.vid
+.vid								;FourWayPlay = 0 or d1 = 0, or from above
 	bsr.w	setvideo
 	move.w	(Vcount).w,d0
-.0
+.0									;loop
 	cmp.w	(Vcount).w,d0			;wait for the next vblank
 	beq.s	.0
 	tst.w	d0
 	bmi.w	.wait
-.ex
+.ex									;exit: restore the registers
 	movem.l	(sp)+,d4-d7/a0-a3
 	rts
 ; wait for either joystick input
@@ -416,7 +416,7 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 waitjoy								;wait for either joystick input. Return d1 = new button presses. it as
 									;data (no caller found)
 	move.w	(Vcount).w,d0
-.0
+.0									;loop
 	cmp.w	(Vcount).w,d0			;wait one vblank
 	beq.s	.0
 	bsr.w	orjoy
@@ -431,7 +431,7 @@ orjoy								;return d1 = new button presses from either joystick
 	bsr.w	ReadJoy2
 	or.w	(sp)+,d1
 	rts
-.4way
+.4way								;FourWayPlay <> 0
 	bsr.w	ReadJoy1
 	move.w	d1,-(sp)
 	bsr.w	ReadJoy2
@@ -458,7 +458,7 @@ nodiag								;eliminate diagonal direction presses: if held directions (d3 bits
 	dbeq	d4,.0
 	beq.w	.ok						;exactly one direction held
 	andi.w	#$FFF0,d1				;diagonal: drop the direction presses
-.ok
+.ok									;exit: restore the registers
 	movem.l	(sp)+,d0/d4-d5
 	rts
 ProcessInputWithRepeat				;nodiag, then key repeat on d1-d3
@@ -472,7 +472,7 @@ ProcessInputWithRepeat				;nodiag, then key repeat on d1-d3
 	move.w	#4,(repeatdelayframes).w	;repeat rate
 	move.w	d3,d1					;repeat the held buttons
 	rts
-.chg
+.chg								;d2 <> 0
 	move.w	#$F,(repeatdelayframes).w
 	rts
 ; Read controller 1
@@ -610,7 +610,7 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	move	sr,-(sp)
 	move	#$2700,sr
 	move.w	#$100,(IO_Z80BUS).l
-.loop
+.loop								;loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	move.w	(dmaram+2).w,(a1)
@@ -625,7 +625,7 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	andi.w	#3,d3
 	move.l	d3,(a1)					;vram write command, no dma
 	move.w	(a0),-4(a1)
-.0
+.0									;a0 >= 0, or from above
 	move	(sp)+,sr
 	movem.l	(sp)+,d2-d3/a1
 	rts
@@ -660,7 +660,7 @@ DoDMA_nd2							;vram to vram copy by dma, protected from vblank
 	ori.w	#$C0,d0					;vram copy command
 	move.l	d0,(dmaram).w
 	move.w	#$100,(IO_Z80BUS).l
-.loop
+.loop								;loop
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	move.w	(dmaram).w,(a1)
@@ -730,7 +730,7 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 	btst	#df32c,(disflags).w		;#df32c
 	bne.w	.i32					;32 column flag set: leave bits 0 and 7 clear
 	ori.w	#$81,d0					;%10000001
-.i32
+.i32								;df32c set, or from above
 	move.w	d0,Vctrl-Vdata(a0)		;40 col mode, no interlace, normal brightness
 	move.w	#VDPR_MODE1+$04,Vctrl-Vdata(a0)	;512 color palette enable
 	move.w	#VDPR_MODE2+$64,Vctrl-Vdata(a0)
@@ -738,7 +738,7 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 	cmpi.w	#6,(Map1col).w
 	beq.w	.i64					;Map1col 6 = 64 columns wide
 	move.w	#$9003,d0				;otherwise 128x32
-.i64
+.i64								;Map1col = 6, or from above
 	move.w	d0,Vctrl-Vdata(a0)
 	move.w	#$8200,d0
 	move.b	(VmMAP1).w,d0
@@ -801,10 +801,10 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	move.w	d1,d6
 	movea.w	#(palfadenew-M68K_RAM),a3	;a3 = target palette, a0 = palette data
 	bra.w	.00
-.01
+.01									;loop
 	move.b	0(a0,d0.w),0(a3,d0.w)
 	dbf	d0,.01
-.02
+.02									;loop
 	adda.l	#$20,a0
 	adda.l	#$20,a3
 .00
@@ -837,7 +837,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	btst	#0,(sflags6).w
 	bne.w	.0
 	bsr.w	DecompressGraphicsPlain
-.0
+.0									;exit: restore the registers
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,(disflags).w
 	move.w	(sp)+,(printy).w
