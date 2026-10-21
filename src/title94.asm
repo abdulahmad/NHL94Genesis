@@ -393,18 +393,18 @@ TeamGfxListEnd						;end of TeamGfxList (size check below)
 	IF (TeamGfxListEnd-TeamGfxList)<>(NumTeams*4)
 		inform	3,"TeamGfxList needs one entry per team"
 	ENDIF
-PrintPlayerAssists					;Print " (n)": byte $CE + d0 of team a2, then the next row at x $E. Called
-									;from ShowGoalBox
+PrintPlayerAssists					;Print " (n)": tmassists + d0 of team a2, then the next row at x $E.
+									;Called from ShowGoalBox
 	movem.l	d0/a2,-(sp)				;save
 	jsr	(printz).l					;print " ("
 	String	' ('
-	adda.w	#$CE,a2					;assists of this game
+	adda.w	#tmassists,a2			;assists of this game
 	bra.w	PrintParenNumber
-PrintPlayerGoals					;As PrintPlayerAssists with byte $B4 + d0. Called from ShowGoalBox
+PrintPlayerGoals					;As PrintPlayerAssists with tmgoals + d0. Called from ShowGoalBox
 	movem.l	d0/a2,-(sp)				;save
 	jsr	(printz).l					;print " ("
 	String	' ('
-	adda.w	#$B4,a2					;goals of this game
+	adda.w	#tmgoals,a2				;goals of this game
 PrintParenNumber					;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3 digits,
 									;PushNumberWidth) and ")"
 	move.b	0(a2,d0.w),d0			;the count
@@ -512,7 +512,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	add.w	d0,(a3)					;move
 .x									;exit (also the end of the code above)
 	rts								;return
-GetLeagueCrowdRecord				;d0 = the team (of NumTeams) with the highest crowd record byte 8
+GetLeagueCrowdRecord				;d0 = the team (of NumTeams) with the highest crowd record (crpeak)
 									;(ReadCrowdRecord; 0 counts as $50). Called from PrintCrowdMeter
 	movem.l	d1-d7/a0-a6,-(sp)		;save
 	move.w	#NumTeams-1,d1			;each team
@@ -522,7 +522,7 @@ GetLeagueCrowdRecord				;d0 = the team (of NumTeams) with the highest crowd reco
 .loop								;read each team's crowd block
 	jsr	(ReadCrowdRecord).l			;read team d1's records
 	clr.w	d2						;clear
-	move.b	8(a0),d2				;byte 8 = the arena's peak
+	move.b	crpeak(a0),d2			;the arena's peak
 	bne.w	.0						;a record: use it
 	move.w	#$50,d2					;none: $50 dB
 .0									;this team's peak

@@ -350,10 +350,10 @@ suba4								;a4 = current replay frame. Back up 1 frame and set video parameter
 	beq.w	.end					;no: the end
 	movea.l	#replayend,a4			;end of the buffer
 .1									;frame pointer ready (wrapped to the end of the buffer)
-	suba.w	#$62,a4					;back a frame
+	suba.w	#replaysize,a4			;back a frame
 	cmpa.l	(recbpr).w,a4			;at the oldest?
 	bne.w	RestoreReplayFrame		;no: restore it
-	adda.w	#$62,a4					;forward again
+	adda.w	#replaysize,a4			;forward again
 .end								;at an end of the replay
 	bsr.w	RestoreReplayFrame		;at either end of the replay: show frame, d7 = 0
 	clr.w	d7						;no more
@@ -413,7 +413,7 @@ adda42								;adda4 without the sf2drec look-ahead: stop at the record point, e
 	beq.w	rtss8					;yes: done
 	bsr.w	RestoreReplayFrame		;restore it
 adda43								;a4 += replay frame size ($62), wrapping from replayend to M68K_RAM
-	adda.w	#$62,a4					;next frame
+	adda.w	#replaysize,a4			;next frame
 	cmpa.l	#replayend,a4			;past the end?
 	bne.w	rtss8					;no
 	movea.l	#M68K_RAM,a4			;wrap to the start
@@ -655,7 +655,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	clr.w	(replaydelay).w			;0
 	bra.w	.rec					;record
 .0									;sf2drec clear or replaydelay >= 0
-	addi.l	#$62,(recbpr).w			;next slot
+	addi.l	#replaysize,(recbpr).w	;next slot
 	cmpi.l	#replayend,(recbpr).w	;replayend
 	bne.w	.rec					;not at the end
 	bset	#sfwrap,(sflags).w		;wrapped

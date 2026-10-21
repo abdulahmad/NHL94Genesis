@@ -435,7 +435,7 @@ PushNumberWidth						;right-justified number
 	divu.w	#$A,d2					;divide d2 by 10 dec
 	bne.s	.loop2					;branch if not equal to 0
 	move.l	a1,d0					;move a1 into d0
-	subi.w	#$C008,d0				;minus PushWidthBuf: the string length
+	subi.w	#(PushWidthBuf-M68K_RAM),d0	;the string length
 	btst	#0,d0					;test bit 0 of d0
 	beq.w	.00						;no
 	clr.b	(a1)+					;clear byte at a1 and increment
