@@ -2354,7 +2354,7 @@ puckgoalie							;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The
 	bne.w	.bounceoff				;branch if so
 	clr.w	Zvel(a3)				;clear puck Zvel
 	bra.w	puckglue
-.list	dc.w	aggress,passacc		;save attribute offsets (92 had stickhand, shotacc)
+.list	dc.w	GGSleft,passacc		;save attribute offsets (92 had stickhand, shotacc)
 	dc.w	spodds,endurance
 .list2								;2 bit save odds per quadrant, one byte per goalie frame from SPFgoalie
 									;odds for stopping puck in each quadrant for each possible goalie frame
