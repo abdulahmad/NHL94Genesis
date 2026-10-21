@@ -170,7 +170,7 @@ PlayerCardScreen					;Draw a player card on one side (setupcardflags bit 1: visi
 	bra.w	.10
 .loop2
 	adda.w	(a2),a2
-	addq.w	#8,a2
+	addq.w	#pldsize,a2
 .10
 	dbf	d0,.loop2
 	movea.l	#mesarea,a3
@@ -971,7 +971,7 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	bra.w	.0
 .loop
 	adda.w	(a2),a2
-	addq.w	#8,a2
+	addq.w	#pldsize,a2
 .0
 	dbf	d0,.loop
 	move.w	d1,d0
@@ -1725,7 +1725,7 @@ DrawPlayerCard						;Draw a player card: picture (DrawPictureBox), name, "Record
 	bra.w	.5
 .loop
 	adda.w	(a2),a2
-	addq.w	#8,a2
+	addq.w	#pldsize,a2
 .5
 	dbf	d0,.loop
 	clr.w	d7
@@ -2231,7 +2231,7 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	adda.w	(a0),a0					;add player table offset to Team Data start
 .skip
 	adda.w	(a0),a0					;add Player Name length to a0
-	addq.w	#8,a0					;add 8 (skips attributes)
+	addq.w	#pldsize,a0				;add 8 (skips attributes)
 	dbf	d0,.skip					;skip until at player
 	clr.w	d0						;clear d0
 	clr.w	d1						;clear d1
@@ -2554,7 +2554,7 @@ DrawPlayerPicture					;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, C
 	bra.w	.2
 .loop2
 	adda.w	(a6),a6
-	addq.w	#8,a6
+	addq.w	#pldsize,a6
 .2
 	dbf	d6,.loop2
 	adda.w	(a6),a6

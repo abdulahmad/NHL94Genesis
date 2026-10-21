@@ -58,8 +58,8 @@ checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Chec
 	ble.w	.cl2
 	addq.w	#1,0(a0,d0.w)
 	subq.w	#1,0(a0,d4.w)
-	move.b	d4,0(a1,d1.w)
-	move.b	d0,1(a1,d1.w)
+	move.b	d4,0(a1,d1.w)			;next higher object into this entry
+	move.b	d0,1(a1,d1.w)			;this object into the next entry
 	addq.w	#1,d1
 	bra.s	.2
 .cl2
@@ -72,8 +72,8 @@ checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Chec
 	bge.w	.ex2
 	subq.w	#1,0(a0,d0.w)
 	addq.w	#1,0(a0,d4.w)
-	move.b	d4,0(a1,d1.w)
-	move.b	d0,-1(a1,d1.w)
+	move.b	d4,0(a1,d1.w)			;next lower object into this entry
+	move.b	d0,-1(a1,d1.w)			;this object into the previous entry
 	subq.w	#1,d1
 	bne.s	.3
 .ex2
@@ -580,9 +580,9 @@ holdcheck							;player a2 is in hold animation looking to hold opponent a3. Ent
 	rts
 Bcheck								;a2 = player that is B checking, a3 = player being checked. Entered from
 									;CCStart. If OptPen is 0 and a2 is joystick controlled a2 needs
-									;randomd0($20 + a2 Chk - a3 Agl, 2 less when sflags8 bit 1 or sflags7 bit
-									;6 is set) >= $18 (93 used $10 + Chk - legstr, >= $C). If a3 is within 1
-									;direction of where a2 faces, a3 falls and checkagr may call penalty $20
+									;randomd0($20 + a2 Chk - a3 legstr, 2 less when sflags8 bit 1 or sflags7
+									;bit 6 is set) >= $18 (93 used $10 + Chk - legstr, >= $C). If a3 is within
+									;1 direction of where a2 faces, a3 falls and checkagr may call penalty $20
 									;(tripping) on a2. Sets collflag
 	btst	#pfalock,pflags(a3)		;check if locked in animation
 	bne.w	rtss2					;exit if locked
@@ -2873,25 +2873,25 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	adda.w	(a0),a0					;moves to player data offset (byte 0 and 1 of Team Data)
 .skiploop
 	adda.w	(a0),a0					;skips the player's name length (current byte is name length)
-	addq.w	#8,a0					;skips players attributes
+	addq.w	#pldsize,a0				;skips players attributes
 	dbf	d3,.skiploop				;loops until current player index is met (which was stored in d3)
-	subq.w	#8,a0					;Jump back to start of players attributes
-	move.b	(a0),rostnum(a3)		;Jersey Number
-	move.b	1(a0),d3				;move Wgt/Agl byte to d3
+	subq.w	#pldsize,a0				;Jump back to start of players attributes
+	move.b	(a0),rostnum(a3)		;Jersey Number (pldnum)
+	move.b	pldweight(a0),d3		;move weight / leg power byte to d3
 	andi.w	#$F0,d3					;Mask Wgt nibble
 	lsr.w	#1,d3					;shift d3 1 bit right (This is taking Wgt and mult by 8)
 	move.b	d3,weight(a3)			;store in player struct
-	move.b	1(a0),d3				;move Wgt/Agl byte to d3
-	andi.b	#$F,d3					;mask Agl nibble
+	move.b	pldweight(a0),d3		;move weight / leg power byte to d3
+	andi.b	#$F,d3					;mask leg power nibble (legstr)
 	move.w	#3,(TempWord2).w		;3 into TempWord2
 	jsr	(AttributeCalc).l			;attribute math and add hot/cold
-	move.b	d3,legstr(a3)			;move Agl byte to player struct
-	move.b	2(a0),d3				;load Spd/OfA byte to d3
+	move.b	d3,legstr(a3)			;move leg power byte (legstr) to player struct
+	move.b	pldlegspd(a0),d3		;load Spd/OfA byte to d3
 	lsr.b	#4,d3					;remove OfA nibble by shifting 4 bits right, moving Spd into lower nibble
 	move.w	#4,(TempWord2).w		;4 into TempWord2
 	jsr	(AttributeCalc).l
 	move.b	d3,legspd(a3)			;move Spd byte into player struct
-	move.b	2(a0),d3				;move Spd/OfA byte to d3
+	move.b	pldlegspd(a0),d3		;move Spd/OfA byte to d3
 	andi.b	#$F,d3					;mask d3 and pass only OfA nibble
 	move.w	#5,(TempWord2).w		;5 into TempWord2
 	jsr	(AttributeCalc).l
@@ -2905,7 +2905,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	addi.b	#$F,d3					;add F to d3
 	lsr.b	#1,d3					;divide by 2
 	move.b	d3,aioff(a3)			;OfA byte = (30-((OfA + Bonuses)/2))/2
-	move.b	3(a0),d3				;move DfA/ShP byte to d3
+	move.b	pldaidef(a0),d3			;move DfA/ShP byte to d3
 	lsr.b	#4,d3					;see above
 	move.w	#6,(TempWord2).w
 	jsr	(AttributeCalc).l
@@ -2916,13 +2916,13 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	addi.b	#$F,d3
 	lsr.b	#1,d3
 	move.b	d3,aidef(a3)			;same math and formula as OfA
-	move.b	3(a0),shotspd(a3)
+	move.b	pldaidef(a0),shotspd(a3)
 	andi.b	#$F,shotspd(a3)
 	move.b	shotspd(a3),d3
 	move.w	#7,(TempWord2).w
 	jsr	(AttributeCalc).l
 	move.b	d3,shotspd(a3)			;ShP does not get any bonuses
-	move.b	4(a0),d3				;move Chk/Hnd byte into d3
+	move.b	pldcheck(a0),d3			;move Chk/Hnd byte into d3
 	lsr.b	#4,d3
 	move.w	#8,(TempWord2).w
 	jsr	(AttributeCalc).l
@@ -2930,7 +2930,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	bsr.w	ClampNibble
 	move.b	d3,checking(a3)			;move Chk into player struct
 	bclr	#3,attribute(a3)		;clear bit 3 in attribute of player struct
-	move.b	4(a0),handed(a3)		;move Chk/Hnd byte to Hnd in player struct
+	move.b	pldcheck(a0),handed(a3)	;move Chk/Hnd byte to Hnd in player struct
 	andi.b	#1,handed(a3)			;masks Hnd byte with 1, only passing first bit
 	eori.b	#1,handed(a3)			;XOR Hnd byte with 1. Sets to opposite what the bit was.
 									;So L will be a 1 and R will be a 0
@@ -2938,9 +2938,9 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	bset	#3,attribute(a3)		;sets bit 3 of attribute byte in player struct (to match Hnd if Hnd bit is
 									;set)
 .attribloadcont
-	move.b	4(a0),fighting(a3)		;moves Chk/Hnd byte into Fgt byte in player struct
+	move.b	pldcheck(a0),fighting(a3)	;moves Chk/Hnd byte into Fgt byte in player struct
 	andi.b	#$E,fighting(a3)		;mask the byte with E, ignoring the Hnd bit - will always be even
-	move.b	5(a0),d3				;move Stk/ShA byte into d3
+	move.b	pldstick(a0),d3			;move Stk/ShA byte into d3
 	lsr.b	#4,d3
 	move.w	#$A,(TempWord2).w
 	jsr	(AttributeCalc).l
@@ -2949,7 +2949,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	add.b	(HmAwBonus).w,d3
 	bsr.w	ClampNibble
 	move.b	d3,stickhand(a3)		;Stk gets PP/PK/Tm Bonus
-	move.b	5(a0),d3
+	move.b	pldstick(a0),d3
 	andi.b	#$F,d3
 	move.w	#$B,(TempWord2).w
 	jsr	(AttributeCalc).l
@@ -2958,12 +2958,12 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	add.b	(HmAwBonus).w,d3
 	bsr.w	ClampNibble
 	move.b	d3,shotacc(a3)			;ShA gets PP/PK/Tm Bonus
-	move.b	6(a0),d3				;move End/PS Bias byte into d3
+	move.b	pldendur(a0),d3			;move End/PS Bias byte into d3
 	lsr.b	#4,d3
 	move.w	#$C,(TempWord2).w
 	jsr	(AttributeCalc).l
 	move.b	d3,endurance(a3)		;End gets no bonuses
-	move.b	6(a0),d3
+	move.b	pldendur(a0),d3
 	andi.b	#$F,d3
 	move.w	#$D,(TempWord2).w
 	jsr	(AttributeCalc).l
@@ -2971,7 +2971,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	add.b	(ThirdPBonus).w,d3
 	bsr.w	ClampNibble
 	move.b	d3,spodds(a3)			;PS Bias gets a double 3rd P bonus
-	move.b	7(a0),d3				;move Pas/Agr byte into d3
+	move.b	pldpass(a0),d3			;move Pas/Agr byte into d3
 	lsr.b	#4,d3
 	move.w	#$E,(TempWord2).w
 	jsr	(AttributeCalc).l
@@ -2979,7 +2979,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	add.b	(HmAwBonus).w,d3
 	bsr.w	ClampNibble
 	move.b	d3,passacc(a3)			;Pas gets PP and Tm bonus
-	move.b	7(a0),aggress(a3)		;moves Pas/Agr into Agr byte in player struct
+	move.b	pldpass(a0),aggress(a3)	;moves Pas/Agr into Agr byte in player struct
 	move.b	aggress(a3),d3			;moves Pas/Agr byte into d3 (weird way to do it)
 	andi.b	#$F,d3
 	move.w	#$F,(TempWord2).w

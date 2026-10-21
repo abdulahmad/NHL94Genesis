@@ -1303,7 +1303,7 @@ GetPlayerNamePointer				;loops through team roster to get to d0 player: a0 = nam
 	bra.w	.loop
 .skip
 	adda.w	(a0),a0					;add player name length to a0
-	addq.w	#8,a0					;add 8 to a0 (player attributes field)
+	addq.w	#pldsize,a0				;add 8 to a0 (player attributes field)
 .loop
 	dbf	d0,.skip					;loop until at player offset
 	rts
@@ -1325,21 +1325,21 @@ AddError							; Address error vector; the bus error vector also points here
 	move	#$2700,sr
 	bsr.w	printbigz
 	String	-(TXPRI+TXMAP3),0,0,'Address Error'
-	move.l	$A(sp),d0				;pc.
-	move.l	2(sp),d1				;access address
+	move.l	$A(sp),d0				;pc (exception frame)
+	move.l	2(sp),d1				;access address (exception frame)
 	bra.w	crash
 Illinst								; Illegal instruction vector
 	move	#$2700,sr
 	bsr.w	printbigz
 	String	-(TXPRI+TXMAP3),0,0,'Illegal Instruction'
-	move.l	2(sp),d0
+	move.l	2(sp),d0				;pc (exception frame)
 	move.l	d0,d1
 	bra.w	crash
 ZeroDiv								; Divide by zero vector, falls into crash
 	move	#$2700,sr
 	bsr.w	printbigz
 	String	-(TXPRI+TXMAP3),0,0,'Division by zero'
-	move.l	2(sp),d0
+	move.l	2(sp),d0				;pc (exception frame)
 	move.l	d0,d1
 crash								;printbig d1 then d0 as hex, set the vdp up, copy 8 longs from the
 									;Rinktilelist palette + $20 to cram $20

@@ -414,6 +414,17 @@ pbscnum equ 1						;byte: SCnum of the player
 pcx equ 0							;word: x coordinate
 pcframes equ 2						;word: frames
 pcsize equ 4
+; .pld player ratings: 8 bytes after each player's name String (92 setplayer field names; the
+; teamdata94.asm legend letters in brackets; goalies use the low nibbles for saves)
+pldnum equ 0						;byte: jersey number, 2 BCD digits (un) -> rostnum
+pldweight equ 1						;high nibble weight, low nibble leg power legstr (wl)
+pldlegspd equ 2						;high nibble speed legspd, low nibble offense aioff (so)
+pldaidef equ 3						;high nibble defense aidef, low nibble shot power shotspd (dp)
+pldcheck equ 4						;high nibble checking, bit 0 handed, bits 1-3 fighting (ch)
+pldstick equ 5						;high nibble stickhandling stickhand, low nibble shot accuracy (ga)
+pldendur equ 6						;high nibble endurance, low nibble shoot / pass odds spodds (ey)
+pldpass equ 7						;high nibble passing passacc, low nibble aggression aggress (tm)
+pldsize equ 8
 ; fofdata2 / fofdata: big faceoff sprites (4 bytes each: home center, visiting center, then fofdata = the ref)
 foframe equ 0						;word: frame
 foattr equ 2						;word: attribute (bit 11 x flip)

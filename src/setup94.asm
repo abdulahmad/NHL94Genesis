@@ -1293,7 +1293,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bra.w	.26
 .loop5
 	adda.w	(a1),a1
-	addq.w	#8,a1
+	addq.w	#pldsize,a1
 .26
 	dbf	d1,.loop5
 	bra.w	.append

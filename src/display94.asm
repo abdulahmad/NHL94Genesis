@@ -855,6 +855,8 @@ addframe							;a3 = sort cord object. Project it with find3d, then addframe2. a
 .exit
 	movem.l	(sp)+,d0-d2
 	rts
+prevtileptr = 4						;addframe2 stack: the last sprite's tile pointer (saved d2)
+prevtilecnt = 8						;and its tile count (saved d4)
 addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = sprite
 									;attribute table, d6 = link counter. Queue the sprite tiles of the frame
 									;(once per frame change, sharing tiles already sent) and write its sprites
@@ -889,20 +891,21 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	bne.w	.nn						;branch if not
 	move.w	d0,oldframe(a3)			;move frame into old frame
 .nn
-	movem.w	d0-d4,-(sp)				;push to stack
+	movem.w	d0-d4,-(sp)				;push d0-d4: prevtileptr(sp) / prevtilecnt(sp) = d2 / d4 of the last
+									;sprite
 	move.w	seTile(a2),d2			;move 4 + a2 data into d2 (tile pointer bytes)
 	clr.w	d4						;clear d4
 	move.b	seSize(a2),d4			;move 7 + a2 data into d4 (sizetab byte)
 	movea.l	#sizetab,a0				;move address into a0
 	move.b	0(a0,d4.w),d4			;move data at a0+d4 into d4 - tiles used in sprite
-	cmp.w	8(sp),d4				;compare current d4 to previous d4
+	cmp.w	prevtilecnt(sp),d4		;compare current d4 to previous d4
 	bgt.w	.nodup					;branch if d4 greater - more data in prev sprite so no dup d0 = frame d2 =
 									;11 bit pointer to sprite tiles d4 = # of tiles in sprite d5 = # of
 									;sprites in frame-1
-	cmp.w	4(sp),d2				;compare current d2 to previous d2
+	cmp.w	prevtileptr(sp),d2		;compare current d2 to previous d2
 	blt.w	.nodup					;branch if less than
-	move.w	4(sp),d0				;move previous d2 into d0
-	add.w	8(sp),d0				;add previous d4 to d0 - end of last data
+	move.w	prevtileptr(sp),d0		;move previous d2 into d0
+	add.w	prevtilecnt(sp),d0		;add previous d4 to d0 - end of last data
 	sub.w	d2,d0					;sub d2 from d0
 	sub.w	d4,d0					;sub d4 from d0
 	bmi.w	.nodup					;branch if d0 negative
@@ -910,7 +913,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	addq.w	#6,sp					;add 6 to stack pointer
 	bra.w	.dup					;branch
 .nodup
-	add.w	8(sp),d3				;add old d4 to d3 - both of these are 0 if first sprite in frame
+	add.w	prevtilecnt(sp),d3		;add old d4 to d3 - both of these are 0 if first sprite in frame
 	movem.w	(sp)+,d0-d1				;pop d0 and d1 from stack (d0=Xpos, d1=Ypos)
 	addq.w	#6,sp					;add 6 to stack pointer (moves past old d4 spot on stack)
 	movem.w	d0-d4,-(sp)				;push d0-d4 to stack (all new values are on stack)
