@@ -336,7 +336,7 @@ assgoaliebreakwait					;asstab entry. In a shootout or penalty shot park the idl
 	btst	#7,pflags(a0)			;check if shooting up or down (a0 is goalie being shot on)
 	bne.w	.popstack				;branch if shooting up
 	move.w	#$FE6F,Ypos(a3)			;move -191 decimal into Ypos (goalie not being shot on)
-.popstack							;exit: restore the registers
+.popstack							;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
 .exit								;exit (also the end of the code above)
 	rts

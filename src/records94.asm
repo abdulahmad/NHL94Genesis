@@ -355,7 +355,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 .0
 	jsr	(printz).l
 	String	'START when done.'
-.x									;exit: restore the registers
+.x									;pop the d0-d7/a0-a6 saved above
 	movem.l	(sp)+,d0-d7/a0-a6
 .x2									;exit (also the end of the code above)
 	rts

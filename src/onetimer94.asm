@@ -251,7 +251,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	move.w	(puckvx).w,d1			;move puckvx into d1
 	eor.w	d1,d0					;EOR d1 with d0
 	bmi.w	.chkypos				;branch if minus
-.notcoming							;exit: restore the registers
+.notcoming							;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;pop from stack d0 and d1
 	bra.w	.cancel
 .chkypos
@@ -265,7 +265,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	move.w	(puckvy).w,d1			;move puckvy into d0
 	eor.w	d1,d0					;EOR d1 with d0
 	bpl.s	.notcoming				;branch if positive
-.coming								;exit: restore the registers
+.coming								;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;pop d0 and d1 from stack
 .chkcarrier							;bit 0 of onetimerflags set, or from above
 	tst.w	(puckc).w				;check if puck carrier

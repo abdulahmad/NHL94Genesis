@@ -304,7 +304,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	cmp.w	#$FF9C,d1				;compare -$64 to Ypos diff
 	bgt.w	.cont2					;branch if greater than
 	bset	#pf3gctrl,pflags3(a3)	;set goalie control bit?
-.cont2								;exit: restore the registers
+.cont2								;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;pop from stack
 	btst	#pf3gctrl,pflags3(a3)	;check goalie ctrl bit
 	bne.w	checkanim				;branch if set
@@ -666,7 +666,7 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	btst	#sfssdir,(sflags).w
 	beq.w	.15
 	addq.w	#8,d4
-.15									;exit: restore the registers
+.15									;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1
 	muls.w	d4,d1
 	addq.w	#8,d4
@@ -869,7 +869,7 @@ goaliesave							;pick the goalie save for a puck crossing the goal line: a0 = p
 	movem.l	(sp)+,d0
 	addq.w	#6,d0
 	bra.w	.done
-.2									;exit: restore the registers
+.2									;pop the d0 saved above
 	movem.l	(sp)+,d0
 	bra.w	.done
 .low
@@ -2217,7 +2217,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	bmi.w	.noeligible
 	movem.w	(sp)+,d1-d2
 	bra.w	.checkgoalie
-.noeligible							;exit: restore the registers
+.noeligible							;pop the d1-d2 saved above
 	movem.w	(sp)+,d1-d2
 	bclr	#2,(BA_PS_flags).w
 	move.w	#$1B,d0					;puckfaceoff
@@ -2257,7 +2257,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	btst	#2,pflags2(a2)
 	bne.s	.goalieloop
 	move.w	d0,(BA_Goalie_SCnum).w
-.startpenshot						;exit: restore the registers
+.startpenshot						;pop the d1-d2 saved above
 	movem.w	(sp)+,d1-d2
 	movea.w	#(tmstruct-M68K_RAM),a2
 	move.w	#$1F,d0					;puckpenshot
@@ -4152,7 +4152,7 @@ GetHot								;push long address of structure to get hot spot from. Hot spot x/y
 	beq.w	.ex						;branch if not
 	exg	d0,d1						;swap d0 and d1
 	neg.w	d1						;ngate d1 (x now)
-.ex									;exit: restore the registers
+.ex									;pop the a0-a1 saved above
 	movem.l	(sp)+,a0-a1				;restore registers, drop the argument
 	move.l	(sp)+,(sp)				;drop the caller's argument (replaces it with the return address)
 	rts
@@ -4250,7 +4250,7 @@ doplayeracc							;player a3 gets acc. in d0 dir
 	bra.w	.done
 .clrrev
 	bclr	#pfrev,pflags(a3)		;clear skating in reverse flag
-.done								;exit: restore the registers
+.done								;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;d0 = wanted direction, d1 = animation
 	move.w	facedir(a3),d2			;facedir into d2
 	sub.w	d2,d0
@@ -4351,7 +4351,7 @@ goalieacc							;goalie gets acc. in direction d0. Turns facedir one step toward
 	bsr.w	AdjustFacingDirection
 	movem.w	(sp)+,d0-d1
 	bra.w	.setready
-.adjustkeepdir						;exit: restore the registers
+.adjustkeepdir						;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1
 	cmp.w	#8,d0
 	beq.w	.setready
@@ -4618,7 +4618,7 @@ playeracc							;d2 = direction of acc
 	cmp.w	SCnum(a3),d0			;check if puck carrier
 	bne.w	.noy6					;branch if not puck carrier
 	asr.l	#1,d2					;divide d2 by 2
-.noy6								;exit: restore the registers
+.noy6								;pop the d0-d1 saved above
 	movem.w	(sp)+,d0-d1				;pop from stack
 	cmp.l	d2,d3					;Compare d3 to d2 (max speed check)
 	bhi.w	.sube					;branch if d3 is higher than d2 (no increase in velocity)
