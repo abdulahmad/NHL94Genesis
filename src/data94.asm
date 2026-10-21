@@ -1658,22 +1658,25 @@ PenDatawhistle	dc.w	$0000		;ttmm: no slow down, 0 minutes; empty text
 PenDatacharge	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Charging'
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
-PenDatachargeps	dc.w	$04ff		;penalty shot form of PenDatacharge: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDatachargeps	dc.w	$04ff		;penalty shot form of PenDatacharge: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Charging'
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
 PenDataslash	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Slashing'
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
-PenDataslashps	dc.w	$04ff		;penalty shot form of PenDataslash: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDataslashps	dc.w	$04ff		;penalty shot form of PenDataslash: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Slashing'
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
 PenDatatrip	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Tripping'
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
-PenDatatripps	dc.w	$04ff		;penalty shot form of PenDatatrip: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDatatripps	dc.w	$04ff		;penalty shot form of PenDatatrip: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Tripping'
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
 PenDatarough2	dc.w	$0a02		;ttmm: slow down $0a, 2 minutes
@@ -1682,29 +1685,33 @@ PenDatarough2	dc.w	$0a02		;ttmm: slow down $0a, 2 minutes
 PenDatarough	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
-PenDataroughps	dc.w	$04ff		;penalty shot form of PenDatarough: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDataroughps	dc.w	$04ff		;penalty shot form of PenDatarough: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Roughing'
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDatahook	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Hooking'
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
-PenDatahookps	dc.w	$04ff		;penalty shot form of PenDatahook: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDatahookps	dc.w	$04ff		;penalty shot form of PenDatahook: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Hooking'
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
 PenDatacross	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Cross Check'
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
-PenDatacrossps	dc.w	$04ff		;penalty shot form of PenDatacross: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDatacrossps	dc.w	$04ff		;penalty shot form of PenDatacross: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Cross Check'
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
 PenDataint	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Interference'
 	dc.w	$0004,$0101,$0c06,-$0101
-PenDataintps	dc.w	$04ff		;penalty shot form of PenDataint: ttmm $04FF (slow down 4; minutes $FF
-									;probably marks the penalty shot)
+PenDataintps	dc.w	$04ff		;penalty shot form of PenDataint: slow down 4, minutes $FF. Negative
+									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
+									;time is served
 	String	'Interference'
 	dc.w	$0004,$0101,$0c06,-$0101
 PenDataHold	dc.w	$0402			;ttmm: slow down 4, 2 minutes
