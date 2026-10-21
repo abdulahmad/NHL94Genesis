@@ -10,7 +10,8 @@
 SoundLast			=	$7A			;last sound number: effects below $30, songs from $30
 FirstSong			=	$30			;the first song; a new song stops the one playing
 
-;	Track slots (rs.b in ram94.asm, 8 of them; slot n plays track 7-n): an event pointer and a delay
+;	Track slots (fm_track_slots in ram94.asm, 8 of SlotSize bytes; slot n plays track 7-n): an event
+;	pointer and a delay
 NumSlots			=	8			;track slots
 SlotSize			=	6			;bytes per slot
 sl_delay			=	4			;word: frames until the next event (+5 is its delay byte)
@@ -53,8 +54,8 @@ PCMPatch			=	$60
 PatchShift			=	5			;32 bytes per patch
 patch_bendscale		=	$1E			;patch byte: pitch bend scale
 
-;	Command buffer sent to the Z80 (Z80_command_buffer in ram94.asm, then the volume, frequency and patch
-;	tables)
+;	Command buffer sent to the Z80 (Z80_command_buffer, 5 bytes in ram94.asm), then
+;	per_channel_attenuation_table, per_channel_frequency_table and per_channel_patch_table
 cb_keyoff			=	0			;bit per output channel
 cb_keyon			=	1
 cb_volume			=	2
