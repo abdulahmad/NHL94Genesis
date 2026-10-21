@@ -3,26 +3,26 @@
 
 Detect4WayPlay						;detect the 4 way play adaptor (EA 4 Way Play) on port 2: FourWayPlay = 1
 									;when found. Called from Begin
-	move.w	#0,(IO_Z80RES).l
-	move.b	#$40,(IO_CT1_CTRL+1).l
-	move.b	#$43,(IO_CT2_CTRL+1).l
+	move.w	#0,(IO_Z80RES).l		;stop the Z80 while the ports are poked
+	move.b	#$40,(IO_CT1_CTRL+1).l	;port 1: TH as output
+	move.b	#$43,(IO_CT2_CTRL+1).l	;port 2: TH, TR, TL as outputs
+	nop
+	move.b	#$7C,(IO_CT2_DATA+1).l	;port 2 out: select the adaptor ID
+	nop
+	move.b	#$7F,(IO_CT2_CTRL+1).l	;port 2: all lines as outputs
 	nop
 	move.b	#$7C,(IO_CT2_DATA+1).l
 	nop
-	move.b	#$7F,(IO_CT2_CTRL+1).l
-	nop
-	move.b	#$7C,(IO_CT2_DATA+1).l
-	nop
-	move.b	(IO_CT1_DATA+1).l,d0
+	move.b	(IO_CT1_DATA+1).l,d0	;the adaptor answers with port 1 lines 0-1 low
 	andi.b	#3,d0
 	cmp.b	#0,d0
-	bne.s	.none
+	bne.s	.none					;lines high: no adaptor
 	move.w	#1,(FourWayPlay).w
-	bra.s	.x
-.none								;d0 <> 0
+	bra.s	.x						;adaptor found
+.none								;no adaptor: port 2 back to a normal pad
 	move.w	#0,(FourWayPlay).w
 	move.b	#$40,(IO_CT2_CTRL+1).l
-.x
+.x									;let the Z80 run again
 	move.w	#$100,(IO_Z80RES).l
 	rts
 ReadJoySwapPad1						;unused: read 4 way play pad 1 (ReadJoy1 with the pad word swapped in)
@@ -58,20 +58,20 @@ Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away n
 	cmpi.w	#$FFFF,(PadControlBits).w
 	beq.w	.x
 	movem.l	d0-d2,-(sp)
-	move.w	#1,d0
+	move.w	#1,d0					;1 = home side code
 	btst	#pfteam,pflags(a3)
 	beq.w	.chkpad3
-	move.w	#2,d0
-.chkpad3							;pfteam clear, or from above
+	move.w	#2,d0					;2 = away
+.chkpad3							;side code ready: is this side the pad 3 one?
 	cmp.w	(cont3team).w,d0
 	beq.w	.pad3
-	move.w	#$F,d1
+	move.w	#$F,d1					;not pad 3: keep the low nibble, write the high
 	move.w	#4,d0
 	bra.w	.set
-.pad3								;d0 = cont3team
+.pad3								;pad 3 side: keep the high nibble, write the low
 	move.w	#$F0,d1
 	move.w	#0,d0
-.set
+.set								;clear the nibble and put the SCnum in it
 	and.w	d1,(PadControlBits34).w
 	move.w	SCnum(a3),d1
 	asl.w	d0,d1
