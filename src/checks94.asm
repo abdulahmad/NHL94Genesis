@@ -4089,7 +4089,8 @@ vtoa
 ; Push long address of structure to get hot spot from
 ; hot spot x/y returned in d0/d1
 GetHot
-	movem.l	a0-a1,-(sp)
+	movem.l	a0-a1,-(sp)				;$C(sp) = the address the caller pushed (above 2 longs and the return
+									;address)
 	movea.l	$C(sp),a0				;move stored address before sub routine call into a0
 	clr.w	d0						;clear d0
 	clr.w	d1						;clear d1

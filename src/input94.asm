@@ -1484,7 +1484,7 @@ doshot
 	blt.w	.cont3
 	move.w	#$88,d0
 .cont3
-	move.w	d0,-(sp)				;push adjusting value on stack
+	move.w	d0,-(sp)				;push adjusting value: 2(sp) / 4(sp) = x / y diff pushed before
 	bsr.w	randomd0s				;RNG adj value
 	add.w	d0,2(sp)				;add result to x diff
 	move.w	(sp),d0					;move adjusting value into d0

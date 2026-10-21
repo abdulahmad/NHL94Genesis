@@ -201,7 +201,7 @@ randomd0s
 ; d0 = range
 ; return random number in d0 (0 <= d0 < range)
 randomd0
-	movem.l	d0-d2,-(sp)
+	movem.l	d0-d2,-(sp)				;2(sp) = range (the saved d0 low word)
 	move.w	(seed+2).w,d0			;seed+2 (92)
 	move.w	d0,d1
 	move.w	(seed).w,d2				;seed
@@ -274,32 +274,33 @@ Sroot
 	bra.s	.bs
 .lo
 	move.w	d4,d1
+sfxarg = 16*4						;sfx / song: stack offset of the number word after the movem
 	bra.s	.bs
 ; play sound effect number
 ; one word passed on stack
 sfx
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;sfxarg(sp) = the number word (above 15 longs and the return address)
 	clr.l	d0
-	move.w	$40(sp),d0				;$40 = 16*4
+	move.w	sfxarg(sp),d0			;sound number
 	bmi.w	.none
 	move.w	d0,(lastsfx).w
 	jsr	(play_sfx_or_music_track).l
 .none
 	movem.l	(sp)+,d0-d7/a0-a6
-	move.l	(sp),2(sp)
+	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp
 	rts
 ; play song number
 ; one word passed on stack
 song
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;sfxarg(sp) = the number word (above 15 longs and the return address)
 	clr.l	d0
-	move.w	$40(sp),d0				;$40 = 16*4
+	move.w	sfxarg(sp),d0			;sound number
 	bmi.w	.none
 	jsr	(play_sfx_or_music_track).l
 .none
 	movem.l	(sp)+,d0-d7/a0-a6
-	move.l	(sp),2(sp)
+	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp
 	rts
 ; wait d0 vblanks or until input from either joystick
@@ -682,7 +683,7 @@ DoFill
 	movem.l	(sp)+,d3/a1
 	rts
 WaitDMA								;wait for dma completion
-	move.w	(Vctrl).l,-(sp)			;read the vdp status
+	move.w	(Vctrl).l,-(sp)			;read the vdp status: 1(sp) is its low byte
 	btst	#1,1(sp)				;status bit 1 = dma busy
 	addq.w	#2,sp
 	bne.s	WaitDMA
@@ -780,7 +781,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	move.w	(printy).w,-(sp)
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;#dfng
-	movem.l	d0-d3/d5-d6/a0-a3,-(sp)
+	movem.l	d0-d3/d5-d6/a0-a3,-(sp)	;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6
 	movea.w	#(palfadenew-M68K_RAM),a3
 	bra.w	.00
@@ -1071,7 +1072,7 @@ eraser
 	movem.l	d0-d2/a0,-(sp)
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;#dfng
-	movem.w	d0-d1,-(sp)
+	movem.w	d0-d1,-(sp)				;(sp) = width, 2(sp) = rows left
 .1
 	bsr.s	xyVmMap
 	move.w	(sp),d0
@@ -1094,7 +1095,7 @@ Framer
 	movem.l	d0-d4/a0-a1,-(sp)
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;#dfng
-	movem.w	d0-d1,-(sp)
+	movem.w	d0-d1,-(sp)				;(sp) = x size, 2(sp) = rows left; .tbline reads the x size at 4(sp)
 	move.w	(printa).w,d2
 	add.w	(framercset).w,d2
 	movea.l	#FramerMap,a1
@@ -1136,7 +1137,7 @@ Framer
 ; see print
 ; string macro should follow jsr to this routine
 printsmallz							;String macro follows the call
-	move.l	a1,-(sp)
+	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
 	movea.l	4(sp),a1				;string after the call
 	bsr.w	printsmall
 	move.l	a1,4(sp)				;return past the string
@@ -1273,7 +1274,7 @@ ControlCode_SetFont					;control code -7, next byte = char set index
 ; see print
 ; string macro should follow jsr to this routine
 printz
-	move.l	a1,-(sp)
+	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
 	movea.l	4(sp),a1				;string after the call
 	bsr.w	print
 	move.l	a1,4(sp)				;return past the string
@@ -1519,7 +1520,7 @@ appstring
 	movem.l	(sp)+,d0/a0
 	rts
 printbigz							;String macro follows the call
-	move.l	a1,-(sp)
+	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
 	movea.l	4(sp),a1				;string after the call
 	bsr.w	printbig
 	move.l	a1,4(sp)				;return past the string

@@ -1650,7 +1650,7 @@ NewTicker3							;Display ticker score for game d3 (a0 = gstruct entry), skip if
 	bsr.w	Framer
 	addq.w	#1,(printx).w
 	subq.w	#4,(printy).w
-	move.w	(printx).w,-(sp)
+	move.w	(printx).w,-(sp)		;box x: .tn reads it at 4(sp), above its return address
 	bsr.w	GetShifter
 	move.w	#$A000,(printa).w
 	bsr.w	printz
