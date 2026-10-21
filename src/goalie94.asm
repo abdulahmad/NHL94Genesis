@@ -15,7 +15,7 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	bne.w	.0
 	eori.w	#1,(goaliemode2).w
 	bra.w	.g1
-.0
+.0									;d0 <> cont2team
 	btst	#sfpj,(sflags).w
 	beq.w	.g1
 	eori.w	#1,(goaliemode2).w
@@ -27,7 +27,7 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	bne.w	.so
 	btst	#2,(BA_PS_flags).w
 	beq.w	.x
-.so
+.so									;bit 0 of gmode2 set, or from above
 	btst	#sfpj,(sflags).w
 	bne.w	.p2
 	cmpi.w	#2,(OptNOP).w
@@ -35,7 +35,7 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	cmpi.w	#5,(BA_Sktr_SCnum).w
 	bgt.w	.x
 	bra.w	.5
-.4
+.4									;OptNOP <> 2
 	cmpi.w	#5,(BA_Sktr_SCnum).w
 	ble.w	.x
 .5
@@ -43,23 +43,23 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.6
 	move.w	#6,d0
-.6
+.6									;OptNOP <> 2, or from above
 	tst.w	(goaliemode1).w
 	bne.w	.set1
 	move.w	#5,d0
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.set1
 	move.w	#$B,d0
-.set1
+.set1								;goaliemode1 <> 0 or OptNOP <> 2, or from above
 	jsr	(setc1player).l
 	bra.w	.x
-.p2
+.p2									;sfpj set
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.9
 	cmpi.w	#5,(BA_Sktr_SCnum).w
 	ble.w	.x
 	bra.w	.10
-.9
+.9									;OptNOP <> 2
 	cmpi.w	#5,(BA_Sktr_SCnum).w
 	bgt.w	.x
 .10
@@ -67,9 +67,9 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	tst.w	(goaliemode2).w
 	bne.w	.set2
 	move.w	#$B,d0
-.set2
+.set2								;goaliemode2 <> 0, or from above
 	jsr	(setc2player).l
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first time, its
@@ -94,14 +94,14 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	clr.w	(arenaframeidx).w
 	bsr.w	NextArenaFrame
 	bra.w	.x
-.run
+.run								;arenaspritelist <> 0
 	sub.w	d7,(arenaframetime).w
 	bpl.w	.x
 	addq.w	#1,(arenaframeidx).w
 	bsr.w	NextArenaFrame
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
-.x2
+.x2									;exit (also the end of the code above)
 	rts
 NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, arenaframetime
 									;= time; frame $FF loops to the start, $FE ends the animation
@@ -123,7 +123,7 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	cmpi.w	#$FFFE,(arenaframe).w
 	bne.w	.x
 	bsr.w	EndArenaAnim
-.x
+.x									;exit (also the end of the code above)
 	rts
 ArenaAnims							;The 8 arena animations (StartArenaAnim d0): frame list, then the graphics
 									;in ArenaGfxBank (sprite list at 4(x), tiles at 8(x))

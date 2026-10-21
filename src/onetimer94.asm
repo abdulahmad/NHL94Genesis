@@ -7,7 +7,7 @@ puckvzadj							;set puckvz for a top shelf shot from the distance to the goal l
 	move.w	(pucky).w,d0			;move pucky into d0
 	bpl.w	.dist					;branch if positive
 	neg.w	d0						;negate d0
-.dist
+.dist								;d0 >= 0, or from above
 	subi.w	#$108,d0
 	;sub top goal line from d0
 	bpl.w	.0						;branch if positive
@@ -24,14 +24,14 @@ puckvzadj							;set puckvz for a top shelf shot from the distance to the goal l
 	tst.w	(PalMode).w				;This byte is never set
 	beq.w	.div					;branch if equal (always is)
 	move.w	#$16,d2					;move 16 into d2
-.div
+.div								;PalMode = 0, or from above
 	divu.w	d1,d0					;divide d1 into d0
 	andi.l	#$FFFF,d0				;pass lower word of d0
 	divu.w	d2,d0					;divide d2 into d0
 	tst.w	d0						;check d0
 	bne.w	.calc					;branch if not zero
 	move.w	#1,d0					;move 1 into d0
-.calc
+.calc								;d0 <> 0, or from above
 	move.l	#$A0000,d1
 	move.w	d0,d3					;move d0 into d3
 	mulu.w	d2,d0					;mult d2 and d0
@@ -48,9 +48,9 @@ puckvzadj							;set puckvz for a top shelf shot from the distance to the goal l
 	tst.w	d1						;test d1
 	bpl.w	.setvz					;branch if positive
 	move.w	#$7FFF,d1				;move 7FFF into d1
-.setvz
+.setvz								;d1 >= 0, or from above
 	move.w	d1,(puckvz).w			;move d1 into puckvz
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy
@@ -74,7 +74,7 @@ OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puck
 	tst.w	d0
 	bne.w	.setv
 	move.w	#1,d0
-.setv
+.setv								;d0 <> 0, or from above
 	divs.w	d0,d1
 	move.w	d1,(puckvx).w
 	clr.l	d1
@@ -103,7 +103,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	btst	#pfgoal,pflags(a3)
 	bne.w	.near
 	neg.w	d0
-.near
+.near								;pfgoal set, or from above
 	bset	#2,(sflags6).w
 	movea.l	#OneTimerNearTbl,a0
 	cmp.w	#$58,d0
@@ -116,7 +116,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	bne.w	.offset
 	addq.w	#4,d0
 	andi.w	#7,d0
-.offset
+.offset								;pfgoal set, or from above
 	asl.w	#2,d0
 	move.w	0(a0,d0.w),d1
 	move.w	2(a0,d0.w),d2
@@ -125,13 +125,13 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	move.w	Ypos(a3),d0
 	bpl.w	.chky
 	neg.w	d0
-.chky
+.chky								;d0 >= 0, or from above
 	cmp.w	#$8A,d0
 	blt.w	.side
 	move.w	(a3),d0
 	bpl.w	.chkx
 	neg.w	d0
-.chkx
+.chkx								;d0 >= 0, or from above
 	cmp.w	#$37,d0
 	bgt.w	.side
 	move.w	#$103,d2
@@ -140,7 +140,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	bne.w	.rand
 	neg.w	d1
 	neg.w	d2
-.rand
+.rand								;pfgoal set, or from above
 	move.w	#$A,d0
 	jsr	(randomd0).l
 	add.w	d0,d1
@@ -157,7 +157,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	neg.w	d1
 	add.w	d1,(onetimertargetx).w
 	bra.w	.sety
-.left
+.left								;d1 negative
 	addi.w	#$3C,d1
 	bmi.w	.sety
 	sub.w	d1,(onetimertargetx).w
@@ -208,7 +208,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	move.w	(sp)+,(c2playernum).w
 	move.w	(sp)+,(cont2team).w
 	bra.w	.setanim
-.setplayer2
+.setplayer2							;TmpJoyPuckCarrier <> 1
 	jsr	(setc2player).l
 	bra.w	.setanim
 .cont1or3
@@ -224,7 +224,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	move.w	(sp)+,(c1playernum).w
 	move.w	(sp)+,(cont1team).w
 	bra.w	.setanim
-.setplayer1
+.setplayer1							;TmpJoyPuckCarrier <> 0
 	jsr	(setc1player).l
 	bra.w	.setanim				;*+4
 .setanim
@@ -237,7 +237,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	move.w	(sp)+,d0
 	movem.l	(sp)+,d0-d7/a0-a6
 	bra.w	.ex
-.checkxpos
+.checkxpos							;pfna was clear or pf3onetimer was set
 	btst	#0,(onetimerflags).w	;check if shot initiated
 	bne.w	.chkcarrier				;branch if set
 	movem.w	d0-d1,-(sp)				;push to stack
@@ -247,11 +247,11 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bgt.w	.chkxvel				;branch if greater than
 	cmp.w	#$FFC4,d0				;compare to -60 pixels
 	bgt.w	.chkypos				;branch if greater than
-.chkxvel
+.chkxvel							;d0 > $3C, or from above
 	move.w	(puckvx).w,d1			;move puckvx into d1
 	eor.w	d1,d0					;EOR d1 with d0
 	bmi.w	.chkypos				;branch if minus
-.notcoming
+.notcoming							;exit: restore the registers
 	movem.w	(sp)+,d0-d1				;pop from stack d0 and d1
 	bra.w	.cancel
 .chkypos
@@ -261,19 +261,19 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bgt.w	.chkyvel				;branch if greater than
 	cmp.w	#$FFC4,d0				;check with -60 pix
 	bgt.w	.coming					;branch if greater than
-.chkyvel
+.chkyvel							;d0 > $3C, or from above
 	move.w	(puckvy).w,d1			;move puckvy into d0
 	eor.w	d1,d0					;EOR d1 with d0
 	bpl.s	.notcoming				;branch if positive
-.coming
+.coming								;exit: restore the registers
 	movem.w	(sp)+,d0-d1				;pop d0 and d1 from stack
-.chkcarrier
+.chkcarrier							;bit 0 of onetimerflags set, or from above
 	tst.w	(puckc).w				;check if puck carrier
 	bmi.w	.loose					;branch if no puck carrier
 .cancel
 	bclr	#7,(sflags8).w			;clear bit 7
 	bra.w	.shoot
-.loose
+.loose								;puckc negative
 	btst	#gmclock,(gmode).w		;check if game clock
 	bne.w	.shoot					;branch if clock stopped
 	movem.l	d0-d1,-(sp)				;push to stack
@@ -286,36 +286,36 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	sub.w	d1,d0					;sub d1 from d0
 	bpl.w	.dy						;branch if positive
 	neg.w	d0						;negate d0
-.dy
+.dy									;d0 >= 0, or from above
 	move.w	Ypos(a3),d1				;move Ypos into d1
 	move.w	(pucky).w,d2			;move pucky into d2
 	sub.w	d2,d1					;sub d2 from d1
 	bpl.w	.vel					;branch if positive
 	neg.w	d1						;negate d1
-.vel
+.vel								;d1 >= 0, or from above
 	move.w	(puckvx).w,d2			;move puckvx into d2
 	beq.w	.usey					;branch if d2 is 0
 	cmp.w	d0,d1					;compare d0 to d1
 	ble.w	.frames					;branch if less than or equal
-.usey
+.usey								;d2 = 0, or from above
 	move.w	(puckvy).w,d2
 	move.w	d1,d0
-.frames
+.frames								;d1 <= d0, or from above
 	swap	d0
 	andi.l	#$FFFF0000,d0
 	tst.w	d2
 	bpl.w	.speed
 	neg.w	d2
-.speed
+.speed								;d2 >= 0, or from above
 	move.w	#$11,d1
 	tst.w	(PalMode).w
 	beq.w	.chkzero
 	move.w	#$16,d1
-.chkzero
+.chkzero							;PalMode = 0, or from above
 	tst.w	d2
 	bne.w	.div
 	move.w	#1,d2
-.div
+.div								;d2 <> 0, or from above
 	divu.w	d2,d0
 	andi.l	#$FFFF,d0
 	divu.w	d1,d0
@@ -329,7 +329,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	neg.w	SPAnum(a3)
 	addi.w	#$18,SPAnum(a3)
 	bra.w	.chkanim
-.wait
+.wait								;d0 > d2
 	add.w	d7,(onetimerclock).w
 	bra.w	.chkhold
 .windup
@@ -362,21 +362,21 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bne.w	.animon
 	movem.l	(sp)+,d0-d1
 	bra.w	.chkdone
-.animon
+.animon								;pf2aip set
 	move.w	SPAnum(a3),d0
 	movem.l	(sp)+,d0-d1
 	btst	#0,(onetimerflags).w
 	beq.w	.nop
 	bclr	#pfalock,pflags(a3)
 	bra.w	.chkdone
-.nop
+.nop								;bit 0 of onetimerflags clear
 	nop
 .chkdone
 	btst	#pf2aip,pflags2(a3)
 	bne.w	.ex
 .shoot
 	jsr	(EndOneTimer).l
-.ex
+.ex									;exit (also the end of the code above)
 	rts
 setonetimeranim						;the one-timer animation: d1 = SPAshotf or SPAshotb from the angle to the
 									;goal (vtoa, CheckOneTimerFacing)
@@ -388,14 +388,14 @@ setonetimeranim						;the one-timer animation: d1 = SPAshotf or SPAshotb from th
 	btst	#pfgoal,pflags(a3)		;check which goal shooting at
 	bne.w	.top					;branch if top
 	neg.w	d1						;negate d1
-.top
+.top								;pfgoal set, or from above
 	sub.w	Ypos(a3),d1				;sub Ypos from d1
 	jsr	(vtoa).l
 	jsr	(CheckOneTimerFacing).l		;code doesnt save any changes
 	movem.w	(sp)+,d0-d1				;pop from stack d0 and d1
 	beq.w	.ex
 	move.w	#SPAshotb,d1
-.ex
+.ex									;exit (also the end of the code above)
 	rts
 PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 shoots at, else
 									;0 (the code after the bra is never used). Called from doinput and
@@ -404,7 +404,7 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	btst	#pfgoal,pflags(a3)		;pfgoal - check which goal shooting at
 	bne.w	.cont					;branch if top goal
 	neg.w	d0
-.cont
+.cont								;pfgoal set, or from above
 	tst.w	d0						;check if d0 is 0
 	bpl.w	.plus					;branch if higher
 	bra.w	.minus
@@ -435,7 +435,7 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	bra.w	.ex
 .plus
 	move.w	#1,d0
-.ex
+.ex									;exit: restore the registers
 	movem.w	(sp)+,d0-d1
 	rts
 onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
@@ -449,7 +449,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	btst	#pfteam,pflags(a3)		;check if home or away
 	beq.w	.home					;branch if home
 	lea	tmsize(a0),a0				;add if away
-.home
+.home								;pfteam clear, or from above
 	clr.w	d0
 	move.b	pnum(a3),d0				;player offset in roster
 	move.w	tmtouch2(a0),tmtouch3(a0)	;move assist 1 player to assist 2
@@ -479,9 +479,9 @@ CheckOneTimerFacing					;called from setonetimeranim. it does nothing, d0 and d1
 	eori.w	#$FFFF,d0				;EOR FFFF with d0. Makes d0 opposite.
 	andi.w	#$800,d0				;pass 12th bit of d0
 	bra.w	.ex
-.g0
+.g0									;d1 > 4
 	move.w	attribute(a3),d0		;move attribute into d0
 	andi.w	#$800,d0				;pass 12th bit of d0
-.ex
+.ex									;exit: restore the registers
 	movem.w	(sp)+,d0-d1				;pop from stack
 	rts
