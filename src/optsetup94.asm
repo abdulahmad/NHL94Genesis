@@ -15,13 +15,13 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 									;change the option (ChangeOption) and redraw (FixModeOptions), start
 									;begins the game (SetupStart), and $5460 frames without a press start a
 									;demo (SetupDemo).
-	jsr	(ReadLineData).l
+	jsr	(ReadLineData).l			;read the line data
 	movea.l	#pwddatabuffer,a3		;saved playoff state
-	jsr	(ReadPassBits).l
+	jsr	(ReadPassBits).l			;read the playoff bits
 	move.w	(TmpOptLine2).w,(OptLine).w	;undo the start changes of SetupStart (Auto line changes, Shootout)
 	move.w	(TempOptPlayMode).w,(OptPlayMode).w
-	bclr	#1,(sflags7).w
-	jsr	(ClearGameStats).l
+	bclr	#1,(sflags7).w			;no overtime
+	jsr	(ClearGameStats).l			;clear the stats
 	jsr	(ReadNameLog).l				;read the SRAM name list
 	bsr.w	setoptions				;build the screen
 	clr.w	(setupfirstline).w		;first menu line shown
@@ -29,47 +29,47 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	bsr.w	PrintOptionNames		;option names
 	tst.w	(demoflag).w			;clear after a demo
 	bne.w	.shootout				;keep the teams
-	moveq	#NumTeams,d0
-	jsr	(randomd0).l
+	moveq	#NumTeams,d0			;team count
+	jsr	(randomd0).l				;random team
 	move.w	d0,(Opt1team).w			;random teams after a demo (0 through NumTeams-1)
 	moveq	#NumTeams,d0
 	jsr	(randomd0).l
-	move.w	d0,(Opt2team).w
+	move.w	d0,(Opt2team).w			;visitors
 .shootout							;teams set (random after a demo)
-	st	(demoflag).w
+	st	(demoflag).w				;demo flag set
 	cmpi.w	#4,(OptPlayMode).w		;check if shootout
-	bne.w	.newplay				;branch if not
-	bra.w	.reggame				;branch if so
+	bne.w	.newplay				;not the shootout
+	bra.w	.reggame				;shootout
 .newplay							;OptPlayMode <> 4
 	cmpi.w	#2,(OptPlayMode).w		;check if new playoffs
-	blt.w	.contplay				;branch if cont. playoffs or reg season
+	blt.w	.contplay				;league or continue playoffs
 	bsr.w	GoNewPlayoffs			;new playoffs: random tree
 .contplay							;playoffs set up
 	cmpi.w	#1,(OptPlayMode).w		;check if cont playoffs
-	bne.w	.reggame				;branch if not
+	bne.w	.reggame				;not continue playoffs
 	bsr.w	GoContinuePlayoffs		;continue playoffs
 .reggame							;any mode: start on the first line
 	clr.w	d7						;menu line 0 (d7 = line * 2 = offset in OptPlayMode ... OptLine)
-	clr.w	d0
+	clr.w	d0						;no move
 	bsr.w	MoveMenuFrame			;frame the line
 	bsr.w	FixModeOptions			;print the options
-	move.w	(HomeTeam).w,(setuphome).w
-	move.w	(HomeTeam).w,(logoteam).w
+	move.w	(HomeTeam).w,(setuphome).w	;home in the block
+	move.w	(HomeTeam).w,(logoteam).w	;logo of the home team
 	bsr.w	DrawHomeBlock			;home team block
-	move.w	(VisTeam).w,(setupvis).w
-	move.w	(VisTeam).w,(logoteam).w
+	move.w	(VisTeam).w,(setupvis).w	;visitors in the block
+	move.w	(VisTeam).w,(logoteam).w	;logo of the visitors
 	bsr.w	DrawVisBlock			;visitors team block
 	move.w	#$18,(palcount).w		;24
 	bclr	#dfng,(disflags).w		;dfng: fade in graphics now
 .loop								;loop
 	cmpi.w	#4,(OptPlayMode).w		;Shootout: line changes Off, penalties Off, user records Off
-	bne.w	.0
-	move.w	#1,(OptLine).w
-	move.w	#0,(OptPen).w
-	move.w	#1,(OptUserRec).w
+	bne.w	.0						;not the shootout
+	move.w	#1,(OptLine).w			;line changes off
+	move.w	#0,(OptPen).w			;penalties off
+	move.w	#1,(OptUserRec).w		;user records off
 .0									;shootout options forced
 	bsr.w	ReadSetupPads			;d1 = new presses, 0 after $5460 frames
-	tst.w	d1
+	tst.w	d1						;any press?
 	bne.w	.1
 	bra.w	SetupDemo				;none: demo
 .1									;d1 <> 0
@@ -79,38 +79,38 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 									;Records; Shootout: Per. Length, nothing after Goalies; no SRAM: User
 									;Records)
 	beq.w	.9
-	tst.w	(OptNOP).w
-	bne.w	.2
-	cmp.w	#8,d7
-	bne.w	.2
-	move.w	#4,d0
+	tst.w	(OptNOP).w				;no players (demo)?
+	bne.w	.2						;players
+	cmp.w	#8,d7					;on the period length line?
+	bne.w	.2						;not the period length line
+	move.w	#4,d0					;skip a line
 	bra.w	.3
 .2									;OptNOP <> 0 or d7 <> 8
-	move.w	#2,d0
+	move.w	#2,d0					;one line down
 .3									;frame size chosen
-	cmpi.w	#4,(OptPlayMode).w
-	beq.w	.4
-	tst.w	(OptNOP).w
-	bne.w	.4
-	cmp.w	#8,d7
-	bne.w	.4
-	move.w	#6,d0
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
+	beq.w	.4						;shootout
+	tst.w	(OptNOP).w				;no players (demo)?
+	bne.w	.4						;players
+	cmp.w	#8,d7					;on the period length line?
+	bne.w	.4						;not the period length line
+	move.w	#6,d0					;skip 3 lines
 	bra.w	.8
 .4									;next line check
-	cmp.w	#6,d7
-	bne.w	.5
-	cmpi.w	#4,(OptPlayMode).w
-	bne.w	.5
-	tst.w	(OptNOP).w
-	bne.w	.7
-	clr.w	d0
-	bra.w	.8
+	cmp.w	#6,d7					;on the 2nd team line?
+	bne.w	.5						;not the 2nd team line
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
+	bne.w	.5						;not the shootout
+	tst.w	(OptNOP).w				;no players (demo)?
+	bne.w	.7						;players: skip
+	clr.w	d0						;stay on the line
+	bra.w	.8						;move it
 .5									;d7 <> 6 or OptPlayMode <> 4
-	cmp.w	#$A,d7
-	bne.w	.8
-	cmpi.w	#4,(OptPlayMode).w
+	cmp.w	#$A,d7					;on the goalie line?
+	bne.w	.8						;not the goalie line
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
 	bne.w	.6
-	clr.w	d0
+	clr.w	d0						;shootout: stay
 	bra.w	.8
 .6									;OptPlayMode <> 4
 	tst.w	(ValidSRAM).w
@@ -119,95 +119,95 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	#4,d0
 .8									;move the frame
 	bsr.w	MoveMenuFrame
-	bsr.w	FixModeOptions
+	bsr.w	FixModeOptions			;print the options
 	bra.w	.loop
 .9									;dbut clear
 	btst	#ubut,d1				;ubut: previous line, the same skips
-	beq.w	.15
-	tst.w	(OptNOP).w
-	bne.w	.10
-	cmp.w	#$C,d7
-	bne.w	.10
-	move.w	#$FFFC,d0
+	beq.w	.15						;not up: left / right
+	tst.w	(OptNOP).w				;demo (no pads)?
+	bne.w	.10						;players: next check
+	cmp.w	#$C,d7					;on the user records line?
+	bne.w	.10						;not the user records line
+	move.w	#$FFFC,d0				;skip a line
 	bra.w	.11
 .10									;OptNOP <> 0 or d7 <> $C
-	move.w	#$FFFE,d0
-	cmpi.w	#4,(OptPlayMode).w
-	beq.w	.11
-	tst.w	(OptNOP).w
-	bne.w	.11
-	cmp.w	#$E,d7
-	bne.w	.11
-	move.w	#$FFFA,d0
+	move.w	#$FFFE,d0				;one line up
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
+	beq.w	.11						;shootout: one line
+	tst.w	(OptNOP).w				;players?
+	bne.w	.11						;players: move one line
+	cmp.w	#$E,d7					;on the penalties line?
+	bne.w	.11						;not the penalties line
+	move.w	#$FFFA,d0				;skip 3 lines
 	bra.w	.14
 .11									;next line check
-	cmp.w	#$A,d7
-	bne.w	.12
-	cmpi.w	#4,(OptPlayMode).w
-	beq.w	.13
+	cmp.w	#$A,d7					;on the goalie line?
+	bne.w	.12						;not the goalie line
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
+	beq.w	.13						;shootout: skip
 .12									;not the shootout line
-	cmp.w	#$E,d7
-	bne.w	.14
-	cmpi.w	#4,(OptPlayMode).w
-	beq.w	.13
-	tst.w	(ValidSRAM).w
-	bpl.w	.14
+	cmp.w	#$E,d7					;on the user records line?
+	bne.w	.14						;not the line: move one line
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
+	beq.w	.13						;shootout: skip
+	tst.w	(ValidSRAM).w			;save RAM?
+	bpl.w	.14						;save RAM: move one line
 .13									;shootout or no save RAM: skip the line
-	move.w	#$FFFC,d0
+	move.w	#$FFFC,d0				;skip a line
 .14									;move the frame
-	bsr.w	MoveMenuFrame
-	bsr.w	FixModeOptions
+	bsr.w	MoveMenuFrame			;move it
+	bsr.w	FixModeOptions			;print the options
 	bra.w	.loop
 .15									;ubut clear
-	moveq	#1,d2
+	moveq	#1,d2					;right: +1
 	btst	#rbut,d1				;rbut
-	bne.w	.16
-	btst	#lbut,d1				;lbut
-	beq.w	.loop
-	moveq	#-1,d2
+	bne.w	.16						;right
+	btst	#lbut,d1				;left?
+	beq.w	.loop					;neither: back to the loop
+	moveq	#-1,d2					;left: -1
 .16									;left or right: change the option
-	cmpi.w	#4,(OptPlayMode).w
-	beq.w	.17
-	jsr	(FigureJoy).l
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
+	beq.w	.17						;shootout: no pad setup
+	jsr	(FigureJoy).l				;set up the pads
 .17									;pad setup done
-	move.w	(Opt2team).w,-(sp)
-	move.w	(Opt1team).w,-(sp)
+	move.w	(Opt2team).w,-(sp)		;save the old teams
+	move.w	(Opt1team).w,-(sp)		;save the old teams
 	bsr.w	ChangeOption			;change the option by d2
-	move.w	(sp)+,d0
-	cmpi.w	#4,(OptPlayMode).w
+	move.w	(sp)+,d0				;old Opt1team
+	cmpi.w	#4,(OptPlayMode).w		;shootout?
 	beq.w	.18
-	tst.w	(OptPlayMode).w
+	tst.w	(OptPlayMode).w			;league?
 	bne.w	.19
 .18									;league or shootout: the menu teams play
 	move.w	(Opt1team).w,(HomeTeam).w	;Regular Season and Shootout: the menu teams
 	move.w	(Opt2team).w,(VisTeam).w
 .19									;teams set for the mode
-	move.w	(HomeTeam).w,(logoteam).w
+	move.w	(HomeTeam).w,(logoteam).w	;logo of the home team
 	btst	#6,(setupcardflags).w	;home logo shown?
 	beq.w	.20
-	movem.w	d0,-(sp)
-	move.w	(setuphome).w,d0
-	cmp.w	(HomeTeam).w,d0
+	movem.w	d0,-(sp)				;save d0
+	move.w	(setuphome).w,d0		;team in the block
+	cmp.w	(HomeTeam).w,d0			;home team changed?
 	movem.w	(sp)+,d0
-	beq.w	.21
+	beq.w	.21						;same team: keep it
 .20									;home team changed (or no logo yet): redraw its block
-	move.w	(HomeTeam).w,(setuphome).w
-	bsr.w	DrawHomeBlock
+	move.w	(HomeTeam).w,(setuphome).w	;new home team
+	bsr.w	DrawHomeBlock			;redraw it
 .21									;home block done
 	btst	#7,(setupcardflags).w	;visitors logo shown?
 	beq.w	.22
-	movem.w	d0,-(sp)
+	movem.w	d0,-(sp)				;save d0
 	move.w	(setupvis).w,d0
-	cmp.w	(VisTeam).w,d0
+	cmp.w	(VisTeam).w,d0			;visitors changed?
 	movem.w	(sp)+,d0
-	beq.w	.23
+	beq.w	.23						;same team: keep it
 .22									;visitors team changed (or no logo yet): redraw its block
-	move.w	(VisTeam).w,(setupvis).w
-	move.w	(VisTeam).w,(logoteam).w
-	bsr.w	DrawVisBlock
-	move.w	(HomeTeam).w,(logoteam).w
+	move.w	(VisTeam).w,(setupvis).w	;new visitors
+	move.w	(VisTeam).w,(logoteam).w	;logo of the visitors
+	bsr.w	DrawVisBlock			;redraw it
+	move.w	(HomeTeam).w,(logoteam).w	;logo back to the home team
 .23									;visitors block done
-	tst.w	(sp)+
+	tst.w	(sp)+					;drop the saved Opt2team
 	bra.w	.fix					;redraw
 	move.w	(sp)+,d0				;unreferenced: an older copy of the team block update above
 	cmp.w	(VisTeam).w,d0
@@ -218,20 +218,20 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	cmp.w	(VisTeam).w,d0
 	movem.w	(sp)+,d0
 	beq.w	.24
-	move.w	(VisTeam).w,(setupvis).w
-	bsr.w	DrawVisBlock
+	move.w	(VisTeam).w,(setupvis).w	;new visitors
+	bsr.w	DrawVisBlock			;redraw the visitors block
 .24									;visitors block redrawn when the team changed
 	movem.w	d0,-(sp)
 	move.w	(setuphome).w,d0
-	cmp.w	(HomeTeam).w,d0
+	cmp.w	(HomeTeam).w,d0			;home team changed?
 	movem.w	(sp)+,d0
-	beq.w	.fix
-	move.w	(HomeTeam).w,(setuphome).w
+	beq.w	.fix					;same: done
+	move.w	(HomeTeam).w,(setuphome).w	;new home team
 	move.w	(HomeTeam).w,(logoteam).w
-	bsr.w	DrawHomeBlock
+	bsr.w	DrawHomeBlock			;redraw the home block
 	move.w	(VisTeam).w,(logoteam).w
 .fix								;redraw the options
-	bsr.w	FixModeOptions
+	bsr.w	FixModeOptions			;print the options
 	bra.w	.loop
 	rts								;unreferenced
 GoNewPlayoffs						;New playoffs: jmp NewPO. Called from GameSetUp and ChangeOption
@@ -244,58 +244,58 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 									;FixModeOptions reprints the names when they differ). Continue playoffs
 									;skips lines 1-3, new playoffs line 3 (Team 2). The old frame is erased by
 									;redrawing the SetupMenuMap background under it. Called from GameSetUp
-	move.w	d7,d3
+	move.w	d7,d3					;old line
 .optionup							;loop
-	bclr	#2,(sflags5).w
-	tst.w	d0
-	bpl.w	.optiondown
-	move.w	d0,-(sp)
-	move.w	d7,d0
+	bclr	#2,(sflags5).w			;not scrolled yet
+	tst.w	d0						;direction?
+	bpl.w	.optiondown				;moving down
+	move.w	d0,-(sp)				;save d0
+	move.w	d7,d0					;line number
 	asr.w	#1,d0
-	cmp.w	(setupfirstline).w,d0
-	bne.w	.noscroll
-	move.w	(setupfirstline).w,(setupprevline).w
-	bset	#2,(sflags5).w
-	subq.w	#1,(setupfirstline).w
-	bpl.w	.noscroll
-	clr.w	(setupfirstline).w
+	cmp.w	(setupfirstline).w,d0	;top line shown?
+	bne.w	.noscroll				;not at the top of the frame
+	move.w	(setupfirstline).w,(setupprevline).w	;old first line
+	bset	#2,(sflags5).w			;scrolled
+	subq.w	#1,(setupfirstline).w	;scroll up
+	bpl.w	.noscroll				;not above line 0
+	clr.w	(setupfirstline).w		;clamp to line 0
 .noscroll							;first line scrolled (not above 0)
-	move.w	(sp)+,d0
+	move.w	(sp)+,d0				;restore d0
 .optiondown							;move the line cursor by d0
-	move.w	d7,(TempWord1).w
-	add.w	d0,d7
-	bpl.w	.0
-	clr.w	d7
+	move.w	d7,(TempWord1).w		;old line
+	add.w	d0,d7					;new line
+	bpl.w	.0						;not above line 0
+	clr.w	d7						;clamp to line 0
 .0									;line clamped at the top
 	tst.w	d0
-	bmi.w	.3
-	move.w	d0,-(sp)
-	move.w	d7,d0
+	bmi.w	.3						;moving up: done
+	move.w	d0,-(sp)				;save d0
+	move.w	d7,d0					;line number
 	asr.w	#1,d0
-	sub.w	(setupfirstline).w,d0
-	cmp.w	#5,d0
-	bgt.w	.scrolldown
+	sub.w	(setupfirstline).w,d0	;row in the frame
+	cmp.w	#5,d0					;past row 5?
+	bgt.w	.scrolldown				;below the frame: scroll
 	bra.w	.2
 .scrolldown							;d0 > 5
-	move.w	(setupfirstline).w,(setupprevline).w
-	bset	#2,(sflags5).w
-	addq.w	#1,(setupfirstline).w
-	move.w	d7,d0
+	move.w	(setupfirstline).w,(setupprevline).w	;old first line
+	bset	#2,(sflags5).w			;scrolled
+	addq.w	#1,(setupfirstline).w	;scroll down
+	move.w	d7,d0					;line number
 	asr.w	#1,d0
-	sub.w	(setupfirstline).w,d0
-	cmp.w	#5,d0
+	sub.w	(setupfirstline).w,d0	;minus the first line shown
+	cmp.w	#5,d0					;still below the frame?
 	ble.w	.1
-	addq.w	#1,(setupfirstline).w
+	addq.w	#1,(setupfirstline).w	;scroll once more
 .1									;first line moved down when needed
-	cmpi.w	#3,(setupfirstline).w
+	cmpi.w	#3,(setupfirstline).w	;past line 3?
 	ble.w	.2
-	move.w	#3,(setupfirstline).w
+	move.w	#3,(setupfirstline).w	;at most 3
 .2									;first line clamped
-	move.w	(sp)+,d0
+	move.w	(sp)+,d0				;restore d0
 .3									;moving up, or the scroll is done
-	btst	#2,(sflags5).w
+	btst	#2,(sflags5).w			;scrolled?
 	bne.w	.4
-	move.w	(setupfirstline).w,(setupprevline).w
+	move.w	(setupfirstline).w,(setupprevline).w	;no scroll: same first line
 .4									;previous line kept for the redraw check
 	cmp.w	#$12,d7					;past the last line (Line Changes)
 	blt.w	.contplayoffs
