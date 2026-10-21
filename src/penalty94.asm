@@ -961,7 +961,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	move.w	#2,(a3)
 	bsr.w	appendz
 	String	$BF,1,$19
-	adda.w	4(a0),a0				;team name
+	adda.w	Teamname(a0),a0			;team name
 	adda.w	(a0),a0
 	movea.l	a0,a1
 	bsr.w	appstring
@@ -1109,7 +1109,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 PrintTeamNameAndScore				;Print the team name of team a2 at printx/printy, then its score as 2
 									;digits at x $1C. Called twice from printscores1
 	movea.l	tmdata(a2),a1			;tmdata
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1					;skip the first string to the team name
 	bsr.w	print
 	move.w	#$1C,(printx).w			;score column
@@ -1558,25 +1558,25 @@ SetScore							;add to score for game in a0. After period 3 a game within one go
 	cmpi.w	#4,gsper(a0)			;gsper
 	bge.w	rtss2
 	movem.l	d0-d1/a0-a1,-(sp)
-	cmpi.w	#3,8(a0)
+	cmpi.w	#3,gsper(a0)
 	bne.w	.o
-	move.w	#5,8(a0)				;final
+	move.w	#5,gsper(a0)			;final
 	move.w	gss1(a0),d0				;gss1
 	sub.w	gss2(a0),d0				;gss2
 	cmp.w	#1,d0
 	bgt.w	.ex
 	cmp.w	#$FFFF,d0
 	blt.w	.ex
-	move.w	#3,8(a0)				;close game: overtime
+	move.w	#3,gsper(a0)			;close game: overtime
 	bset	#gsfhl,gsflags(a0)		;gsfhl
 	bra.w	.ex
 .o
-	addq.w	#1,8(a0)
+	addq.w	#1,gsper(a0)
 	move.w	(a0),d0					;gst1
 	move.w	gst2(a0),d1				;gst2
 	bsr.w	.getscore
 	add.w	d0,gss1(a0)				;gss1
-	move.w	2(a0),d0
+	move.w	gst2(a0),d0
 	move.w	(a0),d1
 	bsr.w	.getscore
 	add.w	d0,gss2(a0)				;gss2
@@ -1589,7 +1589,7 @@ SetScore							;add to score for game in a0. After period 3 a game within one go
 	asl.w	#2,d0
 	movea.w	#TeamList,a1
 	movea.l	0(a1,d0.w),a1
-	adda.w	8(a1),a1
+	adda.w	ScoutReport(a1),a1
 	move.b	(a1),d0
 	andi.w	#$70,d0
 	lsr.w	#1,d0					;row * 8
@@ -1599,7 +1599,7 @@ SetScore							;add to score for game in a0. After period 3 a game within one go
 	asl.w	#2,d1
 	movea.w	#TeamList,a1
 	movea.l	0(a1,d1.w),a1
-	adda.w	8(a1),a1
+	adda.w	ScoutReport(a1),a1
 	move.b	(a1),d0
 	andi.w	#7,d0
 	asl.w	#3,d0
@@ -1690,7 +1690,7 @@ NewTicker3							;Display ticker score for game d3 (a0 = gstruct entry), skip if
 	movea.w	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
-	adda.w	4(a1),a1				;team name
+	adda.w	Teamname(a1),a1			;team name
 	bsr.w	print
 	move.w	4(sp),(printx).w
 	addi.w	#$15,(printx).w			;92 23
@@ -1900,7 +1900,7 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	move.w	gss1(a0),d0
 	cmp.w	gss2(a0),d0
 	beq.w	StartHL2				;still tied: play another hilite
-	move.w	#5,8(a0)				;final
+	move.w	#5,gsper(a0)			;final
 	move.w	d1,d3
 	bsr.w	CheckGameTickerStatus
 	bsr.w	NewTicker3

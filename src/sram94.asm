@@ -14,7 +14,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	clr.w	(ValidSRAM).w			;good until checked
 	jsr	(ReadJoy1).l				;get joypad buttons held
 	move.w	d3,d0					;d3 = buttons held
-	movea.l	#$200000,a0				;move SRAM address into a0
+	movea.l	#SaveRAM,a0				;move SRAM address into a0
 	move.w	#$E,d3					;red ($00E), fading by 2 a frame
 	move.w	#2,d4					;move 2 into d4
 	cmp.b	#$E0,d0					;Start+A+C button held down
@@ -49,7 +49,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	dbf	d0,.setto80
 	adda.w	#2,a0
 	dbf	d2,.SRAMloop
-	movea.l	#$200000,a0
+	movea.l	#SaveRAM,a0
 	move.l	#$120034,(a0)+			;bytes 0-3 = $12,$34,$56,$78 (word writes: the low byte goes to the odd
 									;SRAM byte)
 	move.l	#$560078,(a0)+
@@ -145,7 +145,7 @@ WriteSRAM							;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = fir
 									;Called from ClearSRAM, MakeSRAMChecksum and the save code
 									;(ReadCrowdRecord ...)
 	movem.l	d0-d2/a0-a1,-(sp)
-	movea.l	#$200000,a1
+	movea.l	#SaveRAM,a1
 	add.l	d0,d0
 	subq.l	#1,d1
 	clr.w	d2
@@ -181,7 +181,7 @@ MakeSRAMChecksum					;Read the whole save RAM to M68K_RAM, put the sum of bytes 
 ReadSRAM							;Copy d1 save RAM bytes from byte d0 (the odd bytes + d0 * 2) to (a0)+.
 									;Called from InitSaveRAM, MakeSRAMChecksum and the save code
 	movem.l	d0-d2/a0-a1,-(sp)
-	movea.l	#$200000,a1
+	movea.l	#SaveRAM,a1
 	add.l	d0,d0
 	subq.l	#1,d1
 .loop

@@ -66,7 +66,7 @@ GetTeamCity							;unused: return a1 = the city String of team byte tmATOP(a0) (
 	asl.w	#2,d2
 	movea.l	#TeamList,a1
 	movea.l	0(a1,d2.w),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ron Barr
@@ -550,7 +550,7 @@ GetMatchupPlayer					;Return d0 = the roster index of team a0's player for match
 									;MatchupLineSlots[matchup] (matchupslot; 0 goalie, 1 left defense, 2 right
 									;defense, 3 left wing, 4 center, 5 right wing)
 	movea.l	tmdata(a0),a0			;tmdata
-	adda.w	6(a0),a0				;LineSets
+	adda.w	LineSets(a0),a0			;LineSets
 	move.w	(matchup).w,d0
 	movea.l	#MatchupLineSlots,a1
 	move.b	0(a1,d0.w),d0
@@ -623,7 +623,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (AwShots): r
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
 	movea.l	tmdata(a1),a1			;tmdata
-	adda.w	4(a1),a1				;city
+	adda.w	Teamname(a1),a1			;city
 	adda.w	(a1),a1					;abbreviation
 	adda.w	(a1),a1					;nickname
 	cmpi.w	#2,(a1)					;empty String?
@@ -642,7 +642,7 @@ GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (AwShots): retu
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
 	movea.l	tmdata(a1),a1			;tmdata
-	adda.w	4(a1),a1				;city
+	adda.w	Teamname(a1),a1			;city
 	adda.w	(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1					;arena

@@ -72,7 +72,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	movea.l	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	(a1),d0
 	subq.w	#2,d0
 	lsr.w	#1,d0

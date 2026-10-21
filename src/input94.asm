@@ -272,7 +272,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 	movea.l	#SPAlist,a0
 	adda.w	SPA(a3),a0
 	move.w	facedir(a3),d0
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.1
 	neg.w	d0
 	addq.w	#8,d0
@@ -280,7 +280,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 .1
 	asl.w	#1,d0
 	adda.w	0(a0,d0.w),a0
-	tst.b	$5B(a3)
+	tst.b	SPAnum+1(a3)
 	movem.l	(sp)+,d0-d3/a0-a3
 	bpl.s	rtss15
 	move.w	#$A,SPAcnt(a3)
@@ -564,7 +564,7 @@ getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 	move.w	#$FFFF,d0
 	bra.w	.end
 .goalie
-	move.w	$52(a0),d0
+	move.w	SCnum(a0),d0
 .end
 	movem.l	(sp)+,d1/a0
 	rts
@@ -650,7 +650,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 .next
 	dbf	d4,.loop
 	movea.l	tmdata(a2),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	addq.w	#2,(printx).w
 	bra.w	print
@@ -1153,12 +1153,12 @@ changeplayer
 	beq.w	.0
 	movem.l	d0,-(sp)
 	move.w	(BA_Sktr_SCnum).w,d0
-	cmp.w	$52(a0),d0
+	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	beq.w	.0
 	movem.l	d0,-(sp)
 	move.w	(BA_Goalie_SCnum).w,d0
-	cmp.w	$52(a0),d0
+	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	bne.w	.next
 .0
@@ -1347,9 +1347,9 @@ prepshot
 	movem.l	a0,-(sp)
 	asl.w	#7,d0
 	movea.l	#SortCords,a0
-	cmpi.w	#SPAgstackr,$58(a0,d0.w)	;Checking goalie animations - pad stack right
+	cmpi.w	#SPAgstackr,SPA(a0,d0.w)	;Checking goalie animations - pad stack right
 	beq.w	.svgoalie
-	cmpi.w	#SPAgstackl,$58(a0,d0.w)	;Checking another goalie animation - pad stack left
+	cmpi.w	#SPAgstackl,SPA(a0,d0.w)	;Checking another goalie animation - pad stack left
 .svgoalie
 	movem.l	(sp)+,a0				;pop stack value into a0
 	bne.w	.cont

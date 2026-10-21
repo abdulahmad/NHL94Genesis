@@ -403,7 +403,7 @@ CCStart								;Player a3 is checking player a2. Holds (SPAHold, SPAhook) go to
 	asl.w	#1,d0
 .CheckingCalc						;(a label inside CCStart)
 	sub.b	weight(a3),d0			;subtract wgt of a3 player from d0. a3 is player checking.
-	add.b	$67(a2),d0				;add wgt of a2 player to d0
+	add.b	weight(a2),d0			;add wgt of a2 player to d0
 	lsr.w	#1,d0					;shift d0 1 right word length (divide by 2)
 	exg	a2,a3						;swap addresses in a2 and a3 registers
 	jsr	(wallcollduringcheck).l
@@ -818,7 +818,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	jsr	(StartArenaAnim).l
 	move.w	(sp)+,d0
 	move.w	#SPAbenchcheckl,d1		;anim value
-	btst	#3,4(a2)
+	btst	#3,attribute(a2)
 	beq.w	.6
 	move.w	#SPAbenchcheckr,d1
 	bra.w	.6
@@ -830,12 +830,12 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	cmpi.w	#$FFC8,Ypos(a2)			;compare -38 to Ypos
 	blt.w	.4						;branch if lower
 	move.w	#SPAbenchcheckr,d1		;change anim value
-	btst	#3,4(a2)				;check bit 3 of frame
+	btst	#3,attribute(a2)		;check bit 3 of frame
 	beq.w	.6						;branch if zero
 	move.w	#SPAbenchcheckl,d1		;change anim value
 	bra.w	.6
 .4
-	btst	#3,4(a2)				;check bit 3 of frame
+	btst	#3,attribute(a2)		;check bit 3 of frame
 	beq.w	.6						;branch if zero
 	cmp.w	#SPAboardright,d1		;right of center
 	beq.w	.5						;branch if right of center
@@ -1842,7 +1842,7 @@ checkpuckcoll						;look for puck coll with players. a3 = puck. Clears Yvel past
 	move.l	a0,-(sp)				;push on stack
 	movea.l	#.cbg,a0
 	clr.w	d0
-	move.b	$68(a2),d0				;move Agl into d0
+	move.b	legstr(a2),d0			;move Agl into d0
 	btst	#1,(sflags8).w			;check if cwd meter broken (always is)
 	bne.w	.boost
 	btst	#6,(sflags7).w			;check if crowd meter currently broken
@@ -2822,7 +2822,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	movea.l	tmdata(a0),a0			;tmdata: the address of the team's data
 									;(roster, etc)
 	move.l	a0,-(sp)				;pushes starting position onto the stack
-	adda.w	8(a0),a0				;moves to offset where Off/Def byte is
+	adda.w	ScoutReport(a0),a0		;moves to offset where Off/Def byte is
 	clr.l	(PPBonus).w				;Clears all bonuses
 	tst.w	position(a3)			;check if goalie
 	beq.w	.playdatamove

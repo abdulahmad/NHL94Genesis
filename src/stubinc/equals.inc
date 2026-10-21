@@ -346,6 +346,12 @@ ASW equ 27
 ; all-star number: a new playoff team is inserted before ASE and both all-star numbers move up.
 NumTeams equ ASW+1
 NumPlayoffTeams equ ASE
+Playerdata equ 0					;team block offset words (teamdata94): players
+Palettedata equ 2					;home and visitor palettes
+Teamname equ 4						;city, abbreviation, nickname and arena strings
+LineSets equ 6						;line sets (92 8)
+ScoutReport equ 8					;scouting report bytes, .sr (92 6)
+GoalieOdds equ 10					;starting goalie weights, .godds (new in 94)
 ; Roster slots per team (skaters in card lists, three-stars tables, etc.), not the league count.
 RosterSlots equ 26
 PlayoffRows equ 32

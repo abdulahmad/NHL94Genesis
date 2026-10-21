@@ -2393,7 +2393,7 @@ PrintCardTeam						;Player card: the city and nickname of the card's team (GetCa
 	movea.l	#AwShots,a0
 .0
 	movea.l	tmdata(a0),a0
-	adda.w	4(a0),a0
+	adda.w	Teamname(a0),a0
 .1
 	bsr.w	PrintCentered
 	adda.w	(a0),a0
@@ -2558,7 +2558,7 @@ DrawPlayerPicture					;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, C
 .2
 	dbf	d6,.loop2
 	adda.w	(a6),a6
-	adda.w	$A(a0),a0
+	adda.w	GoalieOdds(a0),a0
 	move.w	(a0),d1
 	clr.w	d3
 .loop3
@@ -2675,7 +2675,7 @@ BuildCardPlayerLists				;Build the player card order of both teams: home at home
 BuildCardPlayerList					;Player card order of team a0 into a1: the 6 starters (TeamList line at
 									;+6) first, the other roster slots after them
 	movea.l	tmdata(a0),a0
-	adda.w	6(a0),a0
+	adda.w	LineSets(a0),a0
 	movea.l	a1,a2
 	addq.w	#6,a2
 	clr.w	d0

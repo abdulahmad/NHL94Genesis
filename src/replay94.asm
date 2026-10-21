@@ -51,9 +51,9 @@ ReplayMode							;Instant replay play-back control and display code.
 .0
 	movem.l	d0/a3,-(sp)
 	movea.l	#SortCords+(12*SCstruct),a3
-	move.w	#1,8(a3)
+	move.w	#1,oldframe(a3)
 	movea.l	#SortCords+(13*SCstruct),a3
-	move.w	#1,8(a3)
+	move.w	#1,oldframe(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#1,d7
 	bsr.w	getpzjoy
@@ -387,9 +387,9 @@ adda4								;Step forward 1 frame. First handles a reverse
 	dbf	d0,.loop2
 	movem.l	a0,-(sp)
 	movea.l	#SortCords+(12*SCstruct),a0
-	move.w	#1,8(a0)
+	move.w	#1,oldframe(a0)
 	adda.w	#$80,a0
-	move.w	#1,8(a0)
+	move.w	#1,oldframe(a0)
 	movem.l	(sp)+,a0
 	bsr.w	RevReplayAdj
 	btst	#sfscrl,(sflags).w
@@ -517,7 +517,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	asr.w	#4,d2
 	andi.w	#$3FF,d2
 .2
-	move.w	d2,6(a3)
+	move.w	d2,frame(a3)
 	cmp.w	#SPFbglass,d2			;check if frame is before glass shatter frames
 	blt.w	.3						;branch if so
 	cmp.w	#SPFbglass+5,d2			;check if frame is after glass shatter frames
@@ -822,25 +822,25 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	bra.w	.top2
 .7
 	move.w	#$82,(a3)
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.top2
 	move.w	#$FF7E,(a3)
 	bra.w	.top2
 .8
 	move.w	#$88,(a3)
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.top2
 	move.w	#$FF78,(a3)
 	bra.w	.top2
 .9
 	move.w	#$FF7E,(a3)
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.top2
 	move.w	#$82,(a3)
 	bra.w	.top2
 .10
 	move.w	#$FF78,(a3)
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.top2
 	move.w	#$88,(a3)
 .top2

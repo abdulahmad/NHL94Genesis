@@ -473,7 +473,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	bra.w	.x
 .6
 	move.w	#$82,d0
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.7
 	move.w	#$FF7E,d0
 .7
@@ -483,7 +483,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	bra.w	.x
 .8
 	move.w	#$88,d0
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.9
 	move.w	#$FF78,d0
 .9
@@ -493,7 +493,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	bra.w	.x
 .10
 	move.w	#$FF7E,d0
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.11
 	move.w	#$82,d0
 .11
@@ -503,7 +503,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	bra.w	.x
 .12
 	move.w	#$FF78,d0
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.13
 	move.w	#$88,d0
 .13
@@ -1293,7 +1293,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 .top
 	tst.w	position(a0)			;position
 	ble.w	.next					;cant switch to goalie
-	btst	#pf2unav,$63(a0)		;#pf2unav
+	btst	#pf2unav,pflags2(a0)	;#pf2unav
 	bne.w	.next					;this player is unavailable for some reason
 	movem.w	d1,-(sp)
 	move.w	SCnum(a0),d1			;SCnum
@@ -1307,12 +1307,12 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	beq.w	.1
 	movem.l	d0,-(sp)
 	move.w	(BA_Sktr_SCnum).w,d0
-	cmp.w	$52(a0),d0
+	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	beq.w	.1
 	movem.l	d0,-(sp)
 	move.w	(BA_Goalie_SCnum).w,d0
-	cmp.w	$52(a0),d0
+	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	bne.w	.next
 .1

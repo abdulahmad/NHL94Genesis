@@ -35,7 +35,6 @@ EASportsMap = $B425A				;movea.l #x. hidden in the string
 
 NoTiles = $30A
 TeamList = $30E
-GoalieOdds = 10						;team block offset word (teamdata94)
 
 ; Main segment code
 	include	attract94.asm

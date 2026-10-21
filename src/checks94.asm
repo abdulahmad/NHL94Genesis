@@ -521,7 +521,7 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	bne.w	.opploop				;branch if away
 	adda.w	#$300,a0
 .opploop
-	btst	#2,$63(a0)				;check if player unavailable
+	btst	#pf2unav,pflags2(a0)	;check if player unavailable
 	bne.w	.opploop2				;branch if so
 	move.w	(pucky).w,d1			;pucky into d1
 	sub.w	Ypos(a0),d1				;sub Ypos a0 from d1
@@ -847,7 +847,7 @@ goaliesave
 	andi.w	#7,d0					;pass first 3 bits of d0
 	move.w	d0,d3					;move d0 into d3
 	lsr.w	#2,d0					;divide d0 by 4
-	btst	#3,4(a3)
+	btst	#3,attribute(a3)
 	beq.w	.0
 	eori.w	#1,d0
 .0
@@ -2394,9 +2394,9 @@ puckpenshot
 	clr.w	(a0)
 	move.w	#$FEF4,Ypos(a0)
 	movea.w	#(SortCords+((puckscnum+1)*SCstruct)-M68K_RAM),a0	;puck shadow SCstruct
-	move.w	#SPFpuck,6(a0)
+	move.w	#SPFpuck,frame(a0)
 	clr.w	SPA(a0)
-	clr.w	4(a0)
+	clr.w	attribute(a0)
 	clr.w	(SortCords+(puckscnum*SCstruct)+attribute).w
 	bclr	#sfslock,(sflags).w
 	moveq	#$64,d4
@@ -2422,7 +2422,7 @@ puckpenshot
 	beq.w	.setupgoalie
 	move.w	#$FF10,(a3)
 	clr.w	Ypos(a3)
-	clr.w	6(a3)
+	clr.w	frame(a3)
 	move.w	#$20,d0
 	bsr.w	assinsert
 	bra.w	.nextplayer
@@ -2625,7 +2625,7 @@ EndPenaltyShotPlay					;stop play after a penalty shot or shootout attempt: free
 	movea.l	#SortCords,a0
 	move.w	(BA_Sktr_SCnum).w,d0
 	asl.w	#7,d0
-	move.b	(savednewpnum).w,$61(a0,d0.w)
+	move.b	(savednewpnum).w,newpnum(a0,d0.w)
 	movem.l	(sp)+,d0/a0
 	jsr	(CountShootoutGoals).l
 PenaltyShotEndReturn
@@ -2803,7 +2803,7 @@ UpdateFaceoffLineChangeTimer		;count down one team's faceoff line change timer a
 	beq.w	.checkactive
 	adda.w	#tmsize,a2
 .checkactive
-	btst	#3,$63(a0,d1.w)
+	btst	#pf2lcm,pflags2(a0,d1.w)
 	bne.w	.countdown
 	st	0(a3,d0.w)
 	bra.w	SetLCmode2
