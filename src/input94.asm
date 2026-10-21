@@ -27,9 +27,9 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bra.w	.4
 .3									;d4 <> 0
 	move.b	#$11,(bholdtimer+1).w
-.4
+.4									;timer set: drop the B change bit
 	bclr	#4,d2
-.5
+.5									;A+B+C cases done; in goalie mode shorten the message timer
 	btst	#7,(gmode2).w
 	beq.w	.6
 	cmp.b	#8,d0
@@ -114,13 +114,14 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 .10									;pf3onetimer clear
 	btst	#6,d1
 	bne.w	Holdplayer
-.11
+.11									;skater (position <> 0) or goalie: pick how B is handled
 	tst.w	position(a3)
 	beq.w	.12
 	btst	#2,(BA_PS_flags).w
 	bne.w	.noswitch
 	bra.w	.bhold
-.12
+.12									;goalie: B switches players only in goalie mode, and not from the puck
+									;carrier
 	btst	#6,(sflags5).w
 	bne.w	.bhold
 	tst.w	d4
@@ -129,7 +130,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bra.w	.14
 .13									;d4 = 0
 	tst.w	(goaliemode1).w
-.14
+.14									;flags from this pad's goaliemode: off = B hold checks
 	beq.w	.bhold
 	movem.w	d0,-(sp)
 	move.w	SCnum(a3),d0
@@ -137,7 +138,8 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	movem.w	(sp)+,d0
 	beq.w	.bhold
 	bra.w	changeplayer
-.bhold
+.bhold								;B still held (no holdreset): count down the hold timer, else treat it as
+									;a press
 	btst	#4,d3
 	beq.w	.bpress
 	tst.w	(holdreset).w
@@ -158,7 +160,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bra.w	.18
 .17									;d4 = 0
 	tst.w	(goaliemode1).w
-.18
+.18									;goalie mode: handle as a press, else go to the goalie
 	bne.w	.bpress
 	bra.w	.goalie
 .c1									;d4 = 0
@@ -174,11 +176,11 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bra.w	.22
 .21									;d4 = 0
 	tst.w	(goaliemode1).w
-.22
+.22									;goalie mode: press; else the goalie once the hold timer is out
 	bne.w	.bpress
 	tst.b	(bholdtimer).w
 	beq.w	.goalie
-.bpress
+.bpress								;B pressed: start this pad's hold timer; released (.brel): switch players
 	btst	#4,d1
 	beq.w	.brel
 	tst.w	d4
@@ -205,7 +207,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bra.w	.27
 .26									;d4 = 0
 	tst.w	(goaliemode1).w
-.27
+.27									;goalie mode: switch players, else take the goalie
 	bne.w	changeplayer
 	bra.w	.goalie
 .28									;d4 = 0
@@ -218,9 +220,9 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bra.w	.30
 .29									;d4 = 0
 	tst.w	(goaliemode1).w
-.30
+.30									;goalie mode: switch players, else take the goalie
 	bne.w	changeplayer
-.goalie
+.goalie								;take the goalie of a3's team (SCnum 5 home, 11 away) unless holdreset
 	tst.w	(holdreset).w
 	bne.w	changeplayer
 	move.w	#5,d0
@@ -241,7 +243,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	tst.w	d4
 	beq.w	setc1player
 	bra.w	setc2player
-.noswitch
+.noswitch							;no switch: one-timer setup, A pass / line change, or the C button
 	tst.w	position(a3)
 	bne.w	doinput_onetimer
 	btst	#6,d1
@@ -277,7 +279,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 	neg.w	d0
 	addq.w	#8,d0
 	andi.w	#7,d0
-.1
+.1									;facedir mirrored for flipped animations (attribute bit 3)
 	asl.w	#1,d0
 	adda.w	0(a0,d0.w),a0
 	tst.b	SPAnum+1(a3)
@@ -308,7 +310,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 	bgt.w	.4
 .3									;pucky > $DB, or from above
 	subi.w	#$40,d0
-.4
+.4									;d0 = lead time: shorter near the ends (pucky past the blue lines)
 	move.w	d0,d1
 	muls.w	(puckvx).w,d0
 	swap	d0
@@ -340,7 +342,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 	muls.w	d4,d0
 	divs.w	d2,d0
 	divs.w	d2,d1
-.near
+.near								;target within 30 pixels: no scaling
 	add.w	d3,d1
 	move.w	d1,d2
 	cmpi.w	#$22,2(a0)
@@ -367,7 +369,7 @@ ClampTargetY						;clamp the target y d1 for player a3 (d0 cleared when a3 has t
 	cmp.w	SCnum(a3),d2
 	bne.w	.0
 	clr.w	d0
-.0
+.0									;d0 cleared when a3 is the puck carrier
 	cmp.w	#$103,d1
 	blt.w	.1
 	move.w	#$103,d1
@@ -375,7 +377,7 @@ ClampTargetY						;clamp the target y d1 for player a3 (d0 cleared when a3 has t
 	cmp.w	#$FEFD,d1
 	bgt.w	.2
 	move.w	#$FEFD,d1
-.2
+.2									;clamp d1 to the top limit
 	sub.w	d3,d1
 	rts
 	;10 SPA offsets, unreferenced: SPAgglover, SPAgglovel, SPAgstackr, SPAgstackl
@@ -397,20 +399,20 @@ doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else sk
 	beq.w	.1
 	bset	#1,(BA_PS_flags).w
 	clr.w	Xvel(a3)
-.1
+.1									;both x limits checked; now y
 	cmpi.w	#$FFDC,(a3)
 	bge.w	.2
 	tst.w	Xvel(a3)
 	bpl.w	.2
 	bset	#1,(BA_PS_flags).w
 	clr.w	Xvel(a3)
-.2
+.2									;x inside -36: keep Xvel
 	cmpi.w	#$E7,Ypos(a3)
 	bgt.w	.4
 	cmpi.w	#$FF19,Ypos(a3)
 	ble.w	.4
 	bra.w	*+4
-.3
+.3									;in the y band: test whether a3 skates outward
 	movem.w	d0-d1,-(sp)
 	move.w	Ypos(a3),d0
 	move.w	Yvel(a3),d1
@@ -421,7 +423,7 @@ doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else sk
 	beq.w	.4
 	bset	#1,(BA_PS_flags).w
 	clr.w	Yvel(a3)
-.4
+.4									;stopped at a limit (BA_PS_flags bit 1): no skating this frame
 	btst	#1,(BA_PS_flags).w
 	bne.w	rtss15
 	move.w	(TempWord1).w,d0
@@ -464,7 +466,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bne.w	.0
 	btst	#pf2aip,pflags2(a3)
 	bne.w	rtss15
-.0
+.0									;goalies without pf2aip go on to pass / shot mode
 	btst	#sfspdir,(sflags).w
 	bne.w	passmode
 	btst	#sfssdir,(sflags).w
@@ -482,7 +484,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bra.w	.ahold
 .2									;d4 = 0
 	move.b	#$F,(aholdtimer).w
-.ahold
+.ahold								;B hold timer set for this pad
 	btst	#6,d3
 	beq.w	.arel
 	tst.w	d4
@@ -506,7 +508,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bset	#3,(sflags5).w
 	jsr	(setpassmode).l
 	bra.w	SetLCmode
-.arel
+.arel								;A not held: release starts a pass or a line change
 	btst	#6,d3
 	bne.w	.8
 	btst	#6,d2
@@ -517,7 +519,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	tst.w	position(a3)
 	bne.w	.shot
 	bra.w	doplayeracc
-.shot
+.shot								;skater: C starts a shot
 	btst	#5,d1
 	beq.w	doplayeracc
 	jsr	(CountButtonPress).l
@@ -556,14 +558,14 @@ getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 	asl.w	#7,d0
 	adda.w	d0,a0
 	move.w	#5,d1
-.loop
+.loop								;scan the 6 objects down from d0 for the goalie (position 0)
 	tst.w	position(a0)
 	beq.w	.goalie
 	suba.w	#$80,a0
 	dbf	d1,.loop
 	move.w	#$FFFF,d0
 	bra.w	.end
-.goalie
+.goalie								;found: d0 = its SCnum
 	move.w	SCnum(a0),d0
 .end								;exit: restore the registers
 	movem.l	(sp)+,d1/a0
@@ -619,13 +621,13 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 .box								;printy < $F
 	jsr	(box).l
 	bsr.w	setlccords
-.frame
+.frame								;draw the frame around the line change box
 	bsr.w	Framer
 	subq.w	#2,(printy).w
-.0
+.0									;first row: the three line choices
 	addq.w	#1,(printx).w
 	moveq	#2,d4
-.loop
+.loop								;d4 = 2..0: one row per button
 	move.w	d4,d0					;next row; d4 = row/button number
 	bsr.w	getlchoice
 	tst.w	d0
@@ -646,7 +648,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 	move.w	(sp)+,d0
 	bsr.w	linebar
 	subq.w	#5,(printx).w
-.up
+.up									;next row up
 	subq.w	#1,(printy).w
 .next								;d0 negative, or from above
 	dbf	d4,.loop					;repeat for the other rows
@@ -824,7 +826,7 @@ Acheck								;start SPAhook, or SPAHold if a0 is ahead
 .air								;pfgoal clear, or from above
 	bmi.w	.ex
 	move.w	#SPAHold,d1				;set anim - hold check stick in air
-.ex
+.ex									;either way: start the animation in d1
 	bra.w	SetSPA
 ; initialize pass mode
 setpassmode							;initialize pass mode
@@ -872,9 +874,9 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	moveq	#8,d0					;moves 8 into d0
 	tst.w	position(a3)			;checks if goalie
 	beq.w	.calc					;jump if goalie
-.LoadPassAttribForPassStart
+.LoadPassAttribForPassStart			;skater: pass speed from passacc
 	move.b	passacc(a3),d0			;Passacc
-.calc
+.calc								;d0 = passacc (8 for a goalie)
 	asl.w	#2,d0					;d0 = passacc for player, 8 for goalie
 	asr.w	#1,d0					;change from NHL Hockey Source,
 									;because max passacc can be 30
@@ -885,7 +887,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	beq.w	.findplayer				;Jumps if 0 (even number)
 	asr.w	#4,d0					;divide d0 by 16
 	add.w	d0,(passspeed).w		;add d0 to passspeed
-.findplayer
+.findplayer							;odd passacc: speed + 1/16
 	moveq	#-1,d4					;look for closest and best player to pass to
 	moveq	#5,d3					;Set total number of players (6 total, set to 5)
 	movea.w	#(SortCords-M68K_RAM),a1	;start of the home players' sort objects
@@ -895,7 +897,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	adda.w	#6*SCstruct,a1			;Switch to Away Team Players
 	btst	#2,(BA_PS_flags).w
 	bne.w	.nopp
-.0
+.0									;a1 = the passer's team (away +6 objects)
 	cmpa.l	a1,a3					;Check to see if passing to self
 	beq.w	.next					;skip if this is passing player
 	tst.w	position(a1)			;position(a1)
@@ -925,7 +927,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	bhi.w	.next					;branch if higher (player is farther away than the closest player)
 	move.l	d2,d4					;move d2 into d4
 	movea.l	a1,a0					;move a1 address into a0 (receiving player)
-.next
+.next								;next teammate
 	adda.w	#SCstruct,a1			;Skip to next player (80 hex is length of player struct)
 	dbf	d3,.0
 	tst.l	d4						;check if there's a player to pass to
@@ -952,7 +954,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	move.w	#$1000,d0
 	bsr.w	randomd0
 	move.w	d0,(puckvz).w
-.exit
+.exit								;goalie passes: point the puck up ice
 	tst.w	position(a3)			;$34 = position
 	bne.w	.notgoalie
 	tst.w	(puckvy).w
@@ -962,9 +964,10 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	bra.w	.notgoalie
 .g0									;pfgoal clear
 	bmi.w	.notgoalie
-.nvy
+.nvy								;goalie shooting at the top net with the puck moving down (or the bottom
+									;and up): flip it
 	neg.w	(puckvy).w				;negative velocity on puck
-.notgoalie
+.notgoalie							;d0/d1 = puck velocity for the pass animation direction
 	move.w	(puckvx).w,d0			;d0/d1 = puck velocity -> direction for the animation (goalie swing,
 									;forehand or backhand pass)
 	move.w	(puckvy).w,d1
@@ -976,7 +979,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	bsr.w	Findhittype
 	beq.w	.e1
 	move.w	#SPApassb,d1
-.e1
+.e1									;goalie: swing animation
 	bsr.w	SetSPA					;start the pass animation d1
 	bset	#pfalock,pflags(a3)		;#pfalock, $62 = pflags
 	moveq	#$C,d0					;Rest to rts, not in NHL Hockey Source
@@ -1090,7 +1093,7 @@ passtoa0							;pass puck to player a0
 	dbpl	d3,.0
 	bne.w	.1
 	addq.w	#1,d2					;can't be zero
-.1
+.1									;time to the target, at least 1
 	cmp.w	#$18,d2					;limit to 3 sec.
 	bls.w	.2
 	moveq	#$18,d2					;d2 = time in 1/8 sec to intersection
@@ -1148,9 +1151,9 @@ changeplayer						;switch controller d4 (0/2) to the teammate nearest the puck, 
 	cmpi.w	#1,0(a1,d4.w)
 	beq.w	.t1
 	adda.w	#6*SCstruct,a0
-.t1
+.t1									;a0 = this pad's team (away +6 objects)
 	movea.w	#(c1playernum-M68K_RAM),a1
-.loop
+.loop								;scan the teammates for the one nearest the puck
 	tst.w	position(a0)			;skip goalie, unavailable and animation-locked players, and the controller
 									;current player
 	ble.w	.next					;can't switch to goalie
@@ -1186,7 +1189,7 @@ changeplayer						;switch controller d4 (0/2) to the teammate nearest the puck, 
 	beq.w	.next					;this is current player
 	move.l	d0,d5
 	move.w	d1,d6
-.next
+.next								;next teammate
 	adda.w	#SCstruct,a0
 	dbf	d2,.loop
 	addq.w	#4,sp
@@ -1246,7 +1249,7 @@ restorepl							;restore old joy controlled player d1, give d0 the joystick; a d
 	btst	#3,pflags3(a0,d1.w)		;bit 3, pflags3
 	bne.w	.spd
 	bset	#pfna,pflags(a0,d1.w)	;#pfna - new assignment
-.spd
+.spd								;d0 = the new player: take the joystick if it is in range
 	tst.w	d0						;checks if d0 0 or higher
 	blt.w	.ex
 	cmp.w	#$B,d0					;checks if d0 11 or less
@@ -1264,17 +1267,17 @@ restorepl							;restore old joy controlled player d1, give d0 the joystick; a d
 	beq.w	.0
 	tst.w	(goaliemode2).w
 	bra.w	.1
-.0
+.0									;pad 1: goaliemode1 sets the flags
 	tst.w	(goaliemode1).w
-.1
+.1									;no goalie mode: the goalie keeps no joystick
 	beq.w	.3
 	move.w	#0,d0					;first position of home SCNum
 	btst	#6,pflags(a0,d1.w)		;check if home or away
 	beq.w	.2
 	move.w	#6,d0					;first position of away SCNum
-.2
+.2									;d0 = first SCnum of the team
 	bra.w	.ex
-.3
+.3									;goalie mode (or a skater): this player gets the joystick
 	bset	#pfjoycon,pflags(a0,d1.w)	;set pfjoycon for SCNum
 .ex									;exit (also the end of the code above)
 	rts
@@ -1319,7 +1322,7 @@ SetShotMode							;initiate shot by player a3
 	beq.w	.ck1
 	move.w	#SPAshotb,d1
 	move.w	#$F,(passspeed).w		;minimum shot speed
-.ck1
+.ck1								;forehand or backhand chosen: start the shot animation
 	bra.w	SetSPA
 ; shot input
 ShotMode							;shot input
@@ -1339,10 +1342,10 @@ ShotMode							;shot input
 	bge.w	.checkcbut
 	cmpi.w	#8,SPAnum(a3)			;SPANum
 	bgt.w	.chganim
-.checkcbut
+.checkcbut							;under full shot speed: check for the C release
 	btst	#cbut,d2				;5 = #cbut
 	beq.w	.end					;button hasnt changed so continue windup
-.chganim
+.chganim							;C released or past the windup: swing through
 	neg.w	SPAnum(a3)				;end windup and swing through
 	addi.w	#$1C,SPAnum(a3)			;Add to SPANum
 .end								;exit (also the end of the code above)
@@ -1382,7 +1385,7 @@ prepshot							;check the conditions before a shot: d0 = SCnum of the opposing g
 	cmp.w	#$D8,d0					;compares location of puck
 	blt.w	.cont
 	bset	#4,(sflags5).w			;set flag for in-close top shelf shooting
-.cont
+.cont								;no in-close top shelf flag
 	bra.w	*+4
 ; stick is at puck so launch puck toward goal
 ; a3 = shooter
@@ -1412,7 +1415,7 @@ doshot								;stick is at puck so launch puck toward goal
 	move.w	(passspeed).w,d0
 	lsr.w	#2,d0					;sub 25% for backhand shots
 	sub.w	d0,(passspeed).w
-.nbh
+.nbh								;forehand shot or backhand already reduced
 	btst	#pf3onetimer,pflags3(a3)	;check if shooting one timer
 	beq.w	.cont2					;jump if not
 	movem.l	d0-d1,-(sp)				;push d0-d1 on stack
@@ -1434,7 +1437,7 @@ doshot								;stick is at puck so launch puck toward goal
 	beq.w	.even
 	asr.w	#4,d0					;divide by 16
 	add.w	(passspeed).w,d0		;add passspeed to d0
-.even
+.even								;odd shotspd: speed + 1/16
 	lsr.w	#4,d0					;divide by 16 (d0 is passspeed)
 	neg.w	d0						;negative
 	addq.w	#3,d0					;add 3 to d0
@@ -1511,14 +1514,14 @@ doshot								;stick is at puck so launch puck toward goal
 	tst.w	4(sp)
 	bpl.w	.ycalc
 	lsr.w	#1,d0
-.ycalc
+.ycalc								;d0 = random adjustment of the y aim
 	bsr.w	randomd0s				;RNG adjustment
 	add.w	d0,4(sp)				;add to y diff
 	move.w	(sp)+,d0				;pop adj value
 	lsr.w	#1,d0					;divide by 2
 	bsr.w	randomd0				;RNG result
 	add.w	d0,4(sp)				;add to Z diff
-.perf
+.perf								;aim set: puck velocity from shot speed and distance
 	move.w	(passspeed).w,d2		;shot speed
 	muls.w	#$44,d2					;'D'   ; 1024/15
 	muls.w	(sp)+,d2				;mult by x dist
@@ -1540,7 +1543,7 @@ doshot								;stick is at puck so launch puck toward goal
 	btst	#pfgoal,pflags(a3)		;check net shooting on
 	bne.w	.3						;branch if top
 	move.w	#$C7F0,(puckvy).w		;move into puckvy (shooting on bottom net)
-.3
+.3									;puck height in the goal (pix)
 	move.w	(sp)+,d1				;pix height in goal
 	beq.w	.ex						;exit if zero
 	mulu.w	(passspeed).w,d1
@@ -1552,14 +1555,14 @@ doshot								;stick is at puck so launch puck toward goal
 	cmp.w	#$1800,d3
 	bls.w	.noup					;branch if less than
 	move.w	#$1800,d3				;set max puckvz
-.noup
+.noup								;puckvz set (capped)
 	move.w	d3,(puckvz).w			;move into puckvz
 	bclr	#4,(sflags5).w			;check in-close top shelf bit
 	beq.w	.ex						;if bit was cleared, exit
 	btst	#pf3onetimer,pflags3(a3)	;check if one timer
 	bne.w	.ex						;branch if so
 	jsr	(puckvzadj).l				;adjust puckvz for top shelf shot
-.ex
+.ex									;play the shot sound and return
 	bsr.w	sfx						;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
@@ -1649,7 +1652,8 @@ shotdiradj							;If the opposing goalie
 	tst.w	d4						;check if d4 is 0
 	bpl.w	.setpassdir				;branch if positive
 	moveq	#6,d0					;move 6 into d0
-.setpassdir
+.setpassdir							;passdir 2 or 6 toward the goalie side, then shootout / penalty shot
+									;handling
 	move.w	d0,(passdir).w			;will be 0,2,6, or 8 (no goalie)
 	btst	#2,(BA_PS_flags).w
 	bne.w	.PSorSO					;branch if bit 2 is set
