@@ -23,8 +23,8 @@ RAMStart = $FF0000
 ;
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-InitialSP = $FFFFF6					;reset vector 0 (24-bit form). The game sets its own Stack
-									;(ram94.asm)
+Stack = $FFFFF6						;reset vector 0. ram94.asm redefines Stack
+									;as the game stack
 
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;
@@ -34,7 +34,7 @@ InitialSP = $FFFFF6					;reset vector 0 (24-bit form). The game sets its own Sta
 
 ;;	.region code
 	org	0
-	dc.l	InitialSP				; 0 initial stack pointer
+	dc.l	Stack					; 0 initial stack pointer
 	dc.l	Start					; 1 initial program counter
 	dc.l	AddError				; 2 bus error: bus and address error share AddError
 	dc.l	AddError				; 3 address error

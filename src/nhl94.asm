@@ -3,9 +3,10 @@
 
 	include	stubinc\ports.inc		;IO_* / VDP_* ports. Equates only
 	include	stubinc\equals.inc		;VDP status bits. Equates only
-	include	ram94.asm				;RAM map (rs). Equates only
 
 	include	main94.asm				; $000000 header, startup, vectors
+	include	ram94.asm				;RAM map (rs), after main94 like 93 so Stack is the reset
+									;vector value until ram94 redefines it. Equates only
 	include	teamdata94.asm			; $00030A teams, palettes, credits text
 	include	frames94.asm			; $005B1C sprite animation tables
 	include	hockey94.asm			; $0076B2 game loop, pause
