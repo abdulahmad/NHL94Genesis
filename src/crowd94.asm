@@ -13,7 +13,7 @@ LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (Rea
 	beq.w	.none
 	andi.w	#$FF,d0
 	bra.w	.ex
-.none
+.none								;d0 = 0
 	move.w	#$50,d0
 .ex
 	move.w	d0,(CrowdRecord).w
@@ -36,9 +36,9 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	subq.w	#1,(crowdnoisedelay).w
 	bpl.w	.ex1
 	clr.w	(crowdnoisedelay).w
-.ex2
+.ex2								;exit (also the end of the code above)
 	rts
-.chkon
+.chkon								;crowdnoisedelay = 0
 	move.w	(CrowdRecord).w,d0
 	move.w	d0,(CrowdAvg).w
 	subi.w	#$B,(CrowdAvg).w
@@ -50,7 +50,7 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	bgt.w	.ex1
 	bset	#7,(sflags5).w
 	rts
-.chkoff
+.chkoff								;bit 7 of sflags5 set
 	move.w	(CrowdAvg).w,d0
 	subi.w	#$41,d0
 	muls.w	d0,d0
@@ -58,7 +58,7 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	cmp.w	(CwdExciteLvl).w,d0
 	blt.w	.meter
 	bclr	#7,(sflags5).w
-.meter
+.meter								;d0 < CwdExciteLvl, or from above
 	sub.w	d7,(CwdChkCntr).w
 	bpl.w	.ex1
 	move.w	#$14,(CwdChkCntr).w
@@ -72,7 +72,7 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	cmp.w	(CrowdPeak).w,d0
 	ble.w	.chkrec
 	move.w	d0,(CrowdPeak).w
-.chkrec
+.chkrec								;d0 <= CrowdPeak, or from above
 	move.w	(CurCrowdMeter).w,d0
 	cmp.w	(CrowdRecord).w,d0
 	blt.w	.stack
@@ -80,7 +80,7 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 .stack
 	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
-.ex1
+.ex1								;exit (also the end of the code above)
 	rts
 stopna2								;Slow the velocity at $28 / $2A of a3 toward 0 by $7D0. Called from
 									;goalieacc
@@ -103,7 +103,7 @@ stopna2								;Slow the velocity at $28 / $2A of a3 toward 0 by $7D0. Called fr
 	subi.w	#$7D0,Yvel(a3)
 	bpl.w	.ex
 	clr.w	Yvel(a3)
-.ex
+.ex									;exit (also the end of the code above)
 	rts
 checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. Corner circles
 									;and side walls for object a3 at d2 / d3 (wcradiusx / wcradiusy); a hit
@@ -126,7 +126,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	cmp.w	d4,d2
 	bgt.w	.circle
 	bra.w	.exit
-.ctc
+.ctc								;d3 > d5
 	neg.w	d5
 	cmp.w	d5,d3
 	blt.w	.exit
@@ -136,7 +136,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	cmp.w	d4,d2
 	bgt.w	.circle
 	bra.w	.exit
-.circle
+.circle								;d2 < d4 or d2 > d4
 	sub.w	d4,d2
 	sub.w	d5,d3
 	move.w	d3,d0					;cos0 = dy/r
@@ -157,7 +157,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	asl.l	#8,d1
 	divs.w	d3,d1
 	bsr.w	cornercollb
-.exit
+.exit								;exit: restore the registers
 	movem.w	(sp)+,d2-d5
 	move.w	Wallcos(a3),d0			;wallcos(a3)
 	or.w	Wallsin(a3),d0			;wallsin(a3)
@@ -201,11 +201,11 @@ Clamp0to100							;unused: clamp d3 to 0 ... 100
 	bpl.w	.chkmax
 	clr.w	d3
 	rts
-.chkmax
+.chkmax								;d3 >= 0
 	cmp.w	#$64,d3
 	ble.w	.x
 	move.w	#$64,d3
-.x
+.x									;exit (also the end of the code above)
 	rts
 AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3, limited to 0
 									;... $1E. Called from setplayer
@@ -216,7 +216,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	beq.w	.attribmath
 .away
 	adda.l	#tmsize,a1				;shift to start of Away Team struct
-.attribmath
+.attribmath							;pfteam clear, or from above
 	clr.w	d1
 	move.b	pnum(a3),d1				;move roster offset into d1
 	asl.w	#4,d1					;shifts d1 4 bits left, moving the values over 1 nibble
@@ -237,7 +237,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 .UpperLimit
 	move.w	#$1E,d3					;if above, set to 1E
 	bra.w	.MaskAttribMathResult
-.LowerLimit
+.LowerLimit							;d3 negative
 	clr.w	d3						;if below lower limit (0), set to 0
 .MaskAttribMathResult
 	andi.w	#$FF,d3					;pass only lower byte
@@ -254,7 +254,7 @@ NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the 
 	cmpi.w	#0,(homehotidx).w
 	bge.w	.x
 	addq.w	#1,(homehotidx).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
@@ -268,7 +268,7 @@ NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a
 	cmpi.w	#0,(awayhotidx).w
 	bge.w	.x
 	addq.w	#1,(awayhotidx).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0/a0
 	movea.l	#AwShots,a1
 	rts
@@ -310,7 +310,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	clr.b	(a1)
 	addq.w	#3,d1
 	move.w	#3,d7
-.attrib
+.attrib								;loop
 	clr.w	d2
 	move.b	0(a2,d1.w),d2
 	cmp.b	#9,d7
@@ -318,14 +318,14 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	cmp.b	#$D,d7
 	beq.w	.nextattr
 	add.b	d2,(a1)
-.nextattr
+.nextattr							;d7 = 9 or d7 = $D, or from above
 	addq.w	#1,d1
 	addq.w	#1,d7
 	cmp.b	#$10,d7
 	bne.s	.attrib
 	tst.b	(a1)+
 	dbf	d0,.player
-.sort
+.sort								;loop
 	movea.l	#TempBuffer,a1
 	clr.w	d1
 	move.w	#4,d0
@@ -354,7 +354,7 @@ NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldpla
 	cmpi.w	#0,(homecoldidx).w
 	bge.w	.x
 	addq.w	#1,(homecoldidx).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
@@ -368,7 +368,7 @@ NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer)
 	cmpi.w	#0,(awaycoldidx).w
 	bge.w	.x
 	addq.w	#1,(awaycoldidx).w
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d0/a0
 	movea.l	#AwShots,a1
 	rts
@@ -414,11 +414,11 @@ CompareHotColdTotals				;Compare the teams' hot / cold totals (GetHotColdTotal i
 	tst.w	d2
 	bmi.w	.abs
 	move.w	#1,(awayhotter).w
-.abs
+.abs								;d2 negative, or from above
 	tst.w	d2
 	bpl.w	.level
 	neg.w	d2
-.level
+.level								;d2 >= 0, or from above
 	move.w	#$FFFF,d0
 	cmp.w	#$5E,d2
 	blt.w	.x
@@ -426,7 +426,7 @@ CompareHotColdTotals				;Compare the teams' hot / cold totals (GetHotColdTotal i
 	cmp.w	#$BD,d2
 	blt.w	.x
 	move.w	#$23,d0
-.x
+.x									;exit: restore the registers
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
 GetHotColdTotal						;d1 = the hot / cold total of the starters of

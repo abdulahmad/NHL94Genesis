@@ -19,7 +19,7 @@ Detect4WayPlay						;detect the 4 way play adaptor (EA 4 Way Play) on port 2: Fo
 	bne.s	.none
 	move.w	#1,(FourWayPlay).w
 	bra.s	.x
-.none
+.none								;d0 <> 0
 	move.w	#0,(FourWayPlay).w
 	move.b	#$40,(IO_CT2_CTRL+1).l
 .x
@@ -62,13 +62,13 @@ Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away n
 	btst	#pfteam,pflags(a3)
 	beq.w	.chkpad3
 	move.w	#2,d0
-.chkpad3
+.chkpad3							;pfteam clear, or from above
 	cmp.w	(cont3team).w,d0
 	beq.w	.pad3
 	move.w	#$F,d1
 	move.w	#4,d0
 	bra.w	.set
-.pad3
+.pad3								;d0 = cont3team
 	move.w	#$F0,d1
 	move.w	#0,d0
 .set
@@ -77,5 +77,5 @@ Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away n
 	asl.w	d0,d1
 	or.w	d1,(PadControlBits34).w
 	movem.l	(sp)+,d0-d2
-.x
+.x									;exit (also the end of the code above)
 	rts

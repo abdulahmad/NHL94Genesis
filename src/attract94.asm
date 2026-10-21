@@ -37,11 +37,11 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	move.w	#$18,(palcount).w		;fade in
 	move	#$2500,sr				;vblank on
 	move.w	#$50,(seed).w			;frame count down in the random seed word
-.wait	moveq	#4,d0
+.wait	moveq	#4,d0				;loop
 	bsr.w	waitx					;4 frames; d1 = buttons
 	tst.w	d1
 	bne.w	.ex						;Button pressed
 	subq.w	#1,(seed).w
 	bpl.s	.wait
-.ex	move	#$2700,sr
+.ex	move	#$2700,sr				;d1 <> 0, or from above
 	rts
