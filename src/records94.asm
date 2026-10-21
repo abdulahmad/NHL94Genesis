@@ -739,14 +739,14 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 .loop								;each player record: clear the old holder
 	clr.w	d5
 	jsr	(ReadSRAM).l				;read the record
-	cmp.b	1(a0),d6				;pruser: the record holder
+	cmp.b	pruser(a0),d6			;the record holder?
 	bne.w	.0						;no
-	clr.b	1(a0)					;clear it
+	clr.b	pruser(a0)				;clear it
 	st	d5							;changed
 .0									;proppuser: the other user
-	cmp.b	3(a0),d6				;is it this slot?
+	cmp.b	proppuser(a0),d6		;is it this slot?
 	bne.w	.1						;no
-	clr.b	3(a0)					;clear it
+	clr.b	proppuser(a0)			;clear it
 	st	d5							;changed
 .1									;write back only when changed
 	tst.w	d5
@@ -763,34 +763,34 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 .loop2								;clear the old user from each crowd record
 	clr.w	d5						;(holder and opponent of the goals, saves and peak records)
 	jsr	(ReadSRAM).l				;read the block
-	cmp.b	1(a0),d6				;crgoalsuser
+	cmp.b	crgoalsuser(a0),d6		;goals record holder?
 	bne.w	.3						;no
-	clr.b	1(a0)					;clear it
+	clr.b	crgoalsuser(a0)			;clear it
 	st	d5							;changed
 .3									;goals holder done: goals opponent
-	cmp.b	3(a0),d6				;crgoalsoppuser
+	cmp.b	crgoalsoppuser(a0),d6	;goals record opponent?
 	bne.w	.4						;no
-	clr.b	3(a0)					;clear it
+	clr.b	crgoalsoppuser(a0)		;clear it
 	st	d5							;changed
 .4									;saves holder
-	cmp.b	5(a0),d6				;crsavesuser
+	cmp.b	crsavesuser(a0),d6		;saves record holder?
 	bne.w	.5						;no
-	clr.b	5(a0)					;clear it
+	clr.b	crsavesuser(a0)			;clear it
 	st	d5							;changed
 .5									;saves opponent
-	cmp.b	7(a0),d6				;crsavesoppuser
+	cmp.b	crsavesoppuser(a0),d6	;saves record opponent?
 	bne.w	.6						;no
-	clr.b	7(a0)					;clear it
+	clr.b	crsavesoppuser(a0)		;clear it
 	st	d5							;changed
 .6									;peak holder
-	cmp.b	9(a0),d6				;crpeakuser
+	cmp.b	crpeakuser(a0),d6		;peak record holder?
 	bne.w	.7						;no
-	clr.b	9(a0)					;clear it
+	clr.b	crpeakuser(a0)			;clear it
 	st	d5							;changed
 .7									;peak opponent
-	cmp.b	$B(a0),d6				;crpeakoppuser
+	cmp.b	crpeakoppuser(a0),d6	;peak record opponent?
 	bne.w	.8						;no
-	clr.b	$B(a0)					;clear it
+	clr.b	crpeakoppuser(a0)		;clear it
 	st	d5							;changed
 .8									;write back only when changed
 	tst.w	d5

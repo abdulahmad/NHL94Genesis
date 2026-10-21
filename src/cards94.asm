@@ -43,21 +43,21 @@ PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the 
 	rts
 .1									;cardtimer negative
 	jmp	ResetCardTimer
-PlayerCardScreen					;Draw a player card on one side (setupcardflags bit 1: visitors on the
-									;left, else home on the right): erase the team block, a logo box, the
-									;picture of featured player featuredplayer (0-5, from the FeaturedPictures
-									;list of the team; next one after each visitors card), a framed box with
-									;the player's number and name, and with SRAM his user records
-									;(PrintRecordValue, PrintRecordHolder, PrintRecordVs). Called from
-									;PlayerCardTimer
+PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: visitors, logo
+									;box and picture on the left (column 3), text frame at $B; clear: home,
+									;logo box and picture on the right ($1C), text frame at 3. Shows featured
+									;player featuredplayer (0-5, from the FeaturedPictures list of the team;
+									;next one after each visitors card), his number and name, and with SRAM
+									;his user records (PrintRecordValue, PrintRecordHolder, PrintRecordVs).
+									;Called from PlayerCardTimer
 	movem.l	d0-d7/a0-a6,-(sp)		;the whole card is drawn here, keep all registers
 	jsr	(printz).l					;map 1
 	String	-TXMAP1,0,0				;x3
-	move.w	#$1C,(printx).w			;right side (home) text column
+	move.w	#$1C,(printx).w			;visitors: erase the other logo box at $1C
 	btst	#1,(setupcardflags).w	;which side?
 	bne.w	.0
-	move.w	#3,(printx).w
-.0									;left side (visitors) keeps column $1C; right side moved to 3
+	move.w	#3,(printx).w			;home: erase the one at 3
+.0									;column chosen
 	move.w	#5,(printy).w			;row 5
 	move.w	#8,d0					;clear the 8 x 8 logo area
 	move.w	#8,d1
@@ -1395,9 +1395,9 @@ UpdateCrowdRecord					;Update the crowd records (ReadCrowdRecord, WriteCrowdReco
 	clr.w	d3						;best so far
 .loop								;saves of goalie d6 = shots against - goals against
 	move.w	d6,d0					;goalie
-	addi.w	#$E8,d0					;his shots against
+	addi.w	#tmpshots,d0			;his shots against
 	move.b	0(a1,d0.w),(TempWord1).w
-	addi.w	#-$34,d0				;his goals against
+	addi.w	#tmgoals-tmpshots,d0	;his goals against
 	move.b	0(a1,d0.w),d0
 	sub.b	d0,(TempWord1).w		;saves
 	cmp.b	(TempWord1).w,d3		;best so far?
@@ -1442,15 +1442,15 @@ UpdatePlayerRecords					;After a game: for the 26 players of team a2, keep each 
 	cmp.w	d5,d0					;goalie?
 	blt.w	.0						;d0 >= goalie count: a skater, use his goals
 	move.w	d0,-(sp)				;save
-	addi.w	#$B4,d0					;goals of this game
+	addi.w	#tmgoals,d0				;goals of this game
 	move.b	0(a2,d0.w),d4			;d4 = goals
 	move.w	(sp)+,d0				;restore
 	bra.w	.1						;compare
 .0									;a goalie: saves = shots against - goals against
 	move.w	d0,-(sp)				;save
-	addi.w	#$E8,d0					;his shots against
+	addi.w	#tmpshots,d0			;his shots against
 	move.b	0(a2,d0.w),d4			;d4 = shots against
-	addi.w	#-$34,d0				;his goals against
+	addi.w	#tmgoals-tmpshots,d0	;his goals against
 	sub.b	0(a2,d0.w),d4			;d4 = saves
 	move.w	(sp)+,d0				;restore
 .1									;this game's value in d4
@@ -2136,7 +2136,7 @@ AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to
 	asl.w	#2,d0					;long index
 	movea.l	#TeamList,a0			;team address table
 	movea.l	0(a0,d0.w),a0			;team data
-	move.w	4(a0),d0				;Teamname: offset of the team's Strings block
+	move.w	Teamname(a0),d0			;offset of the team's Strings block
 	ext.l	d0
 	adda.l	d0,a0					;a0 = Strings block
 	adda.w	(a0),a0					;first String: the city
@@ -2193,7 +2193,7 @@ PrintStartingLine					;Player card "Starting Line": the line slots the player st
 	ext.l	d2
 	adda.l	d2,a0
 	movea.l	(a0),a0					;team data
-	move.w	6(a0),d2				;LineSets offset
+	move.w	LineSets(a0),d2			;offset of the line sets
 	ext.l	d2
 	adda.l	d2,a0					;a0 = line sets
 	move.w	d0,(printx).w			;column
@@ -2479,11 +2479,11 @@ PrintGoalsAssists					;Player card "Goals" / "Assists" (GetCardTeam)
 	movem.l	d0-d7/a0-a6,-(sp)		;save
 	bsr.w	GetCardTeam				;a0 = team stats
 	move.l	a0,-(sp)				;keep it
-	adda.l	#$B4,a0					;goals of this game
+	adda.l	#tmgoals,a0				;goals of this game
 	move.b	0(a0,d0.w),d3			;this player's goals
 	ext.w	d3
 	movea.l	(sp)+,a0				;team stats
-	adda.l	#$CE,a0					;assists of this game
+	adda.l	#tmassists,a0			;assists of this game
 	move.b	0(a0,d0.w),d4			;this player's assists
 	ext.w	d4
 	move.w	d1,(printx).w			;column
@@ -2513,12 +2513,12 @@ PrintSaves							;Player card "Saves" / "Save %" (GetCardTeam)
 	movem.l	d0-d7/a0-a6,-(sp)		;save
 	bsr.w	GetCardTeam				;a0 = team stats
 	move.l	a0,-(sp)				;keep it
-	adda.l	#$B4,a0					;goals against
+	adda.l	#tmgoals,a0				;goals against
 .0									;(not branched to)
 	move.b	0(a0,d0.w),d3			;this goalie's goals against
 	ext.w	d3
 	movea.l	(sp)+,a0				;team stats
-	adda.l	#$E8,a0					;shots against
+	adda.l	#tmpshots,a0			;shots against
 	move.b	0(a0,d0.w),d4			;this goalie's shots against
 	ext.w	d4
 	move.w	d4,d7					;d7 = shots
