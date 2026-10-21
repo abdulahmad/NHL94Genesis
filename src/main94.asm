@@ -24,7 +24,7 @@ RAMStart = $FF0000
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 InitialSP = $FFFFF6					;reset vector 0 (24-bit form). The game sets its own Stack
-									;(ram_addrs.inc)
+									;(ram94.asm)
 
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;

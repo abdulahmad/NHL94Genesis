@@ -4,7 +4,7 @@
 
 - initialsp becomes stack
 - look into teamdata null/notiles -- how was it in 92
-- need to populate ram and make it 93G
+- RAM: src/ram94.asm is the 93G rs form; size the gaps (each name runs to the next one)
 - where did 93G stats report go?
 - move 93G replay to its own file?
 - does input make sense, and if so, bring it to 93g?
