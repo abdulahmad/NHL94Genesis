@@ -690,7 +690,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	tst.w	(OptLine).w
 	beq.w	.0
 	movea.l	tmdata(a2),a0
-	adda.w	6(a0),a0
+	adda.w	LineSets(a0),a0
 	lea	tmlines(a2),a1
 	move.l	(a0)+,(a1)+
 	move.l	(a0)+,(a1)+
@@ -703,7 +703,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 .0
 	moveq	#$D,d0
 	movea.l	tmdata(a2),a0
-	adda.w	6(a0),a0
+	adda.w	LineSets(a0),a0
 	addq.w	#8,a0
 	lea	tmlines(a2),a1
 .copy
@@ -720,7 +720,7 @@ setplayercolors						;Copy in correct color data for each team:.team for the hom
 	adda.w	#tmsize,a0
 .team								;a0 = team struct, d1 = palette offset ($20 for the visitors)
 	movea.l	tmdata(a0),a2
-	adda.w	2(a2),a2
+	adda.w	Palettedata(a2),a2
 	adda.w	d1,a2
 	movea.w	#(palfadenew+$40-M68K_RAM),a1
 	adda.w	d1,a1
@@ -1016,11 +1016,11 @@ waitxc1								;Each time palcount runs out, eor the color
 PrintSeriesScore					;Print best of 7 wins "t-b" for game struct a2 at printx/printy
 	movea.w	#(mesarea-M68K_RAM),a1
 	move.w	#6,(a1)+
-	move.w	4(a2),d0
+	move.w	gspotwins(a2),d0
 	addi.w	#$30,d0
 	move.b	d0,(a1)+
 	move.b	#$2D,(a1)+
-	move.w	6(a2),d0
+	move.w	gspobwins(a2),d0
 	addi.w	#$30,d0
 	move.b	d0,(a1)+
 	clr.b	(a1)+
@@ -1278,7 +1278,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	movea.l	#AwShots,a1
 .21
 	movea.l	tmdata(a1),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	bra.w	.append
 .22
 	movea.w	#(AwShots-M68K_RAM),a1
@@ -1299,7 +1299,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bra.w	.append
 .27
 	movea.l	(AwayTeamRosterPtr).w,a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	bra.w	.append
 .28
 	movea.l	(AwayTeamRosterPtr).w,a1
@@ -1307,7 +1307,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .29
 	movea.l	(HomeTeamRosterPtr).w,a1
 .30
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 .append
 	addq.w	#1,(PlayerScrollCtr).w
 	add.w	(a1),d0
