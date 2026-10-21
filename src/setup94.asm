@@ -802,7 +802,7 @@ Opening2							;reset the stack and clear the variables, then options (GameSetUp
 	movea.w	#(VSCRLPM-M68K_RAM),a0
 .0
 	clr.l	(a0)+
-	cmpa.w	#$D03E,a0				;clear from VSCRLPM to nibblebuffer+8
+	cmpa.w	#(nibblebuffer+8-M68K_RAM),a0	;clear from VSCRLPM up to it
 	blt.s	.0
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l

@@ -1278,7 +1278,7 @@ FormatLastName						;Skip the first name, copy the last name, pad; branched to f
 .loop3
 	move.b	#$20,(a1)+
 .pad
-	cmpa.w	#$BFB2,a1				;TextBuffer+12
+	cmpa.w	#(TextBuffer+12-M68K_RAM),a1
 	blt.s	.loop3
 	bsr.w	FinalizeTextBuffer
 	movem.l	(sp)+,d0-d3/a0/a2

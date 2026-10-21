@@ -589,7 +589,7 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	move.w	(playoffspritey).w,d1
 	move.w	#1,d2
 	jsr	(SetSframe).l
-	cmpa.w	#$C018,a6
+	cmpa.w	#(Satt-M68K_RAM),a6
 	bne.w	.0
 	clr.l	(a6)+
 	clr.l	(a6)+
