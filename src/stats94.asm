@@ -2134,7 +2134,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 	move.w	d0,-(sp)
 	movea.l	tmdata(a2),a0
 	adda.w	ScoutReport(a0),a0
-	move.b	3(a0),d0
+	move.b	srforwards(a0),d0
 	lsr.w	#4,d0
 	andi.w	#$F,d0
 	add.w	(sp)+,d0
@@ -2144,7 +2144,7 @@ GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 
 	movem.l	a0,-(sp)
 	movea.l	tmdata(a2),a0
 	adda.w	ScoutReport(a0),a0
-	move.b	3(a0),d0
+	move.b	srforwards(a0),d0
 	lsr.w	#4,d0					;high nibble = forward count
 	andi.w	#$F,d0
 	movem.l	(sp)+,a0

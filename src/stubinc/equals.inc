@@ -452,3 +452,8 @@ prbest equ 0						;best goals (saves for goalies) in a game
 pruser equ 1						;the user playing his team
 propp equ 2							;opponent team
 proppuser equ 3						;opponent user
+; Team block .sr bytes (at ScoutReport)
+srodds equ 0						;scoring odds of simulated games: bits 4-6 offense row, 0-2 defense row
+srpppk equ 1						;high nibble penalty kill deficit, low nibble power play bonus
+srhomeaway equ 2					;high nibble home bonus, low nibble visitor bonus (negated)
+srforwards equ 3					;high nibble: forward count (GetForwardCount); low nibble not read

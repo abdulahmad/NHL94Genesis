@@ -2830,21 +2830,21 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	beq.w	.habonus
 	bsr.w	chkpk2					;prob determines what team is PP or PK
 	beq.w	.pk
-	move.b	1(a0),(PPBonus).w		;moves PP/PK byte into PPBonus
+	move.b	srpppk(a0),(PPBonus).w	;moves PP/PK byte into PPBonus
 	andi.b	#$F,(PPBonus).w			;passes lower nibble of PP/PK byte (bug)
 	bra.w	.habonus
 .pk
-	move.b	1(a0),d0				;moves PP/PK byte into d0
+	move.b	srpppk(a0),d0			;moves PP/PK byte into d0
 	lsr.b	#4,d0					;shifts d0.b 4 places, to remove the lower nibble
 	neg.b	d0						;switches value to negative (because its a PK, its negative bonus)
 	move.b	d0,(PKBonus).w			;move d0 into PKBonus
 .habonus
-	move.b	2(a0),d0				;This is location of Home/Away adv
+	move.b	srhomeaway(a0),d0		;This is location of Home/Away adv
 	andi.b	#$F,d0					;pass the lower nibble (Away) to d0
 	neg.b	d0						;make d0 negative (away disadvantage)
 	btst	#pfteam,pflags(a3)		;check if player is home or away
 	bne.w	.3rdperbonuscheck
-	move.b	2(a0),d0				;player is home, move Home/Away byte back in to d0
+	move.b	srhomeaway(a0),d0		;player is home, move Home/Away byte back in to d0
 	lsr.b	#4,d0					;Shift d0 4 places right, to move upper nibble into d0
 .3rdperbonuscheck
 	move.b	d0,(HmAwBonus).w		;move d0 into HA bonus
