@@ -486,7 +486,7 @@ handle_command_10					;Event $1x: key on note +2 at volume +3 on channel +1 bits
 	dbeq	d1,.free
 	beq.w	.keyon
 	bra.w	.patch
-.0									;(not branched to)
+.0									;a free channel: same patch?
 	cmp.b	ch_patch(a4),d0
 	beq.w	.keyon
 .patch								;the patch has to be loaded
@@ -571,7 +571,7 @@ UpdateChannelFrequencyAndVolume		;Set the frequency of channel struct a2 from it
 	lea	(fm_instrument_patches).l,a4	;32 bytes per patch
 	move.b	patch_bendscale(a4,d1.w),d1	;byte $1E = pitch bend scale
 	ext.w	d1
-.0									;(not branched to)
+.0									;scale the bend
 	muls.w	d1,d3
 	asr.l	#2,d3
 	asr.w	#7,d3

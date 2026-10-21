@@ -96,7 +96,7 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	bne.w	.4
 	move.w	#6,d0
 	bra.w	.8
-.4									;(not branched to)
+.4									;next line check
 	cmp.w	#6,d7
 	bne.w	.5
 	cmpi.w	#4,(OptPlayMode).w
@@ -140,7 +140,7 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	bne.w	.11
 	move.w	#$FFFA,d0
 	bra.w	.14
-.11									;(not branched to)
+.11									;next line check
 	cmp.w	#$A,d7
 	bne.w	.12
 	cmpi.w	#4,(OptPlayMode).w
@@ -474,7 +474,7 @@ ChangeOption						;add d2 to option d7 (d2 = 0: only limit it) and wrap it in it
 	cmp.w	#4,d7
 	bne.w	.4
 	moveq	#NumPlayoffTeams,d4		;playoff teams, the all-stars excluded
-.4									;(not branched to)
+.4									;limit set
 	cmp.w	#2,d7
 	bne.w	.wrap
 	cmpi.w	#4,(OptPlayMode).w
@@ -494,7 +494,7 @@ ChangeOption						;add d2 to option d7 (d2 = 0: only limit it) and wrap it in it
 .6									;d2 >= 0
 	addq.w	#2,d2
 	bra.w	.9
-.7									;(not branched to)
+.7									;4 or fewer: wrap with the pad count
 	movem.w	d2,-(sp)
 	add.w	(OptNOP).w,d2
 	cmp.w	#3,d2
@@ -520,7 +520,7 @@ ChangeOption						;add d2 to option d7 (d2 = 0: only limit it) and wrap it in it
 .11									;shootout or league
 	clr.w	d5
 	moveq	#5,d4
-.loop								;(not branched to)
+.loop								;each of the 6 slots
 	tst.w	(FourWayPlay).w
 	beq.w	.wrap
 	addq.w	#2,d4
@@ -1084,7 +1084,7 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	moveq	#8,d0
 	moveq	#8,d1
 	move.w	#$7FF,d2
-.0									;(not branched to)
+.0									;home logo box done
 	jsr	(printz).l
 	String	-TXMAP1,0,0				;x3
 	move.w	#$19,(printx).w
@@ -1105,7 +1105,7 @@ DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardfl
 	moveq	#8,d0
 	moveq	#8,d1
 	move.w	#$7FF,d2
-.0									;(not branched to)
+.0									;visitors logo box done
 	jsr	(printz).l
 	String	-(TXPAL3+TXMAP1),0,0
 	move.w	#9,(printx).w
