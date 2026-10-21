@@ -144,7 +144,7 @@ SPAgglovel_table:
 .7	dc.w	SPFGoalie+23,-32
 
 SPAgglovel2	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgglovel2_table:
+SPAgglovel2_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -210,7 +210,7 @@ SPAgstickl_table:
 .7	dc.w	SPFGoalie+79,-32
 
 SPAgstackr	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgstackr_table:
+SPAgstackr_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -232,7 +232,7 @@ SPAgstackr_table:
 .7	dc.w	SPFGoalie+50,8,SPFGoalie+51,-32
 
 SPAgstackl	=	*-SPAlist			;animation number: offset into SPAlist
-SPAgstackl_table:
+SPAgstackl_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -320,7 +320,7 @@ SPAgskate_table:
 .7	dc.w	SPFGoalie+108,10,SPFGoalie+109,10,SPFGoalie+110,10,SPFGoalie+111,-15
 
 SPApflip	=	*-SPAlist			;animation number: offset into SPAlist
-SPApflip_table:
+SPApflip_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -930,7 +930,7 @@ SPAwallright_table:					;first table after pump: there are no fight tables
 .7									;invalid direction: points at the next table
 
 SPAwallleft	=	*-SPAlist			;animation number: offset into SPAlist
-SPAwallleft_table:
+SPAwallleft_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -952,7 +952,7 @@ SPAwallleft_table:
 .7									;invalid direction: points at the next table
 
 SPAfaceoff	=	*-SPAlist			;animation number: offset into SPAlist
-SPAfaceoff_table:
+SPAfaceoff_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -974,7 +974,7 @@ SPAfaceoff_table:
 .7	dc.w	SPFskatewp+20,2,SPFsweep+9,10,SPFsweep+8,-6
 
 SPAfaceoffr	=	*-SPAlist			;animation number: offset into SPAlist
-SPAfaceoffr_table:
+SPAfaceoffr_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -996,7 +996,7 @@ SPAfaceoffr_table:
 .7	dc.w	SPFskatewp+20,-5
 
 SPAsiren	=	*-SPAlist			;animation number: offset into SPAlist
-SPAsiren_table:
+SPAsiren_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1019,7 +1019,7 @@ SPAsiren_table:
 	dc.w	SPFSiren+8,3,SPFSiren+9,3,SPFSiren+10,3,SPFSiren+11,3,SPFSiren+12,3,SPFSiren+13,-3
 
 SPAbglass	=	*-SPAlist			;animation number: offset into SPAlist
-SPAbglass_table:
+SPAbglass_table:					;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t
@@ -1151,7 +1151,7 @@ SPAstumble_table:
 .7	dc.w	SPFstumble+21,6,SPFstumble+22,6,SPFstumble+23,8,SPFstumble+22,6,SPFstumble+21,-6
 
 SPAfake	=	*-SPAlist				;animation number: offset into SPAlist
-SPAfake_table:
+SPAfake_table:						;table of the animation above: direction offsets, flags, frame/time lists
 .t									;offset to each direction of animation (0-7)
 	dc.w	.0-.t
 	dc.w	.1-.t

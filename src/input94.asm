@@ -595,7 +595,8 @@ faceoffinput						;controller processing for faceoff
 fightinput
 	rts								;controller processing for fighting
 ; initiate line change option if available
-SetLCmode
+SetLCmode							;Initiate line change option if available (abut
+									;pressed by the puck carrier)
 	tst.w	(OptLine).w
 	bne.w	rtss7
 	btst	#4,(sflags7).w
@@ -610,10 +611,10 @@ SetLCmode
 	bclr	#sfssdir,(sflags).w
 	bset	#pf2lcm,pflags2(a3)
 SetLCmode2							;a2 = team struct. Draw the line change box
-	bsr.w	setlccords
+	bsr.w	setlccords				;set screen cords for this teams lc box
 	cmpi.w	#$F,(printy).w
 	blt.w	.box
-	bset	#sf3llcs,(sflags3).w
+	bset	#sf3llcs,(sflags3).w	;flag for lower (on screen) line change
 	bra.w	.frame
 .box
 	jsr	(box).l
@@ -625,19 +626,19 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 	addq.w	#1,(printx).w
 	moveq	#2,d4
 .loop
-	move.w	d4,d0
+	move.w	d4,d0					;next row; d4 = row/button number
 	bsr.w	getlchoice
 	tst.w	d0
-	bmi.w	.next
+	bmi.w	.next					;no line for this button
 	btst	#tmflcm,tmflags(a2)
 	bne.w	.pr
-	cmp.w	tmlcchoice(a2),d4
+	cmp.w	tmlcchoice(a2),d4		;box being closed: only the chosen row
 	bne.w	.up
 	move.w	tmline(a2),d0
 .pr
-	movea.w	#(mesarea-M68K_RAM),a1
+	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area; row letter string
 	move.l	#$44120,(a1)			;String length 4, 'A '
-	add.b	d4,2(a1)
+	add.b	d4,2(a1)				;'A'-'C'
 	bsr.w	print
 	move.w	d0,-(sp)
 	movea.l	#linelist,a1
@@ -648,8 +649,8 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 .up
 	subq.w	#1,(printy).w
 .next
-	dbf	d4,.loop
-	movea.l	tmdata(a2),a1
+	dbf	d4,.loop					;repeat for the other rows
+	movea.l	tmdata(a2),a1			;team name
 	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	addq.w	#2,(printx).w
@@ -660,7 +661,7 @@ setlccords							;set printx/y to cords for lc box on team a2
 	bne.w	.0
 	eori.w	#$16,d0
 .0
-	btst	#gmdir,(gmode).w
+	btst	#gmdir,(gmode).w		;reverse direction: flip to the other end
 	beq.w	.noflip
 	eori.w	#$16,d0
 .noflip
@@ -669,10 +670,10 @@ setlccords							;set printx/y to cords for lc box on team a2
 	add.w	d0,(printy).w
 	moveq	#2,d0
 	bsr.w	getlchoice
-	moveq	#6,d1
+	moveq	#6,d1					;3 rows
 	tst.w	d0
 	bpl.w	.ex
-	subq.w	#1,d1
+	subq.w	#1,d1					;no third choice: 2 rows
 	addq.w	#1,(printy).w
 .ex
 	moveq	#9,d0
@@ -708,7 +709,8 @@ getlchoice2							;add $15 to d0 for each player more or fewer than the other te
 	dc.b	6,$FF,5,6,$FF,5,6,$FF,5,6,$FF,6,5,$FF,$FF
 ; process input for line changes
 ; d1 = new button presses
-lineinput
+lineinput							;process input for line changes
+									;d1 = new button presses
 	btst	#3,(sflags5).w
 	beq.w	.0
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -721,10 +723,10 @@ lineinput
 	beq.w	.2
 	adda.w	#tmsize,a2
 .2
-	bclr	#tmflcc,tmflags(a2)
+	bclr	#tmflcc,tmflags(a2)		;Flag to start lc mode
 	beq.w	.1
-	bsr.w	lcfound2
-	bsr.w	SetLCmode2
+	bsr.w	lcfound2				;close the old box
+	bsr.w	SetLCmode2				;start lc mode
 .1
 	move.w	(sp)+,d1
 	clr.w	d2
@@ -741,17 +743,17 @@ lineinput
 	btst	#pfalock,pflags(a3)
 	bne.w	.x
 	btst	#pf2fight,pflags2(a3)
-	beq.w	doplayeracc
+	beq.w	doplayeracc				;skate with dpad if not fighting
 .x
 	rts
 ; d2 = choice made 0-2
-lcfound
+lcfound								;d2 = choice made 0-2
 	move.w	d2,d0
-	move.w	d2,tmlcchoice(a2)
+	move.w	d2,tmlcchoice(a2)		;chosen row: the box redraw shows only that row
 	bsr.w	getlchoice				;translate choice 0-2 into line number 0-6
 	tst.w	d0
 	bmi.w	rtss8
-	bclr	#pf2lcm,pflags2(a3)
+	bclr	#pf2lcm,pflags2(a3)		;pf2lcm
 	bset	#pfjoycon,pflags(a3)
 	bsr.w	loadTeamStruct
 	bclr	#tmflcm,tmflags(a2)
@@ -765,12 +767,13 @@ lcfound2							;close lc box
 	blt.w	.nollcm
 	bclr	#sf3llcs,(sflags3).w
 .nollcm
-	addq.w	#1,d1
+	addq.w	#1,d1					;d1 = 1 and d2 = $7FF tile: erase the box area
 	move.w	#$7FF,d2
 	bsr.w	eraser
 	bra.w	printscores1
 ; c button press check/speed
-burst
+burst								;cbut press check/speed. Also entered from check4check burst costs energy
+									;$CC (only when line changes are on, OptLine = 0)
 	jsr	(getpde).l					;get players energy
 	tst.w	(OptLine).w
 	bne.w	.0
@@ -798,7 +801,8 @@ burst
 ;
 ; a3 = holder
 ; a0 = player being held
-Holdplayer
+Holdplayer							;abut press hold. a0 = the player this one is
+									;assigned to, falls into Acheck
 	bset	#pfalock,pflags(a3)		;lock animation
 	move.w	#SPAhook,d1				;move anim into d1 - normal hold check
 	tst.w	impact(a3)				;check if impact = 0
@@ -835,10 +839,10 @@ setpassmode
 	move.w	#$64,(passmodetimer).w
 .0
 	bset	#sfspdir,(sflags).w		;#sfspdir - set pass dir mode
-rtss
+rtss								;shared rts
 	rts
 ; start passing sequence
-passmode
+passmode							;dpad sets passdir until bbut changes
 	btst	#4,d2					;has b button changed?
 	bne.w	dopass					;yes
 	btst	#3,(sflags5).w			;Not in NHL Hockey Source
@@ -961,7 +965,8 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 .nvy
 	neg.w	(puckvy).w				;negative velocity on puck
 .notgoalie
-	move.w	(puckvx).w,d0
+	move.w	(puckvx).w,d0			;d0/d1 = puck velocity -> direction for the animation (goalie swing,
+									;forehand or backhand pass)
 	move.w	(puckvy).w,d1
 	bsr.w	vtoa
 	move.w	#SPAgswing,d1			;SPA = Sprite Animation
@@ -972,7 +977,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	beq.w	.e1
 	move.w	#SPApassb,d1
 .e1
-	bsr.w	SetSPA
+	bsr.w	SetSPA					;start the pass animation d1
 	bset	#pfalock,pflags(a3)		;#pfalock, $62 = pflags
 	moveq	#$C,d0					;Rest to rts, not in NHL Hockey Source
 									;Used to make puck sound
@@ -1034,9 +1039,9 @@ passtoa0							;pass puck to player a0
 	exg	a0,a3
 	move.l	a0,-(sp)				;This routine uses passspeed and player's a0 x/y speed to determine the
 									;x/y velocity of the puck so it will meet player a0
-	bsr.w	GetHot
+	bsr.w	GetHot					;and player's a0 x/y speed to determine
 	add.w	(a0),d0					;Xpos
-	sub.w	(puckx).w,d0
+	sub.w	(puckx).w,d0			;meet player a0
 	add.w	Ypos(a0),d1				;Ypos
 	sub.w	(pucky).w,d1
 	movem.w	d0-d1,-(sp)
@@ -1076,7 +1081,8 @@ passtoa0							;pass puck to player a0
 	bne.w	.0
 	moveq	#1,d5					;no div by zero
 .0
-	move.w	d0,d2
+	move.w	d0,d2					;d2 = (sqrt(disc) - j) / k = intercept time; dbpl retries with the other
+									;root (d0 negated)
 	neg.w	d0
 	sub.w	d4,d2
 	ext.l	d2
@@ -1094,7 +1100,8 @@ passtoa0							;pass puck to player a0
 	blt.w	.3
 	move.b	#$C,(puckvz).w
 .3
-	move.w	d2,d0
+	move.w	d2,d0					;d2 = time (1/8 s): receiver temp1(a0) = d2*8-10
+									;(temp1), puck lockout = that - 6
 	asl.w	#3,d0
 	subi.w	#$A,d0					;only subtract #6 in NHL Hockey
 	move.b	d0,temp1(a0)			;$40 = temp1
@@ -1104,7 +1111,7 @@ passtoa0							;pass puck to player a0
 	muls.w	d2,d0
 	asr.l	#1,d0
 	add.w	(sp)+,d0				;x distance
-	move.w	(puckx).w,temp3(a0)
+	move.w	(puckx).w,temp3(a0)		;receiver target x/y
 	add.w	d0,temp3(a0)			;$44 = temp3
 	muls.w	d2,d1
 	asr.l	#1,d1
@@ -1120,11 +1127,12 @@ passtoa0							;pass puck to player a0
 	move.w	d1,(puckvy).w
 	rts
 ; Attributes: thunk
-changeplayer
+changeplayer						;switch controller d4 (0/2) to the teammate nearest the puck, or sweep
+									;check if that is the current player
 	jmp	chgplayer
 	bne.w	.x
 	movem.l	d0-d6/a0-a1,-(sp)
-	move.w	(puckvx).w,d0
+	move.w	(puckvx).w,d0			;lead puck slightly
 	asr.w	#8,d0
 	add.w	(puckx).w,d0
 	move.w	(puckvy).w,d1
@@ -1133,9 +1141,9 @@ changeplayer
 	movem.w	d0-d1,-(sp)
 	moveq	#5,d2
 	move.w	d4,d3
-	eori.w	#2,d3
+	eori.w	#2,d3					;other controller
 	moveq	#-1,d5
-	movea.w	#(SortCords-M68K_RAM),a0
+	movea.w	#(SortCords-M68K_RAM),a0	;start of search
 	movea.w	#(cont1team-M68K_RAM),a1
 	cmpi.w	#1,0(a1,d4.w)
 	beq.w	.t1
@@ -1143,10 +1151,11 @@ changeplayer
 .t1
 	movea.w	#(c1playernum-M68K_RAM),a1
 .loop
-	tst.w	position(a0)
-	ble.w	.next
-	btst	#pf2unav,pflags2(a0)
-	bne.w	.next
+	tst.w	position(a0)			;skip goalie, unavailable and animation-locked players, and the controller
+									;current player
+	ble.w	.next					;can't switch to goalie
+	btst	#pf2unav,pflags2(a0)	;pf2unav
+	bne.w	.next					;this player is unavailable for some reason
 	btst	#pfjoycon,pflags(a0)
 	bne.w	.next
 	btst	#2,(BA_PS_flags).w
@@ -1163,7 +1172,7 @@ changeplayer
 	bne.w	.next
 .0
 	btst	#5,pflags(a0)
-	bne.w	.next
+	bne.w	.next					;this player is locked
 	movem.w	(sp),d0-d1
 	sub.w	(a0),d0
 	muls.w	d0,d0
@@ -1174,7 +1183,7 @@ changeplayer
 	bhi.w	.next
 	move.w	SCnum(a0),d1
 	cmp.w	0(a1,d3.w),d1
-	beq.w	.next
+	beq.w	.next					;this is current player
 	move.l	d0,d5
 	move.w	d1,d6
 .next
@@ -1183,7 +1192,7 @@ changeplayer
 	addq.w	#4,sp
 	pea	(.ex).l
 	cmp.w	0(a1,d4.w),d6
-	beq.w	Sweepcheck
+	beq.w	Sweepcheck				;player is same so sweep check
 	move.w	d6,d0
 	tst.w	d4
 	beq.w	setc1player
@@ -1197,7 +1206,7 @@ Sweepcheck							;start sweep check on player a3
 	move.w	#SPAsweepchk,d1
 	bra.w	SetSPA
 ; restore old player and switch to new d0 player on cont. 1
-setc1player
+setc1player							;restore old player and switch to new d0 player on cont. 1
 	cmp.w	(c1playernum).w,d0
 	beq.w	.ex
 	movem.l	d1/a0-a1,-(sp)
@@ -1208,7 +1217,7 @@ setc1player
 .ex
 	rts
 ; restore old player and switch to new d0 player on cont. 2
-setc2player
+setc2player							;restore old player and switch to new d0 player on cont. 2
 	cmp.w	(c2playernum).w,d0
 	beq.w	.ex
 	movem.l	d1/a0-a1,-(sp)
@@ -1270,7 +1279,9 @@ restorepl
 	rts
 ; look for type of swing (forehand or backhand)
 ; input d0 = launch dir
-Findhittype
+Findhittype							;look for type of swing (forhand or backhand)
+									;input d0 = launch dir
+									;ouput beq forhand
 	neg.w	d0
 	add.w	facedir(a3),d0			;facedir
 	andi.w	#7,d0
@@ -1281,7 +1292,7 @@ Findhittype
 .1	btst	d0,#$1E					;%00011110
 	rts
 ; initiate shot by player a3
-SetShotMode
+SetShotMode							;initiate shot by player a3
 	btst	#2,(BA_PS_flags).w		;check for PS or SO
 	beq.w	.start					;branch if not
 	bclr	#2,(gmode2).w
@@ -1310,7 +1321,9 @@ SetShotMode
 .ck1
 	bra.w	SetSPA
 ; shot input
-ShotMode
+ShotMode							;shot input
+									;swing frame reached (anim frame 7*4): shoot, else dpad sets shot
+									;direction
 	cmpi.w	#$1C,SPAnum(a3)
 	bge.w	prepshot				;end of animation so shoot
 	btst	#3,d0					;checks dpad for direction
@@ -1371,7 +1384,7 @@ prepshot
 	bra.w	*+4
 ; stick is at puck so launch puck toward goal
 ; a3 = shooter
-doshot
+doshot								;stick is at puck so launch puck toward goal
 	movem.l	d0-d7/a0-a3,-(sp)
 	bclr	#4,(gmode2).w
 	btst	#pf3break,pflags3(a3)	;check if player on breakaway
@@ -1545,7 +1558,7 @@ doshot
 	bne.w	.ex						;branch if so
 	jsr	(puckvzadj).l				;adjust puckvz for top shelf shot
 .ex
-	bsr.w	sfx
+	bsr.w	sfx						;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 shotsets	dc.w	0
@@ -1570,7 +1583,9 @@ shotsets	dc.w	0
 	dc.w	6
 ; a3 = shooter
 ; Determines where to shoot for CPU player or on a one timer
-shotdiradj
+shotdiradj							;If the opposing goalie
+									;covers the middle of the net, set passdir 2 or 6 to shoot at the open
+									;side, else 0. Skipped for computer players (pfjoycon clear)
 	btst	#pf3onetimer,pflags3(a3)	;check if shooting one timer
 	bne.w	.0						;jump if shooting one timer
 	btst	#pfjoycon,pflags(a3)	;pfjoycon - checks if player is joystick controlled
@@ -1650,7 +1665,8 @@ shotdiradj
 ; d3 = post X position
 ; d4 = goalline
 ;
-CalcAngleOffset
+CalcAngleOffset						;d4 = cross product of goalie vector d0/d1 and post vector d3/d4 (relative
+									;to the puck), divided by d2
 	sub.w	(puckx).w,d3			;sub puckx from post X
 	sub.w	(pucky).w,d4			;sub pucky from goalline
 	muls.w	d0,d4					;mult d0 with d4

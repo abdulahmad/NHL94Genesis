@@ -69,7 +69,7 @@ Start								;($200). Power on: the Sega hardware init, then
 	IF CHECKSUM=1
 		jsr	ValidationRoutine		;jsr (x).l, 4EB9. Red screen and hang if the ROM sum is wrong
 	ELSE
-		nop
+		nop							;checksum disabled: three nops keep the code size the same
 		nop
 		nop
 	ENDIF

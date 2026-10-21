@@ -55,8 +55,8 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 .next
 	addq.w	#4,a0
 .3
-	adda.w	(a0),a0
-	dbf	d0,.next
+	adda.w	(a0),a0					;add the entry's word offset to reach the following one
+	dbf	d0,.next					;d0 = selected item number: repeat until the selected entry
 	movea.l	(a0),a0
 	jsr	(a0)						;the handler of the selected item
 	bclr	#1,(sflags5).w			;the handler drew its own screen
@@ -78,29 +78,29 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	clr.w	(menuitem).w			;no item above the first
 	clr.w	d0
 .0
-	movea.l	(menulist).w,a0
+	movea.l	(menulist).w,a0			;walk the item list d0 entries, stopping at the last one
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.2
 .next
-	adda.w	(a0),a0
+	adda.w	(a0),a0					;advance to the next item entry
 	addq.w	#4,a0
 	tst.w	2(a0)					;negative: the last item
 .2
-	dbmi	d0,.next
-	addq.w	#1,d0
+	dbmi	d0,.next				;stop after d0 items or at the last item
+	addq.w	#1,d0					;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,(menuitem).w			;no item below the last
 	move.w	(menuitem).w,d0
 	cmp.w	(menuitem+2).w,d0
 	bge.w	.3
 	move.w	d0,(menuitem+2).w		;scroll up
 .3
-	subq.w	#3,d0
+	subq.w	#3,d0					;selection - 3 = first visible item if it is on the bottom row
 	cmp.w	(menuitem+2).w,d0
 	ble.w	.print
 	move.w	d0,(menuitem+2).w		;scroll down
 .print
-	bsr.w	SetMenuPrintX
+	bsr.w	SetMenuPrintX			;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).w
 	movea.l	(menulist).w,a1
 	jsr	(printsmall).l				;the menu title
@@ -116,7 +116,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	adda.w	(a1),a1
 	addq.w	#4,a1
 .6
-	dbf	d0,.skip
+	dbf	d0,.skip					;loop until a1 = first visible item
 	moveq	#3,d1					;4 rows
 	move.w	#$C,(printy).w
 	bsr.w	SetMenuPrintX
@@ -191,7 +191,7 @@ PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / 
 	jsr	(xyVmMap).l
 	move.w	#$A,d1					;11 words
 .1
-	move.w	(a1)+,(a0)
+	move.w	(a1)+,(a0)				;write one map word
 	dbf	d1,.1
 	addq.w	#1,(printy).w
 	dbf	d2,.row

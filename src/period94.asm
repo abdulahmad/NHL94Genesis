@@ -578,21 +578,21 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	move.w	#$A,d6
 	lea	TeamStatTextTblNoPen(pc),a1
 .row
-	move.w	(a1),d0
-	lsr.w	#1,d0
+	move.w	(a1),d0					;label length word
+	lsr.w	#1,d0					;half the label width
 	neg.w	d0
-	addi.w	#$15,d0
+	addi.w	#$15,d0					;centre the label around x $15
 	move.w	d0,(printx).w
 	jsr	(print).l
-	movea.l	a1,a0
+	movea.l	a1,a0					;a0 = stat offsets
 	move.w	#$22,(printx).w
 	movea.w	#(tmstruct-M68K_RAM),a2
-	bsr.w	PrintStatValue
+	bsr.w	PrintStatValue			;home team value, centred at x $22
 	move.w	#9,(printx).w
 	lea	tmsize(a2),a2
-	bsr.w	PrintStatValue
-	lea	4(a0),a1
-	addq.w	#2,(printy).w
+	bsr.w	PrintStatValue			;away team value, centred at x 9
+	lea	4(a0),a1					;next table entry
+	addq.w	#2,(printy).w			;2 map rows per table row
 	dbf	d6,.row
 	rts
 PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at printx: the value
