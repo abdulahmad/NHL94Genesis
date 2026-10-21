@@ -931,7 +931,7 @@ goaliesave
 	bne.w	.13
 	andi.w	#3,d3
 	beq.w	.13
-	cmpi.b	#$B,aggress(a3)			;73 = Glove Left. Compares 11 dec to GloveL
+	cmpi.b	#$B,aggress(a3)			;goalie glove save left rating 11 or more?
 	blt.w	.13						;branch if less than
 	move.w	#SPAgglovel2,d1			;reach out glove save
 .13

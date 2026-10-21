@@ -227,8 +227,9 @@ gss2 equ $C							;team 2 score
 gsflags equ $E						;flags
 gssize equ $10
 
-;replay camera struct (ReplayStarStruct, 93 CameraPosStruct): stands in for a sort object, Xpos / Ypos
-;are its position (UpdateCameraPos)
+;replay camera struct (CameraPosStruct, 93 name): stands in for a sort object, Xpos / Ypos
+;are its position (UpdateCameraPos). It is really 14 words: camtrack and camidle lie past the 11
+;words 93 reserved for it and overlap replayactive (camtrack is the replayactive word)
 camtrack equ $16					;SCnum of the object tracked in replay
 camidle equ $18						;$FF while the replay d-pad is idle, cleared on scroll/track (never read)
 ;JIM graphics files

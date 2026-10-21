@@ -101,7 +101,7 @@ fofdata2 equ $FFFFBDA8
 fofdata equ $FFFFBDB0
 pads equ $FFFFBDB4
 Joy1Struct equ $FFFFBDD0
-ReplayStarStruct equ $FFFFBE08
+CameraPosStruct equ $FFFFBE08
 replayactive equ $FFFFBE1E
 Joy3Struct equ $FFFFBE24
 Joy4Struct equ $FFFFBE40
