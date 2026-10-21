@@ -1,5 +1,11 @@
 # NHL 94 segment agent
 
+
+> **Superseded (segment stubs removed).** The `src/stubinc/<name>_stub.asm` files, `tools/segments.json` and the stub org
+> builds described below no longer exist. Every build is the full ROM; `npm run seg -- <name>` (`node tools/build.js --seg
+> <name>` or `--all`) builds it and compares the segment's address range, taken from the build listing (`tools/verifySegment.js`).
+> The history below still describes how each segment was first matched.
+
 This file is the queue and the history. Do not rewrite it as a whole file. Edit it in place.
 
 ## Current rules (Oct 2026; these override older notes below)
@@ -19,7 +25,7 @@ Source style:
 
 Layout (SNES repos, 93S and 94S): `src/banks/` holds ordered bank files named by content (one `org`, then `incsrc` lines in ROM order),
 `src/routines/<module>/<Routine>.asm` holds one routine per file, `src/data/<category>/` holds data. The folder is the module of the
-routine's origin: 94G for 94 code, else 93G, else 92G; SNES-only code goes in a sensibly named SNES folder. Segment build stubs go in
+routine's origin: 94G for 94 code, else 93G, else 92G; SNES-only code goes in a sensibly named SNES folder. Shared includes go in
 `src/stubinc`, tools in `tools/`. The build runs a prebuild ROM check that names the path, file name, SHA-1 and size of the ROM it needs
 (and extracts the assets automatically where the repo extracts them).
 
@@ -42,7 +48,7 @@ None. Every ROM map row is matched, every `seg:` script matches its ROM map rang
 - Style source: the matching file in https://github.com/abdulahmad/NHLPA93Genesis. 93 is the closer source.
 - Reference ROM: `lst/nhl94.bin`. This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
 - `src/nhl94.asm` is the full build top level (`npm run build:retail`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
-- Stub includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`). `nhl94.asm` includes the same three for the full build.
+- Shared includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`); `nhl94.asm` includes them.
 
 
 ## Teams
@@ -113,7 +119,7 @@ The style source is https://github.com/abdulahmad/NHLPA93Genesis.
 - SNASM symbols are case-insensitive. Check a new name against every symbol in `src` and `src/stubinc` ignoring case (IDA's `FaceOffsprites` was 93 `linelist`, and it blocked 93 `FaceOffSprites`).
 - A rename changes code and comments, but not an `;IDA:` note and not an `incbin` path. After it, reread the comments it touched: no `X (93 X)`, no `X X` where a comment listed "IDA name, 93 name", and file headers describe the naming the file really uses.
 - The 93 structure, team, game and flag names (`Ypos`, `SCnum`, `pflags` / `pfteam`, `tmap`, `tmsize`, `gsper`, `sfhor` ...) are in `src/stubinc/equals.inc` with the 94 values (`tmsize` is `$364`, 93 `$1A2`). Write `Ypos(a3)`, not `$14(a3)`.
-- A global rename changes every file that uses the name: the segment asm and the `_stub.asm` equates (SNASM symbols are case-insensitive). Then rerun every `seg:` script and the full build.
+- A global rename changes every file that uses the name (SNASM symbols are case-insensitive). Then run `tools/verify_all.sh`.
 - RAM names: use the 93 name at the same address (94 RAM up to `$FFBDB0` is laid out as 93 `ram93.asm`), or the 93 name of the operand in a lined-up 93 instruction. A field of a structure is the 93 expression, not a name: `SortCords+OldXpos`, `SortCords+(puckscnum*SCstruct)+attribute`, `HmShots+tmgoalie`, `palfadenew+$40`, `gameclock+2`, `Z80_RAM+$8E`. Otherwise name it from what it holds. An equate nothing uses is a comment line, not a name.
 
 ## Starting the next game

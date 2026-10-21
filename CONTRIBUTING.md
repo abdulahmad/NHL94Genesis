@@ -13,7 +13,8 @@ The code, data and bytes must not change unless the change is the point of the P
 tools/verify_all.sh -q
 ```
 
-It builds the full ROM and every segment listed in `tools/segments.json` (under wine on Linux or macOS) and compares each with `lst/nhl94.bin`.
+It builds the full ROM (under wine on Linux or macOS), compares it with `lst/nhl94.bin`, then compares the address range of every
+segment (each file `src/nhl94.asm` includes; ranges from the build listing) with the same range of `lst/nhl94.bin`.
 
 A comment-only or rename-only change must not change a single byte. Never commit ROMs, `Extracted/` or
 `output/`.
@@ -34,12 +35,13 @@ A comment-only or rename-only change must not change a single byte. Never commit
 ## 3. Names, not numbers
 
 - A value that 92 (or an earlier game) names must use the name: sizes, counts, bit numbers, flags, penalty and
-  sound numbers, offsets into structures. Define the constant in `src/stubinc/ram_addrs.inc` (RAM and constants) or `src/ram94.asm` if it does not exist yet.
+  sound numbers, offsets into structures. Define the constant in `src/stubinc/equals.inc` (constants and
+  structure offsets) or with the RAM.
 - The address of a labelled table or routine is written as the label, never as a number
   (`#TeamList`, not `#$314`). Offsets inside data are `label-base` expressions, defined or used next to the data
   they point into.
 - When a table has an equate per entry, 92 puts `Name = (*-Table)/4` or `Name equ (*-Table)` before each entry. Do the
-  same unless the constants are needed by code that is assembled separately; then they go in `src/stubinc/ram_addrs.inc` (RAM and constants) or `src/ram94.asm`.
+  same unless another file needs the constants; then they go in `src/stubinc/equals.inc`.
 - A number is fine when the original code used one (a mask, a coordinate). Say what it is in a comment.
 
 ## 4. Comments: what to write
@@ -88,7 +90,8 @@ A comment-only or rename-only change must not change a single byte. Never commit
 
 ## 6. Where things go
 
-- `nhl94.asm` includes the files in ROM order. A segment stub in `src/stubinc/<file>_stub.asm` assembles one file on its own, so a constant or address a file uses must be defined in an include the stub also reads (`ram_addrs.inc`) or in the stub's outside-address list.
+- `nhl94.asm` includes the files in ROM order. There are no segment stubs: every build is the full ROM, and a segment check
+  (`npm run seg -- <name>`) compares that file's address range.
 - The RAM equates are included before `main94.asm`, so `InitialSP` (the reset vector value) keeps its own name; 92 reuses `Stack` for it.
 - Names and routines that exist in 93 use the 93 name; a routine that is new in 94 says so in its comment.
 

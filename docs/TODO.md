@@ -4,7 +4,7 @@
 
 - initialsp becomes stack
 - look into teamdata null/notiles -- how was it in 92
-- need to populate ram and make it 93G, remove stubs
+- need to populate ram and make it 93G
 - where did 93G stats report go?
 - move 93G replay to its own file?
 - does input make sense, and if so, bring it to 93g?

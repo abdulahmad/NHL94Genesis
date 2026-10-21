@@ -37,7 +37,8 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 
 ## Build
 
-Segment builds use `npm run seg -- <name>` (`tools/build.js --seg`; orgs in `tools/segments.json`). Verify against `lst/nhl94.bin`.
+Segment checks use `npm run seg -- <name>` (`tools/build.js --seg <name>`, or `--all`): the full ROM is built, then the segment's
+address range (from the build listing) is compared with `lst/nhl94.bin`.
 
 `npm run extractassets` runs `tools/extractAssets94.js` against `lst/nhl94.bin`. Builds do this automatically when `Extracted/` is missing or incomplete (below).
 
