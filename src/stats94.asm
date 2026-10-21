@@ -116,7 +116,7 @@ PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digit
 	movea.w	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	#6,(printx).w
 	jsr	(print).l
 	move.w	#$18,(printx).w
@@ -1132,7 +1132,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	adda.w	#tmsize,a2
 .0
 	movea.l	tmdata(a2),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).w
 	jsr	(print).l
@@ -1311,7 +1311,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	adda.w	#tmsize,a2
 .0
 	movea.l	tmdata(a2),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).w
 	jsr	(print).l
@@ -1998,7 +1998,7 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	bsr.w	printz
 	String	-(TXPRI+TXMAP3),$C,$E,'Timeout',-(TXPRI+TXMAP3),$11,$F
 	movea.l	tmdata(a2),a1
-	adda.w	4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	(a1),d0
 	lsr.w	#1,d0
 	sub.w	d0,(printx).w
@@ -2133,7 +2133,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 	bsr.s	GetGoalieCount
 	move.w	d0,-(sp)
 	movea.l	tmdata(a2),a0
-	adda.w	8(a0),a0
+	adda.w	ScoutReport(a0),a0
 	move.b	3(a0),d0
 	lsr.w	#4,d0
 	andi.w	#$F,d0
@@ -2143,7 +2143,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
 	movem.l	a0,-(sp)
 	movea.l	tmdata(a2),a0
-	adda.w	8(a0),a0
+	adda.w	ScoutReport(a0),a0
 	move.b	3(a0),d0
 	lsr.w	#4,d0					;high nibble = forward count
 	andi.w	#$F,d0
