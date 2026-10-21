@@ -2533,7 +2533,7 @@ setpersonel							;This will set personnel on team a2 according to team a2's reg
 	cmp.b	pnum(a3),d5				;compare pnum to d5
 	dbeq	d3,.2					;loop through player structs while pnum != d5 (find player d5)
 	bne.w	.next					;branches if player not found
-	move.b	6(a4,d4.w),newpos(a3)	;move a4+d4+6 into newpos
+	move.b	plpos(a4,d4.w),newpos(a3)	;move a4+d4+6 into newpos
 	move.b	d5,newpnum(a3)			;move d5 into newpnum
 	clr.b	0(a4,d4.w)				;clear a4+d4
 .next
@@ -2557,7 +2557,7 @@ setpersonel							;This will set personnel on team a2 according to team a2's reg
 .0
 	tst.w	position(a3)
 	dbpl	d3,.4
-	move.b	6(a4,d4.w),newpos(a0)
+	move.b	plpos(a4,d4.w),newpos(a0)
 	move.b	d5,newpnum(a0)
 	clr.b	0(a4,d4.w)
 .next2
@@ -2586,7 +2586,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 	clr.w	d5
 	move.b	0(a0,d4.w),d5			;move position into d5
 	move.b	0(a1,d5.w),0(a4,d4.w)
-	move.b	d5,6(a4,d4.w)
+	move.b	d5,plpos(a4,d4.w)
 	bne.w	.next
 	moveq	#1,d3
 	add.w	tmgoalie(a2),d3
@@ -2609,7 +2609,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 .unavail
 	lea	tmlines(a2),a1				;now find a player of similar position who is available move Line Lists
 									;again into d0
-	move.b	6(a4,d4.w),d0			;move 6+a4+d4 into d0 (previous d5)
+	move.b	plpos(a4,d4.w),d0		;move 6+a4+d4 into d0 (previous d5)
 	ext.w	d0						;extend d0
 	asl.w	#1,d0					;mult by 2
 	movea.l	#sublist,a0				;move sublist into a0
@@ -2691,7 +2691,7 @@ SetupPenaltyShot					;Penalty shot set up for team a2 (called from puckpenshot):
 	bsr.w	setplayer
 .3
 	st	newpnum(a3)
-	st	$60(a3)
+	st	newpos(a3)
 	adda.w	#$80,a3
 	dbf	d4,.loop
 	movem.l	(sp)+,d0-d5/a0-a3

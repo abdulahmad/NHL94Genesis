@@ -241,11 +241,11 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	tst.w	(a0)+
 	bne.s	.0						;find end of list
 	subq.w	#4,a0
-	bclr	#7,1(a0)				;player who is guilty
+	bclr	#7,pbscnum(a0)			;player who is guilty
 	bne.w	.Sa
 	move.l	a3,-(sp)
 	clr.w	d1
-	move.b	1(a0),d1
+	move.b	pbscnum(a0),d1
 	asl.w	#scsize,d1				;scsize
 	movea.w	#(SortCords-M68K_RAM),a3
 	adda.w	d1,a3
@@ -279,7 +279,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	move.w	d0,(a4)+				;time
 	move.b	(a0),(a4)+				;penalty
 	clr.w	d1
-	move.b	1(a0),d1
+	move.b	pbscnum(a0),d1
 	asl.w	#scsize,d1				;scsize
 	movea.w	#(SortCords-M68K_RAM),a3
 	adda.w	d1,a3
@@ -512,7 +512,7 @@ limitfo								;limit face off to 5-20 feet from walls of rink.
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 .lf
-	move.b	1(a0),d0
+	move.b	pbscnum(a0),d0
 	andi.w	#$7F,d0
 	asl.w	#scsize,d0				;scsize
 	movea.w	#(SortCords-M68K_RAM),a1
@@ -1316,12 +1316,12 @@ ChkShotStat							;determine if shot taken, add to appropriate stats: crowd, tea
 	movea.l	#ScoreSum-6,a4			;ChkCnt. +ScoreSumbytes, then 2(a4) = the last ScoreSum entry
 	adda.w	(ScoreSumbytes).w,a4
 	movea.l	#tmstruct,a2			;home team
-	btst	#7,2(a4)				;entry flag: visitors
+	btst	#7,ssflags(a4)			;entry flag: visitors
 	beq.w	.pllookup
 	adda.w	#tmsize,a2				;tmsize
 .pllookup
 	clr.w	d0
-	move.b	3(a4),d0				;pnum (roster offset)
+	move.b	ssscorer(a4),d0			;pnum (roster offset)
 	movea.l	(sp)+,a4
 	movea.w	tmsort(a2),a2			;tmsort
 	move.w	#5,d1

@@ -594,7 +594,7 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	clr.l	(a6)+
 	clr.l	(a6)+
 .0
-	clr.b	-5(a6)
+	clr.b	satLink-satLen(a6)
 	move.l	a6,d0
 	subi.l	#Satt,d0
 	lsr.w	#1,d0

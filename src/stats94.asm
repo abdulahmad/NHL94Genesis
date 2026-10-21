@@ -1127,7 +1127,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#1,(printx).w
 	jsr	(FormatAndPrintTime).l
 	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#7,2(a0,d3.w)
+	btst	#7,ssflags(a0,d3.w)
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0
@@ -1138,18 +1138,18 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	jsr	(print).l
 	move.w	#$23,(printx).w
 	lea	GoalTypeTbl(pc),a1
-	move.b	2(a0,d3.w),d0
+	move.b	ssflags(a0,d3.w),d0
 	andi.w	#$7F,d0
 	jsr	(Fprintsmall).l
 	move.w	#$10,(printx).w
-	move.b	3(a0,d3.w),d0
+	move.b	ssscorer(a0,d3.w),d0
 	bsr.w	PrintScorerName
 	move.w	#$E000,(printa).w
 	move.w	#$12,(printx).w
-	move.b	4(a0,d3.w),d0
+	move.b	ssassist1(a0,d3.w),d0
 	bsr.w	PrintScorerName
 	move.w	#$12,(printx).w
-	move.b	5(a0,d3.w),d0
+	move.b	ssassist2(a0,d3.w),d0
 PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	ext.w	d0
 	bmi.w	.0
@@ -1306,7 +1306,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	move.w	#1,(printx).w
 	jsr	(FormatAndPrintTime).l
 	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#7,2(a0,d3.w)
+	btst	#7,pspen(a0,d3.w)
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0
@@ -1315,7 +1315,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	adda.w	(a1),a1
 	move.w	#$C,(printx).w
 	jsr	(print).l
-	move.b	2(a0,d3.w),d0
+	move.b	pspen(a0,d3.w),d0
 	andi.w	#$7F,d0
 	movea.l	#Penaltylist,a3
 	adda.w	0(a3,d0.w),a3
@@ -1326,7 +1326,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	jsr	(print).l
 	move.w	#$10,(printx).w
 	clr.w	d0
-	move.b	3(a0,d3.w),d0
+	move.b	psplayer(a0,d3.w),d0
 	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	addq.w	#1,(printy).w

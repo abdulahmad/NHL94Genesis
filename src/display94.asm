@@ -121,7 +121,7 @@ setvideo							;this is not vblank code but sets up ram for vblank transfers. Ca
 	clr.l	(a6)+
 	clr.l	(a6)+
 .n
-	clr.b	-5(a6)					;end sprite list
+	clr.b	satLink-satLen(a6)		;end sprite list
 	move.l	a6,d0
 	subi.l	#Satt,d0
 	lsr.w	#1,d0					;words
@@ -253,7 +253,7 @@ checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, w
 	add.w	(fodropy).w,d2
 	move.w	d2,(a6)
 	move.w	(a2),d2
-	btst	#3,2(a3)				;x flip
+	btst	#3,foattr(a3)			;x flip
 	beq.w	.0
 	move.b	7(a2),d2
 	andi.w	#$C,d2
@@ -270,7 +270,7 @@ checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, w
 	move.w	6(a2),d2
 	andi.w	#$F800,d2
 	or.w	4(a2),d2
-	move.w	2(a3),d1
+	move.w	foattr(a3),d1
 	andi.w	#$F800,d1
 	eor.w	d1,d2
 	add.w	(faceoffvrcset).w,d2

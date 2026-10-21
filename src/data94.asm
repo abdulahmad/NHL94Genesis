@@ -878,11 +878,11 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	movea.w	#(ChkCnt-M68K_RAM),a0	;+ ScoreSumbytes = last goal entry
 	adda.w	(ScoreSumbytes).w,a0
 	clr.w	d0
-	btst	#7,2(a0)
+	btst	#7,ssflags(a0)
 	beq.w	.slot
 	addi.w	#RosterSlots,d0			;away goal: second RosterSlots entries
 .slot
-	add.b	3(a0),d0
+	add.b	ssscorer(a0),d0
 	asl.w	#2,d0
 	movea.w	#(ThreeStars-M68K_RAM),a0
 	move.l	#$7FFFFFFF,0(a0,d0.w)	;game winner is the first star
@@ -1059,10 +1059,10 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	String	-(TXPRI+TXMAP1),$B,2
 	moveq	#$13,d0
 	move.w	#5,d1					;5 rows: no assist
-	tst.b	4(a4)
+	tst.b	ssassist1(a4)
 	bmi.w	.frame
 	addq.w	#2,d1					;7: one assist
-	tst.b	5(a4)
+	tst.b	ssassist2(a4)
 	bmi.w	.frame
 	addq.w	#1,d1					;8: two assists
 .frame
@@ -1070,7 +1070,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	jsr	(CountGoalies).l
 	movea.w	#(tmstruct-M68K_RAM),a2
 	move.w	(homegoalies).w,(scorergoalies).w
-	btst	#7,2(a4)
+	btst	#7,ssflags(a4)
 	beq.w	.1						;home team scored
 	adda.w	#tmsize,a2
 	move.w	(awaygoalies).w,(scorergoalies).w
@@ -1081,13 +1081,13 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	lea	PPGoalBigTxt(pc),a1
 .2
 	clr.w	d0
-	move.b	3(a4),d0				;scorer
+	move.b	ssscorer(a4),d0			;scorer
 	addi.w	#$B4,d0
 	cmpi.b	#3,0(a2,d0.w)			;goals
 	bne.w	.print
 	movem.w	d1,-(sp)
 	clr.w	d1
-	move.b	3(a4),d1
+	move.b	ssscorer(a4),d1
 	cmp.w	(scorergoalies).w,d1
 	movem.w	(sp)+,d1
 	blt.w	.print
@@ -1103,7 +1103,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 .print
 	bsr.w	printbig
 	clr.w	d0
-	move.b	3(a4),d0
+	move.b	ssscorer(a4),d0
 	move.w	d0,-(sp)
 	move.w	#$C,(printx).w
 	bsr.w	FormatPlayerName
@@ -1111,14 +1111,14 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	move.w	(sp)+,d0
 	movem.w	d1,-(sp)
 	clr.w	d1
-	move.b	3(a4),d1
+	move.b	ssscorer(a4),d1
 	cmp.w	(scorergoalies).w,d1
 	movem.w	(sp)+,d1
 	blt.w	.5
 	jsr	(PrintPlayerGoals).l
 .5
 	clr.w	d0
-	move.b	4(a4),d0				;first assist
+	move.b	ssassist1(a4),d0		;first assist
 	bmi.w	.6
 	bclr	#5,(sflags4).w
 	bne.w	.6						;sflags4 bit 5 set: no assists
@@ -1130,7 +1130,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	move.w	(sp)+,d0
 	jsr	(PrintPlayerAssists).l
 	clr.w	d0
-	move.b	5(a4),d0				;second assist
+	move.b	ssassist2(a4),d0		;second assist
 	bmi.w	.6
 	bsr.w	printz
 	String	-(TXPRI+TXMAP1),$C,8

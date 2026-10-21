@@ -372,3 +372,51 @@ LineDataBase equ $1EF6
 	IF 32<NumPlayoffTeams
 		inform	3,"The playoff draw only keeps 32 team bits"
 	ENDIF
+; Record and field offsets (docs: NHLPA93Genesis docs/file-formats.md for the containers and sprite entries)
+; .map.jim / .anim container header
+jimpalette equ 0					;long: offset of the palette ($FFFFFFFF none)
+jimdata equ 4						;long: offset of the map (.map.jim) or the frame table (.anim)
+jimtilecount equ 8					;word: tile count (bit 15 packed); the tiles follow (jimtiles)
+; .map.jim map section (at jimdata)
+mapwidth equ 0						;word: width in tiles
+mapheight equ 2						;word: height in tiles
+mapwords equ 4						;the map words
+; .anim sprite entry (8 bytes per sprite piece of a frame)
+seX equ 0							;word: x, signed, from the frame origin
+seY equ 2							;word: y, signed
+seTile equ 4						;word: tile, from the set's first tile
+seAttr equ 6						;word: priority, palette, vflip, hflip (bits 15-11), size code (low byte)
+seSize equ 7						;byte: VDP size code (low byte of seAttr)
+seLen equ 8
+; VDP sprite attribute table entry (Satt, 8 bytes)
+satY equ 0							;word: y + 128
+satSize equ 2						;byte: size code
+satLink equ 3						;byte: next sprite (0 ends the list)
+satTile equ 4						;word: priority, palette, flips, tile
+satX equ 6							;word: x + 128
+satLen equ 8
+; ScoreSum entry (6 bytes per goal)
+sstime equ 0						;word: period / time of the goal
+ssflags equ 2						;byte: 2 + skater difference (goal type); bit 7 = away team scored
+ssscorer equ 3						;byte: scorer
+ssassist1 equ 4						;byte: first assist ($FF none)
+ssassist2 equ 5						;byte: second assist ($FF none)
+sssize equ 6
+; PenSum entry (4 bytes per penalty)
+pstime equ 0						;word: period / time
+pspen equ 2							;byte: penalty (Penaltylist offset); bit 7 = away team
+psplayer equ 3						;byte: penalized player
+pssize equ 4
+; PenBuf entry (2 bytes per player in the box)
+pbpen equ 0							;byte: penalty number (0 = free)
+pbscnum equ 1						;byte: SCnum of the player
+; puckcross entry (4 bytes; entry 0 top, entry 1 bottom)
+pcx equ 0							;word: x coordinate
+pcframes equ 2						;word: frames
+pcsize equ 4
+; fofdata2 / fofdata: big faceoff sprites (4 bytes each: home center, visiting center, then fofdata = the ref)
+foframe equ 0						;word: frame
+foattr equ 2						;word: attribute (bit 11 x flip)
+fosize equ 4
+; PlList: 6 wanted roster players, then their positions
+plpos equ 6
