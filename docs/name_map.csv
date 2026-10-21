@@ -161,3 +161,15 @@ SngScout,SngScouting,92G/93G
 ReplayStarStruct,CameraPosStruct,93G
 .goal,Goal,92G/93G (checkgoal branches to it)
 assgoaliecpu,assgoalie,92G/93G (asstab entry; assgoaliecpu and assgoaliectrl kept as sub-labels)
+(raw offset),tmHotCold,new in 94 (94S HotColdTable is a separate array)
+(raw offset),tmPerGoals,94S
+(raw offset),tmPerShots,94S
+(raw offset),tmPwrPlayTime,94S
+(raw offset),tmPPShots,94S
+(raw offset),tmSHGoals,94S
+(raw offset),tmBreakaways,94S
+(raw offset),tmBreakawayGoals,94S
+(raw offset),tmOneTimers,94S
+(raw offset),tmOneTimerGoals,94S
+(raw offset),tmPenShots,94S
+(raw offset),tmPenShotGoals,94S

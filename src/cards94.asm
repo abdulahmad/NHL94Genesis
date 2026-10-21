@@ -2222,7 +2222,7 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	movea.l	#OvrGoalWgtList,a6		;a6 = OvrGoalWgtList
 .11
 	movea.l	tmdata(a2),a0			;move ROM address of Team Data into a0
-	lea	$1A2(a2),a4					;move start of Hot/Cold table to a4
+	lea	tmHotCold(a2),a4			;move start of Hot/Cold table to a4
 	clr.l	d1						;clear d1
 	move.w	d0,d1					;move d0 into d1. d0 is the offset of the player
 	asl.w	#4,d1					;mult d1 by 16

@@ -995,8 +995,8 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;Sort struct (SortCords, SCstruct each) and team struct (tmstruct / AwShots, tmsize bytes): the fields are
-;named in stubinc/equals.inc. 94 adds goals by period and the power play, breakaway and shorthanded goals
-;at the end of the team struct.
+;named in stubinc/equals.inc. 94 adds the hot / cold table and goals by period, power play, breakaway,
+;one-timer, penalty shot and shorthanded stats at the end of the team struct.
 
 checkfight							;an rts: there is no fighting (93 looked for the start of a fight between
 									;a2 and a3 here). Called from checkcx
@@ -1268,15 +1268,15 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	exg	a2,a1
 .addg
 	addq.w	#1,tmscore(a2)			;tmscore: add to Goals
-	btst	#5,(sflags4).w			;goal stats
+	btst	#5,(sflags4).w			;penalty shot / shootout goal
 	beq.w	.11
-	btst	#0,(gmode2).w			;no new assignments in a shootout
+	btst	#0,(gmode2).w			;shootout: no penalty shot goal counted
 	bne.w	.11
-	addq.w	#1,$362(a2)				;add to SH Goals
+	addq.w	#1,tmPenShotGoals(a2)	;penalty shot goal (sflags4 bit 5)
 .11
 	bclr	#4,(gmode2).w
 	beq.w	.12
-	addq.w	#1,$35A(a2)				;add to BA Goals
+	addq.w	#1,tmBreakawayGoals(a2)	;breakaway goal (gmode2 bit 4)
 .12
 	btst	#sf2pwrplay,(sflags2).w	;sf2pwrplay
 	beq.w	.14
@@ -1285,7 +1285,7 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	cmpa.l	#AwShots,a2
 	bne.w	.14
 .loop2
-	addq.w	#1,$356(a2)				;power play goals
+	addq.w	#1,tmSHGoals(a2)		;shorthanded goal: a2 is the team without the power play
 	bra.w	.14
 .13
 	cmpa.l	#tmstruct,a2
@@ -1295,11 +1295,11 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	move.w	(gsp).w,d0
 	add.w	d0,d0
 	adda.w	d0,a2
-	addq.w	#1,$342(a2)				;goals by period
+	addq.w	#1,tmPerGoals(a2)		;goal in this period (gsp)
 	movem.l	(sp)+,d0/a2
 	bclr	#7,(sflags8).w
 	beq.w	.15
-	addq.w	#1,$35E(a2)				;sflags8 bit 7 goals
+	addq.w	#1,tmOneTimerGoals(a2)	;one-timer goal (sflags8 bit 7)
 .15
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home goal: ChooseSong
 	bne.w	.16

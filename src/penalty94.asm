@@ -1352,7 +1352,7 @@ ChkShotStat							;determine if shot taken, add to appropriate stats: crowd, tea
 	btst	#pfteam,pflags(a3)		;pfteam
 	bne.w	.2						;not the team on the power play
 .PPshot
-	addq.w	#1,$354(a2)				;power play shots
+	addq.w	#1,tmPPShots(a2)		;power play shots
 	bra.w	.2
 .1
 	btst	#pfteam,pflags(a3)		;pfteam
@@ -1362,7 +1362,7 @@ ChkShotStat							;determine if shot taken, add to appropriate stats: crowd, tea
 	move.w	(gsp).w,d0				;period
 	add.w	d0,d0
 	adda.w	d0,a2
-	addq.w	#1,$34A(a2)				;shots by period
+	addq.w	#1,tmPerShots(a2)		;shots by period
 	movea.l	(sp)+,a2
 	clr.w	d0
 	move.b	pnum(a3),d0				;pnum

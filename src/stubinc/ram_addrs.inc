@@ -448,8 +448,8 @@ HmTeam equ $FFFFD6CA
 SongIndex equ $FFFFD6CC
 OvrDivisor equ $FFFFD6CE
 OvrDividend equ $FFFFD6D0
-homehotcoldsave equ $FFFFD6D2		;clearTeamStats keeps the first $1A0 bytes of the home hot / cold table
-									;(at the end of tmstruct) here
+homehotcoldsave equ $FFFFD6D2		;clearTeamStats keeps the home hot / cold table (tmstruct+tmHotCold)
+									;here
 awayhotcoldsave equ $FFFFD872		;the same for the AwShots table
 sopath equ $FFFFDA12
 sopathpoint equ $FFFFDA14
