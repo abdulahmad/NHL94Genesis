@@ -1011,7 +1011,7 @@ breakaway							;puck carrier a3 on a breakaway: beep on a new assignment and ch
 	beq.w	.c0						;jump if home
 	movea.l	#AwShots,a2				;move Away Team Struct into a2
 .c0
-	addq.w	#1,$358(a2)				;add one to breakaway attempt
+	addq.w	#1,tmBreakaways(a2)		;add one to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to CwdExcite
 	addi.w	#$C8,(Crowdlevel).w		;add to Crowdlevel
 	movem.l	(sp)+,a2
@@ -1151,7 +1151,7 @@ asspuckc							;player a3 is puck handler
 	beq.w	.5
 	movea.l	#AwShots,a2
 .5
-	addq.w	#1,$358(a2)
+	addq.w	#1,tmBreakaways(a2)
 	addi.w	#$14,(CwdExciteLvl).w
 	addi.w	#$C8,(Crowdlevel).w
 	movem.l	(sp)+,a2
@@ -1748,7 +1748,7 @@ assnearest
 	beq.w	.addcrowd				;jump if home
 	movea.l	#AwShots,a2				;put Away Team Struct into a2
 .addcrowd
-	addq.w	#1,$358(a2)				;add to breakaway attempt
+	addq.w	#1,tmBreakaways(a2)		;add to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to excite level
 	addi.w	#$C8,(Crowdlevel).w		;add to crowd level
 	movem.l	(sp)+,a2				;pop off stack into a2
@@ -2157,7 +2157,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	beq.w	.countattempt
 	movea.l	#AwShots,a2
 .countattempt
-	addq.w	#1,$360(a2)
+	addq.w	#1,tmPenShots(a2)
 	movea.l	(sp)+,a2
 .initflags
 	bclr	#2,(BA_PS_flags).w

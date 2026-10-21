@@ -214,7 +214,22 @@ tmpshots equ tmgoals+(2*maxros)		;shots per roster player (goalies: shots agains
 pchecks equ $11C					;checks per roster player (bytes)
 tmpice equ $136						;frames on ice per roster player (words)
 tmlines equ $16A					;line sets copied from the team data (LineSets), 7 lines x 8 bytes
-tmsize equ $364						;93 $1A2: 94 adds the hot / cold table at $1A2
+tmHotCold equ $1A2					;hot / cold table: 16 bytes per roster player (26 x 16 bytes), each
+									;random -9 ... 8 (Create_HotCold_Table, AttributeCalc). New in 94.
+									;94S keeps one HotColdTable for both teams: 52 players x 12 bytes,
+									;-12 ... 12
+tmPerGoals equ $342					;goals by period (word per period, 4 with overtime). New in 94
+tmPerShots equ $34A					;shots by period (word per period, 4 with overtime). New in 94
+tmPwrPlayTime equ $352				;power play time in seconds (updatePPTeamTime). New in 94
+tmPPShots equ $354					;power play shots (penalty94). New in 94
+tmSHGoals equ $356					;shorthanded goals (Goal). New in 94
+tmBreakaways equ $358				;breakaways. New in 94
+tmBreakawayGoals equ $35A			;breakaway goals (Goal). New in 94
+tmOneTimers equ $35C				;one-timer attempts. New in 94
+tmOneTimerGoals equ $35E			;one-timer goals (Goal, sflags8 bit 7). New in 94
+tmPenShots equ $360					;penalty shots. New in 94
+tmPenShotGoals equ $362				;penalty shot goals (Goal, sflags4 bit 5; not in a shootout). New in 94
+tmsize equ $364						;93 $1A2: 94 adds tmHotCold and the stats from tmPerGoals
 
 ;game structure variables (one per playoff matchup, gsstruct)
 gst1 equ $0							;team 1

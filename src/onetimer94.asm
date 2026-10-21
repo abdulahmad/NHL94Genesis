@@ -440,7 +440,7 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	rts
 onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
 									;assists, add to Crowdlevel /
-									;CwdExciteLvl and to the one-timer attempts ($35C of the team struct).
+									;CwdExciteLvl and to the one-timer attempts (tmOneTimers).
 									;Called from puckstick
 	move.w	#4,(passdir).w
 	jsr	(doshot).l
@@ -458,7 +458,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	bset	#7,(sflags8).w			;set bit 7
 	addi.w	#$96,(Crowdlevel).w		;add to Crowdlevel
 	addi.w	#$A,(CwdExciteLvl).w	;add to Excite Level
-	addq.w	#1,$35C(a0)				;add to one timer attempt
+	addq.w	#1,tmOneTimers(a0)		;add to the one-timer attempts
 	movem.l	(sp)+,d0/a0
 	bset	#0,(onetimerflags).w	;set bit 0
 	bset	#pf2aip,pflags2(a3)		;set animation in progress

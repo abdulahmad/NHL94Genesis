@@ -625,16 +625,16 @@ resetplstuff						;reset team variables/and players on both teams. Called from p
 	adda.w	#SCstruct,a3			;SCstruct size
 	dbf	d2,.loop
 	rts
-clearTeamStats						;clear both team structs (2 x tmsize) but keep the first $1A0 bytes of
-									;each hot / cold table (the table at the end of each team struct, saved to
+clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
+									;(tmHotCold, saved to
 									;homehotcoldsave / awayhotcoldsave and back) and tmstruct+tmgoalie /
 									;AwShots+tmgoalie. Falls into setteams
 	move.w	(tmstruct+tmgoalie).w,-(sp)
 	move.w	(AwShots+tmgoalie).w,-(sp)
 	movem.l	a1-a3,-(sp)
-	move.w	#$19F,d0
-	movea.l	#AwShots+$1A2,a1		;Hot/Cold table Away Team
-	movea.l	#tmstruct+$1A2,a0		;Hot/Cold table Home Team
+	move.w	#tmPerGoals-tmHotCold-1,d0
+	movea.l	#AwShots+tmHotCold,a1	;Hot/Cold table Away Team
+	movea.l	#tmstruct+tmHotCold,a0	;Hot/Cold table Home Team
 	movea.l	#homehotcoldsave,a2
 	movea.l	#awayhotcoldsave,a3
 .loop
@@ -642,20 +642,20 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep the first $1A
 	move.b	(a1)+,(a3)+
 	dbf	d0,.loop
 	movem.l	(sp)+,a1-a3
-	move.l	#$363,d0
+	move.l	#tmsize-1,d0
 	movea.w	#(tmstruct-M68K_RAM),a0
 .loop2
 	clr.b	(a0)+
 	dbf	d0,.loop2
 	movea.w	#(AwShots-M68K_RAM),a0
-	move.w	#$363,d0
+	move.w	#tmsize-1,d0
 .loop3
 	clr.b	(a0)+
 	dbf	d0,.loop3
 	movem.l	a1-a3,-(sp)
-	move.w	#$19F,d0
-	movea.l	#AwShots+$1A2,a1
-	movea.l	#tmstruct+$1A2,a0
+	move.w	#tmPerGoals-tmHotCold-1,d0
+	movea.l	#AwShots+tmHotCold,a1
+	movea.l	#tmstruct+tmHotCold,a0
 	movea.l	#homehotcoldsave,a2
 	movea.l	#awayhotcoldsave,a3
 .loop4

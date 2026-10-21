@@ -181,16 +181,16 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	rts
 cornercollb							;Thunk: jmp wallcollb
 	jmp	wallcollb
-Create_HotCold_Table				;Fill the hot / cold table at $1A2 of team struct a0 with 416 random
-									;values (-9 ... 8 randomd0s). Called from StartGame and ScoutingReport
+Create_HotCold_Table				;Fill the hot / cold table (tmHotCold) of team struct a0: 16 bytes for
+									;each of the 26 roster players, random -9 ... 8 (randomd0s). Called from
+									;StartGame and ScoutingReport, once for each team struct
 	movem.l	d0-d7,-(sp)
-	move.w	#$19F,d1				;$19F = 415. Loop will run 416 times.
-									;(26 players/team * 8) * 2 teams = 416
+	move.w	#tmPerGoals-tmHotCold-1,d1	;loop count: the table size (26 x 16 bytes)
 HotColdLoop							;The Create_HotCold_Table loop
 	move.w	#9,d0					;sets RNG limit (-9 - +8)
 	jsr	(randomd0s).l
 	move.l	a0,-(sp)
-	adda.l	#$1A2,a0				;offset to Hot/Cold table
+	adda.l	#tmHotCold,a0			;offset to Hot/Cold table
 	move.b	d0,0(a0,d1.w)
 	movea.l	(sp)+,a0
 	dbf	d1,HotColdLoop
@@ -220,7 +220,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	clr.w	d1
 	move.b	pnum(a3),d1				;move roster offset into d1
 	asl.w	#4,d1					;shifts d1 4 bits left, moving the values over 1 nibble
-	adda.l	#$1A2,a1				;a1 points to Hot/Cold Table Start
+	adda.l	#tmHotCold,a1			;a1 points to Hot/Cold Table Start
 	move.b	0(a1,d1.w),d1			;move data at add. (a1 + d1) into d1
 	ext.w	d1						;sign-extend word. Ex: F5 (-5) -> FFF5
 	ext.l	d1						;sign-extend long word. Ex: FFF5 -> FFFFFFF5
@@ -296,7 +296,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 									;(byte pairs: player, sum), then sort them by sum
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
-	adda.l	#$1A2,a2
+	adda.l	#tmHotCold,a2
 	movea.l	tmdata(a0),a0
 	adda.w	6(a0),a0
 	movea.l	#TempBuffer,a1

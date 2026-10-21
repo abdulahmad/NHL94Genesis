@@ -92,7 +92,7 @@ ClearGameStats						;Clear the game stats: shootoutstate (19 words), both team s
 	clr.w	(a0)+
 	dbf	d0,.loop
 	movea.l	#tmstruct,a0
-	move.w	#$363,d0
+	move.w	#tmsize-1,d0
 .loop2
 	clr.w	(a0)+
 	dbf	d0,.loop2
@@ -384,10 +384,10 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .team
-	lea	$342(a2),a0
+	lea	tmPerGoals(a2),a0
 	tst.w	(matchup).w
 	beq.w	.9
-	lea	$34A(a2),a0
+	lea	tmPerShots(a2),a0
 .9
 	clr.w	(matchuptimer).w
 	move.w	#$B,(printx).w
@@ -596,17 +596,17 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	dbf	d6,.row
 	rts
 PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at printx: the value
-									;(offsets $A and $352 are times
+									;(tmATOP and tmPwrPlayTime are times
 									;PushTime), "/second" if any, " (pct%)" for passing. Offset $FFFF is the
-									;shooting percentage (goals $C * 100 / shots 0), printed with a "%"
+									;shooting percentage (tmscore * 100 / tmshots), printed with a "%"
 	movea.w	#(mesarea-M68K_RAM),a3
 	move.w	#2,(a3)
 	cmpi.w	#$FFFF,(a0)				;shooting percentage row
 	bne.w	.1
-	move.w	#$C,d0
+	move.w	#tmscore,d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
-	move.w	#0,d1
+	move.w	#tmshots,d1
 	move.w	(a2,d1.w),d1
 	beq.w	.0
 	divu.w	d1,d0
@@ -619,7 +619,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 .1
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
-	cmpi.w	#$352,(a0)				;PP Minutes: a time
+	cmpi.w	#tmPwrPlayTime,(a0)		;PP Minutes: a time
 	bne.w	.2
 	bsr.w	.8
 	bra.w	.4
@@ -670,87 +670,87 @@ TeamStatTextTbl						;Label, then the team struct stat offset and the second off
 									;none). 15 rows
 	dc.w	$0008
 	dc.b	'Score',0
-	dc.w	$C,$FFFF
+	dc.w	tmscore,$FFFF
 	dc.w	$0008
 	dc.b	'Shots',0
-	dc.w	0,$FFFF
+	dc.w	tmshots,$FFFF
 	dc.w	$000E
 	dc.b	'Shooting Pct'
 	dc.w	$FFFF,$FFFF
 	dc.w	$000C
 	dc.b	'Power Play'
-	dc.w	2,4
+	dc.w	tmPwrGoals,tmPwrPlays
 	dc.w	$000C
 	dc.b	'PP Minutes'
-	dc.w	$352,$FFFF
+	dc.w	tmPwrPlayTime,$FFFF
 	dc.w	$000A
 	dc.b	'PP Shots'
-	dc.w	$354,$FFFF
+	dc.w	tmPPShots,$FFFF
 	dc.w	$000A
 	dc.b	'SH Goals'
-	dc.w	$356,$FFFF
+	dc.w	tmSHGoals,$FFFF
 	dc.w	$000C
 	dc.b	'Breakaways'
-	dc.w	$35A,$358
+	dc.w	tmBreakawayGoals,tmBreakaways
 	dc.w	$000C
 	dc.b	'One-Timers'
-	dc.w	$35E,$35C
+	dc.w	tmOneTimerGoals,tmOneTimers
 	dc.w	$0010
 	dc.b	'Penalty Shots',0
-	dc.w	$362,$360
+	dc.w	tmPenShotGoals,tmPenShots
 	dc.w	$000E
 	dc.b	'Faceoffs Won'
-	dc.w	$E,$FFFF
+	dc.w	tmfowon,$FFFF
 	dc.w	$000E
 	dc.b	'Body Checks',0
-	dc.w	$10,$FFFF
+	dc.w	tmchecks,$FFFF
 	dc.w	$000C
 	dc.b	'Penalties',0
-	dc.w	6,8
+	dc.w	tmPenalties,tmPenmin
 	dc.w	$000E
 	dc.b	'Attack Zone',0
-	dc.w	$A,$FFFF
+	dc.w	tmATOP,$FFFF
 	dc.w	$000A
 	dc.b	'Passing',0
-	dc.w	$14,$12
+	dc.w	tmpasscomp,tmpasses
 TeamStatTextTblNoPen				;The rows without the power play ones, used when penalties are off. 11
 									;rows
 	dc.w	$0008
 	dc.b	'Score',0
-	dc.w	$C,$FFFF
+	dc.w	tmscore,$FFFF
 	dc.w	$0008
 	dc.b	'Shots',0
-	dc.w	0,$FFFF
+	dc.w	tmshots,$FFFF
 	dc.w	$000E
 	dc.b	'Shooting Pct'
 	dc.w	$FFFF,$FFFF
 	dc.w	$000C
 	dc.b	'Breakaways'
-	dc.w	$35A,$358
+	dc.w	tmBreakawayGoals,tmBreakaways
 	dc.w	$000C
 	dc.b	'One-Timers'
-	dc.w	$35E,$35C
+	dc.w	tmOneTimerGoals,tmOneTimers
 	dc.w	$0010
 	dc.b	'Penalty Shots',0
-	dc.w	$362,$360
+	dc.w	tmPenShotGoals,tmPenShots
 	dc.w	$000E
 	dc.b	'Faceoffs Won'
-	dc.w	$E,$FFFF
+	dc.w	tmfowon,$FFFF
 	dc.w	$000E
 	dc.b	'Body Checks',0
-	dc.w	$10,$FFFF
+	dc.w	tmchecks,$FFFF
 	dc.w	$000C
 	dc.b	'Penalties',0
-	dc.w	6,8
+	dc.w	tmPenalties,tmPenmin
 	dc.w	$000E
 	dc.b	'Attack Zone',0
-	dc.w	$A,$FFFF
+	dc.w	tmATOP,$FFFF
 	dc.w	$000A
 	dc.b	'Passing',0
-	dc.w	$14,$12
+	dc.w	tmpasscomp,tmpasses
 rtsStatTables						;rts after the stat tables (StatsReport scroll step)
 	rts
-updatePPTeamTime					;One more second of power play time ($352 of the team struct) for the team
+updatePPTeamTime					;One more second of power play time (tmPwrPlayTime) for the team
 									;on the power play (sflags2 bit 5, bit 6 the visitors). Called from
 									;updatepentime
 	btst	#sf2pwrplay,(sflags2).w	;check if PP
@@ -760,7 +760,7 @@ updatePPTeamTime					;One more second of power play time ($352 of the team struc
 	beq.w	.0						;branch if home (team 1)
 	movea.l	#AwShots,a2				;move away team struct into a2
 .0
-	addq.w	#1,$352(a2)				;add 1 to PP team total
+	addq.w	#1,tmPwrPlayTime(a2)	;one more second of power play time
 .x
 	rts
 GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
