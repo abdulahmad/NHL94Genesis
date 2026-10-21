@@ -35,7 +35,7 @@ Work in small steps: every change is built and checked byte for byte against the
 What main is:
 - main is a faithful disassembly of the retail game. It keeps only good-practice changes that emit identical bytes: equates and labels instead of hardcoded values, assemble-time checks, and build tooling (the computed checksum and ROM size in `tools/fixrom.js`, `src/shortcalls.inc`, the CHECKSUM/REV flags).
 - Mod-specific fixes (long calls instead of the retail short ones, save-RAM moves, mapper code) do not go on main. They are documented in `docs/EXPANDING_THE_ROM.md` or live on mod branches.
-- `NumTeams` / `NumPlayoffTeams` in `src/stubinc/equals.inc` and the per-team length checks stay; `NoTiles` and `TeamList` replace the `#$30A` / `#$30E` loads.
+- `NumTeams` / `NumPlayoffTeams` in `src/stubinc/equals.inc` and the per-team length checks stay; `null` (92 name) and `TeamList` replace the `#$30A` / `#$30E` loads.
 
 ## Current segment
 

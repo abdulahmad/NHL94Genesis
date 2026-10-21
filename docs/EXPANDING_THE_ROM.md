@@ -53,7 +53,7 @@ The stock game has 28 teams in TeamList order. The first 26 (`ANH` through `WPG`
 
 Those two rows go at the new team's index, and each map grows by 2 rows. The setup banner and the scoreboard name are those tiles; the menu name and the on-ice abbreviation come from the team record. `tools/prebuild.js` measures both images and writes `output/teamcounts.inc`. The image tools (JIM-Tools) are in EA-NHL-Tools.
 
-`NoTiles` is the zero long just before `TeamList` (the pointer for a slot with no tiles). It is not a team entry.
+`null` (92 name) is the zero long just before `TeamList` (the pointer for a slot with no tiles). It is not a team entry.
 
 ## Playoff rows
 

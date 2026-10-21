@@ -2,7 +2,9 @@
 ;	holds the players, colors, name, lines, scouting report and scoring odds. The playoff seeds and
 ;	the credits come after the teams.
 
-NoTiles	dc.l	0					;a zero long, for a slot with no tiles. Not part of TeamList
+null								;92 null: a zero long, the tile pointer when there is nothing to draw
+									;(no tiles). Not part of TeamList
+	dc.l	0
 
 TeamList							;List Pointer Table Start. Team number = index (ANH 0 ... WPG 25, ASE 26,
 									;ASW 27)
