@@ -60,7 +60,7 @@ gmstars equ 7						;the Stars of the Game box was already shown
 
 
 ; ------------- 93 structure and flag equates -------------
-; Included by every *_stub.asm and by nhl94.asm. Names are the NHLPA93Genesis names; the value is 94's.
+; Included by nhl94.asm. Names are the NHLPA93Genesis names; the value is 94's.
 
 Sortobjs equ 16						;number of sorted graphics objects
 SCstruct equ 1<<scsize				;ram for each sortobj (SortCords entry)

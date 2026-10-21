@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // build.js: the whole NHL 94 build, one line per step, on Windows and Linux (wine).
 //   node tools/build.js [retail|dev] [--verbose]       full ROM -> output/nhl94.bin (nhl94-dev.bin)
-//   node tools/build.js --seg <name> [--verbose]       one segment (tools/segments.json), verified
+//   node tools/build.js --seg <name|--all> [--verbose] full ROM, then compare one segment (a file src/nhl94.asm
+//                                                      includes) or all of them with the same range of lst/nhl94.bin
 //   node tools/build.js --segacd [--verbose]           Sega CD fragments, compared with cdbin/
 // --no-color (or NO_COLOR) turns the colors off; they are also off when the output is not a terminal.
 // retail: CHECKSUM=1 and verified against lst/nhl94.bin. dev: CHECKSUM=0, not verified.
@@ -13,7 +14,6 @@ const { spawn } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
 const REF = 'lst/nhl94.bin';
-const SEGMENTS = require('./segments.json');
 const WIN = process.platform === 'win32';
 
 const args = process.argv.slice(2);
@@ -180,19 +180,20 @@ if (args.includes('--segacd')) {
     process.exit(0);
 }
 
-if (seg !== null && !SEGMENTS[seg]) {
-    console.error(`unknown segment '${seg}'. Known: ${Object.keys(SEGMENTS).join(', ')}`);
+if (segIdx >= 0 && !seg) {
+    console.error('--seg needs a segment name or --all');
     process.exit(1);
 }
-const name = seg || 'nhl94';
+// A segment build is the full build; the verify step then compares the segment's address range only.
+const name = 'nhl94';
 // Intermediate files go in output/build/: the raw assembler image, its listing and the log.
-// The one result is output/<final>: nhl94.bin (retail), nhl94-dev.bin, or <seg>.bin.
+// The one result is output/<final>: nhl94.bin (retail or a segment check) or nhl94-dev.bin.
 const BUILD = path.join(OUT, 'build');
 const bin = path.join(BUILD, `${name}.raw.bin`);
 const lst = path.join(BUILD, `${name} .lst`);
 const fixed = path.join(BUILD, `modified_${name}.raw.bin`);
 const logPath = path.join(BUILD, `Build_${name}.log`);
-const final = seg ? `${seg}.bin` : `nhl94${mode === 'dev' ? '-dev' : ''}.bin`;
+const final = `nhl94${mode === 'dev' && !seg ? '-dev' : ''}.bin`;
 const mod = path.join(OUT, final);
 
 // 1. prebuild: ROM check and Extracted/ assets.
@@ -211,7 +212,7 @@ const mod = path.join(OUT, final);
     begin('assemble');
     fs.mkdirSync(BUILD, { recursive: true });
     for (const f of [bin, fixed, mod]) fs.rmSync(f, { force: true });
-    const src = seg ? `stubinc\\${seg}_stub.asm` : 'nhl94.asm';
+    const src = 'nhl94.asm';
     const o = `..\\output\\build\\${name}`;
     const asmArgs = ['/p', '/m', '/g', '/o', 'd-', '/o', 's-', '/o', 'r+', '/o', 'l+', '/o', 'l.', '/o', 'ow+', '/o', 'op-',
         '/o', 'os+', '/o', 'oz+', '/o', 'omq-', '/o', 'oaq+', '/o', 'osq+',
@@ -241,7 +242,7 @@ const mod = path.join(OUT, final);
 // 3. fixopcodes: rewrite the EA cmp / exg encodings SNASM picks differently; the result becomes output/<final>.
 {
     begin('fixopcodes');
-    const r = await node('fixopcodes.js', [lst, bin, ...(seg ? [SEGMENTS[seg]] : [])]);
+    const r = await node('fixopcodes.js', [lst, bin]);
     const m = r.out.match(/Modified (\d+) instructions/);
     if (r.status !== 0 || !m || !fs.existsSync(fixed)) fail('fixopcodes', 'did not write the fixed binary', r.out);
     fs.renameSync(fixed, mod);
@@ -250,10 +251,8 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 4. fixrom: pad to the cartridge size, header ROM end, boot checksum. Segments are not a ROM.
-if (seg) {
-    step('fixrom', 'skipped (segment)');
-} else {
+// 4. fixrom: pad to the cartridge size, header ROM end, boot checksum.
+{
     begin('fixrom');
     const r = await node('fixrom.js', [lst, mod]);
     const m = r.out.match(/size (\w+) \(end (\w+)\), checksum (\w+) -> (\w+)/);
@@ -267,7 +266,7 @@ if (!seg && mode === 'dev') {
     step('verify', `${rel(mod)} not verified (dev build)`);
 } else {
     begin('verify');
-    const r = await (seg ? node('verifySegment.js', [seg, SEGMENTS[seg], REF]) : node('verifyRom.js', [mod, REF]));
+    const r = await (seg ? node('verifySegment.js', [seg, mod, REF, lst]) : node('verifyRom.js', [mod, REF]));
     const first = r.out.split(/\r?\n/).find((l) => l.trim()) || '';
     if (r.status !== 0 || !/^MATCH/.test(first)) {
         fail('verify', rel(mod), r.out, 'MISMATCH');
