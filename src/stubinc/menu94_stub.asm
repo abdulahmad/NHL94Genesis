@@ -13,12 +13,12 @@
 
 ; External addresses outside, read from lst/nhl94.bin: jsr / jmp (x).l, movea.l / move.l #x
 ; lea (x).l carry the address; bsr.w / bra.w / Bcc.w is the displacement word address + displacement.
-Framer = $119B8						;jsr / jmp (x).l at $7E60
-printsmall = $11A48					;jsr / jmp (x).l at $7F4A
-printsmallz = $11A36				;jsr / jmp (x).l at $7E4C
-rtss8 = $A9D4						;bsr.w / Bcc.w at $7E7E
-seta2 = $7E0E						;bsr.w / Bcc.w at $7EB8. name
-xyVmMap = $11952					;jsr / jmp (x).l at $808E
+Framer = $119B8						;jsr / jmp (x).l
+printsmall = $11A48					;jsr / jmp (x).l
+printsmallz = $11A36				;jsr / jmp (x).l
+rtss8 = $A9D4						;bsr.w / Bcc.w
+seta2 = $7E0E						;bsr.w / Bcc.w, name
+xyVmMap = $11952					;jsr / jmp (x).l
 
 ; Main segment code
 	include	menu94.asm

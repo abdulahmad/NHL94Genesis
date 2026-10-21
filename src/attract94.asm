@@ -135,7 +135,7 @@ setoptions_printpos2				;printz position string, then printx = $1A when a2 is th
 	move.w	#$1A,(printx).w
 	rts
 
-PickStartingGoalie					;unreferenced. $26(a2) = 0 if a pad has team a2, else (gamelevel <= 2,
+PickStartingGoalie					;unreferenced. tmgoalie = 0 if a pad has team a2, else (gamelevel <= 2,
 									;line changes on) a value from the team's .godds
 	movem.l	d0/a0,-(sp)
 	clr.w	tmgoalie(a2)
@@ -147,7 +147,7 @@ PickStartingGoalie					;unreferenced. $26(a2) = 0 if a pad has team a2, else (ga
 	cmp.w	(cont1team).w,d0
 	beq.w	.x
 	cmp.w	(cont2team).w,d0
-	beq.w	.x						;a pad has this team: leave $26(a2) = 0
+	beq.w	.x						;a pad has this team: leave tmgoalie(a2) = 0
 	moveq	#0,d0
 	cmpi.w	#2,(gamelevel).w
 	bgt.w	.set

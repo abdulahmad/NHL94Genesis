@@ -236,10 +236,10 @@ wallcollduringcheck					;during a check, a skater a2 (not a goalie) near the wal
 	movem.l	d0-d7,-(sp)
 	move.w	(a2),d2					;Xpos of checking player
 	move.w	Ypos(a2),d3				;Ypos of checking player
-	move.w	radiusx(a2),(wcradiusx).w	;moves radiusX into FFBD22 (width of graphic)
-	addi.w	#$17,(wcradiusx).l		;add $17 to BD22
-	move.w	radiusy(a2),(wcradiusy).w	;moves radiusY into FFBD24 (height of graphic)
-	addi.w	#$17,(wcradiusy).l		;add $17 to BD24
+	move.w	radiusx(a2),(wcradiusx).w	;radiusx into wcradiusx (width of graphic)
+	addi.w	#$17,(wcradiusx).l		;add $17 to wcradiusx
+	move.w	radiusy(a2),(wcradiusy).w	;radiusy into wcradiusy (height of graphic)
+	addi.w	#$17,(wcradiusy).l		;add $17 to wcradiusy
 	movem.l	a0-a6,-(sp)
 	exg	a2,a3						;swap a2 and a3
 	jsr	(checkcornercoll).l
@@ -960,7 +960,7 @@ AppendNumber						;Write d0 (0 ... 999, no leading zeros) as a String at a1, pad
 	movem.w	(sp)+,d0-d6/a0
 	rts
 GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadPlayerRecord
-									;into $FFFF0000); d1 = 1 when the player is a goalie
+									;into M68K_RAM); d1 = 1 when the player is a goalie
 	movem.l	d2-d7/a0-a6,-(sp)
 	move.w	d0,-(sp)
 	movea.l	#TeamList,a2
@@ -2212,14 +2212,14 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	move.l	a6,-(sp)				;push a6 to stack
 	clr.w	(OvrDivisor).w
 	clr.w	(OvrDividend).w
-	movea.l	#AttribWgtList,a6		;move address FAB3C into a6
+	movea.l	#AttribWgtList,a6		;a6 = AttribWgtList
 	cmp.l	(PAttribOverallMask).l,d4	;compare long word (1FBA000A) to d4
 	bne.w	.1						;branch if not equal
-	movea.l	#OvrPlayerWgtList,a6	;move address FAB1C into a6
+	movea.l	#OvrPlayerWgtList,a6	;a6 = OvrPlayerWgtList
 .1
 	cmp.l	(GAttribOverallMask).l,d4	;compare long word 130F000A to d4
 	bne.w	.11						;branch if not equal
-	movea.l	#OvrGoalWgtList,a6		;move address FAB2C into a6
+	movea.l	#OvrGoalWgtList,a6		;a6 = OvrGoalWgtList
 .11
 	movea.l	tmdata(a2),a0			;move ROM address of Team Data into a0
 	lea	$1A2(a2),a4					;move start of Hot/Cold table to a4
@@ -2270,14 +2270,14 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	tst.w	(sp)+					;test stack and increment
 .000
 	movem.l	(sp)+,d5-d7				;pop off stack into d5-d7
-	cmpa.l	#AttribWgtList,a6		;check if a6 is FAB3C
+	cmpa.l	#AttribWgtList,a6		;check if a6 is AttribWgtList
 	beq.w	.2						;branch if equal
 	neg.w	d2						;negate d2
 	move.w	d7,-(sp)				;push d7 to stack
 	move.b	-1(a4,d2.w),d7			;move data at a4+d2-1 into d7
 	ext.w	d7						;sign extend d7
-	add.w	d7,(OvrDivisor).w		;add d7 to data at D6CE
-	addq.w	#1,(OvrDividend).w		;add 1 to D6D0
+	add.w	d7,(OvrDivisor).w		;add d7 to OvrDivisor
+	addq.w	#1,(OvrDividend).w		;add 1 to OvrDividend
 	move.w	(sp)+,d7				;pop from stack into d7
 	neg.w	d2						;negate d2
 	bra.w	.00						;branch
@@ -2297,7 +2297,7 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	addi.w	#$64,d1					;'d'   ; add 100 dec to d1
 .next
 	dbf	d2,.bit
-	cmpa.l	#AttribWgtList,a6		;compare address value FAB3C to a6
+	cmpa.l	#AttribWgtList,a6		;compare AttribWgtList with a6
 	beq.w	.3						;branch if equal
 	move.w	#$64,d1					;'d'   ; move 100 dec into d1
 	movem.l	d6-d7,-(sp)				;push d6 and d7 to stack
@@ -2623,7 +2623,7 @@ DrawPictureBox						;Player card picture box (DrawPlayerPicture, UnpackPicture)
 	jsr	(dobitmap).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-GetCardTeam							;a0 = HmShots, or AwShots when cardvis is set (the card's team)
+GetCardTeam							;a0 = tmstruct, or AwShots when cardvis is set (the card's team)
 	movea.l	#tmstruct,a0
 	tst.w	(cardvis).w
 	beq.w	.x

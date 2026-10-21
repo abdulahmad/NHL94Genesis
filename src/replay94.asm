@@ -64,7 +64,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	andi.w	#$FFF0,d1
 	andi.w	#$FFF0,d3
 .2
-	movea.w	#(ReplayStarStruct-M68K_RAM),a5
+	movea.w	#(CameraPosStruct-M68K_RAM),a5
 	btst	#sf3track,(sflags3).w
 	beq.w	.dir
 	move.w	d1,d5

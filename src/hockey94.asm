@@ -9,9 +9,9 @@ VBjsr								;Vertical blank interrupt (vector $78), jumps through the VBint RAM
 Begin								;cold start, entered from Start. Clear RAM, init sound and menus, go to
 									;title
 	move	#$2700,sr				;interrupts off
-	movea.w	#(Stack-M68K_RAM),sp	;stack pointer to RAM $FFFE
+	movea.w	#(Stack-M68K_RAM),sp	;stack pointer to Stack
 	movea.w	#(VSCRLPM-M68K_RAM),a0	;clear out ram
-.0	clr.l	(a0)+					;clear RAM $B000-$DEF3
+.0	clr.l	(a0)+					;clear the RAM from VSCRLPM through replaydelay
 	cmpa.w	#$DEF4,a0
 	blt.s	.0
 	clr.w	(PALflag).w				;clear the PAL flag
@@ -72,7 +72,7 @@ StartGame							;reset game state for a new game, then start the first period
 	jsr	(LoadCrowdRec).l
 	jmp	IntermissionStart			;on to period start
 
-ClearShotData						;Clear $E4 words at $FFD092
+ClearShotData						;Clear $E4 words of outputbuffer
 	move.w	#$E3,d0
 	movea.w	#(outputbuffer-M68K_RAM),a0
 .0	clr.w	(a0)+

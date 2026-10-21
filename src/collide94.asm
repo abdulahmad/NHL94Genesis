@@ -2,11 +2,7 @@
 ;	and hooks, and decides when a player falls or is hurt.
 
 
-;Sort struct (SortCords, $80 each): 0 Xpos, 4 attribute, $14 Ypos, $1C OldXpos, $20 OldYpos, $28 Xvel,
-;$2A Yvel, $2E impactp, $32 impact, $34 position, $40 temp1, $4A / $4C wall radius x / y, $4E wallcos,
-;$50 wallsin, $52 SCnum, $54 facedir, $58 SPA, $5E / $5F nopuck, $62 pflags, $63 pflags2, $64 bit 1
-;breakaway, bit 3 one-timer, bit 4 wall collision, bit 5 fell, $66 pnum, $67 weight, $68 Agl, $71 Stk,
-;$73 aggres, $74 Fgt, $75 Chk.
+;Sort struct (SortCords, SCstruct each): the fields are named in stubinc/equals.inc.
 
 checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check wall
 									;collision (around the hot spot and the end of the stick) and player
@@ -133,7 +129,7 @@ checkcx								;d4 = obj. # * 2 for possible collision so check x range and dist
 									;then momentum moves from a3 to a2. Called from checkplcoll
 	movem.l	d0-d7/a0-a3,-(sp)
 	asl.w	#6,d4					;6 = scsize-1
-	movea.l	#SortCords,a2			;B04A = Start of player structs (SortCords)
+	movea.l	#SortCords,a2			;start of the player sort objects
 	adda.w	d4,a2					;add d4 to a2. a2 now address of SCStruct-1
 	btst	#pfnc,pflags(a2)		;test pfnc pflags = no collision mode
 	bne.w	.exit					;object has no collision mode on
@@ -423,7 +419,7 @@ CCStart								;Player a3 is checking player a2. Holds (SPAHold, SPAhook) go to
 	move.b	checking(a3),(TempWord1+1).w	;$75 is Chk attrib. in player struct
 	lsr.w	(TempWord1).w			;Shift right 1 bit
 	cmp.b	(TempWord1+1).w,d0		;d0 - Chk rating / 2
-	ble.w	.down					;branch if d0 less than FFBF13
+	ble.w	.down					;branch if d0 is not more
 	bsr.w	checkagr
 	cmp.w	#4,d0
 	bhi.w	rtss2
@@ -998,12 +994,9 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-;Sort struct (SortCords, $80 each): 0 Xpos, 4 attribute, 6 frame, $14 Ypos, $18 Zpos, $1C OldXpos, $20
-;OldYpos, $24 OldZpos, $28 Xvel, $2A Yvel, $2C Zvel, $32 impact, $34 position, $4E wallcos, $50 wallsin,
-;$52 SCnum, $58 SPA, $5E nopuck (byte), $62 pflags, $63 pflags2, $64 bit 3 one-timer, bit 4 wall collision,
-;$68 Agl, $76 handedness. Team struct from HmShots / AwShots (tmsize $364): $C tmscore, $18-$1C scorer and
-;assists, $22 tmsort, $24 tmap, $26 tmgoalie, $B4 / $CE goal / assist bytes per player, $342 goals by
-;period, $356 PP goals, $35A BA goals, $362 SH goals.
+;Sort struct (SortCords, SCstruct each) and team struct (tmstruct / AwShots, tmsize bytes): the fields are
+;named in stubinc/equals.inc. 94 adds goals by period and the power play, breakaway and shorthanded goals
+;at the end of the team struct.
 
 checkfight							;an rts: there is no fighting (93 looked for the start of a fight between
 									;a2 and a3 here). Called from checkcx
@@ -1952,14 +1945,8 @@ checkpuckcoll						;look for puck coll with players. a3 = puck. Clears Yvel past
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-;Sort struct (SortCords, $80 each): 0 Xpos, 4 attribute, 6 frame, $14 Ypos, $18 Zpos, $28 Xvel, $2A Yvel,
-;$2C Zvel, $34 position, $46 temp4, $48 temp5, $52 SCnum, $54 facedir, $58 SPA, $5A, $5E nopuck (byte), $60
-;newpos, $61 newpnum, $62 pflags, $63 pflags2, $64 bit 3 one-timer, $66 pnum, then the attributes setplayer
-;writes: $67 Wgt, $68 Agl, $69 Spd, $6A OfA, $6B DfA, $6C ShP, $6D ShA, $6E Pas, $6F jersey, $70 PS bias,
-;$71 Stk, $72 End, $73 Agr, $74 Fgt, $75 Chk, $76 handed.
-;Team struct from HmShots (tmsize $364): $E faceoffs won, $14 passes completed, $16 tmline, $1A / $1C
-;assists, $1E tmdata, $22 tmsort, $24 tmap, $26 tmgoalie, $30 tmflags, $32 tmpde, $66 tmpdst (-4 / -3
-;injured, -2 bench, -1 ice, >0 penalty box), $16A line sets.
+;Sort struct (SortCords, SCstruct each) and team struct (tmstruct / AwShots): the fields are named in
+;stubinc/equals.inc. setplayer writes the player attributes from weight to handed.
 
 puckstick							;puck collides with stick. a2 = player who collided, a3 = puck, d0 =
 									;distance^2 (from checkpuckcoll .ccx). A stick check on the puck carrier
@@ -2183,7 +2170,7 @@ puckglue							;part of puckstick that puckgoalie also branches to. Player a2 ta
 	jmp	setc1player
 puckbody							;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckcoll
 									;.ccx). The puck bounces off. A high puck (Zpos > 8) that is fast makes a2
-									;fall (FallDown, Zpos > $C); a slower one starts SPAcatch ($10D0) on a2
+									;fall (FallDown, Zpos > $C); a slower one starts SPAcatch on a2
 	btst	#pf3onetimer,pflags3(a2)
 	bne.w	rtss2
 	cmpi.w	#8,Zpos(a3)
@@ -2367,8 +2354,8 @@ puckgoalie							;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The
 	bne.w	.bounceoff				;branch if so
 	clr.w	Zvel(a3)				;clear puck Zvel
 	bra.w	puckglue
-.list	dc.w	$73,$6E				;save attribute offsets: aggress, passacc (92 had stickhand, shotacc)
-	dc.w	$70,$72					;spodds, endurance
+.list	dc.w	aggress,passacc		;save attribute offsets (92 had stickhand, shotacc)
+	dc.w	spodds,endurance
 .list2								;2 bit save odds per quadrant, one byte per goalie frame from SPFgoalie
 									;odds for stopping puck in each quadrant for each possible goalie frame
 	pix	1111,2131,1213				;ready/glover/glovel
@@ -2832,7 +2819,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 .nda
 	move.w	#$FFFF,tmpdst(a0,d3.w)	;clear out temp space
 	lsr.w	#1,d3					;shift d3 back to its original value
-	movea.l	tmdata(a0),a0			;Offset 1E from Team Struct = The address where the team's data is stored
+	movea.l	tmdata(a0),a0			;tmdata: the address of the team's data
 									;(roster, etc)
 	move.l	a0,-(sp)				;pushes starting position onto the stack
 	adda.w	8(a0),a0				;moves to offset where Off/Def byte is
@@ -2896,17 +2883,17 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	move.b	d3,weight(a3)			;store in player struct
 	move.b	1(a0),d3				;move Wgt/Agl byte to d3
 	andi.b	#$F,d3					;mask Agl nibble
-	move.w	#3,(TempWord2).w		;move 3 into BF14
+	move.w	#3,(TempWord2).w		;3 into TempWord2
 	jsr	(AttributeCalc).l			;attribute math and add hot/cold
 	move.b	d3,legstr(a3)			;move Agl byte to player struct
 	move.b	2(a0),d3				;load Spd/OfA byte to d3
 	lsr.b	#4,d3					;remove OfA nibble by shifting 4 bits right, moving Spd into lower nibble
-	move.w	#4,(TempWord2).w		;move 4 into BF14
+	move.w	#4,(TempWord2).w		;4 into TempWord2
 	jsr	(AttributeCalc).l
 	move.b	d3,legspd(a3)			;move Spd byte into player struct
 	move.b	2(a0),d3				;move Spd/OfA byte to d3
 	andi.b	#$F,d3					;mask d3 and pass only OfA nibble
-	move.w	#5,(TempWord2).w		;move 5 into BF14
+	move.w	#5,(TempWord2).w		;5 into TempWord2
 	jsr	(AttributeCalc).l
 	add.b	(PPBonus).w,d3			;add Bonsuses to OfA
 	add.b	(PKBonus).w,d3

@@ -180,7 +180,7 @@ ShootoutPath7						;ShootoutPaths path: x, y points; $80 in the high byte ends i
 									;sopathend, then sopathdir)
 	dc.w	$FFE6,$F8,0,$E0,$8020,2
 NextPathPoint						;Next point of shootout path sopath: sopathx / sopathy = x (turned by bit
-									;0 of $76(a3)) / y; at the end ($80) sflags7 bit 3, sopathend and
+									;0 of handed(a3)) / y; at the end ($80) sflags7 bit 3, sopathend and
 									;sopathdir
 	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.b	#$80,(sopathx).w
@@ -208,7 +208,7 @@ NextPathPoint						;Next point of shootout path sopath: sopathx / sopathy = x (t
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bottom net);
-									;within $A of it ($12 while $28 / $2A(a3) are 0) take the next one
+									;within $A of it ($12 while Xvel / Yvel(a3) are 0) take the next one
 									;(NextPathPoint). Called from asspuckc
 	movem.l	d2-d7/a0-a6,-(sp)
 	cmpi.b	#$80,(sopathx).w
@@ -428,7 +428,7 @@ PrintParenNumber					;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3 
 PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenchcheckl). For
 									;frames SPAboardfront / SPAboardback (y to $124 / $FEDC, or $116 / $FEEA
 									;by FallXPos) and SPAboardright / SPAbenchcheckr / SPAboardleft /
-									;SPAbenchcheckl (x to +-$82 / $88 by bit 3 of 4(a3)) of SPA(a3): move
+									;SPAbenchcheckl (x to +-$82 / $88 by attribute bit 3) of SPA(a3): move
 									;player a3 half way there. Called from updateplayers
 	cmpi.w	#SPAbenchcheckl,SPA(a3)
 	beq.w	.12
@@ -539,7 +539,7 @@ getFgtbyte							;d0 = fighting byte of a2 / 4. Called from setInjuryType
 	move.b	fighting(a2),d0			;move H/F bit into d0 (this is always even)
 	lsr.w	#2,d0					;shift 2 right (divide by 4)
 	rts
-chkFgtBit1							;test bit 1 of $74(a2). Called from setInjuryType
+chkFgtBit1							;test bit 1 of fighting(a2). Called from setInjuryType
 	btst	#1,fighting(a2)
 	rts
 RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when fox <= -$40 and
@@ -561,7 +561,7 @@ RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when
 	rts
 FaceoffAnims						;RandomFaceoffAnim animations
 	dc.w	3,5,3,1,5,2,3,3,$FFFF
-CheckScoreLeader					;Compare tmap (players on ice) of HmShots / AwShots and test tmteam of
+CheckScoreLeader					;Compare tmap (players on ice) of tmstruct / AwShots and test tmteam of
 									;the team with more for $13 (SJ); the result is not used (bne.w *+4).
 									;Called from puckfaceoff
 	movem.l	d0-d2/a0-a2,-(sp)
@@ -659,7 +659,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 .0
 	move	#$2700,sr
 	rts
-GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not tmteam of HmShots.
+GetTeamStruct						;a2 = tmstruct, or AwShots when team d2 is not tmteam of tmstruct.
 									;Called from PrintStartingLine
 	movea.l	#tmstruct,a2
 	cmp.w	tmteam(a2),d2
@@ -668,7 +668,7 @@ GetTeamStruct						;a2 = HmShots, or AwShots when team d2 is not tmteam of HmSho
 .x
 	rts
 CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for d4), and to the
-									;next long unless TempWord1 is 8 or $54(a3). Called from doinput_ispc
+									;next long unless TempWord1 is 8 or facedir(a3). Called from doinput_ispc
 	movem.l	d1-d7/a0,-(sp)
 	btst	#gmclock,(gmode).w
 	bne.w	.x
@@ -928,7 +928,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move.w	d4,(smallfontchars).w
 	movea.l	#SmallFontMap+8,a2
 	jsr	(DecompressGraphicsWithCallback).l
-	dc.l	$0D104567,$89ABCDEF		;remap table. FF210 + FF211 = Palette assignment for scrolling credits
+	dc.l	$0D104567,$89ABCDEF		;remap table: palette assignment for the scrolling credits
 	jsr	(printz).l
 	String	-(TXPAL1+TXMAP1),0,0
 	movea.l	#Credits,a1				;start of credits for scrolling

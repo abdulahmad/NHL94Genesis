@@ -1445,7 +1445,7 @@ PushNumber							;convert d0 into string format of base 10 number, no leading ze
 	rts
 PushNumberWidth						;right-justified number
 	movem.l	d0-d3,-(sp)				;push to stack
-	movea.w	#(PushWidthBuf+2-M68K_RAM),a1	;move address FFC00A into a1
+	movea.w	#(PushWidthBuf+2-M68K_RAM),a1	;a1 = the digits after the PushWidthBuf length word
 	moveq	#1,d2					;move 1 into d2
 	sub.w	d2,d1					;sub d2 from d1
 	bra.w	.loop					;branch
@@ -1472,13 +1472,13 @@ PushNumberWidth						;right-justified number
 	divu.w	#$A,d2					;divide d2 by 10 dec
 	bne.s	.loop2					;branch if not equal to 0
 	move.l	a1,d0					;move a1 into d0
-	subi.w	#$C008,d0				;sub C008 from d0
+	subi.w	#$C008,d0				;minus PushWidthBuf: the string length
 	btst	#0,d0					;test bit 0 of d0
 	beq.w	.00
 	clr.b	(a1)+					;clear byte at a1 and increment
 	addq.w	#1,d0					;add 1 to d0
 .00
-	movea.w	#(PushWidthBuf-M68K_RAM),a1	;move address FFC008 back into a1
+	movea.w	#(PushWidthBuf-M68K_RAM),a1	;a1 = PushWidthBuf again
 	move.w	d0,(a1)					;move d0 into a1 address location
 	movem.l	(sp)+,d0-d3				;push from stack
 	rts

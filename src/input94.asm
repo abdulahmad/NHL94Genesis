@@ -884,8 +884,8 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 .findplayer
 	moveq	#-1,d4					;look for closest and best player to pass to
 	moveq	#5,d3					;Set total number of players (6 total, set to 5)
-	movea.w	#(SortCords-M68K_RAM),a1	;B04A - Start of Home Players on Ice Arrays
-	cmpi.w	#6,SCnum(a3)			;compares 6 to offset 52 from a3 (current player with puck) to check if
+	movea.w	#(SortCords-M68K_RAM),a1	;start of the home players' sort objects
+	cmpi.w	#6,SCnum(a3)			;compares 6 to SCnum(a3) (current player with puck) to check if
 									;player is away team or home team
 	blt.w	.0						;Jump if player is Home, continue if Away
 	adda.w	#6*SCstruct,a1			;Switch to Away Team Players

@@ -53,7 +53,7 @@ ReadJoySwapPad4						;unused: the same for pad 4
 Set4WayPlayerStub					;An empty Set4WayPlayer (just rts): forcepldata calls it with SCnum $F
 									;when a goalie is pulled
 	rts
-Set4WayPlayer						;unused: put player a3's number ($52) in the home or away nibble of
+Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away nibble of
 									;PadControlBits34 (unless PadControlBits is -1)
 	cmpi.w	#$FFFF,(PadControlBits).w
 	beq.w	.x

@@ -49,8 +49,8 @@ asswingo							;player a3 is winger on offense
 	addq.w	#8,d2					;add 8 to d2 (d2 = 8)
 	cmp.w	#$58,d0					;'X'   ; compare top blue line with d0
 	blt.w	.de2					;branch if in neutral zone
-	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30 (currently offside)
-									;(C6FE Home, CA62 Away)
+	btst	#tmfoside,tmflags(a2)	;currently offside (tmfoside of the team's tmflags)
+									;(the home team's tmstruct or the away team's AwShots)
 	bne.w	.de2					;branch if set
 	addq.w	#8,d2					;add 8 to d2 (d2 = $10)
 	cmp.w	#$108,d3				;compare top goal line with d3
@@ -206,8 +206,8 @@ asscentero
 	cmp.w	#$58,d0					;'X'   ; check opponents blue line
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;Checks if currently offside
-									;C6FE - Home
-									;CA62 - Away
+									;the home team's (tmstruct) or the away team's
+									;(AwShots) flags word
 	bne.w	.de2					;branch if offside
 	addq.w	#8,d2
 	cmp.w	#$108,d0				;check opponents goal line
@@ -931,7 +931,7 @@ goaliesave
 	bne.w	.13
 	andi.w	#3,d3
 	beq.w	.13
-	cmpi.b	#$B,aggress(a3)			;73 = Glove Left. Compares 11 dec to GloveL
+	cmpi.b	#$B,aggress(a3)			;goalie glove save left rating 11 or more?
 	blt.w	.13						;branch if less than
 	move.w	#SPAgglovel2,d1			;reach out glove save
 .13
@@ -1899,7 +1899,7 @@ assnearest
 .nodec2
 	btst	#pfjoycon,pflags(a3)	;pfjoycon - check if controlled
 	bne.w	rtss2					;jump if controlled
-	btst	#tmfmid,tmflags(a2)		;check bit 2 of $30(a2)
+	btst	#tmfmid,tmflags(a2)		;tmfmid of tmflags(a2)
 	bne.w	.nodec22
 	tst.w	(puckc).w				;check if theres a puck carrier
 	bmi.w	.topuck					;jump if no puck carrier
@@ -1935,7 +1935,7 @@ assnearest
 .spdboost
 	btst	#5,(sflags6).w			;check if puckc is in the slot
 	beq.w	.noslot					;branch if not
-	move.b	legspd(a3),(TempLegSpd).w	;legspd into FFBF1E
+	move.b	legspd(a3),(TempLegSpd).w	;legspd into TempLegSpd
 	addq.b	#6,legspd(a3)			;add 6 to legspd
 	btst	#1,(sflags8).w			;check if crowd meter broken (always is)
 	bne.w	.spdboostex				;jump if set
