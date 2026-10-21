@@ -38,10 +38,10 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	rts
 .setiterator						;d0 = $E0
 	move.w	#$1FFF,d2				;$2000 bytes
-.SRAMloop
+.SRAMloop							;each SRAM byte
 	move.w	#1,d1					;bit 0, then up to bit 7
 	move.w	#7,d0
-.setto80
+.setto80							;each bit test
 	move.w	d1,(a0)
 	cmp.b	1(a0),d1
 	bne.w	.loadcolor
@@ -55,7 +55,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	move.l	#$560078,(a0)+
 	move.w	#$E0,d3					;green ($0E0), fading by $20 a frame
 	move.w	#$20,d4
-.loadcolor
+.loadcolor							;flash color reset
 	move.w	d3,d0					;move d3 (color of flashing screen) to d0
 .flashscreen						;loop
 	move.l	#CRAM_W,(Vctrl).l		;cram write 0: the background colour
@@ -67,7 +67,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	bra.s	.flashscreen
 .setiterator2						;d0 = $B0
 	move.w	#3,d1
-.SRAMloop2
+.SRAMloop2							;each test byte
 	adda.w	#1,a0					;odd byte
 	lsl.l	#8,d0
 	move.b	(a0)+,d0
@@ -89,26 +89,26 @@ ValidateSRAM						;Check the save RAM copy in M68K_RAM: byte $1FFF must be the s
 	move.w	#$1FFD,d1				;set iterator to  $1FFD
 	clr.w	d0						;clear d0
 	lea	(M68K_RAM).l,a0				;set a0 to start of RAM
-.loop
+.loop								;sum each byte
 	add.b	(a0)+,d0				;add value at a0 to d0 and increment a0
 	dbf	d1,.loop					;loop through RAM d1 times
 	clr.w	d1						;clear d1
 	cmp.b	1(a0),d0				;compare data at 1+a0 ($1FFF RAM address) to d0
 	beq.w	.0						;branch if equal
 	addq.w	#1,d1					;add 1 to d1
-.0
+.0									;checksum checked
 	not.w	d0						;toggle bits in d0 from 1->0 and vice-versa
 	cmp.b	(a0),d0					;compare byte at a0 ($1FFE) with d0
 	beq.w	.1						;branch if equal
 	addq.w	#1,d1					;add 1 to d1 if not
-.1									;d0 = a0, or from above
+.1									;complement checked
 	swap	d0						;swap d0 word size
 	move.b	(a0),d0					;move data at a0 into d0
 	not.b	d0						;toggle bits
 	cmp.b	1(a0),d0				;compare data a0+1 with d0
 	beq.w	.2						;branch if equal
 	addq.w	#1,d1					;add 1 to d1 if not
-.2
+.2									;check done
 	swap	d0						;swap d0 word size
 	tst.w	d1						;test d1
 	bne.w	.bad					;branch if d1 not 0
@@ -125,7 +125,7 @@ ClearSRAM							;Clears first $2000 of RAM and SaveRAM: zero M68K_RAM $0-$1FFF w
 	lea	(M68K_RAM).l,a0
 	move.w	#$1FFF,d0
 	clr.l	d1
-.loop
+.loop								;clear each byte
 	move.b	d1,(a0)+
 	dbf	d0,.loop
 	move.b	#$FF,(sramcleared).l
@@ -149,7 +149,7 @@ WriteSRAM							;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = fir
 	add.l	d0,d0
 	subq.l	#1,d1
 	clr.w	d2
-.loop
+.loop								;write each byte
 	move.b	(a0)+,d2
 	move.w	d2,0(a1,d0.w)
 	addq.w	#2,d0
@@ -167,7 +167,7 @@ MakeSRAMChecksum					;Read the whole save RAM to M68K_RAM, put the sum of bytes 
 	lea	(M68K_RAM).l,a0
 	clr.w	d0
 	move.w	#$1FFD,d1
-.loop
+.loop								;sum each byte
 	add.b	(a0)+,d0
 	dbf	d1,.loop
 	move.b	d0,1(a0)
@@ -184,7 +184,7 @@ ReadSRAM							;Copy d1 save RAM bytes from byte d0 (the odd bytes + d0 * 2) to 
 	movea.l	#SaveRAM,a1
 	add.l	d0,d0
 	subq.l	#1,d1
-.loop
+.loop								;copy each byte
 	move.b	1(a1,d0.w),d2
 	move.b	d2,(a0)+
 	addq.w	#2,d0

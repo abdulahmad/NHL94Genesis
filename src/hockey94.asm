@@ -46,7 +46,7 @@ StartGame							;reset game state for a new game, then start the first period
 	cmp.b	#$E0,d3
 	bne.w	.chkpen
 	move.w	#3,(Optperlen).w		;period length index 3 = 30 seconds
-.chkpen	clr.b	(gmode).w			;d3 <> $E0, or from above
+.chkpen	clr.b	(gmode).w			;clear the game mode
 	cmpi.w	#1,(OptPen).w
 	bne.w	.0
 	bset	#gmoffs,(gmode).w		;gmoffs: offsides pen. is active
@@ -62,7 +62,7 @@ StartGame							;reset game state for a new game, then start the first period
 	movea.l	#AwShots,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
-.noso	clr.w	(ScoreSumbytes).w	;bit 0 of gmode2 clear, or from above
+.noso	clr.w	(ScoreSumbytes).w	;no shootout: clear the summaries
 	clr.w	(PenSumLength).w
 	clr.w	(gsp).w					;first period
 	clr.w	(ChkCnt).w
@@ -98,7 +98,7 @@ ResetClock							;set period length and stop clock
 	tst.w	(OptPlayMode).w
 	bne.w	.0
 	move.w	#$258,d0				;OptPlayMode 0 overtime is always 10:00
-.0	move.w	d0,(gameclock).w		;gsp < 3 or OptPlayMode <> 0, or from above
+.0	move.w	d0,(gameclock).w		;set the clock
 	move.w	d0,(PerTimeTotal).w
 	move.w	d0,(periodendtime).w	;CheckLateGameSong trigger time =
 	asr.w	#1,d0
@@ -120,7 +120,7 @@ StartPer							;start a period: reset stack, rink and clock, face off, run the g
 	cmpi.w	#3,(gsp).w
 	bne.w	.reg
 	bset	#1,(sflags7).w			;overtime
-.reg	st	(faceoffanim).w			;gsp <> 3, or from above
+.reg	st	(faceoffanim).w			;start the faceoff
 	movea.w	#(Stack-M68K_RAM),sp
 	jsr	(p_turnoff).l				;sound off
 	jsr	(setupice).l
@@ -253,7 +253,7 @@ UpdateCwdExcite						;called once per second. Track peak and running total of cr
 	cmp.w	(MaxCwdExciteLvl).w,d0
 	bls.w	.less
 	move.w	d0,(MaxCwdExciteLvl).w	;new peak
-.less	ext.l	d0					;d0 <= MaxCwdExciteLvl, or from above
+.less	ext.l	d0					;add to the running total
 	add.l	d0,(SumCwdExciteLvl).w	;running total
 	addq.w	#1,(NumCwdExciteLvl).w	;sample count
 	subq.w	#1,(CwdExciteLvl).w		;decay
@@ -332,7 +332,7 @@ clockcont_0							;End of period. Also entered from puckfaceoff
 	btst	#gsftf,gsflags(a0)		;gsftf, gsflags(a0): teams are flipped
 	beq.w	.nf
 	eori.w	#2,d3					;gspobwins-gspotwins
-.nf	move.w	(HmGoals).w,d1			;gsftf clear, or from above
+.nf	move.w	(HmGoals).w,d1			;goal difference
 	sub.w	(AwGoals).w,d1
 	bpl.w	.ns1
 	eori.w	#2,d3					;gspobwins-gspotwins
@@ -369,7 +369,7 @@ clockcont_0							;End of period. Also entered from puckfaceoff
 	bne.w	.eop_ex
 	tst.w	(OptPlayMode).w
 	beq.s	.eog					;gsp 3 with OptPlayMode 0 ends the game
-.eop_ex	move.w	#PenEOP,d0			;gsp <> 3, or from above
+.eop_ex	move.w	#PenEOP,d0			;end of the period
 	jmp	AddPenalty2
 
 demoread							;monitor joystick if in demo mode (called every game loop)

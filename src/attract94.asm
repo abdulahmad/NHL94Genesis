@@ -43,5 +43,5 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	bne.w	.ex						;Button pressed
 	subq.w	#1,(seed).w
 	bpl.s	.wait
-.ex	move	#$2700,sr				;d1 <> 0, or from above
+.ex	move	#$2700,sr				;end of the wait
 	rts
