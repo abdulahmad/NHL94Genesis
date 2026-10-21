@@ -298,7 +298,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	movea.l	a0,a2
 	adda.l	#tmHotCold,a2
 	movea.l	tmdata(a0),a0
-	adda.w	6(a0),a0
+	adda.w	LineSets(a0),a0
 	movea.l	#TempBuffer,a1
 	move.w	#5,d0
 .player
