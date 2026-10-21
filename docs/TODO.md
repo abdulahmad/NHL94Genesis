@@ -20,3 +20,11 @@
 - is data.asm make sense, and if do bring to 93G
 - equate SRAM functions
 - ReadJoyData isn't matching from 94G to 93G
+
+## Open (added 2026-10-21)
+- [ ] Triage branches with open PRs: `cursor/msu-md-music-64b6` (#10), `feature/season-mode`, `patch/teamblock-vram`.
+- [ ] Module split, pending review of the improved 93G split.
+- [ ] Comment pass: carry the 93G full comment pass here once 93G is done (awaiting go-ahead).
+- [ ] Raw value: analyze `tst.w 2(a0)` in stats94 (different struct; not yet named).
+- [x] Build auto-sizes the ROM (`tools/fixrom.js`).
+- [x] README credits chaos, StaticEck, McMarkis and Drezz.
