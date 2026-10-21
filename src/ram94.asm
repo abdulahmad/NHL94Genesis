@@ -42,16 +42,16 @@ repeatdelayframes	rs.w	1
 asv	rs.w	1
 lldisp	rs.w	1
 periodendtime	rs.w	1
-SortCords	rs.w	896
-puckx	rs.w	10
-pucky	rs.l	1
-puckz	rs.w	8
-puckvx	rs.w	1
-puckvy	rs.w	1
-puckvz	rs.w	25
-puckx_nopuck	rs.w	1
-puckc	rs.b	3
-puck_pflags2	rs.b	157
+SortCords	rs.b	Sortobjs*SCstruct	;sort objects, SCstruct bytes each (93G); the puck is object puckscnum
+puckx	equ	SortCords+(puckscnum*SCstruct)+Xpos	;puck x position in its sort object (93G)
+pucky	equ	SortCords+(puckscnum*SCstruct)+Ypos	;puck y position
+puckz	equ	SortCords+(puckscnum*SCstruct)+Zpos	;puck height above the ice
+puckvx	equ	SortCords+(puckscnum*SCstruct)+Xvel	;puck x velocity
+puckvy	equ	SortCords+(puckscnum*SCstruct)+Yvel	;puck y velocity
+puckvz	equ	SortCords+(puckscnum*SCstruct)+Zvel	;puck z velocity
+puckx_nopuck	equ	SortCords+(puckscnum*SCstruct)+nopuck	;puck object nopuck word
+puckc	equ	SortCords+(puckscnum*SCstruct)+newpos	;puck carrier (93G: the newpos slot of the puck object)
+puck_pflags2	equ	SortCords+(puckscnum*SCstruct)+pflags2	;puck object pflags2
 Ylist	rs.w	16
 OOlistpos	rs.w	16
 OOlist	rs.w	8
@@ -98,10 +98,10 @@ passspeed	rs.w	1
 passplayer	rs.w	1
 glovecords	rs.w	1
 threat	rs.w	1
-puckcross	rs.w	1
-puckcross2	rs.w	1
-puckcross4	rs.w	1
-puckcross6	rs.w	1
+puckcross	rs.b	2*pcsize		;xcord / frames, top entry then bottom (93G rs.w 4)
+puckcross2	equ	puckcross+pcframes	;top entry frames
+puckcross4	equ	puckcross+pcsize	;bottom entry x
+puckcross6	equ	puckcross+pcsize+pcframes	;bottom entry frames
 lj1	rs.w	1
 lj2	rs.w	1
 lj3	rs.w	1
@@ -275,14 +275,14 @@ ScoreSumbytes	rs.w	1
 ScoreSum	rs.w	180
 PenSumLength	rs.w	1
 PenSum	rs.w	120
-tmstruct	rs.w	6
-HmGoals	rs.w	9
-HomeTeamRosterPtr	rs.w	419
-AwShots	rs.w	6
-AwGoals	rs.w	9
-AwayTeamRosterPtr	rs.w	419
+tmstruct	rs.b	tmsize			;home team struct (93G)
+HmGoals	equ	tmstruct+tmscore		;home score
+HomeTeamRosterPtr	equ	tmstruct+tmdata	;home team data address
+AwShots	rs.b	tmsize				;away team struct (93G awtmstruct; first field tmshots)
+AwGoals	equ	AwShots+tmscore			;away score
+AwayTeamRosterPtr	equ	AwShots+tmdata	;away team data address
 statsbuffer	rs.w	104
-gsstruct	rs.w	64
+gsstruct	rs.b	gssize*8		;8 game structures (93G gstruct)
 gamenum	rs.w	1
 postarts	rs.w	1
 bosgames	rs.w	1
