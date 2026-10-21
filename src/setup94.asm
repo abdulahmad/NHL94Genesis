@@ -1032,7 +1032,7 @@ DrawTreeArrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	jimdata(a1),a1
-	movea.w	#NoTiles,a2
+	movea.w	#null,a2
 	clr.w	d1
 	moveq	#2,d2
 	moveq	#$17,d3
@@ -1055,7 +1055,7 @@ DrawTeamBlocks						;Draw team block d1 (team*2) from the TeamBlocks map (Teambl
 .nohi
 	movea.l	#Teamblocksmap,a1
 	adda.l	jimdata(a1),a1
-	movea.w	#NoTiles,a2
+	movea.w	#null,a2
 	clr.w	d0
 	move.w	(a1),d2
 	moveq	#2,d3

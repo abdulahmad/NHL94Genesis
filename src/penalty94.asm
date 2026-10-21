@@ -1148,7 +1148,7 @@ EASNLogo							;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if
 	String	-(TXPRI+TXMAP1),1,$19
 	movea.l	#EASNmap,a1
 	adda.l	jimdata(a1),a1
-	movea.w	#NoTiles,a2
+	movea.w	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2					;width and height from the map header
@@ -1237,7 +1237,7 @@ linebar								;Draw the energy bar of line d0 for team a2 at printx/printy (bit
 	clr.w	d0
 	movea.l	#EnergyBarMap,a1
 	adda.l	jimdata(a1),a1
-	movea.w	#NoTiles,a2
+	movea.w	#null,a2
 	move.w	(a1),d2
 	moveq	#1,d3
 	move.w	(energybarchars).w,d4

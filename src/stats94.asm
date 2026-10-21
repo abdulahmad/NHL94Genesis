@@ -459,7 +459,7 @@ DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Edi
 	String	-TXMAP3,0,0
 	movea.l	#ScoutMap,a1
 	adda.l	jimdata(a1),a1
-	movea.w	#NoTiles,a2
+	movea.w	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
@@ -1908,7 +1908,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	String	-(TXPRI+TXMAP3),0,0
 	movea.l	#ScoutMap,a1
 	adda.l	jimdata(a1),a1
-	movea.w	#NoTiles,a2
+	movea.w	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
