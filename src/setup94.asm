@@ -10,12 +10,12 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#df32c,(disflags).w		;df32c
 	move.w	#$C000,(VmMAP2).w
-	move.w	#6,(Map2col1).w
+	move.w	#6,(Map2col).w
 	move.w	#$DC00,(VSPRITES).w
 	move.w	#$E000,(VmMAP1).w
-	move.w	#6,(Map1col1).w
+	move.w	#6,(Map1col).w
 	move.w	#$F000,(VmMAP3).w
-	move.w	#5,(Map3col1).w
+	move.w	#5,(Map3col).w
 	move.w	#$FC00,(VSCRLPM).w
 	moveq	#0,d0
 	bsr.w	setVram
@@ -44,7 +44,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	move.w	d4,(energybarchars).w	;energy bar chars
 	movea.l	#EnergyBarMap+8,a2
 	bsr.w	DecompressGraphicsPlain
-	move.w	d4,(animchars).w		;crowd chars
+	move.w	d4,(crowdvrcset).w		;crowd chars
 	movea.l	#Crowdframelist+8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	d4,(arenaanimchars).w
@@ -188,9 +188,9 @@ ReloadEnergyBarTiles				;Reload the energy bar tiles (EnergyBarMap+8) at energyb
 	move.w	(energybarchars).w,d4
 	movea.l	#EnergyBarMap+8,a2
 	bra.w	DecompressGraphicsPlain
-ReloadCrowdTiles					;Reload the crowd tiles (Crowdframelist+8) at animchars. Called from the
+ReloadCrowdTiles					;Reload the crowd tiles (Crowdframelist+8) at crowdvrcset. Called from the
 									;replay code and ReloadRinkGraphics
-	move.w	(animchars).w,d4
+	move.w	(crowdvrcset).w,d4
 	movea.l	#Crowdframelist+8,a2
 	bra.w	DecompressGraphicsPlain
 ReloadRefHorTiles					;Reload the horizontal ref tiles (RefMap2+8) at
@@ -219,9 +219,9 @@ setupTeamBlocksMap					;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C 
 	addi.w	#$2C,d4
 	movea.w	#(TeamBlockMap-M68K_RAM),a1
 	movea.l	#Teamblocksmap,a0
-	lea	8(a0),a2
+	lea	jimtilecount(a0),a2
 	bsr.w	DecompressGraphicsPlain
-	adda.l	4(a0),a0
+	adda.l	jimdata(a0),a0
 	move.l	a0,-(sp)
 	move.w	(HomeTeam).w,d0
 	move.w	(basetileoffset).w,d1
@@ -824,11 +824,11 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	#0,(VSCRLPM).w
 	move.w	#$BC00,(VSPRITES).w
 	move.w	#$B000,(VmMAP3).w
-	move.w	#6,(Map3col1).w
+	move.w	#6,(Map3col).w
 	move.w	#$C000,(VmMAP2).w
-	move.w	#7,(Map2col1).w
+	move.w	#7,(Map2col).w
 	move.w	#$E000,(VmMAP1).w
-	move.w	#7,(Map1col1).w
+	move.w	#7,(Map1col).w
 	move.w	#0,d0
 	bsr.w	setVram
 	bsr.w	printz
@@ -858,11 +858,11 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#3,d5
 	bsr.w	dobitmap
 	movea.l	#PlayoffSprite,a1
-	lea	8(a1),a2
+	lea	jimtilecount(a1),a2
 	adda.l	(a1),a1
 	moveq	#7,d0
 	movea.w	#(palfadenew+$40-M68K_RAM),a0
@@ -1031,7 +1031,7 @@ DrawTreeArrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx
 	movea.l	#Arrowsmap,a0
 	movea.l	a0,a1
 	adda.l	(a0),a0
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d1
 	moveq	#2,d2
@@ -1054,7 +1054,7 @@ DrawTeamBlocks						;Draw team block d1 (team*2) from the TeamBlocks map (Teambl
 	move.w	#$6000,(printa).w
 .nohi
 	movea.l	#Teamblocksmap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	move.w	(a1),d2

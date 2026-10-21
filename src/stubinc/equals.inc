@@ -372,3 +372,88 @@ LineDataBase equ $1EF6
 	IF 32<NumPlayoffTeams
 		inform	3,"The playoff draw only keeps 32 team bits"
 	ENDIF
+; Record and field offsets (docs: NHLPA93Genesis docs/file-formats.md for the containers and sprite entries)
+; .map.jim / .anim container header
+jimpalette equ 0					;long: offset of the palette ($FFFFFFFF none)
+jimdata equ 4						;long: offset of the map (.map.jim) or the frame table (.anim)
+jimtilecount equ 8					;word: tile count (bit 15 packed); the tiles follow (jimtiles)
+; .map.jim map section (at jimdata)
+mapwidth equ 0						;word: width in tiles
+mapheight equ 2						;word: height in tiles
+mapwords equ 4						;the map words
+; .anim sprite entry (8 bytes per sprite piece of a frame)
+seX equ 0							;word: x, signed, from the frame origin
+seY equ 2							;word: y, signed
+seTile equ 4						;word: tile, from the set's first tile
+seAttr equ 6						;word: priority, palette, vflip, hflip (bits 15-11), size code (low byte)
+seSize equ 7						;byte: VDP size code (low byte of seAttr)
+seLen equ 8
+; VDP sprite attribute table entry (Satt, 8 bytes)
+satY equ 0							;word: y + 128
+satSize equ 2						;byte: size code
+satLink equ 3						;byte: next sprite (0 ends the list)
+satTile equ 4						;word: priority, palette, flips, tile
+satX equ 6							;word: x + 128
+satLen equ 8
+; ScoreSum entry (6 bytes per goal)
+sstime equ 0						;word: period / time of the goal
+ssflags equ 2						;byte: 2 + skater difference (goal type); bit 7 = away team scored
+ssscorer equ 3						;byte: scorer
+ssassist1 equ 4						;byte: first assist ($FF none)
+ssassist2 equ 5						;byte: second assist ($FF none)
+sssize equ 6
+; PenSum entry (4 bytes per penalty)
+pstime equ 0						;word: period / time
+pspen equ 2							;byte: penalty (Penaltylist offset); bit 7 = away team
+psplayer equ 3						;byte: penalized player
+pssize equ 4
+; PenBuf entry (2 bytes per player in the box)
+pbpen equ 0							;byte: penalty number (0 = free)
+pbscnum equ 1						;byte: SCnum of the player
+; puckcross entry (4 bytes; entry 0 top, entry 1 bottom)
+pcx equ 0							;word: x coordinate
+pcframes equ 2						;word: frames
+pcsize equ 4
+; fofdata2 / fofdata: big faceoff sprites (4 bytes each: home center, visiting center, then fofdata = the ref)
+foframe equ 0						;word: frame
+foattr equ 2						;word: attribute (bit 11 x flip)
+fosize equ 4
+; PlList: 6 wanted roster players, then their positions
+plpos equ 6
+; Save RAM records, read and written through recordbuf. Each record is a value, its holder, the
+; opponent team and the opponent user (recordbuf, ram_addrs.inc).
+; User record block (TeamRecBase + user * 16)
+urgoals equ 0						;most goals in a game
+urgoalsteam equ 1					;the user's team in that game
+urgoalsopp equ 2					;opponent team
+urgoalsoppuser equ 3				;opponent user
+ursaves equ 4						;most saves in a game
+ursavesteam equ 5
+ursavesopp equ 6
+ursavesoppuser equ 7
+urwins equ 8						;word, high byte first: wins
+urgames equ $A						;word, high byte first: games (stops at 9000)
+urties equ $C						;word, high byte first: ties
+; Crowd record block (CrowdRecBase + team * 16)
+crgoals equ 0						;most goals by the team in a game
+crgoalsuser equ 1					;the user playing the team
+crgoalsopp equ 2					;opponent team
+crgoalsoppuser equ 3				;opponent user
+crsaves equ 4						;most saves by one of its goalies
+crsavesuser equ 5
+crsavesopp equ 6
+crsavesoppuser equ 7
+crpeak equ 8						;loudest crowd (home games)
+crpeakuser equ 9
+crpeakopp equ $A
+crpeakoppuser equ $B
+; Player record (4 bytes, PlayerRecordOffsets)
+prbest equ 0						;best goals (saves for goalies) in a game
+pruser equ 1						;the user playing his team
+propp equ 2							;opponent team
+proppuser equ 3						;opponent user
+; Team block .sr bytes (at ScoutReport)
+srodds equ 0						;scoring odds of simulated games: bits 4-6 offense row, 0-2 defense row
+srpppk equ 1						;high nibble penalty kill deficit, low nibble power play bonus
+srhomeaway equ 2					;high nibble home bonus, low nibble visitor bonus (negated)
+srforwards equ 3					;high nibble: forward count (GetForwardCount); low nibble not read

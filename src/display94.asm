@@ -121,7 +121,7 @@ setvideo							;this is not vblank code but sets up ram for vblank transfers. Ca
 	clr.l	(a6)+
 	clr.l	(a6)+
 .n
-	clr.b	-5(a6)					;end sprite list
+	clr.b	satLink-satLen(a6)		;end sprite list
 	move.l	a6,d0
 	subi.l	#Satt,d0
 	lsr.w	#1,d0					;words
@@ -153,7 +153,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	beq.w	.0
 	movea.l	#RevRinkTilelist,a0
 .0
-	adda.l	4(a0),a0				;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
+	adda.l	jimdata(a0),a0			;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
 									;leave the cmp flags)
 	blt.w	.su0					;row went up
 .sd
@@ -169,7 +169,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	move.w	(a0),4(a5)
 	mulu.w	(a0),d0
 	add.w	d0,d0
-	lea	4(a0,d0.w),a1
+	lea	mapwords(a0,d0.w),a1
 	move.l	a1,(a5)
 	addq.w	#8,a5
 	subq.w	#1,d1
@@ -189,7 +189,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	move.w	(a0),4(a5)
 	mulu.w	(a0),d0
 	add.w	d0,d0
-	lea	4(a0,d0.w),a1
+	lea	mapwords(a0,d0.w),a1
 	move.l	a1,(a5)
 	addq.w	#8,a5
 	addq.w	#1,d1
@@ -240,7 +240,7 @@ checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, w
 	bmi.w	.next
 	beq.w	.next
 	movea.l	#FaceOffSprites,a2
-	adda.l	4(a2),a2
+	adda.l	jimdata(a2),a2
 	add.w	d4,d4
 	move.w	2(a2,d4.w),d5
 	sub.w	0(a2,d4.w),d5
@@ -248,14 +248,14 @@ checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, w
 	subq.w	#1,d5
 	adda.w	0(a2,d4.w),a2
 .loop2
-	move.w	2(a2),d2
+	move.w	seY(a2),d2
 	addi.w	#$80,d2
 	add.w	(fodropy).w,d2
 	move.w	d2,(a6)
 	move.w	(a2),d2
-	btst	#3,2(a3)				;x flip
+	btst	#3,foattr(a3)			;x flip
 	beq.w	.0
-	move.b	7(a2),d2
+	move.b	seSize(a2),d2
 	andi.w	#$C,d2
 	addq.w	#4,d2
 	asl.w	#1,d2
@@ -264,17 +264,17 @@ checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, w
 .0
 	addi.w	#$80,d2
 	add.w	(fodropx).w,d2
-	move.w	d2,6(a6)
-	move.b	7(a2),2(a6)
-	move.b	d6,3(a6)
-	move.w	6(a2),d2
+	move.w	d2,satX(a6)
+	move.b	seSize(a2),satSize(a6)
+	move.b	d6,satLink(a6)
+	move.w	seAttr(a2),d2
 	andi.w	#$F800,d2
-	or.w	4(a2),d2
-	move.w	2(a3),d1
+	or.w	seTile(a2),d2
+	move.w	foattr(a3),d1
 	andi.w	#$F800,d1
 	eor.w	d1,d2
 	add.w	(faceoffvrcset).w,d2
-	move.w	d2,4(a6)
+	move.w	d2,satTile(a6)
 	addq.w	#1,d6
 	addq.w	#8,a6
 	addq.w	#8,a2
@@ -326,7 +326,7 @@ SetSframe							;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = 
 	cmp.w	#MaxSprites,d6			;MaxSprites
 	bge.w	rtss2
 	movem.l	d0-d5/a0,-(sp)
-	adda.l	4(a0),a0
+	adda.l	jimdata(a0),a0
 	add.w	d2,d2
 	move.w	2(a0,d2.w),d4
 	sub.w	0(a0,d2.w),d4
@@ -334,13 +334,13 @@ SetSframe							;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = 
 	subq.w	#1,d4					;number of sprites in frame
 	adda.w	0(a0,d2.w),a0
 .loop
-	move.w	2(a0),(a6)
+	move.w	seY(a0),(a6)
 	add.w	d1,(a6)+
-	move.b	7(a0),(a6)+
+	move.b	seSize(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	6(a0),d2
+	move.w	seAttr(a0),d2
 	andi.w	#$F800,d2
-	add.w	4(a0),d2
+	add.w	seTile(a0),d2
 	add.w	d3,d2
 	move.w	d2,(a6)+
 	move.w	(a0),(a6)
@@ -359,7 +359,7 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	bne.w	.x						;branch if so
 	movea.l	#Crowdframelist,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	(Hpos).w,d4
 	move.w	(Vpos).w,d5
 	btst	#sfhor,(sflags).w
@@ -423,24 +423,24 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
 .loop
-	cmp.w	2(a0),d2
+	cmp.w	seY(a0),d2
 	bgt.w	.next
-	cmp.w	2(a0),d3
+	cmp.w	seY(a0),d3
 	blt.w	.next
 	cmp.w	(a0),d0
 	bgt.w	.next
 	cmp.w	(a0),d1
 	blt.w	.next
-	move.w	2(a0),d5
+	move.w	seY(a0),d5
 	addi.w	#$70,d5
 	sub.w	d2,d5
 	move.w	d5,(a6)+
-	move.b	7(a0),(a6)+
+	move.b	seSize(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	6(a0),d5
+	move.w	seAttr(a0),d5
 	andi.w	#$F800,d5
-	add.w	4(a0),d5
-	add.w	(animchars).w,d5		;crowd start char
+	add.w	seTile(a0),d5
+	add.w	(crowdvrcset).w,d5		;crowd start char
 	move.w	d5,(a6)+
 	move.w	(a0),d5
 	addi.w	#$70,d5
@@ -536,7 +536,7 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	beq.w	rtss2
 	movea.w	#(clockram+6-M68K_RAM),a0	;end of the 5 word clock buffer; written backward
 	movea.l	#SmallFontMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	$78(a1),d0				;4+(':'*2)
 	add.w	(smallfontchars).w,d0
 	ori.w	#$8000,d0
@@ -826,9 +826,9 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 RenderSmallFontChar					;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
 									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
 	movea.l	#SmallFontMap,a3
-	adda.l	4(a3),a3
+	adda.l	jimdata(a3),a3
 	add.w	d2,d2
-	move.w	4(a3,d2.w),d2
+	move.w	mapwords(a3,d2.w),d2
 	andi.w	#$7FF,d2
 	asl.w	#5,d2					;32 bytes per tile
 	movea.l	#SmallFontMap,a3
@@ -868,7 +868,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	move.w	frame(a3),d4			;move frame back into d4
 	andi.w	#$7FF,d4				;pass first 11 bits
 	movea.l	#Sprites,a2				;sprite frame list
-	adda.l	4(a2),a2				;add long word at offset 4 to a2 address. a2 now
+	adda.l	jimdata(a2),a2			;add long word at offset 4 to a2 address. a2 now
 	add.w	d4,d4					;add d4 to itself
 	cmp.w	2(a2),d4				;compare the word at 2(a2) to d4
 	bge.w	.exit					;branch if greater than or equal
@@ -890,9 +890,9 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	move.w	d0,oldframe(a3)			;move frame into old frame
 .nn
 	movem.w	d0-d4,-(sp)				;push to stack
-	move.w	4(a2),d2				;move 4 + a2 data into d2 (tile pointer bytes)
+	move.w	seTile(a2),d2			;move 4 + a2 data into d2 (tile pointer bytes)
 	clr.w	d4						;clear d4
-	move.b	7(a2),d4				;move 7 + a2 data into d4 (sizetab byte)
+	move.b	seSize(a2),d4			;move 7 + a2 data into d4 (sizetab byte)
 	movea.l	#sizetab,a0				;move address into a0
 	move.b	0(a0,d4.w),d4			;move data at a0+d4 into d4 - tiles used in sprite
 	cmp.w	8(sp),d4				;compare current d4 to previous d4
@@ -930,22 +930,22 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 .noref
 	move.w	(sp)+,d0				;pop from stack
 	movem.w	d0-d2,-(sp)				;push to stack
-	move.w	2(a2),d2				;move data at 2+a2 into d2 - Y global
+	move.w	seY(a2),d2				;move data at 2+a2 into d2 - Y global
 	btst	#4,attribute(a3)		;check for Y flip
 	beq.w	.noyflip				;branch if no y flip
-	move.b	7(a2),d2				;move byte 7 (sizetab byte) into d2
+	move.b	seSize(a2),d2			;move byte 7 (sizetab byte) into d2
 	andi.w	#3,d2					;pass bit 1 and 2
 	addq.w	#1,d2					;add 1
 	asl.w	#3,d2					;mult by 8
 	neg.w	d2						;negate d2
-	sub.w	2(a2),d2				;sub Y global from d2
+	sub.w	seY(a2),d2				;sub Y global from d2
 .noyflip
 	add.w	d2,d1					;add d2 to d1 (d1=Ypos of Sort Cord)
 	move.w	d1,(a6)					;move sprite's Ypos into a6 data (Satt)
 	move.w	(a2),d2					;move data at a2 to d2 (X global into d2)
 	btst	#3,attribute(a3)		;check for x flip
 	beq.w	.noxflip				;branch if no x flip
-	move.b	7(a2),d2				;move data at 7+a2 into d2
+	move.b	seSize(a2),d2			;move data at 7+a2 into d2
 	andi.w	#$C,d2					;pass bit 3 and 4
 	addq.w	#4,d2					;add 4
 	asl.w	#1,d2					;mult by 2
@@ -953,10 +953,10 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	sub.w	(a2),d2					;sub data at a2 from d2
 .noxflip
 	add.w	d2,d0					;add d2 to d0 (d0 = Xpos of Sort Cord)
-	move.w	d0,6(a6)				;move sprite's Xpos into 6+a6 position
-	move.b	7(a2),2(a6)				;move sizetab byte into 2+a6
-	move.b	d6,3(a6)				;move d6 (link counter) into 3+a6
-	move.w	6(a2),d2				;move 6+a2 into d2 (to be used to check palette and set HVFlip)
+	move.w	d0,satX(a6)				;move sprite's Xpos into 6+a6 position
+	move.b	seSize(a2),satSize(a6)	;move sizetab byte into 2+a6
+	move.b	d6,satLink(a6)			;move d6 (link counter) into 3+a6
+	move.w	seAttr(a2),d2			;move 6+a2 into d2 (to be used to check palette and set HVFlip)
 	move.w	attribute(a3),d0		;move attribute into d0
 	eor.w	d0,d2					;EOR d0 with d2
 	andi.w	#$F800,d2				;pass top 5 bits
@@ -968,7 +968,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 .nospec
 	or.b	VRoffs(a3,d5.w),d2		;OR Vroffs of a3+d5 to d2
 	add.w	VRchar(a3),d2			;add VRchar to d2
-	move.w	d2,4(a6)				;move d2 into 4+a6 (Satt)
+	move.w	d2,satTile(a6)			;move d2 into 4+a6 (Satt)
 	movem.w	(sp)+,d0-d2				;pop from stack
 	addq.w	#1,d6					;add 1 to d6
 	addq.w	#8,a6					;add 8 to a6

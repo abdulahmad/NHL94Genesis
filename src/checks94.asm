@@ -3247,15 +3247,15 @@ puckfaceoff2
 	move.w	#$18,(palcount).w
 	movea.l	#fofdata2,a0
 	move.w	#1,(a0)
-	move.w	#$8000,2(a0)
-	move.w	#4,4(a0)
-	move.w	#$A800,6(a0)
-	move.w	#7,8(a0)				;frame of ref
-	move.w	#$8000,$A(a0)
+	move.w	#$8000,foattr(a0)
+	move.w	#4,fosize+foframe(a0)
+	move.w	#$A800,fosize+foattr(a0)
+	move.w	#7,2*fosize+foframe(a0)	;frame of ref
+	move.w	#$8000,2*fosize+foattr(a0)
 	btst	#gmdir,(gmode).w		;#gmdir - 0 = home team goes up
 	bne.w	.nfl
-	eori.w	#$800,2(a0)
-	eori.w	#$800,6(a0)
+	eori.w	#$800,foattr(a0)
+	eori.w	#$800,fosize+foattr(a0)
 .nfl
 	move.w	#$FFFF,(fodir1).w		;-1
 	move.w	#$FFFF,(fodir2).w		;-1
@@ -3384,7 +3384,7 @@ Endfaceoff							;drop the puck: pick the faceoff winner and send the puck off
 	moveq	#$10,d2
 	move.w	(a1),d1
 	sub.b	-1(a0,d1.w),d2
-	move.w	4(a1),d1
+	move.w	fosize+foframe(a1),d1
 	add.b	-1(a0,d1.w),d2
 	moveq	#$21,d0
 	bsr.w	randomd0
@@ -3392,7 +3392,7 @@ Endfaceoff							;drop the puck: pick the faceoff winner and send the puck off
 	bls.w	.p1won
 	addq.w	#4,a1
 .p1won
-	btst	#3,2(a1)
+	btst	#3,foattr(a1)
 	beq.w	.pos
 	move.w	(fodir2).w,d3
 	neg.w	d4
@@ -3446,8 +3446,8 @@ pucknorm
 	move.w	#$78,temp2(a3)			;'x' ; temp2
 .nna
 	movea.w	#(puckcross-M68K_RAM),a1	;table for puck crossing lines
-	sub.w	d7,2(a1)				;sub elapse frames from time til crossing
-	sub.w	d7,6(a1)
+	sub.w	d7,pcframes(a1)			;sub elapse frames from time til crossing
+	sub.w	d7,pcsize+pcframes(a1)
 	sub.w	d7,temp1(a3)			;temp1
 	bpl.w	.0
 	addq.w	#5,temp1(a3)
@@ -3786,7 +3786,7 @@ findpc
 	asr.l	#4,d2					;shift 4 bits right (divide by 16)
 	divs.w	(puckvy).w,d2			;divide puckvy into d2
 	bmi.w	.nocross				;branch if negative
-	move.w	d2,2(a1)				;time until crossing in frames (puckcross y)
+	move.w	d2,pcframes(a1)			;time until crossing in frames (puckcross y)
 	muls.w	(puckvx).w,d0			;mult puckvx with d0
 	divs.w	(puckvy).w,d0			;divide puckvy into d0
 	bvs.w	.nocross				;branch if overflow set
@@ -3810,7 +3810,7 @@ findpc
 	move.w	d0,(a1)					;move d0 into puckcross
 	bra.w	.next
 .nocross
-	move.w	#$FFFF,2(a1)			;move -1 into puckcross y
+	move.w	#$FFFF,pcframes(a1)		;move -1 into puckcross y
 .next
 	addq.w	#4,a1					;add 4 to puckcross (to move to the other goal line)
 	rts

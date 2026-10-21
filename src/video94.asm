@@ -718,7 +718,7 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 	move.w	#VDPR_MODE1+$04,Vctrl-Vdata(a0)	;512 color palette enable
 	move.w	#VDPR_MODE2+$64,Vctrl-Vdata(a0)
 	move.w	#$9001,d0				;playfield is 64x32
-	cmpi.w	#6,(Map1col1).w
+	cmpi.w	#6,(Map1col).w
 	beq.w	.i64
 	move.w	#$9003,d0
 .i64
@@ -1098,7 +1098,7 @@ Framer
 	move.w	(printa).w,d2
 	add.w	(framercset).w,d2
 	movea.l	#FramerMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	addq.w	#4,a1
 	clr.w	d4
 	bsr.w	.tbline
@@ -1192,8 +1192,8 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	beq.w	.4
 	movea.l	#PrintFont2Map,a2
 .4
-	adda.l	4(a2),a2
-	move.w	4(a2,d0.w),d0
+	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
 	move.w	(printfontset).w,d1
 	add.w	0(a3,d1.w),d0
 .p
@@ -1336,8 +1336,8 @@ print
 	beq.w	.2
 	movea.l	#PrintFont2Map,a2
 .2
-	adda.l	4(a2),a2
-	move.w	4(a2,d0.w),d0
+	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
 	btst	#3,(sflags6).w
 	beq.w	.3
 	add.w	(setupfontchars).w,d0
@@ -1589,14 +1589,14 @@ PrintBigChar						;print big font char d0 (ascii) through bfasciicon
 .0
 	asl.w	#1,d1
 	movea.l	#BigFontMap,a0
-	adda.l	4(a0),a0
+	adda.l	jimdata(a0),a0
 .loop
-	move.w	4(a0,d1.w),d3
+	move.w	mapwords(a0,d1.w),d3
 	bsr.w	PutBigTile
 	move.w	(a0),d7
 	asl.w	#1,d7
 	add.w	d7,d1
-	move.w	4(a0,d1.w),d3
+	move.w	mapwords(a0,d1.w),d3
 	sub.w	d7,d1
 	addq.w	#1,d5
 	bsr.w	PutBigTile

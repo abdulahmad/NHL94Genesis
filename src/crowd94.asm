@@ -7,9 +7,9 @@ LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (Rea
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	8(a0),d0
+	move.b	crpeak(a0),d0
 	beq.w	.none
 	andi.w	#$FF,d0
 	bra.w	.ex

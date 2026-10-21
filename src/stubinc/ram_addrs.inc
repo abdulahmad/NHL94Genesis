@@ -7,17 +7,17 @@ replayend equ $FFFFAF54				;end of the replay frames ($62 bytes each from M68K_R
 VSCRLPM equ $FFFFB000
 VSPRITES equ $FFFFB002
 VmMAP1 equ $FFFFB004
-Map1col1 equ $FFFFB006
+Map1col equ $FFFFB006
 VmMAP2 equ $FFFFB008
-Map2col1 equ $FFFFB00A
+Map2col equ $FFFFB00A
 VmMAP3 equ $FFFFB00C
-Map3col1 equ $FFFFB00E
+Map3col equ $FFFFB00E
 BigFontchars equ $FFFFB010
 smallfontchars equ $FFFFB012
 smallfont2chars equ $FFFFB014
 energybarchars equ $FFFFB016
 rinkvrcset equ $FFFFB018
-animchars equ $FFFFB01A				;94 keeps the crowd tiles 1st vram char here
+crowdvrcset equ $FFFFB01A			;94 keeps the crowd tiles 1st vram char here
 faceoffvrcset equ $FFFFB01C
 framercset equ $FFFFB01E
 EASNcset equ $FFFFB020
@@ -299,6 +299,7 @@ ThirdPBonus equ $FFFFCF30
 HmAwBonus equ $FFFFCF31
 callbackPtr equ $FFFFCF32
 ThreeStars equ $FFFFCF36
+recordbuf equ ThreeStars			;the save RAM record staging buffer (shares ThreeStars)
 teamrecbuf equ $FFFFCFFE			;SRAM team record buffer: the 16 byte record of a team (ReadCrowdRecord),
 									;byte 8 crowd record, byte 9 its name number
 nibblebuffer equ $FFFFD036

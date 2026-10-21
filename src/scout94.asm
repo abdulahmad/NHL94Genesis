@@ -92,8 +92,8 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	movea.l	(sp)+,a0
 	jsr	(BuildHotColdLists).l		;again with the new tables
 	bclr	#df32c,(disflags).w		;df32c
-	move.w	#6,(Map1col1).w
-	move.w	#6,(Map2col1).w
+	move.w	#6,(Map1col).w
+	move.w	#6,(Map2col).w
 	move.w	#0,d0					;fade to color
 	jsr	(setVram).l
 	move.w	#2,d4					;vram chars from 2
@@ -157,7 +157,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$C,d5					;color fam 3-4
 	jsr	(dobitmap).l
 	movea.l	#HotIconMap+8,a2
@@ -367,7 +367,7 @@ DrawMatchupPicture					;Draw player picture a0 at printx / printy with the Pictu
 	tst.l	(a2)					;no map?
 	bne.w	.0
 	movea.l	#PicturePalette,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	tst.l	(a2)+
 	bra.w	.1
 .0

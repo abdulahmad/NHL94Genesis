@@ -310,7 +310,7 @@ ShowReplayIcon						;Show the replay icon and start the $F0 frame replayicontime
 	beq.w	.0						;branch if not
 	movea.l	#RevRinkTilelist,a1
 .0
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	bra.w	dobitmap
 EraseReplayIcon						;Erase the 8 x 4 replay icon (replayicontimer timer ran out)
@@ -331,7 +331,7 @@ ShowReplayBanner					;Show ReplayMap at 0,0 (16 x 11) and stop the replayicontim
 	move.w	(ExtraChars).w,d4
 	move.w	#0,d5
 	movea.l	#ReplayMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	bra.w	dobitmap
 EraseReplayBanner					;Erase the 16 x 11 area ShowReplayBanner drew

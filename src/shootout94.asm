@@ -461,12 +461,12 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	jsr	(printz).l
 	String	-TXMAP3,0,0
 	movea.l	#ScoutMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#1,d4
 	moveq	#0,d5
 	jsr	(dobitmap).l

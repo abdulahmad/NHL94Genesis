@@ -95,18 +95,18 @@ ClearWinRecords						;Clear bytes 8-$B of the 8 ThreeStars records and write the
 									;RecordHoldersScreen
 									;(Record Holders)
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.w	#7,d7
 .loop
-	clr.b	8(a0)
-	clr.b	9(a0)
-	clr.b	$A(a0)
-	clr.b	$B(a0)
+	clr.b	urwins(a0)
+	clr.b	urwins+1(a0)
+	clr.b	urgames(a0)
+	clr.b	urgames+1(a0)
 	adda.w	#$10,a0
 	dbf	d7,.loop
 	move.l	#TeamRecBase,d0
 	move.l	#$80,d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(WriteSRAM).l
 	jsr	(MakeSRAMChecksum).l
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -594,7 +594,7 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	clr.l	(a6)+
 	clr.l	(a6)+
 .0
-	clr.b	-5(a6)
+	clr.b	satLink-satLen(a6)
 	move.l	a6,d0
 	subi.l	#Satt,d0
 	lsr.w	#1,d0
@@ -604,11 +604,11 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 									;button (waitx). Called from Begin (attract mode)
 	move.l	#vb2,(VBint).w
 	bclr	#df32c,(disflags).w
-	move.w	#5,(Map3col1).w
+	move.w	#5,(Map3col).w
 	move.w	#$A000,(VmMAP2).w
-	move.w	#7,(Map2col1).w
+	move.w	#7,(Map2col).w
 	move.w	#$C000,(VmMAP1).w
-	move.w	#7,(Map1col1).w
+	move.w	#7,(Map1col).w
 	move.w	#$F000,(VmMAP3).w
 	move.w	#$F800,(VSPRITES).w
 	move.w	#$FC00,(VSCRLPM).w
@@ -629,7 +629,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	clr.w	d4
 	moveq	#$F,d5
 	jsr	(dobitmap).l
@@ -643,7 +643,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
 	move.w	#$18,(palcount).w
@@ -823,11 +823,11 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move.w	(HVcount).l,(seed+2).w
 	move.l	#VBlank_TitleScreen,(VBint).l
 	bset	#df32c,(disflags).w
-	move.w	#5,(Map3col1).w
+	move.w	#5,(Map3col).w
 	move.w	#$A000,(VmMAP2).w
-	move.w	#7,(Map2col1).w
+	move.w	#7,(Map2col).w
 	move.w	#$C000,(VmMAP1).w
-	move.w	#7,(Map1col1).w
+	move.w	#7,(Map1col).w
 	move.w	#$F000,(VmMAP3).w
 	move.w	#$F800,(VSPRITES).w
 	move.w	#$FC00,(VSCRLPM).w
@@ -893,7 +893,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#8,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
@@ -906,7 +906,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
@@ -919,7 +919,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#8,d5
 	jsr	(dobitmap).l
 	clr.w	(palfadenew).w
@@ -1259,7 +1259,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#0,d5
 	jsr	(dobitmap).l
 .x

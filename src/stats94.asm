@@ -16,12 +16,12 @@ ShowScores							;"Scores" screen: the other games of the night in gsstruct over
 	jsr	(printbigz).l
 	String	-(TXPRI+TXMAP3),$E,3,'Scores',-(TXPRI+TXMAP3),$B,1
 	movea.l	#ScoresMap,a1
-	lea	8(a1),a2
-	adda.l	4(a1),a1
+	lea	jimtilecount(a1),a2
+	adda.l	jimdata(a1),a1
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	clr.w	d5
 	jsr	(dobitmap).l
 	jsr	(printsmallz).l
@@ -458,12 +458,12 @@ DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Edi
 	jsr	(printz).l
 	String	-TXMAP3,0,0
 	movea.l	#ScoutMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#1,d4
 	moveq	#0,d5
 	jsr	(dobitmap).l
@@ -1127,7 +1127,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#1,(printx).w
 	jsr	(FormatAndPrintTime).l
 	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#7,2(a0,d3.w)
+	btst	#7,ssflags(a0,d3.w)
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0
@@ -1138,18 +1138,18 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	jsr	(print).l
 	move.w	#$23,(printx).w
 	lea	GoalTypeTbl(pc),a1
-	move.b	2(a0,d3.w),d0
+	move.b	ssflags(a0,d3.w),d0
 	andi.w	#$7F,d0
 	jsr	(Fprintsmall).l
 	move.w	#$10,(printx).w
-	move.b	3(a0,d3.w),d0
+	move.b	ssscorer(a0,d3.w),d0
 	bsr.w	PrintScorerName
 	move.w	#$E000,(printa).w
 	move.w	#$12,(printx).w
-	move.b	4(a0,d3.w),d0
+	move.b	ssassist1(a0,d3.w),d0
 	bsr.w	PrintScorerName
 	move.w	#$12,(printx).w
-	move.b	5(a0,d3.w),d0
+	move.b	ssassist2(a0,d3.w),d0
 PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	ext.w	d0
 	bmi.w	.0
@@ -1306,7 +1306,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	move.w	#1,(printx).w
 	jsr	(FormatAndPrintTime).l
 	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#7,2(a0,d3.w)
+	btst	#7,pspen(a0,d3.w)
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0
@@ -1315,7 +1315,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	adda.w	(a1),a1
 	move.w	#$C,(printx).w
 	jsr	(print).l
-	move.b	2(a0,d3.w),d0
+	move.b	pspen(a0,d3.w),d0
 	andi.w	#$7F,d0
 	movea.l	#Penaltylist,a3
 	adda.w	0(a3,d0.w),a3
@@ -1326,7 +1326,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	jsr	(print).l
 	move.w	#$10,(printx).w
 	clr.w	d0
-	move.b	3(a0,d3.w),d0
+	move.b	psplayer(a0,d3.w),d0
 	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	addq.w	#1,(printy).w
@@ -1823,9 +1823,9 @@ PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteL
 	bmi.w	.x
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	8(a0),d0
+	move.b	crpeak(a0),d0
 	bne.w	.gotarena
 	move.b	#$50,d0
 .gotarena
@@ -1845,9 +1845,9 @@ PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteL
 	jsr	(GetLeagueCrowdRecord).l
 	move.w	d0,d1
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	8(a0),d0
+	move.b	crpeak(a0),d0
 	bne.w	.gotleague
 	move.w	#$50,d0
 .gotleague
@@ -1891,7 +1891,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	move.l	#0,(a0)
 .vdpregs
 	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)
-	move.w	#6,(Map3col1).w
+	move.w	#6,(Map3col).w
 	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)
 	clr.w	d0
 	bsr.w	Vmaddr
@@ -1907,12 +1907,12 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	bsr.w	printz
 	String	-(TXPRI+TXMAP3),0,0
 	movea.l	#ScoutMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#1,d4
 	moveq	#0,d5
 	bsr.w	dobitmap
@@ -1961,7 +1961,7 @@ ReloadRinkGraphics					;after the forceblack: back to 32 cell mode and reload th
 	lsr.b	#2,d0
 	move.w	d0,Vctrl-Vdata(a0)
 	move.w	#VDPR_MODE4,Vctrl-Vdata(a0)
-	move.w	#5,(Map3col1).w
+	move.w	#5,(Map3col).w
 	move.w	(sp)+,(disflags).w
 	bset	#df32c,(disflags).w
 	move.w	(rinkvrcset).w,d4
@@ -2134,7 +2134,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 	move.w	d0,-(sp)
 	movea.l	tmdata(a2),a0
 	adda.w	ScoutReport(a0),a0
-	move.b	3(a0),d0
+	move.b	srforwards(a0),d0
 	lsr.w	#4,d0
 	andi.w	#$F,d0
 	add.w	(sp)+,d0
@@ -2144,7 +2144,7 @@ GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 
 	movem.l	a0,-(sp)
 	movea.l	tmdata(a2),a0
 	adda.w	ScoutReport(a0),a0
-	move.b	3(a0),d0
+	move.b	srforwards(a0),d0
 	lsr.w	#4,d0					;high nibble = forward count
 	andi.w	#$F,d0
 	movem.l	(sp)+,a0
