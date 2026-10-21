@@ -9,29 +9,29 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 									;replay (sflags4 bit 4) and calls LoadHomeTeamGfx
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#df32c,(disflags).w		;df32c
-	move.w	#$C000,(VmMAP2).w
-	move.w	#6,(Map2col).w
-	move.w	#$DC00,(VSPRITES).w
-	move.w	#$E000,(VmMAP1).w
-	move.w	#6,(Map1col).w
+	move.w	#$C000,(VmMAP2).w		;map 2 address
+	move.w	#6,(Map2col).w			;map 2 width
+	move.w	#$DC00,(VSPRITES).w		;sprites address
+	move.w	#$E000,(VmMAP1).w		;map 1 address
+	move.w	#6,(Map1col).w			;map 1 width (same as 2 always)
 	move.w	#$F000,(VmMAP3).w
-	move.w	#5,(Map3col).w
+	move.w	#5,(Map3col).w			;map 3 width (dependent on df32c mode)
 	move.w	#$FC00,(VSCRLPM).w
-	moveq	#0,d0
+	moveq	#0,d0					;color to fade to
 	bsr.w	setVram
 	bclr	#sfpz,(sflags).w		;sfpz
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;dfng
 	clr.w	(Hpos).w
 	clr.w	(Vpos).w
-	move.w	#$7D0,(Oldrow).w
+	move.w	#$7D0,(Oldrow).w		;2000
 	st	(Zamx).w
 	move.w	#$800,d0
 	move.w	(VmMAP1).w,d1
 	move.w	#$7FF,d2
-	bsr.w	DoFill
+	bsr.w	DoFill					;erase map 1
 	clr.w	d4
-	move.w	d4,(rinkvrcset).w
+	move.w	d4,(rinkvrcset).w		;1st vram char for rink map tiles
 	movea.l	#Rinktiles,a2
 	btst	#4,(sflags4).w			;reverse angle replay
 	beq.w	.0						;branch if not
@@ -39,7 +39,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 .0
 	bsr.w	DecompressGraphicsPlain
 	jsr	(LoadHomeTeamGfx).l
-	move.w	d4,(EASNcset).w
+	move.w	d4,(EASNcset).w			;1st vram char for easn logo tiles
 	bsr.w	setupEASNmap
 	move.w	d4,(energybarchars).w	;energy bar chars
 	movea.l	#EnergyBarMap+8,a2
@@ -49,24 +49,24 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	bsr.w	DecompressGraphicsPlain
 	move.w	d4,(arenaanimchars).w
 	addi.w	#$32,d4
-	move.w	d4,(spritechars).w
+	move.w	d4,(spritechars).w		;sprite char start, reused by setupice_highlight
 	bsr.w	defaultsprites
-	bsr.w	setupIceRinkPal
+	bsr.w	setupIceRinkPal			;transfer pal 0&1
 	bsr.w	AddFramer
-	move.w	d4,(smallfontchars).w
+	move.w	d4,(smallfontchars).w	;1st vram char for smallfont tiles
 	movea.l	#SmallFontMap+8,a2
 	bsr.w	DecompressGraphicsWithCallback
 	dc.l	$43434567,$89ABCDEF		;remap table
-	move.w	d4,(BigFontchars).w
+	move.w	d4,(BigFontchars).w		;1st vram char for Bigfont tiles
 	movea.l	#BigFontMap+8,a2
 	bsr.w	DecompressGraphicsWithCallback
 	dc.l	$71234567,$89ABCDEF		;remap table
-	bsr.w	setupTeamBlocksMap
-	move.w	d4,(ExtraChars).w
+	bsr.w	setupTeamBlocksMap		;team blocks for both teams
+	move.w	d4,(ExtraChars).w		;char space for extra graphics
 	btst	#gmdir,(gmode).w		;gmdir: flip pfgoal for the 12 players
 	beq.w	.gok
 	movea.w	#(SortCords-M68K_RAM),a3
-	moveq	#$B,d0
+	moveq	#$B,d0					;12 players
 .loop
 	bchg	#pfgoal,pflags(a3)
 	adda.w	#SCstruct,a3
@@ -80,8 +80,8 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	clr.l	(padcont+8).w
 	st	(c1playernum).w
 	st	(c2playernum).w
-	movea.w	#(DMAList-M68K_RAM),a5
-	movea.w	#(Satt-M68K_RAM),a6
+	movea.w	#(DMAList-M68K_RAM),a5	;dump pad sprites so numbers
+	movea.w	#(Satt-M68K_RAM),a6		;aren't written over later.
 	moveq	#1,d6
 	movea.w	#(pads-M68K_RAM),a3
 	clr.w	d0
@@ -99,7 +99,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	bsr.w	addframe2				;?? addframe
 	move.l	a5,(DMAlistend).w
 	bsr.w	dodmalist
-	move.w	(sp)+,(disflags).w
+	move.w	(sp)+,(disflags).w		;(palcount is set in setupice_highlight only)
 	move.l	#VBlank,(VBint).w
 	bclr	#dfok,(disflags).w
 	bclr	#dfng,(disflags).w
@@ -116,15 +116,15 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	bset	#dfng,(disflags).w
 	clr.w	(Hpos).w
 	clr.w	(Vpos).w
-	move.w	#$7D0,(Oldrow).w
+	move.w	#$7D0,(Oldrow).w		;2000
 	st	(Zamx).w
-	move.w	(spritechars).w,d4
+	move.w	(spritechars).w,d4		;sprite char start from setupice
 	bsr.w	defaultsprites
-	bsr.w	setupIceRinkPal
+	bsr.w	setupIceRinkPal			;transfer pal 0&1
 	btst	#gmdir,(gmode).w
 	beq.w	.gok
 	movea.w	#(SortCords-M68K_RAM),a3
-	moveq	#$B,d0
+	moveq	#$B,d0					;12 players
 .loop
 	bchg	#pfgoal,pflags(a3)
 	adda.w	#SCstruct,a3
@@ -138,8 +138,8 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	clr.l	(padcont+8).w
 	st	(c1playernum).w
 	st	(c2playernum).w
-	bsr.w	setupEASNmap
-	movea.w	#(DMAList-M68K_RAM),a5
+	bsr.w	setupEASNmap			;easn tiles at EASNcset again
+	movea.w	#(DMAList-M68K_RAM),a5	;dump pad sprites
 	movea.w	#(Satt-M68K_RAM),a6
 	moveq	#1,d6
 	movea.w	#(pads-M68K_RAM),a3
@@ -158,7 +158,7 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	bsr.w	addframe2
 	move.l	a5,(DMAlistend).w
 	bsr.w	dodmalist
-	move.w	#$1C,(palcount).w
+	move.w	#$1C,(palcount).w		;fade in new graphics now
 	move.w	(sp)+,(disflags).w
 	move.l	#VBlank,(VBint).w
 	bclr	#dfok,(disflags).w
@@ -169,11 +169,11 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 setupIceRinkPal						;Copy the ice rink palettes (pal 0&1, 16 longs) to palfadenew. Called from
 									;setupice, setupice_highlight and the stats screens
 	movea.l	#Rinktilelist,a0
-	adda.l	(a0),a0
+	adda.l	(a0),a0					;palette offset in the map header
 	moveq	#$F,d0
 	movea.w	#(palfadenew-M68K_RAM),a1
 .ipal
-	move.l	(a0)+,(a1)+
+	move.l	(a0)+,(a1)+				;16 longs = palettes 0 and 1
 	dbf	d0,.ipal
 	rts
 setupEASNmap						;Decompress the easn logo tiles (EASNmap+8) to vram at EASNcset. Called
@@ -217,15 +217,15 @@ setupTeamBlocksMap					;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C 
 									;d4 = 1st vram char; return d4 = basetileoffset+$2C. Called from setupice
 	move.w	d4,(basetileoffset).w
 	addi.w	#$2C,d4
-	movea.w	#(TeamBlockMap-M68K_RAM),a1
+	movea.w	#(TeamBlockMap-M68K_RAM),a1	;map word buffer for CopyTeamBlockMapData
 	movea.l	#Teamblocksmap,a0
 	lea	jimtilecount(a0),a2
-	bsr.w	DecompressGraphicsPlain
-	adda.l	jimdata(a0),a0
+	bsr.w	DecompressGraphicsPlain	;all team block tiles to vram at d4
+	adda.l	jimdata(a0),a0			;map data
 	move.l	a0,-(sp)
 	move.w	(HomeTeam).w,d0
 	move.w	(basetileoffset).w,d1
-	asl.w	#5,d1
+	asl.w	#5,d1					;vram address of char
 	bsr.w	CopyTeamBlockMapData
 	movea.l	(sp)+,a0
 	move.w	(VisTeam).w,d0
@@ -243,21 +243,21 @@ CopyTeamBlockMapData				;Copy one team's 22 block chars from the loaded tile set
 	lea	4(a0,d0.w),a0
 	move.w	#$15,d3
 .row
-	moveq	#$20,d0
+	moveq	#$20,d0					;32 bytes per char
 	move.w	d1,-(sp)
-	move.b	(a0),(a1)
+	move.b	(a0),(a1)				;keep the map word flag bits
 	andi.w	#$F800,(a1)
-	lsr.w	#5,d1
-	ori.w	#$8000,d1
+	lsr.w	#5,d1					;vram address back to char number
+	ori.w	#$8000,d1				;priority
 	or.w	d1,(a1)+
 	move.w	(sp)+,d1
 	move.w	(a0)+,d2
-	andi.w	#$7FF,d2
+	andi.w	#$7FF,d2				;source char in the loaded tile set
 	add.w	(basetileoffset).w,d2
 	addi.w	#$2C,d2
-	asl.w	#5,d2
-	bsr.w	DoDMA_nd2
-	addi.w	#$20,d1
+	asl.w	#5,d2					;source vram address
+	bsr.w	DoDMA_nd2				;vram to vram copy
+	addi.w	#$20,d1					;next char
 	dbf	d3,.row
 	rts
 defaultsprites						;allocate vram and assign char area for graphic structures. d4 = char area
@@ -569,14 +569,14 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	beq.w	.101
 	move.w	(a0),d4
 .101
-	move.w	d4,(a1)+
+	move.w	d4,(a1)+				;update ylist
 	adda.w	#SCstruct,a0
 	dbf	d3,.loop0
 	movea.l	#Ylist,a1
 .loop
-	clr.w	d4
+	clr.w	d4						;one bubble pass over OOlist; d4 = swapped flag
 	movea.l	#OOlist,a0
-	move.w	#$E,d3
+	move.w	#$E,d3					;Sortobjs-2
 	clr.w	d0
 	clr.w	d1
 .0
@@ -594,9 +594,9 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	move.w	d2,0(a2,d1.w)
 	st	d4
 .1
-	dbf	d3,.0
+	dbf	d3,.0						;next adjacent pair
 	tst.w	d4
-	bne.s	.loop
+	bne.s	.loop					;swapped something: another pass
 	movem.l	(sp)+,d0-d4/a0-a2
 	rts
 resetplstuff						;reset team variables/and players on both teams. Called from puckfaceoff2,
@@ -719,8 +719,8 @@ setplayercolors						;Copy in correct color data for each team:.team for the hom
 	moveq	#$20,d1
 	adda.w	#tmsize,a0
 .team								;a0 = team struct, d1 = palette offset ($20 for the visitors)
-	movea.l	tmdata(a0),a2
-	adda.w	Palettedata(a2),a2
+	movea.l	tmdata(a0),a2			;a0 = team struct, d1 = palette offset (0 home, $20 visitors)
+	adda.w	Palettedata(a2),a2		;palettes
 	adda.w	d1,a2
 	movea.w	#(palfadenew+$40-M68K_RAM),a1
 	adda.w	d1,a1
@@ -733,10 +733,10 @@ PeriodOver							;what to do if period over. Branched to from puckfaceoff when t
 									;runs out. After period 3 a tied game goes to
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a
 									;tied playoff game plays on. Falls into IntermissionStart
-	addq.w	#1,(gsp).w
+	addq.w	#1,(gsp).w				;period number
 	bchg	#gmdir,(gmode).w
 	cmpi.w	#3,(gsp).w
-	blt.w	.0
+	blt.w	.0						;periods 1-2 done
 	beq.w	.1
 	move.w	#3,(gsp).w
 	tst.w	(OptPlayMode).w
@@ -769,10 +769,10 @@ IntermissionStart					;reset the clock, song $79, ticker scores, playoff stats a
 	bsr.w	song
 	bsr.w	UpdateScores
 	cmpi.w	#4,(gsp).w
-	bne.w	.1
+	bne.w	.1						;not game over
 	bsr.w	AddPlayoffTeamStats
 .1
-	bsr.w	Intermission
+	bsr.w	Intermission			;intermission screen
 	cmpi.w	#4,(gsp).w
 	beq.w	GameOver
 	jmp	(StartPer).w
@@ -780,7 +780,7 @@ GameOver							;EncodePW (save the password), then in playoff mode PlayoffStatsS
 									;(the playoff stats) and the playoff screen. Falls into ExitToOpening
 	bsr.w	EncodePW
 	tst.w	(OptPlayMode).w
-	beq.w	.po
+	beq.w	.po						;regular season
 	bclr	#sfpj,(sflags).w
 	jsr	(PlayoffStatsScreen).l
 .po
@@ -828,26 +828,26 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	#$C000,(VmMAP2).w
 	move.w	#7,(Map2col).w
 	move.w	#$E000,(VmMAP1).w
-	move.w	#7,(Map1col).w
-	move.w	#0,d0
+	move.w	#7,(Map1col).w			;128 col mode
+	move.w	#0,d0					;fade to color
 	bsr.w	setVram
 	bsr.w	printz
 	String	-TXMAP1,0,0
-	move.l	#$80,d0
+	move.l	#$80,d0					;128 x 28
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
 	bsr.w	printz
 	String	-TXMAP3,0,0
-	moveq	#$28,d0
+	moveq	#$28,d0					;40 x 2
 	moveq	#2,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	bsr.w	AddTeamBlock
-	bsr.w	AddSmallFont
+	bsr.w	AddTeamBlock			;TeamBlocks tiles
+	bsr.w	AddSmallFont			;smallfont tiles
 	movea.l	#Arrowsmap+8,a2
 	move.w	d4,(ExtraChars).w
-	bsr.w	DecompressGraphicsPlain
+	bsr.w	DecompressGraphicsPlain	;arrow tiles at ExtraChars
 	bsr.w	printz
 	String	-(TXPAL3+TXMAP2),0,0
 	movea.l	#ScoutMap,a0
@@ -857,7 +857,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	adda.l	(a2)+,a1
 	clr.w	d0
 	clr.w	d1
-	move.w	(a1),d2
+	move.w	(a1),d2					;width and height from the map header
 	move.w	mapheight(a1),d3
 	moveq	#3,d5
 	bsr.w	dobitmap
@@ -867,13 +867,13 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	moveq	#7,d0
 	movea.w	#(palfadenew+$40-M68K_RAM),a0
 .pal
-	move.l	-$40(a0),$20(a0)
-	move.l	(a1)+,-$40(a0)
-	move.l	-$20(a0),(a0)+
+	move.l	-$40(a0),$20(a0)		;pal 0 -> pal 3
+	move.l	(a1)+,-$40(a0)			;Titlemap2 palette -> pal 0
+	move.l	-$20(a0),(a0)+			;pal 1 -> pal 2
 	dbf	d0,.pal
 	move.w	d4,(energybarchars).w
 	bsr.w	DecompressGraphicsPlain
-	move.w	#$104,(clampcounter).w
+	move.w	#$104,(clampcounter).w	;RAM reused by this screen
 	move.w	#$A0,(playoffspritey).w
 	movea.l	#Vctrl,a0
 	move.w	#VDPR_WINY+$02,(a0)
@@ -890,32 +890,32 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.b	(a0)+,(printx+1).w
 	move.b	(a0)+,(printy+1).w
 	clr.w	d1
-	move.b	(a1)+,d1
+	move.b	(a1)+,d1				;team from potree
 	add.w	d1,d1
-	bsr.w	DrawTeamBlocks
+	bsr.w	DrawTeamBlocks			;draw both team blocks
 	dbf	d4,.top
 	clr.w	d4
-	move.b	(a0)+,d4
+	move.b	(a0)+,d4				;arrow count-1
 .top2
 	bsr.w	printz
 	String	-TXMAP1,0,2
 	move.b	(a0)+,(printx+1).w
 	clr.w	d0
 	move.b	(a0)+,d0
-	bsr.w	DrawTreeArrow
+	bsr.w	DrawTreeArrow			;draw the bracket lines
 	dbf	d4,.top2
 	bsr.w	printz
 	String	-(TXPAL1+TXMAP1),0,0
 	cmpi.w	#7,(bosgames).w			;best of 7
 	beq.w	.noscr
 	clr.w	d4
-	move.b	(a0)+,d4
+	move.b	(a0)+,d4				;score count-1
 	bmi.w	.noscr
 	movea.w	#(gsstruct-M68K_RAM),a2
 .top3
-	move.b	(a0)+,(printx+1).w
+	move.b	(a0)+,(printx+1).w		;per series score: x, y from the tree table
 	move.b	(a0)+,(printy+1).w
-	bsr.w	PrintSeriesScore
+	bsr.w	PrintSeriesScore		;series scores
 	adda.w	#$10,a2
 	dbf	d4,.top3
 .noscr
@@ -923,13 +923,13 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	String	CC_SetMapAndPosition,1,1,$41,$1A
 	lea	PlayoffScreenText(pc),a1
 	move.w	(gamelevel).w,d0
-	bsr.w	AdvanceStringPtr
+	bsr.w	AdvanceStringPtr		;a1 = string d0
 	move.w	(a1),d0
 	lsr.w	#1,d0
-	sub.w	d0,(printx).w
+	sub.w	d0,(printx).w			;center it
 	bsr.w	printsmall
 	tst.w	(gamelevel).w
-	beq.w	.nopage
+	beq.w	.nopage					;one page only
 	bsr.w	printz
 	String	-(TXPAL3+TXMAP3),$A,1,'Press [ or ] to page',0	;the text as code
 .nopage
@@ -938,8 +938,8 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	bsr.w	song
 	clr.w	d0
 	clr.w	d4
-	move.w	#$FFFF,(PlayerScrollCtr).w
-	move.w	#1,(DispAttribCtr).w
+	move.w	#$FFFF,(PlayerScrollCtr).w	;scroll step (RAM shared with the stats screens)
+	move.w	#1,(DispAttribCtr).w	;scroll position
 	bsr.w	UpdatePlayoffScroll
 .input
 	bsr.w	waitxc1
@@ -952,7 +952,7 @@ HandlePlayoffInput					;Read both pads: start leaves PlayoffScreen, right/left s
 	bsr.w	ReadJoy1
 	move.w	d3,-(sp)
 	bsr.w	ReadJoy2
-	or.w	(sp)+,d3
+	or.w	(sp)+,d3				;either pad
 	btst	#7,d3
 	bne.w	PlayoffScreenExit
 	btst	#3,d3
@@ -972,7 +972,7 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	move.w	(gamelevel).w,d1
 	cmp.w	#3,d1
 	bls.w	.lim
-	moveq	#3,d1
+	moveq	#3,d1					;at most 3 pages each way
 .lim
 	mulu.w	#$70,d1
 	cmp.w	d1,d0
@@ -985,14 +985,14 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	move.w	d0,d1
 	addi.w	#$100,d1
 	cmp.w	#$40,d1
-	blt.w	.nox
+	blt.w	.nox					;playoffspritex = position+$124 only inside $40-$200, else 0
 	cmp.w	#$200,d1
 	bgt.w	.nox
 	move.w	d1,(playoffspritex).w
 .nox
-	ext.l	d0
+	ext.l	d0						;is the new position on a page boundary?
 	divs.w	#$70,d0
-	swap	d0
+	swap	d0						;remainder
 	tst.w	d0
 	bne.w	rtss2
 	clr.w	(PlayerScrollCtr).w
@@ -1004,24 +1004,24 @@ waitxc1								;Each time palcount runs out, eor the color
 									;word at palfadenew+$42 with $EE and restart palcount at $18; then wait
 									;for the next vblank
 	tst.w	(palcount).w
-	bpl.w	.wait
+	bpl.w	.wait					;palcount still counting
 	eori.w	#$EE,(palfadenew+$42).w
 	move.w	#$18,(palcount).w
 .wait
-	move.w	(Vcount).w,d0
+	move.w	(Vcount).w,d0			;wait until the vblank handler bumps Vcount
 	cmp.w	(OldVcount).w,d0
 	beq.s	.wait
 	move.w	d0,(OldVcount).w
 	rts
 PrintSeriesScore					;Print best of 7 wins "t-b" for game struct a2 at printx/printy
 	movea.w	#(mesarea-M68K_RAM),a1
-	move.w	#6,(a1)+
-	move.w	gspotwins(a2),d0
-	addi.w	#$30,d0
+	move.w	#6,(a1)+				;string length
+	move.w	gspotwins(a2),d0		;gspotwins
+	addi.w	#$30,d0					;'0'
 	move.b	d0,(a1)+
-	move.b	#$2D,(a1)+
-	move.w	gspobwins(a2),d0
-	addi.w	#$30,d0
+	move.b	#$2D,(a1)+				;'-'
+	move.w	gspobwins(a2),d0		;gspobwins
+	addi.w	#$30,d0					;'0'
 	move.b	d0,(a1)+
 	clr.b	(a1)+
 	movea.w	#(mesarea-M68K_RAM),a1
@@ -1032,10 +1032,10 @@ DrawTreeArrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx
 	movea.l	a0,a1
 	adda.l	(a0),a0
 	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
+	movea.w	#null,a2				;no tiles
 	clr.w	d1
 	moveq	#2,d2
-	moveq	#$17,d3
+	moveq	#$17,d3					;23
 	move.w	(ExtraChars).w,d4
 	moveq	#0,d5
 	bsr.w	dobitmap
@@ -1051,11 +1051,11 @@ DrawTeamBlocks						;Draw team block d1 (team*2) from the TeamBlocks map (Teambl
 	add.b	d0,d0
 	cmp.b	d0,d1
 	bne.w	.nohi
-	move.w	#$6000,(printa).w
+	move.w	#$6000,(printa).w		;palette 3
 .nohi
-	movea.l	#Teamblocksmap,a1
+	movea.l	#Teamblocksmap,a1		;a1 = map header of the team blocks
 	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
+	movea.w	#null,a2				;no tiles
 	clr.w	d0
 	move.w	(a1),d2
 	moveq	#2,d3
@@ -1084,7 +1084,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .nosat
 	bsr.w	cramfade
 .nograph
-	addq.w	#1,(Vcount).w
+	addq.w	#1,(Vcount).w			;frame counter
 	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
@@ -1097,9 +1097,9 @@ PlayoffScreenText					;Round titles by gamelevel, printed with printsmall
 InitScoutingDisplay					;Start the text player ScoutTextPlayer: VertLineScrolling = -1,
 									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / typedelay; return a0 =
 									;TestList. Called from ScoutingReport
-	move.w	#$FFFF,(VertLineScrolling).w
-	st	(PlayerScrollCtr).w
-	clr.w	(SelectedPlayerIdx).w
+	move.w	#$FFFF,(VertLineScrolling).w	;text line -1
+	st	(PlayerScrollCtr).w			;negative: start the next paragraph
+	clr.w	(SelectedPlayerIdx).w	;TestList index
 	clr.w	(typedelay).w
 	movea.w	#(TestList-M68K_RAM),a0
 	rts
@@ -1328,12 +1328,12 @@ ScrollDisplayUp						;Next text line for ScoutTextPlayer: VertLineScrolling + 1;
 	movem.l	d0-d3,-(sp)
 	move.l	#7,d3
 	move.w	(VmMAP1).w,d1
-	addi.w	#$212,d1
+	addi.w	#$212,d1				;text box top left
 .loop
-	move.l	#$3A,d0
+	move.l	#$3A,d0					;copy 8 rows of the text box up by one row
 	move.w	d1,d2
-	addi.w	#$80,d2
-	bsr.w	DoDMA_nd2
+	addi.w	#$80,d2					;from the row below
+	bsr.w	DoDMA_nd2				;vram copy d2 -> d1
 	move.w	d2,d1
 	dbf	d3,.loop
 	movem.l	(sp)+,d0-d3
