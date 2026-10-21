@@ -367,7 +367,7 @@ DrawMatchupPicture					;Draw player picture a0 at printx / printy with the Pictu
 	tst.l	(a2)					;no map?
 	bne.w	.0
 	movea.l	#PicturePalette,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	tst.l	(a2)+
 	bra.w	.1
 .0

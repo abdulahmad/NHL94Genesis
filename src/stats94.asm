@@ -16,12 +16,12 @@ ShowScores							;"Scores" screen: the other games of the night in gsstruct over
 	jsr	(printbigz).l
 	String	-(TXPRI+TXMAP3),$E,3,'Scores',-(TXPRI+TXMAP3),$B,1
 	movea.l	#ScoresMap,a1
-	lea	8(a1),a2
-	adda.l	4(a1),a1
+	lea	jimtilecount(a1),a2
+	adda.l	jimdata(a1),a1
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	clr.w	d5
 	jsr	(dobitmap).l
 	jsr	(printsmallz).l
@@ -458,12 +458,12 @@ DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Edi
 	jsr	(printz).l
 	String	-TXMAP3,0,0
 	movea.l	#ScoutMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#1,d4
 	moveq	#0,d5
 	jsr	(dobitmap).l
@@ -1907,12 +1907,12 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	bsr.w	printz
 	String	-(TXPRI+TXMAP3),0,0
 	movea.l	#ScoutMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#1,d4
 	moveq	#0,d5
 	bsr.w	dobitmap

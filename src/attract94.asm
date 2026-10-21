@@ -99,7 +99,7 @@ DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	movea.l	#TeamBitmaps,a0
 	movea.l	a0,a1
 	adda.l	(a0),a0
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	move.w	(a1),d2
 	moveq	#2,d3
@@ -112,7 +112,7 @@ dotb								;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 
 	movea.l	#Teamblocksmap,a0
 	movea.l	a0,a1
 	adda.l	(a0),a0
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	move.w	(a1),d2
 	moveq	#2,d3

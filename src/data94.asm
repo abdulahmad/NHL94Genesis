@@ -797,7 +797,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	String	-(TXPRI+TXMAP1),9,$10,'Stars of the Game',-(TXPRI+TXMAP1),3,$F
 	movea.l	#Rinktilelist,a1		;map at offset 4
 	movea.w	#NoTiles,a2
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	moveq	#$D,d0
 	moveq	#$5B,d1
 	moveq	#6,d2

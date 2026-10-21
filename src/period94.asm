@@ -125,7 +125,7 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 	btst	#sfhor,(sflags).w
 	bne.w	.x2
 	movea.l	(arenaspritelist).w,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	(Hpos).w,d4
 	move.w	(Vpos).w,d5
 	move.w	(arenaframe).w,d0

@@ -153,7 +153,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	beq.w	.0
 	movea.l	#RevRinkTilelist,a0
 .0
-	adda.l	4(a0),a0				;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
+	adda.l	jimdata(a0),a0			;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
 									;leave the cmp flags)
 	blt.w	.su0					;row went up
 .sd
@@ -240,7 +240,7 @@ checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, w
 	bmi.w	.next
 	beq.w	.next
 	movea.l	#FaceOffSprites,a2
-	adda.l	4(a2),a2
+	adda.l	jimdata(a2),a2
 	add.w	d4,d4
 	move.w	2(a2,d4.w),d5
 	sub.w	0(a2,d4.w),d5
@@ -326,7 +326,7 @@ SetSframe							;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = 
 	cmp.w	#MaxSprites,d6			;MaxSprites
 	bge.w	rtss2
 	movem.l	d0-d5/a0,-(sp)
-	adda.l	4(a0),a0
+	adda.l	jimdata(a0),a0
 	add.w	d2,d2
 	move.w	2(a0,d2.w),d4
 	sub.w	0(a0,d2.w),d4
@@ -359,7 +359,7 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	bne.w	.x						;branch if so
 	movea.l	#Crowdframelist,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	(Hpos).w,d4
 	move.w	(Vpos).w,d5
 	btst	#sfhor,(sflags).w
@@ -536,7 +536,7 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	beq.w	rtss2
 	movea.w	#(clockram+6-M68K_RAM),a0	;end of the 5 word clock buffer; written backward
 	movea.l	#SmallFontMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	$78(a1),d0				;4+(':'*2)
 	add.w	(smallfontchars).w,d0
 	ori.w	#$8000,d0
@@ -826,7 +826,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 RenderSmallFontChar					;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
 									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
 	movea.l	#SmallFontMap,a3
-	adda.l	4(a3),a3
+	adda.l	jimdata(a3),a3
 	add.w	d2,d2
 	move.w	4(a3,d2.w),d2
 	andi.w	#$7FF,d2
@@ -868,7 +868,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	move.w	frame(a3),d4			;move frame back into d4
 	andi.w	#$7FF,d4				;pass first 11 bits
 	movea.l	#Sprites,a2				;sprite frame list
-	adda.l	4(a2),a2				;add long word at offset 4 to a2 address. a2 now
+	adda.l	jimdata(a2),a2			;add long word at offset 4 to a2 address. a2 now
 	add.w	d4,d4					;add d4 to itself
 	cmp.w	2(a2),d4				;compare the word at 2(a2) to d4
 	bge.w	.exit					;branch if greater than or equal

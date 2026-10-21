@@ -113,7 +113,7 @@ PlayerCardScreen					;Draw a player card on one side (setupcardflags bit 1: visi
 	tst.l	(a2)					;no map: the PicturePalette one
 	bne.w	.6
 	movea.l	#PicturePalette,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	tst.l	(a2)+
 	bra.w	.7
 .6
@@ -2599,7 +2599,7 @@ DrawPictureBox						;Player card picture box (DrawPlayerPicture, UnpackPicture)
 	tst.l	(a2)
 	bne.w	.1
 	movea.l	#PicturePalette,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	tst.l	(a2)+
 	bra.w	.2
 .1

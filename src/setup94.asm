@@ -219,9 +219,9 @@ setupTeamBlocksMap					;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C 
 	addi.w	#$2C,d4
 	movea.w	#(TeamBlockMap-M68K_RAM),a1
 	movea.l	#Teamblocksmap,a0
-	lea	8(a0),a2
+	lea	jimtilecount(a0),a2
 	bsr.w	DecompressGraphicsPlain
-	adda.l	4(a0),a0
+	adda.l	jimdata(a0),a0
 	move.l	a0,-(sp)
 	move.w	(HomeTeam).w,d0
 	move.w	(basetileoffset).w,d1
@@ -1031,7 +1031,7 @@ DrawTreeArrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx
 	movea.l	#Arrowsmap,a0
 	movea.l	a0,a1
 	adda.l	(a0),a0
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d1
 	moveq	#2,d2
@@ -1054,7 +1054,7 @@ DrawTeamBlocks						;Draw team block d1 (team*2) from the TeamBlocks map (Teambl
 	move.w	#$6000,(printa).w
 .nohi
 	movea.l	#Teamblocksmap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	move.w	(a1),d2

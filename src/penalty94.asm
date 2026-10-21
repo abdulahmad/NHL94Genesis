@@ -632,7 +632,7 @@ PushRef								;tell vblank what to display. d0 = ref frame, $40 clears the wind
 	beq.w	.m1
 	movea.l	#RefMap2,a0
 .m1
-	adda.l	4(a0),a0
+	adda.l	jimdata(a0),a0
 	addq.w	#4,a0
 	adda.w	d0,a0
 	movea.w	#(RefRamMap-M68K_RAM),a1
@@ -1005,7 +1005,7 @@ SetHor								;switch graphics to horizontal ice rink graphics mode
 	bsr.w	printz
 	String	-TXMAP2,0,0
 	movea.l	#HorRinkMap,a1			;tiles start at HorRinkMap+8
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#HorRinkTiles,a2		;rink tiles
 	clr.w	d0
 	move.w	#0,d1
@@ -1147,12 +1147,12 @@ EASNLogo							;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if
 	bsr.w	printz
 	String	-(TXPRI+TXMAP1),1,$19
 	movea.l	#EASNmap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2					;width and height from the map header
-	move.w	2(a1),d3
+	move.w	mapheight(a1),d3
 	move.w	(EASNcset).w,d4
 	clr.w	d5
 	bra.w	dobitmap
@@ -1236,7 +1236,7 @@ linebar								;Draw the energy bar of line d0 for team a2 at printx/printy (bit
 	sub.w	d0,d1
 	clr.w	d0
 	movea.l	#EnergyBarMap,a1
-	adda.l	4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.w	#NoTiles,a2
 	move.w	(a1),d2
 	moveq	#1,d3
