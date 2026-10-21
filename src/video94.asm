@@ -5,27 +5,27 @@
 UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words at
 									;nibblebuffer
 	movem.l	d0-d2/a0-a1,-(sp)
-	movea.w	#(nibblebuffer-M68K_RAM),a1
-	clr.w	d2
+	movea.w	#(nibblebuffer-M68K_RAM),a1	;a1 = output words
+	clr.w	d2						;d2 bit 0 = which nibble is next
 	bra.w	.next
 .loop
-	move.b	(a0)+,d1
-	bchg	#0,d2
+	move.b	(a0)+,d1				;next nibble (one count per pass)
+	bchg	#0,d2					;toggle high/low nibble
 	bne.w	.lo
-	subq.w	#1,a0
+	subq.w	#1,a0					;high nibble: read the same byte again next time
 	lsr.w	#4,d1
 .lo
 	andi.w	#$F,d1
 	move.w	d1,(a1)+
 .next
-	dbf	d0,.loop
+	dbf	d0,.loop					;loop count in d0
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 WeightedRandomSelect				;d0 = number of word weights at nibblebuffer:
 									;return a weighted random index
 	movem.l	d1/a1,-(sp)
 	movea.w	#(nibblebuffer-M68K_RAM),a1
-	clr.w	d1
+	clr.w	d1						;d1 = running total of the weights
 	bra.w	.pick
 .sumloop
 	add.w	(a1)+,d1
@@ -38,55 +38,57 @@ WeightedRandomSelect				;d0 = number of word weights at nibblebuffer:
 	bpl.s	.findloop
 	suba.w	#(nibblebuffer-M68K_RAM),a1
 	move.w	a1,d0
-	lsr.w	#1,d0
+	lsr.w	#1,d0					;word offset -> index
 	movem.l	(sp)+,d1/a1
 	rts
 
-remap
+remap								;a0 = data (char set), d0 = size in words, d1 = vram dest, a1 = mapping
+									;data (two color nibbles per byte, high nibble for even colors). Jumped to
+									;from DecompressGraphics
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w
 	movem.l	d0-d4/a0-a2,-(sp)
-	exg	d1,d0
-	movea.l	a0,a2
-	bsr.w	Vmaddr
-	subq.w	#1,d1
+	exg	d1,d0						;(keep EA register order)
+	movea.l	a0,a2					;a2 = source tile words
+	bsr.w	Vmaddr					;set vram write address; a0 = Vdata
+	subq.w	#1,d1					;d1 = word count - 1
 .1
-	moveq	#3,d0
+	moveq	#3,d0					;4 pixels per word (one pass per source word)
 	move.w	(a2)+,d2
-	clr.w	d3
+	clr.w	d3						;d3 = remapped word being built
 .11
-	move.w	d2,d4
+	move.w	d2,d4					;one pixel (low nibble of d2) per pass
 	andi.w	#$F,d4
-	lsr.w	#1,d4
+	lsr.w	#1,d4					;map byte = color/2
 	move.b	0(a1,d4.w),d4
 	btst	#0,d2
 	bne.w	.2
 	lsr.w	#4,d4
 .2
 	andi.w	#$F,d4
-	or.b	d4,d3
+	or.b	d4,d3					;put the new color into the result
 	ror.w	#4,d3
-	ror.w	#4,d2
+	ror.w	#4,d2					;next pixel
 	dbf	d0,.11
-	move.w	d3,(a0)
+	move.w	d3,(a0)					;write the word to vram
 	dbf	d1,.1
 	movem.l	(sp)+,d0-d4/a0-a2
 	move.w	(sp)+,(disflags).w
 	rts
 ; fade all colors to black but don't upset palfadenew
-forceblack
+forceblack							;fade all colors to black but don't upset palfadenew
 	movem.l	d0/a0,-(sp)
 	movea.w	#(palfadenew-M68K_RAM),a0
-	moveq	#$1F,d0
+	moveq	#$1F,d0					;31
 .0
-	move.l	(a0),-(sp)
+	move.l	(a0),-(sp)				;save the target palette while blacking it
 	clr.l	(a0)+
 	dbf	d0,.0
-	move.w	#$18,(palcount).w
-	bsr.w	forcefade
+	move.w	#$18,(palcount).w		;24
+	bsr.w	forcefade				;fade to the all-black palfadenew
 	moveq	#$1F,d0
 .1
-	move.l	(sp)+,-(a0)
+	move.l	(sp)+,-(a0)				;put the saved palette back (reverse order)
 	dbf	d0,.1
 	movem.l	(sp)+,d0/a0
 	rts
@@ -112,10 +114,10 @@ forcefade							;regardless of interupts/disflags fade in new palettes, don't up
 	move.l	(VBint).w,-(sp)
 	move.w	(disflags).w,-(sp)
 	bclr	#dfng,(disflags).w
-	move.l	#vb2,(VBint).l
+	move.l	#vb2,(VBint).l			;minimal vblank handler (vb2) that runs the fade
 	move	#$2500,sr
 .1
-	tst.w	(palcount).w
+	tst.w	(palcount).w			;wait until the fade has finished (palcount < 0)
 	bpl.s	.1
 	move.w	(sp)+,(disflags).w
 	move.l	(sp)+,(VBint).w
@@ -123,10 +125,12 @@ forcefade							;regardless of interupts/disflags fade in new palettes, don't up
 	rts
 ; fade from current color in color ram to color held in palfadenew
 ; this should be called during vblank because palette changes punch holes in video
-cramfade
+cramfade							;fade from current color in color ram to color held in palfadenew. This
+									;should be called during vblank because palette changes punch holes in
+									;video. palcount 100 copies the palette with no fade (CopyPaletteToCRAM)
 	tst.w	(palcount).w
 	bmi.w	rtss2
-	cmpi.w	#$64,(palcount).w
+	cmpi.w	#$64,(palcount).w		;100 = copy now
 	beq.w	CopyPaletteToCRAM
 	subq.w	#1,(palcount).w
 	bmi.w	rtss2
@@ -135,44 +139,44 @@ cramfade
 	cmp.w	#$18,d0
 	bgt.w	rtss2
 	divu.w	#3,d0
-	swap	d0
-	asl.w	#2,d0
-	moveq	#2,d3
+	swap	d0						;d0 = palcount mod 3
+	asl.w	#2,d0					;shifter 0/4/8
+	moveq	#2,d3					;d3 = one step of the component (2 << shift)
 	asl.w	d0,d3
-	moveq	#$E,d5
+	moveq	#$E,d5					;d5 = component mask ($E << shift)
 	asl.w	d0,d5
 	move.w	d5,d4
-	not.w	d4
-	movea.l	#palfadenew,a1
-	movea.l	#Vdata,a0
-	clr.w	d6
+	not.w	d4						;d4 = mask of the other components
+	movea.l	#palfadenew,a1			;a1 = destination colors
+	movea.l	#Vdata,a0				;Vdata
+	clr.w	d6						;d6 = cram address, 2 per color
 .top
-	move.w	d3,d2
+	move.w	d3,d2					;d2 = signed step for this color
 	move.w	d6,d0
 	swap	d0
 	move.w	#$20,d0
 	move.l	d0,Vctrl-Vdata(a0)
-	move.w	(a0),d7
+	move.w	(a0),d7					;current color
 	move.w	d7,d0
 	and.w	d5,d0
-	move.w	(a1)+,d1
+	move.w	(a1)+,d1				;dest color
 	and.w	d5,d1
 	cmp.w	d1,d0
-	beq.w	.next
-	blt.w	.nn
-	neg.w	d2
+	beq.w	.next					;component already at target
+	blt.w	.nn						;below target: step up
+	neg.w	d2						;above target: step down
 .nn
-	add.w	d2,d0
+	add.w	d2,d0					;apply the step to the component
 	and.w	d4,d7
-	or.w	d0,d7
+	or.w	d0,d7					;merge the new component into the color
 	move.l	#$C000,d0
 	move.b	d6,d0
 	swap	d0
 	move.l	d0,Vctrl-Vdata(a0)
 	move.w	d7,(a0)
 .next
-	addq.w	#2,d6
-	cmp.w	#$80,d6
+	addq.w	#2,d6					;next color
+	cmp.w	#$80,d6					;64 colors done?
 	bne.s	.top
 	rts
 CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected from vblank
@@ -184,15 +188,15 @@ CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected f
 	move.l	#CRAM_W,Vctrl-Vdata(a0)
 	moveq	#$1F,d0
 .0
-	move.l	(a1)+,(a0)
+	move.l	(a1)+,(a0)				;two colors per long
 	dbf	d0,.0
-	st	(palcount).w
+	st	(palcount).w				;fade done
 	move.w	(sp)+,(disflags).w
 	movem.l	(sp)+,d0/a0-a1
 	rts
 ; d0 = range
 ; return d0 = random number (-range < d0 < range)
-randomd0s
+randomd0s							;d0 = range. Return d0 = random number (-range < d0 < range)
 	move.w	d0,-(sp)
 	asl.w	#1,d0					;range*2
 	bsr.w	randomd0				;0 .. 2*range-1
@@ -200,7 +204,7 @@ randomd0s
 	rts
 ; d0 = range
 ; return random number in d0 (0 <= d0 < range)
-randomd0
+randomd0							;d0 = range. Return random number in d0 (0 <= d0 < range)
 	movem.l	d0-d2,-(sp)				;2(sp) = range (the saved d0 low word)
 	move.w	(seed+2).w,d0			;seed+2 (92)
 	move.w	d0,d1
@@ -221,18 +225,19 @@ randomd0
 	movem.l	(sp)+,d1-d2
 	rts
 ; returns d0.L^.5 in d0
-Sroot
+Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a binary
+									;search
 	tst.l	d0
 	beq.w	rtss2					;zero^.5 = zero
 	cmp.l	#$640,d0				;#40^2
-	bhi.w	.m2
-	move.l	d1,-(sp)
+	bhi.w	.m2						;large value: Newton iteration / binary search below
+	move.l	d1,-(sp)				;find square root of d0
 	moveq	#-1,d1					;-1
 .0
-	addq.w	#2,d1
+	addq.w	#2,d1					;next odd number
 	sub.w	d1,d0
 	bcc.s	.0
-	lsr.w	#1,d1
+	lsr.w	#1,d1					;d1 = 2*root+1 -> root
 	move.w	d1,d0
 	move.l	(sp)+,d1
 	rts
@@ -241,36 +246,36 @@ Sroot
 	moveq	#9,d3					;max number of reps
 	move.w	#$8000,d1
 	cmp.l	#$F00000,d0
-	bhi.w	.big
+	bhi.w	.big					;too big for divu: binary search
 	move.l	d0,d1
-	lsr.l	#8,d1
+	lsr.l	#8,d1					;first guess = d0/256 + 2
 	addq.w	#2,d1
 .top
-	move.w	d1,d2
+	move.w	d1,d2					;Newton step: d1 = (d0/guess + guess)/2
 	move.l	d0,d1
 	divu.w	d2,d1
 	add.w	d2,d1
 	lsr.w	#1,d1
-	cmp.w	d1,d2
+	cmp.w	d1,d2					;stop when the guess stops changing, or after 10 steps
 	dbeq	d3,.top
 .done
-	move.w	d1,d0
+	move.w	d1,d0					;d1 = root (shared exit of both methods)
 	movem.l	(sp)+,d1-d4
 	rts
 .big
 	moveq	#0,d1
 	moveq	#-1,d2
 .bs
-	move.w	d1,d3
+	move.w	d1,d3					;d3 = (low+high)/2, carry shifted back in
 	add.w	d2,d3
 	roxr.w	#1,d3
 	cmp.w	d3,d1
-	beq.s	.done
+	beq.s	.done					;no step left: d1 is the root
 	move.w	d3,d4
 	mulu.w	d3,d3
 	cmp.l	d3,d0
-	bcc.w	.lo
-	move.w	d4,d2
+	bcc.w	.lo						;d0 >= mid^2: raise low
+	move.w	d4,d2					;else lower high
 	bra.s	.bs
 .lo
 	move.w	d4,d1
@@ -278,34 +283,36 @@ sfxarg = 16*4						;sfx / song: stack offset of the number word after the movem
 	bra.s	.bs
 ; play sound effect number
 ; one word passed on stack
-sfx
+sfx									;play sound effect number. One word passed on stack
 	movem.l	d0-d7/a0-a6,-(sp)		;sfxarg(sp) = the number word (above 15 longs and the return address)
 	clr.l	d0
 	move.w	sfxarg(sp),d0			;sound number
-	bmi.w	.none
-	move.w	d0,(lastsfx).w
+	bmi.w	.none					;negative = no sound
+	move.w	d0,(lastsfx).w			;remember the last effect
 	jsr	(play_sfx_or_music_track).l
 .none
-	movem.l	(sp)+,d0-d7/a0-a6
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	move.l	(sp),2(sp)				;return address over the number word
-	addq.w	#2,sp
+	addq.w	#2,sp					;(callee pops its own argument)
 	rts
 ; play song number
 ; one word passed on stack
-song
+song								;play song number. One word passed on stack
 	movem.l	d0-d7/a0-a6,-(sp)		;sfxarg(sp) = the number word (above 15 longs and the return address)
 	clr.l	d0
 	move.w	sfxarg(sp),d0			;sound number
-	bmi.w	.none
-	jsr	(play_sfx_or_music_track).l
+	bmi.w	.none					;negative = no song
+	jsr	(play_sfx_or_music_track).l	;same call as sfx, without lastsfx
 .none
-	movem.l	(sp)+,d0-d7/a0-a6
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	move.l	(sp),2(sp)				;return address over the number word
 	addq.w	#2,sp
 	rts
 ; wait d0 vblanks or until input from either joystick
 ; return joystick variables (d0-d3) if any
-waitx
+waitx								;wait d0 vblanks or until input from either joystick. Return joystick
+									;variables (d0-d3) if any. Called from ScoutingReport and
+									;SetupStanleyCupCelebrationScreen
 	clr.w	(waitxpad).w
 	neg.w	d0
 	move.w	d0,(Vcount).w
@@ -331,34 +338,34 @@ waitx
 .1
 	move.w	(Vcount).w,d0
 .0
-	cmp.w	(Vcount).w,d0
+	cmp.w	(Vcount).w,d0			;wait for the next vblank to change Vcount
 	beq.s	.0
 	tst.w	d0
-	bmi.s	.wait
+	bmi.s	.wait					;still counting up to zero
 	rts
 ; special version of waitx for zamboni crossing
 ; wait d0 vblanks or until input from either joystick
 ; retrun joystick variables (d0-d3) if any
 waitxsr								;Wait d0 vblanks while the zamboni crosses
 	movem.l	d4-d7/a0-a3,-(sp)
-	neg.w	d0
+	neg.w	d0						;Vcount counts up from -d0 to 0
 	move.w	d0,(Vcount).w
 .wait
 	cmpi.w	#$708,(Zamx).w
-	bhi.w	.nz
+	bhi.w	.nz						;zamboni past $708: stop moving it
 	addq.w	#1,(Zamx).w
 .nz
 	moveq	#1,d7
 	jsr	(updatecrowdf).w			;4EB8: target below $8000
 	jsr	(RunArenaAnim).l
 	clr.w	(pausepad).w
-	bclr	#sfpj,(sflags).w
+	bclr	#sfpj,(sflags).w		;pad 1
 	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
 	clr.w	(pausepad).w
-	bset	#sfpj,(sflags).w
+	bset	#sfpj,(sflags).w		;pad 2
 	bsr.w	ReadJoy2
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
@@ -387,9 +394,9 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 .menu
 	movem.w	d0,-(sp)
 	jsr	(HandleMenuInput).w			;4EB8: target below $8000
-	bne.w	.resume
+	bne.w	.resume					;menu did not end the screen: carry on waiting
 	addq.w	#2,sp
-	bset	#7,d1
+	bset	#7,d1					;tell the caller the menu ended it
 	bra.w	.ex
 .resume
 	move.w	(sp)+,(Vcount).w
@@ -397,7 +404,7 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	bsr.w	setvideo
 	move.w	(Vcount).w,d0
 .0
-	cmp.w	(Vcount).w,d0
+	cmp.w	(Vcount).w,d0			;wait for the next vblank
 	beq.s	.0
 	tst.w	d0
 	bmi.w	.wait
@@ -406,13 +413,14 @@ waitxsr								;Wait d0 vblanks while the zamboni crosses
 	rts
 ; wait for either joystick input
 ; return d1 = new button presses
-waitjoy
+waitjoy								;wait for either joystick input. Return d1 = new button presses. it as
+									;data (no caller found)
 	move.w	(Vcount).w,d0
 .0
-	cmp.w	(Vcount).w,d0
+	cmp.w	(Vcount).w,d0			;wait one vblank
 	beq.s	.0
 	bsr.w	orjoy
-	beq.s	waitjoy
+	beq.s	waitjoy					;no new press: wait again
 	rts
 ; return d1 = new button presses
 orjoy
@@ -436,19 +444,20 @@ orjoy
 	or.w	(sp)+,d1
 	rts
 ; eliminate diagonal direction presses on d0
-nodiag
+nodiag								;eliminate diagonal direction presses: if held directions (d3 bits 0-3)
+									;are not one direction, clear the d1 direction bits
 	movem.l	d0/d4-d5,-(sp)
-	moveq	#3,d4
+	moveq	#3,d4					;d4 = direction bit 3..0
 	move.w	d3,d0
-	andi.w	#$F,d0
-	beq.w	.ok
+	andi.w	#$F,d0					;held directions
+	beq.w	.ok						;none held
 .0
-	clr.w	d5
+	clr.w	d5						;test each single-bit direction against the held set
 	bset	d4,d5
 	cmp.w	d5,d0
 	dbeq	d4,.0
-	beq.w	.ok
-	andi.w	#$FFF0,d1
+	beq.w	.ok						;exactly one direction held
+	andi.w	#$FFF0,d1				;diagonal: drop the direction presses
 .ok
 	movem.l	(sp)+,d0/d4-d5
 	rts
@@ -457,11 +466,11 @@ ProcessInputWithRepeat				;nodiag, then key repeat on d1-d3
 	tst.w	d3
 	beq.w	rtss2
 	tst.w	d2
-	bne.w	.chg
+	bne.w	.chg					;buttons changed: restart the delay
 	subq.w	#1,(repeatdelayframes).w
 	bpl.w	rtss2
-	move.w	#4,(repeatdelayframes).w
-	move.w	d3,d1
+	move.w	#4,(repeatdelayframes).w	;repeat rate
+	move.w	d3,d1					;repeat the held buttons
 	rts
 .chg
 	move.w	#$F,(repeatdelayframes).w
@@ -471,21 +480,23 @@ ProcessInputWithRepeat				;nodiag, then key repeat on d1-d3
 ; d1 = new presses (all 8 bits)
 ; d2 = changed buttons (all 8)
 ; d3 = current held buttons (all 8)
-ReadJoy1
+ReadJoy1							;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
+									;direction (bit 0-3) and new button (bit 4-7) presses, d1 = new presses
+									;(all 8 bits), d2 = changed buttons (all 8), d3 = held buttons (all 8)
 	move.b	(pad4way1).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj1).w,d2
+	bsr.w	ReadJoy					;d1 = buttons down now
+	move.w	(lj1).w,d2				;last frame's buttons
 	move.w	d1,(lj1).w
-	move.w	d1,d3
-	eor.w	d1,d2
-	and.w	d2,d1
+	move.w	d1,d3					;d3 = held
+	eor.w	d1,d2					;d2 = changed
+	and.w	d2,d1					;d1 = changed and now down = new presses
 	rts
 ; Read controller 2
 ; return d0 = direction (bit 0-3) and new button (bit 4-7) presses
 ; d1 = new presses (all 8 bits)
 ; d2 = changed buttons (all 8)
 ; d3 = current held buttons (all 8)
-ReadJoy2
+ReadJoy2							;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
 	move.b	(pad4way2).w,d0
 	bsr.w	ReadJoy
 	move.w	(lj2).w,d2
@@ -532,7 +543,9 @@ jdtab	dc.b	8
 ; d0 = words to transfer
 ; d1 = initial vram address
 ; a0 = address to transfer from
-DoDMApro
+DoDMApro							;initiate dma transfer and protect from vblank interuption. d0 = words to
+									;transfer, d1 = initial vram address, a0 = address to transfer from.
+									;Jumped to from DecompressGraphics
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w
 	bsr.w	DoDMA
@@ -542,22 +555,23 @@ DoDMApro
 ; d0 = words to transfer
 ; d1 = destination vram address
 ; a0 = source address
-DoDMA
+DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = words
+									;to transfer, d1 = destination vram address, a0 = source address
 	movem.l	d2-d3/a1,-(sp)
 	move.w	d0,d2
-	add.w	d2,d2
-	add.w	a0,d2
+	add.w	d2,d2					;length in bytes
+	add.w	a0,d2					;carry out = source+length crosses a 64k boundary
 	bcc.w	.nd
-	beq.w	.nd
+	beq.w	.nd						;ends exactly on the boundary: one transfer
 	lsr.w	#1,d2					;do 2 transers if source address crosses 64k boundary
-	sub.w	d2,d0
+	sub.w	d2,d0					;d0 = words before the boundary, d2 = words after it
 	move.w	d0,-(sp)
-	bsr.w	.dd
+	bsr.w	.dd						;first part
 	move.w	(sp)+,d0
-	add.w	d0,d0
+	add.w	d0,d0					;advance vram dest and source by the words done
 	add.w	d0,d1
 	adda.w	d0,a0
-	move.w	d2,d0
+	move.w	d2,d0					;second part: the rest, falls into .nd
 	bra.w	.nd
 .dd									;(a global in ; local here, only DoDMA uses it)
 	movem.l	d2-d3/a1,-(sp)
@@ -565,34 +579,34 @@ DoDMA
 	lea	(Vctrl).l,a1
 	move.w	#VDPR_MODE2+$54,(a1)
 	move.w	#VDPR_AUTOINC+$02,(a1)
-	move.w	#$9300,d2
-	move.b	d0,d2
+	move.w	#$9300,d2				;a0 = source address
+	move.b	d0,d2					;reg 19: length low
 	move.w	d2,(a1)
 	move.w	#$9400,d2
 	lsr.w	#8,d0
-	move.b	d0,d2
+	move.b	d0,d2					;reg 20: length high
 	move.w	d2,(a1)
 	move.l	a0,d0
-	lsr.l	#1,d0
+	lsr.l	#1,d0					;source in words
 	move.w	#$9500,d2
-	move.b	d0,d2
+	move.b	d0,d2					;reg 21: source low
 	move.w	d2,(a1)
 	lsr.l	#8,d0
 	move.w	#$9600,d2
-	move.b	d0,d2
+	move.b	d0,d2					;reg 22: source mid
 	move.w	d2,(a1)
 	lsr.l	#8,d0
 	andi.b	#$7F,d0
 	move.w	#$9700,d2
-	move.b	d0,d2
+	move.b	d0,d2					;reg 23: source high (dma mode bits 7-6 = 0: 68k to vram)
 	move.w	d2,(a1)
 	clr.l	d0
-	move.w	d1,d0
+	move.w	d1,d0					;build the vdp command long for a vram write with dma
 	asl.l	#2,d0
 	lsr.w	#2,d0
 	move.l	d0,d3
 	ori.l	#$804000,d0
-	move.l	d0,(dmaram).w
+	move.l	d0,(dmaram).w			;the last command word is written from ram (dma bug workaround)
 	move	sr,-(sp)
 	move	#$2700,sr
 	move.w	#$100,(IO_Z80BUS).l
@@ -600,7 +614,7 @@ DoDMA
 	btst	#0,(IO_Z80BUS).l
 	bne.s	.loop
 	move.w	(dmaram+2).w,(a1)
-	move.w	(dmaram).w,(a1)
+	move.w	(dmaram).w,(a1)			;this write starts the dma
 	bsr.w	WaitDMA
 	move.w	#VDPR_MODE2+$64,(a1)
 	clr.w	(IO_Z80BUS).l
@@ -609,7 +623,7 @@ DoDMA
 	ori.w	#$4000,d3
 	swap	d3
 	andi.w	#3,d3
-	move.l	d3,(a1)
+	move.l	d3,(a1)					;vram write command, no dma
 	move.w	(a0),-4(a1)
 .0
 	move	(sp)+,sr
@@ -622,27 +636,28 @@ DoDMA_nd2							;vram to vram copy by dma, protected from vblank
 	lea	(Vctrl).l,a1
 	move.w	#VDPR_MODE2+$54,(a1)
 	move.w	#VDPR_AUTOINC+$01,(a1)
-	move.w	#$9300,d3
+	move.w	#$9300,d3				;length low
 	move.b	d0,d3
 	move.w	d3,(a1)
-	move.w	#$9400,d3
+	move.w	#$9400,d3				;length high
 	lsr.w	#8,d0
 	move.b	d0,d3
 	move.w	d3,(a1)
-	move.w	#$9500,d3
+	move.w	#$9500,d3				;source low
 	move.b	d2,d3
 	move.w	d3,(a1)
-	move.w	#$9600,d3
+	move.w	#$9600,d3				;source high
 	lsr.w	#8,d2
 	move.b	d2,d3
 	move.w	d3,(a1)
 	move.w	#VDPR_DMASRCH+$C0,(a1)
 	clr.l	d0
-	move.w	d1,d0
+	move.w	d1,d0					;destination address -> vdp command (address bits 14-15 go to the second
+									;word)
 	asl.l	#2,d0
 	lsr.w	#2,d0
 	swap	d0
-	ori.w	#$C0,d0
+	ori.w	#$C0,d0					;vram copy command
 	move.l	d0,(dmaram).w
 	move.w	#$100,(IO_Z80BUS).l
 .loop
@@ -661,19 +676,19 @@ DoDMA_nd2							;vram to vram copy by dma, protected from vblank
 ; d0 = words to fill
 ; d1 = vram address
 ; d2 = data to fill with
-DoFill
+DoFill								;fill vram. d0 = words to fill, d1 = vram address, d2 = data to fill with
 	movem.l	d3/a1,-(sp)
-	movea.l	#Vdata,a1
+	movea.l	#Vdata,a1				;Vdata
 	andi.l	#$FFFF,d1
-	asl.l	#2,d1
+	asl.l	#2,d1					;build the vram write command for address d1
 	lsr.w	#2,d1
 	ori.w	#$4000,d1
 	swap	d1
 	move.l	d1,Vctrl-Vdata(a1)
 	move.w	d2,d3
 	swap	d3
-	move.w	d2,d3
-	lsr.w	#1,d0
+	move.w	d2,d3					;d3 = fill word twice, for long writes
+	lsr.w	#1,d0					;words -> longs
 	subq.w	#1,d0
 .0
 	move.l	d3,(dmaram).w
@@ -689,14 +704,15 @@ WaitDMA								;wait for dma completion
 	bne.s	WaitDMA
 	rts
 ; d0 = color to fade to
-setVram
+setVram								;initialize all necesary video parameters based on my variables. d0 =
+									;color to fade to. Falls into setVram_0
 	movea.w	#(palfadenew-M68K_RAM),a0
-	moveq	#$3F,d1
+	moveq	#$3F,d1					;63
 .0
-	move.w	d0,(a0)+
+	move.w	d0,(a0)+				;fill the 64 target colors with d0
 	dbf	d1,.0
-	move.w	#$18,(palcount).w
-	bsr.w	forcefade
+	move.w	#$18,(palcount).w		;24
+	bsr.w	forcefade				;fade the screen to that color
 setVram_0							;second half of setVram without the fade: clear vram and set the VDP
 									;registers from disflags, Map1col, VmMAP1-3, VSPRITES and VSCRLPM.
 									;Falls in from setVram, called from EASportsScreen and HiScoreScreen
@@ -704,24 +720,24 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 	bset	#dfng,(disflags).w		;#dfng
 	move.w	#VDPR_AUTOINC+$02,(Vctrl).l
 	clr.w	d0
-	bsr.w	Vmaddr
+	bsr.w	Vmaddr					;vram address 0, a0 = Vdata
 	move.w	#$3FFF,d0
 	clr.l	d1
 .9
-	move.l	d1,(a0)
+	move.l	d1,(a0)					;clear vram
 	dbf	d0,.9
 	move.w	#$8C00,d0				;8 for shadow mode
 	btst	#df32c,(disflags).w		;#df32c
-	bne.w	.i32
-	ori.w	#$81,d0
+	bne.w	.i32					;32 column flag set: leave bits 0 and 7 clear
+	ori.w	#$81,d0					;%10000001
 .i32
 	move.w	d0,Vctrl-Vdata(a0)		;40 col mode, no interlace, normal brightness
 	move.w	#VDPR_MODE1+$04,Vctrl-Vdata(a0)	;512 color palette enable
 	move.w	#VDPR_MODE2+$64,Vctrl-Vdata(a0)
 	move.w	#$9001,d0				;playfield is 64x32
 	cmpi.w	#6,(Map1col).w
-	beq.w	.i64
-	move.w	#$9003,d0
+	beq.w	.i64					;Map1col 6 = 64 columns wide
+	move.w	#$9003,d0				;otherwise 128x32
 .i64
 	move.w	d0,Vctrl-Vdata(a0)
 	move.w	#$8200,d0
@@ -757,11 +773,11 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 ; set video port to address d0
 ; d0 = vram address
 ; returns a0 = Vdata!!!
-Vmaddr
+Vmaddr								;set video port to address d0. d0 = vram address, returns a0 = Vdata!!!
 	movea.l	#Vdata,a0
-	asl.l	#2,d0
+	asl.l	#2,d0					;split the address: bits 0-13 in the first word, 14-15 in the second
 	lsr.w	#2,d0
-	ori.w	#$4000,d0
+	ori.w	#$4000,d0				;vram write command
 	swap	d0
 	andi.w	#3,d0
 	move.l	d0,Vctrl-Vdata(a0)
@@ -778,12 +794,12 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 									;= width x, d3 = width y, d4 = start char, d5 = pal used bits (0-3) for
 									;color fam 1-4. printy is restored and the tiles go last through
 									;DecompressGraphics (returns d4 = end char)
-	move.w	(printy).w,-(sp)
+	move.w	(printy).w,-(sp)		;keep printy
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;#dfng
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)	;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6
-	movea.w	#(palfadenew-M68K_RAM),a3
+	movea.w	#(palfadenew-M68K_RAM),a3	;a3 = target palette, a0 = palette data
 	bra.w	.00
 .01
 	move.b	0(a0,d0.w),0(a3,d0.w)
@@ -792,30 +808,30 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	adda.l	#$20,a0
 	adda.l	#$20,a3
 .00
-	moveq	#$1F,d0
-	lsr.w	#1,d5
+	moveq	#$1F,d0					;31
+	lsr.w	#1,d5					;d5 bit n = copy palette line n; stop when no bits left
 	bcs.s	.01
 	bne.s	.02
-	move.w	(printa).w,d5
+	move.w	(printa).w,d5			;d5 = tile attribute bits (priority/palette/flip) from printa
 	andi.w	#$F800,d5
-	move.w	$E(sp),d2
+	move.w	$E(sp),d2				;width y
 	subq.w	#1,d2
 .loop2
-	bsr.w	xyVmMap
+	bsr.w	xyVmMap					;set vram address from printx/printy/printm, a0 = Vdata
 	move.w	d6,d0					;y start
 	mulu.w	(a1),d0					;map width
-	add.w	2(sp),d0
-	asl.w	#1,d0
-	move.w	$A(sp),d1
+	add.w	2(sp),d0				;x start
+	asl.w	#1,d0					;d0 = byte offset of the first map word wanted
+	move.w	$A(sp),d1				;width x
 	subq.w	#1,d1
 .loop1
-	move.w	4(a1,d0.w),d3
-	add.w	d4,d3
-	eor.w	d5,d3
-	move.w	d3,(a0)
+	move.w	4(a1,d0.w),d3			;map word (map data starts 4 bytes in)
+	add.w	d4,d3					;add the start char
+	eor.w	d5,d3					;xor the attribute bits
+	move.w	d3,(a0)					;write the name table entry
 	addq.w	#2,d0
 	dbf	d1,.loop1
-	addq.w	#1,(printy).w
+	addq.w	#1,(printy).w			;next row
 	addq.w	#1,d6
 	dbf	d2,.loop2
 	btst	#0,(sflags6).w
