@@ -27,7 +27,7 @@ DecompressGraphics					;a2 = graphics data, d4 = start char
 	andi.w	#$7FFF,d0				;tile count
 	add.w	d0,d4
 	bsr.w	DecompressBytecode
-.done
+.done								;exit: restore the registers
 	movem.l	(sp)+,d0-d1/a0-a6
 	rts
 DecompressBytecode					;Unpack a0 into the 256 byte ring buffer at ThreeStars
@@ -40,7 +40,7 @@ DecompressBytecode					;Unpack a0 into the 256 byte ring buffer at ThreeStars
 	move.w	d1,d3					;d3 = vram address
 	clr.w	d1						;d1 = output buffer offset
 	clr.w	d2
-.loop
+.loop								;loop
 	move.b	(a0)+,d0				;read opcode
 	andi.w	#$F0,d0
 	lsr.w	#3,d0					;upper nibble * 2
@@ -73,7 +73,7 @@ Opcode_CopyLiteral					;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
 	addq.b	#1,d1					;d1 is a byte index: wraps to 0 after 256 bytes
 	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
-.next
+.next								;d1 <> 0, or from above
 	dbf	d0,.loop
 	rts
 Opcode_ClearBytes					;opcode 2, write (low 4 bits)+1 zero bytes
@@ -84,7 +84,7 @@ Opcode_ClearBytes					;opcode 2, write (low 4 bits)+1 zero bytes
 	addq.b	#1,d1
 	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
-.next
+.next								;d1 <> 0, or from above
 	dbf	d0,.loop
 	rts
 Opcode_Fillbytes					;opcode 3, write the next data byte (low 4 bits)+3 times
@@ -97,7 +97,7 @@ Opcode_Fillbytes					;opcode 3, write the next data byte (low 4 bits)+3 times
 	addq.b	#1,d1
 	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
-.next
+.next								;d1 <> 0, or from above
 	dbf	d0,.loop
 	rts
 Opcode_CopyBackwardShort			;opcodes 4-7, copy from back in the output buffer
@@ -117,7 +117,7 @@ CopyBackwardRun						;shared copy loop, d0 = count-1, d2 = distance back
 	addq.b	#1,d1
 	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
-.next
+.next								;d1 <> 0, or from above
 	dbf	d0,.loop
 	rts
 Opcode_CopyBackwardMedium			;opcode 8
@@ -176,7 +176,7 @@ CopyBackwardReverseRun				;shared reverse copy loop
 	addq.b	#1,d1
 	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
-.next
+.next								;d1 <> 0, or from above
 	dbf	d0,.loop
 	rts
 Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
@@ -188,7 +188,7 @@ Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
 	tst.w	d1						;end of data
 	beq.w	.fin					;buffer empty
 	bsr.w	FlushOutputBuffer
-.fin
+.fin								;d1 = 0, or from above
 	addq.w	#4,sp					;drop the return into DecompressBytecode
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
@@ -208,7 +208,7 @@ FlushOutputBuffer					;Write the full ring buffer to vram
 	move.w	d1,d0
 	bne.w	.size
 	move.w	#$100,d0				;full buffer
-.size
+.size								;d0 <> 0, or from above
 	lsr.w	#1,d0					;bytes to words
 	move.w	d3,d1					;vram address
 	add.w	d0,d3
@@ -219,8 +219,8 @@ FlushOutputBuffer					;Write the full ring buffer to vram
 	movea.l	(a4),a1					;remap table
 	jsr	(a5)						;remap
 	bra.w	.done
-.dma
+.dma								;a4 = 0
 	jsr	(a6)
-.done
+.done								;exit: restore the registers
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
