@@ -81,17 +81,17 @@ NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList (26)
 ;------------------------
 
 AllStarsEast						;ASE
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\ASEh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\ASEv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 ;		qreb,hvxx
 	dc.w	$7720,$00E8
 .godds								;starting goalie weights, 4 nibbles (PickStartingGoalie)
@@ -144,21 +144,21 @@ AllStarsEast						;ASE
 	String	'Madison Square Garden'
 
 AllStarsWest						;ASW
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\ASWh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\ASWv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$7720,$00E8
-.godds
+.godds								;starting goalie weights
 	dc.b	237,144
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,20,22,11,04,15,14,00
 	dc.b	01,24,22,11,04,15,13,00
 	dc.b	01,20,23,14,06,13,04,00
@@ -167,7 +167,7 @@ AllStarsWest						;ASW
 	dc.b	01,18,22,06,04,15,09,00
 	dc.b	01,25,21,08,12,09,17,00
 	dc.b	01,23,24,09,17,08,12,00
-.pld
+.pld								;player ratings
 	Player	'Ed Belfour',				3066,4665,0000,6655
 	Player	'Tim Cheveldae',			3264,4444,0000,4344
 	Player	'Felix Potvin',				2964,4664,0000,4444
@@ -194,31 +194,31 @@ AllStarsWest						;ASW
 	Player	'Steve Smith',				05B4,4344,4641,5244
 	Player	'Steve Chiasson',			0394,3444,3641,4234
 	dc.w	2
-.tn
+.tn									;team name
 	String	'All Stars West'
-.ta
+.ta									;team abbreviation
 	String	'ASW'
-.tm
+.tm									;nickname
 	dc.w	2
-.ar
+.ar									;arena
 	String	'Madison Square Garden'
 
 Boston								;BOS
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\BOSh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\BOSv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$4121,$21F8
-.godds
+.godds								;starting goalie weights
 	dc.b	180,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,07,03,12,08,00
 	dc.b	01,19,18,08,03,12,05,00
 	dc.b	01,20,21,07,05,13,03,00
@@ -227,7 +227,7 @@ Boston								;BOS
 	dc.b	01,22,21,07,05,13,03,00
 	dc.b	01,19,18,09,04,03,06,00
 	dc.b	01,20,21,03,06,09,04,00
-.pld
+.pld								;player ratings
 	Player	'Andy Moog',				3544,4224,0000,4343
 	Player	'John Blue',				3963,4553,0000,4343
 	Player	'Adam Oates',				1275,4653,3154,5061
@@ -254,31 +254,31 @@ Boston								;BOS
 	Player	'Glen Feathrston',			06B3,3222,4823,2324
 	Player	'Jim Wiemer',				36A2,1221,2820,2324
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Boston'
-.ta
+.ta									;team abbreviation
 	String	'BOS'
-.tm
+.tm									;nickname
 	String	'Bruins'
-.ar
+.ar									;arena
 	String	'Boston Garden'
 
 Buffalo								;BUF
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\BUFh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\BUFv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$6410,$21E8
-.godds
+.godds								;starting goalie weights
 	dc.b	178,80
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,18,19,05,04,13,06,00
 	dc.b	01,18,20,09,04,13,05,00
 	dc.b	01,19,22,11,05,15,04,00
@@ -287,7 +287,7 @@ Buffalo								;BUF
 	dc.b	01,21,22,08,06,15,04,00
 	dc.b	01,20,22,09,06,08,04,00
 	dc.b	01,18,19,08,04,09,06,00
-.pld
+.pld								;player ratings
 	Player	'Grant Fuhr',				3175,4555,0100,4455
 	Player	'Tom Draper',				3562,3332,0000,2222
 	Player	'Dominik Hasek',			3943,3552,0000,2222
@@ -314,31 +314,31 @@ Buffalo								;BUF
 	Player	'Randy Moller',				24A3,2212,3921,1124
 	Player	'Keith Carney',				0692,3212,3622,1424
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Buffalo'
-.ta
+.ta									;team abbreviation
 	String	'BUF'
-.tm
+.tm									;nickname
 	String	'Sabres'
-.ar
+.ar									;arena
 	String	'Memorial Auditorium'
 
 Calgary								;CGY
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\CGYh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\CGYv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$4200,$00DA
-.godds
+.godds								;starting goalie weights
 	dc.b	197,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,16,17,07,03,12,04,00
 	dc.b	01,20,17,07,03,13,04,00
 	dc.b	01,16,22,08,04,12,03,00
@@ -347,7 +347,7 @@ Calgary								;CGY
 	dc.b	01,23,22,04,05,12,03,00
 	dc.b	01,16,22,08,12,07,05,00
 	dc.b	01,23,19,07,05,08,12,00
-.pld
+.pld								;player ratings
 	Player	'Mike Vernon',				3043,4444,0000,4433
 	Player	'Jeff Reese',				3542,3442,0000,2233
 	Player	'Joe Nieuwendyk',			2584,4434,3444,4322
@@ -374,31 +374,31 @@ Calgary								;CGY
 	Player	'Alexnder Godynyuk',		21A2,3222,3822,3512
 	Player	'Greg Smyth',				06A0,0100,1901,1404
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Calgary'
-.ta
+.ta									;team abbreviation
 	String	'CGY'
-.tm
+.tm									;nickname
 	String	'Flames'
-.ar
+.ar									;arena
 	String	'Olympic Saddledome'
 
 Chicago								;CHI
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\CHIh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\CHIv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$2010,$21F8
-.godds
+.godds								;starting goalie weights
 	dc.b	228,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,07,03,12,05,00
 	dc.b	01,19,18,07,03,12,04,00
 	dc.b	01,20,21,09,04,14,03,00
@@ -407,7 +407,7 @@ Chicago								;CHI
 	dc.b	01,20,21,04,05,14,03,00
 	dc.b	01,19,18,05,12,03,13,00
 	dc.b	01,21,23,03,13,05,12,00
-.pld
+.pld								;player ratings
 	Player	'Ed Belfour',				3066,4665,0000,6655
 	Player	'Jim Waite',				2963,3332,0000,2233
 	Player	'Jeremy Roenick',			2745,5445,2355,5253
@@ -434,31 +434,31 @@ Chicago								;CHI
 	Player	'Cam Russell',				0853,3132,3431,3524
 	Player	'Adam Bennett',				4792,2111,2520,1412
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Chicago'
-.ta
+.ta									;team abbreviation
 	String	'CHI'
-.tm
+.tm									;nickname
 	String	'Blackhawks'
-.ar
+.ar									;arena
 	String	'Chicago Stadium'
 
 Detroit								;DET
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\DETh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\DETv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$7321,$00F8
-.godds
+.godds								;starting goalie weights
 	dc.b	212,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,04,03,13,08,00
 	dc.b	01,21,25,11,03,13,04,00
 	dc.b	01,18,23,08,04,14,03,00
@@ -467,7 +467,7 @@ Detroit								;DET
 	dc.b	01,19,21,15,04,14,03,00
 	dc.b	01,19,23,08,04,03,05,00
 	dc.b	01,21,25,05,03,08,04,00
-.pld
+.pld								;player ratings
 	Player	'Tim Cheveldae',			3264,4444,0000,4344
 	Player	'Vincent Riendeau',			3763,3222,0000,3223
 	Player	'Steve Yzerman',			1966,5644,1155,6152
@@ -494,31 +494,31 @@ Detroit								;DET
 	Player	'Steve Konroyd',			0883,3232,4421,3233
 	Player	'Brad McCrimmon',			0283,2242,4610,3133
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Detroit'
-.ta
+.ta									;team abbreviation
 	String	'DET'
-.tm
+.tm									;nickname
 	String	'Red Wings'
-.ar
+.ar									;arena
 	String	'Joe Louis Sports Arena'
 
 Edmonton							;EDM
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\EDMh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\EDMv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$1602,$12F8
-.godds
+.godds								;starting goalie weights
 	dc.b	213,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,18,19,09,03,15,10,00
 	dc.b	01,18,19,10,03,15,04,00
 	dc.b	01,21,20,09,04,16,03,00
@@ -527,7 +527,7 @@ Edmonton							;EDM
 	dc.b	01,22,20,11,07,16,10,00
 	dc.b	01,18,20,09,05,12,03,00
 	dc.b	01,21,23,12,03,09,05,00
-.pld
+.pld								;player ratings
 	Player	'Bill Ranford',				3044,3334,0000,4454
 	Player	'Ron Tugnutt',				0122,3331,0000,1112
 	Player	'Doug Weight',				3963,3343,3443,3132
@@ -554,17 +554,17 @@ Edmonton							;EDM
 	Player	'Chris Joseph',				02A3,3313,3531,1233
 	Player	'Brad Werenka',				3693,3223,2633,2523
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Edmonton'
-.ta
+.ta									;team abbreviation
 	String	'EDM'
-.tm
+.tm									;nickname
 	String	'Oilers'
-.ar
+.ar									;arena
 	String	'Northlands Coliseum'
 
 Hartford							;HFD
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -574,11 +574,11 @@ Hartford							;HFD
 .pad								;both palettes new
 	incbin	..\Extracted\NHL94\Graphics\Pals\HFDh94.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\HFDv94.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$1702,$00F7
-.godds
+.godds								;starting goalie weights
 	dc.b	163,96
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,20,09,04,14,05,00
 	dc.b	01,19,25,09,04,14,05,00
 	dc.b	01,24,20,11,05,15,04,00
@@ -587,7 +587,7 @@ Hartford							;HFD
 	dc.b	01,21,22,10,05,06,04,00
 	dc.b	01,24,20,16,15,09,04,00
 	dc.b	01,19,25,09,04,16,15,00
-.pld
+.pld								;player ratings
 	Player	'Sean Burke',				01A4,3224,0000,4444
 	Player	'Mario Gosselin',			3132,3442,0000,1122
 	Player	'Frank Pietrngelo',			4063,3113,0000,2222
@@ -614,31 +614,31 @@ Hartford							;HFD
 	Player	'Randy Ladouceur',			29B3,3131,2421,3514
 	Player	'Allen Pedersen',			41A2,3132,3621,2123
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Hartford'
-.ta
+.ta									;team abbreviation
 	String	'HFD'
-.tm
+.tm									;nickname
 	String	'Whalers'
-.ar
+.ar									;arena
 	String	'Hartford Civic Center'
 
 LosAngeles							;LA
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\LAh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\LAv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$6612,$11D9
-.godds
+.godds								;starting goalie weights
 	dc.b	150,32
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,17,18,08,04,13,05,00
 	dc.b	01,17,19,08,04,13,05,00
 	dc.b	01,18,21,09,05,14,04,00
@@ -647,7 +647,7 @@ LosAngeles							;LA
 	dc.b	01,20,18,09,05,13,04,00
 	dc.b	01,21,18,09,15,04,14,00
 	dc.b	01,19,22,04,14,09,15,00
-.pld
+.pld								;player ratings
 	Player	'Kelly Hrudey',				3263,3444,0000,2223
 	Player	'Robb Stauber',				3562,3553,0000,2222
 	Player	'Rick Knickle',				0122,3332,0000,2221
@@ -674,17 +674,17 @@ LosAngeles							;LA
 	Player	'Tim Watters',				0562,2121,2620,2122
 	Player	'Rene Chapdlaine',			0881,1010,1510,1313
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Los Angeles'
-.ta
+.ta									;team abbreviation
 	String	'LA'
-.tm
+.tm									;nickname
 	String	'Kings'
-.ar
+.ar									;arena
 	String	'Great Western Forum'
 
 Dallas								;DAL (formerly the Minnesota North Stars)
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -694,11 +694,11 @@ Dallas								;DAL (formerly the Minnesota North Stars)
 .pad								;palettes unchanged
 	incbin	..\Extracted\NHL94\Graphics\Pals\DALh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\DALv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$1410,$00E9
-.godds
+.godds								;starting goalie weights
 	dc.b	181,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,17,18,04,03,11,12,00
 	dc.b	01,17,20,03,12,16,04,00
 	dc.b	01,19,21,08,04,14,12,00
@@ -707,7 +707,7 @@ Dallas								;DAL (formerly the Minnesota North Stars)
 	dc.b	01,22,19,08,04,13,11,00
 	dc.b	01,24,20,05,11,08,09,00
 	dc.b	01,17,21,08,09,05,11,00
-.pld
+.pld								;player ratings
 	Player	'Jon Casey',				3024,3443,0000,2234
 	Player	'Darcy Wakaluk',			3562,3333,0000,2232
 	Player	'Mike Modano',				0975,5445,2452,5243
@@ -734,31 +734,31 @@ Dallas								;DAL (formerly the Minnesota North Stars)
 	Player	'Brad Berry',				0572,2032,3420,3514
 	Player	'Enrico Ciccone',			3991,1022,2820,3525
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Dallas'
-.ta
+.ta									;team abbreviation
 	String	'DAL'
-.tm
+.tm									;nickname
 	String	'Stars'
-.ar
+.ar									;arena
 	String	'Reunion Arena'
 
 Montreal							;MTL
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\MTLh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\MTLv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$5211,$21E9
-.godds
+.godds								;starting goalie weights
 	dc.b	197,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,18,17,07,03,12,04,00
 	dc.b	01,23,18,07,03,12,04,00
 	dc.b	01,22,17,08,04,14,03,00
@@ -767,7 +767,7 @@ Montreal							;MTL
 	dc.b	01,19,20,08,04,05,03,00
 	dc.b	01,17,23,07,06,03,13,00
 	dc.b	01,22,19,03,13,07,06,00
-.pld
+.pld								;player ratings
 	Player	'Patrick Roy',				3366,4446,0000,5566
 	Player	'Andre Racicot',			3742,3333,0000,2222
 	Player	'Kirk Muller',				1194,4444,4444,4143
@@ -794,31 +794,31 @@ Montreal							;MTL
 	Player	'Sean Hill',				3882,2222,3521,2314
 	Player	'Donald Dufresne',			3492,2122,3921,2313
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Montreal'
-.ta
+.ta									;team abbreviation
 	String	'MTL'
-.tm
+.tm									;nickname
 	String	'Canadiens'
-.ar
+.ar									;arena
 	String	'Montreal Forum'
 
 NewJersey							;NJ
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\NJh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\NJv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$3411,$12F8
-.godds
+.godds								;starting goalie weights
 	dc.b	152,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,12,03,13,08,00
 	dc.b	01,18,21,08,04,12,03,00
 	dc.b	01,19,22,07,03,15,04,00
@@ -827,7 +827,7 @@ NewJersey							;NJ
 	dc.b	01,23,21,08,09,07,13,00
 	dc.b	01,18,23,07,17,08,03,00
 	dc.b	01,20,19,08,03,07,17,00
-.pld
+.pld								;player ratings
 	Player	'Chris Terreri',			3124,4443,0000,3333
 	Player	'Craig Billington',			0143,4221,0000,2222
 	Player	'Alexnder Semak',			2064,3443,3144,3242
@@ -854,31 +854,31 @@ NewJersey							;NJ
 	Player	'Tommy Albelin',			0673,2232,2230,3322
 	Player	'Myles O''Connor',			0571,1011,1210,1303
 	dc.w	2
-.tn
+.tn									;team name
 	String	'New Jersey'
-.ta
+.ta									;team abbreviation
 	String	'NJ'
-.tm
+.tm									;nickname
 	String	'Devils'
-.ar
+.ar									;arena
 	String	'Byrne Meadowlands Arena'
 
 NYIslanders							;NYI
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\NYIh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\NYIv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$5321,$00F8
-.godds
+.godds								;starting goalie weights
 	dc.b	151,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,09,03,04,10,00
 	dc.b	01,23,20,09,03,12,04,00
 	dc.b	01,18,19,10,04,13,03,00
@@ -887,7 +887,7 @@ NYIslanders							;NYI
 	dc.b	01,21,20,07,04,12,09,00
 	dc.b	01,23,21,13,12,04,15,00
 	dc.b	01,18,25,04,15,12,13,00
-.pld
+.pld								;player ratings
 	Player	'Glenn Healy',				3552,4442,0000,2222
 	Player	'Mark Fitzpatrik',			3072,4223,0000,2222
 	Player	'Pierre Turgeon',			7794,4534,3445,5141
@@ -914,31 +914,31 @@ NYIslanders							;NYI
 	Player	'Dennis Vaske',				37A1,1212,2611,1113
 	Player	'Richard Pilon',			4793,3123,3821,2515
 	dc.w	2
-.tn
+.tn									;team name
 	String	'New York'
-.ta
+.ta									;team abbreviation
 	String	'NYI'
-.tm
+.tm									;nickname
 	String	'Islanders'
-.ar
+.ar									;arena
 	String	'Nassau Coliseum'
 
 NYRangers							;NYR
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\NYRh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\NYRv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$3411,$11F8
-.godds
+.godds								;starting goalie weights
 	dc.b	150,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,07,03,12,08,00
 	dc.b	01,18,21,08,03,13,06,00
 	dc.b	01,19,22,07,06,14,03,00
@@ -947,7 +947,7 @@ NYRangers							;NYR
 	dc.b	01,20,23,08,05,14,12,00
 	dc.b	01,18,21,08,03,05,04,00
 	dc.b	01,19,25,05,04,08,03,00
-.pld
+.pld								;player ratings
 	Player	'John Vanbiesbrk',			3453,4553,0000,3434
 	Player	'Mike Richter',				3573,4443,0000,4444
 	Player	'Mark Messier',				11A5,4443,5453,4053
@@ -974,17 +974,17 @@ NYRangers							;NYR
 	Player	'Jay Wells',				24A2,2222,3620,2124
 	Player	'Joe Cirella',				06A3,3223,2922,3323
 	dc.w	2
-.tn
+.tn									;team name
 	String	'New York'
-.ta
+.ta									;team abbreviation
 	String	'NYR'
-.tm
+.tm									;nickname
 	String	'Rangers'
-.ar
+.ar									;arena
 	String	'Madison Square Garden'
 
 Ottawa								;OTW
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -994,11 +994,11 @@ Ottawa								;OTW
 .pad								;new visitor palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\OTWh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\OTWv94.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$0702,$13F8
-.godds
+.godds								;starting goalie weights
 	dc.b	197,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,20,19,10,03,15,11,00
 	dc.b	01,20,19,10,03,15,07,00
 	dc.b	01,22,25,12,07,17,03,00
@@ -1007,7 +1007,7 @@ Ottawa								;OTW
 	dc.b	01,23,22,10,05,08,16,00
 	dc.b	01,19,23,06,07,12,04,00
 	dc.b	01,20,25,12,04,07,06,00
-.pld
+.pld								;player ratings
 	Player	'Peter Sidorkwicz',			3162,3112,0000,2222
 	Player	'Daniel Berthiaume',		3213,3112,0000,2222
 	Player	'Jamie Baker',				1373,3333,2433,4232
@@ -1034,31 +1034,31 @@ Ottawa								;OTW
 	Player	'Gord Dineen',				0681,1221,2311,2513
 	Player	'Brad Marsh',				14B2,2031,3610,2522
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Ottawa'
-.ta
+.ta									;team abbreviation
 	String	'OTW'
-.tm
+.tm									;nickname
 	String	'Senators'
-.ar
+.ar									;arena
 	String	'Ottawa Civic Center'
 
 Philadelphia						;PHI
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\PHIh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\PHIv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$3602,$22E8
-.godds
+.godds								;starting goalie weights
 	dc.b	134,48
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,05,04,15,16,00
 	dc.b	01,19,18,10,04,15,05,00
 	dc.b	01,21,23,12,05,16,04,00
@@ -1067,7 +1067,7 @@ Philadelphia						;PHI
 	dc.b	01,21,19,10,06,16,04,00
 	dc.b	01,18,23,08,15,10,05,00
 	dc.b	01,21,19,10,05,08,15,00
-.pld
+.pld								;player ratings
 	Player	'Tommy Soderstrom',			3034,4554,0000,3434
 	Player	'Dominic Roussel',			3363,3333,0000,3322
 	Player	'Steph Beauregard',			3572,3001,0100,2222
@@ -1094,31 +1094,31 @@ Philadelphia						;PHI
 	Player	'Gord Hynes',				2642,2221,3222,2522
 	Player	'Shawn Cronin',				44A1,1111,2C13,1513
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Philadelphia'
-.ta
+.ta									;team abbreviation
 	String	'PHI'
-.tm
+.tm									;nickname
 	String	'Flyers'
-.ar
+.ar									;arena
 	String	'Spectrum'
 
 Pittsburgh							;PIT
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\PITh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\PITv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$7120,$21E9
-.godds
+.godds								;starting goalie weights
 	dc.b	197,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,17,18,07,03,11,12,00
 	dc.b	01,17,18,07,03,11,04,00
 	dc.b	01,21,19,09,04,12,03,00
@@ -1127,7 +1127,7 @@ Pittsburgh							;PIT
 	dc.b	01,23,18,04,13,12,03,00
 	dc.b	01,17,18,12,03,04,13,00
 	dc.b	01,23,22,04,13,03,12,00
-.pld
+.pld								;player ratings
 	Player	'Tom Barrasso',				35A4,4554,0100,4444
 	Player	'Ken Wregget',				3182,3442,0000,3232
 	Player	'Mario Lemieux',			66A5,4644,3366,6062
@@ -1154,31 +1154,31 @@ Pittsburgh							;PIT
 	Player	'Grant Jennings',			0392,2132,3820,2313
 	Player	'Bryan Fogarty',			3381,1211,2220,1011
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Pittsburgh'
-.ta
+.ta									;team abbreviation
 	String	'PIT'
-.tm
+.tm									;nickname
 	String	'Penguins'
-.ar
+.ar									;arena
 	String	'Civic Arena'
 
 Quebec								;QUE
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\QUEh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\QUEv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$7521,$00F8
-.godds
+.godds								;starting goalie weights
 	dc.b	166,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,03,14,15,17,00
 	dc.b	01,19,18,07,03,14,04,00
 	dc.b	01,20,21,08,04,15,03,00
@@ -1187,7 +1187,7 @@ Quebec								;QUE
 	dc.b	01,20,21,07,14,16,03,00
 	dc.b	01,20,22,03,17,05,14,00
 	dc.b	01,19,18,05,14,03,17,00
-.pld
+.pld								;player ratings
 	Player	'Ron Hextall',				2774,4444,0000,4433
 	Player	'Stephane Fiset',			3553,4332,0000,2222
 	Player	'Joe Sakic',				1964,4544,2045,5252
@@ -1214,31 +1214,31 @@ Quebec								;QUE
 	Player	'Mikhail Tatarinov',		0483,3225,4641,2443
 	Player	'Craig Wolanin',			0692,2221,2811,2114
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Quebec'
-.ta
+.ta									;team abbreviation
 	String	'QUE'
-.tm
+.tm									;nickname
 	String	'Nordiques'
-.ar
+.ar									;arena
 	String	'Colisee de Quebec'
 
 SanJose								;SJ
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\SJh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\SJv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$0702,$12D9
-.godds
+.godds								;starting goalie weights
 	dc.b	102,48
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,18,17,10,04,14,05,00
 	dc.b	01,18,21,10,04,14,05,00
 	dc.b	01,19,23,12,05,15,04,00
@@ -1247,7 +1247,7 @@ SanJose								;SJ
 	dc.b	01,18,21,11,05,06,04,00
 	dc.b	01,21,24,04,14,05,07,00
 	dc.b	01,18,23,07,05,04,14,00
-.pld
+.pld								;player ratings
 	Player	'Arturs Irbe',				3252,4443,0000,3322
 	Player	'Jeff Hackett',				3052,3112,0000,2222
 	Player	'Brian Hayward',			0162,3002,0000,2222
@@ -1274,17 +1274,17 @@ SanJose								;SJ
 	Player	'Peter Ahola',				2192,2132,3621,3422
 	Player	'Rob Zettler',				0272,2132,2430,3434
 	dc.w	2
-.tn
+.tn									;team name
 	String	'San Jose'
-.ta
+.ta									;team abbreviation
 	String	'SJ'
-.tm
+.tm									;nickname
 	String	'Sharks'
-.ar
+.ar									;arena
 	String	'San Jose Arena'
 
 StLouis								;STL
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -1294,11 +1294,11 @@ StLouis								;STL
 .pad								;new home palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\STLh94.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\STLv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$2220,$21E9
-.godds
+.godds								;starting goalie weights
 	dc.b	212,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,17,18,12,03,13,04,00
 	dc.b	01,17,18,11,06,13,03,00
 	dc.b	01,20,24,10,03,12,06,00
@@ -1307,7 +1307,7 @@ StLouis								;STL
 	dc.b	01,21,22,04,05,14,12,00
 	dc.b	01,20,24,06,05,10,15,00
 	dc.b	01,21,18,10,15,05,06,00
-.pld
+.pld								;player ratings
 	Player	'Curtis Joseph',			3164,4664,0000,3344
 	Player	'Guy Hebert',				2962,3332,0000,2222
 	Player	'Craig Janney',				1574,3543,2044,4040
@@ -1334,31 +1334,31 @@ StLouis								;STL
 	Player	'Curt Giles',				0253,2131,2220,3312
 	Player	'Murray Baron',				34A3,3122,2621,2513
 	dc.w	2
-.tn
+.tn									;team name
 	String	'St. Louis'
-.ta
+.ta									;team abbreviation
 	String	'STL'
-.tm
+.tm									;nickname
 	String	'Blues'
-.ar
+.ar									;arena
 	String	'St. Louis Arena'
 
 TampaBay							;TB
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\TBh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\TBv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$0502,$00F7
-.godds
+.godds								;starting goalie weights
 	dc.b	104,64
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,20,19,12,04,05,06,00
 	dc.b	01,22,23,13,04,15,06,00
 	dc.b	01,21,24,12,06,17,04,00
@@ -1367,7 +1367,7 @@ TampaBay							;TB
 	dc.b	01,19,22,12,06,05,04,00
 	dc.b	01,22,19,12,17,15,16,00
 	dc.b	01,20,21,16,15,12,17,00
-.pld
+.pld								;player ratings
 	Player	'Wendell Young',			0163,3223,0000,3233
 	Player	'Pat Jablonski',			3552,3222,0100,2222
 	Player	'J.C. Bergeron',			3072,3222,0000,1111
@@ -1394,31 +1394,31 @@ TampaBay							;TB
 	Player	'Chris Lipuma',				4061,1211,0210,1114
 	Player	'Matt Hervey',				2691,1211,2910,1304
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Tampa Bay'
-.ta
+.ta									;team abbreviation
 	String	'TB'
-.tm
+.tm									;nickname
 	String	'Lightning'
-.ar
+.ar									;arena
 	String	'Fairgrounds Expo Hall'
 
 Toronto								;TOR
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\TORh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\TORv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$2020,$11E8
-.godds
+.godds								;starting goalie weights
 	dc.b	150,16
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,09,04,13,15,00
 	dc.b	01,22,18,09,04,13,06,00
 	dc.b	01,24,23,11,06,14,04,00
@@ -1427,7 +1427,7 @@ Toronto								;TOR
 	dc.b	01,20,22,15,05,14,04,00
 	dc.b	01,19,24,06,04,12,07,00
 	dc.b	01,22,18,12,07,04,06,00
-.pld
+.pld								;player ratings
 	Player	'Felix Potvin',				2964,4664,0000,4444
 	Player	'Daren Puppa',				0193,4552,0100,2233
 	Player	'Rick Wamsley',				3062,3002,0000,2222
@@ -1454,17 +1454,17 @@ Toronto								;TOR
 	Player	'Sylvain Lefebvre',			0292,2131,3420,4433
 	Player	'Bob McGill',				0882,2023,3523,2324
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Toronto'
-.ta
+.ta									;team abbreviation
 	String	'TOR'
-.tm
+.tm									;nickname
 	String	'Maple Leafs'
-.ar
+.ar									;arena
 	String	'Maple Leaf Gardens'
 
 Vancouver							;VAN
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -1474,11 +1474,11 @@ Vancouver							;VAN
 .pad								;new home palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\VANh94.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\VANv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$6102,$11F8
-.godds
+.godds								;starting goalie weights
 	dc.b	166,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,07,03,13,04,00
 	dc.b	01,19,22,10,03,14,05,00
 	dc.b	01,24,18,09,05,13,03,00
@@ -1487,7 +1487,7 @@ Vancouver							;VAN
 	dc.b	01,19,23,07,03,09,13,00
 	dc.b	01,24,18,13,05,04,16,00
 	dc.b	01,19,23,04,16,13,05,00
-.pld
+.pld								;player ratings
 	Player	'Kirk McLean',				0184,4444,0000,4433
 	Player	'Kay Whitmore',				3552,3552,0000,2323
 	Player	'Cliff Ronning',			0755,5432,2043,5141
@@ -1514,31 +1514,31 @@ Vancouver							;VAN
 	Player	'Dana Murzyn',				0592,3234,4621,4424
 	Player	'Robert Dirk',				22B2,2132,3632,3324
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Vancouver'
-.ta
+.ta									;team abbreviation
 	String	'VAN'
-.tm
+.tm									;nickname
 	String	'Canucks'
-.ar
+.ar									;arena
 	String	'Pacific Coliseum'
 
 Winnipeg							;WPG
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\WPGh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\WPGv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$4511,$11F8
-.godds
+.godds								;starting goalie weights
 	dc.b	214,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,19,18,04,03,13,09,00
 	dc.b	01,22,18,08,03,13,04,00
 	dc.b	01,19,21,09,04,14,03,00
@@ -1547,7 +1547,7 @@ Winnipeg							;WPG
 	dc.b	01,19,21,09,04,14,03,00
 	dc.b	01,19,21,10,06,05,16,00
 	dc.b	01,24,22,05,16,10,06,00
-.pld
+.pld								;player ratings
 	Player	'Bob Essensa',				3534,4554,0000,4444
 	Player	'Jim Hrivnak',				3062,3222,0000,2222
 	Player	'Alexei Zhamnov',			1075,3433,3054,4152
@@ -1574,31 +1574,31 @@ Winnipeg							;WPG
 	Player	'Dean Kennedy',				2692,2132,3320,4423
 	Player	'Randy Carlyle',			0892,2122,3621,2522
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Winnipeg'
-.ta
+.ta									;team abbreviation
 	String	'WPG'
-.tm
+.tm									;nickname
 	String	'Jets'
-.ar
+.ar									;arena
 	String	'Winnipeg Arena'
 
 Washington							;WSH
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
 	dc.w	.ls-.0
 	dc.w	.sr-.0
 	dc.w	.godds-.0
-.pad
+.pad								;home and visitor palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\WSHh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\WSHv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$5220,$11E8
-.godds
+.godds								;starting goalie weights
 	dc.b	181,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,18,17,04,03,12,13,00
 	dc.b	01,18,17,10,04,14,03,00
 	dc.b	01,19,20,09,03,12,04,00
@@ -1607,7 +1607,7 @@ Washington							;WSH
 	dc.b	01,18,19,06,05,13,04,00
 	dc.b	01,21,17,03,14,10,06,00
 	dc.b	01,19,20,10,06,03,14,00
-.pld
+.pld								;player ratings
 	Player	'Don Beaupre',				3343,4333,0000,3333
 	Player	'Rick Tabaracci',			3162,3112,0000,3322
 	Player	'Mike Ridley',				1794,4433,2044,4042
@@ -1633,17 +1633,17 @@ Washington							;WSH
 	Player	'Jason Woolley',			2562,2111,2220,1212
 	Player	'Rod Langway',				05B3,2022,3230,2323
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Washington'
-.ta
+.ta									;team abbreviation
 	String	'WSH'
-.tm
+.tm									;nickname
 	String	'Capitals'
-.ar
+.ar									;arena
 	String	'Capital Centre'
 
 Florida								;FLA
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -1653,11 +1653,11 @@ Florida								;FLA
 .pad								;new team palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\FLAh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\FLAv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$0702,$1396
-.godds
+.godds								;starting goalie weights
 	dc.b	214,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,14,12,08,05,04,07,00
 	dc.b	01,14,17,08,05,03,04,00
 	dc.b	01,16,12,06,10,11,05,00
@@ -1666,7 +1666,7 @@ Florida								;FLA
 	dc.b	01,13,17,06,10,03,05,00
 	dc.b	01,14,12,09,05,07,08,00
 	dc.b	01,13,17,07,08,09,05,00
-.pld
+.pld								;player ratings
 	Player	'John Vanbiesbrk',			3453,4553,0000,3434
 	Player	'Mark Fitzpatrik',			3072,4223,0000,2222
 	Player	'Tom Fitzgerald',			1482,2232,2122,3222
@@ -1685,17 +1685,17 @@ Florida								;FLA
 	Player	'Milan Tichy',				4383,2112,3821,2224
 	Player	'Stephane Richer',			2593,3333,3332,3322
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Florida'
-.ta
+.ta									;team abbreviation
 	String	'FLA'
-.tm
+.tm									;nickname
 	String	'Panthers'
-.ar
+.ar									;arena
 	String	'Miami Arena'
 
 Anaheim								;ANH
-.0
+.0									;team data start: offsets to the parts
 	dc.w	.pld-.0
 	dc.w	.pad-.0
 	dc.w	.tn-.0
@@ -1705,11 +1705,11 @@ Anaheim								;ANH
 .pad								;new team palettes
 	incbin	..\Extracted\NHL94\Graphics\Pals\ANHh.pal
 	incbin	..\Extracted\NHL94\Graphics\Pals\ANHv.pal
-.sr
+.sr									;team ratings (qreb,hvxx)
 	dc.w	$0702,$1397
-.godds
+.godds								;starting goalie weights
 	dc.b	214,0
-.ls
+.ls									;8 lines of 8 player numbers
 	dc.b	01,12,14,04,06,08,03,00
 	dc.b	01,12,16,03,06,11,04,00
 	dc.b	01,14,15,09,08,07,03,00
@@ -1718,7 +1718,7 @@ Anaheim								;ANH
 	dc.b	01,13,15,03,09,11,03,00
 	dc.b	01,12,14,06,07,04,08,00
 	dc.b	01,17,16,04,08,07,06,00
-.pld
+.pld								;player ratings
 	Player	'Guy Hebert',				2962,3332,0000,2222
 	Player	'Ron Tugnutt',				0122,3331,0000,1112
 	Player	'Steven King',				2772,2322,1323,3422
@@ -1738,13 +1738,13 @@ Anaheim								;ANH
 	Player	'Bobby Dollas',				32B2,1121,2110,2111
 	Player	'Dennis Vial',				17B1,1121,3810,2113
 	dc.w	2
-.tn
+.tn									;team name
 	String	'Anaheim'
-.ta
+.ta									;team abbreviation
 	String	'ANH'
-.tm
+.tm									;nickname
 	String	'Mighty Ducks'
-.ar
+.ar									;arena
 	String	'Pond'
 
 playoffseats						;32 rows of 16 team numbers (PlayoffRows by
