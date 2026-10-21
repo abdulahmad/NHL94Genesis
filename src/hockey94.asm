@@ -378,7 +378,7 @@ demoread							;monitor joystick if in demo mode (called every game loop)
 	tst.w	(cont2team).w
 	bne.w	rtss8					;not demo
 	jsr	(ReadJoy1).l
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	bne.w	startpause1				;start on pad 1 pauses
 	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy2).l

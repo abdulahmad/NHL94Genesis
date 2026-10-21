@@ -243,7 +243,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	movem.w	d0-d1,-(sp)				;push to stack
 	move.w	(puckx).w,d0			;move puckx to d0
 	sub.w	(a3),d0					;sub Xpos from d0
-	cmp.w	#$3C,d0					;'<'   ; compare diff to 3C (60 pixels)
+	cmp.w	#$3C,d0					;compare diff to 3C (60 pixels)
 	bgt.w	.chkxvel				;branch if greater than
 	cmp.w	#$FFC4,d0				;compare to -60 pixels
 	bgt.w	.chkypos				;branch if greater than
@@ -257,7 +257,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .chkypos							;puck within 60 pixels in X: check Y
 	move.w	(pucky).w,d0			;move pucky into d0
 	sub.w	Ypos(a3),d0				;sub Ypos from d0
-	cmp.w	#$3C,d0					;'<'   ; compare diff to 60 pix
+	cmp.w	#$3C,d0					;compare diff to 60 pix
 	bgt.w	.chkyvel				;branch if greater than
 	cmp.w	#$FFC4,d0				;check with -60 pix
 	bgt.w	.coming					;branch if greater than

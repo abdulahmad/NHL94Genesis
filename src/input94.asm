@@ -90,7 +90,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bne.w	.noot
 	move.w	d4,(inputjoy).w
 	move.w	(joypuckcarrier).w,(TmpJoyPuckCarrier).w
-	move.w	#$23,d0					;'#'   ; assonetimer
+	move.w	#$23,d0					;assonetimer
 	jsr	(assreplace).l
 	movem.l	(sp)+,d0-d2/a0/a3
 	rts
@@ -455,7 +455,7 @@ doinput_onetimer					;a3 is set for a one-timer: C (bit 5) starts the one-timer 
 	move.w	d0,-(sp)
 	move.w	d4,(inputjoy).w
 	move.w	(joypuckcarrier).w,(TmpJoyPuckCarrier).w
-	move.w	#$23,d0					;'#'   ; assonetimer
+	move.w	#$23,d0					;assonetimer
 	jsr	(assreplace).l
 	move.w	(sp)+,d0
 	rts
@@ -1121,7 +1121,7 @@ passtoa0							;pass puck to player a0
 	add.w	(sp)+,d1				;y distance
 	move.w	(pucky).w,temp4(a0)
 	add.w	d1,temp4(a0)			;$46 = temp4
-	mulu.w	#$78,d2					;'x'   ; $78 = 60*2
+	mulu.w	#$78,d2					;$78 = 60*2
 	swap	d0
 	divs.w	d2,d0
 	move.w	d0,(puckvx).w
@@ -1506,7 +1506,7 @@ doshot								;stick is at puck so launch puck toward goal
 	bsr.w	randomd0s				;RNG adj value
 	add.w	d0,2(sp)				;add result to x diff
 	move.w	(sp),d0					;move adjusting value into d0
-	cmp.w	#$3C,d0					;'<'   ; compare to $3C (max adjustment in Y)
+	cmp.w	#$3C,d0					;compare to $3C (max adjustment in Y)
 	bls.w	.lessx					;branch if less
 	moveq	#$3C,d0
 	move.w	d0,(sp)
@@ -1523,12 +1523,12 @@ doshot								;stick is at puck so launch puck toward goal
 	add.w	d0,4(sp)				;add to Z diff
 .perf								;aim set: puck velocity from shot speed and distance
 	move.w	(passspeed).w,d2		;shot speed
-	muls.w	#$44,d2					;'D'   ; 1024/15
+	muls.w	#$44,d2					;1024/15
 	muls.w	(sp)+,d2				;mult by x dist
 	divs.w	d3,d2					;divide d2 by straight line distance
 	move.w	d2,(puckvx).w			;move into puckvx
 	move.w	(passspeed).w,d2
-	muls.w	#$44,d2					;'D'   ; 1024/15
+	muls.w	#$44,d2					;1024/15
 	muls.w	(sp)+,d2				;mult by y dist
 	divs.w	d3,d2					;divide d2 by straight line distance
 	move.w	d2,(puckvy).w			;move into puckvy
@@ -1547,7 +1547,7 @@ doshot								;stick is at puck so launch puck toward goal
 	move.w	(sp)+,d1				;pix height in goal
 	beq.w	.ex						;exit if zero
 	mulu.w	(passspeed).w,d1
-	mulu.w	#$44,d1					;'D'   ; 1024/15
+	mulu.w	#$44,d1					;1024/15
 	divu.w	d3,d1					;d3 = distance in pix to goal
 	mulu.w	#$B33,d3				;(1024*42)/15
 	divu.w	(passspeed).w,d3		;divide by passspeed
@@ -1640,7 +1640,7 @@ shotdiradj							;If the opposing goalie
 	bsr.w	CalcAngleOffset
 	add.w	d5,d4					;add results to d4
 	clr.w	d0						;clear d0
-	cmp.w	#$2C,d4					;','   ; 2C - right X edge of crease
+	cmp.w	#$2C,d4					;2C - right X edge of crease
 	bgt.w	.setpassdir
 	cmp.w	#$FFD4,d4				;FFD4 - left X edge of crease
 	blt.w	.setpassdir

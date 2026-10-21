@@ -73,7 +73,7 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	bne.w	.1
 	bra.w	SetupDemo				;none: demo
 .1									;d1 <> 0
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	bne.w	SetupStart				;start the game
 	btst	#dbut,d1				;dbut: next line, past the lines that do not apply (Demo: Goalies, User
 									;Records; Shootout: Per. Length, nothing after Goalies; no SRAM: User
@@ -160,7 +160,7 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 	bra.w	.loop
 .15									;ubut clear
 	moveq	#1,d2					;right: +1
-	btst	#rbut,d1				;rbut
+	btst	#rbut,d1				;right?
 	bne.w	.16						;right
 	btst	#lbut,d1				;left?
 	beq.w	.loop					;neither: back to the loop
@@ -904,7 +904,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	jsr	(ProcessInputWithRepeat).l	;with repeat
 	tst.w	d1						;any press?
 	beq.w	.1						;no
-	btst	#cbut,d1				;cbut
+	btst	#cbut,d1				;C?
 	beq.w	.x						;another button: return
 	btst	#5,d2					;C?
 	beq.w	.0						;no

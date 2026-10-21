@@ -1449,11 +1449,11 @@ ConvertByteToDigits					;converts decimal number in d0 to ascii: two ascii digit
 	bne.w	.n0						;branch if not 0
 	move.b	#$F0,d0					;move $F0 into d0
 .n0									;tens digit (or a space)
-	addi.b	#$30,d0					;'0'   ; add $30 (48 dec) to d0
+	addi.b	#$30,d0					;plus '0'
 	move.b	d0,(a1)+				;move d0 into a1 and increment
 	move.w	(sp)+,d0				;pop d0 from stack
 	andi.w	#$F,d0					;pass bottom 4 bytes of d0 (lower digit in d0)
-	addi.b	#$30,d0					;'0'   ; add $30 (48 dec) to d0
+	addi.b	#$30,d0					;plus '0'
 	move.b	d0,(a1)+				;move d0 into a1 and increment
 	rts
 AddError							; Address error vector; the bus error vector also points here

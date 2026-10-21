@@ -2322,12 +2322,12 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	neg.w	d2						;negate d2
 .00									;weighted value ready (or Wgt / Fight, unweighted)
 	add.w	d3,d0					;add d3 to d0 (d0 = attribute value)
-	addi.w	#$64,d1					;'d'   ; add 100 dec to d1
+	addi.w	#$64,d1					;add 100 dec to d1
 .next								;next mask bit
 	dbf	d2,.bit
 	cmpa.l	#AttribWgtList,a6		;compare AttribWgtList with a6
 	beq.w	.3						;branch if equal
-	move.w	#$64,d1					;'d'   ; move 100 dec into d1
+	move.w	#$64,d1					;move 100 dec into d1
 	movem.l	d6-d7,-(sp)				;push d6 and d7 to stack
 	move.w	(OvrDivisor).w,d6		;move into d6
 	ext.l	d6						;word extend d6

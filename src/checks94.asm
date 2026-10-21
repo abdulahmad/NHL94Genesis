@@ -47,7 +47,7 @@ asswingo							;player a3 is winger on offense
 	cmp.w	#$FFA8,d3				;compare bottom blue line with d3
 	blt.w	.de2					;branch if in defensive zone
 	addq.w	#8,d2					;add 8 to d2 (d2 = 8)
-	cmp.w	#$58,d0					;'X'   ; compare top blue line with d0
+	cmp.w	#$58,d0					;compare top blue line with d0
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;currently offside (tmfoside of the team's tmflags)
 									;(the home team's tmstruct or the away team's AwShots)
@@ -204,7 +204,7 @@ asscentero							;player a3 is center on offense
 	cmp.w	#$FFA8,d0				;check if own blue line
 	blt.w	.de2					;branch if in def zone
 	addq.w	#8,d2					;set zone to 8
-	cmp.w	#$58,d0					;'X'   ; check opponents blue line
+	cmp.w	#$58,d0					;check opponents blue line
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;Checks if currently offside
 									;the home team's (tmstruct) or the away team's
@@ -287,7 +287,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	sub.w	(Hpos).w,d0				;sub ice rink horiz position from Xpos
 	sub.w	(Vpos).w,d1				;sub ice rink vert position from Ypos
 	bclr	#pf3gctrl,pflags3(a3)	;clear goalie control bit?
-	cmp.w	#$74,d0					;'t'   ; compare $74 to Xpos diff
+	cmp.w	#$74,d0					;compare $74 to Xpos diff
 	blt.w	.0						;branch if less than
 	bset	#pf3gctrl,pflags3(a3)	;set goalie control bit?
 	bra.w	.cont2
@@ -297,7 +297,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	bset	#pf3gctrl,pflags3(a3)	;set goalie control bit?
 	bra.w	.cont2
 .1									;x on screen: check y
-	cmp.w	#$64,d1					;'d'   ; compare $64 to Ypos diff
+	cmp.w	#$64,d1					;compare $64 to Ypos diff
 	blt.w	.2						;branch if less than
 	bset	#pf3gctrl,pflags3(a3)	;set goalie control bit?
 	bra.w	.cont2
@@ -409,7 +409,7 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	move.w	#8,temp2(a3)			;move 8 into temp2
 	st	temp4(a3)					;set temp5 (FFFF)
 .nna								;count down the timer
-	cmpi.w	#$34,(a3)				;'4' ; compare 34 hex with Xpos
+	cmpi.w	#$34,(a3)				;compare 34 hex with Xpos
 	bgt.w	.nna2					;branch if greater
 	cmpi.w	#$FFCC,(a3)				;compare -34 hex with Xpos
 	blt.w	.nna2					;branch if less than
@@ -509,10 +509,10 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	bne.w	.notpuckc				;branch if not
 	tst.w	temp5(a3)				;check temp5
 	bpl.w	.5						;branch if positive
-	move.w	#$5A,temp5(a3)			;'Z' ; move 5A into temp5
+	move.w	#$5A,temp5(a3)			;move 5A into temp5
 .5									;goalie holding the puck: freeze timer at 90, then pass or whistle
 	st	temp4(a3)					;FFFF into temp4
-	cmpi.w	#$5A,temp5(a3)			;'Z' ; compare to temp5
+	cmpi.w	#$5A,temp5(a3)			;compare to temp5
 	bgt.w	.de1					;branch if greater
 	move.w	(HVcount).l,d0
 	andi.w	#3,d0					;pass first 2 bits
@@ -1047,7 +1047,7 @@ BreakawayOffsidesFlagSet			;On a new assignment clear the offsides and breakaway
 .cmpgoalline						;|Ypos|
 	cmp.w	d0,d1					;compare position to top goal line
 	bge.w	.nogood					;Branch if above it
-	move.w	#$58,d0					;'X'   ; 58 = top blue line Y pos
+	move.w	#$58,d0					;58 = top blue line Y pos
 	move.w	Ypos(a3),d1				;Ypos
 	btst	#pfgoal,pflags(a3)		;check goal to shoot on (0=bottom, 1=top)
 	bne.w	.top					;branch if top goal
@@ -1127,7 +1127,7 @@ asspuckc							;player a3 is puck handler
 	bne.w	.2
 	jsr	(BreakawayOffsidesFlagSet).l
 	beq.w	.2						;branch if breakaway flag not set
-	move.w	#$21,d0					;'!'   ; chkpuckc assignment
+	move.w	#$21,d0					;chkpuckc assignment
 	bsr.w	assreplace
 	bra.w	*+4
 .2									;no breakaway: normal puck carrier play
@@ -1374,7 +1374,7 @@ chk4shot							;player a3 looks for shot (computer controlled)
 	move.w	(HVcount).l,d0
 	andi.w	#3,d0
 	bne.w	.pkill
-	move.w	#$58,d0					;'X'   ; top blue line Y position
+	move.w	#$58,d0					;top blue line Y position
 	btst	#pfgoal,pflags(a3)
 	beq.w	.cmphome
 	move.w	#$FFA8,d0				;bottom blue line Y pos
@@ -1610,7 +1610,7 @@ EvadePC								;player a3 should avoid the puck carrier if he's on my team out: 
 	ext.w	d2
 	add.w	(a3),d2					;add Xpos
 	sub.w	(puckx).w,d2			;Sub puckx
-	cmp.w	#$28,d2					;'('   ; compare to 40 decimal
+	cmp.w	#$28,d2					;compare to 40 decimal
 	bgt.w	rtss2					;exit if greater than 40
 	cmp.w	#$FFD8,d2				;compare to -40
 	blt.w	rtss2					;exit if less than -40
@@ -1619,7 +1619,7 @@ EvadePC								;player a3 should avoid the puck carrier if he's on my team out: 
 	ext.w	d1
 	add.w	Ypos(a3),d1				;add Ypos to d1
 	sub.w	(pucky).w,d1			;Sub pucky
-	cmp.w	#$28,d1					;'('   ; compare to 40 dec
+	cmp.w	#$28,d1					;compare to 40 dec
 	bgt.w	rtss2					;exit if greater than
 	cmp.w	#$FFD8,d1				;compare to -40 dec
 	blt.w	rtss2					;exit if less than
@@ -1635,7 +1635,7 @@ EvadePC								;player a3 should avoid the puck carrier if he's on my team out: 
 	bne.w	.0						;branch if top
 	neg.w	d1						;negate d1 (Ypos)
 .0									;Y for his end
-	subi.w	#$58,d1					;'X'   ; sub 88 from Ypos (top blue line)
+	subi.w	#$58,d1					;sub 88 from Ypos (top blue line)
 	cmp.w	#$A,d1					;compare to 10 decimal
 	bgt.w	.ex						;exit if greater
 	cmp.w	#-50,d1
@@ -1742,7 +1742,7 @@ assnearest							;this is a special assignment used for the player who is neares
 	bne.w	.chkbreak				;jump if set
 	jsr	(BreakawayOffsidesFlagSet).l
 	beq.w	.chkbreak
-	move.w	#$22,d0					;'"'   ; 22 - assbreakaway if flag set
+	move.w	#$22,d0					;22 - assbreakaway if flag set
 	bsr.w	assreplace				;assreplace with assbreakaway
 	bra.w	*+4
 .chkbreak							;assnearest: breakaway carriers switch to assbreakaway
@@ -1893,7 +1893,7 @@ assnearest							;this is a special assignment used for the player who is neares
 	bne.w	.x						;branch if on PK
 	addq.w	#4,d1					;add 4 to d1
 .x									;d1 = shift for the check odds (penalty kill uses less)
-	move.w	#$28,d0					;'('   ; move $28 into d0 (40 dec)
+	move.w	#$28,d0					;move $28 into d0 (40 dec)
 	sub.b	checking(a3),d0			;sub checking from d0
 	asl.w	d1,d0					;shift d0 by value of d1
 	bsr.w	randomd0				;RNG
@@ -1938,9 +1938,9 @@ assnearest							;this is a special assignment used for the player who is neares
 	beq.w	.spdboost
 	btst	#pfgoal,pflags(a3)		;pfgoal
 	beq.w	.botshoot				;branch if bottom
-	cmp.w	#$53,d1					;'S'   ; check if y pos of puck near blue line
+	cmp.w	#$53,d1					;check if y pos of puck near blue line
 	blt.w	.spdboost				;branch if in neutral zone or D zone
-	move.w	#$44,d1					;'D'   ; move 44 hex into d1
+	move.w	#$44,d1					;move 44 hex into d1
 	bra.w	.spdboost
 .botshoot							;pfgoal clear
 	cmp.w	#$FFAD,d1				;check if pucky near bottom blue line
@@ -2019,7 +2019,7 @@ check4check							;look for good opportunity for checking opponent. Falls in fro
 	bne.w	.player					;branch if not
 	rts
 .player								;skater: d0 = check range, less checking skill, more with penalties off
-	move.w	#$28,d0					;'('   ; start with 28 hex (40 decimal)
+	move.w	#$28,d0					;start with 28 hex (40 decimal)
 	sub.b	checking(a3),d0			;subtract Chk from d0 (Chk max is 1E or 30 decimal)
 	tst.w	(OptPen).w				;check for penalties option
 	beq.w	.nopen					;branch if not on
@@ -2108,7 +2108,7 @@ asspassrec							;assignment for catching a pass (apassrec)
 	bne.w	.chkpos					;branch if shooting at top
 	neg.w	d0
 .chkpos								;position check
-	cmp.w	#Blueline,d0			;'X'   ; blueline
+	cmp.w	#Blueline,d0			;blueline
 	blt.w	.nozone
 	cmp.w	#Blueline+goalline,d0	;goalline
 	bgt.w	.nozone
@@ -2121,7 +2121,7 @@ asspassrec							;assignment for catching a pass (apassrec)
 .atkzone							;in the attack zone (or 1 in 8 outside): set up a one-timer
 	move.w	(sp)+,d0
 	move.w	#$FFFF,(inputjoy).w
-	move.w	#$23,d0					;'#'   ; assonetimer
+	move.w	#$23,d0					;assonetimer
 	jmp	assreplace
 .pop								;no one-timer: drop the saved d0
 	move.w	(sp)+,d0
@@ -2900,7 +2900,7 @@ CPgoalie							;see if computer should pull his goalie. d1 = puck/faceoff y. Fal
 	bmi.w	rtss2					;exit if leading in the game
 	cmp.w	#2,d0
 	bne.w	rtss2					;exit if behind by more than 2
-	cmpi.w	#$3C,(gameclock).w		;'<' ; #60
+	cmpi.w	#$3C,(gameclock).w		;#60
 	bgt.w	rtss2					;exit if more than 1 min left
 	move.l	a0,-(sp)
 	movea.w	tmsort(a2),a0			;moves a player struct address into a0
@@ -3198,7 +3198,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 .drawfaceoffwindow					;draw the faceoff window
 	bsr.w	printz
 	dc.b	0,6,$FF,0,0,0
-	moveq	#$36,d0					;'6'   ; X Position of the faceoff window
+	moveq	#$36,d0					;X Position of the faceoff window
 	tst.w	(fox).w
 	bpl.w	.fok
 	move.w	#$BE,d0					;(18*8)+46
@@ -3207,7 +3207,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	subi.w	#$2E,d0
 	asr.w	#3,d0
 	move.w	d0,(printx).w			;print column = (x - 46) / 8
-	moveq	#$5C,d0					;'\'   ; Y position of the faceoff window
+	moveq	#$5C,d0					;Y position of the faceoff window
 	move.w	d0,(fodropy).w
 	subi.w	#$44,d0
 	asr.w	#3,d0
@@ -3467,7 +3467,7 @@ pucknorm							;assignment for puck most of the time. a3 = puck, d7 = elapse fra
 	bclr	#pfna,pflags(a3)		;#pfna clear
 	beq.w	.nna
 	clr.w	temp1(a3)				;temp1
-	move.w	#$78,temp2(a3)			;'x' ; temp2
+	move.w	#$78,temp2(a3)			;temp2
 .nna								;count down the timer
 	movea.w	#(puckcross-M68K_RAM),a1	;table for puck crossing lines
 	sub.w	d7,pcframes(a1)			;sub elapse frames from time til crossing
@@ -3516,7 +3516,7 @@ pucknorm							;assignment for puck most of the time. a3 = puck, d7 = elapse fra
 .stillpuckdone						;puck has moved or the penalty is in: on to the collision checks
 	bra.w	.end
 .resetstilltimer					;puck moved: restart the still puck timer (120 frames)
-	move.w	#$78,temp2(a3)			;'x' ; move 78 hex into temp2
+	move.w	#$78,temp2(a3)			;move 78 hex into temp2
 .end								;puck in the air or above the ice: collision checks
 	tst.b	Zvel(a3)				;Zvel
 	bne.w	checkpuckcoll
@@ -3729,7 +3729,7 @@ PuckIChk							;check for icing of puck penalty. Called from pucknorm
 	cmp.w	(pucky).w,d0
 	bgt.w	rtss2
 .chkx								;check the X
-	cmpi.w	#$2C,(puckx).w			;',' ; 2C - edge of crease
+	cmpi.w	#$2C,(puckx).w			;2C - edge of crease
 	bgt.w	.set
 	cmpi.w	#$FFD4,(puckx).w		;FFD4 - edge of crease
 	blt.w	.set
@@ -3988,11 +3988,11 @@ avdgoal								;don't try to skate thru goal: if d0/d1 cords intersect thru goal
 	sub.w	d3,d2
 	divs.w	d2,d4
 	add.w	(a3),d4					;Xpos
-	cmp.w	#$50,d4					;'P'   ; #.xr
+	cmp.w	#$50,d4					;#.xr
 	bgt.w	rtss2
 	cmp.w	#$FFB0,d4				;#-.xr
 	blt.w	rtss2
-	moveq	#$50,d3					;'P'   ; #.xr
+	moveq	#$50,d3					;#.xr
 	tst.w	d4
 	bne.w	.ch2
 	tst.w	(a3)					;Xpos
@@ -4530,7 +4530,7 @@ playeracc							;d2 = direction of acc
 	move.b	weight(a3),d2			;move wgt of player into d2
 	lsr.w	#2,d2					;divide d2 by 2
 	neg.w	d2						;make it negative
-	addi.w	#$40,d2					;'@'   ; add 40 hex (64 decimal) to d2
+	addi.w	#$40,d2					;add 40 hex (64 decimal) to d2
 	add.b	legstr(a3),d2			;add agl (legstr) of player to d2
 	btst	#1,(sflags8).w
 	bne.w	.incagl
@@ -4593,12 +4593,12 @@ playeracc							;d2 = direction of acc
 	swap	d2						;swap d2 words (this math is to adjust for energy. Line Changes off, d2 =
 									;Spd value / 2)
 	asl.w	#2,d2					;mult by 4 (No Line changes result from above = Spd value * 2)
-	andi.w	#$3F,d2					;'?'   ; pass first 6 bits. Limits d2 to $3F (63 decimal)
+	andi.w	#$3F,d2					;pass first 6 bits. Limits d2 to $3F (63 decimal)
 	lea	MaxSpeed(pc),a2				;move Maxspeed table address into a2
 	move.w	d2,(TempEnergySpd).w	;hold new spd value
 	move.l	0(a2,d2.w),d2			;use value from MaxSpeed list
 	move.l	d2,(TempMaxSpd).w		;hold MaxSpeed value
-	cmpi.w	#$3C,(TempEnergySpd).w	;'<' ; compare new spd value with 60 decimal
+	cmpi.w	#$3C,(TempEnergySpd).w	;compare new spd value with 60 decimal
 	bge.w	.fgtinj					;branch if greater than or equal
 	btst	#0,(TempRawSpd+1).w		;check if TempRawSpd is odd
 	beq.w	.fgtinj					;branch if even

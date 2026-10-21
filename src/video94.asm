@@ -717,7 +717,7 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 									;registers from disflags, Map1col, VmMAP1-3, VSPRITES and VSCRLPM.
 									;Falls in from setVram, called from EASportsScreen and HiScoreScreen
 	move.w	(disflags).w,-(sp)		;save the flags
-	bset	#dfng,(disflags).w		;#dfng
+	bset	#dfng,(disflags).w		;no graphics
 	move.w	#VDPR_AUTOINC+$02,(Vctrl).l	;step 2
 	clr.w	d0						;address 0
 	bsr.w	Vmaddr					;vram address 0, a0 = Vdata
@@ -796,7 +796,7 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 									;DecompressGraphics (returns d4 = end char)
 	move.w	(printy).w,-(sp)		;keep printy
 	move.w	(disflags).w,-(sp)		;save the flags
-	bset	#dfng,(disflags).w		;#dfng
+	bset	#dfng,(disflags).w		;no graphics
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)	;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6					;y start
 	movea.w	#(palfadenew-M68K_RAM),a3	;a3 = target palette, a0 = palette data

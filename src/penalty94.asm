@@ -1485,7 +1485,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bsr.w	NewTicker3				;show its score
 	move.w	#$96,d0					;150 frames
 	bsr.w	waitxsr
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	bne.w	.clrh
 	bsr.w	ClearTickerArea			;blank pause, then the next game
 	move.w	#$3C,d0					;60 frames
@@ -1776,7 +1776,7 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	String	'Highlight from game:'	;the text as code
 	move.w	#$B4,d0					;180 frames
 	bsr.w	waitxsr
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	bne.w	.nhl1					;start: skip the highlight
 	st	(Zamx).w					;zamboni off
 	clr.w	(CwdExciteLvl).w
@@ -1860,9 +1860,9 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	bmi.w	.endhl					;clock stopped for 180 frames: highlight over
 .1									;clock running, or stopped less than 180 frames
 	bsr.w	orjoy
-	btst	#cbut,d1				;cbut
+	btst	#cbut,d1				;C?
 	bne.w	.2
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	beq.s	.0
 .2									;C or start: end the highlight now
 	move.w	(HmGoals).w,d0			;tied: random winner

@@ -8,7 +8,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 									;DecompressGraphicsWithCallback. Loads RevRinkTiles in a reverse angle
 									;replay (sflags4 bit 4) and calls LoadHomeTeamGfx
 	movem.l	d0-d7/a0-a6,-(sp)		;save
-	bset	#df32c,(disflags).w		;df32c
+	bset	#df32c,(disflags).w		;32 cell mode
 	move.w	#$C000,(VmMAP2).w		;map 2 address
 	move.w	#6,(Map2col).w			;map 2 width
 	move.w	#$DC00,(VSPRITES).w		;sprites address
@@ -21,7 +21,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	bsr.w	setVram					;clear vram
 	bclr	#sfpz,(sflags).w		;sfpz
 	move.w	(disflags).w,-(sp)		;save the flags
-	bset	#dfng,(disflags).w		;dfng
+	bset	#dfng,(disflags).w		;no graphics
 	clr.w	(Hpos).w				;view X 0
 	clr.w	(Vpos).w				;view Y 0
 	move.w	#$7D0,(Oldrow).w		;2000

@@ -117,7 +117,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	movem.w	d2-d5,-(sp)				;save the walls
 	neg.w	d4						;d4/d5 = the negative edges, moved in by the corner radius
 	neg.w	d5						;negated
-	addi.w	#$40,d4					;'@'   ; radius
+	addi.w	#$40,d4					;radius
 	addi.w	#$40,d5					;plus the radius
 	cmp.w	d5,d3					;past the top corner start: maybe the top corners
 	bgt.w	.ctc					;top corners

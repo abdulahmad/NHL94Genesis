@@ -519,7 +519,7 @@ assdefo								;player a3 is defensive player on offense
 	bne.w	.de1					;branch if top
 	neg.w	d1						;Negates d1- shooting on bottom net
 .de1								;puck Y for his end
-	cmp.w	#$5D,d1					;']'   ; slightly above top blueline - checks Y position of puck
+	cmp.w	#$5D,d1					;slightly above top blueline - checks Y position of puck
 	blt.w	assreplace				;not in offensive zone, change assignment
 	move.w	(puckc).w,d1			;puck carrier (SCnum) into d1
 	bmi.w	.nodec					;branch if no puckc
@@ -531,12 +531,12 @@ assdefo								;player a3 is defensive player on offense
 .nodec								;no carrier or our team has the puck: hold the blue line (x 80 to the side
 									;of the position)
 	lea	EvadePC(pc),a0				;EvadePC, extra collision routine for skateto
-	moveq	#$50,d0					;'P'   ; move 80 dec into d0
+	moveq	#$50,d0					;move 80 dec into d0
 	cmpi.w	#2,position(a3)			;position(a3) - checks that player is RD
 	beq.w	.1						;branch if RD
 	neg.w	d0						;player is LD, so negates d0
 .1									;d0 = x for RD (+80) or LD (-80); d1 = just inside the blue line
-	move.w	#$62,d1					;'b'   ; just inside of blueline
+	move.w	#$62,d1					;just inside of blueline
 	btst	#pfgoal,pflags(a3)		;#pfgoal
 	bne.w	.0						;branch if top net shooting
 	neg.w	d0						;shooting on bottom net, so negate d0 and d1
@@ -588,7 +588,7 @@ assdefd								;player a3 is defensive player on defense
 	clr.w	d3						;clear d3
 .de000								;look-ahead at least 0
 	add.w	d1,d3					;add d1 to d3
-	cmp.w	#Blueline,d3			;'X'   ; compare top blueline to d3
+	cmp.w	#Blueline,d3			;compare top blueline to d3
 	blt.w	.de0
 	btst	#tmfoside,tmflags(a2)	;check if team is offsides
 	bne.w	.de0					;branch if offsides
@@ -603,7 +603,7 @@ assdefd								;player a3 is defensive player on defense
 	eor.w	d2,d1					;EOR d2 and d1
 	bpl.w	assreplace				;assreplace if puckc on same team
 .de0								;other team has the puck: guard x 65 to our side
-	move.w	#$41,temp3(a3)			;'A' ; move 65 dec into temp3
+	move.w	#$41,temp3(a3)			;move 65 dec into temp3
 	cmpi.w	#2,position(a3)			;compare if player is RD
 	beq.w	.de1					;branch if RD
 	neg.w	temp3(a3)				;negate temp3 if LD
@@ -636,7 +636,7 @@ assdefd								;player a3 is defensive player on defense
 .gu0								;next opponent
 	adda.w	#SCstruct,a0			;add 80 (offset to next player struct) to a0
 	dbf	d2,.gup						;loop
-	subi.w	#$32,d0					;'2'   ; sub $32 (50 dec) from d0
+	subi.w	#$32,d0					;sub $32 (50 dec) from d0
 	cmp.w	#$FF42,d0				;compare to $FF42 (-190 dec)
 	bgt.w	.gu1					;branch if greater than
 	move.w	#$FF24,d0				;move -220 dec into d0
@@ -665,7 +665,7 @@ assdefd								;player a3 is defensive player on defense
 .gd0								;next opponent (bottom net: d0 = the largest y)
 	adda.w	#SCstruct,a0			;add offset to next player struct
 	dbf	d2,.gdwn					;loop
-	addi.w	#$32,d0					;'2'   ; add 32 to d0
+	addi.w	#$32,d0					;add 32 to d0
 	cmp.w	#$BE,d0					;compare 190 dec to d0
 	blt.w	.gd1					;branch if d0 less than
 	move.w	#$DC,d0					;move 220 dec into d0
@@ -717,7 +717,7 @@ asswingd							;player a3 is wing on defense
 	eor.w	d2,d1					;EOR d2 with d1. Checks if player on same team
 	bpl.w	assreplace				;branch if team has puck
 .nodec								;defending: x 100 to the wing side, y below our blue line
-	moveq	#$64,d0					;'d'   ; move 64 (100 dec) into d0
+	moveq	#$64,d0					;move 64 (100 dec) into d0
 	cmpi.w	#5,position(a3)			;check if player is RW
 	bne.w	.1						;branch if not
 	neg.w	d0						;make d0 negative
@@ -743,7 +743,7 @@ asswingd							;player a3 is wing on defense
 	move.w	d2,d1					;move d2 into d1 if puck behind goal line
 	bra.w	.z1
 .0									;pfgoal clear
-	moveq	#$4E,d2					;'N'   ; defending top goal
+	moveq	#$4E,d2					;defending top goal
 									;4E - slightly below top blue line
 	btst	#tmfoside,tmflags(a2)	;currently offside (tmfoside of the team's tmflags)
 									;the home team's (tmstruct) or the away team's

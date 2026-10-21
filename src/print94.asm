@@ -25,7 +25,7 @@ eraser								;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = cha
 									;to fill with, printx/y/m define top left corner to start at
 	movem.l	d0-d2/a0,-(sp)			;save
 	move.w	(disflags).w,-(sp)		;save the flags
-	bset	#dfng,(disflags).w		;#dfng
+	bset	#dfng,(disflags).w		;no graphics
 	movem.w	d0-d1,-(sp)				;(sp) = width, 2(sp) = rows left
 .1									;loop
 	bsr.s	xyVmMap					;one row: a0 = vram port at printx/y
@@ -50,7 +50,7 @@ Framer								;frame and fill (uses framer.map graphics and assums tiles are alr
 									;top left corner to start at
 	movem.l	d0-d4/a0-a1,-(sp)		;save
 	move.w	(disflags).w,-(sp)		;save the flags
-	bset	#dfng,(disflags).w		;#dfng
+	bset	#dfng,(disflags).w		;no graphics
 	movem.w	d0-d1,-(sp)				;(sp) = x size, 2(sp) = rows left; .tbline reads the x size at 4(sp)
 	move.w	(printa).w,d2			;attribute
 	add.w	(framercset).w,d2		;plus the frame chars
@@ -416,7 +416,7 @@ PushNumberWidth						;right-justified number
 	mulu.w	#$A,d2					;mult d2 by 10 dec
 .loop								;loop the width
 	dbf	d1,.mul						;exit when d1 is 0
-	moveq	#$20,d3					;' '   ; move 20 into d3
+	moveq	#$20,d3					;move 20 into d3
 .loop2								;loop
 	ext.l	d0						;sign extend d0
 	divu.w	d2,d0					;divide d2 into d0
@@ -427,7 +427,7 @@ PushNumberWidth						;right-justified number
 	bra.w	.put					;store it
 .0									;a digit (or a needed 0)
 	;DeterStrLength?+26   j
-	moveq	#$30,d3					;'0'   ; move 48 dec into d3
+	moveq	#$30,d3					;plus '0'
 	add.w	d3,d0					;add d3 to d0
 .put								;store the digit or space
 	move.b	d0,(a1)+				;move d0 into a1 and increment a1

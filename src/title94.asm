@@ -752,7 +752,7 @@ SetSflags8Bit1						;Always sets sflags8 bit 1 (the bclr is skipped).
 	rts								;return
 AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from AttribRating,
 									;PrintOverallRating and PrintMatchupRatings
-	cmp.w	#$32,d0					;'2'   ; compare $32 to d0
+	cmp.w	#$32,d0					;compare $32 to d0
 	bge.w	.exit					;branch if greater than
 	asr.w	#1,d0					;divide by 2
 	addi.w	#$19,d0					;add $19 (25 dec)

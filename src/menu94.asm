@@ -32,19 +32,19 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 									;redraws the menu (not if the handler set sflags5 bit 1). Returns eq to
 									;leave the menu (start, or C on item 0), ne to stay. Called from
 									;PauseMode, and the stats code
-	btst	#sbut,d1				;sbut
+	btst	#sbut,d1				;Start?
 	bne.w	.flip					;start: Z clear, flipped to eq
-	btst	#dbut,d1				;dbut
+	btst	#dbut,d1				;down?
 	beq.w	.up
 	addq.w	#1,(menuitem).w			;next lower item
 	bra.w	UpdateMenuSelection
 .up									;dbut clear
-	btst	#ubut,d1				;ubut
+	btst	#ubut,d1				;up?
 	beq.w	.sel
 	subq.w	#1,(menuitem).w			;next higher item
 	bra.w	UpdateMenuSelection
 .sel								;ubut clear
-	btst	#cbut,d1				;cbut
+	btst	#cbut,d1				;C?
 	beq.w	.flip					;nothing: Z set, flipped to ne
 	bsr.w	seta2
 	move.w	(menuitem).w,d0			;find the handler of the selected item
