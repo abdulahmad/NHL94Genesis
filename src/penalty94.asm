@@ -1369,11 +1369,11 @@ ChkShotStat							;determine if shot taken, add to appropriate stats: crowd, tea
 	movea.l	(sp)+,a2
 	clr.w	d0
 	move.b	pnum(a3),d0				;pnum
-	addi.w	#$E8,d0
+	addi.w	#tmpshots,d0
 	addq.b	#1,0(a2,d0.w)			;shooter's shot count
 	move.w	tmgoalie(a1),d0			;other team's tmgoalie
 	bmi.w	.ex						;empty net
-	addi.w	#$E8,d0
+	addi.w	#tmpshots,d0
 	addq.b	#1,0(a1,d0.w)			;goalie's shots against
 .ex									;exit: restore the registers
 	movem.l	(sp)+,d0-d1/a1-a3

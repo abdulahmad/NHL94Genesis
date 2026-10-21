@@ -21,6 +21,7 @@ goalline equ 176					;distance from blue line to goalline
 Blueline equ $58					;distance from center line to blueline
 Sideline equ $88					;distance from center to side boards
 replaystart equ $FFFF0000			;start of ram area for replay frames, also the start of RAM
+replaysize equ 98					;bytes per replay frame (92G/93G name; 92G 84)
 scsize equ 7						;2 to this power indicates ram needed for each sortobj
 jps equ 24							;jiffys per second
 jiffy equ $10000/jps

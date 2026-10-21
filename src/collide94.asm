@@ -1337,26 +1337,26 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	move.w	tmtouch1(a2),d0			;scorer
 	move.b	d0,(a0)+				;byte 3
 	move.w	#$FFFF,(a0)				;no assists yet
-	addi.w	#$B4,d0
-	addq.b	#1,0(a2,d0.w)			;team byte $B4 + scorer +1
+	addi.w	#tmgoals,d0
+	addq.b	#1,0(a2,d0.w)			;tmgoals of the scorer +1
 	move.w	tmtouch2(a2),d0			;first assist
 	bmi.w	.19
 	cmp.w	tmtouch1(a2),d0
 	beq.w	.19
 	move.b	d0,(a0)+
-	addi.w	#$CE,d0
+	addi.w	#tmassists,d0
 	addq.b	#1,0(a2,d0.w)
 	move.w	tmtouch3(a2),d0			;second assist
 	bmi.w	.19
 	cmp.w	tmtouch1(a2),d0
 	beq.w	.19
 	move.b	d0,(a0)
-	addi.w	#$CE,d0
+	addi.w	#tmassists,d0
 	addq.b	#1,0(a2,d0.w)
 .19									;goal scorer stat done: credit the shot against to the goalie
 	move.w	tmgoalie(a1),d0			;tmgoalie of the other team
 	bmi.w	.stat
-	addi.w	#$B4,d0
+	addi.w	#tmgoals,d0
 	addq.b	#1,0(a1,d0.w)
 .stat								;shot stats
 	bsr.w	ChkShotStat

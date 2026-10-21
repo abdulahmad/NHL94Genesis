@@ -3,7 +3,7 @@
 
 M68K_RAM equ $FFFF0000
 sramcleared equ $FFFF1FFE
-replayend equ $FFFFAF54				;end of the replay frames ($62 bytes each from M68K_RAM); suba4, adda43
+replayend equ $FFFFAF54				;end of the replay frames (replaysize bytes each); suba4, adda43
 									;and the record step wrap here
 varstart equ $FFFFB000				;start of variable space (end of replay; 93G)
 	RSSET	varstart				;variables from here on are allocated upwards with rs (93G)

@@ -2,9 +2,9 @@
 ;	ratings, pictures and positions, and marks which team has the advantage.
 
 ScoutCrowdRecord					;The text player's '@' (ScoutTextPlayer): return a1 = the home team's
-									;crowd record in dB as a String at TempBuffer (SRAM team record byte 8, 80
-									;if 0). ReadCrowdRecord reads the 16 byte SRAM record of team d1 ($B60 +
-									;d1 * 16) to a0
+									;crowd record in dB as a String at TempBuffer (SRAM team record crpeak, 80
+									;if 0). ReadCrowdRecord reads the 16 byte SRAM record of team d1
+									;(CrowdRecBase + d1 * 16) to a0
 	movem.l	d0-d7/a0/a2-a6,-(sp)	;save
 	move.w	(HomeTeam).w,d1			;home team
 	ext.l	d1						;long
@@ -14,7 +14,7 @@ ScoutCrowdRecord					;The text player's '@' (ScoutTextPlayer): return a1 = the h
 	movea.l	(sp)+,a0				;restore it
 	movea.l	#TempBuffer,a1			;String buffer
 	clr.w	d0						;clear
-	move.b	8(a0),d0				;crowd record
+	move.b	crpeak(a0),d0			;crowd record
 	bne.w	.0
 	move.b	#$50,d0					;none saved: 80 dB
 .0									;crowd record ready
@@ -24,8 +24,8 @@ ScoutCrowdRecord					;The text player's '@' (ScoutTextPlayer): return a1 = the h
 	movem.l	(sp)+,d0-d7/a0/a2-a6	;restore
 	rts								;return
 ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's crowd record (SRAM
-									;record byte 9 = name number, AppendUserName reads that 12 char name from
-									;namelog), or an empty String if byte 9 is 0
+									;record crpeakuser = name number, AppendUserName reads that 12 char name
+									;from namelog), or an empty String if crpeakuser is 0
 	movem.l	d0-d7/a0/a2-a6,-(sp)	;save
 	move.w	(HomeTeam).w,d1			;home team
 	ext.l	d1						;long
@@ -33,7 +33,7 @@ ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's cro
 	move.l	a0,-(sp)				;save the buffer
 	jsr	(ReadCrowdRecord).l			;read the HomeTeam record
 	movea.l	(sp)+,a0				;restore it
-	tst.b	9(a0)					;name number
+	tst.b	crpeakuser(a0)			;name number
 	beq.w	.0
 	movea.l	#ThreeStars,a3			;String buffer
 	movea.l	#ScoutByTxt,a1
@@ -41,7 +41,7 @@ ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's cro
 	jsr	(CopyString).l				;copy the String at a1 to a3: 'by '
 	movea.l	(sp)+,a3				;restore
 	clr.w	d2						;clear
-	move.b	9(a0),d2				;name number
+	move.b	crpeakuser(a0),d2		;name number
 	movea.l	#TempBuffer,a1			;name String buffer
 	bset	#7,(sflags6).w
 	bsr.w	AppendUserName			;name String
