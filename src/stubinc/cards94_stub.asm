@@ -8,7 +8,6 @@ ConvertByteToDigits = $18BDC
 LogoBoxLeft = $F877E
 LogoBoxRight = $F8762
 TeamList = $30E
-GoalieOdds = 10						;team block offset word (teamdata94)
 	org	$F87D2
 
 ; includes for stubs to replace removed code

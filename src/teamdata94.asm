@@ -39,15 +39,9 @@ NumofTeams	=	(*-TeamList)/4
 	IF NumofTeams<>NumTeams
 		inform	3,"TeamList needs one entry per team"
 	ENDIF
-Playerdata	=	0
-Palettedata	=	2
-Teamname	=	4
-LineSets	=	6
-ScoutReport	=	8
-GoalieOdds	=	10
 
 ;------------------------
-; Team block: 6 offset words (the equates above), .pad home and visitor palettes (16 colours each, incbin
+; Team block: 6 offset words (in equals.inc), .pad home and visitor palettes (16 colours each, incbin
 ; <team>h.pal / <team>v.pal; files with 94 in the name have new colours)
 ; .sr (4 bytes of bonuses), .godds (starting goalie weights), .ls 8 lines of 8 player numbers (1 = first
 ; .pld entry), .pld players ended by an empty String, then 4 Strings: city, abbreviation, nickname, arena.
