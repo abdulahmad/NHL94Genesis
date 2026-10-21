@@ -139,7 +139,7 @@ assbench							;player a3 should goto bench
 	move.w	d0,position(a3)
 	jsr	(Setplass).l
 	st	newpnum(a3)
-	st	$60(a3)
+	st	newpos(a3)
 rtss4
 	rts
 ; player a3 should exit bench area
