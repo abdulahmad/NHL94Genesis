@@ -47,6 +47,8 @@ NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList (26)
 ; <team>h.pal / <team>v.pal; files with 94 in the name have new colours)
 ; .sr (4 bytes of bonuses), .godds (starting goalie weights), .ls 8 lines of 8 player numbers (1 = first
 ; .pld entry), .pld players ended by an empty String, then 4 Strings: city, abbreviation, nickname, arena.
+; .ls lines: 1 = the line used when line changes are Off or Auto (no line changes, in place of Sc1), then
+; 2 Sc1, 3 Sc2, 4 Chk, 5 PP1, 6 PP2, 7 PK1, 8 PK2. InitTeamStructure copies 7 of them to tmlines.
 ;------------------------
 ; .sr: 4 bytes. byte 0: scoring odds of simulated games (SetScore): bits 4-6 = offense
 ; row, bits 0-2 = defense row of the weights table; byte 1: high nibble = penalty kill deficit, low nibble =
@@ -98,14 +100,14 @@ AllStarsEast						;ASE
 	dc.b	203,192
 .ls									;8 lines of 8 player numbers
 ;		-G,LD,RD,LW,-C,RW,XA,00
-	dc.b	01,19,18,07,04,16,09,00	;line 1 Sc1
-	dc.b	01,19,18,07,04,16,10,00	;line 2 Sc2
-	dc.b	01,22,20,11,10,17,07,00	;line 3 Chk
-	dc.b	01,23,24,05,12,14,07,00	;line 4 PP1
-	dc.b	01,19,22,07,04,16,09,00	;line 5 PP2
-	dc.b	01,18,21,08,09,17,07,00	;line 6 PK1
-	dc.b	01,19,23,13,05,06,15,00	;line 7 PK2
-	dc.b	01,24,25,15,06,05,13,00	;line 8 (no linelist name)
+	dc.b	01,19,18,07,04,16,09,00	;line 1 NLC (no line changes)
+	dc.b	01,19,18,07,04,16,10,00	;line 2 Sc1
+	dc.b	01,22,20,11,10,17,07,00	;line 3 Sc2
+	dc.b	01,23,24,05,12,14,07,00	;line 4 Chk
+	dc.b	01,19,22,07,04,16,09,00	;line 5 PP1
+	dc.b	01,18,21,08,09,17,07,00	;line 6 PP2
+	dc.b	01,19,23,13,05,06,15,00	;line 7 PK1
+	dc.b	01,24,25,15,06,05,13,00	;line 8 PK2
 .pld								;roster, ended by an empty String
 ;										unwl,sodp,chga,eytm
 	Player	'Patrick Roy',				3366,4446,0100,5566
