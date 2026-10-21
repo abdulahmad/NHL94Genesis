@@ -718,8 +718,8 @@ asswingd
 	neg.w	d1						;negate d1
 	moveq	#$FFFFFFB2,d2			;move into d2 (slightly above bottom blue line)
 	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30 (currently offside)
-	;Home - C6FE
-	;Away - CA62
+									;Home - C6FE
+									;Away - CA62
 	bne.w	.dg11					;branch if set
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	bgt.w	.ug1					;branch if puck in defensive zone
@@ -733,10 +733,10 @@ asswingd
 	bra.w	.z1
 .0
 	moveq	#$4E,d2					;'N'   ; defending top goal
-	;4E - slightly below top blue line
+									;4E - slightly below top blue line
 	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30
-	;Home - C6FE
-	;Away - CA62
+									;Home - C6FE
+									;Away - CA62
 	bne.w	.dg11					;branch if set
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	blt.w	.dg1					;branch if puck in defensive zone

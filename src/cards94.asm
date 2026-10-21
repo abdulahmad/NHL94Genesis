@@ -2244,7 +2244,7 @@ CalcAttrib							;The overall rating of player d0: his attributes weighted by
 	lsr.w	#1,d3					;divide d3 by 2
 	neg.w	d3						;negate d3
 	move.b	-1(a0,d3.w),d3			;move a0+d3-1 into d3. a0 currently at end of player data.
-	;Sets d3 byte to attribute
+									;Sets d3 byte to attribute
 	btst	#0,d2					;test bit 0 of d2
 	beq.w	.0						;branch if equal
 	lsr.w	#4,d3					;divide d3 by 16. Shifts upper nibble to lower in case d2 was odd

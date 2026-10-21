@@ -1147,7 +1147,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 GoalBigTxt	String	$BF,$F,3,'GOAL!',$BF,$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
 	String	$BF,$C,3,'HAT TRICK!',$BF,$C,5
 PPGoalBigTxt	String	$BF,$D,3,'PP GOAL!',$BF,$C,5	;The same after DelayedPen bit 0:
-	;PP GOAL!, then HAT TRICK!
+									;PP GOAL!, then HAT TRICK!
 	String	$BF,$C,3,'HAT TRICK!',$BF,$C,5
 box									;Fill a $13 x 8 rectangle at printz position $FF,$B,2 with char $7FF
 									;(eraser). Called from SetLCmode2
@@ -1609,7 +1609,7 @@ PlayerPositionText	String	'LD'	;position names for the line slots. Used by Displ
 	String	'RW'
 
 PerLabels	String	'1',$12			;text list for periods; ' F' is the final. Used
-	;by printscores1, NewTicker3
+									;by printscores1, NewTicker3
 	String	'2',$13
 	String	'3',$14
 	String	'OT'
@@ -1651,7 +1651,7 @@ sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
 	dc.b	-1
 
 priolist	dc.b	0,1,2,4,3,5,6	;positions in order of importance. Used by
-	;SetPlList, releasepl and getlinee
+									;SetPlList, releasepl and getlinee
 	dc.b	$FF						;pad
 
 PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Used by

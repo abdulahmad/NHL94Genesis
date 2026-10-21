@@ -1115,7 +1115,7 @@ updateanim							;frame switch control on struct a3
 	addq.w	#4,SPAnum(a3)			;add 4 to SPAnum (set for next index)
 	addq.w	#4,d0					;add 4 to d0 (currently holds current index)
 	tst.w	-2(a0,d0.w)				;test -2 offset from a0 + d0 (this is the frame
-	;time for the previous frame)
+									;time for the previous frame)
 	bpl.w	.1						;branch if positive (not the end of the animation)
 	clr.w	d0						;clear d0
 	clr.w	SPAnum(a3)				;clear SPANum
@@ -1133,7 +1133,7 @@ updateanim							;frame switch control on struct a3
 	move.w	d0,SPAcnt(a3)			;move d0 into SPAcnt
 .cframe
 	sub.b	d7,glitch(a3)			;sub frames elapsed from glitch - limit minimum
-	;time between frame switches
+									;time between frame switches
 	bpl.w	.rtss					;branch if glitch is positive still
 	clr.b	glitch(a3)				;clear glitch
 	cmp.w	frame(a3),d2			;compare frame to d2

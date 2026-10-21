@@ -573,8 +573,7 @@ faceoffinput						;controller processing for faceoff
 	beq.w	.0
 	rts
 .0
-	;move assnum into d4
-	move.w	assnum(a3),d4
+	move.w	assnum(a3),d4			;move assnum into d4
 	cmpi.b	#$17,asslist(a3,d4.w)	;check if afaceoffpl is in asslist at assnum position
 	bne.s	rtss7					;exit if this is not a faceoff player
 	movea.w	#(fodir1-M68K_RAM),a0	;faceoff direction of puck control variable
@@ -582,8 +581,7 @@ faceoffinput						;controller processing for faceoff
 	beq.w	.2						;branch if bottom goal
 	movea.w	#(fodir2-M68K_RAM),a0
 .2
-	;store dpad for faceoff pull
-	move.w	d0,(a0)
+	move.w	d0,(a0)					;store dpad for faceoff pull
 	btst	#pf2aip,pflags2(a3)		;check if anim in progress
 	bne.s	rtss7					;exit if anim in progress
 	btst	#4,d1					;test for b button press
@@ -592,8 +590,7 @@ faceoffinput						;controller processing for faceoff
 	bset	#pf2aip,pflags2(a3)		;set anim in progress
 	bra.w	SetSPA
 .1
-	;#SPAfaceoffr anim
-	move.w	#SPAfaceoffr,d1
+	move.w	#SPAfaceoffr,d1			;#SPAfaceoffr anim
 	bra.w	SetSPA
 fightinput
 	rts								;controller processing for fighting
@@ -784,7 +781,7 @@ burst
 	move.w	#$1000,d0
 .0
 	lsr.w	#7,d0					;d0 will be $1000 with lines off
-	;d0 / 64 will be 20 hex if max energy
+									;d0 / 64 will be 20 hex if max energy
 	move.w	d0,d1					;energy = speed increase (check violence)
 	move.w	facedir(a3),d2			;facedir
 	asl.w	#2,d2
@@ -872,13 +869,12 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	tst.w	position(a3)			;checks if goalie
 	beq.w	.calc					;jump if goalie
 .LoadPassAttribForPassStart
-	;Passacc
-	move.b	passacc(a3),d0
+	move.b	passacc(a3),d0			;Passacc
 .calc
 	asl.w	#2,d0					;d0 = passacc for player, 8 for goalie
 	asr.w	#1,d0					;change from NHL Hockey Source,
-	;because max passacc can be 30
-	;(15 in 92)
+									;because max passacc can be 30
+									;(15 in 92)
 	addi.w	#$A0,d0
 	move.w	d0,(passspeed).w		;Passspeed = PassAcc (0 to 30 decimal) * 2 + A0 (160 decimal)
 	btst	#0,passacc(a3)			;Checks to see if bit 0 in Passacc is 0
@@ -979,7 +975,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	bsr.w	SetSPA
 	bset	#pfalock,pflags(a3)		;#pfalock, $62 = pflags
 	moveq	#$C,d0					;Rest to rts, not in NHL Hockey Source
-	;Used to make puck sound
+									;Used to make puck sound
 	sub.b	(puckvz).w,d0
 	lsr.w	#2,d0
 	andi.w	#3,d0

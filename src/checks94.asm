@@ -50,7 +50,7 @@ asswingo							;player a3 is winger on offense
 	cmp.w	#$58,d0					;'X'   ; compare top blue line with d0
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;check bit 4 of offset 30 (currently offside)
-	;(C6FE Home, CA62 Away)
+									;(C6FE Home, CA62 Away)
 	bne.w	.de2					;branch if set
 	addq.w	#8,d2					;add 8 to d2 (d2 = $10)
 	cmp.w	#$108,d3				;compare top goal line with d3
@@ -62,7 +62,7 @@ asswingo							;player a3 is winger on offense
 	move.w	(HVcount).l,d0			;move frame counter into d0
 	andi.w	#$7F,d0					;pass first 7 bits
 	bne.w	.nodec					;branch if not equal to 0 - this allows random
-	;movement in zone while waiting
+									;movement in zone while waiting
 .de3
 	move.w	d2,temp5(a3)			;move d2 into temp5
 	lea	.dedata(pc),a0				;move zonedata address into a0
@@ -77,7 +77,7 @@ asswingo							;player a3 is winger on offense
 	bra.w	.nodec
 .dedata
 	dc.w	$50						;Skating zones:
-	;Defensive zone
+									;Defensive zone
 	dc.w	$14
 	dc.w	$FFBA
 	dc.w	$A
@@ -206,8 +206,8 @@ asscentero
 	cmp.w	#$58,d0					;'X'   ; check opponents blue line
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;Checks if currently offside
-	;C6FE - Home
-	;CA62 - Away
+									;C6FE - Home
+									;CA62 - Away
 	bne.w	.de2					;branch if offside
 	addq.w	#8,d2
 	cmp.w	#$108,d0				;check opponents goal line
@@ -217,7 +217,7 @@ asscentero
 	cmp.w	temp5(a3),d2			;compare temp5 to d2
 	bne.w	.de3
 	move.w	(HVcount).l,d0			;move frame counter into d0.
-	;This allows a chance for random movement in zone when waiting
+									;This allows a chance for random movement in zone when waiting
 	andi.w	#$7F,d0					;pass bottom 7 bits
 	bne.w	.nodec
 .de3
@@ -234,7 +234,7 @@ asscentero
 	bra.w	.nodec
 .dedata
 	dc.w	0						;Skating Zones
-	;puck location = defensive zone
+									;puck location = defensive zone
 	dc.w	$3C
 	dc.w	$FFBA
 	dc.w	$A
@@ -4471,7 +4471,7 @@ playeracc
 	move.w	2(a0,d2.w),d1			;Y Inc
 	move.w	0(a0,d2.w),d0			;x Inc
 	move.w	Wallsin(a3),d2			;check acc dir and dont push wall
-	;wallsin
+									;wallsin
 	beq.w	.nox
 	eor.w	d0,d2
 	bpl.w	.nox

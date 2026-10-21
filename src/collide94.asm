@@ -418,7 +418,7 @@ CCStart								;Player a3 is checking player a2. Holds (SPAHold, SPAhook) go to
 	btst	#pf3wall,pflags3(a3)	;wall collision bit
 	bne.w	.down					;branch if bit set
 	bsr.w	randomd0				;d0 is the RNG range.
-	;Result will be in d0 (0 <= d0 < range)
+									;Result will be in d0 (0 <= d0 < range)
 	clr.w	(TempWord1).w
 	move.b	checking(a3),(TempWord1+1).w	;$75 is Chk attrib. in player struct
 	lsr.w	(TempWord1).w			;Shift right 1 bit
@@ -682,7 +682,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	andi.w	#$F,d0					;pass 1st byte of d0
 	addi.w	#$10,d0					;add 10 hex to d0
 	cmp.w	impact(a2),d0			;compare impact value to d0.
-	;d0 will be 10-1F hex (16-31 decimal)
+									;d0 will be 10-1F hex (16-31 decimal)
 	ble.w	.cont2					;no toddle if d0 <= impact
 	move.b	#$3C,nopuckb(a2)		;$3C (60) into nopuckb
 	bra.w	.hitter
@@ -733,7 +733,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	cmpi.w	#$FEF8,Ypos(a3)			;compare to bottom goal line Y
 	blt.w	.bnet2					;branch if behind net
 	tst.w	(a3)					;In between goal lines
-	;Check Xpos of checker
+									;Check Xpos of checker
 	bpl.w	.posx					;branch if positive (right side of center)
 	tst.w	d3						;check diff of Xpos
 	bpl.w	.chktowardcenterice		;branch if positive (player to right of checker)
@@ -749,12 +749,12 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 .bnet2
 	tst.w	d4						;check diff of Ypos
 	bpl.w	.chktowardcenterice		;branch if positive
-	;player higher than checker
+									;player higher than checker
 	bra.w	.chkawayfromcenterice	;player lower than checker
 .bnet1
 	tst.w	d4						;check diff of Ypos
 	bmi.w	.chktowardcenterice		;branch if negative
-	;player lower than checker
+									;player lower than checker
 	bra.w	.chkawayfromcenterice	;player higher than checker
 .chktowardcenterice
 	movem.l	(sp)+,d1-d4
@@ -764,12 +764,12 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	bra.w	*+4						;to the next instruction (.playerpos)
 .playerpos
 	cmpi.w	#$10C,Ypos(a2)			;Ypos player
-	;check if player is above top goal line
+									;check if player is above top goal line
 	bgt.w	.chkawayfrommiddle		;branch if above
 	cmpi.w	#$FEF4,Ypos(a2)			;Check if player is below bottom goal line
 	blt.w	.chkawayfrommiddle		;branch if below
 	cmpi.w	#$68,(a2)				;Xpos player
-	;check if right of crease?
+									;check if right of crease?
 	bgt.w	.chkawayfrommiddle		;branch if to the right
 	cmpi.w	#$FF98,(a2)				;check if left of crease?
 	blt.w	.chkawayfrommiddle		;branch if to the left
@@ -1514,7 +1514,7 @@ CheckBump							;supply minimum separation velocity for coll with walls/goal/net
 	rts
 .bb
 	adda.w	#$C,sp					;drop the saved d0-d1 and the return to checkgoalp:
-	;return to checkgoal's caller
+									;return to checkgoal's caller
 	asr.w	#2,d0
 	asr.w	#2,d1
 	move.w	d0,Xvel(a2)
@@ -1968,7 +1968,7 @@ puckstick							;puck collides with stick. a2 = player who collided, a3 = puck, 
 									;one-timer shoots it (onetimershot). Uses the slot ranges and the
 									;one-timer path
 	tst.w	position(a2)			;a2 = player who collided
-	;a3 = puck
+									;a3 = puck
 	bne.w	.0						;branch if not goalie
 	btst	#gmhl,(gmode).w			;check if highlight
 	bne.w	rtss2					;exit if so (goalie always lets the shot in)
@@ -2246,10 +2246,10 @@ puckgoalie							;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The
 	bsr.w	vtoa					;convert directions
 	sub.w	facedir(a2),d0			;sub facedir into d0
 	andi.w	#7,d0					;pass first 3 bits to d0
-	;0 = puck straight in front of G
-	;1-3 = puck to G right
-	;4 = puck straight behind G
-	;5-7 = puck to G left
+									;0 = puck straight in front of G
+									;1-3 = puck to G right
+									;4 = puck straight behind G
+									;5-7 = puck to G left
 	move.w	d0,d1					;move d0 into d1
 	andi.w	#3,d1					;pass first 2 bits of d1
 	bne.w	.2						;will branch if puck is to the left or right of G
@@ -2738,7 +2738,7 @@ forcepldata							;no skating on/off: force players to correct data (for faceoff
 	move.b	newpnum(a3),d3			;move newpnum into d3
 	add.w	d3,d3					;add d3 to itself
 	move.w	#$FFFF,tmpdst(a2,d3.w)	;move -1 into tmpdst
-	;put player on the ice
+									;put player on the ice
 	lsr.w	#1,d3					;divide d3 by 2
 	bsr.w	setplayer
 .next
@@ -2753,8 +2753,8 @@ ResetBench							;remove all players from penalty box / put all players on their
 									;(home in the high nibble). .rb runs for the home team, then falls in for
 									;the visitors
 	clr.b	(PBnum).w				;PBnum = HV00
-	;H = home players in PB
-	;V = away players in PB
+									;H = home players in PB
+									;V = away players in PB
 	moveq	#$10,d1
 	movea.w	#(tmstruct-M68K_RAM),a0
 	bsr.w	.rb
@@ -2765,9 +2765,9 @@ ResetBench							;remove all players from penalty box / put all players on their
 .rb1
 	add.b	d1,(PBnum).w
 	tst.w	tmpdst(a0,d0.w)			;check tmpdst
-	;check and see which players are in the box
-	;(-2=bench, -1=ice, 0+=pen box)
-	;starts from end of list and works backwards through loop
+									;check and see which players are in the box
+									;(-2=bench, -1=ice, 0+=pen box)
+									;starts from end of list and works backwards through loop
 	ble.w	.cont
 	btst	#4,tmpdst(a0,d0.w)		;test 3rd bit in tmpdst (4 decimal)
 	beq.w	.next
@@ -2794,7 +2794,7 @@ Setplass							;set players (a3) initial assignment from .alist by position
 	move.b	0(a0,d0.w),d0
 	bra.w	assreplace
 .alist	dc.b	$E					;assgoalie
-	;assgoalie??
+									;assgoalie??
 	dc.b	2						;assdefd
 	dc.b	2						;assdefd
 	dc.b	3						;asswingd
@@ -2875,8 +2875,8 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	btst	#pfteam,pflags(a3)		;Check if home or away
 	beq.w	.home					;branch if home
 	eori	#8,ccr					;If Aw team, checks if N flag is set from HmGoals-AwGoals.
-	;Xors the CCR, if N flag set, it will make it 0, if cleared, will make it 1.
-	;If Aw team leading, it will jump boost for away team.
+									;Flips N: if N was set it becomes 0, if clear it becomes 1. So
+									;if the away team leads, the boost goes to the away team.
 .home
 	bpl.w	.playdatamove			;branch for the team who is leading
 .load3pbonus
@@ -2946,7 +2946,7 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	move.b	4(a0),handed(a3)		;move Chk/Hnd byte to Hnd in player struct
 	andi.b	#1,handed(a3)			;masks Hnd byte with 1, only passing first bit
 	eori.b	#1,handed(a3)			;XOR Hnd byte with 1. Sets to opposite what the bit was.
-	;So L will be a 1 and R will be a 0
+									;So L will be a 1 and R will be a 0
 	bne.w	.attribloadcont
 	bset	#3,attribute(a3)		;sets bit 3 of attribute byte in player struct (to match Hnd if Hnd bit is
 									;set)

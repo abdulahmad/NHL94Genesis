@@ -185,7 +185,7 @@ Create_HotCold_Table				;Fill the hot / cold table at $1A2 of team struct a0 wit
 									;values (-9 ... 8 randomd0s). Called from StartGame and ScoutingReport
 	movem.l	d0-d7,-(sp)
 	move.w	#$19F,d1				;$19F = 415. Loop will run 416 times.
-	;(26 players/team * 8) * 2 teams = 416
+									;(26 players/team * 8) * 2 teams = 416
 HotColdLoop							;The Create_HotCold_Table loop
 	move.w	#9,d0					;sets RNG limit (-9 - +8)
 	jsr	(randomd0s).l
@@ -215,8 +215,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	btst	#pfteam,pflags(a3)		;Check if home or away
 	beq.w	.attribmath
 .away
-	;shift to start of Away Team struct
-	adda.l	#tmsize,a1
+	adda.l	#tmsize,a1				;shift to start of Away Team struct
 .attribmath
 	clr.w	d1
 	move.b	pnum(a3),d1				;move roster offset into d1
@@ -233,12 +232,10 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	add.w	d1,d3					;add d1 (H/C value) to d3
 	bmi.w	.LowerLimit
 .UpperLimitCheck
-	;check if above upper limit (1E or 30 decimal)
-	cmp.w	#$1E,d3
+	cmp.w	#$1E,d3					;check if above upper limit (1E or 30 decimal)
 	blt.w	.MaskAttribMathResult
 .UpperLimit
-	;if above, set to 1E
-	move.w	#$1E,d3
+	move.w	#$1E,d3					;if above, set to 1E
 	bra.w	.MaskAttribMathResult
 .LowerLimit
 	clr.w	d3						;if below lower limit (0), set to 0
