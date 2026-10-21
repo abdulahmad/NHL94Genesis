@@ -1787,7 +1787,7 @@ playoffseats						;32 rows of 16 team numbers (PlayoffRows by
 	dc.b	NYR,BUF,FLA,TB, WSH,PIT,BOS,MTL, TOR,CHI,WPG,VAN, DAL,LA,ANH,STL
 	dc.b	NJ,MTL,OTW,BUF, TB,PIT,NYR,NYI, EDM,LA,SJ,CHI, ANH,VAN,DET,STL
 	dc.b	WSH,FLA,NJ,PIT, BOS,MTL,TB,BUF, SJ,STL,DET,CHI, ANH,LA,WPG,VAN
-PlayoffSeatsEnd
+PlayoffSeatsEnd						;end of playoffseats (size check below)
 	IF (PlayoffSeatsEnd-playoffseats)<>(PlayoffRows*PlayoffRowTeams)
 		inform	3,"playoffseats must be 32 rows of 16 teams"
 	ENDIF

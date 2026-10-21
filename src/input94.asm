@@ -256,7 +256,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	bset	#pf2aip,pflags2(a3)
 	bset	#pfalock,pflags(a3)
 	addi.w	#$96,(Crowdlevel).w
-rtss15
+rtss15								;shared rts for the early exits nearby
 	rts
 doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinput_chkanim
 	btst	#5,d1
@@ -545,7 +545,7 @@ doinput_islocked					;a3 is locked in an animation: B (bit 4) changes the contro
 	bset	#6,pflags3(a0)
 .x
 	movem.l	(sp)+,d0/a0
-rtss7
+rtss7								;shared rts for the early exits nearby
 	rts
 ; Find goalie SCnum, store in d0
 ; If no goalie, store FFFF in d0
@@ -592,7 +592,7 @@ faceoffinput						;controller processing for faceoff
 .1
 	move.w	#SPAfaceoffr,d1			;#SPAfaceoffr anim
 	bra.w	SetSPA
-fightinput
+fightinput							;controller processing for fighting
 	rts								;controller processing for fighting
 ; initiate line change option if available
 SetLCmode							;Initiate line change option if available (abut
@@ -827,7 +827,7 @@ Acheck								;start SPAhook, or SPAHold if a0 is ahead
 .ex
 	bra.w	SetSPA
 ; initialize pass mode
-setpassmode
+setpassmode							;initialize pass mode
 	move.w	facedir(a3),(passdir).w	;facedir, default pass direction
 	andi.w	#7,(passdir).w			;Passes first 3 bits of passdir
 	btst	#2,(BA_PS_flags).w
@@ -991,7 +991,7 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	rts
 ; pass puck to player a0
 ; a3 = passer
-passto
+passto								;pass the puck to player a0: a3 = passer
 	btst	#pfjoycon,pflags(a3)
 	beq.w	passtoa0
 	tst.w	position(a3)
@@ -1228,7 +1228,8 @@ setc2player							;restore old player and switch to new d0 player on cont. 2
 .ex
 	rts
 ; d1 = old player
-restorepl
+restorepl							;restore old joy controlled player d1, give d0 the joystick; a d1 in line
+									;change mode keeps control
 	movea.w	#(SortCords-M68K_RAM),a0
 	tst.w	d1
 	blt.w	.spd
@@ -1347,7 +1348,8 @@ ShotMode							;shot input
 .end
 	rts
 ; Check certain conditions before shooting
-prepshot
+prepshot							;check the conditions before a shot: d0 = SCnum of the opposing goalie
+									;(getGoalieSCnum)
 	bclr	#4,(sflags5).w
 	move.w	#$B,d0
 	btst	#pfteam,pflags(a3)		;check if home or away
@@ -1561,7 +1563,8 @@ doshot								;stick is at puck so launch puck toward goal
 	bsr.w	sfx						;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-shotsets	dc.w	0
+shotsets	dc.w	0				;shot offsets for each pass direction (x,z word pairs), read by the shot
+									;code
 	;offsets for different directions on the shot
 	;passdir 0(x,z)
 	dc.w	$C
@@ -1688,5 +1691,5 @@ setpads								;Put SCnum of a3 in the d4 nibble of PadControlBits ; d4 = -2 puc
 	asl.w	d0,d1
 	or.w	d1,(PadControlBits).w
 	movem.l	(sp)+,d0-d1
-rtss3
+rtss3								;shared rts for the early exits nearby
 	rts

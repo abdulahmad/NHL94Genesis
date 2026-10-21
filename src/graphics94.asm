@@ -54,7 +54,7 @@ Spritetiles							;the sprite tiles (+$A; addframe2 adds the frame tile offset t
 									;#Spritetiles)
 	incbin	..\Extracted\NHL94\Graphics\Spritetiles.bin
 	even
-frameSprData
+frameSprData						;sprite piece data of each frame
 	incbin	..\Extracted\NHL94\Graphics\frameSprData.bin
 	even
 HotList								;the hot spot byte pair of each frame

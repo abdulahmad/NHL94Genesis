@@ -142,7 +142,7 @@ assbench							;player a3 should goto bench
 	jsr	(Setplass).l
 	st	newpnum(a3)
 	st	newpos(a3)
-rtss4
+rtss4								;shared rts for the early exits nearby
 	rts
 ; player a3 should exit bench area
 asseben								;Player a3 should exit the bench area
@@ -476,7 +476,7 @@ assscore							;player a3 celebrates, if scoring player then do arm pump
 .ckcon
 	btst	#pfjoycon,pflags(a3)
 	beq.w	skateto
-rtss6
+rtss6								;shared rts for the early exits nearby
 	rts
 ; player a3 is defensive player on offense
 assdefo								;player a3 is defensive player on offense
@@ -674,7 +674,7 @@ assdefd								;player a3 is defensive player on defense
 	movea.l	#EvadePC,a0				;EvadePC to a0
 	bsr.w	skateto
 	bra.w	check4check
-rtss21
+rtss21								;shared rts for the early exits nearby
 	rts
 ; player a3 is winger on defense
 asswingd							;player a3 is wing on defense

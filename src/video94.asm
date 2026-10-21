@@ -423,7 +423,7 @@ waitjoy								;wait for either joystick input. Return d1 = new button presses. 
 	beq.s	waitjoy					;no new press: wait again
 	rts
 ; return d1 = new button presses
-orjoy
+orjoy								;return d1 = new button presses from either joystick
 	tst.w	(FourWayPlay).w			;check for 4-way play?
 	bne.w	.4way
 	bsr.w	ReadJoy1
@@ -536,7 +536,7 @@ ReadJoy								;read controller a0. Return d0 = direction (bit 0-3) and new butt
 	or.w	d1,d0
 	move.w	(sp)+,d1
 	rts
-jdtab	dc.b	8
+jdtab	dc.b	8					;convert buttons l,r,d,u into directions 0-7,8
 	;convert button l,r,d,u into directions 0-7,8
 	dc.b	0,4,8,6,7,5,8,2,1,3,8,8,8,8,8
 ; init dma transfer and protect vblank interruption

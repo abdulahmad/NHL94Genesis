@@ -851,13 +851,13 @@ pcm_sample_table					;(sample address, 0) for PCM patches $60-$6E (lea in handle
 sfx_shotbh_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_shotbh_pcm.bin	;sample 2: shotbh
 	even
-sfx_pass_pcm
+sfx_pass_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_pass_pcm.bin	;sample 1: pass
 	dc.b	$FF						;pad: retail leftover byte
 sfx_oooh_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_oooh_pcm.bin	;sample 12: oooh, sfx_oooh2, sfx_bglass
 	even
-sfx_crowdboo_pcm
+sfx_crowdboo_pcm					;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_crowdboo_pcm.bin	;sample 11: crowdboo
 	dc.b	$FF						;pad: retail leftover byte
 sfx_check_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
@@ -866,13 +866,13 @@ sfx_check_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
 sfx_crowdcheer_pcm					;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_crowdcheer_pcm.bin	;sample 13: crowdcheer, homewin
 	even
-sfx_bglass_pcm
+sfx_bglass_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_bglass_pcm.bin	;sample 14: sfx_bglass
 	dc.b	$FF						;pad: retail leftover byte
 sfx_playerwall_pcm					;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_playerwall_pcm.bin	;sample 6: playerwall, sfx_playerwall2-23
 	even
-sfx_check2_pcm
+sfx_check2_pcm						;raw PCM sample, played through the Z80 (pcm_sample_table)
 	incbin	..\Extracted\NHL94\Sound\sfx_check2_pcm.bin	;sample 4: check2, check4
 	dc.b	$FF						;pad: retail leftover byte
 sfx_hithigh_pcm						;PCM samples 7 and 10: hithigh, hitlow, check1-4, songs $32 and $35-$37
@@ -1157,235 +1157,235 @@ sfx_oooh2_cmdstream					;sound effect event stream (SoundStreamTable)
 sfx_siren_cmdstream					;sound effect event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\sfx_siren_cmdstream.bin	;sound $0
 	even
-fmtune_id_30_cmdstream
+fmtune_id_30_cmdstream				;song $30 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_30_cmdstream.bin	;song $30: ChooseSong, TeamSongs BOS
 	even
-fmtune_id_31_cmdstream
+fmtune_id_31_cmdstream				;song $31 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_31_cmdstream.bin	;song $31: ChooseSong, TeamSongs BOS
 	even
-fmtune_id_32_cmdstream
+fmtune_id_32_cmdstream				;song $32 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_32_cmdstream.bin	;song $32: ChooseSong, TeamSongs BOS
 	even
-fmtune_id_33_cmdstream
+fmtune_id_33_cmdstream				;song $33 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_33_cmdstream.bin	;song $33: ChooseSong, TeamSongs BUF
 	even
-fmtune_id_34_cmdstream
+fmtune_id_34_cmdstream				;song $34 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_34_cmdstream.bin	;song $34: ChooseSong, TeamSongs BUF,
 																;RandomSongs
 	even
-fmtune_id_35_cmdstream
+fmtune_id_35_cmdstream				;song $35 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_35_cmdstream.bin	;song $35: ChooseSong, TeamSongs CGY
 	even
-fmtune_id_36_cmdstream
+fmtune_id_36_cmdstream				;song $36 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_36_cmdstream.bin	;song $36: ChooseSong, TeamSongs CGY
 	even
-fmtune_id_37_cmdstream
+fmtune_id_37_cmdstream				;song $37 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_37_cmdstream.bin	;song $37: ChooseSong, TeamSongs CGY
 	even
-fmtune_id_38_cmdstream
+fmtune_id_38_cmdstream				;song $38 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_38_cmdstream.bin	;song $38: ChooseSong, TeamSongs CHI
 	even
-fmtune_id_39_cmdstream
+fmtune_id_39_cmdstream				;song $39 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_39_cmdstream.bin	;song $39: ChooseSong, TeamSongs CHI
 	even
-fmtune_id_3A_cmdstream
+fmtune_id_3A_cmdstream				;song $3A event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_3A_cmdstream.bin	;song $3A: ChooseSong, TeamSongs CHI
 	even
-fmtune_id_3B_cmdstream
+fmtune_id_3B_cmdstream				;song $3B event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_3B_cmdstream.bin	;song $3B: ChooseSong, TeamSongs DET
 	even
-fmtune_id_3C_cmdstream
+fmtune_id_3C_cmdstream				;song $3C event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_3C_cmdstream.bin	;song $3C: ChooseSong, TeamSongs DET
 	even
-fmtune_id_3D_cmdstream
+fmtune_id_3D_cmdstream				;song $3D event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_3D_cmdstream.bin	;song $3D: ChooseSong, TeamSongs DET
 	even
-fmtune_id_3E_cmdstream
+fmtune_id_3E_cmdstream				;song $3E event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_3E_cmdstream.bin	;song $3E: ChooseSong, TeamSongs EDM
 	even
-fmtune_id_3F_cmdstream
+fmtune_id_3F_cmdstream				;song $3F event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_3F_cmdstream.bin	;song $3F: ChooseSong, TeamSongs EDM
 	even
-fmtune_id_40_cmdstream
+fmtune_id_40_cmdstream				;song $40 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_40_cmdstream.bin	;song $40: ChooseSong, TeamSongs HFD,
 																;RandomSongs
 	even
-fmtune_id_41_cmdstream
+fmtune_id_41_cmdstream				;song $41 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_41_cmdstream.bin	;song $41: ChooseSong, TeamSongs HFD
 	even
-fmtune_id_42_cmdstream
+fmtune_id_42_cmdstream				;song $42 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_42_cmdstream.bin	;song $42: ChooseSong, TeamSongs HFD,
 																;RandomSongs
 	even
-fmtune_id_43_cmdstream
+fmtune_id_43_cmdstream				;song $43 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_43_cmdstream.bin	;song $43: ChooseSong, TeamSongs LA
 	even
-fmtune_id_44_cmdstream
+fmtune_id_44_cmdstream				;song $44 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_44_cmdstream.bin	;song $44: ChooseSong, TeamSongs LA
 	even
-fmtune_id_45_cmdstream
+fmtune_id_45_cmdstream				;song $45 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_45_cmdstream.bin	;song $45: ChooseSong, TeamSongs LA
 	even
-fmtune_id_46_cmdstream
+fmtune_id_46_cmdstream				;song $46 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_46_cmdstream.bin	;song $46: ChooseSong, TeamSongs LA
 	even
-fmtune_id_47_cmdstream
+fmtune_id_47_cmdstream				;song $47 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_47_cmdstream.bin	;song $47: ChooseSong, TeamSongs NYI
 	even
-fmtune_id_48_cmdstream
+fmtune_id_48_cmdstream				;song $48 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_48_cmdstream.bin	;song $48: ChooseSong, TeamSongs NYI
 	even
-fmtune_id_49_cmdstream
+fmtune_id_49_cmdstream				;song $49 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_49_cmdstream.bin	;song $49: ChooseSong, TeamSongs NYI,
 																;RandomSongs
 	even
-fmtune_id_4A_cmdstream
+fmtune_id_4A_cmdstream				;song $4A event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_4A_cmdstream.bin	;song $4A: ChooseSong, TeamSongs DAL
 	even
-fmtune_id_4B_cmdstream
+fmtune_id_4B_cmdstream				;song $4B event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_4B_cmdstream.bin	;song $4B: ChooseSong, TeamSongs DAL
 	even
-fmtune_id_4C_cmdstream
+fmtune_id_4C_cmdstream				;song $4C event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_4C_cmdstream.bin	;song $4C: ChooseSong, TeamSongs MTL
 	even
-fmtune_id_4D_cmdstream
+fmtune_id_4D_cmdstream				;song $4D event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_4D_cmdstream.bin	;song $4D: ChooseSong, TeamSongs MTL
 	even
-fmtune_id_4E_cmdstream
+fmtune_id_4E_cmdstream				;song $4E event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_4E_cmdstream.bin	;song $4E: ChooseSong, TeamSongs MTL
 	even
-fmtune_id_4F_cmdstream
+fmtune_id_4F_cmdstream				;song $4F event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_4F_cmdstream.bin	;song $4F: ChooseSong, TeamSongs MTL
 	even
-fmtune_id_50_cmdstream
+fmtune_id_50_cmdstream				;song $50 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_50_cmdstream.bin	;song $50: ChooseSong, TeamSongs NJ
 	even
-fmtune_id_51_cmdstream
+fmtune_id_51_cmdstream				;song $51 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_51_cmdstream.bin	;song $51: ChooseSong, TeamSongs NJ
 	even
-fmtune_id_52_cmdstream
+fmtune_id_52_cmdstream				;song $52 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_52_cmdstream.bin	;song $52: ChooseSong, TeamSongs NJ
 	even
-fmtune_id_53_cmdstream
+fmtune_id_53_cmdstream				;song $53 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_53_cmdstream.bin	;song $53: ChooseSong, TeamSongs NYR / ASE /
 																;ASW
 	even
-fmtune_id_54_cmdstream
+fmtune_id_54_cmdstream				;song $54 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_54_cmdstream.bin	;song $54: ChooseSong, TeamSongs NYR / ASE /
 																;ASW
 	even
-fmtune_id_55_cmdstream
+fmtune_id_55_cmdstream				;song $55 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_55_cmdstream.bin	;song $55: ChooseSong, TeamSongs NYR / ASE /
 																;ASW
 	even
-fmtune_id_56_cmdstream
+fmtune_id_56_cmdstream				;song $56 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_56_cmdstream.bin	;song $56: ChooseSong, TeamSongs PHI
 	even
-fmtune_id_57_cmdstream
+fmtune_id_57_cmdstream				;song $57 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_57_cmdstream.bin	;song $57: ChooseSong, TeamSongs PHI
 	even
-fmtune_id_58_cmdstream
+fmtune_id_58_cmdstream				;song $58 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_58_cmdstream.bin	;song $58: ChooseSong, TeamSongs PHI,
 																;RandomSongs
 	even
-fmtune_id_59_cmdstream
+fmtune_id_59_cmdstream				;song $59 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_59_cmdstream.bin	;song $59: ChooseSong, TeamSongs PIT
 	even
-fmtune_id_5A_cmdstream
+fmtune_id_5A_cmdstream				;song $5A event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_5A_cmdstream.bin	;song $5A: ChooseSong, TeamSongs (25 teams:
 																;all but CGY, PHI and SJ)
 	even
-fmtune_id_5B_cmdstream
+fmtune_id_5B_cmdstream				;song $5B event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_5B_cmdstream.bin	;song $5B: ChooseSong, TeamSongs PIT
 	even
-fmtune_id_5C_cmdstream
+fmtune_id_5C_cmdstream				;song $5C event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_5C_cmdstream.bin	;song $5C: ChooseSong, TeamSongs PIT,
 																;RandomSongs
 	even
-fmtune_id_5D_cmdstream
+fmtune_id_5D_cmdstream				;song $5D event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_5D_cmdstream.bin	;song $5D: ChooseSong, TeamSongs QUE
 	even
-fmtune_id_5E_cmdstream
+fmtune_id_5E_cmdstream				;song $5E event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_5E_cmdstream.bin	;song $5E: ChooseSong, TeamSongs QUE
 	even
-fmtune_id_5F_cmdstream
+fmtune_id_5F_cmdstream				;song $5F event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_5F_cmdstream.bin	;song $5F: ChooseSong, TeamSongs SJ
 	even
-fmtune_id_60_cmdstream
+fmtune_id_60_cmdstream				;song $60 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_60_cmdstream.bin	;song $60: ChooseSong, TeamSongs SJ
 	even
-fmtune_id_61_cmdstream
+fmtune_id_61_cmdstream				;song $61 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_61_cmdstream.bin	;song $61: ChooseSong, TeamSongs SJ
 	even
-fmtune_id_62_cmdstream
+fmtune_id_62_cmdstream				;song $62 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_62_cmdstream.bin	;song $62: ChooseSong, not in TeamSongs or
 																;RandomSongs
 	even
-fmtune_id_63_cmdstream
+fmtune_id_63_cmdstream				;song $63 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_63_cmdstream.bin	;song $63: ChooseSong, TeamSongs SJ
 	even
-fmtune_id_64_cmdstream
+fmtune_id_64_cmdstream				;song $64 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_64_cmdstream.bin	;song $64: ChooseSong, TeamSongs SJ
 	even
-fmtune_id_65_cmdstream
+fmtune_id_65_cmdstream				;song $65 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_65_cmdstream.bin	;song $65: ChooseSong, TeamSongs CHI / SJ,
 																;RandomSongs
 	even
-fmtune_id_66_cmdstream
+fmtune_id_66_cmdstream				;song $66 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_66_cmdstream.bin	;song $66: ChooseSong, RandomSongs
 	even
-fmtune_id_67_cmdstream
+fmtune_id_67_cmdstream				;song $67 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_67_cmdstream.bin	;song $67: ChooseSong, TeamSongs STL
 	even
-fmtune_id_68_cmdstream
+fmtune_id_68_cmdstream				;song $68 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_68_cmdstream.bin	;song $68: ChooseSong, TeamSongs STL
 	even
-fmtune_id_69_cmdstream
+fmtune_id_69_cmdstream				;song $69 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_69_cmdstream.bin	;song $69: ChooseSong, TeamSongs STL
 	even
-fmtune_id_6A_cmdstream
+fmtune_id_6A_cmdstream				;song $6A event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_6A_cmdstream.bin	;song $6A: ChooseSong, TeamSongs TB
 	even
-fmtune_id_6B_cmdstream
+fmtune_id_6B_cmdstream				;song $6B event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_6B_cmdstream.bin	;song $6B: ChooseSong, TeamSongs TB
 	even
-fmtune_id_6C_cmdstream
+fmtune_id_6C_cmdstream				;song $6C event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_6C_cmdstream.bin	;song $6C: ChooseSong, TeamSongs TOR
 	even
-fmtune_id_6D_cmdstream
+fmtune_id_6D_cmdstream				;song $6D event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_6D_cmdstream.bin	;song $6D: ChooseSong, TeamSongs TOR
 	even
-fmtune_id_6E_cmdstream
+fmtune_id_6E_cmdstream				;song $6E event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_6E_cmdstream.bin	;song $6E: ChooseSong, TeamSongs VAN
 	even
-fmtune_id_6F_cmdstream
+fmtune_id_6F_cmdstream				;song $6F event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_6F_cmdstream.bin	;song $6F: ChooseSong, TeamSongs VAN
 	even
-fmtune_id_70_cmdstream
+fmtune_id_70_cmdstream				;song $70 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_70_cmdstream.bin	;song $70: ChooseSong, TeamSongs VAN
 	even
-fmtune_id_71_cmdstream
+fmtune_id_71_cmdstream				;song $71 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_71_cmdstream.bin	;song $71: ChooseSong, TeamSongs WSH
 	even
-fmtune_id_72_cmdstream
+fmtune_id_72_cmdstream				;song $72 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_72_cmdstream.bin	;song $72: ChooseSong, not in TeamSongs or
 																;RandomSongs
 	even
-fmtune_id_73_cmdstream
+fmtune_id_73_cmdstream				;song $73 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_73_cmdstream.bin	;song $73: ChooseSong, TeamSongs WSH
 	even
-fmtune_id_74_cmdstream
+fmtune_id_74_cmdstream				;song $74 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_74_cmdstream.bin	;song $74: ChooseSong, TeamSongs WSH
 	even
-fmtune_id_75_cmdstream
+fmtune_id_75_cmdstream				;song $75 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_75_cmdstream.bin	;song $75: ChooseSong, TeamSongs ANH / FLA /
 																;OTW / WPG
 	even
-fmtune_id_76_cmdstream
+fmtune_id_76_cmdstream				;song $76 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_76_cmdstream.bin	;song $76: ChooseSong, TeamSongs ANH / FLA /
 																;OTW / WPG
 	even
-fmtune_id_77_cmdstream
+fmtune_id_77_cmdstream				;song $77 event stream (SoundStreamTable)
 	incbin	..\Extracted\NHL94\Sound\fmtune_id_77_cmdstream.bin	;song $77: ChooseSong, TeamSongs ANH / FLA /
 																;OTW / WPG
 	even

@@ -55,9 +55,9 @@ ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's cro
 .x
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
-ScoutEmptyTxt	String	''
-ScoutByTxt	String	'by '
-ScoutSpaceTxt	String	' '
+ScoutEmptyTxt	String	''			;empty String: no name number in the crowd record
+ScoutByTxt	String	'by '			;start of the "by <name> " String
+ScoutSpaceTxt	String	' '			;space after the name
 GetTeamCity							;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
 									;Teamname offset)
 	movem.l	d0-d7/a0/a2-a6,-(sp)
@@ -608,14 +608,14 @@ HomeAdvMarks						;Home advantage marks, by advframe (0-5)
 	dc.l	HomeAdv0Txt,HomeAdv1Txt,HomeAdv2Txt,HomeAdv3Txt,HomeAdv3Txt,HomeAdv3Txt
 VisAdvMarks							;Visitors advantage marks
 	dc.l	VisAdv0Txt,VisAdv1Txt,VisAdv2Txt,VisAdv3Txt,VisAdv3Txt,VisAdv3Txt
-HomeAdv0Txt	String	'   '
-HomeAdv1Txt	String	']  '
-HomeAdv2Txt	String	']] '
-HomeAdv3Txt	String	']]]'
-VisAdv0Txt	String	'   '
-VisAdv1Txt	String	'  ['
-VisAdv2Txt	String	' [['
-VisAdv3Txt	String	'[[['
+HomeAdv0Txt	String	'   '			;home advantage marks: none
+HomeAdv1Txt	String	']  '			;home advantage: one mark
+HomeAdv2Txt	String	']] '			;home advantage: two marks
+HomeAdv3Txt	String	']]]'			;home advantage: three marks
+VisAdv0Txt	String	'   '			;visitors advantage marks: none
+VisAdv1Txt	String	'  ['			;visitors advantage: one mark
+VisAdv2Txt	String	' [['			;visitors advantage: two marks
+VisAdv3Txt	String	'[[['			;visitors advantage: three marks
 EvenAdvTxt	String	'   '			;Even teams
 GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (AwShots): return a1 = the
 									;team nickname String, or 'Home' / 'Visitors' when it is empty (the all
@@ -635,8 +635,8 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (AwShots): r
 .x
 	movem.l	(sp)+,d0/a0/a2
 	rts
-HomeTxt	String	'Home'
-VisitorsTxt	String	'Visitors'
+HomeTxt	String	'Home'				;name used when the home team has no nickname
+VisitorsTxt	String	'Visitors'		;name used when the visiting team has no nickname
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (AwShots): return a1 = the
 									;team arena String
 	movem.l	d0/a0/a2,-(sp)

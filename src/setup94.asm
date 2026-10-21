@@ -806,7 +806,7 @@ Opening2							;reset the stack and clear the variables, then options (GameSetUp
 	blt.s	.0
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
-Opening3	bsr.w	PlayoffScreen
+Opening3	bsr.w	PlayoffScreen	;playoff tree (returns at once outside playoff mode)
 	btst	#0,(gmode2).w
 	bne.w	.1
 	jsr	(ScoutingReport).l			;skipped in shootouts, so no global label here (.1 below is local to

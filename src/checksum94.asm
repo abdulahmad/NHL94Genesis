@@ -13,12 +13,13 @@ ValidationLoop	cmpa.w	#$18C,a0	;header long $18C-$18F holds the checksum word $1
 	addq.w	#4,a0					;skip it, not summed
 	bra.s	ContinueValidation
 SkipIncrement	add.l	(a0)+,d0	;sum += next ROM long (a0 advances)
-ContinueValidation	subq.l	#1,d1
+ContinueValidation	subq.l	#1,d1	;loop back until d1 longs have been counted
 	bgt.s	ValidationLoop
 	cmpi.l	#$8AB9F121,d0			;retail sum. Real CMPI (0C80), not EA cmp
 	bne.s	VDPErrorSetup			;wrong sum: red screen
 	rts
-VDPErrorSetup	movea.l	#Vctrl,a4
+VDPErrorSetup	movea.l	#Vctrl,a4	;wrong checksum: a4 = VDP control port; blank the VDP and flood all of
+									;colour RAM with red
 	move.w	#VDPR_AUTOINC+$02,(a4)	;auto increment 2
 	move.w	#VDPR_MODE1+$04,(a4)	;mode 1: h interrupt off
 	move.w	#VDPR_BGCOL,(a4)		;backdrop = colour 0
