@@ -37,7 +37,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	beq.w	.0						;branch if not
 	movea.l	#RevRinkTiles,a2
 .0									;normal or reverse rink tiles chosen
-	bsr.w	DecompressGraphicsPlain
+	bsr.w	DecompressGraphicsPlain	;tiles to vram at d4, d4 advanced past them
 	jsr	(LoadHomeTeamGfx).l
 	move.w	d4,(EASNcset).w			;1st vram char for easn logo tiles
 	bsr.w	setupEASNmap
@@ -73,7 +73,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	dbf	d0,.loop
 .gok								;goals set for this period's direction
 	bsr.w	setplayercolors
-	move.w	#$FFFF,(PadControlBits).w
+	move.w	#$FFFF,(PadControlBits).w	;no pad assignments
 	move.w	#$FFFF,(PadControlBits34).w
 	clr.l	(padcont).w
 	clr.l	(padcont+4).w
@@ -131,7 +131,7 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	dbf	d0,.loop
 .gok								;goals set for this period's direction
 	bsr.w	setplayercolors
-	move.w	#$FFFF,(PadControlBits).w
+	move.w	#$FFFF,(PadControlBits).w	;no pad assignments
 	move.w	#$FFFF,(PadControlBits34).w
 	clr.l	(padcont).w
 	clr.l	(padcont+4).w
@@ -282,13 +282,13 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 	moveq	#ffonum-1,d0			;#ffonum-1
 .ffotop								;each scrolled object
 	st	oldframe(a3)				;objects tied to screen scrolling (not players/net/puck)
-	move.w	(a2)+,(a3)
+	move.w	(a2)+,(a3)				;Xpos
 	move.w	(a2)+,Ypos(a3)
 	move.w	(a2)+,Zpos(a3)
 	move.w	(a2)+,frame(a3)
 	move.w	(a2)+,attribute(a3)
 	move.w	d4,VRchar(a3)
-	add.w	(a2)+,d4
+	add.w	(a2)+,d4				;vram char size
 	adda.w	#$1C,a3					;#ffosize
 	dbf	d0,.ffotop
 	bra.w	defaultsprites2
@@ -373,13 +373,13 @@ defaultsprites2						;objects which are tied to screen scrolling and have veloci
 	move.w	d6,SCnum(a3)
 	st	oldframe(a3)
 	st	pnum(a3)
-	move.w	(a2)+,(a3)
+	move.w	(a2)+,(a3)				;Xpos
 	move.w	(a2)+,Ypos(a3)
 	move.w	(a2)+,Zpos(a3)
 	move.w	(a2)+,frame(a3)
 	move.w	(a2)+,attribute(a3)
 	move.w	d4,VRchar(a3)
-	add.w	(a2)+,d4
+	add.w	(a2)+,d4				;vram char size
 	move.w	(a2)+,radiusx(a3)
 	move.w	(a2)+,radiusy(a3)
 	addq.w	#1,a2
@@ -388,9 +388,9 @@ defaultsprites2						;objects which are tied to screen scrolling and have veloci
 	move.b	(a2)+,pflags(a3)
 	adda.w	#SCstruct,a3
 	asl.w	#1,d6
-	move.b	d6,(a1)+
+	move.b	d6,(a1)+				;OOlist seed
 	lsr.w	#1,d6
-	move.w	d6,(a4)+
+	move.w	d6,(a4)+				;OOlistpos
 	addq.w	#1,d6
 	cmp.w	#$10,d6
 	bne.s	.0
@@ -567,7 +567,7 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	move.w	Ypos(a0),d4
 	btst	#sfhor,(sflags).w
 	beq.w	.101
-	move.w	(a0),d4
+	move.w	(a0),d4					;Xpos
 .101								;sort key chosen for this rink
 	move.w	d4,(a1)+				;update ylist
 	adda.w	#SCstruct,a0
@@ -592,7 +592,7 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	move.w	d2,0(a2,d0.w)
 	subq.w	#1,d2
 	move.w	d2,0(a2,d1.w)
-	st	d4
+	st	d4							;flag for incomplete sort
 .1									;next pair
 	dbf	d3,.0						;next adjacent pair
 	tst.w	d4
@@ -642,7 +642,7 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	move.b	(a1)+,(a3)+
 	dbf	d0,.loop
 	movem.l	(sp)+,a1-a3
-	move.l	#tmsize-1,d0
+	move.l	#tmsize-1,d0			;tmsize words = 2 x tmsize bytes (both team structs)
 	movea.w	#(tmstruct-M68K_RAM),a0
 .loop2								;clear the home struct
 	clr.b	(a0)+
@@ -684,7 +684,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 									;team data address (tmdata), and copy the line sets to tmlines (two
 									;layouts by OptLine)
 	move.w	d0,tmteam(a2)
-	movea.w	#TeamList,a0
+	movea.w	#TeamList,a0			;team address table
 	asl.w	#2,d0
 	move.l	0(a0,d0.w),tmdata(a2)
 	tst.w	(OptLine).w
@@ -738,15 +738,15 @@ PeriodOver							;what to do if period over. Branched to from puckfaceoff when t
 	cmpi.w	#3,(gsp).w
 	blt.w	.0						;periods 1-2 done
 	beq.w	.1
-	move.w	#3,(gsp).w
+	move.w	#3,(gsp).w				;overtime done: stay at 3
 	tst.w	(OptPlayMode).w
 	bne.w	.1
-	move.w	#4,(gsp).w
+	move.w	#4,(gsp).w				;regular season: game over after overtime
 .1									;period set for overtime or the end
 	move.w	(HmGoals).w,d0
 	sub.w	(AwGoals).w,d0
-	beq.w	.0
-	move.w	#4,(gsp).w
+	beq.w	.0						;tied: play overtime
+	move.w	#4,(gsp).w				;game over
 .0									;period number set
 	bsr.w	forceblack
 IntermissionStart					;reset the clock, song $79, ticker scores, playoff stats at the end
@@ -796,10 +796,10 @@ Opening								;title screen (newTitleScreen), then into Opening2. Jumped to fro
 Opening2							;reset the stack and clear the variables, then options (GameSetUp,
 									;UserNameEntry), playoff screen and (not in a shootout) ScoutingReport,
 									;then StartGame
-	bsr.w	KillCrowd
+	bsr.w	KillCrowd				;stop the crowd sound
 	move	#$2700,sr
 	movea.w	#(Stack-M68K_RAM),sp
-	movea.w	#(VSCRLPM-M68K_RAM),a0
+	movea.w	#(VSCRLPM-M68K_RAM),a0	;varstart
 .0									;loop
 	clr.l	(a0)+
 	cmpa.w	#(nibblebuffer+8-M68K_RAM),a0	;clear from VSCRLPM up to it
@@ -883,7 +883,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	asl.w	#1,d0
 	adda.w	0(a0,d0.w),a0
 	clr.w	d4
-	move.b	(a0)+,d4
+	move.b	(a0)+,d4				;team count-1
 .top								;each team block
 	bsr.w	printz
 	String	-TXMAP1,0,0
@@ -945,7 +945,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	bsr.w	waitxc1
 	movea.l	#rtss2,a0
 	jsr	(DrawPlayoffSprite).l
-	bsr.w	HandlePlayoffInput
+	bsr.w	HandlePlayoffInput		;page / exit input
 	bra.s	.input
 HandlePlayoffInput					;Read both pads: start leaves PlayoffScreen, right/left set the scroll
 									;step, then falls into UpdatePlayoffScroll
@@ -957,11 +957,11 @@ HandlePlayoffInput					;Read both pads: start leaves PlayoffScreen, right/left s
 	bne.w	PlayoffScreenExit
 	btst	#3,d3
 	beq.w	.nr
-	move.w	#$FFFE,(PlayerScrollCtr).w
+	move.w	#$FFFE,(PlayerScrollCtr).w	;step -2
 .nr									;right handled
 	btst	#2,d3
 	beq.w	UpdatePlayoffScroll
-	move.w	#2,(PlayerScrollCtr).w
+	move.w	#2,(PlayerScrollCtr).w	;step +2
 UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a page boundary
 									;($70). The position is
 									;DispAttribCtr; playoffspritex is the sprite x offset while it is on
@@ -995,7 +995,7 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	swap	d0						;remainder
 	tst.w	d0
 	bne.w	rtss2
-	clr.w	(PlayerScrollCtr).w
+	clr.w	(PlayerScrollCtr).w		;stop
 	rts
 PlayoffScreenExit					;Drop HandlePlayoffInput's return address and return from PlayoffScreen
 	addq.w	#4,sp
@@ -1119,14 +1119,14 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	movea.l	#ScoutTextScript,a1
 	move.w	(PlayerScrollCtr).w,d0
 	bpl.w	.3
-	clr.w	(DispAttribCtr).w
+	clr.w	(DispAttribCtr).w		;column 0
 	move.w	(SelectedPlayerIdx).w,d0
 	addq.w	#2,(SelectedPlayerIdx).w
 	movea.w	#(TestList-M68K_RAM),a0
 	move.w	0(a0,d0.w),d0
 	bpl.w	.1
 	move.w	#$7FFF,(typedelay).w
-	move.w	#$1E0,(screentimer).w
+	move.w	#$1E0,(screentimer).w	;and leave the screen in 480 frames
 	rts
 .1									;d0 >= 0
 	bsr.w	ScrollDisplayUp
@@ -1138,24 +1138,24 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .2									;loop d0 lines
 	dbf	d0,.loop
 	suba.l	a1,a2
-	move.w	a2,d0
+	move.w	a2,d0					;d0 = paragraph offset
 .3									;line start found
 	lea	0(a1,d0.w),a2
 	move.w	#$A,(typedelay).w
 	move.w	(DispAttribCtr).w,d0
-	cmpi.b	#$5F,(a2)
+	cmpi.b	#$5F,(a2)				;'_'
 	beq.w	.29
 	cmpi.b	#$2B,(a2)
 	beq.w	.27
 	cmpi.b	#$24,(a2)
 	beq.w	.20
-	cmpi.b	#$7B,(a2)
+	cmpi.b	#$7B,(a2)				;'{' home team name
 	beq.w	.29
-	cmpi.b	#$7D,(a2)
+	cmpi.b	#$7D,(a2)				;'}' away team name
 	beq.w	.28
-	cmpi.b	#$5B,(a2)
+	cmpi.b	#$5B,(a2)				;'[' home player name
 	beq.w	.23
-	cmpi.b	#$5D,(a2)
+	cmpi.b	#$5D,(a2)				;']' away player name
 	beq.w	.22
 	cmpi.b	#$3C,(a2)
 	beq.w	.16
@@ -1179,9 +1179,9 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	beq.w	.14
 	cmpi.b	#$3B,(a2)
 	beq.w	.15
-	st	(PlayerScrollCtr).w
+	st	(PlayerScrollCtr).w			;assume end of paragraph
 	movea.w	#(TextBuffer-M68K_RAM),a0
-	clr.w	d1
+	clr.w	d1						;word length
 .loop2								;loop
 	cmpi.b	#$D,(a2)
 	beq.w	.print
@@ -1189,9 +1189,9 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .loop3								;loop
 	move.b	(a2),(a0)+
 	addq.w	#1,d1
-	cmpi.b	#$2C,(a2)
+	cmpi.b	#$2C,(a2)				;','
 	beq.w	.4
-	cmpi.b	#$2E,(a2)
+	cmpi.b	#$2E,(a2)				;'.'
 	bne.w	.5
 .4									;slow down after a comma or full stop
 	addi.w	#$28,(typedelay).w
@@ -1202,27 +1202,27 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	beq.s	.loop3
 	subq.w	#1,d0
 	suba.w	a1,a2
-	move.w	a2,(PlayerScrollCtr).w
+	move.w	a2,(PlayerScrollCtr).w	;offset of the next word
 .print								;print the word
 	move.w	d1,(mesarea).w
 	addq.w	#2,(mesarea).w
 	btst	#0,d1
 	beq.w	.7
-	clr.b	(a0)
+	clr.b	(a0)					;pad
 	addq.w	#1,(mesarea).w
 .7									;length rounded to even
 	movea.w	#(mesarea-M68K_RAM),a1
 .loop4								;each line
 	cmp.w	#$1D,d0
 	ble.w	.8
-	bsr.w	ScrollDisplayUp
+	bsr.w	ScrollDisplayUp			;wrap to a new line
 .8									;scrolled when the box is full
 	bsr.w	printz
 	String	-TXMAP1,9,4
 	move.w	(DispAttribCtr).w,d0
-	add.w	d0,(printx).w
+	add.w	d0,(printx).w			;x 9 + column
 	move.w	(VertLineScrolling).w,d0
-	add.w	d0,(printy).w
+	add.w	d0,(printy).w			;y 4 + text line
 	bsr.w	print
 	add.w	d1,(DispAttribCtr).w
 	rts
@@ -1289,7 +1289,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	move.w	tmgoalie(a1),d1
 .roster								;roster of team a1
 	movea.l	tmdata(a1),a1
-	adda.w	(a1),a1
+	adda.w	(a1),a1					;player data
 	bra.w	.26
 .loop5								;skip one player record
 	adda.w	(a1),a1
@@ -1313,10 +1313,10 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	add.w	(a1),d0
 	subq.w	#1,d0
 	move.w	(a1),d1
-	subq.w	#2,d1
+	subq.w	#2,d1					;d1 = chars
 	tst.b	1(a1,d1.w)
 	bne.w	.loop4
-	subq.w	#1,d1
+	subq.w	#1,d1					;less the pad byte
 	bra.w	.loop4
 ScrollDisplayUp						;Next text line for ScoutTextPlayer: VertLineScrolling + 1; at 7 lines,
 									;scroll the 8 rows up by vram dma (DoDMA_nd2)
