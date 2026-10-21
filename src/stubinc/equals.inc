@@ -420,3 +420,35 @@ foattr equ 2						;word: attribute (bit 11 x flip)
 fosize equ 4
 ; PlList: 6 wanted roster players, then their positions
 plpos equ 6
+; Save RAM records, read and written through recordbuf. Each record is a value, its holder, the
+; opponent team and the opponent user (recordbuf, ram_addrs.inc).
+; User record block (TeamRecBase + user * 16)
+urgoals equ 0						;most goals in a game
+urgoalsteam equ 1					;the user's team in that game
+urgoalsopp equ 2					;opponent team
+urgoalsoppuser equ 3				;opponent user
+ursaves equ 4						;most saves in a game
+ursavesteam equ 5
+ursavesopp equ 6
+ursavesoppuser equ 7
+urwins equ 8						;word, high byte first: wins
+urgames equ $A						;word, high byte first: games (stops at 9000)
+urties equ $C						;word, high byte first: ties
+; Crowd record block (CrowdRecBase + team * 16)
+crgoals equ 0						;most goals by the team in a game
+crgoalsuser equ 1					;the user playing the team
+crgoalsopp equ 2					;opponent team
+crgoalsoppuser equ 3				;opponent user
+crsaves equ 4						;most saves by one of its goalies
+crsavesuser equ 5
+crsavesopp equ 6
+crsavesoppuser equ 7
+crpeak equ 8						;loudest crowd (home games)
+crpeakuser equ 9
+crpeakopp equ $A
+crpeakoppuser equ $B
+; Player record (4 bytes, PlayerRecordOffsets)
+prbest equ 0						;best goals (saves for goalies) in a game
+pruser equ 1						;the user playing his team
+propp equ 2							;opponent team
+proppuser equ 3						;opponent user

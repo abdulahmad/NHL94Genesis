@@ -734,7 +734,7 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 	move.w	#$2D7,d7
 	moveq	#0,d0
 	moveq	#4,d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.w	(namelogsel).w,d6
 .loop
 	clr.w	d5
@@ -758,7 +758,7 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 	move.w	#NumTeams-1,d7
 	move.l	#CrowdRecBase,d0
 	moveq	#$10,d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.w	(namelogsel).w,d6
 .loop2
 	clr.w	d5
@@ -805,7 +805,7 @@ WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
 	ext.l	d3
 	add.l	d3,d0
 	moveq	#$10,d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadSRAM).l
 	move.l	a0,-(sp)
 	move.w	#$F,d3
@@ -1137,24 +1137,24 @@ PrintWinRecords						;Record Holders: the rows (PrintRecordName)
 	move.w	#6,d7
 	movea.l	#winsort,a0
 	movea.l	#winpcts,a2
-	movea.l	#ThreeStars,a5
+	movea.l	#recordbuf,a5
 .loop
 	move.w	#2,(printx).w
 	move.b	(a0)+,d0
 	ext.w	d0
 	move.b	0(a2,d0.w),d5
 	asl.w	#4,d0
-	move.b	$A(a5,d0.w),d4
+	move.b	urgames(a5,d0.w),d4
 	lsl.w	#8,d4
-	move.b	$B(a5,d0.w),d4
+	move.b	urgames+1(a5,d0.w),d4
 	move.w	d4,-(sp)
-	move.b	$C(a5,d0.w),d4
+	move.b	urties(a5,d0.w),d4
 	lsl.w	#8,d4
-	move.b	$D(a5,d0.w),d4
+	move.b	urties+1(a5,d0.w),d4
 	move.w	d4,(recties).w
-	move.b	8(a5,d0.w),d4
+	move.b	urwins(a5,d0.w),d4
 	lsl.w	#8,d4
-	move.b	9(a5,d0.w),d4
+	move.b	urwins+1(a5,d0.w),d4
 	move.w	d4,(recwins).w
 	add.w	(recties).w,d4
 	sub.w	(sp),d4
@@ -1220,7 +1220,7 @@ PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordN
 	beq.w	.0
 	movea.l	#recsort2,a0
 .0
-	movea.l	#ThreeStars,a2
+	movea.l	#recordbuf,a2
 .loop
 	move.w	#2,(printx).w
 	move.b	(a0)+,d0
@@ -1229,7 +1229,7 @@ PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordN
 	move.b	0(a2,d0.w),d5
 	cmpi.w	#1,(TempWord1).w
 	beq.w	.1
-	move.b	4(a2,d0.w),d5
+	move.b	ursaves(a2,d0.w),d5
 .1
 	tst.b	d5
 	beq.w	.none
@@ -1241,7 +1241,7 @@ PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordN
 	move.b	0(a2,d0.w),d0
 	bra.w	.3
 .2
-	move.b	4(a2,d0.w),d0
+	move.b	ursaves(a2,d0.w),d0
 .3
 	andi.w	#$FF,d0
 	move.w	#3,d1
@@ -1255,10 +1255,10 @@ PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordN
 	move.w	d0,-(sp)
 	cmpi.w	#1,(TempWord1).w
 	bne.w	.4
-	move.b	1(a2,d0.w),d0
+	move.b	urgoalsteam(a2,d0.w),d0
 	bra.w	.5
 .4
-	move.b	5(a2,d0.w),d0
+	move.b	ursavesteam(a2,d0.w),d0
 .5
 	andi.w	#$FF,d0
 	movea.l	#mesarea,a1
@@ -1270,10 +1270,10 @@ PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordN
 	move.w	(sp)+,d0
 	cmpi.w	#1,(TempWord1).w
 	bne.w	.6
-	move.b	2(a2,d0.w),d0
+	move.b	urgoalsopp(a2,d0.w),d0
 	bra.w	.7
 .6
-	move.b	6(a2,d0.w),d0
+	move.b	ursavesopp(a2,d0.w),d0
 .7
 	andi.w	#$FF,d0
 	bsr.w	AppendTeamName
@@ -1325,18 +1325,18 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 									;(winpcts), games (wingames) and ties (winties), then sort the rows
 									;(winsort)
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	movea.l	#winpcts,a1
 	movea.l	#winties,a6
 	movea.l	#wingames,a5
 	move.w	#7,d7
 .loop
-	move.b	8(a0),d0
+	move.b	urwins(a0),d0
 	lsl.w	#8,d0
-	move.b	9(a0),d0
-	move.b	$A(a0),d1
+	move.b	urwins+1(a0),d0
+	move.b	urgames(a0),d1
 	lsl.w	#8,d1
-	move.b	$B(a0),d1
+	move.b	urgames+1(a0),d1
 	move.w	d1,(a5)+
 	tst.w	d1
 	bne.w	.0
@@ -1347,8 +1347,8 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at ThreeStars
 	divu.w	d1,d0
 .1
 	move.b	d0,(a1)+
-	move.b	$C(a0),(a6)+
-	move.b	$D(a0),(a6)+
+	move.b	urties(a0),(a6)+
+	move.b	urties+1(a0),(a6)+
 	adda.w	#$10,a0
 	dbf	d7,.loop
 	movea.l	#winsort,a1
@@ -1411,7 +1411,7 @@ ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	#TeamRecBase,d0
 	move.l	#$80,d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadSRAM).l
 	movea.l	#recsort1,a1
 	btst	#6,(sflags6).w
@@ -1426,7 +1426,7 @@ ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	addq.w	#1,d0
 	dbf	d7,.loop
 	movea.l	(sp),a1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 .loop2
 	movea.l	(sp),a1
 	move.w	#5,d7
@@ -1442,8 +1442,8 @@ ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	move.b	0(a0,d2.w),d3
 	btst	#6,(sflags6).w
 	beq.w	.1
-	move.b	4(a0,d1.w),d0
-	move.b	4(a0,d2.w),d3
+	move.b	ursaves(a0,d1.w),d0
+	move.b	ursaves(a0,d2.w),d3
 .1
 	cmp.b	d3,d0
 	bge.w	.next

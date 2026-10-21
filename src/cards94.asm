@@ -1231,7 +1231,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	bsr.w	CountPlayers
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	movea.l	#tmstruct,a2
 	move.w	(homegoalies).w,d5
 	move.w	(VisTeam).w,d6
@@ -1250,7 +1250,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	move.w	(VisTeam).w,d2
 	move.w	(homegoalies).w,d6
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	bsr.w	UpdateCrowdRecord
 	movea.l	#AwShots,a1
 	move.w	(awayuser).w,d4
@@ -1259,9 +1259,9 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	move.w	(HomeTeam).w,d2
 	move.w	(awaygoalies).w,d6
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	bsr.w	UpdateCrowdRecord
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.w	(homeuser).w,d1
 	ext.l	d1
 	move.w	(awayuser).w,d2
@@ -1270,7 +1270,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	movea.l	#tmstruct,a1
 	movea.l	#AwShots,a2
 	bsr.w	UpdateTeamRecord
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.w	(awayuser).w,d1
 	ext.l	d1
 	move.w	(homeuser).w,d2
@@ -1290,37 +1290,37 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 	st	d7
 	movem.w	d0,-(sp)
 	clr.w	d0
-	move.b	$A(a0),d0
+	move.b	urgames(a0),d0
 	lsl.w	#8,d0
-	move.b	$B(a0),d0
+	move.b	urgames+1(a0),d0
 	cmp.w	#$2328,d0
 	bge.w	.1
 	addq.w	#1,d0
-	move.b	d0,$B(a0)
+	move.b	d0,urgames+1(a0)
 	lsr.w	#8,d0
-	move.b	d0,$A(a0)
+	move.b	d0,urgames(a0)
 	move.w	tmscore(a1),d0
 	cmp.w	tmscore(a2),d0
 	bgt.w	.0
 	blt.w	.1
 	clr.w	d0
-	move.b	$C(a0),d0
+	move.b	urties(a0),d0
 	lsl.w	#8,d0
-	move.b	$D(a0),d0
+	move.b	urties+1(a0),d0
 	addq.w	#1,d0
-	move.b	d0,$D(a0)
+	move.b	d0,urties+1(a0)
 	lsr.w	#8,d0
-	move.b	d0,$C(a0)
+	move.b	d0,urties(a0)
 	bra.w	.1
 .0
 	clr.w	d0
-	move.b	8(a0),d0
+	move.b	urwins(a0),d0
 	lsl.w	#8,d0
-	move.b	9(a0),d0
+	move.b	urwins+1(a0),d0
 	addq.w	#1,d0
-	move.b	d0,9(a0)
+	move.b	d0,urwins+1(a0)
 	lsr.w	#8,d0
-	move.b	d0,8(a0)
+	move.b	d0,urwins(a0)
 .1
 	movem.w	(sp)+,d0
 	movem.w	d0,-(sp)
@@ -1333,20 +1333,20 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 	ble.w	.2
 	st	d7
 	move.b	d5,(a0)
-	move.b	d3,1(a0)
-	move.b	d4,2(a0)
-	move.b	d2,3(a0)
+	move.b	d3,urgoalsteam(a0)
+	move.b	d4,urgoalsopp(a0)
+	move.b	d2,urgoalsoppuser(a0)
 .2
 	move.w	tmscore(a2),d5
 	move.w	(a2),d6
 	sub.w	d5,d6
-	cmp.b	4(a0),d6
+	cmp.b	ursaves(a0),d6
 	ble.w	.write
 	st	d7
-	move.b	d6,4(a0)
-	move.b	d3,5(a0)
-	move.b	d4,6(a0)
-	move.b	d2,7(a0)
+	move.b	d6,ursaves(a0)
+	move.b	d3,ursavesteam(a0)
+	move.b	d4,ursavesopp(a0)
+	move.b	d2,ursavesoppuser(a0)
 .write
 	bsr.w	WriteTeamRecord
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -1358,9 +1358,9 @@ UpdateCrowdRecord					;Update the crowd records (ReadCrowdRecord, WriteCrowdReco
 	cmp.b	(a0),d3
 	ble.w	.0
 	move.b	d3,(a0)
-	move.b	d4,1(a0)
-	move.b	d5,3(a0)
-	move.b	d2,2(a0)
+	move.b	d4,crgoalsuser(a0)
+	move.b	d5,crgoalsoppuser(a0)
+	move.b	d2,crgoalsopp(a0)
 	st	d7
 .0
 	subq.w	#1,d6
@@ -1377,26 +1377,26 @@ UpdateCrowdRecord					;Update the crowd records (ReadCrowdRecord, WriteCrowdReco
 	move.b	(TempWord1).w,d3
 .1
 	dbf	d6,.loop
-	cmp.b	4(a0),d3
+	cmp.b	crsaves(a0),d3
 	ble.w	.2
 	st	d7
-	move.b	d3,4(a0)
-	move.b	d4,5(a0)
-	move.b	d5,7(a0)
-	move.b	d2,6(a0)
+	move.b	d3,crsaves(a0)
+	move.b	d4,crsavesuser(a0)
+	move.b	d5,crsavesoppuser(a0)
+	move.b	d2,crsavesopp(a0)
 .2
 	cmp.w	(HomeTeam).w,d1
 	bne.w	.3
-	move.b	8(a0),d3
+	move.b	crpeak(a0),d3
 	andi.w	#$FF,d3
 	cmp.w	(CrowdPeak).w,d3
 	bge.w	.3
 	move.w	(CrowdPeak).w,d3
 	st	d7
-	move.b	d3,8(a0)
-	move.b	d4,9(a0)
-	move.b	d5,$B(a0)
-	move.b	d2,$A(a0)
+	move.b	d3,crpeak(a0)
+	move.b	d4,crpeakuser(a0)
+	move.b	d5,crpeakoppuser(a0)
+	move.b	d2,crpeakopp(a0)
 .3
 	tst.w	d7
 	beq.w	.x
@@ -1430,14 +1430,14 @@ UpdatePlayerRecords					;After a game: for the 26 players of team a2, keep each 
 	cmp.b	d3,d4
 	ble.w	.3
 	move.b	d4,(a0)
-	move.b	(homeuser+1).w,1(a0)
-	move.b	(awayuser+1).w,3(a0)
+	move.b	(homeuser+1).w,pruser(a0)
+	move.b	(awayuser+1).w,proppuser(a0)
 	cmpa.l	#tmstruct,a2
 	beq.w	.2
-	move.b	(awayuser+1).w,1(a0)
-	move.b	(homeuser+1).w,3(a0)
+	move.b	(awayuser+1).w,pruser(a0)
+	move.b	(homeuser+1).w,proppuser(a0)
 .2
-	move.b	d6,2(a0)
+	move.b	d6,propp(a0)
 	bsr.w	WritePlayerRecord
 .3
 	addq.w	#1,d0
@@ -1787,13 +1787,13 @@ DrawPlayerCard						;Draw a player card: picture (DrawPictureBox), name, "Record
 	ext.l	d1
 	bsr.w	GetCardPlayer
 	ext.l	d0
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	bsr.w	ReadPlayerRecord
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.b	(a0),d2
-	move.b	1(a0),d3
-	move.b	3(a0),d4
-	move.b	2(a0),d5
+	move.b	pruser(a0),d3
+	move.b	proppuser(a0),d4
+	move.b	propp(a0),d5
 	move.w	#$E,d1
 	move.w	(homegoalies).w,d0
 	tst.w	(cardvis).w
@@ -1867,32 +1867,32 @@ PrintCardRecords					;Player card "Records" column
 	move.w	(VisTeam).w,d1
 .0
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.l	a0,-(sp)
 	jsr	(ReadCrowdRecord).l
 	move.w	#$15,d0
 	move.w	#$E,d1
 	move.b	(a0),d2
-	move.b	1(a0),d3
-	move.b	3(a0),d4
-	move.b	2(a0),d5
+	move.b	crgoalsuser(a0),d3
+	move.b	crgoalsoppuser(a0),d4
+	move.b	crgoalsopp(a0),d5
 	bsr.w	PrintGoalRecordLine
 	movea.l	(sp),a0
 	move.w	#$15,d0
 	move.w	#$12,d1
-	move.b	4(a0),d2
-	move.b	5(a0),d3
+	move.b	crsaves(a0),d2
+	move.b	crsavesuser(a0),d3
 .1
-	move.b	7(a0),d4
-	move.b	6(a0),d5
+	move.b	crsavesoppuser(a0),d4
+	move.b	crsavesopp(a0),d5
 	bsr.w	PrintSaveRecordLine
 	movea.l	(sp)+,a0
 	move.w	#$15,d0
 	move.w	#$16,d1
-	move.b	8(a0),d2
-	move.b	9(a0),d3
-	move.b	$B(a0),d4
-	move.b	$A(a0),d5
+	move.b	crpeak(a0),d2
+	move.b	crpeakuser(a0),d3
+	move.b	crpeakoppuser(a0),d4
+	move.b	crpeakopp(a0),d5
 	bsr.w	PrintCrowdRecordLine
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

@@ -299,6 +299,7 @@ ThirdPBonus equ $FFFFCF30
 HmAwBonus equ $FFFFCF31
 callbackPtr equ $FFFFCF32
 ThreeStars equ $FFFFCF36
+recordbuf equ ThreeStars			;the save RAM record staging buffer (shares ThreeStars)
 teamrecbuf equ $FFFFCFFE			;SRAM team record buffer: the 16 byte record of a team (ReadCrowdRecord),
 									;byte 8 crowd record, byte 9 its name number
 nibblebuffer equ $FFFFD036

@@ -95,18 +95,18 @@ ClearWinRecords						;Clear bytes 8-$B of the 8 ThreeStars records and write the
 									;RecordHoldersScreen
 									;(Record Holders)
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	move.w	#7,d7
 .loop
-	clr.b	8(a0)
-	clr.b	9(a0)
-	clr.b	$A(a0)
-	clr.b	$B(a0)
+	clr.b	urwins(a0)
+	clr.b	urwins+1(a0)
+	clr.b	urgames(a0)
+	clr.b	urgames+1(a0)
 	adda.w	#$10,a0
 	dbf	d7,.loop
 	move.l	#TeamRecBase,d0
 	move.l	#$80,d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(WriteSRAM).l
 	jsr	(MakeSRAMChecksum).l
 	movem.l	(sp)+,d0-d7/a0-a6

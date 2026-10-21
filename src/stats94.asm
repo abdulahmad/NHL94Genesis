@@ -1823,9 +1823,9 @@ PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteL
 	bmi.w	.x
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	8(a0),d0
+	move.b	crpeak(a0),d0
 	bne.w	.gotarena
 	move.b	#$50,d0
 .gotarena
@@ -1845,9 +1845,9 @@ PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteL
 	jsr	(GetLeagueCrowdRecord).l
 	move.w	d0,d1
 	ext.l	d1
-	movea.l	#ThreeStars,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	8(a0),d0
+	move.b	crpeak(a0),d0
 	bne.w	.gotleague
 	move.w	#$50,d0
 .gotleague
