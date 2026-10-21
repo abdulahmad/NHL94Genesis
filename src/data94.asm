@@ -2,6 +2,141 @@
 ;	assigns the pads and sets up each game. It also packs the playoff results into the password
 ;	and the saved line data.
 
+;	Option screen helpers (were in attract94.asm): the playoff level, the matchup team pictures,
+;	setoptions print positions, PickStartingGoalie and the options screen vblank (VBlank_SetOptions).
+
+UpdatePlayoffLevel					;Set pojoy from the number of players for play modes 2 and 3.
+	cmpi.w	#2,(OptPlayMode).w
+	blt.w	rtss2
+	cmpi.w	#4,(OptPlayMode).w
+	beq.w	rtss2
+	moveq	#7,d0
+	tst.w	(FourWayPlay).w
+	beq.w	.set
+	move.w	#$B,d0					;4 way play
+.set	sub.w	(OptNOP).w,d0
+	move.w	d0,(pojoy).w
+	rts
+
+DrawMatchupBitmaps					;Called from PrintOptions. Draw the VisTeam and
+									;HomeTeam bitmaps (DrawTeamBitmap)
+	movem.l	d0-d7/a0-a2,-(sp)
+	cmpi.w	#4,(OptPlayMode).w
+	beq.w	.opt
+	tst.w	(OptPlayMode).w
+	bne.w	.draw
+.opt	move.w	(Opt1team).w,(HomeTeam).w
+	move.w	(Opt2team).w,(VisTeam).w
+.draw	bsr.w	printz
+	String	$BF,7,1,0
+	move.w	(VisTeam).w,d1
+	move.w	d1,d0
+	asl.w	#6,d0					;64 bytes per team
+	movea.l	#TeamPalettes,a0
+	move.l	$26(a0,d0.w),(palfadenew+$26).w
+	move.w	(teambitmapchars).w,d4
+	bsr.w	DrawTeamBitmap
+	bsr.w	printz
+	String	-(TXPRI+TXMAP1),$16,1,0
+	move.w	(HomeTeam).w,d1
+	move.w	d1,d0
+	asl.w	#6,d0					;64 bytes per team
+	movea.l	#TeamPalettes,a0
+	move.l	2(a0,d0.w),(palfadenew+$22).w
+	move.w	#$EEE,(palfadenew+$2A).w
+	move.w	#2,d4
+	bsr.w	DrawTeamBitmap
+	bsr.w	setteams
+	move.w	#$64,(palcount).w
+	movem.l	(sp)+,d0-d7/a0-a2
+	rts
+
+DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
+	clr.w	d0
+	asl.w	#1,d1
+	movea.l	#TeamBitmaps,a0
+	movea.l	a0,a1
+	adda.l	(a0),a0
+	adda.l	jimdata(a1),a1
+	movea.w	#null,a2
+	move.w	(a1),d2
+	moveq	#2,d3
+	moveq	#0,d5
+	bra.w	dobitmap
+
+dotb								;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
+	clr.w	d0
+	asl.w	#1,d1
+	movea.l	#Teamblocksmap,a0
+	movea.l	a0,a1
+	adda.l	(a0),a0
+	adda.l	jimdata(a1),a1
+	movea.w	#null,a2
+	move.w	(a1),d2
+	moveq	#2,d3
+	moveq	#2,d4
+	moveq	#2,d5
+	bra.w	dobitmap
+
+ClearRosterName						;unreferenced. Set the print position, then erase 12 x 2 at it
+	bsr.w	setoptions_printpos2
+	moveq	#$C,d0					;12
+	moveq	#2,d1					;2
+	move.w	#$7FF,d2
+	bra.w	eraser
+
+setoptions_printpos2				;printz position string, then printx = $1A when a2 is the home team
+	bsr.w	printz
+	String	-(TXPRI+TXMAP1),2,$A,0
+	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team struct?
+	bne.w	rtss2
+	move.w	#$1A,(printx).w
+	rts
+
+PickStartingGoalie					;unreferenced. tmgoalie = 0 if a pad has team a2, else (gamelevel <= 2,
+									;line changes on) a value from the team's .godds
+	movem.l	d0/a0,-(sp)
+	clr.w	tmgoalie(a2)
+	bsr.w	FigureJoy
+	cmpa.w	#(tmstruct-M68K_RAM),a2
+	seq	d0
+	ext.w	d0
+	addq.w	#2,d0					;1 for the home team, 2 for the away team
+	cmp.w	(cont1team).w,d0
+	beq.w	.x
+	cmp.w	(cont2team).w,d0
+	beq.w	.x						;a pad has this team: leave tmgoalie(a2) = 0
+	moveq	#0,d0
+	cmpi.w	#2,(gamelevel).w
+	bgt.w	.set
+	tst.w	(OptLine).w
+	bne.w	.set
+	movea.w	#TeamList,a0
+	move.w	(a2),d0
+	asl.w	#2,d0
+	movea.l	0(a0,d0.w),a0			;team block
+	adda.w	GoalieOdds(a0),a0		;GoalieOdds offset: a0 = .godds
+	moveq	#4,d0
+	bsr.w	UnpackNibbles
+	bsr.w	WeightedRandomSelect
+.set	move.w	d0,tmgoalie(a2)
+.x	movem.l	(sp)+,d0/a0
+	rts
+
+VBlank_SetOptions					;VBint handler stored by setoptions: cramfade unless dfng), plus
+									;DumpSprites2 when dfok is set
+	movem.l	d0-d7/a0-a6,-(sp)
+	btst	#dfng,(disflags).w		;dfng
+	bne.w	.nograph
+	bclr	#dfok,(disflags).w		;dfok
+	beq.w	.fade
+	bsr.w	DumpSprites2
+.fade	bsr.w	cramfade
+.nograph	addq.w	#1,(Vcount).w
+	jsr	(p_music_vblank).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rte
+
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
