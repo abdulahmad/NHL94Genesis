@@ -123,7 +123,7 @@ assbench							;player a3 should goto bench
 	btst	#pfteam,pflags(a3)
 	beq.w	.t0
 	adda.w	#tmsize,a0
-.t0									;pfteam clear, or from above
+.t0									;put him on the bench
 	move.w	#$FFFE,tmpdst(a0,d0.w)	;tmpdst: put used player on bench
 	move.b	newpnum(a3),d3
 	bsr.w	.nobench2
@@ -272,7 +272,7 @@ assdopen							;add player a3 to penalty box
 	btst	#pfteam,pflags(a3)
 	beq.w	.1
 	moveq	#1,d0
-.1									;pfteam clear, or from above
+.1									;into the box
 	add.b	d0,(PBnum).w			;Players in penalty box
 	st	position(a3)
 	clr.w	frame(a3)
@@ -291,7 +291,7 @@ assepen								;player a3 should exit penalty area
 	beq.w	.0
 	moveq	#1,d0
 	neg.w	d1
-.0									;pfteam clear, or from above
+.0									;leave the box
 	sub.b	d0,(PBnum).w			;Players in penalty box
 	move.w	d1,Ypos(a3)
 	clr.w	Xvel(a3)
@@ -414,11 +414,11 @@ assstanley							;player a3 skates with stanley cup overhead
 	tst.w	(Hpos).w
 	bpl.w	.0
 	neg.w	temp3(a3)
-.0									;Hpos >= 0, or from above
+.0									;target Y from Vpos
 	move.w	(Vpos).w,temp4(a3)		;temp4 = y from Vpos
 	move.w	#SPAstanley,d1
 	bsr.w	SetSPA
-.nna								;pfna was clear, or from above
+.nna								;skate toward the target
 	move.w	temp3(a3),d0			;face and accelerate toward the target
 	sub.w	(a3),d0
 	move.w	temp4(a3),d1
@@ -497,7 +497,7 @@ assdefo								;player a3 is defensive player on offense
 	beq.w	.nna
 	clr.w	temp1(a3)				;clears temp1 if new assignment
 	move.w	#8,temp2(a3)			;moves 8 into temp2 if new assignment
-.nna								;pfna was clear, or from above
+.nna								;count down the timer
 	sub.b	d7,temp1(a3)			;subtract frames elapsed since last call from temp1
 	bpl.w	.nodec					;temp1 not zero or negative
 	move.b	aioff(a3),temp1(a3)		;Loads aioff into temp1
@@ -518,7 +518,7 @@ assdefo								;player a3 is defensive player on offense
 	btst	#pfgoal,pflags(a3)		;#pfgoal - check which net to score on
 	bne.w	.de1					;branch if top
 	neg.w	d1						;Negates d1- shooting on bottom net
-.de1								;pfgoal set, or from above
+.de1								;puck Y for his end
 	cmp.w	#$5D,d1					;']'   ; slightly above top blueline - checks Y position of puck
 	blt.w	assreplace				;not in offensive zone, change assignment
 	move.w	(puckc).w,d1			;puck carrier (SCnum) into d1
@@ -541,7 +541,7 @@ assdefo								;player a3 is defensive player on offense
 	bne.w	.0						;branch if top net shooting
 	neg.w	d0						;shooting on bottom net, so negate d0 and d1
 	neg.w	d1
-.0									;pfgoal set, or from above
+.0									;coordinates for his end
 	move.w	(puckx).w,d2			;move puckx into d2
 	eor.w	d0,d2					;XOR d0 with d2
 	bmi.w	.2						;branch if puck on the other side of X center
@@ -565,7 +565,7 @@ assdefd								;player a3 is defensive player on defense
 	beq.w	.nna					;branch if no new assignment
 	clr.w	temp1(a3)				;clear temp1
 	move.w	#8,temp2(a3)			;move 8 into temp2
-.nna								;pfna was clear, or from above
+.nna								;count down the timer
 	sub.b	d7,temp1(a3)			;sub frames elapsed from temp1
 	bpl.w	.nodec					;branch if not 0
 	move.b	aidef(a3),temp1(a3)		;move DfA into temp1
@@ -582,11 +582,11 @@ assdefd								;player a3 is defensive player on defense
 	bne.w	.de00					;branch if top
 	neg.w	d1						;negate d1 and d3 if bottom
 	neg.w	d3
-.de00								;pfgoal set, or from above
+.de00								;puck Y for his end
 	tst.w	d3						;check if d3 is zero
 	bpl.w	.de000					;branch if positive
 	clr.w	d3						;clear d3
-.de000								;d3 >= 0, or from above
+.de000								;look-ahead at least 0
 	add.w	d1,d3					;add d1 to d3
 	cmp.w	#Blueline,d3			;'X'   ; compare top blueline to d3
 	blt.w	.de0
@@ -627,7 +627,7 @@ assdefd								;player a3 is defensive player on defense
 	move.w	Yvel(a0),d1				;move Yvel of a0 into d1
 	bmi.w	.gu2					;branch if Yvel was negative
 	clr.w	d1						;clear d1
-.gu2								;d1 negative, or from above
+.gu2								;look-ahead Y (back only)
 	asr.w	#4,d1					;divide d1 by 16
 	add.w	Ypos(a0),d1				;add Ypos of a0 player to d1
 	cmp.w	d0,d1					;compare d0 to d1
@@ -656,7 +656,7 @@ assdefd								;player a3 is defensive player on defense
 	move.w	Yvel(a0),d1				;move Yvel of a0 into d1
 	bpl.w	.gd2					;branch if positive
 	clr.w	d1						;clear d1
-.gd2								;d1 >= 0, or from above
+.gd2								;look-ahead Y (forward only)
 	asr.w	#4,d1					;divide d1 by 16
 	add.w	Ypos(a0),d1				;add Ypos of a0 to d1
 	cmp.w	d0,d1					;compare d0 to d1
@@ -669,7 +669,7 @@ assdefd								;player a3 is defensive player on defense
 	cmp.w	#$BE,d0					;compare 190 dec to d0
 	blt.w	.gd1					;branch if d0 less than
 	move.w	#$DC,d0					;move 220 dec into d0
-.gd1								;d0 < $BE, or from above
+.gd1								;target Y clamped
 	move.w	d0,temp4(a3)			;move d0 into temp4
 	neg.w	temp3(a3)				;negate temp3
 	move.w	(puckx).w,d0			;move puckx into d0
@@ -698,7 +698,7 @@ asswingd							;player a3 is wing on defense
 	beq.w	.nna					;branch if cleared already (no new assignment)
 	clr.w	temp1(a3)				;clear temp1
 	move.w	#8,temp2(a3)			;move 8 into temp2
-.nna								;pfna was clear, or from above
+.nna								;count down the timer
 	sub.b	d7,temp1(a3)			;sub frames elapsed from temp1
 	bpl.w	.nodec					;branch if not 0
 	move.b	aidef(a3),temp1(a3)		;move DfA into temp1
@@ -757,7 +757,7 @@ asswingd							;player a3 is wing on defense
 	move.w	#$108,d2				;move top goal line into d2
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	bgt.w	.z1						;branch if puck in between goal line and blue line
-.dg11								;tmfoside set, or from above
+.dg11								;clamp to the goal line
 	move.w	d2,d1					;move d2 into d1 if puck behind goal line
 .z1									;puck on the other side of center: hold x; else follow the puck x
 	lea	rtss21(pc),a0
