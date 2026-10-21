@@ -1842,7 +1842,7 @@ checkpuckcoll						;look for puck coll with players. a3 = puck. Clears Yvel past
 	move.l	a0,-(sp)				;push on stack
 	movea.l	#.cbg,a0
 	clr.w	d0
-	move.b	$68(a2),d0				;move Agl into d0
+	move.b	legstr(a2),d0			;move Agl into d0
 	btst	#1,(sflags8).w			;check if cwd meter broken (always is)
 	bne.w	.boost
 	btst	#6,(sflags7).w			;check if crowd meter currently broken
