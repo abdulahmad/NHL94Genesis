@@ -600,7 +600,7 @@ checksso							;do graphics for sso structure: arrows for the players when they 
 	movea.w	#(sso-M68K_RAM),a3
 	move.w	#SPFarrow,d3			;frame numbers are 6 higher than 92
 	bsr.w	.ca
-	adda.w	#$1C,a0					;ffosize
+	adda.w	#ffosize,a0				;next pad object
 	adda.w	#ssosize,a3				;ssosize
 	move.w	#SPFarrow+3,d3
 	bsr.w	.ca
@@ -727,7 +727,7 @@ setffo								;draw the 7 objects tied to icerink scrolling (gloves and pads), m
 	add.w	d1,6(a0)				;sprite 1 x
 	add.w	d1,$E(a0)
 .next								;next object
-	adda.w	#$1C,a3					;move to next struct
+	adda.w	#ffosize,a3				;move to next struct
 	dbf	d0,.top
 	rts
 uppads								;update the gloves object and the 6 pad objects, and queue new pad labels
@@ -781,7 +781,7 @@ uppads								;update the gloves object and the 6 pad objects, and queue new pad
 	bsr.w	QueuePadLabel
 .next								;next pad
 	lsr.w	#4,d3
-	adda.w	#$1C,a0
+	adda.w	#ffosize,a0
 	addq.w	#2,a1
 	dbf	d4,.top
 	rts

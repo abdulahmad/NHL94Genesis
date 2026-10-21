@@ -77,6 +77,7 @@ VRchar equ $12						;vram char for graphic
 Ypos equ $14
 Zpos equ $18
 OldXpos equ $1C
+ffosize equ OldXpos					;field objects tied to icerink scrolling (pads), OldXpos bytes each (92G)
 OldYpos equ $20
 OldZpos equ $24
 Xvel equ $28
