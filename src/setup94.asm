@@ -681,30 +681,31 @@ setteams							;Use hometeam/visteam to set team structures (InitTeamStructure f
 	movem.l	(sp)+,d0/a0-a2			;restore
 	rts								;return
 InitTeamStructure					;Set up team struct a2 for team d0: store the team number (tmteam), the
-									;team data address (tmdata), and copy the line sets to tmlines (two
-									;layouts by OptLine)
+									;team data address (tmdata), and copy 7 of the 8 line sets to tmlines.
+									;OptLine Off / Auto: line 1 (the no-line-change line) and lines 3-8;
+									;On: lines 2-8
 	move.w	d0,tmteam(a2)			;team number
 	movea.w	#TeamList,a0			;team address table
 	asl.w	#2,d0					;long index
 	move.l	0(a0,d0.w),tmdata(a2)	;team data address
-	tst.w	(OptLine).w				;line layout option
+	tst.w	(OptLine).w				;line changes On (0)?
 	beq.w	.0
 	movea.l	tmdata(a2),a0			;team data
 	adda.w	LineSets(a0),a0			;its line sets
 	lea	tmlines(a2),a1				;destination
-	move.l	(a0)+,(a1)+				;first two lines
+	move.l	(a0)+,(a1)+				;line 1: the no-line-change line
 	move.l	(a0)+,(a1)+
-	addq.w	#8,a0					;skip the next 8 bytes
-	move.w	#$B,d0					;12 more longs
+	addq.w	#8,a0					;skip line 2 (Sc1)
+	move.w	#$B,d0					;lines 3-8
 .loop								;copy the line data
 	move.l	(a0)+,(a1)+
 	dbf	d0,.loop					;next long
 	rts								;return
-.0									;OptLine = 0
+.0									;line changes On: lines 2-8
 	moveq	#$D,d0					;14 longs
 	movea.l	tmdata(a2),a0			;team data
 	adda.w	LineSets(a0),a0			;its line sets
-	addq.w	#8,a0					;skip the first 8 bytes
+	addq.w	#8,a0					;skip line 1 (the no-line-change line)
 	lea	tmlines(a2),a1				;destination
 .copy								;copy the default lines
 	move.l	(a0)+,(a1)+
