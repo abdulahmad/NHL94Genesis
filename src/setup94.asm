@@ -693,7 +693,7 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	adda.w	LineSets(a0),a0			;its line sets
 	lea	tmlines(a2),a1				;destination
 	move.l	(a0)+,(a1)+				;first two lines
-	move.l	(a0)+,(a1)+				;
+	move.l	(a0)+,(a1)+
 	addq.w	#8,a0					;skip the next 8 bytes
 	move.w	#$B,d0					;12 more longs
 .loop								;copy the line data
