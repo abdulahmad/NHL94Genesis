@@ -140,9 +140,9 @@ AllStarsEast						;ASE
 	String	'All Stars East'
 .ta									;abbreviation
 	String	'ASE'
-.tm									;nickname.
+.tm									;nickname
 	dc.w	2						;empty String
-.ar									;arena.
+.ar									;arena
 	String	'Madison Square Garden'
 
 AllStarsWest						;ASW
@@ -196,9 +196,9 @@ AllStarsWest						;ASW
 	Player	'Steve Smith',				05B4,4344,4641,5244
 	Player	'Steve Chiasson',			0394,3444,3641,4234
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'All Stars West'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'ASW'
 .tm									;nickname
 	dc.w	2
@@ -256,9 +256,9 @@ Boston								;BOS
 	Player	'Glen Feathrston',			06B3,3222,4823,2324
 	Player	'Jim Wiemer',				36A2,1221,2820,2324
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Boston'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'BOS'
 .tm									;nickname
 	String	'Bruins'
@@ -316,9 +316,9 @@ Buffalo								;BUF
 	Player	'Randy Moller',				24A3,2212,3921,1124
 	Player	'Keith Carney',				0692,3212,3622,1424
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Buffalo'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'BUF'
 .tm									;nickname
 	String	'Sabres'
@@ -376,9 +376,9 @@ Calgary								;CGY
 	Player	'Alexnder Godynyuk',		21A2,3222,3822,3512
 	Player	'Greg Smyth',				06A0,0100,1901,1404
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Calgary'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'CGY'
 .tm									;nickname
 	String	'Flames'
@@ -436,9 +436,9 @@ Chicago								;CHI
 	Player	'Cam Russell',				0853,3132,3431,3524
 	Player	'Adam Bennett',				4792,2111,2520,1412
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Chicago'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'CHI'
 .tm									;nickname
 	String	'Blackhawks'
@@ -496,9 +496,9 @@ Detroit								;DET
 	Player	'Steve Konroyd',			0883,3232,4421,3233
 	Player	'Brad McCrimmon',			0283,2242,4610,3133
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Detroit'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'DET'
 .tm									;nickname
 	String	'Red Wings'
@@ -556,9 +556,9 @@ Edmonton							;EDM
 	Player	'Chris Joseph',				02A3,3313,3531,1233
 	Player	'Brad Werenka',				3693,3223,2633,2523
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Edmonton'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'EDM'
 .tm									;nickname
 	String	'Oilers'
@@ -616,9 +616,9 @@ Hartford							;HFD
 	Player	'Randy Ladouceur',			29B3,3131,2421,3514
 	Player	'Allen Pedersen',			41A2,3132,3621,2123
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Hartford'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'HFD'
 .tm									;nickname
 	String	'Whalers'
@@ -676,9 +676,9 @@ LosAngeles							;LA
 	Player	'Tim Watters',				0562,2121,2620,2122
 	Player	'Rene Chapdlaine',			0881,1010,1510,1313
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Los Angeles'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'LA'
 .tm									;nickname
 	String	'Kings'
@@ -736,9 +736,9 @@ Dallas								;DAL (formerly the Minnesota North Stars)
 	Player	'Brad Berry',				0572,2032,3420,3514
 	Player	'Enrico Ciccone',			3991,1022,2820,3525
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Dallas'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'DAL'
 .tm									;nickname
 	String	'Stars'
@@ -796,9 +796,9 @@ Montreal							;MTL
 	Player	'Sean Hill',				3882,2222,3521,2314
 	Player	'Donald Dufresne',			3492,2122,3921,2313
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Montreal'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'MTL'
 .tm									;nickname
 	String	'Canadiens'
@@ -856,9 +856,9 @@ NewJersey							;NJ
 	Player	'Tommy Albelin',			0673,2232,2230,3322
 	Player	'Myles O''Connor',			0571,1011,1210,1303
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'New Jersey'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'NJ'
 .tm									;nickname
 	String	'Devils'
@@ -916,9 +916,9 @@ NYIslanders							;NYI
 	Player	'Dennis Vaske',				37A1,1212,2611,1113
 	Player	'Richard Pilon',			4793,3123,3821,2515
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'New York'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'NYI'
 .tm									;nickname
 	String	'Islanders'
@@ -976,9 +976,9 @@ NYRangers							;NYR
 	Player	'Jay Wells',				24A2,2222,3620,2124
 	Player	'Joe Cirella',				06A3,3223,2922,3323
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'New York'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'NYR'
 .tm									;nickname
 	String	'Rangers'
@@ -1036,9 +1036,9 @@ Ottawa								;OTW
 	Player	'Gord Dineen',				0681,1221,2311,2513
 	Player	'Brad Marsh',				14B2,2031,3610,2522
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Ottawa'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'OTW'
 .tm									;nickname
 	String	'Senators'
@@ -1096,9 +1096,9 @@ Philadelphia						;PHI
 	Player	'Gord Hynes',				2642,2221,3222,2522
 	Player	'Shawn Cronin',				44A1,1111,2C13,1513
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Philadelphia'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'PHI'
 .tm									;nickname
 	String	'Flyers'
@@ -1156,9 +1156,9 @@ Pittsburgh							;PIT
 	Player	'Grant Jennings',			0392,2132,3820,2313
 	Player	'Bryan Fogarty',			3381,1211,2220,1011
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Pittsburgh'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'PIT'
 .tm									;nickname
 	String	'Penguins'
@@ -1216,9 +1216,9 @@ Quebec								;QUE
 	Player	'Mikhail Tatarinov',		0483,3225,4641,2443
 	Player	'Craig Wolanin',			0692,2221,2811,2114
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Quebec'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'QUE'
 .tm									;nickname
 	String	'Nordiques'
@@ -1276,9 +1276,9 @@ SanJose								;SJ
 	Player	'Peter Ahola',				2192,2132,3621,3422
 	Player	'Rob Zettler',				0272,2132,2430,3434
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'San Jose'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'SJ'
 .tm									;nickname
 	String	'Sharks'
@@ -1336,9 +1336,9 @@ StLouis								;STL
 	Player	'Curt Giles',				0253,2131,2220,3312
 	Player	'Murray Baron',				34A3,3122,2621,2513
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'St. Louis'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'STL'
 .tm									;nickname
 	String	'Blues'
@@ -1396,9 +1396,9 @@ TampaBay							;TB
 	Player	'Chris Lipuma',				4061,1211,0210,1114
 	Player	'Matt Hervey',				2691,1211,2910,1304
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Tampa Bay'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'TB'
 .tm									;nickname
 	String	'Lightning'
@@ -1456,9 +1456,9 @@ Toronto								;TOR
 	Player	'Sylvain Lefebvre',			0292,2131,3420,4433
 	Player	'Bob McGill',				0882,2023,3523,2324
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Toronto'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'TOR'
 .tm									;nickname
 	String	'Maple Leafs'
@@ -1516,9 +1516,9 @@ Vancouver							;VAN
 	Player	'Dana Murzyn',				0592,3234,4621,4424
 	Player	'Robert Dirk',				22B2,2132,3632,3324
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Vancouver'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'VAN'
 .tm									;nickname
 	String	'Canucks'
@@ -1576,9 +1576,9 @@ Winnipeg							;WPG
 	Player	'Dean Kennedy',				2692,2132,3320,4423
 	Player	'Randy Carlyle',			0892,2122,3621,2522
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Winnipeg'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'WPG'
 .tm									;nickname
 	String	'Jets'
@@ -1635,9 +1635,9 @@ Washington							;WSH
 	Player	'Jason Woolley',			2562,2111,2220,1212
 	Player	'Rod Langway',				05B3,2022,3230,2323
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Washington'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'WSH'
 .tm									;nickname
 	String	'Capitals'
@@ -1687,9 +1687,9 @@ Florida								;FLA
 	Player	'Milan Tichy',				4383,2112,3821,2224
 	Player	'Stephane Richer',			2593,3333,3332,3322
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Florida'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'FLA'
 .tm									;nickname
 	String	'Panthers'
@@ -1740,9 +1740,9 @@ Anaheim								;ANH
 	Player	'Bobby Dollas',				32B2,1121,2110,2111
 	Player	'Dennis Vial',				17B1,1121,3810,2113
 	dc.w	2
-.tn									;team name
+.tn									;city
 	String	'Anaheim'
-.ta									;team abbreviation
+.ta									;abbreviation
 	String	'ANH'
 .tm									;nickname
 	String	'Mighty Ducks'
