@@ -13,7 +13,7 @@ check4bench							;check if player a3 should go to bench
 	bpl.w	.0
 	tst.b	newpnum(a3)
 	bmi.s	rtss3
-.0
+.0									;a line change is pending (new position, or a new player number)
 	move.b	newpnum(a3),d0			;new player number differs from current -> go to the bench; else only
 									;change position
 	cmp.b	pnum(a3),d0
@@ -29,7 +29,7 @@ check4bench							;check if player a3 should go to bench
 	clr.w	temp1(a3)
 	move.l	#$B,d0					;assbench
 	bra.w	assreplace
-.samepl
+.samepl								;same player: no trip to the bench, take the new position here
 	addq.w	#4,sp					;drop return address (takes over the assignment); apply new position now
 	bclr	#pf2unav,pflags2(a3)
 	bclr	#pfnc,pflags(a3)
@@ -39,7 +39,7 @@ check4bench							;check if player a3 should go to bench
 	tst.b	newpos(a3)
 	bpl.w	.1
 	jmp	Setplass
-.1
+.1									;newpos set: use it as the position
 	move.b	newpos(a3),d0
 	ext.w	d0
 	move.w	d0,position(a3)
@@ -61,13 +61,14 @@ assbench							;player a3 should goto bench
 	btst	#pfteam,pflags(a3)
 	bne.w	.0
 	neg.w	d0
-.0									;pfteam set, or from above
+.0									;d0 = bench y: +80 away, -80 home
 	move.w	d0,temp4(a3)
 	move.w	#$88,temp3(a3)
 	neg.w	temp3(a3)
 	subq.w	#8,temp3(a3)			;temp3 = bench x
 	clr.w	temp1(a3)
-.nna								;pfna was clear, or from above
+.nna								;every call: same player only changes position; otherwise skate to the
+									;bench door
 	move.b	newpnum(a3),d0			;same player? just change position
 	cmp.b	pnum(a3),d0
 	beq.w	.nobench				;same player, just change position
@@ -88,14 +89,15 @@ assbench							;player a3 should goto bench
 	tst.w	position(a3)
 	bne.w	.gli
 	move.w	#SPAgready,d1
-.gli
+.gli								;close to the door: glide (goalie: ready) and turn to face the bench
 	bsr.w	SetSPA					;glide (goalie: ready) animation
 	bset	#pfnc,pflags(a3)
 	cmpi.w	#4,facedir(a3)
 	beq.w	.ok
 	addq.w	#1,facedir(a3)			;turn toward the bench
 	andi.w	#7,facedir(a3)
-.ok
+.ok									;facing the bench: slide left, at the door hop the boards (wall animation,
+									;door flag 100)
 	clr.w	Yvel(a3)
 	move.w	#$F800,Xvel(a3)
 	cmp.w	#$10,d0
@@ -109,9 +111,9 @@ assbench							;player a3 should goto bench
 	bsr.w	SetSPA
 	bset	#pfalock,pflags(a3)
 	move.w	#$64,temp1(a3)			;100
-.x									;exit (also the end of the code above)
+.x									;return; skating continues next call
 	rts
-.done
+.done								;door flag 100: the wall animation is over, swap in the new player
 	clr.w	frame(a3)				;at the bench door: mark this roster slot on the bench (tmpdst -2),
 									;install the new player (d3)
 	clr.w	d0
@@ -126,14 +128,15 @@ assbench							;player a3 should goto bench
 	move.b	newpnum(a3),d3
 	bsr.w	.nobench2
 	jmp	setplayer
-.nodec
+.nodec								;not at the door yet: keep skating to temp3/temp4 (unless pfnc stops the
+									;skating)
 	btst	#pfnc,pflags(a3)
 	bne.s	.x
 	move.w	temp3(a3),d0
 	move.w	temp4(a3),d1
 	movea.l	#EvadePC,a0
 	bra.w	skateto
-.nobench
+.nobench							;same player: just take the new position, no bench trip
 	bclr	#pf2unav,pflags2(a3)
 .nobench2							;local subroutine
 	move.b	newpos(a3),d0			;position = newpos; clear newpos and newpnum
@@ -156,7 +159,7 @@ asseben								;Player a3 should exit the bench area
 	subq.w	#6,d0
 	bmi.w	.0
 	addq.w	#1,d0
-.0									;d0 negative, or from above
+.0									;d0 = bench seat: home SCnum - 6 (negative), away SCnum - 5
 	muls.w	#$E,d0
 	move.w	d0,Ypos(a3)
 	move.w	#$88,(a3)
@@ -165,7 +168,7 @@ asseben								;Player a3 should exit the bench area
 	bset	#pfalock,pflags(a3)
 	move.w	#SPAwallright,d1
 	bra.w	SetSPA
-.nna								;pfna was clear
+.nna								;wall animation over: face the rink and skate out
 	move.w	#4,facedir(a3)			;after the wall animation
 	bclr	#pfnc,pflags(a3)
 	bclr	#pf2npc,pflags2(a3)		;pf2npc
@@ -190,12 +193,12 @@ asspenalty							;player a3 should goto penalty box
 	bne.w	.0						;branch if away
 	lsr.w	#4,d1					;shift 4 bits to get Home players in PB
 	neg.w	d0						;make d0 negative (different box)
-.0									;pfteam set, or from above
+.0									;d0 = box side (-11 home, 11 away), d1 = that team's players in the box
 	andi.w	#$F,d1					;pass the first 4 bits of d1 (the team's player total in PB)
 	cmp.w	#2,d1					;compare to 2
 	bls.w	.1						;branch if less than (1 player in box or less)
 	moveq	#2,d1					;add 2 if more than 1 player in box
-.1									;d1 <= 2, or from above
+.1									;seat 3 to 5 by the number of players already in the box
 	addq.w	#3,d1					;add 3 to d1
 	muls.w	d0,d1					;mult d0 with d1, store result in d1
 	move.w	d1,temp4(a3)			;move d1 into temp4 (skateto YPos)
@@ -204,7 +207,7 @@ asspenalty							;player a3 should goto penalty box
 	bset	#pf2npc,pflags2(a3)		;set bit for no player collision
 	clr.w	Wallcos(a3)				;clear wallCos (angle of last collision)
 	clr.w	Wallsin(a3)				;clear wallSin (angle of last collision)
-.nna								;pfna was clear, or from above
+.nna								;every call: at the box door turn and hop in, else skate on (.st)
 	move.w	Ypos(a3),d0				;Current Ypos of player
 	sub.w	temp4(a3),d0			;sub temp4 (Y pos to skate to) from Ypos
 	cmp.w	#$C,d0					;compare to 13 decimal
@@ -226,12 +229,13 @@ asspenalty							;player a3 should goto penalty box
 	tst.b	handed(a3)
 	beq.w	.left
 	moveq	#2,d2
-.left
+.left								;turn one step a frame toward the box (6 left handed, 2 right handed)
 	cmp.w	facedir(a3),d2			;turn one step toward d2
 	beq.w	.ok
 	addq.w	#1,facedir(a3)
 	andi.w	#7,facedir(a3)
-.ok
+.ok									;slide into the box; when stopped and facing it, hop the boards and go to
+									;assdopen
 	clr.w	Yvel(a3)
 	move.w	#$1000,Xvel(a3)
 	cmp.w	#$FFF8,d0
@@ -246,7 +250,7 @@ asspenalty							;player a3 should goto penalty box
 	bclr	#pf2pen,pflags2(a3)		;pf2pen
 	move.l	#$D,d0					;assdopen
 	bra.w	assreplace
-.st
+.st									;not at the box yet: skate to temp3/temp4
 	move.w	temp3(a3),d0
 	move.w	temp4(a3),d1
 	movea.l	#rtss2,a0
@@ -354,19 +358,19 @@ assfaceoffpl						;Face off player
 	bclr	#pfna,pflags(a3)
 	beq.w	.nna
 	clr.w	temp1(a3)
-.nna								;pfna was clear, or from above
+.nna								;every call: set the big faceoff sprite frame for this team
 	movea.l	#fofdata2,a0			;a0 = fofdata2 (home) or +4 (visitor): big faceoff sprite data
 	btst	#pfteam,pflags(a3)
 	beq.w	.0
 	addq.w	#4,a0
-.0									;pfteam clear, or from above
+.0									;a0 = this team's big sprite entry (visitor +4)
 	move.w	SPAnum(a3),d0			;d0 = SPAnum/4 + 1, +3 for right handed: frame code for the big sprite
 	lsr.w	#2,d0
 	addq.w	#1,d0
 	tst.b	handed(a3)
 	bne.w	.lefty
 	addq.w	#3,d0
-.lefty
+.lefty								;store the frame; computer players also start the faceoff stance once
 	move.w	d0,(a0)
 	btst	#pfjoycon,pflags(a3)
 	bne.w	.exit2
@@ -380,7 +384,7 @@ assfaceoffpl						;Face off player
 	tst.w	d0
 	beq.w	.d
 	move.w	#SPAfaceoffr,d1
-.d
+.d									;one in 8 computer centers takes the alternate stance (SPAfaceoffr)
 	bset	#pf2aip,pflags2(a3)
 	bra.w	SetSPA
 .exit								;shared exit of assfaceoffpl
@@ -437,9 +441,9 @@ assscore							;player a3 celebrates, if scoring player then do arm pump
 	tst.w	(Hpos).w
 	bpl.w	.0
 	neg.w	temp3(a3)
-.0									;Hpos >= 0, or from above
+.0									;temp4 = Vpos; celebrate where the camera is
 	move.w	(Vpos).w,temp4(a3)
-.nna								;pfna was clear, or from above
+.nna								;every call: in a shootout hold the skater until shootoutdelay runs out
 	movea.l	#rtss2,a0
 	move.w	temp3(a3),d0
 	move.w	temp4(a3),d1
@@ -450,14 +454,16 @@ assscore							;player a3 celebrates, if scoring player then do arm pump
 	subq.w	#1,(shootoutdelay).w
 	bne.w	.chkx
 	bset	#sf2drec,(sflags2).w
-.chkx								;shootoutdelay = 0 or shootoutdelay <> 0, or from above
+.chkx								;shootout: skater near the middle (x within -$88..$88) stays on the center
+									;line
 	cmpi.w	#$88,(a3)
 	bgt.w	.3
 	cmpi.w	#$FF78,(a3)
 	bgt.w	.noso
-.3									;a3 > $88, or from above
+.3									;outside that band: y = 0
 	clr.w	d1						;end of new code
-.noso
+.noso								;celebration timer: when it runs out start a new celebrate (pump for the
+									;scorer)
 	sub.w	d7,temp1(a3)
 	bpl.w	.ckcon
 	bset	#pfalock,pflags(a3)
@@ -466,14 +472,14 @@ assscore							;player a3 celebrates, if scoring player then do arm pump
 	cmp.w	SCnum(a3),d0
 	bne.w	.nopump
 	move.w	#SPApump,d1
-.nopump
+.nopump								;shooter or not: set the animation and a new random time
 	bsr.w	SetSPA
 .1									;local subroutine
 	moveq	#$78,d0					;120
 	bsr.w	randomd0
 	move.w	d0,temp1(a3)
 	rts
-.ckcon
+.ckcon								;timer still running: computer players skate to the spot
 	btst	#pfjoycon,pflags(a3)
 	beq.w	skateto
 rtss6								;shared rts for the early exits nearby
@@ -501,9 +507,10 @@ assdefo								;player a3 is defensive player on offense
 	beq.w	.noboost				;branch if not
 	tst.b	temp1(a3)				;check if temp1 is 0
 	beq.w	.noboost				;branch if so
-.boost
+.boost								;goalie pulled, or crowd meter broken: temp1 one lower (probably a quicker
+									;reaction)
 	subq.b	#1,temp1(a3)			;sub 1 from temp1
-.noboost
+.noboost							;switch to assdefd when offside, then pick the spot by the puck carrier
 	move.l	#2,d0					;assdefd
 	btst	#tmfoside,tmflags(a2)	;check if team is offsides
 	bne.w	assreplace				;if so, assreplace
@@ -521,13 +528,14 @@ assdefo								;player a3 is defensive player on offense
 	subq.w	#6,d2					;sub 6 from d2
 	eor.w	d2,d1					;EOR d2 with d1
 	bmi.w	assreplace				;ass replace if puckc not on same team
-.nodec
+.nodec								;no carrier or our team has the puck: hold the blue line (x 80 to the side
+									;of the position)
 	lea	EvadePC(pc),a0				;EvadePC, extra collision routine for skateto
 	moveq	#$50,d0					;'P'   ; move 80 dec into d0
 	cmpi.w	#2,position(a3)			;position(a3) - checks that player is RD
 	beq.w	.1						;branch if RD
 	neg.w	d0						;player is LD, so negates d0
-.1
+.1									;d0 = x for RD (+80) or LD (-80); d1 = just inside the blue line
 	move.w	#$62,d1					;'b'   ; just inside of blueline
 	btst	#pfgoal,pflags(a3)		;#pfgoal
 	bne.w	.0						;branch if top net shooting
@@ -539,7 +547,7 @@ assdefo								;player a3 is defensive player on offense
 	bmi.w	.2						;branch if puck on the other side of X center
 	move.w	(puckx).w,d0			;move puckx to d0
 	bra.w	skateto					;d0/d1 are x/y positions, a0 is extra collision routine
-.2
+.2									;puck on our side of center: move half way toward it
 	move.w	(puckx).w,d2			;move puckx into d2
 	asr.w	#1,d2					;divide by 2
 	add.w	d2,d0					;add d2 to d0
@@ -566,7 +574,7 @@ assdefd								;player a3 is defensive player on defense
 	tst.b	temp1(a3)				;check if temp1 is 0
 	beq.w	.noboost				;branch if so
 	subq.b	#1,temp1(a3)			;sub 1 from temp1
-.noboost
+.noboost							;defenseman: shadow the puck, using its y velocity to lead it
 	move.w	(pucky).w,d1			;move pucky into d1
 	move.w	(puckvy).w,d3			;move puckvy into d3
 	asr.w	#6,d3					;divide by 64
@@ -594,23 +602,24 @@ assdefd								;player a3 is defensive player on defense
 	subq.w	#6,d2					;sub 6 from d2
 	eor.w	d2,d1					;EOR d2 and d1
 	bpl.w	assreplace				;assreplace if puckc on same team
-.de0
+.de0								;other team has the puck: guard x 65 to our side
 	move.w	#$41,temp3(a3)			;'A' ; move 65 dec into temp3
 	cmpi.w	#2,position(a3)			;compare if player is RD
 	beq.w	.de1					;branch if RD
 	neg.w	temp3(a3)				;negate temp3 if LD
-.de1
+.de1								;a0 = the opposing team's players (home 0-5, away 6-11)
 	movea.w	#(SortCords-M68K_RAM),a0	;move SC struct start into a0
 	cmpi.w	#6,SCnum(a3)			;compare 6 with player SCnum
 	bge.w	.de2					;branch if away team
 	adda.w	#6*SCstruct,a0			;add 300 to a0 (start at away SC Struct)
-.de2
+.de2								;find the deepest opponent (d2 = 5..0, start d0 = -1000 or 1000)
 	moveq	#5,d2					;move 5 into d2
 	move.w	#$FC18,d0				;move -1000 dec into d0
 	btst	#pfgoal,pflags(a3)		;check what net shooting at
 	beq.w	.gdwn					;branch if bottom net
 	neg.w	d0						;negate d0
-.gup
+.gup								;d0 = the smallest opponent y (led by Yvel / 16) when we shoot at the top
+									;net
 	btst	#pf2unav,pflags2(a0)	;check if a0 player unavailable
 	bne.w	.gu0					;branch if so
 	tst.w	position(a0)			;check a0 position
@@ -624,14 +633,14 @@ assdefd								;player a3 is defensive player on defense
 	cmp.w	d0,d1					;compare d0 to d1
 	bgt.w	.gu0					;branch if d1 is greater
 	move.w	d1,d0					;move d1 into d0
-.gu0
+.gu0								;next opponent
 	adda.w	#SCstruct,a0			;add 80 (offset to next player struct) to a0
 	dbf	d2,.gup						;loop
 	subi.w	#$32,d0					;'2'   ; sub $32 (50 dec) from d0
 	cmp.w	#$FF42,d0				;compare to $FF42 (-190 dec)
 	bgt.w	.gu1					;branch if greater than
 	move.w	#$FF24,d0				;move -220 dec into d0
-.gu1
+.gu1								;temp4 = guard y; if the puck is across center, stay in the middle (x 0)
 	move.w	d0,temp4(a3)			;move d0 into temp4
 	move.w	(puckx).w,d0			;move puckx into d0
 	move.w	temp3(a3),d1			;move temp3 into d1
@@ -653,7 +662,7 @@ assdefd								;player a3 is defensive player on defense
 	cmp.w	d0,d1					;compare d0 to d1
 	blt.w	.gd0					;branch if less than d0
 	move.w	d1,d0					;move d1 into d0
-.gd0
+.gd0								;next opponent (bottom net: d0 = the largest y)
 	adda.w	#SCstruct,a0			;add offset to next player struct
 	dbf	d2,.gdwn					;loop
 	addi.w	#$32,d0					;'2'   ; add 32 to d0
@@ -668,7 +677,7 @@ assdefd								;player a3 is defensive player on defense
 	eor.w	d0,d1					;EOR d0 and d1
 	bpl.w	.nodec					;branch if puck on same side
 	clr.w	temp3(a3)				;clear temp3 if not
-.nodec
+.nodec								;skate to the guard spot with collision avoidance, then try a check
 	move.w	temp3(a3),d0			;move temp3 to d0
 	move.w	temp4(a3),d1			;move temp4 to d1
 	movea.l	#EvadePC,a0				;EvadePC to a0
@@ -698,7 +707,7 @@ asswingd							;player a3 is wing on defense
 	tst.b	temp1(a3)				;check if temp1 is 0
 	beq.w	.noboost				;branch if 0
 	subq.b	#1,temp1(a3)			;sub 1 from temp1
-.noboost
+.noboost							;if our team has the puck, switch to asswingo
 	move.w	(puckc).w,d1			;move puckc into d1
 	bmi.w	.nodec					;branch if no puck carrier
 	move.l	#4,d0					;asswingo into d0
@@ -707,12 +716,12 @@ asswingd							;player a3 is wing on defense
 	subq.w	#6,d2					;sub 6 from d2
 	eor.w	d2,d1					;EOR d2 with d1. Checks if player on same team
 	bpl.w	assreplace				;branch if team has puck
-.nodec
+.nodec								;defending: x 100 to the wing side, y below our blue line
 	moveq	#$64,d0					;'d'   ; move 64 (100 dec) into d0
 	cmpi.w	#5,position(a3)			;check if player is RW
 	bne.w	.1						;branch if not
 	neg.w	d0						;make d0 negative
-.1
+.1									;d1 = blue line + 70 for the side we defend
 	move.l	#$9E,d1					;move $9E into d1 (blueline + 70 dec)
 	btst	#pfgoal,pflags(a3)		;check which goal shooting at
 	beq.w	.0						;branch if bottom goal
@@ -750,7 +759,7 @@ asswingd							;player a3 is wing on defense
 	bgt.w	.z1						;branch if puck in between goal line and blue line
 .dg11								;tmfoside set, or from above
 	move.w	d2,d1					;move d2 into d1 if puck behind goal line
-.z1
+.z1									;puck on the other side of center: hold x; else follow the puck x
 	lea	rtss21(pc),a0
 	move.w	(puckx).w,d2			;move puckx into d2
 	eor.w	d0,d2					;EOR d0 and d2
