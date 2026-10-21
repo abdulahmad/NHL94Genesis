@@ -982,8 +982,8 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	blt.w	rtss2					;yes: stay
 	move.w	d0,(DispAttribCtr).w	;store the new position
 	clr.w	(playoffspritex).w		;sprite x off screen
-	move.w	d0,d1					;sprite x =
-	addi.w	#$100,d1				;position + $100
+	move.w	d0,d1					;sprite x = position + $100
+	addi.w	#$100,d1
 	cmp.w	#$40,d1
 	blt.w	.nox					;playoffspritex = position+$100 only inside $40-$200, else 0
 	cmp.w	#$200,d1				;past $200?
