@@ -186,3 +186,4 @@ animchars,crowdvrcset,92G
 (raw offset),pldendur,92G setplayer fields (.pld rating byte)
 (raw offset),pldpass,92G setplayer fields (.pld rating byte)
 (raw offset),pldsize,92G setplayer fields (.pld rating byte)
+(raw offset),pcsize,93G (puckcross entry size; bottom row)

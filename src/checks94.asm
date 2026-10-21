@@ -3812,7 +3812,7 @@ findpc
 .nocross
 	move.w	#$FFFF,pcframes(a1)		;move -1 into puckcross y
 .next
-	addq.w	#4,a1					;add 4 to puckcross (to move to the other goal line)
+	addq.w	#pcsize,a1				;next puckcross entry (the other goal line)
 	rts
 ; a0 = extra routine for collision avoidance
 ; d0/d1 = x/y coord to skate to

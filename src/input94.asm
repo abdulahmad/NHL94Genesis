@@ -357,7 +357,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 	btst	#pfgoal,pflags(a3)		;check which net shooting on
 	beq.w	.save					;branch if bottom net
 	neg.w	d3						;negate d3 (-108 hex)
-	addq.w	#4,a0					;puckcross+4 (for bottom goalie)
+	addq.w	#pcsize,a0				;bottom goalie puckcross entry
 .save
 	jsr	(goaliesave).l
 	movem.l	(sp)+,d0-d7/a0-a6
