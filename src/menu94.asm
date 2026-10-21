@@ -52,9 +52,9 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.3
-.next
+.next								;next item entry
 	addq.w	#4,a0
-.3
+.3									;loop the walk
 	adda.w	(a0),a0					;add the entry's word offset to reach the following one
 	dbf	d0,.next					;d0 = selected item number: repeat until the selected entry
 	movea.l	(a0),a0
@@ -62,7 +62,7 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	bclr	#1,(sflags5).w			;the handler drew its own screen
 	bne.w	.noredraw
 	bsr.w	DrawMenuScreen
-.noredraw							;1 was set, or from above
+.noredraw							;menu redrawn if needed
 	tst.w	(menuitem).w			;item 0 (resume) leaves the menu
 	rts
 .flip								;sbut set or cbut clear
@@ -77,16 +77,16 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	bpl.w	.0
 	clr.w	(menuitem).w			;no item above the first
 	clr.w	d0
-.0									;d0 >= 0, or from above
+.0									;selection not negative
 	movea.l	(menulist).w,a0			;walk the item list d0 entries, stopping at the last one
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.2
-.next
+.next								;next item entry
 	adda.w	(a0),a0					;advance to the next item entry
 	addq.w	#4,a0
 	tst.w	2(a0)					;negative: the last item
-.2
+.2									;loop the walk
 	dbmi	d0,.next				;stop after d0 items or at the last item
 	addq.w	#1,d0					;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,(menuitem).w			;no item below the last
@@ -94,12 +94,12 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	cmp.w	(menuitem+2).w,d0
 	bge.w	.3
 	move.w	d0,(menuitem+2).w		;scroll up
-.3									;d0 >= (menuitem+2).w, or from above
+.3									;scrolled up if needed
 	subq.w	#3,d0					;selection - 3 = first visible item if it is on the bottom row
 	cmp.w	(menuitem+2).w,d0
 	ble.w	.print
 	move.w	d0,(menuitem+2).w		;scroll down
-.print								;d0 <= (menuitem+2).w, or from above
+.print								;print the menu
 	bsr.w	SetMenuPrintX			;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).w
 	movea.l	(menulist).w,a1
@@ -112,10 +112,10 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	adda.w	(a1),a1
 	move.w	(menuitem+2).w,d0		;skip to the first item shown
 	bra.w	.6
-.skip
+.skip								;skip one item entry
 	adda.w	(a1),a1
 	addq.w	#4,a1
-.6
+.6									;loop the skip
 	dbf	d0,.skip					;loop until a1 = first visible item
 	moveq	#3,d1					;4 rows
 	move.w	#$C,(printy).w
@@ -134,7 +134,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	cmp.w	(menuitem).w,d0
 	bne.w	.nosel
 	jsr	(printsmall).l				;the selected item marker
-.nosel								;d0 <> menuitem, or from above
+.nosel								;marker done
 	movea.l	(sp)+,a1
 	bsr.w	PrintMenuItem			;the item text
 	addq.w	#1,d0
@@ -162,21 +162,21 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	bra.w	.chkgoalie
 .homegoalie							;sfpj clear
 	tst.w	(goaliemode1).w
-.chkgoalie
+.chkgoalie							;goalie mode of the pad's team
 	beq.w	.print
 	movea.l	#.auto,a1
-.print								;goaliemode1 = 0, or from above
+.print								;print the mode
 	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1					;skip the 'x' item text
 	bra.w	.x
-.plain
+.plain								;item without a goalie mode
 	jsr	(printsmall).l
 .x									;exit (also the end of the code above)
 	rts
-.manual
+.manual								;manual goalie text
 	String	'  Manual Goalie   '	;no label
-.auto
+.auto								;auto goalie text
 	String	'   Auto Goalie    '	;no label
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
@@ -187,10 +187,10 @@ PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / 
 	movea.w	#(TeamBlockMap-M68K_RAM),a1
 	adda.w	d0,a1
 	moveq	#1,d2					;2 rows
-.row
+.row								;each row
 	jsr	(xyVmMap).l
 	move.w	#$A,d1					;11 words
-.1
+.1									;each word of the row
 	move.w	(a1)+,(a0)				;write one map word
 	dbf	d1,.1
 	addq.w	#1,(printy).w

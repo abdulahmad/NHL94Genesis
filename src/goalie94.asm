@@ -20,14 +20,14 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	beq.w	.g1
 	eori.w	#1,(goaliemode2).w
 	bra.w	.chkso
-.g1
+.g1									;pad 1's goalie mode
 	eori.w	#1,(goaliemode1).w
-.chkso
+.chkso								;shootout or penalty shot?
 	btst	#0,(gmode2).w
 	bne.w	.so
 	btst	#2,(BA_PS_flags).w
 	beq.w	.x
-.so									;bit 0 of gmode2 set, or from above
+.so									;shootout or penalty shot: switch the pad's player
 	btst	#sfpj,(sflags).w
 	bne.w	.p2
 	cmpi.w	#2,(OptNOP).w
@@ -38,19 +38,19 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 .4									;OptNOP <> 2
 	cmpi.w	#5,(BA_Sktr_SCnum).w
 	ble.w	.x
-.5
+.5									;pad 1: goalie or skater
 	move.w	#0,d0
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.6
 	move.w	#6,d0
-.6									;OptNOP <> 2, or from above
+.6									;goalie slot chosen
 	tst.w	(goaliemode1).w
 	bne.w	.set1
 	move.w	#5,d0
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.set1
 	move.w	#$B,d0
-.set1								;goaliemode1 <> 0 or OptNOP <> 2, or from above
+.set1								;set pad 1's player
 	jsr	(setc1player).l
 	bra.w	.x
 .p2									;sfpj set
@@ -62,12 +62,12 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 .9									;OptNOP <> 2
 	cmpi.w	#5,(BA_Sktr_SCnum).w
 	bgt.w	.x
-.10
+.10									;pad 2: goalie or skater
 	move.w	#6,d0
 	tst.w	(goaliemode2).w
 	bne.w	.set2
 	move.w	#$B,d0
-.set2								;goaliemode2 <> 0, or from above
+.set2								;set pad 2's player
 	jsr	(setc2player).l
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -119,7 +119,7 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	bne.w	.0
 	clr.w	(arenaframeidx).w
 	bra.s	NextArenaFrame
-.0
+.0									;end of the frame list?
 	cmpi.w	#$FFFE,(arenaframe).w
 	bne.w	.x
 	bsr.w	EndArenaAnim
