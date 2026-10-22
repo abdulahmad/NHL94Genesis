@@ -1901,7 +1901,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	bclr	#df32c,(disflags).w		;not in 32 cell mode
 	move.w	(framercset).w,d4		;frame chars
 	movea.l	#FramerMap+8,a2			;frame tiles
-	bsr.w	DecompressGraphicsWithCallback
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$91234567,$89ABCDEF		;remap table
 	move.w	(smallfontchars).w,d4
 	jsr	(AddSmallFont).l
@@ -1935,7 +1935,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	bsr.w	dobitmap
 	move.w	d4,(smallfont2chars).w	;second small font chars
 	movea.l	#SmallFontMap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$D1234567,$89ABCDEF		;remap table
 	bsr.w	printz
 	String	-TXMAP2,0,0
@@ -1975,7 +1975,7 @@ ReloadRinkGraphics					;after the forceblack: back to 32 cell mode and reload th
 	jsr	(LoadHomeTeamGfx).l
 	move.w	(smallfontchars).w,d4
 	movea.l	#SmallFontMap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$43434567,$89ABCDEF		;remap table
 	move.w	(framercset).w,d4		;frame chars
 	jsr	(AddFramer).l				;send the frame tiles

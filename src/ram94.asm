@@ -300,9 +300,10 @@ PPBonus	rs.b	1
 PKBonus	rs.b	1
 ThirdPBonus	rs.b	1
 HmAwBonus	rs.b	1
-callbackPtr	rs.l	1
+remapTablePtr	rs.l	1
 ThreeStars	rs.w	100
 recordbuf equ ThreeStars			;the save RAM record staging buffer (shares ThreeStars)
+decompbuffer equ ThreeStars			;DecompressBytecode 256 byte ring buffer (shares ThreeStars)
 teamrecbuf	rs.w	28				;SRAM team record buffer: the 16 byte record of a team (ReadCrowdRecord),
 									;byte 8 crowd record, byte 9 its name number
 nibblebuffer	rs.w	6

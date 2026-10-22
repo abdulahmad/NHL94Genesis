@@ -25,11 +25,11 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(orjoy).l					;forget any held button
 	move.w	d4,(framercset).w		;d4 = next free tile: frame, font and logo tiles follow
 	movea.l	#FramerMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l	;frame tiles
+	jsr	(DecompressGraphicsWithRemap).l	;frame tiles
 	dc.l	$91234567,$89ABCDEF		;remap table
 	move.w	d4,(nameframechars).w	;name frame tiles
 	movea.l	#FramerMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l	;the same frame tiles again
+	jsr	(DecompressGraphicsWithRemap).l	;the same frame tiles again
 	dc.l	$91234560,$89ABCDEF		;remap table
 	move.w	d4,(smallfontchars).w
 	jsr	(AddSmallFont).l
@@ -60,7 +60,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(BigFontchars).w		;the big font for the title
 	movea.l	#BigFontMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$71234567,$89ABCDEF		;remap table
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP1),$1F,6
