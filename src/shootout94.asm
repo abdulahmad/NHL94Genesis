@@ -12,8 +12,8 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	moveq	#$C,d1
 	jsr	(Framer).l					;draw the box
 	lea	ShootoutModeBigTxt(pc),a1
-	jsr	(printbig).l
-	move.w	(BA_Skater_Offset).w,d0
+	jsr	(printbig).l				;SHOOTOUT MODE
+	move.w	(BA_Skater_Offset).w,d0	;shooter roster index
 	movea.l	#tmstruct,a2
 	tst.w	(BA_Team).w
 	beq.w	.0
@@ -32,7 +32,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	pnum(a2),d0
+	move.b	pnum(a2),d0				;goalie roster index
 	movea.l	#AwShots,a2
 	tst.w	(BA_Team).w
 	beq.w	.1
@@ -46,7 +46,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	movea.l	tmdata(a1),a1
 	adda.w	Teamname(a1),a1
 	jsr	(print).l					;print the team name
-	move.w	#$15,(printx).w
+	move.w	#$15,(printx).w			;goals column
 	move.w	(homeshootgoals).w,d0
 	move.w	#3,d1
 	jsr	(PushNumberWidth).l
@@ -124,7 +124,7 @@ NextShooter							;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSh
 .1									;shooter list chosen
 	move.w	(homeshootnum).w,d0
 	add.w	d0,d0
-	move.w	0(a0,d0.w),(BA_Skater_Offset).w
+	move.w	0(a0,d0.w),(BA_Skater_Offset).w	;this round's shooter
 	bclr	#pfnc,(SortCords+(puckscnum*SCstruct)+pflags).w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -137,8 +137,8 @@ CountShootoutGoals					;Shootout: count the goals and end it when one team canno
 	blt.w	.switch					;before round 5: keep going
 	move.w	(homeshootgoals).w,d0
 	cmp.w	(awayshootgoals).w,d0	;goals differ?
-	beq.w	.switch
-	bset	#3,(gmode2).w
+	beq.w	.switch					;tied: keep going
+	bset	#3,(gmode2).w			;shootout over
 	jsr	(EndShootout).l
 	bra.w	.x
 .switch								;switch the shooting team
@@ -166,11 +166,11 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
 	adda.w	LineSets(a1),a1
-	move.w	#5,d0
+	move.w	#5,d0					;6 starters
 .loop								;each starter
 	clr.w	d1
 	move.b	(a1)+,d1
-	subq.w	#1,d1
+	subq.w	#1,d1					;roster index 0-based
 	move.w	d1,-(a0)				;store the roster index
 	dbf	d0,.loop
 	rts
@@ -245,15 +245,15 @@ ShootersLoop						;Shootout shooters: the input loop
 ShootersExit						;Leave (ExitStatsScreen)
 	jmp	ExitStatsScreen
 ShooterSelectList					;Shootout shooters: "{Select Player}" list
-	move.w	#$C000,d7
+	move.w	#$C000,d7				;highlight palette
 	movea.l	#homeshooters,a0
 	cmpa.l	#tmstruct,a2
 	beq.w	.0
 	movea.l	#awayshooters,a0
 .0									;shooter list chosen
 	move.w	(TestList).w,d0
-	asl.w	#1,d0
-	move.w	0(a0,d0.w),d6
+	asl.w	#1,d0					;word per slot
+	move.w	0(a0,d0.w),d6			;current shooter
 	jsr	(GetGoalieCount).l
 	move.w	d0,d1
 	jsr	(GetPlayerCount).l
@@ -262,8 +262,8 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	cmpi.w	#5,(TestList).w			;goalie slot?
 	bne.w	.1
 	move.w	d1,d0
-	subq.w	#1,d0
-	clr.w	d1
+	subq.w	#1,d0					;last goalie
+	clr.w	d1						;goalies come first
 .1									;candidate range set
 	move.w	d0,(screentimer).w
 	clr.w	(PlayerScrollCtr).w		;scroll to the top
@@ -276,7 +276,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	bne.w	.2
 	move.w	d2,(VertLineScrolling).w	;cursor starts on him
 .2									;not the current shooter
-	addq.w	#1,d1
+	addq.w	#1,d1					;next roster index
 	addq.w	#1,d2
 	dbf	d0,.loop					;next candidate
 	bsr.w	ClearShooterScreen
@@ -332,7 +332,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	bgt.w	.8
 	move.w	d0,(PlayerScrollCtr).w
 .8									;cursor not above the first row shown
-	subq.w	#5,d0
+	subq.w	#5,d0					;6 rows shown
 	cmp.w	(PlayerScrollCtr).w,d0	;below the rows shown?
 	ble.w	.9
 	move.w	d0,(PlayerScrollCtr).w
@@ -350,17 +350,17 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	beq.w	.11
 	movea.l	#awayshooters,a0
 .11									;shooter list chosen
-	asl.w	#1,d2
-	move.w	d0,0(a0,d2.w)
+	asl.w	#1,d2					;word per slot
+	move.w	d0,0(a0,d2.w)			;store the pick
 	bra.w	ShootersRedraw
 PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP2),$16,1
 .loop								;loop
-	movea.l	#PAttribOverall,a1
+	movea.l	#PAttribOverall,a1		;skater columns
 	cmpi.w	#5,(TestList).w			;goalie slot?
 	bne.w	.0
-	movea.l	#GAttribOverall,a1
+	movea.l	#GAttribOverall,a1		;goalie columns
 .0									;column list chosen
 	move.w	(DispAttribCtr).w,d0
 	bra.w	.1
@@ -376,14 +376,14 @@ PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 .found								;page found
 	cmpa.l	#PAttribOverall,a1		;skater columns?
 	bne.w	.3
-	movea.l	#ShooterOverallTxt,a1
+	movea.l	#ShooterOverallTxt,a1	;skater header
 .3									;overall header text
 	cmpa.l	#GAttribOverall,a1		;goalie columns?
 	bne.w	.4
-	movea.l	#ShooterOverallTxt2,a1
+	movea.l	#ShooterOverallTxt2,a1	;goalie header
 .4									;print the header
 	jsr	(print).l
-	move.l	(a1),d4
+	move.l	(a1),d4					;rating weights
 	movea.w	#(Satt-M68K_RAM),a3
 	move.w	(PlayerScrollCtr).w,d2
 	move.w	(screentimer).w,d1
@@ -401,7 +401,7 @@ PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	move.w	d7,(printa).w
 .6									;cursor row highlighted
 	clr.w	d0
-	move.b	0(a3,d2.w),d0
+	move.b	0(a3,d2.w),d0			;roster index
 	jsr	(GetNameandAttrib).l		;print name and rating
 	addq.w	#1,d2
 	dbf	d1,.loop3					;next row
@@ -531,8 +531,8 @@ PrintShooterBox						;Shootout shooters: the selected player box
 	movea.l	#awayshooters,a1
 .0									;shooter list chosen
 	move.w	(TestList).w,d0
-	asl.w	#1,d0
-	move.w	0(a1,d0.w),d0
+	asl.w	#1,d0					;word per slot
+	move.w	0(a1,d0.w),d0			;roster index
 	jsr	(getname).l
 	move.w	(a1),d0
 	lsr.w	#1,d0
@@ -552,18 +552,18 @@ PrintShooterNames					;Shootout shooters: the shooters' names (FormatPlayerNameS
 	movea.l	#awayshooters,a0
 .loop								;each shooter
 	move.w	d1,d0
-	asl.w	#1,d0
-	move.w	0(a0,d0.w),d0
+	asl.w	#1,d0					;word per slot
+	move.w	0(a0,d0.w),d0			;roster index
 	jsr	(FormatPlayerNameShort).l
 	move.w	(printx).w,-(sp)
 	cmp.w	(TestList).w,d1			;cursor slot?
 	bne.w	.1
-	move.w	#2,(printfontset).w
+	move.w	#2,(printfontset).w		;highlight font
 .1									;cursor shooter highlighted
 	cmp.w	#5,d1
 	bne.w	.2
-	move.w	#$19,(printx).w
-	move.w	#$E,(printy).w
+	move.w	#$19,(printx).w			;goalie column
+	move.w	#$E,(printy).w			;goalie row
 .2									;goalie row placed
 	jsr	(printsmall).l				;print the name
 	clr.w	(printfontset).w

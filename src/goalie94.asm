@@ -17,7 +17,7 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	bra.w	.g1						;same team: pad 1 too
 .0									;d0 <> cont2team
 	btst	#sfpj,(sflags).w		;which pad paused?
-	beq.w	.g1
+	beq.w	.g1						;pad 1 paused
 	eori.w	#1,(goaliemode2).w		;toggle pad 2's goalie mode
 	bra.w	.chkso
 .g1									;pad 1's goalie mode
@@ -29,7 +29,7 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	beq.w	.x
 .so									;shootout or penalty shot: switch the pad's player
 	btst	#sfpj,(sflags).w		;which pad paused?
-	bne.w	.p2
+	bne.w	.p2						;pad 2 paused
 	cmpi.w	#2,(OptNOP).w			;OptNOP 2?
 	bne.w	.4
 	cmpi.w	#5,(BA_Sktr_SCnum).w	;visiting shooter?
@@ -39,14 +39,14 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	cmpi.w	#5,(BA_Sktr_SCnum).w	;home shooter?
 	ble.w	.x						;skater on the other side
 .5									;pad 1: goalie or skater
-	move.w	#0,d0
+	move.w	#0,d0					;goalie slot 0
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.6						;not OptNOP 2
 	move.w	#6,d0					;OptNOP 2: slot 6
 .6									;goalie slot chosen
 	tst.w	(goaliemode1).w			;goalie mode of pad 1
-	bne.w	.set1
-	move.w	#5,d0
+	bne.w	.set1					;manual: the goalie
+	move.w	#5,d0					;skater slot 5
 	cmpi.w	#2,(OptNOP).w
 	bne.w	.set1
 	move.w	#$B,d0					;OptNOP 2: skater slot $B
@@ -63,10 +63,10 @@ ManualGoalieMenu					;"x Manual Goalie" menu item (menu lists; PrintMenuItem pri
 	cmpi.w	#5,(BA_Sktr_SCnum).w	;visiting shooter?
 	bgt.w	.x						;skater on the other side
 .10									;pad 2: goalie or skater
-	move.w	#6,d0
+	move.w	#6,d0					;goalie slot 6
 	tst.w	(goaliemode2).w			;goalie mode of pad 2
-	bne.w	.set2
-	move.w	#$B,d0
+	bne.w	.set2					;manual: the goalie
+	move.w	#$B,d0					;skater slot
 .set2								;set pad 2's player
 	jsr	(setc2player).l
 .x									;exit: restore the registers
@@ -78,7 +78,7 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 									;DecompressGraphicsPlain); then count down the frame time arenaframetime
 									;by d7 and step (NextArenaFrame). Called from periodicevents and waitxsr
 	tst.w	(arenaanim).w			;any arena animation?
-	bmi.w	.x2
+	bmi.w	.x2						;none running
 	movem.l	d0-d7/a0-a6,-(sp)
 	tst.l	(arenaspritelist).w		;first time?
 	bne.w	.run					;already loaded: run it
@@ -188,11 +188,11 @@ StartArenaAnim						;Start arena animation d0 (ArenaAnims): arenaanim = d0, RunA
 	rts
 SetFaceoffAnim						;Set the faceoff animation: sflags7 bit 0, faceoffanim = d0. Called from
 									;puckfaceoff
-	bset	#0,(sflags7).w
+	bset	#0,(sflags7).w			;faceoff animation pending
 	move.w	d0,(faceoffanim).w
 	rts
 EndArenaAnim						;End the arena animation: arenaanim = -1, sflags7 bit 0 cleared. Called
 									;from NextArenaFrame and puckfaceoff2
 	move.w	#$FFFF,(arenaanim).w
-	bclr	#0,(sflags7).w
+	bclr	#0,(sflags7).w			;no faceoff animation
 	rts
