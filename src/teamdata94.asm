@@ -135,7 +135,7 @@ AllStarsEast						;ASE
 	Player	'Scott Stevens',			04B4,4344,5642,5043
 	Player	'Zarley Zalapski',			03A5,4454,4442,5133
 	Player	'Glen Wesley',				2685,4344,3641,4442
-	dc.w	2						;end of the player list: an empty String
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'All Stars East'
 .ta									;abbreviation
