@@ -2010,7 +2010,7 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	jsr	(RestoreTeamEnergy).l
 	moveq	#$78,d0
 	bra.w	waitx
-SelectGoalieMenu					;it in TimeoutMenu's String. Pick team a2's goalie (or no goalie) from a
+SelectGoalieMenu					;Pick team a2's goalie (or no goalie) from a
 									;list (DrawGoalieSelectList) with up / down, C or start; sets tmgoalie and
 									;SetPersonel. Menu item handler
 	move.w	(menuitem).w,-(sp)		;save the menu state

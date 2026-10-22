@@ -2515,7 +2515,8 @@ setpde								;d1 = rostnum of player * 2, a2 = team struct, d0 = new energy lev
 .0									;energy at least 0
 	move.w	d0,tmpde(a2,d1.w)
 	rts
-setpersonel							;loop: clear newpos / newpnum on the 6 sort objects
+setpersonel							;set personnel on team a2 from its registers (SetPlList), keeping players
+									;already on the ice
 	movem.l	d0-d5/a0-a4,-(sp)
 	movea.w	tmsort(a2),a3
 	moveq	#5,d4					;# of players on team for loop
