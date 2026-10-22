@@ -85,7 +85,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 .next								;next item entry
 	adda.w	(a0),a0					;advance to the next item entry
 	addq.w	#4,a0
-	tst.w	2(a0)					;negative: the last item
+	tst.w	strtext(a0)				;negative: the last item
 .2									;loop the walk
 	dbmi	d0,.next				;stop after d0 items or at the last item
 	addq.w	#1,d0					;d0 = items left unwalked (-1 if all walked), +1 = overshoot
@@ -139,7 +139,7 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	bsr.w	PrintMenuItem			;the item text
 	addq.w	#1,d0
 	addq.w	#4,a1
-	tst.w	2(a1)					;negative: the last item
+	tst.w	strtext(a1)				;negative: the last item
 	dbmi	d1,.row
 	bmi.w	.x
 	bsr.w	SetMenuPrintX

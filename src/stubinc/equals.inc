@@ -267,6 +267,7 @@ TXPAL1 equ $10						;palette 1
 TXPAL2 equ $20
 TXPAL3 equ $30
 TXPRI equ $40						;high priority
+strtext equ 2						;String: start of the text after its length word
 ;printsmall / printz2 (ControlCodeJumpTable, -byte): the code, then its argument bytes
 CC_SetMap equ $FF					;-1: map
 CC_SetAttribute equ $FE				;-2: palette/priority (printa)
