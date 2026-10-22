@@ -570,7 +570,7 @@ holdcheck							;player a2 is in hold animation looking to hold opponent a3. Ent
 	bhi.w	.ex
 	btst	#gmhl,(gmode).w
 	bne.w	.ex
-	move.w	#$24,d0					;penalty $24 after SPAHold2 (hooking?)
+	move.w	#$24,d0					;penalty $24 (holding) after SPAHold2
 	cmpi.w	#SPAHold2,SPA(a3)
 	beq.w	.addpen
 	move.w	#$1E,d0					;penalty $1E after SPAhook2 (holding)
@@ -931,7 +931,7 @@ FallDown							;player a2 falls down, player a3 is the hitting player. Skips a2 
 	exg	a2,a3
 .9									;injury count down
 	move.w	#4,(InjCntDown).w
-	move.l	#$14,d0					;move 14 into d0 - Pen ???
+	move.l	#$14,d0					;penalty $14 if the hitter is a goalie or OptPen is 0
 	tst.w	position(a3)			;check if a3 goalie
 	beq.w	AddPenalty2
 	tst.w	(OptPen).w
@@ -2771,9 +2771,9 @@ ResetBench							;remove all players from penalty box / put all players on their
 	bra.w	.next
 .cont								;penalty over: back to the bench
 	sub.b	d1,(PBnum).w
-	cmpi.w	#$FFFD,tmpdst(a0,d0.w)	;compare -4 with tmpdst
+	cmpi.w	#$FFFD,tmpdst(a0,d0.w)	;compare -3 with tmpdst
 	beq.w	.next
-	cmpi.w	#$FFFC,tmpdst(a0,d0.w)	;compare -3 with tmpdst
+	cmpi.w	#$FFFC,tmpdst(a0,d0.w)	;compare -4 with tmpdst
 	beq.w	.next
 	move.w	#$FFFE,tmpdst(a0,d0.w)	;move -2 into tmpdst
 .next								;previous roster entry
@@ -2936,12 +2936,11 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	move.b	d3,checking(a3)			;move Chk into player struct
 	bclr	#3,attribute(a3)		;clear bit 3 in attribute of player struct
 	move.b	pldcheck(a0),handed(a3)	;move Chk/Hnd byte to Hnd in player struct
-	andi.b	#1,handed(a3)			;left handed: attribute bit 3 set (flipped sprite)
+	andi.b	#1,handed(a3)			;Hnd bit
 	eori.b	#1,handed(a3)			;XOR Hnd byte with 1. Sets to opposite what the bit was.
 									;So L will be a 1 and R will be a 0
 	bne.w	.attribloadcont
-	bset	#3,attribute(a3)		;sets bit 3 of attribute byte in player struct (to match Hnd if Hnd bit is
-									;set)
+	bset	#3,attribute(a3)		;right handed: attribute bit 3 set (flipped sprite)
 .attribloadcont						;load the rest of the attributes
 	move.b	pldcheck(a0),fighting(a3)	;moves Chk/Hnd byte into Fgt byte in player struct
 	andi.b	#$E,fighting(a3)		;mask the byte with E, ignoring the Hnd bit - will always be even

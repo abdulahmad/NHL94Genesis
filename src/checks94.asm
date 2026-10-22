@@ -2907,7 +2907,7 @@ CPgoalie							;see if computer should pull his goalie. d1 = puck/faceoff y. Fal
 	btst	#pfgoal,pflags(a0)		;#pfgoal
 	movea.l	(sp)+,a0
 	bne.w	.0
-	neg.w	d1						;if shooting on bottom goal, make d1 negative
+	neg.w	d1						;make y positive toward the goal I shoot at
 .0									;Y for his end
 	tst.w	d1
 	bmi.w	rtss2					;exit if d1 negative (faceoff in own zone)
