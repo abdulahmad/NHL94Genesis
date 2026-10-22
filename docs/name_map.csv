@@ -194,4 +194,3 @@ animchars,crowdvrcset,92G
 (raw offset),tmfslide,93G (= tmftimeout)
 NoTiles,null,92G
 InitialSP,Stack,92G/93G
-.left,.righty,asspenalty: the branch is taken for right handed players (handed 0)
