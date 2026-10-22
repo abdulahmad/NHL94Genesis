@@ -14,16 +14,16 @@ Detect4WayPlay						;detect the 4 way play adaptor (EA 4 Way Play) on port 2: Fo
 	move.b	#$7C,(IO_CT2_DATA+1).l	;select the adaptor ID again
 	nop
 	move.b	(IO_CT1_DATA+1).l,d0	;the adaptor answers with port 1 lines 0-1 low
-	andi.b	#3,d0
+	andi.b	#3,d0					;lines 0-1
 	cmp.b	#0,d0					;both low?
 	bne.s	.none					;lines high: no adaptor
 	move.w	#1,(FourWayPlay).w		;4 way play on
-	bra.s	.x
+	bra.s	.x						;adaptor found
 .none								;no adaptor: port 2 back to a normal pad
 	move.w	#0,(FourWayPlay).w		;4 way play off
 	move.b	#$40,(IO_CT2_CTRL+1).l	;port 2: TH as output
 .x									;let the Z80 run again
-	move.w	#$100,(IO_Z80RES).l
+	move.w	#$100,(IO_Z80RES).l		;Z80 runs
 	rts
 ReadJoySwapPad1						;unused: read 4 way play pad 1 (ReadJoy1 with the pad word swapped in)
 	move.b	#0,(IO_CT2_DATA+1).l	;4 way play: select pad

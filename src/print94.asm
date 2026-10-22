@@ -32,13 +32,13 @@ eraser								;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = cha
 	move.w	(sp),d0
 	subq.w	#1,d0
 .0									;fill each cell of the row
-	move.w	d2,(a0)
+	move.w	d2,(a0)					;fill one cell
 	dbf	d0,.0
 	addq.w	#1,(printy).w
 	andi.w	#$1F,(printy).w
-	subq.w	#1,2(sp)
+	subq.w	#1,2(sp)				;rows left
 	bne.s	.1
-	addq.w	#4,sp
+	addq.w	#4,sp					;drop the sizes
 	move.w	(sp)+,(disflags).w
 	movem.l	(sp)+,d0-d2/a0
 	rts
@@ -63,11 +63,11 @@ Framer								;frame and fill (uses framer.map graphics and assums tiles are alr
 .mtop								;loop
 	bsr.w	.tbline					;middle row (height-2 times)
 	subq.w	#6,d4					;stay on the middle map row
-	subq.w	#1,2(sp)
+	subq.w	#1,2(sp)				;rows left
 	bpl.s	.mtop
 	addq.w	#6,d4					;step to the bottom map row
 	bsr.w	.tbline
-	addq.w	#4,sp
+	addq.w	#4,sp					;drop the sizes
 	move.w	(sp)+,(disflags).w
 	movem.l	(sp)+,d0-d4/a0-a1
 	rts
@@ -75,13 +75,13 @@ Framer								;frame and fill (uses framer.map graphics and assums tiles are alr
 	bsr.w	xyVmMap					;draw one frame row: left cell, width-2 middle cells, right cell
 	addq.w	#1,(printy).w
 	bsr.w	.setter
-	addq.w	#2,d4
+	addq.w	#2,d4					;next cell
 	move.w	4(sp),d0
 	subq.w	#3,d0					;minus 3: middle count
 .tblp								;each middle cell
-	bsr.w	.setter
+	bsr.w	.setter					;middle cells
 	dbf	d0,.tblp					;loop
-	addq.w	#2,d4
+	addq.w	#2,d4					;next cell
 	bsr.w	.setter
 	addq.w	#2,d4					;d4 = next map row
 	rts
@@ -132,13 +132,13 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	neg.w	d0						;control code (0 = padding)
 	asl.w	#2,d0
 	movea.l	#ControlCodeJumpTable,a2
-	movea.l	0(a2,d0.w),a2
+	movea.l	0(a2,d0.w),a2			;its routine
 	jsr	(a2)
 	bra.w	.1
 .nocom								;not a control code
 	cmp.b	#$40,d0					;'@'?
 	bne.w	.noblank
-	move.w	#$7FF,d0
+	move.w	#$7FF,d0				;blank char
 	bra.w	.p
 .noblank							;d0 <> $40
 	cmp.b	#$5E,d0					;'^'?
@@ -154,7 +154,7 @@ printsmall							;Print string macro a1 at printx/y/m with printa; uses the setu
 	move.w	(printfontset).w,d1
 	add.w	0(a3,d1.w),d0
 .p									;print the cell
-	add.w	d2,d0
+	add.w	d2,d0					;for alternate paletes
 	move.w	d0,(a0)
 	addq.w	#1,(printx).w
 .1									;loop the string
@@ -183,7 +183,7 @@ ControlCode_SetMapAndPosition		;control code -8, next 4 bytes = attribute, map, 
 	bra.w	ControlCode_SetY
 ControlCode_SetMap					;Control code -1, next byte = map number -> printm
 	move.b	(a1)+,d0
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	andi.w	#3,d0
 	asl.w	#2,d0
 	subq.w	#4,d0
@@ -192,38 +192,38 @@ ControlCode_SetMap					;Control code -1, next byte = map number -> printm
 ControlCode_SetAttribute			;Control code -2, next byte = palette/priority -> printa
 	move.b	(a1)+,d2
 	andi.w	#7,d2
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	ror.w	#3,d2
 	move.w	d2,(printa).w
 	rts
 ControlCode_SetX					;Control code -3, next byte = printx
 	clr.w	d0
 	move.b	(a1)+,d0
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	move.w	d0,(printx).w
 	bra.w	xyVmMap
 ControlCode_SetY					;Control code -4, next byte = printy
 	clr.w	d0
 	move.b	(a1)+,d0
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	move.w	d0,(printy).w
 	bra.w	xyVmMap
 ControlCode_AddX					;control code -5, add the next (signed) byte to printx
 	move.b	(a1)+,d0
 	ext.w	d0
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	add.w	d0,(printx).w
 	bra.w	xyVmMap
 ControlCode_AddY					;control code -6, add the next (signed) byte to printy
 	move.b	(a1)+,d0
 	ext.w	d0
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	add.w	d0,(printy).w
 	bra.w	xyVmMap
 ControlCode_SetFont					;control code -7, next byte = char set index
 	clr.w	d0
 	move.b	(a1)+,d0
-	subq.w	#1,d3
+	subq.w	#1,d3					;byte used
 	asl.w	#1,d0
 	move.w	d0,(printfontset).w
 	rts
@@ -282,12 +282,12 @@ print								;a1 = string macro, printx/y = x/y cordinate on map for printing, p
 	ext.w	d1
 	move.w	d1,(printy).w
 	bsr.w	xyVmMap
-	subq.w	#2,d3
+	subq.w	#2,d3					;two extra bytes
 	bra.w	.1
 .nocom								;d0 >= 0
 	cmp.b	#$40,d0					;'@'?
 	bne.w	.noblank
-	move.w	#$7FF,d0
+	move.w	#$7FF,d0				;blank char
 	bra.w	.p
 .noblank							;d0 <> $40
 	cmp.b	#$5E,d0					;'^'?
@@ -307,7 +307,7 @@ print								;a1 = string macro, printx/y = x/y cordinate on map for printing, p
 .3									;bit 3 of sflags6 clear
 	add.w	(smallfontchars).w,d0	;plus the small font base
 .p									;print the cell
-	add.w	d2,d0
+	add.w	d2,d0					;for alternate palettes
 	move.w	d0,(a0)
 	addq.w	#1,(printx).w
 .1									;loop the string
@@ -322,12 +322,12 @@ print								;a1 = string macro, printx/y = x/y cordinate on map for printing, p
 FormatAndPrintTime					;d0 bits 14-15 = period, bits 0-13 = seconds
 	swap	d0						;period to the low word
 	clr.w	d0
-	rol.l	#2,d0
+	rol.l	#2,d0					;d0.w = period
 	movea.l	#PeriodLabelTable,a1
 	bsr.w	Fprintsmall				;print it
-	addq.w	#2,(printx).w
+	addq.w	#2,(printx).w			;2 columns right
 	swap	d0
-	lsr.w	#2,d0
+	lsr.w	#2,d0					;seconds
 	bsr.w	PushTime
 	bra.w	print
 PeriodLabelTable					;String list for FormatAndPrintTime: " 1", " 2", " 3", "OT"
@@ -349,26 +349,26 @@ PushTime							;convert d0 into string format of minutes:seconds. Return a1 = st
 	divu.w	#$A,d0
 	swap	d0
 	addi.w	#$30,d0
-	move.b	d0,-(a1)
+	move.b	d0,-(a1)				;ones of seconds
 	swap	d0
 	ext.l	d0
 	divu.w	#6,d0
 	swap	d0
 	addi.w	#$30,d0
-	move.b	d0,-(a1)
+	move.b	d0,-(a1)				;tens of seconds
 	swap	d0
 	move.b	#$3A,-(a1)
 	ext.l	d0
 	divu.w	#$A,d0
 	swap	d0
 	addi.w	#$30,d0
-	move.b	d0,-(a1)
+	move.b	d0,-(a1)				;ones of minutes
 	swap	d0
 	move.b	#$20,-(a1)
 	tst.w	d0						;tens of minutes?
 	beq.w	.noz
 	addi.w	#$30,d0
-	move.b	d0,(a1)
+	move.b	d0,(a1)					;tens of minutes
 .noz								;leading zero blanked
 	move.l	(sp)+,d0				;d0 = end address of the string
 	sub.l	a1,d0
@@ -532,7 +532,7 @@ printbig							;same as print, only use bigfont.map graphics. a1 = string macro,
 	blt.w	.2
 	cmp.b	#$7A,d0					;above 'z'?
 	bgt.w	.2
-	addi.b	#-$20,d0
+	addi.b	#-$20,d0				;upper case
 .2									;upper case
 	move.w	d3,-(sp)
 	bsr.w	PrintBigChar			;print the char
@@ -547,7 +547,7 @@ printbig							;same as print, only use bigfont.map graphics. a1 = string macro,
 PrintBigChar						;print big font char d0 (ascii) through bfasciicon
 	subi.w	#$20,d0
 	movea.l	#bfasciicon,a0
-	moveq	#1,d2
+	moveq	#1,d2					;2 columns
 	move.b	0(a0,d0.w),d1
 	ext.w	d1
 	bpl.w	.0
