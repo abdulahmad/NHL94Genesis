@@ -6,15 +6,15 @@ ReplayMode							;Instant replay play-back control and display code.
 									;Called from the pause menu.
 									;Tracking: a d-pad press picks the nearest object in that direction and
 									;the camera follows it
-	bclr	#0,(sflags5).w
-	bsr.w	forceblack
+	bclr	#0,(sflags5).w			;not slow mode
+	bsr.w	forceblack				;screen off
 	move.w	(disflags).w,-(sp)
 	bset	#sf2replay,(sflags2).w	;flag that replay is on
-	bclr	#4,(sflags4).w
-	jsr	(ClrHor).l
-	move.w	#$400,d0
+	bclr	#4,(sflags4).w			;normal angle
+	jsr	(ClrHor).l					;horizontal interrupt off
+	move.w	#$400,d0				;$400 cells
 	move.w	(VmMAP3).w,d1
-	move.w	#$7FF,d2
+	move.w	#$7FF,d2				;blank char
 	bsr.w	DoFill
 	move.w	(ExtraChars).w,d4
 	movea.l	#ReplayMap+8,a2
@@ -34,7 +34,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	clr.l	(padcont).w
 	clr.l	(padcont+4).w
 	clr.l	(padcont+8).w
-	move.w	#$18,(palcount).w
+	move.w	#$18,(palcount).w		;fade in
 	moveq	#1,d7					;1 frame
 .top								;loop
 	move.w	(Vcount).w,d0			;wait until d7 frames have passed
@@ -60,7 +60,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	btst	#0,(sflags5).w			;slow mode?
 	beq.w	.2
 	andi.w	#$FFF0,d0				;direction bits only
-	ori.w	#8,d0
+	ori.w	#8,d0					;no direction
 	andi.w	#$FFF0,d1
 	andi.w	#$FFF0,d3
 .2									;positions rounded in slow mode
@@ -75,12 +75,12 @@ ReplayMode							;Instant replay play-back control and display code.
 	bne.w	.nomans
 	cmpi.w	#$FF60,(a5)				;X past the left?
 	bgt.w	.3
-	move.w	#0,(a5)
+	move.w	#0,(a5)					;centre
 	bra.w	*+4
 .3									;X inside the rink
 	cmpi.w	#$FED0,Ypos(a5)			;Y past the bottom?
 	bgt.w	.4
-	move.w	#0,Ypos(a5)
+	move.w	#0,Ypos(a5)				;centre
 .4									;Y inside the rink
 	bset	#sfscrl,(sflags).w		;manual scrolling is on
 	bne.w	.man					;scrolling?
@@ -88,12 +88,12 @@ ReplayMode							;Instant replay play-back control and display code.
 	move.w	(Vpos).w,Ypos(a5)
 .man								;camera on manual
 	move.w	d0,d5					;d5 = d-pad direction
-	andi.w	#7,d5
-	eori.w	#4,d5
+	andi.w	#7,d5					;direction
+	eori.w	#4,d5					;opposite
 	movea.w	#(SortCords-M68K_RAM),a1
 	st	d3							;no object to skip
 	bclr	#sf3track,(sflags3).w
-	beq.w	.find
+	beq.w	.find					;was not tracking
 	move.w	camtrack(a5),d3			;skip the object tracked now
 .find								;search start, skipping the tracked object
 	move.w	(a5),d0					;camera position d0/d1: search 12 players
@@ -107,7 +107,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	movem.w	(sp),d0-d1				;camera position
 	sub.w	(a1),d0
 	sub.w	Ypos(a1),d1
-	jsr	(vtoa).l
+	jsr	(vtoa).l					;direction to object
 	btst	#3,d0					;no direction?
 	bne.w	.skip
 	sub.w	d5,d0					;minus the pad direction
@@ -120,12 +120,12 @@ ReplayMode							;Instant replay play-back control and display code.
 	sub.w	Ypos(a1),d1
 	muls.w	d0,d0
 	muls.w	d1,d1
-	add.l	d1,d0
+	add.l	d1,d0					;distance squared
 	cmp.l	#4,d0					;too close?
-	bls.w	.skip
+	bls.w	.skip					;too close
 	cmp.l	d4,d0					;closer?
 	bhi.w	.skip
-	move.l	d0,d4
+	move.l	d0,d4					;closest so far
 	move.w	SCnum(a1),camtrack(a5)
 	bset	#sf3track,(sflags3).w
 .skip								;next player
@@ -145,7 +145,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	bra.w	.top
 .scrl								;sf3track clear
 	bset	#sfscrl,(sflags).w		;no object found: scroll the camera by hand
-	eori.w	#4,d5
+	eori.w	#4,d5					;opposite
 	asl.w	#2,d5
 	lea	.dirtab(pc),a0
 	move.w	0(a0,d5.w),d0
@@ -165,7 +165,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	move.w	d1,Ypos(a5)
 .noy								;Y step taken (or out of range)
 	movea.w	a5,a3					;camera struct is the object to follow
-	clr.w	camidle(a5)
+	clr.w	camidle(a5)				;camera moving
 	andi.w	#$FFF,(PadControlBits).w	;keep the low bits
 	ori.w	#$E000,(PadControlBits).w	;pads off
 	bsr.w	UpdateCameraPos			;camera position
@@ -188,7 +188,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	beq.w	.5
 	btst	#0,(sflags5).w			;slow mode?
 	bne.w	.5
-	bsr.w	suba4
+	bsr.w	suba4					;fast rewind
 	bsr.w	suba4					;back a frame
 	bsr.w	suba4					;back a frame
 	bsr.w	suba4					;back a frame
@@ -223,7 +223,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	beq.w	.noplay
 	st	(lastsfx).w					;play mode is on = advance one frame at original speed
 	bsr.w	adda4					;forward a frame
-	move.w	(lastsfx).w,-(sp)
+	move.w	(lastsfx).w,-(sp)		;play sound effects
 	bsr.w	sfx
 	jsr	(SprSort).l
 .noplay								;frame advanced or not, redraw
@@ -234,7 +234,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	beq.w	.top
 	jsr	(ShowReplayBanner).l
 	bclr	#sf3rmplay,(sflags3).w
-	bset	#0,(sflags5).w
+	bset	#0,(sflags5).w			;slow mode
 	bne.w	.6
 	bra.w	.top
 .6									;bit 0 of sflags5 set or 0 was set
@@ -246,8 +246,8 @@ ReplayMode							;Instant replay play-back control and display code.
 	bne.w	.exit
 	btst	#5,d1					;C?
 	beq.w	.top
-	bset	#6,(sflags4).w
-	bclr	#0,(sflags5).w
+	bset	#6,(sflags4).w			;reverse angle change
+	bclr	#0,(sflags5).w			;not slow mode
 	jsr	(EraseReplayBanner).l
 	bsr.w	adda4					;forward a frame
 	jsr	(SprSort).l
@@ -258,11 +258,11 @@ ReplayMode							;Instant replay play-back control and display code.
 	clr.w	(menuitem).w
 	bset	#1,(sflags5).w			;back to the menu
 .exit								;leave the replay
-	bsr.w	forceblack
+	bsr.w	forceblack				;screen off
 	ori.w	#$F000,(PadControlBits).w	;pads off
 	bclr	#sfscrl,(sflags).w
 	movea.l	(recbpr).w,a4			;back to the current frame
-	bclr	#4,(sflags4).w
+	bclr	#4,(sflags4).w			;normal angle
 	bsr.w	RestoreReplayFrame		;restore the frame
 	jsr	(SprSort).l
 	bclr	#sf2replay,(sflags2).w
@@ -277,10 +277,10 @@ ReplayMode							;Instant replay play-back control and display code.
 	jsr	(ReloadFaceOffMap).l
 	jsr	(ReloadFaceOffTiles).l
 .10									;faceoff map reloaded when it was showing
-	jsr	(SetHor).l
+	jsr	(SetHor).l					;horizontal interrupt on
 	jsr	(setvideo).l
-	move.w	#$18,(palcount).w
-	rts
+	move.w	#$18,(palcount).w		;fade in
+	rts								;exit replay mode
 getpzjoy							;read the joystick of the pad that paused. pads 3 and 4 when FourWayPlay
 									;(pausepad = 3 or 4)
 	tst.w	(FourWayPlay).w			;four way?
@@ -304,7 +304,7 @@ ShowReplayIcon						;Show the replay icon and start the $F0 frame replayicontime
 	moveq	#8,d2
 	moveq	#4,d3
 	move.w	(rinkvrcset).w,d4
-	move.w	#0,d5
+	move.w	#0,d5					;no palette lines
 	movea.l	#Rinktilelist,a1
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	beq.w	.0
@@ -316,9 +316,9 @@ ShowReplayIcon						;Show the replay icon and start the $F0 frame replayicontime
 EraseReplayIcon						;Erase the 8 x 4 replay icon (replayicontimer timer ran out)
 	jsr	(printz).l					;map at the icon
 	String	-(TXPRI+TXMAP3),2,2
-	move.w	#8,d0
+	move.w	#8,d0					;8 wide
 	move.w	#4,d1
-	move.w	#$7FF,d2
+	move.w	#$7FF,d2				;blank char
 	jmp	eraser
 ShowReplayBanner					;Show ReplayMap at 0,0 (16 x 11) and stop the replayicontimer timer
 	st	(replayicontimer).w
@@ -329,7 +329,7 @@ ShowReplayBanner					;Show ReplayMap at 0,0 (16 x 11) and stop the replayicontim
 	moveq	#$10,d2
 	moveq	#$B,d3
 	move.w	(ExtraChars).w,d4
-	move.w	#0,d5
+	move.w	#0,d5					;no palette lines
 	movea.l	#ReplayMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
@@ -337,9 +337,9 @@ ShowReplayBanner					;Show ReplayMap at 0,0 (16 x 11) and stop the replayicontim
 EraseReplayBanner					;Erase the 16 x 11 area ShowReplayBanner drew
 	jsr	(printz).l					;map at the top left
 	String	-(TXPRI+TXMAP3),2,2
-	move.w	#$10,d0
+	move.w	#$10,d0					;16 wide
 	move.w	#$B,d1
-	move.w	#$7FF,d2
+	move.w	#$7FF,d2				;blank char
 	jmp	eraser
 suba4								;a4 = current replay frame. Back up 1 frame and set video parameters for
 									;display.
@@ -363,7 +363,7 @@ adda4								;Step forward 1 frame. First handles a reverse
 	bclr	#6,(sflags4).w			;reverse angle change?
 	beq.w	.1
 	movem.l	d0-d7/a0-a6,-(sp)
-	bchg	#4,(sflags4).w
+	bchg	#4,(sflags4).w			;toggle reverse angle
 	move.w	(Hpos).w,-(sp)
 	move.w	(Vpos).w,-(sp)
 	bsr.w	forceblack2
@@ -372,7 +372,7 @@ adda4								;Step forward 1 frame. First handles a reverse
 	jsr	(ReloadRinkGraphics).l
 	clr.w	(Hpos).w
 	clr.w	(Vpos).w
-	move.w	#$7D0,(Oldrow).w
+	move.w	#$7D0,(Oldrow).w		;redraw all rows
 	move.w	#1,d0
 .loop								;2 frames to redraw
 	jsr	(setvideo).l
@@ -388,22 +388,22 @@ adda4								;Step forward 1 frame. First handles a reverse
 	movem.l	a0,-(sp)
 	movea.l	#SortCords+(12*SCstruct),a0
 	move.w	#1,oldframe(a0)
-	adda.w	#$80,a0
+	adda.w	#$80,a0					;object 13
 	move.w	#1,oldframe(a0)
 	movem.l	(sp)+,a0
-	bsr.w	RevReplayAdj
+	bsr.w	RevReplayAdj			;reverse adjust
 	btst	#sfscrl,(sflags).w		;scrolling?
 	beq.w	*+4
 .0									;(not branched to)
 	jsr	(ShowReplayIcon).l
-	move.w	#$64,(palcount).w
+	move.w	#$64,(palcount).w		;copy now
 	movem.l	(sp)+,d0-d7/a0-a6
 .1									;end of the reload
 	clr.w	d7
 	btst	#sf2drec,(sflags2).w	;recording?
 	beq.w	adda42
 	movem.l	a4,-(sp)
-	bsr.w	adda43
+	bsr.w	adda43					;look ahead
 	cmpa.l	(recbpr).w,a4			;at the newest?
 	movem.l	(sp)+,a4
 	beq.w	rtss8
@@ -524,12 +524,12 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	bge.w	.3
 	btst	#4,(sflags4).w			;reverse angle?
 	beq.w	.3
-	move.w	#$190,Ypos(a3)
+	move.w	#$190,Ypos(a3)			;glass Y
 .3									;glass shatter moved for reverse angle
 	move.w	(a0),d2					;frame word
 	asr.w	#3,d2
-	andi.w	#$1800,d2
-	andi.w	#$E7FF,attribute(a3)
+	andi.w	#$1800,d2				;flip bits
+	andi.w	#$E7FF,attribute(a3)	;flip bits
 	or.w	d2,attribute(a3)
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	beq.w	.4
@@ -540,7 +540,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	bge.w	.4
 	bchg	#3,attribute(a3)		;change X flip attribute for object
 .4									;fight frames flipped
-	addq.w	#4,a0
+	addq.w	#4,a0					;next object data
 	adda.w	#SCstruct,a3
 	dbf	d1,.top						;loop to next object
 	moveq	#5,d2					;6 pairs of players
@@ -548,7 +548,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 .loop								;each pair of players
 	move.b	(a0)+,rostnum(a3)		;loop over the 6 pairs of players
 	move.b	(a0),d0					;position byte
-	andi.w	#$F,d0
+	andi.w	#$F,d0					;low nibble
 	cmp.w	#$F,d0					;$F?
 	bne.w	.5
 	moveq	#-1,d0
@@ -556,13 +556,13 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	move.w	d0,position(a3)			;position of the first player of the pair
 	adda.w	#SCstruct,a3
 	move.b	(a0)+,d0
-	lsr.b	#4,d0
+	lsr.b	#4,d0					;high nibble
 	move.b	d0,rostnum(a3)
 	move.b	(a0),d0
-	asl.b	#4,d0
+	asl.b	#4,d0					;low nibble up
 	or.b	d0,rostnum(a3)
 	move.b	(a0)+,d0				;position byte
-	lsr.b	#4,d0
+	lsr.b	#4,d0					;high nibble
 	andi.w	#$F,d0
 	cmp.w	#$F,d0					;$F?
 	bne.w	.6
@@ -585,7 +585,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	move.w	(a0)+,d0
 	andi.w	#$FFF,d0
 	andi.w	#$F000,(PadControlBits).w
-	or.w	d0,(PadControlBits).w
+	or.w	d0,(PadControlBits).w	;merge them
 	move.w	(a0)+,(Crowdframe).w	;crowd frame
 	move.w	(a0)+,(glovecords).w
 	move.b	(a0)+,(PBnum).w			;penalty box count
@@ -599,7 +599,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	movea.w	a5,a3
 	btst	#sf3track,(sflags3).w	;tracking an object?
 	beq.w	.cam					;tracking?
-	clr.w	camidle(a5)
+	clr.w	camidle(a5)				;camera moving
 	move.w	camtrack(a5),d0
 	asl.w	#7,d0					;* SCstruct
 	movea.w	#(SortCords-M68K_RAM),a3
@@ -651,7 +651,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	tst.w	(replaydelay).w			;delay?
 	beq.w	.rec
 	subq.w	#1,(replaydelay).w
-	bpl.w	.0
+	bpl.w	.0						;still delaying
 	clr.w	(replaydelay).w
 	bra.w	.rec
 .0									;sf2drec clear or replaydelay >= 0
@@ -662,7 +662,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.l	#M68K_RAM,(recbpr).w	;back to the start
 .rec								;record into the next slot
 	movea.l	(recbpr).w,a0			;a0 = the record slot
-	moveq	#$F,d2
+	moveq	#$F,d2					;16 objects
 	movea.w	#(SortCords-M68K_RAM),a3
 .top								;pack each of the 16 objects
 	clr.l	(a0)					;loop over the 16 objects: pack x, y, frame, flip bits
@@ -678,9 +678,9 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	asl.w	#4,d1
 	or.w	d1,(a0)
 	move.w	attribute(a3),d1
-	andi.w	#$1800,d1
+	andi.w	#$1800,d1				;flip bits
 	asl.w	#3,d1
-	or.w	d1,(a0)
+	or.w	d1,(a0)					;merge them
 	addq.w	#4,a0
 	adda.w	#SCstruct,a3
 	dbf	d2,.top						;loop
@@ -690,7 +690,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.b	rostnum(a3),(a0)+		;loop over the 6 pairs of players
 	move.w	position(a3),d0
 	bpl.w	.n0
-	moveq	#$F,d0
+	moveq	#$F,d0					;not on ice
 .n0									;off the ice: $F
 	andi.w	#$F,d0					;position nibble
 	move.b	d0,(a0)
@@ -699,11 +699,11 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	asl.w	#4,d0
 	or.b	d0,(a0)+
 	move.b	rostnum(a3),d0
-	lsr.b	#4,d0
+	lsr.b	#4,d0					;high nibble
 	move.b	d0,(a0)
 	move.w	position(a3),d0
 	bpl.w	.n1
-	moveq	#$F,d0
+	moveq	#$F,d0					;not on ice
 .n1									;position nibble ready
 	asl.w	#4,d0					;position to the high nibble
 	or.b	d0,(a0)+
@@ -712,7 +712,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.b	(puckz+1).w,(a0)+
 	move.b	(SortCords+((puckscnum+1)*SCstruct)+Zpos+1).w,(a0)+
 	move.b	(lastsfx+1).w,(a0)+
-	bset	#7,(lastsfx+1).w
+	bset	#7,(lastsfx+1).w		;cue saved
 	move.b	d7,(a0)+
 	move.w	(PadControlBits).w,(a0)+
 	move.w	(Crowdframe).w,(a0)+	;crowd frame
@@ -799,50 +799,50 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	beq.w	.4
 	bra.w	.top2
 .1									;front boards: the wall Y
-	move.w	#$124,d0
+	move.w	#$124,d0				;wall Y
 	cmpi.w	#$56,(FallXPos).w		;right corner?
 	bgt.w	.2
 	cmpi.w	#$FFAA,(FallXPos).w		;middle?
 	bgt.w	.3
 .2									;near a corner: the closer wall
-	move.w	#$116,d0
+	move.w	#$116,d0				;closer wall
 .3									;set Y on the wall
 	move.w	d0,Ypos(a3)
 	bra.w	.top2
 .4									;back boards
-	move.w	#$FEDC,d0
+	move.w	#$FEDC,d0				;wall Y
 	cmpi.w	#$56,(FallXPos).w		;right corner?
 	bgt.w	.5
 	cmpi.w	#$FFAA,(FallXPos).w		;middle?
 	bgt.w	.6
 .5									;near a corner: the closer wall
-	move.w	#$FEEA,d0
+	move.w	#$FEEA,d0				;closer wall
 .6									;set Y on the wall
 	move.w	d0,Ypos(a3)
 	bra.w	.top2
 .7									;right boards
-	move.w	#$82,(a3)
+	move.w	#$82,(a3)				;wall X
 	btst	#3,attribute(a3)		;flipped?
 	beq.w	.top2
-	move.w	#$FF7E,(a3)
+	move.w	#$FF7E,(a3)				;other side
 	bra.w	.top2
 .8									;right bench boards
-	move.w	#$88,(a3)
+	move.w	#$88,(a3)				;wall X
 	btst	#3,attribute(a3)		;flipped?
 	beq.w	.top2
-	move.w	#$FF78,(a3)
+	move.w	#$FF78,(a3)				;other side
 	bra.w	.top2
 .9									;left boards
-	move.w	#$FF7E,(a3)
+	move.w	#$FF7E,(a3)				;wall X
 	btst	#3,attribute(a3)		;flipped?
 	beq.w	.top2
-	move.w	#$82,(a3)
+	move.w	#$82,(a3)				;other side
 	bra.w	.top2
 .10									;left bench boards
-	move.w	#$FF78,(a3)
+	move.w	#$FF78,(a3)				;wall X
 	btst	#3,attribute(a3)		;flipped?
 	beq.w	.top2
-	move.w	#$88,(a3)
+	move.w	#$88,(a3)				;other side
 .top2								;each player on the ice
 	tst.w	position(a3)			;check if on ice
 	bmi.w	.nf1					;branch if not on ice
@@ -867,7 +867,7 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	move.b	pnum(a3),d0				;player offset on roster
 	bmi.w	.11
 	add.w	d0,d0
-	addi.w	#$136,d0
+	addi.w	#$136,d0				;ice time table
 	jsr	(loadTeamStruct).l			;a2 = team struct
 	addq.w	#1,0(a2,d0.w)			;add 1 to TOI for player
 .11									;ice time counted
@@ -875,15 +875,15 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	beq.w	.done
 	cmpi.w	#SPAinjury1,SPA(a3)
 	beq.w	.done
-	moveq	#$11,d4
+	moveq	#$11,d4					;NTSC speed
 	tst.w	(PalMode).w				;PAL?
 	beq.w	.notoside
-	moveq	#$16,d4
+	moveq	#$16,d4					;PAL speed
 .notoside							;speed scale for NTSC or PAL
 	mulu.w	d7,d4
 	tst.w	Zpos(a3)
 	bne.w	.y2
-	moveq	#6,d2
+	moveq	#6,d2					;normal deceleration
 	btst	#pfdoff,pflags(a3)		;pfdoff - player deceleration
 	beq.w	.off
 	moveq	#9,d2					;this value used when player receiving pass. Also the puck will use this
@@ -946,7 +946,7 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 .done								;movement done
 	move.w	SCnum(a3),d6
 	cmp.w	(puckc).w,d6			;check if puck carrier
-	bne.w	.tp
+	bne.w	.tp						;not puck carrier
 	btst	#pf2fight,pflags2(a3)	;pf2fight - check if fighting
 	bne.w	.tp
 	btst	#sfhor,(sflags).w		;#sfhor - check if in horiz mode
@@ -959,7 +959,7 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	tst.w	(holdreset).w			;reset hold?
 	beq.w	.tp2
 	subq.w	#1,(holdreset).w
-	beq.w	.12
+	beq.w	.12						;ran out
 	bpl.w	.tp2
 .12									;hold timer ran out: reset the hold timers
 	clr.w	(holdreset).w
@@ -970,7 +970,7 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	bne.w	.t0
 	bsr.w	ReadJoy1
 	clr.w	d4						;pad index for cont 1 player
-	move.w	#$FFFF,(joypuckcarrier).w
+	move.w	#$FFFF,(joypuckcarrier).w	;home pad
 	bsr.w	doinput
 	bra.w	.t1
 .t0									;d6 <> c1playernum
@@ -1021,7 +1021,7 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	cmp.w	(c4playernum).w,d6		;pad 4's player?
 	bne.w	.t1cont
 	jsr	(ReadJoy4).l
-	moveq	#2,d4
+	moveq	#2,d4					;pad index 2
 	move.w	#1,(joypuckcarrier).w
 	move.w	(cont2team).w,-(sp)		;swap pad 4 into pad 2
 	move.w	(cont4team).w,(cont2team).w
@@ -1087,7 +1087,7 @@ updateanim							;frame switch control on struct a3
 	bclr	#pf2aip,pflags2(a3)		;clear anim in progress
 	rts
 .ia									;an animation is set
-	movea.l	#SPAlist,a0
+	movea.l	#SPAlist,a0				;animation data tables
 	adda.w	SPA(a3),a0				;add SPA to a0 address
 	move.w	SPAattr(a0),d1			;16 dec - attributes for anim
 	move.w	facedir(a3),d0
@@ -1098,7 +1098,7 @@ updateanim							;frame switch control on struct a3
 	subq.w	#2,d0					;direction adjust for horizontal rink
 	andi.w	#7,d0
 .nhor								;direction ready
-	btst	#3,attribute(a3)
+	btst	#3,attribute(a3)		;x flip flag
 	beq.w	.nox					;branch if no flip
 	neg.w	d0
 	addq.w	#8,d0					;add 8 to d0 for flipping
@@ -1163,15 +1163,15 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	btst	#pfgoal,pflags(a3)		;top goal?
 	beq.w	.gd
 	add.w	d0,(yleader).w
-	cmpi.w	#$32,(yleader).w
+	cmpi.w	#$32,(yleader).w		;.ylmax = 50
 	blt.w	.0
-	move.w	#$32,(yleader).w
+	move.w	#$32,(yleader).w		;limit
 	bra.w	.0
 .gd									;pfgoal clear
 	sub.w	d0,(yleader).w
 	cmpi.w	#$FFCE,(yleader).w		;past -$32?
 	bgt.w	.0
-	move.w	#$FFCE,(yleader).w
+	move.w	#$FFCE,(yleader).w		;limit
 .0									;leader at its limit
 	move.w	Yvel(a3),d2				;target y = Ypos + Yvel/128 + yleader
 	asr.w	#7,d2
@@ -1186,10 +1186,10 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	cmp.w	#$FFF6,d0				;near the top?
 	bge.w	.1
 	move.w	d2,d1
-	subi.w	#$FFF6,d1
+	subi.w	#$FFF6,d1				;-.ylim
 	cmp.w	#$FF38,d1				;past -$C8?
 	bgt.w	.2
-	move.w	#$FF38,d1
+	move.w	#$FF38,d1				;limit
 	bra.w	.2
 .1									;below the top edge zone
 	cmp.w	#$A,d0					;near the bottom?
@@ -1198,13 +1198,13 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	subi.w	#$A,d1
 	cmp.w	#$100,d1				;past $100?
 	blt.w	.2
-	move.w	#$100,d1
+	move.w	#$100,d1				;limit
 .2									;scroll target set
 	sub.w	(Vpos).w,d1				;d1 = distance to scroll
 	beq.w	.2x
 	asr.w	#4,d1
 	bne.w	.v2
-	addq.w	#1,d1
+	addq.w	#1,d1					;at least 1
 .v2									;at least 1 pixel
 	add.w	d1,(Vpos).w
 .2x									;vertical done
@@ -1216,7 +1216,7 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	subi.w	#$FFD8,d1
 	cmp.w	#$FFC4,d1				;past -$3C?
 	bge.w	.4
-	move.w	#$FFC4,d1
+	move.w	#$FFC4,d1				;limit
 	bra.w	.4
 .3									;right of the left edge zone
 	cmp.w	#$28,d0					;near the right?
@@ -1225,13 +1225,13 @@ checkwindow							;set Hpos and Vpos according to how the screen should follow t
 	subi.w	#$28,d1
 	cmp.w	#$3C,d1					;past $3C?
 	ble.w	.4
-	move.w	#$3C,d1
+	move.w	#$3C,d1					;limit
 .4									;scroll target set
 	sub.w	(Hpos).w,d1
 	beq.w	.x
 	asr.w	#4,d1
 	bne.w	.h2
-	addq.w	#1,d1
+	addq.w	#1,d1					;at least 1
 .h2									;at least 1 pixel
 	add.w	d1,(Hpos).w
 .x									;exit (also the end of the code above)

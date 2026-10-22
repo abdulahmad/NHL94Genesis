@@ -120,7 +120,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	bne.w	.0						;top net: the direction is already right
 	movea.l	#passdirlist,a0			;bottom net: use the mirrored direction
 	add.w	d0,d0
-	move.w	0(a0,d0.w),d0
+	move.w	0(a0,d0.w),d0			;mirrored
 .0									;direction ready
 	move.w	d0,(passdir).w			;move d0 into passdir
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -139,7 +139,7 @@ StartShootoutPath					;Shootout: pick one of the 7 skate paths (ShootoutPaths) a
 									;puckshootout
 	movem.l	d0-d7/a0-a6,-(sp)
 .loop								;random 0-6
-	move.w	#7,d0
+	move.w	#7,d0					;random 0-7
 	jsr	(randomd0).l
 	cmp.w	#6,d0
 	bgt.s	.loop					;7 is out of range: pick again
@@ -191,19 +191,19 @@ NextPathPoint						;Next point of shootout path sopath: sopathx / sopathy = x (t
 	movea.l	#ShootoutPaths,a0
 	move.w	(sopath).w,d1
 	asl.w	#2,d1					;4 bytes per path address
-	movea.l	0(a0,d1.w),a0
-	move.w	0(a0,d0.w),(sopathx).w
+	movea.l	0(a0,d1.w),a0			;its points
+	move.w	0(a0,d0.w),(sopathx).w	;point X
 	btst	#0,handed(a3)			;left handed: mirror the path
 	beq.w	.0
 	neg.w	(sopathx).w
 .0									;point X ready
-	move.w	2(a0,d0.w),(sopathy).w
+	move.w	2(a0,d0.w),(sopathy).w	;point Y
 	cmpi.b	#$80,4(a0,d0.w)			;next entry not the end marker: done
 	bne.w	.x
 	bset	#3,(sflags7).w			;end reached: flag it and keep the end values
 	clr.w	(sopathend).w
-	move.b	5(a0,d0.w),(sopathend+1).w
-	move.w	6(a0,d0.w),(sopathdir).w
+	move.b	5(a0,d0.w),(sopathend+1).w	;end distance
+	move.w	6(a0,d0.w),(sopathdir).w	;end pass direction
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -229,7 +229,7 @@ SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bott
 	tst.w	Yvel(a3)				;moving?
 	bne.w	.2
 	cmp.w	#$12,d0					;standing: within $12 is close enough
-	ble.w	.3
+	ble.w	.3						;close enough
 .2									;moving: within $A
 	cmp.w	#$A,d0					;within $A?
 	bgt.w	.7
@@ -242,8 +242,8 @@ SkatePath							;Shootout skate path: d0 / d1 = the point (mirrored for the bott
 	bne.w	.5						;moving: the closer limit
 	tst.w	Yvel(a3)				;moving?
 	bne.w	.5
-	cmp.w	#$12,d1
-	ble.w	.nextpt
+	cmp.w	#$12,d1					;standing: within $12
+	ble.w	.nextpt					;close enough
 .5									;moving: within $A
 	cmp.w	#$A,d1					;within $A?
 	bgt.w	.7
@@ -272,11 +272,11 @@ ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (
 	btst	#3,(sflags7).w			;at the path end?
 	bne.w	.0						;at the path end: check the distance
 	tst.w	(puckvx).w				;puck moving?
-	bne.w	.yes
+	bne.w	.yes					;puck moving: shoot
 	tst.w	(puckvy).w				;puck moving?
 	bne.w	.yes
 	cmpi.w	#$F,(shootoutclock).w	;puck stopped: shoot from tick $F
-	blt.w	.no
+	blt.w	.no						;before tick $F
 	bra.w	.yes
 .0									;path end reached: compare the distance to the last point with sopathend
 	move.w	(sopathx).w,d0
@@ -302,7 +302,7 @@ ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (
 	clr.w	d0
 	bra.w	.x
 .yes								;shoot: d0 = 1
-	move.w	#1,d0
+	move.w	#1,d0					;shoot
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -329,37 +329,37 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	addi.l	#$50000000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$1C000000,d2
+	andi.l	#$1C000000,d2			;pixel 1
 	lsr.l	#2,d2
 	addi.l	#$5000000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$3800000,d2
+	andi.l	#$3800000,d2			;pixel 2
 	lsr.l	#3,d2
 	addi.l	#$500000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$700000,d2
+	andi.l	#$700000,d2				;pixel 3
 	lsr.l	#4,d2
 	addi.l	#$50000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$E0000,d2
+	andi.l	#$E0000,d2				;pixel 4
 	lsr.l	#5,d2
 	addi.l	#$5000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$1C000,d2
+	andi.l	#$1C000,d2				;pixel 5
 	lsr.l	#6,d2
 	addi.l	#$500,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$3800,d2
+	andi.l	#$3800,d2				;pixel 6
 	lsr.l	#7,d2
 	addi.l	#$50,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
-	andi.l	#$700,d2
+	andi.l	#$700,d2				;pixel 7
 	move.w	#8,d5
 	lsr.l	d5,d2
 	addq.l	#5,d2
@@ -376,8 +376,8 @@ LoadHomeTeamGfx						;Load the HomeTeam graphics of TeamGfxList to VRAM d4 - $18
 	movea.l	#TeamGfxList,a2
 	move.w	(HomeTeam).w,d0
 	asl.w	#2,d0
-	movea.l	0(a2,d0.w),a2
-	addq.w	#8,a2
+	movea.l	0(a2,d0.w),a2			;its graphics
+	addq.w	#8,a2					;skip the header
 	jsr	(DecompressGraphicsPlain).l
 	move.w	(sp)+,d0
 	rts
@@ -409,13 +409,13 @@ PrintParenNumber					;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3 
 									;PushNumberWidth) and ")"
 	move.b	0(a2,d0.w),d0
 	ext.w	d0
-	move.w	#1,d1
+	move.w	#1,d1					;width 1 digit
 	cmp.w	#9,d0					;over 9?
 	ble.w	.0						;up to 9: 1 digit
-	move.w	#2,d1
+	move.w	#2,d1					;2 wide
 	cmp.w	#$63,d0					;up to 99: 2 digits
 	ble.w	.0						;up to 99: 2 digits
-	move.w	#3,d1
+	move.w	#3,d1					;3 wide
 .0									;width chosen
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
@@ -453,7 +453,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	move.w	#$116,d0
 .2									;wall Y chosen: move half way there
 	sub.w	Ypos(a3),d0
-	bmi.w	.x
+	bmi.w	.x						;already past it
 	asr.w	#1,d0
 	add.w	d0,Ypos(a3)
 	bra.w	.x
@@ -467,7 +467,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	move.w	#$FEEA,d0
 .5									;wall Y chosen: move half way there
 	sub.w	Ypos(a3),d0
-	bpl.w	.x
+	bpl.w	.x						;already past it
 	asr.w	#1,d0
 	add.w	d0,Ypos(a3)
 	bra.w	.x
@@ -482,30 +482,30 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	add.w	d0,(a3)
 	bra.w	.x
 .8									;right bench boards: a little further out
-	move.w	#$88,d0
+	move.w	#$88,d0					;bench wall X
 	btst	#3,attribute(a3)		;attribute bit 3: the other side
 	beq.w	.9
-	move.w	#$FF78,d0
+	move.w	#$FF78,d0				;other side
 .9									;move half way there
 	sub.w	(a3),d0
 	asr.w	#1,d0
 	add.w	d0,(a3)
 	bra.w	.x
 .10									;left boards
-	move.w	#$FF7E,d0
+	move.w	#$FF7E,d0				;wall X
 	btst	#3,attribute(a3)		;attribute bit 3: the other side
 	beq.w	.11
-	move.w	#$82,d0
+	move.w	#$82,d0					;other side
 .11									;move half way there
 	sub.w	(a3),d0
 	asr.w	#1,d0
 	add.w	d0,(a3)
 	bra.w	.x
 .12									;left bench boards
-	move.w	#$FF78,d0
+	move.w	#$FF78,d0				;bench wall X
 	btst	#3,attribute(a3)		;attribute bit 3: the other side
 	beq.w	.13
-	move.w	#$88,d0
+	move.w	#$88,d0					;other side
 .13									;move half way there
 	sub.w	(a3),d0
 	asr.w	#1,d0
@@ -524,7 +524,7 @@ GetLeagueCrowdRecord				;d0 = the team (of NumTeams) with the highest crowd reco
 	clr.w	d2
 	move.b	crpeak(a0),d2
 	bne.w	.0						;a record: use it
-	move.w	#$50,d2
+	move.w	#$50,d2					;none: $50 dB
 .0									;this team's peak
 	cmp.w	d7,d2					;higher?
 	ble.w	.next
@@ -546,11 +546,11 @@ RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when
 									;foy <= $C0. Called from puckfaceoff
 	movem.l	a0,-(sp)
 	movea.l	#FaceoffAnims,a0
-	move.w	#$64,d0
+	move.w	#$64,d0					;random 0-99
 	jsr	(randomd0).l
 	andi.w	#7,d0
 	add.w	d0,d0
-	move.w	0(a0,d0.w),d0
+	move.w	0(a0,d0.w),d0			;the animation number
 	cmpi.w	#$FFC0,(fox).w			;dropped left of center?
 	bgt.w	.x						;puck dropped off center: keep the random one
 	cmpi.w	#$C0,(foy).w			;dropped below?
@@ -584,7 +584,7 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	moveq	#1,d6
 	movea.l	#PlayoffSprite,a0
 	move.w	(energybarchars).w,d3
-	ori.w	#$8000,d3
+	ori.w	#$8000,d3				;high priority
 	move.w	(playoffspritex).w,d0
 	move.w	(playoffspritey).w,d1
 	move.w	#1,d2					;frame 1
@@ -602,8 +602,8 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	rts
 HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 frames or a
 									;button (waitx). Called from Begin (attract mode)
-	move.l	#vb2,(VBint).w
-	bclr	#df32c,(disflags).w
+	move.l	#vb2,(VBint).w			;plain vblank
+	bclr	#df32c,(disflags).w		;40 cell mode
 	move.w	#5,(Map3col).w			;map layout of this screen
 	move.w	#$A000,(VmMAP2).w
 	move.w	#7,(Map2col).w
@@ -612,7 +612,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	move.w	#$F000,(VmMAP3).w
 	move.w	#$F800,(VSPRITES).w
 	move.w	#$FC00,(VSCRLPM).w
-	jsr	(forceblack).l
+	jsr	(forceblack).l				;screen off
 	movea.w	#(palfadenew-M68K_RAM),a0
 	moveq	#$1F,d1					;clear the palette fade target
 .loop								;clear 32 longs
@@ -631,7 +631,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	move.w	(a1),d2
 	move.w	mapheight(a1),d3
 	clr.w	d4
-	moveq	#$F,d5
+	moveq	#$F,d5					;palette lines 0-3
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the picture
 	String	-(TXPRI+TXMAP2),$10,$10
@@ -644,7 +644,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	mapheight(a1),d3
-	moveq	#0,d5
+	moveq	#0,d5					;no palette lines
 	jsr	(dobitmap).l
 	move.w	#$18,(palcount).w		;fade in over $18 frames
 	move	#$2500,sr
@@ -653,11 +653,11 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	moveq	#4,d0
 	jsr	(waitx).l
 	tst.w	d1						;any?
-	bne.w	.0
+	bne.w	.0						;button: leave
 	subq.w	#1,(seed).w
 	bpl.s	.loop2
 .0									;timed out or a button
-	move	#$2700,sr
+	move	#$2700,sr				;interrupts off
 	rts
 GetTeamStruct						;a2 = tmstruct, or AwShots when team d2 is not tmteam of tmstruct.
 									;Called from PrintStartingLine
@@ -672,13 +672,13 @@ CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for 
 	movem.l	d1-d7/a0,-(sp)
 	btst	#gmclock,(gmode).w		;clock running?
 	bne.w	.x						;no count while the clock is stopped
-	move.w	(TempWord1).w,d1
-	movea.l	#homepresses,a0
+	move.w	(TempWord1).w,d1		;pad direction
+	movea.l	#homepresses,a0			;home pad counters
 	tst.w	d4						;away pad?
 	beq.w	.0
 	movea.l	#awaypresses,a0
 .0									;pad counter chosen
-	addq.l	#1,(a0)
+	addq.l	#1,(a0)					;every press counts
 	cmp.w	#8,d1
 	beq.w	.x						;no direction: not a turn
 	cmp.w	facedir(a3),d1
@@ -712,7 +712,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	adda.w	(namelength).w,a1		;end the name with 0
 	move.b	#0,(a1)
 	addq.w	#1,(namelength).w
-	andi.w	#$FFFE,(namelength).w
+	andi.w	#$FFFE,(namelength).w	;rounded to even
 	addq.w	#2,(namelength).w		;rounded to even + the header
 	move.w	(namelength).w,(nameentrybuf).w
 	movea.l	#nameentrybuf,a1
@@ -722,7 +722,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	bsr.w	CopyString				;copy "(played by "
 	movea.l	(sp)+,a1
 	movea.l	#TempBuffer,a3
-	jsr	(appstring).l
+	jsr	(appstring).l				;append the name
 	movea.l	#TempBuffer,a3
 	jsr	(appendz).l
 	String	')'
@@ -740,7 +740,7 @@ PlayedByNone						;PlayedByHome: no name
 PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	(awayuser).w,d0
-	bra.w	PlayedByText
+	bra.w	PlayedByText			;share the body
 SetSflags8Bit1						;Always sets sflags8 bit 1 (the bclr is skipped).
 									;Called from updateplayers
 	bra.w	.set					;(the bclr below is always skipped)
@@ -818,11 +818,11 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 									;the vblank VBlank_TitleScreen, song $78, then the
 									;scrolling credits (Credits, CreditsList text; CreditsPrintRow,
 									;CreditsWait) until start. Called from Opening
-	move	#$2700,sr
+	move	#$2700,sr				;interrupts off
 	move.w	(HVcount).l,(seed).w	;seed the random numbers from the beam position
 	move.w	(HVcount).l,(seed+2).w
 	move.l	#VBlank_TitleScreen,(VBint).l
-	bset	#df32c,(disflags).w
+	bset	#df32c,(disflags).w		;32 cell mode
 	move.w	#5,(Map3col).w
 	move.w	#$A000,(VmMAP2).w
 	move.w	#7,(Map2col).w
@@ -842,13 +842,13 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	String	-TXMAP1,0,0
 	move.l	#$80,d0					;clear both text maps
 	moveq	#$20,d1
-	move.l	#$7FF,d2
+	move.l	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(printz).l					;map 3 at the top left
 	String	-TXMAP2,0,0
 	move.l	#$80,d0
 	moveq	#$20,d1
-	move.l	#$7FF,d2
+	move.l	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	clr.w	d4
 	move.w	d4,-(sp)
@@ -863,7 +863,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	#$17,d3
-	moveq	#$F,d5
+	moveq	#$F,d5					;palette lines 0-3
 	jsr	(dobitmap).l
 	move.w	d4,(TempWord1).w
 	move.w	(sp)+,d4
@@ -878,10 +878,10 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move.w	#$17,d1
 	move.w	(a1),d2
 	move.w	#5,d3
-	moveq	#0,d5
+	moveq	#0,d5					;no palette lines
 	bset	#0,(sflags6).w			;bit 0 of sflags6: dobitmap uses the map as is
 	jsr	(dobitmap).l
-	bclr	#0,(sflags6).w
+	bclr	#0,(sflags6).w			;normal maps
 	move.w	(TempWord1).w,d4
 	jsr	(printz).l					;map at the shield
 	String	-(TXPRI+TXMAP2),1,1
@@ -894,7 +894,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	mapheight(a1),d3
-	moveq	#8,d5
+	moveq	#8,d5					;palette line 3
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the NHLPA logo
 	String	-(TXPRI+TXMAP2),$19,1
@@ -907,7 +907,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	mapheight(a1),d3
-	moveq	#0,d5
+	moveq	#0,d5					;no palette lines
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the title
 	String	-(TXPRI+TXMAP2),1,$E
@@ -920,7 +920,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	mapheight(a1),d3
-	moveq	#8,d5
+	moveq	#8,d5					;palette line 3
 	jsr	(dobitmap).l
 	clr.w	(palfadenew).w			;color 0 black and the fade targets cleared
 	clr.l	(fofdata2).w
@@ -939,11 +939,11 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move.w	#$D0,(playoffspritey).w
 	clr.w	(asv).w					;(sprite and fade setup for the title)
 	move.w	#$FFCE,(DispAttribCtr).w	;attribute display counter
-	move.w	#$20,(palcount).w
+	move.w	#$20,(palcount).w		;fade in
 	move.w	#SngTitle,-(sp)			;the title song
 	jsr	(song).l
 	bsr.w	CreditsLineScroll		;set up the line scroll table
-	move	#$2500,sr
+	move	#$2500,sr				;interrupts on
 .loop								;wait out the first page
 	jsr	(CreditsWait).l				;one frame
 	tst.w	(clampcounter).w		;page time left?
@@ -962,7 +962,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 .loop4								;one line up every 2 frames
 	jsr	(CreditsWait).l				;frame
 	jsr	(CreditsWait).l				;frame
-	addq.w	#1,(Vscroll).w
+	addq.w	#1,(Vscroll).w			;scroll one line
 	dbf	d4,.loop4					;loop
 	moveq	#$78,d4					;hold it $78 frames
 .loop5								;wait
@@ -975,14 +975,14 @@ CreditsPrintRow						;Credits: clear the row below the screen (Vscroll / 8 + $1C
 									;Strings from a1 centred there
 	move.w	(Vscroll).w,d0
 	asr.w	#3,d0					;the row just below the screen
-	addi.w	#$1C,d0
-	andi.w	#$1F,d0
+	addi.w	#$1C,d0					;plus $1C rows
+	andi.w	#$1F,d0					;wrap at 32
 	move.w	d0,(printy).w
 	move.w	d0,-(sp)
 	clr.w	(printx).w
 	moveq	#$20,d0					;clear 6 rows there
 	moveq	#6,d1
-	move.w	#$7FF,d2
+	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	move.w	(sp)+,(printy).w
 .loop								;each String of the entry
@@ -1047,7 +1047,7 @@ CreditsLineScroll					;Credits: the line scroll table at SortCords
 	move.w	#$50,(TempWord2).w		;first update after $50 frames
 	move.w	#$50,d0					;$51 lines: the top part, slanted
 	movea.l	#SortCords,a0
-	move.l	#$FD80,d1
+	move.l	#$FD80,d1				;start far left
 .loop								;fill the top lines
 	move.l	d1,(a0)+
 	btst	#0,d0					;every other line one pixel further
@@ -1075,11 +1075,11 @@ CreditsScrollStep					;Credits: line scroll step, every TempWord2 frames
 .loop								;step each line
 	tst.l	(a0)+
 	cmp.w	#$28,d0					;the top $28 lines stay still
-	ble.w	.2
+	ble.w	.2						;top lines: still
 	move.w	(Hscroll).w,d1
 	cmp.w	#$8F,d0					;lines from $8F: move right
-	blt.w	.1
-	move.w	-2(a0),d2
+	blt.w	.1						;middle lines
+	move.w	-2(a0),d2				;this line
 	beq.w	.2						;already at 0: stays
 	add.w	d1,d2
 	move.w	d2,-2(a0)
@@ -1091,7 +1091,7 @@ CreditsScrollStep					;Credits: line scroll step, every TempWord2 frames
 .1									;middle lines: move left
 	sub.w	d1,-2(a0)
 	bpl.w	.2						;not past 0 yet
-	clr.w	-2(a0)
+	clr.w	-2(a0)					;stop at 0
 .2									;next line
 	dbf	d0,.loop					;loop
 	movem.l	(sp)+,d0-d2/a0
@@ -1143,19 +1143,19 @@ LeadSong							;Not in a shootout (gmode2 bit 1), scores not level: once (sflags
 	lea	tmsize(a2),a3
 	move.w	tmap(a2),d0				;home players on ice
 	sub.w	tmap(a3),d0
-	beq.w	LeadSongExit
+	beq.w	LeadSongExit			;tied: no change
 	bpl.w	.0
 	btst	#sf2pwrtm,(sflags2).w	;away ahead: was it already?
 	bne.w	.1
 	bsr.w	ClearLeadSong			;the lead changed: allow a new song
-	bset	#sf2pwrtm,(sflags2).w
-	bra.w	.1
+	bset	#sf2pwrtm,(sflags2).w	;away lead noted
+	bra.w	.1						;away lead noted
 .0									;home ahead
 	exg	a2,a3						;a3 = the team ahead
 	btst	#sf2pwrtm,(sflags2).w	;home lead already noted?
 	beq.w	.1
 	bsr.w	ClearLeadSong			;the lead changed: allow a new song
-	bclr	#sf2pwrtm,(sflags2).w
+	bclr	#sf2pwrtm,(sflags2).w	;home lead noted
 .1									;lead noted
 	bset	#sf2pwrplay,(sflags2).w	;one song per lead
 	bne.w	LeadSongExit			;already played?
@@ -1185,7 +1185,7 @@ ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf
 	clr.w	(PBnum).w				;no penalty box players
 	clr.w	(Penaltytimer).w
 	clr.w	(PenCntDwn).w
-	move.w	#$10,d0
+	move.w	#$10,d0					;$11 longs
 	movea.l	#PenBuf,a0
 .loop								;clear PenBuf
 	clr.l	(a0)+
@@ -1201,9 +1201,9 @@ clrTmPdst							;Put all 26 players of team struct a0 on the bench (tmpdst -2), 
 	move.w	#$19,d0					;19 = 25 decimal (max roster size)
 	adda.w	#$66,a0					;tmpdst
 .loop								;mark each player
-	move.w	#$FFFE,(a0)+
+	move.w	#$FFFE,(a0)+			;-2 = bench
 	dbf	d0,.loop
-	move.w	#$FFFF,(a0)
+	move.w	#$FFFF,(a0)				;-1 = ice
 	rts
 HotColdIcon							;The icon by the name of player iconplayer of team a2 at x iconx, y $19:
 									;HotIconMap when he is awayhotplayer /
@@ -1228,7 +1228,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	bne.w	.1
 	movea.l	#homecoldplayer,a0
 .1									;team chosen
-	move.w	#0,d0
+	move.w	#0,d0					;1 cold player
 .loop2								;check each cold player
 	move.w	(a0)+,d1
 	cmp.w	(iconplayer).w,d1		;this one?
@@ -1238,7 +1238,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	move.w	#$19,(printy).w
 	move.w	#8,d0
 	move.w	#3,d1
-	move.w	#$7FF,d2
+	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	bra.w	.x
 .hot								;he is hot: the hot icon
@@ -1260,7 +1260,7 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	mapheight(a1),d3
-	moveq	#0,d5
+	moveq	#0,d5					;no palette lines
 	jsr	(dobitmap).l
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0/a0-a1
@@ -1272,7 +1272,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	btst	#6,(sflags5).w			;Check bit 6. This is never set anywhere
 	bne.w	rtsChgplayer
 	movem.l	d0-d6/a0-a1,-(sp)
-	move.w	(puckvx).w,d0
+	move.w	(puckvx).w,d0			;lead puck slightly
 	asr.w	#8,d0
 	add.w	(puckx).w,d0			;plus the puck X
 	move.w	(puckvy).w,d1
@@ -1281,7 +1281,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	movem.w	d0-d1,-(sp)
 	moveq	#5,d2					;6 players of the team
 	move.w	d4,d3
-	eori.w	#2,d3
+	eori.w	#2,d3					;other controller
 	moveq	#-1,d5
 	movea.w	#(SortCords-M68K_RAM),a0
 	movea.w	#(cont1team-M68K_RAM),a1
@@ -1309,7 +1309,7 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	move.w	(BA_Sktr_SCnum).w,d0
 	cmp.w	SCnum(a0),d0			;this one?
 	movem.l	(sp)+,d0
-	beq.w	.1
+	beq.w	.1						;shooter allowed
 	movem.l	d0,-(sp)
 	move.w	(BA_Goalie_SCnum).w,d0
 	cmp.w	SCnum(a0),d0			;this one?
@@ -1323,13 +1323,13 @@ chgplayer							;The pad d4 takes the nearest free skater to where the puck is g
 	muls.w	d0,d0
 	sub.w	Ypos(a0),d1
 	muls.w	d1,d1
-	add.l	d1,d0
+	add.l	d1,d0					;distance squared
 	cmp.l	d5,d0					;closer?
 	bhi.w	.next
 	move.w	SCnum(a0),d1
 	cmp.w	0(a1,d3.w),d1			;other pad's player?
 	beq.w	.next					;the other pad has him
-	move.l	d0,d5
+	move.l	d0,d5					;closest so far
 	move.w	d1,d6
 .next								;next player
 	adda.w	#$80,a0					;size of SCstruct
