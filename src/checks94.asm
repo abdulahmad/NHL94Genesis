@@ -3120,7 +3120,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	bclr	#7,(sflags8).w
 	st	tmtouch2(a2)				;clear last player to touch puck (assist 1)
 	st	tmtouch3(a2)				;clear second last player to touch puck (assist 2)
-	bclr	#tmflast,tmflags(a2)	;tmflags bit 3
+	bclr	#tmflast,tmflags(a2)
 	move.l	#$17,d0					;#afaceoffpl - faceoff player assignment
 .11									;player position
 	bsr.w	assinsert
@@ -4051,7 +4051,7 @@ skatetopuck							;player a3 should skate to puck. d7 = elapse frames
 	sub.w	Ypos(a3),d1				;Ypos
 	movem.w	d0-d1,-(sp)
 	bsr.w	vtoa					;direction from me to the puck
-	cmp.w	facedir(a3),d0			;$54 = facedir
+	cmp.w	facedir(a3),d0
 	movem.w	(sp)+,d0-d1
 	bne.w	.ex						;not facing the puck
 	muls.w	d0,d0
@@ -4073,12 +4073,12 @@ assexit								;exit current assignment on player a3
 ; insert new assignment on player a3
 assinsert							;insert new assignment on player a3. d0 =
 									;assignment. Falls into assreplace
-	subq.w	#1,assnum(a3)			;$36 = assnum
+	subq.w	#1,assnum(a3)
 	andi.w	#7,assnum(a3)
 ; replace current assignment on player a3
 assreplace							;replace current assignment on player a3. d0 = assignment
 	move.l	d1,-(sp)				;push on stack
-	move.w	assnum(a3),d1			;$36 = assnum
+	move.w	assnum(a3),d1
 	move.b	d0,asslist(a3,d1.w)		;replace current assignment with d0 on asslist
 	bset	#pfna,pflags(a3)		;set flag to start new assignment
 	move.l	(sp)+,d1				;pop on stack
@@ -4132,7 +4132,7 @@ GetHot								;push long address of structure to get hot spot from. Hot spot x/y
 	movea.l	$C(sp),a0				;move stored address before sub routine call into a0
 	clr.w	d0						;clear d0
 	clr.w	d1						;clear d1
-	tst.w	frame(a0)				;$6 = frame
+	tst.w	frame(a0)
 	ble.w	.ex						;branch if <= 0
 	movea.l	#HotList,a1				;move HotList address into a1
 	move.w	frame(a0),d0			;move frame into d0
@@ -4490,7 +4490,7 @@ noturn0								;doplayeracc when the wanted direction needs no turn (.ftab entry
 	btst	#pfrev,pflags(a3)
 	bne.w	.ns
 	move.w	#SPAskate,d1
-	btst	#pf2inj,pflags2(a3)		;pflags2 bit 6 uses animation SPAstumble
+	btst	#pf2inj,pflags2(a3)		;injured: stumble animation
 	beq.w	.nb6
 	move.w	#SPAstumble,d1
 .nb6								;set the animation

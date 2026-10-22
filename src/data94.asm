@@ -960,7 +960,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 .1									;(not branched to)
 	sub.w	(AwGoals).w,d0
 	ble.w	.nosong
-	move.w	#SFXhomewin,-(sp)		;song $F: home team won
+	move.w	#SFXhomewin,-(sp)		;home team won (sound effect)
 	jsr	(song).l
 .nosong								;exit: restore the registers
 	movem.l	(sp)+,d0-d5/a0-a4

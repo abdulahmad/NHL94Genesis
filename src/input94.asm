@@ -858,8 +858,8 @@ dopass								;pass the puck in passdir, to the best teammate there if any
 	movem.l	d0-d5/a0-a1,-(sp)
 	bclr	#sfspdir,(sflags).w		;#sfspdir
 	st	(puckc).w					;player is not puck handler anymore
-	move.b	#$10,nopuck(a3)			;$5E = nopuck
-	move.w	SCnum(a3),(lastplayer).w	;$52 = offset of player on ice
+	move.b	#$10,nopuck(a3)
+	move.w	SCnum(a3),(lastplayer).w
 	bclr	#3,(sflags5).w			;Not in NHL Hockey Source
 	beq.w	.noot
 	jsr	(OneTimerTarget).l

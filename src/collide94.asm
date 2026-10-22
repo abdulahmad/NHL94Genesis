@@ -86,7 +86,7 @@ checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Chec
 checkplcoll							;check collision with other players. d2/d3 = x/y cords, a3 = struct. Walk
 									;up and down the OOlist from a3 and call checkcx for each object within
 									;$10 in y. Called from checkcoll
-	btst	#pf2npc,pflags2(a3)		;pflags2 bit 5 (line change mode)
+	btst	#pf2npc,pflags2(a3)		;no player collision?
 	bne.w	.ex
 	cmpi.w	#$B,SCnum(a3)
 	bgt.w	.ex
@@ -180,7 +180,7 @@ checkcx								;d4 = obj. # * 2 for possible collision so check x range and dist
 	bgt.w	.g40
 	moveq	#5,d4					;minimum impact value
 .g40								;add the impact
-	add.w	d4,impact(a3)			;$32 = impact value
+	add.w	d4,impact(a3)
 	add.w	d4,impact(a2)
 	btst	#pf2fight,pflags2(a2)
 	bne.w	.if
@@ -1438,7 +1438,7 @@ checkgoalp							;check for player a3 collision with goal/net a2. Entered from c
 									;Oval goal; skipped for no player coll (pflags2 bit 5), a high
 									;player or a non-player. CheckBump, then wallcoll with sflags6 bit 4 set
 									;(no wall collision bit)
-	btst	#pf2npc,pflags2(a3)		;pflags2 bit 5: no player coll
+	btst	#pf2npc,pflags2(a3)		;no player collision?
 	bne.w	rtss2
 	cmpi.w	#$A,Zpos(a3)
 	bgt.w	rtss2
