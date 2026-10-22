@@ -34,7 +34,7 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	tst.w	(crowdnoisedelay).w		;noise off: wait out the delay first
 	beq.w	.chkon					;delay over: maybe start the noise
 	subq.w	#1,(crowdnoisedelay).w
-	bpl.w	.ex1
+	bpl.w	.ex1					;still waiting
 	clr.w	(crowdnoisedelay).w
 .ex2								;paused: leave the meter alone
 	rts
@@ -48,7 +48,7 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	addq.w	#6,d0
 	cmp.w	(CwdExciteLvl).w,d0		;excitement past it?
 	bgt.w	.ex1					;not loud enough yet
-	bset	#7,(sflags5).w
+	bset	#7,(sflags5).w			;noise on
 	rts
 .chkoff								;noise on: stop it when the excitement drops below (CrowdAvg - $41)^2 / 4
 	move.w	(CrowdAvg).w,d0
@@ -57,11 +57,11 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 	asr.l	#2,d0
 	cmp.w	(CwdExciteLvl).w,d0		;excitement below it?
 	blt.w	.meter					;still loud: keep it on
-	bclr	#7,(sflags5).w
+	bclr	#7,(sflags5).w			;noise off
 .meter								;noise decided: update the meter every $14 ticks
 	sub.w	d7,(CwdChkCntr).w		;d7 = ticks this frame
 	bpl.w	.ex1
-	move.w	#$14,(CwdChkCntr).w
+	move.w	#$14,(CwdChkCntr).w		;restart the countdown
 	addq.w	#1,(CwdChkCnt).w
 	move.w	(CwdExciteLvl).w,d0		;meter = sqrt(level * 4) + $41 (65 dB)
 	ext.l	d0
@@ -85,23 +85,23 @@ Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit
 stopna2								;Slow Xvel and Yvel of a3 toward 0 by $7D0. Called from goalieacc
 	tst.w	Xvel(a3)				;moving left?
 	bpl.w	.xp						;moving right (or still): slow toward 0 from above
-	addi.w	#$7D0,Xvel(a3)
+	addi.w	#$7D0,Xvel(a3)			;slow it
 	bmi.w	.y						;still moving left: next the Y speed
 	clr.w	Xvel(a3)
 .xp									;moving right: slow toward 0 (the left path also falls in here after its
 									;clear)
-	subi.w	#$7D0,Xvel(a3)
+	subi.w	#$7D0,Xvel(a3)			;slow it
 	bpl.w	.y						;still moving right: next the Y speed
 	clr.w	Xvel(a3)
 .y									;now the same for Yvel
 	tst.w	Yvel(a3)				;moving up?
 	bpl.w	.yp						;moving down (or still)
-	addi.w	#$7D0,Yvel(a3)
+	addi.w	#$7D0,Yvel(a3)			;slow it
 	bmi.w	.ex						;still moving up: done
 	clr.w	Yvel(a3)
 .yp									;moving down: slow toward 0 (the up path also falls in here after its
 									;clear)
-	subi.w	#$7D0,Yvel(a3)
+	subi.w	#$7D0,Yvel(a3)			;slow it
 	bpl.w	.ex						;still moving down: done
 	clr.w	Yvel(a3)
 .ex									;exit (also the end of the code above)
@@ -112,13 +112,13 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	bclr	#pf3wall,pflags3(a3)	;clear the wall collision bit
 	move.w	#Sideline,d4
 	sub.w	(wcradiusx).w,d4
-	move.w	#$12A,d5
+	move.w	#$12A,d5				;ywall
 	sub.w	(wcradiusy).w,d5
 	movem.w	d2-d5,-(sp)
 	neg.w	d4						;d4/d5 = the negative edges, moved in by the corner radius
 	neg.w	d5
-	addi.w	#$40,d4
-	addi.w	#$40,d5
+	addi.w	#$40,d4					;radius
+	addi.w	#$40,d5					;plus the radius
 	cmp.w	d5,d3					;past the top corner start: maybe the top corners
 	bgt.w	.ctc
 	cmp.w	d4,d2					;left of the corner circle centre: a corner
@@ -136,7 +136,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	neg.w	d4
 	cmp.w	d4,d2					;right of it?
 	bgt.w	.circle
-	bra.w	.exit
+	bra.w	.exit					;no corner hit
 .circle								;in a corner zone: distance from the circle centre
 	sub.w	d4,d2
 	sub.w	d5,d3
@@ -145,17 +145,17 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	neg.w	d1
 	muls.w	d3,d3
 	muls.w	d2,d2
-	add.l	d2,d3
-	cmp.l	#$1000,d3
+	add.l	d2,d3					;dist from dot
+	cmp.l	#$1000,d3				;.radius^2 = $1000
 	bls.w	.exit					;inside the radius: no corner hit
 	exg	d0,d3						;r = sqrt(dx^2 + dy^2)
 	jsr	(Sroot).l
 	exg	d0,d3
 	ext.l	d0						;cos and sin as 8.8 fractions
-	asl.l	#8,d0
+	asl.l	#8,d0					;cos * 256
 	divs.w	d3,d0
 	ext.l	d1
-	asl.l	#8,d1
+	asl.l	#8,d1					;sin * 256
 	divs.w	d3,d1
 	bsr.w	cornercollb				;bounce off the corner
 .exit								;no corner (or corner done): pop the walls
@@ -301,7 +301,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	movea.l	tmdata(a0),a0
 	adda.w	LineSets(a0),a0
 	movea.l	#TempBuffer,a1
-	move.w	#5,d0
+	move.w	#5,d0					;6 starters
 .player								;each starter
 	move.b	(a0)+,d1
 	subq.b	#1,d1					;roster slots are 1-based
@@ -329,13 +329,13 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 .sort								;bubble sort the 6 pairs by sum, hottest first
 	movea.l	#TempBuffer,a1
 	clr.w	d1
-	move.w	#4,d0
+	move.w	#4,d0					;5 compares
 .cmp								;compare a pair with the next
-	move.b	3(a1),d6
+	move.b	3(a1),d6				;next sum
 	cmp.b	1(a1),d6				;above this one?
 	ble.w	.next					;in order: no swap
 	st	d1							;swapped: d1 set, sort again
-	move.w	2(a1),d2
+	move.w	2(a1),d2				;swap the pairs
 	move.w	(a1),2(a1)
 	move.w	d2,(a1)
 .next								;next pair
@@ -423,10 +423,10 @@ CompareHotColdTotals				;Compare the teams' hot / cold totals (GetHotColdTotal i
 	move.w	#$FFFF,d0
 	cmp.w	#$5E,d2					;small gap?
 	blt.w	.x						;small gap: no text
-	move.w	#$22,d0
+	move.w	#$22,d0					;"Lately" text
 	cmp.w	#$BD,d2					;big gap?
 	blt.w	.x						;big gap: "extremely" well
-	move.w	#$23,d0
+	move.w	#$23,d0					;"extremely" text
 .x									;exit: restore the registers
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
@@ -437,7 +437,7 @@ GetHotColdTotal						;d1 = the hot / cold total of the starters of
 	movea.l	#TempBuffer,a0
 	clr.w	d1
 .sum								;add the sum byte of each pair
-	move.b	1(a0),d2
+	move.b	1(a0),d2				;sum byte
 	ext.w	d2
 	add.w	d2,d1
 	tst.w	(a0)+

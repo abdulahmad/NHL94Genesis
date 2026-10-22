@@ -2,7 +2,7 @@
 
 EASportsScreen						;Called from Begin. Show the EA Sports screen until a button, or $50 x 4
 									;frames (about 5 s)
-	move.l	#vb2,(VBint).w
+	move.l	#vb2,(VBint).w			;vblank handler
 	bclr	#df32c,(disflags).w		;32 cell flag off
 	move.w	#5,(Map3col).w
 	move.w	#$A000,(VmMAP2).w
@@ -20,7 +20,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	bsr.w	setVram_0
 	bsr.w	printz					;map 2 at 0,0
 	String	-TXMAP2,0,0,0
-	movea.l	#EASportsMap,a2
+	movea.l	#EASportsMap,a2			;screen map
 	movea.l	a2,a0					;a0 = map header
 	movea.l	a2,a1					;a1 = map header
 	adda.l	(a2)+,a0				;a0 = tile data
@@ -32,15 +32,15 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	clr.w	d4
 	moveq	#$F,d5
 	bsr.w	dobitmap
-	move.w	#$EEE,(palfadenew).w
-	move.w	#0,(palfadenew+$E).w
-	move.w	#$18,(palcount).w
-	move	#$2500,sr
+	move.w	#$EEE,(palfadenew).w	;colour 0 white
+	move.w	#0,(palfadenew+$E).w	;colour 7 black
+	move.w	#$18,(palcount).w		;fade in
+	move	#$2500,sr				;vblank on
 	move.w	#$50,(seed).w			;frame count down in the random seed word
 .wait	moveq	#4,d0
 	bsr.w	waitx					;4 frames; d1 = buttons
 	tst.w	d1
-	bne.w	.ex
+	bne.w	.ex						;Button pressed
 	subq.w	#1,(seed).w
 	bpl.s	.wait
 .ex	move	#$2700,sr				;end of the wait
