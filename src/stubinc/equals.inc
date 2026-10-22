@@ -425,7 +425,8 @@ pldnum equ 0						;byte: jersey number, 2 BCD digits (un) -> rostnum
 pldweight equ 1						;high nibble weight, low nibble leg power legstr (wl)
 pldlegspd equ 2						;high nibble speed legspd, low nibble offense aioff (so)
 pldaidef equ 3						;high nibble defense aidef, low nibble shot power shotspd (dp)
-pldcheck equ 4						;high nibble checking, bit 0 handed, bits 1-3 fighting (ch)
+pldcheck equ 4						;high nibble checking, bit 0 hand (1 = right in 94 data;
+									;setplayer inverts it into handed), bits 1-3 fighting (ch)
 pldstick equ 5						;high nibble stickhandling stickhand, low nibble shot accuracy (ga)
 pldendur equ 6						;high nibble endurance, low nibble shoot / pass odds spodds (ey)
 pldpass equ 7						;high nibble passing passacc, low nibble aggression aggress (tm)
