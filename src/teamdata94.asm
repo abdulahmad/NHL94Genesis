@@ -99,7 +99,7 @@ AllStarsEast						;ASE
 .godds								;starting goalie weights, 4 nibbles (PickStartingGoalie)
 	dc.b	203,192
 .ls									;8 lines of 8 player numbers
-;		-G,LD,RD,LW,-C,RW,XA,00
+;			-G,LD,RD,LW,-C,RW,XA,00
 	dc.b	01,19,18,07,04,16,09,00	;line 1 NLC (no line changes)
 	dc.b	01,19,18,07,04,16,10,00	;line 2 Sc1
 	dc.b	01,22,20,11,10,17,07,00	;line 3 Sc2
