@@ -927,7 +927,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	(fofdata2+4).w
 	move.w	d4,(smallfontchars).w	;the small font for the credits
 	movea.l	#SmallFontMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$0D104567,$89ABCDEF		;remap table: palette assignment for the scrolling credits
 	jsr	(printz).l					;map 1 at the top left
 	String	-(TXPAL1+TXMAP1),0,0

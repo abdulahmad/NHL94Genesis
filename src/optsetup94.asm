@@ -812,15 +812,15 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	jsr	(LoadSetupTiles).l			;TeamBitmaps+8 tiles 
 	move.w	d4,(framercset).w		;frame chars
 	movea.l	#SetupFramerMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03567564,$89ABCDEF		;remap table (/ or.l, a word dropped)
 	move.w	d4,(smallfontchars).w
 	movea.l	#SmallFontMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$0FC04567,$89ABCDEF		;remap table (/ or.l)
 	move.w	d4,(setupfontchars).w
 	movea.l	#PrintFont2Map+8,a2		;setup screen font (printsmall with sflags6 bit 3)
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$01234567,$89ABCDEF		;remap table (/ or.l)
 	jsr	(printz).l					;map at the top left
 	String	-TXMAP1,0,0				;x2
@@ -877,7 +877,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(logobox2chars).w	;logo box 2 chars
 	movea.l	#LogoBoxMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03414567,$89ABCDEF		;remap table (/ or.l, a word dropped)
 	jsr	(defaultsprites2).l
 	move.w	#$28,(SortCords+OldXpos).w
@@ -1018,7 +1018,7 @@ LoadSetupTiles						;Load the TeamBitmaps+8 tiles from char 2, then again remapp
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(teambitmapchars).w
 	movea.l	#TeamBitmaps+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03412567,$89ABCDEF		;remap table (/ move.l / dc.b)
 	rts
 UpdateRosterPlayers					;An empty routine, called from ReadSetupPads. An unused rts follows

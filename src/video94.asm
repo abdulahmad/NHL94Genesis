@@ -783,7 +783,7 @@ Vmaddr								;set video port to address d0. d0 = vram address, returns a0 = Vda
 	move.l	d0,Vctrl-Vdata(a0)
 	rts
 ;	Bitmap and tile decompression, text and number printing, and the small and big font routines.
-;	The decompressor handlers and control code routines sit at the addresses in jump_table and
+;	The decompressor handlers and control code routines sit at the addresses in DecompressOpcodeTable and
 ;	ControlCodeJumpTable.
 ;
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
@@ -842,5 +842,5 @@ dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette,
 	move.w	(sp)+,(disflags).w
 	move.w	(sp)+,(printy).w
 	rts
-	include	decompress94.asm		;DecompressGraphicsWithCallback ... FlushOutputBuffer (93G layout)
+	include	decompress94.asm		;DecompressGraphicsWithRemap ... FlushOutputBuffer (93G layout)
 	include	print94.asm				;xyVmMap ... AddTeamBlock (93G layout)

@@ -5,7 +5,7 @@
 setupice							;set all variables, send non purgeable graphics, build sprite frame lists
 									;for ice rink. Called from StartGame and StartPer.
 									;Decompresses the tile sets with DecompressGraphicsPlain /
-									;DecompressGraphicsWithCallback. Loads RevRinkTiles in a reverse angle
+									;DecompressGraphicsWithRemap. Loads RevRinkTiles in a reverse angle
 									;replay (sflags4 bit 4) and calls LoadHomeTeamGfx
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#df32c,(disflags).w		;32 cell mode
@@ -55,11 +55,11 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	bsr.w	AddFramer				;frame tiles
 	move.w	d4,(smallfontchars).w	;1st vram char for smallfont tiles
 	movea.l	#SmallFontMap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$43434567,$89ABCDEF		;remap table
 	move.w	d4,(BigFontchars).w		;1st vram char for Bigfont tiles
 	movea.l	#BigFontMap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$71234567,$89ABCDEF		;remap table
 	bsr.w	setupTeamBlocksMap		;team blocks for both teams
 	move.w	d4,(ExtraChars).w		;char space for extra graphics
@@ -180,7 +180,7 @@ setupEASNmap						;Decompress the easn logo tiles (EASNmap+8) to vram at EASNcse
 									;from setupice, setupice_highlight
 	move.w	(EASNcset).w,d4
 	movea.l	#EASNmap+8,a2
-	bsr.w	DecompressGraphicsWithCallback
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$71234567,$89ABCDEF		;remap table
 	rts
 ReloadEnergyBarTiles				;Reload the energy bar tiles (EnergyBarMap+8) at energybarchars. Called

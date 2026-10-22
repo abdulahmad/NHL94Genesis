@@ -1558,7 +1558,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	bsr.w	CountPlayers			;players of each team
 	move.w	(smallfontchars).w,d4	;load the small font
 	movea.l	#SmallFontMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05234167,$89ABCDEF		;remap table
 	jsr	(printz).l					;map 3 at 0,0
 	String	-TXMAP3,0,0

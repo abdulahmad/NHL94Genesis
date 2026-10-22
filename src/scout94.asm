@@ -103,16 +103,16 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	addi.w	#$24,d4
 	move.w	d4,(BigFontchars).w
 	movea.l	#BigFontMap+8,a2
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05431567,$79ABCDEF		;remap table
 	jsr	(AddSmallFont).l
 	move.w	d4,(smallfont2chars).w	;1st vram char of the 2nd small font set
 	movea.l	#SmallFontMap+8,a2		;small font tiles (as AddSmallFont), remapped
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$0A234567,$89ABCDEF		;remap table
 	movea.l	#FramerMap+8,a2			;framer tiles (as AddFramer), remapped
 	move.w	d4,(framercset).w
-	jsr	(DecompressGraphicsWithCallback).l
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05422561,$89ABCDEF		;remap table
 	jsr	(printz).l
 	String	-TXMAP2,0,0

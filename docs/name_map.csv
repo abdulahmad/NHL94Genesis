@@ -194,3 +194,7 @@ animchars,crowdvrcset,92G
 (raw offset),tmfslide,93G (= tmftimeout)
 NoTiles,null,92G
 InitialSP,Stack,92G/93G
+Opcode_Fillbytes,Opcode_FillBytes,93G
+DecompressGraphicsWithCallback,DecompressGraphicsWithRemap,93G
+callbackPtr,remapTablePtr,93G
+jump_table,DecompressOpcodeTable,93G
