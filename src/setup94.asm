@@ -1095,7 +1095,7 @@ PlayoffScreenText					;Round titles by gamelevel, printed with printsmall
 	String	'Semifinals'
 	String	'Finals'
 	String	'Champions'
-InitScoutingDisplay					;Start the text player ScoutTextPlayer: VertLineScrolling = -1,
+InitScoutingDisplay					;Start the text player UpdateScoutingDisplay: VertLineScrolling = -1,
 									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / typedelay; return a0 =
 									;TestList. Called from ScoutingReport
 	move.w	#$FFFF,(VertLineScrolling).w
@@ -1319,8 +1319,8 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bne.w	.loop4
 	subq.w	#1,d1					;less the pad byte
 	bra.w	.loop4					;print it
-ScrollDisplayUp						;Next text line for ScoutTextPlayer: VertLineScrolling + 1; at 7 lines,
-									;scroll the 8 rows up by vram dma (DoDMA_nd2)
+ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrolling + 1; at 7
+									;lines, scroll the 8 rows up by vram dma (DoDMA_nd2)
 	clr.w	(DispAttribCtr).w
 	addq.w	#1,(VertLineScrolling).w
 	cmpi.w	#7,(VertLineScrolling).l	;past the box?

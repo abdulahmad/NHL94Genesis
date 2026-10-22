@@ -1,10 +1,10 @@
 ;	Scouting report. This file shows the pregame matchups screen with its pages of team text,
 ;	ratings, pictures and positions, and marks which team has the advantage.
 
-ScoutCrowdRecord					;The text player's '@' (ScoutTextPlayer): return a1 = the home team's
-									;crowd record in dB as a String at TempBuffer (SRAM team record crpeak, 80
-									;if 0). ReadCrowdRecord reads the 16 byte SRAM record of team d1
-									;(CrowdRecBase + d1 * 16) to a0
+ScoutCrowdRecord					;The text player's '@' (UpdateScoutingDisplay): return a1 = the home
+									;team's crowd record in dB as a String at TempBuffer (SRAM team record
+									;crpeak, 80 if 0). ReadCrowdRecord reads the 16 byte SRAM record of team
+									;d1 (CrowdRecBase + d1 * 16) to a0
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	(HomeTeam).w,d1
 	ext.l	d1
@@ -74,9 +74,9 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 									;matchup 0 is both team logos with the team ratings, 1-6 the two players
 									;at center, left forward, right forward, left defense, right defense and
 									;goalie with their ratings, with marks toward the side that has the
-									;advantage. The text player (ScoutTextPlayer) types the paragraph list. A
-									;/ C page the matchups (the page also turns by itself about every $10E
-									;frames), down types fast, start leaves
+									;advantage. The text player (UpdateScoutingDisplay) types the paragraph
+									;list. A / C page the matchups (the page also turns by itself about every
+									;$10E frames), down types fast, start leaves
 	jsr	(ReadNameLog).l				;read the $80 byte SRAM name list at NameLogBase to namelog
 	jsr	(BuildHotColdLists).l		;hot / cold players for the text
 	clr.w	(advframe).w			;advantage mark frame

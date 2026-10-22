@@ -1,8 +1,8 @@
 ;	Graphics and text data, all loaded from the extracted files: the rink, sprites, fonts, screen
 ;	maps, pictures and one file per player card, in roster order.
 
-ScoutTextScript						;the script ScoutTextPlayer types out word by word on the ScoutingReport
-									;(MATCHUPS) screen
+ScoutTextScript						;the script UpdateScoutingDisplay types out word by word on the
+									;ScoutingReport (MATCHUPS) screen
 	incbin	..\Extracted\NHL94\Text\ScoutTextScript.bin
 	even
 GameSetUpMap						;the game setup screen bitmap, 40 x 28
@@ -85,7 +85,7 @@ EnergyBarMap						;same size: the line energy bar frames (linebar)
 	incbin	..\Extracted\NHL94\Graphics\EnergyBar.map.jim
 	even
 ;EnergyBarMap+8: the tiles (setupice, ReloadEnergyBarTiles)
-Teamblocksmap						;the team blocks (setupTeamBlocksMap, DrawTeamBlocks, DrawTeamBlockBitmap)
+Teamblocksmap						;the team blocks (setupTeamBlocksMap, DrawTeamBlocks, dotb)
 	incbin	..\Extracted\NHL94\Graphics\TeamBlocks.map.jim
 	even
 ;Teamblocksmap+8: the tiles (AddTeamBlock)
