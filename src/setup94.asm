@@ -688,6 +688,8 @@ InitTeamStructure					;Set up team struct a2 for team d0: store the team number 
 	movea.w	#TeamList,a0
 	asl.w	#2,d0
 	move.l	0(a0,d0.w),tmdata(a2)
+CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team data line
+									;sets to tmlines
 	tst.w	(OptLine).w				;line changes On (0)?
 	beq.w	.0
 	movea.l	tmdata(a2),a0
