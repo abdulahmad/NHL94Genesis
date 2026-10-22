@@ -6,7 +6,7 @@ EndShootout							;Shootout over (CountShootoutGoals): freezewindow, then the 5 
 									;player slots 1-5 (homeshootgoals > awayshootgoals) or 7-$B are set up
 									;(setplayer) above or below the view and get assscore (assinsert 7)
 	movem.l	d0-d7/a0-a6,-(sp)
-	bset	#sf2drec,(sflags2).w
+	bset	#sf2drec,(sflags2).w	;replay recording
 	jsr	(freezewindow).l
 	move.w	#$60,(shootoutdelay).w	;delay before the end
 	movea.l	#SortCords,a3
@@ -18,26 +18,26 @@ EndShootout							;Shootout over (CountShootoutGoals): freezewindow, then the 5 
 .0									;the winning side's players
 	asl.w	#7,d0
 	adda.w	d0,a3
-	move.w	#4,d2
+	move.w	#4,d2					;5 skaters
 	move.w	#6,d3
 	bra.w	.2
 .loop								;each skater of that team
 	movem.w	d2-d3,-(sp)
 	jsr	(setplayer).l				;set up the player
 	move.w	#2,position(a3)
-	move.w	#$F0,d0
+	move.w	#$F0,d0					;below the view
 	tst.w	(Vpos).w
 	bmi.w	.1						;view going down?
-	move.w	#$FF10,d0
+	move.w	#$FF10,d0				;above the view
 .1									;lined up at this end of the view
 	add.w	(Vpos).w,d0				;relative to the view
 	move.w	d0,Ypos(a3)
-	move.w	#0,(a3)
-	move.w	#7,d0
+	move.w	#0,(a3)					;X center
+	move.w	#7,d0					;score assignment
 	jsr	(assinsert).l
 	bclr	#pfalock,pflags(a3)
 	bclr	#pf2aip,pflags2(a3)
-	bclr	#pfnc,pflags(a3)
+	bclr	#pfnc,pflags(a3)		;no collisions off
 	movem.w	(sp)+,d2-d3
 .2									;next player
 	adda.l	#$80,a3
@@ -101,7 +101,7 @@ ClearGameStats						;Clear the game stats: shootoutstate (19 words), both team s
 .loop3								;clear PenBuf
 	clr.w	(a0)+
 	dbf	d0,.loop3
-	clr.w	(BA_PS_flags).w
+	clr.w	(BA_PS_flags).w			;no penalty shot
 	clr.w	(sflags4).w
 	clr.w	(sflags6).w
 	clr.w	(gmode2).w				;game mode 2 cleared
@@ -117,13 +117,13 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 	tst.w	(arenaanim).w
 	bmi.w	.x2
 	tst.l	(arenaspritelist).w
-	beq.w	.x2
+	beq.w	.x2						;not loaded: none
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	bne.w	.x2
 	btst	#sf2replay,(sflags2).w
-	bne.w	.x2
+	bne.w	.x2						;replay: none
 	btst	#sfhor,(sflags).w
-	bne.w	.x2
+	bne.w	.x2						;horizontal mode: none
 	movea.l	(arenaspritelist).w,a1
 	adda.l	jimdata(a1),a1
 	move.w	(Hpos).w,d4
@@ -158,15 +158,15 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 	move.w	d1,-(sp)
 	adda.w	0(a0,d0.w),a0			;the frame's sprites
 	move.w	d4,d0
-	addi.w	#$C0,d0
+	addi.w	#$C0,d0					;view X center
 	move.w	d0,d1
-	subi.w	#$90,d0
-	addi.w	#$80,d1
-	move.w	#$170,d2
+	subi.w	#$90,d0					;X left limit
+	addi.w	#$80,d1					;X right limit
+	move.w	#$170,d2				;view Y center
 	sub.w	d5,d2					;minus the camera Y
 	move.w	d2,d3
-	subi.w	#$80,d2
-	addi.w	#$70,d3
+	subi.w	#$80,d2					;Y top limit
+	addi.w	#$70,d3					;Y bottom limit
 	move.w	(sp)+,d4
 .loop2								;each sprite of the frame
 	cmp.w	seY(a0),d2
@@ -194,7 +194,7 @@ AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite 
 	move.w	d5,(a6)+
 	addq.w	#1,d6
 	cmp.w	#$40,d6					;64 sprites at most?
-	beq.w	.x
+	beq.w	.x						;table full: stop
 .next								;next sprite
 	addq.w	#8,a0
 	dbf	d4,.loop2					;next sprite
@@ -215,10 +215,10 @@ PrintPlayerNameRight				;Print the name of player d0 of team a2 (FormatPlayerNam
 	move.w	d0,d5
 	tst.b	-1(a0,d5.w)				;trailing pad byte?
 	bne.w	.0
-	subq.w	#1,d0
+	subq.w	#1,d0					;first pad byte
 	tst.b	-2(a0,d5.w)				;second pad byte?
 	bne.w	.0
-	subq.w	#1,d0
+	subq.w	#1,d0					;second pad byte
 .0									;text width without the padding
 	add.w	(printx).w,d0
 	subi.w	#$29,d0					;past column $29?
@@ -238,7 +238,7 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	jsr	(FormatPlayerNumInitial).l
 	move.w	(a1),d0
 	subq.w	#2,d0
-	move.w	d0,2(a1)
+	move.w	d0,2(a1)				;2 characters shorter
 	addq.w	#2,a1					;length word moved up
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts
@@ -248,7 +248,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 									;team by period (at the end of the team struct; OT when sflags7 bit 1)
 									;and the total. Left / right switch, start exits (ExitStatsScreen)
 	movem.l	d0-d7/a0-a6,-(sp)
-	clr.w	(matchup).w
+	clr.w	(matchup).w				;goals page first
 	moveq	#0,d0
 	moveq	#$1C,d1
 	jsr	(SetupScreen).l				;set up the screen
@@ -267,7 +267,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	movea.l	#TeamLogoBitmaps,a0
 	move.w	(VisTeam).w,d0
 	asl.w	#2,d0
-	movea.l	0(a0,d0.w),a0
+	movea.l	0(a0,d0.w),a0			;visitors logo
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -278,13 +278,13 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	adda.l	(a2)+,a1
 	clr.w	d1
 	clr.w	d0
-	moveq	#6,d2
+	moveq	#6,d2					;6 tiles wide
 	move.w	#6,d3
 	moveq	#4,d5
 	jsr	(dobitmap).l				;draw the visitors logo
 	movea.l	#palfadenew+$40,a0
 	movea.l	#palfadenew+$60,a1
-	move.w	#7,d0
+	move.w	#7,d0					;8 longs
 .loop								;copy palette 2 to 3
 	move.l	(a0)+,(a1)+
 	dbf	d0,.loop					;next long
@@ -293,7 +293,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	movea.l	#TeamLogoBitmaps,a0
 	move.w	(HomeTeam).w,d0
 	asl.w	#2,d0
-	movea.l	0(a0,d0.w),a0
+	movea.l	0(a0,d0.w),a0			;home logo
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -304,7 +304,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	adda.l	(a2)+,a1
 	clr.w	d1
 	clr.w	d0
-	moveq	#6,d2
+	moveq	#6,d2					;6 tiles wide
 	move.w	#6,d3
 	moveq	#4,d5
 	jsr	(dobitmap).l				;draw the home logo
@@ -334,7 +334,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 .1									;print the title and lines
 	bsr.w	.title
 	bsr.w	.lines
-	move.w	#$18,(palcount).w
+	move.w	#$18,(palcount).w		;fade in
 .loop2								;loop
 	jsr	(WaitVSyncAndReadInput).l	;left (bit 2) goals, right (bit 3) shots, start exits
 	btst	#7,d1					;start?
@@ -346,15 +346,15 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bra.s	.loop2
 .2									;bit 3 of d1 set
 	tst.w	(matchup).w				;goals page?
-	bne.s	.loop2
-	st	(matchup).w
+	bne.s	.loop2					;already: ignore
+	st	(matchup).w					;shots page
 	bsr.w	.title
 	bsr.w	.lines
 	bra.s	.loop2					;next frame
 .3									;bit 2 of d1 set
 	tst.w	(matchup).w				;shots page?
-	beq.s	.loop2
-	clr.w	(matchup).w
+	beq.s	.loop2					;already: ignore
+	clr.w	(matchup).w				;goals page
 	bsr.w	.title
 	bsr.w	.lines
 	bra.s	.loop2					;next frame
@@ -363,8 +363,8 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	jmp	(ExitStatsScreen).l			;back to the menu
 .title								;local subroutine
 	tst.w	(matchup).w				;shots page?
-	beq.w	.6
-	jsr	(printz).l
+	beq.w	.6						;goals page
+	jsr	(printz).l					;shots title
 	String	-(TXPRI+TXMAP2),$12,7,'Shots',-(TXPRI+TXMAP2),$F,$1A,'[ For Goals'
 	rts
 .6									;matchup = 0
@@ -386,7 +386,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 .team								;local subroutine
 	lea	tmPerGoals(a2),a0
 	tst.w	(matchup).w				;shots page?
-	beq.w	.9
+	beq.w	.9						;goals page
 	lea	tmPerShots(a2),a0
 .9									;goals, or shots on the shots page
 	clr.w	(matchuptimer).w
@@ -394,28 +394,28 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bsr.w	.num
 	cmpi.w	#1,(gsp).w				;in the 2nd?
 	blt.w	.10
-	move.w	#$10,(printx).w
-	bsr.w	.num
+	move.w	#$10,(printx).w			;second column
+	bsr.w	.num					;second period
 	cmpi.w	#2,(gsp).w				;in the 3rd?
 	blt.w	.10
-	move.w	#$15,(printx).w
-	bsr.w	.num
+	move.w	#$15,(printx).w			;third column
+	bsr.w	.num					;third period
 	cmpi.w	#3,(gsp).w				;in overtime?
 	blt.w	.10
 	btst	#1,(sflags7).w			;overtime?
-	beq.w	.10
+	beq.w	.10						;no overtime played
 	move.w	#$1A,(printx).w
 	bsr.w	.num
 .10									;the total
-	move.w	#$21,(printx).w
+	move.w	#$21,(printx).w			;total column
 	jsr	(printz).l
 	String	'   '					;clear the column
 	subq.w	#3,(printx).w			;back to the column
 	move.w	(matchuptimer).w,d0
-	move.w	#2,d1
+	move.w	#2,d1					;2 digits
 	cmp.w	#$64,d0					;100 or more?
 	blt.w	.11
-	move.w	#3,d1
+	move.w	#3,d1					;3 digits
 .11									;width for the number
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
@@ -426,10 +426,10 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	jsr	(printz).l
 	String	'   '					;clear the column
 	subq.w	#3,(printx).w			;back to the column
-	move.w	#2,d1
+	move.w	#2,d1					;2 digits
 	cmp.w	#$64,d0					;100 or more?
 	blt.w	.13
-	move.w	#3,d1
+	move.w	#3,d1					;3 digits
 .13									;width for the number
 	jsr	(PushNumberWidth).l
 	jmp	(print).l
@@ -447,7 +447,7 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	jsr	(Framer).l					;draw the box
 	jsr	(printbigz).l
 	String	-(TXPRI+TXMAP3),6,4,'Game  Statistics',-(TXPRI+TXMAP3),7,1
-	move.w	#$2C,d0
+	move.w	#$2C,d0					;visitors block
 	jsr	(PutTeamBlock).l
 	addq.w	#4,(printx).w
 	clr.w	d0
@@ -458,7 +458,7 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	move.w	#$70,(matchupvis).w		;the most scroll: 15 rows
 	tst.w	(OptPen).w
 	bne.w	.0
-	move.w	#$30,(matchupvis).w
+	move.w	#$30,(matchupvis).w		;11 rows
 .0									;scroll limit set
 	bsr.w	DisplayStats
 	bsr.w	PrintStatScrollArrows
@@ -475,7 +475,7 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	bne.w	.2
 	neg.w	d0
 	btst	#1,d3					;down?
-	beq.w	.3
+	beq.w	.3						;neither: carry on
 .2									;up or down: scroll by d0 each frame
 	move.w	d0,(PlayerScrollCtr).w
 .3									;nothing new pressed: carry on any scroll still moving
@@ -492,7 +492,7 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	move.w	(VertLineScrolling).w,d1
 	move.w	d0,(VertLineScrolling).w
 	andi.w	#$F,d0					;row step?
-	bne.w	.5
+	bne.w	.5						;between rows
 	clr.w	(PlayerScrollCtr).w		;on a row: stop
 .5									;between rows: keep scrolling
 	andi.w	#$F,d1					;old scroll on a row step?
@@ -509,7 +509,7 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 SetStatScroll						;Plane A vertical scroll (VSRAM 0) = VertLineScrolling - $50, with
 									;disflags bit 2 set while it writes
 	move.w	(disflags).w,-(sp)		;save the display flags
-	bset	#dfng,(disflags).w
+	bset	#dfng,(disflags).w		;no interrupt graphics
 	movea.l	#Vdata,a0
 	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)
 	move.w	#$FFB0,d0
@@ -524,7 +524,7 @@ StatScrollRow						;d3 = VertLineScrolling / 16 (StatsReport, at a scroll step)
 StatScrollRowEnd					;d3 = VertLineScrolling / 16 + 6 (StatsReport, at a scroll step)
 	move.w	(VertLineScrolling).w,d3
 	lsr.w	#4,d3
-	addq.w	#6,d3
+	addq.w	#6,d3					;plus 6 rows
 	bra.w	rtsStatScroll
 rtsStatScroll						;rts of StatScrollRow / StatScrollRowEnd
 	rts
@@ -571,11 +571,11 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	bsr.w	SetStatScroll
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP2),0,0
-	moveq	#$E,d6
+	moveq	#$E,d6					;15 rows
 	lea	TeamStatTextTbl(pc),a1
 	tst.w	(OptPen).w
 	bne.w	.row
-	move.w	#$A,d6
+	move.w	#$A,d6					;11 rows
 	lea	TeamStatTextTblNoPen(pc),a1
 .row								;label table chosen
 	move.w	(a1),d0
@@ -600,8 +600,8 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 									;PushTime), "/second" if any, " (pct%)" for passing. Offset $FFFF is the
 									;shooting percentage (tmscore * 100 / tmshots), printed with a "%"
 	movea.w	#(mesarea-M68K_RAM),a3
-	move.w	#2,(a3)
-	cmpi.w	#$FFFF,(a0)
+	move.w	#2,(a3)					;empty string
+	cmpi.w	#$FFFF,(a0)				;shooting percentage row
 	bne.w	.1
 	move.w	#tmscore,d0
 	move.w	(a2,d0.w),d0
@@ -622,7 +622,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	cmpi.w	#tmPwrPlayTime,(a0)		;PP minutes row?
 	bne.w	.2
 	bsr.w	.8
-	bra.w	.4
+	bra.w	.4						;time appended
 .2									;a0 <> #tmPwrPlayTime
 	cmpi.w	#$A,(a0)				;ATOP row?
 	beq.w	.3
@@ -633,7 +633,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	bsr.w	.8
 .4									;print the label
 	jsr	(appstring).l
-	move.w	2(a0),d0
+	move.w	2(a0),d0				;second offset
 	bmi.w	.6
 	jsr	(appendz).l
 	String	'/'
