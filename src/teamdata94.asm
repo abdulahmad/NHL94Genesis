@@ -108,7 +108,7 @@ AllStarsEast						;ASE
 	dc.b	01,18,21,08,09,17,07,00	;line 6 PP2
 	dc.b	01,19,23,13,05,06,15,00	;line 7 PK1
 	dc.b	01,24,25,15,06,05,13,00	;line 8 PK2
-.pld								;roster, ended by an empty String
+.pld								;player data: one player per row, ended by an empty String
 ;										unwl,sodp,chga,eytm
 	Player	'Patrick Roy',				3366,4446,0100,5566
 	Player	'Grant Fuhr',				3175,4555,0000,4455
@@ -169,7 +169,7 @@ AllStarsWest						;ASW
 	dc.b	01,18,22,06,04,15,09,00
 	dc.b	01,25,21,08,12,09,17,00
 	dc.b	01,23,24,09,17,08,12,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Ed Belfour',				3066,4665,0000,6655
 	Player	'Tim Cheveldae',			3264,4444,0000,4344
 	Player	'Felix Potvin',				2964,4664,0000,4444
@@ -195,7 +195,7 @@ AllStarsWest						;ASW
 	Player	'Dave Manson',				2494,4355,4A41,5434
 	Player	'Steve Smith',				05B4,4344,4641,5244
 	Player	'Steve Chiasson',			0394,3444,3641,4234
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'All Stars West'
 .ta									;abbreviation
@@ -229,7 +229,7 @@ Boston								;BOS
 	dc.b	01,22,21,07,05,13,03,00
 	dc.b	01,19,18,09,04,03,06,00
 	dc.b	01,20,21,03,06,09,04,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Andy Moog',				3544,4224,0000,4343
 	Player	'John Blue',				3963,4553,0000,4343
 	Player	'Adam Oates',				1275,4653,3154,5061
@@ -255,7 +255,7 @@ Boston								;BOS
 	Player	'Gordie Roberts',			1473,2231,3423,3023
 	Player	'Glen Feathrston',			06B3,3222,4823,2324
 	Player	'Jim Wiemer',				36A2,1221,2820,2324
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Boston'
 .ta									;abbreviation
@@ -289,7 +289,7 @@ Buffalo								;BUF
 	dc.b	01,21,22,08,06,15,04,00
 	dc.b	01,20,22,09,06,08,04,00
 	dc.b	01,18,19,08,04,09,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Grant Fuhr',				3175,4555,0100,4455
 	Player	'Tom Draper',				3562,3332,0000,2222
 	Player	'Dominik Hasek',			3943,3552,0000,2222
@@ -315,7 +315,7 @@ Buffalo								;BUF
 	Player	'Gord Donnelly',			3491,2231,3B11,2225
 	Player	'Randy Moller',				24A3,2212,3921,1124
 	Player	'Keith Carney',				0692,3212,3622,1424
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Buffalo'
 .ta									;abbreviation
@@ -349,7 +349,7 @@ Calgary								;CGY
 	dc.b	01,23,22,04,05,12,03,00
 	dc.b	01,16,22,08,12,07,05,00
 	dc.b	01,23,19,07,05,08,12,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Mike Vernon',				3043,4444,0000,4433
 	Player	'Jeff Reese',				3542,3442,0000,2233
 	Player	'Joe Nieuwendyk',			2584,4434,3444,4322
@@ -375,7 +375,7 @@ Calgary								;CGY
 	Player	'Chris Dahlquist',			0583,3143,3431,3523
 	Player	'Alexnder Godynyuk',		21A2,3222,3822,3512
 	Player	'Greg Smyth',				06A0,0100,1901,1404
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Calgary'
 .ta									;abbreviation
@@ -409,7 +409,7 @@ Chicago								;CHI
 	dc.b	01,20,21,04,05,14,03,00
 	dc.b	01,19,18,05,12,03,13,00
 	dc.b	01,21,23,03,13,05,12,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Ed Belfour',				3066,4665,0000,6655
 	Player	'Jim Waite',				2963,3332,0000,2233
 	Player	'Jeremy Roenick',			2745,5445,2355,5253
@@ -435,7 +435,7 @@ Chicago								;CHI
 	Player	'Keith Brown',				0472,2232,3931,3433
 	Player	'Cam Russell',				0853,3132,3431,3524
 	Player	'Adam Bennett',				4792,2111,2520,1412
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Chicago'
 .ta									;abbreviation
@@ -469,7 +469,7 @@ Detroit								;DET
 	dc.b	01,19,21,15,04,14,03,00
 	dc.b	01,19,23,08,04,03,05,00
 	dc.b	01,21,25,05,03,08,04,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Tim Cheveldae',			3264,4444,0000,4344
 	Player	'Vincent Riendeau',			3763,3222,0000,3223
 	Player	'Steve Yzerman',			1966,5644,1155,6152
@@ -495,7 +495,7 @@ Detroit								;DET
 	Player	'Vladimir Konstantov',		1663,3243,4731,4233
 	Player	'Steve Konroyd',			0883,3232,4421,3233
 	Player	'Brad McCrimmon',			0283,2242,4610,3133
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Detroit'
 .ta									;abbreviation
@@ -529,7 +529,7 @@ Edmonton							;EDM
 	dc.b	01,22,20,11,07,16,10,00
 	dc.b	01,18,20,09,05,12,03,00
 	dc.b	01,21,23,12,03,09,05,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Bill Ranford',				3044,3334,0000,4454
 	Player	'Ron Tugnutt',				0122,3331,0000,1112
 	Player	'Doug Weight',				3963,3343,3443,3132
@@ -555,7 +555,7 @@ Edmonton							;EDM
 	Player	'Luke Richardson',			22B3,3132,4630,2434
 	Player	'Chris Joseph',				02A3,3313,3531,1233
 	Player	'Brad Werenka',				3693,3223,2633,2523
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Edmonton'
 .ta									;abbreviation
@@ -589,7 +589,7 @@ Hartford							;HFD
 	dc.b	01,21,22,10,05,06,04,00
 	dc.b	01,24,20,16,15,09,04,00
 	dc.b	01,19,25,09,04,16,15,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Sean Burke',				01A4,3224,0000,4444
 	Player	'Mario Gosselin',			3132,3442,0000,1122
 	Player	'Frank Pietrngelo',			4063,3113,0000,2222
@@ -615,7 +615,7 @@ Hartford							;HFD
 	Player	'Doug Houda',				2772,2122,2921,2414
 	Player	'Randy Ladouceur',			29B3,3131,2421,3514
 	Player	'Allen Pedersen',			41A2,3132,3621,2123
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Hartford'
 .ta									;abbreviation
@@ -649,7 +649,7 @@ LosAngeles							;LA
 	dc.b	01,20,18,09,05,13,04,00
 	dc.b	01,21,18,09,15,04,14,00
 	dc.b	01,19,22,04,14,09,15,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Kelly Hrudey',				3263,3444,0000,2223
 	Player	'Robb Stauber',				3562,3553,0000,2222
 	Player	'Rick Knickle',				0122,3332,0000,2221
@@ -675,7 +675,7 @@ LosAngeles							;LA
 	Player	'Brent Thompson',			0352,2121,2820,2114
 	Player	'Tim Watters',				0562,2121,2620,2122
 	Player	'Rene Chapdlaine',			0881,1010,1510,1313
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Los Angeles'
 .ta									;abbreviation
@@ -709,7 +709,7 @@ Dallas								;DAL (formerly the Minnesota North Stars)
 	dc.b	01,22,19,08,04,13,11,00
 	dc.b	01,24,20,05,11,08,09,00
 	dc.b	01,17,21,08,09,05,11,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Jon Casey',				3024,3443,0000,2234
 	Player	'Darcy Wakaluk',			3562,3333,0000,2232
 	Player	'Mike Modano',				0975,5445,2452,5243
@@ -735,7 +735,7 @@ Dallas								;DAL (formerly the Minnesota North Stars)
 	Player	'Mark Osiecki',				2392,2122,2520,1312
 	Player	'Brad Berry',				0572,2032,3420,3514
 	Player	'Enrico Ciccone',			3991,1022,2820,3525
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Dallas'
 .ta									;abbreviation
@@ -769,7 +769,7 @@ Montreal							;MTL
 	dc.b	01,19,20,08,04,05,03,00
 	dc.b	01,17,23,07,06,03,13,00
 	dc.b	01,22,19,03,13,07,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Patrick Roy',				3366,4446,0000,5566
 	Player	'Andre Racicot',			3742,3333,0000,2222
 	Player	'Kirk Muller',				1194,4444,4444,4143
@@ -795,7 +795,7 @@ Montreal							;MTL
 	Player	'Lyle Odelein',				2493,2242,3620,3324
 	Player	'Sean Hill',				3882,2222,3521,2314
 	Player	'Donald Dufresne',			3492,2122,3921,2313
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Montreal'
 .ta									;abbreviation
@@ -829,7 +829,7 @@ NewJersey							;NJ
 	dc.b	01,23,21,08,09,07,13,00
 	dc.b	01,18,23,07,17,08,03,00
 	dc.b	01,20,19,08,03,07,17,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Chris Terreri',			3124,4443,0000,3333
 	Player	'Craig Billington',			0143,4221,0000,2222
 	Player	'Alexnder Semak',			2064,3443,3144,3242
@@ -855,7 +855,7 @@ NewJersey							;NJ
 	Player	'Ken Daneyko',				03A2,2141,4620,4414
 	Player	'Tommy Albelin',			0673,2232,2230,3322
 	Player	'Myles O''Connor',			0571,1011,1210,1303
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'New Jersey'
 .ta									;abbreviation
@@ -889,7 +889,7 @@ NYIslanders							;NYI
 	dc.b	01,21,20,07,04,12,09,00
 	dc.b	01,23,21,13,12,04,15,00
 	dc.b	01,18,25,04,15,12,13,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Glenn Healy',				3552,4442,0000,2222
 	Player	'Mark Fitzpatrik',			3072,4223,0000,2222
 	Player	'Pierre Turgeon',			7794,4534,3445,5141
@@ -915,7 +915,7 @@ NYIslanders							;NYI
 	Player	'Scott Lachance',			0782,2243,3432,4133
 	Player	'Dennis Vaske',				37A1,1212,2611,1113
 	Player	'Richard Pilon',			4793,3123,3821,2515
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'New York'
 .ta									;abbreviation
@@ -949,7 +949,7 @@ NYRangers							;NYR
 	dc.b	01,20,23,08,05,14,12,00
 	dc.b	01,18,21,08,03,05,04,00
 	dc.b	01,19,25,05,04,08,03,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'John Vanbiesbrk',			3453,4553,0000,3434
 	Player	'Mike Richter',				3573,4443,0000,4444
 	Player	'Mark Messier',				11A5,4443,5453,4053
@@ -975,7 +975,7 @@ NYRangers							;NYR
 	Player	'Peter Andersson',			0592,3322,2231,2432
 	Player	'Jay Wells',				24A2,2222,3620,2124
 	Player	'Joe Cirella',				06A3,3223,2922,3323
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'New York'
 .ta									;abbreviation
@@ -1009,7 +1009,7 @@ Ottawa								;OTW
 	dc.b	01,23,22,10,05,08,16,00
 	dc.b	01,19,23,06,07,12,04,00
 	dc.b	01,20,25,12,04,07,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Peter Sidorkwicz',			3162,3112,0000,2222
 	Player	'Daniel Berthiaume',		3213,3112,0000,2222
 	Player	'Jamie Baker',				1373,3333,2433,4232
@@ -1035,7 +1035,7 @@ Ottawa								;OTW
 	Player	'Ken Hammond',				0573,2132,3621,3513
 	Player	'Gord Dineen',				0681,1221,2311,2513
 	Player	'Brad Marsh',				14B2,2031,3610,2522
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Ottawa'
 .ta									;abbreviation
@@ -1069,7 +1069,7 @@ Philadelphia						;PHI
 	dc.b	01,21,19,10,06,16,04,00
 	dc.b	01,18,23,08,15,10,05,00
 	dc.b	01,21,19,10,05,08,15,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Tommy Soderstrom',			3034,4554,0000,3434
 	Player	'Dominic Roussel',			3363,3333,0000,3322
 	Player	'Steph Beauregard',			3572,3001,0100,2222
@@ -1095,7 +1095,7 @@ Philadelphia						;PHI
 	Player	'Ryan McGill',				2782,2232,2721,3414
 	Player	'Gord Hynes',				2642,2221,3222,2522
 	Player	'Shawn Cronin',				44A1,1111,2C13,1513
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Philadelphia'
 .ta									;abbreviation
@@ -1129,7 +1129,7 @@ Pittsburgh							;PIT
 	dc.b	01,23,18,04,13,12,03,00
 	dc.b	01,17,18,12,03,04,13,00
 	dc.b	01,23,22,04,13,03,12,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Tom Barrasso',				35A4,4554,0100,4444
 	Player	'Ken Wregget',				3182,3442,0000,3232
 	Player	'Mario Lemieux',			66A5,4644,3366,6062
@@ -1155,7 +1155,7 @@ Pittsburgh							;PIT
 	Player	'Kjell Samuelsson',			28E2,2134,4731,4523
 	Player	'Grant Jennings',			0392,2132,3820,2313
 	Player	'Bryan Fogarty',			3381,1211,2220,1011
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Pittsburgh'
 .ta									;abbreviation
@@ -1189,7 +1189,7 @@ Quebec								;QUE
 	dc.b	01,20,21,07,14,16,03,00
 	dc.b	01,20,22,03,17,05,14,00
 	dc.b	01,19,18,05,14,03,17,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Ron Hextall',				2774,4444,0000,4433
 	Player	'Stephane Fiset',			3553,4332,0000,2222
 	Player	'Joe Sakic',				1964,4544,2045,5252
@@ -1215,7 +1215,7 @@ Quebec								;QUE
 	Player	'Steven Finn',				2982,2233,3622,3424
 	Player	'Mikhail Tatarinov',		0483,3225,4641,2443
 	Player	'Craig Wolanin',			0692,2221,2811,2114
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Quebec'
 .ta									;abbreviation
@@ -1249,7 +1249,7 @@ SanJose								;SJ
 	dc.b	01,18,21,11,05,06,04,00
 	dc.b	01,21,24,04,14,05,07,00
 	dc.b	01,18,23,07,05,04,14,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Arturs Irbe',				3252,4443,0000,3322
 	Player	'Jeff Hackett',				3052,3112,0000,2222
 	Player	'Brian Hayward',			0162,3002,0000,2222
@@ -1275,7 +1275,7 @@ SanJose								;SJ
 	Player	'Jay More',					0473,2134,3331,3534
 	Player	'Peter Ahola',				2192,2132,3621,3422
 	Player	'Rob Zettler',				0272,2132,2430,3434
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'San Jose'
 .ta									;abbreviation
@@ -1309,7 +1309,7 @@ StLouis								;STL
 	dc.b	01,21,22,04,05,14,12,00
 	dc.b	01,20,24,06,05,10,15,00
 	dc.b	01,21,18,10,15,05,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Curtis Joseph',			3164,4664,0000,3344
 	Player	'Guy Hebert',				2962,3332,0000,2222
 	Player	'Craig Janney',				1574,3543,2044,4040
@@ -1335,7 +1335,7 @@ StLouis								;STL
 	Player	'Bret Hedican',				4482,2112,3620,1322
 	Player	'Curt Giles',				0253,2131,2220,3312
 	Player	'Murray Baron',				34A3,3122,2621,2513
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'St. Louis'
 .ta									;abbreviation
@@ -1369,7 +1369,7 @@ TampaBay							;TB
 	dc.b	01,19,22,12,06,05,04,00
 	dc.b	01,22,19,12,17,15,16,00
 	dc.b	01,20,21,16,15,12,17,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Wendell Young',			0163,3223,0000,3233
 	Player	'Pat Jablonski',			3552,3222,0100,2222
 	Player	'J.C. Bergeron',			3072,3222,0000,1111
@@ -1395,7 +1395,7 @@ TampaBay							;TB
 	Player	'Joe Reekie',				29B3,2223,2630,3223
 	Player	'Chris Lipuma',				4061,1211,0210,1114
 	Player	'Matt Hervey',				2691,1211,2910,1304
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Tampa Bay'
 .ta									;abbreviation
@@ -1429,7 +1429,7 @@ Toronto								;TOR
 	dc.b	01,20,22,15,05,14,04,00
 	dc.b	01,19,24,06,04,12,07,00
 	dc.b	01,22,18,12,07,04,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Felix Potvin',				2964,4664,0000,4444
 	Player	'Daren Puppa',				0193,4552,0100,2233
 	Player	'Rick Wamsley',				3062,3002,0000,2222
@@ -1455,7 +1455,7 @@ Toronto								;TOR
 	Player	'Bob Rouse',				03A3,3242,4320,4423
 	Player	'Sylvain Lefebvre',			0292,2131,3420,4433
 	Player	'Bob McGill',				0882,2023,3523,2324
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Toronto'
 .ta									;abbreviation
@@ -1489,7 +1489,7 @@ Vancouver							;VAN
 	dc.b	01,19,23,07,03,09,13,00
 	dc.b	01,24,18,13,05,04,16,00
 	dc.b	01,19,23,04,16,13,05,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Kirk McLean',				0184,4444,0000,4433
 	Player	'Kay Whitmore',				3552,3552,0000,2323
 	Player	'Cliff Ronning',			0755,5432,2043,5141
@@ -1515,7 +1515,7 @@ Vancouver							;VAN
 	Player	'Dave Babych',				44B2,2343,2630,4233
 	Player	'Dana Murzyn',				0592,3234,4621,4424
 	Player	'Robert Dirk',				22B2,2132,3632,3324
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Vancouver'
 .ta									;abbreviation
@@ -1549,7 +1549,7 @@ Winnipeg							;WPG
 	dc.b	01,19,21,09,04,14,03,00
 	dc.b	01,19,21,10,06,05,16,00
 	dc.b	01,24,22,05,16,10,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Bob Essensa',				3534,4554,0000,4444
 	Player	'Jim Hrivnak',				3062,3222,0000,2222
 	Player	'Alexei Zhamnov',			1075,3433,3054,4152
@@ -1575,7 +1575,7 @@ Winnipeg							;WPG
 	Player	'Mike Lalor',				2293,2132,2420,4523
 	Player	'Dean Kennedy',				2692,2132,3320,4423
 	Player	'Randy Carlyle',			0892,2122,3621,2522
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Winnipeg'
 .ta									;abbreviation
@@ -1609,7 +1609,7 @@ Washington							;WSH
 	dc.b	01,18,19,06,05,13,04,00
 	dc.b	01,21,17,03,14,10,06,00
 	dc.b	01,19,20,10,06,03,14,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Don Beaupre',				3343,4333,0000,3333
 	Player	'Rick Tabaracci',			3162,3112,0000,3322
 	Player	'Mike Ridley',				1794,4433,2044,4042
@@ -1634,7 +1634,7 @@ Washington							;WSH
 	Player	'Shawn Anderson',			3692,2122,3621,2331
 	Player	'Jason Woolley',			2562,2111,2220,1212
 	Player	'Rod Langway',				05B3,2022,3230,2323
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Washington'
 .ta									;abbreviation
@@ -1668,7 +1668,7 @@ Florida								;FLA
 	dc.b	01,13,17,06,10,03,05,00
 	dc.b	01,14,12,09,05,07,08,00
 	dc.b	01,13,17,07,08,09,05,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'John Vanbiesbrk',			3453,4553,0000,3434
 	Player	'Mark Fitzpatrik',			3072,4223,0000,2222
 	Player	'Tom Fitzgerald',			1482,2232,2122,3222
@@ -1686,7 +1686,7 @@ Florida								;FLA
 	Player	'Gord Hynes',				2642,2221,3222,2522
 	Player	'Milan Tichy',				4383,2112,3821,2224
 	Player	'Stephane Richer',			2593,3333,3332,3322
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Florida'
 .ta									;abbreviation
@@ -1720,7 +1720,7 @@ Anaheim								;ANH
 	dc.b	01,13,15,03,09,11,03,00
 	dc.b	01,12,14,06,07,04,08,00
 	dc.b	01,17,16,04,08,07,06,00
-.pld								;player ratings
+.pld								;player data: one player per row, ended by an empty String
 	Player	'Guy Hebert',				2962,3332,0000,2222
 	Player	'Ron Tugnutt',				0122,3331,0000,1112
 	Player	'Steven King',				2772,2322,1323,3422
@@ -1739,7 +1739,7 @@ Anaheim								;ANH
 	Player	'Bill Houlder',				33B3,2332,3422,2421
 	Player	'Bobby Dollas',				32B2,1121,2110,2111
 	Player	'Dennis Vial',				17B1,1121,3810,2113
-	dc.w	2
+	dc.w	2						;end of player data: empty String
 .tn									;city
 	String	'Anaheim'
 .ta									;abbreviation
