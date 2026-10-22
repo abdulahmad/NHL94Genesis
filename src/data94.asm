@@ -2179,7 +2179,7 @@ LineEditorMenuText					;Line editor exit menu
 	String	'       Exit       '
 	dc.l	rtss2
 	String	'Set Original lines'
-	dc.l	InitTeamStructure+$10	;the line copy loop of InitTeamStructure
+	dc.l	CopyTeamLines			;copy the original line sets
 	String	'  Save Team Line  '
 	dc.l	EncodeTeamLines
 	String	'  Load Team Line  '
@@ -2192,7 +2192,7 @@ LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
 	String	'       Exit       '
 	dc.l	rtss2
 	String	'Set Original lines'
-	dc.l	InitTeamStructure+$10	;the line copy loop of InitTeamStructure
+	dc.l	CopyTeamLines			;copy the original line sets
 	String	'  Save Team Line  '
 	dc.l	EncodeTeamLines
 	String	$FF
