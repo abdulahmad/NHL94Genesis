@@ -227,9 +227,12 @@ asspenalty							;player a3 should goto penalty box
 	bsr.w	SetSPA
 	moveq	#6,d2
 	tst.b	handed(a3)
-	beq.w	.left
-	moveq	#2,d2
-.left								;turn one step a frame toward the box (6 left handed, 2 right handed)
+	beq.w	.righty
+	moveq	#2,d2					;left handed: face 2 (right)
+.righty								;turn one step a frame: right handed faces 6 (left, away
+									;from the box), left handed 2 (right, toward the box).
+									;Righty faces 6 (mirrored to frame dir 2), lefty faces 2:
+									;both show the same glide frame, the righty x-flipped
 	cmp.w	facedir(a3),d2			;turn one step toward d2
 	beq.w	.ok
 	addq.w	#1,facedir(a3)

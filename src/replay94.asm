@@ -921,11 +921,11 @@ updateplayers						;this routine calls all collision/animation/assignment code f
 	tst.w	Zvel(a3)
 	beq.w	.done
 .z1									;in the air: gravity
-	asl.w	#1,d4					;mult d4 by 2
-	sub.w	d4,Zvel(a3)				;sub d4 from Zvel
-	asl.w	#1,d4					;mult d4 by 2
-	sub.w	d4,Zvel(a3)				;sub d4 from Zvel
-	lsr.w	#2,d4					;divide d4 by 4
+	asl.w	#1,d4					;gravity: d4 = 32*d7
+	sub.w	d4,Zvel(a3)				;Zvel -= it
+	asl.w	#1,d4					;d4 = 64*d7
+	sub.w	d4,Zvel(a3)				;Zvel -= it (96*d7 a frame in all)
+	lsr.w	#2,d4					;d4 back to 16*d7, the position step
 	move.w	Zvel(a3),d0				;move Zvel into d0
 	muls.w	d4,d0					;mult d0 by d4
 	add.l	d0,Zpos(a3)				;add d0 to Zpos
