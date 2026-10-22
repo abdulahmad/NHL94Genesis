@@ -18,7 +18,7 @@ AddPenalty							;add penalty d0 (Penaltylist offset) for player a3. Ignored whi
 	cmp.w	#$10,d0					;offsides (92 used $A)
 	beq.w	rtss2
 AddPenalty2							;forced penalties like face off and game over. d0 = penalty number, a3 =
-									;player or player on penalized team. From $E (goal) up: crowd and song. A
+									;player or player on penalized team. From $E (goal) up: crowd sound. A
 									;penalty with minutes sets DelayedPen bit 1 (home) or bit 2 (away)
 	btst	#sfhor,(sflags).w		;sfhor: nothing in horizontal mode
 	bne.w	rtss2
@@ -26,14 +26,14 @@ AddPenalty2							;forced penalties like face off and game over. d0 = penalty nu
 	cmp.w	#$E,d0					;goal (92 used 6) and up
 	blt.w	.nonoise
 	addi.w	#$C8,(Crowdlevel).w		;200
-	move.w	#$C,-(sp)				;song $C for the home team
+	move.w	#$C,-(sp)				;crowd boo sound effect (home team)
 	btst	#pfteam,pflags(a3)		;pfteam
 	beq.w	.song
 	addi.w	#$14,(CwdExciteLvl).w	;visitors: +20 excitement
-	move.w	#$B,(sp)				;song $B
-.song								;song chosen for the penalized team's side
+	move.w	#$B,(sp)				;crowd cheer sound effect
+.song								;sound effect chosen for the penalized team's side
 	bsr.w	song
-.nonoise							;big penalties only get the crowd and song: log it now
+.nonoise							;big penalties only get the crowd sound: log it now
 	movea.w	#(PenBuf-M68K_RAM),a1
 	moveq	#$1F,d1					;MaxPen-1
 .0									;look for a free PenBuf slot
