@@ -962,8 +962,8 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	dbf	d6,.loop					;loop
 .x									;exit (also the end of the code above)
 	rts
-SetupDemo							;Demo after no press for $5460 frames. Clear demoflag, seed RNGseed,
-									;Regular Season, Demo, line changes On
+SetupDemo							;Demo after no press for $5460 frames. Clear demoflag, seed the RNG
+									;(seed), Regular Season, Demo, line changes On
 									;penalties On. Falls into SetupStart. Branched to from GameSetUp
 	clr.w	(demoflag).w
 	move.w	(HVcount).l,(seed).w	;seed from the beam
@@ -972,11 +972,11 @@ SetupDemo							;Demo after no press for $5460 frames. Clear demoflag, seed RNGs
 	clr.w	(OptNOP).w
 	clr.w	(OptLine).w
 	move.w	#1,(OptPen).w
-SetupStart							;Start pressed: Copy Goalies to both teams, set pojoy, seed RNGseed, and
-									;keep OptLine / OptPlayMode in TmpOptLine2 / TempOptPlayMode: Auto line
-									;changes play as On with sflags7 bit 4, Shootout as Regular Season with
-									;gmode2 bit 0 (ClearShootout). Then jmp MakeTree. Branched to from
-									;GameSetUp
+SetupStart							;Start pressed: Copy Goalies to both teams, set pojoy, seed the RNG
+									;(seed), and keep OptLine / OptPlayMode in TmpOptLine2 / TempOptPlayMode:
+									;Auto line changes play as On with sflags7 bit 4, Shootout as Regular
+									;Season with gmode2 bit 0 (ClearShootout). Then jmp MakeTree. Branched to
+									;from GameSetUp
 	move.w	(OptGoalie).w,-(sp)
 	move.w	(sp),(goaliemode1).w
 	move.w	(sp)+,(goaliemode2).w

@@ -245,8 +245,8 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	movem.l	(sp)+,d0-d2/a1
 	rts
 NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the list at
-									;homehotplayer), a1 = tmstruct. Called from ScoutTextPlayer (the MATCHUPS
-									;text)
+									;homehotplayer), a1 = tmstruct. Called from UpdateScoutingDisplay (the
+									;MATCHUPS text)
 	movem.l	d0/a0,-(sp)
 	movea.l	#homehotplayer,a0
 	move.w	(homehotidx).w,d0
@@ -260,7 +260,7 @@ NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the 
 	movea.l	#tmstruct,a1
 	rts
 NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a1 = AwShots.
-									;Called from ScoutTextPlayer
+									;Called from UpdateScoutingDisplay
 	movem.l	d0/a0,-(sp)
 	movea.l	#awayhotplayer,a0
 	move.w	(awayhotidx).w,d0
@@ -346,7 +346,7 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldplayer), a1 =
-									;tmstruct. Called from ScoutTextPlayer
+									;tmstruct. Called from UpdateScoutingDisplay
 	movem.l	d0/a0,-(sp)
 	movea.l	#homecoldplayer,a0
 	move.w	(homecoldidx).w,d0
@@ -360,7 +360,7 @@ NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldpla
 	movea.l	#tmstruct,a1
 	rts
 NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer), a1 = AwShots.
-									;Called from ScoutTextPlayer
+									;Called from UpdateScoutingDisplay
 	movem.l	d0/a0,-(sp)
 	movea.l	#awaycoldplayer,a0
 	move.w	(awaycoldidx).w,d0

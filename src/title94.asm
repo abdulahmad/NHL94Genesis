@@ -700,7 +700,7 @@ TerminateLogName					;Unreferenced. The GetLogName String at lognametext, ended 
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name), or an
-									;empty String for 0. Called from ScoutTextPlayer
+									;empty String for 0. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	(homeuser).w,d0
 PlayedByText						;PlayedByHome / PlayedByAway body
@@ -737,7 +737,7 @@ PlayedByEmptyTxt					;PlayedByHome: the empty String
 PlayedByNone						;PlayedByHome: no name
 	movea.l	#PlayedByEmptyTxt,a1
 	bra.s	PlayedByExit
-PlayedByAway						;As PlayedByHome for awayuser. Called from ScoutTextPlayer
+PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	(awayuser).w,d0
 	bra.w	PlayedByText
@@ -815,7 +815,7 @@ EndOneTimer							;End a one-timer for a3: bits cleared, onetimerplayer = -1, Se
 	movem.l	(sp)+,d0/a0
 	rts
 newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, TitleImg) with
-									;the vblank TitleVBlank, song $78, then the
+									;the vblank VBlank_TitleScreen, song $78, then the
 									;scrolling credits (Credits, CreditsList text; CreditsPrintRow,
 									;CreditsWait) until start. Called from Opening
 	move	#$2700,sr
