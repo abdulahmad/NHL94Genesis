@@ -13,7 +13,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	move	#$2500,sr
 	clr.w	(ValidSRAM).w			;good until checked
 	jsr	(ReadJoy1).l				;get joypad buttons held
-	move.w	d3,d0					;d3 = buttons held
+	move.w	d3,d0					;d0 = buttons held
 	movea.l	#SaveRAM,a0				;move SRAM address into a0
 	move.w	#$E,d3					;red ($00E), fading by 2 a frame
 	move.w	#2,d4					;move 2 into d4

@@ -1548,7 +1548,7 @@ doshot								;stick is at puck so launch puck toward goal
 	beq.w	.ex						;exit if zero
 	mulu.w	(passspeed).w,d1
 	mulu.w	#$44,d1					;1024/15
-	divu.w	d3,d1					;d3 = distance in pix to goal
+	divu.w	d3,d1					;by d3 = distance in pix to goal
 	mulu.w	#$B33,d3				;(1024*42)/15
 	divu.w	(passspeed).w,d3		;divide by passspeed
 	add.w	d1,d3
