@@ -259,7 +259,7 @@ Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a bina
 	cmp.w	d1,d2					;stop when the guess stops changing, or after 10 steps
 	dbeq	d3,.top					;loop
 .done								;loop
-	move.w	d1,d0					;d1 = root (shared exit of both methods)
+	move.w	d1,d0					;d0 = root (shared exit of both methods)
 	movem.l	(sp)+,d1-d4
 	rts
 .big								;binary search for large values
@@ -579,7 +579,7 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	lea	(Vctrl).l,a1
 	move.w	#VDPR_MODE2+$54,(a1)
 	move.w	#VDPR_AUTOINC+$02,(a1)
-	move.w	#$9300,d2				;a0 = source address
+	move.w	#$9300,d2
 	move.b	d0,d2					;reg 19: length low
 	move.w	d2,(a1)
 	move.w	#$9400,d2

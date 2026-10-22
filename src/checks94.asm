@@ -1491,7 +1491,7 @@ CompShoot							;computer shot: drop the return address and aim from the puck's 
 	bne.w	.ds0
 	neg.w	d0
 .ds0								;coordinates for his end
-	move.w	#$108,d1				;d0 = puck y toward the goal I shoot at
+	move.w	#$108,d1				;d0 is now puck y toward the goal I shoot at
 	sub.w	d0,d1					;d1 = distance to $108 along the shooting direction
 	lsr.w	#3,d1
 	cmp.w	#$14,d1
