@@ -76,6 +76,6 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 ## Credits
 
-Thanks to chaos, StaticEck, McMarkis and Drezz for their help with the disassembly.
+Thanks to chaos, StaticEck, McMarkis, Drezz, smozoma and kingraph for their help with the disassembly.
 
 These disassemblies started with a lot of manual work, especially from chaos, and have since been AI-assisted.
