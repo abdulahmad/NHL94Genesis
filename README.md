@@ -74,6 +74,10 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 `tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
 
+## AI assistance
+
+This project is AI-assisted. The work is directed by a strict ruleset and curated by hand, with the aim of producing correctly labelled and commented code that matches the spirit of what the original source code would have been. We can't guarantee it's perfect, and ultimately this will always be a work in progress. If you see something that needs fixing, raise an issue, or even better, raise a PR.
+
 ## Credits
 
 Thanks to chaos, StaticEck, McMarkis and Drezz for their help with the disassembly.
