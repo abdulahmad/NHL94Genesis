@@ -64,12 +64,12 @@ const assets = [
     { name: 'ANHh.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000533C, end: 0x0000535C }, // ANH home
     { name: 'ANHv.pal', folder: 'NHL94/Graphics/Pals', start: 0x0000535C, end: 0x0000537C }, // ANH visitor
     // { name: 'Hockey.snd', folder: 'NHL94/Sound', start: 0x0000F4C8, end: 0x00024214 },
-    // NHL 94 $1AD90-$F66ED, the incbins of src/sound94.asm ($1AD90-$4B5BF) and src/graphics94.asm: one slice per (the 92 / 93 file name where the asset
+    // NHL 94 $1AD90-$F66ED, the incbins of src/sound/sound94.asm ($1AD90-$4B5BF) and src/graphics94.asm: one slice per (the 92 / 93 file name where the asset
     // lines up, else the label), contiguous, end exclusive. Labels from constants or from data read as code are not slice
     // boundaries (see graphics94.asm). Replaces the 94 draft entries $4B7A0-$C0D12 (unknown6, unknown7, unknown9 broken; logos overlapping).
-    // NHL 94 sound data ($1AD90-$4B5BF, src/sound94.asm): split as 93 sound93. The Z80 driver, PCM samples and FM patches are byte-identical to 93
+    // NHL 94 sound data ($1AD90-$4B5BF, src/sound/sound94.asm): split as 93 sound93. The Z80 driver, PCM samples and FM patches are byte-identical to 93
     // and keep the 93 file names; sounds 0-$2F are the 93 streams; the songs ($30-$7A) are 94. Pad bytes and the pointer tables are in the source.
-    // The Z80 driver ($28B bytes at Z80_Program_Code, 93's driver) is source (src/z80_snd_drv93.asm). This slice is not
+    // The Z80 driver ($28B bytes at Z80_Program_Code, 93's driver) is source (src/sound/z80_snd_drv93.asm). This slice is not
     // included anywhere: the build's z80 step only compares the asm80 output with it, all but the FM patch address
     // operands at Z80 $278-$27C, which sound94.asm writes from fm_instrument_patches.
     { name: 'z80_snd_drv93.bin', folder: 'NHL94/Sound', start: 0x0001AD90, end: 0x0001B01B },

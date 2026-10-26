@@ -16,10 +16,10 @@ const builtPath = builtArg || path.join(ROOT, 'output', 'nhl94.bin');
 const refPath = refArg || path.join(ROOT, 'lst', 'nhl94.bin');
 const lstPath = lstArg || path.join(ROOT, 'output', 'build', 'nhl94 .lst');
 
-// The segments, in include order: the .asm files src/nhl94.asm includes.
+// The segments, in include order: the .asm files src/nhl94.asm includes (named without their folder, e.g. sound\sound94.asm is sound94).
 function segmentNames() {
   const top = fs.readFileSync(path.join(ROOT, 'src', 'nhl94.asm'), 'latin1').split(/\r?\n/);
-  return top.map((l) => l.match(/^\s+include\s+(\w+)\.asm\b/i)).filter(Boolean).map((m) => m[1]);
+  return top.map((l) => l.match(/^\s+include\s+(?:\w+\\)?(\w+)\.asm\b/i)).filter(Boolean).map((m) => m[1]);
 }
 
 // Start address of each top-level include (first listing line that includes the file), and the end of the last
@@ -31,7 +31,7 @@ function segmentRanges() {
   let fill = null;
   let after = false;
   for (const line of lst) {
-    const m = line.match(/^([0-9A-F]{8})\s+\tinclude\t(\w+)\.asm\b/i);
+    const m = line.match(/^([0-9A-F]{8})\s+\tinclude\t(?:\w+\\)?(\w+)\.asm\b/i);
     if (m && names.includes(m[2]) && starts[m[2]] === undefined) {
       starts[m[2]] = parseInt(m[1], 16);
       after = m[2] === names[names.length - 1];

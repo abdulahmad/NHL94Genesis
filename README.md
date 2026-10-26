@@ -72,7 +72,7 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 ## Build steps explained
 
-`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/z80_snd_drv93.asm` and checks it against the ROM), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
+`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
 
 ## AI assistance
 

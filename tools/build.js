@@ -43,7 +43,7 @@ let n = 0;
 // wraps). Otherwise both lines are printed once, after the step.
 const ABOUT = {
     prebuild: 'check the retail ROM and extract graphics/sound assets into Extracted/',
-    z80: 'asm80 builds the Z80 sound driver from src/z80_snd_drv93.asm and checks it against the ROM bytes',
+    z80: 'asm80 builds the Z80 sound driver from src/sound/z80_snd_drv93.asm and checks it against the ROM bytes',
     assemble: 'SNASM68k turns src/*.asm into a raw ROM image',
     fixopcodes: "patch the instructions where SNASM picks a different encoding than EA's original assembler",
     fixrom: 'pad to a valid ROM size, write the header end address and the checksum',
@@ -208,13 +208,13 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 2. z80: asm80 (npm devDependency) assembles src/z80_snd_drv93.asm into output/build/z80_snd_drv93.bin, which
+// 2. z80: asm80 (npm devDependency) assembles src/sound/z80_snd_drv93.asm into output/build/z80_snd_drv93.bin, which
 // sound94.asm includes. It must equal the bytes extracted from the ROM (Extracted/NHL94/Sound/z80_snd_drv93.bin)
 // except Z80 $278-$27C, the FM patch address operands that sound94.asm writes from fm_instrument_patches.
 {
     begin('z80');
     fs.mkdirSync(BUILD, { recursive: true });
-    const src = path.join(ROOT, 'src', 'z80_snd_drv93.asm');
+    const src = path.join(ROOT, 'src', 'sound', 'z80_snd_drv93.asm');
     const out = path.join(BUILD, 'z80_snd_drv93.bin');
     let asm80;
     try { asm80 = require.resolve('asm80/asm80.js'); } catch (e) { fail('z80', 'asm80 is not installed, run npm i'); }
