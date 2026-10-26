@@ -14,7 +14,8 @@
     "clean": "node tools/build.js --clean"
   },
   "devDependencies": {
-    "crc-32": "^1.2.2"
+    "crc-32": "^1.2.2",
+    "asm80": "1.11.14"
   },
   "license": "ISC"
 }

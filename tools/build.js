@@ -35,13 +35,14 @@ const mode = args.find((a) => a === 'retail' || a === 'dev') || 'retail';
 const env = (k) => process.env[k] ?? process.env[k.toUpperCase()] ?? process.env[k.toLowerCase()];
 const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' && !seg ? 0 : 1);
 
-let steps = 5;
+let steps = 6;
 let n = 0;
 // Each step is two lines: "[n/5] <step>  <description>", then the result under the description.
 // In a colour terminal the step line shows a spinner and a yellow step name while it runs, and is
 // redrawn with a green check or a red cross when it ends (cut to the terminal width so it never
 // wraps). Otherwise both lines are printed once, after the step.
 const ABOUT = {
+    z80: 'asm80 builds the Z80 sound driver from src/z80_snd_drv94.asm and checks it against the ROM bytes',
     prebuild: 'check the retail ROM and extract graphics/sound assets into Extracted/',
     assemble: 'SNASM68k turns src/*.asm into a raw ROM image',
     fixopcodes: "patch the instructions where SNASM picks a different encoding than EA's original assembler",
@@ -119,6 +120,33 @@ function run(cmd, argv, opts = {}) {
 const node = (script, argv) => run(process.execPath, [path.join(__dirname, script), ...argv]);
 
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
+
+// The Z80 sound driver: asm80 (npm devDependency) assembles src/z80_snd_drv94.asm into output/build/z80_snd_drv94.bin,
+// which sound94.asm includes. It must equal the driver bytes in the reference ROM (Z80_Program_Code, $1AD90) except
+// Z80 $278-$27C, the FM patch address operands that sound94.asm writes from fm_instrument_patches.
+const Z80_ROM = 0x1AD90;
+const Z80_PATCHED = [0x278, 0x27D];
+async function buildZ80() {
+    begin('z80');
+    const src = path.join(ROOT, 'src', 'z80_snd_drv94.asm');
+    const out = path.join(OUT, 'build', 'z80_snd_drv94.bin');
+    let asm80;
+    try { asm80 = require.resolve('asm80/asm80.js'); } catch (e) { fail('z80', 'asm80 is not installed, run npm i'); }
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.rmSync(out, { force: true });
+    // asm80 writes the output (and its .lst) relative to the source folder.
+    const r = await run(process.execPath, [asm80, '-m', 'Z80', '-t', 'bin', '-o', path.relative(path.dirname(src), out), rel(src)]);
+    const log = path.join(OUT, 'build', 'Build_z80_snd_drv94.log');
+    fs.writeFileSync(log, r.out, 'latin1');
+    if (r.status !== 0 || !fs.existsSync(out) || /ERROR/.test(r.out)) fail('z80', `asm80 failed, see ${rel(log)}`, r.out.split(/\r?\n/).slice(-12).join('\n'));
+    detail(r.out);
+    const built = fs.readFileSync(out);
+    const ref = fs.readFileSync(path.join(ROOT, REF)).subarray(Z80_ROM, Z80_ROM + built.length);
+    let i = 0;
+    while (i < built.length && i < ref.length && (built[i] === ref[i] || (i >= Z80_PATCHED[0] && i < Z80_PATCHED[1]))) i++;
+    if (i < built.length) fail('z80', `${rel(out)} (${built.length} bytes) differs from the ROM at Z80 $${i.toString(16).toUpperCase()}`, null, 'MISMATCH');
+    step('z80', `MATCH ${built.length} bytes (except the FM patch address at $278-$27C) == ${REF} Z80_Program_Code -> ${rel(out)}`);
+}
 
 (async () => {
     if (args.includes('--clean')) {
@@ -205,6 +233,8 @@ const mod = path.join(OUT, final);
     step('prebuild', `ROM OK, ${count} assets extracted`);
     detail(r.out);
 }
+
+await buildZ80();
 
 // 2. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
 {
