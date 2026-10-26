@@ -35,14 +35,15 @@ const mode = args.find((a) => a === 'retail' || a === 'dev') || 'retail';
 const env = (k) => process.env[k] ?? process.env[k.toUpperCase()] ?? process.env[k.toLowerCase()];
 const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' && !seg ? 0 : 1);
 
-let steps = 5;
+let steps = 6;
 let n = 0;
-// Each step is two lines: "[n/5] <step>  <description>", then the result under the description.
+// Each step is two lines: "[n/6] <step>  <description>", then the result under the description.
 // In a colour terminal the step line shows a spinner and a yellow step name while it runs, and is
 // redrawn with a green check or a red cross when it ends (cut to the terminal width so it never
 // wraps). Otherwise both lines are printed once, after the step.
 const ABOUT = {
     prebuild: 'check the retail ROM and extract graphics/sound assets into Extracted/',
+    z80: 'asm80 builds the Z80 sound driver from src/z80_snd_drv93.asm and checks it against the ROM bytes',
     assemble: 'SNASM68k turns src/*.asm into a raw ROM image',
     fixopcodes: "patch the instructions where SNASM picks a different encoding than EA's original assembler",
     fixrom: 'pad to a valid ROM size, write the header end address and the checksum',
@@ -207,7 +208,32 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 2. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
+// 2. z80: asm80 (npm devDependency) assembles src/z80_snd_drv93.asm into output/build/z80_snd_drv93.bin, which
+// sound94.asm includes. It must equal the bytes extracted from the ROM (Extracted/NHL94/Sound/z80_snd_drv93.bin)
+// except Z80 $278-$27C, the FM patch address operands that sound94.asm writes from fm_instrument_patches.
+{
+    begin('z80');
+    fs.mkdirSync(BUILD, { recursive: true });
+    const src = path.join(ROOT, 'src', 'z80_snd_drv93.asm');
+    const out = path.join(BUILD, 'z80_snd_drv93.bin');
+    let asm80;
+    try { asm80 = require.resolve('asm80/asm80.js'); } catch (e) { fail('z80', 'asm80 is not installed, run npm i'); }
+    fs.rmSync(out, { force: true });
+    // asm80 writes the output (and its .lst) relative to the source folder.
+    const r = await run(process.execPath, [asm80, '-m', 'Z80', '-t', 'bin', '-o', path.relative(path.dirname(src), out), path.relative(ROOT, src)]);
+    const zlog = path.join(BUILD, 'Build_z80_snd_drv93.log');
+    fs.writeFileSync(zlog, r.out, 'latin1');
+    if (r.status !== 0 || !fs.existsSync(out) || /ERROR/.test(r.out)) fail('z80', `asm80 failed, see ${rel(zlog)}`, r.out.split(/\r?\n/).slice(-12).join('\n'));
+    detail(r.out);
+    const built = fs.readFileSync(out);
+    const ref = fs.readFileSync(path.join(ROOT, 'Extracted', 'NHL94', 'Sound', 'z80_snd_drv93.bin'));
+    let i = 0;
+    while (i < built.length && i < ref.length && (built[i] === ref[i] || (i >= 0x278 && i < 0x27D))) i++;
+    if (built.length !== ref.length || i < built.length) fail('z80', `${rel(out)} (${built.length} bytes) differs from the ROM bytes (${ref.length} bytes) at Z80 $${i.toString(16).toUpperCase()}`, null, 'MISMATCH');
+    step('z80', `MATCH ${built.length} bytes (except the FM patch address at $278-$27C) == ROM $1AD90-$1B01A -> ${rel(out)}`);
+}
+
+// 3. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
 {
     begin('assemble');
     fs.mkdirSync(BUILD, { recursive: true });
@@ -239,7 +265,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 3. fixopcodes: rewrite the EA cmp / exg encodings SNASM picks differently; the result becomes output/<final>.
+// 4. fixopcodes: rewrite the EA cmp / exg encodings SNASM picks differently; the result becomes output/<final>.
 {
     begin('fixopcodes');
     const r = await node('fixopcodes.js', [lst, bin]);
@@ -251,7 +277,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 4. fixrom: pad to the cartridge size, header ROM end, boot checksum.
+// 5. fixrom: pad to the cartridge size, header ROM end, boot checksum.
 {
     begin('fixrom');
     const r = await node('fixrom.js', [lst, mod]);
@@ -261,7 +287,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 5. verify against the retail ROM.
+// 6. verify against the retail ROM.
 if (!seg && mode === 'dev') {
     step('verify', `${rel(mod)} not verified (dev build)`);
 } else {
