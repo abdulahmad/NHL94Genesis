@@ -66,15 +66,16 @@ CmdBufSize			=	33			;bytes copied to the Z80
 ;	Z80 memory map (offsets from Z80_RAM)
 z80_cmdbuf			=	$02			;where the command buffer is copied to
 z80_pcm_addr		=	$23			;3 bytes: PCM sample start (high byte first)
-z80_pcm_len			=	$26			;3 bytes: PCM sample length
-z80_pcm_vol			=	$83
-z80_pcm_rate		=	$8E			;0 stops the PCM channel
-z80_cmd				=	$96			;command byte; Z80Idle when the Z80 can take one
-z80_busy			=	$97			;nonzero while the Z80 is busy with a command
+z80_pcm_next_addr	=	$26			;3 bytes: where the Z80 carries on after a 0 sample byte (high byte first)
+z80_pcm_vol			=	$83			;volume table page ($03-$1F, $1F loudest)
+z80_pcm_rate		=	$8E			;sample step per DAC write; 0 holds the current byte (no advance)
+z80_cmd				=	$96			;low byte of the sample loop's jump target: Z80Idle when the Z80 can take
+									;a command
+z80_cmd_high		=	$97			;high byte of that jump target; the Z80 always leaves 0 here
 z80_tables			=	$2000		;end of the 29 tables of 256 bytes below it
-Z80Idle				=	$7D
-Z80Cmd_Upload		=	$D1			;take the command buffer
-Z80Cmd_PCM			=	$29			;play the PCM sample set up at z80_pcm_addr
+Z80Idle				=	$7D			;the sample loop (PcmLoop in z80_snd_drv93.asm): no command pending
+Z80Cmd_Upload		=	$D1			;UploadHandler: take the command buffer
+Z80Cmd_PCM			=	$29			;Start: restart with the PCM sample set up at z80_pcm_addr
 Z80ProgramLen		=	$295		;bytes of the Z80 program copied to Z80 RAM
 Z80Tables			=	29			;tables of 256 bytes built by p_initialZ80
 
@@ -347,18 +348,18 @@ z80_bus_release_delay				;Z80 busy: give the bus back, wait, then falls into
 .delay								;short wait
 	dbf	d0,.delay
 UploadCommandBufferToZ80			;Copy the 33 byte command buffer (Z80_command_buffer) to z80_cmdbuf once
-									;the Z80 is idle (z80_busy 0, z80_cmd Z80Idle)
+									;the Z80 is idle (z80_cmd_high 0, z80_cmd Z80Idle)
 	move.w	#$100,(IO_Z80BUS).l		;request the Z80 bus
 .loop								;loop
 	btst	#0,(IO_Z80BUS).l		;granted?
 	bne.s	.loop
 	movea.l	#Z80_RAM,a0
-	cmpi.b	#0,z80_busy(a0)
+	cmpi.b	#0,z80_cmd_high(a0)
 	bne.s	z80_bus_release_delay
 	cmpi.b	#Z80Idle,z80_cmd(a0)
 	bne.s	z80_bus_release_delay
-	move.b	#Z80Cmd_Upload,z80_cmd(a0)
-	move.b	#0,z80_busy(a0)
+	move.b	#Z80Cmd_Upload,z80_cmd(a0)	;the sample loop jumps to UploadHandler next
+	move.b	#0,z80_cmd_high(a0)
 	adda.w	#z80_cmdbuf,a0			;command buffer area
 	movea.w	#(Z80_command_buffer-M68K_RAM),a1
 	moveq	#CmdBufSize-1,d0
@@ -445,8 +446,8 @@ StopPCMChannel						;Clear z80_pcm_rate (the PCM rate byte written by
 	rts
 handle_command_10					;Event $1x: key on note ev_data at volume ev_data+1, midi channel bits
 									;3-0, track d7 (volume 0 = key off). An FM patch takes a free channel or
-									;the oldest one; a PCM patch ($60 up) sets the sample start / end
-									;(pcm_sample_table) in z80_pcm_addr / z80_pcm_len. Then the volume
+									;the oldest one; a PCM patch ($60 up) sets the sample start and next address
+									;(pcm_sample_table) in z80_pcm_addr / z80_pcm_next_addr. Then the volume
 									;(SetChannelVolume) and the frequency (UpdateChannelFrequencyAndVolume)
 	tst.b	ev_data+1(a0)			;volume
 	beq.s	handle_command_00		;volume 0: key off
@@ -537,13 +538,13 @@ handle_command_10					;Event $1x: key on note ev_data at volume ev_data+1, midi 
 	move.b	d0,z80_pcm_addr+1(a1)
 	swap	d0
 	move.b	d0,z80_pcm_addr(a1)
-	move.b	d1,z80_pcm_len+2(a1)	;sample length
+	move.b	d1,z80_pcm_next_addr+2(a1)	;where to carry on after a 0 byte
 	lsr.w	#8,d1					;middle byte
-	move.b	d1,z80_pcm_len+1(a1)
+	move.b	d1,z80_pcm_next_addr+1(a1)
 	swap	d1
-	move.b	d1,z80_pcm_len(a1)
-	move.b	#Z80Cmd_PCM,z80_cmd(a1)	;play the sample
-	move.b	#0,z80_busy(a1)
+	move.b	d1,z80_pcm_next_addr(a1)
+	move.b	#Z80Cmd_PCM,z80_cmd(a1)	;play the sample: the Z80 restarts at Start
+	move.b	#0,z80_cmd_high(a1)
 	clr.w	(IO_Z80BUS).l			;release the Z80 bus
 	bsr.w	SetChannelVolume
 UpdateChannelFrequencyAndVolume		;Set the frequency of channel struct a2 from its note and the pitch bend
@@ -688,7 +689,7 @@ SetChannelVolume					;Set the volume of channel struct a2: note volume (ch_vol) 
 	bgt.w	.1
 	moveq	#3,d0					;at least 3
 .1									;at least 3
-	move.b	d0,(Z80_RAM+z80_pcm_vol).l
+	move.b	d0,(Z80_RAM+z80_pcm_vol).l	;the Z80's volume table page
 	clr.w	(IO_Z80BUS).l			;release the Z80 bus
 	movem.l	(sp)+,d0
 	rts
@@ -822,16 +823,17 @@ ClearAllTrackAndSFXSlots			;Free the 8 track slots and reset the 6 channel struc
 
 ;	The Z80 driver, the PCM samples and the FM patches are unchanged from 93; the pointer tables are written
 ;	with the labels; each sound and song event stream is its own file (loop pointers written as dc.l).
-Z80_Program_Code					;First byte of the Z80 program (movea.l in p_initialZ80); the rest of the
-									;Z80 blob and the data after it are the incbins below. p_initialZ80 copies
-									;$295 bytes from here into pcm_sample_table
-	dc.b	$18
-	incbin	..\Extracted\NHL94\Sound\z80_snd_drv93.bin	;the Z80 driver after its first byte, up to the ld bc
-														;of the FM patch bank address
-	;Z80 ld bc,$8000+(fm_instrument_patches&$7FFF): bank window address of the FM patches
+Z80_Program_Code					;The Z80 sound driver (93's, $28B bytes), built by asm80 from
+									;src/z80_snd_drv93.asm (output/build/z80_snd_drv93.bin). p_initialZ80 copies
+									;Z80ProgramLen ($295) bytes from here: the 10 bytes after the driver (the pad
+									;byte and the start of pcm_sample_table) land below the Z80 stack top and are
+									;never read as data.
+	incbin	..\output\build\z80_snd_drv93.bin,0,$278	;Z80 $0000-$0277
+	;Z80 $0278 (z80_fm_patches_window): ld bc operand, the bank window address of the FM patches
 	dc.b	fm_instrument_patches&$FF,((fm_instrument_patches>>8)&$7F)|$80
-	dc.b	$09,$3E,fm_instrument_patches>>15	;Z80 add hl,bc / ld a,bank (32K bank) of the FM patches
-	incbin	..\Extracted\NHL94\Sound\z80_snd_drv93_end.bin	;rest of the Z80 driver
+	;Z80 $027A: add hl,bc / ld a,n; $027C (z80_fm_patches_bank): the 32K bank of the FM patches
+	dc.b	$09,$3E,fm_instrument_patches>>15
+	incbin	..\output\build\z80_snd_drv93.bin,$27D,$E	;Z80 $027D-$028A: jp SetBank, SelectPart
 	dc.b	$FF						;pad: retail leftover byte
 pcm_sample_table					;(sample address, 0) for PCM patches $60-$6E (lea in handle_command_10)
 	dc.l	sfx_puckget_pcm,0		;patch $60

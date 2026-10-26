@@ -69,8 +69,10 @@ const assets = [
     // boundaries (see graphics94.asm). Replaces the 94 draft entries $4B7A0-$C0D12 (unknown6, unknown7, unknown9 broken; logos overlapping).
     // NHL 94 sound data ($1AD90-$4B5BF, src/sound94.asm): split as 93 sound93. The Z80 driver, PCM samples and FM patches are byte-identical to 93
     // and keep the 93 file names; sounds 0-$2F are the 93 streams; the songs ($30-$7A) are 94. Pad bytes and the pointer tables are in the source.
-    { name: 'z80_snd_drv93.bin', folder: 'NHL94/Sound', start: 0x0001AD91, end: 0x0001B008 }, // Z80 driver after its first byte ($1AD90 is Z80_Program_Code dc.b $18), up to the ld bc of the FM patch bank address (93 file, same bytes)
-    { name: 'z80_snd_drv93_end.bin', folder: 'NHL94/Sound', start: 0x0001B00D, end: 0x0001B01B }, // rest of the Z80 driver (93 file, same bytes)
+    // The Z80 driver ($28B bytes at Z80_Program_Code, 93's driver) is source (src/z80_snd_drv93.asm). This slice is not
+    // included anywhere: the build's z80 step only compares the asm80 output with it, all but the FM patch address
+    // operands at Z80 $278-$27C, which sound94.asm writes from fm_instrument_patches.
+    { name: 'z80_snd_drv93.bin', folder: 'NHL94/Sound', start: 0x0001AD90, end: 0x0001B01B },
     { name: 'sfx_shotbh_pcm.bin', folder: 'NHL94/Sound', start: 0x0001B094, end: 0x0001B288 }, // sample 2: shotbh (93 file, same bytes)
     { name: 'sfx_pass_pcm.bin', folder: 'NHL94/Sound', start: 0x0001B288, end: 0x0001BFB5 }, // sample 1: pass (93 file, same bytes)
     { name: 'sfx_oooh_pcm.bin', folder: 'NHL94/Sound', start: 0x0001BFB6, end: 0x0001F1FA }, // sample 12: oooh, sfx_oooh2, sfx_bglass (93 file, same bytes)
