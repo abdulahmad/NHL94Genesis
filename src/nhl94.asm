@@ -25,7 +25,7 @@
 	include	attract94.asm			; $017A18  NEW in 94: EA Sports attract screen
 	include	data94.asm				; $017AC8 option helpers, menus, season results, string tables
 	include	sram94.asm				; $01A050 save data
-	include	sound94.asm				; $01A264 sound driver, then the sound data
+	include	sound\sound94.asm				; $01A264 sound driver, then the sound data
 	include	graphics94.asm			; $04B5C0 graphics only
 	include	onetimer94.asm			; $0F66EE  NEW in 94: one-timer
 	include	fourway94.asm			; $0F6D5E  NEW in 94: four-player adaptor

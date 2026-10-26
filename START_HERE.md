@@ -11,7 +11,7 @@ Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing
 ```
 [1/6] prebuild   check the retail ROM and extract graphics/sound assets into Extracted/
                  ROM OK, 474 assets extracted
-[2/6] z80        asm80 builds the Z80 sound driver from src/z80_snd_drv93.asm and checks it against the ROM bytes
+[2/6] z80        asm80 builds the Z80 sound driver from src/sound/z80_snd_drv93.asm and checks it against the ROM bytes
                  MATCH 651 bytes (except the FM patch address at $278-$27C) == ROM $1AD90-$1B01A -> output/build/z80_snd_drv93.bin
 [3/6] assemble   SNASM68k turns src/*.asm into a raw ROM image
                  0 errors, 0 warnings, 71412 lines in 0.17s (CHECKSUM=1) -> output/build/nhl94.raw.bin
@@ -26,7 +26,7 @@ Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing
 ### Build steps explained
 
 1. **prebuild**: check the retail ROM and extract graphics/sound assets into `Extracted/`.
-2. **z80**: asm80 (npm devDependency, pinned in `package.json`; `npm i` installs it) assembles the Z80 sound driver `src/z80_snd_drv93.asm` (93's driver, same bytes) into `output/build/z80_snd_drv93.bin` and checks it byte-for-byte against the ROM bytes at `Z80_Program_Code`, which the prebuild extracts to `Extracted/NHL94/Sound/z80_snd_drv93.bin` only for this check. The FM patch address operands (Z80 `$278`-`$27C`) are skipped: `src/sound94.asm` writes them from `fm_instrument_patches` and includes the assembled file around them.
+2. **z80**: asm80 (npm devDependency, pinned in `package.json`; `npm i` installs it) assembles the Z80 sound driver `src/sound/z80_snd_drv93.asm` (93's driver, same bytes) into `output/build/z80_snd_drv93.bin` and checks it byte-for-byte against the ROM bytes at `Z80_Program_Code`, which the prebuild extracts to `Extracted/NHL94/Sound/z80_snd_drv93.bin` only for this check. The FM patch address operands (Z80 `$278`-`$27C`) are skipped: `src/sound/sound94.asm` writes them from `fm_instrument_patches` and includes the assembled file around them.
 3. **assemble**: SNASM68k turns `src/*.asm` into a raw ROM image.
 4. **fixopcodes**: patch the instructions where SNASM picks a different encoding than EA's original assembler.
 5. **fixrom**: pad to a valid ROM size, write the header end address and the checksum.

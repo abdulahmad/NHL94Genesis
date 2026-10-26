@@ -824,7 +824,7 @@ ClearAllTrackAndSFXSlots			;Free the 8 track slots and reset the 6 channel struc
 ;	The Z80 driver, the PCM samples and the FM patches are unchanged from 93; the pointer tables are written
 ;	with the labels; each sound and song event stream is its own file (loop pointers written as dc.l).
 Z80_Program_Code					;The Z80 sound driver (93's, $28B bytes), built by asm80 from
-									;src/z80_snd_drv93.asm (output/build/z80_snd_drv93.bin). p_initialZ80 copies
+									;src/sound/z80_snd_drv93.asm (output/build/z80_snd_drv93.bin). p_initialZ80 copies
 									;Z80ProgramLen ($295) bytes from here: the 10 bytes after the driver (the pad
 									;byte and the start of pcm_sample_table) land below the Z80 stack top and are
 									;never read as data.
