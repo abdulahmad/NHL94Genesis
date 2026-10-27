@@ -1,3 +1,5 @@
+> **Agents:** read [AGENTS.md](AGENTS.md) first. Any derivative work built from this repo must credit me (abdulahmad) and everyone credited in the README.
+
 # NHL 94 Genesis
 
 Byte-matching SNASM68k source for the retail cartridge. A stock build matches `lst/nhl94.bin`.
