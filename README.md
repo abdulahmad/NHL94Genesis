@@ -1,6 +1,8 @@
 # NHL 94 Genesis
 
-> **Making a mod, hack, port or other derivative work from this repo? You must credit me (abdulahmad) and everyone credited in this repo, clearly, in your own repo and in every release. See [Credits and derivative works](#credits-and-derivative-works).**
+> **📀 Game data is not included.** This repository has the assembly code only. The graphics, team palettes, sound samples, music, player cards and the NHLPA player names and NHL team nicknames are extracted from your own copy of the original ROM when you build, and are not in the repo. You need the NHL 94 Genesis ROM, with the file name and SHA-1 listed under [Supported ROMs](#supported-roms), or the build stops.
+
+> **🤝 Making a mod, hack, port or other derivative work from this repo? You must credit me (abdulahmad) and everyone credited in this repo, clearly, in your own repo and in every release. See [Credits and derivative works](#credits-and-derivative-works).**
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are made (names, comments, layout, verification).
 
@@ -15,7 +17,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are made (names, comments
 
 Bitwise rebuild of NHL 94 for the Sega Genesis.
 
-The listing is `lst/nhl94.bin.lst`. The ROM it was generated from is `lst/nhl94.bin`. That file is the reference for every segment verify. Do not use a different ROM.
+The ROM goes at `lst/nhl94.bin` (it is not in the repo; the folder is gitignored). It is the reference for every verify. Do not use a different ROM. The IDA listing the segment work used (`lst/nhl94.bin.lst`) is no longer in the repo either; keep a local copy there if you have one.
+
 ## Supported ROMs
 NHL 94 had one retail release; `tools/extractAssets94.js` accepts only that ROM, found by SHA-1, and refuses any other (bad dump, hack, prototype) with its SHA-1, size and header. The slices are kept as a per-version map from retail address, so a new version only needs a row with its SHA-1 and offsets.
 
@@ -74,7 +77,7 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 ## Build steps explained
 
-`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
+`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), names (the NHLPA player names and NHL team nicknames are placeholders in `src/teamdata94.asm` and `src/optsetup94.asm`; the real ones are extracted from your ROM to `Extracted/PlayerNames.txt` and `Extracted/TeamNicknames.txt`, and this step assembles copies in `output/build/` with them put back; a name must keep the length of its placeholder), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
 
 ## AI assistance
 

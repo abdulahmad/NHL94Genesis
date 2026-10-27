@@ -35,13 +35,14 @@ const mode = args.find((a) => a === 'retail' || a === 'dev') || 'retail';
 const env = (k) => process.env[k] ?? process.env[k.toUpperCase()] ?? process.env[k.toLowerCase()];
 const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' && !seg ? 0 : 1);
 
-let steps = 6;
+let steps = 7;
 let n = 0;
 // Each step is two lines: "[n/6] <step>  <description>", then the result under the description.
 // In a colour terminal the step line shows a spinner and a yellow step name while it runs, and is
 // redrawn with a green check or a red cross when it ends (cut to the terminal width so it never
 // wraps). Otherwise both lines are printed once, after the step.
 const ABOUT = {
+    names: 'put the real player names and team nicknames (extracted from the ROM) into copies of src/teamdata94.asm and src/optsetup94.asm',
     prebuild: 'check the retail ROM and extract graphics/sound assets into Extracted/',
     z80: 'asm80 builds the Z80 sound driver from src/sound/z80_snd_drv93.asm and checks it against the ROM bytes',
     assemble: 'SNASM68k turns src/*.asm into a raw ROM image',
@@ -233,7 +234,46 @@ const mod = path.join(OUT, final);
     step('z80', `MATCH ${built.length} bytes (except the FM patch address at $278-$27C) == ROM $1AD90-$1B01A -> ${rel(out)}`);
 }
 
-// 3. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
+// 3. names: src/teamdata94.asm and src/optsetup94.asm hold placeholders instead of the licensed names (the NHLPA player names
+// and the NHL team nicknames). The extractor writes the real ones from the ROM to Extracted/PlayerNames.txt and
+// Extracted/TeamNicknames.txt (one per line, in source order); this copies the two files to output/build/ with each
+// placeholder replaced, and nhl94.asm includes the copies. A name must have the length of its placeholder (the Player macro
+// writes the row length). Player rows are replaced in order; a nickname placeholder is 'N' + its two-digit number in
+// TeamNicknames.txt, padded with '_' (optsetup94.asm uses two of them for the full names of the New York teams).
+{
+    begin('names');
+    const read = (f) => { const l = fs.readFileSync(path.join(ROOT, 'Extracted', f), 'latin1').split('\n'); if (l[l.length - 1] === '') l.pop(); return l; };
+    const players = read('PlayerNames.txt'), nicks = read('TeamNicknames.txt');
+    let p = 0;
+    const used = new Set();
+    const nickRe = /'(N(\d\d)_*)'/g;
+    const put = (name, text) => {
+        const src = path.join(ROOT, 'src', name);
+        const out = fs.readFileSync(src, 'latin1')
+            .replace(/^([ \t]*Player[ \t]+')((?:[^']|'')*)(')/gm, (m, a, ph, z) => {
+                const real = players[p++];
+                if (real === undefined) fail('names', `${rel(src)} has more Player rows than PlayerNames.txt has names (${players.length})`);
+                const want = ph.replace(/''/g, "'").length;
+                if (real.length !== want) fail('names', `Player row ${p}: the name '${real}' has ${real.length} characters, its placeholder '${ph}' has ${want}`);
+                return a + real.replace(/'/g, "''") + z;
+            })
+            .replace(nickRe, (m, ph, id) => {
+                const real = nicks[Number(id) - 1];
+                if (real === undefined) fail('names', `${rel(src)}: nickname placeholder '${ph}' has no entry in TeamNicknames.txt (${nicks.length})`);
+                if (real.length !== ph.length) fail('names', `nickname ${id}: '${real}' has ${real.length} characters, its placeholder '${ph}' has ${ph.length}`);
+                used.add(id);
+                return "'" + real.replace(/'/g, "''") + "'";
+            });
+        fs.writeFileSync(path.join(BUILD, name), out, 'latin1');
+    };
+    fs.mkdirSync(BUILD, { recursive: true });
+    put('teamdata94.asm');
+    put('optsetup94.asm');
+    if (p !== players.length) fail('names', `PlayerNames.txt has ${players.length} names, src/teamdata94.asm has ${p} Player rows`);
+    step('names', `${p} player names, ${nicks.length} team nicknames -> ${rel(path.join(BUILD, 'teamdata94.asm'))}, ${rel(path.join(BUILD, 'optsetup94.asm'))}`);
+}
+
+// 4. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
 {
     begin('assemble');
     fs.mkdirSync(BUILD, { recursive: true });
@@ -265,7 +305,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 4. fixopcodes: rewrite the EA cmp / exg encodings SNASM picks differently; the result becomes output/<final>.
+// 5. fixopcodes: rewrite the EA cmp / exg encodings SNASM picks differently; the result becomes output/<final>.
 {
     begin('fixopcodes');
     const r = await node('fixopcodes.js', [lst, bin]);
@@ -277,7 +317,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 5. fixrom: pad to the cartridge size, header ROM end, boot checksum.
+// 6. fixrom: pad to the cartridge size, header ROM end, boot checksum.
 {
     begin('fixrom');
     const r = await node('fixrom.js', [lst, mod]);
@@ -287,7 +327,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 6. verify against the retail ROM.
+// 7. verify against the retail ROM.
 if (!seg && mode === 'dev') {
     step('verify', `${rel(mod)} not verified (dev build)`);
 } else {

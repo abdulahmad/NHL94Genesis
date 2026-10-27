@@ -1,5 +1,9 @@
 ;	Top level of the ROM build. Includes the equates and then every module in ROM order;
 ;	each file assembles at the address after the one before it.
+;
+;	teamdata94.asm and optsetup94.asm are included as copies in output/build/ with the real
+;	player names and team nicknames put back by tools/build.js. The files in src/ have
+;	placeholders and need the original ROM.
 
 	include	stubinc\ports.inc		;IO_* / VDP_* ports. Equates only
 	include	stubinc\equals.inc		;VDP status bits. Equates only
@@ -7,7 +11,7 @@
 	include	main94.asm				; $000000 header, startup, vectors
 	include	ram94.asm				;RAM map (rs), after main94 like 93 so Stack is the reset
 									;vector value until ram94 redefines it. Equates only
-	include	teamdata94.asm			; $00030A teams, palettes, credits text
+	include	..\output\build\teamdata94.asm	; $00030A teams, palettes, credits text
 	include	frames94.asm			; $005B1C sprite animation tables
 	include	hockey94.asm			; $0076B2 game loop, pause
 	include	menu94.asm				; $007E36 menu core
@@ -30,7 +34,7 @@
 	include	onetimer94.asm			; $0F66EE  NEW in 94: one-timer
 	include	fourway94.asm			; $0F6D5E  NEW in 94: four-player adaptor
 	include	crowd94.asm				; $0F6E8A  NEW in 94: crowd meter and hot / cold players
-	include	optsetup94.asm			; $0F739E expanded: game setup and options
+	include	..\output\build\optsetup94.asm	; $0F739E expanded: game setup and options
 	include	cards94.asm				; $0F87D2  NEW in 94: player cards and matchup palettes
 	include	records94.asm			; $0FB018  NEW in 94: name entry and record holders
 	include	shootout94.asm			; $0FC320  NEW in 94: shootout

@@ -247,446 +247,446 @@ NoPicGoalie2						;the generic goalie card: DrawPlayerPicture uses it for a goal
 									;listed for ANH 0 and FLA 0
 	incbin	..\Extracted\NHL94\Graphics\NoPicGoalie2.bin
 	even
-CardAndyMoog						;Andy Moog player card (FeaturedPictures BOS 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAndyMoog.bin
+Card001								;Player card 1 (FeaturedPictures BOS 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card001.bin
 	even
-CardRayBourque						;Ray Bourque player card (FeaturedPictures BOS 17, ASE 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardRayBourque.bin
+Card002								;Player card 2 (FeaturedPictures BOS 17, ASE 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card002.bin
 	even
-CardAdamOates						;Adam Oates player card (FeaturedPictures BOS 2, ASE 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAdamOates.bin
+Card003								;Player card 3 (FeaturedPictures BOS 2, ASE 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card003.bin
 	even
-CardDonSweeney						;Don Sweeney player card (FeaturedPictures BOS 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDonSweeney.bin
+Card004								;Player card 4 (FeaturedPictures BOS 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card004.bin
 	even
-CardJoeJuneau						;Joe Juneau player card (FeaturedPictures BOS 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJoeJuneau.bin
+Card005								;Player card 5 (FeaturedPictures BOS 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card005.bin
 	even
-CardCamNeely						;Cam Neely player card (FeaturedPictures BOS 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardCamNeely.bin
+Card006								;Player card 6 (FeaturedPictures BOS 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card006.bin
 	even
-CardAlexnderMogilny					;Alexnder Mogilny player card (FeaturedPictures BUF 12, ASE 15)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAlexnderMogilny.bin
+Card007								;Player card 7 (FeaturedPictures BUF 12, ASE 15)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card007.bin
 	even
-CardPatLaFontaine					;Pat LaFontaine player card (FeaturedPictures BUF 3, ASE 9)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPatLaFontaine.bin
+Card008								;Player card 8 (FeaturedPictures BUF 3, ASE 9)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card008.bin
 	even
-CardDaleHawerchuk					;Dale Hawerchuk player card (FeaturedPictures BUF 4)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDaleHawerchuk.bin
+Card009								;Player card 9 (FeaturedPictures BUF 4)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card009.bin
 	even
-CardDougBodger						;Doug Bodger player card (FeaturedPictures BUF 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDougBodger.bin
+Card010								;Player card 10 (FeaturedPictures BUF 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card010.bin
 	even
-CardGrantFuhr						;Grant Fuhr player card (FeaturedPictures BUF 0, ASE 1)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGrantFuhr.bin
+Card011								;Player card 11 (FeaturedPictures BUF 0, ASE 1)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card011.bin
 	even
-CardPetrSvoboda						;Petr Svoboda player card (FeaturedPictures BUF 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPetrSvoboda.bin
+Card012								;Player card 12 (FeaturedPictures BUF 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card012.bin
 	even
-CardMikeVernon						;Mike Vernon player card (FeaturedPictures CGY 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMikeVernon.bin
+Card013								;Player card 13 (FeaturedPictures CGY 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card013.bin
 	even
-CardGaryRoberts						;Gary Roberts player card (FeaturedPictures CGY 6, ASW 9)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGaryRoberts.bin
+Card014								;Player card 14 (FeaturedPictures CGY 6, ASW 9)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card014.bin
 	even
-CardTheorenFleury					;Theoren Fleury player card (FeaturedPictures CGY 11, ASW 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTheorenFleury.bin
+Card015								;Player card 15 (FeaturedPictures CGY 11, ASW 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card015.bin
 	even
-CardGarySuter						;Gary Suter player card (FeaturedPictures CGY 15, ASW 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGarySuter.bin
+Card016								;Player card 16 (FeaturedPictures CGY 15, ASW 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card016.bin
 	even
-CardAlMacInnis						;Al MacInnis player card (FeaturedPictures CGY 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAlMacInnis.bin
+Card017								;Player card 17 (FeaturedPictures CGY 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card017.bin
 	even
-CardJoeNieuwendyk					;Joe Nieuwendyk player card (FeaturedPictures CGY 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJoeNieuwendyk.bin
+Card018								;Player card 18 (FeaturedPictures CGY 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card018.bin
 	even
-CardEdBelfour						;Ed Belfour player card (FeaturedPictures CHI 0, ASW 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardEdBelfour.bin
+Card019								;Player card 19 (FeaturedPictures CHI 0, ASW 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card019.bin
 	even
-CardJeremyRoenick					;Jeremy Roenick player card (FeaturedPictures CHI 2, ASW 5)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJeremyRoenick.bin
+Card020								;Player card 20 (FeaturedPictures CHI 2, ASW 5)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card020.bin
 	even
-CardSteveLarmer						;Steve Larmer player card (FeaturedPictures CHI 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSteveLarmer.bin
+Card021								;Player card 21 (FeaturedPictures CHI 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card021.bin
 	even
-CardChrisChelios					;Chris Chelios player card (FeaturedPictures CHI 17, ASW 20)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardChrisChelios.bin
+Card022								;Player card 22 (FeaturedPictures CHI 17, ASW 20)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card022.bin
 	even
-CardSteveSmith						;Steve Smith player card (FeaturedPictures CHI 18, ASW 23)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSteveSmith.bin
+Card023								;Player card 23 (FeaturedPictures CHI 18, ASW 23)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card023.bin
 	even
-CardMichelGoulet					;Michel Goulet player card (FeaturedPictures CHI 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMichelGoulet.bin
+Card024								;Player card 24 (FeaturedPictures CHI 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card024.bin
 	even
-CardTimCheveldae					;Tim Cheveldae player card (FeaturedPictures DET 0, ASW 1)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTimCheveldae.bin
+Card025								;Player card 25 (FeaturedPictures DET 0, ASW 1)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card025.bin
 	even
-CardSteveYzerman					;Steve Yzerman player card (FeaturedPictures DET 2, ASW 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSteveYzerman.bin
+Card026								;Player card 26 (FeaturedPictures DET 2, ASW 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card026.bin
 	even
-CardSergeiFedorov					;Sergei Fedorov player card (FeaturedPictures DET 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSergeiFedorov.bin
+Card027								;Player card 27 (FeaturedPictures DET 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card027.bin
 	even
-CardPaulCoffey						;Paul Coffey player card (FeaturedPictures DET 17, ASW 19)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPaulCoffey.bin
+Card028								;Player card 28 (FeaturedPictures DET 17, ASW 19)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card028.bin
 	even
-CardSteveChiasson					;Steve Chiasson player card (FeaturedPictures DET 18, ASW 24)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSteveChiasson.bin
+Card029								;Player card 29 (FeaturedPictures DET 18, ASW 24)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card029.bin
 	even
-CardDinoCiccarelli					;Dino Ciccarelli player card (FeaturedPictures DET 12)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDinoCiccarelli.bin
+Card030								;Player card 30 (FeaturedPictures DET 12)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card030.bin
 	even
-CardBillRanford						;Bill Ranford player card (FeaturedPictures EDM 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBillRanford.bin
+Card031								;Player card 31 (FeaturedPictures EDM 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card031.bin
 	even
-CardDaveManson						;Dave Manson player card (FeaturedPictures EDM 17, ASW 22)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDaveManson.bin
+Card032								;Player card 32 (FeaturedPictures EDM 17, ASW 22)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card032.bin
 	even
-CardIgorKravchuk					;Igor Kravchuk player card (FeaturedPictures EDM 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardIgorKravchuk.bin
+Card033								;Player card 33 (FeaturedPictures EDM 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card033.bin
 	even
-CardShayneCorson					;Shayne Corson player card (FeaturedPictures EDM 8)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardShayneCorson.bin
+Card034								;Player card 34 (FeaturedPictures EDM 8)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card034.bin
 	even
-CardDougWeight						;Doug Weight player card (FeaturedPictures EDM 2). Own palette and tile
+Card035								;Player card 35 (FeaturedPictures EDM 2). Own palette and tile
 									;layout, header 0000033A 000003BA 0022
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDougWeight.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card035.bin
 	even
-CardPetrKlima						;Petr Klima player card (FeaturedPictures EDM 14)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPetrKlima.bin
+Card036								;Player card 36 (FeaturedPictures EDM 14)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card036.bin
 	even
-CardSeanBurke						;Sean Burke player card (FeaturedPictures HFD 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSeanBurke.bin
+Card037								;Player card 37 (FeaturedPictures HFD 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card037.bin
 	even
-CardAndrewCassels					;Andrew Cassels player card (FeaturedPictures HFD 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAndrewCassels.bin
+Card038								;Player card 38 (FeaturedPictures HFD 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card038.bin
 	even
-CardGeoffSanderson					;Geoff Sanderson player card (FeaturedPictures HFD 8)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGeoffSanderson.bin
+Card039								;Player card 39 (FeaturedPictures HFD 8)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card039.bin
 	even
-CardPatVerbeek						;Pat Verbeek player card (FeaturedPictures HFD 13)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPatVerbeek.bin
+Card040								;Player card 40 (FeaturedPictures HFD 13)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card040.bin
 	even
-CardZarleyZalapski					;Zarley Zalapski player card (FeaturedPictures HFD 18, ASE 23)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardZarleyZalapski.bin
+Card041								;Player card 41 (FeaturedPictures HFD 18, ASE 23)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card041.bin
 	even
-CardEricWeinrich					;Eric Weinrich player card (FeaturedPictures HFD 19)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardEricWeinrich.bin
+Card042								;Player card 42 (FeaturedPictures HFD 19)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card042.bin
 	even
-CardBenoitHogue						;Benoit Hogue player card (FeaturedPictures NYI 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBenoitHogue.bin
+Card043								;Player card 43 (FeaturedPictures NYI 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card043.bin
 	even
-CardSteveThomas						;Steve Thomas player card (FeaturedPictures NYI 8)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSteveThomas.bin
+Card044								;Player card 44 (FeaturedPictures NYI 8)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card044.bin
 	even
-CardPierreTurgeon					;Pierre Turgeon player card (FeaturedPictures NYI 2, ASE 8)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPierreTurgeon.bin
+Card045								;Player card 45 (FeaturedPictures NYI 2, ASE 8)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card045.bin
 	even
-CardGlennHealy						;Glenn Healy player card (FeaturedPictures NYI 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGlennHealy.bin
+Card046								;Player card 46 (FeaturedPictures NYI 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card046.bin
 	even
-CardDariusKasparitis				;Darius Kasparitis player card (FeaturedPictures NYI 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDariusKasparitis.bin
+Card047								;Player card 47 (FeaturedPictures NYI 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card047.bin
 	even
-CardVladimirMalakhov				;Vladimir Malakhov player card (FeaturedPictures NYI 17). Own palette and
+Card048								;Player card 48 (FeaturedPictures NYI 17). Own palette and
 									;tile layout, header 0000033A 000003BA 0022
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardVladimirMalakhov.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card048.bin
 	even
-CardKellyHrudey						;Kelly Hrudey player card (FeaturedPictures LA 0). Own palette and tile
+Card049								;Player card 49 (FeaturedPictures LA 0). Own palette and tile
 									;layout, header 00000322 000003A2 0021
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardKellyHrudey.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card049.bin
 	even
-CardWayneGretzky					;Wayne Gretzky player card (FeaturedPictures LA 3, ASW 8)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardWayneGretzky.bin
+Card050								;Player card 50 (FeaturedPictures LA 3, ASW 8)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card050.bin
 	even
-CardLucRobitaille					;Luc Robitaille player card (FeaturedPictures LA 7, ASW 10)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardLucRobitaille.bin
+Card051								;Player card 51 (FeaturedPictures LA 7, ASW 10)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card051.bin
 	even
-CardTomasSandstrom					;Tomas Sandstrom player card (FeaturedPictures LA 12)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTomasSandstrom.bin
+Card052								;Player card 52 (FeaturedPictures LA 12)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card052.bin
 	even
-CardRobBlake						;Rob Blake player card (FeaturedPictures LA 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardRobBlake.bin
+Card053								;Player card 53 (FeaturedPictures LA 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card053.bin
 	even
-CardMartyMcSorley					;Marty McSorley player card (FeaturedPictures LA 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMartyMcSorley.bin
+Card054								;Player card 54 (FeaturedPictures LA 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card054.bin
 	even
-CardJonCasey						;Jon Casey player card (FeaturedPictures DAL 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJonCasey.bin
+Card055								;Player card 55 (FeaturedPictures DAL 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card055.bin
 	even
-CardMikeModano						;Mike Modano player card (FeaturedPictures DAL 2, ASW 4)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMikeModano.bin
+Card056								;Player card 56 (FeaturedPictures DAL 2, ASW 4)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card056.bin
 	even
-CardMarkTinordi						;Mark Tinordi player card (FeaturedPictures DAL 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMarkTinordi.bin
+Card057								;Player card 57 (FeaturedPictures DAL 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card057.bin
 	even
-CardTommySjodin						;Tommy Sjodin player card (FeaturedPictures DAL 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTommySjodin.bin
+Card058								;Player card 58 (FeaturedPictures DAL 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card058.bin
 	even
-CardDaveGagner						;Dave Gagner player card (FeaturedPictures DAL 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDaveGagner.bin
+Card059								;Player card 59 (FeaturedPictures DAL 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card059.bin
 	even
-CardRussCourtnall					;Russ Courtnall player card (FeaturedPictures DAL 10)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardRussCourtnall.bin
+Card060								;Player card 60 (FeaturedPictures DAL 10)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card060.bin
 	even
-CardPatrickRoy						;Patrick Roy player card (FeaturedPictures MTL 0, ASE 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPatrickRoy.bin
+Card061								;Player card 61 (FeaturedPictures MTL 0, ASE 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card061.bin
 	even
-CardEricDesjardins					;Eric Desjardins player card (FeaturedPictures MTL 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardEricDesjardins.bin
+Card062								;Player card 62 (FeaturedPictures MTL 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card062.bin
 	even
-CardMattSchneider					;Matt Schneider player card (FeaturedPictures MTL 17). Own palette and
+Card063								;Player card 63 (FeaturedPictures MTL 17). Own palette and
 									;tile layout, header 0000030A 0000038A 0020
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMattSchneider.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card063.bin
 	even
-CardKirkMuller						;Kirk Muller player card (FeaturedPictures MTL 2, ASE 5)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardKirkMuller.bin
+Card064								;Player card 64 (FeaturedPictures MTL 2, ASE 5)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card064.bin
 	even
-CardVincentDamphousse				;Vincent Damphousse player card (FeaturedPictures MTL 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardVincentDamphousse.bin
+Card065								;Player card 65 (FeaturedPictures MTL 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card065.bin
 	even
-CardBrianBellows					;Brian Bellows player card (FeaturedPictures MTL 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBrianBellows.bin
+Card066								;Player card 66 (FeaturedPictures MTL 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card066.bin
 	even
-CardScottStevens					;Scott Stevens player card (FeaturedPictures NJ 17, ASE 22)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardScottStevens.bin
+Card067								;Player card 67 (FeaturedPictures NJ 17, ASE 22)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card067.bin
 	even
-CardChrisTerreri					;Chris Terreri player card (FeaturedPictures NJ 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardChrisTerreri.bin
+Card068								;Player card 68 (FeaturedPictures NJ 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card068.bin
 	even
-CardVachslavFetisov					;Vachslav Fetisov player card (FeaturedPictures NJ 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardVachslavFetisov.bin
+Card069								;Player card 69 (FeaturedPictures NJ 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card069.bin
 	even
-CardStephaneRicher					;Stephane Richer player card (FeaturedPictures NJ 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardStephaneRicher.bin
+Card070								;Player card 70 (FeaturedPictures NJ 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card070.bin
 	even
-CardAlexnderSemak					;Alexnder Semak player card (FeaturedPictures NJ 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAlexnderSemak.bin
+Card071								;Player card 71 (FeaturedPictures NJ 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card071.bin
 	even
-CardClaudeLemieux					;Claude Lemieux player card (FeaturedPictures NJ 12)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardClaudeLemieux.bin
+Card072								;Player card 72 (FeaturedPictures NJ 12)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card072.bin
 	even
-CardJohnVanbiesbrk					;John Vanbiesbrk player card (FeaturedPictures NYR 0). Own palette and
+Card073								;Player card 73 (FeaturedPictures NYR 0). Own palette and
 									;tile layout, header 0000030A 0000038A 0020
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJohnVanbiesbrk.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card073.bin
 	even
-CardMarkMessier						;Mark Messier player card (FeaturedPictures NYR 2, ASE 4)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMarkMessier.bin
+Card074								;Player card 74 (FeaturedPictures NYR 2, ASE 4)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card074.bin
 	even
-CardJamesPatrick					;James Patrick player card (FeaturedPictures NYR 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJamesPatrick.bin
+Card075								;Player card 75 (FeaturedPictures NYR 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card075.bin
 	even
-CardMikeGartner						;Mike Gartner player card (FeaturedPictures NYR 11, ASE 13)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMikeGartner.bin
+Card076								;Player card 76 (FeaturedPictures NYR 11, ASE 13)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card076.bin
 	even
-CardBrianLeetch						;Brian Leetch player card (FeaturedPictures NYR 17, ASE 19)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBrianLeetch.bin
+Card077								;Player card 77 (FeaturedPictures NYR 17, ASE 19)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card077.bin
 	even
-CardEsaTikkanen						;Esa Tikkanen player card (FeaturedPictures NYR 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardEsaTikkanen.bin
+Card078								;Player card 78 (FeaturedPictures NYR 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card078.bin
 	even
-CardPeterSidorkwicz					;Peter Sidorkwicz player card (FeaturedPictures OTW 0). Own palette and
+Card079								;Player card 79 (FeaturedPictures OTW 0). Own palette and
 									;tile layout, header 0000030A 0000038A 0020
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPeterSidorkwicz.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card079.bin
 	even
-CardSylvainTurgeon					;Sylvain Turgeon player card (FeaturedPictures OTW 9)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSylvainTurgeon.bin
+Card080								;Player card 80 (FeaturedPictures OTW 9)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card080.bin
 	even
-CardNormMaciver						;Norm Maciver player card (FeaturedPictures OTW 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardNormMaciver.bin
+Card081								;Player card 81 (FeaturedPictures OTW 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card081.bin
 	even
-CardBradShaw						;Brad Shaw player card (FeaturedPictures OTW 19)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBradShaw.bin
+Card082								;Player card 82 (FeaturedPictures OTW 19)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card082.bin
 	even
-CardJamieBaker						;Jamie Baker player card (FeaturedPictures OTW 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJamieBaker.bin
+Card083								;Player card 83 (FeaturedPictures OTW 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card083.bin
 	even
-CardBobKudelski						;Bob Kudelski player card (FeaturedPictures OTW 14)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBobKudelski.bin
+Card084								;Player card 84 (FeaturedPictures OTW 14)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card084.bin
 	even
-CardEricLindros						;Eric Lindros player card (FeaturedPictures PHI 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardEricLindros.bin
+Card085								;Player card 85 (FeaturedPictures PHI 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card085.bin
 	even
-CardRodBrindAmour					;Rod BrindAmour player card (FeaturedPictures PHI 4)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardRodBrindAmour.bin
+Card086								;Player card 86 (FeaturedPictures PHI 4)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card086.bin
 	even
-CardGarryGalley						;Garry Galley player card (FeaturedPictures PHI 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGarryGalley.bin
+Card087								;Player card 87 (FeaturedPictures PHI 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card087.bin
 	even
-CardMarkRecchi						;Mark Recchi player card (FeaturedPictures PHI 14, ASE 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMarkRecchi.bin
+Card088								;Player card 88 (FeaturedPictures PHI 14, ASE 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card088.bin
 	even
-CardTommySoderstrom					;Tommy Soderstrom player card (FeaturedPictures PHI 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTommySoderstrom.bin
+Card089								;Player card 89 (FeaturedPictures PHI 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card089.bin
 	even
-CardDimitriYushkevich				;Dimitri Yushkevich player card (FeaturedPictures PHI 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDimitriYushkevich.bin
+Card090								;Player card 90 (FeaturedPictures PHI 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card090.bin
 	even
-CardTomBarrasso						;Tom Barrasso player card (FeaturedPictures PIT 0, ASE 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTomBarrasso.bin
+Card091								;Player card 91 (FeaturedPictures PIT 0, ASE 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card091.bin
 	even
-CardMarioLemieux					;Mario Lemieux player card (FeaturedPictures PIT 2, ASE 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMarioLemieux.bin
+Card092								;Player card 92 (FeaturedPictures PIT 2, ASE 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card092.bin
 	even
-CardKevinStevens					;Kevin Stevens player card (FeaturedPictures PIT 6, ASE 10)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardKevinStevens.bin
+Card093								;Player card 93 (FeaturedPictures PIT 6, ASE 10)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card093.bin
 	even
-CardJaromirJagr						;Jaromir Jagr player card (FeaturedPictures PIT 10, ASE 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJaromirJagr.bin
+Card094								;Player card 94 (FeaturedPictures PIT 10, ASE 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card094.bin
 	even
-CardLarryMurphy						;Larry Murphy player card (FeaturedPictures PIT 16, ASE 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardLarryMurphy.bin
+Card095								;Player card 95 (FeaturedPictures PIT 16, ASE 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card095.bin
 	even
-CardUlfSamuelsson					;Ulf Samuelsson player card (FeaturedPictures PIT 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardUlfSamuelsson.bin
+Card096								;Player card 96 (FeaturedPictures PIT 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card096.bin
 	even
-CardRonHextall						;Ron Hextall player card (FeaturedPictures QUE 0). Own palette and tile
+Card097								;Player card 97 (FeaturedPictures QUE 0). Own palette and tile
 									;layout, header 0000030A 0000038A 0020
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardRonHextall.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card097.bin
 	even
-CardOwenNolan						;Owen Nolan player card (FeaturedPictures QUE 14)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardOwenNolan.bin
+Card098								;Player card 98 (FeaturedPictures QUE 14)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card098.bin
 	even
-CardSteveDuchesne					;Steve Duchesne player card (FeaturedPictures QUE 17, ASE 20)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardSteveDuchesne.bin
+Card099								;Player card 99 (FeaturedPictures QUE 17, ASE 20)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card099.bin
 	even
-CardJoeSakic						;Joe Sakic player card (FeaturedPictures QUE 2, ASE 7)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJoeSakic.bin
+Card100								;Player card 100 (FeaturedPictures QUE 2, ASE 7)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card100.bin
 	even
-CardCurtisLeschyshyn				;Curtis Leschyshyn player card (FeaturedPictures QUE 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardCurtisLeschyshyn.bin
+Card101								;Player card 101 (FeaturedPictures QUE 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card101.bin
 	even
-CardMatsSundin						;Mats Sundin player card (FeaturedPictures QUE 13)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMatsSundin.bin
+Card102								;Player card 102 (FeaturedPictures QUE 13)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card102.bin
 	even
-CardKellyKisio						;Kelly Kisio player card (FeaturedPictures SJ 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardKellyKisio.bin
+Card103								;Player card 103 (FeaturedPictures SJ 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card103.bin
 	even
-CardDougWilson						;Doug Wilson player card (FeaturedPictures SJ 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDougWilson.bin
+Card104								;Player card 104 (FeaturedPictures SJ 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card104.bin
 	even
-CardPatFalloon						;Pat Falloon player card (FeaturedPictures SJ 13, ASW 15)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPatFalloon.bin
+Card105								;Player card 105 (FeaturedPictures SJ 13, ASW 15)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card105.bin
 	even
-CardArtursIrbe						;Arturs Irbe player card (FeaturedPictures SJ 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardArtursIrbe.bin
+Card106								;Player card 106 (FeaturedPictures SJ 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card106.bin
 	even
-CardNeilWilkinson					;Neil Wilkinson player card (FeaturedPictures SJ 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardNeilWilkinson.bin
+Card107								;Player card 107 (FeaturedPictures SJ 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card107.bin
 	even
-CardJohanGarpenlov					;Johan Garpenlov player card (FeaturedPictures SJ 9)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJohanGarpenlov.bin
+Card108								;Player card 108 (FeaturedPictures SJ 9)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card108.bin
 	even
-CardCurtisJoseph					;Curtis Joseph player card (FeaturedPictures STL 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardCurtisJoseph.bin
+Card109								;Player card 109 (FeaturedPictures STL 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card109.bin
 	even
-CardCraigJanney						;Craig Janney player card (FeaturedPictures STL 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardCraigJanney.bin
+Card110								;Player card 110 (FeaturedPictures STL 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card110.bin
 	even
-CardBrettHull						;Brett Hull player card (FeaturedPictures STL 12, ASW 12)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBrettHull.bin
+Card111								;Player card 111 (FeaturedPictures STL 12, ASW 12)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card111.bin
 	even
-CardGarthButcher					;Garth Butcher player card (FeaturedPictures STL 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGarthButcher.bin
+Card112								;Player card 112 (FeaturedPictures STL 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card112.bin
 	even
-CardJeffBrown						;Jeff Brown player card (FeaturedPictures STL 16, ASW 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJeffBrown.bin
+Card113								;Player card 113 (FeaturedPictures STL 16, ASW 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card113.bin
 	even
-CardBrendanShanahan					;Brendan Shanahan player card (FeaturedPictures STL 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBrendanShanahan.bin
+Card114								;Player card 114 (FeaturedPictures STL 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card114.bin
 	even
-CardBrianBradley					;Brian Bradley player card (FeaturedPictures TB 3, ASW 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBrianBradley.bin
+Card115								;Player card 115 (FeaturedPictures TB 3, ASW 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card115.bin
 	even
-CardWendellYoung					;Wendell Young player card (FeaturedPictures TB 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardWendellYoung.bin
+Card116								;Player card 116 (FeaturedPictures TB 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card116.bin
 	even
-CardRomanHamrlik					;Roman Hamrlik player card (FeaturedPictures TB 19)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardRomanHamrlik.bin
+Card117								;Player card 117 (FeaturedPictures TB 19)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card117.bin
 	even
-CardBobBeers						;Bob Beers player card (FeaturedPictures TB 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBobBeers.bin
+Card118								;Player card 118 (FeaturedPictures TB 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card118.bin
 	even
-CardMikaelAndersson					;Mikael Andersson player card (FeaturedPictures TB 11)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMikaelAndersson.bin
+Card119								;Player card 119 (FeaturedPictures TB 11)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card119.bin
 	even
-CardChrisKontos						;Chris Kontos player card (FeaturedPictures TB 4)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardChrisKontos.bin
+Card120								;Player card 120 (FeaturedPictures TB 4)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card120.bin
 	even
-CardFelixPotvin						;Felix Potvin player card (FeaturedPictures TOR 0, ASW 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardFelixPotvin.bin
+Card121								;Player card 121 (FeaturedPictures TOR 0, ASW 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card121.bin
 	even
-CardDougGilmour						;Doug Gilmour player card (FeaturedPictures TOR 3, ASW 7)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDougGilmour.bin
+Card122								;Player card 122 (FeaturedPictures TOR 3, ASW 7)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card122.bin
 	even
-CardNikolaiBorshevsky				;Nikolai Borshevsky player card (FeaturedPictures TOR 12)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardNikolaiBorshevsky.bin
+Card123								;Player card 123 (FeaturedPictures TOR 12)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card123.bin
 	even
-CardDaveEllett						;Dave Ellett player card (FeaturedPictures TOR 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDaveEllett.bin
+Card124								;Player card 124 (FeaturedPictures TOR 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card124.bin
 	even
-CardToddGill						;Todd Gill player card (FeaturedPictures TOR 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardToddGill.bin
+Card125								;Player card 125 (FeaturedPictures TOR 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card125.bin
 	even
-CardDaveAndreychuk					;Dave Andreychuk player card (FeaturedPictures TOR 8). Own palette and
+Card126								;Player card 126 (FeaturedPictures TOR 8). Own palette and
 									;tile layout, header 0000033A 000003BA 0022
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDaveAndreychuk.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card126.bin
 	even
-CardKirkMcLean						;Kirk McLean player card (FeaturedPictures VAN 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardKirkMcLean.bin
+Card127								;Player card 127 (FeaturedPictures VAN 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card127.bin
 	even
-CardGeoffCourtnall					;Geoff Courtnall player card (FeaturedPictures VAN 6)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardGeoffCourtnall.bin
+Card128								;Player card 128 (FeaturedPictures VAN 6)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card128.bin
 	even
-CardPavelBure						;Pavel Bure player card (FeaturedPictures VAN 12, ASW 13)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPavelBure.bin
+Card129								;Player card 129 (FeaturedPictures VAN 12, ASW 13)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card129.bin
 	even
-CardJyrkiLumme						;Jyrki Lumme player card (FeaturedPictures VAN 17)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardJyrkiLumme.bin
+Card130								;Player card 130 (FeaturedPictures VAN 17)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card130.bin
 	even
-CardDougLidster						;Doug Lidster player card (FeaturedPictures VAN 18)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDougLidster.bin
+Card131								;Player card 131 (FeaturedPictures VAN 18)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card131.bin
 	even
-CardCliffRonning					;Cliff Ronning player card (FeaturedPictures VAN 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardCliffRonning.bin
+Card132								;Player card 132 (FeaturedPictures VAN 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card132.bin
 	even
-CardDonBeaupre						;Don Beaupre player card (FeaturedPictures WSH 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDonBeaupre.bin
+Card133								;Player card 133 (FeaturedPictures WSH 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card133.bin
 	even
-CardMikeRidley						;Mike Ridley player card (FeaturedPictures WSH 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardMikeRidley.bin
+Card134								;Player card 134 (FeaturedPictures WSH 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card134.bin
 	even
-CardDimitriKhristich				;Dimitri Khristich player card (FeaturedPictures WSH 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardDimitriKhristich.bin
+Card135								;Player card 135 (FeaturedPictures WSH 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card135.bin
 	even
-CardPeterBondra						;Peter Bondra player card (FeaturedPictures WSH 11, ASE 12)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPeterBondra.bin
+Card136								;Player card 136 (FeaturedPictures WSH 11, ASE 12)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card136.bin
 	even
-CardKevinHatcher					;Kevin Hatcher player card (FeaturedPictures WSH 16)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardKevinHatcher.bin
+Card137								;Player card 137 (FeaturedPictures WSH 16)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card137.bin
 	even
-CardAlIafrate						;Al Iafrate player card (FeaturedPictures WSH 17, ASE 21)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAlIafrate.bin
+Card138								;Player card 138 (FeaturedPictures WSH 17, ASE 21)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card138.bin
 	even
-CardThomasSteen						;Thomas Steen player card (FeaturedPictures WPG 3)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardThomasSteen.bin
+Card139								;Player card 139 (FeaturedPictures WPG 3)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card139.bin
 	even
-CardTeemuSelanne					;Teemu Selanne player card (FeaturedPictures WPG 12, ASW 14)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTeemuSelanne.bin
+Card140								;Player card 140 (FeaturedPictures WPG 12, ASW 14)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card140.bin
 	even
-CardPhilHousley						;Phil Housley player card (FeaturedPictures WPG 17, ASW 21)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardPhilHousley.bin
+Card141								;Player card 141 (FeaturedPictures WPG 17, ASW 21)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card141.bin
 	even
-CardBobEssensa						;Bob Essensa player card (FeaturedPictures WPG 0)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardBobEssensa.bin
+Card142								;Player card 142 (FeaturedPictures WPG 0)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card142.bin
 	even
-CardTeppoNumminen					;Teppo Numminen player card (FeaturedPictures WPG 18). Own palette and
+Card143								;Player card 143 (FeaturedPictures WPG 18). Own palette and
 									;tile layout, header 00000352 000003D2 0023
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardTeppoNumminen.bin
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card143.bin
 	even
-CardAlexeiZhamnov					;Alexei Zhamnov player card (FeaturedPictures WPG 2)
-	incbin	..\Extracted\NHL94\Graphics\PlayerCards\CardAlexeiZhamnov.bin
+Card144								;Player card 144 (FeaturedPictures WPG 2)
+	incbin	..\Extracted\NHL94\Graphics\PlayerCards\Card144.bin
 	even
 PlayerCardsScreenPic				;the Player Cards screen picture, 40 x 28 tiles with its own palette and
 									;layout (PlayerCards)

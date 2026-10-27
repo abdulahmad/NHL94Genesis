@@ -668,8 +668,8 @@ PrintScrollMarks					;Print the scroll marks at x 2: '}' at row $19 when more li
 ScrollUpTxt	String	'{'				;Scroll marks for PrintScrollMarks
 ScrollDownTxt	String	'}'			;scroll down mark
 ScrollClearTxt	String	' '			;blank to clear a scroll mark
-PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; 'New York Islanders' /
-									;'New York Rangers' for teams $D / $E).
+PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; the full name of the
+									;two New York teams, $D / $E).
 									;PrintOptionValue
 	move.w	(printx).w,-(sp)
 	movea.l	#BlankValueTxt,a1
@@ -682,19 +682,19 @@ PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; 'New York 
 	movea.l	0(a1,d3.w),a1
 	lsr.w	#2,d3
 	adda.w	Teamname(a1),a1
-	cmp.w	#$E,d3					;Rangers?
+	cmp.w	#$E,d3					;NYR?
 	bne.w	.0
-	movea.l	#RangersTxt,a1			;full name
+	movea.l	#NewYorkRTxt,a1			;full name
 	bra.w	.1						;print
 .0									;d3 <> $E
-	cmp.w	#$D,d3					;Islanders?
+	cmp.w	#$D,d3					;NYI?
 	bne.w	.1
-	movea.l	#IslandersTxt,a1		;full name
+	movea.l	#NewYorkITxt,a1			;full name
 .1									;print the name
 	jmp	print
-IslandersTxt	String	'New York Islanders'	;Full names for the two New York teams (TeamList has only the
-												;city)
-RangersTxt	String	'New York Rangers'	;full name for the Rangers
+NewYorkITxt	String	'New York ','N12______'	;Full names for the two New York teams (TeamList has only the
+												;city). The nickname is a placeholder (see teamdata94.asm)
+NewYorkRTxt	String	'New York ','N13____'	;full name of NYR
 BlankValueTxt	String	'                    '	;A blank value
 NATxt	String	'N/A                 '	;Per. Length in Shootout
 OptionValueOffsets					;Offsets of each option's value Strings. Team 1 / 2 are not read
