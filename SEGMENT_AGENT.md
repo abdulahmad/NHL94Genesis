@@ -1,3 +1,5 @@
+> **Agents:** read [AGENTS.md](AGENTS.md) first. Any derivative work built from this repo must credit me (abdulahmad) and everyone credited in the README.
+
 # NHL 94 segment agent
 
 This file is the queue and the history. Do not rewrite it as a whole file. Edit it in place.
