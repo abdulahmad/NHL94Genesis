@@ -6,7 +6,7 @@ operand shape match (addresses replaced). A pair is kept when that window
 occurs once in the cartridge and the same cartridge address always becomes
 the same disc address.
 
-  python3 tools/segacd_relocs.py nhl94retail.bin cdbin/HOCKEY.BIN
+  python3 tools/segacd_relocs.py <the retail ROM> cdbin/HOCKEY.BIN
 """
 
 import re

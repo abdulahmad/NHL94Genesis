@@ -17,14 +17,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are made (names, comments
 
 Bitwise rebuild of NHL 94 for the Sega Genesis.
 
-The ROM goes in the repository's root folder as `nhl94retail.bin` (it is not in the repo; the file is gitignored). It is the reference for every verify. Do not use a different ROM. The IDA listing the segment work used (`lst/nhl94.bin.lst`) is no longer in the repo either; keep a local copy there if you have one.
+The ROM goes in the repository's root folder (it is not in the repo). `nhl94retail.bin` is the usual name, but any name works: the build finds the ROM by its SHA-1 and size (`tools/roms.js`). `.bin` and `.gen` files there are gitignored; a ROM named `.md` is not, so do not commit it. It is the reference for every verify. Do not use a different ROM. The IDA listing the segment work used (`lst/nhl94.bin.lst`) is no longer in the repo either; keep a local copy there if you have one.
 
 ## Supported ROMs
 NHL 94 had one retail release; `tools/extractAssets94.js` accepts only that ROM, found by SHA-1, and refuses any other (bad dump, hack, prototype) with its SHA-1, size and header. The slices are kept as a per-version map from retail address, so a new version only needs a row with its SHA-1 and offsets.
 
 | Version | Header | File | Size | SHA-1 |
 | --- | --- | --- | --- | --- |
-| Retail | `1993.JUL`, `GM T-50656 -00` | `nhl94retail.bin` | 1 MB | `7b1489ab501258133bf03e5f0892b77d04312580` |
+| Retail | `1993.JUL`, `GM T-50656 -00` | `nhl94retail.bin` (usual name) | 1 MB | `7b1489ab501258133bf03e5f0892b77d04312580` |
 
 
 The listing is an IDA LST in ASM68K / MRI mode. It has no address column. `loc_` / `sub_` names are the address.
@@ -45,7 +45,7 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 Segment checks use `npm run seg -- <name>` (`tools/build.js --seg <name>`, or `--all`): the full ROM is built, then the segment's
 address range (from the build listing) is compared with `nhl94retail.bin`.
 
-`npm run extractassets` runs `tools/extractAssets94.js` against `nhl94retail.bin`. Builds do this automatically when `Extracted/` is missing or incomplete (below).
+`npm run extractassets` runs `tools/extractAssets94.js` against the ROM in the repository's root folder. Builds do this automatically when `Extracted/` is missing or incomplete (below).
 
 ## Build pre-step: ROM check and automatic asset extraction
 Every build entry point (`npm run build:retail`, `build:dev` and `seg`, all through `tools/build.js`) first runs `node tools/prebuild.js`. It:
@@ -58,7 +58,7 @@ If the ROM is missing (or is a different dump), the build stops with the full pa
 
 | Build | ROM needed | SHA-1 | Size |
 | --- | --- | --- | --- |
-| every build and segment | `nhl94retail.bin` | `7b1489ab501258133bf03e5f0892b77d04312580` | 1048576 bytes |
+| every build and segment | the ROM in the repo folder | `7b1489ab501258133bf03e5f0892b77d04312580` | 1048576 bytes |
 
 `npm run assets` runs only this step. `npm run extractassets` still forces a fresh extraction. `tools/build.js` runs it as step 1 of every build; `tools/verify_all.sh` also deletes `Extracted/` first so it is always a fresh extract.
 

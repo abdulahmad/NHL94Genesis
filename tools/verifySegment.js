@@ -2,7 +2,7 @@
 // Usage: node tools/verifySegment.js <segment|--all> [<built.bin> <reference.bin> <listing>]
 // A segment is a file that src/nhl94.asm includes. Its range comes from the full build listing: from the
 // address of its include line to the address of the next include (the last one runs to the 1MB fill), so
-// the ranges follow the code when it moves. Defaults: output/nhl94.bin, nhl94retail.bin, output/build/nhl94 .lst.
+// the ranges follow the code when it moves. Defaults: output/nhl94.bin, the retail ROM in the repo folder (tools/roms.js), output/build/nhl94 .lst.
 const fs = require('fs');
 const path = require('path');
 
@@ -13,7 +13,7 @@ if (!segment) {
   process.exit(1);
 }
 const builtPath = builtArg || path.join(ROOT, 'output', 'nhl94.bin');
-const refPath = refArg || path.join(ROOT, 'lst', 'nhl94.bin');
+const refPath = refArg || require('./roms').romPath('retail') || path.join(ROOT, 'nhl94retail.bin');
 const lstPath = lstArg || path.join(ROOT, 'output', 'build', 'nhl94 .lst');
 
 // The segments, in include order: the .asm files src/nhl94.asm includes (named without their folder, e.g. sound\sound94.asm is sound94).
