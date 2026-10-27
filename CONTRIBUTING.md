@@ -1,6 +1,6 @@
 # Contributing to NHL 94 Genesis
 
-This is a bit-perfect disassembly of NHL Hockey 94 for the Sega Genesis. There is one release of the game, so there is no revision switch. The ROM is `lst/nhl94.bin`.
+This is a bit-perfect disassembly of NHL Hockey 94 for the Sega Genesis. There is one release of the game, so there is no revision switch. The ROM is `nhl94retail.bin`.
 
 Read [README.md](README.md) first for how to build. This file says how changes are made so the repos stay
 consistent with each other and with NHL 92, the root of the family (94 follows 93, which follows 92).
@@ -13,8 +13,8 @@ The code, data and bytes must not change unless the change is the point of the P
 tools/verify_all.sh -q
 ```
 
-It builds the full ROM (under wine on Linux or macOS), compares it with `lst/nhl94.bin`, then compares the address range of every
-segment (each file `src/nhl94.asm` includes; ranges from the build listing) with the same range of `lst/nhl94.bin`.
+It builds the full ROM (under wine on Linux or macOS), compares it with `nhl94retail.bin`, then compares the address range of every
+segment (each file `src/nhl94.asm` includes; ranges from the build listing) with the same range of `nhl94retail.bin`.
 
 A comment-only or rename-only change must not change a single byte. Never commit ROMs, `Extracted/` or
 `output/`.

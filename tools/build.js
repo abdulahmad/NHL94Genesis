@@ -2,10 +2,10 @@
 // build.js: the whole NHL 94 build, one line per step, on Windows and Linux (wine).
 //   node tools/build.js [retail|dev] [--verbose]       full ROM -> output/nhl94.bin (nhl94-dev.bin)
 //   node tools/build.js --seg <name|--all> [--verbose] full ROM, then compare one segment (a file src/nhl94.asm
-//                                                      includes) or all of them with the same range of lst/nhl94.bin
+//                                                      includes) or all of them with the same range of nhl94retail.bin
 //   node tools/build.js --segacd [--verbose]           Sega CD fragments, compared with cdbin/
 // --no-color (or NO_COLOR) turns the colors off; they are also off when the output is not a terminal.
-// retail: CHECKSUM=1 and verified against lst/nhl94.bin. dev: CHECKSUM=0, not verified.
+// retail: CHECKSUM=1 and verified against nhl94retail.bin. dev: CHECKSUM=0, not verified.
 // The checksum environment variable (set checksum=0 on Windows, checksum=0 node ... on Linux) overrides the default.
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +13,7 @@ const { spawn } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
-const REF = 'lst/nhl94.bin';
+const REF = 'nhl94retail.bin';
 const WIN = process.platform === 'win32';
 
 const args = process.argv.slice(2);

@@ -4,8 +4,8 @@
   "description": "Build scripts for NHL 94 Genesis",
   "scripts": {
     "assets": "node tools/prebuild.js retail",
-    "extractassets": "node tools/extractAssets94.js lst/nhl94.bin",
-    "verify:retail": "node tools/verifyRom.js output/nhl94.bin lst/nhl94.bin",
+    "extractassets": "node tools/extractAssets94.js nhl94retail.bin",
+    "verify:retail": "node tools/verifyRom.js output/nhl94.bin nhl94retail.bin",
     "build:retail": "node tools/build.js retail",
     "build:dev": "node tools/build.js dev",
     "build:segacd": "node tools/build.js --segacd",

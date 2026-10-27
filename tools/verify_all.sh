@@ -5,7 +5,7 @@ export WINEDEBUG=-all
 cd "$(dirname "$0")/.."
 quiet=0; case "$1" in -q|--quiet) quiet=1;; esac
 # Fresh extract, the full ROM (tools/build.js), then every segment (each file src/nhl94.asm includes) compared
-# with the same address range of lst/nhl94.bin (tools/verifySegment.js; ranges from the build listing).
+# with the same address range of nhl94retail.bin (tools/verifySegment.js; ranges from the build listing).
 rm -rf Extracted; node tools/prebuild.js retail >/tmp/x94.log 2>&1 || { echo "PREBUILD FAIL"; cat /tmp/x94.log; exit 1; }
 fail=0
 node tools/build.js retail >/tmp/top.log

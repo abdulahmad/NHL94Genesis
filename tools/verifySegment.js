@@ -2,7 +2,7 @@
 // Usage: node tools/verifySegment.js <segment|--all> [<built.bin> <reference.bin> <listing>]
 // A segment is a file that src/nhl94.asm includes. Its range comes from the full build listing: from the
 // address of its include line to the address of the next include (the last one runs to the 1MB fill), so
-// the ranges follow the code when it moves. Defaults: output/nhl94.bin, lst/nhl94.bin, output/build/nhl94 .lst.
+// the ranges follow the code when it moves. Defaults: output/nhl94.bin, nhl94retail.bin, output/build/nhl94 .lst.
 const fs = require('fs');
 const path = require('path');
 
