@@ -1,5 +1,7 @@
 # NHL 94 Genesis
 
+> **Making a mod, hack, port or other derivative work from this repo? You must credit me (abdulahmad) and everyone credited in this repo, clearly, in your own repo and in every release. See [Credits and derivative works](#credits-and-derivative-works).**
+
 Bitwise rebuild of NHL 94 for the Sega Genesis.
 
 The listing is `lst/nhl94.bin.lst`. The ROM it was generated from is `lst/nhl94.bin`. That file is the reference for every segment verify. Do not use a different ROM.
@@ -62,8 +64,18 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 `tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
 
-## Credits
+## Credits and derivative works
 
 Thanks to chaos, StaticEck, McMarkis and Drezz for their help with the disassembly.
 
 These disassemblies started with a lot of manual work, especially from chaos, and have since been AI-assisted.
+
+This project is the result of my work (abdulahmad) and the work of the people credited above. If you build anything from it, including mods, ROM or EXE hacks, ports, released forks, tools, or any other derivative work, you must credit us:
+
+- Put the credit in your repo's README, near the top and not buried in a footer, and in the notes of every release you publish, including any text file shipped inside a release archive.
+- Name me (abdulahmad) and link to this repository.
+- Name everyone credited here: chaos, StaticEck, McMarkis (Mhopkinsinc) and Drezz, with special thanks to smozoma and kingraph.
+- If you only use part of this repo (docs, a tool, labels, a file format description), the credit still applies.
+- If you are unsure, over-credit.
+
+Credit is the condition for using this work. Please do not release a derivative without it.
