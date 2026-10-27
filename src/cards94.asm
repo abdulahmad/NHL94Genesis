@@ -385,246 +385,246 @@ FeaturedPictures					;The featured player pictures
 	dc.l	0
 .BOS								;BOS featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardAndyMoog
+	dc.l	Card001
 	dc.w	0
-	dc.l	CardDonSweeney
+	dc.l	Card004
 	dc.w	18
-	dc.l	CardRayBourque
+	dc.l	Card002
 	dc.w	17
-	dc.l	CardJoeJuneau
+	dc.l	Card005
 	dc.w	6
-	dc.l	CardAdamOates
+	dc.l	Card003
 	dc.w	2
-	dc.l	CardCamNeely
+	dc.l	Card006
 	dc.w	11
 	dc.l	NoPicSkater2
 	dc.w	19
 	dc.l	0
 .BUF								;BUF featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardGrantFuhr
+	dc.l	Card011
 	dc.w	0
-	dc.l	CardDougBodger
+	dc.l	Card010
 	dc.w	17
-	dc.l	CardPetrSvoboda
+	dc.l	Card012
 	dc.w	18
-	dc.l	CardDaleHawerchuk
+	dc.l	Card009
 	dc.w	4
-	dc.l	CardPatLaFontaine
+	dc.l	Card008
 	dc.w	3
-	dc.l	CardAlexnderMogilny
+	dc.l	Card007
 	dc.w	12
 	dc.l	0
 .CGY								;CGY featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardMikeVernon
+	dc.l	Card013
 	dc.w	0
-	dc.l	CardGarySuter
+	dc.l	Card016
 	dc.w	15
-	dc.l	CardAlMacInnis
+	dc.l	Card017
 	dc.w	16
-	dc.l	CardGaryRoberts
+	dc.l	Card014
 	dc.w	6
-	dc.l	CardJoeNieuwendyk
+	dc.l	Card018
 	dc.w	2
-	dc.l	CardTheorenFleury
+	dc.l	Card015
 	dc.w	11
 	dc.l	0
 .CHI								;CHI featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardEdBelfour
+	dc.l	Card019
 	dc.w	0
-	dc.l	CardSteveSmith
+	dc.l	Card023
 	dc.w	18
-	dc.l	CardChrisChelios
+	dc.l	Card022
 	dc.w	17
-	dc.l	CardMichelGoulet
+	dc.l	Card024
 	dc.w	6
-	dc.l	CardJeremyRoenick
+	dc.l	Card020
 	dc.w	2
-	dc.l	CardSteveLarmer
+	dc.l	Card021
 	dc.w	11
 	dc.l	0
 .DAL								;DAL featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardJonCasey
+	dc.l	Card055
 	dc.w	0
-	dc.l	CardMarkTinordi
+	dc.l	Card057
 	dc.w	16
-	dc.l	CardTommySjodin
+	dc.l	Card058
 	dc.w	17
-	dc.l	CardDaveGagner
+	dc.l	Card059
 	dc.w	3
-	dc.l	CardMikeModano
+	dc.l	Card056
 	dc.w	2
-	dc.l	CardRussCourtnall
+	dc.l	Card060
 	dc.w	10
 	dc.l	0
 .DET								;DET featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardTimCheveldae
+	dc.l	Card025
 	dc.w	0
-	dc.l	CardSteveChiasson
+	dc.l	Card029
 	dc.w	18
-	dc.l	CardPaulCoffey
+	dc.l	Card028
 	dc.w	17
-	dc.l	CardSergeiFedorov
+	dc.l	Card027
 	dc.w	3
-	dc.l	CardSteveYzerman
+	dc.l	Card026
 	dc.w	2
-	dc.l	CardDinoCiccarelli
+	dc.l	Card030
 	dc.w	12
 	dc.l	0
 .EDM								;EDM featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardBillRanford
+	dc.l	Card031
 	dc.w	0
-	dc.l	CardDaveManson
+	dc.l	Card032
 	dc.w	17
-	dc.l	CardIgorKravchuk
+	dc.l	Card033
 	dc.w	18
-	dc.l	CardShayneCorson
+	dc.l	Card034
 	dc.w	8
-	dc.l	CardDougWeight
+	dc.l	Card035
 	dc.w	2
-	dc.l	CardPetrKlima
+	dc.l	Card036
 	dc.w	14
 	dc.l	0
 .HFD								;HFD featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardSeanBurke
+	dc.l	Card037
 	dc.w	0
-	dc.l	CardZarleyZalapski
+	dc.l	Card041
 	dc.w	18
-	dc.l	CardEricWeinrich
+	dc.l	Card042
 	dc.w	19
-	dc.l	CardGeoffSanderson
+	dc.l	Card039
 	dc.w	8
-	dc.l	CardAndrewCassels
+	dc.l	Card038
 	dc.w	3
-	dc.l	CardPatVerbeek
+	dc.l	Card040
 	dc.w	13
 	dc.l	0
 .LA									;LA featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardKellyHrudey
+	dc.l	Card049
 	dc.w	0
-	dc.l	CardRobBlake
+	dc.l	Card053
 	dc.w	16
-	dc.l	CardMartyMcSorley
+	dc.l	Card054
 	dc.w	17
-	dc.l	CardLucRobitaille
+	dc.l	Card051
 	dc.w	7
-	dc.l	CardWayneGretzky
+	dc.l	Card050
 	dc.w	3
-	dc.l	CardTomasSandstrom
+	dc.l	Card052
 	dc.w	12
 	dc.l	NoPicSkater2
 	dc.w	13
 	dc.l	0
 .MTL								;MTL featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardPatrickRoy
+	dc.l	Card061
 	dc.w	0
-	dc.l	CardMattSchneider
+	dc.l	Card063
 	dc.w	17
-	dc.l	CardEricDesjardins
+	dc.l	Card062
 	dc.w	16
-	dc.l	CardVincentDamphousse
+	dc.l	Card065
 	dc.w	6
-	dc.l	CardKirkMuller
+	dc.l	Card064
 	dc.w	2
-	dc.l	CardBrianBellows
+	dc.l	Card066
 	dc.w	11
 	dc.l	0
 .NJ									;NJ featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardChrisTerreri
+	dc.l	Card068
 	dc.w	0
-	dc.l	CardVachslavFetisov
+	dc.l	Card069
 	dc.w	18
-	dc.l	CardScottStevens
+	dc.l	Card067
 	dc.w	17
-	dc.l	CardStephaneRicher
+	dc.l	Card070
 	dc.w	11
-	dc.l	CardAlexnderSemak
+	dc.l	Card071
 	dc.w	2
-	dc.l	CardClaudeLemieux
+	dc.l	Card072
 	dc.w	12
 	dc.l	0
 .NYI								;NYI featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardGlennHealy
+	dc.l	Card046
 	dc.w	0
-	dc.l	CardDariusKasparitis
+	dc.l	Card047
 	dc.w	18
-	dc.l	CardVladimirMalakhov
+	dc.l	Card048
 	dc.w	17
-	dc.l	CardSteveThomas
+	dc.l	Card044
 	dc.w	8
-	dc.l	CardPierreTurgeon
+	dc.l	Card045
 	dc.w	2
-	dc.l	CardBenoitHogue
+	dc.l	Card043
 	dc.w	3
 	dc.l	0
 .NYR								;NYR featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardJohnVanbiesbrk
+	dc.l	Card073
 	dc.w	0
-	dc.l	CardJamesPatrick
+	dc.l	Card075
 	dc.w	18
-	dc.l	CardBrianLeetch
+	dc.l	Card077
 	dc.w	17
-	dc.l	CardEsaTikkanen
+	dc.l	Card078
 	dc.w	6
-	dc.l	CardMarkMessier
+	dc.l	Card074
 	dc.w	2
-	dc.l	CardMikeGartner
+	dc.l	Card076
 	dc.w	11
 	dc.l	0
 .OTW								;OTW featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardPeterSidorkwicz
+	dc.l	Card079
 	dc.w	0
-	dc.l	CardBradShaw
+	dc.l	Card082
 	dc.w	19
-	dc.l	CardNormMaciver
+	dc.l	Card081
 	dc.w	18
-	dc.l	CardSylvainTurgeon
+	dc.l	Card080
 	dc.w	9
-	dc.l	CardJamieBaker
+	dc.l	Card083
 	dc.w	2
-	dc.l	CardBobKudelski
+	dc.l	Card084
 	dc.w	14
 	dc.l	0
 .PHI								;PHI featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardTommySoderstrom
+	dc.l	Card089
 	dc.w	0
-	dc.l	CardDimitriYushkevich
+	dc.l	Card090
 	dc.w	18
-	dc.l	CardGarryGalley
+	dc.l	Card087
 	dc.w	17
-	dc.l	CardRodBrindAmour
+	dc.l	Card086
 	dc.w	4
-	dc.l	CardEricLindros
+	dc.l	Card085
 	dc.w	3
-	dc.l	CardMarkRecchi
+	dc.l	Card088
 	dc.w	14
 	dc.l	0
 .PIT								;PIT featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardTomBarrasso
+	dc.l	Card091
 	dc.w	0
-	dc.l	CardLarryMurphy
+	dc.l	Card095
 	dc.w	16
-	dc.l	CardUlfSamuelsson
+	dc.l	Card096
 	dc.w	17
-	dc.l	CardKevinStevens
+	dc.l	Card093
 	dc.w	6
-	dc.l	CardMarioLemieux
+	dc.l	Card092
 	dc.w	2
-	dc.l	CardJaromirJagr
+	dc.l	Card094
 	dc.w	10
 	dc.l	NoPicSkater2
 	dc.w	11
@@ -633,230 +633,230 @@ FeaturedPictures					;The featured player pictures
 	dc.l	0
 .QUE								;QUE featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardRonHextall
+	dc.l	Card097
 	dc.w	0
-	dc.l	CardCurtisLeschyshyn
+	dc.l	Card101
 	dc.w	18
-	dc.l	CardSteveDuchesne
+	dc.l	Card099
 	dc.w	17
-	dc.l	CardJoeSakic
+	dc.l	Card100
 	dc.w	2
-	dc.l	CardMatsSundin
+	dc.l	Card102
 	dc.w	13
-	dc.l	CardOwenNolan
+	dc.l	Card098
 	dc.w	14
 	dc.l	0
 .SJ									;SJ featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardArtursIrbe
+	dc.l	Card106
 	dc.w	0
-	dc.l	CardNeilWilkinson
+	dc.l	Card107
 	dc.w	17
-	dc.l	CardDougWilson
+	dc.l	Card104
 	dc.w	16
-	dc.l	CardJohanGarpenlov
+	dc.l	Card108
 	dc.w	9
-	dc.l	CardKellyKisio
+	dc.l	Card103
 	dc.w	3
-	dc.l	CardPatFalloon
+	dc.l	Card105
 	dc.w	13
 	dc.l	0
 .STL								;STL featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardCurtisJoseph
+	dc.l	Card109
 	dc.w	0
-	dc.l	CardJeffBrown
+	dc.l	Card113
 	dc.w	16
-	dc.l	CardGarthButcher
+	dc.l	Card112
 	dc.w	17
-	dc.l	CardBrendanShanahan
+	dc.l	Card114
 	dc.w	11
-	dc.l	CardCraigJanney
+	dc.l	Card110
 	dc.w	2
-	dc.l	CardBrettHull
+	dc.l	Card111
 	dc.w	12
 	dc.l	0
 .TB									;TB featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardWendellYoung
+	dc.l	Card116
 	dc.w	0
-	dc.l	CardRomanHamrlik
+	dc.l	Card117
 	dc.w	19
-	dc.l	CardBobBeers
+	dc.l	Card118
 	dc.w	18
-	dc.l	CardMikaelAndersson
+	dc.l	Card119
 	dc.w	11
-	dc.l	CardBrianBradley
+	dc.l	Card115
 	dc.w	3
-	dc.l	CardChrisKontos
+	dc.l	Card120
 	dc.w	4
 	dc.l	0
 .TOR								;TOR featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardFelixPotvin
+	dc.l	Card121
 	dc.w	0
-	dc.l	CardDaveEllett
+	dc.l	Card124
 	dc.w	18
-	dc.l	CardToddGill
+	dc.l	Card125
 	dc.w	17
-	dc.l	CardDaveAndreychuk
+	dc.l	Card126
 	dc.w	8
-	dc.l	CardDougGilmour
+	dc.l	Card122
 	dc.w	3
-	dc.l	CardNikolaiBorshevsky
+	dc.l	Card123
 	dc.w	12
 	dc.l	0
 .VAN								;VAN featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardKirkMcLean
+	dc.l	Card127
 	dc.w	0
-	dc.l	CardDougLidster
+	dc.l	Card131
 	dc.w	18
-	dc.l	CardJyrkiLumme
+	dc.l	Card130
 	dc.w	17
-	dc.l	CardGeoffCourtnall
+	dc.l	Card128
 	dc.w	6
-	dc.l	CardCliffRonning
+	dc.l	Card132
 	dc.w	2
-	dc.l	CardPavelBure
+	dc.l	Card129
 	dc.w	12
 	dc.l	0
 .WSH								;WSH featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardDonBeaupre
+	dc.l	Card133
 	dc.w	0
-	dc.l	CardAlIafrate
+	dc.l	Card138
 	dc.w	17
-	dc.l	CardKevinHatcher
+	dc.l	Card137
 	dc.w	16
-	dc.l	CardDimitriKhristich
+	dc.l	Card135
 	dc.w	3
-	dc.l	CardMikeRidley
+	dc.l	Card134
 	dc.w	2
-	dc.l	CardPeterBondra
+	dc.l	Card136
 	dc.w	11
 	dc.l	NoPicSkater1
 	dc.w	18
 	dc.l	0
 .WPG								;WPG featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardBobEssensa
+	dc.l	Card142
 	dc.w	0
-	dc.l	CardTeppoNumminen
+	dc.l	Card143
 	dc.w	18
-	dc.l	CardPhilHousley
+	dc.l	Card141
 	dc.w	17
-	dc.l	CardThomasSteen
+	dc.l	Card139
 	dc.w	3
-	dc.l	CardAlexeiZhamnov
+	dc.l	Card144
 	dc.w	2
-	dc.l	CardTeemuSelanne
+	dc.l	Card140
 	dc.w	12
 	dc.l	0
 .ASE								;ASE featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardPatrickRoy
+	dc.l	Card061
 	dc.w	0
-	dc.l	CardRayBourque
+	dc.l	Card002
 	dc.w	18
-	dc.l	CardLarryMurphy
+	dc.l	Card095
 	dc.w	17
-	dc.l	CardAdamOates
+	dc.l	Card003
 	dc.w	6
-	dc.l	CardMarioLemieux
+	dc.l	Card092
 	dc.w	3
-	dc.l	CardAlexnderMogilny
+	dc.l	Card007
 	dc.w	15
-	dc.l	CardGrantFuhr
+	dc.l	Card011
 	dc.w	1
-	dc.l	CardTomBarrasso
+	dc.l	Card091
 	dc.w	2
-	dc.l	CardMarkMessier
+	dc.l	Card074
 	dc.w	4
-	dc.l	CardKirkMuller
+	dc.l	Card064
 	dc.w	5
-	dc.l	CardJoeSakic
+	dc.l	Card100
 	dc.w	7
-	dc.l	CardPierreTurgeon
+	dc.l	Card045
 	dc.w	8
-	dc.l	CardPatLaFontaine
+	dc.l	Card008
 	dc.w	9
-	dc.l	CardKevinStevens
+	dc.l	Card093
 	dc.w	10
-	dc.l	CardJaromirJagr
+	dc.l	Card094
 	dc.w	11
-	dc.l	CardPeterBondra
+	dc.l	Card136
 	dc.w	12
-	dc.l	CardMikeGartner
+	dc.l	Card076
 	dc.w	13
 	dc.l	NoPicSkater2
 	dc.w	14
-	dc.l	CardMarkRecchi
+	dc.l	Card088
 	dc.w	16
-	dc.l	CardBrianLeetch
+	dc.l	Card077
 	dc.w	19
-	dc.l	CardSteveDuchesne
+	dc.l	Card099
 	dc.w	20
-	dc.l	CardAlIafrate
+	dc.l	Card138
 	dc.w	21
-	dc.l	CardScottStevens
+	dc.l	Card067
 	dc.w	22
-	dc.l	CardZarleyZalapski
+	dc.l	Card041
 	dc.w	23
 	dc.l	NoPicSkater2
 	dc.w	24
 	dc.l	0
 .ASW								;ASW featured pictures: picture and roster index pairs, goalie first, 0
 									;ends
-	dc.l	CardEdBelfour
+	dc.l	Card019
 	dc.w	0
-	dc.l	CardPaulCoffey
+	dc.l	Card028
 	dc.w	19
-	dc.l	CardPhilHousley
+	dc.l	Card141
 	dc.w	21
-	dc.l	CardLucRobitaille
+	dc.l	Card051
 	dc.w	10
-	dc.l	CardSteveYzerman
+	dc.l	Card026
 	dc.w	3
-	dc.l	CardTeemuSelanne
+	dc.l	Card140
 	dc.w	14
-	dc.l	CardTimCheveldae
+	dc.l	Card025
 	dc.w	1
-	dc.l	CardFelixPotvin
+	dc.l	Card121
 	dc.w	2
-	dc.l	CardMikeModano
+	dc.l	Card056
 	dc.w	4
-	dc.l	CardJeremyRoenick
+	dc.l	Card020
 	dc.w	5
-	dc.l	CardBrianBradley
+	dc.l	Card115
 	dc.w	6
-	dc.l	CardDougGilmour
+	dc.l	Card122
 	dc.w	7
-	dc.l	CardWayneGretzky
+	dc.l	Card050
 	dc.w	8
-	dc.l	CardGaryRoberts
+	dc.l	Card014
 	dc.w	9
-	dc.l	CardTheorenFleury
+	dc.l	Card015
 	dc.w	11
-	dc.l	CardBrettHull
+	dc.l	Card111
 	dc.w	12
-	dc.l	CardPavelBure
+	dc.l	Card129
 	dc.w	13
-	dc.l	CardPatFalloon
+	dc.l	Card105
 	dc.w	15
 	dc.l	NoPicSkater2
 	dc.w	16
-	dc.l	CardGarySuter
+	dc.l	Card016
 	dc.w	17
-	dc.l	CardJeffBrown
+	dc.l	Card113
 	dc.w	18
-	dc.l	CardChrisChelios
+	dc.l	Card022
 	dc.w	20
-	dc.l	CardDaveManson
+	dc.l	Card032
 	dc.w	22
-	dc.l	CardSteveSmith
+	dc.l	Card023
 	dc.w	23
-	dc.l	CardSteveChiasson
+	dc.l	Card029
 	dc.w	24
 	dc.l	0
 PrintRecordValue					;Record line for a player card (PlayerCardScreen): copy RecordTxt to a3,
