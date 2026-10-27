@@ -66,7 +66,11 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 ## Credits and derivative works
 
-This project is the result of my work (abdulahmad) and the work of the people credited below. If you build anything from it, including mods, ROM or EXE hacks, ports, released forks, tools, or any other derivative work, you must credit us:
+Thanks to chaos, StaticEck, McMarkis and Drezz for their help with the disassembly.
+
+These disassemblies started with a lot of manual work, especially from chaos, and have since been AI-assisted.
+
+This project is the result of my work (abdulahmad) and the work of the people credited above. If you build anything from it, including mods, ROM or EXE hacks, ports, released forks, tools, or any other derivative work, you must credit us:
 
 - Put the credit in your repo's README, near the top and not buried in a footer, and in the notes of every release you publish, including any text file shipped inside a release archive.
 - Name me (abdulahmad) and link to this repository.
@@ -75,8 +79,3 @@ This project is the result of my work (abdulahmad) and the work of the people cr
 - If you are unsure, over-credit.
 
 Credit is the condition for using this work. Please do not release a derivative without it.
-
-
-Thanks to chaos, StaticEck, McMarkis and Drezz for their help with the disassembly.
-
-These disassemblies started with a lot of manual work, especially from chaos, and have since been AI-assisted.
