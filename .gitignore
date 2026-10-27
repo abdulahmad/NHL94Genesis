@@ -19,8 +19,9 @@ npm-debug.log*
 Thumbs.db
 desktop.ini
 
-# The reference ROM (nhl94retail.bin, in the root folder) and the IDA listing (lst/nhl94.bin.lst) are local files: they are derived from the game and are not committed.
-/nhl94retail.bin
+# The reference ROM (in the root folder, any file name) and the IDA listing (lst/nhl94.bin.lst) are local files: they are derived from the game and are not committed.
+/*.bin
+/*.gen
 lst/
 !.vscode/
 !.vscode/settings.json

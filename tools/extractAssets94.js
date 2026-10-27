@@ -674,7 +674,7 @@ NHL 94 Asset Extractor
 
 This script extracts assets from the NHL 94 Sega Genesis ROM.
 
-Usage: node tools/extractAssets94.js [options] <rom_file_path>
+Usage: node tools/extractAssets94.js [options] [<rom_file_path>]   (no path: the ROM in the repo folder, tools/roms.js)
 
 Options:
   -h, --help              Display this help message
@@ -692,6 +692,8 @@ Examples:
 
 // Main execution
 const options = parseArgs();
+// No path (or the id 'retail'): the ROM in the repo folder, found by its SHA-1 and size (tools/roms.js).
+if (!options.romFile || !require('fs').existsSync(options.romFile)) options.romFile = require('./roms').romPath(options.romFile || 'retail') || options.romFile;
 
 if (!options.romFile) {
     console.error('Error: ROM file path not provided');

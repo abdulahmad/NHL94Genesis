@@ -13,7 +13,7 @@ const { spawn } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
-const REF = 'nhl94retail.bin';
+const { ROMS, findRom } = require('./roms');
 const WIN = process.platform === 'win32';
 
 const args = process.argv.slice(2);
@@ -332,6 +332,7 @@ if (!seg && mode === 'dev') {
     step('verify', `${rel(mod)} not verified (dev build)`);
 } else {
     begin('verify');
+    const REF = findRom(ROMS.retail).path;
     const r = await (seg ? node('verifySegment.js', [seg, mod, REF, lst]) : node('verifyRom.js', [mod, REF]));
     const first = r.out.split(/\r?\n/).find((l) => l.trim()) || '';
     if (r.status !== 0 || !/^MATCH/.test(first)) {
