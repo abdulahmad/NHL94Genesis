@@ -519,7 +519,7 @@ const assets = [
 // Known retail ROMs. NHL 94 had one retail release (1993.JUL, GM T-50656 -00); slices are at its
 // addresses. A new version goes here with its SHA-1 and a map from retail address to its own.
 const VERSIONS = [
-    { id: 'retail', label: 'NHL 94 retail (1993.JUL, GM T-50656 -00)', file: 'lst/nhl94.bin',
+    { id: 'retail', label: 'NHL 94 retail (1993.JUL, GM T-50656 -00)', file: 'nhl94retail.bin',
       sha1: '7b1489ab501258133bf03e5f0892b77d04312580', size: 0x100000, date: '1993.JUL', serial: 'GM T-50656 -00',
       map: (a) => a },
 ];
@@ -685,8 +685,8 @@ Notes:
   - Accepts the known retail ROM (found by SHA-1); any other ROM is refused
 
 Examples:
-  node tools/extractAssets94.js lst/nhl94.bin
-  node tools/extractAssets94.js --verbose --output NHL94Assets lst/nhl94.bin
+  node tools/extractAssets94.js nhl94retail.bin
+  node tools/extractAssets94.js --verbose --output NHL94Assets nhl94retail.bin
     `);
 }
 

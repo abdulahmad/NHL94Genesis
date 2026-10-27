@@ -9,7 +9,7 @@
 
 
 ## Purpose
-A byte-matching 68000 SNASM disassembly of the retail cartridge that reads like clean original source: accurate names that follow the NHL92 Genesis (EA original) lineage, and comments without disassembler or porting artifacts. Every build must still MATCH `lst/nhl94.bin`. `main` keeps only changes that emit identical bytes (Current rules in SEGMENT_AGENT.md).
+A byte-matching 68000 SNASM disassembly of the retail cartridge that reads like clean original source: accurate names that follow the NHL92 Genesis (EA original) lineage, and comments without disassembler or porting artifacts. Every build must still MATCH `nhl94retail.bin`. `main` keeps only changes that emit identical bytes (Current rules in SEGMENT_AGENT.md).
 
 ## Build
 `npm run build:retail` (or `node tools/build.js retail`) on Windows, or on Linux with wine (`apt install wine wine32`, i386 enabled). It prints one line per step: prebuild, assemble, fixopcodes, fixrom, verify. `npm run build:dev` builds with CHECKSUM=0 and skips the verify. One segment: `npm run seg -- <name>` (orgs in `tools/segments.json`). `--verbose` shows each step's full output. `tools/verify_all.sh` extracts fresh and checks the full ROM and every segment; it must end in `ALL MATCH` before every commit.

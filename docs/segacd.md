@@ -65,7 +65,7 @@ Same order, same registers, same `#3` and `#2`. `addq` became `addi` and `bra.b`
 | `$11D3A` PushNumberWidth | `$3919A` | absolute call |
 | `$11DE2` printbigz | `$39258` | absolute call, 36 sites |
 
-`tools/segacd_relocs.py` finds these by matching six-instruction windows and keeping an absolute operand only when the cartridge address always becomes the same disc address. Run `python3 tools/segacd_relocs.py lst/nhl94.bin cdbin/HOCKEY.BIN` for the full list (it needs the disc files in `cdbin/`).
+`tools/segacd_relocs.py` finds these by matching six-instruction windows and keeping an absolute operand only when the cartridge address always becomes the same disc address. Run `python3 tools/segacd_relocs.py nhl94retail.bin cdbin/HOCKEY.BIN` for the full list (it needs the disc files in `cdbin/`).
 
 Those `$37xxx`–`$39xxx` targets are above the end of `HOCKEY.BIN` (`$2D20A`). None of the six disc files, loaded flat, contains the reassembled bytes at that address. The same routines also exist inside `HOCKEY.BIN` (printsmall's register save is at `$1DDAC`) and are reached with `bsr`. A call site uses one or the other. The `$37xxx` image is the open question: it is linked, and it is not a raw slice of these files.
 

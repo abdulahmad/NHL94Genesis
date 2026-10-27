@@ -2,7 +2,7 @@
 
 # NHL 94 Genesis
 
-Byte-matching SNASM68k source for the retail cartridge. A stock build matches `lst/nhl94.bin`.
+Byte-matching SNASM68k source for the retail cartridge. A stock build matches `nhl94retail.bin`.
 
 Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing. `docs/EXPANDING_THE_ROM.md` covers growing the ROM and adding a team.
 

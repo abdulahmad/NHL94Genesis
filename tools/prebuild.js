@@ -7,7 +7,7 @@
 const GAME = 'NHL 94 (Sega Genesis)';
 const EXTRACTOR = 'tools/extractAssets94.js';
 const ROMS = {
-    retail: { label: 'NHL 94 retail (1993.JUL, GM T-50656 -00)', file: 'lst/nhl94.bin',
+    retail: { label: 'NHL 94 retail (1993.JUL, GM T-50656 -00)', file: 'nhl94retail.bin',
               sha1: '7b1489ab501258133bf03e5f0892b77d04312580', size: 0x100000 },
 };
 const TARGETS = { retail: ['retail'] };
