@@ -692,9 +692,12 @@ PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; the full n
 	movea.l	#NewYorkITxt,a1			;full name
 .1									;print the name
 	jmp	print
-NewYorkITxt	String	'New York ','N12______'	;Full names for the two New York teams (TeamList has only the
-												;city). The nickname is a placeholder (see teamdata94.asm)
-NewYorkRTxt	String	'New York ','N13____'	;full name of NYR
+NewYorkITxt							;Full names for the two New York teams (TeamList has only the city).
+									;The nicknames are licensed names, so each String (length word, 'New York ' and
+									;the nickname) is generated from the ROM
+	include	..\Extracted\NHL94\Text\NewYorkIName.asm
+NewYorkRTxt							;full name of NYR
+	include	..\Extracted\NHL94\Text\NewYorkRName.asm
 BlankValueTxt	String	'                    '	;A blank value
 NATxt	String	'N/A                 '	;Per. Length in Shootout
 OptionValueOffsets					;Offsets of each option's value Strings. Team 1 / 2 are not read

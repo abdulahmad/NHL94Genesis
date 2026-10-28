@@ -42,7 +42,7 @@ let n = 0;
 // redrawn with a green check or a red cross when it ends (cut to the terminal width so it never
 // wraps). Otherwise both lines are printed once, after the step.
 const ABOUT = {
-    names: 'put the real player names and team nicknames (extracted from the ROM) into copies of src/teamdata94.asm and src/optsetup94.asm',
+    names: 'put the real player names and team nicknames (extracted from the ROM) into a copy of src/teamdata94.asm',
     prebuild: 'check the retail ROM and extract graphics/sound assets into Extracted/',
     z80: 'asm80 builds the Z80 sound driver from src/sound/z80_snd_drv93.asm and checks it against the ROM bytes',
     assemble: 'SNASM68k turns src/*.asm into a raw ROM image',
@@ -266,12 +266,12 @@ const mod = path.join(OUT, final);
     step('z80', `MATCH ${built.length} bytes (except the FM patch address at $278-$27C) == ROM $1AD90-$1B01A -> ${rel(out)}`);
 }
 
-// 3. names: src/teamdata94.asm and src/optsetup94.asm hold placeholders instead of the licensed names (the NHLPA player names
+// 3. names: src/teamdata94.asm holds placeholders instead of the licensed names (the NHLPA player names
 // and the NHL team nicknames). The extractor writes the real ones from the ROM to Extracted/PlayerNames.txt and
-// Extracted/TeamNicknames.txt (one per line, in source order); this copies the two files to output/build/ with each
-// placeholder replaced, and nhl94.asm includes the copies. A name must have the length of its placeholder (the Player macro
+// Extracted/TeamNicknames.txt (one per line, in source order); this copies the file to output/build/ with each
+// placeholder replaced, and nhl94.asm includes the copy. A name must have the length of its placeholder (the Player macro
 // writes the row length). Player rows are replaced in order; a nickname placeholder is 'N' + its two-digit number in
-// TeamNicknames.txt, padded with '_' (optsetup94.asm uses two of them for the full names of the New York teams).
+// TeamNicknames.txt, padded with '_'.
 {
     begin('names');
     const read = (f) => { const l = fs.readFileSync(path.join(ROOT, 'Extracted', f), 'latin1').split('\n'); if (l[l.length - 1] === '') l.pop(); return l; };
@@ -300,9 +300,8 @@ const mod = path.join(OUT, final);
     };
     fs.mkdirSync(BUILD, { recursive: true });
     put('teamdata94.asm');
-    put('optsetup94.asm');
     if (p !== players.length) fail('names', `PlayerNames.txt has ${players.length} names, src/teamdata94.asm has ${p} Player rows`);
-    step('names', `${p} player names, ${nicks.length} team nicknames -> ${rel(path.join(BUILD, 'teamdata94.asm'))}, ${rel(path.join(BUILD, 'optsetup94.asm'))}`);
+    step('names', `${p} player names, ${nicks.length} team nicknames -> ${rel(path.join(BUILD, 'teamdata94.asm'))}`);
 }
 
 // 4. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
