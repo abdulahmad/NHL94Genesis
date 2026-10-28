@@ -4,13 +4,13 @@
 
 Bitwise rebuild of NHL 94 for the Sega Genesis.
 
-The listing is `lst/nhl94.bin.lst`. The ROM it was generated from is `lst/nhl94.bin`. That file is the reference for every segment verify. Do not use a different ROM.
+The listing is `lst/nhl94.bin.lst` (a local file, not in the repo). The ROM it was generated from is the retail ROM in the root folder (`nhl94retail.bin` is the usual name; any name works, it is found by SHA-1 and size, `tools/roms.js`). That ROM is the reference for every verify. Do not use a different ROM. ROMs are not in the repo.
 ## Supported ROMs
 NHL 94 had one retail release; `tools/extractAssets94.js` accepts only that ROM, found by SHA-1, and refuses any other (bad dump, hack, prototype) with its SHA-1, size and header. The slices are kept as a per-version map from retail address, so a new version only needs a row with its SHA-1 and offsets.
 
 | Version | Header | File | Size | SHA-1 |
 | --- | --- | --- | --- | --- |
-| Retail | `1993.JUL`, `GM T-50656 -00` | `lst/nhl94.bin` | 1 MB | `7b1489ab501258133bf03e5f0892b77d04312580` |
+| Retail | `1993.JUL`, `GM T-50656 -00` | `nhl94retail.bin` (usual name) | 1 MB | `7b1489ab501258133bf03e5f0892b77d04312580` |
 
 
 The listing is an IDA LST in ASM68K / MRI mode. It has no address column. `loc_` / `sub_` names are the address.
@@ -28,9 +28,9 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 
 ## Build
 
-Segment builds use `npm run seg -- <name>` (`tools/build.js --seg`; orgs in `tools/segments.json`). Verify against `lst/nhl94.bin`.
+Segment checks use `npm run seg -- <name>` (`tools/build.js --seg <name>`, or `--all`): the full ROM is built, then the segment's address range (from the build listing) is compared with `nhl94retail.bin`. Segments are the files `src/nhl94.asm` includes before the 1 MB fill.
 
-`npm run extractassets` runs `tools/extractAssets94.js` against `lst/nhl94.bin`. Builds do this automatically when `Extracted/` is missing or incomplete (below).
+`npm run extractassets` runs `tools/extractAssets94.js` against the retail ROM in the root folder. Builds do this automatically when `Extracted/` is missing or incomplete (below).
 
 ## Build pre-step: ROM check and automatic asset extraction
 Every build entry point (`npm run build:retail`, `build:dev` and `seg`, all through `tools/build.js`) first runs `node tools/prebuild.js`. It:
@@ -43,16 +43,17 @@ If the ROM is missing (or is a different dump), the build stops with the full pa
 
 | Build | ROM needed | SHA-1 | Size |
 | --- | --- | --- | --- |
-| every build and segment | `lst/nhl94.bin` | `7b1489ab501258133bf03e5f0892b77d04312580` | 1048576 bytes |
+| every build and segment | `nhl94retail.bin` (root folder, any name) | `7b1489ab501258133bf03e5f0892b77d04312580` | 1048576 bytes |
 
 `npm run assets` runs only this step. `npm run extractassets` still forces a fresh extraction. `tools/build.js` runs it as step 1 of every build; `tools/verify_all.sh` also deletes `Extracted/` first so it is always a fresh extract.
 
-Full ROM builds assemble `src/nhl94.asm`. The listing is `output/obj/nhl94 .lst` and the raw image `output/obj/nhl94.raw.bin`. The finished ROM is `output/nhl94.bin` (`nhl94-revA.bin` with `rev=1`, `nhl94-dev.bin` for a dev build); a segment is `output/<name>.bin`.
+Full ROM builds assemble `src/nhl94.asm`. The listing is `output/obj/nhl94 .lst` and the raw image `output/obj/nhl94.raw.bin`. The finished ROM is `output/nhl94.bin` (`nhl94-revA.bin` with `rev=1`, `nhl94-dev.bin` for a dev build).
 
 | Script | Flags | Result |
 | --- | --- | --- |
-| `npm run build:retail` | `rev=0`, `checksum=1` | Retail, validation included, verified byte for byte against `lst/nhl94.bin`. |
+| `npm run build:retail` | `rev=0`, `checksum=1` | Retail, validation included, verified byte for byte against `nhl94retail.bin`. |
 | `npm run build:dev` | `rev=0`, `checksum=0` | No validation and no retail verify. Use this while editing. |
+| `npm run build:season` | `SEASON=1` | Season mode image `output/nhl94-season.bin` (needs the NHL 95 ROM, `NHL95_ROM`; see `docs/SEASON_SMOKE.md`). Not verified. |
 
 `build:dev` (`checksum=0`): `Start` skips `jsr ValidationRoutine` (3 `nop`s instead) and the header checksum at `$18E` is 0, so changed code still boots. With `checksum=1` the validation routine sums the ROM, and any change turns the screen red. `ValidationRoutine` stays in the ROM but is never called.
 

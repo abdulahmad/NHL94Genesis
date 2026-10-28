@@ -39,10 +39,10 @@ None. Every ROM map row is matched, every `seg:` script matches its ROM map rang
 
 ## Sources
 
-- Listing: `lst/nhl94.bin.lst` in this repo. Open that file. Do not disassemble `lst/nhl94.bin`. Do not write a disassembler.
+- Listing: `lst/nhl94.bin.lst` (a local file: the listing is derived from the ROM and is not in the repo). Open that file. Do not disassemble `nhl94retail.bin`. Do not write a disassembler.
 - The listing was exported from IDA as an LST in ASM68K / MRI mode. It has no address column. A `loc_`, `sub_`, or `unk_` name is the address. A named routine is at the instruction before the next address-bearing label. Confirm the org against `lst/nhl94.bin` before the first verify.
 - Style source: the matching file in https://github.com/abdulahmad/NHLPA93Genesis. 93 is the closer source.
-- Reference ROM: `lst/nhl94.bin`. This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
+- Reference ROM: `nhl94retail.bin` (root folder, not in the repo). This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
 - `src/nhl94.asm` is the full build top level (`npm run build:retail`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
 - Stub includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`). `nhl94.asm` includes the same three for the full build.
 
@@ -66,7 +66,9 @@ Still present from 93: Ottawa Senators, Tampa Bay Lightning, San Jose Sharks, Qu
 
 ## Build
 
-`npm run seg -- <name>` (or `node tools/build.js --seg <name>`) assembles `src/stubinc/<name>_stub.asm`, runs `tools/fixopcodes.js` with the org, then `tools/verifySegment.js`. The stub is `org` at the confirmed start, includes `src/stubinc`, and includes `src/<name>.asm`. Each segment's org is in `tools/segments.json`; a new segment is one line there. The assembler listing name has a space before `.lst`.
+> The segment stubs and `tools/segments.json` were removed (as on main). `npm run seg -- <name>` (or `node tools/build.js --seg <name>` / `--all`) builds the full ROM and compares the segment's address range, taken from the build listing (`tools/verifySegment.js`). The history below describes the old stub builds.
+
+Old stub builds: `npm run seg -- <name>` assembled `src/stubinc/<name>_stub.asm`, ran `tools/fixopcodes.js` with the org, then `tools/verifySegment.js`. The stub is `org` at the confirmed start, includes `src/stubinc`, and includes `src/<name>.asm`. Each segment's org is in `tools/segments.json`; a new segment is one line there. The assembler listing name has a space before `.lst`.
 
 A MATCH of 0 bytes is a failure. The byte count must be the confirmed range.
 
