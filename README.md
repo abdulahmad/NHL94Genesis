@@ -71,6 +71,10 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 
 `build:dev` (`checksum=0`): `Start` skips `jsr ValidationRoutine` (3 `nop`s instead) and the header checksum at `$18E` is 0, so changed code still boots. With `checksum=1` the validation routine sums the ROM, and any change turns the screen red. `ValidationRoutine` stays in the ROM but is never called.
 
+## Mod branches
+
+The feature and patch branches (season mode, MSU-MD music, performance overlay, team banner VRAM) are described in [docs/BRANCHES.md](docs/BRANCHES.md): what each does, how to build it, and its status. `main` stays byte-identical to retail.
+
 ## Sega CD
 
 `npm run build:segacd` (`node tools/build.js --segacd`) assembles the 41 transcribed CD fragments in `src/segacd/` into `output/segacd/` and compares them to the six disc files in `cdbin/` (copied from your own Sega CD disc; not in the repo, see `docs/segacd.md`), on Windows or Linux with wine. It does not change the cartridge build. What the disc changed, and how far the disassembly goes, is `docs/segacd.md`.
