@@ -15,7 +15,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are made (names, comments
 - All sound effects and music are now playable and we have Dieter Ruehle's list, so sound and music names can be fixed properly.
 - Frame lists and animation names still need proper labels.
 
-Bitwise rebuild of NHL 94 for the Sega Genesis.
+Reverse engineered source of NHL 94 for the Sega Genesis.
 
 The ROM goes in the repository's root folder (it is not in the repo). `nhl94retail.bin` is the usual name, but any name works: the build finds the ROM by its SHA-1 and size (`tools/roms.js`). `.bin` and `.gen` files there are gitignored; a ROM named `.md` is not, so do not commit it. It is the reference for every verify. Do not use a different ROM. The IDA listing the segment work used (`lst/nhl94.bin.lst`) is no longer in the repo either; keep a local copy there if you have one.
 
