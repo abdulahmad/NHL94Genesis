@@ -448,8 +448,7 @@ ClearLineArea						;Line editor: erase the line area and print the
 	move.w	(LineIconPosTable-6).l,(printx).l	;OptLine: use the entry before
 .0									;entry chosen: print the position header
 	jsr	(printsmallz).l
-	dc.w	$0022					;String length: too many arguments for the String macro
-	dc.b	$FE,4,$FB,$FD,$FA,2,'LD',$FB,$FE,$FA,2,'RD',$FB,$FE,$FA,2,'LW',$FB,$FE,$FA,2,'C ',$FB,$FE,$FA,2,'RW'
+	String	$FE,$04,$FB,$FD,$FA,$02,'LD',$FB,$FE,$FA,$02,'RD',$FB,$FE,$FA,$02,'LW',$FB,$FE,$FA,$02,'C ',$FB,$FE,$FA,$02,'RW'
 	rts
 DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Editor" title and
 									;the team logo map (PutTeamBlock)
