@@ -14,6 +14,8 @@ const { spawn } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
 const { ROMS, findRom } = require('./roms');
+const { formatAssemblerFailureDetail, hasBranchOutOfRange, DEFAULT_DOC } = require('./assembleHints');
+const EXPANDING_ROM_FILL_HINT = 'the 1 MB fill in src/nhl94.asm';
 const WIN = process.platform === 'win32';
 
 const args = process.argv.slice(2);
@@ -200,7 +202,8 @@ if (args.includes('--segacd')) {
         const sum = r.out.match(/(\d+) error\(s\) from/);
         if (!sum || Number(sum[1]) > 0 || !fs.existsSync(out)) {
             const lines = r.out.split(/\r\n|\n|\r/);
-            fail('assemble', `${f.name} (see ${rel(logPath)})`, lines.filter((l) => /\.(asm|inc|mac)\(\d+|error|not recognised|undefined/i.test(l) && !/error\(s\) from/.test(l)).slice(0, 40).join('\n') || lines.slice(-20).join('\n'));
+            fail('assemble', `${f.name} (see ${rel(logPath)})`, formatAssemblerFailureDetail(lines, { fillHint: EXPANDING_ROM_FILL_HINT })
+                || lines.filter((l) => /\.(asm|inc|mac)\(\d+|error|not recognised|undefined/i.test(l) && !/error\(s\) from/.test(l)).slice(0, 40).join('\n') || lines.slice(-20).join('\n'));
         }
         detail(`${f.name}: ${sum[0]} -> ${rel(out)}`);
     }
@@ -333,8 +336,11 @@ const mod = path.join(OUT, final);
     if (!sum) fail('assemble', `no assembler summary in ${rel(logPath)} (exit ${r.status})`, lines.slice(-20).join('\n'));
     const errors = Number(sum[1]);
     if (errors > 0 || !fs.existsSync(bin)) {
-        const bad = lines.filter((l) => /\.(asm|inc|mac)\(\d+|error|fatal|not recognised|undefined/i.test(l) && !/error\(s\) from/.test(l)).slice(0, 40);
-        fail('assemble', `${errors} error(s), see ${rel(logPath)}`, bad.join('\n'));
+        const detail = formatAssemblerFailureDetail(lines, { fillHint: EXPANDING_ROM_FILL_HINT });
+        const headline = hasBranchOutOfRange(lines)
+            ? `branch out of range — see ${DEFAULT_DOC}`
+            : `${errors} error(s), see ${rel(logPath)}`;
+        fail('assemble', headline, detail);
     }
     step('assemble', `${errors} errors, ${warnings} warnings, ${sum[2]} lines in ${sum[3]}s (CHECKSUM=${checksum}, PERF=${perf}) -> ${rel(bin)}`);
     detail(r.out);
