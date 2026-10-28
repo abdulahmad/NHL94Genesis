@@ -68,8 +68,11 @@ Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .ls
 | --- | --- | --- |
 | `npm run build:retail` | `checksum=1` | Retail, validation included, verified byte for byte against `nhl94retail.bin`. |
 | `npm run build:dev` | `checksum=0` | No validation and no retail verify. Use this while editing. |
+| `npm run build:perf` | `checksum=0`, `PERF=1` | Same as dev, plus the on-screen stats overlay. See `docs/perf.md`. |
 
 `build:dev` (`checksum=0`): `Start` skips `jsr ValidationRoutine` (3 `nop`s instead) and the header checksum at `$18E` is 0, so changed code still boots. With `checksum=1` the validation routine sums the ROM, and any change turns the screen red. `ValidationRoutine` stays in the ROM but is never called.
+
+`build:perf` is that same dev boot with `src/perf94.asm` included after the 1 MB fill. The field names are in `docs/perf.md`.
 
 ## Sega CD
 
