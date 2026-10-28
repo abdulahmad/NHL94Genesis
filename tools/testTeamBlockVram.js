@@ -1,8 +1,8 @@
 // patch/teamblock-vram headless check of output/nhl94.bin: packed tables, pointers, map rebasing, checksum.
 // Usage: node tools/testTeamBlockVram.js [rom]
 const fs = require('fs'), path = require('path');
-const ROOT = path.join(__dirname, '..'), O = path.join(ROOT, 'output');
-const rom = fs.readFileSync(process.argv[2] || path.join(O, 'nhl94.bin'));
+const ROOT = path.join(__dirname, '..'), O = path.join(ROOT, 'output', 'obj');
+const rom = fs.readFileSync(process.argv[2] || path.join(ROOT, 'output', 'nhl94.bin'));
 const tiles = fs.readFileSync(path.join(O, 'tbp_tiles.bin')), bmp = fs.readFileSync(path.join(O, 'tbp_bitmap.bin'));
 const src = fs.readFileSync(path.join(ROOT, 'Extracted/NHL94/Graphics/TeamBlocks94.map.jim'));
 const inc = fs.readFileSync(path.join(O, 'teambitmaps_packed.inc'), 'utf8');

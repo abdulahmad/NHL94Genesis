@@ -14,7 +14,7 @@ Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing
 [1/5] prebuild   check the retail ROM and extract graphics/sound assets into Extracted/
                  ROM OK, 475 assets
 [2/5] assemble   SNASM68k turns src/*.asm into a raw ROM image
-                 0 errors, 0 warnings, 69719 lines in 0.29s (REV=0 CHECKSUM=1) -> output/build/nhl94.raw.bin
+                 0 errors, 0 warnings, 69719 lines in 0.29s (REV=0 CHECKSUM=1) -> output/obj/nhl94.raw.bin
 [3/5] fixopcodes patch the instructions where SNASM picks a different encoding than EA's original assembler
                  473 opcodes fixed
 [4/5] fixrom     pad to a valid ROM size, write the header end address and the checksum
@@ -31,7 +31,7 @@ Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing
 4. **fixrom**: pad to a valid ROM size, write the header end address and the checksum.
 5. **verify**: compare byte-for-byte with the retail ROM.
 
-A failing step prints `FAILED`, the relevant log lines (`output/build/Build_nhl94.log` for the assembler) and `BUILD FAILED at <step>`, and exits 1. `tools/verify_all.sh` builds the full ROM and every segment and prints `ALL MATCH`.
+A failing step prints `FAILED`, the relevant log lines (`output/obj/Build_nhl94.log` for the assembler) and `BUILD FAILED at <step>`, and exits 1. `tools/verify_all.sh` builds the full ROM and every segment and prints `ALL MATCH`.
 
 `checksum=1` runs ValidationRoutine at boot. The fixrom step writes the sum it compares against, so a changed ROM still boots with the check on. `checksum=0` skips the check. The checksum segment is left on the retail immediate so it still matches.
 

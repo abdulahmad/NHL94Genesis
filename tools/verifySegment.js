@@ -17,7 +17,7 @@ if (!Number.isInteger(org) || org < 0) {
 
 const ROOT = path.join(__dirname, '..');
 const builtPath = path.join(ROOT, 'output', `${segment}.bin`);
-const patchedPath = path.join(ROOT, 'output', 'build', `${segment}_patched.bin`);
+const patchedPath = path.join(ROOT, 'output', 'obj', `${segment}_patched.bin`);
 const built = fs.readFileSync(builtPath);
 const reference = fs.readFileSync(referencePath);
 

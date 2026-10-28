@@ -1,5 +1,5 @@
 ;patch/teamblock-vram: setup screen team banners. Data from tools/packTeamBitmaps.js (prebuild).
-	include	..\output\teambitmaps_packed.inc
+	include	..\output\obj\teambitmaps_packed.inc
 	IF TBP_Count<>NumTeams
 		inform	3,"teambitmaps_packed.inc needs one entry per team"
 	ENDIF

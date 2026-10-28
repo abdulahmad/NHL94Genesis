@@ -12,6 +12,7 @@ const { spawn } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
+const OBJ = path.join(OUT, 'obj');   // generated intermediates, emptied before each build
 const REF = 'lst/nhl94.bin';
 const SEGMENTS = require('./segments.json');
 const WIN = process.platform === 'win32';
@@ -147,9 +148,11 @@ if (args.includes('--segacd')) {
     ABOUT.assemble = 'SNASM68k assembles each src/segacd/*.asm fragment with its own options';
     ABOUT.verify = 'compare each fragment with its bytes on the disc (cdbin/)';
     const frags = require('./segacd.json');
-    const BUILD = path.join(OUT, 'build');
+    const BUILD = OBJ;
     const CD = path.join(OUT, 'segacd');
-    fs.mkdirSync(BUILD, { recursive: true });
+    // output/obj/ is shared by all builds: empty it so this build cannot pick up another build's intermediates.
+    fs.rmSync(OBJ, { recursive: true, force: true });
+    fs.mkdirSync(OBJ, { recursive: true });
     fs.mkdirSync(CD, { recursive: true });
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
     begin('assemble');
@@ -157,7 +160,7 @@ if (args.includes('--segacd')) {
     for (const f of frags) {
         const out = path.join(CD, `${f.name}.bin`);
         fs.rmSync(out, { force: true });
-        const a = ['/p', '/m', '/g', ...f.options, `segacd\\${f.name}.asm,..\\output\\segacd\\${f.name}.bin,..\\output\\build\\${f.name},..\\output\\build\\${f.name}`];
+        const a = ['/p', '/m', '/g', ...f.options, `segacd\\${f.name}.asm,..\\output\\segacd\\${f.name}.bin,..\\output\\obj\\${f.name},..\\output\\obj\\${f.name}`];
         const r = await (WIN ? run(exe, a, { cwd: path.join(ROOT, 'src') })
             : run('wine', [exe, ...a], { cwd: path.join(ROOT, 'src'), env: { ...process.env, WINEDEBUG: '-all' } }));
         const logPath = path.join(BUILD, `Build_${f.name}.log`);
@@ -186,9 +189,9 @@ if (seg !== null && !SEGMENTS[seg]) {
     process.exit(1);
 }
 const name = seg || 'nhl94';
-// Intermediate files go in output/build/: the raw assembler image, its listing and the log.
+// Intermediate files go in output/obj/: the raw assembler image, its listing and the log.
 // The one result is output/<final>: nhl94.bin (retail), nhl94-revA.bin, nhl94-dev.bin, or <seg>.bin.
-const BUILD = path.join(OUT, 'build');
+const BUILD = OBJ;
 const bin = path.join(BUILD, `${name}.raw.bin`);
 const lst = path.join(BUILD, `${name} .lst`);
 const fixed = path.join(BUILD, `modified_${name}.raw.bin`);
@@ -196,7 +199,11 @@ const logPath = path.join(BUILD, `Build_${name}.log`);
 const final = seg ? `${seg}.bin` : `nhl94${rev ? '-revA' : ''}${mode === 'dev' ? '-dev' : ''}.bin`;
 const mod = path.join(OUT, final);
 
-// 1. prebuild: ROM check and Extracted/ assets.
+// output/obj/ is shared by all builds: empty it so this build cannot pick up another build's intermediates.
+fs.rmSync(OBJ, { recursive: true, force: true });
+fs.mkdirSync(OBJ, { recursive: true });
+
+// 1. prebuild: ROM check and Extracted/ assets (and output/obj/teamcounts.inc).
 {
     begin('prebuild');
     const r = await node('prebuild.js', ['retail']);
@@ -213,7 +220,7 @@ const mod = path.join(OUT, final);
     fs.mkdirSync(BUILD, { recursive: true });
     for (const f of [bin, fixed, mod]) fs.rmSync(f, { force: true });
     const src = seg ? `stubinc\\${seg}_stub.asm` : 'nhl94.asm';
-    const o = `..\\output\\build\\${name}`;
+    const o = `..\\output\\obj\\${name}`;
     const asmArgs = ['/p', '/m', '/g', '/o', 'd-', '/o', 's-', '/o', 'r+', '/o', 'l+', '/o', 'l.', '/o', 'ow+', '/o', 'op-',
         '/o', 'os+', '/o', 'oz+', '/o', 'omq-', '/o', 'oaq+', '/o', 'osq+',
         '/e', `REV=${rev}`, '/e', `CHECKSUM=${checksum}`, `${src},${o}.raw.bin,${o},${o}`];
