@@ -31,6 +31,8 @@ PerfDeactivate
 PerfReset
 	clr.w	(perf_active).w
 	clr.w	(perf_warmup).w
+	move.w	#VDPR_WINX,(Vctrl).l		;window off (same as setVram)
+	move.w	#VDPR_WINY,(Vctrl).l
 	rts
 PerfActivate
 	move.w	#1,(perf_active).w
@@ -40,21 +42,21 @@ PerfActivate
 ;	It stops at the Hockey.snd incbin, and this file is included after that, so these
 ;	compares are not rewritten. Still use cmp.w Dn,Dn here, not cmpi.w #imm,Dn.
 
-;	printsmall treats bytes <= 0 as control codes and is not used here. The lines are
-;	print strings (length, -(TXPRI+TXMAP3), x, y, text, 0). Drawn only while dfok is
-;	clear, with interrupts left on, so a stalled draw cannot stop the music vblank.
+;	The rink scrolls on maps 1 and 2. print was painting the stat lines onto those
+;	maps, so the cells showed up as garbage and moved with the camera. The lines go
+;	on map 3, and the window is opened over the top 4 rows so they stay on screen.
 
-;digit positions inside the print string (length word, control, x, y, then text)
-p1_cpu	equ	perf_line1+5+3
-p1_sl	equ	perf_line1+5+11
-p1_tot	equ	perf_line1+5+15
-p1_max	equ	perf_line1+5+21
-p2_fps	equ	perf_line2+5+4
-p2_sp	equ	perf_line2+5+11
-p2_dm	equ	perf_line2+5+17
-p2_lag	equ	perf_line2+5+24
-p3_vb	equ	perf_line3+5+3
-p3_stk	equ	perf_line3+5+12
+;	Plain text in the line buffers (28 bytes). Drawn on the window plane, top rows only.
+p1_cpu	equ	perf_line1+3
+p1_sl	equ	perf_line1+10
+p1_tot	equ	perf_line1+14
+p1_max	equ	perf_line1+21
+p2_fps	equ	perf_line2+3
+p2_sp	equ	perf_line2+10
+p2_dm	equ	perf_line2+18
+p2_lag	equ	perf_line2+26
+p3_vb	equ	perf_line3+2
+p3_stk	equ	perf_line3+13
 
 PerfTpl1	dc.b	'CPU000% SL000/262 MAX000    '
 PerfTpl2	dc.b	'FPS00  SP:000w DM:00  LAG:0 '
@@ -181,27 +183,19 @@ PerfEnsureInit
 	move.w	(Vcount).w,(perf_fps_lastvc).w
 	lea	(perf_line1).w,a0
 	lea	PerfTpl1(pc),a1
-	moveq	#1,d2
 	bsr.w	PerfLoadLine
 	lea	(perf_line2).w,a0
 	lea	PerfTpl2(pc),a1
-	moveq	#2,d2
 	bsr.w	PerfLoadLine
 	lea	(perf_line3).w,a0
 	lea	PerfTpl3(pc),a1
-	moveq	#3,d2
 	bsr.w	PerfLoadLine
 	rts
 
 PerfLoadLine
-	move.w	#33,(a0)+			;print length: control, x, y, 28 text, trailing 0
-	move.b	#-(TXPRI+TXMAP3),(a0)+
-	move.b	#1,(a0)+
-	move.b	d2,(a0)+
 	moveq	#27,d0
 .ld	move.b	(a1)+,(a0)+
 	dbf	d0,.ld
-	clr.b	(a0)+
 	rts
 
 PerfFormatLines
@@ -272,14 +266,63 @@ PerfPutDec
 	rts
 
 PerfDrawLines
-	movem.l	d0-d7/a0-a6,-(sp)
+	bset	#dfng,(disflags).w
+	move.w	#VDPR_WINX,(Vctrl).l
+	move.w	#VDPR_WINY+4,(Vctrl).l		;top 4 rows are the window, not the rink
+	moveq	#0,d1
+	bsr.w	PerfBlankRow
+	moveq	#1,d1
+	bsr.w	PerfBlankRow
+	moveq	#2,d1
+	bsr.w	PerfBlankRow
+	moveq	#3,d1
+	bsr.w	PerfBlankRow
+	moveq	#0,d1
 	lea	(perf_line1).w,a1
-	jsr	(print).l
+	bsr.w	PerfDrawRow
+	moveq	#1,d1
 	lea	(perf_line2).w,a1
-	jsr	(print).l
+	bsr.w	PerfDrawRow
+	moveq	#2,d1
 	lea	(perf_line3).w,a1
-	jsr	(print).l
-	movem.l	(sp)+,d0-d7/a0-a6
+	bsr.w	PerfDrawRow
+	bclr	#dfng,(disflags).w
+	rts
+
+PerfBlankRow							;d1 = window row. Fill 32 cells with the blank tile
+	bsr.w	PerfRowAddr
+	moveq	#31,d0
+	move.w	#$7FF,d3
+.pb	move.w	d3,(a0)
+	dbf	d0,.pb
+	rts
+
+PerfDrawRow							;a1 = 28 chars, d1 = window row
+	bsr.w	PerfRowAddr
+	moveq	#27,d4
+.pc	moveq	#0,d0
+	move.b	(a1)+,d0
+	cmp.b	#$20,d0
+	bcs.s	.blk
+	asl.w	#1,d0
+	movea.l	#SmallFontMap,a2
+	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
+	add.w	(smallfontchars).w,d0
+	ori.w	#$8000,d0
+	bra.s	.wr
+.blk	move.w	#$7FF,d0
+.wr	move.w	d0,(a0)
+	dbf	d4,.pc
+	rts
+
+PerfRowAddr							;d1 = row → a0 = Vdata, VRAM write at that window row
+	move.w	(VmMAP3).w,d0
+	move.w	d1,d3
+	asl.w	#5,d3					;map 3 is 32 cells wide
+	asl.w	#1,d3
+	add.w	d3,d0
+	jsr	(Vmaddr).l
 	rts
 
 PerfExit
