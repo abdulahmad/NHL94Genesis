@@ -56,7 +56,7 @@ PerfGameFrameBegin
 	tst.w	(PalMode).w
 	beq.s	.pf0
 	move.w	#45,d1
-.pf0	cmpi.w	d1,d0
+.pf0	cmp.w	d1,d0
 	blt.w	rtss2
 	move.w	(perf_fps_acc).w,(perf_fps).w
 	clr.w	(perf_fps_acc).w
