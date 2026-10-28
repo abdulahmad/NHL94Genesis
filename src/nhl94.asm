@@ -1,7 +1,7 @@
 ;	Top level of the ROM build. Includes the equates and then every module in ROM order;
 ;	each file assembles at the address after the one before it.
 ;
-;	teamdata94.asm is included as a copy in output/build/ with the real player names and
+;	teamdata94.asm is included as a copy in output/obj/ with the real player names and
 ;	team nicknames put back by tools/build.js. The file in src/ has placeholders and needs
 ;	the original ROM. The two New York full names in optsetup94.asm are included from
 ;	Extracted/NHL94/Text (asm the extractor generates).
@@ -12,7 +12,7 @@
 	include	main94.asm				; $000000 header, startup, vectors
 	include	ram94.asm				;RAM map (rs), after main94 like 93 so Stack is the reset
 									;vector value until ram94 redefines it. Equates only
-	include	..\output\build\teamdata94.asm	; $00030A teams, palettes, credits text
+	include	..\output\obj\teamdata94.asm	; $00030A teams, palettes, credits text
 	include	frames94.asm			; $005B1C sprite animation tables
 	include	hockey94.asm			; $0076B2 game loop, pause
 	include	menu94.asm				; $007E36 menu core

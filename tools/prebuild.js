@@ -125,8 +125,8 @@ function writeTeamCounts() {
         `TeamBitmapsEntries equ ${mapTeamEntries(path.join(dir, 'TeamBlocks94.map.jim'))}`,
         '',
     ].join('\n');
-    fs.mkdirSync(path.join(ROOT, 'output'), { recursive: true });
-    fs.writeFileSync(path.join(ROOT, 'output', 'teamcounts.inc'), text);
+    fs.mkdirSync(path.join(ROOT, 'output', 'obj'), { recursive: true });
+    fs.writeFileSync(path.join(ROOT, 'output', 'obj', 'teamcounts.inc'), text);
 }
 
 if (!why) {
