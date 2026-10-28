@@ -147,6 +147,9 @@ StartPer							;start a period: reset stack, rink and clock, face off, run the g
 	move.w	#$FFFF,(lastsfx).w
 	move.l	#replaystart,(recbpr).w	;replaystart
 	move.w	(Vcount).w,(OldVcount).w
+	IF PERF=1
+	jsr	(PerfReset).l			;keep the overlay off through the faceoff fade
+	ENDIF
 	bsr.w	DoGameFrame				;run two frames before the loop
 	move.w	#$FFFF,(palcount).w
 	bsr.w	DoGameFrame
@@ -164,9 +167,6 @@ StartPer							;start a period: reset stack, rink and clock, face off, run the g
 	bset	#sf3fosong,(sflags3).w	;set for periods 1 and 2 only
 
 Gameloop							;Main loop for game
-	IF PERF=1
-	jsr	(PerfActivate).l
-	ENDIF
 	bsr.w	DoGameFrame
 	bsr.w	demoread				;check if demo mode
 	btst	#sfpz,(sflags).w		;sfpz
@@ -180,7 +180,7 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 	beq.s	DoGameFrame
 	move.w	(Vcount).w,(OldVcount).w
 	IF PERF=1
-	jsr	(PerfGameFrameBegin).l
+	jsr	(PerfOnFrame).l
 	ENDIF
 	bsr.w	periodicevents
 	bsr.w	updateplayers			;apply velocity and check collisions
@@ -195,7 +195,13 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 .nosong	jsr	(setSlotBit).l
 	bsr.w	checkwindow
 	bsr.w	updatereplay
+	IF PERF=0
 	jmp	setvideo
+	ELSE
+	jsr	(setvideo).l			;absolute long: setvideo is ~58KB away (bsr.w does not reach)
+	jsr	(PerfAfterVideo).l
+	rts
+	ENDIF
 
 periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jsr	(PenaltyManager).l

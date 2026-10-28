@@ -24,19 +24,26 @@ perf_inited	equ	PALflag+32		;magic $9454 once line buffers are valid
 perf_line1		equ	PALflag+34
 perf_line2		equ	PALflag+68
 perf_line3		equ	PALflag+102
-perf_active	equ	PALflag+136		;nonzero only during live period play (DoGameFrame)
+perf_active	equ	PALflag+136		;nonzero only while the overlay is allowed to draw
+perf_warmup	equ	PALflag+138		;frames to skip after PerfReset (faceoff fade)
 
 PerfDeactivate
+PerfReset
 	clr.w	(perf_active).w
+	clr.w	(perf_warmup).w
 	rts
 PerfActivate
 	move.w	#1,(perf_active).w
 	rts
 
-;	printsmall treats bytes <= 0 as control codes. Uninitialized RAM (this block is the
-;	stack hole above PALflag and is not cleared at boot) will jsr off the control-code
-;	table and never return, leaving dfng set so VBlank never clears dfok. DoGameFrame
-;	then spins in setvideo. Only draw after the line buffers have been filled.
+;	fixopcodes rewrites SNASM cmp #imm,Dn (0C40 and friends) to EA's CMP encoding.
+;	It stops at the Hockey.snd incbin, and this file is included after that, so these
+;	compares are not rewritten. Still use cmp.w Dn,Dn here, not cmpi.w #imm,Dn.
+
+;	printsmall treats bytes <= 0 as control codes. This RAM is the stack hole above
+;	PALflag and is not cleared at boot. Fill the line buffers before drawing.
+;	Do not draw from VBlank or from inside setvideo: printsmall sets dfng, and a
+;	draw while dfok is pending leaves VBlank unable to retire the frame.
 
 ;digit positions (byte offset from perf_lineN, after the length word)
 p1_cpu	equ	perf_line1+2+3
@@ -50,16 +57,22 @@ p2_lag	equ	perf_line2+2+24
 p3_vb	equ	perf_line3+2+3
 p3_stk	equ	perf_line3+2+12
 
-PerfTpl1	dc.b	'CPU000% SL000/262 MAX000'
+PerfTpl1	dc.b	'CPU000% SL000/262 MAX000    '
 PerfTpl2	dc.b	'FPS00  SP:000w DM:00  LAG:0 '
 PerfTpl3	dc.b	'VB000sl  STK:0000           '
+	even
 
-PerfGameFrameBegin
+PerfOnFrame
 	tst.w	(perf_active).w
-	beq.w	PerfExit
-	btst	#sfpz,(sflags).w		;intermission / pause menu — no overlay
-	bne.w	PerfExit
-	move.w	d7,(perf_lag).w
+	bne.s	.arm
+	move.w	(perf_warmup).w,d0
+	addq.w	#1,d0
+	move.w	d0,(perf_warmup).w
+	move.w	#90,d1				;~1.5s: faceoff fade is palcount $18, then forced to $FFFF
+	cmp.w	d1,d0
+	bcs.w	PerfExit
+	move.w	#1,(perf_active).w
+.arm	move.w	d7,(perf_lag).w
 	move.w	(HVcount).l,(perf_hv_start).w
 	move.l	sp,d0
 	move.l	#$FFFFFFFE,d1			;Stack equ — movea.w #(Stack-M68K_RAM) sign-extends wrong
@@ -82,7 +95,7 @@ PerfGameFrameBegin
 	move.w	(Vcount).w,(perf_fps_lastvc).w
 	rts
 
-PerfSampleEndAndDraw
+PerfAfterVideo
 	tst.w	(perf_active).w
 	beq.w	PerfExit
 	btst	#sfpz,(sflags).w
@@ -150,9 +163,11 @@ PerfVScanDelta
 	rts
 
 PerfEnsureInit
-	cmpi.w	#$9454,(perf_inited).w
+	move.w	(perf_inited).w,d0
+	move.w	#$9454,d1
+	cmp.w	d1,d0
 	beq.w	PerfExit
-	move.w	#$9454,(perf_inited).w
+	move.w	d1,(perf_inited).w
 	move.w	(Vcount).w,(perf_fps_lastvc).w
 	lea	(perf_line1).w,a0
 	move.w	#28,(a0)+
@@ -230,6 +245,7 @@ PerfPutDec
 	move.w	d1,d3
 	add.w	d1,a0
 	subq.w	#1,d3
+	andi.l	#$FFFF,d0			;divu.w uses the full long; a dirty high word overflows
 .pd0	divu.w	#$A,d0
 	move.w	d0,d2
 	clr.w	d0
@@ -241,6 +257,8 @@ PerfPutDec
 	rts
 
 PerfDrawLines
+	move.w	sr,-(sp)
+	move.w	#$2700,sr			;no VBlank during printsmall (it sets dfng)
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	(printx).w,-(sp)
 	move.w	(printy).w,-(sp)
@@ -263,6 +281,7 @@ PerfDrawLines
 	move.w	(sp)+,(printy).w
 	move.w	(sp)+,(printx).w
 	movem.l	(sp)+,d0-d2/a0-a1
+	move.w	(sp)+,sr
 	rts
 
 PerfExit

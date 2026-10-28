@@ -9,9 +9,6 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 									;shootout) shootoutclock counts down instead (shootoutjiffy jiffies, not
 									;while gmode2 bit 7 is set)
 	movem.l	d0-d7/a0-a6,-(sp)
-	IF PERF=1
-	jsr	(PerfVBlankStartIfActive).l
-	ENDIF
 	btst	#dfng,(disflags).w		;dfng: don't touch the vdp
 	bne.w	.nograph				;don't screw with vchip cause I'm using it
 	bclr	#dfok,(disflags).w		;dfok
@@ -44,9 +41,6 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 .c									;clock done
 	addq.w	#1,(Vcount).w
 	jsr	(p_music_vblank).l
-	IF PERF=1
-	jsr	(PerfVBlankEndIfActive).l
-	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
 .soclock							;bit 1 of gmode2 set
@@ -133,9 +127,6 @@ setvideo							;this is not vblank code but sets up ram for vblank transfers. Ca
 	lsr.w	#1,d0					;words
 	move.w	d0,(Sattsize).w
 	move.l	a5,(DMAlistend).w
-	IF PERF=1
-	jsr	(PerfSampleEndAndDraw).l	;before dfok: printsmall must not run with a frame pending
-	ENDIF
 	bset	#dfok,(disflags).w		;dfok
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
