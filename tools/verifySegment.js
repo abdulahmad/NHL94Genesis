@@ -16,9 +16,12 @@ const builtPath = builtArg || path.join(ROOT, 'output', 'nhl94.bin');
 const refPath = refArg || require('./roms').romPath('retail') || path.join(ROOT, 'nhl94retail.bin');
 const lstPath = lstArg || path.join(ROOT, 'output', 'obj', 'nhl94 .lst');
 
-// The segments, in include order: the .asm files src/nhl94.asm includes (named without their folder, e.g. sound\sound94.asm is sound94).
+// The segments, in include order: the .asm files src/nhl94.asm includes (named without their folder, e.g. sound\sound94.asm is sound94)
+// before the 1 MB fill. Includes after the fill are mod code past the retail image (not in the retail ROM), so they are not segments.
 function segmentNames() {
-  const top = fs.readFileSync(path.join(ROOT, 'src', 'nhl94.asm'), 'latin1').split(/\r?\n/);
+  let top = fs.readFileSync(path.join(ROOT, 'src', 'nhl94.asm'), 'latin1').split(/\r?\n/);
+  const fillAt = top.findIndex((l) => /^\s+dcb\.b\s+\$100000-\*/i.test(l));
+  if (fillAt >= 0) top = top.slice(0, fillAt);
   return top.map((l) => l.match(/^\s+include\s+(?:\w+\\)?(\w+)\.asm\b/i)).filter(Boolean).map((m) => m[1]);
 }
 
