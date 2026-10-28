@@ -174,7 +174,7 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 	beq.s	DoGameFrame
 	move.w	(Vcount).w,(OldVcount).w
 	IF PERF=1
-	bsr.w	PerfGameFrameBegin
+	jsr	(PerfGameFrameBegin).l
 	ENDIF
 	bsr.w	periodicevents
 	bsr.w	updateplayers			;apply velocity and check collisions

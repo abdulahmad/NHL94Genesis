@@ -26,9 +26,6 @@
 	include	penalty94.asm			; $011F2C penalties, scoreboard, highlights
 	include	collide94.asm			; $0138AC puck, players, walls, fights, goals
 	include	display94.asm			; $015D9A vblank, clock, crowd, rink scroll
-	IF PERF=1
-	include	perf94.asm				; on-screen performance overlay (PERF=1 builds only)
-	ENDIF
 	include	setup94.asm				; $0169FA ice setup, intermission, playoff screen
 	include	attract94.asm			; $017A18  NEW in 94: EA Sports attract screen
 	include	data94.asm				; $017AC8 option helpers, menus, season results, string tables
@@ -50,4 +47,7 @@
 	dcb.b	$100000-*,$FF			;fill the retail 1MB image. Includes for a larger ROM go after this line;
 									;tools/fixrom.js pads the image and sets the header ROM end
 									;(docs/EXPANDING_THE_ROM.md)
+	IF PERF=1
+	include	perf94.asm				; PERF overlay: after 1MB fill so retail addresses stay fixed
+	ENDIF
 	include	shortcalls.inc			; checks only: the routines the retail code calls with .w stay below $8000

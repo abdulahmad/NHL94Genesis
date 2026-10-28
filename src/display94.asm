@@ -10,7 +10,7 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 									;while gmode2 bit 7 is set)
 	movem.l	d0-d7/a0-a6,-(sp)
 	IF PERF=1
-	bsr.w	PerfVBlankStart
+	jsr	(PerfVBlankStart).l
 	ENDIF
 	btst	#dfng,(disflags).w		;dfng: don't touch the vdp
 	bne.w	.nograph				;don't screw with vchip cause I'm using it
@@ -45,7 +45,7 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 	addq.w	#1,(Vcount).w
 	jsr	(p_music_vblank).l
 	IF PERF=1
-	bsr.w	PerfVBlankEnd
+	jsr	(PerfVBlankEnd).l
 	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
@@ -135,7 +135,7 @@ setvideo							;this is not vblank code but sets up ram for vblank transfers. Ca
 	move.l	a5,(DMAlistend).w
 	bset	#dfok,(disflags).w		;dfok
 	IF PERF=1
-	bsr.w	PerfSampleEndAndDraw
+	jsr	(PerfSampleEndAndDraw).l
 	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

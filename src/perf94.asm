@@ -1,5 +1,6 @@
-;	On-screen performance overlay (PERF=1). Stats live in PALflag+2 (word 0 is the only PAL
-;	flag used elsewhere). Hooks: DoGameFrame, setvideo, VBlank.
+;	On-screen performance overlay (PERF=1). Included after the 1MB pad in nhl94.asm so
+;	retail ROM addresses are unchanged (docs/EXPANDING_THE_ROM.md). Call from hooks with
+;	jsr (Perf…).l only.
 
 	IF PERF=0
 	ELSE
@@ -57,7 +58,7 @@ PerfGameFrameBegin
 	beq.s	.pf0
 	move.w	#45,d1
 .pf0	cmp.w	d1,d0
-	blt.w	rtss2
+	blt.w	PerfExit
 	move.w	(perf_fps_acc).w,(perf_fps).w
 	clr.w	(perf_fps_acc).w
 	move.w	(Vcount).w,(perf_fps_lastvc).w
@@ -87,7 +88,7 @@ PerfVBlankEnd
 	bsr.w	PerfVScanDelta
 	move.w	d0,(perf_vblank_sl).w
 	cmp.w	(perf_max_vb_sl).w,d0
-	ble.w	rtss2
+	ble.w	PerfExit
 	move.w	d0,(perf_max_vb_sl).w
 	rts
 
@@ -97,7 +98,7 @@ PerfCalcMainSl
 	bsr.w	PerfVScanDelta
 	move.w	d0,(perf_frame_sl).w
 	cmp.w	(perf_max_sl).w,d0
-	ble.w	rtss2
+	ble.w	PerfExit
 	move.w	d0,(perf_max_sl).w
 	rts
 
@@ -110,7 +111,7 @@ PerfVScanDelta
 	andi.w	#$FF,d3
 	move.w	d3,d0
 	sub.w	d2,d0
-	bpl.w	rtss2
+	bpl.w	PerfExit
 	move.w	#262,d1
 	tst.w	(PalMode).w
 	beq.w	.pvs0
@@ -122,7 +123,7 @@ PerfVScanDelta
 
 PerfEnsureInit
 	tst.w	(perf_inited).w
-	bne.w	rtss2
+	bne.w	PerfExit
 	st	(perf_inited).w
 	move.w	(Vcount).w,(perf_fps_lastvc).w
 	lea	(perf_line1).w,a0
@@ -218,14 +219,17 @@ PerfDrawLines
 	clr.w	(printx).w
 	clr.w	(printy).w
 	lea	(perf_line1).w,a1
-	bsr.w	printsmall
+	jsr	(printsmall).l
 	move.w	#1,(printy).w
 	lea	(perf_line2).w,a1
-	bsr.w	printsmall
+	jsr	(printsmall).l
 	move.w	#2,(printy).w
 	lea	(perf_line3).w,a1
-	bsr.w	printsmall
+	jsr	(printsmall).l
 	movem.l	(sp)+,d0-d2/a0-a1
+	rts
+
+PerfExit
 	rts
 
 	ENDIF
