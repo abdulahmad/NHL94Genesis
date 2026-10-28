@@ -678,8 +678,7 @@ TeamRosterScreen					;"Team Roster" screen for team a2: pages of players (Displa
 	bsr.w	PutTeamBlock
 .header								;(not branched to)
 	jsr	(printsmallz).l
-	dc.w	$0034					;String length: too many arguments for the String macro
-	dc.b	$F8,6,3,2,$C,$F9,1,'Pos.^Player',$FD,$1E,$FC,$C,'Rating',$FD,$C,$FC,$1A,'A^-^Switch^Teams',$F9,0
+	String	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9
 	jsr	(printz).l
 	String	-(TXPRI+TXMAP3),1,8
 	moveq	#$12,d0
