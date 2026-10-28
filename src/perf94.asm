@@ -8,12 +8,8 @@
 perf_lag		equ	PALflag+2
 perf_hv_start	equ	PALflag+4
 perf_hv_end	equ	PALflag+6
-perf_vb_start	equ	PALflag+8
-perf_vb_end	equ	PALflag+10
 perf_frame_sl	equ	PALflag+12
 perf_max_sl	equ	PALflag+14
-perf_vblank_sl	equ	PALflag+16
-perf_max_vb_sl	equ	PALflag+18
 perf_sprite_w	equ	PALflag+20
 perf_dma_cnt	equ	PALflag+22
 perf_stack_hw	equ	PALflag+24
@@ -55,12 +51,11 @@ p2_fps	equ	perf_line2+3
 p2_sp	equ	perf_line2+10
 p2_dm	equ	perf_line2+18
 p2_lag	equ	perf_line2+26
-p3_vb	equ	perf_line3+2
-p3_stk	equ	perf_line3+13
+p3_stk	equ	perf_line3+4
 
 PerfTpl1	dc.b	'CPU000% SL000/262 MAX000    '
 PerfTpl2	dc.b	'FPS00  SP:000w DM:00  LAG:0 '
-PerfTpl3	dc.b	'VB000sl  STK:0000           '
+PerfTpl3	dc.b	'STK:0000                    '
 	even
 
 PerfOnFrame
@@ -123,26 +118,6 @@ PerfMaybeDraw
 	bne.w	PerfExit
 	bsr.w	PerfEnsureInit
 	bsr.w	PerfDrawLines
-	rts
-
-PerfVBlankStartIfActive
-	tst.w	(perf_active).w
-	beq.w	PerfExit
-PerfVBlankStart
-	move.w	(HVcount).l,(perf_vb_start).w
-	rts
-PerfVBlankEndIfActive
-	tst.w	(perf_active).w
-	beq.w	PerfExit
-PerfVBlankEnd
-	move.w	(HVcount).l,(perf_vb_end).w
-	move.w	(perf_vb_start).w,d0
-	move.w	(perf_vb_end).w,d1
-	bsr.w	PerfVScanDelta
-	move.w	d0,(perf_vblank_sl).w
-	cmp.w	(perf_max_vb_sl).w,d0
-	ble.w	PerfExit
-	move.w	d0,(perf_max_vb_sl).w
 	rts
 
 PerfCalcMainSl
@@ -234,10 +209,6 @@ PerfFormatLines
 	move.w	(perf_lag).w,d0
 	moveq	#1,d1
 	movea.l	#p2_lag,a0
-	bsr.w	PerfPutDec
-	move.w	(perf_vblank_sl).w,d0
-	moveq	#3,d1
-	movea.l	#p3_vb,a0
 	bsr.w	PerfPutDec
 	move.w	(perf_stack_hw).w,d0
 	moveq	#4,d1
