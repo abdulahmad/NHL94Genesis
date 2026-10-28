@@ -800,6 +800,9 @@ Opening2							;reset the stack and clear the variables, then options (GameSetUp
 									;UserNameEntry), playoff screen and (not in a shootout) ScoutingReport,
 									;then StartGame
 	bsr.w	KillCrowd				;stop the crowd sound
+	IF PERF=1
+	jsr	(PerfDeactivate).l
+	ENDIF
 	move	#$2700,sr				;interrupts off
 	movea.w	#(Stack-M68K_RAM),sp
 	movea.w	#(VSCRLPM-M68K_RAM),a0	;varstart

@@ -1474,6 +1474,9 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	movea.l	#ShootoutIntermissionMenu,a0
 .2									;menu chosen (shootout menu in a shootout)
 	bset	#sfpz,(sflags).w		;sfpz
+	IF PERF=1
+	jsr	(PerfDeactivate).l
+	ENDIF
 	movea.l	#SetupPauseScreen,a1
 	jsr	(InitMenuState).w
 	bsr.w	GetShifter				;d1 = highest game index

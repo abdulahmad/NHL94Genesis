@@ -37,6 +37,9 @@ Begin								;cold start, entered from Start. Clear RAM, init sound and menus, g
 	jmp	Opening						;goto title screen and options etc.
 
 StartGame							;reset game state for a new game, then start the first period
+	IF PERF=1
+	jsr	(PerfDeactivate).l
+	ENDIF
 	st	(arenaanim).w
 	clr.l	(homepresses).w
 	clr.l	(awaypresses).w
@@ -161,6 +164,9 @@ StartPer							;start a period: reset stack, rink and clock, face off, run the g
 	bset	#sf3fosong,(sflags3).w	;set for periods 1 and 2 only
 
 Gameloop							;Main loop for game
+	IF PERF=1
+	jsr	(PerfActivate).l
+	ENDIF
 	bsr.w	DoGameFrame
 	bsr.w	demoread				;check if demo mode
 	btst	#sfpz,(sflags).w		;sfpz
@@ -189,7 +195,11 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 .nosong	jsr	(setSlotBit).l
 	bsr.w	checkwindow
 	bsr.w	updatereplay
-	jmp	setvideo
+	bsr.w	setvideo
+	IF PERF=1
+	jsr	(PerfSampleEndAndDraw).l
+	ENDIF
+	rts
 
 periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jsr	(PenaltyManager).l
@@ -424,6 +434,9 @@ startpause4							;pause initiated by cont 4 (4 way play). Also from doinput
 	bra.s	startpause
 
 Pausemode							;Game is in pause mode now
+	IF PERF=1
+	jsr	(PerfDeactivate).l
+	ENDIF
 	jsr	(forceblack).l				;fade screen to black
 	move.w	d0,-(sp)
 	move.w	(Vcount).w,d0

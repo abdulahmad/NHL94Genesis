@@ -24,6 +24,14 @@ perf_inited	equ	PALflag+32
 perf_line1		equ	PALflag+34
 perf_line2		equ	PALflag+68
 perf_line3		equ	PALflag+102
+perf_active	equ	PALflag+136		;nonzero only during live period play (DoGameFrame)
+
+PerfDeactivate
+	clr.w	(perf_active).w
+	rts
+PerfActivate
+	move.w	#1,(perf_active).w
+	rts
 
 ;digit positions (byte offset from perf_lineN, after the length word)
 p1_cpu	equ	perf_line1+2+3
@@ -42,14 +50,17 @@ PerfTpl2	dc.b	'FPS00  SP:000w DM:00  LAG:0 '
 PerfTpl3	dc.b	'VB000sl  STK:0000           '
 
 PerfGameFrameBegin
+	tst.w	(perf_active).w
+	beq.w	PerfExit
 	move.w	d7,(perf_lag).w
 	move.w	(HVcount).l,(perf_hv_start).w
 	move.l	sp,d0
-	movea.w	#(Stack-M68K_RAM),a0
-	suba.l	d0,a0
-	cmp.w	(perf_stack_hw).w,d0
+	move.l	#$FFFFFFFE,d1			;Stack equ — movea.w #(Stack-M68K_RAM) sign-extends wrong
+	sub.l	d0,d1
+	lsr.l	#1,d1
+	cmp.w	(perf_stack_hw).w,d1
 	ble.s	.pfs
-	move.w	d0,(perf_stack_hw).w
+	move.w	d1,(perf_stack_hw).w
 .pfs	addq.w	#1,(perf_fps_acc).w
 	move.w	(Vcount).w,d0
 	sub.w	(perf_fps_lastvc).w,d0
@@ -65,6 +76,8 @@ PerfGameFrameBegin
 	rts
 
 PerfSampleEndAndDraw
+	tst.w	(perf_active).w
+	beq.w	PerfExit
 	move.w	(HVcount).l,(perf_hv_end).w
 	bsr.w	PerfCalcMainSl
 	move.w	(Sattsize).w,(perf_sprite_w).w
@@ -73,19 +86,20 @@ PerfSampleEndAndDraw
 	sub.l	a0,d0
 	lsr.l	#3,d0
 	move.w	d0,(perf_dma_cnt).w
-	btst	#sfpz,(sflags).w		;no HUD during pause / intermission UI
-	bne.w	PerfSampleDone
-	cmp.l	#VBlank,(VBint).w		;only while the main game vblank handler is active
-	bne.w	PerfSampleDone
 	bsr.w	PerfEnsureInit
 	bsr.w	PerfFormatLines
 	bsr.w	PerfDrawLines
-PerfSampleDone
 	rts
 
+PerfVBlankStartIfActive
+	tst.w	(perf_active).w
+	beq.w	PerfExit
 PerfVBlankStart
 	move.w	(HVcount).l,(perf_vb_start).w
 	rts
+PerfVBlankEndIfActive
+	tst.w	(perf_active).w
+	beq.w	PerfExit
 PerfVBlankEnd
 	move.w	(HVcount).l,(perf_vb_end).w
 	move.w	(perf_vb_start).w,d0
