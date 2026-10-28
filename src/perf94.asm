@@ -52,6 +52,8 @@ PerfTpl3	dc.b	'VB000sl  STK:0000           '
 PerfGameFrameBegin
 	tst.w	(perf_active).w
 	beq.w	PerfExit
+	btst	#sfpz,(sflags).w		;intermission / pause menu — no overlay
+	bne.w	PerfExit
 	move.w	d7,(perf_lag).w
 	move.w	(HVcount).l,(perf_hv_start).w
 	move.l	sp,d0
@@ -78,6 +80,8 @@ PerfGameFrameBegin
 PerfSampleEndAndDraw
 	tst.w	(perf_active).w
 	beq.w	PerfExit
+	btst	#sfpz,(sflags).w
+	bne.w	PerfExit
 	move.w	(HVcount).l,(perf_hv_end).w
 	bsr.w	PerfCalcMainSl
 	move.w	(Sattsize).w,(perf_sprite_w).w

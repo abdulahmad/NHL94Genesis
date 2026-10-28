@@ -10,7 +10,7 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 									;while gmode2 bit 7 is set)
 	movem.l	d0-d7/a0-a6,-(sp)
 	IF PERF=1
-	jsr	(PerfVBlankStart).l
+	jsr	(PerfVBlankStartIfActive).l
 	ENDIF
 	btst	#dfng,(disflags).w		;dfng: don't touch the vdp
 	bne.w	.nograph				;don't screw with vchip cause I'm using it
@@ -45,7 +45,7 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 	addq.w	#1,(Vcount).w
 	jsr	(p_music_vblank).l
 	IF PERF=1
-	jsr	(PerfVBlankEnd).l
+	jsr	(PerfVBlankEndIfActive).l
 	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a6
 	rte
@@ -134,9 +134,6 @@ setvideo							;this is not vblank code but sets up ram for vblank transfers. Ca
 	move.w	d0,(Sattsize).w
 	move.l	a5,(DMAlistend).w
 	bset	#dfok,(disflags).w		;dfok
-	IF PERF=1
-	jsr	(PerfSampleEndAndDraw).l
-	ENDIF
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on the dma list
