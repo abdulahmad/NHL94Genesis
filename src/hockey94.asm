@@ -173,6 +173,9 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 	sub.w	(OldVcount).w,d7		;number of frames since last loop
 	beq.s	DoGameFrame
 	move.w	(Vcount).w,(OldVcount).w
+	IF PERF=1
+	bsr.w	PerfGameFrameBegin
+	ENDIF
 	bsr.w	periodicevents
 	bsr.w	updateplayers			;apply velocity and check collisions
 	tst.w	(songdelay).w			;delayed song countdown

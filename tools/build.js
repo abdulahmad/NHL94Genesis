@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // build.js: the whole NHL 94 build, one line per step, on Windows and Linux (wine).
-//   node tools/build.js [retail|dev] [--verbose]       full ROM -> output/nhl94.bin (nhl94-dev.bin)
+//   node tools/build.js [retail|dev|perf] [--verbose]  full ROM -> output/nhl94.bin (nhl94-dev.bin / nhl94-perf.bin)
 //   node tools/build.js --seg <name|--all> [--verbose] full ROM, then compare one segment (a file src/nhl94.asm
 //                                                      includes) or all of them with the same range of nhl94retail.bin
 //   node tools/build.js --segacd [--verbose]           Sega CD fragments, compared with cdbin/
@@ -31,9 +31,10 @@ const paint = (t) => t
     .replace(/not verified \([^)]*\)/, (m) => c.yellow(m));
 const segIdx = args.indexOf('--seg');
 const seg = segIdx >= 0 ? args[segIdx + 1] : null;
-const mode = args.find((a) => a === 'retail' || a === 'dev') || 'retail';
+const mode = args.find((a) => a === 'retail' || a === 'dev' || a === 'perf') || 'retail';
 const env = (k) => process.env[k] ?? process.env[k.toUpperCase()] ?? process.env[k.toLowerCase()];
-const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' && !seg ? 0 : 1);
+const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' || mode === 'perf' ? 0 : 1);
+const perf = env('perf') !== undefined ? (env('perf') === '0' ? 0 : 1) : (mode === 'perf' ? 1 : 0);
 
 let steps = 7;
 let n = 0;
@@ -228,7 +229,7 @@ const bin = path.join(BUILD, `${name}.raw.bin`);
 const lst = path.join(BUILD, `${name} .lst`);
 const fixed = path.join(BUILD, `modified_${name}.raw.bin`);
 const logPath = path.join(BUILD, `Build_${name}.log`);
-const final = `nhl94${mode === 'dev' && !seg ? '-dev' : ''}.bin`;
+const final = `nhl94${!seg && mode === 'dev' ? '-dev' : !seg && mode === 'perf' ? '-perf' : ''}.bin`;
 const mod = path.join(OUT, final);
 
 // 1. prebuild: ROM check and Extracted/ assets.
@@ -316,7 +317,7 @@ const mod = path.join(OUT, final);
     const o = `..\\output\\build\\${name}`;
     const asmArgs = ['/p', '/m', '/g', '/o', 'd-', '/o', 's-', '/o', 'r+', '/o', 'l+', '/o', 'l.', '/o', 'ow+', '/o', 'op-',
         '/o', 'os+', '/o', 'oz+', '/o', 'omq-', '/o', 'oaq+', '/o', 'osq+',
-        '/e', `CHECKSUM=${checksum}`, `${src},${o}.raw.bin,${o},${o}`];
+        '/e', `CHECKSUM=${checksum}`, '/e', `PERF=${perf}`, `${src},${o}.raw.bin,${o},${o}`];
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
     const r = await (WIN ? run(exe, asmArgs, { cwd: path.join(ROOT, 'src') })
         : run('wine', [exe, ...asmArgs], { cwd: path.join(ROOT, 'src'), env: { ...process.env, WINEDEBUG: '-all' } }));
@@ -335,7 +336,7 @@ const mod = path.join(OUT, final);
         const bad = lines.filter((l) => /\.(asm|inc|mac)\(\d+|error|fatal|not recognised|undefined/i.test(l) && !/error\(s\) from/.test(l)).slice(0, 40);
         fail('assemble', `${errors} error(s), see ${rel(logPath)}`, bad.join('\n'));
     }
-    step('assemble', `${errors} errors, ${warnings} warnings, ${sum[2]} lines in ${sum[3]}s (CHECKSUM=${checksum}) -> ${rel(bin)}`);
+    step('assemble', `${errors} errors, ${warnings} warnings, ${sum[2]} lines in ${sum[3]}s (CHECKSUM=${checksum}, PERF=${perf}) -> ${rel(bin)}`);
     detail(r.out);
 }
 

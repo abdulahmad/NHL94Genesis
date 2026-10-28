@@ -26,6 +26,9 @@
 	include	penalty94.asm			; $011F2C penalties, scoreboard, highlights
 	include	collide94.asm			; $0138AC puck, players, walls, fights, goals
 	include	display94.asm			; $015D9A vblank, clock, crowd, rink scroll
+	IF PERF=1
+	include	perf94.asm				; on-screen performance overlay (PERF=1 builds only)
+	ENDIF
 	include	setup94.asm				; $0169FA ice setup, intermission, playoff screen
 	include	attract94.asm			; $017A18  NEW in 94: EA Sports attract screen
 	include	data94.asm				; $017AC8 option helpers, menus, season results, string tables
