@@ -219,7 +219,10 @@ PerfPutDec
 
 PerfDrawLines
 	movem.l	d0-d2/a0-a1,-(sp)
-	movem.w	(printx).w,-(sp)		;printx, printy, printm, printa
+	move.w	(printx).w,-(sp)
+	move.w	(printy).w,-(sp)
+	move.w	(printm).w,-(sp)
+	move.w	(printa).w,-(sp)
 	move.w	#-(TXPRI+TXMAP3),(printa).w
 	move.w	#8,(printm).w			;TXMAP3 -> printm (ControlCode_SetMap formula)
 	clr.w	(printx).w
@@ -232,7 +235,10 @@ PerfDrawLines
 	move.w	#2,(printy).w
 	lea	(perf_line3).w,a1
 	jsr	(printsmall).l
-	movem.w	(sp)+,(printx).w
+	move.w	(sp)+,(printa).w
+	move.w	(sp)+,(printm).w
+	move.w	(sp)+,(printy).w
+	move.w	(sp)+,(printx).w
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 
