@@ -209,6 +209,8 @@ const assets = [
     { name: 'fmtune_eop_cmdstream94.bin', folder: 'NHL94/Sound', start: 0x00046D8C, end: 0x000490DE }, // song $79 (93 $36): IntermissionStart, StartHL2 (penalty94) (differs from 93)
     { name: 'fmtune_scouting_cmdstream94.bin', folder: 'NHL94/Sound', start: 0x000490E2, end: 0x0004B5BC }, // song $7A (93 $37): ScoutingReport (scout94) (differs from 93)
     { name: 'ScoutTextScript.bin', folder: 'NHL94/Text', start: 0x0004B5C0, end: 0x0004B7A0 }, // unk_4B5C0
+    { name: 'NewYorkIFull.bin', folder: 'NHL94/Text', start: 0x000F7CB2, end: 0x000F7CC6 }, // NewYorkITxt: String 'New York ' + the Islanders nickname (a licensed name)
+    { name: 'NewYorkRFull.bin', folder: 'NHL94/Text', start: 0x000F7CC6, end: 0x000F7CD8 }, // NewYorkRTxt: String 'New York ' + the Rangers nickname (a licensed name)
     { name: 'GameSetUp94-1.map.jim', folder: 'NHL94/Graphics', start: 0x0004B7A0, end: 0x0004DEEE }, // unk_4B7A0
     { name: 'GameSetUp94-2.map.jim', folder: 'NHL94/Graphics', start: 0x0004DEEE, end: 0x0004E45C }, // unk_4DEEE
     { name: 'Title94-1.map.jim', folder: 'NHL94/Graphics', start: 0x0004E45C, end: 0x00052DAA }, // TitleScreenImg
@@ -612,7 +614,7 @@ async function extractAssets(romPath, options = {}) {
             }
         }
 
-        // The licensed names: src/teamdata94.asm and src/optsetup94.asm hold placeholders, the build writes these into the copies it assembles.
+        // The licensed names: src/teamdata94.asm holds placeholders, the build writes these into the copy it assembles.
         const { players, nicknames } = readTeamNames(romData);
         for (const [file, lines] of [['PlayerNames.txt', players], ['TeamNicknames.txt', nicknames]]) {
             const text = lines.join('\n') + '\n';

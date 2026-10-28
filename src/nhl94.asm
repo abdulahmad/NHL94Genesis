@@ -1,9 +1,10 @@
 ;	Top level of the ROM build. Includes the equates and then every module in ROM order;
 ;	each file assembles at the address after the one before it.
 ;
-;	teamdata94.asm and optsetup94.asm are included as copies in output/build/ with the real
-;	player names and team nicknames put back by tools/build.js. The files in src/ have
-;	placeholders and need the original ROM.
+;	teamdata94.asm is included as a copy in output/build/ with the real player names and
+;	team nicknames put back by tools/build.js. The file in src/ has placeholders and needs
+;	the original ROM. The two New York full names in optsetup94.asm are incbins of
+;	Extracted/NHL94/Text.
 
 	include	stubinc\ports.inc		;IO_* / VDP_* ports. Equates only
 	include	stubinc\equals.inc		;VDP status bits. Equates only
@@ -34,7 +35,7 @@
 	include	onetimer94.asm			; $0F66EE  NEW in 94: one-timer
 	include	fourway94.asm			; $0F6D5E  NEW in 94: four-player adaptor
 	include	crowd94.asm				; $0F6E8A  NEW in 94: crowd meter and hot / cold players
-	include	..\output\build\optsetup94.asm	; $0F739E expanded: game setup and options
+	include	optsetup94.asm				; $0F739E expanded: game setup and options
 	include	cards94.asm				; $0F87D2  NEW in 94: player cards and matchup palettes
 	include	records94.asm			; $0FB018  NEW in 94: name entry and record holders
 	include	shootout94.asm			; $0FC320  NEW in 94: shootout
