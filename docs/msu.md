@@ -7,7 +7,8 @@ On Linux, with the retail ROM already extracted:
 ```
 export NHL_PREBUILD_DONE=1 WINEDEBUG=-all
 wine cmd /c "set rev=0&& set checksum=0&& set MSU=1&& build94.bat"
-node tools/fixopcodes.js "output/nhl94 .lst" output/nhl94.bin
+node tools/fixopcodes.js "output/obj/nhl94 .lst" output/obj/nhl94.bin
+mv output/obj/modified_nhl94.bin output/
 ```
 
 The ROM is `output/modified_nhl94.bin`. Checksum validation is off, the same as `build:dev`, so the expanded ROM boots. The header ROM end is `$1FFFFF`.

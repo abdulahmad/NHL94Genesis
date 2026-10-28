@@ -47,7 +47,7 @@ If the ROM is missing (or is a different dump), the build stops with the full pa
 
 `npm run assets` runs only this step. `npm run extractassets` still forces a fresh extraction. The npm scripts set `NHL_PREBUILD_DONE=1` after the step so the batch file does not repeat it; `tools/verify_all.sh` runs the step with Linux node and sets the same variable for wine (there is no node under wine).
 
-Full ROM builds assemble `src/nhl94.asm`. The listing is `output/nhl94 .lst`. The opcode-corrected output is `output/modified_nhl94.bin`.
+Full ROM builds assemble `src/nhl94.asm`. The listing is `output/obj/nhl94 .lst`. The opcode-corrected output is `output/modified_nhl94.bin`.
 
 | Script | Flags | Result |
 | --- | --- | --- |

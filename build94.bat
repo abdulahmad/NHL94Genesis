@@ -19,7 +19,8 @@ if not defined NHL_PREBUILD_DONE (
 @REM echo Using rev=%rev% and checksum=%checksum%
 
 REM Create the output directory
-if not exist "%workspaceFolder%output" mkdir "%workspaceFolder%output"
+REM Intermediates (raw image, listing, log) go in output\obj; npm run fixopcodes moves the finished ROM to output\
+if not exist "%workspaceFolder%output\obj" mkdir "%workspaceFolder%output\obj"
 
 REM Change to the workspace src directory
 cd /d "%workspaceFolder%src"
@@ -49,7 +50,7 @@ REM Run the assembler with all flags
   /p /m /g ^
   /o d- /o s- /o r+ /o l+ /o l. /o ow+ /o op- /o os+ /o oz+ /o omq- /o oaq+ /o osq+ ^
   %revFlag% %checksumFlag% %msuFlag% ^
-  "%workspaceFolder%src\nhl94.asm,%workspaceFolder%output\nhl94.bin,%workspaceFolder%output\nhl94,%workspaceFolder%output\nhl94" ^
-  > "%workspaceFolder%output\Build94.log"
+  "%workspaceFolder%src\nhl94.asm,%workspaceFolder%output\obj\nhl94.bin,%workspaceFolder%output\obj\nhl94,%workspaceFolder%output\obj\nhl94" ^
+  > "%workspaceFolder%output\obj\Build94.log"
 
 endlocal

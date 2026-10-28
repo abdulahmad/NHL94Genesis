@@ -12,7 +12,7 @@ segments: `npm run seg:<name>` (all keys in package.json `seg:*`).
 Linux (wine): `apt install wine wine32` (dpkg --add-architecture i386), `export WINEDEBUG=-all`, then
 1. `node tools/prebuild.js retail` (checks the ROM, extracts into Extracted/ if missing or incomplete; same as `node tools/extractAssets94.js lst/nhl94.bin`), then `export NHL_PREBUILD_DONE=1` so the .bat files skip their own pre-step (no node under wine). Accepts the one retail ROM (SHA-1 7b1489ab...); other ROMs are refused.
 2. `wine cmd /c "set rev=0&& set checksum=1&& build94.bat"`
-3. `node tools/fixopcodes.js "output/nhl94 .lst" output/nhl94.bin`
+3. `node tools/fixopcodes.js "output/obj/nhl94 .lst" output/obj/nhl94.bin && mv output/obj/modified_nhl94.bin output/`
 4. `node tools/verifyRom.js output/modified_nhl94.bin <reference ROM>` must print MATCH
 5. Segments: run each package.json `seg:*` chain the same way (`wine cmd /c "buildseg.bat <seg>"`, then its node steps); tools/verifySegment.js must MATCH.
 Failed-assembly detection: delete output/*.bin first, then check the bin exists and is fresh and that output/Build*.log has no

@@ -6,7 +6,7 @@
     "assets": "node tools/prebuild.js retail",
     "extractassets": "node tools/extractAssets94.js lst/nhl94.bin",
     "asm": "build94.bat",
-    "fixopcodes": "node tools/fixopcodes.js \"output\\nhl94 .lst\" output\\nhl94.bin",
+    "fixopcodes": "node tools/fixopcodes.js \"output\\obj\\nhl94 .lst\" output\\obj\\nhl94.bin && move /y output\\obj\\modified_nhl94.bin output\\",
     "verify:retail": "node tools/verifyRom.js output/modified_nhl94.bin lst/nhl94.bin",
     "build:retail": "set rev=0&& set checksum=1&& node tools/prebuild.js retail && set NHL_PREBUILD_DONE=1&& npm run asm && npm run fixopcodes && npm run verify:retail",
     "build:dev": "set rev=0&& set checksum=0&& node tools/prebuild.js retail && set NHL_PREBUILD_DONE=1&& npm run asm && npm run fixopcodes",
