@@ -1,6 +1,6 @@
 # Expanding the ROM
 
-`main` is a faithful disassembly of the retail cartridge: a stock build matches `nhl94retail.bin`. It keeps only changes that emit the same bytes (equates, labels, assemble-time checks, build tools). Fixes that a bigger ROM or a bigger league needs are described here and belong on a mod branch, not on `main`.
+`main` is a faithful disassembly of the retail cartridge: a stock build matches `nhl94retail.bin`. It keeps only changes that emit the same bytes (equates, labels, assemble-time checks, build tools). Fixes that a bigger ROM or a bigger league needs are described here and belong on a mod branch, not on `main`. Gameplay-loop speed (vblank DMA, collision, AI) is `docs/PERFORMANCE.md`.
 
 ## What main already does for you
 

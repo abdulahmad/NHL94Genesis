@@ -4,7 +4,7 @@
 
 Byte-matching SNASM68k source for the retail cartridge. A stock build matches `nhl94retail.bin`.
 
-Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing. `docs/EXPANDING_THE_ROM.md` covers growing the ROM and adding a team.
+Read `SEGMENT_AGENT.md` (the Current rules) and `docs/HANDOFF.md` before editing. `docs/EXPANDING_THE_ROM.md` covers growing the ROM and adding a team. `docs/PERFORMANCE.md` is the gameplay loop (what is already cheap, and what a mod branch can still cut).
 
 ## Build
 
@@ -40,4 +40,4 @@ A failing step prints `FAILED`, the relevant log lines (`output/obj/Build_nhl94.
 
 ## Growing the ROM
 
-`main` stays a faithful retail disassembly. `tools/fixrom.js` pads a larger image to 1.5MB, 2MB or 4MB, sets the header ROM end and fixes the checksum; `src/shortcalls.inc` stops the build if a short-called routine moves past $7FFF. Short jumps, save RAM past 2MB, bank switching and the team checklist are in `docs/EXPANDING_THE_ROM.md`.
+`main` stays a faithful retail disassembly. `tools/fixrom.js` pads a larger image to 1.5MB, 2MB or 4MB, sets the header ROM end and fixes the checksum; `src/shortcalls.inc` stops the build if a short-called routine moves past $7FFF. Short jumps, save RAM past 2MB, bank switching and the team checklist are in `docs/EXPANDING_THE_ROM.md`. Gameplay-loop speed (DMA, collision, AI throttle) is `docs/PERFORMANCE.md`.
