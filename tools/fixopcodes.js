@@ -91,7 +91,7 @@ async function parseListingFile(lines, opcodeReplacements) {
     return matches;
 }
 
-// org of the binary: the address of the first listing line that emits bytes (0 for the full ROM, the stub org for a segment)
+// org of the binary: the address of the first listing line that emits bytes (0 for the full ROM)
 function listingOrg(lines) {
     for (const line of lines) {
         const m = line.match(/^([0-9A-Fa-f]{8}) ([0-9A-Fa-f]{2,4})(?:\s|$)/);

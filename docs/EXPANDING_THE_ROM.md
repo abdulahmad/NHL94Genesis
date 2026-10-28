@@ -1,6 +1,6 @@
 # Expanding the ROM
 
-`main` is a faithful disassembly of the retail cartridge: a stock build matches `lst/nhl94.bin`. It keeps only changes that emit the same bytes (equates, labels, assemble-time checks, build tools). Fixes that a bigger ROM or a bigger league needs are described here and belong on a mod branch, not on `main`.
+`main` is a faithful disassembly of the retail cartridge: a stock build matches `nhl94retail.bin`. It keeps only changes that emit the same bytes (equates, labels, assemble-time checks, build tools). Fixes that a bigger ROM or a bigger league needs are described here and belong on a mod branch, not on `main`.
 
 ## What main already does for you
 
@@ -83,6 +83,6 @@ Boot with `checksum=1`; a red screen means the boot checksum is wrong. `tools/ve
 **What the patch (branch `patch/teamblock-vram`) changes.**
 - A, in game: `setupTeamBlocksMap` / `CopyTeamBlockMapData` read each team's 22 map words and DMA each referenced tile from ROM (`Teamblocksmap+10`, unpacked, 32 bytes) into the two fixed slots, writing map words that keep the flip/palette bits (priority forced as retail). No scratch. Same contract: return `d4 = basetileoffset+$2C`, map words in `TeamBlockMap`. VRAM written: 44 chars instead of 44 + 501; chars 1299-1799 are no longer touched at setup (ExtraChars users still load there). Team count no longer limited by this screen.
 - B, setup screen: `tools/packTeamBitmaps.js` (run from `prebuild.js`) packs each team's unique tiles from `TeamBlocks94.map.jim`, plain and pre-remapped, and a copy of the bitmap with each team's map rebased to 0..n-1 (`output/obj/teambitmaps_packed.inc`, included after $100000 by `src/teambitmapvram.asm`, checked against `NumTeams`). `DrawMatchupBitmaps` (the only drawer; runs from `PrintOptions` on every team change) DMAs the home team's tiles to char 2 and the visitor's remapped tiles to `teambitmapchars = 2+TBP_Max` before drawing. `LoadSetupTiles` loads nothing and returns the retail d4 (798), so the framer and fonts stay put. VRAM: 2 x TBP_Max = 44 chars (2-45) instead of 796; chars 46-797 are free. ROM cost: ~35KB for 28 teams (pre-remapped copy doubles the tile data), which pushes the image to 1.5MB.
-- `node tools/testTeamBlockVram.js` checks the built ROM: tables, pointers, and that every team's rebased map + tiles reproduce the retail pixels (plain and remapped).
+- `npm run test:teamblock` (`node tools/testTeamBlockVram.js`) checks the built ROM: tables, pointers, and that every team's rebased map + tiles reproduce the retail pixels (plain and remapped).
 
 **How to apply.** Merge or cherry-pick `patch/teamblock-vram` onto a mod branch; add teams to both `.map.jim` files as usual (two rows of 11 per team) and rebuild. Not for `main` (it changes the ROM).
