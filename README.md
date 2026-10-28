@@ -2,7 +2,7 @@
 
 > **📀 Game data is not included.** This repository has the assembly code only. The graphics, team palettes, sound samples, music, player cards and the NHLPA player names and NHL team nicknames are extracted from your own copy of the original ROM when you build, and are not in the repo. You need the NHL 94 Genesis ROM, with the file name and SHA-1 listed under [Supported ROMs](#supported-roms), or the build stops.
 
-> **🤝 Making a mod, hack, port or other derivative work from this repo? You must credit me (abdulahmad) and everyone credited in this repo, clearly, in your own repo and in every release. See [Credits and derivative works](#credits-and-derivative-works).**
+> **🤝 Making a mod, hack, port or other derivative work from this repo? You must credit me and everyone credited in this repo, clearly, in your own repo and in every release. See [Credits and derivative works](#credits-and-derivative-works).**
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are made (names, comments, layout, verification).
 
@@ -91,10 +91,10 @@ Special thanks to smozoma and kingraph, whose past contributions to the NHL modd
 
 These disassemblies started with a lot of manual work, especially from chaos, and have since been AI-assisted.
 
-This project is the result of my work (abdulahmad) and the work of the people credited above. If you build anything from it, including mods, ROM or EXE hacks, ports, released forks, tools, or any other derivative work, you must credit us:
+This project is the result of my work and the work of the people credited above. If you build anything from it, including mods, ROM or EXE hacks, ports, released forks, tools, or any other derivative work, you must credit us:
 
 - Put the credit in your repo's README, near the top and not buried in a footer, and in the notes of every release you publish, including any text file shipped inside a release archive.
-- Name me (abdulahmad) and link to this repository.
+- Name me and link to this repository.
 - Name everyone credited here: chaos, StaticEck, McMarkis (Mhopkinsinc) and Drezz, with special thanks to smozoma and kingraph.
 - If you only use part of this repo (docs, a tool, labels, a file format description), the credit still applies.
 - If you are unsure, over-credit.
