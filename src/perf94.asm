@@ -198,14 +198,16 @@ PerfFormatLines
 PerfPutDec
 ;	a0 = left of field, d0 = value, d1 = width (writes right-aligned)
 	movem.l	d0-d3/a0,-(sp)
+	move.w	d1,d3
 	add.w	d1,a0
+	subq.w	#1,d3
 .pd0	divu.w	#$A,d0
 	move.w	d0,d2
 	clr.w	d0
 	swap	d2
 	addi.w	#$30,d2
 	move.b	d2,-(a0)
-	dbf	d1,.pd0
+	dbf	d3,.pd0
 	movem.l	(sp)+,d0-d3/a0
 	rts
 
