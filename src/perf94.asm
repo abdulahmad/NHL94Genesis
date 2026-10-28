@@ -40,22 +40,21 @@ PerfActivate
 ;	It stops at the Hockey.snd incbin, and this file is included after that, so these
 ;	compares are not rewritten. Still use cmp.w Dn,Dn here, not cmpi.w #imm,Dn.
 
-;	printsmall treats bytes <= 0 as control codes. This RAM is the stack hole above
-;	PALflag and is not cleared at boot. Fill the line buffers before drawing.
-;	Do not draw from VBlank or from inside setvideo: printsmall sets dfng, and a
-;	draw while dfok is pending leaves VBlank unable to retire the frame.
+;	printsmall treats bytes <= 0 as control codes and is not used here. The lines are
+;	print strings (length, -(TXPRI+TXMAP3), x, y, text, 0). Drawn only while dfok is
+;	clear, with interrupts left on, so a stalled draw cannot stop the music vblank.
 
-;digit positions (byte offset from perf_lineN, after the length word)
-p1_cpu	equ	perf_line1+2+3
-p1_sl	equ	perf_line1+2+11
-p1_tot	equ	perf_line1+2+15
-p1_max	equ	perf_line1+2+21
-p2_fps	equ	perf_line2+2+4
-p2_sp	equ	perf_line2+2+11
-p2_dm	equ	perf_line2+2+17
-p2_lag	equ	perf_line2+2+24
-p3_vb	equ	perf_line3+2+3
-p3_stk	equ	perf_line3+2+12
+;digit positions inside the print string (length word, control, x, y, then text)
+p1_cpu	equ	perf_line1+5+3
+p1_sl	equ	perf_line1+5+11
+p1_tot	equ	perf_line1+5+15
+p1_max	equ	perf_line1+5+21
+p2_fps	equ	perf_line2+5+4
+p2_sp	equ	perf_line2+5+11
+p2_dm	equ	perf_line2+5+17
+p2_lag	equ	perf_line2+5+24
+p3_vb	equ	perf_line3+5+3
+p3_stk	equ	perf_line3+5+12
 
 PerfTpl1	dc.b	'CPU000% SL000/262 MAX000    '
 PerfTpl2	dc.b	'FPS00  SP:000w DM:00  LAG:0 '
@@ -72,7 +71,10 @@ PerfOnFrame
 	cmp.w	d1,d0
 	bcs.w	PerfExit
 	move.w	#1,(perf_active).w
-.arm	move.w	d7,(perf_lag).w
+.arm	move.w	d7,-(sp)
+	bsr.w	PerfMaybeDraw
+	move.w	(sp)+,d7
+	move.w	d7,(perf_lag).w
 	move.w	(HVcount).l,(perf_hv_start).w
 	move.l	sp,d0
 	move.l	#$FFFFFFFE,d1			;Stack equ — movea.w #(Stack-M68K_RAM) sign-extends wrong
@@ -110,6 +112,14 @@ PerfAfterVideo
 	move.w	d0,(perf_dma_cnt).w
 	bsr.w	PerfEnsureInit
 	bsr.w	PerfFormatLines
+	rts
+
+PerfMaybeDraw
+	tst.w	(perf_active).w
+	beq.w	PerfExit
+	btst	#dfok,(disflags).w		;frame already queued: vblank owns the VDP
+	bne.w	PerfExit
+	bsr.w	PerfEnsureInit
 	bsr.w	PerfDrawLines
 	rts
 
@@ -170,23 +180,28 @@ PerfEnsureInit
 	move.w	d1,(perf_inited).w
 	move.w	(Vcount).w,(perf_fps_lastvc).w
 	lea	(perf_line1).w,a0
-	move.w	#28,(a0)+
 	lea	PerfTpl1(pc),a1
-	moveq	#27,d0
-.copy1	move.b	(a1)+,(a0)+
-	dbf	d0,.copy1
+	moveq	#1,d2
+	bsr.w	PerfLoadLine
 	lea	(perf_line2).w,a0
-	move.w	#28,(a0)+
 	lea	PerfTpl2(pc),a1
-	moveq	#27,d0
-.copy2	move.b	(a1)+,(a0)+
-	dbf	d0,.copy2
+	moveq	#2,d2
+	bsr.w	PerfLoadLine
 	lea	(perf_line3).w,a0
-	move.w	#28,(a0)+
 	lea	PerfTpl3(pc),a1
+	moveq	#3,d2
+	bsr.w	PerfLoadLine
+	rts
+
+PerfLoadLine
+	move.w	#33,(a0)+			;print length: control, x, y, 28 text, trailing 0
+	move.b	#-(TXPRI+TXMAP3),(a0)+
+	move.b	#1,(a0)+
+	move.b	d2,(a0)+
 	moveq	#27,d0
-.copy3	move.b	(a1)+,(a0)+
-	dbf	d0,.copy3
+.ld	move.b	(a1)+,(a0)+
+	dbf	d0,.ld
+	clr.b	(a0)+
 	rts
 
 PerfFormatLines
@@ -257,31 +272,14 @@ PerfPutDec
 	rts
 
 PerfDrawLines
-	move.w	sr,-(sp)
-	move.w	#$2700,sr			;no VBlank during printsmall (it sets dfng)
-	movem.l	d0-d2/a0-a1,-(sp)
-	move.w	(printx).w,-(sp)
-	move.w	(printy).w,-(sp)
-	move.w	(printm).w,-(sp)
-	move.w	(printa).w,-(sp)
-	move.w	#-(TXPRI+TXMAP3),(printa).w
-	move.w	#8,(printm).w			;TXMAP3 -> printm (ControlCode_SetMap formula)
-	clr.w	(printx).w
-	clr.w	(printy).w
+	movem.l	d0-d7/a0-a6,-(sp)
 	lea	(perf_line1).w,a1
-	jsr	(printsmall).l
-	move.w	#1,(printy).w
+	jsr	(print).l
 	lea	(perf_line2).w,a1
-	jsr	(printsmall).l
-	move.w	#2,(printy).w
+	jsr	(print).l
 	lea	(perf_line3).w,a1
-	jsr	(printsmall).l
-	move.w	(sp)+,(printa).w
-	move.w	(sp)+,(printm).w
-	move.w	(sp)+,(printy).w
-	move.w	(sp)+,(printx).w
-	movem.l	(sp)+,d0-d2/a0-a1
-	move.w	(sp)+,sr
+	jsr	(print).l
+	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 
 PerfExit
