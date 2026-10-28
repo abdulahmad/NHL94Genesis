@@ -12,7 +12,7 @@
 ;	tools/extractAssets94.js reads the names from your ROM into Extracted/PlayerNames.txt
 ;	and Extracted/TeamNicknames.txt (one per line, in the order they appear below).
 
-;	tools/build.js (the 'names' step) copies this file to output/build/teamdata94.asm with the
+;	tools/build.js (the 'names' step) copies this file to output/obj/teamdata94.asm with the
 ;	real names put back, and nhl94.asm includes that copy.
 
 ;	Keep the placeholder lengths when editing a name or adding a player.

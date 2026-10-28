@@ -13,6 +13,7 @@ const { spawn } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
+const OBJ = path.join(OUT, 'obj');   // generated intermediates, emptied before each build
 const { ROMS, findRom } = require('./roms');
 const { formatAssemblerFailureDetail, hasBranchOutOfRange, DEFAULT_DOC } = require('./assembleHints');
 const EXPANDING_ROM_FILL_HINT = 'the 1 MB fill in src/nhl94.asm';
@@ -184,9 +185,11 @@ if (args.includes('--segacd')) {
     ABOUT.assemble = 'SNASM68k assembles each src/segacd/*.asm fragment with its own options';
     ABOUT.verify = 'compare each fragment with its bytes on the disc (cdbin/)';
     const frags = require('./segacd.json');
-    const BUILD = path.join(OUT, 'build');
+    const BUILD = OBJ;
     const CD = path.join(OUT, 'segacd');
-    fs.mkdirSync(BUILD, { recursive: true });
+    // output/obj/ is shared by all builds: empty it so this build cannot pick up another build's intermediates.
+    fs.rmSync(OBJ, { recursive: true, force: true });
+    fs.mkdirSync(OBJ, { recursive: true });
     fs.mkdirSync(CD, { recursive: true });
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
     begin('assemble');
@@ -194,7 +197,7 @@ if (args.includes('--segacd')) {
     for (const f of frags) {
         const out = path.join(CD, `${f.name}.bin`);
         fs.rmSync(out, { force: true });
-        const a = ['/p', '/m', '/g', ...f.options, `segacd\\${f.name}.asm,..\\output\\segacd\\${f.name}.bin,..\\output\\build\\${f.name},..\\output\\build\\${f.name}`];
+        const a = ['/p', '/m', '/g', ...f.options, `segacd\\${f.name}.asm,..\\output\\segacd\\${f.name}.bin,..\\output\\obj\\${f.name},..\\output\\obj\\${f.name}`];
         const r = await (WIN ? run(exe, a, { cwd: path.join(ROOT, 'src') })
             : run('wine', [exe, ...a], { cwd: path.join(ROOT, 'src'), env: { ...process.env, WINEDEBUG: '-all' } }));
         const logPath = path.join(BUILD, `Build_${f.name}.log`);
@@ -225,9 +228,9 @@ if (segIdx >= 0 && !seg) {
 }
 // A segment build is the full build; the verify step then compares the segment's address range only.
 const name = 'nhl94';
-// Intermediate files go in output/build/: the raw assembler image, its listing and the log.
+// Intermediate files go in output/obj/: the raw assembler image, its listing and the log.
 // The one result is output/<final>: nhl94.bin (retail or a segment check) or nhl94-dev.bin.
-const BUILD = path.join(OUT, 'build');
+const BUILD = OBJ;
 const bin = path.join(BUILD, `${name}.raw.bin`);
 const lst = path.join(BUILD, `${name} .lst`);
 const fixed = path.join(BUILD, `modified_${name}.raw.bin`);
@@ -235,7 +238,11 @@ const logPath = path.join(BUILD, `Build_${name}.log`);
 const final = `nhl94${!seg && mode === 'dev' ? '-dev' : !seg && mode === 'perf' ? '-perf' : ''}.bin`;
 const mod = path.join(OUT, final);
 
-// 1. prebuild: ROM check and Extracted/ assets.
+// output/obj/ is shared by all builds: empty it so this build cannot pick up another build's intermediates.
+fs.rmSync(OBJ, { recursive: true, force: true });
+fs.mkdirSync(OBJ, { recursive: true });
+
+// 1. prebuild: ROM check and Extracted/ assets (and output/obj/teamcounts.inc).
 {
     begin('prebuild');
     const r = await node('prebuild.js', ['retail']);
@@ -246,7 +253,7 @@ const mod = path.join(OUT, final);
     detail(r.out);
 }
 
-// 2. z80: asm80 (npm devDependency) assembles src/sound/z80_snd_drv93.asm into output/build/z80_snd_drv93.bin, which
+// 2. z80: asm80 (npm devDependency) assembles src/sound/z80_snd_drv93.asm into output/obj/z80_snd_drv93.bin, which
 // sound94.asm includes. It must equal the bytes extracted from the ROM (Extracted/NHL94/Sound/z80_snd_drv93.bin)
 // except Z80 $278-$27C, the FM patch address operands that sound94.asm writes from fm_instrument_patches.
 {
@@ -273,7 +280,7 @@ const mod = path.join(OUT, final);
 
 // 3. names: src/teamdata94.asm holds placeholders instead of the licensed names (the NHLPA player names
 // and the NHL team nicknames). The extractor writes the real ones from the ROM to Extracted/PlayerNames.txt and
-// Extracted/TeamNicknames.txt (one per line, in source order); this copies the file to output/build/ with each
+// Extracted/TeamNicknames.txt (one per line, in source order); this copies the file to output/obj/ with each
 // placeholder replaced, and nhl94.asm includes the copy. A name must have the length of its placeholder (the Player macro
 // writes the row length). Player rows are replaced in order; a nickname placeholder is 'N' + its two-digit number in
 // TeamNicknames.txt, padded with '_'.
@@ -317,7 +324,7 @@ const mod = path.join(OUT, final);
     fs.mkdirSync(BUILD, { recursive: true });
     for (const f of [bin, fixed, mod]) fs.rmSync(f, { force: true });
     const src = 'nhl94.asm';
-    const o = `..\\output\\build\\${name}`;
+    const o = `..\\output\\obj\\${name}`;
     const asmArgs = ['/p', '/m', '/g', '/o', 'd-', '/o', 's-', '/o', 'r+', '/o', 'l+', '/o', 'l.', '/o', 'ow+', '/o', 'op-',
         '/o', 'os+', '/o', 'oz+', '/o', 'omq-', '/o', 'oaq+', '/o', 'osq+',
         '/e', `CHECKSUM=${checksum}`, '/e', `PERF=${perf}`, `${src},${o}.raw.bin,${o},${o}`];

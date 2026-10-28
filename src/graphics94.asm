@@ -92,7 +92,7 @@ Teamblocksmap						;the team blocks (setupTeamBlocksMap, DrawTeamBlocks, dotb)
 TeamBitmaps							;dobitmap entries (DrawTeamBitmap)
 	incbin	..\Extracted\NHL94\Graphics\TeamBlocks94.map.jim
 	even
-	include	..\output\teamcounts.inc
+	include	..\output\obj\teamcounts.inc
 	IF TeamblocksEntries<>NumTeams
 		inform	3,"Teamblocksmap needs one entry per team"
 	ENDIF

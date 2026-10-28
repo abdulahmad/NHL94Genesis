@@ -11,7 +11,7 @@ fail=0
 node tools/build.js retail >/tmp/top.log
 [ $quiet = 1 ] || cat /tmp/top.log
 grep -qE '^ +MATCH ' /tmp/top.log || { fail=1; [ $quiet = 1 ] && cat /tmp/top.log; }
-if [ -f "output/build/nhl94 .lst" ] && [ -f output/nhl94.bin ]; then
+if [ -f "output/obj/nhl94 .lst" ] && [ -f output/nhl94.bin ]; then
   if r=$(node tools/verifySegment.js --all 2>&1); then
     [ $quiet = 1 ] || echo "$r" | sed 's/^MATCH: //'
   else
