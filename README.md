@@ -62,7 +62,7 @@ If the ROM is missing (or is a different dump), the build stops with the full pa
 
 `npm run assets` runs only this step. `npm run extractassets` still forces a fresh extraction. `tools/build.js` runs it as step 1 of every build; `tools/verify_all.sh` also deletes `Extracted/` first so it is always a fresh extract.
 
-Full ROM builds assemble `src/nhl94.asm`. The listing is `output/build/nhl94 .lst` and the raw image `output/build/nhl94.raw.bin`. The finished ROM is `output/nhl94.bin` (`nhl94-dev.bin` for a dev build); a segment is `output/<name>.bin`.
+Full ROM builds assemble `src/nhl94.asm`. The listing is `output/obj/nhl94 .lst` and the raw image `output/obj/nhl94.raw.bin`. The finished ROM is `output/nhl94.bin` (`nhl94-dev.bin` for a dev build); a segment is `output/<name>.bin`.
 
 | Script | Flags | Result |
 | --- | --- | --- |
@@ -81,7 +81,7 @@ The feature and patch branches (season mode, MSU-MD music, performance overlay, 
 
 ## Build steps explained
 
-`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), names (the NHLPA player names and NHL team nicknames are placeholders in `src/teamdata94.asm`; the real ones are extracted from your ROM to `Extracted/PlayerNames.txt` and `Extracted/TeamNicknames.txt`, and this step assembles a copy in `output/build/` with them put back (the two New York full names in `src/optsetup94.asm` are `include`s of asm the extractor generates in `Extracted/NHL94/Text/`); a name must keep the length of its placeholder), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
+`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), names (the NHLPA player names and NHL team nicknames are placeholders in `src/teamdata94.asm`; the real ones are extracted from your ROM to `Extracted/PlayerNames.txt` and `Extracted/TeamNicknames.txt`, and this step assembles a copy in `output/obj/` with them put back (the two New York full names in `src/optsetup94.asm` are `include`s of asm the extractor generates in `Extracted/NHL94/Text/`); a name must keep the length of its placeholder), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
 
 ## AI assistance
 

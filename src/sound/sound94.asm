@@ -824,16 +824,16 @@ ClearAllTrackAndSFXSlots			;Free the 8 track slots and reset the 6 channel struc
 ;	The Z80 driver, the PCM samples and the FM patches are unchanged from 93; the pointer tables are written
 ;	with the labels; each sound and song event stream is its own file (loop pointers written as dc.l).
 Z80_Program_Code					;The Z80 sound driver (93's, $28B bytes), built by asm80 from
-									;src/sound/z80_snd_drv93.asm (output/build/z80_snd_drv93.bin). p_initialZ80 copies
+									;src/sound/z80_snd_drv93.asm (output/obj/z80_snd_drv93.bin). p_initialZ80 copies
 									;Z80ProgramLen ($295) bytes from here: the 10 bytes after the driver (the pad
 									;byte and the start of pcm_sample_table) land below the Z80 stack top and are
 									;never read as data.
-	incbin	..\output\build\z80_snd_drv93.bin,0,$278	;Z80 $0000-$0277
+	incbin	..\output\obj\z80_snd_drv93.bin,0,$278	;Z80 $0000-$0277
 	;Z80 $0278 (z80_fm_patches_window): ld bc operand, the bank window address of the FM patches
 	dc.b	fm_instrument_patches&$FF,((fm_instrument_patches>>8)&$7F)|$80
 	;Z80 $027A: add hl,bc / ld a,n; $027C (z80_fm_patches_bank): the 32K bank of the FM patches
 	dc.b	$09,$3E,fm_instrument_patches>>15
-	incbin	..\output\build\z80_snd_drv93.bin,$27D,$E	;Z80 $027D-$028A: jp SetBank, SelectPart
+	incbin	..\output\obj\z80_snd_drv93.bin,$27D,$E	;Z80 $027D-$028A: jp SetBank, SelectPart
 	dc.b	$FF						;pad: retail leftover byte
 pcm_sample_table					;(sample address, 0) for PCM patches $60-$6E (lea in handle_command_10)
 	dc.l	sfx_puckget_pcm,0		;patch $60
