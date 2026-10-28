@@ -7,6 +7,7 @@
 - `tools/fixrom.js` runs after `fixopcodes`. It pads the image with $FF to the next size of 1MB, 1.5MB, 2MB or 4MB, writes the header ROM end ($1A4), then writes the boot checksum (the `cmpi.l` immediate in `ValidationRoutine`). A stock build stays 1MB and byte-identical.
 - `src/nhl94.asm` fills to 1MB. Includes placed after that fill start at $100000, so new data does not move any retail code.
 - `src/shortcalls.inc` (included last, emits nothing) stops the build if a routine the retail code calls with a short `jsr`/`jmp (x).w` moves past $7FFF. `tools/build.js` then stops at the assemble step and prints the routine, the files that call it, and the fix below.
+- If SNASM reports **Branch (… bytes) is out of range**, `tools/build.js` points here too (PC-relative `bsr.w` / `bra.w` / `bxx.w`, not only the absolute short calls above).
 - `NumTeams` / `NumPlayoffTeams` (`src/stubinc/equals.inc`) drive the option limits, the random team range and the playoff clamp, and every per-team table checks its length while assembling.
 - `CHECKSUM=0` skips the boot check (`build:dev`). There is a single revision.
 
@@ -18,6 +19,17 @@ Fix, in order of preference:
 
 1. Put new data after `menu94`, ideally after the 1MB fill in `src/nhl94.asm`. Nothing below $8000 moves.
 2. If something below $8000 has to grow (for example `TeamList` or a team record in `teamdata94.asm`), change the affected calls to `jsr (name).l` / `jmp (name).l` on your mod branch (2 more bytes each), and `bra.w Begin` to `jmp (Begin).l` if it is out of range.
+
+### PC-relative branches (branch out of range)
+
+SNASM’s **Branch (n bytes) is out of range** is the same ~±32 KB limit on **PC-relative** branches: **`bsr.w`**, **`bra.w`**, and **`bxx.w`**, not only the absolute short **`jsr`/`jmp (addr).w`** list above.
+
+Two patterns that break mod builds:
+
+1. **New ROM inserted between existing modules** — Later files move forward in the image. Retail code may already branch with `.w` into a module far enough away that only a few hundred bytes of insert pushes the branch past the limit (for example into `setup94.asm`).
+2. **Hooks into post-fill code** — Includes after the 1 MB `$FF` fill in `src/nhl94.asm` start at `$100000`. Any call from retail code into that region needs **`jsr (label).l`** / **`jmp (label).l`**. Code in the new region should not **`bsr.w`** distant retail helpers (for example shared `rts` labels or `printsmall`); use **`.l`** or a **local `rts`**.
+
+When the build prints branch out of range, fix placement and call mode using this section before changing unrelated branches.
 
 ## Past 2MB: backup RAM and bank switching
 
