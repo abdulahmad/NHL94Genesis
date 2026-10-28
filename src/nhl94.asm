@@ -3,8 +3,8 @@
 ;
 ;	teamdata94.asm is included as a copy in output/build/ with the real player names and
 ;	team nicknames put back by tools/build.js. The file in src/ has placeholders and needs
-;	the original ROM. The two New York full names in optsetup94.asm are incbins of
-;	Extracted/NHL94/Text.
+;	the original ROM. The two New York full names in optsetup94.asm are included from
+;	Extracted/NHL94/Text (asm the extractor generates).
 
 	include	stubinc\ports.inc		;IO_* / VDP_* ports. Equates only
 	include	stubinc\equals.inc		;VDP status bits. Equates only
