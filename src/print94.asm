@@ -331,14 +331,10 @@ FormatAndPrintTime					;d0 bits 14-15 = period, bits 0-13 = seconds
 	bsr.w	PushTime
 	bra.w	print
 PeriodLabelTable					;String list for FormatAndPrintTime: " 1", " 2", " 3", "OT"
-	dc.w	4
-	dc.b	' 1'
-	dc.w	4
-	dc.b	' 2'
-	dc.w	4
-	dc.b	' 3'
-	dc.w	4
-	dc.b	'OT'
+	String	' 1'
+	String	' 2'
+	String	' 3'
+	String	'OT'
 ; convert d0 into string format of min:sec
 PushTime							;convert d0 into string format of minutes:seconds. Return a1 = string.
 									;pads the minutes to 2 places with a space

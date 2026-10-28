@@ -318,19 +318,15 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	btst	#1,(sflags7).w			;overtime played?
 	beq.w	.0
 	jsr	(printz).l
-	dc.w	$001C					;String length: too many arguments for the String macro
-	dc.b	$BE,$C,9,'1',$BE,$11,9,'2',$BE,$16,9,'3',$BE,$1A,9,'OT',$BE,' ',9,'Total',0
+	String	$BE,$0C,$09,'1',$BE,$11,$09,'2',$BE,$16,$09,'3',$BE,$1A,$09,'OT',$BE,' ',$09,'Total'
 	jsr	(printz).l
-	dc.w	$001C					;String length: too many arguments for the String macro
-	dc.b	$BE,$C,$A,'<',$BE,$11,$A,'<',$BE,$16,$A,'<',$BE,$1A,$A,'<<',$BE,' ',$A,'<<<<<',0
+	String	$BE,$0C,$0A,'<',$BE,$11,$0A,'<',$BE,$16,$0A,'<',$BE,$1A,$0A,'<<',$BE,' ',$0A,'<<<<<'
 	bra.w	.1
 .0									;bit 1 of sflags7 clear
 	jsr	(printz).l
-	dc.w	$0016					;String length: too many arguments for the String macro
-	dc.b	$BE,$C,9,'1',$BE,$11,9,'2',$BE,$16,9,'3',$BE,' ',9,'Total'
+	String	$BE,$0C,$09,'1',$BE,$11,$09,'2',$BE,$16,$09,'3',$BE,' ',$09,'Total'
 	jsr	(printz).l
-	dc.w	$0016					;String length: too many arguments for the String macro
-	dc.b	$BE,$C,$A,'<',$BE,$11,$A,'<',$BE,$16,$A,'<',$BE,' ',$A,'<<<<<'
+	String	$BE,$0C,$0A,'<',$BE,$11,$0A,'<',$BE,$16,$0A,'<',$BE,' ',$0A,'<<<<<'
 .1									;print the title and lines
 	bsr.w	.title
 	bsr.w	.lines
@@ -668,85 +664,59 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	jmp	(PushTime).l
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
-	dc.w	$0008
-	dc.b	'Score',0
+	String	'Score'
 	dc.w	tmscore,$FFFF
-	dc.w	$0008
-	dc.b	'Shots',0
+	String	'Shots'
 	dc.w	tmshots,$FFFF
-	dc.w	$000E
-	dc.b	'Shooting Pct'
+	String	'Shooting Pct'
 	dc.w	$FFFF,$FFFF
-	dc.w	$000C
-	dc.b	'Power Play'
+	String	'Power Play'
 	dc.w	tmPwrGoals,tmPwrPlays
-	dc.w	$000C
-	dc.b	'PP Minutes'
+	String	'PP Minutes'
 	dc.w	tmPwrPlayTime,$FFFF
-	dc.w	$000A
-	dc.b	'PP Shots'
+	String	'PP Shots'
 	dc.w	tmPPShots,$FFFF
-	dc.w	$000A
-	dc.b	'SH Goals'
+	String	'SH Goals'
 	dc.w	tmSHGoals,$FFFF
-	dc.w	$000C
-	dc.b	'Breakaways'
+	String	'Breakaways'
 	dc.w	tmBreakawayGoals,tmBreakaways
-	dc.w	$000C
-	dc.b	'One-Timers'
+	String	'One-Timers'
 	dc.w	tmOneTimerGoals,tmOneTimers
-	dc.w	$0010
-	dc.b	'Penalty Shots',0
+	String	'Penalty Shots'
 	dc.w	tmPenShotGoals,tmPenShots
-	dc.w	$000E
-	dc.b	'Faceoffs Won'
+	String	'Faceoffs Won'
 	dc.w	tmfowon,$FFFF
-	dc.w	$000E
-	dc.b	'Body Checks',0
+	String	'Body Checks'
 	dc.w	tmchecks,$FFFF
-	dc.w	$000C
-	dc.b	'Penalties',0
+	String	'Penalties'
 	dc.w	tmPenalties,tmPenmin
-	dc.w	$000E
-	dc.b	'Attack Zone',0
+	String	'Attack Zone'
 	dc.w	tmATOP,$FFFF
-	dc.w	$000A
-	dc.b	'Passing',0
+	String	'Passing'
 	dc.w	tmpasscomp,tmpasses
 TeamStatTextTblNoPen				;The rows without the power play ones, used when penalties are off. 11
 									;rows
-	dc.w	$0008
-	dc.b	'Score',0
+	String	'Score'
 	dc.w	tmscore,$FFFF
-	dc.w	$0008
-	dc.b	'Shots',0
+	String	'Shots'
 	dc.w	tmshots,$FFFF
-	dc.w	$000E
-	dc.b	'Shooting Pct'
+	String	'Shooting Pct'
 	dc.w	$FFFF,$FFFF
-	dc.w	$000C
-	dc.b	'Breakaways'
+	String	'Breakaways'
 	dc.w	tmBreakawayGoals,tmBreakaways
-	dc.w	$000C
-	dc.b	'One-Timers'
+	String	'One-Timers'
 	dc.w	tmOneTimerGoals,tmOneTimers
-	dc.w	$0010
-	dc.b	'Penalty Shots',0
+	String	'Penalty Shots'
 	dc.w	tmPenShotGoals,tmPenShots
-	dc.w	$000E
-	dc.b	'Faceoffs Won'
+	String	'Faceoffs Won'
 	dc.w	tmfowon,$FFFF
-	dc.w	$000E
-	dc.b	'Body Checks',0
+	String	'Body Checks'
 	dc.w	tmchecks,$FFFF
-	dc.w	$000C
-	dc.b	'Penalties',0
+	String	'Penalties'
 	dc.w	tmPenalties,tmPenmin
-	dc.w	$000E
-	dc.b	'Attack Zone',0
+	String	'Attack Zone'
 	dc.w	tmATOP,$FFFF
-	dc.w	$000A
-	dc.b	'Passing',0
+	String	'Passing'
 	dc.w	tmpasscomp,tmpasses
 rtsStatTables						;rts after the stat tables (StatsReport scroll step)
 	rts
