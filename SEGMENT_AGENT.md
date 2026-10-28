@@ -34,11 +34,11 @@ None. Every ROM map row is matched, every `seg:` script matches its ROM map rang
 
 ## Sources
 
-- Listing: `lst/nhl94.bin.lst` in this repo. Open that file. Do not disassemble `lst/nhl94.bin`. Do not write a disassembler.
+- Listing: `lst/nhl94.bin.lst` (a local file: the listing is derived from the ROM and is not in the repo). Open that file. Do not disassemble `nhl94retail.bin`. Do not write a disassembler.
 - The listing was exported from IDA as an LST in ASM68K / MRI mode. It has no address column. A `loc_`, `sub_`, or `unk_` name is the address. A named routine is at the instruction before the next address-bearing label. Confirm the org against `lst/nhl94.bin` before the first verify.
 - Style source: the matching file in https://github.com/abdulahmad/NHLPA93Genesis. 93 is the closer source.
-- Reference ROM: `lst/nhl94.bin`. This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
-- `src/nhl94.asm` is the full build top level (`build94.bat`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
+- Reference ROM: `nhl94retail.bin` (root folder, not in the repo). This is the ROM the listing was generated from. Bytes and branch displacements come from it. Do not substitute another ROM.
+- `src/nhl94.asm` is the full build top level (`tools/build.js`): the three stubinc files, then the full ROM include list, in address order (every row of the ROM map, high ROM included), then the `$FF` fill. Keep the list in address order: a full build needs each file at the address after the one before it.
 - Stub includes live in `src/stubinc` (`ports.inc`, `equals.inc`, `ram_addrs.inc`). `nhl94.asm` includes the same three for the full build.
 
 
@@ -61,7 +61,9 @@ Still present from 93: Ottawa Senators, Tampa Bay Lightning, San Jose Sharks, Qu
 
 ## Build
 
-`buildseg.bat <name>` assembles `src/stubinc/<name>_stub.asm`. The stub is `org` at the confirmed start, includes `src/stubinc`, and includes `src/<name>.asm`.
+> The segment stubs, `buildseg.bat`, `build94.bat` and the `seg:*` scripts were removed (as on main). `npm run seg -- <name>` (or `node tools/build.js --seg <name>` / `--all`) builds the full ROM and compares the segment's address range, taken from the build listing (`tools/verifySegment.js`); `npm run build:retail` writes `output/nhl94.bin` and verifies it. The text and history below describe the old stub and batch builds.
+
+Old stub builds: `buildseg.bat <name>` assembled `src/stubinc/<name>_stub.asm`. The stub is `org` at the confirmed start, includes `src/stubinc`, and includes `src/<name>.asm`.
 
 `npm run seg:<name>` runs buildseg, then `tools/fixopcodes.js` on `output/<name> .lst` and `output/<name>.bin` with the org, then `tools/verifySegment.js`. The assembler listing name has a space before `.lst`.
 

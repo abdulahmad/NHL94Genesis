@@ -4,13 +4,13 @@
 
 Bitwise rebuild of NHL 94 for the Sega Genesis.
 
-The listing is `lst/nhl94.bin.lst`. The ROM it was generated from is `lst/nhl94.bin`. That file is the reference for every segment verify. Do not use a different ROM.
+The listing is `lst/nhl94.bin.lst` (a local file, not in the repo). The ROM it was generated from is the retail ROM in the root folder (`nhl94retail.bin` is the usual name; any name works, it is found by SHA-1 and size, `tools/roms.js`). That ROM is the reference for every verify. Do not use a different ROM. ROMs are not in the repo.
 ## Supported ROMs
 NHL 94 had one retail release; `tools/extractAssets94.js` accepts only that ROM, found by SHA-1, and refuses any other (bad dump, hack, prototype) with its SHA-1, size and header. The slices are kept as a per-version map from retail address, so a new version only needs a row with its SHA-1 and offsets.
 
 | Version | Header | File | Size | SHA-1 |
 | --- | --- | --- | --- | --- |
-| Retail | `1993.JUL`, `GM T-50656 -00` | `lst/nhl94.bin` | 1 MB | `7b1489ab501258133bf03e5f0892b77d04312580` |
+| Retail | `1993.JUL`, `GM T-50656 -00` | `nhl94retail.bin` (usual name) | 1 MB | `7b1489ab501258133bf03e5f0892b77d04312580` |
 
 
 The listing is an IDA LST in ASM68K / MRI mode. It has no address column. `loc_` / `sub_` names are the address.
@@ -28,12 +28,14 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 
 ## Build
 
-Segment builds use `buildseg.bat` and `npm run seg:<name>` once a segment has a stub and a confirmed org. Verify against `lst/nhl94.bin`.
+Every build runs through `tools/build.js` (Windows, or Linux with wine), one line per step: prebuild, assemble, fixopcodes, fixrom, verify. `--verbose` shows each step's full output.
 
-`npm run extractassets` runs `tools/extractAssets94.js` against `lst/nhl94.bin`. Builds do this automatically when `Extracted/` is missing or incomplete (below).
+Segment checks use `npm run seg -- <name>` (`tools/build.js --seg <name>`, or `--all`): the full ROM is built, then the segment's address range (from the build listing) is compared with `nhl94retail.bin`. Segments are the files `src/nhl94.asm` includes before the 1 MB fill (`msu94.asm`, under `IF MSU=1`, is not one).
+
+`npm run extractassets` runs `tools/extractAssets94.js` against the retail ROM in the root folder. Builds do this automatically when `Extracted/` is missing or incomplete (below).
 
 ## Build pre-step: ROM check and automatic asset extraction
-Every build entry point (`npm run build:*`, `npm run seg:*`, and the batch files run directly) first runs `node tools/prebuild.js`. It:
+Every ROM build (`npm run build:*`, `npm run seg`) first runs `node tools/prebuild.js` (step 1 of `tools/build.js`). It:
 
 1. checks that the ROM the build needs is in place and is exactly the right version (SHA-1 and size);
 2. checks that `Extracted/` is complete: the extractor writes `Extracted/.extract-complete.json` last, listing every file it wrote (with its size), the ROM it read and the extractor's own SHA-1;
@@ -43,17 +45,20 @@ If the ROM is missing (or is a different dump), the build stops with the full pa
 
 | Build | ROM needed | SHA-1 | Size |
 | --- | --- | --- | --- |
-| every build and segment | `lst/nhl94.bin` | `7b1489ab501258133bf03e5f0892b77d04312580` | 1048576 bytes |
+| every build and segment | `nhl94retail.bin` (root folder, any name) | `7b1489ab501258133bf03e5f0892b77d04312580` | 1048576 bytes |
 
-`npm run assets` runs only this step. `npm run extractassets` still forces a fresh extraction. The npm scripts set `NHL_PREBUILD_DONE=1` after the step so the batch file does not repeat it; `tools/verify_all.sh` runs the step with Linux node and sets the same variable for wine (there is no node under wine).
+`npm run assets` runs only this step. `npm run extractassets` still forces a fresh extraction.
 
-Full ROM builds assemble `src/nhl94.asm`. The listing is `output/obj/nhl94 .lst`. The opcode-corrected output is `output/modified_nhl94.bin`.
+Full ROM builds assemble `src/nhl94.asm`. The listing is `output/obj/nhl94 .lst` and the raw image `output/obj/nhl94.raw.bin`. The finished ROM is `output/nhl94.bin` (`nhl94-revA.bin` with `rev=1`, `nhl94-dev.bin` for a dev build, `nhl94-msu.bin` for the MSU build).
 
 | Script | Flags | Result |
 | --- | --- | --- |
-| `npm run build:retail` | `rev=0`, `checksum=1` | Retail, validation included, verified byte for byte against `lst/nhl94.bin`. |
+| `npm run build:retail` | `rev=0`, `checksum=1` | Retail, validation included, verified byte for byte against `nhl94retail.bin`. |
 | `npm run build:dev` | `rev=0`, `checksum=0` | No validation and no retail verify. Use this while editing. |
-| `npm run build:msu` | `rev=0`, `checksum=0`, `MSU=1` | 2 MB MSU-MD ROM. CD music instead of FM. See `docs/msu.md`. |
+| `npm run build:msu` | `rev=0`, `checksum=0`, `MSU=1` | 2 MB MSU-MD ROM (`output/nhl94-msu.bin`). CD music instead of FM. See `docs/msu.md`. |
+| `npm run build:segacd` | | Sega CD fragments into `output/segacd/`, compared with `cdbin/` (your own disc files; the verify stops with a message if they are missing). |
+
+On this branch `fixrom` runs only for `checksum=1` non-MSU builds; the dev and MSU ROMs are written as assembled (the same bytes the old `build94.bat` gave).
 
 `build:dev` (`checksum=0`): `Start` skips `jsr ValidationRoutine` (3 `nop`s instead) and the header checksum at `$18E` is 0, so changed code still boots. With `checksum=1` the validation routine sums the ROM, and any change turns the screen red. `ValidationRoutine` stays in the ROM but is never called.
 

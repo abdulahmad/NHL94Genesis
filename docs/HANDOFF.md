@@ -6,17 +6,8 @@ NHL92 Genesis (EA original) lineage, and comments without disassembler or portin
 bytes never change: every build must still MATCH the retail ROM.
 
 ## Setup
-ROMs (gitignored, never commit): lst/nhl94.bin.
-Windows: `npm run build:retail` (tools/prebuild.js, build94.bat, fixopcodes, verify);
-segments: `npm run seg:<name>` (all keys in package.json `seg:*`).
-Linux (wine): `apt install wine wine32` (dpkg --add-architecture i386), `export WINEDEBUG=-all`, then
-1. `node tools/prebuild.js retail` (checks the ROM, extracts into Extracted/ if missing or incomplete; same as `node tools/extractAssets94.js lst/nhl94.bin`), then `export NHL_PREBUILD_DONE=1` so the .bat files skip their own pre-step (no node under wine). Accepts the one retail ROM (SHA-1 7b1489ab...); other ROMs are refused.
-2. `wine cmd /c "set rev=0&& set checksum=1&& build94.bat"`
-3. `node tools/fixopcodes.js "output/obj/nhl94 .lst" output/obj/nhl94.bin && mv output/obj/modified_nhl94.bin output/`
-4. `node tools/verifyRom.js output/modified_nhl94.bin <reference ROM>` must print MATCH
-5. Segments: run each package.json `seg:*` chain the same way (`wine cmd /c "buildseg.bat <seg>"`, then its node steps); tools/verifySegment.js must MATCH.
-Failed-assembly detection: delete output/*.bin first, then check the bin exists and is fresh and that output/Build*.log has no
-`^[1-9][0-9]* error` line. tools/verify_all.sh does all of this (top ROM + every segment).
+ROMs (gitignored, never commit): the retail ROM in the root folder (`nhl94retail.bin` is the usual name; found by SHA-1 7b1489ab..., tools/roms.js).
+`npm run build:retail` (or `node tools/build.js retail`) on Windows, or on Linux with wine (`apt install wine wine32`, i386 enabled). It prints one line per step: prebuild, assemble, fixopcodes, fixrom, verify, and must end with MATCH output/nhl94.bin. `npm run build:dev` builds with CHECKSUM=0 and skips the verify; `npm run build:msu` builds output/nhl94-msu.bin (docs/msu.md). One segment: `npm run seg -- <name>` (full build, then that segment's address range from the listing is compared; `--all` for every segment). `--verbose` shows each step's full output. `tools/verify_all.sh` runs the full build and every segment check.
 
 ## Naming lineage
 - 92G (abdulahmad/NHL92Genesis, EA source) is the root. 93 -> 92; 94 -> 93 -> 92; 95 -> 94 -> 93 -> 92.

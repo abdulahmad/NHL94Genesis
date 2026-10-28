@@ -1,17 +1,14 @@
 # MSU-MD music on the cartridge
 
-`npm run build:msu` (or `MSU=1` with `build94.bat`) assembles a 2 MB cartridge ROM that plays Sega CD audio through the [MSU-MD](https://github.com/krikzz/msu-md) registers. `npm run build:retail` does not include that code. The retail ROM stays byte-identical to `lst/nhl94.bin`.
+`npm run build:msu` (`node tools/build.js msu`) assembles a 2 MB cartridge ROM that plays Sega CD audio through the [MSU-MD](https://github.com/krikzz/msu-md) registers. `npm run build:retail` does not include that code. The retail ROM stays byte-identical to `nhl94retail.bin`.
 
-On Linux, with the retail ROM already extracted:
+On Windows, or on Linux with wine:
 
 ```
-export NHL_PREBUILD_DONE=1 WINEDEBUG=-all
-wine cmd /c "set rev=0&& set checksum=0&& set MSU=1&& build94.bat"
-node tools/fixopcodes.js "output/obj/nhl94 .lst" output/obj/nhl94.bin
-mv output/obj/modified_nhl94.bin output/
+npm run build:msu
 ```
 
-The ROM is `output/modified_nhl94.bin`. Checksum validation is off, the same as `build:dev`, so the expanded ROM boots. The header ROM end is `$1FFFFF`.
+The ROM is `output/nhl94-msu.bin` (intermediates in `output/obj/`). It is not verified (there is no reference ROM) and `fixrom` is skipped: `src/` already pads it to 2 MB. Checksum validation is off, the same as `build:dev`, so the expanded ROM boots. The header ROM end is `$1FFFFF`.
 
 Boot can sit on a black screen for a few seconds while the driver looks for the Mega CD and reads the track list. The title screen asks for the CD song before it draws the pictures, so the seek runs during that work and the track is going when the image fades in. The FM arrangement still starts at the later song call, the same moment as the retail ROM, and that call does not restart a loop that is already playing. If the track list is still being read, the FM arrangement stays silent and the CD track starts when the list is done. The same track keeps playing into the main menu. If CD Music is still Off after the title has been up for a while, the cue's `FILE` lines do not match the bin filenames in that folder. Renaming the cue does not rename the files it points at.
 
