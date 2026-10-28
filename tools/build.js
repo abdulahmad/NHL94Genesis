@@ -6,6 +6,8 @@
 //   node tools/build.js --segacd [--verbose]           Sega CD fragments, compared with cdbin/
 // --no-color (or NO_COLOR) turns the colors off; they are also off when the output is not a terminal.
 // retail: CHECKSUM=1 and verified against nhl94retail.bin. dev: CHECKSUM=0, not verified.
+// perf: dev plus PERF=1 (the on-screen stats overlay in src/perf94.asm, docs/perf.md), not verified. The perf
+// environment variable (perf=0/1) overrides PERF in any mode.
 // The checksum environment variable (set checksum=0 on Windows, checksum=0 node ... on Linux) overrides the default.
 const fs = require('fs');
 const path = require('path');
@@ -15,7 +17,7 @@ const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'output');
 const OBJ = path.join(OUT, 'obj');   // generated intermediates, emptied before each build
 const { ROMS, findRom } = require('./roms');
-const { formatAssemblerFailureDetail, hasBranchOutOfRange, DEFAULT_DOC } = require('./assembleHints');
+const { formatAssemblerFailureDetail, hasBranchOutOfRange } = require('./assembleHints');
 const EXPANDING_ROM_FILL_HINT = 'the 1 MB fill in src/nhl94.asm';
 const WIN = process.platform === 'win32';
 
@@ -36,7 +38,7 @@ const segIdx = args.indexOf('--seg');
 const seg = segIdx >= 0 ? args[segIdx + 1] : null;
 const mode = args.find((a) => a === 'retail' || a === 'dev' || a === 'perf') || 'retail';
 const env = (k) => process.env[k] ?? process.env[k.toUpperCase()] ?? process.env[k.toLowerCase()];
-const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : (mode === 'dev' || mode === 'perf' ? 0 : 1);
+const checksum = env('checksum') !== undefined ? (env('checksum') === '0' ? 0 : 1) : ((mode === 'dev' || mode === 'perf') && !seg ? 0 : 1);
 const perf = env('perf') !== undefined ? (env('perf') === '0' ? 0 : 1) : (mode === 'perf' ? 1 : 0);
 
 let steps = 7;
@@ -212,6 +214,16 @@ if (args.includes('--segacd')) {
     }
     step('assemble', `${frags.length} fragments, 0 errors in ${((Date.now() - t0) / 1000).toFixed(1)}s -> output/segacd/`);
     begin('verify');
+    // The six disc files are the user's own: copied from the data track of an NHL '94 Sega CD disc, not
+    // built here and not in the repo (cdbin/ is gitignored). Name every missing one before comparing.
+    const DISC = ['MAIN.BIN', 'STARTER.BIN', 'HOCKEY.BIN', 'PLAYER.BIN', 'GRAPH2.BIN', 'GTABLE.BIN'];
+    const missing = DISC.filter((n) => !fs.existsSync(path.join(ROOT, 'cdbin', n)));
+    if (missing.length) {
+        fail('verify', `missing Sega CD disc file(s) in cdbin/: ${missing.join(', ')}`,
+            `The fragments assembled into output/segacd/; the compare needs the six files from the data track\n`
+            + `of your own NHL '94 Sega CD disc (${DISC.join(', ')}) copied into cdbin/.\n`
+            + 'They are not build products and are not in the repo. See docs/segacd.md.', 'MISSING INPUT');
+    }
     const r = await node('verifySegacd.js', []);
     const matches = (r.out.match(/ MATCH /g) || []).length;
     if (r.status !== 0) {
@@ -345,7 +357,7 @@ fs.mkdirSync(OBJ, { recursive: true });
     if (errors > 0 || !fs.existsSync(bin)) {
         const detail = formatAssemblerFailureDetail(lines, { fillHint: EXPANDING_ROM_FILL_HINT });
         const headline = hasBranchOutOfRange(lines)
-            ? `branch out of range — see ${DEFAULT_DOC}`
+            ? `branch out of range — see ${require('./assembleHints').DEFAULT_DOC}`
             : `${errors} error(s), see ${rel(logPath)}`;
         fail('assemble', headline, detail);
     }
@@ -376,8 +388,8 @@ fs.mkdirSync(OBJ, { recursive: true });
 }
 
 // 7. verify against the retail ROM.
-if (!seg && mode === 'dev') {
-    step('verify', `${rel(mod)} not verified (dev build)`);
+if (!seg && (mode === 'dev' || mode === 'perf')) {
+    step('verify', `${rel(mod)} not verified (${mode} build)`);
 } else {
     begin('verify');
     const REF = findRom(ROMS.retail).path;
