@@ -105,10 +105,11 @@ UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print 
 	movea.l	(menulist).w,a1
 	jsr	(printsmall).l				;the menu title
 	jsr	(printsmallz).l				;clear the 4 item rows
-	dc.w	$0026					;String length, 36 bytes: too many for the macro
+	StringStart					;36 bytes: past String's 31-arg limit
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01
 	dc.b	$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA
 	dc.b	$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
+	StringEnd
 	adda.w	(a1),a1
 	move.w	(menuitem+2).w,d0		;skip to the first item shown
 	bra.w	.6
