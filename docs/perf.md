@@ -16,7 +16,7 @@ The sample is the main loop in `DoGameFrame`: from `PerfOnFrame` to `PerfAfterVi
 | `SL` | Those scanlines, then the frame length. |
 | `MAX` | The largest `SL` since the period started. It does not reset. |
 | `FPS` | Game loops that finished during the last 55 vertical blanks (45 on PAL). 55 is one loop per blank, about 60 fps. 44 in that window is about 48 fps. |
-| `SP` | Sprite list size in words. A sprite is 4 words, and the hardware limit is 80 sprites. |
+| `SP` | Sprite list size in words. A sprite is 4 words, and the hardware limit is 80 sprites. Sprite hardware limit in words would be 80 * 4 = 320. |
 | `DM` | DMA transfers queued for this frame. |
 | `LAG` | Vertical blanks between the start of the previous loop and the start of this one. 1 means this loop caught the next blank. 2 or more means a blank was skipped. |
 | `VB` | Reserved for how long the vertical blank itself ran. Nothing samples it, so it stays 0. |
