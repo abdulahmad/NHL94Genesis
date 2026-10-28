@@ -26,7 +26,7 @@ Those two rows go at the new team's index, and the map height grows by 2. A team
 
 `NoTiles` is the zero long just before `TeamList`. It is the pointer used when a slot has no tiles. It is not a team entry.
 
-The two shared images are measured by `tools/prebuild.js`, which writes `output/teamcounts.inc`. Rebuilding those images, and the ice logos, is not in this repo. The graphics tools for that live in EA-NHL-Tools.
+The two shared images are measured by `tools/prebuild.js`, which writes `output/obj/teamcounts.inc`. Rebuilding those images, and the ice logos, is not in this repo. The graphics tools for that live in EA-NHL-Tools.
 
 ## Playoff rows
 
