@@ -150,6 +150,8 @@ const node = async (script, argv) => {
     return r;
 };
 
+// The generated file gets each player's id (the number of his placeholder, P001) as a comment at the end of his row.
+const idNote = (rest, ph) => rest + (rest.includes(';') ? ' ' : '\t;') + ph.slice(0, 4);
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
 
 (async () => {
@@ -280,12 +282,12 @@ const mod = path.join(OUT, final);
     const put = (name, text) => {
         const src = path.join(ROOT, 'src', name);
         const out = fs.readFileSync(src, 'latin1')
-            .replace(/^([ \t]*Player[ \t]+')((?:[^']|'')*)(')/gm, (m, a, ph, z) => {
+            .replace(/^([ \t]*Player[ \t]+')((?:[^']|'')*)(')([^\r\n]*)/gm, (m, a, ph, z, rest) => {
                 const real = players[p++];
                 if (real === undefined) fail('names', `${rel(src)} has more Player rows than PlayerNames.txt has names (${players.length})`);
                 const want = ph.replace(/''/g, "'").length;
                 if (real.length !== want) fail('names', `Player row ${p}: the name '${real}' has ${real.length} characters, its placeholder '${ph}' has ${want}`);
-                return a + real.replace(/'/g, "''") + z;
+                return a + real.replace(/'/g, "''") + z + idNote(rest, ph);
             })
             .replace(nickRe, (m, ph, id) => {
                 const real = nicks[Number(id) - 1];
