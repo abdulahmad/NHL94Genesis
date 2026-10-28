@@ -1,6 +1,6 @@
 # Expanding-the-ROM build hints (sibling Genesis repos)
 
-These patches mirror [PR #??? on NHL94Genesis](../..) for repos the cloud agent cannot push to directly.
+These patches mirror [PR #169](https://github.com/abdulahmad/NHL94Genesis/pull/169) on NHL94Genesis for repos the cloud agent cannot push to directly.
 
 Apply from the root of each target repository:
 
