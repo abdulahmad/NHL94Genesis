@@ -718,7 +718,7 @@ setVram_0							;second half of setVram without the fade: clear vram and set the
 									;Falls in from setVram, called from EASportsScreen and HiScoreScreen
 	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w
-	move.w	#VDPR_AUTOINC+$02,(Vctrl).l
+	VmInc	2
 	clr.w	d0
 	bsr.w	Vmaddr					;vram address 0, a0 = Vdata
 	move.w	#$3FFF,d0				;$4000 longs
