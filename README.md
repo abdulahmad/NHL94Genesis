@@ -89,6 +89,8 @@ Thanks to chaos, StaticEck, McMarkis and Drezz for their help with the disassemb
 
 Special thanks to smozoma and kingraph, whose past contributions to the NHL modding community made this work easier.
 
+And thank you to the [original developers of the game](https://www.mobygames.com/game/12399/nhl-94/credits/genesis/), and of its [Sega CD version](https://www.mobygames.com/game/12399/nhl-94/credits/sega-cd/).
+
 These disassemblies started with a lot of manual work, especially from chaos, and have since been AI-assisted.
 
 This project is the result of my work and the work of the people credited above. If you build anything from it, including mods, ROM or EXE hacks, ports, released forks, tools, or any other derivative work, you must credit us:
