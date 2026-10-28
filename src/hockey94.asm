@@ -195,11 +195,7 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 .nosong	jsr	(setSlotBit).l
 	bsr.w	checkwindow
 	bsr.w	updatereplay
-	jsr	(setvideo).l
-	IF PERF=1
-	jsr	(PerfSampleEndAndDraw).l
-	ENDIF
-	rts
+	jmp	setvideo
 
 periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jsr	(PenaltyManager).l

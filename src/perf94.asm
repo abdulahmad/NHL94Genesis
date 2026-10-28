@@ -20,7 +20,7 @@ perf_stack_hw	equ	PALflag+24
 perf_fps		equ	PALflag+26
 perf_fps_acc	equ	PALflag+28
 perf_fps_lastvc	equ	PALflag+30
-perf_inited	equ	PALflag+32
+perf_inited	equ	PALflag+32		;magic $9454 once line buffers are valid
 perf_line1		equ	PALflag+34
 perf_line2		equ	PALflag+68
 perf_line3		equ	PALflag+102
@@ -32,6 +32,11 @@ PerfDeactivate
 PerfActivate
 	move.w	#1,(perf_active).w
 	rts
+
+;	printsmall treats bytes <= 0 as control codes. Uninitialized RAM (this block is the
+;	stack hole above PALflag and is not cleared at boot) will jsr off the control-code
+;	table and never return, leaving dfng set so VBlank never clears dfok. DoGameFrame
+;	then spins in setvideo. Only draw after the line buffers have been filled.
 
 ;digit positions (byte offset from perf_lineN, after the length word)
 p1_cpu	equ	perf_line1+2+3
@@ -145,9 +150,9 @@ PerfVScanDelta
 	rts
 
 PerfEnsureInit
-	tst.w	(perf_inited).w
-	bne.w	PerfExit
-	st	(perf_inited).w
+	cmpi.w	#$9454,(perf_inited).w
+	beq.w	PerfExit
+	move.w	#$9454,(perf_inited).w
 	move.w	(Vcount).w,(perf_fps_lastvc).w
 	lea	(perf_line1).w,a0
 	move.w	#28,(a0)+

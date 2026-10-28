@@ -133,6 +133,9 @@ setvideo							;this is not vblank code but sets up ram for vblank transfers. Ca
 	lsr.w	#1,d0					;words
 	move.w	d0,(Sattsize).w
 	move.l	a5,(DMAlistend).w
+	IF PERF=1
+	jsr	(PerfSampleEndAndDraw).l	;before dfok: printsmall must not run with a frame pending
+	ENDIF
 	bset	#dfok,(disflags).w		;dfok
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
