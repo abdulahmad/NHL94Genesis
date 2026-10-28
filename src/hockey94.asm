@@ -195,7 +195,7 @@ DoGameFrame							;wait for at least one vblank, then run one frame of game logi
 .nosong	jsr	(setSlotBit).l
 	bsr.w	checkwindow
 	bsr.w	updatereplay
-	bsr.w	setvideo
+	jsr	(setvideo).l
 	IF PERF=1
 	jsr	(PerfSampleEndAndDraw).l
 	ENDIF
