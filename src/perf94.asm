@@ -205,12 +205,10 @@ PerfFormatLines
 	tst.w	(PalMode).w
 	beq.s	.pf1
 	move.w	#312,d4
-.pf1	move.l	d4,d2
-	mulu.w	d0,d2
-	divu.w	#100,d2
+.pf1	mulu.w	#100,d0				;scanlines * 100 / frame length
+	divu.w	d4,d0
 	moveq	#3,d1
 	movea.l	#p1_cpu,a0
-	move.w	d2,d0
 	bsr.w	PerfPutDec
 	move.w	(perf_frame_sl).w,d0
 	movea.l	#p1_sl,a0
@@ -255,10 +253,11 @@ PerfPutDec
 	add.w	d1,a0
 	subq.w	#1,d3
 	andi.l	#$FFFF,d0			;divu.w uses the full long; a dirty high word overflows
-.pd0	divu.w	#$A,d0
+.pd0	divu.w	#$A,d0				;low = quotient, high = remainder
+	swap	d0
 	move.w	d0,d2
 	clr.w	d0
-	swap	d2
+	swap	d0				;quotient, high word clear
 	addi.w	#$30,d2
 	move.b	d2,-(a0)
 	dbf	d3,.pd0
@@ -303,7 +302,7 @@ PerfDrawRow							;a1 = 28 chars, d1 = window row
 .pc	moveq	#0,d0
 	move.b	(a1)+,d0
 	cmp.b	#$20,d0
-	bcs.s	.blk
+	bls.s	.blk
 	asl.w	#1,d0
 	movea.l	#SmallFontMap,a2
 	adda.l	jimdata(a2),a2
