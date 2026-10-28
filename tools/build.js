@@ -150,8 +150,9 @@ const node = async (script, argv) => {
     return r;
 };
 
-// The generated file gets each player's id (the number of his placeholder, P001) as a comment at the end of his row.
-const idNote = (rest, ph) => rest + (rest.includes(';') ? ' ' : '\t;') + ph.slice(0, 4);
+// The generated file gets each player's id (the number of his placeholder, P001) as a comment at the end of his row, followed by the
+// name of his player card picture (Card001, see tools/playerCards.js) when he has one.
+const idNote = (rest, ph, card) => rest + (rest.includes(';') ? ' ' : '\t;') + ph.slice(0, 4) + (card ? ' ' + card : '');
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
 
 (async () => {
@@ -276,6 +277,7 @@ const mod = path.join(OUT, final);
     begin('names');
     const read = (f) => { const l = fs.readFileSync(path.join(ROOT, 'Extracted', f), 'latin1').split('\n'); if (l[l.length - 1] === '') l.pop(); return l; };
     const players = read('PlayerNames.txt'), nicks = read('TeamNicknames.txt');
+    const cards = require('./playerCards').playerCards();
     let p = 0;
     const used = new Set();
     const nickRe = /'(N(\d\d)_*)'/g;
@@ -287,7 +289,7 @@ const mod = path.join(OUT, final);
                 if (real === undefined) fail('names', `${rel(src)} has more Player rows than PlayerNames.txt has names (${players.length})`);
                 const want = ph.replace(/''/g, "'").length;
                 if (real.length !== want) fail('names', `Player row ${p}: the name '${real}' has ${real.length} characters, its placeholder '${ph}' has ${want}`);
-                return a + real.replace(/'/g, "''") + z + idNote(rest, ph);
+                return a + real.replace(/'/g, "''") + z + idNote(rest, ph, cards[p - 1] && cards[p - 1].card);
             })
             .replace(nickRe, (m, ph, id) => {
                 const real = nicks[Number(id) - 1];
@@ -300,8 +302,9 @@ const mod = path.join(OUT, final);
     };
     fs.mkdirSync(BUILD, { recursive: true });
     put('teamdata94.asm');
+    fs.writeFileSync(path.join(BUILD, 'PlayerCards.txt'), cards.map((r, i) => `P${String(i + 1).padStart(3, '0')}\t${r.team}\t${r.slot}\t${r.card || '-'}`).join('\n') + '\n');   // every player with his team, roster index and card (- when none)
     if (p !== players.length) fail('names', `PlayerNames.txt has ${players.length} names, src/teamdata94.asm has ${p} Player rows`);
-    step('names', `${p} player names, ${nicks.length} team nicknames -> ${rel(path.join(BUILD, 'teamdata94.asm'))}`);
+    step('names', `${p} player names, ${nicks.length} team nicknames, ${cards.filter((r) => r.card).length} player cards -> ${rel(path.join(BUILD, 'teamdata94.asm'))}`);
 }
 
 // 4. assemble: SNASM68k, directly on Windows, under wine elsewhere. Its console output is the log.
