@@ -1,0 +1,123 @@
+From 7d21cd6835a57d5a4b75042765b59b9d1ebed001 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Wed, 28 Oct 2026 18:52:09 +0000
+Subject: [PATCH] Document PC-relative branch limits; hint on branch out of
+ range
+
+Add assembleHints.js and EXPANDING_THE_ROM guidance. SNASM branch-out-of-range
+failures now point at the doc and common fixes (post-fill placement, jsr .l).
+---
+ docs/EXPANDING_THE_ROM.md | 23 +++++++++++++++++++++
+ tools/assembleHints.js    | 42 +++++++++++++++++++++++++++++++++++++++
+ tools/build.js            |  9 +++++++--
+ 3 files changed, 72 insertions(+), 2 deletions(-)
+ create mode 100644 docs/EXPANDING_THE_ROM.md
+ create mode 100644 tools/assembleHints.js
+
+diff --git a/docs/EXPANDING_THE_ROM.md b/docs/EXPANDING_THE_ROM.md
+new file mode 100644
+index 0000000..9ff270a
+--- /dev/null
++++ b/docs/EXPANDING_THE_ROM.md
+@@ -0,0 +1,23 @@
++# Expanding the ROM
++
++`main` is a faithful disassembly of the retail 2 MB cartridge. Mod-branch growth notes live here; byte-identical retail builds stay on `main`.
++
++## What main already does for you
++
++- `tools/fixrom.js` pads the image, writes the header ROM end ($1A4), and updates the boot checksum when the image grows.
++- `src/nhl96.asm` fills to 2 MB (`dcb.b $200000-*,$FF`). Includes placed **after** that fill start at `$200000`, so retail addresses below the fill do not move.
++- `src/shortcalls.inc` (included last) stops the build if a short-range call moves out of reach.
++- `CHECKSUM=0` skips the boot check (`build:dev`).
++- If SNASM reports **Branch (… bytes) is out of range**, `tools/build.js` points here.
++
++## Short jumps and PC-relative branches
++
++Retail code uses PC-relative **`bsr.w`**, **`bra.w`**, and **`bxx.w`** across modules. SNASM’s **Branch (n bytes) is out of range** means the target is farther than ~±32 KB from the branch.
++
++Fix, in order of preference:
++
++1. Put new ROM **after the 2 MB fill** in `src/nhl96.asm`. Nothing in the retail map below `$200000` moves.
++2. Do not insert new code **between** existing includes if later modules are already branched to with `.w`.
++3. From retail code into post-fill code, use **`jsr (label).l`** / **`jmp (label).l`**. In new post-fill code, use **`.l`** or a **local `rts`** instead of **`bsr.w`** to distant labels.
++
++See also [NHL95Genesis `docs/EXPANDING_THE_ROM.md`](https://github.com/abdulahmad/NHL95Genesis/blob/main/docs/EXPANDING_THE_ROM.md) for backup RAM, teams, and mapper notes (95 and 96 share the same 2 MB / 4 MB patterns).
+diff --git a/tools/assembleHints.js b/tools/assembleHints.js
+new file mode 100644
+index 0000000..546b35e
+--- /dev/null
++++ b/tools/assembleHints.js
+@@ -0,0 +1,42 @@
++'use strict';
++
++// Helpers for SNASM68k assemble failures. Used by tools/build.js.
++
++const DEFAULT_DOC = 'docs/EXPANDING_THE_ROM.md';
++
++function filterAssemblerErrors(lines) {
++    return lines.filter((l) => /\.(asm|inc|mac)\(\d+|error|fatal|not recognised|undefined|could not/i.test(l) && !/error\(s\) from/.test(l)).slice(0, 40);
++}
++
++function hasBranchOutOfRange(lines) {
++    const text = (Array.isArray(lines) ? lines : [lines]).join('\n');
++    return /branch\s*\([^)]*\)\s*is out of range/i.test(text)
++        || (/out of range/i.test(text) && /branch/i.test(text));
++}
++
++function expandingRomBranchHint(options = {}) {
++    const doc = options.doc || DEFAULT_DOC;
++    const fill = options.fillHint || 'the stock ROM fill in the top-level .asm include list';
++    return [
++        '',
++        'Branch out of range (68000 PC-relative limit ~±32 KB):',
++        `  • Do not insert new ROM between existing modules if later code is branched to with .w — put new data after ${fill}.`,
++        '  • From retail code into post-fill code, use jsr (label).l / jmp (label).l.',
++        '  • In new post-fill code, use .l calls or a local rts instead of bsr.w to distant labels.',
++        `  • Read ${doc} (Short jumps — PC-relative branches).`,
++    ].join('\n');
++}
++
++function formatAssemblerFailureDetail(lines, options = {}) {
++    let detail = filterAssemblerErrors(lines).join('\n');
++    if (hasBranchOutOfRange(lines)) detail += expandingRomBranchHint(options);
++    return detail;
++}
++
++module.exports = {
++    DEFAULT_DOC,
++    filterAssemblerErrors,
++    hasBranchOutOfRange,
++    expandingRomBranchHint,
++    formatAssemblerFailureDetail,
++};
+diff --git a/tools/build.js b/tools/build.js
+index 82d08ba..a1fcada 100644
+--- a/tools/build.js
++++ b/tools/build.js
+@@ -13,6 +13,8 @@ const { spawn } = require('child_process');
+ const ROOT = path.join(__dirname, '..');
+ const OUT = path.join(ROOT, 'output');
+ const { romPath } = require('./roms');
++const { formatAssemblerFailureDetail, hasBranchOutOfRange, DEFAULT_DOC } = require('./assembleHints');
++const EXPANDING_ROM_FILL_HINT = 'the 2 MB fill in src/nhl96.asm';
+ const WIN = process.platform === 'win32';
+ 
+ const args = process.argv.slice(2);
+@@ -208,8 +210,11 @@ const logPath = path.join(OUT, 'Build96.log');
+     if (!sum) fail('assemble', `no assembler summary in ${rel(logPath)} (exit ${r.status})`, lines.slice(-20).join('\n'));
+     const errors = Number(sum[1]);
+     if (errors > 0 || !fs.existsSync(bin)) {
+-        const bad = lines.filter((l) => /\.(asm|inc|mac)\(\d+|error|fatal|not recognised|undefined/i.test(l) && !/error\(s\) from/.test(l)).slice(0, 40);
+-        fail('assemble', `${errors} error(s), see ${rel(logPath)}`, bad.join('\n'));
++        const detail = formatAssemblerFailureDetail(lines, { fillHint: EXPANDING_ROM_FILL_HINT });
++        const headline = hasBranchOutOfRange(lines)
++            ? `branch out of range — see ${DEFAULT_DOC}`
++            : `${errors} error(s), see ${rel(logPath)}`;
++        fail('assemble', headline, detail);
+     }
+     step('assemble', `${errors} errors, ${warnings} warnings, ${sum[2]} lines in ${sum[3]}s (CHECKSUM=${checksum}) -> ${rel(bin)}`);
+     detail(r.out);
+-- 
+2.43.0
+
