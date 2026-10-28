@@ -1734,14 +1734,14 @@ PenShotPenalties					;the penalty shot penalty number for penalty number d0 (wor
 
 bfasciicon							;equates to find each char definition for bigfont.map.. Indexed by ascii -
 									;$20 in PrintBigChar (called from printbig)
-;	 - -! " # $ % & -' * +, - -. /
-	dc.b	-76,-73,00,00,00,00,00,-71,00,00,00,00,00,00,-72,00
-;	 0   1  2  3  4  5  6  7  8  9   :  ;  <  =  >  ?
-	dc.b	51,-53,54,56,58,60,62,64,66,68,-71,00,00,00,00,74
-;	@  A  B  C  D  E  F  G	H  -I  J  K  L  M  N  O
-	dc.b	74,00,02,04,06,08,10,12,14,-16,17,19,21,23,25,27
-;	P  Q  R  S  T  U  V  W	X  Y  Z
-	dc.b	29,31,33,35,37,39,41,43,45,47,49
+	;    -sp  -!  "  #  $  %  &  -'  (  )  *  +  ,  -  -.  /
+	dc.b -76,-73,00,00,00,00,00,-71,00,00,00,00,00,00,-72,00
+	;     0  -1  2  3  4  5  6  7  8  9  -:  ;  <  =  >  ?
+	dc.b 51,-53,54,56,58,60,62,64,66,68,-71,00,00,00,00,74
+	;     @  A  B  C  D  E  F  G  H  -I  J  K  L  M  N  O
+	dc.b 74,00,02,04,06,08,10,12,14,-16,17,19,21,23,25,27
+	;     P  Q  R  S  T  U  V  W  X  Y  Z
+	dc.b 29,31,33,35,37,39,41,43,45,47,49
 	dc.b	$FF						;pad
 
 linelist	String	'Sc1'			;text list for line choices. Used by SetLCmode2 and puckfaceoff2
