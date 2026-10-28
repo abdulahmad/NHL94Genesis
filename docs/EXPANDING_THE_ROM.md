@@ -22,7 +22,7 @@ Fix, in order of preference:
 
 ### PC-relative branches (branch out of range)
 
-SNASM’s **Branch (n bytes) is out of range** is the same ~±32 KB limit on **PC-relative** branches: **`bsr.w`**, **`bra.w`**, and **`bxx.w`**, not only the absolute short **`jsr`/`jmp (addr).w`** list above.
+SNASM’s **Branch (n bytes) is out of range** is the same ~±32 KB limit on **PC-relative** branches: **`bsr.w`**, **`bra.w`**, and **`bxx.w`**, not only the absolute short **`jsr`/`jmp (addr).w`** list above. A branch to an earlier label that is too far away reports **Illegal value (-n)** on the branch line instead; `tools/build.js` reads that source line and treats it as the same error when it is a `bra`/`bsr`/`Bcc`/`DBcc`.
 
 Two patterns that break mod builds:
 
