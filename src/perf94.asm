@@ -73,9 +73,14 @@ PerfSampleEndAndDraw
 	sub.l	a0,d0
 	lsr.l	#3,d0
 	move.w	d0,(perf_dma_cnt).w
+	btst	#sfpz,(sflags).w		;no HUD during pause / intermission UI
+	bne.w	PerfSampleDone
+	cmp.l	#VBlank,(VBint).w		;only while the main game vblank handler is active
+	bne.w	PerfSampleDone
 	bsr.w	PerfEnsureInit
 	bsr.w	PerfFormatLines
 	bsr.w	PerfDrawLines
+PerfSampleDone
 	rts
 
 PerfVBlankStart
@@ -214,8 +219,9 @@ PerfPutDec
 
 PerfDrawLines
 	movem.l	d0-d2/a0-a1,-(sp)
+	movem.w	(printx).w,-(sp)		;printx, printy, printm, printa
 	move.w	#-(TXPRI+TXMAP3),(printa).w
-	move.w	#1,(printm).w
+	move.w	#8,(printm).w			;TXMAP3 -> printm (ControlCode_SetMap formula)
 	clr.w	(printx).w
 	clr.w	(printy).w
 	lea	(perf_line1).w,a1
@@ -226,6 +232,7 @@ PerfDrawLines
 	move.w	#2,(printy).w
 	lea	(perf_line3).w,a1
 	jsr	(printsmall).l
+	movem.w	(sp)+,(printx).w
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 
