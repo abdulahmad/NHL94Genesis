@@ -38,7 +38,7 @@ Plays Sega CD audio through [MSU-MD](https://github.com/krikzz/msu-md) on a cart
 
 ## patch/perf-stats
 
-A performance overlay for finding where a frame goes. Three lines on the window plane across the top of the screen, from 90 game frames into each period (after the faceoff fade). Pause, intermission and the title turn it off. What to cut in the gameplay loop, once you have numbers, is `docs/PERFORMANCE.md` (on `main`; nothing in that file changes the ROM).
+A performance overlay for finding where a frame goes. Three lines on the window plane across the top of the screen, from 90 game frames into each period (after the faceoff fade). Pause, intermission and the title turn it off.
 
 - **Docs on the branch:** `docs/perf.md` has what each field means and what the overlay itself costs.
 - **Build:** `npm run build:perf`, giving `output/nhl94-perf.bin`. The code is `src/perf94.asm`, included after the 1 MB fill so retail addresses below `$100000` do not move. Calls into it are `jsr (label).l`.
