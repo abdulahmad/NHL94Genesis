@@ -963,7 +963,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	movea.w	#(mesarea-M68K_RAM),a3
 	move.w	#2,(a3)					;empty string in mesarea, then append the position string and name
 	bsr.w	appendz
-	String	$BF,1,$19
+	String	-(TXPRI+TXMAP1),1,$19
 	adda.w	Teamname(a0),a0			;team name
 	adda.w	(a0),a0
 	movea.l	a0,a1

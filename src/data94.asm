@@ -28,7 +28,7 @@ DrawMatchupBitmaps					;Called from PrintOptions. Draw the VisTeam and
 .opt	move.w	(Opt1team).w,(HomeTeam).w	;league / exhibition setup: the menu teams play
 	move.w	(Opt2team).w,(VisTeam).w	;menu team 2 is the visitors
 .draw	bsr.w	printz				;teams set: print them
-	String	$BF,7,1,0
+	String	-(TXPRI+TXMAP1),7,1,0
 	move.w	(VisTeam).w,d1
 	move.w	d1,d0
 	asl.w	#6,d0					;64 bytes per team
@@ -1170,7 +1170,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	jsr	(print).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-PenShotBigTxt	String	$BF,4,3,'PENALTY SHOT!',$BF,4,5	;printbig String for PenaltyShotBox
+PenShotBigTxt	String	-(TXPRI+TXMAP1),4,3,'PENALTY SHOT!',-(TXPRI+TXMAP1),4,5	;printbig String for PenaltyShotBox
 ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!' ('PP
 									;GOAL!' when DelayedPen bit 0 is set, cleared here), or 'HAT TRICK!' on
 									;the scorer's third goal when the scorer's slot is at least scorergoalies
@@ -1278,11 +1278,11 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bclr	#5,(sflags4).w			;clear the no assists flag
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-GoalBigTxt	String	$BF,$F,3,'GOAL!',$BF,$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
-	String	$BF,$C,3,'HAT TRICK!',$BF,$C,5
-PPGoalBigTxt	String	$BF,$D,3,'PP GOAL!',$BF,$C,5	;The same after DelayedPen bit 0:
+GoalBigTxt	String	-(TXPRI+TXMAP1),$F,3,'GOAL!',-(TXPRI+TXMAP1),$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
+	String	-(TXPRI+TXMAP1),$C,3,'HAT TRICK!',-(TXPRI+TXMAP1),$C,5
+PPGoalBigTxt	String	-(TXPRI+TXMAP1),$D,3,'PP GOAL!',-(TXPRI+TXMAP1),$C,5	;The same after DelayedPen bit 0:
 									;PP GOAL!, then HAT TRICK!
-	String	$BF,$C,3,'HAT TRICK!',$BF,$C,5
+	String	-(TXPRI+TXMAP1),$C,3,'HAT TRICK!',-(TXPRI+TXMAP1),$C,5
 box									;Fill a $13 x 8 rectangle at printz position $FF,$B,2 with char $7FF
 									;(eraser). Called from SetLCmode2
 	bsr.w	printz					;map at the box position
