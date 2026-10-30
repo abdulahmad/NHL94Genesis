@@ -1398,7 +1398,7 @@ fmtune_title_cmdstream				;song event stream (SoundStreamTable)
 	even
 	dc.l	fmtune_title_cmdstream	;loop pointer
 fmtune_eop_cmdstream				;song event stream (SoundStreamTable)
-	incbin	..\Extracted\NHL94\Sound\fmtune_eop_cmdstream94.bin	;song $79: IntermissionStart, StartHL2
+	incbin	..\Extracted\NHL94\Sound\fmtune_eop_cmdstream94.bin	;song $79: PeriodOver_sp, StartHL2
 	even
 	dc.l	fmtune_eop_cmdstream+4	;loop pointer (past the first event)
 fmtune_scouting_cmdstream			;song event stream (SoundStreamTable)

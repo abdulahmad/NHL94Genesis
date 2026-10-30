@@ -795,7 +795,7 @@ OptionNames							;Option names; the last entry is an empty String (dc.w 4,0)
 setoptions							;options screen display: build the game setup screen only: vblank vram
 									;maps, the TeamBitmaps+8 tiles (LoadSetupTiles), framer, small font and
 									;setup font tiles, the screen and menu bitmaps, the logo box tiles and
-									;defaultsprites2. Called from GameSetUp
+									;defaultsprites_0. Called from GameSetUp
 	move.l	#VBlank_SetOptions,(VBint).w
 	move	#$2500,sr				;interrupts on
 	bclr	#dfok,(disflags).w		;#dfok - graphics are ready for transfer (clr = not ready)
@@ -882,7 +882,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	movea.l	#LogoBoxMap+8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03414567,$89ABCDEF		;remap table (/ or.l, a word dropped)
-	jsr	(defaultsprites2).l
+	jsr	(defaultsprites_0).l
 	move.w	#$28,(SortCords+OldXpos).w
 	move.w	#$28,(SortCords+(6*SCstruct)+OldXpos).w
 	st	(tmstruct).w				;no home team block yet

@@ -1185,9 +1185,9 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bset	#sf2drec,(sflags2).w	;record the replay
 .0									;replay recording set for a penalty shot
 	movea.w	#(tmstruct-M68K_RAM),a2
-	jsr	(lcfound2).l				;close lc box
+	jsr	(lcfound_close).l				;close lc box
 	adda.w	#tmsize,a2
-	jsr	(lcfound2).l				;close its box
+	jsr	(lcfound_close).l				;close its box
 	movea.w	#(ChkCnt-M68K_RAM),a4	;+ ScoreSumbytes = last goal entry
 	adda.w	(ScoreSumbytes).w,a4
 	bsr.w	printz					;map at the box position
@@ -1528,7 +1528,7 @@ crash								;printbig d1 then d0 as hex, set the vdp up, copy 8 longs from the
 ;	Menu item lists: two printsmall control Strings, then per item a String and the handler address
 ;	(dc.l). Item 0 leaves the menu (its handler is rtss2). String $FF ends the list.
 
-cd0									;$fftt = frame/time for various levels of crowd
+updatecrowdf_cd0									;$fftt = frame/time for various levels of crowd
 									;excitement. Used by updatecrowdf.
 									;Used by updatecrowdf, indexed by crowd level and Crowdstep
 	dc.w	$010c,$020c,$030c,$040c,$050c,$0a0c,$090c,$080c
@@ -1804,16 +1804,16 @@ priolist	dc.b	0,1,2,4,3,5,6	;positions in order of importance. Used by
 									;SetPlList, releasepl and getlinee
 	dc.b	$FF						;pad
 
-PlayoffTreeSetup					;Playoff tree layout by gamelevel, one column per round. Used by
+PlayoffScreen_setup					;Playoff tree layout by gamelevel, one column per round. Used by
 									;PlayoffScreen
-	dc.w	.l0-PlayoffTreeSetup
-	dc.w	.l1-PlayoffTreeSetup
-	dc.w	.l2-PlayoffTreeSetup
-	dc.w	.l3-PlayoffTreeSetup
-	dc.w	.l4-PlayoffTreeSetup
+	dc.w	.l0-PlayoffScreen_setup
+	dc.w	.l1-PlayoffScreen_setup
+	dc.w	.l2-PlayoffScreen_setup
+	dc.w	.l3-PlayoffScreen_setup
+	dc.w	.l4-PlayoffScreen_setup
 
-	;tree graphics for level 0: teams-1 then x,y per team (DrawTeamBlocks), arrows-1 then x,d0 per arrow
-	;(DrawTreeArrow), scores-1 then x,y per score (PrintSeriesScore, negative: none)
+	;tree graphics for level 0: teams-1 then x,y per team (PlayoffScreen_doteam), arrows-1 then x,d0 per arrow
+	;(PlayoffScreen_doarrow), scores-1 then x,y per score (PlayoffScreen_doscores, negative: none)
 .l0	dc.b	16-1					;level 0: 16 team blocks, then arrows and series scores
 	dc.b	46,2,46,5,46,8,46,11,46,14,46,17,46,20,46,23
 	dc.b	71,2,71,5,71,8,71,11,71,14,71,17,71,20,71,23
@@ -1959,7 +1959,7 @@ PauseMenuItems						;pause menu item list (PauseMode)
 	dc.l	ManualGoalieMenu
 	String	$FF
 
-PauseText							;Pause menu item list (PauseMode)
+Pausemode_mlist							;Pause menu item list (PauseMode)
 	String	$FE,5
 	String	$FE,4
 	String	'   Resume Game    '
@@ -1967,7 +1967,7 @@ PauseText							;Pause menu item list (PauseMode)
 	String	'  Instant Replay  '
 	dc.l	ReplayMode
 	String	'  Change Goalie   '
-	dc.l	SelectGoalieMenu
+	dc.l	Pausemode_go
 	String	'    Edit Lines    '
 	dc.l	LineEditor
 	String	'    Game Stats    '
@@ -2004,7 +2004,7 @@ PauseText2							;Pause menu item list without Timeout (PauseMode)
 	String	'  Instant Replay  '
 	dc.l	ReplayMode
 	String	'  Change Goalie   '
-	dc.l	SelectGoalieMenu
+	dc.l	Pausemode_go
 	String	'    Edit Lines    '
 	dc.l	LineEditor
 	String	'    Game Stats    '
@@ -2052,7 +2052,7 @@ StartGameText						;Intermission menu for gsp 0
 	String	'    Start Game    '
 	dc.l	rtss2
 	String	'  Change Goalie   '
-	dc.l	SelectGoalieMenu
+	dc.l	Pausemode_go
 	String	'    Edit Lines    '
 	dc.l	LineEditor
 	String	'   Team Roster    '
@@ -2071,7 +2071,7 @@ StartGameTextPO						;Intermission menu for gsp 0 in the playoffs
 	String	'    Start Game    '
 	dc.l	rtss2
 	String	'  Change Goalie   '
-	dc.l	SelectGoalieMenu
+	dc.l	Pausemode_go
 	String	'    Edit Lines    '
 	dc.l	LineEditor
 	String	'   Team Roster    '
@@ -2106,7 +2106,7 @@ IntermissionText					;Intermission menu for gsp 1-3
 	String	'   Crowd Meter    '
 	dc.l	CrowdMeterScreen
 	String	'  Change Goalie   '
-	dc.l	SelectGoalieMenu
+	dc.l	Pausemode_go
 	String	'    Edit Lines    '
 	dc.l	LineEditor
 	String	'   Player Cards   '

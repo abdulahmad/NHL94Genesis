@@ -765,7 +765,7 @@ ClearPenaltyBuffer					;Clear PenBuf. Called from clockcont and PenGoalStuff
 	rts
 updatepentime						;update the time remaining on all penalized players, once a second. Sets
 									;sflags3 bit 6 on that tick, then updatePPTeamTime. Falls into
-									;ProcessPenaltyList for team 2
+									;updatepentime_ut for team 2
 	bclr	#sf3icetime,(sflags3).w	;clear last second's tick flag
 	btst	#gmclock,(gmode).w		;gmclock
 	bne.w	rtss2
@@ -776,9 +776,9 @@ updatepentime						;update the time remaining on all penalized players, once a s
 	bsr.w	chkatop					;attack time stat
 	jsr	(updatePPTeamTime).l
 	movea.w	#(tmstruct-M68K_RAM),a2	;team 1, then fall through for team 2
-	bsr.w	ProcessPenaltyList
+	bsr.w	updatepentime_ut
 	adda.w	#tmsize,a2				;tmsize
-ProcessPenaltyList					;a2 = team. Walks the penalty box list (tmboxlist): the first two players
+updatepentime_ut					;a2 = team. Walks the penalty box list (tmboxlist): the first two players
 									;without a coincidental penalty count down one second and the rest wait.
 									;Beeps when the first served time gets to 5 or less and releases the
 									;player at 0. Coincidental penalties count down on their own
@@ -836,7 +836,7 @@ ProcessPenaltyList					;a2 = team. Walks the penalty box list (tmboxlist): the f
 	clr.w	tmpdst(a2,d0.w)			;falls into RemovePlayerFromList
 RemovePlayerFromList				;Remove the entry before a0 from a penalty box list by shifting the rest
 									;down (list ends with a negative byte). Return a0 = removed slot. Called
-									;from PenGoalStuff, ProcessPenaltyList
+									;from PenGoalStuff, updatepentime_ut
 	moveq	#-1,d2
 .shift								;loop
 	addq.w	#1,d2
@@ -863,7 +863,7 @@ chkatop								;attack time of possession stat update. Called once a second from
 	addq.w	#1,tmATOP(a2,d1.w)		;attack time
 	rts
 releasepl							;player's penalty time is up so let him out (if appropriate). a2 = team,
-									;d0 = player*2. Called from ProcessPenaltyList
+									;d0 = player*2. Called from updatepentime_ut
 	movem.l	d0-d3/a0-a3,-(sp)
 	movea.w	tmsort(a2),a3			;tmsort
 	suba.w	#SCstruct,a3
@@ -1041,7 +1041,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 									;when gmode2 bit 1 is set; the horizontal rink uses PerLabels2 (name 4
 									;when bit 0 is set).
 									;sflags5 bit 7 sets crowdnoisedelay = $78. Called from USBoard, Pausemode,
-									;lcfound2 and others
+									;lcfound_close and others
 	movem.l	d0-d2/a0-a3,-(sp)
 	btst	#sfhor,(sflags).w		;sfhor
 	bne.w	.sbscreen
@@ -1076,11 +1076,11 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	bsr.w	printz
 	String	-(TXPRI+TXMAP1),$18,$1A	;home team on the lower row
 	movea.w	#(tmstruct-M68K_RAM),a2
-	bsr.w	PrintTeamNameAndScore
+	bsr.w	printscores1_ps
 	bsr.w	printz
 	String	-(TXPRI+TXMAP1),$18,$18
 	adda.w	#tmsize,a2				;tmsize
-	bsr.w	PrintTeamNameAndScore
+	bsr.w	printscores1_ps
 .ex									;exit: restore the registers
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
@@ -1109,7 +1109,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	move.w	#$2C,d0					;visitor logo data offset
 	bsr.w	PrintTeamLogoAndScore
 	bra.s	.ex
-PrintTeamNameAndScore				;Print the team name of team a2 at printx/printy, then its score as 2
+printscores1_ps				;Print the team name of team a2 at printx/printy, then its score as 2
 									;digits at x $1C. Called twice from printscores1
 	movea.l	tmdata(a2),a1			;tmdata
 	adda.w	Teamname(a1),a1
@@ -1474,8 +1474,8 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	movea.l	#ShootoutIntermissionMenu,a0
 .2									;menu chosen (shootout menu in a shootout)
 	bset	#sfpz,(sflags).w		;sfpz
-	movea.l	#SetupPauseScreen,a1
-	jsr	(InitMenuState).w
+	movea.l	#Pausemode_pall,a1
+	jsr	(Pausemode_top).w
 	bsr.w	GetShifter				;d1 = highest game index
 	move.w	d1,(TickerNum).w		;ticker starts from the last game
 .top								;loop
@@ -1893,7 +1893,7 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	bsr.w	setplayercolors
 	bsr.w	SetHor					;back to the intermission screen
 	bsr.w	setvideo
-	jsr	(SetupPauseScreen).w		;pause menu screen
+	jsr	(Pausemode_pall).w		;pause menu screen
 	jsr	(DrawMenuScreen).w
 	move.w	#$18,(palcount).w		;24
 	move.w	#SngEOP,-(sp)			;song $79

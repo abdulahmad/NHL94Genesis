@@ -77,7 +77,7 @@ BigFontMap							;the big font (PrintBigChar)
 	even
 ;BigFontMap+8: the tiles (setupice, ScoutingReport, BuildCardPlayerList)
 SmallFontMap						;same size: the small font (print, printsmall,
-									;showclock, RenderSmallFontChar)
+									;showclock, uppads_pd)
 	incbin	..\Extracted\NHL94\Graphics\SmallFont.map.jim
 	even
 ;SmallFontMap+8: the tiles (AddSmallFont, setupice, ScoutingReport, setoptions)
@@ -85,7 +85,7 @@ EnergyBarMap						;same size: the line energy bar frames (linebar)
 	incbin	..\Extracted\NHL94\Graphics\EnergyBar.map.jim
 	even
 ;EnergyBarMap+8: the tiles (setupice, ReloadEnergyBarTiles)
-Teamblocksmap						;the team blocks (setupTeamBlocksMap, DrawTeamBlocks, dotb)
+Teamblocksmap						;the team blocks (setupTeamBlocksMap, PlayoffScreen_doteam, dotb)
 	incbin	..\Extracted\NHL94\Graphics\TeamBlocks.map.jim
 	even
 ;Teamblocksmap+8: the tiles (AddTeamBlock)
@@ -104,7 +104,7 @@ EASNmap								;the EASN logo (EASNLogo)
 	incbin	..\Extracted\NHL94\Graphics\EASN.map.jim
 	even
 ;EASNmap+8: the tiles (setupEASNmap)
-Arrowsmap							;same size: the playoff tree arrows (DrawTreeArrow)
+Arrowsmap							;same size: the playoff tree arrows (PlayoffScreen_doarrow)
 	incbin	..\Extracted\NHL94\Graphics\Arrows.map.jim
 	even
 ;Arrowsmap+8: the tiles (PlayoffScreen)

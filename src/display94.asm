@@ -788,7 +788,7 @@ uppads								;update the gloves object and the 6 pad objects, and queue new pad
 QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code: bits 7-4
 									;and 3-0 are digits ($F = blank), bits 10-8 index ButtonLabelCharTable
 									;(none while sflags7 bit 7 is set).
-									;a0 = pad object, a5 = dma list. Falls into RenderSmallFontChar for the
+									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
 	lea	ButtonLabelCharTable(pc),a4
 	clr.w	2(a0)					;x offset (setffo adds it to the sprites)
@@ -801,7 +801,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 .hi									;tens digit (or blank)
 	addi.w	#$30,d2					;'0' (tens digit of the label, or blank)
 	clr.w	d0						;char slot 0
-	bsr.w	RenderSmallFontChar
+	bsr.w	uppads_pd
 	move.w	d1,d2
 	andi.w	#$F,d2
 	cmp.w	#$F,d2
@@ -810,7 +810,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 .lo									;ones digit (or blank)
 	addi.w	#$30,d2					;'0' (ones digit of the label, or blank)
 	moveq	#1,d0					;char slot 1
-	bsr.w	RenderSmallFontChar
+	bsr.w	uppads_pd
 	move.w	d1,d2
 	btst	#7,(sflags7).w
 	beq.w	.0
@@ -823,7 +823,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 .1									;position character
 	move.b	0(a4,d2.w),d2
 	moveq	#2,d0
-RenderSmallFontChar					;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
+uppads_pd					;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
 									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
 	movea.l	#SmallFontMap,a3
 	adda.l	jimdata(a3),a3
@@ -1039,7 +1039,7 @@ updatesound							;move the crowd noise volume (psg noise channel, asv) toward C
 	ori.b	#$F0,d0					;noise channel attenuation
 	move.b	d0,(Asound).l
 	rts
-KillCrowd							;silence the crowd noise (psg). Called from Begin, SetupPauseScreen,
+KillCrowd							;silence the crowd noise (psg). Called from Begin, Pausemode_pall,
 									;StartHL2, ...
 	move.b	#$E7,(Asound).l
 	move.b	#$DF,(Asound).l

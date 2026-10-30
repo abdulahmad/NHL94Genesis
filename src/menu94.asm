@@ -1,7 +1,7 @@
 ;	Menu engine. This file runs the scrolling menu of the pause screen, including the Manual and
 ;	Auto Goalie item, and holds a few helpers for drawing team blocks and waiting for the screen.
 
-InitMenuState						;Start a menu: a0 = item list, a1 = screen draw routine; selection and
+Pausemode_top						;Start a menu: a0 = item list, a1 = screen draw routine; selection and
 									;first shown item 0. Falls into
 									;DrawMenuScreen. Called from PauseMode, and the stats code
 	move.l	a0,(menulist).w			;item list
@@ -18,7 +18,7 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 	moveq	#$16,d0					;22 wide
 	moveq	#6,d1					;6 high
 	jsr	(Framer).l
-	bsr.w	UpdateMenuSelection
+	bsr.w	Pausemode_Pmenu
 	move.w	#$18,(palcount).w		;fade in
 	rts
 SetMenuPrintX						;printx = the left edge of the menu box: 5 in 32 column mode, else 9
@@ -37,12 +37,12 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	btst	#dbut,d1				;down?
 	beq.w	.up
 	addq.w	#1,(menuitem).w			;next lower item
-	bra.w	UpdateMenuSelection
+	bra.w	Pausemode_Pmenu
 .up									;dbut clear
 	btst	#ubut,d1				;up?
 	beq.w	.sel
 	subq.w	#1,(menuitem).w			;next higher item
-	bra.w	UpdateMenuSelection
+	bra.w	Pausemode_Pmenu
 .sel								;ubut clear
 	btst	#cbut,d1				;C?
 	beq.w	.flip					;nothing: Z set, flipped to ne
@@ -68,7 +68,7 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 .flip								;sbut set or cbut clear
 	eori	#4,ccr					;invert Z
 	rts
-UpdateMenuSelection					;Clamp the selection, scroll the 4 rows shown and print the menu:
+Pausemode_Pmenu					;Clamp the selection, scroll the 4 rows shown and print the menu:
 									;title, the items (PrintMenuItem), the selected item marked, { / } when
 									;there are items above / below.
 									;Called from DrawMenuScreen and
@@ -152,7 +152,7 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 									;'x' is the goalie option: it prints Manual Goalie
 									;(.manual) when the pause team word is 0, else Auto Goalie (.auto):
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
-									;UpdateMenuSelection
+									;Pausemode_Pmenu
 	cmpi.b	#$78,2(a1)				;first char 'x'
 	bne.w	.plain
 	move.l	a1,-(sp)

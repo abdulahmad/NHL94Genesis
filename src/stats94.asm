@@ -87,7 +87,7 @@ UpdateVertScrollReg					;VSRAM word 1 = VertLineScrolling - $30
 	rts
 DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current game gamenum,
 									;not one with flag bit 1 or 2 set)
-									;the two teams and scores (PrintGameInfo) and the period (PerLabels)
+									;the two teams and scores (NewTicker3_tn) and the period (PerLabels)
 	cmp.w	(gamenum).w,d3
 	beq.w	rtss8					;the current game is not listed
 	moveq	#$10,d0					;16 bytes a game
@@ -100,11 +100,11 @@ DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current 
 	bne.w	rtss8					;(flag bit 2: game not shown)
 	move.w	gst2(a0),d0				;first team / score
 	move.w	gss2(a0),d1
-	bsr.w	PrintGameInfo			;print it
+	bsr.w	NewTicker3_tn			;print it
 	addq.w	#1,(printy).w
 	move.w	(a0),d0					;second team / score
 	move.w	gss1(a0),d1
-	bsr.w	PrintGameInfo			;print it
+	bsr.w	NewTicker3_tn			;print it
 	move.w	gsper(a0),d0			;period, 1 based
 	subq.w	#1,d0
 	movea.l	#PerLabels,a1			;period names
@@ -112,7 +112,7 @@ DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current 
 	jsr	(Fprintsmall).l				;print the period
 	addq.w	#2,(printy).w			;two rows down
 	rts
-PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
+NewTicker3_tn						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
 	movea.w	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
@@ -531,7 +531,7 @@ LineEditorExit						;Line editor: start pressed. Run the exit menu
 .0									;menu with or without the load option
 	jsr	(printsmallz).l				;small font at the menu position
 	String	CC_SetMap,2
-	bsr.w	InitMenuState
+	bsr.w	Pausemode_top
 .loop								;each frame: run the exit menu
 	bsr.w	vcountwait				;wait for the next frame
 	bsr.w	getpzjoy				;read the pads
@@ -1795,7 +1795,7 @@ CrowdMeterScreen					;"Crowd Meter": current, average and peak level (PrintCrowd
 	bsr.w	PutTeamBlock
 	bsr.w	PrintCrowdMeter			;the three level rows
 .loop								;loop
-	bsr.w	WaitVSyncAndReadInput	;wait for a new button press
+	bsr.w	Pausemode_rjoy	;wait for a new button press
 	btst	#7,d1					;start?
 	bne.w	ExitStatsScreen
 	bra.s	.loop
@@ -2008,8 +2008,8 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	jsr	(RestoreTeamEnergy).l
 	moveq	#$78,d0
 	bra.w	waitx
-SelectGoalieMenu					;Pick team a2's goalie (or no goalie) from a
-									;list (DrawGoalieSelectList) with up / down, C or start; sets tmgoalie and
+Pausemode_go					;Pick team a2's goalie (or no goalie) from a
+									;list (Pausemode_gnum) with up / down, C or start; sets tmgoalie and
 									;SetPersonel. Menu item handler
 	move.w	(menuitem).w,-(sp)		;save the menu state
 	move.w	(menuitem+2).w,-(sp)
@@ -2028,9 +2028,9 @@ SelectGoalieMenu					;Pick team a2's goalie (or no goalie) from a
 	addq.w	#1,d0
 	move.w	d0,(menuitem).w
 .loop								;loop
-	bsr.w	DrawGoalieSelectList
+	bsr.w	Pausemode_gnum
 .pad								;(not branched to)
-	bsr.w	WaitVSyncAndReadInput	;wait for a press
+	bsr.w	Pausemode_rjoy	;wait for a press
 	btst	#7,d1
 	bne.w	.done					;Start confirms
 	btst	#5,d1
@@ -2062,7 +2062,7 @@ SelectGoalieMenu					;Pick team a2's goalie (or no goalie) from a
 	move.w	(sp)+,(menuitem+2).w	;restore the pause menu state
 	move.w	(sp)+,(menuitem).w
 	rts
-DrawGoalieSelectList				;Draw the goalie list, row menuitem highlighted, each goalie with his two
+Pausemode_gnum				;Draw the goalie list, row menuitem highlighted, each goalie with his two
 									;digit number
 	move.w	#$D,(printy).w
 	move.w	(menuitem+2).w,d1
@@ -2161,7 +2161,7 @@ GetPlayerCount						;d0 = players on team a2 (records until a length word of 2)
 	bne.s	.loop
 	movem.l	(sp)+,a0
 	rts
-WaitVSyncAndReadInput				;Wait for Vcount to change and for a new button press (d1)
+Pausemode_rjoy				;Wait for Vcount to change and for a new button press (d1)
 	move.w	(Vcount).w,d1			;current frame
 .wait								;loop
 	cmp.w	(Vcount).w,d1			;has Vcount changed?
@@ -2169,5 +2169,5 @@ WaitVSyncAndReadInput				;Wait for Vcount to change and for a new button press (
 	bsr.w	getpzjoy				;d1 = new presses, d3 = held
 	bsr.w	nodiag					;drop diagonal presses
 	tst.b	d1
-	beq.s	WaitVSyncAndReadInput	;nothing new pressed: wait again
+	beq.s	Pausemode_rjoy	;nothing new pressed: wait again
 	rts
