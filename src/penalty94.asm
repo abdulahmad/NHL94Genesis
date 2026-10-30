@@ -312,7 +312,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	bset	#$C,d2					;keep byte bit 4 (word bit 12) of an old penalty time
 .3									;old penalty bit kept when needed
 	move.w	d2,tmpdst(a2,d0.w)		;store the penalty time (seconds) for this player
-	andi.w	#$EFFF,d2				;drop bit 12 for the comparison below
+.coinsearch	andi.w	#$EFFF,d2				;drop bit 12 for the comparison below
 	moveq	#(maxros-1)*2+2,d1		;(MaxRos-1)*2+2
 .ctop								;loop
 	subq.w	#2,d1					;same time on the other team
@@ -349,9 +349,9 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	bra.w	.ex
 .4									;all entries done: coincidental check for both teams
 	movea.w	#(tmstruct-M68K_RAM),a2	;home team struct
-	bsr.w	coinsearch
+	bsr.w	InProgress_ap
 	adda.w	#tmsize,a2				;tmsize
-	bsr.w	coinsearch
+	bsr.w	InProgress_ap
 	bclr	#gmpen,(gmode).w		;gmpen
 	movea.w	#(puckx-M68K_RAM),a3	;a3 = puck object
 	bclr	#6,(BA_PS_flags).w
@@ -364,7 +364,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 .ex									;exit: restore the registers
 	movem.l	(sp)+,d0/a0-a3
 	rts
-coinsearch							;a2 = team. Clears tmpdst bit 5, counts players kept off the ice by
+InProgress_ap							;a2 = team. Clears tmpdst bit 5, counts players kept off the ice by
 									;penalties (coincidental and bit 4
 									;times do not count, at most 2) and sets tmap. Called twice from
 									;InProgress
