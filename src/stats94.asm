@@ -143,9 +143,9 @@ DrawScrollArrows					;ShowScores up / down arrows (ScrollArrowTable). Saves d0-d
 	movem.l	(sp)+,d0-d1/a1
 	rts
 ScrollArrowTable					;DrawScrollArrows Strings: none, up, down (only 3 entries)
-	String	' ',$FB,$FF,$FA,$13,' ',$F9
-	String	'{',$FB,$FF,$FA,$13,' ',$F9
-	String	' ',$FB,$FF,$FA,$13,'}',$F9
+	String	' ',CC_AddX,$FF,CC_AddY,$13,' ',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$13,' ',CC_SetFont
+	String	' ',CC_AddX,$FF,CC_AddY,$13,'}',CC_SetFont
 LineEditor							;"Line Editor" screen for team a2: line slot cursor (TestList), C picks a
 									;player for the slot from the list, start runs the exit menu
 									;(LineEditorExit). OptLine (manual lines off) limits the cursor. Menu item
@@ -448,7 +448,7 @@ ClearLineArea						;Line editor: erase the line area and print the
 	move.w	(LineIconPosTable-6).l,(printx).l	;OptLine: use the entry before
 .0									;entry chosen: print the position header
 	jsr	(printsmallz).l
-	String	$FE,$04,$FB,$FD,$FA,$02,'LD',$FB,$FE,$FA,$02,'RD',$FB,$FE,$FA,$02,'LW',$FB,$FE,$FA,$02,'C ',$FB,$FE,$FA,$02,'RW'
+	String	CC_SetAttribute,$04,CC_AddX,$FD,CC_AddY,$02,'LD',CC_AddX,$FE,CC_AddY,$02,'RD',CC_AddX,$FE,CC_AddY,$02,'LW',CC_AddX,$FE,CC_AddY,$02,'C ',CC_AddX,$FE,CC_AddY,$02,'RW'
 	rts
 DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Editor" title and
 									;the team logo map (PutTeamBlock)
@@ -677,7 +677,7 @@ TeamRosterScreen					;"Team Roster" screen for team a2: pages of players (Displa
 	bsr.w	PutTeamBlock
 .header								;(not branched to)
 	jsr	(printsmallz).l
-	String	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9
+	String	CC_SetMapAndPosition,$06,$03,$02,$0C,CC_SetFont,$01,'Pos.^Player',CC_SetX,$1E,CC_SetY,$0C,'Rating',CC_SetX,$0C,CC_SetY,$1A,'A^-^Switch^Teams',CC_SetFont
 	jsr	(printz).l
 	String	CC_Font3Pri,1,8
 	moveq	#$12,d0
@@ -1353,10 +1353,10 @@ DrawScrollArrowsPenalty				;Summary screen up / down arrows (ScrollArrowTbl). Sa
 	movem.l	(sp)+,d0-d1/a1
 	rts
 ScrollArrowTbl						;None, up, down, both
-	String	' ',$FB,$FF,$FA,$11,' ',$F9
-	String	'{',$FB,$FF,$FA,$11,' ',$F9
-	String	' ',$FB,$FF,$FA,$11,'}',$F9
-	String	'{',$FB,$FF,$FA,$11,'}',$F9
+	String	' ',CC_AddX,$FF,CC_AddY,$11,' ',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$11,' ',CC_SetFont
+	String	' ',CC_AddX,$FF,CC_AddY,$11,'}',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$11,'}',CC_SetFont
 PlayoffStatsScreen					;"Playoff Stats": the playoff totals (ReadTeamStats) of the potreeteam
 									;team as PlayerStatsList with d7 = 1. Called and the menu lists
 	movem.l	a2,-(sp)
@@ -1772,10 +1772,10 @@ DrawStatsListArrows					;Stats screen up / down arrows (ScrollArrowTbl2). Saves 
 	movem.l	(sp)+,d0-d1/a1
 	rts
 ScrollArrowTbl2						;None, up, down, both
-	String	' ',$FB,$FF,$FA,$C,' ',$F9
-	String	'{',$FB,$FF,$FA,$C,' ',$F9
-	String	' ',$FB,$FF,$FA,$C,'}',$F9
-	String	'{',$FB,$FF,$FA,$C,'}',$F9
+	String	' ',CC_AddX,$FF,CC_AddY,$C,' ',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$C,' ',CC_SetFont
+	String	' ',CC_AddX,$FF,CC_AddY,$C,'}',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$C,'}',CC_SetFont
 CrowdMeterScreen					;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
 	moveq	#9,d0					;bitmap row 9
