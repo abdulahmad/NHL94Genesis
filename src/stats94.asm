@@ -450,13 +450,13 @@ ClearLineArea						;Line editor: erase the line area and print the
 	jsr	(printsmallz).l
 	String	CC_SetAttribute,$04,CC_AddX,$FD,CC_AddY,$02,'LD',CC_AddX,$FE,CC_AddY,$02,'RD',CC_AddX,$FE,CC_AddY,$02,'LW',CC_AddX,$FE,CC_AddY,$02,'C ',CC_AddX,$FE,CC_AddY,$02,'RW'
 	rts
-DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Editor" title and
+DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Line Editor" title and
 									;the team logo map (PutTeamBlock)
 	bsr.w	ClearLineEditorTop
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
 	String	CC_Font3,0,0
-	movea.l	#ScoutMap,a1
+	movea.l	#EASportsBGMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2				;a2 saved/restored around this block
 	clr.w	d0
@@ -1877,7 +1877,7 @@ PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
 	String	' dB'
 	rts
 SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the framer and
-									;small font tiles, the background bitmap (ScoutMap) from row d0, d1 rows
+									;small font tiles, the background bitmap (EASportsBGMap) from row d0, d1 rows
 									;high
 	movem.l	d0-d1/a2,-(sp)			;keep d0/d1 (first/last row) and a2 (team) for the caller
 	bsr.w	forceblack
@@ -1905,7 +1905,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	jsr	(AddSmallFont).l
 	bsr.w	printz
 	String	CC_Font3Pri,0,0
-	movea.l	#ScoutMap,a1
+	movea.l	#EASportsBGMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
 	clr.w	d0						;start x/y 0 in the map
@@ -1919,7 +1919,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	String	CC_Font3,0,0
 	movem.l	(sp),d0-d1/a2
 	add.w	d0,(printy).w
-	movea.l	#ScoutMap,a0
+	movea.l	#EASportsBGMap,a0
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data

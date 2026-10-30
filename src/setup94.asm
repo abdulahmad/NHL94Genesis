@@ -853,7 +853,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	bsr.w	DecompressGraphicsPlain	;arrow tiles at ExtraChars
 	bsr.w	printz					;map 2 (palette 3) at 0,0
 	String	CC_Font2Pal3,0,0
-	movea.l	#ScoutMap,a0			;playoff background map
+	movea.l	#EASportsBGMap,a0			;playoff background map
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = map data
@@ -864,7 +864,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	mapheight(a1),d3
 	moveq	#3,d5
 	bsr.w	dobitmap
-	movea.l	#PlayoffSprite,a1
+	movea.l	#StanleyCupSprite,a1
 	lea	jimtilecount(a1),a2
 	adda.l	(a1),a1
 	moveq	#7,d0					;8 longs

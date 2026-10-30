@@ -116,7 +116,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	dc.l	$05422561,$89ABCDEF		;remap table
 	jsr	(printz).l
 	String	CC_Font2,0,0
-	movea.l	#ScoutMap,a0			;the jsr, the string and this (ori.b x4)
+	movea.l	#EASportsBGMap,a0			;the jsr, the string and this (ori.b x4)
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -160,10 +160,10 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	mapheight(a1),d3
 	moveq	#$C,d5					;color fam 3-4
 	jsr	(dobitmap).l
-	movea.l	#HotIconMap+8,a2
+	movea.l	#HotMap+8,a2
 	move.w	d4,(hoticonchars).w		;tiles: 1st vram char
 	jsr	(DecompressGraphicsPlain).l
-	movea.l	#ColdIconMap+8,a2
+	movea.l	#ColdMap+8,a2
 	move.w	d4,(coldiconchars).w	;tiles: 1st vram char
 	jsr	(DecompressGraphicsPlain).l
 	clr.w	(matchup).w				;matchup 0: the teams

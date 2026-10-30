@@ -1588,7 +1588,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	move.w	(sp)+,d4
 	jsr	(printz).l					;map 2 (priority) at 1,1
 	String	CC_Font2Pri,1,1
-	movea.l	#CornerLogoMap,a0
+	movea.l	#NHLLogoMap,a0
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data
@@ -1601,7 +1601,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	jsr	(dobitmap).l				;draw the corner logo
 	jsr	(printz).l					;map 2 (priority) at column 33, row 1
 	String	CC_Font2Pri,'!',1
-	movea.l	#ArenaGfxBank,a0		;arena logo bank
+	movea.l	#NHLPALogoMap,a0		;arena logo bank
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data

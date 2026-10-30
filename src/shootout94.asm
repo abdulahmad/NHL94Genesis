@@ -460,7 +460,7 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
 	String	CC_Font3,0,0
-	movea.l	#ScoutMap,a1
+	movea.l	#EASportsBGMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
 	clr.w	d0

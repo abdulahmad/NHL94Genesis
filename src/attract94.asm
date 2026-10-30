@@ -20,7 +20,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	bsr.w	setVram_0
 	bsr.w	printz					;map 2 at 0,0
 	String	CC_Font2,0,0,0
-	movea.l	#EASportsMap,a2			;screen map
+	movea.l	#EASportsSplashMap,a2			;screen map
 	movea.l	a2,a0					;a0 = map header
 	movea.l	a2,a1					;a1 = map header
 	adda.l	(a2)+,a0				;a0 = tile data

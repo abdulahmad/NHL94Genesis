@@ -42,7 +42,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(setupIceRinkPal).l
 	jsr	(printz).l
 	String	CC_Font2,0,0
-	movea.l	#ScoutMap,a0			;the background picture
+	movea.l	#EASportsBGMap,a0			;the background picture
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data
@@ -869,7 +869,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	jsr	(SetupScreen).l
 	jsr	(printz).l
 	String	CC_Font2Pri,1,1
-	movea.l	#CornerLogoMap,a0
+	movea.l	#NHLLogoMap,a0
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data
@@ -882,7 +882,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	jsr	(dobitmap).l
 	jsr	(printz).l
 	String	CC_Font2Pri,'!',1
-	movea.l	#ArenaGfxBank,a0		;arena logo bank
+	movea.l	#NHLPALogoMap,a0		;arena logo bank
 	movea.l	a0,a1					;a1 = map header
 .0									;(not branched to)
 	movea.l	a0,a2
