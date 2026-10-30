@@ -4,7 +4,8 @@
 
 
 > **Superseded (segment stubs removed).** The `src/stubinc/<name>_stub.asm` files, `tools/segments.json` and the stub org
-> builds described below no longer exist. Every build is the full ROM; `npm run seg -- <name>` (`node tools/build.js --seg
+> builds described below no longer exist. `src/stubinc/equals.inc` and `ports.inc` were later folded into `src/ram94.asm`.
+> Every build is the full ROM; `npm run seg -- <name>` (`node tools/build.js --seg
 > <name>` or `--all`) builds it and compares the segment's address range, taken from the build listing (`tools/verifySegment.js`).
 > The history below still describes how each segment was first matched.
 

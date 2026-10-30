@@ -8,7 +8,7 @@
 - `src/nhl94.asm` fills to 1MB. Includes placed after that fill start at $100000, so new data does not move any retail code.
 - `src/shortcalls.inc` (included last, emits nothing) stops the build if a routine the retail code calls with a short `jsr`/`jmp (x).w` moves past $7FFF. `tools/build.js` then stops at the assemble step and prints the routine, the files that call it, and the fix below.
 - If SNASM reports **Branch (… bytes) is out of range**, `tools/build.js` points here too (PC-relative `bsr.w` / `bra.w` / `bxx.w`, not only the absolute short calls above).
-- `NumTeams` / `NumPlayoffTeams` (`src/stubinc/equals.inc`) drive the option limits, the random team range and the playoff clamp, and every per-team table checks its length while assembling.
+- `NumTeams` / `NumPlayoffTeams` (`src/ram94.asm`) drive the option limits, the random team range and the playoff clamp, and every per-team table checks its length while assembling.
 - `CHECKSUM=0` skips the boot check (`build:dev`). There is a single revision.
 
 ## Short jumps
@@ -41,7 +41,7 @@ The save chip sits at $200001-$203FFF (odd bytes). A ROM up to 2MB ends at $1FFF
 
 ## Save RAM layout
 
-The save layout is plain equates at the retail addresses (`src/stubinc/equals.inc`): crowd records `CrowdRecBase` ($B60, `NumTeams` blocks of 16 bytes), the records block `TeamRecBase` ($D20, eight 16-byte records), the name log `NameLogBase` ($DA0) and line data `LineDataBase` ($1EF6). The 28 retail teams fill the crowd records exactly up to $D20.
+The save layout is plain equates at the retail addresses (`src/ram94.asm`): crowd records `CrowdRecBase` ($B60, `NumTeams` blocks of 16 bytes), the records block `TeamRecBase` ($D20, eight 16-byte records), the name log `NameLogBase` ($DA0) and line data `LineDataBase` ($1EF6). The 28 retail teams fill the crowd records exactly up to $D20.
 
 A 29th team overlaps the records block, and the build stops with "The crowd records run into the records block". On a mod branch, move `TeamRecBase` to `CrowdRecEnd` and `NameLogBase` to `TeamRecBase+RecordsBytes` (there is room below $1EF6), and expect old saves to be invalid.
 
@@ -51,7 +51,7 @@ The stock game has 28 teams in TeamList order. The first 26 (`ANH` through `WPG`
 
 | What | Where | One entry is |
 | --- | --- | --- |
-| Team number | `src/stubinc/equals.inc` | The next number before `ASE`. Renumber `ASE` and `ASW`. |
+| Team number | `src/ram94.asm` | The next number before `ASE`. Renumber `ASE` and `ASW`. |
 | Team record | `TeamList` in `src/teamdata94.asm` | One `dc.l` to a record like `Anaheim`: player list, home and visitor palettes, city and nickname strings, eight lines, scouting bytes and scoring odds. |
 | Logo bitmap | `TeamLogoBitmaps` in `src/optsetup94.asm` | One `dc.l` to a logo in `src/graphics94.asm` (`logoANH` and the rest, each an `incbin` of a `.map.jim`). |
 | Logo palette | `TeamLogoPalettes` in `src/title94.asm` | 16 colors. Most teams reuse their matchup palette; BOS, FLA, HFD and SJ have their own. |
