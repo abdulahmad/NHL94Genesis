@@ -1818,98 +1818,98 @@ Credits								;title screen scroller: movea.l #Credits (copyright lines), then
 	String	'$ 1993 Electronic Arts'
 	String	'Licensed by'
 	String	'Sega Enterprises Ltd.'
-	String	-1
+	String	CC_PageEnd
 
 CreditsList							;the credits after the copyright lines
 	String	'Design adapted by'
 	String	'Michael Brook'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Programmed by'
 	String	'Mark Lesser'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Graphics by'
 	String	'Doug Wike'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Based on NHLPA 93 by'
 	String	'Jim Simmons'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Music and Sound by'
 	String	'Rob Hubbard'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Organ Music by'
 	String	'Dieter Ruehle'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Executive Producer'
 	String	'Scott Orr'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Produced by'
 	String	'Michael Brook'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Assistant Producer'
 	String	'Kevin Hogan'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Technical Directors'
 	String	'Rob Harris'
 	String	'Lon Meinecke'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Testing by'
 	String	'Yun Shin'
 	String	'Ken Rogers'
 	String	'Craig Wike'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Testing by'
 	String	'John Boerio'
 	String	'Jed Garvey'
 	String	'Gabe Boys'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Player Ratings by'
 	String	'Igor Kuperman'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Player Card Photos by'
 	String	'Steve Babineau'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Special Thanks to'
 	String	'Bob Borgen'
 	String	'Dan Brook'
 	String	'Julie Cressa'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Special Thanks to'
 	String	'Randy Delucchi'
 	String	'Jeff Fennel'
 	String	'Chip Lange'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Special Thanks to'
 	String	'Barry Melrose'
 	String	'Scott Probin'
 	String	'Ian Pulver'
-	String	-1
+	String	CC_PageEnd
 
 	String	'Special Thanks to'
 	String	'Mike Rubinelli'
 	String	'Kyra Woody'
-	String	-1
+	String	CC_PageEnd
 
 	String	'EA Hockey League Champion'
 	String	'Kevin Hogan'
-	String	-1
+	String	CC_PageEnd
 
 	dc.w	2
-	String	-1
+	String	CC_PageEnd
 
-	String	-1
+	String	CC_PageEnd
