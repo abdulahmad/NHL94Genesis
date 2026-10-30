@@ -100,10 +100,10 @@ TeamBitmaps							;dobitmap entries (DrawTeamBitmap)
 		inform	3,"TeamBitmaps needs one entry per team"
 	ENDIF
 ;TeamBitmaps+8: the tiles (LoadSetupTiles)
-EASNmap								;the EASN logo (EASNLogo)
-	incbin	..\Extracted\NHL94\Graphics\EASN.map.jim
+EASportsMap								;the EASN logo (EASNLogo)
+	incbin	..\Extracted\NHL94\Graphics\EASports.map.jim
 	even
-;EASNmap+8: the tiles (setupEASNmap)
+;EASportsMap+8: the tiles (setupEASportsMap)
 Arrowsmap							;same size: the playoff tree arrows (PlayoffScreen_doarrow)
 	incbin	..\Extracted\NHL94\Graphics\Arrows.map.jim
 	even

@@ -1149,7 +1149,7 @@ EASNLogo							;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if
 	bne.w	rtss2
 	bsr.w	printz
 	String	CC_Font1Pri,1,$19
-	movea.l	#EASNmap,a1
+	movea.l	#EASportsMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
 	clr.w	d0

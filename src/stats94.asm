@@ -1977,7 +1977,7 @@ ReloadRinkGraphics					;after the forceblack: back to 32 cell mode and reload th
 	dc.l	$43434567,$89ABCDEF		;remap table
 	move.w	(framercset).w,d4		;frame chars
 	jsr	(AddFramer).l				;send the frame tiles
-	jsr	(setupEASNmap).l
+	jsr	(setupEASportsMap).l
 	jsr	(ReloadEnergyBarTiles).l
 	jsr	(ReloadCrowdTiles).l
 	jsr	(setupIceRinkPal).l

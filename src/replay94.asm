@@ -268,7 +268,7 @@ ReplayMode							;Instant replay play-back control and display code.
 	bclr	#sf2replay,(sflags2).w
 	move.w	(sp)+,(disflags).w
 	jsr	(ReloadRinkGraphics).l
-	jsr	(setupEASNmap).l
+	jsr	(setupEASportsMap).l
 	jsr	(ReloadEnergyBarTiles).l
 	jsr	(ReloadCrowdTiles).l
 	jsr	(ReloadRefTiles).l

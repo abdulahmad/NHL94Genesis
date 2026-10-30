@@ -40,7 +40,7 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 	bsr.w	DecompressGraphicsPlain	;tiles to vram at d4, d4 advanced past them
 	jsr	(LoadHomeTeamGfx).l
 	move.w	d4,(EASNcset).w			;1st vram char for easn logo tiles
-	bsr.w	setupEASNmap
+	bsr.w	setupEASportsMap
 	move.w	d4,(energybarchars).w
 	movea.l	#EnergyBarMap+8,a2
 	bsr.w	DecompressGraphicsPlain
@@ -138,7 +138,7 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	clr.l	(padcont+8).w
 	st	(c1playernum).w				;pad 1 controls no player
 	st	(c2playernum).w				;pad 2 controls no player
-	bsr.w	setupEASNmap			;easn tiles at EASNcset again
+	bsr.w	setupEASportsMap			;easn tiles at EASNcset again
 	movea.w	#(DMAList-M68K_RAM),a5	;dump pad sprites
 	movea.w	#(Satt-M68K_RAM),a6		;sprite attribute table
 	moveq	#1,d6					;link counter
@@ -176,10 +176,10 @@ setupIceRinkPal						;Copy the ice rink palettes (pal 0&1, 16 longs) to palfaden
 	move.l	(a0)+,(a1)+				;16 longs = palettes 0 and 1
 	dbf	d0,.ipal
 	rts
-setupEASNmap						;Decompress the easn logo tiles (EASNmap+8) to vram at EASNcset. Called
+setupEASportsMap						;Decompress the easn logo tiles (EASportsMap+8) to vram at EASNcset. Called
 									;from setupice, setupice_highlight
 	move.w	(EASNcset).w,d4
-	movea.l	#EASNmap+8,a2
+	movea.l	#EASportsMap+8,a2
 	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$71234567,$89ABCDEF		;remap table
 	rts
