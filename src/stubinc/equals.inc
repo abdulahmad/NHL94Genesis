@@ -275,6 +275,9 @@ CC_Font2Pal2Pri equ $9E				;-$62: map 2, palette 2, priority
 CC_Font1Pal3Pri equ $8F				;-$71: map 1, palette 3, priority
 CC_Font2Pal3Pri equ $8E				;-$72: map 2, palette 3, priority
 CC_Font3Pal3Pri equ $8D				;-$73: map 3, palette 3, priority
+;Whole-String markers that list / page readers test (a String of just $FF / -1 is the word $FF00 at strtext, negative)
+CC_ListEnd equ $FF					;String CC_ListEnd ends a menu item list (data94.asm)
+CC_PageEnd equ -1					;String CC_PageEnd ends a credits page; two in a row end the credits (teamdata94.asm)
 strtext equ 2						;String: start of the text after its length word
 ;printsmall / printz2 (ControlCodeJumpTable, -byte): the code, then its argument bytes
 CC_SetMap equ $FF					;-1: map

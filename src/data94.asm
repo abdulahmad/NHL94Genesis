@@ -1957,7 +1957,7 @@ PauseMenuItems						;pause menu item list (PauseMode)
 	dc.l	RecordHoldersScreen
 	String	'x Manual Goalie   '
 	dc.l	ManualGoalieMenu
-	String	$FF
+	String	CC_ListEnd
 
 Pausemode_mlist							;Pause menu item list (PauseMode)
 	String	$FE,5
@@ -1994,7 +1994,7 @@ Pausemode_mlist							;Pause menu item list (PauseMode)
 	dc.l	PeriodStatsScreen
 	String	'x Manual Goalie   '
 	dc.l	ManualGoalieMenu
-	String	$FF
+	String	CC_ListEnd
 
 PauseText2							;Pause menu item list without Timeout (PauseMode)
 	String	$FE,5
@@ -2029,7 +2029,7 @@ PauseText2							;Pause menu item list without Timeout (PauseMode)
 	dc.l	PeriodStatsScreen
 	String	'x Manual Goalie   '
 	dc.l	ManualGoalieMenu
-	String	$FF
+	String	CC_ListEnd
 
 ShootoutIntermissionMenu			;Intermission menu in Shootout (gmode2 bit 0)
 	String	$FE,5
@@ -2044,7 +2044,7 @@ ShootoutIntermissionMenu			;Intermission menu in Shootout (gmode2 bit 0)
 	dc.l	PlayerCards
 	String	'  Record Holders  '
 	dc.l	RecordHoldersScreen
-	String	$FF
+	String	CC_ListEnd
 
 StartGameText						;Intermission menu for gsp 0
 	String	$FE,5
@@ -2063,7 +2063,7 @@ StartGameText						;Intermission menu for gsp 0
 	dc.l	PlayerCards
 	String	'  Record Holders  '
 	dc.l	RecordHoldersScreen
-	String	$FF
+	String	CC_ListEnd
 
 StartGameTextPO						;Intermission menu for gsp 0 in the playoffs
 	String	$FE,5
@@ -2084,7 +2084,7 @@ StartGameTextPO						;Intermission menu for gsp 0 in the playoffs
 	dc.l	PlayerCards
 	String	'  Record Holders  '
 	dc.l	RecordHoldersScreen
-	String	$FF
+	String	CC_ListEnd
 
 IntermissionText					;Intermission menu for gsp 1-3
 	String	$FE,5
@@ -2117,7 +2117,7 @@ IntermissionText					;Intermission menu for gsp 1-3
 	dc.l	PeriodStatsScreen
 	String	'x Manual Goalie   '
 	dc.l	ManualGoalieMenu
-	String	$FF
+	String	CC_ListEnd
 
 ExitGameText						;Intermission menu for gsp 4
 	String	$FE,5
@@ -2144,7 +2144,7 @@ ExitGameText						;Intermission menu for gsp 4
 	dc.l	RecordHoldersScreen
 	String	'   Period Stats   '
 	dc.l	PeriodStatsScreen
-	String	$FF
+	String	CC_ListEnd
 
 ExitGameTextPO						;Intermission menu for gsp 4 in the playoffs
 	String	$FE,5
@@ -2171,7 +2171,7 @@ ExitGameTextPO						;Intermission menu for gsp 4 in the playoffs
 	dc.l	RecordHoldersScreen
 	String	'   Period Stats   '
 	dc.l	PeriodStatsScreen
-	String	$FF
+	String	CC_ListEnd
 
 LineEditorMenuText					;Line editor exit menu 
 	String	$FE,6,$F9,1
@@ -2184,7 +2184,7 @@ LineEditorMenuText					;Line editor exit menu
 	dc.l	EncodeTeamLines
 	String	'  Load Team Line  '
 	dc.l	DecodeTeamLines
-	String	$FF
+	String	CC_ListEnd
 
 LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
 	String	$FE,6,$F9,1
@@ -2195,5 +2195,5 @@ LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
 	dc.l	CopyTeamLines			;copy the original line sets
 	String	'  Save Team Line  '
 	dc.l	EncodeTeamLines
-	String	$FF
+	String	CC_ListEnd
 
