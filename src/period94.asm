@@ -318,15 +318,15 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	btst	#1,(sflags7).w			;overtime played?
 	beq.w	.0
 	jsr	(printz).l
-	String	$BE,$0C,$09,'1',$BE,$11,$09,'2',$BE,$16,$09,'3',$BE,$1A,$09,'OT',$BE,' ',$09,'Total'
+	String	-(TXPRI+TXMAP2),$0C,$09,'1',-(TXPRI+TXMAP2),$11,$09,'2',-(TXPRI+TXMAP2),$16,$09,'3',-(TXPRI+TXMAP2),$1A,$09,'OT',-(TXPRI+TXMAP2),' ',$09,'Total'
 	jsr	(printz).l
-	String	$BE,$0C,$0A,'<',$BE,$11,$0A,'<',$BE,$16,$0A,'<',$BE,$1A,$0A,'<<',$BE,' ',$0A,'<<<<<'
+	String	-(TXPRI+TXMAP2),$0C,$0A,'<',-(TXPRI+TXMAP2),$11,$0A,'<',-(TXPRI+TXMAP2),$16,$0A,'<',-(TXPRI+TXMAP2),$1A,$0A,'<<',-(TXPRI+TXMAP2),' ',$0A,'<<<<<'
 	bra.w	.1
 .0									;bit 1 of sflags7 clear
 	jsr	(printz).l
-	String	$BE,$0C,$09,'1',$BE,$11,$09,'2',$BE,$16,$09,'3',$BE,' ',$09,'Total'
+	String	-(TXPRI+TXMAP2),$0C,$09,'1',-(TXPRI+TXMAP2),$11,$09,'2',-(TXPRI+TXMAP2),$16,$09,'3',-(TXPRI+TXMAP2),' ',$09,'Total'
 	jsr	(printz).l
-	String	$BE,$0C,$0A,'<',$BE,$11,$0A,'<',$BE,$16,$0A,'<',$BE,' ',$0A,'<<<<<'
+	String	-(TXPRI+TXMAP2),$0C,$0A,'<',-(TXPRI+TXMAP2),$11,$0A,'<',-(TXPRI+TXMAP2),$16,$0A,'<',-(TXPRI+TXMAP2),' ',$0A,'<<<<<'
 .1									;print the title and lines
 	bsr.w	.title
 	bsr.w	.lines
