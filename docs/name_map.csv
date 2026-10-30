@@ -213,11 +213,9 @@ DrawGoalieSelectList,Pausemode_gnum,92G parent_local
 PauseText,Pausemode_mlist,92G parent_local
 WaitVSyncAndReadInput,Pausemode_rjoy,92G parent_local
 IntermissionStart,PeriodOver_sp,92G parent_local
-TryAddPlayerToList,TryAddPlayerToList,92G parent_local
 defaultsprites2,defaultsprites_0,92G parent_local
 lcfound2,lcfound_close,92G parent_local
 ProcessPenaltyList,updatepentime_ut,92G parent_local
 PrintTeamNameAndScore,printscores1_ps,92G parent_local
-PrintGameInfo,PrintGameInfo,92G parent_local
 RenderSmallFontChar,uppads_pd,92G parent_local
 cd0,updatecrowdf_cd0,92G parent_local
