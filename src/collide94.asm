@@ -2628,7 +2628,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 	move.b	(a0)+,d0
 	bmi.w	.error
 	move.b	0(a1,d0.w),d0
-	bsr.w	SetPlList_s1
+	bsr.w	TryAddPlayerToList
 	beq.s	.s1
 .next1								;next PlList slot
 	dbf	d4,.1
@@ -2640,10 +2640,10 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 	move.w	d3,d0					;d0 = candidate player number, d3 counts down
 	subq.w	#1,d3
 	bmi.s	.next1					;none available
-	bsr.w	SetPlList_s1
+	bsr.w	TryAddPlayerToList
 	beq.s	.try
 	bra.s	.next1
-SetPlList_s1					;d0 = player number (1 based), d4 = PlList slot. Put d0 in the slot if he
+TryAddPlayerToList					;d0 = player number (1 based), d4 = PlList slot. Put d0 in the slot if he
 									;is on the bench or ice (not in the box, not injured) and not in PlList
 									;yet; return d1 = 0 (Z set) if not
 	move.w	d0,d1
