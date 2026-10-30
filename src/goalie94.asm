@@ -126,15 +126,15 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 .x									;exit (also the end of the code above)
 	rts
 ArenaAnims							;The 8 arena animations (StartArenaAnim d0): frame list, then the graphics
-									;in ArenaGfxBank (sprite list at 4(x), tiles at 8(x))
-	dc.l	ArenaFrames8,ArenaGfxBank+$416
-	dc.l	ArenaFrames6,ArenaGfxBank+$C3A
-	dc.l	ArenaFrames7,ArenaGfxBank+$C3A
-	dc.l	ArenaFrames5,ArenaGfxBank+$1940
-	dc.l	ArenaFrames4,ArenaGfxBank+$23AE
-	dc.l	ArenaFrames3,ArenaGfxBank+$23AE
-	dc.l	ArenaFrames2,ArenaGfxBank+$32DA
-	dc.l	ArenaFrames1,ArenaGfxBank+$32DA
+									;in NHLPALogoMap (sprite list at 4(x), tiles at 8(x))
+	dc.l	ArenaFrames8,NHLPALogoMap+$416
+	dc.l	ArenaFrames6,NHLPALogoMap+$C3A
+	dc.l	ArenaFrames7,NHLPALogoMap+$C3A
+	dc.l	ArenaFrames5,NHLPALogoMap+$1940
+	dc.l	ArenaFrames4,NHLPALogoMap+$23AE
+	dc.l	ArenaFrames3,NHLPALogoMap+$23AE
+	dc.l	ArenaFrames2,NHLPALogoMap+$32DA
+	dc.l	ArenaFrames1,NHLPALogoMap+$32DA
 ArenaFrames1						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
 	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
 	dc.b	9,$A,$A,$A,1,$A,2,$A,3,$A,4,$A,5,$A,6,$A

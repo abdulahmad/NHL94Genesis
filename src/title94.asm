@@ -381,14 +381,14 @@ LoadHomeTeamGfx						;Load the HomeTeam graphics of TeamGfxList to VRAM d4 - $18
 	jsr	(DecompressGraphicsPlain).l
 	move.w	(sp)+,d0
 	rts
-TeamGfxList							;LoadHomeTeamGfx: one address per team (TeamList order) in ArenaGfxBank
-	dc.l	ArenaGfxBank+$3FB4,ArenaGfxBank+$8BAE,ArenaGfxBank+$42BE,ArenaGfxBank+$45C8
-	dc.l	ArenaGfxBank+$48D2,ArenaGfxBank+$4BDC,ArenaGfxBank+$4EE6,ArenaGfxBank+$51F0
-	dc.l	ArenaGfxBank+$54FA,ArenaGfxBank+$5804,ArenaGfxBank+$5B0E,ArenaGfxBank+$5E18
-	dc.l	ArenaGfxBank+$6122,ArenaGfxBank+$642C,ArenaGfxBank+$6736,ArenaGfxBank+$6A40
-	dc.l	ArenaGfxBank+$6D4A,ArenaGfxBank+$7054,ArenaGfxBank+$735E,ArenaGfxBank+$7668
-	dc.l	ArenaGfxBank+$7972,ArenaGfxBank+$7C7C,ArenaGfxBank+$7F86,ArenaGfxBank+$8290
-	dc.l	ArenaGfxBank+$859A,ArenaGfxBank+$88A4,ArenaGfxBank+$8EB8,ArenaGfxBank+$8EB8
+TeamGfxList							;LoadHomeTeamGfx: one address per team (TeamList order) in NHLPALogoMap
+	dc.l	NHLPALogoMap+$3FB4,NHLPALogoMap+$8BAE,NHLPALogoMap+$42BE,NHLPALogoMap+$45C8
+	dc.l	NHLPALogoMap+$48D2,NHLPALogoMap+$4BDC,NHLPALogoMap+$4EE6,NHLPALogoMap+$51F0
+	dc.l	NHLPALogoMap+$54FA,NHLPALogoMap+$5804,NHLPALogoMap+$5B0E,NHLPALogoMap+$5E18
+	dc.l	NHLPALogoMap+$6122,NHLPALogoMap+$642C,NHLPALogoMap+$6736,NHLPALogoMap+$6A40
+	dc.l	NHLPALogoMap+$6D4A,NHLPALogoMap+$7054,NHLPALogoMap+$735E,NHLPALogoMap+$7668
+	dc.l	NHLPALogoMap+$7972,NHLPALogoMap+$7C7C,NHLPALogoMap+$7F86,NHLPALogoMap+$8290
+	dc.l	NHLPALogoMap+$859A,NHLPALogoMap+$88A4,NHLPALogoMap+$8EB8,NHLPALogoMap+$8EB8
 TeamGfxListEnd						;end of TeamGfxList (size check below)
 	IF (TeamGfxListEnd-TeamGfxList)<>(NumTeams*4)
 		inform	3,"TeamGfxList needs one entry per team"
@@ -578,11 +578,11 @@ CheckScoreLeader					;Compare tmap (players on ice) of tmstruct / AwShots and te
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d2/a0-a2
 	rts
-DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffspritey in Satt, then
+DrawPlayoffSprite					;The StanleyCupSprite sprite at playoffspritex / playoffspritey in Satt, then
 									;end the sprite list (Sattsize = its size). Called from PlayoffScreen
 	movea.w	#(Satt-M68K_RAM),a6
 	moveq	#1,d6
-	movea.l	#PlayoffSprite,a0
+	movea.l	#StanleyCupSprite,a0
 	move.w	(energybarchars).w,d3
 	ori.w	#$8000,d3				;high priority
 	move.w	(playoffspritex).w,d0
@@ -600,7 +600,7 @@ DrawPlayoffSprite					;The PlayoffSprite sprite at playoffspritex / playoffsprit
 	lsr.w	#1,d0
 	move.w	d0,(Sattsize).w
 	rts
-HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 frames or a
+HiScoreScreen						;vb2, the bitmap and MarkLesserMap, then wait up to $50 * 4 frames or a
 									;button (waitx). Called from Begin (attract mode)
 	move.l	#vb2,(VBint).w			;plain vblank
 	bclr	#df32c,(disflags).w		;40 cell mode
@@ -621,7 +621,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	jsr	(setVram_0).l
 	jsr	(printz).l					;map at the top left
 	String	CC_Font2Pri,$E,3
-	movea.l	#PlayoffSprite+$12E0,a2	;the background picture after the playoff sprite tiles
+	movea.l	#StanleyCupSprite+$12E0,a2	;the background picture after the playoff sprite tiles
 	movea.l	a2,a0
 	movea.l	a2,a1
 	adda.l	(a2)+,a0
@@ -635,7 +635,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the picture
 	String	CC_Font2Pri,$10,$10
-	movea.l	#HiScoreImg,a2			;then the high score picture
+	movea.l	#MarkLesserMap,a2			;then the high score picture
 	movea.l	a2,a0
 	movea.l	a2,a1
 	adda.l	(a2)+,a0
@@ -1206,8 +1206,8 @@ clrTmPdst							;Put all 26 players of team struct a0 on the bench (tmpdst -2), 
 	move.w	#$FFFF,(a0)				;-1 = ice
 	rts
 HotColdIcon							;The icon by the name of player iconplayer of team a2 at x iconx, y $19:
-									;HotIconMap when he is awayhotplayer /
-									;homehotplayer, ColdIconMap when awaycoldplayer / homecoldplayer, else
+									;HotMap when he is awayhotplayer /
+									;homehotplayer, ColdMap when awaycoldplayer / homecoldplayer, else
 									;clear it (eraser)
 	movem.l	d0/a0-a1,-(sp)
 	movea.l	#awayhotplayer,a0
@@ -1243,11 +1243,11 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 	bra.w	.x
 .hot								;he is hot: the hot icon
 	move.w	(hoticonchars).w,d4
-	movea.l	#HotIconMap,a0
+	movea.l	#HotMap,a0
 	bra.w	.draw
 .cold								;he is cold: the cold icon
 	move.w	(coldiconchars).w,d4
-	movea.l	#ColdIconMap,a0
+	movea.l	#ColdMap,a0
 .draw								;draw the icon
 	move.w	(iconx).w,(printx).w
 	move.w	#$19,(printy).w
