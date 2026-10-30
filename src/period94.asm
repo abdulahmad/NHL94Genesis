@@ -253,17 +253,17 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	moveq	#$1C,d1
 	jsr	(SetupScreen).l				;set up the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),1,$B
+	String	CC_Font2Pri,1,$B
 	move.w	#8,d0
 	move.w	#8,d1
 	jsr	(Framer).l					;visitors logo frame
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),1,$13
+	String	CC_Font2Pri,1,$13
 	move.w	#8,d0
 	move.w	#8,d1
 	jsr	(Framer).l					;home logo frame
 	jsr	(printz).l
-	String	-(TXPRI+TXPAL2+TXMAP2),2,$C
+	String	CC_Font2Pal2Pri,2,$C
 	movea.l	#TeamLogoBitmaps,a0
 	move.w	(VisTeam).w,d0
 	asl.w	#2,d0
@@ -289,7 +289,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	move.l	(a0)+,(a1)+
 	dbf	d0,.loop					;next long
 	jsr	(printz).l
-	String	-(TXPRI+TXPAL3+TXMAP2),2,$14
+	String	CC_Font2Pal3Pri,2,$14
 	movea.l	#TeamLogoBitmaps,a0
 	move.w	(HomeTeam).w,d0
 	asl.w	#2,d0
@@ -309,24 +309,24 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	moveq	#4,d5
 	jsr	(dobitmap).l				;draw the home logo
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),4,1
+	String	CC_Font3Pri,4,1
 	moveq	#$20,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the box
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),6,3,'  Period Stats  ',-(TXPRI+TXMAP2),6,1	;Period Stats title
+	String	CC_Font3Pri,6,3,'  Period Stats  ',CC_Font2Pri,6,1	;Period Stats title
 	btst	#1,(sflags7).w			;overtime played?
 	beq.w	.0
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$0C,$09,'1',-(TXPRI+TXMAP2),$11,$09,'2',-(TXPRI+TXMAP2),$16,$09,'3',-(TXPRI+TXMAP2),$1A,$09,'OT',-(TXPRI+TXMAP2),' ',$09,'Total'
+	String	CC_Font2Pri,$0C,$09,'1',CC_Font2Pri,$11,$09,'2',CC_Font2Pri,$16,$09,'3',CC_Font2Pri,$1A,$09,'OT',CC_Font2Pri,' ',$09,'Total'
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$0C,$0A,'<',-(TXPRI+TXMAP2),$11,$0A,'<',-(TXPRI+TXMAP2),$16,$0A,'<',-(TXPRI+TXMAP2),$1A,$0A,'<<',-(TXPRI+TXMAP2),' ',$0A,'<<<<<'
+	String	CC_Font2Pri,$0C,$0A,'<',CC_Font2Pri,$11,$0A,'<',CC_Font2Pri,$16,$0A,'<',CC_Font2Pri,$1A,$0A,'<<',CC_Font2Pri,' ',$0A,'<<<<<'
 	bra.w	.1
 .0									;bit 1 of sflags7 clear
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$0C,$09,'1',-(TXPRI+TXMAP2),$11,$09,'2',-(TXPRI+TXMAP2),$16,$09,'3',-(TXPRI+TXMAP2),' ',$09,'Total'
+	String	CC_Font2Pri,$0C,$09,'1',CC_Font2Pri,$11,$09,'2',CC_Font2Pri,$16,$09,'3',CC_Font2Pri,' ',$09,'Total'
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$0C,$0A,'<',-(TXPRI+TXMAP2),$11,$0A,'<',-(TXPRI+TXMAP2),$16,$0A,'<',-(TXPRI+TXMAP2),' ',$0A,'<<<<<'
+	String	CC_Font2Pri,$0C,$0A,'<',CC_Font2Pri,$11,$0A,'<',CC_Font2Pri,$16,$0A,'<',CC_Font2Pri,' ',$0A,'<<<<<'
 .1									;print the title and lines
 	bsr.w	.title
 	bsr.w	.lines
@@ -361,16 +361,16 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	tst.w	(matchup).w				;shots page?
 	beq.w	.6						;goals page
 	jsr	(printz).l					;shots title
-	String	-(TXPRI+TXMAP2),$12,7,'Shots',-(TXPRI+TXMAP2),$F,$1A,'[ For Goals'
+	String	CC_Font2Pri,$12,7,'Shots',CC_Font2Pri,$F,$1A,'[ For Goals'
 	rts
 .6									;matchup = 0
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$12,7,'Goals',-(TXPRI+TXMAP2),$F,$1A,'For Shots ]'	;goals title
+	String	CC_Font2Pri,$12,7,'Goals',CC_Font2Pri,$F,$1A,'For Shots ]'	;goals title
 	rts
 .lines								;local subroutine
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	movea.l	#AwShots,a2
 	move.w	#$E,(printy).w
 	bsr.w	.team
@@ -437,12 +437,12 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	moveq	#$1A,d1
 	jsr	(SetupScreen).l				;set up the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),4,1
+	String	CC_Font3Pri,4,1
 	moveq	#$20,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the box
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),6,4,'Game  Statistics',-(TXPRI+TXMAP3),7,1
+	String	CC_Font3Pri,6,4,'Game  Statistics',CC_Font3Pri,7,1
 	move.w	#$2C,d0					;visitors block
 	jsr	(PutTeamBlock).l
 	addq.w	#4,(printx).w
@@ -557,16 +557,16 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 									;centred, with the home value at x $22 and the visitors' at x 9
 									;(PrintStatValue); SetStatScroll first
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),2,7		;visitors logo position
+	String	CC_Font3Pri,2,7		;visitors logo position
 	move.w	#$2C,d0
 	jsr	(PutTeamBlock).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),$1A,7	;home logo position
+	String	CC_Font3Pri,$1A,7	;home logo position
 	moveq	#0,d0
 	jsr	(PutTeamBlock).l
 	bsr.w	SetStatScroll
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	moveq	#$E,d6					;15 rows
 	lea	TeamStatTextTbl(pc),a1
 	tst.w	(OptPen).w

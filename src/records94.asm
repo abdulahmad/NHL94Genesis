@@ -34,14 +34,14 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	move.w	d4,(smallfontchars).w
 	jsr	(AddSmallFont).l
 	jsr	(printz).l
-	String	-TXMAP1,0,0
+	String	CC_Font1,0,0
 	moveq	#$28,d0					;clear the text map
 	moveq	#$1C,d1
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(setupIceRinkPal).l
 	jsr	(printz).l
-	String	-TXMAP2,0,0
+	String	CC_Font2,0,0
 	movea.l	#ScoutMap,a0			;the background picture
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -63,7 +63,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$71234567,$89ABCDEF		;remap table
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),$1F,6
+	String	CC_Font1Pri,$1F,6
 	move.w	(HomeTeam).w,d0			;team of this name entry (nameentryvis: 0 home, 1 visitors)
 	tst.w	(nameentryvis).w		;which side?
 	beq.w	.0
@@ -79,12 +79,12 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	sub.w	d0,(printx).w
 	jsr	(print).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),$1B,7
+	String	CC_Font1Pri,$1B,7
 	move.w	#8,d0					;8 x 8 frame round the logo
 	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l
-	String	-(TXPRI+TXPAL3+TXMAP1),$1C,8
+	String	CC_Font1Pal3Pri,$1C,8
 	move.w	(HomeTeam).w,d3			;the same team for the logo
 	tst.w	(nameentryvis).w		;which side?
 	beq.w	.1
@@ -109,12 +109,12 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	move.w	(homepicchars).w,d4
 	jsr	(dobitmap).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),2,0
+	String	CC_Font1Pri,2,0
 	move.w	#$24,d0					;frame round the whole screen
 	move.w	#6,d1
 	jsr	(Framer).l
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP1),$A,2,'NAME  ENTRY'
+	String	CC_Font1Pri,$A,2,'NAME  ENTRY'
 	bsr.w	ReadNameLog
 	clr.w	(namelogarrows).w		;no log arrows yet
 	move.w	#1,(namelogsel).w		;start on log slot 1
@@ -124,7 +124,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	bsr.w	GetLogName				;copy the log name
 	bsr.w	PrintNameLog			;print the name log
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),7,6,'Name Log'
+	String	CC_Font1Pri,7,6,'Name Log'
 	move.w	#$18,(palcount).w		;fade in over $18 frames
 	bclr	#dfng,(disflags).w		;display ready
 	clr.w	d4						;d4 = cursor position in the name (0-11)
@@ -147,7 +147,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 .loop								;each pass: redraw the name and prompt
 	bsr.w	GetNameLength			;d0 = name length
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),5,$12
+	String	CC_Font1Pri,5,$12
 	tst.w	(cursoron).w			;log mode: no name field or prompt
 	beq.w	.3
 	movea.l	#nameentrybuf,a1
@@ -233,7 +233,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	bra.w	.loop
 .10									;edit mode: clear the cursor and the old grid frame
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),4,$13
+	String	CC_Font1Pri,4,$13
 	add.w	d4,(printx).w
 	jsr	(printz).l
 	String	'   '
@@ -306,7 +306,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 									;"A to go back.")
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),1,$14
+	String	CC_Font1Pri,1,$14
 	move.w	#$16,d0
 	move.w	#7,d1
 	move.w	#$7FF,d2				;blank char
@@ -314,7 +314,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	bchg	#0,(cursoron+1).w		;flip between edit and log mode
 	bne.w	.1						;now log mode: show the help instead
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),$19,$11
+	String	CC_Font1Pri,$19,$11
 	movea.l	#LetterGrid,a0			;print the 5 rows of 6 letters
 	moveq	#4,d0					;5 rows
 .loop								;each row
@@ -331,12 +331,12 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	subi.w	#$C,(printx).w			;back to the row start
 	dbf	d0,.loop					;next row
 	jsr	(printz).l
-	String	-TXMAP2,1,$14
+	String	CC_Font2,1,$14
 	moveq	#$16,d0
 	moveq	#7,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),2,$15,'D-Pad to a letter.'
+	String	CC_Font1Pri,2,$15,'D-Pad to a letter.'
 	move.w	#2,(printx).w
 	addq.w	#1,(printy).w
 	move.w	(printx).w,-(sp)
@@ -374,7 +374,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	jsr	(eraser).l
 .6									;(not branched to)
 	jsr	(printz).l
-	String	-TXMAP2,1,$14
+	String	CC_Font2,1,$14
 	moveq	#$16,d0
 	moveq	#7,d1
 .7									;(not branched to)
@@ -385,9 +385,9 @@ NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Pres
 									;select name.", "Press B to edit.")
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),2,$15,'D-Pad up/down to    '
+	String	CC_Font1Pri,2,$15,'D-Pad up/down to    '
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),2,$16,'move arrows.        '
+	String	CC_Font1Pri,2,$16,'move arrows.        '
 	move.w	#2,(printx).w
 	move.w	(printx).w,-(sp)
 	addq.w	#1,(printy).w
@@ -450,7 +450,7 @@ FindLetter							;d0 = index of letter d0 in LetterGrid, $1E when not found
 	rts
 PrintNameCursor						;Name entry: the " < " cursor
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),4,$13
+	String	CC_Font1Pri,4,$13
 	add.w	d4,(printx).w
 	tst.w	(cursoron).w			;cursor on?
 	beq.w	rtsNameCursor			;cursor off: print nothing
@@ -471,7 +471,7 @@ PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, curso
 LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a row, 2 cells
 									;apart); d0 / d1 = 3 x 3 box
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),$18,$10
+	String	CC_Font1Pri,$18,$10
 	move.w	d5,d0
 	ext.l	d0						;clear the high word
 	divu.w	#6,d0					;row = index / 6, column = remainder
@@ -527,7 +527,7 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	move.w	(namelength).w,-(sp)
 	move.w	(namelogsel).w,-(sp)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),5,8
+	String	CC_Font1Pri,5,8
 	move.w	#6,d7					;7 log slots
 	move.w	#1,(namelogsel).w
 	movea.l	#TempBuffer,a1
@@ -561,7 +561,7 @@ PrintLogArrows						;Name entry: print the two arrow Strings at a1 on name log r
 	tst.w	(namelogarrows).w
 	beq.w	.0						;no arrows drawn yet: nothing to erase
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),3,8
+	String	CC_Font1Pri,3,8
 	move.w	(namelogarrows).w,d0
 	subq.w	#1,d0					;rows from 1
 	add.w	d0,(printy).w
@@ -868,7 +868,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	move.w	#$1A,d1
 	jsr	(SetupScreen).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),1,1
+	String	CC_Font2Pri,1,1
 	movea.l	#CornerLogoMap,a0
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -881,7 +881,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	moveq	#8,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),'!',1
+	String	CC_Font2Pri,'!',1
 	movea.l	#ArenaGfxBank,a0		;arena logo bank
 	movea.l	a0,a1					;a1 = map header
 .0									;(not branched to)
@@ -895,12 +895,12 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	moveq	#0,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),$B,1
+	String	CC_Font3Pri,$B,1
 	move.w	#$12,d0
 	move.w	#7,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),$E,2,'Record',-(TXPRI+TXMAP3),$D,5,'Holders',-(TXPRI+TXMAP3),1,9
+	String	CC_Font3Pri,$E,2,'Record',CC_Font3Pri,$D,5,'Holders',CC_Font3Pri,1,9
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,6,3,5,8,CC_SetFont,1,'Name',CC_SetFont,0
 	bsr.w	ReadNameLog

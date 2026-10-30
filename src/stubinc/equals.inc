@@ -256,17 +256,25 @@ jimtiles equ $A						;header size: the tile data starts here
 ; ----------------------------------
 
 ;text control codes in Strings
-;print / printz / printbig / printbigz: a negative byte -(TXPRI+TXPALn+TXVF+TXHF+TXMAPn), then x, y (printa =
-;the bits << 9, printm = map)
-TXMAP1 equ 1						;plane map 1
-TXMAP2 equ 2
-TXMAP3 equ 3
-TXHF equ 4							;h flip
-TXVF equ 8							;v flip
-TXPAL1 equ $10						;palette 1
-TXPAL2 equ $20
-TXPAL3 equ $30
-TXPRI equ $40						;high priority
+;print / printz / printbig / printbigz / appendz control byte (NOT printsmall: there $FF.. are the CC_Set* codes below).
+;One byte with bit 7 set, read as -$ab: bits 0-1 font (= map 1-3), bit 2 h flip, bit 3 v flip, bits 4-5 palette,
+;bit 6 priority; then x, y (printa = the bits << 9, printm = map). Names match 93G ram93.asm / 93S / 94S
+CC_Font1 equ $FF					;-$01: map 1
+CC_Font2 equ $FE					;-$02: map 2
+CC_Font3 equ $FD					;-$03: map 3
+CC_Font1Pal1 equ $EF				;-$11: map 1, palette 1
+CC_Font1Pal2 equ $DF				;-$21: map 1, palette 2
+CC_Font2Pal2 equ $DE				;-$22: map 2, palette 2
+CC_Font1Pal3 equ $CF				;-$31: map 1, palette 3
+CC_Font2Pal3 equ $CE				;-$32: map 2, palette 3
+CC_Font3Pal3 equ $CD				;-$33: map 3, palette 3
+CC_Font1Pri equ $BF					;-$41: map 1, priority
+CC_Font2Pri equ $BE					;-$42: map 2, priority
+CC_Font3Pri equ $BD					;-$43: map 3, priority
+CC_Font2Pal2Pri equ $9E				;-$62: map 2, palette 2, priority
+CC_Font1Pal3Pri equ $8F				;-$71: map 1, palette 3, priority
+CC_Font2Pal3Pri equ $8E				;-$72: map 2, palette 3, priority
+CC_Font3Pal3Pri equ $8D				;-$73: map 3, palette 3, priority
 strtext equ 2						;String: start of the text after its length word
 ;printsmall / printz2 (ControlCodeJumpTable, -byte): the code, then its argument bytes
 CC_SetMap equ $FF					;-1: map

@@ -476,7 +476,7 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	bne.w	.x
 	move.l	a1,-(sp)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$D,5
+	String	CC_Font2Pri,$D,5
 	move.w	(gameclock).w,d0
 	ext.l	d0
 	divu.w	#$258,d0				;tens of minutes (600 seconds)
@@ -507,7 +507,7 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	jsr	(.digit).l
 	movea.l	(sp)+,a1
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),$D,5
+	String	CC_Font3Pri,$D,5
 .x									;exit
 	rts
 .digit								;Print digit d0 from .digits

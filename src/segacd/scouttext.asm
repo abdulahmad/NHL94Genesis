@@ -136,7 +136,7 @@ L24A4A	movea.l	#$17EF2,a1
 	ble.w	L24A5C
 	bsr.w	X_24BB6
 L24A5C	bsr.w	X_1DF6E
-	; printz string: length word, then -TXMAP1, x=9, y=4
+	; printz string: length word, then CC_Font1 ($FF), x=9, y=4
 	dc.w	$0006
 	dc.b	$FF,$09,$04,$00
 	move.w	$1A44E.l,d0

@@ -668,7 +668,7 @@ setlccords							;set printx/y to cords for lc box on team a2
 	eori.w	#$16,d0
 .noflip								;print at the box
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),$16,0,0
+	String	CC_Font1Pri,$16,0,0
 	add.w	d0,(printy).w
 	moveq	#2,d0
 	bsr.w	getlchoice

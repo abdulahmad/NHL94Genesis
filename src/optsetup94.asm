@@ -341,7 +341,7 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 SetMenuArea							;Set the menu area for MoveMenuFrame: printx $10, printy $E, d0 = 23 x d1
 									;= 13
 	jsr	(printz).l					;map at the menu
-	String	-TXMAP1,$10,$E			;(and dropped a word)
+	String	CC_Font1,$10,$E			;(and dropped a word)
 	move.w	#$17,d0
 	move.w	#$D,d1
 	rts
@@ -369,7 +369,7 @@ SetFrameRect						;Frame position for line d3 (row $E + d3 - setupfirstline * 2)
 									;23 x 5 for Team 1 in new playoffs.
 									;MoveMenuFrame
 	jsr	(printz).l					;map at the first line
-	String	-TXMAP1,$10,$E			;(and dropped a word)
+	String	CC_Font1,$10,$E			;(and dropped a word)
 	add.w	d3,(printy).w			;2 rows per line
 	move.w	(setupfirstline).w,d0
 	add.w	d0,d0					;2 rows a line
@@ -610,7 +610,7 @@ PrintOptionValue					;print the value of option d7 at x $11 on its line (past ro
 									;Shootout prints 'N/A'; Players with FourWayPlay uses the second list
 									;(+$B0). Called from PrintOptions
 	jsr	(printz).l					;map at the first value
-	String	-(TXPRI+TXMAP1),$11,$10
+	String	CC_Font1Pri,$11,$10
 	move.w	(setupfirstline).w,d0
 	add.w	d0,d0					;2 rows a line
 	sub.w	d0,(printy).w
@@ -826,13 +826,13 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$01234567,$89ABCDEF		;remap table (/ or.l)
 	jsr	(printz).l					;map at the top left
-	String	-TXMAP1,0,0				;x2
+	String	CC_Font1,0,0				;x2
 	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(printz).l					;map at the background
-	String	-TXMAP2,0,0				;x3
+	String	CC_Font2,0,0				;x3
 	movea.l	#GameSetUpMap,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -847,7 +847,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	move.w	d4,(vispicchars).w
 	addi.w	#$24,d4
 	jsr	(printz).l					;map at the second layer
-	String	-TXMAP1,0,0				;x3
+	String	CC_Font1,0,0				;x3
 	movea.l	#GameSetUpMap2,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -860,7 +860,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	moveq	#0,d5					;no palette lines
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the menu
-	String	-TXMAP1,1,$E			;(and dropped a word)
+	String	CC_Font1,1,$E			;(and dropped a word)
 	move.w	d4,(setupmenuchars).w
 	movea.l	#SetupMenuMap,a0		;menu background, 38 x 13 at x 1, y $E
 	movea.l	a0,a1
@@ -1036,7 +1036,7 @@ EraseCard							;If a player card is up (setupcardflags bit 0, cleared here), cl
 	bclr	#6,(setupcardflags).w	;no visitors block
 	bclr	#7,(setupcardflags).w	;no home block
 	jsr	(printz).l					;map at the card
-	String	-(TXPAL1+TXMAP1),0,0	;x3
+	String	CC_Font1Pal1,0,0	;x3
 	move.w	#5,(printy).w
 	moveq	#8,d0
 	moveq	#8,d1
@@ -1046,7 +1046,7 @@ EraseCard							;If a player card is up (setupcardflags bit 0, cleared here), cl
 	move.w	#3,(printx).w
 	jsr	(eraser).l
 	jsr	(printz).l					;map at the text
-	String	-TXMAP1,0,0				;x3
+	String	CC_Font1,0,0				;x3
 	move.w	#$B,(printx).w
 	move.w	#5,(printy).w
 	move.w	#$19,d0
@@ -1059,7 +1059,7 @@ EraseCard							;If a player card is up (setupcardflags bit 0, cleared here), cl
 	move.w	#$1C,(printx).w
 	jsr	(eraser).l
 	jsr	(printz).l					;map at the text
-	String	-TXMAP1,0,0				;x3
+	String	CC_Font1,0,0				;x3
 	move.w	#3,(printx).w
 	move.w	#5,(printy).w
 	move.w	#$19,d0
@@ -1081,7 +1081,7 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	bclr	#3,(setupcardflags).w	;visitors side?
 	beq.w	.0
 	jsr	(printz).l					;map at the area
-	String	-(TXPAL1+TXMAP1),0,0	;x3
+	String	CC_Font1Pal1,0,0	;x3
 	move.w	#8,(printx).w
 	move.w	#5,(printy).w
 	moveq	#8,d0
@@ -1089,7 +1089,7 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	move.w	#$7FF,d2				;blank char
 .0									;home logo box done
 	jsr	(printz).l					;map at the logo
-	String	-TXMAP1,0,0				;x3
+	String	CC_Font1,0,0				;x3
 	move.w	#$19,(printx).w
 	bra.w	DrawTeamLogo
 DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardflags bit 3,
@@ -1102,7 +1102,7 @@ DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardfl
 	bclr	#2,(setupcardflags).w	;home side?
 	beq.w	.0
 	jsr	(printz).l					;map at the area
-	String	-(TXPAL1+TXMAP1),0,0	;x3
+	String	CC_Font1Pal1,0,0	;x3
 	move.w	#$18,(printx).w
 	move.w	#5,(printy).w
 	moveq	#8,d0
@@ -1110,7 +1110,7 @@ DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardfl
 	move.w	#$7FF,d2				;blank char
 .0									;visitors logo box done
 	jsr	(printz).l					;map at the logo
-	String	-(TXPAL3+TXMAP1),0,0
+	String	CC_Font1Pal3,0,0
 	move.w	#9,(printx).w
 DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 									;TeamLogoPalettes + team * 8 - $20 (home, color fam

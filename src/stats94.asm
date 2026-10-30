@@ -9,12 +9,12 @@ ShowScores							;"Scores" screen: the other games of the night in gsstruct over
 	moveq	#$1A,d1
 	bsr.w	SetupScreen				;set up the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),5,0
+	String	CC_Font3Pri,5,0
 	moveq	#$1E,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),$E,3,'Scores',-(TXPRI+TXMAP3),$B,1
+	String	CC_Font3Pri,$E,3,'Scores',CC_Font3Pri,$B,1
 	movea.l	#ScoresMap,a1
 	lea	jimtilecount(a1),a2
 	adda.l	jimdata(a1),a1
@@ -308,7 +308,7 @@ PrintAttribHeader					;Line editor player list: the column header of attribute p
 									;DispAttribCtr, then 6 rows of names and that attribute, the selected row
 									;highlighted
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$16,1
+	String	CC_Font2Pri,$16,1
 .top								;(also re-entered when the page is past the end)
 	movea.l	#PAttribColumns,a1		;list of column entries: word length, 4 byte flags, text
 	move.w	(DispAttribCtr).w,d0
@@ -455,7 +455,7 @@ DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Edi
 	bsr.w	ClearLineEditorTop
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
-	String	-TXMAP3,0,0
+	String	CC_Font3,0,0
 	movea.l	#ScoutMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2				;a2 saved/restored around this block
@@ -468,12 +468,12 @@ DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Edi
 	jsr	(dobitmap).l
 	movem.l	(sp)+,d0-d5/a0-a2
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),7,1
+	String	CC_Font2Pri,7,1
 	moveq	#$1A,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP2),$A,4,'Line  Editor',-(TXPRI+TXMAP2),$E,1
+	String	CC_Font2Pri,$A,4,'Line  Editor',CC_Font2Pri,$E,1
 	clr.w	d0						;map offset: home 0, away $2C
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team?
 	beq.w	PutTeamBlock
@@ -481,7 +481,7 @@ DrawTeamScreen						;Line editor background: bitmap (ScoutMap), frame, "Line Edi
 	bra.w	PutTeamBlock
 ClearLineEditorTop					;Erase 40 x 10 at the top of map 2
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	moveq	#$28,d0
 	moveq	#$A,d1
 	move.w	#$7FF,d2				;blank char
@@ -663,12 +663,12 @@ TeamRosterScreen					;"Team Roster" screen for team a2: pages of players (Displa
 	clr.w	(DispAttribCtr).w		;attribute page 0
 .redraw								;(also the target after A switches teams)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),7,1
+	String	CC_Font3Pri,7,1
 	moveq	#$1A,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),9,4,'Team  Roster',-(TXPRI+TXMAP3),$E,1
+	String	CC_Font3Pri,9,4,'Team  Roster',CC_Font3Pri,$E,1
 	clr.w	d0						;logo map offset: home 0, away $2C
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team?
 	beq.w	.home
@@ -679,12 +679,12 @@ TeamRosterScreen					;"Team Roster" screen for team a2: pages of players (Displa
 	jsr	(printsmallz).l
 	String	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),1,8
+	String	CC_Font3Pri,1,8
 	moveq	#$12,d0
 	moveq	#3,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),$15,8
+	String	CC_Font3Pri,$15,8
 	moveq	#$12,d0
 	moveq	#3,d1
 	jsr	(Framer).l					;draw the frame
@@ -991,12 +991,12 @@ ScoringSummaryScreen				;"Scoring Summary": one 4 row entry per goal (6 bytes ea
 	moveq	#$1A,d1
 	bsr.w	SetupScreen				;set up the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),4,1
+	String	CC_Font3Pri,4,1
 	moveq	#$20,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),6,4,'Scoring Summary',-(TXPRI+TXMAP3),7,1
+	String	CC_Font3Pri,6,4,'Scoring Summary',CC_Font3Pri,7,1
 	move.w	#$2C,d0					;away team block
 	bsr.w	PutTeamBlock
 	addq.w	#4,(printx).w			;4 columns right
@@ -1087,7 +1087,7 @@ DrawScoringRowUp					;Draw goal entry (d0 high word) at the top of the window
 	moveq	#6,d3					;6 bytes per entry
 	mulu.w	d0,d3					;d3 = byte offset into ScoreSum
 	jsr	(printz).l					;map at the row position
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	(VertLineScrolling).w,d0
 	lsr.w	#3,d0					;scroll position in 8 pixel rows
 	subq.w	#3,d0					;row just above the window, wrapped to 32 map rows
@@ -1103,7 +1103,7 @@ DrawScoringRowDown					;Draw goal entry (d0 high word) + 4 at the bottom of the 
 	moveq	#6,d3
 	mulu.w	d0,d3					;d3 = byte offset into ScoreSum
 	jsr	(printz).l					;map at the row position
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	(VertLineScrolling).w,d0
 	lsr.w	#3,d0					;scroll position in 8 pixel rows
 	addi.w	#$10,d0					;16 rows below the top, wrapped to 32 map rows
@@ -1168,12 +1168,12 @@ PenaltySummaryScreen				;"Penalty Summary": one 3 row entry per penalty (4 bytes
 	moveq	#$19,d1
 	bsr.w	SetupScreen				;set up the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),4,1
+	String	CC_Font3Pri,4,1
 	moveq	#$20,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),5,4,'Penalty  Summary',-(TXPRI+TXMAP3),7,1
+	String	CC_Font3Pri,5,4,'Penalty  Summary',CC_Font3Pri,7,1
 	move.w	#$2C,d0					;away team block
 	bsr.w	PutTeamBlock
 	addq.w	#4,(printx).w			;4 columns right
@@ -1267,7 +1267,7 @@ DisplayPenaltyLineUp				;Draw penalty entry (d0 high word) at the top of the win
 	move.w	d0,d3
 	asl.w	#2,d3					;d3 = byte offset into PenSum (4 per entry)
 	jsr	(printz).l					;map at the row position
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	(VertLineScrolling).w,d0
 	lsr.w	#3,d0					;scroll in 8 pixel cell rows
 	subq.w	#2,d0					;2 rows above the window top
@@ -1283,7 +1283,7 @@ DisplayPenaltyLineDown				;Draw penalty entry (d0 high word) + 5 at the bottom o
 	move.w	d0,d3
 	asl.w	#2,d3					;d3 = byte offset into PenSum (4 per entry)
 	jsr	(printz).l					;map at the row position
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	(VertLineScrolling).w,d0
 	lsr.w	#3,d0					;scroll in 8 pixel cell rows
 	addi.w	#$F,d0					;15 rows below the window top
@@ -1387,20 +1387,20 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 .redraw								;loop
 	clr.w	(PlayerScrollCtr).w
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),5,1
+	String	CC_Font3Pri,5,1
 	moveq	#$1E,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
 	tst.w	d7						;playoff stats?
 	beq.w	.title
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),7,4,'Playoff  Stats',-(TXPRI+TXMAP3),$E,1
+	String	CC_Font3Pri,7,4,'Playoff  Stats',CC_Font3Pri,$E,1
 	bra.w	.team
 .title								;d7 = 0
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,6,3,$C,$1A,CC_SetFont,1,'A^-^Switch^Teams',CC_SetFont,0
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),8,4,'Player  Stats',-(TXPRI+TXMAP3),$E,1
+	String	CC_Font3Pri,8,4,'Player  Stats',CC_Font3Pri,$E,1
 .team								;print the team
 	clr.w	d0						;TeamBlockMap offset: 0 for the home struct, $30 for the away struct
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team?
@@ -1527,7 +1527,7 @@ DrawStatsList						;Stats screen: column headers (sort column highlighted), the 
 	moveq	#3,d1
 	jsr	(Framer).l					;draw the frame
 	jsr	(printz).l
-	String	-(TXPRI+TXPAL3+TXMAP3),$A,8
+	String	CC_Font3Pal3Pri,$A,8
 	lea	StatSortTitles(pc),a1
 	moveq	#1,d0
 	add.w	(DispAttribCtr).w,d0	;string 0 = goalie saves, 1-5 = G A Pts SOG PIM
@@ -1603,7 +1603,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	movea.w	#(Satt-M68K_RAM),a4
 	adda.w	d3,a4
 	jsr	(printz).l					;map at the list position
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	add.w	d3,d3					;2 map rows per Satt row
 	andi.w	#$1F,d3					;wrap in the 32 row map
 	move.w	d3,(printy).w
@@ -1782,12 +1782,12 @@ CrowdMeterScreen					;"Crowd Meter": current, average and peak level (PrintCrowd
 	moveq	#$1C,d1
 	bsr.w	SetupScreen				;set up the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP3),6,1
+	String	CC_Font3Pri,6,1
 	moveq	#$1C,d0					;frame 28 wide, 6 high
 	moveq	#6,d1
 	bsr.w	Framer
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP3),9,4,'Crowd  Meter',-(TXPRI+TXMAP3),7,1
+	String	CC_Font3Pri,9,4,'Crowd  Meter',CC_Font3Pri,7,1
 	move.w	#$2C,d0					;away team block
 	bsr.w	PutTeamBlock
 	addq.w	#4,(printx).w			;4 columns right
@@ -1904,7 +1904,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	move.w	(smallfontchars).w,d4
 	jsr	(AddSmallFont).l
 	bsr.w	printz
-	String	-(TXPRI+TXMAP3),0,0
+	String	CC_Font3Pri,0,0
 	movea.l	#ScoutMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
@@ -1916,7 +1916,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	moveq	#0,d5					;no palette lines
 	bsr.w	dobitmap
 	bsr.w	printz
-	String	-TXMAP3,0,0
+	String	CC_Font3,0,0
 	movem.l	(sp),d0-d1/a2
 	add.w	d0,(printy).w
 	movea.l	#ScoutMap,a0
@@ -1936,7 +1936,7 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$D1234567,$89ABCDEF		;remap table
 	bsr.w	printz
-	String	-TXMAP2,0,0
+	String	CC_Font2,0,0
 	moveq	#$40,d0
 	moveq	#$20,d1
 	move.w	#$7FF,d2				;blank char
@@ -1990,12 +1990,12 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	move.l	#PauseText2,(menulist).l	;pause menu without Timeout
 	bset	#tmftimeout,tmflags(a2)
 	bsr.w	printz					;map at the box position
-	String	-(TXPRI+TXMAP3),5,$C
+	String	CC_Font3Pri,5,$C
 	moveq	#$16,d0					;frame 22 wide, 6 high
 	moveq	#6,d1
 	bsr.w	Framer					;draw the frame
 	bsr.w	printz					;map at the name position
-	String	-(TXPRI+TXMAP3),$C,$E,'Timeout',-(TXPRI+TXMAP3),$11,$F
+	String	CC_Font3Pri,$C,$E,'Timeout',CC_Font3Pri,$11,$F
 	movea.l	tmdata(a2),a1			;team name, centred
 	adda.w	Teamname(a1),a1
 	move.w	(a1),d0
@@ -2016,7 +2016,7 @@ Pausemode_go					;Pick team a2's goalie (or no goalie) from a
 	bsr.w	GetGoalieCount
 	move.w	d0,(menuitem+2).w
 	bsr.w	printz					;map at the box position
-	String	-(TXPRI+TXMAP3),4,$C
+	String	CC_Font3Pri,4,$C
 	moveq	#$18,d0
 	moveq	#3,d1
 	add.w	(menuitem+2).w,d1		;plus a row per goalie
