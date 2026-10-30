@@ -233,7 +233,7 @@ const assets = [
     { name: 'EnergyBar.map.jim', folder: 'NHL94/Graphics', start: 0x000AB920, end: 0x000ABA14 }, // unk_AB920
     { name: 'TeamBlocks.map.jim', folder: 'NHL94/Graphics', start: 0x000ABA14, end: 0x000AFE12 }, // unk_ABA14
     { name: 'TeamBlocks94.map.jim', folder: 'NHL94/Graphics', start: 0x000AFE12, end: 0x000B3530 }, // unk_AFE12
-    { name: 'EASN.map.jim', folder: 'NHL94/Graphics', start: 0x000B3530, end: 0x000B3640 }, // unk_B3530
+    { name: 'EASports.map.jim', folder: 'NHL94/Graphics', start: 0x000B3530, end: 0x000B3640 }, // unk_B3530
     { name: 'Arrows.map.jim', folder: 'NHL94/Graphics', start: 0x000B3640, end: 0x000B389C }, // unk_B3640
     { name: 'RonBarr.map.jim', folder: 'NHL94/Graphics', start: 0x000B389C, end: 0x000B3E74 }, // unk_B389C
     { name: 'Scores.map.jim', folder: 'NHL94/Graphics', start: 0x000B3E74, end: 0x000B425A }, // unk_B3E74
