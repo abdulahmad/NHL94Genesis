@@ -28,7 +28,7 @@ DrawMatchupBitmaps					;Called from PrintOptions. Draw the VisTeam and
 .opt	move.w	(Opt1team).w,(HomeTeam).w	;league / exhibition setup: the menu teams play
 	move.w	(Opt2team).w,(VisTeam).w	;menu team 2 is the visitors
 .draw	bsr.w	printz				;teams set: print them
-	String	-(TXPRI+TXMAP1),7,1,0
+	String	CC_Font1Pri,7,1,0
 	move.w	(VisTeam).w,d1
 	move.w	d1,d0
 	asl.w	#6,d0					;64 bytes per team
@@ -37,7 +37,7 @@ DrawMatchupBitmaps					;Called from PrintOptions. Draw the VisTeam and
 	move.w	(teambitmapchars).w,d4
 	bsr.w	DrawTeamBitmap
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),$16,1,0
+	String	CC_Font1Pri,$16,1,0
 	move.w	(HomeTeam).w,d1
 	move.w	d1,d0
 	asl.w	#6,d0					;64 bytes per team
@@ -87,7 +87,7 @@ ClearRosterName						;unreferenced. Set the print position, then erase 12 x 2 at
 
 setoptions_printpos2				;printz position string, then printx = $1A when a2 is the home team
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),2,$A,0
+	String	CC_Font1Pri,2,$A,0
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team struct?
 	bne.w	rtss2
 	move.w	#$1A,(printx).w
@@ -924,12 +924,12 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	movem.l	(sp)+,d0/a1
 	movem.l	d0-d5/a0-a4,-(sp)
 	bsr.w	printz					;map at the box position
-	String	-(TXPRI+TXMAP1),2,$E	;(and dropped a word)
+	String	CC_Font1Pri,2,$E	;(and dropped a word)
 	moveq	#$1C,d0					;framer size
 	moveq	#9,d1
 	bsr.w	Framer					;draw the frame
 	bsr.w	printz					;map at the logo position
-	String	-(TXPRI+TXMAP1),9,$10,'Stars of the Game',-(TXPRI+TXMAP1),3,$F
+	String	CC_Font1Pri,9,$10,'Stars of the Game',CC_Font1Pri,3,$F
 	movea.l	#Rinktilelist,a1
 	movea.w	#null,a2
 	adda.l	jimdata(a1),a1
@@ -1089,25 +1089,25 @@ ShowInjuryBox						;Injury box: 'Injury to:' player TempPlOffset, 'Out for perio
 									;CheckInjury so global
 	movem.l	d0-d2/a0-a4,-(sp)
 	bsr.w	printz					;map at the box position
-	String	-(TXPRI+TXMAP1),$B,3
+	String	CC_Font1Pri,$B,3
 	moveq	#$12,d0					;framer size
 	moveq	#5,d1
 	bsr.w	Framer					;draw the frame
 	btst	#5,(sflags7).w			;sflags7 bit 5?
 	bne.w	.0
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),$C,4,'Injury to:',-(TXPRI+TXMAP1),$C,6,'Out for period',-(TXPRI+TXMAP1),$C,5
+	String	CC_Font1Pri,$C,4,'Injury to:',CC_Font1Pri,$C,6,'Out for period',CC_Font1Pri,$C,5
 	bra.w	.1
 .0									;bit 5 of sflags7 set
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),$C,4,'Injury to:',-(TXPRI+TXMAP1),$C,6,'Out for game',-(TXPRI+TXMAP1),$C,5
+	String	CC_Font1Pri,$C,4,'Injury to:',CC_Font1Pri,$C,6,'Out for game',CC_Font1Pri,$C,5
 .1									;both: the player
 	bsr.w	GetPlayerNumInitial		;a1 = number and name
 	bsr.w	print
 	btst	#pf2fight,(puck_pflags2).w	;a fight?
 	beq.w	.ex
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),$14,6,'the game'
+	String	CC_Font1Pri,$14,6,'the game'
 .ex									;exit: restore the registers
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
@@ -1126,7 +1126,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	move.w	#$FFFF,d0				;clear the message
 	jsr	(prefmes).l
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),3,2
+	String	CC_Font1Pri,3,2
 	moveq	#$1B,d0
 .2									;(not branched to)
 	moveq	#8,d1
@@ -1150,7 +1150,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	bsr.w	FormatPlayerNumInitial	;a1 = shooter's name
 	bsr.w	print
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),4,7
+	String	CC_Font1Pri,4,7
 	movem.l	a1/a3,-(sp)
 	move.w	(pspenalty).w,d0
 	movea.l	#Penaltylist,a1
@@ -1159,7 +1159,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	bsr.w	print
 	movem.l	(sp)+,a1/a3
 	bsr.w	printz
-	String	' by',-(TXPRI+TXMAP1),4,8
+	String	' by',CC_Font1Pri,4,8
 	move.w	(BA_Checker_Offset).w,d0
 	movea.l	#AwShots,a2
 	tst.w	(BA_Team).w				;which team?
@@ -1170,7 +1170,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	jsr	(print).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-PenShotBigTxt	String	-(TXPRI+TXMAP1),4,3,'PENALTY SHOT!',-(TXPRI+TXMAP1),4,5	;printbig String for PenaltyShotBox
+PenShotBigTxt	String	CC_Font1Pri,4,3,'PENALTY SHOT!',CC_Font1Pri,4,5	;printbig String for PenaltyShotBox
 ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!' ('PP
 									;GOAL!' when DelayedPen bit 0 is set, cleared here), or 'HAT TRICK!' on
 									;the scorer's third goal when the scorer's slot is at least scorergoalies
@@ -1191,7 +1191,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	movea.w	#(ChkCnt-M68K_RAM),a4	;+ ScoreSumbytes = last goal entry
 	adda.w	(ScoreSumbytes).w,a4
 	bsr.w	printz					;map at the box position
-	String	-(TXPRI+TXMAP1),$B,2
+	String	CC_Font1Pri,$B,2
 	moveq	#$13,d0
 	move.w	#5,d1					;5 rows: no assist
 	tst.b	ssassist1(a4)
@@ -1258,7 +1258,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bclr	#5,(sflags4).w
 	bne.w	.6						;sflags4 bit 5 set: no assists
 	bsr.w	printz					;map at the next row
-	String	-(TXPRI+TXMAP1),$E,6,'Assist by:',-(TXPRI+TXMAP1),$C,7
+	String	CC_Font1Pri,$E,6,'Assist by:',CC_Font1Pri,$C,7
 	move.w	d0,-(sp)
 	bsr.w	FormatPlayerName		;a1 = his name
 	bsr.w	print
@@ -1268,7 +1268,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	move.b	ssassist2(a4),d0
 	bmi.w	.6
 	bsr.w	printz					;map at the next row
-	String	-(TXPRI+TXMAP1),$C,8
+	String	CC_Font1Pri,$C,8
 	move.w	d0,-(sp)
 	bsr.w	FormatPlayerName		;a1 = his name
 	bsr.w	print
@@ -1278,15 +1278,15 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bclr	#5,(sflags4).w			;clear the no assists flag
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-GoalBigTxt	String	-(TXPRI+TXMAP1),$F,3,'GOAL!',-(TXPRI+TXMAP1),$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
-	String	-(TXPRI+TXMAP1),$C,3,'HAT TRICK!',-(TXPRI+TXMAP1),$C,5
-PPGoalBigTxt	String	-(TXPRI+TXMAP1),$D,3,'PP GOAL!',-(TXPRI+TXMAP1),$C,5	;The same after DelayedPen bit 0:
+GoalBigTxt	String	CC_Font1Pri,$F,3,'GOAL!',CC_Font1Pri,$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
+	String	CC_Font1Pri,$C,3,'HAT TRICK!',CC_Font1Pri,$C,5
+PPGoalBigTxt	String	CC_Font1Pri,$D,3,'PP GOAL!',CC_Font1Pri,$C,5	;The same after DelayedPen bit 0:
 									;PP GOAL!, then HAT TRICK!
-	String	-(TXPRI+TXMAP1),$C,3,'HAT TRICK!',-(TXPRI+TXMAP1),$C,5
+	String	CC_Font1Pri,$C,3,'HAT TRICK!',CC_Font1Pri,$C,5
 box									;Fill a $13 x 8 rectangle at printz position $FF,$B,2 with char $7FF
 									;(eraser). Called from SetLCmode2
 	bsr.w	printz					;map at the box position
-	String	-TXMAP1,$B,2
+	String	CC_Font1,$B,2
 	moveq	#$13,d0
 	moveq	#8,d1
 	move.l	#$7FF,d2				;blank char
@@ -1459,21 +1459,21 @@ ConvertByteToDigits					;converts decimal number in d0 to ascii: two ascii digit
 AddError							; Address error vector; the bus error vector also points here
 	move	#$2700,sr				;interrupts off
 	bsr.w	printbigz				;big font message
-	String	-(TXPRI+TXMAP3),0,0,'Address Error'
+	String	CC_Font3Pri,0,0,'Address Error'
 	move.l	$A(sp),d0				;pc (exception frame)
 	move.l	2(sp),d1				;access address (exception frame)
 	bra.w	crash
 Illinst								; Illegal instruction vector
 	move	#$2700,sr				;interrupts off
 	bsr.w	printbigz				;big font message
-	String	-(TXPRI+TXMAP3),0,0,'Illegal Instruction'
+	String	CC_Font3Pri,0,0,'Illegal Instruction'
 	move.l	2(sp),d0				;pc (exception frame)
 	move.l	d0,d1
 	bra.w	crash
 ZeroDiv								; Divide by zero vector, falls into crash
 	move	#$2700,sr				;interrupts off
 	bsr.w	printbigz				;big font message
-	String	-(TXPRI+TXMAP3),0,0,'Division by zero'
+	String	CC_Font3Pri,0,0,'Division by zero'
 	move.l	2(sp),d0				;pc (exception frame)
 	move.l	d0,d1
 crash								;printbig d1 then d0 as hex, set the vdp up, copy 8 longs from the

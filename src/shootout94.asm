@@ -7,7 +7,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	move.w	#$FFFF,d0
 	jsr	(prefmes).l					;prepare the message area
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),3,2
+	String	CC_Font1Pri,3,2
 	moveq	#$1B,d0
 	moveq	#$C,d1
 	jsr	(Framer).l					;draw the box
@@ -26,7 +26,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	addq.w	#1,(printy).w
 	addq.w	#6,(printx).w
 	jsr	(printz).l
-	String	' vs.',-(TXPRI+TXMAP1),4,7
+	String	' vs.',CC_Font1Pri,4,7
 	move.w	(BA_Goalie_SCnum).w,d0	;goalie SCnum
 	asl.w	#7,d0
 	movea.l	#SortCords,a2
@@ -41,7 +41,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),4,9
+	String	CC_Font1Pri,4,9
 	movea.l	#tmstruct,a1
 	movea.l	tmdata(a1),a1
 	adda.w	Teamname(a1),a1
@@ -52,7 +52,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),4,$A
+	String	CC_Font1Pri,4,$A
 	movea.l	#AwShots,a1
 	movea.l	tmdata(a1),a1
 	adda.w	Teamname(a1),a1
@@ -63,7 +63,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),4,$C,'Round '
+	String	CC_Font1Pri,4,$C,'Round '
 	move.w	(shootoutround).w,d0
 	move.w	#2,d1
 	jsr	(PushNumberWidth).l
@@ -177,12 +177,12 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),1,$D
+	String	CC_Font1Pri,1,$D
 	move.w	#6,d1
 	move.w	#$1E,d0
 	jsr	(Framer).l					;draw the box
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP1),2,$E,'SHOOTOUT WON BY'
+	String	CC_Font1Pri,2,$E,'SHOOTOUT WON BY'
 	addq.w	#2,(printy).w
 	move.w	(HomeTeam).w,d1
 	move.w	(homeshootgoals).w,d0
@@ -355,7 +355,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	bra.w	ShootersRedraw
 PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),$16,1
+	String	CC_Font2Pri,$16,1
 .loop								;loop
 	movea.l	#PAttribOverall,a1		;skater columns
 	cmpi.w	#5,(TestList).w			;goalie slot?
@@ -459,7 +459,7 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	bsr.w	ClearShooterScreen
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
-	String	-TXMAP3,0,0
+	String	CC_Font3,0,0
 	movea.l	#ScoutMap,a1
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
@@ -472,12 +472,12 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	jsr	(dobitmap).l				;draw the background map
 	movem.l	(sp)+,d0-d5/a0-a2
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),7,1
+	String	CC_Font2Pri,7,1
 	moveq	#$1A,d0
 	moveq	#6,d1
 	jsr	(Framer).l					;draw the box
 	jsr	(printbigz).l
-	String	-(TXPRI+TXMAP2),$A,4,'  Shootout  ',-(TXPRI+TXMAP2),$F,1	;Shootout title
+	String	CC_Font2Pri,$A,4,'  Shootout  ',CC_Font2Pri,$F,1	;Shootout title
 	clr.w	d0
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team?
 	beq.w	.0
@@ -486,7 +486,7 @@ ShootersBackground					;Shootout shooters background and "Shootout" title
 	jmp	PutTeamBlock				;the team's logo block
 ClearShooterScreen					;Shootout shooters: erase the screen
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	moveq	#$28,d0
 	moveq	#$A,d1
 	move.w	#$7FF,d2

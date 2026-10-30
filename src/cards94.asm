@@ -52,7 +52,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 									;Called from PlayerCardTimer
 	movem.l	d0-d7/a0-a6,-(sp)		;the whole card is drawn here, keep all registers
 	jsr	(printz).l
-	String	-TXMAP1,0,0				;x3
+	String	CC_Font1,0,0				;x3
 	move.w	#$1C,(printx).w			;visitors: erase the other logo box at $1C
 	btst	#1,(setupcardflags).w	;which side?
 	bne.w	.0
@@ -64,7 +64,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(printz).l
-	String	-TXMAP1,0,0				;x3
+	String	CC_Font1,0,0				;x3
 	move.w	#3,(printx).w
 	btst	#1,(setupcardflags).w
 	bne.w	.1
@@ -84,7 +84,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 	addq.w	#1,(featuredplayer).w	;each visitors card moves to the next featured player
 .3									;both sides: wrap featuredplayer after the sixth picture
 	jsr	(printz).l
-	String	-TXMAP1,0,0				;x3 / add.b
+	String	CC_Font1,0,0				;x3 / add.b
 	cmpi.w	#6,(featuredplayer).l
 	blt.w	.4
 	clr.w	(featuredplayer).w		;back to the first picture
@@ -136,7 +136,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 	move.l	(sp)+,(palfadenew+$26).w
 	move.l	(sp)+,(palfadenew+$22).w
 	jsr	(printz).l
-	String	-(TXPRI+TXMAP1),0,0		;(the routine here)
+	String	CC_Font1Pri,0,0		;(the routine here)
 	move.w	#$6000,(printa).w
 	move.w	#3,(printx).w
 	move.w	#$19,d0
@@ -1561,7 +1561,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05234167,$89ABCDEF		;remap table
 	jsr	(printz).l					;map 3 at 0,0
-	String	-TXMAP3,0,0
+	String	CC_Font3,0,0
 	movea.l	#PlayerCardsScreenPic,a0	;the Player Cards screen picture
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -1580,14 +1580,14 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	addi.w	#$24,d4
 	move.w	d4,-(sp)
 	jsr	(printz).l					;map 2 at 0,0
-	String	-TXMAP2,0,0
+	String	CC_Font2,0,0
 	moveq	#$40,d0
 	moveq	#$20,d1
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	move.w	(sp)+,d4
 	jsr	(printz).l					;map 2 (priority) at 1,1
-	String	-(TXPRI+TXMAP2),1,1
+	String	CC_Font2Pri,1,1
 	movea.l	#CornerLogoMap,a0
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -1600,7 +1600,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 	moveq	#8,d5
 	jsr	(dobitmap).l				;draw the corner logo
 	jsr	(printz).l					;map 2 (priority) at column 33, row 1
-	String	-(TXPRI+TXMAP2),'!',1
+	String	CC_Font2Pri,'!',1
 	movea.l	#ArenaGfxBank,a0		;arena logo bank
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -1711,13 +1711,13 @@ DrawPlayerCard						;Draw a player card: picture (DrawPictureBox), name, "Record
 	move.l	$26(a6,d0.w),(palfadenew+$22).w	;the team's card colors into the palette
 	move.w	#$64,(palcount).w		;fade over $64 frames
 	jsr	(printz).l					;map 2 (priority) at 0,7
-	String	-(TXPRI+TXMAP2),0,7
+	String	CC_Font2Pri,0,7
 	move.w	#$28,d0
 	move.w	#$15,d1
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l					;clear the card area
 	jsr	(printz).l					;map 2 (priority) at 0,0
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	movea.l	(sp),a0
 	tst.w	(a0)
 	bne.w	.1						;index 0 is the team records card
@@ -1738,7 +1738,7 @@ DrawPlayerCard						;Draw a player card: picture (DrawPictureBox), name, "Record
 	jsr	(ClearCardText).l			;clear the text area
 	move.w	#$64,(palcount).w		;fade over $64 frames
 	jsr	(printz).l					;map 2 (priority) at 0,0
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	(HomeTeam).w,d0
 	tst.w	(cardvis).w				;which side?
 	beq.w	.4
@@ -1871,7 +1871,7 @@ PrintCardRecords					;Player card "Records" column
 	bclr	#0,(sflags6).w			;back off
 	move.w	#$64,(palcount).w		;fade over $64 frames
 	jsr	(printz).l					;map 2 (priority) at 0,0
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	#8,d1
 	jsr	(PrintCardTeam).l
 	move.w	#3,d0
@@ -1928,7 +1928,7 @@ ClearCardText						;Player card: erase the text area and redraw the team bitmap 
 									;(dobitmap)
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l					;map 2 (priority) at 0,0
-	String	-(TXPRI+TXMAP2),0,0
+	String	CC_Font2Pri,0,0
 	move.w	d0,(printx).w
 	move.w	d1,(printy).w
 	move.w	(cardlogochars1).w,d4
@@ -2617,7 +2617,7 @@ DrawPictureBox						;Player card picture box (DrawPlayerPicture, UnpackPicture)
 .0									;team side chosen
 	bsr.w	DrawPlayerPicture		;a0 = his picture
 	jsr	(printz).l					;map 2 (priority, palette 3) at 1,8
-	String	-(TXPRI+TXPAL3+TXMAP2),1,8
+	String	CC_Font2Pal3Pri,1,8
 	move.w	(cardlogochars2).w,d4
 	movea.l	a0,a1					;a1 = picture header
 	movea.l	a0,a2

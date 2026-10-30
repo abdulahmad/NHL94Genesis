@@ -3373,7 +3373,7 @@ updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the 
 .erase								;d0 = 0
 	bclr	#dffaceoff,(disflags).w
 	bsr.w	printz
-	String	-(TXPRI+TXMAP1),0,0,0
+	String	CC_Font1Pri,0,0,0
 	move.w	(fodropx).w,d0
 	subi.w	#$2E,d0
 	asr.w	#3,d0

@@ -115,7 +115,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05422561,$89ABCDEF		;remap table
 	jsr	(printz).l
-	String	-TXMAP2,0,0
+	String	CC_Font2,0,0
 	movea.l	#ScoutMap,a0			;the jsr, the string and this (ori.b x4)
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -128,27 +128,27 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	moveq	#3,d5					;color fam 1-2
 	jsr	(dobitmap).l
 	jsr	(printbigz).l
-	String	-(TXPAL2+TXMAP1),$C,$D,'MATCHUPS'
+	String	CC_Font1Pal2,$C,$D,'MATCHUPS'
 	move.w	#0,(printfontset).w
 	jsr	(printz).l					;map at the header
-	String	-TXMAP1,$10,$11,'ADVANTAGE:'
+	String	CC_Font1,$10,$11,'ADVANTAGE:'
 	jsr	(printz).l					;map at the box
-	String	-(TXPAL2+TXMAP2),6,3
+	String	CC_Font2Pal2,6,3
 	moveq	#$21,d0					;33 x 9 text box frame
 	moveq	#9,d1
 	jsr	(Framer).l
 	jsr	(printz).l					;map at the visitors picture
-	String	-(TXPAL2+TXMAP2),1,$E	;(and dropped a word)
+	String	CC_Font2Pal2,1,$E	;(and dropped a word)
 	move.w	#8,d0					;8 x 8 frame: visitors picture
 	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l					;map at the home picture
-	String	-(TXPAL2+TXMAP2),$1F,$E	;(and dropped a word)
+	String	CC_Font2Pal2,$1F,$E	;(and dropped a word)
 	move.w	#8,d0					;8 x 8 frame: home picture
 	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l					;map at Ron Barr
-	String	-TXMAP1,1,1
+	String	CC_Font1,1,1
 	movea.l	#RonBarrMap,a0			;Ron Barr picture: palette offset, then map header offset
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -453,16 +453,16 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 	bpl.s	.loop
 	move.w	#2,(printfontset).w
 	jsr	(printz).l					;map at the home rating
-	String	-TXMAP1,0,$17,'                                        '	;40 spaces
+	String	CC_Font1,0,$17,'                                        '	;40 spaces
 	jsr	(printz).l					;its position
-	String	-TXMAP1,$22,$16
+	String	CC_Font1,$22,$16
 	movea.l	#tmstruct,a0
 	movea.l	#AwShots,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(homerating).w
 	move.w	#2,(printfontset).w
 	jsr	(printz).l					;map at the visitors rating
-	String	-TXMAP1,4,$16
+	String	CC_Font1,4,$16
 	exg	a0,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(visrating).w
@@ -489,9 +489,9 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 .4									;rating weights chosen
 	move.w	(matchuphome).w,d0
 	jsr	(printz).l
-	String	-TXMAP1,0,$17,'                                        '	;40 spaces
+	String	CC_Font1,0,$17,'                                        '	;40 spaces
 	jsr	(printz).l					;its position
-	String	-TXMAP1,$23,$17
+	String	CC_Font1,$23,$17
 	bsr.w	PrintPlayerNameRight	;print the name, moved left to fit the line
 	bsr.w	CalcAttrib				;d0 = weighted total, d1 = weights
 	mulu.w	#$64,d0
@@ -501,7 +501,7 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 	move.w	d0,(homerating).w
 	jsr	(PushNumberWidth).l
 	jsr	(printz).l					;map at the number
-	String	-TXMAP1,$22,$16
+	String	CC_Font1,$22,$16
 	bsr.w	PrintTwoSpaces			;clear the old number
 	jsr	(printsmall).l				;print it
 	movea.l	#AwShots,a2
@@ -512,7 +512,7 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 .5									;rating weights chosen
 	move.w	(matchupvis).w,d0
 	jsr	(printz).l					;map at the name
-	String	-TXMAP1,0,$17
+	String	CC_Font1,0,$17
 	bsr.w	PrintPlayerNameRight
 	bsr.w	CalcAttrib				;d0 = weighted total, d1 = weights
 	mulu.w	#$64,d0
@@ -522,7 +522,7 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 	move.w	#2,d1					;2 digits
 	jsr	(PushNumberWidth).l
 	jsr	(printz).l					;map at the number
-	String	-TXMAP1,4,$16
+	String	CC_Font1,4,$16
 	bsr.w	PrintTwoSpaces			;clear the old number
 	jsr	(printsmall).l				;print it
 .x									;exit (also the end of the code above)
@@ -599,7 +599,7 @@ PrintAdvantageMarks					;Called every frame by ScoutingReport. Print the advanta
 .3									;print the marks
 	move.w	#2,(printfontset).w
 	jsr	(printz).l					;map at the marks
-	String	-TXMAP1,$13,$16
+	String	CC_Font1,$13,$16
 	jsr	(printsmall).l				;print them
 	move.w	#0,(printfontset).w
 	movem.l	(sp)+,d0-d7/a0-a6

@@ -835,13 +835,13 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	#0,d0					;fade to color
 	bsr.w	setVram
 	bsr.w	printz					;map 1 at 0,0
-	String	-TXMAP1,0,0
+	String	CC_Font1,0,0
 	move.l	#$80,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2				;blank char
 	bsr.w	eraser
 	bsr.w	printz					;map 3 at 0,0
-	String	-TXMAP3,0,0
+	String	CC_Font3,0,0
 	moveq	#$28,d0
 	moveq	#2,d1
 	move.w	#$7FF,d2				;blank char
@@ -852,7 +852,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.w	d4,(ExtraChars).w		;arrow tiles start here
 	bsr.w	DecompressGraphicsPlain	;arrow tiles at ExtraChars
 	bsr.w	printz					;map 2 (palette 3) at 0,0
-	String	-(TXPAL3+TXMAP2),0,0
+	String	CC_Font2Pal3,0,0
 	movea.l	#ScoutMap,a0			;playoff background map
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
@@ -889,7 +889,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.b	(a0)+,d4
 .top								;each team block
 	bsr.w	printz
-	String	-TXMAP1,0,0
+	String	CC_Font1,0,0
 	move.b	(a0)+,(printx+1).w
 	move.b	(a0)+,(printy+1).w
 	clr.w	d1
@@ -901,14 +901,14 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.b	(a0)+,d4
 .top2								;each arrow
 	bsr.w	printz
-	String	-TXMAP1,0,2
+	String	CC_Font1,0,2
 	move.b	(a0)+,(printx+1).w
 	clr.w	d0
 	move.b	(a0)+,d0
 	bsr.w	PlayoffScreen_doarrow			;draw the bracket lines
 	dbf	d4,.top2
 	bsr.w	printz					;map 1 (palette 1)
-	String	-(TXPAL1+TXMAP1),0,0
+	String	CC_Font1Pal1,0,0
 	cmpi.w	#7,(bosgames).w			;best of 7
 	beq.w	.noscr
 	clr.w	d4						;clear the high byte
@@ -934,7 +934,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	tst.w	(gamelevel).w			;first round?
 	beq.w	.nopage					;one page only
 	bsr.w	printz					;map 3 (palette 3)
-	String	-(TXPAL3+TXMAP3),$A,1,'Press [ or ] to page',0	;the text as code
+	String	CC_Font3Pal3,$A,1,'Press [ or ] to page',0	;the text as code
 .nopage								;gamelevel = 0
 	move.w	#$18,(palcount).w		;after the string
 	move.w	#SngEOP,-(sp)			;end of period song
@@ -1221,7 +1221,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bsr.w	ScrollDisplayUp			;wrap to a new line
 .8									;scrolled when the box is full
 	bsr.w	printz					;map 1 at 9,4
-	String	-TXMAP1,9,4
+	String	CC_Font1,9,4
 	move.w	(DispAttribCtr).w,d0
 	add.w	d0,(printx).w			;x 9 + column
 	move.w	(VertLineScrolling).w,d0

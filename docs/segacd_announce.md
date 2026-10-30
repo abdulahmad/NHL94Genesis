@@ -66,7 +66,7 @@ A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the 
 | `<` `>` `\|` `\` | `$23132`, `$23168`, `$2328E`, `$232C4` | hot and cold players |
 | `$` `[` `]` `{` `}` `_` `+` | walks a team or player record | the name that follows |
 
-The typer then calls `printz` (`$1DF6E`) with the inline string whose length word is `$0006`: flag `$FF` (`-TXMAP1`), x `9`, y `4`. It adds the attribute counter `$1A44E` to print x and the line scroll to print y, calls `print` (`$1DF80`), and adds the word length to the attribute counter.
+The typer then calls `printz` (`$1DF6E`) with the inline string whose length word is `$0006`: flag `$FF` (`CC_Font1`), x `9`, y `4`. It adds the attribute counter `$1A44E` to print x and the line scroll to print y, calls `print` (`$1DF80`), and adds the word length to the attribute counter.
 
 `ScrollDisplayUp` is the tail of `scouttok.asm`. At seven lines it calls `$379D6` eight times to scroll the text window. Nothing in the typer, the token handlers, or the scroll calls `_CDBIOS` or the PCM stream.
 

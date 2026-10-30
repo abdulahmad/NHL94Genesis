@@ -620,7 +620,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	dbf	d1,.loop
 	jsr	(setVram_0).l
 	jsr	(printz).l					;map at the top left
-	String	-(TXPRI+TXMAP2),$E,3
+	String	CC_Font2Pri,$E,3
 	movea.l	#PlayoffSprite+$12E0,a2	;the background picture after the playoff sprite tiles
 	movea.l	a2,a0
 	movea.l	a2,a1
@@ -634,7 +634,7 @@ HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 fram
 	moveq	#$F,d5					;palette lines 0-3
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the picture
-	String	-(TXPRI+TXMAP2),$10,$10
+	String	CC_Font2Pri,$10,$10
 	movea.l	#HiScoreImg,a2			;then the high score picture
 	movea.l	a2,a0
 	movea.l	a2,a1
@@ -839,13 +839,13 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move.w	#VDPR_MODE3+$03,Vctrl-Vdata(a0)	;line scroll for the credits
 	clr.w	(Vscroll).w
 	jsr	(printz).l					;map 1 at the top left
-	String	-TXMAP1,0,0
+	String	CC_Font1,0,0
 	move.l	#$80,d0					;clear both text maps
 	moveq	#$20,d1
 	move.l	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(printz).l					;map 3 at the top left
-	String	-TXMAP2,0,0
+	String	CC_Font2,0,0
 	move.l	#$80,d0
 	moveq	#$20,d1
 	move.l	#$7FF,d2				;blank char
@@ -853,7 +853,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	clr.w	d4
 	move.w	d4,-(sp)
 	jsr	(printz).l					;map 2 at the top
-	String	-TXMAP3,0,0
+	String	CC_Font3,0,0
 	movea.l	#TitleScreenImg,a0		;the top of the title picture
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -868,7 +868,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move.w	d4,(TempWord1).w
 	move.w	(sp)+,d4
 	jsr	(printz).l					;then its bottom 5 rows in the window plane
-	String	-TXMAP2,0,$17
+	String	CC_Font2,0,$17
 	movea.l	#TitleScreenImg,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -884,7 +884,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	bclr	#0,(sflags6).w			;normal maps
 	move.w	(TempWord1).w,d4
 	jsr	(printz).l					;map at the shield
-	String	-(TXPRI+TXMAP2),1,1
+	String	CC_Font2Pri,1,1
 	movea.l	#NHLShieldImg,a0		;NHL shield, NHLPA logo and the title on top
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -897,7 +897,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	moveq	#8,d5					;palette line 3
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the NHLPA logo
-	String	-(TXPRI+TXMAP2),$19,1
+	String	CC_Font2Pri,$19,1
 	movea.l	#PAlogoImg,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -910,7 +910,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	moveq	#0,d5					;no palette lines
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the title
-	String	-(TXPRI+TXMAP2),1,$E
+	String	CC_Font2Pri,1,$E
 	movea.l	#TitleImg,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -930,7 +930,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$0D104567,$89ABCDEF		;remap table: palette assignment for the scrolling credits
 	jsr	(printz).l					;map 1 at the top left
-	String	-(TXPAL1+TXMAP1),0,0
+	String	CC_Font1Pal1,0,0
 	movea.l	#Credits,a1				;the first credits page
 	jsr	(CreditsPrintRow).l			;print the first page
 	addi.w	#$20,(Vscroll).w		;scroll down 32 lines
@@ -953,7 +953,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	jsr	(CreditsWait).l				;one frame
 	dbf	d3,.loop2					;loop
 	jsr	(printz).l					;map 1 at the top left
-	String	-(TXPAL1+TXMAP1),0,0
+	String	CC_Font1Pal1,0,0
 	movea.l	#CreditsList,a1
 .loop3								;each credits entry
 	jsr	(CreditsPrintRow).l			;print the entry
