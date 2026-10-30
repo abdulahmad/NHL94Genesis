@@ -4,7 +4,8 @@
 
 
 > **Superseded (segment stubs removed).** The `src/stubinc/<name>_stub.asm` files, `tools/segments.json` and the stub org
-> builds described below no longer exist. Every build is the full ROM; `npm run seg -- <name>` (`node tools/build.js --seg
+> builds described below no longer exist. `src/stubinc/equals.inc` and `ports.inc` were later folded into `src/ram94.asm`.
+> Every build is the full ROM; `npm run seg -- <name>` (`node tools/build.js --seg
 > <name>` or `--all`) builds it and compares the segment's address range, taken from the build listing (`tools/verifySegment.js`).
 > The history below still describes how each segment was first matched.
 
@@ -37,7 +38,7 @@ Work in small steps: every change is built and checked byte for byte against the
 What main is:
 - main is a faithful disassembly of the retail game. It keeps only good-practice changes that emit identical bytes: equates and labels instead of hardcoded values, assemble-time checks, and build tooling (the computed checksum and ROM size in `tools/fixrom.js`, `src/shortcalls.inc`, the CHECKSUM/REV flags).
 - Mod-specific fixes (long calls instead of the retail short ones, save-RAM moves, mapper code) do not go on main. They are documented in `docs/EXPANDING_THE_ROM.md` or live on mod branches. Gameplay-loop speed is `docs/PERFORMANCE.md`.
-- `NumTeams` / `NumPlayoffTeams` in `src/stubinc/equals.inc` and the per-team length checks stay; `null` (92 name) and `TeamList` replace the `#$30A` / `#$30E` loads.
+- `NumTeams` / `NumPlayoffTeams` in `src/ram94.asm` and the per-team length checks stay; `null` (92 name) and `TeamList` replace the `#$30A` / `#$30E` loads.
 
 ## Current segment
 
