@@ -1,11 +1,14 @@
 ;	RAM map (93G form): M68K_RAM and the RAM below varstart as equates, then the variables from varstart
 ;	allocated with rs in address order, each sized to the next one. Equates only: no ROM bytes.
 
+Z80_RAM equ $A00000
+Z80_YM2612 equ $A04000
+Stack	=	$FFFFFFFE				;game stack (Begin, StartPer, Opening2)
 M68K_RAM equ $FFFF0000
 sramcleared equ $FFFF1FFE
+varstart equ $FFFFB000				;start of variable space (end of replay; 93G)
 replayend equ $FFFFAF54				;end of the replay frames (replaysize bytes each); suba4, adda43
 									;and the record step wrap here
-varstart equ $FFFFB000				;start of variable space (end of replay; 93G)
 	RSSET	varstart				;variables from here on are allocated upwards with rs (93G)
 VSCRLPM	rs.w	1
 VSPRITES	rs.w	1
@@ -44,10 +47,10 @@ lldisp	rs.w	1
 periodendtime	rs.w	1
 SortCords	rs.b	Sortobjs*SCstruct	;sort objects, SCstruct bytes each (93G); the puck is object puckscnum
 puckx	equ	SortCords+(puckscnum*SCstruct)+Xpos	;puck x position in its sort object (93G)
-pucky	equ	SortCords+(puckscnum*SCstruct)+Ypos	;puck y position
-puckz	equ	SortCords+(puckscnum*SCstruct)+Zpos	;puck height above the ice
 puckvx	equ	SortCords+(puckscnum*SCstruct)+Xvel	;puck x velocity
+pucky	equ	SortCords+(puckscnum*SCstruct)+Ypos	;puck y position
 puckvy	equ	SortCords+(puckscnum*SCstruct)+Yvel	;puck y velocity
+puckz	equ	SortCords+(puckscnum*SCstruct)+Zpos	;puck height above the ice
 puckvz	equ	SortCords+(puckscnum*SCstruct)+Zvel	;puck z velocity
 puckx_nopuck	equ	SortCords+(puckscnum*SCstruct)+nopuck	;puck object nopuck word
 puckc	equ	SortCords+(puckscnum*SCstruct)+newpos	;puck carrier (93G: the newpos slot of the puck object)
@@ -80,6 +83,7 @@ palcount	rs.w	1
 palfadenew	rs.w	64
 fofdata2	rs.w	4
 fofdata	rs.l	1
+ffonum	equ	7						;objects tied to the rink scroll (93 had 5)
 pads	rs.w	14
 Joy1Struct	rs.w	28
 CameraPosStruct	rs.w	11
@@ -90,6 +94,9 @@ glovestruct	rs.w	14
 PadControlBits	rs.w	1
 padcont	rs.w	6
 PadControlBits34	rs.w	1		;as PadControlBits, for pads 3 and 4 (4 way play)
+ssonum	equ	4						;screen objects not tied to the rink scroll (2 arrows + 2 scoreboard
+									;logos)
+ssosize	equ	$14						;bytes per sso object
 sso	rs.w	40
 shotplayer	rs.w	1
 lastplayer	rs.w	1
@@ -250,13 +257,9 @@ PenRoughingPS	equ	$36
 PenChargingPS	equ	$38
 PenCrossChkPS	equ	$3A
 PenSlashingPS	equ	$3C
-; Sprite object counts and sizes (92 names)
+; Sprite object constants (92 names; the sso/ffo counts and size sit with sso and pads)
 collrad	equ	8						;collision radius of an object (objects collide within collrad*2)
 horoff	equ	197						;subtracted from the screen y in the horizontal rink view
-ssosize	equ	$14						;bytes per sso object
-ssonum	equ	4						;screen objects not tied to the rink scroll (2 arrows + 2 scoreboard
-									;logos)
-ffonum	equ	7						;objects tied to the rink scroll (93 had 5)
 PenCntDwn	rs.w	1
 Penaltytimer	rs.w	1
 PBnum	rs.w	1
@@ -490,10 +493,7 @@ iconx	rs.w	1
 scoutwait	rs.l	1
 replaydelay	rs.w	1
 PALflag	rs.w	4230
-Stack	=	$FFFFFFFE				;game stack (Begin, StartPer, Opening2)
 	rs.w	1						;the word at Stack
-Z80_RAM equ $A00000
-Z80_YM2612 equ $A04000
 ; ----------------------------------
 
 
