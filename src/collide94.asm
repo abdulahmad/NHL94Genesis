@@ -2,7 +2,7 @@
 ;	and hooks, and decides when a player falls or is hurt.
 
 
-;Sort struct (SortCords, SCstruct each): the fields are named in stubinc/equals.inc.
+;Sort struct (SortCords, SCstruct each): the fields are named in ram94.asm.
 
 checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check wall
 									;collision (around the hot spot and the end of the stick) and player
@@ -1000,7 +1000,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;Sort struct (SortCords, SCstruct each) and team struct (tmstruct / AwShots, tmsize bytes): the fields are
-;named in stubinc/equals.inc. 94 adds the hot / cold table and goals by period, power play, breakaway,
+;named in ram94.asm. 94 adds the hot / cold table and goals by period, power play, breakaway,
 ;one-timer, penalty shot and shorthanded stats at the end of the team struct.
 
 checkfight							;an rts: there is no fighting (93 looked for the start of a fight between
@@ -1952,7 +1952,7 @@ checkpuckcoll						;look for puck coll with players. a3 = puck. Clears Yvel past
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;Sort struct (SortCords, SCstruct each) and team struct (tmstruct / AwShots): the fields are named in
-;stubinc/equals.inc. setplayer writes the player attributes from weight to handed.
+;ram94.asm. setplayer writes the player attributes from weight to handed.
 
 puckstick							;puck collides with stick. a2 = player who collided, a3 = puck, d0 =
 									;distance^2 (from checkpuckcoll .ccx). A stick check on the puck carrier
