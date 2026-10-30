@@ -1943,8 +1943,8 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	dc.w	-1
 
 PauseMenuItems						;pause menu item list (PauseMode)
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'   Resume Game    '
 	dc.l	rtss2
 	String	'  Instant Replay  '
@@ -1960,8 +1960,8 @@ PauseMenuItems						;pause menu item list (PauseMode)
 	String	CC_ListEnd
 
 Pausemode_mlist							;Pause menu item list (PauseMode)
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'   Resume Game    '
 	dc.l	rtss2
 	String	'  Instant Replay  '
@@ -1997,8 +1997,8 @@ Pausemode_mlist							;Pause menu item list (PauseMode)
 	String	CC_ListEnd
 
 PauseText2							;Pause menu item list without Timeout (PauseMode)
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'   Resume Game    '
 	dc.l	rtss2
 	String	'  Instant Replay  '
@@ -2032,8 +2032,8 @@ PauseText2							;Pause menu item list without Timeout (PauseMode)
 	String	CC_ListEnd
 
 ShootoutIntermissionMenu			;Intermission menu in Shootout (gmode2 bit 0)
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'  Start Shootout  '
 	dc.l	rtss2
 	String	'  Shootout SetUp  '
@@ -2047,8 +2047,8 @@ ShootoutIntermissionMenu			;Intermission menu in Shootout (gmode2 bit 0)
 	String	CC_ListEnd
 
 StartGameText						;Intermission menu for gsp 0
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'    Start Game    '
 	dc.l	rtss2
 	String	'  Change Goalie   '
@@ -2066,8 +2066,8 @@ StartGameText						;Intermission menu for gsp 0
 	String	CC_ListEnd
 
 StartGameTextPO						;Intermission menu for gsp 0 in the playoffs
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'    Start Game    '
 	dc.l	rtss2
 	String	'  Change Goalie   '
@@ -2087,8 +2087,8 @@ StartGameTextPO						;Intermission menu for gsp 0 in the playoffs
 	String	CC_ListEnd
 
 IntermissionText					;Intermission menu for gsp 1-3
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'   Resume Game    '
 	dc.l	rtss2
 	String	'    Game Stats    '
@@ -2120,8 +2120,8 @@ IntermissionText					;Intermission menu for gsp 1-3
 	String	CC_ListEnd
 
 ExitGameText						;Intermission menu for gsp 4
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'    Exit Game     '
 	dc.l	rtss2
 	String	'    Game Stats    '
@@ -2147,8 +2147,8 @@ ExitGameText						;Intermission menu for gsp 4
 	String	CC_ListEnd
 
 ExitGameTextPO						;Intermission menu for gsp 4 in the playoffs
-	String	$FE,5
-	String	$FE,4
+	String	CC_SetAttribute,5
+	String	CC_SetAttribute,4
 	String	'    Exit Game     '
 	dc.l	rtss2
 	String	'    Game Stats    '
@@ -2174,8 +2174,8 @@ ExitGameTextPO						;Intermission menu for gsp 4 in the playoffs
 	String	CC_ListEnd
 
 LineEditorMenuText					;Line editor exit menu 
-	String	$FE,6,$F9,1
-	String	$FE,4,$F9,1
+	String	CC_SetAttribute,6,CC_SetFont,1
+	String	CC_SetAttribute,4,CC_SetFont,1
 	String	'       Exit       '
 	dc.l	rtss2
 	String	'Set Original lines'
@@ -2187,8 +2187,8 @@ LineEditorMenuText					;Line editor exit menu
 	String	CC_ListEnd
 
 LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
-	String	$FE,6,$F9,1
-	String	$FE,4,$F9,1
+	String	CC_SetAttribute,6,CC_SetFont,1
+	String	CC_SetAttribute,4,CC_SetFont,1
 	String	'       Exit       '
 	dc.l	rtss2
 	String	'Set Original lines'
