@@ -16,7 +16,7 @@ SetTeamPrintPos,setoptions_printpos2,93G
 shotdirmath,CalcAngleOffset,93G
 DrawTeamBlockBitmap,dotb,92G/93G
 .loop/.add/.next/.bad/.fill/.halt (checksum94),ValidationLoop/SkipIncrement/ContinueValidation/VDPErrorSetup/VRAMWriteLoop/Halt,92G promoted
-(new label),Opening3,92G
+Opening3,Opening3,92G and 93G (same name; Opening3 bsr PlayoffScreen in hockey.asm / hockey93.asm)
 TXS_MAP,CC_SetMap,93G ControlCode_SetMap
 TXS_ATTR,CC_SetAttribute,93G
 TXS_X,CC_SetX,93G
@@ -161,37 +161,37 @@ SngScout,SngScouting,92G/93G
 ReplayStarStruct,CameraPosStruct,93G
 .goal,Goal,92G/93G (checkgoal branches to it)
 assgoaliecpu,assgoalie,92G/93G (asstab entry; assgoaliecpu and assgoaliectrl kept as sub-labels)
-(raw offset),tmHotCold,new in 94 (94S HotColdTable is a separate array)
-(raw offset),tmPerGoals,94S
-(raw offset),tmPerShots,94S
-(raw offset),tmPwrPlayTime,94S
-(raw offset),tmPPShots,94S
-(raw offset),tmSHGoals,94S
-(raw offset),tmBreakaways,94S
-(raw offset),tmBreakawayGoals,94S
-(raw offset),tmOneTimers,94S
-(raw offset),tmOneTimerGoals,94S
-(raw offset),tmPenShots,94S
-(raw offset),tmPenShotGoals,94S
+(new equate),tmHotCold,new in 94 (at 93G tmsize $1A2; 94S HotColdTable is a separate array)
+(new equate),tmPerGoals,new in 94 (past 93G tmsize $1A2); 94S has it as tmPerGoals
+(new equate),tmPerShots,new in 94 (past 93G tmsize $1A2); 94S has it as tmPerShots
+(new equate),tmPwrPlayTime,new in 94 (past 93G tmsize $1A2); 94S has it as tmPwrPlayTime
+(new equate),tmPPShots,new in 94 (past 93G tmsize $1A2); 94S has it as tmPPShots
+(new equate),tmSHGoals,new in 94 (past 93G tmsize $1A2); 94S has it as tmSHGoals
+(new equate),tmBreakaways,new in 94 (past 93G tmsize $1A2); 94S has it as tmBreakaways
+(new equate),tmBreakawayGoals,new in 94 (past 93G tmsize $1A2); 94S has it as tmBreakawayGoals
+(new equate),tmOneTimers,new in 94 (past 93G tmsize $1A2); 94S has it as tmOneTimers
+(new equate),tmOneTimerGoals,new in 94 (past 93G tmsize $1A2); 94S has it as tmOneTimerGoals
+(new equate),tmPenShots,new in 94 (past 93G tmsize $1A2); 94S has it as tmPenShots
+(new equate),tmPenShotGoals,new in 94 (past 93G tmsize $1A2); 94S has it as tmPenShotGoals
 Map1col1,Map1col,92G
 Map2col1,Map2col,92G
 Map3col1,Map3col,92G
 animchars,crowdvrcset,92G
-(raw offset),pldnum,92G setplayer fields (.pld rating byte)
-(raw offset),pldweight,92G setplayer fields (.pld rating byte)
-(raw offset),pldlegspd,92G setplayer fields (.pld rating byte)
-(raw offset),pldaidef,92G setplayer fields (.pld rating byte)
-(raw offset),pldcheck,92G setplayer fields (.pld rating byte)
-(raw offset),pldstick,92G setplayer fields (.pld rating byte)
-(raw offset),pldendur,92G setplayer fields (.pld rating byte)
-(raw offset),pldpass,92G setplayer fields (.pld rating byte)
-(raw offset),pldsize,92G setplayer fields (.pld rating byte)
-(raw offset),pcsize,93G (puckcross entry size; bottom row)
-(raw offset),sfxarg,new (sfx / song stack argument after movem)
-(raw offset),prevtileptr,new (addframe2 saved d2 on the stack)
-(raw offset),prevtilecnt,new (addframe2 saved d4 on the stack)
-(alias),GGSleft,92G (goalie glove save left; aggress in 93/94)
-(raw offset),tmfslide,93G (= tmftimeout)
+pldnum,pldnum,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldweight,pldweight,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldlegspd,pldlegspd,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldaidef,pldaidef,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldcheck,pldcheck,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldstick,pldstick,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldendur,pldendur,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldpass,pldpass,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pldsize,pldsize,93G (same name; .pld rating byte; 92G setplayer used raw offsets)
+pcsize,pcsize,93G (same name; puckcross entry size)
+sfxarg,sfxarg,93G (same name; middle93.asm sfx / song stack argument after movem)
+prevtileptr,prevtileptr,93G (same name; video93.asm addframe2 saved d2 on the stack)
+prevtilecnt,prevtilecnt,93G (same name; video93.asm addframe2 saved d4 on the stack)
+GGSleft,GGSleft,92G and 93G (same name; = stickhand in 92 and aggress in 93/94)
+tmfslide,tmfslide,93G (same name; = tmftimeout)
 NoTiles,null,92G
 InitialSP,Stack,92G/93G
 Opcode_Fillbytes,Opcode_FillBytes,93G
