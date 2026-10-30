@@ -87,7 +87,7 @@ UpdateVertScrollReg					;VSRAM word 1 = VertLineScrolling - $30
 	rts
 DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current game gamenum,
 									;not one with flag bit 1 or 2 set)
-									;the two teams and scores (NewTicker3_tn) and the period (PerLabels)
+									;the two teams and scores (PrintGameInfo) and the period (PerLabels)
 	cmp.w	(gamenum).w,d3
 	beq.w	rtss8					;the current game is not listed
 	moveq	#$10,d0					;16 bytes a game
@@ -100,11 +100,11 @@ DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current 
 	bne.w	rtss8					;(flag bit 2: game not shown)
 	move.w	gst2(a0),d0				;first team / score
 	move.w	gss2(a0),d1
-	bsr.w	NewTicker3_tn			;print it
+	bsr.w	PrintGameInfo			;print it
 	addq.w	#1,(printy).w
 	move.w	(a0),d0					;second team / score
 	move.w	gss1(a0),d1
-	bsr.w	NewTicker3_tn			;print it
+	bsr.w	PrintGameInfo			;print it
 	move.w	gsper(a0),d0			;period, 1 based
 	subq.w	#1,d0
 	movea.l	#PerLabels,a1			;period names
@@ -112,7 +112,7 @@ DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current 
 	jsr	(Fprintsmall).l				;print the period
 	addq.w	#2,(printy).w			;two rows down
 	rts
-NewTicker3_tn						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
+PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
 	movea.w	#TeamList,a1
 	asl.w	#2,d0
 	movea.l	0(a1,d0.w),a1
