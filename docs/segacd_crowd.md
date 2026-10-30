@@ -6,7 +6,7 @@
 
 ## Same frames as the cartridge
 
-The cartridge `updatecrowdf` (`hockey94.asm`) decays `Crowdlevel`, steps `Crowdstep` by 2 masked with `$1E`, and indexes `cd0`. A loud crowd (`Crowdlevel` above `$118`) can store a random extra frame, `$13` through `$19` (19 through 25).
+The cartridge `updatecrowdf` (`hockey94.asm`) decays `Crowdlevel`, steps `Crowdstep` by 2 masked with `$1E`, and indexes `updatecrowdf_cd0`. A loud crowd (`Crowdlevel` above `$118`) can store a random extra frame, `$13` through `$19` (19 through 25).
 
 On the disc the variables moved with the rest of work RAM:
 
@@ -17,7 +17,7 @@ On the disc the variables moved with the rest of work RAM:
 | `Crowdstep` `$B89E` | `$17CD4` | index step |
 | `Crowdcnt` `$B8A0` | `$17CD6` | ticks until the next frame |
 
-The thresholds are the cartridge ones: calm a crowd at or above `$15E` by an extra 3, clamp the index source at `$7F`, mask `$60`, and the loud-crowd window `$118` / `$13` / `$19`. The frame table is the cartridge `cd0` bytes, 64 words, four bands. `HOCKEY.BIN` is entered at `$1B000`, so file `$2654C` is address `$4154C`, which is the `movea.l #$4154C,a0` in the driver. Nothing is appended after the last `$0B03`.
+The thresholds are the cartridge ones: calm a crowd at or above `$15E` by an extra 3, clamp the index source at `$7F`, mask `$60`, and the loud-crowd window `$118` / `$13` / `$19`. The frame table is the cartridge `updatecrowdf_cd0` bytes, 64 words, four bands. `HOCKEY.BIN` is entered at `$1B000`, so file `$2654C` is address `$4154C`, which is the `movea.l #$4154C,a0` in the driver. Nothing is appended after the last `$0B03`.
 
 ## Where the random word comes from
 

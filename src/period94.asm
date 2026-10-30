@@ -332,7 +332,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bsr.w	.lines
 	move.w	#$18,(palcount).w		;fade in
 .loop2								;loop
-	jsr	(WaitVSyncAndReadInput).l	;left (bit 2) goals, right (bit 3) shots, start exits
+	jsr	(Pausemode_rjoy).l	;left (bit 2) goals, right (bit 3) shots, start exits
 	btst	#7,d1					;start?
 	bne.w	.exit
 	btst	#2,d1					;left?

@@ -262,7 +262,7 @@ CopyTeamBlockMapData				;Copy one team's 22 block chars from the loaded tile set
 	rts
 defaultsprites						;allocate vram and assign char area for graphic structures. d4 = char area
 									;for data. Sets up the sso (4) and ffo (7) objects from .listsso /
-									;.listffo, then jumps to defaultsprites2. Called from setupice and
+									;.listffo, then jumps to defaultsprites_0. Called from setupice and
 									;setupice_highlight
 	movea.l	#.listsso,a2
 	movea.w	#(sso-M68K_RAM),a3
@@ -291,7 +291,7 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 	add.w	(a2)+,d4
 	adda.w	#ffosize,a3				;next pad object
 	dbf	d0,.ffotop
-	bra.w	defaultsprites2
+	bra.w	defaultsprites_0
 .listsso							;start values of the screen objects
 	dc.w	0						;xcord,ycord,frame,attribute,vram char size
 	dc.w	0
@@ -356,7 +356,7 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 	dc.w	SPFgloves
 	dc.w	0
 	dc.w	5
-defaultsprites2						;objects which are tied to screen scrolling and have velocity: the 16
+defaultsprites_0						;objects which are tied to screen scrolling and have velocity: the 16
 									;SortCords objects from .list (players, puck, puck shadow, goal nets ...),
 									;the OOlist and OOlistpos; then SprSort. Also called from setoptions
 	clr.w	d6
@@ -735,7 +735,7 @@ setplayercolors						;Copy in correct color data for each team:.team for the hom
 PeriodOver							;what to do if period over. Branched to from puckfaceoff when the clock
 									;runs out. After period 3 a tied game goes to
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a
-									;tied playoff game plays on. Falls into IntermissionStart
+									;tied playoff game plays on. Falls into PeriodOver_sp
 	addq.w	#1,(gsp).w				;period number
 	bchg	#gmdir,(gmode).w		;flip the attack direction
 	cmpi.w	#3,(gsp).w				;period 3 or later?
@@ -752,7 +752,7 @@ PeriodOver							;what to do if period over. Branched to from puckfaceoff when t
 	move.w	#4,(gsp).w				;game over
 .0									;period number set
 	bsr.w	forceblack
-IntermissionStart					;reset the clock, song $79, ticker scores, playoff stats at the end
+PeriodOver_sp					;reset the clock, song $79, ticker scores, playoff stats at the end
 									;(AddPOStats), Intermission, then StartPer or GameOver. Also jumped to
 									;from StartGame
 	jsr	(ResetClock).w				;period clock back to the start
@@ -819,7 +819,7 @@ Opening3	bsr.w	PlayoffScreen	;playoff tree (returns at once outside playoff mode
 PlayoffScreen						;bring up playoff screen if in playoff mode. Called from GameOver and
 									;Opening2. Runs its own vblank and
 									;scrolls the tree a page ($70 pixels) at a time. Returns when start is
-									;pressed (PlayoffScreenExit)
+									;pressed (PlayoffScreen_exit)
 	tst.w	(OptPlayMode).w
 	beq.w	rtss2					;not in playoff mode
 	move.l	#VBlank_Playoff,(VBint).l	;the playoff screen vblank handler
@@ -881,7 +881,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	movea.l	#Vctrl,a0				;vdp control port
 	move.w	#VDPR_WINY+$02,(a0)		;window y position
 	movea.w	#(potree-M68K_RAM),a1	;teams in the tree
-	movea.l	#PlayoffTreeSetup,a0	;playoff tree layout by gamelevel
+	movea.l	#PlayoffScreen_setup,a0	;playoff tree layout by gamelevel
 	move.w	(gamelevel).w,d0
 	asl.w	#1,d0
 	adda.w	0(a0,d0.w),a0			;this level's layout
@@ -895,7 +895,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d1
 	move.b	(a1)+,d1				;team from potree
 	add.w	d1,d1
-	bsr.w	DrawTeamBlocks			;draw both team blocks
+	bsr.w	PlayoffScreen_doteam			;draw both team blocks
 	dbf	d4,.top
 	clr.w	d4						;clear the high byte
 	move.b	(a0)+,d4
@@ -905,7 +905,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.b	(a0)+,(printx+1).w
 	clr.w	d0
 	move.b	(a0)+,d0
-	bsr.w	DrawTreeArrow			;draw the bracket lines
+	bsr.w	PlayoffScreen_doarrow			;draw the bracket lines
 	dbf	d4,.top2
 	bsr.w	printz					;map 1 (palette 1)
 	String	-(TXPAL1+TXMAP1),0,0
@@ -918,7 +918,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 .top3								;each series score
 	move.b	(a0)+,(printx+1).w		;per series score: x, y from the tree table
 	move.b	(a0)+,(printy+1).w
-	bsr.w	PrintSeriesScore
+	bsr.w	PlayoffScreen_doscores
 	adda.w	#$10,a2					;next series
 	dbf	d4,.top3					;next score
 .noscr								;scores done
@@ -943,29 +943,29 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d4
 	move.w	#$FFFF,(PlayerScrollCtr).w	;scroll step (RAM shared with the stats screens)
 	move.w	#1,(DispAttribCtr).w	;scroll position
-	bsr.w	UpdatePlayoffScroll
+	bsr.w	PlayoffScreen_scrup
 .input								;loop
 	bsr.w	waitxc1
 	movea.l	#rtss2,a0
 	jsr	(DrawPlayoffSprite).l		;draw the playoff sprite
-	bsr.w	HandlePlayoffInput		;page / exit input
+	bsr.w	PlayoffScreen_jin		;page / exit input
 	bra.s	.input
-HandlePlayoffInput					;Read both pads: start leaves PlayoffScreen, right/left set the scroll
-									;step, then falls into UpdatePlayoffScroll
+PlayoffScreen_jin					;Read both pads: start leaves PlayoffScreen, right/left set the scroll
+									;step, then falls into PlayoffScreen_scrup
 	bsr.w	ReadJoy1
 	move.w	d3,-(sp)
 	bsr.w	ReadJoy2
 	or.w	(sp)+,d3				;either pad
 	btst	#7,d3					;start?
-	bne.w	PlayoffScreenExit		;yes: leave the screen
+	bne.w	PlayoffScreen_exit		;yes: leave the screen
 	btst	#3,d3					;right?
 	beq.w	.nr
 	move.w	#$FFFE,(PlayerScrollCtr).w
 .nr									;right handled
 	btst	#2,d3					;left?
-	beq.w	UpdatePlayoffScroll
+	beq.w	PlayoffScreen_scrup
 	move.w	#2,(PlayerScrollCtr).w
-UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a page boundary
+PlayoffScreen_scrup					;Move the tree one step (PlayerScrollCtr) and stop on a page boundary
 									;($70). The position is
 									;DispAttribCtr; playoffspritex is the sprite x offset while it is on
 									;screen
@@ -1000,8 +1000,8 @@ UpdatePlayoffScroll					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	bne.w	rtss2					;not on a boundary: keep scrolling
 	clr.w	(PlayerScrollCtr).w
 	rts
-PlayoffScreenExit					;Drop HandlePlayoffInput's return address and return from PlayoffScreen
-	addq.w	#4,sp					;drop HandlePlayoffInput's return address
+PlayoffScreen_exit					;Drop PlayoffScreen_jin's return address and return from PlayoffScreen
+	addq.w	#4,sp					;drop PlayoffScreen_jin's return address
 	rts								;return from PlayoffScreen
 waitxc1								;Each time palcount runs out, eor the color
 									;word at palfadenew+$42 with $EE and restart palcount at $18; then wait
@@ -1016,7 +1016,7 @@ waitxc1								;Each time palcount runs out, eor the color
 	beq.s	.wait
 	move.w	d0,(OldVcount).w
 	rts
-PrintSeriesScore					;Print best of 7 wins "t-b" for game struct a2 at printx/printy
+PlayoffScreen_doscores					;Print best of 7 wins "t-b" for game struct a2 at printx/printy
 	movea.w	#(mesarea-M68K_RAM),a1
 	move.w	#6,(a1)+
 	move.w	gspotwins(a2),d0
@@ -1029,7 +1029,7 @@ PrintSeriesScore					;Print best of 7 wins "t-b" for game struct a2 at printx/pr
 	clr.b	(a1)+
 	movea.w	#(mesarea-M68K_RAM),a1
 	bra.w	print
-DrawTreeArrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
+PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#Arrowsmap,a0
 	movea.l	a0,a1					;a1 = map header
@@ -1044,7 +1044,7 @@ DrawTreeArrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx
 	bsr.w	dobitmap
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-DrawTeamBlocks						;Draw team block d1 (team*2) from the TeamBlocks map (Teamblocksmap) at
+PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (Teamblocksmap) at
 									;printx/printy; the user's team (potreeteam entry of potree) is
 									;highlighted (printa $6000)
 	movem.l	d0-d7/a0-a3,-(sp)

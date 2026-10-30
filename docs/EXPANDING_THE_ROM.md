@@ -13,7 +13,7 @@
 
 ## Short jumps
 
-The retail code reaches eleven routines with absolute short calls, which only reach $0000-$7FFF: `StartGame`, `restoreteams`, `ResetClock`, `GetPeriodTime` (twice), `StartPer`, `DoGameFrame`, `updatecrowdf`, `SetupPauseScreen`, `InitMenuState`, `DrawMenuScreen` and `HandleMenuInput` (callers in setup94, penalty94, collide94, data94 and video94). `menu94` ends just below $8000, so about 375 bytes of growth in the files before it is enough to break them. `bra.w Begin` in `main94.asm` has the same kind of limit.
+The retail code reaches eleven routines with absolute short calls, which only reach $0000-$7FFF: `StartGame`, `restoreteams`, `ResetClock`, `GetPeriodTime` (twice), `StartPer`, `DoGameFrame`, `updatecrowdf`, `Pausemode_pall`, `Pausemode_top`, `DrawMenuScreen` and `HandleMenuInput` (callers in setup94, penalty94, collide94, data94 and video94). `menu94` ends just below $8000, so about 375 bytes of growth in the files before it is enough to break them. `bra.w Begin` in `main94.asm` has the same kind of limit.
 
 Fix, in order of preference:
 

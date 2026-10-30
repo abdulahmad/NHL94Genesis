@@ -19,7 +19,7 @@ shortcall	macro
 	shortcall	StartPer,setup94.asm
 	shortcall	DoGameFrame,penalty94.asm
 	shortcall	updatecrowdf,video94.asm
-	shortcall	SetupPauseScreen,penalty94.asm
-	shortcall	InitMenuState,penalty94.asm
+	shortcall	Pausemode_pall,penalty94.asm
+	shortcall	Pausemode_top,penalty94.asm
 	shortcall	DrawMenuScreen,penalty94.asm
 	shortcall	HandleMenuInput,video94.asm

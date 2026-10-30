@@ -114,7 +114,7 @@ Verified bytes are 22,690 of the 410,162 bytes in the four code files (5.5%). `M
 | `src/segacd/playercareer.asm` | `cdbin/PLAYER.BIN` `$2010` | career-stat rows (960) |
 | `src/segacd/playerpage.asm` | `cdbin/PLAYER.BIN` `$23D0` | team stat page (1,100) |
 | `src/segacd/crowdanim.asm` | `cdbin/HOCKEY.BIN` `$10D28` | crowd frame driver (318) |
-| `src/segacd/crowdtable.asm` | `cdbin/HOCKEY.BIN` `$2654C` | crowd frame table, same as cartridge `cd0` (128) |
+| `src/segacd/crowdtable.asm` | `cdbin/HOCKEY.BIN` `$2654C` | crowd frame table, same as cartridge `updatecrowdf_cd0` (128) |
 | `src/segacd/filmrun.asm` | `cdbin/STARTER.BIN` `$3D94` | movie open/task/close switch (278) |
 | `src/segacd/filmcmd.asm` | `cdbin/STARTER.BIN` `$4D9E` | post a movie command (44) |
 | `src/segacd/filmbuf.asm` | `cdbin/STARTER.BIN` `$4E26` | film buffer allocator (154) |
@@ -141,7 +141,7 @@ The audio slices are the sub CPU's CD-DA calls and the PCM stream. `docs/segacd_
 
 `playerpic.asm`, `playercareer.asm`, and `playerpage.asm` are the `PLAYER.BIN` overlay: a photo (or a generic `$504`-byte frame), the Regular/Playoff career rows, and the Players/Goalies page with the power-play lines. `docs/segacd_stats.md`.
 
-`crowdanim.asm` is the cartridge crowd-frame driver. The frame table in `crowdtable.asm` matches `cd0` with nothing added. The HV counter reads became command `$1B` and a word from `$FF8010`. `docs/segacd_crowd.md`.
+`crowdanim.asm` is the cartridge crowd-frame driver. The frame table in `crowdtable.asm` matches `updatecrowdf_cd0` with nothing added. The HV counter reads became command `$1B` and a word from `$FF8010`. `docs/segacd_crowd.md`.
 
 `filmrun.asm` chooses `FilmOpen`, `FilmTask`, or `FilmClose`. `filmcmd.asm` posts that choice to the main CPU, where `DoMoviePlayBack` blits command `2`. `filmbuf.asm` allocates the buffer. `filmopen.asm`, `filmsm.asm`, `filmtask.asm`, and `filmclose.asm` are the `FILM` / `SM` player. `docs/segacd_film.md`.
 
