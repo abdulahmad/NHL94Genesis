@@ -155,66 +155,66 @@ CountShootoutGoals					;Shootout: count the goals and end it when one team canno
 	rts
 InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away team as the
 									;shooter list below homeshootnum / shootoutteam
-	movea.l	#homeshootnum,a0
-	move.w	(HomeTeam).w,d0
-	tst.w	(shootoutteam).w
-	beq.w	.0
-	move.w	(VisTeam).w,d0
-	movea.l	#shootoutteam,a0
+	movea.l	#homeshootnum,a0		;a0 = homeshootnum
+	move.w	(HomeTeam).w,d0			;d0 = home team
+	tst.w	(shootoutteam).w		;test shootoutteam
+	beq.w	.0						;branch taken: home team
+	move.w	(VisTeam).w,d0			;d0 = visiting team
+	movea.l	#shootoutteam,a0		;a0 = shootoutteam
 .0									;team chosen
-	movea.l	#TeamList,a1
-	asl.w	#2,d0
-	movea.l	0(a1,d0.w),a1
-	adda.w	LineSets(a1),a1
+	movea.l	#TeamList,a1			;a1 = team list
+	asl.w	#2,d0					;times 4 for longword table
+	movea.l	0(a1,d0.w),a1			;a1 = team data
+	adda.w	LineSets(a1),a1			;a1 = line sets
 	move.w	#5,d0					;6 starters
 .loop								;each starter
-	clr.w	d1
-	move.b	(a1)+,d1
+	clr.w	d1						;clear d1
+	move.b	(a1)+,d1				;d1 = starter number
 	subq.w	#1,d1					;roster index 0-based
 	move.w	d1,-(a0)				;store the roster index
-	dbf	d0,.loop
-	rts
+	dbf	d0,.loop					;loop for the other starters
+	rts								;return
 ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
-	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(printz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	jsr	(printz).l					;set print position from the string
 	String	CC_Font1Pri,1,$D
-	move.w	#6,d1
-	move.w	#$1E,d0
+	move.w	#6,d1					;frame height 6
+	move.w	#$1E,d0					;frame width $1E
 	jsr	(Framer).l					;draw the box
-	jsr	(printbigz).l
+	jsr	(printbigz).l				;print the title string
 	String	CC_Font1Pri,2,$E,'SHOOTOUT WON BY'
-	addq.w	#2,(printy).w
-	move.w	(HomeTeam).w,d1
-	move.w	(homeshootgoals).w,d0
-	cmp.w	(awayshootgoals).w,d0
+	addq.w	#2,(printy).w			;down two rows
+	move.w	(HomeTeam).w,d1			;d1 = home team
+	move.w	(homeshootgoals).w,d0	;d0 = home goals
+	cmp.w	(awayshootgoals).w,d0	;compare to away goals
 	bgt.w	.0						;home leads?
-	move.w	(VisTeam).w,d1
+	move.w	(VisTeam).w,d1			;d1 = visiting team
 .0									;winning team chosen
-	asl.w	#2,d1
-	movea.l	#TeamList,a1
-	movea.l	0(a1,d1.w),a1
-	adda.w	Teamname(a1),a1
-	move.w	#2,(printx).w
+	asl.w	#2,d1					;times 4 for longword table
+	movea.l	#TeamList,a1			;a1 = team list
+	movea.l	0(a1,d1.w),a1			;a1 = team data
+	adda.w	Teamname(a1),a1			;add team name offset
+	move.w	#2,(printx).w			;printx = 2
 	jsr	(printbig).l				;print the team name
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 ShootoutShooters					;Shootout shooters menu item (menu lists): pick
 									;the 3 shooters of each team
 	btst	#0,(gmode2).w			;shootout?
-	beq.w	ShootersExit
-	moveq	#0,d0
-	moveq	#$1C,d1
+	beq.w	ShootersExit			;branch taken: not a shootout, exit
+	moveq	#0,d0					;d0 = 0
+	moveq	#$1C,d1					;d1 = $1C
 	jsr	(SetupScreen).l				;set up the screen
-	clr.w	(DispAttribCtr).w
-	clr.w	(PlayerScrollCtr).w
-	jsr	(printsmallz).l
+	clr.w	(DispAttribCtr).w		;clear DispAttribCtr
+	clr.w	(PlayerScrollCtr).w		;clear PlayerScrollCtr
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY
-	moveq	#$28,d0
-	moveq	#$1C,d1
-	move.w	#$7FF,d2
+	moveq	#$28,d0					;width $28
+	moveq	#$1C,d1					;height $1C
+	move.w	#$7FF,d2				;blank tile
 	jsr	(eraser).l
 	bsr.w	ResetShooterScroll		;scroll to the top
-	bsr.w	PrintShooterSlots
+	bsr.w	PrintShooterSlots		;print the shooter slots
 	move.w	#0,(TestList).w			;cursor on slot 0
 ShootersRedraw						;Shootout shooters: redraw (ShootersBackground,
 									;PrintShooterBox, PrintShooterNames)
@@ -456,32 +456,32 @@ ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the 
 	bsr.w	PrintShooterBox			;redraw the box
 	bra.w	ShootersLoop			;back to the input loop
 ShootersBackground					;Shootout shooters background and "Shootout" title
-	bsr.w	ClearShooterScreen
-	movem.l	d0-d5/a0-a2,-(sp)
-	jsr	(printz).l
+	bsr.w	ClearShooterScreen		;clear the shooter screen
+	movem.l	d0-d5/a0-a2,-(sp)		;save registers
+	jsr	(printz).l					;set print position from the string
 	String	CC_Font3,0,0
-	movea.l	#EASportsBGMap,a1
-	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
-	clr.w	d0
-	clr.w	d1
-	move.w	(a1),d2
-	move.w	mapheight(a1),d3
-	moveq	#1,d4
-	moveq	#0,d5
+	movea.l	#EASportsBGMap,a1		;a1 = EA Sports background map
+	adda.l	jimdata(a1),a1			;a1 = map data
+	movea.w	#null,a2				;no sprite attributes
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
+	move.w	(a1),d2					;d2 = map width
+	move.w	mapheight(a1),d3		;d3 = map height
+	moveq	#1,d4					;d4 = 1
+	moveq	#0,d5					;d5 = 0
 	jsr	(dobitmap).l				;draw the background map
-	movem.l	(sp)+,d0-d5/a0-a2
-	jsr	(printz).l
+	movem.l	(sp)+,d0-d5/a0-a2		;restore registers
+	jsr	(printz).l					;set print position from the string
 	String	CC_Font2Pri,7,1
-	moveq	#$1A,d0
-	moveq	#6,d1
+	moveq	#$1A,d0					;frame width $1A
+	moveq	#6,d1					;frame height 6
 	jsr	(Framer).l					;draw the box
-	jsr	(printbigz).l
+	jsr	(printbigz).l				;print the title string
 	String	CC_Font2Pri,$A,4,'  Shootout  ',CC_Font2Pri,$F,1	;Shootout title
-	clr.w	d0
+	clr.w	d0						;d0 = 0
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team?
-	beq.w	.0
-	move.w	#$2C,d0
+	beq.w	.0						;branch taken: home team
+	move.w	#$2C,d0					;d0 = $2C
 .0									;home team at 0, away at $2C
 	jmp	PutTeamBlock				;the team's logo block
 ClearShooterScreen					;Shootout shooters: erase the screen
@@ -518,28 +518,28 @@ PrintShooterSlots					;Shootout shooters: "Shooters" 1. 2. 3.
 	String	CC_SetX,$1A,CC_SetY,$C,'Goalie'	;goalie header
 	rts								;done
 PrintShooterBox						;Shootout shooters: the selected player box
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMapAndPosition,4,2,8,7,CC_SetFont,1
-	moveq	#$18,d0
-	moveq	#3,d1
+	moveq	#$18,d0					;frame width $18
+	moveq	#3,d1					;frame height 3
 	jsr	(Framer).l					;draw the box
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetX,$15,CC_SetY,8,CC_SetAttribute,6	;name position
-	movea.l	#homeshooters,a1
-	cmpa.l	#tmstruct,a2
-	beq.w	.0
-	movea.l	#awayshooters,a1
+	movea.l	#homeshooters,a1		;a1 = home shooters
+	cmpa.l	#tmstruct,a2			;compare a2 to home team struct
+	beq.w	.0						;branch taken: home team
+	movea.l	#awayshooters,a1		;a1 = away shooters
 .0									;shooter list chosen
-	move.w	(TestList).w,d0
+	move.w	(TestList).w,d0			;d0 = cursor slot
 	asl.w	#1,d0					;word per slot
 	move.w	0(a1,d0.w),d0			;roster index
-	jsr	(getname).l
-	move.w	(a1),d0
-	lsr.w	#1,d0
-	sub.w	d0,(printx).w
+	jsr	(getname).l					;get the player name
+	move.w	(a1),d0					;d0 = name length
+	lsr.w	#1,d0					;halve it
+	sub.w	d0,(printx).w			;subtract from printx
 	jsr	(printsmall).l				;print it
-	clr.w	(printfontset).w
-	rts
+	clr.w	(printfontset).w		;clear printfontset
+	rts								;return
 PrintShooterNames					;Shootout shooters: the shooters' names (FormatPlayerNameShort)
 	movem.l	d0-d7/a0-a6,-(sp)
 .0									;(not branched to)
