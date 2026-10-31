@@ -54,7 +54,7 @@ Removes the VRAM limit on the number of teams. Retail copies all 501 team-banner
 
 - **Docs on the branch:** the "Team banner graphics and VRAM" section of `docs/EXPANDING_THE_ROM.md`.
 - **Patch A (in game):** `setupTeamBlocksMap` and `CopyTeamBlockMapData` DMA each tile of the two teams straight from ROM into two fixed slots. No scratch. Writes 44 characters instead of 545.
-- **Patch B (setup screen):** `tools/packTeamBitmaps.js`, run from `prebuild.js`, packs each team's unique tiles and writes `output/teambitmaps_packed.inc`. `DrawMatchupBitmaps` loads only the home and visitor tiles on each team change. VRAM use drops from 796 characters to 44. Costs about 35 KB of ROM for 28 teams, so the image grows to about 1.5 MB.
+- **Patch B (setup screen):** `tools/packTeamBitmaps.js`, run from `prebuild.js`, packs each team's unique tiles and writes `output/teambitmaps_packed.inc`. `TeamIcons` loads only the home and visitor tiles on each team change. VRAM use drops from 796 characters to 44. Costs about 35 KB of ROM for 28 teams, so the image grows to about 1.5 MB.
 - **Check:** `node tools/testTeamBlockVram.js` rebuilds each team's pixels from the packed data and compares them to retail.
 - **Use:** merge or cherry-pick onto a mod branch, then add teams to both `.map.jim` files (two rows of 11 tiles per team) and rebuild. It is not for `main` because it changes the ROM.
 - **Status:** done as of 2026-10-14. Also carries the build-output work that later went to `main` (spinner, `npm run clean`).

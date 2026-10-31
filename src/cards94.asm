@@ -278,7 +278,7 @@ TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per te
 									;teams, TeamList order). A is the matchup logo palette (the
 									;TeamLogoPalettes
 									;entry, except BOS, FLA, HFD, SJ), B the other side (A with colors 1-2 and
-									;3-4 swapped). Used by DrawMatchupBitmaps and the player cards
+									;3-4 swapped). Used by TeamIcons and the player cards
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalANHA.pal	;ANH matchup logo palette
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalANHB.pal	;ANH other side
 	incbin	..\Extracted\NHL94\Graphics\Pals\MatchupPalBOSA.pal	;BOS matchup logo palette

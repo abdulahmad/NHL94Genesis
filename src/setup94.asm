@@ -669,7 +669,7 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	st	(tmstruct+tmpdst+$34).w
 	st	(awtmstruct+tmpdst+$34).w
 setteams							;Use hometeam/visteam to set team structures (InitTeamStructure for each).
-									;Falls in from clearTeamStats, also called from DrawMatchupBitmaps
+									;Falls in from clearTeamStats, also called from TeamIcons
 	movem.l	d0/a0-a2,-(sp)
 	movea.w	#(tmstruct-M68K_RAM),a2
 	move.w	(HomeTeam).w,d0

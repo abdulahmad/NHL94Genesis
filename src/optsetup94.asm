@@ -580,7 +580,7 @@ WrapOption							;d3 + d2, wrapped into d5 ... d4-1. Called from ChangeOption
 	rts
 PrintOptions						;Limit each option (ChangeOption with d2 = 0) and print the lines shown
 									;(PrintOptionValue), the scroll marks (PrintScrollMarks) the team bitmaps
-									;(DrawMatchupBitmaps) and, unless a player card is up, reset the card
+									;(TeamIcons) and, unless a player card is up, reset the card
 									;timer (ResetCardTimer). Called from FixModeOptions
 	move.w	d7,d6
 	moveq	#-2,d7
@@ -599,7 +599,7 @@ PrintOptions						;Limit each option (ChangeOption with d2 = 0) and print the li
 	bne.s	.loop
 	bsr.w	PrintScrollMarks
 	move.w	d6,d7
-	jsr	(DrawMatchupBitmaps).l
+	jsr	(TeamIcons).l
 	btst	#0,(setupcardflags).w	;card up?
 	bne.w	.x
 	jsr	(ResetCardTimer).l			;restart the card timer

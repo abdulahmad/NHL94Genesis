@@ -18,8 +18,8 @@ UpdatePlayoffLevel					;Set pojoy from the number of players for play modes 2 an
 	move.w	d0,(pojoy).w
 	rts
 
-DrawMatchupBitmaps					;Called from PrintOptions. Draw the VisTeam and
-									;HomeTeam bitmaps (DrawTeamBitmap)
+TeamIcons							;draw the visitor and home team bitmaps and set colors.
+									;Called from PrintOptions. 92 TeamIcons drew name bars (dotb)
 	movem.l	d0-d7/a0-a2,-(sp)
 	cmpi.w	#4,(OptPlayMode).w		;mode 4?
 	beq.w	.opt
