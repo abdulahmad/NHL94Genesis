@@ -332,7 +332,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	bsr.w	.lines
 	move.w	#$18,(palcount).w		;fade in
 .loop2								;loop
-	jsr	(Pausemode_rjoy).l	;left (bit 2) goals, right (bit 3) shots, start exits
+	jsr	(Pausemode_rjoy).l			;left (bit 2) goals, right (bit 3) shots, start exits
 	btst	#7,d1					;start?
 	bne.w	.exit
 	btst	#2,d1					;left?
@@ -557,11 +557,11 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 									;centred, with the home value at x $22 and the visitors' at x 9
 									;(PrintStatValue); SetStatScroll first
 	jsr	(printz).l
-	String	CC_Font3Pri,2,7		;visitors logo position
+	String	CC_Font3Pri,2,7			;visitors logo position
 	move.w	#$2C,d0
 	jsr	(PutTeamBlock).l
 	jsr	(printz).l
-	String	CC_Font3Pri,$1A,7	;home logo position
+	String	CC_Font3Pri,$1A,7		;home logo position
 	moveq	#0,d0
 	jsr	(PutTeamBlock).l
 	bsr.w	SetStatScroll
@@ -728,7 +728,7 @@ updatePPTeamTime					;One more second of power play time (tmPwrPlayTime) for the
 	movea.l	#tmstruct,a2			;move home team struct into a2
 	btst	#sf2pwrtm,(sflags2).w	;check who's on PP
 	beq.w	.0						;branch if home (team 1)
-	movea.l	#awtmstruct,a2				;move away team struct into a2
+	movea.l	#awtmstruct,a2			;move away team struct into a2
 .0									;team on the power play chosen
 	addq.w	#1,tmPwrPlayTime(a2)	;one more second of power play time
 .x									;exit (also the end of the code above)

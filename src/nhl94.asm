@@ -4,7 +4,9 @@
 ;
 ;	teamdata94.asm is included as a copy in output/obj/ with the real player names and
 ;	team nicknames put back by tools/build.js. The file in src/ has placeholders and needs
-;	the original ROM. The two New York full names in optsetup94.asm are included from
+;	the original ROM.
+;
+;	The two New York full names in optsetup94.asm are included from
 ;	Extracted/NHL94/Text (asm the extractor generates).
 
 	include	main94.asm				; $000000 header, startup, vectors
@@ -29,12 +31,12 @@
 	include	attract94.asm			; $017A18  NEW in 94: EA Sports attract screen
 	include	data94.asm				; $017AC8 option helpers, menus, season results, string tables
 	include	sram94.asm				; $01A050 save data
-	include	sound\sound94.asm				; $01A264 sound driver, then the sound data
+	include	sound\sound94.asm		; $01A264 sound driver, then the sound data
 	include	graphics94.asm			; $04B5C0 graphics only
 	include	onetimer94.asm			; $0F66EE  NEW in 94: one-timer
 	include	fourway94.asm			; $0F6D5E  NEW in 94: four-player adaptor
 	include	crowd94.asm				; $0F6E8A  NEW in 94: crowd meter and hot / cold players
-	include	optsetup94.asm				; $0F739E expanded: game setup and options
+	include	optsetup94.asm			; $0F739E expanded: game setup and options
 	include	cards94.asm				; $0F87D2  NEW in 94: player cards and matchup palettes
 	include	records94.asm			; $0FB018  NEW in 94: name entry and record holders
 	include	shootout94.asm			; $0FC320  NEW in 94: shootout

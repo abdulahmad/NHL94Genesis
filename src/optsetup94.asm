@@ -16,7 +16,7 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 									;begins the game (SetupStart), and $5460 frames without a press start a
 									;demo (SetupDemo).
 	jsr	(ReadLineData).l			;read the line data
-	movea.l	#passbits,a3		;saved playoff state
+	movea.l	#passbits,a3			;saved playoff state
 	jsr	(ReadPassBits).l			;read the playoff bits
 	move.w	(TmpOptLine2).w,(OptLine).w	;undo the start changes of SetupStart (Auto line changes, Shootout)
 	move.w	(TempOptPlayMode).w,(OptPlayMode).w	;restore the play mode
@@ -693,7 +693,8 @@ PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; the full n
 .1									;print the name
 	jmp	print
 NewYorkITxt							;Full names for the two New York teams (TeamList has only the city).
-									;The nicknames are licensed names, so each String (length word, 'New York ' and
+									;The nicknames are licensed names, so each String (length word, 'New York
+									;' and
 									;the nickname) is generated from the ROM
 	include	..\Extracted\NHL94\Text\NewYorkIName.asm
 NewYorkRTxt							;full name of NYR
@@ -826,13 +827,13 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$01234567,$89ABCDEF		;remap table (/ or.l)
 	jsr	(printz).l					;map at the top left
-	String	CC_Font1,0,0				;x2
+	String	CC_Font1,0,0			;x2
 	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(printz).l					;map at the background
-	String	CC_Font2,0,0				;x3
+	String	CC_Font2,0,0			;x3
 	movea.l	#GameSetUpMap,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -847,7 +848,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	move.w	d4,(vispicchars).w
 	addi.w	#$24,d4
 	jsr	(printz).l					;map at the second layer
-	String	CC_Font1,0,0				;x3
+	String	CC_Font1,0,0			;x3
 	movea.l	#GameSetUpMap2,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -886,7 +887,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	move.w	#$28,(SortCords+rosxoff).w
 	move.w	#$28,(SortCords+(6*SCstruct)+rosxoff).w
 	st	(tmstruct).w				;no home team block yet
-	st	(awtmstruct).w					;no visitors block yet
+	st	(awtmstruct).w				;no visitors block yet
 	rts
 ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (4 with
 									;FourWayPlay); return d1 = the presses, 0 on timeout. C does not return:
@@ -1036,7 +1037,7 @@ EraseCard							;If a player card is up (setupcardflags bit 0, cleared here), cl
 	bclr	#6,(setupcardflags).w	;no visitors block
 	bclr	#7,(setupcardflags).w	;no home block
 	jsr	(printz).l					;map at the card
-	String	CC_Font1Pal1,0,0	;x3
+	String	CC_Font1Pal1,0,0		;x3
 	move.w	#5,(printy).w
 	moveq	#8,d0
 	moveq	#8,d1
@@ -1046,7 +1047,7 @@ EraseCard							;If a player card is up (setupcardflags bit 0, cleared here), cl
 	move.w	#3,(printx).w
 	jsr	(eraser).l
 	jsr	(printz).l					;map at the text
-	String	CC_Font1,0,0				;x3
+	String	CC_Font1,0,0			;x3
 	move.w	#$B,(printx).w
 	move.w	#5,(printy).w
 	move.w	#$19,d0
@@ -1059,7 +1060,7 @@ EraseCard							;If a player card is up (setupcardflags bit 0, cleared here), cl
 	move.w	#$1C,(printx).w
 	jsr	(eraser).l
 	jsr	(printz).l					;map at the text
-	String	CC_Font1,0,0				;x3
+	String	CC_Font1,0,0			;x3
 	move.w	#3,(printx).w
 	move.w	#5,(printy).w
 	move.w	#$19,d0
@@ -1081,7 +1082,7 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	bclr	#3,(setupcardflags).w	;visitors side?
 	beq.w	.0
 	jsr	(printz).l					;map at the area
-	String	CC_Font1Pal1,0,0	;x3
+	String	CC_Font1Pal1,0,0		;x3
 	move.w	#8,(printx).w
 	move.w	#5,(printy).w
 	moveq	#8,d0
@@ -1089,7 +1090,7 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	move.w	#$7FF,d2				;blank char
 .0									;home logo box done
 	jsr	(printz).l					;map at the logo
-	String	CC_Font1,0,0				;x3
+	String	CC_Font1,0,0			;x3
 	move.w	#$19,(printx).w
 	bra.w	DrawTeamLogo
 DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardflags bit 3,
@@ -1102,7 +1103,7 @@ DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardfl
 	bclr	#2,(setupcardflags).w	;home side?
 	beq.w	.0
 	jsr	(printz).l					;map at the area
-	String	CC_Font1Pal1,0,0	;x3
+	String	CC_Font1Pal1,0,0		;x3
 	move.w	#$18,(printx).w
 	move.w	#5,(printy).w
 	moveq	#8,d0

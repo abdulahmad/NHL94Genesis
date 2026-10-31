@@ -312,7 +312,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	bset	#$C,d2					;keep byte bit 4 (word bit 12) of an old penalty time
 .3									;old penalty bit kept when needed
 	move.w	d2,tmpdst(a2,d0.w)		;store the penalty time (seconds) for this player
-.coinsearch	andi.w	#$EFFF,d2				;drop bit 12 for the comparison below
+.coinsearch	andi.w	#$EFFF,d2		;drop bit 12 for the comparison below
 	moveq	#(maxros-1)*2+2,d1		;(MaxRos-1)*2+2
 .ctop								;loop
 	subq.w	#2,d1					;same time on the other team
@@ -364,7 +364,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 .ex									;exit: restore the registers
 	movem.l	(sp)+,d0/a0-a3
 	rts
-InProgress_ap							;a2 = team. Clears tmpdst bit 5, counts players kept off the ice by
+InProgress_ap						;a2 = team. Clears tmpdst bit 5, counts players kept off the ice by
 									;penalties (coincidental and bit 4
 									;times do not count, at most 2) and sets tmap. Called twice from
 									;InProgress
@@ -1007,7 +1007,7 @@ SetHor								;switch graphics to horizontal ice rink graphics mode
 	bsr.w	SprSort
 	bsr.w	printz
 	String	CC_Font2,0,0
-	movea.l	#IceRinkHorMap,a1			;tiles start at IceRinkHorMap+8
+	movea.l	#IceRinkHorMap,a1		;tiles start at IceRinkHorMap+8
 	adda.l	jimdata(a1),a1
 	movea.l	#IceRinkHorTiles,a2		;rink tiles
 	clr.w	d0
@@ -1074,7 +1074,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	moveq	#5,d1
 	bsr.w	Framer
 	bsr.w	printz
-	String	CC_Font1Pri,$18,$1A	;home team on the lower row
+	String	CC_Font1Pri,$18,$1A		;home team on the lower row
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	printscores1_ps
 	bsr.w	printz
@@ -1109,7 +1109,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	move.w	#$2C,d0					;visitor logo data offset
 	bsr.w	PrintTeamLogoAndScore
 	bra.s	.ex
-printscores1_ps				;Print the team name of team a2 at printx/printy, then its score as 2
+printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 									;digits at x $1C. Called twice from printscores1
 	movea.l	tmdata(a2),a1			;tmdata
 	adda.w	Teamname(a1),a1
@@ -1893,7 +1893,7 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	bsr.w	setplayercolors
 	bsr.w	SetHor					;back to the intermission screen
 	bsr.w	setvideo
-	jsr	(Pausemode_pall).w		;pause menu screen
+	jsr	(Pausemode_pall).w			;pause menu screen
 	jsr	(DrawMenuScreen).w
 	move.w	#$18,(palcount).w		;24
 	move.w	#SngEOP,-(sp)			;song $79

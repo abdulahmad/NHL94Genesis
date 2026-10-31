@@ -359,7 +359,8 @@ NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldpla
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
-NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer), a1 = awtmstruct.
+NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer), a1 =
+									;awtmstruct.
 									;Called from UpdateScoutingDisplay
 	movem.l	d0/a0,-(sp)
 	movea.l	#awaycoldplayer,a0

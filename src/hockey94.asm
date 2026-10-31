@@ -70,7 +70,7 @@ StartGame							;reset game state for a new game, then start the first period
 	jsr	(InitScores).l
 	jsr	(setupice).l
 	jsr	(LoadCrowdRec).l
-	jmp	PeriodOver_sp			;on to period start
+	jmp	PeriodOver_sp				;on to period start
 
 ClearShotData						;Clear $E4 words of outputbuffer
 	move.w	#$E3,d0
@@ -280,7 +280,7 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	addq.w	#2,(Crowdstep).w
 	andi.w	#$1E,(Crowdstep).w		;%00011110
 	add.w	(Crowdstep).w,d0
-	movea.l	#updatecrowdf_cd0,a0					;$fftt frame/time table
+	movea.l	#updatecrowdf_cd0,a0	;$fftt frame/time table
 	move.b	0(a0,d0.w),(Crowdframe+1).w
 	clr.w	d1
 	move.b	1(a0,d0.w),d1
@@ -430,7 +430,7 @@ Pausemode							;Game is in pause mode now
 	jsr	(p_turnoff).l				;shut off sound
 	move.w	(sflags).w,-(sp)
 	bsr.w	seta2					;a2 = team of pausing controller
-	movea.l	#Pausemode_mlist,a0			;menu item list
+	movea.l	#Pausemode_mlist,a0		;menu item list
 	lea	Pausemode_pall(pc),a1		;screen draw routine
 	btst	#0,(gmode2).w
 	beq.w	.chk2
@@ -469,7 +469,7 @@ Pausemode							;Game is in pause mode now
 	move.w	(Vcount).w,(OldVcount).w
 	rts
 
-Pausemode_pall					;Draw routine for the pause menu.
+Pausemode_pall						;Draw routine for the pause menu.
 									;also called
 	movea.l	#Vdata,a0
 	move.w	#VDPR_WINX,Vctrl-Vdata(a0)	;playfield 3 width

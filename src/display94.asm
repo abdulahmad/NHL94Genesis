@@ -823,7 +823,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 .1									;position character
 	move.b	0(a4,d2.w),d2
 	moveq	#2,d0
-uppads_pd					;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
+uppads_pd							;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
 									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
 	movea.l	#SmallFontMap,a3
 	adda.l	jimdata(a3),a3

@@ -138,7 +138,7 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	clr.l	(padcont+8).w
 	st	(c1playernum).w				;pad 1 controls no player
 	st	(c2playernum).w				;pad 2 controls no player
-	bsr.w	setupEASportsMap			;easn tiles at EASNcset again
+	bsr.w	setupEASportsMap		;easn tiles at EASNcset again
 	movea.w	#(DMAList-M68K_RAM),a5	;dump pad sprites
 	movea.w	#(Satt-M68K_RAM),a6		;sprite attribute table
 	moveq	#1,d6					;link counter
@@ -176,7 +176,8 @@ setupIceRinkPal						;Copy the ice rink palettes (pal 0&1, 16 longs) to palfaden
 	move.l	(a0)+,(a1)+				;16 longs = palettes 0 and 1
 	dbf	d0,.ipal
 	rts
-setupEASportsMap						;Decompress the easn logo tiles (EASportsMap+8) to vram at EASNcset. Called
+setupEASportsMap					;Decompress the easn logo tiles (EASportsMap+8) to vram at EASNcset.
+									;Called
 									;from setupice, setupice_highlight
 	move.w	(EASNcset).w,d4
 	movea.l	#EASportsMap+8,a2
@@ -356,7 +357,7 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 	dc.w	SPFgloves
 	dc.w	0
 	dc.w	5
-defaultsprites_0						;objects which are tied to screen scrolling and have velocity: the 16
+defaultsprites_0					;objects which are tied to screen scrolling and have velocity: the 16
 									;SortCords objects from .list (players, puck, puck shadow, goal nets ...),
 									;the OOlist and OOlistpos; then SprSort. Also called from setoptions
 	clr.w	d6
@@ -752,7 +753,7 @@ PeriodOver							;what to do if period over. Branched to from puckfaceoff when t
 	move.w	#4,(gsp).w				;game over
 .0									;period number set
 	bsr.w	forceblack
-PeriodOver_sp					;reset the clock, song $79, ticker scores, playoff stats at the end
+PeriodOver_sp						;reset the clock, song $79, ticker scores, playoff stats at the end
 									;(AddPOStats), Intermission, then StartPer or GameOver. Also jumped to
 									;from StartGame
 	jsr	(ResetClock).w				;period clock back to the start
@@ -853,7 +854,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	bsr.w	DecompressGraphicsPlain	;arrow tiles at ExtraChars
 	bsr.w	printz					;map 2 (palette 3) at 0,0
 	String	CC_Font2Pal3,0,0
-	movea.l	#EASportsBGMap,a0			;playoff background map
+	movea.l	#EASportsBGMap,a0		;playoff background map
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = map data
@@ -874,9 +875,9 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.l	(a1)+,-$40(a0)			;Titlemap2 palette -> pal 0
 	move.l	-$20(a0),(a0)+			;pal 1 -> pal 2
 	dbf	d0,.pal
-	move.w	d4,(logochars).w	;playoff sprite tiles start here
+	move.w	d4,(logochars).w		;playoff sprite tiles start here
 	bsr.w	DecompressGraphicsPlain	;playoff sprite tiles to vram
-	move.w	#$104,(logoslide).w	;RAM reused by this screen
+	move.w	#$104,(logoslide).w		;RAM reused by this screen
 	move.w	#$A0,(playoffspritey).w
 	movea.l	#Vctrl,a0				;vdp control port
 	move.w	#VDPR_WINY+$02,(a0)		;window y position
@@ -895,7 +896,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d1
 	move.b	(a1)+,d1				;team from potree
 	add.w	d1,d1
-	bsr.w	PlayoffScreen_doteam			;draw both team blocks
+	bsr.w	PlayoffScreen_doteam	;draw both team blocks
 	dbf	d4,.top
 	clr.w	d4						;clear the high byte
 	move.b	(a0)+,d4
@@ -905,7 +906,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.b	(a0)+,(printx+1).w
 	clr.w	d0
 	move.b	(a0)+,d0
-	bsr.w	PlayoffScreen_doarrow			;draw the bracket lines
+	bsr.w	PlayoffScreen_doarrow	;draw the bracket lines
 	dbf	d4,.top2
 	bsr.w	printz					;map 1 (palette 1)
 	String	CC_Font1Pal1,0,0
@@ -1016,7 +1017,7 @@ waitxc1								;Each time palcount runs out, eor the color
 	beq.s	.wait
 	move.w	d0,(OldVcount).w
 	rts
-PlayoffScreen_doscores					;Print best of 7 wins "t-b" for game struct a2 at printx/printy
+PlayoffScreen_doscores				;Print best of 7 wins "t-b" for game struct a2 at printx/printy
 	movea.w	#(mesarea-M68K_RAM),a1
 	move.w	#6,(a1)+
 	move.w	gspotwins(a2),d0
@@ -1029,7 +1030,7 @@ PlayoffScreen_doscores					;Print best of 7 wins "t-b" for game struct a2 at pri
 	clr.b	(a1)+
 	movea.w	#(mesarea-M68K_RAM),a1
 	bra.w	print
-PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
+PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#Arrowsmap,a0
 	movea.l	a0,a1					;a1 = map header
@@ -1044,7 +1045,7 @@ PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) a
 	bsr.w	dobitmap
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (Teamblocksmap) at
+PlayoffScreen_doteam				;Draw team block d1 (team*2) from the TeamBlocks map (Teamblocksmap) at
 									;printx/printy; the user's team (potreeteam entry of potree) is
 									;highlighted (printa $6000)
 	movem.l	d0-d7/a0-a3,-(sp)
@@ -1098,7 +1099,8 @@ PlayoffScreenText					;Round titles by gamelevel, printed with printsmall
 	String	'Finals'
 	String	'Champions'
 InitScoutingDisplay					;Start the text player UpdateScoutingDisplay: VertLineScrolling = -1,
-									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / ScoutingReportTimer; return a0 =
+									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / ScoutingReportTimer;
+									;return a0 =
 									;TestList. Called from ScoutingReport
 	move.w	#$FFFF,(VertLineScrolling).w
 	st	(PlayerScrollCtr).w			;negative: start the next paragraph
@@ -1116,7 +1118,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bgt.w	rtss2					;yes: nothing to do
 	tst.w	(asv).w					;button held?
 	bmi.w	.0
-	subq.w	#1,(ScoutingReportTimer).w		;count down the delay
+	subq.w	#1,(ScoutingReportTimer).w	;count down the delay
 	bpl.w	rtss2
 .0									;time for the next letter
 	movea.l	#ScoutTextScript,a1
@@ -1144,7 +1146,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	move.w	a2,d0					;d0 = paragraph offset
 .3									;line start found
 	lea	0(a1,d0.w),a2				;a2 = next character
-	move.w	#$A,(ScoutingReportTimer).w		;typing delay
+	move.w	#$A,(ScoutingReportTimer).w	;typing delay
 	move.w	(scoutcolumn).w,d0
 	cmpi.b	#$5F,(a2)
 	beq.w	.29
@@ -1197,7 +1199,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	cmpi.b	#$2E,(a2)
 	bne.w	.5
 .4									;slow down after a comma or full stop
-	addi.w	#$28,(ScoutingReportTimer).w		;longer delay
+	addi.w	#$28,(ScoutingReportTimer).w	;longer delay
 .5									;delay set
 	cmpi.b	#$20,(a2)+				;space ends the word
 	bne.s	.loop2					;not a space: next character

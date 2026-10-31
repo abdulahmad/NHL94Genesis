@@ -42,7 +42,7 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	jsr	(setupIceRinkPal).l
 	jsr	(printz).l
 	String	CC_Font2,0,0
-	movea.l	#EASportsBGMap,a0			;the background picture
+	movea.l	#EASportsBGMap,a0		;the background picture
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data

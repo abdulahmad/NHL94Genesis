@@ -116,7 +116,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	dc.l	$05422561,$89ABCDEF		;remap table
 	jsr	(printz).l
 	String	CC_Font2,0,0
-	movea.l	#EASportsBGMap,a0			;the jsr, the string and this (ori.b x4)
+	movea.l	#EASportsBGMap,a0		;the jsr, the string and this (ori.b x4)
 	movea.l	a0,a1					;a1 = map header
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -138,12 +138,12 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	moveq	#9,d1
 	jsr	(Framer).l
 	jsr	(printz).l					;map at the visitors picture
-	String	CC_Font2Pal2,1,$E	;(and dropped a word)
+	String	CC_Font2Pal2,1,$E		;(and dropped a word)
 	move.w	#8,d0					;8 x 8 frame: visitors picture
 	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l					;map at the home picture
-	String	CC_Font2Pal2,$1F,$E	;(and dropped a word)
+	String	CC_Font2Pal2,$1F,$E		;(and dropped a word)
 	move.w	#8,d0					;8 x 8 frame: home picture
 	move.w	#8,d1
 	jsr	(Framer).l
@@ -617,7 +617,8 @@ VisAdv1Txt	String	'  ['			;visitors advantage: one mark
 VisAdv2Txt	String	' [['			;visitors advantage: two marks
 VisAdv3Txt	String	'[[['			;visitors advantage: three marks
 EvenAdvTxt	String	'   '			;Even teams
-GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct): return a1 = the
+GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct): return a1 =
+									;the
 									;team nickname String, or 'Home' / 'Visitors' when it is empty (the all
 									;star teams)
 	movem.l	d0/a0/a2,-(sp)
@@ -637,7 +638,8 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	rts
 HomeTxt	String	'Home'				;name used when the home team has no nickname
 VisitorsTxt	String	'Visitors'		;name used when the visiting team has no nickname
-GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 = the
+GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
+									;the
 									;team arena String
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1

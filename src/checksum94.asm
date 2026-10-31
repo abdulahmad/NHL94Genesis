@@ -28,4 +28,4 @@ VDPErrorSetup	movea.l	#Vctrl,a4	;wrong checksum: a4 = VDP control port; blank th
 	move.w	#$3F,d1					;64 colours
 VRAMWriteLoop	move.w	#$E,(Vdata).l	;colour = $00E, full red
 	dbf	d1,VRAMWriteLoop
-Halt	bra.s	Halt
+Halt	bra.s	Halt				;the end: hang here after the red screen

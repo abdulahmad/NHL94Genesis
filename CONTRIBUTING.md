@@ -30,7 +30,9 @@ A comment-only or rename-only change must not change a single byte. Never commit
 - Record every rename in the name history file (`docs/name_map.csv`) using its existing columns. Do not leave
   `(was X)` or other history in comments.
 - A routine that is the same code as a 92 routine but has another name here gets a `92 <name>` note in its
-  comment. A routine that only exists in this game says so ("new in 93").
+  comment. A routine that was split off a 92 routine (a section, a local label or a head/tail of it) gets
+  `from 92 <name>` or `from 92 <name> <.label>`; one that merges several gets `from 92 <name>, <name>`. A routine that
+  only exists in this game says so ("new in 93").
 
 ## 3. Names, not numbers
 
@@ -58,7 +60,7 @@ A comment-only or rename-only change must not change a single byte. Never commit
   PR says so.
 - No IDA names or addresses (`loc_`, `sub_`, `unk_`), no source-file or segment names, no hard-coded ROM
   addresses (include lines may carry the address range of the file), no notes about other games except the
-  `92 <name>` equivalents above and value differences such as `(92 $58)`.
+  `92 <name>` and `from 92 <name>` equivalents above and value differences such as `(92 $58)`.
 - No raw addresses or offsets in comments: no RAM or ROM addresses and no structure offsets. Write the name
   instead (`tmgoalie(a2)`, not `$26(a2)`; `tmstruct+tmflags`, not `C6FE`) or say what the value means, and leave
   out an address that only repeats the operand. The only numbers allowed are the address range on an include
