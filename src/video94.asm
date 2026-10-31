@@ -180,20 +180,20 @@ cramfade							;fade from current color in color ram to color held in palfadenew
 	bne.s	.top
 	rts
 CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected from vblank
-	movem.l	d0/a0-a1,-(sp)			;save registers
-	move.w	(disflags).w,-(sp)		;keep disflags
-	bset	#dfng,(disflags).w		;set dfng
-	movea.w	#(palfadenew-M68K_RAM),a1	;a1 = new palette
-	movea.l	#Vdata,a0				;a0 = VDP data port
-	move.l	#CRAM_W,Vctrl-Vdata(a0)	;CRAM write command
+	movem.l	d0/a0-a1,-(sp)
+	move.w	(disflags).w,-(sp)
+	bset	#dfng,(disflags).w
+	movea.w	#(palfadenew-M68K_RAM),a1
+	movea.l	#Vdata,a0
+	move.l	#CRAM_W,Vctrl-Vdata(a0)
 	moveq	#$1F,d0					;32 longs
 .0									;copy each color pair
 	move.l	(a1)+,(a0)				;two colors per long
 	dbf	d0,.0						;loop
-	st	(palcount).w				;palette changed
-	move.w	(sp)+,(disflags).w		;restore disflags
-	movem.l	(sp)+,d0/a0-a1			;restore registers
-	rts								;done
+	st	(palcount).w
+	move.w	(sp)+,(disflags).w
+	movem.l	(sp)+,d0/a0-a1
+	rts
 ; d0 = range
 ; return d0 = random number (-range < d0 < range)
 randomd0s							;d0 = range. Return d0 = random number (-range < d0 < range)
@@ -425,24 +425,24 @@ waitjoy								;wait for either joystick input. Return d1 = new button presses. 
 ; return d1 = new button presses
 orjoy								;return d1 = new button presses from either joystick
 	tst.w	(FourWayPlay).w			;check for 4-way play?
-	bne.w	.4way					;four way play: all four pads
-	bsr.w	ReadJoy1				;read pad 1
-	move.w	d1,-(sp)				;keep it
-	bsr.w	ReadJoy2				;read pad 2
-	or.w	(sp)+,d1				;combine them
-	rts								;done
+	bne.w	.4way
+	bsr.w	ReadJoy1
+	move.w	d1,-(sp)
+	bsr.w	ReadJoy2
+	or.w	(sp)+,d1
+	rts
 .4way								;FourWayPlay <> 0
-	bsr.w	ReadJoy1				;read pad 1
-	move.w	d1,-(sp)				;keep it
-	bsr.w	ReadJoy2				;read pad 2
-	move.w	d1,-(sp)				;keep it
-	bsr.w	ReadJoy3				;read pad 3
-	move.w	d1,-(sp)				;keep it
-	bsr.w	ReadJoy4				;read pad 4
-	or.w	(sp)+,d1				;combine pad 4 with pad 3
-	or.w	(sp)+,d1				;combine pad 2
-	or.w	(sp)+,d1				;combine pad 1
-	rts								;done
+	bsr.w	ReadJoy1
+	move.w	d1,-(sp)
+	bsr.w	ReadJoy2
+	move.w	d1,-(sp)
+	bsr.w	ReadJoy3
+	move.w	d1,-(sp)
+	bsr.w	ReadJoy4
+	or.w	(sp)+,d1
+	or.w	(sp)+,d1
+	or.w	(sp)+,d1
+	rts
 ; eliminate diagonal direction presses on d0
 nodiag								;eliminate diagonal direction presses: if held directions (d3 bits 0-3)
 									;are not one direction, clear the d1 direction bits
@@ -497,45 +497,45 @@ ReadJoy1							;read controller 1 from the byte ReadPads left in PadRaw1. Return
 ; d2 = changed buttons (all 8)
 ; d3 = current held buttons (all 8)
 ReadJoy2							;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	move.b	(PadRaw2).w,d0			;d0 = pad 2 raw bits
-	bsr.w	ReadJoy					;decode the pad
-	move.w	(lj2).w,d2				;d2 = old state
+	move.b	(PadRaw2).w,d0
+	bsr.w	ReadJoy
+	move.w	(lj2).w,d2
 	move.w	d1,(lj2).w				;store the new one
-	move.w	d1,d3					;d3 = new state
-	eor.w	d1,d2					;d2 = changed bits
+	move.w	d1,d3
+	eor.w	d1,d2
 	and.w	d2,d1					;d1 = new presses
-	rts								;return
+	rts
 ReadJoy3							;read 4 way play pad 3 (PadRaw3). Same returns as ReadJoy1
-	move.b	(PadRaw3).w,d0			;d0 = pad 3 raw bits
-	bsr.w	ReadJoy					;decode the pad
-	move.w	(lj3).w,d2				;d2 = old state
+	move.b	(PadRaw3).w,d0
+	bsr.w	ReadJoy
+	move.w	(lj3).w,d2
 	move.w	d1,(lj3).w				;store the new one
-	move.w	d1,d3					;d3 = new state
-	eor.w	d1,d2					;d2 = changed bits
+	move.w	d1,d3
+	eor.w	d1,d2
 	and.w	d2,d1					;d1 = new presses
-	rts								;return
+	rts
 ReadJoy4							;read 4 way play pad 4 (PadRaw4). Same returns as ReadJoy1
-	move.b	(PadRaw4).w,d0			;d0 = pad 4 raw bits
-	bsr.w	ReadJoy					;decode the pad
-	move.w	(lj4).w,d2				;d2 = old state
+	move.b	(PadRaw4).w,d0
+	bsr.w	ReadJoy
+	move.w	(lj4).w,d2
 	move.w	d1,(lj4).w				;store the new one
-	move.w	d1,d3					;d3 = new state
-	eor.w	d1,d2					;d2 = changed bits
+	move.w	d1,d3
+	eor.w	d1,d2
 	and.w	d2,d1					;d1 = new presses
-	rts								;return
+	rts
 ReadJoy								;read controller a0. Return d0 = direction (bit 0-3) and new button (bit
 									;4-7) presses, d1 = buttons down (all 8 bits)
-	not.b	d0						;invert the bits
-	clr.w	d1						;d1 = 0
-	move.b	d0,d1					;d1 = pad bits
-	move.w	d1,-(sp)				;save d1
+	not.b	d0
+	clr.w	d1
+	move.b	d0,d1
+	move.w	d1,-(sp)
 	andi.w	#$F0,d0					;buttons
 	andi.w	#$F,d1					;directions
-	movea.l	#jdtab,a0				;a0 = direction table
+	movea.l	#jdtab,a0
 	move.b	0(a0,d1.w),d1			;direction
-	or.w	d1,d0					;merge the direction
-	move.w	(sp)+,d1				;restore d1
-	rts								;return
+	or.w	d1,d0
+	move.w	(sp)+,d1
+	rts
 jdtab	dc.b	8					;convert buttons l,r,d,u into directions 0-7,8
 	;convert button l,r,d,u into directions 0-7,8
 	dc.b	0,4,8,6,7,5,8,2,1,3,8,8,8,8,8
@@ -630,48 +630,48 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	movem.l	(sp)+,d2-d3/a1
 	rts
 DoDMA_nd2							;vram to vram copy by dma, protected from vblank
-	movem.l	d0-d3/a1,-(sp)			;save registers
-	move.w	(disflags).w,-(sp)		;keep disflags
-	bset	#dfng,(disflags).w		;set dfng
+	movem.l	d0-d3/a1,-(sp)
+	move.w	(disflags).w,-(sp)
+	bset	#dfng,(disflags).w
 	lea	(Vctrl).l,a1				;vdp control port
-	move.w	#VDPR_MODE2+$54,(a1)	;mode 2 register
-	move.w	#VDPR_AUTOINC+$01,(a1)	;auto increment 1
-	move.w	#$9300,d3				;DMA length low register
-	move.b	d0,d3					;low byte
-	move.w	d3,(a1)					;write it
-	move.w	#$9400,d3				;DMA length high register
-	lsr.w	#8,d0					;high byte
-	move.b	d0,d3					;low byte of d0
-	move.w	d3,(a1)					;write it
+	move.w	#VDPR_MODE2+$54,(a1)
+	move.w	#VDPR_AUTOINC+$01,(a1)
+	move.w	#$9300,d3
+	move.b	d0,d3
+	move.w	d3,(a1)
+	move.w	#$9400,d3
+	lsr.w	#8,d0
+	move.b	d0,d3
+	move.w	d3,(a1)
 	move.w	#$9500,d3				;source low
-	move.b	d2,d3					;low byte of d2
-	move.w	d3,(a1)					;write it
+	move.b	d2,d3
+	move.w	d3,(a1)
 	move.w	#$9600,d3				;source high
-	lsr.w	#8,d2					;high byte of d2
-	move.b	d2,d3					;low byte
-	move.w	d3,(a1)					;write it
-	move.w	#VDPR_DMASRCH+$C0,(a1)	;DMA source high: VRAM copy
-	clr.l	d0						;d0 = 0
+	lsr.w	#8,d2
+	move.b	d2,d3
+	move.w	d3,(a1)
+	move.w	#VDPR_DMASRCH+$C0,(a1)
+	clr.l	d0
 	move.w	d1,d0					;destination address -> vdp command (address bits 14-15 go to the second
 									;word)
-	asl.l	#2,d0					;times 4
-	lsr.w	#2,d0					;shift
+	asl.l	#2,d0
+	lsr.w	#2,d0
 	swap	d0						;to the high word
 	ori.w	#$C0,d0					;vram copy command
-	move.l	d0,(dmaram).w			;keep it
+	move.l	d0,(dmaram).w
 	move.w	#$100,(IO_Z80BUS).l		;stop the Z80
 .loop								;loop
 	btst	#0,(IO_Z80BUS).l		;stopped?
-	bne.s	.loop					;loop
-	move.w	(dmaram).w,(a1)			;first command word
-	move.w	(dmaram+2).w,(a1)		;second command word
+	bne.s	.loop
+	move.w	(dmaram).w,(a1)
+	move.w	(dmaram+2).w,(a1)
 	bsr.w	WaitDMA					;wait for the DMA
-	move.w	#VDPR_MODE2+$64,(a1)	;mode 2 register
-	move.w	#VDPR_AUTOINC+$02,(a1)	;auto increment 2
-	clr.w	(IO_Z80BUS).l			;release the Z80 bus
-	move.w	(sp)+,(disflags).w		;restore disflags
-	movem.l	(sp)+,d0-d3/a1			;restore registers
-	rts								;done
+	move.w	#VDPR_MODE2+$64,(a1)
+	move.w	#VDPR_AUTOINC+$02,(a1)
+	clr.w	(IO_Z80BUS).l
+	move.w	(sp)+,(disflags).w
+	movem.l	(sp)+,d0-d3/a1
+	rts
 ; fill vram
 ; d0 = words to fill
 ; d1 = vram address

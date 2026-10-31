@@ -145,32 +145,32 @@ PenShotChk							;a3 = checker, a2 = player hit, d0 = penalty. If a2 is on a bre
 									;bit 3) and PenShotPenalties has an entry for d0, getBAplayerInfo sets one
 									;up and d0 = that penalty (also pspenalty). Called from CCStart before
 									;AddPenalty
-	movem.l	d1-d3/a0,-(sp)			;save registers
+	movem.l	d1-d3/a0,-(sp)
 	btst	#pf3break,pflags3(a2)	;breakaway
-	beq.w	.loop					;branch taken: not a breakaway
+	beq.w	.loop
 	btst	#3,(BA_PS_flags).w		;penalty shot pending
-	beq.w	.0						;branch taken: no penalty shot pending
+	beq.w	.0
 .loop								;no penalty shot: d1 = -1 (no shooter)
-	move.w	#$FFFF,d1				;d1 = -1
-	bra.w	.end					;exit
+	move.w	#$FFFF,d1
+	bra.w	.end
 .0									;bit 3 of BA_PS_flags clear
-	movea.l	#PenShotPenalties,a0	;a0 = penalty shot penalty table
+	movea.l	#PenShotPenalties,a0
 	move.w	0(a0,d0.w),d1			;penalty shot penalty for d0, -1 = none
-	bmi.w	.end					;branch taken: no penalty shot, exit
+	bmi.w	.end
 	move.w	SCnum(a2),d2			;SCnum
-	movem.w	d0-d1,-(sp)				;save d0-d1
-	move.w	d2,d0					;d0 = player number
-	jsr	(getBAplayerInfo).l			;get breakaway player info
-	movem.w	(sp)+,d0-d1				;restore d0-d1
+	movem.w	d0-d1,-(sp)
+	move.w	d2,d0
+	jsr	(getBAplayerInfo).l
+	movem.w	(sp)+,d0-d1
 	bpl.w	.found					;N clear: penalty shot set up
-	bclr	#3,(BA_PS_flags).w		;clear BA_PS_flags bit 3
-	bra.s	.loop					;return to .loop
+	bclr	#3,(BA_PS_flags).w
+	bra.s	.loop
 .found								;d0-d1 >= 0
-	move.w	d1,(pspenalty).w		;store the penalty
+	move.w	d1,(pspenalty).w
 	move.w	d1,d0					;return the penalty shot penalty
 .end								;exit: restore the registers
-	movem.l	(sp)+,d1-d3/a0			;restore registers
-	rts								;return
+	movem.l	(sp)+,d1-d3/a0
+	rts
 getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player on the
 									;breakaway, a3 = checker. If penalties are on and the other team has a
 									;goalie in, set BA_PS_flags bit 3 and save BA_Sktr_SCnum, BA_Team,
@@ -589,41 +589,41 @@ SetPA								;start ref animation. d0 = animation (penalty number). Animations f
 SetPA2								;update animation for ref. Next frame/delay pair from the Penaltylist
 									;animation of RefPen. The delay is doubled
 									;when gmode2 bits 0 and 3 are set. Also called from UpdatePA
-	movem.l	d0-d2/a0-a1,-(sp)		;save registers
+	movem.l	d0-d2/a0-a1,-(sp)
 	moveq	#$40,d0					;clear ref window
-	tst.w	(RefStep).w				;test RefStep
+	tst.w	(RefStep).w
 	bmi.w	.pr						;idle: clear the window
 	move.w	(RefStep).w,d0			;d0 = offset into the animation list
-	addq.w	#2,(RefStep).w			;advance RefStep by 2
-	move.w	(RefPen).w,d1			;d1 = RefPen
-	movea.l	#Penaltylist,a0			;a0 = penalty list
-	adda.w	0(a0,d1.w),a0			;a0 = this penalty's entry
-	addq.w	#2,a0					;skip 2 bytes
-	adda.w	(a0),a0					;a0 = animation list
-	move.w	0(a0,d0.w),d0			;d0 = next frame/delay word
-	bpl.w	.0						;branch taken: positive, frame ready
+	addq.w	#2,(RefStep).w
+	move.w	(RefPen).w,d1
+	movea.l	#Penaltylist,a0
+	adda.w	0(a0,d1.w),a0
+	addq.w	#2,a0
+	adda.w	(a0),a0
+	move.w	0(a0,d0.w),d0
+	bpl.w	.0
 	neg.w	d0						;negative = last frame
 	st	(RefStep).w					;ref idle after this frame
 .0									;frame number ready
 	clr.w	d1						;low byte = delay
 	move.b	d0,d1					;delay
 	asl.w	#3,d1					;delay * 8 = frames to show this ref frame
-	move.w	d1,(RefCnt).w			;store the frame count
-	btst	#0,(gmode2).w			;test gmode2 bit 0
-	beq.w	.1						;branch taken: bit clear
-	btst	#3,(gmode2).w			;test gmode2 bit 3
-	beq.w	.1						;branch taken: bit clear
-	move.w	d0,-(sp)				;save d0
-	move.w	(RefCnt).w,d0			;d0 = RefCnt
-	add.w	d0,d0					;double it
-	move.w	d0,(RefCnt).w			;store it back
-	move.w	(sp)+,d0				;restore d0
+	move.w	d1,(RefCnt).w
+	btst	#0,(gmode2).w
+	beq.w	.1
+	btst	#3,(gmode2).w
+	beq.w	.1
+	move.w	d0,-(sp)
+	move.w	(RefCnt).w,d0
+	add.w	d0,d0
+	move.w	d0,(RefCnt).w
+	move.w	(sp)+,d0
 .1									;delay doubled in a shootout
-	lsr.w	#8,d0					;frame number to the low byte
+	lsr.w	#8,d0
 .pr									;show the frame
 	bsr.w	PushRef					;show the frame (d0 = $40 clears the window)
-	movem.l	(sp)+,d0-d2/a0-a1		;restore registers
-	rts								;return
+	movem.l	(sp)+,d0-d2/a0-a1
+	rts
 PushRef								;tell vblank what to display. d0 = ref frame, $40 clears the window. The
 									;horizontal ref uses RefMap2
 	movem.l	d0-d2/a0-a1,-(sp)
@@ -668,59 +668,59 @@ PushRef								;tell vblank what to display. d0 = ref frame, $40 clears the wind
 	rts
 prefmes								;print message for penalty d0 (negative clears it). Vertical mode: framed
 									;under the ref. Horizontal mode: one centered line on row $B
-	movem.l	d0-d2/a1,-(sp)			;save registers
+	movem.l	d0-d2/a1,-(sp)
 	btst	#sfhor,(sflags).w		;sfhor
-	bne.w	.hor					;branch taken: horizontal rink
-	tst.w	d0						;negative?
-	bpl.w	.noblank				;no: print it
+	bne.w	.hor
+	tst.w	d0
+	bpl.w	.noblank
 	bsr.w	printz					;negative d0: erase the 13x3 message area at x 0, y $A
 	String	CC_Font1Pri,0,$A
-	moveq	#$D,d0					;d0 = $D
-	moveq	#3,d1					;d1 = 3
+	moveq	#$D,d0
+	moveq	#3,d1
 	move.w	#$7FF,d2				;blank tile
-	bsr.w	eraser					;erase
-	bra.w	.ex						;exit
+	bsr.w	eraser
+	bra.w	.ex
 .noblank							;d0 >= 0
-	bsr.w	printz					;print the position codes
+	bsr.w	printz
 	String	CC_Font1Pri,5,$A
-	movea.l	#Penaltylist,a1			;a1 = penalty list
-	adda.w	0(a1,d0.w),a1			;a1 = this penalty
+	movea.l	#Penaltylist,a1
+	adda.w	0(a1,d0.w),a1
 	addq.w	#2,a1					;a1 = message string (length word first)
-	move.w	(a1),d0					;d0 = its width
+	move.w	(a1),d0
 	subq.w	#2,d0					;empty string
-	beq.w	.ex						;zero: exit
-	lsr.w	#1,d0					;half
+	beq.w	.ex
+	lsr.w	#1,d0
 	sub.w	d0,(printx).w			;center: back up by half the text length
-	bpl.w	.nb0					;branch taken
-	clr.w	(printx).w				;printx 0
+	bpl.w	.nb0
+	clr.w	(printx).w
 .nb0								;text start kept on screen
 	move.w	(a1),d0					;d0 = frame width from the string length
-	tst.b	-1(a1,d0.w)				;check a byte
-	bne.w	.nb1					;branch taken
+	tst.b	-1(a1,d0.w)
+	bne.w	.nb1
 	subq.w	#1,d0					;one less when the last string byte is 0 (padding)
 .nb1								;width set
 	moveq	#3,d1					;frame height 3
-	bsr.w	Framer					;frame it
+	bsr.w	Framer
 	subq.w	#2,(printy).w			;back inside the frame
-	addq.w	#1,(printx).w			;next column
-	bsr.w	print					;print
-	bra.w	.ex						;exit
+	addq.w	#1,(printx).w
+	bsr.w	print
+	bra.w	.ex
 .hor								;sfhor set
 	bsr.w	ClearPenaltyMessage		;clear the line first
-	tst.w	d0						;negative?
-	bmi.w	.ex						;yes: exit
+	tst.w	d0
+	bmi.w	.ex
 	bsr.w	printz					;print the message centered on x $11, row $B
 	String	CC_Font1Pri,$11,$B
-	movea.l	#Penaltylist,a1			;a1 = penalty list
-	adda.w	0(a1,d0.w),a1			;a1 = this penalty
-	addq.w	#2,a1					;skip the width word
-	move.w	(a1),d0					;d0 = its width
-	lsr.w	#1,d0					;half
-	sub.w	d0,(printx).w			;centre it
-	bsr.w	print					;print
+	movea.l	#Penaltylist,a1
+	adda.w	0(a1,d0.w),a1
+	addq.w	#2,a1
+	move.w	(a1),d0
+	lsr.w	#1,d0
+	sub.w	d0,(printx).w
+	bsr.w	print
 .ex									;exit: restore the registers
-	movem.l	(sp)+,d0-d2/a1			;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d2/a1
+	rts
 ClearPenaltyMessage					;Blank the horizontal mode penalty message line (22 spaces at x 5, y $B).
 									;Called from UpdatePA and prefmes
 	bsr.w	printz
@@ -837,13 +837,13 @@ updatepentime_ut					;a2 = team. Walks the penalty box list (tmboxlist): the fir
 RemovePlayerFromList				;Remove the entry before a0 from a penalty box list by shifting the rest
 									;down (list ends with a negative byte). Return a0 = removed slot. Called
 									;from PenGoalStuff, updatepentime_ut
-	moveq	#-1,d2					;index -1
+	moveq	#-1,d2
 .shift								;loop
-	addq.w	#1,d2					;next entry
-	move.b	0(a0,d2.w),-1(a0,d2.w)	;move it down one
-	bpl.s	.shift					;until a negative byte has been moved
+	addq.w	#1,d2
+	move.b	0(a0,d2.w),-1(a0,d2.w)
+	bpl.s	.shift
 	subq.w	#1,a0					;a0 = the slot that was removed
-	rts								;done
+	rts
 chkatop								;attack time of possession stat update. Called once a second from
 									;updatepentime
 	moveq	#0,d1					;d1 = struct offset of the team credited
@@ -892,34 +892,34 @@ releasepl							;player's penalty time is up so let him out (if appropriate). a2
 GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0 = power
 									;play time left from the penalty box times. Called from updatepwrplay
 	clr.w	d0						;d0 = running total, d3 = previous time
-	clr.w	d3						;clear d3
+	clr.w	d3
 	lea	tmboxlist(a2),a0			;penalty box list
 .getstatus							;loop
-	clr.w	d2						;clear d2
-	move.b	(a0)+,d2				;d2 = next box list entry
-	bmi.w	.endoflist				;branch taken: end of list
+	clr.w	d2
+	move.b	(a0)+,d2
+	bmi.w	.endoflist
 	move.w	tmpdst(a2,d2.w),d2		;tmpdst
 	btst	#$E,d2					;bit 14: coincidental
 	bne.s	.getstatus
-	sub.w	d3,d2					;subtract d3
-	add.w	d2,d0					;add to d0
-	move.w	d2,d3					;d3 = d2
-	bra.s	.getstatus				;next entry
+	sub.w	d3,d2
+	add.w	d2,d0
+	move.w	d2,d3
+	bra.s	.getstatus
 .endoflist							;d2 negative
 	cmpi.w	#6,tmap(a3)				;tmap: 6 on ice, done
-	beq.w	rtss2					;branch taken: tmap is 6, return
-	sub.w	d3,d0					;subtract d3 from d0
+	beq.w	rtss2
+	sub.w	d3,d0
 	lea	tmboxlist(a3),a0			;then the other team's box list
-	clr.w	d2						;clear d2
+	clr.w	d2
 .getstatusopp						;loop
-	move.b	(a0)+,d2				;d2 = next box list entry
-	bmi.w	rtss2					;branch taken: end of list, return
+	move.b	(a0)+,d2
+	bmi.w	rtss2
 	btst	#6,tmpdst(a3,d2.w)		;coincidental (byte bit 6, word bit 14)
-	bne.s	.getstatusopp			;branch taken: coincidental, skip
-	cmp.w	tmpdst(a3,d2.w),d0		;compare d0 to his time
-	blt.w	rtss2					;branch taken: below, return
-	add.w	d3,d0					;add d3 to d0
-	rts								;return
+	bne.s	.getstatusopp
+	cmp.w	tmpdst(a3,d2.w),d0
+	blt.w	rtss2
+	add.w	d3,d0
+	rts
 updatepwrplay						;show graphic and time remaining for power plays. Nothing when gmode2 bit
 									;1 is set, and no song at the start of a home power
 									;play (the gmode2 test is kept but both ways go to .uppt). Prints the time
@@ -1042,73 +1042,73 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 									;when bit 0 is set).
 									;sflags5 bit 7 sets crowdnoisedelay = $78. Called from USBoard, Pausemode,
 									;lcfound_close and others
-	movem.l	d0-d2/a0-a3,-(sp)		;save registers
+	movem.l	d0-d2/a0-a3,-(sp)
 	btst	#sfhor,(sflags).w		;sfhor
-	bne.w	.sbscreen				;branch taken: scoreboard screen
-	bclr	#7,(sflags5).w			;clear sflags5 bit 7
-	beq.w	.0						;it was clear: continue
-	move.w	#$78,(crowdnoisedelay).w	;crowd noise delay $78
+	bne.w	.sbscreen
+	bclr	#7,(sflags5).w
+	beq.w	.0
+	move.w	#$78,(crowdnoisedelay).w
 .0									;crowd noise delay set after a noise stop
-	bsr.w	printz					;print the position codes
+	bsr.w	printz
 	String	CC_Font1Pri,0,$17
 	moveq	#9,d0					;period box: 9x5 frame at x 0, y $17
-	moveq	#5,d1					;d1 = 5
-	bsr.w	Framer					;frame it
+	moveq	#5,d1
+	bsr.w	Framer
 	bset	#dfclock,(disflags).w	;dfclock
-	bsr.w	printz					;print the position codes
+	bsr.w	printz
 	String	CC_Font1Pri,1,$18
 	move.w	(gsp).w,d0				;period name
-	movea.l	#PerLabels,a1			;a1 = period labels
-	btst	#1,(gmode2).w			;gmode2 bit 1 set?
-	beq.w	.1						;no: keep
-	move.w	#4,d0					;d0 = 4
-	movea.l	#PerLabels2,a1			;a1 = overtime period labels
+	movea.l	#PerLabels,a1
+	btst	#1,(gmode2).w
+	beq.w	.1
+	move.w	#4,d0
+	movea.l	#PerLabels2,a1
 .1									;period names chosen
 	bsr.w	Fprintsmall				;print the period name in the box
 	bsr.w	EASNLogo				;logo under it (unless a power play is shown)
 	btst	#sf3llcs,(sflags3).w	;sf3llcs: lower line change box is up
-	bne.w	.ex						;branch taken: exit
-	bsr.w	printz					;print the position codes
+	bne.w	.ex
+	bsr.w	printz
 	String	CC_Font1Pri,$17,$17
 	moveq	#8,d0					;score box: 8x5 frame at x $17, y $17
-	moveq	#5,d1					;d1 = 5
-	bsr.w	Framer					;frame it
-	bsr.w	printz					;print the position codes
+	moveq	#5,d1
+	bsr.w	Framer
+	bsr.w	printz
 	String	CC_Font1Pri,$18,$1A		;home team on the lower row
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
-	bsr.w	printscores1_ps			;print the score
-	bsr.w	printz					;print the position codes
+	movea.w	#(tmstruct-M68K_RAM),a2
+	bsr.w	printscores1_ps
+	bsr.w	printz
 	String	CC_Font1Pri,$18,$18
 	adda.w	#tmsize,a2				;tmsize
-	bsr.w	printscores1_ps			;print the score
+	bsr.w	printscores1_ps
 .ex									;exit: restore the registers
-	movem.l	(sp)+,d0-d2/a0-a3		;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d2/a0-a3
+	rts
 .sbscreen							;sfhor set
-	bsr.w	printz					;print the position codes
+	bsr.w	printz
 	String	CC_Font2Pri,$11,2
-	move.w	(gsp).w,d0				;d0 = period
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.2						;no: keep
-	move.w	#4,d0					;d0 = 4
+	move.w	(gsp).w,d0
+	btst	#0,(gmode2).w
+	beq.w	.2
+	move.w	#4,d0
 .2									;period index chosen
 	movea.l	#PerLabels2,a1			;the horizontal rink always takes the name from PerLabels2
-	bsr.w	AdvanceStringPtr		;advance the string
+	bsr.w	AdvanceStringPtr
 	move.w	(a1),d0					;center the period name on x $11
 	lsr.w	#1,d0					;center the period name on x $11
-	sub.w	d0,(printx).w			;centre it
-	bsr.w	print					;print
-	bsr.w	printz					;print the position codes
+	sub.w	d0,(printx).w
+	bsr.w	print
+	bsr.w	printz
 	String	CC_Font2Pri,$17,2
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	movea.w	#(tmstruct-M68K_RAM),a2
 	clr.w	d0						;home logo data offset
-	bsr.w	PrintTeamLogoAndScore	;logo and score
-	bsr.w	printz					;print the position codes
+	bsr.w	PrintTeamLogoAndScore
+	bsr.w	printz
 	String	CC_Font2Pri,8,2
 	adda.w	#tmsize,a2				;tmsize
 	move.w	#$2C,d0					;visitor logo data offset
-	bsr.w	PrintTeamLogoAndScore	;logo and score
-	bra.s	.ex						;exit
+	bsr.w	PrintTeamLogoAndScore
+	bra.s	.ex
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 									;digits at x $1C. Called twice from printscores1
 	movea.l	tmdata(a2),a1			;tmdata
@@ -1124,77 +1124,77 @@ PrintTeamLogoAndScore				;Draw the team logo map (PutTeamBlock, d0 = offset) 5 c
 									;printx then the score of team a2 in big font, centered 2 rows lower; a 2
 									;digit score is moved one more left.
 									;Called twice from printscores1
-	move.w	(printx).w,-(sp)		;save printx
-	subq.w	#5,(printx).w			;move left 5 columns
-	jsr	(PutTeamBlock).l			;draw the team block
-	move.w	(sp)+,(printx).w		;restore printx
-	addq.w	#2,(printy).w			;move down 2 rows
+	move.w	(printx).w,-(sp)
+	subq.w	#5,(printx).w
+	jsr	(PutTeamBlock).l
+	move.w	(sp)+,(printx).w
+	addq.w	#2,(printy).w
 	move.w	tmscore(a2),d0			;tmscore
-	cmp.w	#$A,d0					;compare to $A
-	bge.w	.0						;branch taken: $A or more
-	bra.w	.1						;skip the adjustment
+	cmp.w	#$A,d0
+	bge.w	.0
+	bra.w	.1
 .0									;d0 >= $A
-	subq.w	#1,(printx).w			;move left 1 column
+	subq.w	#1,(printx).w
 .1									;score position set
 	bsr.w	PushNumber				;a1 = score string
 	move.w	(a1),d0					;center on the old printx
-	subq.w	#2,d0					;minus 2
-	lsr.w	#1,d0					;halve it
-	sub.w	d0,(printx).w			;subtract from printx
-	addq.w	#1,(printx).w			;move right 1 column
-	bra.w	printbig				;print big and return
+	subq.w	#2,d0
+	lsr.w	#1,d0
+	sub.w	d0,(printx).w
+	addq.w	#1,(printx).w
+	bra.w	printbig
 EASNLogo							;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power
 									;play. Called from printscores1 and updatepwrplay
 	btst	#sf2pwrplay,(sflags2).w	;sf2pwrplay
-	bne.w	rtss2					;branch taken: power play flag set, return
-	bsr.w	printz					;set print position from the string
+	bne.w	rtss2
+	bsr.w	printz
 	String	CC_Font1Pri,1,$19
-	movea.l	#EASportsMap,a1			;a1 = EA Sports map
-	adda.l	jimdata(a1),a1			;a1 = map data
-	movea.w	#null,a2				;no sprite attributes
-	clr.w	d0						;d0 = 0
-	clr.w	d1						;d1 = 0
+	movea.l	#EASportsMap,a1
+	adda.l	jimdata(a1),a1
+	movea.w	#null,a2
+	clr.w	d0
+	clr.w	d1
 	move.w	(a1),d2					;width and height from the map header
 	move.w	mapheight(a1),d3
-	move.w	(EASNcset).w,d4			;d4 = EASNcset
-	clr.w	d5						;d5 = 0
-	bra.w	dobitmap				;draw the bitmap and return
+	move.w	(EASNcset).w,d4
+	clr.w	d5
+	bra.w	dobitmap
 USBoard								;Update score board, including the players in the penalty box and their
 									;time remaining. Called from InProgress and SetHor
-	movem.l	d0-d7/a0-a3,-(sp)		;save registers
+	movem.l	d0-d7/a0-a3,-(sp)
 	bset	#dfclock,(disflags).w	;dfclock
-	bsr.w	printscores1			;reprint the scores
-	bsr.w	printz					;set print position from the string
+	bsr.w	printscores1
+	bsr.w	printz
 	String	CC_Font2Pri,$14,8
 	movea.w	#(tmstruct-M68K_RAM),a2	;home team
-	bsr.w	.dispen					;list home penalties
-	bsr.w	printz					;set print position from the string
+	bsr.w	.dispen
+	bsr.w	printz
 	String	CC_Font2Pri,5,8
 	movea.w	#(awtmstruct-M68K_RAM),a2	;visitors
-	bsr.w	.dispen					;list visitor penalties
-	movem.l	(sp)+,d0-d7/a0-a3		;restore registers
-	rts								;return
+	bsr.w	.dispen
+	movem.l	(sp)+,d0-d7/a0-a3
+	rts
 .dispen								;penalty box list of team a2: the players without a coincidental penalty
 									;first, then those with one
-	lea	tmboxlist(a2),a0			;a0 = box list
+	lea	tmboxlist(a2),a0
 .l1									;loop
 	clr.w	d0						;pass 1: players with bit 14 (coincidental) clear
-	move.b	(a0)+,d0				;d0 = next box list entry
+	move.b	(a0)+,d0
 	bmi.w	.p2						;end of list
 	btst	#6,tmpdst(a2,d0.w)		;coincidental (tmpdst high byte bit 6)
-	bne.s	.l1						;branch taken: coincidental, skip
-	bsr.w	pplpen					;print the player penalty
-	bra.s	.l1						;next entry
+	bne.s	.l1
+	bsr.w	pplpen
+	bra.s	.l1
 .p2									;d0 negative
-	lea	tmboxlist(a2),a0			;a0 = box list
+	lea	tmboxlist(a2),a0
 .l2									;loop
-	clr.w	d0						;clear d0
-	move.b	(a0)+,d0				;d0 = next box list entry
-	bmi.w	rtss2					;branch taken: end of list, return
-	btst	#6,tmpdst(a2,d0.w)		;test the coincidental bit
-	beq.s	.l2						;branch taken: not coincidental, skip
-	bsr.w	pplpen					;print the player penalty
-	bra.s	.l2						;next entry
+	clr.w	d0
+	move.b	(a0)+,d0
+	bmi.w	rtss2
+	btst	#6,tmpdst(a2,d0.w)
+	beq.s	.l2
+	bsr.w	pplpen
+	bra.s	.l2
 pplpen								;print one penalty box line: player number and time remaining. a2 = team,
 									;d0 = roster offset (player*2). Only
 									;rows up to y $A are printed; printy += 1. Called from USBoard .dispen
@@ -1412,17 +1412,17 @@ RestoreTeamEnergy					;a2 = team: max energy (tmpde $1000) for every player. The
 									;Called from the menu code before ReplayMode
 	moveq	#(maxros-1)*2,d0		;(MaxRos-1)*2
 .loop								;loop
-	cmpi.w	#$FFFD,tmpdst(a2,d0.w)	;compare tmpdst to -3
-	bne.w	.0						;branch taken: not -3
-	cmpi.w	#$FFFC,tmpdst(a2,d0.w)	;compare tmpdst to -4
-	bne.w	.0						;branch taken: not -4
-	bra.w	.1						;skip the energy store
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
+	bne.w	.0
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
+	bne.w	.0
+	bra.w	.1
 .0									;not injured: full energy
 	move.w	#$1000,tmpde(a2,d0.w)	;tmpde
 .1									;next player
-	subq.w	#2,d0					;previous player
-	bpl.s	.loop					;loop while positive
-	rts								;return
+	subq.w	#2,d0
+	bpl.s	.loop
+	rts
 reenergizeteam						;Set all players to max energy on team a2 except those at tmpdst -4;
 									;players marked -3 in tmpdst go to
 									;the bench (-2). Called from SetupTeamForIntermission and StartHL2
@@ -1559,60 +1559,60 @@ UpdateScores						;update ticker score values. Called from PeriodOver
 SetScore							;add to score for game in a0. After period 3 a game within one goal goes
 									;to OT (gsper 3) and asks for a highlight
 	cmpi.w	#4,gsper(a0)			;gsper
-	bge.w	rtss2					;branch taken: done
-	movem.l	d0-d1/a0-a1,-(sp)		;save registers
-	cmpi.w	#3,gsper(a0)			;third period?
-	bne.w	.o						;no: continue
+	bge.w	rtss2
+	movem.l	d0-d1/a0-a1,-(sp)
+	cmpi.w	#3,gsper(a0)
+	bne.w	.o
 	move.w	#5,gsper(a0)			;final
 	move.w	gss1(a0),d0				;gss1
 	sub.w	gss2(a0),d0				;gss2
-	cmp.w	#1,d0					;compare d0 with 1
-	bgt.w	.ex						;greater: done
-	cmp.w	#$FFFF,d0				;compare d0 with -1
-	blt.w	.ex						;less: done
+	cmp.w	#1,d0
+	bgt.w	.ex
+	cmp.w	#$FFFF,d0
+	blt.w	.ex
 	move.w	#3,gsper(a0)			;close game: overtime
 	bset	#gsfhl,gsflags(a0)		;gsfhl
-	bra.w	.ex						;done
+	bra.w	.ex
 .o									;not the last period: next period
-	addq.w	#1,gsper(a0)			;count the period
+	addq.w	#1,gsper(a0)
 	move.w	(a0),d0					;gst1
 	move.w	gst2(a0),d1				;gst2
-	bsr.w	.getscore				;get the score
+	bsr.w	.getscore
 	add.w	d0,gss1(a0)				;gss1
-	move.w	gst2(a0),d0				;d0 = gst2
-	move.w	(a0),d1					;d1 = first word
+	move.w	gst2(a0),d0
+	move.w	(a0),d1
 	bsr.w	.getscore				;goals for team 2
 	add.w	d0,gss2(a0)				;gss2
 .ex									;exit: restore the registers
-	movem.l	(sp)+,d0-d1/a0-a1		;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d1/a0-a1
+	rts
 .getscore							;d0 = scoring team, d1 = other team. Adds the scoring team's (bits 4-6)
 									;and the other team's (bits 0-2) sctab rows as weights. Return d0 = goals
 									;0-3
-	asl.w	#2,d0					;times 4
-	movea.w	#TeamList,a1			;a1 = TeamList
-	movea.l	0(a1,d0.w),a1			;a1 = the team
-	adda.w	ScoutReport(a1),a1		;a1 = its scout report
-	move.b	(a1),d0					;first byte
-	andi.w	#$70,d0					;keep bits 4-6
+	asl.w	#2,d0
+	movea.w	#TeamList,a1
+	movea.l	0(a1,d0.w),a1
+	adda.w	ScoutReport(a1),a1
+	move.b	(a1),d0
+	andi.w	#$70,d0
 	lsr.w	#1,d0					;row * 8
-	lea	sctab(pc),a1				;a1 = score table
-	move.l	0(a1,d0.w),(nibblebuffer).w	;first long into the nibble buffer
-	move.l	4(a1,d0.w),(nibblebuffer+4).w	;second long
-	asl.w	#2,d1					;times 4
-	movea.w	#TeamList,a1			;a1 = TeamList
-	movea.l	0(a1,d1.w),a1			;a1 = the team
-	adda.w	ScoutReport(a1),a1		;a1 = its scout report
-	move.b	(a1),d0					;first byte
-	andi.w	#7,d0					;keep bits 0-2
-	asl.w	#3,d0					;times 8
-	lea	sctab(pc),a1				;a1 = score table
-	move.l	0(a1,d0.w),d1			;first long
-	add.l	d1,(nibblebuffer).w		;add to the nibble buffer
-	move.l	4(a1,d0.w),d1			;second long
-	add.l	d1,(nibblebuffer+4).w	;add to the nibble buffer
+	lea	sctab(pc),a1
+	move.l	0(a1,d0.w),(nibblebuffer).w
+	move.l	4(a1,d0.w),(nibblebuffer+4).w
+	asl.w	#2,d1
+	movea.w	#TeamList,a1
+	movea.l	0(a1,d1.w),a1
+	adda.w	ScoutReport(a1),a1
+	move.b	(a1),d0
+	andi.w	#7,d0
+	asl.w	#3,d0
+	lea	sctab(pc),a1
+	move.l	0(a1,d0.w),d1
+	add.l	d1,(nibblebuffer).w
+	move.l	4(a1,d0.w),d1
+	add.l	d1,(nibblebuffer+4).w
 	moveq	#4,d0					;4 weights
-	bra.w	WeightedRandomSelect	;weighted random pick
+	bra.w	WeightedRandomSelect
 sctab								;weights for 0, 1, 2, 3 goals, 8 rows (92 had 4 percent bytes per row)
 	dc.w	$2B,$1E,$17,4
 	dc.w	$27,$20,$18,5
@@ -1713,16 +1713,16 @@ ClearTickerArea						;Erase the ticker box. Called from Intermission and StartHL
 SetTickerAreaPosition				;Set printx/printy/printm for the ticker box (x 3, y $17; the $BD map in
 									;pause mode). Return d0 = $1A wide, d1 = 5 high. Called from NewTicker3pt2
 									;and ClearTickerArea
-	bsr.w	printz					;set print position from the string
+	bsr.w	printz
 	String	CC_Font3Pri,3,$17
 	btst	#sfpz,(sflags).w		;sfpz
-	bne.w	.1						;branch taken: sfpz set
-	bsr.w	printz					;set print position from the string
+	bne.w	.1
+	bsr.w	printz
 	String	CC_Font1Pri,3,$17
 .1									;sfpz set
 	moveq	#$1A,d0					;box size 26x5
-	moveq	#5,d1					;height 5
-	rts								;return
+	moveq	#5,d1
+	rts
 Fprintsmall							;92 Fprint, but printing with printsmall (92 used print). Print string d0
 									;of the String list a1 with printsmall
 	bsr.w	AdvanceStringPtr

@@ -66,51 +66,51 @@ RandomSongs							;ChooseSong: the 8 songs for a random pick
 ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; sflags bit 4
 									;cleared, lastsfx = -1, recbpr = $FFFF0000. Called from Begin and
 									;GameSetUp
-	movem.l	d0-d1/a0,-(sp)			;save registers
+	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1				;all $100 bytes of line data
 	move.l	#LineDataBase,d0
 	movea.l	#databuffer,a0
-	jsr	(ReadSRAM).l				;read SRAM into databuffer
+	jsr	(ReadSRAM).l
 	bclr	#sfwrap,(sflags).w		;the SRAM routines leave these set: reset them
-	move.w	#$FFFF,(lastsfx).w		;lastsfx = -1
-	move.l	#M68K_RAM,(recbpr).w	;recbpr = M68K_RAM
-	movem.l	(sp)+,d0-d1/a0			;restore registers
-	rts								;return
+	move.w	#$FFFF,(lastsfx).w
+	move.l	#M68K_RAM,(recbpr).w
+	movem.l	(sp)+,d0-d1/a0
+	rts
 WriteLineData						;Write databuffer back to save RAM at LineDataBase (WriteSRAM,
 									;MakeSRAMChecksum); as ReadLineData after. Called from EncodePW and
 									;EncodeTeamLines
-	movem.l	d0-d1/a0,-(sp)			;save registers
-	move.l	#$100,d1				;$100 bytes
-	move.l	#LineDataBase,d0		;from the line data base in save RAM
-	movea.l	#databuffer,a0			;from the data buffer
-	jsr	(WriteSRAM).l				;write them
-	jsr	(MakeSRAMChecksum).l		;update the checksum
-	bclr	#sfwrap,(sflags).w		;clear sfwrap
-	move.w	#$FFFF,(lastsfx).w		;no last sound effect
-	move.l	#M68K_RAM,(recbpr).w	;reset recbpr to the RAM copy
-	movem.l	(sp)+,d0-d1/a0			;restore registers
-	rts								;done
+	movem.l	d0-d1/a0,-(sp)
+	move.l	#$100,d1
+	move.l	#LineDataBase,d0
+	movea.l	#databuffer,a0
+	jsr	(WriteSRAM).l
+	jsr	(MakeSRAMChecksum).l
+	bclr	#sfwrap,(sflags).w
+	move.w	#$FFFF,(lastsfx).w
+	move.l	#M68K_RAM,(recbpr).w
+	movem.l	(sp)+,d0-d1/a0
+	rts
 ClearWinRecords						;Clear bytes 8-$B of the 8 ThreeStars records and write the $80 bytes at
 									;TeamRecBase (WriteSRAM, MakeSRAMChecksum). Called from
 									;RecordHoldersScreen
 									;(Record Holders)
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	movea.l	#recordbuf,a0			;a0 = recordbuf
+	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#recordbuf,a0
 	move.w	#7,d7					;8 user record blocks
 .loop								;clear the wins and games of each
-	clr.b	urwins(a0)				;clear wins high byte
-	clr.b	urwins+1(a0)			;clear wins low byte
-	clr.b	urgames(a0)				;clear games high byte
-	clr.b	urgames+1(a0)			;clear games low byte
+	clr.b	urwins(a0)
+	clr.b	urwins+1(a0)
+	clr.b	urgames(a0)
+	clr.b	urgames+1(a0)
 	adda.w	#$10,a0					;16 bytes per block
-	dbf	d7,.loop					;loop for the other blocks
+	dbf	d7,.loop
 	move.l	#TeamRecBase,d0			;write all $80 bytes back
-	move.l	#$80,d1					;length $80
-	movea.l	#recordbuf,a0			;a0 = recordbuf
-	jsr	(WriteSRAM).l				;write to SRAM
-	jsr	(MakeSRAMChecksum).l		;update the SRAM checksum
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;return
+	move.l	#$80,d1
+	movea.l	#recordbuf,a0
+	jsr	(WriteSRAM).l
+	jsr	(MakeSRAMChecksum).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of the skate path,
 									;NextPathPoint), turned by passdirlist for the bottom net. Called from
 									;shotdiradj
@@ -309,65 +309,65 @@ ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (
 UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixels to 4 bit
 									;pixels + 5 at picturebuf (count first). Called from DrawPictureBox,
 									;DrawMatchupPicture and PlayerCardScreen
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	movea.l	#picturebuf,a0			;a0 = picture buffer
-	movea.l	#picturebits,a1			;a1 = picture bits
+	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#picturebuf,a0
+	movea.l	#picturebits,a1
 	move.w	(a2)+,d0				;row count: first word of the picture
-	move.w	d0,(a0)+				;store the row count
+	move.w	d0,(a0)+
 	asl.w	#3,d0					;8 rows per tile
-	subq.w	#1,d0					;minus 1
+	subq.w	#1,d0
 .loop								;each row: 3 bytes = 8 pixels of 3 bits
-	clr.l	(a0)					;clear the row
-	clr.l	(a1)					;clear the bits
-	move.b	(a2)+,(a1)				;first byte
-	move.b	(a2)+,1(a1)				;second byte
-	move.b	(a2)+,2(a1)				;third byte
+	clr.l	(a0)
+	clr.l	(a1)
+	move.b	(a2)+,(a1)
+	move.b	(a2)+,1(a1)
+	move.b	(a2)+,2(a1)
 	move.l	#0,-(sp)				;build the 8 pixels of 4 bits each, + 5 for the card palette
-	move.l	(a1),d2					;d2 = the 24 bits
+	move.l	(a1),d2
 	andi.l	#$E0000000,d2			;pixel 0 (bits 31-29)
-	lsr.l	#1,d2					;shift 1
-	addi.l	#$50000000,d2			;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#1,d2
+	addi.l	#$50000000,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$1C000000,d2			;pixel 1
-	lsr.l	#2,d2					;shift 2
-	addi.l	#$5000000,d2			;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#2,d2
+	addi.l	#$5000000,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$3800000,d2			;pixel 2
-	lsr.l	#3,d2					;shift 3
-	addi.l	#$500000,d2				;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#3,d2
+	addi.l	#$500000,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$700000,d2				;pixel 3
-	lsr.l	#4,d2					;shift 4
-	addi.l	#$50000,d2				;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#4,d2
+	addi.l	#$50000,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$E0000,d2				;pixel 4
-	lsr.l	#5,d2					;shift 5
-	addi.l	#$5000,d2				;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#5,d2
+	addi.l	#$5000,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$1C000,d2				;pixel 5
-	lsr.l	#6,d2					;shift 6
-	addi.l	#$500,d2				;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#6,d2
+	addi.l	#$500,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$3800,d2				;pixel 6
-	lsr.l	#7,d2					;shift 7
-	addi.l	#$50,d2					;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(a1),d2					;d2 = the 24 bits
+	lsr.l	#7,d2
+	addi.l	#$50,d2
+	or.l	d2,(sp)
+	move.l	(a1),d2
 	andi.l	#$700,d2				;pixel 7
-	move.w	#8,d5					;shift 8
-	lsr.l	d5,d2					;shift
-	addq.l	#5,d2					;add the pixel mask
-	or.l	d2,(sp)					;combine into the result
-	move.l	(sp)+,(a0)+				;store the row
+	move.w	#8,d5
+	lsr.l	d5,d2
+	addq.l	#5,d2
+	or.l	d2,(sp)
+	move.l	(sp)+,(a0)+
 	dbf	d0,.loop					;loop
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 LoadHomeTeamGfx						;Load the HomeTeam graphics of TeamGfxList to VRAM d4 - $18
 									;(DecompressGraphicsPlain). Called from setupice, ClrHor and
 									;ReloadRinkGraphics
@@ -690,16 +690,16 @@ CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for 
 	rts
 TerminateLogName					;Unreferenced. The GetLogName String at lognametext, ended with 0 at
 									;namelength and its length word made even
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	movea.l	#lognametext,a1			;a1 = lognametext
-	bsr.w	GetLogName				;get the log name
-	move.w	(namelength).w,d0		;d0 = name length
+	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#lognametext,a1
+	bsr.w	GetLogName
+	move.w	(namelength).w,d0
 	move.b	#0,(a1,d0.w)			;end the name with 0
-	addq.w	#1,d0					;plus 1
+	addq.w	#1,d0
 	andi.w	#$FFFE,d0				;length rounded to even
-	move.w	d0,-2(a1)				;store the length word
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;return
+	move.w	d0,-2(a1)
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name), or an
 									;empty String for 0. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
@@ -782,15 +782,15 @@ PuckComingToward					;nothing calls it. Z clear when the puck is within $1E of p
 	rts
 ReadGoaliePulled					;Z clear when the team of a3 pulled its goalie ($26 of the team struct).
 									;Called from doshot assdefo, asspuckc and assnearest
-	movem.l	a1,-(sp)				;save a1
-	movea.l	#tmstruct,a1			;home team structure
+	movem.l	a1,-(sp)
+	movea.l	#tmstruct,a1
 	btst	#pfteam,pflags(a3)		;check if home or away 0=home 1=away
-	beq.w	.chkgoalie				;home: use it
-	movea.l	#awtmstruct,a1			;away team structure
+	beq.w	.chkgoalie
+	movea.l	#awtmstruct,a1
 .chkgoalie							;team chosen: tmgoalie 0 = goalie in (Z set)
-	tst.w	tmgoalie(a1)			;tmgoalie 0 means the goalie is in (Z set)
-	movem.l	(sp)+,a1				;restore a1
-	rts								;done
+	tst.w	tmgoalie(a1)
+	movem.l	(sp)+,a1
+	rts
 EndOneTimer							;End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA
 									;SPAglide, then assexit (goalie) or Setplass. Called from assonetimer and
 									;checkgoal (.setass)
@@ -1018,30 +1018,30 @@ CreditsWait							;Credits: wait for Vcount, run the clampcounter count down; st
 	rts
 VBlank_TitleScreen					;newTitleScreen vblank: line scroll table (SortCords) and Vscroll,
 									;sprites, cramfade, CreditsScrollStep, p_music_vblank
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).w		;screen off?
 	bne.w	.1						;screen off: skip the DMA
-	movea.w	#(SortCords-M68K_RAM),a0	;a0 = SortCords
-	move.w	(VSCRLPM).w,d1			;d1 = VSCRLPM
+	movea.w	#(SortCords-M68K_RAM),a0
+	move.w	(VSCRLPM).w,d1
 	move.w	#$1C0,d0				;$1C0 bytes: the line scroll table
-	jsr	(DoDMA).l					;DMA to VRAM
-	movea.l	#Vdata,a0				;a0 = VDP data port
-	move.l	#VSRAM_W,Vctrl-Vdata(a0)	;set VSRAM write address
+	jsr	(DoDMA).l
+	movea.l	#Vdata,a0
+	move.l	#VSRAM_W,Vctrl-Vdata(a0)
 	move.w	(Vscroll).w,(a0)		;vertical scroll of the credits
-	movea.w	#(Satt-M68K_RAM),a0		;a0 = sprite attribute table
-	move.w	(Sattsize).w,d0			;d0 = Sattsize
+	movea.w	#(Satt-M68K_RAM),a0
+	move.w	(Sattsize).w,d0
 	beq.w	.0						;no sprites this frame
-	clr.w	(Sattsize).w			;clear Sattsize
-	move.w	(VSPRITES).w,d1			;d1 = VSPRITES
-	jsr	(DoDMA).l					;DMA to VRAM
+	clr.w	(Sattsize).w
+	move.w	(VSPRITES).w,d1
+	jsr	(DoDMA).l
 .0									;sprites done
-	jsr	(cramfade).l				;fade the colors
+	jsr	(cramfade).l
 .1									;drawing done (or skipped)
 	addq.w	#1,(Vcount).w			;count the frame
-	jsr	(CreditsScrollStep).l		;step the credits scroll
-	jsr	(p_music_vblank).l			;run the music vblank
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rte								;return from exception
+	jsr	(CreditsScrollStep).l
+	jsr	(p_music_vblank).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rte
 CreditsLineScroll					;Credits: the line scroll table at SortCords
 	movem.l	d0-d1,-(sp)
 	move.w	#$14,(Hscroll).w		;scroll step per update
@@ -1182,21 +1182,21 @@ LeadSongExit						;LeadSong exit
 	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
 									;teams' penalty slots (clrTmPdst). Called from clockcont_0
-	movem.l	d0/a0,-(sp)				;save d0 and a0
+	movem.l	d0/a0,-(sp)
 	clr.w	(PBnum).w				;no penalty box players
-	clr.w	(Penaltytimer).w		;clear Penaltytimer
-	clr.w	(PenCntDwn).w			;clear PenCntDwn
+	clr.w	(Penaltytimer).w
+	clr.w	(PenCntDwn).w
 	move.w	#$10,d0					;$11 longs
-	movea.l	#PenBuf,a0				;a0 = PenBuf
+	movea.l	#PenBuf,a0
 .loop								;clear PenBuf
-	clr.l	(a0)+					;clear a long
+	clr.l	(a0)+
 	dbf	d0,.loop					;loop
-	movea.l	#tmstruct,a0			;a0 = home team struct
-	bsr.w	clrTmPdst				;clear the team penalty slots
-	movea.l	#awtmstruct,a0			;a0 = away team struct
-	bsr.w	clrTmPdst				;clear the team penalty slots
-	movem.l	(sp)+,d0/a0				;restore d0 and a0
-	rts								;return
+	movea.l	#tmstruct,a0
+	bsr.w	clrTmPdst
+	movea.l	#awtmstruct,a0
+	bsr.w	clrTmPdst
+	movem.l	(sp)+,d0/a0
+	rts
 clrTmPdst							;Put all 26 players of team struct a0 on the bench (tmpdst -2), then the
 									;end word -1
 	move.w	#$19,d0					;19 = 25 decimal (max roster size)
@@ -1210,62 +1210,62 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 									;HotMap when he is awayhotplayer /
 									;homehotplayer, ColdMap when awaycoldplayer / homecoldplayer, else
 									;clear it (eraser)
-	movem.l	d0/a0-a1,-(sp)			;save registers
-	movea.l	#awayhotplayer,a0		;a0 = away hot player
-	move.w	#2,(iconx).w			;iconx 2
+	movem.l	d0/a0-a1,-(sp)
+	movea.l	#awayhotplayer,a0
+	move.w	#2,(iconx).w
 	cmpa.l	#tmstruct,a2			;home team?
-	bne.w	.0						;branch taken
+	bne.w	.0
 	movea.l	#homehotplayer,a0		;home: the home lists and column $20
-	move.w	#$20,(iconx).w			;iconx $20
+	move.w	#$20,(iconx).w
 .0									;team chosen
 	move.w	#0,d0					;1 hot player per team
 .loop								;is he the hot one?
-	move.w	(a0)+,d1				;next player
+	move.w	(a0)+,d1
 	cmp.w	(iconplayer).w,d1		;this one?
-	beq.w	.hot					;zero: hot
+	beq.w	.hot
 	dbf	d0,.loop					;loop
 	movea.l	#awaycoldplayer,a0		;not hot: is he the cold one?
 	cmpa.l	#tmstruct,a2			;home team?
-	bne.w	.1						;branch taken
-	movea.l	#homecoldplayer,a0		;a0 = home cold player
+	bne.w	.1
+	movea.l	#homecoldplayer,a0
 .1									;team chosen
 	move.w	#0,d0					;1 cold player
 .loop2								;check each cold player
-	move.w	(a0)+,d1				;next player
+	move.w	(a0)+,d1
 	cmp.w	(iconplayer).w,d1		;this one?
-	beq.w	.cold					;zero: cold
+	beq.w	.cold
 	dbf	d0,.loop2					;neither: clear the icon area
-	move.w	(iconx).w,(printx).w	;printx = iconx
-	move.w	#$19,(printy).w			;printy $19
-	move.w	#8,d0					;d0 = 8
-	move.w	#3,d1					;d1 = 3
+	move.w	(iconx).w,(printx).w
+	move.w	#$19,(printy).w
+	move.w	#8,d0
+	move.w	#3,d1
 	move.w	#$7FF,d2				;blank char
-	jsr	(eraser).l					;erase the icon area
-	bra.w	.x						;exit
+	jsr	(eraser).l
+	bra.w	.x
 .hot								;he is hot: the hot icon
-	move.w	(hoticonchars).w,d4		;d4 = hot icon chars
-	movea.l	#HotMap,a0				;a0 = hot map
-	bra.w	.draw					;draw it
+	move.w	(hoticonchars).w,d4
+	movea.l	#HotMap,a0
+	bra.w	.draw
 .cold								;he is cold: the cold icon
-	move.w	(coldiconchars).w,d4	;d4 = cold icon chars
-	movea.l	#ColdMap,a0				;a0 = cold map
+	move.w	(coldiconchars).w,d4
+	movea.l	#ColdMap,a0
 .draw								;draw the icon
-	move.w	(iconx).w,(printx).w	;printx = iconx
-	move.w	#$19,(printy).w			;printy $19
-	movea.l	a0,a1					;a1 = the map
-	movea.l	a0,a2					;a2 = the map
-	adda.l	(a2)+,a0				;a0 = the map data
+	move.w	(iconx).w,(printx).w
+	move.w	#$19,(printy).w
+	movea.l	a0,a1
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
 	adda.l	(a2)+,a1				;a1 = map data
-	movea.w	#null,a2				;no attribute map
-	clr.w	d0						;d0 = 0
-	clr.w	d1						;d1 = 0
-	move.w	(a1),d2					;d2 = map width
-	move.w	mapheight(a1),d3		;d3 = map height
+	movea.w	#null,a2
+	clr.w	d0
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	mapheight(a1),d3
 	moveq	#0,d5					;no palette lines
-	jsr	(dobitmap).l				;draw the bitmap
+	jsr	(dobitmap).l
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0/a0-a1			;restore registers
-	rts								;done
+	movem.l	(sp)+,d0/a0-a1
+	rts
 chgplayer							;The pad d4 takes the nearest free skater to where the puck is going (not
 									;a goalie, not locked or unavailable; in a penalty shot / shootout only
 									;BA_Sktr_SCnum or BA_Goalie_SCnum), or sweep checks when it is the same

@@ -845,108 +845,108 @@ goaliesave							;pick the goalie save for a puck crossing the goal line: a0 = p
 	sub.w	(a3),d0					;sub goalie Xpos from d0
 	move.w	d3,d1					;move goalline into d1
 	sub.w	Ypos(a3),d1				;sub goalie Ypos from d1
-	bsr.w	vtoa					;direction
+	bsr.w	vtoa
 	sub.w	facedir(a3),d0			;sub facedir from d0
 	andi.w	#7,d0					;pass first 3 bits of d0
 	move.w	d0,d3					;move d0 into d3
 	lsr.w	#2,d0					;divide d0 by 4
-	btst	#3,attribute(a3)		;flipped animation?
-	beq.w	.0						;no: keep
-	eori.w	#1,d0					;swap the side
+	btst	#3,attribute(a3)
+	beq.w	.0
+	eori.w	#1,d0
 .0									;mirrored for flipped goalies; low or high save by the puck height
-	cmpi.w	#8,(puckz).w			;puck z above 8?
-	bgt.w	.1						;yes: high
-	cmpi.w	#$800,(puckvz).w		;puck z velocity above $800?
-	bgt.w	.1						;yes: high
-	bra.w	.low					;low save
+	cmpi.w	#8,(puckz).w
+	bgt.w	.1
+	cmpi.w	#$800,(puckvz).w
+	bgt.w	.1
+	bra.w	.low
 .1									;puckz > 8 or puckvz > $800
-	movem.l	d0,-(sp)				;save d0
-	move.w	(a3),d0					;goalie x
-	sub.w	(a0),d0					;minus a0 x
-	cmp.w	#$10,d0					;beyond +$10?
-	bgt.w	.2						;yes: pop
-	cmp.w	#$FFF0,d0				;beyond -$10?
-	blt.w	.2						;yes: pop
-	movem.l	(sp)+,d0				;restore d0
-	addq.w	#6,d0					;plus 6
-	bra.w	.done					;animation chosen
+	movem.l	d0,-(sp)
+	move.w	(a3),d0
+	sub.w	(a0),d0
+	cmp.w	#$10,d0
+	bgt.w	.2
+	cmp.w	#$FFF0,d0
+	blt.w	.2
+	movem.l	(sp)+,d0
+	addq.w	#6,d0
+	bra.w	.done
 .2									;pop the d0 saved above
-	movem.l	(sp)+,d0				;restore d0
-	bra.w	.done					;animation chosen
+	movem.l	(sp)+,d0
+	bra.w	.done
 .low								;low save (entry +4) unless the puck is close
-	addq.w	#4,d0					;plus 4
-	cmpi.w	#8,2(a0)				;puck close?
-	bls.w	.9						;yes: by side
-	cmpi.w	#2,facedir(a3)			;facing 2?
-	beq.w	.done					;yes: done
-	cmpi.w	#6,facedir(a3)			;facing 6?
-	beq.w	.done					;yes: done
-	tst.w	(puckc).w				;puck carried?
-	bmi.w	.done					;no: done
-	subq.w	#2,d0					;minus 2
-	move.w	d1,-(sp)				;save d1
-	move.w	#$1000,d1				;d1 = $1000
-	move.w	d1,Xvel(a3)				;x velocity
-	ori.w	#1,d0					;set bit 0
-	btst	#pfgoal,pflags(a3)		;which goal?
-	bne.w	.4						;pfgoal set: keep
-	eori.w	#1,d0					;swap the side
+	addq.w	#4,d0
+	cmpi.w	#8,2(a0)
+	bls.w	.9
+	cmpi.w	#2,facedir(a3)
+	beq.w	.done
+	cmpi.w	#6,facedir(a3)
+	beq.w	.done
+	tst.w	(puckc).w
+	bmi.w	.done
+	subq.w	#2,d0
+	move.w	d1,-(sp)
+	move.w	#$1000,d1
+	move.w	d1,Xvel(a3)
+	ori.w	#1,d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.4
+	eori.w	#1,d0
 .4									;post for his end
-	move.w	#$FFFA,d1				;d1 = -6
-	tst.w	Xvel(a3)				;x velocity negative?
-	bmi.w	.5						;yes: keep
-	neg.w	Xvel(a3)				;negate x velocity
+	move.w	#$FFFA,d1
+	tst.w	Xvel(a3)
+	bmi.w	.5
+	neg.w	Xvel(a3)
 .5									;keep the goalie inside the posts while sliding
-	tst.w	(a3)					;x negative?
-	bpl.w	.7						;no: other post
-	tst.w	Xvel(a3)				;x velocity positive?
-	bpl.w	.6						;yes: keep
-	neg.w	Xvel(a3)				;negate x velocity
+	tst.w	(a3)
+	bpl.w	.7
+	tst.w	Xvel(a3)
+	bpl.w	.6
+	neg.w	Xvel(a3)
 .6									;other post
-	move.w	#6,d1					;d1 = 6
-	eori.w	#1,d0					;swap the side
+	move.w	#6,d1
+	eori.w	#1,d0
 .7									;post set
-	add.w	d1,(a3)					;move the goalie x by d1
+	add.w	d1,(a3)
 	btst	#0,handed(a3)			;check hand of goalie
 	beq.w	.8						;Branch if goalie is Full Right
-	eori.w	#1,d0					;swap the side
+	eori.w	#1,d0
 .8									;glove hand flips the side
-	move.w	(sp)+,d1				;restore d1
-	bra.w	.done					;animation chosen
+	move.w	(sp)+,d1
+	bra.w	.done
 .9									;puck not straight in: save by side
-	movem.l	d0,-(sp)				;save d0
-	move.w	(a3),d0					;goalie x
-	sub.w	(a0),d0					;minus a0 x
-	cmp.w	#$10,d0					;$10 or less?
-	ble.w	.10						;yes: check the other side
-	movem.l	(sp)+,d0				;restore d0
-	bra.w	.11						;far side
+	movem.l	d0,-(sp)
+	move.w	(a3),d0
+	sub.w	(a0),d0
+	cmp.w	#$10,d0
+	ble.w	.10
+	movem.l	(sp)+,d0
+	bra.w	.11
 .10									;d0 <= $10
-	cmp.w	#$FFF0,d0				;beyond -$10?
-	movem.l	(sp)+,d0				;restore d0
-	bgt.w	.done					;yes: animation chosen
+	cmp.w	#$FFF0,d0
+	movem.l	(sp)+,d0
+	bgt.w	.done
 .11									;high on the far side: entry +4
-	addq.w	#4,d0					;plus 4
+	addq.w	#4,d0
 .done								;d1 = the save animation (glove right/left, stick, ...)
-	add.w	d0,d0					;times 2
-	lea	.saveanim(pc),a1			;a1 = save animations
-	move.w	0(a1,d0.w),d1			;d1 = the animation
-	cmp.w	#SPAgglovel,d1			;glove left?
-	bne.w	.13						;no: start it
-	andi.w	#3,d3					;low 2 bits of d3
-	beq.w	.13						;zero: start it
+	add.w	d0,d0
+	lea	.saveanim(pc),a1
+	move.w	0(a1,d0.w),d1
+	cmp.w	#SPAgglovel,d1
+	bne.w	.13
+	andi.w	#3,d3
+	beq.w	.13
 	cmpi.b	#$B,GGSleft(a3)			;goalie glove save left rating 11 or more?
 	blt.w	.13						;branch if less than
 	move.w	#SPAgglovel2,d1			;reach out glove save
 .13									;start the save animation and excite the crowd
-	bsr.w	SetSPA					;set the animation
-	addi.w	#$96,(Crowdlevel).w		;raise the crowd level by $96
-	addi.w	#$A,(CwdExciteLvl).w	;raise the excitement level by $A
-	asr.w	Xvel(a3)				;halve x velocity
-	asr.w	Xvel(a3)				;halve it again
-	asr.w	Yvel(a3)				;halve y velocity
-	asr.w	Yvel(a3)				;halve it again
-	rts								;done
+	bsr.w	SetSPA
+	addi.w	#$96,(Crowdlevel).w
+	addi.w	#$A,(CwdExciteLvl).w
+	asr.w	Xvel(a3)
+	asr.w	Xvel(a3)
+	asr.w	Yvel(a3)
+	asr.w	Yvel(a3)
+	rts
 .saveanim							;SPA per save type. Same 10 words as the
 									;unreferenced table in the input code
 	dc.w	SPAgglover
@@ -1109,191 +1109,191 @@ chkpuckc							;puck carrier a3: check for a breakaway (not in a shootout or pen
 	move.w	#$10,d0					;asspuckc
 	bsr.w	assreplace
 asspuckc							;player a3 is puck handler
-	bclr	#2,(sflags5).w			;clear sflags5 bit 2
-	bne.w	.0						;it was set: keep pf3break
-	bclr	#pf3break,pflags3(a3)	;clear pf3break
+	bclr	#2,(sflags5).w
+	bne.w	.0
+	bclr	#pf3break,pflags3(a3)
 .0									;check the message timer
-	move.w	(puckc).w,d0			;d0 = SCnum of the puck carrier
-	cmp.w	SCnum(a3),d0			;is it a3?
-	bne.w	assexit					;no: exit
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	beq.w	.1						;no: continue
-	cmpi.w	#1,(msgtimer).w			;message timer above 1?
-	bgt.w	.x						;yes: exit
+	move.w	(puckc).w,d0
+	cmp.w	SCnum(a3),d0
+	bne.w	assexit
+	btst	#2,(BA_PS_flags).w
+	beq.w	.1
+	cmpi.w	#1,(msgtimer).w
+	bgt.w	.x
 .1									;breakaway check
-	btst	#pf3break,pflags3(a3)	;pf3break set?
-	bne.w	.2						;yes: continue
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	bne.w	.2						;yes: continue
-	jsr	(BreakawayOffsidesFlagSet).l	;breakaway and offsides flag check
+	btst	#pf3break,pflags3(a3)
+	bne.w	.2
+	btst	#2,(BA_PS_flags).w
+	bne.w	.2
+	jsr	(BreakawayOffsidesFlagSet).l
 	beq.w	.2						;branch if breakaway flag not set
 	move.w	#$21,d0					;chkpuckc assignment
-	bsr.w	assreplace				;assreplace
-	bra.w	*+4						;continue
+	bsr.w	assreplace
+	bra.w	*+4
 .2									;no breakaway: normal puck carrier play
-	btst	#pfalock,pflags(a3)		;locked (pfalock)?
-	bne.w	rtss2					;yes: done
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	bne.w	.3						;yes: continue
-	btst	#gmclock,(gmode).w		;clock stopped (gmclock)?
-	bne.w	donothing				;yes: do nothing
+	btst	#pfalock,pflags(a3)
+	bne.w	rtss2
+	btst	#2,(BA_PS_flags).w
+	bne.w	.3
+	btst	#gmclock,(gmode).w
+	bne.w	donothing
 .3									;breakaway check
-	btst	#pfjoycon,pflags(a3)	;human controlled?
-	bne.w	assexit					;yes: exit
-	bclr	#pfna,pflags(a3)		;clear pfna
-	beq.w	.7						;it was clear: count down
-	btst	#pf3break,pflags3(a3)	;pf3break set?
-	beq.w	.4						;no: skip the beep
-	move.w	#SFXbeep1,-(sp)			;beep sound effect
-	jsr	(sfx).l						;play it
+	btst	#pfjoycon,pflags(a3)
+	bne.w	assexit
+	bclr	#pfna,pflags(a3)
+	beq.w	.7
+	btst	#pf3break,pflags3(a3)
+	beq.w	.4
+	move.w	#SFXbeep1,-(sp)
+	jsr	(sfx).l
 .4									;breakaway crowd
-	btst	#pf3break,pflags3(a3)	;pf3break set?
-	beq.w	.6						;no: skip
-	movem.l	a2,-(sp)				;save a2
-	movea.l	#tmstruct,a2			;a2 = home team structure
-	btst	#pfteam,pflags(a3)		;which team?
-	beq.w	.5						;home: keep
-	movea.l	#awtmstruct,a2			;a2 = away team structure
+	btst	#pf3break,pflags3(a3)
+	beq.w	.6
+	movem.l	a2,-(sp)
+	movea.l	#tmstruct,a2
+	btst	#pfteam,pflags(a3)
+	beq.w	.5
+	movea.l	#awtmstruct,a2
 .5									;team struct chosen
-	addq.w	#1,tmBreakaways(a2)		;count a breakaway
-	addi.w	#$14,(CwdExciteLvl).w	;raise the excitement level by $14
-	addi.w	#$C8,(Crowdlevel).w		;raise the crowd level by $C8
-	movem.l	(sp)+,a2				;restore a2
+	addq.w	#1,tmBreakaways(a2)
+	addi.w	#$14,(CwdExciteLvl).w
+	addi.w	#$C8,(Crowdlevel).w
+	movem.l	(sp)+,a2
 .6									;breakaway check done
-	clr.w	temp1(a3)				;temp1 0
-	move.w	#8,temp2(a3)			;temp2 8
-	move.w	(HVcount).l,d0			;d0 = HVcount
-	andi.w	#3,d0					;low 2 bits
-	move.w	d0,temp3(a3)			;temp3
+	clr.w	temp1(a3)
+	move.w	#8,temp2(a3)
+	move.w	(HVcount).l,d0
+	andi.w	#3,d0
+	move.w	d0,temp3(a3)
 .7									;count down the timer
-	sub.b	d7,temp1(a3)			;count temp1 down by d7
-	bpl.w	.nodec					;still positive: skip
-	move.b	aioff(a3),temp1(a3)		;reload temp1 from aioff
-	jsr	(ReadGoaliePulled).l		;goalie pulled?
-	bmi.w	.8						;yes: quicker
-	btst	#6,(sflags7).w			;sflags7 bit 6 set?
-	beq.w	.9						;no: skip
-	tst.b	temp1(a3)				;temp1 zero?
-	beq.w	.9						;yes: skip
+	sub.b	d7,temp1(a3)
+	bpl.w	.nodec
+	move.b	aioff(a3),temp1(a3)
+	jsr	(ReadGoaliePulled).l
+	bmi.w	.8
+	btst	#6,(sflags7).w
+	beq.w	.9
+	tst.b	temp1(a3)
+	beq.w	.9
 .8									;goalie pulled or crowd meter broken: quicker decisions
-	subq.b	#1,temp1(a3)			;one less
+	subq.b	#1,temp1(a3)
 .9									;shootout or penalty shot: the shootout shot check
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	bne.w	.soshot					;yes: shootout shot
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	bne.w	.soshot					;yes: shootout shot
-	bsr.w	checkob					;offsides check
-	bsr.w	chk4lc					;line change check
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	bne.w	.soshot					;yes: shootout shot
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	bne.w	.soshot					;yes: shootout shot
-	btst	#pf3break,pflags3(a3)	;pf3break set?
-	bne.w	.shot					;yes: shoot check
-	move.w	#1,d0					;d0 = 1
-	btst	#pfteam,pflags(a3)		;which team?
-	beq.w	.10						;home: keep
-	move.w	#2,d0					;d0 = 2
+	btst	#2,(BA_PS_flags).w
+	bne.w	.soshot
+	btst	#0,(gmode2).w
+	bne.w	.soshot
+	bsr.w	checkob
+	bsr.w	chk4lc
+	btst	#0,(gmode2).w
+	bne.w	.soshot
+	btst	#2,(BA_PS_flags).w
+	bne.w	.soshot
+	btst	#pf3break,pflags3(a3)
+	bne.w	.shot
+	move.w	#1,d0
+	btst	#pfteam,pflags(a3)
+	beq.w	.10
+	move.w	#2,d0
 .10									;team pad chosen
-	cmp.w	(cont1team).w,d0		;team on controller 1?
-	beq.w	.shot					;yes: shoot check
-	cmp.w	(cont2team).w,d0		;team on controller 2?
-	beq.w	.shot					;yes: shoot check
-	btst	#1,(Vcount+1).w			;Vcount bit 1
-	bne.w	.pass					;set: pass check
+	cmp.w	(cont1team).w,d0
+	beq.w	.shot
+	cmp.w	(cont2team).w,d0
+	beq.w	.shot
+	btst	#1,(Vcount+1).w
+	bne.w	.pass
 .shot								;shoot check (on a computer pad, every other frame)
-	bsr.w	chk4shot				;shoot check
-	bra.w	.pass					;pass check
+	bsr.w	chk4shot
+	bra.w	.pass
 .soshot								;bit 2 of BA_PS_flags set or bit 0 of gmode2 set
-	jsr	(ShootoutShootCheck).l		;shootout shoot check
-	bne.w	.nodec					;not zero: skate on
-	jsr	(CompShoot).l				;computer shoot check
+	jsr	(ShootoutShootCheck).l
+	bne.w	.nodec
+	jsr	(CompShoot).l
 .pass								;then the pass check
-	bsr.w	chk4pass				;pass check
+	bsr.w	chk4pass
 .nodec								;skate on toward the target spot (.postab2)
-	moveq	#6,d0					;d0 = 6
+	moveq	#6,d0
 	add.w	temp3(a3),d0			;add temp3 to d0
-	lea	.postab2(pc),a0				;a0 = target spot table
+	lea	.postab2(pc),a0
 	btst	#sf2offsig,(sflags2).w	;#sf2offsig
-	beq.w	.nd1					;branch taken: same code
+	beq.w	.nd1
 	move.w	position(a3),d0			;position
 .nd1								;position for the offside check
-	asl.w	#2,d0					;times 4: table entry
-	move.w	2(a0,d0.w),d1			;d1 = y of the spot
-	move.w	0(a0,d0.w),d0			;d0 = x of the spot
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	bne.w	.path					;yes: path
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.15						;no: normal skating
+	asl.w	#2,d0
+	move.w	2(a0,d0.w),d1
+	move.w	0(a0,d0.w),d0
+	btst	#2,(BA_PS_flags).w
+	bne.w	.path
+	btst	#0,(gmode2).w
+	beq.w	.15
 .path								;skate the shootout path
-	jsr	(SkatePath).l				;skate along the path
-	cmpi.b	#$80,(sopathx).w		;path ended ($80)?
-	beq.w	.x						;yes: exit
+	jsr	(SkatePath).l
+	cmpi.b	#$80,(sopathx).w
+	beq.w	.x
 .15									;normal skating
 	btst	#pfgoal,pflags(a3)		;pfgoal - 0 for bottom 1 for top
-	bne.w	.nd0					;branch taken: keep the signs
-	neg.w	d0						;negate x
-	neg.w	d1						;negate y
+	bne.w	.nd0
+	neg.w	d0
+	neg.w	d1
 .nd0								;coordinates for his end
-	lea	.chkdir(pc),a0				;a0 = direction check
-	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
-	bne.w	.16						;yes: no check
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.17						;no: keep the check
+	lea	.chkdir(pc),a0
+	btst	#2,(BA_PS_flags).w
+	bne.w	.16
+	btst	#0,(gmode2).w
+	beq.w	.17
 .16									;shootout or penalty shot: path done
-	lea	.x(pc),a0					;a0 = exit
+	lea	.x(pc),a0
 .17									;skate the path
-	bra.w	skateto					;skate to the spot
+	bra.w	skateto
 .chkdir								;d0 = wanted direction: look for opponents in the way
-	ext.w	d0						;sign extend
+	ext.w	d0
 	move.b	Xvel(a3),d2				;Xvel
-	ext.w	d2						;sign extend
-	add.w	(puckx).w,d2			;plus puck x
+	ext.w	d2
+	add.w	(puckx).w,d2
 	move.b	Yvel(a3),d3				;Yvel
-	ext.w	d3						;sign extend
-	add.w	(pucky).w,d3			;plus puck y
-	clr.w	(threat).w				;no threats
-	moveq	#5,d4					;6 opponents
-	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
-	cmpi.w	#6,SCnum(a3)			;SCnum 6 or more (away)?
-	bge.w	.loop					;yes: next instruction
+	ext.w	d3
+	add.w	(pucky).w,d3
+	clr.w	(threat).w
+	moveq	#5,d4
+	movea.w	#(SortCords-M68K_RAM),a0
+	cmpi.w	#6,SCnum(a3)
+	bge.w	.loop
 	adda.w	#6*SCstruct,a0			;away team SCstruct start
 .loop								;loop over the opponents
 	move.b	Xvel(a0),d1				;Xvel
-	ext.w	d1						;sign extend
+	ext.w	d1
 	add.w	(a0),d1					;Xpos
-	sub.w	d2,d1					;minus x
-	cmp.w	#$14,d1					;beyond +$14?
-	bgt.w	.next					;yes: next
-	cmp.w	#$FFEC,d1				;beyond -$14?
-	blt.w	.next					;yes: next
+	sub.w	d2,d1
+	cmp.w	#$14,d1
+	bgt.w	.next
+	cmp.w	#$FFEC,d1
+	blt.w	.next
 	move.b	Yvel(a0),d1				;Yvel
-	ext.w	d1						;sign extend
+	ext.w	d1
 	add.w	Ypos(a0),d1				;Ypos
-	sub.w	d3,d1					;minus y
-	cmp.w	#$14,d1					;beyond +$14?
-	bgt.w	.next					;yes: next
-	cmp.w	#$FFEC,d1				;beyond -$14?
-	blt.w	.next					;yes: next
-	addq.w	#1,(threat).w			;count a threat
+	sub.w	d3,d1
+	cmp.w	#$14,d1
+	bgt.w	.next
+	cmp.w	#$FFEC,d1
+	blt.w	.next
+	addq.w	#1,(threat).w
 	move.w	(a3),d0					;Xpos
-	sub.w	(a0),d0					;minus his x
+	sub.w	(a0),d0
 	move.w	Ypos(a3),d1				;Ypos
-	sub.w	Ypos(a0),d1				;minus his y
-	bsr.w	vtoa					;direction
+	sub.w	Ypos(a0),d1
+	bsr.w	vtoa
 	move.w	facedir(a3),d1			;facedir
-	eori.w	#4,d1					;opposite direction
-	cmp.w	d0,d1					;same as wanted?
-	bne.w	.next					;no: next
-	move.w	(HVcount).l,d1			;d1 = HVcount
-	andi.w	#1,d1					;low bit
-	add.w	d1,d0					;turn by it
-	andi.w	#7,d0					;0 to 7
+	eori.w	#4,d1
+	cmp.w	d0,d1
+	bne.w	.next
+	move.w	(HVcount).l,d1
+	andi.w	#1,d1
+	add.w	d1,d0
+	andi.w	#7,d0
 .next								;next opponent
 	adda.w	#SCstruct,a0			;SCstruct size
-	dbf	d4,.loop					;loop
+	dbf	d4,.loop
 .x									;exit (also the end of the code above)
-	rts								;done
+	rts
 .postab2	dc.w	$FF9C
 	dc.w	$FFEC
 	dc.w	$64
@@ -1315,34 +1315,34 @@ asspuckc							;player a3 is puck handler
 	dc.w	$1E
 	dc.w	$E6
 chk4lc								;see if computer should call line change
-	btst	#4,(sflags7).w			;test sflags7 bit 4
-	bne.w	rtss2					;branch taken: bit 4 set, return
-	move.w	(pucky).w,d0			;d0 = puck coordinate
-	btst	#pfgoal,pflags(a3)		;test goal side flag
-	bne.w	.0						;branch taken: skip the negate
-	neg.w	d0						;flip sign for the other end
+	btst	#4,(sflags7).w
+	bne.w	rtss2
+	move.w	(pucky).w,d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.0
+	neg.w	d0
 .0									;coordinates for his end
-	tst.w	d0						;test the coordinate
-	bmi.w	rtss2					;branch taken: negative, return
-	cmp.w	#$58,d0					;compare to $58
-	bgt.w	rtss2					;branch taken: past $58, return
-	move.w	(HVcount).l,d0			;d0 = HVcount
-	andi.w	#3,d0					;keep low two bits
-	bne.w	rtss2					;branch taken: nonzero, return
-	btst	#pf2lcm,pflags2(a3)		;test line change mode flag
-	bne.w	rtss2					;branch taken: flag set, return
+	tst.w	d0
+	bmi.w	rtss2
+	cmp.w	#$58,d0
+	bgt.w	rtss2
+	move.w	(HVcount).l,d0
+	andi.w	#3,d0
+	bne.w	rtss2
+	btst	#pf2lcm,pflags2(a3)
+	bne.w	rtss2
 	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = own team struct, a1 = the other one
-	lea	tmsize(a2),a1				;a1 = other team struct
-	btst	#pfteam,pflags(a3)		;test team flag
-	beq.w	.1						;branch taken: keep a1
-	exg	a2,a1						;swap team structs
+	lea	tmsize(a2),a1
+	btst	#pfteam,pflags(a3)
+	beq.w	.1
+	exg	a2,a1
 .1									;team structs chosen
-	bsr.w	AvgCline				;average the line change value
-	cmp.w	#$C00,d0				;compare to $C00
-	bhi.w	rtss2					;branch taken: higher, return
+	bsr.w	AvgCline
+	cmp.w	#$C00,d0
+	bhi.w	rtss2
 	bsr.w	CompLine				;pick and apply the new line
-	bsr.w	setpersonel				;set up personnel
-	bsr.w	printscores1			;reprint the scores
+	bsr.w	setpersonel
+	bsr.w	printscores1
 	bra.w	CompShoot				;then clear the puck by shooting it
 ; return z flag set if killing penalty
 ; return z flag clr if not
@@ -1354,251 +1354,251 @@ chkpk								;return z flag set if killing penalty
 	rts
 chkpk2								;return z flag set if a3's team is the one on the power play (sf2pwrtm
 									;against pfteam)
-	movem.l	d0-d1,-(sp)				;save d0-d1
+	movem.l	d0-d1,-(sp)
 	btst	#sf2pwrtm,(sflags2).w	;#sf2pwrtm - 0 for team 1, 1 for team 2
-	move	sr,d0					;d0 = status register
+	move	sr,d0
 	btst	#pfteam,pflags(a3)		;pfteam - 0 home, 1 away
-	move	sr,d1					;d1 = status register
-	eor.w	d1,d0					;exclusive or the two
-	move	d0,ccr					;put result in the condition codes
-	movem.l	(sp)+,d0-d1				;restore d0-d1
-	rts								;return
+	move	sr,d1
+	eor.w	d1,d0
+	move	d0,ccr
+	movem.l	(sp)+,d0-d1
+	rts
 ; player a3 looks for shot (computer controlled)
 chk4shot							;player a3 looks for shot (computer controlled)
 									;decide whether the computer carrier shoots; rtss = no shot, else falls to
 									;CompShoot
-	bsr.s	chkpk					;puck and shot position check
+	bsr.s	chkpk
 	bne.w	.pkill					;killing penalty
-	tst.w	(threat).w				;any threat?
+	tst.w	(threat).w
 	beq.w	.pkill					;no threat
-	move.w	(HVcount).l,d0			;d0 = HVcount
-	andi.w	#3,d0					;low 2 bits
-	bne.w	.pkill					;not zero: penalty kill check
+	move.w	(HVcount).l,d0
+	andi.w	#3,d0
+	bne.w	.pkill
 	move.w	#$58,d0					;top blue line Y position
-	btst	#pfgoal,pflags(a3)		;which goal?
-	beq.w	.cmphome				;pfgoal clear: compare for the home end
+	btst	#pfgoal,pflags(a3)
+	beq.w	.cmphome
 	move.w	#$FFA8,d0				;bottom blue line Y pos
-	cmp.w	Ypos(a3),d0				;compare with y
+	cmp.w	Ypos(a3),d0
 	blt.w	CompShoot				;clear puck
-	bra.w	.0						;go on
+	bra.w	.0
 .cmphome							;pfgoal clear
-	cmp.w	Ypos(a3),d0				;compare with y
+	cmp.w	Ypos(a3),d0
 	bgt.w	CompShoot				;clear puck
 .0									;clear the puck: pass straight ahead
-	bset	#3,(sflags5).w			;set sflags5 bit 3
-	jmp	dopass						;pass
+	bset	#3,(sflags5).w
+	jmp	dopass
 	dc.b	$60						;`
 	dc.b	0,1
 	dc.b	$30						;0
 .pkill								;penalty kill: shoot it out on a breakaway roll
-	btst	#pf3break,pflags3(a3)	;breakaway (pf3break)?
-	beq.w	.npk					;no: shot range
-	move.w	#$1E,d0					;range $1E
-	jsr	(randomd0).l				;random value
-	addi.w	#$82,d0					;plus $82
-	cmp.w	(pucky).w,d0			;below puck y?
-	blt.w	.1						;yes: turn
-	neg.w	d0						;negate
-	cmp.w	(pucky).w,d0			;beyond puck y?
-	bgt.w	.1						;yes: turn
-	bra.w	.npk					;shot range
+	btst	#pf3break,pflags3(a3)
+	beq.w	.npk
+	move.w	#$1E,d0
+	jsr	(randomd0).l
+	addi.w	#$82,d0
+	cmp.w	(pucky).w,d0
+	blt.w	.1
+	neg.w	d0
+	cmp.w	(pucky).w,d0
+	bgt.w	.1
+	bra.w	.npk
 .1									;d0 < pucky or d0 > pucky
-	move.w	#2,d0					;range 2
-	jsr	(randomd0s).l				;random signed value
-	add.w	facedir(a3),d0			;plus the facing
-	andi.w	#7,d0					;0 to 7
-	move.w	d0,facedir(a3)			;new facing
-	bra.w	CompShoot				;computer shoots
+	move.w	#2,d0
+	jsr	(randomd0s).l
+	add.w	facedir(a3),d0
+	andi.w	#7,d0
+	move.w	d0,facedir(a3)
+	bra.w	CompShoot
 .npk								;d4 = shot range from the shot odds (spodds)
-	moveq	#$20,d4					;d4 = $20
-	clr.w	d1						;d1 = 0
-	move.b	spodds(a3),d1			;shot odds byte
-	lsr.w	#1,d1					;half
-	sub.b	d1,d4					;d4 minus it
-	asl.w	#4,d4					;times 16
+	moveq	#$20,d4
+	clr.w	d1
+	move.b	spodds(a3),d1
+	lsr.w	#1,d1
+	sub.b	d1,d4
+	asl.w	#4,d4
 	move.w	#$108,d1				;top goal line Y
-	btst	#pfgoal,pflags(a3)		;which goal?
-	bne.w	.c0						;pfgoal set: keep
-	neg.w	d1						;negate
+	btst	#pfgoal,pflags(a3)
+	bne.w	.c0
+	neg.w	d1
 .c0									;Y for his end
 	sub.w	(pucky).w,d1			;d1 = y distance to the goal line, d0 = x distance to center
-	move.w	(puckx).w,d0			;d0 = puck x
-	neg.w	d0						;negate
-	movem.w	d0-d1,-(sp)				;save them
-	muls.w	d0,d0					;x squared
-	muls.w	d1,d1					;y squared
+	move.w	(puckx).w,d0
+	neg.w	d0
+	movem.w	d0-d1,-(sp)
+	muls.w	d0,d0
+	muls.w	d1,d1
 	add.l	d0,d1					;distance from goal squared
-	cmp.l	#$2710,d1				;compare with $2710
-	movem.w	(sp)+,d0-d1				;restore them
+	cmp.l	#$2710,d1
+	movem.w	(sp)+,d0-d1
 	bhi.w	.no1					;farther than 100 from the goal: keep d4 as is
 	lsr.w	#4,d4					;close: d4 = $20 - odds
 	bsr.w	vtoa					;d0 = direction to the goal
 	move.w	d0,d5					;d5 = shot direction
 	moveq	#5,d3					;check the 6 opposing sort objects
-	movea.w	#(SortCords-M68K_RAM),a1	;a1 = sort objects
-	cmpi.w	#6,SCnum(a3)			;a3 an away player?
-	bge.w	.loop					;yes: first opponents
-	adda.w	#6*SCstruct,a1			;skip to the away objects
+	movea.w	#(SortCords-M68K_RAM),a1
+	cmpi.w	#6,SCnum(a3)
+	bge.w	.loop
+	adda.w	#6*SCstruct,a1
 .loop								;loop over the opponents: defenders in the shot line make the range bigger
-	tst.w	position(a1)			;goalie?
-	beq.w	.2						;yes: goalie case
+	tst.w	position(a1)
+	beq.w	.2
 	move.w	(a1),d0					;direction from puck to this skater
-	sub.w	(puckx).w,d0			;minus puck x
-	move.w	Ypos(a1),d1				;d1 = his y
-	sub.w	(pucky).w,d1			;minus puck y
-	bsr.w	vtoa					;direction
-	cmp.w	d5,d0					;same as d5?
-	bne.w	.co1					;no: next opponent
+	sub.w	(puckx).w,d0
+	move.w	Ypos(a1),d1
+	sub.w	(pucky).w,d1
+	bsr.w	vtoa
+	cmp.w	d5,d0
+	bne.w	.co1
 	asl.w	#1,d4					;defender in the shot line
-	bra.w	.co1					;next opponent
+	bra.w	.co1
 .2									;goalie: shoot now if he is busy
 	btst	#pf2aip,pflags2(a1)		;goalie busy, shoot now
-	beq.w	.co1					;next opponent
+	beq.w	.co1
 	clr.w	d3						;end the loop after this object
 	moveq	#1,d4					;tiny range: shot is almost certain
 .co1								;next opponent
-	adda.w	#SCstruct,a1			;next object
-	dbf	d3,.loop					;loop
+	adda.w	#SCstruct,a1
+	dbf	d3,.loop
 .no1								;roll against the range
-	move.w	d4,d0					;d0 = the range
-	bsr.w	randomd0				;random value
-	btst	#0,spodds(a3)			;odd spodds?
-	beq.w	.3						;no: even
-	cmp.w	#7,d0					;7 or less?
-	bgt.w	rtss2					;no: done
-	bra.w	.4						;go on
+	move.w	d4,d0
+	bsr.w	randomd0
+	btst	#0,spodds(a3)
+	beq.w	.3
+	cmp.w	#7,d0
+	bgt.w	rtss2
+	bra.w	.4
 .3									;odd spodds: a roll of 7 or less shoots; even: 8 or less
-	cmp.w	#8,d0					;8 or less?
-	bgt.w	rtss2					;no: done
+	cmp.w	#8,d0
+	bgt.w	rtss2
 .4									;shoot only from inside the shooting distance
-	move.w	(pucky).w,d0			;d0 = puck y
-	btst	#pfgoal,pflags(a3)		;which goal?
-	bne.w	.ds0					;pfgoal set: keep
-	neg.w	d0						;negate
+	move.w	(pucky).w,d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.ds0
+	neg.w	d0
 .ds0								;coordinates for his end
-	tst.w	d0						;negative?
-	bmi.w	rtss2					;yes: done
-	move.w	#$108,d1				;d1 = $108
-	sub.w	d0,d1					;minus puck y
-	bmi.w	rtss2					;negative: done
-	btst	#sf2offsig,(sflags2).w	;offsides signal (sf2offsig)?
-	bne.w	rtss2					;yes: done
+	tst.w	d0
+	bmi.w	rtss2
+	move.w	#$108,d1
+	sub.w	d0,d1
+	bmi.w	rtss2
+	btst	#sf2offsig,(sflags2).w
+	bne.w	rtss2
 CompShoot							;computer shot: drop the return address and aim from the puck's distance
 									;to the goal line
 	addq.w	#4,sp					;don't return
-	move.w	(pucky).w,d0			;d0 = puck coordinate
-	btst	#pfgoal,pflags(a3)		;test goal side flag
-	bne.w	.ds0					;branch taken: skip the negate
-	neg.w	d0						;flip sign for the other end
+	move.w	(pucky).w,d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.ds0
+	neg.w	d0
 .ds0								;coordinates for his end
 	move.w	#$108,d1				;d0 is now puck y toward the goal I shoot at
 	sub.w	d0,d1					;d1 = distance to $108 along the shooting direction
-	lsr.w	#3,d1					;d1 divided by 8
-	cmp.w	#$14,d1					;compare to $14
-	blt.w	.0						;branch taken: below, keep d1
-	moveq	#$14,d1					;clamp d1 to $14
+	lsr.w	#3,d1
+	cmp.w	#$14,d1
+	blt.w	.0
+	moveq	#$14,d1
 .0									;d1 clamped
-	move.w	d1,temp2(a3)			;store d1 in temp2
+	move.w	d1,temp2(a3)
 	move.l	#$12,d0					;assshoot
-	bra.w	assreplace				;continue to assreplace
+	bra.w	assreplace
 chk4pass							;player a3 looks for good pass (computer controlled)
-	tst.w	(threat).w				;any threat?
+	tst.w	(threat).w
 	bne.w	.dp0					;an opponent is close: always consider a pass
-	moveq	#$10,d0					;d0 = $10
-	add.b	spodds(a3),d0			;plus the shot odds byte
+	moveq	#$10,d0
+	add.b	spodds(a3),d0
 	bsr.w	randomd0				;0 <= d0 < $10 + odds
-	cmp.w	#$C,d0					;above $C?
-	bgt.w	rtss2					;yes: done
+	cmp.w	#$C,d0
+	bgt.w	rtss2
 .dp0								;threat check passed
 	moveq	#6,d0					;Set up pass assignment
 	bsr.w	randomd0				;d0 = random teammate index 0-5
-	cmpi.w	#6,SCnum(a3)			;a3 an away player?
-	blt.w	.0						;no: keep
-	addq.w	#6,d0					;plus 6
+	cmpi.w	#6,SCnum(a3)
+	blt.w	.0
+	addq.w	#6,d0
 .0									;d0 = random teammate on a3's team
-	tst.w	position(a3)			;goalie?
-	beq.w	.1						;yes: continue
-	cmpi.w	#$28,(puckx).w			;puck x beyond $28?
-	bgt.w	.1						;yes: continue
-	cmpi.w	#$FFD8,(puckx).w		;puck x beyond -$28?
-	blt.w	.1						;yes: continue
-	cmpi.w	#$CC,(pucky).w			;puck y above $CC?
-	bgt.w	rtss2					;yes: done
-	cmpi.w	#$FF34,(pucky).w		;puck y below -$CC?
-	blt.w	rtss2					;yes: done
+	tst.w	position(a3)
+	beq.w	.1
+	cmpi.w	#$28,(puckx).w
+	bgt.w	.1
+	cmpi.w	#$FFD8,(puckx).w
+	blt.w	.1
+	cmpi.w	#$CC,(pucky).w
+	bgt.w	rtss2
+	cmpi.w	#$FF34,(pucky).w
+	blt.w	rtss2
 .1									;not to himself
-	cmp.w	SCnum(a3),d0			;is it a3?
-	beq.w	rtss2					;yes: done
+	cmp.w	SCnum(a3),d0
+	beq.w	rtss2
 	asl.w	#7,d0					;d0 * SCstruct ($80)
-	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
+	movea.w	#(SortCords-M68K_RAM),a0
 	adda.w	d0,a0					;a0 = receiver sort object
-	tst.w	position(a0)			;goalie or off the ice?
-	ble.w	rtss2					;yes: done
-	btst	#pf2unav,pflags2(a0)	;unavailable?
-	bne.w	rtss2					;yes: done
-	btst	#pfalock,pflags(a0)		;locked?
-	bne.w	rtss2					;yes: done
+	tst.w	position(a0)
+	ble.w	rtss2
+	btst	#pf2unav,pflags2(a0)
+	bne.w	rtss2
+	btst	#pfalock,pflags(a0)
+	bne.w	rtss2
 	move.w	Ypos(a0),d0				;check for pass across blue line
 	move.w	Ypos(a3),d1				;d0 = receiver y, d1 = my y (toward the goal I shoot at)
-	btst	#pfgoal,pflags(a3)		;which goal?
-	bne.w	.f0						;pfgoal set: keep
-	neg.w	d0						;negate x
-	neg.w	d1						;negate y
+	btst	#pfgoal,pflags(a3)
+	bne.w	.f0
+	neg.w	d0
+	neg.w	d1
 .f0									;coordinates for his end
 	btst	#gmoffs,(gmode).w		;offsides on?
-	beq.w	.oko					;branch taken
-	movem.w	d0-d1,-(sp)				;save them
+	beq.w	.oko
+	movem.w	d0-d1,-(sp)
 	subi.w	#$58,d0					;y relative to the blue line
-	subi.w	#$58,d1					;minus $58
+	subi.w	#$58,d1
 	eor.w	d0,d1					;sign differs if the pass crosses the blue line
-	movem.w	(sp)+,d0-d1				;restore them
-	bmi.w	rtss2					;negative: done
+	movem.w	(sp)+,d0-d1
+	bmi.w	rtss2
 .oko								;not across the blue line
-	cmp.w	#$58,d0					;beyond $58?
-	bgt.w	.ok						;yes: safe
-	sub.w	d1,d0					;d0 minus d1
-	cmp.w	#$FFF1,d0				;below -$F?
-	blt.w	rtss2					;yes: done
+	cmp.w	#$58,d0
+	bgt.w	.ok
+	sub.w	d1,d0
+	cmp.w	#$FFF1,d0
+	blt.w	rtss2
 .ok									;pass is safe
 	move.w	(a0),d0					;receiver accepted: get the pass direction
-	sub.w	(puckx).w,d0			;minus puck x
-	move.w	Ypos(a0),d1				;d1 = his y
-	sub.w	(pucky).w,d1			;minus puck y
-	movem.w	d0-d1,-(sp)				;save them
+	sub.w	(puckx).w,d0
+	move.w	Ypos(a0),d1
+	sub.w	(pucky).w,d1
+	movem.w	d0-d1,-(sp)
 	bsr.w	vtoa					;direction puck -> receiver
-	move.w	d0,(passdir).w			;pass direction
-	movem.w	(sp)+,d1-d2				;restore as d1 and d2
-	muls.w	d1,d1					;x squared
-	muls.w	d2,d2					;y squared
+	move.w	d0,(passdir).w
+	movem.w	(sp)+,d1-d2
+	muls.w	d1,d1
+	muls.w	d2,d2
 	add.l	d1,d2					;d2 = squared distance to the receiver
-	moveq	#5,d3					;6 opponents
-	movea.w	#(SortCords-M68K_RAM),a1	;a1 = sort objects
-	cmpi.w	#6,SCnum(a3)			;a3 an away player?
-	bge.w	.co0					;yes: loop
+	moveq	#5,d3
+	movea.w	#(SortCords-M68K_RAM),a1
+	cmpi.w	#6,SCnum(a3)
+	bge.w	.co0
 	adda.w	#6*SCstruct,a1			;loop over the 6 opponents
 .co0								;loop over the 6 opponents: anyone in the pass lane?
 	move.w	(a1),d0					;next opponent: is he in the pass lane?
-	sub.w	(puckx).w,d0			;minus puck x
-	move.w	Ypos(a1),d1				;d1 = his y
-	sub.w	(pucky).w,d1			;minus puck y
-	movem.w	d0-d1,-(sp)				;save them
-	muls.w	d0,d0					;x squared
-	muls.w	d1,d1					;y squared
+	sub.w	(puckx).w,d0
+	move.w	Ypos(a1),d1
+	sub.w	(pucky).w,d1
+	movem.w	d0-d1,-(sp)
+	muls.w	d0,d0
+	muls.w	d1,d1
 	add.l	d0,d1					;d1 = squared distance to this opponent
-	cmp.l	d2,d1					;compare with the pass distance
-	movem.w	(sp)+,d0-d1				;restore them
+	cmp.l	d2,d1
+	movem.w	(sp)+,d0-d1
 	bhi.w	.co1					;farther than the receiver: ignore
-	bsr.w	vtoa					;direction
-	cmp.w	(passdir).w,d0			;same as the pass?
-	beq.w	rtss2					;yes: done
+	bsr.w	vtoa
+	cmp.w	(passdir).w,d0
+	beq.w	rtss2
 .co1								;next opponent
 	adda.w	#SCstruct,a1			;next opponent
-	dbf	d3,.co0						;loop
+	dbf	d3,.co0
 	bsr.w	dopass					;lane is clear: pass in passdir
-	tst.w	position(a3)			;goalie?
-	beq.w	rtss2					;yes: done
-	addq.w	#4,sp					;drop the return address
-	bra.w	assexit					;exit
+	tst.w	position(a3)
+	beq.w	rtss2
+	addq.w	#4,sp
+	bra.w	assexit
 ; player a3 should avoid the puck carrier if he's on their team
 EvadePC								;player a3 should avoid the puck carrier if he's on my team out: d0 =
 									;direction 0-7 pointing away from the puck (from vtoa), adjusted near the
@@ -2154,430 +2154,430 @@ assshoot							;assignment for computer shooting. Assignment ashoot ($12)
 	bra.w	ShotMode				;swing time over: press the shot button (cbut)
 puckshootout						;puck logic for the shootout: on a new assignment clear the pads and
 									;select the skater, then run the attempt
-	bclr	#pfna,pflags(a3)		;clear pfna
-	beq.w	.selectskater			;it was clear: select the skater
-	bset	#7,(sflags7).w			;set sflags7 bit 7
-	clr.l	(padcont).w				;clear the pad state (padcont)
-	clr.l	(padcont+4).w			;(next long)
-	clr.l	(padcont+8).w			;(last long)
-	bclr	#7,(gmode2).w			;clear gmode2 bit 7
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.startattempt			;no: start an attempt
-	jsr	(NextShooter).l				;next shooter
-	bra.w	.initflags				;clear the flags
+	bclr	#pfna,pflags(a3)
+	beq.w	.selectskater
+	bset	#7,(sflags7).w
+	clr.l	(padcont).w
+	clr.l	(padcont+4).w
+	clr.l	(padcont+8).w
+	bclr	#7,(gmode2).w
+	btst	#0,(gmode2).w
+	beq.w	.startattempt
+	jsr	(NextShooter).l
+	bra.w	.initflags
 .startattempt						;bit 0 of gmode2 clear
-	jsr	(StartShootoutPath).l		;start the shootout path
-	move.l	a2,-(sp)				;save a2
-	movea.l	#tmstruct,a2			;a2 = home team structure
-	tst.w	(BA_Team).w				;BA_Team 0?
-	beq.w	.countattempt			;yes: home
-	movea.l	#awtmstruct,a2			;a2 = away team structure
+	jsr	(StartShootoutPath).l
+	move.l	a2,-(sp)
+	movea.l	#tmstruct,a2
+	tst.w	(BA_Team).w
+	beq.w	.countattempt
+	movea.l	#awtmstruct,a2
 .countattempt						;count the attempt
-	addq.w	#1,tmPenShots(a2)		;count a penalty shot for the team
-	movea.l	(sp)+,a2				;restore a2
+	addq.w	#1,tmPenShots(a2)
+	movea.l	(sp)+,a2
 .initflags							;attempt counted: clear the penalty shot state flags
-	bclr	#2,(BA_PS_flags).w		;clear BA_PS_flags bit 2
-	bclr	#4,(BA_PS_flags).w		;clear BA_PS_flags bit 4
-	bclr	#5,(BA_PS_flags).w		;clear BA_PS_flags bit 5
-	bclr	#6,(BA_PS_flags).w		;clear BA_PS_flags bit 6
-	bset	#1,(sflags6).w			;set sflags6 bit 1
-	btst	#gmpendel,(gmode).w		;penalty ended (gmpendel)?
-	bne.w	Stop4Pen				;yes: stop for the penalty
-	bclr	#pfna,pflags(a3)		;clear pfna
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.selectsong				;no: select the song
-	tst.w	(shootoutteam).w		;shootout team 0?
-	bne.w	.setstopped				;no: stop the clock
-	tst.w	(homeshootnum).w		;home shooter count 0?
-	bne.w	.setstopped				;no: stop the clock
-	move.w	(HomeTeam).w,(HmTeam).w	;HmTeam = the home team
-	move.w	#SngFaceoff,(SongIndex).w	;faceoff song
-	jsr	(ChooseSong).l				;choose it
-	move.w	(SongNum).w,-(sp)		;keep the song number
-	bra.w	.playsong				;play it
+	bclr	#2,(BA_PS_flags).w
+	bclr	#4,(BA_PS_flags).w
+	bclr	#5,(BA_PS_flags).w
+	bclr	#6,(BA_PS_flags).w
+	bset	#1,(sflags6).w
+	btst	#gmpendel,(gmode).w
+	bne.w	Stop4Pen
+	bclr	#pfna,pflags(a3)
+	btst	#0,(gmode2).w
+	beq.w	.selectsong
+	tst.w	(shootoutteam).w
+	bne.w	.setstopped
+	tst.w	(homeshootnum).w
+	bne.w	.setstopped
+	move.w	(HomeTeam).w,(HmTeam).w
+	move.w	#SngFaceoff,(SongIndex).w
+	jsr	(ChooseSong).l
+	move.w	(SongNum).w,-(sp)
+	bra.w	.playsong
 .selectsong							;bit 0 of gmode2 clear
-	move.w	(HomeTeam).w,(HmTeam).w	;HmTeam = the home team
-	move.w	#SngFaceoff,(SongIndex).w	;faceoff song
-	jsr	(ChooseSong).l				;choose it
-	move.w	(SongNum).w,-(sp)		;keep the song number
+	move.w	(HomeTeam).w,(HmTeam).w
+	move.w	#SngFaceoff,(SongIndex).w
+	jsr	(ChooseSong).l
+	move.w	(SongNum).w,-(sp)
 .playsong							;play the chosen song, then stop the clock for the attempt
-	bsr.w	song					;play the song
+	bsr.w	song
 .setstopped							;stop the clock
-	bset	#gmclock,(gmode).w		;stop the clock (gmclock)
-	bset	#1,(gmode2).w			;set gmode2 bit 1
-	clr.w	(puckvx).w				;puck x velocity 0
-	clr.w	(puckvy).w				;puck y velocity 0
-	move.w	#$19,(shootoutclock).w	;shootout clock $19
-	bsr.w	ReturnGoalies			;put pulled goalies back
-	st	temp1(a3)					;first timer: not started
-	st	temp2(a3)					;second timer: not started
+	bset	#gmclock,(gmode).w
+	bset	#1,(gmode2).w
+	clr.w	(puckvx).w
+	clr.w	(puckvy).w
+	move.w	#$19,(shootoutclock).w
+	bsr.w	ReturnGoalies
+	st	temp1(a3)
+	st	temp2(a3)
 .selectskater						;select the skater
-	bset	#2,(BA_PS_flags).w		;set BA_PS_flags bit 2
-	movem.w	d1-d2,-(sp)				;save registers
-	jsr	(SelectPenaltyShotSkater).l	;pick the shooter
-	bmi.w	.noeligible				;none eligible?
-	movem.w	(sp)+,d1-d2				;restore registers
-	bra.w	.checkgoalie			;check the goalie
+	bset	#2,(BA_PS_flags).w
+	movem.w	d1-d2,-(sp)
+	jsr	(SelectPenaltyShotSkater).l
+	bmi.w	.noeligible
+	movem.w	(sp)+,d1-d2
+	bra.w	.checkgoalie
 .noeligible							;pop the d1-d2 saved above
-	movem.w	(sp)+,d1-d2				;restore registers
-	bclr	#2,(BA_PS_flags).w		;clear BA_PS_flags bit 2
+	movem.w	(sp)+,d1-d2
+	bclr	#2,(BA_PS_flags).w
 	move.w	#$1B,d0					;puckfaceoff
-	bsr.w	assreplace				;assreplace
-	rts								;done
+	bsr.w	assreplace
+	rts
 .checkgoalie						;shootout: make sure the shooting team's goalie is in net
-	movem.w	d1-d2,-(sp)				;save registers
-	move.w	(BA_Goalie_SCnum).w,d0	;d0 = goalie SCnum
-	movea.l	#SortCords,a2			;a2 = sort objects
-	asl.w	#7,d0					;times $80, the object size
-	adda.w	d0,a2					;a2 = the goalie
-	tst.w	position(a2)			;goalie position?
-	bne.w	.findgoalie				;no: find another
-	btst	#2,pflags2(a2)			;pflags2 bit 2 set?
-	beq.w	.startpenshot			;no: start the shot
+	movem.w	d1-d2,-(sp)
+	move.w	(BA_Goalie_SCnum).w,d0
+	movea.l	#SortCords,a2
+	asl.w	#7,d0
+	adda.w	d0,a2
+	tst.w	position(a2)
+	bne.w	.findgoalie
+	btst	#2,pflags2(a2)
+	beq.w	.startpenshot
 .findgoalie							;goalie not available: search the team for another goalie slot
-	move.w	(BA_Goalie_SCnum).w,d0	;d0 = goalie SCnum
-	move.w	#6,d2					;try 6 candidates
+	move.w	(BA_Goalie_SCnum).w,d0
+	move.w	#6,d2
 .goalieloop							;loop
-	subq.w	#1,d2					;count a candidate
-	bmi.s	.noeligible				;none left: not eligible
-	subq.w	#1,d0					;previous SCnum
-	bpl.w	.wraphome				;not negative: check wrap
-	move.w	#5,d0					;wrap to 5
-	bra.w	.checkcandidate			;try him
+	subq.w	#1,d2
+	bmi.s	.noeligible
+	subq.w	#1,d0
+	bpl.w	.wraphome
+	move.w	#5,d0
+	bra.w	.checkcandidate
 .wraphome							;d0 >= 0
-	cmp.w	#5,d0					;reached 5?
-	bne.w	.checkcandidate			;no: try him
-	move.w	#$B,d0					;jump to $B
+	cmp.w	#5,d0
+	bne.w	.checkcandidate
+	move.w	#$B,d0
 .checkcandidate						;wrap from home to away numbering, then try this candidate
-	movea.l	#SortCords,a2			;a2 = sort objects
-	move.w	d0,d1					;d1 = SCnum
-	asl.w	#7,d1					;times $80, the object size
-	adda.w	d1,a2					;a2 = that object
-	tst.w	position(a2)			;goalie position?
-	bne.s	.goalieloop				;no: next candidate
-	btst	#2,pflags2(a2)			;pflags2 bit 2 set?
-	bne.s	.goalieloop				;yes: next candidate
-	move.w	d0,(BA_Goalie_SCnum).w	;new goalie SCnum
+	movea.l	#SortCords,a2
+	move.w	d0,d1
+	asl.w	#7,d1
+	adda.w	d1,a2
+	tst.w	position(a2)
+	bne.s	.goalieloop
+	btst	#2,pflags2(a2)
+	bne.s	.goalieloop
+	move.w	d0,(BA_Goalie_SCnum).w
 .startpenshot						;pop the d1-d2 saved above
-	movem.w	(sp)+,d1-d2				;restore registers
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	movem.w	(sp)+,d1-d2
+	movea.w	#(tmstruct-M68K_RAM),a2
 	move.w	#$1F,d0					;puckpenshot
-	bra.w	assreplace				;assreplace
+	bra.w	assreplace
 SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Team
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	movea.l	#tmstruct,a0			;home team
-	tst.w	(BA_Team).w				;BA_Team 0?
-	beq.w	.hometeam				;yes: home
-	movea.l	#awtmstruct,a0			;away team
+	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#tmstruct,a0
+	tst.w	(BA_Team).w
+	beq.w	.hometeam
+	movea.l	#awtmstruct,a0
 .hometeam							;team struct chosen
-	move.w	#0,d1					;player index 0
-	move.w	#$FFFF,d6				;best rating so far: none
-	move.w	#$FFFF,d5				;best index so far: none
-	movea.l	tmdata(a0),a2			;a2 = the team data
-	adda.w	(a2),a2					;a2 = the first player entry
+	move.w	#0,d1
+	move.w	#$FFFF,d6
+	move.w	#$FFFF,d5
+	movea.l	tmdata(a0),a2
+	adda.w	(a2),a2
 .playerloop							;loop
-	cmpi.w	#2,(a2)					;end marker (2)?
-	beq.w	.doneplayers			;yes: all players checked
-	adda.w	(a2),a2					;a2 = this player's data
-	move.w	d1,d7					;d7 = index
-	asl.w	#1,d7					;times 2: tmpdst offset
-	move.b	pldstick(a2),d0			;d0 = stick byte
-	andi.w	#$F,d0					;low nibble
-	cmp.b	#1,d0					;1 or less?
-	ble.w	.nextplayer				;yes: skip him
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	bne.w	.setskaterscnum			;yes: use the chosen skater
-	cmpi.w	#$FFFE,tmpdst(a0,d7.w)	;state $FFFE (bench)?
-	beq.w	.scorecandidate			;yes: candidate
-	cmpi.w	#$FFFF,tmpdst(a0,d7.w)	;state $FFFF (ice)?
-	bne.w	.nextplayer				;no: skip him
+	cmpi.w	#2,(a2)
+	beq.w	.doneplayers
+	adda.w	(a2),a2
+	move.w	d1,d7
+	asl.w	#1,d7
+	move.b	pldstick(a2),d0
+	andi.w	#$F,d0
+	cmp.b	#1,d0
+	ble.w	.nextplayer
+	btst	#0,(gmode2).w
+	bne.w	.setskaterscnum
+	cmpi.w	#$FFFE,tmpdst(a0,d7.w)
+	beq.w	.scorecandidate
+	cmpi.w	#$FFFF,tmpdst(a0,d7.w)
+	bne.w	.nextplayer
 .scorecandidate						;on the bench or ice: rate this player as a shooter
-	clr.w	d3						;d3 = 0
-	clr.w	d0						;d0 = 0
-	move.b	pldweight(a2),d0		;weight byte
-	andi.w	#$F,d0					;low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldlegspd(a2),d0		;legspd byte
-	andi.w	#$F,d0					;low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldlegspd(a2),d0		;legspd byte
-	andi.w	#$F0,d0					;high nibble
-	lsr.w	#4,d0					;to the low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldaidef(a2),d0			;aidef byte
-	andi.w	#$F,d0					;low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldaidef(a2),d0			;aidef byte
-	andi.w	#$F0,d0					;high nibble
-	lsr.w	#4,d0					;to the low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldstick(a2),d0			;stick byte
-	andi.w	#$F,d0					;low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldstick(a2),d0			;stick byte
-	andi.w	#$F0,d0					;high nibble
-	lsr.w	#4,d0					;to the low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldendur(a2),d0			;endur byte
-	andi.w	#$F0,d0					;high nibble
-	lsr.w	#4,d0					;to the low nibble
-	add.w	d0,d3					;add to rating
-	move.b	pldpass(a2),d0			;pass byte
-	andi.w	#$F0,d0					;high nibble
-	lsr.w	#4,d0					;to the low nibble
-	add.w	d0,d3					;add to rating
-	cmp.w	(BA_Skater_Offset).w,d1	;the skater chosen before?
-	bne.w	.comparebest			;no: compare
-	move.w	#$7FFF,d3				;yes: rate him highest
+	clr.w	d3
+	clr.w	d0
+	move.b	pldweight(a2),d0
+	andi.w	#$F,d0
+	add.w	d0,d3
+	move.b	pldlegspd(a2),d0
+	andi.w	#$F,d0
+	add.w	d0,d3
+	move.b	pldlegspd(a2),d0
+	andi.w	#$F0,d0
+	lsr.w	#4,d0
+	add.w	d0,d3
+	move.b	pldaidef(a2),d0
+	andi.w	#$F,d0
+	add.w	d0,d3
+	move.b	pldaidef(a2),d0
+	andi.w	#$F0,d0
+	lsr.w	#4,d0
+	add.w	d0,d3
+	move.b	pldstick(a2),d0
+	andi.w	#$F,d0
+	add.w	d0,d3
+	move.b	pldstick(a2),d0
+	andi.w	#$F0,d0
+	lsr.w	#4,d0
+	add.w	d0,d3
+	move.b	pldendur(a2),d0
+	andi.w	#$F0,d0
+	lsr.w	#4,d0
+	add.w	d0,d3
+	move.b	pldpass(a2),d0
+	andi.w	#$F0,d0
+	lsr.w	#4,d0
+	add.w	d0,d3
+	cmp.w	(BA_Skater_Offset).w,d1
+	bne.w	.comparebest
+	move.w	#$7FFF,d3
 .comparebest						;compare with the best
-	cmp.w	d6,d3					;below the best so far?
-	blt.w	.nextplayer				;yes: skip him
-	move.w	d3,d6					;new best rating
-	move.w	d1,d5					;new best index
+	cmp.w	d6,d3
+	blt.w	.nextplayer
+	move.w	d3,d6
+	move.w	d1,d5
 	bra.w	*+4
 .nextplayer							;next roster player
-	addq.l	#pldsize,a2				;next player entry
-	addq.w	#1,d1					;next index
-	cmp.w	#$1A,d1					;$1A players?
-	blt.w	.playerloop				;no: loop
+	addq.l	#pldsize,a2
+	addq.w	#1,d1
+	cmp.w	#$1A,d1
+	blt.w	.playerloop
 .doneplayers						;all players checked
-	tst.w	d5						;anyone found?
-	bmi.w	.noeligible				;no: none eligible
-	move.w	d5,(BA_Skater_Offset).w	;remember the skater
+	tst.w	d5
+	bmi.w	.noeligible
+	move.w	d5,(BA_Skater_Offset).w
 .setskaterscnum						;set the skater SCnum
-	move.w	#0,(BA_Sktr_SCnum).w	;SCnum 0 for the home team
-	tst.w	(BA_Team).w				;BA_Team 0?
-	beq.w	.loadskater				;yes: keep it
-	move.w	#6,(BA_Sktr_SCnum).w	;SCnum 6 for the away team
+	move.w	#0,(BA_Sktr_SCnum).w
+	tst.w	(BA_Team).w
+	beq.w	.loadskater
+	move.w	#6,(BA_Sktr_SCnum).w
 .loadskater							;load the skater
-	move.w	(BA_Sktr_SCnum).w,d0	;d0 = SCnum
-	asl.w	#7,d0					;times $80, the object size
-	movea.l	#SortCords,a3			;a3 = sort objects
-	adda.w	d0,a3					;a3 = the skater's object
-	move.w	(BA_Skater_Offset).w,d3	;d3 = his roster offset
-	bra.w	.eligible				;found him
+	move.w	(BA_Sktr_SCnum).w,d0
+	asl.w	#7,d0
+	movea.l	#SortCords,a3
+	adda.w	d0,a3
+	move.w	(BA_Skater_Offset).w,d3
+	bra.w	.eligible
 .noeligible							;d5 negative
-	move.w	#$FFFF,d0				;d0 = -1
-	bra.w	.exit					;done
+	move.w	#$FFFF,d0
+	bra.w	.exit
 .eligible							;found a skater: d0 = 1
-	move.w	#1,d0					;d0 = 1
+	move.w	#1,d0
 .exit								;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 ; puck start for penalty shot/shootout
 puckpenshot							;puck start for a penalty shot or shootout: on the first call (pfna) black
 									;the screen and set up the shot
-	bclr	#pfna,pflags(a3)		;clear pfna
-	beq.w	.resumeplay				;it was clear: resume play
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	bsr.w	forceblack				;force the colours black
+	bclr	#pfna,pflags(a3)
+	beq.w	.resumeplay
+	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	forceblack
 .waitvblank							;loop
-	btst	#dfok,(disflags).w		;display flag dfok set?
-	bne.s	.waitvblank				;yes: wait
-	cmpi.w	#$258,(Crowdlevel).w	;crowd level above $258?
-	bls.w	.setuprink				;no: set up the rink
-	move.w	#$258,(Crowdlevel).w	;cap the crowd level at $258
-	addi.w	#$14,(CwdExciteLvl).w	;raise the excitement level by $14
+	btst	#dfok,(disflags).w
+	bne.s	.waitvblank
+	cmpi.w	#$258,(Crowdlevel).w
+	bls.w	.setuprink
+	move.w	#$258,(Crowdlevel).w
+	addi.w	#$14,(CwdExciteLvl).w
 .setuprink							;set up the rink
-	move.w	(ExtraChars).w,d4		;d4 = ExtraChars
-	movea.l	#RefsMap+8,a2			;the referee tiles
-	jsr	(DecompressGraphicsPlain).l	;decompress them
-	bset	#dfclock,(disflags).w	;set dfclock
-	bclr	#sfpz,(sflags).w		;clear sfpz
-	bclr	#sf3llcs,(sflags3).w	;clear sf3llcs
-	clr.w	(glovecords).w			;glove coordinates 0
-	clr.b	(iflags).w				;iflags 0
-	st	(RefCnt).w					;RefCnt = -1
-	bclr	#sf2refref,(sflags2).w	;clear sf2refref
-	st	(passReceiverPlayerNum).w	;no pass receiver
-	bsr.w	ClrHor					;ClrHor
-	clr.w	(Vpos).w				;Vpos 0
-	clr.w	(Hpos).w				;Hpos 0
-	move.w	#0,(puckx).w			;puck x 0
-	move.w	#0,(pucky).w			;puck y 0
-	clr.w	(puckz).w				;puck z 0
-	clr.w	(puckvx).w				;puck x velocity 0
-	clr.w	(puckvy).w				;puck y velocity 0
-	clr.w	(puckvz).w				;puck z velocity 0
-	st	(puckc).w					;puck carried by no one
+	move.w	(ExtraChars).w,d4
+	movea.l	#RefsMap+8,a2
+	jsr	(DecompressGraphicsPlain).l
+	bset	#dfclock,(disflags).w
+	bclr	#sfpz,(sflags).w
+	bclr	#sf3llcs,(sflags3).w
+	clr.w	(glovecords).w
+	clr.b	(iflags).w
+	st	(RefCnt).w
+	bclr	#sf2refref,(sflags2).w
+	st	(passReceiverPlayerNum).w
+	bsr.w	ClrHor
+	clr.w	(Vpos).w
+	clr.w	(Hpos).w
+	move.w	#0,(puckx).w
+	move.w	#0,(pucky).w
+	clr.w	(puckz).w
+	clr.w	(puckvx).w
+	clr.w	(puckvy).w
+	clr.w	(puckvz).w
+	st	(puckc).w
 	movea.w	#(SortCords+(12*SCstruct)-M68K_RAM),a0	;goal net SCstruct
-	clr.w	Xvel(a0)				;x velocity 0
-	clr.w	Yvel(a0)				;y velocity 0
-	clr.w	(a0)					;x 0
-	move.w	#$10C,Ypos(a0)			;y $10C
+	clr.w	Xvel(a0)
+	clr.w	Yvel(a0)
+	clr.w	(a0)
+	move.w	#$10C,Ypos(a0)
 	adda.w	#$80,a0					;move to second goal net SCstruct
-	clr.w	Xvel(a0)				;x velocity 0
-	clr.w	Yvel(a0)				;y velocity 0
-	clr.w	(a0)					;x 0
-	move.w	#$FEF4,Ypos(a0)			;y -$10C
+	clr.w	Xvel(a0)
+	clr.w	Yvel(a0)
+	clr.w	(a0)
+	move.w	#$FEF4,Ypos(a0)
 	movea.w	#(SortCords+((puckscnum+1)*SCstruct)-M68K_RAM),a0	;puck shadow SCstruct
-	move.w	#SPFpuck,frame(a0)		;puck frame
-	clr.w	SPA(a0)					;animation 0
-	clr.w	attribute(a0)			;attribute 0
-	clr.w	(SortCords+(puckscnum*SCstruct)+attribute).w	;puck object attribute 0
-	bclr	#sfslock,(sflags).w		;clear sfslock
-	moveq	#$64,d4					;101 passes
+	move.w	#SPFpuck,frame(a0)
+	clr.w	SPA(a0)
+	clr.w	attribute(a0)
+	clr.w	(SortCords+(puckscnum*SCstruct)+attribute).w
+	bclr	#sfslock,(sflags).w
+	moveq	#$64,d4
 .scrollloop							;run the scroll window 101 times so it settles
-	bsr.w	checkwindow				;update the scroll window
-	dbf	d4,.scrollloop				;loop
-	move.w	#$3C,(yleader).w		;yleader = $3C
-	bsr.w	ResetBench				;reset the bench
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
-	bsr.w	setpersonel				;set the personnel
-	bsr.w	SetupPenaltyShot		;set up the penalty shot
-	adda.w	#tmsize,a2				;a2 = away team structure
-	bsr.w	setpersonel				;set the personnel
-	bsr.w	SetupPenaltyShot		;set up the penalty shot
-	jsr	(resetplstuff).l			;reset the player structures
-	move.l	a3,-(sp)				;save a3
+	bsr.w	checkwindow
+	dbf	d4,.scrollloop
+	move.w	#$3C,(yleader).w
+	bsr.w	ResetBench
+	movea.w	#(tmstruct-M68K_RAM),a2
+	bsr.w	setpersonel
+	bsr.w	SetupPenaltyShot
+	adda.w	#tmsize,a2
+	bsr.w	setpersonel
+	bsr.w	SetupPenaltyShot
+	jsr	(resetplstuff).l
+	move.l	a3,-(sp)
 	movea.l	#SortCords+(11*SCstruct),a3	;away goalie SCstruct
 	move.w	#$B,d2					;11 = # of player SCstructs
 .playerloop							;loop over the 12 players: set up the shooter and goalie, park the rest
-	cmp.w	(BA_Sktr_SCnum).w,d2	;the shooter?
-	beq.w	.setupskater			;yes: set him up
-	cmp.w	(BA_Goalie_SCnum).w,d2	;the goalie?
-	beq.w	.setupgoalie			;yes: set him up
-	move.w	#$FF10,(a3)				;x = -$F0, off the rink
-	clr.w	Ypos(a3)				;y 0
-	clr.w	frame(a3)				;frame 0
-	move.w	#$20,d0					;d0 = $20
-	bsr.w	assinsert				;insert the assignment
-	bra.w	.nextplayer				;next player
+	cmp.w	(BA_Sktr_SCnum).w,d2
+	beq.w	.setupskater
+	cmp.w	(BA_Goalie_SCnum).w,d2
+	beq.w	.setupgoalie
+	move.w	#$FF10,(a3)
+	clr.w	Ypos(a3)
+	clr.w	frame(a3)
+	move.w	#$20,d0
+	bsr.w	assinsert
+	bra.w	.nextplayer
 .setupskater						;d2 = BA_Sktr_SCnum
-	tst.w	position(a3)			;player on the ice?
-	bpl.w	.placeskater			;yes: place him
-	bclr	#2,pflags2(a3)			;clear pflags2 bit 2
-	beq.w	.placeskater			;it was clear: place him
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	clr.w	d3						;d3 = 0
-	move.b	pnum(a3),d3				;d3 = player number
-	jsr	(setplayer).l				;bring him in
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	tst.w	position(a3)			;on the ice now?
-	beq.w	.skaterready			;yes: ready
-	bpl.w	.placeskater			;else place him anyway
+	tst.w	position(a3)
+	bpl.w	.placeskater
+	bclr	#2,pflags2(a3)
+	beq.w	.placeskater
+	movem.l	d0-d7/a0-a6,-(sp)
+	clr.w	d3
+	move.b	pnum(a3),d3
+	jsr	(setplayer).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	tst.w	position(a3)
+	beq.w	.skaterready
+	bpl.w	.placeskater
 .skaterready						;shooter on the ice: place him at the puck
-	nop								;nothing
+	nop
 .placeskater						;shooter starts at the puck, facing the goal he shoots at
-	move.w	(puckx).w,d0			;d0 = puck x
-	subi.w	#0,d0					;(no offset)
-	move.w	d0,(a3)					;shooter x
-	move.w	(pucky).w,d0			;d0 = puck y
-	btst	#pfgoal,pflags(a3)		;which goal does he shoot at?
-	bne.w	.skaterattop			;pfgoal set: above the puck
-	addi.w	#$10,d0					;below the puck by $10
-	move.w	#4,facedir(a3)			;facing 4
-	bra.w	.setskaterpos			;set the position
+	move.w	(puckx).w,d0
+	subi.w	#0,d0
+	move.w	d0,(a3)
+	move.w	(pucky).w,d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.skaterattop
+	addi.w	#$10,d0
+	move.w	#4,facedir(a3)
+	bra.w	.setskaterpos
 .skaterattop						;pfgoal set
-	addi.w	#-$10,d0				;above the puck by $10
-	move.w	#0,facedir(a3)			;facing 0
+	addi.w	#-$10,d0
+	move.w	#0,facedir(a3)
 .setskaterpos						;set the shooter's y and stop him
-	move.w	d0,Ypos(a3)				;shooter y
-	clr.w	Xvel(a3)				;x velocity 0
-	clr.w	Yvel(a3)				;y velocity 0
-	clr.w	Zvel(a3)				;z velocity 0
-	move.w	#$11,d0					;d0 = $11
-	bsr.w	assinsert				;insert the assignment
-	bra.w	.nextplayer				;next player
+	move.w	d0,Ypos(a3)
+	clr.w	Xvel(a3)
+	clr.w	Yvel(a3)
+	clr.w	Zvel(a3)
+	move.w	#$11,d0
+	bsr.w	assinsert
+	bra.w	.nextplayer
 .setupgoalie						;d2 = BA_Goalie_SCnum
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.goalieactive			;no: goalie active
-	move.b	(shootoutteam-1).w,pnum(a3)	;pnum from the byte before shootoutteam
-	tst.w	(shootoutteam).w		;shootout team?
-	beq.w	.loadgoalieplayer		;zero: load the goalie
-	move.b	(homeshootnum-1).w,pnum(a3)	;pnum from the byte before homeshootnum
-	bra.w	.loadgoalieplayer		;load the goalie
+	btst	#0,(gmode2).w
+	beq.w	.goalieactive
+	move.b	(shootoutteam-1).w,pnum(a3)
+	tst.w	(shootoutteam).w
+	beq.w	.loadgoalieplayer
+	move.b	(homeshootnum-1).w,pnum(a3)
+	bra.w	.loadgoalieplayer
 .goalieactive						;bit 0 of gmode2 clear
-	tst.w	position(a3)			;player on the ice?
-	bpl.w	.placegoalie			;yes: place him
-	bclr	#2,pflags2(a3)			;clear pflags2 bit 2
-	beq.w	.placegoalie			;it was clear: place him
+	tst.w	position(a3)
+	bpl.w	.placegoalie
+	bclr	#2,pflags2(a3)
+	beq.w	.placegoalie
 .loadgoalieplayer					;goalie not on the ice: bring him on
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	clr.w	d3						;d3 = 0
-	move.b	pnum(a3),d3				;d3 = player number
-	jsr	(setplayer).l				;bring him in
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	tst.w	position(a3)			;on the ice now?
-	bne.w	.goalieok				;yes: goalie ready
-	bpl.w	.placegoalie			;else place him anyway
+	movem.l	d0-d7/a0-a6,-(sp)
+	clr.w	d3
+	move.b	pnum(a3),d3
+	jsr	(setplayer).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	tst.w	position(a3)
+	bne.w	.goalieok
+	bpl.w	.placegoalie
 .goalieok							;goalie on the ice
-	nop								;nothing
+	nop
 .placegoalie						;goalie in his crease, facing out
-	bclr	#2,pflags2(a3)			;clear pflags2 bit 2
-	move.w	#0,d0					;x 0
-	move.w	#$E5,d1					;y $E5
-	btst	#pfgoal,pflags(a3)		;which goal?
-	bne.w	.goalieattop			;pfgoal set: keep
-	move.w	#$FF1B,d1				;y -$E5
+	bclr	#2,pflags2(a3)
+	move.w	#0,d0
+	move.w	#$E5,d1
+	btst	#pfgoal,pflags(a3)
+	bne.w	.goalieattop
+	move.w	#$FF1B,d1
 .goalieattop						;goalie Y set
-	move.w	d0,(a3)					;x
-	move.w	d1,Ypos(a3)				;y
-	clr.w	Xvel(a3)				;x velocity 0
-	clr.w	Yvel(a3)				;y velocity 0
-	clr.w	Zpos(a3)				;z 0
-	sub.w	(puckx).w,d0			;minus puck x
-	sub.w	(pucky).w,d1			;minus puck y
-	neg.w	d0						;negate x
-	neg.w	d1						;negate y
-	bsr.w	vtoa					;direction
-	move.w	d0,facedir(a3)			;facing
-	bclr	#2,pflags2(a3)			;clear pflags2 bit 2
-	bclr	#pfalock,pflags(a3)		;clear pfalock
-	move.w	#SPAglide,d1			;glide animation
-	bsr.w	SetSPA					;set the animation
+	move.w	d0,(a3)
+	move.w	d1,Ypos(a3)
+	clr.w	Xvel(a3)
+	clr.w	Yvel(a3)
+	clr.w	Zpos(a3)
+	sub.w	(puckx).w,d0
+	sub.w	(pucky).w,d1
+	neg.w	d0
+	neg.w	d1
+	bsr.w	vtoa
+	move.w	d0,facedir(a3)
+	bclr	#2,pflags2(a3)
+	bclr	#pfalock,pflags(a3)
+	move.w	#SPAglide,d1
+	bsr.w	SetSPA
 .nextplayer							;next player
-	suba.l	#$80,a3					;previous object
+	suba.l	#$80,a3
 	dbf	d2,.playerloop				;cycle to next player
-	bsr.w	SprSort					;sort the sprites
-	movea.l	(sp)+,a3				;restore a3
-	bsr.w	ResetAndSelectPlayers	;reset and select players
-	move.w	(BA_Goalie_SCnum).w,d0	;d0 = goalie SCnum
-	asl.w	#7,d0					;times $80, the object size
-	movea.w	#(SortCords-M68K_RAM),a3	;a3 = sort objects
-	adda.w	d0,a3					;a3 = the goalie
-	move.w	#0,(a3)					;x 0
-	move.w	#$FF06,Ypos(a3)			;y -$FA
-	btst	#pfgoal,pflags(a3)		;which goal?
-	bne.w	.goalieatbottom			;pfgoal set: keep
-	move.w	#$FA,Ypos(a3)			;y $FA
+	bsr.w	SprSort
+	movea.l	(sp)+,a3
+	bsr.w	ResetAndSelectPlayers
+	move.w	(BA_Goalie_SCnum).w,d0
+	asl.w	#7,d0
+	movea.w	#(SortCords-M68K_RAM),a3
+	adda.w	d0,a3
+	move.w	#0,(a3)
+	move.w	#$FF06,Ypos(a3)
+	btst	#pfgoal,pflags(a3)
+	bne.w	.goalieatbottom
+	move.w	#$FA,Ypos(a3)
 .goalieatbottom						;goalie Y set
-	move.w	(BA_Goalie_SCnum).w,d0	;d0 = goalie SCnum
-	move.w	#1,d1					;d1 = 1
-	btst	#pfteam,pflags(a3)		;which team?
-	beq.w	.checkcont1				;home: keep
-	move.w	#2,d1					;d1 = 2
+	move.w	(BA_Goalie_SCnum).w,d0
+	move.w	#1,d1
+	btst	#pfteam,pflags(a3)
+	beq.w	.checkcont1
+	move.w	#2,d1
 .checkcont1							;pad for his team
-	cmp.w	(cont1team).w,d1		;controller 1's team?
-	bne.w	.checkcont2				;no: check controller 2
-	jsr	(setc1player).l				;controller 1 takes him
-	bra.w	.setgoalieassignment	;go on
+	cmp.w	(cont1team).w,d1
+	bne.w	.checkcont2
+	jsr	(setc1player).l
+	bra.w	.setgoalieassignment
 .checkcont2							;d1 <> cont1team
-	cmp.w	(cont2team).w,d1		;controller 2's team?
-	bne.w	.setgoalieassignment	;no: go on
-	jsr	(setc2player).l				;controller 2 takes him
+	cmp.w	(cont2team).w,d1
+	bne.w	.setgoalieassignment
+	jsr	(setc2player).l
 .setgoalieassignment				;give the goalie his penalty shot assignment
 	move.w	#$E,d0					;assignment D51C?
-	bsr.w	assreplace				;assreplace
-	bset	#7,(BA_PS_flags).w		;set BA_PS_flags bit 7
-	bset	#sf2drec,(sflags2).w	;set sf2drec
-	move.w	#$190,(msgtimer).w		;message timer $190
-	tst.w	(cont1team).w			;controller 1 on a team?
-	bne.w	.finishsetup			;yes: finish
-	tst.w	(cont2team).w			;controller 2 on a team?
-	bne.w	.finishsetup			;yes: finish
-	move.w	#$64,(msgtimer).w		;message timer $64
+	bsr.w	assreplace
+	bset	#7,(BA_PS_flags).w
+	bset	#sf2drec,(sflags2).w
+	move.w	#$190,(msgtimer).w
+	tst.w	(cont1team).w
+	bne.w	.finishsetup
+	tst.w	(cont2team).w
+	bne.w	.finishsetup
+	move.w	#$64,(msgtimer).w
 .finishsetup						;finish the setup
-	move.w	#$18,(palcount).w		;palette count $18
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	move.w	#$18,(palcount).w
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 .resumeplay							;pfna was clear
-	bset	#2,(gmode2).w			;set gmode2 bit 2
+	bset	#2,(gmode2).w
 	move.w	#$18,d0					;pucknorm
-	bsr.w	assreplace				;assreplace
-	clr.w	Xvel(a3)				;x velocity 0
-	clr.w	Yvel(a3)				;y velocity 0
-	rts								;done
+	bsr.w	assreplace
+	clr.w	Xvel(a3)
+	clr.w	Yvel(a3)
+	rts
 	dc.b	0,1,2,3,4,5,6,0,0,1,5,3,4,2,0,0
 	dc.b	0,3,5,1,4,0,0,0,0,0,$FF,6,$FF,$DD,$FF,$CE
 	dc.b	0
@@ -2587,257 +2587,257 @@ puckpenshot							;puck start for a penalty shot or shootout: on the first call 
 	dc.b	$FF,$F6,0,0,$FF,$C4
 UpdatePenaltyShotEnd				;end the penalty shot when the goalie has the puck, the puck is loose or
 									;the timer runs out
-	movem.w	d0,-(sp)				;save d0
-	move.w	(puckc).w,d0			;d0 = SCnum of the puck carrier
-	cmp.w	(BA_Goalie_SCnum).w,d0	;is it the goalie?
-	movem.w	(sp)+,d0				;restore d0 (flags kept)
-	beq.w	.setended				;goalie has the puck: ended
-	btst	#5,(BA_PS_flags).w		;BA_PS_flags bit 5 set?
-	beq.w	.checktimer				;no: check the shootout clock
-	btst	#5,(gmode2).w			;gmode2 bit 5 set (puck was loose)?
-	bne.w	.puckloose				;yes: check the puck again
-	tst.w	(puckc).w				;puck carried by someone?
-	bpl.w	.countdown				;yes: count down
-	bset	#5,(gmode2).w			;puck loose: set gmode2 bit 5
+	movem.w	d0,-(sp)
+	move.w	(puckc).w,d0
+	cmp.w	(BA_Goalie_SCnum).w,d0
+	movem.w	(sp)+,d0
+	beq.w	.setended
+	btst	#5,(BA_PS_flags).w
+	beq.w	.checktimer
+	btst	#5,(gmode2).w
+	bne.w	.puckloose
+	tst.w	(puckc).w
+	bpl.w	.countdown
+	bset	#5,(gmode2).w
 .puckloose							;puck loose
-	tst.w	(puckc).w				;puck carried by someone?
-	bpl.w	.setended				;no: ended
+	tst.w	(puckc).w
+	bpl.w	.setended
 .countdown							;count down the shot clock
-	tst.w	(passmodetimer).w		;pass mode timer already out?
-	bmi.w	.setended				;yes: ended
-	subq.w	#1,(passmodetimer).w	;count it down
-	bra.w	.checktimer				;check the clock
+	tst.w	(passmodetimer).w
+	bmi.w	.setended
+	subq.w	#1,(passmodetimer).w
+	bra.w	.checktimer
 .setended							;pass mode timer out: the attempt is over
-	bset	#4,(BA_PS_flags).w		;set the ended flag
+	bset	#4,(BA_PS_flags).w
 .checktimer							;shootout clock out: the attempt is over
-	tst.w	(shootoutclock).w		;shootout clock still running?
+	tst.w	(shootoutclock).w
 	bne.w	.checkended
-	bset	#4,(BA_PS_flags).w		;clock out: set the ended flag
+	bset	#4,(BA_PS_flags).w
 .checkended							;check the end
-	btst	#4,(BA_PS_flags).w		;ended flag set?
-	bne.w	.finishshot				;yes: finish the shot
-	rts								;no: keep going
+	btst	#4,(BA_PS_flags).w
+	bne.w	.finishshot
+	rts
 .finishshot							;bit 4 of BA_PS_flags set
-	btst	#6,(BA_PS_flags).w		;already finished once?
-	bne.w	PenaltyShotEndReturn	;yes: skip
-	bset	#6,(BA_PS_flags).w		;mark it finished
-	move.w	#$A,d0					;d0 = $A
-	jsr	(AddPenalty2).l				;add the penalty
+	btst	#6,(BA_PS_flags).w
+	bne.w	PenaltyShotEndReturn
+	bset	#6,(BA_PS_flags).w
+	move.w	#$A,d0
+	jsr	(AddPenalty2).l
 EndPenaltyShotPlay					;stop play after a penalty shot or shootout attempt: freeze the window,
 									;stop the clock, clear the penalty shot flags
-	jsr	(freezewindow).l			;freeze the window
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	bne.w	.stopplay				;yes: no replay
-	move.w	#$A,(replaydelay).w		;replay delay $A
-	bset	#sf2drec,(sflags2).w	;record a replay
+	jsr	(freezewindow).l
+	btst	#0,(gmode2).w
+	bne.w	.stopplay
+	move.w	#$A,(replaydelay).w
+	bset	#sf2drec,(sflags2).w
 .stopplay							;stop play
-	bset	#gmclock,(gmode).w		;stop the clock
-	bclr	#2,(gmode2).w			;clear gmode2 bit 2
-	bclr	#2,(BA_PS_flags).w		;clear BA_PS_flags bit 2
-	bclr	#3,(BA_PS_flags).w		;clear BA_PS_flags bit 3
-	bclr	#5,(BA_PS_flags).w		;clear BA_PS_flags bit 5
-	bclr	#4,(BA_PS_flags).w		;clear BA_PS_flags bit 4
-	bclr	#6,(BA_PS_flags).w		;clear BA_PS_flags bit 6
-	movem.l	d0/a0,-(sp)				;save registers
-	movea.l	#SortCords,a0			;a0 = sort objects
-	move.w	(BA_Sktr_SCnum).w,d0	;d0 = SCnum of the penalty shot skater
-	asl.w	#7,d0					;times $80, the object size
-	move.b	(savednewpnum).w,newpnum(a0,d0.w)	;put back the saved newpnum
-	movem.l	(sp)+,d0/a0				;restore registers
-	jsr	(CountShootoutGoals).l		;count the shootout goals
+	bset	#gmclock,(gmode).w
+	bclr	#2,(gmode2).w
+	bclr	#2,(BA_PS_flags).w
+	bclr	#3,(BA_PS_flags).w
+	bclr	#5,(BA_PS_flags).w
+	bclr	#4,(BA_PS_flags).w
+	bclr	#6,(BA_PS_flags).w
+	movem.l	d0/a0,-(sp)
+	movea.l	#SortCords,a0
+	move.w	(BA_Sktr_SCnum).w,d0
+	asl.w	#7,d0
+	move.b	(savednewpnum).w,newpnum(a0,d0.w)
+	movem.l	(sp)+,d0/a0
+	jsr	(CountShootoutGoals).l
 PenaltyShotEndReturn				;penalty shot already finished: return without adding another
 	rts
 ; this is where the action starts
 puckfaceoff							;puck controller for the face off: a3 = the face off controller (shootout
 									;mode skips to its own setup)
-	bclr	#4,(sflags8).w			;clear sflags8 bit 4
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.normalfaceoff			;no: normal faceoff
-	clr.w	(puckvx).w				;puck x velocity 0
-	clr.w	(puckvy).w				;puck y velocity 0
+	bclr	#4,(sflags8).w
+	btst	#0,(gmode2).w
+	beq.w	.normalfaceoff
+	clr.w	(puckvx).w
+	clr.w	(puckvy).w
 	move.w	#$1E,d0					;assignment ECB6?
-	bra.w	assreplace				;replay in progress: continue there
+	bra.w	assreplace
 .normalfaceoff						;bit 0 of gmode2 clear
-	bclr	#pfna,pflags(a3)		;clear pfna
-	beq.w	WaitForFaceoffLineChanges	;it was clear: wait for the line changes
-	bclr	#0,(sflags8).w			;clear sflags8 bit 0
-	beq.w	.resetpads				;it was clear: reset the pads
-	clr.w	(fox).w					;faceoff x 0
-	clr.w	(foy).w					;faceoff y 0
+	bclr	#pfna,pflags(a3)
+	beq.w	WaitForFaceoffLineChanges
+	bclr	#0,(sflags8).w
+	beq.w	.resetpads
+	clr.w	(fox).w
+	clr.w	(foy).w
 .resetpads							;reset the pads
-	bclr	#7,(sflags7).w			;clear sflags7 bit 7
-	clr.l	(padcont).w				;clear the pad state (padcont)
-	clr.l	(padcont+4).w			;(next long)
-	clr.l	(padcont+8).w			;(last long)
-	bclr	#6,(sflags7).w			;clear sflags7 bit 6
-	bclr	#2,(sflags7).w			;clear sflags7 bit 2
-	jsr	(CheckScoreLeader).l		;check who leads the score
-	tst.w	(faceoffanim).w			;faceoff animation chosen?
-	bmi.w	.choosefaceoffspot		;no: choose one
-	move.w	(faceoffanim).w,d0		;d0 = the animation
-	bra.w	.handlefaceoffspot		;use it
+	bclr	#7,(sflags7).w
+	clr.l	(padcont).w
+	clr.l	(padcont+4).w
+	clr.l	(padcont+8).w
+	bclr	#6,(sflags7).w
+	bclr	#2,(sflags7).w
+	jsr	(CheckScoreLeader).l
+	tst.w	(faceoffanim).w
+	bmi.w	.choosefaceoffspot
+	move.w	(faceoffanim).w,d0
+	bra.w	.handlefaceoffspot
 .choosefaceoffspot					;faceoffanim negative
-	jsr	(RandomFaceoffAnim).l		;random faceoff animation
-	tst.w	d0						;result negative?
-	bmi.w	.checkperiod			;yes: skip setting it
+	jsr	(RandomFaceoffAnim).l
+	tst.w	d0
+	bmi.w	.checkperiod
 .handlefaceoffspot					;set the faceoff animation for the spot
-	jsr	(SetFaceoffAnim).l			;set the animation
+	jsr	(SetFaceoffAnim).l
 .checkperiod						;period check
-	bclr	#1,(sflags6).w			;clear sflags6 bit 1
-	bclr	#1,(gmode2).w			;clear gmode2 bit 1
-	tst.w	(gameclock).w			;game clock at 0?
-	beq.w	PeriodOver				;yes: period is over
-	btst	#gmeog,(gmode).w		;end of game flag (gmeog)?
-	bne.w	PeriodOver				;yes: period is over
-	cmpi.w	#3,(gsp).w				;third period?
-	bne.w	.npo					;no: not overtime
-	move.w	(HmGoals).w,d0			;home goals
-	cmp.w	(AwGoals).w,d0			;equal to away goals?
-	bne.w	clockcont_0				;no: someone leads, continue the clock
+	bclr	#1,(sflags6).w
+	bclr	#1,(gmode2).w
+	tst.w	(gameclock).w
+	beq.w	PeriodOver
+	btst	#gmeog,(gmode).w
+	bne.w	PeriodOver
+	cmpi.w	#3,(gsp).w
+	bne.w	.npo
+	move.w	(HmGoals).w,d0
+	cmp.w	(AwGoals).w,d0
+	bne.w	clockcont_0
 .npo								;no overtime win
-	btst	#gmpendel,(gmode).w		;penalty ended (gmpendel)?
-	bne.w	Stop4Pen				;yes: stop for the penalty
-	move.w	(PerTimeTotal).w,d0		;d0 = period time total
-	asr.w	#1,d0					;half of it
-	cmp.w	(gameclock).w,d0		;game clock past half?
-	bls.w	.returngoalies			;yes: return the goalies
-	cmpi.w	#$3C,(gameclock).w		;under $3C seconds?
-	blt.w	.returngoalies			;yes: return the goalies
-	bclr	#sf3fosong,(sflags3).w	;clear sf3fosong
-	beq.w	.returngoalies			;it was clear: return the goalies
-	btst	#gmclock,(gmode).w		;clock running (gmclock)?
-	beq.w	.returngoalies			;no: return the goalies
-	btst	#6,(sflags8).w			;sflags8 bit 6 set?
-	bne.w	.returngoalies			;yes: return the goalies
-	move.w	(HomeTeam).w,(HmTeam).w	;HmTeam = the home team
-	move.w	#SngFaceoff,(SongIndex).w	;faceoff song
-	jsr	(ChooseSong).l				;choose it
-	bset	#4,(sflags8).w			;set sflags8 bit 4
+	btst	#gmpendel,(gmode).w
+	bne.w	Stop4Pen
+	move.w	(PerTimeTotal).w,d0
+	asr.w	#1,d0
+	cmp.w	(gameclock).w,d0
+	bls.w	.returngoalies
+	cmpi.w	#$3C,(gameclock).w
+	blt.w	.returngoalies
+	bclr	#sf3fosong,(sflags3).w
+	beq.w	.returngoalies
+	btst	#gmclock,(gmode).w
+	beq.w	.returngoalies
+	btst	#6,(sflags8).w
+	bne.w	.returngoalies
+	move.w	(HomeTeam).w,(HmTeam).w
+	move.w	#SngFaceoff,(SongIndex).w
+	jsr	(ChooseSong).l
+	bset	#4,(sflags8).w
 .returngoalies						;return pulled goalies and start the faceoff timers
-	bsr.w	ReturnGoalies			;put pulled goalies back
-	st	temp1(a3)					;first timer: not started
-	st	temp2(a3)					;second timer: not started
-	tst.w	(OptLine).w				;OptLine set?
-	bne.w	WaitForFaceoffLineChanges	;yes: no line change
-	bclr	#tmflcm,(tmstruct+tmflags).w	;clear home line change mode
-	bclr	#tmflcm,(awtmstruct+tmflags).w	;clear away line change mode
-	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
-	moveq	#$B,d0					;12 players
+	bsr.w	ReturnGoalies
+	st	temp1(a3)
+	st	temp2(a3)
+	tst.w	(OptLine).w
+	bne.w	WaitForFaceoffLineChanges
+	bclr	#tmflcm,(tmstruct+tmflags).w
+	bclr	#tmflcm,(awtmstruct+tmflags).w
+	movea.w	#(SortCords-M68K_RAM),a0
+	moveq	#$B,d0
 .clearlcmloop						;loop: clear the line change mode of all 12 players
-	bclr	#pf2lcm,pflags2(a0)		;clear the player's line change mode
-	adda.w	#SCstruct,a0			;next object
-	dbf	d0,.clearlcmloop			;loop
-	move.w	(cont1team).w,d0		;d0 = controller 1 team
-	or.w	(cont2team).w,d0		;or controller 2 team
-	beq.w	.checkc1line			;no human team: skip
-	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
-	beq.w	.checkc1line			;no: skip
-	bsr.w	forceblack				;force the colours black
-	bset	#sfslock,(sflags).w		;set sfslock
-	bsr.w	ClrHor					;ClrHor
-	move.w	#$18,(palcount).w		;palette count $18
-	tst.w	(OptLine).w				;OptLine set?
-	bne.w	.checkc1line			;yes: skip
-	btst	#4,(sflags7).w			;sflags7 bit 4 set?
-	beq.w	.checkc1line			;no: skip
-	clr.w	(palcount).w			;palette count 0
+	bclr	#pf2lcm,pflags2(a0)
+	adda.w	#SCstruct,a0
+	dbf	d0,.clearlcmloop
+	move.w	(cont1team).w,d0
+	or.w	(cont2team).w,d0
+	beq.w	.checkc1line
+	btst	#sfhor,(sflags).w
+	beq.w	.checkc1line
+	bsr.w	forceblack
+	bset	#sfslock,(sflags).w
+	bsr.w	ClrHor
+	move.w	#$18,(palcount).w
+	tst.w	(OptLine).w
+	bne.w	.checkc1line
+	btst	#4,(sflags7).w
+	beq.w	.checkc1line
+	clr.w	(palcount).w
 .checkc1line						;start the line change box for each pad's team
-	move.w	(c1playernum).w,d0		;d0 = pad 1 player
-	bmi.w	.checkc2line			;none: next pad
-	bsr.w	StartFaceoffLineChange	;start its line change
+	move.w	(c1playernum).w,d0
+	bmi.w	.checkc2line
+	bsr.w	StartFaceoffLineChange
 .checkc2line						;pad 2 line change
-	move.w	(c2playernum).w,d0		;d0 = pad 2 player
-	bmi.w	.checkcomputerline		;none: computer's line
-	bsr.w	StartFaceoffLineChange	;start its line change
+	move.w	(c2playernum).w,d0
+	bmi.w	.checkcomputerline
+	bsr.w	StartFaceoffLineChange
 .checkcomputerline					;computer line change
-	movea.w	#(tmstruct-M68K_RAM),a1	;a1 = home team structure
-	lea	tmsize(a1),a2				;a2 = away team structure
-	moveq	#2,d0					;d0 = 2
-	bsr.w	SetFaceoffComputerLine	;computer line change
-	bra.w	WaitForFaceoffLineChanges	;wait for the line changes
+	movea.w	#(tmstruct-M68K_RAM),a1
+	lea	tmsize(a1),a2
+	moveq	#2,d0
+	bsr.w	SetFaceoffComputerLine
+	bra.w	WaitForFaceoffLineChanges
 SetFaceoffComputerLine				;faceoff: start a line change for team d0 when the computer controls it
 									;(line changes on)
-	tst.w	(OptLine).w				;OptLine set?
-	bne.w	rtss2					;yes: no line change
-	btst	#4,(sflags7).w			;sflags7 bit 4 set?
-	bne.w	.dochange				;yes: change the line
-	cmp.w	(cont1team).w,d0		;team d0 on controller 1?
-	beq.w	rtss2					;yes: a human picks, skip
-	cmp.w	(cont2team).w,d0		;team d0 on controller 2?
-	beq.w	rtss2					;yes: a human picks, skip
+	tst.w	(OptLine).w
+	bne.w	rtss2
+	btst	#4,(sflags7).w
+	bne.w	.dochange
+	cmp.w	(cont1team).w,d0
+	beq.w	rtss2
+	cmp.w	(cont2team).w,d0
+	beq.w	rtss2
 .dochange							;change the line
-	bsr.w	CompLine				;computer picks the line
-	bsr.w	setpersonel				;set the players in
-	bsr.w	printscores1			;redraw the scores
-	move.w	#$2710,(crowdnoisedelay).w	;set the crowd noise delay
-	rts								;done
+	bsr.w	CompLine
+	bsr.w	setpersonel
+	bsr.w	printscores1
+	move.w	#$2710,(crowdnoisedelay).w
+	rts
 StartFaceoffLineChange				;start the line change box for team d0's sort object before a faceoff
-	exg	a2,a3						;a2 = player, a3 = team
-	asl.w	#7,d0					;team d0 times $80
-	movea.w	#(SortCords-M68K_RAM),a3	;a3 = sort objects
-	adda.w	d0,a3					;a3 = the object of team d0
-	bclr	#3,pflags2(a3)			;clear pflags2 bit 3
-	move.l	a2,-(sp)				;save a2
-	bsr.w	SetLCmode				;start the line change mode
-	movea.l	(sp)+,a2				;restore a2
-	btst	#3,pflags2(a3)			;pflags2 bit 3 set?
-	beq.w	.exit					;no: done
-	btst	#pfteam,pflags(a3)		;which team?
-	beq.w	.homeplayer				;home
-	move.w	#$168,temp2(a2)			;away: timer in temp2
-	move.w	SCnum(a3),temp4(a2)		;its SCnum in temp4
-	bra.w	.exit					;done
+	exg	a2,a3
+	asl.w	#7,d0
+	movea.w	#(SortCords-M68K_RAM),a3
+	adda.w	d0,a3
+	bclr	#3,pflags2(a3)
+	move.l	a2,-(sp)
+	bsr.w	SetLCmode
+	movea.l	(sp)+,a2
+	btst	#3,pflags2(a3)
+	beq.w	.exit
+	btst	#pfteam,pflags(a3)
+	beq.w	.homeplayer
+	move.w	#$168,temp2(a2)
+	move.w	SCnum(a3),temp4(a2)
+	bra.w	.exit
 .homeplayer							;pfteam clear
-	move.w	#$258,temp1(a2)			;home: timer in temp1
-	move.w	SCnum(a3),temp3(a2)		;its SCnum in temp3
+	move.w	#$258,temp1(a2)
+	move.w	SCnum(a3),temp3(a2)
 .exit								;return with a2/a3 swapped back
-	exg	a2,a3						;swap back
-	rts								;done
+	exg	a2,a3
+	rts
 WaitForFaceoffLineChanges			;run both teams' faceoff line change timers (temp1 / temp2); continue when
 									;both have run out
-	move.w	#$40,d0					;first team's timer offset
-	bsr.w	UpdateFaceoffLineChangeTimer	;count it down
-	move.w	#$42,d0					;second team's timer offset
-	bsr.w	UpdateFaceoffLineChangeTimer	;count it down
-	tst.w	temp1(a3)				;first timer still positive?
-	bpl.w	rtss2					;yes: wait
-	tst.w	temp2(a3)				;second timer still positive?
-	bpl.w	rtss2					;yes: wait
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
-	lea	tmsize(a2),a1				;a1 = away team structure
-	moveq	#1,d0					;d0 = 1
-	bsr.w	SetFaceoffComputerLine	;set the computer's line
-	move.w	#$FFFF,(facelcwait).w	;no more waiting
+	move.w	#$40,d0
+	bsr.w	UpdateFaceoffLineChangeTimer
+	move.w	#$42,d0
+	bsr.w	UpdateFaceoffLineChangeTimer
+	tst.w	temp1(a3)
+	bpl.w	rtss2
+	tst.w	temp2(a3)
+	bpl.w	rtss2
+	movea.w	#(tmstruct-M68K_RAM),a2
+	lea	tmsize(a2),a1
+	moveq	#1,d0
+	bsr.w	SetFaceoffComputerLine
+	move.w	#$FFFF,(facelcwait).w
 	move.w	#$1C,d0					;puckfaceoff2
-	bra.w	assreplace				;continue
+	bra.w	assreplace
 UpdateFaceoffLineChangeTimer		;count down one team's faceoff line change timer at offset d0 of a3
-	tst.w	0(a3,d0.w)				;timer already done?
-	bmi.w	rtss2					;yes: nothing to do
-	move.w	4(a3,d0.w),d1			;d1 = the player number at offset 4
-	asl.w	#7,d1					;times $80, the object size
-	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
-	btst	#6,pflags(a0,d1.w)		;pflags bit 6 set?
-	beq.w	.checkactive			;no: home
-	adda.w	#tmsize,a2				;yes: away team structure
+	tst.w	0(a3,d0.w)
+	bmi.w	rtss2
+	move.w	4(a3,d0.w),d1
+	asl.w	#7,d1
+	movea.w	#(SortCords-M68K_RAM),a0
+	movea.w	#(tmstruct-M68K_RAM),a2
+	btst	#6,pflags(a0,d1.w)
+	beq.w	.checkactive
+	adda.w	#tmsize,a2
 .checkactive						;a2 = that team's struct: still in line change mode, count down
-	btst	#pf2lcm,pflags2(a0,d1.w)	;still in line change mode?
-	bne.w	.countdown				;yes: count down
-	st	0(a3,d0.w)					;no: mark the timer done
-	bra.w	SetLCmode2				;finish the mode
+	btst	#pf2lcm,pflags2(a0,d1.w)
+	bne.w	.countdown
+	st	0(a3,d0.w)
+	bra.w	SetLCmode2
 .countdown							;pf2lcm set
-	sub.w	d7,0(a3,d0.w)			;count the timer down
-	bpl.w	rtss2					;still positive: wait
-	move.l	a3,-(sp)				;save a3
-	lea	0(a0,d1.w),a3				;a3 = the player object
-	btst	#3,pflags2(a3)			;pflags2 bit 3 set?
-	beq.w	.exit					;no: done
-	clr.w	d2						;d2 = 0
-	bsr.w	lcfound					;accept the line
-	bsr.w	SetLCmode2				;finish the mode
+	sub.w	d7,0(a3,d0.w)
+	bpl.w	rtss2
+	move.l	a3,-(sp)
+	lea	0(a0,d1.w),a3
+	btst	#3,pflags2(a3)
+	beq.w	.exit
+	clr.w	d2
+	bsr.w	lcfound
+	bsr.w	SetLCmode2
 .exit								;done
-	movea.l	(sp)+,a3				;restore a3
-	rts								;done
+	movea.l	(sp)+,a3
+	rts
 ; computer pulls goalie on delayed penalty
 ChkGoalies							;computer pulls goalie on delayed penalty. Called from periodicevents
 	btst	#gmclock,(gmode).w		;check if clock running
@@ -3320,45 +3320,45 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	dc.w	0
 	dc.w	$FFC4
 ResetAndSelectPlayers				;c1playernum / c2playernum = -1, then changeplayer for each human team
-	move.w	#$FFFF,(c1playernum).w	;no player on controller 1
-	move.w	#$FFFF,(c2playernum).w	;no player on controller 2
-	tst.w	(cont1team).w			;controller 1 on a team?
-	beq.w	.checkcont2				;no: next pad
-	clr.w	d4						;pad 1
-	bsr.w	changeplayer			;choose its player
+	move.w	#$FFFF,(c1playernum).w
+	move.w	#$FFFF,(c2playernum).w
+	tst.w	(cont1team).w
+	beq.w	.checkcont2
+	clr.w	d4
+	bsr.w	changeplayer
 .checkcont2							;pad 2
-	tst.w	(cont2team).w			;controller 2 on a team?
-	beq.w	.checkcont3				;no: next pad
-	moveq	#2,d4					;pad 2
-	bsr.w	changeplayer			;choose its player
+	tst.w	(cont2team).w
+	beq.w	.checkcont3
+	moveq	#2,d4
+	bsr.w	changeplayer
 .checkcont3							;pads 3 and 4
-	tst.w	(cont3team).w			;controller 3 on a team?
-	beq.w	.checkcont4				;no: next pad
-	move.w	(cont1team).w,-(sp)		;save controller 1's team
-	move.w	(cont3team).w,(cont1team).w	;controller 3 takes its place
-	move.w	(c1playernum).w,-(sp)	;save controller 1's player
-	move.w	#$FFFF,(c1playernum).w	;no player
-	clr.w	d4						;pad 1
-	jsr	(changeplayer).l			;choose its player
-	move.w	(c1playernum).w,(c3playernum).w	;result is controller 3's player
-	move.w	(cont1team).w,(cont3team).w	;and its team
-	move.w	(sp)+,(c1playernum).w	;restore controller 1's player
-	move.w	(sp)+,(cont1team).w		;restore controller 1's team
+	tst.w	(cont3team).w
+	beq.w	.checkcont4
+	move.w	(cont1team).w,-(sp)
+	move.w	(cont3team).w,(cont1team).w
+	move.w	(c1playernum).w,-(sp)
+	move.w	#$FFFF,(c1playernum).w
+	clr.w	d4
+	jsr	(changeplayer).l
+	move.w	(c1playernum).w,(c3playernum).w
+	move.w	(cont1team).w,(cont3team).w
+	move.w	(sp)+,(c1playernum).w
+	move.w	(sp)+,(cont1team).w
 .checkcont4							;restore pad 4
-	tst.w	(cont4team).w			;controller 4 on a team?
-	beq.w	.exit					;no: done
-	move.w	(cont2team).w,-(sp)		;save controller 2's team
-	move.w	(cont4team).w,(cont2team).w	;controller 4 takes its place
-	move.w	(c2playernum).w,-(sp)	;save controller 2's player
-	move.w	#$FFFF,(c2playernum).w	;no player
-	move.w	#2,d4					;pad 2
-	jsr	(changeplayer).l			;choose its player
-	move.w	(c2playernum).w,(c4playernum).w	;result is controller 4's player
-	move.w	(cont2team).w,(cont4team).w	;and its team
-	move.w	(sp)+,(c2playernum).w	;restore controller 2's player
-	move.w	(sp)+,(cont2team).w		;restore controller 2's team
+	tst.w	(cont4team).w
+	beq.w	.exit
+	move.w	(cont2team).w,-(sp)
+	move.w	(cont4team).w,(cont2team).w
+	move.w	(c2playernum).w,-(sp)
+	move.w	#$FFFF,(c2playernum).w
+	move.w	#2,d4
+	jsr	(changeplayer).l
+	move.w	(c2playernum).w,(c4playernum).w
+	move.w	(cont2team).w,(cont4team).w
+	move.w	(sp)+,(c2playernum).w
+	move.w	(sp)+,(cont2team).w
 .exit								;exit (also the end of the code above)
-	rts								;done
+	rts
 updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the faceoff box
 	move.w	temp1(a3),d0			;frames left until the drop
 	beq.w	.erase					;0: remove the face off box
@@ -3534,107 +3534,107 @@ pucknorm							;assignment for puck most of the time. a3 = puck, d7 = elapse fra
 ;SCnum $52, facedir $54, SPA $58, SPAnum $5A, SPAcnt $5C, pflags $62, pflags2 $63.
 
 ChkOffsides							;check for offsides penalty. a3 = puck. Flags the whole team
-	btst	#gmoffs,(gmode).w		;test gmoffs mode bit
-	beq.w	rtss2					;branch taken: bit clear, return
-	btst	#2,(BA_PS_flags).w		;test BA_PS_flags bit 2
-	bne.w	rtss2					;branch taken: bit set, return
-	movea.w	#(tmstruct-M68K_RAM),a1	;a1 = home team struct
+	btst	#gmoffs,(gmode).w
+	beq.w	rtss2
+	btst	#2,(BA_PS_flags).w
+	bne.w	rtss2
+	movea.w	#(tmstruct-M68K_RAM),a1
 	lea	tmsize(a1),a2				;team 2 (tmsize)
 	bsr.w	ClearOffsidesIfAllPlayers	;first drop the flag of any team with no one over the line
-	exg	a1,a2						;swap team structs
+	exg	a1,a2
 	bsr.w	ClearOffsidesIfAllPlayers
-	move.w	#$54,d0					;d0 = $54
-	cmp.w	Ypos(a3),d0				;compare to puck Ypos
+	move.w	#$54,d0
+	cmp.w	Ypos(a3),d0
 	bgt.w	.neg					;puck y < Blueline-4: go to the bottom line test
 	cmp.w	OldYpos(a3),d0			;OldYpos: puck crossed the top line this frame?
-	ble.w	rtss2					;branch taken: OldYpos is $54 or less, return
+	ble.w	rtss2
 	addi.w	#$A,d0					;d0 = Blueline+6: players must be past this
 	btst	#gmdir,(gmode).w		;pick which team is attacking this end
-	beq.w	.t0						;branch taken: gmdir clear
-	exg	a2,a1						;swap team structs
+	beq.w	.t0
+	exg	a2,a1
 .t0									;team structs chosen
-	moveq	#5,d2					;loop count of 6
-	movea.w	tmsort(a2),a0			;a0 = first sorted player
+	moveq	#5,d2
+	movea.w	tmsort(a2),a0
 .0									;loop over the team: anyone past the blue line?
 	tst.w	position(a0)			;position: skip off ice
-	bmi.w	.1						;branch taken: negative, next player
-	cmp.w	Ypos(a0),d0				;compare d0 to player Ypos
+	bmi.w	.1
+	cmp.w	Ypos(a0),d0
 	bge.w	.1						;not past the line
 	bset	#tmfoside,tmflags(a2)	;player past the line: team offsides
-	rts								;return
+	rts
 .1									;next player
 	adda.w	#SCstruct,a0			;next player
-	dbf	d2,.0						;loop for the other players
-	rts								;return
+	dbf	d2,.0
+	rts
 .neg								;bottom blue line: the same test mirrored
-	neg.w	d0						;negate d0
-	cmp.w	Ypos(a3),d0				;compare d0 to puck Ypos
-	blt.w	rtss2					;branch taken: d0 below puck Ypos, return
-	cmp.w	OldYpos(a3),d0			;compare d0 to OldYpos
-	bge.w	rtss2					;branch taken: d0 at least OldYpos, return
-	subi.w	#$A,d0					;d0 minus $A
-	btst	#gmdir,(gmode).w		;test gmdir mode bit
-	bne.w	.t1						;branch taken: gmdir set
-	exg	a2,a1						;swap team structs
+	neg.w	d0
+	cmp.w	Ypos(a3),d0
+	blt.w	rtss2
+	cmp.w	OldYpos(a3),d0
+	bge.w	rtss2
+	subi.w	#$A,d0
+	btst	#gmdir,(gmode).w
+	bne.w	.t1
+	exg	a2,a1
 .t1									;team structs chosen
-	moveq	#5,d2					;loop count of 6
-	movea.w	tmsort(a2),a0			;a0 = first sorted player
+	moveq	#5,d2
+	movea.w	tmsort(a2),a0
 .2									;loop over the team (bottom line)
 	tst.w	position(a0)			;loop over the team's players (bottom line)
-	bmi.w	.3						;branch taken: negative, next player
-	cmp.w	Ypos(a0),d0				;compare d0 to player Ypos
+	bmi.w	.3
+	cmp.w	Ypos(a0),d0
 	ble.w	.3						;not past the line
 	bset	#tmfoside,tmflags(a2)	;team offsides
-	rts								;return
+	rts
 .3									;next player
 	adda.w	#SCstruct,a0			;next player
-	dbf	d2,.2						;loop for the other players
-	rts								;return
+	dbf	d2,.2
+	rts
 ClearOffsidesIfAllPlayers			;a2 = team struct: clear the team offsides flag once no skater is past the
 									;line
-	btst	#tmfoside,tmflags(a2)	;test team offsides flag
-	beq.w	rtss2					;branch taken: flag clear, return
-	movea.w	tmsort(a2),a0			;a0 = first sorted player
-	moveq	#5,d1					;loop count of 6
+	btst	#tmfoside,tmflags(a2)
+	beq.w	rtss2
+	movea.w	tmsort(a2),a0
+	moveq	#5,d1
 .top								;loop: d0 = each player's y toward the goal he shoots at
 	tst.w	position(a0)			;position: off ice keeps the last d0
-	bmi.w	.next					;branch taken: negative, next player
+	bmi.w	.next
 	move.w	Ypos(a0),d0				;d0 = y toward the goal this player shoots at
-	btst	#pfgoal,pflags(a0)		;test goal side flag
-	bne.w	.next					;branch taken: skip the negate
-	neg.w	d0						;flip sign
+	btst	#pfgoal,pflags(a0)
+	bne.w	.next
+	neg.w	d0
 .next								;next player; stop when one is past the line
-	adda.w	#SCstruct,a0			;step to next player struct
-	cmp.w	#$58,d0					;compare to $58
-	dbgt	d1,.top					;loop while not greater
-	bgt.w	rtss2					;branch taken: a player is past the line, return
-	bclr	#tmfoside,tmflags(a2)	;clear the team offsides flag
-	rts								;return
+	adda.w	#SCstruct,a0
+	cmp.w	#$58,d0
+	dbgt	d1,.top
+	bgt.w	rtss2
+	bclr	#tmfoside,tmflags(a2)
+	rts
 a2offsides							;player a2 touched the puck: offsides penalty if his team is flagged and
 									;the puck is past the blue line
-	btst	#gmoffs,(gmode).w		;test gmoffs mode bit
-	beq.w	rtss2					;branch taken: bit clear, return
+	btst	#gmoffs,(gmode).w
+	beq.w	rtss2
 	move.w	(pucky).w,d0			;puck y toward the goal a2 shoots at
-	btst	#pfgoal,pflags(a2)		;test goal side flag
-	bne.w	.0						;branch taken: skip the negate
-	neg.w	d0						;flip sign
+	btst	#pfgoal,pflags(a2)
+	bne.w	.0
+	neg.w	d0
 .0									;Y for his end
-	cmp.w	#$68,d0					;compare to $68
-	blt.w	rtss2					;branch taken: below, return
+	cmp.w	#$68,d0
+	blt.w	rtss2
 	movea.w	#(tmstruct-M68K_RAM),a0	;a0 = a2's team struct
-	btst	#pfteam,pflags(a2)		;test team flag
-	beq.w	.1						;branch taken: keep a0
-	adda.w	#tmsize,a0				;step a0 to other team struct
+	btst	#pfteam,pflags(a2)
+	beq.w	.1
+	adda.w	#tmsize,a0
 .1									;team struct chosen
-	btst	#tmfoside,tmflags(a0)	;test team offsides flag
-	beq.w	rtss2					;branch taken: flag clear, return
-	btst	#gmhl,(gmode).w			;test gmhl mode bit
-	bne.w	rtss2					;branch taken: bit set, return
-	exg	a2,a3						;swap a2 and a3
-	move.l	#$10,d0					;penalty value $10
-	bsr.w	AddPenalty				;add the penalty
-	exg	a2,a3						;swap back
-	rts								;return
+	btst	#tmfoside,tmflags(a0)
+	beq.w	rtss2
+	btst	#gmhl,(gmode).w
+	bne.w	rtss2
+	exg	a2,a3
+	move.l	#$10,d0
+	bsr.w	AddPenalty
+	exg	a2,a3
+	rts
 ; player a2 touches puck
 ; look for penalties/offsides/other junk
 a2touchpuck							;player a2 touches puck. Look for penalties/offsides/other junk. Called
@@ -4160,12 +4160,12 @@ GetHot								;push long address of structure to get hot spot from. Hot spot x/y
 ; set sprite animation on struct a3
 ; d1 = new animation
 SetSPA								;set sprite animation on struct a3. d1 = new animation
-	cmp.w	SPA(a3),d1				;already this animation?
-	beq.w	rtss2					;yes: nothing to do
-	clr.w	SPAnum(a3)				;restart the animation count
-	move.w	d1,SPA(a3)				;set the new animation
+	cmp.w	SPA(a3),d1
+	beq.w	rtss2
+	clr.w	SPAnum(a3)
+	move.w	d1,SPA(a3)
 	st	SPAcnt(a3)					;restart animation
-	rts								;done
+	rts
 ; player a3 gets acc. in d0 dir
 doplayeracc							;player a3 gets acc. in d0 dir
 									;in: d0 = wanted direction (0-7; 8/9 = none), d7 = elapsed frames. Chooses
@@ -4307,152 +4307,152 @@ doplayeracc							;player a3 gets acc. in d0 dir
 	dc.w	$FFF0
 	dc.w	$FFF0
 goalieacc							;goalie gets acc. in direction d0. Turns facedir one step toward d0
-	btst	#pfjoycon,pflags(a3)	;human controlled (pfjoycon)?
-	beq.w	.normalgoalie			;no: normal goalie
-	movem.w	d0,-(sp)				;save d0
-	move.w	(puckc).w,d0			;d0 = SCnum of the puck carrier
-	cmp.w	SCnum(a3),d0			;is it this goalie?
-	movem.w	(sp)+,d0				;restore d0 (flags kept)
-	beq.w	.normalgoalie			;yes: normal goalie
-	cmpi.w	#$30,(a3)				;x beyond $30?
-	bgt.w	.normalgoalie			;yes: normal goalie
-	cmpi.w	#$FFD0,(a3)				;x below -$30?
-	blt.w	.normalgoalie			;yes: normal goalie
-	cmpi.w	#$FF40,Ypos(a3)			;y above -$C0 (top net)?
-	bgt.w	.checkbottom			;yes: check the bottom net
-	cmpi.w	#$FEFA,Ypos(a3)			;y below -$106?
-	blt.w	.normalgoalie			;yes: normal goalie
-	bra.w	.facepuck				;in the top crease: face the puck
+	btst	#pfjoycon,pflags(a3)
+	beq.w	.normalgoalie
+	movem.w	d0,-(sp)
+	move.w	(puckc).w,d0
+	cmp.w	SCnum(a3),d0
+	movem.w	(sp)+,d0
+	beq.w	.normalgoalie
+	cmpi.w	#$30,(a3)
+	bgt.w	.normalgoalie
+	cmpi.w	#$FFD0,(a3)
+	blt.w	.normalgoalie
+	cmpi.w	#$FF40,Ypos(a3)
+	bgt.w	.checkbottom
+	cmpi.w	#$FEFA,Ypos(a3)
+	blt.w	.normalgoalie
+	bra.w	.facepuck
 .checkbottom						;near the bottom net: face the puck
-	cmpi.w	#$C0,Ypos(a3)			;y below $C0?
-	blt.w	.normalgoalie			;yes: normal goalie
-	cmpi.w	#$106,Ypos(a3)			;y above $106?
-	bgt.w	.normalgoalie			;yes: normal goalie
+	cmpi.w	#$C0,Ypos(a3)
+	blt.w	.normalgoalie
+	cmpi.w	#$106,Ypos(a3)
+	bgt.w	.normalgoalie
 .facepuck							;in the crease: turn toward the puck
-	movem.w	d0-d1,-(sp)				;save registers
-	move.w	(puckx).w,d0			;puck x
-	sub.w	(a3),d0					;minus goalie x
-	move.w	(pucky).w,d1			;puck y
-	sub.w	Ypos(a3),d1				;minus goalie y
-	cmp.w	#$10,d0					;dx beyond +$10?
-	bgt.w	.usevtoa				;yes: use vtoa
-	cmp.w	#$FFF0,d0				;dx beyond -$10?
-	blt.w	.usevtoa				;yes: use vtoa
-	cmp.w	#$10,d1					;dy beyond +$10?
-	bgt.w	.usevtoa				;yes: use vtoa
-	cmp.w	#$FFF0,d1				;dy beyond -$10?
-	blt.w	.usevtoa				;yes: use vtoa
-	move.w	facedir(a3),d0			;puck is close: keep the facing
-	bra.w	.checkadjust			;go on
+	movem.w	d0-d1,-(sp)
+	move.w	(puckx).w,d0
+	sub.w	(a3),d0
+	move.w	(pucky).w,d1
+	sub.w	Ypos(a3),d1
+	cmp.w	#$10,d0
+	bgt.w	.usevtoa
+	cmp.w	#$FFF0,d0
+	blt.w	.usevtoa
+	cmp.w	#$10,d1
+	bgt.w	.usevtoa
+	cmp.w	#$FFF0,d1
+	blt.w	.usevtoa
+	move.w	facedir(a3),d0
+	bra.w	.checkadjust
 .usevtoa							;direction to the puck
-	bsr.w	vtoa					;direction from (dx, dy)
+	bsr.w	vtoa
 .checkadjust						;turn one step toward it (sflags4 bit 0 keeps the direction)
-	btst	#0,(sflags4).w			;sflags4 bit 0 set?
-	bne.w	.adjustkeepdir			;yes: keep the direction
-	bsr.w	AdjustFacingDirection	;turn one step toward d0
-	movem.w	(sp)+,d0-d1				;restore registers
-	bra.w	.setready				;ready stance
+	btst	#0,(sflags4).w
+	bne.w	.adjustkeepdir
+	bsr.w	AdjustFacingDirection
+	movem.w	(sp)+,d0-d1
+	bra.w	.setready
 .adjustkeepdir						;pop the d0-d1 saved above
-	movem.w	(sp)+,d0-d1				;restore registers
-	cmp.w	#8,d0					;d0 = 8 (no direction)?
-	beq.w	.setready				;yes: ready stance
-	movem.w	d0-d1,-(sp)				;save registers
-	bsr.w	AdjustFacingDirection	;turn one step toward d0
-	movem.w	(sp)+,d0-d1				;restore registers
+	movem.w	(sp)+,d0-d1
+	cmp.w	#8,d0
+	beq.w	.setready
+	movem.w	d0-d1,-(sp)
+	bsr.w	AdjustFacingDirection
+	movem.w	(sp)+,d0-d1
 .setready							;ready stance unless a save animation runs
-	move.w	#SPAgready,d1			;d1 = the ready animation
-	btst	#pf2aip,pflags2(a3)		;animation in progress?
-	bne.w	.exit					;yes: done
-	bsr.w	SetSPA					;set the animation
-	cmp.w	#8,d0					;d0 = 8 (no direction)?
-	bne.w	.playermove				;no: move
-	tst.w	position(a3)			;goalie position?
-	bne.w	.playermove				;no: move
-	btst	#pfjoycon,pflags(a3)	;human controlled?
-	beq.w	.playermove				;no: move
-	move.w	d0,-(sp)				;save d0
-	move.w	Ypos(a3),d0				;d0 = y
-	btst	#pfgoal,pflags(a3)		;pfgoal set?
-	beq.w	.topstay				;no: keep the sign
-	neg.w	d0						;flip the sign
+	move.w	#SPAgready,d1
+	btst	#pf2aip,pflags2(a3)
+	bne.w	.exit
+	bsr.w	SetSPA
+	cmp.w	#8,d0
+	bne.w	.playermove
+	tst.w	position(a3)
+	bne.w	.playermove
+	btst	#pfjoycon,pflags(a3)
+	beq.w	.playermove
+	move.w	d0,-(sp)
+	move.w	Ypos(a3),d0
+	btst	#pfgoal,pflags(a3)
+	beq.w	.topstay
+	neg.w	d0
 .topstay							;stay at the spot
-	cmp.w	#$D8,d0					;y below $D8?
-	blt.w	.stopandrestore			;yes: stop and restore
-	move.w	(a3),d0					;d0 = x
-	cmp.w	#$20,d0					;beyond +$20?
-	bgt.w	.stopandrestore			;yes: stop and restore
-	cmp.w	#$FFE0,d0				;beyond -$20?
-	blt.w	.stopandrestore			;yes: stop and restore
-	move.w	(sp)+,d0				;restore d0
-	jsr	(stopna2).l					;stop
-	bra.w	.playermove				;move
+	cmp.w	#$D8,d0
+	blt.w	.stopandrestore
+	move.w	(a3),d0
+	cmp.w	#$20,d0
+	bgt.w	.stopandrestore
+	cmp.w	#$FFE0,d0
+	blt.w	.stopandrestore
+	move.w	(sp)+,d0
+	jsr	(stopna2).l
+	bra.w	.playermove
 .stopandrestore						;stop and restore the direction
-	jsr	(stopna2).l					;stop
-	move.w	(sp)+,d0				;restore d0
+	jsr	(stopna2).l
+	move.w	(sp)+,d0
 .playermove							;accelerate in d0
-	move.w	d0,d2					;d2 = direction
-	bra.w	playeracc				;accelerate
+	move.w	d0,d2
+	bra.w	playeracc
 .normalgoalie						;out of the crease: normal goalie skating
-	move.w	#SPAgready,d1			;d1 = the ready animation
-	btst	#pfjoycon,pflags(a3)	;human controlled?
-	beq.w	.goalieacc2				;no: goalieacc2
-	btst	#pfnc,pflags(a3)		;pfnc set?
-	bne.w	.cgl					;yes: glide check
-	cmp.w	#8,d0					;d0 = 8 (no direction)?
-	bne.w	.turnskater				;no: turn
-	tst.w	position(a3)			;goalie position?
-	bne.w	.cgl					;no: glide check
-	move.w	d0,-(sp)				;save d0
-	move.w	Ypos(a3),d0				;d0 = y
-	btst	#pfgoal,pflags(a3)		;pfgoal set?
-	beq.w	.topstop				;no: keep the sign
-	neg.w	d0						;flip the sign
+	move.w	#SPAgready,d1
+	btst	#pfjoycon,pflags(a3)
+	beq.w	.goalieacc2
+	btst	#pfnc,pflags(a3)
+	bne.w	.cgl
+	cmp.w	#8,d0
+	bne.w	.turnskater
+	tst.w	position(a3)
+	bne.w	.cgl
+	move.w	d0,-(sp)
+	move.w	Ypos(a3),d0
+	btst	#pfgoal,pflags(a3)
+	beq.w	.topstop
+	neg.w	d0
 .topstop							;stop at the spot
-	cmp.w	#$D8,d0					;y below $D8?
-	blt.w	.restoreidle			;yes: restore
-	move.w	(a3),d0					;d0 = x
-	cmp.w	#$20,d0					;beyond +$20?
-	bgt.w	.restoreidle			;yes: restore
-	cmp.w	#$FFE0,d0				;beyond -$20?
-	blt.w	.restoreidle			;yes: restore
-	move.w	(sp)+,d0				;restore d0
-	bsr.w	stopna					;stop
-	bra.w	.cgl					;glide check
+	cmp.w	#$D8,d0
+	blt.w	.restoreidle
+	move.w	(a3),d0
+	cmp.w	#$20,d0
+	bgt.w	.restoreidle
+	cmp.w	#$FFE0,d0
+	blt.w	.restoreidle
+	move.w	(sp)+,d0
+	bsr.w	stopna
+	bra.w	.cgl
 .restoreidle						;restore the direction, then the glide check
-	move.w	(sp)+,d0				;restore d0
-	bra.w	.cgl					;glide check
+	move.w	(sp)+,d0
+	bra.w	.cgl
 .turnskater							;d0 <> 8
-	bra.w	.d1						;turn one step
+	bra.w	.d1
 .goalieacc2							;pfjoycon clear
-	andi.w	#$F,d0					;keep 4 bits
-	cmp.w	#7,d0					;7 or less?
-	ble.w	.d1						;yes: turn
-	cmp.w	#9,d0					;9?
-	bne.w	.cgl					;no: glide check
-	move.w	Xvel(a3),d0				;x velocity
-	or.w	Yvel(a3),d0				;or y velocity
-	beq.w	.cgl					;not moving: glide check
-	jmp	stopna2						;stop
+	andi.w	#$F,d0
+	cmp.w	#7,d0
+	ble.w	.d1
+	cmp.w	#9,d0
+	bne.w	.cgl
+	move.w	Xvel(a3),d0
+	or.w	Yvel(a3),d0
+	beq.w	.cgl
+	jmp	stopna2
 .cgl								;not moving: ready / glide animation unless one runs
-	btst	#pf2aip,pflags2(a3)		;animation in progress?
-	beq.w	SetSPA					;no: set the animation
+	btst	#pf2aip,pflags2(a3)
+	beq.w	SetSPA
 .exit								;exit (also the end of the code above)
-	rts								;done
+	rts
 .d1									;d0 = turn needed: one step a frame
-	sub.w	facedir(a3),d0			;minus the current facing
-	beq.w	.d11					;already facing it: skate
-	neg.w	d0						;negate
-	andi.w	#4,d0					;keep bit 2
-	lsr.w	#1,d0					;to bit 1
-	subq.w	#1,d0					;-1 or +1
-	add.w	facedir(a3),d0			;plus the facing
-	andi.w	#7,d0					;0 to 7
-	move.w	d0,facedir(a3)			;new facing
+	sub.w	facedir(a3),d0
+	beq.w	.d11
+	neg.w	d0
+	andi.w	#4,d0
+	lsr.w	#1,d0
+	subq.w	#1,d0
+	add.w	facedir(a3),d0
+	andi.w	#7,d0
+	move.w	d0,facedir(a3)
 .d11								;facing set
-	move.w	#SPAgskate,d1			;d1 = the skate animation
-	bsr.w	SetSPA					;set the animation
-	move.w	facedir(a3),d2			;d2 = facing
-	bra.w	playeracc				;accelerate
+	move.w	#SPAgskate,d1
+	bsr.w	SetSPA
+	move.w	facedir(a3),d2
+	bra.w	playeracc
 noturn0								;doplayeracc when the wanted direction needs no turn (.ftab entry 0). d0 =
 									;direction minus facedir, times 2
 	moveq	#2,d4					;d4 = 2 forwards, 6 when skating backwards
