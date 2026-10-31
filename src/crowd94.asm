@@ -4,21 +4,21 @@
 
 LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (ReadCrowdRecord
 									;into the buffer at ThreeStars), $50 when none. Called from StartGame
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(HomeTeam).w,d1
-	ext.l	d1
-	movea.l	#recordbuf,a0
-	jsr	(ReadCrowdRecord).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	move.w	(HomeTeam).w,d1			;d1 = home team
+	ext.l	d1						;extend d1
+	movea.l	#recordbuf,a0			;a0 = record buffer
+	jsr	(ReadCrowdRecord).l			;read the crowd record
 	move.b	crpeak(a0),d0			;the arena's loudest crowd so far
 	beq.w	.none					;no record yet: use $50
-	andi.w	#$FF,d0
-	bra.w	.ex
+	andi.w	#$FF,d0					;keep the low byte
+	bra.w	.ex						;continue
 .none								;no record: $50 dB
-	move.w	#$50,d0
+	move.w	#$50,d0					;d0 = $50
 .ex									;CrowdRecord = record or $50
-	move.w	d0,(CrowdRecord).w
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	d0,(CrowdRecord).w		;store CrowdRecord
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 Crowd_Noise							;The crowd meter each frame: crowd noise on / off (sflags5 bit 7) from
 									;CwdExciteLvl against
 									;CrowdRecord / CrowdAvg, and every $14 ticks CurCrowdMeter (sqrt(level *
@@ -247,33 +247,33 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the list at
 									;homehotplayer), a1 = tmstruct. Called from UpdateScoutingDisplay (the
 									;MATCHUPS text)
-	movem.l	d0/a0,-(sp)
-	movea.l	#homehotplayer,a0
-	move.w	(homehotidx).w,d0
-	add.w	d0,d0
+	movem.l	d0/a0,-(sp)				;save d0 and a0
+	movea.l	#homehotplayer,a0		;a0 = home hot player list
+	move.w	(homehotidx).w,d0		;d0 = index
+	add.w	d0,d0					;double for word index
 	move.w	0(a0,d0.w),d1			;the next entry of the list
 	cmpi.w	#0,(homehotidx).w		;index stays 0 when already 0 or more
-	bge.w	.x
-	addq.w	#1,(homehotidx).w
+	bge.w	.x						;branch taken: 0 or more, keep the index
+	addq.w	#1,(homehotidx).w		;advance the index
 .x									;(the index never moves past entry 0)
-	movem.l	(sp)+,d0/a0
-	movea.l	#tmstruct,a1
-	rts
+	movem.l	(sp)+,d0/a0				;restore d0 and a0
+	movea.l	#tmstruct,a1			;a1 = home team struct
+	rts								;return
 NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a1 = awtmstruct.
 									;Called from UpdateScoutingDisplay
-	movem.l	d0/a0,-(sp)
-	movea.l	#awayhotplayer,a0
-	move.w	(awayhotidx).w,d0
-	add.w	d0,d0
+	movem.l	d0/a0,-(sp)				;save d0 and a0
+	movea.l	#awayhotplayer,a0		;a0 = away hot player list
+	move.w	(awayhotidx).w,d0		;d0 = index
+	add.w	d0,d0					;double for word index
 	move.w	0(a0,d0.w),d1			;d1 = the player
 	cmpi.w	#0,(awayhotidx).w		;0 or more?
-	bge.w	.x
-	addq.w	#1,(awayhotidx).w
+	bge.w	.x						;branch taken: 0 or more, keep the index
+	addq.w	#1,(awayhotidx).w		;advance the index
 .x									;pop the d0/a0 saved above
-	movem.l	(sp)+,d0/a0
-	movea.l	#awtmstruct,a1
-	rts
-	rts
+	movem.l	(sp)+,d0/a0				;restore d0 and a0
+	movea.l	#awtmstruct,a1			;a1 = away team struct
+	rts								;return
+	rts								;return
 BuildHotColdLists					;Build the hot / cold player lists of both teams (SortHotColdStarters,
 									;CopyHottestPlayer, CopyColdestPlayer). Called from ScoutingReport
 	clr.w	(awayhotidx).w			;away hot list empty
@@ -347,34 +347,34 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	rts
 NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldplayer), a1 =
 									;tmstruct. Called from UpdateScoutingDisplay
-	movem.l	d0/a0,-(sp)
-	movea.l	#homecoldplayer,a0
-	move.w	(homecoldidx).w,d0
-	add.w	d0,d0
+	movem.l	d0/a0,-(sp)				;save d0 and a0
+	movea.l	#homecoldplayer,a0		;a0 = home cold player list
+	move.w	(homecoldidx).w,d0		;d0 = index
+	add.w	d0,d0					;double for word index
 	move.w	0(a0,d0.w),d1			;d1 = the player
 	cmpi.w	#0,(homecoldidx).w		;index stays 0 when already 0 or more
-	bge.w	.x
-	addq.w	#1,(homecoldidx).w
+	bge.w	.x						;branch taken: 0 or more, keep the index
+	addq.w	#1,(homecoldidx).w		;advance the index
 .x									;(the index never moves past entry 0)
-	movem.l	(sp)+,d0/a0
-	movea.l	#tmstruct,a1
-	rts
+	movem.l	(sp)+,d0/a0				;restore d0 and a0
+	movea.l	#tmstruct,a1			;a1 = home team struct
+	rts								;return
 NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer), a1 =
 									;awtmstruct.
 									;Called from UpdateScoutingDisplay
-	movem.l	d0/a0,-(sp)
-	movea.l	#awaycoldplayer,a0
-	move.w	(awaycoldidx).w,d0
-	add.w	d0,d0
+	movem.l	d0/a0,-(sp)				;save d0 and a0
+	movea.l	#awaycoldplayer,a0		;a0 = away cold player list
+	move.w	(awaycoldidx).w,d0		;d0 = index
+	add.w	d0,d0					;double for word index
 	move.w	0(a0,d0.w),d1			;d1 = the player
 	cmpi.w	#0,(awaycoldidx).w		;index stays 0 when already 0 or more
-	bge.w	.x
-	addq.w	#1,(awaycoldidx).w
+	bge.w	.x						;branch taken: 0 or more, keep the index
+	addq.w	#1,(awaycoldidx).w		;advance the index
 .x									;(the index never moves past entry 0)
-	movem.l	(sp)+,d0/a0
-	movea.l	#awtmstruct,a1
-	rts
-	rts
+	movem.l	(sp)+,d0/a0				;restore d0 and a0
+	movea.l	#awtmstruct,a1			;a1 = away team struct
+	rts								;return
+	rts								;return
 CopyHottestPlayer					;Copy the hottest player of TempBuffer to the list at a0
 	movem.l	d0-d1/a0-a1,-(sp)		;save registers
 	movea.l	#TempBuffer,a1			;a1 = sorted list
@@ -388,16 +388,16 @@ CopyHottestPlayer					;Copy the hottest player of TempBuffer to the list at a0
 	movem.l	(sp)+,d0-d1/a0-a1		;restore registers
 	rts								;done
 CopyColdestPlayer					;Copy the coldest player (TempBuffer+10) to the list at a0
-	movem.l	d0/a0-a1,-(sp)
+	movem.l	d0/a0-a1,-(sp)			;save registers
 	movea.l	#TempBuffer+10,a1		;the last pair is the coldest
-	move.w	#0,d0
+	move.w	#0,d0					;d0 = 0
 .copy								;byte 0 = 0, byte 1 = player
-	clr.b	(a0)+
-	move.b	(a1),(a0)+
-	tst.w	-(a1)
+	clr.b	(a0)+					;byte 0 = 0
+	move.b	(a1),(a0)+				;byte 1 = player
+	tst.w	-(a1)					;back up one word
 	dbf	d0,.copy					;loop
-	movem.l	(sp)+,d0/a0-a1
-	rts
+	movem.l	(sp)+,d0/a0-a1			;restore registers
+	rts								;return
 CompareHotColdTotals				;Compare the teams' hot / cold totals (GetHotColdTotal into TempWord1 /
 									;TempWord2): awayhotter = 1 when the away total is
 									;higher; d0 = -1, $22 or $23 by the difference (ScoutingReport text

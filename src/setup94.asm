@@ -168,14 +168,14 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	rts								;done
 setupIceRinkPal						;Copy the ice rink palettes (pal 0&1, 16 longs) to palfadenew. Called from
 									;setupice, setupice_highlight and the stats screens
-	movea.l	#Rinktilelist,a0
+	movea.l	#Rinktilelist,a0		;a0 = rink tile list
 	adda.l	(a0),a0					;palette offset in the map header
-	moveq	#$F,d0
-	movea.w	#(palfadenew-M68K_RAM),a1
+	moveq	#$F,d0					;loop count of 16
+	movea.w	#(palfadenew-M68K_RAM),a1	;a1 = palfadenew
 .ipal								;copy the rink palettes
 	move.l	(a0)+,(a1)+				;16 longs = palettes 0 and 1
-	dbf	d0,.ipal
-	rts
+	dbf	d0,.ipal					;loop for the other longs
+	rts								;return
 setupEASportsMap					;Decompress the easn logo tiles (EASportsMap+8) to vram at EASNcset.
 									;Called
 									;from setupice, setupice_highlight
@@ -602,30 +602,30 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	rts
 resetplstuff						;reset team variables/and players on both teams. Called from puckfaceoff2,
 									;puckpenshot and StartHL2
-	movem.l	d0-d2/a0-a3,-(sp)
-	movea.w	#(tmstruct-M68K_RAM),a2
-	bsr.w	.top
-	movea.w	#(awtmstruct-M68K_RAM),a2
-	bsr.w	.top
-	movem.l	(sp)+,d0-d2/a0-a3
-	rts
+	movem.l	d0-d2/a0-a3,-(sp)		;save registers
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
+	bsr.w	.top					;reset that team
+	movea.w	#(awtmstruct-M68K_RAM),a2	;a2 = away team struct
+	bsr.w	.top					;reset that team
+	movem.l	(sp)+,d0-d2/a0-a3		;restore registers
+	rts								;return
 .top								;local subroutine
 	bclr	#tmfoside,tmflags(a2)	;clear team offside bit
-	moveq	#5,d2
-	movea.w	tmsort(a2),a3
+	moveq	#5,d2					;loop count of 6
+	movea.w	tmsort(a2),a3			;a3 = first sorted player
 .loop								;each player of the team
-	clr.b	pflags2(a3)
-	tst.w	position(a3)
-	bmi.w	.next
+	clr.b	pflags2(a3)				;clear pflags2
+	tst.w	position(a3)			;test the position
+	bmi.w	.next					;branch taken: negative, next player
 	move.w	#SPAglide,d1			;92 $346
 	bsr.w	SetSPA					;set the glide animation
-	clr.w	impact(a3)
-	clr.b	nopuck(a3)
+	clr.w	impact(a3)				;clear impact
+	clr.b	nopuck(a3)				;clear nopuck
 	andi.b	#$C2,pflags(a3)			;2^pfteam + 2^pfgoal +2^pfna, pflags
 .next								;next player
-	adda.w	#SCstruct,a3
+	adda.w	#SCstruct,a3			;step to next player struct
 	dbf	d2,.loop					;next player
-	rts
+	rts								;return
 clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
 									;(tmHotCold, saved to
 									;homehotcoldsave / awayhotcoldsave and back) and tmstruct+tmgoalie /
@@ -670,17 +670,17 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	st	(awtmstruct+tmpdst+$34).w	;away tmpdst entry -1
 setteams							;Use hometeam/visteam to set team structures (InitTeamStructure for each).
 									;Falls in from clearTeamStats, also called from DrawMatchupBitmaps
-	movem.l	d0/a0-a2,-(sp)
-	movea.w	#(tmstruct-M68K_RAM),a2
-	move.w	(HomeTeam).w,d0
+	movem.l	d0/a0-a2,-(sp)			;save registers
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
+	move.w	(HomeTeam).w,d0			;d0 = home team
 	move.w	#(SortCords-M68K_RAM),tmsort(a2)	;home players: the first 6 sort objects
-	bsr.w	InitTeamStructure
-	movea.w	#(awtmstruct-M68K_RAM),a2
-	move.w	(VisTeam).w,d0
+	bsr.w	InitTeamStructure		;initialize the team structure
+	movea.w	#(awtmstruct-M68K_RAM),a2	;a2 = away team struct
+	move.w	(VisTeam).w,d0			;d0 = visiting team
 	move.w	#(SortCords-M68K_RAM)+(6*SCstruct),tmsort(a2)	;away players: the next 6 sort objects
-	bsr.w	InitTeamStructure
-	movem.l	(sp)+,d0/a0-a2
-	rts
+	bsr.w	InitTeamStructure		;initialize the team structure
+	movem.l	(sp)+,d0/a0-a2			;restore registers
+	rts								;return
 InitTeamStructure					;Set up team struct a2 for team d0: store the team number (tmteam), the
 									;team data address (tmdata), and copy 7 of the 8 line sets to tmlines.
 									;OptLine Off / Auto: line 1 (the no-line-change line) and lines 3-8;
@@ -1031,43 +1031,43 @@ PlayoffScreen_doscores				;Print best of 7 wins "t-b" for game struct a2 at prin
 	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
 	bra.w	print					;print it
 PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (ArrowsMap) at printx/printy
-	movem.l	d0-d7/a0-a3,-(sp)
-	movea.l	#ArrowsMap,a0
+	movem.l	d0-d7/a0-a3,-(sp)		;save registers
+	movea.l	#ArrowsMap,a0			;a0 = arrows map
 	movea.l	a0,a1					;a1 = map header
 	adda.l	(a0),a0					;a0 = arrow frames
 	adda.l	jimdata(a1),a1			;a1 = map data
-	movea.w	#null,a2
-	clr.w	d1
-	moveq	#2,d2
-	moveq	#$17,d3
-	move.w	(ExtraChars).w,d4
-	moveq	#0,d5
-	bsr.w	dobitmap
-	movem.l	(sp)+,d0-d7/a0-a3
-	rts
+	movea.w	#null,a2				;no sprite attributes
+	clr.w	d1						;d1 = 0
+	moveq	#2,d2					;d2 = 2
+	moveq	#$17,d3					;d3 = $17
+	move.w	(ExtraChars).w,d4		;d4 = ExtraChars
+	moveq	#0,d5					;d5 = 0
+	bsr.w	dobitmap				;draw the bitmap
+	movem.l	(sp)+,d0-d7/a0-a3		;restore registers
+	rts								;return
 PlayoffScreen_doteam				;Draw team block d1 (team*2) from the TeamBlocks map (TeamBlocksmap) at
 									;printx/printy; the user's team (potreeteam entry of potree) is
 									;highlighted (printa $6000)
-	movem.l	d0-d7/a0-a3,-(sp)
+	movem.l	d0-d7/a0-a3,-(sp)		;save registers
 	movea.w	#(potree-M68K_RAM),a0	;teams in the tree
 	move.w	(potreeteam).w,d0		;the user's team entry
-	move.b	0(a0,d0.w),d0
-	add.b	d0,d0
+	move.b	0(a0,d0.w),d0			;d0 = team in the tree
+	add.b	d0,d0					;double it
 	cmp.b	d0,d1					;this block?
-	bne.w	.nohi
-	move.w	#$6000,(printa).w
+	bne.w	.nohi					;branch taken: not this block, skip
+	move.w	#$6000,(printa).w		;printa = $6000
 .nohi								;the team that won the round highlighted
 	movea.l	#TeamBlocksmap,a1		;a1 = map header of the team blocks
-	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
-	clr.w	d0
-	move.w	(a1),d2
-	moveq	#2,d3
-	moveq	#2,d4
-	moveq	#0,d5
-	bsr.w	dobitmap
-	movem.l	(sp)+,d0-d7/a0-a3
-	rts
+	adda.l	jimdata(a1),a1			;a1 = map data
+	movea.w	#null,a2				;no sprite attributes
+	clr.w	d0						;d0 = 0
+	move.w	(a1),d2					;d2 = map width
+	moveq	#2,d3					;d3 = 2
+	moveq	#2,d4					;d4 = 2
+	moveq	#0,d5					;d5 = 0
+	bsr.w	dobitmap				;draw the bitmap
+	movem.l	(sp)+,d0-d7/a0-a3		;restore registers
+	rts								;return
 VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite table, write
 									;$FEA0+DispAttribCtr to the hscroll, cramfade. Always Vcount+1,
 									;p_music_vblank, rte
