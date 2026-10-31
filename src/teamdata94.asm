@@ -56,10 +56,9 @@ TeamList							;List Pointer Table Start. Team number = index (ANH 0 ... WPG 25,
 	dc.l	AllStarsEast			;26 ASE
 	dc.l	AllStarsWest			;27 ASW
 
-NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList (26)
-	IF NumofTeams<>NumTeams
-		inform	3,"TeamList needs one entry per team"
-	ENDIF
+NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList
+NumTeams	=	NumofTeams			;same count; the rest of the code uses this name. ram94.asm
+									;checks it against ASW+1 once the team numbers are defined.
 Playerdata	=	0					;record offset of the word offset to the player data (.pld)
 Palettedata	=	2					;record offset of the word offset to the palettes (.pad)
 Teamname	=	4					;record offset of the word offset to the team name (.tn)
@@ -1774,6 +1773,8 @@ Anaheim								;ANH
 .ar									;arena
 	String	'Pond'
 
+PlayoffRows equ 32					;playoffseats rows (NewPO picks one at random)
+PlayoffRowTeams equ 16				;teams per playoffseats row
 playoffseats						;32 rows of 16 team numbers (PlayoffRows by
 									;PlayoffRowTeams). Not one entry per team.
 									;NewPO picks a row at random, then finds the chosen team in that row.

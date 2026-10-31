@@ -248,13 +248,14 @@ WSH equ 24
 WPG equ 25
 ASE equ 26
 ASW equ 27
-; NumTeams includes the two all-star teams, which stay last. NumPlayoffTeams is the first
-; all-star number: a new playoff team is inserted before ASE and both all-star numbers move up.
-NumTeams equ ASW+1
+; NumTeams includes the two all-star teams, which stay last (defined from TeamList in
+; teamdata94.asm, included before this file). NumPlayoffTeams is the first all-star
+; number: a new playoff team is inserted before ASE and both all-star numbers move up.
+	IF NumTeams<>ASW+1
+		inform	3,"TeamList needs one entry per team"
+	ENDIF
 NumPlayoffTeams equ ASE
 RosterSlots equ 26
-PlayoffRows equ 32
-PlayoffRowTeams equ 16
 ; Save RAM layout (retail addresses). Crowd records are NumTeams blocks of CrowdRecBytes at
 ; CrowdRecBase and must end before the records block; see docs/EXPANDING_THE_ROM.md.
 CrowdRecBase equ $B60
