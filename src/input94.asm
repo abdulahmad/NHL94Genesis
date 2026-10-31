@@ -430,35 +430,35 @@ doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else sk
 	bra.w	doplayeracc				;skate
 doinput_onetimer					;a3 is set for a one-timer: C (bit 5) starts the one-timer shot, else
 									;skate
-	move.w	(TempWord1).w,d0
-	btst	#pf3onetimer,pflags3(a3)
-	bne.w	rtss7
-	btst	#5,d1
-	beq.w	doplayeracc
-	movem.l	d7-a0,-(sp)
-	move.w	(lastplayer).w,d7
-	asl.w	#7,d7
-	movea.l	#SortCords,a0
-	adda.w	d7,a0
-	tst.w	position(a0)
-	movem.l	(sp)+,d7-a0
-	beq.w	burst
-	movem.w	d7,-(sp)
-	move.w	SCnum(a3),d7
-	cmp.w	(passReceiverPlayerNum).w,d7
-	movem.w	(sp)+,d7
-	bne.w	burst
-	tst.w	(puckc).w
-	bpl.w	burst
-	jsr	(PuckOnAttackHalf).l
-	beq.w	burst
-	move.w	d0,-(sp)
-	move.w	d4,(inputjoy).w
-	move.w	(joypuckcarrier).w,(TmpJoyPuckCarrier).w
+	move.w	(TempWord1).w,d0		;d0 = TempWord1
+	btst	#pf3onetimer,pflags3(a3)	;already a one-timer?
+	bne.w	rtss7					;yes: ignore
+	btst	#5,d1					;C pressed?
+	beq.w	doplayeracc				;no: skate
+	movem.l	d7-a0,-(sp)				;save registers
+	move.w	(lastplayer).w,d7		;d7 = last player
+	asl.w	#7,d7					;times $80, the object size
+	movea.l	#SortCords,a0			;a0 = sort objects
+	adda.w	d7,a0					;a0 = last player
+	tst.w	position(a0)			;goalie?
+	movem.l	(sp)+,d7-a0				;restore registers (flags kept)
+	beq.w	burst					;yes: burst
+	movem.w	d7,-(sp)				;save d7
+	move.w	SCnum(a3),d7			;d7 = SCnum of a3
+	cmp.w	(passReceiverPlayerNum).w,d7	;the pass receiver?
+	movem.w	(sp)+,d7				;restore d7 (flags kept)
+	bne.w	burst					;no: burst
+	tst.w	(puckc).w				;puck carried?
+	bpl.w	burst					;yes: burst
+	jsr	(PuckOnAttackHalf).l		;puck on the attack half?
+	beq.w	burst					;no: burst
+	move.w	d0,-(sp)				;save d0
+	move.w	d4,(inputjoy).w			;input into inputjoy
+	move.w	(joypuckcarrier).w,(TmpJoyPuckCarrier).w	;puck carrier pad to TmpJoyPuckCarrier
 	move.w	#$23,d0					;assonetimer
-	jsr	(assreplace).l
-	move.w	(sp)+,d0
-	rts
+	jsr	(assreplace).l				;switch the replay to assonetimer
+	move.w	(sp)+,d0				;restore d0
+	rts								;done
 doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot by the
 									;buttons
 	bsr.w	checkob
