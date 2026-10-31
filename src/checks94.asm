@@ -2264,106 +2264,106 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	move.w	#$1F,d0					;puckpenshot
 	bra.w	assreplace
 SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Team
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#tmstruct,a0
-	tst.w	(BA_Team).w
-	beq.w	.hometeam
-	movea.l	#awtmstruct,a0
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#tmstruct,a0			;home team
+	tst.w	(BA_Team).w				;BA_Team 0?
+	beq.w	.hometeam				;yes: home
+	movea.l	#awtmstruct,a0			;away team
 .hometeam							;team struct chosen
-	move.w	#0,d1
-	move.w	#$FFFF,d6
-	move.w	#$FFFF,d5
-	movea.l	tmdata(a0),a2
-	adda.w	(a2),a2
+	move.w	#0,d1					;player index 0
+	move.w	#$FFFF,d6				;best rating so far: none
+	move.w	#$FFFF,d5				;best index so far: none
+	movea.l	tmdata(a0),a2			;a2 = the team data
+	adda.w	(a2),a2					;a2 = the first player entry
 .playerloop							;loop
-	cmpi.w	#2,(a2)
-	beq.w	.doneplayers
-	adda.w	(a2),a2
-	move.w	d1,d7
-	asl.w	#1,d7
-	move.b	pldstick(a2),d0
-	andi.w	#$F,d0
-	cmp.b	#1,d0
-	ble.w	.nextplayer
-	btst	#0,(gmode2).w
-	bne.w	.setskaterscnum
-	cmpi.w	#$FFFE,tmpdst(a0,d7.w)
-	beq.w	.scorecandidate
-	cmpi.w	#$FFFF,tmpdst(a0,d7.w)
-	bne.w	.nextplayer
+	cmpi.w	#2,(a2)					;end marker (2)?
+	beq.w	.doneplayers			;yes: all players checked
+	adda.w	(a2),a2					;a2 = this player's data
+	move.w	d1,d7					;d7 = index
+	asl.w	#1,d7					;times 2: tmpdst offset
+	move.b	pldstick(a2),d0			;d0 = stick byte
+	andi.w	#$F,d0					;low nibble
+	cmp.b	#1,d0					;1 or less?
+	ble.w	.nextplayer				;yes: skip him
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	bne.w	.setskaterscnum			;yes: use the chosen skater
+	cmpi.w	#$FFFE,tmpdst(a0,d7.w)	;state $FFFE (bench)?
+	beq.w	.scorecandidate			;yes: candidate
+	cmpi.w	#$FFFF,tmpdst(a0,d7.w)	;state $FFFF (ice)?
+	bne.w	.nextplayer				;no: skip him
 .scorecandidate						;on the bench or ice: rate this player as a shooter
-	clr.w	d3
-	clr.w	d0
-	move.b	pldweight(a2),d0
-	andi.w	#$F,d0
-	add.w	d0,d3
-	move.b	pldlegspd(a2),d0
-	andi.w	#$F,d0
-	add.w	d0,d3
-	move.b	pldlegspd(a2),d0
-	andi.w	#$F0,d0
-	lsr.w	#4,d0
-	add.w	d0,d3
-	move.b	pldaidef(a2),d0
-	andi.w	#$F,d0
-	add.w	d0,d3
-	move.b	pldaidef(a2),d0
-	andi.w	#$F0,d0
-	lsr.w	#4,d0
-	add.w	d0,d3
-	move.b	pldstick(a2),d0
-	andi.w	#$F,d0
-	add.w	d0,d3
-	move.b	pldstick(a2),d0
-	andi.w	#$F0,d0
-	lsr.w	#4,d0
-	add.w	d0,d3
-	move.b	pldendur(a2),d0
-	andi.w	#$F0,d0
-	lsr.w	#4,d0
-	add.w	d0,d3
-	move.b	pldpass(a2),d0
-	andi.w	#$F0,d0
-	lsr.w	#4,d0
-	add.w	d0,d3
-	cmp.w	(BA_Skater_Offset).w,d1
-	bne.w	.comparebest
-	move.w	#$7FFF,d3
+	clr.w	d3						;d3 = 0
+	clr.w	d0						;d0 = 0
+	move.b	pldweight(a2),d0		;weight byte
+	andi.w	#$F,d0					;low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldlegspd(a2),d0		;legspd byte
+	andi.w	#$F,d0					;low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldlegspd(a2),d0		;legspd byte
+	andi.w	#$F0,d0					;high nibble
+	lsr.w	#4,d0					;to the low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldaidef(a2),d0			;aidef byte
+	andi.w	#$F,d0					;low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldaidef(a2),d0			;aidef byte
+	andi.w	#$F0,d0					;high nibble
+	lsr.w	#4,d0					;to the low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldstick(a2),d0			;stick byte
+	andi.w	#$F,d0					;low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldstick(a2),d0			;stick byte
+	andi.w	#$F0,d0					;high nibble
+	lsr.w	#4,d0					;to the low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldendur(a2),d0			;endur byte
+	andi.w	#$F0,d0					;high nibble
+	lsr.w	#4,d0					;to the low nibble
+	add.w	d0,d3					;add to rating
+	move.b	pldpass(a2),d0			;pass byte
+	andi.w	#$F0,d0					;high nibble
+	lsr.w	#4,d0					;to the low nibble
+	add.w	d0,d3					;add to rating
+	cmp.w	(BA_Skater_Offset).w,d1	;the skater chosen before?
+	bne.w	.comparebest			;no: compare
+	move.w	#$7FFF,d3				;yes: rate him highest
 .comparebest						;compare with the best
-	cmp.w	d6,d3
-	blt.w	.nextplayer
-	move.w	d3,d6
-	move.w	d1,d5
+	cmp.w	d6,d3					;below the best so far?
+	blt.w	.nextplayer				;yes: skip him
+	move.w	d3,d6					;new best rating
+	move.w	d1,d5					;new best index
 	bra.w	*+4
 .nextplayer							;next roster player
-	addq.l	#pldsize,a2
-	addq.w	#1,d1
-	cmp.w	#$1A,d1
-	blt.w	.playerloop
+	addq.l	#pldsize,a2				;next player entry
+	addq.w	#1,d1					;next index
+	cmp.w	#$1A,d1					;$1A players?
+	blt.w	.playerloop				;no: loop
 .doneplayers						;all players checked
-	tst.w	d5
-	bmi.w	.noeligible
-	move.w	d5,(BA_Skater_Offset).w
+	tst.w	d5						;anyone found?
+	bmi.w	.noeligible				;no: none eligible
+	move.w	d5,(BA_Skater_Offset).w	;remember the skater
 .setskaterscnum						;set the skater SCnum
-	move.w	#0,(BA_Sktr_SCnum).w
-	tst.w	(BA_Team).w
-	beq.w	.loadskater
-	move.w	#6,(BA_Sktr_SCnum).w
+	move.w	#0,(BA_Sktr_SCnum).w	;SCnum 0 for the home team
+	tst.w	(BA_Team).w				;BA_Team 0?
+	beq.w	.loadskater				;yes: keep it
+	move.w	#6,(BA_Sktr_SCnum).w	;SCnum 6 for the away team
 .loadskater							;load the skater
-	move.w	(BA_Sktr_SCnum).w,d0
-	asl.w	#7,d0
-	movea.l	#SortCords,a3
-	adda.w	d0,a3
-	move.w	(BA_Skater_Offset).w,d3
-	bra.w	.eligible
+	move.w	(BA_Sktr_SCnum).w,d0	;d0 = SCnum
+	asl.w	#7,d0					;times $80, the object size
+	movea.l	#SortCords,a3			;a3 = sort objects
+	adda.w	d0,a3					;a3 = the skater's object
+	move.w	(BA_Skater_Offset).w,d3	;d3 = his roster offset
+	bra.w	.eligible				;found him
 .noeligible							;d5 negative
-	move.w	#$FFFF,d0
-	bra.w	.exit
+	move.w	#$FFFF,d0				;d0 = -1
+	bra.w	.exit					;done
 .eligible							;found a skater: d0 = 1
-	move.w	#1,d0
+	move.w	#1,d0					;d0 = 1
 .exit								;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 ; puck start for penalty shot/shootout
 puckpenshot							;puck start for a penalty shot or shootout: on the first call (pfna) black
 									;the screen and set up the shot
