@@ -257,25 +257,25 @@ stop_current_song					;Stop the song in progress: free the first slot whose poin
 	rts
 ReadJoyData							;read the pads every vblank. With FourWayPlay, pads 1-4 through the 4 way
 									;adaptor (ReadPad4Way1 ...
-									;ReadPad4Way4) to pad4way1-pad4way4, else pads 1 and 2 (ReadPad1,
+									;ReadPad4Way4) to PadRaw1-PadRaw4, else pads 1 and 2 (ReadPad1,
 									;ReadPad2)
 	movem.l	d1/a0,-(sp)
 	tst.w	(FourWayPlay).w			;4-way play?
 	beq.w	.0
 	bsr.s	ReadPad4Way1
-	move.b	d0,(pad4way1).w
+	move.b	d0,(PadRaw1).w
 	bsr.s	ReadPad4Way2
-	move.b	d0,(pad4way2).w
+	move.b	d0,(PadRaw2).w
 	bsr.w	ReadPad4Way3
-	move.b	d0,(pad4way3).w
+	move.b	d0,(PadRaw3).w
 	bsr.w	ReadPad4Way4
-	move.b	d0,(pad4way4).w
+	move.b	d0,(PadRaw4).w
 	bra.w	.x
 .0									;FourWayPlay = 0
 	bsr.w	ReadPad1
-	move.b	d0,(pad4way1).w
+	move.b	d0,(PadRaw1).w
 	bsr.w	ReadPad2
-	move.b	d0,(pad4way2).w
+	move.b	d0,(PadRaw2).w
 .x									;exit: restore the registers
 	movem.l	(sp)+,d1/a0
 	rts
