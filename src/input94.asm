@@ -91,7 +91,7 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	move.w	d4,(inputjoy).w			;input into inputjoy
 	move.w	(joypuckcarrier).w,(TmpJoyPuckCarrier).w	;puck carrier pad to TmpJoyPuckCarrier
 	move.w	#$23,d0					;assonetimer
-	jsr	(assreplace).l				;switch the replay to assonetimer
+	jsr	(assreplace).l				;assreplace: switch to assonetimer
 	movem.l	(sp)+,d0-d2/a0/a3		;restore registers
 	rts								;done
 .noot								;pop the d0-d2/a0/a3 saved above
@@ -456,7 +456,7 @@ doinput_onetimer					;a3 is set for a one-timer: C (bit 5) starts the one-timer 
 	move.w	d4,(inputjoy).w			;input into inputjoy
 	move.w	(joypuckcarrier).w,(TmpJoyPuckCarrier).w	;puck carrier pad to TmpJoyPuckCarrier
 	move.w	#$23,d0					;assonetimer
-	jsr	(assreplace).l				;switch the replay to assonetimer
+	jsr	(assreplace).l				;assreplace: switch to assonetimer
 	move.w	(sp)+,d0				;restore d0
 	rts								;done
 doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot by the
