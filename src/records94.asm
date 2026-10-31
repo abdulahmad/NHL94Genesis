@@ -913,7 +913,7 @@ RecordHoldersScreen					;"Record Holders" menu item (menu lists): the save RAM r
 	bsr.w	PrintRecordTitles		;first page: titles and win records
 	bsr.w	PrintWinRecords
 .loop								;each frame: read the pad
-	jsr	(vcountwait).l				;wait for the next frame
+	jsr	(MenuWaitVblank).l				;wait for the next frame
 	jsr	(getpzjoy).l				;read the pads
 	jsr	(ProcessInputWithRepeat).l
 	btst	#7,d3					;start?

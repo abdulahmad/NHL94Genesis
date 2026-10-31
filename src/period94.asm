@@ -459,7 +459,7 @@ StatsReport							;"Game Statistics" menu item (menu lists): both
 	bsr.w	DisplayStats
 	bsr.w	PrintStatScrollArrows
 .loop								;loop
-	jsr	(vcountwait).l				;wait for the frame
+	jsr	(MenuWaitVblank).l				;wait for the frame
 	jsr	(getpzjoy).l				;read the pads
 	btst	#7,d3					;start?
 	beq.w	.1

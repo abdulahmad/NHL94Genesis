@@ -20,17 +20,12 @@
 	include	stats94.asm				;$0080D4 scores, line editor, roster, scoring and penalty summaries,
 									;player stats, crowd meter, goalie select
 	include	replay94.asm			; $009FD0 replay
-	include	logic94.asm				; $00A9D6 updateplayers, updateanim, freezewindow, checkwindow
-	include	input94.asm				; $00B0E8 controller input and line changes
-	include	assign94.asm			; $00C67A player assignments
-	include	checks94.asm			; $00D09C checks before the display code
-	include	video94.asm				; $010E88 display helpers
+	include	logic94.asm				; $00A9D6 player update, input, assignments
+	include	middle94.asm			; $010E88 shared helpers, decompress, print
 	include	penalty94.asm			; $011F2C penalties, scoreboard, highlights
 	include	collide94.asm			; $0138AC puck, players, walls, fights, goals
-	include	display94.asm			; $015D9A vblank, clock, crowd, rink scroll
-	include	setup94.asm				; $0169FA ice setup, intermission, playoff screen
-	include	attract94.asm			; $017A18  NEW in 94: EA Sports attract screen
-	include	data94.asm				; $017AC8 option helpers, menus, season results
+	include	video94.asm				; $015D9A vblank, clock, crowd, rink scroll
+	include	setup94.asm				; $0169FA ice setup, attract, menus, playoff data
 	include	tables94.asm			; $018CFC crowd frames, asstab, penalties, playoff tree, menus
 	include	sram94.asm				; $01A050 save data
 	include	sound\sound94.asm		; $01A264 sound driver, then the sound data

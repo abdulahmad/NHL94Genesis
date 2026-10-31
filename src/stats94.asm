@@ -43,7 +43,7 @@ ShowScores							;"Scores" screen: the other games of the night in gstruct over 
 	move.w	d0,(SelectedPlayerIdx).w
 	bsr.w	DrawScrollArrows
 .loop								;each frame: read the pad
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	getpzjoy				;read the pads
 	btst	#7,d3					;start: leave
 	bne.w	ExitStatsScreen
@@ -173,7 +173,7 @@ LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slo
 	bsr.w	DrawTeamScreen
 	bsr.w	DrawLineIcons
 .loop								;each frame: read the pad
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	getpzjoy				;read the pads
 	jsr	(ProcessInputWithRepeat).l
 	btst	#7,d1					;start: exit menu
@@ -252,7 +252,7 @@ SelectLinePlayer					;Line editor: C pressed on slot TestList. Build the list of
 	clr.w	d0						;draw the list with the cursor
 	bra.w	.vert
 .loop								;each frame: read the pad
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	getpzjoy				;read the pads
 	jsr	(ProcessInputWithRepeat).l
 	btst	#7,d1					;start: back to slot cursor
@@ -534,7 +534,7 @@ LineEditorExit						;Line editor: start pressed. Run the exit menu
 	String	CC_SetMap,2
 	bsr.w	Pausemode_top
 .loop								;each frame: run the exit menu
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	getpzjoy				;read the pads
 	jsr	(ProcessInputWithRepeat).l
 	move.w	d1,-(sp)
@@ -696,7 +696,7 @@ TeamRosterScreen					;"Team Roster" screen for team a2: pages of players (Displa
 	bsr.w	UpdatePlayerListScroll	;set the scroll register for it
 	clr.w	(PlayerScrollCtr).w
 .loop								;each frame: read the pad
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 .pad								;(not branched to)
 	bsr.w	getpzjoy				;read the pads
 .repeat								;(not branched to)
@@ -1017,7 +1017,7 @@ ScoringSummaryScreen				;"Scoring Summary": one 4 row entry per goal (6 bytes ea
 	move.w	d0,(SelectedPlayerIdx).w
 	move.w	(VertLineScrolling).w,d0	;start position
 .toend								;loop
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	UpdateScoringScroll
 	move.w	(VertLineScrolling).w,d0	;position
 	subq.w	#2,d0
@@ -1025,7 +1025,7 @@ ScoringSummaryScreen				;"Scoring Summary": one 4 row entry per goal (6 bytes ea
 	bge.s	.toend
 	clr.w	(PlayerScrollCtr).w
 .loop								;loop
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	getpzjoy				;read the pads
 	btst	#7,d3					;start: leave
 	bne.w	ExitStatsScreen
@@ -1194,7 +1194,7 @@ PenaltySummaryScreen				;"Penalty Summary": one 3 row entry per penalty (4 bytes
 	move.w	d0,(SelectedPlayerIdx).w
 	move.w	(VertLineScrolling).w,d0	;start position
 .toend								;scroll down to the end of the list first
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	UpdatePenaltyScroll		;set scroll to d0, drawing entries as they come into view
 	move.w	(VertLineScrolling).w,d0	;position
 	subq.w	#2,d0
@@ -1202,7 +1202,7 @@ PenaltySummaryScreen				;"Penalty Summary": one 3 row entry per penalty (4 bytes
 	bge.s	.toend					;not there yet
 	clr.w	(PlayerScrollCtr).w
 .loop								;each frame: read the pad
-	bsr.w	vcountwait				;wait for the next frame
+	bsr.w	MenuWaitVblank				;wait for the next frame
 	bsr.w	getpzjoy				;d3 = held buttons of the pad that paused
 	btst	#7,d3					;start?
 	bne.w	ExitStatsScreen			;Start
@@ -1412,7 +1412,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	bsr.w	DrawStatsList
 	bsr.w	DrawStatsListArrows
 .loop								;loop
-	bsr.w	vcountwait
+	bsr.w	MenuWaitVblank
 	bsr.w	getpzjoy				;d1 = new presses, d3 = held
 	btst	#7,d3
 	bne.w	ExitStatsScreen			;Start

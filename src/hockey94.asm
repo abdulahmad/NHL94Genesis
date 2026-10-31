@@ -440,7 +440,7 @@ Pausemode							;Game is in pause mode now
 	beq.w	.0
 	movea.l	#PauseText2,a0			;alternate item list
 .0	bsr.w	Pausemode_top			;build menu from list a0, draw routine a1
-.loop	bsr.w	vcountwait			;loop
+.loop	bsr.w	MenuWaitVblank			;loop
 	bsr.w	getpzjoy
 	jsr	(showclock).l
 	jsr	(ProcessInputWithRepeat).l

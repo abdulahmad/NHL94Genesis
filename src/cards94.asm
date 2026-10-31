@@ -1642,7 +1642,7 @@ PlayerCards							;"Player Cards" menu item (menu lists), with save RAM only: th
 .draw								;draw the first card of that side
 	bsr.w	DrawPlayerCard
 .loop								;each frame: read the pad
-	jsr	(vcountwait).l				;wait for the next frame
+	jsr	(MenuWaitVblank).l				;wait for the next frame
 	jsr	(getpzjoy).l				;read the pads
 	jsr	(ProcessInputWithRepeat).l
 	btst	#7,d3					;start?

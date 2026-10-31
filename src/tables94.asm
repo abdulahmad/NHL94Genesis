@@ -1,4 +1,4 @@
-;	Data tables, included from nhl94.asm after data94.asm: the crowd frame table, the player logic
+;	Data tables, included from nhl94.asm after setup94.asm: the crowd frame table, the player logic
 ;	assignment table (asstab), PenaltyList and its records, the playoff tree layout, the line editor and
 ;	roster attribute column lists, the menu item lists and other small tables. Code addresses here are labels.
 ;

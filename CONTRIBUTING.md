@@ -97,11 +97,14 @@ A comment-only or rename-only change must not change a single byte. Never commit
   It is included after `frames94.asm`, as in 93: `main94.asm` sets `Stack = $FFFFF6` for the reset vector and
   `ram94.asm` redefines `Stack` with `=` as the game stack, so `Stack` is not an `rs` label.
 - `tables94.asm` holds the data tables (crowd frames, asstab, penalty list, playoff tree, menu item lists),
-  included after `data94.asm` like 93 `tables93.asm`. Table-entry equates (`adefo = (*-asstab)/4`,
+  included after `setup94.asm` like 93 `tables93.asm`. Table-entry equates (`adefo = (*-asstab)/4`,
   `PenEOP equ (*-Penaltylist)`) live on the table, not in `ram94.asm`.
-- `logic94.asm` holds `updateplayers` through `checkwindow`, included after `replay94.asm` like 93
-  `logic93.asm` (those labels sit at the start of logic93). `assign94.asm` and `checks94.asm` stay
-  separate for now.
+- `logic94.asm` holds `updateplayers` through `dirtab` (player update, input, assignments), included after
+  `replay94.asm` like 93 `logic93.asm`.
+- `middle94.asm` holds the shared helpers (`UnpackNibbles` through `AddTeamBlock`, plus decompress and print),
+  included after `logic94.asm` like 93 `middle93.asm`.
+- `video94.asm` holds the game-play vblank path (`VBlank` through `KillCrowd`), like 93 `video93.asm`.
+- `setup94.asm` holds rink setup, the EA Sports attract screen, and the menu / playoff data.
 - Names and routines that exist in 93 use the 93 name; a routine that is new in 94 says so in its comment.
 
 ## 7. Commits and pull requests

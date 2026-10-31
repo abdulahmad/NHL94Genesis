@@ -37,7 +37,7 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 
 94-only files that 93 did not have:
 
-- `attract94.asm` for `EASportsScreen`, `HiScoreScreen`, and `LoadDefMenuOptions`
+- `setup94.asm` holds `EASportsScreen` with the rink setup and menu / playoff data
 - `sram94.asm` starts at `InitSaveRAM`
 
 ## Build
