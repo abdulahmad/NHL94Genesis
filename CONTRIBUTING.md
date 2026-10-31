@@ -99,6 +99,9 @@ A comment-only or rename-only change must not change a single byte. Never commit
 - `tables94.asm` holds the data tables (crowd frames, asstab, penalty list, playoff tree, menu item lists),
   included after `data94.asm` like 93 `tables93.asm`. Table-entry equates (`adefo = (*-asstab)/4`,
   `PenEOP equ (*-Penaltylist)`) live on the table, not in `ram94.asm`.
+- `logic94.asm` holds `updateplayers` through `checkwindow`, included after `replay94.asm` like 93
+  `logic93.asm` (those labels sit at the start of logic93). `assign94.asm` and `checks94.asm` stay
+  separate for now.
 - Names and routines that exist in 93 use the 93 name; a routine that is new in 94 says so in its comment.
 
 ## 7. Commits and pull requests

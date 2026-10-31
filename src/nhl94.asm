@@ -20,6 +20,7 @@
 	include	stats94.asm				;$0080D4 scores, line editor, roster, scoring and penalty summaries,
 									;player stats, crowd meter, goalie select
 	include	replay94.asm			; $009FD0 replay
+	include	logic94.asm				; $00A9D6 updateplayers, updateanim, freezewindow, checkwindow
 	include	input94.asm				; $00B0E8 controller input and line changes
 	include	assign94.asm			; $00C67A player assignments
 	include	checks94.asm			; $00D09C checks before the display code
