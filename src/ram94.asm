@@ -344,7 +344,7 @@ CC_Font2Pal3Pri equ $8E				;-$72: map 2, palette 3, priority
 CC_Font3Pal3Pri equ $8D				;-$73: map 3, palette 3, priority
 ;Whole-String markers that list / page readers test (a String of just $FF / -1 is the word
 ;$FF00 at strtext, negative)
-CC_ListEnd equ $FF					;String CC_ListEnd ends a menu item list (data94.asm)
+CC_ListEnd equ $FF					;String CC_ListEnd ends a menu item list (table94.asm)
 CC_PageEnd equ -1					;String CC_PageEnd ends a credits page; two in a row end
 									;the credits (teamdata94.asm)
 fodropx	rs.w	1
@@ -684,40 +684,6 @@ VisTeam	rs.w	1
 TeamBlockMap	rs.w	56			;Map word buffer for CopyTeamBlockMapData and PutTeamBlock
 MaxPen equ 32						;penalties kept in PenBuf
 PenBuf	rs.w	MaxPen+1
-; Penalty numbers (word offsets into Penaltylist) for AddPenalty
-PenEOP	equ	$2
-PenEOG	equ	$4
-PenOOP	equ	$6
-PenGhold	equ	$8
-PenWhistle	equ	$A
-PenIcing	equ	$C
-PenGoal	equ	$E
-PenOffsides	equ	$10
-PenRoughing2	equ	$12
-PenNoText	equ	$14
-PenCharging	equ	$16
-PenSlashing	equ	$18
-PenRoughing	equ	$1A
-PenCrossChk	equ	$1C
-PenHooking	equ	$1E
-PenTripping	equ	$20
-PenInterference	equ	$22
-PenHolding	equ	$24
-PenFighting	equ	$26
-PenFighting2	equ	$28
-PenInst	equ	$2A
-PenDelay	equ	$2C
-PenHookingPS	equ	$2E
-PenTrippingPS	equ	$30
-PenGhold2	equ	$32
-PenInterferencePS	equ	$34
-PenRoughingPS	equ	$36
-PenChargingPS	equ	$38
-PenCrossChkPS	equ	$3A
-PenSlashingPS	equ	$3C
-; Sprite object constants (92 names; the sso/ffo counts and size sit with sso and pads)
-collrad	equ	8						;collision radius of an object (objects collide within collrad*2)
-horoff	equ	197						;subtracted from the screen y in the horizontal rink view
 PenCntDwn	rs.w	1
 Penaltytimer	rs.w	1
 PBnum	rs.w	1

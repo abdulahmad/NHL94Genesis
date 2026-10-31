@@ -29,7 +29,8 @@
 	include	display94.asm			; $015D9A vblank, clock, crowd, rink scroll
 	include	setup94.asm				; $0169FA ice setup, intermission, playoff screen
 	include	attract94.asm			; $017A18  NEW in 94: EA Sports attract screen
-	include	data94.asm				; $017AC8 option helpers, menus, season results, string tables
+	include	data94.asm				; $017AC8 option helpers, menus, season results
+	include	table94.asm				; $018CFC crowd frames, asstab, penalties, playoff tree, menus
 	include	sram94.asm				; $01A050 save data
 	include	sound\sound94.asm		; $01A264 sound driver, then the sound data
 	include	graphics94.asm			; $04B5C0 graphics only

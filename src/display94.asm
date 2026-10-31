@@ -589,6 +589,9 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	swap	d0
 	ext.l	d0
 	rts
+
+horoff	equ	197						;subtracted from the screen y in the horizontal rink view (sfhor)
+
 checksso							;do graphics for sso structure: arrows for the players when they are off
 									;screen. Called from setvideo. a5 = dma list, a6 = sprite table, d6 = link
 									;counter. Returns on the horizontal rink. Includes the pads 3 and 4
@@ -987,7 +990,7 @@ find3d								;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d
 	beq.w	.nhor
 	exg	d0,d1
 	neg.w	d0
-	subi.w	#$C5,d1
+	subi.w	#horoff,d1
 	bra.w	.crange
 .nhor								;sfhor clear
 	sub.w	(Hpos).w,d0

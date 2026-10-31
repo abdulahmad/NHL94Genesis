@@ -1,5 +1,5 @@
 ; HOCKEY.BIN crowd frame table, file $2654C, 128 bytes.
-; The cartridge updatecrowdf_cd0 table (data94.asm). Loaded at $1B000 this is $4154C,
+; The cartridge updatecrowdf_cd0 table (table94.asm). Loaded at $1B000 this is $4154C,
 ; which is the pointer updatecrowdf uses. Four bands of frame/time words.
 ; No extra frames past the cartridge table.
 

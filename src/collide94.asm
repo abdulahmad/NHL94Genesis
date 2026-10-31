@@ -4,6 +4,8 @@
 
 ;Sort struct (SortCords, SCstruct each): the fields are named in ram94.asm.
 
+collrad	=	8						;collision radius of an object (objects collide within collrad*2)
+
 checkcoll							;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check wall
 									;collision (around the hot spot and the end of the stick) and player
 									;collisions, then move a3 in the OOlist sort order by its y. If a player
