@@ -296,23 +296,23 @@ getpzjoy							;read the joystick of the pad that paused. pads 3 and 4 when Four
 	beq.w	ReadJoy3
 	bra.w	ReadJoy4
 ShowReplayIcon						;Show the replay icon and start the $F0 frame replayicontimer timer
-	move.w	#$F0,(replayicontimer).w
+	move.w	#$F0,(replayicontimer).w	;start the icon timer
 	bsr.w	printz					;map at the icon
 	String	CC_Font3Pri,2,2
-	moveq	#$20,d0
-	moveq	#$55,d1
-	moveq	#8,d2
-	moveq	#4,d3
-	move.w	(rinkvrcset).w,d4
+	moveq	#$20,d0					;width $20
+	moveq	#$55,d1					;y $55
+	moveq	#8,d2					;d2 = 8
+	moveq	#4,d3					;d3 = 4
+	move.w	(rinkvrcset).w,d4		;d4 = rink character set
 	move.w	#0,d5					;no palette lines
-	movea.l	#Rinktilelist,a1
+	movea.l	#Rinktilelist,a1		;a1 = rink tile list
 	btst	#4,(sflags4).w			;check if reverse angle replay
-	beq.w	.0
+	beq.w	.0						;branch taken: normal angle, keep a1
 	movea.l	#RevRinkTilelist,a1		;reverse rink tile list
 .0									;normal or reverse rink tiles chosen
-	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
-	bra.w	dobitmap
+	adda.l	jimdata(a1),a1			;a1 = map data
+	movea.w	#null,a2				;no sprite attributes
+	bra.w	dobitmap				;draw the bitmap and return
 EraseReplayIcon						;Erase the 8 x 4 replay icon (replayicontimer timer ran out)
 	jsr	(printz).l					;map at the icon
 	String	CC_Font3Pri,2,2
@@ -321,19 +321,19 @@ EraseReplayIcon						;Erase the 8 x 4 replay icon (replayicontimer timer ran out
 	move.w	#$7FF,d2				;blank char
 	jmp	eraser
 ShowReplayBanner					;Show ReplayMap at 0,0 (16 x 11) and stop the replayicontimer timer
-	st	(replayicontimer).w
+	st	(replayicontimer).w			;stop the icon timer
 	bsr.w	printz					;map at the top left
 	String	CC_Font3Pri,2,0
-	moveq	#0,d0
-	moveq	#0,d1
-	moveq	#$10,d2
-	moveq	#$B,d3
-	move.w	(ExtraChars).w,d4
+	moveq	#0,d0					;d0 = 0
+	moveq	#0,d1					;d1 = 0
+	moveq	#$10,d2					;width $10
+	moveq	#$B,d3					;height $B
+	move.w	(ExtraChars).w,d4		;d4 = ExtraChars
 	move.w	#0,d5					;no palette lines
 	movea.l	#ReplayMap,a1
-	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
-	bra.w	dobitmap
+	adda.l	jimdata(a1),a1			;a1 = map data
+	movea.w	#null,a2				;no sprite attributes
+	bra.w	dobitmap				;draw the bitmap and return
 EraseReplayBanner					;Erase the 16 x 11 area ShowReplayBanner drew
 	jsr	(printz).l					;map at the top left
 	String	CC_Font3Pri,2,2
@@ -420,39 +420,39 @@ adda43								;a4 += replay frame size ($62), wrapping from replayend to M68K_RA
 	rts
 UpdateCameraPos						;Camera struct a5 = object a3 x/y (negated for the reverse angle),
 									;Hpos/Vpos clamped
-	movem.l	d0-d2,-(sp)
-	move.w	(a3),d0
+	movem.l	d0-d2,-(sp)				;save registers
+	move.w	(a3),d0					;d0 = object x
 	btst	#7,(sflags4).w			;reverse angle?
-	beq.w	.0
-	neg.w	d0
+	beq.w	.0						;branch taken: not reverse angle
+	neg.w	d0						;negate x
 .0									;X mirrored for reverse angle
-	move.w	d0,(a5)
-	move.w	Ypos(a3),d1
+	move.w	d0,(a5)					;store camera x
+	move.w	Ypos(a3),d1				;d1 = object y
 	btst	#7,(sflags4).w			;reverse angle?
-	beq.w	.2
-	neg.w	d1
+	beq.w	.2						;branch taken: not reverse angle
+	neg.w	d1						;negate y
 .2									;Y mirrored for reverse angle
-	move.w	d1,Ypos(a5)
+	move.w	d1,Ypos(a5)				;store camera y
 	cmp.w	#$3C,d0					;past $3C?
-	blt.w	.4
-	move.w	#$3C,d0
+	blt.w	.4						;branch taken: below $3C
+	move.w	#$3C,d0					;clamp to $3C
 .4									;X not past the right limit
 	cmp.w	#$FFC4,d0				;past -$3C?
-	bgt.w	.1
-	move.w	#$FFC4,d0
+	bgt.w	.1						;branch taken: above -$3C
+	move.w	#$FFC4,d0				;clamp to -$3C
 .1									;X inside the limits
-	move.w	d0,(Hpos).w
+	move.w	d0,(Hpos).w				;store Hpos
 	cmp.w	#$100,d1				;past $100?
-	blt.w	.5
-	move.w	#$100,d1
+	blt.w	.5						;branch taken: below $100
+	move.w	#$100,d1				;clamp to $100
 .5									;Y not past the top limit
 	cmp.w	#$FF38,d1				;past -$C8?
-	bgt.w	.3
-	move.w	#$FF38,d1
+	bgt.w	.3						;branch taken: above -$C8
+	move.w	#$FF38,d1				;clamp to -$C8
 .3									;Y inside the limits
-	move.w	d1,(Vpos).w
-	movem.l	(sp)+,d0-d2
-	rts
+	move.w	d1,(Vpos).w				;store Vpos
+	movem.l	(sp)+,d0-d2				;restore registers
+	rts								;return
 ; set flag for reverse replay setup if needed
 RevReplayAdj						;Set sflags4 bit 7 for a reverse angle replay, then fall into
 									;RestoreReplayFrame
@@ -620,27 +620,27 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	movem.l	(sp)+,d0-d2/a0/a6
 	rts
 ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
-	move.w	d0,-(sp)
-	move.w	#$3C,d0
+	move.w	d0,-(sp)				;save d0
+	move.w	#$3C,d0					;d0 = $3C
 	cmp.w	(Hpos).w,d0				;Hpos past it?
-	blt.w	.0
-	move.w	#$FFC4,d0
+	blt.w	.0						;branch taken: Hpos above $3C
+	move.w	#$FFC4,d0				;d0 = -$3C
 	cmp.w	(Hpos).w,d0				;Hpos inside?
-	ble.w	.1
+	ble.w	.1						;branch taken: Hpos inside
 .0									;Hpos past the limit: clamp
-	move.w	d0,(Hpos).w
+	move.w	d0,(Hpos).w				;store Hpos
 .1									;Hpos inside the limits
-	move.w	#$100,d0
+	move.w	#$100,d0				;d0 = $100
 	cmp.w	(Vpos).w,d0				;Vpos past it?
-	blt.w	.2
-	move.w	#$FF38,d0
+	blt.w	.2						;branch taken: Vpos above $100
+	move.w	#$FF38,d0				;d0 = -$C8
 	cmp.w	(Vpos).w,d0				;Vpos inside?
-	ble.w	.3
+	ble.w	.3						;branch taken: Vpos inside
 .2									;Vpos past the limit: clamp
-	move.w	d0,(Vpos).w
+	move.w	d0,(Vpos).w				;store Vpos
 .3									;Vpos inside the limits
-	move.w	(sp)+,d0
-	rts
+	move.w	(sp)+,d0				;restore d0
+	rts								;return
 ; called every frame to save replay events
 ; d7 = elapsed frames
 updatereplay						;called every frame to save replay events, d7 = elapsed frames

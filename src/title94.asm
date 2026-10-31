@@ -66,16 +66,16 @@ RandomSongs							;ChooseSong: the 8 songs for a random pick
 ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; sflags bit 4
 									;cleared, lastsfx = -1, recbpr = $FFFF0000. Called from Begin and
 									;GameSetUp
-	movem.l	d0-d1/a0,-(sp)
+	movem.l	d0-d1/a0,-(sp)			;save registers
 	move.l	#$100,d1				;all $100 bytes of line data
 	move.l	#LineDataBase,d0
 	movea.l	#databuffer,a0
-	jsr	(ReadSRAM).l
+	jsr	(ReadSRAM).l				;read SRAM into databuffer
 	bclr	#sfwrap,(sflags).w		;the SRAM routines leave these set: reset them
-	move.w	#$FFFF,(lastsfx).w
-	move.l	#M68K_RAM,(recbpr).w
-	movem.l	(sp)+,d0-d1/a0
-	rts
+	move.w	#$FFFF,(lastsfx).w		;lastsfx = -1
+	move.l	#M68K_RAM,(recbpr).w	;recbpr = M68K_RAM
+	movem.l	(sp)+,d0-d1/a0			;restore registers
+	rts								;return
 WriteLineData						;Write databuffer back to save RAM at LineDataBase (WriteSRAM,
 									;MakeSRAMChecksum); as ReadLineData after. Called from EncodePW and
 									;EncodeTeamLines
@@ -94,23 +94,23 @@ ClearWinRecords						;Clear bytes 8-$B of the 8 ThreeStars records and write the
 									;TeamRecBase (WriteSRAM, MakeSRAMChecksum). Called from
 									;RecordHoldersScreen
 									;(Record Holders)
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#recordbuf,a0
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#recordbuf,a0			;a0 = recordbuf
 	move.w	#7,d7					;8 user record blocks
 .loop								;clear the wins and games of each
-	clr.b	urwins(a0)
-	clr.b	urwins+1(a0)
-	clr.b	urgames(a0)
-	clr.b	urgames+1(a0)
+	clr.b	urwins(a0)				;clear wins high byte
+	clr.b	urwins+1(a0)			;clear wins low byte
+	clr.b	urgames(a0)				;clear games high byte
+	clr.b	urgames+1(a0)			;clear games low byte
 	adda.w	#$10,a0					;16 bytes per block
-	dbf	d7,.loop
+	dbf	d7,.loop					;loop for the other blocks
 	move.l	#TeamRecBase,d0			;write all $80 bytes back
-	move.l	#$80,d1
-	movea.l	#recordbuf,a0
-	jsr	(WriteSRAM).l
-	jsr	(MakeSRAMChecksum).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.l	#$80,d1					;length $80
+	movea.l	#recordbuf,a0			;a0 = recordbuf
+	jsr	(WriteSRAM).l				;write to SRAM
+	jsr	(MakeSRAMChecksum).l		;update the SRAM checksum
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of the skate path,
 									;NextPathPoint), turned by passdirlist for the bottom net. Called from
 									;shotdiradj
@@ -690,16 +690,16 @@ CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for 
 	rts
 TerminateLogName					;Unreferenced. The GetLogName String at lognametext, ended with 0 at
 									;namelength and its length word made even
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#lognametext,a1
-	bsr.w	GetLogName
-	move.w	(namelength).w,d0
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#lognametext,a1			;a1 = lognametext
+	bsr.w	GetLogName				;get the log name
+	move.w	(namelength).w,d0		;d0 = name length
 	move.b	#0,(a1,d0.w)			;end the name with 0
-	addq.w	#1,d0
+	addq.w	#1,d0					;plus 1
 	andi.w	#$FFFE,d0				;length rounded to even
-	move.w	d0,-2(a1)
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	d0,-2(a1)				;store the length word
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name), or an
 									;empty String for 0. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
@@ -1018,30 +1018,30 @@ CreditsWait							;Credits: wait for Vcount, run the clampcounter count down; st
 	rts
 VBlank_TitleScreen					;newTitleScreen vblank: line scroll table (SortCords) and Vscroll,
 									;sprites, cramfade, CreditsScrollStep, p_music_vblank
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	btst	#dfng,(disflags).w		;screen off?
 	bne.w	.1						;screen off: skip the DMA
-	movea.w	#(SortCords-M68K_RAM),a0
-	move.w	(VSCRLPM).w,d1
+	movea.w	#(SortCords-M68K_RAM),a0	;a0 = SortCords
+	move.w	(VSCRLPM).w,d1			;d1 = VSCRLPM
 	move.w	#$1C0,d0				;$1C0 bytes: the line scroll table
-	jsr	(DoDMA).l
-	movea.l	#Vdata,a0
-	move.l	#VSRAM_W,Vctrl-Vdata(a0)
+	jsr	(DoDMA).l					;DMA to VRAM
+	movea.l	#Vdata,a0				;a0 = VDP data port
+	move.l	#VSRAM_W,Vctrl-Vdata(a0)	;set VSRAM write address
 	move.w	(Vscroll).w,(a0)		;vertical scroll of the credits
-	movea.w	#(Satt-M68K_RAM),a0
-	move.w	(Sattsize).w,d0
+	movea.w	#(Satt-M68K_RAM),a0		;a0 = sprite attribute table
+	move.w	(Sattsize).w,d0			;d0 = Sattsize
 	beq.w	.0						;no sprites this frame
-	clr.w	(Sattsize).w
-	move.w	(VSPRITES).w,d1
-	jsr	(DoDMA).l
+	clr.w	(Sattsize).w			;clear Sattsize
+	move.w	(VSPRITES).w,d1			;d1 = VSPRITES
+	jsr	(DoDMA).l					;DMA to VRAM
 .0									;sprites done
-	jsr	(cramfade).l
+	jsr	(cramfade).l				;fade the colors
 .1									;drawing done (or skipped)
 	addq.w	#1,(Vcount).w			;count the frame
-	jsr	(CreditsScrollStep).l
-	jsr	(p_music_vblank).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rte
+	jsr	(CreditsScrollStep).l		;step the credits scroll
+	jsr	(p_music_vblank).l			;run the music vblank
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rte								;return from exception
 CreditsLineScroll					;Credits: the line scroll table at SortCords
 	movem.l	d0-d1,-(sp)
 	move.w	#$14,(Hscroll).w		;scroll step per update
@@ -1182,21 +1182,21 @@ LeadSongExit						;LeadSong exit
 	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
 									;teams' penalty slots (clrTmPdst). Called from clockcont_0
-	movem.l	d0/a0,-(sp)
+	movem.l	d0/a0,-(sp)				;save d0 and a0
 	clr.w	(PBnum).w				;no penalty box players
-	clr.w	(Penaltytimer).w
-	clr.w	(PenCntDwn).w
+	clr.w	(Penaltytimer).w		;clear Penaltytimer
+	clr.w	(PenCntDwn).w			;clear PenCntDwn
 	move.w	#$10,d0					;$11 longs
-	movea.l	#PenBuf,a0
+	movea.l	#PenBuf,a0				;a0 = PenBuf
 .loop								;clear PenBuf
-	clr.l	(a0)+
+	clr.l	(a0)+					;clear a long
 	dbf	d0,.loop					;loop
-	movea.l	#tmstruct,a0
-	bsr.w	clrTmPdst
-	movea.l	#awtmstruct,a0
-	bsr.w	clrTmPdst
-	movem.l	(sp)+,d0/a0
-	rts
+	movea.l	#tmstruct,a0			;a0 = home team struct
+	bsr.w	clrTmPdst				;clear the team penalty slots
+	movea.l	#awtmstruct,a0			;a0 = away team struct
+	bsr.w	clrTmPdst				;clear the team penalty slots
+	movem.l	(sp)+,d0/a0				;restore d0 and a0
+	rts								;return
 clrTmPdst							;Put all 26 players of team struct a0 on the bench (tmpdst -2), then the
 									;end word -1
 	move.w	#$19,d0					;19 = 25 decimal (max roster size)

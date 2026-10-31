@@ -85,30 +85,30 @@ PositionBoxesTop					;ClampPositionBox boxes, top net
 ClearGameStats						;Clear the game stats: shootoutstate (19 words), both team structs
 									;(tmstruct, awtmstruct), PenBuf, BA_PS_flags, sflags4 / F8 / FA and
 									;setupcardflags / featuredplayer. Called from GameSetUp
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#shootoutstate,a0
-	moveq	#$12,d0
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#shootoutstate,a0		;a0 = shootoutstate
+	moveq	#$12,d0					;loop count of 19
 .loop								;clear the shootout state
-	clr.w	(a0)+
-	dbf	d0,.loop
-	movea.l	#tmstruct,a0
-	move.w	#tmsize-1,d0
+	clr.w	(a0)+					;clear a word
+	dbf	d0,.loop					;loop for the other words
+	movea.l	#tmstruct,a0			;a0 = home team struct
+	move.w	#tmsize-1,d0			;loop count of tmsize words
 .loop2								;clear both team structs (tmsize words)
-	clr.w	(a0)+
-	dbf	d0,.loop2
-	movea.l	#PenBuf,a0
-	moveq	#$24,d0
+	clr.w	(a0)+					;clear a word
+	dbf	d0,.loop2					;loop for the other words
+	movea.l	#PenBuf,a0				;a0 = PenBuf
+	moveq	#$24,d0					;loop count of 37
 .loop3								;clear PenBuf
-	clr.w	(a0)+
-	dbf	d0,.loop3
+	clr.w	(a0)+					;clear a word
+	dbf	d0,.loop3					;loop for the other words
 	clr.w	(BA_PS_flags).w			;no penalty shot
-	clr.w	(sflags4).w
-	clr.w	(sflags6).w
+	clr.w	(sflags4).w				;clear sflags4
+	clr.w	(sflags6).w				;clear sflags6
 	clr.w	(gmode2).w				;game mode 2 cleared
 	clr.w	(setupcardflags).w		;no setup card flags
-	clr.w	(featuredplayer).w
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	clr.w	(featuredplayer).w		;clear featuredplayer
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite list
 									;arenaspritelist, see RunArenaAnim) to the sprite table a6 (d6 sprites, 64
 									;at most) for the pieces inside the view (Hpos / Vpos). Not in a reverse
@@ -234,14 +234,14 @@ PrintPlayerNameRight				;Print the name of player d0 of team a2 (FormatPlayerNam
 	rts
 SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String without its first 2
 									;characters (the length word moved up 2)
-	movem.l	d0-d7/a0/a2-a3,-(sp)
-	jsr	(FormatPlayerNumInitial).l
-	move.w	(a1),d0
-	subq.w	#2,d0
+	movem.l	d0-d7/a0/a2-a3,-(sp)	;save registers
+	jsr	(FormatPlayerNumInitial).l	;format the number and initial
+	move.w	(a1),d0					;d0 = string length
+	subq.w	#2,d0					;minus 2
 	move.w	d0,2(a1)				;2 characters shorter
 	addq.w	#2,a1					;length word moved up
-	movem.l	(sp)+,d0-d7/a0/a2-a3
-	rts
+	movem.l	(sp)+,d0-d7/a0/a2-a3	;restore registers
+	rts								;return
 	String	' . '
 PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (TeamLogoBitmaps,
 									;TeamLogoPalettes palettes), then the goals (matchup 0) or shots of each
@@ -526,32 +526,32 @@ rtsStatScroll						;rts of StatScrollRow / StatScrollRowEnd
 	rts
 PrintStatScrollArrows				;StatsReport scroll arrows (printz2): up ($7B) when VertLineScrolling > 0,
 									;down ($7D) when it is below matchupvis
-	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(printsmallz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetFont,1			;arrow font
 	tst.w	(VertLineScrolling).w	;at the top?
 	beq.w	.0						;at the top: none
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMapAndPosition,4,3,'&',8,CC_SetFont,1,'{'	;up arrow
-	bra.w	.1
+	bra.w	.1						;continue
 .0									;VertLineScrolling = 0
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMapAndPosition,4,3,'&',8,CC_SetFont,1,' '	;no up arrow
 .1									;up arrow done
-	move.w	(matchupvis).w,d0
+	move.w	(matchupvis).w,d0		;d0 = matchupvis
 	cmp.w	(VertLineScrolling).w,d0	;at the end?
 	beq.w	.2						;at the end: none
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMapAndPosition,4,3,'&',$1A,CC_SetFont,1,'}'	;down arrow
-	bra.w	.3
+	bra.w	.3						;continue
 .2									;d0 = VertLineScrolling
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMapAndPosition,4,3,'&',$1A,CC_SetFont,1,' '	;no down arrow
 .3									;down arrow done
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetFont				;normal font
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 DisplayStats						;Team logos (PutTeamBlock), then each
 									;TeamStatTextTbl row (TeamStatTextTblNoPen when penalties are off, OptPen)
 									;centred, with the home value at x $22 and the visitors' at x 9
