@@ -269,8 +269,8 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 	moveq	#ssonum-1,d0
 .ssotop								;each screen object
 	move.w	#$FFFF,oldframe(a3)		;screen objects not locked to scroll of screen
-	move.w	(a2)+,(a3)
-	move.w	(a2)+,2(a3)
+	move.w	(a2)+,Xcord(a3)
+	move.w	(a2)+,Ycord(a3)
 	move.w	(a2)+,frame(a3)
 	move.w	(a2)+,attribute(a3)
 	move.w	d4,VRchar(a3)			;first char of this object
@@ -805,7 +805,7 @@ Opening2							;reset the stack and clear the variables, then options (GameSetUp
 	movea.w	#(VSCRLPM-M68K_RAM),a0	;varstart
 .0									;loop
 	clr.l	(a0)+
-	cmpa.w	#(nibblebuffer+8-M68K_RAM),a0	;clear from VSCRLPM up to it
+	cmpa.w	#(varend-M68K_RAM),a0	;clear from VSCRLPM up to it
 	blt.s	.0
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
@@ -874,9 +874,9 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	move.l	(a1)+,-$40(a0)			;Titlemap2 palette -> pal 0
 	move.l	-$20(a0),(a0)+			;pal 1 -> pal 2
 	dbf	d0,.pal
-	move.w	d4,(energybarchars).w	;playoff sprite tiles start here
+	move.w	d4,(logochars).w	;playoff sprite tiles start here
 	bsr.w	DecompressGraphicsPlain	;playoff sprite tiles to vram
-	move.w	#$104,(clampcounter).w	;RAM reused by this screen
+	move.w	#$104,(logoslide).w	;RAM reused by this screen
 	move.w	#$A0,(playoffspritey).w
 	movea.l	#Vctrl,a0				;vdp control port
 	move.w	#VDPR_WINY+$02,(a0)		;window y position
@@ -942,7 +942,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d0						;fade to color 0
 	clr.w	d4
 	move.w	#$FFFF,(PlayerScrollCtr).w	;scroll step (RAM shared with the stats screens)
-	move.w	#1,(DispAttribCtr).w	;scroll position
+	move.w	#1,(playoffscroll).w	;scroll position
 	bsr.w	PlayoffScreen_scrup
 .input								;loop
 	bsr.w	waitxc1
@@ -971,7 +971,7 @@ PlayoffScreen_scrup					;Move the tree one step (PlayerScrollCtr) and stop on a 
 									;screen
 	move.w	(PlayerScrollCtr).w,d0
 	beq.w	rtss2
-	add.w	(DispAttribCtr).w,d0	;new position
+	add.w	(playoffscroll).w,d0	;new position
 	move.w	(gamelevel).w,d1		;page limit = gamelevel
 	cmp.w	#3,d1					;more than 3?
 	bls.w	.lim
@@ -983,7 +983,7 @@ PlayoffScreen_scrup					;Move the tree one step (PlayerScrollCtr) and stop on a 
 	neg.w	d1
 	cmp.w	d1,d0					;past it?
 	blt.w	rtss2
-	move.w	d0,(DispAttribCtr).w	;store the new position
+	move.w	d0,(playoffscroll).w	;store the new position
 	clr.w	(playoffspritex).w		;sprite x off screen
 	move.w	d0,d1					;sprite x = position + $100
 	addi.w	#$100,d1
@@ -1082,7 +1082,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	move.w	(VSCRLPM).w,d0
 	bsr.w	Vmaddr					;set the vram address
 	move.w	#$FEA0,d0				;hscroll = $FEA0 + position
-	add.w	(DispAttribCtr).w,d0
+	add.w	(playoffscroll).w,d0
 	move.w	d0,(a0)
 .nosat								;scroll set
 	bsr.w	cramfade
@@ -1122,7 +1122,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	movea.l	#ScoutTextScript,a1
 	move.w	(PlayerScrollCtr).w,d0	;offset into the script
 	bpl.w	.3						;inside a paragraph
-	clr.w	(DispAttribCtr).w
+	clr.w	(scoutcolumn).w
 	move.w	(SelectedPlayerIdx).w,d0	;TestList index
 	addq.w	#2,(SelectedPlayerIdx).w
 	movea.w	#(TestList-M68K_RAM),a0
@@ -1145,7 +1145,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .3									;line start found
 	lea	0(a1,d0.w),a2				;a2 = next character
 	move.w	#$A,(ScoutingReportTimer).w		;typing delay
-	move.w	(DispAttribCtr).w,d0
+	move.w	(scoutcolumn).w,d0
 	cmpi.b	#$5F,(a2)
 	beq.w	.29
 	cmpi.b	#$2B,(a2)
@@ -1222,12 +1222,12 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 .8									;scrolled when the box is full
 	bsr.w	printz					;map 1 at 9,4
 	String	CC_Font1,9,4
-	move.w	(DispAttribCtr).w,d0
+	move.w	(scoutcolumn).w,d0
 	add.w	d0,(printx).w			;x 9 + column
 	move.w	(VertLineScrolling).w,d0
 	add.w	d0,(printy).w			;y 4 + text line
 	bsr.w	print
-	add.w	d1,(DispAttribCtr).w
+	add.w	d1,(scoutcolumn).w
 	rts
 .9									;a2 = $40
 	jsr	(ScoutCrowdRecord).l
@@ -1323,7 +1323,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bra.w	.loop4					;print it
 ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrolling + 1; at 7
 									;lines, scroll the 8 rows up by vram dma (DoDMA_nd2)
-	clr.w	(DispAttribCtr).w
+	clr.w	(scoutcolumn).w
 	addq.w	#1,(VertLineScrolling).w
 	cmpi.w	#7,(VertLineScrolling).l	;past the box?
 	blt.w	rtss2

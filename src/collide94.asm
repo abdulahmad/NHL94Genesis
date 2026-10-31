@@ -1309,7 +1309,7 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home goal: ChooseSong
 	bne.w	.16
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#3,(SongIndex).w
+	move.w	#SngGoal,(SongIndex).w
 	jsr	(ChooseSong).l
 	move.w	#$78,(songdelay).w
 	move.w	(SongNum).w,-(sp)

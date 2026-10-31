@@ -883,8 +883,8 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03414567,$89ABCDEF		;remap table (/ or.l, a word dropped)
 	jsr	(defaultsprites_0).l
-	move.w	#$28,(SortCords+OldXpos).w
-	move.w	#$28,(SortCords+(6*SCstruct)+OldXpos).w
+	move.w	#$28,(SortCords+rosxoff).w
+	move.w	#$28,(SortCords+(6*SCstruct)+rosxoff).w
 	st	(tmstruct).w				;no home team block yet
 	st	(awtmstruct).w					;no visitors block yet
 	rts

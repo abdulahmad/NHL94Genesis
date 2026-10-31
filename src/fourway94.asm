@@ -7,13 +7,13 @@ Detect4WayPlay						;detect the 4 way play adaptor (EA 4 Way Play) on port 2: Fo
 	move.b	#$40,(IO_CT1_CTRL+1).l	;port 1: TH as output
 	move.b	#$43,(IO_CT2_CTRL+1).l	;port 2: TH, TR, TL as outputs
 	nop
-	move.b	#$7C,(IO_CT2_DATA+1).l	;port 2 out: select the adaptor ID
+	move.b	#$7C,(Joy2).l	;port 2 out: select the adaptor ID
 	nop
 	move.b	#$7F,(IO_CT2_CTRL+1).l	;port 2: all lines as outputs
 	nop
-	move.b	#$7C,(IO_CT2_DATA+1).l	;select the adaptor ID again
+	move.b	#$7C,(Joy2).l	;select the adaptor ID again
 	nop
-	move.b	(IO_CT1_DATA+1).l,d0	;the adaptor answers with port 1 lines 0-1 low
+	move.b	(Joy1).l,d0	;the adaptor answers with port 1 lines 0-1 low
 	andi.b	#3,d0					;lines 0-1
 	cmp.b	#0,d0					;both low?
 	bne.s	.none					;lines high: no adaptor
@@ -26,25 +26,25 @@ Detect4WayPlay						;detect the 4 way play adaptor (EA 4 Way Play) on port 2: Fo
 	move.w	#$100,(IO_Z80RES).l		;Z80 runs
 	rts
 ReadJoySwapPad1						;unused: read 4 way play pad 1 (ReadJoy1 with the pad word swapped in)
-	move.b	#0,(IO_CT2_DATA+1).l	;4 way play: select pad
+	move.b	#0,(Joy2).l	;4 way play: select pad
 	move.w	(pad4waysave1).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave1).w
 	rts
 ReadJoySwapPad2						;unused: the same for pad 2
-	move.b	#$10,(IO_CT2_DATA+1).l	;4 way play: select pad
+	move.b	#$10,(Joy2).l	;4 way play: select pad
 	move.w	(pad4waysave2).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave2).w
 	rts
 ReadJoySwapPad3						;unused: the same for pad 3
-	move.b	#$20,(IO_CT2_DATA+1).l	;4 way play: select pad
+	move.b	#$20,(Joy2).l	;4 way play: select pad
 	move.w	(pad4waysave3).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave3).w
 	rts
 ReadJoySwapPad4						;unused: the same for pad 4
-	move.b	#$30,(IO_CT2_DATA+1).l	;4 way play: select pad
+	move.b	#$30,(Joy2).l	;4 way play: select pad
 	move.w	(pad4waysave4).w,(pad4wayword).w
 	jsr	(ReadJoy1).l
 	move.w	(pad4wayword).w,(pad4waysave4).w

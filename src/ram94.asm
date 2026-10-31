@@ -15,7 +15,11 @@ Vctrl	equ	Vdata+4
 VRAM_W	equ	$40000000				;VDP command: VRAM write, address 0
 CRAM_W	equ	$C0000000				;VDP command: CRAM write, address 0
 VSRAM_W	equ	$40000010				;VDP command: VSRAM write, address 0
-HVcount	equ	$C00008					;horizontal / vertical counter
+;sprite sizes
+MaxSprites equ 64					;max sprites during game (64 because 32 col mode)
+
+refwidth equ 7						;width of ref.map frames
+refheight equ 8						;height of ref.map frames
 PAL_MODE equ 0						;VDP status bit 0 = PAL (50 Hz)
 ;VDP register write words for the control port (register number in the high byte): move.w
 ;#VDPR_MODE2+$74,(Vctrl)
@@ -48,13 +52,12 @@ IO_CT2_DATA equ $A10004
 IO_Z80BUS equ $A11100
 IO_Z80RES equ $A11200
 Z80_RAM equ $A00000
+Joy1 equ IO_CT1_DATA+1				;controller 1 data port (byte)
+Joy2 equ IO_CT2_DATA+1				;controller 2 data port (byte)
 Z80_YM2612 equ $A04000
 SaveRAM equ $200000					;battery save RAM (InitSaveRAM): $2000 bytes, the odd byte of each word.
 									;93 had a serial backup RAM port here (BackupRAM_Port)
 Stack	=	$FFFFFFFE				;game stack (Begin, StartPer, Opening2)
-
-;sprite sizes
-MaxSprites equ 64					;max sprites during game (64 because 32 col mode)
 
 ;joystick button equates (bit numbers)
 ubut equ 0							;up
@@ -65,46 +68,54 @@ bbut equ 4							;b button
 cbut equ 5							;c button
 abut equ 6							;a button
 sbut equ 7							;start button
+HVcount	equ	$C00008					;horizontal / vertical counter
 osflag equ 20000					;flag for off screen graphic ($4E20)
 
+;song numbers (SngTitle, SngEOP, SngScouting are song numbers)
+SngTitle equ $78
+SngEOP equ $79
+;Song slots (SongIndex, 93G names): ChooseSong takes byte SongIndex of the 6 song bytes of team HmTeam
+SngGoal equ 3						;home goal tune
+SngPeriodStart equ 0				;period start tune (StartPer)
+SngLateGame equ 5					;late game tune, once in the 3rd period
+SngPP equ 4							;home team ahead on players: power play tune (LeadSong)
+SngPPAway equ 1						;away team ahead on players (LeadSong); 94 only
+SngFaceoff equ 2					;face off tune, once per period; also the shootout song
+SngScouting equ $7A
 ;game sound effect numbers (sfx / song argument). 95 maps them through SfxTable
 SFXsiren equ $0
 SFXbeep1 equ $1
 SFXbeep2 equ $2
 SFXwhistle equ $3
 SFXhorn equ $4
-SFXshotwiff equ $5
-SFXstdef equ $6
-SFXpuckget equ $7
-SFXoooh equ $8
-SFXhithigh equ $9
-SFXhitlow equ $A
-SFXcrowdcheer equ $B
-SFXcrowdboo equ $C
-SFXoooh2 equ $D
-SFXbglass equ $E
-SFXhomewin equ $F					;home team won
 SFXpass equ $10						;4 variants, +0-3
 SFXshotbh equ $14					;+0-3
 SFXshotfh equ $18					;+0-3
-SFXcheck equ $1C					;+0-3
-SFXplayerwall equ $20
-SFXplayerwall2 equ $21
-SFXplayerwall3 equ $22
-SFXplayerwall4 equ $23
+SFXshotwiff equ $5
+SFXstdef equ $6
+SFXpuckget equ $7
 SFXpuckbody equ $24
-SFXpuckpost equ $25
-SFX26 equ $26
-SFX27 equ $27
 SFXpuckwall1 equ $28				;+0-3
 SFXpuckwall2 equ $29				;medium (92 SFXpuckwall2)
 SFXpuckwall3 equ $2A				;soft (92 SFXpuckwall3)
 SFXpuckwall4 equ $2B				;softest (new in 93)
+SFXbglass equ $E
 SFXpuckice equ $2C					;+0-3
-;song numbers
-SngTitle equ $78
-SngEOP equ $79
-SngScouting equ $7A
+SFXplayerwall equ $20
+SFXplayerwall2 equ $21
+SFXplayerwall3 equ $22
+SFXplayerwall4 equ $23
+SFXpuckpost equ $25
+SFX26 equ $26
+SFX27 equ $27
+SFXcheck equ $1C					;+0-3
+SFXhithigh equ $9
+SFXhitlow equ $A
+SFXcrowdcheer equ $B
+SFXcrowdboo equ $C
+SFXoooh equ $8
+SFXoooh2 equ $D
+SFXhomewin equ $F					;home team won
 goalline equ 176					;distance from blue line to goalline
 
 replaystart equ $FFFF0000			;start of ram area for replay frames, also the start of RAM
@@ -163,6 +174,12 @@ pbscnum equ 1						;byte: SCnum of the player
 pcx equ 0							;word: x coordinate
 pcframes equ 2						;word: frames
 pcsize equ 4
+; fofdata2 / fofdata: big faceoff sprites (4 bytes each: home center, visiting center, then fofdata = the ref)
+foframe equ 0						;word: frame
+foattr equ 2						;word: attribute (bit 11 x flip)
+fosize equ 4
+; PlList: 6 wanted roster players, then their positions
+plpos equ 6
 ; .pld player ratings: 8 bytes after each player's name String (92 setplayer field names; the
 ; teamdata94.asm legend letters in brackets; goalies use the low nibbles for saves)
 pldnum equ 0						;byte: jersey number, 2 BCD digits (un) -> rostnum
@@ -175,12 +192,6 @@ pldstick equ 5						;high nibble stickhandling stickhand, low nibble shot accura
 pldendur equ 6						;high nibble endurance, low nibble shoot / pass odds spodds (ey)
 pldpass equ 7						;high nibble passing passacc, low nibble aggression aggress (tm)
 pldsize equ 8
-; fofdata2 / fofdata: big faceoff sprites (4 bytes each: home center, visiting center, then fofdata = the ref)
-foframe equ 0						;word: frame
-foattr equ 2						;word: attribute (bit 11 x flip)
-fosize equ 4
-; PlList: 6 wanted roster players, then their positions
-plpos equ 6
 ; Save RAM records, read and written through recordbuf. Each record is a value, its holder, the
 ; opponent team and the opponent user (recordbuf, ram94.asm).
 ; User record block (TeamRecBase + user * 16)
@@ -286,6 +297,7 @@ BigFontchars	rs.w	1
 smallfontchars	rs.w	1
 smallfont2chars	rs.w	1
 energybarchars	rs.w	1
+logochars equ energybarchars		;reused: logo / cup sprite tiles on the title and playoff screens
 rinkvrcset	rs.w	1
 crowdvrcset	rs.w	1				;94 keeps the crowd tiles 1st vram char here
 faceoffvrcset	rs.w	1
@@ -345,6 +357,8 @@ repeatdelayframes	rs.w	1
 asv	rs.w	1
 lldisp	rs.w	1
 periodendtime	rs.w	1
+Xcord equ 0							;x and y words at the start of an sso object
+Ycord equ 2
 ;the sort object structure (SCstruct bytes each)
 Xpos equ $0
 attribute equ $4					;frame attribute switch bits
@@ -355,9 +369,9 @@ VRchar equ $12						;vram char for graphic
 Ypos equ $14
 Zpos equ $18
 OldXpos equ $1C
-ffosize equ OldXpos					;field objects tied to icerink scrolling (pads), OldXpos bytes each (92G)
 OldYpos equ $20
 OldZpos equ $24
+rosxoff equ OldXpos					;game setup: player sprite x offset from Xpos (optsetup94)
 Xvel equ $28
 Yvel equ $2A
 Zvel equ $2C
@@ -403,6 +417,9 @@ pf2lcm equ 3						;line change mode. 92 bit 5
 pf2pen equ 4						;player has caused a penalty. 92 bit 6
 pf2npc equ 5						;no player collision. 92 bit 7
 pf2inj equ 6						;player is injured (SPAfinjury animation, max speed 1/8).
+;player struct fields after handed's neighbours, not named in 93 (names from the 92/93/94 comments)
+pflags3 equ $64						;player flags 3 (92: not used)
+pf3oside equ 0						;offsides
 glitch equ $65						;counter to eliminate quick frame changes (de-glitch graphics)
 pnum equ $66						;player's team location number 0-22
 weight equ $67
@@ -417,10 +434,6 @@ rostnum equ $6F
 spodds equ $70
 stickhand equ $71
 endurance equ $72
-handed equ $76						;bit0 set is left handed
-;player struct fields after handed's neighbours, not named in 93 (names from the 92/93/94 comments)
-pflags3 equ $64						;player flags 3 (92: not used)
-pf3oside equ 0						;offsides
 pf3break equ 1						;on a breakaway
 pf3gctrl equ 2						;goalie control
 pf3onetimer equ 3					;doing a one-timer
@@ -430,8 +443,9 @@ aggress equ $73						;aggression (Agr; goalie: glove left)
 GGSleft equ aggress					;goalie glove save left (92 name; 92 put it on stickhand)
 fighting equ $74					;fighting (Fgt; from the Chk/Hnd byte, always even)
 checking equ $75					;checking (Chk)
-puckscnum equ 14					;puck is sort obj number 14
+handed equ $76						;bit0 set is left handed
 SortCords	rs.b	Sortobjs*SCstruct	;sort objects, SCstruct bytes each (93G); the puck is object puckscnum
+puckscnum equ 14					;puck is sort obj number 14
 puckx	equ	SortCords+(puckscnum*SCstruct)+Xpos	;puck x position in its sort object (93G)
 puckvx	equ	SortCords+(puckscnum*SCstruct)+Xvel	;puck x velocity
 pucky	equ	SortCords+(puckscnum*SCstruct)+Ypos	;puck y position
@@ -441,6 +455,7 @@ puckvz	equ	SortCords+(puckscnum*SCstruct)+Zvel	;puck z velocity
 puckx_nopuck	equ	SortCords+(puckscnum*SCstruct)+nopuck	;puck object nopuck word
 puckc	equ	SortCords+(puckscnum*SCstruct)+newpos	;puck carrier (93G: the newpos slot of the puck object)
 puck_pflags2	equ	SortCords+(puckscnum*SCstruct)+pflags2	;puck object pflags2
+GoalieStruct equ SortCords-SCstruct	;the sort object before SortCords: GoalieStruct+SCstruct is player 0 (shotdiradj scan)
 Ylist	rs.w	16
 OOlistpos	rs.w	16
 OOlist	rs.w	8
@@ -456,6 +471,7 @@ Zamx	rs.w	1
 playoffspritex	rs.w	1
 playoffspritey	rs.w	1
 clampcounter	rs.w	1
+logoslide equ clampcounter			;reused: title / playoff screen page time (credits wait)
 DMAList	rs.w	560
 DMAlistend	rs.l	1
 Vpos	rs.w	1
@@ -472,6 +488,7 @@ palfadenew	rs.w	64
 fofdata2	rs.w	4
 fofdata	rs.l	1
 ffonum	equ	7						;objects tied to the rink scroll (93 had 5)
+ffosize equ OldXpos					;field objects tied to icerink scrolling (pads), OldXpos bytes each (92G)
 pads	rs.w	14
 Joy1Struct	rs.w	28
 CameraPosStruct	rs.w	11
@@ -506,10 +523,10 @@ lj1	rs.w	1
 lj2	rs.w	1
 lj3	rs.w	1
 lj4	rs.w	1
-pad4way1	rs.b	1
-pad4way2	rs.b	1
-pad4way3	rs.b	1
-pad4way4	rs.b	1
+PadRaw1	rs.b	1
+PadRaw2	rs.b	1
+PadRaw3	rs.b	1
+PadRaw4	rs.b	1
 pad4wayword	rs.l	1				;the pad word the unused ReadJoySwapPad1-4 swap a pad's saved word into
 									;around ReadJoy1
 pad4waysave1	rs.w	1			;ReadJoySwapPad1 saved pad word
@@ -663,7 +680,8 @@ cont4team	rs.w	1
 HomeTeam	rs.w	1
 VisTeam	rs.w	1
 TeamBlockMap	rs.w	56			;Map word buffer for CopyTeamBlockMapData and PutTeamBlock
-PenBuf	rs.w	33
+MaxPen equ 32						;penalties kept in PenBuf
+PenBuf	rs.w	MaxPen+1
 ; Penalty numbers (word offsets into Penaltylist) for AddPenalty
 PenEOP	equ	$2
 PenEOG	equ	$4
@@ -706,7 +724,7 @@ penmsgtimer	rs.w	1
 RefCnt	rs.w	1
 RefStep	rs.w	1
 RefPen	rs.w	1
-RefRamMap	rs.w	56
+RefRamMap	rs.w	refwidth*refheight
 gsp	rs.w	1
 gameclock	rs.l	1
 PerTimeTotal	rs.w	1
@@ -723,31 +741,31 @@ tmPwrPlays equ $4					;power plays stat
 tmPenalties equ $6					;penalties stat
 tmPenmin equ $8						;penalty min. stat
 tmATOP equ $A						;attack time of possesion stat
-tmscore equ $C						;score
-tmfowon equ $E						;face-offs won stat
-tmchecks equ $10					;checks stat
-tmpasses equ $12					;passes stat
-tmpasscomp equ $14					;completed passes stat
-tmline equ $16						;current line
-tmtouch1 equ $18					;last touch (team/pnum word): the scorer
-tmtouch2 equ $1A					;second last touch (first assist)
-tmtouch3 equ $1C					;third last touch (second assist)
 tmdata equ $1E						;team data address
 tmsort equ $22						;address of first sort obj (word)
+tmscore equ $C						;score
+tmline equ $16						;current line
 tmap equ $24						;active players on ice 4-6
 tmgoalie equ $26					;goalie 1/2/none
-tmteam equ $28						;team number (TeamList index) of this team struct
-tmnear equ $2A						;long: nearest skater's distance^2 to the puck (assnearest)
-tmlcchoice equ $2E					;line change box row chosen (0-2)
 tmflags equ $30						;flags
 tmflcc equ 0						;tmflags: line change on
 tmflcm equ 1						;team is in line change mode (92 scanned the players for pf2lcm)
+tmflast equ 3						;next touch overwrites the last touch only.
+tmfoside equ 4						;team is offsides (92 flagged the player with pf3oside)
 tmftimeout equ 2					;timeout used (the pause menu drops Timeout from then on). Same bit as
 									;tmfmid and tmfslide
 tmfmid equ tmftimeout				;nearest player always takes the in-between spot (assnearest)
 tmfslide equ tmftimeout				;93 roster screen name slide; unused here (UpdateRosterPlayers is empty)
-tmflast equ 3						;next touch overwrites the last touch only.
-tmfoside equ 4						;team is offsides (92 flagged the player with pf3oside)
+tmfowon equ $E						;face-offs won stat
+tmchecks equ $10					;checks stat
+tmpasses equ $12					;passes stat
+tmpasscomp equ $14					;completed passes stat
+tmtouch1 equ $18					;last touch (team/pnum word): the scorer
+tmtouch2 equ $1A					;second last touch (first assist)
+tmtouch3 equ $1C					;third last touch (second assist)
+tmteam equ $28						;team number (TeamList index) of this team struct
+tmnear equ $2A						;long: nearest skater's distance^2 to the puck (assnearest)
+tmlcchoice equ $2E					;line change box row chosen (0-2)
 tmpde equ $32						;energy level of each roster player
 maxros equ 26						;roster slots per team in the team structure
 tmpdst equ tmpde+(2*maxros)			;-2=bench/-1=ice/0+=penalty box
@@ -814,11 +832,13 @@ ThirdPBonus	rs.b	1
 HmAwBonus	rs.b	1
 remapTablePtr	rs.l	1
 ThreeStars	rs.w	100
+starscores equ ThreeStars			;the 52 star score longs (CalcStarScores)
 recordbuf equ ThreeStars			;the save RAM record staging buffer (shares ThreeStars)
 decompbuffer equ ThreeStars			;DecompressBytecode 256 byte ring buffer (shares ThreeStars)
 teamrecbuf	rs.w	28				;SRAM team record buffer: the 16 byte record of a team (ReadCrowdRecord),
 									;byte 8 crowd record, byte 9 its name number
 nibblebuffer	rs.w	6
+varend equ nibblebuffer+8			;end of the variables cleared by Opening2
 homeuser	rs.w	1
 awayuser	rs.w	1
 FourWayPlay	rs.w	1
@@ -845,7 +865,8 @@ TmpOptLine2	rs.w	1
 TempOptPlayMode	rs.w	1
 databuffer	rs.w	9
 passbits	rs.w	5				;playoff password bits (94 had pwddatabuffer)
-outputbuffer	rs.w	114
+outputbuffer	rs.w	113
+marker	rs.w	1				;last word of the $100 byte saved block (databuffer .. marker), as 93
 tpassbits	rs.w	5
 music_needs_z80_update	rs.w	1
 Z80_command_buffer	rs.b	5
@@ -945,6 +966,9 @@ matchuptimer	rs.w	1
 matchupslot	rs.w	1
 ;DispAttribCtr to TestList are not in 93G order: 94 moved them, and the addresses here are 94's
 DispAttribCtr	rs.w	1
+playoffscroll equ DispAttribCtr		;reused: playoff screen scroll position
+scoutcolumn equ DispAttribCtr		;reused: scouting report column
+titlescrollspeed equ DispAttribCtr	;reused: title screen attribute display counter
 VertLineScrolling	rs.w	1
 PlayerScrollCtr	rs.w	1
 SelectedPlayerIdx	rs.w	1

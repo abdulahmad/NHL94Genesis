@@ -1599,7 +1599,7 @@ shotdiradj							;If the opposing goalie
 .0									;aim adjust
 	moveq	#8,d0
 	moveq	#5,d1
-	movea.w	#(SortCords-SCstruct-M68K_RAM),a0	;SC Struct start - 80
+	movea.w	#(GoalieStruct-M68K_RAM),a0	;SC Struct start - 80
 	btst	#pfteam,pflags(a3)		;pfteam - check if home or away
 	bne.w	.loop					;jump if away
 	adda.w	#$300,a0				;add 300 to a0 (start on away team)

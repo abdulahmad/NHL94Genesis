@@ -483,7 +483,7 @@ ProcessInputWithRepeat				;nodiag, then key repeat on d1-d3
 ReadJoy1							;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
 									;direction (bit 0-3) and new button (bit 4-7) presses, d1 = new presses
 									;(all 8 bits), d2 = changed buttons (all 8), d3 = held buttons (all 8)
-	move.b	(pad4way1).w,d0
+	move.b	(PadRaw1).w,d0
 	bsr.w	ReadJoy					;d1 = buttons down now
 	move.w	(lj1).w,d2				;last frame's buttons
 	move.w	d1,(lj1).w
@@ -497,7 +497,7 @@ ReadJoy1							;read controller 1 from the byte ReadPads left in PadRaw1. Return
 ; d2 = changed buttons (all 8)
 ; d3 = current held buttons (all 8)
 ReadJoy2							;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	move.b	(pad4way2).w,d0
+	move.b	(PadRaw2).w,d0
 	bsr.w	ReadJoy
 	move.w	(lj2).w,d2
 	move.w	d1,(lj2).w				;store the new one
@@ -505,8 +505,8 @@ ReadJoy2							;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
 	eor.w	d1,d2
 	and.w	d2,d1					;d1 = new presses
 	rts
-ReadJoy3							;read 4 way play pad 3 (pad4way3). Same returns as ReadJoy1
-	move.b	(pad4way3).w,d0
+ReadJoy3							;read 4 way play pad 3 (PadRaw3). Same returns as ReadJoy1
+	move.b	(PadRaw3).w,d0
 	bsr.w	ReadJoy
 	move.w	(lj3).w,d2
 	move.w	d1,(lj3).w				;store the new one
@@ -514,8 +514,8 @@ ReadJoy3							;read 4 way play pad 3 (pad4way3). Same returns as ReadJoy1
 	eor.w	d1,d2
 	and.w	d2,d1					;d1 = new presses
 	rts
-ReadJoy4							;read 4 way play pad 4 (pad4way4). Same returns as ReadJoy1
-	move.b	(pad4way4).w,d0
+ReadJoy4							;read 4 way play pad 4 (PadRaw4). Same returns as ReadJoy1
+	move.b	(PadRaw4).w,d0
 	bsr.w	ReadJoy
 	move.w	(lj4).w,d2
 	move.w	d1,(lj4).w				;store the new one

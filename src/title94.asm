@@ -583,7 +583,7 @@ DrawPlayoffSprite					;The StanleyCupSprite sprite at playoffspritex / playoffsp
 	movea.w	#(Satt-M68K_RAM),a6
 	moveq	#1,d6
 	movea.l	#StanleyCupSprite,a0
-	move.w	(energybarchars).w,d3
+	move.w	(logochars).w,d3
 	ori.w	#$8000,d3				;high priority
 	move.w	(playoffspritex).w,d0
 	move.w	(playoffspritey).w,d1
@@ -934,11 +934,11 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	movea.l	#Credits,a1				;the first credits page
 	jsr	(CreditsPrintRow).l			;print the first page
 	addi.w	#$20,(Vscroll).w		;scroll down 32 lines
-	move.w	#$104,(clampcounter).w	;clampcounter = how long the first page stays
+	move.w	#$104,(logoslide).w	;clampcounter = how long the first page stays
 	move.w	#$120,(playoffspritex).w
 	move.w	#$D0,(playoffspritey).w
 	clr.w	(asv).w					;(sprite and fade setup for the title)
-	move.w	#$FFCE,(DispAttribCtr).w	;attribute display counter
+	move.w	#$FFCE,(titlescrollspeed).w	;attribute display counter
 	move.w	#$20,(palcount).w		;fade in
 	move.w	#SngTitle,-(sp)			;the title song
 	jsr	(song).l
@@ -946,7 +946,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move	#$2500,sr				;interrupts on
 .loop								;wait out the first page
 	jsr	(CreditsWait).l				;one frame
-	tst.w	(clampcounter).w		;page time left?
+	tst.w	(logoslide).w		;page time left?
 	bne.s	.loop
 	move.w	#$3C,d3
 .loop2								;then $3C more frames
@@ -1004,9 +1004,9 @@ CreditsWait							;Credits: wait for Vcount, run the clampcounter count down; st
 .loop								;wait for the next vblank
 	cmp.w	(Vcount).w,d0
 	beq.s	.loop
-	subq.w	#2,(clampcounter).w		;count down the page time
+	subq.w	#2,(logoslide).w		;count down the page time
 	bpl.w	.0
-	clr.w	(clampcounter).w
+	clr.w	(logoslide).w
 .0									;counter done: check the start button
 	jsr	(orjoy).l					;read the pads
 	btst	#7,d1					;start?
@@ -1162,14 +1162,14 @@ LeadSong							;Not in a shootout (gmode2 bit 1), scores not level: once (sflags
 	cmpa.w	#(tmstruct-M68K_RAM),a3	;a3 the away struct?
 	bne.w	.2						;home ahead?
 	move.w	(HomeTeam).w,(HmTeam).w	;away ahead: song slot 1
-	move.w	#1,(SongIndex).w		;away ahead: song slot 1
+	move.w	#SngPPAway,(SongIndex).w	;away ahead: song slot 1
 	jsr	(ChooseSong).l
 .loop								;(not looped: a song is now playing)
 	bset	#6,(sflags8).w			;lead song done
 	bra.w	LeadSongExit
 .2									;home ahead: song slot 4
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#4,(SongIndex).w
+	move.w	#SngPP,(SongIndex).w
 	jsr	(ChooseSong).l
 	bra.s	.loop
 ClearLeadSong						;Clear sflags2 bit 5

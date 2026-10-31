@@ -152,7 +152,7 @@ StartPer							;start a period: reset stack, rink and clock, face off, run the g
 	move.w	d0,(CwdExciteLvl).w		;starting excitement = gamelevel*16
 	clr.w	(CurCrowdMeter).w
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#0,(SongIndex).w
+	move.w	#SngPeriodStart,(SongIndex).w
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)		;period start tune
 	jsr	(song).l
@@ -240,7 +240,7 @@ CheckLateGameSong					;Called once per second. 3rd period: choose and play a son
 	bgt.w	.x						;not there yet
 	st	(periodendtime).w			;high byte $FF: trigger goes negative, fires once
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#5,(SongIndex).w
+	move.w	#SngLateGame,(SongIndex).w
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)
 	jsr	(song).l

@@ -969,7 +969,7 @@ TakeTopStarScore					;Take the highest of the 52 star scores at ThreeStars and c
 									;Returns d0 = player slot, a2 = its team struct. Called from
 									;ShowThreeStars
 	movem.l	d1-d2/a1/a4,-(sp)
-	movea.w	#(ThreeStars-M68K_RAM),a4
+	movea.w	#(starscores-M68K_RAM),a4
 	clr.l	d0						;best so far 0
 	moveq	#$33,d2
 .find								;scan the 52 entries
@@ -981,7 +981,7 @@ TakeTopStarScore					;Take the highest of the 52 star scores at ThreeStars and c
 	dbf	d2,.find					;next entry
 	clr.l	(a1)
 	move.w	a1,d0
-	subi.w	#(ThreeStars-M68K_RAM),d0
+	subi.w	#(starscores-M68K_RAM),d0
 	lsr.w	#2,d0
 	movea.w	#(tmstruct-M68K_RAM),a2
 	cmp.w	#RosterSlots,d0			;home slot?
@@ -996,7 +996,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 									;GetPeriodTime + d2, the goalie ice time needed. If gsp is 3 and the score
 									;is not tied, the scorer of the last goal gets $7FFFFFFF. Called from
 									;ShowThreeStars
-	movea.w	#(ThreeStars-M68K_RAM),a4
+	movea.w	#(starscores-M68K_RAM),a4
 	jsr	(GetPeriodTime).w			;d0 = period time
 	move.w	d0,d5					;d5 = period time + d2
 	add.w	d2,d5
@@ -1019,7 +1019,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 .slot								;slot of the scorer
 	add.b	ssscorer(a0),d0
 	asl.w	#2,d0
-	movea.w	#(ThreeStars-M68K_RAM),a0
+	movea.w	#(starscores-M68K_RAM),a0
 	move.l	#$7FFFFFFF,0(a0,d0.w)	;game winner is the first star
 .x									;exit (also the end of the code above)
 	rts

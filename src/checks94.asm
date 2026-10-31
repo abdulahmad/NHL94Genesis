@@ -2191,13 +2191,13 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	tst.w	(homeshootnum).w
 	bne.w	.setstopped
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#2,(SongIndex).w
+	move.w	#SngFaceoff,(SongIndex).w
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)
 	bra.w	.playsong
 .selectsong							;bit 0 of gmode2 clear
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#2,(SongIndex).w
+	move.w	#SngFaceoff,(SongIndex).w
 	jsr	(ChooseSong).l
 	move.w	(SongNum).w,-(sp)
 .playsong							;play the chosen song, then stop the clock for the attempt
@@ -2710,7 +2710,7 @@ puckfaceoff							;puck controller for the face off: a3 = the face off controlle
 	btst	#6,(sflags8).w
 	bne.w	.returngoalies
 	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#2,(SongIndex).w
+	move.w	#SngFaceoff,(SongIndex).w
 	jsr	(ChooseSong).l
 	bset	#4,(sflags8).w
 .returngoalies						;return pulled goalies and start the faceoff timers
