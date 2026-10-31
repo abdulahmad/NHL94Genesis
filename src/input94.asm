@@ -727,7 +727,7 @@ lineinput							;process input for line changes
 .2									;team struct chosen
 	bclr	#tmflcc,tmflags(a2)		;Flag to start lc mode
 	beq.w	.1
-	bsr.w	lcfound_close				;close the old box
+	bsr.w	lcfound_close			;close the old box
 	bsr.w	SetLCmode2				;start lc mode
 .1									;restore d1
 	move.w	(sp)+,d1
@@ -761,7 +761,7 @@ lcfound								;d2 = choice made 0-2
 	bclr	#tmflcm,tmflags(a2)
 	move.w	d0,tmline(a2)
 	jsr	(setpersonel).l
-lcfound_close							;close lc box
+lcfound_close						;close lc box
 	btst	#sfhor,(sflags).w
 	bne.w	rtss
 	bsr.w	setlccords

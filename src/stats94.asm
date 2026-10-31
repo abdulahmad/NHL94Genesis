@@ -450,7 +450,8 @@ ClearLineArea						;Line editor: erase the line area and print the
 	jsr	(printsmallz).l
 	String	CC_SetAttribute,$04,CC_AddX,$FD,CC_AddY,$02,'LD',CC_AddX,$FE,CC_AddY,$02,'RD',CC_AddX,$FE,CC_AddY,$02,'LW',CC_AddX,$FE,CC_AddY,$02,'C ',CC_AddX,$FE,CC_AddY,$02,'RW'
 	rts
-DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Line Editor" title and
+DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Line Editor"
+									;title and
 									;the team logo map (PutTeamBlock)
 	bsr.w	ClearLineEditorTop
 	movem.l	d0-d5/a0-a2,-(sp)
@@ -1795,7 +1796,7 @@ CrowdMeterScreen					;"Crowd Meter": current, average and peak level (PrintCrowd
 	bsr.w	PutTeamBlock
 	bsr.w	PrintCrowdMeter			;the three level rows
 .loop								;loop
-	bsr.w	Pausemode_rjoy	;wait for a new button press
+	bsr.w	Pausemode_rjoy			;wait for a new button press
 	btst	#7,d1					;start?
 	bne.w	ExitStatsScreen
 	bra.s	.loop
@@ -1877,7 +1878,8 @@ PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
 	String	' dB'
 	rts
 SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the framer and
-									;small font tiles, the background bitmap (EASportsBGMap) from row d0, d1 rows
+									;small font tiles, the background bitmap (EASportsBGMap) from row d0, d1
+									;rows
 									;high
 	movem.l	d0-d1/a2,-(sp)			;keep d0/d1 (first/last row) and a2 (team) for the caller
 	bsr.w	forceblack
@@ -2008,7 +2010,7 @@ TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseTex
 	jsr	(RestoreTeamEnergy).l
 	moveq	#$78,d0
 	bra.w	waitx
-Pausemode_go					;Pick team a2's goalie (or no goalie) from a
+Pausemode_go						;Pick team a2's goalie (or no goalie) from a
 									;list (Pausemode_gnum) with up / down, C or start; sets tmgoalie and
 									;SetPersonel. Menu item handler
 	move.w	(menuitem).w,-(sp)		;save the menu state
@@ -2030,7 +2032,7 @@ Pausemode_go					;Pick team a2's goalie (or no goalie) from a
 .loop								;loop
 	bsr.w	Pausemode_gnum
 .pad								;(not branched to)
-	bsr.w	Pausemode_rjoy	;wait for a press
+	bsr.w	Pausemode_rjoy			;wait for a press
 	btst	#7,d1
 	bne.w	.done					;Start confirms
 	btst	#5,d1
@@ -2062,7 +2064,7 @@ Pausemode_go					;Pick team a2's goalie (or no goalie) from a
 	move.w	(sp)+,(menuitem+2).w	;restore the pause menu state
 	move.w	(sp)+,(menuitem).w
 	rts
-Pausemode_gnum				;Draw the goalie list, row menuitem highlighted, each goalie with his two
+Pausemode_gnum						;Draw the goalie list, row menuitem highlighted, each goalie with his two
 									;digit number
 	move.w	#$D,(printy).w
 	move.w	(menuitem+2).w,d1
@@ -2161,7 +2163,7 @@ GetPlayerCount						;d0 = players on team a2 (records until a length word of 2)
 	bne.s	.loop
 	movem.l	(sp)+,a0
 	rts
-Pausemode_rjoy				;Wait for Vcount to change and for a new button press (d1)
+Pausemode_rjoy						;Wait for Vcount to change and for a new button press (d1)
 	move.w	(Vcount).w,d1			;current frame
 .wait								;loop
 	cmp.w	(Vcount).w,d1			;has Vcount changed?
@@ -2169,5 +2171,5 @@ Pausemode_rjoy				;Wait for Vcount to change and for a new button press (d1)
 	bsr.w	getpzjoy				;d1 = new presses, d3 = held
 	bsr.w	nodiag					;drop diagonal presses
 	tst.b	d1
-	beq.s	Pausemode_rjoy	;nothing new pressed: wait again
+	beq.s	Pausemode_rjoy			;nothing new pressed: wait again
 	rts

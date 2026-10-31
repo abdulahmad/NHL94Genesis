@@ -1013,7 +1013,7 @@ breakaway							;puck carrier a3 on a breakaway: beep on a new assignment and ch
 	movea.l	#tmstruct,a2			;move Home Team Struct into a2
 	btst	#pfteam,pflags(a3)		;pfteam - check if home or away
 	beq.w	.c0						;jump if home
-	movea.l	#awtmstruct,a2				;move Away Team Struct into a2
+	movea.l	#awtmstruct,a2			;move Away Team Struct into a2
 .c0									;team struct chosen
 	addq.w	#1,tmBreakaways(a2)		;add one to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to CwdExcite
@@ -1759,7 +1759,7 @@ assnearest							;this is a special assignment used for the player who is neares
 	movea.l	#tmstruct,a2			;put Home Team Struct into a2
 	btst	#pfteam,pflags(a3)		;pfteam - check home or away
 	beq.w	.addcrowd				;jump if home
-	movea.l	#awtmstruct,a2				;put Away Team Struct into a2
+	movea.l	#awtmstruct,a2			;put Away Team Struct into a2
 .addcrowd							;team struct chosen
 	addq.w	#1,tmBreakaways(a2)		;add to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to excite level
@@ -3128,7 +3128,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	move.w	(tmstruct+tmap).w,d4	;tmap = active players on ice (4-6). (tmap).w
 	btst	#pfteam,pflags(a3)		;#pfteam - 0=home 1=away
 	beq.w	.t0
-	move.w	(awtmstruct+tmap).w,d4		;(tmsize).w
+	move.w	(awtmstruct+tmap).w,d4	;(tmsize).w
 .t0									;players to place
 	neg.w	d4						;d4 = 6 - active players: formation row
 	addq.w	#6,d4					;6 - active players
@@ -3702,7 +3702,7 @@ a2touchpuck							;player a2 touches puck. Look for penalties/offsides/other jun
 .0									;icing check
 	bmi.w	rtss2					;exit if minus
 	move.w	(tmstruct+tmap).w,d0	;(tmap).w
-	sub.w	(awtmstruct+tmap).w,d0		;(tmsize).w
+	sub.w	(awtmstruct+tmap).w,d0	;(tmsize).w
 	btst	#pfteam,pflags(a2)		;check home or away
 	beq.w	.1						;branch if home
 	neg.w	d0						;negate d0

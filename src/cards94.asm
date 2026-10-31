@@ -52,7 +52,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 									;Called from PlayerCardTimer
 	movem.l	d0-d7/a0-a6,-(sp)		;the whole card is drawn here, keep all registers
 	jsr	(printz).l
-	String	CC_Font1,0,0				;x3
+	String	CC_Font1,0,0			;x3
 	move.w	#$1C,(printx).w			;visitors: erase the other logo box at $1C
 	btst	#1,(setupcardflags).w	;which side?
 	bne.w	.0
@@ -64,7 +64,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
 	jsr	(printz).l
-	String	CC_Font1,0,0				;x3
+	String	CC_Font1,0,0			;x3
 	move.w	#3,(printx).w
 	btst	#1,(setupcardflags).w
 	bne.w	.1
@@ -84,7 +84,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 	addq.w	#1,(featuredplayer).w	;each visitors card moves to the next featured player
 .3									;both sides: wrap featuredplayer after the sixth picture
 	jsr	(printz).l
-	String	CC_Font1,0,0				;x3 / add.b
+	String	CC_Font1,0,0			;x3 / add.b
 	cmpi.w	#6,(featuredplayer).l
 	blt.w	.4
 	clr.w	(featuredplayer).w		;back to the first picture
@@ -136,7 +136,7 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 	move.l	(sp)+,(palfadenew+$26).w
 	move.l	(sp)+,(palfadenew+$22).w
 	jsr	(printz).l
-	String	CC_Font1Pri,0,0		;(the routine here)
+	String	CC_Font1Pri,0,0			;(the routine here)
 	move.w	#$6000,(printa).w
 	move.w	#3,(printx).w
 	move.w	#$19,d0
@@ -1296,7 +1296,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	move.w	(HomeTeam).w,d3
 	move.w	(VisTeam).w,d4
 	movea.l	#tmstruct,a1
-	movea.l	#awtmstruct,a2				;opponent team struct
+	movea.l	#awtmstruct,a2			;opponent team struct
 	bsr.w	UpdateTeamRecord
 	movea.l	#recordbuf,a0
 	move.w	(awayuser).w,d1
@@ -1780,7 +1780,7 @@ DrawPlayerCard						;Draw a player card: picture (DrawPictureBox), name, "Record
 	movea.l	#tmstruct,a2
 	tst.w	(cardvis).w				;which side?
 	beq.w	.6
-	movea.l	#awtmstruct,a2				;visitors stats
+	movea.l	#awtmstruct,a2			;visitors stats
 .6									;team side chosen: the stats table
 	jsr	(FormatPlayerNameLast).l
 	move.w	#8,(printx).l
@@ -2159,7 +2159,7 @@ PrintOverallRating					;Player card "Overall Rating" (CalcAttrib, AttribAdjust)
 	movea.l	#tmstruct,a2
 	tst.w	(cardvis).w				;which side?
 	beq.w	.0
-	movea.l	#awtmstruct,a2				;visitors stats
+	movea.l	#awtmstruct,a2			;visitors stats
 .0									;team side chosen
 	move.l	(PAttribOverallMask).l,d4	;skater mask, or the goalie mask on a goalie card
 	tst.w	(matchup).w				;goalie card?
@@ -2360,7 +2360,7 @@ PrintCardPosition					;Player card position: Goalie, Forward or Defenseman (from
 	movea.l	#tmstruct,a2
 	tst.w	(cardvis).w				;which side?
 	beq.w	.0
-	movea.l	#awtmstruct,a2				;visitors stats
+	movea.l	#awtmstruct,a2			;visitors stats
 .0									;team side chosen
 	move.w	d0,-(sp)
 	jsr	(GetDefenseStart).l			;index at or past the defense start: not a forward
@@ -2696,7 +2696,7 @@ BuildCardPlayerLists				;Build the player card order of both teams: home at home
 	movea.l	#tmstruct,a0
 	bsr.w	BuildCardPlayerList
 	movea.l	#awaycardlist,a1
-	movea.l	#awtmstruct,a0				;away team stats
+	movea.l	#awtmstruct,a0			;away team stats
 	bsr.w	BuildCardPlayerList
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

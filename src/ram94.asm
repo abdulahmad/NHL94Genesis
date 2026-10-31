@@ -455,7 +455,8 @@ puckvz	equ	SortCords+(puckscnum*SCstruct)+Zvel	;puck z velocity
 puckx_nopuck	equ	SortCords+(puckscnum*SCstruct)+nopuck	;puck object nopuck word
 puckc	equ	SortCords+(puckscnum*SCstruct)+newpos	;puck carrier (93G: the newpos slot of the puck object)
 puck_pflags2	equ	SortCords+(puckscnum*SCstruct)+pflags2	;puck object pflags2
-GoalieStruct equ SortCords-SCstruct	;the sort object before SortCords: GoalieStruct+SCstruct is player 0 (shotdiradj scan)
+GoalieStruct equ SortCords-SCstruct	;the sort object before SortCords: GoalieStruct+SCstruct is player 0
+									;(shotdiradj scan)
 Ylist	rs.w	16
 OOlistpos	rs.w	16
 OOlist	rs.w	8
@@ -512,7 +513,8 @@ shotplayer	rs.w	1
 lastplayer	rs.w	1
 passdir	rs.w	1
 passspeed	rs.w	1
-passReceiverPlayerNum	rs.w	1			;SCnum of the intended receiver of the last pass, -1 = none (94 had passplayer)
+passReceiverPlayerNum	rs.w	1	;SCnum of the intended receiver of the last pass, -1 = none (94 had
+									;passplayer)
 glovecords	rs.w	1
 threat	rs.w	1
 puckcross	rs.b	2*pcsize		;xcord / frames, top entry then bottom (93G rs.w 4)
@@ -795,8 +797,8 @@ tmsize equ $364						;93 $1A2: 94 adds tmHotCold and the stats from tmPerGoals
 tmstruct	rs.b	tmsize			;home team struct (93G)
 HmGoals	equ	tmstruct+tmscore		;home score
 HomeTeamRosterPtr	equ	tmstruct+tmdata	;home team data address
-awtmstruct	rs.b	tmsize				;away team struct (first field tmshots)
-AwGoals	equ	awtmstruct+tmscore			;away score
+awtmstruct	rs.b	tmsize			;away team struct (first field tmshots)
+AwGoals	equ	awtmstruct+tmscore		;away score
 AwayTeamRosterPtr	equ	awtmstruct+tmdata	;away team data address
 statsbuffer	rs.w	104
 ;game structure variables (one per playoff matchup)
@@ -812,7 +814,7 @@ gsftf equ 0							;teams are flipped
 gsfhl equ 1							;hilite requested
 gsfso equ 2							;series over
 gssize equ $10
-gstruct	rs.b	gssize*8		;8 game structures
+gstruct	rs.b	gssize*8			;8 game structures
 gamenum	rs.w	1
 postarts	rs.w	1
 bosgames	rs.w	1
@@ -866,7 +868,7 @@ TempOptPlayMode	rs.w	1
 databuffer	rs.w	9
 passbits	rs.w	5				;playoff password bits (94 had pwddatabuffer)
 outputbuffer	rs.w	113
-marker	rs.w	1				;last word of the $100 byte saved block (databuffer .. marker), as 93
+marker	rs.w	1					;last word of the $100 byte saved block (databuffer .. marker), as 93
 tpassbits	rs.w	5
 music_needs_z80_update	rs.w	1
 Z80_command_buffer	rs.b	5
@@ -875,7 +877,8 @@ per_channel_frequency_table	rs.w	7
 per_channel_patch_table	rs.w	4
 fm_voice_usage_table	rs.w	256
 fm_channel_structs	rs.w	20
-pcm_channel_struct	rs.w	4			;PCM (DAC) channel struct, after the 5 FM structs (94 had fm_channel_struct6)
+pcm_channel_struct	rs.w	4		;PCM (DAC) channel struct, after the 5 FM structs (94 had
+									;fm_channel_struct6)
 fm_track_slots	rs.w	24
 BA_Team	rs.w	1
 BA_Sktr_SCnum	rs.w	1
@@ -972,7 +975,7 @@ titlescrollspeed equ DispAttribCtr	;reused: title screen attribute display count
 VertLineScrolling	rs.w	1
 PlayerScrollCtr	rs.w	1
 SelectedPlayerIdx	rs.w	1
-ScoutingReportTimer	rs.w	1			;scouting report: frames elapsed, the text typing delay (94 had typedelay)
+ScoutingReportTimer	rs.w	1		;scouting report: frames elapsed, the text typing delay (94 had typedelay)
 screentimer	rs.w	1
 TestList	rs.w	122
 arenaanimchars	rs.w	1

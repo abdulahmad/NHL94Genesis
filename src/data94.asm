@@ -924,7 +924,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	movem.l	(sp)+,d0/a1
 	movem.l	d0-d5/a0-a4,-(sp)
 	bsr.w	printz					;map at the box position
-	String	CC_Font1Pri,2,$E	;(and dropped a word)
+	String	CC_Font1Pri,2,$E		;(and dropped a word)
 	moveq	#$1C,d0					;framer size
 	moveq	#9,d1
 	bsr.w	Framer					;draw the frame
@@ -1185,9 +1185,9 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bset	#sf2drec,(sflags2).w	;record the replay
 .0									;replay recording set for a penalty shot
 	movea.w	#(tmstruct-M68K_RAM),a2
-	jsr	(lcfound_close).l				;close lc box
+	jsr	(lcfound_close).l			;close lc box
 	adda.w	#tmsize,a2
-	jsr	(lcfound_close).l				;close its box
+	jsr	(lcfound_close).l			;close its box
 	movea.w	#(ChkCnt-M68K_RAM),a4	;+ ScoreSumbytes = last goal entry
 	adda.w	(ScoreSumbytes).w,a4
 	bsr.w	printz					;map at the box position
@@ -1278,7 +1278,8 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bclr	#5,(sflags4).w			;clear the no assists flag
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-GoalBigTxt	String	CC_Font1Pri,$F,3,'GOAL!',CC_Font1Pri,$C,5	;printbig Strings for ShowGoalBox: GOAL!, then HAT TRICK!
+GoalBigTxt	String	CC_Font1Pri,$F,3,'GOAL!',CC_Font1Pri,$C,5	;printbig Strings for ShowGoalBox: GOAL!,
+																;then HAT TRICK!
 	String	CC_Font1Pri,$C,3,'HAT TRICK!',CC_Font1Pri,$C,5
 PPGoalBigTxt	String	CC_Font1Pri,$D,3,'PP GOAL!',CC_Font1Pri,$C,5	;The same after DelayedPen bit 0:
 									;PP GOAL!, then HAT TRICK!
@@ -1528,7 +1529,7 @@ crash								;printbig d1 then d0 as hex, set the vdp up, copy 8 longs from the
 ;	Menu item lists: two printsmall control Strings, then per item a String and the handler address
 ;	(dc.l). Item 0 leaves the menu (its handler is rtss2). String $FF ends the list.
 
-updatecrowdf_cd0									;$fftt = frame/time for various levels of crowd
+updatecrowdf_cd0					;$fftt = frame/time for various levels of crowd
 									;excitement. Used by updatecrowdf.
 									;Used by updatecrowdf, indexed by crowd level and Crowdstep
 	dc.w	$010c,$020c,$030c,$040c,$050c,$0a0c,$090c,$080c
@@ -1959,7 +1960,7 @@ PauseMenuItems						;pause menu item list (PauseMode)
 	dc.l	ManualGoalieMenu
 	String	CC_ListEnd
 
-Pausemode_mlist							;Pause menu item list (PauseMode)
+Pausemode_mlist						;Pause menu item list (PauseMode)
 	String	CC_SetAttribute,5
 	String	CC_SetAttribute,4
 	String	'   Resume Game    '

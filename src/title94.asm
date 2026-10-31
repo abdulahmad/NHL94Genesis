@@ -578,7 +578,8 @@ CheckScoreLeader					;Compare tmap (players on ice) of tmstruct / awtmstruct and
 .x									;exit: restore the registers
 	movem.l	(sp)+,d0-d2/a0-a2
 	rts
-DrawPlayoffSprite					;The StanleyCupSprite sprite at playoffspritex / playoffspritey in Satt, then
+DrawPlayoffSprite					;The StanleyCupSprite sprite at playoffspritex / playoffspritey in Satt,
+									;then
 									;end the sprite list (Sattsize = its size). Called from PlayoffScreen
 	movea.w	#(Satt-M68K_RAM),a6
 	moveq	#1,d6
@@ -635,7 +636,7 @@ HiScoreScreen						;vb2, the bitmap and MarkLesserMap, then wait up to $50 * 4 f
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the picture
 	String	CC_Font2Pri,$10,$10
-	movea.l	#MarkLesserMap,a2			;then the high score picture
+	movea.l	#MarkLesserMap,a2		;then the high score picture
 	movea.l	a2,a0
 	movea.l	a2,a1
 	adda.l	(a2)+,a0
@@ -934,7 +935,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	movea.l	#Credits,a1				;the first credits page
 	jsr	(CreditsPrintRow).l			;print the first page
 	addi.w	#$20,(Vscroll).w		;scroll down 32 lines
-	move.w	#$104,(logoslide).w	;clampcounter = how long the first page stays
+	move.w	#$104,(logoslide).w		;clampcounter = how long the first page stays
 	move.w	#$120,(playoffspritex).w
 	move.w	#$D0,(playoffspritey).w
 	clr.w	(asv).w					;(sprite and fade setup for the title)
@@ -946,7 +947,7 @@ newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, 
 	move	#$2500,sr				;interrupts on
 .loop								;wait out the first page
 	jsr	(CreditsWait).l				;one frame
-	tst.w	(logoslide).w		;page time left?
+	tst.w	(logoslide).w			;page time left?
 	bne.s	.loop
 	move.w	#$3C,d3
 .loop2								;then $3C more frames

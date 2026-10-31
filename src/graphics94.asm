@@ -23,7 +23,7 @@ PAlogoImg							;the NHLPA logo on newTitleScreen
 TitleImg							;the title on newTitleScreen
 	incbin	..\Extracted\NHL94\Graphics\Title94-4.map.jim
 	even
-EASportsBGMap							;the ScoutingReport and PlayoffScreen background
+EASportsBGMap						;the ScoutingReport and PlayoffScreen background
 	incbin	..\Extracted\NHL94\Graphics\EASportsBG.map.jim
 	even
 FramerMap							;Framer
@@ -100,7 +100,7 @@ TeamBitmaps							;dobitmap entries (DrawTeamBitmap)
 		inform	3,"TeamBitmaps needs one entry per team"
 	ENDIF
 ;TeamBitmaps+8: the tiles (LoadSetupTiles)
-EASportsMap								;the EASN logo (EASNLogo)
+EASportsMap							;the EASN logo (EASNLogo)
 	incbin	..\Extracted\NHL94\Graphics\EASports.map.jim
 	even
 ;EASportsMap+8: the tiles (setupEASportsMap)
@@ -115,7 +115,7 @@ RonBarrMap							;same size: the Ron Barr picture (ScoutingReport). The old
 ScoresMap							;same size
 	incbin	..\Extracted\NHL94\Graphics\Scores.map.jim
 	even
-EASportsSplashMap							;the EA Sports screen map
+EASportsSplashMap					;the EA Sports screen map
 	incbin	..\Extracted\NHL94\Graphics\EASportsSplash.map.jim
 	even
 RevRinkTilelist						;the reversed ice rink (updatescroll, ShowReplayIcon)
@@ -126,7 +126,7 @@ ReplayMap							;the replay map ShowReplayBanner shows at 0,0 (16 x 11)
 	incbin	..\Extracted\NHL94\Graphics\ReplayOptions.map.jim
 	even
 ;ReplayMap+8: the tiles (ReplayMode)
-IceRinkHorMap							;SetHor
+IceRinkHorMap						;SetHor
 	incbin	..\Extracted\NHL94\Graphics\IceRinkHor.map.jim
 	even
 IceRinkHorTiles	equ	IceRinkHorMap+8	;the tiles (SetHor)
@@ -692,23 +692,23 @@ PlayerCardsScreenPic				;the Player Cards screen picture, 40 x 28 tiles with its
 									;layout (PlayerCards)
 	incbin	..\Extracted\NHL94\Graphics\PlayerCardsScreenPic.map.jim
 	even
-NHLLogoMap						;read in the high ROM near NoNameTxt and by SkipOtherUserName
+NHLLogoMap							;read in the high ROM near NoNameTxt and by SkipOtherUserName
 	incbin	..\Extracted\NHL94\Graphics\NHLLogo.map.jim
 	even
 NHLPALogoMap						;read in the high ROM near NoNameTxt and by SkipOtherUserName
 	incbin	..\Extracted\NHL94\Graphics\NHLPALogo.map.jim
 	even
-StanleyCupSprite						;PlayoffScreen and DrawPlayoffSprite
+StanleyCupSprite					;PlayoffScreen and DrawPlayoffSprite
 	incbin	..\Extracted\NHL94\Graphics\StanleyCup.anim
 	even
-MarkLesserMap							;HiScoreScreen (high ROM)
+MarkLesserMap						;HiScoreScreen (high ROM)
 	incbin	..\Extracted\NHL94\Graphics\MarkLesser.map.jim
 	even
-HotMap							;read by HotColdIcon (high ROM)
+HotMap								;read by HotColdIcon (high ROM)
 	incbin	..\Extracted\NHL94\Graphics\Hot.map.jim
 	even
 ;HotMap+8: the tiles (ScoutingReport)
-ColdMap							;read by HotColdIcon (high ROM)
+ColdMap								;read by HotColdIcon (high ROM)
 	incbin	..\Extracted\NHL94\Graphics\Cold.map.jim
 	even
 ;ColdMap+8: the tiles (ScoutingReport)
