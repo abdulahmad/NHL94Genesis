@@ -1805,67 +1805,67 @@ PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteL
 									;in dB (PrintCrowdDB). With save RAM (ValidSRAM) the arena record of
 									;HomeTeam and the league record, read into the buffer at ThreeStars by
 									;ReadCrowdRecord (high ROM); 0 reads as $50
-	bsr.w	printsmallz
+	bsr.w	printsmallz				;print
 	String	CC_SetMapAndPosition,4,2,4,$C,'Current Level',CC_SetX,$1C
 	move.w	(CwdExciteLvl).w,d0		;current level
 	bsr.w	PrintCrowdDB			;print it
-	bsr.w	printsmallz
+	bsr.w	printsmallz				;print
 	String	CC_SetX,4,CC_AddY,2,'Average Level',CC_SetX,$1C
 	move.l	(SumCwdExciteLvl).w,d0	;sum of the levels
-	divu.w	(NumCwdExciteLvl).w,d0
+	divu.w	(NumCwdExciteLvl).w,d0	;average
 	bsr.w	PrintCrowdDB			;print it
-	bsr.w	printsmallz
+	bsr.w	printsmallz				;print
 	String	CC_SetX,4,CC_AddY,2,'Peak Level',CC_SetX,$1C
 	move.w	(MaxCwdExciteLvl).w,d0	;peak level
 	bsr.w	PrintCrowdDB			;print it
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	tst.w	(ValidSRAM).w			;save RAM?
-	bmi.w	.x
-	move.w	(HomeTeam).w,d1
-	ext.l	d1
-	movea.l	#recordbuf,a0
-	jsr	(ReadCrowdRecord).l
-	move.b	crpeak(a0),d0
-	bne.w	.gotarena
+	bmi.w	.x						;negative: exit
+	move.w	(HomeTeam).w,d1			;d1 = home team
+	ext.l	d1						;long
+	movea.l	#recordbuf,a0			;a0 = record buffer
+	jsr	(ReadCrowdRecord).l			;read the crowd record
+	move.b	crpeak(a0),d0			;peak byte
+	bne.w	.gotarena				;not zero: use it
 	move.b	#$50,d0					;none: $50
 .gotarena							;arena record, or $50 dB when none
-	andi.w	#$FF,d0
-	move.w	d0,-(sp)
+	andi.w	#$FF,d0					;byte
+	move.w	d0,-(sp)				;keep it
 .arena								;(not branched to)
-	bsr.w	printsmallz
+	bsr.w	printsmallz				;print
 	String	CC_SetX,4,CC_AddY,2,'Arena Record',CC_SetX,$1C
-	move.w	(sp)+,d0
+	move.w	(sp)+,d0				;restore it
 	move.w	#3,d1					;3 digits
-	jsr	(PushNumberWidth).l
-	jsr	(print).l
+	jsr	(PushNumberWidth).l			;push the number
+	jsr	(print).l					;print it
 .arenadb							;(not branched to)
-	jsr	(printz).l
+	jsr	(printz).l					;print the end
 	String	' dB'
 .league								;(not branched to)
-	jsr	(GetLeagueCrowdRecord).l
-	move.w	d0,d1
-	ext.l	d1
-	movea.l	#recordbuf,a0
-	jsr	(ReadCrowdRecord).l
-	move.b	crpeak(a0),d0
-	bne.w	.gotleague
+	jsr	(GetLeagueCrowdRecord).l	;league crowd record
+	move.w	d0,d1					;d1 = it
+	ext.l	d1						;long
+	movea.l	#recordbuf,a0			;a0 = record buffer
+	jsr	(ReadCrowdRecord).l			;read the crowd record
+	move.b	crpeak(a0),d0			;peak byte
+	bne.w	.gotleague				;not zero: use it
 	move.w	#$50,d0					;none: $50
 .gotleague							;league record, or $50 dB when none
-	andi.w	#$FF,d0
-	move.w	d0,-(sp)
-	bsr.w	printsmallz
+	andi.w	#$FF,d0					;byte
+	move.w	d0,-(sp)				;keep it
+	bsr.w	printsmallz				;print
 	String	CC_SetX,4,CC_AddY,2,'League Record',CC_SetX,$1C
-	move.w	(sp)+,d0
+	move.w	(sp)+,d0				;restore it
 .leaguew							;(not branched to)
-	move.w	#3,d1
+	move.w	#3,d1					;d1 = 3
 .leaguenum							;(not branched to)
-	jsr	(PushNumberWidth).l
-	jsr	(print).l
-	bsr.w	printz
+	jsr	(PushNumberWidth).l			;push the number
+	jsr	(print).l					;print it
+	bsr.w	printz					;print the end
 	String	' dB'
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
 	ext.l	d0
 	asl.w	#2,d0					;level * 4
@@ -1882,70 +1882,70 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 									;rows
 									;high
 	movem.l	d0-d1/a2,-(sp)			;keep d0/d1 (first/last row) and a2 (team) for the caller
-	bsr.w	forceblack
+	bsr.w	forceblack				;force the colours black
 	bclr	#dfok,(disflags).w		;graphics not ready for transfer
-	move.w	(disflags).w,-(sp)
+	move.w	(disflags).w,-(sp)		;keep disflags
 .noint								;(not branched to)
-	bset	#dfng,(disflags).w
-	move.w	(VSPRITES).w,d0
-	bsr.w	Vmaddr
-	move.l	#0,(a0)
+	bset	#dfng,(disflags).w		;set dfng
+	move.w	(VSPRITES).w,d0			;d0 = VSPRITES
+	bsr.w	Vmaddr					;VDP address
+	move.l	#0,(a0)					;clear it
 .vdpregs							;(not branched to)
-	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)
-	move.w	#6,(Map3col).w
-	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)
-	clr.w	d0
-	bsr.w	Vmaddr
-	move.l	#0,(a0)
-	move.w	(sp)+,(disflags).w
+	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)	;mode 4 register
+	move.w	#6,(Map3col).w			;Map3col 6
+	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)	;horizontal scroll register
+	clr.w	d0						;d0 = 0
+	bsr.w	Vmaddr					;VDP address
+	move.l	#0,(a0)					;clear it
+	move.w	(sp)+,(disflags).w		;restore disflags
 	bclr	#df32c,(disflags).w		;not in 32 cell mode
 	move.w	(framercset).w,d4		;frame chars
 	movea.l	#FramerMap+8,a2			;frame tiles
-	bsr.w	DecompressGraphicsWithRemap
+	bsr.w	DecompressGraphicsWithRemap	;decompress the tiles with remap
 	dc.l	$91234567,$89ABCDEF		;remap table
-	move.w	(smallfontchars).w,d4
-	jsr	(AddSmallFont).l
-	bsr.w	printz
+	move.w	(smallfontchars).w,d4	;d4 = small font chars
+	jsr	(AddSmallFont).l			;add the small font
+	bsr.w	printz					;print the position codes
 	String	CC_Font3Pri,0,0
-	movea.l	#EASportsBGMap,a1
-	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
+	movea.l	#EASportsBGMap,a1		;a1 = EA Sports background map
+	adda.l	jimdata(a1),a1			;plus the data offset
+	movea.w	#null,a2				;no attribute map
 	clr.w	d0						;start x/y 0 in the map
-	clr.w	d1
-	move.w	(a1),d2
-	move.w	mapheight(a1),d3
-	moveq	#1,d4
+	clr.w	d1						;d1 = 0
+	move.w	(a1),d2					;d2 = map width
+	move.w	mapheight(a1),d3		;d3 = map height
+	moveq	#1,d4					;d4 = 1
 	moveq	#0,d5					;no palette lines
-	bsr.w	dobitmap
-	bsr.w	printz
+	bsr.w	dobitmap				;draw the bitmap
+	bsr.w	printz					;print the position codes
 	String	CC_Font3,0,0
-	movem.l	(sp),d0-d1/a2
-	add.w	d0,(printy).w
-	movea.l	#EASportsBGMap,a0
+	movem.l	(sp),d0-d1/a2			;load d0-d1/a2 from the stack, keep them there
+	add.w	d0,(printy).w			;plus the start row
+	movea.l	#EASportsBGMap,a0		;a0 = EA Sports background map
 	movea.l	a0,a1					;a1 = map header
-	movea.l	a0,a2
+	movea.l	a0,a2					;a2 = the map
 	adda.l	(a2)+,a0				;a0 = tile data
 	adda.l	(a2)+,a1				;a1 = map data
-	move.w	d1,d3
+	move.w	d1,d3					;d3 = d1
 	sub.w	d0,d3					;height = last row - first row
 	move.w	d0,d1					;start y = first row
-	clr.w	d0
-	moveq	#$28,d2
+	clr.w	d0						;d0 = 0
+	moveq	#$28,d2					;d2 = $28
 	moveq	#$D,d5					;copy palette lines 0, 2 and 3
-	bsr.w	dobitmap
+	bsr.w	dobitmap				;draw the bitmap
 	move.w	d4,(smallfont2chars).w	;second small font chars
-	movea.l	#SmallFontMap+8,a2
-	bsr.w	DecompressGraphicsWithRemap
+	movea.l	#SmallFontMap+8,a2		;a2 = small font tiles
+	bsr.w	DecompressGraphicsWithRemap	;decompress them with remap
 	dc.l	$D1234567,$89ABCDEF		;remap table
-	bsr.w	printz
+	bsr.w	printz					;print the position codes
 	String	CC_Font2,0,0
-	moveq	#$40,d0
-	moveq	#$20,d1
+	moveq	#$40,d0					;d0 = $40
+	moveq	#$20,d1					;d1 = $20
 	move.w	#$7FF,d2				;blank char
-	bsr.w	eraser
+	bsr.w	eraser					;erase
 	move.w	#$18,(palcount).w		;start a palette fade in
-	movem.l	(sp)+,d0-d1/a2
-	rts
+	movem.l	(sp)+,d0-d1/a2			;restore registers
+	rts								;done
 ExitStatsScreen						;Leave a stats screen: blank, then ReloadRinkGraphics
 	bsr.w	forceblack				;screen off
 ReloadRinkGraphics					;after the forceblack: back to 32 cell mode and reload the rink (Rinktiles

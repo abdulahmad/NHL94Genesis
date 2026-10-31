@@ -309,65 +309,65 @@ ShootoutShootCheck					;Shootout, skater a3 has the puck (gmode2 bit 1): Z set (
 UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixels to 4 bit
 									;pixels + 5 at picturebuf (count first). Called from DrawPictureBox,
 									;DrawMatchupPicture and PlayerCardScreen
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#picturebuf,a0
-	movea.l	#picturebits,a1
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#picturebuf,a0			;a0 = picture buffer
+	movea.l	#picturebits,a1			;a1 = picture bits
 	move.w	(a2)+,d0				;row count: first word of the picture
-	move.w	d0,(a0)+
+	move.w	d0,(a0)+				;store the row count
 	asl.w	#3,d0					;8 rows per tile
-	subq.w	#1,d0
+	subq.w	#1,d0					;minus 1
 .loop								;each row: 3 bytes = 8 pixels of 3 bits
-	clr.l	(a0)
-	clr.l	(a1)
-	move.b	(a2)+,(a1)
-	move.b	(a2)+,1(a1)
-	move.b	(a2)+,2(a1)
+	clr.l	(a0)					;clear the row
+	clr.l	(a1)					;clear the bits
+	move.b	(a2)+,(a1)				;first byte
+	move.b	(a2)+,1(a1)				;second byte
+	move.b	(a2)+,2(a1)				;third byte
 	move.l	#0,-(sp)				;build the 8 pixels of 4 bits each, + 5 for the card palette
-	move.l	(a1),d2
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$E0000000,d2			;pixel 0 (bits 31-29)
-	lsr.l	#1,d2
-	addi.l	#$50000000,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#1,d2					;shift 1
+	addi.l	#$50000000,d2			;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$1C000000,d2			;pixel 1
-	lsr.l	#2,d2
-	addi.l	#$5000000,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#2,d2					;shift 2
+	addi.l	#$5000000,d2			;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$3800000,d2			;pixel 2
-	lsr.l	#3,d2
-	addi.l	#$500000,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#3,d2					;shift 3
+	addi.l	#$500000,d2				;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$700000,d2				;pixel 3
-	lsr.l	#4,d2
-	addi.l	#$50000,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#4,d2					;shift 4
+	addi.l	#$50000,d2				;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$E0000,d2				;pixel 4
-	lsr.l	#5,d2
-	addi.l	#$5000,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#5,d2					;shift 5
+	addi.l	#$5000,d2				;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$1C000,d2				;pixel 5
-	lsr.l	#6,d2
-	addi.l	#$500,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#6,d2					;shift 6
+	addi.l	#$500,d2				;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$3800,d2				;pixel 6
-	lsr.l	#7,d2
-	addi.l	#$50,d2
-	or.l	d2,(sp)
-	move.l	(a1),d2
+	lsr.l	#7,d2					;shift 7
+	addi.l	#$50,d2					;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(a1),d2					;d2 = the 24 bits
 	andi.l	#$700,d2				;pixel 7
-	move.w	#8,d5
-	lsr.l	d5,d2
-	addq.l	#5,d2
-	or.l	d2,(sp)
-	move.l	(sp)+,(a0)+
+	move.w	#8,d5					;shift 8
+	lsr.l	d5,d2					;shift
+	addq.l	#5,d2					;add the pixel mask
+	or.l	d2,(sp)					;combine into the result
+	move.l	(sp)+,(a0)+				;store the row
 	dbf	d0,.loop					;loop
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 LoadHomeTeamGfx						;Load the HomeTeam graphics of TeamGfxList to VRAM d4 - $18
 									;(DecompressGraphicsPlain). Called from setupice, ClrHor and
 									;ReloadRinkGraphics
@@ -1210,62 +1210,62 @@ HotColdIcon							;The icon by the name of player iconplayer of team a2 at x ico
 									;HotMap when he is awayhotplayer /
 									;homehotplayer, ColdMap when awaycoldplayer / homecoldplayer, else
 									;clear it (eraser)
-	movem.l	d0/a0-a1,-(sp)
-	movea.l	#awayhotplayer,a0
-	move.w	#2,(iconx).w
+	movem.l	d0/a0-a1,-(sp)			;save registers
+	movea.l	#awayhotplayer,a0		;a0 = away hot player
+	move.w	#2,(iconx).w			;iconx 2
 	cmpa.l	#tmstruct,a2			;home team?
-	bne.w	.0
+	bne.w	.0						;branch taken
 	movea.l	#homehotplayer,a0		;home: the home lists and column $20
-	move.w	#$20,(iconx).w
+	move.w	#$20,(iconx).w			;iconx $20
 .0									;team chosen
 	move.w	#0,d0					;1 hot player per team
 .loop								;is he the hot one?
-	move.w	(a0)+,d1
+	move.w	(a0)+,d1				;next player
 	cmp.w	(iconplayer).w,d1		;this one?
-	beq.w	.hot
+	beq.w	.hot					;zero: hot
 	dbf	d0,.loop					;loop
 	movea.l	#awaycoldplayer,a0		;not hot: is he the cold one?
 	cmpa.l	#tmstruct,a2			;home team?
-	bne.w	.1
-	movea.l	#homecoldplayer,a0
+	bne.w	.1						;branch taken
+	movea.l	#homecoldplayer,a0		;a0 = home cold player
 .1									;team chosen
 	move.w	#0,d0					;1 cold player
 .loop2								;check each cold player
-	move.w	(a0)+,d1
+	move.w	(a0)+,d1				;next player
 	cmp.w	(iconplayer).w,d1		;this one?
-	beq.w	.cold
+	beq.w	.cold					;zero: cold
 	dbf	d0,.loop2					;neither: clear the icon area
-	move.w	(iconx).w,(printx).w
-	move.w	#$19,(printy).w
-	move.w	#8,d0
-	move.w	#3,d1
+	move.w	(iconx).w,(printx).w	;printx = iconx
+	move.w	#$19,(printy).w			;printy $19
+	move.w	#8,d0					;d0 = 8
+	move.w	#3,d1					;d1 = 3
 	move.w	#$7FF,d2				;blank char
-	jsr	(eraser).l
-	bra.w	.x
+	jsr	(eraser).l					;erase the icon area
+	bra.w	.x						;exit
 .hot								;he is hot: the hot icon
-	move.w	(hoticonchars).w,d4
-	movea.l	#HotMap,a0
-	bra.w	.draw
+	move.w	(hoticonchars).w,d4		;d4 = hot icon chars
+	movea.l	#HotMap,a0				;a0 = hot map
+	bra.w	.draw					;draw it
 .cold								;he is cold: the cold icon
-	move.w	(coldiconchars).w,d4
-	movea.l	#ColdMap,a0
+	move.w	(coldiconchars).w,d4	;d4 = cold icon chars
+	movea.l	#ColdMap,a0				;a0 = cold map
 .draw								;draw the icon
-	move.w	(iconx).w,(printx).w
-	move.w	#$19,(printy).w
-	movea.l	a0,a1
-	movea.l	a0,a2
-	adda.l	(a2)+,a0
+	move.w	(iconx).w,(printx).w	;printx = iconx
+	move.w	#$19,(printy).w			;printy $19
+	movea.l	a0,a1					;a1 = the map
+	movea.l	a0,a2					;a2 = the map
+	adda.l	(a2)+,a0				;a0 = the map data
 	adda.l	(a2)+,a1				;a1 = map data
-	movea.w	#null,a2
-	clr.w	d0
-	clr.w	d1
-	move.w	(a1),d2
-	move.w	mapheight(a1),d3
+	movea.w	#null,a2				;no attribute map
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
+	move.w	(a1),d2					;d2 = map width
+	move.w	mapheight(a1),d3		;d3 = map height
 	moveq	#0,d5					;no palette lines
-	jsr	(dobitmap).l
+	jsr	(dobitmap).l				;draw the bitmap
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0/a0-a1
-	rts
+	movem.l	(sp)+,d0/a0-a1			;restore registers
+	rts								;done
 chgplayer							;The pad d4 takes the nearest free skater to where the puck is going (not
 									;a goalie, not locked or unavailable; in a penalty shot / shootout only
 									;BA_Sktr_SCnum or BA_Goalie_SCnum), or sweep checks when it is the same
