@@ -76,15 +76,15 @@ UpdateScoresScroll					;Called every frame by ShowScores: add PlayerScrollCtr to
 	bsr.w	DrawScrollArrows
 	clr.w	(PlayerScrollCtr).w
 UpdateVertScrollReg					;VSRAM word 1 = VertLineScrolling - $30
-	move.w	(disflags).w,-(sp)
+	move.w	(disflags).w,-(sp)		;save disflags
 	bset	#dfng,(disflags).w		;don't int graphics
 	movea.l	#Vdata,a0				;a0 = VDP data port
-	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)
-	move.w	#$FFD0,d0
-	add.w	(VertLineScrolling).w,d0
-	move.w	d0,(a0)
-	move.w	(sp)+,(disflags).w
-	rts
+	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;set VSRAM write address 2
+	move.w	#$FFD0,d0				;d0 = -$30
+	add.w	(VertLineScrolling).w,d0	;add the scroll value
+	move.w	d0,(a0)					;write to VSRAM
+	move.w	(sp)+,(disflags).w		;restore disflags
+	rts								;return
 DisplayGameInfo						;Print game d3 of gstruct (16 bytes each; not the current game gamenum,
 									;not one with flag bit 1 or 2 set)
 									;the two teams and scores (PrintGameInfo) and the period (PerLabels)
@@ -158,13 +158,13 @@ LineEditor							;"Line Editor" screen for team a2: line slot cursor (TestList),
 	clr.w	(PlayerScrollCtr).w
 	move.w	#1,(TestList).w			;cursor = first slot
 LineEditorRedraw					;Clear the screen and redraw everything. Also entered from LineEditorExit
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY
-	moveq	#$28,d0
-	moveq	#$1C,d1
+	moveq	#$28,d0					;width $28
+	moveq	#$1C,d1					;height $1C
 	move.w	#$7FF,d2				;blank char
-	jsr	(eraser).l
-	st	(redrawicons).w
+	jsr	(eraser).l					;erase the screen
+	st	(redrawicons).w				;redraw the icons
 	bsr.w	ClearMenuFlags			;clear the highlight colours
 LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slot
 									;(SelectLinePlayer), up / down /
@@ -437,19 +437,19 @@ ClearLineArea						;Line editor: erase the line area and print the
 	jsr	(printsmallz).l
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY,$A
 .erase								;(not branched to)
-	moveq	#$28,d0
-	moveq	#$12,d1
+	moveq	#$28,d0					;width $28
+	moveq	#$12,d1					;height $12
 	move.w	#$7FF,d2				;blank char
-	jsr	(eraser).l
-	move.w	(LineIconPosTable+2).l,(printy).l
-	move.w	(LineIconPosTable).l,(printx).l
+	jsr	(eraser).l					;erase the area
+	move.w	(LineIconPosTable+2).l,(printy).l	;printy = second table entry
+	move.w	(LineIconPosTable).l,(printx).l	;printx = first table entry
 	tst.w	(OptLine).w				;OptLine set?
-	beq.w	.0
+	beq.w	.0						;branch taken: OptLine clear
 	move.w	(LineIconPosTable-6).l,(printx).l	;OptLine: use the entry before
 .0									;entry chosen: print the position header
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set print position from the string
 	String	CC_SetAttribute,$04,CC_AddX,$FD,CC_AddY,$02,'LD',CC_AddX,$FE,CC_AddY,$02,'RD',CC_AddX,$FE,CC_AddY,$02,'LW',CC_AddX,$FE,CC_AddY,$02,'C ',CC_AddX,$FE,CC_AddY,$02,'RW'
-	rts
+	rts								;return
 DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Line Editor"
 									;title and
 									;the team logo map (PutTeamBlock)
@@ -886,22 +886,22 @@ PlayerStatMenuTxt					;Roster page titles; { } are the left / right arrows
 	String	'{Penalty Kill 2 '
 GetNameandAttrib					;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
-	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
+	movem.l	d0-d4/a0-a1/a4-a5,-(sp)	;save registers
 	pea	.x(pc)						;handlers return here
 	jsr	(getname).l					;a1 = his number and name
-	jsr	(print).l
+	jsr	(print).l					;print it
 	move.w	#$1E,(printx).w
 	cmp.w	#2,d4					;status or energy column?
-	bls.w	.jump
-	jsr	(CalcAttrib).l
-	swap	d4
+	bls.w	.jump					;branch taken: d4 is 2 or less
+	jsr	(CalcAttrib).l				;calculate the attribute
+	swap	d4						;swap d4 halves
 .jump								;column handler for d4
-	lea	attribjmp(pc),a0
+	lea	attribjmp(pc),a0			;a0 = attribute jump table
 	adda.w	0(a0,d4.w),a0			;this handler
-	jmp	(a0)
+	jmp	(a0)						;jump to the handler
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d4/a0-a1/a4-a5
-	rts
+	movem.l	(sp)+,d0-d4/a0-a1/a4-a5	;restore registers
+	rts								;return
 attribjmp							;getNameandAttrib column handlers, offsets from attribjmp
 	dc.w	AttribStatus-attribjmp
 	dc.w	AttribEnergy-attribjmp
@@ -2115,54 +2115,54 @@ Pausemode_gnum						;Draw the goalie list, row menuitem highlighted, each goalie
 	dbf	d1,.row
 	rts
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
-	movem.l	d1/a0,-(sp)
-	movea.l	tmdata(a2),a0
+	movem.l	d1/a0,-(sp)				;save registers
+	movea.l	tmdata(a2),a0			;a0 = team data
 .word								;(not branched to)
-	adda.w	GoalieOdds(a0),a0
+	adda.w	GoalieOdds(a0),a0		;add the goalie odds offset
 	move.w	(a0),d1					;word with one nibble per goalie slot
-	clr.w	d0
+	clr.w	d0						;d0 = 0
 .count								;loop
 	addq.w	#1,d0					;count nibbles by shifting 4 bits out until the word is 0
-	asl.w	#4,d1
-	bne.s	.count
-	movem.l	(sp)+,d1/a0
-	rts
+	asl.w	#4,d1					;shift 4 bits out
+	bne.s	.count					;loop until the word is 0
+	movem.l	(sp)+,d1/a0				;restore registers
+	rts								;return
 GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetForwardCount),
 									;the roster index of the first defenseman (roster order is goalies,
 									;forwards, defense). Called from the high ROM player cards
-	movem.l	a0,-(sp)
-	bsr.s	GetGoalieCount
-	move.w	d0,-(sp)
-	movea.l	tmdata(a2),a0
-	adda.w	ScoutReport(a0),a0
-	move.b	srforwards(a0),d0
+	movem.l	a0,-(sp)				;save a0
+	bsr.s	GetGoalieCount			;d0 = goalie count
+	move.w	d0,-(sp)				;save it
+	movea.l	tmdata(a2),a0			;a0 = team data
+	adda.w	ScoutReport(a0),a0		;add the scout report offset
+	move.b	srforwards(a0),d0		;d0 = forwards byte
 	lsr.w	#4,d0					;high nibble
 	andi.w	#$F,d0					;forward count
-	add.w	(sp)+,d0
-	movem.l	(sp)+,a0
-	rts
+	add.w	(sp)+,d0				;add the goalie count
+	movem.l	(sp)+,a0				;restore a0
+	rts								;return
 GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
-	movem.l	a0,-(sp)
-	movea.l	tmdata(a2),a0
-	adda.w	ScoutReport(a0),a0
-	move.b	srforwards(a0),d0
+	movem.l	a0,-(sp)				;save a0
+	movea.l	tmdata(a2),a0			;a0 = team data
+	adda.w	ScoutReport(a0),a0		;add the scout report offset
+	move.b	srforwards(a0),d0		;d0 = forwards byte
 	lsr.w	#4,d0					;high nibble = forward count
 	andi.w	#$F,d0					;forward count
-	movem.l	(sp)+,a0
-	rts
+	movem.l	(sp)+,a0				;restore a0
+	rts								;return
 GetPlayerCount						;d0 = players on team a2 (records until a length word of 2)
-	movem.l	a0,-(sp)
-	movea.l	tmdata(a2),a0
+	movem.l	a0,-(sp)				;save a0
+	movea.l	tmdata(a2),a0			;a0 = team data
 	adda.w	(a0),a0					;a0 = first player record
-	clr.w	d0
+	clr.w	d0						;d0 = 0
 .loop								;loop
-	addq.w	#1,d0
-	adda.w	(a0),a0
+	addq.w	#1,d0					;count a player
+	adda.w	(a0),a0					;skip the name
 	addq.w	#pldsize,a0				;and the fixed part
 	cmpi.w	#2,(a0)					;empty name ends the list
-	bne.s	.loop
-	movem.l	(sp)+,a0
-	rts
+	bne.s	.loop					;loop until the empty name
+	movem.l	(sp)+,a0				;restore a0
+	rts								;return
 Pausemode_rjoy						;Wait for Vcount to change and for a new button press (d1)
 	move.w	(Vcount).w,d1			;current frame
 .wait								;loop

@@ -232,18 +232,18 @@ RestoreBenchEnergy					;Called once per second. Restore energy for players on th
 CheckLateGameSong					;Called once per second. 3rd period: choose and play a song once at the
 									;random trigger time set by ResetClock
 	cmpi.w	#2,(gsp).w				;3rd period only
-	bne.w	.x
+	bne.w	.x						;branch taken: not the 3rd period, exit
 	btst	#gmhl,(gmode).w
-	bne.w	.x
-	move.w	(gameclock).w,d0
-	cmp.w	(periodendtime).w,d0
+	bne.w	.x						;branch taken: gmhl bit set, exit
+	move.w	(gameclock).w,d0		;d0 = gameclock
+	cmp.w	(periodendtime).w,d0	;compare to periodendtime
 	bgt.w	.x						;not there yet
 	st	(periodendtime).w			;high byte $FF: trigger goes negative, fires once
-	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#SngLateGame,(SongIndex).w
-	jsr	(ChooseSong).l
-	move.w	(SongNum).w,-(sp)
-	jsr	(song).l
+	move.w	(HomeTeam).w,(HmTeam).w	;set HmTeam from HomeTeam
+	move.w	#SngLateGame,(SongIndex).w	;SongIndex = SngLateGame
+	jsr	(ChooseSong).l				;choose the song
+	move.w	(SongNum).w,-(sp)		;push SongNum
+	jsr	(song).l					;play the song
 .x	rts								;exit (also the end of the code above)
 
 UpdateCwdExcite						;called once per second. Track peak and running total of crowd excitement,

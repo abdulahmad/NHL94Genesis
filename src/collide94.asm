@@ -261,18 +261,18 @@ checkcx								;d4 = obj. # * 2 for possible collision so check x range and dist
 newcheck							;start a new check sound: one of 4 sounds $1C-$1F, never the last one
 									;again. Called from checkcx; FallDown branches here when the player who
 									;fell did not have the puck
-	move.l	d0,-(sp)
-	moveq	#3,d0
-	bsr.w	randomd0
+	move.l	d0,-(sp)				;save d0
+	moveq	#3,d0					;d0 = 3
+	bsr.w	randomd0				;get a random number
 	addq.w	#1,d0					;1-3 sounds on from the last one
-	add.w	(ltack).w,d0
-	andi.w	#3,d0
-	move.w	d0,(ltack).w
+	add.w	(ltack).w,d0			;add the last sound
+	andi.w	#3,d0					;keep 2 bits
+	move.w	d0,(ltack).w			;store as the last sound
 	addi.w	#SFXcheck,d0			;first check sound (92 used 18)
-	move.w	d0,-(sp)
-	bsr.w	sfx
-	move.l	(sp)+,d0
-	rts
+	move.w	d0,-(sp)				;save the sound number
+	bsr.w	sfx						;play the sound
+	move.l	(sp)+,d0				;restore d0
+	rts								;return
 checkint							;check for interference penalty. player a2 interferes with a3 or
 									;vice-versa; goalie is only player who can cause an interference call.
 									;Called from checkcx
@@ -2994,11 +2994,11 @@ setplayer							;bring player onto the ice and set his attributes. d3 = offset o
 	rts
 ClampNibble							;Clamp byte d3 to 0-$1E (93 clamped to 0-15). Called by setplayer
 	tst.b	d3						;test if d3 is zero or higher
-	bpl.w	.pos
-	clr.w	d3
+	bpl.w	.pos					;branch taken: d3 positive
+	clr.w	d3						;d3 = 0
 .pos								;clamp the top
-	cmp.b	#$1E,d3
-	ble.w	.withinlimits
+	cmp.b	#$1E,d3					;compare to $1E
+	ble.w	.withinlimits			;branch taken: not above, keep d3
 	move.w	#$1E,d3					;if higher, set to 1E
 .withinlimits						;exit (also the end of the code above)
-	rts
+	rts								;return

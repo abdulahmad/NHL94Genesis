@@ -347,24 +347,24 @@ SetMenuArea							;Set the menu area for MoveMenuFrame: printx $10, printy $E, d
 	rts
 SetFrameRectUnused					;An unused copy of SetFrameRect without its printz that uses setupprevline
 									;and stops at row $18
-	add.w	d3,(printy).w
-	move.w	(setupprevline).w,d0
+	add.w	d3,(printy).w			;add d3 to printy
+	move.w	(setupprevline).w,d0	;d0 = setupprevline
 	add.w	d0,d0					;2 rows a line
-	sub.w	d0,(printy).w
+	sub.w	d0,(printy).w			;subtract from printy
 	cmpi.w	#$18,(printy).w			;below row $18?
-	ble.w	.0
-	move.w	#$18,(printy).w
+	ble.w	.0						;branch taken: printy is $18 or less
+	move.w	#$18,(printy).w			;printy = $18
 .0									;frame Y clamped
-	moveq	#$17,d0
-	moveq	#3,d1
+	moveq	#$17,d0					;width $17
+	moveq	#3,d1					;height 3
 	cmpi.w	#2,(OptPlayMode).w		;playoffs?
-	blt.w	rtsSetup
+	blt.w	rtsSetup				;branch taken: below 2, return
 	cmpi.w	#4,(OptPlayMode).w		;shootout?
-	beq.w	rtsSetup
+	beq.w	rtsSetup				;branch taken: OptPlayMode is 4, return
 	cmp.w	#4,d3					;line 4?
-	bne.w	rtsSetup
-	moveq	#5,d1
-	rts
+	bne.w	rtsSetup				;branch taken: not line 4, return
+	moveq	#5,d1					;height 5
+	rts								;return
 SetFrameRect						;Frame position for line d3 (row $E + d3 - setupfirstline * 2), 23 x 3, or
 									;23 x 5 for Team 1 in new playoffs.
 									;MoveMenuFrame
@@ -568,16 +568,16 @@ ChangeOption						;add d2 to option d7 (d2 = 0: only limit it) and wrap it in it
 	beq.w	GoNewPlayoffs
 	rts
 WrapOption							;d3 + d2, wrapped into d5 ... d4-1. Called from ChangeOption
-	add.w	d2,d3
+	add.w	d2,d3					;add d2 to d3
 	cmp.w	d5,d3					;below the lowest?
-	bge.w	.0
-	move.w	d4,d3
-	subq.w	#1,d3
+	bge.w	.0						;branch taken: d3 at least d5
+	move.w	d4,d3					;d3 = d4
+	subq.w	#1,d3					;minus 1
 .0									;wrapped to the top
 	cmp.w	d4,d3					;at the limit?
-	blt.w	rtsSetup
-	move.w	d5,d3
-	rts
+	blt.w	rtsSetup				;branch taken: d3 below d4, return
+	move.w	d5,d3					;d3 = d5
+	rts								;return
 PrintOptions						;Limit each option (ChangeOption with d2 = 0) and print the lines shown
 									;(PrintOptionValue), the scroll marks (PrintScrollMarks) the team bitmaps
 									;(DrawMatchupBitmaps) and, unless a player card is up, reset the card
@@ -969,13 +969,13 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 SetupDemo							;Demo after no press for $5460 frames. Clear demoflag, seed the RNG
 									;(seed), Regular Season, Demo, line changes On
 									;penalties On. Falls into SetupStart. Branched to from GameSetUp
-	clr.w	(demoflag).w
+	clr.w	(demoflag).w			;clear demoflag
 	move.w	(HVcount).l,(seed).w	;seed from the beam
-	move.w	(HVcount).l,(seed+2).w
-	clr.w	(OptPlayMode).w
-	clr.w	(OptNOP).w
+	move.w	(HVcount).l,(seed+2).w	;seed+2 from the beam
+	clr.w	(OptPlayMode).w			;clear OptPlayMode
+	clr.w	(OptNOP).w				;clear OptNOP
 	clr.w	(OptLine).w				;line changes off
-	move.w	#1,(OptPen).w
+	move.w	#1,(OptPen).w			;OptPen = 1
 SetupStart							;Start pressed: Copy Goalies to both teams, set pojoy, seed the RNG
 									;(seed), and keep OptLine / OptPlayMode in TmpOptLine2 / TempOptPlayMode:
 									;Auto line changes play as On with sflags7 bit 4, Shootout as Regular

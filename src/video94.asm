@@ -497,45 +497,45 @@ ReadJoy1							;read controller 1 from the byte ReadPads left in PadRaw1. Return
 ; d2 = changed buttons (all 8)
 ; d3 = current held buttons (all 8)
 ReadJoy2							;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	move.b	(PadRaw2).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj2).w,d2
+	move.b	(PadRaw2).w,d0			;d0 = pad 2 raw bits
+	bsr.w	ReadJoy					;decode the pad
+	move.w	(lj2).w,d2				;d2 = old state
 	move.w	d1,(lj2).w				;store the new one
-	move.w	d1,d3
-	eor.w	d1,d2
+	move.w	d1,d3					;d3 = new state
+	eor.w	d1,d2					;d2 = changed bits
 	and.w	d2,d1					;d1 = new presses
-	rts
+	rts								;return
 ReadJoy3							;read 4 way play pad 3 (PadRaw3). Same returns as ReadJoy1
-	move.b	(PadRaw3).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj3).w,d2
+	move.b	(PadRaw3).w,d0			;d0 = pad 3 raw bits
+	bsr.w	ReadJoy					;decode the pad
+	move.w	(lj3).w,d2				;d2 = old state
 	move.w	d1,(lj3).w				;store the new one
-	move.w	d1,d3
-	eor.w	d1,d2
+	move.w	d1,d3					;d3 = new state
+	eor.w	d1,d2					;d2 = changed bits
 	and.w	d2,d1					;d1 = new presses
-	rts
+	rts								;return
 ReadJoy4							;read 4 way play pad 4 (PadRaw4). Same returns as ReadJoy1
-	move.b	(PadRaw4).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj4).w,d2
+	move.b	(PadRaw4).w,d0			;d0 = pad 4 raw bits
+	bsr.w	ReadJoy					;decode the pad
+	move.w	(lj4).w,d2				;d2 = old state
 	move.w	d1,(lj4).w				;store the new one
-	move.w	d1,d3
-	eor.w	d1,d2
+	move.w	d1,d3					;d3 = new state
+	eor.w	d1,d2					;d2 = changed bits
 	and.w	d2,d1					;d1 = new presses
-	rts
+	rts								;return
 ReadJoy								;read controller a0. Return d0 = direction (bit 0-3) and new button (bit
 									;4-7) presses, d1 = buttons down (all 8 bits)
-	not.b	d0
-	clr.w	d1
-	move.b	d0,d1
-	move.w	d1,-(sp)
+	not.b	d0						;invert the bits
+	clr.w	d1						;d1 = 0
+	move.b	d0,d1					;d1 = pad bits
+	move.w	d1,-(sp)				;save d1
 	andi.w	#$F0,d0					;buttons
 	andi.w	#$F,d1					;directions
-	movea.l	#jdtab,a0
+	movea.l	#jdtab,a0				;a0 = direction table
 	move.b	0(a0,d1.w),d1			;direction
-	or.w	d1,d0
-	move.w	(sp)+,d1
-	rts
+	or.w	d1,d0					;merge the direction
+	move.w	(sp)+,d1				;restore d1
+	rts								;return
 jdtab	dc.b	8					;convert buttons l,r,d,u into directions 0-7,8
 	;convert button l,r,d,u into directions 0-7,8
 	dc.b	0,4,8,6,7,5,8,2,1,3,8,8,8,8,8
