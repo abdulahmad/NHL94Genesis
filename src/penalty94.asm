@@ -1146,19 +1146,19 @@ PrintTeamLogoAndScore				;Draw the team logo map (PutTeamBlock, d0 = offset) 5 c
 EASNLogo							;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power
 									;play. Called from printscores1 and updatepwrplay
 	btst	#sf2pwrplay,(sflags2).w	;sf2pwrplay
-	bne.w	rtss2
-	bsr.w	printz
+	bne.w	rtss2					;branch taken: power play flag set, return
+	bsr.w	printz					;set print position from the string
 	String	CC_Font1Pri,1,$19
-	movea.l	#EASportsMap,a1
-	adda.l	jimdata(a1),a1
-	movea.w	#null,a2
-	clr.w	d0
-	clr.w	d1
+	movea.l	#EASportsMap,a1			;a1 = EA Sports map
+	adda.l	jimdata(a1),a1			;a1 = map data
+	movea.w	#null,a2				;no sprite attributes
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
 	move.w	(a1),d2					;width and height from the map header
 	move.w	mapheight(a1),d3
-	move.w	(EASNcset).w,d4
-	clr.w	d5
-	bra.w	dobitmap
+	move.w	(EASNcset).w,d4			;d4 = EASNcset
+	clr.w	d5						;d5 = 0
+	bra.w	dobitmap				;draw the bitmap and return
 USBoard								;Update score board, including the players in the penalty box and their
 									;time remaining. Called from InProgress and SetHor
 	movem.l	d0-d7/a0-a3,-(sp)		;save registers
@@ -1412,17 +1412,17 @@ RestoreTeamEnergy					;a2 = team: max energy (tmpde $1000) for every player. The
 									;Called from the menu code before ReplayMode
 	moveq	#(maxros-1)*2,d0		;(MaxRos-1)*2
 .loop								;loop
-	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
-	bne.w	.0
-	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
-	bne.w	.0
-	bra.w	.1
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)	;compare tmpdst to -3
+	bne.w	.0						;branch taken: not -3
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)	;compare tmpdst to -4
+	bne.w	.0						;branch taken: not -4
+	bra.w	.1						;skip the energy store
 .0									;not injured: full energy
 	move.w	#$1000,tmpde(a2,d0.w)	;tmpde
 .1									;next player
-	subq.w	#2,d0
-	bpl.s	.loop
-	rts
+	subq.w	#2,d0					;previous player
+	bpl.s	.loop					;loop while positive
+	rts								;return
 reenergizeteam						;Set all players to max energy on team a2 except those at tmpdst -4;
 									;players marked -3 in tmpdst go to
 									;the bench (-2). Called from SetupTeamForIntermission and StartHL2
@@ -1713,16 +1713,16 @@ ClearTickerArea						;Erase the ticker box. Called from Intermission and StartHL
 SetTickerAreaPosition				;Set printx/printy/printm for the ticker box (x 3, y $17; the $BD map in
 									;pause mode). Return d0 = $1A wide, d1 = 5 high. Called from NewTicker3pt2
 									;and ClearTickerArea
-	bsr.w	printz
+	bsr.w	printz					;set print position from the string
 	String	CC_Font3Pri,3,$17
 	btst	#sfpz,(sflags).w		;sfpz
-	bne.w	.1
-	bsr.w	printz
+	bne.w	.1						;branch taken: sfpz set
+	bsr.w	printz					;set print position from the string
 	String	CC_Font1Pri,3,$17
 .1									;sfpz set
 	moveq	#$1A,d0					;box size 26x5
-	moveq	#5,d1
-	rts
+	moveq	#5,d1					;height 5
+	rts								;return
 Fprintsmall							;92 Fprint, but printing with printsmall (92 used print). Print string d0
 									;of the String list a1 with printsmall
 	bsr.w	AdvanceStringPtr

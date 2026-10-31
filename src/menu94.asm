@@ -154,27 +154,27 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
 									;Pausemode_Pmenu
 	cmpi.b	#$78,2(a1)				;first char 'x'
-	bne.w	.plain
-	move.l	a1,-(sp)
-	movea.l	#.manual,a1
+	bne.w	.plain					;branch taken: not 'x'
+	move.l	a1,-(sp)				;save a1
+	movea.l	#.manual,a1				;a1 = manual goalie text
 	btst	#sfpj,(sflags).w		;sfpj: the pause pad
-	beq.w	.homegoalie
-	tst.w	(goaliemode2).w
-	bra.w	.chkgoalie
+	beq.w	.homegoalie				;branch taken: sfpj clear
+	tst.w	(goaliemode2).w			;test goaliemode2
+	bra.w	.chkgoalie				;go to the mode test
 .homegoalie							;sfpj clear
-	tst.w	(goaliemode1).w
+	tst.w	(goaliemode1).w			;test goaliemode1
 .chkgoalie							;goalie mode of the pad's team
-	beq.w	.print
-	movea.l	#.auto,a1
+	beq.w	.print					;branch taken: mode is 0, keep manual text
+	movea.l	#.auto,a1				;a1 = auto goalie text
 .print								;print the mode
-	jsr	(printsmall).l
-	movea.l	(sp)+,a1
+	jsr	(printsmall).l				;print the text
+	movea.l	(sp)+,a1				;restore a1
 	adda.w	(a1),a1					;skip the 'x' item text
-	bra.w	.x
+	bra.w	.x						;exit
 .plain								;item without a goalie mode
-	jsr	(printsmall).l
+	jsr	(printsmall).l				;print the item
 .x									;exit (also the end of the code above)
-	rts
+	rts								;return
 .manual								;manual goalie text
 	String	'  Manual Goalie   '	;no label
 .auto								;auto goalie text
@@ -182,25 +182,25 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
-	movem.l	d0-d2/a0-a1,-(sp)
-	move.w	(disflags).w,-(sp)
+	movem.l	d0-d2/a0-a1,-(sp)		;save registers
+	move.w	(disflags).w,-(sp)		;save disflags
 	bset	#dfng,(disflags).w		;dfng: don't int graphics
-	movea.w	#(TeamBlockMap-M68K_RAM),a1
-	adda.w	d0,a1
+	movea.w	#(TeamBlockMap-M68K_RAM),a1	;a1 = TeamBlockMap
+	adda.w	d0,a1					;add the offset
 	moveq	#1,d2					;2 rows
 .row								;each row
-	jsr	(xyVmMap).l
+	jsr	(xyVmMap).l					;set the VDP address from printx/printy
 	move.w	#$A,d1					;11 words
 .1									;each word of the row
 	move.w	(a1)+,(a0)				;write one map word
-	dbf	d1,.1
-	addq.w	#1,(printy).w
-	dbf	d2,.row
-	addi.w	#$B,(printx).w
-	subq.w	#2,(printy).w
-	move.w	(sp)+,(disflags).w
-	movem.l	(sp)+,d0-d2/a0-a1
-	rts
+	dbf	d1,.1						;loop for the other words
+	addq.w	#1,(printy).w			;next row
+	dbf	d2,.row						;loop for the other row
+	addi.w	#$B,(printx).w			;printx plus $B
+	subq.w	#2,(printy).w			;printy minus 2
+	move.w	(sp)+,(disflags).w		;restore disflags
+	movem.l	(sp)+,d0-d2/a0-a1		;restore registers
+	rts								;return
 vcountwait							;wait till Vcount changes, then resync Vcount. Saves d0. Reads OldVcount
 									;twice. Called from PauseMode, and the stats code
 	move.w	d0,-(sp)				;save d0

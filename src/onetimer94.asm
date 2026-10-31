@@ -399,15 +399,15 @@ setonetimeranim						;the one-timer animation: d1 = SPAshotf or SPAshotb from th
 	rts
 PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 shoots at, else
 									;0 (the code after the bra is never used). Called from doinput and
-	movem.w	d0-d1,-(sp)
-	move.w	(pucky).w,d0
+	movem.w	d0-d1,-(sp)				;save d0-d1
+	move.w	(pucky).w,d0			;d0 = puck Y
 	btst	#pfgoal,pflags(a3)		;pfgoal - check which goal shooting at
 	bne.w	.cont					;branch if top goal
-	neg.w	d0
+	neg.w	d0						;negate d0
 .cont								;puck Y for his end
 	tst.w	d0						;check if d0 is 0
 	bpl.w	.plus					;branch if higher
-	bra.w	.minus
+	bra.w	.minus					;go to .minus
 	move.w	(passdir).w,d0			;code never used from here up to .minus
 	addq.w	#4,d0
 	andi.w	#7,d0
@@ -431,13 +431,13 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	andi.w	#7,d1
 	beq.w	.plus
 .minus								;turn the other way
-	move.w	#0,d0
-	bra.w	.ex
+	move.w	#0,d0					;d0 = 0
+	bra.w	.ex						;exit
 .plus								;turn this way
-	move.w	#1,d0
+	move.w	#1,d0					;d0 = 1
 .ex									;exit: restore the registers
-	movem.w	(sp)+,d0-d1
-	rts
+	movem.w	(sp)+,d0-d1				;restore d0-d1
+	rts								;return
 onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
 									;assists, add to Crowdlevel /
 									;CwdExciteLvl and to the one-timer attempts (tmOneTimers).

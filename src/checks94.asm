@@ -3534,62 +3534,62 @@ pucknorm							;assignment for puck most of the time. a3 = puck, d7 = elapse fra
 ;SCnum $52, facedir $54, SPA $58, SPAnum $5A, SPAcnt $5C, pflags $62, pflags2 $63.
 
 ChkOffsides							;check for offsides penalty. a3 = puck. Flags the whole team
-	btst	#gmoffs,(gmode).w
-	beq.w	rtss2
-	btst	#2,(BA_PS_flags).w
-	bne.w	rtss2
-	movea.w	#(tmstruct-M68K_RAM),a1
+	btst	#gmoffs,(gmode).w		;test gmoffs mode bit
+	beq.w	rtss2					;branch taken: bit clear, return
+	btst	#2,(BA_PS_flags).w		;test BA_PS_flags bit 2
+	bne.w	rtss2					;branch taken: bit set, return
+	movea.w	#(tmstruct-M68K_RAM),a1	;a1 = home team struct
 	lea	tmsize(a1),a2				;team 2 (tmsize)
 	bsr.w	ClearOffsidesIfAllPlayers	;first drop the flag of any team with no one over the line
-	exg	a1,a2
+	exg	a1,a2						;swap team structs
 	bsr.w	ClearOffsidesIfAllPlayers
-	move.w	#$54,d0
-	cmp.w	Ypos(a3),d0
+	move.w	#$54,d0					;d0 = $54
+	cmp.w	Ypos(a3),d0				;compare to puck Ypos
 	bgt.w	.neg					;puck y < Blueline-4: go to the bottom line test
 	cmp.w	OldYpos(a3),d0			;OldYpos: puck crossed the top line this frame?
-	ble.w	rtss2
+	ble.w	rtss2					;branch taken: OldYpos is $54 or less, return
 	addi.w	#$A,d0					;d0 = Blueline+6: players must be past this
 	btst	#gmdir,(gmode).w		;pick which team is attacking this end
-	beq.w	.t0
-	exg	a2,a1
+	beq.w	.t0						;branch taken: gmdir clear
+	exg	a2,a1						;swap team structs
 .t0									;team structs chosen
-	moveq	#5,d2
-	movea.w	tmsort(a2),a0
+	moveq	#5,d2					;loop count of 6
+	movea.w	tmsort(a2),a0			;a0 = first sorted player
 .0									;loop over the team: anyone past the blue line?
 	tst.w	position(a0)			;position: skip off ice
-	bmi.w	.1
-	cmp.w	Ypos(a0),d0
+	bmi.w	.1						;branch taken: negative, next player
+	cmp.w	Ypos(a0),d0				;compare d0 to player Ypos
 	bge.w	.1						;not past the line
 	bset	#tmfoside,tmflags(a2)	;player past the line: team offsides
-	rts
+	rts								;return
 .1									;next player
 	adda.w	#SCstruct,a0			;next player
-	dbf	d2,.0
-	rts
+	dbf	d2,.0						;loop for the other players
+	rts								;return
 .neg								;bottom blue line: the same test mirrored
-	neg.w	d0
-	cmp.w	Ypos(a3),d0
-	blt.w	rtss2
-	cmp.w	OldYpos(a3),d0
-	bge.w	rtss2
-	subi.w	#$A,d0
-	btst	#gmdir,(gmode).w
-	bne.w	.t1
-	exg	a2,a1
+	neg.w	d0						;negate d0
+	cmp.w	Ypos(a3),d0				;compare d0 to puck Ypos
+	blt.w	rtss2					;branch taken: d0 below puck Ypos, return
+	cmp.w	OldYpos(a3),d0			;compare d0 to OldYpos
+	bge.w	rtss2					;branch taken: d0 at least OldYpos, return
+	subi.w	#$A,d0					;d0 minus $A
+	btst	#gmdir,(gmode).w		;test gmdir mode bit
+	bne.w	.t1						;branch taken: gmdir set
+	exg	a2,a1						;swap team structs
 .t1									;team structs chosen
-	moveq	#5,d2
-	movea.w	tmsort(a2),a0
+	moveq	#5,d2					;loop count of 6
+	movea.w	tmsort(a2),a0			;a0 = first sorted player
 .2									;loop over the team (bottom line)
 	tst.w	position(a0)			;loop over the team's players (bottom line)
-	bmi.w	.3
-	cmp.w	Ypos(a0),d0
+	bmi.w	.3						;branch taken: negative, next player
+	cmp.w	Ypos(a0),d0				;compare d0 to player Ypos
 	ble.w	.3						;not past the line
 	bset	#tmfoside,tmflags(a2)	;team offsides
-	rts
+	rts								;return
 .3									;next player
 	adda.w	#SCstruct,a0			;next player
-	dbf	d2,.2
-	rts
+	dbf	d2,.2						;loop for the other players
+	rts								;return
 ClearOffsidesIfAllPlayers			;a2 = team struct: clear the team offsides flag once no skater is past the
 									;line
 	btst	#tmfoside,tmflags(a2)	;test team offsides flag

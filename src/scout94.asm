@@ -256,35 +256,35 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 PageMatchup							;Page the matchup by d0 (+1 / -1, 0-6 wrapping), restart the page timer
 									;and redraw. Called from ScoutingReport
 	move.w	#$10E,(matchuptimer).w	;restart the matchup timer
-	add.w	(matchup).w,d0
+	add.w	(matchup).w,d0			;add the current matchup
 	bmi.w	.0						;below 0: wrap to 6
 	cmp.w	#7,d0					;past 6?
-	blt.w	.1
-	clr.w	d0
-	bra.w	.1
+	blt.w	.1						;branch taken: below 7
+	clr.w	d0						;d0 = 0
+	bra.w	.1						;continue
 .0									;d0 negative
-	move.w	#6,d0
+	move.w	#6,d0					;d0 = 6
 .1									;set the matchup
 	move.w	d0,(matchup).w
-	bsr.w	GetMatchupPlayers
-	bsr.w	DrawMatchupPictures
-	bsr.w	PrintMatchupRatings
-	rts
+	bsr.w	GetMatchupPlayers		;get the matchup players
+	bsr.w	DrawMatchupPictures		;draw the matchup pictures
+	bsr.w	PrintMatchupRatings		;print the matchup ratings
+	rts								;return
 PrintMatchupRating					;Print the team rating of team a0 (GetTeamRating: the TeamRatings byte for
 									;team number tmteam(a0)) as 2 digits at printx / printy; return d0 = the
 									;rating.
 									;Called from PrintMatchupRatings
 	bsr.w	PrintTwoSpaces			;clear the old number
-	move.l	a2,-(sp)
-	movea.l	a0,a2
-	bsr.w	GetTeamRating
-	movea.l	(sp)+,a2
-	move.l	d0,-(sp)
+	move.l	a2,-(sp)				;save a2
+	movea.l	a0,a2					;a2 = team
+	bsr.w	GetTeamRating			;get the team rating
+	movea.l	(sp)+,a2				;restore a2
+	move.l	d0,-(sp)				;save the rating
 	move.w	#2,d1					;2 digits
-	jsr	(PushNumberWidth).l
+	jsr	(PushNumberWidth).l			;push the number
 	jsr	(printsmall).l				;print it
-	move.l	(sp)+,d0
-	rts
+	move.l	(sp)+,d0				;restore the rating
+	rts								;return
 PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	move.l	a1,-(sp)				;save a1
 	move.w	(printx).w,-(sp)		;save printx
@@ -549,17 +549,17 @@ GetMatchupPlayer					;Return d0 = the roster index of team a0's player for match
 									;line of the team's line sets, slot
 									;MatchupLineSlots[matchup] (matchupslot; 0 goalie, 1 left defense, 2 right
 									;defense, 3 left wing, 4 center, 5 right wing)
-	movea.l	tmdata(a0),a0
-	adda.w	LineSets(a0),a0
-	move.w	(matchup).w,d0
-	movea.l	#MatchupLineSlots,a1
-	move.b	0(a1,d0.w),d0
-	ext.w	d0
-	move.w	d0,(matchupslot).w
+	movea.l	tmdata(a0),a0			;a0 = team data
+	adda.w	LineSets(a0),a0			;a0 = line sets
+	move.w	(matchup).w,d0			;d0 = matchup
+	movea.l	#MatchupLineSlots,a1	;a1 = matchup line slots
+	move.b	0(a1,d0.w),d0			;d0 = slot
+	ext.w	d0						;extend d0
+	move.w	d0,(matchupslot).w		;store matchupslot
 	move.b	0(a0,d0.w),d0			;player number in the slot
-	ext.w	d0
+	ext.w	d0						;extend d0
 	subq.w	#1,d0					;player numbers start at 1
-	rts
+	rts								;return
 MatchupLineSlots					;Line slot by matchup 0-6 (0 for the teams, then 4 center, 3 left forward,
 									;5 right forward, 1 left defense, 2 right defense,
 									;0 goalie), and a pad byte
