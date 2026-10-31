@@ -668,59 +668,59 @@ PushRef								;tell vblank what to display. d0 = ref frame, $40 clears the wind
 	rts
 prefmes								;print message for penalty d0 (negative clears it). Vertical mode: framed
 									;under the ref. Horizontal mode: one centered line on row $B
-	movem.l	d0-d2/a1,-(sp)
+	movem.l	d0-d2/a1,-(sp)			;save registers
 	btst	#sfhor,(sflags).w		;sfhor
-	bne.w	.hor
-	tst.w	d0
-	bpl.w	.noblank
+	bne.w	.hor					;branch taken: horizontal rink
+	tst.w	d0						;negative?
+	bpl.w	.noblank				;no: print it
 	bsr.w	printz					;negative d0: erase the 13x3 message area at x 0, y $A
 	String	CC_Font1Pri,0,$A
-	moveq	#$D,d0
-	moveq	#3,d1
+	moveq	#$D,d0					;d0 = $D
+	moveq	#3,d1					;d1 = 3
 	move.w	#$7FF,d2				;blank tile
-	bsr.w	eraser
-	bra.w	.ex
+	bsr.w	eraser					;erase
+	bra.w	.ex						;exit
 .noblank							;d0 >= 0
-	bsr.w	printz
+	bsr.w	printz					;print the position codes
 	String	CC_Font1Pri,5,$A
-	movea.l	#Penaltylist,a1
-	adda.w	0(a1,d0.w),a1
+	movea.l	#Penaltylist,a1			;a1 = penalty list
+	adda.w	0(a1,d0.w),a1			;a1 = this penalty
 	addq.w	#2,a1					;a1 = message string (length word first)
-	move.w	(a1),d0
+	move.w	(a1),d0					;d0 = its width
 	subq.w	#2,d0					;empty string
-	beq.w	.ex
-	lsr.w	#1,d0
+	beq.w	.ex						;zero: exit
+	lsr.w	#1,d0					;half
 	sub.w	d0,(printx).w			;center: back up by half the text length
-	bpl.w	.nb0
-	clr.w	(printx).w
+	bpl.w	.nb0					;branch taken
+	clr.w	(printx).w				;printx 0
 .nb0								;text start kept on screen
 	move.w	(a1),d0					;d0 = frame width from the string length
-	tst.b	-1(a1,d0.w)
-	bne.w	.nb1
+	tst.b	-1(a1,d0.w)				;check a byte
+	bne.w	.nb1					;branch taken
 	subq.w	#1,d0					;one less when the last string byte is 0 (padding)
 .nb1								;width set
 	moveq	#3,d1					;frame height 3
-	bsr.w	Framer
+	bsr.w	Framer					;frame it
 	subq.w	#2,(printy).w			;back inside the frame
-	addq.w	#1,(printx).w
-	bsr.w	print
-	bra.w	.ex
+	addq.w	#1,(printx).w			;next column
+	bsr.w	print					;print
+	bra.w	.ex						;exit
 .hor								;sfhor set
 	bsr.w	ClearPenaltyMessage		;clear the line first
-	tst.w	d0
-	bmi.w	.ex
+	tst.w	d0						;negative?
+	bmi.w	.ex						;yes: exit
 	bsr.w	printz					;print the message centered on x $11, row $B
 	String	CC_Font1Pri,$11,$B
-	movea.l	#Penaltylist,a1
-	adda.w	0(a1,d0.w),a1
-	addq.w	#2,a1
-	move.w	(a1),d0
-	lsr.w	#1,d0
-	sub.w	d0,(printx).w
-	bsr.w	print
+	movea.l	#Penaltylist,a1			;a1 = penalty list
+	adda.w	0(a1,d0.w),a1			;a1 = this penalty
+	addq.w	#2,a1					;skip the width word
+	move.w	(a1),d0					;d0 = its width
+	lsr.w	#1,d0					;half
+	sub.w	d0,(printx).w			;centre it
+	bsr.w	print					;print
 .ex									;exit: restore the registers
-	movem.l	(sp)+,d0-d2/a1
-	rts
+	movem.l	(sp)+,d0-d2/a1			;restore registers
+	rts								;done
 ClearPenaltyMessage					;Blank the horizontal mode penalty message line (22 spaces at x 5, y $B).
 									;Called from UpdatePA and prefmes
 	bsr.w	printz
@@ -1042,73 +1042,73 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 									;when bit 0 is set).
 									;sflags5 bit 7 sets crowdnoisedelay = $78. Called from USBoard, Pausemode,
 									;lcfound_close and others
-	movem.l	d0-d2/a0-a3,-(sp)
+	movem.l	d0-d2/a0-a3,-(sp)		;save registers
 	btst	#sfhor,(sflags).w		;sfhor
-	bne.w	.sbscreen
-	bclr	#7,(sflags5).w
-	beq.w	.0
-	move.w	#$78,(crowdnoisedelay).w
+	bne.w	.sbscreen				;branch taken: scoreboard screen
+	bclr	#7,(sflags5).w			;clear sflags5 bit 7
+	beq.w	.0						;it was clear: continue
+	move.w	#$78,(crowdnoisedelay).w	;crowd noise delay $78
 .0									;crowd noise delay set after a noise stop
-	bsr.w	printz
+	bsr.w	printz					;print the position codes
 	String	CC_Font1Pri,0,$17
 	moveq	#9,d0					;period box: 9x5 frame at x 0, y $17
-	moveq	#5,d1
-	bsr.w	Framer
+	moveq	#5,d1					;d1 = 5
+	bsr.w	Framer					;frame it
 	bset	#dfclock,(disflags).w	;dfclock
-	bsr.w	printz
+	bsr.w	printz					;print the position codes
 	String	CC_Font1Pri,1,$18
 	move.w	(gsp).w,d0				;period name
-	movea.l	#PerLabels,a1
-	btst	#1,(gmode2).w
-	beq.w	.1
-	move.w	#4,d0
-	movea.l	#PerLabels2,a1
+	movea.l	#PerLabels,a1			;a1 = period labels
+	btst	#1,(gmode2).w			;gmode2 bit 1 set?
+	beq.w	.1						;no: keep
+	move.w	#4,d0					;d0 = 4
+	movea.l	#PerLabels2,a1			;a1 = overtime period labels
 .1									;period names chosen
 	bsr.w	Fprintsmall				;print the period name in the box
 	bsr.w	EASNLogo				;logo under it (unless a power play is shown)
 	btst	#sf3llcs,(sflags3).w	;sf3llcs: lower line change box is up
-	bne.w	.ex
-	bsr.w	printz
+	bne.w	.ex						;branch taken: exit
+	bsr.w	printz					;print the position codes
 	String	CC_Font1Pri,$17,$17
 	moveq	#8,d0					;score box: 8x5 frame at x $17, y $17
-	moveq	#5,d1
-	bsr.w	Framer
-	bsr.w	printz
+	moveq	#5,d1					;d1 = 5
+	bsr.w	Framer					;frame it
+	bsr.w	printz					;print the position codes
 	String	CC_Font1Pri,$18,$1A		;home team on the lower row
-	movea.w	#(tmstruct-M68K_RAM),a2
-	bsr.w	printscores1_ps
-	bsr.w	printz
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	bsr.w	printscores1_ps			;print the score
+	bsr.w	printz					;print the position codes
 	String	CC_Font1Pri,$18,$18
 	adda.w	#tmsize,a2				;tmsize
-	bsr.w	printscores1_ps
+	bsr.w	printscores1_ps			;print the score
 .ex									;exit: restore the registers
-	movem.l	(sp)+,d0-d2/a0-a3
-	rts
+	movem.l	(sp)+,d0-d2/a0-a3		;restore registers
+	rts								;done
 .sbscreen							;sfhor set
-	bsr.w	printz
+	bsr.w	printz					;print the position codes
 	String	CC_Font2Pri,$11,2
-	move.w	(gsp).w,d0
-	btst	#0,(gmode2).w
-	beq.w	.2
-	move.w	#4,d0
+	move.w	(gsp).w,d0				;d0 = period
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	beq.w	.2						;no: keep
+	move.w	#4,d0					;d0 = 4
 .2									;period index chosen
 	movea.l	#PerLabels2,a1			;the horizontal rink always takes the name from PerLabels2
-	bsr.w	AdvanceStringPtr
+	bsr.w	AdvanceStringPtr		;advance the string
 	move.w	(a1),d0					;center the period name on x $11
 	lsr.w	#1,d0					;center the period name on x $11
-	sub.w	d0,(printx).w
-	bsr.w	print
-	bsr.w	printz
+	sub.w	d0,(printx).w			;centre it
+	bsr.w	print					;print
+	bsr.w	printz					;print the position codes
 	String	CC_Font2Pri,$17,2
-	movea.w	#(tmstruct-M68K_RAM),a2
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
 	clr.w	d0						;home logo data offset
-	bsr.w	PrintTeamLogoAndScore
-	bsr.w	printz
+	bsr.w	PrintTeamLogoAndScore	;logo and score
+	bsr.w	printz					;print the position codes
 	String	CC_Font2Pri,8,2
 	adda.w	#tmsize,a2				;tmsize
 	move.w	#$2C,d0					;visitor logo data offset
-	bsr.w	PrintTeamLogoAndScore
-	bra.s	.ex
+	bsr.w	PrintTeamLogoAndScore	;logo and score
+	bra.s	.ex						;exit
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 									;digits at x $1C. Called twice from printscores1
 	movea.l	tmdata(a2),a1			;tmdata
@@ -1559,60 +1559,60 @@ UpdateScores						;update ticker score values. Called from PeriodOver
 SetScore							;add to score for game in a0. After period 3 a game within one goal goes
 									;to OT (gsper 3) and asks for a highlight
 	cmpi.w	#4,gsper(a0)			;gsper
-	bge.w	rtss2
-	movem.l	d0-d1/a0-a1,-(sp)
-	cmpi.w	#3,gsper(a0)
-	bne.w	.o
+	bge.w	rtss2					;branch taken: done
+	movem.l	d0-d1/a0-a1,-(sp)		;save registers
+	cmpi.w	#3,gsper(a0)			;third period?
+	bne.w	.o						;no: continue
 	move.w	#5,gsper(a0)			;final
 	move.w	gss1(a0),d0				;gss1
 	sub.w	gss2(a0),d0				;gss2
-	cmp.w	#1,d0
-	bgt.w	.ex
-	cmp.w	#$FFFF,d0
-	blt.w	.ex
+	cmp.w	#1,d0					;compare d0 with 1
+	bgt.w	.ex						;greater: done
+	cmp.w	#$FFFF,d0				;compare d0 with -1
+	blt.w	.ex						;less: done
 	move.w	#3,gsper(a0)			;close game: overtime
 	bset	#gsfhl,gsflags(a0)		;gsfhl
-	bra.w	.ex
+	bra.w	.ex						;done
 .o									;not the last period: next period
-	addq.w	#1,gsper(a0)
+	addq.w	#1,gsper(a0)			;count the period
 	move.w	(a0),d0					;gst1
 	move.w	gst2(a0),d1				;gst2
-	bsr.w	.getscore
+	bsr.w	.getscore				;get the score
 	add.w	d0,gss1(a0)				;gss1
-	move.w	gst2(a0),d0
-	move.w	(a0),d1
+	move.w	gst2(a0),d0				;d0 = gst2
+	move.w	(a0),d1					;d1 = first word
 	bsr.w	.getscore				;goals for team 2
 	add.w	d0,gss2(a0)				;gss2
 .ex									;exit: restore the registers
-	movem.l	(sp)+,d0-d1/a0-a1
-	rts
+	movem.l	(sp)+,d0-d1/a0-a1		;restore registers
+	rts								;done
 .getscore							;d0 = scoring team, d1 = other team. Adds the scoring team's (bits 4-6)
 									;and the other team's (bits 0-2) sctab rows as weights. Return d0 = goals
 									;0-3
-	asl.w	#2,d0
-	movea.w	#TeamList,a1
-	movea.l	0(a1,d0.w),a1
-	adda.w	ScoutReport(a1),a1
-	move.b	(a1),d0
-	andi.w	#$70,d0
+	asl.w	#2,d0					;times 4
+	movea.w	#TeamList,a1			;a1 = TeamList
+	movea.l	0(a1,d0.w),a1			;a1 = the team
+	adda.w	ScoutReport(a1),a1		;a1 = its scout report
+	move.b	(a1),d0					;first byte
+	andi.w	#$70,d0					;keep bits 4-6
 	lsr.w	#1,d0					;row * 8
-	lea	sctab(pc),a1
-	move.l	0(a1,d0.w),(nibblebuffer).w
-	move.l	4(a1,d0.w),(nibblebuffer+4).w
-	asl.w	#2,d1
-	movea.w	#TeamList,a1
-	movea.l	0(a1,d1.w),a1
-	adda.w	ScoutReport(a1),a1
-	move.b	(a1),d0
-	andi.w	#7,d0
-	asl.w	#3,d0
-	lea	sctab(pc),a1
-	move.l	0(a1,d0.w),d1
-	add.l	d1,(nibblebuffer).w
-	move.l	4(a1,d0.w),d1
-	add.l	d1,(nibblebuffer+4).w
+	lea	sctab(pc),a1				;a1 = score table
+	move.l	0(a1,d0.w),(nibblebuffer).w	;first long into the nibble buffer
+	move.l	4(a1,d0.w),(nibblebuffer+4).w	;second long
+	asl.w	#2,d1					;times 4
+	movea.w	#TeamList,a1			;a1 = TeamList
+	movea.l	0(a1,d1.w),a1			;a1 = the team
+	adda.w	ScoutReport(a1),a1		;a1 = its scout report
+	move.b	(a1),d0					;first byte
+	andi.w	#7,d0					;keep bits 0-2
+	asl.w	#3,d0					;times 8
+	lea	sctab(pc),a1				;a1 = score table
+	move.l	0(a1,d0.w),d1			;first long
+	add.l	d1,(nibblebuffer).w		;add to the nibble buffer
+	move.l	4(a1,d0.w),d1			;second long
+	add.l	d1,(nibblebuffer+4).w	;add to the nibble buffer
 	moveq	#4,d0					;4 weights
-	bra.w	WeightedRandomSelect
+	bra.w	WeightedRandomSelect	;weighted random pick
 sctab								;weights for 0, 1, 2, 3 goals, 8 rows (92 had 4 percent bytes per row)
 	dc.w	$2B,$1E,$17,4
 	dc.w	$27,$20,$18,5

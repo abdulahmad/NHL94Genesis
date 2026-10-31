@@ -109,33 +109,33 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 setupice_highlight					;Rebuild the rink sprites after a highlight replay without reloading
 									;tiles, then fade in. Uses the sprite char start saved by setupice in
 									;spritechars. Called from StartHL2
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	bsr.w	forceblack				;screen off
-	bclr	#sfpz,(sflags).w
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	clr.w	(Hpos).w
-	clr.w	(Vpos).w
-	move.w	#$7D0,(Oldrow).w
-	st	(Zamx).w
+	bclr	#sfpz,(sflags).w		;clear sfpz
+	move.w	(disflags).w,-(sp)		;keep disflags
+	bset	#dfng,(disflags).w		;set dfng
+	clr.w	(Hpos).w				;Hpos 0
+	clr.w	(Vpos).w				;Vpos 0
+	move.w	#$7D0,(Oldrow).w		;Oldrow $7D0
+	st	(Zamx).w					;Zamx -1
 	move.w	(spritechars).w,d4		;sprite char start from setupice
-	bsr.w	defaultsprites
-	bsr.w	setupIceRinkPal
-	btst	#gmdir,(gmode).w
-	beq.w	.gok
-	movea.w	#(SortCords-M68K_RAM),a3
-	moveq	#$B,d0
+	bsr.w	defaultsprites			;default sprites
+	bsr.w	setupIceRinkPal			;ice rink palette
+	btst	#gmdir,(gmode).w		;gmdir set?
+	beq.w	.gok					;no: keep the goals
+	movea.w	#(SortCords-M68K_RAM),a3	;a3 = sort objects
+	moveq	#$B,d0					;12 players
 .loop								;flip each player's goal
-	bchg	#pfgoal,pflags(a3)
-	adda.w	#SCstruct,a3
-	dbf	d0,.loop
+	bchg	#pfgoal,pflags(a3)		;flip pfgoal
+	adda.w	#SCstruct,a3			;next object
+	dbf	d0,.loop					;loop
 .gok								;goals set for this period's direction
-	bsr.w	setplayercolors
+	bsr.w	setplayercolors			;set the player colours
 	move.w	#$FFFF,(PadControlBits).w	;no pad assignments
 	move.w	#$FFFF,(PadControlBits34).w	;no pad assignments for pads 3 and 4
 	clr.l	(padcont).w				;clear the pad readings
-	clr.l	(padcont+4).w
-	clr.l	(padcont+8).w
+	clr.l	(padcont+4).w			;clear the pad state
+	clr.l	(padcont+8).w			;(last long)
 	st	(c1playernum).w				;pad 1 controls no player
 	st	(c2playernum).w				;pad 2 controls no player
 	bsr.w	setupEASportsMap		;easn tiles at EASNcset again
@@ -143,29 +143,29 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	movea.w	#(Satt-M68K_RAM),a6		;sprite attribute table
 	moveq	#1,d6					;link counter
 	movea.w	#(pads-M68K_RAM),a3		;the 6 pad (scrolled) objects
-	clr.w	d0
-	clr.w	d1
-	bsr.w	addframe2
-	adda.w	#ffosize,a3
-	bsr.w	addframe2
-	adda.w	#ffosize,a3
-	bsr.w	addframe2
-	adda.w	#ffosize,a3
-	bsr.w	addframe2
-	adda.w	#ffosize,a3
-	bsr.w	addframe2
-	adda.w	#ffosize,a3
-	bsr.w	addframe2
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
+	bsr.w	addframe2				;add the frame
+	adda.w	#ffosize,a3				;next faceoff object
+	bsr.w	addframe2				;add the frame
+	adda.w	#ffosize,a3				;next faceoff object
+	bsr.w	addframe2				;add the frame
+	adda.w	#ffosize,a3				;next faceoff object
+	bsr.w	addframe2				;add the frame
+	adda.w	#ffosize,a3				;next faceoff object
+	bsr.w	addframe2				;add the frame
+	adda.w	#ffosize,a3				;next faceoff object
+	bsr.w	addframe2				;add the frame
 	move.l	a5,(DMAlistend).w		;end of the queued dma
-	bsr.w	dodmalist
+	bsr.w	dodmalist				;DMA list
 	move.w	#$1C,(palcount).w		;fade in new graphics now
-	move.w	(sp)+,(disflags).w
-	move.l	#VBlank,(VBint).w
-	bclr	#dfok,(disflags).w
-	bclr	#dfng,(disflags).w
-	move	#$2300,sr
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	(sp)+,(disflags).w		;restore disflags
+	move.l	#VBlank,(VBint).w		;vertical blank handler
+	bclr	#dfok,(disflags).w		;clear dfok
+	bclr	#dfng,(disflags).w		;clear dfng
+	move	#$2300,sr				;enable interrupts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 setupIceRinkPal						;Copy the ice rink palettes (pal 0&1, 16 longs) to palfadenew. Called from
 									;setupice, setupice_highlight and the stats screens
 	movea.l	#Rinktilelist,a0
@@ -265,34 +265,34 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 									;for data. Sets up the sso (4) and ffo (7) objects from .listsso /
 									;.listffo, then jumps to defaultsprites_0. Called from setupice and
 									;setupice_highlight
-	movea.l	#.listsso,a2
-	movea.w	#(sso-M68K_RAM),a3
-	moveq	#ssonum-1,d0
+	movea.l	#.listsso,a2			;a2 = sso list
+	movea.w	#(sso-M68K_RAM),a3		;a3 = sso structures
+	moveq	#ssonum-1,d0			;sso count
 .ssotop								;each screen object
 	move.w	#$FFFF,oldframe(a3)		;screen objects not locked to scroll of screen
-	move.w	(a2)+,Xcord(a3)
-	move.w	(a2)+,Ycord(a3)
-	move.w	(a2)+,frame(a3)
-	move.w	(a2)+,attribute(a3)
+	move.w	(a2)+,Xcord(a3)			;x
+	move.w	(a2)+,Ycord(a3)			;y
+	move.w	(a2)+,frame(a3)			;frame
+	move.w	(a2)+,attribute(a3)		;attribute
 	move.w	d4,VRchar(a3)			;first char of this object
-	add.w	(a2)+,d4
-	adda.w	#ssosize,a3
-	dbf	d0,.ssotop
-	movea.l	#.listffo,a2
-	movea.l	#pads,a3
-	moveq	#ffonum-1,d0
+	add.w	(a2)+,d4				;d4 plus the chars
+	adda.w	#ssosize,a3				;next sso
+	dbf	d0,.ssotop					;loop
+	movea.l	#.listffo,a2			;a2 = ffo list
+	movea.l	#pads,a3				;a3 = pads
+	moveq	#ffonum-1,d0			;ffo count
 .ffotop								;each scrolled object
 	st	oldframe(a3)				;objects tied to screen scrolling (not players/net/puck)
 	move.w	(a2)+,(a3)				;Xpos
-	move.w	(a2)+,Ypos(a3)
-	move.w	(a2)+,Zpos(a3)
-	move.w	(a2)+,frame(a3)
-	move.w	(a2)+,attribute(a3)
-	move.w	d4,VRchar(a3)
-	add.w	(a2)+,d4
+	move.w	(a2)+,Ypos(a3)			;y
+	move.w	(a2)+,Zpos(a3)			;z
+	move.w	(a2)+,frame(a3)			;frame
+	move.w	(a2)+,attribute(a3)		;attribute
+	move.w	d4,VRchar(a3)			;vram char
+	add.w	(a2)+,d4				;d4 plus the chars
 	adda.w	#ffosize,a3				;next pad object
-	dbf	d0,.ffotop
-	bra.w	defaultsprites_0
+	dbf	d0,.ffotop					;loop
+	bra.w	defaultsprites_0		;continue
 .listsso							;start values of the screen objects
 	dc.w	0						;xcord,ycord,frame,attribute,vram char size
 	dc.w	0
@@ -632,42 +632,42 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 									;awtmstruct+tmgoalie. Falls into setteams
 	move.w	(tmstruct+tmgoalie).w,-(sp)	;keep the home goalie
 	move.w	(awtmstruct+tmgoalie).w,-(sp)	;keep the away goalie
-	movem.l	a1-a3,-(sp)
+	movem.l	a1-a3,-(sp)				;save a1-a3
 	move.w	#tmPerGoals-tmHotCold-1,d0	;hot / cold table bytes - 1
 	movea.l	#awtmstruct+tmHotCold,a1	;Hot/Cold table Away Team
 	movea.l	#tmstruct+tmHotCold,a0	;Hot/Cold table Home Team
-	movea.l	#homehotcoldsave,a2
-	movea.l	#awayhotcoldsave,a3
+	movea.l	#homehotcoldsave,a2		;a2 = home hot/cold save
+	movea.l	#awayhotcoldsave,a3		;a3 = away hot/cold save
 .loop								;keep both hot / cold tables
-	move.b	(a0)+,(a2)+
-	move.b	(a1)+,(a3)+
+	move.b	(a0)+,(a2)+				;save a home byte
+	move.b	(a1)+,(a3)+				;save an away byte
 	dbf	d0,.loop					;next byte
-	movem.l	(sp)+,a1-a3
-	move.l	#tmsize-1,d0
-	movea.w	#(tmstruct-M68K_RAM),a0
+	movem.l	(sp)+,a1-a3				;restore a1-a3
+	move.l	#tmsize-1,d0			;home structure size
+	movea.w	#(tmstruct-M68K_RAM),a0	;a0 = home team structure
 .loop2								;clear the home struct
-	clr.b	(a0)+
+	clr.b	(a0)+					;clear a byte
 	dbf	d0,.loop2					;next byte
-	movea.w	#(awtmstruct-M68K_RAM),a0
-	move.w	#tmsize-1,d0
+	movea.w	#(awtmstruct-M68K_RAM),a0	;a0 = away team structure
+	move.w	#tmsize-1,d0			;away structure size
 .loop3								;clear the away struct
-	clr.b	(a0)+
+	clr.b	(a0)+					;clear a byte
 	dbf	d0,.loop3					;next byte
-	movem.l	a1-a3,-(sp)
+	movem.l	a1-a3,-(sp)				;save a1-a3
 	move.w	#tmPerGoals-tmHotCold-1,d0	;hot / cold table bytes - 1
-	movea.l	#awtmstruct+tmHotCold,a1
-	movea.l	#tmstruct+tmHotCold,a0
-	movea.l	#homehotcoldsave,a2
-	movea.l	#awayhotcoldsave,a3
+	movea.l	#awtmstruct+tmHotCold,a1	;a1 = away hot/cold
+	movea.l	#tmstruct+tmHotCold,a0	;a0 = home hot/cold
+	movea.l	#homehotcoldsave,a2		;a2 = home hot/cold save
+	movea.l	#awayhotcoldsave,a3		;a3 = away hot/cold save
 .loop4								;put the hot / cold tables back
-	move.b	(a2)+,(a0)+
-	move.b	(a3)+,(a1)+
+	move.b	(a2)+,(a0)+				;restore a home byte
+	move.b	(a3)+,(a1)+				;restore an away byte
 	dbf	d0,.loop4					;next byte
-	movem.l	(sp)+,a1-a3
-	move.w	(sp)+,(awtmstruct+tmgoalie).w
-	move.w	(sp)+,(tmstruct+tmgoalie).w
-	st	(tmstruct+tmpdst+$34).w
-	st	(awtmstruct+tmpdst+$34).w
+	movem.l	(sp)+,a1-a3				;restore a1-a3
+	move.w	(sp)+,(awtmstruct+tmgoalie).w	;away goalie
+	move.w	(sp)+,(tmstruct+tmgoalie).w	;home goalie
+	st	(tmstruct+tmpdst+$34).w		;home tmpdst entry -1
+	st	(awtmstruct+tmpdst+$34).w	;away tmpdst entry -1
 setteams							;Use hometeam/visteam to set team structures (InitTeamStructure for each).
 									;Falls in from clearTeamStats, also called from DrawMatchupBitmaps
 	movem.l	d0/a0-a2,-(sp)
