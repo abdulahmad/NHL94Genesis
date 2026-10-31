@@ -762,17 +762,17 @@ lcfound								;d2 = choice made 0-2
 	move.w	d0,tmline(a2)
 	jsr	(setpersonel).l
 lcfound_close						;close lc box
-	btst	#sfhor,(sflags).w
-	bne.w	rtss
-	bsr.w	setlccords
-	cmpi.w	#$F,(printy).w
-	blt.w	.nollcm
-	bclr	#sf3llcs,(sflags3).w
+	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
+	bne.w	rtss					;yes: nothing to erase
+	bsr.w	setlccords				;get the box position
+	cmpi.w	#$F,(printy).w			;printy below $F?
+	blt.w	.nollcm					;yes: keep sf3llcs
+	bclr	#sf3llcs,(sflags3).w	;clear sf3llcs
 .nollcm								;erase the box
 	addq.w	#1,d1					;d1 = 1 and d2 = $7FF tile: erase the box area
-	move.w	#$7FF,d2
-	bsr.w	eraser
-	bra.w	printscores1
+	move.w	#$7FF,d2				;tile $7FF
+	bsr.w	eraser					;erase the box
+	bra.w	printscores1			;redraw the scores
 ; c button press check/speed
 burst								;cbut press check/speed. Also entered from check4check burst costs energy
 									;$CC (only when line changes are on, OptLine = 0)

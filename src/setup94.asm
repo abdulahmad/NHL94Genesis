@@ -1018,18 +1018,18 @@ waitxc1								;Each time palcount runs out, eor the color
 	move.w	d0,(OldVcount).w
 	rts
 PlayoffScreen_doscores				;Print best of 7 wins "t-b" for game struct a2 at printx/printy
-	movea.w	#(mesarea-M68K_RAM),a1
-	move.w	#6,(a1)+
-	move.w	gspotwins(a2),d0
-	addi.w	#$30,d0
-	move.b	d0,(a1)+
-	move.b	#$2D,(a1)+
-	move.w	gspobwins(a2),d0
-	addi.w	#$30,d0
-	move.b	d0,(a1)+
-	clr.b	(a1)+
-	movea.w	#(mesarea-M68K_RAM),a1
-	bra.w	print
+	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
+	move.w	#6,(a1)+				;print position word 6
+	move.w	gspotwins(a2),d0		;d0 = wins of the first team
+	addi.w	#$30,d0					;to an ASCII digit
+	move.b	d0,(a1)+				;store it
+	move.b	#$2D,(a1)+				;'-'
+	move.w	gspobwins(a2),d0		;d0 = wins of the other team
+	addi.w	#$30,d0					;to an ASCII digit
+	move.b	d0,(a1)+				;store it
+	clr.b	(a1)+					;end of string
+	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
+	bra.w	print					;print it
 PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#Arrowsmap,a0

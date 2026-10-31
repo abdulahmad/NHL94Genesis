@@ -271,17 +271,17 @@ asspenalty							;player a3 should goto penalty box
 	bra.w	changeplayer
 ; add player a3 to penalty box
 assdopen							;add player a3 to penalty box
-	btst	#pfalock,pflags(a3)
-	bne.w	rtss4
-	moveq	#$10,d0
-	btst	#pfteam,pflags(a3)
-	beq.w	.1
-	moveq	#1,d0
+	btst	#pfalock,pflags(a3)		;locked in (pfalock)?
+	bne.w	rtss4					;yes: nothing to do
+	moveq	#$10,d0					;d0 = $10
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.1						;home: keep $10
+	moveq	#1,d0					;away: d0 = 1
 .1									;into the box
 	add.b	d0,(PBnum).w			;Players in penalty box
-	st	position(a3)
-	clr.w	frame(a3)
-	rts
+	st	position(a3)				;in the box
+	clr.w	frame(a3)				;frame 0
+	rts								;done
 ; player a3 should exit penalty area
 assepen								;player a3 should exit penalty area
 	btst	#pfalock,pflags(a3)
