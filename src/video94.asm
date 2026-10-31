@@ -288,7 +288,7 @@ showzam								;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Dr
 									;frame. Called from setvideo
 	move.w	(Zamx).w,d0
 	bmi.w	rtss2					;no zamboni
-	movea.l	#ZamFrameList,a0
+	movea.l	#ZamSprites,a0
 	lsr.w	#2,d0
 	move.w	#$12A,d1				;y (92 128+200)
 	moveq	#1,d2					;frame
@@ -358,7 +358,7 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 									;No crowd in a reverse angle replay. Called from setvideo
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	bne.w	.x						;branch if so
-	movea.l	#Crowdframelist,a1
+	movea.l	#CrowdSprites,a1
 	adda.l	jimdata(a1),a1			;a1 = frame offset table
 	move.w	(Hpos).w,d4
 	move.w	(Vpos).w,d5

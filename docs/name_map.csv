@@ -221,3 +221,7 @@ RenderSmallFontChar,uppads_pd,92G parent_local
 cd0,updatecrowdf_cd0,92G parent_local
 DrawMatchupBitmaps,TeamIcons,92G/93G
 vcountwait,MenuWaitVblank,93G
+Crowdframelist,CrowdSprites,92G/93G
+ZamFrameList,ZamSprites,92G/93G
+TeamBlocksmap,Teamblocksmap,92G
+ArrowsMap,Arrowsmap,92G
