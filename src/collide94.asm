@@ -1091,120 +1091,120 @@ checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/
 									;Called from checkwallcoll
 	cmpi.w	#$D,Zpos(a3)			;13 pix for zside = height of goal (puck only check)
 	bgt.w	rtss2					;over goal
-	cmpi.w	#puckscnum,SCnum(a3)
+	cmpi.w	#puckscnum,SCnum(a3)	;the puck?
 	bne.w	checkgoalp				;coll with player not puck
 	sub.w	(a2),d2					;Xpos
 	moveq	#$10,d4					;xside = 16  width of goal/2
-	add.w	(wcradiusx).w,d4
-	cmp.w	d4,d2
-	bgt.w	rtss2
-	neg.w	d4
-	cmp.w	d4,d2
-	blt.w	rtss2
-	sub.w	Ypos(a2),d3
+	add.w	(wcradiusx).w,d4		;plus the wall collision x radius
+	cmp.w	d4,d2					;beyond it?
+	bgt.w	rtss2					;yes: no collision
+	neg.w	d4						;negate the radius
+	cmp.w	d4,d2					;beyond it?
+	blt.w	rtss2					;yes: no collision
+	sub.w	Ypos(a2),d3				;minus the goal's y
 	move.w	#2,d5					;yside = 2 depth of goal/2
-	add.w	(wcradiusy).w,d5
-	cmp.w	d5,d3
-	bgt.w	rtss2
-	neg.w	d5
-	cmp.w	d5,d3
-	blt.w	rtss2
+	add.w	(wcradiusy).w,d5		;plus the wall collision y radius
+	cmp.w	d5,d3					;beyond it?
+	bgt.w	rtss2					;yes: no collision
+	neg.w	d5						;negate the radius
+	cmp.w	d5,d3					;beyond it?
+	blt.w	rtss2					;yes: no collision
 	st	(collflag).w				;inside goal area now
 	cmpi.w	#$D,OldZpos(a3)			;compare OldZpos to zside
 	blt.w	.nod					;branch if less than (in net)
-	move.w	OldZpos(a3),Zpos(a3)
-	bra.w	.deflectz
+	move.w	OldZpos(a3),Zpos(a3)	;puck z back to its old value
+	bra.w	.deflectz				;bounce off the top
 .nod								;puck in the net (below the crossbar): it loses its carrier
 	bclr	#pfgoal,pflags(a3)		;puck was below the top of the net
-	move.w	(puckc).w,d0
+	move.w	(puckc).w,d0			;d0 = puck carrier
 	bmi.w	.nocon					;no puck carrier
-	st	(puckc).w
-	asl.w	#7,d0
-	movea.w	#(SortCords-M68K_RAM),a0
+	st	(puckc).w					;puck carried by no one
+	asl.w	#7,d0					;times $80, the object size
+	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
 	move.b	#8,nopuck(a0,d0.w)		;92 wrote a word
-	move.w	(pucky).w,d1
-	btst	#pfgoal,pflags(a0,d0.w)
-	bne.w	.an
-	neg.w	d1
+	move.w	(pucky).w,d1			;d1 = puck y
+	btst	#pfgoal,pflags(a0,d0.w)	;which goal does the carrier shoot at?
+	bne.w	.an						;pfgoal set: keep
+	neg.w	d1						;negate
 .an									;carrier's side
 	tst.w	d1						;carrier's side sign
-	bpl.w	.nocon
-	bset	#pfgoal,pflags(a3)
+	bpl.w	.nocon					;positive: no contact
+	bset	#pfgoal,pflags(a3)		;set pfgoal on the puck
 .nocon								;set the puck velocity
-	move.w	#$FF00,d0
-	move.l	Ypos(a3),d1
-	sub.l	OldYpos(a3),d1
-	asr.l	#8,d1
-	beq.w	.sideentry
-	bmi.w	.0
-	neg.w	d0
-	neg.w	d5
+	move.w	#$FF00,d0				;d0 = -$100
+	move.l	Ypos(a3),d1				;d1 = y position
+	sub.l	OldYpos(a3),d1			;minus the old y
+	asr.l	#8,d1					;scaled down
+	beq.w	.sideentry				;zero: side entry
+	bmi.w	.0						;negative: keep
+	neg.w	d0						;negate d0
+	neg.w	d5						;negate d5
 .0									;d0/d5 = where the puck crossed the goal line
-	add.w	d3,d5
+	add.w	d3,d5					;add d3 to d5
 	move.l	(a3),d3					;Xpos
-	sub.l	OldXpos(a3),d3
-	asr.l	#8,d3
-	muls.w	d3,d5
-	divs.w	d1,d5
-	bvs.w	.sideentry
-	sub.w	d5,d2
-	cmp.w	d4,d2
-	blt.w	.sideentry
-	neg.w	d4
-	cmp.w	d4,d2
-	bgt.w	.sideentry
-	clr.w	d1
-	move.w	Ypos(a3),d3
-	eor.w	d0,d3
-	bmi.w	wallcoll
-	neg.w	d0
-	btst	#pfgoal,pflags(a3)
-	bne.w	wallcoll
+	sub.l	OldXpos(a3),d3			;d3 minus the old x
+	asr.l	#8,d3					;scaled down
+	muls.w	d3,d5					;times d3
+	divs.w	d1,d5					;divided by d1
+	bvs.w	.sideentry				;overflow: side entry
+	sub.w	d5,d2					;d2 minus the result
+	cmp.w	d4,d2					;below the radius?
+	blt.w	.sideentry				;yes: side entry
+	neg.w	d4						;negate the radius
+	cmp.w	d4,d2					;beyond it?
+	bgt.w	.sideentry				;yes: side entry
+	clr.w	d1						;d1 = 0
+	move.w	Ypos(a3),d3				;d3 = puck y
+	eor.w	d0,d3					;xor with d0
+	bmi.w	wallcoll				;negative: wall collision
+	neg.w	d0						;negate d0
+	btst	#pfgoal,pflags(a3)		;pfgoal set?
+	bne.w	wallcoll				;yes: wall collision
 	cmpi.w	#$D,Zpos(a3)			;.zside, Zpos
-	beq.w	.deflectsf
-	subq.w	#1,d4
-	cmp.w	d4,d2
-	bgt.w	.deflectsf
-	neg.w	d4
-	cmp.w	d4,d2
-	bge.w	Goal
+	beq.w	.deflectsf				;equal: deflect
+	subq.w	#1,d4					;one less
+	cmp.w	d4,d2					;beyond it?
+	bgt.w	.deflectsf				;yes: deflect
+	neg.w	d4						;negate the radius
+	cmp.w	d4,d2					;beyond it?
+	bge.w	Goal					;no: goal
 .deflectsf							;deflection off the post or crossbar: count the shot and play the sound
 	bsr.w	ChkShotStat				;deflection: count the shot
 	move.w	#$25,-(sp)				;sfx $25 when the clock is stopped (92 used 9)
 	btst	#gmclock,(gmode).w		;gmclock: no goal after the whistle
-	bne.w	.deflectsf2
+	bne.w	.deflectsf2				;not zero: skip the stat
 	move.w	#8,(sp)					;sfx 8 (92 used 31) and crowd
-	addi.w	#$12C,(Crowdlevel).w
-	addi.w	#$28,(CwdExciteLvl).w
+	addi.w	#$12C,(Crowdlevel).w	;raise the crowd level by $12C
+	addi.w	#$28,(CwdExciteLvl).w	;raise the excitement level by $28
 .deflectsf2							;play the sound
-	bsr.w	sfx
-	move.w	#$1000,d0
-	bsr.w	randomd0
-	tst.w	Ypos(a3)
-	bmi.w	.df0
-	neg.w	d0
+	bsr.w	sfx						;play the sound
+	move.w	#$1000,d0				;range $1000
+	bsr.w	randomd0				;random value
+	tst.w	Ypos(a3)				;puck y negative?
+	bmi.w	.df0					;yes: keep
+	neg.w	d0						;negate
 .df0								;d0 = random y speed away from the net
-	move.w	d0,Yvel(a3)
-	move.w	#$1000,d0
-	bsr.w	randomd0s
-	move.w	d0,Xvel(a3)
-	move.w	#$1000,d0
-	bsr.w	randomd0s
-	move.w	d0,Zvel(a3)
-	bra.w	puckflip
+	move.w	d0,Yvel(a3)				;y velocity
+	move.w	#$1000,d0				;range $1000
+	bsr.w	randomd0s				;random signed value
+	move.w	d0,Xvel(a3)				;x velocity
+	move.w	#$1000,d0				;range $1000
+	bsr.w	randomd0s				;random signed value
+	move.w	d0,Zvel(a3)				;z velocity
+	bra.w	puckflip				;flip the puck
 .deflectz							;puck over the net: bounce down (Zvel kept downward)
-	neg.w	Zvel(a3)
-	bpl.w	rtss2
-	neg.w	Zvel(a3)
-	rts
+	neg.w	Zvel(a3)				;reverse z velocity
+	bpl.w	rtss2					;positive: done
+	neg.w	Zvel(a3)				;reverse it back
+	rts								;done
 .sideentry							;through the side or back: treat the net as a wall along x
 	clr.w	d0						;through the side or back: wall normal along x, sign from x motion
-	move.w	#$100,d1
+	move.w	#$100,d1				;d1 = $100
 	move.w	(a3),d2					;Xpos
-	sub.w	OldXpos(a3),d2
-	bmi.w	wallcoll
-	neg.w	d1
-	bra.w	wallcoll
+	sub.w	OldXpos(a3),d2			;d2 minus the old x
+	bmi.w	wallcoll				;negative: wall collision
+	neg.w	d1						;negate
+	bra.w	wallcoll				;wall collision
 Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit 2)
 									;only the shooter's end counts (gmode2 bit 0
 									;shootout, shootoutteam picks the end); it counts the shootout goal

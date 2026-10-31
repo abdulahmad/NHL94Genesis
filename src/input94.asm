@@ -261,109 +261,109 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 rtss15								;shared rts for the early exits nearby
 	rts
 doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinput_chkanim
-	btst	#5,d1
-	bne.w	.press
-	btst	#5,d3
-	bne.w	.held
-	bclr	#7,pflags2(a3)
-	bra.w	doinput_chkanim
+	btst	#5,d1					;C pressed?
+	bne.w	.press					;yes: press
+	btst	#5,d3					;C held?
+	bne.w	.held					;yes: held
+	bclr	#7,pflags2(a3)			;clear pflags2 bit 7
+	bra.w	doinput_chkanim			;animation check
 .held								;bit 5 of d3 set
-	btst	#7,pflags2(a3)
-	beq.w	doinput_chkanim
-	movem.l	d0-d3/a0-a3,-(sp)
-	movea.l	#SPAlist,a0
-	adda.w	SPA(a3),a0
-	move.w	facedir(a3),d0
-	btst	#3,attribute(a3)
-	beq.w	.1
-	neg.w	d0
-	addq.w	#8,d0
-	andi.w	#7,d0
+	btst	#7,pflags2(a3)			;pflags2 bit 7 set?
+	beq.w	doinput_chkanim			;no: animation check
+	movem.l	d0-d3/a0-a3,-(sp)		;save registers
+	movea.l	#SPAlist,a0				;a0 = animation lists
+	adda.w	SPA(a3),a0				;plus the animation
+	move.w	facedir(a3),d0			;d0 = facing
+	btst	#3,attribute(a3)		;flipped animation?
+	beq.w	.1						;no: keep
+	neg.w	d0						;negate
+	addq.w	#8,d0					;plus 8
+	andi.w	#7,d0					;0 to 7
 .1									;facedir mirrored for flipped animations (attribute bit 3)
-	asl.w	#1,d0
-	adda.w	0(a0,d0.w),a0
-	tst.b	SPAnum+1(a3)
-	movem.l	(sp)+,d0-d3/a0-a3
-	bpl.s	rtss15
-	move.w	#$A,SPAcnt(a3)
-	rts
+	asl.w	#1,d0					;times 2: table entry
+	adda.w	0(a0,d0.w),a0			;a0 = that animation
+	tst.b	SPAnum+1(a3)			;animation number low byte
+	movem.l	(sp)+,d0-d3/a0-a3		;restore registers
+	bpl.s	rtss15					;not negative: done
+	move.w	#$A,SPAcnt(a3)			;animation count $A
+	rts								;done
 .press								;bit 5 of d1 set
-	btst	#pfalock,pflags(a3)
-	bne.w	doinput_chkanim
-	movem.w	d0-d1,-(sp)
-	move.w	(puckx).w,d0
-	sub.w	(a3),d0
-	move.w	(pucky).w,d1
-	sub.w	Ypos(a3),d1
-	bsr.w	vtoa
-	move.w	d0,facedir(a3)
-	movem.w	(sp)+,d0-d1
-	move.w	(TempWord1).w,d0
-	bclr	#0,(BA_PS_flags).w
-	move.w	(gameclock).w,d0
-	andi.w	#7,d0
-	asl.w	#4,d0
-	addi.w	#$A0,d0
-	cmpi.w	#$DB,(pucky).w
-	bgt.w	.3
-	cmpi.w	#$FF25,(pucky).w
-	bgt.w	.4
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.w	doinput_chkanim			;yes: animation check
+	movem.w	d0-d1,-(sp)				;save registers
+	move.w	(puckx).w,d0			;puck x
+	sub.w	(a3),d0					;minus a3 x
+	move.w	(pucky).w,d1			;puck y
+	sub.w	Ypos(a3),d1				;minus a3 y
+	bsr.w	vtoa					;direction
+	move.w	d0,facedir(a3)			;face the puck
+	movem.w	(sp)+,d0-d1				;restore registers
+	move.w	(TempWord1).w,d0		;d0 = TempWord1
+	bclr	#0,(BA_PS_flags).w		;clear BA_PS_flags bit 0
+	move.w	(gameclock).w,d0		;d0 = game clock
+	andi.w	#7,d0					;low 3 bits
+	asl.w	#4,d0					;times 16
+	addi.w	#$A0,d0					;plus $A0
+	cmpi.w	#$DB,(pucky).w			;puck y above $DB?
+	bgt.w	.3						;yes: outside the zone
+	cmpi.w	#$FF25,(pucky).w		;puck y above -$DB?
+	bgt.w	.4						;yes: in the zone
 .3									;puck Y outside the zone
-	subi.w	#$40,d0
+	subi.w	#$40,d0					;minus $40
 .4									;d0 = lead time: shorter near the ends (pucky past the blue lines)
-	move.w	d0,d1
-	muls.w	(puckvx).w,d0
-	swap	d0
-	add.w	(puckx).w,d0
-	muls.w	(puckvy).w,d1
-	swap	d1
-	add.w	(pucky).w,d1
-	bsr.w	ClampTargetY
-	movem.w	d0-d1,-(sp)
-	muls.w	d0,d0
-	muls.w	d1,d1
-	add.l	d1,d0
-	cmp.l	#$384,d0
-	bhi.w	.far
-	movem.w	(sp)+,d0-d1
-	bra.w	.near
+	move.w	d0,d1					;d1 = lead time
+	muls.w	(puckvx).w,d0			;times puck x velocity
+	swap	d0						;result to the low word
+	add.w	(puckx).w,d0			;plus puck x
+	muls.w	(puckvy).w,d1			;times puck y velocity
+	swap	d1						;result to the low word
+	add.w	(pucky).w,d1			;plus puck y
+	bsr.w	ClampTargetY			;clamp the target y
+	movem.w	d0-d1,-(sp)				;save them
+	muls.w	d0,d0					;x squared
+	muls.w	d1,d1					;y squared
+	add.l	d1,d0					;sum
+	cmp.l	#$384,d0				;above $384?
+	bhi.w	.far					;yes: far
+	movem.w	(sp)+,d0-d1				;restore them
+	bra.w	.near					;near
 .far								;d0 > $384
-	bsr.w	Sroot
-	moveq	#1,d2
-	add.w	d0,d2
-	moveq	#$12,d4
-	btst	#sfssdir,(sflags).w
-	beq.w	.6
-	addq.w	#8,d4
+	bsr.w	Sroot					;square root
+	moveq	#1,d2					;d2 = 1
+	add.w	d0,d2					;plus the distance
+	moveq	#$12,d4					;d4 = $12
+	btst	#sfssdir,(sflags).w		;sfssdir set?
+	beq.w	.6						;no: keep
+	addq.w	#8,d4					;d4 = $1A
 .6									;pop the d0-d1 saved above
-	movem.w	(sp)+,d0-d1
-	muls.w	d4,d1
-	addq.w	#8,d4
-	muls.w	d4,d0
-	divs.w	d2,d0
-	divs.w	d2,d1
+	movem.w	(sp)+,d0-d1				;restore them
+	muls.w	d4,d1					;y times d4
+	addq.w	#8,d4					;d4 plus 8
+	muls.w	d4,d0					;x times d4
+	divs.w	d2,d0					;divide x by d2
+	divs.w	d2,d1					;divide y by d2
 .near								;target within 30 pixels: no scaling
-	add.w	d3,d1
-	move.w	d1,d2
-	cmpi.w	#$22,2(a0)
-	cmpi.w	#$18,(a0)
-	cmpi.w	#$FFE8,(a0)
-	cmpi.w	#$C,2(a0)
-	cmpi.w	#$108,(pucky).w
-	cmpi.w	#$FEF8,(pucky).w
-	bset	#pf2aip,pflags2(a3)
-	bne.w	doinput_chkanim
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#puckcross,a0
-	move.w	#$108,d3
+	add.w	d3,d1					;plus d3
+	move.w	d1,d2					;d2 = y
+	cmpi.w	#$22,2(a0)				;compare with the animation data
+	cmpi.w	#$18,(a0)				;compare with the animation data
+	cmpi.w	#$FFE8,(a0)				;compare with the animation data
+	cmpi.w	#$C,2(a0)				;compare with the animation data
+	cmpi.w	#$108,(pucky).w			;puck y against $108
+	cmpi.w	#$FEF8,(pucky).w		;puck y against -$108
+	bset	#pf2aip,pflags2(a3)		;set pf2aip
+	bne.w	doinput_chkanim			;already set: animation check
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#puckcross,a0			;a0 = puckcross
+	move.w	#$108,d3				;d3 = $108
 	btst	#pfgoal,pflags(a3)		;check which net shooting on
 	beq.w	.save					;branch if bottom net
 	neg.w	d3						;negate d3 (-108 hex)
 	addq.w	#pcsize,a0				;bottom goalie puckcross entry
 .save								;goalie save
-	jsr	(goaliesave).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	jsr	(goaliesave).l				;goalie save
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 ClampTargetY						;clamp the target y d1 for player a3 (d0 cleared when a3 has the puck)
 	move.w	(puckc).w,d2			;d2 = SCnum of the puck carrier
 	cmp.w	SCnum(a3),d2			;is a3 the carrier?
