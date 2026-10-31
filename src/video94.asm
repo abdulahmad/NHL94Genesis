@@ -425,24 +425,24 @@ waitjoy								;wait for either joystick input. Return d1 = new button presses. 
 ; return d1 = new button presses
 orjoy								;return d1 = new button presses from either joystick
 	tst.w	(FourWayPlay).w			;check for 4-way play?
-	bne.w	.4way
-	bsr.w	ReadJoy1
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy2
-	or.w	(sp)+,d1
-	rts
+	bne.w	.4way					;four way play: all four pads
+	bsr.w	ReadJoy1				;read pad 1
+	move.w	d1,-(sp)				;keep it
+	bsr.w	ReadJoy2				;read pad 2
+	or.w	(sp)+,d1				;combine them
+	rts								;done
 .4way								;FourWayPlay <> 0
-	bsr.w	ReadJoy1
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy2
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy3
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy4
-	or.w	(sp)+,d1
-	or.w	(sp)+,d1
-	or.w	(sp)+,d1
-	rts
+	bsr.w	ReadJoy1				;read pad 1
+	move.w	d1,-(sp)				;keep it
+	bsr.w	ReadJoy2				;read pad 2
+	move.w	d1,-(sp)				;keep it
+	bsr.w	ReadJoy3				;read pad 3
+	move.w	d1,-(sp)				;keep it
+	bsr.w	ReadJoy4				;read pad 4
+	or.w	(sp)+,d1				;combine pad 4 with pad 3
+	or.w	(sp)+,d1				;combine pad 2
+	or.w	(sp)+,d1				;combine pad 1
+	rts								;done
 ; eliminate diagonal direction presses on d0
 nodiag								;eliminate diagonal direction presses: if held directions (d3 bits 0-3)
 									;are not one direction, clear the d1 direction bits

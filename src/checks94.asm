@@ -2650,111 +2650,111 @@ PenaltyShotEndReturn				;penalty shot already finished: return without adding an
 ; this is where the action starts
 puckfaceoff							;puck controller for the face off: a3 = the face off controller (shootout
 									;mode skips to its own setup)
-	bclr	#4,(sflags8).w
-	btst	#0,(gmode2).w
-	beq.w	.normalfaceoff
-	clr.w	(puckvx).w
-	clr.w	(puckvy).w
+	bclr	#4,(sflags8).w			;clear sflags8 bit 4
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	beq.w	.normalfaceoff			;no: normal faceoff
+	clr.w	(puckvx).w				;puck x velocity 0
+	clr.w	(puckvy).w				;puck y velocity 0
 	move.w	#$1E,d0					;assignment ECB6?
-	bra.w	assreplace
+	bra.w	assreplace				;replay in progress: continue there
 .normalfaceoff						;bit 0 of gmode2 clear
-	bclr	#pfna,pflags(a3)
-	beq.w	WaitForFaceoffLineChanges
-	bclr	#0,(sflags8).w
-	beq.w	.resetpads
-	clr.w	(fox).w
-	clr.w	(foy).w
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	WaitForFaceoffLineChanges	;it was clear: wait for the line changes
+	bclr	#0,(sflags8).w			;clear sflags8 bit 0
+	beq.w	.resetpads				;it was clear: reset the pads
+	clr.w	(fox).w					;faceoff x 0
+	clr.w	(foy).w					;faceoff y 0
 .resetpads							;reset the pads
-	bclr	#7,(sflags7).w
-	clr.l	(padcont).w
-	clr.l	(padcont+4).w
-	clr.l	(padcont+8).w
-	bclr	#6,(sflags7).w
-	bclr	#2,(sflags7).w
-	jsr	(CheckScoreLeader).l
-	tst.w	(faceoffanim).w
-	bmi.w	.choosefaceoffspot
-	move.w	(faceoffanim).w,d0
-	bra.w	.handlefaceoffspot
+	bclr	#7,(sflags7).w			;clear sflags7 bit 7
+	clr.l	(padcont).w				;clear the pad state (padcont)
+	clr.l	(padcont+4).w			;(next long)
+	clr.l	(padcont+8).w			;(last long)
+	bclr	#6,(sflags7).w			;clear sflags7 bit 6
+	bclr	#2,(sflags7).w			;clear sflags7 bit 2
+	jsr	(CheckScoreLeader).l		;check who leads the score
+	tst.w	(faceoffanim).w			;faceoff animation chosen?
+	bmi.w	.choosefaceoffspot		;no: choose one
+	move.w	(faceoffanim).w,d0		;d0 = the animation
+	bra.w	.handlefaceoffspot		;use it
 .choosefaceoffspot					;faceoffanim negative
-	jsr	(RandomFaceoffAnim).l
-	tst.w	d0
-	bmi.w	.checkperiod
+	jsr	(RandomFaceoffAnim).l		;random faceoff animation
+	tst.w	d0						;result negative?
+	bmi.w	.checkperiod			;yes: skip setting it
 .handlefaceoffspot					;set the faceoff animation for the spot
-	jsr	(SetFaceoffAnim).l
+	jsr	(SetFaceoffAnim).l			;set the animation
 .checkperiod						;period check
-	bclr	#1,(sflags6).w
-	bclr	#1,(gmode2).w
-	tst.w	(gameclock).w
-	beq.w	PeriodOver
-	btst	#gmeog,(gmode).w
-	bne.w	PeriodOver
-	cmpi.w	#3,(gsp).w
-	bne.w	.npo
-	move.w	(HmGoals).w,d0
-	cmp.w	(AwGoals).w,d0
-	bne.w	clockcont_0
+	bclr	#1,(sflags6).w			;clear sflags6 bit 1
+	bclr	#1,(gmode2).w			;clear gmode2 bit 1
+	tst.w	(gameclock).w			;game clock at 0?
+	beq.w	PeriodOver				;yes: period is over
+	btst	#gmeog,(gmode).w		;end of game flag (gmeog)?
+	bne.w	PeriodOver				;yes: period is over
+	cmpi.w	#3,(gsp).w				;third period?
+	bne.w	.npo					;no: not overtime
+	move.w	(HmGoals).w,d0			;home goals
+	cmp.w	(AwGoals).w,d0			;equal to away goals?
+	bne.w	clockcont_0				;no: someone leads, continue the clock
 .npo								;no overtime win
-	btst	#gmpendel,(gmode).w
-	bne.w	Stop4Pen
-	move.w	(PerTimeTotal).w,d0
-	asr.w	#1,d0
-	cmp.w	(gameclock).w,d0
-	bls.w	.returngoalies
-	cmpi.w	#$3C,(gameclock).w
-	blt.w	.returngoalies
-	bclr	#sf3fosong,(sflags3).w
-	beq.w	.returngoalies
-	btst	#gmclock,(gmode).w
-	beq.w	.returngoalies
-	btst	#6,(sflags8).w
-	bne.w	.returngoalies
-	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#SngFaceoff,(SongIndex).w
-	jsr	(ChooseSong).l
-	bset	#4,(sflags8).w
+	btst	#gmpendel,(gmode).w		;penalty ended (gmpendel)?
+	bne.w	Stop4Pen				;yes: stop for the penalty
+	move.w	(PerTimeTotal).w,d0		;d0 = period time total
+	asr.w	#1,d0					;half of it
+	cmp.w	(gameclock).w,d0		;game clock past half?
+	bls.w	.returngoalies			;yes: return the goalies
+	cmpi.w	#$3C,(gameclock).w		;under $3C seconds?
+	blt.w	.returngoalies			;yes: return the goalies
+	bclr	#sf3fosong,(sflags3).w	;clear sf3fosong
+	beq.w	.returngoalies			;it was clear: return the goalies
+	btst	#gmclock,(gmode).w		;clock running (gmclock)?
+	beq.w	.returngoalies			;no: return the goalies
+	btst	#6,(sflags8).w			;sflags8 bit 6 set?
+	bne.w	.returngoalies			;yes: return the goalies
+	move.w	(HomeTeam).w,(HmTeam).w	;HmTeam = the home team
+	move.w	#SngFaceoff,(SongIndex).w	;faceoff song
+	jsr	(ChooseSong).l				;choose it
+	bset	#4,(sflags8).w			;set sflags8 bit 4
 .returngoalies						;return pulled goalies and start the faceoff timers
-	bsr.w	ReturnGoalies
-	st	temp1(a3)
-	st	temp2(a3)
-	tst.w	(OptLine).w
-	bne.w	WaitForFaceoffLineChanges
-	bclr	#tmflcm,(tmstruct+tmflags).w
-	bclr	#tmflcm,(awtmstruct+tmflags).w
-	movea.w	#(SortCords-M68K_RAM),a0
-	moveq	#$B,d0
+	bsr.w	ReturnGoalies			;put pulled goalies back
+	st	temp1(a3)					;first timer: not started
+	st	temp2(a3)					;second timer: not started
+	tst.w	(OptLine).w				;OptLine set?
+	bne.w	WaitForFaceoffLineChanges	;yes: no line change
+	bclr	#tmflcm,(tmstruct+tmflags).w	;clear home line change mode
+	bclr	#tmflcm,(awtmstruct+tmflags).w	;clear away line change mode
+	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
+	moveq	#$B,d0					;12 players
 .clearlcmloop						;loop: clear the line change mode of all 12 players
-	bclr	#pf2lcm,pflags2(a0)
-	adda.w	#SCstruct,a0
-	dbf	d0,.clearlcmloop
-	move.w	(cont1team).w,d0
-	or.w	(cont2team).w,d0
-	beq.w	.checkc1line
-	btst	#sfhor,(sflags).w
-	beq.w	.checkc1line
-	bsr.w	forceblack
-	bset	#sfslock,(sflags).w
-	bsr.w	ClrHor
-	move.w	#$18,(palcount).w
-	tst.w	(OptLine).w
-	bne.w	.checkc1line
-	btst	#4,(sflags7).w
-	beq.w	.checkc1line
-	clr.w	(palcount).w
+	bclr	#pf2lcm,pflags2(a0)		;clear the player's line change mode
+	adda.w	#SCstruct,a0			;next object
+	dbf	d0,.clearlcmloop			;loop
+	move.w	(cont1team).w,d0		;d0 = controller 1 team
+	or.w	(cont2team).w,d0		;or controller 2 team
+	beq.w	.checkc1line			;no human team: skip
+	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
+	beq.w	.checkc1line			;no: skip
+	bsr.w	forceblack				;force the colours black
+	bset	#sfslock,(sflags).w		;set sfslock
+	bsr.w	ClrHor					;ClrHor
+	move.w	#$18,(palcount).w		;palette count $18
+	tst.w	(OptLine).w				;OptLine set?
+	bne.w	.checkc1line			;yes: skip
+	btst	#4,(sflags7).w			;sflags7 bit 4 set?
+	beq.w	.checkc1line			;no: skip
+	clr.w	(palcount).w			;palette count 0
 .checkc1line						;start the line change box for each pad's team
-	move.w	(c1playernum).w,d0
-	bmi.w	.checkc2line
-	bsr.w	StartFaceoffLineChange
+	move.w	(c1playernum).w,d0		;d0 = pad 1 player
+	bmi.w	.checkc2line			;none: next pad
+	bsr.w	StartFaceoffLineChange	;start its line change
 .checkc2line						;pad 2 line change
-	move.w	(c2playernum).w,d0
-	bmi.w	.checkcomputerline
-	bsr.w	StartFaceoffLineChange
+	move.w	(c2playernum).w,d0		;d0 = pad 2 player
+	bmi.w	.checkcomputerline		;none: computer's line
+	bsr.w	StartFaceoffLineChange	;start its line change
 .checkcomputerline					;computer line change
-	movea.w	#(tmstruct-M68K_RAM),a1
-	lea	tmsize(a1),a2
-	moveq	#2,d0
-	bsr.w	SetFaceoffComputerLine
-	bra.w	WaitForFaceoffLineChanges
+	movea.w	#(tmstruct-M68K_RAM),a1	;a1 = home team structure
+	lea	tmsize(a1),a2				;a2 = away team structure
+	moveq	#2,d0					;d0 = 2
+	bsr.w	SetFaceoffComputerLine	;computer line change
+	bra.w	WaitForFaceoffLineChanges	;wait for the line changes
 SetFaceoffComputerLine				;faceoff: start a line change for team d0 when the computer controls it
 									;(line changes on)
 	tst.w	(OptLine).w				;OptLine set?
@@ -4307,152 +4307,152 @@ doplayeracc							;player a3 gets acc. in d0 dir
 	dc.w	$FFF0
 	dc.w	$FFF0
 goalieacc							;goalie gets acc. in direction d0. Turns facedir one step toward d0
-	btst	#pfjoycon,pflags(a3)
-	beq.w	.normalgoalie
-	movem.w	d0,-(sp)
-	move.w	(puckc).w,d0
-	cmp.w	SCnum(a3),d0
-	movem.w	(sp)+,d0
-	beq.w	.normalgoalie
-	cmpi.w	#$30,(a3)
-	bgt.w	.normalgoalie
-	cmpi.w	#$FFD0,(a3)
-	blt.w	.normalgoalie
-	cmpi.w	#$FF40,Ypos(a3)
-	bgt.w	.checkbottom
-	cmpi.w	#$FEFA,Ypos(a3)
-	blt.w	.normalgoalie
-	bra.w	.facepuck
+	btst	#pfjoycon,pflags(a3)	;human controlled (pfjoycon)?
+	beq.w	.normalgoalie			;no: normal goalie
+	movem.w	d0,-(sp)				;save d0
+	move.w	(puckc).w,d0			;d0 = SCnum of the puck carrier
+	cmp.w	SCnum(a3),d0			;is it this goalie?
+	movem.w	(sp)+,d0				;restore d0 (flags kept)
+	beq.w	.normalgoalie			;yes: normal goalie
+	cmpi.w	#$30,(a3)				;x beyond $30?
+	bgt.w	.normalgoalie			;yes: normal goalie
+	cmpi.w	#$FFD0,(a3)				;x below -$30?
+	blt.w	.normalgoalie			;yes: normal goalie
+	cmpi.w	#$FF40,Ypos(a3)			;y above -$C0 (top net)?
+	bgt.w	.checkbottom			;yes: check the bottom net
+	cmpi.w	#$FEFA,Ypos(a3)			;y below -$106?
+	blt.w	.normalgoalie			;yes: normal goalie
+	bra.w	.facepuck				;in the top crease: face the puck
 .checkbottom						;near the bottom net: face the puck
-	cmpi.w	#$C0,Ypos(a3)
-	blt.w	.normalgoalie
-	cmpi.w	#$106,Ypos(a3)
-	bgt.w	.normalgoalie
+	cmpi.w	#$C0,Ypos(a3)			;y below $C0?
+	blt.w	.normalgoalie			;yes: normal goalie
+	cmpi.w	#$106,Ypos(a3)			;y above $106?
+	bgt.w	.normalgoalie			;yes: normal goalie
 .facepuck							;in the crease: turn toward the puck
-	movem.w	d0-d1,-(sp)
-	move.w	(puckx).w,d0
-	sub.w	(a3),d0
-	move.w	(pucky).w,d1
-	sub.w	Ypos(a3),d1
-	cmp.w	#$10,d0
-	bgt.w	.usevtoa
-	cmp.w	#$FFF0,d0
-	blt.w	.usevtoa
-	cmp.w	#$10,d1
-	bgt.w	.usevtoa
-	cmp.w	#$FFF0,d1
-	blt.w	.usevtoa
-	move.w	facedir(a3),d0
-	bra.w	.checkadjust
+	movem.w	d0-d1,-(sp)				;save registers
+	move.w	(puckx).w,d0			;puck x
+	sub.w	(a3),d0					;minus goalie x
+	move.w	(pucky).w,d1			;puck y
+	sub.w	Ypos(a3),d1				;minus goalie y
+	cmp.w	#$10,d0					;dx beyond +$10?
+	bgt.w	.usevtoa				;yes: use vtoa
+	cmp.w	#$FFF0,d0				;dx beyond -$10?
+	blt.w	.usevtoa				;yes: use vtoa
+	cmp.w	#$10,d1					;dy beyond +$10?
+	bgt.w	.usevtoa				;yes: use vtoa
+	cmp.w	#$FFF0,d1				;dy beyond -$10?
+	blt.w	.usevtoa				;yes: use vtoa
+	move.w	facedir(a3),d0			;puck is close: keep the facing
+	bra.w	.checkadjust			;go on
 .usevtoa							;direction to the puck
-	bsr.w	vtoa
+	bsr.w	vtoa					;direction from (dx, dy)
 .checkadjust						;turn one step toward it (sflags4 bit 0 keeps the direction)
-	btst	#0,(sflags4).w
-	bne.w	.adjustkeepdir
-	bsr.w	AdjustFacingDirection
-	movem.w	(sp)+,d0-d1
-	bra.w	.setready
+	btst	#0,(sflags4).w			;sflags4 bit 0 set?
+	bne.w	.adjustkeepdir			;yes: keep the direction
+	bsr.w	AdjustFacingDirection	;turn one step toward d0
+	movem.w	(sp)+,d0-d1				;restore registers
+	bra.w	.setready				;ready stance
 .adjustkeepdir						;pop the d0-d1 saved above
-	movem.w	(sp)+,d0-d1
-	cmp.w	#8,d0
-	beq.w	.setready
-	movem.w	d0-d1,-(sp)
-	bsr.w	AdjustFacingDirection
-	movem.w	(sp)+,d0-d1
+	movem.w	(sp)+,d0-d1				;restore registers
+	cmp.w	#8,d0					;d0 = 8 (no direction)?
+	beq.w	.setready				;yes: ready stance
+	movem.w	d0-d1,-(sp)				;save registers
+	bsr.w	AdjustFacingDirection	;turn one step toward d0
+	movem.w	(sp)+,d0-d1				;restore registers
 .setready							;ready stance unless a save animation runs
-	move.w	#SPAgready,d1
-	btst	#pf2aip,pflags2(a3)
-	bne.w	.exit
-	bsr.w	SetSPA
-	cmp.w	#8,d0
-	bne.w	.playermove
-	tst.w	position(a3)
-	bne.w	.playermove
-	btst	#pfjoycon,pflags(a3)
-	beq.w	.playermove
-	move.w	d0,-(sp)
-	move.w	Ypos(a3),d0
-	btst	#pfgoal,pflags(a3)
-	beq.w	.topstay
-	neg.w	d0
+	move.w	#SPAgready,d1			;d1 = the ready animation
+	btst	#pf2aip,pflags2(a3)		;animation in progress?
+	bne.w	.exit					;yes: done
+	bsr.w	SetSPA					;set the animation
+	cmp.w	#8,d0					;d0 = 8 (no direction)?
+	bne.w	.playermove				;no: move
+	tst.w	position(a3)			;goalie position?
+	bne.w	.playermove				;no: move
+	btst	#pfjoycon,pflags(a3)	;human controlled?
+	beq.w	.playermove				;no: move
+	move.w	d0,-(sp)				;save d0
+	move.w	Ypos(a3),d0				;d0 = y
+	btst	#pfgoal,pflags(a3)		;pfgoal set?
+	beq.w	.topstay				;no: keep the sign
+	neg.w	d0						;flip the sign
 .topstay							;stay at the spot
-	cmp.w	#$D8,d0
-	blt.w	.stopandrestore
-	move.w	(a3),d0
-	cmp.w	#$20,d0
-	bgt.w	.stopandrestore
-	cmp.w	#$FFE0,d0
-	blt.w	.stopandrestore
-	move.w	(sp)+,d0
-	jsr	(stopna2).l
-	bra.w	.playermove
+	cmp.w	#$D8,d0					;y below $D8?
+	blt.w	.stopandrestore			;yes: stop and restore
+	move.w	(a3),d0					;d0 = x
+	cmp.w	#$20,d0					;beyond +$20?
+	bgt.w	.stopandrestore			;yes: stop and restore
+	cmp.w	#$FFE0,d0				;beyond -$20?
+	blt.w	.stopandrestore			;yes: stop and restore
+	move.w	(sp)+,d0				;restore d0
+	jsr	(stopna2).l					;stop
+	bra.w	.playermove				;move
 .stopandrestore						;stop and restore the direction
-	jsr	(stopna2).l
-	move.w	(sp)+,d0
+	jsr	(stopna2).l					;stop
+	move.w	(sp)+,d0				;restore d0
 .playermove							;accelerate in d0
-	move.w	d0,d2
-	bra.w	playeracc
+	move.w	d0,d2					;d2 = direction
+	bra.w	playeracc				;accelerate
 .normalgoalie						;out of the crease: normal goalie skating
-	move.w	#SPAgready,d1
-	btst	#pfjoycon,pflags(a3)
-	beq.w	.goalieacc2
-	btst	#pfnc,pflags(a3)
-	bne.w	.cgl
-	cmp.w	#8,d0
-	bne.w	.turnskater
-	tst.w	position(a3)
-	bne.w	.cgl
-	move.w	d0,-(sp)
-	move.w	Ypos(a3),d0
-	btst	#pfgoal,pflags(a3)
-	beq.w	.topstop
-	neg.w	d0
+	move.w	#SPAgready,d1			;d1 = the ready animation
+	btst	#pfjoycon,pflags(a3)	;human controlled?
+	beq.w	.goalieacc2				;no: goalieacc2
+	btst	#pfnc,pflags(a3)		;pfnc set?
+	bne.w	.cgl					;yes: glide check
+	cmp.w	#8,d0					;d0 = 8 (no direction)?
+	bne.w	.turnskater				;no: turn
+	tst.w	position(a3)			;goalie position?
+	bne.w	.cgl					;no: glide check
+	move.w	d0,-(sp)				;save d0
+	move.w	Ypos(a3),d0				;d0 = y
+	btst	#pfgoal,pflags(a3)		;pfgoal set?
+	beq.w	.topstop				;no: keep the sign
+	neg.w	d0						;flip the sign
 .topstop							;stop at the spot
-	cmp.w	#$D8,d0
-	blt.w	.restoreidle
-	move.w	(a3),d0
-	cmp.w	#$20,d0
-	bgt.w	.restoreidle
-	cmp.w	#$FFE0,d0
-	blt.w	.restoreidle
-	move.w	(sp)+,d0
-	bsr.w	stopna
-	bra.w	.cgl
+	cmp.w	#$D8,d0					;y below $D8?
+	blt.w	.restoreidle			;yes: restore
+	move.w	(a3),d0					;d0 = x
+	cmp.w	#$20,d0					;beyond +$20?
+	bgt.w	.restoreidle			;yes: restore
+	cmp.w	#$FFE0,d0				;beyond -$20?
+	blt.w	.restoreidle			;yes: restore
+	move.w	(sp)+,d0				;restore d0
+	bsr.w	stopna					;stop
+	bra.w	.cgl					;glide check
 .restoreidle						;restore the direction, then the glide check
-	move.w	(sp)+,d0
-	bra.w	.cgl
+	move.w	(sp)+,d0				;restore d0
+	bra.w	.cgl					;glide check
 .turnskater							;d0 <> 8
-	bra.w	.d1
+	bra.w	.d1						;turn one step
 .goalieacc2							;pfjoycon clear
-	andi.w	#$F,d0
-	cmp.w	#7,d0
-	ble.w	.d1
-	cmp.w	#9,d0
-	bne.w	.cgl
-	move.w	Xvel(a3),d0
-	or.w	Yvel(a3),d0
-	beq.w	.cgl
-	jmp	stopna2
+	andi.w	#$F,d0					;keep 4 bits
+	cmp.w	#7,d0					;7 or less?
+	ble.w	.d1						;yes: turn
+	cmp.w	#9,d0					;9?
+	bne.w	.cgl					;no: glide check
+	move.w	Xvel(a3),d0				;x velocity
+	or.w	Yvel(a3),d0				;or y velocity
+	beq.w	.cgl					;not moving: glide check
+	jmp	stopna2						;stop
 .cgl								;not moving: ready / glide animation unless one runs
-	btst	#pf2aip,pflags2(a3)
-	beq.w	SetSPA
+	btst	#pf2aip,pflags2(a3)		;animation in progress?
+	beq.w	SetSPA					;no: set the animation
 .exit								;exit (also the end of the code above)
-	rts
+	rts								;done
 .d1									;d0 = turn needed: one step a frame
-	sub.w	facedir(a3),d0
-	beq.w	.d11
-	neg.w	d0
-	andi.w	#4,d0
-	lsr.w	#1,d0
-	subq.w	#1,d0
-	add.w	facedir(a3),d0
-	andi.w	#7,d0
-	move.w	d0,facedir(a3)
+	sub.w	facedir(a3),d0			;minus the current facing
+	beq.w	.d11					;already facing it: skate
+	neg.w	d0						;negate
+	andi.w	#4,d0					;keep bit 2
+	lsr.w	#1,d0					;to bit 1
+	subq.w	#1,d0					;-1 or +1
+	add.w	facedir(a3),d0			;plus the facing
+	andi.w	#7,d0					;0 to 7
+	move.w	d0,facedir(a3)			;new facing
 .d11								;facing set
-	move.w	#SPAgskate,d1
-	bsr.w	SetSPA
-	move.w	facedir(a3),d2
-	bra.w	playeracc
+	move.w	#SPAgskate,d1			;d1 = the skate animation
+	bsr.w	SetSPA					;set the animation
+	move.w	facedir(a3),d2			;d2 = facing
+	bra.w	playeracc				;accelerate
 noturn0								;doplayeracc when the wanted direction needs no turn (.ftab entry 0). d0 =
 									;direction minus facedir, times 2
 	moveq	#2,d4					;d4 = 2 forwards, 6 when skating backwards
