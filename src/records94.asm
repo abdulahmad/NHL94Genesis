@@ -405,18 +405,18 @@ NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Pres
 	rts								;done
 PrintNamePrompt						;Name entry: "Enter new name:" for an empty name log slot namelogsel, else
 									;"Select or replace:"
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(namelogsel).w,d0
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	move.w	(namelogsel).w,d0		;d0 = selected log slot
 	mulu.w	#$C,d0					;12 bytes per name
-	movea.l	#namelog,a0
-	movea.l	#EnterNameTxt,a1
+	movea.l	#namelog,a0				;a0 = namelog
+	movea.l	#EnterNameTxt,a1		;a1 = enter name text
 	tst.b	0(a0,d0.w)				;empty slot: "Enter new name:"
-	beq.w	.0
-	movea.l	#SelectNameTxt,a1
+	beq.w	.0						;branch taken: slot empty
+	movea.l	#SelectNameTxt,a1		;a1 = select name text
 .0									;text chosen: print it
-	jsr	(print).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	jsr	(print).l					;print the text
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 SyncLetterCursor					;Name entry: the letter grid cursor d5 = the grid index of the current
 									;letter (FindLetter), 0 when it is not in the grid
 	movem.l	d0-d4/a0-a6,-(sp)
@@ -434,20 +434,20 @@ SyncLetterCursor					;Name entry: the letter grid cursor d5 = the grid index of 
 	movem.l	(sp)+,d0-d4/a0-a6
 	rts
 FindLetter							;d0 = index of letter d0 in LetterGrid, $1E when not found
-	movem.l	d1-d3/a0-a6,-(sp)
-	movea.l	#LetterGrid,a0
-	move.b	d0,d1
-	clr.w	d0
+	movem.l	d1-d3/a0-a6,-(sp)		;save registers
+	movea.l	#LetterGrid,a0			;a0 = letter grid
+	move.b	d0,d1					;d1 = the letter
+	clr.w	d0						;d0 = 0
 	move.w	#$1E,d3					;31 tries
 .loop								;compare with each grid letter
-	cmp.b	0(a0,d0.w),d1
-	beq.w	.x
-	addq.w	#1,d0
+	cmp.b	0(a0,d0.w),d1			;compare with the grid letter
+	beq.w	.x						;branch taken: found
+	addq.w	#1,d0					;next grid position
 	dbf	d3,.loop					;all 31 tried: not found
 	move.w	#$1E,d0					;not found
 .x									;exit: restore the registers
-	movem.l	(sp)+,d1-d3/a0-a6
-	rts
+	movem.l	(sp)+,d1-d3/a0-a6		;restore registers
+	rts								;return
 PrintNameCursor						;Name entry: the " < " cursor
 	jsr	(printz).l
 	String	CC_Font1Pri,4,$13
@@ -523,26 +523,26 @@ SelectNameTxt	dc.b	0			;PrintNamePrompt table
 	dc.b	$3A						;:
 	dc.b	0
 PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(namelength).w,-(sp)
-	move.w	(namelogsel).w,-(sp)
-	jsr	(printz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	move.w	(namelength).w,-(sp)	;save namelength
+	move.w	(namelogsel).w,-(sp)	;save namelogsel
+	jsr	(printz).l					;set print position from the string
 	String	CC_Font1Pri,5,8
 	move.w	#6,d7					;7 log slots
-	move.w	#1,(namelogsel).w
-	movea.l	#TempBuffer,a1
+	move.w	#1,(namelogsel).w		;namelogsel = 1
+	movea.l	#TempBuffer,a1			;a1 = TempBuffer
 .loop								;print each slot's name on its own row
 	bsr.w	GetLogName				;copy the log name
-	move.w	(printx).w,-(sp)
+	move.w	(printx).w,-(sp)		;save printx
 	bsr.w	PrintNameField			;print it
-	move.w	(sp)+,(printx).w
-	addq.w	#1,(printy).w
-	addq.w	#1,(namelogsel).w
+	move.w	(sp)+,(printx).w		;restore printx
+	addq.w	#1,(printy).w			;next row
+	addq.w	#1,(namelogsel).w		;next log slot
 	dbf	d7,.loop					;loop
 	move.w	(sp)+,(namelogsel).w	;put back the caller's selection
-	move.w	(sp)+,(namelength).w
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	(sp)+,(namelength).w	;restore namelength
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;return
 MoveLogArrows						;Name entry: when the name log selection namelogsel changed, erase the old
 									;] [ arrows and print them at the new row (PrintLogArrows)
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -558,22 +558,22 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	rts
 PrintLogArrows						;Name entry: print the two arrow Strings at a1 on name log row
 									;namelogarrows, then namelogarrows = namelogsel
-	tst.w	(namelogarrows).w
+	tst.w	(namelogarrows).w		;test namelogarrows
 	beq.w	.0						;no arrows drawn yet: nothing to erase
-	jsr	(printz).l
+	jsr	(printz).l					;set print position from the string
 	String	CC_Font1Pri,3,8
-	move.w	(namelogarrows).w,d0
+	move.w	(namelogarrows).w,d0	;d0 = namelogarrows
 	subq.w	#1,d0					;rows from 1
-	add.w	d0,(printy).w
-	move.l	a1,-(sp)
-	jsr	(print).l
-	movea.l	(sp)+,a1
+	add.w	d0,(printy).w			;add to printy
+	move.l	a1,-(sp)				;save a1
+	jsr	(print).l					;print the first string
+	movea.l	(sp)+,a1				;restore a1
 	adda.w	(a1),a1					;the second String (right arrow) follows the first
-	move.w	#$12,(printx).w
-	jsr	(print).l
+	move.w	#$12,(printx).w			;printx = $12
+	jsr	(print).l					;print the second string
 .0									;old arrows handled: remember the new row
-	move.w	(namelogsel).w,(namelogarrows).w
-	rts
+	move.w	(namelogsel).w,(namelogarrows).w	;namelogarrows = namelogsel
+	rts								;return
 LogArrowsTxt	dc.b	0			;MoveLogArrows data
 	dc.b	4
 	dc.b	$5D						;]
