@@ -523,64 +523,64 @@ holdcheck							;player a2 is in hold animation looking to hold opponent a3. Ent
 									;faces. a3 flails, a2 goes to SPAHold2 (or SPAhook2), and checkagr rolls
 									;penalty $24 after SPAHold2 or $1E after SPAhook2 (through PenShotChk)
 	btst	#pfalock,pflags(a3)		;#pfalock - locked animation
-	bne.w	rtss2
+	bne.w	rtss2					;branch taken: done
 	tst.w	position(a3)			;position - no hold on goalies
-	beq.w	rtss2
+	beq.w	rtss2					;branch taken: done
 	btst	#pf2fight,pflags2(a3)	;#pf2fight - no hold on fighters
-	bne.w	rtss2
+	bne.w	rtss2					;branch taken: done
 	move.w	(a3),d0					;Xpos a3
 	sub.w	(a2),d0					;Xpos a2
-	move.w	Ypos(a3),d1
-	sub.w	Ypos(a2),d1
+	move.w	Ypos(a3),d1				;d1 = a3 y
+	sub.w	Ypos(a2),d1				;minus a2 y
 	bsr.w	vtoa					;direction from a2 to a3
-	sub.w	facedir(a2),d0
-	addq.w	#1,d0
-	andi.w	#7,d0
-	cmp.w	#2,d0
-	bhi.w	rtss2
-	move.w	(puckc).w,d0
-	cmp.w	SCnum(a3),d0
-	bne.w	.holdcheck
+	sub.w	facedir(a2),d0			;minus a2 facing
+	addq.w	#1,d0					;plus 1
+	andi.w	#7,d0					;0 to 7
+	cmp.w	#2,d0					;beyond 2?
+	bhi.w	rtss2					;yes: done
+	move.w	(puckc).w,d0			;d0 = puck carrier
+	cmp.w	SCnum(a3),d0			;is it a3?
+	bne.w	.holdcheck				;yes: continue
 	bclr	#sfssdir,(sflags).w		;a3 has the puck
 .holdcheck							;a3 does not have the puck: average the two players' velocities (they
 									;skate together)
-	move.w	Xvel(a3),d0
-	add.w	Xvel(a2),d0
-	asr.w	#1,d0
-	move.w	d0,Xvel(a3)
-	move.w	d0,Xvel(a2)
-	move.w	Yvel(a3),d0
-	add.w	Yvel(a2),d0
-	asr.w	#1,d0
-	move.w	d0,Yvel(a3)
-	move.w	d0,Yvel(a2)
-	bset	#pfalock,pflags(a3)
-	move.w	#SPAflail,d1
-	bsr.w	SetSPA
-	exg	a2,a3
-	bset	#pfalock,pflags(a3)
-	move.w	#SPAHold2,d1
-	cmpi.w	#SPAHold,SPA(a3)
-	beq.w	.setanimation
+	move.w	Xvel(a3),d0				;a3 x velocity
+	add.w	Xvel(a2),d0				;plus a2 x velocity
+	asr.w	#1,d0					;half
+	move.w	d0,Xvel(a3)				;a3 x velocity
+	move.w	d0,Xvel(a2)				;a2 x velocity
+	move.w	Yvel(a3),d0				;a3 y velocity
+	add.w	Yvel(a2),d0				;plus a2 y velocity
+	asr.w	#1,d0					;half
+	move.w	d0,Yvel(a3)				;a3 y velocity
+	move.w	d0,Yvel(a2)				;a2 y velocity
+	bset	#pfalock,pflags(a3)		;set pfalock on a3
+	move.w	#SPAflail,d1			;flail animation
+	bsr.w	SetSPA					;set it
+	exg	a2,a3						;swap a2 and a3
+	bset	#pfalock,pflags(a3)		;lock the new a3
+	move.w	#SPAHold2,d1			;d1 = SPAHold2
+	cmpi.w	#SPAHold,SPA(a3)		;a3 in SPAHold?
+	beq.w	.setanimation			;yes: set the animation
 	move.w	#SPAhook2,d1			;holding anim after SPAhook
 .setanimation						;start the hold animation (SPAHold2 after a hold, SPAhook2 after a hook)
 	bsr.w	SetSPA					;start the hold animation
-	bsr.w	checkagr
-	cmp.w	#6,d0
-	bhi.w	.ex
-	btst	#gmhl,(gmode).w
-	bne.w	.ex
+	bsr.w	checkagr				;checkagr
+	cmp.w	#6,d0					;above 6?
+	bhi.w	.ex						;yes: done
+	btst	#gmhl,(gmode).w			;hold or hook penalties off (gmhl)?
+	bne.w	.ex						;yes: done
 	move.w	#$24,d0					;penalty $24 (holding) after SPAHold2
-	cmpi.w	#SPAHold2,SPA(a3)
-	beq.w	.addpen
+	cmpi.w	#SPAHold2,SPA(a3)		;SPAHold2?
+	beq.w	.addpen					;yes: add the penalty
 	move.w	#$1E,d0					;penalty $1E after SPAhook2 (holding)
 .addpen								;d0 = the hold or hook penalty for the animation
-	jsr	(PenShotChk).l
-	bsr.w	AddPenalty
+	jsr	(PenShotChk).l				;penalty shot check
+	bsr.w	AddPenalty				;add the penalty
 .ex									;exit: swap back
-	exg	a2,a3
-	st	(collflag).w
-	rts
+	exg	a2,a3						;swap back
+	st	(collflag).w				;collision flag set
+	rts								;done
 Bcheck								;a2 = player that is B checking, a3 = player being checked. Entered from
 									;CCStart. If OptPen is 0 and a2 is joystick controlled a2 needs
 									;randomd0($20 + a2 Chk - a3 legstr, 2 less when sflags8 bit 1 or sflags7
@@ -1011,80 +1011,80 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 									;top, SortCords+(12*SCstruct) bottom) and then the side and end boards.
 									;Calls wallcollb on a hit, with d0/d1 = cos/sin of the wall. Called from
 									;checkcoll
-	bclr	#pf3wall,pflags3(a3)
-	move.w	#$88,d4
-	sub.w	(wcradiusx).w,d4
+	bclr	#pf3wall,pflags3(a3)	;clear pf3wall
+	move.w	#$88,d4					;d4 = $88
+	sub.w	(wcradiusx).w,d4		;minus the x radius
 	move.w	#$12A,d5				;298: end boards
-	sub.w	(wcradiusy).w,d5
-	movem.w	d2-d5,-(sp)
-	neg.w	d4
-	neg.w	d5
+	sub.w	(wcradiusy).w,d5		;d5 minus the y radius
+	movem.w	d2-d5,-(sp)				;save d2-d5
+	neg.w	d4						;negate d4
+	neg.w	d5						;negate d5
 	addi.w	#$40,d4					;corner circle radius 64
-	addi.w	#$40,d5
-	cmp.w	d5,d3
-	bgt.w	.0
-	cmp.w	d4,d2
-	blt.w	.1
-	neg.w	d4
-	cmp.w	d4,d2
-	bgt.w	.1
-	movea.w	#(SortCords+(13*SCstruct)-M68K_RAM),a2
-	bsr.w	checkgoal
-	bra.w	.2
+	addi.w	#$40,d5					;plus $40
+	cmp.w	d5,d3					;y beyond it?
+	bgt.w	.0						;yes: other end
+	cmp.w	d4,d2					;x below the limit?
+	blt.w	.1						;yes: corner
+	neg.w	d4						;negate d4
+	cmp.w	d4,d2					;x beyond the limit?
+	bgt.w	.1						;yes: corner
+	movea.w	#(SortCords+(13*SCstruct)-M68K_RAM),a2	;a2 = goal object
+	bsr.w	checkgoal				;check the goal
+	bra.w	.2						;done
 .0									;d3 > d5
-	neg.w	d5
-	cmp.w	d5,d3
-	blt.w	.2
-	cmp.w	d4,d2
-	blt.w	.1
-	neg.w	d4
-	cmp.w	d4,d2
-	bgt.w	.1
-	movea.w	#(SortCords+(12*SCstruct)-M68K_RAM),a2
-	bsr.w	checkgoal
-	bra.w	.2
+	neg.w	d5						;negate d5
+	cmp.w	d5,d3					;y below it?
+	blt.w	.2						;yes: done
+	cmp.w	d4,d2					;x below the limit?
+	blt.w	.1						;yes: corner
+	neg.w	d4						;negate d4
+	cmp.w	d4,d2					;x beyond the limit?
+	bgt.w	.1						;yes: corner
+	movea.w	#(SortCords+(12*SCstruct)-M68K_RAM),a2	;a2 = goal object
+	bsr.w	checkgoal				;check the goal
+	bra.w	.2						;done
 .1									;d2 < d4 or d2 > d4
 	sub.w	d4,d2					;corner circle: d2/d3 = offset from the circle centre
-	sub.w	d5,d3
-	move.w	d3,d0
-	move.w	d2,d1
-	neg.w	d1
-	muls.w	d3,d3
-	muls.w	d2,d2
+	sub.w	d5,d3					;d3 minus d5
+	move.w	d3,d0					;d0 = y offset
+	move.w	d2,d1					;d1 = x offset
+	neg.w	d1						;negate
+	muls.w	d3,d3					;y squared
+	muls.w	d2,d2					;x squared
 	add.l	d2,d3					;dist from dot
 	cmp.l	#$1000,d3				;inside the corner circle (64*64)
-	bls.w	.2
-	exg	d0,d3
+	bls.w	.2						;branch taken: done
+	exg	d0,d3						;swap
 	bsr.w	Sroot					;distance from the circle center
-	exg	d0,d3
-	ext.l	d0
-	asl.l	#8,d0
-	divs.w	d3,d0
-	ext.l	d1
-	asl.l	#8,d1
-	divs.w	d3,d1
-	bsr.w	wallcollb
+	exg	d0,d3						;swap back
+	ext.l	d0						;long
+	asl.l	#8,d0					;scaled up
+	divs.w	d3,d0					;divided by d3
+	ext.l	d1						;long
+	asl.l	#8,d1					;scaled up
+	divs.w	d3,d1					;divided by d3
+	bsr.w	wallcollb				;wall collision
 .2									;pop the d2-d5 saved above
-	movem.w	(sp)+,d2-d5
+	movem.w	(sp)+,d2-d5				;restore d2-d5
 	move.w	Wallcos(a3),d0			;wallcos: already hit
-	or.w	Wallsin(a3),d0
-	bne.w	rtss2
+	or.w	Wallsin(a3),d0			;or the wall sine
+	bne.w	rtss2					;not zero: done
 	move.w	#$100,d0				;now check side walls
-	clr.w	d1
-	cmp.w	d5,d3
-	bge.w	wallcollb
-	neg.w	d5
-	neg.w	d0
-	cmp.w	d5,d3
-	ble.w	wallcollb
-	exg	d0,d1
-	cmp.w	d4,d2
-	bge.w	wallcollb
-	neg.w	d4
-	neg.w	d1
-	cmp.w	d4,d2
-	ble.w	wallcollb
-	rts
+	clr.w	d1						;d1 = 0
+	cmp.w	d5,d3					;y at or past the limit?
+	bge.w	wallcollb				;yes: wall collision
+	neg.w	d5						;negate d5
+	neg.w	d0						;negate d0
+	cmp.w	d5,d3					;y within it?
+	ble.w	wallcollb				;yes: wall collision
+	exg	d0,d1						;swap d0 and d1
+	cmp.w	d4,d2					;x at or past the limit?
+	bge.w	wallcollb				;yes: wall collision
+	neg.w	d4						;negate d4
+	neg.w	d1						;negate d1
+	cmp.w	d4,d2					;x within it?
+	ble.w	wallcollb				;yes: wall collision
+	rts								;done
 checkgoal							;look for coll with goal/net. a2 = goal struct, a3 = object, d2/d3 = x/y.
 									;A puck under the crossbar hits a post or the net (deflect,
 									;sfx $25 or 8 and crowd) or goes in (Goal); a player goes to checkgoalp.
@@ -1532,141 +1532,141 @@ wallcollb							;Check for puck over wall. a3 = object, d0/d1 = cos/sin of the w
 									;Yvel >= $FA0 (else wallcoll): halve Yvel, SPA $1078 on the next struct,
 									;sfx $E and crowd, then out of play. Out of play: sfslock, pfnc, and while
 									;the clock runs penalty 6 (PenOOP) for ltplayer. Called from checkwallcoll
-	cmpi.w	#puckscnum,SCnum(a3)
+	cmpi.w	#puckscnum,SCnum(a3)	;the puck?
 	bne.w	wallcoll				;not puck so wall coll
-	cmpi.w	#$1D,Zpos(a3)
-	bgt.w	.0
-	cmpi.w	#$12,Zpos(a3)
-	bls.w	wallcoll
-	cmpi.w	#$118,Ypos(a3)
-	blt.w	.0
+	cmpi.w	#$1D,Zpos(a3)			;puck z above $1D?
+	bgt.w	.0						;yes: glass check
+	cmpi.w	#$12,Zpos(a3)			;puck z at or below $12?
+	bls.w	wallcoll				;yes: wall collision
+	cmpi.w	#$118,Ypos(a3)			;puck y below $118?
+	blt.w	.0						;yes: skip
 	cmpi.w	#$D,(a3)				;14, Xpos
-	blt.w	wallcoll
+	blt.w	wallcoll				;branch taken: wall collision
 	cmpi.w	#$F,(a3)				;15, Xpos
-	bgt.w	wallcoll
-	cmpi.w	#$FA0,Yvel(a3)
-	blt.w	wallcoll
-	move.l	a3,-(sp)
-	asr.w	Yvel(a3)
+	bgt.w	wallcoll				;branch taken: wall collision
+	cmpi.w	#$FA0,Yvel(a3)			;y velocity below $FA0?
+	blt.w	wallcoll				;yes: wall collision
+	move.l	a3,-(sp)				;save a3
+	asr.w	Yvel(a3)				;halve y velocity
 	adda.w	#$80,a3					;next struct (SCstruct)
-	move.w	#SPAbglass,d1
-	bsr.w	SetSPA
-	movea.l	(sp)+,a3
+	move.w	#SPAbglass,d1			;glass break animation
+	bsr.w	SetSPA					;set it
+	movea.l	(sp)+,a3				;restore a3
 	move.w	#SFXbglass,-(sp)		;sfx $E
-	bsr.w	sfx
-	addi.w	#$258,(Crowdlevel).w
-	addi.w	#$F,(CwdExciteLvl).w
+	bsr.w	sfx						;play the sound
+	addi.w	#$258,(Crowdlevel).w	;raise the crowd level by $258
+	addi.w	#$F,(CwdExciteLvl).w	;raise the excitement level by $F
 .0									;glass break done: stop the screen and lock the puck
-	bset	#sfslock,(sflags).w
-	bset	#pfnc,pflags(a3)
-	tst.w	Ypos(a3)
-	bpl.w	.1
-	ori.w	#$8000,attribute(a3)
+	bset	#sfslock,(sflags).w		;set sfslock
+	bset	#pfnc,pflags(a3)		;set pfnc
+	tst.w	Ypos(a3)				;puck y negative?
+	bpl.w	.1						;no: keep
+	ori.w	#$8000,attribute(a3)	;set attribute bit 15
 .1									;clear the frame; nothing more after the whistle
-	clr.w	frame+SCstruct(a3)
-	btst	#gmclock,(gmode).w
-	bne.w	rtss2
-	move.l	a3,-(sp)
-	move.w	(ltplayer).w,d0
-	asl.w	#scsize,d0
-	movea.w	#(SortCords-M68K_RAM),a3
-	adda.w	d0,a3
-	move.l	#PenOOP,d0
-	bsr.w	AddPenalty2
-	movea.l	(sp)+,a3
-	rts
+	clr.w	frame+SCstruct(a3)		;clear the frame
+	btst	#gmclock,(gmode).w		;clock stopped (gmclock)?
+	bne.w	rtss2					;yes: done
+	move.l	a3,-(sp)				;save a3
+	move.w	(ltplayer).w,d0			;d0 = ltplayer
+	asl.w	#scsize,d0				;times the object size
+	movea.w	#(SortCords-M68K_RAM),a3	;a3 = sort objects
+	adda.w	d0,a3					;a3 = that player
+	move.l	#PenOOP,d0				;d0 = PenOOP
+	bsr.w	AddPenalty2				;add the penalty
+	movea.l	(sp)+,a3				;restore a3
+	rts								;done
 wallcoll							;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = object.
 									;Bounce a3 off the wall: the puck loses speed, flips and plays
 									;sfx $28-$2B; a player sets the wall collision bit (unless sflags6 bit 4)
 									;and plays SFXplayerwall on a hard hit. Called from checkgoal, checkgoalp
 									;and wallcollb
-	move.w	d0,Wallcos(a3)
-	move.w	d1,Wallsin(a3)
-	movem.l	d2-d3,-(sp)
-	movem.w	d0-d1,-(sp)
-	muls.w	Yvel(a3),d0
-	muls.w	Xvel(a3),d1
-	sub.l	d1,d0
-	asr.l	#8,d0
-	move.w	d0,d2
-	movem.w	(sp),d0-d1
-	muls.w	Xvel(a3),d0
-	muls.w	Yvel(a3),d1
-	add.l	d1,d0
-	asr.l	#8,d0
-	move.w	d0,d3
-	neg.w	d2
-	cmpi.w	#puckscnum,SCnum(a3)
-	bne.w	.player
-	bclr	#sf2shot,(sflags2).w
-	tst.w	d2
-	bpl.w	.nocoll
+	move.w	d0,Wallcos(a3)			;keep the wall cosine
+	move.w	d1,Wallsin(a3)			;keep the wall sine
+	movem.l	d2-d3,-(sp)				;save d2-d3
+	movem.w	d0-d1,-(sp)				;save cosine and sine
+	muls.w	Yvel(a3),d0				;cos * y velocity
+	muls.w	Xvel(a3),d1				;sin * x velocity
+	sub.l	d1,d0					;difference
+	asr.l	#8,d0					;scaled down
+	move.w	d0,d2					;d2 = speed along the wall normal
+	movem.w	(sp),d0-d1				;d0, d1 = cosine, sine again
+	muls.w	Xvel(a3),d0				;cos * x velocity
+	muls.w	Yvel(a3),d1				;sin * y velocity
+	add.l	d1,d0					;sum
+	asr.l	#8,d0					;scaled down
+	move.w	d0,d3					;d3 = speed along the wall
+	neg.w	d2						;negate d2
+	cmpi.w	#puckscnum,SCnum(a3)	;the puck?
+	bne.w	.player					;no: player
+	bclr	#sf2shot,(sflags2).w	;clear sf2shot
+	tst.w	d2						;d2 negative?
+	bpl.w	.nocoll					;no: no collision
 	asr.w	#2,d2					;reduce normal speed on puck
-	cmp.w	#$FC00,d2
-	bgt.w	.pok
-	move.w	#$800,d0
-	bsr.w	randomd0
-	neg.w	d0
-	move.w	d0,Zvel(a3)
-	bsr.w	puckflip
+	cmp.w	#$FC00,d2				;beyond -$400?
+	bgt.w	.pok					;no: puck ok
+	move.w	#$800,d0				;range $800
+	bsr.w	randomd0				;random value
+	neg.w	d0						;negate
+	move.w	d0,Zvel(a3)				;z velocity
+	bsr.w	puckflip				;flip the puck
 	move.w	d2,d0					;sfx $28 + ((v1n >> 10) + 4) & 3
-	asr.w	#8,d0
-	asr.w	#2,d0
-	addq.w	#4,d0
-	bpl.w	.sf0
-	clr.w	d0
+	asr.w	#8,d0					;scale the speed
+	asr.w	#2,d0					;(shift)
+	addq.w	#4,d0					;plus 4
+	bpl.w	.sf0					;not negative: keep
+	clr.w	d0						;at least 0
 .sf0								;sound index at least 0
-	andi.w	#3,d0
-	addi.w	#$28,d0
-	move.w	d0,-(sp)
-	bsr.w	sfx
+	andi.w	#3,d0					;0 to 3
+	addi.w	#$28,d0					;plus $28: sound
+	move.w	d0,-(sp)				;keep it
+	bsr.w	sfx						;play it
 .pok								;puck: cut the tangent speed
 	move.w	d3,d0					;reduce tangent speed on puck
-	asr.w	#6,d0
-	sub.w	d0,d3
-	asr.w	#1,d0
-	sub.w	d0,d3
-	bra.w	.noadd
+	asr.w	#6,d0					;one 64th of d0
+	sub.w	d0,d3					;d3 minus it
+	asr.w	#1,d0					;half again
+	sub.w	d0,d3					;d3 minus it
+	bra.w	.noadd					;rotate back
 .player								;player: wall collision unless checkgoalp set sflags6 bit 4
-	cmp.w	#$3E8,d2
-	bgt.w	.nocoll
+	cmp.w	#$3E8,d2				;beyond $3E8?
+	bgt.w	.nocoll					;yes: no collision
 	bclr	#4,(sflags6).w			;set by checkgoalp
-	bne.w	.0
+	bne.w	.0						;always continues
 	bset	#pf3wall,pflags3(a3)	;set wall collision bit
 .0									;wall collision sound
-	cmp.w	#$F000,d2
-	bgt.w	.nosfx
-	cmpi.w	#$A,impact(a3)
-	blt.w	.nosfx
-	move.w	#SFXplayerwall,-(sp)
-	bsr.w	sfx
+	cmp.w	#$F000,d2				;beyond -$1000?
+	bgt.w	.nosfx					;yes: no sound
+	cmpi.w	#$A,impact(a3)			;impact below $A?
+	blt.w	.nosfx					;yes: no sound
+	move.w	#SFXplayerwall,-(sp)	;player wall sound effect
+	bsr.w	sfx						;play it
 .nosfx								;no wall sound: cut the normal speed to 1/4 (at least -1000)
 	asr.w	#2,d2					;reduce normal speed on player to 1/4
-	cmp.w	#$FC7C,d2
-	blt.w	.noadd
-	move.w	#$FC18,d2
+	cmp.w	#$FC7C,d2				;below -$384?
+	blt.w	.noadd					;yes: keep
+	move.w	#$FC18,d2				;d2 = -$3E8
 .noadd								;rotate the speeds back into Xvel/Yvel
 	movem.w	(sp),d0-d1				;rotate normal/tangent speeds (d2/d3) back into Xvel/Yvel
-	movem.w	d2-d3,-(sp)
-	muls.w	d0,d3
-	muls.w	d1,d2
-	sub.l	d2,d3
-	asr.l	#8,d3
-	move.w	d3,Xvel(a3)
-	movem.w	(sp)+,d2-d3
-	movem.w	(sp),d0-d1
-	muls.w	d1,d3
-	muls.w	d0,d2
-	add.l	d2,d3
-	asr.l	#8,d3
-	move.w	d3,Yvel(a3)
-	tst.w	Zvel(a3)
-	bmi.w	.nocoll
-	clr.w	Zvel(a3)
+	movem.w	d2-d3,-(sp)				;save d2-d3
+	muls.w	d0,d3					;d3 times cosine
+	muls.w	d1,d2					;d2 times sine
+	sub.l	d2,d3					;difference
+	asr.l	#8,d3					;scaled down
+	move.w	d3,Xvel(a3)				;x velocity
+	movem.w	(sp)+,d2-d3				;restore d2-d3
+	movem.w	(sp),d0-d1				;d0, d1 = cosine, sine
+	muls.w	d1,d3					;d3 times sine
+	muls.w	d0,d2					;d2 times cosine
+	add.l	d2,d3					;sum
+	asr.l	#8,d3					;scaled down
+	move.w	d3,Yvel(a3)				;y velocity
+	tst.w	Zvel(a3)				;z velocity negative?
+	bmi.w	.nocoll					;yes: done
+	clr.w	Zvel(a3)				;z velocity 0
 .nocoll								;done: drop the saved cos/sin
 	addq.w	#4,sp					;drop saved cos/sin
-	movem.l	(sp)+,d2-d3
-	rts
+	movem.l	(sp)+,d2-d3				;restore d2-d3
+	rts								;done
 checkpuckcoll_sfx					;Entered from checkpuckcoll. Puck in the air: sfx 5 once when sflags4 bit
 									;2 is set
 	bclr	#2,(sflags4).w
