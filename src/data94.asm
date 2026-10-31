@@ -64,10 +64,10 @@ DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	moveq	#0,d5
 	bra.w	dobitmap
 
-dotb								;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
+dotb								;unreferenced. Like DrawTeamBitmap with TeamBlocksmap, d4 = 2, d5 = 2
 	clr.w	d0
 	asl.w	#1,d1
-	movea.l	#Teamblocksmap,a0
+	movea.l	#TeamBlocksmap,a0
 	movea.l	a0,a1					;a1 = map header
 	adda.l	(a0),a0					;a0 = tile data
 	adda.l	jimdata(a1),a1			;a1 = map data

@@ -213,13 +213,13 @@ ReloadFaceOffMap					;Reload the FaceOffMap+8 tiles at ExtraChars. Called from t
 	move.w	(ExtraChars).w,d4
 	movea.l	#FaceOffMap+8,a2
 	bra.w	DecompressGraphicsPlain
-setupTeamBlocksMap					;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C and copy the home
+setupTeamBlocksMap					;Load the TeamBlocks map tiles (TeamBlocksmap) at d4+$2C and copy the home
 									;and visitor team blocks to vram at basetileoffset and basetileoffset+$16.
 									;d4 = 1st vram char; return d4 = basetileoffset+$2C. Called from setupice
 	move.w	d4,(basetileoffset).w
 	addi.w	#$2C,d4
 	movea.w	#(TeamBlockMap-M68K_RAM),a1	;map word buffer for CopyTeamBlockMapData
-	movea.l	#Teamblocksmap,a0
+	movea.l	#TeamBlocksmap,a0
 	lea	jimtilecount(a0),a2
 	bsr.w	DecompressGraphicsPlain	;all team block tiles to vram at d4
 	adda.l	jimdata(a0),a0
@@ -849,7 +849,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	bsr.w	eraser
 	bsr.w	AddTeamBlock
 	bsr.w	AddSmallFont
-	movea.l	#Arrowsmap+8,a2
+	movea.l	#ArrowsMap+8,a2
 	move.w	d4,(ExtraChars).w		;arrow tiles start here
 	bsr.w	DecompressGraphicsPlain	;arrow tiles at ExtraChars
 	bsr.w	printz					;map 2 (palette 3) at 0,0
@@ -1030,9 +1030,9 @@ PlayoffScreen_doscores				;Print best of 7 wins "t-b" for game struct a2 at prin
 	clr.b	(a1)+					;end of string
 	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
 	bra.w	print					;print it
-PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
+PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (ArrowsMap) at printx/printy
 	movem.l	d0-d7/a0-a3,-(sp)
-	movea.l	#Arrowsmap,a0
+	movea.l	#ArrowsMap,a0
 	movea.l	a0,a1					;a1 = map header
 	adda.l	(a0),a0					;a0 = arrow frames
 	adda.l	jimdata(a1),a1			;a1 = map data
@@ -1045,7 +1045,7 @@ PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (Arrowsmap) at 
 	bsr.w	dobitmap
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-PlayoffScreen_doteam				;Draw team block d1 (team*2) from the TeamBlocks map (Teamblocksmap) at
+PlayoffScreen_doteam				;Draw team block d1 (team*2) from the TeamBlocks map (TeamBlocksmap) at
 									;printx/printy; the user's team (potreeteam entry of potree) is
 									;highlighted (printa $6000)
 	movem.l	d0-d7/a0-a3,-(sp)
@@ -1057,7 +1057,7 @@ PlayoffScreen_doteam				;Draw team block d1 (team*2) from the TeamBlocks map (Te
 	bne.w	.nohi
 	move.w	#$6000,(printa).w
 .nohi								;the team that won the round highlighted
-	movea.l	#Teamblocksmap,a1		;a1 = map header of the team blocks
+	movea.l	#TeamBlocksmap,a1		;a1 = map header of the team blocks
 	adda.l	jimdata(a1),a1
 	movea.w	#null,a2
 	clr.w	d0

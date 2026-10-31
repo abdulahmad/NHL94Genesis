@@ -268,7 +268,7 @@ newcheck							;start a new check sound: one of 4 sounds $1C-$1F, never the last
 	add.w	(ltack).w,d0
 	andi.w	#3,d0
 	move.w	d0,(ltack).w
-	addi.w	#$1C,d0					;first check sound (92 used 18)
+	addi.w	#SFXcheck,d0					;first check sound (92 used 18)
 	move.w	d0,-(sp)
 	bsr.w	sfx
 	move.l	(sp)+,d0
