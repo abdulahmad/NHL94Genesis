@@ -1033,7 +1033,7 @@ SetHor								;switch graphics to horizontal ice rink graphics mode
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;Team struct (tmstruct / awtmstruct, tmsize bytes) and game struct (gstruct, gssize each): fields named in
-;stubinc/equals.inc. 94 adds shots by period and power play shots at the end of the team struct.
+;ram94.asm. 94 adds shots by period and power play shots at the end of the team struct.
 
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
 									;and scores). Horizontal rink .sbscreen: period and both team logos with

@@ -35,13 +35,12 @@ A comment-only or rename-only change must not change a single byte. Never commit
 ## 3. Names, not numbers
 
 - A value that 92 (or an earlier game) names must use the name: sizes, counts, bit numbers, flags, penalty and
-  sound numbers, offsets into structures. Define the constant in `src/stubinc/equals.inc` (constants and
-  structure offsets) or in `src/ram94.asm` (RAM).
+  sound numbers, offsets into structures. Define the constant in `src/ram94.asm` if it does not exist yet.
 - The address of a labelled table or routine is written as the label, never as a number
   (`#TeamList`, not `#$314`). Offsets inside data are `label-base` expressions, defined or used next to the data
   they point into.
 - When a table has an equate per entry, 92 puts `Name = (*-Table)/4` or `Name equ (*-Table)` before each entry. Do the
-  same unless another file needs the constants; then they go in `src/stubinc/equals.inc`.
+  same unless the constants are needed by code that is assembled separately; then they go in `src/ram94.asm`.
 - A number is fine when the original code used one (a mask, a coordinate). Say what it is in a comment.
 
 ## 4. Comments: what to write
@@ -92,7 +91,8 @@ A comment-only or rename-only change must not change a single byte. Never commit
 
 - `nhl94.asm` includes the files in ROM order. There are no segment stubs: every build is the full ROM, and a segment check
   (`npm run seg -- <name>`) compares that file's address range.
-- `ram94.asm` is included after `main94.asm`, as in 92 and 93: `main94.asm` sets `Stack = $FFFFF6` for the reset vector and
+- `ram94.asm` holds the RAM map, ports, structure offsets and the constants that code uses (laid out like 93 `ram93.asm`).
+  It is included after `frames94.asm`, as in 93: `main94.asm` sets `Stack = $FFFFF6` for the reset vector and
   `ram94.asm` redefines `Stack` with `=` as the game stack, so `Stack` is not an `rs` label.
 - Names and routines that exist in 93 use the 93 name; a routine that is new in 94 says so in its comment.
 

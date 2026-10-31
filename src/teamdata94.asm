@@ -56,14 +56,19 @@ TeamList							;List Pointer Table Start. Team number = index (ANH 0 ... WPG 25,
 	dc.l	AllStarsEast			;26 ASE
 	dc.l	AllStarsWest			;27 ASW
 
-NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList (26)
-	IF NumofTeams<>NumTeams
-		inform	3,"TeamList needs one entry per team"
-	ENDIF
+NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList
+NumTeams	=	NumofTeams			;same count; the rest of the code uses this name. ram94.asm
+									;checks it against ASW+1 once the team numbers are defined.
+Playerdata	=	0					;record offset of the word offset to the player data (.pld)
+Palettedata	=	2					;record offset of the word offset to the palettes (.pad)
+Teamname	=	4					;record offset of the word offset to the team name (.tn)
+LineSets	=	6					;record offset of the word offset to the line sets (.ls)
+ScoutReport	=	8					;record offset of the word offset to the scouting report ratings (.sr)
+GoalieOdds	=	10					;record offset of the word offset to the starting goalie weights (.godds)
 
 ;------------------------
-; Team block: 6 offset words (in equals.inc), .pad home and visitor palettes (16 colours each, incbin
-; <team>h.pal / <team>v.pal; files with 94 in the name have new colours)
+; Team block: 6 offset words (Playerdata ... GoalieOdds), .pad home and visitor palettes
+; (16 colours each, incbin <team>h.pal / <team>v.pal; files with 94 in the name have new colours)
 ; .sr (4 bytes of bonuses), .godds (starting goalie weights), .ls 8 lines of 8 player numbers (1 = first
 ; .pld entry), .pld players ended by an empty String, then 4 Strings: city, abbreviation, nickname, arena.
 ; .ls lines: 1 = the line used when line changes are Off or Auto (no line changes, in place of Sc1), then
@@ -72,7 +77,7 @@ NumofTeams	=	(*-TeamList)/4		;number of teams in TeamList (26)
 ; .sr: 4 bytes. byte 0: scoring odds of simulated games (SetScore): bits 4-6 = offense
 ; row, bits 0-2 = defense row of the weights table; byte 1: high nibble = penalty kill deficit, low nibble =
 ; power play bonus; byte 2: high nibble = home bonus, low nibble = visitor bonus (negated); byte 3: high
-; nibble = forward count (GetForwardCount). Field names srodds .. srforwards in equals.inc
+; nibble = forward count (GetForwardCount). Field names srodds .. srforwards in ram94.asm
 ;q - scoring odds offense row (bits 4-6)
 ;r - scoring odds defense row (bits 0-2)
 ;e - penalty kill deficit
@@ -1768,6 +1773,8 @@ Anaheim								;ANH
 .ar									;arena
 	String	'Pond'
 
+PlayoffRows equ 32					;playoffseats rows (NewPO picks one at random)
+PlayoffRowTeams equ 16				;teams per playoffseats row
 playoffseats						;32 rows of 16 team numbers (PlayoffRows by
 									;PlayoffRowTeams). Not one entry per team.
 									;NewPO picks a row at random, then finds the chosen team in that row.

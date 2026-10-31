@@ -784,7 +784,7 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;Game struct (gstruct, gssize each) and team struct (tmstruct / awtmstruct): the fields are named in
-;stubinc/equals.inc.
+;ram94.asm.
 
 ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
 	move.w	(gamenum).w,d0			;game just played
