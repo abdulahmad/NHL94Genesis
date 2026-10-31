@@ -29,40 +29,40 @@ ChooseSong							;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, o
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs							;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)
-	dc.b	$77,$75,$76,0,$5A,0
-	dc.b	$31,$32,$30,0,$5A,$31
-	dc.b	$34,$33,$33,$34,$5A,0
-	dc.b	$35,$37,$35,$37,$36,$36
-	dc.b	$38,$3A,$39,$38,$5A,$65
-	dc.b	$4A,$4B,$4B,0,$5A,0
-	dc.b	$3B,$3C,$3D,0,$5A,$3C
-	dc.b	$3E,$3F,$3F,0,$5A,0
-	dc.b	$77,$75,$76,0,$5A,0
-	dc.b	$40,$42,$41,$42,$5A,$40
-	dc.b	$43,$43,$45,$44,$5A,$46
-	dc.b	$4F,$4E,$4F,$4D,$5A,$4C
-	dc.b	$50,$51,$50,0,$5A,$52
-	dc.b	$47,$48,$47,$49,$5A,$49
-	dc.b	$54,$55,$53,0,$5A,0
-	dc.b	$77,$75,$76,0,$5A,0
-	dc.b	$56,$57,$56,$58,0,$58
-	dc.b	$59,$5B,$59,$5C,$5A,$5C
-	dc.b	$5D,$5E,$5D,0,$5A,$5E
-	dc.b	$5F,$60,$61,$63,$64,$65
-	dc.b	$67,$68,$68,$67,$5A,$69
-	dc.b	$6A,$6B,$6B,0,$5A,0
-	dc.b	$6C,$6C,$6D,0,$5A,0
-	dc.b	$6E,$6F,$70,0,$5A,0
-	dc.b	$71,$73,$71,0,$5A,$74
-	dc.b	$77,$75,$76,0,$5A,0
-	dc.b	$54,$55,$53,0,$5A,0
-	dc.b	$54,$55,$53,0,$5A,0
+	dc.b	NHL94_music_072,NHL94_music_070,NHL94_music_071,0,NHL94_music_043,0
+	dc.b	NHL94_music_002,NHL94_music_003,NHL94_music_001,0,NHL94_music_043,NHL94_music_002
+	dc.b	NHL94_music_005,NHL94_music_004,NHL94_music_004,NHL94_music_005,NHL94_music_043,0
+	dc.b	NHL94_music_006,NHL94_music_008,NHL94_music_006,NHL94_music_008,NHL94_music_007,NHL94_music_007
+	dc.b	NHL94_music_009,NHL94_music_011,NHL94_music_010,NHL94_music_009,NHL94_music_043,NHL94_music_054
+	dc.b	NHL94_music_027,NHL94_music_028,NHL94_music_028,0,NHL94_music_043,0
+	dc.b	NHL94_music_012,NHL94_music_013,NHL94_music_014,0,NHL94_music_043,NHL94_music_013
+	dc.b	NHL94_music_015,NHL94_music_016,NHL94_music_016,0,NHL94_music_043,0
+	dc.b	NHL94_music_072,NHL94_music_070,NHL94_music_071,0,NHL94_music_043,0
+	dc.b	NHL94_music_017,NHL94_music_019,NHL94_music_018,NHL94_music_019,NHL94_music_043,NHL94_music_017
+	dc.b	NHL94_music_020,NHL94_music_020,NHL94_music_022,NHL94_music_021,NHL94_music_043,NHL94_music_023
+	dc.b	NHL94_music_032,NHL94_music_031,NHL94_music_032,NHL94_music_030,NHL94_music_043,NHL94_music_029
+	dc.b	NHL94_music_033,NHL94_music_034,NHL94_music_033,0,NHL94_music_043,NHL94_music_035
+	dc.b	NHL94_music_024,NHL94_music_025,NHL94_music_024,NHL94_music_026,NHL94_music_043,NHL94_music_026
+	dc.b	NHL94_music_037,NHL94_music_038,NHL94_music_036,0,NHL94_music_043,0
+	dc.b	NHL94_music_072,NHL94_music_070,NHL94_music_071,0,NHL94_music_043,0
+	dc.b	NHL94_music_039,NHL94_music_040,NHL94_music_039,NHL94_music_041,0,NHL94_music_041
+	dc.b	NHL94_music_042,NHL94_music_044,NHL94_music_042,NHL94_music_045,NHL94_music_043,NHL94_music_045
+	dc.b	NHL94_music_046,NHL94_music_047,NHL94_music_046,0,NHL94_music_043,NHL94_music_047
+	dc.b	NHL94_music_048,NHL94_music_049,NHL94_music_050,NHL94_music_052,NHL94_music_053,NHL94_music_054
+	dc.b	NHL94_music_056,NHL94_music_057,NHL94_music_057,NHL94_music_056,NHL94_music_043,NHL94_music_058
+	dc.b	NHL94_music_059,NHL94_music_060,NHL94_music_060,0,NHL94_music_043,0
+	dc.b	NHL94_music_061,NHL94_music_061,NHL94_music_062,0,NHL94_music_043,0
+	dc.b	NHL94_music_063,NHL94_music_064,NHL94_music_065,0,NHL94_music_043,0
+	dc.b	NHL94_music_066,NHL94_music_068,NHL94_music_066,0,NHL94_music_043,NHL94_music_069
+	dc.b	NHL94_music_072,NHL94_music_070,NHL94_music_071,0,NHL94_music_043,0
+	dc.b	NHL94_music_037,NHL94_music_038,NHL94_music_036,0,NHL94_music_043,0
+	dc.b	NHL94_music_037,NHL94_music_038,NHL94_music_036,0,NHL94_music_043,0
 TeamSongsEnd						;end of TeamSongs (size check below)
 	IF (TeamSongsEnd-TeamSongs)<>(NumTeams*6)
 		inform	3,"TeamSongs needs 6 songs per team"
 	ENDIF
 RandomSongs							;ChooseSong: the 8 songs for a random pick
-	dc.b	$34,$40,$42,$49,$58,$5C,$65,$66
+	dc.b	NHL94_music_005,NHL94_music_017,NHL94_music_019,NHL94_music_026,NHL94_music_041,NHL94_music_045,NHL94_music_054,NHL94_music_055
 ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; sflags bit 4
 									;cleared, lastsfx = -1, recbpr = $FFFF0000. Called from Begin and
 									;GameSetUp

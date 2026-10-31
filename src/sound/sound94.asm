@@ -10,6 +10,81 @@
 SoundLast			=	$7A			;last sound number: effects below $30, songs from $30
 FirstSong			=	$30			;the first song; a new song stops the one playing
 
+;	Song numbers $30-$77, named by Music # in the forum list by Jkline3 and Tony Ouradnik (nhl94.com forum,
+;	topic 11307, comment 197067). The comment is the track description and the teams that use it
+NHL94_music_001	=	$30				;Go Team Go [E-flat] (BOS)
+NHL94_music_002	=	$31				;Here We Go [E-flat] (BOS)
+NHL94_music_003	=	$32				;Charge [E-flat] (BOS)
+NHL94_music_004	=	$33				;Rally Time [F] (BUF)
+NHL94_music_005	=	$34				;Sabre Dance (BUF)
+NHL94_music_006	=	$35				;O'Malley's Steps [G] (CGY)
+NHL94_music_007	=	$36				;Kalinka [Em] (CGY)
+NHL94_music_008	=	$37				;You Say It's Your Birthday {Claps} (CGY)
+NHL94_music_009	=	$38				;Here Come the Hawks (CHI)
+NHL94_music_010	=	$39				;Gypsy Spain [G, rising] (CHI)
+NHL94_music_011	=	$3A				;Las Chiapanecas {Mexican Hat Dance} [C] (CHI)
+NHL94_music_012	=	$3B				;La Raspa [C] (DET)
+NHL94_music_013	=	$3C				;O'Malleys Steps / Charge [C] (DET)
+NHL94_music_014	=	$3D				;Las Chiapanecas {Mexican Hat Dance} [F] (DET)
+NHL94_music_015	=	$3E				;O'Malleys Steps [F] (EDM)
+NHL94_music_016	=	$3F				;Here We Go [C] (EDM)
+NHL94_music_017	=	$40				;Brass Bonanza (HFD)
+NHL94_music_018	=	$41				;Let's Go [C] (HFD)
+NHL94_music_019	=	$42				;William Tell Overture (HFD)
+NHL94_music_020	=	$43				;O'Malley's Steps [C] (LA)
+NHL94_music_021	=	$44				;You Say It's Your Birthday (LA)
+NHL94_music_022	=	$45				;Las Chiapanecas {Mexican Hat Dance} [G] (LA)
+NHL94_music_023	=	$46				;Go Team Go [C] (LA)
+NHL94_music_024	=	$47				;Rally Time [C] (NYI)
+NHL94_music_025	=	$48				;Charge [B-flat only] (NYI)
+NHL94_music_026	=	$49				;?Islanders? / Charge [B-flat] (NYI)
+NHL94_music_027	=	$4A				;Here We Go [G] (DAL)
+NHL94_music_028	=	$4B				;Charge [C] (DAL)
+NHL94_music_029	=	$4C				;Let's Go Claps [C only] (MTL)
+NHL94_music_030	=	$4D				;Halte la Les Canadiens sont la (MTL)
+NHL94_music_031	=	$4E				;Gypsy Spain [E] (MTL)
+NHL94_music_032	=	$4F				;O'Malley's Steps [F] (MTL)
+NHL94_music_033	=	$50				;Let's Go [F] (NJ)
+NHL94_music_034	=	$51				;Buildup [C] (NJ)
+NHL94_music_035	=	$52				;La Raspa [F] (NJ)
+NHL94_music_036	=	$53				;Let's Go [F] {Shorter} (NYR, ASE, ASW)
+NHL94_music_037	=	$54				;Here We Go [C] {Slower} (NYR, ASE, ASW)
+NHL94_music_038	=	$55				;Charge [C] {Slower} (NYR)
+NHL94_music_039	=	$56				;Let's Go [C] {Alternate} (PHI)
+NHL94_music_040	=	$57				;Buildup [F] (PHI)
+NHL94_music_041	=	$58				;Zorba the Greek / Charge [C] (PHI)
+NHL94_music_042	=	$59				;O'Malley's Steps [G] {Faster} (PIT)
+NHL94_music_043	=	$5A				;Defense [C] (all but CGY, PHI and SJ)
+NHL94_music_044	=	$5B				;Let's Go / Rally Time [G] (PIT)
+NHL94_music_045	=	$5C				;What Do You Do With A Drunken Sailor? (PIT)
+NHL94_music_046	=	$5D				;Let's Go Claps [C] (QUE)
+NHL94_music_047	=	$5E				;Kalinka [Em] {Alternate} (QUE)
+NHL94_music_048	=	$5F				;Charge [C] (SJ)
+NHL94_music_049	=	$60				;Jaws Theme (SJ)
+NHL94_music_050	=	$61				;Let's Go Claps [F] (SJ)
+NHL94_music_051	=	$62				;Go Team Go [C] (Longer)
+NHL94_music_052	=	$63				;Blue Danube Waltz [C] (SJ)
+NHL94_music_053	=	$64				;Buildup / Charge [F only] (SJ)
+NHL94_music_054	=	$65				;Hava Nagila (CHI, SJ)
+NHL94_music_055	=	$66				;Tarantella Napoletana [Cm] / O'Malley's Steps [F]
+NHL94_music_056	=	$67				;When the Saints Go Marching In [C] (STL)
+NHL94_music_057	=	$68				;Buildup / O'Malley's Steps [F] (STL)
+NHL94_music_058	=	$69				;Let's Go Claps [C] {Alternate} (STL)
+NHL94_music_059	=	$6A				;Here We Go [F] (TB)
+NHL94_music_060	=	$6B				;Cavalry Charge [C] (TB)
+NHL94_music_061	=	$6C				;O'Malley's Steps [C] {Slower} (TOR)
+NHL94_music_062	=	$6D				;?Quick Buildup? [F] (TOR)
+NHL94_music_063	=	$6E				;Let's Go Claps [C] {Shorter} (VAN)
+NHL94_music_064	=	$6F				;Buildup [D-flat] (VAN)
+NHL94_music_065	=	$70				;Charge Fanfare [C] (VAN)
+NHL94_music_066	=	$71				;O'Malley's Steps [F] {Alternate} (WSH)
+NHL94_music_067	=	$72				;Go Team Go [C] {Alternate}
+NHL94_music_068	=	$73				;Rally Time [F] {Alternate} (WSH)
+NHL94_music_069	=	$74				;Charge / O'Malley's Steps [F] (WSH)
+NHL94_music_070	=	$75				;O'Malley's Steps [G] {Alternate} (ANA, FLA, OTT, WPG)
+NHL94_music_071	=	$76				;Gypsy Spain [E] / Charge [F-sharp] (ANA, FLA, OTT, WPG)
+NHL94_music_072	=	$77				;Rally Time [F] {Longer} (ANA, FLA, OTT, WPG)
+
 ;	Track slots (fm_track_slots in ram94.asm, 8 of SlotSize bytes; slot n plays track 7-n): an event
 ;	pointer and a delay
 NumSlots			=	8
@@ -943,78 +1018,78 @@ SoundStreamTable					;event stream of sounds 0-$7A as long pointers (play_sfx_or
 	dc.l	sfx_puckice3_cmdstream	;sound $2E
 	dc.l	sfx_puckice4_cmdstream	;sound $2F
 SongPointerTable					;the songs $30-$7A of SoundStreamTable (stop_current_song reads the first)
-	dc.l	fmtune_id_30_cmdstream	;song $30
-	dc.l	fmtune_id_31_cmdstream	;song $31
-	dc.l	fmtune_id_32_cmdstream	;song $32
-	dc.l	fmtune_id_33_cmdstream	;song $33
-	dc.l	fmtune_id_34_cmdstream	;song $34
-	dc.l	fmtune_id_35_cmdstream	;song $35
-	dc.l	fmtune_id_36_cmdstream	;song $36
-	dc.l	fmtune_id_37_cmdstream	;song $37
-	dc.l	fmtune_id_38_cmdstream	;song $38
-	dc.l	fmtune_id_39_cmdstream	;song $39
-	dc.l	fmtune_id_3A_cmdstream	;song $3A
-	dc.l	fmtune_id_3B_cmdstream	;song $3B
-	dc.l	fmtune_id_3C_cmdstream	;song $3C
-	dc.l	fmtune_id_3D_cmdstream	;song $3D
-	dc.l	fmtune_id_3E_cmdstream	;song $3E
-	dc.l	fmtune_id_3F_cmdstream	;song $3F
-	dc.l	fmtune_id_40_cmdstream	;song $40
-	dc.l	fmtune_id_41_cmdstream	;song $41
-	dc.l	fmtune_id_42_cmdstream	;song $42
-	dc.l	fmtune_id_43_cmdstream	;song $43
-	dc.l	fmtune_id_44_cmdstream	;song $44
-	dc.l	fmtune_id_45_cmdstream	;song $45
-	dc.l	fmtune_id_46_cmdstream	;song $46
-	dc.l	fmtune_id_47_cmdstream	;song $47
-	dc.l	fmtune_id_48_cmdstream	;song $48
-	dc.l	fmtune_id_49_cmdstream	;song $49
-	dc.l	fmtune_id_4A_cmdstream	;song $4A
-	dc.l	fmtune_id_4B_cmdstream	;song $4B
-	dc.l	fmtune_id_4C_cmdstream	;song $4C
-	dc.l	fmtune_id_4D_cmdstream	;song $4D
-	dc.l	fmtune_id_4E_cmdstream	;song $4E
-	dc.l	fmtune_id_4F_cmdstream	;song $4F
-	dc.l	fmtune_id_50_cmdstream	;song $50
-	dc.l	fmtune_id_51_cmdstream	;song $51
-	dc.l	fmtune_id_52_cmdstream	;song $52
-	dc.l	fmtune_id_53_cmdstream	;song $53
-	dc.l	fmtune_id_54_cmdstream	;song $54
-	dc.l	fmtune_id_55_cmdstream	;song $55
-	dc.l	fmtune_id_56_cmdstream	;song $56
-	dc.l	fmtune_id_57_cmdstream	;song $57
-	dc.l	fmtune_id_58_cmdstream	;song $58
-	dc.l	fmtune_id_59_cmdstream	;song $59
-	dc.l	fmtune_id_5A_cmdstream	;song $5A
-	dc.l	fmtune_id_5B_cmdstream	;song $5B
-	dc.l	fmtune_id_5C_cmdstream	;song $5C
-	dc.l	fmtune_id_5D_cmdstream	;song $5D
-	dc.l	fmtune_id_5E_cmdstream	;song $5E
-	dc.l	fmtune_id_5F_cmdstream	;song $5F
-	dc.l	fmtune_id_60_cmdstream	;song $60
-	dc.l	fmtune_id_61_cmdstream	;song $61
-	dc.l	fmtune_id_62_cmdstream	;song $62
-	dc.l	fmtune_id_63_cmdstream	;song $63
-	dc.l	fmtune_id_64_cmdstream	;song $64
-	dc.l	fmtune_id_65_cmdstream	;song $65
-	dc.l	fmtune_id_66_cmdstream	;song $66
-	dc.l	fmtune_id_67_cmdstream	;song $67
-	dc.l	fmtune_id_68_cmdstream	;song $68
-	dc.l	fmtune_id_69_cmdstream	;song $69
-	dc.l	fmtune_id_6A_cmdstream	;song $6A
-	dc.l	fmtune_id_6B_cmdstream	;song $6B
-	dc.l	fmtune_id_6C_cmdstream	;song $6C
-	dc.l	fmtune_id_6D_cmdstream	;song $6D
-	dc.l	fmtune_id_6E_cmdstream	;song $6E
-	dc.l	fmtune_id_6F_cmdstream	;song $6F
-	dc.l	fmtune_id_70_cmdstream	;song $70
-	dc.l	fmtune_id_71_cmdstream	;song $71
-	dc.l	fmtune_id_72_cmdstream	;song $72
-	dc.l	fmtune_id_73_cmdstream	;song $73
-	dc.l	fmtune_id_74_cmdstream	;song $74
-	dc.l	fmtune_id_75_cmdstream	;song $75
-	dc.l	fmtune_id_76_cmdstream	;song $76
-	dc.l	fmtune_id_77_cmdstream	;song $77
+	dc.l	fmtune_id_30_cmdstream	;song $30 NHL94_music_001
+	dc.l	fmtune_id_31_cmdstream	;song $31 NHL94_music_002
+	dc.l	fmtune_id_32_cmdstream	;song $32 NHL94_music_003
+	dc.l	fmtune_id_33_cmdstream	;song $33 NHL94_music_004
+	dc.l	fmtune_id_34_cmdstream	;song $34 NHL94_music_005
+	dc.l	fmtune_id_35_cmdstream	;song $35 NHL94_music_006
+	dc.l	fmtune_id_36_cmdstream	;song $36 NHL94_music_007
+	dc.l	fmtune_id_37_cmdstream	;song $37 NHL94_music_008
+	dc.l	fmtune_id_38_cmdstream	;song $38 NHL94_music_009
+	dc.l	fmtune_id_39_cmdstream	;song $39 NHL94_music_010
+	dc.l	fmtune_id_3A_cmdstream	;song $3A NHL94_music_011
+	dc.l	fmtune_id_3B_cmdstream	;song $3B NHL94_music_012
+	dc.l	fmtune_id_3C_cmdstream	;song $3C NHL94_music_013
+	dc.l	fmtune_id_3D_cmdstream	;song $3D NHL94_music_014
+	dc.l	fmtune_id_3E_cmdstream	;song $3E NHL94_music_015
+	dc.l	fmtune_id_3F_cmdstream	;song $3F NHL94_music_016
+	dc.l	fmtune_id_40_cmdstream	;song $40 NHL94_music_017
+	dc.l	fmtune_id_41_cmdstream	;song $41 NHL94_music_018
+	dc.l	fmtune_id_42_cmdstream	;song $42 NHL94_music_019
+	dc.l	fmtune_id_43_cmdstream	;song $43 NHL94_music_020
+	dc.l	fmtune_id_44_cmdstream	;song $44 NHL94_music_021
+	dc.l	fmtune_id_45_cmdstream	;song $45 NHL94_music_022
+	dc.l	fmtune_id_46_cmdstream	;song $46 NHL94_music_023
+	dc.l	fmtune_id_47_cmdstream	;song $47 NHL94_music_024
+	dc.l	fmtune_id_48_cmdstream	;song $48 NHL94_music_025
+	dc.l	fmtune_id_49_cmdstream	;song $49 NHL94_music_026
+	dc.l	fmtune_id_4A_cmdstream	;song $4A NHL94_music_027
+	dc.l	fmtune_id_4B_cmdstream	;song $4B NHL94_music_028
+	dc.l	fmtune_id_4C_cmdstream	;song $4C NHL94_music_029
+	dc.l	fmtune_id_4D_cmdstream	;song $4D NHL94_music_030
+	dc.l	fmtune_id_4E_cmdstream	;song $4E NHL94_music_031
+	dc.l	fmtune_id_4F_cmdstream	;song $4F NHL94_music_032
+	dc.l	fmtune_id_50_cmdstream	;song $50 NHL94_music_033
+	dc.l	fmtune_id_51_cmdstream	;song $51 NHL94_music_034
+	dc.l	fmtune_id_52_cmdstream	;song $52 NHL94_music_035
+	dc.l	fmtune_id_53_cmdstream	;song $53 NHL94_music_036
+	dc.l	fmtune_id_54_cmdstream	;song $54 NHL94_music_037
+	dc.l	fmtune_id_55_cmdstream	;song $55 NHL94_music_038
+	dc.l	fmtune_id_56_cmdstream	;song $56 NHL94_music_039
+	dc.l	fmtune_id_57_cmdstream	;song $57 NHL94_music_040
+	dc.l	fmtune_id_58_cmdstream	;song $58 NHL94_music_041
+	dc.l	fmtune_id_59_cmdstream	;song $59 NHL94_music_042
+	dc.l	fmtune_id_5A_cmdstream	;song $5A NHL94_music_043
+	dc.l	fmtune_id_5B_cmdstream	;song $5B NHL94_music_044
+	dc.l	fmtune_id_5C_cmdstream	;song $5C NHL94_music_045
+	dc.l	fmtune_id_5D_cmdstream	;song $5D NHL94_music_046
+	dc.l	fmtune_id_5E_cmdstream	;song $5E NHL94_music_047
+	dc.l	fmtune_id_5F_cmdstream	;song $5F NHL94_music_048
+	dc.l	fmtune_id_60_cmdstream	;song $60 NHL94_music_049
+	dc.l	fmtune_id_61_cmdstream	;song $61 NHL94_music_050
+	dc.l	fmtune_id_62_cmdstream	;song $62 NHL94_music_051
+	dc.l	fmtune_id_63_cmdstream	;song $63 NHL94_music_052
+	dc.l	fmtune_id_64_cmdstream	;song $64 NHL94_music_053
+	dc.l	fmtune_id_65_cmdstream	;song $65 NHL94_music_054
+	dc.l	fmtune_id_66_cmdstream	;song $66 NHL94_music_055
+	dc.l	fmtune_id_67_cmdstream	;song $67 NHL94_music_056
+	dc.l	fmtune_id_68_cmdstream	;song $68 NHL94_music_057
+	dc.l	fmtune_id_69_cmdstream	;song $69 NHL94_music_058
+	dc.l	fmtune_id_6A_cmdstream	;song $6A NHL94_music_059
+	dc.l	fmtune_id_6B_cmdstream	;song $6B NHL94_music_060
+	dc.l	fmtune_id_6C_cmdstream	;song $6C NHL94_music_061
+	dc.l	fmtune_id_6D_cmdstream	;song $6D NHL94_music_062
+	dc.l	fmtune_id_6E_cmdstream	;song $6E NHL94_music_063
+	dc.l	fmtune_id_6F_cmdstream	;song $6F NHL94_music_064
+	dc.l	fmtune_id_70_cmdstream	;song $70 NHL94_music_065
+	dc.l	fmtune_id_71_cmdstream	;song $71 NHL94_music_066
+	dc.l	fmtune_id_72_cmdstream	;song $72 NHL94_music_067
+	dc.l	fmtune_id_73_cmdstream	;song $73 NHL94_music_068
+	dc.l	fmtune_id_74_cmdstream	;song $74 NHL94_music_069
+	dc.l	fmtune_id_75_cmdstream	;song $75 NHL94_music_070
+	dc.l	fmtune_id_76_cmdstream	;song $76 NHL94_music_071
+	dc.l	fmtune_id_77_cmdstream	;song $77 NHL94_music_072
 	dc.l	fmtune_title_cmdstream	;song $78
 	dc.l	fmtune_eop_cmdstream	;song $79
 	dc.l	fmtune_scouting_cmdstream	;song $7A
