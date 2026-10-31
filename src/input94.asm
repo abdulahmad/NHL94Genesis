@@ -614,72 +614,72 @@ SetLCmode							;Initiate line change option if available (abut
 	bset	#pf2lcm,pflags2(a3)		;a3 flagged pf2lcm
 SetLCmode2							;a2 = team struct. Draw the line change box
 	bsr.w	setlccords				;set screen cords for this teams lc box
-	cmpi.w	#$F,(printy).w
-	blt.w	.box
+	cmpi.w	#$F,(printy).w			;compare printy to $F
+	blt.w	.box					;branch taken: printy below $F
 	bset	#sf3llcs,(sflags3).w	;flag for lower (on screen) line change
 	bra.w	.frame
 .box								;printy < $F
-	jsr	(box).l
-	bsr.w	setlccords
+	jsr	(box).l						;draw the box
+	bsr.w	setlccords				;set the box position again
 .frame								;draw the frame around the line change box
-	bsr.w	Framer
-	subq.w	#2,(printy).w
+	bsr.w	Framer					;draw the frame
+	subq.w	#2,(printy).w			;up two rows
 .0									;first row: the three line choices
-	addq.w	#1,(printx).w
-	moveq	#2,d4
+	addq.w	#1,(printx).w			;next column
+	moveq	#2,d4					;d4 = 2
 .loop								;d4 = 2..0: one row per button
 	move.w	d4,d0					;next row; d4 = row/button number
-	bsr.w	getlchoice
-	tst.w	d0
+	bsr.w	getlchoice				;get the line choice
+	tst.w	d0						;test the choice
 	bmi.w	.next					;no line for this button
 	btst	#tmflcm,tmflags(a2)
-	bne.w	.pr
+	bne.w	.pr						;branch taken: tmflcm set, print
 	cmp.w	tmlcchoice(a2),d4		;box being closed: only the chosen row
-	bne.w	.up
-	move.w	tmline(a2),d0
+	bne.w	.up						;branch taken: not the chosen row, skip
+	move.w	tmline(a2),d0			;d0 = current line
 .pr									;print the row
 	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area; row letter string
 	move.l	#$44120,(a1)			;String length 4, 'A '
 	add.b	d4,2(a1)				;'A'-'C'
-	bsr.w	print
-	move.w	d0,-(sp)
-	movea.l	#linelist,a1
-	bsr.w	Fprintsmall
-	move.w	(sp)+,d0
-	bsr.w	linebar
-	subq.w	#5,(printx).w
+	bsr.w	print					;print the letter
+	move.w	d0,-(sp)				;save d0
+	movea.l	#linelist,a1			;a1 = line list
+	bsr.w	Fprintsmall				;print the line text
+	move.w	(sp)+,d0				;restore d0
+	bsr.w	linebar					;draw the line bar
+	subq.w	#5,(printx).w			;back 5 columns
 .up									;next row up
-	subq.w	#1,(printy).w
+	subq.w	#1,(printy).w			;up one row
 .next								;loop the rows
 	dbf	d4,.loop					;repeat for the other rows
 	movea.l	tmdata(a2),a1			;team name
-	adda.w	Teamname(a1),a1
-	adda.w	(a1),a1
-	addq.w	#2,(printx).w
-	bra.w	print
+	adda.w	Teamname(a1),a1			;add team name offset
+	adda.w	(a1),a1					;a1 = name string
+	addq.w	#2,(printx).w			;next two columns
+	bra.w	print					;print the team name and return
 setlccords							;set printx/y to cords for lc box on team a2
-	clr.w	d0
-	cmpa.w	#(tmstruct-M68K_RAM),a2
-	bne.w	.0
-	eori.w	#$16,d0
+	clr.w	d0						;d0 = 0
+	cmpa.w	#(tmstruct-M68K_RAM),a2	;compare a2 to the home team struct
+	bne.w	.0						;branch taken: not home, keep d0
+	eori.w	#$16,d0					;d0 = $16
 .0									;side chosen
 	btst	#gmdir,(gmode).w		;reverse direction: flip to the other end
-	beq.w	.noflip
-	eori.w	#$16,d0
+	beq.w	.noflip					;branch taken: no flip
+	eori.w	#$16,d0					;toggle d0
 .noflip								;print at the box
-	bsr.w	printz
+	bsr.w	printz					;set print position from the string
 	String	CC_Font1Pri,$16,0,0
-	add.w	d0,(printy).w
-	moveq	#2,d0
-	bsr.w	getlchoice
+	add.w	d0,(printy).w			;add d0 to printy
+	moveq	#2,d0					;choice 2
+	bsr.w	getlchoice				;get the line choice
 	moveq	#6,d1					;3 rows
 	tst.w	d0
-	bpl.w	.ex
+	bpl.w	.ex						;branch taken: third choice exists
 	subq.w	#1,d1					;no third choice: 2 rows
-	addq.w	#1,(printy).w
+	addq.w	#1,(printy).w			;down one row
 .ex									;set the box size
 	moveq	#9,d0
-	rts
+	rts								;return
 getlchoice							;d0 = 0-2 (a2 = team)
 	movem.l	d1-d2,-(sp)
 	move.w	tmsize+tmap(a2),d2
@@ -713,54 +713,54 @@ getlchoice2							;add $15 to d0 for each player more or fewer than the other te
 ; d1 = new button presses
 lineinput							;process input for line changes
 									;d1 = new button presses
-	btst	#3,(sflags5).w
-	beq.w	.0
-	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(passmode).l
-	movem.l	(sp)+,d0-d7/a0-a6
+	btst	#3,(sflags5).w			;test sflags5 bit 3
+	beq.w	.0						;branch taken: bit clear
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	jsr	(passmode).l				;pass mode
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 .0									;line change check
-	move.w	d1,-(sp)
-	movea.w	#(tmstruct-M68K_RAM),a2
+	move.w	d1,-(sp)				;save d1
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
 	btst	#pfteam,pflags(a3)
-	beq.w	.2
-	adda.w	#tmsize,a2
+	beq.w	.2						;branch taken: pfteam clear, keep a2
+	adda.w	#tmsize,a2				;a2 = away team struct
 .2									;team struct chosen
 	bclr	#tmflcc,tmflags(a2)		;Flag to start lc mode
-	beq.w	.1
+	beq.w	.1						;branch taken: flag was clear
 	bsr.w	lcfound_close			;close the old box
 	bsr.w	SetLCmode2				;start lc mode
 .1									;restore d1
-	move.w	(sp)+,d1
-	clr.w	d2
-	btst	#6,d1
-	bne.w	lcfound
-	addq.w	#1,d2
-	btst	#4,d1
-	bne.w	lcfound
-	addq.w	#1,d2
-	btst	#5,d1
-	bne.w	lcfound
-	btst	#pfjoycon,pflags(a3)
-	beq.w	.x
+	move.w	(sp)+,d1				;restore d1
+	clr.w	d2						;choice 0
+	btst	#6,d1					;test button bit 6
+	bne.w	lcfound					;branch taken: choice found
+	addq.w	#1,d2					;choice 1
+	btst	#4,d1					;test button bit 4
+	bne.w	lcfound					;branch taken: choice found
+	addq.w	#1,d2					;choice 2
+	btst	#5,d1					;test button bit 5
+	bne.w	lcfound					;branch taken: choice found
+	btst	#pfjoycon,pflags(a3)	;test joystick control flag
+	beq.w	.x						;branch taken: no control, return
 	btst	#pfalock,pflags(a3)
-	bne.w	.x
+	bne.w	.x						;branch taken: locked, return
 	btst	#pf2fight,pflags2(a3)
 	beq.w	doplayeracc				;skate with dpad if not fighting
 .x									;exit (also the end of the code above)
-	rts
+	rts								;return
 ; d2 = choice made 0-2
 lcfound								;d2 = choice made 0-2
-	move.w	d2,d0
+	move.w	d2,d0					;d0 = choice
 	move.w	d2,tmlcchoice(a2)		;chosen row: the box redraw shows only that row
 	bsr.w	getlchoice				;translate choice 0-2 into line number 0-6
-	tst.w	d0
-	bmi.w	rtss8
+	tst.w	d0						;test the line
+	bmi.w	rtss8					;branch taken: no line, return
 	bclr	#pf2lcm,pflags2(a3)		;pf2lcm
-	bset	#pfjoycon,pflags(a3)
-	bsr.w	loadTeamStruct
-	bclr	#tmflcm,tmflags(a2)
-	move.w	d0,tmline(a2)
-	jsr	(setpersonel).l
+	bset	#pfjoycon,pflags(a3)	;set joystick control flag
+	bsr.w	loadTeamStruct			;load the team struct
+	bclr	#tmflcm,tmflags(a2)		;clear tmflcm flag
+	move.w	d0,tmline(a2)			;store the line
+	jsr	(setpersonel).l				;set up personnel
 lcfound_close						;close lc box
 	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
 	bne.w	rtss					;yes: nothing to erase
