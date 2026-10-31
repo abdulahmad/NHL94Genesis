@@ -1315,34 +1315,34 @@ asspuckc							;player a3 is puck handler
 	dc.w	$1E
 	dc.w	$E6
 chk4lc								;see if computer should call line change
-	btst	#4,(sflags7).w
-	bne.w	rtss2
-	move.w	(pucky).w,d0
-	btst	#pfgoal,pflags(a3)
-	bne.w	.0
-	neg.w	d0
+	btst	#4,(sflags7).w			;test sflags7 bit 4
+	bne.w	rtss2					;branch taken: bit 4 set, return
+	move.w	(pucky).w,d0			;d0 = puck coordinate
+	btst	#pfgoal,pflags(a3)		;test goal side flag
+	bne.w	.0						;branch taken: skip the negate
+	neg.w	d0						;flip sign for the other end
 .0									;coordinates for his end
-	tst.w	d0
-	bmi.w	rtss2
-	cmp.w	#$58,d0
-	bgt.w	rtss2
-	move.w	(HVcount).l,d0
-	andi.w	#3,d0
-	bne.w	rtss2
-	btst	#pf2lcm,pflags2(a3)
-	bne.w	rtss2
+	tst.w	d0						;test the coordinate
+	bmi.w	rtss2					;branch taken: negative, return
+	cmp.w	#$58,d0					;compare to $58
+	bgt.w	rtss2					;branch taken: past $58, return
+	move.w	(HVcount).l,d0			;d0 = HVcount
+	andi.w	#3,d0					;keep low two bits
+	bne.w	rtss2					;branch taken: nonzero, return
+	btst	#pf2lcm,pflags2(a3)		;test line change mode flag
+	bne.w	rtss2					;branch taken: flag set, return
 	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = own team struct, a1 = the other one
-	lea	tmsize(a2),a1
-	btst	#pfteam,pflags(a3)
-	beq.w	.1
-	exg	a2,a1
+	lea	tmsize(a2),a1				;a1 = other team struct
+	btst	#pfteam,pflags(a3)		;test team flag
+	beq.w	.1						;branch taken: keep a1
+	exg	a2,a1						;swap team structs
 .1									;team structs chosen
-	bsr.w	AvgCline
-	cmp.w	#$C00,d0
-	bhi.w	rtss2
+	bsr.w	AvgCline				;average the line change value
+	cmp.w	#$C00,d0				;compare to $C00
+	bhi.w	rtss2					;branch taken: higher, return
 	bsr.w	CompLine				;pick and apply the new line
-	bsr.w	setpersonel
-	bsr.w	printscores1
+	bsr.w	setpersonel				;set up personnel
+	bsr.w	printscores1			;reprint the scores
 	bra.w	CompShoot				;then clear the puck by shooting it
 ; return z flag set if killing penalty
 ; return z flag clr if not
@@ -1354,15 +1354,15 @@ chkpk								;return z flag set if killing penalty
 	rts
 chkpk2								;return z flag set if a3's team is the one on the power play (sf2pwrtm
 									;against pfteam)
-	movem.l	d0-d1,-(sp)
+	movem.l	d0-d1,-(sp)				;save d0-d1
 	btst	#sf2pwrtm,(sflags2).w	;#sf2pwrtm - 0 for team 1, 1 for team 2
-	move	sr,d0
+	move	sr,d0					;d0 = status register
 	btst	#pfteam,pflags(a3)		;pfteam - 0 home, 1 away
-	move	sr,d1
-	eor.w	d1,d0
-	move	d0,ccr
-	movem.l	(sp)+,d0-d1
-	rts
+	move	sr,d1					;d1 = status register
+	eor.w	d1,d0					;exclusive or the two
+	move	d0,ccr					;put result in the condition codes
+	movem.l	(sp)+,d0-d1				;restore d0-d1
+	rts								;return
 ; player a3 looks for shot (computer controlled)
 chk4shot							;player a3 looks for shot (computer controlled)
 									;decide whether the computer carrier shoots; rtss = no shot, else falls to
@@ -1486,21 +1486,21 @@ chk4shot							;player a3 looks for shot (computer controlled)
 CompShoot							;computer shot: drop the return address and aim from the puck's distance
 									;to the goal line
 	addq.w	#4,sp					;don't return
-	move.w	(pucky).w,d0
-	btst	#pfgoal,pflags(a3)
-	bne.w	.ds0
-	neg.w	d0
+	move.w	(pucky).w,d0			;d0 = puck coordinate
+	btst	#pfgoal,pflags(a3)		;test goal side flag
+	bne.w	.ds0					;branch taken: skip the negate
+	neg.w	d0						;flip sign for the other end
 .ds0								;coordinates for his end
 	move.w	#$108,d1				;d0 is now puck y toward the goal I shoot at
 	sub.w	d0,d1					;d1 = distance to $108 along the shooting direction
-	lsr.w	#3,d1
-	cmp.w	#$14,d1
-	blt.w	.0
-	moveq	#$14,d1
+	lsr.w	#3,d1					;d1 divided by 8
+	cmp.w	#$14,d1					;compare to $14
+	blt.w	.0						;branch taken: below, keep d1
+	moveq	#$14,d1					;clamp d1 to $14
 .0									;d1 clamped
-	move.w	d1,temp2(a3)
+	move.w	d1,temp2(a3)			;store d1 in temp2
 	move.l	#$12,d0					;assshoot
-	bra.w	assreplace
+	bra.w	assreplace				;continue to assreplace
 chk4pass							;player a3 looks for good pass (computer controlled)
 	tst.w	(threat).w				;any threat?
 	bne.w	.dp0					;an opponent is close: always consider a pass
@@ -3592,49 +3592,49 @@ ChkOffsides							;check for offsides penalty. a3 = puck. Flags the whole team
 	rts
 ClearOffsidesIfAllPlayers			;a2 = team struct: clear the team offsides flag once no skater is past the
 									;line
-	btst	#tmfoside,tmflags(a2)
-	beq.w	rtss2
-	movea.w	tmsort(a2),a0
-	moveq	#5,d1
+	btst	#tmfoside,tmflags(a2)	;test team offsides flag
+	beq.w	rtss2					;branch taken: flag clear, return
+	movea.w	tmsort(a2),a0			;a0 = first sorted player
+	moveq	#5,d1					;loop count of 6
 .top								;loop: d0 = each player's y toward the goal he shoots at
 	tst.w	position(a0)			;position: off ice keeps the last d0
-	bmi.w	.next
+	bmi.w	.next					;branch taken: negative, next player
 	move.w	Ypos(a0),d0				;d0 = y toward the goal this player shoots at
-	btst	#pfgoal,pflags(a0)
-	bne.w	.next
-	neg.w	d0
+	btst	#pfgoal,pflags(a0)		;test goal side flag
+	bne.w	.next					;branch taken: skip the negate
+	neg.w	d0						;flip sign
 .next								;next player; stop when one is past the line
-	adda.w	#SCstruct,a0
-	cmp.w	#$58,d0
-	dbgt	d1,.top
-	bgt.w	rtss2
-	bclr	#tmfoside,tmflags(a2)
-	rts
+	adda.w	#SCstruct,a0			;step to next player struct
+	cmp.w	#$58,d0					;compare to $58
+	dbgt	d1,.top					;loop while not greater
+	bgt.w	rtss2					;branch taken: a player is past the line, return
+	bclr	#tmfoside,tmflags(a2)	;clear the team offsides flag
+	rts								;return
 a2offsides							;player a2 touched the puck: offsides penalty if his team is flagged and
 									;the puck is past the blue line
-	btst	#gmoffs,(gmode).w
-	beq.w	rtss2
+	btst	#gmoffs,(gmode).w		;test gmoffs mode bit
+	beq.w	rtss2					;branch taken: bit clear, return
 	move.w	(pucky).w,d0			;puck y toward the goal a2 shoots at
-	btst	#pfgoal,pflags(a2)
-	bne.w	.0
-	neg.w	d0
+	btst	#pfgoal,pflags(a2)		;test goal side flag
+	bne.w	.0						;branch taken: skip the negate
+	neg.w	d0						;flip sign
 .0									;Y for his end
-	cmp.w	#$68,d0
-	blt.w	rtss2
+	cmp.w	#$68,d0					;compare to $68
+	blt.w	rtss2					;branch taken: below, return
 	movea.w	#(tmstruct-M68K_RAM),a0	;a0 = a2's team struct
-	btst	#pfteam,pflags(a2)
-	beq.w	.1
-	adda.w	#tmsize,a0
+	btst	#pfteam,pflags(a2)		;test team flag
+	beq.w	.1						;branch taken: keep a0
+	adda.w	#tmsize,a0				;step a0 to other team struct
 .1									;team struct chosen
-	btst	#tmfoside,tmflags(a0)
-	beq.w	rtss2
-	btst	#gmhl,(gmode).w
-	bne.w	rtss2
-	exg	a2,a3
-	move.l	#$10,d0
-	bsr.w	AddPenalty
-	exg	a2,a3
-	rts
+	btst	#tmfoside,tmflags(a0)	;test team offsides flag
+	beq.w	rtss2					;branch taken: flag clear, return
+	btst	#gmhl,(gmode).w			;test gmhl mode bit
+	bne.w	rtss2					;branch taken: bit set, return
+	exg	a2,a3						;swap a2 and a3
+	move.l	#$10,d0					;penalty value $10
+	bsr.w	AddPenalty				;add the penalty
+	exg	a2,a3						;swap back
+	rts								;return
 ; player a2 touches puck
 ; look for penalties/offsides/other junk
 a2touchpuck							;player a2 touches puck. Look for penalties/offsides/other junk. Called
