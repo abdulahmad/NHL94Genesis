@@ -4,7 +4,7 @@
 
 - initialsp becomes stack: done. ram94.asm is included after main94.asm and Stack is set with `=` in both, as in 92 and 93
 - look into teamdata null/notiles -- how was it in 92: done, `NoTiles` is now 92/93 `null`
-- RAM: src/ram94.asm is the 93G rs form; size the gaps (each name runs to the next one). Partly done: SortCords (puck fields as 93G equates), tmstruct / AwShots (tmsize), puckcross, gsstruct. Still sized to the next name: Joy1Struct, sso, pads, TempBuffer, ThreeStars, picturebuf, PALflag (to Stack) and others with no 93G counterpart
+- RAM: src/ram94.asm is the 93G rs form; size the gaps (each name runs to the next one). Partly done: SortCords (puck fields as 93G equates), tmstruct / awtmstruct (tmsize), puckcross, gstruct. Still sized to the next name: Joy1Struct, sso, pads, TempBuffer, ThreeStars, picturebuf, PALflag (to Stack) and others with no 93G counterpart
 - where did 93G stats report go? Answer: 92 penalty.asm and 93 stats93.asm `StatsReport` is in period94.asm (`StatsReport`, the Game Statistics screen), in the new-in-94 code near the end of the ROM
 - move 93G replay to its own file?
 - does input make sense, and if so, bring it to 93g?

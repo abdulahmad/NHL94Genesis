@@ -50,7 +50,7 @@ asswingo							;player a3 is winger on offense
 	cmp.w	#$58,d0					;compare top blue line with d0
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;currently offside (tmfoside of the team's tmflags)
-									;(the home team's tmstruct or the away team's AwShots)
+									;(the home team's tmstruct or the away team's awtmstruct)
 	bne.w	.de2					;branch if set
 	addq.w	#8,d2					;add 8 to d2 (d2 = $10)
 	cmp.w	#$108,d3				;compare top goal line with d3
@@ -208,7 +208,7 @@ asscentero							;player a3 is center on offense
 	blt.w	.de2					;branch if in neutral zone
 	btst	#tmfoside,tmflags(a2)	;Checks if currently offside
 									;the home team's (tmstruct) or the away team's
-									;(AwShots) flags word
+									;(awtmstruct) flags word
 	bne.w	.de2					;branch if offside
 	addq.w	#8,d2
 	cmp.w	#$108,d0				;check opponents goal line
@@ -1013,7 +1013,7 @@ breakaway							;puck carrier a3 on a breakaway: beep on a new assignment and ch
 	movea.l	#tmstruct,a2			;move Home Team Struct into a2
 	btst	#pfteam,pflags(a3)		;pfteam - check if home or away
 	beq.w	.c0						;jump if home
-	movea.l	#AwShots,a2				;move Away Team Struct into a2
+	movea.l	#awtmstruct,a2				;move Away Team Struct into a2
 .c0									;team struct chosen
 	addq.w	#1,tmBreakaways(a2)		;add one to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to CwdExcite
@@ -1153,7 +1153,7 @@ asspuckc							;player a3 is puck handler
 	movea.l	#tmstruct,a2
 	btst	#pfteam,pflags(a3)
 	beq.w	.5
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 .5									;team struct chosen
 	addq.w	#1,tmBreakaways(a2)
 	addi.w	#$14,(CwdExciteLvl).w
@@ -1759,7 +1759,7 @@ assnearest							;this is a special assignment used for the player who is neares
 	movea.l	#tmstruct,a2			;put Home Team Struct into a2
 	btst	#pfteam,pflags(a3)		;pfteam - check home or away
 	beq.w	.addcrowd				;jump if home
-	movea.l	#AwShots,a2				;put Away Team Struct into a2
+	movea.l	#awtmstruct,a2				;put Away Team Struct into a2
 .addcrowd							;team struct chosen
 	addq.w	#1,tmBreakaways(a2)		;add to breakaway attempt
 	addi.w	#$14,(CwdExciteLvl).w	;add to excite level
@@ -2171,7 +2171,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	movea.l	#tmstruct,a2
 	tst.w	(BA_Team).w
 	beq.w	.countattempt
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 .countattempt						;count the attempt
 	addq.w	#1,tmPenShots(a2)
 	movea.l	(sp)+,a2
@@ -2268,7 +2268,7 @@ SelectPenaltyShotSkater				;pick the skater for the penalty shot from team BA_Te
 	movea.l	#tmstruct,a0
 	tst.w	(BA_Team).w
 	beq.w	.hometeam
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 .hometeam							;team struct chosen
 	move.w	#0,d1
 	move.w	#$FFFF,d6
@@ -2389,7 +2389,7 @@ puckpenshot							;puck start for a penalty shot or shootout: on the first call 
 	clr.b	(iflags).w
 	st	(RefCnt).w
 	bclr	#sf2refref,(sflags2).w
-	st	(passplayer).w
+	st	(passReceiverPlayerNum).w
 	bsr.w	ClrHor
 	clr.w	(Vpos).w
 	clr.w	(Hpos).w
@@ -2720,7 +2720,7 @@ puckfaceoff							;puck controller for the face off: a3 = the face off controlle
 	tst.w	(OptLine).w
 	bne.w	WaitForFaceoffLineChanges
 	bclr	#tmflcm,(tmstruct+tmflags).w
-	bclr	#tmflcm,(AwShots+tmflags).w
+	bclr	#tmflcm,(awtmstruct+tmflags).w
 	movea.w	#(SortCords-M68K_RAM),a0
 	moveq	#$B,d0
 .clearlcmloop						;loop: clear the line change mode of all 12 players
@@ -3054,7 +3054,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	bclr	#sf2refref,(sflags2).w	;no ref refresh
 	bset	#sf2faceoff,(sflags2).w	;face off in progress
 	bset	#sf2drec,(sflags2).w	;dont record yet
-	st	(passplayer).w
+	st	(passReceiverPlayerNum).w
 	st	(onetimerplayer).w
 	bset	#dffaceoff,(disflags).w
 	bsr.w	ClrHor					;vertical ice rink
@@ -3128,7 +3128,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	move.w	(tmstruct+tmap).w,d4	;tmap = active players on ice (4-6). (tmap).w
 	btst	#pfteam,pflags(a3)		;#pfteam - 0=home 1=away
 	beq.w	.t0
-	move.w	(AwShots+tmap).w,d4		;(tmsize).w
+	move.w	(awtmstruct+tmap).w,d4		;(tmsize).w
 .t0									;players to place
 	neg.w	d4						;d4 = 6 - active players: formation row
 	addq.w	#6,d4					;6 - active players
@@ -3234,7 +3234,7 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	moveq	#3,d1
 	bsr.w	Framer
 	move.w	(tmstruct+tmline).w,d0	;d0/d1 = current lines of home / visitors
-	move.w	(AwShots+tmline).w,d1
+	move.w	(awtmstruct+tmline).w,d1
 	btst	#gmdir,(gmode).w
 	bne.w	.printline2
 	exg	d0,d1
@@ -3702,7 +3702,7 @@ a2touchpuck							;player a2 touches puck. Look for penalties/offsides/other jun
 .0									;icing check
 	bmi.w	rtss2					;exit if minus
 	move.w	(tmstruct+tmap).w,d0	;(tmap).w
-	sub.w	(AwShots+tmap).w,d0		;(tmsize).w
+	sub.w	(awtmstruct+tmap).w,d0		;(tmsize).w
 	btst	#pfteam,pflags(a2)		;check home or away
 	beq.w	.1						;branch if home
 	neg.w	d0						;negate d0

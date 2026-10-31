@@ -561,12 +561,12 @@ RandomFaceoffAnim					;d0 = a random faceoff animation from FaceoffAnims, 6 when
 	rts
 FaceoffAnims						;RandomFaceoffAnim animations
 	dc.w	3,5,3,1,5,2,3,3,$FFFF
-CheckScoreLeader					;Compare tmap (players on ice) of tmstruct / AwShots and test tmteam of
+CheckScoreLeader					;Compare tmap (players on ice) of tmstruct / awtmstruct and test tmteam of
 									;the team with more for $13 (SJ); the result is not used (bne.w *+4).
 									;Called from puckfaceoff
 	movem.l	d0-d2/a0-a2,-(sp)
 	movea.l	#tmstruct,a0
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 	move.w	tmap(a0),d0				;home players on ice
 	sub.w	tmap(a1),d0
 	beq.w	.x						;same number on the ice: done
@@ -659,12 +659,12 @@ HiScoreScreen						;vb2, the bitmap and MarkLesserMap, then wait up to $50 * 4 f
 .0									;timed out or a button
 	move	#$2700,sr				;interrupts off
 	rts
-GetTeamStruct						;a2 = tmstruct, or AwShots when team d2 is not tmteam of tmstruct.
+GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of tmstruct.
 									;Called from PrintStartingLine
 	movea.l	#tmstruct,a2
 	cmp.w	tmteam(a2),d2			;team d2 is the home team
 	beq.w	.x
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 .x									;exit (also the end of the code above)
 	rts
 CountButtonPress					;Not in gmode bit 0: add 1 to homepresses (awaypresses for d4), and to the
@@ -785,7 +785,7 @@ ReadGoaliePulled					;Z clear when the team of a3 pulled its goalie ($26 of the 
 	movea.l	#tmstruct,a1
 	btst	#pfteam,pflags(a3)		;check if home or away 0=home 1=away
 	beq.w	.chkgoalie
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 .chkgoalie							;team chosen: tmgoalie 0 = goalie in (Z set)
 	tst.w	tmgoalie(a1)
 	movem.l	(sp)+,a1
@@ -1192,7 +1192,7 @@ ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf
 	dbf	d0,.loop					;loop
 	movea.l	#tmstruct,a0
 	bsr.w	clrTmPdst
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 	bsr.w	clrTmPdst
 	movem.l	(sp)+,d0/a0
 	rts

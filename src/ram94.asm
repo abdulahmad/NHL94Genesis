@@ -102,7 +102,7 @@ shotplayer	rs.w	1
 lastplayer	rs.w	1
 passdir	rs.w	1
 passspeed	rs.w	1
-passplayer	rs.w	1
+passReceiverPlayerNum	rs.w	1			;SCnum of the intended receiver of the last pass, -1 = none (94 had passplayer)
 glovecords	rs.w	1
 threat	rs.w	1
 puckcross	rs.b	2*pcsize		;xcord / frames, top entry then bottom (93G rs.w 4)
@@ -281,11 +281,11 @@ PenSum	rs.w	120
 tmstruct	rs.b	tmsize			;home team struct (93G)
 HmGoals	equ	tmstruct+tmscore		;home score
 HomeTeamRosterPtr	equ	tmstruct+tmdata	;home team data address
-AwShots	rs.b	tmsize				;away team struct (93G awtmstruct; first field tmshots)
-AwGoals	equ	AwShots+tmscore			;away score
-AwayTeamRosterPtr	equ	AwShots+tmdata	;away team data address
+awtmstruct	rs.b	tmsize				;away team struct (first field tmshots)
+AwGoals	equ	awtmstruct+tmscore			;away score
+AwayTeamRosterPtr	equ	awtmstruct+tmdata	;away team data address
 statsbuffer	rs.w	104
-gsstruct	rs.b	gssize*8		;8 game structures (93G gstruct)
+gstruct	rs.b	gssize*8		;8 game structures
 gamenum	rs.w	1
 postarts	rs.w	1
 bosgames	rs.w	1
@@ -335,7 +335,7 @@ music_tick_divider	rs.w	1
 TmpOptLine2	rs.w	1
 TempOptPlayMode	rs.w	1
 databuffer	rs.w	9
-pwddatabuffer	rs.w	5
+passbits	rs.w	5				;playoff password bits (94 had pwddatabuffer)
 outputbuffer	rs.w	114
 tpassbits	rs.w	5
 music_needs_z80_update	rs.w	1
@@ -345,7 +345,7 @@ per_channel_frequency_table	rs.w	7
 per_channel_patch_table	rs.w	4
 fm_voice_usage_table	rs.w	256
 fm_channel_structs	rs.w	20
-fm_channel_struct6	rs.w	4
+pcm_channel_struct	rs.w	4			;PCM (DAC) channel struct, after the 5 FM structs (94 had fm_channel_struct6)
 fm_track_slots	rs.w	24
 BA_Team	rs.w	1
 BA_Sktr_SCnum	rs.w	1
@@ -439,7 +439,7 @@ DispAttribCtr	rs.w	1
 VertLineScrolling	rs.w	1
 PlayerScrollCtr	rs.w	1
 SelectedPlayerIdx	rs.w	1
-typedelay	rs.w	1
+ScoutingReportTimer	rs.w	1			;scouting report: frames elapsed, the text typing delay (94 had typedelay)
 screentimer	rs.w	1
 TestList	rs.w	122
 arenaanimchars	rs.w	1
@@ -459,7 +459,7 @@ OvrDivisor	rs.w	1
 OvrDividend	rs.w	1
 homehotcoldsave	rs.w	208			;clearTeamStats keeps the home hot / cold table (tmstruct+tmHotCold)
 									;here
-awayhotcoldsave	rs.w	208			;the same for the AwShots table
+awayhotcoldsave	rs.w	208			;the same for the awtmstruct table
 sopath	rs.w	1
 sopathpoint	rs.w	1
 sopathx	rs.w	1

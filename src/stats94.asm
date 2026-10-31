@@ -2,7 +2,7 @@
 ;	roster, scoring and penalty summaries, player and playoff stats, the crowd meter with the
 ;	arena and league records, the timeout and goalie selection.
 
-ShowScores							;"Scores" screen: the other games of the night in gsstruct over the Scores
+ShowScores							;"Scores" screen: the other games of the night in gstruct over the Scores
 									;bitmap (ScoresMap); up / down scroll, start exits (ExitStatsScreen). Menu
 									;item handler (menu lists)
 	moveq	#6,d0					;SetupScreen d0/d1: bitmap row offset / height
@@ -85,14 +85,14 @@ UpdateVertScrollReg					;VSRAM word 1 = VertLineScrolling - $30
 	move.w	d0,(a0)
 	move.w	(sp)+,(disflags).w
 	rts
-DisplayGameInfo						;Print game d3 of gsstruct (16 bytes each; not the current game gamenum,
+DisplayGameInfo						;Print game d3 of gstruct (16 bytes each; not the current game gamenum,
 									;not one with flag bit 1 or 2 set)
 									;the two teams and scores (PrintGameInfo) and the period (PerLabels)
 	cmp.w	(gamenum).w,d3
 	beq.w	rtss8					;the current game is not listed
 	moveq	#$10,d0					;16 bytes a game
 	mulu.w	d3,d0
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	adda.w	d0,a0					;a0 = this game
 	btst	#1,gsflags(a0)
 	bne.w	rtss8					;(flag bit 1: game not shown)
@@ -737,7 +737,7 @@ TeamRosterScreen					;"Team Roster" screen for team a2: pages of players (Displa
 	bra.s	.scroll
 .team								;A: the other team
 	lea	tmsize(a2),a2
-	cmpa.w	#(AwShots-M68K_RAM),a2	;was the home team?
+	cmpa.w	#(awtmstruct-M68K_RAM),a2	;was the home team?
 	beq.w	.redraw					;yes: show the away team
 	movea.w	#(tmstruct-M68K_RAM),a2	;away -> back to home
 	bra.w	.redraw
@@ -1451,7 +1451,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	tst.w	d7						;No team switch in playoff stats
 	bne.s	.scroll
 	lea	tmsize(a2),a2
-	cmpa.w	#(AwShots-M68K_RAM),a2	;was the home team?
+	cmpa.w	#(awtmstruct-M68K_RAM),a2	;was the home team?
 	beq.w	.redraw					;was home, now away
 	movea.w	#(tmstruct-M68K_RAM),a2	;was away, back to home
 	bra.w	.redraw

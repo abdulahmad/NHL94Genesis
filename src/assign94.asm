@@ -735,7 +735,7 @@ asswingd							;player a3 is wing on defense
 	moveq	#$FFFFFFB2,d2			;move into d2 (slightly above bottom blue line)
 	btst	#tmfoside,tmflags(a2)	;currently offside (tmfoside of the team's tmflags)
 									;the home team's (tmstruct) or the away team's
-									;(AwShots) flags word
+									;(awtmstruct) flags word
 	bne.w	.dg11					;branch if set
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	bgt.w	.ug1					;branch if puck in defensive zone
@@ -752,7 +752,7 @@ asswingd							;player a3 is wing on defense
 									;4E - slightly below top blue line
 	btst	#tmfoside,tmflags(a2)	;currently offside (tmfoside of the team's tmflags)
 									;the home team's (tmstruct) or the away team's
-									;(AwShots) flags word
+									;(awtmstruct) flags word
 	bne.w	.dg11					;branch if set
 	cmp.w	(pucky).w,d2			;compare pucky to d2
 	blt.w	.dg1					;branch if puck in defensive zone

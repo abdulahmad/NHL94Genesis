@@ -87,7 +87,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.l	a0,-(sp)
 	movea.l	#tmstruct,a0
 	jsr	(Create_HotCold_Table).l	;new random hot / cold tables (end of the team structs)
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
 	jsr	(BuildHotColdLists).l		;again with the new tables
@@ -457,7 +457,7 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 	jsr	(printz).l					;its position
 	String	CC_Font1,$22,$16
 	movea.l	#tmstruct,a0
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(homerating).w
 	move.w	#2,(printfontset).w
@@ -504,7 +504,7 @@ PrintMatchupRatings					;Print the matchup ratings. Matchup 0: 'Overall' at y $1
 	String	CC_Font1,$22,$16
 	bsr.w	PrintTwoSpaces			;clear the old number
 	jsr	(printsmall).l				;print it
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	move.l	(PAttribOverallMask).l,d4	;skater rating weights
 	tst.w	(matchupslot).w			;goalie?
 	bne.w	.5
@@ -540,7 +540,7 @@ GetMatchupPlayers					;matchuphome / matchupvis = the home / visitors player of 
 	movea.l	#tmstruct,a0
 	bsr.w	GetMatchupPlayer
 	move.w	d0,(matchuphome).w
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 	bsr.w	GetMatchupPlayer
 	move.w	d0,(matchupvis).w
 	movem.l	(sp)+,d0/a0-a1
@@ -617,7 +617,7 @@ VisAdv1Txt	String	'  ['			;visitors advantage: one mark
 VisAdv2Txt	String	' [['			;visitors advantage: two marks
 VisAdv3Txt	String	'[[['			;visitors advantage: three marks
 EvenAdvTxt	String	'   '			;Even teams
-GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (AwShots): return a1 = the
+GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct): return a1 = the
 									;team nickname String, or 'Home' / 'Visitors' when it is empty (the all
 									;star teams)
 	movem.l	d0/a0/a2,-(sp)
@@ -637,7 +637,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (AwShots): r
 	rts
 HomeTxt	String	'Home'				;name used when the home team has no nickname
 VisitorsTxt	String	'Visitors'		;name used when the visiting team has no nickname
-GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (AwShots): return a1 = the
+GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 = the
 									;team arena String
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1

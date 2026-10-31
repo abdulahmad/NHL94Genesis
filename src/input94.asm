@@ -70,13 +70,13 @@ doinput								;process controller input: d0 = dpad, d1 = new buttons, d2 = chan
 	move.w	(lastplayer).w,d0
 	cmp.w	SCnum(a3),d0
 	bne.w	.noot
-	tst.w	(passplayer).w
+	tst.w	(passReceiverPlayerNum).w
 	bmi.w	.noot
 	tst.w	(onetimerplayer).w
 	bpl.w	.noot
 	btst	#5,d1
 	beq.w	.noot
-	move.w	(passplayer).w,d0
+	move.w	(passReceiverPlayerNum).w,d0
 	asl.w	#7,d0
 	movea.l	#SortCords,a3
 	adda.w	d0,a3
@@ -445,7 +445,7 @@ doinput_onetimer					;a3 is set for a one-timer: C (bit 5) starts the one-timer 
 	beq.w	burst
 	movem.w	d7,-(sp)
 	move.w	SCnum(a3),d7
-	cmp.w	(passplayer).w,d7
+	cmp.w	(passReceiverPlayerNum).w,d7
 	movem.w	(sp)+,d7
 	bne.w	burst
 	tst.w	(puckc).w
@@ -1033,7 +1033,7 @@ passto								;pass the puck to player a0: a3 = passer
 passtoa0							;pass puck to player a0
 	bsr.w	loadTeamStruct
 	addq.w	#1,tmpasses(a2)			;add 1 to total pass attempts
-	move.w	SCnum(a0),(passplayer).w	;Moves index number for a0 player
+	move.w	SCnum(a0),(passReceiverPlayerNum).w	;Moves index number for a0 player
 	move.w	(passspeed).w,d5		;passspeed = pix/sec
 	asr.w	#2,d5					;divides pass speed by 4
 	exg	a0,a3						;tell pass recipient to get puck - swaps a3 and a0 for assinsert

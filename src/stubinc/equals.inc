@@ -185,7 +185,7 @@ sf3rmplay equ 1						;play mode on for replay
 sf3alttree equ 2					;alt. tree
 sf3sbut equ 3						;flag for start button
 
-;team variables (tmstruct / AwShots = the home / away team struct)
+;team variables (tmstruct / awtmstruct = the home / away team struct)
 tmshots equ $0						;shots stat
 tmPwrGoals equ $2					;power play goals stat
 tmPwrPlays equ $4					;power plays stat
@@ -235,7 +235,7 @@ tmPenShots equ $360					;penalty shots. New in 94
 tmPenShotGoals equ $362				;penalty shot goals (Goal, sflags4 bit 5; not in a shootout). New in 94
 tmsize equ $364						;93 $1A2: 94 adds tmHotCold and the stats from tmPerGoals
 
-;game structure variables (one per playoff matchup, gsstruct)
+;game structure variables (one per playoff matchup, gstruct)
 gst1 equ $0							;team 1
 gst2 equ $2							;team 2
 gspotwins equ $4					;play off top team (on tree) wins (for best of 7)

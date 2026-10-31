@@ -604,7 +604,7 @@ resetplstuff						;reset team variables/and players on both teams. Called from p
 	movem.l	d0-d2/a0-a3,-(sp)
 	movea.w	#(tmstruct-M68K_RAM),a2
 	bsr.w	.top
-	movea.w	#(AwShots-M68K_RAM),a2
+	movea.w	#(awtmstruct-M68K_RAM),a2
 	bsr.w	.top
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
@@ -628,12 +628,12 @@ resetplstuff						;reset team variables/and players on both teams. Called from p
 clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
 									;(tmHotCold, saved to
 									;homehotcoldsave / awayhotcoldsave and back) and tmstruct+tmgoalie /
-									;AwShots+tmgoalie. Falls into setteams
+									;awtmstruct+tmgoalie. Falls into setteams
 	move.w	(tmstruct+tmgoalie).w,-(sp)	;keep the home goalie
-	move.w	(AwShots+tmgoalie).w,-(sp)	;keep the away goalie
+	move.w	(awtmstruct+tmgoalie).w,-(sp)	;keep the away goalie
 	movem.l	a1-a3,-(sp)
 	move.w	#tmPerGoals-tmHotCold-1,d0	;hot / cold table bytes - 1
-	movea.l	#AwShots+tmHotCold,a1	;Hot/Cold table Away Team
+	movea.l	#awtmstruct+tmHotCold,a1	;Hot/Cold table Away Team
 	movea.l	#tmstruct+tmHotCold,a0	;Hot/Cold table Home Team
 	movea.l	#homehotcoldsave,a2
 	movea.l	#awayhotcoldsave,a3
@@ -647,14 +647,14 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 .loop2								;clear the home struct
 	clr.b	(a0)+
 	dbf	d0,.loop2					;next byte
-	movea.w	#(AwShots-M68K_RAM),a0
+	movea.w	#(awtmstruct-M68K_RAM),a0
 	move.w	#tmsize-1,d0
 .loop3								;clear the away struct
 	clr.b	(a0)+
 	dbf	d0,.loop3					;next byte
 	movem.l	a1-a3,-(sp)
 	move.w	#tmPerGoals-tmHotCold-1,d0	;hot / cold table bytes - 1
-	movea.l	#AwShots+tmHotCold,a1
+	movea.l	#awtmstruct+tmHotCold,a1
 	movea.l	#tmstruct+tmHotCold,a0
 	movea.l	#homehotcoldsave,a2
 	movea.l	#awayhotcoldsave,a3
@@ -663,10 +663,10 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	move.b	(a3)+,(a1)+
 	dbf	d0,.loop4					;next byte
 	movem.l	(sp)+,a1-a3
-	move.w	(sp)+,(AwShots+tmgoalie).w
+	move.w	(sp)+,(awtmstruct+tmgoalie).w
 	move.w	(sp)+,(tmstruct+tmgoalie).w
 	st	(tmstruct+tmpdst+$34).w
-	st	(AwShots+tmpdst+$34).w
+	st	(awtmstruct+tmpdst+$34).w
 setteams							;Use hometeam/visteam to set team structures (InitTeamStructure for each).
 									;Falls in from clearTeamStats, also called from DrawMatchupBitmaps
 	movem.l	d0/a0-a2,-(sp)
@@ -674,7 +674,7 @@ setteams							;Use hometeam/visteam to set team structures (InitTeamStructure f
 	move.w	(HomeTeam).w,d0
 	move.w	#(SortCords-M68K_RAM),tmsort(a2)	;home players: the first 6 sort objects
 	bsr.w	InitTeamStructure
-	movea.w	#(AwShots-M68K_RAM),a2
+	movea.w	#(awtmstruct-M68K_RAM),a2
 	move.w	(VisTeam).w,d0
 	move.w	#(SortCords-M68K_RAM)+(6*SCstruct),tmsort(a2)	;away players: the next 6 sort objects
 	bsr.w	InitTeamStructure
@@ -914,7 +914,7 @@ PlayoffScreen						;bring up playoff screen if in playoff mode. Called from Game
 	clr.w	d4						;clear the high byte
 	move.b	(a0)+,d4
 	bmi.w	.noscr
-	movea.w	#(gsstruct-M68K_RAM),a2	;playoff series structs
+	movea.w	#(gstruct-M68K_RAM),a2	;playoff series structs
 .top3								;each series score
 	move.b	(a0)+,(printx+1).w		;per series score: x, y from the tree table
 	move.b	(a0)+,(printy+1).w
@@ -1098,25 +1098,25 @@ PlayoffScreenText					;Round titles by gamelevel, printed with printsmall
 	String	'Finals'
 	String	'Champions'
 InitScoutingDisplay					;Start the text player UpdateScoutingDisplay: VertLineScrolling = -1,
-									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / typedelay; return a0 =
+									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / ScoutingReportTimer; return a0 =
 									;TestList. Called from ScoutingReport
 	move.w	#$FFFF,(VertLineScrolling).w
 	st	(PlayerScrollCtr).w			;negative: start the next paragraph
 	clr.w	(SelectedPlayerIdx).w	;TestList index
-	clr.w	(typedelay).w
+	clr.w	(ScoutingReportTimer).w
 	movea.w	#(TestList-M68K_RAM),a0
 	rts
 UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextScript script word by
-									;word with a typing delay (typedelay, longer
+									;word with a typing delay (ScoutingReportTimer, longer
 									;after , and .). $D ends a line; special characters ( _ + $ { } [ ] < > |
 									;\ @ # % = * ^ ; ) insert team data through the team routines
-									;(GetTeamNickname / GetTeamArena for tmstruct / AwShots). Line breaks
+									;(GetTeamNickname / GetTeamArena for tmstruct / awtmstruct). Line breaks
 									;scroll the text box. Called from ScoutingReport
-	cmpi.w	#$1000,(typedelay).w	;text finished?
+	cmpi.w	#$1000,(ScoutingReportTimer).w	;text finished?
 	bgt.w	rtss2					;yes: nothing to do
 	tst.w	(asv).w					;button held?
 	bmi.w	.0
-	subq.w	#1,(typedelay).w		;count down the delay
+	subq.w	#1,(ScoutingReportTimer).w		;count down the delay
 	bpl.w	rtss2
 .0									;time for the next letter
 	movea.l	#ScoutTextScript,a1
@@ -1128,7 +1128,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	movea.w	#(TestList-M68K_RAM),a0
 	move.w	0(a0,d0.w),d0			;this paragraph number
 	bpl.w	.1						;not the end of the list
-	move.w	#$7FFF,(typedelay).w	;text finished
+	move.w	#$7FFF,(ScoutingReportTimer).w	;text finished
 	move.w	#$1E0,(screentimer).w	;and leave the screen in 480 frames
 	rts
 .1									;d0 >= 0
@@ -1144,7 +1144,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	move.w	a2,d0					;d0 = paragraph offset
 .3									;line start found
 	lea	0(a1,d0.w),a2				;a2 = next character
-	move.w	#$A,(typedelay).w		;typing delay
+	move.w	#$A,(ScoutingReportTimer).w		;typing delay
 	move.w	(DispAttribCtr).w,d0
 	cmpi.b	#$5F,(a2)
 	beq.w	.29
@@ -1197,7 +1197,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	cmpi.b	#$2E,(a2)
 	bne.w	.5
 .4									;slow down after a comma or full stop
-	addi.w	#$28,(typedelay).w		;longer delay
+	addi.w	#$28,(ScoutingReportTimer).w		;longer delay
 .5									;delay set
 	cmpi.b	#$20,(a2)+				;space ends the word
 	bne.s	.loop2					;not a space: next character
@@ -1246,7 +1246,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bra.w	.append
 .13									;a2 = $2A
 	move.l	a2,-(sp)
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	jsr	(GetTeamNickname).l
 	movea.l	(sp)+,a2
 	bra.w	.append
@@ -1258,7 +1258,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	bra.w	.append
 .15									;a2 = $3B
 	move.l	a2,-(sp)
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	jsr	(GetTeamArena).l
 	movea.l	(sp)+,a2
 	bra.w	.append
@@ -1278,13 +1278,13 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	movea.l	#tmstruct,a1
 	tst.w	(awayhotter).w			;away team hotter?
 	beq.w	.21
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 .21									;hotter team chosen
 	movea.l	tmdata(a1),a1
 	adda.w	Teamname(a1),a1
 	bra.w	.append
 .22									;a2 = $5D
-	movea.w	#(AwShots-M68K_RAM),a1
+	movea.w	#(awtmstruct-M68K_RAM),a1
 	bra.w	.24
 .23									;a2 = $5B
 	movea.w	#(tmstruct-M68K_RAM),a1

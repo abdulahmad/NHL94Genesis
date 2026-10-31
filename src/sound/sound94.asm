@@ -526,7 +526,7 @@ handle_command_10					;Event $1x: key on note ev_data at volume ev_data+1, midi 
 									;(SetChannelVolume) and the frequency (UpdateChannelFrequencyAndVolume)
 	tst.b	ev_data+1(a0)			;volume
 	beq.s	handle_command_00		;volume 0: key off
-	movea.w	#(fm_channel_struct6-M68K_RAM),a2	;the PCM channel struct
+	movea.w	#(pcm_channel_struct-M68K_RAM),a2	;the PCM channel struct
 	lea	(fm_voice_usage_table).w,a3
 	move.b	ev_status(a0),d0
 	andi.w	#EvChanMask,d0			;midi channel
@@ -550,7 +550,7 @@ handle_command_10					;Event $1x: key on note ev_data at volume ev_data+1, midi 
 	subq.w	#ChanSize,a2
 	dbf	d1,.old						;loop
 	moveq	#NumFMChans-1,d1
-	movea.w	#(fm_channel_struct6-M68K_RAM),a2	;after the last FM channel
+	movea.w	#(pcm_channel_struct-M68K_RAM),a2	;after the last FM channel
 .free								;look for a free channel with this patch
 	subq.w	#ChanSize,a2			;look for a channel struct that is off
 	btst	#ch_on,ch_flags(a2)		;on?

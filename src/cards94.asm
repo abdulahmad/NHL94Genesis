@@ -1266,7 +1266,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	bsr.w	UpdatePlayerRecords
 	move.w	(VisTeam).w,d1
 	ext.l	d1
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	move.w	(awaygoalies).w,d5
 	move.w	(HomeTeam).w,d6
 	bsr.w	UpdatePlayerRecords
@@ -1280,7 +1280,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	ext.l	d1
 	movea.l	#recordbuf,a0
 	bsr.w	UpdateCrowdRecord
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 	move.w	(awayuser).w,d4
 	move.w	(homeuser).w,d5
 	move.w	(VisTeam).w,d1
@@ -1296,7 +1296,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	move.w	(HomeTeam).w,d3
 	move.w	(VisTeam).w,d4
 	movea.l	#tmstruct,a1
-	movea.l	#AwShots,a2				;opponent team struct
+	movea.l	#awtmstruct,a2				;opponent team struct
 	bsr.w	UpdateTeamRecord
 	movea.l	#recordbuf,a0
 	move.w	(awayuser).w,d1
@@ -1304,7 +1304,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	move.w	(homeuser).w,d2
 	move.w	(VisTeam).w,d3
 	move.w	(HomeTeam).w,d4
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 	movea.l	#tmstruct,a2
 	bsr.w	UpdateTeamRecord
 	jsr	(MakeSRAMChecksum).l		;new save RAM checksum
@@ -1477,7 +1477,7 @@ CountGoalies						;homegoalies / awaygoalies = goalies of the home / away team
 	movea.l	#tmstruct,a2
 	jsr	(GetGoalieCount).l
 	move.w	d0,(homegoalies).w
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	jsr	(GetGoalieCount).l
 	move.w	d0,(awaygoalies).w
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -1488,7 +1488,7 @@ CountPlayers						;homeplayers / awayplayers = players of the home / away team
 	movea.l	#tmstruct,a2
 	jsr	(GetPlayerCount).l
 	move.w	d0,(homeplayers).w
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	jsr	(GetPlayerCount).l
 	move.w	d0,(awayplayers).w
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -1780,7 +1780,7 @@ DrawPlayerCard						;Draw a player card: picture (DrawPictureBox), name, "Record
 	movea.l	#tmstruct,a2
 	tst.w	(cardvis).w				;which side?
 	beq.w	.6
-	movea.l	#AwShots,a2				;visitors stats
+	movea.l	#awtmstruct,a2				;visitors stats
 .6									;team side chosen: the stats table
 	jsr	(FormatPlayerNameLast).l
 	move.w	#8,(printx).l
@@ -2159,7 +2159,7 @@ PrintOverallRating					;Player card "Overall Rating" (CalcAttrib, AttribAdjust)
 	movea.l	#tmstruct,a2
 	tst.w	(cardvis).w				;which side?
 	beq.w	.0
-	movea.l	#AwShots,a2				;visitors stats
+	movea.l	#awtmstruct,a2				;visitors stats
 .0									;team side chosen
 	move.l	(PAttribOverallMask).l,d4	;skater mask, or the goalie mask on a goalie card
 	tst.w	(matchup).w				;goalie card?
@@ -2360,7 +2360,7 @@ PrintCardPosition					;Player card position: Goalie, Forward or Defenseman (from
 	movea.l	#tmstruct,a2
 	tst.w	(cardvis).w				;which side?
 	beq.w	.0
-	movea.l	#AwShots,a2				;visitors stats
+	movea.l	#awtmstruct,a2				;visitors stats
 .0									;team side chosen
 	move.w	d0,-(sp)
 	jsr	(GetDefenseStart).l			;index at or past the defense start: not a forward
@@ -2399,7 +2399,7 @@ PrintTeamRating						;Player card "Team Rating" (GetTeamRating, high ROM)
 	movea.l	#tmstruct,a0
 	tst.w	(cardvis).w				;which side?
 	beq.w	.1
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 .1									;team side chosen
 	movea.l	a0,a2
 	bsr.w	GetTeamRating			;d0 = team rating
@@ -2418,7 +2418,7 @@ PrintCardTeam						;Player card: the city and nickname of the card's team (GetCa
 	movea.l	#tmstruct,a0
 	tst.w	(cardvis).w				;which side?
 	beq.w	.0
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 .0									;team side chosen
 	movea.l	tmdata(a0),a0
 	adda.w	Teamname(a0),a0
@@ -2445,7 +2445,7 @@ GetJerseyString						;Player d0 of the card's team: his jersey number as a 2 dig
 	movea.l	#tmstruct,a0
 	tst.w	(cardvis).w				;which side?
 	beq.w	.0
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 .0									;team side chosen
 	movea.l	tmdata(a0),a0
 	move.w	(a0),d1
@@ -2651,11 +2651,11 @@ DrawPictureBox						;Player card picture box (DrawPlayerPicture, UnpackPicture)
 	jsr	(dobitmap).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-GetCardTeam							;a0 = tmstruct, or AwShots when cardvis is set (the card's team)
+GetCardTeam							;a0 = tmstruct, or awtmstruct when cardvis is set (the card's team)
 	movea.l	#tmstruct,a0
 	tst.w	(cardvis).w				;which side?
 	beq.w	.x
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 .x									;exit (also the end of the code above)
 	rts
 TrimSpaces							;Trim the trailing spaces of String a2 and pad it to an even length
@@ -2696,7 +2696,7 @@ BuildCardPlayerLists				;Build the player card order of both teams: home at home
 	movea.l	#tmstruct,a0
 	bsr.w	BuildCardPlayerList
 	movea.l	#awaycardlist,a1
-	movea.l	#AwShots,a0				;away team stats
+	movea.l	#awtmstruct,a0				;away team stats
 	bsr.w	BuildCardPlayerList
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

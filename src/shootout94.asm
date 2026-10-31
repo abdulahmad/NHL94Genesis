@@ -17,7 +17,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	movea.l	#tmstruct,a2
 	tst.w	(BA_Team).w
 	beq.w	.0
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 .0									;team struct chosen
 	jsr	(FormatPlayerNumInitial).l
 	move.w	(printx).w,-(sp)
@@ -33,7 +33,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	adda.w	d0,a2
 	clr.w	d0
 	move.b	pnum(a2),d0				;goalie roster index
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	tst.w	(BA_Team).w
 	beq.w	.1
 	movea.l	#tmstruct,a2
@@ -53,7 +53,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(print).l
 	jsr	(printz).l
 	String	CC_Font1Pri,4,$A
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 	movea.l	tmdata(a1),a1
 	adda.w	Teamname(a1),a1
 	jsr	(print).l					;print the team name

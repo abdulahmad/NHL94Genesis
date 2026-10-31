@@ -141,7 +141,7 @@ VBlank_SetOptions					;VBint handler stored by setoptions: cramfade unless dfng)
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
 ;RAM: potree, WinBits, pojoy, statsbuffer
-;tpassbits. gsstruct game (gssize bytes): gst1, gst2, gspotwins, gspobwins, gsper, gss1, gss2, gsflags
+;tpassbits. gstruct game (gssize bytes): gst1, gst2, gspotwins, gspobwins, gsper, gss1, gss2, gsflags
 ;(gsflags bits 0 gsftf teams flipped, 1 gsfhl hilite, 2 gsfso series over).
 
 DefaultMenus						;Set the default menu choices for the beginning of the game: the 9 option
@@ -167,12 +167,12 @@ defmenuoptions						;default options: Regular Season, One - Home, MTL, LA, 10 Mi
 	dc.w	0						;Penalties
 	dc.w	1						;Line Changes
 ContinuePlayoffs					;Continue playoffs:
-									;read the playoff state back from the saved bits at pwddatabuffer, rebuild
+									;read the playoff state back from the saved bits at passbits, rebuild
 									;the tree and set OptNOP from pojoy ( = 7 - OptNOP; 7 or $B with
 									;FourWayPlay, pojoy adjusted to the pad set-ups). Called
 									;(GoContinuePlayoffs, ChangeOption)
 	movem.l	d0-d7/a0-a3,-(sp)
-	movea.w	#(pwddatabuffer-M68K_RAM),a3
+	movea.w	#(passbits-M68K_RAM),a3
 	bsr.w	ReadPassBits
 	move.w	(gamelevel).w,d0
 	or.w	(bosgames).w,d0
@@ -233,7 +233,7 @@ NewPO								;New playoff generates tree with same team 1. Called from GoNewPlay
 	beq.w	MakeTree				;jump to make playoff tree if play mode is 2
 	clr.w	(bosgames).w			;best of seven: game 0
 	moveq	#7,d0					;clr games won
-	movea.w	#(gsstruct-M68K_RAM),a0	;Game struct variables start
+	movea.w	#(gstruct-M68K_RAM),a0	;Game struct variables start
 .cg									;clear each series
 	clr.w	gspotwins(a0)
 	clr.w	gspobwins(a0)
@@ -269,9 +269,9 @@ MakeTree							;Make the playoff tree (potree) from playoffseats and WinBits, cl
 	movea.w	#(potree-M68K_RAM),a0
 	adda.w	d2,a0
 	adda.w	d2,a0					;(2 bytes a game)
-	movea.w	#(gsstruct-M68K_RAM),a1
+	movea.w	#(gstruct-M68K_RAM),a1
 .loop								;each first round game
-	clr.w	gss1(a1)				;gsstruct: gss1
+	clr.w	gss1(a1)				;gstruct: gss1
 	clr.w	gss2(a1)
 	clr.w	gsper(a1)
 	bclr	#gsfhl,gsflags(a1)		;hilite requested
@@ -302,7 +302,7 @@ FigureJoy							;Set contteams appropriately: cont1team ... cont4team (3 and 4 f
 									;FourWayPlay). In the playoffs (not Shootout, gmode2 bit 0) find this
 									;round's game of the po team and set the teams and pads from .pojoylist
 									;(.pojoylist2 with FourWayPlay); otherwise from .noplist by OptNOP.
-									;After a demo (demoflag clear), and outside the playoffs, fill gsstruct
+									;After a demo (demoflag clear), and outside the playoffs, fill gstruct
 									;with random matchups (InitializeGameStructures). Called from MakeTree and
 									;GameSetUp
 	movem.l	d0-d3/a0-a1,-(sp)
@@ -320,7 +320,7 @@ FigureJoy							;Set contteams appropriately: cont1team ... cont4team (3 and 4 f
 	movea.w	#(potree-M68K_RAM),a0
 	move.w	(potreeteam).w,d2		;user's tree position
 	move.b	0(a0,d2.w),d2
-	movea.w	#(gsstruct-M68K_RAM),a1
+	movea.w	#(gstruct-M68K_RAM),a1
 	moveq	#gssize,d4
 	mulu.w	d1,d4					;times the last game
 	adda.w	d4,a1					;a1 = last game
@@ -455,7 +455,7 @@ FigureJoy							;Set contteams appropriately: cont1team ... cont4team (3 and 4 f
 	dc.w	2
 	dc.w	1
 	dc.w	2
-InitializeGameStructures			;Random team pairs for all 8 gsstruct games, none of them HomeTeam or
+InitializeGameStructures			;Random team pairs for all 8 gstruct games, none of them HomeTeam or
 									;VisTeam. Called from FigureJoy
 	st	(gamenum).w
 	clr.l	d3						;d3 = used team bits
@@ -463,7 +463,7 @@ InitializeGameStructures			;Random team pairs for all 8 gsstruct games, none of 
 	bset	d1,d3
 	move.w	(VisTeam).w,d1
 	bset	d1,d3
-	movea.w	#(gsstruct-M68K_RAM),a1
+	movea.w	#(gstruct-M68K_RAM),a1
 	moveq	#7,d2					;8 games
 .loop								;two random teams for each game
 	bsr.w	GetRandomUnusedTeam		;both teams of game d2
@@ -491,7 +491,7 @@ ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff varia
 	move.w	-(a0),-(sp)				;SuperDiv destroys the bits
 	dbf	d0,.save					;loop
 	moveq	#7,d2					;set gspobwins/gspotwins
-	movea.w	#(gsstruct+(7*$10)-M68K_RAM),a1	;last gsstruct game (gsstruct + 7 * $10)
+	movea.w	#(gstruct+(7*$10)-M68K_RAM),a1	;last gstruct game (gstruct + 7 * $10)
 .loop								;each series: decode both win counts
 	bclr	#gsfso,gsflags(a1)		;series over
 	moveq	#5,d0
@@ -546,7 +546,7 @@ ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff varia
 EncodePW							;After a playoff game compute winners and save the bits if needed. Returns
 									;at once for Demo, Regular
 									;Season and Shootout, and sets TempOptPlayMode with OptPlayMode. The bits
-									;are pwddatabuffer, saved through WriteLineData. Called from GameOver
+									;are passbits, saved through WriteLineData. Called from GameOver
 	tst.w	(OptNOP).w				;no players?
 	beq.w	rtss2
 	tst.w	(OptPlayMode).w			;regular season?
@@ -561,7 +561,7 @@ EncodePW							;After a playoff game compute winners and save the bits if needed
 	beq.w	.0						;finished playoffs
 	tst.w	(gamenum).w
 	bmi.w	.0						;po team out, same as a win
-	movea.w	#(pwddatabuffer-M68K_RAM),a3
+	movea.w	#(passbits-M68K_RAM),a3
 	bsr.w	WritePassBits
 	jsr	(WriteLineData).l
 	btst	#sf3alttree,(sflags3).w	;alternate tree saved?
@@ -570,7 +570,7 @@ EncodePW							;After a playoff game compute winners and save the bits if needed
 	bsr.w	ReadPassBits
 	bra.w	MakeTree
 .0									;gamelevel = 4 or gamenum negative
-	movea.w	#(pwddatabuffer-M68K_RAM),a3
+	movea.w	#(passbits-M68K_RAM),a3
 	bsr.w	ClrPassBits
 	jsr	(WriteLineData).l
 	move.w	#2,(OptPlayMode).w
@@ -603,7 +603,7 @@ WritePassBits						;Transfer the game variables to the bits at a3 (pojoy range 8
 	bsr.w	PushBits
 	moveq	#5,d1					;range 5
 	moveq	#7,d2					;8 games
-	movea.w	#(gsstruct-M68K_RAM),a1
+	movea.w	#(gstruct-M68K_RAM),a1
 .loop								;each game
 	move.w	gspotwins(a1),d0		;per game: push both win counts (range 5)
 	bsr.w	PushBits
@@ -783,17 +783,17 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-;Game struct (gsstruct, gssize each) and team struct (tmstruct / AwShots): the fields are named in
+;Game struct (gstruct, gssize each) and team struct (tmstruct / awtmstruct): the fields are named in
 ;stubinc/equals.inc.
 
 ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
 	move.w	(gamenum).w,d0			;game just played
 	mulu.w	#gssize,d0
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	move.w	(HmGoals).w,gss1(a0,d0.w)	;copy score from played game into game structures (gss1, gss2)
 	move.w	(AwGoals).w,gss2(a0,d0.w)
 	bsr.w	GetShifter				;d1 = games - 1
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	moveq	#gssize,d3
 	mulu.w	d1,d3					;times the last game
 	adda.w	d3,a0					;a0 = last game
@@ -823,7 +823,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.nextround
 	move.w	(gamenum).w,d0			;game just played
 	mulu.w	#gssize,d0
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	adda.w	d0,a0					;a0 = that game
 	cmpi.w	#4,gspotwins(a0)
 	beq.w	.cround					;series won
@@ -833,7 +833,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	cmpi.w	#3,(gamelevel).w		;finish off rest of round games here
 	bge.w	.nextround
 	bsr.w	GetShifter				;d1 = games - 1
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	moveq	#gssize,d3
 	mulu.w	d1,d3					;times the last game
 	adda.w	d3,a0					;a0 = last game
@@ -861,7 +861,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 .nextround							;next round
 	clr.w	(bosgames).w			;advance to next round
 	bsr.w	GetShifter				;d1 = games - 1, d2 = first bit
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	moveq	#gssize,d3
 	mulu.w	d1,d3					;times the last game
 	adda.w	d3,a0					;a0 = last game
@@ -1145,7 +1145,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	tst.w	(BA_Team).w				;which team?
 	beq.w	.6
 .5									;(not branched to)
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 .6									;team chosen
 	bsr.w	FormatPlayerNumInitial	;a1 = shooter's name
 	bsr.w	print
@@ -1161,7 +1161,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	bsr.w	printz
 	String	' by',CC_Font1Pri,4,8
 	move.w	(BA_Checker_Offset).w,d0
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	tst.w	(BA_Team).w				;which team?
 	beq.w	.7
 	movea.l	#tmstruct,a2

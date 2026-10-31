@@ -83,7 +83,7 @@ PositionBoxes						;ClampPositionBox boxes: min / max of $44, then of $46, per p
 PositionBoxesTop					;ClampPositionBox boxes, top net
 	dc.w	$FFB5,0,$FEF8,0,0,$4B,$FEF8,0
 ClearGameStats						;Clear the game stats: shootoutstate (19 words), both team structs
-									;(tmstruct, AwShots), PenBuf, BA_PS_flags, sflags4 / F8 / FA and
+									;(tmstruct, awtmstruct), PenBuf, BA_PS_flags, sflags4 / F8 / FA and
 									;setupcardflags / featuredplayer. Called from GameSetUp
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#shootoutstate,a0
@@ -371,7 +371,7 @@ PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (T
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
 	String	CC_Font2Pri,0,0
-	movea.l	#AwShots,a2
+	movea.l	#awtmstruct,a2
 	move.w	#$E,(printy).w
 	bsr.w	.team
 	movea.l	#tmstruct,a2
@@ -728,7 +728,7 @@ updatePPTeamTime					;One more second of power play time (tmPwrPlayTime) for the
 	movea.l	#tmstruct,a2			;move home team struct into a2
 	btst	#sf2pwrtm,(sflags2).w	;check who's on PP
 	beq.w	.0						;branch if home (team 1)
-	movea.l	#AwShots,a2				;move away team struct into a2
+	movea.l	#awtmstruct,a2				;move away team struct into a2
 .0									;team on the power play chosen
 	addq.w	#1,tmPwrPlayTime(a2)	;one more second of power play time
 .x									;exit (also the end of the code above)

@@ -259,7 +259,7 @@ NextHomeHotPlayer					;d1 = the next home hot player (homehotidx index into the 
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
-NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a1 = AwShots.
+NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a1 = awtmstruct.
 									;Called from UpdateScoutingDisplay
 	movem.l	d0/a0,-(sp)
 	movea.l	#awayhotplayer,a0
@@ -271,7 +271,7 @@ NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a
 	addq.w	#1,(awayhotidx).w
 .x									;pop the d0/a0 saved above
 	movem.l	(sp)+,d0/a0
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 	rts
 	rts
 BuildHotColdLists					;Build the hot / cold player lists of both teams (SortHotColdStarters,
@@ -285,7 +285,7 @@ BuildHotColdLists					;Build the hot / cold player lists of both teams (SortHotC
 	bsr.w	CopyHottestPlayer
 	movea.l	#homecoldplayer,a0
 	bsr.w	CopyColdestPlayer
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 	bsr.w	SortHotColdStarters
 	movea.l	#awayhotplayer,a0
 	bsr.w	CopyHottestPlayer
@@ -359,7 +359,7 @@ NextHomeColdPlayer					;d1 = the next home cold player (homecoldidx, homecoldpla
 	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
-NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer), a1 = AwShots.
+NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer), a1 = awtmstruct.
 									;Called from UpdateScoutingDisplay
 	movem.l	d0/a0,-(sp)
 	movea.l	#awaycoldplayer,a0
@@ -371,7 +371,7 @@ NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer)
 	addq.w	#1,(awaycoldidx).w
 .x									;(the index never moves past entry 0)
 	movem.l	(sp)+,d0/a0
-	movea.l	#AwShots,a1
+	movea.l	#awtmstruct,a1
 	rts
 	rts
 CopyHottestPlayer					;Copy the hottest player of TempBuffer to the list at a0
@@ -405,7 +405,7 @@ CompareHotColdTotals				;Compare the teams' hot / cold totals (GetHotColdTotal i
 	movea.l	#tmstruct,a0
 	bsr.w	GetHotColdTotal
 	move.w	d1,(TempWord1).w
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 	bsr.w	GetHotColdTotal
 	move.w	d1,(TempWord2).w
 	move.w	(TempWord1).w,d1

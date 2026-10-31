@@ -59,7 +59,7 @@ StartGame							;reset game state for a new game, then start the first period
 	move.l	a0,-(sp)
 	movea.l	#tmstruct,a0
 	jsr	(Create_HotCold_Table).l
-	movea.l	#AwShots,a0
+	movea.l	#awtmstruct,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
 .noso	clr.w	(ScoreSumbytes).w	;no shootout: clear the summaries
@@ -326,7 +326,7 @@ clockcont_0							;End of period. Also entered from puckfaceoff
 	;Stanley Cup if the winning team already has 3 series wins
 	moveq	#gssize,d3				;gssize
 	mulu.w	(gamenum).w,d3
-	movea.w	#(gsstruct-M68K_RAM),a0	;game structs (games stored for playoffs and box scores)
+	movea.w	#(gstruct-M68K_RAM),a0	;game structs (games stored for playoffs and box scores)
 	adda.w	d3,a0
 	clr.w	d3
 	btst	#gsftf,gsflags(a0)		;gsftf, gsflags(a0): teams are flipped

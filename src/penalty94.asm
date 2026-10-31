@@ -752,7 +752,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	addq.w	#1,tmap(a1)				;tmap
 	addq.w	#1,tmPwrGoals(a2)		;tmPwrGoals
 	bset	#tmflcc,(tmstruct+tmflags).w	;home tmflags: tmflcc
-	bset	#tmflcc,(AwShots+tmflags).w	;visitors tmflags: tmflcc
+	bset	#tmflcc,(awtmstruct+tmflags).w	;visitors tmflags: tmflcc
 .ex									;exit: restore the registers
 	movem.l	(sp)+,d0-d2/a0
 	rts
@@ -876,7 +876,7 @@ releasepl							;player's penalty time is up so let him out (if appropriate). a2
 	move.w	tmap(a2),d1				;tmap
 	addq.w	#1,tmap(a2)				;one more on the ice
 	bset	#tmflcc,(tmstruct+tmflags).w	;home tmflags: tmflcc
-	bset	#tmflcc,(AwShots+tmflags).w	;visitors tmflags: tmflcc
+	bset	#tmflcc,(awtmstruct+tmflags).w	;visitors tmflags: tmflcc
 	movea.l	#priolist,a0
 	tst.w	tmgoalie(a2)			;tmgoalie
 	bpl.w	.1
@@ -1032,7 +1032,7 @@ SetHor								;switch graphics to horizontal ice rink graphics mode
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-;Team struct (tmstruct / AwShots, tmsize bytes) and game struct (gsstruct, gssize each): fields named in
+;Team struct (tmstruct / awtmstruct, tmsize bytes) and game struct (gstruct, gssize each): fields named in
 ;stubinc/equals.inc. 94 adds shots by period and power play shots at the end of the team struct.
 
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
@@ -1170,7 +1170,7 @@ USBoard								;Update score board, including the players in the penalty box and
 	bsr.w	.dispen
 	bsr.w	printz
 	String	CC_Font2Pri,5,8
-	movea.w	#(AwShots-M68K_RAM),a2	;visitors
+	movea.w	#(awtmstruct-M68K_RAM),a2	;visitors
 	bsr.w	.dispen
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
@@ -1517,7 +1517,7 @@ InitScores							;initialize other games scores/period in playoffs. Called from 
 	cmpi.w	#1,(gamelevel).w
 	bgt.w	rtss2
 	bsr.w	GetShifter
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	moveq	#gssize,d0				;gssize
 	mulu.w	d1,d0
 	adda.w	d0,a0					;a0 = gstruct of game d1, counting down
@@ -1541,7 +1541,7 @@ InitScores							;initialize other games scores/period in playoffs. Called from 
 UpdateScores						;update ticker score values. Called from PeriodOver
 	bsr.w	GetShifter				;d1 = highest game index
 	move.w	d1,(TickerNum).w		;restart the ticker
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	moveq	#gssize,d0				;gssize
 	mulu.w	d1,d0
 	adda.w	d0,a0					;a0 = gstruct of game d1, counting down
@@ -1638,7 +1638,7 @@ CheckGameTickerStatus				;d3 = game. Return a0 = its gstruct; skip to the next t
 									;highlight is coming up or the series is over. Called from StartHL2
 	moveq	#gssize,d0				;gssize
 	mulu.w	d3,d0
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	adda.w	d0,a0
 	btst	#gsfhl,gsflags(a0)		;gsfhl
 	bne.s	NewTicker2				;don't show if hilite coming up
@@ -1739,7 +1739,7 @@ DoHiLights							;Hilites logic: search for hilite game and show
 	bsr.w	GetShifter				;d1 = highest game index
 	moveq	#gssize,d3				;gssize
 	mulu.w	d1,d3
-	movea.w	#(gsstruct-M68K_RAM),a0
+	movea.w	#(gstruct-M68K_RAM),a0
 	adda.w	d3,a0
 .top								;each game
 	btst	#gsfso,gsflags(a0)		;gsfso
@@ -1784,7 +1784,7 @@ StartHL2							;Play hilite for game a0. Start skips it with a random result. A 
 	move.w	2(a0),(VisTeam).w
 	move.l	a0,-(sp)				;keep the gstruct pointer
 	clr.w	(tmstruct+tmgoalie).w
-	clr.w	(AwShots+tmgoalie).w
+	clr.w	(awtmstruct+tmgoalie).w
 	jsr	(clearTeamStats).l
 	jsr	(restoreteams).w			;load both teams' data
 	st	(c1playernum).w				;no human players

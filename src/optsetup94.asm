@@ -16,7 +16,7 @@ GameSetUp							;Game setup screen, called from PeriodOver. Builds the screen
 									;begins the game (SetupStart), and $5460 frames without a press start a
 									;demo (SetupDemo).
 	jsr	(ReadLineData).l			;read the line data
-	movea.l	#pwddatabuffer,a3		;saved playoff state
+	movea.l	#passbits,a3		;saved playoff state
 	jsr	(ReadPassBits).l			;read the playoff bits
 	move.w	(TmpOptLine2).w,(OptLine).w	;undo the start changes of SetupStart (Auto line changes, Shootout)
 	move.w	(TempOptPlayMode).w,(OptPlayMode).w	;restore the play mode
@@ -886,7 +886,7 @@ setoptions							;options screen display: build the game setup screen only: vbla
 	move.w	#$28,(SortCords+OldXpos).w
 	move.w	#$28,(SortCords+(6*SCstruct)+OldXpos).w
 	st	(tmstruct).w				;no home team block yet
-	st	(AwShots).w					;no visitors block yet
+	st	(awtmstruct).w					;no visitors block yet
 	rts
 ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (4 with
 									;FourWayPlay); return d1 = the presses, 0 on timeout. C does not return:

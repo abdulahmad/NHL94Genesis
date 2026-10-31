@@ -10,10 +10,10 @@
 	include	stubinc\equals.inc		;VDP status bits. Equates only
 
 	include	main94.asm				; $000000 header, startup, vectors
-	include	ram94.asm				;RAM map (rs), after main94 like 93 so Stack is the reset
-									;vector value until ram94 redefines it. Equates only
 	include	..\output\obj\teamdata94.asm	; $00030A teams, palettes, credits text
 	include	frames94.asm			; $005B1C sprite animation tables
+	include	ram94.asm				;RAM map (rs), after frames94 like 93, so Stack is the reset vector
+									;value until ram94 redefines it. Equates only
 	include	hockey94.asm			; $0076B2 game loop, pause
 	include	menu94.asm				; $007E36 menu core
 	include	stats94.asm				;$0080D4 scores, line editor, roster, scoring and penalty summaries,

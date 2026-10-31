@@ -187,7 +187,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bclr	#5,(sflags8).w
 	clr.w	(onetimerflags).w
 	clr.w	(onetimerclock).w
-	st	(passplayer).w
+	st	(passReceiverPlayerNum).w
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	SCnum(a3),d0			;move a3 SCnum into d0
 	move.w	d0,(onetimerplayer).w	;move d0
