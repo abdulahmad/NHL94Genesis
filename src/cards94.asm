@@ -989,49 +989,49 @@ AppendNumber						;Write d0 (0 ... 999, no leading zeros) as a String at a1, pad
 	rts
 GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadPlayerRecord
 									;into M68K_RAM); d1 = 1 when the player is a goalie
-	movem.l	d2-d7/a0-a6,-(sp)
-	move.w	d0,-(sp)
-	movea.l	#TeamList,a2
-	asl.w	#2,d0
-	movea.l	0(a2,d0.w),a2
+	movem.l	d2-d7/a0-a6,-(sp)		;save registers
+	move.w	d0,-(sp)				;keep d0
+	movea.l	#TeamList,a2			;a2 = TeamList
+	asl.w	#2,d0					;times 4
+	movea.l	0(a2,d0.w),a2			;a2 = the team
 	adda.w	(a2),a2					;a2 = the team's first player record
 	move.w	d1,d0					;skip d1 records to reach the player
-	bra.w	.0
+	bra.w	.0						;go on
 .loop								;skip one player record: name length + fixed part
-	adda.w	(a2),a2
-	addq.w	#pldsize,a2
+	adda.w	(a2),a2					;a2 = next player
+	addq.w	#pldsize,a2				;plus a player entry
 .0									;loop until the player is reached
-	dbf	d0,.loop
-	move.w	d1,d0
-	move.w	(sp)+,d1
-	move.w	d0,d5
-	move.w	d1,d4
-	ext.l	d0
-	movea.l	#M68K_RAM,a0
+	dbf	d0,.loop					;loop
+	move.w	d1,d0					;d0 = d1
+	move.w	(sp)+,d1				;d1 = team
+	move.w	d0,d5					;d5 = d0
+	move.w	d1,d4					;d4 = d1
+	ext.l	d0						;long
+	movea.l	#M68K_RAM,a0			;a0 = RAM copy
 	bsr.w	ReadPlayerRecord		;his save record into M68K_RAM
 	move.b	(a0),d0					;byte 0 = the record value
-	ext.w	d0
-	movea.l	#TeamList,a5
-	asl.w	#2,d4
-	movea.l	0(a5,d4.w),a5
+	ext.w	d0						;word
+	movea.l	#TeamList,a5			;a5 = TeamList
+	asl.w	#2,d4					;times 4
+	movea.l	0(a5,d4.w),a5			;a5 = the team
 	adda.w	GoalieOdds(a5),a5		;the goalie nibbles in GoalieOdds give the goalie count
-	move.w	(a5),d1
-	movem.w	d0,-(sp)
-	clr.w	d0
+	move.w	(a5),d1					;d1 = first word
+	movem.w	d0,-(sp)				;keep d0
+	clr.w	d0						;d0 = 0
 .loop2								;count the nibbles of the goalie word
-	addq.w	#1,d0
+	addq.w	#1,d0					;next
 	asl.w	#4,d1					;next nibble
-	bne.s	.loop2
+	bne.s	.loop2					;loop
 	cmp.w	d5,d0					;roster index past the goalies: a skater
-	movem.w	(sp)+,d0
+	movem.w	(sp)+,d0				;restore d0
 	bgt.w	.1						;index below the goalie count: a goalie
 	clr.w	d1						;d1 = 0: a skater
-	bra.w	.x
+	bra.w	.x						;exit
 .1									;player is one of the goalies
 	move.w	#1,d1					;d1 = 1: a goalie
 .x									;exit: restore the registers
-	movem.l	(sp)+,d2-d7/a0-a6
-	rts
+	movem.l	(sp)+,d2-d7/a0-a6		;restore registers
+	rts								;done
 PrintRecordHolder					;Record holder line: RecByTxt ("by") then the holder's user name
 									;(AppendRecordHolder). An empty String when there is none
 	movem.l	d0-d7/a1-a6,-(sp)
@@ -1380,58 +1380,58 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	rts								;done
 UpdateCrowdRecord					;Update the crowd records (ReadCrowdRecord, WriteCrowdRecord)
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	bsr.w	ReadCrowdRecord			;crowd record block to a0
 	move.w	$C(a1),d3				;team goals of this game
 	cmp.b	(a0),d3					;more goals than the record: new crowd goals record
-	ble.w	.0
-	move.b	d3,(a0)
-	move.b	d4,crgoalsuser(a0)
-	move.b	d5,crgoalsoppuser(a0)
-	move.b	d2,crgoalsopp(a0)
-	st	d7
+	ble.w	.0						;branch taken
+	move.b	d3,(a0)					;goals
+	move.b	d4,crgoalsuser(a0)		;goals user
+	move.b	d5,crgoalsoppuser(a0)	;goals opponent user
+	move.b	d2,crgoalsopp(a0)		;goals opponent
+	st	d7							;a record was set
 .0									;goals record done: find the best goalie save total
 	subq.w	#1,d6					;d6 = goalie count - 1
 	clr.w	d3						;best so far
 .loop								;saves of goalie d6 = shots against - goals against
-	move.w	d6,d0
+	move.w	d6,d0					;d0 = d6
 	addi.w	#tmpshots,d0			;his shots against
-	move.b	0(a1,d0.w),(TempWord1).w
+	move.b	0(a1,d0.w),(TempWord1).w	;first value
 	addi.w	#tmgoals-tmpshots,d0	;his goals against
-	move.b	0(a1,d0.w),d0
-	sub.b	d0,(TempWord1).w
+	move.b	0(a1,d0.w),d0			;second value
+	sub.b	d0,(TempWord1).w		;difference
 	cmp.b	(TempWord1).w,d3		;best so far?
-	bge.w	.1
-	move.b	(TempWord1).w,d3
+	bge.w	.1						;branch taken
+	move.b	(TempWord1).w,d3		;best so far
 .1									;next goalie
-	dbf	d6,.loop
+	dbf	d6,.loop					;loop
 	cmp.b	crsaves(a0),d3			;best saves above the record: new saves record
-	ble.w	.2
-	st	d7
-	move.b	d3,crsaves(a0)
-	move.b	d4,crsavesuser(a0)
-	move.b	d5,crsavesoppuser(a0)
-	move.b	d2,crsavesopp(a0)
+	ble.w	.2						;branch taken
+	st	d7							;a record was set
+	move.b	d3,crsaves(a0)			;saves
+	move.b	d4,crsavesuser(a0)		;saves user
+	move.b	d5,crsavesoppuser(a0)	;saves opponent user
+	move.b	d2,crsavesopp(a0)		;saves opponent
 .2									;saves record done: crowd peak only for the home team
 	cmp.w	(HomeTeam).w,d1			;home team?
-	bne.w	.3
-	move.b	crpeak(a0),d3
-	andi.w	#$FF,d3
-	cmp.w	(CrowdPeak).w,d3
+	bne.w	.3						;branch taken
+	move.b	crpeak(a0),d3			;peak byte
+	andi.w	#$FF,d3					;byte
+	cmp.w	(CrowdPeak).w,d3		;compare with CrowdPeak
 	bge.w	.3						;the record is as loud or louder: keep it
-	move.w	(CrowdPeak).w,d3
-	st	d7
-	move.b	d3,crpeak(a0)
-	move.b	d4,crpeakuser(a0)
-	move.b	d5,crpeakoppuser(a0)
-	move.b	d2,crpeakopp(a0)
+	move.w	(CrowdPeak).w,d3		;d3 = CrowdPeak
+	st	d7							;a record was set
+	move.b	d3,crpeak(a0)			;peak
+	move.b	d4,crpeakuser(a0)		;peak user
+	move.b	d5,crpeakoppuser(a0)	;peak opponent user
+	move.b	d2,crpeakopp(a0)		;peak opponent
 .3									;records checked: write back only when one changed (d7)
-	tst.w	d7
+	tst.w	d7						;a record was set?
 	beq.w	.x						;nothing changed
 	bsr.w	WriteCrowdRecord		;write the block back
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 UpdatePlayerRecords					;After a game: for the 26 players of team a2, keep each new best (goals,
 									;or saves for the goalies) in his player record with the user names and
 									;opponent d6
@@ -2075,53 +2075,53 @@ CardGoalsByTxt	dc.b	0			;PrintGoalRecordLine text
 	dc.b	$79						;y
 PrintCardRecordLine					;Print a player card record line: label (appstring), value (AppendNumber /
 									;AppendUserName / AppendTeamName)
-	tst.b	d2
+	tst.b	d2						;d2 zero?
 	bne.w	.0						;no record value: print nothing
-	rts
+	rts								;yes: done
 .0									;record value: number, label, then the user names
-	move.w	d0,(printx).w
-	move.w	d1,(printy).w
-	move.w	d2,d0
-	andi.w	#$FF,d0
-	movea.l	#mesarea,a1
-	move.l	a1,-(sp)
+	move.w	d0,(printx).w			;printx
+	move.w	d1,(printy).w			;printy
+	move.w	d2,d0					;d0 = d2
+	andi.w	#$FF,d0					;byte
+	movea.l	#mesarea,a1				;a1 = message area
+	move.l	a1,-(sp)				;keep it
 	jsr	(AppendNumber).l			;value as a String
-	movea.l	(sp)+,a1
-	movea.l	a1,a3
+	movea.l	(sp)+,a1				;restore a1
+	movea.l	a1,a3					;a3 = a1
 	movea.l	(TempMaxSpd).w,a1		;the label chosen by the caller
 	jsr	(appstring).l				;append the label
-	move.w	(printx).w,-(sp)
-	movea.l	#mesarea,a1
+	move.w	(printx).w,-(sp)		;keep printx
+	movea.l	#mesarea,a1				;a1 = message area
 	jsr	(printsmall).l				;print it
-	move.w	(sp)+,(printx).w
-	addq.w	#1,(printy).w
-	movea.l	#mesarea,a1
+	move.w	(sp)+,(printx).w		;restore printx
+	addq.w	#1,(printy).w			;next row
+	movea.l	#mesarea,a1				;a1 = message area
 	move.w	d3,d2					;next line: the holder (d3) "vs." ...
-	ext.w	d2
+	ext.w	d2						;word
 	bset	#7,(sflags6).w			;record name list
-	jsr	(AppendUserName).l
-	movea.l	a1,a3
-	movea.l	#CardVsTxt,a1
-	jsr	(appstring).l
-	move.w	(printx).w,-(sp)
-	movea.l	#mesarea,a1
+	jsr	(AppendUserName).l			;append the user name
+	movea.l	a1,a3					;a3 = a1
+	movea.l	#CardVsTxt,a1			;a1 = "vs" text
+	jsr	(appstring).l				;append it
+	move.w	(printx).w,-(sp)		;keep printx
+	movea.l	#mesarea,a1				;a1 = message area
 	jsr	(printsmall).l				;print it
-	move.w	(sp)+,(printx).w
-	addq.w	#1,(printy).w
+	move.w	(sp)+,(printx).w		;restore printx
+	addq.w	#1,(printy).w			;next row
 	move.w	d4,d2					;next line: the opponent user (d4) and his team (d5)
-	ext.w	d2
-	movea.l	#mesarea,a1
+	ext.w	d2						;word
+	movea.l	#mesarea,a1				;a1 = message area
 	bset	#7,(sflags6).w			;record name list
-	jsr	(AppendUserName).l
-	movea.l	a1,a3
+	jsr	(AppendUserName).l			;append the user name
+	movea.l	a1,a3					;a3 = a1
 	movea.l	#CardEmptyTxt,a1		;separator
-	jsr	(appstring).l
-	move.w	d5,d0
-	movea.l	#mesarea,a1
-	jsr	(AppendTeamName).l
-	movea.l	#mesarea,a1
+	jsr	(appstring).l				;append the string
+	move.w	d5,d0					;d0 = d5
+	movea.l	#mesarea,a1				;a1 = message area
+	jsr	(AppendTeamName).l			;append the team name
+	movea.l	#mesarea,a1				;a1 = message area
 	jsr	(printsmall).l				;print it
-	rts
+	rts								;done
 CardVsTxt	dc.b	0				;PrintCardRecordLine text
 	dc.b	6,$20
 	dc.b	$76						;v
@@ -2179,52 +2179,52 @@ CardStub							;An rts with no caller
 	rts
 PrintStartingLine					;Player card "Starting Line": the line slots the player starts in
 									;(LinePosNames position names)
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(HomeTeam).w,d2
-	bsr.w	GetTeamStruct
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	move.w	(HomeTeam).w,d2			;d2 = home team
+	bsr.w	GetTeamStruct			;team structure
 	tst.w	(cardvis).w				;home team struct unless this is the visitors card
 .0									;(not branched to)
-	beq.w	.1
-	move.w	(VisTeam).w,d2
-	bsr.w	GetTeamStruct
+	beq.w	.1						;branch taken
+	move.w	(VisTeam).w,d2			;d2 = visiting team
+	bsr.w	GetTeamStruct			;team structure
 .1									;team side chosen: its line sets (LineSets)
-	movea.l	#TeamList,a0
-	asl.w	#2,d2
-	ext.l	d2
-	adda.l	d2,a0
-	movea.l	(a0),a0
+	movea.l	#TeamList,a0			;a0 = TeamList
+	asl.w	#2,d2					;times 4
+	ext.l	d2						;long
+	adda.l	d2,a0					;plus it
+	movea.l	(a0),a0					;a0 = the team
 	move.w	LineSets(a0),d2			;offset of the line sets
-	ext.l	d2
+	ext.l	d2						;long
 	adda.l	d2,a0					;a0 = line sets
-	move.w	d0,(printx).w
-	move.w	d1,(printy).w
-	move.w	d0,-(sp)
+	move.w	d0,(printx).w			;printx
+	move.w	d1,(printy).w			;printy
+	move.w	d0,-(sp)				;keep printx
 	jsr	(printsmallz).l				;print
 	String	'Starting Line'
 	addq.w	#2,(printy).w			;two rows down
-	move.w	(sp),(printx).w
-	movea.l	#LinePosNames,a1
+	move.w	(sp),(printx).w			;printx
+	movea.l	#LinePosNames,a1		;a1 = line position names
 .loop								;one position per row
 	cmpi.w	#2,(a1)					;the empty String ends the list
-	beq.w	.2
-	move.w	(sp),(printx).w
-	move.l	a1,-(sp)
+	beq.w	.2						;branch taken
+	move.w	(sp),(printx).w			;printx
+	move.l	a1,-(sp)				;keep a1
 	jsr	(printsmall).l				;print the position name
 	move.b	(a0)+,d0				;roster slot (1-based) of this position
-	ext.w	d0
+	ext.w	d0						;word
 	subq.w	#1,d0					;0-based
-	jsr	(FormatPlayerNameShort).l
+	jsr	(FormatPlayerNameShort).l	;format the player name
 	jsr	(printsmall).l				;print it
 	movea.l	(sp)+,a1				;position name
-	move.w	(a1),d0
-	ext.l	d0
+	move.w	(a1),d0					;d0 = first word
+	ext.l	d0						;long
 	adda.l	d0,a1					;next position name
-	addq.w	#1,(printy).w
-	bra.s	.loop
+	addq.w	#1,(printy).w			;next row
+	bra.s	.loop					;loop
 .2									;all positions printed
-	move.w	(sp)+,d0
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	(sp)+,d0				;restore d0
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 LinePosNames						;Position names; an empty String ends the list
 	String	'G   '
 	String	'LD  '
@@ -2510,147 +2510,147 @@ PrintGoalsAssists					;Player card "Goals" / "Assists" (GetCardTeam)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PrintSaves							;Player card "Saves" / "Save %" (GetCardTeam)
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	bsr.w	GetCardTeam				;a0 = team stats
-	move.l	a0,-(sp)
-	adda.l	#tmgoals,a0
+	move.l	a0,-(sp)				;keep a0
+	adda.l	#tmgoals,a0				;plus goals
 .0									;(not branched to)
 	move.b	0(a0,d0.w),d3			;this goalie's goals against
-	ext.w	d3
-	movea.l	(sp)+,a0
-	adda.l	#tmpshots,a0
+	ext.w	d3						;word
+	movea.l	(sp)+,a0				;restore a0
+	adda.l	#tmpshots,a0			;plus penalty shots
 	move.b	0(a0,d0.w),d4			;this goalie's shots against
-	ext.w	d4
-	move.w	d4,d7
+	ext.w	d4						;word
+	move.w	d4,d7					;d7 = d4
 	sub.w	d3,d7					;saves = shots - goals
-	move.w	d1,(printx).w
-	move.w	d2,(printy).w
-	move.w	d1,-(sp)
+	move.w	d1,(printx).w			;printx
+	move.w	d2,(printy).w			;printy
+	move.w	d1,-(sp)				;keep printx
 	jsr	(printsmallz).l				;print
 	String	'Saves    '
-	move.w	d7,d0
-	movea.l	#mesarea,a1
-	move.l	a1,-(sp)
-	bsr.w	AppendNumber
-	movea.l	(sp)+,a1
+	move.w	d7,d0					;d0 = d7
+	movea.l	#mesarea,a1				;a1 = message area
+	move.l	a1,-(sp)				;keep it
+	bsr.w	AppendNumber			;append the number
+	movea.l	(sp)+,a1				;restore a1
 	jsr	(printsmall).l				;print it
-	move.w	(sp)+,(printx).w
-	addq.w	#1,(printy).w
+	move.w	(sp)+,(printx).w		;restore printx
+	addq.w	#1,(printy).w			;next row
 	jsr	(printsmallz).l				;print
 	String	'Save %   '
-	move.w	d7,d0
+	move.w	d7,d0					;d0 = d7
 	mulu.w	#$64,d0					;save % = saves * 100 / shots
 	tst.w	d4						;any shots?
-	bne.w	.1
-	clr.w	d0
+	bne.w	.1						;branch taken
+	clr.w	d0						;d0 = 0
 	bra.w	.2						;print it
 .1									;shots faced: divide
-	divu.w	d4,d0
+	divu.w	d4,d0					;divided by d4
 .2									;print the percentage
-	movea.l	#mesarea,a1
-	move.l	a1,-(sp)
-	bsr.w	AppendNumber
-	movea.l	(sp)+,a1
+	movea.l	#mesarea,a1				;a1 = message area
+	move.l	a1,-(sp)				;keep it
+	bsr.w	AppendNumber			;append the number
+	movea.l	(sp)+,a1				;restore a1
 	jsr	(printsmall).l				;print it
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 DrawPlayerPicture					;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, Card<player>)
-	movem.l	d0-d7/a1-a6,-(sp)
+	movem.l	d0-d7/a1-a6,-(sp)		;save registers
 	movea.l	#FeaturedPictures,a0	;featured picture lists
-	move.w	d1,d2
-	asl.w	#2,d2
+	move.w	d1,d2					;d2 = d1
+	asl.w	#2,d2					;times 4
 	movea.l	0(a0,d2.w),a0			;this team's list
 	move.w	#$FFFF,d2				;d2 = entry counter
-	bra.w	.1
+	bra.w	.1						;go on
 .loop								;this team's featured list: look for player d0
-	cmp.w	4(a0),d0
+	cmp.w	4(a0),d0				;compare with the entry
 	bne.w	.0						;not him: next entry
 	movea.l	(a0),a0					;his picture
-	bra.w	.x
+	bra.w	.x						;exit
 .0									;not this entry: skip picture.l + index.w
-	addq.l	#6,a0
+	addq.l	#6,a0					;next entry
 .1									;stop at the 0 that ends the list
-	addq.w	#1,d2
-	tst.l	(a0)
-	bne.s	.loop
+	addq.w	#1,d2					;next index
+	tst.l	(a0)					;end of the list?
+	bne.s	.loop					;no: loop
 	movea.l	#TeamList,a0			;no own picture: pick a generic one
-	asl.w	#2,d1
-	movea.l	0(a0,d1.w),a0
+	asl.w	#2,d1					;d1 times 4
+	movea.l	0(a0,d1.w),a0			;a0 = the entry
 	movea.l	a0,a6					;a6 = team data
-	move.w	d0,d6
-	adda.w	(a6),a6
-	bra.w	.2
+	move.w	d0,d6					;d6 = d0
+	adda.w	(a6),a6					;a6 = next player
+	bra.w	.2						;go on
 .loop2								;skip one player record: name length + fixed part
-	adda.w	(a6),a6
-	addq.w	#pldsize,a6
+	adda.w	(a6),a6					;a6 = next player
+	addq.w	#pldsize,a6				;next player data
 .2									;loop until the player is reached
-	dbf	d6,.loop2
+	dbf	d6,.loop2					;loop
 	adda.w	(a6),a6					;past his name
-	adda.w	GoalieOdds(a0),a0
-	move.w	(a0),d1
-	clr.w	d3
+	adda.w	GoalieOdds(a0),a0		;a0 = goalie odds
+	move.w	(a0),d1					;d1 = first word
+	clr.w	d3						;d3 = 0
 .loop3								;count the goalie nibbles
-	addq.w	#1,d3
+	addq.w	#1,d3					;next
 	asl.w	#4,d1					;next nibble
-	bne.s	.loop3
-	movea.l	#NoPicGoalie1,a0
+	bne.s	.loop3					;loop
+	movea.l	#NoPicGoalie1,a0		;a0 = goalie picture 1
 	btst	#0,4(a6)				;bit 0 of the player byte picks one of the two generic pictures
-	bne.w	.3
-	movea.l	#NoPicGoalie2,a0
+	bne.w	.3						;branch taken
+	movea.l	#NoPicGoalie2,a0		;a0 = goalie picture 2
 .3									;generic goalie picked: goalies stop here
 	cmp.w	d3,d0					;a skater: the generic skater picture instead
-	blt.w	.x
-	movea.l	#NoPicSkater2,a0
+	blt.w	.x						;branch taken: exit
+	movea.l	#NoPicSkater2,a0		;a0 = skater picture 2
 	btst	#0,4(a6)				;same bit picks the skater picture
 	bne.w	.x						;NoPicSkater2
-	movea.l	#NoPicSkater1,a0
+	movea.l	#NoPicSkater1,a0		;a0 = skater picture 1
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a1-a6
-	rts
+	movem.l	(sp)+,d0-d7/a1-a6		;restore registers
+	rts								;done
 DrawPictureBox						;Player card picture box (DrawPlayerPicture, UnpackPicture)
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	bsr.w	GetCardPlayer			;d0 = roster index of the card
-	move.w	(HomeTeam).w,d1
+	move.w	(HomeTeam).w,d1			;d1 = home team
 	tst.w	(cardvis).w				;which side?
-	beq.w	.0
-	move.w	(VisTeam).w,d1
+	beq.w	.0						;branch taken
+	move.w	(VisTeam).w,d1			;d1 = visiting team
 .0									;team side chosen
 	bsr.w	DrawPlayerPicture		;a0 = his picture
 	jsr	(printz).l					;map 2 (priority, palette 3) at 1,8
 	String	CC_Font2Pal3Pri,1,8
-	move.w	(cardlogochars2).w,d4
+	move.w	(cardlogochars2).w,d4	;d4 = card logo chars
 	movea.l	a0,a1					;a1 = picture header
-	movea.l	a0,a2
+	movea.l	a0,a2					;a2 = a0
 	adda.l	(a2)+,a0				;a0 = tile data
-	movea.l	#PicturePalette,a0
-	adda.l	(a0),a0
+	movea.l	#PicturePalette,a0		;a0 = picture palette
+	adda.l	(a0),a0					;plus its offset
 	tst.l	(a2)					;no map: the PicturePalette one
-	bne.w	.1
-	movea.l	#PicturePalette,a1
-	adda.l	jimdata(a1),a1
+	bne.w	.1						;branch taken
+	movea.l	#PicturePalette,a1		;a1 = picture palette
+	adda.l	jimdata(a1),a1			;plus the data offset
 	tst.l	(a2)+					;skip the map offset
-	bra.w	.2
+	bra.w	.2						;go on
 .1									;picture has its own map
-	adda.l	(a2)+,a1
+	adda.l	(a2)+,a1				;plus the entry offset
 .2									;both: unpack into picturebuf
-	bsr.w	UnpackPicture
-	movea.l	#picturebuf,a2
-	move.w	#6,d3
-	move.w	#6,d2
-	clr.w	d0
-	clr.w	d1
-	movem.l	d0/a0-a1,-(sp)
+	bsr.w	UnpackPicture			;unpack the picture
+	movea.l	#picturebuf,a2			;a2 = picture buffer
+	move.w	#6,d3					;d3 = 6
+	move.w	#6,d2					;d2 = 6
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
+	movem.l	d0/a0-a1,-(sp)			;keep registers
 	adda.w	#$20,a0					;the picture's 16 colors into palette 3
-	movea.l	#palfadenew+$40,a1
+	movea.l	#palfadenew+$40,a1		;a1 = new palette fade area
 	move.w	#7,d0					;8 longs
 .loop								;copy 8 longs
-	move.l	(a0)+,(a1)+
+	move.l	(a0)+,(a1)+				;copy a palette long
 	dbf	d0,.loop					;next long
-	movem.l	(sp)+,d0/a0-a1
-	move.w	#0,d5
-	jsr	(dobitmap).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0/a0-a1			;restore registers
+	move.w	#0,d5					;d5 = 0
+	jsr	(dobitmap).l				;draw the bitmap
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 GetCardTeam							;a0 = tmstruct, or awtmstruct when cardvis is set (the card's team)
 	movea.l	#tmstruct,a0
 	tst.w	(cardvis).w				;which side?
