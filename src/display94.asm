@@ -135,67 +135,67 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 									;the rows from Rinktilelist, or RevRinkTilelist in a reverse angle replay
 									;(sflags4 bit 4)
 	btst	#sfhor,(sflags).w		;sfhor
-	bne.w	rtss2
+	bne.w	rtss2					;branch taken: sfhor set, return
 	moveq	#-$40,d0				;-192+128 (#$FFFFFFC0)
-	sub.w	(Hpos).w,d0
-	move.w	(Vpos).w,d1
-	move.w	d0,(Hscroll).w
-	move.w	d1,(Vscroll).w
-	neg.w	(Vscroll).w
-	move.w	(Oldrow).w,d4
+	sub.w	(Hpos).w,d0				;minus Hpos
+	move.w	(Vpos).w,d1				;d1 = Vpos
+	move.w	d0,(Hscroll).w			;store Hscroll
+	move.w	d1,(Vscroll).w			;store Vscroll
+	neg.w	(Vscroll).w				;negate Vscroll
+	move.w	(Oldrow).w,d4			;d4 = Oldrow
 	asr.w	#3,d1					;d1 = Vpos in 8 pixel rows
 	move.w	d1,(Oldrow).w			;d4 = previous row
 	moveq	#$1F,d3					;max lines to update
-	cmp.w	d4,d1
+	cmp.w	d4,d1					;compare new row to old row
 	beq.w	rtss2					;same row as last frame
-	movea.l	#Rinktilelist,a0
+	movea.l	#Rinktilelist,a0		;a0 = rink tile list
 	btst	#4,(sflags4).w			;reverse angle replay
-	beq.w	.0
-	movea.l	#RevRinkTilelist,a0
+	beq.w	.0						;branch taken: normal angle, keep a0
+	movea.l	#RevRinkTilelist,a0		;a0 = reverse rink tile list
 .0									;normal or reverse rink map chosen
 	adda.l	jimdata(a0),a0			;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
 									;leave the cmp flags)
 	blt.w	.su0					;row went up
 .sd									;scrolling down: queue each new row
 	move.w	d1,d0					;scrolling down: queue map rows, one per pass (d3 = max rows)
-	neg.w	d0
-	addi.w	#$1E,d0
-	andi.w	#$1F,d0
+	neg.w	d0						;negate row
+	addi.w	#$1E,d0					;plus $1E
+	andi.w	#$1F,d0					;keep 5 bits
 	asl.w	#7,d0					;chars per row screen format
-	add.w	(VmMAP2).w,d0
+	add.w	(VmMAP2).w,d0			;plus map 2 base
 	move.w	d0,6(a5)				;vram address
 	move.w	#$1E,d0					;60-30
-	sub.w	d1,d0
+	sub.w	d1,d0					;minus the row
 	move.w	(a0),4(a5)				;words = one map row
-	mulu.w	(a0),d0
-	add.w	d0,d0
-	lea	mapwords(a0,d0.w),a1
+	mulu.w	(a0),d0					;times chars per row
+	add.w	d0,d0					;double to bytes
+	lea	mapwords(a0,d0.w),a1		;a1 = map row data
 	move.l	a1,(a5)					;source = map row
-	addq.w	#8,a5
-	subq.w	#1,d1
-	cmp.w	d4,d1
-	dbeq	d3,.sd
-	rts
+	addq.w	#8,a5					;next dma entry
+	subq.w	#1,d1					;previous row
+	cmp.w	d4,d1					;compare to old row
+	dbeq	d3,.sd					;loop until old row or d3 runs out
+	rts								;return
 .su0								;scrolling up: queue each new row
 	move.w	d1,d0					;scrolling up: same as .sd with rows going the other way
-	neg.w	d0
-	addi.w	#$1D,d0
-	andi.w	#$1F,d0
-	asl.w	#7,d0
-	add.w	(VmMAP2).w,d0
-	move.w	d0,6(a5)
-	move.w	#$3D,d0
-	sub.w	d1,d0
-	move.w	(a0),4(a5)
-	mulu.w	(a0),d0
-	add.w	d0,d0
-	lea	mapwords(a0,d0.w),a1
-	move.l	a1,(a5)
-	addq.w	#8,a5
-	addq.w	#1,d1
-	cmp.w	d4,d1
-	dbeq	d3,.su0
-	rts
+	neg.w	d0						;negate row
+	addi.w	#$1D,d0					;plus $1D
+	andi.w	#$1F,d0					;keep 5 bits
+	asl.w	#7,d0					;chars per row screen format
+	add.w	(VmMAP2).w,d0			;plus map 2 base
+	move.w	d0,6(a5)				;vram address
+	move.w	#$3D,d0					;d0 = $3D
+	sub.w	d1,d0					;minus the row
+	move.w	(a0),4(a5)				;words = one map row
+	mulu.w	(a0),d0					;times chars per row
+	add.w	d0,d0					;double to bytes
+	lea	mapwords(a0,d0.w),a1		;a1 = map row data
+	move.l	a1,(a5)					;source = map row
+	addq.w	#8,a5					;next dma entry
+	addq.w	#1,d1					;next row
+	cmp.w	d4,d1					;compare to old row
+	dbeq	d3,.su0					;loop until old row or d3 runs out
+	rts								;return
 showref								;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link counter.
 									;Called from setvideo
 	bclr	#sf2refref,(sflags2).w	;sf2refref
@@ -790,53 +790,53 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;(none while sflags7 bit 7 is set).
 									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
-	lea	ButtonLabelCharTable(pc),a4
+	lea	ButtonLabelCharTable(pc),a4	;a4 = label character table
 	clr.w	2(a0)					;x offset (setffo adds it to the sprites)
-	move.w	d1,d2
-	lsr.w	#4,d2
-	andi.w	#$F,d2
-	bne.w	.hi
+	move.w	d1,d2					;d2 = label code
+	lsr.w	#4,d2					;shift tens digit down
+	andi.w	#$F,d2					;keep 4 bits
+	bne.w	.hi						;branch taken: tens digit nonzero
 	move.w	#$FFF0,d2				;' '-'0': blank leading zero
 	subq.w	#4,2(a0)
 .hi									;tens digit (or blank)
 	addi.w	#$30,d2					;'0' (tens digit of the label, or blank)
 	clr.w	d0						;char slot 0
 	bsr.w	uppads_pd
-	move.w	d1,d2
-	andi.w	#$F,d2
-	cmp.w	#$F,d2
-	bne.w	.lo
+	move.w	d1,d2					;d2 = label code
+	andi.w	#$F,d2					;keep ones digit
+	cmp.w	#$F,d2					;compare to $F
+	bne.w	.lo						;branch taken: not blank
 	move.w	#$FFF0,d2				;$F: blank
 .lo									;ones digit (or blank)
 	addi.w	#$30,d2					;'0' (ones digit of the label, or blank)
 	moveq	#1,d0					;char slot 1
-	bsr.w	uppads_pd
-	move.w	d1,d2
-	btst	#7,(sflags7).w
-	beq.w	.0
-	clr.w	d2
+	bsr.w	uppads_pd				;queue the tile
+	move.w	d1,d2					;d2 = label code
+	btst	#7,(sflags7).w			;test sflags7 bit 7
+	beq.w	.0						;branch taken: bit clear, use the label
+	clr.w	d2						;no position bits
 .0									;position bits
-	lsr.w	#8,d2
-	andi.w	#7,d2
-	bne.w	.1
+	lsr.w	#8,d2					;shift position bits down
+	andi.w	#7,d2					;keep 3 bits
+	bne.w	.1						;branch taken: nonzero
 	addq.w	#4,2(a0)
 .1									;position character
-	move.b	0(a4,d2.w),d2
-	moveq	#2,d0
+	move.b	0(a4,d2.w),d2			;d2 = label character
+	moveq	#2,d0					;char slot 2
 uppads_pd							;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
 									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
-	movea.l	#SmallFontMap,a3
-	adda.l	jimdata(a3),a3
-	add.w	d2,d2
-	move.w	mapwords(a3,d2.w),d2
-	andi.w	#$7FF,d2
+	movea.l	#SmallFontMap,a3		;a3 = small font map
+	adda.l	jimdata(a3),a3			;a3 = map data
+	add.w	d2,d2					;double for word index
+	move.w	mapwords(a3,d2.w),d2	;d2 = map word
+	andi.w	#$7FF,d2				;keep tile number
 	asl.w	#5,d2					;32 bytes per tile
-	movea.l	#SmallFontMap,a3
+	movea.l	#SmallFontMap,a3		;a3 = small font map
 	lea	jimtiles(a3,d2.w),a3		;tile data
-	move.l	a3,(a5)+
+	move.l	a3,(a5)+				;source address
 	move.w	#$10,(a5)+				;words to transfer
-	add.w	VRchar(a0),d0
-	asl.w	#5,d0
+	add.w	VRchar(a0),d0			;plus first char of the object
+	asl.w	#5,d0					;times 32 bytes
 	move.w	d0,(a5)+				;vram destination
 	rts
 ButtonLabelCharTable				;Third label character by bits 10-8 of the label code
@@ -983,62 +983,62 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	rts
 find3d								;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 =
 									;xscreen, d1 = yscreen, or d1 = $4E20 when off screen
-	btst	#sfhor,(sflags).w
-	beq.w	.nhor
-	exg	d0,d1
-	neg.w	d0
-	subi.w	#$C5,d1
-	bra.w	.crange
+	btst	#sfhor,(sflags).w		;test sfhor
+	beq.w	.nhor					;branch taken: sfhor clear
+	exg	d0,d1						;swap d0 and d1
+	neg.w	d0						;negate d0
+	subi.w	#$C5,d1					;subtract $C5 from d1
+	bra.w	.crange					;go check the range
 .nhor								;sfhor clear
-	sub.w	(Hpos).w,d0
-	sub.w	(Vpos).w,d1
+	sub.w	(Hpos).w,d0				;minus Hpos
+	sub.w	(Vpos).w,d1				;minus Vpos
 .crange								;check the screen range
-	cmp.w	#$90,d0
-	bgt.w	.offscr
-	cmp.w	#$FF70,d0
-	blt.w	.offscr
+	cmp.w	#$90,d0					;compare to $90
+	bgt.w	.offscr					;branch taken: off screen
+	cmp.w	#$FF70,d0				;compare to -$90
+	blt.w	.offscr					;branch taken: off screen
 	addi.w	#$100,d0				;128+128
-	add.w	d2,d1
-	asr.w	#1,d2
+	add.w	d2,d1					;add height
+	asr.w	#1,d2					;half the height
 	add.w	d2,d1					;y + 1.5 * height
 	cmp.w	#$90,d1					;112+32
-	bgt.w	.offscr
-	cmp.w	#$FF70,d1
-	blt.w	.offscr
-	neg.w	d1
+	bgt.w	.offscr					;branch taken: off screen
+	cmp.w	#$FF70,d1				;compare to -$90
+	blt.w	.offscr					;branch taken: off screen
+	neg.w	d1						;negate d1
 	addi.w	#$F0,d1					;112+128
-	rts
+	rts								;return
 .offscr								;off screen
-	move.w	#$4E20,d1
-	rts
+	move.w	#$4E20,d1				;d1 = off screen value
+	rts								;return
 updatesound							;move the crowd noise volume (psg noise channel, asv) toward Crowdlevel.
 									;Called from periodicevents
-	move.w	(Crowdlevel).w,d0
-	asl.w	#3,d0
-	addi.w	#$400,d0
-	cmp.w	#$EFF,d0
-	bls.w	.ip
+	move.w	(Crowdlevel).w,d0		;d0 = Crowdlevel
+	asl.w	#3,d0					;times 8
+	addi.w	#$400,d0				;plus $400
+	cmp.w	#$EFF,d0				;compare to $EFF
+	bls.w	.ip						;branch taken: not above, keep d0
 	move.w	#$EFF,d0
 .ip									;level clamped
 	moveq	#$28,d2					;max step 40 (d0 = target level, asv = current)
-	sub.w	(asv).w,d0
-	cmp.w	d2,d0
-	bgt.w	.iasv
-	neg.w	d2
-	cmp.w	d2,d0
+	sub.w	(asv).w,d0				;minus current asv
+	cmp.w	d2,d0					;compare to the step
+	bgt.w	.iasv					;branch taken: above the step
+	neg.w	d2						;negate the step
+	cmp.w	d2,d0					;compare to the negative step
 	bge.w	.non					;within 40: no change
 .iasv								;step toward the target
 	add.w	d2,(asv).w				;step asv toward the target
-	bpl.w	.non
-	clr.w	(asv).w
+	bpl.w	.non					;branch taken: asv still positive
+	clr.w	(asv).w					;clear asv
 .non								;crowd level set
 	move.b	#$C8,(Asound).l			;psg: noise channel setup, then attenuation below
-	move.b	#1,(Asound).l
-	move.b	(asv).w,d0
-	eori.b	#$F,d0
+	move.b	#1,(Asound).l			;second write to Asound
+	move.b	(asv).w,d0				;d0 = asv
+	eori.b	#$F,d0					;invert the low nibble
 	ori.b	#$F0,d0					;noise channel attenuation
-	move.b	d0,(Asound).l
-	rts
+	move.b	d0,(Asound).l			;write attenuation to Asound
+	rts								;return
 KillCrowd							;silence the crowd noise (psg). Called from Begin, Pausemode_pall,
 									;StartHL2, ...
 	move.b	#$E7,(Asound).l			;PSG command $E7
