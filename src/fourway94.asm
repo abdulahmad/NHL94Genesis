@@ -45,10 +45,10 @@ ReadJoySwapPad3						;unused: the same for pad 3
 	rts
 ReadJoySwapPad4						;unused: the same for pad 4
 	move.b	#$30,(Joy2).l			;4 way play: select pad
-	move.w	(pad4waysave4).w,(pad4wayword).w
-	jsr	(ReadJoy1).l
-	move.w	(pad4wayword).w,(pad4waysave4).w
-	rts
+	move.w	(pad4waysave4).w,(pad4wayword).w	;restore its word
+	jsr	(ReadJoy1).l				;read the pad
+	move.w	(pad4wayword).w,(pad4waysave4).w	;save its word
+	rts								;done
 	rts
 Set4WayPlayerStub					;An empty Set4WayPlayer (just rts): forcepldata calls it with SCnum $F
 									;when a goalie is pulled

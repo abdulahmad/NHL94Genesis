@@ -1473,26 +1473,26 @@ UpdatePlayerRecords					;After a game: for the 26 players of team a2, keep each 
 	rts
 CountGoalies						;homegoalies / awaygoalies = goalies of the home / away team
 									;(GetGoalieCount). Called and PlayerCards
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#tmstruct,a2
-	jsr	(GetGoalieCount).l
-	move.w	d0,(homegoalies).w
-	movea.l	#awtmstruct,a2
-	jsr	(GetGoalieCount).l
-	move.w	d0,(awaygoalies).w
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#tmstruct,a2			;home team
+	jsr	(GetGoalieCount).l			;count its goalies
+	move.w	d0,(homegoalies).w		;store them
+	movea.l	#awtmstruct,a2			;away team
+	jsr	(GetGoalieCount).l			;count its goalies
+	move.w	d0,(awaygoalies).w		;store them
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 CountPlayers						;homeplayers / awayplayers = players of the home / away team
 									;(GetPlayerCount)
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#tmstruct,a2
-	jsr	(GetPlayerCount).l
-	move.w	d0,(homeplayers).w
-	movea.l	#awtmstruct,a2
-	jsr	(GetPlayerCount).l
-	move.w	d0,(awayplayers).w
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#tmstruct,a2			;home team
+	jsr	(GetPlayerCount).l			;count its players
+	move.w	d0,(homeplayers).w		;store them
+	movea.l	#awtmstruct,a2			;away team
+	jsr	(GetPlayerCount).l			;count its players
+	move.w	d0,(awayplayers).w		;store them
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, spaces for 0)
 									;to a1, or NoNameTxt when d2 is 0; trailing spaces trimmed (TrimSpaces)
 	movem.l	d0-d3/a0-a3,-(sp)
@@ -2691,15 +2691,15 @@ GetCardPlayer						;cardplayer = the roster index of card cardindex from the car
 	rts
 BuildCardPlayerLists				;Build the player card order of both teams: home at homecardlist, away at
 									;awaycardlist
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#homecardlist,a1
-	movea.l	#tmstruct,a0
-	bsr.w	BuildCardPlayerList
-	movea.l	#awaycardlist,a1
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#homecardlist,a1		;home list
+	movea.l	#tmstruct,a0			;home team
+	bsr.w	BuildCardPlayerList		;build it
+	movea.l	#awaycardlist,a1		;away list
 	movea.l	#awtmstruct,a0			;away team stats
-	bsr.w	BuildCardPlayerList
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	bsr.w	BuildCardPlayerList		;build it
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 BuildCardPlayerList					;Player card order of team a0 into a1: the 6 starters (the first line of
 									;LineSets) first, the other roster slots after them
 	movea.l	tmdata(a0),a0

@@ -837,13 +837,13 @@ updatepentime_ut					;a2 = team. Walks the penalty box list (tmboxlist): the fir
 RemovePlayerFromList				;Remove the entry before a0 from a penalty box list by shifting the rest
 									;down (list ends with a negative byte). Return a0 = removed slot. Called
 									;from PenGoalStuff, updatepentime_ut
-	moveq	#-1,d2
+	moveq	#-1,d2					;index -1
 .shift								;loop
-	addq.w	#1,d2
-	move.b	0(a0,d2.w),-1(a0,d2.w)
-	bpl.s	.shift
+	addq.w	#1,d2					;next entry
+	move.b	0(a0,d2.w),-1(a0,d2.w)	;move it down one
+	bpl.s	.shift					;until a negative byte has been moved
 	subq.w	#1,a0					;a0 = the slot that was removed
-	rts
+	rts								;done
 chkatop								;attack time of possession stat update. Called once a second from
 									;updatepentime
 	moveq	#0,d1					;d1 = struct offset of the team credited

@@ -113,17 +113,17 @@ DisplayGameInfo						;Print game d3 of gstruct (16 bytes each; not the current g
 	addq.w	#2,(printy).w			;two rows down
 	rts
 PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
-	movea.w	#TeamList,a1
-	asl.w	#2,d0
-	movea.l	0(a1,d0.w),a1
-	adda.w	Teamname(a1),a1
-	move.w	#6,(printx).w
-	jsr	(print).l
-	move.w	#$18,(printx).w
-	move.w	d1,d0
+	movea.w	#TeamList,a1			;a1 = TeamList
+	asl.w	#2,d0					;times 4: index
+	movea.l	0(a1,d0.w),a1			;a1 = the team
+	adda.w	Teamname(a1),a1			;a1 = its Teamname String
+	move.w	#6,(printx).w			;name at x 6
+	jsr	(print).l					;print it
+	move.w	#$18,(printx).w			;score at x $18
+	move.w	d1,d0					;d0 = score
 	moveq	#2,d1					;2 digits
-	jsr	(PushNumberWidth).l
-	jmp	print
+	jsr	(PushNumberWidth).l			;print the number
+	jmp	print						;and return
 DrawScrollArrows					;ShowScores up / down arrows (ScrollArrowTable). Saves d0-d1/a1
 	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
@@ -784,20 +784,20 @@ StopPlayerListScroll				;Out of range: stop scrolling
 	clr.w	(PlayerScrollCtr).w
 	rts
 DisplayPlayerListUp					;d0 = divs result (quotient in the high word): draw that page
-	move.l	d0,-(sp)
-	swap	d0
-	move.w	d0,(SelectedPlayerIdx).w
-	bsr.w	DisplayPlayerList
-	move.l	(sp)+,d0
-	rts
+	move.l	d0,-(sp)				;save d0
+	swap	d0						;quotient to the low word
+	move.w	d0,(SelectedPlayerIdx).w	;that page
+	bsr.w	DisplayPlayerList		;draw the list
+	move.l	(sp)+,d0				;restore d0
+	rts								;done
 DisplayPlayerListDown				;Draw the page after the quotient in the high word of d0
-	move.l	d0,-(sp)
-	swap	d0
+	move.l	d0,-(sp)				;save d0
+	swap	d0						;quotient to the low word
 	addq.w	#1,d0					;next page
-	move.w	d0,(SelectedPlayerIdx).w
-	bsr.w	DisplayPlayerList
-	move.l	(sp)+,d0
-	rts
+	move.w	d0,(SelectedPlayerIdx).w	;that page
+	bsr.w	DisplayPlayerList		;draw the list
+	move.l	(sp)+,d0				;restore d0
+	rts								;done
 DisplayPlayerList					;Draw roster page SelectedPlayerIdx (0 goalies, 1-7 lines): title
 									;(PlayerStatMenuTxt), column header, then
 									;the rows (GoalieRowText / PlayerPositionText, getNameandAttrib)
@@ -1483,15 +1483,15 @@ UpdateStatsListScroll				;Stats screen per frame: scroll 0 ... SelectedPlayerIdx
 	bne.w	SetStatsListScrollReg
 	bsr.w	DrawStatsRowDown		;falls into the scroll register write
 SetStatsListScrollReg				;VSRAM = VertLineScrolling - $68
-	move.w	(disflags).w,-(sp)
+	move.w	(disflags).w,-(sp)		;save disflags
 	bset	#dfng,(disflags).w		;don't int graphics while the VDP is being addressed
-	movea.l	#Vdata,a0
-	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)
-	move.w	#$FF98,d0
-	add.w	(VertLineScrolling).w,d0
-	move.w	d0,(a0)
-	move.w	(sp)+,(disflags).w
-	rts
+	movea.l	#Vdata,a0				;a0 = VDP data port
+	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;VSRAM write address 2 to the control port
+	move.w	#$FF98,d0				;-$68
+	add.w	(VertLineScrolling).w,d0	;add the vertical scroll
+	move.w	d0,(a0)					;write it
+	move.w	(sp)+,(disflags).w		;restore disflags
+	rts								;done
 DrawStatsRowUp						;Draw the top row of the window
 	move.w	(VertLineScrolling).w,d3	;scroll position
 	lsr.w	#4,d3					;d3 = first visible Satt row (16 pixels per row)

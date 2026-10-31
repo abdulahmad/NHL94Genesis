@@ -55,14 +55,14 @@ VBlank								;Main vblank code for game play (VBint target, set by setupice and
 	bra.s	.c
 vb2									;Vblank used for palfades only, no dmas (VBint target). No rte here: falls
 									;into IRQ7
-	movem.l	d0-d7/a0-a6,-(sp)
-	btst	#dfng,(disflags).w
-	bne.w	.nograph
-	bsr.w	cramfade
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	btst	#dfng,(disflags).w		;graphics off limits?
+	bne.w	.nograph				;yes: skip the fade
+	bsr.w	cramfade				;fade the colours
 .nograph							;no sprite or dma work in this vblank
-	addq.w	#1,(Vcount).w
-	jsr	(p_music_vblank).l
-	movem.l	(sp)+,d0-d7/a0-a6
+	addq.w	#1,(Vcount).w			;count the frame
+	jsr	(p_music_vblank).l			;music vblank work
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 IRQ7								;rte only. vb2 falls in; the vector table ($60, $64, ...) points here
 	rte
 DumpSprites							;Transfer (by dma) scroll stuff, sprite table, vram data in dmalist.
@@ -88,13 +88,13 @@ dodmalist							;(symbols are case-insensitive). Transfer data from dmalist.
 	bne.s	.0
 	rts
 SetScroll2							;Write Hscroll / Vscroll to the vdp. Called from DumpSprites
-	move.w	(VSCRLPM).w,d0
-	addq.w	#2,d0
-	bsr.w	Vmaddr
-	move.w	(Hscroll).w,(a0)
+	move.w	(VSCRLPM).w,d0			;d0 = VSCRLPM
+	addq.w	#2,d0					;plus 2
+	bsr.w	Vmaddr					;a0 = VDP address for it
+	move.w	(Hscroll).w,(a0)		;write Hscroll
 	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;vsram write, address 2
-	move.w	(Vscroll).w,(a0)
-	rts
+	move.w	(Vscroll).w,(a0)		;write Vscroll
+	rts								;done
 setvideo							;this is not vblank code but sets up ram for vblank transfers. Called once
 									;per game frame (DoGameFrame, PauseMode, ...). Also runs
 									;AddArenaAnimSprite and Crowd_Noise
@@ -1041,9 +1041,9 @@ updatesound							;move the crowd noise volume (psg noise channel, asv) toward C
 	rts
 KillCrowd							;silence the crowd noise (psg). Called from Begin, Pausemode_pall,
 									;StartHL2, ...
-	move.b	#$E7,(Asound).l
-	move.b	#$DF,(Asound).l
-	move.b	#$C8,(Asound).l
-	move.b	#1,(Asound).l
+	move.b	#$E7,(Asound).l			;PSG command $E7
+	move.b	#$DF,(Asound).l			;PSG command $DF
+	move.b	#$C8,(Asound).l			;PSG command $C8
+	move.b	#1,(Asound).l			;PSG command 1
 	move.b	#$FF,(Asound).l			;noise channel off
-	rts
+	rts								;done

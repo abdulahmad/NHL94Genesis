@@ -2587,64 +2587,64 @@ puckpenshot							;puck start for a penalty shot or shootout: on the first call 
 	dc.b	$FF,$F6,0,0,$FF,$C4
 UpdatePenaltyShotEnd				;end the penalty shot when the goalie has the puck, the puck is loose or
 									;the timer runs out
-	movem.w	d0,-(sp)
-	move.w	(puckc).w,d0
-	cmp.w	(BA_Goalie_SCnum).w,d0
-	movem.w	(sp)+,d0
-	beq.w	.setended
-	btst	#5,(BA_PS_flags).w
-	beq.w	.checktimer
-	btst	#5,(gmode2).w
-	bne.w	.puckloose
-	tst.w	(puckc).w
-	bpl.w	.countdown
-	bset	#5,(gmode2).w
+	movem.w	d0,-(sp)				;save d0
+	move.w	(puckc).w,d0			;d0 = SCnum of the puck carrier
+	cmp.w	(BA_Goalie_SCnum).w,d0	;is it the goalie?
+	movem.w	(sp)+,d0				;restore d0 (flags kept)
+	beq.w	.setended				;goalie has the puck: ended
+	btst	#5,(BA_PS_flags).w		;BA_PS_flags bit 5 set?
+	beq.w	.checktimer				;no: check the shootout clock
+	btst	#5,(gmode2).w			;gmode2 bit 5 set (puck was loose)?
+	bne.w	.puckloose				;yes: check the puck again
+	tst.w	(puckc).w				;puck carried by someone?
+	bpl.w	.countdown				;yes: count down
+	bset	#5,(gmode2).w			;puck loose: set gmode2 bit 5
 .puckloose							;puck loose
-	tst.w	(puckc).w
-	bpl.w	.setended
+	tst.w	(puckc).w				;puck carried by someone?
+	bpl.w	.setended				;no: ended
 .countdown							;count down the shot clock
-	tst.w	(passmodetimer).w
-	bmi.w	.setended
-	subq.w	#1,(passmodetimer).w
-	bra.w	.checktimer
+	tst.w	(passmodetimer).w		;pass mode timer already out?
+	bmi.w	.setended				;yes: ended
+	subq.w	#1,(passmodetimer).w	;count it down
+	bra.w	.checktimer				;check the clock
 .setended							;pass mode timer out: the attempt is over
-	bset	#4,(BA_PS_flags).w
+	bset	#4,(BA_PS_flags).w		;set the ended flag
 .checktimer							;shootout clock out: the attempt is over
-	tst.w	(shootoutclock).w
+	tst.w	(shootoutclock).w		;shootout clock still running?
 	bne.w	.checkended
-	bset	#4,(BA_PS_flags).w
+	bset	#4,(BA_PS_flags).w		;clock out: set the ended flag
 .checkended							;check the end
-	btst	#4,(BA_PS_flags).w
-	bne.w	.finishshot
-	rts
+	btst	#4,(BA_PS_flags).w		;ended flag set?
+	bne.w	.finishshot				;yes: finish the shot
+	rts								;no: keep going
 .finishshot							;bit 4 of BA_PS_flags set
-	btst	#6,(BA_PS_flags).w
-	bne.w	PenaltyShotEndReturn
-	bset	#6,(BA_PS_flags).w
-	move.w	#$A,d0
-	jsr	(AddPenalty2).l
+	btst	#6,(BA_PS_flags).w		;already finished once?
+	bne.w	PenaltyShotEndReturn	;yes: skip
+	bset	#6,(BA_PS_flags).w		;mark it finished
+	move.w	#$A,d0					;d0 = $A
+	jsr	(AddPenalty2).l				;add the penalty
 EndPenaltyShotPlay					;stop play after a penalty shot or shootout attempt: freeze the window,
 									;stop the clock, clear the penalty shot flags
-	jsr	(freezewindow).l
-	btst	#0,(gmode2).w
-	bne.w	.stopplay
-	move.w	#$A,(replaydelay).w
-	bset	#sf2drec,(sflags2).w
+	jsr	(freezewindow).l			;freeze the window
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	bne.w	.stopplay				;yes: no replay
+	move.w	#$A,(replaydelay).w		;replay delay $A
+	bset	#sf2drec,(sflags2).w	;record a replay
 .stopplay							;stop play
-	bset	#gmclock,(gmode).w
-	bclr	#2,(gmode2).w
-	bclr	#2,(BA_PS_flags).w
-	bclr	#3,(BA_PS_flags).w
-	bclr	#5,(BA_PS_flags).w
-	bclr	#4,(BA_PS_flags).w
-	bclr	#6,(BA_PS_flags).w
-	movem.l	d0/a0,-(sp)
-	movea.l	#SortCords,a0
-	move.w	(BA_Sktr_SCnum).w,d0
-	asl.w	#7,d0
-	move.b	(savednewpnum).w,newpnum(a0,d0.w)
-	movem.l	(sp)+,d0/a0
-	jsr	(CountShootoutGoals).l
+	bset	#gmclock,(gmode).w		;stop the clock
+	bclr	#2,(gmode2).w			;clear gmode2 bit 2
+	bclr	#2,(BA_PS_flags).w		;clear BA_PS_flags bit 2
+	bclr	#3,(BA_PS_flags).w		;clear BA_PS_flags bit 3
+	bclr	#5,(BA_PS_flags).w		;clear BA_PS_flags bit 5
+	bclr	#4,(BA_PS_flags).w		;clear BA_PS_flags bit 4
+	bclr	#6,(BA_PS_flags).w		;clear BA_PS_flags bit 6
+	movem.l	d0/a0,-(sp)				;save registers
+	movea.l	#SortCords,a0			;a0 = sort objects
+	move.w	(BA_Sktr_SCnum).w,d0	;d0 = SCnum of the penalty shot skater
+	asl.w	#7,d0					;times $80, the object size
+	move.b	(savednewpnum).w,newpnum(a0,d0.w)	;put back the saved newpnum
+	movem.l	(sp)+,d0/a0				;restore registers
+	jsr	(CountShootoutGoals).l		;count the shootout goals
 PenaltyShotEndReturn				;penalty shot already finished: return without adding another
 	rts
 ; this is where the action starts
@@ -2757,87 +2757,87 @@ puckfaceoff							;puck controller for the face off: a3 = the face off controlle
 	bra.w	WaitForFaceoffLineChanges
 SetFaceoffComputerLine				;faceoff: start a line change for team d0 when the computer controls it
 									;(line changes on)
-	tst.w	(OptLine).w
-	bne.w	rtss2
-	btst	#4,(sflags7).w
-	bne.w	.dochange
-	cmp.w	(cont1team).w,d0
-	beq.w	rtss2
-	cmp.w	(cont2team).w,d0
-	beq.w	rtss2
+	tst.w	(OptLine).w				;OptLine set?
+	bne.w	rtss2					;yes: no line change
+	btst	#4,(sflags7).w			;sflags7 bit 4 set?
+	bne.w	.dochange				;yes: change the line
+	cmp.w	(cont1team).w,d0		;team d0 on controller 1?
+	beq.w	rtss2					;yes: a human picks, skip
+	cmp.w	(cont2team).w,d0		;team d0 on controller 2?
+	beq.w	rtss2					;yes: a human picks, skip
 .dochange							;change the line
-	bsr.w	CompLine
-	bsr.w	setpersonel
-	bsr.w	printscores1
-	move.w	#$2710,(crowdnoisedelay).w
-	rts
+	bsr.w	CompLine				;computer picks the line
+	bsr.w	setpersonel				;set the players in
+	bsr.w	printscores1			;redraw the scores
+	move.w	#$2710,(crowdnoisedelay).w	;set the crowd noise delay
+	rts								;done
 StartFaceoffLineChange				;start the line change box for team d0's sort object before a faceoff
-	exg	a2,a3
-	asl.w	#7,d0
-	movea.w	#(SortCords-M68K_RAM),a3
-	adda.w	d0,a3
-	bclr	#3,pflags2(a3)
-	move.l	a2,-(sp)
-	bsr.w	SetLCmode
-	movea.l	(sp)+,a2
-	btst	#3,pflags2(a3)
-	beq.w	.exit
-	btst	#pfteam,pflags(a3)
-	beq.w	.homeplayer
-	move.w	#$168,temp2(a2)
-	move.w	SCnum(a3),temp4(a2)
-	bra.w	.exit
+	exg	a2,a3						;a2 = player, a3 = team
+	asl.w	#7,d0					;team d0 times $80
+	movea.w	#(SortCords-M68K_RAM),a3	;a3 = sort objects
+	adda.w	d0,a3					;a3 = the object of team d0
+	bclr	#3,pflags2(a3)			;clear pflags2 bit 3
+	move.l	a2,-(sp)				;save a2
+	bsr.w	SetLCmode				;start the line change mode
+	movea.l	(sp)+,a2				;restore a2
+	btst	#3,pflags2(a3)			;pflags2 bit 3 set?
+	beq.w	.exit					;no: done
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.homeplayer				;home
+	move.w	#$168,temp2(a2)			;away: timer in temp2
+	move.w	SCnum(a3),temp4(a2)		;its SCnum in temp4
+	bra.w	.exit					;done
 .homeplayer							;pfteam clear
-	move.w	#$258,temp1(a2)
-	move.w	SCnum(a3),temp3(a2)
+	move.w	#$258,temp1(a2)			;home: timer in temp1
+	move.w	SCnum(a3),temp3(a2)		;its SCnum in temp3
 .exit								;return with a2/a3 swapped back
-	exg	a2,a3
-	rts
+	exg	a2,a3						;swap back
+	rts								;done
 WaitForFaceoffLineChanges			;run both teams' faceoff line change timers (temp1 / temp2); continue when
 									;both have run out
-	move.w	#$40,d0
-	bsr.w	UpdateFaceoffLineChangeTimer
-	move.w	#$42,d0
-	bsr.w	UpdateFaceoffLineChangeTimer
-	tst.w	temp1(a3)
-	bpl.w	rtss2
-	tst.w	temp2(a3)
-	bpl.w	rtss2
-	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	tmsize(a2),a1
-	moveq	#1,d0
-	bsr.w	SetFaceoffComputerLine
-	move.w	#$FFFF,(facelcwait).w
+	move.w	#$40,d0					;first team's timer offset
+	bsr.w	UpdateFaceoffLineChangeTimer	;count it down
+	move.w	#$42,d0					;second team's timer offset
+	bsr.w	UpdateFaceoffLineChangeTimer	;count it down
+	tst.w	temp1(a3)				;first timer still positive?
+	bpl.w	rtss2					;yes: wait
+	tst.w	temp2(a3)				;second timer still positive?
+	bpl.w	rtss2					;yes: wait
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	lea	tmsize(a2),a1				;a1 = away team structure
+	moveq	#1,d0					;d0 = 1
+	bsr.w	SetFaceoffComputerLine	;set the computer's line
+	move.w	#$FFFF,(facelcwait).w	;no more waiting
 	move.w	#$1C,d0					;puckfaceoff2
-	bra.w	assreplace
+	bra.w	assreplace				;continue there
 UpdateFaceoffLineChangeTimer		;count down one team's faceoff line change timer at offset d0 of a3
-	tst.w	0(a3,d0.w)
-	bmi.w	rtss2
-	move.w	4(a3,d0.w),d1
-	asl.w	#7,d1
-	movea.w	#(SortCords-M68K_RAM),a0
-	movea.w	#(tmstruct-M68K_RAM),a2
-	btst	#6,pflags(a0,d1.w)
-	beq.w	.checkactive
-	adda.w	#tmsize,a2
+	tst.w	0(a3,d0.w)				;timer already done?
+	bmi.w	rtss2					;yes: nothing to do
+	move.w	4(a3,d0.w),d1			;d1 = the player number at offset 4
+	asl.w	#7,d1					;times $80, the object size
+	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	btst	#6,pflags(a0,d1.w)		;pflags bit 6 set?
+	beq.w	.checkactive			;no: home
+	adda.w	#tmsize,a2				;yes: away team structure
 .checkactive						;a2 = that team's struct: still in line change mode, count down
-	btst	#pf2lcm,pflags2(a0,d1.w)
-	bne.w	.countdown
-	st	0(a3,d0.w)
-	bra.w	SetLCmode2
+	btst	#pf2lcm,pflags2(a0,d1.w)	;still in line change mode?
+	bne.w	.countdown				;yes: count down
+	st	0(a3,d0.w)					;no: mark the timer done
+	bra.w	SetLCmode2				;finish the mode
 .countdown							;pf2lcm set
-	sub.w	d7,0(a3,d0.w)
-	bpl.w	rtss2
-	move.l	a3,-(sp)
-	lea	0(a0,d1.w),a3
-	btst	#3,pflags2(a3)
-	beq.w	.exit
-	clr.w	d2
-	bsr.w	lcfound
-	bsr.w	SetLCmode2
+	sub.w	d7,0(a3,d0.w)			;count the timer down
+	bpl.w	rtss2					;still positive: wait
+	move.l	a3,-(sp)				;save a3
+	lea	0(a0,d1.w),a3				;a3 = the player object
+	btst	#3,pflags2(a3)			;pflags2 bit 3 set?
+	beq.w	.exit					;no: done
+	clr.w	d2						;d2 = 0
+	bsr.w	lcfound					;accept the line
+	bsr.w	SetLCmode2				;finish the mode
 .exit								;done
-	movea.l	(sp)+,a3
-	rts
+	movea.l	(sp)+,a3				;restore a3
+	rts								;done
 ; computer pulls goalie on delayed penalty
 ChkGoalies							;computer pulls goalie on delayed penalty. Called from periodicevents
 	btst	#gmclock,(gmode).w		;check if clock running
@@ -3320,45 +3320,45 @@ puckfaceoff2						;face off control logic and general setup for action a3 = the 
 	dc.w	0
 	dc.w	$FFC4
 ResetAndSelectPlayers				;c1playernum / c2playernum = -1, then changeplayer for each human team
-	move.w	#$FFFF,(c1playernum).w
-	move.w	#$FFFF,(c2playernum).w
-	tst.w	(cont1team).w
-	beq.w	.checkcont2
-	clr.w	d4
-	bsr.w	changeplayer
+	move.w	#$FFFF,(c1playernum).w	;no player on controller 1
+	move.w	#$FFFF,(c2playernum).w	;no player on controller 2
+	tst.w	(cont1team).w			;controller 1 on a team?
+	beq.w	.checkcont2				;no: next pad
+	clr.w	d4						;pad 1
+	bsr.w	changeplayer			;choose its player
 .checkcont2							;pad 2
-	tst.w	(cont2team).w
-	beq.w	.checkcont3
-	moveq	#2,d4
-	bsr.w	changeplayer
+	tst.w	(cont2team).w			;controller 2 on a team?
+	beq.w	.checkcont3				;no: next pad
+	moveq	#2,d4					;pad 2
+	bsr.w	changeplayer			;choose its player
 .checkcont3							;pads 3 and 4
-	tst.w	(cont3team).w
-	beq.w	.checkcont4
-	move.w	(cont1team).w,-(sp)
-	move.w	(cont3team).w,(cont1team).w
-	move.w	(c1playernum).w,-(sp)
-	move.w	#$FFFF,(c1playernum).w
-	clr.w	d4
-	jsr	(changeplayer).l
-	move.w	(c1playernum).w,(c3playernum).w
-	move.w	(cont1team).w,(cont3team).w
-	move.w	(sp)+,(c1playernum).w
-	move.w	(sp)+,(cont1team).w
+	tst.w	(cont3team).w			;controller 3 on a team?
+	beq.w	.checkcont4				;no: next pad
+	move.w	(cont1team).w,-(sp)		;save controller 1's team
+	move.w	(cont3team).w,(cont1team).w	;controller 3 takes its place
+	move.w	(c1playernum).w,-(sp)	;save controller 1's player
+	move.w	#$FFFF,(c1playernum).w	;no player
+	clr.w	d4						;pad 1
+	jsr	(changeplayer).l			;choose its player
+	move.w	(c1playernum).w,(c3playernum).w	;result is controller 3's player
+	move.w	(cont1team).w,(cont3team).w	;and its team
+	move.w	(sp)+,(c1playernum).w	;restore controller 1's player
+	move.w	(sp)+,(cont1team).w		;restore controller 1's team
 .checkcont4							;restore pad 4
-	tst.w	(cont4team).w
-	beq.w	.exit
-	move.w	(cont2team).w,-(sp)
-	move.w	(cont4team).w,(cont2team).w
-	move.w	(c2playernum).w,-(sp)
-	move.w	#$FFFF,(c2playernum).w
-	move.w	#2,d4
-	jsr	(changeplayer).l
-	move.w	(c2playernum).w,(c4playernum).w
-	move.w	(cont2team).w,(cont4team).w
-	move.w	(sp)+,(c2playernum).w
-	move.w	(sp)+,(cont2team).w
+	tst.w	(cont4team).w			;controller 4 on a team?
+	beq.w	.exit					;no: done
+	move.w	(cont2team).w,-(sp)		;save controller 2's team
+	move.w	(cont4team).w,(cont2team).w	;controller 4 takes its place
+	move.w	(c2playernum).w,-(sp)	;save controller 2's player
+	move.w	#$FFFF,(c2playernum).w	;no player
+	move.w	#2,d4					;pad 2
+	jsr	(changeplayer).l			;choose its player
+	move.w	(c2playernum).w,(c4playernum).w	;result is controller 4's player
+	move.w	(cont2team).w,(cont4team).w	;and its team
+	move.w	(sp)+,(c2playernum).w	;restore controller 2's player
+	move.w	(sp)+,(cont2team).w		;restore controller 2's team
 .exit								;exit (also the end of the code above)
-	rts
+	rts								;done
 updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the faceoff box
 	move.w	temp1(a3),d0			;frames left until the drop
 	beq.w	.erase					;0: remove the face off box
@@ -4160,12 +4160,12 @@ GetHot								;push long address of structure to get hot spot from. Hot spot x/y
 ; set sprite animation on struct a3
 ; d1 = new animation
 SetSPA								;set sprite animation on struct a3. d1 = new animation
-	cmp.w	SPA(a3),d1
-	beq.w	rtss2
-	clr.w	SPAnum(a3)
-	move.w	d1,SPA(a3)
+	cmp.w	SPA(a3),d1				;already this animation?
+	beq.w	rtss2					;yes: nothing to do
+	clr.w	SPAnum(a3)				;restart the animation count
+	move.w	d1,SPA(a3)				;set the new animation
 	st	SPAcnt(a3)					;restart animation
-	rts
+	rts								;done
 ; player a3 gets acc. in d0 dir
 doplayeracc							;player a3 gets acc. in d0 dir
 									;in: d0 = wanted direction (0-7; 8/9 = none), d7 = elapsed frames. Chooses

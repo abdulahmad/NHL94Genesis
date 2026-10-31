@@ -383,26 +383,26 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	bra.s	.x
 NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Press START to
 									;select name.", "Press B to edit.")
-	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(printz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	jsr	(printz).l					;print the first line of text
 	String	CC_Font1Pri,2,$15,'D-Pad up/down to    '
 	jsr	(printz).l
 	String	CC_Font1Pri,2,$16,'move arrows.        '
-	move.w	#2,(printx).w
-	move.w	(printx).w,-(sp)
-	addq.w	#1,(printy).w
-	jsr	(printz).l
+	move.w	#2,(printx).w			;help text column
+	move.w	(printx).w,-(sp)		;keep it for the next lines
+	addq.w	#1,(printy).w			;next row
+	jsr	(printz).l					;second line
 	String	'Press START to      '
-	addq.w	#1,(printy).w
-	move.w	(sp),(printx).w
-	jsr	(printz).l
+	addq.w	#1,(printy).w			;next row
+	move.w	(sp),(printx).w			;back to the column
+	jsr	(printz).l					;third line
 	String	'select name.        '
-	addq.w	#1,(printy).w
-	move.w	(sp)+,(printx).w
-	jsr	(printz).l
+	addq.w	#1,(printy).w			;next row
+	move.w	(sp)+,(printx).w		;back to the column
+	jsr	(printz).l					;last line
 	String	'Press B to edit.    '
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 PrintNamePrompt						;Name entry: "Enter new name:" for an empty name log slot namelogsel, else
 									;"Select or replace:"
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -1196,20 +1196,20 @@ PrintWinRecords						;Record Holders: the rows (PrintRecordName)
 	rts
 ClearRecordArea						;Record Holders: erase the record rows ($28 x $12), keeping printx /
 									;printy / printm
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(printx).w,-(sp)
-	move.w	(printy).w,-(sp)
-	move.w	(printm).w,-(sp)
-	jsr	(printsmallz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	move.w	(printx).w,-(sp)		;save printx
+	move.w	(printy).w,-(sp)		;save printy
+	move.w	(printm).w,-(sp)		;save printm
+	jsr	(printsmallz).l				;set the map and position of the area
 	String	CC_SetMapAndPosition,4,2,0,$A
-	move.w	#$28,d0
-	move.w	#$12,d1
-	jsr	(eraser).l
-	move.w	(sp)+,(printm).w
-	move.w	(sp)+,(printy).w
-	move.w	(sp)+,(printx).w
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	#$28,d0					;$28 columns
+	move.w	#$12,d1					;$12 rows
+	jsr	(eraser).l					;erase them
+	move.w	(sp)+,(printm).w		;restore printm
+	move.w	(sp)+,(printy).w		;restore printy
+	move.w	(sp)+,(printx).w		;restore printx
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordName)
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l

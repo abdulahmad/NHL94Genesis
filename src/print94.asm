@@ -182,13 +182,13 @@ ControlCode_SetMapAndPosition		;control code -8, next 4 bytes = attribute, map, 
 	bsr.w	ControlCode_SetX
 	bra.w	ControlCode_SetY
 ControlCode_SetMap					;Control code -1, next byte = map number -> printm
-	move.b	(a1)+,d0
+	move.b	(a1)+,d0				;d0 = the map number
 	subq.w	#1,d3					;byte used
-	andi.w	#3,d0
-	asl.w	#2,d0
-	subq.w	#4,d0
-	move.w	d0,(printm).w
-	bra.w	xyVmMap
+	andi.w	#3,d0					;keep 2 bits
+	asl.w	#2,d0					;times 4
+	subq.w	#4,d0					;minus 4
+	move.w	d0,(printm).w			;printm
+	bra.w	xyVmMap					;continue with x, y and map
 ControlCode_SetAttribute			;Control code -2, next byte = palette/priority -> printa
 	move.b	(a1)+,d2
 	andi.w	#7,d2
@@ -221,12 +221,12 @@ ControlCode_AddY					;control code -6, add the next (signed) byte to printy
 	add.w	d0,(printy).w
 	bra.w	xyVmMap
 ControlCode_SetFont					;control code -7, next byte = char set index
-	clr.w	d0
-	move.b	(a1)+,d0
+	clr.w	d0						;d0 = 0
+	move.b	(a1)+,d0				;d0 = the font index
 	subq.w	#1,d3					;byte used
-	asl.w	#1,d0
-	move.w	d0,(printfontset).w
-	rts
+	asl.w	#1,d0					;times 2
+	move.w	d0,(printfontset).w		;set the font
+	rts								;done
 ; see print
 ; string macro should follow jsr to this routine
 printz								;print the String that follows the bsr/jsr to this routine, then return

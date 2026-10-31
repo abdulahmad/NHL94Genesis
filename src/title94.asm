@@ -79,17 +79,17 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 WriteLineData						;Write databuffer back to save RAM at LineDataBase (WriteSRAM,
 									;MakeSRAMChecksum); as ReadLineData after. Called from EncodePW and
 									;EncodeTeamLines
-	movem.l	d0-d1/a0,-(sp)
-	move.l	#$100,d1
-	move.l	#LineDataBase,d0
-	movea.l	#databuffer,a0
-	jsr	(WriteSRAM).l
-	jsr	(MakeSRAMChecksum).l
-	bclr	#sfwrap,(sflags).w
-	move.w	#$FFFF,(lastsfx).w
-	move.l	#M68K_RAM,(recbpr).w
-	movem.l	(sp)+,d0-d1/a0
-	rts
+	movem.l	d0-d1/a0,-(sp)			;save registers
+	move.l	#$100,d1				;$100 bytes
+	move.l	#LineDataBase,d0		;from the line data base in save RAM
+	movea.l	#databuffer,a0			;from the data buffer
+	jsr	(WriteSRAM).l				;write them
+	jsr	(MakeSRAMChecksum).l		;update the checksum
+	bclr	#sfwrap,(sflags).w		;clear sfwrap
+	move.w	#$FFFF,(lastsfx).w		;no last sound effect
+	move.l	#M68K_RAM,(recbpr).w	;reset recbpr to the RAM copy
+	movem.l	(sp)+,d0-d1/a0			;restore registers
+	rts								;done
 ClearWinRecords						;Clear bytes 8-$B of the 8 ThreeStars records and write the $80 bytes at
 									;TeamRecBase (WriteSRAM, MakeSRAMChecksum). Called from
 									;RecordHoldersScreen
@@ -782,15 +782,15 @@ PuckComingToward					;nothing calls it. Z clear when the puck is within $1E of p
 	rts
 ReadGoaliePulled					;Z clear when the team of a3 pulled its goalie ($26 of the team struct).
 									;Called from doshot assdefo, asspuckc and assnearest
-	movem.l	a1,-(sp)
-	movea.l	#tmstruct,a1
+	movem.l	a1,-(sp)				;save a1
+	movea.l	#tmstruct,a1			;home team structure
 	btst	#pfteam,pflags(a3)		;check if home or away 0=home 1=away
-	beq.w	.chkgoalie
-	movea.l	#awtmstruct,a1
+	beq.w	.chkgoalie				;home: use it
+	movea.l	#awtmstruct,a1			;away team structure
 .chkgoalie							;team chosen: tmgoalie 0 = goalie in (Z set)
-	tst.w	tmgoalie(a1)
-	movem.l	(sp)+,a1
-	rts
+	tst.w	tmgoalie(a1)			;tmgoalie 0 means the goalie is in (Z set)
+	movem.l	(sp)+,a1				;restore a1
+	rts								;done
 EndOneTimer							;End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA
 									;SPAglide, then assexit (goalie) or Setplass. Called from assonetimer and
 									;checkgoal (.setass)
