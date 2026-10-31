@@ -1209,68 +1209,68 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 									;only the shooter's end counts (gmode2 bit 0
 									;shootout, shootoutteam picks the end); it counts the shootout goal
 									;(homeshootgoals / awayshootgoals) and calls EndPenaltyShotPlay
-	btst	#2,(BA_PS_flags).w
-	beq.w	.7
-	btst	#0,(gmode2).w
-	bne.w	.1
-	movem.l	d0/a0,-(sp)
-	move.w	(BA_Sktr_SCnum).w,d0
-	asl.w	#7,d0
-	movea.l	#SortCords,a0
-	adda.w	d0,a0
-	btst	#7,pflags(a0)
-	movem.l	(sp)+,d0/a0
-	bne.w	.2
-	bra.w	.3
+	btst	#2,(BA_PS_flags).w		;penalty shot or shootout (BA_PS_flags bit 2)?
+	beq.w	.7						;no: normal goal
+	btst	#0,(gmode2).w			;gmode2 bit 0 set (shootout)?
+	bne.w	.1						;yes: shootout check
+	movem.l	d0/a0,-(sp)				;save registers
+	move.w	(BA_Sktr_SCnum).w,d0	;d0 = shooter SCnum
+	asl.w	#7,d0					;times $80, the object size
+	movea.l	#SortCords,a0			;a0 = sort objects
+	adda.w	d0,a0					;a0 = the shooter
+	btst	#7,pflags(a0)			;pflags bit 7 set?
+	movem.l	(sp)+,d0/a0				;restore registers (flags kept)
+	bne.w	.2						;yes: check the puck end
+	bra.w	.3						;no: other end
 .1									;bit 0 of gmode2 set
-	tst.w	(shootoutteam).w
-	bne.w	.3
+	tst.w	(shootoutteam).w		;shootout team 0?
+	bne.w	.3						;no: other end
 .2									;check the puck end
-	tst.w	(pucky).w
-	bmi.w	rtss2
-	bra.w	.4
+	tst.w	(pucky).w				;puck y negative?
+	bmi.w	rtss2					;yes: not this net
+	bra.w	.4						;goal
 .3									;away shooter (shootoutteam set): a goal only at the negative y end
-	tst.w	(pucky).w
-	bpl.w	rtss2
+	tst.w	(pucky).w				;puck y positive?
+	bpl.w	rtss2					;yes: not this net
 .4									;goal in a penalty shot or shootout: count it for the shooter's team
 	bset	#5,(sflags4).w			;penalty shot / shootout goal
-	tst.w	(shootoutteam).w
-	beq.w	.5
-	addq.w	#1,(awayshootgoals).w
-	bra.w	.6
+	tst.w	(shootoutteam).w		;shootout team 0?
+	beq.w	.5						;yes: home
+	addq.w	#1,(awayshootgoals).w	;count an away shootout goal
+	bra.w	.6						;go on
 .5									;shootoutteam = 0
-	addq.w	#1,(homeshootgoals).w
+	addq.w	#1,(homeshootgoals).w	;count a home shootout goal
 .6									;the shootout goal is counted: end the penalty shot play
-	bset	#0,(sflags8).w
-	jsr	(EndPenaltyShotPlay).l
-	bra.w	.8
+	bset	#0,(sflags8).w			;set sflags8 bit 0
+	jsr	(EndPenaltyShotPlay).l		;end the penalty shot play
+	bra.w	.8						;score it
 .7									;bit 2 of BA_PS_flags clear
-	btst	#gmclock,(gmode).w
-	bne.w	rtss2
+	btst	#gmclock,(gmode).w		;clock running (gmclock)?
+	bne.w	rtss2					;yes: no goal now
 .8									;normal goal: score it
-	bset	#0,(sflags4).w
-	bclr	#3,(sflags8).w
-	bsr.w	ChkShotStat
-	bsr.w	stop_current_song
-	move.w	d0,-(sp)
-	move.w	(Vcount).w,d0
+	bset	#0,(sflags4).w			;set sflags4 bit 0
+	bclr	#3,(sflags8).w			;clear sflags8 bit 3
+	bsr.w	ChkShotStat				;check the shot stat
+	bsr.w	stop_current_song		;stop the current song
+	move.w	d0,-(sp)				;save d0
+	move.w	(Vcount).w,d0			;d0 = Vcount
 .loop								;loop
 	cmp.w	(Vcount).w,d0			;wait for the next vblank
-	beq.s	.loop
-	move.w	(sp)+,d0
-	move.w	#SFXsiren,-(sp)
-	bsr.w	sfx
-	jsr	(freezewindow).l
+	beq.s	.loop					;unchanged: wait
+	move.w	(sp)+,d0				;restore d0
+	move.w	#SFXsiren,-(sp)			;siren sound effect
+	bsr.w	sfx						;play it
+	jsr	(freezewindow).l			;freeze the window
 	addi.w	#$1F4,(Crowdlevel).w	;add 500 (92 800)
-	movea.w	#(tmstruct-M68K_RAM),a2
-	lea	tmsize(a2),a1
-	tst.w	Ypos(a3)
-	bpl.w	.9
-	exg	a2,a1
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	lea	tmsize(a2),a1				;a1 = away team structure
+	tst.w	Ypos(a3)				;puck y negative?
+	bpl.w	.9						;no: keep
+	exg	a2,a1						;swap the teams
 .9									;a2 = the team that scored (top end: home, unless gmdir swaps it)
-	btst	#gmdir,(gmode).w
-	beq.w	.addg
-	exg	a2,a1
+	btst	#gmdir,(gmode).w		;gmode direction flag (gmdir)?
+	beq.w	.addg					;no: keep
+	exg	a2,a1						;swap the teams
 .addg								;add the goal
 	addq.w	#1,tmscore(a2)			;tmscore: add to Goals
 	btst	#5,(sflags4).w			;penalty shot / shootout goal
@@ -1279,152 +1279,152 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	bne.w	.11
 	addq.w	#1,tmPenShotGoals(a2)	;penalty shot goal (sflags4 bit 5)
 .11									;breakaway goal?
-	bclr	#4,(gmode2).w
-	beq.w	.12
+	bclr	#4,(gmode2).w			;clear gmode2 bit 4
+	beq.w	.12						;it was clear: skip
 	addq.w	#1,tmBreakawayGoals(a2)	;breakaway goal (gmode2 bit 4)
 .12									;power play goal?
-	btst	#sf2pwrplay,(sflags2).w
-	beq.w	.14
+	btst	#sf2pwrplay,(sflags2).w	;power play (sf2pwrplay)?
+	beq.w	.14						;no: count the goal
 	btst	#sf2pwrtm,(sflags2).w	;sf2pwrtm: 0 home, 1 visitors
-	bne.w	.13
-	cmpa.l	#awtmstruct,a2
-	bne.w	.14
+	bne.w	.13						;sf2pwrtm set?
+	cmpa.l	#awtmstruct,a2			;a2 is the away team?
+	bne.w	.14						;no: count the goal
 .loop2								;loop
 	addq.w	#1,tmSHGoals(a2)		;shorthanded goal: a2 is the team without the power play
-	bra.w	.14
+	bra.w	.14						;count the goal
 .13									;sf2pwrtm set
-	cmpa.l	#tmstruct,a2
-	beq.s	.loop2
+	cmpa.l	#tmstruct,a2			;a2 is the home team?
+	beq.s	.loop2					;yes: count the goal
 .14									;shorthanded or not: count the goal in this period
-	movem.l	d0/a2,-(sp)
-	move.w	(gsp).w,d0
-	add.w	d0,d0
-	adda.w	d0,a2
+	movem.l	d0/a2,-(sp)				;save registers
+	move.w	(gsp).w,d0				;d0 = period (gsp)
+	add.w	d0,d0					;times 2
+	adda.w	d0,a2					;a2 = the period's entry
 	addq.w	#1,tmPerGoals(a2)		;goal in this period (gsp)
-	movem.l	(sp)+,d0/a2
-	bclr	#7,(sflags8).w
-	beq.w	.15
+	movem.l	(sp)+,d0/a2				;restore registers
+	bclr	#7,(sflags8).w			;clear sflags8 bit 7
+	beq.w	.15						;it was clear: skip
 	addq.w	#1,tmOneTimerGoals(a2)	;one-timer goal (sflags8 bit 7)
 .15									;home goal song
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home goal: ChooseSong
-	bne.w	.16
-	move.w	(HomeTeam).w,(HmTeam).w
-	move.w	#SngGoal,(SongIndex).w
-	jsr	(ChooseSong).l
-	move.w	#$78,(songdelay).w
-	move.w	(SongNum).w,-(sp)
-	move.w	(sp)+,(delayedsong).w
+	bne.w	.16						;skip the song
+	move.w	(HomeTeam).w,(HmTeam).w	;HmTeam = the home team
+	move.w	#SngGoal,(SongIndex).w	;goal song
+	jsr	(ChooseSong).l				;choose it
+	move.w	#$78,(songdelay).w		;song delay $78
+	move.w	(SongNum).w,-(sp)		;song number
+	move.w	(sp)+,(delayedsong).w	;delayed song
 .16									;score summary
 	cmpi.w	#$168,(ScoreSumbytes).w	;60 entries of 6 bytes full? (93 kept 30)
-	bne.w	.sum
+	bne.w	.sum					;skip the summary
 	subq.w	#6,(ScoreSumbytes).w	;overwrite the last entry
 .sum								;add the ScoreSum entry
 	movea.w	#(ScoreSum-M68K_RAM),a0	;a0 = next 6 byte ScoreSum entry
-	adda.w	(ScoreSumbytes).w,a0
-	addq.w	#6,(ScoreSumbytes).w
-	bsr.w	GetPeriodTimeRemaining
+	adda.w	(ScoreSumbytes).w,a0	;a0 = next ScoreSum entry
+	addq.w	#6,(ScoreSumbytes).w	;entry size 6
+	bsr.w	GetPeriodTimeRemaining	;d0 = time remaining
 	move.w	d0,(a0)+				;entry word 0 = period/time
-	moveq	#2,d0
-	add.w	tmap(a2),d0
-	sub.w	tmap(a1),d0
+	moveq	#2,d0					;d0 = 2
+	add.w	tmap(a2),d0				;plus tmap of the scoring team
+	sub.w	tmap(a1),d0				;minus tmap of the other team
 	move.b	d0,(a0)+				;byte 2 = 2 + tmap(a2) - tmap(a1)
-	addi.w	#$1E,(CwdExciteLvl).w
-	cmpa.w	#(tmstruct-M68K_RAM),a2
-	beq.w	.18
+	addi.w	#$1E,(CwdExciteLvl).w	;raise the excitement level by $1E
+	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team scored?
+	beq.w	.18						;yes: keep
 	subi.w	#$14,(CwdExciteLvl).w	;less for an away goal
 	bset	#7,-1(a0)				;byte 2 bit 7 = away team scored
 .18									;scorer byte
-	move.w	tmtouch1(a2),d0
-	move.b	d0,(a0)+
+	move.w	tmtouch1(a2),d0			;first toucher
+	move.b	d0,(a0)+				;store the scorer
 	move.w	#$FFFF,(a0)				;no assists yet
-	addi.w	#tmgoals,d0
+	addi.w	#tmgoals,d0				;goals offset
 	addq.b	#1,0(a2,d0.w)			;tmgoals of the scorer +1
-	move.w	tmtouch2(a2),d0
-	bmi.w	.19
-	cmp.w	tmtouch1(a2),d0
-	beq.w	.19
-	move.b	d0,(a0)+
-	addi.w	#tmassists,d0
-	addq.b	#1,0(a2,d0.w)
+	move.w	tmtouch2(a2),d0			;second toucher
+	bmi.w	.19						;none: done
+	cmp.w	tmtouch1(a2),d0			;same as the scorer?
+	beq.w	.19						;yes: done
+	move.b	d0,(a0)+				;store the first assist
+	addi.w	#tmassists,d0			;assists offset
+	addq.b	#1,0(a2,d0.w)			;count the assist
 	move.w	tmtouch3(a2),d0			;second assist
-	bmi.w	.19
-	cmp.w	tmtouch1(a2),d0
-	beq.w	.19
-	move.b	d0,(a0)
-	addi.w	#tmassists,d0
-	addq.b	#1,0(a2,d0.w)
+	bmi.w	.19						;none: done
+	cmp.w	tmtouch1(a2),d0			;same as the scorer?
+	beq.w	.19						;yes: done
+	move.b	d0,(a0)					;store the second assist
+	addi.w	#tmassists,d0			;assists offset
+	addq.b	#1,0(a2,d0.w)			;count the assist
 .19									;goal scorer stat done: credit the shot against to the goalie
 	move.w	tmgoalie(a1),d0			;tmgoalie of the other team
-	bmi.w	.stat
-	addi.w	#tmgoals,d0
-	addq.b	#1,0(a1,d0.w)
+	bmi.w	.stat					;none: shot stats
+	addi.w	#tmgoals,d0				;goals offset
+	addq.b	#1,0(a1,d0.w)			;count the goal against the goalie
 .stat								;shot stats
-	bsr.w	ChkShotStat
-	bsr.w	PenGoalStuff
-	bclr	#3,(BA_PS_flags).w
-	bsr.w	printscores1
-	move.w	#$2710,(crowdnoisedelay).w
-	btst	#0,(gmode2).w
-	beq.w	.21
-	bra.w	.22
+	bsr.w	ChkShotStat				;check the shot stat
+	bsr.w	PenGoalStuff			;penalty goal handling
+	bclr	#3,(BA_PS_flags).w		;clear BA_PS_flags bit 3
+	bsr.w	printscores1			;redraw the scores
+	move.w	#$2710,(crowdnoisedelay).w	;crowd noise delay $2710
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	beq.w	.21						;no: assign players
+	bra.w	.22						;skip
 .21									;bit 0 of gmode2 clear
 	move.l	#7,d0					;assignment 7 (92 used 8)
-	bsr.w	.setass
+	bsr.w	.setass					;assign players
 .22									;reset the puck to center (x 6, behind the goal line)
-	clr.w	(collflag).w
-	clr.w	Xvel(a3)
-	clr.w	Yvel(a3)
-	moveq	#6,d0
+	clr.w	(collflag).w			;collision flag 0
+	clr.w	Xvel(a3)				;x velocity 0
+	clr.w	Yvel(a3)				;y velocity 0
+	moveq	#6,d0					;d0 = 6
 	tst.w	(a3)					;Xpos
-	bpl.w	.23
-	neg.w	d0
+	bpl.w	.23						;keep the sign
+	neg.w	d0						;negate
 .23									;set Xpos
 	move.w	d0,(a3)					;Xpos
 	move.w	#$110,d0				;+goalline+8
-	tst.w	Ypos(a3)
-	bpl.w	.24
-	neg.w	d0
+	tst.w	Ypos(a3)				;puck y negative?
+	bpl.w	.24						;no: keep
+	neg.w	d0						;negate
 .24									;y = goal line + 8 on the puck's side
-	move.w	d0,Ypos(a3)
-	move.w	#$600,Zvel(a3)
-	clr.w	Zpos(a3)
-	st	(puckcross2).w
-	st	(puckcross6).w
-	bset	#pfnc,pflags(a3)
+	move.w	d0,Ypos(a3)				;puck y
+	move.w	#$600,Zvel(a3)			;z velocity $600
+	clr.w	Zpos(a3)				;z 0
+	st	(puckcross2).w				;puckcross2
+	st	(puckcross6).w				;puckcross6
+	bset	#pfnc,pflags(a3)		;set pfnc
 	move.w	#$1A,d0					;puckunflip
-	bsr.w	assreplace
-	move.l	a3,-(sp)
+	bsr.w	assreplace				;assreplace
+	move.l	a3,-(sp)				;save a3
 	adda.w	#$80,a3					;SCstruct
 	move.w	#SPAsiren,d1			;92 used $FE8
-	bsr.w	SetSPA
+	bsr.w	SetSPA					;set the animation
 	movea.w	tmsort(a1),a3			;first sort obj of the other team
 	move.l	#$E,d0					;penalty $E (92 used 6)
-	bsr.w	AddPenalty2
-	movea.l	(sp)+,a3
-	rts
+	bsr.w	AddPenalty2				;add the penalty
+	movea.l	(sp)+,a3				;restore a3
+	rts								;done
 .setass								;d0 = assignment, a2 = team. Give each skater of team a2 that is not
 									;fighting assignment d0, clear pfnc. Also clears $64 bit 3 (one-timer) and
 									;then calls EndOneTimer.
 									;Called from Goal
 	move.l	a3,-(sp)				;d0 = assignment, a2 = team
-	movea.w	tmsort(a2),a3
-	moveq	#5,d3
+	movea.w	tmsort(a2),a3			;a3 = the team's first sort object
+	moveq	#5,d3					;6 skaters
 .loop3								;next skater
-	tst.w	position(a3)
-	ble.w	.nl
-	btst	#pf2fight,pflags2(a3)
-	bne.w	.nl
-	bclr	#pfnc,pflags(a3)
-	bclr	#pf3onetimer,pflags3(a3)
-	beq.w	.insert
-	jsr	(EndOneTimer).l
+	tst.w	position(a3)			;goalie?
+	ble.w	.nl						;goalie or off the ice: next player
+	btst	#pf2fight,pflags2(a3)	;fighting?
+	bne.w	.nl						;yes: next player
+	bclr	#pfnc,pflags(a3)		;clear pfnc
+	bclr	#pf3onetimer,pflags3(a3)	;clear the one-timer flag
+	beq.w	.insert					;it was clear: insert
+	jsr	(EndOneTimer).l				;end the one-timer
 .insert								;put him back in the assignments
-	bsr.w	assinsert
+	bsr.w	assinsert				;insert the assignment
 .nl									;next player
-	adda.w	#$80,a3
-	dbf	d3,.loop3
-	movea.l	(sp)+,a3
-	rts
+	adda.w	#$80,a3					;next object
+	dbf	d3,.loop3					;loop
+	movea.l	(sp)+,a3				;restore a3
+	rts								;done
 GetPeriodTimeRemaining				;Return d0 = (gsp << 14 | PerTimeTotal) - gameclock. Called from checkgoal
 									;(ScoreSum entry) and InProgress
 	move.w	(gsp).w,d0				;d0 = gsp
