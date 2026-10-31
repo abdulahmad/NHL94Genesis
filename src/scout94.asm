@@ -5,56 +5,56 @@ ScoutCrowdRecord					;The text player's '@' (UpdateScoutingDisplay): return a1 =
 									;team's crowd record in dB as a String at TempBuffer (SRAM team record
 									;crpeak, 80 if 0). ReadCrowdRecord reads the 16 byte SRAM record of team
 									;d1 (CrowdRecBase + d1 * 16) to a0
-	movem.l	d0-d7/a0/a2-a6,-(sp)
-	move.w	(HomeTeam).w,d1
-	ext.l	d1
+	movem.l	d0-d7/a0/a2-a6,-(sp)	;save registers
+	move.w	(HomeTeam).w,d1			;d1 = home team
+	ext.l	d1						;long
 	movea.l	#teamrecbuf,a0			;SRAM team record buffer
-	move.l	a0,-(sp)
+	move.l	a0,-(sp)				;keep a0
 	jsr	(ReadCrowdRecord).l			;read the HomeTeam record
-	movea.l	(sp)+,a0
-	movea.l	#TempBuffer,a1
-	clr.w	d0
+	movea.l	(sp)+,a0				;restore a0
+	movea.l	#TempBuffer,a1			;a1 = temp buffer
+	clr.w	d0						;d0 = 0
 	move.b	crpeak(a0),d0			;crowd record
-	bne.w	.0
+	bne.w	.0						;branch taken
 	move.b	#$50,d0					;none saved: 80 dB
 .0									;crowd record ready
-	move.l	a1,-(sp)
+	move.l	a1,-(sp)				;keep a1
 	jsr	(AppendNumber).l			;d0 as a decimal String at a1
-	movea.l	(sp)+,a1
-	movem.l	(sp)+,d0-d7/a0/a2-a6
-	rts
+	movea.l	(sp)+,a1				;restore a1
+	movem.l	(sp)+,d0-d7/a0/a2-a6	;restore registers
+	rts								;done
 ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's crowd record (SRAM
 									;record crpeakuser = name number, AppendUserName reads that 12 char name
 									;from namelog), or an empty String if crpeakuser is 0
-	movem.l	d0-d7/a0/a2-a6,-(sp)
-	move.w	(HomeTeam).w,d1
-	ext.l	d1
+	movem.l	d0-d7/a0/a2-a6,-(sp)	;save registers
+	move.w	(HomeTeam).w,d1			;d1 = home team
+	ext.l	d1						;long
 	movea.l	#teamrecbuf,a0			;SRAM team record buffer
-	move.l	a0,-(sp)
+	move.l	a0,-(sp)				;keep a0
 	jsr	(ReadCrowdRecord).l			;read the HomeTeam record
-	movea.l	(sp)+,a0
-	tst.b	crpeakuser(a0)
-	beq.w	.0
-	movea.l	#ThreeStars,a3
-	movea.l	#ScoutByTxt,a1
-	move.l	a3,-(sp)
+	movea.l	(sp)+,a0				;restore a0
+	tst.b	crpeakuser(a0)			;peak user set?
+	beq.w	.0						;no: empty
+	movea.l	#ThreeStars,a3			;a3 = three stars
+	movea.l	#ScoutByTxt,a1			;a1 = "by" text
+	move.l	a3,-(sp)				;keep a3
 	jsr	(CopyString).l				;copy the String at a1 to a3: 'by '
-	movea.l	(sp)+,a3
-	clr.w	d2
-	move.b	crpeakuser(a0),d2
-	movea.l	#TempBuffer,a1
-	bset	#7,(sflags6).w
-	bsr.w	AppendUserName
+	movea.l	(sp)+,a3				;restore a3
+	clr.w	d2						;d2 = 0
+	move.b	crpeakuser(a0),d2		;peak user
+	movea.l	#TempBuffer,a1			;a1 = temp buffer
+	bset	#7,(sflags6).w			;set sflags6 bit 7
+	bsr.w	AppendUserName			;append the user name
 	jsr	(appstring).l				;append the name
-	movea.l	#ScoutSpaceTxt,a1
-	jsr	(appstring).l
+	movea.l	#ScoutSpaceTxt,a1		;a1 = space text
+	jsr	(appstring).l				;append it
 	movea.l	a3,a1					;a1 = 'by <name> '
-	bra.w	.x
+	bra.w	.x						;exit
 .0									;no name: empty text
-	movea.l	#ScoutEmptyTxt,a1
+	movea.l	#ScoutEmptyTxt,a1		;a1 = empty text
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0/a2-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0/a2-a6	;restore registers
+	rts								;done
 ScoutEmptyTxt	String	''			;empty String: no name number in the crowd record
 ScoutByTxt	String	'by '			;start of the "by <name> " String
 ScoutSpaceTxt	String	' '			;space after the name
@@ -312,70 +312,70 @@ DrawMatchupPictures					;Draw the matchup's 6 x 6 pictures, visitors at x 2, hom
 									;matchup 0 the team logos (GetTeamLogo, DrawMatchupLogo)
 									;1-6 the two players' pictures (DrawPlayerPicture, DrawMatchupPicture).
 									;Called from ScoutingReport and PageMatchup
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	tst.w	(matchup).w				;the teams?
-	bne.w	.0
-	move.w	(VisTeam).w,d3
+	bne.w	.0						;branch taken
+	move.w	(VisTeam).w,d3			;d3 = visiting team
 	bsr.w	GetTeamLogo				;a0 = visitors logo
-	move.w	#2,(printx).w
-	move.w	#$F,(printy).w
-	move.w	(vispicchars).w,d4
-	move.w	#4,d5
-	move.w	#$6000,(printa).w
-	bsr.w	DrawMatchupLogo
-	move.w	(HomeTeam).w,d3
+	move.w	#2,(printx).w			;printx 2
+	move.w	#$F,(printy).w			;printy $F
+	move.w	(vispicchars).w,d4		;d4 = visiting picture chars
+	move.w	#4,d5					;d5 = 4
+	move.w	#$6000,(printa).w		;print attribute $6000
+	bsr.w	DrawMatchupLogo			;draw the logo
+	move.w	(HomeTeam).w,d3			;d3 = home team
 	bsr.w	GetTeamLogo				;a0 = home logo
-	move.w	#$20,(printx).w
-	move.w	#$F,(printy).w
-	move.w	(homepicchars).w,d4
-	move.w	#0,(printa).w
-	move.w	#2,d5
-	bsr.w	DrawMatchupLogo
-	move.w	#$64,(palcount).w
-	bra.w	.x
+	move.w	#$20,(printx).w			;printx $20
+	move.w	#$F,(printy).w			;printy $F
+	move.w	(homepicchars).w,d4		;d4 = home picture chars
+	move.w	#0,(printa).w			;print attribute 0
+	move.w	#2,d5					;d5 = 2
+	bsr.w	DrawMatchupLogo			;draw the logo
+	move.w	#$64,(palcount).w		;palette count $64
+	bra.w	.x						;exit
 .0									;matchup <> 0
-	move.w	(VisTeam).w,d1
+	move.w	(VisTeam).w,d1			;d1 = visiting team
 	move.w	(matchupvis).w,d0		;matchup player
 	jsr	(DrawPlayerPicture).l		;a0 = picture of player d0 of team d1 (visitors)
-	move.w	#2,(printx).w
-	move.w	#$F,(printy).w
-	move.w	(vispicchars).w,d4
+	move.w	#2,(printx).w			;printx 2
+	move.w	#$F,(printy).w			;printy $F
+	move.w	(vispicchars).w,d4		;d4 = visiting picture chars
 	move.w	#2,d5					;palette line 2
-	move.w	#0,(printa).w
-	bsr.w	DrawMatchupPicture
-	move.w	(HomeTeam).w,d1
+	move.w	#0,(printa).w			;print attribute 0
+	bsr.w	DrawMatchupPicture		;draw the picture
+	move.w	(HomeTeam).w,d1			;d1 = home team
 	move.w	(matchuphome).w,d0		;matchup player
-	jsr	(DrawPlayerPicture).l
-	move.w	#$20,(printx).w
-	move.w	#$F,(printy).w
-	move.w	(homepicchars).w,d4
+	jsr	(DrawPlayerPicture).l		;draw the player picture
+	move.w	#$20,(printx).w			;printx $20
+	move.w	#$F,(printy).w			;printy $F
+	move.w	(homepicchars).w,d4		;d4 = home picture chars
 	move.w	#0,d5					;palette line 0
-	move.w	#0,(printa).w
-	bsr.w	DrawMatchupPicture
-	move.w	#$64,(palcount).w
+	move.w	#0,(printa).w			;print attribute 0
+	bsr.w	DrawMatchupPicture		;draw the picture
+	move.w	#$64,(palcount).w		;palette count $64
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 DrawMatchupPicture					;Draw player picture a0 at printx / printy with the PicturePalette
 									;palette. A picture with no map (offset 0) uses the PicturePalette map.
 									;UnpackPicture, then the picturebuf tiles. Falls into DrawMatchupBitmap
 	movea.l	a0,a1					;a1 = map header
-	movea.l	a0,a2
+	movea.l	a0,a2					;a2 = a0
 	adda.l	(a2)+,a0				;skip the palette offset
-	movea.l	#PicturePalette,a0
-	adda.l	(a0),a0
+	movea.l	#PicturePalette,a0		;a0 = picture palette
+	adda.l	(a0),a0					;plus its offset
 	tst.l	(a2)					;no map?
-	bne.w	.0
-	movea.l	#PicturePalette,a1
-	adda.l	jimdata(a1),a1
-	tst.l	(a2)+
-	bra.w	.1
+	bne.w	.0						;branch taken
+	movea.l	#PicturePalette,a1		;a1 = picture palette
+	adda.l	jimdata(a1),a1			;plus the data offset
+	tst.l	(a2)+					;skip the first long
+	bra.w	.1						;go on
 .0									;a2 <> 0
-	adda.l	(a2)+,a1
+	adda.l	(a2)+,a1				;plus the entry offset
 .1									;unpack the logo
-	bsr.w	UnpackPicture
-	movea.l	#picturebuf,a2
-	bra.w	DrawMatchupBitmap
+	bsr.w	UnpackPicture			;unpack the picture
+	movea.l	#picturebuf,a2			;a2 = picture buffer
+	bra.w	DrawMatchupBitmap		;draw the bitmap
 DrawMatchupLogo						;Draw team logo a0 at printx / printy, palette TeamLogoPalettes + team d3
 									;* 8 - $20 (d5 = 4: - $40). Falls into DrawMatchupBitmap
 	movea.l	a0,a1					;a1 = map header
@@ -394,24 +394,24 @@ DrawMatchupLogo						;Draw team logo a0 at printx / printy, palette TeamLogoPale
 	adda.l	(a2)+,a1
 DrawMatchupBitmap					;6 x 6 dobitmap, then erase the 8 x 3 name area at y $19 on that side (x 2
 									;or $20). Branched to from DrawMatchupPicture
-	move.w	#6,d3
-	move.w	#6,d2
-	clr.w	d0
-	clr.w	d1
-	jsr	(dobitmap).l
+	move.w	#6,d3					;d3 = 6
+	move.w	#6,d2					;d2 = 6
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
+	jsr	(dobitmap).l				;draw the bitmap
 	cmpi.w	#$14,(printx).w			;right side?
-	bgt.w	.0
-	move.w	#2,(printx).l
-	bra.w	.1
+	bgt.w	.0						;branch taken
+	move.w	#2,(printx).l			;printx 2
+	bra.w	.1						;go on
 .0									;printx > $14
-	move.w	#$20,(printx).l
+	move.w	#$20,(printx).l			;printx $20
 .1									;print x chosen
-	move.w	#$19,(printy).l
-	move.w	#8,d0
-	move.w	#3,d1
+	move.w	#$19,(printy).l			;printy $19
+	move.w	#8,d0					;d0 = 8
+	move.w	#3,d1					;d1 = 3
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l					;erase the name area
-	rts
+	rts								;done
 GetTeamLogo							;Return a0 = the logo bitmap of team d3 (TeamLogoBitmaps table)
 	asl.w	#2,d3
 	movea.l	#TeamLogoBitmaps,a0
@@ -621,21 +621,21 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 									;the
 									;team nickname String, or 'Home' / 'Visitors' when it is empty (the all
 									;star teams)
-	movem.l	d0/a0/a2,-(sp)
-	movea.l	a2,a1
-	movea.l	tmdata(a1),a1
-	adda.w	Teamname(a1),a1
-	adda.w	(a1),a1
-	adda.w	(a1),a1
+	movem.l	d0/a0/a2,-(sp)			;save registers
+	movea.l	a2,a1					;a1 = team structure
+	movea.l	tmdata(a1),a1			;a1 = the team data
+	adda.w	Teamname(a1),a1			;a1 = the Teamname String
+	adda.w	(a1),a1					;follow the offset word
+	adda.w	(a1),a1					;follow the offset word
 	cmpi.w	#2,(a1)					;empty String?
-	bne.w	.x
-	movea.l	#HomeTxt,a1
+	bne.w	.x						;branch taken: exit
+	movea.l	#HomeTxt,a1				;a1 = "Home" text
 	cmpa.l	#tmstruct,a2			;home team?
-	beq.w	.x
-	movea.l	#VisitorsTxt,a1
+	beq.w	.x						;branch taken: exit
+	movea.l	#VisitorsTxt,a1			;a1 = "Visitors" text
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0/a0/a2
-	rts
+	movem.l	(sp)+,d0/a0/a2			;restore registers
+	rts								;done
 HomeTxt	String	'Home'				;name used when the home team has no nickname
 VisitorsTxt	String	'Visitors'		;name used when the visiting team has no nickname
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
