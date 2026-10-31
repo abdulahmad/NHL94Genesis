@@ -60,18 +60,18 @@ frameSprData						;sprite piece data of each frame
 HotList								;the hot spot byte pair of each frame
 	incbin	..\Extracted\NHL94\Graphics\HotList.bin
 	even
-Crowdframelist						;showcrowd
+CrowdSprites						;showcrowd
 	incbin	..\Extracted\NHL94\Graphics\Crowd.anim
 	even
-;Crowdframelist+8: the tiles (setupice, ReloadCrowdTiles)
+;CrowdSprites+8: the tiles (setupice, ReloadCrowdTiles)
 FaceOffSprites						;same size: checkfo
 	incbin	..\Extracted\NHL94\Graphics\FaceOff.anim
 	even
 ;FaceOffSprites+8: the tiles (puckfaceoff2, ReloadFaceOffTiles)
-ZamFrameList						;showzam
+ZamSprites							;showzam
 	incbin	..\Extracted\NHL94\Graphics\Zam.anim
 	even
-;ZamFrameList+8: the tiles (Intermission)
+;ZamSprites+8: the tiles (Intermission)
 BigFontMap							;the big font (PrintBigChar)
 	incbin	..\Extracted\NHL94\Graphics\BigFont94.map.jim
 	even
@@ -85,16 +85,16 @@ EnergyBarMap						;same size: the line energy bar frames (linebar)
 	incbin	..\Extracted\NHL94\Graphics\EnergyBar.map.jim
 	even
 ;EnergyBarMap+8: the tiles (setupice, ReloadEnergyBarTiles)
-TeamBlocksmap						;the team blocks (setupTeamBlocksMap, PlayoffScreen_doteam, dotb)
+Teamblocksmap						;the team blocks (setupTeamBlocksMap, PlayoffScreen_doteam, dotb)
 	incbin	..\Extracted\NHL94\Graphics\TeamBlocks.map.jim
 	even
-;TeamBlocksmap+8: the tiles (AddTeamBlock)
+;Teamblocksmap+8: the tiles (AddTeamBlock)
 TeamBitmaps							;dobitmap entries (DrawTeamBitmap)
 	incbin	..\Extracted\NHL94\Graphics\TeamBlocks94.map.jim
 	even
 	include	..\output\obj\teamcounts.inc
 	IF TeamblocksEntries<>NumTeams
-		inform	3,"TeamBlocksmap needs one entry per team"
+		inform	3,"Teamblocksmap needs one entry per team"
 	ENDIF
 	IF TeamBitmapsEntries<>NumTeams
 		inform	3,"TeamBitmaps needs one entry per team"
@@ -104,10 +104,10 @@ EASportsMap							;the EASN logo (EASNLogo)
 	incbin	..\Extracted\NHL94\Graphics\EASports.map.jim
 	even
 ;EASportsMap+8: the tiles (setupEASportsMap)
-ArrowsMap							;same size: the playoff tree arrows (PlayoffScreen_doarrow)
+Arrowsmap							;same size: the playoff tree arrows (PlayoffScreen_doarrow)
 	incbin	..\Extracted\NHL94\Graphics\Arrows.map.jim
 	even
-;ArrowsMap+8: the tiles (PlayoffScreen)
+;Arrowsmap+8: the tiles (PlayoffScreen)
 RonBarrMap							;same size: the Ron Barr picture (ScoutingReport). The old
 									;RonBarrCompressed.map.jim ran 4 bytes into ScoresMap
 	incbin	..\Extracted\NHL94\Graphics\RonBarr.map.jim

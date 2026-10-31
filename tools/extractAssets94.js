@@ -227,7 +227,7 @@ const assets = [
     { name: 'Hotlist.bin', folder: 'NHL94/Graphics', start: 0x000A44C8, end: 0x000A4B54 }, // Hotlist
     { name: 'Crowd.anim', folder: 'NHL94/Graphics', start: 0x000A4B54, end: 0x000A78AE }, // CrowdFrameList
     { name: 'FaceOff.anim', folder: 'NHL94/Graphics', start: 0x000A78AE, end: 0x000A8922 }, // unk_A78AE
-    { name: 'Zam.anim', folder: 'NHL94/Graphics', start: 0x000A8922, end: 0x000A9A10 }, // ZamFrameList
+    { name: 'Zam.anim', folder: 'NHL94/Graphics', start: 0x000A8922, end: 0x000A9A10 }, // ZamSprites
     { name: 'BigFont94.map.jim', folder: 'NHL94/Graphics', start: 0x000A9A10, end: 0x000AAC52 }, // unk_A9A10
     { name: 'SmallFont.map.jim', folder: 'NHL94/Graphics', start: 0x000AAC52, end: 0x000AB920 }, // unk_AAC52
     { name: 'EnergyBar.map.jim', folder: 'NHL94/Graphics', start: 0x000AB920, end: 0x000ABA14 }, // unk_AB920

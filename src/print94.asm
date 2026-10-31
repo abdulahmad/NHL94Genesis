@@ -596,5 +596,5 @@ AddFramer							;transfer framer.map tiles to vram. d4 = char to start tiles at,
 AddTeamBlock						;transfer TeamBlocks.map tiles to vram at char 2. Return d4 = end of tiles
 									;+ 1. Goes through DecompressGraphics
 	moveq	#2,d4
-	movea.l	#TeamBlocksmap+8,a2
+	movea.l	#Teamblocksmap+8,a2
 	bra.w	DecompressGraphicsPlain

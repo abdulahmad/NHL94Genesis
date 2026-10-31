@@ -1458,7 +1458,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	adda.w	#SCstruct,a0			;SCstruct
 	dbf	d0,.clr
 	move.w	(ExtraChars).w,d4
-	movea.l	#ZamFrameList+8,a2		;+8
+	movea.l	#ZamSprites+8,a2		;+8
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$140,(Zamx).w			;320
 	move.w	(gsp).w,d0
