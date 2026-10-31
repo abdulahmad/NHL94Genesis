@@ -556,112 +556,112 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 									;TeamStatTextTbl row (TeamStatTextTblNoPen when penalties are off, OptPen)
 									;centred, with the home value at x $22 and the visitors' at x 9
 									;(PrintStatValue); SetStatScroll first
-	jsr	(printz).l
+	jsr	(printz).l					;print the position codes
 	String	CC_Font3Pri,2,7			;visitors logo position
-	move.w	#$2C,d0
-	jsr	(PutTeamBlock).l
-	jsr	(printz).l
+	move.w	#$2C,d0					;d0 = $2C
+	jsr	(PutTeamBlock).l			;put the team block
+	jsr	(printz).l					;print the position codes
 	String	CC_Font3Pri,$1A,7		;home logo position
-	moveq	#0,d0
-	jsr	(PutTeamBlock).l
-	bsr.w	SetStatScroll
-	jsr	(printz).l
+	moveq	#0,d0					;d0 = 0
+	jsr	(PutTeamBlock).l			;put the team block
+	bsr.w	SetStatScroll			;set the stat scroll
+	jsr	(printz).l					;print the position codes
 	String	CC_Font2Pri,0,0
 	moveq	#$E,d6					;15 rows
-	lea	TeamStatTextTbl(pc),a1
-	tst.w	(OptPen).w
-	bne.w	.row
+	lea	TeamStatTextTbl(pc),a1		;a1 = stat label table
+	tst.w	(OptPen).w				;penalty stats on?
+	bne.w	.row					;yes: keep
 	move.w	#$A,d6					;11 rows
-	lea	TeamStatTextTblNoPen(pc),a1
+	lea	TeamStatTextTblNoPen(pc),a1	;a1 = table without penalties
 .row								;label table chosen
-	move.w	(a1),d0
+	move.w	(a1),d0					;d0 = label width
 	lsr.w	#1,d0					;half the label width
-	neg.w	d0
+	neg.w	d0						;negated
 	addi.w	#$15,d0					;centre the label around x $15
-	move.w	d0,(printx).w
-	jsr	(print).l
+	move.w	d0,(printx).w			;printx
+	jsr	(print).l					;print the label
 	movea.l	a1,a0					;a0 = stat offsets
-	move.w	#$22,(printx).w
-	movea.w	#(tmstruct-M68K_RAM),a2
-	bsr.w	PrintStatValue
-	move.w	#9,(printx).w
-	lea	tmsize(a2),a2
+	move.w	#$22,(printx).w			;printx $22
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
+	bsr.w	PrintStatValue			;print the value
+	move.w	#9,(printx).w			;printx 9
+	lea	tmsize(a2),a2				;a2 = away team structure
 	bsr.w	PrintStatValue			;away team value, centred at x 9
-	lea	4(a0),a1
+	lea	4(a0),a1					;a1 = next entry
 	addq.w	#2,(printy).w			;2 map rows per table row
 	dbf	d6,.row						;next row
-	rts
+	rts								;done
 PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at printx: the value
 									;(tmATOP and tmPwrPlayTime are times
 									;PushTime), "/second" if any, " (pct%)" for passing. Offset $FFFF is the
 									;shooting percentage (tmscore * 100 / tmshots), printed with a "%"
-	movea.w	#(mesarea-M68K_RAM),a3
+	movea.w	#(mesarea-M68K_RAM),a3	;a3 = message area
 	move.w	#2,(a3)					;empty string
 	cmpi.w	#$FFFF,(a0)				;shooting percentage row
-	bne.w	.1
-	move.w	#tmscore,d0
-	move.w	(a2,d0.w),d0
-	mulu.w	#$64,d0
-	move.w	#tmshots,d1
-	move.w	(a2,d1.w),d1
-	beq.w	.0
-	divu.w	d1,d0
+	bne.w	.1						;branch taken
+	move.w	#tmscore,d0				;d0 = tmscore offset
+	move.w	(a2,d0.w),d0			;goals
+	mulu.w	#$64,d0					;times 100
+	move.w	#tmshots,d1				;d1 = tmshots offset
+	move.w	(a2,d1.w),d1			;shots
+	beq.w	.0						;zero: no percentage
+	divu.w	d1,d0					;divided by the shots
 .0									;% ready (0 with no shots)
-	jsr	(PushNumber).l
-	jsr	(appstring).l
-	jsr	(appendz).l
+	jsr	(PushNumber).l				;push the number
+	jsr	(appstring).l				;append it
+	jsr	(appendz).l					;append the end
 	String	'%'
 	bra.w	.6						;print it
 .1									;not the shooting percentage: the value
-	move.w	(a0),d0
-	move.w	(a2,d0.w),d0
+	move.w	(a0),d0					;d0 = value offset
+	move.w	(a2,d0.w),d0			;value
 	cmpi.w	#tmPwrPlayTime,(a0)		;PP minutes row?
-	bne.w	.2
-	bsr.w	.8
+	bne.w	.2						;branch taken
+	bsr.w	.8						;push the time
 	bra.w	.4						;time appended
 .2									;a0 <> #tmPwrPlayTime
 	cmpi.w	#$A,(a0)				;ATOP row?
-	beq.w	.3
-	bsr.w	.7
+	beq.w	.3						;branch taken
+	bsr.w	.7						;push the number
 .3									;time line done
 	cmpi.w	#$A,(a0)				;ATOP row?
-	bne.w	.4
-	bsr.w	.8
+	bne.w	.4						;branch taken
+	bsr.w	.8						;push the time
 .4									;print the label
-	jsr	(appstring).l
+	jsr	(appstring).l				;append the label
 	move.w	2(a0),d0				;second offset
-	bmi.w	.6
-	jsr	(appendz).l
+	bmi.w	.6						;negative: print
+	jsr	(appendz).l					;append the end
 	String	'/'
-	move.w	(a2,d0.w),d0
-	jsr	(PushNumber).l
-	jsr	(appstring).l
+	move.w	(a2,d0.w),d0			;second value
+	jsr	(PushNumber).l				;push the number
+	jsr	(appstring).l				;append it
 	cmpi.w	#$14,(a0)				;passing row?
-	bne.w	.6
-	jsr	(appendz).l
+	bne.w	.6						;branch taken
+	jsr	(appendz).l					;append the end
 	String	' ('
-	move.w	(a0),d0
-	move.w	(a2,d0.w),d0
-	mulu.w	#$64,d0
-	move.w	2(a0),d1
-	move.w	(a2,d1.w),d1
-	beq.w	.5
-	divu.w	d1,d0
+	move.w	(a0),d0					;d0 = first offset
+	move.w	(a2,d0.w),d0			;first value
+	mulu.w	#$64,d0					;times 100
+	move.w	2(a0),d1				;d1 = second offset
+	move.w	(a2,d1.w),d1			;second value
+	beq.w	.5						;zero: no percentage
+	divu.w	d1,d0					;divided
 .5									;% ready (0 when the divisor is 0)
-	jsr	(PushNumber).l
-	jsr	(appstring).l
-	jsr	(appendz).l
+	jsr	(PushNumber).l				;push the number
+	jsr	(appstring).l				;append it
+	jsr	(appendz).l					;append the end
 	String	'%)'
 .6									;print the line
-	movea.w	a3,a1
-	move.w	(a1),d0
-	lsr.w	#1,d0
-	sub.w	d0,(printx).w
-	jmp	(print).l
+	movea.w	a3,a1					;a1 = message area
+	move.w	(a1),d0					;d0 = its width
+	lsr.w	#1,d0					;half
+	sub.w	d0,(printx).w			;centre on printx
+	jmp	(print).l					;print
 .7									;local subroutine
-	jmp	(PushNumber).l
+	jmp	(PushNumber).l				;push the number
 .8									;local subroutine
-	jmp	(PushTime).l
+	jmp	(PushTime).l				;push the time
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
 	String	'Score'
