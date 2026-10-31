@@ -3,73 +3,73 @@
 
 ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goalie and both
 									;teams' shootout goals. Jumped to from PenaltyShotBox
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	#$FFFF,d0
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	move.w	#$FFFF,d0				;d0 = -1
 	jsr	(prefmes).l					;prepare the message area
-	jsr	(printz).l
+	jsr	(printz).l					;print the box text
 	String	CC_Font1Pri,3,2
-	moveq	#$1B,d0
-	moveq	#$C,d1
+	moveq	#$1B,d0					;d0 = $1B
+	moveq	#$C,d1					;d1 = $C
 	jsr	(Framer).l					;draw the box
-	lea	ShootoutModeBigTxt(pc),a1
+	lea	ShootoutModeBigTxt(pc),a1	;a1 = the big text
 	jsr	(printbig).l				;SHOOTOUT MODE
 	move.w	(BA_Skater_Offset).w,d0	;shooter roster index
-	movea.l	#tmstruct,a2
-	tst.w	(BA_Team).w
-	beq.w	.0
-	movea.l	#awtmstruct,a2
+	movea.l	#tmstruct,a2			;a2 = home team structure
+	tst.w	(BA_Team).w				;BA_Team 0?
+	beq.w	.0						;yes: home
+	movea.l	#awtmstruct,a2			;a2 = away team structure
 .0									;team struct chosen
-	jsr	(FormatPlayerNumInitial).l
-	move.w	(printx).w,-(sp)
-	jsr	(print).l
-	move.w	(sp)+,(printx).w
-	addq.w	#1,(printy).w
-	addq.w	#6,(printx).w
-	jsr	(printz).l
+	jsr	(FormatPlayerNumInitial).l	;format the player number and initial
+	move.w	(printx).w,-(sp)		;keep printx
+	jsr	(print).l					;print it
+	move.w	(sp)+,(printx).w		;restore printx
+	addq.w	#1,(printy).w			;next row
+	addq.w	#6,(printx).w			;6 columns on
+	jsr	(printz).l					;print the next text
 	String	' vs.',CC_Font1Pri,4,7
 	move.w	(BA_Goalie_SCnum).w,d0	;goalie SCnum
-	asl.w	#7,d0
-	movea.l	#SortCords,a2
-	adda.w	d0,a2
-	clr.w	d0
+	asl.w	#7,d0					;times $80, the object size
+	movea.l	#SortCords,a2			;a2 = sort objects
+	adda.w	d0,a2					;a2 = the goalie
+	clr.w	d0						;d0 = 0
 	move.b	pnum(a2),d0				;goalie roster index
-	movea.l	#awtmstruct,a2
-	tst.w	(BA_Team).w
-	beq.w	.1
-	movea.l	#tmstruct,a2
+	movea.l	#awtmstruct,a2			;a2 = away team structure
+	tst.w	(BA_Team).w				;BA_Team 0?
+	beq.w	.1						;yes: keep
+	movea.l	#tmstruct,a2			;a2 = home team structure
 .1									;other team chosen
-	jsr	(FormatPlayerNumInitial).l
-	jsr	(print).l
-	jsr	(printz).l
+	jsr	(FormatPlayerNumInitial).l	;format the player number and initial
+	jsr	(print).l					;print it
+	jsr	(printz).l					;print the next text
 	String	CC_Font1Pri,4,9
-	movea.l	#tmstruct,a1
-	movea.l	tmdata(a1),a1
-	adda.w	Teamname(a1),a1
+	movea.l	#tmstruct,a1			;a1 = home team structure
+	movea.l	tmdata(a1),a1			;a1 = the team data
+	adda.w	Teamname(a1),a1			;a1 = the Teamname String
 	jsr	(print).l					;print the team name
 	move.w	#$15,(printx).w			;goals column
-	move.w	(homeshootgoals).w,d0
-	move.w	#3,d1
-	jsr	(PushNumberWidth).l
-	jsr	(print).l
-	jsr	(printz).l
+	move.w	(homeshootgoals).w,d0	;d0 = home goals
+	move.w	#3,d1					;3 digits
+	jsr	(PushNumberWidth).l			;push the number
+	jsr	(print).l					;print it
+	jsr	(printz).l					;print the next text
 	String	CC_Font1Pri,4,$A
-	movea.l	#awtmstruct,a1
-	movea.l	tmdata(a1),a1
-	adda.w	Teamname(a1),a1
+	movea.l	#awtmstruct,a1			;a1 = away team structure
+	movea.l	tmdata(a1),a1			;a1 = the team data
+	adda.w	Teamname(a1),a1			;a1 = the Teamname String
 	jsr	(print).l					;print the team name
-	move.w	#$15,(printx).w
-	move.w	(awayshootgoals).w,d0
-	move.w	#3,d1
-	jsr	(PushNumberWidth).l
-	jsr	(print).l
-	jsr	(printz).l
+	move.w	#$15,(printx).w			;printx $15
+	move.w	(awayshootgoals).w,d0	;d0 = away goals
+	move.w	#3,d1					;3 digits
+	jsr	(PushNumberWidth).l			;push the number
+	jsr	(print).l					;print it
+	jsr	(printz).l					;print the next text
 	String	CC_Font1Pri,4,$C,'Round '
-	move.w	(shootoutround).w,d0
-	move.w	#2,d1
-	jsr	(PushNumberWidth).l
-	jsr	(print).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	move.w	(shootoutround).w,d0	;d0 = round
+	move.w	#2,d1					;2 digits
+	jsr	(PushNumberWidth).l			;push the number
+	jsr	(print).l					;print it
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 ShootoutModeBigTxt	dc.b	0		;ShootoutModeBox big text
 	dc.b	$16,$BF,4,3
 	dc.b	$53						;S
@@ -246,113 +246,113 @@ ShootersExit						;Leave (ExitStatsScreen)
 	jmp	ExitStatsScreen
 ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	move.w	#$C000,d7				;highlight palette
-	movea.l	#homeshooters,a0
-	cmpa.l	#tmstruct,a2
-	beq.w	.0
-	movea.l	#awayshooters,a0
+	movea.l	#homeshooters,a0		;a0 = home shooters
+	cmpa.l	#tmstruct,a2			;home team?
+	beq.w	.0						;yes: keep
+	movea.l	#awayshooters,a0		;a0 = away shooters
 .0									;shooter list chosen
-	move.w	(TestList).w,d0
+	move.w	(TestList).w,d0			;d0 = TestList
 	asl.w	#1,d0					;word per slot
 	move.w	0(a0,d0.w),d6			;current shooter
-	jsr	(GetGoalieCount).l
-	move.w	d0,d1
-	jsr	(GetPlayerCount).l
-	sub.w	d1,d0
-	subq.w	#1,d0
+	jsr	(GetGoalieCount).l			;count the goalies
+	move.w	d0,d1					;d1 = goalies
+	jsr	(GetPlayerCount).l			;count the players
+	sub.w	d1,d0					;minus goalies
+	subq.w	#1,d0					;minus 1
 	cmpi.w	#5,(TestList).w			;goalie slot?
-	bne.w	.1
-	move.w	d1,d0
+	bne.w	.1						;not zero: keep
+	move.w	d1,d0					;d0 = goalies
 	subq.w	#1,d0					;last goalie
 	clr.w	d1						;goalies come first
 .1									;candidate range set
-	move.w	d0,(screentimer).w
+	move.w	d0,(screentimer).w		;rows to show
 	clr.w	(PlayerScrollCtr).w		;scroll to the top
 	clr.w	(VertLineScrolling).w	;cursor on row 0
-	movea.w	#(Satt-M68K_RAM),a0
-	clr.w	d2
+	movea.w	#(Satt-M68K_RAM),a0		;a0 = sprite attributes
+	clr.w	d2						;d2 = 0
 .loop								;list each candidate
 	move.b	d1,0(a0,d2.w)			;row = roster index
 	cmp.w	d1,d6					;current shooter?
-	bne.w	.2
+	bne.w	.2						;branch taken: skip
 	move.w	d2,(VertLineScrolling).w	;cursor starts on him
 .2									;not the current shooter
 	addq.w	#1,d1					;next roster index
-	addq.w	#1,d2
+	addq.w	#1,d2					;next candidate
 	dbf	d0,.loop					;next candidate
-	bsr.w	ClearShooterScreen
-	jsr	(printsmallz).l
+	bsr.w	ClearShooterScreen		;clear the shooter screen
+	jsr	(printsmallz).l				;print the header
 	String	CC_SetMapAndPosition,0,3,1,0
-	move.w	#$12,d0
-	move.w	#3,d1
+	move.w	#$12,d0					;d0 = $12
+	move.w	#3,d1					;d1 = 3
 	jsr	(Framer).l					;frame of the title
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;print
 	String	CC_SetX,$15,CC_SetY
-	move.w	#$12,d0
-	move.w	#3,d1
+	move.w	#$12,d0					;d0 = $12
+	move.w	#3,d1					;d1 = 3
 	jsr	(Framer).l					;frame of the list
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;print
 	String	CC_SetMapAndPosition,4,2,2,1,'{Select Player}'	;title
-	clr.w	d0
-	bra.w	.scroll
+	clr.w	d0						;d0 = 0
+	bra.w	.scroll					;scroll
 .loop2								;loop
-	jsr	(vcountwait).l
-	jsr	(getpzjoy).l
-	jsr	(ProcessInputWithRepeat).l
-	btst	#7,d1
+	jsr	(vcountwait).l				;wait for the vertical count
+	jsr	(getpzjoy).l				;read the pad
+	jsr	(ProcessInputWithRepeat).l	;input with repeat
+	btst	#7,d1					;START pressed?
 	bne.w	ShootersRedraw			;start: back to the shooters
-	btst	#5,d1
-	bne.w	.pick
+	btst	#5,d1					;C pressed?
+	bne.w	.pick					;yes: pick
 	moveq	#1,d0					;down / right: +1
-	btst	#1,d1
-	bne.w	.scroll
-	btst	#3,d1
-	bne.w	.page
+	btst	#1,d1					;up?
+	bne.w	.scroll					;yes: scroll
+	btst	#3,d1					;left?
+	bne.w	.page					;yes: page
 	moveq	#-1,d0					;up / left: -1
-	btst	#0,d1
-	bne.w	.scroll
-	btst	#2,d1
-	bne.w	.page
-	bra.s	.loop2
+	btst	#0,d1					;down?
+	bne.w	.scroll					;yes: scroll
+	btst	#2,d1					;right?
+	bne.w	.page					;yes: page
+	bra.s	.loop2					;loop
 .page								;bit 3 of d1 set or bit 2 of d1 set
-	add.w	(DispAttribCtr).w,d0
+	add.w	(DispAttribCtr).w,d0	;plus DispAttribCtr
 	bmi.s	.loop2					;before the first page: ignore
-	move.w	d0,(DispAttribCtr).w
+	move.w	d0,(DispAttribCtr).w	;store it
 .4									;(not branched to)
-	bsr.w	PrintShooterList
+	bsr.w	PrintShooterList		;print the list
 .5									;(not branched to)
-	bra.s	.loop2
+	bra.s	.loop2					;loop
 .scroll								;up / down: move the cursor
-	add.w	(VertLineScrolling).w,d0
+	add.w	(VertLineScrolling).w,d0	;plus VertLineScrolling
 	bmi.s	.loop2					;above the first: ignore
-	cmp.w	(screentimer).w,d0
+	cmp.w	(screentimer).w,d0		;compare with the row count
 	bgt.s	.loop2					;past the last: ignore
 .7									;(not branched to)
-	move.w	d0,(VertLineScrolling).w
+	move.w	d0,(VertLineScrolling).w	;store it
 	cmp.w	(PlayerScrollCtr).w,d0	;above the rows shown?
-	bgt.w	.8
-	move.w	d0,(PlayerScrollCtr).w
+	bgt.w	.8						;greater: keep
+	move.w	d0,(PlayerScrollCtr).w	;store the scroll counter
 .8									;cursor not above the first row shown
 	subq.w	#5,d0					;6 rows shown
 	cmp.w	(PlayerScrollCtr).w,d0	;below the rows shown?
-	ble.w	.9
-	move.w	d0,(PlayerScrollCtr).w
+	ble.w	.9						;less or equal: keep
+	move.w	d0,(PlayerScrollCtr).w	;store the scroll counter
 .9									;cursor inside the rows shown: redraw
-	bsr.w	PrintShooterList
-	bra.w	.loop2
+	bsr.w	PrintShooterList		;print the list
+	bra.w	.loop2					;loop
 .pick								;bit 5 of d1 set
-	movea.w	#(Satt-M68K_RAM),a3
-	adda.w	(VertLineScrolling).w,a3
-	clr.w	d0
-	move.b	(a3),d0
-	move.w	(TestList).w,d2
-	movea.l	#homeshooters,a0
-	cmpa.l	#tmstruct,a2
-	beq.w	.11
-	movea.l	#awayshooters,a0
+	movea.w	#(Satt-M68K_RAM),a3		;a3 = sprite attributes
+	adda.w	(VertLineScrolling).w,a3	;plus VertLineScrolling
+	clr.w	d0						;d0 = 0
+	move.b	(a3),d0					;player byte
+	move.w	(TestList).w,d2			;d2 = TestList
+	movea.l	#homeshooters,a0		;a0 = home shooters
+	cmpa.l	#tmstruct,a2			;home team?
+	beq.w	.11						;yes: keep
+	movea.l	#awayshooters,a0		;a0 = away shooters
 .11									;shooter list chosen
 	asl.w	#1,d2					;word per slot
 	move.w	d0,0(a0,d2.w)			;store the pick
-	bra.w	ShootersRedraw
+	bra.w	ShootersRedraw			;redraw the shooters
 PrintShooterList					;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	CC_Font2Pri,$16,1

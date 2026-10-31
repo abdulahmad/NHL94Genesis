@@ -304,83 +304,83 @@ NameEntryScreen						;"NAME ENTRY" screen for the user records (own vblank VBlan
 	rts
 NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to select letter.",
 									;"A to go back.")
-	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(printz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	jsr	(printz).l					;print the first text
 	String	CC_Font1Pri,1,$14
-	move.w	#$16,d0
-	move.w	#7,d1
+	move.w	#$16,d0					;d0 = $16
+	move.w	#7,d1					;d1 = 7
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l					;clear the help area
 	bchg	#0,(cursoron+1).w		;flip between edit and log mode
 	bne.w	.1						;now log mode: show the help instead
-	jsr	(printz).l
+	jsr	(printz).l					;print the next text
 	String	CC_Font1Pri,$19,$11
 	movea.l	#LetterGrid,a0			;print the 5 rows of 6 letters
 	moveq	#4,d0					;5 rows
 .loop								;each row
 	moveq	#5,d1					;6 letters
-	movea.l	#mesarea,a1
+	movea.l	#mesarea,a1				;a1 = message area
 	move.w	#$E,(a1)+				;String of 6 letters with spaces: 12 bytes + header
 .loop2								;letter and a space
-	move.b	(a0)+,(a1)+
-	move.b	#$20,(a1)+
+	move.b	(a0)+,(a1)+				;letter
+	move.b	#$20,(a1)+				;space
 	dbf	d1,.loop2					;next letter
-	movea.w	#(mesarea-M68K_RAM),a1
-	jsr	(print).l
+	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
+	jsr	(print).l					;print the row
 	addq.w	#2,(printy).w			;two rows down
 	subi.w	#$C,(printx).w			;back to the row start
 	dbf	d0,.loop					;next row
-	jsr	(printz).l
+	jsr	(printz).l					;print the next text
 	String	CC_Font2,1,$14
-	moveq	#$16,d0
-	moveq	#7,d1
+	moveq	#$16,d0					;d0 = $16
+	moveq	#7,d1					;d1 = 7
 	jsr	(Framer).l					;draw the frame
-	jsr	(printz).l
+	jsr	(printz).l					;print the next text
 	String	CC_Font1Pri,2,$15,'D-Pad to a letter.'
-	move.w	#2,(printx).w
-	addq.w	#1,(printy).w
-	move.w	(printx).w,-(sp)
-	jsr	(printz).l
+	move.w	#2,(printx).w			;printx 2
+	addq.w	#1,(printy).w			;next row
+	move.w	(printx).w,-(sp)		;keep printx
+	jsr	(printz).l					;print a row
 	String	'C to select letter.'
-	move.w	(sp),(printx).w
-	addq.w	#1,(printy).w
-	jsr	(printz).l
+	move.w	(sp),(printx).w			;back to the column
+	addq.w	#1,(printy).w			;next row
+	jsr	(printz).l					;print a row
 	String	'A to go back.'
-	move.w	(sp),(printx).w
-	addq.w	#1,(printy).w
-	jsr	(printz).l
+	move.w	(sp),(printx).w			;back to the column
+	addq.w	#1,(printy).w			;next row
+	jsr	(printz).l					;print a row
 	String	'B to cancel.'
-	move.w	(sp)+,(printx).w
-	addq.w	#1,(printy).w
+	move.w	(sp)+,(printx).w		;restore printx
+	addq.w	#1,(printy).w			;next row
 .0									;(not branched to)
-	jsr	(printz).l
+	jsr	(printz).l					;print the last text
 	String	'START when done.'
 .x									;pop the registers saved at entry
-	movem.l	(sp)+,d0-d7/a0-a6
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 .x2									;(not branched to)
-	rts
+	rts								;done
 .1									;log mode: reload the name, clear the field area, frame the help box
-	movea.l	#nameentrybuf,a1
+	movea.l	#nameentrybuf,a1		;a1 = name entry buffer
 .2									;(not branched to)
 	bsr.w	GetLogName				;copy the log name
-	move.w	#0,(printx).w
+	move.w	#0,(printx).w			;printx 0
 .3									;(not branched to)
-	move.w	#$F,(printy).w
-	move.w	#$28,d0
+	move.w	#$F,(printy).w			;printy $F
+	move.w	#$28,d0					;d0 = $28
 .4									;(not branched to)
-	move.w	#$D,d1
+	move.w	#$D,d1					;d1 = $D
 	move.w	#$7FF,d2				;blank char
 .5									;(not branched to)
-	jsr	(eraser).l
+	jsr	(eraser).l					;erase
 .6									;(not branched to)
-	jsr	(printz).l
+	jsr	(printz).l					;print the text
 	String	CC_Font2,1,$14
-	moveq	#$16,d0
-	moveq	#7,d1
+	moveq	#$16,d0					;d0 = $16
+	moveq	#7,d1					;d1 = 7
 .7									;(not branched to)
 	jsr	(Framer).l					;draw the frame
-	bsr.w	NameEntryHelp
-	bra.s	.x
+	bsr.w	NameEntryHelp			;name entry help
+	bra.s	.x						;exit
 NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Press START to
 									;select name.", "Press B to edit.")
 	movem.l	d0-d7/a0-a6,-(sp)		;save registers
@@ -730,93 +730,93 @@ StoreUserName						;Name entry: store the name in save RAM
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 WriteNameRecord						;Write the name record (ReadSRAM / WriteSRAM)
-	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
 	move.w	#$2D7,d7				;$2D8 player records of 4 bytes
 	moveq	#0,d0					;first record
-	moveq	#4,d1
-	movea.l	#recordbuf,a0
+	moveq	#4,d1					;d1 = 4
+	movea.l	#recordbuf,a0			;a0 = record buffer
 	move.w	(namelogsel).w,d6		;d6 = the slot whose name was replaced
 .loop								;each player record: clear the old holder
-	clr.w	d5
-	jsr	(ReadSRAM).l
+	clr.w	d5						;no change
+	jsr	(ReadSRAM).l				;read the record
 	cmp.b	pruser(a0),d6			;the record holder?
-	bne.w	.0
-	clr.b	pruser(a0)
-	st	d5
+	bne.w	.0						;keep the holder?
+	clr.b	pruser(a0)				;clear the holder
+	st	d5							;changed
 .0									;proppuser: the other user
 	cmp.b	proppuser(a0),d6		;is it this slot?
-	bne.w	.1
-	clr.b	proppuser(a0)
-	st	d5
+	bne.w	.1						;keep the opponent?
+	clr.b	proppuser(a0)			;clear the opponent
+	st	d5							;changed
 .1									;write back only when changed
-	tst.w	d5
-	beq.w	.2
-	jsr	(WriteSRAM).l
+	tst.w	d5						;changed?
+	beq.w	.2						;no: next
+	jsr	(WriteSRAM).l				;write it back
 .2									;next record
 	addq.l	#4,d0					;next record
 	dbf	d7,.loop					;loop
 	move.w	#NumTeams-1,d7			;each team's crowd record block
 	move.l	#CrowdRecBase,d0		;first block
-	moveq	#$10,d1
-	movea.l	#recordbuf,a0
-	move.w	(namelogsel).w,d6
+	moveq	#$10,d1					;d1 = $10
+	movea.l	#recordbuf,a0			;a0 = record buffer
+	move.w	(namelogsel).w,d6		;d6 = namelogsel
 .loop2								;clear the old user from each crowd record
 	clr.w	d5						;(holder and opponent of the goals, saves and peak records)
-	jsr	(ReadSRAM).l
+	jsr	(ReadSRAM).l				;read the record
 	cmp.b	crgoalsuser(a0),d6		;goals record holder?
-	bne.w	.3
-	clr.b	crgoalsuser(a0)
-	st	d5
+	bne.w	.3						;keep the holder?
+	clr.b	crgoalsuser(a0)			;clear the goals holder
+	st	d5							;changed
 .3									;goals holder done: goals opponent
 	cmp.b	crgoalsoppuser(a0),d6	;goals record opponent?
-	bne.w	.4
-	clr.b	crgoalsoppuser(a0)
-	st	d5
+	bne.w	.4						;keep?
+	clr.b	crgoalsoppuser(a0)		;clear the goals opponent
+	st	d5							;changed
 .4									;saves holder
 	cmp.b	crsavesuser(a0),d6		;saves record holder?
-	bne.w	.5
-	clr.b	crsavesuser(a0)
-	st	d5
+	bne.w	.5						;keep?
+	clr.b	crsavesuser(a0)			;clear the saves holder
+	st	d5							;changed
 .5									;saves opponent
 	cmp.b	crsavesoppuser(a0),d6	;saves record opponent?
-	bne.w	.6
-	clr.b	crsavesoppuser(a0)
-	st	d5
+	bne.w	.6						;keep?
+	clr.b	crsavesoppuser(a0)		;clear the saves opponent
+	st	d5							;changed
 .6									;peak holder
 	cmp.b	crpeakuser(a0),d6		;peak record holder?
-	bne.w	.7
-	clr.b	crpeakuser(a0)
-	st	d5
+	bne.w	.7						;keep?
+	clr.b	crpeakuser(a0)			;clear the peak holder
+	st	d5							;changed
 .7									;peak opponent
 	cmp.b	crpeakoppuser(a0),d6	;peak record opponent?
-	bne.w	.8
-	clr.b	crpeakoppuser(a0)
-	st	d5
+	bne.w	.8						;keep?
+	clr.b	crpeakoppuser(a0)		;clear the peak opponent
+	st	d5							;changed
 .8									;write back only when changed
-	tst.w	d5
-	beq.w	.9
-	jsr	(WriteSRAM).l
+	tst.w	d5						;changed?
+	beq.w	.9						;no: next
+	jsr	(WriteSRAM).l				;write it back
 .9									;next block
 	addi.l	#CrowdRecBytes,d0		;next block
 	dbf	d7,.loop2					;next team
 	move.l	#TeamRecBase,d0			;and wipe the new slot's own 16 byte user record
-	move.w	(namelogsel).w,d3
-	asl.w	#4,d3
-	ext.l	d3
+	move.w	(namelogsel).w,d3		;d3 = namelogsel
+	asl.w	#4,d3					;times 16
+	ext.l	d3						;long
 	add.l	d3,d0					;its user record
-	moveq	#$10,d1
-	movea.l	#recordbuf,a0
-	jsr	(ReadSRAM).l
-	move.l	a0,-(sp)
-	move.w	#$F,d3
+	moveq	#$10,d1					;d1 = $10
+	movea.l	#recordbuf,a0			;a0 = record buffer
+	jsr	(ReadSRAM).l				;read it
+	move.l	a0,-(sp)				;keep a0
+	move.w	#$F,d3					;16 bytes
 .loop3								;clear 16 bytes
-	clr.b	(a0)+
+	clr.b	(a0)+					;clear a byte
 	dbf	d3,.loop3					;next byte
-	movea.l	(sp)+,a0
-	jsr	(WriteSRAM).l
+	movea.l	(sp)+,a0				;restore a0
+	jsr	(WriteSRAM).l				;write it
 	jsr	(MakeSRAMChecksum).l		;new save RAM checksum
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 
 UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEntryScreen) for
 									;the pads in use. Called from Opening2
@@ -1211,81 +1211,81 @@ ClearRecordArea						;Record Holders: erase the record rows ($28 x $12), keeping
 	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
 	rts								;done
 PrintPlayerRecords					;Record Holders: the rows of the other page (PrintRecordName)
-	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(printsmallz).l
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	jsr	(printsmallz).l				;print the position codes
 	String	CC_SetMapAndPosition,4,2,2,$A,CC_SetFont,0
 	move.w	#6,d7					;7 rows
 	movea.l	#recsort1,a0			;page 1: the goals sort
-	cmpi.w	#1,(TempWord1).w
-	beq.w	.0
-	movea.l	#recsort2,a0
+	cmpi.w	#1,(TempWord1).w		;first page?
+	beq.w	.0						;yes: keep
+	movea.l	#recsort2,a0			;a0 = second sort list
 .0									;sort list chosen
-	movea.l	#recordbuf,a2
+	movea.l	#recordbuf,a2			;a2 = record buffer
 .loop								;each row
-	move.w	#2,(printx).w
-	move.b	(a0)+,d0
-	ext.w	d0
+	move.w	#2,(printx).w			;printx 2
+	move.b	(a0)+,d0				;d0 = next index
+	ext.w	d0						;word
 	asl.w	#4,d0					;16 bytes per user record
 	move.b	0(a2,d0.w),d5			;goals record, or the saves one on page 2
-	cmpi.w	#1,(TempWord1).w
-	beq.w	.1
-	move.b	ursaves(a2,d0.w),d5
+	cmpi.w	#1,(TempWord1).w		;first page?
+	beq.w	.1						;yes: keep
+	move.b	ursaves(a2,d0.w),d5		;d5 = saves
 .1									;record value chosen
-	tst.b	d5
+	tst.b	d5						;zero?
 	beq.w	.none					;no record: "( )"
-	bsr.w	PrintRecordName
-	move.w	#$12,(printx).w
-	move.w	d0,-(sp)
+	bsr.w	PrintRecordName			;print the record name
+	move.w	#$12,(printx).w			;printx $12
+	move.w	d0,-(sp)				;keep d0
 	cmpi.w	#1,(TempWord1).w		;page 1?
 	bne.w	.2						;page 2: saves
-	move.b	0(a2,d0.w),d0
-	bra.w	.3
+	move.b	0(a2,d0.w),d0			;goals value
+	bra.w	.3						;print it
 .2									;page 2: the saves value
-	move.b	ursaves(a2,d0.w),d0
+	move.b	ursaves(a2,d0.w),d0		;saves value
 .3									;value chosen: print it
-	andi.w	#$FF,d0
+	andi.w	#$FF,d0					;byte
 	move.w	#3,d1					;3 digits
-	jsr	(PushNumberWidth).l
+	jsr	(PushNumberWidth).l			;push the number
 	jsr	(printsmall).l				;print it
-	move.w	(sp)+,d0
-	move.w	#$19,(printx).w
-	movea.l	#RecHolderByTxt,a1
-	movea.l	#mesarea,a3
-	bsr.w	CopyString
-	move.w	d0,-(sp)
+	move.w	(sp)+,d0				;restore d0
+	move.w	#$19,(printx).w			;printx $19
+	movea.l	#RecHolderByTxt,a1		;a1 = "by" text
+	movea.l	#mesarea,a3				;a3 = message area
+	bsr.w	CopyString				;copy it
+	move.w	d0,-(sp)				;keep d0
 	cmpi.w	#1,(TempWord1).w		;page 1?
 	bne.w	.4						;page 2: the saves team
-	move.b	urgoalsteam(a2,d0.w),d0
-	bra.w	.5
+	move.b	urgoalsteam(a2,d0.w),d0	;goals team
+	bra.w	.5						;go on
 .4									;page 2: the saves team
-	move.b	ursavesteam(a2,d0.w),d0
+	move.b	ursavesteam(a2,d0.w),d0	;saves team
 .5									;team chosen
-	andi.w	#$FF,d0
-	movea.l	#mesarea,a1
+	andi.w	#$FF,d0					;byte
+	movea.l	#mesarea,a1				;a1 = message area
 	bsr.w	AppendTeamName			;append the team name
-	movea.l	#RecHolderVsTxt,a1
-	movea.l	#mesarea,a3
-	jsr	(appstring).l
-	movea.l	#mesarea,a1
-	move.w	(sp)+,d0
+	movea.l	#RecHolderVsTxt,a1		;a1 = "vs" text
+	movea.l	#mesarea,a3				;a3 = message area
+	jsr	(appstring).l				;append it
+	movea.l	#mesarea,a1				;a1 = message area
+	move.w	(sp)+,d0				;restore d0
 	cmpi.w	#1,(TempWord1).w		;page 1?
 	bne.w	.6						;page 2: the saves opponent
-	move.b	urgoalsopp(a2,d0.w),d0
-	bra.w	.7
+	move.b	urgoalsopp(a2,d0.w),d0	;goals opponent
+	bra.w	.7						;go on
 .6									;page 2: the saves opponent
-	move.b	ursavesopp(a2,d0.w),d0
+	move.b	ursavesopp(a2,d0.w),d0	;saves opponent
 .7									;opponent chosen
-	andi.w	#$FF,d0
+	andi.w	#$FF,d0					;byte
 	bsr.w	AppendTeamName			;append the team name
-	bra.w	.print
+	bra.w	.print					;print
 .none								;no record: "( )"
-	movea.l	#RecParenTxt,a1
+	movea.l	#RecParenTxt,a1			;a1 = "( )" text
 .print								;print the row
-	jsr	(printsmall).l
-	addq.w	#2,(printy).w
+	jsr	(printsmall).l				;print the row
+	addq.w	#2,(printy).w			;next row
 	dbf	d7,.loop					;loop
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 RecParenTxt	dc.b	0				;PrintWinRecords data
 	dc.b	$28						;(
 	dc.b	$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20
@@ -1324,89 +1324,89 @@ PrintRecordName						;Record Holders: print a value (AppendUserName)
 CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf, the win %
 									;(winpcts), games (wingames) and ties (winties), then sort the rows
 									;(winsort)
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#recordbuf,a0
-	movea.l	#winpcts,a1
-	movea.l	#winties,a6
-	movea.l	#wingames,a5
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#recordbuf,a0			;a0 = record buffer
+	movea.l	#winpcts,a1				;a1 = win percentages
+	movea.l	#winties,a6				;a6 = ties
+	movea.l	#wingames,a5			;a5 = games
 	move.w	#7,d7					;8 user blocks
 .loop								;each user record
 	move.b	urwins(a0),d0			;wins, big endian
-	lsl.w	#8,d0
-	move.b	urwins+1(a0),d0
+	lsl.w	#8,d0					;wins high byte
+	move.b	urwins+1(a0),d0			;wins low byte
 	move.b	urgames(a0),d1			;games, big endian
-	lsl.w	#8,d1
-	move.b	urgames+1(a0),d1
-	move.w	d1,(a5)+
-	tst.w	d1
-	bne.w	.0
-	clr.w	d0
-	bra.w	.1
+	lsl.w	#8,d1					;games high byte
+	move.b	urgames+1(a0),d1		;games low byte
+	move.w	d1,(a5)+				;store the games
+	tst.w	d1						;games zero?
+	bne.w	.0						;no: compute
+	clr.w	d0						;percentage 0
+	bra.w	.1						;store it
 .0									;games played: win % = wins * 100 / games
-	mulu.w	#$64,d0
-	divu.w	d1,d0
+	mulu.w	#$64,d0					;wins times 100
+	divu.w	d1,d0					;divided by games
 .1									;% ready
-	move.b	d0,(a1)+
-	move.b	urties(a0),(a6)+
-	move.b	urties+1(a0),(a6)+
+	move.b	d0,(a1)+				;store the percentage
+	move.b	urties(a0),(a6)+		;ties high byte
+	move.b	urties+1(a0),(a6)+		;ties low byte
 	adda.w	#$10,a0					;next 16 byte block
 	dbf	d7,.loop					;next user
-	movea.l	#winsort,a1
-	move.l	a1,-(sp)
+	movea.l	#winsort,a1				;a1 = sort list
+	move.l	a1,-(sp)				;keep it
 	move.w	#1,d0					;the sort list starts as users 1-7
 	move.w	#6,d7					;7 users
 .loop2								;fill in users 1-7
-	move.b	d0,(a1)+
+	move.b	d0,(a1)+				;store the index
 	addq.w	#1,d0					;next user
 	dbf	d7,.loop2					;loop
-	movea.l	(sp),a1
-	movea.l	#winpcts,a0
-	movea.l	#winties,a6
-	movea.l	#wingames,a5
+	movea.l	(sp),a1					;a1 = sort list
+	movea.l	#winpcts,a0				;a0 = win percentages
+	movea.l	#winties,a6				;a6 = ties
+	movea.l	#wingames,a5			;a5 = games
 .loop3								;bubble sort: win %, then ties, then games
-	movea.l	(sp),a1
+	movea.l	(sp),a1					;a1 = sort list
 	move.w	#5,d7					;6 pairs
-	clr.w	d6
+	clr.w	d6						;no swap yet
 .loop4								;compare a pair with the next
-	move.b	(a1)+,d1
-	ext.w	d1
-	move.b	(a1),d2
-	ext.w	d2
+	move.b	(a1)+,d1				;d1 = first index
+	ext.w	d1						;word
+	move.b	(a1),d2					;d2 = next index
+	ext.w	d2						;word
 	move.b	0(a0,d1.w),d0			;this user's %
 	move.b	0(a0,d2.w),d3			;next user's %
-	cmp.b	d3,d0
-	bgt.w	.next
-	blt.w	.swap
-	movem.l	d1-d3,-(sp)
-	add.w	d1,d1
-	add.w	d2,d2
+	cmp.b	d3,d0					;compare the percentages
+	bgt.w	.next					;greater: next pair
+	blt.w	.swap					;less: swap
+	movem.l	d1-d3,-(sp)				;save d1-d3
+	add.w	d1,d1					;times 2
+	add.w	d2,d2					;times 2
 	move.w	0(a6,d1.w),d0			;this user's ties
 	move.w	0(a6,d2.w),d3			;next user's ties
-	cmp.w	d3,d0
-	movem.l	(sp)+,d1-d3
+	cmp.w	d3,d0					;compare the ties
+	movem.l	(sp)+,d1-d3				;restore d1-d3
 	bgt.w	.next					;same %: more ties first
-	blt.w	.swap
-	movem.l	d1-d3,-(sp)
-	add.w	d1,d1
-	add.w	d2,d2
+	blt.w	.swap					;less: swap
+	movem.l	d1-d3,-(sp)				;save d1-d3
+	add.w	d1,d1					;times 2
+	add.w	d2,d2					;times 2
 	move.w	0(a5,d1.w),d0			;this user's games
 	move.w	0(a5,d2.w),d3			;next user's games
-	cmp.w	d3,d0
-	movem.l	(sp)+,d1-d3
+	cmp.w	d3,d0					;compare the games
+	movem.l	(sp)+,d1-d3				;restore d1-d3
 	bge.w	.next					;same ties: more games first
 .swap								;out of order: swap
-	move.b	(a1),d0
+	move.b	(a1),d0					;first index
 	move.b	-1(a1),d1				;previous entry
 	move.b	d0,-1(a1)				;swap them
-	move.b	d1,(a1)
-	st	d6
+	move.b	d1,(a1)					;swap them
+	st	d6							;a swap was done
 .next								;next pair
 	dbf	d7,.loop4					;next pair
-	tst.w	d6
+	tst.w	d6						;swapped?
 	bne.s	.loop3					;repeat until no swap
-	movea.l	(sp)+,a1
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movea.l	(sp)+,a1				;restore a1
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	#TeamRecBase,d0			;first user block
