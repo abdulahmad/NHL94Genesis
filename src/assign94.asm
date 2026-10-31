@@ -3,179 +3,179 @@
 ;	as a defenseman or a wing. There is no fighting in this game, so the fight assignments do nothing.
 
 check4bench							;check if player a3 should go to bench
-	btst	#2,(BA_PS_flags).w
-	bne.s	rtss3
-	btst	#pfjoycon,pflags(a3)
-	bne.s	rtss3
-	btst	#pf2pen,pflags2(a3)
-	bne.s	rtss3
-	tst.b	newpos(a3)
-	bpl.w	.0
-	tst.b	newpnum(a3)
-	bmi.s	rtss3
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.s	rtss3					;yes: no bench trip
+	btst	#pfjoycon,pflags(a3)	;human controlled?
+	bne.s	rtss3					;yes: no bench trip
+	btst	#pf2pen,pflags2(a3)		;penalty (pf2pen)?
+	bne.s	rtss3					;yes: no bench trip
+	tst.b	newpos(a3)				;new position set?
+	bpl.w	.0						;no: continue
+	tst.b	newpnum(a3)				;new player number set?
+	bmi.s	rtss3					;no: no bench trip
 .0									;a line change is pending (new position, or a new player number)
 	move.b	newpnum(a3),d0			;new player number differs from current -> go to the bench; else only
 									;change position
-	cmp.b	pnum(a3),d0
+	cmp.b	pnum(a3),d0				;same player number?
 	beq.w	.samepl					;player should just change positions
-	move.w	assnum(a3),d0
+	move.w	assnum(a3),d0			;d0 = assignment
 	cmpi.b	#$B,asslist(a3,d0.w)	;already going to bench
-	beq.s	rtss3
-	move.w	SCnum(a3),d0
-	cmp.w	(puckc).w,d0
-	beq.s	rtss3
-	addq.w	#4,sp
+	beq.s	rtss3					;zero: no bench trip
+	move.w	SCnum(a3),d0			;d0 = SCnum
+	cmp.w	(puckc).w,d0			;puck carrier?
+	beq.s	rtss3					;yes: no bench trip
+	addq.w	#4,sp					;drop the return address
 	bset	#pf2unav,pflags2(a3)	;set player unavailable (pf2unav)
-	clr.w	temp1(a3)
+	clr.w	temp1(a3)				;temp1 0
 	move.l	#$B,d0					;assbench
-	bra.w	assreplace
+	bra.w	assreplace				;assreplace
 .samepl								;same player: no trip to the bench, take the new position here
 	addq.w	#4,sp					;drop return address (takes over the assignment); apply new position now
-	bclr	#pf2unav,pflags2(a3)
-	bclr	#pfnc,pflags(a3)
-	st	newpnum(a3)
-	st	newpos(a3)
-	move.w	position(a3),d0
-	tst.b	newpos(a3)
-	bpl.w	.1
-	jmp	Setplass
+	bclr	#pf2unav,pflags2(a3)	;clear pf2unav
+	bclr	#pfnc,pflags(a3)		;clear pfnc
+	st	newpnum(a3)					;no new player number
+	st	newpos(a3)					;no new position
+	move.w	position(a3),d0			;d0 = position
+	tst.b	newpos(a3)				;new position set?
+	bpl.w	.1						;no: set the player
+	jmp	Setplass					;set the player attributes
 .1									;newpos set: use it as the position
-	move.b	newpos(a3),d0
-	ext.w	d0
-	move.w	d0,position(a3)
-	jmp	Setplass
+	move.b	newpos(a3),d0			;d0 = new position
+	ext.w	d0						;word
+	move.w	d0,position(a3)			;set the position
+	jmp	Setplass					;set the player attributes
 ; player a3 should go to bench
 
 assbench							;player a3 should goto bench
-	btst	#pfalock,pflags(a3)
-	bne.w	rtss3
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.w	rtss3					;yes: done
 	cmpi.w	#$64,temp1(a3)			;temp1 = 100 flag: at the bench door
-	beq.w	.done
-	bsr.w	check4bench
+	beq.w	.done					;branch taken: finish the move
+	bsr.w	check4bench				;should he go to the bench?
 	btst	#pf2pen,pflags2(a3)		;pf2pen
-	bne.w	assexit
-	bclr	#pfna,pflags(a3)
-	beq.w	.nna
-	move.w	#8,temp2(a3)
+	bne.w	assexit					;yes: exit
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.nna					;it was clear: skate on
+	move.w	#8,temp2(a3)			;temp2 8
 	moveq	#$50,d0					;80
-	btst	#pfteam,pflags(a3)
-	bne.w	.0
-	neg.w	d0
+	btst	#pfteam,pflags(a3)		;which team?
+	bne.w	.0						;away: keep the sign
+	neg.w	d0						;negate for home
 .0									;d0 = bench y: +80 away, -80 home
-	move.w	d0,temp4(a3)
-	move.w	#$88,temp3(a3)
-	neg.w	temp3(a3)
+	move.w	d0,temp4(a3)			;bench y
+	move.w	#$88,temp3(a3)			;bench x $88
+	neg.w	temp3(a3)				;negated
 	subq.w	#8,temp3(a3)			;temp3 = bench x
-	clr.w	temp1(a3)
+	clr.w	temp1(a3)				;temp1 0
 .nna								;every call: same player only changes position; otherwise skate to the
 									;bench door
 	move.b	newpnum(a3),d0			;same player? just change position
-	cmp.b	pnum(a3),d0
+	cmp.b	pnum(a3),d0				;same player number?
 	beq.w	.nobench				;same player, just change position
-	sub.w	d7,temp1(a3)
-	bpl.w	.nodec
-	addq.w	#8,temp1(a3)
-	move.w	Ypos(a3),d0
-	sub.w	temp4(a3),d0
-	cmp.w	#$28,d0
-	bgt.w	.nodec
-	cmp.w	#$FFD8,d0
-	blt.w	.nodec
-	move.w	(a3),d0
-	sub.w	temp3(a3),d0
-	cmp.w	#$20,d0
-	bgt.w	.nodec
-	move.w	#SPAglide,d1
-	tst.w	position(a3)
-	bne.w	.gli
-	move.w	#SPAgready,d1
+	sub.w	d7,temp1(a3)			;count temp1 down by d7
+	bpl.w	.nodec					;still positive: skate on
+	addq.w	#8,temp1(a3)			;reload with 8
+	move.w	Ypos(a3),d0				;d0 = y
+	sub.w	temp4(a3),d0			;minus the bench y
+	cmp.w	#$28,d0					;beyond +$28?
+	bgt.w	.nodec					;yes: skate on
+	cmp.w	#$FFD8,d0				;beyond -$28?
+	blt.w	.nodec					;yes: skate on
+	move.w	(a3),d0					;d0 = x
+	sub.w	temp3(a3),d0			;minus the bench x
+	cmp.w	#$20,d0					;beyond +$20?
+	bgt.w	.nodec					;yes: skate on
+	move.w	#SPAglide,d1			;glide animation
+	tst.w	position(a3)			;goalie?
+	bne.w	.gli					;no: keep
+	move.w	#SPAgready,d1			;ready animation
 .gli								;close to the door: glide (goalie: ready) and turn to face the bench
 	bsr.w	SetSPA					;glide (goalie: ready) animation
-	bset	#pfnc,pflags(a3)
-	cmpi.w	#4,facedir(a3)
-	beq.w	.ok
+	bset	#pfnc,pflags(a3)		;set pfnc
+	cmpi.w	#4,facedir(a3)			;facing 4?
+	beq.w	.ok						;yes: ok
 	addq.w	#1,facedir(a3)			;turn toward the bench
-	andi.w	#7,facedir(a3)
+	andi.w	#7,facedir(a3)			;keep 0 to 7
 .ok									;facing the bench: slide left, at the door hop the boards (wall animation,
 									;door flag 100)
-	clr.w	Yvel(a3)
-	move.w	#$F800,Xvel(a3)
-	cmp.w	#$10,d0
-	bgt.w	.x
-	clr.w	Xvel(a3)
-	cmpi.w	#4,facedir(a3)
-	bne.w	.x
-	move.w	#$F800,Xvel(a3)
-	move.w	#2,facedir(a3)
-	move.w	#SPAwallleft,d1
-	bsr.w	SetSPA
-	bset	#pfalock,pflags(a3)
+	clr.w	Yvel(a3)				;y velocity 0
+	move.w	#$F800,Xvel(a3)			;x velocity -$800
+	cmp.w	#$10,d0					;x within $10?
+	bgt.w	.x						;no: done
+	clr.w	Xvel(a3)				;x velocity 0
+	cmpi.w	#4,facedir(a3)			;facing 4?
+	bne.w	.x						;no: done
+	move.w	#$F800,Xvel(a3)			;x velocity -$800
+	move.w	#2,facedir(a3)			;facing 2
+	move.w	#SPAwallleft,d1			;wall animation
+	bsr.w	SetSPA					;set it
+	bset	#pfalock,pflags(a3)		;set pfalock
 	move.w	#$64,temp1(a3)			;100
 .x									;return; skating continues next call
-	rts
+	rts								;done
 .done								;door flag 100: the wall animation is over, swap in the new player
 	clr.w	frame(a3)				;at the bench door: mark this roster slot on the bench (tmpdst -2),
 									;install the new player (d3)
-	clr.w	d0
-	move.b	pnum(a3),d0
-	add.w	d0,d0
-	movea.l	#tmstruct,a0
-	btst	#pfteam,pflags(a3)
-	beq.w	.t0
-	adda.w	#tmsize,a0
+	clr.w	d0						;d0 = 0
+	move.b	pnum(a3),d0				;player number
+	add.w	d0,d0					;times 2
+	movea.l	#tmstruct,a0			;a0 = home team structure
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.t0						;home: keep
+	adda.w	#tmsize,a0				;away team structure
 .t0									;put him on the bench
 	move.w	#$FFFE,tmpdst(a0,d0.w)	;tmpdst: put used player on bench
-	move.b	newpnum(a3),d3
-	bsr.w	.nobench2
-	jmp	setplayer
+	move.b	newpnum(a3),d3			;new player number
+	bsr.w	.nobench2				;take the position
+	jmp	setplayer					;bring him in
 .nodec								;not at the door yet: keep skating to temp3/temp4 (unless pfnc stops the
 									;skating)
-	btst	#pfnc,pflags(a3)
-	bne.s	.x
-	move.w	temp3(a3),d0
-	move.w	temp4(a3),d1
-	movea.l	#EvadePC,a0
-	bra.w	skateto
+	btst	#pfnc,pflags(a3)		;pfnc set?
+	bne.s	.x						;yes: done
+	move.w	temp3(a3),d0			;target x
+	move.w	temp4(a3),d1			;target y
+	movea.l	#EvadePC,a0				;path evasion routine
+	bra.w	skateto					;skate there
 .nobench							;same player: just take the new position, no bench trip
-	bclr	#pf2unav,pflags2(a3)
+	bclr	#pf2unav,pflags2(a3)	;clear pf2unav
 .nobench2							;local subroutine
 	move.b	newpos(a3),d0			;position = newpos; clear newpos and newpnum
-	ext.w	d0
-	move.w	d0,position(a3)
-	jsr	(Setplass).l
-	st	newpnum(a3)
-	st	newpos(a3)
+	ext.w	d0						;word
+	move.w	d0,position(a3)			;set the position
+	jsr	(Setplass).l				;set the player attributes
+	st	newpnum(a3)					;no new player number
+	st	newpos(a3)					;no new position
 rtss4								;shared rts for the early exits nearby
 	rts
 ; player a3 should exit bench area
 asseben								;Player a3 should exit the bench area
-	btst	#pfalock,pflags(a3)
-	bne.s	rtss4
-	bclr	#pfna,pflags(a3)
-	beq.w	.nna
-	clr.w	Xvel(a3)
-	clr.w	Yvel(a3)
-	move.w	SCnum(a3),d0
-	subq.w	#6,d0
-	bmi.w	.0
-	addq.w	#1,d0
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.s	rtss4					;yes: done
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.nna					;it was clear: skate out
+	clr.w	Xvel(a3)				;x velocity 0
+	clr.w	Yvel(a3)				;y velocity 0
+	move.w	SCnum(a3),d0			;d0 = SCnum
+	subq.w	#6,d0					;minus 6
+	bmi.w	.0						;negative: home
+	addq.w	#1,d0					;away: plus 1
 .0									;d0 = bench seat: home SCnum - 6 (negative), away SCnum - 5
-	muls.w	#$E,d0
-	move.w	d0,Ypos(a3)
-	move.w	#$88,(a3)
-	neg.w	(a3)
-	move.w	#2,facedir(a3)
-	bset	#pfalock,pflags(a3)
-	move.w	#SPAwallright,d1
-	bra.w	SetSPA
+	muls.w	#$E,d0					;times $E
+	move.w	d0,Ypos(a3)				;bench seat y
+	move.w	#$88,(a3)				;x $88
+	neg.w	(a3)					;negated
+	move.w	#2,facedir(a3)			;facing 2
+	bset	#pfalock,pflags(a3)		;set pfalock
+	move.w	#SPAwallright,d1		;wall animation
+	bra.w	SetSPA					;set it
 .nna								;wall animation over: face the rink and skate out
 	move.w	#4,facedir(a3)			;after the wall animation
-	bclr	#pfnc,pflags(a3)
+	bclr	#pfnc,pflags(a3)		;clear pfnc
 	bclr	#pf2npc,pflags2(a3)		;pf2npc
 	bclr	#pf2unav,pflags2(a3)	;pf2unav
-	clr.w	SPA(a3)
-	move.w	#$1000,Xvel(a3)
-	bra.w	assexit
+	clr.w	SPA(a3)					;animation 0
+	move.w	#$1000,Xvel(a3)			;x velocity $1000
+	bra.w	assexit					;exit
 ; player a3 should go to penalty box
 asspenalty							;player a3 should goto penalty box
 	btst	#pfalock,pflags(a3)
@@ -284,39 +284,39 @@ assdopen							;add player a3 to penalty box
 	rts								;done
 ; player a3 should exit penalty area
 assepen								;player a3 should exit penalty area
-	btst	#pfalock,pflags(a3)
-	bne.w	rtss4
-	bclr	#pfna,pflags(a3)
-	beq.w	.nna
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.w	rtss4					;yes: done
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.nna					;it was clear: skate out
 	bset	#pfnc,pflags(a3)		;set player in no collision mode
 	bset	#pf2unav,pflags2(a3)	;set player unavailable
-	moveq	#$10,d0
-	moveq	#$FFFFFFC4,d1
-	btst	#pfteam,pflags(a3)
-	beq.w	.0
-	moveq	#1,d0
-	neg.w	d1
+	moveq	#$10,d0					;d0 = $10
+	moveq	#$FFFFFFC4,d1			;d1 = -$3C
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.0						;home: keep
+	moveq	#1,d0					;d0 = 1
+	neg.w	d1						;negate d1
 .0									;leave the box
 	sub.b	d0,(PBnum).w			;Players in penalty box
-	move.w	d1,Ypos(a3)
-	clr.w	Xvel(a3)
-	clr.w	Yvel(a3)
-	move.w	#$86,(a3)
-	move.w	#2,facedir(a3)
-	bset	#pfalock,pflags(a3)
-	move.w	#SPAwallleft,d1
-	bsr.w	SetSPA
-	jmp	SprSort
+	move.w	d1,Ypos(a3)				;y
+	clr.w	Xvel(a3)				;x velocity 0
+	clr.w	Yvel(a3)				;y velocity 0
+	move.w	#$86,(a3)				;x $86
+	move.w	#2,facedir(a3)			;facing 2
+	bset	#pfalock,pflags(a3)		;set pfalock
+	move.w	#SPAwallleft,d1			;wall animation
+	bsr.w	SetSPA					;set it
+	jmp	SprSort						;sort the sprites
 .nna								;pfna was clear
-	move.w	#4,facedir(a3)
-	st	newpnum(a3)
-	st	newpos(a3)
-	bclr	#pfjoycon,pflags(a3)
-	bclr	#pfnc,pflags(a3)
+	move.w	#4,facedir(a3)			;facing 4
+	st	newpnum(a3)					;no new player number
+	st	newpos(a3)					;no new position
+	bclr	#pfjoycon,pflags(a3)	;clear pfjoycon
+	bclr	#pfnc,pflags(a3)		;clear pfnc
 	bclr	#pf2npc,pflags2(a3)		;pf2npc
 	bclr	#pf2unav,pflags2(a3)	;pf2unav
-	move.w	#$F000,Xvel(a3)
-	bra.w	assexit
+	move.w	#$F000,Xvel(a3)			;x velocity -$1000
+	bra.w	assexit					;exit
 ; moves the goalie not being used during shootout/pen shot off the screen
 ; a3 = goalie who is to be taken off ice
 assgoaliebreakwait					;asstab entry. In a shootout or penalty shot park the idle goalie off the
@@ -356,47 +356,47 @@ assfaceoff							;players do nothing until faceoff is over
 ; assignment for players actually participating in faceoff
 ; a3 = player
 assfaceoffpl						;Face off player
-	btst	#pfalock,pflags(a3)
-	bne.w	.exit2
-	btst	#sf2faceoff,(sflags2).w
-	beq.w	.exit
-	bclr	#pfna,pflags(a3)
-	beq.w	.nna
-	clr.w	temp1(a3)
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.w	.exit2					;yes: done
+	btst	#sf2faceoff,(sflags2).w	;faceoff (sf2faceoff)?
+	beq.w	.exit					;no: exit
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.nna					;it was clear: set the frame
+	clr.w	temp1(a3)				;temp1 0
 .nna								;every call: set the big faceoff sprite frame for this team
 	movea.l	#fofdata2,a0			;a0 = fofdata2 (home) or +4 (visitor): big faceoff sprite data
-	btst	#pfteam,pflags(a3)
-	beq.w	.0
-	addq.w	#4,a0
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.0						;home: keep
+	addq.w	#4,a0					;visitor entry
 .0									;a0 = this team's big sprite entry (visitor +4)
 	move.w	SPAnum(a3),d0			;d0 = SPAnum/4 + 1, +3 for right handed: frame code for the big sprite
-	lsr.w	#2,d0
-	addq.w	#1,d0
-	tst.b	handed(a3)
-	bne.w	.lefty
-	addq.w	#3,d0
+	lsr.w	#2,d0					;divided by 4
+	addq.w	#1,d0					;plus 1
+	tst.b	handed(a3)				;left handed?
+	bne.w	.lefty					;yes: keep
+	addq.w	#3,d0					;plus 3
 .lefty								;store the frame; computer players also start the faceoff stance once
-	move.w	d0,(a0)
-	btst	#pfjoycon,pflags(a3)
-	bne.w	.exit2
-	bset	#pf2aip,pflags2(a3)
-	bne.w	.exit2
-	move.w	#SPAfaceoff,d1
-	cmpi.w	#$10,(SortCords+(puckscnum*SCstruct)+temp1).w
-	bls.w	.d
-	moveq	#8,d0
-	bsr.w	randomd0
-	tst.w	d0
-	beq.w	.d
-	move.w	#SPAfaceoffr,d1
+	move.w	d0,(a0)					;store the frame
+	btst	#pfjoycon,pflags(a3)	;human controlled?
+	bne.w	.exit2					;yes: done
+	bset	#pf2aip,pflags2(a3)		;set pf2aip
+	bne.w	.exit2					;it was set: done
+	move.w	#SPAfaceoff,d1			;d1 = faceoff animation
+	cmpi.w	#$10,(SortCords+(puckscnum*SCstruct)+temp1).w	;puck temp1 above $10?
+	bls.w	.d						;no: use it
+	moveq	#8,d0					;range 8
+	bsr.w	randomd0				;random value
+	tst.w	d0						;zero?
+	beq.w	.d						;yes: use it
+	move.w	#SPAfaceoffr,d1			;alternate faceoff animation
 .d									;one in 8 computer centers takes the alternate stance (SPAfaceoffr)
-	bset	#pf2aip,pflags2(a3)
-	bra.w	SetSPA
+	bset	#pf2aip,pflags2(a3)		;set pf2aip
+	bra.w	SetSPA					;set the animation
 .exit								;shared exit of assfaceoffpl
-	move.b	#$14,nopuck(a3)
-	bra.w	assexit
+	move.b	#$14,nopuck(a3)			;nopuck $14
+	bra.w	assexit					;exit
 .exit2								;exit
-	rts
+	rts								;done
 assfight							;rts only: there is no fighting
 	rts								;assfight - possible location where fighting logic used to be
 assfwatch							;rts only: there is no fighting
@@ -411,82 +411,82 @@ donothing							;player should do nothing
 	bra.w	doplayeracc
 ; player skates with stanley cup overhead
 assstanley							;player a3 skates with stanley cup overhead
-	btst	#pfalock,pflags(a3)
-	bne.s	assfwatch
-	bclr	#pfna,pflags(a3)
-	beq.w	.nna
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.s	assfwatch				;yes: watch
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.nna					;it was clear: skate
 	move.w	#$5A,temp3(a3)			;90
-	tst.w	(Hpos).w
-	bpl.w	.0
-	neg.w	temp3(a3)
+	tst.w	(Hpos).w				;Hpos negative?
+	bpl.w	.0						;no: keep
+	neg.w	temp3(a3)				;negate temp3
 .0									;target Y from Vpos
 	move.w	(Vpos).w,temp4(a3)		;temp4 = y from Vpos
-	move.w	#SPAstanley,d1
-	bsr.w	SetSPA
+	move.w	#SPAstanley,d1			;stanley animation
+	bsr.w	SetSPA					;set it
 .nna								;skate toward the target
 	move.w	temp3(a3),d0			;face and accelerate toward the target
-	sub.w	(a3),d0
-	move.w	temp4(a3),d1
-	sub.w	Ypos(a3),d1
-	bsr.w	vtoa
-	cmp.w	#7,d0
-	bgt.s	assfwatch
-	move.w	d0,d2
-	move.w	d2,facedir(a3)
-	bra.w	playeracc
+	sub.w	(a3),d0					;minus x
+	move.w	temp4(a3),d1			;d1 = temp4
+	sub.w	Ypos(a3),d1				;minus y
+	bsr.w	vtoa					;direction
+	cmp.w	#7,d0					;beyond 7?
+	bgt.s	assfwatch				;yes: watch
+	move.w	d0,d2					;d2 = direction
+	move.w	d2,facedir(a3)			;facing
+	bra.w	playeracc				;accelerate
 ; player a3 celebrates, if scoreing player then do arm pump
 assscore							;player a3 celebrates, if scoring player then do arm pump
-	btst	#pfalock,pflags(a3)
-	bne.s	assfwatch
-	bclr	#pfna,pflags(a3)
-	beq.w	.nna
-	bsr.w	.1
-	move.w	#8,temp2(a3)
-	move.w	#$5A,temp3(a3)
-	tst.w	(Hpos).w
-	bpl.w	.0
-	neg.w	temp3(a3)
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.s	assfwatch				;yes: watch
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.nna					;it was clear: celebrate
+	bsr.w	.1						;random time
+	move.w	#8,temp2(a3)			;temp2 8
+	move.w	#$5A,temp3(a3)			;temp3 $5A
+	tst.w	(Hpos).w				;Hpos negative?
+	bpl.w	.0						;no: keep
+	neg.w	temp3(a3)				;negate temp3
 .0									;temp4 = Vpos; celebrate where the camera is
-	move.w	(Vpos).w,temp4(a3)
+	move.w	(Vpos).w,temp4(a3)		;temp4 = Vpos
 .nna								;every call: in a shootout hold the skater until shootoutdelay runs out
-	movea.l	#rtss2,a0
-	move.w	temp3(a3),d0
-	move.w	temp4(a3),d1
+	movea.l	#rtss2,a0				;a0 = rtss2
+	move.w	temp3(a3),d0			;d0 = temp3
+	move.w	temp4(a3),d1			;d1 = temp4
 	btst	#0,(gmode2).w			;start of new code
-	beq.w	.noso
-	tst.w	(shootoutdelay).w
-	beq.w	.chkx
-	subq.w	#1,(shootoutdelay).w
-	bne.w	.chkx
-	bset	#sf2drec,(sflags2).w
+	beq.w	.noso					;branch taken: skip
+	tst.w	(shootoutdelay).w		;shootout delay zero?
+	beq.w	.chkx					;yes: check x
+	subq.w	#1,(shootoutdelay).w	;count it down
+	bne.w	.chkx					;not zero: check x
+	bset	#sf2drec,(sflags2).w	;set sf2drec
 .chkx								;shootout: skater near the middle (x within -$88..$88) stays on the center
 									;line
-	cmpi.w	#$88,(a3)
-	bgt.w	.3
-	cmpi.w	#$FF78,(a3)
-	bgt.w	.noso
+	cmpi.w	#$88,(a3)				;x beyond $88?
+	bgt.w	.3						;yes: outside
+	cmpi.w	#$FF78,(a3)				;x beyond -$88?
+	bgt.w	.noso					;yes: celebrate
 .3									;outside that band: y = 0
 	clr.w	d1						;end of new code
 .noso								;celebration timer: when it runs out start a new celebrate (pump for the
 									;scorer)
-	sub.w	d7,temp1(a3)
-	bpl.w	.ckcon
-	bset	#pfalock,pflags(a3)
-	move.w	#SPAcelebrate,d1
-	move.w	(shotplayer).w,d0
-	cmp.w	SCnum(a3),d0
-	bne.w	.nopump
-	move.w	#SPApump,d1
+	sub.w	d7,temp1(a3)			;count temp1 down by d7
+	bpl.w	.ckcon					;still positive: continue
+	bset	#pfalock,pflags(a3)		;set pfalock
+	move.w	#SPAcelebrate,d1		;celebrate animation
+	move.w	(shotplayer).w,d0		;d0 = shot player
+	cmp.w	SCnum(a3),d0			;is it a3?
+	bne.w	.nopump					;no: celebrate
+	move.w	#SPApump,d1				;pump animation
 .nopump								;shooter or not: set the animation and a new random time
-	bsr.w	SetSPA
+	bsr.w	SetSPA					;set the animation
 .1									;local subroutine
 	moveq	#$78,d0					;120
-	bsr.w	randomd0
-	move.w	d0,temp1(a3)
-	rts
+	bsr.w	randomd0				;random value
+	move.w	d0,temp1(a3)			;new time
+	rts								;done
 .ckcon								;timer still running: computer players skate to the spot
-	btst	#pfjoycon,pflags(a3)
-	beq.w	skateto
+	btst	#pfjoycon,pflags(a3)	;human controlled?
+	beq.w	skateto					;no: skate
 rtss6								;shared rts for the early exits nearby
 	rts
 ; player a3 is defensive player on offense
