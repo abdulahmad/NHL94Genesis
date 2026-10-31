@@ -122,72 +122,72 @@ ClearSRAM							;Clears first $2000 of RAM and SaveRAM: zero M68K_RAM $0-$1FFF w
 									;$1FFE = $FF (the checksum of zeros), write it to
 									;the save RAM, set byte 1 to 1, then MakeSRAMChecksum. Called from
 									;InitSaveRAM
-	lea	(M68K_RAM).l,a0
-	move.w	#$1FFF,d0
-	clr.l	d1
+	lea	(M68K_RAM).l,a0				;a0 = RAM copy buffer
+	move.w	#$1FFF,d0				;$2000 bytes, as a dbf count
+	clr.l	d1						;fill value 0
 .loop								;clear each byte
-	move.b	d1,(a0)+
+	move.b	d1,(a0)+				;zero one byte
 	dbf	d0,.loop
-	move.b	#$FF,(sramcleared).l
-	moveq	#0,d0
-	move.l	#$2000,d1
-	movea.l	#M68K_RAM,a0
-	bsr.w	WriteSRAM
-	moveq	#1,d0
-	moveq	#1,d1
+	move.b	#$FF,(sramcleared).l	;$FF, the checksum of all zeros
+	moveq	#0,d0					;first save RAM byte 0
+	move.l	#$2000,d1				;$2000 bytes
+	movea.l	#M68K_RAM,a0			;from the RAM copy
+	bsr.w	WriteSRAM				;write all of it to save RAM
+	moveq	#1,d0					;save RAM byte 1
+	moveq	#1,d1					;one byte
 	move.b	#1,(M68K_RAM).l			;byte 0 of the RAM copy is written to save RAM byte 1
-	movea.l	#M68K_RAM,a0
-	bsr.w	WriteSRAM
-	bsr.w	MakeSRAMChecksum
-	rts
+	movea.l	#M68K_RAM,a0			;from the RAM copy (byte 0 = 1)
+	bsr.w	WriteSRAM				;write it
+	bsr.w	MakeSRAMChecksum		;put the checksum bytes in place
+	rts								;done
 WriteSRAM							;Write data from a0 into SaveRAM: d1 = number of bytes, d0 = first save
 									;RAM byte (each byte is the odd byte of a word at
 									;Called from ClearSRAM, MakeSRAMChecksum and the save code
 									;(ReadCrowdRecord ...)
-	movem.l	d0-d2/a0-a1,-(sp)
-	movea.l	#SaveRAM,a1
-	add.l	d0,d0
-	subq.l	#1,d1
-	clr.w	d2
+	movem.l	d0-d2/a0-a1,-(sp)		;save registers
+	movea.l	#SaveRAM,a1				;a1 = save RAM
+	add.l	d0,d0					;word offset = byte number * 2 (one byte per word)
+	subq.l	#1,d1					;dbf count
+	clr.w	d2						;d2 high byte stays 0
 .loop								;write each byte
-	move.b	(a0)+,d2
-	move.w	d2,0(a1,d0.w)
-	addq.w	#2,d0
+	move.b	(a0)+,d2				;next byte to write
+	move.w	d2,0(a1,d0.w)			;store it as a word
+	addq.w	#2,d0					;next word
 	dbf	d1,.loop
-	movem.l	(sp)+,d0-d2/a0-a1
-	rts
+	movem.l	(sp)+,d0-d2/a0-a1		;restore registers
+	rts								;done
 MakeSRAMChecksum					;Read the whole save RAM to M68K_RAM, put the sum of bytes 0-$1FFD in byte
 									;$1FFF and its complement in byte $1FFE
 									;and write those two bytes back. Called from ClearSRAM and the save code
 									;(UpdateRecords ...)
-	lea	(M68K_RAM).l,a0
-	move.l	#$2000,d1
-	clr.l	d0
-	bsr.w	ReadSRAM
-	lea	(M68K_RAM).l,a0
-	clr.w	d0
-	move.w	#$1FFD,d1
+	lea	(M68K_RAM).l,a0				;a0 = RAM copy buffer
+	move.l	#$2000,d1				;$2000 bytes
+	clr.l	d0						;from save RAM byte 0
+	bsr.w	ReadSRAM				;read the whole save RAM
+	lea	(M68K_RAM).l,a0				;start of the copy again
+	clr.w	d0						;d0 = sum
+	move.w	#$1FFD,d1				;dbf count for bytes 0 to $1FFD
 .loop								;sum each byte
-	add.b	(a0)+,d0
+	add.b	(a0)+,d0				;add each byte to the sum
 	dbf	d1,.loop
-	move.b	d0,1(a0)
-	not.w	d0
-	move.b	d0,(a0)
-	movea.l	#sramcleared,a0
-	moveq	#2,d1
-	move.l	#$1FFE,d0
-	bsr.s	WriteSRAM
-	rts
+	move.b	d0,1(a0)				;sum goes to save RAM byte $1FFF (a0 is at byte $1FFE here)
+	not.w	d0						;complement of the sum
+	move.b	d0,(a0)					;complement goes to byte $1FFE
+	movea.l	#sramcleared,a0			;the two checksum bytes
+	moveq	#2,d1					;two bytes
+	move.l	#$1FFE,d0				;save RAM byte $1FFE
+	bsr.s	WriteSRAM				;write them back
+	rts								;done
 ReadSRAM							;Copy d1 save RAM bytes from byte d0 (the odd bytes + d0 * 2) to (a0)+.
 									;Called from InitSaveRAM, MakeSRAMChecksum and the save code
-	movem.l	d0-d2/a0-a1,-(sp)
-	movea.l	#SaveRAM,a1
-	add.l	d0,d0
-	subq.l	#1,d1
+	movem.l	d0-d2/a0-a1,-(sp)		;save registers
+	movea.l	#SaveRAM,a1				;a1 = save RAM
+	add.l	d0,d0					;word offset = byte number * 2
+	subq.l	#1,d1					;dbf count
 .loop								;copy each byte
-	move.b	1(a1,d0.w),d2
-	move.b	d2,(a0)+
-	addq.w	#2,d0
+	move.b	1(a1,d0.w),d2			;odd byte of the word
+	move.b	d2,(a0)+				;store it in the buffer
+	addq.w	#2,d0					;next word
 	dbf	d1,.loop
-	movem.l	(sp)+,d0-d2/a0-a1
-	rts
+	movem.l	(sp)+,d0-d2/a0-a1		;restore registers
+	rts								;done
