@@ -37,39 +37,39 @@ Begin								;cold start, entered from Start. Clear RAM, init sound and menus, g
 	jmp	Opening						;goto title screen and options etc.
 
 StartGame							;reset game state for a new game, then start the first period
-	st	(arenaanim).w				;arenaanim -1
-	clr.l	(homepresses).w			;clear home presses
-	clr.l	(awaypresses).w			;clear away presses
-	clr.l	(homedirpresses).w		;clear home direction presses
-	clr.l	(awaydirpresses).w		;clear away direction presses
+	st	(arenaanim).w
+	clr.l	(homepresses).w
+	clr.l	(awaypresses).w
+	clr.l	(homedirpresses).w
+	clr.l	(awaydirpresses).w
 	jsr	(ReadJoy1).l				;pad 1 = $E0 at game start forces 30 second periods
-	cmp.b	#$E0,d3					;d3 = $E0?
-	bne.w	.chkpen					;no: penalty check
+	cmp.b	#$E0,d3
+	bne.w	.chkpen
 	move.w	#3,(Optperlen).w		;period length index 3 = 30 seconds
 .chkpen	clr.b	(gmode).w			;clear the game mode
-	cmpi.w	#1,(OptPen).w			;OptPen 1?
-	bne.w	.0						;no: continue
+	cmpi.w	#1,(OptPen).w
+	bne.w	.0
 	bset	#gmoffs,(gmode).w		;gmoffs: offsides pen. is active
 .0	cmpi.w	#1,(OptPlayMode).w		;OptPlayMode test (shot buffer)
 	ble.w	.1						;OptPlayMode 0-1 keep the shot buffer
-	bsr.w	ClearShotData			;clear the shot data
+	bsr.w	ClearShotData
 .1	jsr	(clearTeamStats).l			;reset team stats
-	btst	#0,(gmode2).w			;gmode2 bit 0 set?
-	beq.w	.noso					;no: no shootout
-	move.l	a0,-(sp)				;keep a0
-	movea.l	#tmstruct,a0			;a0 = home team structure
-	jsr	(Create_HotCold_Table).l	;create the hot/cold table
-	movea.l	#awtmstruct,a0			;a0 = away team structure
-	jsr	(Create_HotCold_Table).l	;create the hot/cold table
-	movea.l	(sp)+,a0				;restore a0
+	btst	#0,(gmode2).w
+	beq.w	.noso
+	move.l	a0,-(sp)
+	movea.l	#tmstruct,a0
+	jsr	(Create_HotCold_Table).l
+	movea.l	#awtmstruct,a0
+	jsr	(Create_HotCold_Table).l
+	movea.l	(sp)+,a0
 .noso	clr.w	(ScoreSumbytes).w	;no shootout: clear the summaries
-	clr.w	(PenSumLength).w		;PenSumLength 0
+	clr.w	(PenSumLength).w
 	clr.w	(gsp).w					;first period
-	clr.w	(ChkCnt).w				;ChkCnt 0
-	bsr.w	restoreteams			;restore the teams
-	jsr	(InitScores).l				;init the scores
-	jsr	(setupice).l				;set up the ice
-	jsr	(LoadCrowdRec).l			;load the crowd record
+	clr.w	(ChkCnt).w
+	bsr.w	restoreteams
+	jsr	(InitScores).l
+	jsr	(setupice).l
+	jsr	(LoadCrowdRec).l
 	jmp	PeriodOver_sp				;on to period start
 
 ClearShotData						;Clear $E4 words of outputbuffer
@@ -169,42 +169,42 @@ Gameloop							;Main loop for game
 	bra.s	Gameloop
 
 DoGameFrame							;wait for at least one vblank, then run one frame of game logic
-	move.w	(Vcount).w,d7			;d7 = Vcount
+	move.w	(Vcount).w,d7
 	sub.w	(OldVcount).w,d7		;number of frames since last loop
-	beq.s	DoGameFrame				;same as OldVcount: wait
-	move.w	(Vcount).w,(OldVcount).w	;OldVcount = Vcount
-	bsr.w	periodicevents			;periodic events
+	beq.s	DoGameFrame
+	move.w	(Vcount).w,(OldVcount).w
+	bsr.w	periodicevents
 	bsr.w	updateplayers			;apply velocity and check collisions
 	tst.w	(songdelay).w			;delayed song countdown
-	beq.w	.nosong					;branch taken: no song
-	bmi.w	.nosong					;branch taken: no song
-	subq.w	#1,(songdelay).w		;count the song delay down
-	bne.w	.nosong					;not out: no song
-	jsr	(stop_current_song).l		;stop the current song
-	move.w	(delayedsong).w,-(sp)	;keep the delayed song
-	jsr	(song).l					;play it
+	beq.w	.nosong
+	bmi.w	.nosong
+	subq.w	#1,(songdelay).w
+	bne.w	.nosong
+	jsr	(stop_current_song).l
+	move.w	(delayedsong).w,-(sp)
+	jsr	(song).l
 .nosong	jsr	(setSlotBit).l
-	bsr.w	checkwindow				;update the scroll window
-	bsr.w	updatereplay			;update the replay
-	jmp	setvideo					;set the video
+	bsr.w	checkwindow
+	bsr.w	updatereplay
+	jmp	setvideo
 
 periodicevents						;Called every time thru game loop with d7 = elapsed frames
-	jsr	(PenaltyManager).l			;penalty manager
-	bsr.w	updatecrowdf			;update the crowd frame
-	jsr	(RunArenaAnim).l			;run the arena animation
-	jsr	(updatesound).l				;update the sound
-	bsr.w	clockcont				;clock continue
+	jsr	(PenaltyManager).l
+	bsr.w	updatecrowdf
+	jsr	(RunArenaAnim).l
+	jsr	(updatesound).l
+	bsr.w	clockcont
 	btst	#sfhor,(sflags).w		;sfhor
 	bne.w	rtss8					;exit if in horizontal mode
 	sub.w	d7,(lldisp).w			;count down for screen updates
-	bpl.w	rtss8					;branch taken: done
+	bpl.w	rtss8
 	addi.w	#jps,(lldisp).w			;jps: only update once per second
-	bsr.w	ChkGoalies				;check the goalies
-	bsr.w	UpdateCwdExcite			;update the crowd excitement
-	bsr.w	CheckLateGameSong		;late game song check
-	bsr.w	RestoreBenchEnergy		;restore the bench energy
-	bsr.w	CheckInjury				;check injuries
-	jmp	updatepwrplay				;update the power play
+	bsr.w	ChkGoalies
+	bsr.w	UpdateCwdExcite
+	bsr.w	CheckLateGameSong
+	bsr.w	RestoreBenchEnergy
+	bsr.w	CheckInjury
+	jmp	updatepwrplay
 
 CheckInjury							;Called once per second. Count down InjCntDown, act on it at zero
 	subq.w	#1,(InjCntDown).w
@@ -232,18 +232,18 @@ RestoreBenchEnergy					;Called once per second. Restore energy for players on th
 CheckLateGameSong					;Called once per second. 3rd period: choose and play a song once at the
 									;random trigger time set by ResetClock
 	cmpi.w	#2,(gsp).w				;3rd period only
-	bne.w	.x						;branch taken: not the 3rd period, exit
+	bne.w	.x
 	btst	#gmhl,(gmode).w
-	bne.w	.x						;branch taken: gmhl bit set, exit
-	move.w	(gameclock).w,d0		;d0 = gameclock
-	cmp.w	(periodendtime).w,d0	;compare to periodendtime
+	bne.w	.x
+	move.w	(gameclock).w,d0
+	cmp.w	(periodendtime).w,d0
 	bgt.w	.x						;not there yet
 	st	(periodendtime).w			;high byte $FF: trigger goes negative, fires once
-	move.w	(HomeTeam).w,(HmTeam).w	;set HmTeam from HomeTeam
-	move.w	#SngLateGame,(SongIndex).w	;SongIndex = SngLateGame
-	jsr	(ChooseSong).l				;choose the song
-	move.w	(SongNum).w,-(sp)		;push SongNum
-	jsr	(song).l					;play the song
+	move.w	(HomeTeam).w,(HmTeam).w
+	move.w	#SngLateGame,(SongIndex).w
+	jsr	(ChooseSong).l
+	move.w	(SongNum).w,-(sp)
+	jsr	(song).l
 .x	rts								;exit (also the end of the code above)
 
 UpdateCwdExcite						;called once per second. Track peak and running total of crowd excitement,
@@ -373,26 +373,26 @@ clockcont_0							;End of period. Also entered from puckfaceoff
 	jmp	AddPenalty2
 
 demoread							;monitor joystick if in demo mode (called every game loop)
-	tst.w	(cont1team).w			;controller 1 on a team?
+	tst.w	(cont1team).w
 	bne.w	rtss8					;not demo
-	tst.w	(cont2team).w			;controller 2 on a team?
+	tst.w	(cont2team).w
 	bne.w	rtss8					;not demo
-	jsr	(ReadJoy1).l				;read pad 1
+	jsr	(ReadJoy1).l
 	btst	#sbut,d1				;Start?
 	bne.w	startpause1				;start on pad 1 pauses
-	bsr.w	EndDemoOnPress			;end the demo on a press
-	jsr	(ReadJoy2).l				;read pad 2
-	btst	#7,d1					;START pressed?
-	bne.w	startpause2				;yes: pause for pad 2
+	bsr.w	EndDemoOnPress
+	jsr	(ReadJoy2).l
+	btst	#7,d1
+	bne.w	startpause2
 	tst.w	(FourWayPlay).w			;pads 3 and 4 on the 4 way play adapter
-	beq.w	EndDemoOnPress			;branch taken: end the demo on a press
-	jsr	(ReadJoy3).l				;read pad 3
-	btst	#7,d1					;START pressed?
-	bne.w	startpause3				;yes: pause for pad 3
-	bsr.w	EndDemoOnPress			;end the demo on a press
-	jsr	(ReadJoy4).l				;read pad 4
-	btst	#7,d1					;START pressed?
-	bne.w	startpause4				;yes: pause for pad 4
+	beq.w	EndDemoOnPress
+	jsr	(ReadJoy3).l
+	btst	#7,d1
+	bne.w	startpause3
+	bsr.w	EndDemoOnPress
+	jsr	(ReadJoy4).l
+	btst	#7,d1
+	bne.w	startpause4
 	;falls into EndDemoOnPress with pad 4 in d1
 
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo

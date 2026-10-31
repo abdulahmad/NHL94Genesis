@@ -79,28 +79,28 @@ Opcode_CopyLiteral					;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
 	rts
 Opcode_ClearBytes					;opcode 2, write (low 4 bits)+1 zero bytes
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	andi.w	#$F,d0					;keep the low 4 bits
+	andi.w	#$F,d0
 .loop								;clear each byte
-	clr.b	0(a1,d1.w)				;clear the next byte
-	addq.b	#1,d1					;advance the buffer offset
-	bne.w	.next					;branch taken: offset did not wrap
+	clr.b	0(a1,d1.w)
+	addq.b	#1,d1
+	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
 .next								;loop the run
-	dbf	d0,.loop					;loop for the run
-	rts								;return
+	dbf	d0,.loop
+	rts
 Opcode_FillBytes					;opcode 3, write the next data byte (low 4 bits)+3 times
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	andi.w	#$F,d0					;keep the low 4 bits
-	addq.w	#2,d0					;count plus 2 for the loop
-	move.b	(a0)+,d2				;d2 = fill byte
+	andi.w	#$F,d0
+	addq.w	#2,d0
+	move.b	(a0)+,d2
 .loop								;write each byte
-	move.b	d2,0(a1,d1.w)			;write the fill byte
-	addq.b	#1,d1					;advance the buffer offset
-	bne.w	.next					;branch taken: offset did not wrap
+	move.b	d2,0(a1,d1.w)
+	addq.b	#1,d1
+	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
 .next								;loop the run
-	dbf	d0,.loop					;loop for the run
-	rts								;return
+	dbf	d0,.loop
+	rts
 Opcode_CopyBackwardShort			;opcodes 4-7, copy from back in the output buffer
 	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#7,d0
@@ -110,17 +110,17 @@ Opcode_CopyBackwardShort			;opcodes 4-7, copy from back in the output buffer
 	andi.w	#7,d2
 	addq.w	#1,d2					;distance
 CopyBackwardRun						;shared copy loop, d0 = count-1, d2 = distance back
-	neg.b	d2						;negate the distance
+	neg.b	d2
 	add.b	d1,d2					;source offset in the ring buffer
 .loop								;copy each byte
-	move.b	0(a1,d2.w),0(a1,d1.w)	;copy one byte
-	addq.b	#1,d2					;advance the source offset
-	addq.b	#1,d1					;advance the buffer offset
-	bne.w	.next					;branch taken: offset did not wrap
+	move.b	0(a1,d2.w),0(a1,d1.w)
+	addq.b	#1,d2
+	addq.b	#1,d1
+	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
 .next								;loop the run
-	dbf	d0,.loop					;loop for the run
-	rts								;return
+	dbf	d0,.loop
+	rts
 Opcode_CopyBackwardMedium			;opcode 8
 	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$F,d0
@@ -128,58 +128,58 @@ Opcode_CopyBackwardMedium			;opcode 8
 	move.b	(a0)+,d2
 	bra.s	CopyBackwardRun
 Opcode_CopyBackwardLong				;opcode 9
-	move.b	(a0),d0					;d0 = next byte
+	move.b	(a0),d0
 	asl.b	#1,d0					;x = bit 7 of the next byte
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	roxl.b	#1,d0					;rotate bit 7 into the count
-	andi.w	#$1F,d0					;keep 5 bits
-	addq.w	#2,d0					;count plus 2 for the loop
-	move.b	(a0)+,d2				;d2 = next byte
-	andi.w	#$7F,d2					;keep 7 bits
-	addq.w	#1,d2					;distance plus 1
-	bra.s	CopyBackwardRun			;go to the shared copy loop
+	roxl.b	#1,d0
+	andi.w	#$1F,d0
+	addq.w	#2,d0
+	move.b	(a0)+,d2
+	andi.w	#$7F,d2
+	addq.w	#1,d2
+	bra.s	CopyBackwardRun
 Opcode_CopyBackwardExtended1		;opcode A
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	asl.w	#8,d0					;first byte to the high half
-	move.b	(a0),d0					;second byte as the low half
-	lsr.w	#6,d0					;shift down 6
-	andi.w	#$3F,d0					;mask 6 bits
-	addq.w	#2,d0					;plus 2: copy distance
-	move.b	(a0)+,d2				;second byte again, advance
-	andi.w	#$3F,d2					;mask 6 bits
-	addq.w	#1,d2					;plus 1: run length
-	bra.s	CopyBackwardRun			;copy the run
+	asl.w	#8,d0
+	move.b	(a0),d0
+	lsr.w	#6,d0
+	andi.w	#$3F,d0
+	addq.w	#2,d0
+	move.b	(a0)+,d2
+	andi.w	#$3F,d2
+	addq.w	#1,d2
+	bra.s	CopyBackwardRun
 Opcode_CopyBackwardExtended2		;opcode B
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	asl.w	#8,d0					;first byte to the high half
-	move.b	(a0),d0					;second byte as the low half
-	lsr.w	#5,d0					;shift down 5
-	andi.w	#$7F,d0					;mask 7 bits
-	addq.w	#2,d0					;plus 2: copy distance
-	move.b	(a0)+,d2				;second byte again, advance
-	andi.w	#$1F,d2					;mask 5 bits
-	addq.w	#1,d2					;plus 1: run length
-	bra.s	CopyBackwardRun			;copy the run
+	asl.w	#8,d0
+	move.b	(a0),d0
+	lsr.w	#5,d0
+	andi.w	#$7F,d0
+	addq.w	#2,d0
+	move.b	(a0)+,d2
+	andi.w	#$1F,d2
+	addq.w	#1,d2
+	bra.s	CopyBackwardRun
 Opcode_CopyBackwardReverseShort		;opcodes C-D, copy backwards through the source
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	andi.w	#3,d0					;keep the low 2 bits
-	addq.w	#1,d0					;count plus 1
+	andi.w	#3,d0
+	addq.w	#1,d0
 	move.b	-1(a0),d2				;step back to the opcode byte just read
-	lsr.w	#2,d2					;shift right 2
-	andi.w	#7,d2					;keep 3 bits
-	addq.w	#1,d2					;distance plus 1
+	lsr.w	#2,d2
+	andi.w	#7,d2
+	addq.w	#1,d2
 CopyBackwardReverseRun				;shared reverse copy loop
-	neg.b	d2						;negate the distance
-	add.b	d1,d2					;plus the position
+	neg.b	d2
+	add.b	d1,d2
 .loop								;copy each byte, reversed
-	move.b	0(a1,d2.w),0(a1,d1.w)	;copy one byte from behind, reversed
-	subq.b	#1,d2					;source goes back
-	addq.b	#1,d1					;destination goes on
-	bne.w	.next					;not wrapped: loop
+	move.b	0(a1,d2.w),0(a1,d1.w)
+	subq.b	#1,d2
+	addq.b	#1,d1
+	bne.w	.next
 	bsr.w	FlushOutputBuffer		;buffer full
 .next								;loop the run
-	dbf	d0,.loop					;loop for the run
-	rts								;done
+	dbf	d0,.loop
+	rts
 Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
 	move.b	-1(a0),d0				;step back to the opcode byte just read
 	andi.w	#$F,d0
@@ -194,34 +194,34 @@ Opcode_CopyBackwardReverseMedium	;opcode E. Distance 0 is the end code
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
 Opcode_CopyBackwardReverseLong		;opcode F
-	move.b	(a0),d0					;next byte
-	asl.b	#1,d0					;shift left, top bit to carry
+	move.b	(a0),d0
+	asl.b	#1,d0
 	move.b	-1(a0),d0				;step back to the opcode byte just read
-	roxl.b	#1,d0					;rotate the carry in
-	andi.w	#$1F,d0					;keep 5 bits
-	addq.w	#2,d0					;plus 2: copy distance
-	move.b	(a0)+,d2				;byte again, advance
-	andi.w	#$7F,d2					;mask 7 bits
-	addq.w	#1,d2					;plus 1: run length
-	bra.s	CopyBackwardReverseRun	;copy the run reversed
+	roxl.b	#1,d0
+	andi.w	#$1F,d0
+	addq.w	#2,d0
+	move.b	(a0)+,d2
+	andi.w	#$7F,d2
+	addq.w	#1,d2
+	bra.s	CopyBackwardReverseRun
 FlushOutputBuffer					;Write d1 bytes (0 = 256) of the ring buffer to vram d3, advance d3
 	movem.l	d0-d1/a0-a1,-(sp)
-	move.w	d1,d0					;d0 = byte count
-	bne.w	.size					;branch taken: nonzero count
+	move.w	d1,d0
+	bne.w	.size
 	move.w	#$100,d0				;full buffer
 .size								;byte count
 	lsr.w	#1,d0					;bytes to words
 	move.w	d3,d1					;vram address
-	add.w	d0,d3					;advance d3 by the words
-	add.w	d0,d3					;advance d3 by the words again
-	movea.l	a1,a0					;a0 = ring buffer
-	tst.l	(a4)					;test the remap table pointer
-	beq.w	.dma					;branch taken: no remap table
+	add.w	d0,d3
+	add.w	d0,d3
+	movea.l	a1,a0
+	tst.l	(a4)
+	beq.w	.dma
 	movea.l	(a4),a1					;remap table
 	jsr	(a5)						;remap
-	bra.w	.done					;exit
+	bra.w	.done
 .dma								;a4 = 0
-	jsr	(a6)						;call the transfer routine
+	jsr	(a6)
 .done								;exit: restore the registers
-	movem.l	(sp)+,d0-d1/a0-a1		;restore registers
-	rts								;return
+	movem.l	(sp)+,d0-d1/a0-a1
+	rts

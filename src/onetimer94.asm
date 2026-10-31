@@ -56,115 +56,115 @@ puckvzadj							;set puckvz for a top shelf shot from the distance to the goal l
 OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy
 									;toward the target onetimertargetx / onetimertargety in puckvz / 3 frames;
 									;flip the puck (puckflip, a3 = the puck at puckx). Called from passmode
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	move.w	#$C,d0					;12
-	move.w	(onetimerheight).w,d1	;d1 = onetimerheight
-	mulu.w	d1,d0					;12 * height
-	swap	d0						;result to the high word
-	andi.l	#$FFFF0000,d0			;keep only the high word
-	jsr	(Sroot).l					;square root
-	move.w	d0,(puckvz).w			;vertical speed puckvz
-	ext.l	d0						;long
-	move.w	#3,d4					;divisor 3
-	divu.w	d4,d0					;puckvz / 3 = frames to the target
-	clr.l	d1						;d1 = 0
-	move.w	(onetimertargetx).w,d1	;target x
-	sub.w	(puckx).w,d1			;minus puck x
-	swap	d1						;distance in the high word
-	tst.w	d0						;frames zero?
-	bne.w	.setv					;no: use them
-	move.w	#1,d0					;at least 1 frame
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	#$C,d0
+	move.w	(onetimerheight).w,d1
+	mulu.w	d1,d0
+	swap	d0
+	andi.l	#$FFFF0000,d0
+	jsr	(Sroot).l
+	move.w	d0,(puckvz).w
+	ext.l	d0
+	move.w	#3,d4
+	divu.w	d4,d0
+	clr.l	d1
+	move.w	(onetimertargetx).w,d1
+	sub.w	(puckx).w,d1
+	swap	d1
+	tst.w	d0
+	bne.w	.setv
+	move.w	#1,d0
 .setv								;at least 1
-	divs.w	d0,d1					;x speed = distance / frames
-	move.w	d1,(puckvx).w			;puckvx
-	clr.l	d1						;d1 = 0
-	move.w	(onetimertargety).w,d1	;target y
-	sub.w	(pucky).w,d1			;minus puck y
-	swap	d1						;distance in the high word
-	divs.w	d0,d1					;y speed = distance / frames
-	move.w	d1,(puckvy).w			;puckvy
-	movea.l	#puckx,a3				;a3 = the puck
-	move.w	(puckvz).w,d0			;d0 = puckvz
-	jsr	(puckflip).l				;flip the puck
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	divs.w	d0,d1
+	move.w	d1,(puckvx).w
+	clr.l	d1
+	move.w	(onetimertargety).w,d1
+	sub.w	(pucky).w,d1
+	swap	d1
+	divs.w	d0,d1
+	move.w	d1,(puckvy).w
+	movea.l	#puckx,a3
+	move.w	(puckvz).w,d0
+	jsr	(puckflip).l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing from
 									;OneTimerNearTbl / OneTimerFarTbl (skater, near or far from the goal) or
 									;OneTimerGoalieTbl (goalie), +-10 at random, into onetimertargetx /
 									;onetimertargety; sflags6 bit 2 = near. Called from passmode
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	bclr	#2,(sflags6).w			;clear the near flag
-	tst.w	position(a3)			;goalie?
-	bne.w	.skater					;no: skater
-	movea.l	#OneTimerGoalieTbl,a0	;goalie table
-	bra.w	.facing					;pick the facing offset
+	movem.l	d0-d7/a0-a6,-(sp)
+	bclr	#2,(sflags6).w
+	tst.w	position(a3)
+	bne.w	.skater
+	movea.l	#OneTimerGoalieTbl,a0
+	bra.w	.facing
 .skater								;a skater
-	move.w	Ypos(a3),d0				;d0 = his y
-	btst	#pfgoal,pflags(a3)		;facing his own goal end?
-	bne.w	.near					;yes: keep the sign
-	neg.w	d0						;else flip it
+	move.w	Ypos(a3),d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.near
+	neg.w	d0
 .near								;distance from his goal line
-	bset	#2,(sflags6).w			;set the near flag
-	movea.l	#OneTimerNearTbl,a0		;near table
-	cmp.w	#$58,d0					;distance $58 or more?
-	blt.w	.facing					;no: near
-	movea.l	#OneTimerFarTbl,a0		;far table
-	bclr	#2,(sflags6).w			;clear the near flag
+	bset	#2,(sflags6).w
+	movea.l	#OneTimerNearTbl,a0
+	cmp.w	#$58,d0
+	blt.w	.facing
+	movea.l	#OneTimerFarTbl,a0
+	bclr	#2,(sflags6).w
 .facing								;table chosen
-	move.w	facedir(a3),d0			;d0 = facing direction
-	btst	#pfgoal,pflags(a3)		;facing his own goal end?
-	bne.w	.offset					;yes: keep it
-	addq.w	#4,d0					;opposite direction
-	andi.w	#7,d0					;0 to 7
+	move.w	facedir(a3),d0
+	btst	#pfgoal,pflags(a3)
+	bne.w	.offset
+	addq.w	#4,d0
+	andi.w	#7,d0
 .offset								;direction for his end
-	asl.w	#2,d0					;times 4: table entry
-	move.w	0(a0,d0.w),d1			;x offset from the table
-	move.w	2(a0,d0.w),d2			;y offset from the table
-	cmpa.l	#OneTimerFarTbl,a0		;far table?
-	bne.w	.side					;no: sides done
-	move.w	Ypos(a3),d0				;d0 = his y
-	bpl.w	.chky					;positive: keep
-	neg.w	d0						;absolute value
+	asl.w	#2,d0
+	move.w	0(a0,d0.w),d1
+	move.w	2(a0,d0.w),d2
+	cmpa.l	#OneTimerFarTbl,a0
+	bne.w	.side
+	move.w	Ypos(a3),d0
+	bpl.w	.chky
+	neg.w	d0
 .chky								;|Ypos|
-	cmp.w	#$8A,d0					;y beyond $8A?
-	blt.w	.side					;yes: sides done
-	move.w	(a3),d0					;d0 = his x
-	bpl.w	.chkx					;positive: keep
-	neg.w	d0						;absolute value
+	cmp.w	#$8A,d0
+	blt.w	.side
+	move.w	(a3),d0
+	bpl.w	.chkx
+	neg.w	d0
 .chkx								;|Xpos|
-	cmp.w	#$37,d0					;x beyond $37?
-	bgt.w	.side					;yes: sides done
-	move.w	#$103,d2				;target y $103
+	cmp.w	#$37,d0
+	bgt.w	.side
+	move.w	#$103,d2
 .side								;side check
-	btst	#pfgoal,pflags(a3)		;facing his own goal end?
-	bne.w	.rand					;yes: keep the signs
-	neg.w	d1						;flip x offset
-	neg.w	d2						;flip y offset
+	btst	#pfgoal,pflags(a3)
+	bne.w	.rand
+	neg.w	d1
+	neg.w	d2
 .rand								;random offset to the target
-	move.w	#$A,d0					;random range $A
-	jsr	(randomd0).l				;random value
-	add.w	d0,d1					;add to x offset
-	move.w	#$A,d0					;random range $A
-	jsr	(randomd0).l				;random value
-	add.w	d0,d2					;add to y offset
-	move.w	d1,(onetimertargetx).w	;target x
-	tst.w	position(a3)			;goalie?
-	beq.w	.sety					;yes: y only
-	sub.w	(a3),d1					;offset minus his x
-	bmi.w	.left					;left of him: other case
-	subi.w	#$3C,d1					;minus $3C
-	bpl.w	.sety					;still positive: y only
-	neg.w	d1						;negate
-	add.w	d1,(onetimertargetx).w	;move the target x
-	bra.w	.sety					;y only
+	move.w	#$A,d0
+	jsr	(randomd0).l
+	add.w	d0,d1
+	move.w	#$A,d0
+	jsr	(randomd0).l
+	add.w	d0,d2
+	move.w	d1,(onetimertargetx).w
+	tst.w	position(a3)
+	beq.w	.sety
+	sub.w	(a3),d1
+	bmi.w	.left
+	subi.w	#$3C,d1
+	bpl.w	.sety
+	neg.w	d1
+	add.w	d1,(onetimertargetx).w
+	bra.w	.sety
 .left								;d1 negative
-	addi.w	#$3C,d1					;plus $3C
-	bmi.w	.sety					;still negative: y only
-	sub.w	d1,(onetimertargetx).w	;move the target x
+	addi.w	#$3C,d1
+	bmi.w	.sety
+	sub.w	d1,(onetimertargetx).w
 .sety								;target Y set
-	move.w	d2,(onetimertargety).w	;target y
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	move.w	d2,(onetimertargety).w
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 OneTimerNearTbl						;OneTimerTarget target offsets (x, y) by facing, receiver near the goal
 	dc.w	$74,$C2,$74,$C2,$74,$C2,$74,$C2
 	dc.w	$FF8C,$C2,$FF8C,$C2,$FF8C,$C2,$FF8C,$C2
@@ -399,15 +399,15 @@ setonetimeranim						;the one-timer animation: d1 = SPAshotf or SPAshotb from th
 	rts
 PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 shoots at, else
 									;0 (the code after the bra is never used). Called from doinput and
-	movem.w	d0-d1,-(sp)				;save d0-d1
-	move.w	(pucky).w,d0			;d0 = puck Y
+	movem.w	d0-d1,-(sp)
+	move.w	(pucky).w,d0
 	btst	#pfgoal,pflags(a3)		;pfgoal - check which goal shooting at
 	bne.w	.cont					;branch if top goal
-	neg.w	d0						;negate d0
+	neg.w	d0
 .cont								;puck Y for his end
 	tst.w	d0						;check if d0 is 0
 	bpl.w	.plus					;branch if higher
-	bra.w	.minus					;go to .minus
+	bra.w	.minus
 	move.w	(passdir).w,d0			;code never used from here up to .minus
 	addq.w	#4,d0
 	andi.w	#7,d0
@@ -431,13 +431,13 @@ PuckOnAttackHalf					;d0 = 1 when the puck is on the half of the goal player a3 
 	andi.w	#7,d1
 	beq.w	.plus
 .minus								;turn the other way
-	move.w	#0,d0					;d0 = 0
-	bra.w	.ex						;exit
+	move.w	#0,d0
+	bra.w	.ex
 .plus								;turn this way
-	move.w	#1,d0					;d0 = 1
+	move.w	#1,d0
 .ex									;exit: restore the registers
-	movem.w	(sp)+,d0-d1				;restore d0-d1
-	rts								;return
+	movem.w	(sp)+,d0-d1
+	rts
 onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
 									;assists, add to Crowdlevel /
 									;CwdExciteLvl and to the one-timer attempts (tmOneTimers).

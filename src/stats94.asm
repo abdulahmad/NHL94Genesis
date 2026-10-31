@@ -76,15 +76,15 @@ UpdateScoresScroll					;Called every frame by ShowScores: add PlayerScrollCtr to
 	bsr.w	DrawScrollArrows
 	clr.w	(PlayerScrollCtr).w
 UpdateVertScrollReg					;VSRAM word 1 = VertLineScrolling - $30
-	move.w	(disflags).w,-(sp)		;save disflags
+	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;don't int graphics
 	movea.l	#Vdata,a0				;a0 = VDP data port
-	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;set VSRAM write address 2
-	move.w	#$FFD0,d0				;d0 = -$30
-	add.w	(VertLineScrolling).w,d0	;add the scroll value
-	move.w	d0,(a0)					;write to VSRAM
-	move.w	(sp)+,(disflags).w		;restore disflags
-	rts								;return
+	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)
+	move.w	#$FFD0,d0
+	add.w	(VertLineScrolling).w,d0
+	move.w	d0,(a0)
+	move.w	(sp)+,(disflags).w
+	rts
 DisplayGameInfo						;Print game d3 of gstruct (16 bytes each; not the current game gamenum,
 									;not one with flag bit 1 or 2 set)
 									;the two teams and scores (PrintGameInfo) and the period (PerLabels)
@@ -113,17 +113,17 @@ DisplayGameInfo						;Print game d3 of gstruct (16 bytes each; not the current g
 	addq.w	#2,(printy).w			;two rows down
 	rts
 PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
-	movea.w	#TeamList,a1			;a1 = TeamList
-	asl.w	#2,d0					;times 4: index
-	movea.l	0(a1,d0.w),a1			;a1 = the team
-	adda.w	Teamname(a1),a1			;a1 = its Teamname String
-	move.w	#6,(printx).w			;name at x 6
-	jsr	(print).l					;print it
-	move.w	#$18,(printx).w			;score at x $18
-	move.w	d1,d0					;d0 = score
+	movea.w	#TeamList,a1
+	asl.w	#2,d0
+	movea.l	0(a1,d0.w),a1
+	adda.w	Teamname(a1),a1
+	move.w	#6,(printx).w
+	jsr	(print).l
+	move.w	#$18,(printx).w
+	move.w	d1,d0
 	moveq	#2,d1					;2 digits
-	jsr	(PushNumberWidth).l			;print the number
-	jmp	print						;and return
+	jsr	(PushNumberWidth).l
+	jmp	print
 DrawScrollArrows					;ShowScores up / down arrows (ScrollArrowTable). Saves d0-d1/a1
 	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
@@ -158,13 +158,13 @@ LineEditor							;"Line Editor" screen for team a2: line slot cursor (TestList),
 	clr.w	(PlayerScrollCtr).w
 	move.w	#1,(TestList).w			;cursor = first slot
 LineEditorRedraw					;Clear the screen and redraw everything. Also entered from LineEditorExit
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY
-	moveq	#$28,d0					;width $28
-	moveq	#$1C,d1					;height $1C
+	moveq	#$28,d0
+	moveq	#$1C,d1
 	move.w	#$7FF,d2				;blank char
-	jsr	(eraser).l					;erase the screen
-	st	(redrawicons).w				;redraw the icons
+	jsr	(eraser).l
+	st	(redrawicons).w
 	bsr.w	ClearMenuFlags			;clear the highlight colours
 LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slot
 									;(SelectLinePlayer), up / down /
@@ -437,49 +437,49 @@ ClearLineArea						;Line editor: erase the line area and print the
 	jsr	(printsmallz).l
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY,$A
 .erase								;(not branched to)
-	moveq	#$28,d0					;width $28
-	moveq	#$12,d1					;height $12
+	moveq	#$28,d0
+	moveq	#$12,d1
 	move.w	#$7FF,d2				;blank char
-	jsr	(eraser).l					;erase the area
-	move.w	(LineIconPosTable+2).l,(printy).l	;printy = second table entry
-	move.w	(LineIconPosTable).l,(printx).l	;printx = first table entry
+	jsr	(eraser).l
+	move.w	(LineIconPosTable+2).l,(printy).l
+	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	(OptLine).w				;OptLine set?
-	beq.w	.0						;branch taken: OptLine clear
+	beq.w	.0
 	move.w	(LineIconPosTable-6).l,(printx).l	;OptLine: use the entry before
 .0									;entry chosen: print the position header
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetAttribute,$04,CC_AddX,$FD,CC_AddY,$02,'LD',CC_AddX,$FE,CC_AddY,$02,'RD',CC_AddX,$FE,CC_AddY,$02,'LW',CC_AddX,$FE,CC_AddY,$02,'C ',CC_AddX,$FE,CC_AddY,$02,'RW'
-	rts								;return
+	rts
 DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Line Editor"
 									;title and
 									;the team logo map (PutTeamBlock)
-	bsr.w	ClearLineEditorTop		;clear the line editor top
-	movem.l	d0-d5/a0-a2,-(sp)		;save registers
-	jsr	(printz).l					;set print position from the string
+	bsr.w	ClearLineEditorTop
+	movem.l	d0-d5/a0-a2,-(sp)
+	jsr	(printz).l
 	String	CC_Font3,0,0
-	movea.l	#EASportsBGMap,a1		;a1 = EA Sports background map
-	adda.l	jimdata(a1),a1			;a1 = map data
+	movea.l	#EASportsBGMap,a1
+	adda.l	jimdata(a1),a1
 	movea.w	#null,a2				;a2 saved/restored around this block
-	clr.w	d0						;d0 = x 0
-	clr.w	d1						;d1 = y 0
-	move.w	(a1),d2					;d2 = map width
-	move.w	mapheight(a1),d3		;d3 = map height
-	moveq	#1,d4					;d4 = 1
-	moveq	#0,d5					;d5 = 0
-	jsr	(dobitmap).l				;draw the bitmap
-	movem.l	(sp)+,d0-d5/a0-a2		;restore registers
-	jsr	(printz).l					;set print position from the string
+	clr.w	d0
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	mapheight(a1),d3
+	moveq	#1,d4
+	moveq	#0,d5
+	jsr	(dobitmap).l
+	movem.l	(sp)+,d0-d5/a0-a2
+	jsr	(printz).l
 	String	CC_Font2Pri,7,1
-	moveq	#$1A,d0					;frame width $1A
-	moveq	#6,d1					;frame height 6
+	moveq	#$1A,d0
+	moveq	#6,d1
 	jsr	(Framer).l					;draw the frame
-	jsr	(printbigz).l				;print the title string
+	jsr	(printbigz).l
 	String	CC_Font2Pri,$A,4,'Line  Editor',CC_Font2Pri,$E,1
 	clr.w	d0						;map offset: home 0, away $2C
 	cmpa.w	#(tmstruct-M68K_RAM),a2	;home team?
-	beq.w	PutTeamBlock			;branch taken: home team, draw its block
+	beq.w	PutTeamBlock
 	move.w	#$2C,d0					;away team block
-	bra.w	PutTeamBlock			;draw the away block
+	bra.w	PutTeamBlock
 ClearLineEditorTop					;Erase 40 x 10 at the top of map 2
 	jsr	(printz).l
 	String	CC_Font2Pri,0,0
@@ -609,41 +609,41 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	rts
 EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into databuffer and
 									;convert it (WriteLineData, high ROM). Menu item handler
-	movem.l	d0-d4/a0-a3,-(sp)		;save registers
+	movem.l	d0-d4/a0-a3,-(sp)
 	movea.w	#(databuffer-M68K_RAM),a0	;saved line data
-	move.w	tmteam(a2),d0			;d0 = team number
-	addq.w	#1,d0					;plus one
-	move.b	d0,(a0)+				;store it and advance
-	lea	tmlines(a2),a1				;a1 = team lines
-	bsr.w	GetGoalieCount			;count the goalies
-	move.w	d0,d1					;d1 = goalie count
-	bsr.w	GetForwardCount			;count the forwards
-	movea.l	#AttributeOffsetTbl,a3	;a3 = attribute offset table
-	clr.w	d4						;d4 = nibble toggle
-	clr.w	d2						;clear d2
+	move.w	tmteam(a2),d0
+	addq.w	#1,d0
+	move.b	d0,(a0)+
+	lea	tmlines(a2),a1
+	bsr.w	GetGoalieCount
+	move.w	d0,d1
+	bsr.w	GetForwardCount
+	movea.l	#AttributeOffsetTbl,a3
+	clr.w	d4
+	clr.w	d2
 .next								;each slot
-	move.b	(a3)+,d2				;d2 = next slot offset
-	bmi.w	.done					;branch taken: end of table, done
+	move.b	(a3)+,d2
+	bmi.w	.done
 	move.b	0(a1,d2.w),d3			;player in the slot
 	subq.b	#1,d3					;0-based
 	sub.b	d1,d3					;relative to the first non-goalie
-	andi.w	#7,d2					;keep low 3 bits
+	andi.w	#7,d2
 	cmp.w	#2,d2					;defense?
-	bgt.w	.pack					;branch taken: above 2, pack
+	bgt.w	.pack
 	sub.b	d0,d3					;slots 1-2: also minus forward count
 .pack								;forward slot, or defense made relative to the first defenseman
 	bchg	#0,d4					;alternate low / high nibble
-	bne.w	.hi						;branch taken: was high, store the high nibble
+	bne.w	.hi
 	move.b	d3,(a0)					;low nibble (high is or'ed in next)
-	bra.s	.next					;next slot
+	bra.s	.next
 .hi									;second slot of the byte: high nibble
 	asl.b	#4,d3					;second nibble goes in the high half
-	or.b	d3,(a0)+				;or into the byte and advance
-	bra.s	.next					;next slot
+	or.b	d3,(a0)+
+	bra.s	.next
 .done								;all slots packed: save them
-	jsr	(WriteLineData).l			;write the line data
-	movem.l	(sp)+,d0-d4/a0-a3		;restore registers
-	rts								;return
+	jsr	(WriteLineData).l
+	movem.l	(sp)+,d0-d4/a0-a3
+	rts
 AttributeOffsetTbl					;Line slots saved in databuffer ($FF ends)
 	dc.b	1,2,3,4,5
 	dc.b	9,$A,$B,$C,$D
@@ -784,20 +784,20 @@ StopPlayerListScroll				;Out of range: stop scrolling
 	clr.w	(PlayerScrollCtr).w
 	rts
 DisplayPlayerListUp					;d0 = divs result (quotient in the high word): draw that page
-	move.l	d0,-(sp)				;save d0
-	swap	d0						;quotient to the low word
-	move.w	d0,(SelectedPlayerIdx).w	;that page
-	bsr.w	DisplayPlayerList		;draw the list
-	move.l	(sp)+,d0				;restore d0
-	rts								;done
+	move.l	d0,-(sp)
+	swap	d0
+	move.w	d0,(SelectedPlayerIdx).w
+	bsr.w	DisplayPlayerList
+	move.l	(sp)+,d0
+	rts
 DisplayPlayerListDown				;Draw the page after the quotient in the high word of d0
-	move.l	d0,-(sp)				;save d0
-	swap	d0						;quotient to the low word
+	move.l	d0,-(sp)
+	swap	d0
 	addq.w	#1,d0					;next page
-	move.w	d0,(SelectedPlayerIdx).w	;that page
-	bsr.w	DisplayPlayerList		;draw the list
-	move.l	(sp)+,d0				;restore d0
-	rts								;done
+	move.w	d0,(SelectedPlayerIdx).w
+	bsr.w	DisplayPlayerList
+	move.l	(sp)+,d0
+	rts
 DisplayPlayerList					;Draw roster page SelectedPlayerIdx (0 goalies, 1-7 lines): title
 									;(PlayerStatMenuTxt), column header, then
 									;the rows (GoalieRowText / PlayerPositionText, getNameandAttrib)
@@ -886,22 +886,22 @@ PlayerStatMenuTxt					;Roster page titles; { } are the left / right arrows
 	String	'{Penalty Kill 2 '
 GetNameandAttrib					;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
-	movem.l	d0-d4/a0-a1/a4-a5,-(sp)	;save registers
+	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
 	pea	.x(pc)						;handlers return here
 	jsr	(getname).l					;a1 = his number and name
-	jsr	(print).l					;print it
+	jsr	(print).l
 	move.w	#$1E,(printx).w
 	cmp.w	#2,d4					;status or energy column?
-	bls.w	.jump					;branch taken: d4 is 2 or less
-	jsr	(CalcAttrib).l				;calculate the attribute
-	swap	d4						;swap d4 halves
+	bls.w	.jump
+	jsr	(CalcAttrib).l
+	swap	d4
 .jump								;column handler for d4
-	lea	attribjmp(pc),a0			;a0 = attribute jump table
+	lea	attribjmp(pc),a0
 	adda.w	0(a0,d4.w),a0			;this handler
-	jmp	(a0)						;jump to the handler
+	jmp	(a0)
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d4/a0-a1/a4-a5	;restore registers
-	rts								;return
+	movem.l	(sp)+,d0-d4/a0-a1/a4-a5
+	rts
 attribjmp							;getNameandAttrib column handlers, offsets from attribjmp
 	dc.w	AttribStatus-attribjmp
 	dc.w	AttribEnergy-attribjmp
@@ -1052,36 +1052,36 @@ UpdateScoringScroll					;Set VertLineScrolling = d0. Stop on an entry boundary (
 									;by DrawScrollArrowsPenalty) draw the entry coming into view, VSRAM =
 									;VertLineScrolling - $50
 	move.w	(VertLineScrolling).w,d1	;d1 = old position
-	move.w	d0,(VertLineScrolling).w	;store the scroll value
-	ext.l	d0						;extend to long
+	move.w	d0,(VertLineScrolling).w
+	ext.l	d0
 	divs.w	#$20,d0					;32 pixels per entry; remainder in the low word after swap
-	swap	d0						;swap remainder into low word
+	swap	d0
 	tst.w	d0						;on a boundary?
-	bne.w	.0						;branch taken: not on a boundary
+	bne.w	.0
 	bsr.w	DrawScrollArrowsPenalty	;on an entry boundary: update arrows and stop
-	clr.w	(PlayerScrollCtr).w		;clear PlayerScrollCtr
+	clr.w	(PlayerScrollCtr).w
 .0									;between entries: keep scrolling
 	andi.w	#$1F,d1					;was the old position on a boundary?
-	bne.w	.2						;branch taken: not on a boundary, skip redraw
-	move.l	d0,-(sp)				;save d0
+	bne.w	.2
+	move.l	d0,-(sp)
 	cmp.w	#$1E,d0					;moved back 2: draw the entry above
-	bne.w	.1						;branch taken: not moving up
+	bne.w	.1
 	bsr.w	DrawScoringRowUp
 .1									;not moving up
-	move.l	(sp)+,d0				;restore d0
+	move.l	(sp)+,d0
 	cmp.w	#2,d0					;moved on 2: draw the entry below
-	bne.w	.2						;branch taken: not moving down
+	bne.w	.2
 	bsr.w	DrawScoringRowDown
 .2									;only on the first step off an entry boundary
 	move.w	(disflags).w,-(sp)		;set the VSRAM scroll value, as in UpdateVertScrollReg
-	bset	#dfng,(disflags).w		;set disflags bit dfng
-	movea.l	#Vdata,a0				;a0 = VDP data port
-	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;set VSRAM write address 2
-	moveq	#$FFFFFFB0,d0			;d0 = -$50
-	add.w	(VertLineScrolling).w,d0	;add the scroll value
-	move.w	d0,(a0)					;write to VSRAM
-	move.w	(sp)+,(disflags).w		;restore disflags
-	rts								;return
+	bset	#dfng,(disflags).w
+	movea.l	#Vdata,a0
+	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)
+	moveq	#$FFFFFFB0,d0
+	add.w	(VertLineScrolling).w,d0
+	move.w	d0,(a0)
+	move.w	(sp)+,(disflags).w
+	rts
 DrawScoringRowUp					;Draw goal entry (d0 high word) at the top of the window
 	move.l	d0,-(sp)
 	swap	d0						;d0 = entry number (quotient)
@@ -1295,45 +1295,45 @@ DisplayPenaltyLineDown				;Draw penalty entry (d0 high word) + 5 at the bottom o
 	rts
 DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = away), minutes and
 									;name from Penaltylist, player (byte 3)
-	move.w	(printy).w,-(sp)		;save printy
+	move.w	(printy).w,-(sp)
 	moveq	#$28,d0					;width 40 cells
 	moveq	#3,d1					;3 rows high
 	move.w	#$7FF,d2				;blank tile
-	jsr	(eraser).l					;erase the blanked area
-	move.w	(sp)+,(printy).w		;restore printy
-	movea.w	#(PenSum-M68K_RAM),a0	;a0 = PenSum
+	jsr	(eraser).l
+	move.w	(sp)+,(printy).w
+	movea.w	#(PenSum-M68K_RAM),a0
 	move.w	0(a0,d3.w),d0			;penalty time
-	move.w	#1,(printx).w			;print column 1
+	move.w	#1,(printx).w
 	jsr	(FormatAndPrintTime).l		;print it
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
+	movea.w	#(tmstruct-M68K_RAM),a2
 	btst	#7,pspen(a0,d3.w)		;away penalty?
-	beq.w	.0						;branch taken: home penalty, keep a2
-	adda.w	#tmsize,a2				;a2 = away team struct
+	beq.w	.0
+	adda.w	#tmsize,a2
 .0									;team chosen
 	movea.l	tmdata(a2),a1			;team data -> team name string
-	adda.w	Teamname(a1),a1			;add team name offset
-	adda.w	(a1),a1					;a1 = name string
-	move.w	#$C,(printx).w			;print column $C
-	jsr	(print).l					;print the team name
-	move.b	pspen(a0,d3.w),d0		;d0 = penalty byte
+	adda.w	Teamname(a1),a1
+	adda.w	(a1),a1
+	move.w	#$C,(printx).w
+	jsr	(print).l
+	move.b	pspen(a0,d3.w),d0
 	andi.w	#$7F,d0					;strip the away bit
-	movea.l	#Penaltylist,a3			;a3 = penalty list
-	adda.w	0(a3,d0.w),a3			;a3 = this penalty's entry
-	clr.w	d0						;clear d0
+	movea.l	#Penaltylist,a3
+	adda.w	0(a3,d0.w),a3
+	clr.w	d0
 	move.b	1(a3),d0				;penalty minutes
-	jsr	(PushNumber).l				;push the number for printing
-	move.w	#$23,(printx).w			;print column $23
-	jsr	(print).l					;print the minutes
-	move.w	#$10,(printx).w			;print column $10
-	clr.w	d0						;clear d0
-	move.b	psplayer(a0,d3.w),d0	;d0 = player byte
+	jsr	(PushNumber).l
+	move.w	#$23,(printx).w
+	jsr	(print).l
+	move.w	#$10,(printx).w
+	clr.w	d0
+	move.b	psplayer(a0,d3.w),d0
 	jsr	(FormatPlayerNumInitial).l	;his number and name
-	jsr	(print).l					;print the player
-	addq.w	#1,(printy).w			;next print row
-	move.w	#$13,(printx).w			;print column $13
-	move.w	#$E000,(printa).w		;print attribute $E000
+	jsr	(print).l
+	addq.w	#1,(printy).w
+	move.w	#$13,(printx).w
+	move.w	#$E000,(printa).w
 	lea	2(a3),a1					;penalty name string
-	jmp	(print).l					;print the penalty name and return
+	jmp	(print).l
 DrawScrollArrowsPenalty				;Summary screen up / down arrows (ScrollArrowTbl). Saves d0-d1/a1. Also
 									;used by UpdateScoringScroll
 	movem.l	d0-d1/a1,-(sp)
@@ -1483,15 +1483,15 @@ UpdateStatsListScroll				;Stats screen per frame: scroll 0 ... SelectedPlayerIdx
 	bne.w	SetStatsListScrollReg
 	bsr.w	DrawStatsRowDown		;falls into the scroll register write
 SetStatsListScrollReg				;VSRAM = VertLineScrolling - $68
-	move.w	(disflags).w,-(sp)		;save disflags
+	move.w	(disflags).w,-(sp)
 	bset	#dfng,(disflags).w		;don't int graphics while the VDP is being addressed
-	movea.l	#Vdata,a0				;a0 = VDP data port
-	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;VSRAM write address 2 to the control port
-	move.w	#$FF98,d0				;-$68
-	add.w	(VertLineScrolling).w,d0	;add the vertical scroll
-	move.w	d0,(a0)					;write it
-	move.w	(sp)+,(disflags).w		;restore disflags
-	rts								;done
+	movea.l	#Vdata,a0
+	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)
+	move.w	#$FF98,d0
+	add.w	(VertLineScrolling).w,d0
+	move.w	d0,(a0)
+	move.w	(sp)+,(disflags).w
+	rts
 DrawStatsRowUp						;Draw the top row of the window
 	move.w	(VertLineScrolling).w,d3	;scroll position
 	lsr.w	#4,d3					;d3 = first visible Satt row (16 pixels per row)
@@ -1805,67 +1805,67 @@ PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteL
 									;in dB (PrintCrowdDB). With save RAM (ValidSRAM) the arena record of
 									;HomeTeam and the league record, read into the buffer at ThreeStars by
 									;ReadCrowdRecord (high ROM); 0 reads as $50
-	bsr.w	printsmallz				;print
+	bsr.w	printsmallz
 	String	CC_SetMapAndPosition,4,2,4,$C,'Current Level',CC_SetX,$1C
 	move.w	(CwdExciteLvl).w,d0		;current level
 	bsr.w	PrintCrowdDB			;print it
-	bsr.w	printsmallz				;print
+	bsr.w	printsmallz
 	String	CC_SetX,4,CC_AddY,2,'Average Level',CC_SetX,$1C
 	move.l	(SumCwdExciteLvl).w,d0	;sum of the levels
-	divu.w	(NumCwdExciteLvl).w,d0	;average
+	divu.w	(NumCwdExciteLvl).w,d0
 	bsr.w	PrintCrowdDB			;print it
-	bsr.w	printsmallz				;print
+	bsr.w	printsmallz
 	String	CC_SetX,4,CC_AddY,2,'Peak Level',CC_SetX,$1C
 	move.w	(MaxCwdExciteLvl).w,d0	;peak level
 	bsr.w	PrintCrowdDB			;print it
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	(ValidSRAM).w			;save RAM?
-	bmi.w	.x						;negative: exit
-	move.w	(HomeTeam).w,d1			;d1 = home team
-	ext.l	d1						;long
-	movea.l	#recordbuf,a0			;a0 = record buffer
-	jsr	(ReadCrowdRecord).l			;read the crowd record
-	move.b	crpeak(a0),d0			;peak byte
-	bne.w	.gotarena				;not zero: use it
+	bmi.w	.x
+	move.w	(HomeTeam).w,d1
+	ext.l	d1
+	movea.l	#recordbuf,a0
+	jsr	(ReadCrowdRecord).l
+	move.b	crpeak(a0),d0
+	bne.w	.gotarena
 	move.b	#$50,d0					;none: $50
 .gotarena							;arena record, or $50 dB when none
-	andi.w	#$FF,d0					;byte
-	move.w	d0,-(sp)				;keep it
+	andi.w	#$FF,d0
+	move.w	d0,-(sp)
 .arena								;(not branched to)
-	bsr.w	printsmallz				;print
+	bsr.w	printsmallz
 	String	CC_SetX,4,CC_AddY,2,'Arena Record',CC_SetX,$1C
-	move.w	(sp)+,d0				;restore it
+	move.w	(sp)+,d0
 	move.w	#3,d1					;3 digits
-	jsr	(PushNumberWidth).l			;push the number
-	jsr	(print).l					;print it
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
 .arenadb							;(not branched to)
-	jsr	(printz).l					;print the end
+	jsr	(printz).l
 	String	' dB'
 .league								;(not branched to)
-	jsr	(GetLeagueCrowdRecord).l	;league crowd record
-	move.w	d0,d1					;d1 = it
-	ext.l	d1						;long
-	movea.l	#recordbuf,a0			;a0 = record buffer
-	jsr	(ReadCrowdRecord).l			;read the crowd record
-	move.b	crpeak(a0),d0			;peak byte
-	bne.w	.gotleague				;not zero: use it
+	jsr	(GetLeagueCrowdRecord).l
+	move.w	d0,d1
+	ext.l	d1
+	movea.l	#recordbuf,a0
+	jsr	(ReadCrowdRecord).l
+	move.b	crpeak(a0),d0
+	bne.w	.gotleague
 	move.w	#$50,d0					;none: $50
 .gotleague							;league record, or $50 dB when none
-	andi.w	#$FF,d0					;byte
-	move.w	d0,-(sp)				;keep it
-	bsr.w	printsmallz				;print
+	andi.w	#$FF,d0
+	move.w	d0,-(sp)
+	bsr.w	printsmallz
 	String	CC_SetX,4,CC_AddY,2,'League Record',CC_SetX,$1C
-	move.w	(sp)+,d0				;restore it
+	move.w	(sp)+,d0
 .leaguew							;(not branched to)
-	move.w	#3,d1					;d1 = 3
+	move.w	#3,d1
 .leaguenum							;(not branched to)
-	jsr	(PushNumberWidth).l			;push the number
-	jsr	(print).l					;print it
-	bsr.w	printz					;print the end
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	bsr.w	printz
 	String	' dB'
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
 	ext.l	d0
 	asl.w	#2,d0					;level * 4
@@ -1882,134 +1882,134 @@ SetupScreen							;Common start of the stats screens: blank, 40 cell mode, the f
 									;rows
 									;high
 	movem.l	d0-d1/a2,-(sp)			;keep d0/d1 (first/last row) and a2 (team) for the caller
-	bsr.w	forceblack				;force the colours black
+	bsr.w	forceblack
 	bclr	#dfok,(disflags).w		;graphics not ready for transfer
-	move.w	(disflags).w,-(sp)		;keep disflags
+	move.w	(disflags).w,-(sp)
 .noint								;(not branched to)
-	bset	#dfng,(disflags).w		;set dfng
-	move.w	(VSPRITES).w,d0			;d0 = VSPRITES
-	bsr.w	Vmaddr					;VDP address
-	move.l	#0,(a0)					;clear it
+	bset	#dfng,(disflags).w
+	move.w	(VSPRITES).w,d0
+	bsr.w	Vmaddr
+	move.l	#0,(a0)
 .vdpregs							;(not branched to)
-	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)	;mode 4 register
-	move.w	#6,(Map3col).w			;Map3col 6
-	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)	;horizontal scroll register
-	clr.w	d0						;d0 = 0
-	bsr.w	Vmaddr					;VDP address
-	move.l	#0,(a0)					;clear it
-	move.w	(sp)+,(disflags).w		;restore disflags
+	move.w	#VDPR_MODE4+$81,Vctrl-Vdata(a0)
+	move.w	#6,(Map3col).w
+	move.w	#VDPR_HSCROLL,Vctrl-Vdata(a0)
+	clr.w	d0
+	bsr.w	Vmaddr
+	move.l	#0,(a0)
+	move.w	(sp)+,(disflags).w
 	bclr	#df32c,(disflags).w		;not in 32 cell mode
 	move.w	(framercset).w,d4		;frame chars
 	movea.l	#FramerMap+8,a2			;frame tiles
-	bsr.w	DecompressGraphicsWithRemap	;decompress the tiles with remap
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$91234567,$89ABCDEF		;remap table
-	move.w	(smallfontchars).w,d4	;d4 = small font chars
-	jsr	(AddSmallFont).l			;add the small font
-	bsr.w	printz					;print the position codes
+	move.w	(smallfontchars).w,d4
+	jsr	(AddSmallFont).l
+	bsr.w	printz
 	String	CC_Font3Pri,0,0
-	movea.l	#EASportsBGMap,a1		;a1 = EA Sports background map
-	adda.l	jimdata(a1),a1			;plus the data offset
-	movea.w	#null,a2				;no attribute map
+	movea.l	#EASportsBGMap,a1
+	adda.l	jimdata(a1),a1
+	movea.w	#null,a2
 	clr.w	d0						;start x/y 0 in the map
-	clr.w	d1						;d1 = 0
-	move.w	(a1),d2					;d2 = map width
-	move.w	mapheight(a1),d3		;d3 = map height
-	moveq	#1,d4					;d4 = 1
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	mapheight(a1),d3
+	moveq	#1,d4
 	moveq	#0,d5					;no palette lines
-	bsr.w	dobitmap				;draw the bitmap
-	bsr.w	printz					;print the position codes
+	bsr.w	dobitmap
+	bsr.w	printz
 	String	CC_Font3,0,0
-	movem.l	(sp),d0-d1/a2			;load d0-d1/a2 from the stack, keep them there
-	add.w	d0,(printy).w			;plus the start row
-	movea.l	#EASportsBGMap,a0		;a0 = EA Sports background map
+	movem.l	(sp),d0-d1/a2
+	add.w	d0,(printy).w
+	movea.l	#EASportsBGMap,a0
 	movea.l	a0,a1					;a1 = map header
-	movea.l	a0,a2					;a2 = the map
+	movea.l	a0,a2
 	adda.l	(a2)+,a0				;a0 = tile data
 	adda.l	(a2)+,a1				;a1 = map data
-	move.w	d1,d3					;d3 = d1
+	move.w	d1,d3
 	sub.w	d0,d3					;height = last row - first row
 	move.w	d0,d1					;start y = first row
-	clr.w	d0						;d0 = 0
-	moveq	#$28,d2					;d2 = $28
+	clr.w	d0
+	moveq	#$28,d2
 	moveq	#$D,d5					;copy palette lines 0, 2 and 3
-	bsr.w	dobitmap				;draw the bitmap
+	bsr.w	dobitmap
 	move.w	d4,(smallfont2chars).w	;second small font chars
-	movea.l	#SmallFontMap+8,a2		;a2 = small font tiles
-	bsr.w	DecompressGraphicsWithRemap	;decompress them with remap
+	movea.l	#SmallFontMap+8,a2
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$D1234567,$89ABCDEF		;remap table
-	bsr.w	printz					;print the position codes
+	bsr.w	printz
 	String	CC_Font2,0,0
-	moveq	#$40,d0					;d0 = $40
-	moveq	#$20,d1					;d1 = $20
+	moveq	#$40,d0
+	moveq	#$20,d1
 	move.w	#$7FF,d2				;blank char
-	bsr.w	eraser					;erase
+	bsr.w	eraser
 	move.w	#$18,(palcount).w		;start a palette fade in
-	movem.l	(sp)+,d0-d1/a2			;restore registers
-	rts								;done
+	movem.l	(sp)+,d0-d1/a2
+	rts
 ExitStatsScreen						;Leave a stats screen: blank, then ReloadRinkGraphics
 	bsr.w	forceblack				;screen off
 ReloadRinkGraphics					;after the forceblack: back to 32 cell mode and reload the rink (Rinktiles
 									;or RevRinkTiles in a reverse angle
 									;replay), font, framer, EASN and team graphics. Falls out through
 									;setplayercolors. Also called from the replay code
-	move.w	(disflags).w,-(sp)		;save disflags
-	bset	#dfng,(disflags).w		;set disflags bit dfng
-	move.w	(VSCRLPM).w,d0			;d0 = VSCRLPM
-	bsr.w	Vmaddr					;get the VDP address
-	move.l	#0,(a0)					;write zero
+	move.w	(disflags).w,-(sp)
+	bset	#dfng,(disflags).w
+	move.w	(VSCRLPM).w,d0
+	bsr.w	Vmaddr
+	move.l	#0,(a0)
 	move.w	#$8D00,d0				;register $D: hscroll table
-	move.b	(VSCRLPM).w,d0			;low byte = VSCRLPM
-	lsr.b	#2,d0					;shift right 2
-	move.w	d0,Vctrl-Vdata(a0)		;write to the VDP control port
-	move.w	#VDPR_MODE4,Vctrl-Vdata(a0)	;set VDP mode 4 register
-	move.w	#5,(Map3col).w			;Map3col = 5
-	move.w	(sp)+,(disflags).w		;restore disflags
-	bset	#df32c,(disflags).w		;set disflags bit df32c
-	move.w	(rinkvrcset).w,d4		;d4 = rink character set
-	movea.l	#Rinktiles,a2			;a2 = rink tiles
+	move.b	(VSCRLPM).w,d0
+	lsr.b	#2,d0
+	move.w	d0,Vctrl-Vdata(a0)
+	move.w	#VDPR_MODE4,Vctrl-Vdata(a0)
+	move.w	#5,(Map3col).w
+	move.w	(sp)+,(disflags).w
+	bset	#df32c,(disflags).w
+	move.w	(rinkvrcset).w,d4
+	movea.l	#Rinktiles,a2
 	btst	#4,(sflags4).w			;check if reverse angle replay
-	beq.w	.load					;branch taken: normal angle, keep a2
+	beq.w	.load
 	movea.l	#RevRinkTiles,a2		;load reverse rink address
 .load								;normal or reverse angle rink tiles chosen
 	bsr.w	DecompressGraphicsPlain	;send the rink tiles
-	jsr	(LoadHomeTeamGfx).l			;load the home team graphics
-	move.w	(smallfontchars).w,d4	;d4 = small font character set
-	movea.l	#SmallFontMap+8,a2		;a2 = small font map plus 8
-	bsr.w	DecompressGraphicsWithRemap	;decompress with the remap table below
+	jsr	(LoadHomeTeamGfx).l
+	move.w	(smallfontchars).w,d4
+	movea.l	#SmallFontMap+8,a2
+	bsr.w	DecompressGraphicsWithRemap
 	dc.l	$43434567,$89ABCDEF		;remap table
 	move.w	(framercset).w,d4		;frame chars
 	jsr	(AddFramer).l				;send the frame tiles
-	jsr	(setupEASportsMap).l		;set up the EA Sports map
-	jsr	(ReloadEnergyBarTiles).l	;reload the energy bar tiles
-	jsr	(ReloadCrowdTiles).l		;reload the crowd tiles
-	jsr	(setupIceRinkPal).l			;set up the ice rink palette
-	jmp	setplayercolors				;set player colors and return
+	jsr	(setupEASportsMap).l
+	jsr	(ReloadEnergyBarTiles).l
+	jsr	(ReloadCrowdTiles).l
+	jsr	(setupIceRinkPal).l
+	jmp	setplayercolors
 TimeoutMenu							;Pause menu "Timeout" for team a2: switch the menu to PauseText2, show the
 									;team name, rest both teams (RestoreTeamEnergy), wait $78 frames (waitx).
 									;Menu item handler
-	subq.w	#1,(menuitem).w			;decrement menuitem
-	subq.w	#1,(menuitem+2).w		;decrement menuitem+2
+	subq.w	#1,(menuitem).w
+	subq.w	#1,(menuitem+2).w
 	move.l	#PauseText2,(menulist).l	;pause menu without Timeout
-	bset	#tmftimeout,tmflags(a2)	;set the team timeout flag
+	bset	#tmftimeout,tmflags(a2)
 	bsr.w	printz					;map at the box position
 	String	CC_Font3Pri,5,$C
 	moveq	#$16,d0					;frame 22 wide, 6 high
-	moveq	#6,d1					;frame height 6
+	moveq	#6,d1
 	bsr.w	Framer					;draw the frame
 	bsr.w	printz					;map at the name position
 	String	CC_Font3Pri,$C,$E,'Timeout',CC_Font3Pri,$11,$F
 	movea.l	tmdata(a2),a1			;team name, centred
-	adda.w	Teamname(a1),a1			;add team name offset
-	move.w	(a1),d0					;d0 = first word of the name
-	lsr.w	#1,d0					;half of it
-	sub.w	d0,(printx).w			;subtract from printx
-	bsr.w	print					;print the name
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
-	jsr	(RestoreTeamEnergy).l		;restore home team energy
-	adda.w	#tmsize,a2				;a2 = away team struct
-	jsr	(RestoreTeamEnergy).l		;restore away team energy
-	moveq	#$78,d0					;wait count $78
-	bra.w	waitx					;wait and return
+	adda.w	Teamname(a1),a1
+	move.w	(a1),d0
+	lsr.w	#1,d0
+	sub.w	d0,(printx).w
+	bsr.w	print
+	movea.w	#(tmstruct-M68K_RAM),a2
+	jsr	(RestoreTeamEnergy).l
+	adda.w	#tmsize,a2
+	jsr	(RestoreTeamEnergy).l
+	moveq	#$78,d0
+	bra.w	waitx
 Pausemode_go						;Pick team a2's goalie (or no goalie) from a
 									;list (Pausemode_gnum) with up / down, C or start; sets tmgoalie and
 									;SetPersonel. Menu item handler
@@ -2115,54 +2115,54 @@ Pausemode_gnum						;Draw the goalie list, row menuitem highlighted, each goalie
 	dbf	d1,.row
 	rts
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
-	movem.l	d1/a0,-(sp)				;save registers
-	movea.l	tmdata(a2),a0			;a0 = team data
+	movem.l	d1/a0,-(sp)
+	movea.l	tmdata(a2),a0
 .word								;(not branched to)
-	adda.w	GoalieOdds(a0),a0		;add the goalie odds offset
+	adda.w	GoalieOdds(a0),a0
 	move.w	(a0),d1					;word with one nibble per goalie slot
-	clr.w	d0						;d0 = 0
+	clr.w	d0
 .count								;loop
 	addq.w	#1,d0					;count nibbles by shifting 4 bits out until the word is 0
-	asl.w	#4,d1					;shift 4 bits out
-	bne.s	.count					;loop until the word is 0
-	movem.l	(sp)+,d1/a0				;restore registers
-	rts								;return
+	asl.w	#4,d1
+	bne.s	.count
+	movem.l	(sp)+,d1/a0
+	rts
 GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetForwardCount),
 									;the roster index of the first defenseman (roster order is goalies,
 									;forwards, defense). Called from the high ROM player cards
-	movem.l	a0,-(sp)				;save a0
-	bsr.s	GetGoalieCount			;d0 = goalie count
-	move.w	d0,-(sp)				;save it
-	movea.l	tmdata(a2),a0			;a0 = team data
-	adda.w	ScoutReport(a0),a0		;add the scout report offset
-	move.b	srforwards(a0),d0		;d0 = forwards byte
+	movem.l	a0,-(sp)
+	bsr.s	GetGoalieCount
+	move.w	d0,-(sp)
+	movea.l	tmdata(a2),a0
+	adda.w	ScoutReport(a0),a0
+	move.b	srforwards(a0),d0
 	lsr.w	#4,d0					;high nibble
 	andi.w	#$F,d0					;forward count
-	add.w	(sp)+,d0				;add the goalie count
-	movem.l	(sp)+,a0				;restore a0
-	rts								;return
+	add.w	(sp)+,d0
+	movem.l	(sp)+,a0
+	rts
 GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
-	movem.l	a0,-(sp)				;save a0
-	movea.l	tmdata(a2),a0			;a0 = team data
-	adda.w	ScoutReport(a0),a0		;add the scout report offset
-	move.b	srforwards(a0),d0		;d0 = forwards byte
+	movem.l	a0,-(sp)
+	movea.l	tmdata(a2),a0
+	adda.w	ScoutReport(a0),a0
+	move.b	srforwards(a0),d0
 	lsr.w	#4,d0					;high nibble = forward count
 	andi.w	#$F,d0					;forward count
-	movem.l	(sp)+,a0				;restore a0
-	rts								;return
+	movem.l	(sp)+,a0
+	rts
 GetPlayerCount						;d0 = players on team a2 (records until a length word of 2)
-	movem.l	a0,-(sp)				;save a0
-	movea.l	tmdata(a2),a0			;a0 = team data
+	movem.l	a0,-(sp)
+	movea.l	tmdata(a2),a0
 	adda.w	(a0),a0					;a0 = first player record
-	clr.w	d0						;d0 = 0
+	clr.w	d0
 .loop								;loop
-	addq.w	#1,d0					;count a player
-	adda.w	(a0),a0					;skip the name
+	addq.w	#1,d0
+	adda.w	(a0),a0
 	addq.w	#pldsize,a0				;and the fixed part
 	cmpi.w	#2,(a0)					;empty name ends the list
-	bne.s	.loop					;loop until the empty name
-	movem.l	(sp)+,a0				;restore a0
-	rts								;return
+	bne.s	.loop
+	movem.l	(sp)+,a0
+	rts
 Pausemode_rjoy						;Wait for Vcount to change and for a new button press (d1)
 	move.w	(Vcount).w,d1			;current frame
 .wait								;loop

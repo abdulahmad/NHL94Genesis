@@ -109,33 +109,33 @@ setupice							;set all variables, send non purgeable graphics, build sprite fra
 setupice_highlight					;Rebuild the rink sprites after a highlight replay without reloading
 									;tiles, then fade in. Uses the sprite char start saved by setupice in
 									;spritechars. Called from StartHL2
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	forceblack				;screen off
-	bclr	#sfpz,(sflags).w		;clear sfpz
-	move.w	(disflags).w,-(sp)		;keep disflags
-	bset	#dfng,(disflags).w		;set dfng
-	clr.w	(Hpos).w				;Hpos 0
-	clr.w	(Vpos).w				;Vpos 0
-	move.w	#$7D0,(Oldrow).w		;Oldrow $7D0
-	st	(Zamx).w					;Zamx -1
+	bclr	#sfpz,(sflags).w
+	move.w	(disflags).w,-(sp)
+	bset	#dfng,(disflags).w
+	clr.w	(Hpos).w
+	clr.w	(Vpos).w
+	move.w	#$7D0,(Oldrow).w
+	st	(Zamx).w
 	move.w	(spritechars).w,d4		;sprite char start from setupice
-	bsr.w	defaultsprites			;default sprites
-	bsr.w	setupIceRinkPal			;ice rink palette
-	btst	#gmdir,(gmode).w		;gmdir set?
-	beq.w	.gok					;no: keep the goals
-	movea.w	#(SortCords-M68K_RAM),a3	;a3 = sort objects
-	moveq	#$B,d0					;12 players
+	bsr.w	defaultsprites
+	bsr.w	setupIceRinkPal
+	btst	#gmdir,(gmode).w
+	beq.w	.gok
+	movea.w	#(SortCords-M68K_RAM),a3
+	moveq	#$B,d0
 .loop								;flip each player's goal
-	bchg	#pfgoal,pflags(a3)		;flip pfgoal
-	adda.w	#SCstruct,a3			;next object
-	dbf	d0,.loop					;loop
+	bchg	#pfgoal,pflags(a3)
+	adda.w	#SCstruct,a3
+	dbf	d0,.loop
 .gok								;goals set for this period's direction
-	bsr.w	setplayercolors			;set the player colours
+	bsr.w	setplayercolors
 	move.w	#$FFFF,(PadControlBits).w	;no pad assignments
 	move.w	#$FFFF,(PadControlBits34).w	;no pad assignments for pads 3 and 4
 	clr.l	(padcont).w				;clear the pad readings
-	clr.l	(padcont+4).w			;clear the pad state
-	clr.l	(padcont+8).w			;(last long)
+	clr.l	(padcont+4).w
+	clr.l	(padcont+8).w
 	st	(c1playernum).w				;pad 1 controls no player
 	st	(c2playernum).w				;pad 2 controls no player
 	bsr.w	setupEASportsMap		;easn tiles at EASNcset again
@@ -143,39 +143,39 @@ setupice_highlight					;Rebuild the rink sprites after a highlight replay withou
 	movea.w	#(Satt-M68K_RAM),a6		;sprite attribute table
 	moveq	#1,d6					;link counter
 	movea.w	#(pads-M68K_RAM),a3		;the 6 pad (scrolled) objects
-	clr.w	d0						;d0 = 0
-	clr.w	d1						;d1 = 0
-	bsr.w	addframe2				;add the frame
-	adda.w	#ffosize,a3				;next faceoff object
-	bsr.w	addframe2				;add the frame
-	adda.w	#ffosize,a3				;next faceoff object
-	bsr.w	addframe2				;add the frame
-	adda.w	#ffosize,a3				;next faceoff object
-	bsr.w	addframe2				;add the frame
-	adda.w	#ffosize,a3				;next faceoff object
-	bsr.w	addframe2				;add the frame
-	adda.w	#ffosize,a3				;next faceoff object
-	bsr.w	addframe2				;add the frame
+	clr.w	d0
+	clr.w	d1
+	bsr.w	addframe2
+	adda.w	#ffosize,a3
+	bsr.w	addframe2
+	adda.w	#ffosize,a3
+	bsr.w	addframe2
+	adda.w	#ffosize,a3
+	bsr.w	addframe2
+	adda.w	#ffosize,a3
+	bsr.w	addframe2
+	adda.w	#ffosize,a3
+	bsr.w	addframe2
 	move.l	a5,(DMAlistend).w		;end of the queued dma
-	bsr.w	dodmalist				;DMA list
+	bsr.w	dodmalist
 	move.w	#$1C,(palcount).w		;fade in new graphics now
-	move.w	(sp)+,(disflags).w		;restore disflags
-	move.l	#VBlank,(VBint).w		;vertical blank handler
-	bclr	#dfok,(disflags).w		;clear dfok
-	bclr	#dfng,(disflags).w		;clear dfng
-	move	#$2300,sr				;enable interrupts
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;done
+	move.w	(sp)+,(disflags).w
+	move.l	#VBlank,(VBint).w
+	bclr	#dfok,(disflags).w
+	bclr	#dfng,(disflags).w
+	move	#$2300,sr
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 setupIceRinkPal						;Copy the ice rink palettes (pal 0&1, 16 longs) to palfadenew. Called from
 									;setupice, setupice_highlight and the stats screens
-	movea.l	#Rinktilelist,a0		;a0 = rink tile list
+	movea.l	#Rinktilelist,a0
 	adda.l	(a0),a0					;palette offset in the map header
-	moveq	#$F,d0					;loop count of 16
-	movea.w	#(palfadenew-M68K_RAM),a1	;a1 = palfadenew
+	moveq	#$F,d0
+	movea.w	#(palfadenew-M68K_RAM),a1
 .ipal								;copy the rink palettes
 	move.l	(a0)+,(a1)+				;16 longs = palettes 0 and 1
-	dbf	d0,.ipal					;loop for the other longs
-	rts								;return
+	dbf	d0,.ipal
+	rts
 setupEASportsMap					;Decompress the easn logo tiles (EASportsMap+8) to vram at EASNcset.
 									;Called
 									;from setupice, setupice_highlight
@@ -265,34 +265,34 @@ defaultsprites						;allocate vram and assign char area for graphic structures. 
 									;for data. Sets up the sso (4) and ffo (7) objects from .listsso /
 									;.listffo, then jumps to defaultsprites_0. Called from setupice and
 									;setupice_highlight
-	movea.l	#.listsso,a2			;a2 = sso list
-	movea.w	#(sso-M68K_RAM),a3		;a3 = sso structures
-	moveq	#ssonum-1,d0			;sso count
+	movea.l	#.listsso,a2
+	movea.w	#(sso-M68K_RAM),a3
+	moveq	#ssonum-1,d0
 .ssotop								;each screen object
 	move.w	#$FFFF,oldframe(a3)		;screen objects not locked to scroll of screen
-	move.w	(a2)+,Xcord(a3)			;x
-	move.w	(a2)+,Ycord(a3)			;y
-	move.w	(a2)+,frame(a3)			;frame
-	move.w	(a2)+,attribute(a3)		;attribute
+	move.w	(a2)+,Xcord(a3)
+	move.w	(a2)+,Ycord(a3)
+	move.w	(a2)+,frame(a3)
+	move.w	(a2)+,attribute(a3)
 	move.w	d4,VRchar(a3)			;first char of this object
-	add.w	(a2)+,d4				;d4 plus the chars
-	adda.w	#ssosize,a3				;next sso
-	dbf	d0,.ssotop					;loop
-	movea.l	#.listffo,a2			;a2 = ffo list
-	movea.l	#pads,a3				;a3 = pads
-	moveq	#ffonum-1,d0			;ffo count
+	add.w	(a2)+,d4
+	adda.w	#ssosize,a3
+	dbf	d0,.ssotop
+	movea.l	#.listffo,a2
+	movea.l	#pads,a3
+	moveq	#ffonum-1,d0
 .ffotop								;each scrolled object
 	st	oldframe(a3)				;objects tied to screen scrolling (not players/net/puck)
 	move.w	(a2)+,(a3)				;Xpos
-	move.w	(a2)+,Ypos(a3)			;y
-	move.w	(a2)+,Zpos(a3)			;z
-	move.w	(a2)+,frame(a3)			;frame
-	move.w	(a2)+,attribute(a3)		;attribute
-	move.w	d4,VRchar(a3)			;vram char
-	add.w	(a2)+,d4				;d4 plus the chars
+	move.w	(a2)+,Ypos(a3)
+	move.w	(a2)+,Zpos(a3)
+	move.w	(a2)+,frame(a3)
+	move.w	(a2)+,attribute(a3)
+	move.w	d4,VRchar(a3)
+	add.w	(a2)+,d4
 	adda.w	#ffosize,a3				;next pad object
-	dbf	d0,.ffotop					;loop
-	bra.w	defaultsprites_0		;continue
+	dbf	d0,.ffotop
+	bra.w	defaultsprites_0
 .listsso							;start values of the screen objects
 	dc.w	0						;xcord,ycord,frame,attribute,vram char size
 	dc.w	0
@@ -602,85 +602,85 @@ SprSort								;sort objects in struct SortObj and set corresponding tables for 
 	rts
 resetplstuff						;reset team variables/and players on both teams. Called from puckfaceoff2,
 									;puckpenshot and StartHL2
-	movem.l	d0-d2/a0-a3,-(sp)		;save registers
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
-	bsr.w	.top					;reset that team
-	movea.w	#(awtmstruct-M68K_RAM),a2	;a2 = away team struct
-	bsr.w	.top					;reset that team
-	movem.l	(sp)+,d0-d2/a0-a3		;restore registers
-	rts								;return
+	movem.l	d0-d2/a0-a3,-(sp)
+	movea.w	#(tmstruct-M68K_RAM),a2
+	bsr.w	.top
+	movea.w	#(awtmstruct-M68K_RAM),a2
+	bsr.w	.top
+	movem.l	(sp)+,d0-d2/a0-a3
+	rts
 .top								;local subroutine
 	bclr	#tmfoside,tmflags(a2)	;clear team offside bit
-	moveq	#5,d2					;loop count of 6
-	movea.w	tmsort(a2),a3			;a3 = first sorted player
+	moveq	#5,d2
+	movea.w	tmsort(a2),a3
 .loop								;each player of the team
-	clr.b	pflags2(a3)				;clear pflags2
-	tst.w	position(a3)			;test the position
-	bmi.w	.next					;branch taken: negative, next player
+	clr.b	pflags2(a3)
+	tst.w	position(a3)
+	bmi.w	.next
 	move.w	#SPAglide,d1			;92 $346
 	bsr.w	SetSPA					;set the glide animation
-	clr.w	impact(a3)				;clear impact
-	clr.b	nopuck(a3)				;clear nopuck
+	clr.w	impact(a3)
+	clr.b	nopuck(a3)
 	andi.b	#$C2,pflags(a3)			;2^pfteam + 2^pfgoal +2^pfna, pflags
 .next								;next player
-	adda.w	#SCstruct,a3			;step to next player struct
+	adda.w	#SCstruct,a3
 	dbf	d2,.loop					;next player
-	rts								;return
+	rts
 clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
 									;(tmHotCold, saved to
 									;homehotcoldsave / awayhotcoldsave and back) and tmstruct+tmgoalie /
 									;awtmstruct+tmgoalie. Falls into setteams
 	move.w	(tmstruct+tmgoalie).w,-(sp)	;keep the home goalie
 	move.w	(awtmstruct+tmgoalie).w,-(sp)	;keep the away goalie
-	movem.l	a1-a3,-(sp)				;save a1-a3
+	movem.l	a1-a3,-(sp)
 	move.w	#tmPerGoals-tmHotCold-1,d0	;hot / cold table bytes - 1
 	movea.l	#awtmstruct+tmHotCold,a1	;Hot/Cold table Away Team
 	movea.l	#tmstruct+tmHotCold,a0	;Hot/Cold table Home Team
-	movea.l	#homehotcoldsave,a2		;a2 = home hot/cold save
-	movea.l	#awayhotcoldsave,a3		;a3 = away hot/cold save
+	movea.l	#homehotcoldsave,a2
+	movea.l	#awayhotcoldsave,a3
 .loop								;keep both hot / cold tables
-	move.b	(a0)+,(a2)+				;save a home byte
-	move.b	(a1)+,(a3)+				;save an away byte
+	move.b	(a0)+,(a2)+
+	move.b	(a1)+,(a3)+
 	dbf	d0,.loop					;next byte
-	movem.l	(sp)+,a1-a3				;restore a1-a3
-	move.l	#tmsize-1,d0			;home structure size
-	movea.w	#(tmstruct-M68K_RAM),a0	;a0 = home team structure
+	movem.l	(sp)+,a1-a3
+	move.l	#tmsize-1,d0
+	movea.w	#(tmstruct-M68K_RAM),a0
 .loop2								;clear the home struct
-	clr.b	(a0)+					;clear a byte
+	clr.b	(a0)+
 	dbf	d0,.loop2					;next byte
-	movea.w	#(awtmstruct-M68K_RAM),a0	;a0 = away team structure
-	move.w	#tmsize-1,d0			;away structure size
+	movea.w	#(awtmstruct-M68K_RAM),a0
+	move.w	#tmsize-1,d0
 .loop3								;clear the away struct
-	clr.b	(a0)+					;clear a byte
+	clr.b	(a0)+
 	dbf	d0,.loop3					;next byte
-	movem.l	a1-a3,-(sp)				;save a1-a3
+	movem.l	a1-a3,-(sp)
 	move.w	#tmPerGoals-tmHotCold-1,d0	;hot / cold table bytes - 1
-	movea.l	#awtmstruct+tmHotCold,a1	;a1 = away hot/cold
-	movea.l	#tmstruct+tmHotCold,a0	;a0 = home hot/cold
-	movea.l	#homehotcoldsave,a2		;a2 = home hot/cold save
-	movea.l	#awayhotcoldsave,a3		;a3 = away hot/cold save
+	movea.l	#awtmstruct+tmHotCold,a1
+	movea.l	#tmstruct+tmHotCold,a0
+	movea.l	#homehotcoldsave,a2
+	movea.l	#awayhotcoldsave,a3
 .loop4								;put the hot / cold tables back
-	move.b	(a2)+,(a0)+				;restore a home byte
-	move.b	(a3)+,(a1)+				;restore an away byte
+	move.b	(a2)+,(a0)+
+	move.b	(a3)+,(a1)+
 	dbf	d0,.loop4					;next byte
-	movem.l	(sp)+,a1-a3				;restore a1-a3
-	move.w	(sp)+,(awtmstruct+tmgoalie).w	;away goalie
-	move.w	(sp)+,(tmstruct+tmgoalie).w	;home goalie
-	st	(tmstruct+tmpdst+$34).w		;home tmpdst entry -1
-	st	(awtmstruct+tmpdst+$34).w	;away tmpdst entry -1
+	movem.l	(sp)+,a1-a3
+	move.w	(sp)+,(awtmstruct+tmgoalie).w
+	move.w	(sp)+,(tmstruct+tmgoalie).w
+	st	(tmstruct+tmpdst+$34).w
+	st	(awtmstruct+tmpdst+$34).w
 setteams							;Use hometeam/visteam to set team structures (InitTeamStructure for each).
 									;Falls in from clearTeamStats, also called from DrawMatchupBitmaps
-	movem.l	d0/a0-a2,-(sp)			;save registers
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team struct
-	move.w	(HomeTeam).w,d0			;d0 = home team
+	movem.l	d0/a0-a2,-(sp)
+	movea.w	#(tmstruct-M68K_RAM),a2
+	move.w	(HomeTeam).w,d0
 	move.w	#(SortCords-M68K_RAM),tmsort(a2)	;home players: the first 6 sort objects
-	bsr.w	InitTeamStructure		;initialize the team structure
-	movea.w	#(awtmstruct-M68K_RAM),a2	;a2 = away team struct
-	move.w	(VisTeam).w,d0			;d0 = visiting team
+	bsr.w	InitTeamStructure
+	movea.w	#(awtmstruct-M68K_RAM),a2
+	move.w	(VisTeam).w,d0
 	move.w	#(SortCords-M68K_RAM)+(6*SCstruct),tmsort(a2)	;away players: the next 6 sort objects
-	bsr.w	InitTeamStructure		;initialize the team structure
-	movem.l	(sp)+,d0/a0-a2			;restore registers
-	rts								;return
+	bsr.w	InitTeamStructure
+	movem.l	(sp)+,d0/a0-a2
+	rts
 InitTeamStructure					;Set up team struct a2 for team d0: store the team number (tmteam), the
 									;team data address (tmdata), and copy 7 of the 8 line sets to tmlines.
 									;OptLine Off / Auto: line 1 (the no-line-change line) and lines 3-8;
@@ -1018,56 +1018,56 @@ waitxc1								;Each time palcount runs out, eor the color
 	move.w	d0,(OldVcount).w
 	rts
 PlayoffScreen_doscores				;Print best of 7 wins "t-b" for game struct a2 at printx/printy
-	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
-	move.w	#6,(a1)+				;print position word 6
-	move.w	gspotwins(a2),d0		;d0 = wins of the first team
-	addi.w	#$30,d0					;to an ASCII digit
-	move.b	d0,(a1)+				;store it
-	move.b	#$2D,(a1)+				;'-'
-	move.w	gspobwins(a2),d0		;d0 = wins of the other team
-	addi.w	#$30,d0					;to an ASCII digit
-	move.b	d0,(a1)+				;store it
-	clr.b	(a1)+					;end of string
-	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area
-	bra.w	print					;print it
+	movea.w	#(mesarea-M68K_RAM),a1
+	move.w	#6,(a1)+
+	move.w	gspotwins(a2),d0
+	addi.w	#$30,d0
+	move.b	d0,(a1)+
+	move.b	#$2D,(a1)+
+	move.w	gspobwins(a2),d0
+	addi.w	#$30,d0
+	move.b	d0,(a1)+
+	clr.b	(a1)+
+	movea.w	#(mesarea-M68K_RAM),a1
+	bra.w	print
 PlayoffScreen_doarrow				;Draw tree arrow d0 from the arrows map (ArrowsMap) at printx/printy
-	movem.l	d0-d7/a0-a3,-(sp)		;save registers
+	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#ArrowsMap,a0			;a0 = arrows map
 	movea.l	a0,a1					;a1 = map header
 	adda.l	(a0),a0					;a0 = arrow frames
 	adda.l	jimdata(a1),a1			;a1 = map data
-	movea.w	#null,a2				;no sprite attributes
-	clr.w	d1						;d1 = 0
-	moveq	#2,d2					;d2 = 2
-	moveq	#$17,d3					;d3 = $17
-	move.w	(ExtraChars).w,d4		;d4 = ExtraChars
-	moveq	#0,d5					;d5 = 0
-	bsr.w	dobitmap				;draw the bitmap
-	movem.l	(sp)+,d0-d7/a0-a3		;restore registers
-	rts								;return
+	movea.w	#null,a2
+	clr.w	d1
+	moveq	#2,d2
+	moveq	#$17,d3
+	move.w	(ExtraChars).w,d4
+	moveq	#0,d5
+	bsr.w	dobitmap
+	movem.l	(sp)+,d0-d7/a0-a3
+	rts
 PlayoffScreen_doteam				;Draw team block d1 (team*2) from the TeamBlocks map (TeamBlocksmap) at
 									;printx/printy; the user's team (potreeteam entry of potree) is
 									;highlighted (printa $6000)
-	movem.l	d0-d7/a0-a3,-(sp)		;save registers
+	movem.l	d0-d7/a0-a3,-(sp)
 	movea.w	#(potree-M68K_RAM),a0	;teams in the tree
 	move.w	(potreeteam).w,d0		;the user's team entry
-	move.b	0(a0,d0.w),d0			;d0 = team in the tree
-	add.b	d0,d0					;double it
+	move.b	0(a0,d0.w),d0
+	add.b	d0,d0
 	cmp.b	d0,d1					;this block?
-	bne.w	.nohi					;branch taken: not this block, skip
-	move.w	#$6000,(printa).w		;printa = $6000
+	bne.w	.nohi
+	move.w	#$6000,(printa).w
 .nohi								;the team that won the round highlighted
 	movea.l	#TeamBlocksmap,a1		;a1 = map header of the team blocks
-	adda.l	jimdata(a1),a1			;a1 = map data
-	movea.w	#null,a2				;no sprite attributes
-	clr.w	d0						;d0 = 0
-	move.w	(a1),d2					;d2 = map width
-	moveq	#2,d3					;d3 = 2
-	moveq	#2,d4					;d4 = 2
-	moveq	#0,d5					;d5 = 0
-	bsr.w	dobitmap				;draw the bitmap
-	movem.l	(sp)+,d0-d7/a0-a3		;restore registers
-	rts								;return
+	adda.l	jimdata(a1),a1
+	movea.w	#null,a2
+	clr.w	d0
+	move.w	(a1),d2
+	moveq	#2,d3
+	moveq	#2,d4
+	moveq	#0,d5
+	bsr.w	dobitmap
+	movem.l	(sp)+,d0-d7/a0-a3
+	rts
 VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite table, write
 									;$FEA0+DispAttribCtr to the hscroll, cramfade. Always Vcount+1,
 									;p_music_vblank, rte

@@ -85,30 +85,30 @@ PositionBoxesTop					;ClampPositionBox boxes, top net
 ClearGameStats						;Clear the game stats: shootoutstate (19 words), both team structs
 									;(tmstruct, awtmstruct), PenBuf, BA_PS_flags, sflags4 / F8 / FA and
 									;setupcardflags / featuredplayer. Called from GameSetUp
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	movea.l	#shootoutstate,a0		;a0 = shootoutstate
-	moveq	#$12,d0					;loop count of 19
+	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#shootoutstate,a0
+	moveq	#$12,d0
 .loop								;clear the shootout state
-	clr.w	(a0)+					;clear a word
-	dbf	d0,.loop					;loop for the other words
-	movea.l	#tmstruct,a0			;a0 = home team struct
-	move.w	#tmsize-1,d0			;loop count of tmsize words
+	clr.w	(a0)+
+	dbf	d0,.loop
+	movea.l	#tmstruct,a0
+	move.w	#tmsize-1,d0
 .loop2								;clear both team structs (tmsize words)
-	clr.w	(a0)+					;clear a word
-	dbf	d0,.loop2					;loop for the other words
-	movea.l	#PenBuf,a0				;a0 = PenBuf
-	moveq	#$24,d0					;loop count of 37
+	clr.w	(a0)+
+	dbf	d0,.loop2
+	movea.l	#PenBuf,a0
+	moveq	#$24,d0
 .loop3								;clear PenBuf
-	clr.w	(a0)+					;clear a word
-	dbf	d0,.loop3					;loop for the other words
+	clr.w	(a0)+
+	dbf	d0,.loop3
 	clr.w	(BA_PS_flags).w			;no penalty shot
-	clr.w	(sflags4).w				;clear sflags4
-	clr.w	(sflags6).w				;clear sflags6
+	clr.w	(sflags4).w
+	clr.w	(sflags6).w
 	clr.w	(gmode2).w				;game mode 2 cleared
 	clr.w	(setupcardflags).w		;no setup card flags
-	clr.w	(featuredplayer).w		;clear featuredplayer
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;return
+	clr.w	(featuredplayer).w
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 AddArenaAnimSprite					;Add the frame arenaframe of the arena animation (sprite list
 									;arenaspritelist, see RunArenaAnim) to the sprite table a6 (d6 sprites, 64
 									;at most) for the pieces inside the view (Hpos / Vpos). Not in a reverse
@@ -234,14 +234,14 @@ PrintPlayerNameRight				;Print the name of player d0 of team a2 (FormatPlayerNam
 	rts
 SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String without its first 2
 									;characters (the length word moved up 2)
-	movem.l	d0-d7/a0/a2-a3,-(sp)	;save registers
-	jsr	(FormatPlayerNumInitial).l	;format the number and initial
-	move.w	(a1),d0					;d0 = string length
-	subq.w	#2,d0					;minus 2
+	movem.l	d0-d7/a0/a2-a3,-(sp)
+	jsr	(FormatPlayerNumInitial).l
+	move.w	(a1),d0
+	subq.w	#2,d0
 	move.w	d0,2(a1)				;2 characters shorter
 	addq.w	#2,a1					;length word moved up
-	movem.l	(sp)+,d0-d7/a0/a2-a3	;restore registers
-	rts								;return
+	movem.l	(sp)+,d0-d7/a0/a2-a3
+	rts
 	String	' . '
 PeriodStatsScreen					;"Period Stats" menu item (menu lists): both team logos (TeamLogoBitmaps,
 									;TeamLogoPalettes palettes), then the goals (matchup 0) or shots of each
@@ -526,142 +526,142 @@ rtsStatScroll						;rts of StatScrollRow / StatScrollRowEnd
 	rts
 PrintStatScrollArrows				;StatsReport scroll arrows (printz2): up ($7B) when VertLineScrolling > 0,
 									;down ($7D) when it is below matchupvis
-	movem.l	d0-d7/a0-a6,-(sp)		;save registers
-	jsr	(printsmallz).l				;set print position from the string
+	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	(printsmallz).l
 	String	CC_SetFont,1			;arrow font
 	tst.w	(VertLineScrolling).w	;at the top?
 	beq.w	.0						;at the top: none
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',8,CC_SetFont,1,'{'	;up arrow
-	bra.w	.1						;continue
+	bra.w	.1
 .0									;VertLineScrolling = 0
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',8,CC_SetFont,1,' '	;no up arrow
 .1									;up arrow done
-	move.w	(matchupvis).w,d0		;d0 = matchupvis
+	move.w	(matchupvis).w,d0
 	cmp.w	(VertLineScrolling).w,d0	;at the end?
 	beq.w	.2						;at the end: none
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',$1A,CC_SetFont,1,'}'	;down arrow
-	bra.w	.3						;continue
+	bra.w	.3
 .2									;d0 = VertLineScrolling
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,3,'&',$1A,CC_SetFont,1,' '	;no down arrow
 .3									;down arrow done
-	jsr	(printsmallz).l				;set print position from the string
+	jsr	(printsmallz).l
 	String	CC_SetFont				;normal font
-	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
-	rts								;return
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 DisplayStats						;Team logos (PutTeamBlock), then each
 									;TeamStatTextTbl row (TeamStatTextTblNoPen when penalties are off, OptPen)
 									;centred, with the home value at x $22 and the visitors' at x 9
 									;(PrintStatValue); SetStatScroll first
-	jsr	(printz).l					;print the position codes
+	jsr	(printz).l
 	String	CC_Font3Pri,2,7			;visitors logo position
-	move.w	#$2C,d0					;d0 = $2C
-	jsr	(PutTeamBlock).l			;put the team block
-	jsr	(printz).l					;print the position codes
+	move.w	#$2C,d0
+	jsr	(PutTeamBlock).l
+	jsr	(printz).l
 	String	CC_Font3Pri,$1A,7		;home logo position
-	moveq	#0,d0					;d0 = 0
-	jsr	(PutTeamBlock).l			;put the team block
-	bsr.w	SetStatScroll			;set the stat scroll
-	jsr	(printz).l					;print the position codes
+	moveq	#0,d0
+	jsr	(PutTeamBlock).l
+	bsr.w	SetStatScroll
+	jsr	(printz).l
 	String	CC_Font2Pri,0,0
 	moveq	#$E,d6					;15 rows
-	lea	TeamStatTextTbl(pc),a1		;a1 = stat label table
-	tst.w	(OptPen).w				;penalty stats on?
-	bne.w	.row					;yes: keep
+	lea	TeamStatTextTbl(pc),a1
+	tst.w	(OptPen).w
+	bne.w	.row
 	move.w	#$A,d6					;11 rows
-	lea	TeamStatTextTblNoPen(pc),a1	;a1 = table without penalties
+	lea	TeamStatTextTblNoPen(pc),a1
 .row								;label table chosen
-	move.w	(a1),d0					;d0 = label width
+	move.w	(a1),d0
 	lsr.w	#1,d0					;half the label width
-	neg.w	d0						;negated
+	neg.w	d0
 	addi.w	#$15,d0					;centre the label around x $15
-	move.w	d0,(printx).w			;printx
-	jsr	(print).l					;print the label
+	move.w	d0,(printx).w
+	jsr	(print).l
 	movea.l	a1,a0					;a0 = stat offsets
-	move.w	#$22,(printx).w			;printx $22
-	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team structure
-	bsr.w	PrintStatValue			;print the value
-	move.w	#9,(printx).w			;printx 9
-	lea	tmsize(a2),a2				;a2 = away team structure
+	move.w	#$22,(printx).w
+	movea.w	#(tmstruct-M68K_RAM),a2
+	bsr.w	PrintStatValue
+	move.w	#9,(printx).w
+	lea	tmsize(a2),a2
 	bsr.w	PrintStatValue			;away team value, centred at x 9
-	lea	4(a0),a1					;a1 = next entry
+	lea	4(a0),a1
 	addq.w	#2,(printy).w			;2 map rows per table row
 	dbf	d6,.row						;next row
-	rts								;done
+	rts
 PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at printx: the value
 									;(tmATOP and tmPwrPlayTime are times
 									;PushTime), "/second" if any, " (pct%)" for passing. Offset $FFFF is the
 									;shooting percentage (tmscore * 100 / tmshots), printed with a "%"
-	movea.w	#(mesarea-M68K_RAM),a3	;a3 = message area
+	movea.w	#(mesarea-M68K_RAM),a3
 	move.w	#2,(a3)					;empty string
 	cmpi.w	#$FFFF,(a0)				;shooting percentage row
-	bne.w	.1						;branch taken
-	move.w	#tmscore,d0				;d0 = tmscore offset
-	move.w	(a2,d0.w),d0			;goals
-	mulu.w	#$64,d0					;times 100
-	move.w	#tmshots,d1				;d1 = tmshots offset
-	move.w	(a2,d1.w),d1			;shots
-	beq.w	.0						;zero: no percentage
-	divu.w	d1,d0					;divided by the shots
+	bne.w	.1
+	move.w	#tmscore,d0
+	move.w	(a2,d0.w),d0
+	mulu.w	#$64,d0
+	move.w	#tmshots,d1
+	move.w	(a2,d1.w),d1
+	beq.w	.0
+	divu.w	d1,d0
 .0									;% ready (0 with no shots)
-	jsr	(PushNumber).l				;push the number
-	jsr	(appstring).l				;append it
-	jsr	(appendz).l					;append the end
+	jsr	(PushNumber).l
+	jsr	(appstring).l
+	jsr	(appendz).l
 	String	'%'
 	bra.w	.6						;print it
 .1									;not the shooting percentage: the value
-	move.w	(a0),d0					;d0 = value offset
-	move.w	(a2,d0.w),d0			;value
+	move.w	(a0),d0
+	move.w	(a2,d0.w),d0
 	cmpi.w	#tmPwrPlayTime,(a0)		;PP minutes row?
-	bne.w	.2						;branch taken
-	bsr.w	.8						;push the time
+	bne.w	.2
+	bsr.w	.8
 	bra.w	.4						;time appended
 .2									;a0 <> #tmPwrPlayTime
 	cmpi.w	#$A,(a0)				;ATOP row?
-	beq.w	.3						;branch taken
-	bsr.w	.7						;push the number
+	beq.w	.3
+	bsr.w	.7
 .3									;time line done
 	cmpi.w	#$A,(a0)				;ATOP row?
-	bne.w	.4						;branch taken
-	bsr.w	.8						;push the time
+	bne.w	.4
+	bsr.w	.8
 .4									;print the label
-	jsr	(appstring).l				;append the label
+	jsr	(appstring).l
 	move.w	2(a0),d0				;second offset
-	bmi.w	.6						;negative: print
-	jsr	(appendz).l					;append the end
+	bmi.w	.6
+	jsr	(appendz).l
 	String	'/'
-	move.w	(a2,d0.w),d0			;second value
-	jsr	(PushNumber).l				;push the number
-	jsr	(appstring).l				;append it
+	move.w	(a2,d0.w),d0
+	jsr	(PushNumber).l
+	jsr	(appstring).l
 	cmpi.w	#$14,(a0)				;passing row?
-	bne.w	.6						;branch taken
-	jsr	(appendz).l					;append the end
+	bne.w	.6
+	jsr	(appendz).l
 	String	' ('
-	move.w	(a0),d0					;d0 = first offset
-	move.w	(a2,d0.w),d0			;first value
-	mulu.w	#$64,d0					;times 100
-	move.w	2(a0),d1				;d1 = second offset
-	move.w	(a2,d1.w),d1			;second value
-	beq.w	.5						;zero: no percentage
-	divu.w	d1,d0					;divided
+	move.w	(a0),d0
+	move.w	(a2,d0.w),d0
+	mulu.w	#$64,d0
+	move.w	2(a0),d1
+	move.w	(a2,d1.w),d1
+	beq.w	.5
+	divu.w	d1,d0
 .5									;% ready (0 when the divisor is 0)
-	jsr	(PushNumber).l				;push the number
-	jsr	(appstring).l				;append it
-	jsr	(appendz).l					;append the end
+	jsr	(PushNumber).l
+	jsr	(appstring).l
+	jsr	(appendz).l
 	String	'%)'
 .6									;print the line
-	movea.w	a3,a1					;a1 = message area
-	move.w	(a1),d0					;d0 = its width
-	lsr.w	#1,d0					;half
-	sub.w	d0,(printx).w			;centre on printx
-	jmp	(print).l					;print
+	movea.w	a3,a1
+	move.w	(a1),d0
+	lsr.w	#1,d0
+	sub.w	d0,(printx).w
+	jmp	(print).l
 .7									;local subroutine
-	jmp	(PushNumber).l				;push the number
+	jmp	(PushNumber).l
 .8									;local subroutine
-	jmp	(PushTime).l				;push the time
+	jmp	(PushTime).l
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
 	String	'Score'
@@ -735,14 +735,14 @@ updatePPTeamTime					;One more second of power play time (tmPwrPlayTime) for the
 	rts
 GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 									;(the player card "Team Rating") and PrintMatchupRating
-	movem.l	d1-d7/a0-a6,-(sp)		;save registers
-	move.w	tmteam(a2),d0			;d0 = team number
-	movea.l	#TeamRatings,a0			;a0 = ratings table
-	clr.w	d1						;d1 = 0
-	move.b	0(a0,d0.w),d1			;rating byte of the team
-	move.w	d1,d0					;return it in d0
-	movem.l	(sp)+,d1-d7/a0-a6		;restore registers
-	rts								;done
+	movem.l	d1-d7/a0-a6,-(sp)
+	move.w	tmteam(a2),d0
+	movea.l	#TeamRatings,a0
+	clr.w	d1
+	move.b	0(a0,d0.w),d1
+	move.w	d1,d0
+	movem.l	(sp)+,d1-d7/a0-a6
+	rts
 TeamRatings							;GetTeamRating values, one byte per team (TeamList order)
 	dc.b	$33,$4C,$49,$4B,$4E,$43,$4B,$43,$34,$42,$4A,$49,$44,$42
 	dc.b	$4A,$37,$45,$4B,$47,$38,$45,$38,$48,$47,$48,$46,$5B,$59
@@ -753,16 +753,16 @@ TeamRatingsEnd						;end of TeamRatings (size check below)
 	even
 ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) and a3 is not
 									;the puck carrier. Called from doinput
-	movem.l	d0,-(sp)				;save d0
-	tst.w	(cont2team).w			;second pad on?
-	beq.w	.0						;no: cap the timer
-	move.w	SCnum(a3),d0			;d0 = SCnum of a3
-	cmp.w	(puckc).w,d0			;a3 is the puck carrier?
-	bne.w	.x						;no: leave the timer
+	movem.l	d0,-(sp)
+	tst.w	(cont2team).w
+	beq.w	.0
+	move.w	SCnum(a3),d0
+	cmp.w	(puckc).w,d0
+	bne.w	.x
 .0									;message for the puck carrier (or one pad)
-	cmpi.w	#2,(msgtimer).w			;already 2 or less?
-	ble.w	.x						;yes: leave it
-	move.w	#2,(msgtimer).w			;cap it at 2
+	cmpi.w	#2,(msgtimer).w
+	ble.w	.x
+	move.w	#2,(msgtimer).w
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0				;restore d0
-	rts								;done
+	movem.l	(sp)+,d0
+	rts
