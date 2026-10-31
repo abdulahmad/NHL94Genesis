@@ -1109,191 +1109,191 @@ chkpuckc							;puck carrier a3: check for a breakaway (not in a shootout or pen
 	move.w	#$10,d0					;asspuckc
 	bsr.w	assreplace
 asspuckc							;player a3 is puck handler
-	bclr	#2,(sflags5).w
-	bne.w	.0
-	bclr	#pf3break,pflags3(a3)
+	bclr	#2,(sflags5).w			;clear sflags5 bit 2
+	bne.w	.0						;it was set: keep pf3break
+	bclr	#pf3break,pflags3(a3)	;clear pf3break
 .0									;check the message timer
-	move.w	(puckc).w,d0
-	cmp.w	SCnum(a3),d0
-	bne.w	assexit
-	btst	#2,(BA_PS_flags).w
-	beq.w	.1
-	cmpi.w	#1,(msgtimer).w
-	bgt.w	.x
+	move.w	(puckc).w,d0			;d0 = SCnum of the puck carrier
+	cmp.w	SCnum(a3),d0			;is it a3?
+	bne.w	assexit					;no: exit
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	beq.w	.1						;no: continue
+	cmpi.w	#1,(msgtimer).w			;message timer above 1?
+	bgt.w	.x						;yes: exit
 .1									;breakaway check
-	btst	#pf3break,pflags3(a3)
-	bne.w	.2
-	btst	#2,(BA_PS_flags).w
-	bne.w	.2
-	jsr	(BreakawayOffsidesFlagSet).l
+	btst	#pf3break,pflags3(a3)	;pf3break set?
+	bne.w	.2						;yes: continue
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.w	.2						;yes: continue
+	jsr	(BreakawayOffsidesFlagSet).l	;breakaway and offsides flag check
 	beq.w	.2						;branch if breakaway flag not set
 	move.w	#$21,d0					;chkpuckc assignment
-	bsr.w	assreplace
-	bra.w	*+4
+	bsr.w	assreplace				;assreplace
+	bra.w	*+4						;continue
 .2									;no breakaway: normal puck carrier play
-	btst	#pfalock,pflags(a3)
-	bne.w	rtss2
-	btst	#2,(BA_PS_flags).w
-	bne.w	.3
-	btst	#gmclock,(gmode).w
-	bne.w	donothing
+	btst	#pfalock,pflags(a3)		;locked (pfalock)?
+	bne.w	rtss2					;yes: done
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.w	.3						;yes: continue
+	btst	#gmclock,(gmode).w		;clock stopped (gmclock)?
+	bne.w	donothing				;yes: do nothing
 .3									;breakaway check
-	btst	#pfjoycon,pflags(a3)
-	bne.w	assexit
-	bclr	#pfna,pflags(a3)
-	beq.w	.7
-	btst	#pf3break,pflags3(a3)
-	beq.w	.4
-	move.w	#SFXbeep1,-(sp)
-	jsr	(sfx).l
+	btst	#pfjoycon,pflags(a3)	;human controlled?
+	bne.w	assexit					;yes: exit
+	bclr	#pfna,pflags(a3)		;clear pfna
+	beq.w	.7						;it was clear: count down
+	btst	#pf3break,pflags3(a3)	;pf3break set?
+	beq.w	.4						;no: skip the beep
+	move.w	#SFXbeep1,-(sp)			;beep sound effect
+	jsr	(sfx).l						;play it
 .4									;breakaway crowd
-	btst	#pf3break,pflags3(a3)
-	beq.w	.6
-	movem.l	a2,-(sp)
-	movea.l	#tmstruct,a2
-	btst	#pfteam,pflags(a3)
-	beq.w	.5
-	movea.l	#awtmstruct,a2
+	btst	#pf3break,pflags3(a3)	;pf3break set?
+	beq.w	.6						;no: skip
+	movem.l	a2,-(sp)				;save a2
+	movea.l	#tmstruct,a2			;a2 = home team structure
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.5						;home: keep
+	movea.l	#awtmstruct,a2			;a2 = away team structure
 .5									;team struct chosen
-	addq.w	#1,tmBreakaways(a2)
-	addi.w	#$14,(CwdExciteLvl).w
-	addi.w	#$C8,(Crowdlevel).w
-	movem.l	(sp)+,a2
+	addq.w	#1,tmBreakaways(a2)		;count a breakaway
+	addi.w	#$14,(CwdExciteLvl).w	;raise the excitement level by $14
+	addi.w	#$C8,(Crowdlevel).w		;raise the crowd level by $C8
+	movem.l	(sp)+,a2				;restore a2
 .6									;breakaway check done
-	clr.w	temp1(a3)
-	move.w	#8,temp2(a3)
-	move.w	(HVcount).l,d0
-	andi.w	#3,d0
-	move.w	d0,temp3(a3)
+	clr.w	temp1(a3)				;temp1 0
+	move.w	#8,temp2(a3)			;temp2 8
+	move.w	(HVcount).l,d0			;d0 = HVcount
+	andi.w	#3,d0					;low 2 bits
+	move.w	d0,temp3(a3)			;temp3
 .7									;count down the timer
-	sub.b	d7,temp1(a3)
-	bpl.w	.nodec
-	move.b	aioff(a3),temp1(a3)
-	jsr	(ReadGoaliePulled).l
-	bmi.w	.8
-	btst	#6,(sflags7).w
-	beq.w	.9
-	tst.b	temp1(a3)
-	beq.w	.9
+	sub.b	d7,temp1(a3)			;count temp1 down by d7
+	bpl.w	.nodec					;still positive: skip
+	move.b	aioff(a3),temp1(a3)		;reload temp1 from aioff
+	jsr	(ReadGoaliePulled).l		;goalie pulled?
+	bmi.w	.8						;yes: quicker
+	btst	#6,(sflags7).w			;sflags7 bit 6 set?
+	beq.w	.9						;no: skip
+	tst.b	temp1(a3)				;temp1 zero?
+	beq.w	.9						;yes: skip
 .8									;goalie pulled or crowd meter broken: quicker decisions
-	subq.b	#1,temp1(a3)
+	subq.b	#1,temp1(a3)			;one less
 .9									;shootout or penalty shot: the shootout shot check
-	btst	#2,(BA_PS_flags).w
-	bne.w	.soshot
-	btst	#0,(gmode2).w
-	bne.w	.soshot
-	bsr.w	checkob
-	bsr.w	chk4lc
-	btst	#0,(gmode2).w
-	bne.w	.soshot
-	btst	#2,(BA_PS_flags).w
-	bne.w	.soshot
-	btst	#pf3break,pflags3(a3)
-	bne.w	.shot
-	move.w	#1,d0
-	btst	#pfteam,pflags(a3)
-	beq.w	.10
-	move.w	#2,d0
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.w	.soshot					;yes: shootout shot
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	bne.w	.soshot					;yes: shootout shot
+	bsr.w	checkob					;offsides check
+	bsr.w	chk4lc					;line change check
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	bne.w	.soshot					;yes: shootout shot
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.w	.soshot					;yes: shootout shot
+	btst	#pf3break,pflags3(a3)	;pf3break set?
+	bne.w	.shot					;yes: shoot check
+	move.w	#1,d0					;d0 = 1
+	btst	#pfteam,pflags(a3)		;which team?
+	beq.w	.10						;home: keep
+	move.w	#2,d0					;d0 = 2
 .10									;team pad chosen
-	cmp.w	(cont1team).w,d0
-	beq.w	.shot
-	cmp.w	(cont2team).w,d0
-	beq.w	.shot
-	btst	#1,(Vcount+1).w
-	bne.w	.pass
+	cmp.w	(cont1team).w,d0		;team on controller 1?
+	beq.w	.shot					;yes: shoot check
+	cmp.w	(cont2team).w,d0		;team on controller 2?
+	beq.w	.shot					;yes: shoot check
+	btst	#1,(Vcount+1).w			;Vcount bit 1
+	bne.w	.pass					;set: pass check
 .shot								;shoot check (on a computer pad, every other frame)
-	bsr.w	chk4shot
-	bra.w	.pass
+	bsr.w	chk4shot				;shoot check
+	bra.w	.pass					;pass check
 .soshot								;bit 2 of BA_PS_flags set or bit 0 of gmode2 set
-	jsr	(ShootoutShootCheck).l
-	bne.w	.nodec
-	jsr	(CompShoot).l
+	jsr	(ShootoutShootCheck).l		;shootout shoot check
+	bne.w	.nodec					;not zero: skate on
+	jsr	(CompShoot).l				;computer shoot check
 .pass								;then the pass check
-	bsr.w	chk4pass
+	bsr.w	chk4pass				;pass check
 .nodec								;skate on toward the target spot (.postab2)
-	moveq	#6,d0
+	moveq	#6,d0					;d0 = 6
 	add.w	temp3(a3),d0			;add temp3 to d0
-	lea	.postab2(pc),a0
+	lea	.postab2(pc),a0				;a0 = target spot table
 	btst	#sf2offsig,(sflags2).w	;#sf2offsig
-	beq.w	.nd1
+	beq.w	.nd1					;branch taken: same code
 	move.w	position(a3),d0			;position
 .nd1								;position for the offside check
-	asl.w	#2,d0
-	move.w	2(a0,d0.w),d1
-	move.w	0(a0,d0.w),d0
-	btst	#2,(BA_PS_flags).w
-	bne.w	.path
-	btst	#0,(gmode2).w
-	beq.w	.15
+	asl.w	#2,d0					;times 4: table entry
+	move.w	2(a0,d0.w),d1			;d1 = y of the spot
+	move.w	0(a0,d0.w),d0			;d0 = x of the spot
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.w	.path					;yes: path
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	beq.w	.15						;no: normal skating
 .path								;skate the shootout path
-	jsr	(SkatePath).l
-	cmpi.b	#$80,(sopathx).w
-	beq.w	.x
+	jsr	(SkatePath).l				;skate along the path
+	cmpi.b	#$80,(sopathx).w		;path ended ($80)?
+	beq.w	.x						;yes: exit
 .15									;normal skating
 	btst	#pfgoal,pflags(a3)		;pfgoal - 0 for bottom 1 for top
-	bne.w	.nd0
-	neg.w	d0
-	neg.w	d1
+	bne.w	.nd0					;branch taken: keep the signs
+	neg.w	d0						;negate x
+	neg.w	d1						;negate y
 .nd0								;coordinates for his end
-	lea	.chkdir(pc),a0
-	btst	#2,(BA_PS_flags).w
-	bne.w	.16
-	btst	#0,(gmode2).w
-	beq.w	.17
+	lea	.chkdir(pc),a0				;a0 = direction check
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	bne.w	.16						;yes: no check
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	beq.w	.17						;no: keep the check
 .16									;shootout or penalty shot: path done
-	lea	.x(pc),a0
+	lea	.x(pc),a0					;a0 = exit
 .17									;skate the path
-	bra.w	skateto
+	bra.w	skateto					;skate to the spot
 .chkdir								;d0 = wanted direction: look for opponents in the way
-	ext.w	d0
+	ext.w	d0						;sign extend
 	move.b	Xvel(a3),d2				;Xvel
-	ext.w	d2
-	add.w	(puckx).w,d2
+	ext.w	d2						;sign extend
+	add.w	(puckx).w,d2			;plus puck x
 	move.b	Yvel(a3),d3				;Yvel
-	ext.w	d3
-	add.w	(pucky).w,d3
-	clr.w	(threat).w
-	moveq	#5,d4
-	movea.w	#(SortCords-M68K_RAM),a0
-	cmpi.w	#6,SCnum(a3)
-	bge.w	.loop
+	ext.w	d3						;sign extend
+	add.w	(pucky).w,d3			;plus puck y
+	clr.w	(threat).w				;no threats
+	moveq	#5,d4					;6 opponents
+	movea.w	#(SortCords-M68K_RAM),a0	;a0 = sort objects
+	cmpi.w	#6,SCnum(a3)			;SCnum 6 or more (away)?
+	bge.w	.loop					;yes: next instruction
 	adda.w	#6*SCstruct,a0			;away team SCstruct start
 .loop								;loop over the opponents
 	move.b	Xvel(a0),d1				;Xvel
-	ext.w	d1
+	ext.w	d1						;sign extend
 	add.w	(a0),d1					;Xpos
-	sub.w	d2,d1
-	cmp.w	#$14,d1
-	bgt.w	.next
-	cmp.w	#$FFEC,d1
-	blt.w	.next
+	sub.w	d2,d1					;minus x
+	cmp.w	#$14,d1					;beyond +$14?
+	bgt.w	.next					;yes: next
+	cmp.w	#$FFEC,d1				;beyond -$14?
+	blt.w	.next					;yes: next
 	move.b	Yvel(a0),d1				;Yvel
-	ext.w	d1
+	ext.w	d1						;sign extend
 	add.w	Ypos(a0),d1				;Ypos
-	sub.w	d3,d1
-	cmp.w	#$14,d1
-	bgt.w	.next
-	cmp.w	#$FFEC,d1
-	blt.w	.next
-	addq.w	#1,(threat).w
+	sub.w	d3,d1					;minus y
+	cmp.w	#$14,d1					;beyond +$14?
+	bgt.w	.next					;yes: next
+	cmp.w	#$FFEC,d1				;beyond -$14?
+	blt.w	.next					;yes: next
+	addq.w	#1,(threat).w			;count a threat
 	move.w	(a3),d0					;Xpos
-	sub.w	(a0),d0
+	sub.w	(a0),d0					;minus his x
 	move.w	Ypos(a3),d1				;Ypos
-	sub.w	Ypos(a0),d1
-	bsr.w	vtoa
+	sub.w	Ypos(a0),d1				;minus his y
+	bsr.w	vtoa					;direction
 	move.w	facedir(a3),d1			;facedir
-	eori.w	#4,d1
-	cmp.w	d0,d1
-	bne.w	.next
-	move.w	(HVcount).l,d1
-	andi.w	#1,d1
-	add.w	d1,d0
-	andi.w	#7,d0
+	eori.w	#4,d1					;opposite direction
+	cmp.w	d0,d1					;same as wanted?
+	bne.w	.next					;no: next
+	move.w	(HVcount).l,d1			;d1 = HVcount
+	andi.w	#1,d1					;low bit
+	add.w	d1,d0					;turn by it
+	andi.w	#7,d0					;0 to 7
 .next								;next opponent
 	adda.w	#SCstruct,a0			;SCstruct size
-	dbf	d4,.loop
+	dbf	d4,.loop					;loop
 .x									;exit (also the end of the code above)
-	rts
+	rts								;done
 .postab2	dc.w	$FF9C
 	dc.w	$FFEC
 	dc.w	$64
