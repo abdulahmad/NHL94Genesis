@@ -90,14 +90,14 @@ DisplayGameInfo						;Print game d3 of gstruct (16 bytes each; not the current g
 									;the two teams and scores (PrintGameInfo) and the period (PerLabels)
 	cmp.w	(gamenum).w,d3
 	beq.w	rtss8					;the current game is not listed
-	moveq	#$10,d0					;16 bytes a game
+	moveq	#gssize,d0				;bytes per game
 	mulu.w	d3,d0
 	movea.w	#(gstruct-M68K_RAM),a0
 	adda.w	d0,a0					;a0 = this game
-	btst	#1,gsflags(a0)
-	bne.w	rtss8					;(flag bit 1: game not shown)
-	btst	#2,gsflags(a0)
-	bne.w	rtss8					;(flag bit 2: game not shown)
+	btst	#gsfhl,gsflags(a0)
+	bne.w	rtss8					;(highlighted game: not shown)
+	btst	#gsfso,gsflags(a0)
+	bne.w	rtss8					;(series over: not shown)
 	move.w	gst2(a0),d0				;first team / score
 	move.w	gss2(a0),d1
 	bsr.w	PrintGameInfo			;print it
