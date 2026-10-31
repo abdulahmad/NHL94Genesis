@@ -230,59 +230,59 @@ showref								;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link c
 checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, word
 									;flags. Called from setvideo
 	btst	#sfpz,(sflags).w		;sfpz
-	bne.w	rtss2
+	bne.w	rtss2					;branch taken: done
 	btst	#dffaceoff,(disflags).w	;face off flag
-	beq.w	rtss2
-	movea.w	#(fofdata2-M68K_RAM),a3
-	moveq	#2,d0
+	beq.w	rtss2					;branch taken: done
+	movea.w	#(fofdata2-M68K_RAM),a3	;a3 = faceoff objects
+	moveq	#2,d0					;3 objects
 .loop								;each faceoff object
-	move.w	(a3),d4
-	bmi.w	.next
-	beq.w	.next
-	movea.l	#FaceOffSprites,a2
-	adda.l	jimdata(a2),a2
-	add.w	d4,d4
-	move.w	2(a2,d4.w),d5
-	sub.w	0(a2,d4.w),d5
-	lsr.w	#3,d5
-	subq.w	#1,d5
-	adda.w	0(a2,d4.w),a2
+	move.w	(a3),d4					;d4 = frame
+	bmi.w	.next					;negative: next
+	beq.w	.next					;zero: next
+	movea.l	#FaceOffSprites,a2		;a2 = faceoff sprites
+	adda.l	jimdata(a2),a2			;plus the data offset
+	add.w	d4,d4					;times 2
+	move.w	2(a2,d4.w),d5			;d5 = next frame offset
+	sub.w	0(a2,d4.w),d5			;minus this frame offset
+	lsr.w	#3,d5					;divided by 8
+	subq.w	#1,d5					;number of sprites minus 1
+	adda.w	0(a2,d4.w),a2			;a2 = this frame's sprites
 .loop2								;each sprite of the frame
-	move.w	seY(a2),d2
-	addi.w	#$80,d2
-	add.w	(fodropy).w,d2
-	move.w	d2,(a6)
-	move.w	(a2),d2
+	move.w	seY(a2),d2				;d2 = sprite y
+	addi.w	#$80,d2					;plus $80
+	add.w	(fodropy).w,d2			;plus the drop y
+	move.w	d2,(a6)					;y into the sprite list
+	move.w	(a2),d2					;d2 = sprite x
 	btst	#3,foattr(a3)			;x flip
-	beq.w	.0
-	move.b	seSize(a2),d2
-	andi.w	#$C,d2
-	addq.w	#4,d2
-	asl.w	#1,d2
-	neg.w	d2
-	sub.w	(a2),d2
+	beq.w	.0						;branch taken: use it
+	move.b	seSize(a2),d2			;sprite size
+	andi.w	#$C,d2					;keep the width bits
+	addq.w	#4,d2					;plus 4
+	asl.w	#1,d2					;times 2
+	neg.w	d2						;negate
+	sub.w	(a2),d2					;minus x
 .0									;sprite X
-	addi.w	#$80,d2
-	add.w	(fodropx).w,d2
-	move.w	d2,satX(a6)
-	move.b	seSize(a2),satSize(a6)
-	move.b	d6,satLink(a6)
-	move.w	seAttr(a2),d2
-	andi.w	#$F800,d2
-	or.w	seTile(a2),d2
-	move.w	foattr(a3),d1
-	andi.w	#$F800,d1
-	eor.w	d1,d2
-	add.w	(faceoffvrcset).w,d2
-	move.w	d2,satTile(a6)
-	addq.w	#1,d6
-	addq.w	#8,a6
-	addq.w	#8,a2
-	dbf	d5,.loop2
-	addq.w	#4,a3
+	addi.w	#$80,d2					;plus $80
+	add.w	(fodropx).w,d2			;plus the drop x
+	move.w	d2,satX(a6)				;x into the sprite list
+	move.b	seSize(a2),satSize(a6)	;size
+	move.b	d6,satLink(a6)			;link
+	move.w	seAttr(a2),d2			;d2 = attribute
+	andi.w	#$F800,d2				;keep the top 5 bits
+	or.w	seTile(a2),d2			;or the tile
+	move.w	foattr(a3),d1			;d1 = object attribute
+	andi.w	#$F800,d1				;keep the top 5 bits
+	eor.w	d1,d2					;combine
+	add.w	(faceoffvrcset).w,d2	;plus the vram base
+	move.w	d2,satTile(a6)			;tile into the sprite list
+	addq.w	#1,d6					;next link
+	addq.w	#8,a6					;next sprite entry
+	addq.w	#8,a2					;next sprite
+	dbf	d5,.loop2					;loop
+	addq.w	#4,a3					;next object
 .next								;next object
-	dbf	d0,.loop
-	rts
+	dbf	d0,.loop					;loop
+	rts								;done
 showzam								;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draws frame
 									;1, frame 2-4 picked by x, then frame 5 (home score not ahead) or a .ftab
 									;frame. Called from setvideo
@@ -358,104 +358,104 @@ showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the t
 									;No crowd in a reverse angle replay. Called from setvideo
 	btst	#4,(sflags4).w			;check if reverse angle replay
 	bne.w	.x						;branch if so
-	movea.l	#Crowdframelist,a1
+	movea.l	#Crowdframelist,a1		;a1 = crowd frame list
 	adda.l	jimdata(a1),a1			;a1 = frame offset table
-	move.w	(Hpos).w,d4
-	move.w	(Vpos).w,d5
-	btst	#sfhor,(sflags).w
-	beq.w	.v
+	move.w	(Hpos).w,d4				;d4 = Hpos
+	move.w	(Vpos).w,d5				;d5 = Vpos
+	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
+	beq.w	.v						;no: keep
 	moveq	#-$40,d4				;(#$FFFFFFC0)
-	move.l	#$100,d5
+	move.l	#$100,d5				;d5 = $100
 .v									;view position set
 	clr.w	d0						;d4/d5 = x/y of the view
 	move.b	(PBnum).w,d2			;low nibble
 	moveq	#$1A,d3					;frames 26+ (low nibble)
-	bsr.w	.pb
-	move.b	(PBnum).w,d2
+	bsr.w	.pb						;penalty box sprites
+	move.b	(PBnum).w,d2			;d2 = PBnum
 	lsr.w	#4,d2					;high nibble
 	moveq	#$1D,d3					;frames 29+ (high nibble)
-	bsr.w	.pb
-	move.b	(Crowdframe).w,d0
-	bsr.w	.sc
-	move.b	(Crowdframe+1).w,d0
-	bra.w	.sc
+	bsr.w	.pb						;penalty box sprites
+	move.b	(Crowdframe).w,d0		;d0 = first crowd frame
+	bsr.w	.sc						;draw it
+	move.b	(Crowdframe+1).w,d0		;d0 = second crowd frame
+	bra.w	.sc						;draw it
 .pb									;d2 = count, d3 = first frame
 	andi.w	#$F,d2					;d2 = count, d3 = first frame
-	cmp.w	#3,d2
-	bls.w	.pb0
+	cmp.w	#3,d2					;more than 3?
+	bls.w	.pb0					;no: keep
 	moveq	#3,d2					;max 3
 .pb0								;count clamped to 3
-	bra.w	.nextpb
+	bra.w	.nextpb					;next sprite
 .pbt								;each penalty box sprite
 	move.w	d3,d0					;frame = first frame + counter
-	add.w	d2,d0
-	bsr.w	.sc
+	add.w	d2,d0					;plus the count
+	bsr.w	.sc						;draw the frame
 .nextpb								;next sprite
-	dbf	d2,.pbt
-	rts
+	dbf	d2,.pbt						;loop
+	rts								;done
 .sc									;d0 = frame, 0 = none
-	ext.w	d0
-	beq.w	rtss2
-	btst	#sfhor,(sflags).w
-	beq.w	.chk
+	ext.w	d0						;word
+	beq.w	rtss2					;none: done
+	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
+	beq.w	.chk					;no: check
 	addi.w	#$1F,d0					;horizontal frames are 31 later
 .chk								;frame number set for this rink
 	cmp.w	#MaxSprites,d6			;MaxSprites
-	bge.w	rtss2
-	movem.l	d0-d5,-(sp)
-	add.w	d0,d0
-	movea.l	a1,a0
-	move.w	2(a0,d0.w),d1
-	sub.w	0(a0,d0.w),d1
-	lsr.w	#3,d1
-	subq.w	#1,d1
+	bge.w	rtss2					;branch taken: done
+	movem.l	d0-d5,-(sp)				;save registers
+	add.w	d0,d0					;times 2
+	movea.l	a1,a0					;a0 = frame list
+	move.w	2(a0,d0.w),d1			;d1 = next frame offset
+	sub.w	0(a0,d0.w),d1			;minus this frame offset
+	lsr.w	#3,d1					;divided by 8
+	subq.w	#1,d1					;number of sprites minus 1
 	move.w	d1,-(sp)				;number of sprites in frame
-	adda.w	0(a0,d0.w),a0
+	adda.w	0(a0,d0.w),a0			;a0 = this frame's sprites
 	move.w	d4,d0					;x window d0-d1
-	addi.w	#$C0,d0
-	move.w	d0,d1
+	addi.w	#$C0,d0					;plus $C0
+	move.w	d0,d1					;d1 = d0
 	subi.w	#$90,d0					;128+16
-	addi.w	#$80,d1
+	addi.w	#$80,d1					;plus $80
 	move.w	#$170,d2				;y window d2-d3
-	sub.w	d5,d2
-	move.w	d2,d3
+	sub.w	d5,d2					;minus Vpos
+	move.w	d2,d3					;d3 = d2
 	subi.w	#$80,d2					;112+16
 	addi.w	#$70,d3					;112
-	move.w	(sp)+,d4
+	move.w	(sp)+,d4				;restore d4
 .loop								;each sprite of the frame
 	cmp.w	seY(a0),d2				;per sprite: skip it if outside the window d0-d3
-	bgt.w	.next
-	cmp.w	seY(a0),d3
-	blt.w	.next
-	cmp.w	(a0),d0
-	bgt.w	.next
-	cmp.w	(a0),d1
-	blt.w	.next
-	move.w	seY(a0),d5
+	bgt.w	.next					;branch taken: next sprite
+	cmp.w	seY(a0),d3				;compare with sprite y
+	blt.w	.next					;branch taken: next sprite
+	cmp.w	(a0),d0					;compare with sprite x
+	bgt.w	.next					;branch taken: next sprite
+	cmp.w	(a0),d1					;compare with sprite x
+	blt.w	.next					;branch taken: next sprite
+	move.w	seY(a0),d5				;d5 = sprite y
 	addi.w	#$70,d5					;128-16
-	sub.w	d2,d5
-	move.w	d5,(a6)+
-	move.b	seSize(a0),(a6)+
-	move.b	d6,(a6)+
-	move.w	seAttr(a0),d5
-	andi.w	#$F800,d5
-	add.w	seTile(a0),d5
+	sub.w	d2,d5					;minus d2
+	move.w	d5,(a6)+				;y into the sprite list
+	move.b	seSize(a0),(a6)+		;size
+	move.b	d6,(a6)+				;link
+	move.w	seAttr(a0),d5			;d5 = attribute
+	andi.w	#$F800,d5				;keep the top 5 bits
+	add.w	seTile(a0),d5			;plus the tile
 	add.w	(crowdvrcset).w,d5		;crowd start char
-	move.w	d5,(a6)+
-	move.w	(a0),d5
+	move.w	d5,(a6)+				;tile into the sprite list
+	move.w	(a0),d5					;d5 = sprite x
 	addi.w	#$70,d5					;128-16
-	sub.w	d0,d5
-	move.w	d5,(a6)+
-	addq.w	#1,d6
-	cmp.w	#$40,d6
-	beq.w	.ex
+	sub.w	d0,d5					;minus d0
+	move.w	d5,(a6)+				;x into the sprite list
+	addq.w	#1,d6					;next link
+	cmp.w	#$40,d6					;all $40 used?
+	beq.w	.ex						;yes: done
 .next								;next sprite
-	addq.w	#8,a0
-	dbf	d4,.loop
+	addq.w	#8,a0					;next sprite
+	dbf	d4,.loop					;loop
 .ex									;pop the d0-d5 saved above
-	movem.l	(sp)+,d0-d5
+	movem.l	(sp)+,d0-d5				;restore registers
 .x									;exit (also the end of the code above)
-	rts
+	rts								;done
 ;	Clock, pad label and object helpers from showclock to KillCrowd. The horizontal clock's .digit and
 ;	.digits tables sit inside showclock.
 ;
@@ -471,51 +471,51 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 									;list, only when dfclock is set; with gmode2 bit 1 (penalty shot /
 									;shootout) shootoutclock is shown instead of gameclock. a5 = dma list
 	btst	#sfhor,(sflags).w		;sfhor
-	beq.w	.3
+	beq.w	.3						;branch taken: clock sprite case
 	btst	#0,(gmode2).w			;shootout
-	bne.w	.x
-	move.l	a1,-(sp)
-	jsr	(printz).l
+	bne.w	.x						;not zero: done
+	move.l	a1,-(sp)				;save a1
+	jsr	(printz).l					;print the position and map codes
 	String	CC_Font2Pri,$D,5
-	move.w	(gameclock).w,d0
-	ext.l	d0
+	move.w	(gameclock).w,d0		;d0 = game clock
+	ext.l	d0						;long
 	divu.w	#$258,d0				;tens of minutes (600 seconds)
-	move.l	d0,-(sp)
-	tst.w	d0
-	bne.w	.1
-	addq.w	#1,(printx).w
-	bra.w	.2
+	move.l	d0,-(sp)				;keep it
+	tst.w	d0						;zero?
+	bne.w	.1						;no: print the digit
+	addq.w	#1,(printx).w			;skip a column
+	bra.w	.2						;continue
 .1									;d0 <> 0
-	jsr	(.digit).l
+	jsr	(.digit).l					;print the digit
 .2									;digit printed
-	move.l	(sp)+,d0
-	swap	d0
-	ext.l	d0
+	move.l	(sp)+,d0				;d0 = game clock again
+	swap	d0						;next part in the low word
+	ext.l	d0						;long
 	divu.w	#$3C,d0					;minutes
-	move.l	d0,-(sp)
-	jsr	(.digit).l
-	move.l	(sp)+,d0
-	swap	d0
-	ext.l	d0
-	addq.w	#2,(printx).w
+	move.l	d0,-(sp)				;keep it
+	jsr	(.digit).l					;print the digit
+	move.l	(sp)+,d0				;restore it
+	swap	d0						;next part in the low word
+	ext.l	d0						;long
+	addq.w	#2,(printx).w			;skip 2 columns
 	divu.w	#$A,d0					;tens of seconds
-	move.l	d0,-(sp)
-	jsr	(.digit).l
-	move.l	(sp)+,d0
-	swap	d0
-	ext.l	d0
-	jsr	(.digit).l
-	movea.l	(sp)+,a1
-	jsr	(printz).l
+	move.l	d0,-(sp)				;keep it
+	jsr	(.digit).l					;print the digit
+	move.l	(sp)+,d0				;restore it
+	swap	d0						;next part in the low word
+	ext.l	d0						;long
+	jsr	(.digit).l					;print the digit
+	movea.l	(sp)+,a1				;restore a1
+	jsr	(printz).l					;print the closing codes
 	String	CC_Font3Pri,$D,5
 .x									;exit
-	rts
+	rts								;done
 .digit								;Print digit d0 from .digits
-	movea.l	#.digits,a1
-	asl.w	#2,d0
-	adda.w	d0,a1
-	jsr	(print).l
-	rts
+	movea.l	#.digits,a1				;a1 = digit Strings
+	asl.w	#2,d0					;times 4
+	adda.w	d0,a1					;a1 = that digit
+	jsr	(print).l					;print it
+	rts								;done
 .digits								;Strings '0' .. '9' for .digit (4 bytes each)
 	String	'0'
 	String	'1'
@@ -529,168 +529,168 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	String	'9'
 .3									;Returns unless dfclock is set
 	bclr	#dfclock,(disflags).w	;dfclock
-	beq.w	rtss2
-	btst	#sf2replay,(sflags2).w
-	bne.w	rtss2
+	beq.w	rtss2					;branch taken: done
+	btst	#sf2replay,(sflags2).w	;replay (sf2replay)?
+	bne.w	rtss2					;yes: done
 	cmpi.w	#4,(gsp).w				;no clock update when gsp = 4
-	beq.w	rtss2
+	beq.w	rtss2					;branch taken: done
 	movea.w	#(clockram+6-M68K_RAM),a0	;end of the 5 word clock buffer; written backward
-	movea.l	#SmallFontMap,a1
-	adda.l	jimdata(a1),a1
+	movea.l	#SmallFontMap,a1		;a1 = small font map
+	adda.l	jimdata(a1),a1			;plus the data offset
 	move.w	$78(a1),d0				;4+(':'*2)
-	add.w	(smallfontchars).w,d0
-	ori.w	#$8000,d0
+	add.w	(smallfontchars).w,d0	;plus the font tile base
+	ori.w	#$8000,d0				;set bit 15
 	move.w	d0,(clockram).w			;colon
-	move.w	(gameclock).w,d0
+	move.w	(gameclock).w,d0		;d0 = game clock
 	btst	#1,(gmode2).w			;penalty shot / shootout clock
-	beq.w	.4
-	move.w	(shootoutclock).w,d0
+	beq.w	.4						;branch taken: use it
+	move.w	(shootoutclock).w,d0	;d0 = shootout clock
 .4									;clock value chosen
-	ext.l	d0
-	divu.w	#$A,d0
+	ext.l	d0						;long
+	divu.w	#$A,d0					;divide by 10
 	bsr.w	.char					;seconds ones
-	divu.w	#6,d0
+	divu.w	#6,d0					;divide by 6
 	bsr.w	.char					;seconds tens
 	subq.w	#2,a0					;skip the colon
-	divu.w	#$A,d0
+	divu.w	#$A,d0					;divide by 10
 	bsr.w	.char					;minutes ones
-	swap	d0
+	swap	d0						;digits to the low word
 	tst.l	d0						;minutes tens is zero?
-	bne.w	.0
+	bne.w	.0						;not zero: keep
 	moveq	#-$10,d0				;' '-'0': blank leading zero (#$FFFFFFF0)
-	swap	d0
+	swap	d0						;swap back
 .0									;leading zero blanked
 	bsr.w	.char					;minutes tens
-	move.l	a0,(a5)+
+	move.l	a0,(a5)+				;store the address
 	move.w	#5,(a5)+				;words to transfer
-	movea.w	#(VmMAP1-M68K_RAM),a1
+	movea.w	#(VmMAP1-M68K_RAM),a1	;a1 = map 1
 	moveq	#$18,d0					;.clocky = 24
 	moveq	#3,d2					;.clockx = 3
 	btst	#sfhor,(sflags).w		;sfhor (always clear here: the horizontal rink prints the clock above)
-	beq.w	.cv
-	movea.w	#(VmMAP2-M68K_RAM),a1
+	beq.w	.cv						;branch taken: map 1
+	movea.w	#(VmMAP2-M68K_RAM),a1	;a1 = map 2
 	moveq	#5,d0					;clock y (93 used 4)
 	moveq	#$D,d2					;.clockx2 = 13
 .cv									;map position set
 	move.w	2(a1),d1				;map width shift (d0 = y, d2 = x of the clock)
-	asl.w	d1,d0
-	add.w	d2,d0
-	asl.w	#1,d0
-	add.w	(a1),d0
+	asl.w	d1,d0					;shift by d1
+	add.w	d2,d0					;plus d2
+	asl.w	#1,d0					;times 2
+	add.w	(a1),d0					;plus the map base
 	move.w	d0,(a5)+				;vram destination
-	rts
+	rts								;done
 .char								;d0 high word = digit, write its tile to -(a0)
-	swap	d0
-	asl.w	#1,d0
+	swap	d0						;digit to the low word
+	asl.w	#1,d0					;times 2
 	move.w	$64(a1,d0.w),d0			;4+('0'*2)
-	add.w	(smallfontchars).w,d0
-	ori.w	#$8000,d0
-	move.w	d0,-(a0)
-	swap	d0
-	ext.l	d0
-	rts
+	add.w	(smallfontchars).w,d0	;plus the font tile base
+	ori.w	#$8000,d0				;set bit 15
+	move.w	d0,-(a0)				;write the tile
+	swap	d0						;digit back to the high word
+	ext.l	d0						;long
+	rts								;done
 checksso							;do graphics for sso structure: arrows for the players when they are off
 									;screen. Called from setvideo. a5 = dma list, a6 = sprite table, d6 = link
 									;counter. Returns on the horizontal rink. Includes the pads 3 and 4
 									;(Joy3Struct / Joy4Struct when cont3team / cont4team). Falls into .ca for
 									;the last one
-	btst	#sfhor,(sflags).w
-	bne.w	rtss2
-	movea.w	#(Joy1Struct-M68K_RAM),a0
-	movea.w	#(sso-M68K_RAM),a3
+	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
+	bne.w	rtss2					;yes: no arrows
+	movea.w	#(Joy1Struct-M68K_RAM),a0	;a0 = pad 1 object
+	movea.w	#(sso-M68K_RAM),a3		;a3 = sso structure
 	move.w	#SPFarrow,d3			;frame numbers are 6 higher than 92
-	bsr.w	.ca
+	bsr.w	.ca						;draw the arrow
 	adda.w	#ffosize,a0				;next pad object
 	adda.w	#ssosize,a3				;ssosize
-	move.w	#SPFarrow+3,d3
-	bsr.w	.ca
-	tst.w	(cont3team).w
+	move.w	#SPFarrow+3,d3			;second arrow frame
+	bsr.w	.ca						;draw the arrow
+	tst.w	(cont3team).w			;controller 3 on a team?
 	beq.w	rtss2					;on screen: no arrow
-	movea.w	#(Joy3Struct-M68K_RAM),a0
-	adda.w	#$14,a3
-	move.w	#$346,d3
-	bsr.w	.ca
-	tst.w	(cont4team).w
-	beq.w	rtss2
-	movea.w	#(Joy4Struct-M68K_RAM),a0
-	adda.w	#$14,a3
-	move.w	#$349,d3
+	movea.w	#(Joy3Struct-M68K_RAM),a0	;a0 = pad 3 object
+	adda.w	#$14,a3					;next sso structure
+	move.w	#$346,d3				;first arrow frame $346
+	bsr.w	.ca						;draw the arrow
+	tst.w	(cont4team).w			;controller 4 on a team?
+	beq.w	rtss2					;no: done
+	movea.w	#(Joy4Struct-M68K_RAM),a0	;a0 = pad 4 object
+	adda.w	#$14,a3					;next sso structure
+	move.w	#$349,d3				;first arrow frame $349
 .ca									;a0 = object, a3 = sso, d3 = first arrow frame. In a shootout, with
 									;sflags2 bit 3 or in a penalty shot, no arrow for a player beyond x $A6
-	tst.w	Zpos(a0)
+	tst.w	Zpos(a0)				;z position set?
 	bmi.w	rtss2					;not on the ice
-	st	frame(a3)
-	move.w	(a0),d0
-	btst	#0,(gmode2).w
-	bne.w	.0
-	btst	#sf2replay,(sflags2).w
-	bne.w	.0
-	btst	#2,(BA_PS_flags).w
-	beq.w	.7
+	st	frame(a3)					;no frame
+	move.w	(a0),d0					;d0 = x
+	btst	#0,(gmode2).w			;gmode2 bit 0 set?
+	bne.w	.0						;yes: check off screen
+	btst	#sf2replay,(sflags2).w	;replay (sf2replay)?
+	bne.w	.0						;yes: check off screen
+	btst	#2,(BA_PS_flags).w		;BA_PS_flags bit 2 set?
+	beq.w	.7						;no: position the arrow
 .0									;off screen check (also in shootouts, replays and penalty shots)
-	move.w	d0,-(sp)
-	tst.w	d0
-	bpl.w	.2
-	neg.w	d0
+	move.w	d0,-(sp)				;keep d0
+	tst.w	d0						;negative?
+	bpl.w	.2						;no: keep
+	neg.w	d0						;negate
 .2									;|d0|
-	cmp.w	#$A6,d0
-	blt.w	.6
-	move.w	(sp)+,d0
-	rts
+	cmp.w	#$A6,d0					;beyond $A6?
+	blt.w	.6						;no: on screen
+	move.w	(sp)+,d0				;restore d0
+	rts								;done
 .6									;d0 < $A6
-	move.w	(sp)+,d0
+	move.w	(sp)+,d0				;restore d0
 .7									;arrow position
-	move.w	Ypos(a0),d1
-	btst	#sfhor,(sflags).w
-	beq.w	.nhor
+	move.w	Ypos(a0),d1				;d1 = y
+	btst	#sfhor,(sflags).w		;horizontal rink (sfhor)?
+	beq.w	.nhor					;no: keep
 	exg	d0,d1						;horizontal view: swap axes
-	neg.w	d0
+	neg.w	d0						;negate x
 	subi.w	#horoff,d1				;horoff
-	bra.w	.hord
+	bra.w	.hord					;go on
 .nhor								;sfhor clear
-	sub.w	(Hpos).w,d0
-	sub.w	(Vpos).w,d1
+	sub.w	(Hpos).w,d0				;minus Hpos
+	sub.w	(Vpos).w,d1				;minus Vpos
 .hord								;position relative to the view
-	clr.w	d2
+	clr.w	d2						;d2 = 0
 	cmp.w	#$74,d0					;.xoff = 116
-	blt.w	.8
-	bset	#3,d2
+	blt.w	.8						;branch taken
+	bset	#3,d2					;set d2 bit 3
 .8									;not off the right
 	cmp.w	#$FF8C,d0				;-.xoff
-	bgt.w	.1
-	bset	#2,d2
+	bgt.w	.1						;branch taken
+	bset	#2,d2					;set d2 bit 2
 .1									;not off the left
 	cmp.w	#$64,d1					;.yoff = 100
-	blt.w	.9
-	bset	#0,d2
+	blt.w	.9						;branch taken
+	bset	#0,d2					;set d2 bit 0
 .9									;not off the bottom
 	cmp.w	#$FF9C,d1				;-.yoff
-	bgt.w	.3
-	bset	#1,d2
+	bgt.w	.3						;branch taken
+	bset	#1,d2					;set d2 bit 1
 .3									;not off the top
-	tst.w	d2
-	beq.w	rtss2
-	movea.l	#jdtab,a1
-	move.b	0(a1,d2.w),d2
-	asl.w	#3,d2
-	movea.l	#.tab,a1
-	move.w	0(a1,d2.w),d4
-	beq.w	.4
-	move.w	d4,d0
+	tst.w	d2						;any bit set?
+	beq.w	rtss2					;no: on screen, done
+	movea.l	#jdtab,a1				;a1 = direction table
+	move.b	0(a1,d2.w),d2			;d2 = the direction
+	asl.w	#3,d2					;times 8
+	movea.l	#.tab,a1				;a1 = arrow table
+	move.w	0(a1,d2.w),d4			;d4 = x spot
+	beq.w	.4						;zero: keep the player's x
+	move.w	d4,d0					;use the spot
 .4									;arrow X (or the player's)
 	addi.w	#$100,d0				;128+128
 	move.w	d0,(a3)					;Xcord
 	move.w	2(a1,d2.w),d4			;y spot, 0 = keep player y
-	beq.w	.5
-	move.w	d4,d1
+	beq.w	.5						;zero: keep the player's y
+	move.w	d4,d1					;use the spot
 .5									;arrow Y (or the player's)
 	neg.w	d1						;y up is negative on screen
 	addi.w	#$F0,d1					;112+128
 	move.w	d1,2(a3)				;Ycord
-	add.w	4(a1,d2.w),d3
-	move.w	d3,frame(a3)
+	add.w	4(a1,d2.w),d3			;plus the frame add
+	move.w	d3,frame(a3)			;store the frame
 	move.w	6(a1,d2.w),attribute(a3)	;flip bits
-	bra.w	addframe2
+	bra.w	addframe2				;add the frame
 .tab								;x spot, y spot, frame add, attribute per direction
 	dc.w	0,$64,0,$0000			;x spot, y spot, frame add, attribute per direction
 	dc.w	$74,$64,1,$0000			;.xspot = 116, .yspot = 100
