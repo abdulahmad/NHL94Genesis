@@ -1,5 +1,5 @@
 ;	Graphics decompression (93G decompress93.asm): DecompressGraphics sends packed tiles to vram
-;	through DecompressBytecode and its 256 byte ring buffer. Included at the end of video94.asm.
+;	through DecompressBytecode and its 256 byte ring buffer. Included at the end of middle94.asm.
 
 DecompressGraphicsWithRemap			;DecompressGraphics, then return 8 bytes past the call (remap table)
 	move.l	(sp),(remapTablePtr).w

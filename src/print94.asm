@@ -1,5 +1,5 @@
 ;	Text printing (93G print93.asm): vram address from printx / printy, small and big font strings,
-;	frames, numbers and times, and the font tile uploads. Included at the end of video94.asm.
+;	frames, numbers and times, and the font tile uploads. Included at the end of middle94.asm.
 
 ; use print x/y/m to set vram address
 xyVmMap								;use printx/y/m to set vram address. Returns a0 = Vdata.

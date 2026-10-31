@@ -57,7 +57,7 @@ SPFghighr	=	658					; 658 (goalie high shoulder save right; the frames after it 
 
 ;	Each animation table is: 8 word offsets (one per facing direction 0-7, relative to .t), a flags word
 ;	(0 or 1), then per direction a list of frame,time word pairs; a negative time ends the list. A SPA value,
-;	as kept in SPA(a3), is the offset of its table from SPAlist; SetSPA in checks94.asm switches animation.
+;	as kept in SPA(a3), is the offset of its table from SPAlist; SetSPA in logic94.asm switches animation.
 ;
 ;	Only the animation equate and table lines are commented. The .0-.7 direction labels and the .a/.b/.c/.off
 ;	helper symbols are assembler temporaries that step through the SPF frame numbers.

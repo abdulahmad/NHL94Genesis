@@ -11,12 +11,12 @@
 - does assign make sense, and if so bring to 93g?
   - assign ends early, checks stuff goes into assign
 - does video make sense, and if so bring to 93g?
-- bring decompress and print to 94G: done, decompress94.asm and print94.asm (included at the end of video94 as 93G middle93 does)
+- bring decompress and print to 94G: done, decompress94.asm and print94.asm (included at the end of middle94 as 93G middle93 does)
 - does collide make sense, and bring to 93G?
 - does display make sense, and if so bring to 93G?
   - what differentiates video and display? hardware level?
 - bring setup94 to 93G?
-- attract94: done, it holds EASportsScreen only; the option screen helpers open data94. The routine before it (setup94 ScrollDisplayUp, scouting text) is not attract code
+- attract: done, EASportsScreen sits in setup94 with the option screen helpers and menu / playoff data
 - is data.asm make sense, and if do bring to 93G
 - equate SRAM functions
 - ReadJoyData isn't matching from 94G to 93G

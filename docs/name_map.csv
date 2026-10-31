@@ -220,3 +220,4 @@ PrintTeamNameAndScore,printscores1_ps,92G parent_local
 RenderSmallFontChar,uppads_pd,92G parent_local
 cd0,updatecrowdf_cd0,92G parent_local
 DrawMatchupBitmaps,TeamIcons,92G/93G
+vcountwait,MenuWaitVblank,93G

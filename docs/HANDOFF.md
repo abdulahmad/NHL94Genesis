@@ -48,5 +48,5 @@ Follow 92G (EA source): ~31% of its locals are number-only (.0, .1 ...), the res
 ## Current state
 - Every segment and the full ROM MATCH. The comment review, the name pass, the local label pass and the file header rewrites are done for 94G (renames are in docs/name_map.csv).
 - Oct 14 cleanup: main is a faithful retail disassembly again (SRAMTOGGLE, absjsr/absjmp and LONGBRA removed; plain 1MB fill). Kept: NumTeams equates and table checks, the null/TeamList labels, CHECKSUM/REV, `tools/fixrom.js` (size, header ROM end, checksum) and `src/shortcalls.inc`. Mod fixes and the team checklist: docs/EXPANDING_THE_ROM.md.
-- Left numeric on purpose (no safe name): checks94 `cmp.w #$180,d4` / `move.w #$180,d4` (speed clamp) and `cmp.w #-50,d1`; display94 showcrowd and showzam constants and the pad arrow frames `#$346` / `#$349`; setup94 `.listffo` `$34C` / `$34D`; replay94 `cmp.w #$34E`.
+- Left numeric on purpose (no safe name): logic94 `cmp.w #$180,d4` / `move.w #$180,d4` (speed clamp) and `cmp.w #-50,d1`; video94 showcrowd and showzam constants and the pad arrow frames `#$346` / `#$349`; setup94 `.listffo` `$34C` / `$34D`; replay94 `cmp.w #$34E`.
 - Next: the same local label pass for 95G.

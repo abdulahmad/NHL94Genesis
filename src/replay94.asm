@@ -366,8 +366,8 @@ adda4								;Step forward 1 frame. First handles a reverse
 	move.w	(Hpos).w,-(sp)
 	move.w	(Vpos).w,-(sp)
 	bsr.w	forceblack2
-	jsr	(vcountwait).l				;frame
-	jsr	(vcountwait).l				;frame
+	jsr	(MenuWaitVblank).l				;frame
+	jsr	(MenuWaitVblank).l				;frame
 	jsr	(ReloadRinkGraphics).l
 	clr.w	(Hpos).w
 	clr.w	(Vpos).w
@@ -375,14 +375,14 @@ adda4								;Step forward 1 frame. First handles a reverse
 	move.w	#1,d0
 .loop								;2 frames to redraw
 	jsr	(setvideo).l
-	jsr	(vcountwait).l				;frame
+	jsr	(MenuWaitVblank).l				;frame
 	dbf	d0,.loop					;loop
 	move.w	(sp)+,(Vpos).w
 	move.w	(sp)+,(Hpos).w
 	move.w	#1,d0
 	jsr	(setvideo).l
 .loop2								;wait 2 more frames
-	jsr	(vcountwait).l				;frame
+	jsr	(MenuWaitVblank).l				;frame
 	dbf	d0,.loop2					;loop
 	movem.l	a0,-(sp)
 	movea.l	#SortCords+(12*SCstruct),a0

@@ -77,7 +77,7 @@ The shell around the movie player (STARTER runtime `$24E44`) saves BIOS `$8004` 
 
 ## Crowd
 
-On the cartridge, `updatesound` in `display94.asm` slews `asv` toward `Crowdlevel` and writes the PSG noise channel: `$C8`, then `1`, then the volume byte `(asv XOR $F) OR $F0`. `KillCrowd` writes `$E7`, `$DF`, `$C8`, `1`, `$FF` to the same port. Gameplay adds to `Crowdlevel` on hits, goals, and penalties, and `periodicevents` calls `updatesound`.
+On the cartridge, `updatesound` in `video94.asm` slews `asv` toward `Crowdlevel` and writes the PSG noise channel: `$C8`, then `1`, then the volume byte `(asv XOR $F) OR $F0`. `KillCrowd` writes `$E7`, `$DF`, `$C8`, `1`, `$FF` to the same port. Gameplay adds to `Crowdlevel` on hits, goals, and penalties, and `periodicevents` calls `updatesound`.
 
 `cdcrowd.asm` (`HOCKEY.BIN` `$238CE`) is that slew. `Crowdlevel` is `$17CD2` and `asv` is `$1747A`. The scale (`asl #3`, add `$400`, clamp at `$EFF`, step `$28`) is the cartridge math. The routine builds the old volume byte in `d0` and returns. The three PSG stores are not in this copy, and `$C00011` is not written from any of the four code files. No branch and no absolute `jsr` in `HOCKEY.BIN` targets `$238CE`.
 

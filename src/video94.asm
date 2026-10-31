@@ -1,846 +1,1052 @@
-;	Shared helpers used all over the game. They fade palettes, make random numbers and square
-;	roots, start sounds, read up to four joysticks and wait for buttons, move and fill video
-;	memory and set up the screen.
+;	Game play display. Every frame the vertical blank code builds the sprite list, sends it and
+;	other graphics to video memory and scrolls the rink. This file also draws the sprites for the
+;	rink, the referee, faceoffs, the zamboni and the crowd.
 
-UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words at
-									;nibblebuffer
-	movem.l	d0-d2/a0-a1,-(sp)
-	movea.w	#(nibblebuffer-M68K_RAM),a1	;a1 = output words
-	clr.w	d2						;d2 bit 0 = which nibble is next
-	bra.w	.next
-.loop								;each nibble
-	move.b	(a0)+,d1				;next nibble (one count per pass)
-	bchg	#0,d2					;toggle high/low nibble
-	bne.w	.lo						;low nibble?
-	subq.w	#1,a0					;high nibble: read the same byte again next time
-	lsr.w	#4,d1					;high nibble down
-.lo									;nibble in the low bits
-	andi.w	#$F,d1
-	move.w	d1,(a1)+
-.next								;loop d0 times
-	dbf	d0,.loop					;loop count in d0
-	movem.l	(sp)+,d0-d2/a0-a1
-	rts
-WeightedRandomSelect				;d0 = number of word weights at nibblebuffer:
-									;return a weighted random index
-	movem.l	d1/a1,-(sp)
-	movea.w	#(nibblebuffer-M68K_RAM),a1	;weights
-	clr.w	d1						;d1 = running total of the weights
-	bra.w	.pick
-.sumloop							;add each weight
-	add.w	(a1)+,d1
-.pick								;loop d0 times
-	dbf	d0,.sumloop					;loop
-	move.w	d1,d0
-	bsr.w	randomd0				;random 0 to total-1
-.findloop							;loop
-	sub.w	-(a1),d0				;minus the weight
-	bpl.s	.findloop
-	suba.w	#(nibblebuffer-M68K_RAM),a1
-	move.w	a1,d0
-	lsr.w	#1,d0					;word offset -> index
-	movem.l	(sp)+,d1/a1
-	rts
-
-remap								;a0 = data (char set), d0 = size in words, d1 = vram dest, a1 = mapping
-									;data (two color nibbles per byte, high nibble for even colors). Jumped to
-									;from DecompressGraphics
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	movem.l	d0-d4/a0-a2,-(sp)
-	exg	d1,d0						;(keep EA register order)
-	movea.l	a0,a2					;a2 = source tile words
-	bsr.w	Vmaddr					;set vram write address; a0 = Vdata
-	subq.w	#1,d1					;d1 = word count - 1
-.1									;each source word
-	moveq	#3,d0					;4 pixels per word (one pass per source word)
-	move.w	(a2)+,d2
-	clr.w	d3						;d3 = remapped word being built
-.11									;each pixel
-	move.w	d2,d4					;one pixel (low nibble of d2) per pass
-	andi.w	#$F,d4
-	lsr.w	#1,d4					;map byte = color/2
-	move.b	0(a1,d4.w),d4
-	btst	#0,d2					;odd color?
-	bne.w	.2
-	lsr.w	#4,d4					;even: high nibble
-.2									;map nibble chosen
-	andi.w	#$F,d4
-	or.b	d4,d3					;put the new color into the result
-	ror.w	#4,d3
-	ror.w	#4,d2					;next pixel
-	dbf	d0,.11						;loop
-	move.w	d3,(a0)					;write the word to vram
-	dbf	d1,.1						;loop
-	movem.l	(sp)+,d0-d4/a0-a2
-	move.w	(sp)+,(disflags).w
-	rts
-; fade all colors to black but don't upset palfadenew
-forceblack							;fade all colors to black but don't upset palfadenew
-	movem.l	d0/a0,-(sp)
-	movea.w	#(palfadenew-M68K_RAM),a0
-	moveq	#$1F,d0
-.0									;black out each target color, saving it
-	move.l	(a0),-(sp)				;save the target palette while blacking it
-	clr.l	(a0)+
-	dbf	d0,.0						;loop
-	move.w	#$18,(palcount).w
-	bsr.w	forcefade				;fade to the all-black palfadenew
-	moveq	#$1F,d0					;32 longs
-.1									;put each color back
-	move.l	(sp)+,-(a0)				;put the saved palette back (reverse order)
-	dbf	d0,.1						;loop
-	movem.l	(sp)+,d0/a0
-	rts
-forceblack2							;fade to black, keeping palfadenew (saved on the stack and restored)
-	movem.l	d0/a0,-(sp)
-	movea.w	#(palfadenew-M68K_RAM),a0
-	moveq	#$1F,d0					;32 longs
-.loop								;black out each target color, saving it
-	move.l	(a0),-(sp)
-	clr.l	(a0)+
-	dbf	d0,.loop					;loop
-	move.w	#$64,(palcount).w		;copy now
-	bsr.w	forcefade
-	moveq	#$1F,d0					;32 longs
-.loop2								;put each color back
-	move.l	(sp)+,-(a0)
-	dbf	d0,.loop2					;loop
-	movem.l	(sp)+,d0/a0
-	rts
-forcefade							;regardless of interupts/disflags fade in new palettes, don't upset
-									;anything else
-	move	sr,-(sp)
-	move.l	(VBint).w,-(sp)			;save the vblank routine
-	move.w	(disflags).w,-(sp)
-	bclr	#dfng,(disflags).w
-	move.l	#vb2,(VBint).l			;minimal vblank handler (vb2) that runs the fade
-	move	#$2500,sr				;interrupts on
-.1									;loop
-	tst.w	(palcount).w			;wait until the fade has finished (palcount < 0)
-	bpl.s	.1
-	move.w	(sp)+,(disflags).w
-	move.l	(sp)+,(VBint).w			;restore the vblank routine
-	move	(sp)+,sr
-	rts
-; fade from current color in color ram to color held in palfadenew
-; this should be called during vblank because palette changes punch holes in video
-cramfade							;fade from current color in color ram to color held in palfadenew. This
-									;should be called during vblank because palette changes punch holes in
-									;video. palcount 100 copies the palette with no fade (CopyPaletteToCRAM)
-	tst.w	(palcount).w			;fading?
-	bmi.w	rtss2
-	cmpi.w	#$64,(palcount).w		;100 = copy now
-	beq.w	CopyPaletteToCRAM
-	subq.w	#1,(palcount).w
-	bmi.w	rtss2
-	clr.l	d0
-	move.w	(palcount).w,d0
-	cmp.w	#$18,d0					;above $18?
-	bgt.w	rtss2
-	divu.w	#3,d0
-	swap	d0						;d0 = palcount mod 3
-	asl.w	#2,d0					;shifter 0/4/8
-	moveq	#2,d3					;d3 = one step of the component (2 << shift)
-	asl.w	d0,d3
-	moveq	#$E,d5					;d5 = component mask ($E << shift)
-	asl.w	d0,d5
-	move.w	d5,d4
-	not.w	d4						;d4 = mask of the other components
-	movea.l	#palfadenew,a1			;a1 = destination colors
-	movea.l	#Vdata,a0
-	clr.w	d6						;d6 = cram address, 2 per color
-.top								;loop
-	move.w	d3,d2					;d2 = signed step for this color
-	move.w	d6,d0
-	swap	d0						;to the high word
-	move.w	#$20,d0					;cram read
-	move.l	d0,Vctrl-Vdata(a0)
-	move.w	(a0),d7					;current color
-	move.w	d7,d0					;current color
-	and.w	d5,d0
-	move.w	(a1)+,d1				;dest color
-	and.w	d5,d1					;target component
-	cmp.w	d1,d0					;same?
-	beq.w	.next					;component already at target
-	blt.w	.nn						;below target: step up
-	neg.w	d2						;above target: step down
-.nn									;component stepped
-	add.w	d2,d0					;apply the step to the component
-	and.w	d4,d7
-	or.w	d0,d7					;merge the new component into the color
-	move.l	#$C000,d0				;cram write
-	move.b	d6,d0
-	swap	d0						;to the high word
-	move.l	d0,Vctrl-Vdata(a0)
-	move.w	d7,(a0)
-.next								;next color
-	addq.w	#2,d6					;next color
-	cmp.w	#$80,d6					;64 colors done?
-	bne.s	.top
-	rts
-CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected from vblank
-	movem.l	d0/a0-a1,-(sp)
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	movea.w	#(palfadenew-M68K_RAM),a1
-	movea.l	#Vdata,a0
-	move.l	#CRAM_W,Vctrl-Vdata(a0)
-	moveq	#$1F,d0					;32 longs
-.0									;copy each color pair
-	move.l	(a1)+,(a0)				;two colors per long
-	dbf	d0,.0						;loop
-	st	(palcount).w
-	move.w	(sp)+,(disflags).w
-	movem.l	(sp)+,d0/a0-a1
-	rts
-; d0 = range
-; return d0 = random number (-range < d0 < range)
-randomd0s							;d0 = range. Return d0 = random number (-range < d0 < range)
-	move.w	d0,-(sp)
-	asl.w	#1,d0					;range*2
-	bsr.w	randomd0
-	sub.w	(sp)+,d0				;shift down to -range+1 .. range-1
-	rts
-; d0 = range
-; return random number in d0 (0 <= d0 < range)
-randomd0							;d0 = range. Return random number in d0 (0 <= d0 < range)
-	movem.l	d0-d2,-(sp)				;2(sp) = range (the saved d0 low word)
-	move.w	(seed+2).w,d0			;seed+2 (92)
-	move.w	d0,d1					;seed low
-	move.w	(seed).w,d2
-	mulu.w	#$E62D,d0
-	mulu.w	#$BB40,d1
-	mulu.w	#$E62D,d2
-	add.w	d2,d1					;add the cross term
-	swap	d0						;to the high word
-	add.w	d1,d0
-	swap	d0
-	addq.l	#1,d0
-	move.l	d0,(seed).w
-	asr.l	#8,d0
-	mulu.w	2(sp),d0				;times the range
-	swap	d0						;d0 = result 0 <= d0 < range
-	addq.w	#4,sp					;skip the saved d0 so the result survives
-	movem.l	(sp)+,d1-d2
-	rts
-; returns d0.L^.5 in d0
-Sroot								;Square Root, this returns (d0.L)^.5 in d0. Large values use a binary
-									;search
-	tst.l	d0						;zero?
-	beq.w	rtss2
-	cmp.l	#$640,d0
-	bhi.w	.m2						;large value: Newton iteration / binary search below
-	move.l	d1,-(sp)				;find square root of d0
-	moveq	#-1,d1
-.0									;loop
-	addq.w	#2,d1					;next odd number
-	sub.w	d1,d0					;minus the odd number
-	bcc.s	.0
-	lsr.w	#1,d1					;d1 = 2*root+1 -> root
-	move.w	d1,d0
-	move.l	(sp)+,d1
-	rts
-.m2									;d0 > $640
-	movem.l	d1-d4,-(sp)
-	moveq	#9,d3					;max number of reps
-	move.w	#$8000,d1				;binary search start
-	cmp.l	#$F00000,d0				;over $F00000?
-	bhi.w	.big					;too big for divu: binary search
-	move.l	d0,d1
-	lsr.l	#8,d1					;first guess = d0/256 + 2
-	addq.w	#2,d1
-.top								;Newton steps until the guess settles
-	move.w	d1,d2					;Newton step: d1 = (d0/guess + guess)/2
-	move.l	d0,d1
-	divu.w	d2,d1
-	add.w	d2,d1
-	lsr.w	#1,d1
-	cmp.w	d1,d2					;stop when the guess stops changing, or after 10 steps
-	dbeq	d3,.top					;loop
-.done								;loop
-	move.w	d1,d0					;d0 = root (shared exit of both methods)
-	movem.l	(sp)+,d1-d4
-	rts
-.big								;binary search for large values
-	moveq	#0,d1
-	moveq	#-1,d2
-.bs									;loop
-	move.w	d1,d3					;d3 = (low+high)/2, carry shifted back in
-	add.w	d2,d3
-	roxr.w	#1,d3
-	cmp.w	d3,d1					;same as low?
-	beq.s	.done					;no step left: d1 is the root
-	move.w	d3,d4
-	mulu.w	d3,d3
-	cmp.l	d3,d0
-	bcc.w	.lo						;d0 >= mid^2: raise low
-	move.w	d4,d2
-	bra.s	.bs
-.lo									;d0 >= d3
-	move.w	d4,d1
-sfxarg = 16*4						;sfx / song: stack offset of the number word after the movem
-	bra.s	.bs
-; play sound effect number
-; one word passed on stack
-sfx									;play sound effect number. One word passed on stack
-	movem.l	d0-d7/a0-a6,-(sp)		;sfxarg(sp) = the number word (above 15 longs and the return address)
-	clr.l	d0
-	move.w	sfxarg(sp),d0
-	bmi.w	.none					;negative = no sound
-	move.w	d0,(lastsfx).w			;remember the last effect
-	jsr	(play_sfx_or_music_track).l
-.none								;pop the d0-d7/a0-a6 saved above
+VBlank								;Main vblank code for game play (VBint target, set by setupice and
+									;setupice_highlight). DumpSprites when
+									;dfok is set, cramfade, then the game clock. gmode2 bit 2 keeps the clock
+									;running after the whistle, and with gmode2 bit 1 (penalty shot /
+									;shootout) shootoutclock counts down instead (shootoutjiffy jiffies, not
+									;while gmode2 bit 7 is set)
+	movem.l	d0-d7/a0-a6,-(sp)
+	btst	#dfng,(disflags).w		;dfng: don't touch the vdp
+	bne.w	.nograph				;don't screw with vchip cause I'm using it
+	bclr	#dfok,(disflags).w		;dfok
+	beq.w	.01
+	bsr.w	DumpSprites
+.01									;sprites sent when ready
+	bsr.w	cramfade				;palette fades run every vblank unless dfng
+.nograph							;game clock part: runs even with dfng set
+	btst	#sfpz,(sflags).w		;sfpz
+	bne.w	.c
+	btst	#2,(gmode2).w
+	bne.w	.0
+	btst	#gmclock,(gmode).w		;gmclock: game clock stopped
+	bne.w	.c
+.0									;shootout clock, or the game clock when running
+	btst	#1,(gmode2).w			;penalty shot / shootout clock
+	bne.w	.soclock
+	tst.w	(gameclock).w
+	beq.w	.c
+	subi.w	#jiffy,(gameclock+2).w	;jiffy. gameclock+2 = gameclock+2
+	bcc.w	.c
+	bset	#dfclock,(disflags).w	;dfclock
+	subq.w	#1,(gameclock).w
+	cmpi.w	#$3D,(gameclock).w		;61
+	bgt.w	.c
+	cmpi.w	#$3C,(gameclock).w		;60
+	blt.w	.c
+	move.w	#SFXbeep2,-(sp)			;SFXbeep2, played when gameclock reaches 60
+	bsr.w	sfx
+.c									;clock done
+	addq.w	#1,(Vcount).w
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
-	move.l	(sp),2(sp)				;return address over the number word
-	addq.w	#2,sp					;(callee pops its own argument)
-	rts
-; play song number
-; one word passed on stack
-song								;play song number. One word passed on stack
-	movem.l	d0-d7/a0-a6,-(sp)		;sfxarg(sp) = the number word (above 15 longs and the return address)
-	clr.l	d0
-	move.w	sfxarg(sp),d0
-	bmi.w	.none					;negative = no song
-	jsr	(play_sfx_or_music_track).l	;same call as sfx, without lastsfx
-.none								;pop the d0-d7/a0-a6 saved above
+	rte
+.soclock							;bit 1 of gmode2 set
+	tst.w	(shootoutclock).w
+	beq.s	.c
+	subi.w	#$AAA,(shootoutjiffy).w
+	bcc.s	.c
+	bset	#dfclock,(disflags).w
+	btst	#7,(gmode2).w
+	bne.s	.c
+	subq.w	#1,(shootoutclock).w
+	bra.s	.c
+vb2									;Vblank used for palfades only, no dmas (VBint target). No rte here: falls
+									;into IRQ7
+	movem.l	d0-d7/a0-a6,-(sp)
+	btst	#dfng,(disflags).w
+	bne.w	.nograph
+	bsr.w	cramfade
+.nograph							;no sprite or dma work in this vblank
+	addq.w	#1,(Vcount).w
+	jsr	(p_music_vblank).l
 	movem.l	(sp)+,d0-d7/a0-a6
-	move.l	(sp),2(sp)				;return address over the number word
-	addq.w	#2,sp					;drop the number word
-	rts
-; wait d0 vblanks or until input from either joystick
-; return joystick variables (d0-d3) if any
-waitx								;wait d0 vblanks or until input from either joystick. Return joystick
-									;variables (d0-d3) if any. Called from ScoutingReport and
-									;SetupStanleyCupCelebrationScreen
-	clr.w	(waitxpad).w			;no pad bits yet
-	neg.w	d0
-	move.w	d0,(Vcount).w			;frame counter
-.wait								;loop
-	bsr.w	ReadJoy1
-	move.w	d3,(waitxpad).w
-	tst.w	d1						;any press?
-	bne.w	rtss2
-	bsr.w	ReadJoy2
-	or.w	d3,(waitxpad).w			;plus its held bits
-	tst.w	d1						;any press?
-	bne.w	rtss2
-	tst.w	(FourWayPlay).w			;four way?
-	beq.w	.1
-	bsr.w	ReadJoy3
-	or.w	d3,(waitxpad).w			;plus its held bits
-	tst.w	d1						;any press?
-	bne.w	rtss2
-	bsr.w	ReadJoy4
-	or.w	d3,(waitxpad).w			;plus its held bits
-	tst.w	d1						;any press?
-	bne.w	rtss2
-.1									;read pad 1 (and the others)
-	move.w	(Vcount).w,d0			;frame counter
-.0									;loop
-	cmp.w	(Vcount).w,d0			;wait for the next vblank to change Vcount
-	beq.s	.0						;wait for a new frame
-	tst.w	d0						;time left?
-	bmi.s	.wait					;still counting up to zero
-	rts
-; special version of waitx for zamboni crossing
-; wait d0 vblanks or until input from either joystick
-; retrun joystick variables (d0-d3) if any
-waitxsr								;Wait d0 vblanks while the zamboni crosses
-	movem.l	d4-d7/a0-a3,-(sp)
-	neg.w	d0						;Vcount counts up from -d0 to 0
-	move.w	d0,(Vcount).w			;frame counter
-.wait								;loop
-	cmpi.w	#$708,(Zamx).w			;zamboni across?
-	bhi.w	.nz						;zamboni past $708: stop moving it
-	addq.w	#1,(Zamx).w
-.nz									;zamboni moved
-	moveq	#1,d7					;1 frame
-	jsr	(updatecrowdf).w			;4EB8: target below $8000
-	jsr	(RunArenaAnim).l
-	clr.w	(pausepad).w
-	bclr	#sfpj,(sflags).w
-	bsr.w	ReadJoy1
-	bsr.w	ProcessInputWithRepeat
-	tst.w	d1						;any press?
-	bne.w	.key
-	clr.w	(pausepad).w
-	bset	#sfpj,(sflags).w
-	bsr.w	ReadJoy2
-	bsr.w	ProcessInputWithRepeat
-	tst.w	d1						;any press?
-	bne.w	.key
-	tst.w	(FourWayPlay).w			;four way?
-	beq.w	.vid
-	bclr	#sfpj,(sflags).w
-	move.w	#3,(pausepad).w
-	bsr.w	ReadJoy3
-	bsr.w	ProcessInputWithRepeat
-	tst.w	d1						;any press?
-	bne.w	.key
-	tst.w	(FourWayPlay).w			;four way?
-	beq.w	.vid
-	bset	#sfpj,(sflags).w
-	move.w	#4,(pausepad).w
-	bsr.w	ReadJoy4
-	bsr.w	ProcessInputWithRepeat
-	tst.w	d1						;any press?
-	beq.w	.vid
-.key								;a button: run the menu
-	move.w	(Vcount).w,d0			;frame counter
-	cmp.w	#$FF88,d0				;more than $78 frames left?
-	blt.w	.menu
-	moveq	#$FFFFFF88,d0
-.menu								;timer clamped
-	movem.w	d0,-(sp)
-	jsr	(HandleMenuInput).w			;4EB8: target below $8000
-	bne.w	.resume					;menu did not end the screen: carry on waiting
-	addq.w	#2,sp					;drop it
-	bset	#7,d1					;tell the caller the menu ended it
-	bra.w	.ex
-.resume								;menu left the screen up
-	move.w	(sp)+,(Vcount).w
-.vid								;redraw and keep waiting
-	bsr.w	setvideo
-	move.w	(Vcount).w,d0			;frame counter
-.0									;loop
-	cmp.w	(Vcount).w,d0			;wait for the next vblank
-	beq.s	.0						;wait for a new frame
-	tst.w	d0						;time left?
-	bmi.w	.wait
-.ex									;exit: restore the registers
-	movem.l	(sp)+,d4-d7/a0-a3
-	rts
-; wait for either joystick input
-; return d1 = new button presses
-waitjoy								;wait for either joystick input. Return d1 = new button presses. it as
-									;data (no caller found)
-	move.w	(Vcount).w,d0			;frame counter
-.0									;loop
-	cmp.w	(Vcount).w,d0
-	beq.s	.0						;wait for a new frame
-	bsr.w	orjoy					;read the pads
-	beq.s	waitjoy					;no new press: wait again
-	rts
-; return d1 = new button presses
-orjoy								;return d1 = new button presses from either joystick
-	tst.w	(FourWayPlay).w			;check for 4-way play?
-	bne.w	.4way
-	bsr.w	ReadJoy1
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy2
-	or.w	(sp)+,d1
-	rts
-.4way								;FourWayPlay <> 0
-	bsr.w	ReadJoy1
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy2
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy3
-	move.w	d1,-(sp)
-	bsr.w	ReadJoy4
-	or.w	(sp)+,d1
-	or.w	(sp)+,d1
-	or.w	(sp)+,d1
-	rts
-; eliminate diagonal direction presses on d0
-nodiag								;eliminate diagonal direction presses: if held directions (d3 bits 0-3)
-									;are not one direction, clear the d1 direction bits
-	movem.l	d0/d4-d5,-(sp)
-	moveq	#3,d4					;d4 = direction bit 3..0
-	move.w	d3,d0
-	andi.w	#$F,d0					;held directions
-	beq.w	.ok						;none held
-.0									;each direction bit
-	clr.w	d5						;test each single-bit direction against the held set
-	bset	d4,d5					;single direction bit
-	cmp.w	d5,d0					;matches?
-	dbeq	d4,.0					;loop
-	beq.w	.ok						;exactly one direction held
-	andi.w	#$FFF0,d1				;diagonal: drop the direction presses
-.ok									;exit: restore the registers
-	movem.l	(sp)+,d0/d4-d5
-	rts
-ProcessInputWithRepeat				;nodiag, then key repeat on d1-d3
-	bsr.s	nodiag
-	tst.w	d3						;anything held?
-	beq.w	rtss2
-	tst.w	d2						;changed?
-	bne.w	.chg					;buttons changed: restart the delay
-	subq.w	#1,(repeatdelayframes).w
-	bpl.w	rtss2
-	move.w	#4,(repeatdelayframes).w	;repeat rate
-	move.w	d3,d1					;repeat the held buttons
-	rts
-.chg								;d2 <> 0
-	move.w	#$F,(repeatdelayframes).w
-	rts
-; Read controller 1
-; return d0 = direction (bit 0-3) and new button (bit 4-7) presses
-; d1 = new presses (all 8 bits)
-; d2 = changed buttons (all 8)
-; d3 = current held buttons (all 8)
-ReadJoy1							;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
-									;direction (bit 0-3) and new button (bit 4-7) presses, d1 = new presses
-									;(all 8 bits), d2 = changed buttons (all 8), d3 = held buttons (all 8)
-	move.b	(PadRaw1).w,d0
-	bsr.w	ReadJoy					;d1 = buttons down now
-	move.w	(lj1).w,d2				;last frame's buttons
-	move.w	d1,(lj1).w
-	move.w	d1,d3
-	eor.w	d1,d2
-	and.w	d2,d1					;d1 = changed and now down = new presses
-	rts
-; Read controller 2
-; return d0 = direction (bit 0-3) and new button (bit 4-7) presses
-; d1 = new presses (all 8 bits)
-; d2 = changed buttons (all 8)
-; d3 = current held buttons (all 8)
-ReadJoy2							;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	move.b	(PadRaw2).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj2).w,d2
-	move.w	d1,(lj2).w				;store the new one
-	move.w	d1,d3
-	eor.w	d1,d2
-	and.w	d2,d1					;d1 = new presses
-	rts
-ReadJoy3							;read 4 way play pad 3 (PadRaw3). Same returns as ReadJoy1
-	move.b	(PadRaw3).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj3).w,d2
-	move.w	d1,(lj3).w				;store the new one
-	move.w	d1,d3
-	eor.w	d1,d2
-	and.w	d2,d1					;d1 = new presses
-	rts
-ReadJoy4							;read 4 way play pad 4 (PadRaw4). Same returns as ReadJoy1
-	move.b	(PadRaw4).w,d0
-	bsr.w	ReadJoy
-	move.w	(lj4).w,d2
-	move.w	d1,(lj4).w				;store the new one
-	move.w	d1,d3
-	eor.w	d1,d2
-	and.w	d2,d1					;d1 = new presses
-	rts
-ReadJoy								;read controller a0. Return d0 = direction (bit 0-3) and new button (bit
-									;4-7) presses, d1 = buttons down (all 8 bits)
-	not.b	d0
-	clr.w	d1
-	move.b	d0,d1
-	move.w	d1,-(sp)
-	andi.w	#$F0,d0					;buttons
-	andi.w	#$F,d1					;directions
-	movea.l	#jdtab,a0
-	move.b	0(a0,d1.w),d1			;direction
-	or.w	d1,d0
-	move.w	(sp)+,d1
-	rts
-jdtab	dc.b	8					;convert buttons l,r,d,u into directions 0-7,8
-	;convert button l,r,d,u into directions 0-7,8
-	dc.b	0,4,8,6,7,5,8,2,1,3,8,8,8,8,8
-; init dma transfer and protect vblank interruption
-; d0 = words to transfer
-; d1 = initial vram address
-; a0 = address to transfer from
-DoDMApro							;initiate dma transfer and protect from vblank interuption. d0 = words to
-									;transfer, d1 = initial vram address, a0 = address to transfer from.
-									;Jumped to from DecompressGraphics
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
+IRQ7								;rte only. vb2 falls in; the vector table ($60, $64, ...) points here
+	rte
+DumpSprites							;Transfer (by dma) scroll stuff, sprite table, vram data in dmalist.
+									;Called from VBlank when dfok was set. Falls into DumpSprites2
+	bsr.w	SetScroll2
+DumpSprites2						;Transfer sprite table, then the dma list. Falls into DoDMAlist. Also
+									;called from VBlank_SetOptions
+	movea.w	#(Satt-M68K_RAM),a0		;transfer sprite table
+	move.w	(Sattsize).w,d0			;words
+	move.w	(VSPRITES).w,d1
 	bsr.w	DoDMA
-	move.w	(sp)+,(disflags).w
+dodmalist							;(symbols are case-insensitive). Transfer data from dmalist.
+									;Also called from setupice
+	movea.l	(DMAlistend).w,a6
+	cmpa.l	#DMAList,a6
+	beq.w	rtss2					;list empty
+.0									;loop
+	move.w	-(a6),d1				;vram address
+	move.w	-(a6),d0				;words
+	movea.l	-(a6),a0				;source
+	bsr.w	DoDMA
+	cmpa.l	#DMAList,a6
+	bne.s	.0
 	rts
-; initiate dma transfer (dma transfer bug is compensated for)
-; d0 = words to transfer
-; d1 = destination vram address
-; a0 = source address
-DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = words
-									;to transfer, d1 = destination vram address, a0 = source address
-	movem.l	d2-d3/a1,-(sp)
+SetScroll2							;Write Hscroll / Vscroll to the vdp. Called from DumpSprites
+	move.w	(VSCRLPM).w,d0
+	addq.w	#2,d0
+	bsr.w	Vmaddr
+	move.w	(Hscroll).w,(a0)
+	move.l	#VSRAM_W+(2<<16),Vctrl-Vdata(a0)	;vsram write, address 2
+	move.w	(Vscroll).w,(a0)
+	rts
+setvideo							;this is not vblank code but sets up ram for vblank transfers. Called once
+									;per game frame (DoGameFrame, PauseMode, ...). Also runs
+									;AddArenaAnimSprite and Crowd_Noise
+	movem.l	d0-d7/a0-a6,-(sp)
+.p									;loop
+	btst	#dfok,(disflags).w		;dfok: wait for vblank to take the last frame
+	bne.s	.p						;(VBlank clears dfok after DumpSprites)
+	movea.w	#(DMAList-M68K_RAM),a5	;dma transfer list
+	bsr.w	updatescroll			;after a5 is set
+	movea.w	#(Satt-M68K_RAM),a6		;sprite attribute table area
+	moveq	#1,d6					;link counter
+	bsr.w	checkfo
+	bsr.w	checksso
+	bsr.w	setsortcords
+	bsr.w	setffo
+	bsr.w	showclock
+	bsr.w	showzam
+	jsr	(AddArenaAnimSprite).l
+	bsr.w	showcrowd
+	bsr.w	showref
+	jsr	(Crowd_Noise).l
+	cmpa.w	#(Satt-M68K_RAM),a6		;no sprites: one blank sprite
+	bne.w	.n
+	clr.l	(a6)+					;no sprites: one blank sprite
+	clr.l	(a6)+
+.n									;sprite list ended
+	clr.b	satLink-satLen(a6)		;end sprite list
+	move.l	a6,d0
+	subi.l	#Satt,d0
+	lsr.w	#1,d0					;words
+	move.w	d0,(Sattsize).w
+	move.l	a5,(DMAlistend).w
+	bset	#dfok,(disflags).w		;dfok
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on the dma list
+									;(a5) when vertical scrolling needs new rows. Called from setvideo. Takes
+									;the rows from Rinktilelist, or RevRinkTilelist in a reverse angle replay
+									;(sflags4 bit 4)
+	btst	#sfhor,(sflags).w		;sfhor
+	bne.w	rtss2
+	moveq	#-$40,d0				;-192+128 (#$FFFFFFC0)
+	sub.w	(Hpos).w,d0
+	move.w	(Vpos).w,d1
+	move.w	d0,(Hscroll).w
+	move.w	d1,(Vscroll).w
+	neg.w	(Vscroll).w
+	move.w	(Oldrow).w,d4
+	asr.w	#3,d1					;d1 = Vpos in 8 pixel rows
+	move.w	d1,(Oldrow).w			;d4 = previous row
+	moveq	#$1F,d3					;max lines to update
+	cmp.w	d4,d1
+	beq.w	rtss2					;same row as last frame
+	movea.l	#Rinktilelist,a0
+	btst	#4,(sflags4).w			;reverse angle replay
+	beq.w	.0
+	movea.l	#RevRinkTilelist,a0
+.0									;normal or reverse rink map chosen
+	adda.l	jimdata(a0),a0			;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
+									;leave the cmp flags)
+	blt.w	.su0					;row went up
+.sd									;scrolling down: queue each new row
+	move.w	d1,d0					;scrolling down: queue map rows, one per pass (d3 = max rows)
+	neg.w	d0
+	addi.w	#$1E,d0
+	andi.w	#$1F,d0
+	asl.w	#7,d0					;chars per row screen format
+	add.w	(VmMAP2).w,d0
+	move.w	d0,6(a5)				;vram address
+	move.w	#$1E,d0					;60-30
+	sub.w	d1,d0
+	move.w	(a0),4(a5)				;words = one map row
+	mulu.w	(a0),d0
+	add.w	d0,d0
+	lea	mapwords(a0,d0.w),a1
+	move.l	a1,(a5)					;source = map row
+	addq.w	#8,a5
+	subq.w	#1,d1
+	cmp.w	d4,d1
+	dbeq	d3,.sd
+	rts
+.su0								;scrolling up: queue each new row
+	move.w	d1,d0					;scrolling up: same as .sd with rows going the other way
+	neg.w	d0
+	addi.w	#$1D,d0
+	andi.w	#$1F,d0
+	asl.w	#7,d0
+	add.w	(VmMAP2).w,d0
+	move.w	d0,6(a5)
+	move.w	#$3D,d0
+	sub.w	d1,d0
+	move.w	(a0),4(a5)
+	mulu.w	(a0),d0
+	add.w	d0,d0
+	lea	mapwords(a0,d0.w),a1
+	move.l	a1,(a5)
+	addq.w	#8,a5
+	addq.w	#1,d1
+	cmp.w	d4,d1
+	dbeq	d3,.su0
+	rts
+showref								;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link counter.
+									;Called from setvideo
+	bclr	#sf2refref,(sflags2).w	;sf2refref
+	beq.w	rtss2
+	movea.w	#(RefRamMap-M68K_RAM),a0
+	movea.w	#(VmMAP1-M68K_RAM),a1
+	move.w	2(a1),d2
+	moveq	#2,d0					;refy: Xpos on ice screen
+	btst	#sfhor,(sflags).w
+	beq.w	.1
+	moveq	#$F,d0					;Ypos on scoreboard screen
+.1									;ref row for this rink
+	asl.w	d2,d0					;row * map row size
+	moveq	#2,d1
+	asl.w	d2,d1					;d1 = vram step of 2 map rows
+	addq.w	#2,d0					;refx
+	btst	#sfhor,(sflags).w
+	beq.w	.2
+	addi.w	#$B,d0
+.2									;ref column for this rink
+	asl.w	#1,d0					;cells to bytes
+	add.w	(a1),d0					;d0 = vram address of the ref block in map 1
+	moveq	#7,d2					;refheight-1
+.0									;queue each ref row
+	move.l	a0,(a5)+
+	move.w	#7,(a5)+
+	move.w	d0,(a5)+
+	adda.w	#$E,a0					;refwidth*2
+	add.w	d1,d0
+	dbf	d2,.0
+	rts
+checkfo								;check for face off sprites. 3 entries of fofdata2: word frame, word
+									;flags. Called from setvideo
+	btst	#sfpz,(sflags).w		;sfpz
+	bne.w	rtss2
+	btst	#dffaceoff,(disflags).w	;face off flag
+	beq.w	rtss2
+	movea.w	#(fofdata2-M68K_RAM),a3
+	moveq	#2,d0
+.loop								;each faceoff object
+	move.w	(a3),d4
+	bmi.w	.next
+	beq.w	.next
+	movea.l	#FaceOffSprites,a2
+	adda.l	jimdata(a2),a2
+	add.w	d4,d4
+	move.w	2(a2,d4.w),d5
+	sub.w	0(a2,d4.w),d5
+	lsr.w	#3,d5
+	subq.w	#1,d5
+	adda.w	0(a2,d4.w),a2
+.loop2								;each sprite of the frame
+	move.w	seY(a2),d2
+	addi.w	#$80,d2
+	add.w	(fodropy).w,d2
+	move.w	d2,(a6)
+	move.w	(a2),d2
+	btst	#3,foattr(a3)			;x flip
+	beq.w	.0
+	move.b	seSize(a2),d2
+	andi.w	#$C,d2
+	addq.w	#4,d2
+	asl.w	#1,d2
+	neg.w	d2
+	sub.w	(a2),d2
+.0									;sprite X
+	addi.w	#$80,d2
+	add.w	(fodropx).w,d2
+	move.w	d2,satX(a6)
+	move.b	seSize(a2),satSize(a6)
+	move.b	d6,satLink(a6)
+	move.w	seAttr(a2),d2
+	andi.w	#$F800,d2
+	or.w	seTile(a2),d2
+	move.w	foattr(a3),d1
+	andi.w	#$F800,d1
+	eor.w	d1,d2
+	add.w	(faceoffvrcset).w,d2
+	move.w	d2,satTile(a6)
+	addq.w	#1,d6
+	addq.w	#8,a6
+	addq.w	#8,a2
+	dbf	d5,.loop2
+	addq.w	#4,a3
+.next								;next object
+	dbf	d0,.loop
+	rts
+showzam								;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draws frame
+									;1, frame 2-4 picked by x, then frame 5 (home score not ahead) or a .ftab
+									;frame. Called from setvideo
+	move.w	(Zamx).w,d0
+	bmi.w	rtss2					;no zamboni
+	movea.l	#ZamFrameList,a0
+	lsr.w	#2,d0
+	move.w	#$12A,d1				;y (92 128+200)
+	moveq	#1,d2					;frame
+	move.w	(ExtraChars).w,d3
+	bsr.w	SetSframe
 	move.w	d0,d2
+	lsr.w	#1,d2
+	ext.l	d2
+	divu.w	#3,d2
+	swap	d2
+	addq.w	#2,d2					;frame 2 + (x/2 mod 3)
+	bsr.w	SetSframe
+	moveq	#5,d2
+	move.w	(HmGoals).w,d4			;home score
+	cmp.w	(AwGoals).w,d4
+	bls.w	SetSframe				;home not ahead: frame 5
+	move.w	d0,d2
+	subi.w	#$DA,d2
+	bpl.w	.pos
+	clr.w	d2						;x below $DA: first entry
+.pos								;entry index
+	lsr.w	#2,d2					;(x-$DA)/4
+	add.w	d2,d2					;word index
+	cmp.w	#$1A,d2
+	blt.w	.get
+	move.l	#$18,d2					;clamp to the last entry
+.get								;index clamped
+	movea.l	#.ftab,a1
+	move.w	0(a1,d2.w),d2
+	bra.w	SetSframe
+.ftab	dc.w	5,6,7,8,7,8,7,8,7,8,7,6,5	;frame by (x-$DA)/4
+SetSframe							;draw one sprite frame. a0 = framelist, d0/d1 = x/y cords, d2 = frame to
+									;setup (from 0), d3 = start char in vram, a6 = sprite table, d6 = link
+									;counter. Called from showzam and the screen code
+	cmp.w	#MaxSprites,d6			;MaxSprites
+	bge.w	rtss2
+	movem.l	d0-d5/a0,-(sp)
+	adda.l	jimdata(a0),a0			;frame offset table
 	add.w	d2,d2
-	add.w	a0,d2					;carry out = source+length crosses a 64k boundary
-	bcc.w	.nd						;no boundary crossed
-	beq.w	.nd						;ends exactly on the boundary: one transfer
-	lsr.w	#1,d2					;do 2 transers if source address crosses 64k boundary
-	sub.w	d2,d0					;d0 = words before the boundary, d2 = words after it
-	move.w	d0,-(sp)
-	bsr.w	.dd
-	move.w	(sp)+,d0
-	add.w	d0,d0					;advance vram dest and source by the words done
-	add.w	d0,d1					;plus the bytes done
-	adda.w	d0,a0
-	move.w	d2,d0					;second part: the rest, falls into .nd
-	bra.w	.nd						;second part
-.dd									;(a global in ; local here, only DoDMA uses it)
-	movem.l	d2-d3/a1,-(sp)
-.nd									;DMA the part
-	lea	(Vctrl).l,a1				;vdp control port
-	move.w	#VDPR_MODE2+$54,(a1)
-	move.w	#VDPR_AUTOINC+$02,(a1)
-	move.w	#$9300,d2
-	move.b	d0,d2					;reg 19: length low
-	move.w	d2,(a1)
-	move.w	#$9400,d2
-	lsr.w	#8,d0
-	move.b	d0,d2					;reg 20: length high
-	move.w	d2,(a1)
-	move.l	a0,d0
-	lsr.l	#1,d0					;source in words
-	move.w	#$9500,d2
-	move.b	d0,d2					;reg 21: source low
-	move.w	d2,(a1)
-	lsr.l	#8,d0
-	move.w	#$9600,d2
-	move.b	d0,d2					;reg 22: source mid
-	move.w	d2,(a1)
-	lsr.l	#8,d0
-	andi.b	#$7F,d0
-	move.w	#$9700,d2
-	move.b	d0,d2					;reg 23: source high (dma mode bits 7-6 = 0: 68k to vram)
-	move.w	d2,(a1)
-	clr.l	d0
-	move.w	d1,d0					;build the vdp command long for a vram write with dma
-	asl.l	#2,d0
-	lsr.w	#2,d0
-	move.l	d0,d3
-	ori.l	#$804000,d0				;vram write with DMA
-	move.l	d0,(dmaram).w			;the last command word is written from ram (dma bug workaround)
-	move	sr,-(sp)
-	move	#$2700,sr				;interrupts off
-	move.w	#$100,(IO_Z80BUS).l		;stop the Z80
-.loop								;loop
-	btst	#0,(IO_Z80BUS).l		;stopped?
-	bne.s	.loop
-	move.w	(dmaram+2).w,(a1)
-	move.w	(dmaram).w,(a1)			;this write starts the dma
-	bsr.w	WaitDMA					;wait for the DMA
-	move.w	#VDPR_MODE2+$64,(a1)
-	clr.w	(IO_Z80BUS).l
-	cmpa.w	#0,a0					;ram source?
-	bge.w	.0
-	ori.w	#$4000,d3
-	swap	d3						;to the high word
-	andi.w	#3,d3
-	move.l	d3,(a1)					;vram write command, no dma
-	move.w	(a0),-4(a1)				;write the first word again
-.0									;DMA or single word done
-	move	(sp)+,sr
-	movem.l	(sp)+,d2-d3/a1
+	move.w	2(a0,d2.w),d4
+	sub.w	0(a0,d2.w),d4
+	lsr.w	#3,d4
+	subq.w	#1,d4					;number of sprites in frame
+	adda.w	0(a0,d2.w),a0
+.loop								;each sprite of the frame
+	move.w	seY(a0),(a6)			;per sprite: y (+ d1)
+	add.w	d1,(a6)+
+	move.b	seSize(a0),(a6)+		;size
+	move.b	d6,(a6)+				;link
+	move.w	seAttr(a0),d2
+	andi.w	#$F800,d2
+	add.w	seTile(a0),d2
+	add.w	d3,d2
+	move.w	d2,(a6)+				;char + flags
+	move.w	(a0),(a6)				;x
+	add.w	d0,(a6)+
+	addq.w	#1,d6
+	cmp.w	#MaxSprites,d6			;MaxSprites
+	beq.w	.ex						;sprite table full
+	addq.w	#8,a0
+	dbf	d4,.loop
+.ex									;exit: restore the registers
+	movem.l	(sp)+,d0-d5/a0
 	rts
-DoDMA_nd2							;vram to vram copy by dma, protected from vblank
-	movem.l	d0-d3/a1,-(sp)
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	lea	(Vctrl).l,a1				;vdp control port
-	move.w	#VDPR_MODE2+$54,(a1)
-	move.w	#VDPR_AUTOINC+$01,(a1)
-	move.w	#$9300,d3
-	move.b	d0,d3
-	move.w	d3,(a1)
-	move.w	#$9400,d3
-	lsr.w	#8,d0
-	move.b	d0,d3
-	move.w	d3,(a1)
-	move.w	#$9500,d3				;source low
-	move.b	d2,d3
-	move.w	d3,(a1)
-	move.w	#$9600,d3				;source high
-	lsr.w	#8,d2
-	move.b	d2,d3
-	move.w	d3,(a1)
-	move.w	#VDPR_DMASRCH+$C0,(a1)
-	clr.l	d0
-	move.w	d1,d0					;destination address -> vdp command (address bits 14-15 go to the second
-									;word)
-	asl.l	#2,d0
-	lsr.w	#2,d0
-	swap	d0						;to the high word
-	ori.w	#$C0,d0					;vram copy command
-	move.l	d0,(dmaram).w
-	move.w	#$100,(IO_Z80BUS).l		;stop the Z80
-.loop								;loop
-	btst	#0,(IO_Z80BUS).l		;stopped?
-	bne.s	.loop
-	move.w	(dmaram).w,(a1)
-	move.w	(dmaram+2).w,(a1)
-	bsr.w	WaitDMA					;wait for the DMA
-	move.w	#VDPR_MODE2+$64,(a1)
-	move.w	#VDPR_AUTOINC+$02,(a1)
-	clr.w	(IO_Z80BUS).l
-	move.w	(sp)+,(disflags).w
-	movem.l	(sp)+,d0-d3/a1
+showcrowd							;draw crowd sprites: up to 3 frames per PBnum nibble, then the two
+									;Crowdframe frames. a5 = dma list, a6 = sprite table, d6 = link counter.
+									;No crowd in a reverse angle replay. Called from setvideo
+	btst	#4,(sflags4).w			;check if reverse angle replay
+	bne.w	.x						;branch if so
+	movea.l	#Crowdframelist,a1
+	adda.l	jimdata(a1),a1			;a1 = frame offset table
+	move.w	(Hpos).w,d4
+	move.w	(Vpos).w,d5
+	btst	#sfhor,(sflags).w
+	beq.w	.v
+	moveq	#-$40,d4				;(#$FFFFFFC0)
+	move.l	#$100,d5
+.v									;view position set
+	clr.w	d0						;d4/d5 = x/y of the view
+	move.b	(PBnum).w,d2			;low nibble
+	moveq	#$1A,d3					;frames 26+ (low nibble)
+	bsr.w	.pb
+	move.b	(PBnum).w,d2
+	lsr.w	#4,d2					;high nibble
+	moveq	#$1D,d3					;frames 29+ (high nibble)
+	bsr.w	.pb
+	move.b	(Crowdframe).w,d0
+	bsr.w	.sc
+	move.b	(Crowdframe+1).w,d0
+	bra.w	.sc
+.pb									;d2 = count, d3 = first frame
+	andi.w	#$F,d2					;d2 = count, d3 = first frame
+	cmp.w	#3,d2
+	bls.w	.pb0
+	moveq	#3,d2					;max 3
+.pb0								;count clamped to 3
+	bra.w	.nextpb
+.pbt								;each penalty box sprite
+	move.w	d3,d0					;frame = first frame + counter
+	add.w	d2,d0
+	bsr.w	.sc
+.nextpb								;next sprite
+	dbf	d2,.pbt
 	rts
-; fill vram
-; d0 = words to fill
-; d1 = vram address
-; d2 = data to fill with
-DoFill								;fill vram. d0 = words to fill, d1 = vram address, d2 = data to fill with
-	movem.l	d3/a1,-(sp)
-	movea.l	#Vdata,a1
-	andi.l	#$FFFF,d1
-	asl.l	#2,d1					;build the vram write command for address d1
-	lsr.w	#2,d1
-	ori.w	#$4000,d1
-	swap	d1						;to the high word
-	move.l	d1,Vctrl-Vdata(a1)
+.sc									;d0 = frame, 0 = none
+	ext.w	d0
+	beq.w	rtss2
+	btst	#sfhor,(sflags).w
+	beq.w	.chk
+	addi.w	#$1F,d0					;horizontal frames are 31 later
+.chk								;frame number set for this rink
+	cmp.w	#MaxSprites,d6			;MaxSprites
+	bge.w	rtss2
+	movem.l	d0-d5,-(sp)
+	add.w	d0,d0
+	movea.l	a1,a0
+	move.w	2(a0,d0.w),d1
+	sub.w	0(a0,d0.w),d1
+	lsr.w	#3,d1
+	subq.w	#1,d1
+	move.w	d1,-(sp)				;number of sprites in frame
+	adda.w	0(a0,d0.w),a0
+	move.w	d4,d0					;x window d0-d1
+	addi.w	#$C0,d0
+	move.w	d0,d1
+	subi.w	#$90,d0					;128+16
+	addi.w	#$80,d1
+	move.w	#$170,d2				;y window d2-d3
+	sub.w	d5,d2
 	move.w	d2,d3
-	swap	d3						;to the high word
-	move.w	d2,d3					;d3 = fill word twice, for long writes
-	lsr.w	#1,d0					;words -> longs
-	subq.w	#1,d0
-.0									;each long of the fill
-	move.l	d3,(dmaram).w
-	move.w	(dmaram).w,(a1)
-	move.w	(dmaram+2).w,(a1)
-	dbf	d0,.0						;loop
-	movem.l	(sp)+,d3/a1
+	subi.w	#$80,d2					;112+16
+	addi.w	#$70,d3					;112
+	move.w	(sp)+,d4
+.loop								;each sprite of the frame
+	cmp.w	seY(a0),d2				;per sprite: skip it if outside the window d0-d3
+	bgt.w	.next
+	cmp.w	seY(a0),d3
+	blt.w	.next
+	cmp.w	(a0),d0
+	bgt.w	.next
+	cmp.w	(a0),d1
+	blt.w	.next
+	move.w	seY(a0),d5
+	addi.w	#$70,d5					;128-16
+	sub.w	d2,d5
+	move.w	d5,(a6)+
+	move.b	seSize(a0),(a6)+
+	move.b	d6,(a6)+
+	move.w	seAttr(a0),d5
+	andi.w	#$F800,d5
+	add.w	seTile(a0),d5
+	add.w	(crowdvrcset).w,d5		;crowd start char
+	move.w	d5,(a6)+
+	move.w	(a0),d5
+	addi.w	#$70,d5					;128-16
+	sub.w	d0,d5
+	move.w	d5,(a6)+
+	addq.w	#1,d6
+	cmp.w	#$40,d6
+	beq.w	.ex
+.next								;next sprite
+	addq.w	#8,a0
+	dbf	d4,.loop
+.ex									;pop the d0-d5 saved above
+	movem.l	(sp)+,d0-d5
+.x									;exit (also the end of the code above)
 	rts
-WaitDMA								;wait for dma completion
-	move.w	(Vctrl).l,-(sp)			;read the vdp status: 1(sp) is its low byte
-	btst	#1,1(sp)				;status bit 1 = dma busy
-	addq.w	#2,sp					;drop it
-	bne.s	WaitDMA
-	rts
-; d0 = color to fade to
-setVram								;initialize all necesary video parameters based on my variables. d0 =
-									;color to fade to. Falls into setVram_0
-	movea.w	#(palfadenew-M68K_RAM),a0
-	moveq	#$3F,d1
-.0									;fill each target color
-	move.w	d0,(a0)+				;fill the 64 target colors with d0
-	dbf	d1,.0						;loop
-	move.w	#$18,(palcount).w
-	bsr.w	forcefade				;fade the screen to that color
-setVram_0							;second half of setVram without the fade: clear vram and set the VDP
-									;registers from disflags, Map1col, VmMAP1-3, VSPRITES and VSCRLPM.
-									;Falls in from setVram, called from EASportsScreen and HiScoreScreen
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	VmInc	2
-	clr.w	d0
-	bsr.w	Vmaddr					;vram address 0, a0 = Vdata
-	move.w	#$3FFF,d0				;$4000 longs
-	clr.l	d1
-.9									;clear each long of VRAM
-	move.l	d1,(a0)
-	dbf	d0,.9						;loop
-	move.w	#$8C00,d0				;8 for shadow mode
-	btst	#df32c,(disflags).w
-	bne.w	.i32					;32 column flag set: leave bits 0 and 7 clear
-	ori.w	#$81,d0
-.i32								;column mode set
-	move.w	d0,Vctrl-Vdata(a0)		;40 col mode, no interlace, normal brightness
-	move.w	#VDPR_MODE1+$04,Vctrl-Vdata(a0)	;512 color palette enable
-	move.w	#VDPR_MODE2+$64,Vctrl-Vdata(a0)
-	move.w	#$9001,d0				;playfield is 64x32
-	cmpi.w	#6,(Map1col).w			;64 wide?
-	beq.w	.i64					;Map1col 6 = 64 columns wide
-	move.w	#$9003,d0				;otherwise 128x32
-.i64								;map width set
-	move.w	d0,Vctrl-Vdata(a0)
-	move.w	#$8200,d0				;reg 2: map 1 address
-	move.b	(VmMAP1).w,d0
-	lsr.b	#2,d0
-	andi.b	#$38,d0
-	move.w	d0,Vctrl-Vdata(a0)
-	move.w	#$8400,d0				;reg 4: map 2 address
-	move.b	(VmMAP2).w,d0
-	lsr.b	#5,d0
-	move.w	d0,Vctrl-Vdata(a0)
-	move.w	#$8300,d0				;reg 3: map 3 address
-	move.b	(VmMAP3).w,d0
-	lsr.b	#2,d0
-	andi.b	#$3E,d0
-	move.w	d0,Vctrl-Vdata(a0)
-	move.w	#$8500,d0				;reg 5: sprite table
-	move.b	(VSPRITES).w,d0
-	lsr.b	#1,d0
-	move.w	d0,Vctrl-Vdata(a0)
-	move.w	#$8D00,d0				;reg $D: scroll table
-	move.b	(VSCRLPM).w,d0
-	lsr.b	#2,d0
-	move.w	d0,Vctrl-Vdata(a0)
-	move.w	#VDPR_WINX,Vctrl-Vdata(a0)	;disable plane 3 graphics
-	move.w	#VDPR_WINY,Vctrl-Vdata(a0)	;disable plane 3 graphics
-	move.w	#VDPR_BGCOL,Vctrl-Vdata(a0)	;Palette # 0 is border/transparent
-	move.w	#VDPR_MODE3,Vctrl-Vdata(a0)	;Scroll mode (entire scroll)
-	move.l	#VSRAM_W,Vctrl-Vdata(a0)
-	move.l	#0,(a0)					;playfield 1/2
-	move.w	(sp)+,(disflags).w
-	rts
-; set video port to address d0
-; d0 = vram address
-; returns a0 = Vdata!!!
-Vmaddr								;set video port to address d0. d0 = vram address, returns a0 = Vdata!!!
-	movea.l	#Vdata,a0
-	asl.l	#2,d0					;split the address: bits 0-13 in the first word, 14-15 in the second
-	lsr.w	#2,d0
-	ori.w	#$4000,d0				;vram write command
-	swap	d0						;to the high word
-	andi.w	#3,d0
-	move.l	d0,Vctrl-Vdata(a0)
-	rts
-;	Bitmap and tile decompression, text and number printing, and the small and big font routines.
-;	The decompressor handlers and control code routines sit at the addresses in DecompressOpcodeTable and
-;	ControlCodeJumpTable.
+;	Clock, pad label and object helpers from showclock to KillCrowd. The horizontal clock's .digit and
+;	.digits tables sit inside showclock.
 ;
 ;	EA's compiler emits cmp #imm,Dn as CMP (Bxxx), SNASM emits CMPI (0Cxx). The source has the real cmp /
 ;	cmpi; fixopcodes.js patches the cmp encoding after assembly.
 
-dobitmap							;transfer palette data/map data/tiles data to vram. a0 = palette, a1 =
-									;map, a2 = tiles (DecompressGraphics data), d0 = start x, d1 = start y, d2
-									;= width x, d3 = width y, d4 = start char, d5 = pal used bits (0-3) for
-									;color fam 1-4. printy is restored and the tiles go last through
-									;DecompressGraphics (returns d4 = end char)
-	move.w	(printy).w,-(sp)
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	movem.l	d0-d3/d5-d6/a0-a3,-(sp)	;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
-	move.w	d1,d6
-	movea.w	#(palfadenew-M68K_RAM),a3	;a3 = target palette, a0 = palette data
-	bra.w	.00
-.01									;loop
-	move.b	0(a0,d0.w),0(a3,d0.w)	;copy the color
-	dbf	d0,.01						;loop
-.02									;loop
-	adda.l	#$20,a0					;next line
-	adda.l	#$20,a3					;next line
-.00									;copy each palette line chosen in d5
-	moveq	#$1F,d0
-	lsr.w	#1,d5					;d5 bit n = copy palette line n; stop when no bits left
-	bcs.s	.01
-	bne.s	.02
-	move.w	(printa).w,d5			;d5 = tile attribute bits (priority/palette/flip) from printa
-	andi.w	#$F800,d5				;attribute bits
-	move.w	$E(sp),d2
-	subq.w	#1,d2
-.loop2								;each map row
-	bsr.w	xyVmMap					;set vram address from printx/printy/printm, a0 = Vdata
-	move.w	d6,d0
-	mulu.w	(a1),d0
-	add.w	2(sp),d0
-	asl.w	#1,d0					;d0 = byte offset of the first map word wanted
-	move.w	$A(sp),d1
-	subq.w	#1,d1
-.loop1								;each map word of the row
-	move.w	4(a1,d0.w),d3			;map word (map data starts 4 bytes in)
-	add.w	d4,d3					;add the start char
-	eor.w	d5,d3					;xor the attribute bits
-	move.w	d3,(a0)					;write the name table entry
-	addq.w	#2,d0
-	dbf	d1,.loop1					;loop
-	addq.w	#1,(printy).w
-	addq.w	#1,d6
-	dbf	d2,.loop2					;loop
-	btst	#0,(sflags6).w			;map as is?
-	bne.w	.0
-	bsr.w	DecompressGraphicsPlain
-.0									;pop the d0-d3/d5-d6/a0-a3 saved above
-	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
-	move.w	(sp)+,(disflags).w
-	move.w	(sp)+,(printy).w
+;Object offsets: Xpos 0, attribute 4, frame 6, oldframe 8, VRoffs $A, VRchar $12, Ypos $14, Zpos $18.
+;ssosize = $14. DMA list entries (a5): long source, word length in words, word vram.
+
+showclock							;put the game clock on screen. Called from setvideo and PauseMode. On the
+									;horizontal rink the clock is printed (printz / print with .digits; not in
+									;a shootout, gmode2 bit 0). On the vertical rink (.3) it goes in the dma
+									;list, only when dfclock is set; with gmode2 bit 1 (penalty shot /
+									;shootout) shootoutclock is shown instead of gameclock. a5 = dma list
+	btst	#sfhor,(sflags).w		;sfhor
+	beq.w	.3
+	btst	#0,(gmode2).w			;shootout
+	bne.w	.x
+	move.l	a1,-(sp)
+	jsr	(printz).l
+	String	CC_Font2Pri,$D,5
+	move.w	(gameclock).w,d0
+	ext.l	d0
+	divu.w	#$258,d0				;tens of minutes (600 seconds)
+	move.l	d0,-(sp)
+	tst.w	d0
+	bne.w	.1
+	addq.w	#1,(printx).w
+	bra.w	.2
+.1									;d0 <> 0
+	jsr	(.digit).l
+.2									;digit printed
+	move.l	(sp)+,d0
+	swap	d0
+	ext.l	d0
+	divu.w	#$3C,d0					;minutes
+	move.l	d0,-(sp)
+	jsr	(.digit).l
+	move.l	(sp)+,d0
+	swap	d0
+	ext.l	d0
+	addq.w	#2,(printx).w
+	divu.w	#$A,d0					;tens of seconds
+	move.l	d0,-(sp)
+	jsr	(.digit).l
+	move.l	(sp)+,d0
+	swap	d0
+	ext.l	d0
+	jsr	(.digit).l
+	movea.l	(sp)+,a1
+	jsr	(printz).l
+	String	CC_Font3Pri,$D,5
+.x									;exit
 	rts
-	include	decompress94.asm		;DecompressGraphicsWithRemap ... FlushOutputBuffer (93G layout)
-	include	print94.asm				;xyVmMap ... AddTeamBlock (93G layout)
+.digit								;Print digit d0 from .digits
+	movea.l	#.digits,a1
+	asl.w	#2,d0
+	adda.w	d0,a1
+	jsr	(print).l
+	rts
+.digits								;Strings '0' .. '9' for .digit (4 bytes each)
+	String	'0'
+	String	'1'
+	String	'2'
+	String	'3'
+	String	'4'
+	String	'5'
+	String	'6'
+	String	'7'
+	String	'8'
+	String	'9'
+.3									;Returns unless dfclock is set
+	bclr	#dfclock,(disflags).w	;dfclock
+	beq.w	rtss2
+	btst	#sf2replay,(sflags2).w
+	bne.w	rtss2
+	cmpi.w	#4,(gsp).w				;no clock update when gsp = 4
+	beq.w	rtss2
+	movea.w	#(clockram+6-M68K_RAM),a0	;end of the 5 word clock buffer; written backward
+	movea.l	#SmallFontMap,a1
+	adda.l	jimdata(a1),a1
+	move.w	$78(a1),d0				;4+(':'*2)
+	add.w	(smallfontchars).w,d0
+	ori.w	#$8000,d0
+	move.w	d0,(clockram).w			;colon
+	move.w	(gameclock).w,d0
+	btst	#1,(gmode2).w			;penalty shot / shootout clock
+	beq.w	.4
+	move.w	(shootoutclock).w,d0
+.4									;clock value chosen
+	ext.l	d0
+	divu.w	#$A,d0
+	bsr.w	.char					;seconds ones
+	divu.w	#6,d0
+	bsr.w	.char					;seconds tens
+	subq.w	#2,a0					;skip the colon
+	divu.w	#$A,d0
+	bsr.w	.char					;minutes ones
+	swap	d0
+	tst.l	d0						;minutes tens is zero?
+	bne.w	.0
+	moveq	#-$10,d0				;' '-'0': blank leading zero (#$FFFFFFF0)
+	swap	d0
+.0									;leading zero blanked
+	bsr.w	.char					;minutes tens
+	move.l	a0,(a5)+
+	move.w	#5,(a5)+				;words to transfer
+	movea.w	#(VmMAP1-M68K_RAM),a1
+	moveq	#$18,d0					;.clocky = 24
+	moveq	#3,d2					;.clockx = 3
+	btst	#sfhor,(sflags).w		;sfhor (always clear here: the horizontal rink prints the clock above)
+	beq.w	.cv
+	movea.w	#(VmMAP2-M68K_RAM),a1
+	moveq	#5,d0					;clock y (93 used 4)
+	moveq	#$D,d2					;.clockx2 = 13
+.cv									;map position set
+	move.w	2(a1),d1				;map width shift (d0 = y, d2 = x of the clock)
+	asl.w	d1,d0
+	add.w	d2,d0
+	asl.w	#1,d0
+	add.w	(a1),d0
+	move.w	d0,(a5)+				;vram destination
+	rts
+.char								;d0 high word = digit, write its tile to -(a0)
+	swap	d0
+	asl.w	#1,d0
+	move.w	$64(a1,d0.w),d0			;4+('0'*2)
+	add.w	(smallfontchars).w,d0
+	ori.w	#$8000,d0
+	move.w	d0,-(a0)
+	swap	d0
+	ext.l	d0
+	rts
+
+horoff	equ	197						;subtracted from the screen y in the horizontal rink view (sfhor)
+
+checksso							;do graphics for sso structure: arrows for the players when they are off
+									;screen. Called from setvideo. a5 = dma list, a6 = sprite table, d6 = link
+									;counter. Returns on the horizontal rink. Includes the pads 3 and 4
+									;(Joy3Struct / Joy4Struct when cont3team / cont4team). Falls into .ca for
+									;the last one
+	btst	#sfhor,(sflags).w
+	bne.w	rtss2
+	movea.w	#(Joy1Struct-M68K_RAM),a0
+	movea.w	#(sso-M68K_RAM),a3
+	move.w	#SPFarrow,d3			;frame numbers are 6 higher than 92
+	bsr.w	.ca
+	adda.w	#ffosize,a0				;next pad object
+	adda.w	#ssosize,a3				;ssosize
+	move.w	#SPFarrow+3,d3
+	bsr.w	.ca
+	tst.w	(cont3team).w
+	beq.w	rtss2					;on screen: no arrow
+	movea.w	#(Joy3Struct-M68K_RAM),a0
+	adda.w	#$14,a3
+	move.w	#$346,d3
+	bsr.w	.ca
+	tst.w	(cont4team).w
+	beq.w	rtss2
+	movea.w	#(Joy4Struct-M68K_RAM),a0
+	adda.w	#$14,a3
+	move.w	#$349,d3
+.ca									;a0 = object, a3 = sso, d3 = first arrow frame. In a shootout, with
+									;sflags2 bit 3 or in a penalty shot, no arrow for a player beyond x $A6
+	tst.w	Zpos(a0)
+	bmi.w	rtss2					;not on the ice
+	st	frame(a3)
+	move.w	(a0),d0
+	btst	#0,(gmode2).w
+	bne.w	.0
+	btst	#sf2replay,(sflags2).w
+	bne.w	.0
+	btst	#2,(BA_PS_flags).w
+	beq.w	.7
+.0									;off screen check (also in shootouts, replays and penalty shots)
+	move.w	d0,-(sp)
+	tst.w	d0
+	bpl.w	.2
+	neg.w	d0
+.2									;|d0|
+	cmp.w	#$A6,d0
+	blt.w	.6
+	move.w	(sp)+,d0
+	rts
+.6									;d0 < $A6
+	move.w	(sp)+,d0
+.7									;arrow position
+	move.w	Ypos(a0),d1
+	btst	#sfhor,(sflags).w
+	beq.w	.nhor
+	exg	d0,d1						;horizontal view: swap axes
+	neg.w	d0
+	subi.w	#horoff,d1				;horoff
+	bra.w	.hord
+.nhor								;sfhor clear
+	sub.w	(Hpos).w,d0
+	sub.w	(Vpos).w,d1
+.hord								;position relative to the view
+	clr.w	d2
+	cmp.w	#$74,d0					;.xoff = 116
+	blt.w	.8
+	bset	#3,d2
+.8									;not off the right
+	cmp.w	#$FF8C,d0				;-.xoff
+	bgt.w	.1
+	bset	#2,d2
+.1									;not off the left
+	cmp.w	#$64,d1					;.yoff = 100
+	blt.w	.9
+	bset	#0,d2
+.9									;not off the bottom
+	cmp.w	#$FF9C,d1				;-.yoff
+	bgt.w	.3
+	bset	#1,d2
+.3									;not off the top
+	tst.w	d2
+	beq.w	rtss2
+	movea.l	#jdtab,a1
+	move.b	0(a1,d2.w),d2
+	asl.w	#3,d2
+	movea.l	#.tab,a1
+	move.w	0(a1,d2.w),d4
+	beq.w	.4
+	move.w	d4,d0
+.4									;arrow X (or the player's)
+	addi.w	#$100,d0				;128+128
+	move.w	d0,(a3)					;Xcord
+	move.w	2(a1,d2.w),d4			;y spot, 0 = keep player y
+	beq.w	.5
+	move.w	d4,d1
+.5									;arrow Y (or the player's)
+	neg.w	d1						;y up is negative on screen
+	addi.w	#$F0,d1					;112+128
+	move.w	d1,2(a3)				;Ycord
+	add.w	4(a1,d2.w),d3
+	move.w	d3,frame(a3)
+	move.w	6(a1,d2.w),attribute(a3)	;flip bits
+	bra.w	addframe2
+.tab								;x spot, y spot, frame add, attribute per direction
+	dc.w	0,$64,0,$0000			;x spot, y spot, frame add, attribute per direction
+	dc.w	$74,$64,1,$0000			;.xspot = 116, .yspot = 100
+	dc.w	$74,0,2,$0000
+	dc.w	$74,-$64,1,$1000
+	dc.w	0,-$64,0,$1000
+	dc.w	-$74,-$64,1,$1800
+	dc.w	-$74,0,2,$0800
+	dc.w	-$74,$64,1,$0800
+setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOlist order. a5
+									;= dmalist, a6 = sprite attribute table, d6 = link counter
+	movea.w	#(OOlist-M68K_RAM),a4	;move OOlist into a4
+	move.w	#$F,d0					;sortobj-1 (15 dec)
+.top								;each sort object
+	clr.w	d1
+	move.b	(a4)+,d1				;move next sortcord into d1
+	asl.w	#6,d1					;mult by 64
+	movea.w	#(SortCords-M68K_RAM),a3	;SortCords into a3
+	adda.w	d1,a3					;add offset to next struct
+	bsr.w	addframe
+	dbf	d0,.top						;loop until done
+	rts
+setffo								;draw the 7 objects tied to icerink scrolling (gloves and pads), moving
+									;each by its x offset. Called from setvideo
+	bsr.w	uppads
+	move.w	#6,d0					;ffo obj -1
+	movea.w	#(pads-M68K_RAM),a3		;move start of struct into a3
+.top								;each scrolled object
+	movea.w	a6,a0					;per object: a0 = first sprite this object writes
+	bsr.w	addframe
+	cmpa.w	a6,a0
+	beq.w	.next					;no sprites added
+	move.w	2(a3),d1				;x offset (set by QueuePadLabel)
+	add.w	d1,6(a0)				;sprite 1 x
+	add.w	d1,$E(a0)
+.next								;next object
+	adda.w	#ffosize,a3				;move to next struct
+	dbf	d0,.top
+	rts
+uppads								;update the gloves object and the 6 pad objects, and queue new pad labels
+									;(QueuePadLabel). The pad players
+									;come from the PadControlBits / PadControlBits34 nibbles ($E = no change,
+									;$F = none)
+	movea.w	#(glovestruct-M68K_RAM),a0	;pads+(4*ffosize): gloves
+	st	Zpos(a0)					;set Zpos
+	move.b	(glovecords).w,d0
+	beq.w	.0						;branch if 0
+	move.b	(glovecords+1).w,d1
+	ext.w	d0
+	asl.w	#2,d0
+	move.w	d0,(a0)					;move d0 into Xpos
+	ext.w	d1
+	asl.w	#2,d1
+	move.w	d1,Ypos(a0)				;move d1 into Ypos
+	clr.w	Zpos(a0)				;clear Zpos
+.0									;pads set up
+	move.w	#5,d4
+	movea.w	#(pads-M68K_RAM),a0
+	movea.w	#(padcont-M68K_RAM),a1	;last label code per pad
+	movea.w	#(SortCords-M68K_RAM),a2
+	move.w	(PadControlBits).w,d3
+.top								;each pad
+	cmp.w	#1,d4
+	bne.w	.nibble
+	move.w	(PadControlBits34).w,d3
+	lsr.w	#4,d3
+	bra.w	*+4						;to the next instruction
+.nibble								;d4 <> 1
+	move.w	d3,d0					;per pad: d3 holds the remaining nibbles
+	andi.w	#$F,d0					;this pad's nibble: player number, $E or $F
+	move.w	#$F,d1					;label code for $E
+	cmp.w	#$E,d0
+	beq.w	.chg					;$E: leave the pad position alone
+	st	Zpos(a0)					;hidden
+	cmp.w	#$F,d0
+	beq.w	.next					;$F: pad hidden, label unchanged
+	asl.w	#7,d0
+	move.w	0(a2,d0.w),(a0)
+	move.w	Ypos(a2,d0.w),Ypos(a0)
+	clr.w	Zpos(a0)				;shown
+	move.b	position+1(a2,d0.w),d1	;label code = position << 8 | rostnum
+	asl.w	#8,d1
+	move.b	rostnum(a2,d0.w),d1
+.chg								;label code ready
+	cmp.w	(a1),d1					;new label code vs the last one for this pad
+	beq.w	.next					;same label as last time
+	move.w	d1,(a1)
+	bsr.w	QueuePadLabel
+.next								;next pad
+	lsr.w	#4,d3
+	adda.w	#ffosize,a0
+	addq.w	#2,a1
+	dbf	d4,.top
+	rts
+QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code: bits 7-4
+									;and 3-0 are digits ($F = blank), bits 10-8 index ButtonLabelCharTable
+									;(none while sflags7 bit 7 is set).
+									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
+									;last char
+	lea	ButtonLabelCharTable(pc),a4
+	clr.w	2(a0)					;x offset (setffo adds it to the sprites)
+	move.w	d1,d2
+	lsr.w	#4,d2
+	andi.w	#$F,d2
+	bne.w	.hi
+	move.w	#$FFF0,d2				;' '-'0': blank leading zero
+	subq.w	#4,2(a0)
+.hi									;tens digit (or blank)
+	addi.w	#$30,d2					;'0' (tens digit of the label, or blank)
+	clr.w	d0						;char slot 0
+	bsr.w	uppads_pd
+	move.w	d1,d2
+	andi.w	#$F,d2
+	cmp.w	#$F,d2
+	bne.w	.lo
+	move.w	#$FFF0,d2				;$F: blank
+.lo									;ones digit (or blank)
+	addi.w	#$30,d2					;'0' (ones digit of the label, or blank)
+	moveq	#1,d0					;char slot 1
+	bsr.w	uppads_pd
+	move.w	d1,d2
+	btst	#7,(sflags7).w
+	beq.w	.0
+	clr.w	d2
+.0									;position bits
+	lsr.w	#8,d2
+	andi.w	#7,d2
+	bne.w	.1
+	addq.w	#4,2(a0)
+.1									;position character
+	move.b	0(a4,d2.w),d2
+	moveq	#2,d0
+uppads_pd							;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
+									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
+	movea.l	#SmallFontMap,a3
+	adda.l	jimdata(a3),a3
+	add.w	d2,d2
+	move.w	mapwords(a3,d2.w),d2
+	andi.w	#$7FF,d2
+	asl.w	#5,d2					;32 bytes per tile
+	movea.l	#SmallFontMap,a3
+	lea	jimtiles(a3,d2.w),a3		;tile data
+	move.l	a3,(a5)+
+	move.w	#$10,(a5)+				;words to transfer
+	add.w	VRchar(a0),d0
+	asl.w	#5,d0
+	move.w	d0,(a5)+				;vram destination
+	rts
+ButtonLabelCharTable				;Third label character by bits 10-8 of the label code
+	dc.b	' DDLCRX',$FF			;pad byte (93 used $10)
+addframe							;a3 = sort cord object. Project it with find3d, then addframe2. a5 = dma
+									;trans, a6 = sprite attribute table. Called from setsortcords and setffo
+	movem.l	d0-d2,-(sp)
+	move.w	(a3),d0					;Xpos into d0
+	move.w	Ypos(a3),d1				;Ypos into d1
+	move.w	Zpos(a3),d2				;Zpos into d2
+	bmi.w	.exit					;exit if Zpos minus
+	bsr.w	find3d					;get position on screen
+	cmp.w	#osflag,d1				;#osflag into d1
+	beq.w	.exit					;exit if Sort Cord is off screen
+	bsr.w	addframe2
+.exit								;exit: restore the registers
+	movem.l	(sp)+,d0-d2				;hidden or off screen: nothing drawn
+	rts
+prevtileptr = 4						;addframe2 stack: the last sprite's tile pointer (saved d2)
+prevtilecnt = 8						;and its tile count (saved d4)
+addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = sprite
+									;attribute table, d6 = link counter. Queue the sprite tiles of the frame
+									;(once per frame change, sharing tiles already sent) and write its sprites
+	move.w	attribute(a3),-(sp)		;push attribute to stack
+	movem.l	d0-d5/a0-a2,-(sp)		;push to stack
+	move.w	frame(a3),d4			;move frame into d4
+	bmi.w	.exit					;exit if minus
+	beq.w	.exit					;exit if 0
+	andi.w	#$F800,d4				;pass highest 5 bits
+	eor.w	d4,attribute(a3)		;EOR d4 with attribute
+	move.w	frame(a3),d4			;move frame back into d4
+	andi.w	#$7FF,d4				;pass first 11 bits
+	movea.l	#Sprites,a2				;sprite frame list
+	adda.l	jimdata(a2),a2			;add long word at offset 4 to a2 address. a2 now
+	add.w	d4,d4					;add d4 to itself
+	cmp.w	2(a2),d4				;compare the word at 2(a2) to d4
+	bge.w	.exit					;branch if greater than or equal
+	move.w	2(a2,d4.w),d5			;move data at 2+a2+d4 into d5
+	sub.w	0(a2,d4.w),d5			;sub data at a2+d4 from d5
+	lsr.w	#3,d5					;divide d5 by 8
+	subq.w	#1,d5					;sub 1 from d5. d5 now total sprites in frame -1(SprStrnum)
+	adda.w	0(a2,d4.w),a2			;add data at a2+d4 to a2, a2 now at SprStrdat - sprite data
+	clr.w	d3						;clear d3
+	clr.w	d4						;clear d4
+.sloop								;each sprite of the frame
+	move.w	d0,-(sp)				;push d0 on stack
+	move.w	frame(a3),d0			;move frame into d0
+	andi.w	#$7FF,d0				;pass first 11 bits
+	cmp.w	oldframe(a3),d0			;compare old frame to d0 (current frame)
+	beq.w	.noref					;branch if equal (no change)
+	tst.w	d5						;check if d5 is 0
+	bne.w	.nn						;branch if not
+	move.w	d0,oldframe(a3)			;move frame into old frame
+.nn									;frame changed: queue the tiles
+	movem.w	d0-d4,-(sp)				;push d0-d4: prevtileptr(sp) / prevtilecnt(sp) = d2 / d4 of the last
+									;sprite
+	move.w	seTile(a2),d2			;move 4 + a2 data into d2 (tile pointer bytes)
+	clr.w	d4						;clear d4
+	move.b	seSize(a2),d4			;move 7 + a2 data into d4 (sizetab byte)
+	movea.l	#sizetab,a0				;move address into a0
+	move.b	0(a0,d4.w),d4			;move data at a0+d4 into d4 - tiles used in sprite
+	cmp.w	prevtilecnt(sp),d4		;compare current d4 to previous d4
+	bgt.w	.nodup					;branch if d4 greater - more data in prev sprite so no dup d0 = frame d2 =
+									;11 bit pointer to sprite tiles d4 = # of tiles in sprite d5 = # of
+									;sprites in frame-1
+	cmp.w	prevtileptr(sp),d2		;compare current d2 to previous d2
+	blt.w	.nodup					;branch if less than
+	move.w	prevtileptr(sp),d0		;move previous d2 into d0
+	add.w	prevtilecnt(sp),d0		;add previous d4 to d0 - end of last data
+	sub.w	d2,d0					;sub d2 from d0
+	sub.w	d4,d0					;sub d4 from d0
+	bmi.w	.nodup					;branch if d0 negative
+	movem.w	(sp)+,d0-d1				;pop d0 and d1 from stack
+	addq.w	#6,sp					;add 6 to stack pointer
+	bra.w	.dup					;branch
+.nodup								;new tiles: queue a DMA
+	add.w	prevtilecnt(sp),d3		;add old d4 to d3 - both of these are 0 if first sprite in frame
+	movem.w	(sp)+,d0-d1				;pop d0 and d1 from stack (d0=Xpos, d1=Ypos)
+	addq.w	#6,sp					;add 6 to stack pointer (moves past old d4 spot on stack)
+	movem.w	d0-d4,-(sp)				;push d0-d4 to stack (all new values are on stack)
+	add.w	VRchar(a3),d3			;add VRChar of player struct to d3
+	ext.l	d2						;extend d2 (clears out upper word)
+	asl.l	#5,d2					;mult d2 by 32
+	addi.l	#Spritetiles,d2			;tile address
+	asl.w	#4,d4					;mult by 16 (# of sprite tiles by 16)
+	asl.w	#5,d3					;mult by 32 (# of prev sprite tiles+VrChar by 32)
+	move.l	d2,(a5)+
+	move.w	d4,(a5)+				;words to transfer
+	move.w	d3,(a5)+				;vram destination
+	movem.w	(sp)+,d0-d4				;pop from stack
+.dup								;tile offset of the sprite
+	move.b	d3,VRoffs(a3,d5.w)		;move d3 into VRoffs of sprite
+									;This and VRChar are for VRAM access
+.noref								;sprite tiles ready
+	move.w	(sp)+,d0				;pop from stack
+	movem.w	d0-d2,-(sp)				;push to stack
+	move.w	seY(a2),d2				;move data at 2+a2 into d2 - Y global
+	btst	#4,attribute(a3)		;check for Y flip
+	beq.w	.noyflip				;branch if no y flip
+	move.b	seSize(a2),d2			;move byte 7 (sizetab byte) into d2
+	andi.w	#3,d2					;pass bit 1 and 2
+	addq.w	#1,d2					;add 1
+	asl.w	#3,d2					;mult by 8
+	neg.w	d2						;negate d2
+	sub.w	seY(a2),d2				;sub Y global from d2
+.noyflip							;Y flip handled
+	add.w	d2,d1					;add d2 to d1 (d1=Ypos of Sort Cord)
+	move.w	d1,(a6)					;move sprite's Ypos into a6 data (Satt)
+	move.w	(a2),d2					;move data at a2 to d2 (X global into d2)
+	btst	#3,attribute(a3)		;check for x flip
+	beq.w	.noxflip				;branch if no x flip
+	move.b	seSize(a2),d2			;move data at 7+a2 into d2
+	andi.w	#$C,d2					;pass bit 3 and 4
+	addq.w	#4,d2					;add 4
+	asl.w	#1,d2					;mult by 2
+	neg.w	d2						;negate d2
+	sub.w	(a2),d2					;sub data at a2 from d2
+.noxflip							;X flip handled
+	add.w	d2,d0					;add d2 to d0 (d0 = Xpos of Sort Cord)
+	move.w	d0,satX(a6)				;move sprite's Xpos into 6+a6 position
+	move.b	seSize(a2),satSize(a6)	;move sizetab byte into 2+a6
+	move.b	d6,satLink(a6)			;move d6 (link counter) into 3+a6
+	move.w	seAttr(a2),d2			;move 6+a2 into d2 (to be used to check palette and set HVFlip)
+	move.w	attribute(a3),d0		;move attribute into d0
+	eor.w	d0,d2					;EOR d0 with d2
+	andi.w	#$F800,d2				;pass top 5 bits
+	btst	#0,attribute+1(a3)		;check if bit 0 of attribute+1 is 0
+	beq.w	.nospec					;branch if zero
+	btst	#$E,d2					;check if bit 14 is 0
+	beq.w	.nospec					;branch if zero
+	bset	#$D,d2					;set bit 13 to 0 - team 2 color
+.nospec								;team colors handled
+	or.b	VRoffs(a3,d5.w),d2		;OR Vroffs of a3+d5 to d2
+	add.w	VRchar(a3),d2			;add VRchar to d2
+	move.w	d2,satTile(a6)			;move d2 into 4+a6 (Satt)
+	movem.w	(sp)+,d0-d2				;pop from stack
+	addq.w	#1,d6					;add 1 to d6
+	addq.w	#8,a6					;add 8 to a6
+	addq.w	#8,a2					;add 8 to a2
+	dbf	d5,.sloop					;loop if still sprites in frame
+.exit								;pop the d0-d5/a0-a2 saved above
+	movem.l	(sp)+,d0-d5/a0-a2		;also reached when frame is 0, negative or past the table
+	move.w	(sp)+,attribute(a3)		;restore attribute
+	rts
+find3d								;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 =
+									;xscreen, d1 = yscreen, or d1 = $4E20 when off screen
+	btst	#sfhor,(sflags).w
+	beq.w	.nhor
+	exg	d0,d1
+	neg.w	d0
+	subi.w	#horoff,d1
+	bra.w	.crange
+.nhor								;sfhor clear
+	sub.w	(Hpos).w,d0
+	sub.w	(Vpos).w,d1
+.crange								;check the screen range
+	cmp.w	#$90,d0
+	bgt.w	.offscr
+	cmp.w	#$FF70,d0
+	blt.w	.offscr
+	addi.w	#$100,d0				;128+128
+	add.w	d2,d1
+	asr.w	#1,d2
+	add.w	d2,d1					;y + 1.5 * height
+	cmp.w	#$90,d1					;112+32
+	bgt.w	.offscr
+	cmp.w	#$FF70,d1
+	blt.w	.offscr
+	neg.w	d1
+	addi.w	#$F0,d1					;112+128
+	rts
+.offscr								;off screen
+	move.w	#$4E20,d1
+	rts
+updatesound							;move the crowd noise volume (psg noise channel, asv) toward Crowdlevel.
+									;Called from periodicevents
+	move.w	(Crowdlevel).w,d0
+	asl.w	#3,d0
+	addi.w	#$400,d0
+	cmp.w	#$EFF,d0
+	bls.w	.ip
+	move.w	#$EFF,d0
+.ip									;level clamped
+	moveq	#$28,d2					;max step 40 (d0 = target level, asv = current)
+	sub.w	(asv).w,d0
+	cmp.w	d2,d0
+	bgt.w	.iasv
+	neg.w	d2
+	cmp.w	d2,d0
+	bge.w	.non					;within 40: no change
+.iasv								;step toward the target
+	add.w	d2,(asv).w				;step asv toward the target
+	bpl.w	.non
+	clr.w	(asv).w
+.non								;crowd level set
+	move.b	#$C8,(Asound).l			;psg: noise channel setup, then attenuation below
+	move.b	#1,(Asound).l
+	move.b	(asv).w,d0
+	eori.b	#$F,d0
+	ori.b	#$F0,d0					;noise channel attenuation
+	move.b	d0,(Asound).l
+	rts
+KillCrowd							;silence the crowd noise (psg). Called from Begin, Pausemode_pall,
+									;StartHL2, ...
+	move.b	#$E7,(Asound).l
+	move.b	#$DF,(Asound).l
+	move.b	#$C8,(Asound).l
+	move.b	#1,(Asound).l
+	move.b	#$FF,(Asound).l			;noise channel off
+	rts

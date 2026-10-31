@@ -78,7 +78,7 @@ InitSaveRAM							;Called from Begin. Copy the $2000 byte save RAM (the odd byte
 	move.w	#$20,d4
 	bra.s	.loadcolor				;branch (screen flashes green)
 SRAMWaitVblank						;Wait for the next vblank. Called from InitSaveRAM
-	jsr	(vcountwait).l
+	jsr	(MenuWaitVblank).l
 	rts
 VBcount								;VBint handler while InitSaveRAM runs: Vcount + 1 only
 	addq.w	#1,(Vcount).w			;vblank with counter only

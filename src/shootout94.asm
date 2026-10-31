@@ -222,7 +222,7 @@ ShootersRedraw						;Shootout shooters: redraw (ShootersBackground,
 	bsr.w	PrintShooterNames
 	bsr.w	PrintShooterBox
 ShootersLoop						;Shootout shooters: the input loop
-	jsr	(vcountwait).l				;wait for the frame
+	jsr	(MenuWaitVblank).l				;wait for the frame
 	jsr	(getpzjoy).l				;read the pads
 	jsr	(ProcessInputWithRepeat).l	;pad presses with repeat
 	btst	#7,d1					;start?
@@ -295,7 +295,7 @@ ShooterSelectList					;Shootout shooters: "{Select Player}" list
 	clr.w	d0
 	bra.w	.scroll
 .loop2								;loop
-	jsr	(vcountwait).l
+	jsr	(MenuWaitVblank).l
 	jsr	(getpzjoy).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#7,d1
