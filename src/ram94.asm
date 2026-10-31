@@ -51,12 +51,13 @@ IO_CT2_CTRL equ $A1000A
 IO_CT2_DATA equ $A10004
 IO_Z80BUS equ $A11100
 IO_Z80RES equ $A11200
-Z80_RAM equ $A00000
-Joy1 equ IO_CT1_DATA+1				;controller 1 data port (byte)
-Joy2 equ IO_CT2_DATA+1				;controller 2 data port (byte)
-Z80_YM2612 equ $A04000
+Z80_RAM equ $A00000					;Z80 RAM as seen from the 68000 (Z80_RAM+$8E is the PCM rate byte)
 SaveRAM equ $200000					;battery save RAM (InitSaveRAM): $2000 bytes, the odd byte of each word.
 									;93 had a serial backup RAM port here (BackupRAM_Port)
+sramcleared equ $FFFF1FFE			;checksum byte of the $2000-byte save copy in work RAM (ClearSRAM)
+Joy1 equ IO_CT1_DATA+1				;controller 1 data port (byte)
+Joy2 equ IO_CT2_DATA+1				;controller 2 data port (byte)
+Z80_YM2612 equ $A04000				;YM2612 as seen from the Z80 bus (used by the Z80 driver only)
 Stack	=	$FFFFFFFE				;game stack (Begin, StartPer, Opening2)
 
 ;joystick button equates (bit numbers)
@@ -120,7 +121,6 @@ goalline equ 176					;distance from blue line to goalline
 
 replaystart equ $FFFF0000			;start of ram area for replay frames, also the start of RAM
 M68K_RAM equ replaystart
-sramcleared equ $FFFF1FFE
 varstart equ $FFFFB000				;start of variable space (end of replay; 93G)
 replaysize equ 98					;bytes per replay frame (92G/93G name; 92G 84)
 replaynum equ ((varstart-replaystart)/replaysize)-1	;number of frames for replay
@@ -230,7 +230,8 @@ srpppk equ 1						;high nibble penalty kill deficit, low nibble power play bonus
 srhomeaway equ 2					;high nibble home bonus, low nibble visitor bonus (negated)
 srforwards equ 3					;high nibble: forward count (GetForwardCount); low nibble not read
 
-; team numbers (TeamList order in teamdata): schedule, playoffseats and other team-indexed tables
+; team numbers (TeamList order in teamdata): schedule, playoffseats and other team-indexed tables.
+; 92/93 used the numbers; 94 names them because ANA and FLA shifted every later team's index.
 ANH equ 0
 BOS equ 1
 BUF equ 2
@@ -344,7 +345,7 @@ CC_Font2Pal3Pri equ $8E				;-$72: map 2, palette 3, priority
 CC_Font3Pal3Pri equ $8D				;-$73: map 3, palette 3, priority
 ;Whole-String markers that list / page readers test (a String of just $FF / -1 is the word
 ;$FF00 at strtext, negative)
-CC_ListEnd equ $FF					;String CC_ListEnd ends a menu item list (table94.asm)
+CC_ListEnd equ $FF					;String CC_ListEnd ends a menu item list (tables94.asm)
 CC_PageEnd equ -1					;String CC_PageEnd ends a credits page; two in a row end
 									;the credits (teamdata94.asm)
 fodropx	rs.w	1
@@ -490,8 +491,9 @@ fofdata2	rs.w	4
 fofdata	rs.l	1
 ffonum	equ	7						;objects tied to the rink scroll (93 had 5)
 ffosize equ OldXpos					;field objects tied to icerink scrolling (pads), OldXpos bytes each (92G)
-pads	rs.w	14
-Joy1Struct	rs.w	28
+pads	rs.w	14					;face-off ice pad object (93 pads object 0). Not joypads
+Joy1Struct	rs.w	28				;controller 1 and 2 arrow objects (93 pads+ffosize, two ffo)
+Joy2Struct	equ	Joy1Struct+ffosize	;controller 2 arrow object (second half of Joy1Struct)
 CameraPosStruct	rs.w	11
 ;replay camera struct (CameraPosStruct, 93 name): stands in for a sort object, Xpos / Ypos
 ;are its position (UpdateCameraPos). It is really 14 words: camtrack and camidle lie past the 11
@@ -499,8 +501,8 @@ CameraPosStruct	rs.w	11
 camtrack equ $16					;SCnum of the object tracked in replay
 camidle equ $18						;$FF while the replay d-pad is idle, cleared on scroll/track (never read)
 replayactive	rs.w	3
-Joy3Struct	rs.w	14
-Joy4Struct	rs.w	14
+Joy3Struct	rs.w	14				;controller 3 arrow object (4 Way Play; 93 had glovestruct here)
+Joy4Struct	rs.w	14				;controller 4 arrow object (4 Way Play)
 glovestruct	rs.w	14
 PadControlBits	rs.w	1
 padcont	rs.w	6
@@ -646,7 +648,7 @@ sf3icetime equ 6					;set once a second by updatepentime: each player on the ice
 									;time on ice.
 sf3fosong equ 7						;set for periods 1 and 2: play the face off tune once, at the first face
 									;off past half the period
-BA_PS_flags	rs.w	1
+BA_PS_flags	rs.w	1				;breakaway / penalty shot / shootout flags (94)
 sflags4	rs.w	1					;94 flag word: reverse angle replay (bits 4, 6, 7), slot, penalty shot
 									;goal ...
 sflags5	rs.w	1					;94 flag word: crowd noise on (bit 7), menu handler keeps its screen (bit
@@ -658,7 +660,7 @@ gmode2	rs.w	1					;94 game mode word, beside gmode: shootout (bit 0), shootout s
 sflags7	rs.w	1					;94 flag byte: arena faceoff animation (bit 0), injury (bit 5), crowd
 									;meter broken (bit 6) ...
 sflags8	rs.w	1					;94 flag byte: penalty shot / shootout and one-timer bits
-DelayedPen	rs.l	1
+DelayedPen	rs.l	1				;delayed penalty (94): bit 0 PP goal, bit 1 home, bit 2 away
 crowdnoisedelay	rs.w	1
 CwdChkCntr	rs.w	1
 CwdChkCnt	rs.w	3
@@ -809,7 +811,8 @@ nibblebuffer	rs.w	6
 varend equ nibblebuffer+8			;end of the variables cleared by Opening2
 homeuser	rs.w	1
 awayuser	rs.w	1
-FourWayPlay	rs.w	1
+FourWayPlay	rs.w	1				;EA 4 Way Play adaptor present (Detect4WayPlay). With the Opt* setup
+									;flags, not the pad I/O (PadRaw / ReadPad4Way)
 OptPlayMode	rs.w	1
 OptNOP	rs.w	1
 Opt1team	rs.w	1
@@ -846,12 +849,12 @@ fm_channel_structs	rs.w	20
 pcm_channel_struct	rs.w	4		;PCM (DAC) channel struct, after the 5 FM structs (94 had
 									;fm_channel_struct6)
 fm_track_slots	rs.w	24
-BA_Team	rs.w	1
-BA_Sktr_SCnum	rs.w	1
-BA_Goalie_SCnum	rs.w	1
-BA_Skater_Offset	rs.w	1
-BA_Goalie_Offset	rs.w	1
-BA_Checker_Offset	rs.w	1
+BA_Team	rs.w	1					;breakaway / penalty shot / shootout: which team (with BA_PS_flags)
+BA_Sktr_SCnum	rs.w	1			;SCnum of the breakaway / penalty-shot / shootout skater
+BA_Goalie_SCnum	rs.w	1			;SCnum of that play's goalie
+BA_Skater_Offset	rs.w	1		;that skater's team position offset
+BA_Goalie_Offset	rs.w	1		;that goalie's team position offset
+BA_Checker_Offset	rs.w	1		;the checker's team position offset (penalty shot)
 pspenalty	rs.w	1
 holdreset	rs.w	1
 onetimertargetx	rs.w	1

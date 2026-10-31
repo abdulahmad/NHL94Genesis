@@ -96,7 +96,7 @@ A comment-only or rename-only change must not change a single byte. Never commit
 - `ram94.asm` holds the RAM map, ports, structure offsets and the constants that code uses (laid out like 93 `ram93.asm`).
   It is included after `frames94.asm`, as in 93: `main94.asm` sets `Stack = $FFFFF6` for the reset vector and
   `ram94.asm` redefines `Stack` with `=` as the game stack, so `Stack` is not an `rs` label.
-- `table94.asm` holds the data tables (crowd frames, asstab, penalty list, playoff tree, menu item lists),
+- `tables94.asm` holds the data tables (crowd frames, asstab, penalty list, playoff tree, menu item lists),
   included after `data94.asm` like 93 `tables93.asm`. Table-entry equates (`adefo = (*-asstab)/4`,
   `PenEOP equ (*-Penaltylist)`) live on the table, not in `ram94.asm`.
 - Names and routines that exist in 93 use the 93 name; a routine that is new in 94 says so in its comment.
