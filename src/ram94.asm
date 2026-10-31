@@ -420,6 +420,11 @@ pf2inj equ 6						;player is injured (SPAfinjury animation, max speed 1/8).
 ;player struct fields after handed's neighbours, not named in 93 (names from the 92/93/94 comments)
 pflags3 equ $64						;player flags 3 (92: not used)
 pf3oside equ 0						;offsides
+pf3break equ 1						;on a breakaway
+pf3gctrl equ 2						;goalie control
+pf3onetimer equ 3					;doing a one-timer
+pf3wall equ 4						;wall collision
+pf3fall equ 5						;falling down
 glitch equ $65						;counter to eliminate quick frame changes (de-glitch graphics)
 pnum equ $66						;player's team location number 0-22
 weight equ $67
@@ -434,11 +439,6 @@ rostnum equ $6F
 spodds equ $70
 stickhand equ $71
 endurance equ $72
-pf3break equ 1						;on a breakaway
-pf3gctrl equ 2						;goalie control
-pf3onetimer equ 3					;doing a one-timer
-pf3wall equ 4						;wall collision
-pf3fall equ 5						;falling down
 aggress equ $73						;aggression (Agr; goalie: glove left)
 GGSleft equ aggress					;goalie glove save left (92 name; 92 put it on stickhand)
 fighting equ $74					;fighting (Fgt; from the Chk/Hnd byte, always even)
