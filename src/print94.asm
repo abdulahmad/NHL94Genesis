@@ -23,25 +23,25 @@ xyVmMap								;use printx/y/m to set vram address. Returns a0 = Vdata.
 ; printx/y/m define top corner to start at
 eraser								;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = char word
 									;to fill with, printx/y/m define top left corner to start at
-	movem.l	d0-d2/a0,-(sp)
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
+	movem.l	d0-d2/a0,-(sp)			;save registers
+	move.w	(disflags).w,-(sp)		;keep disflags
+	bset	#dfng,(disflags).w		;set dfng
 	movem.w	d0-d1,-(sp)				;(sp) = width, 2(sp) = rows left
 .1									;loop
 	bsr.s	xyVmMap					;one row: a0 = vram port at printx/y
-	move.w	(sp),d0
-	subq.w	#1,d0
+	move.w	(sp),d0					;d0 = width
+	subq.w	#1,d0					;minus 1
 .0									;fill each cell of the row
 	move.w	d2,(a0)					;fill one cell
-	dbf	d0,.0
-	addq.w	#1,(printy).w
-	andi.w	#$1F,(printy).w
+	dbf	d0,.0						;loop
+	addq.w	#1,(printy).w			;next row
+	andi.w	#$1F,(printy).w			;wrap at 32 rows
 	subq.w	#1,2(sp)				;rows left
-	bne.s	.1
+	bne.s	.1						;branch taken
 	addq.w	#4,sp					;drop the sizes
-	move.w	(sp)+,(disflags).w
-	movem.l	(sp)+,d0-d2/a0
-	rts
+	move.w	(sp)+,(disflags).w		;restore disflags
+	movem.l	(sp)+,d0-d2/a0			;restore registers
+	rts								;done
 ; frame and fill (uses framer.map graphics and assumes tiles are already located at framercset)
 ; d0/d1 = x/y size of rectangle
 ; printx/y/m define top left corner to start at
@@ -339,44 +339,44 @@ PeriodLabelTable					;String list for FormatAndPrintTime: " 1", " 2", " 3", "OT"
 PushTime							;convert d0 into string format of minutes:seconds. Return a1 = string.
 									;pads the minutes to 2 places with a space
 	movea.w	#(mesarea+30-M68K_RAM),a1	;end of the buffer
-	move.l	d0,-(sp)
-	move.l	a1,-(sp)
-	ext.l	d0
-	divu.w	#$A,d0
-	swap	d0
-	addi.w	#$30,d0
+	move.l	d0,-(sp)				;keep d0
+	move.l	a1,-(sp)				;keep a1
+	ext.l	d0						;long
+	divu.w	#$A,d0					;divided by 10
+	swap	d0						;remainder to the low word
+	addi.w	#$30,d0					;to ASCII
 	move.b	d0,-(a1)				;ones of seconds
-	swap	d0
-	ext.l	d0
-	divu.w	#6,d0
-	swap	d0
-	addi.w	#$30,d0
+	swap	d0						;quotient back
+	ext.l	d0						;long
+	divu.w	#6,d0					;divided by 6
+	swap	d0						;remainder to the low word
+	addi.w	#$30,d0					;to ASCII
 	move.b	d0,-(a1)				;tens of seconds
-	swap	d0
-	move.b	#$3A,-(a1)
-	ext.l	d0
-	divu.w	#$A,d0
-	swap	d0
-	addi.w	#$30,d0
+	swap	d0						;quotient back
+	move.b	#$3A,-(a1)				;':'
+	ext.l	d0						;long
+	divu.w	#$A,d0					;divided by 10
+	swap	d0						;remainder to the low word
+	addi.w	#$30,d0					;to ASCII
 	move.b	d0,-(a1)				;ones of minutes
-	swap	d0
-	move.b	#$20,-(a1)
+	swap	d0						;quotient back
+	move.b	#$20,-(a1)				;space
 	tst.w	d0						;tens of minutes?
-	beq.w	.noz
-	addi.w	#$30,d0
+	beq.w	.noz					;branch taken: .noz
+	addi.w	#$30,d0					;to ASCII
 	move.b	d0,(a1)					;tens of minutes
 .noz								;leading zero blanked
 	move.l	(sp)+,d0				;d0 = end address of the string
-	sub.l	a1,d0
+	sub.l	a1,d0					;minus a1
 	addq.w	#2,d0					;length incl. the length word
 	btst	#0,d0					;odd?
-	beq.w	.1
+	beq.w	.1						;branch taken
 	clr.b	-(a1)					;pad to an even length
-	addq.w	#1,d0
+	addq.w	#1,d0					;plus 1
 .1									;length made even
 	move.w	d0,-(a1)				;string length word in front
-	move.l	(sp)+,d0
-	rts
+	move.l	(sp)+,d0				;restore d0
+	rts								;done
 PushNumber							;convert d0 into string format of base 10 number, no leading zeros. Return
 									;a1 = string
 	movea.w	#(PushNumberBuf-M68K_RAM),a1	;end of the buffer
@@ -489,85 +489,85 @@ printbig							;same as print, only use bigfont.map graphics. a1 = string macro,
 									;attribute for characters. string \-$ab,$xx,$yy,'Sample!'\ : a = map
 									;number (1-3), b = color/priority (0-3 = color fam, prio off),(4-7 = color
 									;fam, prio on), xx/yy = x/y cord to print at
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	movem.l	d0-d7/a0/a2,-(sp)
-	move.w	(printx).w,d4
-	move.w	(printy).w,d5
+	move.w	(disflags).w,-(sp)		;keep disflags
+	bset	#dfng,(disflags).w		;set dfng
+	movem.l	d0-d7/a0/a2,-(sp)		;save registers
+	move.w	(printx).w,d4			;d4 = printx
+	move.w	(printy).w,d5			;d5 = printy
 	move.w	(printa).w,d6			;attribute
-	add.w	(BigFontchars).w,d6
-	move.w	(a1)+,d3
+	add.w	(BigFontchars).w,d6		;plus the big font chars
+	move.w	(a1)+,d3				;d3 = string length
 	subq.w	#2,d3					;minus the length word
-	bra.w	.1
+	bra.w	.1						;go on
 .0									;each string byte
-	move.b	(a1)+,d0
-	beq.w	.1
-	ext.w	d0
-	bpl.w	.nocom
+	move.b	(a1)+,d0				;next character
+	beq.w	.1						;zero: go on
+	ext.w	d0						;word
+	bpl.w	.nocom					;not a control code: print it
 	neg.w	d0						;-$ab: new attribute, map, x, y
-	move.w	d0,d6
+	move.w	d0,d6					;d6 = the code
 	asl.w	#8,d6					;shift left 9 in all
-	asl.w	#1,d6
+	asl.w	#1,d6					;times 2
 	andi.w	#$F800,d6				;b -> palette/priority bits
-	move.w	d6,(printa).w
+	move.w	d6,(printa).w			;print attribute
 	add.w	(BigFontchars).w,d6		;d6 = attribute + big font char base
 	andi.w	#3,d0					;a = map number
-	asl.w	#2,d0
+	asl.w	#2,d0					;times 4
 	subq.w	#4,d0					;printm = (map-1)*4
-	move.w	d0,(printm).w
-	move.b	(a1)+,d4
-	ext.w	d4
-	move.w	d4,(printx).w
-	move.b	(a1)+,d5
-	ext.w	d5
-	move.w	d5,(printy).w
+	move.w	d0,(printm).w			;print map
+	move.b	(a1)+,d4				;x
+	ext.w	d4						;word
+	move.w	d4,(printx).w			;printx
+	move.b	(a1)+,d5				;y
+	ext.w	d5						;word
+	move.w	d5,(printy).w			;printy
 	subq.w	#2,d3					;two extra bytes consumed
-	bra.w	.1
+	bra.w	.1						;go on
 .nocom								;d0 >= 0
 	cmp.b	#$61,d0					;below 'a'?
-	blt.w	.2
+	blt.w	.2						;branch taken
 	cmp.b	#$7A,d0					;above 'z'?
-	bgt.w	.2
+	bgt.w	.2						;branch taken
 	addi.b	#-$20,d0				;upper case
 .2									;upper case
-	move.w	d3,-(sp)
+	move.w	d3,-(sp)				;keep d3
 	bsr.w	PrintBigChar			;print the char
-	move.w	(sp)+,d3
+	move.w	(sp)+,d3				;restore d3
 .1									;loop the string
 	dbf	d3,.0						;d3 = bytes left in the string
-	move.w	d4,(printx).w
-	move.w	d5,(printy).w
-	movem.l	(sp)+,d0-d7/a0/a2
-	move.w	(sp)+,(disflags).w
-	rts
+	move.w	d4,(printx).w			;printx
+	move.w	d5,(printy).w			;printy
+	movem.l	(sp)+,d0-d7/a0/a2		;restore registers
+	move.w	(sp)+,(disflags).w		;restore disflags
+	rts								;done
 PrintBigChar						;print big font char d0 (ascii) through bfasciicon
-	subi.w	#$20,d0
-	movea.l	#bfasciicon,a0
+	subi.w	#$20,d0					;minus the space
+	movea.l	#bfasciicon,a0			;a0 = ASCII conversion table
 	moveq	#1,d2					;2 columns
-	move.b	0(a0,d0.w),d1
-	ext.w	d1
-	bpl.w	.0
-	neg.w	d1
-	clr.w	d2
+	move.b	0(a0,d0.w),d1			;tile index
+	ext.w	d1						;word
+	bpl.w	.0						;positive: use it
+	neg.w	d1						;negate
+	clr.w	d2						;d2 = 0
 .0									;tile offset ready
-	asl.w	#1,d1
-	movea.l	#BigFontMap,a0
-	adda.l	jimdata(a0),a0
+	asl.w	#1,d1					;times 2
+	movea.l	#BigFontMap,a0			;a0 = big font map
+	adda.l	jimdata(a0),a0			;plus the data offset
 .loop								;each tile of the char
-	move.w	mapwords(a0,d1.w),d3
-	bsr.w	PutBigTile
-	move.w	(a0),d7
+	move.w	mapwords(a0,d1.w),d3	;tile word
+	bsr.w	PutBigTile				;put the tile
+	move.w	(a0),d7					;d7 = map width
 	asl.w	#1,d7					;2 bytes a cell
-	add.w	d7,d1
-	move.w	mapwords(a0,d1.w),d3
-	sub.w	d7,d1
-	addq.w	#1,d5
-	bsr.w	PutBigTile
-	subq.w	#1,d5
-	addq.w	#1,d4
-	addq.w	#2,d1
+	add.w	d7,d1					;plus the width
+	move.w	mapwords(a0,d1.w),d3	;next tile word
+	sub.w	d7,d1					;back
+	addq.w	#1,d5					;next row
+	bsr.w	PutBigTile				;put the tile
+	subq.w	#1,d5					;back
+	addq.w	#1,d4					;next column
+	addq.w	#2,d1					;next tile
 	dbf	d2,.loop					;loop
-	rts
+	rts								;done
 PutBigTile							;write one big font tile to the map at printx / printy
 	add.w	d6,d3					;plus attribute and chars
 	movem.l	d1/a0,-(sp)

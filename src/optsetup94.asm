@@ -647,51 +647,51 @@ PrintOptionValue					;print the value of option d7 at x $11 on its line (past ro
 PrintScrollMarks					;Print the scroll marks at x 2: '}' at row $19 when more lines follow
 									;(first line < 3), '{' at row $F when lines are above (first line > 0),
 									;else a space
-	move.w	#$19,(printy).w
-	movea.l	#ScrollClearTxt,a1
+	move.w	#$19,(printy).w			;printy $19
+	movea.l	#ScrollClearTxt,a1		;a1 = clear text
 	cmpi.w	#3,(setupfirstline).w	;at the last first line?
-	beq.w	.0
+	beq.w	.0						;branch taken
 	cmpi.w	#4,(OptPlayMode).w		;shootout?
-	beq.w	.0
-	movea.l	#ScrollDownTxt,a1
+	beq.w	.0						;branch taken
+	movea.l	#ScrollDownTxt,a1		;a1 = scroll down text
 .0									;down arrow (or a blank)
-	move.w	#2,(printx).w
-	jsr	(print).l
-	movea.l	#ScrollClearTxt,a1
-	move.w	#$F,(printy).w
+	move.w	#2,(printx).w			;printx 2
+	jsr	(print).l					;print
+	movea.l	#ScrollClearTxt,a1		;a1 = clear text
+	move.w	#$F,(printy).w			;printy $F
 	tst.w	(setupfirstline).w		;at the top?
-	beq.w	.1
-	movea.l	#ScrollUpTxt,a1
+	beq.w	.1						;branch taken
+	movea.l	#ScrollUpTxt,a1			;a1 = scroll up text
 .1									;up arrow (or a blank)
-	move.w	#2,(printx).w
-	jmp	print
+	move.w	#2,(printx).w			;printx 2
+	jmp	print						;print
 ScrollUpTxt	String	'{'				;Scroll marks for PrintScrollMarks
 ScrollDownTxt	String	'}'			;scroll down mark
 ScrollClearTxt	String	' '			;blank to clear a scroll mark
 PrintOptTeamName					;Print team name d3 of option d7 (TeamList city; the full name of the
 									;two New York teams, $D / $E).
 									;PrintOptionValue
-	move.w	(printx).w,-(sp)
-	movea.l	#BlankValueTxt,a1
-	jsr	(print).l
-	move.w	(sp)+,(printx).w
-	movea.l	#OptPlayMode,a1
-	move.w	0(a1,d7.w),d3
-	movea.w	#TeamList,a1
-	asl.w	#2,d3
-	movea.l	0(a1,d3.w),a1
-	lsr.w	#2,d3
-	adda.w	Teamname(a1),a1
+	move.w	(printx).w,-(sp)		;keep printx
+	movea.l	#BlankValueTxt,a1		;a1 = blank value text
+	jsr	(print).l					;print it
+	move.w	(sp)+,(printx).w		;restore printx
+	movea.l	#OptPlayMode,a1			;a1 = option table
+	move.w	0(a1,d7.w),d3			;d3 = the option value
+	movea.w	#TeamList,a1			;a1 = TeamList
+	asl.w	#2,d3					;times 4
+	movea.l	0(a1,d3.w),a1			;a1 = the team
+	lsr.w	#2,d3					;back
+	adda.w	Teamname(a1),a1			;a1 = Teamname String
 	cmp.w	#$E,d3					;NYR?
-	bne.w	.0
+	bne.w	.0						;branch taken
 	movea.l	#NewYorkRTxt,a1			;full name
 	bra.w	.1						;print
 .0									;d3 <> $E
 	cmp.w	#$D,d3					;NYI?
-	bne.w	.1
+	bne.w	.1						;branch taken
 	movea.l	#NewYorkITxt,a1			;full name
 .1									;print the name
-	jmp	print
+	jmp	print						;print
 NewYorkITxt							;Full names for the two New York teams (TeamList has only the city).
 									;The nicknames are licensed names, so each String (length word, 'New York
 									;' and
@@ -1118,48 +1118,48 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 									;2) or - $40 (visitors, color fam 3), then wait $B4 frames before a player
 									;card (carddelay). Branched to
 	;  from DrawHomeBlock
-	move.w	#$B4,(carddelay).w
-	move.w	#6,(printy).w
-	move.w	(homepicchars).w,d4
+	move.w	#$B4,(carddelay).w		;card delay $B4
+	move.w	#6,(printy).w			;printy 6
+	move.w	(homepicchars).w,d4		;d4 = home picture chars
 	btst	#2,(setupcardflags).w	;home?
-	bne.w	.0
-	move.w	(vispicchars).w,d4
+	bne.w	.0						;branch taken
+	move.w	(vispicchars).w,d4		;d4 = visiting picture chars
 .0									;picture tiles chosen
-	move.w	(logoteam).w,d3
-	asl.w	#2,d3
-	movea.l	#TeamLogoBitmaps,a0
+	move.w	(logoteam).w,d3			;d3 = logo team
+	asl.w	#2,d3					;times 4
+	movea.l	#TeamLogoBitmaps,a0		;a0 = team logo bitmaps
 	movea.l	0(a0,d3.w),a0			;its logo
-	movea.l	a0,a1
-	movea.l	a0,a2
+	movea.l	a0,a1					;a1 = the bitmap
+	movea.l	a0,a2					;a2 = the bitmap
 	adda.l	(a2)+,a0				;skip the palette offset
 	asl.w	#3,d3					;32 bytes per team
-	movea.l	#TeamLogoPalettes,a0
+	movea.l	#TeamLogoPalettes,a0	;a0 = team logo palettes
 	btst	#2,(setupcardflags).w	;home?
-	beq.w	.1
-	subi.w	#$20,d3
-	bra.w	.2
+	beq.w	.1						;branch taken
+	subi.w	#$20,d3					;minus $20
+	bra.w	.2						;go on
 .1									;bit 2 of setupcardflags clear
-	subi.w	#$40,d3
+	subi.w	#$40,d3					;minus $40
 .2									;palette offset chosen
-	adda.w	d3,a0
-	adda.l	(a2)+,a1
-	move.w	#6,d3
-	move.w	#6,d2
-	clr.w	d0
-	clr.w	d1
-	move.l	(palfadenew+$22).w,-(sp)
-	move.l	(palfadenew+$26).w,-(sp)
-	move.w	#4,d5
+	adda.w	d3,a0					;plus d3
+	adda.l	(a2)+,a1				;plus the bitmap offset
+	move.w	#6,d3					;d3 = 6
+	move.w	#6,d2					;d2 = 6
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
+	move.l	(palfadenew+$22).w,-(sp)	;keep palette long
+	move.l	(palfadenew+$26).w,-(sp)	;keep palette long
+	move.w	#4,d5					;d5 = 4
 	btst	#2,(setupcardflags).w	;home?
-	beq.w	.draw
-	move.w	#2,d5
+	beq.w	.draw					;branch taken
+	move.w	#2,d5					;d5 = 2
 .draw								;palette line chosen
-	jsr	(dobitmap).l
-	move.l	(sp)+,(palfadenew+$26).w
-	move.l	(sp)+,(palfadenew+$22).w
+	jsr	(dobitmap).l				;draw the bitmap
+	move.l	(sp)+,(palfadenew+$26).w	;restore palette long
+	move.l	(sp)+,(palfadenew+$22).w	;restore palette long
 	move.w	#$64,(palcount).w		;fade in
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 TeamLogoBitmaps						;Team logo bitmaps by team number (TeamList
 									;order); also used by GetTeamLogo
 	dc.l	logoANH,logoBOS,logoBUF,logoCGY,logoCHI,logoDAL,logoDET,logoEDM
@@ -1189,19 +1189,19 @@ LogoBoxVis							;Logo box at x 8 (visitors block). Called from DrawVisBlock
 	move.w	#8,(printx).w
 DrawLogoBox							;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to
 									;from LogoBoxRight ... LogoBoxVis
-	clr.w	(printa).w
-	move.w	#5,(printy).w
+	clr.w	(printa).w				;print attribute 0
+	move.w	#5,(printy).w			;printy 5
 	movea.l	#LogoBoxMap,a0			;logo box map
-	movea.l	a0,a1
-	movea.l	a0,a2
-	adda.l	(a2)+,a0
+	movea.l	a0,a1					;a1 = the map
+	movea.l	a0,a2					;a2 = the map
+	adda.l	(a2)+,a0				;plus the data offset
 	adda.l	(a2)+,a1				;a1 = map data
-	move.w	#8,d3
-	move.w	#8,d2
-	clr.w	d0
-	clr.w	d1
+	move.w	#8,d3					;d3 = 8
+	move.w	#8,d2					;d2 = 8
+	clr.w	d0						;d0 = 0
+	clr.w	d1						;d1 = 0
 	move.w	#0,d5					;no palette lines
-	bset	#0,(sflags6).w
-	jsr	(dobitmap).l
+	bset	#0,(sflags6).w			;set sflags6 bit 0
+	jsr	(dobitmap).l				;draw the bitmap
 	bclr	#0,(sflags6).w			;normal maps
-	rts
+	rts								;done

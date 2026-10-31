@@ -180,20 +180,20 @@ cramfade							;fade from current color in color ram to color held in palfadenew
 	bne.s	.top
 	rts
 CopyPaletteToCRAM					;Copy all 64 palfadenew colours to colour ram, protected from vblank
-	movem.l	d0/a0-a1,-(sp)
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
-	movea.w	#(palfadenew-M68K_RAM),a1
-	movea.l	#Vdata,a0
-	move.l	#CRAM_W,Vctrl-Vdata(a0)
+	movem.l	d0/a0-a1,-(sp)			;save registers
+	move.w	(disflags).w,-(sp)		;keep disflags
+	bset	#dfng,(disflags).w		;set dfng
+	movea.w	#(palfadenew-M68K_RAM),a1	;a1 = new palette
+	movea.l	#Vdata,a0				;a0 = VDP data port
+	move.l	#CRAM_W,Vctrl-Vdata(a0)	;CRAM write command
 	moveq	#$1F,d0					;32 longs
 .0									;copy each color pair
 	move.l	(a1)+,(a0)				;two colors per long
 	dbf	d0,.0						;loop
-	st	(palcount).w
-	move.w	(sp)+,(disflags).w
-	movem.l	(sp)+,d0/a0-a1
-	rts
+	st	(palcount).w				;palette changed
+	move.w	(sp)+,(disflags).w		;restore disflags
+	movem.l	(sp)+,d0/a0-a1			;restore registers
+	rts								;done
 ; d0 = range
 ; return d0 = random number (-range < d0 < range)
 randomd0s							;d0 = range. Return d0 = random number (-range < d0 < range)
@@ -630,48 +630,48 @@ DoDMA								;initiate dma transfer (dma transfer bug is compensated for). d0 = 
 	movem.l	(sp)+,d2-d3/a1
 	rts
 DoDMA_nd2							;vram to vram copy by dma, protected from vblank
-	movem.l	d0-d3/a1,-(sp)
-	move.w	(disflags).w,-(sp)
-	bset	#dfng,(disflags).w
+	movem.l	d0-d3/a1,-(sp)			;save registers
+	move.w	(disflags).w,-(sp)		;keep disflags
+	bset	#dfng,(disflags).w		;set dfng
 	lea	(Vctrl).l,a1				;vdp control port
-	move.w	#VDPR_MODE2+$54,(a1)
-	move.w	#VDPR_AUTOINC+$01,(a1)
-	move.w	#$9300,d3
-	move.b	d0,d3
-	move.w	d3,(a1)
-	move.w	#$9400,d3
-	lsr.w	#8,d0
-	move.b	d0,d3
-	move.w	d3,(a1)
+	move.w	#VDPR_MODE2+$54,(a1)	;mode 2 register
+	move.w	#VDPR_AUTOINC+$01,(a1)	;auto increment 1
+	move.w	#$9300,d3				;DMA length low register
+	move.b	d0,d3					;low byte
+	move.w	d3,(a1)					;write it
+	move.w	#$9400,d3				;DMA length high register
+	lsr.w	#8,d0					;high byte
+	move.b	d0,d3					;low byte of d0
+	move.w	d3,(a1)					;write it
 	move.w	#$9500,d3				;source low
-	move.b	d2,d3
-	move.w	d3,(a1)
+	move.b	d2,d3					;low byte of d2
+	move.w	d3,(a1)					;write it
 	move.w	#$9600,d3				;source high
-	lsr.w	#8,d2
-	move.b	d2,d3
-	move.w	d3,(a1)
-	move.w	#VDPR_DMASRCH+$C0,(a1)
-	clr.l	d0
+	lsr.w	#8,d2					;high byte of d2
+	move.b	d2,d3					;low byte
+	move.w	d3,(a1)					;write it
+	move.w	#VDPR_DMASRCH+$C0,(a1)	;DMA source high: VRAM copy
+	clr.l	d0						;d0 = 0
 	move.w	d1,d0					;destination address -> vdp command (address bits 14-15 go to the second
 									;word)
-	asl.l	#2,d0
-	lsr.w	#2,d0
+	asl.l	#2,d0					;times 4
+	lsr.w	#2,d0					;shift
 	swap	d0						;to the high word
 	ori.w	#$C0,d0					;vram copy command
-	move.l	d0,(dmaram).w
+	move.l	d0,(dmaram).w			;keep it
 	move.w	#$100,(IO_Z80BUS).l		;stop the Z80
 .loop								;loop
 	btst	#0,(IO_Z80BUS).l		;stopped?
-	bne.s	.loop
-	move.w	(dmaram).w,(a1)
-	move.w	(dmaram+2).w,(a1)
+	bne.s	.loop					;loop
+	move.w	(dmaram).w,(a1)			;first command word
+	move.w	(dmaram+2).w,(a1)		;second command word
 	bsr.w	WaitDMA					;wait for the DMA
-	move.w	#VDPR_MODE2+$64,(a1)
-	move.w	#VDPR_AUTOINC+$02,(a1)
-	clr.w	(IO_Z80BUS).l
-	move.w	(sp)+,(disflags).w
-	movem.l	(sp)+,d0-d3/a1
-	rts
+	move.w	#VDPR_MODE2+$64,(a1)	;mode 2 register
+	move.w	#VDPR_AUTOINC+$02,(a1)	;auto increment 2
+	clr.w	(IO_Z80BUS).l			;release the Z80 bus
+	move.w	(sp)+,(disflags).w		;restore disflags
+	movem.l	(sp)+,d0-d3/a1			;restore registers
+	rts								;done
 ; fill vram
 ; d0 = words to fill
 ; d1 = vram address
