@@ -203,12 +203,12 @@ PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / 
 	rts
 vcountwait							;wait till Vcount changes, then resync Vcount. Saves d0. Reads OldVcount
 									;twice. Called from PauseMode, and the stats code
-	move.w	d0,-(sp)
-	move.w	(OldVcount).w,d0
-	move.w	(OldVcount).w,d0
+	move.w	d0,-(sp)				;save d0
+	move.w	(OldVcount).w,d0		;d0 = OldVcount
+	move.w	(OldVcount).w,d0		;(read twice)
 .wait								;loop
-	cmp.w	(Vcount).w,d0
-	beq.s	.wait
-	move.w	(OldVcount).w,(Vcount).w
-	move.w	(sp)+,d0
-	rts
+	cmp.w	(Vcount).w,d0			;has Vcount changed?
+	beq.s	.wait					;no: wait
+	move.w	(OldVcount).w,(Vcount).w	;resync Vcount
+	move.w	(sp)+,d0				;restore d0
+	rts								;done

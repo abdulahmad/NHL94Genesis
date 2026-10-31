@@ -1017,14 +1017,14 @@ LoadSetupTiles						;Load the TeamBitmaps+8 tiles from char 2, then again remapp
 									;teambitmapchars.
 									;Called
 									;from setoptions
-	moveq	#2,d4
-	movea.l	#TeamBitmaps+8,a2
-	jsr	(DecompressGraphicsPlain).l
-	move.w	d4,(teambitmapchars).w
-	movea.l	#TeamBitmaps+8,a2
-	jsr	(DecompressGraphicsWithRemap).l
+	moveq	#2,d4					;first char 2
+	movea.l	#TeamBitmaps+8,a2		;the tiles
+	jsr	(DecompressGraphicsPlain).l	;decompress them as they are
+	move.w	d4,(teambitmapchars).w	;remember the first char
+	movea.l	#TeamBitmaps+8,a2		;the tiles again
+	jsr	(DecompressGraphicsWithRemap).l	;decompress them with the remap table
 	dc.l	$03412567,$89ABCDEF		;remap table (/ move.l / dc.b)
-	rts
+	rts								;done
 UpdateRosterPlayers					;An empty routine, called from ReadSetupPads. An unused rts follows
 	rts
 	rts

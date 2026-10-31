@@ -276,23 +276,23 @@ NextAwayHotPlayer					;The same for the away team (awayhotplayer, awayhotidx), a
 	rts
 BuildHotColdLists					;Build the hot / cold player lists of both teams (SortHotColdStarters,
 									;CopyHottestPlayer, CopyColdestPlayer). Called from ScoutingReport
-	clr.w	(awayhotidx).w
-	clr.w	(homehotidx).w
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#tmstruct,a0
-	bsr.w	SortHotColdStarters
-	movea.l	#homehotplayer,a0
-	bsr.w	CopyHottestPlayer
-	movea.l	#homecoldplayer,a0
-	bsr.w	CopyColdestPlayer
-	movea.l	#awtmstruct,a0
-	bsr.w	SortHotColdStarters
-	movea.l	#awayhotplayer,a0
-	bsr.w	CopyHottestPlayer
-	movea.l	#awaycoldplayer,a0
-	bsr.w	CopyColdestPlayer
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	clr.w	(awayhotidx).w			;away hot list empty
+	clr.w	(homehotidx).w			;home hot list empty
+	movem.l	d0-d7/a0-a6,-(sp)		;save registers
+	movea.l	#tmstruct,a0			;home team
+	bsr.w	SortHotColdStarters		;sort its hot and cold starters into TempBuffer
+	movea.l	#homehotplayer,a0		;home hot list
+	bsr.w	CopyHottestPlayer		;copy the hottest player
+	movea.l	#homecoldplayer,a0		;home cold list
+	bsr.w	CopyColdestPlayer		;copy the coldest player
+	movea.l	#awtmstruct,a0			;away team
+	bsr.w	SortHotColdStarters		;sort its hot and cold starters
+	movea.l	#awayhotplayer,a0		;away hot list
+	bsr.w	CopyHottestPlayer		;copy the hottest player
+	movea.l	#awaycoldplayer,a0		;away cold list
+	bsr.w	CopyColdestPlayer		;copy the coldest player
+	movem.l	(sp)+,d0-d7/a0-a6		;restore registers
+	rts								;done
 SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 into TempBuffer
 									;(byte pairs: player, sum), then sort them by sum
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -376,17 +376,17 @@ NextAwayColdPlayer					;The same for the away team (awaycoldidx, awaycoldplayer)
 	rts
 	rts
 CopyHottestPlayer					;Copy the hottest player of TempBuffer to the list at a0
-	movem.l	d0-d1/a0-a1,-(sp)
-	movea.l	#TempBuffer,a1
-	move.w	#0,d0
+	movem.l	d0-d1/a0-a1,-(sp)		;save registers
+	movea.l	#TempBuffer,a1			;a1 = sorted list
+	move.w	#0,d0					;one entry
 .copy								;byte 0 = 0, byte 1 = player
-	clr.b	(a0)+
-	move.b	(a1),d1
-	move.b	d1,(a0)+
-	tst.w	(a1)+
+	clr.b	(a0)+					;first byte 0
+	move.b	(a1),d1					;player byte of the first entry
+	move.b	d1,(a0)+				;second byte = player
+	tst.w	(a1)+					;step to the next entry
 	dbf	d0,.copy					;loop
-	movem.l	(sp)+,d0-d1/a0-a1
-	rts
+	movem.l	(sp)+,d0-d1/a0-a1		;restore registers
+	rts								;done
 CopyColdestPlayer					;Copy the coldest player (TempBuffer+10) to the list at a0
 	movem.l	d0/a0-a1,-(sp)
 	movea.l	#TempBuffer+10,a1		;the last pair is the coldest

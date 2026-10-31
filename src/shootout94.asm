@@ -88,24 +88,24 @@ ShootoutModeBigTxt	dc.b	0		;ShootoutModeBox big text
 	dc.b	$BF,4,5,0
 
 ClearShootout						;Clear the player structs (SortCords) and the shootout state.
-	movea.l	#SortCords,a0
-	move.w	#$3FF,d0
+	movea.l	#SortCords,a0			;a0 = player structs
+	move.w	#$3FF,d0				;$400 words
 .loop								;clear each word
-	clr.w	(a0)+
+	clr.w	(a0)+					;clear a word
 	dbf	d0,.loop					;clear the player structs
-	clr.w	(shootoutdelay).w
-	move.w	#1,(shootoutround).w
-	bclr	#3,(gmode2).w
-	clr.w	(homeshootgoals).w
-	clr.w	(awayshootgoals).w
-	clr.w	(homeshootnum).w
-	clr.w	(shootoutteam).w
+	clr.w	(shootoutdelay).w		;no shootout delay
+	move.w	#1,(shootoutround).w	;round 1
+	bclr	#3,(gmode2).w			;clear gmode2 bit 3
+	clr.w	(homeshootgoals).w		;home goals 0
+	clr.w	(awayshootgoals).w		;away goals 0
+	clr.w	(homeshootnum).w		;home shooter count 0
+	clr.w	(shootoutteam).w		;home team shoots first
 .0									;(not branched to)
-	bsr.w	InitShooters
-	move.w	#1,(shootoutteam).w
-	bsr.w	InitShooters
-	clr.w	(shootoutteam).w
-	rts
+	bsr.w	InitShooters			;set up the home shooters
+	move.w	#1,(shootoutteam).w		;away team
+	bsr.w	InitShooters			;set up the away shooters
+	clr.w	(shootoutteam).w		;back to the home team
+	rts								;done
 NextShooter							;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartShootoutPath),
 									;or the end (ExitToOpening).
 	btst	#3,(gmode2).w
@@ -497,14 +497,14 @@ ResetShooterScroll					;Shootout shooters: clear the list scroll words
 	clr.w	(palfadenew+$7A).w
 	rts
 PrintShooterSlots					;Shootout shooters: "Shooters" 1. 2. 3.
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;print the text with this map and position
 	String	CC_SetMap,2,CC_SetX,0,CC_SetY,$A
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;set the attribute
 	String	CC_SetAttribute,4
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;print the header
 	String	CC_SetX,7,CC_SetY,$C,'Shooters'	;shooters header
 .0									;(not branched to)
-	jsr	(printsmallz).l
+	jsr	(printsmallz).l				;print the five slot numbers
 	String	CC_SetX,3,CC_SetY,$E,'1. '
 	jsr	(printsmallz).l
 	String	CC_SetX,3,CC_SetY,$10,'2. '
@@ -516,7 +516,7 @@ PrintShooterSlots					;Shootout shooters: "Shooters" 1. 2. 3.
 	String	CC_SetX,3,CC_SetY,$16,'5. '
 	jsr	(printsmallz).l
 	String	CC_SetX,$1A,CC_SetY,$C,'Goalie'	;goalie header
-	rts
+	rts								;done
 PrintShooterBox						;Shootout shooters: the selected player box
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,4,2,8,7,CC_SetFont,1

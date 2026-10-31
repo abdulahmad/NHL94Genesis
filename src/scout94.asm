@@ -60,15 +60,15 @@ ScoutByTxt	String	'by '			;start of the "by <name> " String
 ScoutSpaceTxt	String	' '			;space after the name
 GetTeamCity							;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
 									;Teamname offset)
-	movem.l	d0-d7/a0/a2-a6,-(sp)
-	clr.w	d2
-	move.b	$A(a0),d2
-	asl.w	#2,d2
-	movea.l	#TeamList,a1
-	movea.l	0(a1,d2.w),a1
-	adda.w	Teamname(a1),a1
-	movem.l	(sp)+,d0-d7/a0/a2-a6
-	rts
+	movem.l	d0-d7/a0/a2-a6,-(sp)	;save registers
+	clr.w	d2						;d2 = 0
+	move.b	$A(a0),d2				;team number byte
+	asl.w	#2,d2					;times 4: TeamList index
+	movea.l	#TeamList,a1			;a1 = TeamList
+	movea.l	0(a1,d2.w),a1			;a1 = the team data
+	adda.w	Teamname(a1),a1			;a1 = the city String
+	movem.l	(sp)+,d0-d7/a0/a2-a6	;restore registers
+	rts								;done
 ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ron Barr
 									;picture, the text box and the matchup
 									;matchup 0 is both team logos with the team ratings, 1-6 the two players
@@ -286,13 +286,13 @@ PrintMatchupRating					;Print the team rating of team a0 (GetTeamRating: the Tea
 	move.l	(sp)+,d0
 	rts
 PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
-	move.l	a1,-(sp)
-	move.w	(printx).w,-(sp)
-	movea.l	#TwoSpacesTxt,a1
+	move.l	a1,-(sp)				;save a1
+	move.w	(printx).w,-(sp)		;save printx
+	movea.l	#TwoSpacesTxt,a1		;a1 = the two spaces
 	jsr	(printsmall).l				;print them
-	move.w	(sp)+,(printx).w
-	movea.l	(sp)+,a1
-	rts
+	move.w	(sp)+,(printx).w		;restore printx
+	movea.l	(sp)+,a1				;restore a1
+	rts								;done
 TwoSpacesTxt						;A two space String (printsmall by PrintTwoSpaces)
 	String	'  '
 ScoutRatingText						;rating names; only ' Overall ' is printed (PrintMatchupRatings, matchup
@@ -536,15 +536,15 @@ MatchupPosNames						;Position names of matchups 1-6
 	String	'     goalie     '
 GetMatchupPlayers					;matchuphome / matchupvis = the home / visitors player of the matchup.
 									;Called from ScoutingReport and PageMatchup
-	movem.l	d0/a0-a1,-(sp)
-	movea.l	#tmstruct,a0
-	bsr.w	GetMatchupPlayer
-	move.w	d0,(matchuphome).w
-	movea.l	#awtmstruct,a0
-	bsr.w	GetMatchupPlayer
-	move.w	d0,(matchupvis).w
-	movem.l	(sp)+,d0/a0-a1
-	rts
+	movem.l	d0/a0-a1,-(sp)			;save registers
+	movea.l	#tmstruct,a0			;home team
+	bsr.w	GetMatchupPlayer		;get its matchup player
+	move.w	d0,(matchuphome).w		;home matchup player
+	movea.l	#awtmstruct,a0			;visiting team
+	bsr.w	GetMatchupPlayer		;get its matchup player
+	move.w	d0,(matchupvis).w		;visiting matchup player
+	movem.l	(sp)+,d0/a0-a1			;restore registers
+	rts								;done
 GetMatchupPlayer					;Return d0 = the roster index of team a0's player for matchup: the first
 									;line of the team's line sets, slot
 									;MatchupLineSlots[matchup] (matchupslot; 0 goalie, 1 left defense, 2 right
@@ -641,15 +641,15 @@ VisitorsTxt	String	'Visitors'		;name used when the visiting team has no nickname
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
 									;the
 									;team arena String
-	movem.l	d0/a0/a2,-(sp)
-	movea.l	a2,a1
-	movea.l	tmdata(a1),a1
-	adda.w	Teamname(a1),a1
-	adda.w	(a1),a1
-	adda.w	(a1),a1
-	adda.w	(a1),a1
-	movem.l	(sp)+,d0/a0/a2
-	rts
+	movem.l	d0/a0/a2,-(sp)			;save registers
+	movea.l	a2,a1					;a1 = team structure
+	movea.l	tmdata(a1),a1			;a1 = the team data
+	adda.w	Teamname(a1),a1			;a1 = the Teamname String
+	adda.w	(a1),a1					;follow the offset word at a1
+	adda.w	(a1),a1					;follow the next offset word
+	adda.w	(a1),a1					;a1 = the arena String (third offset)
+	movem.l	(sp)+,d0/a0/a2			;restore registers
+	rts								;done
 ScoutStub							;An empty routine
 	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6

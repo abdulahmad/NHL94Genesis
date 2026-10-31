@@ -735,14 +735,14 @@ updatePPTeamTime					;One more second of power play time (tmPwrPlayTime) for the
 	rts
 GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 									;(the player card "Team Rating") and PrintMatchupRating
-	movem.l	d1-d7/a0-a6,-(sp)
-	move.w	tmteam(a2),d0
-	movea.l	#TeamRatings,a0
-	clr.w	d1
-	move.b	0(a0,d0.w),d1
-	move.w	d1,d0
-	movem.l	(sp)+,d1-d7/a0-a6
-	rts
+	movem.l	d1-d7/a0-a6,-(sp)		;save registers
+	move.w	tmteam(a2),d0			;d0 = team number
+	movea.l	#TeamRatings,a0			;a0 = ratings table
+	clr.w	d1						;d1 = 0
+	move.b	0(a0,d0.w),d1			;rating byte of the team
+	move.w	d1,d0					;return it in d0
+	movem.l	(sp)+,d1-d7/a0-a6		;restore registers
+	rts								;done
 TeamRatings							;GetTeamRating values, one byte per team (TeamList order)
 	dc.b	$33,$4C,$49,$4B,$4E,$43,$4B,$43,$34,$42,$4A,$49,$44,$42
 	dc.b	$4A,$37,$45,$4B,$47,$38,$45,$38,$48,$47,$48,$46,$5B,$59
@@ -753,16 +753,16 @@ TeamRatingsEnd						;end of TeamRatings (size check below)
 	even
 ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) and a3 is not
 									;the puck carrier. Called from doinput
-	movem.l	d0,-(sp)
-	tst.w	(cont2team).w
-	beq.w	.0
-	move.w	SCnum(a3),d0
-	cmp.w	(puckc).w,d0
-	bne.w	.x
+	movem.l	d0,-(sp)				;save d0
+	tst.w	(cont2team).w			;second pad on?
+	beq.w	.0						;no: cap the timer
+	move.w	SCnum(a3),d0			;d0 = SCnum of a3
+	cmp.w	(puckc).w,d0			;a3 is the puck carrier?
+	bne.w	.x						;no: leave the timer
 .0									;message for the puck carrier (or one pad)
-	cmpi.w	#2,(msgtimer).w
-	ble.w	.x
-	move.w	#2,(msgtimer).w
+	cmpi.w	#2,(msgtimer).w			;already 2 or less?
+	ble.w	.x						;yes: leave it
+	move.w	#2,(msgtimer).w			;cap it at 2
 .x									;exit: restore the registers
-	movem.l	(sp)+,d0
-	rts
+	movem.l	(sp)+,d0				;restore d0
+	rts								;done

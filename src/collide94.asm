@@ -348,12 +348,12 @@ checkint							;check for interference penalty. player a2 interferes with a3 or
 	bra.w	AddPenalty
 checkcheck							;player is in contact: look for various contact events. Runs CCStart for
 									;a3 on a2, then for a2 on a3. d4 = impact. Called from checkcx
-	movem.l	d0-d4/a0-a3,-(sp)
-	bsr.w	CCStart
-	exg	a2,a3
-	bsr.w	CCStart
-	movem.l	(sp)+,d0-d4/a0-a3
-	rts
+	movem.l	d0-d4/a0-a3,-(sp)		;save registers
+	bsr.w	CCStart					;a3 on a2
+	exg	a2,a3						;swap them
+	bsr.w	CCStart					;a2 on a3
+	movem.l	(sp)+,d0-d4/a0-a3		;restore registers
+	rts								;done
 CCStart								;Player a3 is checking player a2. Holds (SPAHold, SPAhook) go to
 									;holdcheck, SPAsweepchk to Bcheck; otherwise
 									;only a3 in SPAburst checks. Sets a3's check anim from checkinglist; a big
@@ -1427,13 +1427,13 @@ Goal								;puck in goal. First: in a penalty shot or shootout (BA_PS_flags bit
 	rts
 GetPeriodTimeRemaining				;Return d0 = (gsp << 14 | PerTimeTotal) - gameclock. Called from checkgoal
 									;(ScoreSum entry) and InProgress
-	move.w	(gsp).w,d0
-	swap	d0
-	clr.w	d0
+	move.w	(gsp).w,d0				;d0 = gsp
+	swap	d0						;to the high word
+	clr.w	d0						;clear the low word
 	lsr.l	#2,d0					;gsp in bits 14-15
-	or.w	(PerTimeTotal).w,d0
-	sub.w	(gameclock).w,d0
-	rts
+	or.w	(PerTimeTotal).w,d0		;add the period time
+	sub.w	(gameclock).w,d0		;minus the game clock
+	rts								;done
 checkgoalp							;check for player a3 collision with goal/net a2. Entered from checkgoal.
 									;Oval goal; skipped for no player coll (pflags2 bit 5), a high
 									;player or a non-player. CheckBump, then wallcoll with sflags6 bit 4 set
@@ -2467,46 +2467,46 @@ puckgoalie							;puck hits goalie a2. a3 = puck, d0/d1 = goalie - puck x/y. The
 	pix	3111,3111
 	pix	1311,1311
 deflect								;random puck direction on deflection, puck = a3. Entered from puckstick
-	st	(puckc).w
-	move.w	#$1000,d0
-	bsr.w	randomd0s
-	move.w	d0,Yvel(a3)
-	move.w	#$1000,d0
-	bsr.w	randomd0s
-	move.w	d0,Xvel(a3)
-	move.w	#$1000,d0
-	bsr.w	randomd0
-	move.w	d0,Zvel(a3)
-	bra.w	puckflip
+	st	(puckc).w					;puck loose
+	move.w	#$1000,d0				;range $1000
+	bsr.w	randomd0s				;random signed value
+	move.w	d0,Yvel(a3)				;y velocity
+	move.w	#$1000,d0				;range $1000
+	bsr.w	randomd0s				;random signed value
+	move.w	d0,Xvel(a3)				;x velocity
+	move.w	#$1000,d0				;range $1000
+	bsr.w	randomd0				;random value
+	move.w	d0,Zvel(a3)				;z velocity
+	bra.w	puckflip				;flip the puck
 makepde								;pass d0 as value to be scaled by player a0's energy level (full energy
 									;while sflags7 bit 4 is set). Return d0 as result
-	ext.w	d0
-	move.w	d0,-(sp)
-	movem.l	d1/a2-a3,-(sp)
-	movea.l	a0,a3
-	bsr.w	getpde
-	btst	#4,(sflags7).w
-	beq.w	.0
-	move.w	#$1000,d0
+	ext.w	d0						;word
+	move.w	d0,-(sp)				;keep the value
+	movem.l	d1/a2-a3,-(sp)			;save registers
+	movea.l	a0,a3					;a3 = player
+	bsr.w	getpde					;d0 = his energy
+	btst	#4,(sflags7).w			;sflags7 bit 4 set?
+	beq.w	.0						;no: use his energy
+	move.w	#$1000,d0				;full energy
 .0									;pop the d1/a2-a3 saved above
-	movem.l	(sp)+,d1/a2-a3
-	muls.w	(sp)+,d0
-	asl.l	#4,d0
-	swap	d0
+	movem.l	(sp)+,d1/a2-a3			;restore registers
+	muls.w	(sp)+,d0				;value times energy
+	asl.l	#4,d0					;shift
+	swap	d0						;result to the low word
 	ext.l	d0						;d0 = d0 * energy / 4096
-	rts
+	rts								;done
 getpde								;get player a3's energy level into d0. Return a2 = his team struct, d1 =
 									;pnum*2
-	movea.w	#(tmstruct-M68K_RAM),a2
+	movea.w	#(tmstruct-M68K_RAM),a2	;a2 = home team
 	btst	#pfteam,pflags(a3)		;#pfteam - home or away
-	beq.w	.0
-	adda.w	#tmsize,a2
+	beq.w	.0						;home
+	adda.w	#tmsize,a2				;away team
 .0									;roster offset
-	move.b	pnum(a3),d1
-	ext.w	d1
-	add.w	d1,d1
-	move.w	tmpde(a2,d1.w),d0
-	rts
+	move.b	pnum(a3),d1				;d1 = player number
+	ext.w	d1						;word
+	add.w	d1,d1					;times 2
+	move.w	tmpde(a2,d1.w),d0		;d0 = his energy
+	rts								;done
 setpde								;d1 = rostnum of player * 2, a2 = team struct, d0 = new energy level (0 if
 									;negative)
 	tst.w	d0
@@ -2646,25 +2646,25 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 TryAddPlayerToList					;d0 = player number (1 based), d4 = PlList slot. Put d0 in the slot if he
 									;is on the bench or ice (not in the box, not injured) and not in PlList
 									;yet; return d1 = 0 (Z set) if not
-	move.w	d0,d1
-	subq.w	#1,d0
-	add.w	d0,d0
-	tst.w	tmpdst(a2,d0.w)
+	move.w	d0,d1					;d1 = player number
+	subq.w	#1,d0					;zero based
+	add.w	d0,d0					;times 2
+	tst.w	tmpdst(a2,d0.w)			;player state positive?
 	bgt.w	.0						;loop: is d1 already in PlList?
-	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
-	beq.w	.0
-	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
-	beq.w	.0
-	moveq	#5,d0
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)	;state $FFFD?
+	beq.w	.0						;yes: not usable
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)	;state $FFFC?
+	beq.w	.0						;yes: not usable
+	moveq	#5,d0					;check 6 entries
 .loop								;d1 not usable: return 0
-	cmp.b	0(a4,d0.w),d1
+	cmp.b	0(a4,d0.w),d1			;already in the list?
 	dbeq	d0,.loop
-	beq.w	.0
-	move.b	d1,0(a4,d4.w)
-	rts
+	beq.w	.0						;yes: return 0
+	move.b	d1,0(a4,d4.w)			;put him in the slot
+	rts								;done
 .0									;already in the list
-	clr.w	d1
-	rts
+	clr.w	d1						;d1 = 0
+	rts								;done
 SetupPenaltyShot					;Penalty shot set up for team a2 (called from puckpenshot): the shooter
 									;loop over the team: shooter plays center, goalie stays, others leave
 	movem.l	d0-d5/a0-a3,-(sp)
