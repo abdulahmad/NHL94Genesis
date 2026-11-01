@@ -1109,8 +1109,8 @@ InitScoutingDisplay					;Start the text player UpdateScoutingDisplay: VertLineSc
 	clr.w	(ScoutingReportTimer).w
 	movea.w	#(TestList-M68K_RAM),a0
 	rts
-UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextScript script word by
-									;word with a typing delay (ScoutingReportTimer, longer
+UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutingReportText script
+									;word by word with a typing delay (ScoutingReportTimer, longer)
 									;after , and .). $D ends a line; special characters ( _ + $ { } [ ] < > |
 									;\ @ # % = * ^ ; ) insert team data through the team routines
 									;(GetTeamNickname / GetTeamArena for tmstruct / awtmstruct). Line breaks
@@ -1122,7 +1122,7 @@ UpdateScoutingDisplay				;Text player for ScoutingReport: prints the ScoutTextSc
 	subq.w	#1,(ScoutingReportTimer).w	;count down the delay
 	bpl.w	rtss2
 .0									;time for the next letter
-	movea.l	#ScoutTextScript,a1
+	movea.l	#ScoutingReportText,a1
 	move.w	(PlayerScrollCtr).w,d0	;offset into the script
 	bpl.w	.3						;inside a paragraph
 	clr.w	(scoutcolumn).w

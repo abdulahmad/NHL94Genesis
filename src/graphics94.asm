@@ -1,9 +1,9 @@
 ;	Graphics and text data, all loaded from the extracted files: the rink, sprites, fonts, screen
 ;	maps, pictures and one file per player card, in roster order.
 
-ScoutTextScript						;the script UpdateScoutingDisplay types out word by word on the
+ScoutingReportText					;the script UpdateScoutingDisplay types out word by word on the
 									;ScoutingReport (MATCHUPS) screen
-	incbin	..\Extracted\NHL94\Text\ScoutTextScript.bin
+	incbin	..\Extracted\NHL94\Text\ScoutingReportText.bin
 	even
 GameSetUpMap						;the game setup screen bitmap, 40 x 28
 	incbin	..\Extracted\NHL94\Graphics\GameSetUp94-1.map.jim
