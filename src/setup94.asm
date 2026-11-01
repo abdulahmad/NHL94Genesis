@@ -795,9 +795,9 @@ ExitToOpening						;Song $78, then restart at Opening2. Also jumped to from demo
 	move.w	#SngTitle,-(sp)
 	bsr.w	song
 	bra.w	Opening2
-Opening								;title screen (newTitleScreen), then into Opening2. Jumped to from Begin
+Opening								;title screen (TitleScreen), then into Opening2. Jumped to from Begin
 	bsr.w	KillCrowd				;stop the crowd sound
-	jsr	(newTitleScreen).l
+	jsr	(TitleScreen).l
 Opening2							;reset the stack and clear the variables, then options (GameSetUp,
 									;UserNameEntry), playoff screen and (not in a shootout) ScoutingReport,
 									;then StartGame
@@ -2596,7 +2596,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	adda.w	#tmsize,a2
 	move.w	(awaygoalies).w,(scorergoalies).w
 .1									;scorer team chosen
-	lea	GoalBigTxt(pc),a1
+	lea	GoalBoxText(pc),a1
 	bclr	#0,(DelayedPen).w		;power play goal?
 	beq.w	.2
 	lea	PPGoalBigTxt(pc),a1
@@ -2664,7 +2664,7 @@ ShowGoalBox							;Goal box. Closes both line change boxes, then printbig 'GOAL!
 	bclr	#5,(sflags4).w			;clear the no assists flag
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-GoalBigTxt	String	CC_Font1Pri,$F,3,'GOAL!',CC_Font1Pri,$C,5	;printbig Strings for ShowGoalBox: GOAL!,
+GoalBoxText	String	CC_Font1Pri,$F,3,'GOAL!',CC_Font1Pri,$C,5	;printbig Strings for ShowGoalBox: GOAL!,
 																;then HAT TRICK!
 	String	CC_Font1Pri,$C,3,'HAT TRICK!',CC_Font1Pri,$C,5
 PPGoalBigTxt	String	CC_Font1Pri,$D,3,'PP GOAL!',CC_Font1Pri,$C,5	;The same after DelayedPen bit 0:

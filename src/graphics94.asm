@@ -11,16 +11,16 @@ GameSetUpMap						;the game setup screen bitmap, 40 x 28
 GameSetUpMap2						;the second game setup bitmap
 	incbin	..\Extracted\NHL94\Graphics\GameSetUp94-2.map.jim
 	even
-TitleScreenImg						;the newTitleScreen backdrop (high ROM)
+TitleScreenImg						;the TitleScreen backdrop (high ROM)
 	incbin	..\Extracted\NHL94\Graphics\Title94-1.map.jim
 	even
-NHLShieldImg						;the NHL shield on newTitleScreen
+NHLShieldImg						;the NHL shield on TitleScreen
 	incbin	..\Extracted\NHL94\Graphics\Title94-2.map.jim
 	even
-PAlogoImg							;the NHLPA logo on newTitleScreen
+PAlogoImg							;the NHLPA logo on TitleScreen
 	incbin	..\Extracted\NHL94\Graphics\Title94-3.map.jim
 	even
-TitleImg							;the title on newTitleScreen
+TitleImg							;the title on TitleScreen
 	incbin	..\Extracted\NHL94\Graphics\Title94-4.map.jim
 	even
 EASportsBGMap						;the ScoutingReport and PlayoffScreen background
