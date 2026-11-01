@@ -1473,7 +1473,7 @@ fmtune_id_77_cmdstream				;song $77 event stream (SoundStreamTable)
 																;OTW / WPG
 	even
 fmtune_title_cmdstream				;song event stream (SoundStreamTable)
-	incbin	..\Extracted\NHL94\Sound\fmtune_title_cmdstream94.bin	;song $78: ExitToOpening, newTitleScreen.
+	incbin	..\Extracted\NHL94\Sound\fmtune_title_cmdstream94.bin	;song $78: ExitToOpening, TitleScreen.
 									;One stream that loops to its start
 	even
 	dc.l	fmtune_title_cmdstream	;loop pointer

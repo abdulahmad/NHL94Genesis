@@ -225,3 +225,5 @@ Crowdframelist,CrowdSprites,92G/93G
 ZamFrameList,ZamSprites,92G/93G
 TeamBlocksmap,Teamblocksmap,92G
 ArrowsMap,Arrowsmap,92G
+newTitleScreen,TitleScreen,92G/93G
+GoalBigTxt,GoalBoxText,93G

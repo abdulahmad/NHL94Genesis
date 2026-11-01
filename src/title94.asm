@@ -815,7 +815,7 @@ EndOneTimer							;End a one-timer for a3: bits cleared, onetimerplayer = -1, Se
 	move.w	(sp)+,d1
 	movem.l	(sp)+,d0/a0
 	rts
-newTitleScreen						;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, TitleImg) with
+TitleScreen							;the title screen (TitleScreenImg, NHLShieldImg, PAlogoImg, TitleImg) with
 									;the vblank VBlank_TitleScreen, song $78, then the
 									;scrolling credits (Credits, CreditsList text; CreditsPrintRow,
 									;CreditsWait) until start. Called from Opening
@@ -1016,7 +1016,7 @@ CreditsWait							;Credits: wait for Vcount, run the clampcounter count down; st
 	addq.w	#4,sp					;start: drop the caller's return address and leave his loop too
 .x									;exit (also the end of the code above)
 	rts
-VBlank_TitleScreen					;newTitleScreen vblank: line scroll table (SortCords) and Vscroll,
+VBlank_TitleScreen					;TitleScreen vblank: line scroll table (SortCords) and Vscroll,
 									;sprites, cramfade, CreditsScrollStep, p_music_vblank
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).w		;screen off?
