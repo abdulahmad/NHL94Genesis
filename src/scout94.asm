@@ -176,7 +176,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.l	#vb2,(VBint).w			;vblank routine
 	move	#$2500,sr				;interrupts on
 	jsr	(InitScoutingDisplay).l		;a0 = the paragraph list
-	move.w	#$1B,(a0)+				;paragraph numbers in ScoutTextScript: 'Hi, I'm Ron Barr ...'
+	move.w	#$1B,(a0)+				;paragraph numbers in ScoutingReportText: 'Hi, I'm Ron Barr ...'
 	move.w	#$1D,(a0)+				;empty paragraph: a blank line
 	move.w	#$1A,(a0)+				;'Welcome to a sold out ^ ...'
 	move.w	#$1D,(a0)+				;blank line

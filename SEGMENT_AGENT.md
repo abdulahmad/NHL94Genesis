@@ -163,7 +163,7 @@ The rows are in ROM address order, the same order as the includes in `src/nhl94.
 | data94 | matched | org $17AC8, UpdatePlayoffLevel | 9608 bytes, `$017AC8-$01A04F` (the option screen helpers from attract94, then DefaultMenus at `$017C72`). DefaultMenus ... ReadTeamStats, ResolveGames ... crash, updatecrowdf_cd0 ... ExitAttribText (data). Was hockey94_09 (`$17C72-$1837F`), hockey94_10 (`$18380-$18CFB`), hockey94_11 (`$18CFC-$1A04F`) |
 | sram94 | matched | org $1A050, InitSaveRAM | 532 bytes, `$01A050-$01A263`. InitSaveRAM ... ReadSRAM |
 | sound94 | matched | org $1A264, AllSndOff | 201564 bytes, `$01A264-$04B5BF`: the 68k driver, AllSndOff ... ClearAllTrackAndSFXSlots (`$1A264-$1AD8F`), then the sound data incbins as 93 sound93 (Z80_Program_Code ... SongStreams, `$1AD90-$4B5BF`, 6 slices from extractAssets94.js) |
-| graphics94 | matched | org $4B5C0, ScoutTextScript | 700718 bytes, `$04B5C0-$0F66ED`. incbin only: 77 slices from extractAssets94.js, one per IDA label (the MATCHUPS script, then the graphics) |
+| graphics94 | matched | org $4B5C0, ScoutingReportText | 700718 bytes, `$04B5C0-$0F66ED`. incbin only: 77 slices from extractAssets94.js, one per IDA label (the MATCHUPS script, then the graphics) |
 | onetimer94 | matched | org $F66EE, puckvzadj | 1648 bytes, `$0F66EE-$0F6D5D`. puckvzadj ... CheckOneTimerFacing: one-timer. First part of high94_1 |
 | fourway94 | matched | org $F6D5E, Detect4WayPlay | 300 bytes, `$0F6D5E-$0F6E89`. Detect4WayPlay ... Set4WayPlayer: 4 way play adaptor. Second part of high94_1 |
 | crowd94 | matched | org $F6E8A, LoadCrowdRec | 1300 bytes, `$0F6E8A-$0F739D`. LoadCrowdRec ... GetHotColdTotal: crowd meter, hot / cold. Last part of high94_1 |
