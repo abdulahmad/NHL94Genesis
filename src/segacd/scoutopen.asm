@@ -2,21 +2,28 @@
 ; Points the stack at $1745C, then starts song $7A (cartridge SngScouting).
 ; $371D2 is song. The body is in the $37xxx library, outside these files.
 
+GameSetUpMapPtr	equ	$47D00
+BigFontMapPtr	equ	$47D38
+SmallFontMapPtr	equ	$47D3C
+HotMapPtr	equ	$47D98
+ColdMapPtr	equ	$47D9C
+ScoutingSpeechClipsPtr	equ	$47DA4
+
 	org	$D2B6
 
-	move.l	sp,$47D00.l
+	move.l	sp,(GameSetUpMapPtr).l	;the old stack, in that slot until scout94_2 leaves
 	movea.l	#$1745C,sp
-	movea.l	$47DA4.l,a0
+	movea.l	(ScoutingSpeechClipsPtr).l,a0	;the speech clips and the three pieces after them
 	movea.l	#$C458,a1
 	move.w	#$DAC,d0
 LD2D2	move.l	(a0)+,(a1)+
 	dbra	d0,LD2D2
-	move.l	$47DA4.l,d1
+	move.l	(ScoutingSpeechClipsPtr).l,d1	;then their pointers moved to the copy
 	subi.l	#$C458,d1
-	sub.l	d1,$47DA4.l
-	sub.l	d1,$47D3C.l
-	sub.l	d1,$47D98.l
-	sub.l	d1,$47D9C.l
+	sub.l	d1,(ScoutingSpeechClipsPtr).l
+	sub.l	d1,(SmallFontMapPtr).l
+	sub.l	d1,(HotMapPtr).l
+	sub.l	d1,(ColdMapPtr).l
 	jsr	$2262E.l
 	jsr	$231A0.l
 	clr.w	$1A446.l
@@ -42,6 +49,6 @@ LD2D2	move.l	(a0)+,(a1)+
 	move.w	d4,$19394.l
 	addi.w	#$24,d4
 	move.w	d4,$18D40.l
-	movea.l	$47D38.l,a2
+	movea.l	(BigFontMapPtr).l,a2
 	addq.l	#$8,a2
 	jsr	$38946.l

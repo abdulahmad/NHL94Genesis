@@ -1,0 +1,2000 @@
+; =============================================================================
+; NHL Hockey 94 Sega CD - MAIN.BIN Z80 sound program
+; =============================================================================
+; MAIN.BIN file $5E0C-$765B ($1850 bytes): the block InitSoundCommand (game shell
+; commands $29 and $40) passes to z80load.asm, which copies it to Z80 RAM $0000.
+; It is not the cartridge Z80 driver. $0000 jumps to Z80_Start at $0600; the
+; restart vectors jump to InterruptReturn (reti); the RAM below $0600 and after
+; the program is zero on the disc. The 68000 writes commands into the queue at
+; $0030. CommandJumpOffset is the operand of a JR that the code rewrites to pick
+; an entry of CommandJumps. No caller of $10CD was found. There is no JP (HL) /
+; JP (IX) dispatch. Written by tools/segacd_z80dis.py from cdbin/MAIN.BIN;
+; tables are db/dw, zero runs ds.
+; The DAC sample request is DacRequest / DacSampleId ($0092 / $0093); the 68000's
+; ServiceZ80DataRequest polls $0072 / $0073 instead (inside the queue here), so no
+; request is answered: docs/segacd_main_shell.md, sound operation 4.
+; =============================================================================
+
+        .binfrom 0
+        .binto $184F
+
+CommandJumpOffset        EQU $0640
+Z80_STACK_TOP            EQU $1FFE
+YM2612_ADDR1             EQU $4000
+YM2612_DATA1             EQU $4001
+YM2612_ADDR2             EQU $4002
+YM2612_DATA2             EQU $4003
+BANK_REGISTER            EQU $6000
+PSG_DATA                 EQU $7F11
+BANK_WINDOW              EQU $8000
+
+        org 0
+
+
+Z80_Reset:
+        jp Z80_Start
+
+L0003:
+        nop
+
+L0004:
+        jp InterruptReturn
+
+L0007:
+        nop
+
+L0008:
+        jp InterruptReturn
+
+L000B:
+        nop
+
+L000C:
+        jp InterruptReturn
+
+L000F:
+        nop
+
+L0010:
+        jp InterruptReturn
+
+L0013:
+        nop
+
+L0014:
+        jp InterruptReturn
+
+L0017:
+        nop
+
+L0018:
+        jp InterruptReturn
+
+L001B:
+        nop
+
+L001C:
+        jp InterruptReturn
+
+L001F:
+        nop
+        db $18,$4F,$18,$4F,$14,$48,$16,$49,$18,$4B,$00,$00,$00,$00,$00,$00
+CommandQueueLock:
+        db $00
+CommandQueueCount:
+        db $00
+CommandByte0:
+        db $00
+CommandByte1:
+        db $00
+CommandByte2:
+        db $00
+CommandByte3:
+        db $00
+PendingCommands:
+        ds 92
+DacRequest:
+        db $00
+DacSampleId:
+        db $00
+L0094:
+        db $00
+L0095:
+        db $00
+L0096:
+        db $00,$00
+L0098:
+        db $00
+L0099:
+        db $00
+L009A:
+        db $00
+L009B:
+        db $00
+L009C:
+        db $00
+L009D:
+        db $00
+L009E:
+        db $00
+L009F:
+        db $00
+L00A0:
+        db $00
+L00A1:
+        db $00
+DacNextBuffer:
+        ds 17
+L00B3:
+        db $00
+L00B4:
+        db $00
+L00B5:
+        db $00
+L00B6:
+        db $00,$00,$00,$00,$00
+L00BB:
+        db $00
+L00BC:
+        db $00,$00,$00,$00,$00,$00
+L00C2:
+        db $00,$00,$00,$00,$00,$00
+L00C8:
+        db $00,$00,$00,$00,$00
+L00CD:
+        db $00
+L00CE:
+        db $00,$00,$00,$00,$00
+L00D3:
+        db $00
+L00D4:
+        db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+L00E0:
+        db $00,$00,$00,$00,$00
+L00E5:
+        db $00
+L00E6:
+        ds 26
+L0100:
+        db $00
+L0101:
+        db $00
+L0102:
+        db $00
+L0103:
+        db $00
+L0104:
+        db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+L010F:
+        ds 241
+SlotSound:
+        ds 128
+SlotModulation:
+        ds 128
+SlotVolume:
+        ds 128
+L0380:
+        ds 128
+SlotPitchBend:
+        ds 128
+L0480:
+        ds 128
+L0500:
+        ds 128
+L0580:
+        ds 128
+
+; Disable interrupts and initialize the driver.
+
+Z80_Start:
+        di
+        ld sp,Z80_STACK_TOP
+        im 0
+        call InitResourceTable
+        exx
+        ld de,YM2612_DATA1
+        ld hl,YM2612_ADDR1
+        exx
+        ld iy,YM2612_ADDR1
+        call ClearCommandQueue
+        call L07FE
+        call L0858
+        call L0853
+        call KeyOffAllChannels
+        call InitSlotTables
+        ld a,$3F
+        ld (L00BB),a
+
+; Poll the command queue while servicing YM timers.
+
+CommandLoop:
+        call ServiceTimers
+
+WaitCommand:
+        ld a,(CommandQueueCount)
+        or a
+        jr z,CommandLoop
+        ld a,(CommandByte0)
+        rra
+        rra
+        and $1C
+        ld (CommandJumpOffset),a
+        jr CommandJumps
+
+; Eight command vectors, four bytes each.
+
+CommandJumps:
+        jp NoteOff
+
+L0644:
+        nop
+
+L0645:
+        jp NoteOn
+
+L0648:
+        nop
+
+L0649:
+        jp UnsupportedCommand
+
+L064C:
+        nop
+
+L064D:
+        jp ControlChange
+
+L0650:
+        nop
+
+L0651:
+        jp ProgramChange
+
+L0654:
+        nop
+
+L0655:
+        jp UnsupportedCommand
+
+L0658:
+        nop
+
+L0659:
+        jp PitchBend
+
+L065C:
+        nop
+
+L065D:
+        jp UnsupportedCommand
+
+L0660:
+        nop
+
+; MIDI-style commands from the queue, by status nibble: $8x note off, $9x note on,
+; $Bx controller (1 and 7), $Cx program, $Ex pitch bend; the slot is the low nibble + byte 3.
+
+NoteOff:
+        ld a,(CommandByte0)
+        and $0F
+        ld b,a
+        ld a,(CommandByte3)
+        add a,b
+        ld (L0098),a
+        call GetSlotSound
+        ld (L0095),a
+
+L0674:
+        call FindZ80Resource
+        ld (L0096),ix
+        ld a,(ix+0)
+        cp $07
+        jr nz,L0694
+        ld a,(CommandByte1)
+        add a,$02
+        ld c,a
+        ld b,$00
+        add ix,bc
+        ld a,(ix+0)
+        ld (L0095),a
+        jr L0674
+
+L0694:
+        ld a,(CommandByte1)
+        ld (L009B),a
+        call ServiceTimers
+        ld hl,L00C8
+        ld ix,L00D4
+        ld a,(L00BB)
+        ld b,a
+        ld c,$00
+
+L06AA:
+        call ServiceTimers
+        srl b
+        jr c,L06BF
+        ld a,(L0098)
+        cp (ix+0)
+        jr nz,L06BF
+        ld a,(L009B)
+        cp (hl)
+        jr z,L06CA
+
+L06BF:
+        inc hl
+        inc ix
+        inc c
+        ld a,c
+        cp $06
+        jr nz,L06AA
+        jr L06CE
+
+L06CA:
+        ld a,c
+        call KeyOffChannel
+
+L06CE:
+        call PopCommand
+        jp CommandLoop
+
+; Note on: the slot's sound record by kind: 0 an FM instrument, 3 a DAC sample on FM
+; channel 6 (StartDacSample), 7 a key map (byte 2 + note is the sound).
+
+NoteOn:
+        ld a,(CommandByte0)
+        and $0F
+        ld b,a
+        ld a,(CommandByte3)
+        add a,b
+        ld (L0098),a
+        call GetSlotSound
+        ld (L0095),a
+
+L06E7:
+        call FindZ80Resource
+        ld (L0096),ix
+        call ServiceTimers
+        ld a,(ix+0)
+        cp $00
+        jr nz,L070D
+        call L0A0C
+        cp $FF
+        jr nz,L0702
+        jp L073A
+
+L0702:
+        ld (L0094),a
+        call ServiceTimers
+        call L0A9E
+        jr L073A
+
+L070D:
+        cp $03
+        jr nz,L0723
+        call CheckDacChannel
+        cp $05
+        jr nz,L073A
+        ld (L0094),a
+        call ServiceTimers
+        call StartDacSample
+        jr L073A
+
+L0723:
+        cp $07
+        jr nz,L073A
+        ld a,(CommandByte1)
+        add a,$02
+        ld c,a
+        ld b,$00
+        add ix,bc
+        ld a,(ix+0)
+        ld (L0095),a
+        jp L06E7
+
+L073A:
+        call PopCommand
+        jp CommandLoop
+
+ControlChange:
+        ld a,(CommandByte0)
+        and $0F
+        ld b,a
+        ld a,(CommandByte3)
+        add a,b
+        ld (L0098),a
+        ld a,(CommandByte1)
+        cp $01
+        jr nz,L0765
+        ld a,(L0098)
+        add a,SlotModulation & $FF
+        ld l,a
+        ld h,floor(SlotModulation/256)
+        ld a,(CommandByte2)
+        ld (hl),a
+        call L0F32
+        jr L0790
+
+L0765:
+        cp $07
+        jr nz,L0790
+        ld a,(L0098)
+        add a,SlotVolume & $FF
+        ld l,a
+        ld h,floor(SlotVolume/256)
+        ld a,(CommandByte2)
+        ld (hl),a
+        ld a,(L0098)
+        call GetSlotSound
+        ld (L0095),a
+        call ServiceTimers
+        call FindZ80Resource
+        ld (L0096),ix
+        call ServiceTimers
+        call L0FFD
+        jr L0790
+
+L0790:
+        call PopCommand
+        jp CommandLoop
+
+ProgramChange:
+        ld a,(CommandByte0)
+        and $0F
+        ld b,a
+        ld a,(CommandByte3)
+        add a,b
+        add a,SlotSound & $FF
+        ld l,a
+        ld h,floor(SlotSound/256)
+        ld a,(CommandByte1)
+        ld (hl),a
+        call PopCommand
+        call ServiceTimers
+        jp CommandLoop
+
+PitchBend:
+        ld a,(CommandByte0)
+        and $0F
+        ld b,a
+        ld a,(CommandByte3)
+        add a,b
+        ld (L0098),a
+        add a,SlotPitchBend & $FF
+        ld l,a
+        ld h,floor(SlotPitchBend/256)
+        ld a,(CommandByte1)
+        ld (hl),a
+        call ServiceTimers
+        call L0F32
+        call PopCommand
+        jp CommandLoop
+
+; Any other status: drop it and key off every FM channel.
+
+UnsupportedCommand:
+        call PopCommand
+        call KeyOffAllChannels
+        jp CommandLoop
+
+KeyOffAllChannels:
+        ld hl,YM2612_ADDR1
+        ld de,YM2612_DATA1
+        ld a,$06
+
+L07E5:
+        call WaitYmReady
+        ld (hl),$28
+        ld (de),a
+
+L07EB:
+        dec a
+        jp m,L07F5
+        cp $03
+        jr z,L07EB
+        jr L07E5
+
+L07F5:
+        call ServiceTimers
+        ld a,$3F
+        ld (L00BB),a
+        ret
+
+; Write the two terminated YM register/value lists.
+
+L07FE:
+        ld bc,L082F
+        ld hl,YM2612_ADDR1
+        ld de,YM2612_DATA1
+
+L0807:
+        ld a,(bc)
+        inc bc
+        cp $FF
+        jr z,L0816
+        call WaitYmReady
+        ld (hl),a
+        ld a,(bc)
+        inc bc
+        ld (de),a
+        jr L0807
+
+L0816:
+        ld bc,L084A
+        ld hl,YM2612_ADDR2
+        ld de,YM2612_DATA2
+
+L081F:
+        ld a,(bc)
+        inc bc
+        cp $FF
+        jr z,L082E
+        call WaitYmReady
+        ld (hl),a
+        ld a,(bc)
+        inc bc
+        ld (de),a
+        jr L081F
+
+L082E:
+        ret
+L082F:
+        db $22,$00,$27,$00,$28,$00,$28,$01,$28,$02,$28,$04,$28,$05,$28,$06
+        db $2B,$00,$90,$00,$94,$00,$98,$00,$9C,$00,$FF
+L084A:
+        db $90,$00,$94,$00,$98,$00,$9C,$00,$FF
+
+L0853:
+        ret
+        db $9F,$BF,$DF,$FF
+
+L0858:
+        ld hl,YM2612_ADDR1
+        call WaitYmReady
+        ld (hl),$27
+        inc hl
+        ld (hl),$30
+        dec hl
+        call WaitYmReady
+        ld (hl),$26
+        inc hl
+        ld (hl),$FE
+        dec hl
+        call WaitYmReady
+        ld (hl),$27
+        inc hl
+        ld a,$0A
+        ld (hl),a
+        ld (L00A1),a
+        ret
+
+; Clear the shared command queue.
+
+ClearCommandQueue:
+        ld hl,CommandQueueLock
+        ld (hl),$FF
+        inc hl
+        ld c,$41
+        ld a,$00
+
+L0884:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L0884
+        ld (CommandQueueLock),a
+        ret
+
+; Remove the first command and shift the remaining four-byte records.
+
+PopCommand:
+        ld a,$FF
+        ld (CommandQueueLock),a
+        ld hl,CommandByte0
+        ld ix,PendingCommands
+        ld a,(CommandQueueCount)
+        dec a
+        jr z,L08AE
+        sla a
+        sla a
+        ld c,a
+
+L08A4:
+        ld a,(ix+0)
+        ld (hl),a
+        inc ix
+        inc hl
+        dec c
+        jr nz,L08A4
+
+L08AE:
+        ld a,(CommandQueueCount)
+        dec a
+        ld (CommandQueueCount),a
+        ld a,$00
+        ld (CommandQueueLock),a
+        ret
+
+InitSlotTables:
+        ld hl,SlotSound
+        ld a,$00
+        ld c,$80
+
+L08C2:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L08C2
+        ld hl,SlotModulation
+        ld a,$00
+        ld c,$80
+
+L08CE:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L08CE
+        ld hl,SlotVolume
+        ld a,$7F
+        ld c,$80
+
+L08DA:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L08DA
+        ld hl,L0380
+        ld a,$40
+        ld c,$80
+
+L08E6:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L08E6
+        ld hl,SlotPitchBend
+        ld a,$40
+        ld c,$80
+
+L08F2:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L08F2
+        ret
+
+; Initialize the four-byte record table at $0100 (id, size, address high, low): entry 0 is
+; record $7F, the 4 bytes at $184B (kind 3, priority 0, pan $C0, sample id), the DAC
+; sample sound operation 4 plays; the rest $FF (free).
+
+InitResourceTable:
+        ld a,$7F
+        ld (L0100),a
+        ld a,$04
+        ld (L0101),a
+        ld a,$18
+        ld (L0102),a
+        ld a,$4B
+        ld (L0103),a
+        ld hl,L0104
+        ld a,$FF
+        ld c,$FC
+
+L0913:
+        ld (hl),a
+        inc hl
+        dec c
+        jr nz,L0913
+        ret
+
+GetSlotSound:
+        add a,SlotSound & $FF
+        ld l,a
+        ld h,floor(SlotSound/256)
+        ld a,(hl)
+        call ServiceTimers
+        ret
+
+FindZ80Resource:
+        push hl
+        ld hl,L0100
+        ld c,$40
+
+L0929:
+        cp (hl)
+        jr nz,L0936
+        inc hl
+        inc hl
+        ld b,(hl)
+        inc hl
+        ld c,(hl)
+        push bc
+        pop ix
+        jr L0944
+
+L0936:
+        call ServiceTimers
+        inc hl
+        inc hl
+        inc hl
+        inc hl
+        dec c
+        jr nz,L0929
+        ld ix,Z80_Reset
+
+L0944:
+        pop hl
+        ret
+
+KeyOffChannel:
+        ld b,a
+        ld hl,YM2612_ADDR1
+        cp $03
+        jr c,L094F
+        inc a
+
+L094F:
+        call WaitYmReady
+        ld (hl),$28
+        inc hl
+        ld (hl),a
+        ld a,b
+        add a,ChannelBits & $FF
+        ld l,a
+        ld a,floor(ChannelBits/256)
+        adc a,$00
+        ld h,a
+        ld a,(L00BB)
+        or (hl)
+        ld (L00BB),a
+        call ServiceTimers
+        ret
+
+L096A:
+        ld a,(L0094)
+        add a,ChannelClearBits & $FF
+        ld l,a
+        ld a,floor(ChannelClearBits/256)
+        adc a,$00
+        ld h,a
+        ld a,(L00BB)
+        and (hl)
+        ld (L00BB),a
+        ret
+
+L097D:
+        ret
+
+SetChannelState:
+        ld a,(L0094)
+        add a,L00BC & $FF
+        ld l,a
+        ld h,floor(L00BC/256)
+        ld a,(L0095)
+        ld (hl),a
+        call ServiceTimers
+        ld a,(L0094)
+        add a,L00C2 & $FF
+        ld l,a
+        ld h,floor(L00C2/256)
+        ld a,(ix+0)
+        ld (hl),a
+        call ServiceTimers
+        ld a,(L0094)
+        add a,L00C8 & $FF
+        ld l,a
+        ld h,floor(L00C8/256)
+        ld a,(CommandByte1)
+        ld (hl),a
+        call ServiceTimers
+        ld a,(L0094)
+        add a,L00CE & $FF
+        ld l,a
+        ld h,floor(L00CE/256)
+        ld a,(CommandByte2)
+        ld (hl),a
+        call ServiceTimers
+        ld a,(L0094)
+        add a,L00E0 & $FF
+        ld l,a
+        ld h,floor(L00E0/256)
+        ld a,(ix+1)
+        ld (hl),a
+        call ServiceTimers
+        ld a,(L0098)
+        ld b,a
+        ld a,(L0094)
+        add a,L00D4 & $FF
+        ld l,a
+        ld h,floor(L00D4/256)
+        ld (hl),b
+        call ServiceTimers
+        ld a,(L0098)
+        add a,L0580 & $FF
+        ld l,a
+        ld h,floor(L0580/256)
+        ld a,(ix+34)
+        ld (hl),a
+        ld a,(L0098)
+        add a,L0480 & $FF
+        ld l,a
+        ld h,floor(L0480/256)
+        ld (hl),$80
+        ld a,(L0098)
+        add a,L0500 & $FF
+        ld l,a
+        ld h,floor(L0500/256)
+        ld (hl),$00
+        ld a,(L0094)
+        add a,L00E6 & $FF
+        ld l,a
+        ld h,floor(L00E6/256)
+        ld a,(ix+0)
+        or a
+        jr nz,L0A0B
+        ld a,(ix+29)
+        ld (hl),a
+
+L0A0B:
+        ret
+
+L0A0C:
+        call ServiceTimers
+        xor a
+        ld (L0099),a
+        bit 0,(ix+35)
+        jr z,L0A3C
+        ld a,(L00BB)
+        ld b,a
+        ld a,(L0095)
+        ld c,$00
+        ld d,$06
+        ld hl,L00BC
+
+L0A27:
+        srl b
+        jr c,L0A37
+        cp (hl)
+        jr nz,L0A37
+        ld a,$FF
+        ld (L0099),a
+        ld a,c
+        jp L0A9D
+
+L0A37:
+        inc c
+        inc hl
+        dec d
+        jr nz,L0A27
+
+L0A3C:
+        ld a,(L00BB)
+        or a
+        jr z,L0A4C
+        ld b,a
+        ld a,$00
+
+L0A45:
+        rr b
+        jr c,L0A9D
+        inc a
+        jr L0A45
+
+L0A4C:
+        call ServiceTimers
+        ld a,(ix+1)
+        ld ix,L00E0
+        ld c,$00
+        cp (ix+0)
+        jr c,L0A8C
+        jr z,L0A8C
+        inc c
+        cp (ix+1)
+        jr c,L0A8C
+        jr z,L0A8C
+        inc c
+        cp (ix+2)
+        jr c,L0A8C
+        jr z,L0A8C
+        inc c
+        call ServiceTimers
+        cp (ix+3)
+        jr c,L0A8C
+        jr z,L0A8C
+        inc c
+        cp (ix+4)
+        jr c,L0A8C
+        jr z,L0A8C
+        inc c
+        cp (ix+5)
+        jr c,L0A8C
+        jr z,L0A8C
+        jr L0A98
+
+L0A8C:
+        ld a,c
+        ld (L0094),a
+        call KeyOffChannel
+        ld a,(L0094)
+        jr L0A9D
+
+L0A98:
+        call ServiceTimers
+        ld a,$FF
+
+L0A9D:
+        ret
+
+L0A9E:
+        call SetChannelState
+        ld a,(L0099)
+        or a
+        jr z,L0AAA
+        jp L0B3F
+
+L0AAA:
+        inc ix
+        inc ix
+        ld a,(L0094)
+        cp $03
+        jr c,L0ABC
+        add a,$B1
+        ld hl,YM2612_ADDR2
+        jr L0AC1
+
+L0ABC:
+        add a,$B4
+        ld hl,YM2612_ADDR1
+
+L0AC1:
+        call WaitYmReady
+        ld (hl),a
+        inc hl
+        ld (hl),$00
+        ld a,(L0094)
+        cp $05
+        jr nz,L0ADA
+        ld hl,YM2612_ADDR1
+        call WaitYmReady
+        ld (hl),$2B
+        inc hl
+        ld (hl),$00
+
+L0ADA:
+        ld a,(L0094)
+        cp $03
+        jr c,L0AE8
+        add a,$2D
+        ld hl,YM2612_ADDR2
+        jr L0AED
+
+L0AE8:
+        add a,$30
+        ld hl,YM2612_ADDR1
+
+L0AED:
+        ld c,$18
+
+L0AEF:
+        call ServiceTimers
+        ld d,(ix+0)
+        inc ix
+        call WaitYmReady
+        ld (hl),a
+        inc hl
+        add a,$04
+        ld (hl),d
+        dec hl
+        dec c
+        jr nz,L0AEF
+        ld a,(L0094)
+        cp $03
+        jr c,L0B0E
+        add a,$AD
+        jr L0B10
+
+L0B0E:
+        add a,$B0
+
+L0B10:
+        ld d,(ix+0)
+        call WaitYmReady
+        ld (hl),a
+        inc hl
+        ld (hl),d
+        call ServiceTimers
+        call L0CB9
+        ld ix,(L0096)
+        ld a,(L0094)
+        cp $03
+        jr c,L0B31
+        add a,$B1
+        ld hl,YM2612_ADDR2
+        jr L0B36
+
+L0B31:
+        add a,$B4
+        ld hl,YM2612_ADDR1
+
+L0B36:
+        call WaitYmReady
+        ld (hl),a
+        inc hl
+        ld a,(ix+27)
+        ld (hl),a
+
+L0B3F:
+        call L0B61
+        ld a,(L0099)
+        or a
+        jr nz,L0B5D
+        ld hl,YM2612_ADDR1
+        ld a,(L0094)
+        cp $03
+        jr c,L0B53
+        inc a
+
+L0B53:
+        or (ix+29)
+        call WaitYmReady
+        ld (hl),$28
+        inc hl
+        ld (hl),a
+
+L0B5D:
+        call L096A
+        ret
+
+L0B61:
+        ld ix,(L0096)
+        ld a,(L0094)
+        add a,L00C8 & $FF
+        ld l,a
+        ld h,floor(L00C8/256)
+        ld a,(hl)
+        add a,(ix+30)
+        ld (L009B),a
+        call ServiceTimers
+        xor a
+        ld (L009A),a
+        ld a,(L0098)
+        add a,SlotPitchBend & $FF
+        ld l,a
+        ld h,floor(SlotPitchBend/256)
+        ld a,(hl)
+        cp $40
+        jr z,L0BBA
+        rlca
+        bit 7,a
+        jr z,L0BA3
+        sub $80
+        rlca
+        ld b,(ix+31)
+        call L1148
+        ld a,c
+        ld (L009A),a
+        ld a,(L009B)
+        add a,b
+        ld (L009B),a
+        jr L0BBA
+
+L0BA3:
+        ld c,a
+        ld a,$7F
+        sub c
+        rlca
+        ld b,(ix+32)
+        call L1148
+        xor a
+        sub c
+        ld (L009A),a
+        ld a,(L009B)
+        sbc a,b
+        ld (L009B),a
+
+L0BBA:
+        call ServiceTimers
+        ld a,(ix+33)
+        or a
+        jr z,L0C15
+        ld b,a
+        ld a,(L0098)
+        add a,SlotModulation & $FF
+        ld l,a
+        ld h,floor(SlotModulation/256)
+        ld a,(hl)
+        or a
+        jr z,L0C15
+        rlca
+        call L1148
+        call ServiceTimers
+        ld a,(L0098)
+        add a,L0480 & $FF
+        ld l,a
+        ld h,floor(L0480/256)
+        ld a,(hl)
+        bit 7,a
+        jr z,L0BFD
+        sub $80
+        rlca
+        ld e,a
+        ld d,$00
+        call L115A
+        ld a,(L009A)
+        add a,d
+        ld (L009A),a
+        ld a,(L009B)
+        adc a,c
+        ld (L009B),a
+        jr L0C15
+
+L0BFD:
+        ld d,a
+        ld a,$7F
+        sub d
+        ld e,a
+        ld d,$00
+        call L115A
+        ld a,(L009A)
+        sub d
+        ld (L009A),a
+        ld a,(L009B)
+        sbc a,c
+        ld (L009B),a
+
+L0C15:
+        call ServiceTimers
+        ld a,(ix+28)
+        or a
+        jr z,L0C4A
+        bit 7,a
+        jr nz,L0C35
+        rlca
+        ld b,a
+        ld a,(L009A)
+        add a,b
+        ld (L009A),a
+        ld a,(L009B)
+        adc a,$00
+        ld (L009B),a
+        jr L0C4A
+
+L0C35:
+        ld b,a
+        ld a,$80
+        sub b
+        rlca
+        ld b,a
+        ld a,(L009A)
+        sub b
+        ld (L009A),a
+        ld a,(L009B)
+        sbc a,$00
+        ld (L009B),a
+
+L0C4A:
+        call ServiceTimers
+        ld a,(L009B)
+        sla a
+        add a,FmPitchTable & $FF
+        ld l,a
+        ld a,floor(FmPitchTable/256)
+        adc a,$00
+        ld h,a
+        ld a,(hl)
+        ld (L00B3),a
+        ld (L00B5),a
+        ld c,a
+        inc hl
+        ld a,(hl)
+        ld (L00B4),a
+        and $07
+        ld b,a
+        ld (L00B6),a
+        ld de,L010F
+        call L115A
+        call ServiceTimers
+        ld l,d
+        ld h,c
+        ld bc,(L00B5)
+        scf
+        ccf
+        sbc hl,bc
+        ld b,l
+        ld a,(L009A)
+        call L1148
+        call ServiceTimers
+        ld c,b
+        ld b,$00
+        ld hl,(L00B3)
+        add hl,bc
+        push hl
+        pop bc
+        ld a,(L0094)
+        cp $03
+        jr c,L0CA1
+        add a,$A1
+        ld hl,YM2612_ADDR2
+        jr L0CA6
+
+L0CA1:
+        add a,$A4
+        ld hl,YM2612_ADDR1
+
+L0CA6:
+        call WaitYmReady
+        ld (hl),a
+        inc hl
+        sub $04
+        ld (hl),b
+        dec hl
+        call WaitYmReady
+        ld (hl),a
+        inc hl
+        ld (hl),c
+        call ServiceTimers
+        ret
+
+L0CB9:
+        ld a,(L0098)
+        add a,SlotVolume & $FF
+        ld l,a
+        ld h,floor(SlotVolume/256)
+        ld a,(hl)
+        sla a
+        cp $FE
+        jr c,L0CD5
+        ld a,(L0094)
+        add a,L00CE & $FF
+        ld l,a
+        ld h,floor(L00CE/256)
+        ld b,(hl)
+        sla b
+        jr L0CE8
+
+L0CD5:
+        ld b,a
+        ld a,(L0094)
+        add a,L00CE & $FF
+        ld l,a
+        ld h,floor(L00CE/256)
+        ld a,(hl)
+        sla a
+        cp $FE
+        jr z,L0CE8
+        call L1148
+
+L0CE8:
+        call ServiceTimers
+        ld a,b
+        ld (L009C),a
+        ld ix,(L0096)
+        ld a,(ix+9)
+        add a,L12C8 & $FF
+        ld l,a
+        ld a,floor(L12C8/256)
+        adc a,$00
+        ld h,a
+        ld b,(hl)
+        ld a,(L009C)
+        call L1148
+        ld a,b
+        srl a
+        add a,L1248 & $FF
+        ld l,a
+        ld a,floor(L1248/256)
+        adc a,$00
+        ld h,a
+        ld a,(hl)
+        ld (L00A0),a
+        call ServiceTimers
+        ld ix,(L0096)
+        ld a,(ix+26)
+        and $07
+        cp $04
+        jr nc,L0D27
+        jp L0DAD
+
+L0D27:
+        ld a,(ix+8)
+        add a,L12C8 & $FF
+        ld l,a
+        ld a,floor(L12C8/256)
+        adc a,$00
+        ld h,a
+        ld b,(hl)
+        ld a,(L009C)
+        call L1148
+        ld a,b
+        srl a
+        add a,L1248 & $FF
+        ld l,a
+        ld a,floor(L1248/256)
+        adc a,$00
+        ld h,a
+        ld a,(hl)
+        ld (L009E),a
+        call ServiceTimers
+        ld ix,(L0096)
+        ld a,(ix+26)
+        and $07
+        cp $05
+        jr c,L0DAD
+        ld a,(ix+7)
+        add a,L12C8 & $FF
+        ld l,a
+        ld a,floor(L12C8/256)
+        adc a,$00
+        ld h,a
+        ld b,(hl)
+        ld a,(L009C)
+        call L1148
+        ld a,b
+        srl a
+        add a,L1248 & $FF
+        ld l,a
+        ld a,floor(L1248/256)
+        adc a,$00
+        ld h,a
+        ld a,(hl)
+        ld (L009F),a
+        call ServiceTimers
+        ld ix,(L0096)
+        ld a,(ix+26)
+        and $07
+        cp $07
+        jr nz,L0DAD
+        ld a,(ix+6)
+        add a,L12C8 & $FF
+        ld l,a
+        ld a,floor(L12C8/256)
+        adc a,$00
+        ld h,a
+        ld b,(hl)
+        ld a,(L009C)
+        call L1148
+        ld a,b
+        srl a
+        add a,L1248 & $FF
+        ld l,a
+        ld a,floor(L1248/256)
+        adc a,$00
+        ld h,a
+        ld a,(hl)
+        ld (L009D),a
+        call ServiceTimers
+
+L0DAD:
+        ld a,(L0094)
+        cp $03
+        jr nc,L0DBC
+        add a,$4C
+        ld c,a
+        ld hl,YM2612_ADDR1
+        jr L0DC2
+
+L0DBC:
+        add a,$49
+        ld c,a
+        ld hl,YM2612_ADDR2
+
+L0DC2:
+        call ServiceTimers
+        ld ix,(L0096)
+        ld a,(ix+26)
+        and $07
+        ld b,a
+        call WaitYmReady
+        ld (hl),c
+        inc hl
+        ld a,(L00A0)
+        ld (hl),a
+        dec hl
+        call ServiceTimers
+        dec c
+        dec c
+        dec c
+        dec c
+        ld a,b
+        cp $04
+        jr c,L0E1A
+        call WaitYmReady
+        ld (hl),c
+        inc hl
+        ld a,(L009E)
+        ld (hl),a
+        dec hl
+        call ServiceTimers
+        dec c
+        dec c
+        dec c
+        dec c
+        ld a,b
+        cp $05
+        jr c,L0E1A
+        call WaitYmReady
+        ld (hl),c
+        inc hl
+        ld a,(L009F)
+        ld (hl),a
+        dec hl
+        call ServiceTimers
+        dec c
+        dec c
+        dec c
+        dec c
+        ld a,b
+        cp $07
+        jr nz,L0E1A
+        call WaitYmReady
+        ld (hl),c
+        inc hl
+        ld a,(L009D)
+        ld (hl),a
+
+L0E1A:
+        ret
+
+L0E1B:
+        ret
+
+L0E1C:
+        ret
+
+L0E1D:
+        ret
+
+L0E1E:
+        ret
+
+CheckDacChannel:
+        ld a,(L00BB)
+        bit 5,a
+        jr nz,L0E2E
+        ld a,(L00E5)
+        cp (ix+1)
+        jr c,L0E32
+
+L0E2E:
+        ld a,$05
+        jr L0E34
+
+L0E32:
+        ld a,$FF
+
+L0E34:
+        ret
+
+; Start a DAC sample: channel 6 to DAC mode, its pan, DacSampleId from the record
+; byte 3, DacRequest 1 for the 68000, timer A from the note (the sample rate), and the
+; stream pointer (BC') at DacStartMark, which waits for the first buffer.
+
+StartDacSample:
+        call SetChannelState
+        ld a,$05
+        call KeyOffChannel
+        ld hl,YM2612_ADDR1
+        call WaitYmReady
+        ld (hl),$2B
+        inc hl
+        ld (hl),$80
+        ld hl,YM2612_ADDR2
+        ld a,(ix+2)
+        call WaitYmReady
+        ld (hl),$B6
+        inc hl
+        ld (hl),a
+        ld a,(ix+3)
+        ld (DacSampleId),a
+        ld a,$01
+        ld (DacRequest),a
+        ld hl,YM2612_ADDR1
+        ld de,YM2612_DATA1
+        call WaitYmReady
+        ld a,(L00A1)
+        and $FE
+        ld (hl),$27
+        ld (de),a
+        ld a,(L00CD)
+        srl a
+        and $FE
+        add a,TimerAValues & $FF
+        ld c,a
+        ld a,floor(TimerAValues/256)
+        adc a,$00
+        ld b,a
+        call WaitYmReady
+        ld a,(bc)
+        inc bc
+        ld (hl),$24
+        ld (de),a
+        call WaitYmReady
+        ld a,(bc)
+        ld (hl),$25
+        ld (de),a
+        call WaitYmReady
+        ld a,(L00A1)
+        or $05
+        ld (L00A1),a
+        ld (hl),$27
+        ld (de),a
+        exx
+        ld bc,DacStartMark
+        exx
+        ret
+
+; YM timer A register pairs ($24, $25).
+TimerAValues:
+        db $F8,$00,$F8,$01,$F8,$02,$F8,$03,$F9,$00,$F9,$01,$F9,$02,$F9,$03
+        db $FA,$00,$FA,$01,$FA,$02,$FA,$03,$FB,$00,$FB,$01,$FB,$02,$FB,$03
+        db $FC,$00,$FC,$01,$FC,$02,$FC,$03,$FD,$00,$FD,$01,$FD,$02,$FD,$03
+        db $FE,$00,$FE,$01,$FE,$02,$FE,$03,$FF,$00,$FF,$01,$FF,$02,$FF,$03
+
+L0EE3:
+        ld a,(L0098)
+        add a,SlotVolume & $FF
+        ld l,a
+        ld h,floor(SlotVolume/256)
+        ld a,(hl)
+        inc a
+        ld c,a
+        ld b,$00
+        sla c
+        rl b
+        ld a,(L00D3)
+        inc a
+        ld e,a
+        ld d,$00
+        sla e
+        rl d
+        call L115A
+        ld b,c
+        ld c,d
+        ld ix,L13C8
+        ld hl,BANK_WINDOW
+        ld d,$80
+
+L0F0D:
+        ld (ix+0),h
+        dec ix
+        scf
+        ccf
+        sbc hl,bc
+        dec d
+        jr nz,L0F0D
+        call ServiceTimers
+        ld ix,L13C8
+        ld hl,BANK_WINDOW
+        ld d,$80
+
+L0F25:
+        ld (ix+0),h
+        inc ix
+        add hl,bc
+        dec d
+        jr nz,L0F25
+        call ServiceTimers
+        ret
+
+L0F32:
+        ld a,(L0098)
+        call GetSlotSound
+        ld (L0095),a
+        call FindZ80Resource
+        ld (L0096),ix
+        ld a,$00
+        ld (L0094),a
+
+L0F47:
+        call ServiceTimers
+        ld a,(L0094)
+        add a,ChannelClearBits & $FF
+        ld l,a
+        ld a,floor(ChannelClearBits/256)
+        adc a,$00
+        ld h,a
+        ld a,(L00BB)
+        and (hl)
+        jr z,L0F87
+        ld a,(L0094)
+        add a,L00D4 & $FF
+        ld l,a
+        ld h,floor(L00D4/256)
+        ld a,(L0098)
+        cp (hl)
+        jr nz,L0F87
+        ld hl,(L0096)
+        ld a,(hl)
+        or a
+        jr nz,L0F75
+        call L0B61
+        jr L0F87
+
+L0F75:
+        cp $01
+        jr nz,L0F7E
+        call L0E1B
+        jr L0F87
+
+L0F7E:
+        cp $02
+        jr nz,L0F87
+        call L0E1D
+        jr L0F87
+
+L0F87:
+        ld a,(L0094)
+        inc a
+        ld (L0094),a
+        cp $06
+        jr nz,L0F47
+        ret
+
+; Called by the isolated timer B routine at $10CD.
+
+L0F93:
+        ld a,(L0098)
+        call GetSlotSound
+        ld (L0095),a
+        call FindZ80Resource
+        ld (L0096),ix
+        ld a,$00
+        ld (L0094),a
+
+L0FA8:
+        call ServiceTimers
+        ld a,(L0094)
+        add a,ChannelClearBits & $FF
+        ld l,a
+        ld a,floor(ChannelClearBits/256)
+        adc a,$00
+        ld h,a
+        ld a,(L00BB)
+        and (hl)
+        jr z,L0FF1
+        ld a,(L0094)
+        add a,L00D4 & $FF
+        ld l,a
+        ld h,floor(L00D4/256)
+        ld a,(L0098)
+        cp (hl)
+        jr nz,L0FF1
+        add a,SlotModulation & $FF
+        ld l,a
+        ld h,floor(SlotModulation/256)
+        ld a,(hl)
+        or a
+        jr z,L0FF1
+        ld hl,(L0096)
+        ld a,(hl)
+        or a
+        jr nz,L0FDF
+        call L0B61
+        jr L0FF1
+
+L0FDF:
+        cp $01
+        jr nz,L0FE8
+        call L0E1B
+        jr L0FF1
+
+L0FE8:
+        cp $02
+        jr nz,L0FF1
+        call L0E1D
+        jr L0FF1
+
+L0FF1:
+        ld a,(L0094)
+        inc a
+        ld (L0094),a
+        cp $06
+        jr nz,L0FA8
+        ret
+
+L0FFD:
+        ld a,$00
+        ld (L0094),a
+
+L1002:
+        call ServiceTimers
+        ld a,(L0094)
+        add a,ChannelClearBits & $FF
+        ld l,a
+        ld a,floor(ChannelClearBits/256)
+        adc a,$00
+        ld h,a
+        ld a,(L00BB)
+        and (hl)
+        jr z,L1045
+        ld a,(L0094)
+        add a,L00D4 & $FF
+        ld l,a
+        ld h,floor(L00D4/256)
+        ld a,(L0098)
+        cp (hl)
+        jr nz,L1045
+        ld hl,(L0096)
+        ld a,(hl)
+        or a
+        jr nz,L1030
+        call L0CB9
+        jr L1045
+
+L1030:
+        cp $01
+        jr nz,L1039
+        call L0E1C
+        jr L1045
+
+L1039:
+        cp $02
+        jr nz,L1042
+        call L0E1E
+        jr L1045
+
+L1042:
+        call L0EE3
+
+L1045:
+        ld a,(L0094)
+        inc a
+        ld (L0094),a
+        cp $06
+        jr nz,L1002
+        ret
+
+InterruptReturn:
+        reti
+
+; Poll YM timer A and write DAC sample bytes: 0 ends the sample, $FF ends a buffer (on
+; to the other once the 68000 has filled it: DacRequest 2 or 3), $FE waits at the start.
+
+ServiceTimers:
+        exx
+        bit 0,(hl)
+        jr z,L10CB
+        ex af,af'
+        ld a,(L00A1)
+        or $10
+
+L105E:
+        bit 7,(hl)
+        jr nz,L105E
+        ld (hl),$27
+        ld (de),a
+
+L1065:
+        ld a,(bc)
+        inc bc
+        or a
+        jr z,L107B
+        cp $FF
+        jr z,L1094
+        cp $FE
+        jr z,L10BF
+
+L1072:
+        bit 7,(hl)
+        jr nz,L1072
+        ld (hl),$2A
+        ld (de),a
+        jr L10CA
+
+L107B:
+        bit 7,(hl)
+        jr nz,L107B
+        ld (hl),$27
+        ld a,(L00A1)
+        and $FA
+        ld (de),a
+        ld (L00A1),a
+        ld a,(L00BB)
+        or $20
+        ld (L00BB),a
+        jr L10CA
+
+L1094:
+        ld a,(DacRequest)
+        or a
+        jr z,L109D
+        dec bc
+        jr L10CA
+
+L109D:
+        ld a,(DacNextBuffer)
+        or a
+        jr nz,L10B1
+        inc a
+        ld (DacNextBuffer),a
+        ld a,$02
+        ld (DacRequest),a
+        ld bc,DacBufferB
+        jr L1065
+
+L10B1:
+        dec a
+        ld (DacNextBuffer),a
+        ld a,$03
+        ld (DacRequest),a
+        ld bc,DacBufferA
+        jr L1065
+
+L10BF:
+        dec bc
+        ld a,(DacRequest)
+        or a
+        jr nz,L10CA
+        ld a,$01
+        jr L10B1
+
+L10CA:
+        ex af,af'
+
+L10CB:
+        exx
+        ret
+
+; No resolved caller in this image; polls YM timer B.
+
+L10CD:
+        ld hl,YM2612_ADDR1
+        bit 1,(hl)
+        jr z,L112D
+        ld a,(L00A1)
+        or $20
+        call WaitYmReady
+        ld (hl),$27
+        inc hl
+        ld (hl),a
+        ld a,$00
+        ld (L0098),a
+
+L10E5:
+        call ServiceTimers
+        ld a,(L0098)
+        add a,L0580 & $FF
+        ld l,a
+        ld h,floor(L0580/256)
+        ld b,(hl)
+        ld a,(L0098)
+        add a,L0500 & $FF
+        ld l,a
+        ld h,floor(L0500/256)
+        ld a,(hl)
+        add a,b
+        ld (hl),a
+        srl a
+        srl a
+        srl a
+        srl a
+        add a,L112E & $FF
+        ld l,a
+        ld a,floor(L112E/256)
+        adc a,$00
+        ld h,a
+        ld b,(hl)
+        ld a,(L0098)
+        add a,L0480 & $FF
+        ld l,a
+        ld h,floor(L0480/256)
+        ld a,b
+        cp (hl)
+        jr z,L111D
+        ld (hl),b
+        call L0F93
+
+L111D:
+        ld a,(L0098)
+        inc a
+        ld (L0098),a
+        cp $80
+        jr nz,L10E5
+        ld a,$00
+        ld (L0094),a
+
+L112D:
+        ret
+L112E:
+        db $00,$20,$40,$60,$80,$A0,$C0,$E0,$FF,$E0,$C0,$A0,$80,$60,$40,$20
+
+; Wait for the YM2612 busy flag to clear.
+
+WaitYmReady:
+        push hl
+        ld hl,YM2612_ADDR1
+
+L1142:
+        bit 7,(hl)
+        jr nz,L1142
+        pop hl
+        ret
+
+L1148:
+        ld l,$00
+        ld h,a
+        ld c,b
+        ld b,$00
+        ld a,$08
+
+L1150:
+        add hl,hl
+        jr nc,L1154
+        add hl,bc
+
+L1154:
+        dec a
+        jr nz,L1150
+        push hl
+        pop bc
+        ret
+
+L115A:
+        push bc
+        pop hl
+        ld bc,Z80_Reset
+        ld iy,Z80_Reset
+        ld a,$10
+
+L1165:
+        add iy,iy
+        adc hl,hl
+        jr nc,L116F
+        add iy,de
+        adc hl,bc
+
+L116F:
+        dec a
+        jr nz,L1165
+        push hl
+        pop bc
+        push iy
+        pop de
+        ret
+
+; FM block/frequency words.
+FmPitchTable:
+        dw $0284,$02AA,$02D3,$02FE,$032B,$035C,$038F,$03C5
+        dw $03FE,$043B,$047B,$04C0,$0A84,$0AAA,$0AD3,$0AFE
+        dw $0B2B,$0B5C,$0B8F,$0BC5,$0BFE,$0C3B,$0C7B,$0CC0
+        dw $1284,$12AA,$12D3,$12FE,$132B,$135C,$138F,$13C5
+        dw $13FE,$143B,$147B,$14C0,$1A84,$1AAA,$1AD3,$1AFE
+        dw $1B2B,$1B5C,$1B8F,$1BC5,$1BFE,$1C3B,$1C7B,$1CC0
+        dw $2284,$22AA,$22D3,$22FE,$232B,$235C,$238F,$23C5
+        dw $23FE,$243B,$247B,$24C0,$2A84,$2AAA,$2AD3,$2AFE
+        dw $2B2B,$2B5C,$2B8F,$2BC5,$2BFE,$2C3B,$2C7B,$2CC0
+        dw $3284,$32AA,$32D3,$32FE,$332B,$335C,$338F,$33C5
+        dw $33FE,$343B,$347B,$34C0,$3A84,$3AAA,$3AD3,$3AFE
+        dw $3B2B,$3B5C,$3B8F,$3BC5,$3BFE,$3C3B,$3C7B,$3CC0
+ChannelBits:
+        db $01,$02,$04,$08,$10,$20,$40,$80
+ChannelClearBits:
+        db $FE,$FD,$FB,$F7,$EF,$DF,$BF,$7F
+L1248:
+        db $7F,$74,$68,$60,$5A,$55,$51,$4D,$4A,$47,$44,$42,$40,$3E,$3C,$3A
+        db $38,$37,$35,$34,$32,$31,$30,$2F,$2D,$2C,$2B,$2A,$29,$28,$27,$27
+        db $26,$25,$24,$23,$22,$22,$21,$20,$20,$1F,$1E,$1E,$1D,$1C,$1C,$1B
+        db $1B,$1A,$1A,$19,$19,$18,$17,$17,$16,$16,$16,$15,$15,$14,$14,$13
+        db $13,$12,$12,$12,$11,$11,$10,$10,$10,$0F,$0F,$0E,$0E,$0E,$0D,$0D
+        db $0D,$0C,$0C,$0C,$0B,$0B,$0B,$0A,$0A,$0A,$09,$09,$09,$09,$08,$08
+        db $08,$07,$07,$07,$07,$06,$06,$06,$06,$05,$05,$05,$04,$04,$04,$04
+        db $03,$03,$03,$03,$02,$02,$02,$02,$02,$01,$01,$01,$01,$00,$00,$00
+L12C8:
+        db $FF,$F8,$F0,$E6,$DE,$D6,$D0,$C8,$C0,$BA,$B2,$AC,$A6,$A0,$9A,$94
+        db $90,$8A,$86,$80,$7C,$78,$74,$6E,$6A,$68,$64,$60,$5C,$58,$56,$52
+        db $50,$4C,$4A,$48,$46,$44,$42,$40,$3C,$3A,$38,$36,$34,$32,$31,$30
+        db $2E,$2C,$2A,$29,$28,$26,$25,$24,$22,$21,$20,$1F,$1E,$1D,$1C,$1B
+        db $1A,$19,$18,$17,$16,$15,$15,$14,$13,$12,$12,$11,$11,$10,$10,$0F
+        db $0F,$0E,$0E,$0D,$0D,$0C,$0C,$0C,$0B,$0B,$0A,$0A,$0A,$0A,$09,$09
+        db $08,$08,$08,$07,$07,$07,$06,$06,$06,$06,$05,$05,$05,$05,$05,$04
+        db $04,$04,$04,$04,$04,$03,$03,$03,$03,$02,$02,$02,$01,$01,$01,$00
+        ds 128
+L13C8:
+        ds 128
+DacBufferA:
+        ds 512
+        db $FF
+DacBufferB:
+        ds 512
+        db $FF
+DacStartMark:
+        db $FE,$03,$00,$C0,$00,$00

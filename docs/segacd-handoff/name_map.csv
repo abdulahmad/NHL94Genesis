@@ -1,1 +1,1586 @@
 disc_file,disc_addr,name_94g,notes
+BOOT.BIN,$784,IPMain,Sierra C name tag
+BOOT.BIN,$806,WaitMainWordRam,Sierra C name tag
+BOOT.BIN,$812,GiveSubWordRamAndWait,Sierra C name tag
+BOOT.BIN,$826,AcknowledgeMainVBlank,Sierra C name tag
+BOOT.BIN,$830,IPHBlank,Sierra C name tag
+BOOT.BIN,$832,SyncMainShellStartup,Sierra C name tag
+BOOT.BIN,$87C,SetInterruptLevel,Sierra C name tag
+BOOT.BIN,$1044,SegaOSCall,Sierra C name tag
+BOOT.BIN,$1052,SegaOSCallTable,Sierra C name tag
+BOOT.BIN,$1096,SegaOSStack,Sierra C name tag
+BOOT.BIN,$1226,SegaOSStackTop,Sierra C name tag
+BOOT.BIN,$122A,SegaOSMain,Sierra C name tag
+BOOT.BIN,$133E,ReadFrameHook,Sierra C name tag
+BOOT.BIN,$1346,HookReturn,Sierra C name tag
+BOOT.BIN,$137A,OSReadSectors,Sierra C name tag
+BOOT.BIN,$13AC,OSLoadResource,Sierra C name tag
+BOOT.BIN,$14EC,OSSetLoadPointer,Sierra C name tag
+BOOT.BIN,$14F4,OSStartTimer,Sierra C name tag
+BOOT.BIN,$14FC,OSReturnFromPlayer,Sierra C name tag
+BOOT.BIN,$162E,OSRunPlayer,Sierra C name tag
+BOOT.BIN,$171A,OSGetLoadPointer,Sierra C name tag
+BOOT.BIN,$1722,OSGetPcmDriver,Sierra C name tag
+BOOT.BIN,$172A,OSCallPcmDriver,Sierra C name tag
+BOOT.BIN,$1730,OSSetKeptWord,Sierra C name tag
+BOOT.BIN,$1738,OSGetKeptWord,Sierra C name tag
+BOOT.BIN,$1740,OSPlayFilm,Sierra C name tag
+BOOT.BIN,$18D2,FilmSwitch,Sierra C name tag
+BOOT.BIN,$18D6,FilmFrameTicks,Sierra C name tag
+BOOT.BIN,$18DA,FilmBuffer,Sierra C name tag
+BOOT.BIN,$18DE,FilmBufferSize,Sierra C name tag
+BOOT.BIN,$18E2,FilmReadCount,Sierra C name tag
+BOOT.BIN,$18E6,FilmReadDest,Sierra C name tag
+BOOT.BIN,$18EA,FilmReadSector,Sierra C name tag
+BOOT.BIN,$18F2,FilmDisplayArgs,Sierra C name tag
+BOOT.BIN,$1906,FilmCallback,Sierra C name tag
+BOOT.BIN,$190A,FilmReadError,Sierra C name tag
+BOOT.BIN,$1912,FilmState,Sierra C name tag
+BOOT.BIN,$19B2,FilmSwitchBody,Sierra C name tag
+BOOT.BIN,$1A7E,SavedFilmHookJump,Sierra C name tag
+BOOT.BIN,$1A82,InstallFilmHook,Sierra C name tag
+BOOT.BIN,$1A9C,RemoveFilmHook,Sierra C name tag
+BOOT.BIN,$1AAE,FilmHook,Sierra C name tag
+BOOT.BIN,$1AC8,CopySmChunk,Sierra C name tag
+BOOT.BIN,$1BEE,InitFilmPcm,Sierra C name tag
+BOOT.BIN,$1C74,StartFilmPcm,Sierra C name tag
+BOOT.BIN,$1C8E,StopFilmPcm,Sierra C name tag
+BOOT.BIN,$1C9C,ReadFilmPcmAddress,Sierra C name tag
+BOOT.BIN,$1CC4,LoadFilmPcmBank,Sierra C name tag
+BOOT.BIN,$1D18,SavedFilmReadJump,Sierra C name tag
+BOOT.BIN,$1D1C,InstallFilmReadHook,Sierra C name tag
+BOOT.BIN,$1D36,RemoveFilmReadHook,Sierra C name tag
+BOOT.BIN,$1D48,FilmSectorHeader,Sierra C name tag
+BOOT.BIN,$1D4C,FilmReadInterrupt,Sierra C name tag
+BOOT.BIN,$1E54,StopFilmRead,Sierra C name tag
+BOOT.BIN,$1E64,StartFilmRead,Sierra C name tag
+BOOT.BIN,$1EC0,FilmBcdToBinary,Sierra C name tag
+BOOT.BIN,$1ED8,FilmMsfToLba,Sierra C name tag
+BOOT.BIN,$1F24,Wait,Sierra C name tag
+BOOT.BIN,$1F54,FilmOpen,Sierra C name tag
+BOOT.BIN,$21AA,FilmTask,Sierra C name tag
+BOOT.BIN,$2382,FilmClose,Sierra C name tag
+BOOT.BIN,$23D0,SwapMeg,Sierra C name tag
+BOOT.BIN,$23F6,DrawText,Sierra C name tag
+BOOT.BIN,$244E,NumStr,Sierra C name tag
+BOOT.BIN,$24AC,HexStr,Sierra C name tag
+BOOT.BIN,$250C,aprint,Sierra C name tag
+BOOT.BIN,$2642,ffree,Sierra C name tag
+BOOT.BIN,$2716,findSmallestBlock,Sierra C name tag
+BOOT.BIN,$277C,MaxFree,Sierra C name tag
+BOOT.BIN,$27C6,mmalloc,Sierra C name tag
+BOOT.BIN,$2858,InitHeap,Sierra C name tag
+BOOT.BIN,$28CC,InitWorld,Sierra C name tag
+BOOT.BIN,$29AA,GetTicks,Sierra C name tag
+BOOT.BIN,$29C6,WaitIODone,Sierra C name tag
+BOOT.BIN,$29E6,SendCommandToMain,Sierra C name tag
+BOOT.BIN,$2A26,CopyData,Sierra C name tag
+BOOT.BIN,$2A6E,InitEngine,Sierra C name tag
+BOOT.BIN,$2B16,DisposeEngine,Sierra C name tag
+BOOT.BIN,$2B44,GetSectDst,Sierra C name tag
+BOOT.BIN,$2BA0,PeekSectDst,Sierra C name tag
+BOOT.BIN,$2BF0,EngineIdle,Sierra C name tag
+BOOT.BIN,$2C44,GetData,Sierra C name tag
+BOOT.BIN,$2CC0,ReadData,Sierra C name tag
+BOOT.BIN,$2CE4,AudioPlayPos,Sierra C name tag
+BOOT.BIN,$2D30,AudioInit,Sierra C name tag
+BOOT.BIN,$2D64,AudioIdle,Sierra C name tag
+BOOT.BIN,$2DD8,AudioFeed,Sierra C name tag
+BOOT.BIN,$2E36,AudioSilence,Sierra C name tag
+BOOT.BIN,$2EAE,AudioStop,Sierra C name tag
+BOOT.BIN,$2EC6,AudioTicks,Sierra C name tag
+BOOT.BIN,$2F0A,AudioTime,Sierra C name tag
+BOOT.BIN,$2F40,AudioBusy,Sierra C name tag
+BOOT.BIN,$2F64,LongMultiply,Sierra C name tag
+BOOT.BIN,$2F8A,LongModulo,Sierra C name tag
+BOOT.BIN,$2FAE,LongDivide,Sierra C name tag
+BOOT.BIN,$2FC4,SignedDivide,Sierra C name tag
+BOOT.BIN,$3078,OSStopFilm,Sierra C name tag
+BOOT.BIN,$308A,OSInitMainSound,Sierra C name tag
+BOOT.BIN,$3122,OSInitMainSoundDriver,Sierra C name tag
+BOOT.BIN,$318E,OSStopMainSoundHInt,Sierra C name tag
+BOOT.BIN,$31DE,OSStopTimer,Sierra C name tag
+BOOT.BIN,$31F2,StartTimerInterrupt,Sierra C name tag
+BOOT.BIN,$322C,TimerInterrupt,Sierra C name tag
+BOOT.BIN,$3260,PcmDriverEntry,Sierra C name tag
+BOOT.BIN,$3264,PcmCommandQueue,Sierra C name tag
+BOOT.BIN,$32E6,DispatchPcmCommand,Sierra C name tag
+BOOT.BIN,$335C,ServicePcmDriver,Sierra C name tag
+BOOT.BIN,$33AA,DrainPcmCommandQueue,Sierra C name tag
+BOOT.BIN,$33FC,UpdatePcmEnvelopes,Sierra C name tag
+BOOT.BIN,$35BE,ServicePcmStream,Sierra C name tag
+BOOT.BIN,$36CC,DispatchPackedPcmCommand,Sierra C name tag
+BOOT.BIN,$3716,PlayPackedPcmSound,Sierra C name tag
+BOOT.BIN,$386E,StopPackedPcmSound,Sierra C name tag
+BOOT.BIN,$3970,SetPcmSoundMapping,Sierra C name tag
+BOOT.BIN,$3994,SetPcmPitchControl,Sierra C name tag
+BOOT.BIN,$39E8,StartPcmEnvelope,Sierra C name tag
+BOOT.BIN,$3A9E,InitPcmDriver,Sierra C name tag
+BOOT.BIN,$3BAC,PlayPcmSample,Sierra C name tag
+BOOT.BIN,$3CE4,UpdatePcmFrequency,Sierra C name tag
+BOOT.BIN,$3EAC,PcmPitchTable,Sierra C name tag
+BOOT.BIN,$3F0E,UpdatePcmPan,Sierra C name tag
+BOOT.BIN,$3FCE,SelectPcmChannel,Sierra C name tag
+BOOT.BIN,$406E,FindPcmRecord,Sierra C name tag
+BOOT.BIN,$40E2,ControlPcmSampleAllocation,Sierra C name tag
+BOOT.BIN,$4152,SetPcmRecordDirectory,Sierra C name tag
+BOOT.BIN,$4166,LoadPcmRecordList,Sierra C name tag
+BOOT.BIN,$41C8,CopyPcmWaveData,Sierra C name tag
+BOOT.BIN,$4248,SetPcmSoundLoopOffset,Sierra C name tag
+BOOT.BIN,$4290,PlayPcmStream,Sierra C name tag
+BOOT.BIN,$449E,FillPcmStreamHalf,Sierra C name tag
+BOOT.BIN,$45A2,WaitCdbiosReady,Sierra C name tag
+BOOT.BIN,$45B0,PcmCommandNoOp,Sierra C name tag
+BOOT.BIN,$45B2,PcmWriteDelay,Sierra C name tag
+BOOT.BIN,$45C2,PcmAllocPosition,Sierra C name tag
+BOOT.BIN,$45C6,PcmSampleAddress,Sierra C name tag
+BOOT.BIN,$47C6,PcmLastWaveLength,Sierra C name tag
+BOOT.BIN,$47C8,PcmRecordDirectories,Sierra C name tag
+BOOT.BIN,$47D8,PcmServiceBusy,Sierra C name tag
+BOOT.BIN,$47DA,PcmChannelOffMask,Sierra C name tag
+BOOT.BIN,$47DC,PcmChannelSlot,Sierra C name tag
+BOOT.BIN,$47E4,PcmChannelSound,Sierra C name tag
+BOOT.BIN,$47EC,PcmChannelNote,Sierra C name tag
+BOOT.BIN,$47F4,PcmChannelVelocity,Sierra C name tag
+BOOT.BIN,$47FC,PcmChannelPriority,Sierra C name tag
+BOOT.BIN,$4804,PcmChannelEnvelope,Sierra C name tag
+BOOT.BIN,$480C,PcmChannelSegment,Sierra C name tag
+BOOT.BIN,$4814,PcmChannelSegmentTime,Sierra C name tag
+BOOT.BIN,$4825,PcmEnvelopeHeld,Sierra C name tag
+BOOT.BIN,$4826,PcmLastTimerTick,Sierra C name tag
+BOOT.BIN,$4828,PcmCurrentChannel,Sierra C name tag
+BOOT.BIN,$482A,PcmEventSlot,Sierra C name tag
+BOOT.BIN,$482C,PcmEventNote,Sierra C name tag
+BOOT.BIN,$482E,PcmEventVelocity,Sierra C name tag
+BOOT.BIN,$4830,PcmEventSound,Sierra C name tag
+BOOT.BIN,$4832,PcmReuseFlags,Sierra C name tag
+BOOT.BIN,$4834,PcmEventRecord,Sierra C name tag
+BOOT.BIN,$4838,PcmStreamActive,Sierra C name tag
+BOOT.BIN,$483A,PcmStreamHalfA,Sierra C name tag
+BOOT.BIN,$483C,PcmStreamHalfASize,Sierra C name tag
+BOOT.BIN,$483E,PcmStreamHalfB,Sierra C name tag
+BOOT.BIN,$4840,PcmStreamHalfBSize,Sierra C name tag
+BOOT.BIN,$4842,PcmStreamLoopB,Sierra C name tag
+BOOT.BIN,$4844,PcmStreamLoopA,Sierra C name tag
+BOOT.BIN,$4846,PcmStreamLastHalf,Sierra C name tag
+BOOT.BIN,$4848,PcmStreamChannel,Sierra C name tag
+BOOT.BIN,$484A,PcmStreamSource,Sierra C name tag
+BOOT.BIN,$484E,PcmStreamFrequency,Sierra C name tag
+BOOT.BIN,$4850,PcmStreamEnvelope,Sierra C name tag
+BOOT.BIN,$4852,PcmStreamPan,Sierra C name tag
+BOOT.BIN,$4854,PcmSoundMapping,Sierra C name tag
+BOOT.BIN,$48D4,PcmSlotModulation,Sierra C name tag
+BOOT.BIN,$4954,PcmSlotLevel,Sierra C name tag
+BOOT.BIN,$49D4,PcmSlotPan,Sierra C name tag
+BOOT.BIN,$4A54,PcmPitchControl,Sierra C name tag
+BOOT.BIN,$4AD4,PcmGroupLevel,Sierra C name tag
+BOOT.BIN,$4ADC,PcmMasterLevel,Sierra C name tag
+BOOT.BIN,$4ADD,PcmModulationLevels,Sierra C name tag
+BOOT.BIN,$4AE0,SyncWithMain,Sierra C name tag
+BOOT.BIN,$4B20,WaitForSubWordRam,Sierra C name tag
+BOOT.BIN,$4B2C,GiveWordRamToMain,Sierra C name tag
+BOOT.BIN,$4B40,WaitDriveReady,Sierra C name tag
+BOOT.BIN,$4B56,DriveInitParams,Sierra C name tag
+BOOT.BIN,$5372,BcdToBinary,Sierra C name tag
+BOOT.BIN,$538A,MsfToLba,Sierra C name tag
+BOOT.BIN,$53DC,WaitReadFrame,Sierra C name tag
+BOOT.BIN,$53F8,ReadSectors,Sierra C name tag
+HOCKEY.BIN,$8,null,teamdata94.asm
+HOCKEY.BIN,$C,TeamList,teamdata94.asm
+HOCKEY.BIN,$7C,AllStarsEast,teamdata94.asm
+HOCKEY.BIN,$382,AllStarsWest,teamdata94.asm
+HOCKEY.BIN,$684,Boston,teamdata94.asm
+HOCKEY.BIN,$954,Buffalo,teamdata94.asm
+HOCKEY.BIN,$C2E,Calgary,teamdata94.asm
+HOCKEY.BIN,$EF2,Chicago,teamdata94.asm
+HOCKEY.BIN,$11D6,Detroit,teamdata94.asm
+HOCKEY.BIN,$14F0,Edmonton,teamdata94.asm
+HOCKEY.BIN,$17BE,Hartford,teamdata94.asm
+HOCKEY.BIN,$1A9E,LosAngeles,teamdata94.asm
+HOCKEY.BIN,$1D84,Dallas,teamdata94.asm
+HOCKEY.BIN,$205E,Montreal,teamdata94.asm
+HOCKEY.BIN,$234C,NewJersey,teamdata94.asm
+HOCKEY.BIN,$264A,NewYorkI,teamdata94.asm
+HOCKEY.BIN,$2908,NewYorkR,teamdata94.asm
+HOCKEY.BIN,$2BBA,Ottawa,teamdata94.asm
+HOCKEY.BIN,$2EAE,Philadelphia,teamdata94.asm
+HOCKEY.BIN,$3180,Pittsburgh,teamdata94.asm
+HOCKEY.BIN,$3462,Quebec,teamdata94.asm
+HOCKEY.BIN,$373E,SanJose,teamdata94.asm
+HOCKEY.BIN,$3A00,StLouis,teamdata94.asm
+HOCKEY.BIN,$3CBE,TampaBay,teamdata94.asm
+HOCKEY.BIN,$3FA4,Toronto,teamdata94.asm
+HOCKEY.BIN,$4292,Vancouver,teamdata94.asm
+HOCKEY.BIN,$4566,Winnipeg,teamdata94.asm
+HOCKEY.BIN,$4858,Washington,teamdata94.asm
+HOCKEY.BIN,$4B42,Florida,teamdata94.asm
+HOCKEY.BIN,$4D8C,Anaheim,teamdata94.asm
+HOCKEY.BIN,$4FDA,playoffseats,teamdata94.asm
+HOCKEY.BIN,$51F2,Credits,teamdata94.asm
+HOCKEY.BIN,$521C,CreditsPages,teamdata94.asm
+HOCKEY.BIN,$5432,SPAlist,frames94.asm
+HOCKEY.BIN,$5434,SPAgready_table,frames94.asm
+HOCKEY.BIN,$5546,SPAgready2_table,frames94.asm
+HOCKEY.BIN,$5578,SPAgglover_table,frames94.asm
+HOCKEY.BIN,$55AA,SPAgglovel_table,frames94.asm
+HOCKEY.BIN,$55DC,SPAgglovel2_table,frames94.asm
+HOCKEY.BIN,$561E,SPAgstickr_table,frames94.asm
+HOCKEY.BIN,$5650,SPAgstickl_table,frames94.asm
+HOCKEY.BIN,$5682,SPAgstackr_table,frames94.asm
+HOCKEY.BIN,$56D4,SPAgstackl_table,frames94.asm
+HOCKEY.BIN,$5726,SPAgdive_table,frames94.asm
+HOCKEY.BIN,$5798,SPAgswing_table,frames94.asm
+HOCKEY.BIN,$580A,SPAgskate_table,frames94.asm
+HOCKEY.BIN,$589C,SPApflip_table,frames94.asm
+HOCKEY.BIN,$593E,SPAglide_table,frames94.asm
+HOCKEY.BIN,$5970,SPAskatewp_table,frames94.asm
+HOCKEY.BIN,$5A02,SPAskate_table,frames94.asm
+HOCKEY.BIN,$5A94,SPAturnl_table,frames94.asm
+HOCKEY.BIN,$5AC6,SPAturnr_table,frames94.asm
+HOCKEY.BIN,$5AF8,SPAstop_table,frames94.asm
+HOCKEY.BIN,$5B4A,SPApassf_table,frames94.asm
+HOCKEY.BIN,$5BBC,SPApassb_table,frames94.asm
+HOCKEY.BIN,$5C2E,SPAshotf_table,frames94.asm
+HOCKEY.BIN,$5D60,SPAshotb_table,frames94.asm
+HOCKEY.BIN,$5E92,SPAglideback_table,frames94.asm
+HOCKEY.BIN,$5EC4,SPAskateback_table,frames94.asm
+HOCKEY.BIN,$5F56,SPAsweepchk_table,frames94.asm
+HOCKEY.BIN,$5FC8,SPAshoulderchkl_table,frames94.asm
+HOCKEY.BIN,$5FFA,SPAshoulderchkr_table,frames94.asm
+HOCKEY.BIN,$602C,SPAhipchkl_table,frames94.asm
+HOCKEY.BIN,$605E,SPAhipchkr_table,frames94.asm
+HOCKEY.BIN,$6090,SPAburst_table,frames94.asm
+HOCKEY.BIN,$60C2,SPAHold_table,frames94.asm
+HOCKEY.BIN,$60F4,SPAHold2_table,frames94.asm
+HOCKEY.BIN,$6126,SPAflail_table,frames94.asm
+HOCKEY.BIN,$6158,SPAfallfwd_table,frames94.asm
+HOCKEY.BIN,$620A,SPAfallback_table,frames94.asm
+HOCKEY.BIN,$62BC,SPAcelebrate_table,frames94.asm
+HOCKEY.BIN,$632E,SPApump_table,frames94.asm
+HOCKEY.BIN,$63A0,SPAwallright_table,frames94.asm
+HOCKEY.BIN,$63DE,SPAwallleft_table,frames94.asm
+HOCKEY.BIN,$641C,SPAfaceoff_table,frames94.asm
+HOCKEY.BIN,$6446,SPAfaceoffr_table,frames94.asm
+HOCKEY.BIN,$6460,SPAsiren_table,frames94.asm
+HOCKEY.BIN,$64AA,SPAbglass_table,frames94.asm
+HOCKEY.BIN,$64D0,SPAstanley_table,frames94.asm
+HOCKEY.BIN,$6502,SPAcatch_table,frames94.asm
+HOCKEY.BIN,$6554,SPAhook_table,frames94.asm
+HOCKEY.BIN,$6586,SPAhook2_table,frames94.asm
+HOCKEY.BIN,$6618,SPAstumble_table,frames94.asm
+HOCKEY.BIN,$66CA,SPAfake_table,frames94.asm
+HOCKEY.BIN,$679C,SPAflip_table,frames94.asm
+HOCKEY.BIN,$688E,SPAinjuryfall_table,frames94.asm
+HOCKEY.BIN,$68C0,SPAghighr_table,frames94.asm
+HOCKEY.BIN,$68F2,SPAghighl_table,frames94.asm
+HOCKEY.BIN,$6924,SPAgstick2r_table,frames94.asm
+HOCKEY.BIN,$6976,SPAgstick2l_table,frames94.asm
+HOCKEY.BIN,$69C8,SPAgslamtop_table,frames94.asm
+HOCKEY.BIN,$6AB6,SPAgslambot_table,frames94.asm
+HOCKEY.BIN,$6BA8,SPAboardfront_table,frames94.asm
+HOCKEY.BIN,$6C1A,SPAboardright_table,frames94.asm
+HOCKEY.BIN,$6C8C,SPAboardback_table,frames94.asm
+HOCKEY.BIN,$6CFE,SPAboardleft_table,frames94.asm
+HOCKEY.BIN,$6D70,SPAbenchcheckl_table,frames94.asm
+HOCKEY.BIN,$6E32,SPAbenchcheckr_table,frames94.asm
+HOCKEY.BIN,$6EF4,SPAcrosscheck_table,frames94.asm
+HOCKEY.BIN,$6F26,SPAinjury1_table,frames94.asm
+HOCKEY.BIN,$7096,Begin,sram94.asm
+HOCKEY.BIN,$72EA,GamePcmSounds,CD-only name in sram94.asm
+HOCKEY.BIN,$73D6,GamePcmSampleList,CD-only name in sram94.asm
+HOCKEY.BIN,$743C,ValidateSRAM,sram94.asm
+HOCKEY.BIN,$743E,ClearSRAM,sram94.asm
+HOCKEY.BIN,$7534,ReadPlayerRecord,cards94.asm
+HOCKEY.BIN,$753C,PlayerRecordIO,cards94.asm
+HOCKEY.BIN,$7582,WritePlayerRecord,cards94.asm
+HOCKEY.BIN,$758E,ReadCrowdRecord,cards94.asm
+HOCKEY.BIN,$7596,CrowdRecordIO,cards94.asm
+HOCKEY.BIN,$75CC,WriteCrowdRecord,cards94.asm
+HOCKEY.BIN,$75D8,ReadTeamRecord,cards94.asm
+HOCKEY.BIN,$75E0,TeamRecordIO,cards94.asm
+HOCKEY.BIN,$7616,WriteTeamRecord,cards94.asm
+HOCKEY.BIN,$7622,WriteNameLog,cards94.asm
+HOCKEY.BIN,$762E,ReadNameLog,cards94.asm
+HOCKEY.BIN,$7636,NameLogIO,cards94.asm
+HOCKEY.BIN,$766E,PlayerRecordOffsets,cards94.asm
+HOCKEY.BIN,$76A8,puckvzadj,onetimer94.asm
+HOCKEY.BIN,$773A,OneTimerPass,onetimer94.asm
+HOCKEY.BIN,$77B8,OneTimerTarget,onetimer94.asm
+HOCKEY.BIN,$78C6,OneTimerNearTbl,onetimer94.asm
+HOCKEY.BIN,$78E6,OneTimerFarTbl,onetimer94.asm
+HOCKEY.BIN,$7906,OneTimerGoalieTbl,onetimer94.asm
+HOCKEY.BIN,$7926,assonetimer,onetimer94.asm
+HOCKEY.BIN,$7C68,setonetimeranim,onetimer94.asm
+HOCKEY.BIN,$7CA4,PuckOnAttackHalf,onetimer94.asm
+HOCKEY.BIN,$7D28,onetimershot,onetimer94.asm
+HOCKEY.BIN,$7D9E,CheckOneTimerFacing,onetimer94.asm
+HOCKEY.BIN,$7DDC,ReadJoySwapPad4,fourway94.asm
+HOCKEY.BIN,$7DDE,Set4WayPlayerStub,fourway94.asm
+HOCKEY.BIN,$7DE0,Set4WayPlayer,fourway94.asm
+HOCKEY.BIN,$7E38,LoadCrowdRec,crowd94.asm
+HOCKEY.BIN,$7E70,Crowd_Noise,crowd94.asm
+HOCKEY.BIN,$7F74,stopna2,crowd94.asm
+HOCKEY.BIN,$7FBE,checkcornercoll,crowd94.asm
+HOCKEY.BIN,$8088,cornercollb,crowd94.asm
+HOCKEY.BIN,$808E,Create_HotCold_Table,crowd94.asm
+HOCKEY.BIN,$8096,HotColdLoop,crowd94.asm
+HOCKEY.BIN,$80B8,Clamp0to100,crowd94.asm
+HOCKEY.BIN,$80D0,AttributeCalc,crowd94.asm
+HOCKEY.BIN,$8132,NextHomeHotPlayer,crowd94.asm
+HOCKEY.BIN,$8168,NextAwayHotPlayer,crowd94.asm
+HOCKEY.BIN,$81A0,BuildHotColdLists,crowd94.asm
+HOCKEY.BIN,$81F2,SortHotColdStarters,crowd94.asm
+HOCKEY.BIN,$828E,NextHomeColdPlayer,crowd94.asm
+HOCKEY.BIN,$82C4,NextAwayColdPlayer,crowd94.asm
+HOCKEY.BIN,$82FC,CopyHottestPlayer,crowd94.asm
+HOCKEY.BIN,$831C,CopyColdestPlayer,crowd94.asm
+HOCKEY.BIN,$833A,CompareHotColdTotals,crowd94.asm
+HOCKEY.BIN,$83AC,GetHotColdTotal,crowd94.asm
+HOCKEY.BIN,$83CC,GameSetUp,optsetup94.asm
+HOCKEY.BIN,$8798,GoNewPlayoffs,optsetup94.asm
+HOCKEY.BIN,$879E,GoContinuePlayoffs,optsetup94.asm
+HOCKEY.BIN,$87A4,MoveMenuFrame,optsetup94.asm
+HOCKEY.BIN,$891E,SetMenuArea,optsetup94.asm
+HOCKEY.BIN,$8934,SetFrameRectUnused,optsetup94.asm
+HOCKEY.BIN,$8984,SetFrameRect,optsetup94.asm
+HOCKEY.BIN,$89CA,rtsSetup,optsetup94.asm
+HOCKEY.BIN,$89CC,FixModeOptions,optsetup94.asm
+HOCKEY.BIN,$8A68,OptionLimits,optsetup94.asm
+HOCKEY.BIN,$8A7A,OptionLimits4Way,optsetup94.asm
+HOCKEY.BIN,$8A8C,ChangeOption,optsetup94.asm
+HOCKEY.BIN,$8CA0,WrapOption,optsetup94.asm
+HOCKEY.BIN,$8CB6,PrintOptions,optsetup94.asm
+HOCKEY.BIN,$8D08,PrintOptionValue,optsetup94.asm
+HOCKEY.BIN,$8DAE,PrintScrollMarks,optsetup94.asm
+HOCKEY.BIN,$8E14,ScrollUpTxt,optsetup94.asm
+HOCKEY.BIN,$8E18,ScrollDownTxt,optsetup94.asm
+HOCKEY.BIN,$8E1C,ScrollClearTxt,optsetup94.asm
+HOCKEY.BIN,$8E20,PrintOptTeamName,optsetup94.asm
+HOCKEY.BIN,$8E7A,NewYorkITxt,optsetup94.asm
+HOCKEY.BIN,$8E8E,NewYorkRTxt,optsetup94.asm
+HOCKEY.BIN,$8EA0,BlankValueTxt,optsetup94.asm
+HOCKEY.BIN,$8EB6,NATxt,optsetup94.asm
+HOCKEY.BIN,$8ECC,OptionValueOffsets,optsetup94.asm
+HOCKEY.BIN,$8EDE,PlayModeValues,optsetup94.asm
+HOCKEY.BIN,$8F4C,PlayersValues,optsetup94.asm
+HOCKEY.BIN,$9104,PerLengthValues,optsetup94.asm
+HOCKEY.BIN,$915C,GoaliesValues,optsetup94.asm
+HOCKEY.BIN,$9188,PenaltiesValues,optsetup94.asm
+HOCKEY.BIN,$91CA,UserRecValues,optsetup94.asm
+HOCKEY.BIN,$91F6,LineChangeValues,optsetup94.asm
+HOCKEY.BIN,$9238,PrintOptionNames,optsetup94.asm
+HOCKEY.BIN,$92B4,OptionNames,optsetup94.asm
+HOCKEY.BIN,$9348,setoptions,optsetup94.asm
+HOCKEY.BIN,$9524,ReadSetupPads,optsetup94.asm
+HOCKEY.BIN,$9660,SetupDemo,optsetup94.asm
+HOCKEY.BIN,$9720,SetupStart,optsetup94.asm
+HOCKEY.BIN,$982E,CheckNOPUnused,optsetup94.asm
+HOCKEY.BIN,$9866,LoadSetupTiles,optsetup94.asm
+HOCKEY.BIN,$9894,UpdateRosterPlayers,optsetup94.asm
+HOCKEY.BIN,$9898,EraseCard,optsetup94.asm
+HOCKEY.BIN,$9962,DrawHomeBlock,optsetup94.asm
+HOCKEY.BIN,$99C6,DrawVisBlock,optsetup94.asm
+HOCKEY.BIN,$9A26,DrawTeamLogo,optsetup94.asm
+HOCKEY.BIN,$9AD6,LogoBoxRight,optsetup94.asm
+HOCKEY.BIN,$9AD6,TeamLogoBitmapsEnd,optsetup94.asm
+HOCKEY.BIN,$9AE8,LogoBoxHome,optsetup94.asm
+HOCKEY.BIN,$9AFA,LogoBoxLeft,optsetup94.asm
+HOCKEY.BIN,$9B0C,LogoBoxVis,optsetup94.asm
+HOCKEY.BIN,$9B1A,DrawLogoBox,optsetup94.asm
+HOCKEY.BIN,$9B5E,ResetCardTimer,cards94.asm
+HOCKEY.BIN,$9B7C,PlayerCardTimer,cards94.asm
+HOCKEY.BIN,$9C1E,PlayerCardScreen,cards94.asm
+HOCKEY.BIN,$9FB4,wallcollduringcheck,cards94.asm
+HOCKEY.BIN,$A000,setSlotBit,cards94.asm
+HOCKEY.BIN,$A060,TeamPalettes,cards94.asm
+HOCKEY.BIN,$A760,PrintRecordValue,cards94.asm
+HOCKEY.BIN,$A7EE,RecordTxt,cards94.asm
+HOCKEY.BIN,$A7F8,RecGoalsTxt,cards94.asm
+HOCKEY.BIN,$A800,RecGoalTxt,cards94.asm
+HOCKEY.BIN,$A808,RecSavesTxt,cards94.asm
+HOCKEY.BIN,$A810,RecSaveTxt,cards94.asm
+HOCKEY.BIN,$A818,CopyString,cards94.asm
+HOCKEY.BIN,$A82E,AppendNumber,cards94.asm
+HOCKEY.BIN,$A8A0,GetRecordValue,cards94.asm
+HOCKEY.BIN,$A91A,PrintRecordHolder,cards94.asm
+HOCKEY.BIN,$A95C,RecByTxt,cards94.asm
+HOCKEY.BIN,$A962,PrintRecordVs,cards94.asm
+HOCKEY.BIN,$A994,RecVsTxt,cards94.asm
+HOCKEY.BIN,$A99A,AppendRecordHolder,cards94.asm
+HOCKEY.BIN,$A9E2,AppendRecordVs,cards94.asm
+HOCKEY.BIN,$AA4A,RecSpaceTxt,cards94.asm
+HOCKEY.BIN,$AA4E,UpdateRecords,cards94.asm
+HOCKEY.BIN,$AB78,UpdateTeamRecord,cards94.asm
+HOCKEY.BIN,$AC54,UpdateCrowdRecord,cards94.asm
+HOCKEY.BIN,$AD0E,UpdatePlayerRecords,cards94.asm
+HOCKEY.BIN,$AD8C,CountGoalies,cards94.asm
+HOCKEY.BIN,$ADBA,CountPlayers,cards94.asm
+HOCKEY.BIN,$ADE8,AppendUserName,cards94.asm
+HOCKEY.BIN,$AE54,NoNameTxt,cards94.asm
+HOCKEY.BIN,$AE56,RunPlayerOverlay,CD-only name in cards94.asm
+HOCKEY.BIN,$B0E0,AppendTeamName,cards94.asm
+HOCKEY.BIN,$B10C,CalcAttrib,cards94.asm
+HOCKEY.BIN,$B246,OvrPlayerWgtList,cards94.asm
+HOCKEY.BIN,$B256,OvrGoalWgtList,cards94.asm
+HOCKEY.BIN,$B266,AttribWgtList,cards94.asm
+HOCKEY.BIN,$B276,DrawPlayerPicture,cards94.asm
+HOCKEY.BIN,$B31C,TrimSpaces,cards94.asm
+HOCKEY.BIN,$B348,NameEntryScreen,records94.asm
+HOCKEY.BIN,$B8B0,NameLetterGrid,records94.asm
+HOCKEY.BIN,$BA4A,NameEntryHelp,records94.asm
+HOCKEY.BIN,$BB1A,PrintNamePrompt,records94.asm
+HOCKEY.BIN,$BB4E,SyncLetterCursor,records94.asm
+HOCKEY.BIN,$BB80,FindLetter,records94.asm
+HOCKEY.BIN,$BBAC,PrintNameCursor,records94.asm
+HOCKEY.BIN,$BBD4,rtsNameCursor,records94.asm
+HOCKEY.BIN,$BBD6,PrintCurLetter,records94.asm
+HOCKEY.BIN,$BC04,LetterGridPos,records94.asm
+HOCKEY.BIN,$BC30,EnterNameTxt,records94.asm
+HOCKEY.BIN,$BC48,SelectNameTxt,records94.asm
+HOCKEY.BIN,$BC60,PrintNameLog,records94.asm
+HOCKEY.BIN,$BCC8,MoveLogArrows,records94.asm
+HOCKEY.BIN,$BCF6,PrintLogArrows,records94.asm
+HOCKEY.BIN,$BD42,LogArrowsTxt,records94.asm
+HOCKEY.BIN,$BD4A,LogArrowsClrTxt,records94.asm
+HOCKEY.BIN,$BD52,GetNameLength,records94.asm
+HOCKEY.BIN,$BD86,PrintNameField,records94.asm
+HOCKEY.BIN,$BDD0,LetterGrid,records94.asm
+HOCKEY.BIN,$BDF0,NameEntryFramer,records94.asm
+HOCKEY.BIN,$BE0E,GetLogName,records94.asm
+HOCKEY.BIN,$BE5E,StoreUserName,records94.asm
+HOCKEY.BIN,$BF06,WriteNameRecord,records94.asm
+HOCKEY.BIN,$C02C,UserNameEntry,records94.asm
+HOCKEY.BIN,$C0A0,SkipOtherUserName,records94.asm
+HOCKEY.BIN,$C0E0,RecordHoldersScreen,records94.asm
+HOCKEY.BIN,$C264,PrintRecordPage,records94.asm
+HOCKEY.BIN,$C272,PrintRecordTitles,records94.asm
+HOCKEY.BIN,$C2A2,WinRecTitles,records94.asm
+HOCKEY.BIN,$C2F4,GoalRecTitles,records94.asm
+HOCKEY.BIN,$C346,SaveRecTitles,records94.asm
+HOCKEY.BIN,$C398,PrintWinRecords,records94.asm
+HOCKEY.BIN,$C4B0,ClearRecordArea,records94.asm
+HOCKEY.BIN,$C4FA,PrintPlayerRecords,records94.asm
+HOCKEY.BIN,$C630,RecParenTxt,records94.asm
+HOCKEY.BIN,$C658,RecHolderByTxt,records94.asm
+HOCKEY.BIN,$C65E,RecHolderVsTxt,records94.asm
+HOCKEY.BIN,$C666,PrintRecordName,records94.asm
+HOCKEY.BIN,$C6B8,CalcWinPercents,records94.asm
+HOCKEY.BIN,$C7BA,ReadTeamRecords,records94.asm
+HOCKEY.BIN,$C860,ShootoutModeBox,shootout94.asm
+HOCKEY.BIN,$C9C4,ShootoutModeBigTxt,shootout94.asm
+HOCKEY.BIN,$C9DA,ClearShootout,shootout94.asm
+HOCKEY.BIN,$CA30,NextShooter,shootout94.asm
+HOCKEY.BIN,$CA98,CountShootoutGoals,shootout94.asm
+HOCKEY.BIN,$CB0A,InitShooters,shootout94.asm
+HOCKEY.BIN,$CB50,ShootoutWonBy,shootout94.asm
+HOCKEY.BIN,$CBD0,ShootoutShooters,shootout94.asm
+HOCKEY.BIN,$CC1E,ShootersRedraw,shootout94.asm
+HOCKEY.BIN,$CC2A,ShootersLoop,shootout94.asm
+HOCKEY.BIN,$CC80,ShootersExit,shootout94.asm
+HOCKEY.BIN,$CC86,ShooterSelectList,shootout94.asm
+HOCKEY.BIN,$CE44,PrintShooterList,shootout94.asm
+HOCKEY.BIN,$CF28,ShooterOverallTxt,shootout94.asm
+HOCKEY.BIN,$CF3E,ShooterOverallTxt2,shootout94.asm
+HOCKEY.BIN,$CF54,ShootersPick,shootout94.asm
+HOCKEY.BIN,$CF62,ShootersMove,shootout94.asm
+HOCKEY.BIN,$CF8A,ShootersSelect,shootout94.asm
+HOCKEY.BIN,$CF9C,ShootersBackground,shootout94.asm
+HOCKEY.BIN,$D01E,ClearShooterScreen,shootout94.asm
+HOCKEY.BIN,$D038,ResetShooterScroll,shootout94.asm
+HOCKEY.BIN,$D046,PrintShooterSlots,shootout94.asm
+HOCKEY.BIN,$D0D6,PrintShooterBox,shootout94.asm
+HOCKEY.BIN,$D13E,PrintShooterNames,shootout94.asm
+HOCKEY.BIN,$D1D4,ScoutCrowdRecord,scout94.asm
+HOCKEY.BIN,$D214,ScoutCrowdRecordBy,scout94.asm
+HOCKEY.BIN,$D28A,ScoutEmptyTxt,scout94.asm
+HOCKEY.BIN,$D28C,ScoutByTxt,scout94.asm
+HOCKEY.BIN,$D292,ScoutSpaceTxt,scout94.asm
+HOCKEY.BIN,$D296,GetTeamCity,scout94.asm
+HOCKEY.BIN,$D398,ScoutingReport,scout94.asm
+HOCKEY.BIN,$DA54,PageMatchup,scout94.asm
+HOCKEY.BIN,$DAE0,PrintMatchupRating,scout94.asm
+HOCKEY.BIN,$DB04,PrintTwoSpaces,scout94.asm
+HOCKEY.BIN,$DB22,TwoSpacesTxt,scout94.asm
+HOCKEY.BIN,$DB26,ScoutRatingText,scout94.asm
+HOCKEY.BIN,$DBB0,DrawMatchupPictures,scout94.asm
+HOCKEY.BIN,$DCA8,DrawMatchupPicture,scout94.asm
+HOCKEY.BIN,$DCDC,DrawMatchupLogo,scout94.asm
+HOCKEY.BIN,$DD02,DrawMatchupBitmap,scout94.asm
+HOCKEY.BIN,$DD50,GetTeamLogo,scout94.asm
+HOCKEY.BIN,$DD5E,PrintMatchupRatings,scout94.asm
+HOCKEY.BIN,$DF8E,MatchupPosNames,scout94.asm
+HOCKEY.BIN,$DFFA,GetMatchupPlayers,scout94.asm
+HOCKEY.BIN,$E024,GetMatchupPlayer,scout94.asm
+HOCKEY.BIN,$E050,MatchupLineSlots,scout94.asm
+HOCKEY.BIN,$E058,RestartAdvantageMarks,scout94.asm
+HOCKEY.BIN,$E066,PrintAdvantageMarks,scout94.asm
+HOCKEY.BIN,$E0FE,HomeAdvMarks,scout94.asm
+HOCKEY.BIN,$E116,VisAdvMarks,scout94.asm
+HOCKEY.BIN,$E12E,HomeAdv0Txt,scout94.asm
+HOCKEY.BIN,$E134,HomeAdv1Txt,scout94.asm
+HOCKEY.BIN,$E13A,HomeAdv2Txt,scout94.asm
+HOCKEY.BIN,$E140,HomeAdv3Txt,scout94.asm
+HOCKEY.BIN,$E146,VisAdv0Txt,scout94.asm
+HOCKEY.BIN,$E14C,VisAdv1Txt,scout94.asm
+HOCKEY.BIN,$E152,VisAdv2Txt,scout94.asm
+HOCKEY.BIN,$E158,VisAdv3Txt,scout94.asm
+HOCKEY.BIN,$E15E,EvenAdvTxt,scout94.asm
+HOCKEY.BIN,$E164,GetTeamNickname,scout94.asm
+HOCKEY.BIN,$E19A,HomeTxt,scout94.asm
+HOCKEY.BIN,$E1A0,VisitorsTxt,scout94.asm
+HOCKEY.BIN,$E1AA,GetTeamArena,scout94.asm
+HOCKEY.BIN,$E1C4,ScoutStub,scout94.asm
+HOCKEY.BIN,$E1CE,EndShootout,period94.asm
+HOCKEY.BIN,$E278,ClampPositionBox,period94.asm
+HOCKEY.BIN,$E2E2,PositionBoxes,period94.asm
+HOCKEY.BIN,$E2F2,PositionBoxesTop,period94.asm
+HOCKEY.BIN,$E302,ClearGameStats,period94.asm
+HOCKEY.BIN,$E364,AddArenaAnimSprite,period94.asm
+HOCKEY.BIN,$E48E,PrintPlayerNameRight,period94.asm
+HOCKEY.BIN,$E4EA,SkipNameNumber,period94.asm
+HOCKEY.BIN,$E50E,PeriodStatsScreen,period94.asm
+HOCKEY.BIN,$EA2E,StatsReport,period94.asm
+HOCKEY.BIN,$EB5E,SetStatScroll,period94.asm
+HOCKEY.BIN,$EC20,StatScrollRow,period94.asm
+HOCKEY.BIN,$EC2C,StatScrollRowEnd,period94.asm
+HOCKEY.BIN,$EC3C,rtsStatScroll,period94.asm
+HOCKEY.BIN,$EC3E,PrintStatScrollArrows,period94.asm
+HOCKEY.BIN,$ECBE,DisplayStats,period94.asm
+HOCKEY.BIN,$ED5C,PrintStatValue,period94.asm
+HOCKEY.BIN,$EE56,TeamStatTextTbl,period94.asm
+HOCKEY.BIN,$EF44,TeamStatTextTblNoPen,period94.asm
+HOCKEY.BIN,$EFF6,rtsStatTables,period94.asm
+HOCKEY.BIN,$EFF8,updatePPTeamTime,period94.asm
+HOCKEY.BIN,$F024,GetTeamRating,period94.asm
+HOCKEY.BIN,$F040,TeamRatings,period94.asm
+HOCKEY.BIN,$F05C,ShortenMsgTimer,period94.asm
+HOCKEY.BIN,$F05C,TeamRatingsEnd,period94.asm
+HOCKEY.BIN,$F092,ManualGoalieMenu,period94.asm
+HOCKEY.BIN,$F1AA,RunArenaAnim,arena94.asm
+HOCKEY.BIN,$F21E,NextArenaFrame,arena94.asm
+HOCKEY.BIN,$F26C,ArenaAnims,arena94.asm
+HOCKEY.BIN,$F2AC,ArenaFrames1,arena94.asm
+HOCKEY.BIN,$F2EA,ArenaFrames2,arena94.asm
+HOCKEY.BIN,$F300,ArenaFrames3,arena94.asm
+HOCKEY.BIN,$F330,ArenaFrames4,arena94.asm
+HOCKEY.BIN,$F386,ArenaFrames5,arena94.asm
+HOCKEY.BIN,$F398,ArenaFrames6,arena94.asm
+HOCKEY.BIN,$F3BE,ArenaFrames7,arena94.asm
+HOCKEY.BIN,$F3E4,ArenaFrames8,arena94.asm
+HOCKEY.BIN,$F404,SetCameraTop,arena94.asm
+HOCKEY.BIN,$F41E,StartArenaAnim,arena94.asm
+HOCKEY.BIN,$F456,SetFaceoffAnim,arena94.asm
+HOCKEY.BIN,$F466,EndArenaAnim,arena94.asm
+HOCKEY.BIN,$F478,ChooseSong,arena94.asm
+HOCKEY.BIN,$F4DC,TeamSongs,arena94.asm
+HOCKEY.BIN,$F584,RandomSongs,arena94.asm
+HOCKEY.BIN,$F584,TeamSongsEnd,arena94.asm
+HOCKEY.BIN,$F58C,ReadLineData,shootoutpath94.asm
+HOCKEY.BIN,$F5C8,WriteLineData,shootoutpath94.asm
+HOCKEY.BIN,$F604,ClearWinRecords,shootoutpath94.asm
+HOCKEY.BIN,$F648,PSandSOpassdir,shootoutpath94.asm
+HOCKEY.BIN,$F674,passdirlist,shootoutpath94.asm
+HOCKEY.BIN,$F686,StartShootoutPath,shootoutpath94.asm
+HOCKEY.BIN,$F6C2,ShootoutPaths,shootoutpath94.asm
+HOCKEY.BIN,$F6DE,ShootoutPath1,shootoutpath94.asm
+HOCKEY.BIN,$F6EA,ShootoutPath2,shootoutpath94.asm
+HOCKEY.BIN,$F6FA,ShootoutPath3,shootoutpath94.asm
+HOCKEY.BIN,$F706,ShootoutPath4,shootoutpath94.asm
+HOCKEY.BIN,$F712,ShootoutPath5,shootoutpath94.asm
+HOCKEY.BIN,$F71E,ShootoutPath6,shootoutpath94.asm
+HOCKEY.BIN,$F72A,ShootoutPath7,shootoutpath94.asm
+HOCKEY.BIN,$F736,NextPathPoint,shootoutpath94.asm
+HOCKEY.BIN,$F7B6,SkatePath,shootoutpath94.asm
+HOCKEY.BIN,$F84A,ShootoutShootCheck,shootoutpath94.asm
+HOCKEY.BIN,$F902,UnpackPicture,ui94.asm
+HOCKEY.BIN,$F9D0,LoadHomeTeamGfx,ui94.asm
+HOCKEY.BIN,$FA6A,PrintPlayerAssists,ui94.asm
+HOCKEY.BIN,$FA6A,TeamGfxListEnd,ui94.asm
+HOCKEY.BIN,$FA80,PrintPlayerGoals,ui94.asm
+HOCKEY.BIN,$FA92,PrintParenNumber,ui94.asm
+HOCKEY.BIN,$FAE0,PlaceBoardFall,ui94.asm
+HOCKEY.BIN,$FC02,GetLeagueCrowdRecord,ui94.asm
+HOCKEY.BIN,$FC3C,getFgtbyte,ui94.asm
+HOCKEY.BIN,$FC46,chkFgtBit1,ui94.asm
+HOCKEY.BIN,$FC4E,RandomFaceoffAnim,ui94.asm
+HOCKEY.BIN,$FC8E,FaceoffAnims,ui94.asm
+HOCKEY.BIN,$FCA0,CheckScoreLeader,ui94.asm
+HOCKEY.BIN,$FCD2,DrawPlayoffSprite,ui94.asm
+HOCKEY.BIN,$FD24,GetTeamStruct,ui94.asm
+HOCKEY.BIN,$FD3A,CountButtonPress,ui94.asm
+HOCKEY.BIN,$FD86,TerminateLogName,ui94.asm
+HOCKEY.BIN,$FDB2,PlayedByHome,ui94.asm
+HOCKEY.BIN,$FDBC,PlayedByText,ui94.asm
+HOCKEY.BIN,$FE3A,PlayedByExit,ui94.asm
+HOCKEY.BIN,$FE40,PlayedByTxt,ui94.asm
+HOCKEY.BIN,$FE4E,PlayedByEmptyTxt,ui94.asm
+HOCKEY.BIN,$FE50,PlayedByNone,ui94.asm
+HOCKEY.BIN,$FE5A,PlayedByAway,ui94.asm
+HOCKEY.BIN,$FE68,SetSflags8Bit1,helpers94.asm
+HOCKEY.BIN,$FE82,AttribAdjust,helpers94.asm
+HOCKEY.BIN,$FE92,PuckComingToward,helpers94.asm
+HOCKEY.BIN,$FEDC,ReadGoaliePulled,helpers94.asm
+HOCKEY.BIN,$FF00,EndOneTimer,helpers94.asm
+HOCKEY.BIN,$FF56,TeamLogoPalettes,logos94.asm
+HOCKEY.BIN,$102D6,LeadSong,logos94.asm
+HOCKEY.BIN,$10392,ClearLeadSong,logos94.asm
+HOCKEY.BIN,$1039C,LeadSongExit,logos94.asm
+HOCKEY.BIN,$103A8,ClearPenalties,logos94.asm
+HOCKEY.BIN,$103E8,clrTmPdst,logos94.asm
+HOCKEY.BIN,$103FE,HotColdIcon,logos94.asm
+HOCKEY.BIN,$104E2,chgplayer,chgplayer94.asm
+HOCKEY.BIN,$10600,rtsChgplayer,chgplayer94.asm
+HOCKEY.BIN,$10602,swpchk,chgplayer94.asm
+HOCKEY.BIN,$10608,j_setc1player,chgplayer94.asm
+HOCKEY.BIN,$1060E,j_setc2player,chgplayer94.asm
+HOCKEY.BIN,$10614,LoadGameGfx,CD-only name in hockey94.asm
+HOCKEY.BIN,$107F8,StartGame,hockey94.asm
+HOCKEY.BIN,$10984,ClearShotData,hockey94.asm
+HOCKEY.BIN,$10996,restoreteams,hockey94.asm
+HOCKEY.BIN,$109BC,ResetClock,hockey94.asm
+HOCKEY.BIN,$10A04,GetPeriodTime,hockey94.asm
+HOCKEY.BIN,$10A3A,StartPer,hockey94.asm
+HOCKEY.BIN,$10B58,StartPer,hockey94.asm
+HOCKEY.BIN,$10B6C,Gameloop,hockey94.asm
+HOCKEY.BIN,$10B8E,DoGameFrame,hockey94.asm
+HOCKEY.BIN,$10BF0,periodicevents,hockey94.asm
+HOCKEY.BIN,$10C44,CheckInjury,hockey94.asm
+HOCKEY.BIN,$10C56,RestoreBenchEnergy,hockey94.asm
+HOCKEY.BIN,$10C9A,CheckLateGameSong,hockey94.asm
+HOCKEY.BIN,$10CEE,UpdateCwdExcite,hockey94.asm
+HOCKEY.BIN,$10E66,clockcont,hockey94.asm
+HOCKEY.BIN,$10E98,clockcont_0,hockey94.asm
+HOCKEY.BIN,$10FB8,demoread,hockey94.asm
+HOCKEY.BIN,$11016,EndDemoOnPress,hockey94.asm
+HOCKEY.BIN,$11022,startpause1,hockey94.asm
+HOCKEY.BIN,$11034,startpause2,hockey94.asm
+HOCKEY.BIN,$11042,startpause,hockey94.asm
+HOCKEY.BIN,$1104C,startpause3,hockey94.asm
+HOCKEY.BIN,$11060,startpause4,hockey94.asm
+HOCKEY.BIN,$11074,Pausemode,hockey94.asm
+HOCKEY.BIN,$111F8,Pausemode_pall,hockey94.asm
+HOCKEY.BIN,$112C8,seta2,hockey94.asm
+HOCKEY.BIN,$112F8,Pausemode_top,menu94.asm
+HOCKEY.BIN,$11310,DrawMenuScreen,menu94.asm
+HOCKEY.BIN,$1134A,SetMenuPrintX,menu94.asm
+HOCKEY.BIN,$11368,HandleMenuInput,menu94.asm
+HOCKEY.BIN,$113E4,Pausemode_Pmenu,menu94.asm
+HOCKEY.BIN,$11528,PrintMenuItem,menu94.asm
+HOCKEY.BIN,$1159E,PutTeamBlock,menu94.asm
+HOCKEY.BIN,$1163A,MenuWaitVblank,menu94.asm
+HOCKEY.BIN,$11660,ShowScores,stats94.asm
+HOCKEY.BIN,$11730,UpdateScoresScroll,stats94.asm
+HOCKEY.BIN,$1176C,UpdateVertScrollReg,stats94.asm
+HOCKEY.BIN,$1182E,DisplayGameInfo,stats94.asm
+HOCKEY.BIN,$1189E,PrintGameInfo,stats94.asm
+HOCKEY.BIN,$118D4,DrawScrollArrows,stats94.asm
+HOCKEY.BIN,$11914,ScrollArrowTable,stats94.asm
+HOCKEY.BIN,$11932,LineEditor,stats94.asm
+HOCKEY.BIN,$11954,LineEditorRedraw,stats94.asm
+HOCKEY.BIN,$1197A,LineEditorMenu,stats94.asm
+HOCKEY.BIN,$119FC,SelectLinePlayer,stats94.asm
+HOCKEY.BIN,$11B74,PrintAttribHeader,stats94.asm
+HOCKEY.BIN,$11C24,DrawLineIcons,stats94.asm
+HOCKEY.BIN,$11CB7,LineIconGroups,stats94.asm
+HOCKEY.BIN,$11CBE,DrawLineIcon,stats94.asm
+HOCKEY.BIN,$11D7A,ClearLineArea,stats94.asm
+HOCKEY.BIN,$11DE8,DrawTeamScreen,stats94.asm
+HOCKEY.BIN,$11E66,ClearLineEditorTop,stats94.asm
+HOCKEY.BIN,$11E80,ClearMenuFlags,stats94.asm
+HOCKEY.BIN,$11E94,LineIconPosTable,stats94.asm
+HOCKEY.BIN,$11EC0,LineCursorTable,stats94.asm
+HOCKEY.BIN,$11F08,LineEditorExit,stats94.asm
+HOCKEY.BIN,$11FAE,SetLineSlot,stats94.asm
+HOCKEY.BIN,$11FDE,DecodeTeamLines,stats94.asm
+HOCKEY.BIN,$12046,EncodeTeamLines,stats94.asm
+HOCKEY.BIN,$120B2,AttributeOffsetTbl,stats94.asm
+HOCKEY.BIN,$120D4,TeamRosterScreen,stats94.asm
+HOCKEY.BIN,$12248,CheckPlayerListScroll,stats94.asm
+HOCKEY.BIN,$12264,UpdatePlayerListScroll,stats94.asm
+HOCKEY.BIN,$12366,StopPlayerListScroll,stats94.asm
+HOCKEY.BIN,$1236E,DisplayPlayerListUp,stats94.asm
+HOCKEY.BIN,$12380,DisplayPlayerListDown,stats94.asm
+HOCKEY.BIN,$12396,DisplayPlayerList,stats94.asm
+HOCKEY.BIN,$124CA,GoalieRowText,stats94.asm
+HOCKEY.BIN,$124DA,PlayerStatMenuTxt,stats94.asm
+HOCKEY.BIN,$1256A,GetNameandAttrib,stats94.asm
+HOCKEY.BIN,$125A6,attribjmp,stats94.asm
+HOCKEY.BIN,$125B2,AttribStatus,stats94.asm
+HOCKEY.BIN,$12610,StatusTextTbl,stats94.asm
+HOCKEY.BIN,$12644,AttribEnergy,stats94.asm
+HOCKEY.BIN,$1265E,AttribFighting,stats94.asm
+HOCKEY.BIN,$12666,AttribRating,stats94.asm
+HOCKEY.BIN,$12672,AttribPrintPct,stats94.asm
+HOCKEY.BIN,$1268E,AttribHanded,stats94.asm
+HOCKEY.BIN,$126A0,HandedTextTbl,stats94.asm
+HOCKEY.BIN,$126B4,AttribWeight,stats94.asm
+HOCKEY.BIN,$126D6,ScoringSummaryScreen,stats94.asm
+HOCKEY.BIN,$127DE,CheckScoringScroll,stats94.asm
+HOCKEY.BIN,$127FC,UpdateScoringScroll,stats94.asm
+HOCKEY.BIN,$12904,DrawScoringRowUp,stats94.asm
+HOCKEY.BIN,$12936,DrawScoringRowDown,stats94.asm
+HOCKEY.BIN,$1296C,DrawScoringRow,stats94.asm
+HOCKEY.BIN,$12A18,PrintScorerName,stats94.asm
+HOCKEY.BIN,$12A34,GoalTypeTbl,stats94.asm
+HOCKEY.BIN,$12A4C,PenaltySummaryScreen,stats94.asm
+HOCKEY.BIN,$12B54,CheckPenaltyScroll,stats94.asm
+HOCKEY.BIN,$12B72,UpdatePenaltyScroll,stats94.asm
+HOCKEY.BIN,$12C82,DisplayPenaltyLineUp,stats94.asm
+HOCKEY.BIN,$12CB4,DisplayPenaltyLineDown,stats94.asm
+HOCKEY.BIN,$12CEA,DisplayPenaltyEntry,stats94.asm
+HOCKEY.BIN,$12DB0,DrawScrollArrowsPenalty,stats94.asm
+HOCKEY.BIN,$12DF0,ScrollArrowTbl,stats94.asm
+HOCKEY.BIN,$12E18,PlayoffStatsScreen,stats94.asm
+HOCKEY.BIN,$12E50,PlayerStatsScreen,stats94.asm
+HOCKEY.BIN,$12E52,PlayerStatsList,stats94.asm
+HOCKEY.BIN,$12F9A,UpdateStatsListScroll,stats94.asm
+HOCKEY.BIN,$12FFA,SetStatsListScrollReg,stats94.asm
+HOCKEY.BIN,$130BC,DrawStatsRowUp,stats94.asm
+HOCKEY.BIN,$130C8,DrawStatsRowDown,stats94.asm
+HOCKEY.BIN,$130D8,DrawStatsList,stats94.asm
+HOCKEY.BIN,$1322C,DrawStatsRow,stats94.asm
+HOCKEY.BIN,$13388,GetStatColumn,stats94.asm
+HOCKEY.BIN,$133A4,ReadStatColumn,stats94.asm
+HOCKEY.BIN,$133E8,GetStatsValue,stats94.asm
+HOCKEY.BIN,$13436,StatColumnHeaders,stats94.asm
+HOCKEY.BIN,$1346A,StatSortTitles,stats94.asm
+HOCKEY.BIN,$134EE,DrawStatsListArrows,stats94.asm
+HOCKEY.BIN,$1352E,ScrollArrowTbl2,stats94.asm
+HOCKEY.BIN,$13556,CrowdMeterScreen,stats94.asm
+HOCKEY.BIN,$135B6,PrintCrowdMeter,stats94.asm
+HOCKEY.BIN,$136FE,PrintCrowdDB,stats94.asm
+HOCKEY.BIN,$13728,SetupScreen,stats94.asm
+HOCKEY.BIN,$13980,ExitStatsScreen,stats94.asm
+HOCKEY.BIN,$13986,ReloadRinkGraphics,stats94.asm
+HOCKEY.BIN,$13B2A,TimeoutMenu,stats94.asm
+HOCKEY.BIN,$13BAE,Pausemode_go,stats94.asm
+HOCKEY.BIN,$13C7A,Pausemode_gnum,stats94.asm
+HOCKEY.BIN,$13D60,GetGoalieCount,stats94.asm
+HOCKEY.BIN,$13D80,GetDefenseStart,stats94.asm
+HOCKEY.BIN,$13DA0,GetForwardCount,stats94.asm
+HOCKEY.BIN,$13DBC,GetPlayerCount,stats94.asm
+HOCKEY.BIN,$13DE2,Pausemode_rjoy,stats94.asm
+HOCKEY.BIN,$13E04,ReplayMode,replay94.asm
+HOCKEY.BIN,$142F0,getpzjoy,replay94.asm
+HOCKEY.BIN,$14330,ShowReplayIcon,replay94.asm
+HOCKEY.BIN,$1437E,EraseReplayIcon,replay94.asm
+HOCKEY.BIN,$1439C,ShowReplayBanner,replay94.asm
+HOCKEY.BIN,$143D6,EraseReplayBanner,replay94.asm
+HOCKEY.BIN,$143F4,suba4,replay94.asm
+HOCKEY.BIN,$1442A,adda4,replay94.asm
+HOCKEY.BIN,$14512,adda42,replay94.asm
+HOCKEY.BIN,$14520,adda43,replay94.asm
+HOCKEY.BIN,$14536,UpdateCameraPos,replay94.asm
+HOCKEY.BIN,$145A8,RevReplayAdj,replay94.asm
+HOCKEY.BIN,$145BC,RestoreReplayFrame,replay94.asm
+HOCKEY.BIN,$147FA,ClampReplayView,replay94.asm
+HOCKEY.BIN,$14844,updatereplay,replay94.asm
+HOCKEY.BIN,$14988,rtss8,replay94.asm
+HOCKEY.BIN,$1498A,updateplayers,logic94.asm
+HOCKEY.BIN,$14FB8,updateanim,logic94.asm
+HOCKEY.BIN,$15094,freezewindow,logic94.asm
+HOCKEY.BIN,$150B2,checkwindow,logic94.asm
+HOCKEY.BIN,$15200,doinput,logic94.asm
+HOCKEY.BIN,$15606,rtss15,logic94.asm
+HOCKEY.BIN,$15608,doinput_cbut,logic94.asm
+HOCKEY.BIN,$15798,ClampTargetY,logic94.asm
+HOCKEY.BIN,$157D8,doinput_chkanim,logic94.asm
+HOCKEY.BIN,$1588C,doinput_onetimer,logic94.asm
+HOCKEY.BIN,$1590E,doinput_ispc,logic94.asm
+HOCKEY.BIN,$15A18,doinput_islocked,logic94.asm
+HOCKEY.BIN,$15A6E,rtss7,logic94.asm
+HOCKEY.BIN,$15A70,getGoalieSCnum,logic94.asm
+HOCKEY.BIN,$15AA4,faceoffinput,logic94.asm
+HOCKEY.BIN,$15B06,fightinput,logic94.asm
+HOCKEY.BIN,$15B08,SetLCmode,logic94.asm
+HOCKEY.BIN,$15B50,SetLCmode2,logic94.asm
+HOCKEY.BIN,$15C08,setlccords,logic94.asm
+HOCKEY.BIN,$15C58,getlchoice,logic94.asm
+HOCKEY.BIN,$15C6E,getlchoice2,logic94.asm
+HOCKEY.BIN,$15CDE,lineinput,logic94.asm
+HOCKEY.BIN,$15D64,lcfound,logic94.asm
+HOCKEY.BIN,$15D9C,lcfound_close,logic94.asm
+HOCKEY.BIN,$15DD2,burst,logic94.asm
+HOCKEY.BIN,$15E2A,Holdplayer,logic94.asm
+HOCKEY.BIN,$15E4A,Acheck,logic94.asm
+HOCKEY.BIN,$15E7C,setpassmode,logic94.asm
+HOCKEY.BIN,$15EC4,rtss,logic94.asm
+HOCKEY.BIN,$15EC6,passmode,logic94.asm
+HOCKEY.BIN,$15EF0,dopass,logic94.asm
+HOCKEY.BIN,$160EA,passto,logic94.asm
+HOCKEY.BIN,$1617A,passtoa0,logic94.asm
+HOCKEY.BIN,$162A4,changeplayer,logic94.asm
+HOCKEY.BIN,$162AA,Sweepcheck,logic94.asm
+HOCKEY.BIN,$162B8,setc1player,logic94.asm
+HOCKEY.BIN,$162DC,setc2player,logic94.asm
+HOCKEY.BIN,$16300,restorepl,logic94.asm
+HOCKEY.BIN,$163AA,Findhittype,logic94.asm
+HOCKEY.BIN,$163CA,SetShotMode,logic94.asm
+HOCKEY.BIN,$1644C,ShotMode,logic94.asm
+HOCKEY.BIN,$164A0,prepshot,logic94.asm
+HOCKEY.BIN,$16528,doshot,logic94.asm
+HOCKEY.BIN,$167B8,shotsets,logic94.asm
+HOCKEY.BIN,$167DC,shotdiradj,logic94.asm
+HOCKEY.BIN,$168C8,CalcAngleOffset,logic94.asm
+HOCKEY.BIN,$168DE,setpads,logic94.asm
+HOCKEY.BIN,$16904,rtss3,logic94.asm
+HOCKEY.BIN,$16906,check4bench,logic94.asm
+HOCKEY.BIN,$169AC,assbench,logic94.asm
+HOCKEY.BIN,$16B26,rtss4,logic94.asm
+HOCKEY.BIN,$16B28,asseben,logic94.asm
+HOCKEY.BIN,$16BA0,asspenalty,logic94.asm
+HOCKEY.BIN,$16CE2,assdopen,logic94.asm
+HOCKEY.BIN,$16D0A,assepen,logic94.asm
+HOCKEY.BIN,$16D9E,assgoaliebreakwait,logic94.asm
+HOCKEY.BIN,$16DFE,assfaceoff,logic94.asm
+HOCKEY.BIN,$16E16,assfaceoffpl,logic94.asm
+HOCKEY.BIN,$16EB0,assfight,logic94.asm
+HOCKEY.BIN,$16EB2,donothing,logic94.asm
+HOCKEY.BIN,$16ECC,assstanley,logic94.asm
+HOCKEY.BIN,$16F2A,assscore,logic94.asm
+HOCKEY.BIN,$16FF0,rtss6,logic94.asm
+HOCKEY.BIN,$16FF2,assdefo,logic94.asm
+HOCKEY.BIN,$170E6,assdefd,logic94.asm
+HOCKEY.BIN,$172B0,rtss21,logic94.asm
+HOCKEY.BIN,$172B2,asswingd,logic94.asm
+HOCKEY.BIN,$173D2,asswingo,logic94.asm
+HOCKEY.BIN,$17574,rtss11,logic94.asm
+HOCKEY.BIN,$17576,asscenterd,logic94.asm
+HOCKEY.BIN,$17636,asscentero,logic94.asm
+HOCKEY.BIN,$177BE,assgoaliectrl,logic94.asm
+HOCKEY.BIN,$17926,assgoalie,logic94.asm
+HOCKEY.BIN,$17926,assgoaliecpu,logic94.asm
+HOCKEY.BIN,$17930,checkanim,logic94.asm
+HOCKEY.BIN,$1802C,ClampYPosition,logic94.asm
+HOCKEY.BIN,$18058,AdjustFacingDirection,logic94.asm
+HOCKEY.BIN,$180AC,goaliesave,logic94.asm
+HOCKEY.BIN,$1823C,assgoalietopuck,logic94.asm
+HOCKEY.BIN,$182DE,breakaway,logic94.asm
+HOCKEY.BIN,$1834E,BreakawayOffsidesFlagSet,logic94.asm
+HOCKEY.BIN,$18418,chkpuckc,logic94.asm
+HOCKEY.BIN,$18446,asspuckc,logic94.asm
+HOCKEY.BIN,$187F2,chk4lc,logic94.asm
+HOCKEY.BIN,$188B6,chkpk,logic94.asm
+HOCKEY.BIN,$188C8,chkpk2,logic94.asm
+HOCKEY.BIN,$188E8,chk4shot,logic94.asm
+HOCKEY.BIN,$18AC8,CompShoot,logic94.asm
+HOCKEY.BIN,$18AFA,chk4pass,logic94.asm
+HOCKEY.BIN,$18C6E,EvadePC,logic94.asm
+HOCKEY.BIN,$18D20,checkob,logic94.asm
+HOCKEY.BIN,$18DDC,assbreakaway,logic94.asm
+HOCKEY.BIN,$18E06,assnearest,logic94.asm
+HOCKEY.BIN,$1922A,check4check,logic94.asm
+HOCKEY.BIN,$19330,asspassrec,logic94.asm
+HOCKEY.BIN,$1942C,SkateToTempTarget,logic94.asm
+HOCKEY.BIN,$1943C,assshoot,logic94.asm
+HOCKEY.BIN,$19472,puckshootout,logic94.asm
+HOCKEY.BIN,$19666,SelectPenaltyShotSkater,logic94.asm
+HOCKEY.BIN,$197BA,puckpenshot,logic94.asm
+HOCKEY.BIN,$19BA0,UpdatePenaltyShotEnd,logic94.asm
+HOCKEY.BIN,$19C46,EndPenaltyShotPlay,logic94.asm
+HOCKEY.BIN,$19CC4,PenaltyShotEndReturn,logic94.asm
+HOCKEY.BIN,$19CC6,puckfaceoff,logic94.asm
+HOCKEY.BIN,$19EDC,SetFaceoffComputerLine,logic94.asm
+HOCKEY.BIN,$19F1E,StartFaceoffLineChange,logic94.asm
+HOCKEY.BIN,$19F6C,WaitForFaceoffLineChanges,logic94.asm
+HOCKEY.BIN,$19FAC,UpdateFaceoffLineChangeTimer,logic94.asm
+HOCKEY.BIN,$1A012,ChkGoalies,logic94.asm
+HOCKEY.BIN,$1A08E,ReturnGoalies,logic94.asm
+HOCKEY.BIN,$1A0CA,CPgoalie,logic94.asm
+HOCKEY.BIN,$1A11A,CompLine,logic94.asm
+HOCKEY.BIN,$1A22A,puckfaceoff2,logic94.asm
+HOCKEY.BIN,$1A798,ResetAndSelectPlayers,logic94.asm
+HOCKEY.BIN,$1A86C,updatefaceoff,logic94.asm
+HOCKEY.BIN,$1A8EC,Endfaceoff,logic94.asm
+HOCKEY.BIN,$1AAD4,pucknorm,logic94.asm
+HOCKEY.BIN,$1ABC6,ChkOffsides,logic94.asm
+HOCKEY.BIN,$1AC8C,ClearOffsidesIfAllPlayers,logic94.asm
+HOCKEY.BIN,$1ACCC,a2offsides,logic94.asm
+HOCKEY.BIN,$1AD28,a2touchpuck,logic94.asm
+HOCKEY.BIN,$1AE58,PuckIChk,logic94.asm
+HOCKEY.BIN,$1AECE,puckunflip,logic94.asm
+HOCKEY.BIN,$1AEF8,puckflip,logic94.asm
+HOCKEY.BIN,$1AF12,puckshadow,logic94.asm
+HOCKEY.BIN,$1AF76,findpc,logic94.asm
+HOCKEY.BIN,$1B008,skateto,logic94.asm
+HOCKEY.BIN,$1B0D8,avdgoal,logic94.asm
+HOCKEY.BIN,$1B1F0,skatetopuckinit,logic94.asm
+HOCKEY.BIN,$1B212,skatetopuck,logic94.asm
+HOCKEY.BIN,$1B2C4,assexit,logic94.asm
+HOCKEY.BIN,$1B2D8,assinsert,logic94.asm
+HOCKEY.BIN,$1B2E4,assreplace,logic94.asm
+HOCKEY.BIN,$1B2F8,vtoa,logic94.asm
+HOCKEY.BIN,$1B362,GetHot,logic94.asm
+HOCKEY.BIN,$1B3C0,SetSPA,logic94.asm
+HOCKEY.BIN,$1B3D6,doplayeracc,logic94.asm
+HOCKEY.BIN,$1B5A4,goalieacc,logic94.asm
+HOCKEY.BIN,$1B7B8,noturn0,logic94.asm
+HOCKEY.BIN,$1B86A,noturn,logic94.asm
+HOCKEY.BIN,$1B878,playeracc,logic94.asm
+HOCKEY.BIN,$1BAA0,MaxSpeed,logic94.asm
+HOCKEY.BIN,$1BAE0,dostop,logic94.asm
+HOCKEY.BIN,$1BB44,stopna,logic94.asm
+HOCKEY.BIN,$1BB8E,dirtab,logic94.asm
+HOCKEY.BIN,$1BBB2,UnpackNibbles,middle94.asm
+HOCKEY.BIN,$1BBE2,WeightedRandomSelect,middle94.asm
+HOCKEY.BIN,$1BC14,remap,middle94.asm
+HOCKEY.BIN,$1BD0A,forceblack,middle94.asm
+HOCKEY.BIN,$1BD38,forceblack2,middle94.asm
+HOCKEY.BIN,$1BD66,forcefade,middle94.asm
+HOCKEY.BIN,$1BDF6,cramfade,middle94.asm
+HOCKEY.BIN,$1BEA0,CopyPaletteToCRAM,middle94.asm
+HOCKEY.BIN,$1C044,randomd0s,middle94.asm
+HOCKEY.BIN,$1C050,randomd0,middle94.asm
+HOCKEY.BIN,$1C08E,Sroot,middle94.asm
+HOCKEY.BIN,$1C2D0,waitx,middle94.asm
+HOCKEY.BIN,$1C340,waitxsr,middle94.asm
+HOCKEY.BIN,$1C446,waitjoy,middle94.asm
+HOCKEY.BIN,$1C460,orjoy,middle94.asm
+HOCKEY.BIN,$1C496,nodiag,middle94.asm
+HOCKEY.BIN,$1C4BE,ProcessInputWithRepeat,middle94.asm
+HOCKEY.BIN,$1C4F0,ReadJoy1,middle94.asm
+HOCKEY.BIN,$1C50E,ReadJoy2,middle94.asm
+HOCKEY.BIN,$1C52C,ReadJoy3,middle94.asm
+HOCKEY.BIN,$1C54A,ReadJoy4,middle94.asm
+HOCKEY.BIN,$1C568,ReadJoy,middle94.asm
+HOCKEY.BIN,$1C588,jdtab,middle94.asm
+HOCKEY.BIN,$1C762,DoDMApro,middle94.asm
+HOCKEY.BIN,$1C77C,DoDMA,middle94.asm
+HOCKEY.BIN,$1CB58,WaitDMA,middle94.asm
+HOCKEY.BIN,$1CB5A,setVram,middle94.asm
+HOCKEY.BIN,$1CC4A,setVram_0,middle94.asm
+HOCKEY.BIN,$1D71E,Vmaddr,middle94.asm
+HOCKEY.BIN,$1D7E2,dobitmap,middle94.asm
+HOCKEY.BIN,$1D946,DecompressGraphicsWithRemap,decompress94.asm
+HOCKEY.BIN,$1D958,DecompressGraphicsPlain,decompress94.asm
+HOCKEY.BIN,$1D95E,DecompressGraphics,decompress94.asm
+HOCKEY.BIN,$1D9F6,DecompressBytecode,decompress94.asm
+HOCKEY.BIN,$1DA34,DecompressOpcodeTable,decompress94.asm
+HOCKEY.BIN,$1DA54,Opcode_CopyLiteral,decompress94.asm
+HOCKEY.BIN,$1DA70,Opcode_ClearBytes,decompress94.asm
+HOCKEY.BIN,$1DA8C,Opcode_FillBytes,decompress94.asm
+HOCKEY.BIN,$1DAAC,Opcode_CopyBackwardShort,decompress94.asm
+HOCKEY.BIN,$1DAC2,CopyBackwardRun,decompress94.asm
+HOCKEY.BIN,$1DADE,Opcode_CopyBackwardMedium,decompress94.asm
+HOCKEY.BIN,$1DAEC,Opcode_CopyBackwardLong,decompress94.asm
+HOCKEY.BIN,$1DB06,Opcode_CopyBackwardExtended1,decompress94.asm
+HOCKEY.BIN,$1DB20,Opcode_CopyBackwardExtended2,decompress94.asm
+HOCKEY.BIN,$1DB3A,Opcode_CopyBackwardReverseShort,decompress94.asm
+HOCKEY.BIN,$1DB50,CopyBackwardReverseRun,decompress94.asm
+HOCKEY.BIN,$1DB6C,Opcode_CopyBackwardReverseMedium,decompress94.asm
+HOCKEY.BIN,$1DB8C,Opcode_CopyBackwardReverseLong,decompress94.asm
+HOCKEY.BIN,$1DBA6,FlushOutputBuffer,decompress94.asm
+HOCKEY.BIN,$1DBD4,xyVmMap,print94.asm
+HOCKEY.BIN,$1DC06,eraser,print94.asm
+HOCKEY.BIN,$1DCA0,Framer,print94.asm
+HOCKEY.BIN,$1DD8C,printsmallz,print94.asm
+HOCKEY.BIN,$1DD9E,printsmall,print94.asm
+HOCKEY.BIN,$1DEB2,ControlCodeJumpTable,print94.asm
+HOCKEY.BIN,$1DED6,ControlCode_SetMapAndPosition,print94.asm
+HOCKEY.BIN,$1DEE6,ControlCode_SetMap,print94.asm
+HOCKEY.BIN,$1DF00,ControlCode_SetAttribute,print94.asm
+HOCKEY.BIN,$1DF14,ControlCode_SetX,print94.asm
+HOCKEY.BIN,$1DF26,ControlCode_SetY,print94.asm
+HOCKEY.BIN,$1DF38,ControlCode_AddX,print94.asm
+HOCKEY.BIN,$1DF4A,ControlCode_AddY,print94.asm
+HOCKEY.BIN,$1DF5C,ControlCode_SetFont,print94.asm
+HOCKEY.BIN,$1DF6E,printz,print94.asm
+HOCKEY.BIN,$1DF80,print,print94.asm
+HOCKEY.BIN,$1E0C0,FormatAndPrintTime,print94.asm
+HOCKEY.BIN,$1E0E4,PeriodLabelTable,print94.asm
+HOCKEY.BIN,$1E0F4,PushTime,print94.asm
+HOCKEY.BIN,$1E15E,PushNumber,print94.asm
+HOCKEY.BIN,$1E19A,PushNumberWidth,print94.asm
+HOCKEY.BIN,$1E200,appendz,print94.asm
+HOCKEY.BIN,$1E208,appstring,print94.asm
+HOCKEY.BIN,$1E258,printbigz,print94.asm
+HOCKEY.BIN,$1E26A,printbig,print94.asm
+HOCKEY.BIN,$1E326,PrintBigChar,print94.asm
+HOCKEY.BIN,$1E372,PutBigTile,print94.asm
+HOCKEY.BIN,$1E3E8,AddSmallFont,print94.asm
+HOCKEY.BIN,$1E3FA,AddFramer,print94.asm
+HOCKEY.BIN,$1E40C,AddTeamBlock,print94.asm
+HOCKEY.BIN,$1E41A,AddPenalty,penalty94.asm
+HOCKEY.BIN,$1E456,AddPenalty2,penalty94.asm
+HOCKEY.BIN,$1E4F2,PenaltyManager,penalty94.asm
+HOCKEY.BIN,$1E502,chkprogress,penalty94.asm
+HOCKEY.BIN,$1E64C,PenShotChk,penalty94.asm
+HOCKEY.BIN,$1E6AE,getBAplayerInfo,penalty94.asm
+HOCKEY.BIN,$1E772,InProgress,penalty94.asm
+HOCKEY.BIN,$1E96A,InProgress_ap,penalty94.asm
+HOCKEY.BIN,$1E9AA,checkfornewpen,penalty94.asm
+HOCKEY.BIN,$1EA56,Stop4Pen,penalty94.asm
+HOCKEY.BIN,$1EB44,limitfo,penalty94.asm
+HOCKEY.BIN,$1EBC2,UpdatePA,penalty94.asm
+HOCKEY.BIN,$1EC1C,SetPA,penalty94.asm
+HOCKEY.BIN,$1EC7C,SetPA2,penalty94.asm
+HOCKEY.BIN,$1ED02,PushRef,penalty94.asm
+HOCKEY.BIN,$1ED96,prefmes,penalty94.asm
+HOCKEY.BIN,$1EE5C,ClearPenaltyMessage,penalty94.asm
+HOCKEY.BIN,$1EE7E,PenGoalStuff,penalty94.asm
+HOCKEY.BIN,$1EEE4,ClearPenaltyBuffer,penalty94.asm
+HOCKEY.BIN,$1EEF4,updatepentime,penalty94.asm
+HOCKEY.BIN,$1EF3A,updatepentime_ut,penalty94.asm
+HOCKEY.BIN,$1EFEC,RemovePlayerFromList,penalty94.asm
+HOCKEY.BIN,$1F002,chkatop,penalty94.asm
+HOCKEY.BIN,$1F040,releasepl,penalty94.asm
+HOCKEY.BIN,$1F0A6,GetLowestPen,penalty94.asm
+HOCKEY.BIN,$1F0FA,checkcoll,collide94.asm
+HOCKEY.BIN,$1F212,checkplcoll,collide94.asm
+HOCKEY.BIN,$1F290,checkcx,collide94.asm
+HOCKEY.BIN,$1F43E,newcheck,collide94.asm
+HOCKEY.BIN,$1F466,checkint,collide94.asm
+HOCKEY.BIN,$1F55C,checkcheck,collide94.asm
+HOCKEY.BIN,$1F570,CCStart,collide94.asm
+HOCKEY.BIN,$1F74C,checkinglist,collide94.asm
+HOCKEY.BIN,$1F75C,checkagr,collide94.asm
+HOCKEY.BIN,$1F822,holdcheck,collide94.asm
+HOCKEY.BIN,$1F90A,Bcheck,collide94.asm
+HOCKEY.BIN,$1F9BE,FallDown,collide94.asm
+HOCKEY.BIN,$1FE8A,setInjuryType,collide94.asm
+HOCKEY.BIN,$1FF3E,checkfight,collide94.asm
+HOCKEY.BIN,$1FF40,checkwallcoll,collide94.asm
+HOCKEY.BIN,$2001C,checkgoal,collide94.asm
+HOCKEY.BIN,$201B8,Goal,collide94.asm
+HOCKEY.BIN,$2051E,GetPeriodTimeRemaining,collide94.asm
+HOCKEY.BIN,$20538,checkgoalp,collide94.asm
+HOCKEY.BIN,$205D0,CheckBump,collide94.asm
+HOCKEY.BIN,$206A2,wallcollb,collide94.asm
+HOCKEY.BIN,$2075C,wallcoll,collide94.asm
+HOCKEY.BIN,$2086E,checkpuckcoll_sfx,collide94.asm
+HOCKEY.BIN,$20882,checkpuckcoll,collide94.asm
+HOCKEY.BIN,$20C30,puckstick,collide94.asm
+HOCKEY.BIN,$20DE8,puckglue,collide94.asm
+HOCKEY.BIN,$20F62,puckbody,collide94.asm
+HOCKEY.BIN,$21000,rtss2,collide94.asm
+HOCKEY.BIN,$21002,puckgoalie,collide94.asm
+HOCKEY.BIN,$21246,deflect,collide94.asm
+HOCKEY.BIN,$21274,makepde,collide94.asm
+HOCKEY.BIN,$212A0,getpde,collide94.asm
+HOCKEY.BIN,$212C2,setpde,collide94.asm
+HOCKEY.BIN,$212D0,updatepwrplay,penalty94.asm
+HOCKEY.BIN,$213AC,ClrHor,penalty94.asm
+HOCKEY.BIN,$2140A,SetHor,penalty94.asm
+HOCKEY.BIN,$2148C,printscores1,penalty94.asm
+HOCKEY.BIN,$215AE,printscores1_ps,penalty94.asm
+HOCKEY.BIN,$215D2,PrintTeamLogoAndScore,penalty94.asm
+HOCKEY.BIN,$2162A,EASNLogo,penalty94.asm
+HOCKEY.BIN,$21666,USBoard,penalty94.asm
+HOCKEY.BIN,$216E0,pplpen,penalty94.asm
+HOCKEY.BIN,$21746,linebar,penalty94.asm
+HOCKEY.BIN,$2179E,getlinee,penalty94.asm
+HOCKEY.BIN,$217E2,AvgCline,penalty94.asm
+HOCKEY.BIN,$2181E,ChkShotStat,penalty94.asm
+HOCKEY.BIN,$21958,loadTeamStruct,penalty94.asm
+HOCKEY.BIN,$21970,SetupTeamForIntermission,penalty94.asm
+HOCKEY.BIN,$219B6,RestoreTeamEnergy,penalty94.asm
+HOCKEY.BIN,$219E0,reenergizeteam,penalty94.asm
+HOCKEY.BIN,$21A0C,Intermission,penalty94.asm
+HOCKEY.BIN,$21B50,InitScores,penalty94.asm
+HOCKEY.BIN,$21BA0,UpdateScores,penalty94.asm
+HOCKEY.BIN,$21BDE,SetScore,penalty94.asm
+HOCKEY.BIN,$21CB2,sctab,penalty94.asm
+HOCKEY.BIN,$21CF2,NewTicker,penalty94.asm
+HOCKEY.BIN,$21D00,NewTicker2,penalty94.asm
+HOCKEY.BIN,$21D1C,CheckGameTickerStatus,penalty94.asm
+HOCKEY.BIN,$21D3E,NewTicker3,penalty94.asm
+HOCKEY.BIN,$21E3C,GameLabels,penalty94.asm
+HOCKEY.BIN,$21E8C,ClearTickerArea,penalty94.asm
+HOCKEY.BIN,$21E98,SetTickerAreaPosition,penalty94.asm
+HOCKEY.BIN,$21EBE,Fprintsmall,penalty94.asm
+HOCKEY.BIN,$21EC6,AdvanceStringPtr,penalty94.asm
+HOCKEY.BIN,$21ED2,DoHiLights,penalty94.asm
+HOCKEY.BIN,$21F04,StartHL,penalty94.asm
+HOCKEY.BIN,$21F08,StartHL2,penalty94.asm
+HOCKEY.BIN,$22426,setpersonel,collide94.asm
+HOCKEY.BIN,$224D8,SetPlList,collide94.asm
+HOCKEY.BIN,$225A8,TryAddPlayerToList,collide94.asm
+HOCKEY.BIN,$225E4,SetupPenaltyShot,collide94.asm
+HOCKEY.BIN,$22668,forcepldata,collide94.asm
+HOCKEY.BIN,$226E2,ResetBench,collide94.asm
+HOCKEY.BIN,$22754,Setplass,collide94.asm
+HOCKEY.BIN,$22770,setplayer,collide94.asm
+HOCKEY.BIN,$22AA2,ClampNibble,collide94.asm
+HOCKEY.BIN,$22AB8,VBlank,video94.asm
+HOCKEY.BIN,$22B90,vb2,video94.asm
+HOCKEY.BIN,$22BB0,DumpSprites,video94.asm
+HOCKEY.BIN,$22BB4,DumpSprites2,video94.asm
+HOCKEY.BIN,$22BCA,dodmalist,video94.asm
+HOCKEY.BIN,$22C16,SetScroll2,video94.asm
+HOCKEY.BIN,$22D16,setvideo,video94.asm
+HOCKEY.BIN,$22DA0,updatescroll,video94.asm
+HOCKEY.BIN,$22E76,showref,video94.asm
+HOCKEY.BIN,$22ED6,checkfo,video94.asm
+HOCKEY.BIN,$22F9E,showzam,video94.asm
+HOCKEY.BIN,$23028,SetSframe,video94.asm
+HOCKEY.BIN,$23086,showcrowd,video94.asm
+HOCKEY.BIN,$231CE,showclock,video94.asm
+HOCKEY.BIN,$2337A,checksso,video94.asm
+HOCKEY.BIN,$23514,setsortcords,video94.asm
+HOCKEY.BIN,$23536,setffo,video94.asm
+HOCKEY.BIN,$23566,uppads,video94.asm
+HOCKEY.BIN,$2361A,QueuePadLabel,video94.asm
+HOCKEY.BIN,$23684,uppads_pd,video94.asm
+HOCKEY.BIN,$236BC,addframe,video94.asm
+HOCKEY.BIN,$236E6,addframe2,video94.asm
+HOCKEY.BIN,$23872,find3d,video94.asm
+HOCKEY.BIN,$2391C,setupice,setup94.asm
+HOCKEY.BIN,$23B3C,setupice_highlight,setup94.asm
+HOCKEY.BIN,$23C60,setupIceRinkPal,setup94.asm
+HOCKEY.BIN,$23C78,setupEASportsMap,setup94.asm
+HOCKEY.BIN,$23C94,ReloadEnergyBarTiles,setup94.asm
+HOCKEY.BIN,$23CEE,ReloadFaceOffMap,setup94.asm
+HOCKEY.BIN,$23D00,setupTeamBlocksMap,setup94.asm
+HOCKEY.BIN,$23D5A,CopyTeamBlockMapData,setup94.asm
+HOCKEY.BIN,$23D9A,defaultsprites,setup94.asm
+HOCKEY.BIN,$23E84,defaultsprites_0,setup94.asm
+HOCKEY.BIN,$2403E,SprSort,setup94.asm
+HOCKEY.BIN,$240C6,resetplstuff,setup94.asm
+HOCKEY.BIN,$2411E,clearTeamStats,setup94.asm
+HOCKEY.BIN,$241BC,setteams,setup94.asm
+HOCKEY.BIN,$241F6,InitTeamStructure,setup94.asm
+HOCKEY.BIN,$24208,CopyTeamLines,setup94.asm
+HOCKEY.BIN,$2424C,setplayercolors,setup94.asm
+HOCKEY.BIN,$2429E,GameOver,setup94.asm
+HOCKEY.BIN,$242EA,Opening2,setup94.asm
+HOCKEY.BIN,$24320,Opening3,setup94.asm
+HOCKEY.BIN,$2433C,PlayoffScreen,setup94.asm
+HOCKEY.BIN,$24608,PlayoffScreen_jin,setup94.asm
+HOCKEY.BIN,$24640,PlayoffScreen_scrup,setup94.asm
+HOCKEY.BIN,$246B0,PlayoffScreen_exit,setup94.asm
+HOCKEY.BIN,$246B6,waitxc1,setup94.asm
+HOCKEY.BIN,$246E8,PlayoffScreen_doscores,setup94.asm
+HOCKEY.BIN,$24716,PlayoffScreen_doarrow,setup94.asm
+HOCKEY.BIN,$24746,PlayoffScreen_doteam,setup94.asm
+HOCKEY.BIN,$2478E,VBlank_Playoff,setup94.asm
+HOCKEY.BIN,$24832,PlayoffScreenText,setup94.asm
+HOCKEY.BIN,$24DF4,EASportsScreen,setup94.asm
+HOCKEY.BIN,$24F16,UpdatePlayoffLevel,setup94.asm
+HOCKEY.BIN,$24F4C,TeamIcons,setup94.asm
+HOCKEY.BIN,$24FEA,DrawTeamBitmap,setup94.asm
+HOCKEY.BIN,$2500C,dotb,setup94.asm
+HOCKEY.BIN,$25030,ClearRosterName,setup94.asm
+HOCKEY.BIN,$25040,setoptions_printpos2,setup94.asm
+HOCKEY.BIN,$2505E,PickStartingGoalie,setup94.asm
+HOCKEY.BIN,$250D0,VBlank_SetOptions,setup94.asm
+HOCKEY.BIN,$25102,DefaultMenus,setup94.asm
+HOCKEY.BIN,$25120,defmenuoptions,setup94.asm
+HOCKEY.BIN,$25132,ContinuePlayoffs,setup94.asm
+HOCKEY.BIN,$251C4,NewPO,setup94.asm
+HOCKEY.BIN,$25244,MakeTree,setup94.asm
+HOCKEY.BIN,$25318,FigureJoy,setup94.asm
+HOCKEY.BIN,$25532,InitializeGameStructures,setup94.asm
+HOCKEY.BIN,$2556C,GetRandomUnusedTeam,setup94.asm
+HOCKEY.BIN,$2557C,ReadPassBits,setup94.asm
+HOCKEY.BIN,$2565C,EncodePW,setup94.asm
+HOCKEY.BIN,$25712,WritePassBits,setup94.asm
+HOCKEY.BIN,$25784,PushBits,setup94.asm
+HOCKEY.BIN,$2579C,ClrPassBits,setup94.asm
+HOCKEY.BIN,$257A8,SuperAdd,setup94.asm
+HOCKEY.BIN,$257C6,SuperMult,setup94.asm
+HOCKEY.BIN,$257FE,SuperDiv,setup94.asm
+HOCKEY.BIN,$2581C,GetShifter,setup94.asm
+HOCKEY.BIN,$25838,AddPlayoffTeamStats,setup94.asm
+HOCKEY.BIN,$258DC,BitWidthTable,setup94.asm
+HOCKEY.BIN,$258E0,ReadTeamStats,setup94.asm
+HOCKEY.BIN,$2592C,ResolveGames,setup94.asm
+HOCKEY.BIN,$25AFA,ShowThreeStars,setup94.asm
+HOCKEY.BIN,$25BFA,TakeTopStarScore,setup94.asm
+HOCKEY.BIN,$25C40,CalcStarScores,setup94.asm
+HOCKEY.BIN,$25CAC,CalcTeamStarScores,setup94.asm
+HOCKEY.BIN,$25D50,ShowInjuryBox,setup94.asm
+HOCKEY.BIN,$25DFC,PenaltyShotBox,setup94.asm
+HOCKEY.BIN,$25EE4,PenShotBigTxt,setup94.asm
+HOCKEY.BIN,$25EFA,ShowGoalBox,setup94.asm
+HOCKEY.BIN,$260AA,GoalBoxText,setup94.asm
+HOCKEY.BIN,$260CA,PPGoalBigTxt,setup94.asm
+HOCKEY.BIN,$260EC,box,setup94.asm
+HOCKEY.BIN,$26108,GetPlayerName,setup94.asm
+HOCKEY.BIN,$2612E,getname,setup94.asm
+HOCKEY.BIN,$2616C,GetPlayerNumInitial,setup94.asm
+HOCKEY.BIN,$26192,FormatPlayerNumInitial,setup94.asm
+HOCKEY.BIN,$261D6,FormatPlayerName,setup94.asm
+HOCKEY.BIN,$26214,FormatPlayerNameLast,setup94.asm
+HOCKEY.BIN,$26226,FormatPlayerNameShort,setup94.asm
+HOCKEY.BIN,$26238,FormatLastName,setup94.asm
+HOCKEY.BIN,$26270,FinalizeTextBuffer,setup94.asm
+HOCKEY.BIN,$26290,GetPlayerNamePointer,setup94.asm
+HOCKEY.BIN,$262A8,ConvertByteToDigits,setup94.asm
+HOCKEY.BIN,$262D6,AddError,setup94.asm
+HOCKEY.BIN,$26302,Illinst,setup94.asm
+HOCKEY.BIN,$26332,ZeroDiv,setup94.asm
+HOCKEY.BIN,$2634E,crash,setup94.asm
+HOCKEY.BIN,$2665C,Penaltylist,tables94.asm
+HOCKEY.BIN,$2669A,PenDataEOP,tables94.asm
+HOCKEY.BIN,$266AC,PenDataEOG,tables94.asm
+HOCKEY.BIN,$266BE,PenDataGoal,tables94.asm
+HOCKEY.BIN,$266C6,PenDataNoText,tables94.asm
+HOCKEY.BIN,$266CE,PenDataice,tables94.asm
+HOCKEY.BIN,$266DE,PenDataoffsides,tables94.asm
+HOCKEY.BIN,$266F0,PenDataGhold,tables94.asm
+HOCKEY.BIN,$266FE,PenDataGhold2,tables94.asm
+HOCKEY.BIN,$2670C,PenDatadelay,tables94.asm
+HOCKEY.BIN,$2671E,PenDatawhistle,tables94.asm
+HOCKEY.BIN,$26724,PenDatacharge,tables94.asm
+HOCKEY.BIN,$26746,PenDatachargeps,tables94.asm
+HOCKEY.BIN,$26768,PenDataslash,tables94.asm
+HOCKEY.BIN,$2678A,PenDataslashps,tables94.asm
+HOCKEY.BIN,$267AC,PenDatatrip,tables94.asm
+HOCKEY.BIN,$267CC,PenDatatripps,tables94.asm
+HOCKEY.BIN,$267EC,PenDatarough2,tables94.asm
+HOCKEY.BIN,$2680C,PenDatarough,tables94.asm
+HOCKEY.BIN,$2682C,PenDataroughps,tables94.asm
+HOCKEY.BIN,$2684C,PenDatahook,tables94.asm
+HOCKEY.BIN,$2686E,PenDatahookps,tables94.asm
+HOCKEY.BIN,$26890,PenDatacross,tables94.asm
+HOCKEY.BIN,$268B6,PenDatacrossps,tables94.asm
+HOCKEY.BIN,$268DC,PenDataint,tables94.asm
+HOCKEY.BIN,$268F4,PenDataintps,tables94.asm
+HOCKEY.BIN,$2690C,PenDataHold,tables94.asm
+HOCKEY.BIN,$26920,PenDatafight,tables94.asm
+HOCKEY.BIN,$26940,PenDatafight2,tables94.asm
+HOCKEY.BIN,$26962,PenDataInst,tables94.asm
+HOCKEY.BIN,$2698A,PenShotPenalties,tables94.asm
+HOCKEY.BIN,$269BA,bfasciicon,tables94.asm
+HOCKEY.BIN,$269F6,linelist,tables94.asm
+HOCKEY.BIN,$26A20,PlayerPositionText,tables94.asm
+HOCKEY.BIN,$26A34,PerLabels,tables94.asm
+HOCKEY.BIN,$26A48,PerLabels2,tables94.asm
+HOCKEY.BIN,$26A5C,sizetab,tables94.asm
+HOCKEY.BIN,$26A6C,sublist,tables94.asm
+HOCKEY.BIN,$26AD6,priolist,tables94.asm
+HOCKEY.BIN,$26ADE,PlayoffScreen_setup,tables94.asm
+HOCKEY.BIN,$26C48,PAttribColumns,tables94.asm
+HOCKEY.BIN,$26C5E,PAttribOverall,tables94.asm
+HOCKEY.BIN,$26C70,PAttribOverallMask,tables94.asm
+HOCKEY.BIN,$26DAA,GAttribColumns,tables94.asm
+HOCKEY.BIN,$26DC0,GAttribOverall,tables94.asm
+HOCKEY.BIN,$26DD2,GAttribOverallMask,tables94.asm
+HOCKEY.BIN,$26EB4,PauseMenuItems,tables94.asm
+HOCKEY.BIN,$26F50,Pausemode_mlist,tables94.asm
+HOCKEY.BIN,$270DC,PauseText2,tables94.asm
+HOCKEY.BIN,$27250,ShootoutIntermissionMenu,tables94.asm
+HOCKEY.BIN,$272D4,StartGameText,tables94.asm
+HOCKEY.BIN,$27388,StartGameTextPO,tables94.asm
+HOCKEY.BIN,$27454,IntermissionText,tables94.asm
+HOCKEY.BIN,$275B0,ExitGameText,tables94.asm
+HOCKEY.BIN,$276C4,ExitGameTextPO,tables94.asm
+HOCKEY.BIN,$277D8,LineEditorMenuText,tables94.asm
+HOCKEY.BIN,$27848,LineEditorMenuNoLoad,tables94.asm
+HOCKEY.BIN,$278A0,PicturePalette,graphics94.asm
+HOCKEY.BIN,$27CD6,NoPicSkater1,graphics94.asm
+HOCKEY.BIN,$28040,NoPicSkater2,graphics94.asm
+HOCKEY.BIN,$283AA,NoPicGoalie1,graphics94.asm
+HOCKEY.BIN,$28714,NoPicGoalie2,graphics94.asm
+HOCKEY.BIN,$28A7E,ArenaGfx8,graphics94.asm (CD name: NHLPALogoMap+$416)
+HOCKEY.BIN,$292A2,ArenaGfx67,graphics94.asm (CD name)
+HOCKEY.BIN,$29FA8,ArenaGfx5,graphics94.asm (CD name)
+HOCKEY.BIN,$2AA16,ArenaGfx34,graphics94.asm (CD name)
+HOCKEY.BIN,$2B942,ArenaGfx12,graphics94.asm (CD name)
+HOCKEY.BIN,$2CCFC,GfxPointers,CD-only (cdgfxptrs.asm)
+HOCKEY.BIN,$2CDB2,ReadPads,
+MAIN.BIN,$34B8,DoDrawTextCommand,Sierra C name tag
+MAIN.BIN,$35A8,MainShellEntry,Sierra C name tag
+MAIN.BIN,$3622,MainShellCommandLoop,Sierra C name tag
+MAIN.BIN,$3678,ReceiveSubWord,Sierra C name tag
+MAIN.BIN,$36BE,SendMainWord,Sierra C name tag
+MAIN.BIN,$3704,CallMainShellCommand,Sierra C name tag
+MAIN.BIN,$381C,SoundSequenceHInt,Sierra C name tag
+MAIN.BIN,$3854,AcknowledgeMainVBlank,Sierra C name tag
+MAIN.BIN,$385E,MainShellVBlank,Sierra C name tag
+MAIN.BIN,$3918,SyncMainShellStartup,Sierra C name tag
+MAIN.BIN,$3962,WaitMainMemoryModeReady,Sierra C name tag
+MAIN.BIN,$396E,ClearVramByWord,Sierra C name tag
+MAIN.BIN,$3996,WaitMainWordRam,Sierra C name tag
+MAIN.BIN,$39A2,GiveSubWordRamAndWait,Sierra C name tag
+MAIN.BIN,$39B6,SetShellVramWriteAddress,Sierra C name tag
+MAIN.BIN,$39DA,CopyWordRamToVram,Sierra C name tag
+MAIN.BIN,$3A0A,SetShellCramWriteAddress,Sierra C name tag
+MAIN.BIN,$3A2E,CopyWordRamToCram,Sierra C name tag
+MAIN.BIN,$3A56,TestZ80BusBitCommand,Sierra C name tag
+MAIN.BIN,$3A78,ClearByteAtAddressCommand,Sierra C name tag
+MAIN.BIN,$3A82,ClearWordAtAddressCommand,Sierra C name tag
+MAIN.BIN,$3A8C,GiveSubWordRamCommand,Sierra C name tag
+MAIN.BIN,$3A92,RunWordRamVdpDmaCommand,Sierra C name tag
+MAIN.BIN,$3C3E,StepCramFadeCommand,Sierra C name tag
+MAIN.BIN,$3CAC,CopyVramByDmaCommand,Sierra C name tag
+MAIN.BIN,$3D38,RunWordRamVdpDmaListCommand,Sierra C name tag
+MAIN.BIN,$3D8E,FillVramFromWordRamCommand,Sierra C name tag
+MAIN.BIN,$3DE4,ClearAllVramCommand,Sierra C name tag
+MAIN.BIN,$3E02,WriteVdpWordsFromWordRamCommand,Sierra C name tag
+MAIN.BIN,$3E24,WriteZ80ResetCommand,Sierra C name tag
+MAIN.BIN,$3E30,SoundOperation4Command,Sierra C name tag
+MAIN.BIN,$3E5A,StartSoundSequenceCommand,Sierra C name tag
+MAIN.BIN,$3E84,TickSoundSequenceCommand,Sierra C name tag
+MAIN.BIN,$3E8E,PollShellPads,Sierra C name tag
+MAIN.BIN,$3EAC,ReadShellPad2,Sierra C name tag
+MAIN.BIN,$3EB8,ReadShellPad1,Sierra C name tag
+MAIN.BIN,$3FC8,EnterMainShellCProgram,Sierra C name tag
+MAIN.BIN,$400C,RunSubCommandAndRestartShell,Sierra C name tag
+MAIN.BIN,$57E8,InstallSoundSequenceHInt,Sierra C name tag
+MAIN.BIN,$580E,DisableShellHInt,Sierra C name tag
+MAIN.BIN,$5818,RestartMainShellCommandLoop,Sierra C name tag
+MAIN.BIN,$584A,InitSoundCommand,Sierra C name tag
+MAIN.BIN,$588A,InitSoundDriverCommand,Sierra C name tag
+MAIN.BIN,$58AA,DetectFourWayPlayCommand,Sierra C name tag
+MAIN.BIN,$5916,InstallMainShellVBlank,Sierra C name tag
+MAIN.BIN,$5924,InstallAcknowledgeVBlank,Sierra C name tag
+MAIN.BIN,$5932,EndVBlankCommandService,Sierra C name tag
+MAIN.BIN,$593C,WriteVBlankVdpControlLong,Sierra C name tag
+MAIN.BIN,$5948,WriteVBlankVdpDataWord,Sierra C name tag
+MAIN.BIN,$5954,WriteVBlankVdpDataLong,Sierra C name tag
+MAIN.BIN,$5960,StartVBlankSoundSequence,Sierra C name tag
+MAIN.BIN,$597C,WriteVBlankPad1Port,Sierra C name tag
+MAIN.BIN,$5988,WriteVBlankPad2Port,Sierra C name tag
+MAIN.BIN,$5994,ReadVBlankPad1Port,Sierra C name tag
+MAIN.BIN,$59A0,ReadVBlankPad2Port,Sierra C name tag
+MAIN.BIN,$59AC,WriteVBlankVdpControlWord,Sierra C name tag
+MAIN.BIN,$59B8,SaveCramPaletteCommand,Sierra C name tag
+MAIN.BIN,$59E4,ShowWordRamScreenCommand,Sierra C name tag
+MAIN.BIN,$5AC8,InstallScreenFadeVBlank,Sierra C name tag
+MAIN.BIN,$5AF2,SetScreenVramWriteAddress,Sierra C name tag
+MAIN.BIN,$5B0C,ScreenFadeVBlank,Sierra C name tag
+MAIN.BIN,$5BD0,DmaScreenTilesToVram,Sierra C name tag
+MAIN.BIN,$5C86,InstallMainShellOverlayCommand,Sierra C name tag
+MAIN.BIN,$765C,DispatchSoundOperation,Sierra C name tag
+MAIN.BIN,$77B8,TickSoundSequences,Sierra C name tag
+MAIN.BIN,$7A34,StartSoundSequence,Sierra C name tag
+MAIN.BIN,$7ADE,StopSoundSequence,Sierra C name tag
+MAIN.BIN,$7B36,PlayZ80Channel16Note,Sierra C name tag
+MAIN.BIN,$7B90,ClearZ80SoundBuffers,Sierra C name tag
+MAIN.BIN,$7BFC,RouteSoundEvent,Sierra C name tag
+MAIN.BIN,$7C2A,QueueDeferredSoundEvent,Sierra C name tag
+MAIN.BIN,$7C76,QueueZ80SoundEvent,Sierra C name tag
+MAIN.BIN,$7CF0,FlushDeferredSoundEvents,Sierra C name tag
+MAIN.BIN,$7D5A,UploadZ80SoundResource,Sierra C name tag
+MAIN.BIN,$7E1E,ClearPendingNoteOffs,Sierra C name tag
+MAIN.BIN,$7E52,ExpireSequenceNoteOffs,Sierra C name tag
+MAIN.BIN,$7E96,QueueTimedNoteOff,Sierra C name tag
+MAIN.BIN,$7EBC,TickPendingNoteOffs,Sierra C name tag
+MAIN.BIN,$7F30,ServiceZ80DataRequest,Sierra C name tag
+MAIN.BIN,$80CA,FindSoundResource,Sierra C name tag
+MAIN.BIN,$819C,RegisterSoundResourceBank,Sierra C name tag
+MAIN.BIN,$81B0,LoadZ80SoundResources,Sierra C name tag
+MAIN.BIN,$81FA,RemoveZ80SoundResources,Sierra C name tag
+MAIN.BIN,$82F8,ClearZ80SoundResourceDirectory,Sierra C name tag
+MAIN.BIN,$833E,AcquireSoundZ80Bus,Sierra C name tag
+MAIN.BIN,$8352,ReleaseSoundZ80Bus,Sierra C name tag
+MAIN.BIN,$835C,AcquireSoundSubProgramRam,Sierra C name tag
+MAIN.BIN,$83B0,ReleaseSoundSubProgramRam,Sierra C name tag
+MAIN.BIN,$83FC,MapSoundSubProgramPointer,Sierra C name tag
+MAIN.BIN,$841A,SoundEngineGuard,Sierra C name tag
+MAIN.BIN,$841C,SequenceData,Sierra C name tag
+MAIN.BIN,$843C,SequencePosition,Sierra C name tag
+MAIN.BIN,$845C,SequenceId,Sierra C name tag
+MAIN.BIN,$846C,SequenceDelay,Sierra C name tag
+MAIN.BIN,$847C,SequenceTempo,Sierra C name tag
+MAIN.BIN,$848C,SequenceFraction,Sierra C name tag
+MAIN.BIN,$849C,SequenceRunState,Sierra C name tag
+MAIN.BIN,$853E,CurrentSoundStream,Sierra C name tag
+MAIN.BIN,$8540,DacSampleRecord,Sierra C name tag
+MAIN.BIN,$8544,DacSamplePosition,Sierra C name tag
+MAIN.BIN,$8548,DacSampleLoop,Sierra C name tag
+MAIN.BIN,$854A,PcmChannelRouting,Sierra C name tag
+MAIN.BIN,$855A,PcmQueuePointer,Sierra C name tag
+MAIN.BIN,$855E,DeferredSoundEvents,Sierra C name tag
+MAIN.BIN,$85EC,SoundResourceBanks,Sierra C name tag
+MAIN.BIN,$863C,SoundBank,Sierra C name tag
+MAIN.BIN,$90C6,Z80SoundResourceList,Sierra C name tag
+PLAYER.BIN,$0,PlayerOverlayEntry,Sierra C name tag
+PLAYER.BIN,$CAA,FetchTeamPhotoAndStatTables,Sierra C name tag
+PLAYER.BIN,$EAA,WaitDisplayFrames,Sierra C name tag
+PLAYER.BIN,$EBC,ClearVerticalScroll,Sierra C name tag
+PLAYER.BIN,$F64,SetWindowPosition,Sierra C name tag
+PLAYER.BIN,$1006,ClearStatTextTileRectangle,Sierra C name tag
+PLAYER.BIN,$10D8,AnimateStatDisplayTransition,Sierra C name tag
+PLAYER.BIN,$11DA,InitStatTextSprites,Sierra C name tag
+PLAYER.BIN,$1262,MoveStatTextSpritesY,Sierra C name tag
+PLAYER.BIN,$129C,RenderTwoStatStringsToTiles,Sierra C name tag
+PLAYER.BIN,$1336,UploadStatTextTiles,Sierra C name tag
+PLAYER.BIN,$1376,DrawSelectedTeamPageBackground,Sierra C name tag
+PLAYER.BIN,$1B9C,DrawPlayerNumberAndPosition,Sierra C name tag
+PLAYER.BIN,$1C8C,DrawThreeRowTileBlock,Sierra C name tag
+PLAYER.BIN,$281C,CopyVramRows,Sierra C name tag
+PLAYER.BIN,$289A,CopyVramRowsViaMainCommand,Sierra C name tag
+PLAYER.BIN,$2972,FormatTwoDigitNumber,Sierra C name tag
+PLAYER.BIN,$29B6,FormatPercentage,Sierra C name tag
+PLAYER.BIN,$2A1E,FormatDecimalString,Sierra C name tag
+PLAYER.BIN,$2AA0,FindPlayerAndCareerRecord,Sierra C name tag
+PLAYER.BIN,$2C28,FillVram,Sierra C name tag
+PLAYER.BIN,$2C48,FillVramWithTextTile,Sierra C name tag
+PLAYER.BIN,$2C6A,DrawTileMap,Sierra C name tag
+PLAYER.BIN,$2D3A,MakeVramWriteCommand,Sierra C name tag
+PLAYER.BIN,$2D4E,IncrementPaletteTick,Sierra C name tag
+PLAYER.BIN,$2D54,ServicePlayerDisplay,Sierra C name tag
+PLAYER.BIN,$3480,WriteHorizontalScroll,Sierra C name tag
+PLAYER.BIN,$356A,StepPaletteFade,Sierra C name tag
+PLAYER.BIN,$3608,WritePlayerPalette,Sierra C name tag
+PLAYER.BIN,$36B6,ReadJoy1,Sierra C name tag
+PLAYER.BIN,$36CE,ReadJoy2,Sierra C name tag
+PLAYER.BIN,$36E6,ReadJoy3,Sierra C name tag
+PLAYER.BIN,$36FE,ReadJoy4,Sierra C name tag
+PLAYER.BIN,$3716,ReadJoy,Sierra C name tag
+PLAYER.BIN,$3744,ReadPads,Sierra C name tag
+PLAYER.BIN,$3B8C,InstallPlayerFrameCallback,Sierra C name tag
+PLAYER.BIN,$3B9C,RestorePlayerFrameCallback,Sierra C name tag
+PLAYER.BIN,$3BA4,PlayerFrameCallback,Sierra C name tag
+PLAYER.BIN,$3C16,PrintTextAtScreenCell,Sierra C name tag
+PLAYER.BIN,$3C9C,PrintTextAtPageCell,Sierra C name tag
+PLAYER.BIN,$3D26,PrintPaddedText,Sierra C name tag
+PLAYER.BIN,$3E18,PrintStatColumnText,Sierra C name tag
+PLAYER.BIN,$3EEA,CopyTextToBuffer,Sierra C name tag
+PLAYER.BIN,$3F04,WaitForSubWordRam,Sierra C name tag
+PLAYER.BIN,$3F10,GiveWordRamToMain,Sierra C name tag
+PLAYER.BIN,$3F24,SendMainCommand3D,Sierra C name tag
+STARTER.BIN,$14B6,StarterDriverEntry,Sierra C name tag
+STARTER.BIN,$14BC,DispatchPcmCommandEntry,Sierra C name tag
+STARTER.BIN,$1542,DispatchPcmCommand,Sierra C name tag
+STARTER.BIN,$15AE,ServicePcmDriver,Sierra C name tag
+STARTER.BIN,$15F8,DrainPcmCommandQueue,Sierra C name tag
+STARTER.BIN,$164A,UpdatePcmEnvelopes,Sierra C name tag
+STARTER.BIN,$180C,DispatchPackedPcmCommand,Sierra C name tag
+STARTER.BIN,$1856,PlayPackedPcmSound,Sierra C name tag
+STARTER.BIN,$19AE,StopPackedPcmSound,Sierra C name tag
+STARTER.BIN,$1AB0,SetPcmSoundMapping,Sierra C name tag
+STARTER.BIN,$1AD4,SetPcmPitchControl,Sierra C name tag
+STARTER.BIN,$1B28,StartPcmEnvelope,Sierra C name tag
+STARTER.BIN,$1BDE,InitPcmDriver,Sierra C name tag
+STARTER.BIN,$1CCE,PlayPcmSample,Sierra C name tag
+STARTER.BIN,$1E06,UpdatePcmFrequency,Sierra C name tag
+STARTER.BIN,$1F5E,PcmPitchTable,Sierra C name tag
+STARTER.BIN,$1FC0,UpdatePcmPan,Sierra C name tag
+STARTER.BIN,$2080,SelectPcmChannel,Sierra C name tag
+STARTER.BIN,$2120,FindPcmRecord,Sierra C name tag
+STARTER.BIN,$2194,ControlPcmSampleAllocation,Sierra C name tag
+STARTER.BIN,$2204,SetPcmRecordDirectory,Sierra C name tag
+STARTER.BIN,$2218,LoadPcmRecordList,Sierra C name tag
+STARTER.BIN,$227A,CopyPcmWaveData,Sierra C name tag
+STARTER.BIN,$22FA,SetPcmSoundLoopOffset,Sierra C name tag
+STARTER.BIN,$2342,WaitCdbiosReady,Sierra C name tag
+STARTER.BIN,$2350,PcmCommandNoOp,Sierra C name tag
+STARTER.BIN,$2352,PcmWriteDelay,Sierra C name tag
+STARTER.BIN,$285A,RunStarterDriver,Sierra C name tag
+STARTER.BIN,$28F8,RunStarterSequence,Sierra C name tag
+STARTER.BIN,$294C,CopyScreensToWordRam,Sierra C name tag
+STARTER.BIN,$29DC,CopyBytesToEnd,Sierra C name tag
+STARTER.BIN,$29E4,LoadStarterPcmSamples,Sierra C name tag
+STARTER.BIN,$2A2A,AnimateEASportsLogo,Sierra C name tag
+STARTER.BIN,$2AC6,AnimateEASportsLogoStep,Sierra C name tag
+STARTER.BIN,$2B8C,ShowHighScoreScreen,Sierra C name tag
+STARTER.BIN,$2C78,ShowHighScoreScreenStep,Sierra C name tag
+STARTER.BIN,$2D22,RunCredits,Sierra C name tag
+STARTER.BIN,$2E96,DrawCreditsLines,Sierra C name tag
+STARTER.BIN,$2EF2,WaitCreditsFrame,Sierra C name tag
+STARTER.BIN,$2F1E,UpdateCreditsScroll,Sierra C name tag
+STARTER.BIN,$2FAC,WaitNextDriverFrame,Sierra C name tag
+STARTER.BIN,$2FCA,BeginStarterSpriteList,Sierra C name tag
+STARTER.BIN,$2FDA,AppendStarterSprites,Sierra C name tag
+STARTER.BIN,$303A,FinishStarterSpriteList,Sierra C name tag
+STARTER.BIN,$306E,CopyStarterSpriteData,Sierra C name tag
+STARTER.BIN,$30BA,StepStarterAnimation,Sierra C name tag
+STARTER.BIN,$3102,InitStarterAnimation,Sierra C name tag
+STARTER.BIN,$3118,WaitDriverFrames,Sierra C name tag
+STARTER.BIN,$312A,SendMainLoadTiles,Sierra C name tag
+STARTER.BIN,$314C,ClearStarterPaletteAndWait,Sierra C name tag
+STARTER.BIN,$317A,WaitStarterTransfer,Sierra C name tag
+STARTER.BIN,$3198,ReadStarterPads,Sierra C name tag
+STARTER.BIN,$31B6,RepeatStarterPad1,Sierra C name tag
+STARTER.BIN,$31E6,RepeatStarterPad2,Sierra C name tag
+STARTER.BIN,$3212,RepeatStarterPad,Sierra C name tag
+STARTER.BIN,$324A,ReadStarterPad,Sierra C name tag
+STARTER.BIN,$3298,ReadStarterPad1,Sierra C name tag
+STARTER.BIN,$32BC,ReadStarterPad2,Sierra C name tag
+STARTER.BIN,$32DE,DecodeStarterPadDirection,Sierra C name tag
+STARTER.BIN,$3310,SendMainCommand03,Sierra C name tag
+STARTER.BIN,$3320,SendMainCommand02Inline,Sierra C name tag
+STARTER.BIN,$3338,SendMainCommand00,Sierra C name tag
+STARTER.BIN,$3354,SendMainCommand01,Sierra C name tag
+STARTER.BIN,$3370,SendMainCommand,Sierra C name tag
+STARTER.BIN,$33BC,ClearSubCommWords,Sierra C name tag
+STARTER.BIN,$33EE,EnterTwoMegWordRamMode,Sierra C name tag
+STARTER.BIN,$33F8,SyncMainFlag7,Sierra C name tag
+STARTER.BIN,$3416,WaitForSubWordRam,Sierra C name tag
+STARTER.BIN,$3430,GiveWordRamToMain,Sierra C name tag
+STARTER.BIN,$3440,ClearStarterWorkState,Sierra C name tag
+STARTER.BIN,$3452,StarterSequenceNoOp,Sierra C name tag
+STARTER.BIN,$3454,InstallDriverFrameCallback,Sierra C name tag
+STARTER.BIN,$347C,StarterRandomSigned,Sierra C name tag
+STARTER.BIN,$3488,StarterRandomRange,Sierra C name tag
+STARTER.BIN,$34C6,SendMainCommand06,Sierra C name tag
+STARTER.BIN,$34D6,SendMainCommand07,Sierra C name tag
+STARTER.BIN,$351C,SendMainCommand08,Sierra C name tag
+STARTER.BIN,$357C,SendMainCommand0BInline,Sierra C name tag
+STARTER.BIN,$35E2,SendMainCommand0C,Sierra C name tag
+STARTER.BIN,$3658,SendMainCommand0DInline,Sierra C name tag
+STARTER.BIN,$36D6,DoubleStarterColorComponents,Sierra C name tag
+STARTER.BIN,$36FC,SendMainCommand0E,Sierra C name tag
+STARTER.BIN,$3722,AppendStarterTextInline,Sierra C name tag
+STARTER.BIN,$373C,AppendStarterText,Sierra C name tag
+STARTER.BIN,$3780,MeasureStarterText,Sierra C name tag
+STARTER.BIN,$37B2,MeasureStarterCharacter,Sierra C name tag
+STARTER.BIN,$37E0,ReadMainHvCounter,Sierra C name tag
+STARTER.BIN,$37FA,SendMainCommand10Inline,Sierra C name tag
+STARTER.BIN,$3826,SyncMainWordRamPhase0,Sierra C name tag
+STARTER.BIN,$3844,SyncMainWordRamPhase1,Sierra C name tag
+STARTER.BIN,$3862,SyncMainWordRamPhase2,Sierra C name tag
+STARTER.BIN,$3880,SyncMainWordRamPhase3,Sierra C name tag
+STARTER.BIN,$389E,SendMainCommand12Inline,Sierra C name tag
+STARTER.BIN,$38C4,SendMainCommand12,Sierra C name tag
+STARTER.BIN,$38E2,SendMainFontMap,Sierra C name tag
+STARTER.BIN,$38F6,SendMainCommand0B,Sierra C name tag
+STARTER.BIN,$3958,WriteMainVdpControl,Sierra C name tag
+STARTER.BIN,$3970,SendIndexedMainCommand0C,Sierra C name tag
+STARTER.BIN,$3978,SkipStarterRecords,Sierra C name tag
+STARTER.BIN,$3984,SendMainCommand14,Sierra C name tag
+STARTER.BIN,$3994,SendMainCommand15,Sierra C name tag
+STARTER.BIN,$39A4,SendMainCommand16,Sierra C name tag
+STARTER.BIN,$39C2,SendMainCommand19,Sierra C name tag
+STARTER.BIN,$39D8,SendMainCommand17,Sierra C name tag
+STARTER.BIN,$39E4,SendMainCommand18,Sierra C name tag
+STARTER.BIN,$3A00,EnterOneMegWordRamMode,Sierra C name tag
+STARTER.BIN,$3A8A,DriverFrameCallback,Sierra C name tag
+STARTER.BIN,$3AAC,ReleaseDriverFrameWordRam,Sierra C name tag
+STARTER.BIN,$3AD0,ReclaimDriverFrameWordRam,Sierra C name tag
+STARTER.BIN,$3AE2,StarterFilmCallbackNoOp,Sierra C name tag
+STARTER.BIN,$3AE4,RunStarterFilm,Sierra C name tag
+STARTER.BIN,$3C80,PrepareMainFilmDisplay,Sierra C name tag
+STARTER.BIN,$3CB4,StarterFilmEntry,Sierra C name tag
+STARTER.BIN,$3CB8,FilmFrameTicks,Sierra C name tag
+STARTER.BIN,$3CBC,FilmBuffer,Sierra C name tag
+STARTER.BIN,$3CC0,FilmBufferSize,Sierra C name tag
+STARTER.BIN,$3CC4,FilmReadCount,Sierra C name tag
+STARTER.BIN,$3CC8,FilmReadDest,Sierra C name tag
+STARTER.BIN,$3CCC,FilmReadSector,Sierra C name tag
+STARTER.BIN,$3CD4,FilmDisplayArgs,Sierra C name tag
+STARTER.BIN,$3CE8,FilmCallback,Sierra C name tag
+STARTER.BIN,$3CEC,FilmReadError,Sierra C name tag
+STARTER.BIN,$3CF4,FilmState,Sierra C name tag
+STARTER.BIN,$40FA,SavedFilmReadJump,Sierra C name tag
+STARTER.BIN,$40FE,InstallFilmReadHook,Sierra C name tag
+STARTER.BIN,$4118,RemoveFilmReadHook,Sierra C name tag
+STARTER.BIN,$412A,FilmSectorHeader,Sierra C name tag
+STARTER.BIN,$412E,FilmReadInterrupt,Sierra C name tag
+STARTER.BIN,$4236,StopFilmRead,Sierra C name tag
+STARTER.BIN,$4246,StartFilmRead,Sierra C name tag
+STARTER.BIN,$42A2,FilmBcdToBinary,Sierra C name tag
+STARTER.BIN,$42BA,FilmMsfToLba,Sierra C name tag
+STARTER.BIN,$4306,Wait,Sierra C name tag
+STARTER.BIN,$4788,SwapMeg,Sierra C name tag
+STARTER.BIN,$47AE,DrawText,Sierra C name tag
+STARTER.BIN,$4806,NumStr,Sierra C name tag
+STARTER.BIN,$4864,HexStr,Sierra C name tag
+STARTER.BIN,$48C4,aprint,Sierra C name tag
+STARTER.BIN,$49FA,ffree,Sierra C name tag
+STARTER.BIN,$4ACE,findSmallestBlock,Sierra C name tag
+STARTER.BIN,$4B34,MaxFree,Sierra C name tag
+STARTER.BIN,$4B7E,mmalloc,Sierra C name tag
+STARTER.BIN,$4C10,InitHeap,Sierra C name tag
+STARTER.BIN,$4C84,InitWorld,Sierra C name tag
+STARTER.BIN,$4D62,GetTicks,Sierra C name tag
+STARTER.BIN,$4D7E,WaitIODone,Sierra C name tag
+STARTER.BIN,$4DDE,CopyData,Sierra C name tag
+STARTER.BIN,$4ECE,DisposeEngine,Sierra C name tag
+STARTER.BIN,$4EFC,GetSectDst,Sierra C name tag
+STARTER.BIN,$4F58,PeekSectDst,Sierra C name tag
+STARTER.BIN,$5068,ReadData,Sierra C name tag
+STARTER.BIN,$1B2A8,SubMain,Sierra C name tag

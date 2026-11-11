@@ -12,6 +12,9 @@ Place them in `NHL94Genesis/cdbin/` (the folder is gitignored; never commit them
 **If `segacd-disc/` is ever missing, or from your own NHL '94 Sega CD disc:** take them from your own NHL '94 Sega CD disc:
 - The disc has a data track (track 1, ISO 9660). Open the `.bin/.cue` image with 7-Zip (`7z x image.bin`), or mount it, or on Linux `bchunk` then `7z x`. Copy the six files out of the root.
 - Check sizes: MAIN 60,416; STARTER 120,248; HOCKEY 184,842; PLAYER 44,656; GRAPH2 3,051,520; GTABLE 2,048 bytes. A different size means a different disc release; say so in HANDOFF.md before going on.
+- Or let the repo do it: `python tools/segacd_bootarea.py "path/to/NHL '94.cue" --files` copies the six files out of the image (a `.cue` with its `.bin`, or an `.iso`) into `cdbin/`.
+
+**Optional, the boot area:** the disc's boot sectors (header, initial program, system program) are not a file, so only the image has them. `python tools/segacd_bootarea.py "path/to/NHL '94.cue"` writes `cdbin/BOOT.BIN`, and the build then also checks `src/segacd/boot/` (four fragments, skipped without it). Never commit the image or `cdbin/`.
 
 ## 3. Build tools
 - Node 18+ and `npm install` in `NHL94Genesis`.

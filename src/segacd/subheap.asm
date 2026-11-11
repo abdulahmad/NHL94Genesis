@@ -1,16 +1,16 @@
-;	Sub CPU heap helpers from STARTER.BIN, linked at $21300.
+;	Sub CPU heap helpers from STARTER.BIN, which runs at file + $B000.
 ;	Sierra C puts the function name after the rts. These two are EngineIdle
 ;	and GetData. Verified against STARTER.BIN file offset $4FA8.
 ;
-;	$24FB4 is the HOCKEY.SEG object. $FF8000 is the sub CPU gate array, used
+;	$ECB4 is the HOCKEY.SEG object. $FF8000 is the sub CPU gate array, used
 ;	by the routine EngineIdle calls when a free block is at least $8000.
 
-GateCall	equ	$25546				;link a6,#-4, a5 = $FF8000
-MoveBlock	equ	$260DE				;three long arguments
-AllocAlign	equ	$26656				;tiny lea / jmp thunk
-SegHead		equ	$24FB4				;HOCKEY.SEG object
+GateCall	equ	$F246				;link a6,#-4, a5 = $FF8000
+MoveBlock	equ	$FDDE				;three long arguments
+AllocAlign	equ	$10356				;tiny lea / jmp thunk
+SegHead		equ	$ECB4				;HOCKEY.SEG object
 
-	org	$262A8
+	org	$FFA8
 
 ; a4 = heap. If $10(SegHead) is clear and the free gap is at least $8000,
 ; call GateCall(block, $1000, 0).

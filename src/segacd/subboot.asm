@@ -1,6 +1,6 @@
 ;	NHL 94 Sega CD, sub CPU boot (the front of STARTER.BIN).
-;	Runtime base is $21300: the opening jmp lands on a Sierra C `link a6,#0`
-;	at $262A8 (file offset $4FA8), which is the SDK heap/film startup.
+;	STARTER.BIN runs at file + $B000. The opening jmp lands on SubMain at $262A8 (file $1B2A8,
+;	startertail.asm): the stack at $C41C, the gate array command words cleared, then the start-up.
 ;
 ;	This fragment is the file image from the first byte through `jmp $1B000`.
 ;	It is verified against STARTER.BIN.
@@ -8,7 +8,7 @@
 ;	$6044 is the sub CPU BIOS dispatcher (function number in d7).
 ;	$1B000 is inside HOCKEY.BIN, the game.
 
-	org	$21300
+	org	$B000
 
 SubBoot	move.l	$6038.w,$B090		;keep the BIOS vector the game will call through
 	jmp	$262A8						;C runtime (link a6). Does not return here

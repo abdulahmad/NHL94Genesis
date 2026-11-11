@@ -72,6 +72,20 @@ The typer then calls `printz` (`$1DF6E`) with the inline string whose length wor
 
 `scoutload.asm` (`$24C12`) is the loader just after that scroll. It stops where `cdstart.asm` begins (`$24D66`). It tests `$3FC0A` and, when it is set, calls `$376F2`. It then calls the SDK entry `$6044` with `d7 = $D`, then with `d7 = 1` and `d0 = 0`, then with `d7 = 3`. It adds the returned pointer to a run of longs. Those longs become `$47CFC` (the script base) and the picture and font pointers the screen uses (`$47D54` is the Ron Barr picture the open path draws). The words it relocates are the directory of the file the SDK returns for id 0.
 
+## The speech
+
+The CD reads the script aloud: the main loop of ScoutingReport (`scout94_2.asm`) plays one clip of Ron Barr's voice for each paragraph it types. `.L289EC` turns the paragraph number into the paragraph's byte offset in the script and its line number (lines that end in `!` continue a paragraph, and count). Paragraph `$1A` becomes `$EA` + HomeTeam; when the home team is an all-star team (`$1A`, `$1B`) it becomes `$104`, or `$105` when the visitors are one too.
+
+The line number picks an entry in ScoutingSpeechClips (resource 0 piece 3, `ScoutingSpeechClipsPtr` at `$47DA4`; `scoutopen.asm` copies it to `$C458` and points the entry there). It has 1,120 entries of two longs, a start sector and a sector count, and they are the disc's speech files:
+
+| Entries | File |
+| --- | --- |
+| 198 | entry n is `RON` n+1 `.PCM` (`RON0034.PCM` for entry 33, the "Hit the start button" paragraph `$21`) |
+| 893 | `RON0028.PCM`, for lines with no recording of their own |
+| from 1,092 | the team names, `ANAHEIM.PCM` ... |
+
+For each paragraph, service 6 gives LoadPointer, service 0 reads the clip there, and service `$10` sends the system program's PCM driver command 9 (PlayPcmStream, `docs/segacd_boot.md`) with a0 = the clip, d1 = `$400` (`$380` for lines `$5A`, `$97`, `$392`, `$3F1` and `$405`), d2 = `$FF` and d3 = `$FFFF`. While it plays, BIOS function `$18` is called with a0 at `$47D60`, which holds the next paragraph's start sector minus 2 (a seek ahead). When the typer has finished a paragraph (the script cursor back at `$FF00`), the loop goes back and asks command 9 (a0 = 0) until the clip has ended (the driver turns the stream off at its end byte), stops the stream (a0 = -1), and starts the next paragraph and its clip, so the voice and the text keep together. When bit 1 of `$1AD77` is set the clip is not played and each pass of the loop stops the stream; leaving the screen stops it too.
+
 ## What is not this screen
 
 `FilmOpen` / `FilmTask` / `FilmClose` in `STARTER.BIN` (runtime `$25636`, `$2588C`, `$25A3A`) are the movie player. `FilmTask` calls the `SM` copier when a chunk's first word is `$534D`. That copier does not touch the PCM chip. The scouting typer does not branch to those routines. Digitized movie audio and the scouting script are different callers of different code. `docs/segacd_film.md`.

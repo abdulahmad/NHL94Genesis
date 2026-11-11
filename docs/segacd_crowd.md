@@ -23,6 +23,6 @@ The thresholds are the cartridge ones: calm a crowd at or above `$15E` by an ext
 
 The cartridge reads `VDP_CNTR` (`$C00008`). The disc posts `$1B` to `$FF8020` and, once bit 6 of `$FF800E` is set, reads `$FF8010`. It does that twice: once for the frame delay, once for the loud-crowd frame. The rest of the handshake is the usual bit 6 / bit 7 pair on `$FF800F`.
 
-`$FF8010` is main-CPU `$A12010`. `hwread.asm` is the run of one-instruction readers at `$FF3B3C`. One of them is `move.w $C00008,$A12010`, the HV counter copied into that comm word. The command `$1B` slot in the jump table at `$FF01BE` is `$FF142A`, and that handler does not itself read the HV counter. The word the crowd driver uses is whatever the main CPU last stored at `$A12010`.
+`$FF8010` is main-CPU `$A12010`. `hwread.asm` is the run of one-instruction readers at `$FF4B3C`. One of them is `move.w $C00008,$A12010`, the HV counter copied into that comm word. The command `$1B` slot in the jump table at `$FF11BE` is `$FF242A`, and that handler does not itself read the HV counter. The word the crowd driver uses is whatever the main CPU last stored at `$A12010`.
 
 The PSG crowd bed is still gone. `cdcrowd.asm` computes the old volume byte and returns it. This driver only picks a frame.

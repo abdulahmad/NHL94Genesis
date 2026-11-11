@@ -191,15 +191,50 @@ if (args.includes('--segacd')) {
     fs.mkdirSync(OBJ, { recursive: true });
     fs.mkdirSync(CD, { recursive: true });
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
+    // The six disc files are the user's own: copied from the data track of an NHL '94 Sega CD disc, not
+    // built here and not in the repo (cdbin/ is gitignored). The HOCKEY.BIN fragments read licensed text
+    // (team nicknames) from cdbin/HOCKEY.BIN with incbin, so name every missing file before assembling.
+    const DISC = ['MAIN.BIN', 'STARTER.BIN', 'HOCKEY.BIN', 'PLAYER.BIN', 'GRAPH2.BIN', 'GTABLE.BIN'];
+    const missing = DISC.filter((n) => !fs.existsSync(path.join(ROOT, 'cdbin', n)));
     begin('assemble');
+    if (missing.length) {
+        fail('assemble', `missing Sega CD disc file(s) in cdbin/: ${missing.join(', ')}`,
+            `The build needs the six files from the data track of your own NHL '94 Sega CD disc\n`
+            + `(${DISC.join(', ')}) copied into cdbin/ (see docs/segacd-handoff/GETTING_FILES.md).\n`
+            + 'They are not build products and are not in the repo. See docs/segacd.md.', 'MISSING INPUT');
+    }
     const t0 = Date.now();
+    // MAIN.BIN's Z80 sound program is Z80 source (src/segacd/main/mainz80.z80): asm80 (npm devDependency)
+    // assembles it into output/obj/z80/mainz80.bin first, and the fragment main/mainz80.asm includes that.
+    {
+        const zsrc = path.join(ROOT, 'src', 'segacd', 'main', 'mainz80.z80');
+        const zout = path.join(OBJ, 'z80', 'mainz80.bin');
+        let asm80;
+        try { asm80 = require.resolve('asm80/asm80.js'); } catch (e) { fail('assemble', 'asm80 is not installed, run npm i'); }
+        fs.mkdirSync(path.dirname(zout), { recursive: true });
+        // asm80 writes the output (and its .lst) relative to the source folder.
+        const r = await run(process.execPath, [asm80, '-m', 'Z80', '-t', 'bin', '-o', path.relative(path.dirname(zsrc), zout), path.relative(ROOT, zsrc)]);
+        const zlog = path.join(OBJ, 'Build_mainz80_z80.log');
+        fs.writeFileSync(zlog, r.out, 'latin1');
+        if (r.status !== 0 || !fs.existsSync(zout) || /ERROR/.test(r.out)) fail('assemble', `asm80 failed on src/segacd/main/mainz80.z80, see ${rel(zlog)}`, r.out.split(/\r?\n/).slice(-12).join('\n'));
+        detail(`main/mainz80.z80: asm80 -> ${rel(zout)}`);
+    }
+    // src/segacd/boot/ (the disc's boot area: header, initial program, system program) is compared with
+    // cdbin/BOOT.BIN, which tools/segacd_bootarea.py copies from a disc image. Without it those are skipped.
+    const haveBoot = fs.existsSync(path.join(ROOT, 'cdbin', 'BOOT.BIN'));
+    const skipped = frags.filter((f) => f.name.startsWith('boot/') && !haveBoot);
     for (const f of frags) {
+        if (skipped.includes(f)) continue;
+        // A name may carry a folder: hockey/onetimer94 is src/segacd/hockey/onetimer94.asm.
         const out = path.join(CD, `${f.name}.bin`);
         fs.rmSync(out, { force: true });
-        const a = ['/p', '/m', '/g', ...f.options, `segacd\\${f.name}.asm,..\\output\\segacd\\${f.name}.bin,..\\output\\obj\\${f.name},..\\output\\obj\\${f.name}`];
+        fs.mkdirSync(path.dirname(out), { recursive: true });
+        fs.mkdirSync(path.dirname(path.join(OBJ, f.name)), { recursive: true });
+        const w = f.name.split('/').join('\\');
+        const a = ['/p', '/m', '/g', ...f.options, `segacd\\${w}.asm,..\\output\\segacd\\${w}.bin,..\\output\\obj\\${w},..\\output\\obj\\${w}`];
         const r = await (WIN ? run(exe, a, { cwd: path.join(ROOT, 'src') })
             : run('wine', [exe, ...a], { cwd: path.join(ROOT, 'src'), env: { ...process.env, WINEDEBUG: '-all' } }));
-        const logPath = path.join(BUILD, `Build_${f.name}.log`);
+        const logPath = path.join(BUILD, `Build_${f.name.split('/').join('_')}.log`);
         fs.writeFileSync(logPath, r.out, 'latin1');
         const sum = r.out.match(/(\d+) error\(s\) from/);
         if (!sum || Number(sum[1]) > 0 || !fs.existsSync(out)) {
@@ -209,18 +244,9 @@ if (args.includes('--segacd')) {
         }
         detail(`${f.name}: ${sum[0]} -> ${rel(out)}`);
     }
-    step('assemble', `${frags.length} fragments, 0 errors in ${((Date.now() - t0) / 1000).toFixed(1)}s -> output/segacd/`);
+    step('assemble', `${frags.length - skipped.length} fragments, 0 errors in ${((Date.now() - t0) / 1000).toFixed(1)}s -> output/segacd/`
+        + (skipped.length ? ` (${skipped.length} boot area fragments skipped: no cdbin/BOOT.BIN, see tools/segacd_bootarea.py)` : ''));
     begin('verify');
-    // The six disc files are the user's own: copied from the data track of an NHL '94 Sega CD disc, not
-    // built here and not in the repo (cdbin/ is gitignored). Name every missing one before comparing.
-    const DISC = ['MAIN.BIN', 'STARTER.BIN', 'HOCKEY.BIN', 'PLAYER.BIN', 'GRAPH2.BIN', 'GTABLE.BIN'];
-    const missing = DISC.filter((n) => !fs.existsSync(path.join(ROOT, 'cdbin', n)));
-    if (missing.length) {
-        fail('verify', `missing Sega CD disc file(s) in cdbin/: ${missing.join(', ')}`,
-            `The fragments assembled into output/segacd/; the compare needs the six files from the data track\n`
-            + `of your own NHL '94 Sega CD disc (${DISC.join(', ')}) copied into cdbin/.\n`
-            + 'They are not build products and are not in the repo. See docs/segacd.md.', 'MISSING INPUT');
-    }
     const r = await node('verifySegacd.js', []);
     const matches = (r.out.match(/ MATCH /g) || []).length;
     if (r.status !== 0) {

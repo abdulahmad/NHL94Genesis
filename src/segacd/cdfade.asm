@@ -1,8 +1,8 @@
-; STARTER.BIN CD-DA helpers, file $54F6-$556D, runtime $267F6-$2686D.
+; STARTER.BIN CD-DA helpers, file $54F6-$556D, runtime $104F6-$1056D.
 ; Seek a track and repeat it, ramp the fader, or stop.
 ; $15 MSCSEEK, $13 MSCPLAYR, $86 FDRCHG, $02 MSCSTOP. _CDBIOS is $5F22.
 
-	org	$267F6
+	org	$104F6
 
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$40(sp),$10AD4.l

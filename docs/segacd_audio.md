@@ -58,7 +58,7 @@ No `jsr` absolute and no `bra`/`bsr` in `HOCKEY.BIN` lands on `$1C1D2` or `$1C20
 
 `$191CE` is cleared again at `$10826`.
 
-`cdfade.asm` (STARTER file `$54F6`, runtime `$267F6`) is three helpers. The first copies a track word from the stack to `$10AD4`, `MSCSEEK`s it, `MSCPLAYR`s it, then `FDRCHG` with `d1 = $400` (volume word `0`, rate `$400`, so the fader snaps to silence) and calls `$E118` with `d0 = $1E`. The second `FDRCHG`s to a long taken from the stack. The third is `MSCSTOP`.
+`cdfade.asm` (STARTER file `$54F6`, runtime `$104F6`) is three helpers. The first copies a track word from the stack to `$10AD4`, `MSCSEEK`s it, `MSCPLAYR`s it, then `FDRCHG` with `d1 = $400` (volume word `0`, rate `$400`, so the fader snaps to silence) and calls `$E118` with `d0 = $1E`. The second `FDRCHG`s to a long taken from the stack. The third is `MSCSTOP`.
 
 These sequences sit inside larger routines and play track `5` on a loop. Each one `MSCSTOP`s, waits on `CDBCHK`, polls `CDBSTAT` until the status high byte is `0`, stores `5` at `$19364`, and `MSCPLAYR`s it:
 
@@ -73,7 +73,7 @@ These sequences sit inside larger routines and play track `5` on a loop. Each on
 
 `$D820` is `ROMSEEK` (`$18`) of a sector long, in a menu routine. It is not a music call. That same menu clears `asv` at `$D938` and does `st.b asv` at `$D946` and `$D958`.
 
-The shell around the movie player (STARTER runtime `$24E44`) saves BIOS `$8004` to `$EC8E`, `DRVINIT`s through `$ECA2`, and `CDCSETMODE`s with `d1 = 0`. On the way out it `DRVINIT`s again and `CDCSETMODE`s with `($EC8E & $F8) | 3`, which forces the CD-DA bit and the mode-2 bit back on.
+The shell around the movie player (STARTER runtime `$EB44`) saves BIOS `$8004` to `$EC8E`, `DRVINIT`s through `$ECA2`, and `CDCSETMODE`s with `d1 = 0`. On the way out it `DRVINIT`s again and `CDCSETMODE`s with `($EC8E & $F8) | 3`, which forces the CD-DA bit and the mode-2 bit back on.
 
 ## Crowd
 
@@ -87,21 +87,21 @@ The selector's track `2` is the loop that replaces a playing track below `7`. It
 
 ## PCM stream
 
-The chip is the RF5C164 on the sub CPU, base `$FF0000`. `MAIN.BIN` is linked at `$FF0000` on the main CPU, so those are not the same address. Writes are byte-sized, odd addresses only for wave RAM, and each control write is followed by `moveq #$14,d0` / `dbra`. The play-address registers are read twice.
+The chip is the RF5C164 on the sub CPU, base `$FF0000`. `MAIN.BIN` runs at `$FF1000` on the main CPU, so those are not the same address. Writes are byte-sized, odd addresses only for wave RAM, and each control write is followed by `moveq #$14,d0` / `dbra`. The play-address registers are read twice.
 
-`pcmchip.asm` (STARTER file `$3FD0`, runtime `$252D0`):
+`pcmchip.asm` (STARTER file `$3FD0`, runtime `$EFD0`):
 
 | Runtime | What it writes |
 | --- | --- |
-| `$252D0` | mute `$FF0011 = $FF`, channel `$FF000F = $C0` then `$88`, envelope `$FF0001 = $FF`, pan `$FF0003 = $FF`, frequency high `$FF0007 = $04` (FD `$0400`), frequency low / loop / start cleared, one `$FF` sample at `$FF2001` |
-| `$25356` | `$FF000F = $80`, `$FF0011 = $FE` (channel 0 on) |
-| `$25370` | `$FF0011 = $FF` (mute) |
-| `$2537E` | `$FF0021` twice into the low byte, `$FF0023` twice into the high byte |
-| `$253A6` | stack argument at `8(sp)` is the bank, ORed with `$80` and written to `$FF000F`. Then `$1000` bytes from `4(sp)` are copied to `$FF2001`, stepping the chip pointer by 2 |
+| `$EFD0` InitFilmPcm | mute `$FF0011 = $FF`, channel `$FF000F = $C0` then `$88`, envelope `$FF0001 = $FF`, pan `$FF0003 = $FF`, frequency high `$FF0007 = $04` (FD `$0400`), frequency low / loop / start cleared, one `$FF` sample at `$FF2001` |
+| `$F056` StartFilmPcm | `$FF000F = $80`, `$FF0011 = $FE` (channel 0 on) |
+| `$F070` StopFilmPcm | `$FF0011 = $FF` (mute) |
+| `$F07E` ReadFilmPcmAddress | `$FF0021` twice into the low byte, `$FF0023` twice into the high byte |
+| `$F0A6` LoadFilmPcmBank | stack argument at `8(sp)` is the bank, ORed with `$80` and written to `$FF000F`. Then `$1000` bytes from `4(sp)` are copied to `$FF2001`, stepping the chip pointer by 2 |
 
-`pcmclear.asm` (`$24D0C`) selects channels `0`–`7` with `$40` added to the index, clears the start registers, fills wave RAM, and mutes with `$FF0011 = $FF`.
+`pcmclear.asm` (`$EA0C`) selects channels `0`–`7` with `$40` added to the index, clears the start registers, fills wave RAM, and mutes with `$FF0011 = $FF`.
 
-`audiostream.asm` (file `$508C`, runtime `$2638C`) is nine Sierra C functions. The name bytes follow each `rts`. The struct passed in `8(a6)` is:
+`audiostream.asm` (file `$508C`, runtime `$1008C`) is nine Sierra C functions. The name bytes follow each `rts`. The struct passed in `8(a6)` is:
 
 | Offset | Use |
 | --- | --- |
@@ -111,22 +111,22 @@ The chip is the RF5C164 on the sub CPU, base `$FF0000`. `MAIN.BIN` is linked at 
 | `+$C` | bytes still to send |
 | `+$E` | the word `AudioBusy` returns (the low word of the long at `+$C`) |
 
-`AudioPlayPos` reads the chip address, shifts it right by 12, and calls `$26656` with that index and `d1 = 8`. If the two differ it increments the index. Eight banks of `$1000` bytes is the ring those shifts line up with.
+`AudioPlayPos` reads the chip address, shifts it right by 12, and calls `$10356` with that index and `d1 = 8`. If the two differ it increments the index. Eight banks of `$1000` bytes is the ring those shifts line up with.
 
-`AudioInit` stores `-1` and three zero longs, then calls the PCM init at `$252D0`.
+`AudioInit` stores `-1` and three zero longs, then calls the PCM init at `$EFD0`.
 
-`AudioIdle` calls `AudioPlayPos`. It returns when no bytes remain, and when `submitted - playpos` is at least 8. Otherwise it loads one `$1000` bank through `$253A6` at slot `submitted mod 8` (the same `$26656` call), advances the source, and drops the remaining count by `$1000`.
+`AudioIdle` calls `AudioPlayPos`. It returns when no bytes remain, and when `submitted - playpos` is at least 8. Otherwise it loads one `$1000` bank through `$F0A6` at slot `submitted mod 8` (the same `$10356` call), advances the source, and drops the remaining count by `$1000`.
 
-`AudioFeed` stores the caller's pointer and length, fills while bytes remain and fewer than 8 blocks are queued, calls `$25356` to open channel 0, and sets the index to `0`. If the index was already running it returns after the two idle calls.
+`AudioFeed` stores the caller's pointer and length, fills while bytes remain and fewer than 8 blocks are queued, calls `$F056` to open channel 0, and sets the index to `0`. If the index was already running it returns after the two idle calls.
 
-`AudioSilence` allocates `$1000` bytes at `$25E7E`, fills `$400` longs with zero, submits that block eight times, frees it at `$25CFA`, and starts channel 0. It does nothing when the index is already running.
+`AudioSilence` allocates `$1000` bytes at `$FB7E`, fills `$400` longs with zero, submits that block eight times, frees it at `$F9FA`, and starts channel 0. It does nothing when the index is already running.
 
-`AudioStop` mutes at `$25370`.
+`AudioStop` mutes at `$F070`.
 
 `AudioTicks` returns `(index << 12) | (chip address & $FFF)`.
 
-`AudioTime` calls `AudioTicks`, multiplies by the second argument through `$2660C`, adds `$1F40` (8000), and divides by `$3E80` (16000) through `$26632`. The frequency register `$0400` is the setting that lines up with a 16000 divisor. SNASM rewrites `add.l #$1F40,d0` into `addi.l`. The disc byte is `D0 BC 00 00 1F 40`, so that one instruction is a `dc.w` / `dc.l` in `audiostream.asm`.
+`AudioTime` calls `AudioTicks`, multiplies by the second argument through `$1030C`, adds `$1F40` (8000), and divides by `$3E80` (16000) through `$10332`. The frequency register `$0400` is the setting that lines up with a 16000 divisor. SNASM rewrites `add.l #$1F40,d0` into `addi.l`. The disc byte is `D0 BC 00 00 1F 40`, so that one instruction is a `dc.w` / `dc.l` in `audiostream.asm`.
 
-`$2660C`, `$26632`, and `$26656` are compiler thunks. Capstone stops inside `$26632` on a `dc.w $4C41`. They are called as multiply, divide, and the divide-by-8 used for the bank slot. Their bodies are not in this slice.
+`$1030C`, `$10332`, and `$10356` are compiler thunks. Capstone stops inside `$10332` on a `dc.w $4C41`. They are called as multiply, divide, and the divide-by-8 used for the bank slot. Their bodies are not in this slice.
 
-No absolute pointer to `AudioFeed` or `$253A6` turned up in `HOCKEY.BIN`. The callers are PC-relative inside `STARTER.BIN`, or they go through a pointer that is not the full address. The scouting-report announcer is the next pass; the credit string `Announcer:` is in STARTER at file `$1B032`.
+No absolute pointer to `AudioFeed` or `$F0A6` turned up in `HOCKEY.BIN`. The callers are PC-relative inside `STARTER.BIN`, or they go through a pointer that is not the full address. The scouting-report announcer is the next pass; the credit string `Announcer:` is in STARTER at file `$1B032`.

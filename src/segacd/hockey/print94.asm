@@ -1,0 +1,708 @@
+;	HOCKEY.BIN $1DBD4-$1E419 (runtime $38BD4-$39419): print94.asm as the disc has it.
+;	The cartridge source with long addresses and no short or quick forms. Lines under ;CD: have
+;	no cartridge twin. Names are the cartridge's; segacd\hockey\hockey.inc has the disc RAM map.
+;
+;	The print routines. CD: writes to the VDP became commands to the main CPU (e.g. eraser sends
+;	command $D with the fill word in $FF8022).
+
+	include	macros\genesis.mac
+	include	segacd\hockey\hockey.inc
+
+Vmaddr	equ	$3871E
+DecompressGraphicsPlain	equ	$38958
+rtss2	equ	$3C000
+Fprintsmall	equ	$3CEBE
+bfasciicon	equ	$419BA
+
+	org	$38BD4
+
+;	Text printing (93G print93.asm): vram address from printx / printy, small and big font strings,
+;	frames, numbers and times, and the font tile uploads. Included at the end of middle94.asm.
+
+; use print x/y/m to set vram address
+xyVmMap								;use printx/y/m to set vram address. Returns a0 = Vdata.
+									;Saves d0-d2 and calls Vmaddr
+	movem.l	d0-d2,-(sp)
+	move.w	(printx).l,d0
+	move.w	(printy).l,d1
+	movea.l	#VmMAP1,a0
+	adda.w	(printm).l,a0
+	move.w	2(a0),d2
+	asl.w	d2,d1					;y * map width
+	add.w	d1,d0
+	asl.w	#1,d0					;2 bytes a cell
+	add.w	(a0),d0					;plus the map address
+	bsr.w	Vmaddr					;set the vram address
+	movem.l	(sp)+,d0-d2
+	rts
+; fill rectangle with char
+; d0/d1 - x/y size of rectangle
+; d2 = char word to fill with
+; printx/y/m define top corner to start at
+eraser								;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = char word
+									;to fill with, printx/y/m define top left corner to start at
+	movem.l	d0-d2/a0,-(sp)
+	move.w	(disflags).l,-(sp)
+	bset.b	#dfng,(disflags).l
+	movem.w	d0-d1,-(sp)				;(sp) = width, 2(sp) = rows left
+.1									;loop
+	bsr.w	xyVmMap					;one row: a0 = vram port at printx/y
+	move.w	(sp),d0
+	subi.w	#1,d0
+;CD: no cartridge twin
+.0									;CD: placed where the disc branches to it
+.L38C26
+	btst.b	#$7,$FF800E.l
+	bne.s	.L38C26
+	move.w	d2,$FF8022.l
+	move.w	#$D,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.L38C46
+	btst.b	#$6,$FF800E.l
+	beq.s	.L38C46
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.L38C60
+	btst.b	#$6,$FF800E.l
+	bne.s	.L38C60
+	bclr.b	#$7,$FF800F.l
+	dbf	d0,.0
+	addi.w	#1,(printy).l
+	andi.w	#$1F,(printy).l
+	subi.w	#1,2(sp)				;rows left
+	bne.w	.1
+;CD: no cartridge twin
+	adda.w	#$4,sp
+	move.w	(sp)+,(disflags).l
+	movem.l	(sp)+,d0-d2/a0
+	rts
+; frame and fill (uses framer.map graphics and assumes tiles are already located at framercset)
+; d0/d1 = x/y size of rectangle
+; printx/y/m define top left corner to start at
+Framer								;frame and fill (uses framer.map graphics and assums tiles are already
+									;located at framercset). d0/d1 = x/y size of rectangle, printx/y/m define
+									;top left corner to start at
+	movem.l	d0-d4/a0-a1,-(sp)
+	move.w	(disflags).l,-(sp)
+	bset.b	#dfng,(disflags).l
+	movem.w	d0-d1,-(sp)				;(sp) = x size, 2(sp) = rows left; .tbline reads the x size at 4(sp)
+	move.w	(printa).l,d2			;attribute
+	add.w	(framercset).l,d2		;plus the frame chars
+;CD: no cartridge twin
+	movea.l	(FramerMapPtr).l,a1
+	adda.l	$4(a1),a1
+	adda.w	#$4,a1
+	clr.w	d4						;d4 = offset of the frame map row (6 bytes per row: left, middle, right)
+	bsr.w	.tbline
+	subi.w	#3,2(sp)				;height-3: loop counter for the middle rows
+.mtop								;loop
+	bsr.w	.tbline					;middle row (height-2 times)
+	subi.w	#6,d4					;stay on the middle map row
+	subi.w	#1,2(sp)				;rows left
+	bpl.w	.mtop
+	addi.w	#6,d4					;step to the bottom map row
+	bsr.w	.tbline
+;CD: no cartridge twin
+	adda.w	#$4,sp
+	move.w	(sp)+,(disflags).l
+	movem.l	(sp)+,d0-d4/a0-a1
+	rts
+.tbline								;local subroutine
+	bsr.w	xyVmMap					;draw one frame row: left cell, width-2 middle cells, right cell
+	addi.w	#1,(printy).l
+	bsr.w	.setter
+	addi.w	#2,d4					;next cell
+	move.w	4(sp),d0
+	subi.w	#3,d0					;minus 3: middle count
+.tblp								;each middle cell
+	bsr.w	.setter					;middle cells
+	dbf	d0,.tblp					;loop
+	addi.w	#2,d4					;next cell
+	bsr.w	.setter
+	addi.w	#2,d4					;d4 = next map row
+	rts
+.setter								;local subroutine
+	move.w	(a1,d4.w),d3
+	add.w	d2,d3					;plus attribute and chars
+;CD: no cartridge twin
+.L38D3E
+	btst.b	#$7,$FF800E.l
+	bne.s	.L38D3E
+	move.w	d3,$FF8022.l
+	move.w	#$D,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.L38D5E
+	btst.b	#$6,$FF800E.l
+	beq.s	.L38D5E
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.L38D78
+	btst.b	#$6,$FF800E.l
+	bne.s	.L38D78
+	bclr.b	#$7,$FF800F.l
+	rts
+; see print
+; string macro should follow jsr to this routine
+printsmallz							;String macro follows the call
+	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
+	movea.l	4(sp),a1				;string after the call
+	bsr.w	printsmall				;print it
+	move.l	a1,4(sp)				;return past the string
+	movea.l	(sp)+,a1
+	rts
+; a1 = string macro
+; printx/y = x/y coordinate on map for printing
+; printm = map to print on
+; printa = attribute for characters
+;
+; string \-$ab,$xx,$yy,'Sample!'\
+;
+; a = map number (1-3)
+; b = color/priority (0-3 = color fam,prio off), (4-7 = color fam, prio on)
+; xx = x coord to print at
+; yy = y coord to print at
+printsmall							;Print string macro a1 at printx/y/m with printa; uses the setup font
+									;(setupfontchars) when sflags6 bit 3 is set
+	move.w	(disflags).l,-(sp)
+	bset.b	#dfng,(disflags).l
+	movem.l	d0-d3/a0/a2-a3,-(sp)
+	movea.l	#$18D42,a3				;char set bases, picked by printfontset (CD: the cartridge has
+									;#(smallfontchars-M68K_RAM))
+	btst.b	#3,(sflags6).l			;setup font?
+	beq.w	.start
+	movea.l	#$17EA2,a3				;setup font char base (CD: the cartridge has #(setupfontchars-M68K_RAM))
+.start								;font chosen
+	bsr.w	xyVmMap
+	move.w	(printa).l,d2			;attribute
+	move.w	(a1)+,d3
+	subi.w	#2,d3					;minus the length word
+	bra.w	.1
+.0									;each string byte
+	move.b	(a1)+,d0
+	ext.w	d0
+	bgt.w	.nocom
+	neg.w	d0						;control code (0 = padding)
+	asl.w	#2,d0
+	movea.l	#ControlCodeJumpTable,a2
+	movea.l	(a2,d0.w),a2			;its routine
+	jsr	(a2)
+	bra.w	.1
+.nocom								;not a control code
+	cmpi.b	#$40,d0					;'@'?
+	bne.w	.noblank
+	move.w	#$7FF,d0				;blank char
+	bra.w	.p
+.noblank							;d0 <> $40
+	cmpi.b	#$5E,d0					;'^'?
+	beq.w	.skip
+	asl.w	#1,d0					;ascii -> word index into the font map
+;CD: no cartridge twin
+	movea.l	(SmallFontMapPtr).l,a2
+	btst.b	#$3,(sflags6).l
+	beq.w	.4
+	movea.l	(PrintFont2MapPtr).l,a2
+.4									;font map chosen
+	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0	;char of the font
+	move.w	(printfontset).l,d1
+	add.w	(a3,d1.w),d0
+.p									;print the cell
+	add.w	d2,d0					;for alternate paletes
+;CD: no cartridge twin
+.L38E3E
+	btst.b	#$7,$FF800E.l
+	bne.s	.L38E3E
+	move.w	d0,$FF8022.l
+	move.w	#$D,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.L38E5E
+	btst.b	#$6,$FF800E.l
+	beq.s	.L38E5E
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.L38E78
+	btst.b	#$6,$FF800E.l
+	bne.s	.L38E78
+	bclr.b	#$7,$FF800F.l
+	addi.w	#1,(printx).l
+.1									;loop the string
+	dbf	d3,.0						;d3 = bytes left in the string
+	movem.l	(sp)+,d0-d3/a0/a2-a3
+	move.w	(sp)+,(disflags).l
+	rts
+.skip								;d0 = $5E
+	addi.w	#1,(printx).l			;'^': skip a column
+	bsr.w	xyVmMap
+	bra.w	.1
+ControlCodeJumpTable				;printsmall control codes, indexed by -byte
+	dc.l	rtss2
+	dc.l	ControlCode_SetMap
+	dc.l	ControlCode_SetAttribute
+	dc.l	ControlCode_SetX
+	dc.l	ControlCode_SetY
+	dc.l	ControlCode_AddX
+	dc.l	ControlCode_AddY
+	dc.l	ControlCode_SetFont
+	dc.l	ControlCode_SetMapAndPosition
+ControlCode_SetMapAndPosition		;control code -8, next 4 bytes = attribute, map, x, y
+	bsr.w	ControlCode_SetAttribute	;attribute
+	bsr.w	ControlCode_SetMap
+	bsr.w	ControlCode_SetX
+	bra.w	ControlCode_SetY
+ControlCode_SetMap					;Control code -1, next byte = map number -> printm
+	move.b	(a1)+,d0
+	subi.w	#1,d3					;byte used
+	andi.w	#3,d0
+	asl.w	#2,d0
+	subi.w	#4,d0
+	move.w	d0,(printm).l
+	bra.w	xyVmMap
+ControlCode_SetAttribute			;Control code -2, next byte = palette/priority -> printa
+	move.b	(a1)+,d2
+	andi.w	#7,d2
+	subi.w	#1,d3					;byte used
+	ror.w	#3,d2
+	move.w	d2,(printa).l
+	rts
+ControlCode_SetX					;Control code -3, next byte = printx
+	clr.w	d0
+	move.b	(a1)+,d0
+	subi.w	#1,d3					;byte used
+	move.w	d0,(printx).l
+	bra.w	xyVmMap
+ControlCode_SetY					;Control code -4, next byte = printy
+	clr.w	d0
+	move.b	(a1)+,d0
+	subi.w	#1,d3					;byte used
+	move.w	d0,(printy).l
+	bra.w	xyVmMap
+ControlCode_AddX					;control code -5, add the next (signed) byte to printx
+	move.b	(a1)+,d0
+	ext.w	d0
+	subi.w	#1,d3					;byte used
+	add.w	d0,(printx).l
+	bra.w	xyVmMap
+ControlCode_AddY					;control code -6, add the next (signed) byte to printy
+	move.b	(a1)+,d0
+	ext.w	d0
+	subi.w	#1,d3					;byte used
+	add.w	d0,(printy).l
+	bra.w	xyVmMap
+ControlCode_SetFont					;control code -7, next byte = char set index
+	clr.w	d0
+	move.b	(a1)+,d0
+	subi.w	#1,d3					;byte used
+	asl.w	#1,d0
+	move.w	d0,(printfontset).l
+	rts
+; see print
+; string macro should follow jsr to this routine
+printz								;print the String that follows the bsr/jsr to this routine, then return
+									;past it
+	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
+	movea.l	4(sp),a1				;string after the call
+	bsr.w	print
+	move.l	a1,4(sp)				;return past the string
+	movea.l	(sp)+,a1
+	rts
+; a1 = string macro
+; printx/y = x/y coordinate on map for printing
+; printm = map to print on
+; printa = attribute for characters
+;
+; string \-$ab,$xx,$yy,'Sample!'\
+; a = map number (1-3)
+; b = color/priority (0-3 = color fam, prio off), (4-7 = color fam, prio on)
+; xx = x coord to print at
+; yy = y coord to print at
+print								;a1 = string macro, printx/y = x/y cordinate on map for printing, printm =
+									;map to print on, printa = attribute for characters. string
+									;\-$ab,$xx,$yy,'Sample!'\ : a = map number (1-3), b = color/priority (0-3
+									;= color fam, prio off),(4-7 = color fam, prio on), xx/yy = x/y cord to
+									;print at. '@' = char $7FF, '^' = skip a column
+	move.w	(disflags).l,-(sp)
+	bset.b	#dfng,(disflags).l
+	movem.l	d0-d3/a0/a2,-(sp)
+	bsr.w	xyVmMap
+	move.w	(printa).l,d2			;attribute
+	move.w	(a1)+,d3
+	subi.w	#2,d3					;minus the length word
+	bra.w	.1
+.0									;each string byte
+	move.b	(a1)+,d0
+	beq.w	.1
+	ext.w	d0
+	bpl.w	.nocom
+	neg.w	d0						;-$ab: new attribute, map, x, y
+	move.w	d0,d2
+	asl.w	#8,d2					;shift left 9 in all
+	asl.w	#1,d2
+	andi.w	#$F800,d2				;b (bits 7-4 of the code) -> palette/priority bits 15-11
+	move.w	d2,(printa).l
+	andi.w	#3,d0					;a = map number
+	asl.w	#2,d0
+	subi.w	#4,d0					;printm = (map-1)*4
+	move.w	d0,(printm).l
+	move.b	(a1)+,d0
+	ext.w	d0
+	move.w	d0,(printx).l
+	move.b	(a1)+,d1
+	ext.w	d1
+	move.w	d1,(printy).l
+	bsr.w	xyVmMap
+	subi.w	#2,d3					;two extra bytes
+	bra.w	.1
+.nocom								;d0 >= 0
+	cmpi.b	#$40,d0					;'@'?
+	bne.w	.noblank
+	move.w	#$7FF,d0				;blank char
+	bra.w	.p
+.noblank							;d0 <> $40
+	cmpi.b	#$5E,d0					;'^'?
+	beq.w	.skip
+	asl.w	#1,d0					;ascii -> word index into the font map
+;CD: no cartridge twin
+	movea.l	(SmallFontMapPtr).l,a2
+	btst.b	#$3,(sflags6).l
+	beq.w	.2
+	movea.l	(PrintFont2MapPtr).l,a2
+.2									;font map chosen
+	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0	;char of the font
+	btst.b	#3,(sflags6).l			;setup font?
+	beq.w	.3
+	add.w	(setupfontchars).l,d0
+	bra.w	.p
+.3									;bit 3 of sflags6 clear
+	add.w	(smallfontchars).l,d0	;plus the small font base
+.p									;print the cell
+	add.w	d2,d0					;for alternate palettes
+;CD: no cartridge twin
+.L3904C
+	btst.b	#$7,$FF800E.l
+	bne.s	.L3904C
+	move.w	d0,$FF8022.l
+	move.w	#$D,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.L3906C
+	btst.b	#$6,$FF800E.l
+	beq.s	.L3906C
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.L39086
+	btst.b	#$6,$FF800E.l
+	bne.s	.L39086
+	bclr.b	#$7,$FF800F.l
+	addi.w	#1,(printx).l
+.1									;loop the string
+	dbf	d3,.0						;d3 = bytes left in the string
+	movem.l	(sp)+,d0-d3/a0/a2
+	move.w	(sp)+,(disflags).l
+	rts
+.skip								;d0 = $5E
+	addi.w	#1,(printx).l			;'^': skip a column
+	bsr.w	xyVmMap
+	bra.w	.1
+FormatAndPrintTime					;d0 bits 14-15 = period, bits 0-13 = seconds
+	swap	d0						;period to the low word
+	clr.w	d0
+	rol.l	#2,d0					;d0.w = period
+	movea.l	#PeriodLabelTable,a1
+	bsr.w	Fprintsmall				;print it
+	addi.w	#2,(printx).l			;2 columns right
+	swap	d0
+	lsr.w	#2,d0					;seconds
+	bsr.w	PushTime
+	bra.w	print
+PeriodLabelTable					;String list for FormatAndPrintTime: " 1", " 2", " 3", "OT"
+	String	' 1'
+	String	' 2'
+	String	' 3'
+	String	'OT'
+; convert d0 into string format of min:sec
+PushTime							;convert d0 into string format of minutes:seconds. Return a1 = string.
+									;pads the minutes to 2 places with a space
+	movea.l	#$17F10,a1				;end of the buffer (CD: the cartridge has #(mesarea+30-M68K_RAM))
+	move.l	d0,-(sp)
+	move.l	a1,-(sp)
+	ext.l	d0
+	divu.w	#$A,d0
+	swap	d0
+	addi.w	#$30,d0
+	move.b	d0,-(a1)				;ones of seconds
+	swap	d0
+	ext.l	d0
+	divu.w	#6,d0
+	swap	d0
+	addi.w	#$30,d0
+	move.b	d0,-(a1)				;tens of seconds
+	swap	d0
+	move.b	#$3A,-(a1)
+	ext.l	d0
+	divu.w	#$A,d0
+	swap	d0
+	addi.w	#$30,d0
+	move.b	d0,-(a1)				;ones of minutes
+	swap	d0
+	move.b	#$20,-(a1)
+	tst.w	d0						;tens of minutes?
+	beq.w	.noz
+	addi.w	#$30,d0
+	move.b	d0,(a1)					;tens of minutes
+.noz								;leading zero blanked
+	move.l	(sp)+,d0				;d0 = end address of the string
+	sub.l	a1,d0
+	addi.w	#2,d0					;length incl. the length word
+	btst	#0,d0					;odd?
+	beq.w	.1
+	clr.b	-(a1)					;pad to an even length
+	addi.w	#1,d0
+.1									;length made even
+	move.w	d0,-(a1)				;string length word in front
+	move.l	(sp)+,d0
+	rts
+PushNumber							;convert d0 into string format of base 10 number, no leading zeros. Return
+									;a1 = string
+	movea.l	#(PushNumberBuf-M68K_RAM),a1	;end of the buffer
+	move.l	d0,-(sp)
+	move.l	a1,-(sp)
+.0									;loop
+	ext.l	d0
+	divu.w	#$A,d0
+	swap	d0
+	addi.w	#$30,d0
+	move.b	d0,-(a1)
+	swap	d0
+	tst.w	d0						;more?
+	bne.w	.0						;quotient left: more digits
+	move.l	(sp)+,d0				;d0 = end address of the string
+	sub.l	a1,d0
+	addi.w	#2,d0					;length incl. the length word
+	btst	#0,d0					;odd?
+	beq.w	.1
+	clr.b	-(a1)					;pad to an even length
+	addi.w	#1,d0
+.1									;length made even
+	move.w	d0,-(a1)				;string length word in front
+	move.l	(sp)+,d0
+	rts
+PushNumberWidth						;right-justified number
+	movem.l	d0-d3,-(sp)
+	movea.l	#(PushWidthBuf+2-M68K_RAM),a1	;a1 = the digits after the PushWidthBuf length word
+	moveq	#1,d2					;move 1 into d2
+	sub.w	d2,d1					;sub d2 from d1
+	bra.w	.loop
+.mul								;power of 10 for the width
+	mulu.w	#$A,d2					;mult d2 by 10 dec
+.loop								;loop the width
+	dbf	d1,.mul						;exit when d1 is 0
+	moveq	#$20,d3					;move 20 into d3
+.loop2								;loop
+	ext.l	d0
+	divu.w	d2,d0					;divide d2 into d0
+	bne.w	.0						;branch if not equal
+	cmpi.w	#1,d2					;compare d2 to 1
+	beq.w	.0
+	move.w	d3,d0					;move d3 into d0
+	bra.w	.put
+.0									;a digit (or a needed 0)
+	;DeterStrLength?+26   j
+	moveq	#$30,d3
+	add.w	d3,d0					;add d3 to d0
+.put								;store the digit or space
+	move.b	d0,(a1)+				;move d0 into a1 and increment a1
+	swap	d0
+	divu.w	#$A,d2					;divide d2 by 10 dec
+	bne.w	.loop2					;branch if not equal to 0
+	move.l	a1,d0					;move a1 into d0
+;CD: no cartridge twin
+	subi.l	#$17F56,d0
+	btst	#0,d0					;test bit 0 of d0
+	beq.w	.00
+	clr.b	(a1)+					;clear byte at a1 and increment
+	addi.w	#1,d0					;add 1 to d0
+.00									;length made even
+	movea.l	#(PushWidthBuf-M68K_RAM),a1	;a1 = PushWidthBuf again
+	move.w	d0,(a1)					;move d0 into a1 address location
+	movem.l	(sp)+,d0-d3
+	rts
+appendz								;see appstring. String macro should follow the bsr/jsr to this routine
+	movea.l	(sp)+,a1
+	bsr.w	appstring
+	jmp	(a1)
+; append string a1 to string a3
+appstring							;append string a1 to string a3
+	movem.l	d0/a0,-(sp)
+	lea	strtext(a3),a0				;a0 scans a3's text for its terminating zero
+	move.w	(a3),d0
+	subi.w	#3,d0
+	bmi.w	.1
+;CD: no cartridge twin
+.0									;CD: placed where the disc branches to it
+	adda.w	#$1,a0
+	tst.b	(a0)					;zero?
+	dbeq	d0,.0					;stop at the zero byte
+.1									;end found
+	move.w	(a1)+,d0
+	subi.w	#3,d0
+	bmi.w	.ex						;empty source: nothing to append
+.2									;copy each char
+	move.b	(a1)+,(a0)+
+	bne.w	.3						;zero?
+;CD: no cartridge twin
+	suba.w	#$1,a0
+.3									;next char
+	dbf	d0,.2						;next char
+	move.l	a0,d0
+	btst	#0,d0					;odd?
+	beq.w	.4
+	clr.b	(a0)+					;pad to an even length
+	addi.l	#1,d0
+.4									;length made even
+	sub.l	a3,d0
+	move.w	d0,(a3)
+.ex									;exit: restore the registers
+	movem.l	(sp)+,d0/a0
+	rts
+printbigz							;String macro follows the call
+	move.l	a1,-(sp)				;4(sp) = return address = the String after the call
+	movea.l	4(sp),a1				;string after the call
+	bsr.w	printbig				;print it
+	move.l	a1,4(sp)				;return past the string
+	movea.l	(sp)+,a1
+	rts
+printbig							;same as print, only use bigfont.map graphics. a1 = string macro, printx/y
+									;= x/y cordinate on map for printing, printm = map to print on, printa =
+									;attribute for characters. string \-$ab,$xx,$yy,'Sample!'\ : a = map
+									;number (1-3), b = color/priority (0-3 = color fam, prio off),(4-7 = color
+									;fam, prio on), xx/yy = x/y cord to print at
+	move.w	(disflags).l,-(sp)
+	bset.b	#dfng,(disflags).l
+	movem.l	d0-d7/a0/a2,-(sp)
+	move.w	(printx).l,d4
+	move.w	(printy).l,d5
+	move.w	(printa).l,d6			;attribute
+	add.w	(BigFontchars).l,d6
+	move.w	(a1)+,d3
+	subi.w	#2,d3					;minus the length word
+	bra.w	.1
+.0									;each string byte
+	move.b	(a1)+,d0
+	beq.w	.1
+	ext.w	d0
+	bpl.w	.nocom
+	neg.w	d0						;-$ab: new attribute, map, x, y
+	move.w	d0,d6
+	asl.w	#8,d6					;shift left 9 in all
+	asl.w	#1,d6
+	andi.w	#$F800,d6				;b -> palette/priority bits
+	move.w	d6,(printa).l
+	add.w	(BigFontchars).l,d6		;d6 = attribute + big font char base
+	andi.w	#3,d0					;a = map number
+	asl.w	#2,d0
+	subi.w	#4,d0					;printm = (map-1)*4
+	move.w	d0,(printm).l
+	move.b	(a1)+,d4
+	ext.w	d4
+	move.w	d4,(printx).l
+	move.b	(a1)+,d5
+	ext.w	d5
+	move.w	d5,(printy).l
+	subi.w	#2,d3					;two extra bytes consumed
+	bra.w	.1
+.nocom								;d0 >= 0
+	cmpi.b	#$61,d0					;below 'a'?
+	blt.w	.2
+	cmpi.b	#$7A,d0					;above 'z'?
+	bgt.w	.2
+	addi.b	#-$20,d0				;upper case
+.2									;upper case
+	move.w	d3,-(sp)
+	bsr.w	PrintBigChar			;print the char
+	move.w	(sp)+,d3
+.1									;loop the string
+	dbf	d3,.0						;d3 = bytes left in the string
+	move.w	d4,(printx).l
+	move.w	d5,(printy).l
+	movem.l	(sp)+,d0-d7/a0/a2
+	move.w	(sp)+,(disflags).l
+	rts
+PrintBigChar						;print big font char d0 (ascii) through bfasciicon
+	subi.w	#$20,d0
+	movea.l	#bfasciicon,a0
+	moveq	#1,d2					;2 columns
+	move.b	(a0,d0.w),d1
+	ext.w	d1
+	bpl.w	.0
+	neg.w	d1
+	clr.w	d2
+.0									;tile offset ready
+	asl.w	#1,d1
+;CD: no cartridge twin
+	movea.l	(BigFontMapPtr).l,a0
+	adda.l	jimdata(a0),a0
+.loop								;each tile of the char
+	move.w	mapwords(a0,d1.w),d3
+	bsr.w	PutBigTile
+	move.w	(a0),d7
+	asl.w	#1,d7					;2 bytes a cell
+	add.w	d7,d1
+	move.w	mapwords(a0,d1.w),d3
+	sub.w	d7,d1
+	addq.w	#1,d5
+	bsr.w	PutBigTile
+	subq.w	#1,d5
+	addq.w	#1,d4
+	addq.w	#2,d1
+	dbf	d2,.loop					;loop
+	rts
+PutBigTile							;write one big font tile to the map at printx / printy
+	add.w	d6,d3					;plus attribute and chars
+	movem.l	d1/a0,-(sp)
+	move.w	d5,d0
+	movea.l	#VmMAP1,a0
+	adda.w	(printm).l,a0
+	move.w	2(a0),d1
+	asl.w	d1,d0					;y * map width
+	add.w	d4,d0
+	asl.w	#1,d0					;2 bytes a cell
+	add.w	(a0),d0					;plus the map address
+	bsr.w	Vmaddr					;set the vram address
+;CD: no cartridge twin
+.L39396
+	btst.b	#$7,$FF800E.l
+	bne.s	.L39396
+	move.w	d3,$FF8022.l
+	move.w	#$D,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.L393B6
+	btst.b	#$6,$FF800E.l
+	beq.s	.L393B6
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.L393D0
+	btst.b	#$6,$FF800E.l
+	bne.s	.L393D0
+	bclr.b	#$7,$FF800F.l
+	movem.l	(sp)+,d1/a0
+	rts
+AddSmallFont						;transfer smallfont.map tiles to vram. d4 = char to start tiles at, return
+									;d4 = end of tiles + 1. Goes through DecompressGraphics
+	move.w	d4,(smallfontchars).l
+;CD: no cartridge twin
+	movea.l	(SmallFontMapPtr).l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain
+AddFramer							;CD: entered here; the cartridge AddFramer starts at its first twin line,
+									;$39402
+	movea.l	(FramerMapPtr).l,a2
+	addq.l	#$8,a2
+	move.w	d4,(framercset).l		;frame chars
+	bra.w	DecompressGraphicsPlain
+AddTeamBlock						;transfer TeamBlocks.map tiles to vram at char 2. Return d4 = end of tiles
+									;+ 1. Goes through DecompressGraphics
+	moveq	#2,d4
+;CD: no cartridge twin
+	movea.l	(TeamblocksmapPtr).l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain

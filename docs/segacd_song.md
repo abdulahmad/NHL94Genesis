@@ -29,8 +29,8 @@ Five calls, all `jsr $371D2`:
 
 `sfxcd.asm` is the cartridge `sfx` with the FM call removed. A negative id returns. Otherwise the id is saved at `$17F64` (cartridge `lastsfx`) and written to `$FF8022`, and command `$26` is posted to `$FF8020` with the bit-6 handshake. Six sites call `$3710C`. One of them is the horn: file `$10E8E` pushes `$4` and calls it. That `$4` is cartridge `SFXhorn`.
 
-The main CPU loop at `$FF3622` waits on bit 6, reads `$A12020`, and calls the handler at `$FF471C` indexed by that command. The table is zero in the file. The static handler list sits at `$FF371C`, 64 longs. Command `$26` is past the first command table at `$FF01BE`, which stops at `$1E`.
+The main CPU loop at `$FF4622` waits on bit 6, reads `$A12020`, and calls the handler at `$FF471C` indexed by that command. That is the static handler list, 64 longs at file `$371C` (`main/maintable.asm`): MAIN.BIN runs at `$FF1000`. Command `$26` is past the first command table at `$FF11BE`, which stops at `$1E`.
 
 ## Command $34
 
-`gate34.asm` writes the stack word to `$FF8028` and posts `$34` to `$FF8026`, handshaking on flag bits 3 and 4 instead of bit 6. The main CPU loop at `$FF38AE` reads `$A12026` with those same bits and uses the same `$FF471C` handler table. No `jsr $37174` is in `HOCKEY.BIN`, `STARTER.BIN`, `MAIN.BIN`, or `PLAYER.BIN`.
+`gate34.asm` writes the stack word to `$FF8028` and posts `$34` to `$FF8026`, handshaking on flag bits 3 and 4 instead of bit 6. The main CPU loop at `$FF48AE` reads `$A12026` with those same bits and uses the same `$FF471C` handler table. No `jsr $37174` is in `HOCKEY.BIN`, `STARTER.BIN`, `MAIN.BIN`, or `PLAYER.BIN`.
