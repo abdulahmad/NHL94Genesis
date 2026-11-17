@@ -22,7 +22,8 @@
 	include	replay94.asm			; $009FD0 replay
 	include	logic94.asm				; $00A9D6 player update, input, assignments
 	include	middle94.asm			; $010E88 shared helpers, decompress, print
-	include	penalty94.asm			; $011F2C penalties, scoreboard, highlights
+	include	penalty94.asm			; $011F2C penalties
+	include	scoreboard94.asm		; $012A7C power play graphic, rink mode, scoreboard, ticker, highlights
 	include	collide94.asm			; $0138AC puck, players, walls, fights, goals
 	include	video94.asm				; $015D9A vblank, clock, crowd, rink scroll
 	include	setup94.asm				; $0169FA ice setup, attract, menus, playoff data
