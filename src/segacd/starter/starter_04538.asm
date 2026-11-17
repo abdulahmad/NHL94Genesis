@@ -1,7 +1,7 @@
-	dc.b	$88,$46,$69,$6C,$6D,$4F,$70,$65,$6E,$00,$00,$48	; .FilmOpen..H
-L25844	dc.b	$46,$69,$6C,$6D,$20,$4F,$70,$65,$6E,$00	; Film Open.
-L2584E	dc.b	$49,$6E,$69,$74,$45,$6E,$67,$69,$6E,$65,$00,$00	; InitEngine..
-L2585A	dc.b	$48,$65,$61,$64,$65,$72,$53,$65,$63,$74,$73,$3A,$20,$25,$64,$00	; HeaderSects: %d.
-L2586A	dc.b	$46,$69,$6C,$6D,$20,$61,$74,$20,$25,$64,$20,$69,$73,$20,$62,$61	; Film at %d is ba
+	dc.b	$88,'FilmOpen',$00,$00,$48	; .FilmOpen..H
+Wait_5	dc.b	'Film Open',$00	; Film Open.
+Wait_6	dc.b	'InitEngine',$00,$00	; InitEngine..
+Wait_7	dc.b	'HeaderSects: %d',$00	; HeaderSects: %d.
+Wait_8	dc.b	'Film at %d is ba'	; Film at %d is ba
 	dc.b	$64,$00	; d.
-L2587C	dc.b	$46,$69,$6C,$6D,$4F,$70,$65,$6E,$69,$6E,$67,$20,$25,$64,$00,$00	; FilmOpening %d..
+Wait_9	dc.b	'FilmOpening %d',$00,$00	; FilmOpening %d..

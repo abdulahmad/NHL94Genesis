@@ -4,24 +4,24 @@
 
 
 
-L26126	link	a6,#$0
+CopyData_2	link	a6,#$0
 	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
-	jsr	L25E34(pc)
+	jsr	findSmallestBlock_1(pc)
 	move.l	d0,d7
 	cmpi.l	#$14000,d7
-	bge.b	L26144
+	bge.b	.l26144
 	moveq	#-1,d0
-	bra.b	L261B6
-L26144	cmpi.l	#$34000,d7
-	ble.b	L26152
+	bra.b	.l261B6
+.l26144	cmpi.l	#$34000,d7
+	ble.b	.l26152
 	move.l	#$34000,d7
-L26152	move.l	d7,d0
+.l26152	move.l	d7,d0
 	; SNASM rewrites sub.l #imm,dn into subi.l. The disc is 90BC.
 	dc.w	$90BC
 	dc.l	$00004000
 	move.l	#$800,d1
-	jsr	L26632(pc)
+	jsr	GetData_15(pc)
 	move.l	d0,d1
 	mulu.w	#$800,d0
 	swap	d1
@@ -34,24 +34,24 @@ L26152	move.l	d7,d0
 	dc.w	$D0BC
 	dc.l	$00004000
 	move.l	d0,-(sp)
-	jsr	L25E7E(pc)
+	jsr	MaxFree_1(pc)
 	move.l	d0,(a4)
 	addq.w	#$4,sp
-	bne.b	L26190
+	bne.b	.l26190
 	moveq	#-1,d0
-	bra.b	L261B6
-L26190	moveq	#$0,d0
+	bra.b	.l261B6
+.l26190	moveq	#$0,d0
 	move.l	d0,$8(a4)
 	move.l	d0,$C(a4)
 	move.l	$C(a6),$10(a4)
 	move.l	d0,$14(a4)
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	a4,$1C(a0)
 	move.l	a4,-(sp)
 	jsr	EngineIdle(pc)
 	moveq	#$0,d0
 	addq.w	#$4,sp
-L261B6	movem.l	-$8(a6),d7/a4
+.l261B6	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	rts
 

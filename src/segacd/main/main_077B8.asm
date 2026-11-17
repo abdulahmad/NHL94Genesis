@@ -1,4 +1,4 @@
-LFF77B8	movem.l	d0-d7/a0-a6,-(sp)
+.lFF77B8	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$41FA,$0C5C
 	cmpi.w	#$1234,(a0)
 	dc.w	$6600,$0264
@@ -183,7 +183,7 @@ LFF77B8	movem.l	d0-d7/a0-a6,-(sp)
 .l7A2A	andi.b	#$FE,ccr
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-LFF7A34	movem.l	d1-d4/a0-a1,-(sp)
+.lFF7A34	movem.l	d1-d4/a0-a1,-(sp)
 	dc.w	$41FA,$09E0
 	move.w	d1,$1C8(a0)
 	move.w	d2,$1CA(a0)
@@ -228,7 +228,7 @@ LFF7A34	movem.l	d1-d4/a0-a1,-(sp)
 .l7AD4	ori.b	#$1,ccr
 .l7AD8	movem.l	(sp)+,d1-d4/a0-a1
 	rts
-LFF7ADE	movem.l	d1-d2/a0,-(sp)
+.lFF7ADE	movem.l	d1-d2/a0,-(sp)
 	dc.w	$41FA,$0978
 	clr.w	d0
 .l7AE8	cmp.w	(a0)+,d1
@@ -253,7 +253,7 @@ LFF7ADE	movem.l	d1-d2/a0,-(sp)
 	clr.w	d0
 .l7B30	movem.l	(sp)+,d1-d2/a0
 	rts
-LFF7B36	movem.l	d1-d2/a0,-(sp)
+.lFF7B36	movem.l	d1-d2/a0,-(sp)
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	dc.w	$6100,$07FC
@@ -277,7 +277,7 @@ LFF7B36	movem.l	d1-d2/a0,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
-LFF7B90	movem.l	a0-a1,-(sp)
+.lFF7B90	movem.l	a0-a1,-(sp)
 	dc.w	$41FA,$0884
 	move.w	#$0,$0(a0)
 	dc.w	$6100,$079E
@@ -304,7 +304,7 @@ LFF7B90	movem.l	a0-a1,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
 	rts
-LFF7BFC	movem.l	d1-d3/a0,-(sp)
+.lFF7BFC	movem.l	d1-d3/a0,-(sp)
 	dc.w	$41FA,$0948
 	move.l	d0,d1
 	swap	d1
@@ -320,7 +320,7 @@ LFF7BFC	movem.l	d1-d3/a0,-(sp)
 .l7C20	dc.w	$6100,$0008
 .l7C24	movem.l	(sp)+,d1-d3/a0
 	rts
-LFF7C2A	movem.l	d1-d2/a0,-(sp)
+.lFF7C2A	movem.l	d1-d2/a0,-(sp)
 	dc.w	$41FA,$07EA
 	move.w	#$0,(a0)
 	dc.w	$41FA,$0926
@@ -343,7 +343,7 @@ LFF7C2A	movem.l	d1-d2/a0,-(sp)
 	clr.w	d0
 .l7C70	movem.l	(sp)+,d1-d2/a0
 	rts
-LFF7C76	movem.l	d1/a0,-(sp)
+.lFF7C76	movem.l	d1/a0,-(sp)
 	dc.w	$41FA,$079E
 	move.w	#$0,$0(a0)
 .l7C84	dc.w	$6100,$06B8
@@ -379,7 +379,7 @@ LFF7C76	movem.l	d1/a0,-(sp)
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d1/a0
 	rts
-LFF7CF0	movem.l	d0-d1/a0-a1,-(sp)
+.lFF7CF0	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$43FA,$0868
 	cmpi.w	#$0,(a1)
 	dc.w	$6756
@@ -412,7 +412,7 @@ LFF7CF0	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$6100,$065E
 .l7D54	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Sub_FF7D5A	movem.l	d0-d2/a0-a1,-(sp)
+Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
 	dc.w	$43FA,$06BA
 	move.w	#$0,(a1)
 	dc.w	$6100,$05D6
@@ -461,7 +461,7 @@ Sub_FF7D5A	movem.l	d0-d2/a0-a1,-(sp)
 	clr.w	d0
 .l7E18	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-LFF7E1E	movem.l	d0-d1/a0-a1,-(sp)
+Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$41FA,$05F6
 	move.w	#$0,$0(a0)
 	move.w	#$0,$122(a0)
@@ -473,7 +473,7 @@ LFF7E1E	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-LFF7E52	movem.l	d0-d2/a0-a1,-(sp)
+.lFF7E52	movem.l	d0-d2/a0-a1,-(sp)
 	dc.w	$41FA,$05C2
 	move.w	#$0,$0(a0)
 	dc.w	$43FA,$065A
@@ -492,7 +492,7 @@ LFF7E52	movem.l	d0-d2/a0-a1,-(sp)
 .l7E8A	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-LFF7E96	movem.l	d0-d1/a0,-(sp)
+.lFF7E96	movem.l	d0-d1/a0,-(sp)
 	dc.w	$41FA,$057E
 	move.w	$122(a0),d1
 	lsl.w	#$2,d1
@@ -502,15 +502,15 @@ LFF7E96	movem.l	d0-d1/a0,-(sp)
 	dc.w	$0668,$0001,$0122
 	movem.l	(sp)+,d0-d1/a0
 	dc.w	$4E75
-LFF7EBC	dc.b	$48,$E7,$C0,$E0,$45,$FA,$05,$58,$0C,$6A,$00,$00,$01,$22,$67,$5E	; H...E..X.j..."g^
+.lFF7EBC	dc.b	$48,$E7,$C0,$E0,$45,$FA,$05,$58,$0C,$6A,$00,$00,$01,$22,$67,$5E	; H...E..X.j..."g^
 	dc.b	$41,$FA,$05,$EE,$0C,$50,$FF,$FF,$67,$54,$04,$50,$00,$01,$66,$48	; A....P..gT.P..fH
-	dc.b	$10,$28,$00,$03,$02,$00,$00,$F0,$E1,$48,$48,$40,$30,$28,$00,$02	; .(.......HH@0(..
+	dc.b	$10,$28,$00,$03,$02,$00,$00,$F0,$E1,'HH@0(',$00,$02	; .(.......HH@0(..
 	dc.b	$02,$00,$00,$0F,$00,$00,$00,$80,$61,$00,$FD,$06,$4A,$40,$67,$06	; ........a...J@g.
 	dc.b	$06,$50,$00,$01,$60,$22,$43,$FA,$05,$B8,$30,$3A,$06,$34,$04,$40	; .P..`"C...0:.4.@
 	dc.b	$00,$01,$E5,$48,$20,$B1,$00,$00,$23,$BC,$FF,$FF,$FF,$FF,$00,$00	; ...H ...#.......
 	dc.b	$04,$6A,$00,$01,$01,$22,$60,$AC,$D0,$FC,$00,$04,$60,$A6,$4C,$DF	; .j..."`.....`.L.
 	dc.b	$07,$03,$4E,$75	; ..Nu
-LFF7F30	movem.l	d1-d2/a0,-(sp)
+.lFF7F30	movem.l	d1-d2/a0,-(sp)
 	dc.w	$6100,$0408
 	tst.b	$A00072.l
 	dc.w	$6700,$0178
@@ -615,7 +615,7 @@ LFF7F30	movem.l	d1-d2/a0,-(sp)
 	dc.w	$6100,$0290
 	movem.l	(sp)+,d1-d2/a0
 	rts
-LFF80CA	movem.l	d1-d4/a1-a2,-(sp)
+.lFF80CA	movem.l	d1-d4/a1-a2,-(sp)
 	dc.w	$43FA,$051C
 	move.w	#$4,d2
 .l80D6	cmpi.l	#$FFFFFFFF,(a1)
@@ -683,13 +683,13 @@ LFF80CA	movem.l	d1-d4/a1-a2,-(sp)
 	ori.b	#$1,ccr
 .l8196	movem.l	(sp)+,d1-d4/a1-a2
 	rts
-LFF819C	movem.l	d1/a1,-(sp)
+.lFF819C	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
 	dc.w	$43FA,$0448
 	move.l	a0,(a1,d1.w)
 	movem.l	(sp)+,d1/a1
 	rts
-LFF81B0	movem.l	d1/a0-a1,-(sp)
+.lFF81B0	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
 .l81B6	cmpi.w	#$FFFF,(a1)
 	dc.w	$6604
@@ -713,7 +713,7 @@ LFF81B0	movem.l	d1/a0-a1,-(sp)
 .l81F0	ori.b	#$1,ccr
 .l81F4	movem.l	(sp)+,d1/a0-a1
 	rts
-LFF81FA	movem.l	d1-d3/a0-a2,-(sp)
+.lFF81FA	movem.l	d1-d3/a0-a2,-(sp)
 	dc.w	$43FA,$021A
 	move.w	#$0,(a1)
 	dc.w	$6100,$0136
@@ -784,7 +784,7 @@ LFF81FA	movem.l	d1-d3/a0-a2,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,d1-d3/a0-a2
 	rts
-LFF82F8	movem.l	a0-a1,-(sp)
+.lFF82F8	movem.l	a0-a1,-(sp)
 	dc.w	$41FA,$011C
 	move.w	#$0,(a0)
 	dc.w	$6100,$0038
@@ -802,13 +802,13 @@ LFF82F8	movem.l	a0-a1,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
 	rts
-LFF833E	move.w	#$100,$A11100.l
+.lFF833E	move.w	#$100,$A11100.l
 .l8346	btst.b	#$8,$A11100.l
 	bne.b	.l8346
 	rts
-LFF8352	move.w	#$0,$A11100.l
+.lFF8352	move.w	#$0,$A11100.l
 	rts
-LFF835C	movem.l	d0-d1/a1,-(sp)
+Set1MFlag_3	movem.l	d0-d1/a1,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$6400,$0042
 	move.b	#$3,$A12001.l
@@ -830,7 +830,7 @@ LFF835C	movem.l	d0-d1/a1,-(sp)
 	move.w	d1,$A12002.l
 .l83AA	movem.l	(sp)+,d0-d1/a1
 	rts
-LFF83B0	move.l	d0,-(sp)
+Set1MFlag_4	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$643E
 	dc.w	$303A,$022E
@@ -850,7 +850,7 @@ LFF83B0	move.l	d0,-(sp)
 	bne.b	.l83E0
 .l83F8	move.l	(sp)+,d0
 	rts
-LFF83FC	move.l	d0,-(sp)
+Set1MFlag_5	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$6410
 	move.l	a0,d0
@@ -859,23 +859,23 @@ LFF83FC	move.l	d0,-(sp)
 	movea.l	d0,a0
 .l8416	move.l	(sp)+,d0
 	rts
-LFF841A	dc.b	$00,$00	; ..
-LFF841C	dcb.b	$20,0
-LFF843C	dcb.b	$20,0
-LFF845C	dcb.b	$10,0
-LFF846C	dcb.b	$10,0
-LFF847C	dcb.b	$10,0
-LFF848C	dcb.b	$10,0
-LFF849C	dcb.b	$20,0
-LFF84BC	dcb.b	$82,0
-LFF853E	dc.b	$00,$00,$00,$00,$00,$00	; ......
-LFF8544	dc.b	$00,$00,$00,$00	; ....
-LFF8548	dc.b	$00,$00	; ..
-LFF854A	dcb.b	$10,0
-LFF855A	dc.b	$00,$00,$00,$00	; ....
-LFF855E	dcb.b	$8C,0
-LFF85EA	dc.b	$00,$00	; ..
-LFF85EC	dcb.b	$51,0
+.lFF841A	dc.b	$00,$00	; ..
+Set1MFlag_6	dcb.b	$20,0
+Set1MFlag_7	dcb.b	$20,0
+Set1MFlag_8	dcb.b	$10,0
+.lFF846C	dcb.b	$10,0
+.lFF847C	dcb.b	$10,0
+.lFF848C	dcb.b	$10,0
+.lFF849C	dcb.b	$20,0
+.lFF84BC	dcb.b	$82,0
+.lFF853E	dc.b	$00,$00,$00,$00,$00,$00	; ......
+.lFF8544	dc.b	$00,$00,$00,$00	; ....
+.lFF8548	dc.b	$00,$00	; ..
+Set1MFlag_9	dcb.b	$10,0
+Set1MFlag_10	dc.b	$00,$00,$00,$00	; ....
+Set1MFlag_11	dcb.b	$8C,0
+.lFF85EA	dc.b	$00,$00	; ..
+Set1MFlag_12	dcb.b	$51,0
 	incbin	..\Extracted\SegaCD\MAIN\main_0863D.bin
 	dcb.b	$9,0
 	dc.b	$01,$00,$00,$00,$02,$00,$00,$00,$03,$00,$00,$00,$04,$00,$00,$00	; ................

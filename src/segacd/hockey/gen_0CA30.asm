@@ -255,7 +255,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 .5	move.w	#$2,(printy).l
 .loop3	jsr	(printsmallz).l
 	dc.w	$0020
-	dc.b	$FE,$04,$FD,$05,$FA,$01,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$FD,$05
+	dc.b	$FE,$04,$FD,$05,$FA,$01,'                      ',$FD,$05
 	cmp.w	(VertLineScrolling).l,d2
 	bne.w	.6
 	move.w	d7,(printa).l

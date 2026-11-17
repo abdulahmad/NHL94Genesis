@@ -10,12 +10,12 @@
 ; See docs/segacd_film.md.
 
 
-L251AA	link	a6,#$0
+RestoreBios_26	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8(a6),a0
 	movea.l	$C(a6),a1
 	cmpi.w	#$534D,(a1)
-	bne.w	L252C4
+	bne.w	.l252C4
 	move.w	$8(a1),d0
 	ext.l	d0
 	move.w	$A(a1),d7
@@ -29,15 +29,15 @@ L251AA	link	a6,#$0
 	move.w	#$C,d0
 	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	beq.b	L251EC
+	beq.b	.l251EC
 	add.w	d6,d0
-L251EC	addq.w	#$1,d1
+.l251EC	addq.w	#$1,d1
 	lsl.w	#$5,d1
 	add.w	d1,d0
 	lsr.w	#$2,d0
 	subq.w	#$1,d0
-L251F6	move.l	(a1)+,(a0)+
-	dbra	d0,L251F6
+.l251F6	move.l	(a1)+,(a0)+
+	dbra	d0,.l251F6
 	move.l	(a1)+,d0
 	movea.l	a1,a2
 	adda.l	d0,a1
@@ -48,18 +48,18 @@ L251F6	move.l	(a1)+,(a0)+
 	adda.l	d6,a1
 	moveq	#$1,d3
 	subq.w	#$1,d7
-L25210	subq.w	#$1,d3
-	bne.b	L25218
+.l25210	subq.w	#$1,d3
+	bne.b	.l25218
 	move.l	(a4)+,d5
 	moveq	#$10,d3
-L25218	add.l	d5,d5
-	bcs.b	L25244
+.l25218	add.l	d5,d5
+	bcs.b	.l25244
 	add.l	d5,d5
-	bcs.b	L2522C
+	bcs.b	.l2522C
 	lea.l	$20(a0),a0
-	dbra	d7,L25210
-	bra.w	L252C4
-L2522C	move.l	(a1)+,(a0)+
+	dbra	d7,.l25210
+	bra.w	.l252C4
+.l2522C	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
@@ -67,12 +67,12 @@ L2522C	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
-	dbra	d7,L25210
-	bra.w	L252C4
-L25244	add.l	d5,d5
-	bcs.b	L25278
+	dbra	d7,.l25210
+	bra.w	.l252C4
+.l25244	add.l	d5,d5
+	bcs.b	.l25278
 	moveq	#$3,d4
-L2524A	moveq	#$0,d0
+.l2524A	moveq	#$0,d0
 	move.b	(a1)+,d0
 	lsl.w	#$2,d0
 	move.l	(a2,d0.w),d0
@@ -88,11 +88,11 @@ L2524A	moveq	#$0,d0
 	swap	d1
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+
-	dbra	d4,L2524A
-	dbra	d7,L25210
-	bra.b	L252C4
-L25278	moveq	#$3,d4
-L2527A	moveq	#$0,d0
+	dbra	d4,.l2524A
+	dbra	d7,.l25210
+	bra.b	.l252C4
+.l25278	moveq	#$3,d4
+.l2527A	moveq	#$0,d0
 	move.b	(a1)+,d0
 	add.w	d0,d0
 	move.w	(a3,d0.w),d1
@@ -121,9 +121,9 @@ L2527A	moveq	#$0,d0
 	move.b	d0,d1
 	move.l	d1,(a0)+
 	move.l	d2,(a0)+
-	dbra	d4,L2527A
-	dbra	d7,L25210
-L252C4	movem.l	(sp)+,d0-d7/a0-a5
+	dbra	d4,.l2527A
+	dbra	d7,.l25210
+.l252C4	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	addq.w	#$8,sp

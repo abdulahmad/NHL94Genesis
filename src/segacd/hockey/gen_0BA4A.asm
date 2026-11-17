@@ -408,10 +408,10 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	jsr	(Framer).l
 	jsr	(printbigz).l
 	dc.w	$0018
-	dc.b	$BD,$0E,$02,$52,$65,$63,$6F,$72,$64,$BD,$0D,$05,$48,$6F,$6C,$64,$65,$72,$73,$BD,$01,$09
+	dc.b	$BD,$0E,$02,'Record',$BD,$0D,$05,'Holders',$BD,$01,$09
 	jsr	(printsmallz).l
 	dc.w	$0010
-	dc.b	$F8,$06,$03,$05,$08,$F9,$01,$4E,$61,$6D,$65,$F9,$00,$00
+	dc.b	$F8,$06,$03,$05,$08,$F9,$01,'Name',$F9,$00,$00
 	bsr.w	ReadNameLog
 	clr.w	$17E62.l
 	bclr	#$6,(sflags6).l

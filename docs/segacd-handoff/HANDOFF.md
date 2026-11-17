@@ -14,6 +14,12 @@
 - Round 7: short-branch targets labeled, 18 more names from cartridge twins, 50 L labels made local, the rest numbered per routine (`<Routine>_<n>`, `<Routine>Sub<n>`; `hockey_seqnames.py`). These are CD-only or CD-changed entry points with no cartridge twin. About 700 dc lines remain (tables, strings, undecodable data).
 - MAIN.BIN (23%), STARTER.BIN (3%) and PLAYER.BIN (6%) are mostly undisassembled; their fragments still use `X_xxxx` equates for code outside the fragment. Bringing them to the HOCKEY structure means disassembling the rest of each file first.
 
+## Status 2026-11-17 (round 8): every disc program is one assembly
+- MAIN.BIN (`src/segacd/main.asm`), PLAYER.BIN (`player.asm`), STARTER.BIN (`starter.asm`) and HOCKEY.BIN (`hockey.asm`) each assemble from one top file plus parts in the same-named folder, byte for byte (`npm run build:segacd`). Assets (blocks of 512 bytes or more that are not code) are extracted at build time into Extracted/SegaCD/<FILE>/ (`tools/extractAssetsSegaCD.js`, `<dir>/assets.json`), like the cartridge.
+- Built by `tools/segcd_one.py` (hand fragments kept for names and comments, minus their X_ equates; the bytes between them rebuilt from the disc: code found by `tools/segcd_flow.py` as instructions, zero runs dcb.b, text dc.b with quoted strings, large blocks incbin). `segcd_locals.py` makes address-named labels local where every use is in one routine, `segcd_seqnames.py` numbers the rest per routine, `segcd_strs.py` quotes text. The old hand fragments are in git history (the commit before PR #250).
+- Sierra C function names come from the name tags in MAIN.BIN. Everything else in MAIN, PLAYER and STARTER is CD-only (SDK, film player, PCM, photo/career pages): no cartridge twin, so names are the hand names from the fragments, else `<Routine>_<n>` / `<Routine>Sub<n>`.
+- Left: data that is not flagged as code (tables, tile data, strings split across lines) is still dc.b/dc.w; code reached only by indirect jumps may still be dc.b.
+
 ## Coverage (from NHL94Genesis `docs/segacd.md`, 2026-11-10)
 | File | Size | Matched | Notes |
 |---|---|---|---|

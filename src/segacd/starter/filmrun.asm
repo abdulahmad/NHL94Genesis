@@ -6,15 +6,15 @@
 
 
 
-L25094	tst.w	$4(sp)
-	bne.b	L250F6
+.l25094	tst.w	$4(sp)
+	bne.b	.l250F6
 	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
-	lea.l	L24FC0(pc),a0
+	lea.l	RestoreBios_15(pc),a0
 	move.l	$12(a6),(a0)
-	lea.l	L24FBC(pc),a0
+	lea.l	RestoreBios_14(pc),a0
 	move.l	$E(a6),(a0)
-	lea.l	L24FD4(pc),a0
+	lea.l	RestoreBios_19(pc),a0
 	move.l	$22(a6),(a0)+
 	move.l	$1E(a6),(a0)+
 	move.l	$1A(a6),(a0)+
@@ -23,34 +23,34 @@ L25094	tst.w	$4(sp)
 	move.l	$2A(a6),(a0)+
 	movea.l	#$FF8000,a5
 	ori.w	#$4,$2(a5)
-	jsr	L25164(pc)
-	jsr	L253FE(pc)
+	jsr	RestoreBios_23(pc)
+	jsr	RestoreBios_33(pc)
 	move.l	$A(a6),-(sp)
-	jsr	L25636(pc)
+	jsr	Wait_1(pc)
 	addq.w	#$4,sp
 	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	tst.l	d0
 	rts
-L250F6	link	a6,#$0
+.l250F6	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
 	move.w	$8(a6),d0
 	subq.w	#$1,d0
-	bne.b	L2510C
-	jsr	L2588C(pc)
-	bra.b	L2511A
-L2510C	jsr	L25A3A(pc)
-	jsr	L2517E(pc)
-	jsr	L25418(pc)
+	bne.b	.l2510C
+	jsr	Wait_10(pc)
+	bra.b	.l2511A
+.l2510C	jsr	Wait_23(pc)
+	jsr	RestoreBios_24(pc)
+	jsr	RestoreBios_34(pc)
 	moveq	#$0,d0
-L2511A	movem.l	(sp)+,d1-d7/a0-a5
+.l2511A	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	tst.l	d0
 	rts
 	move.w	$0.w,d0
-L25128	addq.w	#$1,$0.w
+.l25128	addq.w	#$1,$0.w
 	cmp.w	$0.w,d0
-	beq.b	L25128
+	beq.b	.l25128
 	move.w	d0,$0.w
 	clr.l	$8.w
 	clr.l	$C.w
@@ -62,28 +62,28 @@ L25128	addq.w	#$1,$0.w
 	clr.l	$24.w
 	move.l	#$208008,$80.w
 	rts
-L25160	ori.b	#$0,d0
-L25164	lea.l	L25160(pc),a0
+RestoreBios_22	ori.b	#$0,d0
+RestoreBios_23	lea.l	RestoreBios_22(pc),a0
 	move.l	$5F36.w,(a0)
-	lea.l	L25190(pc),a0
+	lea.l	RestoreBios_25(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F36.w
 	move.w	(sp)+,sr
 	rts
-L2517E	movea.l	L25160(pc),a0
+RestoreBios_24	movea.l	RestoreBios_22(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F36.w
 	move.w	(sp)+,sr
 	rts
-L25190	movem.l	d0/a0,-(sp)
-	lea.l	L24FB8(pc),a0
+RestoreBios_25	movem.l	d0/a0,-(sp)
+	lea.l	RestoreBios_13(pc),a0
 	addq.l	#$1,(a0)
-	move.l	L24FE8(pc),d0
-	beq.b	L251A4
+	move.l	RestoreBios_20(pc),d0
+	beq.b	.l251A4
 	movea.l	d0,a0
 	jsr	(a0)
-L251A4	movem.l	(sp)+,d0/a0
+.l251A4	movem.l	(sp)+,d0/a0
 	rts
 

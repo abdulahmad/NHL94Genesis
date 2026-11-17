@@ -1,4 +1,4 @@
-L281C	movem.l	d0-d7/a0-a3,-(sp)
+LF64_17	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$BC000,a0
 	move.w	d0,d4
 	movea.w	d1,a1
@@ -44,7 +44,7 @@ L281C	movem.l	d0-d7/a0-a3,-(sp)
 	bne.w	.l288C
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-Sub_289A	movem.l	d0-d4,-(sp)
+LF64Sub4	movem.l	d0-d4,-(sp)
 	move.w	#$50,$E0(a6)
 	move.w	d0,d3
 	swap	d0
@@ -60,18 +60,18 @@ Sub_289A	movem.l	d0-d4,-(sp)
 	dbra	d2,.l28AC
 	movem.l	(sp)+,d0-d4
 	rts
-L28D0	dc.b	$16,$50,$6F,$77,$65,$72,$20,$70,$6C,$61,$79,$20,$61,$64,$76,$61	; .Power play adva
-	dc.b	$6E,$74,$61,$67,$65,$00,$1E,$50,$65,$6E,$61,$6C,$74,$79,$20,$6B	; ntage..Penalty k
-	dc.b	$69,$6C,$6C,$69,$6E,$67,$20,$64,$69,$73,$61,$64,$76,$61,$6E,$74	; illing disadvant
-	dc.b	$61,$67,$65,$00,$15,$48,$6F,$6D,$65,$20,$74,$65,$61,$6D,$20,$61	; age..Home team a
-	dc.b	$64,$76,$61,$6E,$74,$61,$67,$65,$00,$18,$52,$6F,$61,$64,$20,$74	; dvantage..Road t
-	dc.b	$65,$61,$6D,$20,$64,$69,$73,$61,$64,$76,$61,$6E,$74,$61,$67,$65	; eam disadvantage
-	dc.b	$00,$14,$4E,$75,$6D,$62,$65,$72,$20,$6F,$66,$20,$66,$6F,$72,$77	; ..Number of forw
-	dc.b	$61,$72,$64,$73,$00,$16,$4E,$75,$6D,$62,$65,$72,$20,$6F,$66,$20	; ards..Number of 
-	dc.b	$64,$65,$66,$65,$6E,$73,$65,$6D,$65,$6E,$00	; defensemen.
-L295B	dc.b	$0B,$47,$6F,$61,$6C,$69,$65,$20,$23,$20,$00	; .Goalie # .
-L2966	dc.b	$0B,$50,$6C,$61,$79,$65,$72,$20,$23,$20,$00,$00	; .Player # ..
-L2972	movem.l	d0-d2,-(sp)
+LF64_18	dc.b	$16,'Power play adva'	; .Power play adva
+	dc.b	'ntage',$00,$1E,'Penalty k'	; ntage..Penalty k
+	dc.b	'illing disadvant'	; illing disadvant
+	dc.b	$61,$67,$65,$00,$15,'Home team a'	; age..Home team a
+	dc.b	'dvantage',$00,$18,'Road t'	; dvantage..Road t
+	dc.b	'eam disadvantage'	; eam disadvantage
+	dc.b	$00,$14,'Number of forw'	; ..Number of forw
+	dc.b	'ards',$00,$16,'Number of '	; ards..Number of 
+	dc.b	'defensemen',$00	; defensemen.
+LF64_19	dc.b	$0B,'Goalie # ',$00	; .Goalie # .
+LF64_20	dc.b	$0B,'Player # ',$00,$00	; .Player # ..
+LF64_21	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
 	moveq	#$0,d2
 	abcd.b	d0,d1
@@ -92,7 +92,7 @@ L2972	movem.l	d0-d2,-(sp)
 	ori.l	#$200000,d7
 .l29B0	movem.l	(sp)+,d0-d2
 	rts
-L29B6	movem.l	d0-d2,-(sp)
+LF64_22	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
 	moveq	#$0,d1
 	moveq	#$0,d2
@@ -124,8 +124,8 @@ L29B6	movem.l	d0-d2,-(sp)
 	ori.l	#$25000000,d7
 .l2A18	movem.l	(sp)+,d0-d2
 	rts
-Sub_2A1E	movem.l	d0-d2/a0-a1,-(sp)
-	lea.l	L2A50(pc),a1
+LF64Sub5	movem.l	d0-d2/a0-a1,-(sp)
+	lea.l	.l2A50(pc),a1
 	moveq	#$0,d2
 	clr.b	(a1)+
 .l2A2A	move.l	d0,d1
@@ -141,8 +141,8 @@ Sub_2A1E	movem.l	d0-d2/a0-a1,-(sp)
 	bne.w	.l2A44
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-L2A50	dcb.b	$50,0
-L2AA0	movem.l	d0-d7/a1-a5,-(sp)
+.l2A50	dcb.b	$50,0
+LF64_23	movem.l	d0-d7/a1-a5,-(sp)
 	moveq	#$0,d0
 	movea.l	$1C(a6),a1
 	movea.l	$48(a6),a2
@@ -168,14 +168,14 @@ L2AA0	movem.l	d0-d7/a1-a5,-(sp)
 	move.w	(a1),d0
 	movea.l	a1,a2
 	adda.l	d0,a2
-	bra.w	L2B02
+	bra.w	.l2B02
 	dc.b	$30,$12,$45,$F2,$08,$08	; 0.E...
-L2B02	dc.b	$51,$C9,$FF,$F8,$30,$12,$41,$F2,$08,$00,$2D,$48,$00,$50,$57,$40	; Q...0.A...-H.PW@
+.l2B02	dc.b	$51,$C9,$FF,$F8,$30,$12,$41,$F2,$08,$00,$2D,$48,$00,$50,$57,$40	; Q...0.A...-H.PW@
 	dc.b	$20,$4A,$54,$88,$22,$6E,$00,$8E,$12,$18,$67,$00,$00,$08,$12,$C1	;  JT."n....g.....
 	dc.b	$51,$C8,$FF,$F6,$12,$BC,$00,$00,$20,$6E,$00,$8E,$10,$18,$0C,$00	; Q....... n......
 	dc.b	$00,$20,$66,$00,$FF,$F8,$4B,$FA,$15,$1F,$2D,$4D,$00,$9A,$3D,$7C	; . f...K...-M..=|
 	dc.b	$00,$02,$00,$A6,$4B,$FA,$14,$62,$2D,$4D,$00,$9E,$4B,$FA,$14,$34	; ....K..b-M..K..4
-	dc.b	$26,$48,$22,$6E,$00,$2C,$24,$6E,$00,$30,$0C,$6E,$00,$00,$00,$18	; &H"n.,$n.0.n....
+	dc.b	'&H"n',$00,$2C,$24,$6E,$00,$30,$0C,$6E,$00,$00,$00,$18	; &H"n.,$n.0.n....
 	dc.b	$67,$00,$00,$0A,$22,$6E,$00,$3C,$24,$6E,$00,$40,$20,$09,$67,$00	; g..."n.<$n.@ .g.
 	dc.b	$00,$A4,$70,$00,$74,$FE,$28,$49,$D9,$FC,$00,$00,$00,$05,$20,$4B	; ..p.t.(I...... K
 	dc.b	$10,$18,$12,$1C,$00,$00,$00,$20,$00,$01,$00,$20,$B2,$00,$67,$00	; ....... ... ..g.
@@ -184,12 +184,12 @@ L2B02	dc.b	$51,$C9,$FF,$F8,$30,$12,$41,$F2,$08,$00,$2D,$48,$00,$50,$57,$40	; Q..
 	dc.b	$65,$6E,$00,$04,$66,$00,$FF,$E8,$32,$11,$43,$F1,$18,$00,$60,$00	; en..f...2.C...`.
 	dc.b	$FF,$B6,$2D,$49,$00,$44,$30,$2E,$00,$5A,$D0,$40,$3D,$75,$00,$00	; ..-I.D0..Z.@=u..
 	dc.b	$00,$58,$6A,$00,$00,$48,$3D,$7C,$00,$00,$00,$B0,$04,$6E,$00,$01	; .Xj..H=|.....n..
-	dc.b	$00,$5A,$60,$00,$FF,$E2,$52,$42,$67,$00,$00,$2A,$22,$4A,$4B,$FA	; .Z`...RBg..*"JK.
+	dc.b	$00,$5A,$60,$00,$FF,$E2,$52,$42,$67,$00,$00,'*"JK',$FA	; .Z`...RBg..*"JK.
 	dc.b	$14,$93,$2D,$4D,$00,$9A,$3D,$7C,$00,$05,$00,$A6,$4B,$FA,$13,$B8	; ..-M..=|....K...
 	dc.b	$2D,$4D,$00,$9E,$4B,$FA,$13,$8A,$20,$09,$67,$00,$00,$08,$70,$00	; -M..K... .g...p.
 	dc.b	$60,$00,$FF,$64,$2D,$7C,$00,$00,$00,$00,$00,$44,$20,$6E,$00,$8E	; `..d-|.....D n..
 	dc.b	$4C,$DF,$3E,$FF,$4E,$75	; L.>.Nu
-L2C28	move.w	d0,$E0(a6)
+LF64_24	move.w	d0,$E0(a6)
 	swap	d0
 	move.w	d0,$E2(a6)
 	move.l	$62(a6),$E4(a6)
@@ -205,14 +205,14 @@ L2C28	move.w	d0,$E0(a6)
 .l2C60	tst.w	$DE(a6)
 	bne.w	.l2C60
 	rts
-L2C6A	move.w	(a1)+,d1
+LF64_25	move.w	(a1)+,d1
 	subq.w	#$1,d1
 	move.w	d1,d2
 	move.w	(a1)+,d7
 	subq.w	#$1,d7
 .l2C74	moveq	#$0,d4
 	move.w	d3,d4
-	bsr.w	L2D3A
+	bsr.w	LF64_26
 .l2C7C	btst.b	#$7,$FF800E.l
 	bne.b	.l2C7C
 	move.l	d4,$FF8022.l
@@ -249,38 +249,38 @@ L2C6A	move.w	(a1)+,d1
 	move.w	d1,d2
 	dbra	d7,.l2C74
 	rts
-L2D3A	andi.l	#$FFFF,d4
+LF64_26	andi.l	#$FFFF,d4
 	lsl.l	#$2,d4
 	lsr.w	#$2,d4
 	swap	d4
 	addi.l	#$40000000,d4
 	rts
-L2D4E	addq.w	#$1,$EC(a6)
+LF64_27	addq.w	#$1,$EC(a6)
 	rts
-L2D54	move.w	#$1,$102(a6)
+LF64_28	move.w	#$1,$102(a6)
 	addi.l	#$1,$96(a6)
 	cmpi.w	#$2,$DE(a6)
-	beq.w	L3272
+	beq.w	.l3272
 	cmpi.w	#$1,$DE(a6)
-	beq.w	L32EA
+	beq.w	.l32EA
 	cmpi.w	#$3,$DE(a6)
-	beq.w	L3046
+	beq.w	.l3046
 	cmpi.w	#$4,$DE(a6)
-	beq.w	L30A6
+	beq.w	.l30A6
 	cmpi.w	#$5,$DE(a6)
-	beq.w	L3100
+	beq.w	.l3100
 	cmpi.w	#$6,$DE(a6)
-	beq.w	L31F8
+	beq.w	.l31F8
 	cmpi.w	#$7,$DE(a6)
-	beq.w	L2F90
+	beq.w	.l2F90
 	cmpi.w	#$8,$DE(a6)
-	beq.w	L2F36
+	beq.w	.l2F36
 	cmpi.w	#$9,$DE(a6)
-	beq.w	L2E7E
+	beq.w	.l2E7E
 	cmpi.w	#$A,$DE(a6)
-	beq.w	L2DCA
-	bra.w	L3400
-L2DCA	movem.l	d0-d3/a0-a2,-(sp)
+	beq.w	.l2DCA
+	bra.w	.l3400
+.l2DCA	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	move.w	$E2(a6),d0
 	move.w	$E0(a6),d1
@@ -310,8 +310,8 @@ L2DCA	movem.l	d0-d3/a0-a2,-(sp)
 .l2E68	btst.b	#$3,$FF800E.l
 	bne.b	.l2E68
 	bclr.b	#$4,$FF800F.l
-	bra.w	L33FC
-L2E7E	movem.l	d0-d3/a0-a2,-(sp)
+	bra.w	.l33FC
+.l2E7E	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	move.w	$E2(a6),d0
 	andi.w	#$3FF,d0
@@ -341,10 +341,10 @@ L2E7E	movem.l	d0-d3/a0-a2,-(sp)
 	bclr.b	#$4,$FF800F.l
 	add.w	$E0(a6),d0
 	move.w	d0,$E2(a6)
-	bra.w	L33FC
-L2F36	movem.l	d0-d3/a0-a2,-(sp)
+	bra.w	.l33FC
+.l2F36	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
-	bsr.w	L3F10
+	bsr.w	LF64_43
 .l2F42	btst.b	#$4,$FF800E.l
 	bne.b	.l2F42
 	move.w	#$2C,$FF8026.l
@@ -356,9 +356,9 @@ L2F36	movem.l	d0-d3/a0-a2,-(sp)
 .l2F76	btst.b	#$3,$FF800E.l
 	bne.b	.l2F76
 	bclr.b	#$4,$FF800F.l
-	bsr.w	L3F04
-	bra.w	L33FC
-L2F90	movem.l	d0-d3/a0-a2,-(sp)
+	bsr.w	LF64_42
+	bra.w	.l33FC
+.l2F90	movem.l	d0-d3/a0-a2,-(sp)
 .l2F94	btst.b	#$4,$FF800E.l
 	bne.b	.l2F94
 	move.w	#$30,$FF8026.l
@@ -388,11 +388,11 @@ L2F90	movem.l	d0-d3/a0-a2,-(sp)
 	bne.b	.l302C
 	bclr.b	#$4,$FF800F.l
 	move.w	d0,$E2(a6)
-	bra.w	L33FC
-L3046	movem.l	d0-d3/a0-a2,-(sp)
+	bra.w	.l33FC
+.l3046	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	moveq	#$0,d0
-	bsr.w	L3480
+	bsr.w	LF64_30
 .l3054	btst.b	#$4,$FF800E.l
 	bne.b	.l3054
 	move.w	#$39,$FF8026.l
@@ -405,8 +405,8 @@ L3046	movem.l	d0-d3/a0-a2,-(sp)
 .l3090	btst.b	#$3,$FF800E.l
 	bne.b	.l3090
 	bclr.b	#$4,$FF800F.l
-	bra.w	L33FC
-L30A6	movem.l	d0-d3/a0-a2,-(sp)
+	bra.w	.l33FC
+.l30A6	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 .l30AE	btst.b	#$4,$FF800E.l
 	bne.b	.l30AE
@@ -420,8 +420,8 @@ L30A6	movem.l	d0-d3/a0-a2,-(sp)
 .l30EA	btst.b	#$3,$FF800E.l
 	bne.b	.l30EA
 	bclr.b	#$4,$FF800F.l
-	bra.w	L33FC
-L3100	movem.l	d0-d3/a0-a2,-(sp)
+	bra.w	.l33FC
+.l3100	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 .l3108	btst.b	#$4,$FF800E.l
 	bne.b	.l3108
@@ -459,8 +459,8 @@ L3100	movem.l	d0-d3/a0-a2,-(sp)
 .l31E2	btst.b	#$3,$FF800E.l
 	bne.b	.l31E2
 	bclr.b	#$4,$FF800F.l
-	bra.w	L33FC
-L31F8	movem.l	d0-d3/a0-a2,-(sp)
+	bra.w	.l33FC
+.l31F8	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	moveq	#$0,d0
 	move.w	$E0(a6),d0
@@ -469,7 +469,7 @@ L31F8	movem.l	d0-d3/a0-a2,-(sp)
 	move.l	d0,$BBC8C.l
 	move.w	$E4(a6),d0
 	move.l	d0,$BBC90.l
-	bsr.w	L3F10
+	bsr.w	LF64_43
 .l3224	btst.b	#$4,$FF800E.l
 	bne.b	.l3224
 	move.w	#$3A,$FF8026.l
@@ -481,9 +481,9 @@ L31F8	movem.l	d0-d3/a0-a2,-(sp)
 .l3258	btst.b	#$3,$FF800E.l
 	bne.b	.l3258
 	bclr.b	#$4,$FF800F.l
-	bsr.w	L3F04
-	bra.w	L33FC
-L3272	movem.l	d0-d3/a0-a2,-(sp)
+	bsr.w	LF64_42
+	bra.w	.l33FC
+.l3272	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	moveq	#$0,d0
 	move.w	$E0(a6),d0
@@ -491,7 +491,7 @@ L3272	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	$E2(a6),d0
 	move.l	d0,$BBC8C.l
 	move.l	$E4(a6),$BBC90.l
-	bsr.w	L3F10
+	bsr.w	LF64_43
 .l329C	btst.b	#$4,$FF800E.l
 	bne.b	.l329C
 	move.w	#$3B,$FF8026.l
@@ -503,9 +503,9 @@ L3272	movem.l	d0-d3/a0-a2,-(sp)
 .l32D0	btst.b	#$3,$FF800E.l
 	bne.b	.l32D0
 	bclr.b	#$4,$FF800F.l
-	bsr.w	L3F04
-	bra.w	L33FC
-L32EA	movem.l	d0-d3/a0-a2,-(sp)
+	bsr.w	LF64_42
+	bra.w	.l33FC
+.l32EA	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	move.w	$E0(a6),d0
 	move.w	$E2(a6),d1
@@ -555,7 +555,7 @@ L32EA	movem.l	d0-d3/a0-a2,-(sp)
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	bsr.w	L3F10
+	bsr.w	LF64_43
 .l33B2	btst.b	#$4,$FF800E.l
 	bne.b	.l33B2
 	move.w	#$32,$FF8026.l
@@ -567,11 +567,11 @@ L32EA	movem.l	d0-d3/a0-a2,-(sp)
 .l33E6	btst.b	#$3,$FF800E.l
 	bne.b	.l33E6
 	bclr.b	#$4,$FF800F.l
-	bsr.w	L3F04
-L33FC	movem.l	(sp)+,d0-d3/a0-a2
-L3400	tst.w	$FA(a6)
-	beq.w	L3472
-Sub_3408	movem.l	d0-d3/a0-a2,-(sp)
+	bsr.w	LF64_42
+.l33FC	movem.l	(sp)+,d0-d3/a0-a2
+.l3400	tst.w	$FA(a6)
+	beq.w	LF64_29
+LF64Sub6	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	$F6(a6),d0
 	cmp.w	$F4(a6),d0
 	bgt.w	.l3436
@@ -579,7 +579,7 @@ Sub_3408	movem.l	d0-d3/a0-a2,-(sp)
 	beq.w	.l3424
 	neg.w	d0
 .l3424	add.w	$F2(a6),d0
-	bsr.w	L3480
+	bsr.w	LF64_30
 	addi.w	#$6,$F6(a6)
 	bra.w	.l346E
 .l3436	move.w	$F6(a6),d0
@@ -592,18 +592,18 @@ Sub_3408	movem.l	d0-d3/a0-a2,-(sp)
 	bne.w	.l3456
 	neg.w	d0
 .l3456	add.w	$F2(a6),d0
-	bsr.w	L3480
+	bsr.w	LF64_30
 	clr.w	$FA(a6)
 	clr.w	$F6(a6)
 	andi.w	#$3FF,d0
 	move.w	d0,$F2(a6)
 .l346E	movem.l	(sp)+,d0-d3/a0-a2
-L3472	movem.l	d0-d5/a0-a1,-(sp)
-	bsr.w	L356A
+LF64_29	movem.l	d0-d5/a0-a1,-(sp)
+	bsr.w	LF64_31
 	movem.l	(sp)+,d0-d5/a0-a1
 	rts
-L3480	btst.b	#$4,$FF800E.l
-	bne.b	L3480
+LF64_30	btst.b	#$4,$FF800E.l
+	bne.b	LF64_30
 	move.w	#$30,$FF8026.l
 	move.l	#$70000003,$FF8028.l
 	bset.b	#$3,$FF800F.l
@@ -639,7 +639,7 @@ L3480	btst.b	#$4,$FF800E.l
 	bne.b	.l3556
 	bclr.b	#$4,$FF800F.l
 	rts
-L356A	tst.w	$EC(a6)
+LF64_31	tst.w	$EC(a6)
 	bmi.w	.l3606
 	cmpi.w	#$64,$EC(a6)
 	beq.w	.l3608
@@ -661,7 +661,7 @@ L356A	tst.w	$EC(a6)
 	move.l	d3,$BBC88.l
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
-	bsr.w	L3F10
+	bsr.w	LF64_43
 .l35BC	btst.b	#$4,$FF800E.l
 	bne.b	.l35BC
 	move.w	#$1D,$FF8026.l
@@ -673,7 +673,7 @@ L356A	tst.w	$EC(a6)
 .l35F0	btst.b	#$3,$FF800E.l
 	bne.b	.l35F0
 	bclr.b	#$4,$FF800F.l
-	bsr.w	L3F04
+	bsr.w	LF64_42
 .l3606	rts
 .l3608	movea.l	#$BBCB0,a1
 .l360E	btst.b	#$4,$FF800E.l
@@ -704,16 +704,16 @@ L356A	tst.w	$EC(a6)
 	dbra	d0,.l3660
 	st.b	$EC(a6)
 	rts
-L36B6	move.b	$C2(a6),d0
-	bsr.w	L3716
+LF64_32	move.b	$C2(a6),d0
+	bsr.w	LF64_34
 	move.w	$C6(a6),d2
 	move.w	d1,$C6(a6)
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L36CE	move.b	$C3(a6),d0
-	bsr.w	L3716
+LF64_33	move.b	$C3(a6),d0
+	bsr.w	LF64_34
 	move.w	$C8(a6),d2
 	move.w	d1,$C8(a6)
 	move.w	d1,d3
@@ -721,7 +721,7 @@ L36CE	move.b	$C3(a6),d0
 	and.w	d2,d1
 	rts
 	move.b	$C4(a6),d0
-	bsr.w	L3716
+	bsr.w	LF64_34
 	move.w	$CA(a6),d2
 	move.w	d1,$CA(a6)
 	move.w	d1,d3
@@ -729,45 +729,45 @@ L36CE	move.b	$C3(a6),d0
 	and.w	d2,d1
 	rts
 	move.b	$C5(a6),d0
-	bsr.w	L3716
+	bsr.w	LF64_34
 	move.w	$CC(a6),d2
 	move.w	d1,$CC(a6)
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L3716	not.b	d0
+LF64_34	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
 	andi.w	#$F0,d0
 	andi.w	#$F,d1
-	lea.l	L3734(pc),a0
+	lea.l	.l3734(pc),a0
 	move.b	(a0,d1.w),d1
 	or.w	d1,d0
 	move.w	(sp)+,d1
 	rts
-L3734	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
-Sub_3744	movem.l	d1/a0,-(sp)
+.l3734	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
+LF64Sub7	movem.l	d1/a0,-(sp)
 	tst.w	$BC(a6)
 	beq.w	.l3772
-	bsr.b	L3788
+	bsr.b	.l3788
 	move.b	d0,$C2(a6)
-	bsr.w	L37DA
+	bsr.w	.l37DA
 	move.b	d0,$C3(a6)
-	bsr.w	L382C
+	bsr.w	.l382C
 	move.b	d0,$C4(a6)
-	bsr.w	L387E
+	bsr.w	.l387E
 	move.b	d0,$C5(a6)
 	bra.w	.l3782
-.l3772	bsr.w	L38DC
+.l3772	bsr.w	.l38DC
 	move.b	d0,$C2(a6)
-	bsr.w	L38D4
+	bsr.w	.l38D4
 	move.b	d0,$C3(a6)
 .l3782	movem.l	(sp)+,d1/a0
 	rts
-L3788	btst.b	#$4,$FF800E.l
-	bne.b	L3788
+.l3788	btst.b	#$4,$FF800E.l
+	bne.b	.l3788
 	move.b	#$C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
@@ -778,9 +778,9 @@ L3788	btst.b	#$4,$FF800E.l
 .l37C4	btst.b	#$3,$FF800E.l
 	bne.b	.l37C4
 	bclr.b	#$4,$FF800F.l
-	bra.w	L38CC
-L37DA	btst.b	#$4,$FF800E.l
-	bne.b	L37DA
+	bra.w	.l38CC
+.l37DA	btst.b	#$4,$FF800E.l
+	bne.b	.l37DA
 	move.b	#$1C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
@@ -791,9 +791,9 @@ L37DA	btst.b	#$4,$FF800E.l
 .l3816	btst.b	#$3,$FF800E.l
 	bne.b	.l3816
 	bclr.b	#$4,$FF800F.l
-	bra.w	L38CC
-L382C	btst.b	#$4,$FF800E.l
-	bne.b	L382C
+	bra.w	.l38CC
+.l382C	btst.b	#$4,$FF800E.l
+	bne.b	.l382C
 	move.b	#$2C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
@@ -804,9 +804,9 @@ L382C	btst.b	#$4,$FF800E.l
 .l3868	btst.b	#$3,$FF800E.l
 	bne.b	.l3868
 	bclr.b	#$4,$FF800F.l
-	bra.w	L38CC
-L387E	btst.b	#$4,$FF800E.l
-	bne.b	L387E
+	bra.w	.l38CC
+.l387E	btst.b	#$4,$FF800E.l
+	bne.b	.l387E
 	move.b	#$3C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
@@ -817,12 +817,12 @@ L387E	btst.b	#$4,$FF800E.l
 .l38BA	btst.b	#$3,$FF800E.l
 	bne.b	.l38BA
 	bclr.b	#$4,$FF800F.l
-L38CC	movem.l	d1/a0,-(sp)
-	bra.w	L38E0
-L38D4	movem.l	d1/a0,-(sp)
-	bra.w	L3A1A
-L38DC	movem.l	d1/a0,-(sp)
-L38E0	moveq	#$0,d0
+.l38CC	movem.l	d1/a0,-(sp)
+	bra.w	.l38E0
+.l38D4	movem.l	d1/a0,-(sp)
+	bra.w	.l3A1A
+.l38DC	movem.l	d1/a0,-(sp)
+.l38E0	moveq	#$0,d0
 .l38E2	btst.b	#$4,$FF800E.l
 	bne.b	.l38E2
 	move.b	#$0,$FF8028.l
@@ -872,7 +872,7 @@ L38E0	moveq	#$0,d0
 	bne.b	.l3A04
 	bclr.b	#$4,$FF800F.l
 	dc.w	$6000,$013C
-L3A1A	moveq	#$0,d0
+.l3A1A	moveq	#$0,d0
 .l3A1C	btst.b	#$4,$FF800E.l
 	bne.b	.l3A1C
 	move.b	#$0,$FF8028.l
@@ -929,33 +929,33 @@ L3A1A	moveq	#$0,d0
 	not.b	d0
 	not.b	d1
 	andi.w	#$F,d1
-	lea.l	L3B7C(pc),a0
+	lea.l	.l3B7C(pc),a0
 	andi.b	#$F0,d0
 	or.b	(a0,d1.w),d0
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-L3B7C	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
-L3B8C	move.l	$6038.w,$D6(a6)
-	lea.l	L3BA4(pc),a0
+.l3B7C	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
+LF64_35	move.l	$6038.w,$D6(a6)
+	lea.l	LF64_37(pc),a0
 	move.l	a0,$6038.w
 	rts
-L3B9C	move.l	$D6(a6),$6038.w
+LF64_36	move.l	$D6(a6),$6038.w
 	rts
-L3BA4	btst.b	#$5,$FF800E.l
-	beq.w	L3C14
+LF64_37	btst.b	#$5,$FF800E.l
+	beq.w	.l3C14
 	bset.b	#$2,$FF800F.l
-	pea.l	L3BC2(pc)
+	pea.l	.l3BC2(pc)
 	move.l	$D2(a6),-(sp)
 	rts
-L3BC2	dc.b	$61,$00,$FB,$80,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$33,$FC	; a....9......f.3.
+.l3BC2	dc.b	$61,$00,$FB,$80,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$33,$FC	; a....9......f.3.
 	dc.b	$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F,$08,$39	; ./...&.........9
 	dc.b	$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF,$80,$0F	; ......g.........
 	dc.b	$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF,$80,$0E	; .........9......
 	dc.b	$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02,$00,$FF	; f...............
 	dc.b	$80,$0F	; ..
-L3C14	rts
-L3C16	movem.l	d0-d2/a0-a1/a5,-(sp)
+.l3C14	rts
+LF64_38	movem.l	d0-d2/a0-a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2
@@ -983,10 +983,10 @@ L3C16	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bne.b	.l3C7C
 	bclr.b	#$7,$FF800F.l
 	movea.l	$8E(a6),a5
-	bsr.w	L3D26
+	bsr.w	LF64_39
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
-Sub_3C9C	movem.l	d0-d2/a0-a1/a5,-(sp)
+LF64Sub8	movem.l	d0-d2/a0-a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2
@@ -1015,10 +1015,10 @@ Sub_3C9C	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bne.b	.l3D06
 	bclr.b	#$7,$FF800F.l
 	movea.l	$8E(a6),a5
-	bsr.w	L3D26
+	bsr.w	LF64_39
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
-L3D26	move.w	#$7A0,d0
+LF64_39	move.w	#$7A0,d0
 	bset	#$E,d0
 .l3D2E	moveq	#$0,d2
 	move.b	(a0)+,d2
@@ -1069,7 +1069,7 @@ L3D26	move.w	#$7A0,d0
 	subq.l	#$1,a5
 .l3E14	clr.b	(a5)+
 	rts
-L3E18	movem.l	d0-d2/a4,-(sp)
+LF64_40	movem.l	d0-d2/a4,-(sp)
 	move.w	#$7A0,d0
 	bset	#$E,d0
 .l3E24	moveq	#$0,d2
@@ -1111,7 +1111,7 @@ L3E18	movem.l	d0-d2/a4,-(sp)
 	dbra	d1,.l3E94
 .l3EE4	movem.l	(sp)+,d0-d2/a4
 	rts
-L3EEA	movem.l	d0/a0-a1,-(sp)
+LF64_41	movem.l	d0/a0-a1,-(sp)
 	movea.l	$8E(a6),a1
 .l3EF2	move.b	(a0)+,(a1)+
 	beq.w	.l3EFE
@@ -1119,14 +1119,14 @@ L3EEA	movem.l	d0/a0-a1,-(sp)
 	clr.b	(a1)
 .l3EFE	movem.l	(sp)+,d0/a0-a1
 	rts
-L3F04	btst.b	#$1,$FF8003.l
-	beq.b	L3F04
+LF64_42	btst.b	#$1,$FF8003.l
+	beq.b	LF64_42
 	rts
-L3F10	bset.b	#$0,$FF8003.l
+LF64_43	bset.b	#$0,$FF8003.l
 .l3F18	btst.b	#$1,$FF8003.l
 	bne.b	.l3F18
 	rts
-L3F24	movem.l	d0-d7/a0-a2,-(sp)
+LF64_44	movem.l	d0-d7/a0-a2,-(sp)
 	bclr.b	#$5,$FF800F.l
 .l3F30	btst.b	#$7,$FF800E.l
 	bne.b	.l3F30
@@ -1147,30 +1147,30 @@ L3F24	movem.l	d0-d7/a0-a2,-(sp)
 	dc.b	$00,$0B,$00,$0C,$FF,$FF,$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03	; ................
 	dc.b	$03,$03,$04,$00,$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03	; ................
 	dc.b	$03,$03,$05,$03,$03,$04	; ......
-L3FCA	dc.b	$50,$6C,$61,$79,$65,$72,$73,$00,$20,$00	; Players. .
-L3FD4	dc.b	$47,$6F,$61,$6C,$69,$65,$73,$00,$20,$00	; Goalies. .
-L3FDE	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
+LF64_45	dc.b	'Players',$00,$20,$00	; Players. .
+LF64_46	dc.b	'Goalies',$00,$20,$00	; Goalies. .
+LF64_47	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
 	dc.b	$69,$6D,$00,$50,$50,$00,$53,$68,$00,$47,$77,$00,$47,$74,$00,$53	; im.PP.Sh.Gw.Gt.S
-	dc.b	$00,$50,$63,$74,$67,$FF	; .Pctg.
-L4004	dc.b	$47,$70,$00,$4D,$69,$6E,$73,$00,$47,$61,$00,$41,$76,$67,$2E,$00	; Gp.Mins.Ga.Avg..
-	dc.b	$57,$00,$4C,$00,$54,$00,$53,$4F,$00,$45,$6E,$00,$53,$68,$74,$73	; W.L.T.SO.En.Shts
-	dc.b	$00,$70,$47,$50,$00,$70,$4D,$49,$4E,$00,$70,$47,$41,$00,$70,$41	; .pGP.pMIN.pGA.pA
+	dc.b	$00,'Pctg',$FF	; .Pctg.
+LF64_48	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
+	dc.b	$57,$00,$4C,$00,$54,$00,$53,$4F,$00,$45,$6E,$00,'Shts'	; W.L.T.SO.En.Shts
+	dc.b	$00,$70,$47,$50,$00,'pMIN',$00,$70,$47,$41,$00,$70,$41	; .pGP.pMIN.pGA.pA
 	dc.b	$56,$47,$00,$70,$57,$00,$70,$4C,$00,$70,$53,$4F,$00,$70,$45,$4E	; VG.pW.pL.pSO.pEN
 	dc.b	$00,$70,$53,$41,$FF	; .pSA.
-L4049	dc.b	$52,$65,$67,$75,$6C,$61,$72,$00	; Regular.
-L4051	dc.b	$50,$6C,$61,$79,$6F,$66,$66,$00,$53,$65,$61,$73,$6F,$6E,$00,$43	; Playoff.Season.C
+LF64_49	dc.b	'Regular',$00	; Regular.
+LF64_50	dc.b	'Playoff',$00,'Season',$00,$43	; Playoff.Season.C
 	dc.b	$6C,$75,$62,$00,$4C,$65,$61,$00,$47,$70,$00,$47,$00,$41,$00,$54	; lub.Lea.Gp.G.A.T
 	dc.b	$70,$00,$50,$69,$6D,$00,$47,$70,$00,$47,$00,$41,$00,$54,$70,$00	; p.Pim.Gp.G.A.Tp.
-	dc.b	$50,$69,$6D,$00,$53,$65,$61,$73,$6F,$6E,$00,$43,$6C,$75,$62,$00	; Pim.Season.Club.
+	dc.b	$50,$69,$6D,$00,'Season',$00,'Club',$00	; Pim.Season.Club.
 	dc.b	$4C,$65,$61,$00,$47,$70,$00,$57,$00,$4C,$00,$54,$00,$4D,$69,$6E	; Lea.Gp.W.L.T.Min
 	dc.b	$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57	; s.Ga.So.Avg.Gp.W
-	dc.b	$00,$4C,$00,$4D,$69,$6E,$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76	; .L.Mins.Ga.So.Av
+	dc.b	$00,$4C,$00,'Mins',$00,$47,$61,$00,$53,$6F,$00,$41,$76	; .L.Mins.Ga.So.Av
 	dc.b	$67,$00,$00	; g..
-L40C4	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
-L45C8	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
-L6044	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
-L68E4	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
-L6DE8	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
-L7CF4	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
-L82A4	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
+LF64_51	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
+LF64_52	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
+.l6044	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
+LF64_53	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
+LF64_54	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
+LF64_55	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
+LF64_56	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
 	dcb.b	$8DC,0

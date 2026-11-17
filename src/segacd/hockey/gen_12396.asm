@@ -143,7 +143,7 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 	bsr.w	PutTeamBlockSub1
 	jsr	(printsmallz).l
 	dc.w	$0034
-	dc.b	$F8,$06,$03,$00,$08,$F9,$01,$5E,$50,$65,$72,$5E,$5E,$54,$69,$6D,$65,$5E,$5E,$54,$6D,$5E,$5E,$47,$6F,$61,$6C,$2F,$41,$73,$73,$69,$73,$74,$5E,$5E,$5E,$5E,$5E,$5E,$5E,$5E,$50,$2F,$53,$5E,$5E,$F9,$00,$00
+	dc.b	$F8,$06,$03,$00,$08,$F9,$01,'^Per^^Time^^Tm^^Goal/Assist^^^^^^^^P/S^^',$F9,$00,$00
 	clr.l	d0
 	move.w	$180F0.l,d0
 	divu.w	#$6,d0		;goals
@@ -324,7 +324,7 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 	bsr.w	PutTeamBlockSub1
 	jsr	(printsmallz).l
 	dc.w	$0034
-	dc.b	$F8,$06,$03,$00,$08,$F9,$01,$5E,$50,$65,$72,$5E,$5E,$54,$69,$6D,$65,$5E,$5E,$54,$6D,$5E,$5E,$50,$6C,$61,$79,$65,$72,$2F,$50,$65,$6E,$61,$6C,$74,$79,$5E,$5E,$5E,$5E,$6D,$69,$6E,$5E,$5E,$5E,$F9,$00,$00
+	dc.b	$F8,$06,$03,$00,$08,$F9,$01,'^Per^^Time^^Tm^^Player/Penalty^^^^min^^^',$F9,$00,$00
 	clr.l	d0
 	move.w	$1825A.l,d0
 	lsr.w	#$2,d0		;/4 bytes per entry = number of penalties
@@ -543,7 +543,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	bra.w	.team
 .title	jsr	(printsmallz).l
 	dc.w	$001C
-	dc.b	$F8,$06,$03,$0C,$1A,$F9,$01,$41,$5E,$2D,$5E,$53,$77,$69,$74,$63,$68,$5E,$54,$65,$61,$6D,$73,$F9,$00,$00
+	dc.b	$F8,$06,$03,$0C,$1A,$F9,$01,'A^-^Switch^Teams',$F9,$00,$00
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$8,$4,'Player  Stats',CC_Font3Pri,$E,$1
 .team	clr.w	d0		;TeamBlockMap offset: 0 for the home struct, $30 for the away struct
@@ -655,7 +655,7 @@ UpdateStatsListScroll_3	move.w	(VertLineScrolling).l,d3
 	bra.w	DrawStatsRow
 UpdateStatsListScroll_4	jsr	(printsmallz).l
 	dc.w	$0012
-	dc.b	$F8,$06,$03,$04,$0B,$F9,$01,$50,$6C,$61,$79,$65,$72,$FB,$07,$00
+	dc.b	$F8,$06,$03,$04,$0B,$F9,$01,'Player',$FB,$07,$00
 	dc.w	$43FA,$0344
 	moveq	#$5,d3
 	tst.w	(scoutcolumn).l

@@ -17,16 +17,16 @@
 	move.w	#$8B00,$4(a0)
 	move.w	#$921C,$4(a0)
 	bclr.b	#$4,$23C6E8.l
-	bsr.w	LFF077C
+	bsr.w	LinkedCall_11
 	rts
 	move.w	#$800,d0
 	move.w	$FF2852.l,d1
 	move.w	#$7FF,d2
-	bsr.w	LFF10BE
+	bsr.w	DispatchTail_2
 	move.w	#$1000,d0
 	move.w	$FF2856.l,d1
 	move.w	#$7FF,d2
-	bsr.w	LFF10BE
+	bsr.w	DispatchTail_2
 	rts
 	lea.l	$23A450.l,a1
 	move.w	(a1)+,$FF2A24.l
@@ -66,8 +66,8 @@
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	bset.b	#$0,$A12014.l
-LFF1438	btst.b	#$1,$A12024.l
-	beq.b	LFF1438
+.lFF1438	btst.b	#$1,$A12024.l
+	beq.b	.lFF1438
 	bsr.w	DispatchAfter
 	bsr.w	GiveWordRAM
 	bsr.w	DispatchTail
@@ -103,70 +103,70 @@ LFF1438	btst.b	#$1,$A12024.l
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset.b	#$0,$A12000.l
 	btst.b	#$2,$A12024.l
-	beq.w	LFF1578
-	bsr.w	LFF179A
+	beq.w	.lFF1578
+	bsr.w	DispatchTail_7
 	btst.b	#$4,$23C6E8.l
-	bne.w	LFF1570
-	bsr.w	LFF169A
+	bne.w	.lFF1570
+	bsr.w	DispatchTail_6
 	btst.b	#$2,$23C6E8.l
-	bne.w	LFF1538
+	bne.w	.lFF1538
 	bclr.b	#$1,$23C6E8.l
-	bne.w	LFF1550
+	bne.w	.lFF1550
 	bclr.b	#$0,$23C6E8.l
-	bne.w	LFF1560
-	bra.w	LFF1570
-LFF1538	bclr.b	#$0,$23C6E8.l
-	bne.w	LFF1560
+	bne.w	.lFF1560
+	bra.w	.lFF1570
+.lFF1538	bclr.b	#$0,$23C6E8.l
+	bne.w	.lFF1560
 	bclr.b	#$1,$23C6E8.l
-	beq.w	LFF1570
-LFF1550	bsr.w	LFF17D0
+	beq.w	.lFF1570
+.lFF1550	bsr.w	DispatchTail_9
 	bset.b	#$2,$23C6E8.l
-	bra.w	LFF1570
-LFF1560	bsr.w	LFF157E
-	bsr.w	LFF159E
+	bra.w	.lFF1570
+.lFF1560	bsr.w	.lFF157E
+	bsr.w	.lFF159E
 	bclr.b	#$2,$23C6E8.l
-LFF1570	bsr.w	LFF15C0
-	bsr.w	LFF17BE
-LFF1578	movem.l	(sp)+,d0-d7/a0-a6
+.lFF1570	bsr.w	DispatchTail_4
+	bsr.w	DispatchTail_8
+.lFF1578	movem.l	(sp)+,d0-d7/a0-a6
 	rte
-LFF157E	bclr.b	#$6,$23C6E8.l
-	beq.w	LFF1698
+.lFF157E	bclr.b	#$6,$23C6E8.l
+	beq.w	DispatchTail_5
 	lea.l	$23C368.l,a0
 	move.w	#$1C0,d0
 	move.w	$FF284E.l,d1
-	bra.w	LFF0418
-LFF159E	bclr.b	#$5,$23C6E8.l
-	beq.w	LFF1698
+	bra.w	LinkedCall_5
+.lFF159E	bclr.b	#$5,$23C6E8.l
+	beq.w	DispatchTail_5
 	lea.l	$23B1E8.l,a0
 	move.w	#$8C0,d0
 	move.w	$FF2862.l,d1
 	asl.w	#$5,d1
-	bra.w	LFF0418
-LFF15C0	btst.b	#$3,$A12024.l
-	bne.w	LFF1602
+	bra.w	LinkedCall_5
+DispatchTail_4	btst.b	#$3,$A12024.l
+	bne.w	.lFF1602
 	lea.l	$A10003.l,a0
-	bsr.w	LFF167A
+	bsr.w	.lFF167A
 	move.b	d0,$FF284A.l
 	lea.l	$A10005.l,a0
-	bsr.w	LFF167A
+	bsr.w	.lFF167A
 	move.b	d0,$FF284B.l
 	move.b	$FF284A.l,d0
 	lsl.w	#$8,d0
 	move.b	$FF284B.l,d0
 	move.w	d0,$A1201C.l
 	rts
-LFF1602	lea.l	$A10003.l,a0
+.lFF1602	lea.l	$A10003.l,a0
 	move.b	#$C,$A10005.l
-	bsr.w	LFF167A
+	bsr.w	.lFF167A
 	move.b	d0,$FF284A.l
 	move.b	#$1C,$A10005.l
-	bsr.w	LFF167A
+	bsr.w	.lFF167A
 	move.b	d0,$FF284B.l
 	move.b	#$2C,$A10005.l
-	bsr.w	LFF167A
+	bsr.w	.lFF167A
 	move.b	d0,$FF284C.l
 	move.b	#$3C,$A10005.l
-	bsr.w	LFF167A
+	bsr.w	.lFF167A
 	move.b	d0,$FF284D.l
 	move.b	$FF284A.l,d0
 	lsl.w	#$8,d0
@@ -177,7 +177,7 @@ LFF1602	lea.l	$A10003.l,a0
 	move.b	$FF284D.l,d0
 	move.w	d0,$A1201E.l
 	rts
-LFF167A	move.b	#$0,(a0)
+.lFF167A	move.b	#$0,(a0)
 	nop
 	nop
 	move.b	(a0),d0
@@ -188,19 +188,19 @@ LFF167A	move.b	#$0,(a0)
 	andi.b	#$3F,d1
 	or.b	d1,d0
 	not.b	d0
-LFF1698	rts
-LFF169A	btst.b	#$4,$23C6E8.l
-	bne.b	LFF1698
+DispatchTail_5	rts
+DispatchTail_6	btst.b	#$4,$23C6E8.l
+	bne.b	DispatchTail_5
 	tst.w	$23A8D0.l
-	bmi.b	LFF1698
+	bmi.b	DispatchTail_5
 	cmpi.w	#$64,$23A8D0.l
-	beq.w	LFF175A
+	beq.w	.lFF175A
 	subq.w	#$1,$23A8D0.l
-	bmi.b	LFF1698
+	bmi.b	DispatchTail_5
 	clr.l	d0
 	move.w	$23A8D0.l,d0
 	cmpi.w	#$18,d0
-	bgt.b	LFF1698
+	bgt.b	DispatchTail_5
 	divu.w	#$3,d0
 	swap	d0
 	asl.w	#$2,d0
@@ -213,7 +213,7 @@ LFF169A	btst.b	#$4,$23C6E8.l
 	movea.l	#$23A850,a1
 	movea.l	#$C00000,a0
 	clr.w	d6
-LFF16F0	move.w	d3,d2
+.lFF16F0	move.w	d3,d2
 	move.w	d6,d0
 	swap	d0
 	move.w	#$20,d0
@@ -224,10 +224,10 @@ LFF16F0	move.w	d3,d2
 	move.w	(a1)+,d1
 	and.w	d5,d1
 	cmp.w	d1,d0
-	beq.w	LFF172A
-	blt.w	LFF1714
+	beq.w	.lFF172A
+	blt.w	.lFF1714
 	neg.w	d2
-LFF1714	add.w	d2,d0
+.lFF1714	add.w	d2,d0
 	and.w	d4,d7
 	or.w	d0,d7
 	move.l	#$C000,d0
@@ -235,76 +235,76 @@ LFF1714	add.w	d2,d0
 	swap	d0
 	move.l	d0,$4(a0)
 	move.w	d7,(a0)
-LFF172A	addq.w	#$2,d6
+.lFF172A	addq.w	#$2,d6
 	cmpi.w	#$80,d6
-	bne.b	LFF16F0
+	bne.b	.lFF16F0
 	rts
 	movem.l	d1-d4,-(sp)
 	clr.w	d4
 	moveq	#$2,d3
 	moveq	#$E,d2
-LFF173E	move.w	d0,d1
+.lFF173E	move.w	d0,d1
 	and.w	d2,d1
-	beq.w	LFF174C
+	beq.w	.lFF174C
 	add.w	d2,d1
 	and.w	d2,d1
 	or.w	d1,d4
-LFF174C	asl.w	#$4,d2
-	dbra	d3,LFF173E
+.lFF174C	asl.w	#$4,d2
+	dbra	d3,.lFF173E
 	move.w	d4,d0
 	movem.l	(sp)+,d1-d4
 	rts
-LFF175A	movem.l	d0/a0-a1,-(sp)
+.lFF175A	movem.l	d0/a0-a1,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movea.l	#$23A850,a1
 	movea.l	#$C00000,a0
 	move.l	#$C0000000,$4(a0)
 	moveq	#$1F,d0
-LFF1782	move.l	(a1)+,(a0)
-	dbra	d0,LFF1782
+.lFF1782	move.l	(a1)+,(a0)
+	dbra	d0,.lFF1782
 	st.b	$23A8D0.l
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0/a0-a1
 	rts
-LFF179A	btst.b	#$1,$FF2A16.l
-	beq.w	LFF17B4
+DispatchTail_7	btst.b	#$1,$FF2A16.l
+	beq.w	.lFF17B4
 	bsr.w	WaitWordRAM
 	bset.b	#$0,$FF2A16.l
 	rts
-LFF17B4	bclr.b	#$0,$FF2A16.l
+.lFF17B4	bclr.b	#$0,$FF2A16.l
 	rts
-LFF17BE	btst.b	#$0,$FF2A16.l
-	beq.w	LFF17CE
+DispatchTail_8	btst.b	#$0,$FF2A16.l
+	beq.w	.lFF17CE
 	bsr.w	GiveWordRAM
-LFF17CE	rts
-LFF17D0	lea.l	$23AF16.l,a0
+.lFF17CE	rts
+DispatchTail_9	lea.l	$23AF16.l,a0
 	move.w	$23B1E6.l,d0
 	move.w	$FF2850.l,d1
-	bsr.w	LFF0418
+	bsr.w	LinkedCall_5
 	movea.l	$23AF12.l,a6
 	adda.l	#$180000,a6
 	btst.b	#$0,$23C6EA.l
-	beq.w	LFF1830
+	beq.w	DispatchTail_11
 	lea.l	$23A8D2.l,a5
 	cmpa.l	a5,a6
-	beq.w	LFF1698
-LFF180A	movea.l	(a5)+,a0
+	beq.w	DispatchTail_5
+.lFF180A	movea.l	(a5)+,a0
 	move.w	(a5)+,d0
 	move.w	(a5)+,d1
 	adda.l	#$180000,a0
-	bsr.w	LFF0418
+	bsr.w	LinkedCall_5
 	cmpa.l	a6,a5
-	bcs.b	LFF180A
+	bcs.b	.lFF180A
 	rts
-LFF1820	move.w	-(a6),d1
+DispatchTail_10	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
 	adda.l	#$180000,a0
-	bsr.w	LFF0418
-LFF1830	cmpa.l	#$23A8D2,a6
-	bne.b	LFF1820
+	bsr.w	LinkedCall_5
+DispatchTail_11	cmpa.l	#$23A8D2,a6
+	bne.b	DispatchTail_10
 	rts
-	bsr.w	LFF15C0
+	bsr.w	DispatchTail_4
 	rts
 
