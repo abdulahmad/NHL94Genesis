@@ -64,7 +64,7 @@ DispatchTail_14	ori.b	#$0,d0
 	move.w	#$FF,d0
 .lFF1F5A	move.l	d1,(a0)
 	dbra	d0,.lFF1F5A
-	lea.l	Buf8_1(pc),a1
+	lea.l	DispatchTail_26(pc),a1
 	move.w	#$2FF,d3
 .lFF1F68	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -139,7 +139,7 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	dbra	d7,.lFF2018
 .lFF2036	lea.l	DispatchTail_16+$2(pc),a2
 	eori.w	#$1,(a2)
-.lFF203E	lea.l	Buf8C_1(pc),a0
+.lFF203E	lea.l	DispatchTail_13(pc),a0
 	addq.l	#$1,(a0)
 	move.l	DispatchTail_14(pc),d0
 	beq.b	.lFF204E

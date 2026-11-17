@@ -176,28 +176,28 @@
   "Sets DMNA and waits until the sub CPU has taken word RAM."
  ],
  "DispatchTailSub6": [
-  "VdpSetVramWriteAddr",
-  "Sets the VDP command for a VRAM write at d0."
+  "WaitDmnaClear",
+  "Spins while the word-RAM DMNA bit is set."
  ],
  "DispatchTailSub8": [
   "VdpSetCramWriteAddr",
   "Sets the VDP command for a CRAM write at d0."
  ],
  "DispatchTailSub9": [
-  "ClearVram",
-  "Writes zeros over all 64 KB of VRAM."
+  "VdpSetCramWriteAddr",
+  "Sets the VDP command for a CRAM write at d0."
  ],
  "DispatchTailSub10": [
   "PollControllers",
   "Reads both pads into $FF4F84/$FF4F85 and updates the edge state."
  ],
  "DispatchTailSub11": [
-  "UpdatePad1",
-  "Decodes pad 1 and computes the newly pressed buttons."
+  "ClearVram",
+  "Writes zeros over all 64 KB of VRAM."
  ],
  "DispatchTailSub12": [
-  "UpdatePad2",
-  "Decodes pad 2 and computes the newly pressed buttons."
+  "PollControllers",
+  "Reads both pads into $FF4F84/$FF4F85 and updates the edge state."
  ],
  "DispatchTail_68": [
   "DecodePadBits",
@@ -208,8 +208,8 @@
   "Second copy of DrawTextToPlane."
  ],
  "DispatchTailSub18": [
-  "DrawTextBuffer_B",
-  "Second copy of DrawTextBuffer."
+  "DrawTextToPlane_B",
+  "Second copy of DrawTextToPlane."
  ],
  "Set1MFlag_26": [
   "Z80RequestBus",
@@ -426,5 +426,25 @@
  "Set1MFlag_19": [
   "SndSlotsTick",
   "Counts down every active sound slot and starts the ones that reach zero."
+ ],
+ "DispatchTailSub13": [
+  "UpdatePad1",
+  "Decodes pad 1 and computes the newly pressed buttons."
+ ],
+ "DispatchTailSub14": [
+  "UpdatePad2",
+  "Decodes pad 2 and computes the newly pressed buttons."
+ ],
+ "DispatchTailSub20": [
+  "DrawTextBuffer_B",
+  "Second copy of DrawTextBuffer."
+ ],
+ "DispatchTailSub3": [
+  "ReadSubCommWord",
+  "Handshakes with the sub CPU on $A1200E/F and reads the comm word $A12020."
+ ],
+ "DispatchTailSub7": [
+  "VdpSetVramWriteAddr",
+  "Sets the VDP command for a VRAM write at d0."
  ]
 }

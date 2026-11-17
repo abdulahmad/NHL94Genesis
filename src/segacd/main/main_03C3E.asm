@@ -1,30 +1,121 @@
-	dc.b	$61,$00,$FD,$56,$26,$39,$00,$23,$BC,$88,$28,$39,$00,$23,$BC,$8C	; a..V&9.#..(9.#..
-	dc.b	$2A,$39,$00,$23,$BC,$90,$22,$7C,$00,$23,$BC,$B0,$20,$7C,$00,$C0	; *9.#.."|.#.. |..
-	dc.b	$00,$00,$42,$46,$34,$03,$30,$06,'H@0<',$00,$20,$21,$40	; ..BF4.0.H@0<. !@
-	dc.b	$00,$04,$3E,$10,$30,$07,$C0,$45,$32,$19,$C2,$45,$B0,$41,$67,$00	; ..>.0..E2..E.Ag.
-	dc.b	$00,$1E,$6D,$00,$00,$04,$44,$42,$D0,$42,$CE,$44,$8E,$40,$20,$3C	; ..m...DB.B.D.@ <
-	dc.b	$00,$00,$C0,$00,$10,$06,'H@!@',$00,$04,$30,$87,$54,$46	; ......H@!@..0.TF
-	dc.b	$0C,$46,$00,$80,$66,$00,$FF,$BE,$61,$00,$FC,$FA,$4E,$75,$61,$00	; .F..f...a...Nua.
-	dc.b	$FC,$E8,$20,$39,$00,$23,$BC,$88,$22,$39,$00,$23,$BC,$8C,$24,$39	; .. 9.#.."9.#..$9
-	dc.b	$00,$23,$BC,$90,$43,$F9,$00,$C0,$00,$04,$32,$BC,$81,$54,$32,$BC	; .#..C.....2..T2.
-	dc.b	$8F,$01,$36,$3C,$93,$00,$16,$00,$32,$83,$36,$3C,$94,$00,$E0,$48	; ..6<....2.6<...H
-	dc.b	$16,$00,$32,$83,$36,$3C,$95,$00,$16,$02,$32,$83,$36,$3C,$96,$00	; ..2.6<....2.6<..
-	dc.b	$E0,$4A,$16,$02,$32,$83,$32,$BC,$97,$C0,$42,$80,$30,$01,$E5,$80	; .J..2.2...B.0...
-	dc.b	$E4,$48,$48,$40,$00,$40,$00,$C0,$23,$C0,$00,$FF,$6C,$E8,$32,$B9	; .HH@.@..#...l.2.
-	dc.b	$00,$FF,$6C,$E8,$32,$B9,$00,$FF,$6C,$EA,$3F,$39,$00,$C0,$00,$04	; ..l.2...l.?9....
-	dc.b	$08,$2F,$00,$01,$00,$01,$54,$4F,$66,$00,$FF,$F0,$32,$BC,$81,$64	; ./....TOf...2..d
-	dc.b	$32,$BC,$8F,$02,$61,$00,$FC,'nNua',$00,$FC,$5C,$43,$F9	; 2...a..nNua...C.
-	dc.b	$00,$C0,$00,$04,$20,$7C,$00,$23,$C0,$00,$30,$18,$32,$98,$32,$98	; .... |.#..0.2.2.
-	dc.b	$32,$98,$32,$98,$32,$98,$32,$98,$32,$98,$23,$D8,$00,$FF,$6C,$E8	; 2.2.2.2.2.#...l.
-	dc.b	$32,$B9,$00,$FF,$6C,$E8,$32,$B9,$00,$FF,$6C,$EA,$3F,$39,$00,$C0	; 2...l.2...l.?9..
-	dc.b	$00,$04,$08,$2F,$00,$01,$00,$01,$54,$4F,$66,$00,$FF,$F0,$32,$BC	; .../....TOf...2.
-	dc.b	$81,$64,$51,$C8,$FF,$CA,$32,$BC,$8F,$02,$61,$00,$FC,$18,$4E,$75	; .dQ...2...a...Nu
-	dc.b	$61,$00,$FC,$06,$20,$39,$00,$23,$BC,$88,$22,$39,$00,$23,$BC,$8C	; a... 9.#.."9.#..
-	dc.b	$24,$39,$00,$23,$BC,$90,$22,$7C,$00,$C0,$00,$00,$02,$81,$00,$00	; $9.#.."|........
-	dc.b	$FF,$FF,$E5,$81,$E4,$49,$00,$41,$40,$00,'HA#A',$00,$04	; .....I.A@.HA#A..
-	dc.b	$36,$02,$48,$43,$36,$02,$E2,'HS@#',$C3,$00,$FF,$6C,$E8	; 6.HC6..HS@#...l.
-	dc.b	$32,$B9,$00,$FF,$6C,$E8,$32,$B9,$00,$FF,$6C,$EA,$51,$C8,$FF,$EC	; 2...l.2...l.Q...
-	dc.b	$61,$00,$FB,$C2,$4E,$75	; a...Nu
+DispatchTailSub10	bsr.w	WaitDmnaClear
+	move.l	$23BC88.l,d3
+	move.l	$23BC8C.l,d4
+	move.l	$23BC90.l,d5
+	movea.l	#$23BCB0,a1
+	movea.l	#$C00000,a0
+	clr.w	d6
+.l3C62	move.w	d3,d2
+	move.w	d6,d0
+	swap	d0
+	move.w	#$20,d0
+	move.l	d0,$4(a0)
+	move.w	(a0),d7
+	move.w	d7,d0
+	and.w	d5,d0
+	move.w	(a1)+,d1
+	and.w	d5,d1
+	cmp.w	d1,d0
+	beq.w	.l3C9C
+	blt.w	.l3C86
+	neg.w	d2
+.l3C86	add.w	d2,d0
+	and.w	d4,d7
+	or.w	d0,d7
+	move.l	#$C000,d0
+	move.b	d6,d0
+	swap	d0
+	move.l	d0,$4(a0)
+	move.w	d7,(a0)
+.l3C9C	addq.w	#$2,d6
+	cmpi.w	#$80,d6
+	bne.w	.l3C62
+	bsr.w	GiveWordRamToSub
+	rts
+	bsr.w	WaitDmnaClear
+	move.l	$23BC88.l,d0
+	move.l	$23BC8C.l,d1
+	move.l	$23BC90.l,d2
+	lea.l	$C00004.l,a1
+	move.w	#$8154,(a1)
+	move.w	#$8F01,(a1)
+	move.w	#$9300,d3
+	move.b	d0,d3
+	move.w	d3,(a1)
+	move.w	#$9400,d3
+	lsr.w	#$8,d0
+	move.b	d0,d3
+	move.w	d3,(a1)
+	move.w	#$9500,d3
+	move.b	d2,d3
+	move.w	d3,(a1)
+	move.w	#$9600,d3
+	lsr.w	#$8,d2
+	move.b	d2,d3
+	move.w	d3,(a1)
+	move.w	#$97C0,(a1)
+	clr.l	d0
+	move.w	d1,d0
+	asl.l	#$2,d0
+	lsr.w	#$2,d0
+	swap	d0
+	ori.w	#$C0,d0
+	move.l	d0,$FF6CE8.l
+	move.w	$FF6CE8.l,(a1)
+	move.w	$FF6CEA.l,(a1)
+.l3D18	move.w	$C00004.l,-(sp)
+	btst.b	#$1,$1(sp)
+	addq.w	#$2,sp
+	bne.w	.l3D18
+	move.w	#$8164,(a1)
+	move.w	#$8F02,(a1)
+	bsr.w	GiveWordRamToSub
+	rts
+	bsr.w	WaitDmnaClear
+	lea.l	$C00004.l,a1
+	movea.l	#$23C000,a0
+	move.w	(a0)+,d0
+	move.w	(a0)+,(a1)
+.l3D4C	move.w	(a0)+,(a1)
+	move.w	(a0)+,(a1)
+	move.w	(a0)+,(a1)
+	move.w	(a0)+,(a1)
+	move.w	(a0)+,(a1)
+	move.w	(a0)+,(a1)
+	move.l	(a0)+,$FF6CE8.l
+	move.w	$FF6CE8.l,(a1)
+	move.w	$FF6CEA.l,(a1)
+.l3D6A	move.w	$C00004.l,-(sp)
+	btst.b	#$1,$1(sp)
+	addq.w	#$2,sp
+	bne.w	.l3D6A
+	move.w	#$8164,(a1)
+	dbra	d0,.l3D4C
+	move.w	#$8F02,(a1)
+	bsr.w	GiveWordRamToSub
+	rts
+	bsr.w	WaitDmnaClear
+	move.l	$23BC88.l,d0
+	move.l	$23BC8C.l,d1
+	move.l	$23BC90.l,d2
+	movea.l	#$C00000,a1
+	andi.l	#$FFFF,d1
+	asl.l	#$2,d1
+	lsr.w	#$2,d1
+	ori.w	#$4000,d1
+	swap	d1
+	move.l	d1,$4(a1)
+	move.w	d2,d3
+	swap	d3
+	move.w	d2,d3
+	lsr.w	#$1,d0
+	subq.w	#$1,d0
+.l3DC8	move.l	d3,$FF6CE8.l
+	move.w	$FF6CE8.l,(a1)
+	move.w	$FF6CEA.l,(a1)
+	dbra	d0,.l3DC8
+	bsr.w	GiveWordRamToSub
+	rts
 ; Writes zeros over all 64 KB of VRAM.
 ClearVram	move.l	#$40000000,$C00004.l
 	move.w	#$3FFF,d0
@@ -133,7 +224,7 @@ DecodePadBits	not.b	d0
 	rts
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
-DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
+DispatchTailSub15	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$0,$A1200F.l
 	beq.w	.l3FC0
 	bclr.b	#$1,$A1200E.l
@@ -156,9 +247,8 @@ DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$08,$B9,$00,$07,$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E	; ...... ....... .
 	dc.b	$61,$00,$BF,$CE,$60,$00,$F5,$6C,$4E,$75	; a...`..lNu
 DispatchTail_69	dc.b	$60,$00,$00,$8E	; `...
-; Zero-filled work storage (140 bytes).
-Buf8C_2	dcb.b	$8C,0
-DispatchTailSub14	lea.l	Long1(pc),a0
+DispatchTail_70	dcb.b	$8C,0
+DispatchTailSub16	lea.l	Long1(pc),a0
 	move.l	$4(sp),(a0)
 	lea.l	.lFF410C(pc),a0
 	move.l	$FFFFFD08.w,(a0)
@@ -179,7 +269,7 @@ DispatchTailSub14	lea.l	Long1(pc),a0
 .lFF410C	dc.b	$00,$00,$00,$00	; ....
 ; Zero-filled work storage (4 bytes).
 Long1	dc.b	$00,$00,$00,$00	; ....
-DispatchTailSub15	movea.l	#$C00000,a0
+DispatchTailSub17	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
 	lsl.l	#$2,d0
@@ -219,7 +309,7 @@ DispatchTailSub15	movea.l	#$C00000,a0
 	move.w	#$FF,d0
 .l419A	move.l	d1,(a0)
 	dbra	d0,.l419A
-	lea.l	Buf8_2(pc),a1
+	lea.l	DispatchTail_88(pc),a1
 	move.w	#$2FF,d3
 .l41A8	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -241,7 +331,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	tst.w	(a2)
 	beq.w	.l427E
 	movea.l	#$C00000,a0
-	lea.l	Buf80_1(pc),a1
+	lea.l	DispatchTail_76(pc),a1
 	move.l	#$C0000000,$4(a0)
 	dc.w	$303A,$00A0
 .l41FA	move.l	(a1)+,(a0)
@@ -255,7 +345,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	dbra	d0,.l41FA
 	clr.w	(a2)
 	dc.w	$263A,$010A
-	lea.l	Buf5EC_1(pc),a2
+	lea.l	DispatchTail_80(pc),a2
 	dc.w	$243A,$0106
 	dc.w	$2E3A,$010A
 	subq.w	#$1,d7
@@ -294,7 +384,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	dbra	d7,.l4258
 .l4276	lea.l	Word2(pc),a2
 	eori.w	#$1,(a2)
-.l427E	lea.l	Buf8C_2(pc),a0
+.l427E	lea.l	DispatchTail_70(pc),a0
 	addq.l	#$1,(a0)
 	move.l	Long1(pc),d0
 	beq.b	.l428E
@@ -308,15 +398,13 @@ Word1	dc.b	$00,$00	; ..
 Word2	dc.b	$00,$00	; ..
 ; Zero-filled work storage (4 bytes).
 Long2	dc.b	$00,$00,$00,$00	; ....
-; Zero-filled work storage (128 bytes).
-Buf80_1	dcb.b	$80,0
+DispatchTail_76	dcb.b	$80,0
 DispatchTail_77	dc.b	$00,$00,$E0,$00	; ....
 .lFF4320	dc.b	$00,$00,$00,$80	; ....
 ; Zero-filled work storage (4 bytes).
 Long3	dc.b	$00,$00,$00,$00	; ....
 DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
-; Zero-filled work storage (1516 bytes).
-Buf5EC_1	dcb.b	$5EC,0
+DispatchTail_80	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
 ; Second copy of DrawTextToPlane.
 DrawTextToPlane_B	link	a6,#$0
@@ -362,7 +450,7 @@ DrawTextToPlane_B	link	a6,#$0
 	dbra	d1,.l4DAA
 	lea.l	Word2(pc),a0
 	move.w	#$1,(a0)
-	lea.l	Buf80_1(pc),a0
+	lea.l	DispatchTail_76(pc),a0
 	move.l	#$EEE,(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
@@ -407,7 +495,7 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
-	lea.l	Buf80_1(pc),a2
+	lea.l	DispatchTail_76(pc),a2
 .l4E42	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
@@ -418,11 +506,11 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.l4E42
-DispatchTailSub19	lea.l	Long3(pc),a3
+DispatchTailSub21	lea.l	Long3(pc),a3
 	move.l	d6,(a3)
 	lea.l	DispatchTail_79(pc),a3
 	move.l	d7,(a3)
-	lea.l	Buf5EC_1(pc),a3
+	lea.l	DispatchTail_80(pc),a3
 	move.l	d7,-(sp)
 	move.l	$10(a6),d3
 	lsr.l	#$5,d3
@@ -433,7 +521,7 @@ DispatchTailSub19	lea.l	Long3(pc),a3
 .l4E7E	moveq	#$1,d2
 	move.w	d7,d5
 	bra.b	DispatchTail_85
-DispatchTailSub20	move.w	d6,d4
+DispatchTailSub22	move.w	d6,d4
 	bra.b	.l4EA2
 .l4E88	subq.w	#$1,d2
 	bne.b	.l4E94
@@ -448,7 +536,7 @@ DispatchTailSub20	move.w	d6,d4
 	addq.w	#$1,d3
 	move.w	d1,(a3)+
 .l4EA2	dbra	d4,.l4E88
-DispatchTail_85	dbra	d5,DispatchTailSub20
+DispatchTail_85	dbra	d5,DispatchTailSub22
 	move.l	(sp)+,d7
 	moveq	#$0,d2
 	move.w	d6,d2
@@ -517,8 +605,7 @@ VdpDmaSetup	move.l	a1,d1
 	move.l	d0,$4(a0)
 	move.l	(a1),(a0)
 	rts
-; Zero-filled work storage (8 bytes).
-Buf8_2	dcb.b	$8,0
+DispatchTail_88	dcb.b	$8,0
 	dc.b	'    ',$00,$20,$00,$00,$50,$50,$00,$00,$00,$00,$00,$00	;     . ..PP......
 	dc.b	$28,$78,$50,$F0,$A0,$00,$00,' pP ',$10,$50,$70,$20,$00	; (xP.... pP .Pp .
 	dc.b	$50,$A0,$40,$30,$50,$A0,$00,$00,$60,$80,$40,$A8,$90,$68,$00,$00	; P.@0P...`.@..h..
@@ -1010,7 +1097,7 @@ SetFlagOnce	tst.w	$FF6D84.l
 .lFF59F8	movem.l	d0-d7/a0-a2,-(sp)
 	st.b	$FF6D8A.l
 	bsr.w	.lFF5AC8
-	lea.l	Buf80_2(pc),a0
+	lea.l	Set1MFlag_5(pc),a0
 	moveq	#$3F,d1
 .l5A0C	move.w	#$0,(a0)+
 	dbra	d1,.l5A0C
@@ -1035,7 +1122,7 @@ SetFlagOnce	tst.w	$FF6D84.l
 	jsr	$FF6BD0.l
 	add.w	d2,d2
 	lea.l	$4(a1,d2.w),a0
-	lea.l	Buf80_2(pc),a1
+	lea.l	Set1MFlag_5(pc),a1
 	moveq	#$1F,d0
 .l5A78	move.l	(a0)+,(a1)+
 	dbra	d0,.l5A78
@@ -1101,7 +1188,7 @@ Set1MFlag_4	movem.l	d0-d7/a0-a4,-(sp)
 	asl.w	d0,d5
 	move.w	d5,d4
 	not.w	d4
-	lea.l	Buf80_2(pc),a1
+	lea.l	Set1MFlag_5(pc),a1
 	movea.l	#$C00000,a0
 	clr.w	d6
 .l5B60	move.w	d3,d2
@@ -1217,8 +1304,7 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
-; Zero-filled work storage (128 bytes).
-Buf80_2	dcb.b	$80,0
+Set1MFlag_5	dcb.b	$80,0
 	dc.b	$C3,$00,$06,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .....Q...Q...Q..
 	dc.b	$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .Q...Q...Q...Q..
 	dc.b	$18,$4F,$18,$4F,$14,$48,$16,$49,$18,$4B	; .O.O.H.I.K

@@ -253,7 +253,7 @@
 	dcb.b	$A,0
 	dc.b	$5A,$0D,$0D,$00,$00,$00,$00,$77,$07,$77,$79,$00,$90	; Z......w.wy..
 	dcb.b	$13,0
-GetDataSub9	subi.w	#$7,d6
+GetDataSub10	subi.w	#$7,d6
 	bra.w	.l28318
 	dc.b	$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$07	; ...p...p...p....
 	dcb.b	$A,0
@@ -868,30 +868,29 @@ GetDataSub9	subi.w	#$7,d6
 	dcb.b	$40,0
 	dc.b	'@L`M`N`O`P`Q`R S'	; @L`M`N`O`P`Q`R S
 	dcb.b	$40,0
-GetDataSub10	ori.w	#$4055,(a4)
+GetDataSub11	ori.w	#$4055,(a4)
 	bra.b	GetData_26
 	dc.b	'`W`X`Y@Z ['	; `W`X`Y@Z [
 	dcb.b	$40,0
-GetDataSub11	negx.w	(a4)+
+GetDataSub12	negx.w	(a4)+
 	negx.w	(a5)+
-	bra.b	Buf42_1
+	bra.b	GetData_27
 	dc.b	'`_```a'	; `_```a
 GetData_26	dc.b	'@b@c'	; @b@c
 	dcb.b	$40,0
-GetDataSub12	movea.l	-(a4),a0
+GetDataSub13	movea.l	-(a4),a0
 	negx.w	-(a5)
 	negx.w	-(a6)
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
-; Zero-filled work storage (66 bytes).
-Buf42_1	dcb.b	$42,0
+GetData_27	dcb.b	$42,0
 	dc.b	'`l`m'	; `l`m
 	dcb.b	$15,0
 .l2CC81	dcb.b	$D1,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u
 	dcb.b	$202,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_0BC64.bin
-GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
+GetDataSub14	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$5,d0
 	jsr	$6044.w
@@ -981,7 +980,7 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
 	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
 	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
-GetDataSub14	movem.l	d0-d7/a0-a2,-(sp)
+GetDataSub15	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	#$1,$C450.l
 	tst.w	$C44E.l
 	bne.w	GetData_28
@@ -1006,7 +1005,7 @@ GetDataSub14	movem.l	d0-d7/a0-a2,-(sp)
 	jsr	$2790E.l
 	add.w	d2,d2
 	add.w	d2,$C448.l
-GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
+GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$61,d0
 	jsr	$6044.w
@@ -1078,7 +1077,7 @@ GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	d3,d1
 	add.w	d7,d4
 	dbra	d2,.l1BFC2
-GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
+GetDataSub17	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$40,d0
 	jsr	$6044.w
@@ -1281,7 +1280,7 @@ GateArrayVdpAddrCmd	movem.l	d0-d2,-(sp)
 	dbra	d2,.l1C414
 	movem.l	(sp)+,d0-d2
 	rts
-GetDataSub17	movem.l	d0-d7/a0,-(sp)
+GetDataSub18	movem.l	d0-d7/a0,-(sp)
 	tst.w	$C440.l
 	beq.w	.l1C69A
 .l1C478	btst.b	#$4,$FF800E.l
@@ -1498,7 +1497,7 @@ TilemapCellCmd	movem.l	d0-d2/a1/a5,-(sp)
 	bclr.b	#$7,$FF800F.l
 	bra.w	.l1C886
 .l1C90C	rts
-GetDataSub18	movem.l	d2-d3/a1-a2,-(sp)
+GetDataSub19	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
 	bge.w	.l1C932
 	move.l	d0,d3
@@ -1587,7 +1586,7 @@ GetDataSub18	movem.l	d2-d3/a1-a2,-(sp)
 	dc.b	$00,$FF,$80,$0F	; ....
 .l3DDF2	rts
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
-GetDataSub19	movem.l	d0-d7/a0-a4/a6,-(sp)
+GetDataSub20	movem.l	d0-d7/a0-a4/a6,-(sp)
 	btst.b	#$0,$FF800F.l
 	beq.w	.l1CB1E
 	btst.b	#$1,$FF800E.l
@@ -1604,7 +1603,7 @@ GetDataSub19	movem.l	d0-d7/a0-a4/a6,-(sp)
 	nop
 	movea.l	(sp)+,a5
 	rts
-GetDataSub20	movem.l	d1/a0,-(sp)
+GetDataSub21	movem.l	d1/a0,-(sp)
 	bsr.w	.l3DFAA
 	move.b	d0,$2800A.l
 	bsr.w	.l3DFA2
@@ -1844,17 +1843,17 @@ GiveWordRam	bset.b	#$0,$FF8003.l
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$0D,$13,$FC,$00,$00,$00,$FF,$00,$0B	; ................
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$09,$51,$CA,$FF,$DA,$13,$FC,$00,$40	; ........Q......@
 	dc.b	$00,$FF,$00,$0F,$13,$FC,$00,$80,$00,$FF,$00,$0F,$34,$3C,$00,$0F	; ............4<..
-GetDataSub21	move.w	#$FFF,d0
+GetDataSub22	move.w	#$FFF,d0
 	move.l	#$0,d1
 	movea.l	#$FF2001,a0
 	move.b	d2,$FF000D.l
 .l1D0C4	move.b	d1,$0(a0)
 	adda.w	#$2,a0
 	dbra	d0,.l1D0C4
-	dbra	d2,GetDataSub21
+	dbra	d2,GetDataSub22
 	move.b	#$FF,$FF0011.l
 	rts
-GetDataSub22	movem.l	d0-d1/a0-a1,-(sp)
+GetDataSub23	movem.l	d0-d1/a0-a1,-(sp)
 .l1D0E2	move.w	#$80,d0
 	jsr	$5F22.w
 	bcs.b	.l1D0E2

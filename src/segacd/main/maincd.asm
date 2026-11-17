@@ -63,9 +63,9 @@ DispatchSubCommand
 	bclr.b	#0,$A12014				;drop the main CPU's busy bit while it runs
 	move	sr,-(sp)
 	move	#$2700,sr
-	bsr.w	SubHandshake0
+	bsr.w	DispatchPrep
 	bsr.w	WaitWordRAM
-	bsr.w	SubHandshake1
+	bsr.w	DispatchBody
 	move	(sp)+,sr
 	lsl.w	#2,d0
 	lea	CmdJumpTable(pc),a0
@@ -76,9 +76,9 @@ DispatchSubCommand
 	bset.b	#0,$A12014
 .wait	btst.b	#1,$A12024			;wait until the sub CPU sees it
 	beq.s	.wait
-	bsr.w	SubHandshake2
+	bsr.w	DispatchAfter
 	bsr.w	GiveWordRAM
-	bsr.w	SubHandshake3
+	bsr.w	DispatchTail
 	move	(sp)+,sr
 	rts
 
@@ -151,7 +151,7 @@ CallLinkedPtr	lea	$23A450,a0
 	move.l	(a0)+,d4
 	movea.l	(a0),a2
 	adda.l	#$180000,a2
-	bsr.w	TileCmdListInit
+	bsr.w	LinkedCall
 	lea	$23A450,a0
 	move.l	d4,(a0)
 	rts

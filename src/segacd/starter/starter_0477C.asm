@@ -102,7 +102,6 @@ HexStr	link	a6,#$0
 	unlk	a6
 	rts
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
-; C function aprint (Sierra C name tag follows it).
 aprint	link	a6,#$FED8
 	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
@@ -203,7 +202,6 @@ aprint	link	a6,#$FED8
 	unlk	a6
 	rts
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
-; C function ffree (Sierra C name tag follows it).
 ffree	link	a6,#$0
 	movem.l	a3-a4,-(sp)
 	movea.l	$8(a6),a3
@@ -256,7 +254,7 @@ ffree	link	a6,#$0
 findSmallestBlock	link	a6,#$0
 	movem.l	d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#$0,d0
 	movea.l	d0,a3
@@ -284,10 +282,9 @@ findSmallestBlock	link	a6,#$0
 	rts
 	dc.b	$91,'findSmallestBlo'	; .findSmallestBlo
 	dc.b	$63,$6B,$00,$00	; ck..
-; C function MaxFree (Sierra C name tag follows it).
 MaxFree	link	a6,#$0
 	movem.l	d6-d7/a4,-(sp)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#-1,d6
 	bra.b	.l4B64
@@ -309,7 +306,6 @@ MaxFree	link	a6,#$0
 	unlk	a6
 	rts
 	dc.b	$87,'MaxFree',$00,$00	; .MaxFree..
-; C function mmalloc (Sierra C name tag follows it).
 mmalloc	link	a6,#$0
 	movem.l	d6-d7/a3-a4,-(sp)
 	move.l	$8(a6),d7
@@ -361,10 +357,10 @@ mmalloc	link	a6,#$0
 	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	link	a6,#$0
 	movem.l	a3-a4,-(sp)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	movea.l	$8(a0),a3
-	lea.l	RestoreBios_91(pc),a0
-	lea.l	RestoreBios_91(pc),a1
+	lea.l	RestoreBios_97(pc),a0
+	lea.l	RestoreBios_97(pc),a1
 	move.l	$C(a1),d0
 	add.l	$8(a0),d0
 	movea.l	d0,a4
@@ -392,7 +388,7 @@ InitWorld	link	a6,#$0
 	clr.w	$FF8020.l
 	pea.l	.l26052(pc)
 	jsr	aprint(pc)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	moveq	#$F,d7
 	and.l	$8(a0),d7
 	tst.l	d7
@@ -401,30 +397,30 @@ InitWorld	link	a6,#$0
 	pea.l	.l26046(pc)
 	jsr	aprint(pc)
 	addq.w	#$4,sp
-.l4CB2	lea.l	RestoreBios_91(pc),a0
+.l4CB2	lea.l	RestoreBios_97(pc),a0
 	move.l	$8(a0),d0
 	moveq	#$F,d1
 	add.l	d1,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	move.l	d2,$8(a0)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	move.l	$C(a0),d0
 	sub.l	d7,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	move.l	d2,$C(a0)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	move.l	$8(a0),-(sp)
 	pea.l	.l26036(pc)
 	jsr	aprint(pc)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	move.l	$C(a0),-(sp)
 	pea.l	.l26026(pc)
 	jsr	aprint(pc)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	tst.l	$C(a0)
 	lea.l	$10(sp),sp
 	beq.b	.l4D12
@@ -438,14 +434,14 @@ InitWorld	link	a6,#$0
 .l26046	dc.b	'Fixing Heap',$00	; Fixing Heap.
 .l26052	dc.b	'SUBCPU is alive',$00	; SUBCPU is alive.
 GetTicks	link	a6,#$0
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	move.l	$4(a0),d0
 	unlk	a6
 	rts
 	dc.b	$88,'GetTicks',$00,$00,$00	; .GetTicks...
 ; C function WaitIODone (Sierra C name tag follows it).
 WaitIODone	link	a6,#$0
-.l4D82	lea.l	RestoreBios_91(pc),a0
+.l4D82	lea.l	RestoreBios_97(pc),a0
 	tst.l	$10(a0)
 	bne.b	.l4D82
 	unlk	a6

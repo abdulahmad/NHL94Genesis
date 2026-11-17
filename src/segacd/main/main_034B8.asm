@@ -1,4 +1,5 @@
-	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
+DispatchTailSub1	move.l	$4(sp),d1
+	move.l	$8(sp),d0
 ; Unsigned 32-bit divide stub (divu.l d1,d0).
 LongDivU	lea.l	.lFF34CC(pc),a0
 	movea.w	#$2,a1
@@ -21,7 +22,7 @@ LongModU	lea.l	.lFF34F0(pc),a0
 	dc.b	$48,$40,$30,$02,$72,$00,$60,$16,$D2,$41,$65,$12,$D4,$42,$D1,$80	; H@0.r.`..Ae..B..
 	dc.b	$B0,$83,$65,$F4,$90,$83,$D2,$41,$08,$C1,$00,$00,$64,$EE,$26,$1F	; ..e....A....d.&.
 	dc.b	$34,$1F,$4E,$75,$00,$00,$00,$00	; 4.Nu....
-DispatchTailSub1	movea.l	#$FFFC00,sp
+DispatchTailSub2	movea.l	#$FFFC00,sp
 	move.w	#$0,$A12010.l
 	move.w	#$0,$A12012.l
 	move.w	#$0,$A12014.l
@@ -79,7 +80,7 @@ ReadSubCommWord	btst.b	#$7,$A1200F.l
 	bne.b	.l36F0
 	bclr.b	#$7,$A1200E.l
 	rts
-DispatchTailSub3	movem.l	d0-d7/a0-a6,-(sp)
+DispatchTailSub4	movem.l	d0-d7/a0-a6,-(sp)
 	lsl.w	#$2,d0
 	lea.l	$FF471C.l,a1
 	movea.l	-$4(a1,d0.w),a0
@@ -107,7 +108,7 @@ DispatchTailSub3	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$4A,$79,$00,$FF,$6C,$F8,$67,$04,$30,$1F,$4E,$73,$33,$FC,$00,$01	; Jy..l.g.0.Ns3...
 	dc.b	$00,$FF,$6C,$F8,$30,$3C,$00,$01,$61,$00,$3E,$0E,$30,$1F,$4E,$73	; ..l.0<..a.>.0.Ns
 	dc.b	$08,$F9,$00,$00,$00,$A1,$20,$00,$4E,$73	; ...... .Ns
-DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
+DispatchTailSub5	movem.l	d0-d1/a0-a1,-(sp)
 	bset.b	#$5,$A1200E.l
 	bset.b	#$0,$A12000.l
 	move.w	#$1,$FF6CFA.l
@@ -186,7 +187,7 @@ VdpSetVramWriteAddr	movem.w	d0,-(sp)
 	andi.w	#$3,d0
 	move.w	d0,$C00004.l
 	rts
-DispatchTailSub7	movem.l	d0-d1/a0,-(sp)
+DispatchTailSub8	movem.l	d0-d1/a0,-(sp)
 	bsr.w	GiveWordRamToSub
 	bsr.w	WaitDmnaClear
 	bsr.w	ReadSubCommWord

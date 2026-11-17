@@ -14,7 +14,7 @@ DisposeEngine	link	a6,#$0
 	dc.b	$8D,'DisposeEngine',$00,$00	; .DisposeEngine..
 GetSectDst	link	a6,#$0
 	movem.l	d7/a4,-(sp)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
 	move.l	$8(a4),d0
@@ -36,7 +36,7 @@ GetSectDst	link	a6,#$0
 	dc.b	$8A,'GetSectDst',$00,$00,$00	; .GetSectDst...
 PeekSectDst	link	a6,#$0
 	movem.l	d7/a4,-(sp)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_97(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
 	move.l	$8(a4),d0

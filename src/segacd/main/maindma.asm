@@ -4,8 +4,7 @@
 
 
 
-; Clears the tile-load pointer, then runs ProcessTileCmdList.
-TileCmdListInit	lea.l	LFF1912(pc),a0
+LinkedCall	lea.l	LFF1912(pc),a0
 	clr.l	(a0)
 ; Walks a command list at a2 and loads tile data for each entry (uses the $FF12B0 helper).
 ProcessTileCmdList	movem.l	d0-d1/a0,-(sp)

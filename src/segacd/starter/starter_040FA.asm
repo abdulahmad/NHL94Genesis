@@ -3,7 +3,7 @@ Long7	dc.b	$00,$00,$00,$00	; ....
 ; Saves the vector at $5F90 and installs the second handler.
 InstallIrqHook2	lea.l	Long7(pc),a0
 	move.l	$5F90.w,(a0)
-	lea.l	RestoreBios_116(pc),a0
+	lea.l	RestoreBios_122(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F90.w
@@ -18,7 +18,7 @@ RemoveIrqHook2	movea.l	Long7(pc),a0
 	rts
 ; Zero-filled work storage (4 bytes).
 Long8	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_116	movem.l	d0-d3/a0-a2/a5,-(sp)
+RestoreBios_122	movem.l	d0-d3/a0-a2/a5,-(sp)
 	pea.l	.l413E(pc)
 	move.w	sr,-(sp)
 	movea.l	Long7(pc),a2
@@ -47,7 +47,7 @@ RestoreBios_116	movem.l	d0-d3/a0-a2/a5,-(sp)
 	move.l	Long8(pc),d0
 	andi.l	#$FFFFFF00,d0
 	bsr.w	CdMsfBcdToBin
-	move.l	Buf8_10(pc),d1
+	move.l	RestoreBios_103(pc),d1
 	cmp.l	d0,d1
 	bne.b	.l421C
 	lea.l	Long5(pc),a1
@@ -90,7 +90,7 @@ RestoreBios_116	movem.l	d0-d3/a0-a2/a5,-(sp)
 .l4222	lea.l	Long4(pc),a1
 	clr.l	(a1)
 	bra.b	.l421C
-.l422A	lea.l	BufA8_1(pc),a1
+.l422A	lea.l	RestoreBios_106(pc),a1
 	move.l	#$FFFFFFFF,(a1)
 	bra.b	.l421C
 ; Clears a flag and calls CD BIOS function 8.
@@ -103,7 +103,7 @@ CdBiosCall8	lea.l	Long4(pc),a1
 CdBiosReadSequence	link	a6,#$FFFC
 	movem.l	d1-d7/a0-a5,-(sp)
 	movea.l	#$FF8000,a5
-	lea.l	BufA8_1(pc),a1
+	lea.l	RestoreBios_106(pc),a1
 	clr.l	(a1)
 	moveq	#$5,d4
 	moveq	#-1,d5
@@ -122,7 +122,7 @@ CdBiosReadSequence	link	a6,#$FFFC
 	lea.l	Long4(pc),a1
 	neg.l	d2
 	move.l	d2,(a1)
-	lea.l	Buf8_10(pc),a1
+	lea.l	RestoreBios_103(pc),a1
 	move.l	d3,(a1)
 	moveq	#$0,d5
 .l4298	move.l	d5,d0

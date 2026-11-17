@@ -277,7 +277,7 @@ LinkedCall_17	moveq	#$1F,d0
 	addq.w	#$1,$FF2DB4.l
 	addq.w	#$1,d6
 	dbra	d2,.lFF0922
-	bsr.w	TileCmdListInit
+	bsr.w	LinkedCall
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,$FF2DB4.l
