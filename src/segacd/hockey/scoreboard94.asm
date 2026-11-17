@@ -282,7 +282,7 @@ linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitma
 	movea.l	#$1B008,a2
 	move.w	(a1),d2
 	moveq	#$1,d3
-	move.w	$18D46.l,d4
+	move.w	(energybarchars).l,d4
 	moveq	#$0,d5
 	bsr.w	dobitmap
 	move.w	(sp)+,(printa).l
@@ -342,7 +342,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	bne.w	rtss2
 	bclr	#$4,(sflags2).l
 	bne.w	.Cwdupdate
-	btst	#$0,$17F72.l
+	btst	#$0,(sflags4).l
 	beq.w	rtss2
 	bclr	#$3,(sflags8).l
 	bne.w	.0
@@ -350,7 +350,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	bra.w	rtss2
 .0	movem.l	d0-d1/a1-a3,-(sp)
 	move.l	a4,-(sp)
-	movea.l	#$180EC,a4
+	movea.l	#ChkCnt,a4
 	adda.w	(ScoreSumbytes).l,a4
 	movea.l	#tmstruct,a2
 	btst	#$7,$2(a4)

@@ -442,10 +442,10 @@ HotColdIconExitReset
 	jsr	$5F22.w
 	bclr	#$5,$FF800F.l
 	st.b	(arenaanim).l
-	clr.l	$1AD46.l
-	clr.l	$1AD4E.l
-	clr.l	$1AD4A.l
-	clr.l	$1AD52.l
+	clr.l	(homepresses).l
+	clr.l	(awaypresses).l
+	clr.l	(homedirpresses).l
+	clr.l	(awaydirpresses).l
 	clr.w	$191CE.l
 	jsr	(ScoutingReportTextLoad).l
 	jsr	(SubCmd3DSend).l
@@ -511,7 +511,7 @@ HotColdIconExitReset
 .next8	clr.w	(ScoreSumbytes).l
 	clr.w	(PenSumLength).l
 	clr.w	(gsp).l
-	clr.w	$180EC.l
+	clr.w	(ChkCnt).l
 	bsr.w	restoreteams
 	jsr	(InitScores).l
 	jsr	(UpdateSoundVdpSetup).l

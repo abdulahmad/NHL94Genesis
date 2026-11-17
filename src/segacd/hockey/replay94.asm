@@ -15,10 +15,10 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	rts
 adda4						;Step forward 1 frame. First handles a reverse
 	
-	bclr	#$6,$17F72.l
+	bclr	#$6,(sflags4).l
 	beq.w	.1
 	movem.l	d0-d7/a0-a6,-(sp)
-	bchg	#$4,$17F72.l
+	bchg	#$4,(sflags4).l
 	move.w	(Hpos).l,-(sp)
 	move.w	(Vpos).l,-(sp)
 	bsr.w	forceblack2
@@ -71,12 +71,12 @@ NextReplayEntry	adda.w	#$62,a4
 	rts
 UpdateCameraPos	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
-	btst	#$7,$17F72.l
+	btst	#$7,(sflags4).l
 	beq.w	.0
 	neg.w	d0
 .0	move.w	d0,$0(a5)
 	move.w	$14(a3),d1
-	btst	#$7,$17F72.l
+	btst	#$7,(sflags4).l
 	beq.w	.2
 	neg.w	d1
 .2	move.w	d1,$14(a5)
@@ -96,9 +96,9 @@ UpdateCameraPos	movem.l	d0-d2,-(sp)
 .3	move.w	d1,(Vpos).l
 	movem.l	(sp)+,d0-d2
 	rts
-RestoreReplayFrame	btst	#$4,$17F72.l
+RestoreReplayFrame	btst	#$4,(sflags4).l
 	beq.w	RestoreReplayFrameCopy
-	bset	#$7,$17F72.l
+	bset	#$7,(sflags4).l
 ; Copies the saved replay sprite state back.
 RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	#$4761C,a6
@@ -110,7 +110,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	btst	#$9,d2
 	beq.w	.next
 	ori.w	#$FC00,d2
-.next	btst	#$4,$17F72.l
+.next	btst	#$4,(sflags4).l
 	beq.w	.next2
 	neg.w	d2
 .next2	move.w	d2,$0(a3)
@@ -120,7 +120,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	btst	#$9,d2
 	beq.w	.next3
 	ori.w	#$FC00,d2
-.next3	btst	#$4,$17F72.l
+.next3	btst	#$4,(sflags4).l
 	beq.w	.next4
 	neg.w	d2
 	cmpi.w	#$0,d1
@@ -130,7 +130,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	move.w	(a0),d2
 	asr.w	#$4,d2
 	andi.w	#$3FF,d2
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next7
 	asl.w	#$1,d2
 	move.w	(a6,d2.w),d2
@@ -152,7 +152,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	blt.w	.next8
 	cmpi.w	#$292,d2
 	bge.w	.next8
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next8
 	move.w	#$190,$14(a3)
 .next8	move.w	(a0),d2
@@ -160,7 +160,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	andi.w	#$1800,d2
 	andi.w	#$E7FF,$4(a3)
 	or.w	d2,$4(a3)
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next9
 	move.w	$6(a3),d2
 	cmpi.w	#$162,d2
@@ -233,12 +233,12 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	bra.w	.next14
 .next13	move.w	(a0)+,(Hpos).l
 	move.w	(a0)+,(Vpos).l
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next14
 	neg.w	(Hpos).l
 	neg.w	(Vpos).l
 	jsr	(ClampReplayView).l
-.next14	bclr	#$7,$17F72.l
+.next14	bclr	#$7,(sflags4).l
 	movem.l	(sp)+,d0-d2/a0/a6
 	rts
 ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100

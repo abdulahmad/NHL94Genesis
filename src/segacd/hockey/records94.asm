@@ -269,7 +269,7 @@ NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as 
 ; Runs the framer with the name entry framer setting.
 NameEntryFramerRun
 	move.w	(framercset).l,-(sp)
-	move.w	$1A3D2.l,(framercset).l
+	move.w	(nameframechars).l,(framercset).l
 	jsr	(Framer).l
 	move.w	(sp)+,(framercset).l
 	rts
@@ -588,15 +588,15 @@ PrintRecordTitlesBody
 	move.b	$C(a5,d0.w),d4
 	lsl.w	#$8,d4
 	move.b	$D(a5,d0.w),d4
-	move.w	d4,$17E9A.l
+	move.w	d4,(recties).l
 	move.b	$8(a5,d0.w),d4
 	lsl.w	#$8,d4
 	move.b	$9(a5,d0.w),d4
-	move.w	d4,$17E9E.l
-	add.w	$17E9A.l,d4
+	move.w	d4,(recwins).l
+	add.w	(recties).l,d4
 	sub.w	(sp),d4
 	neg.w	d4
-	move.w	d4,$17E9C.l
+	move.w	d4,(reclosses).l
 	move.w	(sp)+,d4
 	tst.w	d4
 	beq.w	.next
@@ -608,17 +608,17 @@ PrintRecordTitlesBody
 	jsr	(PushNumberWidth).l
 	jsr	(printsmall).l
 	move.w	#$1A,(printx).l
-	move.w	$17E9E.l,d0
+	move.w	(recwins).l,d0
 	move.w	#$4,d1
 	jsr	(PushNumberWidth).l
 	jsr	(printsmall).l
 	move.w	#$1F,(printx).l
-	move.w	$17E9C.l,d0
+	move.w	(reclosses).l,d0
 	move.w	#$4,d1
 	jsr	(PushNumberWidth).l
 	jsr	(printsmall).l
 	move.w	#$24,(printx).l
-	move.w	$17E9A.l,d0
+	move.w	(recties).l,d0
 	move.w	#$3,d1
 	jsr	(PushNumberWidth).l
 	move.w	(sp)+,d0

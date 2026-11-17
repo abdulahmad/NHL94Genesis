@@ -352,7 +352,7 @@ PushTime						;convert d0 into string format of minutes:seconds. Return a1 = str
 	rts
 PushNumber						;convert d0 into string format of base 10 number, no leading zeros. Return
 	
-	movea.l	#$17F5E,a1
+	movea.l	#PushNumberBuf,a1
 	move.l	d0,-(sp)
 	move.l	a1,-(sp)
 .0	ext.l	d0
@@ -396,12 +396,12 @@ PushNumberWidth						;right-justified number
 	divu.w	#$A,d2
 	bne.w	.loop2
 	move.l	a1,d0
-	subi.l	#$17F56,d0
+	subi.l	#PushWidthBuf,d0
 	btst	#$0,d0
 	beq.w	.00
 	clr.b	(a1)+
 	addi.w	#$1,d0
-.00	movea.l	#$17F56,a1
+.00	movea.l	#PushWidthBuf,a1
 	move.w	d0,(a1)
 	movem.l	(sp)+,d0-d3
 	rts

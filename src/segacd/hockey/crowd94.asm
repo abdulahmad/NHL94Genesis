@@ -52,7 +52,7 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 .meter	sub.w	d7,(CwdChkCntr).l
 	bpl.w	.ex1
 	move.w	#$14,(CwdChkCntr).l
-	addi.w	#$1,$17F86.l
+	addi.w	#$1,(CwdChkCnt).l
 	move.w	(CwdExciteLvl).l,d0
 	ext.l	d0
 	asl.w	#$2,d0

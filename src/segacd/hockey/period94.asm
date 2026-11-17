@@ -34,7 +34,7 @@ ClampPositionBoxSecondLimits	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$000
 ; Clears the position box state and the team struct area.
 ClampPositionBoxClear
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$1A414,a0
+	movea.l	#shootoutstate,a0
 	move.l	#$12,d0
 .loop	clr.w	(a0)+
 	dbra	d0,.loop
@@ -47,7 +47,7 @@ ClampPositionBoxClear
 .loop3	clr.w	(a0)+
 	dbra	d0,.loop3
 	clr.w	(BA_PS_flags).l
-	clr.w	$17F72.l
+	clr.w	(sflags4).l
 	clr.w	(sflags6).l
 	clr.w	(gmode2).l
 	clr.w	(setupcardflags).l
@@ -63,7 +63,7 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	bmi.w	AddArenaAnimSpriteExit
 	tst.l	(arenaspritelist).l
 	beq.w	AddArenaAnimSpriteExit		;not loaded: none
-	btst	#$4,$17F72.l		;check if reverse angle replay
+	btst	#$4,(sflags4).l		;check if reverse angle replay
 	bne.w	AddArenaAnimSpriteExit
 	btst	#$3,(sflags2).l
 	bne.w	AddArenaAnimSpriteExit		;replay: none

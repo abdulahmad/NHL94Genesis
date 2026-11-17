@@ -273,7 +273,7 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	movea.l	#$BBD30,a6
 	moveq	#$1,d6
 	movea.l	$47D94.l,a0
-	move.w	$18D46.l,d3
+	move.w	(energybarchars).l,d3
 	ori.w	#$8000,d3
 	move.w	(playoffspritex).l,d0
 	move.w	(playoffspritey).l,d1
@@ -302,10 +302,10 @@ GetTeamStructCount
 	btst	#$0,(gmode).l
 	bne.w	.next2
 	move.w	(TempWord1).l,d1
-	movea.l	#$1AD46,a0
+	movea.l	#homepresses,a0
 	tst.w	d4
 	beq.w	.next
-	movea.l	#$1AD4E,a0
+	movea.l	#awaypresses,a0
 .next	addi.l	#$1,(a0)
 	cmpi.w	#$8,d1
 	beq.w	.next2

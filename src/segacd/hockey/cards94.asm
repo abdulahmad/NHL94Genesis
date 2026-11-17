@@ -764,13 +764,13 @@ UpdateRecordsStart
 	ext.l	d1
 	movea.l	#ThreeStars,a0
 	movea.l	#tmstruct,a2
-	move.w	$193AA.l,d5
+	move.w	(homegoalies).l,d5
 	move.w	(VisTeam).l,d6
 	bsr.w	.next12
 	move.w	(VisTeam).l,d1
 	ext.l	d1
 	movea.l	#awtmstruct,a2
-	move.w	$193AC.l,d5
+	move.w	(awaygoalies).l,d5
 	move.w	(HomeTeam).l,d6
 	bsr.w	.next12
 	clr.w	d7
@@ -779,7 +779,7 @@ UpdateRecordsStart
 	move.w	(awayuser).l,d5
 	move.w	(HomeTeam).l,d1
 	move.w	(VisTeam).l,d2
-	move.w	$193AA.l,d6
+	move.w	(homegoalies).l,d6
 	ext.l	d1
 	movea.l	#ThreeStars,a0
 	bsr.w	.next6
@@ -788,7 +788,7 @@ UpdateRecordsStart
 	move.w	(homeuser).l,d5
 	move.w	(VisTeam).l,d1
 	move.w	(HomeTeam).l,d2
-	move.w	$193AC.l,d6
+	move.w	(awaygoalies).l,d6
 	ext.l	d1
 	movea.l	#ThreeStars,a0
 	bsr.w	.next6
@@ -955,20 +955,20 @@ UpdateRecordsStart
 UpdateRecordsGoalieCounts	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetGoalieCount).l
-	move.w	d0,$193AA.l
+	move.w	d0,(homegoalies).l
 	movea.l	#awtmstruct,a2
 	jsr	(GetGoalieCount).l
-	move.w	d0,$193AC.l
+	move.w	d0,(awaygoalies).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Stores the player counts of both teams
 UpdateRecordsPlayerCounts	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetPlayerCount).l
-	move.w	d0,$193AE.l
+	move.w	d0,(homeplayers).l
 	movea.l	#awtmstruct,a2
 	jsr	(GetPlayerCount).l
-	move.w	d0,$193B0.l
+	move.w	d0,(awayplayers).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, spaces for 0)
@@ -1325,7 +1325,7 @@ TrimSpacesMenuSetup
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$91234567,$89ABCDEF
-	move.w	d4,$1A3D2.l
+	move.w	d4,(nameframechars).l
 	movea.l	$47D10.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
@@ -1358,7 +1358,7 @@ TrimSpacesMenuSetup
 	jsr	(ForceBlackStepCram).l
 	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
-	move.w	d4,$19398.l
+	move.w	d4,(logobox1chars).l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l

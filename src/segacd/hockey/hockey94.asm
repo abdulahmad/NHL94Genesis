@@ -132,7 +132,7 @@ periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	bsr.w	RestoreBenchEnergy
 	bsr.w	.next
 	jmp	(updatepwrplay).l
-.next	subi.w	#$1,$1806A.l
+.next	subi.w	#$1,(InjCntDown).l
 	bne.w	updatereplayExit
 	jmp	(CalcTeamStarScoresPrint).l
 RestoreBenchEnergy						;Called once per second. Restore energy for players on the bench
@@ -176,7 +176,7 @@ UpdateCwdExcite						;called once per second. Track peak and running total of cr
 	move.w	d0,(MaxCwdExciteLvl).l
 .less	ext.l	d0
 	add.l	d0,(SumCwdExciteLvl).l
-	addi.w	#$1,$17CDC.l
+	addi.w	#$1,(NumCwdExciteLvl).l
 	subi.w	#$1,(CwdExciteLvl).l
 	bpl.w	.ex
 	clr.w	(CwdExciteLvl).l

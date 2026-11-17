@@ -126,7 +126,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	cmp.w	d4,d1
 	beq.w	rtss2		;same row as last frame
 	movea.l	$47D18.l,a0
-	btst	#$4,$17F72.l		;reverse angle replay
+	btst	#$4,(sflags4).l		;reverse angle replay
 	beq.w	.0
 	movea.l	$47D64.l,a0
 .0	adda.l	$4(a0),a0		;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
@@ -173,7 +173,7 @@ showref						;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link cou
 									;Called from setvideo
 	bclr	#$1,(sflags2).l		;sf2refref
 	beq.w	rtss2
-	movea.l	#$18074,a0
+	movea.l	#RefRamMap,a0
 	movea.l	#VmMAP1,a1
 	move.w	$2(a1),d2
 	moveq	#$2,d0		;refy: Xpos on ice screen
@@ -318,7 +318,7 @@ SetSframe
 showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the two
 									;Crowdframe frames. a5 = dma list, a6 = sprite table, d6 = link counter.
 									;No crowd in a reverse angle replay. Called from setvideo
-	btst	#$4,$17F72.l		;check if reverse angle replay
+	btst	#$4,(sflags4).l		;check if reverse angle replay
 	bne.w	.x		;branch if so
 	movea.l	$47D2C.l,a1
 	adda.l	$4(a1),a1		;a1 = frame offset table
@@ -474,7 +474,7 @@ showclockVertical
 	move.w	$78(a1),d0
 	add.w	(smallfontchars).l,d0
 	ori.w	#$8000,d0
-	move.w	d0,$17ED4.l
+	move.w	d0,(clockram).l
 	move.w	(gameclock).l,d0
 	btst	#$1,(gmode2).l
 	beq.w	.next
@@ -526,8 +526,8 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 									;the last one
 	btst	#$7,(sflags).l
 	bne.w	rtss2
-	movea.l	#$17D20,a0
-	movea.l	#$17DD8,a3
+	movea.l	#Joy1Struct,a0
+	movea.l	#sso,a3
 	move.w	#$180,d3		;frame numbers are 6 higher than 92
 	bsr.w	.ca
 	adda.w	#$1C,a0		;next pad object
@@ -536,13 +536,13 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	bsr.w	.ca
 	tst.w	(cont3team).l
 	beq.w	rtss2		;on screen: no arrow
-	movea.l	#$17D74,a0
+	movea.l	#Joy3Struct,a0
 	adda.w	#$14,a3
 	move.w	#$346,d3
 	bsr.w	.ca
 	tst.w	(cont4team).l
 	beq.w	rtss2
-	movea.l	#$17D90,a0
+	movea.l	#Joy4Struct,a0
 	adda.w	#$14,a3
 	move.w	#$349,d3
 .ca	tst.w	$18(a0)
@@ -628,7 +628,7 @@ setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), mov
 									;each by its x offset. Called from setvideo
 	bsr.w	uppads
 	move.w	#$6,d0		;ffo obj -1
-	movea.l	#$17D04,a3		;move start of struct into a3
+	movea.l	#pads,a3		;move start of struct into a3
 .top	movea.l	a6,a0		;per object: a0 = first sprite this object writes
 	bsr.w	addframe
 	cmpa.l	a6,a0
@@ -643,7 +643,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 									;(QueuePadLabel). The pad players
 									;come from the PadControlBits / PadControlBits34 nibbles ($E = no change,
 									;$F = none)
-	movea.l	#$17DAC,a0		;pads+(4*ffosize): gloves
+	movea.l	#glovestruct,a0		;pads+(4*ffosize): gloves
 	st.b	$18(a0)		;set Zpos
 	move.b	(glovecords).l,d0
 	beq.w	.0		;branch if 0
@@ -656,7 +656,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 	move.w	d1,$14(a0)		;move d1 into Ypos
 	clr.w	$18(a0)		;clear Zpos
 .0	move.w	#$5,d4
-	movea.l	#$17D04,a0
+	movea.l	#pads,a0
 	movea.l	#padcont,a1		;last label code per pad
 	movea.l	#SortCords,a2
 	move.w	(PadControlBits).l,d3
@@ -943,7 +943,7 @@ UpdateSoundVdpSetup
 	move.w	d4,(rinkvrcset).l
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next4
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
@@ -951,7 +951,7 @@ UpdateSoundVdpSetup
 	jsr	(UnpackPictureSelectGfx).l
 	move.w	d4,(EASNcset).l
 	bsr.w	SetupIceRinkPalRemap
-	move.w	d4,$18D46.l
+	move.w	d4,(energybarchars).l
 	movea.l	$47D40.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
@@ -963,7 +963,7 @@ UpdateSoundVdpSetup
 	addi.w	#$32,d4
 	move.w	d4,(spritechars).l
 	bsr.w	CopyTeamBlockMapDataFill
-	move.w	d4,$18C1C.l
+	move.w	d4,(dmaram).l
 	bsr.w	setupIceRinkPal
 	bsr.w	AddSmallFontFramer
 	move.w	d4,(smallfontchars).l

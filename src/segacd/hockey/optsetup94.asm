@@ -769,11 +769,11 @@ OptionsScreenSetup
 	jsr	(dobitmap).l
 	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
-	move.w	d4,$19398.l
+	move.w	d4,(logobox1chars).l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	move.w	d4,$1939A.l
+	move.w	d4,(logobox2chars).l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
@@ -1074,20 +1074,20 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 TeamLogoBitmapsEnd						;end of TeamLogoBitmaps (size check below)
-	move.w	$19398.l,d4
+	move.w	(logobox1chars).l,d4
 	move.w	#$1C,(printx).l
 	bra.w	DrawLogoBox
 ; Draws the visitor logo box at x=$18.
-DrawLogoBoxVisitor	move.w	$19398.l,d4
+DrawLogoBoxVisitor	move.w	(logobox1chars).l,d4
 	move.w	#$18,(printx).l
 	bra.w	DrawLogoBox
 ; Draws a logo box at x=3 from the value at $1939A.
 DrawLogoBoxHomeLeft
-	move.w	$1939A.l,d4
+	move.w	(logobox2chars).l,d4
 	move.w	#$3,(printx).l
 	bra.w	DrawLogoBox
 ; Draws a logo box at x=8 from the value at $1939A.
-DrawLogoBoxHomeRight	move.w	$1939A.l,d4
+DrawLogoBoxHomeRight	move.w	(logobox2chars).l,d4
 	move.w	#$8,(printx).l
 DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to
 	

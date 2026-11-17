@@ -38,7 +38,7 @@ PeriodOverPenaltyShot	btst.b	#$2,(BA_PS_flags).l
 	beq.w	.next2
 	clr.w	$40(a3)
 	move.w	#$78,$42(a3)
-.next2	movea.l	#$17E36,a1
+.next2	movea.l	#puckcross,a1
 	sub.w	d7,$2(a1)
 	sub.w	d7,$6(a1)
 	sub.w	d7,$40(a3)
