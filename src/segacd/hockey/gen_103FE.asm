@@ -51,7 +51,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 .l104DC	movem.l	(sp)+,d0/a0-a1
 	rts
 	btst	#$6,$17F74.l
-	bne.w	Sub_2B600
+	bne.w	HotColdIconExit
 	movem.l	d0-d6/a0-a1,-(sp)
 	move.w	$17BA8.l,d0
 	asr.w	#$8,d0
@@ -119,7 +119,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	beq.w	Sub_2B608
 	bra.w	Sub_2B60E
 	movem.l	(sp)+,d0-d6/a0-a1
-Sub_2B600
+HotColdIconExit
 	rts
 Sub_2B602
 	jmp	(Sweepcheck).l
@@ -233,9 +233,9 @@ Sub_2B60E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l10850	move.w	#$0,-(a6)
 .l10854	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -244,9 +244,9 @@ Sub_2B60E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l10880	bclr	#$5,$FF800F.l
 .l10888	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -422,9 +422,9 @@ periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jsr	(updatesound).l
 	bsr.w	clockcont
 	btst	#$7,$17F6A.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	sub.w	d7,$1747C.l
-	bpl.w	Sub_2F988
+	bpl.w	updatereplayExit
 	addi.w	#$18,$1747C.l
 	jsr	(ChkGoalies).l
 	bsr.w	UpdateCwdExcite
@@ -433,7 +433,7 @@ periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	bsr.w	.l10C44
 	jmp	(updatepwrplay).l
 .l10C44	subi.w	#$1,$1806A.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	jmp	$40D50.l
 RestoreBenchEnergy						;Called once per second. Restore energy for players on the bench
 	tst.w	$18C0A.l
@@ -521,7 +521,7 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	move.w	d1,(Crowdcnt).l
 .cf	clr.b	(Crowdframe).l
 	cmpi.w	#$118,(Crowdlevel).l
-	bls.w	Sub_2F988
+	bls.w	updatereplayExit
 .l10DFE	btst	#$7,$FF800E.l
 	bne.b	.l10DFE
 	move.w	#$1B,$FF8020.l
@@ -536,16 +536,16 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	bclr	#$7,$FF800F.l
 	andi.w	#$7F,d0
 	cmpi.w	#$13,d0
-	blt.w	Sub_2F988
+	blt.w	updatereplayExit
 	cmpi.w	#$19,d0
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 	move.b	d0,(Crowdframe).l
 	rts
 clockcont						;monitor period clock and initiate various clock activated events
 	btst	#$0,$17F68.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	tst.w	$180E6.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	bset	#$3,(disflags).l
 	jsr	$47DB0.l
 	move.w	#$4,-(sp)
@@ -610,9 +610,9 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	jmp	(AddPenalty2).l
 demoread						;monitor joystick if in demo mode (called every game loop)
 	tst.w	$17FA6.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	tst.w	$17FA8.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	jsr	(ReadJoy1).l
 	btst	#$7,d1
 	bne.w	Sub_2C022
@@ -631,7 +631,7 @@ demoread						;monitor joystick if in demo mode (called every game loop)
 	bne.w	Sub_2C060
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	jmp	$3F2BE.l
 Sub_2C022
 	clr.w	$17F94.l
@@ -786,7 +786,7 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 SetMenuPrintX						;printx = the left edge of the menu box: 5 in 32 column mode, else 9
 	move.w	#$5,(printx).l
 	btst	#$1,(disflags).l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	addi.w	#$4,(printx).l
 	rts
 HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up move the

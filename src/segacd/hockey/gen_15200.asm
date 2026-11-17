@@ -58,7 +58,7 @@ doinput
 	btst	#$3,$63(a3)
 	bne.w	lineinput
 	btst	#$3,$62(a3)
-	beq.w	Sub_30606
+	beq.w	doinputExit
 	movem.l	d0-d2/a0/a3,-(sp)
 	move.w	$17E2A.l,d0
 	cmp.w	$52(a3),d0
@@ -93,7 +93,7 @@ doinput
 	btst	#$5,$62(a3)
 	bne.w	doinput_islocked
 .l153AE	btst	#$0,$63(a3)
-	bne.w	Sub_30B06
+	bne.w	faceoffinputExit
 	move.w	$17BE0.l,d5
 	cmp.w	$52(a3),d5
 	beq.w	doinput_ispc
@@ -198,14 +198,14 @@ doinput
 	move.w	#$B,d0
 .l15590	jsr	(getGoalieSCnum).l
 	tst.w	d0
-	bmi.w	Sub_30606
+	bmi.w	doinputExit
 	movem.l	d0/a3,-(sp)
 	movea.l	#$17480,a3
 	asl.w	#$7,d0
 	adda.w	d0,a3
 	btst	#$3,$62(a3)
 	movem.l	(sp)+,d0/a3
-	bne.w	Sub_30606
+	bne.w	doinputExit
 	tst.w	d4
 	beq.w	setc1player
 	bra.w	setc2player
@@ -223,7 +223,7 @@ doinput
 	bset	#$1,$63(a3)
 	bset	#$5,$62(a3)
 	addi.w	#$96,(Crowdlevel).l
-Sub_30606
+doinputExit
 	rts
 L15608	btst	#$5,d1
 	bne.w	.l1566C
@@ -246,7 +246,7 @@ L15608	btst	#$5,d1
 	adda.w	(a0,d0.w),a0
 	tst.b	$5B(a3)
 	movem.l	(sp)+,d0-d3/a0-a3
-	bpl.w	Sub_30606
+	bpl.w	doinputExit
 	move.w	#$A,$5C(a3)
 	rts
 .l1566C	btst	#$5,$62(a3)
@@ -373,14 +373,14 @@ Sub_307D8
 	bset	#$1,$17F70.l
 	clr.w	$2A(a3)
 .l15876	btst	#$1,$17F70.l
-	bne.w	Sub_30606
+	bne.w	doinputExit
 	move.w	$17E62.l,d0
 	bra.w	doplayeracc
 doinput_onetimer						;a3 is set for a one-timer: C (bit 5) starts the one-timer shot, else
 									;skate
 	move.w	$17E62.l,d0
 	btst	#$3,$64(a3)
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	btst	#$5,d1
 	beq.w	doplayeracc
 	movem.l	d7/a0,-(sp)
@@ -413,7 +413,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	tst.w	$34(a3)
 	bne.w	.0
 	btst	#$1,$63(a3)
-	bne.w	Sub_30606
+	bne.w	doinputExit
 .0	btst	#$2,$17F6A.l
 	bne.w	passmode
 	btst	#$3,$17F6A.l
@@ -465,11 +465,11 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the controlled player
 	move.w	$17BE0.l,d5
 	cmp.w	$52(a3),d5
-	beq.w	Sub_30606
+	beq.w	doinputExit
 	btst	#$4,d1
-	beq.w	Sub_30A6E
+	beq.w	doinput_islockedExit
 	btst	#$6,$17F74.l
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	bsr.w	Sub_312A4
 	movem.l	d0/a0,-(sp)
 	move.w	$17F9E.l,d0
@@ -483,7 +483,7 @@ doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the contr
 	adda.w	d0,a0
 	bset	#$6,$64(a0)
 .x	movem.l	(sp)+,d0/a0
-Sub_30A6E
+doinput_islockedExit
 	rts
 getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 									;up to object d0, -1 if none
@@ -507,7 +507,7 @@ faceoffinput						;controller processing for faceoff
 	rts
 .0	move.w	$36(a3),d4		;move assnum into d4
 	cmpi.b	#$17,$38(a3,d4.w)		;check if afaceoffpl is in asslist at assnum position
-	bne.w	Sub_30A6E		;exit if this is not a faceoff player
+	bne.w	doinput_islockedExit		;exit if this is not a faceoff player
 	movea.l	#$17EE6,a0		;faceoff direction of puck control variable
 	btst	#$7,$62(a3)		;check which goal shooting on
 	beq.w	.2		;branch if bottom goal
@@ -523,16 +523,16 @@ faceoffinput						;controller processing for faceoff
 	bra.w	SetSPA
 .1	move.w	#$1014,d1		;#SPAfaceoffr anim
 	bra.w	SetSPA
-Sub_30B06
+faceoffinputExit
 	rts
 Sub_30B08
 	tst.w	$18C0A.l
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	btst	#$4,$17F7A.l
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	jsr	$3C958.l
 	bset	#$1,$32(a2)
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	btst	#$3,$17F74.l
 	bne.w	.l15B42
 	bclr	#$2,$17F6A.l
@@ -732,7 +732,7 @@ setpassmode						;initialize pass mode
 	beq.w	.l15EBC
 	bclr	#$2,$17F78.l
 	bset	#$5,$17F70.l
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	bclr	#$5,$17F78.l
 	move.w	#$64,$17F9A.l
 .l15EBC	bset	#$2,$17F6A.l

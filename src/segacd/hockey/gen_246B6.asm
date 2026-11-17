@@ -201,7 +201,7 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	cmpa.l	a2,a1
 	ble.w	.l24A22
 	move.w	#$FF00,(PlayerScrollCtr).l
-	dc.w	$6008
+	bra.s	*+10
 .l24A22	suba.l	a1,a2		;offset into the script
 	move.w	a2,(PlayerScrollCtr).l		;offset of the next word
 .print	move.w	d1,(mesarea).l
@@ -317,7 +317,7 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 Sub_3FC0C
 	jsr	$37598.l
 	tst.w	$3FC0A.l
-	dc.w	$6706
+	beq.s	*+8
 	jsr	$376F2.l
 .l24C20	move.w	#$D,d7
 	jsr	$6044.w
@@ -383,7 +383,7 @@ Sub_3FC0C
 	st.b	$191CE.l
 	moveq	#$0,d0
 	tst.w	$3FC0A.l
-	dc.w	$6706
+	beq.s	*+8
 	jsr	$37752.l
 .l24D90	jsr	$21FC8.l
 	move.w	#$2,d1

@@ -599,7 +599,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	jsr	(PlayoffStatsScreen).l
 .po	bsr.w	Sub_3F33C
 	tst.w	$191CE.l
-	dc.w	$660C
+	bne.s	*+14
 	move.w	#$1,$3FC0A.l
 	bsr.w	Sub_3FC0C
 .l242D2	bra.w	Sub_3F2DC
@@ -623,7 +623,7 @@ Sub_3F2DC
 .l24336	jmp	$2B7F8.l
 Sub_3F33C
 	tst.w	$191CE.l
-	dc.w	$660C
+	bne.s	*+14
 	move.w	#$0,$3FC0A.l
 	bsr.w	Sub_3FC0C
 .l24350	bclr	#$5,$FF800F.l

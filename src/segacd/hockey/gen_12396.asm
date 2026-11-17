@@ -177,11 +177,11 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 CheckScoringScroll						;ScoringSummaryScreen per frame: add PlayerScrollCtr to VertLineScrolling
 									;(0 ... SelectedPlayerIdx). Falls into UpdateScoringScroll
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0		;new position
-	bmi.w	Sub_2F988		;above the top: ignore
+	bmi.w	updatereplayExit		;above the top: ignore
 	cmp.w	(SelectedPlayerIdx).l,d0		;past the limit?
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 L127FC	move.w	(VertLineScrolling).l,d1
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
@@ -358,11 +358,11 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 CheckPenaltyScroll						;PenaltySummaryScreen per frame: add PlayerScrollCtr to VertLineScrolling
 									;(0 ... SelectedPlayerIdx). Falls into UpdatePenaltyScroll
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0		;new position
-	bmi.w	Sub_2F988		;above the top: ignore
+	bmi.w	updatereplayExit		;above the top: ignore
 	cmp.w	(SelectedPlayerIdx).l,d0		;past the limit?
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 L12B72	move.w	(VertLineScrolling).l,d1
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
@@ -594,11 +594,11 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 UpdateStatsListScroll						;Stats screen per frame: scroll 0 ... SelectedPlayerIdx, stop on a 16 line
 									;boundary, draw the row coming into view
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0		;new position
-	bmi.w	Sub_2F988		;above the top: ignore
+	bmi.w	updatereplayExit		;above the top: ignore
 	cmp.w	(SelectedPlayerIdx).l,d0		;past the limit?
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 	move.w	(VertLineScrolling).l,d1		;d1 = old position
 	move.w	d0,(VertLineScrolling).l
 	andi.w	#$F,d0		;pixels into the current 16 pixel row
@@ -752,7 +752,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	move.w	#$7FF,d2		;blank char
 	jsr	(eraser).l
 	tst.b	(a4)		;empty row?
-	bmi.w	Sub_2F988
+	bmi.w	updatereplayExit
 	subi.w	#$1,(printy).l		;eraser moved printy down one row; back to the row rank (2 digits) at x 1
 	move.w	#$1,(printx).l
 	move.l	a4,d0

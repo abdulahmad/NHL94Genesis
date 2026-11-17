@@ -24,7 +24,7 @@ Sub_2E3A4
 	clr.l	d2
 	move.b	(a2,d1.l),d2
 	move.w	$2(a1),d1
-	bmi.w	Sub_2F988
+	bmi.w	updatereplayExit
 	add.w	d0,d1
 	clr.w	d3
 	move.b	(a2,d1.l),d3
@@ -40,7 +40,7 @@ Sub_2E3A4
 	rts
 .l133E8	movea.l	#$2E40E,a1
 	tst.w	(a1,d1.w)
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	movea.w	(a1,d1.w),a1
 	move.l	d7,-(sp)
 	move.l	a1,d7

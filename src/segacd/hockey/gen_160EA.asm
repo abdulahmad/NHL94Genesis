@@ -201,7 +201,7 @@ SetShotMode
 	beq.w	.l163FA
 	bclr	#$2,$17F78.l
 	bset	#$5,$17F70.l
-	bne.w	Sub_30A6E
+	bne.w	doinput_islockedExit
 	bclr	#$5,$17F78.l
 	move.w	#$64,$17F9A.l
 .l163FA	move.w	#$8,$17E2C.l
@@ -567,12 +567,12 @@ check4bench
 	move.w	d0,$34(a3)
 	jmp	(Setplass).l
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_169AC.bin
-Sub_31AB6
+check4benchExit
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_16AB8.bin
 assdopen						;add player a3 to penalty box
 	btst	#$5,$62(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	moveq	#$10,d0
 	btst	#$6,$62(a3)
 	beq.w	.l16CFA
@@ -583,7 +583,7 @@ assdopen						;add player a3 to penalty box
 	rts
 assepen						;player a3 should exit penalty area
 	btst	#$5,$62(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	bclr	#$1,$62(a3)
 	beq.w	.nna
 	bset	#$2,$62(a3)		;set player in no collision mode
@@ -662,9 +662,9 @@ assfaceoffpl						;Face off player
 	addi.w	#$3,d0
 .lefty	move.w	d0,(a0)
 	btst	#$3,$62(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	bset	#$1,$63(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	move.w	#$FEA,d1
 	cmpi.w	#$10,$17BC0.l
 	bls.w	.d

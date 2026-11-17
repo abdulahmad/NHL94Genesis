@@ -1,15 +1,15 @@
 ScoutParaOffset
 	cmpi.w	#$1A,d0
-	dc.w	$662A
+	bne.s	*+44
 	move.w	#$EA,d0
 	cmpi.w	#$1A,(HomeTeam).l
-	dc.w	$6C08
+	bge.s	*+10
 	add.w	(HomeTeam).l,d0
-	dc.w	$6014
+	bra.s	*+22
 .lDA08	cmpi.w	#$1A,(VisTeam).l
-	dc.w	$6C06
+	bge.s	*+8
 	addi.w	#$1A,d0
-	dc.w	$6004
+	bra.s	*+6
 .lDA18	addi.w	#$1B,d0
 .lDA1C	movea.l	(ScoutingReportText).l,a1
 	movea.l	a1,a2
@@ -298,26 +298,26 @@ MatchupPosNames						;Position names of matchups 1-6
 	dc.w	$0012,$2020
 	move.l	-(a0),d0
 	movea.l	-(a3),a0
-	dc.w	$656E
+	bcs.s	*+112
 	moveq	#$65,d2
 	moveq	#$20,d1
 	move.l	-(a0),d0
 	move.l	-(a0),d0
 	dc.w	$0012,$206C
-	dc.w	$6566
+	bcs.s	*+104
 	moveq	#$20,d2
-	dc.w	$666F
+	bne.s	*+113
 	moveq	#$77,d1
 	dc.w	$6172
-	dc.w	$6420
+	bcc.s	Sub_28FD0
 	move.l	-(a0),d0
 	dc.w	$0012,$2072
-	dc.w	$6967
-	dc.w	$6874
+	bvs.s	*+105
+	bvc.s	*+118
 	movea.l	-(a6),a0
-	dc.w	$6F72
+	ble.s	*+116
 	dc.b	'ward  ',$00,$12,'left def'
-	dc.w	$656E
+	bcs.s	*+112
 Sub_28FD0
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
@@ -450,7 +450,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	rts
 HomeTxt						;name used when the home team has no nickname
 	dc.w	$0006,$486F
-	dc.w	$6D65
+	blt.s	*+103
 VisitorsTxt						;name used when the visiting team has no nickname
 	dc.b	$00,$0A,'Visitors'
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
@@ -562,15 +562,15 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 									;angle replay (sflags4 bit 4), sflags2 bit 3 or sflags bit 7. Called from
 									;setvideo
 	tst.w	$1A556.l
-	bmi.w	Sub_2948C
+	bmi.w	AddArenaAnimSpriteExit
 	tst.l	$1A55C.l
-	beq.w	Sub_2948C		;not loaded: none
+	beq.w	AddArenaAnimSpriteExit		;not loaded: none
 	btst	#$4,$17F72.l		;check if reverse angle replay
-	bne.w	Sub_2948C
+	bne.w	AddArenaAnimSpriteExit
 	btst	#$3,$17F6C.l
-	bne.w	Sub_2948C		;replay: none
+	bne.w	AddArenaAnimSpriteExit		;replay: none
 	btst	#$7,$17F6A.l
-	bne.w	Sub_2948C		;horizontal mode: none
+	bne.w	AddArenaAnimSpriteExit		;horizontal mode: none
 	movea.l	$1A55C.l,a1
 	adda.l	$4(a1),a1
 	move.w	$17CEE.l,d4
@@ -581,9 +581,9 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	dc.w	$000A,$3003,$D042,$6100,$0008,$51CA,$FFF6,$4E75
 Sub_293DC
 	ext.w	d0
-	beq.w	Sub_2948C
+	beq.w	AddArenaAnimSpriteExit
 	cmpi.w	#$40,d6
-	bge.w	Sub_2948C
+	bge.w	AddArenaAnimSpriteExit
 	movem.l	d0-d5,-(sp)
 	add.w	d0,d0
 	movea.l	a1,a0
@@ -633,7 +633,7 @@ Sub_293DC
 .lE480	adda.w	#$8,a0
 	dbra	d4,.lE428
 .lE488	movem.l	(sp)+,d0-d5
-Sub_2948C
+AddArenaAnimSpriteExit
 	rts
 PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerName), moved left so
 									;it ends before column $29 (a trailing pad byte or

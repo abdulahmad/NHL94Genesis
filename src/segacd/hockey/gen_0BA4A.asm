@@ -98,11 +98,11 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	dc.w	$0018,$BF02
 	move.b	-(a0),d0
 	movea.l	d5,a0
-	dc.w	$6E74
-	dc.w	$6572
+	bgt.s	*+118
+	bcs.s	*+116
 	movea.l	$6577(a6),a0
 	movea.l	$616D(a6),a0
-	dc.w	$653A
+	bcs.s	Sub_26C80
 	move.l	d0,d0
 	dc.w	$0018,$BF02
 	dc.b	$10,'Select or repla'

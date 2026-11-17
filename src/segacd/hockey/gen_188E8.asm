@@ -97,21 +97,21 @@ Sub_33986
 	btst	#$0,$70(a3)
 	beq.w	.l18A92
 	cmpi.w	#$7,d0
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 	bra.w	.l18A9A
 .l18A92	cmpi.w	#$8,d0
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 .l18A9A	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
 	bne.w	.l18AAC
 	neg.w	d0
 .l18AAC	tst.w	d0
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 	move.w	#$108,d1
 	sub.w	d0,d1
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 	btst	#$7,$17F6C.l
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 CompShoot						;computer shot: drop the return address and aim from the puck's distance
 									;to the goal line
 	adda.w	#$4,sp
@@ -135,7 +135,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	add.b	$70(a3),d0
 	bsr.w	randomd0		;0 <= d0 < $10 + odds
 	cmpi.w	#$C,d0
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 .dp0	moveq	#$6,d0		;Set up pass assignment
 	bsr.w	randomd0		;d0 = random teammate index 0-5
 	cmpi.w	#$6,$52(a3)
@@ -148,20 +148,20 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	cmpi.w	#$FFD8,$17B80.l
 	blt.w	.1
 	cmpi.w	#$CC,$17B94.l
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 	cmpi.w	#$FF34,$17B94.l
-	blt.w	Sub_31AB6
+	blt.w	check4benchExit
 .1	cmp.w	$52(a3),d0
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	asl.w	#$7,d0		;d0 * SCstruct ($80)
 	movea.l	#$17480,a0
 	adda.w	d0,a0		;a0 = receiver sort object
 	tst.w	$34(a0)
-	ble.w	Sub_31AB6
+	ble.w	check4benchExit
 	btst	#$2,$63(a0)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	btst	#$5,$62(a0)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	move.w	$14(a0),d0		;check for pass across blue line
 	move.w	$14(a3),d1		;d0 = receiver y, d1 = my y (toward the goal I shoot at)
 	btst	#$7,$62(a3)
@@ -175,12 +175,12 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	subi.w	#$58,d1
 	eor.w	d0,d1		;sign differs if the pass crosses the blue line
 	movem.w	(sp)+,d0-d1
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 .oko	cmpi.w	#$58,d0
 	bgt.w	.ok
 	sub.w	d1,d0
 	cmpi.w	#$FFF1,d0
-	blt.w	Sub_31AB6
+	blt.w	check4benchExit
 .ok	move.w	$0(a0),d0		;receiver accepted: get the pass direction
 	sub.w	$17B80.l,d0
 	move.w	$14(a0),d1
@@ -210,12 +210,12 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	bhi.w	.l18C52		;farther than the receiver: ignore
 	bsr.w	vtoa
 	cmp.w	$17E2C.l,d0
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 .l18C52	adda.w	#$80,a1
 	dbra	d3,.co0
 	bsr.w	dopass		;lane is clear: pass in passdir
 	tst.w	$34(a3)
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	adda.w	#$4,sp
 	bra.w	assexit
 	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439
@@ -232,7 +232,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	dc.w	$4E75
 checkob						;bring up little warning ref if a player on your team is over blue line
 	btst	#$5,$17F68.l
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	btst	#$2,$17F70.l
 	bne.w	.l18D94
 	movem.l	d0-d1/a0,-(sp)
@@ -421,7 +421,7 @@ L18E06	bclr	#$2,$17F74.l
 	exg.l	a1,a3
 	bra.w	assexit		;I (old a3) drop this assignment
 .de1	btst	#$5,$62(a3)		;pfalock - check if locked in animation
-	bne.w	Sub_31AB6		;exit if locked
+	bne.w	check4benchExit		;exit if locked
 	moveq	#$2,d1		;move 2 into d1
 	cmpi.w	#$190,d2		;compare $190 (20^2) to d2. d2 = distance to puck^2
 	bhi.w	.nfar		;branch if d2 higher
@@ -442,7 +442,7 @@ L18E06	bclr	#$2,$17F74.l
 	bhi.w	.nodec		;branch if d0 more than 2
 	move.w	#$F0,$44(a3)		;move 240 dec into temp3
 .nodec	btst	#$5,$62(a3)		;pfalock - check if anim lock
-	bne.w	Sub_31AB6		;exit if locked
+	bne.w	check4benchExit		;exit if locked
 	btst	#$2,$17F70.l		;check bit 2
 	beq.w	.gmclock		;jump if not set
 	btst	#$5,$17F70.l		;check bit 5
@@ -450,7 +450,7 @@ L18E06	bclr	#$2,$17F74.l
 .gmclock	btst	#$0,$17F68.l		;check if clock running
 	bne.w	donothing		;branch if not
 .nodec2	btst	#$3,$62(a3)		;pfjoycon - check if controlled
-	bne.w	Sub_31AB6		;jump if controlled
+	bne.w	check4benchExit		;jump if controlled
 	btst	#$2,$32(a2)		;tmfmid of tmflags(a2)
 	bne.w	.nodec22
 	tst.w	$17BE0.l		;check if theres a puck carrier
@@ -546,7 +546,7 @@ L1922A	tst.w	$34(a3)		;check if goalie
 	asl.w	#$1,d0		;mult by 2
 .nopen	bsr.w	randomd0		;RNG d0
 	cmpi.w	#$6,d0		;compare 6 to d0
-	bhi.w	Sub_31AB6		;exit if d0 higher than 6
+	bhi.w	check4benchExit		;exit if d0 higher than 6
 	moveq	#$5,d2		;move 5 into d2
 	movea.l	#$17480,a0
 	cmpi.w	#$6,$52(a3)		;check if player on home team
@@ -595,7 +595,7 @@ L1922A	tst.w	$34(a3)		;check if goalie
 	rts
 asspassrec						;assignment for catching a pass (apassrec)
 	btst	#$5,$62(a3)		;pfalock - animation lock
-	bne.w	Sub_31AB6		;exit if locked
+	bne.w	check4benchExit		;exit if locked
 	btst	#$0,$17F68.l		;gmclock - check if clock running
 	bne.w	donothing		;exit if clock stopped
 	btst	#$3,$62(a3)		;pfjoycon - joystick controlled?
@@ -646,13 +646,13 @@ asspassrec						;assignment for catching a pass (apassrec)
 	jmp	(assreplace).l
 .pop	move.w	(sp)+,d0
 .ex2	sub.b	d7,$40(a3)
-	bpl.w	Sub_31AB6
+	bpl.w	check4benchExit
 .exit	bclr	#$0,$62(a3)
 	bra.w	assexit
 	dc.w	$302B,$0044,$322B,$0046,$41FA,$7BCA,$6000,$1BCE
 assshoot						;assignment for computer shooting. Assignment ashoot ($12)
 	btst	#$5,$62(a3)		;pfalock - animation locked
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	bclr	#$1,$62(a3)		;clear pfna
 	beq.w	.nna
 	bra.w	SetShotMode		;first frame: start the shot (temp2 = swing time set by CompShoot)

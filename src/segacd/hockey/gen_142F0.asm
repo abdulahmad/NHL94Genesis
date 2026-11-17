@@ -2,13 +2,13 @@ Sub_2F2F0
 	tst.w	$18BF8.l
 	bne.w	.l14310
 .l142FA	btst	#$1,$17F6A.l
-	dc.w	$6706
+	beq.s	*+8
 	jmp	(ReadJoy2).l
 .l1430A	jmp	(ReadJoy1).l
 .l14310	tst.w	$17F94.l
 	beq.w	.l142FA
 	cmpi.w	#$3,$17F94.l
-	dc.w	$6606
+	bne.s	*+8
 	jmp	$3752C.l
 .l1432A	jmp	$3754A.l
 	move.w	#$F0,$1AD56.l
@@ -94,15 +94,15 @@ adda4						;Step forward 1 frame. First handles a reverse
 	bsr.w	L14520
 	cmpa.l	$17470.l,a4
 	movem.l	(sp)+,a4
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 adda42						;adda4 without the sf2drec look-ahead: stop at the record point, else show
 	
 	cmpa.l	$17470.l,a4
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	bsr.w	L145BC
 L14520	adda.w	#$62,a4
 	cmpa.l	#$173B0,a4
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	movea.l	#$C45C,a4
 	rts
 L14536	movem.l	d0-d2,-(sp)
@@ -296,7 +296,7 @@ ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
 	rts
 updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	btst	#$4,$17F68.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	btst	#$2,$17F6C.l
 	beq.w	.l1487C
 	tst.w	$1AD92.l
@@ -370,7 +370,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.w	(sp)+,d0
 	move.w	$17CEE.l,(a0)+
 	move.w	$17CEA.l,(a0)+
-Sub_2F988
+updatereplayExit
 	rts
 updateplayers
 	btst	#$7,$17F6A.l

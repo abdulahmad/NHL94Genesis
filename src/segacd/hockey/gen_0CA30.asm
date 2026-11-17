@@ -454,7 +454,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	rts
 ScoutEmptyTxt						;empty String: no name number in the crowd record
 	ori.b	#$6,d2
-	dc.w	$6279
+	bhi.s	*+123
 	move.l	d0,d0
 ScoutSpaceTxt						;space after the name
 	dc.w	$0004,$2000
@@ -710,7 +710,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	movea.l	#TestList,a0
 	move.w	(a0,d0.w),d1
 	btst	#$F,d1
-	dc.w	$6738
+	beq.s	*+58
 	bclr	#$F,d1
 	move.w	d1,(a0,d0.w)
 	move.l	d1,-(sp)
@@ -724,7 +724,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.l	(sp)+,d1
 .lD720	move.l	d1,d0
 	cmpi.w	#$21,d0
-	dc.w	$6608
+	bne.s	*+10
 	move.w	#$1,(ScoutLastPara).l
 .lD730	bsr.w	ScoutParaOffset
 	move.l	d0,(scoutparaoff).l
@@ -760,7 +760,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$0,d7
 	jsr	$6044.w
 	tst.w	(ScoutLastPara).l
-	dc.w	$664A
+	bne.s	*+76
 	move.w	(SelectedPlayerIdx).l,d0
 	movea.l	#TestList,a0
 .lD7E6	addi.w	#$2,d0
@@ -782,17 +782,17 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$6,d7
 	jsr	$6044.w
 	cmpi.w	#$5A,d3
-	dc.w	$671E
+	beq.s	*+32
 	cmpi.w	#$3F1,d3
-	dc.w	$6718
+	beq.s	*+26
 	cmpi.w	#$97,d3
-	dc.w	$6712
+	beq.s	*+20
 	cmpi.w	#$392,d3
-	dc.w	$670C
+	beq.s	*+14
 	cmpi.w	#$405,d3
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$400,d1
-	dc.w	$6004
+	bra.s	*+6
 .lD858	move.w	#$380,d1
 .lD85C	move.w	#$9,d0
 	move.w	#$FF,d2
@@ -805,7 +805,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 .lD888	moveq	#$0,d0
 	jsr	(waitx).l
 	btst	#$1,$1AD77.l
-	dc.w	$6712
+	beq.s	*+20
 	movea.l	#$FFFFFFFF,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
@@ -825,7 +825,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 .lD8F2	dc.w	$6100,$0764
 	move.w	#$1,d0
 	tst.w	(ScoutLastPara).l
-	dc.w	$6704
+	beq.s	*+6
 	bsr.w	PageMatchup
 .lD906	bra.w	.lD94C
 .lD90A	btst	#$6,d1		;A?
@@ -834,7 +834,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.l	#$8CA0,(scoutwait).l
 	dc.w	$6100,$0732
 	tst.w	(ScoutLastPara).l
-	dc.w	$6704
+	beq.s	*+6
 	bsr.w	PageMatchup
 .lD934	bra.w	.lD94C
 .lD938	clr.w	(asv).l		;normal text speed
@@ -846,15 +846,15 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	st.b	(asv).l
 .lD95E	jsr	(UpdateScoutingDisplay).l
 	tst.w	(ScoutLastPara).l
-	dc.w	$662E
+	bne.s	*+48
 	cmpi.w	#$FF00,(PlayerScrollCtr).l
-	dc.w	$6624
+	bne.s	*+38
 	move.l	#$A9,(scoutparaoff).l
 	move.w	(SelectedPlayerIdx).l,d0
 	movea.l	#TestList,a0
 	move.w	(a0,d0.w),d0
 	cmpi.w	#$1D,d0
-	dc.w	$6704
+	beq.s	*+6
 	bra.w	.lD6A0
 .lD99A	subi.w	#$1,(screentimer).l
 	bpl.w	.lD888

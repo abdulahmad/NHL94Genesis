@@ -797,9 +797,9 @@ Sub_36C14
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1BC2C	move.w	#$0,-(a6)
 .l1BC30	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -844,9 +844,9 @@ Sub_36C14
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1BCF8	bclr	#$5,$FF800F.l
 .l1BD00	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -887,9 +887,9 @@ Sub_36D66
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1BD9C	move.w	#$0,-(a6)
 .l1BDA0	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -900,9 +900,9 @@ Sub_36D66
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1BDD8	bclr	#$5,$FF800F.l
 .l1BDE0	move.l	a6,$19360.l
 	movea.l	(sp)+,a6

@@ -313,7 +313,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	move.w	#$FFFC,$68(a0,d1.w)		;update status of player
 .exit	move.w	(sp)+,d0
 	rts
-Sub_3AF3E
+setInjuryTypeExit
 	rts
 checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radius. Check the
 									;corner circles, the goals (checkgoal with a2 = SortCords+(13*SCstruct)

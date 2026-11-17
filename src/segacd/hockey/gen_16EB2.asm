@@ -1,8 +1,8 @@
 donothing
 	btst	#$5,$62(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	btst	#$3,$62(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	moveq	#$8,d0
 	bra.w	doplayeracc
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_16ECC.bin
@@ -48,7 +48,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	btst	#$2,$64(a3)		;check goalie ctrl bit
 	bne.w	Sub_32930		;branch if set
 .na	btst	#$5,$62(a3)		;check if anim lock
-	bne.w	Sub_31AB6		;exit if so
+	bne.w	check4benchExit		;exit if so
 	bsr.w	check4bench
 	bclr	#$1,$62(a3)		;clear new assignment bit
 	beq.w	.nna		;branch if already cleared
@@ -58,7 +58,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 .nna	btst	#$1,$63(a3)		;check if anim in progress
 	bne.w	.ex		;exit if so
 	btst	#$0,$17F68.l		;check if clock stopped
-	bne.w	Sub_31AB6		;exit if so
+	bne.w	check4benchExit		;exit if so
 	tst.w	$48(a3)		;test temp5
 	bmi.w	.nofo		;branch if less than 0
 	move.w	$52(a3),d0		;move SCnum into d0

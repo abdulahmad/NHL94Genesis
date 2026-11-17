@@ -229,34 +229,34 @@ song						;play song number. One word passed on stack
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$500,d2
-	dc.w	$660A
+	bne.s	*+12
 	move.w	#$2,$1745E.l
-	dc.w	$603A
+	bra.s	*+60
 .l1C234	cmpi.w	#$100,d2
-	dc.w	$6622
+	bne.s	*+36
 	move.b	$7(a0),d0
 	cmpi.b	#$FF,d0
-	dc.w	$6718
+	beq.s	*+26
 	cmpi.b	#$2,d0
-	dc.w	$6712
+	beq.s	*+20
 	cmpi.b	#$7,$7(a0)
-	dc.w	$6C0A
+	bge.s	*+12
 	move.w	#$2,$1745E.l
-	dc.w	$6012
+	bra.s	*+20
 .l1C25C	cmpi.w	#$0,d2
-	dc.w	$6604
+	bne.s	*+6
 	bra.w	.l1C26E
 .l1C266	tst.w	$1745C.l
-	dc.w	$6F5C
+	ble.s	*+94
 .l1C26E	move.w	#$0,$1745C.l
 	move.w	$1745E.l,$19364.l
 	cmpi.w	#$2,$1745E.l
-	dc.w	$6618
+	bne.s	*+26
 	move.w	#$300,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
 	move.w	$1745E.l,$19364.l
-	dc.w	$600C
+	bra.s	*+14
 .l1C2A2	move.w	#$400,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
@@ -583,9 +583,9 @@ Sub_3777C
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1C794	move.w	#$0,-(a6)
 .l1C798	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -649,9 +649,9 @@ Sub_3777C
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1C8BC	bclr	#$5,$FF800F.l
 .l1C8C4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -719,9 +719,9 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1C9EE	move.w	#$0,-(a6)
 .l1C9F2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -748,9 +748,9 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1CA90	bclr	#$5,$FF800F.l
 .l1CA98	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -759,9 +759,9 @@ Sub_37AA2
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1CABA	move.w	#$0,-(a6)
 .l1CABE	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -785,9 +785,9 @@ Sub_37AA2
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1CB48	bclr	#$5,$FF800F.l
 .l1CB50	move.l	a6,$19360.l
 	movea.l	(sp)+,a6

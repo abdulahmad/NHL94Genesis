@@ -547,7 +547,7 @@ checkcx						;d4 = obj. # * 2 for possible collision so check x range and distan
 .l1F394	bsr.w	newcheck
 .l1F398	bsr.w	checkint		;interference, check and fight tests
 	bsr.w	L1F55C
-	bsr.w	Sub_3AF3E
+	bsr.w	setInjuryTypeExit
 .l1F3A4	move.w	d1,d4
 	movem.w	(sp)+,d0-d1
 	tst.w	$17EEE.l		;set to -1 by holdcheck / Bcheck: no transfer

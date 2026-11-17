@@ -288,11 +288,11 @@ SetFrameRectUnused						;An unused copy of SetFrameRect without its printz that 
 .0	moveq	#$17,d0
 	moveq	#$3,d1
 	cmpi.w	#$2,$18BFA.l
-	blt.w	Sub_239CA
+	blt.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,$18BFA.l
-	beq.w	Sub_239CA
+	beq.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,d3		;line 4?
-	bne.w	Sub_239CA
+	bne.w	SetFrameRectUnusedExit
 	moveq	#$5,d1
 	rts
 L8984	jsr	(printz).l
@@ -304,13 +304,13 @@ L8984	jsr	(printz).l
 	moveq	#$17,d0
 	moveq	#$3,d1
 	cmpi.w	#$2,$18BFA.l
-	blt.w	Sub_239CA
+	blt.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,$18BFA.l
-	beq.w	Sub_239CA
+	beq.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,d3
-	bne.w	Sub_239CA
+	bne.w	SetFrameRectUnusedExit
 	moveq	#$5,d1
-Sub_239CA
+SetFrameRectUnusedExit
 	rts
 FixModeOptions						;Fix the options a mode does not allow, then print them: Shootout and Demo
 									;set User Records Off, Demo sets both goalies to
@@ -446,7 +446,7 @@ ChangeOption
 .l8C40	move.w	#$B,d3
 .l8C44	move.w	d3,(a2,d7.w)
 	tst.w	d2
-	beq.w	Sub_239CA
+	beq.w	SetFrameRectUnusedExit
 	cmpi.w	#$1,$18BFA.l
 	bne.w	.l8C78
 	tst.w	d7
@@ -457,9 +457,9 @@ ChangeOption
 	beq.w	.l8BF2
 	rts
 .l8C78	cmpi.w	#$2,$18BFA.l
-	blt.w	Sub_239CA
+	blt.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,$18BFA.l
-	beq.w	Sub_239CA
+	beq.w	SetFrameRectUnusedExit
 	tst.w	d7
 	beq.w	Sub_23798
 	cmpi.w	#$4,d7
@@ -472,7 +472,7 @@ WrapOption						;d3 + d2, wrapped into d5 ... d4-1. Called from ChangeOption
 	move.w	d4,d3
 	subq.w	#$1,d3
 .0	cmp.w	d4,d3		;at the limit?
-	blt.w	Sub_239CA
+	blt.w	SetFrameRectUnusedExit
 	move.w	d5,d3
 	rts
 PrintOptions
@@ -507,7 +507,7 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 	sub.w	d0,(printy).l
 	add.w	d7,(printy).l
 	cmpi.w	#$1B,(printy).l		;below row $1B?
-	bgt.w	Sub_239CA		;yes: off screen
+	bgt.w	SetFrameRectUnusedExit		;yes: off screen
 	subi.w	#$1,(printy).l
 	move.w	#$11,(printx).l
 	cmpi.w	#$4,d7		;home team line?

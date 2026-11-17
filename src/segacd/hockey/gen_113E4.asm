@@ -190,11 +190,11 @@ UpdateScoresScroll						;Called every frame by ShowScores: add PlayerScrollCtr t
 	
 	
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0
-	bmi.w	Sub_2F988
+	bmi.w	updatereplayExit
 	cmp.w	(SelectedPlayerIdx).l,d0
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
 	divu.w	#$18,d0
@@ -235,15 +235,15 @@ L1176C	move.w	(disflags).l,-(sp)
 	move.w	(sp)+,(disflags).l
 	rts
 L1182E	cmp.w	$18A98.l,d3
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	moveq	#$10,d0
 	mulu.w	d3,d0
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
 	btst	#$1,$E(a0)
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	btst	#$2,$E(a0)
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	move.w	$2(a0),d0
 	move.w	$C(a0),d1
 	bsr.w	PrintGameInfo
@@ -810,7 +810,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 CheckPlayerListScroll						;TeamRosterScreen per frame: add PlayerScrollCtr to VertLineScrolling (0
 	
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0
 	bmi.w	L12366
 	cmpi.w	#$380,d0

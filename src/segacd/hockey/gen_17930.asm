@@ -411,7 +411,7 @@ L18056	rts
 AdjustFacingDirection						;Turn facedir one step toward direction d0
 	move.w	$54(a3),d1		;facedir
 	sub.w	d1,d0		;d0 = wanted - current
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	neg.w	d0
 	andi.w	#$4,d0		;bit 2 of (current - wanted) picks the turn sense
 	lsr.w	#$1,d0
@@ -660,7 +660,7 @@ asspuckc						;player a3 is puck handler
 	btst	#$2,$17F70.l
 	beq.w	.1
 	cmpi.w	#$1,$17F98.l
-	bgt.w	Sub_337C8
+	bgt.w	asspuckcExit
 .1	btst	#$1,$64(a3)
 	bne.w	.2
 	btst	#$2,$17F70.l
@@ -671,7 +671,7 @@ asspuckc						;player a3 is puck handler
 	bsr.w	assreplace
 	bra.w	.2
 .2	btst	#$5,$62(a3)
-	bne.w	Sub_337C8
+	bne.w	asspuckcExit
 	btst	#$2,$17F70.l
 	bne.w	.3
 	btst	#$0,$17F68.l
@@ -764,7 +764,7 @@ asspuckc						;player a3 is puck handler
 	beq.w	.15
 .path	jsr	$2A7B6.l
 	cmpi.b	#$80,$1A8B8.l
-	beq.w	Sub_337C8
+	beq.w	asspuckcExit
 .15	btst	#$7,$62(a3)		;pfgoal - 0 for bottom 1 for top
 	bne.w	.l186AE
 	neg.w	d0
@@ -774,7 +774,7 @@ asspuckc						;player a3 is puck handler
 	bne.w	.16
 	btst	#$0,$17F78.l
 	beq.w	.17
-.16	lea.l	Sub_337C8(pc),a0
+.16	lea.l	asspuckcExit(pc),a0
 .17	bra.w	skateto
 	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
 	dc.w	$002A,$4883,$D679,$0001,$7B94,$4279,$0001,$7E34
@@ -792,7 +792,7 @@ asspuckc						;player a3 is puck handler
 	dc.w	$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9,$0007
 	dc.w	$00FF,$800F,$0241,$0001,$D041,$0240,$0007,$D0FC
 	dc.w	$0080,$51CC,$FF42
-Sub_337C8
+asspuckcExit
 	rts
 chk4lc						;see if computer should call line change
 	dc.w	$FF9C
@@ -813,9 +813,9 @@ Sub_337F2
 	bne.w	.l18810
 	neg.w	d0
 .l18810	tst.w	d0
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 	cmpi.w	#$58,d0
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 .l1881E	btst	#$7,$FF800E.l
 	bne.b	.l1881E
 	move.w	#$1B,$FF8020.l
@@ -829,9 +829,9 @@ Sub_337F2
 	bne.b	.l18858
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d0
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	btst	#$3,$63(a3)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	btst	#$6,$62(a3)
@@ -839,7 +839,7 @@ Sub_337F2
 	exg.l	a1,a2
 .l18892	jsr	(AvgCline).l
 	cmpi.w	#$C00,d0
-	bhi.w	Sub_31AB6
+	bhi.w	check4benchExit
 	bsr.w	CompLine
 	jsr	(setpersonel).l
 	jsr	(printscores1).l
