@@ -4,7 +4,7 @@ The scouting screen is still the cartridge matchup page. It draws the Ron Barr p
 
 ## Song $7A
 
-`scoutopen.asm` (`HOCKEY.BIN` `$D2B6`) is the start of `ScoutingReport`. It saves the old stack at `$47D00` and points `a7` at `$1745C` (the same word the CD track selector uses as its change flag). It relocates four pointers that were built against a base of `$C458`, calls `$2262E` and `$231A0`, clears the matchup at `$1A446`, then:
+`scout94.asm` (`HOCKEY.BIN` `$D2B6`) is the start of `ScoutingReport`. It saves the old stack at `$47D00` and points `a7` at `$1745C` (the same word the CD track selector uses as its change flag). It relocates four pointers that were built against a base of `$C458`, calls `$2262E` and `$231A0`, clears the matchup at `$1A446`, then:
 
 ```
 move.w  #$7A,-(sp)

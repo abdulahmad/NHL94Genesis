@@ -7,6 +7,9 @@
 
 	include	segacd\hockey.inc
 
+;calls begin
+;calls end
+
 rtss8	equ	$14988				;a bare rts, the cartridge rtss8
 
 	org	$10D28

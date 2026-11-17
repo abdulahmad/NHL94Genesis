@@ -56,7 +56,7 @@ def anchor_of(insns, dest):
 
 def snasm_op(insn, labels, base):
     op = insn.op_str
-    op = op.replace("a7", "sp")
+    op = re.sub(r"\ba7\b", "sp", op)
     op = re.sub(r"#\$([0-9a-f]+)", lambda m: "#$" + m.group(1).upper(), op)
     op = re.sub(r"\$([0-9a-f]+)", lambda m: "$" + m.group(1).upper(), op)
     # Sign-extended absolute short must be written as a 32-bit value.
