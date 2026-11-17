@@ -6,12 +6,11 @@
 	include	..\output\obj\hockey_teamdata.asm
 	include	frames94.asm					;sprite animation tables, the same file the cartridge includes
 	include	segacd\hockey\cdhockey.asm
-	include	segacd\hockey\cards94.asm
 	include	segacd\hockey\onetimer94.asm
 	include	segacd\hockey\fourway94.asm
 	include	segacd\hockey\crowd94.asm
 	include	segacd\hockey\optsetup94.asm
-	include	segacd\hockey\cards94_2.asm
+	include	segacd\hockey\cards94.asm
 	include	segacd\hockey\records94.asm
 	include	segacd\hockey\shootout94.asm
 	include	segacd\hockey\scout94.asm
