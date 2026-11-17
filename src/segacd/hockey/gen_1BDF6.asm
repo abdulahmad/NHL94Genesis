@@ -105,7 +105,7 @@ Sub_36DF6
 	move.w	(sp)+,(disflags).l
 	movem.l	(sp)+,d0/a0-a1
 	rts
-Sub_37044
+randomd0s
 	move.w	d0,-(sp)
 	asl.w	#$1,d0
 	bsr.w	randomd0
@@ -229,34 +229,34 @@ song						;play song number. One word passed on stack
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$500,d2
-	dc.w	$660A
+	bne.s	*+12
 	move.w	#$2,$1745E.l
-	dc.w	$603A
+	bra.s	*+60
 .l1C234	cmpi.w	#$100,d2
-	dc.w	$6622
+	bne.s	*+36
 	move.b	$7(a0),d0
 	cmpi.b	#$FF,d0
-	dc.w	$6718
+	beq.s	*+26
 	cmpi.b	#$2,d0
-	dc.w	$6712
+	beq.s	*+20
 	cmpi.b	#$7,$7(a0)
-	dc.w	$6C0A
+	bge.s	*+12
 	move.w	#$2,$1745E.l
-	dc.w	$6012
+	bra.s	*+20
 .l1C25C	cmpi.w	#$0,d2
-	dc.w	$6604
+	bne.s	*+6
 	bra.w	.l1C26E
 .l1C266	tst.w	$1745C.l
-	dc.w	$6F5C
+	ble.s	*+94
 .l1C26E	move.w	#$0,$1745C.l
 	move.w	$1745E.l,$19364.l
 	cmpi.w	#$2,$1745E.l
-	dc.w	$6618
+	bne.s	*+26
 	move.w	#$300,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
 	move.w	$1745E.l,$19364.l
-	dc.w	$600C
+	bra.s	*+14
 .l1C2A2	move.w	#$400,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
@@ -282,7 +282,7 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	or.w	d3,(waitxpad).l
 	tst.w	d1
 	bne.w	rtss2
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.1
 	bsr.w	L1C52C
 	or.w	d3,(waitxpad).l
@@ -308,30 +308,30 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 .nz	moveq	#$1,d7
 	jsr	(updatecrowdf).l
 	jsr	(RunArenaAnim).l
-	dc.w	$4279,$0001,$7F94
+	clr.w	$17F94.l
 	bclr	#$1,$17F6A.l
 	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	dc.w	$4279,$0001,$7F94
+	clr.w	$17F94.l
 	bset	#$1,$17F6A.l
 	bsr.w	ReadJoy2
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.vid
 	bclr	#$1,$17F6A.l
-	dc.w	$33FC,$0003,$0001,$7F94
+	move.w	#$3,$17F94.l
 	bsr.w	L1C52C
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.vid
 	bset	#$1,$17F6A.l
-	dc.w	$33FC,$0004,$0001,$7F94
+	move.w	#$4,$17F94.l
 	bsr.w	L1C54A
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
@@ -347,7 +347,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bset	#$7,d1
 	bra.w	.ex
 .resume	move.w	(sp)+,(ScoutSubStatus).l
-.vid	bsr.w	Sub_3DD16
+.vid	bsr.w	setvideo
 	move.w	(ScoutSubStatus).l,d0
 .0	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.0
@@ -364,7 +364,7 @@ waitjoy						;wait for either joystick input. Return d1 = new button presses. it
 	beq.w	waitjoy
 	rts
 orjoy						;return d1 = new button presses from either joystick
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	bne.w	.4way
 	bsr.w	ReadJoy1
 	move.w	d1,-(sp)
@@ -413,7 +413,7 @@ ProcessInputWithRepeat						;nodiag, then key repeat on d1-d3
 ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
 	
 	
-	dc.w	$1039,$0001,$7E46
+	move.b	$17E46.l,d0
 	bsr.w	L1C568
 	move.w	$17E3E.l,d2
 	move.w	d1,$17E3E.l
@@ -422,7 +422,7 @@ ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return 
 	and.w	d2,d1		;d1 = changed and now down = new presses
 	rts
 ReadJoy2						;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	dc.w	$1039,$0001,$7E47
+	move.b	$17E47.l,d0
 	bsr.w	L1C568
 	move.w	$17E40.l,d2
 	move.w	d1,$17E40.l
@@ -430,7 +430,7 @@ ReadJoy2						;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C52C	dc.w	$1039,$0001,$7E48
+L1C52C	move.b	$17E48.l,d0
 	bsr.w	L1C568
 	move.w	$17E42.l,d2
 	move.w	d1,$17E42.l
@@ -438,7 +438,7 @@ L1C52C	dc.w	$1039,$0001,$7E48
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C54A	dc.w	$1039,$0001,$7E49
+L1C54A	move.b	$17E49.l,d0
 	bsr.w	L1C568
 	move.w	$17E44.l,d2
 	move.w	d1,$17E44.l
@@ -573,7 +573,7 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	bsr.w	setVram
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-Sub_37762
+DoDMApro
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	bsr.w	Sub_3777C
@@ -583,9 +583,9 @@ Sub_3777C
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1C794	move.w	#$0,-(a6)
 .l1C798	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -649,9 +649,9 @@ Sub_3777C
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1C8BC	bclr	#$5,$FF800F.l
 .l1C8C4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -719,9 +719,9 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1C9EE	move.w	#$0,-(a6)
 .l1C9F2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -748,9 +748,9 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1CA90	bclr	#$5,$FF800F.l
 .l1CA98	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -759,9 +759,9 @@ Sub_37AA2
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1CABA	move.w	#$0,-(a6)
 .l1CABE	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -785,9 +785,9 @@ Sub_37AA2
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1CB48	bclr	#$5,$FF800F.l
 .l1CB50	move.l	a6,$19360.l
 	movea.l	(sp)+,a6

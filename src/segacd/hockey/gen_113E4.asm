@@ -7,7 +7,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	bpl.w	.l113F6
 	clr.w	$18AD2.l		;no item above the first
 	clr.w	d0
-.l113F6	dc.w	$2079,$0001,$8AD6
+.l113F6	movea.l	$18AD6.l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.l1140E
@@ -27,9 +27,9 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	move.w	d0,$18AD4.l		;scroll down
 .l11446	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).l
-	dc.w	$2279,$0001,$8AD6
-	dc.w	$4EB9,$0003,$8D9E
-	dc.w	$4EB9,$0003,$8D8C
+	movea.l	$18AD6.l,a1
+	jsr	(printsmall).l
+	jsr	(printsmallz).l
 	dc.w	$0026
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
 	adda.w	(a1),a1
@@ -43,28 +43,28 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	bsr.w	SetMenuPrintX
 	move.w	$18AD4.l,d0
 	beq.w	.l114CA
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$000C
 	dc.b	$FE,$05,$FB,$01,$FA,$01,$7B,$FA,$FF,$00
 .l114CA	bsr.w	SetMenuPrintX
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0006
 	dc.b	$FB,$02,$FA,$01
 	move.l	a1,-(sp)
-	dc.w	$2279,$0001,$8AD6
-	dc.w	$4EB9,$0003,$8D9E
+	movea.l	$18AD6.l,a1
+	jsr	(printsmall).l
 	cmp.w	$18AD2.l,d0
 	bne.w	.l114F8
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 .l114F8	movea.l	(sp)+,a1
-	dc.w	$4EB9,$0002,$C528
+	jsr	(PrintMenuItem).l
 	addi.w	#$1,d0
 	adda.w	#$4,a1
 	tst.w	$2(a1)		;negative: the last item
 	dbmi	d1,.l114CA
 	bmi.w	.l11526
 	bsr.w	SetMenuPrintX
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font2,$5,$FB,$1,'}'
 .l11526	rts
 PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text starts with
@@ -75,12 +75,12 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	cmpi.b	#$78,$2(a1)		;first char 'x'
 	bne.w	.l1156E
 	move.l	a1,-(sp)
-	dc.w	$227C,$0002,$C576
+	movea.l	#$2C576,a1
 	btst	#$1,$17F6A.l
 	beq.w	.l11550
-	dc.w	$4A79,$0001,$8C0E
+	tst.w	$18C0E.l
 	bra.w	.l11556
-.l11550	dc.w	$4A79,$0001,$8C0C
+.l11550	tst.w	$18C0C.l
 .l11556	beq.w	.l11560
 	movea.l	#$2C58A,a1
 .l11560	jsr	(printsmall).l
@@ -93,8 +93,8 @@ PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / 
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
 	dc.w	$0014,$2020
-	dc.w	$4D61,$6E75,$616C,$2047,$6F61,$6C69,$6520,$2020
-	dc.w	$0014,$2020,$2041,$7574,$6F20,$476F,$616C,$6965
+	dc.b	'Manual Goalie   '
+	dc.b	$00,$14,'   Auto Goalie'
 	dc.w	$2020,$2020
 Sub_2C59E
 	movem.l	d0-d2/a0-a1,-(sp)
@@ -128,11 +128,11 @@ Sub_2C59E
 MenuWaitVblank						;wait till Vcount changes, then resync Vcount. Saves d0. Reads OldVcount
 									;twice (93 once). Called from PauseMode, and the stats code
 	move.w	d0,-(sp)
-	dc.w	$3039,$0001,$7476
-	dc.w	$3039,$0001,$7476
+	move.w	$17476.l,d0
+	move.w	$17476.l,d0
 .l11648	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.l11648
-	dc.w	$33F9,$0001,$7476,$0001,$7474
+	move.w	$17476.l,(ScoutSubStatus).l
 	move.w	(sp)+,d0
 	rts
 ShowScores						;"Scores" screen: the other games of the night in gstruct over the Scores
@@ -141,12 +141,12 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	moveq	#$6,d0
 	moveq	#$1A,d1
 	bsr.w	Sub_2E728
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$5,$0
 	moveq	#$1E,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$E,$3,'Scores',CC_Font3Pri,$B,$1
 	movea.l	$47D58.l,a1
 	lea.l	$8(a1),a2
@@ -156,12 +156,12 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	move.w	(a1),d2
 	move.w	$2(a1),d3
 	clr.w	d5
-	dc.w	$4EB9,$0003,$87E2
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(dobitmap).l
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$4,$0
 	clr.w	(VertLineScrolling).l
 	bsr.w	L1176C
-	dc.w	$4EB9,$0004,$081C
+	jsr	(GetShifter).l
 	move.w	d1,d3
 	ble.w	.skip
 .game	bsr.w	L1182E
@@ -190,11 +190,11 @@ UpdateScoresScroll						;Called every frame by ShowScores: add PlayerScrollCtr t
 	
 	
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0
-	bmi.w	Sub_2F988
+	bmi.w	updatereplayExit
 	cmp.w	(SelectedPlayerIdx).l,d0
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
 	divu.w	#$18,d0
@@ -234,16 +234,16 @@ L1176C	move.w	(disflags).l,-(sp)
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
-L1182E	dc.w	$B679,$0001,$8A98
-	beq.w	Sub_2F988
+L1182E	cmp.w	$18A98.l,d3
+	beq.w	updatereplayExit
 	moveq	#$10,d0
 	mulu.w	d3,d0
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
 	btst	#$1,$E(a0)
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	btst	#$2,$E(a0)
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	move.w	$2(a0),d0
 	move.w	$C(a0),d1
 	bsr.w	PrintGameInfo
@@ -255,7 +255,7 @@ L1182E	dc.w	$B679,$0001,$8A98
 	subi.w	#$1,d0
 	movea.l	#$41A34,a1
 	move.w	#$1C,(printx).l
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	addi.w	#$2,(printy).l
 	rts
 PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
@@ -264,14 +264,14 @@ PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digit
 	movea.l	(a1,d0.w),a1
 	adda.w	$4(a1),a1
 	move.w	#$6,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	#$18,(printx).l
 	move.w	d1,d0
 	moveq	#$2,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EF9,$0003,$8F80
+	jsr	(PushNumberWidth).l
+	jmp	(print).l
 L118D4	movem.l	d0-d1/a1,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$4,$6,CC_SetFont,$1
 	clr.w	d0
 	move.w	(VertLineScrolling).l,d1
@@ -284,7 +284,7 @@ L118D4	movem.l	d0-d1/a1,-(sp)
 	add.b	d1,d0
 	add.b	d1,d0
 	dc.w	$43FA,$000E
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
 	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
@@ -292,14 +292,14 @@ L118D4	movem.l	d0-d1/a1,-(sp)
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
 	dc.w	$A44E,$4279,$0001,$A452,$33FC,$0001,$0001,$A45A
 Sub_2C954
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$00
 	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
-	dc.w	$50F9,$0001,$7F60
+	jsr	(eraser).l
+	st.b	$17F60.l
 	bsr.w	Sub_2CE80
 LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slot
 	
@@ -309,9 +309,9 @@ LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slo
 	bsr.w	DrawLineIcons
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	Sub_2F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
-	bne.w	Sub_2CF08
+	bne.w	LineEditorExit
 	btst	#$5,d1
 	bne.w	SelectLinePlayer
 	moveq	#$1,d0
@@ -327,7 +327,7 @@ LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slo
 	btst	#$2,d1
 	beq.w	.loop
 .move	add.w	(TestList).l,d0
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	beq.w	.set
 	cmpi.w	#$1,d0
 	blt.w	.loop
@@ -350,13 +350,13 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	cmpi.w	#$2,d2
 	bgt.w	.n
 	add.w	d0,d1
-	bsr.w	Sub_2EDBC
+	bsr.w	GetPlayerCount
 	sub.w	d1,d0
 .n	subi.w	#$1,d0
 	move.w	d0,(screentimer).l
 	clr.w	(PlayerScrollCtr).l
 	clr.w	(VertLineScrolling).l
-	dc.w	$207C,$000B,$BD30
+	movea.l	#$BBD30,a0
 	clr.w	d2
 .fill	move.b	d1,(a0,d2.w)
 	cmp.w	d1,d6
@@ -366,23 +366,23 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	addi.w	#$1,d2
 	dbra	d0,.fill
 	bsr.w	ClearLineEditorTop
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$3,$1,$0
 	moveq	#$12,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Framer).l
+	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC
 	moveq	#$12,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Framer).l
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$1,'{Select  Player}'
 	clr.w	d0
 	bra.w	.vert
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	Sub_2F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	LineEditorMenu
 	btst	#$5,d1
@@ -417,7 +417,7 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	move.w	d0,(PlayerScrollCtr).l
 .draw	bsr.w	PrintAttribHeader
 	bra.w	.loop
-.l11B54	dc.w	$267C,$000B,$BD30
+.l11B54	movea.l	#$BBD30,a3
 	adda.w	(VertLineScrolling).l,a3
 	move.b	(a3),d0
 	addi.b	#$1,d0		;SetLineSlot wants 1 based
@@ -427,7 +427,7 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 PrintAttribHeader						;Line editor player list: the column header of attribute page
 	
 	
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
 .top	movea.l	#$41C48,a1
 	move.w	(scoutcolumn).l,d0
@@ -441,7 +441,7 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 	bra.w	.top
 .found	jsr	(print).l
 	move.l	(a1),d4
-	dc.w	$267C,$000B,$BD30
+	movea.l	#$BBD30,a3
 	move.w	(PlayerScrollCtr).l,d2
 	move.w	(screentimer).l,d1
 	sub.w	d2,d1
@@ -468,32 +468,32 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	move.w	(TestList).l,d0
 	lsr.w	#$3,d0
 	adda.w	d0,a0
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	beq.w	.0
 	suba.w	#$1,a0
 .0	move.b	(a0),d0
-	dc.w	$B039,$0001,$7F60
+	cmp.b	$17F60.l,d0
 	beq.w	.l11C58
-	dc.w	$13C0,$0001,$7F60
+	move.b	d0,$17F60.l
 	bsr.w	Sub_2CD7A
-.l11C58	dc.w	$0B39,$0001,$7F60
+.l11C58	btst	d5,$17F60.l
 	beq.w	.l11C66
 	bsr.w	DrawLineIcon
 .l11C66	dbra	d5,.l11C58
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Framer).l
+	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC,$8
 	move.w	d6,d0
-	dc.w	$4EB9,$0004,$112E
+	jsr	(Sub_4112E).l
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	move.w	d7,(printa).l
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	rts
 	dc.w	$0107,$0707,$1818,$6060		;the entry before LineIconGroups (read with OptLine set)
@@ -503,7 +503,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	mulu.w	d5,d0
 	dc.w	$41FA,$01D0
 	adda.w	d0,a0
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	beq.w	.0
 	suba.w	#$6,a0
 .0	move.w	(a0),(printx).l
@@ -511,8 +511,8 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	move.w	d5,d0
 	movea.l	#$419F6,a1
 	move.w	#$8000,(printa).l
-	dc.w	$4EB9,$0003,$CEBE
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Sub_3CEBE).l
+	jsr	(printsmallz).l
 	String	' Line'
 	move.w	(a0),(printx).l
 	move.w	d5,d4
@@ -522,7 +522,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	move.w	$4(a0),d3
 	lea.l	$16C(a2),a3
 .slot	move.w	(a0),(printx).l
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FB,$FF,$FA,$02,$FE,$06
 	clr.w	d0
@@ -540,16 +540,16 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	dbra	d3,.slot
 	rts
 Sub_2CD7A
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
 	moveq	#$28,d0
 	moveq	#$12,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	move.w	$2CE96.l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	beq.w	.l11DBE
 	move.w	$2CE8E.l,(printx).l
 .l11DBE	jsr	(printsmallz).l
@@ -561,7 +561,7 @@ DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Lin
 	
 	bsr.w	ClearLineEditorTop
 	movem.l	d0-d5/a0-a2,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3,$0,$0
 	movea.l	(EASportsBGMap).l,a1
 	adda.l	$4(a1),a1
@@ -572,14 +572,14 @@ DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Lin
 	move.w	$2(a1),d3
 	moveq	#$1,d4
 	moveq	#$0,d5
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	movem.l	(sp)+,d0-d5/a0-a2
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$7,$1
 	moveq	#$1A,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font2Pri,$A,$4,'Line Editor',CC_Font2Pri,$E,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
@@ -587,12 +587,12 @@ DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Lin
 	moveq	#$2C,d0
 	bra.w	Sub_2C59E
 ClearLineEditorTop						;Erase 40 x 10 at the top of map 2
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$28,d0
 	moveq	#$A,d1
 	move.w	#$7FF,d2
-	dc.w	$4EF9,$0003,$8C06
+	jmp	(eraser).l
 Sub_2CE80
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
@@ -607,17 +607,17 @@ LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / do
 	dc.w	$0101,$0203,$0405,$1901,$0101,$0203,$0405,$1901
 	dc.w	$0909,$0A0B,$0C0D,$2101,$1111,$1213,$1415,$2101
 	dc.w	$0519,$1A1B,$1C1D,$2901,$0D21,$2223,$2425,$3101
-	dc.w	$1D29,$2A2B,$2C2C,$0101,$2531,$3233,$3434,$0101
-	dc.w	$2531,$3233,$3434,$0101
-Sub_2CF08
+	dc.b	$1D,')*+,,',$01,$01,'%12344',$01,$01
+	dc.b	'%12344',$01,$01
+LineEditorExit
 	bsr.w	Sub_2CE80
 	move.w	#$18,(palcount).l
 .l11F14	tst.w	(palcount).l
 	bpl.w	.l11F14
 	move.l	$18AD2.l,-(sp)
-	dc.w	$2F39,$0001,$8AD6
-	dc.w	$2F39,$0001,$8ADA
-	dc.w	$227C,$0003,$C000
+	move.l	$18AD6.l,-(sp)
+	move.l	$18ADA.l,-(sp)
+	movea.l	#$3C000,a1
 	movea.l	#$427D8,a0
 	movea.l	#$18C26,a3
 	move.w	$2A(a2),d0
@@ -630,17 +630,17 @@ Sub_2CF08
 	bsr.w	Sub_2C2F8
 .l11F64	bsr.w	MenuWaitVblank
 	bsr.w	Sub_2F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	move.w	d1,-(sp)
 	bsr.w	HandleMenuInput
 	move.w	(sp)+,d1
 	andi.w	#$A0,d1
 	beq.w	.l11F64
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetFont
 	move.w	$18AD2.l,d0
-	dc.w	$23DF,$0001,$8ADA
-	dc.w	$23DF,$0001,$8AD6
+	move.l	(sp)+,$18ADA.l
+	move.l	(sp)+,$18AD6.l
 	move.l	(sp)+,$18AD2.l
 	tst.w	d0
 	bne.w	Sub_2C954
@@ -670,7 +670,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	move.w	d0,d1
 	bsr.w	GetForwardCount
 	move.w	d0,d3
-	dc.w	$267C,$0002,$D0B2
+	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
 .next	move.b	(a3),d2
@@ -705,7 +705,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
 	bsr.w	GetForwardCount
-	dc.w	$267C,$0002,$D0B2
+	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
 .next	move.b	(a3)+,d2
@@ -729,7 +729,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	rts
 AttributeOffsetTbl						;Line slots saved in databuffer ($FF ends)
 	dc.w	$0102,$0304,$0509,$0A0B,$0C0D,$1112,$1314,$1519
-	dc.w	$1A1B,$1C1D,$2122,$2324,$2529,$2A2B,$2C31,$3233
+	dc.b	$1A,$1B,$1C,$1D,'!"#$%)*+,123'
 	dc.w	$34FF
 TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (DisplayPlayerList:
 	
@@ -745,27 +745,27 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	String	CC_Font3Pri,$7,$1
 	moveq	#$1A,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$9,$4,'Team  Roster',CC_Font3Pri,$E,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
 	beq.w	.l1212C
 	moveq	#$2C,d0
 .l1212C	bsr.w	Sub_2C59E
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$02,$0C,$F9,$01,$50,$6F,$73,$2E,$5E,$50,$6C,$61,$79,$65,$72,$FD,$1E,$FC,$0C,$52,$61,$74,$69,$6E,$67,$FD,$0C,$FC,$1A,$41,$5E,$2D,$5E,$53,$77,$69,$74,$63,$68,$5E,$54,$65,$61,$6D,$73,$F9,$00
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$1,$8
 	moveq	#$12,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Framer).l
+	jsr	(printz).l
 	String	CC_Font3Pri,$15,$8
 	moveq	#$12,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	bsr.w	Sub_2D396
 	move.w	(SelectedPlayerIdx).l,d0
 	mulu.w	#$80,d0
@@ -774,12 +774,12 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	clr.w	(PlayerScrollCtr).l
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	Sub_2F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
 	bne.w	Sub_2E980
 	btst	#$6,d1
 	bne.w	.team
-	dc.w	$4EB9,$0003,$7496
+	jsr	(nodiag).l
 	moveq	#$1,d0
 	btst	#$3,d1
 	bne.w	.col
@@ -810,7 +810,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 CheckPlayerListScroll						;TeamRosterScreen per frame: add PlayerScrollCtr to VertLineScrolling (0
 	
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0
 	bmi.w	L12366
 	cmpi.w	#$380,d0

@@ -1,4 +1,4 @@
-Sub_3A9BE
+FallDown
 	cmpi.w	#$B,$52(a2)
 	bgt.w	rtss2
 	cmpi.w	#$145C,$58(a2)
@@ -60,10 +60,10 @@ Sub_3A9BE
 	move.b	$66(a3),d0
 	adda.w	d0,a0
 	addi.b	#$1,$11E(a0)
-	dc.w	$0679,$0001,$0001,$80EC
+	addi.w	#$1,$180EC.l
 	tst.b	$74(a3)
 	bne.w	.l1FB08
-	dc.w	$0679,$0002,$0001,$80EC
+	addi.w	#$2,$180EC.l
 .l1FB08	move.b	#$78,$5E(a2)
 	move.w	$0(a3),d0
 	sub.w	$0(a2),d0
@@ -123,13 +123,13 @@ Sub_3A9BE
 	bra.w	Sub_3AD4A
 .l1FBF2	cmpi.w	#$B,$52(a3)
 	bgt.w	.l1FC2E
-	dc.w	$0679,$000A,$0001,$7CD8
+	addi.w	#$A,$17CD8.l
 	addi.w	#$96,(Crowdlevel).l
 	move.w	d1,-(sp)
 	move.b	#$0,$40(a3)
 	move.b	#$0,$65(a3)
 	move.w	#$1AC2,d1
-	jsr	(Sub_363C0).l
+	jsr	(SetSPA).l
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	move.w	(sp)+,d1
@@ -216,14 +216,14 @@ Sub_3AD66
 Sub_3AD94
 	exg.l	a2,a3
 	bset	#$5,$62(a3)
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 	tst.w	$34(a3)
 	beq.w	.l1FDC2
 	tst.w	$34(a2)
 	beq.w	.l1FDC2
 	addi.w	#$12C,(Crowdlevel).l
-	dc.w	$0679,$000F,$0001,$7CD8
+	addi.w	#$F,$17CD8.l
 .l1FDC2	move.w	$17BE0.l,d0
 	bmi.w	newcheck
 	cmp.w	$52(a2),d0
@@ -246,20 +246,20 @@ Sub_3AD94
 	bne.w	.l1FE72
 	exg.l	a2,a3
 	move.w	#$145C,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 	bsr.w	setInjuryType
 	btst	#$5,$17F7A.l
 	bne.w	.l1FE4C
 	exg.l	a2,a3
 	move.w	#$1AF4,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 .l1FE4C	move.w	#$4,$1806A.l
 	moveq	#$14,d0
 	tst.w	$34(a3)
 	beq.w	AddPenalty2
-	dc.w	$4A79,$0001,$8C08
+	tst.w	$18C08.l
 	beq.w	AddPenalty2
 	moveq	#$12,d0
 	bsr.w	AddPenalty2
@@ -279,7 +279,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	move.w	d0,-(sp)
 	bset	#$2,$63(a2)
 	addi.w	#$12C,(Crowdlevel).l		;pump up crowd
-	dc.w	$0679,$001E,$0001,$7CD8
+	addi.w	#$1E,$17CD8.l
 	move.w	#$D,-(sp)
 	bsr.w	sfx
 	move.w	$0(a2),$17EDC.l		;move Xpos to scroll center
@@ -292,7 +292,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	move.w	#$8000,d1		;move $8000 into d1
 	adda.w	#$366,a0		;add $364 to a0 (Away Team Struct start)
 .0	move.b	$66(a2),d1		;move roster offset into d1
-	dc.w	$33C1,$0001,$80EE
+	move.w	d1,$180EE.l
 	ext.w	d1		;sign extend - in this case just makes upper bye of word 00
 	add.w	d1,d1		;add d1 to itself
 	exg.l	a2,a3		;swap a2 and a3
@@ -313,7 +313,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	move.w	#$FFFC,$68(a0,d1.w)		;update status of player
 .exit	move.w	(sp)+,d0
 	rts
-Sub_3AF3E
+setInjuryTypeExit
 	rts
 checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radius. Check the
 									;corner circles, the goals (checkgoal with a2 = SortCords+(13*SCstruct)
@@ -322,9 +322,9 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 									;checkcoll
 	bclr	#$4,$64(a3)
 	move.w	#$88,d4
-	dc.w	$9879,$0001,$7CF4
+	sub.w	$17CF4.l,d4
 	move.w	#$12A,d5
-	dc.w	$9A79,$0001,$7CF6
+	sub.w	$17CF6.l,d5
 	movem.w	d2-d5,-(sp)
 	neg.w	d4
 	neg.w	d5
@@ -397,7 +397,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bne.w	L20538
 	sub.w	$0(a2),d2
 	moveq	#$10,d4
-	dc.w	$D879,$0001,$7CF4
+	add.w	$17CF4.l,d4
 	cmp.w	d4,d2
 	bgt.w	rtss2
 	neg.w	d4
@@ -405,7 +405,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	blt.w	rtss2
 	sub.w	$14(a2),d3
 	move.w	#$2,d5
-	dc.w	$DA79,$0001,$7CF6
+	add.w	$17CF6.l,d5
 	cmp.w	d5,d3
 	bgt.w	rtss2
 	neg.w	d5
@@ -421,9 +421,9 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bmi.w	.l200C2
 	st.b	$17BE0.l
 	asl.w	#$7,d0
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	move.b	#$8,$5E(a0,d0.w)
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	btst	#$7,$62(a0,d0.w)
 	bne.w	.l200B6
 	neg.w	d1
@@ -472,7 +472,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bne.w	.l2015C
 	move.w	#$8,(sp)
 	addi.w	#$12C,(Crowdlevel).l
-	dc.w	$0679,$0028,$0001,$7CD8
+	addi.w	#$28,$17CD8.l
 .l2015C	bsr.w	sfx
 	move.w	#$1000,d0
 	bsr.w	randomd0
@@ -481,10 +481,10 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	neg.w	d0
 .l20172	move.w	d0,$2A(a3)
 	move.w	#$1000,d0
-	bsr.w	Sub_37044
+	bsr.w	randomd0s
 	move.w	d0,$28(a3)
 	move.w	#$1000,d0
-	bsr.w	Sub_37044
+	bsr.w	randomd0s
 	move.w	d0,$2C(a3)
 	bra.w	puckflip
 .l20192	neg.w	$2C(a3)
@@ -503,27 +503,27 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	btst	#$0,$17F78.l
 	bne.w	.l201F6
 	movem.l	d0/a0,-(sp)
-	dc.w	$3039,$0001,$9368
+	move.w	$19368.l,d0
 	asl.w	#$7,d0
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	adda.w	d0,a0
 	btst	#$7,$62(a0)
 	movem.l	(sp)+,d0/a0
 	bne.w	.l20200
 	bra.w	.l2020E
-.l201F6	dc.w	$4A79,$0001,$A436
+.l201F6	tst.w	$1A436.l
 	bne.w	.l2020E
-.l20200	dc.w	$4A79,$0001,$7B94
+.l20200	tst.w	$17B94.l
 	bmi.w	rtss2
 	bra.w	.l20218
-.l2020E	dc.w	$4A79,$0001,$7B94
+.l2020E	tst.w	$17B94.l
 	bpl.w	rtss2
 .l20218	bset	#$5,$17F72.l
-	dc.w	$4A79,$0001,$A436
+	tst.w	$1A436.l
 	beq.w	.l20236
-	dc.w	$0679,$0001,$0001,$A418
+	addi.w	#$1,$1A418.l
 	bra.w	.l2023E
-.l20236	dc.w	$0679,$0001,$0001,$A416
+.l20236	addi.w	#$1,$1A416.l
 .l2023E	bset	#$0,$17F7C.l
 	jsr	(EndPenaltyShotPlay).l
 	bra.w	.l2025C
@@ -580,27 +580,27 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	addi.w	#$1,$360(a2)
 .l20358	cmpa.l	#$1834C,a2
 	bne.w	.l20384
-	dc.w	$33F9,$0001,$7FAE,$0001,$A56C
-	dc.w	$33FC,$0003,$0001,$A56E
+	move.w	(HomeTeam).l,$1A56C.l
+	move.w	#$3,$1A56E.l
 	jsr	(ChooseSong).l
-	dc.w	$3F39,$0001,$A56A
+	move.w	$1A56A.l,-(sp)
 	bsr.w	song
-.l20384	dc.w	$0C79,$0168,$0001,$80F0
+.l20384	cmpi.w	#$168,$180F0.l
 	bne.w	.l20398
-	dc.w	$0479,$0006,$0001,$80F0
+	subi.w	#$6,$180F0.l
 .l20398	movea.l	#$180F2,a0
-	dc.w	$D0F9,$0001,$80F0
-	dc.w	$0679,$0006,$0001,$80F0
-	bsr.w	Sub_3B51E
+	adda.w	$180F0.l,a0
+	addi.w	#$6,$180F0.l
+	bsr.w	GetPeriodTimeRemaining
 	move.w	d0,(a0)+
 	moveq	#$2,d0
 	add.w	$26(a2),d0
 	sub.w	$26(a1),d0
 	move.b	d0,(a0)+
-	dc.w	$0679,$001E,$0001,$7CD8
+	addi.w	#$1E,$17CD8.l
 	cmpa.l	#$1834C,a2
 	beq.w	.l203DE
-	dc.w	$0479,$0014,$0001,$7CD8
+	subi.w	#$14,$17CD8.l
 	bset	#$7,-$1(a0)
 .l203DE	move.w	$18(a2),d0
 	move.b	d0,(a0)+
@@ -629,7 +629,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bsr.w	PenGoalStuff
 	bclr	#$3,$17F70.l
 	bsr.w	printscores1
-	dc.w	$33FC,$2710,$0001,$7F82
+	move.w	#$2710,$17F82.l
 	btst	#$0,$17F78.l
 	beq.w	.l20468
 	bra.w	.l2046E
@@ -654,11 +654,11 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	st.b	$17E3C.l
 	bset	#$2,$62(a3)
 	move.w	#$1A,d0
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	move.l	a3,-(sp)
 	adda.w	#$80,a3
 	move.w	#$102E,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	movea.l	$22(a1),a3
 	moveq	#$E,d0
 	bsr.w	AddPenalty2
@@ -680,13 +680,13 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	dbra	d3,.l204E6
 	movea.l	(sp)+,a3
 	rts
-Sub_3B51E
+GetPeriodTimeRemaining
 	move.w	$180E4.l,d0
 	swap	d0
 	clr.w	d0
 	lsr.l	#$2,d0
-	dc.w	$8079,$0001,$80EA
-	dc.w	$9079,$0001,$80E6
+	or.w	$180EA.l,d0
+	sub.w	$180E6.l,d0
 	rts
 L20538	btst	#$5,$63(a3)
 	bne.w	rtss2
@@ -746,7 +746,7 @@ L20538	btst	#$5,$63(a3)
 	bclr	#$7,$FF800F.l
 	andi.w	#$1F,d0
 	bne.w	.l2066A
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	sub.w	$14(a2),d0
 	cmpi.w	#$28,d0
 	bgt.w	.l2066A
@@ -794,12 +794,12 @@ L206A2	cmpi.w	#$E,$52(a3)
 	asr.w	$2A(a3)
 	adda.w	#$80,a3
 	move.w	#$1078,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	movea.l	(sp)+,a3
 	move.w	#$E,-(sp)
 	bsr.w	sfx
 	addi.w	#$258,(Crowdlevel).l
-	dc.w	$0679,$000F,$0001,$7CD8
+	addi.w	#$F,$17CD8.l
 .l20714	bset	#$6,$17F6A.l
 	bset	#$2,$62(a3)
 	tst.w	$14(a3)
@@ -811,7 +811,7 @@ L206A2	cmpi.w	#$E,$52(a3)
 	move.l	a3,-(sp)
 	move.w	$17EC8.l,d0
 	asl.w	#$7,d0
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d0,a3
 	moveq	#$6,d0
 	bsr.w	AddPenalty2

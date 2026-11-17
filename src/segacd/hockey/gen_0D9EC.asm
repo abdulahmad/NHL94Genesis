@@ -1,15 +1,15 @@
 ScoutParaOffset
 	cmpi.w	#$1A,d0
-	dc.w	$662A
+	bne.s	*+44
 	move.w	#$EA,d0
 	cmpi.w	#$1A,(HomeTeam).l
-	dc.w	$6C08
+	bge.s	*+10
 	add.w	(HomeTeam).l,d0
-	dc.w	$6014
+	bra.s	*+22
 .lDA08	cmpi.w	#$1A,(VisTeam).l
-	dc.w	$6C06
+	bge.s	*+8
 	addi.w	#$1A,d0
-	dc.w	$6004
+	bra.s	*+6
 .lDA18	addi.w	#$1B,d0
 .lDA1C	movea.l	(ScoutingReportText).l,a1
 	movea.l	a1,a2
@@ -67,15 +67,15 @@ PrintMatchupRating						;Print the team rating of team a0 (GetTeamRating: the Te
 	movea.l	(sp)+,a2
 	move.l	d0,-(sp)
 	move.w	#$2,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
 	move.l	(sp)+,d0
 	rts
 PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	move.l	a1,-(sp)
 	move.w	(printx).l,-(sp)
-	dc.w	$227C,$0002,$8B22
-	dc.w	$4EB9,$0003,$8D9E
+	movea.l	#$28B22,a1
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).l
 	movea.l	(sp)+,a1
 	rts
@@ -83,15 +83,15 @@ TwoSpacesTxt						;A two space String (printsmall by PrintTwoSpaces)
 	dc.w	$0004,$2020
 ScoutRatingText						;rating names; only ' Overall ' is printed (PrintMatchupRatings, matchup
 	
-	dc.w	$000A,$5368,$6F6F,$7469,$6E67,$000A,$536B,$6174
-	dc.w	$696E,$6700,$000A,$5061,$7373,$696E,$6700,$000A
-	dc.w	$4465,$6665,$6E73,$6500,$000A,$4368,$6563,$6B69
-	dc.w	$6E67,$000A,$4669,$6768,$7469,$6E67,$000E,$476F
-	dc.w	$616C,$6B65,$6570,$696E,$6700,$0012,$506F,$7765
-	dc.w	$7220,$506C,$6179,$2041,$6476,$2E00,$001A,$2D20
-	dc.w	$2020,$2048,$6F6D,$6520,$5465,$616D,$2041,$6476
-	dc.w	$2E20,$2020,$2000,$0012,$2020,$2020,$4F76,$6572
-	dc.w	$616C,$6C20,$2020,$2020,$FFFF
+	dc.b	$00,$0A,'Shooting',$00,$0A,'Skat'
+	dc.b	'ing',$00,$00,$0A,'Passing',$00,$00,$0A
+	dc.b	'Defense',$00,$00,$0A,'Checki'
+	dc.b	'ng',$00,$0A,'Fighting',$00,$0E,'Go'
+	dc.b	'alkeeping',$00,$00,$12,'Powe'
+	dc.b	'r Play Adv.',$00,$00,$1A,'- '
+	dc.b	'   Home Team Adv'
+	dc.b	'.    ',$00,$00,$12,'    Over'
+	dc.b	'all     ',$FF,$FF
 DrawMatchupPictures						;Draw the matchup's 6 x 6 pictures, visitors at x 2, home at x $20, y $F:
 	
 	
@@ -176,7 +176,7 @@ DrawMatchupBitmap						;6 x 6 dobitmap, then erase the 8 x 3 name area at y $19 
 	move.w	#$6,d2
 	clr.w	d0
 	clr.w	d1
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	cmpi.w	#$14,(printx).l
 	bgt.w	.0
 	move.w	#$2,(printx).l
@@ -186,7 +186,7 @@ DrawMatchupBitmap						;6 x 6 dobitmap, then erase the 8 x 3 name area at y $19 
 	move.w	#$8,d0
 	move.w	#$3,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	rts
 GetTeamLogo						;Return a0 = the logo bitmap of team d3 (TeamLogoBitmaps table)
 	asl.w	#$2,d3
@@ -203,7 +203,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	
 	tst.w	(matchup).l
 	bne.w	.matchup
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$1,$16,$16,CC_SetFont,$1
 	lea.l	ScoutRatingText(pc),a1
 	move.w	#$0,d7
@@ -219,22 +219,22 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 .0	move.w	#$2,(printfontset).l
 	move.w	(printy).l,-(sp)
 	subi.w	#$3,(printy).l
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	(sp)+,(printy).l
 .1	addi.w	#$1,d7
 	tst.w	(a1)
 	bpl.w	.loop
 	move.w	#$2,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$17,'                                        '
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$22,$16
 	movea.l	#tmstruct,a0
 	movea.l	#awtmstruct,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(homerating).l
 	move.w	#$2,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$4,$16
 	exg.l	a0,a2
 	bsr.w	PrintMatchupRating
@@ -242,13 +242,13 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bra.w	.lDF8C
 .matchup	move.w	(matchup).l,d0
 	subi.w	#$1,d0
-	dc.w	$227C,$0002,$8F8E
+	movea.l	#$28F8E,a1
 	bra.w	.lDE62
 .lDE60	adda.w	(a1),a1
 .lDE62	dbra	d0,.lDE60
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$1,$D,$13,CC_SetFont,$1
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	#$16,(printy).l
 	move.w	#$2,(printfontset).l
 	movea.l	#tmstruct,a2
@@ -257,9 +257,9 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bne.w	.4
 	move.l	(GAttribOverallMask).l,d4
 .4	move.w	(matchuphome).l,d0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$17,'                                        '
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$23,$17
 	bsr.w	PrintPlayerNameRight
 	bsr.w	CalcAttrib
@@ -268,18 +268,18 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bsr.w	AttribAdjust
 	move.w	#$2,d1
 	move.w	d0,(homerating).l
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(printz).l
 	String	CC_Font1,$22,$16
 	bsr.w	PrintTwoSpaces
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	movea.l	#awtmstruct,a2
 	move.l	(PAttribOverallMask).l,d4
 	tst.w	(matchupslot).l
 	bne.w	.5
 	move.l	(GAttribOverallMask).l,d4
 .5	move.w	(matchupvis).l,d0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$17
 	bsr.w	PrintPlayerNameRight
 	bsr.w	CalcAttrib
@@ -288,40 +288,40 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bsr.w	AttribAdjust
 	move.w	d0,(visrating).l
 	move.w	#$2,d1		;2 digits
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(printz).l
 	String	CC_Font1,$4,$16
 	bsr.w	PrintTwoSpaces
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 .lDF8C	rts
 MatchupPosNames						;Position names of matchups 1-6
 	dc.w	$0012,$2020
 	move.l	-(a0),d0
 	movea.l	-(a3),a0
-	dc.w	$656E
+	bcs.s	*+112
 	moveq	#$65,d2
 	moveq	#$20,d1
 	move.l	-(a0),d0
 	move.l	-(a0),d0
 	dc.w	$0012,$206C
-	dc.w	$6566
+	bcs.s	*+104
 	moveq	#$20,d2
-	dc.w	$666F
+	bne.s	*+113
 	moveq	#$77,d1
 	dc.w	$6172
-	dc.w	$6420
+	bcc.s	Sub_28FD0
 	move.l	-(a0),d0
 	dc.w	$0012,$2072
-	dc.w	$6967
-	dc.w	$6874
+	bvs.s	*+105
+	bvc.s	*+118
 	movea.l	-(a6),a0
-	dc.w	$6F72
-	dc.w	$7761,$7264,$2020,$0012,$6C65,$6674,$2064,$6566
-	dc.w	$656E
+	ble.s	*+116
+	dc.b	'ward  ',$00,$12,'left def'
+	bcs.s	*+112
 Sub_28FD0
-	dc.w	$7365,$6D61,$6E20,$0012,$7269,$6768,$7420,$6465
-	dc.w	$6665,$6E73,$656D,$616E,$0012,$2020,$2020,$2067
-	dc.w	$6F61,$6C69,$6520,$2020,$2020
+	dc.b	'seman ',$00,$12,'right de'
+	dc.b	'fenseman',$00,$12,'     g'
+	dc.b	'oalie     '
 GetMatchupPlayers						;matchuphome / matchupvis = the home / visitors player of the matchup.
 	
 	movem.l	d0/a0-a1,-(sp)
@@ -340,7 +340,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	movea.l	$1E(a0),a0
 	adda.w	$6(a0),a0
 	move.w	(matchup).l,d0
-	dc.w	$227C,$0002,$9050
+	movea.l	#$29050,a1
 	move.b	(a1,d0.w),d0
 	ext.w	d0
 	move.w	d0,(matchupslot).l
@@ -373,19 +373,19 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	move.w	#$5,(advframe).l
 .0	move.w	(advframe).l,d1
 	asl.w	#$2,d1
-	dc.w	$227C,$0002,$90FE
+	movea.l	#$290FE,a1
 	move.w	(homerating).l,d0
 	cmp.w	(visrating).l,d0
 	bgt.w	.1
 	beq.w	.2
-	dc.w	$227C,$0002,$9116
+	movea.l	#$29116,a1
 .1	movea.l	(a1,d1.w),a1
 	bra.w	.3
 .2	movea.l	#EvenAdvTxt,a1
 .3	move.w	#$2,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$13,$16
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	#$0,(printfontset).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -442,17 +442,17 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	adda.w	(a1),a1
 	cmpi.w	#$2,(a1)
 	bne.w	.lE194
-	dc.w	$227C,$0002,$919A
+	movea.l	#$2919A,a1
 	cmpa.l	#$1834C,a2
 	beq.w	.lE194
-	dc.w	$227C,$0002,$91A0
+	movea.l	#$291A0,a1
 .lE194	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname
 	dc.w	$0006,$486F
-	dc.w	$6D65
+	blt.s	*+103
 VisitorsTxt						;name used when the visiting team has no nickname
-	dc.w	$000A,$5669,$7369,$746F,$7273
+	dc.b	$00,$0A,'Visitors'
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
 	
 	
@@ -471,12 +471,12 @@ ScoutStub						;An empty routine
 	rts
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$2,$17F6C.l
-	dc.w	$4EB9,$0003,$0094
-	dc.w	$33FC,$0060,$0001,$AD72
-	dc.w	$267C,$0001,$7480
+	jsr	(freezewindow).l
+	move.w	#$60,$1AD72.l
+	movea.l	#$17480,a3
 	move.w	#$0,d0
-	dc.w	$3439,$0001,$A416
-	dc.w	$B479,$0001,$A418
+	move.w	$1A416.l,d2
+	cmp.w	$1A418.l,d2
 	bgt.w	.lE206
 	move.w	#$6,d0
 .lE206	asl.w	#$7,d0
@@ -485,17 +485,17 @@ ScoutStub						;An empty routine
 	move.w	#$6,d3
 	bra.w	.lE268
 .lE216	movem.w	d2-d3,-(sp)
-	dc.w	$4EB9,$0003,$D770
+	jsr	(Sub_3D770).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
-	dc.w	$4A79,$0001,$7CEA
+	tst.w	$17CEA.l
 	bmi.w	.lE238
 	move.w	#$FF10,d0
-.lE238	dc.w	$D079,$0001,$7CEA
+.lE238	add.w	$17CEA.l,d0
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
-	dc.w	$4EB9,$0003,$62D8
+	jsr	(Sub_362D8).l
 	bclr	#$5,$62(a3)
 	bclr	#$1,$63(a3)
 	bclr	#$2,$62(a3)
@@ -537,15 +537,15 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$1A414,a0
-	dc.w	$203C,$0000,$0012
+	move.l	#$12,d0
 .lE312	clr.w	(a0)+
 	dbra	d0,.lE312
 	movea.l	#tmstruct,a0
 	move.w	#$365,d0
 .lE322	clr.w	(a0)+
 	dbra	d0,.lE322
-	dc.w	$207C,$0001,$8022
-	dc.w	$203C,$0000,$0024
+	movea.l	#$18022,a0
+	move.l	#$24,d0
 .lE334	clr.w	(a0)+
 	dbra	d0,.lE334
 	clr.w	$17F70.l
@@ -561,29 +561,29 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 									;at most) for the pieces inside the view (Hpos / Vpos). Not in a reverse
 									;angle replay (sflags4 bit 4), sflags2 bit 3 or sflags bit 7. Called from
 									;setvideo
-	dc.w	$4A79,$0001,$A556
-	bmi.w	Sub_2948C
-	dc.w	$4AB9,$0001,$A55C
-	beq.w	Sub_2948C		;not loaded: none
+	tst.w	$1A556.l
+	bmi.w	AddArenaAnimSpriteExit
+	tst.l	$1A55C.l
+	beq.w	AddArenaAnimSpriteExit		;not loaded: none
 	btst	#$4,$17F72.l		;check if reverse angle replay
-	bne.w	Sub_2948C
+	bne.w	AddArenaAnimSpriteExit
 	btst	#$3,$17F6C.l
-	bne.w	Sub_2948C		;replay: none
+	bne.w	AddArenaAnimSpriteExit		;replay: none
 	btst	#$7,$17F6A.l
-	bne.w	Sub_2948C		;horizontal mode: none
-	dc.w	$2279,$0001,$A55C
+	bne.w	AddArenaAnimSpriteExit		;horizontal mode: none
+	movea.l	$1A55C.l,a1
 	adda.l	$4(a1),a1
-	dc.w	$3839,$0001,$7CEE
-	dc.w	$3A39,$0001,$7CEA
-	dc.w	$3039,$0001,$A550
+	move.w	$17CEE.l,d4
+	move.w	$17CEA.l,d5
+	move.w	$1A550.l,d0
 	bra.w	Sub_293DC
 	dc.w	$0242,$000F,$0C42,$0003,$6300,$0004,$7403,$6000
 	dc.w	$000A,$3003,$D042,$6100,$0008,$51CA,$FFF6,$4E75
 Sub_293DC
 	ext.w	d0
-	beq.w	Sub_2948C
+	beq.w	AddArenaAnimSpriteExit
 	cmpi.w	#$40,d6
-	bge.w	Sub_2948C
+	bge.w	AddArenaAnimSpriteExit
 	movem.l	d0-d5,-(sp)
 	add.w	d0,d0
 	movea.l	a1,a0
@@ -621,7 +621,7 @@ Sub_293DC
 	move.w	$6(a0),d5
 	andi.w	#$F800,d5
 	add.w	$4(a0),d5
-	dc.w	$DA79,$0001,$A54E
+	add.w	$1A54E.l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
 	addi.w	#$70,d5
@@ -633,16 +633,16 @@ Sub_293DC
 .lE480	adda.w	#$8,a0
 	dbra	d4,.lE428
 .lE488	movem.l	(sp)+,d0-d5
-Sub_2948C
+AddArenaAnimSpriteExit
 	rts
 PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerName), moved left so
 									;it ends before column $29 (a trailing pad byte or
 									;two not counted), then the icon of HotColdIcon. Called from
 									;PrintMatchupRatings
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$33C0,$0001,$AD8A
+	move.w	d0,$1AD8A.l
 	move.l	a2,-(sp)
-	dc.w	$4EB9,$0004,$11D6
+	jsr	(FormatPlayerName).l
 	movea.l	a1,a0
 	move.w	(a0),d0
 	move.w	d0,d5
@@ -658,8 +658,8 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 	neg.w	d0
 	add.w	d0,(printx).l
 .lE4D4	movea.l	a0,a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movea.l	(sp)+,a2
-	dc.w	$4EB9,$0002,$B3FE
+	jsr	(HotColdIcon).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

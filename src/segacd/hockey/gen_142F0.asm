@@ -1,24 +1,24 @@
 Sub_2F2F0
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	bne.w	.l14310
 .l142FA	btst	#$1,$17F6A.l
-	dc.w	$6706
-	dc.w	$4EF9,$0003,$750E
+	beq.s	*+8
+	jmp	(ReadJoy2).l
 .l1430A	jmp	(ReadJoy1).l
-.l14310	dc.w	$4A79,$0001,$7F94
+.l14310	tst.w	$17F94.l
 	beq.w	.l142FA
-	dc.w	$0C79,$0003,$0001,$7F94
-	dc.w	$6606
+	cmpi.w	#$3,$17F94.l
+	bne.s	*+8
 	jmp	$3752C.l
 .l1432A	jmp	$3754A.l
 	move.w	#$F0,$1AD56.l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$2,$2
 	moveq	#$20,d0
 	moveq	#$55,d1
 	moveq	#$8,d2
 	moveq	#$4,d3
-	dc.w	$3839,$0001,$8D48
+	move.w	$18D48.l,d4
 	move.w	#$0,d5
 	movea.l	$47D18.l,a1
 	btst	#$4,$17F72.l
@@ -26,7 +26,7 @@ Sub_2F2F0
 	movea.l	$47D64.l,a1
 .l1436E	adda.l	$4(a1),a1
 	movea.l	#$1B008,a2
-	dc.w	$4EF9,$0003,$87E2
+	jmp	(dobitmap).l
 	dc.w	$4EB9,$0003,$8F6E,$0006,$BD02,$0200,$303C,$0008
 	dc.w	$323C,$0004,$343C,$07FF,$4EF9,$0003,$8C06,$50F9
 	dc.w	$0001,$AD56,$4EB9,$0003,$8F6E,$0006,$BD02,$0000
@@ -34,7 +34,7 @@ Sub_2F2F0
 	dc.w	$0000,$2279,$0004,$7D68,$D3E9,$0004,$247C,$0001
 	dc.w	$B008,$4EF9,$0003,$87E2,$4EB9,$0003,$8F6E,$0006
 	dc.w	$BD02,$0200,$303C,$0010,$323C,$000B,$343C,$07FF
-	dc.w	$4EF9,$0003,$8C06
+	jmp	(eraser).l
 suba4						;a4 = current replay frame. Back up 1 frame and set video parameters for
 	
 	
@@ -42,9 +42,9 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	bne.w	.l14410
 	btst	#$4,$17F6A.l
 	beq.w	.end
-	dc.w	$287C,$0001,$73B0
+	movea.l	#$173B0,a4
 .l14410	suba.w	#$62,a4
-	dc.w	$B9F9,$0001,$7470
+	cmpa.l	$17470.l,a4
 	bne.w	L145BC
 	adda.w	#$62,a4
 .end	bsr.w	L145BC
@@ -56,23 +56,23 @@ adda4						;Step forward 1 frame. First handles a reverse
 	beq.w	.1
 	movem.l	d0-d7/a0-a6,-(sp)
 	bchg	#$4,$17F72.l
-	dc.w	$3F39,$0001,$7CEE
-	dc.w	$3F39,$0001,$7CEA
-	bsr.w	Sub_36D38
+	move.w	$17CEE.l,-(sp)
+	move.w	$17CEA.l,-(sp)
+	bsr.w	forceblack2
 	jsr	(MenuWaitVblank).l
 	jsr	(MenuWaitVblank).l
 	jsr	$2E986.l
-	dc.w	$4279,$0001,$7CEE
-	dc.w	$4279,$0001,$7CEA
-	dc.w	$33FC,$07D0,$0001,$7CEC
+	clr.w	$17CEE.l
+	clr.w	$17CEA.l
+	move.w	#$7D0,$17CEC.l
 	move.w	#$1,d0
-.loop	jsr	(Sub_3DD16).l
+.loop	jsr	(setvideo).l
 	jsr	(MenuWaitVblank).l
 	dbra	d0,.loop
-	dc.w	$33DF,$0001,$7CEA
-	dc.w	$33DF,$0001,$7CEE
+	move.w	(sp)+,$17CEA.l
+	move.w	(sp)+,$17CEE.l
 	move.w	#$1,d0
-	dc.w	$4EB9,$0003,$DD16
+	jsr	(setvideo).l
 .l144A2	jsr	(MenuWaitVblank).l
 	dbra	d0,.l144A2
 	movem.l	a0,-(sp)
@@ -92,18 +92,18 @@ adda4						;Step forward 1 frame. First handles a reverse
 	beq.w	adda42
 	movem.l	a4,-(sp)
 	bsr.w	L14520
-	dc.w	$B9F9,$0001,$7470
+	cmpa.l	$17470.l,a4
 	movem.l	(sp)+,a4
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 adda42						;adda4 without the sf2drec look-ahead: stop at the record point, else show
 	
-	dc.w	$B9F9,$0001,$7470
-	beq.w	Sub_2F988
+	cmpa.l	$17470.l,a4
+	beq.w	updatereplayExit
 	bsr.w	L145BC
 L14520	adda.w	#$62,a4
 	cmpa.l	#$173B0,a4
-	bne.w	Sub_2F988
-	dc.w	$287C,$0000,$C45C
+	bne.w	updatereplayExit
+	movea.l	#$C45C,a4
 	rts
 L14536	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
@@ -122,14 +122,14 @@ L14536	movem.l	d0-d2,-(sp)
 .l14572	cmpi.w	#$FFC4,d0
 	bgt.w	.l1457E
 	move.w	#$FFC4,d0
-.l1457E	dc.w	$33C0,$0001,$7CEE
+.l1457E	move.w	d0,$17CEE.l
 	cmpi.w	#$100,d1
 	blt.w	.l14590
 	move.w	#$100,d1
 .l14590	cmpi.w	#$FF38,d1
 	bgt.w	.l1459C
 	move.w	#$FF38,d1
-.l1459C	dc.w	$33C1,$0001,$7CEA
+.l1459C	move.w	d1,$17CEA.l
 	movem.l	(sp)+,d0-d2
 	rts
 L145A8	btst	#$4,$17F72.l
@@ -139,7 +139,7 @@ L145BC	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	#$4761C,a6
 	movea.l	a4,a0
 	moveq	#$F,d1
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 .l145D0	move.w	$2(a0),d2
 	andi.w	#$3FF,d2
 	btst	#$9,d2
@@ -207,7 +207,7 @@ L145BC	movem.l	d0-d2/a0/a6,-(sp)
 	adda.l	#$80,a3
 	dbra	d1,.l145D0
 	moveq	#$5,d2
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 .l146E8	move.b	(a0)+,$6F(a3)
 	move.b	(a0),d0
 	andi.w	#$F,d0
@@ -244,16 +244,16 @@ L145BC	movem.l	d0-d2/a0/a6,-(sp)
 	move.b	(a0)+,d7
 	move.w	(a0)+,d0
 	andi.w	#$FFF,d0
-	dc.w	$0279,$F000,$0001,$7DC8
-	dc.w	$8179,$0001,$7DC8
+	andi.w	#$F000,$17DC8.l
+	or.w	d0,$17DC8.l
 	move.w	(a0)+,(Crowdframe).l
 	move.w	(a0)+,$17E32.l
-	dc.w	$13D8,$0001,$8068
+	move.b	(a0)+,$18068.l
 	clr.w	d0
 	move.b	(a0)+,d0
 	lsl.w	#$4,d0
 	ori.w	#$F00F,d0
-	dc.w	$33C0,$0001,$7DD6
+	move.w	d0,$17DD6.l
 	btst	#$5,$17F6A.l
 	beq.w	.l147C2
 	movea.l	a5,a3
@@ -262,57 +262,57 @@ L145BC	movem.l	d0-d2/a0/a6,-(sp)
 	clr.w	$18(a5)
 	move.w	$16(a5),d0
 	asl.w	#$7,d0
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d0,a3
 .l147BA	bsr.w	L14536
 	bra.w	.l147EC
-.l147C2	dc.w	$33D8,$0001,$7CEE
-	dc.w	$33D8,$0001,$7CEA
+.l147C2	move.w	(a0)+,$17CEE.l
+	move.w	(a0)+,$17CEA.l
 	btst	#$4,$17F72.l
 	beq.w	.l147EC
-	dc.w	$4479,$0001,$7CEE
-	dc.w	$4479,$0001,$7CEA
-	dc.w	$4EB9,$0002,$F7FA
+	neg.w	$17CEE.l
+	neg.w	$17CEA.l
+	jsr	(ClampReplayView).l
 .l147EC	bclr	#$7,$17F72.l
 	movem.l	(sp)+,d0-d2/a0/a6
 	rts
 ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
 	move.w	d0,-(sp)
 	move.w	#$3C,d0
-	dc.w	$B079,$0001,$7CEE
+	cmp.w	$17CEE.l,d0
 	blt.w	.l14818
 	move.w	#$FFC4,d0
-	dc.w	$B079,$0001,$7CEE
+	cmp.w	$17CEE.l,d0
 	ble.w	.l1481E
-.l14818	dc.w	$33C0,$0001,$7CEE
+.l14818	move.w	d0,$17CEE.l
 .l1481E	move.w	#$100,d0
-	dc.w	$B079,$0001,$7CEA
+	cmp.w	$17CEA.l,d0
 	blt.w	.l1483A
 	move.w	#$FF38,d0
-	dc.w	$B079,$0001,$7CEA
+	cmp.w	$17CEA.l,d0
 	ble.w	.l14840
-.l1483A	dc.w	$33C0,$0001,$7CEA
+.l1483A	move.w	d0,$17CEA.l
 .l14840	move.w	(sp)+,d0
 	rts
 updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	btst	#$4,$17F68.l
-	bne.w	Sub_2F988
+	bne.w	updatereplayExit
 	btst	#$2,$17F6C.l
 	beq.w	.l1487C
-	dc.w	$4A79,$0001,$AD92
+	tst.w	$1AD92.l
 	beq.w	.l148A6
-	dc.w	$0479,$0001,$0001,$AD92
+	subi.w	#$1,$1AD92.l
 	bpl.w	.l1487C
-	dc.w	$4279,$0001,$AD92
+	clr.w	$1AD92.l
 	bra.w	.l148A6
-.l1487C	dc.w	$06B9,$0000,$0062,$0001,$7470
-	dc.w	$0CB9,$0001,$73B0,$0001,$7470
+.l1487C	addi.l	#$62,$17470.l
+	cmpi.l	#$173B0,$17470.l
 	bne.w	.l148A6
 	bset	#$4,$17F6A.l
-	dc.w	$23FC,$0000,$C45C,$0001,$7470
-.l148A6	dc.w	$2079,$0001,$7470
+	move.l	#$C45C,$17470.l
+.l148A6	movea.l	$17470.l,a0
 	moveq	#$F,d2
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 .top	clr.l	(a0)
 	move.w	$0(a3),d1
 	andi.w	#$3FF,d1
@@ -333,7 +333,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	adda.l	#$80,a3
 	dbra	d2,.top
 	moveq	#$5,d2
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 .loop	move.b	$6F(a3),(a0)+
 	move.w	$34(a3),d0
 	bpl.w	.n0
@@ -359,20 +359,20 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.b	$17F65.l,(a0)+
 	bset	#$7,$17F65.l
 	move.b	d7,(a0)+
-	dc.w	$30F9,$0001,$7DC8
+	move.w	$17DC8.l,(a0)+
 	move.w	(Crowdframe).l,(a0)+
 	move.w	$17E32.l,(a0)+
-	dc.w	$10F9,$0001,$8068
+	move.b	$18068.l,(a0)+
 	move.w	d0,-(sp)
-	dc.w	$3039,$0001,$7DD6
+	move.w	$17DD6.l,d0
 	lsr.w	#$4,d0
 	move.b	d0,(a0)+
 	move.w	(sp)+,d0
-	dc.w	$30F9,$0001,$7CEE
-	dc.w	$30F9,$0001,$7CEA
-Sub_2F988
+	move.w	$17CEE.l,(a0)+
+	move.w	$17CEA.l,(a0)+
+updatereplayExit
 	rts
-Sub_2F98A
+updateplayers
 	btst	#$7,$17F6A.l
 	bne.w	.l149F4
 	dc.w	$0079,$000F,$0001,$7DC8
@@ -391,8 +391,8 @@ Sub_2F98A
 	clr.w	$1AD74.l
 	subi.w	#$1,$17B98.l
 .l149F4	bclr	#$6,$17F7A.l
-	dc.w	$3039,$0001,$7F8C
-	dc.w	$B079,$0001,$7F8E
+	move.w	$17F8C.l,d0
+	cmp.w	$17F8E.l,d0
 	blt.w	.l14A14
 	bset	#$6,$17F7A.l
 .l14A14	jsr	$2AE68.l
@@ -402,12 +402,12 @@ Sub_2F98A
 	bclr	#$1,(sflags6).l
 	move.w	$17BE0.l,d0
 	asl.w	#$7,d0
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d0,a3
 	btst	#$1,$64(a3)
 	beq.w	.l14A56
 	bclr	#$4,$17F78.l
-.l14A56	dc.w	$267C,$0001,$7480
+.l14A56	movea.l	#$17480,a3
 .l14A5C	move.l	$0(a3),$1C(a3)
 	move.l	$14(a3),$20(a3)
 	move.l	$18(a3),$24(a3)
@@ -495,7 +495,7 @@ Sub_2F98A
 	cmpi.w	#$1AF4,$58(a3)
 	beq.w	.l14CCC
 	moveq	#$11,d4
-	dc.w	$4A79,$0001,$8C20
+	tst.w	$18C20.l
 	beq.w	.l14C0E
 	moveq	#$16,d4
 .l14C0E	mulu.w	d7,d4
@@ -509,13 +509,13 @@ Sub_2F98A
 	beq.w	.l14C3E
 	asr.w	d2,d0
 	bne.w	.l14C3A
-	dc.w	$203C,$0000,$0001
+	move.l	#$1,d0
 .l14C3A	sub.w	d0,$28(a3)
 .l14C3E	move.w	$2A(a3),d0
 	beq.w	.l14C56
 	asr.w	d2,d0
 	bne.w	.l14C52
-	dc.w	$203C,$0000,$0001
+	move.l	#$1,d0
 .l14C52	sub.w	d0,$2A(a3)
 .l14C56	move.w	$28(a3),d0
 	beq.w	.l14C64
@@ -570,85 +570,85 @@ Sub_2F98A
 .l14D1C	clr.w	$19374.l
 	move.w	#$1111,$17E56.l
 	move.w	#$1111,$17E58.l
-.l14D32	dc.w	$BC79,$0001,$7F9E
+.l14D32	cmp.w	$17F9E.l,d6
 	bne.w	.l14D52
 	bsr.w	ReadJoy1
 	clr.w	d4
 	move.w	#$FFFF,$17F96.l
-	bsr.w	Sub_30200
+	bsr.w	doinput
 	bra.w	.l14D72
-.l14D52	dc.w	$BC79,$0001,$7FA0
+.l14D52	cmp.w	$17FA0.l,d6
 	bne.w	.l14D72
 	bsr.w	ReadJoy2
-	dc.w	$283C,$0000,$0002
+	move.l	#$2,d4
 	move.w	#$FFFF,$17F96.l
-	bsr.w	Sub_30200
+	bsr.w	doinput
 .l14D72	cmpi.w	#$B,d6
 	bgt.w	.l14F4C
-	dc.w	$4A79,$0001,$7FAA
+	tst.w	$17FAA.l
 	beq.w	.l14E60
-	dc.w	$BC79,$0001,$7FA2
+	cmp.w	$17FA2.l,d6
 	bne.w	.l14E60
 	jsr	$3752C.l
 	clr.l	d4
 	clr.w	$17F96.l
-	dc.w	$3F39,$0001,$7FA6
-	dc.w	$33F9,$0001,$7FAA,$0001,$7FA6
-	dc.w	$3F39,$0001,$7F9E
-	dc.w	$33F9,$0001,$7FA2,$0001,$7F9E
+	move.w	$17FA6.l,-(sp)
+	move.w	$17FAA.l,$17FA6.l
+	move.w	$17F9E.l,-(sp)
+	move.w	$17FA2.l,$17F9E.l
 	move.w	$17E56.l,-(sp)
 	move.w	$17E58.l,$17E56.l
 	move.w	$17E5E.l,-(sp)
 	move.w	$17E5A.l,$17E5E.l
 	move.w	$19380.l,-(sp)
 	move.w	$19382.l,$19380.l
-	dc.w	$3F39,$0001,$7DC8
-	dc.w	$33F9,$0001,$7DD6,$0001,$7DC8
-	bsr.w	Sub_30200
-	dc.w	$33F9,$0001,$7DC8,$0001,$7DD6
-	dc.w	$33DF,$0001,$7DC8
+	move.w	$17DC8.l,-(sp)
+	move.w	$17DD6.l,$17DC8.l
+	bsr.w	doinput
+	move.w	$17DC8.l,$17DD6.l
+	move.w	(sp)+,$17DC8.l
 	move.w	$19380.l,$19382.l
 	move.w	(sp)+,$19380.l
 	move.w	$17E5E.l,$17E5A.l
 	move.w	(sp)+,$17E5E.l
 	move.w	$17E56.l,$17E58.l
 	move.w	(sp)+,$17E56.l
-	dc.w	$33F9,$0001,$7F9E,$0001,$7FA2
-	dc.w	$33DF,$0001,$7F9E
-	dc.w	$33F9,$0001,$7FA6,$0001,$7FAA
-	dc.w	$33DF,$0001,$7FA6
-.l14E60	dc.w	$4A79,$0001,$7FAC
+	move.w	$17F9E.l,$17FA2.l
+	move.w	(sp)+,$17F9E.l
+	move.w	$17FA6.l,$17FAA.l
+	move.w	(sp)+,$17FA6.l
+.l14E60	tst.w	$17FAC.l
 	beq.w	.l14F4C
-	dc.w	$BC79,$0001,$7FA4
+	cmp.w	$17FA4.l,d6
 	bne.w	.l14F4C
 	jsr	$3754A.l
-	dc.w	$283C,$0000,$0002
+	move.l	#$2,d4
 	move.w	#$1,$17F96.l
-	dc.w	$3F39,$0001,$7FA8
-	dc.w	$33F9,$0001,$7FAC,$0001,$7FA8
-	dc.w	$3F39,$0001,$7FA0
-	dc.w	$33F9,$0001,$7FA4,$0001,$7FA0
+	move.w	$17FA8.l,-(sp)
+	move.w	$17FAC.l,$17FA8.l
+	move.w	$17FA0.l,-(sp)
+	move.w	$17FA4.l,$17FA0.l
 	move.w	$17E56.l,-(sp)
 	move.w	$17E58.l,$17E56.l
 	move.w	$17E60.l,-(sp)
 	move.w	$17E5C.l,$17E60.l
 	move.w	$19380.l,-(sp)
 	move.w	$19382.l,$19380.l
-	dc.w	$3F39,$0001,$7DC8
-	dc.w	$33F9,$0001,$7DD6,$0001,$7DC8
-	bsr.w	Sub_30200
-	dc.w	$33F9,$0001,$7DC8,$0001,$7DD6
-	dc.w	$33DF,$0001,$7DC8
+	move.w	$17DC8.l,-(sp)
+	move.w	$17DD6.l,$17DC8.l
+	bsr.w	doinput
+	move.w	$17DC8.l,$17DD6.l
+	move.w	(sp)+,$17DC8.l
 	move.w	$19380.l,$19382.l
 	move.w	(sp)+,$19380.l
 	move.w	$17E60.l,$17E5C.l
 	move.w	(sp)+,$17E60.l
 	move.w	$17E56.l,$17E58.l
 	move.w	(sp)+,$17E56.l
-	dc.w	$33F9,$0001,$7FA0,$0001,$7FA4
-	dc.w	$33DF,$0001,$7FA0
-	dc.w	$33F9,$0001,$7FA8,$0001,$7FAC
-	dc.w	$33DF,$0001,$7FA8
+	move.w	$17FA0.l,$17FA4.l
+	move.w	(sp)+,$17FA0.l
+	move.w	$17FA8.l,$17FAC.l
+	move.w	(sp)+,$17FA8.l
 .l14F4C	move.w	$36(a3),d0
 	clr.w	d1
 	move.b	$38(a3,d0.w),d1
@@ -730,20 +730,20 @@ updateanim						;frame switch control on struct a3
 	move.b	#$4,$65(a3)		;move 4 into glitch - /60 sec min frame switch time
 .l15092	rts
 freezewindow						;lock scrolling to the current position
-	dc.w	$33F9,$0001,$7CEA,$0001,$7EDE
-	dc.w	$33F9,$0001,$7CEE,$0001,$7EDC
+	move.w	$17CEA.l,$17EDE.l
+	move.w	$17CEE.l,$17EDC.l
 	bset	#$6,$17F6A.l
 	rts
-Sub_300B2
+checkwindow
 	move.w	$17EDE.l,d2
 	move.w	$17EDC.l,d3
 	btst	#$6,$17F6A.l
 	bne.w	.l1514A
-	dc.w	$267C,$0001,$7B80
+	movea.l	#$17B80,a3
 	move.w	$17BE0.l,d0
 	bmi.w	.l1512A
 	asl.w	#$7,d0
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d0,a3
 	move.w	d7,d0
 	add.w	d0,d0
@@ -766,7 +766,7 @@ Sub_300B2
 	move.w	d2,$17EDE.l
 	move.w	d3,$17EDC.l
 .l1514A	move.w	d2,d0
-	dc.w	$9079,$0001,$7CEA
+	sub.w	$17CEA.l,d0
 	cmpi.w	#$FFF6,d0
 	bge.w	.l15170
 	move.w	d2,d1
@@ -782,14 +782,14 @@ Sub_300B2
 	cmpi.w	#$100,d1
 	blt.w	.l1518A
 	move.w	#$100,d1
-.l1518A	dc.w	$9279,$0001,$7CEA
+.l1518A	sub.w	$17CEA.l,d1
 	beq.w	.l151A4
 	asr.w	#$4,d1
 	bne.w	.l1519E
 	addi.w	#$1,d1
-.l1519E	dc.w	$D379,$0001,$7CEA
+.l1519E	add.w	d1,$17CEA.l
 .l151A4	move.w	d3,d0
-	dc.w	$9079,$0001,$7CEE
+	sub.w	$17CEE.l,d0
 	cmpi.w	#$FFD8,d0
 	bge.w	.l151CA
 	move.w	d3,d1
@@ -805,10 +805,10 @@ Sub_300B2
 	cmpi.w	#$3C,d1
 	ble.w	.l151E4
 	move.w	#$3C,d1
-.l151E4	dc.w	$9279,$0001,$7CEE
+.l151E4	sub.w	$17CEE.l,d1
 	beq.w	.l151FE
 	asr.w	#$4,d1
 	bne.w	.l151F8
 	addi.w	#$1,d1
-.l151F8	dc.w	$D379,$0001,$7CEE
+.l151F8	add.w	d1,$17CEE.l
 .l151FE	rts

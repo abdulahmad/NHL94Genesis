@@ -17,8 +17,8 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	bra.w	rtss2
 .0	movem.l	d0-d1/a1-a3,-(sp)
 	move.l	a4,-(sp)
-	dc.w	$287C,$0001,$80EC
-	dc.w	$D8F9,$0001,$80F0
+	movea.l	#$180EC,a4
+	adda.w	$180F0.l,a4
 	movea.l	#tmstruct,a2
 	btst	#$7,$2(a4)
 	beq.w	.pllookup
@@ -37,10 +37,10 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	bra.w	.l218D2
 .Cwdupdate	movem.l	d0-d1/a1-a3,-(sp)
 	addi.w	#$64,(Crowdlevel).l
-	dc.w	$0679,$000A,$0001,$7CD8
-	dc.w	$3039,$0001,$7E28
+	addi.w	#$A,$17CD8.l
+	move.w	$17E28.l,d0
 .l218D2	asl.w	#$7,d0
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d0,a3
 	bsr.w	.l21958
 	addi.w	#$1,$0(a2)
@@ -86,7 +86,7 @@ SetupTeamForIntermission						;Reset the bench, then for each team refill energy
 	exg.l	a2,a3
 .r	bsr.w	reenergizeteam
 	clr.w	$16(a3)
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	bne.w	rtss2
 	move.w	$26(a3),d0
 	sub.w	$26(a2),d0
@@ -131,21 +131,21 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	
 	cmpi.w	#$4,$180E4.l
 	bne.w	.1
-	dc.w	$33FC,$0000,$0001,$80E6
+	move.w	#$0,$180E6.l
 	jsr	$25A4E.l
 .1	bsr.w	SetupTeamForIntermission
 	moveq	#$F,d0
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 .l21A32	clr.w	$0(a0)
 	adda.w	#$80,a0
 	dbra	d0,.l21A32
-	dc.w	$3839,$0001,$8D56
+	move.w	$18D56.l,d4
 	movea.l	$47D34.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$140,$17CE2.l
 	move.w	$180E4.l,d0
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	beq.w	.ss
 	addi.w	#$5,d0
 .ss	asl.w	#$2,d0
@@ -158,9 +158,9 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	movea.l	#$2C1F8,a1
 	jsr	(Sub_2C2F8).l
 	bsr.w	GetShifter
-	dc.w	$33C1,$0001,$8ADE
+	move.w	d1,$18ADE.l
 	bset	#$5,$FF800F.l
-.l21AAE	dc.w	$4A79,$0001,$8ADE
+.l21AAE	tst.w	$18ADE.l
 	bmi.w	.doh
 	bsr.w	Sub_3CD00
 	bsr.w	NewTicker3
@@ -181,9 +181,9 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bsr.w	waitxsr
 	btst	#$7,d1
 	bne.w	.clrz
-	dc.w	$4A79,$0001,$7FA6
+	tst.w	$17FA6.l
 	bne.w	.wait
-	dc.w	$4A79,$0001,$7FA8
+	tst.w	$17FA8.l
 	bne.w	.wait
 .clrz	st.b	$17CE2.l		;zamboni off
 	rts
@@ -191,14 +191,14 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	dc.w	$0004,$25B0,$0004,$2388,$0004,$2454,$0004,$2454
 	dc.w	$0004,$2454,$0004,$26C4
 InitScores						;initialize other games scores/period in playoffs. Called from StartGame
-	dc.w	$0C79,$0001,$0001,$8A9E
+	cmpi.w	#$1,$18A9E.l
 	bgt.w	rtss2
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.l21B6C	dc.w	$B279,$0001,$8A98
+.l21B6C	cmp.w	$18A98.l,d1
 	beq.w	.l21B96
 	btst	#$2,$E(a0)
 	bne.w	.l21B96
@@ -213,12 +213,12 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 	rts
 UpdateScores						;update ticker score values. Called from PeriodOver
 	bsr.w	GetShifter
-	dc.w	$33C1,$0001,$8ADE
+	move.w	d1,$18ADE.l
 	movea.l	#$18A18,a0
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.l21BB6	dc.w	$B279,$0001,$8A98
+.l21BB6	cmp.w	$18A98.l,d1
 	beq.w	.next
 	bclr	#$1,$E(a0)
 	btst	#$2,$E(a0)
@@ -294,13 +294,13 @@ NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3
 	dc.w	$000C,$000F,$0026,$0020,$000F
 Sub_3CCF2
 	moveq	#-1,d3
-	dc.w	$0C79,$01E0,$0001,$80E6
+	cmpi.w	#$1E0,$180E6.l
 	bgt.w	rtss2
 Sub_3CD00
-	dc.w	$3639,$0001,$8ADE
+	move.w	$18ADE.l,d3
 	bmi.w	rtss2
-	dc.w	$0479,$0001,$0001,$8ADE
-	dc.w	$B679,$0001,$8A98
+	subi.w	#$1,$18ADE.l
+	cmp.w	$18A98.l,d3
 	beq.w	Sub_3CD00
 CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next ticker game if a
 	
@@ -328,8 +328,8 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	String	'                        '
 	move.w	(sp),(printx).l
 	moveq	#$1,d0
-	dc.w	$D079,$0001,$8A9E
-	dc.w	$4A79,$0001,$8BFA
+	add.w	$18A9E.l,d0
+	tst.w	$18BFA.l
 	bne.w	.l21DA6
 	clr.w	d0
 .l21DA6	dc.w	$43FA,$0094
@@ -367,11 +367,11 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	moveq	#$2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print
-	dc.w	$0012,$4541,$2048,$6F63,$6B65,$7920,$4E69,$6768
-	dc.w	$7400,$0018,$5374,$616E,$6C65,$7920,$4375,$7020
-	dc.w	$5175,$616C,$6966,$6965,$7200,$000E,$5175,$6172
-	dc.w	$7465,$7266,$696E,$616C,$0018,$5374,$616E,$6C65
-	dc.w	$7920,$4375,$7020,$5365,$6D69,$6669,$6E61,$6C00
+	dc.b	$00,$12,'EA Hockey Nigh'
+	dc.b	't',$00,$00,$18,'Stanley Cup '
+	dc.b	'Qualifier',$00,$00,$0E,'Quar'
+	dc.b	'terfinal',$00,$18,'Stanle'
+	dc.b	'y Cup Semifinal',$00
 Sub_3CE8C
 	bsr.w	SetTickerAreaPosition
 	move.w	#$7FF,d2
@@ -434,27 +434,27 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	btst	#$7,d1
 	bne.w	.l22312
 	st.b	$17CE2.l
-	dc.w	$4279,$0001,$7CD8
+	clr.w	$17CD8.l
 	move.w	$0(a0),(HomeTeam).l
 	move.w	$2(a0),(VisTeam).l
 	move.l	a0,-(sp)
 	clr.w	$18374.l
 	clr.w	$186DA.l
-	dc.w	$4EB9,$0003,$F11E
+	jsr	(clearTeamStats).l
 	jsr	(restoreteams).l
-	dc.w	$50F9,$0001,$7F9E
-	dc.w	$50F9,$0001,$7FA0
-	dc.w	$4279,$0001,$7FA6
-	dc.w	$4279,$0001,$7FA8
+	st.b	$17F9E.l
+	st.b	$17FA0.l
+	clr.w	$17FA6.l
+	clr.w	$17FA8.l
 	moveq	#$78,d0
 	bsr.w	randomd0
 	addi.w	#$3C,d0
-	dc.w	$33C0,$0001,$80E6
+	move.w	d0,$180E6.l
 	movea.l	(sp),a0
 	move.w	$8(a0),$180E4.l
 	subi.w	#$1,$180E4.l
-	dc.w	$33E8,$000A,$0001,$8358
-	dc.w	$33E8,$000C,$0001,$86BE
+	move.w	$A(a0),$18358.l
+	move.w	$C(a0),$186BE.l
 	move.b	#$10,$17F68.l
 	btst	#$0,$180E5.l
 	beq.w	.l2201C
@@ -466,11 +466,11 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bset	#$3,(disflags).l
 	clr.w	$17E32.l
 	clr.b	$17ECE.l
-	dc.w	$50F9,$0001,$806E
+	st.b	$1806E.l
 	st.b	$17E38.l
 	st.b	$17E3C.l
 	jsr	$47DAC.l
-	bsr.w	Sub_3EB3C
+	bsr.w	setupice_highlight
 	move.w	#$1,$17468.l
 	bsr.w	ClrHor
 	move.w	#$0,$17468.l
@@ -499,21 +499,21 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .l2210C	btst	#$6,$FF800E.l
 	bne.b	.l2210C
 	bclr	#$7,$FF800F.l
-	dc.w	$3839,$0001,$8D56
+	move.w	$18D56.l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
-	dc.w	$4279,$0001,$7CEA
-	dc.w	$4279,$0001,$7CEE
+	clr.w	$17CEA.l
+	clr.w	$17CEE.l
 	bsr.w	ResetBench
 	movea.l	#tmstruct,a2
 	bsr.w	.l22326
 	adda.w	#$366,a2
 	bsr.w	.l22326
-	bsr.w	Sub_3F0C6
+	bsr.w	resetplstuff
 	moveq	#$B,d0
 	movea.l	#$3D3F6,a0
-	dc.w	$227C,$0001,$7480
+	movea.l	#$17480,a1
 .l22164	move.w	$34(a1),d1
 	btst	#$7,$62(a1)
 	bne.w	.l22176
@@ -527,7 +527,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dbra	d0,.l22164
 	bsr.w	Sub_3F03E
 	move.w	#$18,(palcount).l
-	dc.w	$33F9,$0001,$7474,$0001,$7476
+	move.w	(ScoutSubStatus).l,$17476.l
 	move.w	#$B4,-(sp)
 .l221AE	jsr	(DoGameFrame).l
 	btst	#$0,$17F68.l
@@ -539,8 +539,8 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bne.w	.l221DC
 	btst	#$7,d1
 	beq.w	.l221AE
-.l221DC	dc.w	$3039,$0001,$8358
-	dc.w	$B079,$0001,$86BE
+.l221DC	move.w	$18358.l,d0
+	cmp.w	$186BE.l,d0
 	bne.w	.l2224C
 .l221EC	btst	#$7,$FF800E.l
 	bne.b	.l221EC
@@ -555,27 +555,27 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bne.b	.l22226
 	bclr	#$7,$FF800F.l
 	andi.w	#$1,d0
-	dc.w	$D179,$0001,$8358
+	add.w	d0,$18358.l
 	eori.w	#$1,d0
-	dc.w	$D179,$0001,$86BE
+	add.w	d0,$186BE.l
 .l2224C	adda.w	#$2,sp
 	movea.l	(sp)+,a0
 	movem.l	d1/a0,-(sp)
 	jsr	$48208.l
 	jsr	$47DAC.l
 	movem.l	(sp)+,d1/a0
-	dc.w	$3179,$0001,$8358,$000A
-	dc.w	$3179,$0001,$86BE,$000C
-	bsr.w	Sub_36D0A
+	move.w	$18358.l,$A(a0)
+	move.w	$186BE.l,$C(a0)
+	bsr.w	forceblack
 	moveq	#$F,d0
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 .l22282	clr.w	$0(a0)
 	adda.w	#$80,a0
 	dbra	d0,.l22282
 	bsr.w	.l223D8
 	bsr.w	Sub_3F24C
 	bsr.w	SetHor
-	bsr.w	Sub_3DD16
+	bsr.w	setvideo
 	jsr	$2C1F8.l
 	jsr	(DrawMenuScreen).l
 	move.w	#$18,(palcount).l
@@ -608,7 +608,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .l2231E	bsr.w	.l2234A
 	bra.w	.l2230C
 .l22326	jsr	(reenergizeteam).l
-	bsr.w	Sub_3D426
+	bsr.w	setpersonel
 	bsr.w	forcepldata
 	st.b	$18(a2)
 	bclr	#$7,$17F7C.l
@@ -638,22 +638,22 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	rts
 .l223BA	move.w	#$557,d0
 	movea.l	#$17F68,a1
-	dc.w	$247C,$0000,$C45C
+	movea.l	#$C45C,a2
 .l223CA	move.w	(a1)+,(a2)+
 	dbra	d0,.l223CA
-	dc.w	$34F9,$0001,$80F0
+	move.w	$180F0.l,(a2)+
 	rts
 .l223D8	move.w	#$557,d0
 	movea.l	#$17F68,a2
-	dc.w	$227C,$0000,$C45C
+	movea.l	#$C45C,a1
 .l223E8	move.w	(a1)+,(a2)+
 	dbra	d0,.l223E8
-	dc.w	$33D9,$0001,$80F0
+	move.w	(a1)+,$180F0.l
 	rts
 	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4
 	dc.w	$0019,$FFD8,$0046,$FFB0,$0000,$00F0,$0022,$005A
 	dc.w	$FFC9,$0050,$0064,$0028,$FFF6,$000A,$FFCE,$0000
-Sub_3D426
+setpersonel
 	movem.l	d0-d5/a0-a4,-(sp)
 	movea.l	$22(a2),a3
 	moveq	#$5,d4
@@ -753,7 +753,7 @@ SetPlList						;create PlList of players who we want on the ice now. a2 = team s
 	beq.w	.l22570
 .l22584	dbra	d4,.l2252E
 	rts
-.l2258A	jsr	(Sub_2EDBC).l		;then try the players from d0 down
+.l2258A	jsr	(GetPlayerCount).l		;then try the players from d0 down
 	move.w	d0,d3
 .l22592	move.w	d3,d0		;d0 = candidate player number, d3 counts down
 	subi.w	#$1,d3
@@ -787,13 +787,13 @@ SetupPenaltyShot						;Penalty shot set up for team a2 (called from puckpenshot)
 	movea.l	$22(a2),a3
 	moveq	#$5,d4
 .l225EE	move.w	$52(a3),d0
-	dc.w	$B079,$0001,$9368
+	cmp.w	$19368.l,d0
 	beq.w	.l22618
-	dc.w	$B079,$0001,$936A
+	cmp.w	$1936A.l,d0
 	beq.w	.l22636
 	bset	#$2,$63(a3)		;set player unavailable
 	move.w	#$20,d0		;assgoaliebreakwait
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	bra.w	.l22652
 .l22618	bsr.w	Setplass
 	move.b	$61(a3),$17F9C.l
@@ -852,14 +852,14 @@ ResetBench						;remove all players from penalty box / put all players on their 
 									;(not the injured, -3 / -4). Counts the players left in the box in PBnum
 									;(home in the high nibble). .rb runs for the home team, then falls in for
 									;the visitors
-	dc.w	$4239,$0001,$8068
+	clr.b	$18068.l
 	moveq	#$10,d1
 	movea.l	#tmstruct,a0
 	bsr.w	.l226FA
 	moveq	#$1,d1
 	adda.w	#$366,a0		;change to Away Team
 .l226FA	moveq	#$32,d0		;$32 = (MaxRos-1)*2 = 50 decimal
-.l226FC	dc.w	$D339,$0001,$8068
+.l226FC	add.b	d1,$18068.l
 	tst.w	$68(a0,d0.w)
 	ble.w	.l2272A
 	btst	#$4,$68(a0,d0.w)		;test 3rd bit in tmpdst (4 decimal)
@@ -867,9 +867,9 @@ ResetBench						;remove all players from penalty box / put all players on their 
 	move.w	$68(a0,d0.w),d2		;move tmpdst into d2
 	andi.w	#$7FF,d2		;mask 7FF with d2. Passes lowest 11 bits
 	bne.w	.l2274A
-	dc.w	$9339,$0001,$8068
+	sub.b	d1,$18068.l
 	bra.w	.l2274A
-.l2272A	dc.w	$9339,$0001,$8068
+.l2272A	sub.b	d1,$18068.l
 	cmpi.w	#$FFFD,$68(a0,d0.w)		;compare -3 with tmpdst
 	beq.w	.l2274A
 	cmpi.w	#$FFFC,$68(a0,d0.w)		;compare -4 with tmpdst
@@ -883,7 +883,7 @@ Setplass						;set players (a3) initial assignment from .alist by position
 	bmi.w	rtss2
 	dc.w	$41FA,$000A
 	move.b	(a0,d0.w),d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 	dc.w	$0E02		;assgoalie
 setplayer						;bring player onto the ice and set his attributes. d3 = offset of player
 									;on roster, a3 = sortcord of player. Reads the roster bytes through

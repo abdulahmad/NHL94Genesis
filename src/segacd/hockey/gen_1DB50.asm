@@ -55,7 +55,7 @@ xyVmMap						;use printx/y/m to set vram address. Returns a0 = Vdata.
 	move.w	(printx).l,d0
 	move.w	(printy).l,d1
 	movea.l	#VmMAP1,a0
-	dc.w	$D0F9,$0001,$8D5E
+	adda.w	$18D5E.l,a0
 	move.w	$2(a0),d2
 	asl.w	d2,d1
 	add.w	d1,d0
@@ -158,7 +158,7 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movem.l	d0-d3/a0/a2-a3,-(sp)
-	dc.w	$267C,$0001,$8D42
+	movea.l	#$18D42,a3
 	btst	#$3,(sflags6).l
 	beq.w	.start
 	movea.l	#$17EA2,a3
@@ -172,7 +172,7 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	bgt.w	.nocom
 	neg.w	d0
 	asl.w	#$2,d0
-	dc.w	$247C,$0003,$8EB2
+	movea.l	#$38EB2,a2
 	movea.l	(a2,d0.w),a2
 	jsr	(a2)
 	bra.w	.l1DE92
@@ -231,7 +231,7 @@ ControlCode_SetMapAndPosition						;control code -8, next 4 bytes = attribute, m
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
-	dc.w	$33C0,$0001,$8D5E
+	move.w	d0,$18D5E.l
 	bra.w	xyVmMap
 .l1DF00	move.b	(a1)+,d2
 	andi.w	#$7,d2
@@ -287,7 +287,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
-	dc.w	$33C0,$0001,$8D5E
+	move.w	d0,$18D5E.l
 	move.b	(a1)+,d0
 	ext.w	d0
 	move.w	d0,(printx).l
@@ -314,7 +314,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	beq.w	.l1E044
 	add.w	$17EA2.l,d0
 	bra.w	.l1E04A
-.l1E044	dc.w	$D079,$0001,$8D42
+.l1E044	add.w	$18D42.l,d0
 .l1E04A	add.w	d2,d0
 .l1E04C	btst	#$7,$FF800E.l
 	bne.b	.l1E04C
@@ -507,7 +507,7 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
-	dc.w	$33C0,$0001,$8D5E
+	move.w	d0,$18D5E.l
 	move.b	(a1)+,d4
 	ext.w	d4
 	move.w	d4,(printx).l
@@ -561,7 +561,7 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	movem.l	d1/a0,-(sp)
 	move.w	d5,d0
 	movea.l	#VmMAP1,a0
-	dc.w	$D0F9,$0001,$8D5E
+	adda.w	$18D5E.l,a0
 	move.w	$2(a0),d1
 	asl.w	d1,d0
 	add.w	d4,d0
@@ -584,7 +584,7 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	rts
 AddSmallFont						;transfer smallfont.map tiles to vram. d4 = char to start tiles at, return
 	
-	dc.w	$33C4,$0001,$8D42
+	move.w	d4,$18D42.l
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
@@ -605,7 +605,7 @@ AddPenalty						;add penalty d0 (Penaltylist offset) for player a3. Ignored whil
 	bne.w	rtss2
 	cmpi.w	#$C,d0
 	beq.w	AddPenalty2
-	dc.w	$4A79,$0001,$8C08
+	tst.w	$18C08.l
 	beq.w	rtss2
 	btst	#$2,$63(a3)
 	bne.w	rtss2
@@ -625,17 +625,17 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 	move.w	#$C,-(sp)
 	btst	#$6,$62(a3)
 	beq.w	.l1E490
-	dc.w	$0679,$0014,$0001,$7CD8
+	addi.w	#$14,$17CD8.l
 	move.w	#$B,(sp)
 .l1E490	bsr.w	sfx
-.l1E494	dc.w	$227C,$0001,$8022
+.l1E494	movea.l	#$18022,a1
 	moveq	#$1F,d1
 .l1E49C	tst.w	(a1)+
 	dbeq	d1,.l1E49C
 	bne.w	.l1E4EC
 	move.b	$53(a3),-(a1)
 	move.b	d0,-(a1)
-	dc.w	$207C,$0004,$165C
+	movea.l	#$4165C,a0
 	adda.w	(a0,d0.w),a0
 	tst.b	$1(a0)
 	beq.w	.l1E4EC
@@ -682,41 +682,41 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 .l1E584	rts
 .l1E586	btst	#$2,$17F68.l
 	beq.w	rtss2
-	dc.w	$4A79,$0001,$8064
+	tst.w	$18064.l
 	bmi.w	InProgress
-	dc.w	$9F79,$0001,$8064
+	sub.w	d7,$18064.l
 	bpl.w	rtss2
 	bclr	#$3,$17F68.l
-	dc.w	$207C,$0001,$8022
+	movea.l	#$18022,a0
 .l1E5B4	tst.w	(a0)+
 	beq.w	rtss2
 	clr.w	d0
 	move.b	-$2(a0),d0
-	dc.w	$227C,$0004,$165C
+	movea.l	#$4165C,a1
 	adda.w	(a1,d0.w),a1
 	tst.b	$1(a1)
 	beq.w	.l1E5B4
 	bmi.w	.l1E5B4
 	bset	#$2,$17F6C.l
 	move.w	(ScoutSubStatus).l,-(sp)
-	bsr.w	Sub_36D0A
+	bsr.w	forceblack
 	move.w	(sp)+,(ScoutSubStatus).l
 	bsr.w	SetHor
-	dc.w	$3839,$0001,$8D56
+	move.w	$18D56.l,d4
 	movea.l	$47D20.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	bsr.w	Sub_3CCF2
 	bsr.w	NewTicker3
 	st.b	$17BE0.l
-	dc.w	$267C,$0001,$7B80
+	movea.l	#$17B80,a3
 	moveq	#$1A,d0
 	bsr.w	Sub_362D8
 	move.w	#$1C20,$40(a3)
-	dc.w	$50F9,$0001,$8070
-	dc.w	$4279,$0001,$806E
+	st.b	$18070.l
+	clr.w	$1806E.l
 	bsr.w	UpdatePA
-	dc.w	$33FC,$0032,$0001,$806E
+	move.w	#$32,$1806E.l
 	clr.w	d0
 	bsr.w	PushRef
 	move.w	#$18,(palcount).l
@@ -739,12 +739,12 @@ PenShotChk						;a3 = checker, a2 = player hit, d0 = penalty. If a2 is on a brea
 	move.w	$52(a2),d2
 	movem.w	d0-d1,-(sp)
 	move.w	d2,d0
-	dc.w	$4EB9,$0003,$96AE
+	jsr	(getBAplayerInfo).l
 	movem.w	(sp)+,d0-d1
 	bpl.w	.l1E6A0
 	bclr	#$3,$17F70.l
 	bra.w	.l1E666
-.l1E6A0	dc.w	$33C1,$0001,$9372
+.l1E6A0	move.w	d1,$19372.l
 	move.w	d1,d0		;return the penalty shot penalty
 .l1E6A8	movem.l	(sp)+,d1-d3/a0
 	rts
@@ -754,7 +754,7 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 	
 	
 	movem.l	d1-d3/a1,-(sp)
-	dc.w	$4A79,$0001,$8C08
+	tst.w	$18C08.l
 	beq.w	.l1E76A
 	bset	#$3,$17F70.l
 	movem.w	d0,-(sp)
@@ -773,17 +773,17 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 	bra.w	.l1E764
 .l1E6FE	move.w	d0,d1
 	move.w	(sp)+,d0
-	dc.w	$33C0,$0001,$9368
-	dc.w	$227C,$0001,$7480
+	move.w	d0,$19368.l
+	movea.l	#$17480,a1
 	move.w	d0,d3
 	asl.w	#$7,d3
-	dc.w	$33FC,$0000,$0001,$9366
+	move.w	#$0,$19366.l
 	btst	#$6,$62(a1,d3.w)
 	beq.w	.l1E72C
-	dc.w	$33FC,$0001,$0001,$9366
-.l1E72C	dc.w	$33FC,$0000,$0001,$936C
+	move.w	#$1,$19366.l
+.l1E72C	move.w	#$0,$1936C.l
 	move.b	$66(a1,d3.w),$1936D.l
-	dc.w	$33C1,$0001,$936A
+	move.w	d1,$1936A.l
 	asl.w	#$7,d1
 	move.w	#$0,$1936E.l
 	move.b	$66(a1,d1.w),$1936F.l
@@ -799,12 +799,12 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	
 	
 	
-	dc.w	$4A79,$0001,$806E
+	tst.w	$1806E.l
 	bpl.w	rtss2
-	dc.w	$4A79,$0001,$8070
+	tst.w	$18070.l
 	bpl.w	rtss2
 	movem.l	d0/a0-a3,-(sp)
-.l1E78A	dc.w	$207C,$0001,$8022
+.l1E78A	movea.l	#$18022,a0
 	tst.w	(a0)+
 	beq.w	.l1E924
 .l1E796	tst.w	(a0)+
@@ -816,7 +816,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	clr.w	d1
 	move.b	$1(a0),d1
 	asl.w	#$7,d1
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d1,a3
 	tst.w	$34(a3)
 	movea.l	(sp)+,a3
@@ -825,7 +825,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bra.w	.l1E964
 .l1E7CC	clr.w	d0
 	move.b	(a0),d0
-	dc.w	$227C,$0004,$165C
+	movea.l	#$4165C,a1
 	adda.w	(a1,d0.w),a1
 	bclr	#$5,$17F74.l
 	clr.w	d2
@@ -836,18 +836,18 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bne.w	.l1E800
 	bset	#$5,$17F74.l
 .l1E800	movem.l	d0-d1/a1-a4,-(sp)
-	bsr.w	Sub_3B51E
+	bsr.w	GetPeriodTimeRemaining
 	movea.l	#$1825C,a4
-	dc.w	$D8F9,$0001,$825A
-	dc.w	$0C79,$00EC,$0001,$825A
+	adda.w	$1825A.l,a4
+	cmpi.w	#$EC,$1825A.l
 	beq.w	.l1E828
-	dc.w	$0679,$0004,$0001,$825A
+	addi.w	#$4,$1825A.l
 .l1E828	move.w	d0,(a4)+
 	move.b	(a0),(a4)+
 	clr.w	d1
 	move.b	$1(a0),d1
 	asl.w	#$7,d1
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d1,a3
 	clr.w	d0
 	movea.l	#tmstruct,a2
@@ -861,7 +861,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	add.w	d2,$8(a2)
 	move.b	$66(a3),d0
 	move.b	d0,(a4)
-	dc.w	$33C0,$0001,$80EE
+	move.w	d0,$180EE.l
 	ext.w	d0
 	addi.w	#$104,d0
 	add.b	d2,(a2,d0.w)
@@ -897,28 +897,28 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	st.b	(a0)
 	movem.l	(sp)+,a0
 	move.w	#$C,d0
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	movem.l	(sp)+,d0-d1/a1-a4
-	bsr.w	Sub_39C1C
+	bsr.w	SetPA
 	bsr.w	USBoard
 	bra.w	.l1E964
 .l1E90E	clr.w	(a0)
 	btst	#$7,$17F6A.l
 	bne.w	.l1E78A
-	bsr.w	Sub_39C1C
+	bsr.w	SetPA
 	bra.w	.l1E964
 .l1E924	movea.l	#tmstruct,a2
 	bsr.w	InProgress_ap
 	adda.w	#$366,a2
 	bsr.w	InProgress_ap
 	bclr	#$2,$17F68.l
-	dc.w	$267C,$0001,$7B80
+	movea.l	#$17B80,a3
 	bclr	#$6,$17F70.l
 	move.w	#$1B,d0
 	btst	#$3,$17F70.l
 	beq.w	.l1E960
 	move.w	#$1E,d0		;puckshootout: penalty shot
-.l1E960	bsr.w	Sub_362E4
+.l1E960	bsr.w	assreplace
 .l1E964	movem.l	(sp)+,d0/a0-a3
 	rts
 InProgress_ap						;a2 = team. Clears tmpdst bit 5, counts players kept off the ice by
@@ -946,14 +946,14 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	
 	btst	#$7,$17F6A.l
 	bne.w	rtss2
-	dc.w	$207C,$0001,$8022
+	movea.l	#$18022,a0
 .l1E9BC	tst.w	(a0)+
 	beq.w	rtss2
 	btst	#$2,$17F68.l
 	bne.w	.l1EA08
 	clr.w	d0
 	move.b	-$2(a0),d0
-	dc.w	$227C,$0004,$165C
+	movea.l	#$4165C,a1
 	adda.w	(a1,d0.w),a1
 	tst.b	$1(a1)
 	beq.w	.l1EA04
@@ -970,19 +970,19 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	bne.w	.l1E9BC
 	clr.w	d0
 	move.b	-$2(a0),d0
-	dc.w	$227C,$0004,$165C
+	movea.l	#$4165C,a1
 	adda.w	(a1,d0.w),a1
 	clr.w	d1
 	move.b	$0(a1),d1
 	asl.w	#$5,d1
-	dc.w	$B279,$0001,$8064
+	cmp.w	$18064.l,d1
 	ble.w	.l1E9BC
-	dc.w	$33C1,$0001,$8064
+	move.w	d1,$18064.l
 	bra.w	.l1E9BC
 .l1EA3E	bset	#$3,$17F68.l
 	bne.w	.l1E9BC
 	move.w	#$2C,d0
-	bsr.w	Sub_39C1C
+	bsr.w	SetPA
 	bra.w	.l1E9BC
 Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spot from
 	
@@ -997,12 +997,12 @@ Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spo
 	move.w	$17ECC.l,d1
 	cmpi.b	#$6,-$2(a0)
 	beq.w	.l1EAC0
-	dc.w	$3039,$0001,$7B80
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B80.l,d0
+	move.w	$17B94.l,d1
 	cmpi.b	#$C,-$2(a0)
 	bne.w	.l1EAC0
 	move.l	a3,-(sp)
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	move.b	-$1(a0),d1
 	ext.w	d1
 	asl.w	#$7,d1
@@ -1037,10 +1037,10 @@ Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spo
 	move.w	d1,$17EE4.l
 	adda.w	#$4,sp
 	bsr.w	limitfo
-.l1EB20	dc.w	$4279,$0001,$8064
+.l1EB20	clr.w	$18064.l
 	bset	#$2,$17F68.l
 	jsr	$47DB0.l
 	move.w	#$3,-(sp)
 	bsr.w	sfx
 	move.w	#$A,d0		;whistle (92 used $26)
-	bra.w	Sub_39C1C
+	bra.w	SetPA

@@ -48,10 +48,10 @@ Sub_3D770
 	bgt.w	.l2284E
 	jsr	(GetPeriodTime).l
 	lsr.w	#$1,d0
-	dc.w	$B079,$0001,$80E6
+	cmp.w	$180E6.l,d0
 	bgt.w	.l22878
-.l2284E	dc.w	$3039,$0001,$8358
-	dc.w	$9079,$0001,$86BE
+.l2284E	move.w	$18358.l,d0
+	sub.w	$186BE.l,d0
 	beq.w	.l22870
 	btst	#$6,$62(a3)
 	beq.w	.l2286C
@@ -71,17 +71,17 @@ Sub_3D770
 	move.b	d3,$67(a3)
 	move.b	$1(a0),d3
 	andi.b	#$F,d3
-	dc.w	$33FC,$0003,$0001,$7E64
+	move.w	#$3,$17E64.l
 	jsr	(AttributeCalc).l
 	move.b	d3,$68(a3)
 	move.b	$2(a0),d3
 	lsr.b	#$4,d3
-	dc.w	$33FC,$0004,$0001,$7E64
+	move.w	#$4,$17E64.l
 	jsr	(AttributeCalc).l
 	move.b	d3,$69(a3)
 	move.b	$2(a0),d3
 	andi.b	#$F,d3
-	dc.w	$33FC,$0005,$0001,$7E64
+	move.w	#$5,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE0.l,d3
 	add.b	$18AE1.l,d3
@@ -95,7 +95,7 @@ Sub_3D770
 	move.b	d3,$6A(a3)
 	move.b	$3(a0),d3
 	lsr.b	#$4,d3
-	dc.w	$33FC,$0006,$0001,$7E64
+	move.w	#$6,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE3.l,d3
 	bsr.w	.l22AA2
@@ -107,12 +107,12 @@ Sub_3D770
 	move.b	$3(a0),$6C(a3)
 	andi.b	#$F,$6C(a3)
 	move.b	$6C(a3),d3
-	dc.w	$33FC,$0007,$0001,$7E64
+	move.w	#$7,$17E64.l
 	jsr	(AttributeCalc).l
 	move.b	d3,$6C(a3)
 	move.b	$4(a0),d3
 	lsr.b	#$4,d3
-	dc.w	$33FC,$0008,$0001,$7E64
+	move.w	#$8,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE2.l,d3
 	bsr.w	.l22AA2
@@ -127,7 +127,7 @@ Sub_3D770
 	andi.b	#$E,$74(a3)
 	move.b	$5(a0),d3
 	lsr.b	#$4,d3
-	dc.w	$33FC,$000A,$0001,$7E64
+	move.w	#$A,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE0.l,d3
 	add.b	$18AE1.l,d3
@@ -136,7 +136,7 @@ Sub_3D770
 	move.b	d3,$71(a3)
 	move.b	$5(a0),d3
 	andi.b	#$F,d3
-	dc.w	$33FC,$000B,$0001,$7E64
+	move.w	#$B,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE0.l,d3
 	add.b	$18AE1.l,d3
@@ -145,12 +145,12 @@ Sub_3D770
 	move.b	d3,$6D(a3)
 	move.b	$6(a0),d3
 	lsr.b	#$4,d3
-	dc.w	$33FC,$000C,$0001,$7E64
+	move.w	#$C,$17E64.l
 	jsr	(AttributeCalc).l
 	move.b	d3,$72(a3)
 	move.b	$6(a0),d3
 	andi.b	#$F,d3
-	dc.w	$33FC,$000D,$0001,$7E64
+	move.w	#$D,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE2.l,d3
 	add.b	$18AE2.l,d3
@@ -158,7 +158,7 @@ Sub_3D770
 	move.b	d3,$70(a3)
 	move.b	$7(a0),d3
 	lsr.b	#$4,d3
-	dc.w	$33FC,$000E,$0001,$7E64
+	move.w	#$E,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE0.l,d3
 	add.b	$18AE3.l,d3
@@ -167,7 +167,7 @@ Sub_3D770
 	move.b	$7(a0),$73(a3)
 	move.b	$73(a3),d3
 	andi.b	#$F,d3
-	dc.w	$33FC,$000F,$0001,$7E64
+	move.w	#$F,$17E64.l
 	jsr	(AttributeCalc).l
 	move.b	d3,$73(a3)
 	andi.b	#$F,$73(a3)
@@ -206,7 +206,7 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 	dc.w	$3239,$0001,$8D32,$6100,$9D0A,$2C79,$0001,$91CA
 	dc.w	$BDFC,$0001,$8D6A,$6700,$E428,$3226,$3026,$2066
 	dc.w	$6100,$9CF0,$BDFC,$0001,$8D6A,$6E00,$FFEE,$4E75
-Sub_3DBF0
+dodmalist
 	movea.l	$191CA.l,a6
 	cmpa.l	#$18D6A,a6
 	beq.w	rtss2
@@ -218,13 +218,13 @@ Sub_3DBF0
 	bgt.w	.l22C00
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_22C16.bin
-Sub_3DD16
+setvideo
 	movem.l	d0-d7/a0-a6,-(sp)
 .l22D1A	btst	#$0,(disflags).l
 	bne.w	.l22D1A
 	movea.l	#$18D6A,a5
 	bsr.w	updatescroll
-	dc.w	$2C7C,$000B,$BD30
+	movea.l	#$BBD30,a6
 	moveq	#$1,d6
 	bsr.w	checkfo
 	bsr.w	checksso
@@ -244,7 +244,7 @@ Sub_3DD16
 	move.l	a6,d0
 	subi.l	#$BBD30,d0
 	lsr.w	#$1,d0
-	dc.w	$33C0,$0001,$7F66
+	move.w	d0,$17F66.l
 	move.l	a5,$191CA.l
 	move.l	a5,$1AD96.l
 	bset	#$0,(disflags).l
@@ -257,14 +257,14 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	btst	#$7,$17F6A.l		;sfhor
 	bne.w	rtss2
 	moveq	#-64,d0		;-192+128 (#$FFFFFFC0)
-	dc.w	$9079,$0001,$7CEE
-	dc.w	$3239,$0001,$7CEA
-	dc.w	$33C0,$0001,$7CF0
-	dc.w	$33C1,$0001,$7CF2
-	dc.w	$4479,$0001,$7CF2
-	dc.w	$3839,$0001,$7CEC
+	sub.w	$17CEE.l,d0
+	move.w	$17CEA.l,d1
+	move.w	d0,$17CF0.l
+	move.w	d1,$17CF2.l
+	neg.w	$17CF2.l
+	move.w	$17CEC.l,d4
 	asr.w	#$3,d1
-	dc.w	$33C1,$0001,$7CEC
+	move.w	d1,$17CEC.l
 	moveq	#$1F,d3		;max lines to update
 	cmp.w	d4,d1
 	beq.w	rtss2		;same row as last frame
@@ -279,7 +279,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	addi.w	#$1E,d0
 	andi.w	#$1F,d0
 	asl.w	#$7,d0		;chars per row screen format
-	dc.w	$D079,$0001,$8D38
+	add.w	$18D38.l,d0
 	move.w	d0,$6(a5)		;vram address
 	move.w	#$1E,d0		;60-30
 	sub.w	d1,d0
@@ -298,7 +298,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	addi.w	#$1D,d0
 	andi.w	#$1F,d0
 	asl.w	#$7,d0
-	dc.w	$D079,$0001,$8D38
+	add.w	$18D38.l,d0
 	move.w	d0,$6(a5)
 	move.w	#$3D,d0
 	sub.w	d1,d0
@@ -346,7 +346,7 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	bne.w	rtss2
 	btst	#$4,(disflags).l		;face off flag
 	beq.w	rtss2
-	dc.w	$267C,$0001,$7CF8
+	movea.l	#$17CF8,a3
 	moveq	#$2,d0
 .loop	move.w	(a3),d4
 	bmi.w	.l22F98
@@ -361,7 +361,7 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	adda.w	(a2,d4.w),a2
 .loop2	move.w	$2(a2),d2
 	addi.w	#$80,d2
-	dc.w	$D479,$0001,$746E
+	add.w	$1746E.l,d2
 	move.w	d2,(a6)
 	move.w	(a2),d2
 	btst	#$3,$2(a3)		;x flip
@@ -373,7 +373,7 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	neg.w	d2
 	sub.w	(a2),d2
 .0	addi.w	#$80,d2
-	dc.w	$D479,$0001,$746C
+	add.w	$1746C.l,d2
 	move.w	d2,$6(a6)
 	move.b	$7(a2),$2(a6)
 	move.b	d6,$3(a6)
@@ -383,7 +383,7 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	move.w	$2(a3),d1
 	andi.w	#$F800,d1
 	eor.w	d1,d2
-	dc.w	$D479,$0001,$8D4C
+	add.w	$18D4C.l,d2
 	move.w	d2,$4(a6)
 	addi.w	#$1,d6
 	adda.w	#$8,a6
@@ -401,19 +401,19 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	lsr.w	#$2,d0
 	move.w	#$12A,d1		;y (92 128+200)
 	moveq	#$1,d2		;frame
-	dc.w	$3639,$0001,$8D56
-	bsr.w	Sub_3E028
+	move.w	$18D56.l,d3
+	bsr.w	SetSframe
 	move.w	d0,d2
 	lsr.w	#$1,d2
 	ext.l	d2
 	divu.w	#$3,d2
 	swap	d2
 	addi.w	#$2,d2		;frame 2 + (x/2 mod 3)
-	bsr.w	Sub_3E028
+	bsr.w	SetSframe
 	moveq	#$5,d2
-	dc.w	$3839,$0001,$8358
-	dc.w	$B879,$0001,$86BE
-	bls.w	Sub_3E028		;home not ahead: frame 5
+	move.w	$18358.l,d4
+	cmp.w	$186BE.l,d4
+	bls.w	SetSframe		;home not ahead: frame 5
 	move.w	d0,d2
 	subi.w	#$DA,d2
 	bpl.w	.pos
@@ -425,10 +425,10 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	moveq	#$18,d2
 .l23000	lea.l	$3E00E.l,a1
 	move.w	(a1,d2.w),d2
-	bra.w	Sub_3E028
+	bra.w	SetSframe
 	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
 	dc.w	$0007,$0008,$0007,$0006,$0005
-Sub_3E028
+SetSframe
 	cmpi.w	#$40,d6
 	bge.w	rtss2
 	movem.l	d0-d5/a0,-(sp)
@@ -464,17 +464,17 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	bne.w	.l231CC		;branch if so
 	movea.l	$47D2C.l,a1
 	adda.l	$4(a1),a1		;a1 = frame offset table
-	dc.w	$3839,$0001,$7CEE
-	dc.w	$3A39,$0001,$7CEA
+	move.w	$17CEE.l,d4
+	move.w	$17CEA.l,d5
 	btst	#$7,$17F6A.l
 	beq.w	.v
 	moveq	#-64,d4		;(#$FFFFFFC0)
 	move.l	#$100,d5
 .v	clr.w	d0		;d4/d5 = x/y of the view
-	dc.w	$1439,$0001,$8068
+	move.b	$18068.l,d2
 	moveq	#$1A,d3
 	bsr.w	.pb
-	dc.w	$1439,$0001,$8068
+	move.b	$18068.l,d2
 	lsr.w	#$4,d2		;high nibble
 	moveq	#$1D,d3		;frames 29+ (high nibble)
 	bsr.w	.pb
@@ -536,7 +536,7 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	move.w	$6(a0),d5
 	andi.w	#$F800,d5
 	add.w	$4(a0),d5
-	dc.w	$DA79,$0001,$8D4A
+	add.w	$18D4A.l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
 	addi.w	#$70,d5		;128-16
@@ -561,7 +561,7 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 	move.l	a1,-(sp)
 	jsr	(printz).l
 	String	CC_Font2Pri,$D,$5
-	dc.w	$3039,$0001,$80E6
+	move.w	$180E6.l,d0
 	ext.l	d0
 	divu.w	#$258,d0		;tens of minutes (600 seconds)
 	move.l	d0,-(sp)
@@ -610,13 +610,13 @@ Sub_3E29C
 	movea.l	(SmallFontMap).l,a1
 	adda.l	$4(a1),a1
 	move.w	$78(a1),d0
-	dc.w	$D079,$0001,$8D42
+	add.w	$18D42.l,d0
 	ori.w	#$8000,d0
-	dc.w	$33C0,$0001,$7ED4
-	dc.w	$3039,$0001,$80E6
+	move.w	d0,$17ED4.l
+	move.w	$180E6.l,d0
 	btst	#$1,$17F78.l
 	beq.w	.l232FC
-	dc.w	$3039,$0001,$93B6
+	move.w	$193B6.l,d0
 .l232FC	ext.l	d0
 	divu.w	#$A,d0
 	bsr.w	.l23360
@@ -638,7 +638,7 @@ Sub_3E29C
 	moveq	#$3,d2
 	btst	#$7,$17F6A.l
 	beq.w	.l23350
-	dc.w	$227C,$0001,$8D38
+	movea.l	#$18D38,a1
 	moveq	#$5,d0
 	moveq	#$D,d2
 .l23350	move.w	$2(a1),d1
@@ -651,7 +651,7 @@ Sub_3E29C
 .l23360	swap	d0
 	asl.w	#$1,d0
 	move.w	$64(a1,d0.w),d0
-	dc.w	$D079,$0001,$8D42
+	add.w	$18D42.l,d0
 	ori.w	#$8000,d0
 	move.w	d0,-(a0)
 	swap	d0
@@ -672,13 +672,13 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	adda.w	#$14,a3		;ssosize
 	move.w	#$183,d3
 	bsr.w	.ca
-	dc.w	$4A79,$0001,$7FAA
+	tst.w	$17FAA.l
 	beq.w	rtss2		;on screen: no arrow
 	movea.l	#$17D74,a0
 	adda.w	#$14,a3
 	move.w	#$346,d3
 	bsr.w	.ca
-	dc.w	$4A79,$0001,$7FAC
+	tst.w	$17FAC.l
 	beq.w	rtss2
 	movea.l	#$17D90,a0
 	adda.w	#$14,a3
@@ -709,8 +709,8 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	neg.w	d0
 	subi.w	#$C5,d1		;horoff
 	bra.w	.hord
-.l23446	dc.w	$9079,$0001,$7CEE
-	dc.w	$9279,$0001,$7CEA
+.l23446	sub.w	$17CEE.l,d0
+	sub.w	$17CEA.l,d1
 .hord	clr.w	d2
 	cmpi.w	#$74,d0		;.xoff = 116
 	blt.w	.8
@@ -744,7 +744,7 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	add.w	$4(a1,d2.w),d3
 	move.w	d3,$6(a3)
 	move.w	$6(a1,d2.w),$4(a3)		;flip bits
-	bra.w	Sub_3E6E6
+	bra.w	addframe2
 	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
 	dc.w	$0074,$0000,$0002,$0000,$0074,$FF9C,$0001,$1000		;.xspot = 116, .yspot = 100
 	dc.w	$0000,$FF9C,$0000,$1000,$FF8C,$FF9C,$0001,$1800
@@ -756,9 +756,9 @@ setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOli
 .top	clr.w	d1
 	move.b	(a4)+,d1		;move next sortcord into d1
 	asl.w	#$6,d1		;mult by 64
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d1,a3
-	bsr.w	Sub_3E6BC
+	bsr.w	addframe
 	dbra	d0,.top
 	rts
 setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), moving
@@ -767,7 +767,7 @@ setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), mov
 	move.w	#$6,d0		;ffo obj -1
 	movea.l	#$17D04,a3		;move start of struct into a3
 .top	movea.l	a6,a0		;per object: a0 = first sprite this object writes
-	bsr.w	Sub_3E6BC
+	bsr.w	addframe
 	cmpa.l	a6,a0
 	beq.w	.next		;no sprites added
 	move.w	$2(a3),d1		;x offset (set by QueuePadLabel)
@@ -795,11 +795,11 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 .0	move.w	#$5,d4
 	movea.l	#$17D04,a0
 	movea.l	#$17DCA,a1		;last label code per pad
-	dc.w	$247C,$0001,$7480
-	dc.w	$3639,$0001,$7DC8
+	movea.l	#$17480,a2
+	move.w	$17DC8.l,d3
 .l235B0	cmpi.w	#$1,d4
 	bne.w	.nibble
-	dc.w	$3639,$0001,$7DD6
+	move.w	$17DD6.l,d3
 	lsr.w	#$4,d3
 	bra.w	.nibble		;to the next instruction
 .nibble	move.w	d3,d0		;per pad: d3 holds the remaining nibbles
@@ -876,8 +876,8 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 	asl.w	#$5,d0
 	move.w	d0,(a5)+		;vram destination
 	rts
-	dc.w	$2044,$444C,$4352,$5800
-Sub_3E6BC
+	dc.b	' DDLCRX',$00
+addframe
 	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
 	move.w	$14(a3),d1
@@ -886,6 +886,6 @@ Sub_3E6BC
 	bsr.w	find3d
 	cmpi.w	#$4E20,d1
 	beq.w	.l236E0
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 .l236E0	movem.l	(sp)+,d0-d2
 	rts

@@ -1,5 +1,5 @@
 Sub_338E8
-	bsr.w	Sub_338B6
+	bsr.w	chkpk
 	bne.w	Sub_33986
 	tst.w	$17E34.l
 	beq.w	Sub_33986
@@ -33,16 +33,16 @@ Sub_33986
 	btst	#$1,$64(a3)
 	beq.w	.l189D2
 	move.w	#$1E,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	addi.w	#$82,d0
-	dc.w	$B079,$0001,$7B94
+	cmp.w	$17B94.l,d0
 	blt.w	.l189B8
 	neg.w	d0
-	dc.w	$B079,$0001,$7B94
+	cmp.w	$17B94.l,d0
 	bgt.w	.l189B8
 	bra.w	.l189D2
 .l189B8	move.w	#$2,d0
-	dc.w	$4EB9,$0003,$7044
+	jsr	(randomd0s).l
 	add.w	$54(a3),d0
 	andi.w	#$7,d0
 	move.w	d0,$54(a3)
@@ -57,8 +57,8 @@ Sub_33986
 	btst	#$7,$62(a3)
 	bne.w	.l189F0
 	neg.w	d1
-.l189F0	dc.w	$9279,$0001,$7B94
-	dc.w	$3039,$0001,$7B80
+.l189F0	sub.w	$17B94.l,d1
+	move.w	$17B80.l,d0
 	neg.w	d0
 	movem.w	d0-d1,-(sp)
 	muls.w	d0,d0
@@ -71,16 +71,16 @@ Sub_33986
 	bsr.w	vtoa
 	move.w	d0,d5
 	moveq	#$5,d3
-	dc.w	$227C,$0001,$7480
+	movea.l	#$17480,a1
 	cmpi.w	#$6,$52(a3)
 	bge.w	.l18A34
 	adda.w	#$300,a1
 .l18A34	tst.w	$34(a1)
 	beq.w	.l18A60
 	move.w	$0(a1),d0
-	dc.w	$9079,$0001,$7B80
+	sub.w	$17B80.l,d0
 	move.w	$14(a1),d1
-	dc.w	$9279,$0001,$7B94
+	sub.w	$17B94.l,d1
 	bsr.w	vtoa
 	cmp.w	d5,d0
 	bne.w	.l18A6E
@@ -97,25 +97,25 @@ Sub_33986
 	btst	#$0,$70(a3)
 	beq.w	.l18A92
 	cmpi.w	#$7,d0
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 	bra.w	.l18A9A
 .l18A92	cmpi.w	#$8,d0
-	bgt.w	Sub_31AB6
-.l18A9A	dc.w	$3039,$0001,$7B94
+	bgt.w	check4benchExit
+.l18A9A	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
 	bne.w	.l18AAC
 	neg.w	d0
 .l18AAC	tst.w	d0
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 	move.w	#$108,d1
 	sub.w	d0,d1
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 	btst	#$7,$17F6C.l
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 CompShoot						;computer shot: drop the return address and aim from the puck's distance
 									;to the goal line
 	adda.w	#$4,sp
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
 	bne.w	.ds0
 	neg.w	d0
@@ -127,7 +127,7 @@ CompShoot						;computer shot: drop the return address and aim from the puck's d
 	moveq	#$14,d1
 .0	move.w	d1,$42(a3)
 	moveq	#$12,d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 chk4pass						;player a3 looks for good pass (computer controlled)
 	tst.w	$17E34.l
 	bne.w	.dp0		;an opponent is close: always consider a pass
@@ -135,7 +135,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	add.b	$70(a3),d0
 	bsr.w	randomd0		;0 <= d0 < $10 + odds
 	cmpi.w	#$C,d0
-	bgt.w	Sub_31AB6
+	bgt.w	check4benchExit
 .dp0	moveq	#$6,d0		;Set up pass assignment
 	bsr.w	randomd0		;d0 = random teammate index 0-5
 	cmpi.w	#$6,$52(a3)
@@ -143,25 +143,25 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	addi.w	#$6,d0
 .0	tst.w	$34(a3)
 	beq.w	.1
-	dc.w	$0C79,$0028,$0001,$7B80
+	cmpi.w	#$28,$17B80.l
 	bgt.w	.1
-	dc.w	$0C79,$FFD8,$0001,$7B80
+	cmpi.w	#$FFD8,$17B80.l
 	blt.w	.1
-	dc.w	$0C79,$00CC,$0001,$7B94
-	bgt.w	Sub_31AB6
-	dc.w	$0C79,$FF34,$0001,$7B94
-	blt.w	Sub_31AB6
+	cmpi.w	#$CC,$17B94.l
+	bgt.w	check4benchExit
+	cmpi.w	#$FF34,$17B94.l
+	blt.w	check4benchExit
 .1	cmp.w	$52(a3),d0
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	asl.w	#$7,d0		;d0 * SCstruct ($80)
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	adda.w	d0,a0		;a0 = receiver sort object
 	tst.w	$34(a0)
-	ble.w	Sub_31AB6
+	ble.w	check4benchExit
 	btst	#$2,$63(a0)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	btst	#$5,$62(a0)
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	move.w	$14(a0),d0		;check for pass across blue line
 	move.w	$14(a3),d1		;d0 = receiver y, d1 = my y (toward the goal I shoot at)
 	btst	#$7,$62(a3)
@@ -175,32 +175,32 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	subi.w	#$58,d1
 	eor.w	d0,d1		;sign differs if the pass crosses the blue line
 	movem.w	(sp)+,d0-d1
-	bmi.w	Sub_31AB6
+	bmi.w	check4benchExit
 .oko	cmpi.w	#$58,d0
 	bgt.w	.ok
 	sub.w	d1,d0
 	cmpi.w	#$FFF1,d0
-	blt.w	Sub_31AB6
+	blt.w	check4benchExit
 .ok	move.w	$0(a0),d0		;receiver accepted: get the pass direction
-	dc.w	$9079,$0001,$7B80
+	sub.w	$17B80.l,d0
 	move.w	$14(a0),d1
-	dc.w	$9279,$0001,$7B94
+	sub.w	$17B94.l,d1
 	movem.w	d0-d1,-(sp)
 	bsr.w	vtoa
-	dc.w	$33C0,$0001,$7E2C
+	move.w	d0,$17E2C.l
 	movem.w	(sp)+,d1-d2
 	muls.w	d1,d1
 	muls.w	d2,d2
 	add.l	d1,d2		;d2 = squared distance to the receiver
 	moveq	#$5,d3
-	dc.w	$227C,$0001,$7480
+	movea.l	#$17480,a1
 	cmpi.w	#$6,$52(a3)
 	bge.w	.co0
 	adda.w	#$300,a1		;loop over the 6 opponents
 .co0	move.w	$0(a1),d0		;next opponent: is he in the pass lane?
-	dc.w	$9079,$0001,$7B80
+	sub.w	$17B80.l,d0
 	move.w	$14(a1),d1
-	dc.w	$9279,$0001,$7B94
+	sub.w	$17B94.l,d1
 	movem.w	d0-d1,-(sp)
 	muls.w	d0,d0
 	muls.w	d1,d1
@@ -209,15 +209,15 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	movem.w	(sp)+,d0-d1
 	bhi.w	.l18C52		;farther than the receiver: ignore
 	bsr.w	vtoa
-	dc.w	$B079,$0001,$7E2C
-	beq.w	Sub_31AB6
+	cmp.w	$17E2C.l,d0
+	beq.w	check4benchExit
 .l18C52	adda.w	#$80,a1
 	dbra	d3,.co0
 	bsr.w	dopass		;lane is clear: pass in passdir
 	tst.w	$34(a3)
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	adda.w	#$4,sp
-	bra.w	Sub_362C4
+	bra.w	assexit
 	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439
 	dc.w	$0001,$7BA8,$4882,$D46B,$0000,$9479,$0001,$7B80
 	dc.w	$0C42,$0028,$6E00,$DE22,$0C42,$FFD8,$6D00,$DE1A
@@ -232,12 +232,12 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	dc.w	$4E75
 checkob						;bring up little warning ref if a player on your team is over blue line
 	btst	#$5,$17F68.l
-	beq.w	Sub_31AB6
+	beq.w	check4benchExit
 	btst	#$2,$17F70.l
 	bne.w	.l18D94
 	movem.l	d0-d1/a0,-(sp)
 	moveq	#$5,d0		;6 players of a3's team
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	cmpi.w	#$6,$52(a3)
 	blt.w	.0
 	adda.w	#$300,a0		;a0 = first sort object of a3's team
@@ -245,7 +245,7 @@ checkob						;bring up little warning ref if a player on your team is over blue 
 	btst	#$7,$62(a3)
 	bne.w	.l18DB6		;shooting at the top goal: mirrored tests below
 	neg.w	d1		;d1 = -$5C
-	dc.w	$B279,$0001,$7B94
+	cmp.w	$17B94.l,d1
 	bgt.w	.nob		;puck already across the line: nobody can be offside
 .bottom	tst.w	$34(a0)		;loop over the team, skipping negative positions
 	bmi.w	.bn
@@ -261,11 +261,11 @@ checkob						;bring up little warning ref if a player on your team is over blue 
 .ob	moveq	#$6,d0
 	bset	#$7,$17F6C.l		;someone is offsides: show the little ref
 	bne.w	.ex		;already shown
-.l18DA4	dc.w	$4A79,$0001,$806E
+.l18DA4	tst.w	$1806E.l
 	bpl.w	.ex
 	bsr.w	PushRef
 	bra.w	.ex
-.l18DB6	dc.w	$B279,$0001,$7B94
+.l18DB6	cmp.w	$17B94.l,d1
 	blt.w	.nob
 .top1	tst.w	$34(a0)		;loop over the team's players (top goal)
 	bmi.w	.tn
@@ -281,7 +281,7 @@ assbreakaway						;assignment for a breakaway: the puck carrier skates in, anyon
 	beq.w	assnearest		;branch if puck carrier
 L18DEA	bclr	#$1,$64(a3)		;clear breakaway bit
 	move.w	#$11,d0		;11 - assnearest
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	bra.w	L18E06
 assnearest						;this is a special assignment used for the player who is nearest the puck
 									;but doesn't have it. Assignment anearest ($11)
@@ -302,14 +302,14 @@ L18E06	bclr	#$2,$17F74.l
 	jsr	(BreakawayOffsidesFlagSet).l
 	beq.w	.chkbreak
 	move.w	#$22,d0		;22 - assbreakaway if flag set
-	bsr.w	Sub_362E4		;assreplace with assbreakaway
+	bsr.w	assreplace		;assreplace with assbreakaway
 	bra.w	.chkbreak
 .chkbreak	bclr	#$1,$62(a3)		;pfna - clear new assignment
 	beq.w	.nna
 	btst	#$1,$64(a3)		;check if breakaway
 	beq.w	.chkbreak2		;jump if not
 	move.w	#$2,-(sp)		;ding SFX
-	dc.w	$4EB9,$0003,$710C
+	jsr	(sfx).l
 .chkbreak2	btst	#$1,$64(a3)		;check if breakaway
 	beq.w	.nobreak		;jump if not
 	movem.l	a2,-(sp)		;push a2 to stack
@@ -318,7 +318,7 @@ L18E06	bclr	#$2,$17F74.l
 	beq.w	.addcrowd		;jump if home
 	movea.l	#awtmstruct,a2		;put Away Team Struct into a2
 .addcrowd	addi.w	#$1,$35A(a2)		;add to breakaway attempt
-	dc.w	$0679,$0014,$0001,$7CD8
+	addi.w	#$14,$17CD8.l
 	addi.w	#$C8,(Crowdlevel).l		;add to crowd level
 	movem.l	(sp)+,a2		;pop off stack into a2
 .nobreak	clr.w	$44(a3)		;clear temp3
@@ -328,7 +328,7 @@ L18E06	bclr	#$2,$17F74.l
 	cmp.w	$17BE0.l,d1
 	bne.w	.nopc		;jumps if not
 	tst.w	$34(a3)		;check if goalie
-	beq.w	Sub_32926		;branch if goalie
+	beq.w	checkanim		;branch if goalie
 	moveq	#$10,d0
 	btst	#$3,$62(a3)		;pfjoycon - check if controlled
 	beq.w	Sub_362D8		;jump if not
@@ -363,7 +363,7 @@ L18E06	bclr	#$2,$17F74.l
 	move.w	$17BE0.l,d1		;move puck carrier SCnum into d1
 	bmi.w	.np		;branch if no puck carrier
 	asl.w	#$7,d1		;scsize
-	dc.w	$227C,$0001,$7480
+	movea.l	#$17480,a1
 	adda.w	d1,a1		;use d1 as offset
 	move.b	$62(a1),d0		;pflags of puck carrier
 	move.b	$62(a3),d1		;pflags of current player
@@ -385,13 +385,13 @@ L18E06	bclr	#$2,$17F74.l
 	move.l	a0,-(sp)		;push onto stack
 	bsr.w	Sub_36362		;get hot spot
 	add.w	$0(a0),d0		;Xpos to d0
-	dc.w	$9079,$0001,$7B80
+	sub.w	$17B80.l,d0
 	add.w	$14(a0),d1
-	dc.w	$9279,$0001,$7B94
-	dc.w	$3639,$0001,$7BA8
+	sub.w	$17B94.l,d1
+	move.w	$17BA8.l,d3
 	asr.w	#$6,d3
 	sub.w	d3,d0
-	dc.w	$3639,$0001,$7BAA
+	move.w	$17BAA.l,d3
 	asr.w	#$6,d3		;divide by 64
 	sub.w	d3,d1		;sub d3 from d1 (Y distance between player and puck)
 	muls.w	d0,d0		;square d0
@@ -419,9 +419,9 @@ L18E06	bclr	#$2,$17F74.l
 	moveq	#$11,d0
 	bsr.w	Sub_362D8		;... and give him the assnearest assignment
 	exg.l	a1,a3
-	bra.w	Sub_362C4		;I (old a3) drop this assignment
+	bra.w	assexit		;I (old a3) drop this assignment
 .de1	btst	#$5,$62(a3)		;pfalock - check if locked in animation
-	bne.w	Sub_31AB6		;exit if locked
+	bne.w	check4benchExit		;exit if locked
 	moveq	#$2,d1		;move 2 into d1
 	cmpi.w	#$190,d2		;compare $190 (20^2) to d2. d2 = distance to puck^2
 	bhi.w	.nfar		;branch if d2 higher
@@ -442,15 +442,15 @@ L18E06	bclr	#$2,$17F74.l
 	bhi.w	.nodec		;branch if d0 more than 2
 	move.w	#$F0,$44(a3)		;move 240 dec into temp3
 .nodec	btst	#$5,$62(a3)		;pfalock - check if anim lock
-	bne.w	Sub_31AB6		;exit if locked
+	bne.w	check4benchExit		;exit if locked
 	btst	#$2,$17F70.l		;check bit 2
 	beq.w	.gmclock		;jump if not set
 	btst	#$5,$17F70.l		;check bit 5
 	beq.w	.nodec2		;jump if not set
 .gmclock	btst	#$0,$17F68.l		;check if clock running
-	bne.w	Sub_31EB2		;branch if not
+	bne.w	donothing		;branch if not
 .nodec2	btst	#$3,$62(a3)		;pfjoycon - check if controlled
-	bne.w	Sub_31AB6		;jump if controlled
+	bne.w	check4benchExit		;jump if controlled
 	btst	#$2,$32(a2)		;tmfmid of tmflags(a2)
 	bne.w	.nodec22
 	tst.w	$17BE0.l		;check if theres a puck carrier
@@ -501,7 +501,7 @@ L18E06	bclr	#$2,$17F74.l
 	bsr.w	skateto
 .chkslot	btst	#$5,(sflags6).l
 	beq.w	.chkcont
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	move.w	$14(a3),d2		;Ypos into d2
 	tst.w	d0		;check if d0 is 0
 	bpl.w	.pospuck		;branch if positive
@@ -511,7 +511,7 @@ L18E06	bclr	#$2,$17F74.l
 	cmpi.w	#$A,d2		;check difference with A (10 decimal)
 	blt.w	.exit
 	move.w	$0(a3),d0		;Xpos of player (gets here if player is between net and puck carrier)
-	dc.w	$9079,$0001,$7B80
+	sub.w	$17B80.l,d0
 	bpl.w	.chkx		;branch if positive difference
 	neg.w	d0		;make d0 negative
 .chkx	cmpi.w	#$F,d0		;compare F (15 dec) with Xpos difference
@@ -541,14 +541,14 @@ L1922A	tst.w	$34(a3)		;check if goalie
 	rts
 .player	move.w	#$28,d0		;start with 28 hex (40 decimal)
 	sub.b	$75(a3),d0		;subtract Chk from d0 (Chk max is 1E or 30 decimal)
-	dc.w	$4A79,$0001,$8C08
+	tst.w	$18C08.l
 	beq.w	.nopen		;branch if not on
 	asl.w	#$1,d0		;mult by 2
 .nopen	bsr.w	randomd0		;RNG d0
 	cmpi.w	#$6,d0		;compare 6 to d0
-	bhi.w	Sub_31AB6		;exit if d0 higher than 6
+	bhi.w	check4benchExit		;exit if d0 higher than 6
 	moveq	#$5,d2		;move 5 into d2
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	cmpi.w	#$6,$52(a3)		;check if player on home team
 	bge.w	.0		;branch if away
 	adda.w	#$300,a0		;add if home (checks opposite team in loop)
@@ -595,11 +595,11 @@ L1922A	tst.w	$34(a3)		;check if goalie
 	rts
 asspassrec						;assignment for catching a pass (apassrec)
 	btst	#$5,$62(a3)		;pfalock - animation lock
-	bne.w	Sub_31AB6		;exit if locked
+	bne.w	check4benchExit		;exit if locked
 	btst	#$0,$17F68.l		;gmclock - check if clock running
-	bne.w	Sub_31EB2		;exit if clock stopped
+	bne.w	donothing		;exit if clock stopped
 	btst	#$3,$62(a3)		;pfjoycon - joystick controlled?
-	bne.w	Sub_362C4		;exit if controlled
+	bne.w	assexit		;exit if controlled
 	bclr	#$1,$62(a3)		;#pfna - clear new assignment
 	beq.w	.nna
 	bset	#$0,$62(a3)		;#pfdoff - set decceleration off
@@ -611,7 +611,7 @@ asspassrec						;assignment for catching a pass (apassrec)
 	addi.w	#$1,$46(a3)		;add to temp4
 	beq.w	.l19388		;branch if temp4 is zero
 	bpl.w	.ex2		;branch if temp4 is positive
-.l19388	dc.w	$4A79,$0001,$7EBC
+.l19388	tst.w	$17EBC.l
 	bpl.w	.ex2
 	tst.w	$34(a3)		;test if goalie
 	beq.w	.ex2		;exit if goalie
@@ -621,9 +621,9 @@ asspassrec						;assignment for catching a pass (apassrec)
 	btst	#$6,$62(a3)		;check if home or away
 	beq.w	.l193B2
 	move.w	#$2,d0		;away team
-.l193B2	dc.w	$B079,$0001,$7FA6
+.l193B2	cmp.w	$17FA6.l,d0
 	beq.w	.pop
-	dc.w	$B079,$0001,$7FA8
+	cmp.w	$17FA8.l,d0
 	beq.w	.pop		;branch if so
 	jsr	(PuckOnAttackHalf).l
 	beq.w	.pop
@@ -637,27 +637,27 @@ asspassrec						;assignment for catching a pass (apassrec)
 	bgt.w	.nozone
 	bra.w	.atkzone
 .nozone	move.w	#$8,d0		;outside of attack zone
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	tst.w	d0		;check if d0 is zero
 	bne.w	.pop
 .atkzone	move.w	(sp)+,d0
-	dc.w	$33FC,$FFFF,$0001,$AD7A
+	move.w	#$FFFF,$1AD7A.l
 	move.w	#$23,d0
-	dc.w	$4EF9,$0003,$62E4
+	jmp	(assreplace).l
 .pop	move.w	(sp)+,d0
 .ex2	sub.b	d7,$40(a3)
-	bpl.w	Sub_31AB6
+	bpl.w	check4benchExit
 .exit	bclr	#$0,$62(a3)
-	bra.w	Sub_362C4
+	bra.w	assexit
 	dc.w	$302B,$0044,$322B,$0046,$41FA,$7BCA,$6000,$1BCE
 assshoot						;assignment for computer shooting. Assignment ashoot ($12)
 	btst	#$5,$62(a3)		;pfalock - animation locked
-	bne.w	Sub_31AB6
+	bne.w	check4benchExit
 	bclr	#$1,$62(a3)		;clear pfna
 	beq.w	.nna
-	bra.w	Sub_313CA		;first frame: start the shot (temp2 = swing time set by CompShoot)
+	bra.w	SetShotMode		;first frame: start the shot (temp2 = swing time set by CompShoot)
 .nna	btst	#$3,$17F6A.l		;#sfssdir
-	beq.w	Sub_362C4		;no: the shot is done
+	beq.w	assexit		;no: the shot is done
 	clr.w	d2
 	sub.w	d7,$42(a3)		;count the swing time down
 	bpl.w	ShotMode		;still swinging: feed ShotMode no buttons
@@ -679,7 +679,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 .startattempt	jsr	(StartShootoutPath).l
 	move.l	a2,-(sp)
 	movea.l	#tmstruct,a2
-	dc.w	$4A79,$0001,$9366
+	tst.w	$19366.l
 	beq.w	.countattempt
 	movea.l	#awtmstruct,a2
 .countattempt	addi.w	#$1,$362(a2)
@@ -694,49 +694,49 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	bclr	#$1,$62(a3)
 	btst	#$0,$17F78.l
 	beq.w	.l19556
-	dc.w	$4A79,$0001,$A436
+	tst.w	$1A436.l
 	bne.w	.setstopped
-	dc.w	$4A79,$0001,$A428
+	tst.w	$1A428.l
 	bne.w	.setstopped
-	dc.w	$33F9,$0001,$7FAE,$0001,$A56C
-	dc.w	$33FC,$0002,$0001,$A56E
+	move.w	(HomeTeam).l,$1A56C.l
+	move.w	#$2,$1A56E.l
 	jsr	(ChooseSong).l
-	dc.w	$3F39,$0001,$A56A
+	move.w	$1A56A.l,-(sp)
 	bra.w	.playsong
-.l19556	dc.w	$33F9,$0001,$7FAE,$0001,$A56C
-	dc.w	$33FC,$0002,$0001,$A56E
+.l19556	move.w	(HomeTeam).l,$1A56C.l
+	move.w	#$2,$1A56E.l
 	jsr	(ChooseSong).l
-	dc.w	$3F39,$0001,$A56A
+	move.w	$1A56A.l,-(sp)
 .playsong	bsr.w	song
 .setstopped	bset	#$0,$17F68.l
 	bset	#$1,$17F78.l
-	dc.w	$4279,$0001,$7BA8
-	dc.w	$4279,$0001,$7BAA
-	dc.w	$33FC,$0019,$0001,$93B6
+	clr.w	$17BA8.l
+	clr.w	$17BAA.l
+	move.w	#$19,$193B6.l
 	bsr.w	ReturnGoalies
 	st.b	$40(a3)
 	st.b	$42(a3)
 .selectskater	bset	#$2,$17F70.l
 	movem.w	d1-d2,-(sp)
-	dc.w	$4EB9,$0003,$4666
+	jsr	(SelectPenaltyShotSkater).l
 	bmi.w	.noeligible
 	movem.w	(sp)+,d1-d2
 	bra.w	.checkgoalie
 .noeligible	movem.w	(sp)+,d1-d2
 	bclr	#$2,$17F70.l
 	move.w	#$1B,d0		;puckfaceoff
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	rts
 .checkgoalie	movem.w	d1-d2,-(sp)
-	dc.w	$3039,$0001,$936A
-	dc.w	$247C,$0001,$7480
+	move.w	$1936A.l,d0
+	movea.l	#$17480,a2
 	asl.w	#$7,d0
 	adda.w	d0,a2
 	tst.w	$34(a2)
 	bne.w	.l19602
 	btst	#$2,$63(a2)
 	beq.w	.startpenshot
-.l19602	dc.w	$3039,$0001,$936A
+.l19602	move.w	$1936A.l,d0
 	move.w	#$6,d2
 .goalieloop	subi.w	#$1,d2
 	bmi.w	.noeligible
@@ -747,7 +747,7 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 .wraphome	cmpi.w	#$5,d0
 	bne.w	.l19630
 	move.w	#$B,d0
-.l19630	dc.w	$247C,$0001,$7480
+.l19630	movea.l	#$17480,a2
 	move.w	d0,d1
 	asl.w	#$7,d1
 	adda.w	d1,a2
@@ -755,8 +755,8 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	bne.w	.goalieloop
 	btst	#$2,$63(a2)
 	bne.w	.goalieloop
-	dc.w	$33C0,$0001,$936A
+	move.w	d0,$1936A.l
 .startpenshot	movem.w	(sp)+,d1-d2
 	movea.l	#tmstruct,a2
 	move.w	#$1F,d0		;puckpenshot
-	bra.w	Sub_362E4
+	bra.w	assreplace

@@ -17,40 +17,40 @@ Sub_351D8
 	bra.w	Sub_35154
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
 ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer for each human team
-	dc.w	$33FC,$FFFF,$0001,$7F9E
-	dc.w	$33FC,$FFFF,$0001,$7FA0
-	dc.w	$4A79,$0001,$7FA6
+	move.w	#$FFFF,$17F9E.l
+	move.w	#$FFFF,$17FA0.l
+	tst.w	$17FA6.l
 	beq.w	.l1A7B8
 	clr.w	d4
 	bsr.w	Sub_312A4
-.l1A7B8	dc.w	$4A79,$0001,$7FA8
+.l1A7B8	tst.w	$17FA8.l
 	beq.w	.l1A7C8
 	moveq	#$2,d4
 	bsr.w	Sub_312A4
-.l1A7C8	dc.w	$4A79,$0001,$7FAA
+.l1A7C8	tst.w	$17FAA.l
 	beq.w	.l1A818
-	dc.w	$3F39,$0001,$7FA6
-	dc.w	$33F9,$0001,$7FAA,$0001,$7FA6
-	dc.w	$3F39,$0001,$7F9E
-	dc.w	$33FC,$FFFF,$0001,$7F9E
+	move.w	$17FA6.l,-(sp)
+	move.w	$17FAA.l,$17FA6.l
+	move.w	$17F9E.l,-(sp)
+	move.w	#$FFFF,$17F9E.l
 	clr.w	d4
 	jsr	(Sub_312A4).l
-	dc.w	$33F9,$0001,$7F9E,$0001,$7FA2
-	dc.w	$33F9,$0001,$7FA6,$0001,$7FAA
-	dc.w	$33DF,$0001,$7F9E
-	dc.w	$33DF,$0001,$7FA6
-.l1A818	dc.w	$4A79,$0001,$7FAC
+	move.w	$17F9E.l,$17FA2.l
+	move.w	$17FA6.l,$17FAA.l
+	move.w	(sp)+,$17F9E.l
+	move.w	(sp)+,$17FA6.l
+.l1A818	tst.w	$17FAC.l
 	beq.w	.l1A86A
-	dc.w	$3F39,$0001,$7FA8
-	dc.w	$33F9,$0001,$7FAC,$0001,$7FA8
-	dc.w	$3F39,$0001,$7FA0
-	dc.w	$33FC,$FFFF,$0001,$7FA0
+	move.w	$17FA8.l,-(sp)
+	move.w	$17FAC.l,$17FA8.l
+	move.w	$17FA0.l,-(sp)
+	move.w	#$FFFF,$17FA0.l
 	move.w	#$2,d4
 	jsr	(Sub_312A4).l
-	dc.w	$33F9,$0001,$7FA0,$0001,$7FA4
-	dc.w	$33F9,$0001,$7FA8,$0001,$7FAC
-	dc.w	$33DF,$0001,$7FA0
-	dc.w	$33DF,$0001,$7FA8
+	move.w	$17FA0.l,$17FA4.l
+	move.w	$17FA8.l,$17FAC.l
+	move.w	(sp)+,$17FA0.l
+	move.w	(sp)+,$17FA8.l
 .l1A86A	rts
 updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the faceoff box
 	move.w	$40(a3),d0
@@ -61,17 +61,17 @@ updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the 
 	bgt.w	rtss2
 	neg.w	d0
 	addi.w	#$A,d0
-	dc.w	$33C0,$0001,$7D00
+	move.w	d0,$17D00.l
 	rts
 .erase	bclr	#$4,(disflags).l
 	bsr.w	printz
 	String	CC_Font1Pri,$0,$0
-	dc.w	$3039,$0001,$746C
+	move.w	$1746C.l,d0
 	subi.w	#$2E,d0
 	asr.w	#$3,d0
 	move.w	d0,(printx).l
 	moveq	#$64,d0
-	dc.w	$3039,$0001,$746E
+	move.w	$1746E.l,d0
 	subi.w	#$44,d0
 	asr.w	#$3,d0
 	move.w	d0,(printy).l
@@ -80,27 +80,27 @@ updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the 
 	move.w	#$7FF,d2
 	bra.w	eraser
 Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
-	dc.w	$207C,$000B,$BD30
-	dc.w	$3039,$0001,$7F66
-	dc.w	$3239,$0001,$8D32
-	dc.w	$4EB9,$0003,$777C
+	movea.l	#$BBD30,a0
+	move.w	$17F66.l,d0
+	move.w	$18D32.l,d1
+	jsr	(Sub_3777C).l
 	move.w	#$2F,-(sp)
 	bsr.w	sfx
 	bclr	#$0,$17F6C.l
 	move.w	#$3C,$19374.l
-	dc.w	$3839,$0001,$8D56
+	move.w	$18D56.l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	bclr	#$2,$17F6C.l
 	bclr	#$0,$17F68.l
 	bclr	#$0,$63(a3)
-	dc.w	$4279,$0001,$7F82
+	clr.w	$17F82.l
 	bset	#$4,$17F6E.l
 	move.w	$17EE6.l,d3
 	move.w	#$800,d4
 	movea.l	#$35A38,a0
-	dc.w	$227C,$0001,$7CF8
+	movea.l	#$17CF8,a1
 	moveq	#$10,d2
 	move.w	(a1),d1
 	sub.b	-$1(a0,d1.w),d2
@@ -155,7 +155,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	clr.w	$17B98.l
 	bclr	#$2,$62(a3)
 	moveq	#$18,d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 	dc.w	$0008,$1000,$0810
 PeriodOver						;what to do if period over. Branched to from puckfaceoff when the clock
 									;runs out. After period 3 a tied game goes to
@@ -167,21 +167,21 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	blt.w	.l1AA90
 	beq.w	.l1AA78		;period 3 just ended
 	move.w	#$3,$180E4.l		;overtime done: stay at 3
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	bne.w	.l1AA78
 	move.w	#$4,$180E4.l
-.l1AA78	dc.w	$3039,$0001,$8358
-	dc.w	$9079,$0001,$86BE
+.l1AA78	move.w	$18358.l,d0
+	sub.w	$186BE.l,d0
 	beq.w	.l1AA90		;tied: play overtime
 	move.w	#$4,$180E4.l		;game over
-.l1AA90	bsr.w	Sub_36D0A
+.l1AA90	bsr.w	forceblack
 	jsr	(ResetClock).l
 	move.w	#$79,-(sp)
 	bsr.w	song
 	bsr.w	UpdateScores
 	cmpi.w	#$4,$180E4.l
 	bne.w	.l1AAB8
-	dc.w	$4EB9,$0004,$0838
+	jsr	(AddPlayoffTeamStats).l
 .l1AAB8	bsr.w	Intermission
 	cmpi.w	#$4,$180E4.l
 	beq.w	.l1AACE
@@ -210,7 +210,7 @@ a2offsides						;player a2 touched the puck: offsides penalty if his team is fla
 	
 	btst	#$5,$17F68.l
 	beq.w	rtss2
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	btst	#$7,$62(a2)
 	bne.w	.0
 	neg.w	d0
@@ -229,7 +229,7 @@ a2offsides						;player a2 touched the puck: offsides penalty if his team is fla
 	bsr.w	AddPenalty
 	exg.l	a2,a3
 	rts
-Sub_35D28
+a2touchpuck
 	move.w	$0(a2),$17ECA.l
 	move.w	$14(a2),$17ECC.l
 	move.w	$52(a2),$17EC8.l
@@ -268,7 +268,7 @@ Sub_35D28
 	move.b	$17ECF.l,d0
 	asl.w	#$7,d0
 	move.l	a3,-(sp)
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	adda.w	d0,a3
 	move.w	#$C,d0
 	bsr.w	AddPenalty
@@ -278,7 +278,7 @@ Sub_35D28
 	beq.w	.l1ADDC
 .l1AE06	clr.b	$17ECE.l
 	move.b	$53(a2),$17ECF.l
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	btst	#$7,$62(a2)
 	beq.w	.l1AE2E
 	bset	#$1,$17ECE.l
@@ -303,14 +303,14 @@ PuckIChk						;check for icing of puck penalty. Called from pucknorm
 	btst	#$1,$17ECE.l
 	bne.w	.l1AE98
 	neg.w	d0
-	dc.w	$B079,$0001,$7B94
+	cmp.w	$17B94.l,d0
 	bgt.w	.l1AEA2
 	rts
-.l1AE98	dc.w	$B079,$0001,$7B94
+.l1AE98	cmp.w	$17B94.l,d0
 	bgt.w	rtss2
-.l1AEA2	dc.w	$0C79,$002C,$0001,$7B80
+.l1AEA2	cmpi.w	#$2C,$17B80.l
 	bgt.w	.set
-	dc.w	$0C79,$FFD4,$0001,$7B80
+	cmpi.w	#$FFD4,$17B80.l
 	blt.w	.set
 	bclr	#$2,$17ECE.l
 	rts
@@ -334,11 +334,11 @@ puckflip						;start puck spinning. a3 = puck, d0 bit 0 = flip. Called from chec
 	andi.w	#$3,$54(a3)
 	st.b	$5C(a3)
 	move.w	#$46A,d1
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 	dc.w	$0C6B,$018A,$0006,$6600,$002A,$376B,$FF80,$0000
 	dc.w	$376B,$FF94,$0014,$426B,$0018,$7014,$0839,$0007
 	dc.w	$0001,$7F6A,$6700,$0004,$7000,$0673,$0001,$0000
-	dc.w	$4E75,$4A6B,$0006,$6700,$60B6,$426B,$0000,$377C
+	dc.b	'NuJk',$00,$06,'g',$00,'`',$B6,'Bk',$00,$00,'7|'
 	dc.w	$012C,$0014,$377C,$000E,$0018,$4A6B,$FF94,$6A00
 	dc.w	$0012,$377C,$8000,$0004,$446B,$0014,$046B,$0001
 	dc.w	$0018,$4E75
@@ -355,20 +355,20 @@ findpc						;find puck crossing lines: calculate when puck will cross goalline (
 	movem.l	(sp)+,d0-d4/a1-a2
 	rts
 .calc	move.w	d4,d0
-	dc.w	$9079,$0001,$7B94
-	dc.w	$4A79,$0001,$7BAA
+	sub.w	$17B94.l,d0
+	tst.w	$17BAA.l
 	beq.w	.nocross
 	move.w	d0,d2
 	swap	d2
 	clr.w	d2
 	asr.l	#$4,d2
-	dc.w	$85F9,$0001,$7BAA
+	divs.w	$17BAA.l,d2
 	bmi.w	.nocross
 	move.w	d2,$2(a1)
-	dc.w	$C1F9,$0001,$7BA8
-	dc.w	$81F9,$0001,$7BAA
+	muls.w	$17BA8.l,d0
+	divs.w	$17BAA.l,d0
 	bvs.w	.nocross
-	dc.w	$D079,$0001,$7B80
+	add.w	$17B80.l,d0
 	cmp.w	d1,d0
 	blt.w	.o1
 	neg.w	d0

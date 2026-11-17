@@ -1,11 +1,11 @@
 Sub_2D396
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$7,$3,$2,$9,CC_SetFont,$1
 	move.w	(SelectedPlayerIdx).l,d0
 	dc.w	$43FA,$012C
-	dc.w	$4EB9,$0003,$CEC6
-	dc.w	$4EB9,$0003,$8D9E
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Sub_3CEC6).l
+	jsr	(printsmall).l
+	jsr	(printsmallz).l
 	String	CC_Font3,$16,$FC,$9
 .l123C8	movea.l	#$41C48,a1
 	move.w	(scoutcolumn).l,d0
@@ -22,7 +22,7 @@ Sub_2D396
 	bra.w	.l123C8
 .l12404	jsr	(printsmall).l
 	move.l	(a1),d4
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$0,$0,CC_SetFont,$0
 	btst	#$0,$1A455.l
 	beq.w	.l12430
@@ -31,13 +31,13 @@ Sub_2D396
 	moveq	#$28,d0
 	moveq	#$10,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	move.w	(sp)+,(printy).l
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
 	subi.w	#$1,d1
 	movea.l	#$2D4CA,a5
-	dc.w	$267C,$000B,$BD30
+	movea.l	#$BBD30,a3
 	move.l	#$1020304,(a3)
 	move.w	(SelectedPlayerIdx).l,d0
 	subi.w	#$1,d0
@@ -52,7 +52,7 @@ Sub_2D396
 	subi.w	#$1,d1
 .l12496	move.w	#$2,(printx).l
 	movea.l	a5,a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movea.l	a1,a5
 	move.w	#$7,(printx).l
 	clr.w	d0
@@ -63,21 +63,21 @@ Sub_2D396
 	dbra	d1,.l12496
 	rts
 	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
-	dc.w	$0012,$2020,$2020,$476F,$616C,$6965,$7320,$2020
-	dc.w	$207D,$0012,$7B20,$2053,$636F,$7269,$6E67,$2020
-	dc.w	$3120,$207D,$0012,$7B20,$2053,$636F,$7269,$6E67
-	dc.w	$2020,$3220,$207D,$0012,$7B20,$2020,$4368,$6563
-	dc.w	$6B69,$6E67,$2020,$207D,$0012,$7B20,$506F,$7765
-	dc.w	$7220,$506C,$6179,$2031,$207D,$0012,$7B20,$506F
-	dc.w	$7765,$7220,$506C,$6179,$2032,$207D,$0012,$7B50
-	dc.w	$656E,$616C,$7479,$204B,$696C,$6C20,$317D,$0012
-	dc.w	$7B50,$656E,$616C,$7479,$204B,$696C,$6C20,$3220
+	dc.b	$00,$12,'    Goalies   '
+	dc.b	' }',$00,$12,'{  Scoring  '
+	dc.b	'1  }',$00,$12,'{  Scoring'
+	dc.b	'  2  }',$00,$12,'{   Chec'
+	dc.b	'king   }',$00,$12,'{ Powe'
+	dc.b	'r Play 1 }',$00,$12,'{ Po'
+	dc.b	'wer Play 2 }',$00,$12,'{P'
+	dc.b	'enalty Kill 1}',$00,$12
+	dc.b	'{Penalty Kill 2 '
 GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
 	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
 	dc.w	$487A,$0030
-	dc.w	$4EB9,$0004,$112E
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(Sub_4112E).l
+	jsr	(print).l
 	move.w	#$1E,(printx).l
 	cmpi.w	#$2,d4		;status or energy column?
 	bls.w	.l12596
@@ -93,9 +93,9 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 	dc.w	$0479,$0001,$0001,$8D58,$3200,$0240,$0FFF,$4EB9
 	dc.w	$0003,$90F4,$4EB9,$0003,$8F80,$7004,$0881,$000E
 	dc.w	$6700,$0004,$7005,$43FA,$0008,$4EF9,$0003,$CEBE
-	dc.w	$000A,$4963,$6520,$2020,$2020,$000A,$4265,$6E63
-	dc.w	$6820,$2020,$000A,$496E,$6A75,$7279,$2050,$000A
-	dc.w	$496E,$6A75,$7279,$2047,$0006,$2020,$2020,$0006
+	dc.b	$00,$0A,'Ice     ',$00,$0A,'Benc'
+	dc.b	'h   ',$00,$0A,'Injury P',$00,$0A
+	dc.b	'Injury G',$00,$06,'    ',$00,$06
 	dc.w	$2043,$2020
 AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	add.w	d0,d0
@@ -103,16 +103,16 @@ AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	ext.l	d0
 	divu.w	#$28,d0
 	cmpi.w	#$64,d0		;over 100?
-	ble.w	Sub_2D672
+	ble.w	AttribPrintPct
 	moveq	#$64,d0
-	bra.w	Sub_2D672		;print it
+	bra.w	AttribPrintPct		;print it
 	dc.w	$0240,$000E,$0441,$0001,$C0FC,$0064,$80C1,$4EB9
 	dc.w	$0002,$AE82
-Sub_2D672
+AttribPrintPct
 	moveq	#$4,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F80
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	jsr	(printz).l
 	String	'    '
 	rts
 	dc.w	$0240,$0001,$0A40,$0001,$43FA,$0008,$4EF9,$0003
@@ -121,31 +121,31 @@ AttribWeight						;Weight: 140 + 8 * rating lb
 	addq.w	#$1,$6768(a1)
 	moveq	#$79,d2
 	move.l	-(a0),d0
-	dc.w	$000A,$4C65,$6674,$7920,$2020,$E740,$0640,$008C
+	dc.b	$00,$0A,'Lefty   ',$E7,'@',$06,'@',$00,$8C
 	dc.w	$4EB9,$0003,$915E,$4EB9,$0003,$8F80,$4EB9,$0003
-	dc.w	$8F6E,$0008,$206C,$6220,$2000,$4E75
+	dc.b	$8F,'n',$00,$08,' lb  ',$00,'Nu'
 ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes each from ScoreSum),
 									;scrolled with up / down, start exits. Menu item handler
 	moveq	#$A,d0		;SetupScreen d0/d1: row offset / height
 	moveq	#$1A,d1
 	bsr.w	Sub_2E728		;set up the screen
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Scoring Summary',CC_Font3Pri,$7,$1
 	moveq	#$2C,d0
 	bsr.w	Sub_2C59E
 	addi.w	#$4,(printx).l		;4 columns right
 	clr.w	d0
 	bsr.w	Sub_2C59E
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,$5E,$50,$65,$72,$5E,$5E,$54,$69,$6D,$65,$5E,$5E,$54,$6D,$5E,$5E,$47,$6F,$61,$6C,$2F,$41,$73,$73,$69,$73,$74,$5E,$5E,$5E,$5E,$5E,$5E,$5E,$5E,$50,$2F,$53,$5E,$5E,$F9,$00,$00
 	clr.l	d0
-	dc.w	$3039,$0001,$80F0
+	move.w	$180F0.l,d0
 	divu.w	#$6,d0		;goals
 	asl.w	#$5,d0		;32 pixels per entry
 	move.w	d0,(VertLineScrolling).l		;start at the end
@@ -177,11 +177,11 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 CheckScoringScroll						;ScoringSummaryScreen per frame: add PlayerScrollCtr to VertLineScrolling
 									;(0 ... SelectedPlayerIdx). Falls into UpdateScoringScroll
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0		;new position
-	bmi.w	Sub_2F988		;above the top: ignore
+	bmi.w	updatereplayExit		;above the top: ignore
 	cmp.w	(SelectedPlayerIdx).l,d0		;past the limit?
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 L127FC	move.w	(VertLineScrolling).l,d1
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
@@ -236,7 +236,7 @@ L127FC	move.w	(VertLineScrolling).l,d1
 	swap	d0
 	moveq	#$6,d3
 	mulu.w	d0,d3
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	move.w	(VertLineScrolling).l,d0
 	lsr.w	#$3,d0
@@ -251,7 +251,7 @@ L127FC	move.w	(VertLineScrolling).l,d1
 	addi.w	#$4,d0
 	moveq	#$6,d3
 	mulu.w	d0,d3
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	move.w	(VertLineScrolling).l,d0
 	lsr.w	#$3,d0
@@ -267,12 +267,12 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	moveq	#$28,d0		;width 40 cells
 	moveq	#$4,d1		;4 rows high
 	move.w	#$7FF,d2		;blank tile
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	move.w	(sp)+,(printy).l
 	movea.l	#$180F2,a0
 	move.w	(a0,d3.w),d0		;goal time
 	move.w	#$1,(printx).l
-	dc.w	$4EB9,$0003,$90C0
+	jsr	(FormatAndPrintTime).l
 	movea.l	#tmstruct,a2
 	btst	#$7,$2(a0,d3.w)
 	beq.w	.0
@@ -281,12 +281,12 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	#$23,(printx).l
 	dc.w	$43FA,$0060
 	move.b	$2(a0,d3.w),d0
 	andi.w	#$7F,d0
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	move.w	#$10,(printx).l
 	move.b	$3(a0,d3.w),d0
 	bsr.w	PrintScorerName		;print him
@@ -299,34 +299,34 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	ext.w	d0
 	bmi.w	.l12A2A
-	dc.w	$4EB9,$0004,$1192
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(FormatPlayerNumInitial).l
+	jsr	(print).l
 .l12A2A	addi.w	#$1,(printy).l
 	rts
 	dc.w	$0006,$5348,$3200,$0004,$5348,$0004,$2000,$0004
-	dc.w	$5050,$0006,$5050,$3200
+	dc.b	'PP',$00,$06,'PP2',$00
 PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 bytes each from PenSum,
 									;PenSumLength bytes), scrolled as ScoringSummaryScreen. Menu item handler
 	moveq	#$A,d0		;bitmap row $A
 	moveq	#$19,d1
 	bsr.w	Sub_2E728		;set up the screen
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$5,$4,'Penalty  Summary',CC_Font3Pri,$7,$1
 	moveq	#$2C,d0
 	bsr.w	Sub_2C59E
 	addi.w	#$4,(printx).l		;4 columns right
 	clr.w	d0
 	bsr.w	Sub_2C59E
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,$5E,$50,$65,$72,$5E,$5E,$54,$69,$6D,$65,$5E,$5E,$54,$6D,$5E,$5E,$50,$6C,$61,$79,$65,$72,$2F,$50,$65,$6E,$61,$6C,$74,$79,$5E,$5E,$5E,$5E,$6D,$69,$6E,$5E,$5E,$5E,$F9,$00,$00
 	clr.l	d0
-	dc.w	$3039,$0001,$825A
+	move.w	$1825A.l,d0
 	lsr.w	#$2,d0		;/4 bytes per entry = number of penalties
 	mulu.w	#$18,d0		;24 pixels per entry
 	move.w	d0,(VertLineScrolling).l		;start at the end
@@ -358,11 +358,11 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 CheckPenaltyScroll						;PenaltySummaryScreen per frame: add PlayerScrollCtr to VertLineScrolling
 									;(0 ... SelectedPlayerIdx). Falls into UpdatePenaltyScroll
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0		;new position
-	bmi.w	Sub_2F988		;above the top: ignore
+	bmi.w	updatereplayExit		;above the top: ignore
 	cmp.w	(SelectedPlayerIdx).l,d0		;past the limit?
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 L12B72	move.w	(VertLineScrolling).l,d1
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
@@ -420,7 +420,7 @@ L12B72	move.w	(VertLineScrolling).l,d1
 	swap	d0
 	move.w	d0,d3
 	asl.w	#$2,d3
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	move.w	(VertLineScrolling).l,d0
 	lsr.w	#$3,d0
@@ -435,7 +435,7 @@ L12B72	move.w	(VertLineScrolling).l,d1
 	addi.w	#$5,d0
 	move.w	d0,d3
 	asl.w	#$2,d3
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	move.w	(VertLineScrolling).l,d0
 	lsr.w	#$3,d0
@@ -451,12 +451,12 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	moveq	#$28,d0		;width 40 cells
 	moveq	#$3,d1		;3 rows high
 	move.w	#$7FF,d2		;blank tile
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	move.w	(sp)+,(printy).l
 	movea.l	#$1825C,a0
 	move.w	(a0,d3.w),d0		;penalty time
 	move.w	#$1,(printx).l
-	dc.w	$4EB9,$0003,$90C0
+	jsr	(FormatAndPrintTime).l
 	movea.l	#tmstruct,a2
 	btst	#$7,$2(a0,d3.w)		;away penalty?
 	beq.w	.0
@@ -465,29 +465,29 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.b	$2(a0,d3.w),d0
 	andi.w	#$7F,d0
-	dc.w	$267C,$0004,$165C
+	movea.l	#$4165C,a3
 	adda.w	(a3,d0.w),a3
 	clr.w	d0
 	move.b	$1(a3),d0		;penalty minutes
-	dc.w	$4EB9,$0003,$915E
+	jsr	(PushNumber).l
 	move.w	#$23,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	#$10,(printx).l
 	clr.w	d0
 	move.b	$3(a0,d3.w),d0
-	dc.w	$4EB9,$0004,$1192
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(FormatPlayerNumInitial).l
+	jsr	(print).l
 	addi.w	#$1,(printy).l
 	move.w	#$13,(printx).l
 	move.w	#$E000,(printa).l
 	lea.l	$2(a3),a1		;penalty name string
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 Sub_2DDB0
 	movem.l	d0-d1/a1,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$4,$9,CC_SetFont,$1
 	clr.w	d0
 	move.w	(VertLineScrolling).l,d1
@@ -500,7 +500,7 @@ Sub_2DDB0
 	add.b	d1,d0
 	add.b	d1,d0
 	dc.w	$43FA,$000E
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
 	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
@@ -509,9 +509,9 @@ Sub_2DDB0
 PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of the potreeteam
 									;team as PlayerStatsList with d7 = 1. Called and the menu lists
 	movem.l	a2,-(sp)
-	dc.w	$4EB9,$0004,$08E0
+	jsr	(ReadTeamStats).l
 	movea.l	#$18AA6,a0
-	dc.w	$3039,$0001,$8AA0
+	move.w	$18AA0.l,d0
 	move.b	(a0,d0.w),d0		;his team
 	movea.l	#tmstruct,a2
 	cmp.w	$2A(a2),d0		;is it home?
@@ -531,20 +531,20 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	clr.w	(scoutcolumn).l		;sort column: -1 goalie saves, 0-4 G A Pts SOG PIM; start with goals
 	clr.w	(VertLineScrolling).l		;list scrolled to the top
 .redraw	clr.w	(PlayerScrollCtr).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$5,$1
 	moveq	#$1E,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	tst.w	d7
 	beq.w	.title
-	dc.w	$4EB9,$0003,$9258
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$7,$4,'Playoff  Stats',CC_Font3Pri,$E,$1
 	bra.w	.team
 .title	jsr	(printsmallz).l
 	dc.w	$001C
 	dc.b	$F8,$06,$03,$0C,$1A,$F9,$01,$41,$5E,$2D,$5E,$53,$77,$69,$74,$63,$68,$5E,$54,$65,$61,$6D,$73,$F9,$00,$00
-	dc.w	$4EB9,$0003,$9258
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$8,$4,'Player  Stats',CC_Font3Pri,$E,$1
 .team	clr.w	d0		;TeamBlockMap offset: 0 for the home struct, $30 for the away struct
 	cmpa.l	#$1834C,a2		;home team?
@@ -559,7 +559,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	bne.w	Sub_2E980		;Start
 	btst	#$6,d1		;A?
 	bne.w	.switch
-	dc.w	$4EB9,$0003,$7496
+	jsr	(nodiag).l
 	moveq	#$1,d0
 	btst	#$3,d1		;right?
 	bne.w	.col		;right pressed: column +1
@@ -594,11 +594,11 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 UpdateStatsListScroll						;Stats screen per frame: scroll 0 ... SelectedPlayerIdx, stop on a 16 line
 									;boundary, draw the row coming into view
 	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0		;new position
-	bmi.w	Sub_2F988		;above the top: ignore
+	bmi.w	updatereplayExit		;above the top: ignore
 	cmp.w	(SelectedPlayerIdx).l,d0		;past the limit?
-	bgt.w	Sub_2F988
+	bgt.w	updatereplayExit
 	move.w	(VertLineScrolling).l,d1		;d1 = old position
 	move.w	d0,(VertLineScrolling).l
 	andi.w	#$F,d0		;pixels into the current 16 pixel row
@@ -670,19 +670,19 @@ L130D8	jsr	(printsmallz).l
 	addi.w	#$1,d3
 	cmpi.w	#$5,d3
 	blt.w	.l13104
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$9,$7
 	moveq	#$16,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Framer).l
+	jsr	(printz).l
 	String	CC_Font3Pal3Pri,$A,$8
 	dc.w	$43FA,$0314
 	moveq	#$1,d0
 	add.w	(scoutcolumn).l,d0
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	clr.w	(printfontset).l
-	dc.w	$267C,$000B,$BD30
+	movea.l	#$BBD30,a3
 	clr.l	d6
 	tst.w	(scoutcolumn).l
 	bpl.w	.l1318A
@@ -692,7 +692,7 @@ L130D8	jsr	(printsmallz).l
 	not.l	d6
 .l1318A	moveq	#-1,d4
 	st.b	d5
-	bsr.w	Sub_2EDBC
+	bsr.w	GetPlayerCount
 	bra.w	.l131D8
 .l13196	btst	d0,d6
 	bne.w	.l131D8
@@ -740,9 +740,9 @@ L130D8	jsr	(printsmallz).l
 	bra.w	L12FFA
 DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, or for
 									;goalies saves, shots and save %
-	dc.w	$287C,$000B,$BD30
+	movea.l	#$BBD30,a4
 	adda.w	d3,a4
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	add.w	d3,d3		;2 map rows per Satt row
 	andi.w	#$1F,d3		;wrap in the 32 row map
@@ -750,23 +750,23 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	moveq	#$28,d0		;erase one row, 40 cells wide
 	moveq	#$1,d1
 	move.w	#$7FF,d2		;blank char
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	tst.b	(a4)		;empty row?
-	bmi.w	Sub_2F988
+	bmi.w	updatereplayExit
 	subi.w	#$1,(printy).l		;eraser moved printy down one row; back to the row rank (2 digits) at x 1
 	move.w	#$1,(printx).l
 	move.l	a4,d0
 	subi.l	#$BBD2F,d0		;rank (1-based)
 	moveq	#$2,d1		;2 digits
 	move.w	#$E000,(printa).l
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
 	clr.w	d0
 	move.b	(a4),d0
-	dc.w	$4EB9,$0004,$11D6
+	jsr	(FormatPlayerName).l
 	addi.w	#$1,(printx).l
 	move.w	#$8000,(printa).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	#$11,(printx).l		;stat columns start at x $11
 	tst.w	(scoutcolumn).l		;goalie column?
 	bmi.w	.goalie
@@ -777,7 +777,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	bsr.w	GetStatColumn		;d2 = the stat
 	move.w	d2,d0
 	moveq	#$4,d1		;4 digits
-	dc.w	$4EB9,$0003,$919A
+	jsr	(PushNumberWidth).l
 	move.w	#$8000,(printa).l
 	cmp.w	(scoutcolumn).l,d5		;sort column?
 	bne.w	.1
@@ -803,23 +803,23 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	clr.w	d0
 .2	move.w	d0,d2
 	moveq	#$4,d1		;4 digits
-	dc.w	$4EB9,$0003,$919A
+	jsr	(PushNumberWidth).l
 	addi.w	#$1,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	d3,d0
 	moveq	#$4,d1
-	dc.w	$4EB9,$0003,$919A
+	jsr	(PushNumberWidth).l
 	addi.w	#$2,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	tst.w	d3
 	beq.w	.3		;no shots: percentage is just d2 (0)
 	mulu.w	#$64,d2
 	divu.w	d3,d2		;saves * 100 / shots
 .3	move.w	d2,d0
 	moveq	#$4,d1		;4 digits
-	dc.w	$4EB9,$0003,$919A
+	jsr	(PushNumberWidth).l
 	addi.w	#$2,(printx).l
-	dc.w	$4EB9,$0003,$8F80
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(print).l
+	jsr	(printz).l
 	String	'%'
 .l13386	rts

@@ -4,21 +4,21 @@
 	rts
 ReadJoyData
 	movem.l	d1/a0,-(sp)
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	L2CDEA
 	dc.w	$6142
-	dc.w	$13C0,$0001,$7E46
+	move.b	d0,$17E46.l
 	bsr.w	L2CE56
-	dc.w	$13C0,$0001,$7E47
+	move.b	d0,$17E47.l
 	bsr.w	L2CEA8
-	dc.w	$13C0,$0001,$7E48
+	move.b	d0,$17E48.l
 	bsr.w	L2CEFA
-	dc.w	$13C0,$0001,$7E49
+	move.b	d0,$17E49.l
 	bra.w	L2CDFE
 L2CDEA	bsr.w	L2CF58
-	dc.w	$13C0,$0001,$7E46
+	move.b	d0,$17E46.l
 	bsr.w	L2CF50
-	dc.w	$13C0,$0001,$7E47
+	move.b	d0,$17E47.l
 L2CDFE	movem.l	(sp)+,d1/a0
 	rts
 L2CE04	btst	#$4,$FF800E.l

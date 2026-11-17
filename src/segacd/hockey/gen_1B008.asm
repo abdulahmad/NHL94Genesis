@@ -33,8 +33,8 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 	move.w	$28(a3),d0
 	or.w	$2A(a3),d0
 	bne.w	.ex
-	dc.w	$3039,$0001,$7B80
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B80.l,d0
+	move.w	$17B94.l,d1
 	btst	#$0,$17BE3.l
 	beq.w	.nf
 	move.w	$17EDC.l,d0
@@ -53,7 +53,7 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 	move.w	d0,$54(a3)
 .ex	clr.w	d0
 	move.b	$43(a3),d0
-	bra.w	Sub_363D6
+	bra.w	doplayeracc
 L1B0D8	clr.w	$17EEA.l
 	clr.w	$17EEC.l
 	tst.w	$34(a3)
@@ -132,14 +132,14 @@ L1B0D8	clr.w	$17EEA.l
 	rts
 skatetopuckinit						;d0/d1 = puck x/y plus half the high byte of its
 	
-	dc.w	$1039,$0001,$7BA8
+	move.b	$17BA8.l,d0
 	asr.b	#$1,d0
 	ext.w	d0
-	dc.w	$D079,$0001,$7B80
-	dc.w	$1239,$0001,$7BAA
+	add.w	$17B80.l,d0
+	move.b	$17BAA.l,d1
 	asr.b	#$1,d1
 	ext.w	d1
-	dc.w	$D279,$0001,$7B94
+	add.w	$17B94.l,d1
 	rts
 skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	bsr.w	skatetopuckinit
@@ -164,15 +164,15 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	move.b	d0,$43(a3)
 	tst.w	$34(a3)
 	beq.w	.ex
-	dc.w	$3039,$0001,$7BA8
-	dc.w	$3239,$0001,$7BAA
+	move.w	$17BA8.l,d0
+	move.w	$17BAA.l,d1
 	bsr.w	vtoa
 	eori.w	#$4,d0
 	cmp.w	$54(a3),d0
 	beq.w	.ex
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	sub.w	$14(a3),d1
 	movem.w	d0-d1,-(sp)
 	bsr.w	vtoa
@@ -187,8 +187,8 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	cmpi.l	#$5A4,d0
 	bls.w	Sweepcheck
 .ex	move.b	$43(a3),d0
-	bra.w	Sub_363D6
-Sub_362C4
+	bra.w	doplayeracc
+assexit
 	addi.w	#$1,$36(a3)
 	andi.w	#$7,$36(a3)
 	bset	#$1,$62(a3)
@@ -196,7 +196,7 @@ Sub_362C4
 Sub_362D8
 	subi.w	#$1,$36(a3)
 	andi.w	#$7,$36(a3)
-Sub_362E4
+assreplace
 	move.l	d1,-(sp)
 	move.w	$36(a3),d1
 	move.b	d0,$38(a3,d1.w)
@@ -271,14 +271,14 @@ Sub_36362
 .l1B3B8	movem.l	(sp)+,a0-a1
 	move.l	(sp)+,(sp)
 	rts
-Sub_363C0
+SetSPA
 	cmp.w	$58(a3),d1
 	beq.w	rtss2
 	clr.w	$5A(a3)
 	move.w	d1,$58(a3)
 	st.b	$5C(a3)
 	rts
-Sub_363D6
+doplayeracc
 	tst.w	$34(a3)
 	beq.w	L1B5A4
 	move.w	#$50C,d1
@@ -292,21 +292,21 @@ Sub_363D6
 	bne.w	.l1B410
 	move.w	$28(a3),d0
 	or.w	$2A(a3),d0
-	bne.w	Sub_36AE0
+	bne.w	dostop
 .l1B410	btst	#$1,$63(a3)
-	beq.w	Sub_363C0
+	beq.w	SetSPA
 	rts
 .l1B41C	movem.w	d0-d1,-(sp)
 	move.w	d0,d2
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
 	beq.w	.l1B4F4
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
 	move.w	$14(a3),d3
-	dc.w	$1239,$0001,$7BAA
+	move.b	$17BAA.l,d1
 	ext.w	d1
-	dc.w	$D279,$0001,$7B94
+	add.w	$17B94.l,d1
 	sub.w	d3,d1
 	btst	#$7,$62(a3)
 	bne.w	.l1B462
@@ -355,7 +355,7 @@ Sub_363D6
 	move.w	$54(a3),d2
 	sub.w	d2,d0
 	andi.w	#$7,d0
-	dc.w	$207C,$0003,$6594
+	movea.l	#$36594,a0
 	asl.w	#$1,d0
 	tst.w	(a0,d0.w)
 	beq.w	noturn0
@@ -388,7 +388,7 @@ Sub_363D6
 	eori.w	#$FFCE,d1
 .l1B57C	addi.w	#$694,d1
 	bset	#$1,$63(a3)
-.l1B586	bsr.w	Sub_363C0
+.l1B586	bsr.w	SetSPA
 	cmpi.w	#$2,d3
 	bhi.w	L1B86A
 	rts
@@ -419,9 +419,9 @@ L1B5A4	btst	#$3,$62(a3)
 	cmpi.w	#$106,$14(a3)
 	bgt.w	.normalgoalie
 .facepuck	movem.w	d0-d1,-(sp)
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	sub.w	$14(a3),d1
 	cmpi.w	#$10,d0
 	bgt.w	.usevtoa
@@ -448,7 +448,7 @@ L1B5A4	btst	#$3,$62(a3)
 .setready	move.w	#$2,d1
 	btst	#$1,$63(a3)
 	bne.w	.exit
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	cmpi.w	#$8,d0
 	bne.w	.playermove
 	tst.w	$34(a3)
@@ -473,7 +473,7 @@ L1B5A4	btst	#$3,$62(a3)
 .stopandrestore	jsr	(stopna2).l
 	move.w	(sp)+,d0
 .playermove	move.w	d0,d2
-	bra.w	Sub_36878
+	bra.w	playeracc
 .normalgoalie	move.w	#$2,d1
 	btst	#$3,$62(a3)
 	beq.w	.goalieacc2
@@ -511,7 +511,7 @@ L1B5A4	btst	#$3,$62(a3)
 	beq.w	.cgl
 	jmp	(stopna2).l
 .cgl	btst	#$1,$63(a3)
-	beq.w	Sub_363C0
+	beq.w	SetSPA
 .exit	rts
 .d1	sub.w	$54(a3),d0
 	beq.w	.d11
@@ -523,9 +523,9 @@ L1B5A4	btst	#$3,$62(a3)
 	andi.w	#$7,d0
 	move.w	d0,$54(a3)
 .d11	move.w	#$3D8,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	move.w	$54(a3),d2
-	bra.w	Sub_36878
+	bra.w	playeracc
 noturn0						;doplayeracc when the wanted direction needs no turn (.ftab entry 0). d0 =
 	
 	moveq	#$2,d4
@@ -544,7 +544,7 @@ noturn0						;doplayeracc when the wanted direction needs no turn (.ftab entry 0
 	add.w	d4,d0
 	andi.w	#$7,d0
 	cmpi.w	#$4,d0
-	blt.w	Sub_36AE0
+	blt.w	dostop
 .nostop	addi.w	#$1,$54(a3)
 	btst	#$3,$4(a3)
 	beq.w	.nos0
@@ -552,9 +552,9 @@ noturn0						;doplayeracc when the wanted direction needs no turn (.ftab entry 0
 .nos0	andi.w	#$7,$54(a3)
 	move.w	#$50C,d1
 	btst	#$4,$62(a3)
-	beq.w	Sub_363C0
+	beq.w	SetSPA
 	move.w	#$A60,d1
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 noturn						;reverse the acc. direction when skating backwards, then falls into
 	
 	move.w	#$A92,d1
@@ -570,11 +570,11 @@ noturn						;reverse the acc. direction when skating backwards, then falls into
 	move.w	#$53E,d1
 .l1B85C	btst	#$1,$63(a3)
 	bne.w	L1B86A
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 L1B86A	btst	#$4,$62(a3)
-	beq.w	Sub_36878
+	beq.w	playeracc
 	eori.w	#$4,d2		;opposite direction
-Sub_36878
+playeracc
 	asl.w	#$2,d2
 	dc.w	$41FA,$0312
 	move.w	$2(a0,d2.w),d1
@@ -678,7 +678,7 @@ Sub_36878
 	bhi.w	.l1BA04
 	move.w	d0,$28(a3)
 	move.w	d1,$2A(a3)
-.l1BA04	dc.w	$4A79,$0001,$8C0A
+.l1BA04	tst.w	$18C0A.l
 	bne.w	rtss2
 .l1BA0E	btst	#$7,$FF800E.l
 	bne.b	.l1BA0E
@@ -697,25 +697,25 @@ Sub_36878
 	bsr.w	getpde
 	subi.w	#$21,d0
 	cmpi.w	#$C00,d0
-	blt.w	Sub_3C2C2
+	blt.w	setpde
 	move.b	$72(a3),d2
 	ext.w	d2
 	lsr.w	#$1,d2
 	add.w	d2,d0
-	bsr.w	Sub_3C2C2
+	bsr.w	setpde
 	btst	#$0,$72(a3)
 	beq.w	.l1BA9E
 	btst	#$0,$17475.l
 	beq.w	.l1BA9E
 	addi.w	#$1,d0
-	bra.w	Sub_3C2C2
+	bra.w	setpde
 .l1BA9E	rts
 MaxSpeed						;max speed values for each rating level 0-$F: ((n+20)*275)^2 (92 used 250)
 	dc.w	$01CD,$9410,$01FC,$E3E1,$022E,$8284,$0262,$6FF9
 	dc.w	$0298,$AC40,$02D1,$3759,$030C,$1144,$0349,$3A01
 	dc.w	$0388,$B190,$03CA,$77F1,$040E,$8D24,$0454,$F129
 	dc.w	$049D,$A400,$04E8,$A5A9,$0535,$F624,$0585,$9571
-Sub_36AE0
+dostop
 	cmpi.w	#$1000,$28(a3)
 	bgt.w	Sub_36B1A
 	cmpi.w	#$F000,$28(a3)
@@ -734,7 +734,7 @@ Sub_36B1A
 	bne.w	.l1BB32
 	bset	#$1,$63(a3)
 	move.w	#$6C6,d1
-.l1BB32	bsr.w	Sub_363C0
+.l1BB32	bsr.w	SetSPA
 	tst.w	$34(a3)
 	bne.w	stopna
 	jmp	(stopna2).l
@@ -797,9 +797,9 @@ Sub_36C14
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1BC2C	move.w	#$0,-(a6)
 .l1BC30	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -844,14 +844,14 @@ Sub_36C14
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1BCF8	bclr	#$5,$FF800F.l
 .l1BD00	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts
-Sub_36D0A
+forceblack
 	movem.l	d0/a0,-(sp)
 	movea.l	#$BBCB0,a0
 	moveq	#$1F,d0
@@ -865,7 +865,7 @@ Sub_36D0A
 	dbra	d0,.l1BD2C
 	movem.l	(sp)+,d0/a0
 	rts
-Sub_36D38
+forceblack2
 	movem.l	d0/a0,-(sp)
 	movea.l	#$BBCB0,a0
 	moveq	#$1F,d0
@@ -887,9 +887,9 @@ Sub_36D66
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	dc.w	$6706
+	beq.s	*+8
 	move.w	#$1,-(a6)
-	dc.w	$6004
+	bra.s	*+6
 .l1BD9C	move.w	#$0,-(a6)
 .l1BDA0	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -900,9 +900,9 @@ Sub_36D66
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	dc.w	$670A
+	beq.s	*+12
 	bset	#$5,$FF800F.l
-	dc.w	$6008
+	bra.s	*+10
 .l1BDD8	bclr	#$5,$FF800F.l
 .l1BDE0	move.l	a6,$19360.l
 	movea.l	(sp)+,a6

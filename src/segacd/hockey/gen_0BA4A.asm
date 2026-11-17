@@ -1,32 +1,32 @@
 NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Press START to
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$2,$15,'D-Pad up/down to    '
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$2,$16,'move arrows.        '
 	move.w	#$2,(printx).l
 	move.w	(printx).l,-(sp)
 	addi.w	#$1,(printy).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'Press START to      '
 	addi.w	#$1,(printy).l
 	move.w	(sp),(printx).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'select name.        '
 	addi.w	#$1,(printy).l
 	move.w	(sp)+,(printx).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'Press B to edit.    '
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PrintNamePrompt						;Name entry: "Enter new name:" for an empty name log slot namelogsel, else
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$3039,$0001,$A38C
+	move.w	$1A38C.l,d0
 	mulu.w	#$C,d0
-	dc.w	$207C,$0001,$A2FC
-	dc.w	$227C,$0002,$6C30
+	movea.l	#$1A2FC,a0
+	movea.l	#$26C30,a1
 	tst.b	(a0,d0.w)
 	beq.w	.0
 	movea.l	#$26C48,a1
@@ -61,16 +61,16 @@ FindLetter						;d0 = index of letter d0 in LetterGrid, $1E when not found
 .x	movem.l	(sp)+,d1-d3/a0-a6
 	rts
 PrintNameCursor						;Name entry: the " < " cursor
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$4,$13
 	add.w	d4,(printx).l
-	dc.w	$4A79,$0001,$A566
+	tst.w	$1A566.l
 	beq.w	LBBD4
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	' < '
 LBBD4	rts
 PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, cursoron)
-	dc.w	$4A79,$0001,$A566
+	tst.w	$1A566.l
 	beq.w	LBBD4
 	movea.l	#ThreeStars,a1
 	move.w	#$4,(a1)
@@ -78,10 +78,10 @@ PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, curso
 	movea.l	#$26DD0,a0
 	move.b	(a0,d5.w),d0
 	move.b	d0,$2(a1)
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a row, 2 cells
 	
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$18,$10
 	move.w	d5,d0
 	ext.l	d0
@@ -98,36 +98,36 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	dc.w	$0018,$BF02
 	move.b	-(a0),d0
 	movea.l	d5,a0
-	dc.w	$6E74
-	dc.w	$6572
+	bgt.s	*+118
+	bcs.s	*+116
 	movea.l	$6577(a6),a0
 	movea.l	$616D(a6),a0
-	dc.w	$653A
+	bcs.s	Sub_26C80
 	move.l	d0,d0
 	dc.w	$0018,$BF02
-	dc.w	$1053,$656C,$6563,$7420,$6F72,$2072,$6570,$6C61
+	dc.b	$10,'Select or repla'
 	dc.w	$6365,$3A00,$48E7,$FFFE,$3F39,$0001,$A38A,$3F39
 	dc.w	$0001,$A38C,$4EB9,$0003,$8F6E,$0006,$BF05,$0800
-	dc.w	$3E3C,$0006
+	move.w	#$6,d7
 Sub_26C80
-	dc.w	$33FC,$0001,$0001,$A38C
+	move.w	#$1,$1A38C.l
 	movea.l	#TempBuffer,a1
 .lBC8E	bsr.w	GetLogName
 	move.w	(printx).l,-(sp)
 	bsr.w	PrintNameField
 	move.w	(sp)+,(printx).l
 	addi.w	#$1,(printy).l
-	dc.w	$0679,$0001,$0001,$A38C
+	addi.w	#$1,$1A38C.l
 	dbra	d7,.lBC8E
-	dc.w	$33DF,$0001,$A38C
-	dc.w	$33DF,$0001,$A38A
+	move.w	(sp)+,$1A38C.l
+	move.w	(sp)+,$1A38A.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 MoveLogArrows						;Name entry: when the name log selection namelogsel changed, erase the old
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$3039,$0001,$A38C
-	dc.w	$B079,$0001,$A38E
+	move.w	$1A38C.l,d0
+	cmp.w	$1A38E.l,d0
 	beq.w	.x
 	movea.l	#$26D4A,a1
 	bsr.w	.lBCF6
@@ -135,20 +135,20 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	bsr.w	.lBCF6
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.lBCF6	dc.w	$4A79,$0001,$A38E
+.lBCF6	tst.w	$1A38E.l
 	beq.w	.lBD36
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$3,$8
-	dc.w	$3039,$0001,$A38E
+	move.w	$1A38E.l,d0
 	subi.w	#$1,d0
 	add.w	d0,(printy).l
 	move.l	a1,-(sp)
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1
 	move.w	#$12,(printx).l
-	dc.w	$4EB9,$0003,$8F80
-.lBD36	dc.w	$33F9,$0001,$A38C,$0001,$A38E
+	jsr	(print).l
+.lBD36	move.w	$1A38C.l,$1A38E.l
 	rts
 	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
 GetNameLength						;namelength = length of the name being entered
@@ -156,12 +156,12 @@ GetNameLength						;namelength = length of the name being entered
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$B,d3
 	movea.l	#$1A37C,a0
-	dc.w	$4279,$0001,$A38A
+	clr.w	$1A38A.l
 .loop	cmpi.b	#$2D,(a0)
 	beq.w	.lBD80
 	tst.b	(a0)+
 	beq.w	.lBD80
-	dc.w	$0679,$0001,$0001,$A38A
+	addi.w	#$1,$1A38A.l
 	dbra	d3,.loop
 .lBD80	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -169,11 +169,11 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
-	dc.w	$3039,$0001,$A38A
+	move.w	$1A38A.l,d0
 	move.w	#$0,d3
 	move.w	#$E,(a0)+
 .lBD9E	move.b	(a1,d3.w),d1
-	dc.w	$B679,$0001,$A38A
+	cmp.w	$1A38A.l,d3
 	blt.w	.0
 	move.b	#$2D,d1
 .0	move.b	d1,(a0)+
@@ -181,10 +181,10 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	cmpi.w	#$C,d3
 	blt.w	.lBD9E
 	movea.l	#ThreeStars,a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$4142,$4344,$4546,$4748,$494A,$4B4C,$4D4E,$4F50
+	dc.b	'ABCDEFGHIJKLMNOP'
 NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
 	subq.w	#$8,(a2)
 	subq.w	#$1,(a4)
@@ -195,24 +195,24 @@ NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as 
 	move.l	d0,-(a6)
 	move.w	(framercset).l,-(sp)
 	move.w	$1A3D2.l,(framercset).l
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	move.w	(sp)+,(framercset).l
 	rts
 GetLogName						;Copy name log entry namelogsel to a1 ('-' for
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$207C,$0001,$A2FC
-	dc.w	$3439,$0001,$A38C
+	movea.l	#$1A2FC,a0
+	move.w	$1A38C.l,d2
 	mulu.w	#$C,d2
-	dc.w	$33FC,$0000,$0001,$A38A
+	move.w	#$0,$1A38A.l
 	move.w	#$B,d3
 .loop	move.b	(a0,d2.w),d0
 	beq.w	.0
 	bra.w	.lBE46
 .0	move.b	#$2D,d0
-	dc.w	$0479,$0001,$0001,$A38A
+	subi.w	#$1,$1A38A.l
 .lBE46	move.b	d0,(a1)+
-	dc.w	$0679,$0001,$0001,$A38A
+	addi.w	#$1,$1A38A.l
 	addi.w	#$1,d2
 	dbra	d3,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -220,8 +220,8 @@ GetLogName						;Copy name log entry namelogsel to a1 ('-' for
 StoreUserName						;Name entry: store the name in save RAM
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$207C,$0001,$A2FC
-	dc.w	$3039,$0001,$A38C
+	movea.l	#$1A2FC,a0
+	move.w	$1A38C.l,d0
 	mulu.w	#$C,d0
 	adda.w	d0,a0
 	movea.l	#$1A37C,a1
@@ -234,8 +234,8 @@ StoreUserName						;Name entry: store the name in save RAM
 	bne.w	.lBE9A
 	dbra	d4,.loop
 	bra.w	.lBED4
-.lBE9A	dc.w	$207C,$0001,$A2FC
-	dc.w	$3039,$0001,$A38C
+.lBE9A	movea.l	#$1A2FC,a0
+	move.w	$1A38C.l,d0
 	mulu.w	#$C,d0
 	adda.w	d0,a0
 	movea.l	#$1A37C,a1
@@ -248,22 +248,22 @@ StoreUserName						;Name entry: store the name in save RAM
 	dbra	d4,.loop2
 	bsr.w	Sub_22622
 	jsr	$26F06.l
-.lBED4	dc.w	$2A7C,$0001,$8BF4
-	dc.w	$4A79,$0001,$A390
+.lBED4	movea.l	#$18BF4,a5
+	tst.w	$1A390.l
 	beq.w	.lBEEA
-	dc.w	$2A7C,$0001,$8BF6
+	movea.l	#$18BF6,a5
 .lBEEA	tst.b	$1A37C.l
 	bne.w	.lBEFA
-	dc.w	$4279,$0001,$A38C
-.lBEFA	dc.w	$3AB9,$0001,$A38C
+	clr.w	$1A38C.l
+.lBEFA	move.w	$1A38C.l,(a5)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$2D7,d7
-	dc.w	$203C,$0000,$0000
-	dc.w	$223C,$0000,$0004
+	move.l	#$0,d0
+	move.l	#$4,d1
 	movea.l	#ThreeStars,a0
-	dc.w	$3C39,$0001,$A38C
+	move.w	$1A38C.l,d6
 .lBF26	clr.w	d5
 	jsr	$22452.l
 	cmp.b	$1(a0),d6
@@ -281,9 +281,9 @@ StoreUserName						;Name entry: store the name in save RAM
 	dbra	d7,.lBF26
 	move.w	#$1B,d7
 	move.l	#$B60,d0
-	dc.w	$223C,$0000,$0010
+	move.l	#$10,d1
 	movea.l	#ThreeStars,a0
-	dc.w	$3C39,$0001,$A38C
+	move.w	$1A38C.l,d6
 .lBF7C	clr.w	d5
 	jsr	$22452.l
 	cmp.b	$1(a0),d6
@@ -315,12 +315,12 @@ StoreUserName						;Name entry: store the name in save RAM
 	jsr	$2246C.l
 .lBFE4	addi.l	#$10,d0
 	dbra	d7,.lBF7C
-	dc.w	$203C,$0000,$0D20
-	dc.w	$3639,$0001,$A38C
+	move.l	#$D20,d0
+	move.w	$1A38C.l,d3
 	asl.w	#$4,d3
 	ext.l	d3
 	add.l	d3,d0
-	dc.w	$223C,$0000,$0010
+	move.l	#$10,d1
 	movea.l	#ThreeStars,a0
 	jsr	$22452.l
 	move.l	a0,-(sp)
@@ -333,40 +333,40 @@ StoreUserName						;Name entry: store the name in save RAM
 	rts
 UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEntryScreen) for
 	
-	dc.w	$4A79,$0001,$8C06
+	tst.w	$18C06.l
 	bne.w	.lC09E
-	dc.w	$4279,$0001,$8BF4
-	dc.w	$4279,$0001,$8BF6
-	dc.w	$4A79,$0001,$7FA6
+	clr.w	$18BF4.l
+	clr.w	$18BF6.l
+	tst.w	$17FA6.l
 	beq.w	.lC064
-	dc.w	$33F9,$0001,$7FA6,$0001,$A390
-	dc.w	$0479,$0001,$0001,$A390
+	move.w	$17FA6.l,$1A390.l
+	subi.w	#$1,$1A390.l
 	jsr	$26348.l
-.lC064	dc.w	$4A79,$0001,$7FA8
+.lC064	tst.w	$17FA8.l
 	beq.w	.lC09E
 	movem.w	d0,-(sp)
-	dc.w	$3039,$0001,$7FA6
-	dc.w	$B079,$0001,$7FA8
+	move.w	$17FA6.l,d0
+	cmp.w	$17FA8.l,d0
 	movem.w	(sp)+,d0
 	beq.w	.lC09E
-	dc.w	$33F9,$0001,$7FA8,$0001,$A390
-	dc.w	$0479,$0001,$0001,$A390
+	move.w	$17FA8.l,$1A390.l
+	subi.w	#$1,$1A390.l
 	jsr	$26348.l
 .lC09E	rts
 SkipOtherUserName						;Name entry: step the selection namelogsel past the name the other pad
 	
 	movem.w	d0,-(sp)
-	dc.w	$3039,$0001,$8BF6
-	dc.w	$4A79,$0001,$A390
+	move.w	$18BF6.l,d0
+	tst.w	$1A390.l
 	beq.w	.lC0BA
-	dc.w	$3039,$0001,$8BF4
-.lC0BA	dc.w	$B079,$0001,$A38C
+	move.w	$18BF4.l,d0
+.lC0BA	cmp.w	$1A38C.l,d0
 	bne.w	.x
 	move.w	#$1,d0
 	tst.w	(sp)
 	bpl.w	.lC0D2
 	move.w	#$FFFF,d0
-.lC0D2	dc.w	$D179,$0001,$A38C
+.lC0D2	add.w	d0,$1A38C.l
 	clr.w	d0
 .x	movem.w	(sp)+,d0
 	rts
@@ -374,8 +374,8 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	
 	move.w	#$0,d0
 	move.w	#$1A,d1
-	dc.w	$4EB9,$0002,$E728
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Sub_2E728).l
+	jsr	(printz).l
 	String	CC_Font2Pri,$1,$1
 	movea.l	$47D80.l,a0
 	movea.l	a0,a1
@@ -387,8 +387,8 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	moveq	#$6,d2
 	move.w	#$6,d3
 	moveq	#$8,d5
-	dc.w	$4EB9,$0003,$87E2
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(dobitmap).l
+	jsr	(printz).l
 	String	CC_Font2Pri,$21,$1
 	movea.l	$47D84.l,a0
 	movea.l	a0,a1
@@ -400,20 +400,20 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	moveq	#$6,d2
 	move.w	#$6,d3
 	moveq	#$0,d5
-	dc.w	$4EB9,$0003,$87E2
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(dobitmap).l
+	jsr	(printz).l
 	String	CC_Font3Pri,$B,$1
 	move.w	#$12,d0
 	move.w	#$7,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	dc.w	$0018
 	dc.b	$BD,$0E,$02,$52,$65,$63,$6F,$72,$64,$BD,$0D,$05,$48,$6F,$6C,$64,$65,$72,$73,$BD,$01,$09
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0010
 	dc.b	$F8,$06,$03,$05,$08,$F9,$01,$4E,$61,$6D,$65,$F9,$00,$00
 	bsr.w	ReadNameLog
-	dc.w	$4279,$0001,$7E62
+	clr.w	$17E62.l
 	bclr	#$6,(sflags6).l
 	bsr.w	ReadTeamRecords
 	bset	#$6,(sflags6).l
@@ -422,78 +422,78 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	bsr.w	PrintRecordTitles
 	bsr.w	Sub_27398
 .loop	jsr	(MenuWaitVblank).l
-	dc.w	$4EB9,$0002,$F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(Sub_2F2F0).l
+	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
 	beq.w	.lC1E2
-	dc.w	$4EF9,$0002,$E980
-.lC1E2	dc.w	$4A79,$0001,$7E62
+	jmp	(Sub_2E980).l
+.lC1E2	tst.w	$17E62.l
 	bne.w	.right
 	btst	#$6,d3
 	beq.w	.right
 	btst	#$5,d3
 	beq.w	.right
-	bsr.w	Sub_2A604
+	bsr.w	ClearWinRecords
 	bsr.w	CalcWinPercents
 	bsr.w	Sub_27398
 	bra.w	.loop
 .right	btst	#$3,d1
 	beq.w	.left
-	dc.w	$0C79,$0002,$0001,$7E62
+	cmpi.w	#$2,$17E62.l
 	beq.w	.loop
 	bsr.w	ClearRecordArea
-	dc.w	$0679,$0001,$0001,$7E62
+	addi.w	#$1,$17E62.l
 	bsr.w	PrintRecordTitles
-	bsr.w	Sub_27264
+	bsr.w	PrintRecordPage
 	bra.w	.loop
 .left	btst	#$2,d1
 	beq.w	.loop
-	dc.w	$4A79,$0001,$7E62
+	tst.w	$17E62.l
 	beq.w	.loop
 	bsr.w	ClearRecordArea
-	dc.w	$0479,$0001,$0001,$7E62
+	subi.w	#$1,$17E62.l
 	bsr.w	PrintRecordTitles
-	bsr.w	Sub_27264
+	bsr.w	PrintRecordPage
 	bra.w	.loop
 	dc.w	$4E75		;N
-Sub_27264
-	dc.w	$4A79,$0001,$7E62
+PrintRecordPage
+	tst.w	$17E62.l
 	beq.w	Sub_27398
 	bra.w	Sub_274FA
 PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRecTitles,
 	
 	movea.l	#$272A2,a1
-	dc.w	$4A79,$0001,$7E62
+	tst.w	$17E62.l
 	beq.w	.0
 	movea.l	#$27346,a1
-	dc.w	$0C79,$0002,$0001,$7E62
+	cmpi.w	#$2,$17E62.l
 	beq.w	.0
 	movea.l	#$272F4,a1
 .0	jsr	(printsmall).l
 	rts
 	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
-	dc.w	$2520,$2020,$5769,$6E2D,$4C6F,$7373,$2D54,$6965
-	dc.w	$FD04,$FC19,$5573,$6520,$412B,$4320,$746F,$2063
-	dc.w	$6C65,$6172,$2041,$4C4C,$2077,$696E,$2072,$6563
-	dc.w	$6F72,$6473,$FD10,$FC1A,$2020,$4D6F,$7265,$205D
+	dc.b	'%   Win-Loss-Tie'
+	dc.b	$FD,$04,$FC,$19,'Use A+C to c'
+	dc.b	'lear ALL win rec'
+	dc.b	'ords',$FD,$10,$FC,$1A,'  More ]'
 	dc.w	$F900,$0052,$F806,$0312,$08F9,$0147,$6F61,$6C73
-	dc.w	$2020,$2020,$2020,$2020,$2054,$6561,$6D73,$2020
-	dc.w	$2020,$FD04,$FC19,$2020,$2020,$5445,$414D,$204D
-	dc.w	$5553,$5420,$5749,$4E20,$544F,$2051,$5541,$4C49
-	dc.w	$4659,$2020,$2020,$FD10,$FC1A,$5B20,$4D6F,$7265
+	dc.b	'         Teams  '
+	dc.b	'  ',$FD,$04,$FC,$19,'    TEAM M'
+	dc.b	'UST WIN TO QUALI'
+	dc.b	'FY    ',$FD,$10,$FC,$1A,'[ More'
 	dc.w	$205D,$F900,$0052,$F806,$0312,$08F9,$0153,$6176
-	dc.w	$6573,$2020,$2020,$2020,$2020,$2054,$6561,$6D73
-	dc.w	$2020,$2020,$FD04,$FC19,$2020,$2020,$5445,$414D
-	dc.w	$204D,$5553,$5420,$5749,$4E20,$544F,$2051,$5541
-	dc.w	$4C49,$4659,$2020,$2020,$FD10,$FC1A,$5B20,$4D6F
-	dc.w	$7265,$2020,$F900
+	dc.b	'es         Teams'
+	dc.b	'    ',$FD,$04,$FC,$19,'    TEAM'
+	dc.b	' MUST WIN TO QUA'
+	dc.b	'LIFY    ',$FD,$10,$FC,$1A,'[ Mo'
+	dc.b	're  ',$F9,$00
 Sub_27398
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$A,CC_SetFont,$0
 	move.w	#$6,d7
-	dc.w	$207C,$0001,$A3E4
-	dc.w	$247C,$0001,$A3EC
+	movea.l	#$1A3E4,a0
+	movea.l	#$1A3EC,a2
 	movea.l	#ThreeStars,a5
 .lC3C2	move.w	#$2,(printx).l
 	move.b	(a0)+,d0
@@ -519,27 +519,27 @@ Sub_27398
 	move.w	(sp)+,d4
 	tst.w	d4
 	beq.w	.lC492
-	bsr.w	Sub_27666
+	bsr.w	PrintRecordName
 	move.w	#$13,(printx).l
 	move.w	d0,-(sp)
 	move.w	d5,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
 	move.w	#$1A,(printx).l
 	move.w	$17E9E.l,d0
 	move.w	#$4,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
 	move.w	#$1F,(printx).l
 	move.w	$17E9C.l,d0
 	move.w	#$4,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
 	move.w	#$24,(printx).l
 	move.w	$17E9A.l,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$919A
+	jsr	(PushNumberWidth).l
 	move.w	(sp)+,d0
 	bra.w	.lC498
 .lC492	movea.l	#$27630,a1
@@ -553,56 +553,56 @@ ClearRecordArea						;Record Holders: erase the record rows ($28 x $12), keeping
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(printx).l,-(sp)
 	move.w	(printy).l,-(sp)
-	dc.w	$3F39,$0001,$8D5E
-	dc.w	$4EB9,$0003,$8D8C
+	move.w	$18D5E.l,-(sp)
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$0,$A
 	move.w	#$28,d0
 	move.w	#$12,d1
-	dc.w	$4EB9,$0003,$8C06
-	dc.w	$33DF,$0001,$8D5E
+	jsr	(eraser).l
+	move.w	(sp)+,$18D5E.l
 	move.w	(sp)+,(printy).l
 	move.w	(sp)+,(printx).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 Sub_274FA
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$A,CC_SetFont,$0
 	move.w	#$6,d7
-	dc.w	$207C,$0001,$A3D4
-	dc.w	$0C79,$0001,$0001,$7E62
+	movea.l	#$1A3D4,a0
+	cmpi.w	#$1,$17E62.l
 	beq.w	.lC52A
-	dc.w	$207C,$0001,$A3DC
+	movea.l	#$1A3DC,a0
 .lC52A	movea.l	#ThreeStars,a2
 .lC530	move.w	#$2,(printx).l
 	move.b	(a0)+,d0
 	ext.w	d0
 	asl.w	#$4,d0
 	move.b	(a2,d0.w),d5
-	dc.w	$0C79,$0001,$0001,$7E62
+	cmpi.w	#$1,$17E62.l
 	beq.w	.lC552
 	move.b	$4(a2,d0.w),d5
 .lC552	tst.b	d5
 	beq.w	.lC612
-	bsr.w	Sub_27666
+	bsr.w	PrintRecordName
 	move.w	#$12,(printx).l
 	move.w	d0,-(sp)
-	dc.w	$0C79,$0001,$0001,$7E62
+	cmpi.w	#$1,$17E62.l
 	bne.w	.lC57A
 	move.b	(a2,d0.w),d0
 	bra.w	.lC57E
 .lC57A	move.b	$4(a2,d0.w),d0
 .lC57E	andi.w	#$FF,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
 	move.w	(sp)+,d0
 	move.w	#$19,(printx).l
 	movea.l	#$27658,a1
 	movea.l	#mesarea,a3
 	bsr.w	CopyString
 	move.w	d0,-(sp)
-	dc.w	$0C79,$0001,$0001,$7E62
+	cmpi.w	#$1,$17E62.l
 	bne.w	.lC5C2
 	move.b	$1(a2,d0.w),d0
 	bra.w	.lC5C6
@@ -612,10 +612,10 @@ Sub_274FA
 	bsr.w	AppendTeamName
 	movea.l	#$2765E,a1
 	movea.l	#mesarea,a3
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movea.l	#mesarea,a1
 	move.w	(sp)+,d0
-	dc.w	$0C79,$0001,$0001,$7E62
+	cmpi.w	#$1,$17E62.l
 	bne.w	.lC602
 	move.b	$2(a2,d0.w),d0
 	bra.w	.lC606
@@ -629,11 +629,11 @@ Sub_274FA
 	dbra	d7,.lC530
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0028,$2020,$2020,$2020,$2020,$2020,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$2020,$2020,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$0006,$6279,$2000,$0008
-	dc.w	$2076,$732E,$2000
-Sub_27666
+	dc.b	$00,'(              '
+	dc.b	'                '
+	dc.b	'        ',$00,$06,'by ',$00,$00,$08
+	dc.b	' vs. ',$00
+PrintRecordName
 	move.w	d7,-(sp)
 	neg.w	d7
 	addi.w	#$7,d7
@@ -644,22 +644,22 @@ Sub_27666
 	move.b	#$2E,$3(a1)
 	move.b	#$20,$4(a1)
 	move.b	#$0,$5(a1)
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	(sp)+,d7
 	move.b	-$1(a0),d2
 	ext.w	d2
 	movea.l	#mesarea,a1
 	bclr	#$7,(sflags6).l
 	bsr.w	AppendUserName
-	dc.w	$4EF9,$0003,$8D9E
+	jmp	(printsmall).l
 CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf, the win %
 	
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
-	dc.w	$227C,$0001,$A3EC
-	dc.w	$2C7C,$0001,$A3F4
-	dc.w	$2A7C,$0001,$A404
+	movea.l	#$1A3EC,a1
+	movea.l	#$1A3F4,a6
+	movea.l	#$1A404,a5
 	move.w	#$7,d7
 .loop	move.b	$8(a0),d0
 	lsl.w	#$8,d0
@@ -679,7 +679,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	move.b	$D(a0),(a6)+
 	adda.w	#$10,a0
 	dbra	d7,.loop
-	dc.w	$227C,$0001,$A3E4
+	movea.l	#$1A3E4,a1
 	move.l	a1,-(sp)
 	move.w	#$1,d0
 	move.w	#$6,d7
@@ -687,9 +687,9 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	addi.w	#$1,d0
 	dbra	d7,.loop2
 	movea.l	(sp),a1
-	dc.w	$207C,$0001,$A3EC
-	dc.w	$2C7C,$0001,$A3F4
-	dc.w	$2A7C,$0001,$A404
+	movea.l	#$1A3EC,a0
+	movea.l	#$1A3F4,a6
+	movea.l	#$1A404,a5
 .loop3	movea.l	(sp),a1
 	move.w	#$5,d7
 	clr.w	d6
@@ -732,14 +732,14 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	rts
 ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$203C,$0000,$0D20
-	dc.w	$223C,$0000,$0080
+	move.l	#$D20,d0
+	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
 	jsr	$22452.l
-	dc.w	$227C,$0001,$A3D4
+	movea.l	#$1A3D4,a1
 	btst	#$6,(sflags6).l
 	beq.w	.0
-	dc.w	$227C,$0001,$A3DC
+	movea.l	#$1A3DC,a1
 .0	move.l	a1,-(sp)
 	move.w	#$1,d0
 	move.w	#$6,d7
@@ -780,86 +780,86 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 									;teams' shootout goals. Jumped to from PenaltyShotBox
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$FFFF,d0
-	dc.w	$4EB9,$0003,$9D96
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(prefmes).l
+	jsr	(printz).l
 	String	CC_Font1Pri,$3,$2
 	moveq	#$1B,d0
 	moveq	#$C,d1
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	dc.w	$43FA,$013E
-	dc.w	$4EB9,$0003,$926A
-	dc.w	$3039,$0001,$936C
+	jsr	(printbig).l
+	move.w	$1936C.l,d0
 	movea.l	#tmstruct,a2
-	dc.w	$4A79,$0001,$9366
+	tst.w	$19366.l
 	beq.w	.lC8AA
 	movea.l	#awtmstruct,a2
 .lC8AA	jsr	(FormatPlayerNumInitial).l
 	move.w	(printx).l,-(sp)
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	(sp)+,(printx).l
 	addi.w	#$1,(printy).l
 	addi.w	#$6,(printx).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	' vs.',CC_Font1Pri,$4,$7
-	dc.w	$3039,$0001,$936A
+	move.w	$1936A.l,d0
 	asl.w	#$7,d0
-	dc.w	$247C,$0001,$7480
+	movea.l	#$17480,a2
 	adda.w	d0,a2
 	clr.w	d0
 	move.b	$66(a2),d0		;goalie roster index
 	movea.l	#awtmstruct,a2
-	dc.w	$4A79,$0001,$9366
+	tst.w	$19366.l
 	beq.w	.lC90E
 	movea.l	#tmstruct,a2
 .lC90E	jsr	(FormatPlayerNumInitial).l
-	dc.w	$4EB9,$0003,$8F80
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(print).l
+	jsr	(printz).l
 	String	CC_Font1Pri,$4,$9
 	movea.l	#tmstruct,a1
 	movea.l	$1E(a1),a1
 	adda.w	$4(a1),a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	#$15,(printx).l
-	dc.w	$3039,$0001,$A416
+	move.w	$1A416.l,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F80
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	jsr	(printz).l
 	String	CC_Font1Pri,$4,$A
 	movea.l	#awtmstruct,a1
 	movea.l	$1E(a1),a1
 	adda.w	$4(a1),a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	#$15,(printx).l
-	dc.w	$3039,$0001,$A418
+	move.w	$1A418.l,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F80
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	jsr	(printz).l
 	String	CC_Font1Pri,$4,$C,'Round'
 	move.l	d0,d0
 	move.w	$1A41A.l,d0
 	move.w	#$2,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0016,$BF04,$0353,$484F,$4F54,$4F55,$5420,$4D4F
+	dc.b	$00,$16,$BF,$04,$03,'SHOOTOUT MO'
 	dc.w	$4445,$BF04,$0500
 ClearShootout						;Clear the player structs (SortCords) and the shootout state.
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	move.w	#$3FF,d0
 .lC9E4	clr.w	(a0)+
 	dbra	d0,.lC9E4
-	dc.w	$4279,$0001,$AD72
+	clr.w	$1AD72.l
 	move.w	#$1,$1A41A.l
 	bclr	#$3,$17F78.l
-	dc.w	$4279,$0001,$A416
-	dc.w	$4279,$0001,$A418
-	dc.w	$4279,$0001,$A428
-	dc.w	$4279,$0001,$A436
+	clr.w	$1A416.l
+	clr.w	$1A418.l
+	clr.w	$1A428.l
+	clr.w	$1A436.l
 	bsr.w	InitShooters
-	dc.w	$33FC,$0001,$0001,$A436
+	move.w	#$1,$1A436.l
 	bsr.w	InitShooters
-	dc.w	$4279,$0001,$A436
+	clr.w	$1A436.l
 	rts

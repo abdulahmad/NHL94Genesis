@@ -24,7 +24,7 @@ Sub_2E3A4
 	clr.l	d2
 	move.b	(a2,d1.l),d2
 	move.w	$2(a1),d1
-	bmi.w	Sub_2F988
+	bmi.w	updatereplayExit
 	add.w	d0,d1
 	clr.w	d3
 	move.b	(a2,d1.l),d3
@@ -40,7 +40,7 @@ Sub_2E3A4
 	rts
 .l133E8	movea.l	#$2E40E,a1
 	tst.w	(a1,d1.w)
-	beq.w	Sub_2F988
+	beq.w	updatereplayExit
 	movea.w	(a1,d1.w),a1
 	move.l	d7,-(sp)
 	move.l	a1,d7
@@ -52,20 +52,20 @@ Sub_2E3A4
 	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
 	dc.w	$B09C,$0000,$00B6,$FFFF,$00D0,$FFFF,$00B6,$00D0
 	dc.w	$00EA,$FFFF,$0104,$FFFF,$0016,$5361,$7665,$7320
-	dc.w	$5368,$6F74,$7320,$5361,$7665,$2025,$2020,$0006
-	dc.w	$2020,$2047,$0006,$2020,$2041,$0006,$2050,$7473
-	dc.w	$0006,$2053,$4F47,$0006,$2050,$494D,$0016,$2020
-	dc.w	$2020,$476F,$616C,$6965,$2053,$6176,$6573,$2020
-	dc.w	$205D,$0016,$5B20,$2020,$2020,$2047,$6F61,$6C73
-	dc.w	$2020,$2020,$2020,$205D,$0016,$5B20,$2020,$2020
-	dc.w	$4173,$7369,$7374,$7320,$2020,$2020,$205D,$0016
-	dc.w	$5B20,$2020,$2020,$2050,$6F69,$6E74,$7320,$2020
-	dc.w	$2020,$205D,$0016,$5B20,$2053,$686F,$7473,$204F
-	dc.w	$6E20,$476F,$616C,$2020,$205D,$0016,$5B20,$5065
-	dc.w	$6E61,$6C74,$7920,$4D69,$6E75,$7465,$7320,$2020
+	dc.b	'Shots Save %  ',$00,$06
+	dc.b	'   G',$00,$06,'   A',$00,$06,' Pts'
+	dc.b	$00,$06,' SOG',$00,$06,' PIM',$00,$16,'  '
+	dc.b	'  Goalie Saves  '
+	dc.b	' ]',$00,$16,'[      Goals'
+	dc.b	'       ]',$00,$16,'[     '
+	dc.b	'Assists      ]',$00,$16
+	dc.b	'[      Points   '
+	dc.b	'   ]',$00,$16,'[  Shots O'
+	dc.b	'n Goal   ]',$00,$16,'[ Pe'
+	dc.b	'nalty Minutes   '
 Sub_2E4EE
 	movem.l	d0-d1/a1,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$2,$B,CC_SetFont,$1
 	clr.w	d0
 	move.w	(VertLineScrolling).l,d1
@@ -78,7 +78,7 @@ Sub_2E4EE
 	add.b	d1,d0
 	add.b	d1,d0
 	dc.w	$43FA,$000E
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
 	dc.w	$000A
@@ -88,15 +88,15 @@ CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrow
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1353A.bin
 Sub_2E728
 	movem.l	d0-d1/a2,-(sp)
-	dc.w	$4EB9,$0003,$6D0A
+	jsr	(forceblack).l
 	bclr	#$0,(disflags).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	dc.w	$3039,$0001,$8D32
-	dc.w	$4EB9,$0003,$871E
+	move.w	$18D32.l,d0
+	jsr	(Sub_3871E).l
 .l13754	btst	#$7,$FF800E.l
 	bne.b	.l13754
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l13778	btst	#$6,$FF800E.l
@@ -132,10 +132,10 @@ Sub_2E728
 	bne.b	.l13836
 	bclr	#$7,$FF800F.l
 	clr.w	d0
-	dc.w	$4EB9,$0003,$871E
+	jsr	(Sub_3871E).l
 .l13850	btst	#$7,$FF800E.l
 	bne.b	.l13850
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l13874	btst	#$6,$FF800E.l
@@ -150,7 +150,7 @@ Sub_2E728
 	move.w	(framercset).l,d4
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$91234567,$89ABCDEF
 	dc.w	$3839,$0001,$8D42,$4EB9,$0003,$93E8,$4EB9,$0003
 	dc.w	$8F6E,$0006,$BD00,$0000,$2279,$0004,$7D0C,$D3E9
@@ -165,14 +165,14 @@ Sub_2E728
 	dc.w	$07FF,$4EB9,$0003,$8C06,$33FC,$0018,$0001,$8D62
 	dc.w	$4CDF,$0403,$4E75
 Sub_2E980
-	dc.w	$4EB9,$0003,$6D0A
+	jsr	(forceblack).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	move.w	$18D30.l,d0
-	dc.w	$4EB9,$0003,$871E
+	jsr	(Sub_3871E).l
 .l139A0	btst	#$7,$FF800E.l
 	bne.b	.l139A0
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l139C4	btst	#$6,$FF800E.l
@@ -214,7 +214,7 @@ Sub_2E980
 	bpl.w	.l13A9E
 	move.w	(sp)+,(disflags).l
 	bset	#$1,(disflags).l
-	dc.w	$3839,$0001,$8D48
+	move.w	$18D48.l,d4
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
@@ -223,10 +223,10 @@ Sub_2E980
 	addq.l	#$8,a2
 .l13AD8	jsr	(DecompressGraphicsPlain).l
 	jsr	$2A9D0.l
-	dc.w	$3839,$0001,$8D42
+	move.w	$18D42.l,d4
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$43434567,$89ABCDEF
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_13B00.bin
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
@@ -262,7 +262,7 @@ GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 
 	andi.w	#$F,d0		;forward count
 	movem.l	(sp)+,a0
 	rts
-Sub_2EDBC
+GetPlayerCount
 	movem.l	a0,-(sp)
 	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0

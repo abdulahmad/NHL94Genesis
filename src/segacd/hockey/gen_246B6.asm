@@ -6,9 +6,9 @@ waitxc1						;Each time palcount runs out, eor the color
 	eori.w	#$EE,$BBCF2.l		;blink the color
 	move.w	#$18,(palcount).l		;restart the count
 .wait	move.w	(ScoutSubStatus).l,d0		;wait until the vblank handler bumps Vcount
-	dc.w	$B079,$0001,$7476
+	cmp.w	$17476.l,d0
 	beq.w	.wait
-	dc.w	$33C0,$0001,$7476
+	move.w	d0,$17476.l
 	rts
 PlayoffScreen_doscores						;Print best of 7 wins "t-b" for game struct a2 at printx/printy
 	movea.l	#mesarea,a1
@@ -33,7 +33,7 @@ PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) a
 	clr.w	d1
 	moveq	#$2,d2
 	moveq	#$17,d3
-	dc.w	$3839,$0001,$8D56
+	move.w	$18D56.l,d4
 	moveq	#$0,d5
 	bsr.w	dobitmap
 	movem.l	(sp)+,d0-d7/a0-a3
@@ -43,7 +43,7 @@ PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (
 									;highlighted (printa $6000)
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$18AA6,a0
-	dc.w	$3039,$0001,$8AA0
+	move.w	$18AA0.l,d0
 	move.b	(a0,d0.w),d0
 	add.b	d0,d0
 	cmp.b	d0,d1		;this block?
@@ -66,11 +66,11 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$2,(disflags).l
 	bne.w	.l24826
-	dc.w	$207C,$000B,$BD30
-	dc.w	$3039,$0001,$7F66
+	movea.l	#$BBD30,a0
+	move.w	$17F66.l,d0
 	beq.w	.l24820
-	dc.w	$4279,$0001,$7F66
-	dc.w	$3239,$0001,$8D32
+	clr.w	$17F66.l
+	move.w	$18D32.l,d1
 	jsr	$378D2.l
 	move.w	$18D30.l,d0
 	bsr.w	Sub_38780
@@ -92,10 +92,10 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .l24826	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$000A,$506C,$6179,$6F66,$6673,$0010,$5175,$6172
-	dc.w	$7465,$7266,$696E,$616C,$7300,$000C,$5365,$6D69
-	dc.w	$6669,$6E61,$6C73,$0008,$4669,$6E61,$6C73,$000C
-	dc.w	$4368,$616D,$7069,$6F6E,$7300
+	dc.b	$00,$0A,'Playoffs',$00,$10,'Quar'
+	dc.b	'terfinals',$00,$00,$0C,'Semi'
+	dc.b	'finals',$00,$08,'Finals',$00,$0C
+	dc.b	'Champions',$00
 InitScoutingDisplay						;Start the text player UpdateScoutingDisplay: VertLineScrolling = -1,
 									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / ScoutingReportTimer;
 									;return a0 =
@@ -201,7 +201,7 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	cmpa.l	a2,a1
 	ble.w	.l24A22
 	move.w	#$FF00,(PlayerScrollCtr).l
-	dc.w	$6008
+	bra.s	*+10
 .l24A22	suba.l	a1,a2		;offset into the script
 	move.w	a2,(PlayerScrollCtr).l		;offset of the next word
 .print	move.w	d1,(mesarea).l
@@ -317,7 +317,7 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 Sub_3FC0C
 	jsr	$37598.l
 	tst.w	$3FC0A.l
-	dc.w	$6706
+	beq.s	*+8
 	jsr	$376F2.l
 .l24C20	move.w	#$D,d7
 	jsr	$6044.w
@@ -383,7 +383,7 @@ Sub_3FC0C
 	st.b	$191CE.l
 	moveq	#$0,d0
 	tst.w	$3FC0A.l
-	dc.w	$6706
+	beq.s	*+8
 	jsr	$37752.l
 .l24D90	jsr	$21FC8.l
 	move.w	#$2,d1
@@ -411,12 +411,12 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	move.l	#vb2,(VBint).l
 	bclr	#$1,(disflags).l
 	move.w	#$5,$18D3E.l
-	dc.w	$33FC,$A000,$0001,$8D38
+	move.w	#$A000,$18D38.l
 	move.w	#$7,(Map2col).l
 	move.w	#$C000,(VmMAP1).l
 	move.w	#$7,(Map1col).l
 	move.w	#$F000,$18D3C.l
-	dc.w	$33FC,$F800,$0001,$8D32
+	move.w	#$F800,$18D32.l
 	move.w	#$FC00,$18D30.l
 	movea.l	#$BBCB0,a0
 	moveq	#$1F,d1		;32 longs: all 64 colours black
@@ -429,7 +429,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	dc.w	$0005,$00FF,$800F,$23FC,$0003,$DB90,$0001,$8D66
 	dc.w	$4EB9,$0004,$7DAC,$4EB9,$0003,$6D0A,$33FC,$0018
 	dc.w	$0001,$8D62,$6100,$8EF4,$0012,$F804,$030C,$0143
-	dc.w	$6865,$636B,$2053,$6F75,$6E64,$7C14,$3039,$0001
+	dc.b	'heck Sound|',$14,'09',$00,$01
 	dc.w	$7474,$B079,$0001,$7474,$6700,$FFF8,$4EB9,$0003
 	dc.w	$74F0,$4EB9,$0003,$74BE,$4A01,$6700,$FFE0,$0801
 	dc.w	$0007,$6600,$C12A,$0801,$0003,$6700,$0006,$0646
@@ -438,26 +438,26 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	dc.w	$6100,$9296,$33FC,$0017,$0001,$8D58,$6100,$9070
 	dc.w	$6000,$FF9A
 UpdatePlayoffLevel						;Set pojoy from the number of players for play modes 2 and 3.
-	dc.w	$0C79,$0002,$0001,$8BFA
+	cmpi.w	#$2,$18BFA.l
 	blt.w	rtss2
-	dc.w	$0C79,$0004,$0001,$8BFA
+	cmpi.w	#$4,$18BFA.l
 	beq.w	rtss2
 	moveq	#$7,d0
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.set
 	move.w	#$B,d0		;4 way play
 .set	sub.w	(OptNOP).l,d0		;pojoy = pad layouts minus the player count option
-	dc.w	$33C0,$0001,$8AA2
+	move.w	d0,$18AA2.l
 	rts
 TeamIcons						;draw the visitor and home team bitmaps and set colors.
 									;Called from PrintOptions. 92 TeamIcons drew name bars (dotb)
 	movem.l	d0-d7/a0-a2,-(sp)
-	dc.w	$0C79,$0004,$0001,$8BFA
+	cmpi.w	#$4,$18BFA.l
 	beq.w	.l24F66
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	bne.w	.draw
-.l24F66	dc.w	$33F9,$0001,$8BFE,$0001,$7FAE
-	dc.w	$33F9,$0001,$8C00,$0001,$7FB0
+.l24F66	move.w	$18BFE.l,(HomeTeam).l
+	move.w	$18C00.l,(VisTeam).l
 .draw	bsr.w	printz		;teams set: print them
 	String	CC_Font1Pri,$7,$1
 	move.w	(VisTeam).l,d1
@@ -465,7 +465,7 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 	asl.w	#$6,d0		;64 bytes per team
 	movea.l	#$25060,a0
 	move.l	$26(a0,d0.w),$BBCD6.l		;B palette colors into palette 1
-	dc.w	$3839,$0001,$939C
+	move.w	$1939C.l,d4
 	bsr.w	DrawTeamBitmap
 	bsr.w	printz
 	String	CC_Font1Pri,$16,$1
@@ -527,14 +527,14 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 	seq.b	d0		;home: d0 = -1
 	ext.w	d0
 	addi.w	#$2,d0		;1 for the home team, 2 for the away team
-	dc.w	$B079,$0001,$7FA6
+	cmp.w	$17FA6.l,d0
 	beq.w	.x
-	dc.w	$B079,$0001,$7FA8
+	cmp.w	$17FA8.l,d0
 	beq.w	.x
 	moveq	#$0,d0
-	dc.w	$0C79,$0002,$0001,$8A9E
+	cmpi.w	#$2,$18A9E.l
 	bgt.w	.set
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	bne.w	.set		;line changes off
 	movea.l	#TeamList,a0
 	move.w	$0(a2),d0
@@ -553,8 +553,8 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 	dc.w	$4E75
 DefaultMenus						;Set the default menu choices for the beginning of the game: the 9 option
 									;words from defmenuoptions (93 had 7). Called once from Begin
-	dc.w	$50F9,$0001,$8C16
-	dc.w	$207C,$0001,$8BFA
+	st.b	$18C16.l
+	movea.l	#$18BFA,a0
 	movea.l	#$40120,a1		;Start of Menu Options in RAM
 	move.w	#$8,d0
 .l25118	move.w	(a1)+,(a0)+		;9 options
@@ -563,30 +563,30 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	dc.w	$0001
 	movem.l	d0-d7/a0-a3,-(sp)
-	dc.w	$267C,$0001,$8C38
+	movea.l	#$18C38,a3
 	bsr.w	Sub_4057C
-	dc.w	$3039,$0001,$8A9E
-	dc.w	$8079,$0001,$8A9C
+	move.w	$18A9E.l,d0
+	or.w	$18A9C.l,d0
 	beq.w	.l251BE
 	bsr.w	MakeTree
 	moveq	#$7,d0
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.l25164
 	move.w	#$B,d0
-.l25164	dc.w	$4A79,$0001,$8BF8
+.l25164	tst.w	$18BF8.l
 	bne.w	.l25186
-	dc.w	$0C79,$0002,$0001,$8AA2
+	cmpi.w	#$2,$18AA2.l
 	ble.w	.l251B2
-	dc.w	$0479,$0002,$0001,$8AA2
+	subi.w	#$2,$18AA2.l
 	bra.w	.l251B2
-.l25186	dc.w	$0C79,$0001,$0001,$8AA2
+.l25186	cmpi.w	#$1,$18AA2.l
 	bne.w	.l2519E
-	dc.w	$33FC,$0003,$0001,$8AA2
+	move.w	#$3,$18AA2.l
 	bra.w	.l251B2
-.l2519E	dc.w	$0C79,$0002,$0001,$8AA2
+.l2519E	cmpi.w	#$2,$18AA2.l
 	bne.w	.l251B2
-	dc.w	$33FC,$0004,$0001,$8AA2
-.l251B2	dc.w	$9079,$0001,$8AA2
+	move.w	#$4,$18AA2.l
+.l251B2	sub.w	$18AA2.l,d0
 	move.w	d0,(OptNOP).l
 .l251BE	movem.l	(sp)+,d0-d7/a0-a3
 	rts
@@ -599,7 +599,7 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 	adda.w	d0,a0
 	lsr.w	#$4,d0
 	moveq	#$F,d1
-	dc.w	$3439,$0001,$8BFE
+	move.w	$18BFE.l,d2
 	cmpi.w	#$19,d2
 	bls.w	.l251F2
 	moveq	#$19,d2
@@ -607,13 +607,13 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 	dbeq	d1,.l251F2
 	bne.w	.l251CC
 	eori.w	#$F,d1
-	dc.w	$33C1,$0001,$8AA0
-	dc.w	$33C0,$0001,$8A9A
-	dc.w	$4279,$0001,$8A9E
-	dc.w	$33FC,$0007,$0001,$8A9C
-	dc.w	$0C79,$0002,$0001,$8BFA
+	move.w	d1,$18AA0.l
+	move.w	d0,$18A9A.l
+	clr.w	$18A9E.l
+	move.w	#$7,$18A9C.l
+	cmpi.w	#$2,$18BFA.l
 	beq.w	MakeTree
-	dc.w	$4279,$0001,$8A9C
+	clr.w	$18A9C.l
 	moveq	#$7,d0
 	movea.l	#$18A18,a0
 .l25234	clr.w	$4(a0)
@@ -625,7 +625,7 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 									;(.sett), then FigureJoy. Called from ContinuePlayoffs and EncodePW; falls
 									;in from NewPO
 	movem.l	d0-d4/a0-a3,-(sp)
-	dc.w	$3239,$0001,$8A9A
+	move.w	$18A9A.l,d1
 	asl.w	#$4,d1		;16 bytes a tree
 	movea.l	#$18AA6,a0
 	movea.l	#$1FFDA,a1
@@ -636,7 +636,7 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	move.l	$C(a1),$C(a0)
 	lea.l	$10(a0),a1		;a1 = next round
 	moveq	#$E,d2		;15 winners
-	dc.w	$3039,$0001,$8AA4
+	move.w	$18AA4.l,d0
 .0	move.w	d0,d1		;d1 = lowest WinBits bit: pick the pair member
 	andi.w	#$1,d1		;winbit picks the top or bottom team of the pair
 	move.b	(a0,d1.w),(a1)+		;winner
@@ -660,11 +660,11 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	bsr.w	FigureJoy		;assign the pads
 .nogames	movem.l	(sp)+,d0-d4/a0-a3
 	rts
-.l252D4	dc.w	$0C79,$0002,$0001,$8A9C
+.l252D4	cmpi.w	#$2,$18A9C.l
 	beq.w	.1
-	dc.w	$0C79,$0003,$0001,$8A9C
+	cmpi.w	#$3,$18A9C.l
 	beq.w	.1
-	dc.w	$0C79,$0005,$0001,$8A9C
+	cmpi.w	#$5,$18A9C.l
 	beq.w	.1		;tree order
 	bset	#$0,$E(a1)		;teams are flipped
 	move.b	(a0)+,$3(a1)
@@ -682,25 +682,25 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 									;with random matchups (InitializeGameStructures). Called from MakeTree and
 									;GameSetUp
 	movem.l	d0-d3/a0-a1,-(sp)
-	dc.w	$4279,$0001,$7FA6
-	dc.w	$4279,$0001,$7FA8
-	dc.w	$4279,$0001,$7FAA
-	dc.w	$4279,$0001,$7FAC
-	dc.w	$4A79,$0001,$8C16
+	clr.w	$17FA6.l
+	clr.w	$17FA8.l
+	clr.w	$17FAA.l
+	clr.w	$17FAC.l
+	tst.w	$18C16.l
 	beq.w	Sub_4050C
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	beq.w	Sub_404B6		;regular season
 	btst	#$0,$17F78.l
 	bne.w	Sub_404B6
 	bsr.w	GetShifter		;d1 = last game
 	movea.l	#$18AA6,a0
-	dc.w	$3439,$0001,$8AA0
+	move.w	$18AA0.l,d2
 	move.b	(a0,d2.w),d2
 	movea.l	#$18A18,a1
 	moveq	#$10,d4
 	mulu.w	d1,d4		;times the last game
 	adda.w	d4,a1		;a1 = last game
-	dc.w	$50F9,$0001,$8A98
+	st.b	$18A98.l
 	clr.w	d0
 .f0	cmp.w	$0(a1),d2		;first team?
 	beq.w	.l253BC
@@ -710,43 +710,43 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	dbra	d1,.f0
 	bra.w	Sub_40510
 .l25398	moveq	#$4,d0
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.l253A8
 	move.w	#$5,d0
-.l253A8	dc.w	$33E9,$0000,$0001,$8C00
-	dc.w	$33E9,$0002,$0001,$8BFE
+.l253A8	move.w	$0(a1),$18C00.l
+	move.w	$2(a1),$18BFE.l
 	bra.w	.l253CE
 .l253BC	clr.w	d0
-	dc.w	$33E9,$0002,$0001,$8C00
-	dc.w	$33E9,$0000,$0001,$8BFE
-.l253CE	dc.w	$D079,$0001,$8AA2
-	dc.w	$33C1,$0001,$8A98
+	move.w	$2(a1),$18C00.l
+	move.w	$0(a1),$18BFE.l
+.l253CE	add.w	$18AA2.l,d0
+	move.w	d1,$18A98.l
 	move.w	$0(a1),(HomeTeam).l
 	move.w	$2(a1),(VisTeam).l
 	asl.w	#$2,d0		;4 bytes an entry
 	dc.w	$41FA,$0080
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.l253FE
 	dc.w	$41FA,$0092
-.l253FE	dc.w	$33F0,$0000,$0001,$7FA6
-	dc.w	$33F0,$0002,$0001,$7FA8
-	dc.w	$4A79,$0001,$8BF8
+.l253FE	move.w	(a0,d0.w),$17FA6.l
+	move.w	$2(a0,d0.w),$17FA8.l
+	tst.w	$18BF8.l
 	beq.w	Sub_40510
 	cmpi.w	#$4,d0		;layout 1?
 	beq.w	.l2542C		;pojoy 1: cont3team / cont4team = cont1team / cont2team
 	cmpi.w	#$18,d0		;layout 6?
 	beq.w	.l2542C
 	bra.w	.2
-.l2542C	dc.w	$33F9,$0001,$7FA6,$0001,$7FAA
-	dc.w	$33F9,$0001,$7FA8,$0001,$7FAC
+.l2542C	move.w	$17FA6.l,$17FAA.l
+	move.w	$17FA8.l,$17FAC.l
 	bra.w	Sub_40510
 .2	cmpi.w	#$8,d0		;layout 2?
 	beq.w	.l25458		;pojoy 2: cont3team = cont1team, cont4team 0
 	cmpi.w	#$1C,d0		;layout 7?
 	beq.w	.l25458
 	bra.w	Sub_40510
-.l25458	dc.w	$33F9,$0001,$7FA6,$0001,$7FAA
-	dc.w	$33FC,$0000,$0001,$7FAC
+.l25458	move.w	$17FA6.l,$17FAA.l
+	move.w	#$0,$17FAC.l
 	bra.w	Sub_40510
 	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
 	dc.w	$0002,$0000,$0002,$0002,$0002,$0001,$0001,$0002
@@ -757,17 +757,17 @@ Sub_404B6
 	move.w	(OptNOP).l,d0
 	asl.w	#$2,d0
 	dc.w	$41FA,$0056
-	dc.w	$33F0,$0000,$0001,$7FA6
-	dc.w	$33F0,$0002,$0001,$7FA8
+	move.w	(a0,d0.w),$17FA6.l
+	move.w	$2(a0,d0.w),$17FA8.l
 	cmpi.w	#$14,d0
 	bne.w	.l254F0
-	dc.w	$33F9,$0001,$7FA6,$0001,$7FAA
-	dc.w	$33FC,$0000,$0001,$7FAC
+	move.w	$17FA6.l,$17FAA.l
+	move.w	#$0,$17FAC.l
 	bra.w	Sub_4050C
 .l254F0	cmpi.w	#$18,d0
 	bne.w	Sub_4050C
-	dc.w	$33F9,$0001,$7FA6,$0001,$7FAA
-	dc.w	$33F9,$0001,$7FA8,$0001,$7FAC
+	move.w	$17FA6.l,$17FAA.l
+	move.w	$17FA8.l,$17FAC.l
 Sub_4050C
 	bsr.w	Sub_40532
 Sub_40510
@@ -783,7 +783,7 @@ InitializeGameStructures						;Random team pairs for all 8 gstruct games, none o
 	ori.b	#$2,d1
 	ori.b	#$2,d1
 Sub_40532
-	dc.w	$50F9,$0001,$8A98
+	st.b	$18A98.l
 	clr.l	d3
 	move.w	(HomeTeam).l,d1
 	bset	d1,d3
@@ -827,31 +827,31 @@ Sub_4057C
 	dbra	d2,.l25590
 	move.w	#$4000,d0
 	bsr.w	SuperDiv
-	dc.w	$33C0,$0001,$8AA4
+	move.w	d0,$18AA4.l
 	move.w	#$8,d0
 	bsr.w	SuperDiv
-	dc.w	$33C0,$0001,$8AA2
-	dc.w	$4A79,$0001,$8BF8
+	move.w	d0,$18AA2.l
+	tst.w	$18BF8.l
 	beq.w	.l25620
-	dc.w	$0C79,$0001,$0001,$8AA2
+	cmpi.w	#$1,$18AA2.l
 	bne.w	.l2560C
-	dc.w	$33FC,$0003,$0001,$8AA2
+	move.w	#$3,$18AA2.l
 	bra.w	.l25620
-.l2560C	dc.w	$0C79,$0002,$0001,$8AA2
+.l2560C	cmpi.w	#$2,$18AA2.l
 	bne.w	.l25620
-	dc.w	$33FC,$0004,$0001,$8AA2
+	move.w	#$4,$18AA2.l
 .l25620	moveq	#$10,d0
 	bsr.w	SuperDiv
-	dc.w	$33C0,$0001,$8AA0
+	move.w	d0,$18AA0.l
 	moveq	#$4,d0
 	bsr.w	SuperDiv
-	dc.w	$33C0,$0001,$8A9E
+	move.w	d0,$18A9E.l
 	moveq	#$8,d0
 	bsr.w	SuperDiv
-	dc.w	$33C0,$0001,$8A9C
+	move.w	d0,$18A9C.l
 	moveq	#$20,d0
 	bsr.w	SuperDiv
-	dc.w	$33C0,$0001,$8A9A
+	move.w	d0,$18A9A.l
 	moveq	#$4,d0
 	lea.l	(a3),a0
 .l25654	move.w	(sp)+,(a0)+
