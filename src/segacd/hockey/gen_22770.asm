@@ -180,20 +180,48 @@ SetPlayerSide
 	ble.w	.ex
 	move.w	#$1E,d3
 .ex	rts
-setplayerTbl1	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0016
-	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$00DA
-	dc.w	$6100,$931C,$0839,$0000,$0001,$7F6A,$6600,$006A
-	dc.w	$0839,$0002,$0001,$7F78,$6600,$000E,$0839,$0000
-	dc.w	$0001,$7F68,$6600,$0052,$0839,$0001,$0001,$7F78
-	dc.w	$6600,$0052,$4A79,$0001,$80E6,$6700,$003C,$0479
-	dc.w	$0AAA,$0001,$80E8,$6400,$0030,$08F9,$0003,$0001
-	dc.w	$8D64,$5379,$0001,$80E6,$0C79,$003D,$0001,$80E6
-	dc.w	$6E00,$0016,$0C79,$003C,$0001,$80E6,$6D00,$000A
-	dc.w	$3F3C,$0002,$6100,$9626,$5279,$0001,$7474,$4CDF
-	dc.w	$7FFF,$4E75,$4A79,$0001,$93B6,$6700,$FFEC,$0479
-	dc.w	$0AAA,$0001,$93B8,$6400,$FFE0,$08F9,$0003,$0001
-	dc.w	$8D64,$0839,$0007,$0001,$7F78,$6600,$FFCC,$5379
-	dc.w	$0001,$93B6,$6000,$FFC2
+; Vertical interrupt handler of the ice setup
+SetupIceVBlankHandler
+; Vertical interrupt body: dma list, palettes and the sub CPU handshake
+VBlankMainHandler	movem.l	d0-d7/a0-a6,-(sp)
+	btst.b	#$2,$18D64.l
+	bne.w	.l22ADC
+	bclr.b	#$0,$18D64.l
+	beq.w	.l22AD8
+	bsr.w	VBlankDmaList
+.l22AD8	bsr.w	ForceBlackStep
+.l22ADC	btst.b	#$0,$17F6A.l
+	bne.w	.l22B50
+	btst.b	#$2,$17F78.l
+	bne.w	.l22B00
+	btst.b	#$0,$17F68.l
+	bne.w	.l22B50
+.l22B00	btst.b	#$1,$17F78.l
+	bne.w	.l22B5C
+	tst.w	$180E6.l
+	beq.w	.l22B50
+	subi.w	#$AAA,$180E8.l
+	bcc.w	.l22B50
+	bset.b	#$3,$18D64.l
+	subq.w	#$1,$180E6.l
+	cmpi.w	#$3D,$180E6.l
+	bgt.w	.l22B50
+	cmpi.w	#$3C,$180E6.l
+	blt.w	.l22B50
+	move.w	#$2,-(sp)
+	bsr.w	GateArrayCommandSend
+.l22B50	addq.w	#$1,$17474.l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+.l22B5C	tst.w	$193B6.l
+	beq.w	.l22B50
+	subi.w	#$AAA,$193B8.l
+	bcc.w	.l22B50
+	bset.b	#$3,$18D64.l
+	btst.b	#$7,$17F78.l
+	bne.w	.l22B50
+	subq.w	#$1,$193B6.l
+	bra.w	.l22B50
 vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: falls
 									;into IRQ7
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -203,7 +231,8 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 .nograph	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$6100,$0064,$207C,$000B,$BD30,$3039,$0001,$7F66
+; Vertical interrupt: runs the dma list
+VBlankDmaList	dc.w	$6100,$0064,$207C,$000B,$BD30,$3039,$0001,$7F66
 	dc.w	$3239,$0001,$8D32,$6100,$9D0A,$2C79,$0001,$91CA
 	dc.w	$BDFC,$0001,$8D6A,$6700,$E428,$3226,$3026,$2066
 	dc.w	$6100,$9CF0,$BDFC,$0001,$8D6A,$6E00,$FFEE,$4E75
@@ -218,7 +247,8 @@ dodmalist
 	cmpa.l	#$18D6A,a6
 	bgt.w	.loop
 	rts
-L3DC16	move.w	$18D30.l,d0
+; Waits for the sub CPU and writes the dma list
+DmaListWait	move.w	$18D30.l,d0
 	addi.w	#$2,d0
 	bsr.w	SetVramWriteAddr2
 .loop	btst.b	#$4,$FF800E.l
@@ -463,10 +493,11 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	cmpi.w	#$1A,d2
 	blt.w	.next
 	moveq	#$18,d2
-.next	lea.l	showzamTbl1.l,a1
+.next	lea.l	showzamData.l,a1
 	move.w	(a1,d2.w),d2
 	bra.w	SetSframe
-showzamTbl1	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
+; Data that follows showzam (strings, small tables)
+showzamData	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
 	dc.w	$0007,$0008,$0007,$0006,$0005
 SetSframe
 	cmpi.w	#$40,d6
@@ -595,7 +626,7 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 									;list, only when dfclock is set; with gmode2 bit 1 (penalty shot /
 									;shootout) shootoutclock is shown instead of gameclock. a5 = dma list
 	btst	#$7,$17F6A.l		;sfhor
-	beq.w	showclockSub1
+	beq.w	showclockVertical
 	btst	#$0,$17F78.l		;shootout
 	bne.w	.x
 	move.l	a1,-(sp)
@@ -636,10 +667,12 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 	adda.w	d0,a1
 	jsr	(print).l
 	rts
-showclockTbl1	dc.w	$0004,$3000,$0004,$3100,$0004,$3200,$0004,$3300
+; Data that follows showclock (strings, small tables)
+showclockData	dc.w	$0004,$3000,$0004,$3100,$0004,$3200,$0004,$3300
 	dc.w	$0004,$3400,$0004,$3500,$0004,$3600,$0004,$3700
 	dc.w	$0004,$3800,$0004,$3900
-showclockSub1
+; showclock: vertical rink case
+showclockVertical
 	bclr	#$3,(disflags).l
 	beq.w	rtss2
 	btst	#$3,$17F6C.l
@@ -785,7 +818,8 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	move.w	d3,$6(a3)
 	move.w	$6(a1,d2.w),$4(a3)		;flip bits
 	bra.w	addframe2
-checkssoTbl1	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
+; Data that follows checksso (strings, small tables)
+checkssoData	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
 	dc.w	$0074,$0000,$0002,$0000,$0074,$FF9C,$0001,$1000		;.xspot = 116, .yspot = 100
 	dc.w	$0000,$FF9C,$0000,$1000,$FF8C,$FF9C,$0001,$1800
 	dc.w	$FF8C,$0000,$0002,$0800,$FF8C,$0064,$0001,$0800

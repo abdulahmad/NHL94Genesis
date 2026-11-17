@@ -65,13 +65,14 @@ PrintNameCursor						;Name entry: the " < " cursor
 	String	CC_Font1Pri,$4,$13
 	add.w	d4,(printx).l
 	tst.w	$1A566.l
-	beq.w	PrintNameCursor_1
+	beq.w	PrintNameCursorExit
 	jsr	(printz).l
 	String	' < '
-PrintNameCursor_1	rts
+; Return of PrintNameCursor
+PrintNameCursorExit	rts
 PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, cursoron)
 	tst.w	$1A566.l
-	beq.w	PrintNameCursor_1
+	beq.w	PrintNameCursorExit
 	movea.l	#ThreeStars,a1
 	move.w	#$4,(a1)
 	move.b	#$0,$3(a1)
@@ -149,7 +150,8 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	jsr	(print).l
 .next2	move.w	$1A38C.l,$1A38E.l
 	rts
-MoveLogArrowsTbl1	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
+; Data that follows MoveLogArrows (strings, small tables)
+MoveLogArrowsData	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
 GetNameLength						;namelength = length of the name being entered
 	
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -183,7 +185,8 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-PrintNameFieldStr1	dc.b	'ABCDEFGHIJKLMNOP'
+; Data that follows PrintNameField (strings, small tables)
+PrintNameFieldTexts	dc.b	'ABCDEFGHIJKLMNOP'
 NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
 	subq.w	#$8,(a2)
 	subq.w	#$1,(a4)
@@ -425,7 +428,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
 	beq.w	.next
-	jmp	(CrowdMeterScreenSub2).l
+	jmp	(StatsScreenFadeIn).l
 .next	tst.w	$17E62.l
 	bne.w	.right
 	btst	#$6,d3
@@ -458,7 +461,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 PrintRecordPage
 	tst.w	$17E62.l
 	beq.w	PrintRecordTitlesBody
-	bra.w	ClearRecordAreaSub1
+	bra.w	ClearRecordAreaRows
 PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRecTitles,
 	
 	movea.l	#$272A2,a1
@@ -470,7 +473,8 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 	movea.l	#$272F4,a1
 .0	jsr	(printsmall).l
 	rts
-PrintRecordTitlesTbl1	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
+; Data that follows PrintRecordTitles (strings, small tables)
+PrintRecordTitlesData	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
 	dc.b	'%   Win-Loss-Tie'
 	dc.b	$FD,$04,$FC,$19,'Use A+C to c'
 	dc.b	'lear ALL win rec'
@@ -564,7 +568,8 @@ ClearRecordArea						;Record Holders: erase the record rows ($28 x $12), keeping
 	move.w	(sp)+,(printx).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-ClearRecordAreaSub1
+; Clears the record rows: prints the row prefix and loops over the rows
+ClearRecordAreaRows
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$A,CC_SetFont,$0
@@ -629,7 +634,8 @@ ClearRecordAreaSub1
 	dbra	d7,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-ClearRecordAreaTbl1	dc.b	$00,'(              '
+; Data that follows ClearRecordArea (strings, small tables)
+ClearRecordAreaData	dc.b	$00,'(              '
 	dc.b	'                '
 	dc.b	'        ',$00,$06,'by ',$00,$00,$08
 	dc.b	' vs. ',$00

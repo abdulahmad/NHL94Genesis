@@ -260,7 +260,8 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 .next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts
-L3816C	move.l	a6,-(sp)
+; Pushes the flag on the queue for setVram
+SetVramQueueFlag	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst.b	#$5,$FF800F.l
 	beq.b	.next
@@ -659,7 +660,7 @@ DecompressGraphicsQueue	move.l	a6,-(sp)
 	tst.l	$18AE4.l
 	beq.w	DoDMApro
 	movea.l	$18AE4.l,a1
-	bra.w	WeightedRandomSelectSub1
+	bra.w	QueueVramWriteFlag
 .next3	andi.w	#$7FFF,d0
 	add.w	d0,d4
 	bsr.w	DecompressBytecode
@@ -679,7 +680,7 @@ DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer
 	movea.l	#ThreeStars,a1
 	movea.l	#ThreeStars,a3
 	movea.l	#$18AE4,a4
-	movea.l	#WeightedRandomSelectSub1,a5
+	movea.l	#QueueVramWriteFlag,a5
 	movea.l	#DoDMApro,a6
 	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	d1,d3

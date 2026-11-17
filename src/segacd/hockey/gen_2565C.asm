@@ -187,7 +187,8 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	add.w	d2,d4
 	dbra	d0,.loop2
 	rts
-AddPlayoffTeamStatsTbl1	dc.w	$0C0E,$0A0A
+; Data that follows AddPlayoffTeamStats (strings, small tables)
+AddPlayoffTeamStatsData	dc.w	$0C0E,$0A0A
 ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into statsbuffer
 	
 	movea.l	#$B000,a0
@@ -813,31 +814,33 @@ ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digi
 	addi.b	#$30,d0
 	move.b	d0,(a1)+
 	rts
-L412C8	bclr.b	#$5,$FF800F.l
+; Address error screen: prints the error and the registers
+AddressErrorScreen	bclr.b	#$5,$FF800F.l
 	jsr	$39258.l
 	dc.b	$00,$12,$BD,$00,$00,$41,$64,$64,$72,$65,$73,$73,$20,$45,$72,$72	; .....Address Err
 	dc.b	$6F,$72	; or
 	move.l	$A(sp),d0
 	move.l	$2(sp),d1
-	bra.w	L4134E
+	bra.w	ErrorScreenPrint
 	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$18	; ........N....X..
 	dc.b	$BD,$00,$00,$49,$6C,$6C,$65,$67,$61,$6C,$20,$49,$6E,$73,$74,$72	; ...Illegal Instr
 	dc.b	$75,$63,$74,$69,$6F,$6E,$20,$2F,$00,$02,$22,$00,$60,$00,$00,$2C	; uction /..".`..,
 	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$16	; ........N....X..
 	dc.b	$BD,$00,$00,$44,$69,$76,$69,$73,$69,$6F,$6E,$20,$62,$79,$20,$7A	; ...Division by z
 	dc.b	$65,$72,$6F,$00,$20,$2F,$00,$02,$22,$00	; ero. /..".
-L4134E	movea.l	#$17EF2,a0
+; Error screen: prints a long as hex
+ErrorScreenPrint	movea.l	#$17EF2,a0
 	move.w	#$18,(a0)+
 	move.b	#$BD,(a0)+
 	move.b	#$0,(a0)+
 	move.b	#$2,(a0)+
 	move.l	d1,-(sp)
-	bsr.w	L4152A
+	bsr.w	PrintHexLong
 	move.b	#$BD,(a0)+
 	move.b	#$0,(a0)+
 	move.b	#$4,(a0)+
 	move.l	(sp)+,d0
-	bsr.w	L4152A
+	bsr.w	PrintHexLong
 	movea.l	#$17EF2,a1
 	jsr	$3926A.l
 	movea.l	#$C00000,a0
@@ -907,7 +910,8 @@ L4134E	movea.l	#$17EF2,a0
 	bclr.b	#$7,$FF800F.l
 	dbra	d0,.loop13
 	dc.w	$6000,$FFFE
-L4152A	moveq	#$7,d2
+; Prints d0 as 8 hex digits
+PrintHexLong	moveq	#$7,d2
 .loop	rol.l	#$4,d0
 	move.w	d0,d1
 	andi.w	#$F,d1

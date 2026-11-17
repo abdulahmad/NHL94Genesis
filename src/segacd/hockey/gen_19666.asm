@@ -88,7 +88,8 @@ SelectPenaltyShotSkater						;pick the skater for the penalty shot from team BA_
 .eligible	move.w	#$1,d0
 .exit	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-L347BA	bclr.b	#$1,$62(a3)
+; Penalty shot: fade out and show the skater selection
+SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	beq.w	.next19
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	forceblack
@@ -310,7 +311,7 @@ UpdatePenaltyShotEnd						;end the penalty shot when the goalie has the puck, th
 	bne.w	.finishshot
 	rts
 .finishshot	btst	#$6,$17F70.l
-	bne.w	EndPenaltyShotPlay_1
+	bne.w	EndPenaltyShotPlayExit
 	bset	#$6,$17F70.l
 	move.w	#$A,d0
 	jsr	(AddPenalty2).l
@@ -335,8 +336,10 @@ EndPenaltyShotPlay						;stop play after a penalty shot or shootout attempt: fre
 	move.b	$17F9C.l,$61(a0,d0.w)
 	movem.l	(sp)+,d0/a0
 	jsr	(CountShootoutGoals).l
-EndPenaltyShotPlay_1	rts
-L34CC6	bclr.b	#$4,$17F7C.l
+; Return of EndPenaltyShotPlay
+EndPenaltyShotPlayExit	rts
+; Penalty shot: clears the flags and the timers
+PenaltyShotCleanup	bclr.b	#$4,$17F7C.l
 	btst.b	#$0,$17F78.l
 	beq.w	.next
 	clr.w	$17BA8.l
@@ -374,7 +377,7 @@ L34CC6	bclr.b	#$4,$17F7C.l
 	bne.w	.next6
 	move.w	$18358.l,d0
 	cmp.w	$186BE.l,d0
-	bne.w	L3500C
+	bne.w	FaceoffContinueClock
 .next6	btst.b	#$3,$17F68.l
 	bne.w	Stop4Pen
 	move.w	$180EA.l,d0
@@ -507,7 +510,8 @@ UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change tim
 	bsr.w	SetLCmode2
 .exit	movea.l	(sp)+,a3
 	rts
-L3500C	jmp	(clockcont_0).l
+; Jumps back into clockcont
+FaceoffContinueClock	jmp	(clockcontAssists).l
 ChkGoalies						;computer pulls goalie on delayed penalty. Called from periodicevents
 	btst	#$0,$17F68.l		;check if clock running
 	bne.w	rtss2

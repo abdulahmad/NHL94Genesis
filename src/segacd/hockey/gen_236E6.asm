@@ -277,7 +277,7 @@ setupice_highlight
 	bsr.w	dodmalist
 	move.w	#$1C,(palcount).l
 	move.w	(sp)+,(disflags).l
-	move.l	#setplayerTbl1,(VBint).l
+	move.l	#SetupIceVBlankHandler,(VBint).l
 	bclr	#$0,(disflags).l
 	bclr	#$2,(disflags).l
 	bset	#$5,$FF800F.l
@@ -382,21 +382,24 @@ CopyTeamBlockMapDataFill
 	add.w	(a2)+,d4
 	adda.w	#$1C,a3
 	dbra	d0,.loop2
-	bra.w	defaultsprites_0Sub1
-defaultsprites_0						;objects which are tied to screen scrolling and have velocity: the 16
+	bra.w	SortObjectsInit
+; Start of defaultsprites
+defaultspritesStart						;objects which are tied to screen scrolling and have velocity: the 16
 	
 	
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	dc.w	$0009,$0000,$0000,$0000,$0000,$0009,$0000,$0000
 	dc.w	$0000,$0000,$0009,$0000,$0000,$0000,$0000,$0009
-defaultspritesTbl1	dc.w	$0000,$0000,$FFFF,$0188,$0000,$0007,$0000,$0000
+; Data that follows defaultsprites (strings, small tables)
+defaultspritesData	dc.w	$0000,$0000,$FFFF,$0188,$0000,$0007,$0000,$0000
 	dc.w	$FFFF,$0186,$0000,$0007,$0000,$0000,$FFFF,$0187
 	dc.w	$0000,$0007,$0000,$0000,$FFFF,$0189,$8000,$0007
 	dc.w	$0000,$0000,$FFFF,$034C,$0000,$0007,$0000,$0000
 	dc.w	$FFFF,$034D,$0000,$0007,$0000,$0000,$FFFF,$0161
 	dc.w	$0000,$0005
-defaultsprites_0Sub1
+; Sets up the 16 sort objects from .list
+SortObjectsInit
 	clr.w	d6
 	movea.l	#$17CC0,a1
 	lea	.list(pc),a2
@@ -761,7 +764,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 .po	bsr.w	GameOverCleanup
 	tst.w	$191CE.l
 	bne.s	.next
-	move.w	#$1,ScrollDisplayUpTbl1.l
+	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
 .next	bra.w	.next2
 	jsr	$48208.l
@@ -786,7 +789,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 GameOverCleanup
 	tst.w	$191CE.l
 	bne.s	.next
-	move.w	#$0,ScrollDisplayUpTbl1.l
+	move.w	#$0,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
 .next	bclr	#$5,$FF800F.l
 	tst.w	$18BFA.l

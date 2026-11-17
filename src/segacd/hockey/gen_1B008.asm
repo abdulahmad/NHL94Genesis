@@ -282,7 +282,7 @@ SetSPA
 	rts
 doplayeracc
 	tst.w	$34(a3)
-	beq.w	goalieacc_1
+	beq.w	goalieaccControlled
 	move.w	#$50C,d1
 	btst	#$4,$62(a3)
 	beq.w	.next
@@ -392,7 +392,7 @@ doplayeracc
 	bset	#$1,$63(a3)
 .next14	bsr.w	SetSPA
 	cmpi.w	#$2,d3
-	bhi.w	noturn_1
+	bhi.w	noturnFlag
 	rts
 goalieacc						;goalie gets acc. in direction d0. Turns facedir one step toward d0
 	ori.b	#$10,d0
@@ -400,7 +400,8 @@ goalieacc						;goalie gets acc. in direction d0. Turns facedir one step toward 
 	dc.l	$FFF0
 	dc.w	$FFF0
 	dc.w	$FFF0
-goalieacc_1	btst	#$3,$62(a3)
+; goalieacc: the controlled goalie case
+goalieaccControlled	btst	#$3,$62(a3)
 	beq.w	.normalgoalie
 	movem.w	d0,-(sp)
 	move.w	$17BE0.l,d0
@@ -571,14 +572,15 @@ noturn						;reverse the acc. direction when skating backwards, then falls into
 	bne.w	.next2
 	move.w	#$53E,d1
 .next2	btst	#$1,$63(a3)
-	bne.w	noturn_1
+	bne.w	noturnFlag
 	bsr.w	SetSPA
-noturn_1	btst	#$4,$62(a3)
+; noturn: flag 4 swaps the direction
+noturnFlag	btst	#$4,$62(a3)
 	beq.w	playeracc
 	eori.w	#$4,d2		;opposite direction
 playeracc
 	asl.w	#$2,d2
-	lea.l	stopnaTbl1(pc),a0
+	lea.l	stopnaData(pc),a0
 	move.w	$2(a0,d2.w),d1
 	move.w	(a0,d2.w),d0
 	move.w	$50(a3),d2
@@ -759,7 +761,8 @@ stopna						;slow player a3 by 150 on each axis, no animation change. Falls in f
 	bpl.w	rtss2
 	clr.w	$2A(a3)
 	rts
-stopnaTbl1	dc.w	$0000,$00C8,$008D,$008D,$00C8,$0000,$008D,$FF73
+; Data that follows stopna (strings, small tables)
+stopnaData	dc.w	$0000,$00C8,$008D,$008D,$00C8,$0000,$008D,$FF73
 	dc.w	$0000,$FF38,$FF73,$FF73,$FF38,$0000,$FF73,$008D
 	dc.w	$0000,$0000
 UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words at
@@ -795,7 +798,8 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 	lsr.w	#$1,d0		;word offset -> index
 	movem.l	(sp)+,d1/a1
 	rts
-WeightedRandomSelectSub1
+; Pushes the vram write flag on the gate array queue
+QueueVramWriteFlag
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l

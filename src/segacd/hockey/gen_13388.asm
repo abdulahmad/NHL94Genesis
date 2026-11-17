@@ -50,7 +50,8 @@ ReadStatColumnTable
 	move.l	(sp)+,d7
 	add.w	(a1,d0.w),d2
 	rts
-ReadStatColumnTbl1	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
+; Data that follows ReadStatColumn (strings, small tables)
+ReadStatColumnData	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
 	dc.w	$B09C,$0000,$00B6,$FFFF,$00D0,$FFFF,$00B6,$00D0
 	dc.w	$00EA,$FFFF,$0104,$FFFF,$0016,$5361,$7665,$7320
 	dc.b	'Shots Save %  ',$00,$06
@@ -103,9 +104,10 @@ CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrow
 	dc.b	$00,$01,$7C,$DE,$80,$F9,$00,$01,$7C,$DC,$61,$00,$00,$F8,$4E,$B9	; ..|.....|.a...N.
 	dc.b	$00,$03,$8D,$8C,$00,$12,$FD,$04,$FA,$02,$50,$65,$61,$6B,$20,$4C	; ..........Peak L
 	dc.b	$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$DA,$61,$00,$00,$D6	; evel..09..|.a...
-L2E62A	movem.l	d0-d7/a0-a6,-(sp)
+; Crowd meter: reads the crowd record and prints the level
+CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	$193BA.l
-	bmi.w	L2E6F8
+	bmi.w	CrowdMeterScreenExit
 	move.w	$17FAE.l,d1
 	ext.l	d1
 	movea.l	#$BC000,a0
@@ -143,7 +145,8 @@ L2E62A	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$38F80.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
-L2E6F8	movem.l	(sp)+,d0-d7/a0-a6
+; Crowd meter: restores the registers and returns
+CrowdMeterScreenExit	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	ext.l	d0
 	asl.w	#$2,d0
@@ -234,7 +237,8 @@ CrowdMeterFadeIn
 	dc.w	$0003,$8F6E,$0006,$FE00,$0000,$7040,$7220,$343C
 	dc.w	$07FF,$4EB9,$0003,$8C06,$33FC,$0018,$0001,$8D62
 	dc.w	$4CDF,$0403,$4E75
-CrowdMeterScreenSub2
+; Black out, set the display flags and fade a stats screen in
+StatsScreenFadeIn
 	jsr	(forceblack).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -326,10 +330,12 @@ CrowdMeterScreenSub2
 	dc.b	$30,$39,$00,$01,$8A,$D2,$04,$40,$00,$01,$6A,$00,$00,$0C,$0C,$6A	; 09.....@..j....j
 	dc.b	$FF,$FF,$00,$28,$6D,$00,$00,$0C,$35,$40,$00,$28,$4E,$B9,$00,$03	; ...(m...5@.(N...
 	dc.b	$D4,$26,$33,$DF,$00,$01,$8A,$D4,$33,$DF,$00,$01,$8A,$D2,$4E,$75	; .&3.....3.....Nu
-L2EC7A	move.w	#$D,$18D5A.l
+; Stats rows: starts at row $D
+StatsRowsInit	move.w	#$D,$18D5A.l
 	move.w	$18AD4.l,d1
 	moveq	#$0,d0
-L2EC8A	move.w	#$5,$18D58.l
+; Stats rows: prints one row of the table
+StatsRowsLoop	move.w	#$5,$18D58.l
 	move.w	#$A000,$18D5C.l
 	cmp.w	$18AD2.l,d0
 	bne.w	.next
@@ -337,13 +343,15 @@ L2EC8A	move.w	#$5,$18D58.l
 .next	jsr	$38F6E.l
 	dc.b	$00,$18,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20	; ..              
 	dc.b	$20,$20,$20,$20,$20,$20,$20,$20	;         
-L2ECCA	tst.w	d0
-	bne.w	L2ECEE
+; Stats rows: prints "no goalie" when the team has none
+StatsRowNoGoalie	tst.w	d0
+	bne.w	StatsRowGoalieName
 	move.w	#$B,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
-	bra.w	L13D4E
-L2ECEE	movea.l	$1E(a2),a1
+	bra.w	StatsRowsNext
+; Stats rows: finds the goalie name
+StatsRowGoalieName	movea.l	$1E(a2),a1
 	adda.w	$0(a1),a1
 	move.w	d0,d2
 	subi.w	#$1,d2
@@ -365,9 +373,10 @@ L2ECEE	movea.l	$1E(a2),a1
 	move.w	#$4,(a1)
 	move.w	#$5,$18D58.l
 	jsr	$38F80.l
-L13D4E	addi.w	#$1,$18D5A.l
+; Stats rows: next row
+StatsRowsNext	addi.w	#$1,$18D5A.l
 	addi.w	#$1,d0
-	dbra	d1,L2EC8A
+	dbra	d1,StatsRowsLoop
 	rts
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
 	movem.l	d1/a0,-(sp)
@@ -414,13 +423,14 @@ GetPlayerCount
 	bne.w	.loop
 	movem.l	(sp)+,a0
 	rts
-L2EDE2	move.w	$17474.l,d1
+; Waits for the next frame count change, then runs the sub CPU step
+FrameWaitStep	move.w	$17474.l,d1
 .loop	cmp.w	$17474.l,d1
 	beq.w	.loop
 	dc.w	$6100,$04FC
 	jsr	$37496.l
 	tst.b	d1
-	beq.w	L2EDE2
+	beq.w	FrameWaitStep
 	rts
 	bclr.b	#$0,$17F74.l
 	bsr.w	forceblack
@@ -452,10 +462,11 @@ L2EDE2	move.w	$17474.l,d1
 	clr.l	$17DD2.l
 	move.w	#$18,$18D62.l
 	moveq	#$1,d7
-L2EEB0	move.w	$17474.l,d0
+; Waits until d7 frames have passed
+WaitFramesD7	move.w	$17474.l,d0
 	sub.w	$17476.l,d0
 	cmp.w	d0,d7
-	bhi.w	L2EEB0
+	bhi.w	WaitFramesD7
 	move.w	$17474.l,$17476.l
 	tst.w	$1AD56.l
 	bmi.w	.next
@@ -482,9 +493,9 @@ L2EEB0	move.w	$17474.l,d0
 	beq.w	.next3
 	move.w	d1,d5
 	andi.w	#$F,d5
-	beq.w	L2F0F8
+	beq.w	DirectionPressCheck
 .next3	btst	#$3,d0
-	bne.w	L2F0F8
+	bne.w	DirectionPressCheck
 	cmpi.w	#$FF60,$0(a5)
 	bgt.w	.next4
 	move.w	#$0,$0(a5)
@@ -548,11 +559,11 @@ L2EEB0	move.w	$17474.l,d0
 	bsr.w	setpads
 	bsr.w	UpdateCameraPos
 	jsr	$3DD16.l
-	bra.w	L2EEB0
+	bra.w	WaitFramesD7
 .next9	bset.b	#$5,$17F6A.l
 	eori.w	#$4,d5
 	asl.w	#$2,d5
-	lea.l	L2F0D8(pc),a0
+	lea.l	DirectionStepTable(pc),a0
 	move.w	(a0,d5.w),d0
 	add.w	$0(a5),d0
 	cmpi.w	#$88,d0
@@ -573,10 +584,12 @@ L2EEB0	move.w	$17474.l,d0
 	ori.w	#$E000,$17DC8.l
 	bsr.w	UpdateCameraPos
 	jsr	$3DD16.l
-	bra.w	L2EEB0
-L2F0D8	dc.b	$00,$00,$00,$02,$00,$02,$00,$02,$00,$02,$00,$00,$00,$02,$FF,$FE	; ................
+	bra.w	WaitFramesD7
+; Word pairs: x and y step for each of the 8 directions
+DirectionStepTable	dc.b	$00,$00,$00,$02,$00,$02,$00,$02,$00,$02,$00,$00,$00,$02,$FF,$FE	; ................
 	dc.b	$00,$00,$FF,$FE,$FF,$FE,$FF,$FE,$FF,$FE,$00,$00,$FF,$FE,$00,$02	; ................
-L2F0F8	st.b	$18(a5)
+; Checks the direction buttons after a wait
+DirectionPressCheck	st.b	$18(a5)
 	btst	#$5,d1
 	beq.w	.next
 	btst.b	#$0,$17F74.l
@@ -608,7 +621,7 @@ L2F0F8	st.b	$18(a5)
 	ori.w	#$E000,d0
 	move.w	d0,$17DC8.l
 	move.w	(sp)+,d0
-	bra.w	L2EEB0
+	bra.w	WaitFramesD7
 .next3	bsr.w	adda4
 	jsr	$3F03E.l
 	jsr	$3DD16.l
@@ -625,12 +638,12 @@ L2F0F8	st.b	$18(a5)
 	btst.b	#$0,$17F74.l
 	bne.w	.next6
 	btst	#$7,d1
-	beq.w	L2EEB0
+	beq.w	WaitFramesD7
 	jsr	$2F39C.l
 	bclr.b	#$1,$17F6E.l
 	bset.b	#$0,$17F74.l
 	bne.w	.next6
-	bra.w	L2EEB0
+	bra.w	WaitFramesD7
 .next6	btst	#$7,d1
 	bne.w	.next8
 	btst	#$6,d1
@@ -638,13 +651,13 @@ L2F0F8	st.b	$18(a5)
 	btst	#$4,d1
 	bne.w	.next9
 	btst	#$5,d1
-	beq.w	L2EEB0
+	beq.w	WaitFramesD7
 	bset.b	#$6,$17F72.l
 	bclr.b	#$0,$17F74.l
 	jsr	$2F3D6.l
 	bsr.w	adda4
 	jsr	$3F03E.l
-	bra.w	L2EEB0
+	bra.w	WaitFramesD7
 .next7	jmp	$2EEB0.l
 .next8	clr.w	$18AD2.l
 	bset.b	#$1,$17F74.l

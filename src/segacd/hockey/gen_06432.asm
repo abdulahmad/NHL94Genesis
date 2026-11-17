@@ -11,7 +11,8 @@
 	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	rts
-L22018	btst.b	#$5,$FF800E.l
+; disc only: vertical interrupt entry; hands the frame to the sub CPU through the gate array flags, then runs the game vblank (VBint)
+VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	beq.w	.ex
 	bset.b	#$2,$FF800F.l
 	move.l	#$2203A,-(sp)

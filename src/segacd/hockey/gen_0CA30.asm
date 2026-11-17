@@ -101,7 +101,8 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	bsr.w	ResetShooterScroll
 	bsr.w	ShooterScreenTitles
 	move.w	#$0,(TestList).l
-ShootoutShooters_1	bsr.w	ShootersSelectDraw
+; Redraws the shooter selection screen: list, rows and frame
+ShootoutShootersRedraw	bsr.w	ShootersSelectDraw
 	bsr.w	ShooterScreenRows
 	bsr.w	ShooterScreenFrame
 ShootersLoop						;Shootout shooters: the input loop
@@ -125,7 +126,7 @@ ShootersLoop						;Shootout shooters: the input loop
 	btst	#$5,d1
 	bne.w	ShooterSelectList
 	bra.w	ShootersLoop
-ShootersExit	jmp	(CrowdMeterScreenSub2).l
+ShootersExit	jmp	(StatsScreenFadeIn).l
 ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	#$C000,d7
 	movea.l	#$1A41C,a0
@@ -176,7 +177,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	jsr	(ReadActiveJoypad).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
-	bne.w	ShootoutShooters_1
+	bne.w	ShootoutShootersRedraw
 	btst	#$5,d1
 	bne.w	.next
 	moveq	#$1,d0
@@ -220,7 +221,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	movea.l	#$1A42A,a0
 .11	asl.w	#$1,d2
 	move.w	d0,(a0,d2.w)
-	bra.w	ShootoutShooters_1
+	bra.w	ShootoutShootersRedraw
 PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
@@ -265,13 +266,14 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	addi.w	#$1,d2
 	dbra	d1,.loop3
 	rts
-PrintShooterListTbl1	dc.b	$00,$12,'    Overall   '
+; Data that follows PrintShooterList (strings, small tables)
+PrintShooterListData	dc.b	$00,$12,'    Overall   '
 	dc.b	' ]',$1F,':',$00,$0A,$00,$12,'    Over'
 	dc.b	'all    ]',$1B,$0F,$00,$0A
 ShootersPick
 	cmp.w	(TestList).l,d0
 	beq.w	ShootersLoop
-	bra.w	ShootersSelect_1
+	bra.w	ShootersSelectRedraw
 ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 ... 4 (not
 	
 	cmpi.w	#$5,(TestList).l
@@ -279,13 +281,14 @@ ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 
 	add.w	(TestList).l,d0
 	bmi.w	ShootersSelect
 	cmpi.w	#$5,d0
-	blt.w	ShootersSelect_1
+	blt.w	ShootersSelectRedraw
 	clr.w	d0
-	bra.w	ShootersSelect_1
+	bra.w	ShootersSelectRedraw
 ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the player box,
 	
 	move.w	#$4,d0
-ShootersSelect_1	move.w	d0,(TestList).l
+; Stores the chosen shooter and redraws the rows and frame
+ShootersSelectRedraw	move.w	d0,(TestList).l
 	bsr.w	ShooterScreenRows
 	bsr.w	ShooterScreenFrame
 	bra.w	ShootersLoop		;back to the input loop
@@ -461,7 +464,8 @@ ScoutEmptyTxt						;empty String: no name number in the crowd record
 	dc.w	6							;the String 'by ' of the next label
 	dc.b	'by ',$00
 ScoutSpaceTxt						;space after the name
-ScoutSpaceTxtTbl1	dc.w	$0004,$2000
+; Data that follows ScoutSpaceTxt (strings, small tables)
+ScoutSpaceTxtData	dc.w	$0004,$2000
 GetTeamCity						;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
 									;Teamname offset)
 	movem.l	d0-d7/a0/a2-a6,-(sp)

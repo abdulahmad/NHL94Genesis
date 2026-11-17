@@ -4,7 +4,8 @@ checkpuckcoll_sfx						;Entered from checkpuckcoll. Puck in the air: sfx 5 once 
 	beq.w	rtss2
 	move.w	#$5,-(sp)
 	bra.w	sfx
-L3B882	cmpi.w	#$190,$14(a3)
+; Puck collision: checks the position limits
+PuckCollisionLimits	cmpi.w	#$190,$14(a3)
 	bgt.w	.next
 	cmpi.w	#$FE70,$14(a3)
 	bgt.w	.next2
@@ -25,7 +26,7 @@ L3B882	cmpi.w	#$190,$14(a3)
 	sub.w	$14(a3),d5
 	cmpi.w	#$16,d5
 	bgt.w	.next3
-	bsr.w	L3B912
+	bsr.w	PuckCollisionCheck
 	addq.w	#$1,d1
 	bra.w	.loop
 .next3	move.w	(a0,d0.w),d1
@@ -36,16 +37,17 @@ L3B882	cmpi.w	#$190,$14(a3)
 	sub.w	(a2,d4.w),d5
 	cmpi.w	#$16,d5
 	bgt.w	.ex
-	bsr.w	L3B912
+	bsr.w	PuckCollisionCheck
 	subq.w	#$1,d1
 	bne.w	.loop2
 .ex	rts
-L3B912	movem.l	d0-d7/a0-a3,-(sp)
+; Puck collision: tests the object
+PuckCollisionCheck	movem.l	d0-d7/a0-a3,-(sp)
 	lsr.w	#$1,d4
 	cmp.w	$17BE0.l,d4
-	beq.w	L20A36
+	beq.w	PuckCollisionReturn
 	cmpi.w	#$B,d4
-	bgt.w	L20A36
+	bgt.w	PuckCollisionReturn
 	asl.w	#$7,d4
 	movea.l	#$17480,a2
 	adda.w	d4,a2
@@ -55,11 +57,11 @@ L3B912	movem.l	d0-d7/a0-a3,-(sp)
 	cmp.w	$19368.l,d4
 	beq.w	.next
 	cmp.w	$1936A.l,d4
-	bne.w	L20A36
+	bne.w	PuckCollisionReturn
 .next	btst.b	#$2,$62(a2)
-	bne.w	L20A36
+	bne.w	PuckCollisionReturn
 	tst.b	$5E(a2)
-	bne.w	L20A36
+	bne.w	PuckCollisionReturn
 	btst.b	#$2,$63(a2)
 	bne.w	.next3
 	cmpi.w	#$5,$18(a3)
@@ -90,38 +92,41 @@ L3B912	movem.l	d0-d7/a0-a3,-(sp)
 .next2	cmp.l	d1,d0
 	bhi.w	.next3
 	bsr.w	puckstick
-	bra.w	L20A36
+	bra.w	PuckCollisionReturn
 .next3	tst.w	$34(a2)
-	beq.w	L3BA8C
+	beq.w	PuckCollisionTable
 	btst.b	#$3,$64(a2)
-	bne.w	L20A36
+	bne.w	PuckCollisionReturn
 	move.w	$0(a2),d0
 	sub.w	$0(a3),d0
 	cmpi.w	#$8,d0
-	bgt.w	L20A36
+	bgt.w	PuckCollisionReturn
 	cmpi.w	#$FFF8,d0
-	blt.w	L20A36
+	blt.w	PuckCollisionReturn
 	move.w	$14(a2),d1
 	sub.w	$14(a3),d1
 	cmpi.w	#$8,d1
-	bgt.w	L20A36
+	bgt.w	PuckCollisionReturn
 	cmpi.w	#$FFF8,d1
-	blt.w	L20A36
+	blt.w	PuckCollisionReturn
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmpi.l	#$40,d0
-	bhi.w	L20A36
+	bhi.w	PuckCollisionReturn
 	bsr.w	puckbody
-L3BA36
-L20A36	movem.l	(sp)+,d0-d7/a0-a3
+; Puck collision: restores the registers
+PuckCollisionExit
+; Puck collision: return
+PuckCollisionReturn	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
 	dc.b	$00,$0D,$00,$0D,$00,$0E,$00,$0E,$00,$0E,$00,$0E,$00,$0F,$00,$0F	; ................
 	dc.b	$00,$0F,$00,$0F,$00,$0F,$00,$0F,$00,$90,$00,$90,$00,$A9,$00,$A9	; ................
 	dc.b	$00,$A9,$00,$A9,$00,$A9,$00,$A9,$00,$A9,$00,$A9,$00,$C4,$00,$C4	; ................
 	dc.b	$00,$C4,$00,$C4,$00,$E1,$00,$E1,$00,$E1,$00,$E1,$00,$E1,$00,$E1	; ................
-L3BA8C	move.l	a0,-(sp)
+; Puck collision: table lookup
+PuckCollisionTable	move.l	a0,-(sp)
 	movea.l	#$3BA3C,a0
 	clr.w	d0
 	move.b	$68(a2),d0
@@ -197,16 +202,16 @@ L3BA8C	move.l	a0,-(sp)
 	cmp.l	$17EB6.l,d0
 	movem.w	(sp)+,d0-d1
 	bhi.w	.next14
-	bsr.w	L3C002
-	bra.w	L3BA36
+	bsr.w	PuckCollisionStick
+	bra.w	PuckCollisionExit
 .next14	bclr.b	#$2,$17F72.l
-	beq.w	L3BA36
+	beq.w	PuckCollisionExit
 	move.w	$17BE0.l,d0
 	cmp.w	$52(a2),d0
-	beq.w	L3BA36
+	beq.w	PuckCollisionExit
 	move.w	#$5,-(sp)
 	bsr.w	sfx
-	bra.w	L3BA36
+	bra.w	PuckCollisionExit
 puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d0 =
 									;distance^2 (from checkpuckcoll .ccx). A stick check on the puck carrier
 									;can steal the puck (Stk rolls, smaller ranges when the carrier is in the
@@ -444,7 +449,8 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	exg.l	a2,a3
 rtss2						;shared rts
 	rts
-L3C002	btst.b	#$4,$17F68.l
+; Puck collision: stick check
+PuckCollisionStick	btst.b	#$4,$17F68.l
 	bne.w	rtss2
 	clr.w	d2
 	cmpi.w	#$8,$18(a3)
@@ -475,7 +481,7 @@ L3C002	btst.b	#$4,$17F68.l
 	eori.w	#$1,d0
 	add.w	d0,d2
 	add.w	d2,d2
-	lea.l	L3C23E(pc),a0
+	lea.l	PuckCollisionWords(pc),a0
 	move.w	(a0,d2.w),d0
 	moveq	#$F,d1
 	add.b	(a2,d0.w),d1
@@ -571,7 +577,8 @@ L3C002	btst.b	#$4,$17F68.l
 	bne.w	.loop4
 	clr.w	$2C(a3)
 	bra.w	puckglue
-L3C23E	dc.b	$00,$73,$00,$6E,$00,$70,$00,$72	; .s.n.p.r
+; Four words used by the stick check
+PuckCollisionWords	dc.b	$00,$73,$00,$6E,$00,$70,$00,$72	; .s.n.p.r
 deflect
 	st.b	$17BE0.l
 	move.w	#$1000,d0

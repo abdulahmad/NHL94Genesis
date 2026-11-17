@@ -468,7 +468,8 @@ TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per te
 	jsr	(appstring).l
 .next4	movem.l	(sp)+,d0-d7/a1-a6
 	rts
-PlayerCardScreenTbl1	dc.b	$00,$0A,'Record ',$00,$00,$08,' goa'
+; Data that follows PlayerCardScreen (strings, small tables)
+PlayerCardScreenData	dc.b	$00,$0A,'Record ',$00,$00,$08,' goa'
 	dc.b	'ls',$00,$08,' goal',$00,$00,$08,' sav'
 	dc.b	'es',$00,$08,' save',$00
 CopyString						;Copy String a1 (length word first) to a3
@@ -575,7 +576,8 @@ PrintRecordHolder						;Record holder line: RecByTxt ("by") then the holder's us
 .0	jsr	(appstring).l		;append the name
 .x	movem.l	(sp)+,d0-d7/a1-a6
 	rts
-PrintRecordHolderTbl1	dc.w	$0006,$6279,$2000
+; Data that follows PrintRecordHolder (strings, small tables)
+PrintRecordHolderData	dc.w	$0006,$6279,$2000
 PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opponent team
 									;(AppendRecordVs)
 	movem.l	d0-d7/a1-a6,-(sp)
@@ -591,7 +593,8 @@ PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opp
 	jsr	(appstring).l
 	movem.l	(sp)+,d0-d7/a1-a6
 	rts
-PrintRecordVsTbl1	dc.b	$00,$06,'vs. '
+; Data that follows PrintRecordVs (strings, small tables)
+PrintRecordVsData	dc.b	$00,$06,'vs. '
 AppendRecordHolder						;Append the user name of the record holder (byte 1 of record a0, or read
 									;record d0 / d1 when a0 is 0) to a1 (AppendUserName)
 	movem.l	d0-d7/a1-a2,-(sp)

@@ -1,6 +1,6 @@
 ; Installs the options-screen vblank handler and display flags.
 OptionsScreenSetup
-	move.l	#PickStartingGoalieTbl1,(VBint).l
+	move.l	#MenuVBlankHandler,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
@@ -163,7 +163,8 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .next2	jsr	(PlayerCardTimer).l
 .next3	dbra	d6,.loop
 .ex	rts
-ReadSetupPadsSub1
+; Sub CPU handshake that reads the pads for the setup screen
+SetupPadsSyncRead
 	clr.w	$18C16.l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -193,7 +194,8 @@ ReadSetupPadsSub1
 	clr.w	(OptNOP).l
 	clr.w	$18C0A.l
 	move.w	#$1,$18C08.l
-ReadSetupPadsSub2
+; Saves the playoff level, updates it and reads the pads through the sub CPU
+SetupPadsPlayoffLevelRead
 	move.w	$18C04.l,-(sp)
 	move.w	(sp),$18C0C.l
 	move.w	(sp)+,$18C0E.l

@@ -2,7 +2,8 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	
 	
 	
-UpdateRecordsTbl1	dc.w	$0004,$2000
+; Data that follows UpdateRecords (strings, small tables)
+UpdateRecordsData	dc.w	$0004,$2000
 	tst.w	$193BA.l
 	bmi.w	.ex
 	tst.w	$18C06.l
@@ -251,7 +252,8 @@ AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, s
 .x	movem.l	(sp)+,d0-d3/a0-a3
 	rts
 	dc.b	$00,$02	; ..
-L25E56	movem.l	d0-d7/a0-a6,-(sp)
+; Loads the records from the disc (loader command 9) and copies them to RAM
+LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$9,d7
 	jsr	$6044.w
 	movea.l	#$AFF60,a0
@@ -479,9 +481,12 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	subi.w	#$1,d0
 .4	movea.l	(sp)+,a6
 	rts
-CalcAttribTbl1	dc.w	$0202,$0202,$0406,$0204,$0204,$0606,$0402,$0202
-CalcAttribTbl2	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
-CalcAttribTbl3	dc.w	$0202,$0202,$0202,$0202,$0202,$0202,$0202,$0202
+; Rating weight table
+CalcAttribFirstTable	dc.w	$0202,$0202,$0406,$0204,$0204,$0606,$0402,$0202
+; Rating weight table
+CalcAttribSecondTable	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
+; Rating weight table
+CalcAttribThirdTable	dc.w	$0202,$0202,$0202,$0202,$0202,$0202,$0202,$0202
 DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, Card<player>)
 	movem.l	d0-d7/a1-a6,-(sp)
 	movea.l	$47D88.l,a0
@@ -544,7 +549,7 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$5,$FF800F.l
 	move.w	#$2,d4
-	move.l	#PickStartingGoalieTbl1,(VBint).l
+	move.l	#MenuVBlankHandler,(VBint).l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l
@@ -682,8 +687,9 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	move.w	#$1,$1A566.l
 	bsr.w	NameLetterGrid
 	clr.w	d0
-	bra.w	L267DA
-L2662C	bsr.w	GetNameLength
+	bra.w	NameEntryMoveCursor
+; Name entry: prints the prompt and the length of the name so far
+NameEntryPrompt	bsr.w	GetNameLength
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$05,$12,$00	; ......
 	tst.w	$1A566.l
@@ -709,7 +715,7 @@ L2662C	bsr.w	GetNameLength
 	tst.w	d1
 	beq.w	.loop
 .next3	btst	#$7,d1
-	bne.w	L268A6
+	bne.w	NameEntryDone
 	tst.w	$1A566.l
 	bne.w	.next4
 	move.w	#$1,d0
@@ -719,31 +725,31 @@ L2662C	bsr.w	GetNameLength
 	btst	#$0,d1
 	bne.w	.next5
 	btst	#$4,d1
-	beq.w	L2662C
+	beq.w	NameEntryPrompt
 	bsr.w	NameLetterGrid
 	clr.w	d0
 	bra.w	.next5
 .next4	moveq	#-1,d0
 	btst	#$6,d1
-	bne.w	L267DA
+	bne.w	NameEntryMoveCursor
 	neg.w	d0
 	btst	#$5,d1
-	bne.w	L267DA
+	bne.w	NameEntryMoveCursor
 	btst	#$3,d1
-	bne.w	L26808
+	bne.w	NameEntryMoveRow
 	neg.w	d0
 	btst	#$2,d1
-	bne.w	L26808
+	bne.w	NameEntryMoveRow
 	moveq	#$6,d0
 	btst	#$1,d1
-	bne.w	L26808
+	bne.w	NameEntryMoveRow
 	neg.w	d0
 	btst	#$0,d1
-	bne.w	L26808
+	bne.w	NameEntryMoveRow
 	btst	#$4,d1
-	beq.w	L2662C
+	beq.w	NameEntryPrompt
 	bsr.w	NameLetterGrid
-	bra.w	L2662C
+	bra.w	NameEntryPrompt
 .next5	add.w	d0,$1A38C.l
 .loop3	cmpi.w	#$7,$1A38C.l
 	ble.w	.next6
@@ -758,10 +764,11 @@ L2662C	bsr.w	GetNameLength
 	tst.w	$1A566.l
 	bne.w	.next8
 	jsr	$26A4A.l
-	bra.w	L2662C
+	bra.w	NameEntryPrompt
 .next8	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$04,$13,$00	; ......
-L26784	add.w	d4,$18D58.l
+; Name entry: blanks the letter under the cursor
+NameEntryClearLetter	add.w	d4,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	bsr.w	LetterGridPos
@@ -777,25 +784,29 @@ L26784	add.w	d4,$18D58.l
 	bsr.w	SyncLetterCursor
 	move.w	d4,d0
 	neg.w	d0
-	bra.w	LB7DA
-L267DA
-LB7DA	add.w	d4,d0
+	bra.w	NameEntryMoveColumn
+; Name entry: moves the cursor along the name
+NameEntryMoveCursor
+; Name entry: adds the column step to the letter grid position
+NameEntryMoveColumn	add.w	d4,d0
 	cmpi.w	#$B,d0
-	bhi.w	L2662C
+	bhi.w	NameEntryPrompt
 	move.w	d0,d4
 	bsr.w	PrintNameCursor
 	movea.l	#$1A37C,a0
 	clr.w	d0
 	cmpi.b	#$2D,(a0,d4.w)
-	beq.w	LB808
+	beq.w	NameEntryApplyRow
 	move.b	(a0,d4.w),d0
 	ext.w	d0
 	bsr.w	FindLetter
 	sub.w	d5,d0
-L26808
-LB808	add.w	d5,d0
+; Name entry: moves the letter grid row
+NameEntryMoveRow
+; Name entry: applies the row step to the letter grid position
+NameEntryApplyRow	add.w	d5,d0
 	cmpi.w	#$1D,d0
-	bhi.w	L2662C
+	bhi.w	NameEntryPrompt
 	move.w	d0,-(sp)
 	bsr.w	LetterGridPos
 	moveq	#$1,d2
@@ -823,8 +834,9 @@ LB808	add.w	d5,d0
 	movea.l	#$26DD0,a1
 	move.b	(a1,d5.w),d0
 	move.b	d0,(a0,d4.w)
-	bra.w	L2662C
-L268A6	bsr.w	StoreUserName
+	bra.w	NameEntryPrompt
+; Name entry: stores the name and returns
+NameEntryDone	bsr.w	StoreUserName
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to select letter.",
