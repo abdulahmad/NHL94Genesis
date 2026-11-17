@@ -331,7 +331,7 @@ doshot						;stick is at puck so launch puck toward goal
 	neg.w	d1		;flip d1 if shooting down
 .l1662C	move.w	$17E2C.l,d2
 	asl.w	#$2,d2
-	dc.w	$41FA,$0182
+	lea.l	shotdiradj(pc),a0
 	move.w	(a0,d2.w),d0
 	move.w	$2(a0,d2.w),d2
 	sub.w	$17B80.l,d0

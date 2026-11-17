@@ -19,7 +19,7 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 	dc.b	'ghhgZijkk',$00,'Z',$00,'llm',$00
 	dc.b	'Z',$00,'nop',$00,'Z',$00,'qsq',$00,'Ztwu'
 	dc.b	'v',$00,'Z',$00,'TUS',$00,'Z',$00,'TUS',$00,'Z',$00
-	dc.b	'4@BIX',$5C,'ef'
+ReadLineDataStr1	dc.b	'4@BIX',$5C,'ef'
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
@@ -69,7 +69,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 .lF668	move.w	d0,$17E2C.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
+PSandSOpassdirTbl1	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
 	dc.w	$0008
 StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) at random
 	
@@ -86,7 +86,7 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	bsr.w	NextPathPoint
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
+StartShootoutPathTbl1	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
 	dc.w	$0002,$A712,$0002,$A71E,$0002,$A72A,$0010,$00E2
 	dc.w	$0010,$00D0,$8020,$0005,$FFC9,$00A0,$FFFF,$00C8
 	dc.w	$FFE0,$00D0,$8020,$0005,$FFB0,$0040,$001A,$00BC
@@ -437,7 +437,7 @@ RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 whe
 	move.w	#$6,d0
 .x	movem.l	(sp)+,a0
 	rts
-	dc.w	$0003,$0005,$0003,$0001,$0005,$0002,$0003,$0003
+RandomFaceoffAnimTbl1	dc.w	$0003,$0005,$0003,$0001,$0005,$0002,$0003,$0003
 	dc.w	$FFFF
 CheckScoreLeader						;Compare tmap (players on ice) of tmstruct / awtmstruct and test tmteam of
 	
@@ -542,7 +542,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 PlayedByExit
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
-	dc.b	$00,$0E,'(played by ',$00,$00,$02
+PlayedByExitTbl1	dc.b	$00,$0E,'(played by ',$00,$00,$02
 PlayedByNone
 	movea.l	#$2AE4E,a1
 	bra.w	PlayedByExit

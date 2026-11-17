@@ -311,7 +311,7 @@ CompLineSub1
 CompLine_1	cmpa.l	#$1834C,a2
 	bne.w	CompLineSub2
 	moveq	#$2,d1
-	dc.w	$41FA,$0046
+	lea.l	.l351AE(pc),a0
 	cmpi.w	#$2,$180E4.l
 	bne.w	.l1A18E
 	move.w	$C(a2),d2
@@ -328,6 +328,6 @@ CompLine_1	cmpa.l	#$1834C,a2
 	bls.w	CompLineSub2
 	move.w	(a0,d1.w),$16(a2)
 	bra.w	CompLineSub1
-	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
+.l351AE	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
 	dc.w	$0000,$0001,$0002,$0000,$0002,$0000,$0000,$0001
 	dc.w	$0000,$0000,$0001,$0000,$0001

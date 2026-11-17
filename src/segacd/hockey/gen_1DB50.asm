@@ -213,7 +213,7 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	bsr.w	xyVmMap
 	bra.w	.l1DE92
 ControlCode_SetMapAndPosition						;control code -8, next 4 bytes = attribute, map, x, y
-	dc.w	$0003,$C000
+ControlCode_SetMapAndPositionTbl1	dc.w	$0003,$C000
 	dc.w	$0003,$8EE6
 	dc.w	$0003,$8F00
 	dc.w	$0003,$8F14
@@ -347,7 +347,7 @@ FormatAndPrintTime						;d0 bits 14-15 = period, bits 0-13 = seconds
 	lsr.w	#$2,d0
 	bsr.w	PushTime
 	bra.w	print
-	dc.w	$0004,$2031,$0004,$2032,$0004,$2033,$0004,$4F54
+FormatAndPrintTimeTbl1	dc.w	$0004,$2031,$0004,$2032,$0004,$2033,$0004,$4F54
 PushTime						;convert d0 into string format of minutes:seconds. Return a1 = string.
 	
 	movea.l	#$17F10,a1

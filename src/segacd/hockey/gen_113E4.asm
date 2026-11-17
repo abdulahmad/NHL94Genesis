@@ -92,9 +92,9 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
-	dc.w	$0014,$2020
+PutTeamBlockTbl1	dc.w	$0014,$2020
 	dc.b	'Manual Goalie   '
-	dc.b	$00,$14,'   Auto Goalie'
+PutTeamBlockTbl2	dc.b	$00,$14,'   Auto Goalie'
 	dc.w	$2020,$2020
 PutTeamBlockSub1
 	movem.l	d0-d2/a0-a1,-(sp)
@@ -283,11 +283,11 @@ PrintGameInfo_1	movem.l	d0-d1/a1,-(sp)
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	dc.w	$43FA,$000E
+	lea.l	.l2C914(pc),a1
 	jsr	(SetTickerAreaPositionSub1).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
+.l2C914	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
 	dc.w	$A44E,$4279,$0001,$A452,$33FC,$0001,$0001,$A45A
@@ -501,7 +501,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	
 	moveq	#$6,d0
 	mulu.w	d5,d0
-	dc.w	$41FA,$01D0
+	lea.l	LineIconPosTable(pc),a0
 	adda.w	d0,a0
 	tst.w	$18C0A.l
 	beq.w	.0
@@ -551,7 +551,7 @@ DrawLineIconSub1
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	$18C0A.l
 	beq.w	.l11DBE
-	move.w	$2CE8E.l,(printx).l
+	move.w	ClearLineEditorTopTbl1.l,(printx).l
 .l11DBE	jsr	(printsmallz).l
 	dc.w	$0022
 	dc.b	$FE,$04,$FB,$FD,$FA,$02,$4C,$44,$FB,$FE,$FA,$02,$52,$44,$FB,$FE,$FA,$02,$4C,$57,$FB,$FE,$FA,$02,$43,$20,$FB,$FE,$FA,$02,$52,$57
@@ -597,7 +597,7 @@ ClearLineEditorTopSub1
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
 	rts
-	dc.w	$0010,$000C,$0004
+ClearLineEditorTopTbl1	dc.w	$0010,$000C,$0004
 LineIconPosTable						;Line icons: x, y, slot count - 1 per line
 	dc.w	$0004,$000C,$0004,$0010,$000C,$0004,$001C,$000C
 	dc.w	$0004,$0004,$000C,$0004,$0010,$000C,$0004,$0004
@@ -728,7 +728,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
 AttributeOffsetTbl						;Line slots saved in databuffer ($FF ends)
-	dc.w	$0102,$0304,$0509,$0A0B,$0C0D,$1112,$1314,$1519
+AttributeOffsetTblTbl1	dc.w	$0102,$0304,$0509,$0A0B,$0C0D,$1112,$1314,$1519
 	dc.b	$1A,$1B,$1C,$1D,'!"#$%)*+,123'
 	dc.w	$34FF
 TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (DisplayPlayerList:

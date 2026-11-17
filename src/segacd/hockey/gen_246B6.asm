@@ -313,10 +313,10 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 	dbra	d3,.l24BE8
 	movem.l	(sp)+,d0-d3
 	rts
-	dc.w	$0000
+ScrollDisplayUpTbl1	dc.w	$0000
 ScrollDisplayUpSub1
 	jsr	$37598.l
-	tst.w	$3FC0A.l
+	tst.w	ScrollDisplayUpTbl1.l
 	beq.s	.l24C20
 	jsr	$376F2.l
 .l24C20	move.w	#$D,d7
@@ -382,7 +382,7 @@ ScrollDisplayUpSub1
 	jsr	$376D4.l
 	st.b	$191CE.l
 	moveq	#$0,d0
-	tst.w	$3FC0A.l
+	tst.w	ScrollDisplayUpTbl1.l
 	beq.s	.l24D90
 	jsr	$37752.l
 .l24D90	jsr	$21FC8.l
@@ -406,7 +406,7 @@ ScrollDisplayUpSub1
 	rts
 EASportsScreen						;Called from Begin. Show the EA Sports screen until a button, or $50 x 4
 									;frames (about 5 s)
-	move.w	#$1,$3FC0A.l
+	move.w	#$1,ScrollDisplayUpTbl1.l
 	bsr.w	ScrollDisplayUpSub1
 	move.l	#vb2,(VBint).l
 	bclr	#$1,(disflags).l
@@ -547,7 +547,7 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 .set	move.w	d0,$28(a2)		;store the pick (0 = first goalie)
 .x	movem.l	(sp)+,d0/a0
 	rts
-	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
+PickStartingGoalieTbl1	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
 	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$DAC6
 	dc.w	$4EB9,$0003,$6DF6,$5279,$0001,$7474,$4CDF,$7FFF
 	rts
@@ -560,7 +560,7 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 .l25118	move.w	(a1)+,(a0)+		;9 options
 	dbra	d0,.l25118
 	rts
-	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
+DefaultMenusTbl1	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	dc.w	$0001
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$18C38,a3
@@ -724,10 +724,10 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	move.w	$0(a1),(HomeTeam).l
 	move.w	$2(a1),(VisTeam).l
 	asl.w	#$2,d0		;4 bytes an entry
-	dc.w	$41FA,$0080
+	lea.l	.l4046E(pc),a0
 	tst.w	$18BF8.l
 	beq.w	.l253FE
-	dc.w	$41FA,$0092
+	lea.l	.l4048E(pc),a0
 .l253FE	move.w	(a0,d0.w),$17FA6.l
 	move.w	$2(a0,d0.w),$17FA8.l
 	tst.w	$18BF8.l
@@ -748,15 +748,15 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 .l25458	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
 	bra.w	FigureJoySub3
-	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
+.l4046E	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
 	dc.w	$0002,$0000,$0002,$0002,$0002,$0001,$0001,$0002
-	dc.w	$0001,$0000,$0001,$0002,$0001,$0002,$0001,$0001
+.l4048E	dc.w	$0001,$0000,$0001,$0002,$0001,$0002,$0001,$0001
 	dc.w	$0001,$0002,$0002,$0000,$0002,$0001,$0002,$0001
 	dc.w	$0002,$0002,$0002,$0001
 FigureJoySub1
 	move.w	(OptNOP).l,d0
 	asl.w	#$2,d0
-	dc.w	$41FA,$0056
+	lea.l	InitializeGameStructures(pc),a0
 	move.w	(a0,d0.w),$17FA6.l
 	move.w	$2(a0,d0.w),$17FA8.l
 	cmpi.w	#$14,d0

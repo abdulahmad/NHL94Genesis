@@ -576,7 +576,7 @@ noturn_1	btst	#$4,$62(a3)
 	eori.w	#$4,d2		;opposite direction
 playeracc
 	asl.w	#$2,d2
-	dc.w	$41FA,$0312
+	lea.l	stopnaTbl1(pc),a0
 	move.w	$2(a0,d2.w),d1
 	move.w	(a0,d2.w),d0
 	move.w	$50(a3),d2
@@ -650,7 +650,7 @@ playeracc
 	swap	d2
 	asl.w	#$2,d2
 	andi.w	#$3F,d2
-	dc.w	$45FA,$0118
+	lea.l	MaxSpeed(pc),a2
 	move.w	d2,$17E6C.l
 	move.l	(a2,d2.w),d2
 	move.l	d2,$17E68.l
@@ -757,7 +757,7 @@ stopna						;slow player a3 by 150 on each axis, no animation change. Falls in f
 	bpl.w	rtss2
 	clr.w	$2A(a3)
 	rts
-	dc.w	$0000,$00C8,$008D,$008D,$00C8,$0000,$008D,$FF73
+stopnaTbl1	dc.w	$0000,$00C8,$008D,$008D,$00C8,$0000,$008D,$FF73
 	dc.w	$0000,$FF38,$FF73,$FF73,$FF38,$0000,$FF73,$008D
 	dc.w	$0000,$0000
 UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words at

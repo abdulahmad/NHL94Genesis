@@ -133,7 +133,7 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 .l7662	jsr	$22452.l
 .l7668	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
+NameLogIOTbl1	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
 	dc.w	$00D0,$00EA,$0104,$011E,$0138,$0152,$016C,$0186
 	dc.w	$01A0,$01BA,$01D4,$01EE,$0208,$0222,$023C,$0256
 	dc.w	$0270,$028A,$02A4,$02BE,$02D8

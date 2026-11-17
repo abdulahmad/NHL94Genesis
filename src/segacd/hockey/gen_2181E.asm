@@ -149,7 +149,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	beq.w	.ss
 	addi.w	#$5,d0
 .ss	asl.w	#$2,d0
-	dc.w	$41FA,$00B8
+	lea.l	.l3CB28(pc),a0
 	movea.l	(a0,d0.w),a0
 	btst	#$0,$17F78.l
 	beq.w	.2
@@ -187,7 +187,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bne.w	.wait
 .clrz	st.b	$17CE2.l		;zamboni off
 	rts
-	dc.w	$0004,$22D4,$0004,$2454,$0004,$2454,$0004,$2454
+.l3CB28	dc.w	$0004,$22D4,$0004,$2454,$0004,$2454,$0004,$2454
 	dc.w	$0004,$25B0,$0004,$2388,$0004,$2454,$0004,$2454
 	dc.w	$0004,$2454,$0004,$26C4
 InitScores						;initialize other games scores/period in playoffs. Called from StartGame
@@ -262,7 +262,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.b	(a1),d0
 	andi.w	#$70,d0
 	lsr.w	#$1,d0
-	dc.w	$43FA,$0048
+	lea.l	NewTicker(pc),a1
 	move.l	(a1,d0.w),$18BE8.l
 	move.l	$4(a1,d0.w),$18BEC.l
 	asl.w	#$2,d1
@@ -272,7 +272,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.b	(a1),d0
 	andi.w	#$7,d0
 	asl.w	#$3,d0
-	dc.w	$43FA,$001C
+	lea.l	NewTicker(pc),a1
 	move.l	(a1,d0.w),d1
 	add.l	d1,$18BE8.l
 	move.l	$4(a1,d0.w),d1
@@ -332,7 +332,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	tst.w	$18BFA.l
 	bne.w	.l21DA6
 	clr.w	d0
-.l21DA6	dc.w	$43FA,$0094
+.l21DA6	lea.l	.l3CE3C(pc),a1
 	bsr.w	SetTickerAreaPositionSub1
 	move.w	$8(a0),d0
 	subi.w	#$1,d0
@@ -367,7 +367,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	moveq	#$2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print
-	dc.b	$00,$12,'EA Hockey Nigh'
+.l3CE3C	dc.b	$00,$12,'EA Hockey Nigh'
 	dc.b	't',$00,$00,$18,'Stanley Cup '
 	dc.b	'Qualifier',$00,$00,$0E,'Quar'
 	dc.b	'terfinal',$00,$18,'Stanle'
@@ -650,7 +650,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dbra	d0,.l223E8
 	move.w	(a1)+,$180F0.l
 	rts
-	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4
+DoHiLightsTbl1	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4
 	dc.w	$0019,$FFD8,$0046,$FFB0,$0000,$00F0,$0022,$005A
 	dc.w	$FFC9,$0050,$0064,$0028,$FFF6,$000A,$FFCE,$0000
 setpersonel
@@ -881,10 +881,10 @@ ResetBench						;remove all players from penalty box / put all players on their 
 Setplass						;set players (a3) initial assignment from .alist by position
 	move.w	$34(a3),d0
 	bmi.w	rtss2
-	dc.w	$41FA,$000A
+	lea.l	.l3D768(pc),a0
 	move.b	(a0,d0.w),d0
 	bra.w	assreplace
-	dc.w	$0E02		;assgoalie
+.l3D768	dc.w	$0E02		;assgoalie
 setplayer						;bring player onto the ice and set his attributes. d3 = offset of player
 									;on roster, a3 = sortcord of player. Reads the roster bytes through
 									;AttributeCalc (attribute number in TempWord2). Adds the PP / PK, home /

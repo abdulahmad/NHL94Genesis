@@ -1,6 +1,6 @@
 CompLineSub2
 	moveq	#$2,d1
-	dc.w	$41FA,$003C
+	lea.l	.l35218(pc),a0
 	cmpi.w	#$2,$180E4.l
 	bne.w	.l1A202
 	move.w	$C(a2),d2
@@ -15,7 +15,7 @@ CompLineSub2
 	dbhi	d1,.l1A202
 	move.w	-(a0),$16(a2)
 	bra.w	CompLineSub1
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
+.l35218	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
 ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer for each human team
 	move.w	#$FFFF,$17F9E.l
 	move.w	#$FFFF,$17FA0.l
@@ -156,7 +156,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	bclr	#$2,$62(a3)
 	moveq	#$18,d0
 	bra.w	assreplace
-	dc.w	$0008,$1000,$0810
+EndfaceoffTbl1	dc.w	$0008,$1000,$0810
 PeriodOver						;what to do if period over. Branched to from puckfaceoff when the clock
 									;runs out. After period 3 a tied game goes to
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a

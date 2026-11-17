@@ -708,7 +708,7 @@ checkint_1	movem.l	d0-d4/a0-a3,-(sp)
 	addi.w	#$8,d0
 	andi.w	#$7,d0
 .l1F5E0	asl.w	#$1,d0
-	dc.w	$41FA,$0168
+	lea.l	checkagr(pc),a0
 	move.w	(a0,d0.w),d1
 	bset	#$5,$62(a3)
 	bsr.w	SetSPA

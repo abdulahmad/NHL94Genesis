@@ -80,7 +80,7 @@ PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	movea.l	(sp)+,a1
 	rts
 TwoSpacesTxt						;A two space String (printsmall by PrintTwoSpaces)
-	dc.w	$0004,$2020
+TwoSpacesTxtTbl1	dc.w	$0004,$2020
 ScoutRatingText						;rating names; only ' Overall ' is printed (PrintMatchupRatings, matchup
 	
 	dc.b	$00,$0A,'Shooting',$00,$0A,'Skat'
@@ -295,7 +295,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	jsr	(printsmall).l
 .lDF8C	rts
 MatchupPosNames						;Position names of matchups 1-6
-	dc.w	$0012,$2020
+MatchupPosNamesTbl1	dc.w	$0012,$2020
 	move.l	-(a0),d0
 	movea.l	-(a3),a0
 	bcs.s	*+112
@@ -351,7 +351,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 MatchupLineSlots						;Line slot by matchup 0-6 (0 for the teams, then 4 center, 3 left forward,
 	
 	
-	dc.w	$0004,$0305
+MatchupLineSlotsTbl1	dc.w	$0004,$0305
 	dc.w	$0102
 	dc.l	$4279
 	dc.w	$0001,$A448
@@ -390,14 +390,14 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 HomeAdvMarks						;Home advantage marks, by advframe (0-5)
-	dc.w	$0002,$912E
+HomeAdvMarksTbl1	dc.w	$0002,$912E
 	dc.w	$0002,$9134
 	dc.w	$0002,$913A
 	dc.w	$0002,$9140
 	dc.w	$0002,$9140
 	dc.w	$0002,$9140
 VisAdvMarks						;Visitors advantage marks
-	dc.w	$0002,$9146
+VisAdvMarksTbl1	dc.w	$0002,$9146
 	dc.w	$0002,$914C
 	dc.w	$0002,$9152
 	dc.w	$0002,$9158
@@ -449,10 +449,10 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 .lE194	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname
-	dc.w	$0006,$486F
+HomeTxtTbl1	dc.w	$0006,$486F
 	blt.s	*+103
 VisitorsTxt						;name used when the visiting team has no nickname
-	dc.b	$00,$0A,'Visitors'
+VisitorsTxtTbl1	dc.b	$00,$0A,'Visitors'
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
 	
 	
@@ -533,8 +533,8 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	move.w	d0,$46(a3)		;clamp to the top
 .lE2DC	movem.l	(sp)+,d0-d7/a0
 	rts
-	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
-	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
+ClampPositionBoxTbl1	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
+ClampPositionBoxTbl2	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$1A414,a0
 	move.l	#$12,d0
