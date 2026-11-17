@@ -1055,13 +1055,13 @@ SndBufE	dcb.b	$10,0
 SndBufF	dcb.b	$20,0
 ; Sound slot table
 SndSlotTable	dcb.b	$80,0
-; Data of SndSlotTable (1 row): table or constants used by it.
+; 2 zero bytes after SndSlotTable (padding or space the program fills at run time).
 .next	dc.b	$00,$00	; ..
 ; Sound engine state variables
 SndStateVars	dc.b	$00,$00,$00,$00,$00,$00	; ......
-; Data of SndStateVars (1 row): table or constants used by it.
+; 4 zero bytes after SndStateVars (padding or space the program fills at run time).
 .next	dc.b	$00,$00,$00,$00	; ....
-; Data of SndStateVars (1 row): table or constants used by it.
+; 2 zero bytes after SndStateVars (padding or space the program fills at run time).
 .next2	dc.b	$00,$00	; ..
 ; Sound miscellaneous buffer
 SndMiscBuf	dcb.b	$10,0
@@ -1084,7 +1084,7 @@ SndEffectScripts
 ; each (the first 32 bytes of every record here), so this is the disc's longer record form.
 FmInstrumentPatches
 	incbin	..\Extracted\SegaCD\MAIN\main_08C6C.bin
-; Data of SndSourceTable (10 rows): table or constants used by it.
+; Table of 23356 bytes after SndSourceTable, 23356 bytes: $00,$00,$00,$00,$00,$00 ...
 	dcb.b	$9,0
 	dc.b	$01,$00,$00,$00,$02,$00,$00,$00,$03,$00,$00,$00,$04,$00,$00,$00	; ................
 	dc.b	$05,$00,$00,$00,$06,$00,$00,$00,$07,$00,$00,$00,$08,$00,$00,$00	; ................

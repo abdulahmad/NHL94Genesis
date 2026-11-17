@@ -10,9 +10,9 @@ CrowdRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	#$10,d1
 	btst	#$6,(sflags6).l
 	beq.w	.next
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	bra.w	.next2
-.next	jsr	$22452.l
+.next	jsr	(BackupRamRead).l
 .next2	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 ; Sets the flag and reads a crowd record (variant A).
@@ -30,9 +30,9 @@ TeamRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	#$10,d1
 	btst	#$6,(sflags6).l
 	beq.w	.next
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	bra.w	.next2
-.next	jsr	$22452.l
+.next	jsr	(BackupRamRead).l
 .next2	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 ; Sets the flag and reads a crowd record (variant B).
@@ -53,9 +53,9 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 	movea.l	#$1A2FC,a0
 	btst	#$6,(sflags6).l
 	beq.w	.next
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	bra.w	.next2
-.next	jsr	$22452.l
+.next	jsr	(BackupRamRead).l
 .next2	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Data that follows NameLogIO (strings, small tables)

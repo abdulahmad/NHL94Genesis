@@ -31,6 +31,8 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 ClampPositionBoxFirstLimits	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
 ; Position limits
 ClampPositionBoxSecondLimits	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
+; Clears the position box state and the team struct area.
+ClampPositionBoxClear
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$1A414,a0
 	move.l	#$12,d0
@@ -229,7 +231,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
-	jsr	$376D4.l
+	jsr	(RelocateLogoBitmaps).l
 	clr.w	$1A43A.l
 	moveq	#$0,d0
 	moveq	#$1C,d1

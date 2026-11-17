@@ -14,7 +14,7 @@ LoadBootImages	movem.l	d0-d7/a0-a6,-(sp)
 	bset.b	#$2,$FFFF8024.w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-; Data of LoadBootImages (1 row): table or constants used by it.
+; Table of 6 bytes after LoadBootImages, 6 bytes: $00,$02,$00,$00,$FF,$FF ...
 	dc.b	$00,$02,$00,$00,$FF,$FF	; ......
 ; Screen setup with inline palette words.
 ScreenSetupA	movem.l	d0-d7/a0-a6,-(sp)
@@ -92,7 +92,7 @@ AnimTick	movem.l	d0-d6/a0-a2,-(sp)
 	bset.b	#$1,$BC6E8.l
 .next4	movem.l	(sp)+,d0-d6/a0-a2
 	rts
-; Data of AnimTick (2 rows): table or constants used by it.
+; Table of 20 bytes after AnimTick, 20 bytes: $00,$1E,$00,$00,$00,$1E ...
 	dc.b	$00,$1E,$00,$00,$00,$1E,$00,$01,$00,$1E,$00,$01,$00,$04,$00,$01	; ................
 	dc.b	$00,$06,$FF,$FF	; ....
 ; Screen setup, second variant.

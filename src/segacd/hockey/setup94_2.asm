@@ -72,18 +72,26 @@ SetupIceRinkPalRemap
 	dc.w	$7123,$4567,$89AB,$CDEF,$4E75,$3839,$0001,$8D46
 	dc.w	$2479,$0004,$7D40,$508A,$6000,$9CB4,$3839,$0001
 	dc.w	$8D4A,$2479,$0004,$7D2C,$508A,$6000,$9CA2
+; Decompresses the first ice rink graphics set with the remap.
+IceRinkRemapGfxA
 	move.w	$18D56.l,d4
 	movea.l	$47D20.l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
+; Decompresses the second ice rink graphics set with the remap.
+IceRinkRemapGfxB
 	move.w	$18D56.l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
+; Decompresses the third ice rink graphics set with the remap.
+IceRinkRemapGfxC
 	move.w	$18D4C.l,d4
 	movea.l	$47D30.l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
+; Decompresses the fourth ice rink graphics set with the remap.
+IceRinkRemapGfxD
 	move.w	$18D56.l,d4
 	movea.l	$47D14.l,a2
 	addq.l	#$8,a2
@@ -543,14 +551,16 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	bclr	#$1,$17F6A.l
 	jsr	(PlayoffStatsScreen).l
 .po	bsr.w	GameOverCleanup
+; Game over: scrolls the display up once, then falls into the clean-up.
+GameOverCheckScroll
 	tst.w	$191CE.l
 	bne.s	.next
 	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
 .next	bra.w	.next2
-	jsr	$48208.l
+	jsr	(HockeyRtsStubC).l
 .next2
-	jsr	$48208.l
+	jsr	(HockeyRtsStubC).l
 	bclr	#$5,$FF800F.l
 	movea.l	#$C458,sp
 	movea.l	#$1745C,a0
@@ -565,7 +575,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	btst	#$0,$17F78.l
 	bne.w	.next3
 	jsr	(ScoutingReport).l
-.next3	jmp	$2B7F8.l
+.next3	jmp	(HotColdIconExitReset).l
 ; Resets scroll state and clears the display request.
 GameOverCleanup
 	tst.w	$191CE.l
@@ -809,7 +819,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	beq.w	.next
 	clr.w	$17F66.l
 	move.w	$18D32.l,d1
-	jsr	$378D2.l
+	jsr	(DmaCopyFromWordRam).l
 	move.w	$18D30.l,d0
 	bsr.w	SetVramWriteAddr2
 	move.w	#$FEA0,d0
@@ -1056,10 +1066,10 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 ScrollDisplayUpData	dc.w	$0000
 ; Calls the display helpers and the $6044 routine.
 ScrollDisplayUpCall
-	jsr	$37598.l
+	jsr	(ScoutingReportTextLoad).l
 	tst.w	ScrollDisplayUpData.l
 	beq.s	.next
-	jsr	$376F2.l
+	jsr	(SubCmd3DSend).l
 .next	move.w	#$D,d7
 	jsr	$6044.w
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -1119,18 +1129,18 @@ ScrollDisplayUpCall
 	move.l	(a0)+,$47D04.l
 	add.l	d0,$47D04.l
 	bclr	#$5,$FF800F.l
-	jsr	$375F4.l
-	jsr	$376D4.l
+	jsr	(RelocatePointerTableDisc).l
+	jsr	(RelocateLogoBitmaps).l
 	st.b	$191CE.l
 	moveq	#$0,d0
 	tst.w	ScrollDisplayUpData.l
 	beq.s	.next2
-	jsr	$37752.l
-.next2	jsr	$21FC8.l
+	jsr	(ClearVramViaSetVram).l
+.next2	jsr	(SubCmd2DSend).l
 	move.w	#$2,d1
 	move.w	#$96,d0
 	jsr	$5F22.w
-	jsr	$222D6.l
+	jsr	(CdBiosCall80Retry).l
 	move.w	#$4,$19364.l
 	lea.l	$19364.l,a0
 	move.w	#$15,d0
@@ -1163,8 +1173,8 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	moveq	#$1F,d1		;32 longs: all 64 colours black
 .clr	clr.l	(a0)+
 	dbra	d1,.clr
-	jsr	$36F72.l
-	jsr	$37B74.l
+	jsr	(ForceBlackStepCram).l
+	jsr	(SetVramStackPush).l
 	rts
 ; EA Sports screen: waits for the sub CPU reply, then switches the vblank vector
 EASportsScreenCheck	jsr	(ReadJoy1).l
@@ -1172,7 +1182,7 @@ EASportsScreenCheck	jsr	(ReadJoy1).l
 	bne.w	rtss2
 	bset.b	#$5,$FF800F.l
 	move.l	#$3DB90,$18D66.l
-	jsr	$47DAC.l
+	jsr	(HockeyRtsStubA).l
 	jsr	(forceblack).l
 	move.w	#$18,$18D62.l
 	bsr.w	printsmallz
@@ -1332,6 +1342,8 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 ; Data that follows DefaultMenus (strings, small tables)
 DefaultMenusData	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	dc.w	$0001
+; Default menus: sets the player slots and builds the menu tree.
+DefaultMenusInit
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$18C38,a3
 	bsr.w	InitPlayerSlots
@@ -1360,6 +1372,8 @@ DefaultMenusData	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	move.w	d0,(OptNOP).l
 .next5	movem.l	(sp)+,d0-d7/a0-a3
 	rts
+; Picks a random slot (0-$1F) and walks the table until a free one.
+DefaultMenusRandomPick
 	moveq	#$20,d0
 	jsr	(randomd0).l
 .loop	addi.w	#$1,d0
@@ -1518,10 +1532,10 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 .next7	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
 	bra.w	.next13
-; Data of FigureJoy (2 rows): table or constants used by it.
+; Table of 16 words after FigureJoy, 32 bytes: $0001,$0000,$0001,$0001,$0001,$0002 ...
 .next8	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
 	dc.w	$0002,$0000,$0002,$0002,$0002,$0001,$0001,$0002
-; Data of FigureJoy (3 rows): table or constants used by it.
+; Table of 20 words after FigureJoy, 40 bytes: $0001,$0000,$0001,$0002,$0001,$0002 ...
 .next9	dc.w	$0001,$0000,$0001,$0002,$0001,$0002,$0001,$0001
 	dc.w	$0001,$0002,$0002,$0000,$0002,$0001,$0002,$0001
 	dc.w	$0002,$0002,$0002,$0001
@@ -1652,7 +1666,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	bmi.w	.next
 	movea.l	#$18C38,a3
 	bsr.w	WritePassBits
-	jsr	$2A5C8.l
+	jsr	(ReadLineDataBackupWrite).l
 	btst	#$2,$17F6E.l
 	beq.w	rtss2
 	movea.l	#$18D26,a3
@@ -1660,7 +1674,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	bra.w	MakeTree
 .next	movea.l	#$18C38,a3
 	bsr.w	ClrPassBits
-	jsr	$2A5C8.l
+	jsr	(ReadLineDataBackupWrite).l
 	move.w	#$2,$18BFA.l
 	move.w	#$2,$18C24.l
 	cmpi.w	#$7,$18A9C.l
@@ -2119,6 +2133,8 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	adda.w	#$4,a4
 	dbra	d4,.loop
 	rts
+; Prints the star score line.
+CalcTeamStarScoresPrint
 	movem.l	d0-d2/a0-a4,-(sp)
 	jsr	(printz).l
 	String	CC_Font1Pri,$B,$3
@@ -2144,6 +2160,8 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	String	CC_Font1Pri,$14,$6,'the game'
 .next4	movem.l	(sp)+,d0-d2/a0-a4
 	rts
+; Enters the shootout box or prints the star score message.
+CalcTeamStarScoresShootout
 	bset	#$7,$17F78.l
 	btst	#$0,$17F78.l
 	beq.w	.next5
@@ -2198,7 +2216,7 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 									;StartArenaAnim (home hat trick),
 									;PrintPlayerGoals and PrintPlayerAssists; BA_PS_flags bit 2 sets sflags2
 									;bit 2. Called from SetPA
-; Data of ShowGoalBox (1 row): table or constants used by it.
+; Table of 2 words after ShowGoalBox, 4 bytes: $0016,$BF04 ...
 	dc.w	$0016,$BF04
 	bchg	d1,(a0)
 ; Text of ShowGoalBox (1 row).
@@ -2270,7 +2288,7 @@ ShowGoalBoxDraw
 	cmp.w	$17E98.l,d1
 	movem.w	(sp)+,d1
 	blt.w	.next7
-	jsr	$2AA80.l
+	jsr	(TeamGfxListEndPrintB).l
 .next7	clr.w	d0
 	move.b	$4(a4),d0
 	bmi.w	.next8
@@ -2282,7 +2300,7 @@ ShowGoalBoxDraw
 	bsr.w	FormatPlayerName
 	jsr	(print).l
 	move.w	(sp)+,d0
-	jsr	$2AA6A.l
+	jsr	(TeamGfxListEndPrintA).l
 	clr.w	d0
 	move.b	$5(a4),d0
 	bmi.w	.next8
@@ -2292,17 +2310,19 @@ ShowGoalBoxDraw
 	bsr.w	FormatPlayerName
 	jsr	(print).l
 	move.w	(sp)+,d0
-	jsr	$2AA6A.l
+	jsr	(TeamGfxListEndPrintA).l
 .next8	bclr	#$5,$17F72.l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-; Data of ShowGoalBoxDraw (2 rows): table or constants used by it.
+; Table of 24 words after ShowGoalBoxDraw, 32 bytes: $000E,$BF0F,$0347,$4F41,$4C21,$BF0C ...
 .next9	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
 	dc.b	$BF,$0C,$03,'HAT TRICK!',$BF,$0C,$05
-; Data of ShowGoalBoxDraw (3 rows): table or constants used by it.
+; Table of 25 words after ShowGoalBoxDraw, 34 bytes: $0010,$BF0D,$0350,$5020,$474F,$414C ...
 .next10	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
 	dc.b	$00,$12,$BF,$0C,$03,'HAT TRICK!',$BF
 	dc.w	$0C05
+; Prints a banner line in font 1.
+PrintBannerFont1
 	jsr	(printz).l
 	String	CC_Font1,$B,$2
 	moveq	#$13,d0
@@ -2400,6 +2420,8 @@ FormatPlayerNameLast						;FormatPlayerNameShort without the leading space ("Las
 	bsr.w	SkipTextEntries
 	movea.l	#TextBuffer,a1
 	bra.w	FormatLastName
+; Formats a last name into the text buffer.
+FormatLastNameStart
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	SkipTextEntries
 	movea.l	#TextBuffer,a1
@@ -2463,7 +2485,7 @@ AddressErrorScreen	bclr.b	#$5,$FF800F.l
 	move.l	$A(sp),d0
 	move.l	$2(sp),d1
 	bra.w	ErrorScreenPrint
-; Data of AddressErrorScreen (6 rows): table or constants used by it.
+; Table of 90 bytes after AddressErrorScreen, 90 bytes: $08,$B9,$00,$05,$00,$FF ...
 	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$18	; ........N....X..
 	dc.b	$BD,$00,$00,$49,$6C,$6C,$65,$67,$61,$6C,$20,$49,$6E,$73,$74,$72	; ...Illegal Instr
 	dc.b	$75,$63,$74,$69,$6F,$6E,$20,$2F,$00,$02,$22,$00,$60,$00,$00,$2C	; uction /..".`..,

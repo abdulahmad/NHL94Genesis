@@ -57,7 +57,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	jsr	$2A9D0.l
+	jsr	(UnpackPictureSelectGfx).l
 	bsr.w	SprSort
 	btst	#$0,$17F6A.l
 	bne.w	.next
@@ -460,7 +460,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	cmpi.w	#$4,$180E4.l
 	bne.w	.1
 	move.w	#$0,$180E6.l
-	jsr	$25A4E.l
+	jsr	(UpdateRecordsStart).l
 .1	bsr.w	SetupTeamForIntermission
 	moveq	#$F,d0
 	movea.l	#$17480,a0
@@ -515,7 +515,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bne.w	.wait
 .clrz	st.b	$17CE2.l		;zamboni off
 	rts
-; Data of Intermission (3 rows): table or constants used by it.
+; Table of 20 words after Intermission, 40 bytes: $0004,$22D4,$0004,$2454,$0004,$2454 ...
 .next	dc.w	$0004,$22D4,$0004,$2454,$0004,$2454,$0004,$2454
 	dc.w	$0004,$25B0,$0004,$2388,$0004,$2454,$0004,$2454
 	dc.w	$0004,$2454,$0004,$26C4
@@ -805,7 +805,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	st.b	$1806E.l
 	st.b	$17E38.l
 	st.b	$17E3C.l
-	jsr	$47DAC.l
+	jsr	(HockeyRtsStubA).l
 	bsr.w	setupice_highlight
 	move.w	#$1,$17468.l
 	bsr.w	ClrHor
@@ -897,8 +897,8 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .next7	adda.w	#$2,sp
 	movea.l	(sp)+,a0
 	movem.l	d1/a0,-(sp)
-	jsr	$48208.l
-	jsr	$47DAC.l
+	jsr	(HockeyRtsStubC).l
+	jsr	(HockeyRtsStubA).l
 	movem.l	(sp)+,d1/a0
 	move.w	$18358.l,$A(a0)
 	move.w	$186BE.l,$C(a0)

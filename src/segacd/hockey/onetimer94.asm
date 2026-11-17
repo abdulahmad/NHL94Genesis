@@ -344,7 +344,7 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 .next	tst.w	d0
 	bpl.w	.next3
 	bra.w	.next2
-; Data of PuckOnAttackHalf (6 rows): table or constants used by it.
+; Table of 41 words after PuckOnAttackHalf, 82 bytes: $3039,$0001,$7E2C,$0640,$0004,$0240 ...
 	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B
 	dc.w	$0054,$B240,$6000,$0044,$6700,$0040,$0641,$0001
 	dc.w	$0241,$0007,$B240,$6700,$0032,$0641,$0001,$0241
@@ -403,4 +403,6 @@ CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d
 .next2	movem.w	(sp)+,d0-d1
 	rts
 	rts
+; Return point of CheckOneTimerFacing.
+CheckOneTimerFacingReturn
 	rts

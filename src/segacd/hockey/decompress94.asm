@@ -65,7 +65,7 @@ DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer
 	jsr	(a2,d0.w)
 	bra.b	.loop
 DecompressOpcodeTable						;DecompressBytecode handler offsets, one per opcode high nibble
-; Data of DecompressOpcodeTable (2 rows): table or constants used by it.
+; Ascending offset table of 16 words after DecompressOpcodeTable ($0020,$0020,$003C,$0058 ...).
 	dc.w	$0020,$0020,$003C,$0058,$0078,$0078,$0078,$0078
 	dc.w	$00AA,$00B8,$00D2,$00EC,$0106,$0106,$0138,$0158
 Opcode_CopyLiteral						;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
@@ -121,7 +121,7 @@ Opcode_CopyBackwardMedium						;opcode 8
 	addq.w	#$2,d0
 	move.b	(a0)+,d2
 	bra.b	CopyBackwardRun
-; Data of Opcode_CopyBackwardMedium (7 rows): table or constants used by it.
+; Table of 50 words after Opcode_CopyBackwardMedium, 100 bytes: $1010,$E300,$1028,$FFFF,$E310,$0240 ...
 	dc.w	$1010,$E300,$1028,$FFFF,$E310,$0240,$001F,$5440
 	dc.w	$1418,$0242,$007F,$5242,$60BC,$1028,$FFFF,$E140
 	dc.w	$1010,$EC48,$0240,$003F,$5440,$1418,$0242,$003F

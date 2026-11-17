@@ -490,7 +490,7 @@ PrintStringBox	move.w	$23C6E8.l,-(sp)
 	move.w	d6,(a0)
 	movem.l	(sp)+,d1/a0
 	rts
-; Data of PrintStringBox (9 rows): table or constants used by it.
+; Table of 9 longs after PrintStringBox, 36 bytes: $00FF2698,$00FF1CCC,$00FF1CE2,$00FF1CF4,$00FF1D04,$00FF1D14 ...
 	dc.l	$FF2698
 	dc.l	$FF1CCC
 	dc.l	$FF1CE2

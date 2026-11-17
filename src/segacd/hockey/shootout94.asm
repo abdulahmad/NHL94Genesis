@@ -91,7 +91,7 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 	
 	btst	#$3,$17F78.l
 	beq.w	.0
-	jmp	$3F2BE.l
+	jmp	(GameOverCheckScroll).l
 .0	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	StartShootoutPath
 	move.w	$1A436.l,$19366.l
@@ -118,7 +118,7 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	cmp.w	$1A418.l,d0
 	beq.w	.next
 	bset	#$3,$17F78.l
-	jsr	$291CE.l
+	jsr	(ScoutStubSetup).l
 	bra.w	.x
 .next	eori.w	#$1,$1A436.l
 	bne.w	.x
@@ -482,7 +482,7 @@ ShooterScreenRows
 .loop	move.w	d1,d0
 	asl.w	#$1,d0
 	move.w	(a0,d0.w),d0
-	jsr	$41226.l
+	jsr	(FormatLastNameStart).l
 	move.w	(printx).l,-(sp)
 	cmp.w	(TestList).l,d1
 	bne.w	.next

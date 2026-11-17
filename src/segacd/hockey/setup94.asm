@@ -16,6 +16,8 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	beq.w	.next2		;tied: play overtime
 	move.w	#$4,$180E4.l		;game over
 .next2	bsr.w	forceblack
+; End of period: resets the clock, scores, then runs the intermission.
+PeriodOverIntermission
 	jsr	(ResetClock).l
 	move.w	#$79,-(sp)
 	bsr.w	song
@@ -26,7 +28,7 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 .next3	bsr.w	Intermission
 	cmpi.w	#$4,$180E4.l
 	beq.w	.next4
-	jmp	$2BA1E.l
+	jmp	(GetPeriodTimeSetup).l
 .next4	jmp	(GameOver).l
 ; Period over: ends a penalty shot first
 PeriodOverPenaltyShot	btst.b	#$2,$17F70.l

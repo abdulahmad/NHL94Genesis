@@ -151,7 +151,7 @@ PlBinToDecString	movem.l	d0-d2/a0-a1,-(sp)
 	bne.w	.loop2
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-; Data of PlBinToDecString (1 row): table or constants used by it.
+; 80 zero bytes after PlBinToDecString (padding or space the program fills at run time).
 .next	dcb.b	$50,0
 ; Chooses the source pointers for the current page.
 PlPrepareSource	movem.l	d0-d7/a1-a5,-(sp)

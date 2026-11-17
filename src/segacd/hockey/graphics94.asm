@@ -30,8 +30,12 @@ NHLPALogoMapDisc					;disc only: graphics after Card001 (through the end of $2B6
 TileNumberTables					;disc only: tables of VDP tile numbers (word rows of consecutive numbers), then the pointer
 									;slots the file loader fills ($47CFC and up: ScoutingReportText, BigFontMap ...)
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_2C65C.bin
+; Bare rts used as a call target.
+HockeyRtsStubA
 	rts
 	rts
+; Bare rts used as a call target.
+HockeyRtsStubB
 	rts
 ReadJoyData
 	movem.l	d1/a0,-(sp)
@@ -221,6 +225,8 @@ ReadJoyData
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-; Data of ReadJoyData (1 row): table or constants used by it.
+; Table of 8 words after ReadJoyData, 16 bytes: $0001,$0201,$0405,$0606,$0809,$0A0A ...
 .next9	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
+; Bare rts used as a call target.
+HockeyRtsStubC
 	rts

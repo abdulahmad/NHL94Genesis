@@ -46,7 +46,7 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	bne.w	.ex
 	bsr.w	EndArenaAnim		;$FE: end the animation
 .ex	rts
-; Data of NextArenaFrame (4 rows): table or constants used by it.
+; Table of 64 bytes after NextArenaFrame, 64 bytes: $00,$02,$A3,$E4,$00,$04 ...
 	dc.b	$00,$02,$A3,$E4,$00,$04,$3A,$7E,$00,$02,$A3,$98,$00,$04,$42,$A2
 	dc.b	$00,$02,$A3,$BE,$00,$04,$42,$A2,$00,$02,$A3,$86,$00,$04,$4F,$A8
 	dc.b	$00,$02,$A3,$30,$00,$04,$5A,$16,$00,$02,$A3,$00,$00,$04,$5A,$16

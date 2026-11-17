@@ -50,7 +50,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 .next2	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutEmptyTxt						;empty String: no name number in the crowd record
-; Data of ScoutEmptyTxt (3 rows): table or constants used by it.
+; Ascending offset table of 6 words after ScoutEmptyTxt ($0002,$0006 ...).
 	dc.w	2
 	dc.w	6							;the String 'by ' of the next label
 	dc.b	'by ',$00
@@ -402,7 +402,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$10,d7
 	jsr	$6044.w
 .next6	move.l	#vb2,(VBint).l
-	jsr	$21FC8.l
+	jsr	(SubCmd2DSend).l
 	bset	#$5,$FF800F.l
 .loop11	moveq	#$0,d0
 	jsr	(waitx).l
@@ -870,39 +870,39 @@ VisAdvMarksData	dc.w	$0002,$9146
 	dc.w	$0002,$9158
 	dc.w	$0002,$9158
 HomeAdv0Txt						;home advantage marks: none
-; Data of HomeAdv0Txt (1 row): table or constants used by it.
+; Table of 2 words after HomeAdv0Txt, 4 bytes: $0006,$2020 ...
 	dc.w	$0006,$2020
 	move.l	d0,d0
 HomeAdv1Txt						;home advantage: one mark
-; Data of HomeAdv1Txt (1 row): table or constants used by it.
+; Table of 2 words after HomeAdv1Txt, 4 bytes: $0006,$5D20 ...
 	dc.w	$0006,$5D20
 	move.l	d0,d0
 HomeAdv2Txt						;home advantage: two marks
-; Data of HomeAdv2Txt (1 row): table or constants used by it.
+; Table of 2 words after HomeAdv2Txt, 4 bytes: $0006,$5D5D ...
 	dc.w	$0006,$5D5D
 	move.l	d0,d0
 HomeAdv3Txt						;home advantage: three marks
-; Data of HomeAdv3Txt (1 row): table or constants used by it.
+; Table of 2 words after HomeAdv3Txt, 4 bytes: $0006,$5D5D ...
 	dc.w	$0006,$5D5D
 	subq.b	#$6,d0
 VisAdv0Txt						;visitors advantage marks: none
-; Data of VisAdv0Txt (1 row): table or constants used by it.
+; Table of 2 words after VisAdv0Txt, 4 bytes: $0006,$2020 ...
 	dc.w	$0006,$2020
 	move.l	d0,d0
 VisAdv1Txt						;visitors advantage: one mark
-; Data of VisAdv1Txt (1 row): table or constants used by it.
+; Table of 2 words after VisAdv1Txt, 4 bytes: $0006,$2020 ...
 	dc.w	$0006,$2020
 	subq.b	#$5,d0
 VisAdv2Txt						;visitors advantage: two marks
-; Data of VisAdv2Txt (1 row): table or constants used by it.
+; Table of 2 words after VisAdv2Txt, 4 bytes: $0006,$205B ...
 	dc.w	$0006,$205B
 	subq.b	#$5,d0
 VisAdv3Txt						;visitors advantage: three marks
-; Data of VisAdv3Txt (1 row): table or constants used by it.
+; Table of 2 words after VisAdv3Txt, 4 bytes: $0006,$5B5B ...
 	dc.w	$0006,$5B5B
 	subq.b	#$5,d0
 EvenAdvTxt						;Even teams
-; Data of EvenAdvTxt (1 row): table or constants used by it.
+; Table of 2 words after EvenAdvTxt, 4 bytes: $0006,$2020 ...
 	dc.w	$0006,$2020
 	move.l	d0,d0
 GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct): return a1 =
@@ -946,6 +946,8 @@ ScoutStub						;An empty routine
 	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Scouting screen set-up: freezes the window and clears the pick state.
+ScoutStubSetup
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$2,$17F6C.l
 	jsr	(freezewindow).l

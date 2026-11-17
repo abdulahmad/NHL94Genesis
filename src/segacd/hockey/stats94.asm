@@ -152,7 +152,7 @@ PrintGameInfoHeader	movem.l	d0-d1/a1,-(sp)
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-; Data of PrintGameInfoHeader (4 rows): table or constants used by it.
+; Table of 32 words after PrintGameInfoHeader, 64 bytes: $000A,$20FB,$FFFA,$1320,$F900,$000A ...
 .next	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
@@ -402,7 +402,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	clr.w	d0
 	move.b	(a3,d4.w),d0
 	subi.w	#$1,d0
-	jsr	$41226.l
+	jsr	(FormatLastNameStart).l
 	cmp.w	(TestList).l,d4
 	bne.w	.nocur
 	move.w	d0,d6
@@ -488,7 +488,7 @@ LineIconPosTable					;Line icons: x, y, slot count - 1 per line
 	dc.w	$FFFF
 LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / down / left /
 	
-; Data of LineCursorTable (5 rows): table or constants used by it.
+; Table of 48 words after LineCursorTable, 72 bytes: $0101,$0203,$0405,$1901,$0101,$0203 ...
 	dc.w	$0101,$0203,$0405,$1901,$0101,$0203,$0405,$1901
 	dc.w	$0909,$0A0B,$0C0D,$2101,$1111,$1213,$1415,$2101
 	dc.w	$0519,$1A1B,$1C1D,$2901,$0D21,$2223,$2425,$3101
@@ -609,7 +609,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 .hi	asl.b	#$4,d3
 	or.b	d3,(a0)+
 	bra.w	.loop
-.done	jsr	$2A5C8.l
+.done	jsr	(ReadLineDataBackupWrite).l
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
 AttributeOffsetTbl						;Line slots saved in databuffer ($FF ends)
@@ -860,7 +860,7 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 .next	dc.w	$41FA,$000E		; lea.l X_2D5A6(pc),a0
 	adda.w	(a0,d4.w),a0
 	jmp	(a0)
-; Data of GetNameandAttrib (11 rows): table or constants used by it.
+; Table of 106 words after GetNameandAttrib, 164 bytes: $4CDF,$331F,$4E75,$000C,$009E,$00E8 ...
 	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8
 	dc.w	$00C0,$D040,$3032,$0068,$6A00,$001E,$4640,$0C40
 	dc.w	$0003,$6300,$000A,$7001,$6000,$0004,$7003,$43FA
@@ -881,7 +881,7 @@ AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	ble.w	AttribPrintPct
 	moveq	#$64,d0
 	bra.w	AttribPrintPct		;print it
-; Data of AttribEnergy (2 rows): table or constants used by it.
+; Table of 10 words after AttribEnergy, 20 bytes: $0240,$000E,$0441,$0001,$C0FC,$0064 ...
 	dc.w	$0240,$000E,$0441,$0001,$C0FC,$0064,$80C1,$4EB9
 	dc.w	$0002,$AE82
 AttribPrintPct
@@ -891,7 +891,7 @@ AttribPrintPct
 	jsr	(printz).l
 	String	'    '
 	rts
-; Data of AttribPrintPct (2 rows): table or constants used by it.
+; Table of 10 words after AttribPrintPct, 20 bytes: $0240,$0001,$0A40,$0001,$43FA,$0008 ...
 	dc.w	$0240,$0001,$0A40,$0001,$43FA,$0008,$4EF9,$0003
 	dc.w	$CEBE,$000A
 AttribWeight						;Weight: 140 + 8 * rating lb
@@ -1083,7 +1083,7 @@ PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	jsr	(print).l
 .next	addi.w	#$1,(printy).l
 	rts
-; Data of PrintScorerName (2 rows): table or constants used by it.
+; Table of 16 words after PrintScorerName, 24 bytes: $0006,$5348,$3200,$0004,$5348,$0004 ...
 	dc.w	$0006,$5348,$3200,$0004,$5348,$0004,$2000,$0004
 	dc.b	'PP',$00,$06,'PP2',$00
 PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 bytes each from PenSum,
@@ -1287,7 +1287,7 @@ PenaltyEntryHeader
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-; Data of PenaltyEntryHeader (3 rows): table or constants used by it.
+; Table of 20 words after PenaltyEntryHeader, 40 bytes: $000A,$20FB,$FFFA,$1120,$F900,$000A ...
 .next	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1120,$F900,$000A,$20FB,$FFFA,$117D,$F900,$000A
 	dc.w	$7BFB,$FFFA,$117D,$F900
@@ -1306,7 +1306,7 @@ PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of 
 	bsr.w	PlayerStatsList
 	movem.l	(sp)+,a2
 	rts
-; Data of PlayoffStatsScreen (1 row): table or constants used by it.
+; Table of 1 word after PlayoffStatsScreen, 2 bytes: $4247 ...
 	dc.w	$4247
 PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the column headers,
 									;the players sorted by the selected column (left / right), up / down
@@ -1703,11 +1703,11 @@ StatColumnHeader
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-; Data of StatColumnHeader (1 row): table or constants used by it.
+; Table of 1 word after StatColumnHeader, 2 bytes: $000A ...
 .next	dc.w	$000A
 CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
-; Data of CrowdMeterScreen (16 rows): table or constants used by it.
+; Table of 245 words after CrowdMeterScreen, 250 bytes: $20FB,$FFFA,$0C20,$F900,$000A,$7B ...
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
 	dc.b	$7B,$FB,$FF,$FA,$0C,$20,$F9,$00,$00,$0A,$20,$FB,$FF,$FA,$0C,$7D	; {.... .... ....}
 	dc.b	$F9,$00,$00,$0A,$7B,$FB,$FF,$FA,$0C,$7D,$F9,$00,$70,$09,$72,$1C	; ....{....}..p.r.
@@ -1866,6 +1866,8 @@ CrowdMeterFadeIn
 ; Black out, set the display flags and fade a stats screen in
 StatsScreenFadeIn
 	jsr	(forceblack).l
+; Stats screen: clears VRAM through the gate array while fading in.
+StatsScreenFadeInClear
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	move.w	$18D30.l,d0
@@ -1922,7 +1924,7 @@ StatsScreenFadeIn
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
 .next	jsr	(DecompressGraphicsPlain).l
-	jsr	$2A9D0.l
+	jsr	(UnpackPictureSelectGfx).l
 	move.w	$18D42.l,d4
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
@@ -1936,7 +1938,7 @@ StatsScreenFadeIn
 	jsr	$3ECA6.l
 	jsr	(setupIceRinkPal).l
 	jmp	(CopyTeamLinesCheckTeam).l
-; Data of StatsScreenFadeIn (21 rows): table or constants used by it.
+; Table of 336 bytes after StatsScreenFadeIn, 336 bytes: $04,$79,$00,$01,$00,$01 ...
 	dc.b	$04,$79,$00,$01,$00,$01,$8A,$D2,$04,$79,$00,$01,$00,$01,$8A,$D4	; .y.......y......
 	dc.b	$23,$FC,$00,$04,$20,$DC,$00,$01,$8A,$D6,$08,$EA,$00,$02,$00,$32	; #... ..........2
 	dc.b	$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$05,$0C,$00,$70,$16,$72,$06	; N....n......p.r.
@@ -2076,7 +2078,7 @@ FrameWaitStep	move.w	$17474.l,d1
 	movea.l	$47D68.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	jsr	$2F330.l
+	jsr	(ReadActiveJoypadPrint).l
 	bclr.b	#$5,$17F6A.l
 	bclr.b	#$5,$17F6E.l
 	st.b	$17D6E.l
@@ -2300,15 +2302,15 @@ DirectionPressCheck	st.b	$18(a5)
 	jsr	(SprSort).l
 	bclr.b	#$3,$17F6C.l
 	move.w	(sp)+,$18D64.l
-	jsr	$2E986.l
+	jsr	(StatsScreenFadeInClear).l
 	jsr	(SetupIceRinkPalRemap).l
 	jsr	$3EC94.l
 	jsr	$3ECA6.l
-	jsr	$3ECCA.l
+	jsr	(IceRinkRemapGfxB).l
 	btst.b	#$4,$18D64.l
 	beq.w	.next10
-	jsr	$3ECEE.l
-	jsr	$3ECDC.l
+	jsr	(IceRinkRemapGfxD).l
+	jsr	(IceRinkRemapGfxC).l
 .next10	jsr	(SetHor).l
 	jsr	(setvideo).l
 	move.w	#$18,$18D62.l
@@ -2328,6 +2330,8 @@ ReadActiveJoypad
 	bne.s	.next3
 	jmp	(ReadJoy3).l
 .next3	jmp	(ReadJoy4).l
+; Prints the controller text on the pad test screen.
+ReadActiveJoypadPrint
 	move.w	#$F0,$1AD56.l
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$2
@@ -2344,7 +2348,7 @@ ReadActiveJoypad
 .next4	adda.l	$4(a1),a1
 	movea.l	#$1B008,a2
 	jmp	(dobitmap).l
-; Data of ReadActiveJoypad (7 rows): table or constants used by it.
+; Table of 56 words after ReadActiveJoypad, 112 bytes: $4EB9,$0003,$8F6E,$0006,$BD02,$0200 ...
 	dc.w	$4EB9,$0003,$8F6E,$0006,$BD02,$0200,$303C,$0008
 	dc.w	$323C,$0004,$343C,$07FF,$4EF9,$0003,$8C06,$50F9
 	dc.w	$0001,$AD56,$4EB9,$0003,$8F6E,$0006,$BD02,$0000

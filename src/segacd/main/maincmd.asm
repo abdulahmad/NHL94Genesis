@@ -748,7 +748,7 @@ VdpInitRegs	movem.l	d2-d7/a1-a2,-(sp)
 	bsr.w	GiveWordRamToSub
 	clr.w	$FF6D84.l
 	rts
-; Data of VdpInitRegs (3 rows): table or constants used by it.
+; Table of 164 bytes after VdpInitRegs, 164 bytes: $00,$00,$00,$00,$00,$00 ...
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0

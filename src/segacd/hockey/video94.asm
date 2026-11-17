@@ -427,28 +427,30 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 	bne.w	.1
 	addi.w	#$1,(printx).l
 	bra.w	.2
-.1	jsr	$3E262.l
+.1	jsr	(ShowClockPrintDigit).l
 .2	move.l	(sp)+,d0
 	swap	d0
 	ext.l	d0
 	divu.w	#$3C,d0		;minutes
 	move.l	d0,-(sp)
-	jsr	$3E262.l
+	jsr	(ShowClockPrintDigit).l
 	move.l	(sp)+,d0
 	swap	d0
 	ext.l	d0
 	addi.w	#$2,(printx).l
 	divu.w	#$A,d0		;tens of seconds
 	move.l	d0,-(sp)
-	jsr	$3E262.l
+	jsr	(ShowClockPrintDigit).l
 	move.l	(sp)+,d0
 	swap	d0
 	ext.l	d0
-	jsr	$3E262.l
+	jsr	(ShowClockPrintDigit).l
 	movea.l	(sp)+,a1
 	jsr	(printz).l
 	String	CC_Font3Pri,$D,$5
 .x	rts
+; Prints one clock digit from the digit table.
+ShowClockPrintDigit
 	movea.l	#$3E274,a1
 	asl.w	#$2,d0
 	adda.w	d0,a1
@@ -692,7 +694,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;(none while sflags7 bit 7 is set).
 									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
-; Data of QueuePadLabel (1 row): table or constants used by it.
+; Table of 2 words after QueuePadLabel, 4 bytes: $49FA,$0098 ...
 	dc.w	$49FA,$0098
 	clr.w	$2(a0)		;x offset (setffo adds it to the sprites)
 	move.w	d1,d2
@@ -912,6 +914,8 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	eori.b	#$F,d0
 	ori.b	#$F0,d0
 	rts
+; Sets the VDP planes and scroll for the sound update screen.
+UpdateSoundVdpSetup
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$1,(disflags).l
 	move.w	#$C000,$18D38.l
@@ -944,7 +948,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
 .next4	bsr.w	DecompressGraphicsPlain
-	jsr	$2A9D0.l
+	jsr	(UnpackPictureSelectGfx).l
 	move.w	d4,$18D50.l
 	bsr.w	SetupIceRinkPalRemap
 	move.w	d4,$18D46.l

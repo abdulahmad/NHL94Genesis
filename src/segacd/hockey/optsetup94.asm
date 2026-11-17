@@ -3,13 +3,13 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 									;change the option (ChangeOption) and redraw (FixModeOptions), start
 									;begins the game (SetupStart), and $5460 frames without a press start a
 									;demo (SetupDemo).
-	jsr	$2A58C.l
+	jsr	(ReadLineDataBackupRead).l
 	movea.l	#$18C38,a3
 	jsr	(InitPlayerSlots).l
 	move.w	$18C22.l,$18C0A.l
 	move.w	$18C24.l,$18BFA.l
 	bclr	#$1,$17F7A.l		;no overtime
-	jsr	$29302.l
+	jsr	(ClampPositionBoxClear).l
 	jsr	(ReadNameLog).l		;read the SRAM name list
 	bsr.w	OptionsScreenSetup		;build the screen
 	clr.w	$19384.l
@@ -167,7 +167,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	(HomeTeam).l,$1938A.l
 .next27	tst.w	(sp)+
 	bra.w	.next28
-; Data of GameSetUp (8 rows): table or constants used by it.
+; Table of 59 words after GameSetUp, 118 bytes: $301F,$B079,$0001,$7FB0,$6700,$006C ...
 	dc.w	$301F,$B079,$0001,$7FB0,$6700,$006C,$33F9,$0001
 	dc.w	$7FB0,$0001,$938A,$48A7,$8000,$3039,$0001,$7FB0
 	dc.w	$B079,$0001,$7FB0,$4C9F,$0001,$6700,$0010,$33F9
@@ -182,10 +182,10 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	rts
 ; Jumps to the disc routine at $401C4.
 GameSetUpJumpA
-	jmp	$401C4.l
+	jmp	(DefaultMenusRandomPick).l
 ; Jumps to the disc routine at $40132.
 GameSetUpJumpB
-	jmp	$40132.l
+	jmp	(DefaultMenusInit).l
 MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 lines and
 									;scrolls: setupfirstline = first line shown
 									;(0-3), setupprevline = the one before (sflags5 bit 2 set on a scroll;
@@ -456,7 +456,7 @@ ChangeOption
 	bne.w	.next17
 	tst.w	d7
 	bne.w	.next17
-	jsr	$40132.l
+	jsr	(DefaultMenusInit).l
 	move.w	$18A9E.l,d0
 	or.w	$18A9C.l,d0
 	beq.w	.loop
@@ -696,7 +696,7 @@ OptionsScreenSetup
 	move.l	#$0,d0
 	jsr	(setVram).l
 	jsr	(orjoy).l
-	jsr	$24866.l
+	jsr	(LoadTeamGraphicsPair).l
 	move.w	d4,(framercset).l
 	movea.l	$47D78.l,a2
 	addq.l	#$8,a2
@@ -798,7 +798,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	beq.w	.loop
 	move.w	(ScoutSubStatus).l,$17476.l
 	bclr	#$5,$19390.l
-	jsr	$24894.l
+	jsr	(CheckNOPUnusedReturn).l
 	jsr	(ReadJoy1).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
@@ -935,6 +935,8 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	beq.w	.x
 	cmpi.w	#$A,(OptNOP).l
 .x	rts
+; Decompresses the plain and the remapped team graphics pair.
+LoadTeamGraphicsPair
 	moveq	#$2,d4
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
@@ -946,6 +948,8 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$03412567,$89ABCDEF
 	rts
+; Return point of CheckNOPUnused.
+CheckNOPUnusedReturn
 	rts
 	rts
 ; Prints the message selected by the flag bits at $19390.

@@ -22,21 +22,25 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 	dc.b	'v',$00,'Z',$00,'TUS',$00,'Z',$00,'TUS',$00,'Z',$00
 ; Data that follows ReadLineData (strings, small tables)
 ReadLineDataTexts	dc.b	'4@BIX',$5C,'ef'
+; Reads the line data from the backup RAM image into the line buffer.
+ReadLineDataBackupRead
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
 	movea.l	#$18C26,a0
-	jsr	$22452.l
+	jsr	(BackupRamRead).l
 	bclr	#$4,$17F6A.l
 	move.w	#$FFFF,(lastsfx).l
 	move.l	#$C45C,$17470.l
 	movem.l	(sp)+,d0-d1/a0
 	rts
+; Writes the line buffer into the backup RAM image.
+ReadLineDataBackupWrite
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
 	movea.l	#$18C26,a0
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	bclr	#$4,$17F6A.l
 	move.w	#$FFFF,(lastsfx).l
 	move.l	#$C45C,$17470.l
@@ -55,7 +59,7 @@ ClearWinRecords
 	move.l	#$D20,d0
 	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of the skate path,
@@ -122,6 +126,8 @@ NextPathPoint
 	move.w	$6(a0,d0.w),$1A8BC.l
 .next2	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Shootout path: steps the shooter to the next path point.
+NextPathPointStep
 	movem.l	d2-d7/a0-a6,-(sp)
 	cmpi.b	#$80,$1A8B8.l
 	beq.w	.next11
@@ -158,6 +164,8 @@ NextPathPoint
 	move.w	$1A8BA.l,d1
 .next11	movem.l	(sp)+,d2-d7/a0-a6
 	rts
+; Shootout path: checks the current point before moving on.
+NextPathPointCheck
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$1,$17F78.l
 	beq.w	.next17

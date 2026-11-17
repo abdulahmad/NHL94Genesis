@@ -36,7 +36,7 @@ ClearVram	move.l	#$40000000,$C00004.l
 	bsr.w	Z80CommandSwitch
 	move.w	(sp)+,sr
 	rts
-; Data of ClearVram (2 rows): table or constants used by it.
+; Table of 24 bytes after ClearVram, 24 bytes: $00,$00,$00,$6B,$00,$6A ...
 	dc.b	$00,$00,$00,$6B,$00,$6A,$00,$75,$00,$7C,$00,$73,$00,$74,$30,$3C	; ...k.j.u.|.s.t0<
 	dc.b	$00,$01,$61,$00,$37,$D2,$4E,$75	; ..a.7.Nu
 ; Reads both pads into $FF4F84/$FF4F85 and updates the edge state.
@@ -74,7 +74,7 @@ PollControllers	movem.l	d1/a0,-(sp)
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-; Data of PollControllers (1 row): table or constants used by it.
+; Table of 16 bytes after PollControllers, 16 bytes: $00,$01,$02,$01,$04,$05 ...
 .next4	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 ; Decodes pad 1 and computes the newly pressed buttons.
 UpdatePad1	move.b	$FF4F84.l,d0
@@ -106,7 +106,7 @@ DecodePadBits	not.b	d0
 	or.w	d1,d0
 	move.w	(sp)+,d1
 	rts
-; Data of DecodePadBits (2 rows): table or constants used by it.
+; Table of 28 bytes after DecodePadBits, 28 bytes: $08,$00,$04,$08,$06,$07 ...
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
 ; Polls the sub-CPU and controllers
