@@ -39,7 +39,7 @@ printy		equ	$18D5A			;cartridge $B02A
 HomeTeamRosterPtr	equ	$1836A		;tmstruct+tmdata
 AwayTeamRosterPtr	equ	$186D0		;awtmstruct+tmdata
 tmdata		equ	$1E			;team data address, as the cartridge
-tmgoalie	equ	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
+tmgoalie	set	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
 pldsize		equ	8
 
 ; routines of the cartridge that HOCKEY.BIN calls at these addresses
