@@ -3,26 +3,26 @@
 
 LOAD	equ	$1B000
 SortCords	equ	$17480
+Sroot	equ	$3708E
 lastplayer	equ	$17E2A
+makepde	equ	$3C274
 move	equ	$2C9C8
 onetimershot	equ	$22D28
-puckc	equ	$17BE0
+puckglue	equ	$3BDE8
 puckvx	equ	$17BA8
 puckvy	equ	$17BAA
+randomd0	equ	$37050
 sflags6	equ	$17F76
 sfx	equ	$3710C
 wcradiusx	equ	$17CF4
 wcradiusy	equ	$17CF6
 X_1AD28	equ	$1AD28
 X_1AEF8	equ	$1AEF8
-X_1C050	equ	$1C050
-X_1C08E	equ	$1C08E
 X_2001C	equ	$2001C
 X_206A2	equ	$206A2
-X_20DE8	equ	$20DE8
+X_208E8	equ	$208E8
 X_21000	equ	$21000
 X_21246	equ	$21246
-X_21274	equ	$21274
 
 	org	$1FF40
 
@@ -73,7 +73,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	cmpi.l	#$1000,d3		;inside the corner circle (64*64)
 	bls.w	.2
 	exg.l	d0,d3
-	bsr.w	X_1C08E		;distance from the circle center
+	bsr.w	Sroot-LOAD		;distance from the circle center
 	exg.l	d0,d3
 	ext.l	d0
 	asl.l	#$8,d0
@@ -248,7 +248,7 @@ wallcoll						;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = obje
 	cmpi.w	#$FC00,d2
 	bgt.w	.pok
 	move.w	#$800,d0
-	bsr.w	X_1C050
+	bsr.w	randomd0-LOAD
 	neg.w	d0
 	move.w	d0,$2C(a3)
 	bsr.w	X_1AEF8
@@ -303,67 +303,82 @@ wallcoll						;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = obje
 .nocoll	adda.w	#$4,sp		;drop saved cos/sin
 	movem.l	(sp)+,d2-d3
 	rts
-	dc.w	$08B9,$0002,$0001,$7F72,$6700,$0788,$3F3C,$0005
-	dc.w	$6000,$B88C,$0C6B,$0190,$0014,$6E00,$000C,$0C6B
-	dc.w	$FE70,$0014,$6E00,$0006,$426B,$002A,$0C6B,$0010
-	dc.w	$0018,$6E00,$FFCC,$302B,$0052,$E340,$207C,$0001
-	dc.w	$7CA0,$227C,$0001,$7CC0,$247C,$0001,$7C80,$3230
-	dc.w	$0000,$0C41,$000F,$6700,$0022,$4244,$1831,$1001
-	dc.w	$3A32,$4000,$9A6B,$0014,$0C45,$0016,$6E00,$000C
-	dc.w	$6100,$0032,$5241,$6000,$FFDA,$3230,$0000,$6700
-	dc.w	$0022,$4244,$1831,$10FF,$3A2B,$0014,$9A72,$4000
-	dc.w	$0C45,$0016,$6E00,$000C,$6100,$000A,$5341,$6600
-	dc.w	$FFE2,$4E75,$48E7,$FFF0,$E24C,$B879,$0001,$7BE0
-	dc.w	$6700,$0116,$0C44,$000B,$6E00,$010E,$EF44,$247C
-	dc.w	$0001,$7480,$D4C4,$0839,$0002,$0001,$7F70,$6700
-	dc.w	$0018,$EE44,$B879,$0001,$9368,$6700,$000C,$B879
-	dc.w	$0001,$936A,$6600,$00E2,$082A,$0002,$0062,$6600
-	dc.w	$00D8,$4A2A,$005E,$6600,$00D0,$082A,$0002,$0063
-	dc.w	$6600,$0070,$0C6B,$0005,$0018,$6E00,$0066,$0C6B
-	dc.w	$0200,$002C,$6E00,$005C,$2F0A,$6100,$A9D8,$D06A
-	dc.w	$0000,$906B,$0000,$0C40,$000E,$6E00,$0046,$0C40
-	dc.w	$FFF2,$6D00,$003E,$D26A,$0014,$926B,$0014,$0C41
-	dc.w	$000E,$6E00,$002E,$0C41,$FFF2,$6D00,$0026,$C1C0
-	dc.w	$C3C1,$D081,$223C,$0000,$00C4,$4A2B,$005E,$6F00
-	dc.w	$0004,$E449,$B081,$6200,$000A,$6100,$0256,$6000
-	dc.w	$0058,$4A6A,$0034,$6700,$00A6,$082A,$0003,$0064
-	dc.w	$6600,$0046,$302A,$0000,$906B,$0000,$0C40,$0008
-	dc.w	$6E00,$0036,$0C40,$FFF8,$6D00,$002E,$322A,$0014
-	dc.w	$926B,$0014,$0C41,$0008,$6E00,$001E,$0C41,$FFF8
-	dc.w	$6D00,$0016,$C1C0,$C3C1,$D081,$0C80,$0000,$0040
-	dc.w	$6200,$0006,$6100,$052E,$4CDF,$0FFF,$4E75,$000C
-	dc.w	$000C,$000D,$000D,$000D,$000D,$000D,$000D,$000D
-	dc.w	$000D,$000E,$000E,$000E,$000E,$000F,$000F,$000F
-	dc.w	$000F,$000F,$000F,$0090,$0090,$00A9,$00A9,$00A9
-	dc.w	$00A9,$00A9,$00A9,$00A9,$00A9,$00C4,$00C4,$00C4
-	dc.w	$00C4,$00E1,$00E1,$00E1,$00E1,$00E1,$00E1,$2F08
-	dc.w	$207C,$0003,$BA3C,$4240,$102A,$0068,$0839,$0001
-	dc.w	$0001,$7F7C,$6600,$000E,$0839,$0006,$0001,$7F7A
-	dc.w	$6700,$0006,$0600,$0002,$E248,$082A,$0003,$0062
-	dc.w	$6700,$0006,$303C,$000F,$D040,$0839,$0000,$0001
-	dc.w	$7F78,$6700,$000C,$4A40,$6700,$0006,$0440,$0002
-	dc.w	$0C40,$001E,$6D00,$0006,$303C,$001E,$33F0,$0000
-	dc.w	$0001,$7EB4,$207C,$0003,$BA64,$42B9,$0001,$7EB6
-	dc.w	$33F0,$0000,$0001,$7EB8,$33F9,$0001,$7EB4,$0001
-	dc.w	$7EBA,$4479,$0001,$7EBA,$0839,$0001,$0001,$7F76
-	dc.w	$6700,$001C,$33FC,$000C,$0001,$7EB4,$23FC,$0000
-	dc.w	$0090,$0001,$7EB6,$33FC,$FFF4,$0001,$7EBA,$0C6A
-	dc.w	$0250,$0058,$6700,$000C,$0C6A,$02A2,$0058,$6600
-	dc.w	$001C,$33FC,$0012,$0001,$7EB4,$23FC,$0000,$0144
-	dc.w	$0001,$7EB6,$33FC,$FFEE,$0001,$7EBA,$205F,$0C79
-	dc.w	$000F,$0001,$7B98,$6E00,$0094,$302A,$0000,$0C6A
-	dc.w	$0250,$0058,$6700,$0014,$0C6A,$02A2,$0058,$6600
-	dc.w	$0028,$323C,$0006,$6000,$0006,$323C,$FFFA,$082A
-	dc.w	$0007,$0062,$6600,$0004,$4441,$082A,$0000,$0076
-	dc.w	$6700,$0004,$4441,$D041,$906B,$0000,$B079,$0001
-	dc.w	$7EB4,$6E00,$0048,$B079,$0001,$7EBA,$6D00,$003E
-	dc.w	$322A,$0014,$926B,$0014,$B279,$0001,$7EB4,$6E00
-	dc.w	$002C,$B279,$0001,$7EBA,$6D00,$0022,$48A7,$C000
-	dc.w	$C1C0,$C3C1,$D081,$B0B9,$0001,$7EB6,$4C9F,$0003
-	dc.w	$6200,$000A,$6100,$03FE,$6000,$FE2E,$08B9,$0002
-	dc.w	$0001,$7F72,$6700,$FE22,$3039,$0001,$7BE0,$B06A
-	dc.w	$0052,$6700,$FE14,$3F3C,$0005,$6100,$B4E2,$6000
-	dc.w	$FE08
+checkpuckcoll_sfx						;Entered from checkpuckcoll. Puck in the air: sfx 5 once when sflags4 bit
+									;2 is set
+	bclr	#$2,$17F72.l
+	beq.w	X_21000
+	move.w	#$5,-(sp)
+	bra.w	sfx-LOAD
+	cmpi.w	#$190,$14(a3)
+	bgt.w	.l20896
+	cmpi.w	#$FE70,$14(a3)
+	bgt.w	.l2089A
+.l20896	clr.w	$2A(a3)
+.l2089A	cmpi.w	#$10,$18(a3)
+	bgt.w	checkpuckcoll_sfx
+	move.w	$52(a3),d0
+	asl.w	#$1,d0
+	movea.l	#$17CA0,a0
+	movea.l	#$17CC0,a1
+	movea.l	#$17C80,a2
+	move.w	(a0,d0.w),d1
+	cmpi.w	#$F,d1
+	beq.w	X_208E8
+	dc.w	$4244,$1831,$1001,$3A32,$4000,$9A6B,$0014,$0C45
+	dc.w	$0016,$6E00,$000C,$6100,$0032,$5241,$6000,$FFDA
+	dc.w	$3230,$0000,$6700,$0022,$4244,$1831,$10FF,$3A2B
+	dc.w	$0014,$9A72,$4000,$0C45,$0016,$6E00,$000C,$6100
+	dc.w	$000A,$5341,$6600,$FFE2,$4E75,$48E7,$FFF0,$E24C
+	dc.w	$B879,$0001,$7BE0,$6700,$0116,$0C44,$000B,$6E00
+	dc.w	$010E,$EF44,$247C,$0001,$7480,$D4C4,$0839,$0002
+	dc.w	$0001,$7F70,$6700,$0018,$EE44,$B879,$0001,$9368
+	dc.w	$6700,$000C,$B879,$0001,$936A,$6600,$00E2,$082A
+	dc.w	$0002,$0062,$6600,$00D8,$4A2A,$005E,$6600,$00D0
+	dc.w	$082A,$0002,$0063,$6600,$0070,$0C6B,$0005,$0018
+	dc.w	$6E00,$0066,$0C6B,$0200,$002C,$6E00,$005C,$2F0A
+	dc.w	$6100,$A9D8,$D06A,$0000,$906B,$0000,$0C40,$000E
+	dc.w	$6E00,$0046,$0C40,$FFF2,$6D00,$003E,$D26A,$0014
+	dc.w	$926B,$0014,$0C41,$000E,$6E00,$002E,$0C41,$FFF2
+	dc.w	$6D00,$0026,$C1C0,$C3C1,$D081,$223C,$0000,$00C4
+	dc.w	$4A2B,$005E,$6F00,$0004,$E449,$B081,$6200,$000A
+	dc.w	$6100,$0256,$6000,$0058,$4A6A,$0034,$6700,$00A6
+	dc.w	$082A,$0003,$0064,$6600,$0046,$302A,$0000,$906B
+	dc.w	$0000,$0C40,$0008,$6E00,$0036,$0C40,$FFF8,$6D00
+	dc.w	$002E,$322A,$0014,$926B,$0014,$0C41,$0008,$6E00
+	dc.w	$001E,$0C41,$FFF8,$6D00,$0016,$C1C0,$C3C1,$D081
+	dc.w	$0C80,$0000,$0040,$6200,$0006,$6100,$052E,$4CDF
+	dc.w	$0FFF,$4E75,$000C,$000C,$000D,$000D,$000D,$000D
+	dc.w	$000D,$000D,$000D,$000D,$000E,$000E,$000E,$000E
+	dc.w	$000F,$000F,$000F,$000F,$000F,$000F,$0090,$0090
+	dc.w	$00A9,$00A9,$00A9,$00A9,$00A9,$00A9,$00A9,$00A9
+	dc.w	$00C4,$00C4,$00C4,$00C4,$00E1,$00E1,$00E1,$00E1
+	dc.w	$00E1,$00E1,$2F08,$207C,$0003,$BA3C,$4240,$102A
+	dc.w	$0068,$0839,$0001,$0001,$7F7C,$6600,$000E,$0839
+	dc.w	$0006,$0001,$7F7A,$6700,$0006,$0600,$0002,$E248
+	dc.w	$082A,$0003,$0062,$6700,$0006,$303C,$000F,$D040
+	dc.w	$0839,$0000,$0001,$7F78,$6700,$000C,$4A40,$6700
+	dc.w	$0006,$0440,$0002,$0C40,$001E,$6D00,$0006,$303C
+	dc.w	$001E,$33F0,$0000,$0001,$7EB4,$207C,$0003,$BA64
+	dc.w	$42B9,$0001,$7EB6,$33F0,$0000,$0001,$7EB8,$33F9
+	dc.w	$0001,$7EB4,$0001,$7EBA,$4479,$0001,$7EBA,$0839
+	dc.w	$0001,$0001,$7F76,$6700,$001C,$33FC,$000C,$0001
+	dc.w	$7EB4,$23FC,$0000,$0090,$0001,$7EB6,$33FC,$FFF4
+	dc.w	$0001,$7EBA,$0C6A,$0250,$0058,$6700,$000C,$0C6A
+	dc.w	$02A2,$0058,$6600,$001C,$33FC,$0012,$0001,$7EB4
+	dc.w	$23FC,$0000,$0144,$0001,$7EB6,$33FC,$FFEE,$0001
+	dc.w	$7EBA,$205F,$0C79,$000F,$0001,$7B98,$6E00,$0094
+	dc.w	$302A,$0000,$0C6A,$0250,$0058,$6700,$0014,$0C6A
+	dc.w	$02A2,$0058,$6600,$0028,$323C,$0006,$6000,$0006
+	dc.w	$323C,$FFFA,$082A,$0007,$0062,$6600,$0004,$4441
+	dc.w	$082A,$0000,$0076,$6700,$0004,$4441,$D041,$906B
+	dc.w	$0000,$B079,$0001,$7EB4,$6E00,$0048,$B079,$0001
+	dc.w	$7EBA,$6D00,$003E,$322A,$0014,$926B,$0014,$B279
+	dc.w	$0001,$7EB4,$6E00,$002C,$B279,$0001,$7EBA,$6D00
+	dc.w	$0022,$48A7,$C000,$C1C0,$C3C1,$D081,$B0B9,$0001
+	dc.w	$7EB6,$4C9F,$0003,$6200,$000A,$6100,$03FE,$6000
+	dc.w	$FE2E,$08B9,$0002,$0001,$7F72,$6700,$FE22,$3039
+	dc.w	$0001,$7BE0,$B06A,$0052,$6700,$FE14,$3F3C,$0005
+	dc.w	$6100,$B4E2,$6000,$FE08
 puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d0 =
 									;distance^2 (from checkpuckcoll .ccx). A stick check on the puck carrier
 									;can steal the puck (Stk rolls, smaller ranges when the carrier is in the
@@ -376,7 +391,7 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	btst	#$4,$17F68.l
 	bne.w	X_21000		;exit if so (goalie always lets the shot in)
 .0	bclr	#$0,$62(a2)
-	move.w	(puckc).l,d1		;move puckc into d1
+	move.w	$17BE0.l,d1		;move puckc into d1
 	bmi.w	.nosteal		;branch if no puck carrier
 	asl.w	#$7,d1
 	movea.l	#SortCords,a0
@@ -399,17 +414,17 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	beq.w	X_21000		;no stealing from goalie
 	move.b	$71(a0),d0
 	lsr.b	#$1,d0
-	bsr.w	X_21274		;adjust for energy level
+	bsr.w	makepde-LOAD		;adjust for energy level
 	move.w	d0,-(sp)
 	exg.l	a0,a2		;swap a2 and a0 (a0 now collider)
 	move.b	$71(a0),d0		;Stk for collider
 	lsr.b	#$1,d0		;divie by 2
-	bsr.w	X_21274		;adjust for energy
+	bsr.w	makepde-LOAD		;adjust for energy
 	exg.l	a0,a2		;swap back (a0 now puckc)
 	neg.w	d0
 	add.w	(sp)+,d0		;add puckc modified Stk
 	addi.w	#$24,d0		;add 24 hex (36 decimal)
-	bsr.w	X_1C050
+	bsr.w	randomd0-LOAD
 	btst	#$5,(sflags6).l		;check if puckc is in slot
 	beq.w	.2
 	cmpi.w	#$4,d0		;steal: the carrier cannot touch the puck for a while (stick handling,
@@ -419,13 +434,13 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	bhi.w	X_21000		;exit if higher (not losing puck)
 .steal	move.b	$71(a0),d0		;Stk of puckc
 	lsr.b	#$1,d0
-	bsr.w	X_21274		;adj for energy
+	bsr.w	makepde-LOAD		;adj for energy
 	addi.w	#$14,d0		;add 14 hex (20 dec)
 	move.b	d0,$5E(a0)		;move result into nopuck (cant get puck timer)
 	exg.l	a0,a2		;swap a0 and a2 (a0 now collider)
 	move.b	$71(a0),d0		;Stk of collider
 	lsr.b	#$1,d0
-	bsr.w	X_21274		;adj for energy
+	bsr.w	makepde-LOAD		;adj for energy
 	addi.w	#$14,d0		;add 14 hex (20 dec)
 	move.b	d0,$5E(a0)		;move result into nopuck
 	exg.l	a0,a2
@@ -463,7 +478,7 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 .nohand	addi.w	#$32C8,d1
 	mulu.w	d1,d1
 	cmp.l	d1,d0
-	bls.w	X_20DE8
+	bls.w	puckglue-LOAD
 	move.b	#$8,$5E(a2)
 	bra.w	.stdef
 .onetimer	exg.l	a2,a3

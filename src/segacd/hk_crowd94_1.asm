@@ -1,12 +1,13 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
+CC_Font1Pri	equ	$BF
 ClearGameStats	equ	$29302
 FigureJoy	equ	$40318
 FourWayPlay	equ	$18BF8
 Framer	equ	$38CA0
-GameSetUpMap	equ	$47D74
 HomeTeam	equ	$17FAE
+LOAD	equ	$1B000
 NATxt	equ	$23EB6
 Opt1team	equ	$18BFE
 Opt2team	equ	$18C00
@@ -16,11 +17,15 @@ OptPen	equ	$18C08
 OptPlayMode	equ	$18BFA
 OptUserRec	equ	$18C06
 OptionValueOffsets	equ	$23ECC
+PrintOptTeamName	equ	$23E20
+PrintOptionNames	equ	$24238
 ReadNameLog	equ	$2262E
 ReadPassBits	equ	$4057C
+ReadSetupPads	equ	$24524
 ScrollClearTxt	equ	$23E1C
 ScrollDownTxt	equ	$23E18
 ScrollUpTxt	equ	$23E14
+SetupMenuMap	equ	$47D74
 Sroot	equ	$3708E
 TempBuffer	equ	$17E70
 TempWord1	equ	$17E62
@@ -48,6 +53,7 @@ print	equ	$38F80
 printa	equ	$18D5C
 printx	equ	$18D58
 printy	equ	$18D5A
+printz	equ	$38F6E
 randomd0	equ	$37050
 randomd0s	equ	$37044
 setupfirstline	equ	$19384
@@ -60,7 +66,6 @@ tmstruct	equ	$1834C
 wcradiusx	equ	$17CF4
 wcradiusy	equ	$17CF6
 X_8088	equ	$8088
-X_81F2	equ	$81F2
 X_8798	equ	$8798
 X_879E	equ	$879E
 X_891E	equ	$891E
@@ -68,10 +73,7 @@ X_8984	equ	$8984
 X_89CA	equ	$89CA
 X_8A8C	equ	$8A8C
 X_8CB6	equ	$8CB6
-X_8E20	equ	$8E20
-X_9238	equ	$9238
 X_9348	equ	$9348
-X_9524	equ	$9524
 X_9660	equ	$9660
 X_9720	equ	$9720
 X_9962	equ	$9962
@@ -198,49 +200,120 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 .MaskAttribMathResult	andi.w	#$FF,d3		;pass only lower byte
 	movem.l	(sp)+,d0-d2/a1
 	rts
-	dc.w	$48E7,$8080,$207C,$0001,$7EAE,$3039,$0001,$7EA6
-	dc.w	$D040,$3230,$0000,$0C79,$0000,$0001,$7EA6,$6C00
-	dc.w	$000A,$0679,$0001,$0001,$7EA6,$4CDF,$0101,$227C
-	dc.w	$0001,$834C,$4E75,$48E7,$8080,$207C,$0001,$7EAC
-	dc.w	$3039,$0001,$7EA4,$D040,$3230,$0000,$0C79,$0000
-	dc.w	$0001,$7EA4,$6C00,$000A,$0679,$0001,$0001,$7EA4
-	dc.w	$4CDF,$0101,$227C,$0001,$86B2,$4E75,$4E75
+NextHomeHotPlayer						;d1 = the next home hot player (homehotidx index into the list at
+									;homehotplayer), a1 = tmstruct. Called from UpdateScoutingDisplay (the
+									;MATCHUPS text)
+	movem.l	d0/a0,-(sp)
+	movea.l	#homehotplayer,a0
+	move.w	(homehotidx).l,d0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d1		;the next entry of the list
+	cmpi.w	#$0,(homehotidx).l		;index stays 0 when already 0 or more
+	bge.w	.x
+	addi.w	#$1,(homehotidx).l
+.x	movem.l	(sp)+,d0/a0
+	movea.l	#tmstruct,a1
+	rts
+	movem.l	d0/a0,-(sp)
+	movea.l	#awayhotplayer,a0
+	move.w	(awayhotidx).l,d0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d1
+	cmpi.w	#$0,(awayhotidx).l
+	bge.w	.l8192
+	addi.w	#$1,(awayhotidx).l
+.l8192	movem.l	(sp)+,d0/a0
+	movea.l	#awtmstruct,a1
+	rts
+	rts
 BuildHotColdLists						;Build the hot / cold player lists of both teams (SortHotColdStarters,
 									;CopyHottestPlayer, CopyColdestPlayer). Called from ScoutingReport
 	clr.w	(awayhotidx).l
 	clr.w	(homehotidx).l
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a0
-	bsr.w	X_81F2
+	bsr.w	SortHotColdStarters
 	movea.l	#homehotplayer,a0
 	bsr.w	CopyHottestPlayer
 	movea.l	#homecoldplayer,a0
 	bsr.w	CopyColdestPlayer
 	movea.l	#awtmstruct,a0
-	bsr.w	X_81F2
+	bsr.w	SortHotColdStarters
 	movea.l	#awayhotplayer,a0
 	bsr.w	CopyHottestPlayer
 	movea.l	#awaycoldplayer,a0
 	bsr.w	CopyColdestPlayer
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$48E7,$FFFE,$2448,$D5FC,$0000,$01A4,$2068,$001E
-	dc.w	$D0E8,$0006,$227C,$0001,$7E70,$303C,$0005,$1218
-	dc.w	$0401,$0001,$12C1,$4881,$E941,$4211,$0641,$0003
-	dc.w	$3E3C,$0003,$4242,$1432,$1000,$0C07,$0009,$6700
-	dc.w	$000C,$0C07,$000D,$6700,$0004,$D511,$0641,$0001
-	dc.w	$0647,$0001,$0C07,$0010,$6600,$FFDA,$4A19,$51C8
-	dc.w	$FFBE,$227C,$0001,$7E70,$4241,$303C,$0004,$1C29
-	dc.w	$0003,$BC29,$0001,$6F00,$0012,$50C1,$3429,$0002
-	dc.w	$3369,$0000,$0002,$3342,$0000,$4A59,$51C8,$FFE0
-	dc.w	$4A41,$6600,$FFCE,$4CDF,$7FFF,$4E75,$48E7,$8080
-	dc.w	$207C,$0001,$7EB2,$3039,$0001,$7EAA,$D040,$3230
-	dc.w	$0000,$0C79,$0000,$0001,$7EAA,$6C00,$000A,$0679
-	dc.w	$0001,$0001,$7EAA,$4CDF,$0101,$227C,$0001,$834C
-	dc.w	$4E75,$48E7,$8080,$207C,$0001,$7EB0,$3039,$0001
-	dc.w	$7EA8,$D040,$3230,$0000,$0C79,$0000,$0001,$7EA8
-	dc.w	$6C00,$000A,$0679,$0001,$0001,$7EA8,$4CDF,$0101
-	dc.w	$227C,$0001,$86B2,$4E75,$4E75
+SortHotColdStarters						;Sum the hot / cold values of the 6 starters of team a0 into TempBuffer
+									;(byte pairs: player, sum), then sort them by sum
+	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	a0,a2
+	adda.l	#$1A4,a2		;its hot / cold table
+	movea.l	$1E(a0),a0
+	adda.w	$6(a0),a0
+	movea.l	#TempBuffer,a1
+	move.w	#$5,d0		;6 starters
+.player	move.b	(a0)+,d1
+	subi.b	#$1,d1		;roster slots are 1-based
+	move.b	d1,(a1)+
+	ext.w	d1
+	asl.w	#$4,d1		;16 hot / cold bytes per player
+	clr.b	(a1)
+	addi.w	#$3,d1		;start at byte 3
+	move.w	#$3,d7
+.attrib	clr.w	d2
+	move.b	(a2,d1.w),d2		;hot / cold byte
+	cmpi.b	#$9,d7		;byte 9?
+	beq.w	.nextattr		;skip bytes 9 and $D
+	cmpi.b	#$D,d7		;byte $D?
+	beq.w	.nextattr
+	add.b	d2,(a1)
+.nextattr	addi.w	#$1,d1
+	addi.w	#$1,d7
+	cmpi.b	#$10,d7		;past byte $F?
+	bne.w	.attrib		;up to byte $F
+	tst.b	(a1)+
+	dbra	d0,.player
+.sort	movea.l	#TempBuffer,a1
+	clr.w	d1
+	move.w	#$4,d0		;5 compares
+.cmp	move.b	$3(a1),d6		;next sum
+	cmp.b	$1(a1),d6		;above this one?
+	ble.w	.next		;in order: no swap
+	st.b	d1		;swapped: d1 set, sort again
+	move.w	$2(a1),d2		;swap the pairs
+	move.w	$0(a1),$2(a1)
+	move.w	d2,$0(a1)
+.next	tst.w	(a1)+
+	dbra	d0,.cmp
+	tst.w	d1
+	bne.w	.sort		;repeat until no swap
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+	movem.l	d0/a0,-(sp)
+	movea.l	#homecoldplayer,a0
+	move.w	$17EAA.l,d0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d1
+	cmpi.w	#$0,$17EAA.l
+	bge.w	.l82B8
+	addi.w	#$1,$17EAA.l
+.l82B8	movem.l	(sp)+,d0/a0
+	movea.l	#tmstruct,a1
+	rts
+	movem.l	d0/a0,-(sp)
+	movea.l	#awaycoldplayer,a0
+	move.w	$17EA8.l,d0
+	add.w	d0,d0
+	move.w	(a0,d0.w),d1
+	cmpi.w	#$0,$17EA8.l
+	bge.w	.l82EE
+	addi.w	#$1,$17EA8.l
+.l82EE	movem.l	(sp)+,d0/a0
+	movea.l	#awtmstruct,a1
+	rts
+	rts
 CopyHottestPlayer						;Copy the hottest player of TempBuffer to the list at a0
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	#TempBuffer,a1
@@ -294,7 +367,7 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	rts
 GetHotColdTotal						;d1 = the hot / cold total of the starters of
 									;team a0 (SortHotColdStarters)
-	bsr.w	X_81F2
+	bsr.w	SortHotColdStarters
 	move.w	#$6,d0		;7 sums (starters + the extra slot)
 	movea.l	#TempBuffer,a0
 	clr.w	d1
@@ -316,7 +389,7 @@ GameSetUp
 	bsr.w	X_9348
 	clr.w	(setupfirstline).l
 	clr.w	(setupprevline).l
-	bsr.w	X_9238
+	bsr.w	PrintOptionNames-LOAD
 	tst.w	(demoflag).l
 	bne.w	.l8440
 	moveq	#$1C,d0
@@ -352,7 +425,7 @@ GameSetUp
 	move.w	#$1,(OptLine).l
 	move.w	#$0,(OptPen).l
 	move.w	#$1,(OptUserRec).l
-.l84E6	bsr.w	X_9524
+.l84E6	bsr.w	ReadSetupPads-LOAD
 	tst.w	d1
 	bne.w	.l84F4
 	bra.w	X_9660
@@ -555,7 +628,7 @@ MoveMenuFrame
 .l88BA	bsr.w	X_891E
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(setupmenuchars).l,d4
-	movea.l	(GameSetUpMap).l,a0
+	movea.l	(SetupMenuMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -595,21 +668,11 @@ SetFrameRectUnused
 	bne.w	X_89CA
 	moveq	#$5,d1
 	rts
-	dc.w	$4EB9,$0003,$8F6E,$0006,$FF10,$0E00
-	add.w	d3,(printy).l
-	move.w	(setupfirstline).l,d0
-	add.w	d0,d0
-	sub.w	d0,(printy).l
-	moveq	#$17,d0
-	moveq	#$3,d1
-	cmpi.w	#$2,(OptPlayMode).l
-	blt.w	X_89CA
-	cmpi.w	#$4,(OptPlayMode).l
-	beq.w	X_89CA
-	cmpi.w	#$4,d3
-	bne.w	X_89CA
-	moveq	#$5,d1
-	dc.w	$4E75
+	dc.w	$4EB9,$0003,$8F6E,$0006,$FF10,$0E00,$D779,$0001
+	dc.w	$8D5A,$3039,$0001,$9384,$D040,$9179,$0001,$8D5A
+	dc.w	$7017,$7203,$0C79,$0002,$0001,$8BFA,$6D00,$0018
+	dc.w	$0C79,$0004,$0001,$8BFA,$6700,$000C,$0C43,$0004
+	dc.w	$6600,$0004,$7205,$4E75
 FixModeOptions
 	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.w	#$4,(OptPlayMode).l
@@ -631,7 +694,7 @@ FixModeOptions
 .l8A3A	move.w	(setupfirstline).l,d0
 	cmp.w	(setupprevline).l,d0
 	beq.w	.l8A4E
-	bsr.w	X_9238
+	bsr.w	PrintOptionNames-LOAD
 .l8A4E	bset	#$3,(sflags6).l
 	bsr.w	X_8CB6
 	bclr	#$3,(sflags6).l
@@ -688,7 +751,10 @@ WrapOption
 	dc.w	$0080,$6D00,$0006,$6100,$002A,$0C47,$0010,$6600
 	dc.w	$FFD8,$6100,$00C4,$3E06,$4EB9,$0003,$FF4C,$0839
 	dc.w	$0000,$0001,$9390,$6600,$0008,$4EB9,$0002,$4B5E
-	dc.w	$4E75,$4EB9,$0003,$8F6E,$0006,$BF11,$1000
+	dc.w	$4E75
+PrintOptionValue
+	jsr	(printz).l
+	String	CC_Font1Pri,$11,$10
 	move.w	(setupfirstline).l,d0
 	add.w	d0,d0
 	sub.w	d0,(printy).l
@@ -698,9 +764,9 @@ WrapOption
 	subi.w	#$1,(printy).l
 	move.w	#$11,(printx).l
 	cmpi.w	#$4,d7
-	beq.w	X_8E20
+	beq.w	PrintOptTeamName-LOAD
 	cmpi.w	#$6,d7
-	beq.w	X_8E20
+	beq.w	PrintOptTeamName-LOAD
 	movea.l	#OptPlayMode,a0
 	move.w	(a0,d7.w),d3
 	movea.l	#OptionValueOffsets,a0

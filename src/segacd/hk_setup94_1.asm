@@ -2,18 +2,24 @@
 	include	macros\genesis.mac
 
 Arrowsmap	equ	$47D50
-CC_Font3Pal3	equ	$CD
 DecompressGraphicsPlain	equ	$38958
 DoDMA_nd2	equ	$379D6
+EncodePW	equ	$4065C
 ExtraChars	equ	$18D56
+GameSetUp	equ	$233CC
 HomeTeam	equ	$17FAE
 LOAD	equ	$1B000
 OldVcount	equ	$17476
 OptLine	equ	$18C0A
+OptPlayMode	equ	$18BFA
 PlayerScrollCtr	equ	$1A452
+PlayoffStatsScreen	equ	$2DE18
 ScoutSubStatus	equ	$17474
+SetSPA	equ	$363C0
 SortCords	equ	$17480
 Teamblocksmap	equ	$47D44
+UserNameEntry	equ	$2702C
+VBint	equ	$18D66
 VisTeam	equ	$17FB0
 awayhotcoldsave	equ	$1A714
 awtmstruct	equ	$186B2
@@ -24,23 +30,20 @@ homehotcoldsave	equ	$1A574
 mesarea	equ	$17EF2
 move	equ	$2C9C8
 null	equ	$1B008
-page	equ	$27DB0
 palcount	equ	$18D62
 playoffspritex	equ	$17CE4
 potreeteam	equ	$18AA0
 print	equ	$38F80
 printa	equ	$18D5C
-printsmall	equ	$38D9E
-printx	equ	$18D58
-printz	equ	$38F6E
 scoutcolumn	equ	$1A44E
 swap	equ	$2779A
 tmstruct	equ	$1834C
+vb2	equ	$3DB90
 X_21000	equ	$21000
-X_21EC6	equ	$21EC6
+X_2403E	equ	$2403E
 X_241F6	equ	$241F6
-X_245C6	equ	$245C6
-X_24832	equ	$24832
+X_2433C	equ	$2433C
+X_24C0C	equ	$24C0C
 
 	org	$2391C
 
@@ -160,57 +163,220 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	dc.w	$FFDE,$247C,$0003,$EE30,$267C,$0001,$7D04,$203C
 	dc.w	$0000,$0006,$50EB,$0008,$375A,$0000,$375A,$0014
 	dc.w	$375A,$0018,$375A,$0006,$375A,$0004,$3744,$0012
-	dc.w	$D85A,$D6FC,$001C,$51C8,$FFDC,$6000,$007E,$0000
-	dc.w	$0000,$0000,$0000,$0009,$0000,$0000,$0000,$0000
-	dc.w	$0009,$0000,$0000,$0000,$0000,$0009,$0000,$0000
-	dc.w	$0000,$0000,$0009,$0000,$0000,$FFFF,$0188,$0000
-	dc.w	$0007,$0000,$0000,$FFFF,$0186,$0000,$0007,$0000
-	dc.w	$0000,$FFFF,$0187,$0000,$0007,$0000,$0000,$FFFF
-	dc.w	$0189,$8000,$0007,$0000,$0000,$FFFF,$034C,$0000
-	dc.w	$0007,$0000,$0000,$FFFF,$034D,$0000,$0007,$0000
-	dc.w	$0000,$FFFF,$0161,$0000,$0005,$4246,$227C,$0001
-	dc.w	$7CC0,$45FA,$0070,$267C,$0001,$7480,$287C,$0001
-	dc.w	$7CA0,$701F,$204B,$4298,$51C8,$FFFC,$3746,$0052
-	dc.w	$50EB,$0008,$50EB,$0066,$375A,$0000,$375A,$0014
-	dc.w	$375A,$0018,$375A,$0006,$375A,$0004,$3744,$0012
-	dc.w	$D85A,$375A,$004A,$375A,$004C,$D4FC,$0001,$175A
-	dc.w	$0038,$D4FC,$0001,$175A,$0062,$D6FC,$0080,$E346
-	dc.w	$12C6,$E24E,$38C6,$5246,$0C46,$0010,$6600,$FFA4
-	dc.w	$6000,$0142,$0180,$00C0,$0000,$0001,$0000,$0014
-	dc.w	$0008,$0004,$0000,$0080,$FF38,$FF9C,$0000,$0001
-	dc.w	$0000,$0014,$0008,$0004,$0000,$0080,$FF38,$FFB0
-	dc.w	$0000,$0001,$0000,$0014,$0008,$0004,$0000,$0080
-	dc.w	$FF38,$FFC4,$0000,$0001,$0000,$0014,$0008,$0004
-	dc.w	$0000,$0080,$FF38,$FFD8,$0000,$0001,$0000,$0014
-	dc.w	$0008,$0004,$0000,$0080,$FF38,$FFEC,$0000,$0001
-	dc.w	$0000,$0014,$0008,$0004,$0000,$0080,$00C0,$00C0
-	dc.w	$0000,$0001,$0001,$0014,$0008,$0004,$0000,$0040
-	dc.w	$FF38,$0028,$0000,$0001,$0001,$0014,$0008,$0004
-	dc.w	$0000,$0040,$FF38,$003C,$0000,$0001,$0001,$0014
-	dc.w	$0008,$0004,$0000,$0040,$FF38,$0050,$0000,$0001
-	dc.w	$0001,$0014,$0008,$0004,$0000,$0040,$FF38,$0064
-	dc.w	$0000,$0001,$0001,$0014,$0008,$0004,$0000,$0040
-	dc.w	$FF38,$0078,$0000,$0001,$0001,$0014,$0008,$0004
-	dc.w	$0000,$0040,$0000,$010C,$0000,$0195,$0000,$000B
-	dc.w	$0014,$0006,$0000,$0000,$0000,$FEF4,$0000,$0196
-	dc.w	$0000,$0011,$0014,$0006,$0000,$0000,$0000,$0000
-	dc.w	$0000,$018B,$0000,$0001,$0005,$0005,$0018,$0001
-	dc.w	$0000,$0000,$0000,$018A,$0000,$0011,$0003,$0003
-	dc.w	$0019,$0004,$48E7,$F8E0,$247C,$0001,$7CA0,$227C
-	dc.w	$0001,$7C80,$207C,$0001,$7480,$363C,$000F,$3828
-	dc.w	$0014,$0839,$0007,$0001,$7F6A,$6700,$0006,$3828
-	dc.w	$0000,$32C4,$D0FC,$0080,$51CB,$FFE4,$227C,$0001
-	dc.w	$7C80,$4244,$207C,$0001,$7CC0,$363C,$000E,$4240
-	dc.w	$4241,$1018,$1210,$3431,$0000,$B471,$1000,$6F00
-	dc.w	$001C,$1080,$1141,$FFFF,$2408,$0482,$0001,$7CC0
-	dc.w	$3582,$0000,$5342,$3582,$1000,$50C4,$51CB,$FFD4
-	dc.w	$4A44,$6600,$FFBE,$4CDF,$071F,$4E75,$48E7,$E0F0
-	dc.w	$247C,$0001,$834C,$6100,$0012,$247C,$0001,$86B2
-	dc.w	$6100,$0008,$4CDF,$0F07,$4E75,$08AA,$0004,$0032
-	dc.w	$7405,$266A,$0022,$422B,$0063,$4A6B,$0034,$6B00
-	dc.w	$001A,$323C,$050C,$4EB9,$0003,$63C0,$426B,$0032
-	dc.w	$422B,$005E,$022B,$00C2,$0062,$D6FC,$0080,$51CA
-	dc.w	$FFD6,$4E75
+	dc.w	$D85A,$D6FC,$001C,$51C8,$FFDC,$6000,$007E
+defaultsprites_0						;objects which are tied to screen scrolling and have velocity: the 16
+									;SortCords objects from .list (players, puck, puck shadow, goal nets ...),
+									;the OOlist and OOlistpos; then SprSort. Also called from setoptions
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	dc.w	$0009
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	dc.w	$0009
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	dc.w	$0009
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	dc.w	$0009
+	ori.b	#$0,d0
+	dc.w	$FFFF
+	movep.w	d0,$0(a0)
+	ori.b	#$0,d7
+	dc.l	$FFFF
+	bclr	d0,d6
+	ori.b	#$7,d0
+	ori.b	#$0,d0
+	dc.w	$FFFF
+	bclr	d0,d7
+	ori.b	#$7,d0
+	ori.b	#$0,d0
+	dc.w	$FFFF
+	movep.w	d0,-$8000(a1)
+	ori.b	#$0,d7
+	dc.l	$FFFF
+	movep.l	$0(a4),d1
+	ori.b	#$0,d7
+	dc.l	$FFFF
+	movep.l	$0(a5),d1
+	ori.b	#$0,d7
+	dc.l	$FFFF
+	bchg	d0,-(a1)
+	ori.b	#$5,d0
+	clr.w	d6
+	movea.l	#$17CC0,a1		;object order list
+	lea.l	SprSort(pc),a2
+	movea.l	#SortCords,a3
+	movea.l	#$17CA0,a4		;object order positions
+.0	moveq	#$1F,d0		;32 longs
+	movea.l	a3,a0
+.1	clr.l	(a0)+
+	dbra	d0,.1
+	move.w	d6,$52(a3)
+	st.b	$8(a3)		;no frame sent yet
+	st.b	$66(a3)
+	move.w	(a2)+,$0(a3)		;Xpos
+	move.w	(a2)+,$14(a3)
+	move.w	(a2)+,$18(a3)
+	move.w	(a2)+,$6(a3)
+	move.w	(a2)+,$4(a3)
+	move.w	d4,$12(a3)		;first char of this object
+	add.w	(a2)+,d4
+	move.w	(a2)+,$4A(a3)
+	move.w	(a2)+,$4C(a3)
+	adda.w	#$1,a2		;skip the high byte
+	move.b	(a2)+,$38(a3)
+	adda.w	#$1,a2		;skip the high byte
+	move.b	(a2)+,$62(a3)
+	adda.w	#$80,a3
+	asl.w	#$1,d6		;seed = object number * 2
+	move.b	d6,(a1)+		;OOlist seed
+	lsr.w	#$1,d6		;back to the object number
+	move.w	d6,(a4)+		;OOlistpos
+	addq.w	#$1,d6		;next object
+	cmpi.w	#$10,d6		;16 objects
+	bne.w	.0
+	bra.w	X_2403E
+SprSort						;sort objects in struct SortObj and set corresponding tables for keeping
+									;them sorted later (Ylist, OOlist, OOlistpos)
+	bclr	d0,d0
+	dc.w	$00C0
+	ori.b	#$1,d0
+	ori.b	#$14,d0
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.l	#$FF38FF9C,d0
+	ori.b	#$1,d0
+	ori.b	#$14,d0
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.l	#$FF38FFB0,d0
+	ori.b	#$1,d0
+	ori.b	#$14,d0
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.l	#$FF38FFC4,d0
+	ori.b	#$1,d0
+	ori.b	#$14,d0
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.l	#$FF38FFD8,d0
+	ori.b	#$1,d0
+	ori.b	#$14,d0
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.l	#$FF38FFEC,d0
+	ori.b	#$1,d0
+	ori.b	#$14,d0
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.l	#$C000C0,d0
+	ori.b	#$1,d0
+	ori.b	#$14,d1
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.w	#$FF38,d0
+	ori.b	#$0,$1(a0)
+	ori.b	#$14,d1
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.w	#$FF38,d0
+	ori.b	#$0,ccr
+	ori.b	#$1,d1
+	ori.b	#$8,(a4)
+	ori.b	#$0,d4
+	ori.w	#$FF38,d0
+	ori.w	#$0,(a0)
+	ori.b	#$1,d1
+	ori.b	#$8,(a4)
+	ori.b	#$0,d4
+	ori.w	#$FF38,d0
+	ori.w	#$0,-(a4)
+	ori.b	#$1,d1
+	ori.b	#$8,(a4)
+	ori.b	#$0,d4
+	ori.w	#$FF38,d0
+	ori.w	#$0,$1.w
+	ori.b	#$14,d1
+	dc.w	$0008
+	ori.b	#$0,d4
+	ori.w	#$0,d0
+	movep.w	$0(a4),d0
+	bclr	d0,(a5)
+	ori.b	#$B,d0
+	ori.b	#$6,(a4)
+	ori.b	#$0,d0
+	dc.l	$FEF4
+	dc.l	$196
+	ori.b	#$11,d0
+	ori.b	#$6,(a4)
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	dc.l	$18B
+	ori.b	#$1,d0
+	ori.b	#$5,d5
+	ori.b	#$1,(a0)+
+	ori.b	#$0,d0
+	dc.l	$18A
+	ori.b	#$11,d0
+	ori.b	#$3,d3
+	ori.b	#$4,(a1)+
+	movem.l	d0-d4/a0-a2,-(sp)
+	movea.l	#$17CA0,a2		;object order positions
+	movea.l	#$17C80,a1		;sort keys
+	movea.l	#SortCords,a0
+	move.w	#$F,d3		;Sortobjs -1
+.loop0	move.w	$14(a0),d4		;sort key = Ypos
+	btst	#$7,$17F6A.l		;horizontal rink?
+	beq.w	.101		;no: keep Ypos
+	move.w	$0(a0),d4		;Xpos
+.101	move.w	d4,(a1)+
+	adda.w	#$80,a0
+	dbra	d3,.loop0
+	movea.l	#$17C80,a1		;sort keys
+.loop	clr.w	d4		;one bubble pass over OOlist; d4 = swapped flag
+	movea.l	#$17CC0,a0
+	move.w	#$E,d3		;Sortobjs-2
+	clr.w	d0		;clear the high bytes
+	clr.w	d1
+.0	move.b	(a0)+,d0		;d0 = this entry (object * 2)
+	move.b	(a0),d1		;d1 = next entry
+	move.w	(a1,d0.w),d2		;this object's key
+	cmp.w	(a1,d1.w),d2		;against the next one's
+	ble.w	.l240B6		;in order: next pair
+	move.b	d0,(a0)		;swap the two entries
+	move.b	d1,-$1(a0)
+	move.l	a0,d2		;d2 = position of the second entry
+	subi.l	#$17CC0,d2
+	move.w	d2,(a2,d0.w)		;store the new positions in OOlistpos
+	subq.w	#$1,d2
+	move.w	d2,(a2,d1.w)
+	st.b	d4		;flag for incomplete sort
+.l240B6	dbra	d3,.0
+	tst.w	d4		;any swap this pass?
+	bne.w	.loop		;swapped something: another pass
+	movem.l	(sp)+,d0-d4/a0-a2
+	rts
+	movem.l	d0-d2/a0-a3,-(sp)
+	movea.l	#tmstruct,a2
+	bsr.w	.l240E4
+	movea.l	#awtmstruct,a2
+	bsr.w	.l240E4
+	movem.l	(sp)+,d0-d2/a0-a3
+	rts
+.l240E4	bclr	#$4,$32(a2)
+	moveq	#$5,d2
+	movea.l	$22(a2),a3
+	clr.b	$63(a3)
+	tst.w	$34(a3)
+	bmi.w	.l24114
+	move.w	#$50C,d1
+	jsr	(SetSPA).l
+	clr.w	$32(a3)
+	clr.b	$5E(a3)
+	andi.b	#$C2,$62(a3)
+.l24114	adda.w	#$80,a3
+	dc.w	$51CA,$FFD6,$4E75
 clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
 									;(tmHotCold, saved to
 									;homehotcoldsave / awayhotcoldsave and back) and tmstruct+tmgoalie /
@@ -291,72 +457,82 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 	dc.w	$0860,$000B,$BCDC,$207C,$0001,$834C,$6100,$0008
 	dc.w	$7220,$D0FC,$0366,$2468,$001E,$D4EA,$0002,$D4C1
 	dc.w	$227C,$000B,$BCF0,$D2C1,$7007,$22DA,$51C8,$FFFC
-	dc.w	$4E75,$6100,$13BC,$4A79,$0001,$8BFA,$6700,$0010
-	dc.w	$08B9,$0001,$0001,$7F6A,$4EB9,$0002,$DE18,$6100
-	dc.w	$0080,$4A79,$0001,$91CE,$660C,$33FC,$0001,$0003
-	dc.w	$FC0A,$6100,$093C,$6000,$0008,$4EB9,$0004,$8208
-	dc.w	$4EB9,$0004,$8208,$08B9,$0005,$00FF,$800F,$2E7C
-	dc.w	$0000,$C458,$207C,$0001,$745C,$4298,$B1FC,$0001
-	dc.w	$8BF0,$6D00,$FFF6,$23FC,$0003,$DB90,$0001,$8D66
-	dc.w	$08F9,$0005,$00FF,$800F,$4EB9,$0002,$33CC,$4EB9
-	dc.w	$0002,$702C,$6100,$001A,$0839,$0000,$0001,$7F78
-	dc.w	$6600,$0008,$4EB9,$0002,$82B6,$4EF9,$0002,$B7F8
-	dc.w	$4A79,$0001,$91CE,$660C,$33FC,$0000,$0003,$FC0A
-	dc.w	$6100,$08BE,$08B9,$0005,$00FF,$800F,$4A79,$0001
-	dc.w	$8BFA,$6700,$CCA0,$23FC,$0003,$F78E,$0001,$8D66
-	dc.w	$08F9,$0005,$00FF,$800F,$08B9,$0001,$0001,$8D64
-	dc.w	$33FC,$0000,$0001,$8D30,$33FC,$BC00,$0001,$8D32
-	dc.w	$33FC,$B000,$0001,$8D3C,$33FC,$0006,$0001,$8D3E
-	dc.w	$33FC,$C000,$0001,$8D38,$33FC,$0007,$0001,$8D3A
-	dc.w	$33FC,$E000,$0001,$8D34,$33FC,$0007,$0001,$8D36
-	dc.w	$303C,$0000,$6100,$8798,$6100,$9BA8,$0006,$FF00
-	dc.w	$0000,$203C,$0000,$0080,$721C,$343C,$07FF,$6100
-	dc.w	$982A,$6100,$9B8E,$0006,$FD00,$0000,$7028,$7202
-	dc.w	$343C,$07FF,$6100,$9814,$6100,$A016,$6100,$9FEE
-	dc.w	$2479,$0004,$7D50,$508A,$33C4,$0001,$8D56,$6100
-	dc.w	$954C,$6100,$9B5E,$0006,$CE00,$0000,$2079,$0004
-	dc.w	$7D0C,$2248,$2448,$D1DA,$D3DA,$4240,$4241,$3411
-	dc.w	$3629,$0002,$7A03,$6100,$93AE,$2279,$0004,$7D94
-	dc.w	$45E9,$0008,$D3D1,$7007,$207C,$000B,$BCF0,$2168
-	dc.w	$FFC0,$0020,$2159,$FFC0,$20E8,$FFE0,$51C8,$FFF0
-	dc.w	$33FC,$0860,$000B,$BCDC,$33FC,$0860,$000B,$BCFC
-	dc.w	$33C4,$0001,$8D46,$6100,$94E4,$33FC,$0104,$0001
-	dc.w	$7CE8,$33FC,$00A0,$0001,$7CE6,$207C,$00C0,$0004
-	dc.w	$0839,$0007,$00FF,$800E,$66F6,$33FC,$9202,$00FF
-	dc.w	$8022,$33FC,$000A,$00FF,$8020,$08F9,$0006,$00FF
-	dc.w	$800F,$0839,$0006,$00FF,$800E,$67F6,$08F9,$0007
-	dc.w	$00FF,$800F,$08B9,$0006,$00FF,$800F,$0839,$0006
-	dc.w	$00FF,$800E,$66F6,$08B9,$0007,$00FF,$800F,$227C
-	dc.w	$0001,$8AA6,$207C,$0004,$1ADE,$3039,$0001,$8A9E
-	dc.w	$E340,$D0F0,$0000,$4244,$1818,$6100,$9A76,$0006
-	dc.w	$FF00,$0000,$13D8,$0001,$8D59,$13D8,$0001,$8D5B
-	dc.w	$4241,$1219,$D241,$6100,$0232,$51CC,$FFDE,$4244
-	dc.w	$1818,$6100,$9A4E,$0006,$FF00,$0200,$13D8,$0001
-	dc.w	$8D59,$4240,$1018,$6100,$01E2,$51CC,$FFE6,$6100
-	dc.w	$9A32,$0006,$EF00,$0000,$0C79,$0007,$0001,$8A9C
-	dc.w	$6700,$0028,$4244,$1818,$6B00,$0020,$247C,$0001
-	dc.w	$8A18,$13D8,$0001,$8D59,$13D8,$0001,$8D5B,$6100
-	dc.w	$017C,$D4FC,$0010,$51CC,$FFEA,$6100,$9814,$0008
-	dc.w	$F801,$0141,$1A00
-	lea.l	X_24832(pc),a1
-	move.w	(gamelevel).l,d0
-	bsr.w	X_21EC6
-	move.w	(a1),d0
-	lsr.w	#$1,d0
-	sub.w	d0,(printx).l
-	bsr.w	printsmall-LOAD
-	tst.w	(gamelevel).l
-	beq.w	X_245C6
-	bsr.w	printz-LOAD
-	String	CC_Font3Pal3,$A,$1,'Press [ or ] to page'
-	dc.w	$33FC,$0018,$0001,$8D62,$3F3C,$0079,$4EB9,$0003
-	dc.w	$71D2,$4240,$4244,$33FC,$FFFF,$0001,$A452,$33FC
-	dc.w	$0001,$0001,$A44E,$6100,$0052,$6100,$00C4,$207C
-	dc.w	$0003,$C000,$4EB9,$0002,$ACD2,$6100,$0006,$6000
-	dc.w	$FFEA,$4EB9,$0003,$74F0,$3F03,$4EB9,$0003,$750E
-	dc.w	$865F,$0803,$0007,$6600,$0092,$0803,$0003,$6700
-	dc.w	$000A,$33FC,$FFFE,$0001,$A452,$0803,$0002,$6700
-	dc.w	$000A,$33FC,$0002,$0001,$A452
+	dc.w	$4E75
+GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsScreen
+									;(the playoff stats) and the playoff screen. Falls into ExitToOpening
+	bsr.w	EncodePW-LOAD
+	tst.w	(OptPlayMode).l		;playoff mode?
+	beq.w	.po		;regular season
+	bclr	#$1,$17F6A.l
+	jsr	(PlayoffStatsScreen).l
+.po	bsr.w	X_2433C
+	tst.w	$191CE.l
+	bne.b	.l242D2
+	move.w	#$1,$3FC0A.l
+	bsr.w	X_24C0C
+.l242D2	bra.w	.l242DC
+	jsr	$48208.l
+.l242DC	jsr	$48208.l
+	bclr	#$5,$FF800F.l
+	movea.l	#$C458,sp
+	movea.l	#$1745C,a0
+.l242F6	clr.l	(a0)+
+	cmpa.l	#$18BF0,a0
+	blt.w	.l242F6
+	move.l	#vb2,(VBint).l
+	bset	#$5,$FF800F.l
+	jsr	(GameSetUp).l
+	jsr	(UserNameEntry).l
+	dc.w	$6100,$001A,$0839,$0000,$0001,$7F78,$6600,$0008
+	dc.w	$4EB9,$0002,$82B6,$4EF9,$0002,$B7F8,$4A79,$0001
+	dc.w	$91CE,$660C,$33FC,$0000,$0003,$FC0A,$6100,$08BE
+	dc.w	$08B9,$0005,$00FF,$800F,$4A79,$0001,$8BFA,$6700
+	dc.w	$CCA0,$23FC,$0003,$F78E,$0001,$8D66,$08F9,$0005
+	dc.w	$00FF,$800F,$08B9,$0001,$0001,$8D64,$33FC,$0000
+	dc.w	$0001,$8D30,$33FC,$BC00,$0001,$8D32,$33FC,$B000
+	dc.w	$0001,$8D3C,$33FC,$0006,$0001,$8D3E,$33FC,$C000
+	dc.w	$0001,$8D38,$33FC,$0007,$0001,$8D3A,$33FC,$E000
+	dc.w	$0001,$8D34,$33FC,$0007,$0001,$8D36,$303C,$0000
+	dc.w	$6100,$8798,$6100,$9BA8,$0006,$FF00,$0000,$203C
+	dc.w	$0000,$0080,$721C,$343C,$07FF,$6100,$982A,$6100
+	dc.w	$9B8E,$0006,$FD00,$0000,$7028,$7202,$343C,$07FF
+	dc.w	$6100,$9814,$6100,$A016,$6100,$9FEE,$2479,$0004
+	dc.w	$7D50,$508A,$33C4,$0001,$8D56,$6100,$954C,$6100
+	dc.w	$9B5E,$0006,$CE00,$0000,$2079,$0004,$7D0C,$2248
+	dc.w	$2448,$D1DA,$D3DA,$4240,$4241,$3411,$3629,$0002
+	dc.w	$7A03,$6100,$93AE,$2279,$0004,$7D94,$45E9,$0008
+	dc.w	$D3D1,$7007,$207C,$000B,$BCF0,$2168,$FFC0,$0020
+	dc.w	$2159,$FFC0,$20E8,$FFE0,$51C8,$FFF0,$33FC,$0860
+	dc.w	$000B,$BCDC,$33FC,$0860,$000B,$BCFC,$33C4,$0001
+	dc.w	$8D46,$6100,$94E4,$33FC,$0104,$0001,$7CE8,$33FC
+	dc.w	$00A0,$0001,$7CE6,$207C,$00C0,$0004,$0839,$0007
+	dc.w	$00FF,$800E,$66F6,$33FC,$9202,$00FF,$8022,$33FC
+	dc.w	$000A,$00FF,$8020,$08F9,$0006,$00FF,$800F,$0839
+	dc.w	$0006,$00FF,$800E,$67F6,$08F9,$0007,$00FF,$800F
+	dc.w	$08B9,$0006,$00FF,$800F,$0839,$0006,$00FF,$800E
+	dc.w	$66F6,$08B9,$0007,$00FF,$800F,$227C,$0001,$8AA6
+	dc.w	$207C,$0004,$1ADE,$3039,$0001,$8A9E,$E340,$D0F0
+	dc.w	$0000,$4244,$1818,$6100,$9A76,$0006,$FF00,$0000
+	dc.w	$13D8,$0001,$8D59,$13D8,$0001,$8D5B,$4241,$1219
+	dc.w	$D241,$6100,$0232,$51CC,$FFDE,$4244,$1818,$6100
+	dc.w	$9A4E,$0006,$FF00,$0200,$13D8,$0001,$8D59,$4240
+	dc.w	$1018,$6100,$01E2,$51CC,$FFE6,$6100,$9A32,$0006
+	dc.w	$EF00,$0000,$0C79,$0007,$0001,$8A9C,$6700,$0028
+	dc.w	$4244,$1818,$6B00,$0020,$247C,$0001,$8A18,$13D8
+	dc.w	$0001,$8D59,$13D8,$0001,$8D5B,$6100,$017C,$D4FC
+	dc.w	$0010,$51CC,$FFEA,$6100,$9814,$0008,$F801,$0141
+	dc.w	$1A00,$43FA,$02AE,$3039,$0001,$8A9E,$6100,$D938
+	dc.w	$3011,$E248,$9179,$0001,$8D58,$6100,$9802,$4A79
+	dc.w	$0001,$8A9E,$6700,$0020,$6100,$99C4,$001A,$CD0A
+	dc.w	$0150,$7265,$7373,$205B,$206F,$7220,$5D20,$746F
+	dc.w	$2070,$6167,$6500,$33FC,$0018,$0001,$8D62,$3F3C
+	dc.w	$0079,$4EB9,$0003,$71D2,$4240,$4244,$33FC,$FFFF
+	dc.w	$0001,$A452,$33FC,$0001,$0001,$A44E,$6100,$0052
+	dc.w	$6100,$00C4,$207C,$0003,$C000,$4EB9,$0002,$ACD2
+	dc.w	$6100,$0006,$6000,$FFEA,$4EB9,$0003,$74F0,$3F03
+	dc.w	$4EB9,$0003,$750E,$865F,$0803,$0007,$6600,$0092
+	dc.w	$0803,$0003,$6700,$000A,$33FC,$FFFE,$0001,$A452
+	dc.w	$0803,$0002,$6700,$000A,$33FC,$0002,$0001,$A452
 PlayoffScreen_scrup						;Move the tree one step (PlayerScrollCtr) and stop on a page boundary
 									;($70). The position is
 									;DispAttribCtr; playoffspritex is the sprite x offset while it is on

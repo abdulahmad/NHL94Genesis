@@ -1,24 +1,36 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
+AwGoals	equ	$186BE
 CC_Font2Pri	equ	$BE
+CC_Font3Pri	equ	$BD
 CrowdSprites	equ	$47D2C
 Crowdframe	equ	$17CD0
+ExtraChars	equ	$18D56
 FaceOffSprites	equ	$47D30
+HmGoals	equ	$18358
 Hpos	equ	$17CEE
 Hscroll	equ	$17CF0
 Oldrow	equ	$17CEC
 PBnum	equ	$18068
+PadControlBits	equ	$17DC8
+PadControlBits34	equ	$17DD6
 RevRinkTilelist	equ	$47D64
 Rinktilelist	equ	$47D18
+Satt	equ	$BBD30
+Sattsize	equ	$17F66
 SmallFontMap	equ	$47D3C
 SortCords	equ	$17480
+VSPRITES	equ	$18D32
 VmMAP1	equ	$18D34
 VmMAP2	equ	$18D38
 Vpos	equ	$17CEA
 Vscroll	equ	$17CF2
+ZamSprites	equ	$47D34
 clockram	equ	$17ED4
 crowdvrcset	equ	$18D4A
+digit	equ	$3E262
+digits	equ	$3E274
 disflags	equ	$18D64
 faceoffvrcset	equ	$18D4C
 fodropx	equ	$1746C
@@ -26,152 +38,58 @@ fodropy	equ	$1746E
 fofdata2	equ	$17CF8
 gameclock	equ	$180E6
 move	equ	$2C9C8
+print	equ	$38F80
 printx	equ	$18D58
 printz	equ	$38F6E
 shootoutclock	equ	$193B6
 smallfontchars	equ	$18D42
 swap	equ	$2779A
-tmstruct	equ	$1834C
+L23028	equ	$23028
+X_1C8D2	equ	$1C8D2
 X_21000	equ	$21000
-X_23214	equ	$23214
-X_2321A	equ	$2321A
-X_23260	equ	$23260
-X_2329C	equ	$2329C
-X_23566	equ	$23566
-X_23684	equ	$23684
+X_22C16	equ	$22C16
 X_236B4	equ	$236B4
 X_236BC	equ	$236BC
 
-	org	$226E2
+	org	$22BB0
 
-ResetBench
-	clr.b	(PBnum).l
-	moveq	#$10,d1
-	movea.l	#tmstruct,a0
-	bsr.w	.l226FA
-	moveq	#$1,d1
-	adda.w	#$366,a0
-.l226FA	moveq	#$32,d0
-.l226FC	add.b	d1,(PBnum).l
-	tst.w	$68(a0,d0.w)
-	ble.w	.l2272A
-	btst	#$4,$68(a0,d0.w)
-	beq.w	.l2274A
-	move.w	$68(a0,d0.w),d2
-	andi.w	#$7FF,d2
-	bne.w	.l2274A
-	sub.b	d1,(PBnum).l
-	bra.w	.l2274A
-.l2272A	sub.b	d1,(PBnum).l
-	cmpi.w	#$FFFD,$68(a0,d0.w)
-	beq.w	.l2274A
-	cmpi.w	#$FFFC,$68(a0,d0.w)
-	beq.w	.l2274A
-	move.w	#$FFFE,$68(a0,d0.w)
-.l2274A	subi.w	#$2,d0
-	bpl.w	.l226FC
-	rts
-	dc.w	$302B,$0034,$6B00,$E8A6,$41FA,$000A,$1030,$0000
-	dc.w	$6000,$8B7E,$0E02,$0203,$0503,$0500,$08AB,$0006
-	dc.w	$0063,$207C,$0001,$834C,$082B,$0006,$0062,$6700
-	dc.w	$0006,$D0FC,$0366,$1743,$0066,$700A,$4883,$D643
-	dc.w	$3230,$3068,$6A00,$000C,$7009,$0C41,$FFFE,$6600
-	dc.w	$0010,$6100,$8B30,$08AB,$0005,$0062,$426B,$0058
-	dc.w	$31BC,$FFFF,$3068,$E24B,$2068,$001E,$2F08,$D0E8
-	dc.w	$0008,$42B9,$0001,$8AE0,$4A6B,$0034,$6700,$00A6
-	dc.w	$0839,$0005,$0001,$7F6C,$6700,$002E,$4EB9,$0003
-	dc.w	$38C8,$6700,$0016,$13E8,$0001,$0001,$8AE0,$0239
-	dc.w	$000F,$0001,$8AE0,$6000,$0010,$1028,$0001,$E808
-	dc.w	$4400,$13C0,$0001,$8AE1,$1028,$0002,$0200,$000F
-	dc.w	$4400,$082B,$0006,$0062,$6600,$0008,$1028,$0002
-	dc.w	$E808,$13C0,$0001,$8AE3,$0C79,$0002,$0001,$80E4
-	dc.w	$6D00,$0042,$6E00,$0014,$4EB9,$0002,$BA04,$E248
-	dc.w	$B079,$0001,$80E6,$6E00,$002C,$3039,$0001,$8358
-	dc.w	$9079,$0001,$86BE,$6700,$0014,$082B,$0006,$0062
-	dc.w	$6700,$0006,$0A3C,$0008,$6A00,$000A,$13FC,$0002
-	dc.w	$0001,$8AE2,$205F,$D0E8,$0000,$D0D0,$D0FC,$0008
-	dc.w	$51CB,$FFF8,$90FC,$0008,$1750,$006F,$1628,$0001
-	dc.w	$0243,$00F0,$E24B,$1743,$0067,$1628,$0001,$0203
-	dc.w	$000F,$33FC,$0003,$0001,$7E64,$4EB9,$0002,$30D0
-	dc.w	$1743,$0068,$1628,$0002,$E80B,$33FC,$0004,$0001
-	dc.w	$7E64,$4EB9,$0002,$30D0,$1743,$0069,$1628,$0002
-	dc.w	$0203,$000F,$33FC,$0005,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$D639,$0001,$8AE0,$D639,$0001,$8AE1,$D639
-	dc.w	$0001,$8AE3,$D639,$0001,$8AE2,$6100,$01A2,$E20B
-	dc.w	$0A03,$000F,$0603,$000F,$E20B,$1743,$006A,$1628
-	dc.w	$0003,$E80B,$33FC,$0006,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$D639,$0001,$8AE3,$6100,$0174,$E20B,$0A03
-	dc.w	$000F,$0603,$000F,$E20B,$1743,$006B,$1768,$0003
-	dc.w	$006C,$022B,$000F,$006C,$162B,$006C,$33FC,$0007
-	dc.w	$0001,$7E64,$4EB9,$0002,$30D0,$1743,$006C,$1628
-	dc.w	$0004,$E80B,$33FC,$0008,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$D639,$0001,$8AE2,$6100,$0124,$1743,$0075
-	dc.w	$08AB,$0003,$0004,$1768,$0004,$0076,$022B,$0001
-	dc.w	$0076,$0A2B,$0001,$0076,$6600,$0008,$08EB,$0003
-	dc.w	$0004,$1768,$0004,$0074,$022B,$000E,$0074,$1628
-	dc.w	$0005,$E80B,$33FC,$000A,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$D639,$0001,$8AE0,$D639,$0001,$8AE1,$D639
-	dc.w	$0001,$8AE3,$6100,$00C8,$1743,$0071,$1628,$0005
-	dc.w	$0203,$000F,$33FC,$000B,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$D639,$0001,$8AE0,$D639,$0001,$8AE1,$D639
-	dc.w	$0001,$8AE3,$6100,$0098,$1743,$006D,$1628,$0006
-	dc.w	$E80B,$33FC,$000C,$0001,$7E64,$4EB9,$0002,$30D0
-	dc.w	$1743,$0072,$1628,$0006,$0203,$000F,$33FC,$000D
-	dc.w	$0001,$7E64,$4EB9,$0002,$30D0,$D639,$0001,$8AE2
-	dc.w	$D639,$0001,$8AE2,$6100,$0056,$1743,$0070,$1628
-	dc.w	$0007,$E80B,$33FC,$000E,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$D639,$0001,$8AE0,$D639,$0001,$8AE3,$6100
-	dc.w	$002E,$1743,$006E,$1768,$0007,$0073,$162B,$0073
-	dc.w	$0203,$000F,$33FC,$000F,$0001,$7E64,$4EB9,$0002
-	dc.w	$30D0,$1743,$0073,$022B,$000F,$0073,$4E75,$4A03
-	dc.w	$6A00,$0004,$4243,$0C03,$001E,$6F00,$0006,$363C
-	dc.w	$001E,$4E75,$48E7,$FFFE,$0839,$0002,$0001,$8D64
-	dc.w	$6600,$0016,$08B9,$0000,$0001,$8D64,$6700,$0006
-	dc.w	$6100,$00DA,$6100,$931C,$0839,$0000,$0001,$7F6A
-	dc.w	$6600,$006A,$0839,$0002,$0001,$7F78,$6600,$000E
-	dc.w	$0839,$0000,$0001,$7F68,$6600,$0052,$0839,$0001
-	dc.w	$0001,$7F78,$6600,$0052,$4A79,$0001,$80E6,$6700
-	dc.w	$003C,$0479,$0AAA,$0001,$80E8,$6400,$0030,$08F9
-	dc.w	$0003,$0001,$8D64,$5379,$0001,$80E6,$0C79,$003D
-	dc.w	$0001,$80E6,$6E00,$0016,$0C79,$003C,$0001,$80E6
-	dc.w	$6D00,$000A,$3F3C,$0002,$6100,$9626,$5279,$0001
-	dc.w	$7474,$4CDF,$7FFF,$4E75,$4A79,$0001,$93B6,$6700
-	dc.w	$FFEC,$0479,$0AAA,$0001,$93B8,$6400,$FFE0,$08F9
-	dc.w	$0003,$0001,$8D64,$0839,$0007,$0001,$7F78,$6600
-	dc.w	$FFCC,$5379,$0001,$93B6,$6000,$FFC2,$48E7,$FFFE
-	dc.w	$0839,$0002,$0001,$8D64,$6600,$0006,$6100,$9254
-	dc.w	$5279,$0001,$7474,$4CDF,$7FFF,$4E75,$6100,$0064
-	dc.w	$207C,$000B,$BD30,$3039,$0001,$7F66,$3239,$0001
-	dc.w	$8D32,$6100,$9D0A,$2C79,$0001,$91CA,$BDFC,$0001
-	dc.w	$8D6A,$6700,$E428,$3226,$3026,$2066,$6100,$9CF0
-	dc.w	$BDFC,$0001,$8D6A,$6E00,$FFEE,$4E75,$2C79,$0001
-	dc.w	$91CA,$BDFC,$0001,$8D6A,$6700,$E402,$3226,$3026
-	dc.w	$2066,$6100,$9B74,$BDFC,$0001,$8D6A,$6E00,$FFEE
-	dc.w	$4E75,$3039,$0001,$8D30,$0640,$0002,$6100,$AB5E
-	dc.w	$0839,$0004,$00FF,$800E,$66F6,$33FC,$0031,$00FF
-	dc.w	$8026,$33F9,$0001,$7CF0,$00FF,$8028,$08F9,$0003
-	dc.w	$00FF,$800F,$0839,$0003,$00FF,$800E,$67F6,$08F9
-	dc.w	$0004,$00FF,$800F,$08B9,$0003,$00FF,$800F,$0839
-	dc.w	$0003,$00FF,$800E,$66F6,$08B9,$0004,$00FF,$800F
-	dc.w	$0839,$0004,$00FF,$800E,$66F6,$33FC,$0030,$00FF
-	dc.w	$8026,$23FC,$4002,$0010,$00FF,$8028,$08F9,$0003
-	dc.w	$00FF,$800F,$0839,$0003,$00FF,$800E,$67F6,$08F9
-	dc.w	$0004,$00FF,$800F,$08B9,$0003,$00FF,$800F,$0839
-	dc.w	$0003,$00FF,$800E,$66F6,$08B9,$0004,$00FF,$800F
-	dc.w	$0839,$0004,$00FF,$800E,$66F6,$33FC,$0031,$00FF
-	dc.w	$8026,$33F9,$0001,$7CF2,$00FF,$8028,$08F9,$0003
-	dc.w	$00FF,$800F,$0839,$0003,$00FF,$800E,$67F6,$08F9
-	dc.w	$0004,$00FF,$800F,$08B9,$0003,$00FF,$800F,$0839
-	dc.w	$0003,$00FF,$800E,$66F6,$08B9,$0004,$00FF,$800F
-	dc.w	$4E75,$48E7,$FFFE,$0839,$0000,$0001,$8D64,$6600
-	dc.w	$FFF6,$2A7C,$0001,$8D6A,$6100,$0072,$2C7C,$000B
-	dc.w	$BD30,$7C01,$6100,$019C,$6100,$063C,$6100,$07D2
-	dc.w	$6100,$07F0,$6100,$0484,$6100,$0250,$4EB9,$0002
-	dc.w	$9364,$6100,$032E,$6100,$011A,$4EB9,$0002,$2E70
-	dc.w	$BDFC,$000B,$BD30,$6600,$0006,$429E,$429E,$422E
-	dc.w	$FFFB,$200E,$0480,$000B,$BD30,$E248,$33C0,$0001
-	dc.w	$7F66,$23CD,$0001,$91CA,$23CD,$0001,$AD96,$08F9
-	dc.w	$0000,$0001,$8D64,$4CDF,$7FFF,$4E75
+DumpSprites						;Transfer (by dma) scroll stuff, sprite table, vram data in dmalist.
+									;Called from VBlank when dfok was set. Falls into DumpSprites2
+	bsr.w	X_22C16
+	movea.l	#Satt,a0
+	move.w	(Sattsize).l,d0
+	move.w	(VSPRITES).l,d1
+	bsr.w	X_1C8D2
+	movea.l	$191CA.l,a6
+	dc.w	$BDFC,$0001,$8D6A,$6700,$E428,$3226,$3026,$2066
+	dc.w	$6100,$9CF0,$BDFC,$0001,$8D6A,$6E00,$FFEE,$4E75
+	dc.w	$2C79,$0001,$91CA,$BDFC,$0001,$8D6A,$6700,$E402
+	dc.w	$3226,$3026,$2066,$6100,$9B74,$BDFC,$0001,$8D6A
+	dc.w	$6E00,$FFEE,$4E75,$3039,$0001,$8D30,$0640,$0002
+	dc.w	$6100,$AB5E,$0839,$0004,$00FF,$800E,$66F6,$33FC
+	dc.w	$0031,$00FF,$8026,$33F9,$0001,$7CF0,$00FF,$8028
+	dc.w	$08F9,$0003,$00FF,$800F,$0839,$0003,$00FF,$800E
+	dc.w	$67F6,$08F9,$0004,$00FF,$800F,$08B9,$0003,$00FF
+	dc.w	$800F,$0839,$0003,$00FF,$800E,$66F6,$08B9,$0004
+	dc.w	$00FF,$800F,$0839,$0004,$00FF,$800E,$66F6,$33FC
+	dc.w	$0030,$00FF,$8026,$23FC,$4002,$0010,$00FF,$8028
+	dc.w	$08F9,$0003,$00FF,$800F,$0839,$0003,$00FF,$800E
+	dc.w	$67F6,$08F9,$0004,$00FF,$800F,$08B9,$0003,$00FF
+	dc.w	$800F,$0839,$0003,$00FF,$800E,$66F6,$08B9,$0004
+	dc.w	$00FF,$800F,$0839,$0004,$00FF,$800E,$66F6,$33FC
+	dc.w	$0031,$00FF,$8026,$33F9,$0001,$7CF2,$00FF,$8028
+	dc.w	$08F9,$0003,$00FF,$800F,$0839,$0003,$00FF,$800E
+	dc.w	$67F6,$08F9,$0004,$00FF,$800F,$08B9,$0003,$00FF
+	dc.w	$800F,$0839,$0003,$00FF,$800E,$66F6,$08B9,$0004
+	dc.w	$00FF,$800F,$4E75,$48E7,$FFFE,$0839,$0000,$0001
+	dc.w	$8D64,$6600,$FFF6,$2A7C,$0001,$8D6A,$6100,$0072
+	dc.w	$2C7C,$000B,$BD30,$7C01,$6100,$019C,$6100,$063C
+	dc.w	$6100,$07D2,$6100,$07F0,$6100,$0484,$6100,$0250
+	dc.w	$4EB9,$0002,$9364,$6100,$032E,$6100,$011A,$4EB9
+	dc.w	$0002,$2E70,$BDFC,$000B,$BD30,$6600,$0006,$429E
+	dc.w	$429E,$422E,$FFFB,$200E,$0480,$000B,$BD30,$E248
+	dc.w	$33C0,$0001,$7F66,$23CD,$0001,$91CA,$23CD,$0001
+	dc.w	$AD96,$08F9,$0000,$0001,$8D64,$4CDF,$7FFF,$4E75
 updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on the dma list
 									;(a5) when vertical scrolling needs new rows. Called from setvideo. Takes
 									;the rows from Rinktilelist, or RevRinkTilelist in a reverse angle replay
@@ -314,21 +232,75 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	adda.w	#$4,a3
 .l22F98	dbra	d0,.loop
 	rts
-	dc.w	$3039,$0001,$7CE2,$6B00,$E05A,$2079,$0004,$7D34
-	dc.w	$E448,$323C,$012A,$7401,$3639,$0001,$8D56,$6100
-	dc.w	$006A,$3400,$E24A,$48C2,$84FC,$0003,$4842,$0642
-	dc.w	$0002,$6100,$0056,$7405,$3839,$0001,$8358,$B879
-	dc.w	$0001,$86BE,$6300,$0044,$3400,$0442,$00DA,$6A00
-	dc.w	$0004,$4242,$E44A,$D442,$0C42,$001A,$6D00,$0004
-	dc.w	$7418,$43F9,$0003,$E00E,$3431,$2000,$6000,$001C
-	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008
-	dc.w	$0007,$0008,$0007,$0006,$0005,$0C46,$0040,$6C00
-	dc.w	$DFD2,$48E7,$FC80,$D1E8,$0004,$D442,$3830,$2002
-	dc.w	$9870,$2000,$E64C,$0444,$0001,$D0F0,$2000,$3CA8
-	dc.w	$0002,$D35E,$1CE8,$0007,$1CC6,$3428,$0006,$0242
-	dc.w	$F800,$D468,$0004,$D443,$3CC2,$3C90,$D15E,$0646
-	dc.w	$0001,$0C46,$0040,$6700,$000A,$D0FC,$0008,$51CC
-	dc.w	$FFCE,$4CDF,$013F,$4E75
+showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draws frame
+									;1, frame 2-4 picked by x, then frame 5 (home score not ahead) or a .ftab
+									;frame. Called from setvideo
+	move.w	$17CE2.l,d0
+	bmi.w	X_21000		;no zamboni
+	movea.l	(ZamSprites).l,a0
+	lsr.w	#$2,d0
+	move.w	#$12A,d1		;y (92 128+200)
+	moveq	#$1,d2		;frame
+	move.w	(ExtraChars).l,d3
+	bsr.w	L23028
+	move.w	d0,d2
+	lsr.w	#$1,d2
+	ext.l	d2
+	divu.w	#$3,d2
+	swap	d2
+	addi.w	#$2,d2		;frame 2 + (x/2 mod 3)
+	bsr.w	L23028
+	moveq	#$5,d2
+	move.w	(HmGoals).l,d4		;home score
+	cmp.w	(AwGoals).l,d4
+	bls.w	L23028		;home not ahead: frame 5
+	move.w	d0,d2
+	subi.w	#$DA,d2
+	bpl.w	.pos
+	clr.w	d2		;x below $DA: first entry
+.pos	lsr.w	#$2,d2		;(x-$DA)/4
+	add.w	d2,d2		;word index
+	cmpi.w	#$1A,d2
+	blt.w	.l23000
+	moveq	#$18,d2
+.l23000	lea.l	$3E00E.l,a1
+	move.w	(a1,d2.w),d2
+	bra.w	L23028
+	ori.b	#$6,d5
+	ori.b	#$8,d7
+	ori.b	#$8,d7
+	ori.b	#$8,d7
+	ori.b	#$8,d7
+	ori.b	#$6,d7
+	dc.w	$0005,$0C46
+	ori.w	#$6C00,d0
+	adda.l	(a2),sp
+	movem.l	d0-d5/a0,-(sp)
+	adda.l	$4(a0),a0
+	add.w	d2,d2
+	move.w	$2(a0,d2.w),d4
+	sub.w	(a0,d2.w),d4
+	lsr.w	#$3,d4
+	subi.w	#$1,d4
+	adda.w	(a0,d2.w),a0
+.l2304C	move.w	$2(a0),(a6)
+	add.w	d1,(a6)+
+	move.b	$7(a0),(a6)+		;clamp to the last entry
+	move.b	d6,(a6)+
+	move.w	$6(a0),d2
+	andi.w	#$F800,d2
+	add.w	$4(a0),d2
+	add.w	d3,d2
+	move.w	d2,(a6)+
+	move.w	(a0),(a6)
+	add.w	d0,(a6)+
+	addi.w	#$1,d6
+	cmpi.w	#$40,d6
+	beq.w	.l23080
+	adda.w	#$8,a0
+	dbra	d4,.l2304C
+.l23080	movem.l	(sp)+,d0-d5/a0
+	rts
 showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the two
 									;Crowdframe frames. a5 = dma list, a6 = sprite table, d6 = link counter.
 									;No crowd in a reverse angle replay. Called from setvideo
@@ -427,9 +399,9 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 									;list, only when dfclock is set; with gmode2 bit 1 (penalty shot /
 									;shootout) shootoutclock is shown instead of gameclock. a5 = dma list
 	btst	#$7,$17F6A.l		;sfhor
-	beq.w	X_2329C
+	beq.w	.3
 	btst	#$0,$17F78.l		;shootout
-	bne.w	X_23260
+	bne.w	.x
 	move.l	a1,-(sp)
 	jsr	(printz).l
 	String	CC_Font2Pri,$D,$5
@@ -438,19 +410,47 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 	divu.w	#$258,d0		;tens of minutes (600 seconds)
 	move.l	d0,-(sp)
 	tst.w	d0
-	bne.w	X_23214
+	bne.w	.1
 	addi.w	#$1,(printx).l
-	bra.w	X_2321A
-	dc.w	$4EB9,$0003,$E262,$201F,$4840,$48C0,$80FC,$003C
-	dc.w	$2F00,$4EB9,$0003,$E262,$201F,$4840,$48C0,$0679
-	dc.w	$0002,$0001,$8D58,$80FC,$000A,$2F00,$4EB9,$0003
-	dc.w	$E262,$201F,$4840,$48C0,$4EB9,$0003,$E262,$225F
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BD0D,$0500,$4E75,$227C
-	dc.w	$0003,$E274,$E540,$D2C0,$4EB9,$0003,$8F80,$4E75
-	dc.w	$0004,$3000,$0004,$3100,$0004,$3200,$0004,$3300
-	dc.w	$0004,$3400,$0004,$3500,$0004,$3600,$0004,$3700
-	dc.w	$0004,$3800,$0004,$3900
-	bclr	#$3,(disflags).l		;dfclock
+	bra.w	.2
+.1	jsr	(digit).l
+.2	move.l	(sp)+,d0
+	swap	d0
+	ext.l	d0
+	divu.w	#$3C,d0		;minutes
+	move.l	d0,-(sp)
+	jsr	(digit).l
+	move.l	(sp)+,d0
+	swap	d0
+	ext.l	d0
+	addi.w	#$2,(printx).l
+	divu.w	#$A,d0		;tens of seconds
+	move.l	d0,-(sp)
+	jsr	(digit).l
+	move.l	(sp)+,d0
+	swap	d0
+	ext.l	d0
+	jsr	(digit).l
+	movea.l	(sp)+,a1
+	jsr	(printz).l
+	String	CC_Font3Pri,$D,$5
+.x	rts
+	movea.l	#digits,a1
+	asl.w	#$2,d0
+	adda.w	d0,a1
+	jsr	(print).l
+	rts
+	dc.w	$0004,$3000
+	dc.w	$0004,$3100
+	dc.w	$0004,$3200
+	dc.w	$0004,$3300
+	dc.w	$0004,$3400
+	dc.w	$0004,$3500
+	dc.w	$0004,$3600
+	dc.w	$0004,$3700
+	dc.w	$0004,$3800
+	dc.w	$0004,$3900
+.3	bclr	#$3,(disflags).l		;dfclock
 	beq.w	X_21000
 	btst	#$3,$17F6C.l
 	bne.w	X_21000
@@ -507,32 +507,113 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 	swap	d0
 	ext.l	d0
 	rts
-	dc.w	$0839,$0007,$0001,$7F6A,$6600,$DC7C,$207C,$0001
-	dc.w	$7D20,$267C,$0001,$7DD8,$363C,$0180,$6100,$0046
-	dc.w	$D0FC,$001C,$D6FC,$0014,$363C,$0183,$6100,$0036
-	dc.w	$4A79,$0001,$7FAA,$6700,$DC4E,$207C,$0001,$7D74
-	dc.w	$D6FC,$0014,$363C,$0346,$6100,$001A,$4A79,$0001
-	dc.w	$7FAC,$6700,$DC32,$207C,$0001,$7D90,$D6FC,$0014
-	dc.w	$363C,$0349,$4A68,$0018,$6B00,$DC1C,$50EB,$0006
-	dc.w	$3028,$0000,$0839,$0000,$0001,$7F78,$6600,$001A
-	dc.w	$0839,$0003,$0001,$7F6C,$6600,$000E,$0839,$0002
-	dc.w	$0001,$7F70,$6700,$001A,$3F00,$4A40,$6A00,$0004
-	dc.w	$4440,$0C40,$00A6,$6D00,$0006,$301F,$4E75,$301F
-	dc.w	$3228,$0014,$0839,$0007,$0001,$7F6A,$6700,$000E
-	dc.w	$C141,$4440,$0441,$00C5,$6000,$000E,$9079,$0001
-	dc.w	$7CEE,$9279,$0001,$7CEA,$4242,$0C40,$0074,$6D00
-	dc.w	$0006,$08C2,$0003,$0C40,$FF8C,$6E00,$0006,$08C2
-	dc.w	$0002,$0C41,$0064,$6D00,$0006,$08C2,$0000,$0C41
-	dc.w	$FF9C,$6E00,$0006,$08C2,$0001,$4A42,$6700,$DB78
-	dc.w	$227C,$0003,$7588,$1431,$2000,$E742,$227C,$0003
-	dc.w	$E4D4,$3831,$2000,$6700,$0004,$3004,$0640,$0100
-	dc.w	$3740,$0000,$3831,$2002,$6700,$0004,$3204,$4441
-	dc.w	$0641,$00F0,$3741,$0002,$D671,$2004,$3743,$0006
-	dc.w	$3771,$2006,$0004,$6000,$0214,$0000,$0064,$0000
-	dc.w	$0000,$0074,$0064,$0001,$0000,$0074,$0000,$0002
-	dc.w	$0000,$0074,$FF9C,$0001,$1000,$0000,$FF9C,$0000
-	dc.w	$1000,$FF8C,$FF9C,$0001,$1800,$FF8C,$0000,$0002
-	dc.w	$0800,$FF8C,$0064,$0001,$0800
+checksso						;do graphics for sso structure: arrows for the players when they are off
+									;screen. Called from setvideo. a5 = dma list, a6 = sprite table, d6 = link
+									;counter. Returns on the horizontal rink. Includes the pads 3 and 4
+									;(Joy3Struct / Joy4Struct when cont3team / cont4team). Falls into .ca for
+									;the last one
+	dc.w	$0839,$0007,$0001,$7F6A		;x spot, y spot, frame add, attribute per direction
+	dc.w	$6600,$DC7C		;.xspot = 116, .yspot = 100
+	dc.w	$207C,$0001,$7D20
+	dc.w	$267C,$0001,$7DD8
+	dc.w	$363C,$0180
+	dc.w	$6100,$0046
+	dc.w	$D0FC,$001C
+	dc.w	$D6FC,$0014
+	dc.w	$363C,$0183
+	dc.w	$6100,$0036
+	dc.w	$4A79,$0001,$7FAA
+	dc.w	$6700,$DC4E
+	dc.w	$207C,$0001,$7D74
+	dc.w	$D6FC,$0014
+	dc.w	$363C,$0346
+	dc.w	$6100,$001A
+	dc.w	$4A79,$0001,$7FAC
+	dc.w	$6700,$DC32
+	dc.w	$207C,$0001,$7D90
+	dc.w	$D6FC,$0014
+	dc.w	$363C,$0349
+.l233DE	dc.w	$4A68,$0018
+	dc.w	$6B00,$DC1C
+	dc.w	$50EB,$0006
+	dc.w	$3028,$0000
+	dc.w	$0839,$0000,$0001,$7F78
+	dc.w	$6600,$001A
+	dc.w	$0839,$0003,$0001,$7F6C
+	dc.w	$6600,$000E
+	dc.w	$0839,$0002,$0001,$7F70
+	dc.w	$6700,$001A
+.l23412	dc.w	$3F00
+	dc.w	$4A40
+	dc.w	$6A00,$0004
+	dc.w	$4440
+.l2341C	dc.w	$0C40,$00A6
+	dc.w	$6D00,$0006
+	dc.w	$301F
+	dc.w	$4E75
+.l23428	dc.w	$301F
+.l2342A	dc.w	$3228,$0014
+	dc.w	$0839,$0007,$0001,$7F6A
+	dc.w	$6700,$000E
+	dc.w	$C141
+	dc.w	$4440
+	dc.w	$0441,$00C5
+	dc.w	$6000,$000E
+.l23446	dc.w	$9079,$0001,$7CEE
+	dc.w	$9279,$0001,$7CEA
+.l23452	dc.w	$4242
+	dc.w	$0C40,$0074
+	dc.w	$6D00,$0006
+	dc.w	$08C2,$0003
+.l23460	dc.w	$0C40,$FF8C
+	dc.w	$6E00,$0006
+	dc.w	$08C2,$0002
+.l2346C	dc.w	$0C41,$0064
+	dc.w	$6D00,$0006
+	dc.w	$08C2,$0000
+.l23478	dc.w	$0C41,$FF9C
+	dc.w	$6E00,$0006
+	dc.w	$08C2,$0001
+.l23484	dc.w	$4A42
+	dc.w	$6700,$DB78
+	dc.w	$227C,$0003,$7588
+	dc.w	$1431,$2000
+	dc.w	$E742
+	dc.w	$227C,$0003,$E4D4
+	dc.w	$3831,$2000
+	dc.w	$6700,$0004
+	dc.w	$3004
+.l234A6	dc.w	$0640,$0100
+	dc.w	$3740,$0000
+	dc.w	$3831,$2002
+	dc.w	$6700,$0004
+	dc.w	$3204
+.l234B8	dc.w	$4441
+	dc.w	$0641,$00F0
+	dc.w	$3741,$0002
+	dc.w	$D671,$2004
+	dc.w	$3743,$0006
+	dc.w	$3771,$2006,$0004
+	dc.w	$6000,$0214
+	dc.w	$0000,$0064
+	dc.w	$0000,$0000
+	dc.w	$0074,$0064,$0001
+	dc.w	$0000,$0074
+	dc.w	$0000,$0002
+	dc.w	$0000,$0074
+	dc.w	$FF9C
+	dc.w	$0001,$1000
+	dc.l	$FF9C
+	dc.l	$1000
+	dc.w	$FF8C
+	dc.w	$FF9C
+	dc.w	$0001,$1800
+	dc.w	$FF8C
+	dc.w	$0000,$0002
+	dc.w	$0800
+	dc.w	$FF8C
+	dc.w	$0064,$0001
+	dc.w	$0800
 setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOlist order. a5
 									;= dmalist, a6 = sprite attribute table, d6 = link counter
 	movea.l	#$17CC0,a4		;move OOlist into a4
@@ -547,7 +628,7 @@ setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOli
 	rts
 setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), moving
 									;each by its x offset. Called from setvideo
-	bsr.w	X_23566
+	bsr.w	uppads
 	move.w	#$6,d0		;ffo obj -1
 	movea.l	#$17D04,a3		;move start of struct into a3
 .top	movea.l	a6,a0		;per object: a0 = first sprite this object writes
@@ -560,18 +641,56 @@ setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), mov
 .next	adda.w	#$1C,a3		;move to next struct
 	dbra	d0,.top
 	rts
-	dc.w	$207C,$0001,$7DAC,$50E8,$0018,$1039,$0001,$7E32
-	dc.w	$6700,$001C,$1239,$0001,$7E33,$4880,$E540,$3140
-	dc.w	$0000,$4881,$E541,$3141,$0014,$4268,$0018,$383C
-	dc.w	$0005,$207C,$0001,$7D04,$227C,$0001,$7DCA,$247C
-	dc.w	$0001,$7480,$3639,$0001,$7DC8,$0C44,$0001,$6600
-	dc.w	$000E,$3639,$0001,$7DD6,$E84B,$6000,$0002,$3003
-	dc.w	$0240,$000F,$323C,$000F,$0C40,$000E,$6700,$002A
-	dc.w	$50E8,$0018,$0C40,$000F,$6700,$002A,$EF40,$3172
-	dc.w	$0000,$0000,$3172,$0014,$0014,$4268,$0018,$1232
-	dc.w	$0035,$E141,$1232,$006F,$B251,$6700,$0008,$3281
-	dc.w	$6100,$0012,$E84B,$D0FC,$001C,$D2FC,$0002,$51CC
-	dc.w	$FF9A,$4E75
+uppads						;update the gloves object and the 6 pad objects, and queue new pad labels
+									;(QueuePadLabel). The pad players
+									;come from the PadControlBits / PadControlBits34 nibbles ($E = no change,
+									;$F = none)
+	movea.l	#$17DAC,a0		;pads+(4*ffosize): gloves
+	st.b	$18(a0)		;set Zpos
+	move.b	$17E32.l,d0
+	beq.w	.0		;branch if 0
+	move.b	$17E33.l,d1
+	ext.w	d0
+	asl.w	#$2,d0
+	move.w	d0,$0(a0)		;move d0 into Xpos
+	ext.w	d1
+	asl.w	#$2,d1
+	move.w	d1,$14(a0)		;move d1 into Ypos
+	clr.w	$18(a0)		;clear Zpos
+.0	move.w	#$5,d4
+	movea.l	#$17D04,a0
+	movea.l	#$17DCA,a1		;last label code per pad
+	movea.l	#SortCords,a2
+	move.w	(PadControlBits).l,d3
+.top	cmpi.w	#$1,d4
+	bne.w	.nibble
+	move.w	(PadControlBits34).l,d3
+	lsr.w	#$4,d3
+	bra.w	.nibble		;to the next instruction
+.nibble	move.w	d3,d0		;per pad: d3 holds the remaining nibbles
+	andi.w	#$F,d0		;this pad's nibble: player number, $E or $F
+	move.w	#$F,d1		;label code for $E
+	cmpi.w	#$E,d0
+	beq.w	.chg		;$E: leave the pad position alone
+	st.b	$18(a0)		;hidden
+	cmpi.w	#$F,d0
+	beq.w	.next		;$F: pad hidden, label unchanged
+	asl.w	#$7,d0
+	move.w	(a2,d0.w),$0(a0)
+	move.w	$14(a2,d0.w),$14(a0)
+	clr.w	$18(a0)		;shown
+	move.b	$35(a2,d0.w),d1		;label code = position << 8 | rostnum
+	asl.w	#$8,d1
+	move.b	$6F(a2,d0.w),d1
+.chg	cmp.w	(a1),d1		;new label code vs the last one for this pad
+	beq.w	.next		;same label as last time
+	move.w	d1,(a1)
+	bsr.w	QueuePadLabel
+.next	lsr.w	#$4,d3
+	adda.w	#$1C,a0
+	adda.w	#$2,a1
+	dbra	d4,.top
+	rts
 QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code: bits 7-4
 									;and 3-0 are digits ($F = blank), bits 10-8 index ButtonLabelCharTable
 									;(none while sflags7 bit 7 is set).
@@ -587,7 +706,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 	subi.w	#$4,$2(a0)
 .hi	addi.w	#$30,d2		;'0' (tens digit of the label, or blank)
 	clr.w	d0		;char slot 0
-	bsr.w	X_23684
+	bsr.w	uppads_pd
 	move.w	d1,d2
 	andi.w	#$F,d2
 	cmpi.w	#$F,d2
@@ -595,7 +714,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 	move.w	#$FFF0,d2		;$F: blank
 .lo	addi.w	#$30,d2		;'0' (ones digit of the label, or blank)
 	moveq	#$1,d0		;char slot 1
-	bsr.w	X_23684
+	bsr.w	uppads_pd
 	move.w	d1,d2
 	btst	#$7,$17F7A.l
 	beq.w	.0
@@ -606,3 +725,74 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 	addi.w	#$4,$2(a0)
 .1	move.b	(a4,d2.w),d2
 	moveq	#$2,d0
+uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
+									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
+	movea.l	(SmallFontMap).l,a3
+	adda.l	$4(a3),a3
+	add.w	d2,d2
+	move.w	$4(a3,d2.w),d2
+	andi.w	#$7FF,d2
+	asl.w	#$5,d2		;32 bytes per tile
+	movea.l	(SmallFontMap).l,a3
+	lea.l	$A(a3,d2.w),a3		;tile data
+	move.l	a3,(a5)+
+	move.w	#$10,(a5)+		;words to transfer
+	add.w	$12(a0),d0
+	asl.w	#$5,d0
+	move.w	d0,(a5)+		;vram destination
+	rts
+	dc.w	$2044,$444C,$4352,$5800,$48E7,$E000,$302B,$0000
+	dc.w	$322B,$0014,$342B,$0018,$6B00,$0012,$6100,$01A0
+	dc.w	$0C41,$4E20,$6700,$0006,$6100,$0008,$4CDF,$0007
+	dc.w	$4E75,$3F2B,$0004,$48E7,$FCE0,$382B,$0006,$6B00
+	dc.w	$0174,$6700,$0170,$0244,$F800,$B96B,$0004,$382B
+	dc.w	$0006,$0244,$07FF,$2479,$0004,$7D24,$D5EA,$0004
+	dc.w	$D844,$B86A,$0002,$6C00,$014C,$3A32,$4002,$9A72
+	dc.w	$4000,$E64D,$0445,$0001,$D4F2,$4000,$4243,$4244
+	dc.w	$3F00,$302B,$0006,$0240,$07FF,$B06B,$0008,$6700
+	dc.w	$0086,$4A45,$6600,$0006,$3740,$0008,$48A7,$F800
+	dc.w	$342A,$0004,$4244,$182A,$0007,$207C,$0004,$1A5C
+	dc.w	$1830,$4000,$B86F,$0008,$6E00,$0026,$B46F,$0004
+	dc.w	$6D00,$001E,$302F,$0004,$D06F,$0008,$9042,$9044
+	dc.w	$6B00,$000E,$4C9F,$0003,$DEFC,$0006,$6000,$0034
+	dc.w	$D66F,$0008,$4C9F,$0003,$DEFC,$0006,$48A7,$F800
+	dc.w	$D66B,$0012,$48C2,$EB82,$D4B9,$0004,$7D24,$0682
+	dc.w	$0000,$000A,$E944,$EB43,$2AC2,$3AC4,$3AC3,$4C9F
+	dc.w	$001F,$1783,$500A,$301F,$48A7,$E000,$342A,$0002
+	dc.w	$082B,$0004,$0004,$6700,$0016,$142A,$0007,$0242
+	dc.w	$0003,$0642,$0001,$E742,$4442,$946A,$0002,$D242
+	dc.w	$3C81,$3412,$082B,$0003,$0004,$6700,$0014,$142A
+	dc.w	$0007,$0242,$000C,$0642,$0004,$E342,$4442,$9452
+	dc.w	$D042,$3D40,$0006,$1D6A,$0007,$0002,$1D46,$0003
+	dc.w	$342A,$0006,$302B,$0004,$B142,$0242,$F800,$082B
+	dc.w	$0000,$0005,$6700,$000E,$0802,$000E,$6700,$0006
+	dc.w	$08C2,$000D,$8433,$500A,$D46B,$0012,$3D42,$0004
+	dc.w	$4C9F,$0007,$0646,$0001,$DCFC,$0008,$D4FC,$0008
+	dc.w	$51CD,$FECE,$4CDF,$073F,$375F,$0004,$4E75
+find3d						;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 =
+									;xscreen, d1 = yscreen, or d1 = $4E20 when off screen
+	btst	#$7,$17F6A.l
+	beq.w	.nhor
+	exg.l	d0,d1
+	neg.w	d0
+	subi.w	#$C5,d1
+	bra.w	.crange
+.nhor	sub.w	(Hpos).l,d0
+	sub.w	(Vpos).l,d1
+.crange	cmpi.w	#$90,d0
+	bgt.w	.offscr
+	cmpi.w	#$FF70,d0
+	blt.w	.offscr
+	addi.w	#$100,d0		;128+128
+	add.w	d2,d1
+	asr.w	#$1,d2
+	add.w	d2,d1		;y + 1.5 * height
+	cmpi.w	#$90,d1		;112+32
+	bgt.w	.offscr
+	cmpi.w	#$FF70,d1
+	blt.w	.offscr
+	neg.w	d1
+	addi.w	#$F0,d1		;112+128
+	rts
+.offscr	move.w	#$4E20,d1
+	rts

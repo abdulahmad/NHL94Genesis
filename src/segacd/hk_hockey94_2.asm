@@ -5,15 +5,19 @@ ChooseSong	equ	$2A478
 CwdExciteLvl	equ	$17CD8
 HmTeam	equ	$1A56C
 HomeTeam	equ	$17FAE
+LOAD	equ	$1B000
 MaxCwdExciteLvl	equ	$17CDA
 OldVcount	equ	$17476
 OptLine	equ	$18C0A
+RunArenaAnim	equ	$2A1AA
 ScoutSubStatus	equ	$17474
 SongIndex	equ	$1A56E
 SongNum	equ	$1A56A
 SumCwdExciteLvl	equ	$17CDE
+clockcont	equ	$2BE66
 delayedsong	equ	$1AD70
 gameclock	equ	$180E6
+lldisp	equ	$1747C
 move	equ	$2C9C8
 periodendtime	equ	$1747E
 setvideo	equ	$3DD16
@@ -21,8 +25,11 @@ song	equ	$371D2
 songdelay	equ	$1AD6E
 stop_current_song	equ	$47DB0
 tmstruct	equ	$1834C
-X_10BF0	equ	$10BF0
-X_14844	equ	$14844
+updatecrowdf	equ	$2BD28
+updatepwrplay	equ	$3C2D0
+updatereplay	equ	$2F844
+updatesound	equ	$3E8CE
+X_14988	equ	$14988
 X_1498A	equ	$1498A
 X_150B2	equ	$150B2
 
@@ -37,7 +44,7 @@ DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	sub.w	(OldVcount).l,d7		;number of frames since last loop
 	beq.w	DoGameFrame
 	move.w	(ScoutSubStatus).l,(OldVcount).l
-	bsr.w	X_10BF0
+	bsr.w	periodicevents
 	bsr.w	X_1498A		;apply velocity and check collisions
 	tst.w	(songdelay).l		;delayed song countdown
 	beq.w	.nosong
@@ -49,15 +56,28 @@ DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	jsr	(song).l
 .nosong	jsr	$25000.l
 	bsr.w	X_150B2
-	bsr.w	X_14844
+	bsr.w	updatereplay-LOAD
 	jmp	(setvideo).l
-	dc.w	$4EB9,$0003,$94F2,$6100,$0130,$4EB9,$0002,$A1AA
-	dc.w	$4EB9,$0003,$E8CE,$6100,$025E,$0839,$0007,$0001
-	dc.w	$7F6A,$6600,$3D74,$9F79,$0001,$747C,$6A00,$3D6A
-	dc.w	$0679,$0018,$0001,$747C,$4EB9,$0003,$5012,$6100
-	dc.w	$00BE,$6100,$0066,$6100,$001E,$6100,$0008,$4EF9
-	dc.w	$0003,$C2D0,$0479,$0001,$0001,$806A,$6600,$3D3A
-	dc.w	$4EF9,$0004,$0D50
+periodicevents						;Called every time thru game loop with d7 = elapsed frames
+	jsr	$394F2.l
+	bsr.w	updatecrowdf-LOAD
+	jsr	(RunArenaAnim).l
+	jsr	(updatesound).l
+	bsr.w	clockcont-LOAD
+	btst	#$7,$17F6A.l		;sfhor
+	bne.w	X_14988		;exit if in horizontal mode
+	sub.w	d7,(lldisp).l		;count down for screen updates
+	bpl.w	X_14988
+	addi.w	#$18,(lldisp).l		;jps: only update once per second
+	jsr	$35012.l
+	bsr.w	UpdateCwdExcite
+	bsr.w	CheckLateGameSong
+	bsr.w	RestoreBenchEnergy
+	bsr.w	.l10C44
+	jmp	(updatepwrplay).l
+.l10C44	subi.w	#$1,$1806A.l
+	bne.w	X_14988
+	jmp	$40D50.l
 RestoreBenchEnergy						;Called once per second. Restore energy for players on the bench
 	tst.w	(OptLine).l
 	bne.w	.ex		;exit if line changes are off

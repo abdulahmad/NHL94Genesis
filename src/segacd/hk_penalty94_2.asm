@@ -1,23 +1,46 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
+CC_Font1	equ	$FF
 CC_Font1Pri	equ	$BF
 CC_Font2	equ	$FE
+CC_Font2Pri	equ	$BE
+ConvertByteToDigits	equ	$412A8
 Crowdlevel	equ	$17CD2
 CwdExciteLvl	equ	$17CD8
+DecompressGraphicsPlain	equ	$38958
+DoHiLights	equ	$3CED2
 EASNcset	equ	$18D50
 EASportsMap	equ	$47D4C
 EnergyBarMap	equ	$47D40
+ExtraChars	equ	$18D56
+Framer	equ	$38CA0
+GetLowestPen	equ	$3A0A6
+GetShifter	equ	$4081C
 Hscroll	equ	$17CF0
 LOAD	equ	$1B000
+NewTicker3	equ	$3CD3E
+Oldrow	equ	$17CEC
 OptLine	equ	$18C0A
+OptPlayMode	equ	$18BFA
 PerLabels	equ	$41A34
 PerLabels2	equ	$41A48
+PushNumber	equ	$3915E
 PushNumberWidth	equ	$3919A
+PushTime	equ	$390F4
 PutTeamBlock	equ	$2C59E
+ResetBench	equ	$3D6E2
+Rinktilelist	equ	$47D18
+ScoreSum	equ	$180EC
+ScoreSumbytes	equ	$180F0
 SortCords	equ	$17480
+TeamList	equ	$1B00C
+TextBuffer	equ	$17EF4
 TickerNum	equ	$18ADE
+UpdateRecords	equ	$25A4E
 Vscroll	equ	$17CF2
+WeightedRandomSelect	equ	$36BE2
+ZamSprites	equ	$47D34
 appstring	equ	$39208
 awtmstruct	equ	$186B2
 c1playernum	equ	$17F9E
@@ -32,6 +55,8 @@ crowdnoisedelay	equ	$17F82
 disflags	equ	$18D64
 dobitmap	equ	$387E2
 energybarchars	equ	$18D46
+eraser	equ	$38C06
+gameclock	equ	$180E6
 gamelevel	equ	$18A9E
 gamenum	equ	$18A98
 lastplayer	equ	$17E2A
@@ -41,43 +66,41 @@ null	equ	$1B008
 passReceiverPlayerNum	equ	$17E30
 print	equ	$38F80
 printa	equ	$18D5C
+printbig	equ	$3926A
 printx	equ	$18D58
 printy	equ	$18D5A
 printz	equ	$38F6E
 priolist	equ	$41AD6
-puckc	equ	$17BE0
+randomd0	equ	$37050
+rinkvrcset	equ	$18D48
 setc1player	equ	$312B8
 setc2player	equ	$312DC
 sfx	equ	$3710C
+shotplayer	equ	$17E28
 swap	equ	$2779A
 tmstruct	equ	$1834C
-X_1C050	equ	$1C050
-X_1E0F4	equ	$1E0F4
-X_1E15E	equ	$1E15E
+waitxsr	equ	$37340
+X_1AD28	equ	$1AD28
+X_1AEF8	equ	$1AEF8
+X_1B362	equ	$1B362
+X_1B3C0	equ	$1B3C0
 X_1E200	equ	$1E200
-X_1E26A	equ	$1E26A
-X_1F0A6	equ	$1F0A6
+X_1F9BE	equ	$1F9BE
+X_20FEA	equ	$20FEA
 X_21000	equ	$21000
-X_21350	equ	$21350
-X_2139C	equ	$2139C
-X_21542	equ	$21542
 X_21548	equ	$21548
-X_2162A	equ	$2162A
-X_216E0	equ	$216E0
-X_2181E	equ	$2181E
-X_21BDE	equ	$21BDE
+X_21B28	equ	$21B28
 X_21D00	equ	$21D00
+X_21E8C	equ	$21E8C
 X_21EBE	equ	$21EBE
-X_226E2	equ	$226E2
 X_2403E	equ	$2403E
-X_2581C	equ	$2581C
 
 	org	$20DE8
 
 puckglue
 	move.w	#$7,-(sp)
 	move.w	$52(a2),d0
-	move.w	d0,(puckc).l
+	move.w	d0,$17BE0.l
 	movea.l	#tmstruct,a0
 	lea.l	$366(a0),a1
 	btst	#$6,$62(a2)
@@ -105,7 +128,7 @@ puckglue
 	bclr	#$3,$17F6A.l
 	tst.w	$34(a2)
 	bne.w	.l20E9E
-	bsr.w	X_2181E
+	bsr.w	ChkShotStat
 	move.w	#$8C,$48(a2)
 	cmpi.w	#$2F4,$58(a2)
 	bne.w	.l20E9E
@@ -152,16 +175,48 @@ puckglue
 .l20F52	cmp.w	(cont1team).l,d1
 	bne.w	X_21000
 	jmp	(setc1player).l
-	dc.w	$082A,$0003,$0064,$6600,$0096,$0C6B,$0008,$0018
-	dc.w	$6E00,$000C,$3200,$0241,$000F,$6600,$0082,$6100
-	dc.w	$9DA6,$3F3C,$0024,$6100,$B182,$426B,$002C,$157C
-	dc.w	$0008,$005E,$302B,$0000,$906A,$0000,$322B,$0014
-	dc.w	$926A,$0014,$6600,$0008,$2F0A,$6100,$A3B4,$342B
-	dc.w	$0028,$362B,$002A,$1740,$0028,$1741,$002A,$6100
-	dc.w	$9F36,$0C6B,$0008,$0018,$6F00,$0034,$C5C2,$C7C3
-	dc.w	$D483,$0C82,$0900,$0000,$6300,$000E,$0C6B,$000C
-	dc.w	$0018,$6E00,$E9D8,$4E75,$08EA,$0005,$0062,$6600
-	dc.w	$000E,$323C,$10D0,$C54B,$6100,$A3C4,$C54B,$4E75
+puckbody
+	btst	#$3,$64(a2)
+	bne.w	X_21000
+	cmpi.w	#$8,$18(a3)
+	bgt.w	.l20F80
+	move.w	d0,d1
+	andi.w	#$F,d1
+	bne.w	X_21000
+.l20F80	bsr.w	X_1AD28
+	move.w	#$24,-(sp)
+	bsr.w	sfx-LOAD
+	clr.w	$2C(a3)
+	move.b	#$8,$5E(a2)
+	move.w	$0(a3),d0
+	sub.w	$0(a2),d0
+	move.w	$14(a3),d1
+	sub.w	$14(a2),d1
+	bne.w	.l20FB0
+	move.l	a2,-(sp)
+	bsr.w	X_1B362
+.l20FB0	move.w	$28(a3),d2
+	move.w	$2A(a3),d3
+	move.b	d0,$28(a3)
+	move.b	d1,$2A(a3)
+	bsr.w	X_1AEF8
+	cmpi.w	#$8,$18(a3)
+	ble.w	X_21000
+	muls.w	d2,d2
+	muls.w	d3,d3
+	add.l	d3,d2
+	cmpi.l	#$9000000,d2
+	bls.w	X_20FEA
+	cmpi.w	#$C,$18(a3)
+	bgt.w	X_1F9BE
+	rts
+	bset	#$5,$62(a2)
+	bne.w	.l21000
+	move.w	#$10D0,d1
+	exg.l	a2,a3
+	bsr.w	X_1B3C0
+	exg.l	a2,a3
+.l21000	rts
 	dc.w	$0839,$0004,$0001,$7F68,$6600,$FFF4,$4242,$0C6B
 	dc.w	$0008,$0018,$6E00,$0006,$0642,$0002,$4440,$4441
 	dc.w	$6100,$A2D4,$906A,$0054,$0240,$0007,$3200,$0241
@@ -238,29 +293,30 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	lea.l	$366(a2),a3		;tmsize
 	move.w	$26(a2),d0		;tmap
 	sub.w	$26(a3),d0		;players on ice: team 1 minus team 2
-	beq.w	X_2139C		;same number on the ice
+	beq.w	.clrpwrplay		;same number on the ice
 	bpl.w	.t0		;team 1 has more
 	btst	#$6,$17F6C.l		;sf2pwrtm: 0 home, 1 visitors
 	bne.w	.upp
-	bsr.w	X_2139C		;power play team changed: remove the old display
+	bsr.w	.clrpwrplay		;power play team changed: remove the old display
 	bset	#$6,$17F6C.l
 	bra.w	.upp
 .t0	exg.l	a2,a3		;a2 = shorthanded team 2, a3 = power play team 1
 	btst	#$6,$17F6C.l
 	beq.w	.upp
-	bsr.w	X_2139C
+	bsr.w	.clrpwrplay
 	bclr	#$6,$17F6C.l
 .upp	bset	#$5,$17F6C.l		;sf2pwrplay
-	bne.w	X_21350		;already showing a power play
+	bne.w	.uppt		;already showing a power play
 	addi.w	#$1,$4(a3)		;tmPwrPlays
 	cmpa.l	#$1834C,a3		;home team (93 played song $33 here)
 	bne.w	.away
-.home	bra.w	X_21350
+.home	bra.w	.uppt
 .away	bra.w	.home
-	dc.w	$6100,$CC1C,$0012,$BF01,$1920,$2020,$1617,$1819
-	dc.w	$BF01,$1A20,$2000
-	bsr.w	X_1F0A6		;d0 = time left
-	bsr.w	X_1E0F4		;a1 = m:ss string
+.uppt	bsr.w	printz-LOAD
+	dc.w	$0012
+	dc.b	$BF,$01,$19,$20,$20,$20,$16,$17,$18,$19,$BF,$01,$1A,$20,$20,$00
+	bsr.w	GetLowestPen-LOAD		;d0 = time left
+	bsr.w	PushTime-LOAD		;a1 = m:ss string
 	bsr.w	print-LOAD
 	movea.l	$1E(a3),a0		;tmdata
 	movea.l	#mesarea,a3
@@ -273,15 +329,31 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	bsr.w	appstring-LOAD
 	movea.l	a3,a1
 	bra.w	print-LOAD
-	bclr	#$5,$17F6C.l
+.clrpwrplay	bclr	#$5,$17F6C.l
 	beq.w	X_21000
-	bra.w	X_2162A
-	dc.w	$48E7,$FFFE,$08B9,$0007,$0001,$7F6A,$33FC,$03E8
-	dc.w	$0001,$7CEC,$3839,$0001,$8D48,$2479,$0004,$7D18
-	dc.w	$508A,$4EB9,$0003,$8958,$4EB9,$0002,$A9D0,$6100
-	dc.w	$2C62,$0839,$0000,$0001,$7F6A,$6600,$001C,$6100
-	dc.w	$CB82,$0006,$FF00,$0000,$7020,$721C,$343C,$07FF
-	dc.w	$6100,$C808,$6100,$008A,$4CDF,$7FFF,$4E75
+	bra.w	EASNLogo
+ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktiles and
+									;calls LoadHomeTeamGfx
+	movem.l	d0-d7/a0-a6,-(sp)
+	bclr	#$7,$17F6A.l		;sfhor
+	move.w	#$3E8,(Oldrow).l		;1000
+	move.w	(rinkvrcset).l,d4
+	movea.l	(Rinktilelist).l,a2
+	addq.l	#$8,a2
+	jsr	(DecompressGraphicsPlain).l
+	jsr	$2A9D0.l
+	bsr.w	X_2403E
+	btst	#$0,$17F6A.l		;sfpz
+	bne.w	.ex
+	bsr.w	printz-LOAD
+	String	CC_Font1,$0,$0
+	moveq	#$20,d0		;32
+	moveq	#$1C,d1		;28
+	move.w	#$7FF,d2		;blank tile
+	bsr.w	eraser-LOAD		;blank the 32x28 area
+	bsr.w	printscores1		;redraw the score board
+.ex	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 SetHor						;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$7,$17F6A.l		;sfhor
@@ -292,11 +364,12 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bsr.w	X_2403E
 	bsr.w	printz-LOAD
 	String	CC_Font2,$0,$0
-	dc.w	$2279,$0004,$7D6C,$D3E9,$0004,$2479,$0004,$7D6C
-	dc.w	$508A,$4240,$323C,$0000,$7420,$761C,$3839,$0001
-	dc.w	$8D48,$7A00,$6100,$C380,$6100,$0200,$0839,$0000
-	dc.w	$0001,$7F6A,$6600,$0014,$303C,$0800,$3239,$0001
-	dc.w	$8D34,$343C,$07FF,$6100,$B61E,$4CDF,$7FFF,$4E75
+	movea.l	$47D6C.l,a1		;tiles start at IceRinkHorMap+8
+	dc.w	$D3E9,$0004,$2479,$0004,$7D6C,$508A,$4240,$323C
+	dc.w	$0000,$7420,$761C,$3839,$0001,$8D48,$7A00,$6100
+	dc.w	$C380,$6100,$0200,$0839,$0000,$0001,$7F6A,$6600
+	dc.w	$0014,$303C,$0800,$3239,$0001,$8D34,$343C,$07FF
+	dc.w	$6100,$B61E,$4CDF,$7FFF,$4E75
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
 									;and scores). Horizontal rink .sbscreen: period and both team logos with
 									;big scores. The period name is gsp of PerLabels, or name 4 of PerLabels2
@@ -312,8 +385,12 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	move.w	#$78,(crowdnoisedelay).l
 .0	bsr.w	printz-LOAD
 	String	CC_Font1Pri,$0,$17
-	dc.w	$7009,$7205,$6100,$C7E0,$08F9,$0003,$0001,$8D64
-	dc.w	$6100,$CAA2,$0006,$BF01,$1800
+	moveq	#$9,d0		;period box: 9x5 frame at x 0, y $17
+	moveq	#$5,d1
+	bsr.w	Framer-LOAD
+	bset	#$3,(disflags).l		;dfclock
+	bsr.w	printz-LOAD
+	String	CC_Font1Pri,$1,$18
 	move.w	$180E4.l,d0		;period name
 	movea.l	#PerLabels,a1
 	btst	#$1,$17F78.l
@@ -321,21 +398,31 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	move.w	#$4,d0
 	movea.l	#PerLabels2,a1
 .1	bsr.w	X_21EBE		;print the period name in the box
-	bsr.w	X_2162A		;logo under it (unless a power play is shown)
+	bsr.w	EASNLogo		;logo under it (unless a power play is shown)
 	btst	#$0,$17F6E.l		;sf3llcs: lower line change box is up
-	bne.w	X_21542
+	bne.w	.ex
 	bsr.w	printz-LOAD
 	String	CC_Font1Pri,$17,$17
-	dc.w	$7008,$7205,$6100,$C786,$6100,$CA50,$0006,$BF18
-	dc.w	$1A00,$247C,$0001,$834C,$6100,$0080,$6100,$CA3C
-	dc.w	$0006,$BF18,$1800,$D4FC,$0366,$6100,$006E,$4CDF
-	dc.w	$0F07,$4E75,$6100,$CA24,$0006,$BE11,$0200,$3039
-	dc.w	$0001,$80E4,$0839,$0000,$0001,$7F78,$6700,$0006
-	dc.w	$303C,$0004,$227C,$0004,$1A48,$6100,$0956,$3011
-	dc.w	$E248,$9179,$0001,$8D58,$6100,$CA02,$6100,$C9EC
-	dc.w	$0006,$BE17,$0200,$247C,$0001,$834C,$4240,$6100
-	dc.w	$003E,$6100,$C9D6,$0006,$BE08,$0200,$D4FC,$0366
-	dc.w	$702C,$6100,$002A,$6000,$FF96
+	moveq	#$8,d0		;score box: 8x5 frame at x $17, y $17
+	moveq	#$5,d1
+	bsr.w	Framer-LOAD
+	bsr.w	printz-LOAD
+	String	CC_Font1Pri,$18,$1A		;home team on the lower row
+	movea.l	#tmstruct,a2
+	bsr.w	printscores1_ps
+	bsr.w	printz-LOAD
+	String	CC_Font1Pri,$18,$18
+	adda.w	#$366,a2		;tmsize
+	bsr.w	printscores1_ps
+.ex	movem.l	(sp)+,d0-d2/a0-a3
+	rts
+	dc.w	$6100,$CA24,$0006,$BE11,$0200,$3039,$0001,$80E4
+	dc.w	$0839,$0000,$0001,$7F78,$6700,$0006,$303C,$0004
+	dc.w	$227C,$0004,$1A48,$6100,$0956,$3011,$E248,$9179
+	dc.w	$0001,$8D58,$6100,$CA02,$6100,$C9EC,$0006,$BE17
+	dc.w	$0200,$247C,$0001,$834C,$4240,$6100,$003E,$6100
+	dc.w	$C9D6,$0006,$BE08,$0200,$D4FC,$0366,$702C,$6100
+	dc.w	$002A,$6000,$FF96
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 									;digits at x $1C. Called twice from printscores1
 	movea.l	$1E(a2),a1		;tmdata
@@ -361,55 +448,87 @@ PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5
 	bge.w	.0
 	bra.w	.1
 .0	subi.w	#$1,(printx).l
-.1	bsr.w	X_1E15E		;a1 = score string
+.1	bsr.w	PushNumber-LOAD		;a1 = score string
 	move.w	(a1),d0		;center on the old printx
 	subi.w	#$2,d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	addi.w	#$1,(printx).l
-	bra.w	X_1E26A
-	dc.w	$0839,$0005,$0001,$7F6C,$6600,$F9CC,$6100,$C936
-	dc.w	$0006,$BF01,$1900
+	bra.w	printbig-LOAD
+EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power
+									;play. Called from printscores1 and updatepwrplay
+	btst	#$5,$17F6C.l		;sf2pwrplay
+	bne.w	X_21000
+	bsr.w	printz-LOAD
+	String	CC_Font1Pri,$1,$19
 	movea.l	(EASportsMap).l,a1
 	adda.l	$4(a1),a1
 	movea.l	#null,a2
 	clr.w	d0
 	clr.w	d1
-	move.w	(a1),d2
+	move.w	(a1),d2		;width and height from the map header
 	move.w	$2(a1),d3
 	move.w	(EASNcset).l,d4
 	clr.w	d5
 	bra.w	dobitmap-LOAD
-	dc.w	$48E7,$FFF0,$08F9,$0003,$0001,$8D64,$6100,$FE18
-	dc.w	$6100,$C8F6,$0006,$BE14,$0800,$247C,$0001,$834C
-	dc.w	$6100,$001C,$6100,$C8E2,$0006,$BE05,$0800
-	movea.l	#awtmstruct,a2
-	bsr.w	.l216A4
+USBoard						;Update score board, including the players in the penalty box and their
+									;time remaining. Called from InProgress and SetHor
+	movem.l	d0-d7/a0-a3,-(sp)
+	bset	#$3,(disflags).l		;dfclock
+	bsr.w	printscores1
+	bsr.w	printz-LOAD
+	String	CC_Font2Pri,$14,$8
+	movea.l	#tmstruct,a2		;home team
+	bsr.w	.dispen
+	bsr.w	printz-LOAD
+	String	CC_Font2Pri,$5,$8
+	movea.l	#awtmstruct,a2		;visitors
+	bsr.w	.dispen
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-.l216A4	lea.l	$9C(a2),a0
-.l216A8	clr.w	d0
+.dispen	lea.l	$9C(a2),a0
+.l1	clr.w	d0		;pass 1: players with bit 14 (coincidental) clear
 	move.b	(a0)+,d0
-	bmi.w	.l216C2
-	btst	#$6,$68(a2,d0.w)
-	bne.w	.l216A8
-	bsr.w	X_216E0
-	bra.w	.l216A8
-.l216C2	lea.l	$9C(a2),a0
-.l216C6	clr.w	d0
+	bmi.w	.p2		;end of list
+	btst	#$6,$68(a2,d0.w)		;coincidental (tmpdst high byte bit 6)
+	bne.w	.l1
+	bsr.w	pplpen
+	bra.w	.l1
+.p2	lea.l	$9C(a2),a0
+.l2	clr.w	d0
 	move.b	(a0)+,d0
 	bmi.w	X_21000
 	btst	#$6,$68(a2,d0.w)
-	beq.w	.l216C6
-	bsr.w	X_216E0
-	bra.w	.l216C6
-	dc.w	$0C79,$000A,$0001,$8D5A,$6200,$F916,$3432,$0068
-	dc.w	$0242,$07FF,$226A,$001E,$D2E9,$0000,$E248,$D2D1
-	dc.w	$D2FC,$0008,$51C8,$FFF8,$4240,$1029,$FFF8,$3F39
-	dc.w	$0001,$8D58,$227C,$0001,$7EF4,$6100,$4B8C,$227C
-	dc.w	$0001,$7EF2,$32BC,$0004,$6100,$C856,$3002,$6100
-	dc.w	$C9C4,$6100,$C84C,$33DF,$0001,$8D58,$0679,$0001
-	dc.w	$0001,$8D5A,$4E75
+	beq.w	.l2
+	bsr.w	pplpen
+	bra.w	.l2
+pplpen						;print one penalty box line: player number and time remaining. a2 = team,
+									;d0 = roster offset (player*2). Only
+									;rows up to y $A are printed; printy += 1. Called from USBoard .dispen
+	cmpi.w	#$A,(printy).l
+	bhi.w	X_21000		;no room for more rows
+	move.w	$68(a2,d0.w),d2
+	andi.w	#$7FF,d2		;penalty time
+	movea.l	$1E(a2),a1		;tmdata
+	adda.w	$0(a1),a1		;a1 = roster in the team data
+	lsr.w	#$1,d0		;d0 = player index
+.find	adda.w	(a1),a1		;skip d0+1 roster entries (name string + 8 bytes)
+	adda.w	#$8,a1
+	dbra	d0,.find
+	clr.w	d0
+	move.b	-$8(a1),d0		;player number (BCD)
+	move.w	(printx).l,-(sp)
+	movea.l	#TextBuffer,a1		;mesarea+2
+	bsr.w	ConvertByteToDigits-LOAD		;two digits to TextBuffer
+	movea.l	#mesarea,a1
+	move.w	#$4,(a1)		;string length: 2 digits
+	bsr.w	print-LOAD		;print the number
+	move.w	d2,d0
+	bsr.w	PushTime-LOAD		;m:ss string
+	bsr.w	print-LOAD		;print the time next to it
+	move.w	(sp)+,(printx).l
+	addi.w	#$1,(printy).l		;next row
+	rts
 linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitmap from
 									;the bar map, 16 steps). Called from SetLCmode2
 	movem.l	d0-d5/a0-a2,-(sp)
@@ -477,32 +596,88 @@ AvgCline						;Return d0 = average energy of current line on team a2
 	divu.w	d1,d0		;average
 .ex	movem.l	(sp)+,d1-d3/a0
 	rts
-	dc.w	$0839,$0000,$0001,$7F68,$6600,$F7D8,$0839,$0004
-	dc.w	$0001,$7F68,$6600,$F7CC,$08B9,$0004,$0001,$7F6C
-	dc.w	$6600,$0078,$0839,$0000,$0001,$7F72,$6700,$F7B4
-	dc.w	$08B9,$0003,$0001,$7F7C,$6600,$000E,$08F9,$0003
-	dc.w	$0001,$7F7C,$6000,$F79C,$48E7,$C070,$2F0C,$287C
-	dc.w	$0001,$80EC,$D8F9,$0001,$80F0,$247C,$0001,$834C
-	dc.w	$082C,$0007,$0002,$6700,$0006,$D4FC,$0366,$4240
-	dc.w	$102C,$0003,$285F,$246A,$0022,$323C,$0005,$B02A
-	dc.w	$0066,$6700,$000E,$D4FC,$0080,$51C9,$FFF2,$6000
-	dc.w	$00A4,$302A,$0052,$6000,$001C,$48E7,$C070,$0679
-	dc.w	$0064,$0001,$7CD2,$0679,$000A,$0001,$7CD8,$3039
-	dc.w	$0001,$7E28,$EF40,$267C,$0001,$7480,$D6C0,$6100
-	dc.w	$007A,$066A,$0001,$0000,$0839,$0005,$0001,$7F6C
-	dc.w	$6700,$002C,$0839,$0006,$0001,$7F6C,$6600,$0016
-	dc.w	$082B,$0006,$0062,$6600,$0016,$066A,$0001,$0356
-	dc.w	$6000,$000C,$082B,$0006,$0062,$6600,$FFEE,$2F0A
-	dc.w	$3039,$0001,$80E4,$D040,$D4C0,$066A,$0001,$034C
-	dc.w	$245F,$4240,$102B,$0066,$0640,$00EA,$0632,$0001
-	dc.w	$0000,$3029,$0028,$6B00,$000C,$0640,$00EA,$0631
-	dc.w	$0001,$0000,$4CDF,$0E03,$4E75,$247C,$0001,$834C
-	dc.w	$43EA,$0366,$082B,$0006,$0062,$6700,$F696,$C34A
-	dc.w	$4E75
+ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team, shooter
+									;and goalie shots against. Nothing while the
+									;clock is stopped or in a highlight, PP shots and period shots
+									;and a second path (sflags4 bit 0, sflags8 bit 3 every second
+									;call) that counts the shot for the player in the last ScoreSum entry
+	btst	#$0,$17F68.l		;gmclock: clock stopped
+	bne.w	X_21000		;exit if so
+	btst	#$4,$17F68.l		;gmhl: highlight
+	bne.w	X_21000		;exit if so
+	bclr	#$4,$17F6C.l		;sf2shot: shot taken
+	bne.w	.Cwdupdate		;it was set
+	btst	#$0,$17F72.l
+	beq.w	X_21000		;exit if cleared
+	bclr	#$3,$17F7C.l
+	bne.w	.0
+	bset	#$3,$17F7C.l
+	bra.w	X_21000
+.0	movem.l	d0-d1/a1-a3,-(sp)
+	move.l	a4,-(sp)
+	movea.l	#ScoreSum,a4		;ChkCnt. +ScoreSumbytes, then 2(a4) = the last ScoreSum entry
+	adda.w	(ScoreSumbytes).l,a4
+	movea.l	#tmstruct,a2		;home team
+	btst	#$7,$2(a4)		;entry flag: visitors
+	beq.w	.pllookup
+	adda.w	#$366,a2		;tmsize
+.pllookup	clr.w	d0
+	move.b	$3(a4),d0		;pnum (roster offset)
+	movea.l	(sp)+,a4
+	movea.l	$22(a2),a2		;tmsort
+	move.w	#$5,d1
+.findplayer	cmp.b	$66(a2),d0		;pnum
+	beq.w	.foundplayer
+	adda.w	#$80,a2		;SCstruct
+	dbra	d1,.findplayer
+	bra.w	.ex
+.foundplayer	move.w	$52(a2),d0		;SCnum
+	bra.w	.addShot
+.Cwdupdate	movem.l	d0-d1/a1-a3,-(sp)
+	addi.w	#$64,(Crowdlevel).l		;100
+	addi.w	#$A,(CwdExciteLvl).l
+	move.w	(shotplayer).l,d0
+.addShot	asl.w	#$7,d0		;scsize
+	movea.l	#SortCords,a3
+	adda.w	d0,a3
+	bsr.w	.l21958
+	addi.w	#$1,$0(a2)		;tmshots
+	btst	#$5,$17F6C.l		;sf2pwrplay
+	beq.w	.2
+	btst	#$6,$17F6C.l		;sf2pwrtm: 0 home, 1 visitors
+	bne.w	.1
+	btst	#$6,$62(a3)		;pfteam
+	bne.w	.2		;not the team on the power play
+.PPshot	addi.w	#$1,$356(a2)		;power play shots
+	bra.w	.2
+.1	btst	#$6,$62(a3)		;pfteam
+	bne.w	.PPshot
+.2	move.l	a2,-(sp)
+	move.w	$180E4.l,d0		;period
+	add.w	d0,d0
+	adda.w	d0,a2
+	addi.w	#$1,$34C(a2)		;shots by period
+	movea.l	(sp)+,a2
+	clr.w	d0
+	move.b	$66(a3),d0		;pnum
+	addi.w	#$EA,d0
+	addi.b	#$1,(a2,d0.w)		;shooter's shot count
+	move.w	$28(a1),d0		;other team's tmgoalie
+	bmi.w	.ex		;empty net
+	addi.w	#$EA,d0
+	addi.b	#$1,(a1,d0.w)		;goalie's shots against
+.ex	movem.l	(sp)+,d0-d1/a1-a3
+	rts
+.l21958	movea.l	#tmstruct,a2
+	lea.l	$366(a2),a1
+	btst	#$6,$62(a3)
+	beq.w	X_21000
+	exg.l	a1,a2
+	rts
 SetupTeamForIntermission						;Reset the bench, then for each team refill energy and pick the starting
 									;line: power play 1 (3) for the team with more players on ice, PK1 (5) for
 									;the team with fewer, else 0. Called from Intermission
-	bsr.w	X_226E2
+	bsr.w	ResetBench-LOAD
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a3
 	bsr.w	.r
@@ -546,31 +721,84 @@ reenergizeteam						;Set all players to max energy on team a2 except those at tm
 .nb	subi.w	#$2,d0
 	bpl.w	.loop
 	rts
-	dc.w	$0C79,$0004,$0001,$80E4,$6600,$0010,$33FC,$0000
-	dc.w	$0001,$80E6,$4EB9,$0002,$5A4E,$6100,$FF48,$700F
-	dc.w	$207C,$0001,$7480,$4268,$0000,$D0FC,$0080,$51C8
-	dc.w	$FFF6,$3839,$0001,$8D56,$2479,$0004,$7D34,$508A
-	dc.w	$6100,$BF0A,$33FC,$0140,$0001,$7CE2,$3039,$0001
-	dc.w	$80E4,$4A79,$0001,$8BFA,$6700,$0006,$0640,$0005
-	dc.w	$E540,$41FA,$00B8,$2070,$0000,$0839,$0000,$0001
-	dc.w	$7F78,$6700,$0008,$207C,$0004,$2250,$08F9,$0000
-	dc.w	$0001,$7F6A,$227C,$0002,$C1F8,$4EB9,$0002,$C2F8
-	dc.w	$6100,$3D7E,$33C1,$0001,$8ADE,$08F9,$0005,$00FF
-	dc.w	$800F,$4A79,$0001,$8ADE,$6B00,$0036,$6100,$0246
-	dc.w	$6100,$0280,$303C,$0096,$6100,$A87A,$0801,$0007
-	dc.w	$6600,$0016,$6100,$03BA,$303C,$003C,$6100,$A866
-	dc.w	$0801,$0007,$6700,$FFCC,$08F9,$0003,$0001,$7F6E
-	dc.w	$6100,$03E4,$08B9,$0003,$0001,$7F6E,$6600,$0026
-	dc.w	$303C,$01E0,$6100,$A83E,$0801,$0007,$6600,$0016
-	dc.w	$4A79,$0001,$7FA6,$6600,$FFE8,$4A79,$0001,$7FA8
-	dc.w	$6600,$FFDE,$50F9,$0001,$7CE2,$4E75,$0004,$22D4
-	dc.w	$0004,$2454,$0004,$2454,$0004,$2454,$0004,$25B0
-	dc.w	$0004,$2388,$0004,$2454,$0004,$2454,$0004,$2454
+Intermission						;end of period junk (zamboni/stats). Opens the pause menu screen (item
+									;list by period, +5 in playoffs), shows the ticker scores of the other
+									;games, then the highlights; Start on either pad cuts it short. When gsp
+									;is 4 the clock is cleared and UpdateRecords runs first, and gmode2 bit 0
+									;picks the ShootoutIntermissionMenu item list.
+									;Called from PeriodOver
+	cmpi.w	#$4,$180E4.l
+	bne.w	.1
+	move.w	#$0,(gameclock).l
+	jsr	(UpdateRecords).l
+.1	bsr.w	SetupTeamForIntermission
+	moveq	#$F,d0
+	movea.l	#SortCords,a0
+.clr	clr.w	$0(a0)		;Xpos
+	adda.w	#$80,a0		;SCstruct
+	dbra	d0,.clr
+	move.w	(ExtraChars).l,d4
+	movea.l	(ZamSprites).l,a2
+	addq.l	#$8,a2
+	bsr.w	DecompressGraphicsPlain-LOAD
+	move.w	#$140,$17CE2.l		;320
+	move.w	$180E4.l,d0
+	tst.w	(OptPlayMode).l
+	beq.w	.ss
+	addi.w	#$5,d0		;playoffs
+.ss	asl.w	#$2,d0
+	lea.l	X_21B28(pc),a0
+	movea.l	(a0,d0.w),a0
+	btst	#$0,$17F78.l
+	beq.w	.2
+	movea.l	#$42250,a0
+.2	bset	#$0,$17F6A.l		;sfpz
+	movea.l	#$2C1F8,a1
+	jsr	$2C2F8.l
+	bsr.w	GetShifter-LOAD		;d1 = highest game index
+	move.w	d1,(TickerNum).l		;ticker starts from the last game
+	bset	#$5,$FF800F.l
+.top	tst.w	(TickerNum).l		;one ticker game per pass
+	bmi.w	.doh		;no more ticker games
+	bsr.w	X_21D00		;d3 = next game to show
+	bsr.w	NewTicker3-LOAD		;show its score
+	move.w	#$96,d0		;150 frames
+	bsr.w	waitxsr-LOAD
+	btst	#$7,d1		;Start?
+	bne.w	.clrh
+	bsr.w	X_21E8C		;blank pause, then the next game
+	move.w	#$3C,d0		;60 frames
+	bsr.w	waitxsr-LOAD
+	btst	#$7,d1
+	beq.w	.top
+.clrh	bset	#$3,$17F6E.l		;sf3sbut
+.doh	bsr.w	DoHiLights-LOAD		;show the requested highlights
+	bclr	#$3,$17F6E.l
+	bne.w	.clrz		;start pressed (flag set by .clrh or by a highlight): leave
+.wait	move.w	#$1E0,d0		;480 frames
+	bsr.w	waitxsr-LOAD
+	btst	#$7,d1
+	bne.w	.clrz
+	tst.w	(cont1team).l
+	bne.w	.wait		;keep waiting while a pad is on a team
+	tst.w	(cont2team).l
+	bne.w	.wait
+.clrz	st.b	$17CE2.l		;zamboni off
+	rts
+	dc.w	$0004,$22D4
+	dc.w	$0004,$2454
+	dc.w	$0004,$2454
+	dc.w	$0004,$2454
+	dc.w	$0004,$25B0
+	dc.w	$0004,$2388
+	dc.w	$0004,$2454
+	dc.w	$0004,$2454
+	dc.w	$0004,$2454
 	dc.w	$0004,$26C4
 InitScores						;initialize other games scores/period in playoffs. Called from StartGame
 	cmpi.w	#$1,(gamelevel).l
 	bgt.w	X_21000
-	bsr.w	X_2581C
+	bsr.w	GetShifter-LOAD
 	movea.l	#$18A18,a0
 	moveq	#$10,d0		;gssize
 	mulu.w	d1,d0
@@ -581,15 +809,15 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 	bne.w	.l21B96		;series already over
 	clr.w	$8(a0)		;gsper
 	moveq	#$3,d0
-	bsr.w	X_1C050		;random 0-2: score that many plus one periods
+	bsr.w	randomd0-LOAD		;random 0-2: score that many plus one periods
 	bra.w	.l21B92
-.0	bsr.w	X_21BDE
+.0	bsr.w	SetScore
 .l21B92	dbra	d0,.0
 .l21B96	suba.w	#$10,a0
 	dbra	d1,.top
 	rts
 UpdateScores						;update ticker score values. Called from PeriodOver
-	bsr.w	X_2581C		;d1 = highest game index
+	bsr.w	GetShifter-LOAD		;d1 = highest game index
 	move.w	d1,(TickerNum).l		;restart the ticker
 	movea.l	#$18A18,a0
 	moveq	#$10,d0		;gssize
@@ -600,30 +828,84 @@ UpdateScores						;update ticker score values. Called from PeriodOver
 	bclr	#$1,$E(a0)		;gsfhl
 	btst	#$2,$E(a0)		;gsfso
 	bne.w	.next		;series over
-	bsr.w	X_21BDE		;one more period for this game
+	bsr.w	SetScore		;one more period for this game
 .next	suba.w	#$10,a0		;gssize
 	dbra	d1,.top
 	rts
-	dc.w	$0C68,$0004,$0008,$6C00,$F41A,$48E7,$C0C0,$0C68
-	dc.w	$0003,$0008,$6600,$0030,$317C,$0005,$0008,$3028
-	dc.w	$000A,$9068,$000C,$0C40,$0001,$6E00,$0040,$0C40
-	dc.w	$FFFF,$6D00,$0038,$317C,$0003,$0008,$08E8,$0001
-	dc.w	$000E,$6000,$0028,$0668,$0001,$0008,$3028,$0000
-	dc.w	$3228,$0002,$6100,$001C,$D168,$000A,$3028,$0002
-	dc.w	$3228,$0000,$6100,$000C,$D168,$000C,$4CDF,$0303
-	dc.w	$4E75,$E540,$227C,$0001,$B00C,$2271,$0000,$D2E9
-	dc.w	$0008,$1011,$0240,$0070,$E248,$43FA,$0048,$23F1
-	dc.w	$0000,$0001,$8BE8,$23F1,$0004,$0001,$8BEC,$E541
-	dc.w	$227C,$0001,$B00C,$2271,$1000,$D2E9,$0008,$1011
-	dc.w	$0240,$0007,$E740,$43FA,$001C,$2231,$0000,$D3B9
-	dc.w	$0001,$8BE8,$2231,$0004,$D3B9,$0001,$8BEC,$7004
-	dc.w	$6000,$9F32,$002B,$001E,$0017,$0004,$0027,$0020
-	dc.w	$0018,$0005,$0023,$0021,$001A,$0006,$001E,$0022
-	dc.w	$001E,$0006,$001A,$0024,$001E,$0008,$0016,$0025
-	dc.w	$001F,$000A,$0013,$0026,$001F,$000C,$000F,$0026
-	dc.w	$0020,$000F,$76FF,$0C79,$01E0,$0001,$80E6,$6E00
-	dc.w	$F302,$3639,$0001,$8ADE,$6B00,$F2F8,$0479,$0001
-	dc.w	$0001,$8ADE,$B679,$0001,$8A98,$6700,$FFE6
+SetScore						;add to score for game in a0. After period 3 a game within one goal goes
+									;to OT (gsper 3) and asks for a highlight
+	cmpi.w	#$4,$8(a0)		;gsper
+	bge.w	X_21000
+	movem.l	d0-d1/a0-a1,-(sp)
+	cmpi.w	#$3,$8(a0)
+	bne.w	.o
+	move.w	#$5,$8(a0)		;final
+	move.w	$A(a0),d0		;gss1
+	sub.w	$C(a0),d0		;gss2
+	cmpi.w	#$1,d0
+	bgt.w	.ex
+	cmpi.w	#$FFFF,d0
+	blt.w	.ex
+	move.w	#$3,$8(a0)		;close game: overtime
+	bset	#$1,$E(a0)		;gsfhl
+	bra.w	.ex
+.o	addi.w	#$1,$8(a0)
+	move.w	$0(a0),d0		;gst1
+	move.w	$2(a0),d1		;gst2
+	bsr.w	.getscore
+	add.w	d0,$A(a0)		;gss1
+	move.w	$2(a0),d0
+	move.w	$0(a0),d1
+	bsr.w	.getscore		;goals for team 2
+	add.w	d0,$C(a0)		;gss2
+.ex	movem.l	(sp)+,d0-d1/a0-a1
+	rts
+.getscore	asl.w	#$2,d0
+	movea.l	#TeamList,a1
+	movea.l	(a1,d0.w),a1
+	adda.w	$8(a1),a1
+	move.b	(a1),d0
+	andi.w	#$70,d0
+	lsr.w	#$1,d0		;row * 8
+	dc.w	$43FA,$0048
+	move.l	(a1,d0.w),$18BE8.l
+	move.l	$4(a1,d0.w),$18BEC.l
+	asl.w	#$2,d1
+	movea.l	#TeamList,a1
+	movea.l	(a1,d1.w),a1
+	adda.w	$8(a1),a1
+	move.b	(a1),d0
+	andi.w	#$7,d0
+	asl.w	#$3,d0
+	dc.w	$43FA,$001C
+	move.l	(a1,d0.w),d1
+	add.l	d1,$18BE8.l
+	move.l	$4(a1,d0.w),d1
+	add.l	d1,$18BEC.l
+	moveq	#$4,d0		;4 weights
+	bra.w	WeightedRandomSelect-LOAD
+NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3 = -1 if
+									;not. Called from chkprogress. Falls into NewTicker2
+	ori.b	#$1E,$17(a3)
+	ori.b	#$27,d4
+	ori.b	#$18,-(a0)
+	ori.b	#$23,d5
+	ori.b	#$1A,-(a1)
+	ori.b	#$1E,d6
+	ori.b	#$1E,-(a2)
+	ori.b	#$1A,d6
+	ori.b	#$1E,-(a4)
+	dc.w	$0008
+	ori.b	#$25,(a6)
+	ori.b	#$A,(sp)+
+	ori.b	#$26,(a3)
+	ori.b	#$C,(sp)+
+	dc.w	$000F
+	ori.b	#$20,-(a6)
+	dc.w	$000F
+	dc.w	$76FF,$0C79,$01E0,$0001,$80E6,$6E00,$F302,$3639
+	dc.w	$0001,$8ADE,$6B00,$F2F8,$0479,$0001,$0001,$8ADE
+	dc.w	$B679,$0001,$8A98,$6700,$FFE6
 CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next ticker game if a
 									;highlight is coming up or the series is over. Called from StartHL2
 	moveq	#$10,d0		;gssize

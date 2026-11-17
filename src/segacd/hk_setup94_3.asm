@@ -1,22 +1,28 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
-BA_Checker_Offset	equ	$19370
-BA_Team	equ	$19366
 CC_Font1Pri	equ	$BF
+Framer	equ	$38CA0
 GetGoalieCount	equ	$2ED60
-LOAD	equ	$1B000
+HomeTeam	equ	$17FAE
+ScoreSum	equ	$180EC
 ScoreSumbytes	equ	$180F0
+StartArenaAnim	equ	$2A41E
 TempPlOffset	equ	$180EE
 TextBuffer	equ	$17EF4
 appendz	equ	$39200
-awtmstruct	equ	$186B2
+appstring	equ	$39208
+eraser	equ	$38C06
 lcfound_close	equ	$30D9C
 mesarea	equ	$17EF2
 move	equ	$2C9C8
 print	equ	$38F80
+printbig	equ	$3926A
+printx	equ	$18D58
 printz	equ	$38F6E
 tmstruct	equ	$1834C
+X_260AA	equ	$260AA
+X_260CA	equ	$260CA
 X_26290	equ	$26290
 
 	org	$25CAC
@@ -99,18 +105,10 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	dc.w	$0006,$BF04,$0700,$48E7,$0050,$3039,$0001,$9372
 	dc.w	$227C,$0004,$165C,$D2F1,$0000,$43E9,$0002,$4EB9
 	dc.w	$0003,$8F80,$4CDF,$0A00,$4EB9,$0003,$8F6E,$0008
-	dc.w	$2062,$79BF,$0408
-	move.w	(BA_Checker_Offset).l,d0
-	movea.l	#awtmstruct,a2
-	tst.w	(BA_Team).l
-	beq.w	.l25ED2
-	movea.l	#tmstruct,a2
-.l25ED2	jsr	(FormatPlayerNumInitial+LOAD).l
-	jsr	(print).l
-	movem.l	(sp)+,d0-d2/a0-a4
-	rts
-	dc.w	$0016,$BF04,$0350,$454E,$414C,$5459,$2053,$484F
-	dc.w	$5421,$BF04,$0500
+	dc.w	$2062,$79BF,$0408,$3039,$0001,$9370,$247C,$0001
+	dc.w	$86B2,$4A79,$0001,$9366,$6700,$0008,$247C,$0001
+	dc.w	$834C,$4EB9,$0004,$1192,$4EB9,$0003,$8F80,$4CDF
+	dc.w	$1F07,$4E75
 ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!' ('PP
 									;GOAL!' when DelayedPen bit 0 is set, cleared here), or 'HAT TRICK!' on
 									;the scorer's third goal when the scorer's slot is at least scorergoalies
@@ -119,6 +117,16 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 									;StartArenaAnim (home hat trick),
 									;PrintPlayerGoals and PrintPlayerAssists; BA_PS_flags bit 2 sets sflags2
 									;bit 2. Called from SetPA
+	dc.w	$0016,$BF04
+	bchg	d1,(a0)
+	dc.w	$454E
+	dc.w	$414C
+	addq.w	#$2,(a1)+
+	movea.l	(a3),a0
+	dc.w	$484F
+	addq.b	#$2,-(a1)
+	eor.b	d7,d4
+	btst	d2,d0
 	movem.l	d0-d2/a0-a4,-(sp)
 	btst	#$2,$17F70.l		;penalty shot?
 	beq.w	.0
@@ -127,66 +135,159 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 	jsr	(lcfound_close).l		;close lc box
 	adda.w	#$366,a2
 	jsr	(lcfound_close).l		;close its box
-	movea.l	#$180EC,a4		;+ ScoreSumbytes = last goal entry
+	movea.l	#ScoreSum,a4		;+ ScoreSumbytes = last goal entry
 	adda.w	(ScoreSumbytes).l,a4
 	jsr	(printz).l
 	String	CC_Font1Pri,$B,$2
-	dc.w	$7013,$323C,$0005,$4A2C,$0004,$6B00,$0012,$0641
-	dc.w	$0002,$4A2C,$0005,$6B00,$0006,$0641,$0001,$4EB9
-	dc.w	$0003,$8CA0,$4EB9,$0002,$5D8C,$247C,$0001,$834C
-	dc.w	$33F9,$0001,$93AA,$0001,$7E98,$082C,$0007,$0002
-	dc.w	$6700,$0010,$D4FC,$0366,$33F9,$0001,$93AC,$0001
-	dc.w	$7E98,$43FA,$0116,$08B9,$0000,$0001,$7F7E,$6700
-	dc.w	$0006,$43FA,$0126,$4240,$102C,$0003,$0640,$00B6
-	dc.w	$0C32,$0003,$0000,$6600,$0038,$48A7,$4000,$4241
-	dc.w	$122C,$0003,$B279,$0001,$7E98,$4C9F,$0002,$6D00
-	dc.w	$0020,$D2D1,$3F00,$302A,$002A,$B079,$0001,$7FAE
-	dc.w	$6600,$000C,$303C,$0000,$4EB9,$0002,$A41E,$301F
-	dc.w	$4EB9,$0003,$926A,$4240,$102C,$0003,$3F00,$33FC
-	dc.w	$000C,$0001,$8D58,$6100,$01CE,$4EB9,$0003,$8F80
-	dc.w	$301F,$48A7,$4000,$4241,$122C,$0003,$B279,$0001
-	dc.w	$7E98,$4C9F,$0002,$6D00,$0008,$4EB9,$0002,$AA80
-	dc.w	$4240,$102C,$0004,$6B00,$0064,$08B9,$0005,$0001
-	dc.w	$7F72,$6600,$0058,$4EB9,$0003,$8F6E,$0012,$BF0E
-	dc.w	$0641,$7373,$6973,$7420,$6279,$3ABF,$0C07,$3F00
-	dc.w	$6100,$0174,$4EB9,$0003,$8F80,$301F,$4EB9,$0002
-	dc.w	$AA6A,$4240,$102C,$0005,$6B00,$0022,$4EB9,$0003
-	dc.w	$8F6E,$0006,$BF0C,$0800,$3F00,$6100,$014A,$4EB9
-	dc.w	$0003,$8F80,$301F,$4EB9,$0002,$AA6A,$08B9,$0005
-	dc.w	$0001,$7F72,$4CDF,$1F07,$4E75,$000E,$BF0F,$0347
-	dc.w	$4F41,$4C21,$BF0C,$0500,$0012,$BF0C,$0348,$4154
-	dc.w	$2054,$5249,$434B,$21BF,$0C05,$0010,$BF0D,$0350
-	dc.w	$5020,$474F,$414C,$21BF,$0C05,$0012,$BF0C,$0348
-	dc.w	$4154,$2054,$5249,$434B,$21BF,$0C05,$4EB9,$0003
-	dc.w	$8F6E,$0006,$FF0B,$0200,$7013,$7208,$243C,$0000
-	dc.w	$07FF,$4EF9,$0003,$8C06,$48E7,$8020,$247C,$0001
-	dc.w	$834C,$3039,$0001,$80EE,$6A00,$000A,$0240,$00FF
-	dc.w	$D4FC,$0366,$6100,$0008,$4CDF,$0401,$4E75
-getname						;gets player number and name, appends to string: a1 = mesarea "NN First
-									;Last" for player d0 (roster offset) of team struct a2. The number is the
-									;bcd byte after the name
-	movem.l	d0-d3/a0/a2-a3,-(sp)
-	bsr.w	X_26290		;get to start of player name
-	move.l	a0,-(sp)		;push a0 (address to start of player name) to stack
-	movea.l	#mesarea,a3		;move mesarea to a3 address
-	move.w	#$4,(a3)		;move 4 into a3 address location
-	lea.l	$2(a3),a1		;move long address at a3+2 into a1
-	adda.w	(a0),a0		;add data at a0 (player name length) to a0
-	move.b	(a0),d0		;move a0 data (jersey #) to d0
-	bsr.w	ConvertByteToDigits		;convert JNo to ascii
-	jsr	(appendz).l
-	String	' '
-	dc.w	$225F,$4EB9,$0003,$9208,$227C,$0001,$7EF2,$4CDF
-	dc.w	$0D0F,$4E75
-GetPlayerNumInitial						;a1 = mesarea "NN F. Last" (FormatPlayerNumInitial) for player
-									;TempPlOffset (bit 15 set: away team). Called from ShowInjuryBox
+	moveq	#$13,d0
+	move.w	#$5,d1		;5 rows: no assist
+	tst.b	$4(a4)
+	bmi.w	.l25F5E
+	addi.w	#$2,d1		;7: one assist
+	tst.b	$5(a4)
+	bmi.w	.l25F5E
+	addi.w	#$1,d1		;8: two assists
+.l25F5E	jsr	(Framer).l
+	jsr	$25D8C.l		;goalies of each team
+	movea.l	#tmstruct,a2
+	move.w	$193AA.l,$17E98.l
+	btst	#$7,$2(a4)
+	beq.w	.1
+	adda.w	#$366,a2
+	move.w	$193AC.l,$17E98.l
+.1	lea.l	X_260AA(pc),a1
+	bclr	#$0,$17F7E.l		;power play goal?
+	beq.w	.2
+	lea.l	X_260CA(pc),a1
+.2	clr.w	d0
+	move.b	$3(a4),d0
+	addi.w	#$B6,d0		;goals of the scorer
+	cmpi.b	#$3,(a2,d0.w)		;goals
+	bne.w	.l25FF0		;not a hat trick
+	movem.w	d1,-(sp)
+	clr.w	d1
+	move.b	$3(a4),d1
+	cmp.w	$17E98.l,d1		;a goalie?
+	movem.w	(sp)+,d1
+	blt.w	.l25FF0		;yes: no hat trick
+	adda.w	(a1),a1		;HAT TRICK!
+	move.w	d0,-(sp)
+	move.w	$2A(a2),d0
+	cmp.w	(HomeTeam).l,d0		;home team?
+	bne.w	.3
+	move.w	#$0,d0		;animation 0
+	jsr	(StartArenaAnim).l
+.3	move.w	(sp)+,d0
+.l25FF0	jsr	(printbig).l
+	clr.w	d0
+	move.b	$3(a4),d0
+	move.w	d0,-(sp)
+	move.w	#$C,(printx).l
+	bsr.w	FormatPlayerName		;a1 = his name
+	jsr	(print).l
+	move.w	(sp)+,d0
+	movem.w	d1,-(sp)
+	clr.w	d1
+	move.b	$3(a4),d1
+	cmp.w	$17E98.l,d1		;a goalie?
+	movem.w	(sp)+,d1
+	blt.w	.5
+	jsr	$2AA80.l
+.5	clr.w	d0
+	move.b	$4(a4),d0
+	bmi.w	.6
+	bclr	#$5,$17F72.l
+	bne.w	.6		;sflags4 bit 5 set: no assists
+	jsr	(printz).l
+	String	CC_Font1Pri,$E,$6,'Assist by:',CC_Font1Pri,$C,$7
+	move.w	d0,-(sp)
+	bsr.w	FormatPlayerName		;a1 = his name
+	jsr	(print).l
+	move.w	(sp)+,d0
+	jsr	$2AA6A.l
+	clr.w	d0
+	move.b	$5(a4),d0
+	bmi.w	.6
+	jsr	(printz).l
+	String	CC_Font1Pri,$C,$8
+	move.w	d0,-(sp)
+	bsr.w	FormatPlayerName		;a1 = his name
+	jsr	(print).l
+	move.w	(sp)+,d0
+	jsr	$2AA6A.l
+.6	bclr	#$5,$17F72.l		;clear the no assists flag
+	movem.l	(sp)+,d0-d2/a0-a4
+	rts
+	dc.w	$000E
+	cmpm.b	(sp)+,(sp)+
+	bchg	d1,d7
+	dc.w	$4F41
+	dc.w	$4C21
+	cmpm.b	(a4)+,(sp)+
+	btst	d2,d0
+	dc.w	$0012,$BF0C
+	movep.l	$4154(a0),d1
+	movea.l	(a4),a0
+	addq.w	#$1,a1
+	dc.w	$434B
+	dc.w	$21BF
+	cmpi.b	#$10,d5
+	cmpm.b	(a5)+,(sp)+
+	bchg	d1,(a0)
+	addq.b	#$8,-(a0)
+	dc.w	$474F
+	dc.w	$414C
+	dc.w	$21BF
+	cmpi.b	#$12,d5
+	cmpm.b	(a4)+,(sp)+
+	movep.l	$4154(a0),d1
+	movea.l	(a4),a0
+	addq.w	#$1,a1
+	dc.w	$434B
+	dc.w	$21BF
+	dc.w	$0C05,$4EB9
+	dc.w	$0003,$8F6E
+	dc.w	$0006,$FF0B
+	dc.w	$0200,$7013
+	moveq	#$8,d1
+	move.l	#$7FF,d2
+	jmp	(eraser).l
+GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols are
+									;case-insensitive).
+									;a1 = mesarea "NN First Last" (getname) for player TempPlOffset (bit 15
+									;set: away team). Called from UpdatePA
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
 	move.w	(TempPlOffset).l,d0
-	bpl.w	.get
+	bpl.w	.0
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
-.get	bsr.w	FormatPlayerNumInitial		;name for d0 of team a2
+.0	bsr.w	.l2612E		;name for d0 of team a2
+	movem.l	(sp)+,d0/a2
+	rts
+.l2612E	movem.l	d0-d3/a0/a2-a3,-(sp)
+	bsr.w	X_26290
+	move.l	a0,-(sp)
+	movea.l	#mesarea,a3
+	move.w	#$4,(a3)
+	lea.l	$2(a3),a1
+	adda.w	(a0),a0
+	move.b	(a0),d0
+	bsr.w	ConvertByteToDigits
+	jsr	(appendz).l
+	String	' '
+	movea.l	(sp)+,a1
+	jsr	(appstring).l
+	movea.l	#mesarea,a1
+	movem.l	(sp)+,d0-d3/a0/a2-a3
+	rts
+	movem.l	d0/a2,-(sp)
+	movea.l	#tmstruct,a2
+	move.w	(TempPlOffset).l,d0
+	bpl.w	.l26188
+	andi.w	#$FF,d0
+	adda.w	#$366,a2
+.l26188	bsr.w	FormatPlayerNumInitial
 	movem.l	(sp)+,d0/a2
 	rts
 FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in
@@ -233,9 +334,16 @@ FormatPlayerName						;a1 = mesarea string "NN Last" for player d0 of team a2, b
 	bsr.w	FinalizeTextBuffer
 	movem.l	(sp)+,d0-d3/a0/a2
 	rts
-	dc.w	$48E7,$F0A0,$6100,$0076,$227C,$0001,$7EF4,$6000
-	dc.w	$0014,$48E7,$F0A0,$6100,$0064,$227C,$0001,$7EF4
-	dc.w	$12FC,$0020
+FormatPlayerNameLast						;FormatPlayerNameShort without the leading space ("Last", space padded).
+									;Branches into FormatLastName
+	movem.l	d0-d3/a0/a2,-(sp)
+	bsr.w	X_26290		;a0 = player record
+	movea.l	#TextBuffer,a1
+	bra.w	FormatLastName
+	movem.l	d0-d3/a0/a2,-(sp)
+	bsr.w	X_26290
+	movea.l	#TextBuffer,a1
+	move.b	#$20,(a1)+
 FormatLastName						;Skip the first name, copy the last name, pad; branched to from
 									;FormatPlayerNameLast, so global
 	move.w	(a0)+,d0

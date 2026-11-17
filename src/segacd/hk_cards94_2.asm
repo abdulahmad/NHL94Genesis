@@ -1,152 +1,276 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
+AttribWgtList	equ	$26266
 CC_Font1Pri	equ	$BF
 CC_Font2	equ	$FE
 CopyString	equ	$25818
+CrowdPeak	equ	$17F92
 Framer	equ	$38CA0
+GAttribOverallMask	equ	$41DD2
+GetGoalieCount	equ	$2ED60
+GetPlayerCount	equ	$2EDBC
 HomeTeam	equ	$17FAE
 LOAD	equ	$1B000
 LetterGrid	equ	$26DD0
-M68K_RAM	equ	$C45C
-NameEntryFramer	equ	$26DF0
-NameEntryHelp	equ	$26A4A
 NoNameTxt	equ	$25E54
-ReadJoy1	equ	$374F0
-ReadJoy2	equ	$3750E
-ReadNameLog	equ	$2262E
-RecSpaceTxt	equ	$25A4A
-ScoutSubStatus	equ	$17474
+OptUserRec	equ	$18C06
+OvrDividend	equ	$1A572
+OvrDivisor	equ	$1A570
+OvrGoalWgtList	equ	$26256
+OvrPlayerWgtList	equ	$26246
+PAttribOverallMask	equ	$41C70
+ReadCrowdRecord	equ	$2258E
 TeamList	equ	$1B00C
-TeamLogoBitmaps	equ	$47D8C
-TeamLogoPalettes	equ	$2AF56
+TempWord1	equ	$17E62
+ThreeStars	equ	$BC000
+ValidSRAM	equ	$193BA
 VisTeam	equ	$17FB0
 appstring	equ	$39208
-cont1team	equ	$17FA6
-cursoron	equ	$1A566
-dobitmap	equ	$387E2
+awayuser	equ	$18BF6
+awtmstruct	equ	$186B2
 eraser	equ	$38C06
-homepicchars	equ	$19392
+homeuser	equ	$18BF4
 mesarea	equ	$17EF2
 move	equ	$2C9C8
-nameentryvis	equ	$1A390
 namelog	equ	$1A2FC
-namelogarrows	equ	$1A38E
-namelogsel	equ	$1A38C
 print	equ	$38F80
 printx	equ	$18D58
 printy	equ	$18D5A
 printz	equ	$38F6E
 sflags6	equ	$17F76
+swap	equ	$2779A
+tmstruct	equ	$1834C
 X_7534	equ	$7534
-X_B62C	equ	$B62C
-X_B778	equ	$B778
-X_B7DA	equ	$B7DA
-X_B808	equ	$B808
-X_B8A6	equ	$B8A6
-X_B8B0	equ	$B8B0
+X_7582	equ	$7582
+X_75CC	equ	$75CC
+X_75D8	equ	$75D8
+X_7616	equ	$7616
 X_BA00	equ	$BA00
-X_BB1A	equ	$BB1A
-X_BB4E	equ	$BB4E
-X_BB80	equ	$BB80
-X_BBAC	equ	$BBAC
-X_BBD6	equ	$BBD6
-X_BC04	equ	$BC04
-X_BC60	equ	$BC60
-X_BCC8	equ	$BCC8
-X_BD86	equ	$BD86
-X_BE0E	equ	$BE0E
-X_BE5E	equ	$BE5E
-X_C0A0	equ	$C0A0
 
-	org	$A9E2
+	org	$AA4A
 
-AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the opponent team
-									;name (byte 2, AppendTeamName) to a1
+UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0), update the
+									;team and player records after a game (UpdateTeamRecord UpdateCrowdRecord,
+									;UpdatePlayerRecords), then the save RAM checksum (MakeSRAMChecksum).
+									;Called from Intermission
+	dc.w	$0004,$2000
+	tst.w	(ValidSRAM).l
+	bmi.w	.lAB76		;no save RAM: nothing to update
+	tst.w	(OptUserRec).l
+	bne.w	.lAB76		;user records turned off in the options
 	movem.l	d0-d7/a0-a6,-(sp)
-	cmpa.l	#$0,a0
-	bne.w	.0		;a record was passed in a0: use it
-	movem.l	d0-d7/a1-a6,-(sp)
-	move.w	d0,-(sp)		;swap d0 and d1
-	move.w	d1,d0		;swap d0/d1 into ReadPlayerRecord's order: d0 player, d1 team
-	move.w	(sp)+,d1
+	bsr.w	.lAD8C		;goalies of each team
+	bsr.w	.lADBA		;players of each team
+	move.w	(HomeTeam).l,d1
 	ext.l	d1
-	ext.l	d0
-	movea.l	#M68K_RAM,a0
-	bsr.w	X_7534
-	movea.l	#M68K_RAM,a0		;a0 = the record
-	movem.l	(sp)+,d0-d7/a1-a6
-.0	move.b	$3(a0),d2
-	ext.w	d2
-	movem.l	d0/a1,-(sp)
-	bset	#$7,(sflags6).l		;record name list
-	bsr.w	AppendUserName
-	movea.l	a1,a3
-	movea.l	#RecSpaceTxt,a1
-	jsr	(appstring).l
-	movem.l	(sp)+,d0/a1
-	move.b	$2(a0),d0		;byte 2 = the opponent team
-	jsr	(AppendTeamName+LOAD).l		;append the team name
+	movea.l	#ThreeStars,a0
+	movea.l	#tmstruct,a2
+	move.w	$193AA.l,d5		;goalie count: the first players of the roster are goalies
+	move.w	(VisTeam).l,d6		;opponent team for the records
+	bsr.w	.lAD0E
+	move.w	(VisTeam).l,d1
+	ext.l	d1
+	movea.l	#awtmstruct,a2
+	move.w	$193AC.l,d5
+	move.w	(HomeTeam).l,d6
+	bsr.w	.lAD0E
+	clr.w	d7		;d7 = "a record was changed" flag
+	movea.l	#tmstruct,a1
+	move.w	(homeuser).l,d4
+	move.w	(awayuser).l,d5
+	move.w	(HomeTeam).l,d1
+	move.w	(VisTeam).l,d2
+	move.w	$193AA.l,d6
+	ext.l	d1
+	movea.l	#ThreeStars,a0
+	bsr.w	.lAC54
+	movea.l	#awtmstruct,a1
+	move.w	(awayuser).l,d4
+	move.w	(homeuser).l,d5
+	move.w	(VisTeam).l,d1
+	move.w	(HomeTeam).l,d2
+	move.w	$193AC.l,d6
+	ext.l	d1
+	movea.l	#ThreeStars,a0
+	bsr.w	.lAC54
+	movea.l	#ThreeStars,a0
+	move.w	(homeuser).l,d1
+	ext.l	d1
+	move.w	(awayuser).l,d2
+	move.w	(HomeTeam).l,d3
+	move.w	(VisTeam).l,d4
+	movea.l	#tmstruct,a1
+	movea.l	#awtmstruct,a2		;opponent team struct
+	bsr.w	.lAB78
+	movea.l	#ThreeStars,a0
+	move.w	(awayuser).l,d1
+	ext.l	d1
+	move.w	(homeuser).l,d2
+	move.w	(VisTeam).l,d3
+	move.w	(HomeTeam).l,d4
+	movea.l	#awtmstruct,a1
+	movea.l	#tmstruct,a2
+	bsr.w	.lAB78
+	movem.l	(sp)+,d0-d7/a0-a6
+.lAB76	rts
+.lAB78	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	X_75D8
+	st.b	d7
+	movem.w	d0,-(sp)
+	clr.w	d0
+	move.b	$A(a0),d0
+	lsl.w	#$8,d0
+	move.b	$B(a0),d0
+	cmpi.w	#$2328,d0
+	bge.w	.lABF0
+	addi.w	#$1,d0
+	move.b	d0,$B(a0)
+	lsr.w	#$8,d0
+	move.b	d0,$A(a0)
+	move.w	$C(a1),d0
+	cmp.w	$C(a2),d0
+	bgt.w	.lABD6
+	blt.w	.lABF0
+	clr.w	d0
+	move.b	$C(a0),d0
+	lsl.w	#$8,d0
+	move.b	$D(a0),d0
+	addi.w	#$1,d0
+	move.b	d0,$D(a0)
+	lsr.w	#$8,d0
+	move.b	d0,$C(a0)
+	bra.w	.lABF0
+.lABD6	clr.w	d0
+	move.b	$8(a0),d0
+	lsl.w	#$8,d0
+	move.b	$9(a0),d0
+	addi.w	#$1,d0
+	move.b	d0,$9(a0)
+	lsr.w	#$8,d0
+	move.b	d0,$8(a0)
+.lABF0	movem.w	(sp)+,d0
+	movem.w	d0,-(sp)
+	move.w	$C(a1),d0
+	cmp.w	$C(a2),d0
+	movem.w	(sp)+,d0
+	ble.w	.lAC4A
+	move.w	$C(a1),d5
+	cmp.b	$0(a0),d5
+	ble.w	.lAC26
+	st.b	d7
+	move.b	d5,$0(a0)
+	move.b	d3,$1(a0)
+	move.b	d4,$2(a0)
+	move.b	d2,$3(a0)
+.lAC26	move.w	$C(a2),d5
+	move.w	$0(a2),d6
+	sub.w	d5,d6
+	cmp.b	$4(a0),d6
+	ble.w	.lAC4A
+	st.b	d7
+	move.b	d6,$4(a0)
+	move.b	d3,$5(a0)
+	move.b	d4,$6(a0)
+	move.b	d2,$7(a0)
+.lAC4A	bsr.w	X_7616
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0004,$2000,$4A79,$0001,$93BA,$6B00,$0120,$4A79
-	dc.w	$0001,$8C06,$6600,$0116,$48E7,$FFFE,$6100,$0324
-	dc.w	$6100,$034E,$3239,$0001,$7FAE,$48C1,$207C,$000B
-	dc.w	$C000,$247C,$0001,$834C,$3A39,$0001,$93AA,$3C39
-	dc.w	$0001,$7FB0,$6100,$027E,$3239,$0001,$7FB0,$48C1
-	dc.w	$247C,$0001,$86B2,$3A39,$0001,$93AC,$3C39,$0001
-	dc.w	$7FAE,$6100,$0260,$4247,$227C,$0001,$834C,$3839
-	dc.w	$0001,$8BF4,$3A39,$0001,$8BF6,$3239,$0001,$7FAE
-	dc.w	$3439,$0001,$7FB0,$3C39,$0001,$93AA,$48C1,$207C
-	dc.w	$000B,$C000,$6100,$0174,$227C,$0001,$86B2,$3839
-	dc.w	$0001,$8BF6,$3A39,$0001,$8BF4,$3239,$0001,$7FB0
-	dc.w	$3439,$0001,$7FAE,$3C39,$0001,$93AC,$48C1,$207C
-	dc.w	$000B,$C000,$6100,$0144,$207C,$000B,$C000,$3239
-	dc.w	$0001,$8BF4,$48C1,$3439,$0001,$8BF6,$3639,$0001
-	dc.w	$7FAE,$3839,$0001,$7FB0,$227C,$0001,$834C,$247C
-	dc.w	$0001,$86B2,$6100,$0038,$207C,$000B,$C000,$3239
-	dc.w	$0001,$8BF6,$48C1,$3439,$0001,$8BF4,$3639,$0001
-	dc.w	$7FB0,$3839,$0001,$7FAE,$227C,$0001,$86B2,$247C
-	dc.w	$0001,$834C,$6100,$0008,$4CDF,$7FFF,$4E75,$48E7
-	dc.w	$FFFE,$6100,$CA5A,$50C7,$48A7,$8000,$4240,$1028
-	dc.w	$000A,$E148,$1028,$000B,$0C40,$2328,$6C00,$0058
-	dc.w	$0640,$0001,$1140,$000B,$E048,$1140,$000A,$3029
-	dc.w	$000C,$B06A,$000C,$6E00,$0024,$6D00,$003A,$4240
-	dc.w	$1028,$000C,$E148,$1028,$000D,$0640,$0001,$1140
-	dc.w	$000D,$E048,$1140,$000C,$6000,$001C,$4240,$1028
-	dc.w	$0008,$E148,$1028,$0009,$0640,$0001,$1140,$0009
-	dc.w	$E048,$1140,$0008,$4C9F,$0001,$48A7,$8000,$3029
-	dc.w	$000C,$B06A,$000C,$4C9F,$0001,$6F00,$0044,$3A29
-	dc.w	$000C,$BA28,$0000,$6F00,$0014,$50C7,$1145,$0000
-	dc.w	$1143,$0001,$1144,$0002,$1142,$0003,$3A2A,$000C
-	dc.w	$3C2A,$0000,$9C45,$BC28,$0004,$6F00,$0014,$50C7
-	dc.w	$1146,$0004,$1143,$0005,$1144,$0006,$1142,$0007
-	dc.w	$6100,$C9CA,$4CDF,$7FFF,$4E75,$48E7,$FFFE,$6100
-	dc.w	$C934,$3629,$000C,$B628,$0000,$6F00,$0014,$1143
-	dc.w	$0000,$1144,$0001,$1145,$0003,$1142,$0002,$50C7
-	dc.w	$0446,$0001,$4243,$3006,$0640,$00EA,$13F1,$0000
-	dc.w	$0001,$7E62,$0640,$FFCC,$1031,$0000,$9139,$0001
-	dc.w	$7E62,$B639,$0001,$7E62,$6C00,$0008,$1639,$0001
-	dc.w	$7E62,$51CE,$FFD2,$B628,$0004,$6F00,$0014,$50C7
-	dc.w	$1143,$0004,$1144,$0005,$1145,$0007,$1142,$0006
-	dc.w	$B279,$0001,$7FAE,$6600,$002C,$1628,$0008,$0243
-	dc.w	$00FF,$B679,$0001,$7F92,$6C00,$001A,$3639,$0001
-	dc.w	$7F92,$50C7,$1143,$0008,$1144,$0009,$1145,$000B
-	dc.w	$1142,$000A,$4A47,$6700,$0006,$6100,$C8C6,$4CDF
-	dc.w	$7FFF,$4E75,$4280,$343C,$0019,$6100,$C81E,$B045
-	dc.w	$6D00,$0012,$3F00,$0640,$00B6,$1832,$0000,$301F
-	dc.w	$6000,$0016,$3F00,$0640,$00EA,$1832,$0000,$0640
-	dc.w	$FFCC,$9832,$0000,$301F,$1628,$0000,$B803,$6F00
-	dc.w	$0038,$1144,$0000,$1179,$0001,$8BF5,$0001,$1179
-	dc.w	$0001,$8BF7,$0003,$B5FC,$0001,$834C,$6700,$0012
-	dc.w	$1179,$0001,$8BF7,$0001,$1179,$0001,$8BF5,$0003
-	dc.w	$1146,$0002,$6100,$C802,$0640,$0001,$51CA,$FF8C
-	dc.w	$4E75,$48E7,$FFFE,$247C,$0001,$834C,$4EB9,$0002
-	dc.w	$ED60,$33C0,$0001,$93AA,$247C,$0001,$86B2,$4EB9
-	dc.w	$0002,$ED60,$33C0,$0001,$93AC,$4CDF,$7FFF,$4E75
-	dc.w	$48E7,$FFFE,$247C,$0001,$834C,$4EB9,$0002,$EDBC
-	dc.w	$33C0,$0001,$93AE,$247C,$0001,$86B2,$4EB9,$0002
-	dc.w	$EDBC,$33C0,$0001,$93B0,$4CDF,$7FFF,$4E75
+.lAC54	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	ReadCrowdRecord-LOAD
+	move.w	$C(a1),d3
+	cmp.b	$0(a0),d3
+	ble.w	.lAC7A
+	move.b	d3,$0(a0)
+	move.b	d4,$1(a0)
+	move.b	d5,$3(a0)
+	move.b	d2,$2(a0)
+	st.b	d7
+.lAC7A	subi.w	#$1,d6
+	clr.w	d3
+.lAC80	move.w	d6,d0
+	addi.w	#$EA,d0
+	move.b	(a1,d0.w),(TempWord1).l
+	addi.w	#$FFCC,d0
+	move.b	(a1,d0.w),d0
+	sub.b	d0,(TempWord1).l
+	cmp.b	(TempWord1).l,d3
+	bge.w	.lACAC
+	move.b	(TempWord1).l,d3
+.lACAC	dbra	d6,.lAC80
+	cmp.b	$4(a0),d3
+	ble.w	.lACCA
+	st.b	d7
+	move.b	d3,$4(a0)
+	move.b	d4,$5(a0)
+	move.b	d5,$7(a0)
+	move.b	d2,$6(a0)
+.lACCA	cmp.w	(HomeTeam).l,d1
+	bne.w	.lACFE
+	move.b	$8(a0),d3
+	andi.w	#$FF,d3
+	cmp.w	(CrowdPeak).l,d3
+	bge.w	.lACFE
+	move.w	(CrowdPeak).l,d3
+	st.b	d7
+	move.b	d3,$8(a0)
+	move.b	d4,$9(a0)
+	move.b	d5,$B(a0)
+	move.b	d2,$A(a0)
+.lACFE	tst.w	d7
+	beq.w	.lAD08
+	bsr.w	X_75CC
+.lAD08	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+.lAD0E	clr.l	d0
+	move.w	#$19,d2
+.lAD14	bsr.w	X_7534
+	cmp.w	d5,d0
+	blt.w	.lAD2E
+	move.w	d0,-(sp)
+	addi.w	#$B6,d0
+	move.b	(a2,d0.w),d4
+	move.w	(sp)+,d0
+	bra.w	.lAD42
+.lAD2E	move.w	d0,-(sp)
+	addi.w	#$EA,d0
+	move.b	(a2,d0.w),d4
+	addi.w	#$FFCC,d0
+	sub.b	(a2,d0.w),d4
+	move.w	(sp)+,d0
+.lAD42	move.b	$0(a0),d3
+	cmp.b	d3,d4
+	ble.w	.lAD82
+	move.b	d4,$0(a0)
+	move.b	$18BF5.l,$1(a0)
+	move.b	$18BF7.l,$3(a0)
+	cmpa.l	#$1834C,a2
+	beq.w	.lAD7A
+	move.b	$18BF7.l,$1(a0)
+	move.b	$18BF5.l,$3(a0)
+.lAD7A	move.b	d6,$2(a0)
+	bsr.w	X_7582
+.lAD82	addi.w	#$1,d0
+	dbra	d2,.lAD14
+	rts
+.lAD8C	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#tmstruct,a2
+	jsr	(GetGoalieCount).l
+	move.w	d0,$193AA.l
+	movea.l	#awtmstruct,a2
+	jsr	(GetGoalieCount).l
+	move.w	d0,$193AC.l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+.lADBA	movem.l	d0-d7/a0-a6,-(sp)
+	movea.l	#tmstruct,a2
+	jsr	(GetPlayerCount).l
+	move.w	d0,$193AE.l
+	movea.l	#awtmstruct,a2
+	jsr	(GetPlayerCount).l
+	move.w	d0,$193B0.l
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
 AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, spaces for 0)
 									;to a1, or NoNameTxt when d2 is 0; trailing spaces trimmed (TrimSpaces)
 	movem.l	d0-d3/a0-a3,-(sp)
@@ -235,39 +359,158 @@ AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to
 	jsr	(appstring).l
 	movem.l	(sp)+,d0/a0-a3
 	rts
-	dc.w	$2F0E,$4279,$0001,$A570,$4279,$0001,$A572,$2C7C
-	dc.w	$0002,$6266,$B8B9,$0004,$1C70,$6600,$0008,$2C7C
-	dc.w	$0002,$6246,$B8B9,$0004,$1DD2,$6600,$0008,$2C7C
-	dc.w	$0002,$6256,$206A,$001E,$49EA,$01A4,$4281,$3200
-	dc.w	$E941,$D9C1,$D9FC,$0000,$0010,$D0E8,$0000,$D0D0
-	dc.w	$D0FC,$0008,$51C8,$FFF8,$4240,$4241,$740F,$4844
-	dc.w	$0504,$6700,$009A,$3602,$E24B,$4443,$1630,$30FF
-	dc.w	$0802,$0000,$6700,$0004,$E84B,$0243,$000F,$0C42
-	dc.w	$000D,$6600,$0006,$6000,$0070,$0C42,$0006,$6700
-	dc.w	$0068,$48E7,$0700,$1A36,$2000,$4885,$0C45,$0002
-	dc.w	$6700,$0012,$3F03,$0445,$0002,$D657,$51CD,$FFFC
-	dc.w	$E243,$4A5F,$4CDF,$00E0,$BDFC,$0002,$6266,$6700
-	dc.w	$0022,$4442,$3F07,$1E34,$20FF,$4887,$DF79,$0001
-	dc.w	$A570,$0679,$0001,$0001,$A572,$3E1F,$4442,$6000
-	dc.w	$0018,$3F03,$E943,$D657,$D65F,$4442,$D634,$20FF
-	dc.w	$6A00,$0004,$4203,$4442,$D043,$0641,$0064,$51CA
-	dc.w	$FF60,$BDFC,$0002,$6266,$6700,$0020,$323C,$0064
-	dc.w	$48E7,$0300,$3C39,$0001,$A570,$48C6,$3E39,$0001
-	dc.w	$A572,$8DC7,$D046,$4CDF,$00C0,$B041,$6D00,$0008
-	dc.w	$3200,$0440,$0001,$2C5F,$4E75,$0202,$0202,$0406
-	dc.w	$0204,$0204,$0606,$0402,$0202,$0202,$0202,$0202
-	dc.w	$0202,$0909,$0202,$0902,$0202,$0202,$0202,$0202
-	dc.w	$0202,$0202,$0202,$0202,$0202,$48E7,$FF7E,$2079
-	dc.w	$0004,$7D88,$3401,$E542,$2070,$2000,$343C,$FFFF
-	dc.w	$6000,$0016,$B068,$0004,$6600,$0008,$2050,$6000
-	dc.w	$007A,$D1FC,$0000,$0006,$0642,$0001,$4A90,$6600
-	dc.w	$FFE4,$207C,$0001,$B00C,$E541,$2070,$1000,$2C48
-	dc.w	$3C00,$DCEE,$0000,$6000,$0008,$DCD6,$DCFC,$0008
-	dc.w	$51CE,$FFF8,$DCD6,$D0E8,$000A,$3210,$4243,$0643
-	dc.w	$0001,$E941,$6600,$FFF8,$207C,$0004,$33AA,$082E
-	dc.w	$0000,$0004,$6600,$0008,$207C,$0004,$3714,$B043
-	dc.w	$6D00,$0018,$207C,$0004,$3040,$082E,$0000,$0004
-	dc.w	$6600,$0008,$207C,$0004,$2CD6,$4CDF,$7EFF,$4E75
+CalcAttrib						;The overall rating of player d0: his attributes weighted by
+									;OvrPlayerWgtList (skaters) or
+									;OvrGoalWgtList (goalies), and by AttribWgtList. Called from
+									;getNameandAttrib and PrintOverallRating
+	move.l	a6,-(sp)		;push a6 to stack
+	clr.w	(OvrDivisor).l
+	clr.w	(OvrDividend).l
+	movea.l	#AttribWgtList,a6
+	cmp.l	(PAttribOverallMask).l,d4		;compare long word (1FBA000A) to d4
+	bne.w	.1		;branch if not equal
+	movea.l	#OvrPlayerWgtList,a6
+.1	cmp.l	(GAttribOverallMask).l,d4		;compare long word 130F000A to d4
+	bne.w	.11		;branch if not equal
+	movea.l	#OvrGoalWgtList,a6
+.11	movea.l	$1E(a2),a0		;move ROM address of Team Data into a0
+	lea.l	$1A4(a2),a4		;move start of Hot/Cold table to a4
+	clr.l	d1
+	move.w	d0,d1		;move d0 into d1. d0 is the offset of the player
+	asl.w	#$4,d1		;mult d1 by 16
+	adda.l	d1,a4		;add d1 to a4
+	adda.l	#$10,a4		;add 16 dec to a4. Move to start of Hot/Cold for player.
+	adda.w	$0(a0),a0		;add player table offset to Team Data start
+.skip	adda.w	(a0),a0		;add Player Name length to a0
+	adda.w	#$8,a0		;add 8 (skips attributes)
+	dbra	d0,.skip
+	clr.w	d0
+	clr.w	d1
+	moveq	#$F,d2		;move 15 dec into d2 (start at bit 15)
+	swap	d4		;swap words in d4
+.bit	btst	d2,d4		;bit test d2 bit in d4
+	beq.w	.lB20A		;branch if bit is 0
+	move.w	d2,d3		;move d2 into d3
+	lsr.w	#$1,d3		;divide d3 by 2
+	neg.w	d3
+	move.b	-$1(a0,d3.w),d3		;move a0+d3-1 into d3. a0 currently at end of player data.
+	btst	#$0,d2		;test bit 0 of d2
+	beq.w	.0
+	lsr.w	#$4,d3		;divide d3 by 16. Shifts upper nibble to lower in case d2 was odd
+.0	andi.w	#$F,d3		;pass bottom nibble of d3
+	cmpi.w	#$D,d2		;compare d2 to 13 dec (check if Wgt nibble)
+	bne.w	.cont		;branch if not equal
+	bra.w	.00
+.cont	cmpi.w	#$6,d2		;compare d2 to 6 (Fight nibble)
+	beq.w	.00
+	movem.l	d5-d7,-(sp)
+	move.b	(a6,d2.w),d5		;move a6+d2 into d5
+	ext.w	d5
+	cmpi.w	#$2,d5		;comare d5 to 2
+	beq.w	.000
+	move.w	d3,-(sp)		;push d3 to stack (current attribute)
+	subi.w	#$2,d5		;sub 2 from d5
+.attribadd	add.w	(sp),d3		;add stack value to d3
+	dbra	d5,.attribadd
+	asr.w	#$1,d3		;divide d3 by 2
+	tst.w	(sp)+		;test stack and increment
+.000	movem.l	(sp)+,d5-d7		;pop off stack into d5-d7
+	cmpa.l	#$26266,a6		;check if a6 is AttribWgtList
+	beq.w	.2
+	neg.w	d2
+	move.w	d7,-(sp)		;push d7 to stack
+	move.b	-$1(a4,d2.w),d7		;move data at a4+d2-1 into d7
+	ext.w	d7
+	add.w	d7,(OvrDivisor).l		;add d7 to OvrDivisor
+	addi.w	#$1,(OvrDividend).l		;add 1 to OvrDividend
+	move.w	(sp)+,d7		;pop from stack into d7
+	neg.w	d2
+	bra.w	.00
+.2	move.w	d3,-(sp)		;push d3 onto stack
+	asl.w	#$4,d3		;mult d3 by 16
+	add.w	(sp),d3		;add value on stack to d3
+	add.w	(sp)+,d3		;add value again from stack into d3 and increment
+	neg.w	d2
+	add.b	-$1(a4,d2.w),d3		;add data at a4+s2-1 into d3
+	bpl.w	.pos
+	clr.b	d3
+.pos	neg.w	d2
+.00	add.w	d3,d0		;add d3 to d0 (d0 = attribute value)
+	addi.w	#$64,d1		;add 100 dec to d1
+.lB20A	dbra	d2,.bit
+	cmpa.l	#$26266,a6		;compare AttribWgtList with a6
+	beq.w	.3
+	move.w	#$64,d1		;move 100 dec into d1
+	movem.l	d6-d7,-(sp)		;push d6 and d7 to stack
+	move.w	(OvrDivisor).l,d6
+	ext.l	d6
+	move.w	(OvrDividend).l,d7
+	divs.w	d7,d6		;divide d7 into d6
+	add.w	d6,d0		;add d6 to d0
+	movem.l	(sp)+,d6-d7
+.3	cmp.w	d1,d0
+	blt.w	.4
+	move.w	d0,d1
+	subi.w	#$1,d0
+.4	movea.l	(sp)+,a6
+	rts
+	dc.w	$0202,$0202
+	dc.w	$0406,$0204
+	dc.w	$0204,$0606
+	dc.w	$0402,$0202
+	dc.w	$0202,$0202
+	dc.w	$0202,$0202
+	movep.w	$202(a1),d4
+	btst	d4,d2
+	dc.w	$0202,$0202
+	dc.w	$0202,$0202
+	dc.w	$0202,$0202
+	dc.w	$0202,$0202
+	dc.w	$0202,$48E7
+	dc.w	$FF7E
+	movea.l	$47D88.l,a0
+	move.w	d1,d2
+	asl.w	#$2,d2
+	movea.l	(a0,d2.w),a0
+	move.w	#$FFFF,d2
+	bra.w	.lB2A4
+.lB290	cmp.w	$4(a0),d0
+	bne.w	.lB29E
+	movea.l	(a0),a0
+	bra.w	.lB316
+.lB29E	adda.l	#$6,a0
+.lB2A4	addi.w	#$1,d2
+	tst.l	(a0)
+	bne.w	.lB290
+	movea.l	#TeamList,a0
+	asl.w	#$2,d1
+	movea.l	(a0,d1.w),a0
+	movea.l	a0,a6
+	move.w	d0,d6
+	adda.w	$0(a6),a6
+	bra.w	.lB2CC
+.lB2C6	adda.w	(a6),a6
+	adda.w	#$8,a6
+.lB2CC	dbra	d6,.lB2C6
+	adda.w	(a6),a6
+	adda.w	$A(a0),a0
+	move.w	(a0),d1
+	clr.w	d3
+.lB2DA	addi.w	#$1,d3
+	asl.w	#$4,d1
+	bne.w	.lB2DA
+	movea.l	#$433AA,a0
+	btst	#$0,$4(a6)
+	bne.w	.lB2FA
+	movea.l	#$43714,a0
+.lB2FA	cmp.w	d3,d0
+	blt.w	.lB316
+	movea.l	#$43040,a0
+	btst	#$0,$4(a6)
+	bne.w	.lB316
+	movea.l	#$42CD6,a0
+.lB316	movem.l	(sp)+,d0-d7/a1-a6
+	rts
 TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even length
 	movem.l	a3,-(sp)
 	movea.l	a2,a3
@@ -310,189 +553,69 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	dc.w	$E248,$9179,$0001,$8D58,$4EB9,$0003,$8F80,$4EB9
 	dc.w	$0003,$8F6E,$0006,$BF1B,$0700,$303C,$0008,$323C
 	dc.w	$0008,$4EB9,$0003,$8CA0,$4EB9,$0003,$8F6E,$0006
-	dc.w	$8F1C,$0800
-	move.w	(HomeTeam).l,d3
-	tst.w	(nameentryvis).l
-	beq.w	.lB522
-	move.w	(VisTeam).l,d3
-.lB522	asl.w	#$2,d3
-	movea.l	(TeamLogoBitmaps).l,a0
-	movea.l	(a0,d3.w),a0
-	movea.l	a0,a1
-	movea.l	a0,a2
-	adda.l	(a2)+,a0
-	asl.w	#$3,d3
-	movea.l	#TeamLogoPalettes,a0
-	subi.w	#$40,d3
-	adda.w	d3,a0
-	adda.l	(a2)+,a1
-	move.w	#$6,d3
-	move.w	#$6,d2
-	clr.w	d0
-	clr.w	d1
-	move.w	#$4,d5
-	move.w	(homepicchars).l,d4
-	jsr	(dobitmap).l
-	jsr	(printz).l
-	String	CC_Font1Pri,$2,$0
-	dc.w	$303C,$0024,$323C,$0006,$4EB9,$0003,$8CA0,$4EB9
-	dc.w	$0003,$9258,$0010,$BF0A,$024E,$414D,$4520,$2045
-	dc.w	$4E54,$5259
-	bsr.w	ReadNameLog-LOAD
-	clr.w	(namelogarrows).l
-	move.w	#$1,(namelogsel).l
-	clr.w	d0
-	bsr.w	X_C0A0
-	movea.l	#$1A37C,a1
-	bsr.w	X_BE0E
-	bsr.w	X_BC60
-	jsr	(printz).l
-	String	CC_Font1Pri,$7,$6,'Name Log'
-	dc.w	$33FC,$0018,$0001,$8D62,$08B9,$0002,$0001,$8D64
-	dc.w	$4244,$6100,$0570,$6100,$05CA,$6100,$061E,$3F39
-	dc.w	$0001,$8D58,$3F39,$0001,$8D5A,$4EB9,$0002,$6DF0
-	dc.w	$33DF,$0001,$8D5A,$0679,$0001,$0001,$8D5A,$33DF
-	dc.w	$0001,$8D58,$0679,$0001,$0001,$8D58,$6100,$05BE
-	dc.w	$33FC,$0001,$0001,$A566,$6100,$028C,$4240,$6000
-	dc.w	$01B0,$6100,$0724,$4EB9,$0003,$8F6E,$0006,$BF05
-	dc.w	$1200
-	tst.w	(cursoron).l
-	beq.w	.lB654
-	movea.l	#$1A37C,a1
-	bsr.w	X_BD86
-	bsr.w	X_BB1A
-.lB654	bsr.w	X_BCC8
-.lB658	move.w	(ScoutSubStatus).l,d0
-.lB65E	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.lB65E
-	movem.w	d1,-(sp)
-	move.w	(cont1team).l,d1
-	subi.w	#$1,d1
-	cmp.w	(nameentryvis).l,d1
-	movem.w	(sp)+,d1
-	beq.w	.lB694
-	jsr	(ReadJoy2).l
-	tst.w	d1
-	beq.w	.lB658
-	bra.w	.lB6A0
-.lB694	jsr	(ReadJoy1).l
-	tst.w	d1
-	beq.w	.lB658
-.lB6A0	btst	#$7,d1
-	bne.w	X_B8A6
-	tst.w	(cursoron).l
-	bne.w	.lB6DC
-	move.w	#$1,d0
-	btst	#$1,d1
-	bne.w	.lB726
-	move.w	#$FFFF,d0
-	btst	#$0,d1
-	bne.w	.lB726
-	btst	#$4,d1
-	beq.w	X_B62C
-	bsr.w	X_B8B0
-	clr.w	d0
-	bra.w	.lB726
-.lB6DC	moveq	#-1,d0
-	btst	#$6,d1
-	bne.w	X_B7DA
-	neg.w	d0
-	btst	#$5,d1
-	bne.w	X_B7DA
-	btst	#$3,d1
-	bne.w	X_B808
-	neg.w	d0
-	btst	#$2,d1
-	bne.w	X_B808
-	moveq	#$6,d0
-	btst	#$1,d1
-	bne.w	X_B808
-	neg.w	d0
-	btst	#$0,d1
-	bne.w	X_B808
-	btst	#$4,d1
-	beq.w	X_B62C
-	bsr.w	X_B8B0
-	bra.w	X_B62C
-.lB726	add.w	d0,(namelogsel).l
-.lB72C	cmpi.w	#$7,(namelogsel).l
-	ble.w	.lB740
-	move.w	#$1,(namelogsel).l
-.lB740	tst.w	(namelogsel).l
-	bne.w	.lB752
-	move.w	#$7,(namelogsel).l
-.lB752	bsr.w	X_C0A0
-	beq.w	.lB72C
-	movea.l	#$1A37C,a1
-	bsr.w	X_BE0E
-	tst.w	(cursoron).l
-	bne.w	X_B778
-	jsr	(NameEntryHelp).l
-	bra.w	X_B62C
+	dc.w	$8F1C,$0800,$3639,$0001,$7FAE,$4A79,$0001,$A390
+	dc.w	$6700,$0008,$3639,$0001,$7FB0,$E543,$2079,$0004
+	dc.w	$7D8C,$2070,$3000,$2248,$2448,$D1DA,$E743,$207C
+	dc.w	$0002,$AF56,$0443,$0040,$D0C3,$D3DA,$363C,$0006
+	dc.w	$343C,$0006,$4240,$4241,$3A3C,$0004,$3839,$0001
+	dc.w	$9392,$4EB9,$0003,$87E2,$4EB9,$0003,$8F6E,$0006
+	dc.w	$BF02,$0000,$303C,$0024,$323C,$0006,$4EB9,$0003
+	dc.w	$8CA0,$4EB9,$0003,$9258,$0010,$BF0A,$024E,$414D
+	dc.w	$4520,$2045,$4E54,$5259,$6100,$C09C,$4279,$0001
+	dc.w	$A38E,$33FC,$0001,$0001,$A38C,$4240,$6100,$0AFA
+	dc.w	$227C,$0001,$A37C,$6100,$085E,$6100,$06AC,$4EB9
+	dc.w	$0003,$8F6E,$000E,$BF07,$064E,$616D,$6520,$4C6F
+	dc.w	$6700,$33FC,$0018,$0001,$8D62,$08B9,$0002,$0001
+	dc.w	$8D64,$4244,$6100,$0570,$6100,$05CA,$6100,$061E
+	dc.w	$3F39,$0001,$8D58,$3F39,$0001,$8D5A,$4EB9,$0002
+	dc.w	$6DF0,$33DF,$0001,$8D5A,$0679,$0001,$0001,$8D5A
+	dc.w	$33DF,$0001,$8D58,$0679,$0001,$0001,$8D58,$6100
+	dc.w	$05BE,$33FC,$0001,$0001,$A566,$6100,$028C,$4240
+	dc.w	$6000,$01B0,$6100,$0724,$4EB9,$0003,$8F6E,$0006
+	dc.w	$BF05,$1200,$4A79,$0001,$A566,$6700,$0010,$227C
+	dc.w	$0001,$A37C,$6100,$0738,$6100,$04C8,$6100,$0672
+	dc.w	$3039,$0001,$7474,$B079,$0001,$7474,$6700,$FFF8
+	dc.w	$48A7,$4000,$3239,$0001,$7FA6,$0441,$0001,$B279
+	dc.w	$0001,$A390,$4C9F,$0002,$6700,$0012,$4EB9,$0003
+	dc.w	$750E,$4A41,$6700,$FFCA,$6000,$000E,$4EB9,$0003
+	dc.w	$74F0,$4A41,$6700,$FFBA,$0801,$0007,$6600,$0200
+	dc.w	$4A79,$0001,$A566,$6600,$002C,$303C,$0001,$0801
+	dc.w	$0001,$6600,$006A,$303C,$FFFF,$0801,$0000,$6600
+	dc.w	$005E,$0801,$0004,$6700,$FF5C,$6100,$01DC,$4240
+	dc.w	$6000,$004C,$70FF,$0801,$0006,$6600,$00F6,$4440
+	dc.w	$0801,$0005,$6600,$00EC,$0801,$0003,$6600,$0112
+	dc.w	$4440,$0801,$0002,$6600,$0108,$7006,$0801,$0001
+	dc.w	$6600,$00FE,$4440,$0801,$0000,$6600,$00F4,$0801
+	dc.w	$0004,$6700,$FF10,$6100,$0190,$6000,$FF08,$D179
+	dc.w	$0001,$A38C,$0C79,$0007,$0001,$A38C,$6F00,$000A
+	dc.w	$33FC,$0001,$0001,$A38C,$4A79,$0001,$A38C,$6600
+	dc.w	$000A,$33FC,$0007,$0001,$A38C,$6100,$094C,$6700
+	dc.w	$FFD4,$227C,$0001,$A37C,$6100,$06AC,$4A79,$0001
+	dc.w	$A566,$6600,$000C,$4EB9,$0002,$6A4A,$6000,$FEB6
 	dc.w	$4EB9,$0003,$8F6E,$0006,$BF04,$1300,$D979,$0001
-	dc.w	$8D58,$4EB9,$0003,$8F6E,$0006,$2020,$2000
-	bsr.w	X_BC04
-	moveq	#$1,d2
-	move.w	(printx).l,-(sp)
-	move.w	(printy).l,-(sp)
-	jsr	(eraser).l
-	move.w	(sp)+,(printy).l
-	addi.w	#$1,(printy).l
-	move.w	(sp)+,(printx).l
-	addi.w	#$1,(printx).l
-	bsr.w	X_BBD6
-	bsr.w	X_BB4E
-	move.w	d4,d0
-	neg.w	d0
-	bra.w	.lB7DA
-.lB7DA	add.w	d4,d0
-	cmpi.w	#$B,d0
-	bhi.w	X_B62C
-	move.w	d0,d4
-	bsr.w	X_BBAC
-	movea.l	#$1A37C,a0
-	clr.w	d0
-	cmpi.b	#$2D,(a0,d4.w)
-	beq.w	.lB808
-	move.b	(a0,d4.w),d0
-	ext.w	d0
-	bsr.w	X_BB80
-	sub.w	d5,d0
-.lB808	add.w	d5,d0
-	cmpi.w	#$1D,d0
-	bhi.w	X_B62C
-	move.w	d0,-(sp)
-	bsr.w	X_BC04
-	moveq	#$1,d2
-	move.w	(printx).l,-(sp)
-	move.w	(printy).l,-(sp)
-	jsr	(eraser).l
-	move.w	(sp)+,(printy).l
-	addi.w	#$1,(printy).l
-	move.w	(sp)+,(printx).l
-	addi.w	#$1,(printx).l
-	bsr.w	X_BBD6
-	move.w	(sp)+,d5
-	bsr.w	X_BC04
-	move.w	(printx).l,-(sp)
-	move.w	(printy).l,-(sp)
-	tst.w	(cursoron).l
-	beq.w	.lB86E
-	jsr	(NameEntryFramer).l
-.lB86E	move.w	(sp)+,(printy).l
-	addi.w	#$1,(printy).l
-	move.w	(sp)+,(printx).l
-	addi.w	#$1,(printx).l
-	bsr.w	X_BBD6
-	movea.l	#$1A37C,a0
-	movea.l	#LetterGrid,a1
-	move.b	(a1,d5.w),d0
-	move.b	d0,(a0,d4.w)
-	bra.w	X_B62C
-	bsr.w	X_BE5E
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
-	dc.w	$48E7,$FFFE,$4EB9,$0003,$8F6E,$0006,$BF01,$1400
+	dc.w	$8D58,$4EB9,$0003,$8F6E,$0006,$2020,$2000,$6100
+	dc.w	$046C,$7401,$3F39,$0001,$8D58,$3F39,$0001,$8D5A
+	dc.w	$4EB9,$0003,$8C06,$33DF,$0001,$8D5A,$0679,$0001
+	dc.w	$0001,$8D5A,$33DF,$0001,$8D58,$0679,$0001,$0001
+	dc.w	$8D58,$6100,$040A,$6100,$037E,$3004,$4440,$6000
+	dc.w	$0002,$D044,$0C40,$000B,$6200,$FE4A,$3800,$6100
+	dc.w	$03C4,$207C,$0001,$A37C,$4240,$0C30,$002D,$4000
+	dc.w	$6700,$000E,$1030,$4000,$4880,$6100,$037C,$9045
+	dc.w	$D045,$0C40,$001D,$6200,$FE1C,$3F00,$6100,$03EE
+	dc.w	$7401,$3F39,$0001,$8D58,$3F39,$0001,$8D5A,$4EB9
+	dc.w	$0003,$8C06,$33DF,$0001,$8D5A,$0679,$0001,$0001
+	dc.w	$8D5A,$33DF,$0001,$8D58,$0679,$0001,$0001,$8D58
+	dc.w	$6100,$038C,$3A1F,$6100,$03B4,$3F39,$0001,$8D58
+	dc.w	$3F39,$0001,$8D5A,$4A79,$0001,$A566,$6700,$0008
+	dc.w	$4EB9,$0002,$6DF0,$33DF,$0001,$8D5A,$0679,$0001
+	dc.w	$0001,$8D5A,$33DF,$0001,$8D58,$0679,$0001,$0001
+	dc.w	$8D58,$6100,$034A,$207C,$0001,$A37C,$227C,$0002
+	dc.w	$6DD0,$1031,$5000,$1180,$4000,$6000,$FD88,$6100
+	dc.w	$05B6,$4CDF,$7FFF,$4E75
+NameLetterGrid
+	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	(printz).l
+	String	CC_Font1Pri,$1,$14
 	move.w	#$16,d0
 	move.w	#$7,d1
 	move.w	#$7FF,d2
@@ -526,3 +649,19 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	move.w	(printx).l,-(sp)
 	jsr	(printz).l
 	String	'C to select letter.'
+	move.w	(sp),(printx).l
+	addi.w	#$1,(printy).l
+	jsr	(printz).l
+	String	'A to go back.'
+	move.w	(sp),(printx).l
+	addi.w	#$1,(printy).l
+	jsr	(printz).l
+	String	'B to cancel.'
+	dc.w	$33DF,$0001,$8D58,$0679,$0001,$0001,$8D5A,$4EB9
+	dc.w	$0003,$8F6E,$0012,$5354,$4152,$5420,$7768,$656E
+	dc.w	$2064,$6F6E,$652E,$4CDF,$7FFF,$4E75,$227C,$0001
+	dc.w	$A37C,$6100,$0406,$33FC,$0000,$0001,$8D58,$33FC
+	dc.w	$000F,$0001,$8D5A,$303C,$0028,$323C,$000D,$343C
+	dc.w	$07FF,$4EB9,$0003,$8C06,$4EB9,$0003,$8F6E,$0006
+	dc.w	$FE01,$1400,$7016,$7207,$4EB9,$0003,$8CA0,$6100
+	dc.w	$0006,$6000,$FFB2

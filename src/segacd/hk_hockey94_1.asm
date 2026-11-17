@@ -2,38 +2,57 @@
 	include	macros\genesis.mac
 
 ColdMap	equ	$47D9C
+CurCrowdMeter	equ	$17F8C
+CwdExciteLvl	equ	$17CD8
+DoGameFrame	equ	$2BB8E
+HmTeam	equ	$1A56C
+HomeTeam	equ	$17FAE
 HotMap	equ	$47D98
+LOAD	equ	$1B000
+M68K_RAM	equ	$C45C
+OldVcount	equ	$17476
 OptPlayMode	equ	$18BFA
+Optperlen	equ	$18C02
 PBnum	equ	$18068
+PadControlBits	equ	$17DC8
 PenBuf	equ	$18022
 PenCntDwn	equ	$18064
 Penaltytimer	equ	$18066
 PerTimeTotal	equ	$180EA
+ScoutSubStatus	equ	$17474
 SetSPA	equ	$363C0
 Setplass	equ	$3D754
+SongIndex	equ	$1A56E
 assexit	equ	$362C4
+assreplace	equ	$362E4
 awaycoldplayer	equ	$17EB0
 awayhotplayer	equ	$17EAC
 awtmstruct	equ	$186B2
+c1playernum	equ	$17F9E
+c2playernum	equ	$17FA0
 coldiconchars	equ	$1AD88
 dobitmap	equ	$387E2
 eraser	equ	$38C06
+faceoffanim	equ	$1A560
 gameclock	equ	$180E6
+gamelevel	equ	$18A9E
 homecoldplayer	equ	$17EB2
 homehotplayer	equ	$17EAE
 hoticonchars	equ	$1AD86
 iconplayer	equ	$1AD8A
+lastsfx	equ	$17F64
 move	equ	$2C9C8
 null	equ	$1B008
 onetimerflags	equ	$17EC6
 onetimerplayer	equ	$17EBC
+palcount	equ	$18D62
 periodendtime	equ	$1747E
 printx	equ	$18D58
 printy	equ	$18D5A
 randomd0	equ	$37050
+recbpr	equ	$17470
 tmstruct	equ	$1834C
-X_103E8	equ	$103E8
-X_10A04	equ	$10A04
+X_10A16	equ	$10A16
 
 	org	$FF00
 
@@ -137,13 +156,18 @@ ClearPenalties
 .l103C8	clr.l	(a0)+
 	dbra	d0,.l103C8
 	movea.l	#tmstruct,a0
-	bsr.w	X_103E8
+	bsr.w	clrTmPdst
 	movea.l	#awtmstruct,a0
-	bsr.w	X_103E8
+	bsr.w	clrTmPdst
 	movem.l	(sp)+,d0/a0
 	rts
-	dc.w	$303C,$0019,$D0FC,$0068,$30FC,$FFFE,$51C8,$FFFA
-	dc.w	$30BC,$FFFF,$4E75
+clrTmPdst
+	move.w	#$19,d0
+	adda.w	#$68,a0
+.l103F0	move.w	#$FFFE,(a0)+
+	dbra	d0,.l103F0
+	move.w	#$FFFF,(a0)
+	rts
 HotColdIcon
 	movem.l	d0/a0-a1,-(sp)
 	movea.l	#awayhotplayer,a0
@@ -280,7 +304,7 @@ restoreteams						;Put both teams' rosters on the bench
 	bpl.w	.0
 	rts
 ResetClock						;set period length and stop clock
-	bsr.w	X_10A04		;d0 = period length in seconds
+	bsr.w	GetPeriodTime		;d0 = period length in seconds
 	cmpi.w	#$3,$180E4.l		;overtime?
 	blt.w	.0
 	tst.w	(OptPlayMode).l
@@ -294,21 +318,49 @@ ResetClock						;set period length and stop clock
 	sub.w	d0,(periodendtime).l		;length - random(length/2)
 	bset	#$0,$17F68.l		;gmclock: stop clock
 	rts
-	dc.w	$3039,$0001,$8C02,$E340,$41FA,$0008,$3030,$0000
-	dc.w	$4E75,$012C,$0258,$04B0,$001E,$08B9,$0005,$00FF
-	dc.w	$800F,$33FC,$FFFF,$0001,$8D62,$323C,$8400,$303C
-	dc.w	$0085,$4EB8,$5F22,$0C79,$0003,$0001,$80E4,$6600
-	dc.w	$000A,$08F9,$0001,$0001,$7F7A,$50F9,$0001,$A560
-	dc.w	$4EB9,$0004,$7DAC,$4EB9,$0003,$E91C,$6100,$FF5A
-	dc.w	$0079,$F000,$0001,$7DC8,$50F9,$0001,$7F9E,$50F9
-	dc.w	$0001,$7FA0,$267C,$0001,$7B80,$4279,$0001,$7EE2
-	dc.w	$4279,$0001,$7EE4,$0839,$0000,$0001,$7F78,$6700
-	dc.w	$001A,$303C,$001E,$33FC,$0008,$0001,$936C,$33FC
-	dc.w	$000B,$0001,$936A,$6000,$0004,$701B,$4EB9,$0003
-	dc.w	$62E4,$08F9,$0002,$0001,$7F6C,$08B9,$0004,$0001
-	dc.w	$7F6A,$33FC,$FFFF,$0001,$7F64,$23FC,$0000,$C45C
-	dc.w	$0001,$7470,$33F9,$0001,$7474,$0001,$7476,$6100
-	dc.w	$00AA,$33FC,$FFFF,$0001,$8D62,$6100,$009E,$3039
-	dc.w	$0001,$8A9E,$E940,$33C0,$0001,$7CD8,$4279,$0001
-	dc.w	$7F8C,$33F9,$0001,$7FAE,$0001,$A56C,$33FC,$0000
-	dc.w	$0001,$A56E,$4EB9,$0002,$A478
+GetPeriodTime						;Return d0 = period length in seconds for the period length option
+	move.w	(Optperlen).l,d0
+	asl.w	#$1,d0
+	lea.l	X_10A16(pc),a0
+	move.w	(a0,d0.w),d0
+	rts
+	btst	d0,$258(a4)
+	subi.l	#$1E08B9,$5(a0,d0.w)
+	dc.w	$00FF
+	dc.w	$800F
+	move.w	#$FFFF,(palcount).l
+	move.w	#$8400,d1
+	move.w	#$85,d0
+	jsr	$5F22.w
+	cmpi.w	#$3,$180E4.l
+	bne.w	.l10A4E
+	bset	#$1,$17F7A.l
+.l10A4E	st.b	(faceoffanim).l
+	jsr	$47DAC.l
+	jsr	$3E91C.l
+	bsr.w	ResetClock
+	ori.w	#$F000,(PadControlBits).l
+	st.b	(c1playernum).l
+	st.b	(c2playernum).l
+	dc.w	$267C,$0001,$7B80,$4279,$0001,$7EE2,$4279,$0001
+	dc.w	$7EE4,$0839,$0000,$0001,$7F78,$6700,$001A,$303C
+	dc.w	$001E,$33FC,$0008,$0001,$936C,$33FC,$000B,$0001
+	dc.w	$936A,$6000,$0004
+Gameloop						;Main loop for game
+	moveq	#$1B,d0
+	jsr	(assreplace).l
+	bset	#$2,$17F6C.l
+	bclr	#$4,$17F6A.l
+	move.w	#$FFFF,(lastsfx).l
+	move.l	#M68K_RAM,(recbpr).l
+	move.w	(ScoutSubStatus).l,(OldVcount).l
+	bsr.w	DoGameFrame-LOAD
+	move.w	#$FFFF,(palcount).l
+	bsr.w	DoGameFrame-LOAD
+	move.w	(gamelevel).l,d0
+	asl.w	#$4,d0
+	move.w	d0,(CwdExciteLvl).l
+	clr.w	(CurCrowdMeter).l
+	move.w	(HomeTeam).l,(HmTeam).l
+	move.w	#$0,(SongIndex).l
+	dc.w	$4EB9,$0002,$A478
