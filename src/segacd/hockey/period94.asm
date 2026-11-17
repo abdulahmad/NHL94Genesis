@@ -80,7 +80,7 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 .next	bra.w	.next2
 .loop	move.w	d3,d0
 	add.w	d2,d0
-	dc.w	$6100,$0008
+	dc.w	$6100,$0008		; bsr.w X_293DC
 .next2	dbra	d2,.loop
 	rts	
 .next3
@@ -599,11 +599,11 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$E,d6
-	dc.w	$43FA,$015A
+	dc.w	$43FA,$015A		; lea.l X_29E56(pc),a1
 	tst.w	$18C08.l
 	bne.w	.row
 	move.w	#$A,d6
-	dc.w	$43FA,$0236
+	dc.w	$43FA,$0236		; lea.l X_29F44(pc),a1
 .row	move.w	(a1),d0
 	lsr.w	#$1,d0
 	neg.w	d0
@@ -690,27 +690,34 @@ TeamStatTextTbl						;Label, then the team struct stat offset and the second off
 	String	'Shots'
 	dc.b	$00,$00,$FF,$FF
 	String	'Shooting Pct'
-	dc.w	$FFFF,$FFFF
+	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	$FFFF		; dc.w $FFFF
 	String	'Power Play'
-	dc.b	$00,$02,$00,$04
+	dc.w	$0002,$0004		; ori.b #$4,d2
 	String	'PP Minutes'
-	dc.b	$03,$54,$FF,$FF
+	dc.w	$0354		; bchg.b d1,(a4)
+	dc.w	$FFFF		; dc.w $FFFF
 	String	'PP Shots'
-	dc.b	$03,$56,$FF,$FF
+	dc.w	$0356		; bchg.b d1,(a6)
+	dc.w	$FFFF		; dc.w $FFFF
 	String	'SH Goals'
-	dc.b	$03,$58,$FF,$FF
+	dc.w	$0358		; bchg.b d1,(a0)+
+	dc.w	$FFFF		; dc.w $FFFF
 	String	'Breakaways'
-	dc.b	$03,$5C,$03,$5A
+	dc.w	$035C		; bchg.b d1,(a4)+
+	dc.w	$035A		; bchg.b d1,(a2)+
 	String	'One-Timers'
-	dc.b	$03,$60,$03,$5E
+	dc.w	$0360		; bchg.b d1,-(a0)
+	dc.w	$035E		; bchg.b d1,(a6)+
 	String	'Penalty Shots'
-	dc.b	$03,$64,$03,$62
+	dc.w	$0364		; bchg.b d1,-(a4)
+	dc.w	$0362		; bchg.b d1,-(a2)
 	String	'Faceoffs Won'
 	dc.b	$00,$0E,$FF,$FF
 	String	'Body Checks'
-	dc.b	$00,$10,$FF,$FF
+	dc.w	$0010,$FFFF		; ori.b #$FF,(a0)
 	String	'Penalties'
-	dc.b	$00,$06,$00,$08
+	dc.w	$0006,$0008		; ori.b #$8,d6
 	String	'Attack Zone'
 	dc.b	$00,$0A,$FF,$FF
 	String	'Passing'
@@ -722,19 +729,23 @@ TeamStatTextTblNoPen				;The rows without the power play ones, used when penalti
 	String	'Shots'
 	dc.b	$00,$00,$FF,$FF
 	String	'Shooting Pct'
-	dc.w	$FFFF,$FFFF
+	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	$FFFF		; dc.w $FFFF
 	String	'Breakaways'
-	dc.b	$03,$5C,$03,$5A
+	dc.w	$035C		; bchg.b d1,(a4)+
+	dc.w	$035A		; bchg.b d1,(a2)+
 	String	'One-Timers'
-	dc.b	$03,$60,$03,$5E
+	dc.w	$0360		; bchg.b d1,-(a0)
+	dc.w	$035E		; bchg.b d1,(a6)+
 	String	'Penalty Shots'
-	dc.b	$03,$64,$03,$62
+	dc.w	$0364		; bchg.b d1,-(a4)
+	dc.w	$0362		; bchg.b d1,-(a2)
 	String	'Faceoffs Won'
 	dc.b	$00,$0E,$FF,$FF
 	String	'Body Checks'
-	dc.b	$00,$10,$FF,$FF
+	dc.w	$0010,$FFFF		; ori.b #$FF,(a0)
 	String	'Penalties'
-	dc.b	$00,$06,$00,$08
+	dc.w	$0006,$0008		; ori.b #$8,d6
 	String	'Attack Zone'
 	dc.b	$00,$0A,$FF,$FF
 	String	'Passing'

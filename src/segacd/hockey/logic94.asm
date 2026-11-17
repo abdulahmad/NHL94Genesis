@@ -1,7 +1,7 @@
 updateplayers
 	btst	#$7,$17F6A.l
 	bne.w	.next3
-	dc.w	$0079,$000F,$0001,$7DC8
+	dc.w	$0079,$000F,$0001,$7DC8		; ori.w #$F,$17DC8.l
 	cmpi.w	#$5,$17B98.l
 	bgt.w	.next
 .loop	clr.w	$1AD74.l
@@ -2301,7 +2301,7 @@ AssistSkateOrExit	btst.b	#$3,$62(a3)
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bmi.w	assreplace
-.next5	dc.w	$41FA,$1BCE
+.next5	dc.w	$41FA,$1BCE		; lea.l X_33C6E(pc),a0
 	moveq	#$50,d0
 	cmpi.w	#$2,$34(a3)
 	beq.w	.next6
@@ -3221,13 +3221,13 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	subi.w	#$1,d0		;d0 = +1/-1
 	btst	#$3,$62(a3)		;pfjoycon
 	bne.w	.add
-	dc.w	$033C,$0042,$6700
-	dc.w	$0022,$D240
+	dc.w	$033C,$0042,$6700		; btst.l d1,#$426700
+	dc.w	$0022,$D240		; ori.b #$40,-(a2)
 	btst	#$7,$62(a3)
-	dc.w	$6600,$000A
-	dc.w	$033C,$0083,$6000
-	dc.w	$0006,$033C
-	dc.w	$0038,$6700,$0008
+	dc.w	$6600,$000A		; bne.w .l18094
+	dc.w	$033C,$0083,$6000		; btst.l d1,#$836000
+	dc.w	$0006,$033C		; ori.b #$3C,d6
+	dc.w	$0038,$6700,$0008		; ori.b #$0,$8.w
 	neg.w	d0		;in the mask: undo it and turn the other way instead
 	add.w	d0,d1
 .add	add.w	d0,d1		;apply the step
@@ -3604,7 +3604,7 @@ chk4lc						;see if computer should call line change
 	dc.w	$FF88
 	ori.b	#$14,$28(a0)
 	ori.w	#$28,$FFFFFFEC.w
-	dc.w	$0028,$FFD8,$00F0
+	dc.w	$0028,$FFD8,$00F0		; ori.b #$D8,$F0(a0)
 	ori.b	#$DC,d0
 	ori.b	#$E6,(a4)
 	ori.b	#$E6,(a6)+
@@ -5294,7 +5294,7 @@ FaceoffSongPick	moveq	#$36,d0
 	dc.b	$00,$06,$FB,$01,$FA,$FE	; ......
 ; Prints the line list
 FaceoffLineList	movea.l	#linelist,a1
-	dc.w	$6100,$787A
+	dc.w	$6100,$787A		; bsr.w X_3CEBE
 	addi.w	#$4,$18D58.l
 	move.w	d1,d0
 	movea.l	#linelist,a1

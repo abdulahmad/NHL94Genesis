@@ -1969,7 +1969,7 @@ PuckCollisionStick	btst.b	#$4,$17F68.l
 	move.w	(a0,d2.w),d0
 	moveq	#$F,d1
 	add.b	(a2,d0.w),d1
-	dc.w	$41FA,$01A4
+	dc.w	$41FA,$01A4		; lea.l X_3C246(pc),a0
 	btst.b	#$3,$4(a2)
 	beq.w	.next3
 	eori.w	#$2,d2
@@ -1978,7 +1978,7 @@ PuckCollisionStick	btst.b	#$4,$17F68.l
 	cmpi.w	#$233,d0
 	blt.w	.next4
 	move.w	#$292,(sp)
-	dc.w	$41FA,$017E
+	dc.w	$41FA,$017E		; lea.l X_3C246(pc),a0
 .next4	sub.w	(sp)+,d0
 	move.b	(a0,d0.w),d0
 	lsr.w	d2,d0

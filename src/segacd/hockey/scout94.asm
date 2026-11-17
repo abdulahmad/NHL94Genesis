@@ -420,7 +420,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.w	.next11
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-.next9	dc.w	$6100,$0764
+.next9	dc.w	$6100,$0764		; bsr.w X_29058
 	move.w	#$1,d0
 	tst.w	(ScoutLastPara).l
 	beq.s	.next10
@@ -430,7 +430,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.w	.next13
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-	dc.w	$6100,$0732
+	dc.w	$6100,$0732		; bsr.w X_29058
 	tst.w	(ScoutLastPara).l
 	beq.s	.next12
 	bsr.w	PageMatchup

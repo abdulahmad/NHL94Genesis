@@ -330,7 +330,7 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 DrawLineIcons						;Line editor: draw the line icons for the cursor's line (LineIconGroups
 	
 	moveq	#$6,d5
-	dc.w	$41FA,$008F
+	dc.w	$41FA,$008F		; lea.l X_2CCB7(pc),a0
 	move.w	(TestList).l,d0
 	lsr.w	#$3,d0
 	adda.w	d0,a0
@@ -761,7 +761,7 @@ PlayerListDrawSelected
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$7,$3,$2,$9,CC_SetFont,$1
 	move.w	(SelectedPlayerIdx).l,d0
-	dc.w	$43FA,$012C
+	dc.w	$43FA,$012C		; lea.l X_2D4DA(pc),a1
 	jsr	(SkipListEntries).l
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
@@ -835,7 +835,7 @@ CheckPlayerListScrollData	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
 GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
 	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
-	dc.w	$487A,$0030
+	dc.w	$487A,$0030		; pea.l X_2D5A0(pc)
 	jsr	(GetPlayerNameBuild).l
 	jsr	(print).l
 	move.w	#$1E,(printx).l
@@ -843,7 +843,7 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 	bls.w	.next
 	jsr	(CalcAttrib).l
 	swap	d4
-.next	dc.w	$41FA,$000E
+.next	dc.w	$41FA,$000E		; lea.l X_2D5A6(pc),a0
 	adda.w	(a0,d4.w),a0
 	jmp	(a0)
 	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8
@@ -1044,7 +1044,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#$C,(printx).l
 	jsr	(print).l
 	move.w	#$23,(printx).l
-	dc.w	$43FA,$0060
+	dc.w	$43FA,$0060		; lea.l X_2DA34(pc),a1
 	move.b	$2(a0,d3.w),d0
 	andi.w	#$7F,d0
 	jsr	(PrintTickerEntry).l
@@ -1444,7 +1444,7 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font3Pal3Pri,$A,$8
-	dc.w	$43FA,$0314
+	dc.w	$43FA,$0314		; lea.l X_2E46A(pc),a1
 	moveq	#$1,d0
 	add.w	(scoutcolumn).l,d0
 	jsr	(PrintTickerEntry).l
@@ -1609,7 +1609,7 @@ ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct 
 ReadStatColumnTable
 	tst.w	d7
 	bne.w	.next
-	dc.w	$43FA,$0076
+	dc.w	$43FA,$0076		; lea.l X_2E422(pc),a1
 	asl.w	#$2,d1
 	adda.w	d1,a1
 	clr.l	d1
@@ -2020,7 +2020,7 @@ GetPlayerCount
 FrameWaitStep	move.w	$17474.l,d1
 .loop	cmp.w	$17474.l,d1
 	beq.w	.loop
-	dc.w	$6100,$04FC
+	dc.w	$6100,$04FC		; bsr.w X_2F2F0
 	jsr	$37496.l
 	tst.b	d1
 	beq.w	FrameWaitStep
@@ -2074,7 +2074,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	move.w	#$1,$8(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#$1,d7
-	dc.w	$6100,$03E0
+	dc.w	$6100,$03E0		; bsr.w X_2F2F0
 	btst.b	#$0,$17F74.l
 	beq.w	.next2
 	andi.w	#$FFF0,d0

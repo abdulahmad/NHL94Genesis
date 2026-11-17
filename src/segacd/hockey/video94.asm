@@ -12,14 +12,14 @@ VBlankDmaList	bsr.w	DmaListWait
 	movea.l	#$BBD30,a0
 	move.w	$17F66.l,d0
 	move.w	$18D32.l,d1
-	dc.w	$6100,$9D0A
+	dc.w	$6100,$9D0A		; bsr.w X_378D2
 	movea.l	$191CA.l,a6
 	cmpa.l	#$18D6A,a6
 	beq.w	rtss2
 .loop	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
-	dc.w	$6100,$9CF0
+	dc.w	$6100,$9CF0		; bsr.w X_378D2
 	cmpa.l	#$18D6A,a6
 	bgt.w	.loop
 	rts	

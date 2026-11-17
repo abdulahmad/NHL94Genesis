@@ -261,7 +261,7 @@ NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as 
 	subq.w	#$2,(a6)
 	subq.w	#$3,(a0)+
 	subq.w	#$4,(a2)+
-	dc.w	$2E31,$3220
+	dc.w	$2E31,$3220		; move.l $20(a1,d3.w),d7
 	move.l	d0,-(a6)
 	move.w	(framercset).l,-(sp)
 	move.w	$1A3D2.l,(framercset).l

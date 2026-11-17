@@ -329,27 +329,27 @@ PAttribOverallMask	dc.w	$1fba,$a	;skater Overall: attribute weight bits and colu
 	String	'[   Agility    ]'
 	dc.w	$1000,$a
 	String	'[    Speed     ]'
-	dc.w	$0800,$a
+	dc.w	$0800,$000A		; btst #$A,d0
 	String	'[   Handed     ]'
-	dc.w	$0040,$4				;handed
+	dc.w	$0040,$0004		; ori.w #$4,d0
 	String	'[Off. Awareness]'
-	dc.w	$0400,$a
+	dc.w	$0400,$000A		; subi.b #$A,d0
 	String	'[Def. Awareness]'
-	dc.w	$0200,$a
+	dc.w	$0200,$000A		; andi.b #$A,d0
 	String	'[  Shot Power  ]'
 	dc.w	$0100,$a
 	String	'[Shot  Accuracy]'
-	dc.w	$0010,$a
+	dc.w	$0010,$000A		; ori.b #$A,(a0)
 	String	'[Pass  Accuracy]'
-	dc.w	$0002,$a
+	dc.w	$0002,$000A		; ori.b #$A,d2
 	String	'[Stick Handling]'
-	dc.w	$0020,$a
+	dc.w	$0020,$000A		; ori.b #$A,-(a0)
 	String	'[    Weight    ]'
 	dc.w	$2000,$6				;weight
 	String	'[  Endurance   ]'
 	dc.w	$0008,$a
 	String	'[Aggressiveness]'
-	dc.w	$0001,$a
+	dc.w	$0001,$000A		; ori.b #$A,d1
 	String	'[   Checking    '
 	dc.w	$0080,$a
 	dc.w	-1
@@ -366,233 +366,255 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	String	'[   Agility    ]'
 	dc.w	$1000,$a
 	String	'[    Speed     ]'
-	dc.w	$0800,$a
+	dc.w	$0800,$000A		; btst #$A,d0
 	String	'[  Glove Hand  ]'
-	dc.w	$0040,$4				;handed
+	dc.w	$0040,$0004		; ori.w #$4,d0
 	String	'[Def. Awareness]'
-	dc.w	$0200,$a
+	dc.w	$0200,$000A		; andi.b #$A,d0
 	String	'[ Puck Control ]'
 	dc.w	$0100,$a
 	String	'[ Stick  Right ]'
 	dc.w	$0008,$a
 	String	'[  Stick Left  ]'
-	dc.w	$0004,$a
+	dc.w	$0004,$000A		; ori.b #$A,d4
 	String	'[ Glove  Right ]'
-	dc.w	$0002,$a
+	dc.w	$0002,$000A		; ori.b #$A,d2
 	String	'[  Glove Left  ]'
-	dc.w	$0001,$a
+	dc.w	$0001,$000A		; ori.b #$A,d1
 	String	'[    Weight     '
-	dc.w	$2000,$6				;weight
-	dc.w	-1
-	dc.b	$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$2000		; move.l d0,d0
+	dc.w	$0006,$FFFF		; ori.b #$FF,d6
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'   Resume Game    '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Instant Replay  '
-	dc.b	$00,$02,$EE,$04
+	dc.w	$0002,$EE04		; ori.b #$4,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'x Manual Goalie   '
-	dc.b	$00,$02,$A0,$92,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$A092		; ori.b #$92,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'   Resume Game    '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Instant Replay  '
-	dc.b	$00,$02,$EE,$04
+	dc.w	$0002,$EE04		; ori.b #$4,d2
 	String	'  Change Goalie   '
-	dc.b	$00,$02,$EB,$AE
+	dc.w	$0002,$EBAE		; ori.b #$AE,d2
 	String	'    Edit Lines    '
-	dc.b	$00,$02,$C9,$32
+	dc.w	$0002,$C932		; ori.b #$32,d2
 	String	'    Game Stats    '
-	dc.b	$00,$02,$9A,$2E
+	dc.w	$0002,$9A2E		; ori.b #$2E,d2
 	String	'   Player Stats   '
-	dc.b	$00,$02,$DE,$50
+	dc.w	$0002,$DE50		; ori.b #$50,d2
 	String	' Scoring Summary  '
-	dc.b	$00,$02,$D6,$D6
+	dc.w	$0002,$D6D6		; ori.b #$D6,d2
 	String	' Penalty Summary  '
-	dc.b	$00,$02,$DA,$4C
+	dc.w	$0002,$DA4C		; ori.b #$4C,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
-	dc.b	$00,$02,$C6,$60
+	dc.w	$0002,$C660		; ori.b #$60,d2
 	String	'   Crowd Meter    '
-	dc.b	$00,$02,$E5,$56
+	dc.w	$0002,$E556		; ori.b #$56,d2
 	String	'     Timeout      '
-	dc.b	$00,$02,$EB,$2A
+	dc.w	$0002,$EB2A		; ori.b #$2A,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
-	dc.b	$00,$02,$95,$0E
+	dc.w	$0002,$950E		; ori.b #$E,d2
 	String	'x Manual Goalie   '
-	dc.b	$00,$02,$A0,$92,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$A092		; ori.b #$92,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'   Resume Game    '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Instant Replay  '
-	dc.b	$00,$02,$EE,$04
+	dc.w	$0002,$EE04		; ori.b #$4,d2
 	String	'  Change Goalie   '
-	dc.b	$00,$02,$EB,$AE
+	dc.w	$0002,$EBAE		; ori.b #$AE,d2
 	String	'    Edit Lines    '
-	dc.b	$00,$02,$C9,$32
+	dc.w	$0002,$C932		; ori.b #$32,d2
 	String	'    Game Stats    '
-	dc.b	$00,$02,$9A,$2E
+	dc.w	$0002,$9A2E		; ori.b #$2E,d2
 	String	'   Player Stats   '
-	dc.b	$00,$02,$DE,$50
+	dc.w	$0002,$DE50		; ori.b #$50,d2
 	String	' Scoring Summary  '
-	dc.b	$00,$02,$D6,$D6
+	dc.w	$0002,$D6D6		; ori.b #$D6,d2
 	String	' Penalty Summary  '
-	dc.b	$00,$02,$DA,$4C
+	dc.w	$0002,$DA4C		; ori.b #$4C,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
-	dc.b	$00,$02,$C6,$60
+	dc.w	$0002,$C660		; ori.b #$60,d2
 	String	'   Crowd Meter    '
-	dc.b	$00,$02,$E5,$56
+	dc.w	$0002,$E556		; ori.b #$56,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
-	dc.b	$00,$02,$95,$0E
+	dc.w	$0002,$950E		; ori.b #$E,d2
 	String	'x Manual Goalie   '
-	dc.b	$00,$02,$A0,$92,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$A092		; ori.b #$92,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'  Start Shootout  '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Shootout SetUp  '
-	dc.b	$00,$02,$7B,$D0
+	dc.w	$0002,$7BD0		; ori.b #$D0,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'    Start Game    '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Change Goalie   '
-	dc.b	$00,$02,$EB,$AE
+	dc.w	$0002,$EBAE		; ori.b #$AE,d2
 	String	'    Edit Lines    '
-	dc.b	$00,$02,$C9,$32
+	dc.w	$0002,$C932		; ori.b #$32,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
-	dc.b	$00,$02,$C6,$60
+	dc.w	$0002,$C660		; ori.b #$60,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'    Start Game    '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Change Goalie   '
-	dc.b	$00,$02,$EB,$AE
+	dc.w	$0002,$EBAE		; ori.b #$AE,d2
 	String	'    Edit Lines    '
-	dc.b	$00,$02,$C9,$32
+	dc.w	$0002,$C932		; ori.b #$32,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'  Playoff Stats   '
-	dc.b	$00,$02,$DE,$18
+	dc.w	$0002,$DE18		; ori.b #$18,d2
 	String	'   Other Scores   '
-	dc.b	$00,$02,$C6,$60
+	dc.w	$0002,$C660		; ori.b #$60,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'   Resume Game    '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'    Game Stats    '
-	dc.b	$00,$02,$9A,$2E
+	dc.w	$0002,$9A2E		; ori.b #$2E,d2
 	String	'   Player Stats   '
-	dc.b	$00,$02,$DE,$50
+	dc.w	$0002,$DE50		; ori.b #$50,d2
 	String	' Scoring Summary  '
-	dc.b	$00,$02,$D6,$D6
+	dc.w	$0002,$D6D6		; ori.b #$D6,d2
 	String	' Penalty Summary  '
-	dc.b	$00,$02,$DA,$4C
+	dc.w	$0002,$DA4C		; ori.b #$4C,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
-	dc.b	$00,$02,$C6,$60
+	dc.w	$0002,$C660		; ori.b #$60,d2
 	String	'   Crowd Meter    '
-	dc.b	$00,$02,$E5,$56
+	dc.w	$0002,$E556		; ori.b #$56,d2
 	String	'  Change Goalie   '
-	dc.b	$00,$02,$EB,$AE
+	dc.w	$0002,$EBAE		; ori.b #$AE,d2
 	String	'    Edit Lines    '
-	dc.b	$00,$02,$C9,$32
+	dc.w	$0002,$C932		; ori.b #$32,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
-	dc.b	$00,$02,$95,$0E
+	dc.w	$0002,$950E		; ori.b #$E,d2
 	String	'x Manual Goalie   '
-	dc.b	$00,$02,$A0,$92,$00,$04,$FF,$00,$00,$04,$FE,$05,$00,$04,$FE,$04
+	dc.w	$0002,$A092		; ori.b #$92,d2
+	dc.w	$0004,$FF00		; ori.b #$0,d4
+	dc.w	$0004,$FE05		; ori.b #$5,d4
+	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'    Exit Game     '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'    Game Stats    '
-	dc.b	$00,$02,$9A,$2E
+	dc.w	$0002,$9A2E		; ori.b #$2E,d2
 	String	'   Player Stats   '
-	dc.b	$00,$02,$DE,$50
+	dc.w	$0002,$DE50		; ori.b #$50,d2
 	String	' Scoring Summary  '
-	dc.b	$00,$02,$D6,$D6
+	dc.w	$0002,$D6D6		; ori.b #$D6,d2
 	String	' Penalty Summary  '
-	dc.b	$00,$02,$DA,$4C
+	dc.w	$0002,$DA4C		; ori.b #$4C,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
 
 	dc.b	$00,$02,$C6,$60
 	String	'   Crowd Meter    '
-	dc.b	$00,$02,$E5,$56
+	dc.w	$0002,$E556		; ori.b #$56,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 ExitGameText						;Intermission menu for gsp 4
 	dc.b	$00,$04,$FE,$05,$00,$04,$FE,$04
 	String	'    Exit Game     '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'    Game Stats    '
-	dc.b	$00,$02,$9A,$2E
+	dc.w	$0002,$9A2E		; ori.b #$2E,d2
 	String	'   Player Stats   '
-	dc.b	$00,$02,$DE,$50
+	dc.w	$0002,$DE50		; ori.b #$50,d2
 	String	' Scoring Summary  '
-	dc.b	$00,$02,$D6,$D6
+	dc.w	$0002,$D6D6		; ori.b #$D6,d2
 	String	' Penalty Summary  '
-	dc.b	$00,$02,$DA,$4C
+	dc.w	$0002,$DA4C		; ori.b #$4C,d2
 	String	'   Team Roster    '
-	dc.b	$00,$02,$D0,$D4
+	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
-	dc.b	$00,$02,$C6,$60
+	dc.w	$0002,$C660		; ori.b #$60,d2
 	String	'   Crowd Meter    '
-	dc.b	$00,$02,$E5,$56
+	dc.w	$0002,$E556		; ori.b #$56,d2
 	String	'   Player Cards   '
-	dc.b	$00,$02,$5E,$56
+	dc.w	$0002,$5E56		; ori.b #$56,d2
 	String	'  Record Holders  '
-	dc.b	$00,$02,$70,$E0
+	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 LineEditorMenuText					;Line editor exit menu
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'Set Original lines'
-	dc.b	$00,$03,$F2,$08
+	dc.w	$0003,$F208		; ori.b #$8,d3
 	String	'  Save Team Line  '
-	dc.b	$00,$02,$D0,$46
+	dc.w	$0002,$D046		; ori.b #$46,d2
 	String	'  Load Team Line  '
 	dc.b	$00,$02,$CF,$DE,$00,$04,$FF,$00
 
 LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
-	dc.b	$00,$03,$C0,$00
+	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'Set Original lines'
-	dc.b	$00,$03,$F2,$08
+	dc.w	$0003,$F208		; ori.b #$8,d3
 	String	'  Save Team Line  '
 	dc.w	2							;end of the list: an empty String
 	dc.w	$D046,4,$FF00				;not read: the bytes between the list and PicturePalette
