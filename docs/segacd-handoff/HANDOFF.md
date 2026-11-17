@@ -20,6 +20,13 @@
 - Sierra C function names come from the name tags in MAIN.BIN. Everything else in MAIN, PLAYER and STARTER is CD-only (SDK, film player, PCM, photo/career pages): no cartridge twin, so names are the hand names from the fragments, else `<Routine>_<n>` / `<Routine>Sub<n>`.
 - Left: data that is not flagged as code (tables, tile data, strings split across lines) is still dc.b/dc.w; code reached only by indirect jumps may still be dc.b.
 
+## Status 2026-11-17 (round 9): names, recovered code, data labels
+- Regenerating MAIN/PLAYER/STARTER: `python3 tools/segcd_one.py <MAIN|PLAYER|STARTER> --fix`, then `segcd_locals.py`, `segcd_seqnames.py` (arg `src/segacd/<dir>`), `segcd_strs.py`, `segcd_fixlink.py <dir>`, build, then re-apply names (below). Generated parts are overwritten by a regeneration, names are not kept in them.
+- Names live in `src/segacd/<dir>/names.json` (`{"@FF0278": ["Name", "comment"]}`, key = runtime address of the placeholder label in the last build, or the placeholder itself) and are applied by `tools/segcd_rename.py <dir>`; applied entries move to `names_applied.json`. `tools/segcd_tags.py <dir>` writes names.json from the Sierra C name tags (the tag follows its function, the string literals after it are `<Func>Str<n>`).
+- Generator fixes this round: `ori.b #imm,d0` is code, not padding (it hid whole routines); prologue seeds go before pointer seeds (a pointer into the middle of an instruction used to split real routines); calls that read inline data from the return address (`cfg["inline_calls"]`: command words, a length word) skip the data; `link`/`btst` spellings SNASM accepts; the row check no longer sends short branches and `rts` back to dc.w (dc.w code lines: STARTER 354 -> 6, MAIN 241 -> 29, PLAYER 23 -> 2); add/sub immediates that SNASM would turn into quick forms get a per-line `opt oaq-/osq-` wrapper.
+- Named: MAIN VDP/DMA/print/pad/word-RAM/Z80 helpers, handshakes, Sierra C functions; PLAYER page, picture, pad and BCD routines, strings, column tables, picture tiles; STARTER PCM chip, comm registers, word RAM, IRQ hooks, BCD and the Sierra C functions (film, heap, audio, text). Zero-filled work storage is `Byte/Word/Long<n>` or `Buf<size>_<n>`.
+- Still numbered (`<Routine>_<n>`): about 50 STARTER routines of the CD command/state machine at $22xxx-$24xxx, 7 MAIN routines, and the mid-routine labels. HOCKEY.BIN keeps about 600 dc lines (tables, strings, 41 `lea label(pc)` rows).
+
 ## Coverage (from NHL94Genesis `docs/segacd.md`, 2026-11-10)
 | File | Size | Matched | Notes |
 |---|---|---|---|

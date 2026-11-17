@@ -474,7 +474,7 @@ ReadJoy	not.b	d0
 	rts
 	dc.w	$563A,$7E00,$3E39,$0003,$75D2,$E24F,$6400,$0006
 	dc.w	$0A47,$B400,$33C7,$0003,$75D2,$8FFC,$FFFF,$4847
-	dc.w	$4E75
+	rts
 	movem.l	d0-d1/a0,-(sp)
 	movea.l	$47D88.l,a0
 	move.l	a0,d1

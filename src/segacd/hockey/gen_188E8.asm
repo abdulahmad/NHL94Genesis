@@ -229,7 +229,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	dc.w	$0007,$0062,$6600,$0004,$4441,$0441,$0058,$0C41
 	dc.w	$000A,$6E00,$001C,$0C41,$FFCE,$6D00,$0014,$7002
 	dc.w	$322B,$0000,$B279,$0001,$7B80,$6E00,$0004,$7006
-	dc.w	$4E75
+	rts
 checkob						;bring up little warning ref if a player on your team is over blue line
 	btst	#$5,$17F68.l
 	beq.w	check4benchExit
