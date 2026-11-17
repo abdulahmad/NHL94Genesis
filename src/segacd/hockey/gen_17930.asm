@@ -506,7 +506,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	bgt.w	.l181DA
 .l181D6	addi.w	#$4,d0
 .l181DA	add.w	d0,d0
-	dc.w	$43FA,$004A
+	lea.l	.l33228(pc),a1
 	move.w	(a1,d0.w),d1
 	cmpi.w	#$178,d1
 	bne.w	.l18202
@@ -523,7 +523,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	asr.w	$2A(a3)
 	asr.w	$2A(a3)
 	rts
-	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0
+.l33228	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0
 	dc.w	$14F2,$1544
 assgoalietopuck						;goalie skates out to a loose puck (inserted by
 									;assgoalie)
@@ -751,7 +751,7 @@ asspuckc						;player a3 is puck handler
 .pass	bsr.w	chk4pass
 .nodec	moveq	#$6,d0
 	add.w	$44(a3),d0		;add temp3 to d0
-	dc.w	$41FA,$0170
+	lea.l	chk4lc(pc),a0
 	btst	#$7,$17F6C.l		;#sf2offsig
 	beq.w	.nd1
 	move.w	$34(a3),d0		;position
@@ -769,14 +769,14 @@ asspuckc						;player a3 is puck handler
 	bne.w	.l186AE
 	neg.w	d0
 	neg.w	d1
-.l186AE	dc.w	$41FA,$0022
+.l186AE	lea.l	.l336D2(pc),a0
 	btst	#$2,$17F70.l
 	bne.w	.16
 	btst	#$0,$17F78.l
 	beq.w	.17
 .16	lea.l	asspuckcExit(pc),a0
 .17	bra.w	skateto
-	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
+.l336D2	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
 	dc.w	$002A,$4883,$D679,$0001,$7B94,$4279,$0001,$7E34
 	dc.w	$7805,$207C,$0001,$7480,$0C6B,$0006,$0052,$6C00
 	dc.w	$0006,$D0FC,$0300,$1228,$0028,$4881,$D268,$0000

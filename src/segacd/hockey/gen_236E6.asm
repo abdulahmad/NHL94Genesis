@@ -277,7 +277,7 @@ setupice_highlight
 	bsr.w	dodmalist
 	move.w	#$1C,(palcount).l
 	move.w	(sp)+,(disflags).l
-	move.l	#$3DAB8,(VBint).l
+	move.l	#setplayerTbl1,(VBint).l
 	bclr	#$0,(disflags).l
 	bclr	#$2,(disflags).l
 	bset	#$5,$FF800F.l
@@ -388,7 +388,7 @@ defaultsprites_0						;objects which are tied to screen scrolling and have veloc
 	ori.b	#$0,d0
 	dc.w	$0009,$0000,$0000,$0000,$0000,$0009,$0000,$0000
 	dc.w	$0000,$0000,$0009,$0000,$0000,$0000,$0000,$0009
-	dc.w	$0000,$0000,$FFFF,$0188,$0000,$0007,$0000,$0000
+defaultspritesTbl1	dc.w	$0000,$0000,$FFFF,$0188,$0000,$0007,$0000,$0000
 	dc.w	$FFFF,$0186,$0000,$0007,$0000,$0000,$FFFF,$0187
 	dc.w	$0000,$0007,$0000,$0000,$FFFF,$0189,$8000,$0007
 	dc.w	$0000,$0000,$FFFF,$034C,$0000,$0007,$0000,$0000
@@ -397,7 +397,7 @@ defaultsprites_0						;objects which are tied to screen scrolling and have veloc
 defaultsprites_0Sub1
 	clr.w	d6
 	movea.l	#$17CC0,a1
-	dc.w	$45FA,$0070
+	lea.l	SprSort(pc),a2
 	movea.l	#$17480,a3
 	movea.l	#$17CA0,a4
 .l23E9C	moveq	#$1F,d0
@@ -600,7 +600,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 .po	bsr.w	GameOverSub2
 	tst.w	$191CE.l
 	bne.s	.l242D2
-	move.w	#$1,$3FC0A.l
+	move.w	#$1,ScrollDisplayUpTbl1.l
 	bsr.w	ScrollDisplayUpSub1
 .l242D2	bra.w	GameOverSub1
 	jsr	$48208.l
@@ -624,7 +624,7 @@ GameOverSub1
 GameOverSub2
 	tst.w	$191CE.l
 	bne.s	.l24350
-	move.w	#$0,$3FC0A.l
+	move.w	#$0,ScrollDisplayUpTbl1.l
 	bsr.w	ScrollDisplayUpSub1
 .l24350	bclr	#$5,$FF800F.l
 	tst.w	$18BFA.l

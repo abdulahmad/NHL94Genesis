@@ -8,11 +8,11 @@ files = glob.glob('src/segacd/%s/*.asm' % d) + ['src/segacd/%s.asm' % d]
 T = {f: open(f).read() for f in files}
 PH = re.compile(r'\w+?(_\d+|Sub\d+)$')
 def refs(n):
-    return sum(len(re.findall(r'(?<![\w.\'])%s(?![\w\'])' % re.escape(n), re.sub(r'(?m)^.*\tdc\.b\t.*$', '', t))) for t in T.values())
+    return sum(len(re.findall(r'(?<![\w.\'])%s(?![\w\'])' % re.escape(n), re.sub(r'(?m)^(.*\tdc\.b\t.*|\s*;.*)$', '', re.sub(r'(?m);[^\n]*$', '', t)))) for t in T.values())
 for f in files:
     L = T[f].split('\n')
     for i in range(len(L) - 1):
-        m = re.match(r'^(\w+)(?:;[^\t]*)?\tdc\.w\t\$4E56,\$[0-9A-F]{4}\s*$', L[i])
+        m = re.match(r'^(\w+)(?:;[^\t]*)?\t(?:dc\.w\t\$4E56,\$[0-9A-F]{4}|link\ta6,#[-$0-9A-Fa-f]+)\s*$', L[i])
         m2 = re.match(r'^(\w+)((?:;[^\t]*)?)\t(.*)$', L[i + 1])
         if not (m and m2): continue
         a, b = m.group(1), m2.group(1)

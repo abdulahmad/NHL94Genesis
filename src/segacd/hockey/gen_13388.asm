@@ -49,12 +49,13 @@ ReadStatColumnSub1
 	move.l	(sp)+,d7
 	add.w	(a1,d0.w),d2
 	rts
-	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
+ReadStatColumnTbl1	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
 	dc.w	$B09C,$0000,$00B6,$FFFF,$00D0,$FFFF,$00B6,$00D0
 	dc.w	$00EA,$FFFF,$0104,$FFFF,$0016,$5361,$7665,$7320
 	dc.b	'Shots Save %  ',$00,$06
 	dc.b	'   G',$00,$06,'   A',$00,$06,' Pts'
-	dc.b	$00,$06,' SOG',$00,$06,' PIM',$00,$16,'  '
+	dc.b	$00,$06,' SOG',$00,$06,' PIM'
+	dc.b	$00,$16,'  '
 	dc.b	'  Goalie Saves  '
 	dc.b	' ]',$00,$16,'[      Goals'
 	dc.b	'       ]',$00,$16,'[     '
@@ -77,11 +78,11 @@ ReadStatColumnSub2
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	dc.w	$43FA,$000E
+	lea.l	.l2E52E(pc),a1
 	jsr	(SetTickerAreaPositionSub1).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-	dc.w	$000A
+.l2E52E	dc.w	$000A
 CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A

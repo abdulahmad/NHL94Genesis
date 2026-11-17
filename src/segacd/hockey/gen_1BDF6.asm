@@ -452,12 +452,12 @@ ReadJoy	not.b	d0
 	move.w	d1,-(sp)
 	andi.w	#$F0,d0
 	andi.w	#$F,d1
-	lea.l	$37588.l,a0
+	lea.l	ReadJoyTbl1.l,a0
 	move.b	(a0,d1.w),d1
 	or.w	d1,d0
 	move.w	(sp)+,d1
 	rts
-	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
+ReadJoyTbl1	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	movem.l	d7/a0,-(sp)
 	move.w	#$2,d7
 	movea.l	#$4820A,a0

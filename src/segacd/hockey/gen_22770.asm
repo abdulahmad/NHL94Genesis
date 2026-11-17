@@ -179,7 +179,7 @@ setplayerSub1
 	ble.w	.l22AB6
 	move.w	#$1E,d3
 .l22AB6	rts
-	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0016
+setplayerTbl1	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0016
 	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$00DA
 	dc.w	$6100,$931C,$0839,$0000,$0001,$7F6A,$6600,$006A
 	dc.w	$0839,$0002,$0001,$7F78,$6600,$000E,$0839,$0000
@@ -423,10 +423,10 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	cmpi.w	#$1A,d2
 	blt.w	.l23000
 	moveq	#$18,d2
-.l23000	lea.l	$3E00E.l,a1
+.l23000	lea.l	showzamTbl1.l,a1
 	move.w	(a1,d2.w),d2
 	bra.w	SetSframe
-	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
+showzamTbl1	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
 	dc.w	$0007,$0008,$0007,$0006,$0005
 SetSframe
 	cmpi.w	#$40,d6
@@ -596,7 +596,7 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 	adda.w	d0,a1
 	jsr	(print).l
 	rts
-	dc.w	$0004,$3000,$0004,$3100,$0004,$3200,$0004,$3300
+showclockTbl1	dc.w	$0004,$3000,$0004,$3100,$0004,$3200,$0004,$3300
 	dc.w	$0004,$3400,$0004,$3500,$0004,$3600,$0004,$3700
 	dc.w	$0004,$3800,$0004,$3900
 showclockSub1
@@ -745,7 +745,7 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	move.w	d3,$6(a3)
 	move.w	$6(a1,d2.w),$4(a3)		;flip bits
 	bra.w	addframe2
-	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
+checkssoTbl1	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
 	dc.w	$0074,$0000,$0002,$0000,$0074,$FF9C,$0001,$1000		;.xspot = 116, .yspot = 100
 	dc.w	$0000,$FF9C,$0000,$1000,$FF8C,$FF9C,$0001,$1800
 	dc.w	$FF8C,$0000,$0002,$0800,$FF8C,$0064,$0001,$0800

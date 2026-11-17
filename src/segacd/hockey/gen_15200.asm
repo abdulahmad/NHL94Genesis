@@ -614,12 +614,12 @@ getlchoice2						;add $15 to d0 for each player more or fewer than the other tea
 	add.w	d1,d0
 	add.w	d1,d0
 	add.w	d1,d0
-	dc.w	$41FA,$000E
+	lea.l	.l30C9E(pc),a0
 	move.b	(a0,d0.w),d0
 	ext.w	d0
 	movem.l	(sp)+,d1-d2
 	rts
-	dc.w	$0001,$0201,$0200,$0200,$0100,$0102,$0001,$0200
+.l30C9E	dc.w	$0001,$0201,$0200,$0200,$0100,$0102,$0001,$0200
 	dc.w	$0102,$0001,$0203,$04FF,$0304,$FF03,$04FF,$0304
 	dc.w	$FF04,$03FF,$0304,$FF03,$04FF,$0506,$FF05,$06FF
 	dc.w	$0506,$FF05,$06FF,$0506,$FF05,$06FF,$0605,$FF00

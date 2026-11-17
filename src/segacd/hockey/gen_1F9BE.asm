@@ -193,7 +193,7 @@ FallDown
 	bset	#$0,$62(a2)
 	movem.l	(sp)+,d0/a0
 	bra.w	FallDownSub2
-	dc.w	$1776,$1776,$17E8,$17E8,$185A,$185A,$18CC,$18CC
+FallDownTbl1	dc.w	$1776,$1776,$17E8,$17E8,$185A,$185A,$18CC,$18CC
 FallDownSub1
 	move.w	#$DD8,d1
 	sub.w	$54(a2),d0

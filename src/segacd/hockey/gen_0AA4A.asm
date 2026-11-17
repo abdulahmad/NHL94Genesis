@@ -2,7 +2,7 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	
 	
 	
-	dc.w	$0004,$2000
+UpdateRecordsTbl1	dc.w	$0004,$2000
 	tst.w	$193BA.l
 	bmi.w	.lAB76
 	tst.w	$18C06.l
@@ -362,9 +362,9 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	subi.w	#$1,d0
 .4	movea.l	(sp)+,a6
 	rts
-	dc.w	$0202,$0202,$0406,$0204,$0204,$0606,$0402,$0202
-	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
-	dc.w	$0202,$0202,$0202,$0202,$0202,$0202,$0202,$0202
+CalcAttribTbl1	dc.w	$0202,$0202,$0406,$0204,$0204,$0606,$0402,$0202
+CalcAttribTbl2	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
+CalcAttribTbl3	dc.w	$0202,$0202,$0202,$0202,$0202,$0202,$0202,$0202
 DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, Card<player>)
 	movem.l	d0-d7/a1-a6,-(sp)
 	movea.l	$47D88.l,a0
@@ -427,7 +427,7 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$5,$FF800F.l
 	move.w	#$2,d4
-	move.l	#$400D0,(VBint).l
+	move.l	#PickStartingGoalieTbl1,(VBint).l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l

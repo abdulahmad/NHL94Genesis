@@ -398,5 +398,33 @@
  "Set1MFlag_45": [
   "Buf51_1",
   "Zero-filled work storage (81 bytes)."
+ ],
+ "DispatchTail_9": [
+  "VramRestoreFromList",
+  "Copies each saved region from the list at $23A8D2 back to the VDP, then the base region."
+ ],
+ "DispatchTail_87": [
+  "VdpDmaSetup",
+  "Writes the VDP DMA length and source registers ($93-$97) for a transfer from a1, size d2."
+ ],
+ "Set1MFlagSub2": [
+  "SetTextVector",
+  "Stores the address $FF485E in the vector at $FFFD08."
+ ],
+ "Set1MFlagSub3": [
+  "SetFlagOnce",
+  "Sets the flag at $FF6D84 to 1 if it is clear."
+ ],
+ "Set1MFlag_3": [
+  "VdpSetWriteAddrD0",
+  "Second copy of VdpSetWriteAddr (sets the VRAM write command from d0)."
+ ],
+ "Set1MFlag_6": [
+  "Z80CommandSwitch",
+  "Jumps to the handler for the command number in d0."
+ ],
+ "Set1MFlag_19": [
+  "SndSlotsTick",
+  "Counts down every active sound slot and starts the ones that reach zero."
  ]
 }

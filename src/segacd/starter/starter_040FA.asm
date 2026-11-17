@@ -93,13 +93,15 @@ RestoreBios_116	movem.l	d0-d3/a0-a2/a5,-(sp)
 .l422A	lea.l	BufA8_1(pc),a1
 	move.l	#$FFFFFFFF,(a1)
 	bra.b	.l421C
-RestoreBios_117	lea.l	Long4(pc),a1
+; Clears a flag and calls CD BIOS function 8.
+CdBiosCall8	lea.l	Long4(pc),a1
 	clr.l	(a1)
 	move.w	#$8,d0
 	jsr	$5F22.w
 	rts
-RestoreBios_118	link	a6,#$FFFC
-RestoreBiosSub47	movem.l	d1-d7/a0-a5,-(sp)
+; Runs a CD BIOS read sequence (functions $96...) with a retry count.
+CdBiosReadSequence	link	a6,#$FFFC
+	movem.l	d1-d7/a0-a5,-(sp)
 	movea.l	#$FF8000,a5
 	lea.l	BufA8_1(pc),a1
 	clr.l	(a1)
@@ -161,8 +163,8 @@ CdMsfBcdToBin	movem.l	d1-d2,-(sp)
 	move.l	d2,d0
 	movem.l	(sp)+,d1-d2
 	rts
-RestoreBios_120	link	a6,#$0
-Wait	movem.l	d6-d7,-(sp)
+Wait	link	a6,#$0
+	movem.l	d6-d7,-(sp)
 	move.l	$8(a6),d6
 	jsr	GetTicks(pc)
 	move.l	d0,d7

@@ -1,4 +1,5 @@
-GetData_1	link	a6,#$0
+; Stores start+length in the block record at 8(a6).
+SetBlockEnd	link	a6,#$0
 	move.l	$10(a6),d0
 	add.l	$C(a6),d0
 	movea.l	$8(a6),a0

@@ -18,7 +18,8 @@ RestoreBiosSub41	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	TakeWordRam
 .l3AE0	rts
 	dc.b	$4E,$75	; Nu
-RestoreBios_86	movem.l	d0-d7/a0-a6,-(sp)
+; Calls the $E320 command with an inline parameter block.
+SendCmdE320Inline	movem.l	d0-d7/a0-a6,-(sp)
 RestoreBiosSub42	movem.l	a1,-(sp)
 	jsr	$E320.l
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$08	; ............. ..
@@ -31,7 +32,7 @@ RestoreBiosSub43	movem.l	(sp)+,a1
 	bsr.w	WaitCountdown
 	jsr	$1055C.l
 	jsr	$EA76.l
-	bsr.w	RestoreBios_90
+	bsr.w	SubBiosCall1A
 	jsr	$EA0C.l
 	move.l	$EC92.l,d1
 	beq.w	RestoreBios_88
@@ -99,7 +100,8 @@ RestoreBiosSub46	bne.w	.l3C04
 RestoreBios_88	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 RestoreBios_89	bra.b	RestoreBios_89
-RestoreBios_90	moveq	#$1A,d0
+; Calls $E370 with function $1A.
+SubBiosCall1A	moveq	#$1A,d0
 	jsr	$E370.l
 	rts
 	dcb.b	$18,0

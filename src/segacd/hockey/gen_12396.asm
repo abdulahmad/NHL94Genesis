@@ -62,7 +62,7 @@ CheckPlayerListScrollSub2
 	addi.w	#$2,(printy).l
 	dbra	d1,.l12496
 	rts
-	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
+CheckPlayerListScrollTbl1	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
 	dc.b	$00,$12,'    Goalies   '
 	dc.b	' }',$00,$12,'{  Scoring  '
 	dc.b	'1  }',$00,$12,'{  Scoring'
@@ -499,11 +499,11 @@ DisplayPenaltyEntrySub1
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	dc.w	$43FA,$000E
+	lea.l	.l2DDF0(pc),a1
 	jsr	(SetTickerAreaPositionSub1).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
+.l2DDF0	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1120,$F900,$000A,$20FB,$FFFA,$117D,$F900,$000A
 	dc.w	$7BFB,$FFFA,$117D,$F900
 PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of the potreeteam

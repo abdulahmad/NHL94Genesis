@@ -259,7 +259,7 @@ GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from Pr
 	move.w	d1,d0
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
-	dc.b	'3LIKNCKC4BJIDBJ7'
+GetTeamRatingStr1	dc.b	'3LIKNCKC4BJIDBJ7'
 	dc.b	'EKG8E8HGHF[Y'
 ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) and a3 is not
 	
@@ -429,4 +429,4 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs						;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)
-	dc.w	$7775
+TeamSongsTbl1	dc.w	$7775

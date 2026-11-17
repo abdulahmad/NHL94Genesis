@@ -187,7 +187,7 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	add.w	d2,d4
 	dbra	d0,.loop2
 	rts
-	dc.w	$0C0E,$0A0A
+AddPlayoffTeamStatsTbl1	dc.w	$0C0E,$0A0A
 ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into statsbuffer
 	
 	movea.l	#$B000,a0
@@ -519,7 +519,7 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	moveq	#$1B,d0
 	moveq	#$8,d1
 	jsr	(Framer).l
-	dc.w	$43FA,$00A8
+	lea.l	ShowGoalBox(pc),a1
 	jsr	(printbig).l
 	move.w	$19368.l,d0
 	asl.w	#$7,d0
@@ -593,10 +593,10 @@ ShowGoalBoxSub1
 	beq.w	.l25F92
 	adda.w	#$366,a2
 	move.w	$193AC.l,$17E98.l
-.l25F92	dc.w	$43FA,$0116
+.l25F92	lea.l	.l410AA(pc),a1
 	bclr	#$0,$17F7E.l
 	beq.w	.l25FA6
-	dc.w	$43FA,$0126
+	lea.l	.l410CA(pc),a1
 .l25FA6	clr.w	d0
 	move.b	$3(a4),d0
 	addi.w	#$B6,d0
@@ -656,9 +656,9 @@ ShowGoalBoxSub1
 .l2609C	bclr	#$5,$17F72.l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
+.l410AA	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
 	dc.b	$BF,$0C,$03,'HAT TRICK!',$BF,$0C,$05
-	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
+.l410CA	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
 	dc.b	$00,$12,$BF,$0C,$03,'HAT TRICK!',$BF
 	dc.w	$0C05
 	jsr	(printz).l

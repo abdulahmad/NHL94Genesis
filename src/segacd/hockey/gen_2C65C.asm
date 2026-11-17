@@ -184,11 +184,11 @@ ReadJoyData
 	not.b	d0
 	not.b	d1
 	andi.w	#$F,d1
-	dc.w	$41FA,$0012
+	lea.l	.l481F8(pc),a0
 	andi.b	#$F0,d0
 	or.b	(a0,d1.w),d0
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
+.l481F8	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
 	rts

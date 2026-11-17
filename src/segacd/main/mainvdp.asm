@@ -119,7 +119,7 @@
 	bne.w	.lFF1560
 	bclr.b	#$1,$23C6E8.l
 	beq.w	.lFF1570
-.lFF1550	bsr.w	DispatchTail_9
+.lFF1550	bsr.w	VramRestoreFromList
 	bset.b	#$2,$23C6E8.l
 	bra.w	.lFF1570
 .lFF1560	bsr.w	.lFF157E
@@ -282,7 +282,8 @@ ReleaseWordRam	btst.b	#$0,$FF2A16.l
 	beq.w	.lFF17CE
 	bsr.w	GiveWordRAM
 .lFF17CE	rts
-DispatchTail_9	lea.l	$23AF16.l,a0
+; Copies each saved region from the list at $23A8D2 back to the VDP, then the base region.
+VramRestoreFromList	lea.l	$23AF16.l,a0
 	move.w	$23B1E6.l,d0
 	move.w	$FF2850.l,d1
 	bsr.w	CopyToVdp

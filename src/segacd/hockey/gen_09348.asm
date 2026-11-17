@@ -1,5 +1,5 @@
 PrintOptionNamesSub1
-	move.l	#$400D0,(VBint).l
+	move.l	#PickStartingGoalieTbl1,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l

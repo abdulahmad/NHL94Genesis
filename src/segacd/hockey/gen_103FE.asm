@@ -331,10 +331,10 @@ ResetClock						;set period length and stop clock
 GetPeriodTime						;Return d0 = period length in seconds for the period length option
 	move.w	$18C02.l,d0
 	asl.w	#$1,d0
-	dc.w	$41FA,$0008
+	lea.l	.l2BA16(pc),a0
 	move.w	(a0,d0.w),d0
 	rts
-	dc.w	$012C,$0258,$04B0,$001E
+.l2BA16	dc.w	$012C,$0258,$04B0,$001E
 	bclr	#$5,$FF800F.l
 	move.w	#$FFFF,(palcount).l
 	move.w	#$8400,d1
@@ -660,7 +660,7 @@ Pausemode	jsr	(forceblack).l
 	move.w	$17F6A.l,-(sp)
 	bsr.w	seta2
 	movea.l	#$41F50,a0
-	dc.w	$43FA,$0152
+	lea.l	.l2C1F8(pc),a1
 	btst	#$0,$17F78.l
 	beq.w	.l110BE
 	movea.l	#$41EB4,a0
@@ -717,7 +717,7 @@ Pausemode	jsr	(forceblack).l
 	bpl.w	.l111E2
 	move.w	(ScoutSubStatus).l,$17476.l
 	rts
-	movea.l	#$C00000,a0
+.l2C1F8	movea.l	#$C00000,a0
 .l111FE	btst	#$7,$FF800E.l
 	bne.b	.l111FE
 	move.w	#$9100,$FF8022.l

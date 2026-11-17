@@ -443,7 +443,7 @@ DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer
 .loop	move.b	(a0)+,d0
 	andi.w	#$F0,d0
 	lsr.w	#$3,d0
-	dc.w	$45FA,$000C
+	lea.l	DecompressOpcodeTable(pc),a2
 	move.w	(a2,d0.w),d0
 	jsr	(a2,d0.w)
 	bra.b	.loop

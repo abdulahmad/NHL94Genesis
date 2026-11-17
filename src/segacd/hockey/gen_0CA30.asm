@@ -265,7 +265,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	addi.w	#$1,d2
 	dbra	d1,.loop3
 	rts
-	dc.b	$00,$12,'    Overall   '
+PrintShooterListTbl1	dc.b	$00,$12,'    Overall   '
 	dc.b	' ]',$1F,':',$00,$0A,$00,$12,'    Over'
 	dc.b	'all    ]',$1B,$0F,$00,$0A
 ShootersPick
@@ -457,7 +457,7 @@ ScoutEmptyTxt						;empty String: no name number in the crowd record
 	bhi.s	*+123
 	move.l	d0,d0
 ScoutSpaceTxt						;space after the name
-	dc.w	$0004,$2000
+ScoutSpaceTxtTbl1	dc.w	$0004,$2000
 GetTeamCity						;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
 									;Teamname offset)
 	movem.l	d0-d7/a0/a2-a6,-(sp)

@@ -95,7 +95,7 @@ LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a r
 	moveq	#$3,d1
 	rts
 PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
-	dc.w	$0018,$BF02
+PrintNameLogTbl1	dc.w	$0018,$BF02
 	move.b	-(a0),d0
 	movea.l	d5,a0
 	bgt.s	*+118
@@ -104,7 +104,7 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	movea.l	$616D(a6),a0
 	bcs.s	PrintNameLogSub1
 	move.l	d0,d0
-	dc.w	$0018,$BF02
+PrintNameLogTbl2	dc.w	$0018,$BF02
 	dc.b	$10,'Select or repla'
 	dc.w	$6365,$3A00,$48E7,$FFFE,$3F39,$0001,$A38A,$3F39
 	dc.w	$0001,$A38C,$4EB9,$0003,$8F6E,$0006,$BF05,$0800
@@ -150,7 +150,7 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	jsr	(print).l
 .lBD36	move.w	$1A38C.l,$1A38E.l
 	rts
-	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
+MoveLogArrowsTbl1	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
 GetNameLength						;namelength = length of the name being entered
 	
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -184,7 +184,7 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.b	'ABCDEFGHIJKLMNOP'
+PrintNameFieldStr1	dc.b	'ABCDEFGHIJKLMNOP'
 NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
 	subq.w	#$8,(a2)
 	subq.w	#$1,(a4)
@@ -471,7 +471,7 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 	movea.l	#$272F4,a1
 .0	jsr	(printsmall).l
 	rts
-	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
+PrintRecordTitlesTbl1	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
 	dc.b	'%   Win-Loss-Tie'
 	dc.b	$FD,$04,$FC,$19,'Use A+C to c'
 	dc.b	'lear ALL win rec'
@@ -629,7 +629,7 @@ ClearRecordAreaSub1
 	dbra	d7,.lC530
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.b	$00,'(              '
+ClearRecordAreaTbl1	dc.b	$00,'(              '
 	dc.b	'                '
 	dc.b	'        ',$00,$06,'by ',$00,$00,$08
 	dc.b	' vs. ',$00
@@ -786,7 +786,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	moveq	#$1B,d0
 	moveq	#$C,d1
 	jsr	(Framer).l
-	dc.w	$43FA,$013E
+	lea.l	.l279C4(pc),a1
 	jsr	(printbig).l
 	move.w	$1936C.l,d0
 	movea.l	#tmstruct,a2
@@ -844,7 +844,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.b	$00,$16,$BF,$04,$03,'SHOOTOUT MO'
+.l279C4	dc.b	$00,$16,$BF,$04,$03,'SHOOTOUT MO'
 	dc.w	$4445,$BF04,$0500
 ClearShootout						;Clear the player structs (SortCords) and the shootout state.
 	movea.l	#$17480,a0

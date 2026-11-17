@@ -4,28 +4,28 @@
   "Busy-wait of about 40 loop passes (hardware settling delay)."
  ],
  "RestoreBios_53": [
-  "WaitFrameTick",
-  "Waits until the frame counter at $10AE0 changes."
+  "ScreenSetupA",
+  "Screen setup with inline palette words."
  ],
  "RestoreBios_61": [
-  "WaitCountdown",
-  "Stores -d0 in the frame counter and waits until it counts up past zero."
+  "SpriteListToVram",
+  "Copies the sprite data to the buffer at $BC6F0."
  ],
  "RestoreBios_62": [
-  "SendCmd4Args",
-  "Puts d4/a2 in the command buffer and sends command 4."
+  "AnimNextFrame",
+  "Steps an animation script to its next frame or loop point."
  ],
  "RestoreBios_68": [
-  "SendCmd3",
-  "Sends command 3 to the main CPU."
+  "ReadPadsCombined",
+  "Reads the pads four times and ORs the results."
  ],
  "RestoreBios_69": [
   "SendCmdD0",
   "Sends the command in d0 through the gate-array comm registers and waits for the acknowledge."
  ],
  "RestoreBios_70": [
-  "ClearCommRegs",
-  "Clears the sub-CPU communication registers $8020-$802C."
+  "PadAutoRepeat",
+  "Auto-repeat counter for held pad directions."
  ],
  "RestoreBios_71": [
   "ReadCommRegs",
@@ -48,12 +48,12 @@
   "Returns word RAM to the main CPU."
  ],
  "RestoreBios_78": [
-  "CommHandshake3",
-  "Handshake flag 3."
+  "NopReturn",
+  "Empty routine."
  ],
  "RestoreBios_79": [
-  "SendCmd5",
-  "Sends command 5 with the value from $1094C."
+  "SaveRegsToCommBuf",
+  "Stores the registers and pad values in the command buffer."
  ],
  "RestoreBios_63": [
   "ClearCmdBuffer",
@@ -72,8 +72,8 @@
   "Zero-filled work storage (8 bytes)."
  ],
  "RestoreBios_106": [
-  "InstallIrqHook2",
-  "Saves the vector at $5F90 and installs the second handler."
+  "LoadSmImage",
+  "Unpacks an 'SM' image (header $534D) into memory."
  ],
  "RestoreBios_107": [
   "PcmInit",
@@ -454,5 +454,141 @@
  "GetData_36": [
   "StrWarningB",
   "Warning screen text."
+ ],
+ "RestoreBiosSub1": [
+  "SubCommandDispatch",
+  "Dispatches the command number in d0 (below $80 by a compare chain, the rest to the high handler)."
+ ],
+ "RestoreBios_6": [
+  "SubCommandDispatchHigh",
+  "Second level for commands $80 and up, by range."
+ ],
+ "RestoreBios_9": [
+  "CalcLevelDelta",
+  "Sums signed differences between table values and the record at a0."
+ ],
+ "RestoreBios_10": [
+  "ScaleValueByTables",
+  "Scales a value through three byte tables and a lookup."
+ ],
+ "RestoreBios_11": [
+  "FindKeyIndex",
+  "Finds the index of the key byte d0 in the 8-entry table and stores it."
+ ],
+ "RestoreBios_14": [
+  "TableLookupWord",
+  "Looks up the pair (d0,d1) in the table list and returns the word, carry set if absent."
+ ],
+ "RestoreBios_52": [
+  "LoadBootImages",
+  "Sends the load commands for the two boot images ($1756C, $DA24)."
+ ],
+ "RestoreBios_54": [
+  "AnimTick",
+  "Advances the screen animation script by one tick."
+ ],
+ "RestoreBios_55": [
+  "ScreenSetupB",
+  "Screen setup, second variant."
+ ],
+ "RestoreBios_56": [
+  "ScreenSetupC",
+  "Screen setup, third variant."
+ ],
+ "RestoreBios_58": [
+  "SpriteListReset",
+  "Points the sprite list registers at $BA8D2/$BAF16 and restarts the count."
+ ],
+ "RestoreBios_59": [
+  "SpriteListAddObject",
+  "Adds the sprites of one object to the list (max $50)."
+ ],
+ "RestoreBios_60": [
+  "SpriteListFinish",
+  "Terminates the sprite list."
+ ],
+ "RestoreBios_64": [
+  "QueueAnimCmd",
+  "Stores the animation state and sends command 4."
+ ],
+ "RestoreBios_73": [
+  "SendCmd2Inline",
+  "Sends command 2 with the nine inline words after the call."
+ ],
+ "RestoreBios_80": [
+  "SendStateWithInline",
+  "Sends the pad state plus a length-prefixed inline block."
+ ],
+ "RestoreBios_86": [
+  "SendCmdE320Inline",
+  "Calls the $E320 command with an inline parameter block."
+ ],
+ "RestoreBios_90": [
+  "SubBiosCall1A",
+  "Calls $E370 with function $1A."
+ ],
+ "RestoreBios_110": [
+  "PcmReadStatus",
+  "Reads the PCM chip status bytes after the settling delays."
+ ],
+ "RestoreBios_117": [
+  "CdBiosCall8",
+  "Clears a flag and calls CD BIOS function 8."
+ ],
+ "RestoreBios_118": [
+  "CdBiosReadSequence",
+  "Runs a CD BIOS read sequence (functions $96...) with a retry count."
+ ],
+ "GetData_1": [
+  "SetBlockEnd",
+  "Stores start+length in the block record at 8(a6)."
+ ],
+ "GetData_14": [
+  "LongMulU",
+  "Unsigned 32-bit multiply."
+ ],
+ "GetData_15": [
+  "LongDivUStub",
+  "Unsigned 32-bit divide stub."
+ ],
+ "GetData_16": [
+  "LongModUStub",
+  "Unsigned 32-bit remainder stub."
+ ],
+ "GetData_20": [
+  "SetupSpriteFrame",
+  "Loads a sprite frame descriptor from the stack arguments."
+ ],
+ "GetData_23": [
+  "CdPlayTrackRepeat",
+  "Seeks and plays CD track d0 on repeat (BIOS $15, $13) and sets the fader."
+ ],
+ "GetData_24": [
+  "CdSetFader",
+  "CD BIOS FDRSET with the volume from the stack."
+ ],
+ "GetData_25": [
+  "CdStopMusic",
+  "CD BIOS MSCSTOP."
+ ],
+ "GetData_29": [
+  "GateArrayVdpAddrCmd",
+  "Sends a VDP write address through the gate-array command."
+ ],
+ "GetData_30": [
+  "TilemapCellCmd",
+  "Turns a cell index into a nametable VDP command (40 columns)."
+ ],
+ "GetData_31": [
+  "UpdatePadStateSub",
+  "Reads the pad byte at $2800A and computes newly pressed buttons."
+ ],
+ "GetData_32": [
+  "WaitDmnaSet",
+  "Spins until DMNA is set."
+ ],
+ "GetData_33": [
+  "GiveWordRam",
+  "Sets the word-RAM request bit and waits for the grant."
  ]
 }
