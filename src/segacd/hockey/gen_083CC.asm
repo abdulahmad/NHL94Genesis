@@ -178,7 +178,7 @@ GameSetUpSub1
 GameSetUpSub2
 	bsr.w	FixModeOptions
 	bra.w	GameSetUpSub1
-	dc.w	$4E75
+	rts
 GameSetUpSub3
 	jmp	$401C4.l
 GameSetUpSub4

@@ -354,7 +354,7 @@ CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d
 	andi.w	#$800,d0
 .l7DD6	movem.w	(sp)+,d0-d1
 	rts
-	dc.w	$4E75
+	rts
 	rts
 Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away nibble of
 									;PadControlBits34 (unless PadControlBits is -1)
@@ -618,7 +618,7 @@ NextAwayHotPlayer						;The same for the away team (awayhotplayer, awayhotidx), 
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
-	dc.w	$4E75
+	rts
 BuildHotColdLists						;Build the hot / cold player lists of both teams (SortHotColdStarters,
 	
 	clr.w	$17EA4.l
@@ -711,7 +711,7 @@ NextAwayColdPlayer						;The same for the away team (awaycoldidx, awaycoldplayer
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
-	dc.w	$4E75
+	rts
 CopyHottestPlayer						;Copy the hottest player of TempBuffer to the list at a0
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	#TempBuffer,a1

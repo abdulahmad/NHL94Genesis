@@ -1,17 +1,17 @@
 Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	cmpi.w	#$1234,(a0)
 	bne.w	.l7A2A
 	bsr.w	Set1MFlag_19
 	bsr.w	Z80StartStream
-	lea.l	Set1MFlag_40(pc),a0
+	lea.l	Buf6_1(pc),a0
 	move.w	#$0,(a0)
-	lea.l	Set1MFlag_32(pc),a6
-	lea.l	Set1MFlag_33(pc),a5
-	lea.l	Set1MFlag_35(pc),a4
-	lea.l	Set1MFlag_36(pc),a3
-	lea.l	Set1MFlag_37(pc),a2
-	lea.l	Set1MFlag_38(pc),a1
+	lea.l	Buf20_1(pc),a6
+	lea.l	Buf20_2(pc),a5
+	lea.l	Buf10_2(pc),a4
+	lea.l	Buf10_3(pc),a3
+	lea.l	Buf10_4(pc),a2
+	lea.l	Buf20_3(pc),a1
 .l77F0	dc.w	$3C3A,$0D4C
 	lsl.w	#$1,d6
 	move.w	d6,d7
@@ -43,13 +43,25 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	(a5,d7.w),d5
 .l7856	tst.b	(a0,d5.l)
 	bpl.b	.l7864
-	dc.w	$0685,$0000,$0001
+	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7856
-.l7864	dc.w	$0685,$0000,$0001
+.l7864	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	tst.b	(a0,d5.l)
 	bpl.b	.l787C
 	move.b	(a0,d5.l),$2(a1,d7.w)
-	dc.w	$0685,$0000,$0001
+	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 .l787C	move.b	$2(a1,d7.w),d0
 	andi.b	#$F0,d0
 	cmpi.b	#$90,d0
@@ -65,7 +77,11 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l78B6
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.w	.l7A16
 .l78B6	clr.l	d0
 	move.b	$2(a0,d5.l),d0
@@ -85,12 +101,24 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	andi.b	#$F,d0
 	or.b	d1,d0
 	bsr.w	SndSlotAdd
-	dc.w	$0685,$0000,$0002
+	opt	oaq-
+	opt	osq-
+	addi.l	#$2,d5
+	opt	oaq+
+	opt	osq+
 .l78F4	tst.b	(a0,d5.l)
 	bpl.b	.l7902
-	dc.w	$0685,$0000,$0001
+	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l78F4
-.l7902	dc.w	$0685,$0000,$0001
+.l7902	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.w	.l79F4
 .l790C	cmpi.b	#$B0,d0
 	bne.b	.l797E
@@ -103,7 +131,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d2
 	move.b	$2(a1,d7.w),d2
 	andi.b	#$F,d2
-	lea.l	Set1MFlag_41(pc),a0
+	lea.l	Buf10_5(pc),a0
 	move.w	(a0,d0.w),d3
 	cmpi.b	#$0,d1
 	bne.b	.l7942
@@ -124,9 +152,17 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l7976
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.w	.l7A16
-.l7976	dc.w	$0685,$0000,$0002
+.l7976	opt	oaq-
+	opt	osq-
+	addi.l	#$2,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l79F4
 .l797E	cmpi.b	#$C0,d0
 	bne.b	.l79B0
@@ -140,9 +176,17 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l79A8
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7A16
-.l79A8	dc.w	$0685,$0000,$0001
+.l79A8	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l79F4
 .l79B0	cmpi.b	#$E0,d0
 	bne.b	.l79E2
@@ -156,9 +200,17 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l79DA
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7A16
-.l79DA	dc.w	$0685,$0000,$0001
+.l79DA	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l79F4
 .l79E2	cmpi.b	#$FF,$2(a1,d7.w)
 	bne.b	.l79F4
@@ -175,8 +227,12 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	d2
 	bne.b	.l7A16
 	bra.w	.l77F0
-.l7A16	lea.l	Set1MFlag_40(pc),a0
-	dc.w	$0650,$0001
+.l7A16	lea.l	Buf6_1(pc),a0
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a0)
+	opt	oaq+
+	opt	osq+
 	cmpi.w	#$8,(a0)
 	blt.w	.l77F0
 	bsr.w	Z80LoadPending
@@ -184,16 +240,20 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	d1,$1C8(a0)
 	move.w	d2,$1CA(a0)
 	move.w	d3,$1CC(a0)
 	move.w	d4,$1CE(a0)
-	lea.l	Set1MFlag_32(pc),a1
+	lea.l	Buf20_1(pc),a1
 	clr.w	d0
 .l7A52	cmpi.l	#$FFFFFFFF,(a1)+
 	beq.b	.l7A6A
-	dc.w	$0640,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	cmpi.w	#$8,d0
 	bne.b	.l7A52
 	move.w	#$7,d0
@@ -207,14 +267,18 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	lsl.w	#$8,d1
 	move.b	(a0),d1
 	lsl.w	#$1,d1
-	dc.w	$0641,$0002
-	lea.l	Set1MFlag_31(pc),a1
+	opt	oaq-
+	opt	osq-
+	addi.w	#$2,d1
+	opt	oaq+
+	opt	osq+
+	lea.l	Word3(pc),a1
 	move.w	#$0,$0(a1)
 	move.w	$1C6(a1),d0
 	lsl.w	#$2,d0
 	move.l	a0,$2(a1,d0.w)
 	move.l	d1,$22(a1,d0.w)
-	lea.l	Set1MFlag_38(pc),a0
+	lea.l	Buf20_3(pc),a0
 	move.l	#$0,(a0,d0.w)
 	move.w	$1C6(a1),d0
 	lsl.w	#$1,d0
@@ -229,25 +293,29 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 .l7AD8	movem.l	(sp)+,d1-d4/a0-a1
 	rts
 Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
-	lea.l	Set1MFlag_34(pc),a0
+	lea.l	Buf10_1(pc),a0
 	clr.w	d0
 .l7AE8	cmp.w	(a0)+,d1
 	beq.b	.l7B00
-	dc.w	$0640,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	cmpi.w	#$8,d0
 	bne.b	.l7AE8
 	move.w	#$3,d0
 	ori.b	#$1,ccr
 	bra.b	.l7B30
-.l7B00	lea.l	Set1MFlag_31(pc),a0
+.l7B00	lea.l	Word3(pc),a0
 	move.w	d0,$1C6(a0)
 	lsl.w	#$1,d0
-	lea.l	Set1MFlag_34(pc),a0
+	lea.l	Buf10_1(pc),a0
 	move.w	#$FFFF,(a0,d0.w)
 	lsl.w	#$1,d0
-	lea.l	Set1MFlag_32(pc),a0
+	lea.l	Buf20_1(pc),a0
 	move.l	#$FFFFFFFF,(a0,d0.w)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	$1C6(a0),d0
 	bsr.w	SndSlotFind
 	clr.w	d0
@@ -279,7 +347,7 @@ Set1MFlag_11	movem.l	d1-d2/a0,-(sp)
 	rts
 ; Reads the Z80 driver status byte at $A00024.
 Z80ReadStatus	movem.l	a0-a1,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$0,$0(a0)
 	bsr.w	Z80RequestBus
 	clr.l	d0
@@ -307,7 +375,7 @@ Z80ReadStatus	movem.l	a0-a1,-(sp)
 	rts
 ; Looks up d0 in the loaded-sound bitmap and starts it or queues a load.
 Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
-	lea.l	Set1MFlag_41(pc),a0
+	lea.l	Buf10_5(pc),a0
 	move.l	d0,d1
 	swap	d1
 	lsr.w	#$8,d1
@@ -323,31 +391,39 @@ Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 .l7C24	movem.l	(sp)+,d1-d3/a0
 	rts
 .lFF7C2A	movem.l	d1-d2/a0,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$0,(a0)
-	lea.l	Set1MFlag_43(pc),a0
+	lea.l	Buf8C_3(pc),a0
 	move.w	(a0),d2
 	cmpi.w	#$20,d2
 	bne.b	.l7C54
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$1234,(a0)
 	move.w	#$FFFF,d0
 	ori.b	#$1,ccr
 	bra.b	.l7C70
 .l7C54	move.w	d2,d1
 	lsl.w	#$2,d1
-	dc.w	$0641,$0002
+	opt	oaq-
+	opt	osq-
+	addi.w	#$2,d1
+	opt	oaq+
+	opt	osq+
 	move.l	d0,(a0,d1.w)
-	dc.w	$0642,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	move.w	d2,(a0)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$1234,(a0)
 	clr.w	d0
 .l7C70	movem.l	(sp)+,d1-d2/a0
 	rts
 ; Appends command d0 to the Z80 driver command queue.
 Z80QueueCommand	movem.l	d1/a0,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$0,$0(a0)
 .l7C84	bsr.w	Z80RequestBus
 	lea.l	$A00030.l,a0
@@ -355,7 +431,11 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 	beq.b	.l7CA2
 	bsr.w	Z80ReleaseBus
 	move.w	#$64,d1
-.l7C9A	dc.w	$0441,$0001
+.l7C9A	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d1
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7C9A
 	bra.b	.l7C84
 .l7CA2	adda.l	#$1,a0
@@ -378,13 +458,13 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 	move.b	d1,(a0)
 	move.w	#$0,d0
 .l7CDC	bsr.w	Z80ReleaseBus
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d1/a0
 	rts
 ; Loads the pending sound blocks into the Z80 driver.
 Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
-	lea.l	Set1MFlag_43(pc),a1
+	lea.l	Buf8C_3(pc),a1
 	cmpi.w	#$0,(a1)
 	beq.b	.l7D54
 	dc.w	$207A,$085A
@@ -410,7 +490,7 @@ Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	(a1)+,d0
 .l7D3E	move.l	(a1)+,(a0)+
 	dbra	d0,.l7D3E
-	lea.l	Set1MFlag_43(pc),a1
+	lea.l	Buf8C_3(pc),a1
 	move.w	#$0,(a1)
 	dc.w	$207A,$080C
 	bsr.w	PrgRamReadWait
@@ -418,7 +498,7 @@ Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	rts
 ; Copies a sound block into Z80 RAM, checking the free space.
 Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.w	#$0,(a1)
 	bsr.w	Z80RequestBus
 	move.b	$A00022.l,d2
@@ -435,10 +515,14 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 .l7D96	cmpi.b	#$FF,(a1)
 	beq.b	.l7DC0
 	adda.l	#$4,a1
-	dc.w	$0442,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7D96
 	bsr.w	Z80ReleaseBus
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.w	#$1234,(a1)
 	move.w	#$7,d0
 	ori.b	#$1,ccr
@@ -455,23 +539,27 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	lsl.w	#$8,d2
 	move.b	$A00023.l,d2
 .l7DF0	move.b	(a0)+,(a1,d2.w)
-	dc.w	$0642,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	dbra	d1,.l7DF0
 	move.b	d2,$A00023.l
 	lsr.w	#$8,d2
 	move.b	d2,$A00022.l
 	bsr.w	Z80ReleaseBus
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
 .l7E18	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 ; Marks all 32 sound slots as empty.
 SndSlotsReset	movem.l	d0-d1/a0-a1,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$0,$0(a0)
 	move.w	#$0,$122(a0)
-	lea.l	Set1MFlag_39(pc),a1
+	lea.l	Buf80_3(pc),a1
 	move.w	#$1F,d1
 	move.l	#$FFFFFFFF,d0
 .l7E40	move.l	d0,(a1)+
@@ -481,9 +569,9 @@ SndSlotsReset	movem.l	d0-d1/a0-a1,-(sp)
 	rts
 ; Looks for the sound slot whose id matches d0.
 SndSlotFind	movem.l	d0-d2/a0-a1,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$0,$0(a0)
-	lea.l	Set1MFlag_39(pc),a1
+	lea.l	Buf80_3(pc),a1
 	move.w	$122(a0),d1
 	clr.w	d2
 .l7E6A	cmpi.w	#$0,d1
@@ -494,30 +582,42 @@ SndSlotFind	movem.l	d0-d2/a0-a1,-(sp)
 	bne.b	.l7E7E
 	move.w	#$1,(a1)
 .l7E7E	adda.l	#$4,a1
-	dc.w	$0441,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d1
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7E6A
 .l7E8A	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 ; Stores d0 in the next free sound slot.
 SndSlotAdd	movem.l	d0-d1/a0,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	$122(a0),d1
 	lsl.w	#$2,d1
-	lea.l	Set1MFlag_39(pc),a0
+	lea.l	Buf80_3(pc),a0
 	move.l	d0,(a0,d1.w)
-	lea.l	Set1MFlag_31(pc),a0
-	dc.w	$0668,$0001,$0122
+	lea.l	Word3(pc),a0
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,$122(a0)
+	opt	oaq+
+	opt	osq+
 	movem.l	(sp)+,d0-d1/a0
 	rts
 Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
-	lea.l	Set1MFlag_31(pc),a2
+	lea.l	Word3(pc),a2
 	cmpi.w	#$0,$122(a2)
 	beq.b	.l7F2A
-	lea.l	Set1MFlag_39(pc),a0
+	lea.l	Buf80_3(pc),a0
 .l7ED0	cmpi.w	#$FFFF,(a0)
 	beq.b	.l7F2A
-	dc.w	$0450,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,(a0)
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7F24
 	move.b	$3(a0),d0
 	andi.b	#$F0,d0
@@ -529,15 +629,27 @@ Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l7F02
-	dc.w	$0650,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a0)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7F24
-.l7F02	lea.l	Set1MFlag_39(pc),a1
+.l7F02	lea.l	Buf80_3(pc),a1
 	dc.w	$303A,$0634
-	dc.w	$0440,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	lsl.w	#$2,d0
 	move.l	(a1,d0.w),(a0)
 	move.l	#$FFFFFFFF,(a1,d0.w)
-	dc.w	$046A,$0001,$0122
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,$122(a2)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7ED0
 .l7F24	adda.w	#$4,a0
 	bra.b	.l7ED0
@@ -557,7 +669,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	bcs.w	.l80B8
 	cmpa.l	#$FFFFFFFF,a0
 	beq.w	.l80B8
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.l	a0,$126(a1)
 	move.l	a0,-(sp)
 	bsr.w	PrgRamReadBegin
@@ -622,7 +734,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 .l8058	move.b	(a0)+,(a1)+
 	beq.b	.l807A
 	dbra	d1,.l8058
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.l	$12A(a1),d0
 	addi.l	#$200,d0
 	move.l	d0,$12A(a1)
@@ -637,13 +749,13 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	cmpi.w	#$FFFF,d0
 	beq.b	.l80AC
 	move.b	#$FF,(a1)
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	movea.l	$126(a1),a0
 	adda.l	#$2,a0
 	adda.l	d0,a0
 	move.l	a0,$12A(a1)
 	bra.b	.l80B8
-.l80AC	lea.l	Set1MFlag_31(pc),a1
+.l80AC	lea.l	Word3(pc),a1
 	move.l	#$0,$12A(a1)
 .l80B8	move.b	#$0,$A00072.l
 	bsr.w	Z80ReleaseBus
@@ -651,7 +763,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	rts
 ; Finds the sound source for the request in d0/d1 in the list at 4 sources.
 SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
-	lea.l	Set1MFlag_45(pc),a1
+	lea.l	Buf51_1(pc),a1
 	move.w	#$4,d2
 .l80D6	cmpi.l	#$FFFFFFFF,(a1)
 	beq.w	.l8180
@@ -707,12 +819,20 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	bne.b	.l8162
 	adda.l	d4,a2
 	adda.l	#$4,a0
-	dc.w	$0443,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d3
+	opt	oaq+
+	opt	osq+
 	bne.b	.l8116
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 .l8180	adda.l	#$4,a1
-	dc.w	$0442,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	bne.w	.l80D6
 	move.w	#$3,d0
 	ori.b	#$1,ccr
@@ -720,7 +840,7 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	rts
 Set1MFlag_22	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
-	lea.l	Set1MFlag_45(pc),a1
+	lea.l	Buf51_1(pc),a1
 	move.l	a0,(a1,d1.w)
 	movem.l	(sp)+,d1/a1
 	rts
@@ -749,7 +869,7 @@ Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 .l81F4	movem.l	(sp)+,d1/a0-a1
 	rts
 Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.w	#$0,(a1)
 	bsr.w	Z80RequestBus
 .l820A	cmpi.w	#$FFFF,(a0)
@@ -776,8 +896,16 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 .l8256	cmpi.w	#$1F00,d2
 	beq.b	.l826C
 	move.b	(a2,d2.w),(a2,d1.w)
-	dc.w	$0642,$0001
-	dc.w	$0641,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d1
+	opt	oaq+
+	opt	osq+
 	bra.b	.l8256
 .l826C	clr.w	d1
 	move.b	$2(a1),d1
@@ -814,13 +942,13 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 .l82DA	adda.l	#$4,a0
 	bra.w	.l820A
 .l82E4	bsr.w	Z80ReleaseBus
-	lea.l	Set1MFlag_31(pc),a1
+	lea.l	Word3(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
 	movem.l	(sp)+,d1-d3/a0-a2
 	rts
 Set1MFlag_25	movem.l	a0-a1,-(sp)
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$0,(a0)
 	bsr.w	Z80RequestBus
 	lea.l	$A00100.l,a0
@@ -832,7 +960,7 @@ Set1MFlag_25	movem.l	a0-a1,-(sp)
 	move.b	(a0)+,(a1)+
 	move.b	(a0),(a1)
 	bsr.w	Z80ReleaseBus
-	lea.l	Set1MFlag_31(pc),a0
+	lea.l	Word3(pc),a0
 	move.w	#$1234,(a0)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
@@ -857,7 +985,7 @@ PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 	swap	d0
 	andi.w	#$6,d0
 	lsl.w	#$5,d0
-	lea.l	Set1MFlag_44(pc),a1
+	lea.l	Word4(pc),a1
 	move.w	$A12002.l,d1
 	move.w	d1,(a1)
 	btst	#$2,d1
@@ -899,24 +1027,39 @@ PrgRamMapAddr	move.l	d0,-(sp)
 	movea.l	d0,a0
 .l8416	move.l	(sp)+,d0
 	rts
-Set1MFlag_31	dc.b	$00,$00	; ..
-Set1MFlag_32	dcb.b	$20,0
-Set1MFlag_33	dcb.b	$20,0
-Set1MFlag_34	dcb.b	$10,0
-Set1MFlag_35	dcb.b	$10,0
-Set1MFlag_36	dcb.b	$10,0
-Set1MFlag_37	dcb.b	$10,0
-Set1MFlag_38	dcb.b	$20,0
-Set1MFlag_39	dcb.b	$80,0
+; Zero-filled work storage (2 bytes).
+Word3	dc.b	$00,$00	; ..
+; Zero-filled work storage (32 bytes).
+Buf20_1	dcb.b	$20,0
+; Zero-filled work storage (32 bytes).
+Buf20_2	dcb.b	$20,0
+; Zero-filled work storage (16 bytes).
+Buf10_1	dcb.b	$10,0
+; Zero-filled work storage (16 bytes).
+Buf10_2	dcb.b	$10,0
+; Zero-filled work storage (16 bytes).
+Buf10_3	dcb.b	$10,0
+; Zero-filled work storage (16 bytes).
+Buf10_4	dcb.b	$10,0
+; Zero-filled work storage (32 bytes).
+Buf20_3	dcb.b	$20,0
+; Zero-filled work storage (128 bytes).
+Buf80_3	dcb.b	$80,0
 .lFF853C	dc.b	$00,$00	; ..
-Set1MFlag_40	dc.b	$00,$00,$00,$00,$00,$00	; ......
+; Zero-filled work storage (6 bytes).
+Buf6_1	dc.b	$00,$00,$00,$00,$00,$00	; ......
 .lFF8544	dc.b	$00,$00,$00,$00	; ....
 .lFF8548	dc.b	$00,$00	; ..
-Set1MFlag_41	dcb.b	$10,0
-Set1MFlag_42	dc.b	$00,$00,$00,$00	; ....
-Set1MFlag_43	dcb.b	$8C,0
-Set1MFlag_44	dc.b	$00,$00	; ..
-Set1MFlag_45	dcb.b	$51,0
+; Zero-filled work storage (16 bytes).
+Buf10_5	dcb.b	$10,0
+; Zero-filled work storage (4 bytes).
+Long4	dc.b	$00,$00,$00,$00	; ....
+; Zero-filled work storage (140 bytes).
+Buf8C_3	dcb.b	$8C,0
+; Zero-filled work storage (2 bytes).
+Word4	dc.b	$00,$00	; ..
+; Zero-filled work storage (81 bytes).
+Buf51_1	dcb.b	$51,0
 	incbin	..\Extracted\SegaCD\MAIN\main_0863D.bin
 	dcb.b	$9,0
 	dc.b	$01,$00,$00,$00,$02,$00,$00,$00,$03,$00,$00,$00,$04,$00,$00,$00	; ................

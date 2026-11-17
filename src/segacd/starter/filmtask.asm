@@ -24,7 +24,7 @@ FilmTask	link	a6,#$FFFC
 	cmp.l	$3C(a0),d0
 	bne.b	.l258D6
 	pea.l	$30(a4)
-	jsr	GetData_9(pc)
+	jsr	AudioSilence(pc)
 	addq.w	#$4,sp
 .l258D6	movea.l	$10(a4),a0
 	move.l	$40(a4),d0
@@ -38,7 +38,7 @@ FilmTask	link	a6,#$FFFC
 Wait_11	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	pea.l	$30(a4)
-	jsr	GetData_4(pc)
+	jsr	AudioIdle(pc)
 	addq.w	#$8,sp
 Wait_12	move.l	$4(a3),-(sp)
 	move.l	(a3),d0
@@ -52,7 +52,7 @@ Wait_12	move.l	$4(a3),-(sp)
 	move.l	$4(a3),-(sp)
 	move.l	d7,-(sp)
 	pea.l	$30(a4)
-	jsr	GetData_5(pc)
+	jsr	AudioFeed(pc)
 	lea.l	RestoreBios_91(pc),a0
 	moveq	#-1,d0
 	cmp.l	$3C(a0),d0
@@ -60,10 +60,10 @@ Wait_12	move.l	$4(a3),-(sp)
 	bne.b	Wait_15
 	bra.b	Wait_14
 Wait_13	pea.l	$30(a4)
-	jsr	GetData_4(pc)
+	jsr	AudioIdle(pc)
 	addq.w	#$4,sp
 Wait_14	pea.l	$30(a4)
-	jsr	GetData_13(pc)
+	jsr	AudioBusy(pc)
 	tst.w	d0
 	addq.w	#$4,sp
 	bne.b	Wait_13
@@ -76,7 +76,7 @@ Wait_15	move.l	$4(a3),-(sp)
 	lea.l	$C(sp),sp
 	bra.w	Wait_21
 Wait_16	pea.l	$30(a4)
-	jsr	GetData_4(pc)
+	jsr	AudioIdle(pc)
 	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	addq.w	#$8,sp
@@ -99,13 +99,13 @@ Wait_17	move.l	$4(a3),-(sp)
 	and.l	$8(a3),d7
 	bra.b	Wait_19
 Wait_18	pea.l	$30(a4)
-	jsr	GetData_4(pc)
+	jsr	AudioIdle(pc)
 	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	addq.w	#$8,sp
 Wait_19	pea.l	$258.w
 	pea.l	$30(a4)
-	jsr	GetData_12(pc)
+	jsr	AudioTime(pc)
 	cmp.l	d0,d7
 	addq.w	#$8,sp
 	bgt.b	Wait_18

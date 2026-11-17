@@ -68,9 +68,9 @@
 	bset.b	#$0,$A12014.l
 .lFF1438	btst.b	#$1,$A12024.l
 	beq.b	.lFF1438
-	bsr.w	DispatchAfter
+	bsr.w	SubHandshake2
 	bsr.w	GiveWordRAM
-	bsr.w	DispatchTail
+	bsr.w	SubHandshake3
 	move.w	(sp)+,sr
 	move.w	#$8004,$C00004.l
 	bsr.w	ClearMainComm

@@ -874,7 +874,7 @@ GetDataSub10	ori.w	#$4055,(a4)
 	dcb.b	$40,0
 GetDataSub11	negx.w	(a4)+
 	negx.w	(a5)+
-	bra.b	GetData_27
+	bra.b	Buf42_1
 	dc.b	'`_```a'	; `_```a
 GetData_26	dc.b	'@b@c'	; @b@c
 	dcb.b	$40,0
@@ -883,7 +883,8 @@ GetDataSub12	movea.l	-(a4),a0
 	negx.w	-(a6)
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
-GetData_27	dcb.b	$42,0
+; Zero-filled work storage (66 bytes).
+Buf42_1	dcb.b	$42,0
 	dc.b	'`l`m'	; `l`m
 	dcb.b	$15,0
 .l2CC81	dcb.b	$D1,0
@@ -1172,7 +1173,7 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.b	.l1C250
 	bclr.b	#$7,$FF800F.l
 	move.w	#$3B,$C444.l
-	lea.l	GetData_34(pc),a0
+	lea.l	StrWarningA(pc),a0
 	move.w	#$5B,d0
 	moveq	#$9,d1
 .l1C274	bsr.w	GetData_30
@@ -1210,7 +1211,7 @@ GetData_28	tst.w	$C44C.l
 	bra.w	.l1C2AC
 .l1C320	cmpi.w	#$FFFF,$C442.l
 	beq.w	.l1C364
-	lea.l	GetData_35(pc),a0
+	lea.l	StrFormatting(pc),a0
 	move.w	#$213,d0
 	bsr.w	GetData_30
 	moveq	#$3,d1
@@ -1230,7 +1231,7 @@ GetData_28	tst.w	$C44C.l
 	bsr.w	GetData_29
 	move.w	#$B,d1
 	move.w	#$5B,d0
-	lea.l	GetData_36(pc),a0
+	lea.l	StrWarningB(pc),a0
 .l1C37C	bsr.w	GetData_30
 	addi.w	#$28,d0
 	dbra	d1,.l1C37C
@@ -1857,7 +1858,8 @@ GetDataSub22	movem.l	d0-d1/a0-a1,-(sp)
 .l1D0F2	bclr.b	#$2,$FF8003.l
 	bne.b	.l1D0F2
 	rts
-GetData_34	dc.b	'    WARNING!!   '	;     WARNING!!   
+; Warning screen text.
+StrWarningA	dc.b	'    WARNING!!   '	;     WARNING!!   
 	dc.b	$20,$20,$00,'Backup ram is'	;   .Backup ram is
 	dc.b	' NOT ',$00,'formatted.'	;  NOT .formatted.
 	dc.b	' Do you ',$00,'want to'	;  Do you .want to
@@ -1869,9 +1871,11 @@ GetData_34	dc.b	'    WARNING!!   '	;     WARNING!!
 	dc.b	'on to  ',$00,'confirm.'	; on to  .confirm.
 	dc.b	'          ',$00,'     '	;           .     
 	dc.b	'             ',$00	;              .
-GetData_35	dc.b	'FORMATTING',$00,$2E,$00,$2E,$00,$2E	; FORMATTING......
+; 'FORMATTING...' text.
+StrFormatting	dc.b	'FORMATTING',$00,$2E,$00,$2E,$00,$2E	; FORMATTING......
 	dc.b	$00,$2E,$00	; ...
-GetData_36	dc.b	'    WARNING!!   '	;     WARNING!!   
+; Warning screen text.
+StrWarningB	dc.b	'    WARNING!!   '	;     WARNING!!   
 	dc.b	$20,$20,$00,'Not enough ro'	;   .Not enough ro
 	dc.b	'om to',$00,'save game '	; om to.save game 
 	dc.b	'status. ',$00,'To save'	; status. .To save

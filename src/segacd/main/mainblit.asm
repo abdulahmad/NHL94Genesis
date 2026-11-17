@@ -159,28 +159,32 @@
 	add.w	d2,d3
 	move.w	d3,(a0)
 	rts
-DispatchPrep	bset.b	#$0,$A12018.l
+; Raises main-side flag 0 in $A12018 and waits for the sub CPU to answer in $A12028, then clears it.
+SubHandshake0	bset.b	#$0,$A12018.l
 .lFF0F34	btst.b	#$0,$A12028.l
 	beq.b	.lFF0F34
 	bclr.b	#$0,$A12018.l
 .lFF0F46	btst.b	#$0,$A12028.l
 	bne.b	.lFF0F46
 	rts
-DispatchBody	bset.b	#$1,$A12018.l
+; Same handshake on flag 1.
+SubHandshake1	bset.b	#$1,$A12018.l
 .lFF0F5A	btst.b	#$1,$A12028.l
 	beq.b	.lFF0F5A
 	bclr.b	#$1,$A12018.l
 .lFF0F6C	btst.b	#$1,$A12028.l
 	bne.b	.lFF0F6C
 	rts
-DispatchAfter	bset.b	#$2,$A12018.l
+; Same handshake on flag 2.
+SubHandshake2	bset.b	#$2,$A12018.l
 .lFF0F80	btst.b	#$2,$A12028.l
 	beq.b	.lFF0F80
 	bclr.b	#$2,$A12018.l
 .lFF0F92	btst.b	#$2,$A12028.l
 	bne.b	.lFF0F92
 	rts
-DispatchTail	bset.b	#$3,$A12018.l
+; Same handshake on flag 3.
+SubHandshake3	bset.b	#$3,$A12018.l
 .lFF0FA6	btst.b	#$3,$A12028.l
 	beq.b	.lFF0FA6
 	bclr.b	#$3,$A12018.l

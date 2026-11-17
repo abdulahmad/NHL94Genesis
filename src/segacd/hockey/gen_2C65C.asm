@@ -1,6 +1,6 @@
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_2C65C.bin
 	rts
-	dc.w	$4E75
+	rts
 	rts
 ReadJoyData
 	movem.l	d1/a0,-(sp)
@@ -191,4 +191,4 @@ ReadJoyData
 	movem.l	(sp)+,d1/a0
 	rts
 	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
-	dc.w	$4E75
+	rts

@@ -270,5 +270,133 @@
  "Set1MFlag_21": [
   "SndFindSource",
   "Finds the sound source for the request in d0/d1 in the list at 4 sources."
+ ],
+ "LinkedCall": [
+  "TileCmdListInit",
+  "Clears the tile-load pointer, then runs ProcessTileCmdList."
+ ],
+ "DispatchPrep": [
+  "SubHandshake0",
+  "Raises main-side flag 0 in $A12018 and waits for the sub CPU to answer in $A12028, then clears it."
+ ],
+ "DispatchBody": [
+  "SubHandshake1",
+  "Same handshake on flag 1."
+ ],
+ "DispatchAfter": [
+  "SubHandshake2",
+  "Same handshake on flag 2."
+ ],
+ "DispatchTail": [
+  "SubHandshake3",
+  "Same handshake on flag 3."
+ ],
+ "DispatchTail_13": [
+  "Buf8C_1",
+  "Zero-filled work storage (140 bytes)."
+ ],
+ "DispatchTail_26": [
+  "Buf8_1",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "DispatchTail_70": [
+  "Buf8C_2",
+  "Zero-filled work storage (140 bytes)."
+ ],
+ "DispatchTail_71": [
+  "Long1",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "DispatchTail_73": [
+  "Word1",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "DispatchTail_74": [
+  "Word2",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "DispatchTail_75": [
+  "Long2",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "DispatchTail_76": [
+  "Buf80_1",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "DispatchTail_78": [
+  "Long3",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "DispatchTail_80": [
+  "Buf5EC_1",
+  "Zero-filled work storage (1516 bytes)."
+ ],
+ "DispatchTail_88": [
+  "Buf8_2",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "Set1MFlag_5": [
+  "Buf80_2",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "Set1MFlag_31": [
+  "Word3",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "Set1MFlag_32": [
+  "Buf20_1",
+  "Zero-filled work storage (32 bytes)."
+ ],
+ "Set1MFlag_33": [
+  "Buf20_2",
+  "Zero-filled work storage (32 bytes)."
+ ],
+ "Set1MFlag_34": [
+  "Buf10_1",
+  "Zero-filled work storage (16 bytes)."
+ ],
+ "Set1MFlag_35": [
+  "Buf10_2",
+  "Zero-filled work storage (16 bytes)."
+ ],
+ "Set1MFlag_36": [
+  "Buf10_3",
+  "Zero-filled work storage (16 bytes)."
+ ],
+ "Set1MFlag_37": [
+  "Buf10_4",
+  "Zero-filled work storage (16 bytes)."
+ ],
+ "Set1MFlag_38": [
+  "Buf20_3",
+  "Zero-filled work storage (32 bytes)."
+ ],
+ "Set1MFlag_39": [
+  "Buf80_3",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "Set1MFlag_40": [
+  "Buf6_1",
+  "Zero-filled work storage (6 bytes)."
+ ],
+ "Set1MFlag_41": [
+  "Buf10_5",
+  "Zero-filled work storage (16 bytes)."
+ ],
+ "Set1MFlag_42": [
+  "Long4",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "Set1MFlag_43": [
+  "Buf8C_3",
+  "Zero-filled work storage (140 bytes)."
+ ],
+ "Set1MFlag_44": [
+  "Word4",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "Set1MFlag_45": [
+  "Buf51_1",
+  "Zero-filled work storage (81 bytes)."
  ]
 }

@@ -550,7 +550,7 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
 	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$DAC6
 	dc.w	$4EB9,$0003,$6DF6,$5279,$0001,$7474,$4CDF,$7FFF
-	dc.w	$4E75
+	rts
 DefaultMenus						;Set the default menu choices for the beginning of the game: the 9 option
 									;words from defmenuoptions (93 had 7). Called once from Begin
 	st.b	$18C16.l

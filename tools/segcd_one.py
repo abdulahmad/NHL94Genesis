@@ -519,6 +519,18 @@ def to_words(l):
     return [lab + "\tdc.w\t" + w + "\t;@" + raw.hex()]
 
 
+def wrap_quick(cfg, l):
+    """An add/sub immediate the assembler turned into a quick form (oaq+/osq+) but the disc has long: assemble it
+    with the optimizations off for this one line."""
+    if cfg["oaq"] != "+" or re.search(r"\topt\t", l):
+        return None
+    m = re.match(r"^(\S*)\t((?:addi|subi|add|sub|adda|suba)\.[wl]\t#.*)$", re.sub(r"(\t;@[0-9a-f]+)\s*$", r"\1", l))
+    if not m:
+        return None
+    lab, ins = m.group(1), m.group(2)
+    return [lab + "\topt\toaq-", "\topt\tosq-", "\t" + ins, "\topt\toaq+", "\topt\tosq+"]
+
+
 def fixloop(cfg, parts, ddir, d):
     base = cfg["base"]
     gen = [(nm, a) for a, b, kind, nm in parts if kind == "gen"]
@@ -583,7 +595,7 @@ def fixloop(cfg, parts, ddir, d):
                 wrong = got != exp_b[:len(got)] or (len(got) < len(exp_b) and False)
             # (an instruction that assembled longer or shorter shows in the first-difference fallback below)
             if wrong:
-                w = to_words(l)
+                w = wrap_quick(cfg, l) or to_words(l)
                 if w:
                     files[nm][i] = "\x00".join(w)
                     bad += 1

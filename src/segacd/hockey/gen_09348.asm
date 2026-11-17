@@ -181,7 +181,7 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	dc.l	$03412567,$89ABCDEF
 	rts
 	rts
-	dc.w	$4E75
+	rts
 CheckNOPUnused_1	movem.l	d0-d7,-(sp)
 	bclr	#$0,$19390.l
 	beq.w	.l995C

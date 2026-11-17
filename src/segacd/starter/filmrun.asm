@@ -14,7 +14,7 @@ RestoreBios_101	tst.w	$4(sp)
 	move.l	$12(a6),(a0)
 	lea.l	RestoreBios_93(pc),a0
 	move.l	$E(a6),(a0)
-	lea.l	RestoreBios_98(pc),a0
+	lea.l	Buf14_1(pc),a0
 	move.l	$22(a6),(a0)+
 	move.l	$1E(a6),(a0)+
 	move.l	$1A(a6),(a0)+
@@ -80,9 +80,9 @@ RemoveIrqHook1	movea.l	RestoreBios_102(pc),a0
 	move.w	(sp)+,sr
 	rts
 RestoreBios_105	movem.l	d0/a0,-(sp)
-	lea.l	RestoreBios_92(pc),a0
+	lea.l	Long3(pc),a0
 	addq.l	#$1,(a0)
-	move.l	RestoreBios_99(pc),d0
+	move.l	Long6(pc),d0
 	beq.b	.l251A4
 	movea.l	d0,a0
 	jsr	(a0)
