@@ -1,0 +1,29 @@
+{
+ "prog": "player",
+ "files": {
+  "player_00000": [
+   [
+    "playerscreen",
+    null
+   ]
+  ],
+  "player_0281C": [
+   [
+    "playerblit",
+    null
+   ],
+   [
+    "playervblank",
+    "PlTimerTick"
+   ],
+   [
+    "playertext",
+    "PrintTextLine"
+   ],
+   [
+    "playerdata",
+    "StatColumnIdsSkaterA"
+   ]
+  ]
+ }
+}

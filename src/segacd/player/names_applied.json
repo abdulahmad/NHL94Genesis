@@ -282,5 +282,45 @@
  "LF64Sub8": [
   "PlRoutineB",
   "Player screen routine"
+ ],
+ "LCAA": [
+  "PlAllocObject",
+  "Allocates a screen object and stores its pointer"
+ ],
+ "LDEC": [
+  "PlDrawBackground",
+  "Blits the background and sets the window"
+ ],
+ "LEAA": [
+  "PlWaitFrames",
+  "Waits d0 frames for the vblank counter"
+ ],
+ "LEBC": [
+  "PlSetScrollCmd",
+  "Gate array command $B: writes vertical scroll RAM"
+ ],
+ "LF64": [
+  "PlSetWindowRegCmd",
+  "Gate array command $A: sets the VDP window register $92xx"
+ ],
+ "PlSaveRegsA": [
+  "PlMoveObjectSteps",
+  "Moves an object in d2 steps, waiting for each step"
+ ],
+ "PlSaveRegsB": [
+  "PlBinToDecString",
+  "Converts d0 to a decimal string at a0"
+ ],
+ "PlRoutineA": [
+  "PlReadPadFields",
+  "Reads the pad state into the four direction/button fields"
+ ],
+ "PlRoutineB": [
+  "PlTileIndexToVdpCmd",
+  "Converts a tile index into a VDP write command"
+ ],
+ "PlSubCpuHandshake": [
+  "PlVblankMainSync",
+  "Vblank hook: handshake with the main CPU through the gate array"
  ]
 }

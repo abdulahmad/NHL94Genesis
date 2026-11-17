@@ -1,0 +1,99 @@
+{
+ "prog": "starter",
+ "files": {
+  "starter_00090": [
+   [
+    "startersubpcm",
+    null
+   ],
+   [
+    "starterbios",
+    "SetupBiosCallArgs"
+   ],
+   [
+    "starterscreen",
+    "LoadBootImages"
+   ],
+   [
+    "startersprite",
+    "SpriteListReset"
+   ],
+   [
+    "starteranim",
+    "AnimNextFrame"
+   ],
+   [
+    "startercmd",
+    "SendCmd4Args"
+   ]
+  ],
+  "starter_03A8A": [
+   [
+    "startervars",
+    null
+   ]
+  ],
+  "starter_040FA": [
+   [
+    "startercdbios",
+    null
+   ]
+  ],
+  "starter_04538": [
+   [
+    "starterfilmstr",
+    null
+   ]
+  ],
+  "starter_0472E": [
+   [
+    "starterfilmname",
+    null
+   ]
+  ],
+  "starter_0477C": [
+   [
+    "starterheap",
+    null
+   ]
+  ],
+  "starter_04DCA": [
+   [
+    "startercopy",
+    null
+   ]
+  ],
+  "starter_04EC0": [
+   [
+    "startersect",
+    null
+   ]
+  ],
+  "starter_05068": [
+   [
+    "starterblock",
+    null
+   ]
+  ],
+  "starter_05304": [
+   [
+    "starterarith",
+    null
+   ]
+  ],
+  "starter_0556E": [
+   [
+    "starterdisptbl",
+    null
+   ],
+   [
+    "startergate",
+    "GateArrayIrqA"
+   ],
+   [
+    "starterstr",
+    "StrWarningA"
+   ]
+  ]
+ }
+}

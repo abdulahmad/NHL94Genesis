@@ -265,11 +265,11 @@ PlShowPicture	movem.l	d0-d7/a0-a5,-(sp)
 	ble.w	.next18
 	move.w	#$D,d0
 	move.w	#$0,d1
-	bsr.w	LF64
+	bsr.w	PlSetWindowRegCmd
 	bra.w	.next19
 .next18	moveq	#$F,d0
 	moveq	#$0,d1
-	bsr.w	LF64
+	bsr.w	PlSetWindowRegCmd
 	cmpi.w	#$2,$B0(a6)
 	bne.w	.next19
 	move.w	#$50,d0
@@ -286,8 +286,8 @@ PlShowPicture	movem.l	d0-d7/a0-a5,-(sp)
 	move.w	#$0,$B0(a6)
 	moveq	#$1C,d0
 	moveq	#$0,d1
-	bsr.w	LF64
-	bsr.w	LEBC
+	bsr.w	PlSetWindowRegCmd
+	bsr.w	PlSetScrollCmd
 .next20	move.w	#$50,d0
 	move.w	$EE(a6),d1
 	subi.w	#$2000,d1
@@ -298,7 +298,7 @@ PlShowPicture	movem.l	d0-d7/a0-a5,-(sp)
 	bsr.w	PlBlitToBuffer
 	moveq	#$0,d0
 	moveq	#$0,d1
-	bsr.w	LF64
+	bsr.w	PlSetWindowRegCmd
 .next21	movem.l	(sp)+,d0-d7/a0-a5
 	rts
 
