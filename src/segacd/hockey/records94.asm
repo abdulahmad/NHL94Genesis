@@ -165,9 +165,11 @@ LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a r
 	rts
 PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 PrintNameLogEnterText				;the prompt String of the name entry screen (length word, map and position codes, text)
+; Data of PrintNameLogEnterText (2 rows): table or constants used by it.
 	dc.w	$0018
 	dc.b	$BF,$02,$10,'  Enter new name: ',$00
 PrintNameLogSelectText				;the prompt String of the Name Log list
+; Data of PrintNameLogSelectText (2 rows): table or constants used by it.
 	dc.w	$0018
 	dc.b	$BF,$02,$10,'Select or replace:',$00
 PrintNameLogList					;draw the Name Log list screen: prompt, then the log names
@@ -175,6 +177,7 @@ PrintNameLogList					;draw the Name Log list screen: prompt, then the log names
 	move.w	$1A38A.l,-(sp)
 	move.w	$1A38C.l,-(sp)
 	jsr	(printz).l				;the String that follows
+; Inline data read by printz from the return address (1 row).
 	dc.w	$0006,$BF05,$0800
 	move.w	#$6,d7
 PrintNameLogRows
@@ -477,9 +480,11 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	move.w	#$7,d1
 	jsr	(Framer).l
 	jsr	(printbigz).l
+; Inline data read by printbigz from the return address (2 rows).
 	dc.w	$0018
 	dc.b	$BD,$0E,$02,'Record',$BD,$0D,$05,'Holders',$BD,$01,$09
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0010
 	dc.b	$F8,$06,$03,$05,$08,$F9,$01,'Name',$F9,$00,$00
 	bsr.w	ReadNameLog

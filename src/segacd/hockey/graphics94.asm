@@ -218,5 +218,6 @@ ReadJoyData
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
+; Data of ReadJoyData (1 row): table or constants used by it.
 .next9	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
 	rts

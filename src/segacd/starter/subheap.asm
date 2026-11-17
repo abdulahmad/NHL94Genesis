@@ -36,6 +36,7 @@ EngineIdle	link	a6,#0
 .done	movea.l	-4(a6),a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'EngineIdle', zero padding).
 	dc.b	$8A,'EngineIdle',0,0,0
 
 ; d0 = pointer. Grows the heap through EngineIdle until [d7,d7+d6] fits,
@@ -74,6 +75,7 @@ GetData	link	a6,#0
 	movem.l	-$10(a6),d5-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'GetData', zero padding).
 	dc.b	$87,'GetData',0,0
 
 	opt	oaq-

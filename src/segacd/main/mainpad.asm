@@ -3,6 +3,7 @@
 ; in the first 1404 bytes.
 
 
+; Data of the file start (8 rows): table or constants used by it.
 	dcb.b	$4D,0
 	dc.b	$01						; .
 	dcb.b	$52E,0

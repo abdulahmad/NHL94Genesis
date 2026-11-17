@@ -66,6 +66,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Text of ShootoutModeBox (2 rows).
 .next3	dc.b	$00,$16,$BF,$04,$03,'SHOOTOUT MO'
 	dc.w	$4445,$BF04,$0500
 ClearShootout						;Clear the player structs (SortCords) and the shootout state.
@@ -180,6 +181,7 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	clr.w	(scoutcolumn).l
 	clr.w	(PlayerScrollCtr).l
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$00
 	moveq	#$28,d0
@@ -343,6 +345,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	moveq	#$5,d1
 .5	move.w	#$2,(printy).l
 .loop3	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0020
 	dc.b	$FE,$04,$FD,$05,$FA,$01,'                      ',$FD,$05
 	cmp.w	(VertLineScrolling).l,d2
@@ -423,6 +426,7 @@ ResetShooterScroll
 ; Prints the shooter screen heading.
 ShooterScreenTitles
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
 	jsr	(printsmallz).l

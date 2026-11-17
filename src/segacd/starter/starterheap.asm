@@ -1,3 +1,4 @@
+; Sierra C name tag of the routine above (length byte, 'FilmClose', zero padding).
 	dc.b	$89,'FilmClose',$00,$00	; .FilmClose..
 ; C function SwapMeg (Sierra C name tag follows it).
 SwapMeg	link	a6,#$0
@@ -7,6 +8,7 @@ SwapMeg	link	a6,#$0
 	eori.w	#$1,$FF8002.l
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'SwapMeg', zero padding).
 	dc.b	$87,'SwapMeg',$00,$00	; .SwapMeg..
 DrawText	link	a6,#$0
 	movem.l	d7/a4,-(sp)
@@ -36,6 +38,7 @@ DrawText	link	a6,#$0
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'DrawText', zero padding).
 	dc.b	$88,'DrawText',$00,$00,$00	; .DrawText...
 NumStr	link	a6,#$FFF0
 	movem.l	d6-d7/a3-a4,-(sp)
@@ -67,6 +70,7 @@ NumStr	link	a6,#$FFF0
 	movem.l	-$20(a6),d6-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'NumStr', zero padding).
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	link	a6,#$0
 	movem.l	d3-d7/a4,-(sp)
@@ -101,6 +105,7 @@ HexStr	link	a6,#$0
 	movem.l	-$18(a6),d3-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'HexStr', zero padding).
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
 aprint	link	a6,#$FED8
 	movem.l	d4-d7/a3-a4,-(sp)
@@ -201,6 +206,7 @@ aprint	link	a6,#$FED8
 	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'aprint', zero padding).
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
 ffree	link	a6,#$0
 	movem.l	a3-a4,-(sp)
@@ -246,9 +252,12 @@ ffree	link	a6,#$0
 .next6	movem.l	-$8(a6),a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'ffree', zero padding).
 	dc.b	$85,'ffree',$00,$40	; .ffree.@
+; Text of ffree (2 rows).
 .next7	dc.b	'Tried to ffree a'	; Tried to ffree a
 	dc.b	' free block: %x',$00	;  free block: %x.
+; Text of ffree (2 rows).
 .next8	dc.b	'Tried to ffree a'	; Tried to ffree a
 	dc.b	' bad block: %x',$00,$00	;  bad block: %x..
 findSmallestBlock	link	a6,#$0
@@ -280,6 +289,7 @@ findSmallestBlock	link	a6,#$0
 	movem.l	-$14(a6),d5-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'findSmallestBlo', zero padding).
 	dc.b	$91,'findSmallestBlo'	; .findSmallestBlo
 	dc.b	$63,$6B,$00,$00	; ck..
 MaxFree	link	a6,#$0
@@ -305,6 +315,7 @@ MaxFree	link	a6,#$0
 	movem.l	-$C(a6),d6-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'MaxFree', zero padding).
 	dc.b	$87,'MaxFree',$00,$00	; .MaxFree..
 mmalloc	link	a6,#$0
 	movem.l	d6-d7/a3-a4,-(sp)
@@ -354,6 +365,7 @@ mmalloc	link	a6,#$0
 .next3	movem.l	-$10(a6),d6-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'mmalloc', zero padding).
 	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	link	a6,#$0
 	movem.l	a3-a4,-(sp)
@@ -382,6 +394,7 @@ InitHeapBlock	move.b	#$48,(a3)
 	movem.l	-$8(a6),a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'InitHeap', zero padding).
 	dc.b	$88,'InitHeap',$00,$00,$00	; .InitHeap...
 ; C function InitWorld (Sierra C name tag follows it).
 InitWorld	link	a6,#$0
@@ -429,16 +442,22 @@ InitWorld	link	a6,#$0
 .next2	move.l	-$4(a6),d7
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'InitWorld', zero padding).
 	dc.b	$89,'InitWorld',$00,$3C	; .InitWorld.<
+; Text of InitWorld (1 row).
 .next3	dc.b	'Heap Size : %x',$00,$00	; Heap Size : %x..
+; Text of InitWorld (1 row).
 .next4	dc.b	'Heap Start: %x',$00,$00	; Heap Start: %x..
+; Text of InitWorld (1 row).
 .next5	dc.b	'Fixing Heap',$00	; Fixing Heap.
+; Text of InitWorld (1 row).
 .next6	dc.b	'SUBCPU is alive',$00	; SUBCPU is alive.
 GetTicks	link	a6,#$0
 	lea.l	FilmEntryVector(pc),a0
 	move.l	$4(a0),d0
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'GetTicks', zero padding).
 	dc.b	$88,'GetTicks',$00,$00,$00	; .GetTicks...
 ; C function WaitIODone (Sierra C name tag follows it).
 WaitIODone	link	a6,#$0
@@ -447,4 +466,5 @@ WaitIODone	link	a6,#$0
 	bne.b	.loop
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'WaitIODone', zero padding).
 	dc.b	$8A,'WaitIODone',$00,$00,$00	; .WaitIODone...

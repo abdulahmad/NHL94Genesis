@@ -21,6 +21,7 @@ DoDrawTextCommand	link	a6,#$FF00
 	movem.l	-$10C(a6),d6-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'DoDrawTextComma', zero padding).
 	dc.b	$91,'DoDrawTextComma'	; .DoDrawTextComma
 	dc.b	$6E,$64,$00,$00	; nd..
 DoMoviePlayBack	link	a6,#$0
@@ -48,6 +49,7 @@ DoMoviePlayBack	link	a6,#$0
 	movem.l	-$10(a6),d5-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'DoMoviePlayBack', zero padding).
 	dc.b	$8F,'DoMoviePlayBack'	; .DoMoviePlayBack
 	dc.b	$00,$00	; ..
 MAINCODE	link	a6,#$0
@@ -81,15 +83,20 @@ MAINCODE	link	a6,#$0
 	move.l	-$4(a6),d7
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'MAINCODE', zero padding).
 	dc.b	$88,'MAINCODE',$00,$00,$38	; .MAINCODE..8
+; Text of MAINCODE (1 row).
 .next6	dc.b	'Main Done',$00	; Main Done.
+; Text of MAINCODE (1 row).
 .next7	dc.b	'Command: %d',$00	; Command: %d.
+; Text of MAINCODE (3 rows).
 .next8	dc.b	'MAINCPU ready to'	; MAINCPU ready to
 	dc.b	' handle commands'	;  handle commands
 	dc.b	$00,$00	; ..
 ReDraw	link	a6,#$0
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'ReDraw', zero padding).
 	dc.b	$86,'ReDraw',$00,$00,$00	; .ReDraw...
 drawprint	link	a6,#$0
 	move.l	$8(a6),-(sp)
@@ -109,6 +116,7 @@ drawprint	link	a6,#$0
 .next	jsr	ReDraw(pc)
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'drawprint', zero padding).
 	dc.b	$89,'drawprint',$00,$00	; .drawprint..
 NumStr	link	a6,#$FFF0
 	movem.l	d6-d7/a3-a4,-(sp)
@@ -140,6 +148,7 @@ NumStr	link	a6,#$FFF0
 	movem.l	-$20(a6),d6-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'NumStr', zero padding).
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	link	a6,#$0
 	movem.l	d3-d7/a4,-(sp)
@@ -174,6 +183,7 @@ HexStr	link	a6,#$0
 	movem.l	-$18(a6),d3-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'HexStr', zero padding).
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
 aprint	link	a6,#$FED8
 	movem.l	d4-d7/a3-a4,-(sp)
@@ -270,6 +280,7 @@ aprint	link	a6,#$FED8
 .next11	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'aprint', zero padding).
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
 InitWorld	link	a6,#$0
 	movea.l	#$A12010,a0
@@ -293,9 +304,13 @@ InitWorld	link	a6,#$0
 	jsr	aprint(pc)
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'InitWorld', zero padding).
 	dc.b	$89,'InitWorld',$00,$32	; .InitWorld.2
+; Text of InitWorld (1 row).
 .next	dc.b	'Heap Size : %x',$00,$00	; Heap Size : %x..
+; Text of InitWorld (1 row).
 .next2	dc.b	'Heap Start: %x',$00,$00	; Heap Start: %x..
+; Text of InitWorld (2 rows).
 .next3	dc.b	'MAINCPU is alive'	; MAINCPU is alive
 	dc.b	$00,$00	; ..
 GetCommandFromSub	link	a6,#$0
@@ -312,6 +327,7 @@ GetCommandFromSub	link	a6,#$0
 	movem.l	-$C(a6),d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'GetCommandFromS', zero padding).
 	dc.b	$91,'GetCommandFromS'	; .GetCommandFromS
 	dc.b	$75,$62,$00,$00	; ub..
 Set1MFlag	link	a6,#$0
@@ -319,6 +335,7 @@ Set1MFlag	link	a6,#$0
 	move.w	$A(a6),$2(a0)
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'Set1MFlag', zero padding).
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
 ; Jump thunk through a computed address (number string)
@@ -731,6 +748,7 @@ VdpInitRegs	movem.l	d2-d7/a1-a2,-(sp)
 	bsr.w	GiveWordRamToSub
 	clr.w	$FF6D84.l
 	rts
+; Data of VdpInitRegs (3 rows): table or constants used by it.
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
@@ -743,6 +761,7 @@ VdpShadowBuffers	dcb.b	$80,0
 	incbin	..\Extracted\SegaCD\MAIN\main_0640C.bin
 .next	incbin	..\Extracted\SegaCD\MAIN\main_067E8.bin
 .next2	incbin	..\Extracted\SegaCD\MAIN\main_06BD0.bin
+; Data of VdpShadowBuffers (4 rows): table or constants used by it.
 	dcb.b	$301,0
 	dc.b	$FF	; .
 	dcb.b	$200,0

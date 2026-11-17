@@ -87,6 +87,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0026
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
 	adda.w	(a1),a1
@@ -101,10 +102,12 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	move.w	$18AD4.l,d0
 	beq.w	.loop3
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$000C
 	dc.b	$FE,$05,$FB,$01,$FA,$01,$7B,$FA,$FF,$00
 .loop3	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0006
 	dc.b	$FB,$02,$FA,$01
 	move.l	a1,-(sp)

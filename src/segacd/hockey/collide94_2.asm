@@ -235,6 +235,7 @@ setplayer						;bring player onto the ice and set his attributes. d3 = offset of
 									;AttributeCalc (attribute number in TempWord2). Adds the PP / PK, home /
 									;away and third period bonuses (team ScoutReport bytes) to some attributes
 									;and clamps them with ClampNibble
+; Data of setplayer (1 row): table or constants used by it.
 	dc.w	$0203,$0503
 	btst	d2,d0
 

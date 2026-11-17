@@ -498,6 +498,7 @@ DecodePadBits	not.b	d0
 	or.w	d1,d0
 	move.w	(sp)+,d1
 	rts
+; Data of DecodePadBits (1 row): table or constants used by it.
 .next	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 ; Player screen routine
 ; Reads the pad state into the four direction/button fields
@@ -624,6 +625,7 @@ PlReadPadFields	movem.l	d1/a0,-(sp)
 .loop24	btst.b	#$3,$FF800E.l
 	bne.b	.loop24
 	bclr.b	#$4,$FF800F.l
+; Instruction bytes inside PlReadPadFields that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6000,$013C
 .next7	moveq	#$0,d0
 .loop25	btst.b	#$4,$FF800E.l
@@ -688,6 +690,7 @@ PlReadPadFields	movem.l	d1/a0,-(sp)
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
+; Data of PlReadPadFields (1 row): table or constants used by it.
 .next9	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 ; Saves the vblank vector and points it at the page handler.
 InstallVblankHook	move.l	$6038.w,$D6(a6)

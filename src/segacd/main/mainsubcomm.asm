@@ -164,6 +164,7 @@ SubCommDispatch	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(a0)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Data of SubCommDispatch (21 rows): table or constants used by it.
 	dc.b	$00,$FF,$49,$6E,$00,$FF,$49,$DA,$00,$FF,$4A,$2E,$00,$FF,$4A,$56	; ..In..I...J...JV
 	dc.b	$00,$FF,$4A,$78,$00,$FF,$4A,$82,$00,$FF,$4A,$8C,$00,$FF,$4A,$92	; ..Jx..J...J...J.
 	dc.b	$00,$FF,$4B,$3C,$00,$FF,$4B,$48,$00,$FF,$4B,$54,$00,$FF,$4B,$60	; ..K<..KH..KT..K`
@@ -300,6 +301,7 @@ VdpSetCramWriteAddr	movem.w	d0,-(sp)
 	rts
 	move.w	$A12022.l,d0
 	move.w	#$0,$A12010.l
+; Instruction bytes inside VdpSetCramWriteAddr that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0139,$00A1,$1100
 	bne.w	.ex
 	move.w	#$4,$A12010.l

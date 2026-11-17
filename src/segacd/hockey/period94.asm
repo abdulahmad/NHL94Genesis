@@ -235,16 +235,19 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	moveq	#$1C,d1
 	jsr	$2E728.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
 	move.w	#$8,d0
 	move.w	#$8,d1
 	jsr	$38CA0.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$13,$00	; ......
 	move.w	#$8,d0
 	move.w	#$8,d1
 	jsr	$38CA0.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
 	movea.l	$47D8C.l,a0
 	move.w	$17FB0.l,d0
@@ -270,6 +273,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 .loop3	move.l	(a0)+,(a1)+
 	dbra	d0,.loop3
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
 	movea.l	$47D8C.l,a0
 	move.w	$17FAE.l,d0
@@ -290,27 +294,33 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	moveq	#$4,d5
 	jsr	$387E2.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BD,$04,$01,$00	; ......
 	moveq	#$20,d0
 	moveq	#$6,d1
 	jsr	$38CA0.l
 	jsr	$39258.l
+; Inline data read by $39258 from the return address (2 rows).
 	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
 	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
 	btst.b	#$1,$17F7A.l
 	beq.w	PeriodStatsHeader
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$1C,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$1A	; .....1...2...3..
 	dc.b	$09,$4F,$54,$BE,$20,$09,$54,$6F,$74,$61,$6C,$00	; .OT. .Total.
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$1C,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$1A	; .....<...<...<..
 	dc.b	$0A,$3C,$3C,$BE,$20,$0A,$3C,$3C,$3C,$3C,$3C,$00	; .<<. .<<<<<.
 	bra.w	PeriodStatsLoop
 ; Period stats: prints the period column heads (1, 2, 3 ... Total)
 PeriodStatsHeader	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$16,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$20	; .....1...2...3. 
 	dc.b	$09,$54,$6F,$74,$61,$6C	; .Total
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$16,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$20	; .....<...<...<. 
 	dc.b	$0A,$3C,$3C,$3C,$3C,$3C	; .<<<<<
 ; Period stats: draws the title and rows, then waits for a button
@@ -388,17 +398,20 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 PeriodStatsTitleShots	tst.w	$1A43A.l
 	beq.w	PeriodStatsTitleGoals
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$BE,$12,$07,$53,$68,$6F,$74,$73,$BE,$0F,$1A,$5B,$20,$46	; .....Shots...[ F
 	dc.b	$6F,$72,$20,$47,$6F,$61,$6C,$73	; or Goals
 	rts
 ; Period stats: title when the table shows goals (Goals [ For Shots ])
 PeriodStatsTitleGoals	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$BE,$12,$07,$47,$6F,$61,$6C,$73,$BE,$0F,$1A,$46,$6F,$72	; .....Goals...For
 	dc.b	$20,$53,$68,$6F,$74,$73,$20,$5D	;  Shots ]
 	rts
 ; Period stats: team rows of the table
 PeriodStatsTeamRows	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$00,$00,$00	; ......
 	movea.l	#$186B2,a2
 	move.w	#$E,$18D5A.l
@@ -432,6 +445,7 @@ PeriodStatsPeriodRow	lea.l	$344(a2),a0
 	bsr.w	PeriodStatsPrintTotal
 .next2	move.w	#$21,$18D58.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	subi.w	#$3,$18D58.l
 	move.w	$1A44A.l,d0
@@ -446,6 +460,7 @@ PeriodStatsPeriodRow	lea.l	$344(a2),a0
 PeriodStatsPrintTotal	move.w	(a0)+,d0
 	add.w	d0,$1A44A.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	subi.w	#$3,$18D58.l
 	move.w	#$2,d1
@@ -686,8 +701,10 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
 	String	'Score'
+; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$0C,$FF,$FF
 	String	'Shots'
+; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$00,$FF,$FF
 	String	'Shooting Pct'
 	dc.w	$FFFF		; dc.w $FFFF
@@ -713,20 +730,25 @@ TeamStatTextTbl						;Label, then the team struct stat offset and the second off
 	dc.w	$0364		; bchg.b d1,-(a4)
 	dc.w	$0362		; bchg.b d1,-(a2)
 	String	'Faceoffs Won'
+; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$0E,$FF,$FF
 	String	'Body Checks'
 	dc.w	$0010,$FFFF		; ori.b #$FF,(a0)
 	String	'Penalties'
 	dc.w	$0006,$0008		; ori.b #$8,d6
 	String	'Attack Zone'
+; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$0A,$FF,$FF
 	String	'Passing'
+; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$14,$00,$12
 TeamStatTextTblNoPen				;The rows without the power play ones, used when penalties are off. 11
 									;rows
 	String	'Score'
+; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$0C,$FF,$FF
 	String	'Shots'
+; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$00,$FF,$FF
 	String	'Shooting Pct'
 	dc.w	$FFFF		; dc.w $FFFF
@@ -741,14 +763,17 @@ TeamStatTextTblNoPen				;The rows without the power play ones, used when penalti
 	dc.w	$0364		; bchg.b d1,-(a4)
 	dc.w	$0362		; bchg.b d1,-(a2)
 	String	'Faceoffs Won'
+; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$0E,$FF,$FF
 	String	'Body Checks'
 	dc.w	$0010,$FFFF		; ori.b #$FF,(a0)
 	String	'Penalties'
 	dc.w	$0006,$0008		; ori.b #$8,d6
 	String	'Attack Zone'
+; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$0A,$FF,$FF
 	String	'Passing'
+; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$14,$00,$12
 rtsStatTables
 	rts

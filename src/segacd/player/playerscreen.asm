@@ -1141,6 +1141,7 @@ PlSelectPicture	movem.l	d0-d7/a0-a2,-(sp)
 	move.l	#$100,d6
 	bsr.w	PlCopyRectToVdp
 	movem.l	(sp)+,d2
+; Instruction bytes inside PlSelectPicture that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6000,$0022
 ; Waits for the frame timer, then copies the rectangle to VRAM
 PlWaitFrameCopy	move.w	#$64,$EC(a6)

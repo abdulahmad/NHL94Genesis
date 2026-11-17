@@ -1,4 +1,5 @@
 	incbin	..\Extracted\SegaCD\STARTER\starter_0556E.bin
+; Data of the file start (25 rows): table or constants used by it.
 	dcb.b	$B,0
 	dc.b	$BD,$00,$63,$00,$05,$FF,$FF,$00,$00,$00,$08,$00,$00,$00,$07,$00	; ..c.............
 	dc.b	$00,$00,$06,$00,$00,$00,$05,$00,$00,$00,$04,$00,$00,$00,$03,$00	; ................
@@ -24,8 +25,11 @@
 	dc.b	$00,$00,$04,$00,$00,$00,$05,$00,$00,$00,$06,$00,$00,$00,$07,$00	; ................
 	dc.b	$00,$00,$08,$00,$32,$FF,$FF,$FF,$FF	; ....2....
 	dcb.b	$286,0
+; Data of the file start (1 row): table or constants used by it.
 .next	dcb.b	$14,0
+; Data of the file start (1 row): table or constants used by it.
 .next2	dcb.b	$14,0
+; Data of the file start (169 rows): table or constants used by it.
 .next3	dcb.b	$1C,0
 	dc.b	$3D,$2A,$00,$00,$3D,$AA,$01,$E9	; =*..=...
 	dcb.b	$3C,0
@@ -196,10 +200,12 @@
 	dc.b	$BB,$BB,$BB,$22,$BB,$BB,$BB,$22,$BB,$BB,$BB,$22,$BB,$BB,$BB,$22	; ..."..."..."..."
 	dc.b	$BB,$22,$22,$22,$9B,$B2,$22,$22,$B9,$B2,$22,$22	; ."""..""..""
 .next4	incbin	..\Extracted\SegaCD\STARTER\starter_0660E.bin
+; Data of the file start (3 rows): table or constants used by it.
 	dcb.b	$11,0
 	dc.b	$90,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70	; ....p...p...p
 	dcb.b	$A,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_06869.bin
+; Data of the file start (40 rows): table or constants used by it.
 	dcb.b	$14,0
 	dc.b	'""""wfg',$82,$31,$13,$33,$52	; """"wfg.1.3R
 	dcb.b	$1F,0
@@ -240,8 +246,10 @@
 	dc.b	$07,$77,$70,$00,$02,$BB,$96,$9B,$02,$B9,$B6,$9B,$02,$B9,$88,$BB	; .wp.............
 	dc.b	$02,$B9,$99,$B2,$02,$B9,$B9,$BB,$02,$2B,$B8,$B2,$02,$2B,$BB,$22	; .........+...+."
 	dc.b	$02,$22,$22,$22,$BB,$BB,$BB,$BB,$BB,$BB,$BB,$BB,$2B,$BB,$BB,$BB	; ."""........+...
+; Text of the file start (1 row).
 .next5	dc.b	$22,$BB,$BB,$B2,'""+"',$B2,$22,$22,$BB	; "...""+"."".
 .next6	incbin	..\Extracted\SegaCD\STARTER\starter_06D1A.bin
+; Data of the file start (11 rows): table or constants used by it.
 	dcb.b	$8,0
 	dc.b	$97,$90,$00,$00,$00,$09,$79	; ......y
 	dcb.b	$18,0
@@ -256,6 +264,7 @@
 ; Display data table fragment A
 DispTableA	subi.w	#$7,d6
 	bra.w	.next
+; Data of DispTableA (9 rows): table or constants used by it.
 	dc.b	$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$07	; ...p...p...p....
 	dcb.b	$A,0
 	dc.b	$70,$00,$77,$70,$07,$00,$70,$07,$07,$00,$77,$70,$07,$00,$70,$07	; p.wp..p...wp..p.
@@ -265,6 +274,7 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$91,$11,$00,$09,$11,$11,$00,$00,$63,$33,$00,$00,$00,$00,$11,$11	; ........c3......
 	dc.b	$11,$31,$11,$11,$17,$31,$11,$11,$16,$21,$71,$11,$16,$61,$69,$11	; .1...1...!q..ai.
 	dc.b	$73,$11,$C6,$11	; s...
+; Data of DispTableA (89 rows): table or constants used by it.
 .next	dc.b	$62,$11,$00,$63,$00,$63,$00,$00,$00,$00,$11,$11,$11,$16,$11,$11	; b..c.c..........
 	dc.b	$11,$13,$11,$11,$11,$13,$16,$61,$11,$73,$16,$21,$11,$32,$1C,$E1	; .......a.s.!.2..
 	dc.b	$11,$33,$30,$06,$36,$00,$00,$00,$00,$00,$39,$11,$13,$E6,$31,$11	; .30.6.....9...1.
@@ -355,6 +365,7 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$99,$99,$B9,$92,$14,$56,$78,$9B,$11,$14,$46,$89,$54,$55,$66,$99	; .....Vx...F.TUf.
 	dcb.b	$10,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_07512.bin
+; Data of DispTableA (58 rows): table or constants used by it.
 	dcb.b	$B,0
 	dc.b	$0B,$BB,$2B,$B2,$0B,$BB,$BB,$22,$0B,$BB,$BB,$B2,$0B,$BB,$BB,$BB	; ..+...."........
 	dc.b	$0B,$BB,$BB,$B2,$0B,$BB,$BB,$B2,$0B,$BB,$BB,$BB,$0B,$BB,$B9,$B2	; ................
@@ -414,6 +425,7 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$BB,$BB,$2B,$B2,$89,$99,$99,$87,'DUVT',$11,$11,$11,$44	; ..+.....DUVT...D
 	dcb.b	$10,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_07CD2.bin
+; Data of DispTableA (26 rows): table or constants used by it.
 	dcb.b	$1F,0
 	dc.b	$02,$00,$00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$00	; ................
 	dc.b	$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$00	; ................
@@ -441,6 +453,7 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$00,$00,$02	; ...
 	dcb.b	$10,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_08102.bin
+; Data of DispTableA (402 rows): table or constants used by it.
 	dcb.b	$17,0
 	dc.b	$77,$00,$00,$00,$77	; w...w
 	dcb.b	$18,0
@@ -844,8 +857,10 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$41,$E8	; A.
 	dcb.b	$1EE,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_0A248.bin
+; Data of DispTableA (1 row): table or constants used by it.
 	dcb.b	$1D,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_0A885.bin
+; Data of DispTableA (23 rows): table or constants used by it.
 	dcb.b	$200,0
 	dc.b	$40,$01,$40,$02,$40,$03,$40,$04,$40,$05,$40,$06,$40,$07,$40,$08	; @.@.@.@.@.@.@.@.
 	dcb.b	$40,0
@@ -872,12 +887,14 @@ DispTableA	subi.w	#$7,d6
 ; Display data table fragment B
 DispTableB	ori.w	#$4055,(a4)
 	bra.b	DispTableD
+; Text of DispTableB (2 rows).
 	dc.b	'`W`X`Y@Z ['	; `W`X`Y@Z [
 	dcb.b	$40,0
 ; Display data table fragment C
 DispTableC	negx.w	(a4)+
 	negx.w	(a5)+
 	bra.b	DispTableF
+; Data of DispTableC (3 rows): table or constants used by it.
 	dc.w	$605F
 	dc.w	$6060
 	dc.w	$6061
@@ -888,6 +905,7 @@ DispTableD	dc.b	'@b@c'	; @b@c
 DispTableE	movea.l	-(a4),a0
 	negx.w	-(a5)
 	negx.w	-(a6)
+; Instruction bytes inside DispTableE that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
 ; Display data table fragment F
@@ -907,9 +925,11 @@ DispTableF	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
+; Instruction bytes inside DispTableF that the assembler would encode differently, kept as words (3 rows).
 	dc.w	$0000,$606C
 	dc.w	$606D
 	dcb.b	$15,0
+; Data of DispTableF (3 rows): table or constants used by it.
 .next	dcb.b	$D1,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u
 	dcb.b	$202,0
@@ -999,6 +1019,7 @@ DispTableF	ori.b	#$0,d0
 	move.w	#$B,d7
 	jsr	$6044.w
 .ex	rts
+; Text of DispTableF (5 rows).
 	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00	; NHLHOCKEY94.....
 	dc.b	'NHLHOCKEY94',$00,$00,$3D,$41,$F9	; NHLHOCKEY94..=A.
 	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...

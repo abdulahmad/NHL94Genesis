@@ -5,14 +5,18 @@ updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
 	movep.w	$40C(a4),d1
 	movep.w	$A0C(a4),d2
 	movep.w	$80C(a4),d4
+; Instruction bytes inside updatecrowdf_cd0 that the assembler would encode differently, kept as words (1 row).
 	dc.w	$060c,$070c,$080c,$090c,$0a0c,$050c,$040c,$030c
 
+; Data of updatecrowdf_cd0 (2 rows): table or constants used by it.
 	dc.w	$0107,$0207,$0307,$0407,$0507,$0b07,$0c07,$0d07
 	dc.w	$0607,$0707,$0807,$0907,$0a07,$0b07,$0c07,$0d07
 
+; Data of updatecrowdf_cd0 (2 rows): table or constants used by it.
 	dc.w	$0e07,$0f07,$1007,$1107,$1207,$0b07,$0c07,$0d07
 	dc.w	$1207,$1107,$1007,$0f07,$0e07,$0d07,$0c07,$0b07
 
+; Data of updatecrowdf_cd0 (11 rows): table or constants used by it.
 	dc.w	$0e03,$0f03,$1003,$1103,$1203,$0b03,$0c03,$0d03
 	dc.w	$1203,$1103,$1003,$0f03,$0e03,$0d03,$0c03,$0b03
 	dc.b	$00,$03,$C0,$00,$00,$03,$1F,$F2,$00,$03,$20,$E6,$00,$03,$22,$B2
@@ -30,6 +34,7 @@ Penaltylist							;Penalty number = word offset into this table. Entries $2E-$3C
 									;penalty shot additions (the penalty shot
 									;versions of 7 penalties, minutes byte $FF, and a second Face Off). Used
 									;by AddPenalty, SetPA2, PenaltyShotBox, ...
+; Data of Penaltylist (31 rows): table or constants used by it.
 	dc.w	$0000
 	dc.w	PenDataEOP-Penaltylist
 	dc.w	PenDataEOG-Penaltylist
@@ -70,9 +75,11 @@ Penaltylist							;Penalty number = word offset into this table. Entries $2E-$3C
 PenDataEOP	dc.w	$0100			;ttmm: slow down 1 half sec, 0 minutes; then the text and frame/delay
 									;words
 	String	'Period Over'
+; Instruction bytes inside PenDataEOP that the assembler would encode differently, kept as words (1 row).
 	dc.w	-$0510
 PenDataEOG	dc.w	$0100			;ttmm: slow down 1, 0 minutes
 	String	'Game Over'
+; Instruction bytes inside PenDataEOG that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0510,-$4060
 PenDataGoal	dc.w	$0100			;ttmm: slow down 1, 0 minutes; empty text
 	dc.w	2						;String with no text
@@ -82,109 +89,138 @@ PenDataNoText	dc.w	$0100		;ttmm: slow down 1, 0 minutes; empty text
 	dc.w	$0510,-$4018
 PenDataice	dc.w	$0100			;ttmm: slow down 1, 0 minutes
 	String	'Icing'
+; Instruction bytes inside PenDataice that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0002,$0101,-$0206
 PenDataoffsides	dc.w	$0100		;ttmm: slow down 1, 0 minutes
 	String	'Off-side'
+; Instruction bytes inside PenDataoffsides that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0002,$0301,-$040f
 PenDataGhold	dc.w	$0100		;ttmm: slow down 1, 0 minutes (also used for out of play / PenOOP)
 	String	'Face Off'
+; Instruction bytes inside PenDataGhold that the assembler would encode differently, kept as words (1 row).
 	dc.w	-$050a
 PenDataGhold2	dc.w	$0000		;face off text with ttmm 0 (no slow down, 0 minutes), Penaltylist entry
 									;for a face off
 	String	'Face Off'
+; Instruction bytes inside PenDataGhold2 that the assembler would encode differently, kept as words (1 row).
 	dc.w	-$050a
 PenDatadelay	dc.w	$0000		;ttmm: no slow down, 0 minutes
 	String	'Penalty'
+; Instruction bytes inside PenDatadelay that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0003,$0301,-$040f
 PenDatawhistle	dc.w	$0000		;ttmm: no slow down, 0 minutes; empty text
 	dc.w	2						;String with no text
 	dc.w	-$050a
 PenDatacharge	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Charging'
+; Instruction bytes inside PenDatacharge that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
 PenDatachargeps	dc.w	$04ff		;penalty shot form of PenDatacharge: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Charging'
+; Instruction bytes inside PenDatachargeps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,$0a01,$0b01,-$0101
 PenDataslash	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Slashing'
+; Instruction bytes inside PenDataslash that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
 PenDataslashps	dc.w	$04ff		;penalty shot form of PenDataslash: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Slashing'
+; Instruction bytes inside PenDataslashps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0201,$0301,$0201,$0301,$0201,$0301,$0201,$0301,-$0101
 PenDatatrip	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Tripping'
+; Instruction bytes inside PenDatatrip that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
 PenDatatripps	dc.w	$04ff		;penalty shot form of PenDatatrip: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Tripping'
+; Instruction bytes inside PenDatatripps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0401,$0501,$0401,$0501,$0401,$0501,$0401,$0501,-$0101
 PenDatarough2	dc.w	$0a02		;ttmm: slow down $0a, 2 minutes
 	String	'Roughing'
+; Instruction bytes inside PenDatarough2 that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDatarough	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Roughing'
+; Instruction bytes inside PenDatarough that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDataroughps	dc.w	$04ff		;penalty shot form of PenDatarough: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Roughing'
+; Instruction bytes inside PenDataroughps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDatahook	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Hooking'
+; Instruction bytes inside PenDatahook that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
 PenDatahookps	dc.w	$04ff		;penalty shot form of PenDatahook: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Hooking'
+; Instruction bytes inside PenDatahookps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0901,$0801,$0901,$0801,$0901,$0801,$0901,$0801,-$0101
 PenDatacross	dc.w	$0402		;ttmm: slow down 4, 2 minutes
 	String	'Cross Check'
+; Instruction bytes inside PenDatacross that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
 PenDatacrossps	dc.w	$04ff		;penalty shot form of PenDatacross: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Cross Check'
+; Instruction bytes inside PenDatacrossps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0601,$0f01,$1001,$0f01,$1001,$0f01,$1001,$0f01,$1001,-$0101
 PenDataint	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Interference'
+; Instruction bytes inside PenDataint that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0c06,-$0101
 PenDataintps	dc.w	$04ff		;penalty shot form of PenDataint: slow down 4, minutes $FF. Negative
 									;minutes are skipped like 0 by AddPenalty and the penalty box code, so no
 									;time is served
 	String	'Interference'
+; Instruction bytes inside PenDataintps that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0c06,-$0101
 PenDataHold	dc.w	$0402			;ttmm: slow down 4, 2 minutes
 	String	'Holding'
+; Instruction bytes inside PenDataHold that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0101,$0706,-$0101
 PenDatafight	dc.w	$2805		;ttmm: slow down $28, 5 minutes
 	String	'Fighting'
+; Instruction bytes inside PenDatafight that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDatafight2	dc.w	$2805		;ttmm: slow down $28, 5 minutes
 	String	'Fighting *'
+; Instruction bytes inside PenDatafight2 that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 PenDataInst	dc.w	$2802			;ttmm: slow down $28, 2 minutes
 	String	'Fight Instigator'
+; Instruction bytes inside PenDataInst that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0004,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,$0d01,$0e01,-$0101
 
 PenShotPenalties					;the penalty shot penalty number for penalty number d0 (word offset), -1
 									;none. Used by PenShotChk
+; Data of PenShotPenalties (2 rows): table or constants used by it.
 	dc.w	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,$38,$3C
 	dc.w	$36,$3A,$2E,$30,$34,-1,-1,-1,-1,-1,-1,-1
 
 bfasciicon							;equates to find each char definition for bigfont.map.. Indexed by ascii -
 									;$20 in PrintBigChar (called from printbig)
 	;    -sp  -!  "  #  $  %  &  -'  (  )  *  +  ,  -  -.  /
+; Data of bfasciicon (1 row): table or constants used by it.
 	dc.b -76,-73,00,00,00,00,00,-71,00,00,00,00,00,00,-72,00
 	;     0  -1  2  3  4  5  6  7  8  9  -:  ;  <  =  >  ?
+; Data of bfasciicon (1 row): table or constants used by it.
 	dc.b 51,-53,54,56,58,60,62,64,66,68,-71,00,00,00,00,74
 	;     @  A  B  C  D  E  F  G  H  -I  J  K  L  M  N  O
+; Data of bfasciicon (1 row): table or constants used by it.
 	dc.b 74,00,02,04,06,08,10,12,14,-16,17,19,21,23,25,27
 	;     P  Q  R  S  T  U  V  W  X  Y  Z
+; Data of bfasciicon (2 rows): table or constants used by it.
 	dc.b 29,31,33,35,37,39,41,43,45,47,49
 	dc.b	$00
 
@@ -216,6 +252,7 @@ PerLabels2	String	'1',$12			;the same with a blank last entry. Used by printscor
 	String	'  '
 
 sizetab								;sprite size code to tile count. sizetab, used by addframe2
+; Data of sizetab (1 row): table or constants used by it.
 	dc.b	1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16
 
 sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
@@ -229,16 +266,21 @@ sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
 	dc.w	.wingr-sublist
 	dc.w	.center-sublist
 
+; Data of sublist (2 rows): table or constants used by it.
 .defl	dc.b	0+1,8+1,16+1,24+1,32+1,40+1,48+1	;list of players in there lines/each line = 8 bytes
 	dc.b	0+2,8+2,16+2,24+2,32+2,40+2,48+2
+; Data of sublist (2 rows): table or constants used by it.
 .defr	dc.b	0+2,8+2,16+2,24+2,32+2,40+2,48+2	;defensive RD slots first, then LD slots
 	dc.b	0+1,8+1,16+1,24+1,32+1,40+1,48+1
+; Data of sublist (3 rows): table or constants used by it.
 .wingl	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3	;left wing slots, then right wing, then center
 	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5
 	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4
+; Data of sublist (3 rows): table or constants used by it.
 .wingr	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5	;right wing slots, then left wing, then center
 	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3
 	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4
+; Data of sublist (4 rows): table or constants used by it.
 .center	dc.b	0+4,8+4,16+4,24+4,32+4,40+4,48+4	;center slots, then left wing, then right wing; -1 ends
 	dc.b	0+3,8+3,16+3,24+3,32+3,40+3,48+3
 	dc.b	0+5,8+5,16+5,24+5,32+5,40+5,48+5
@@ -249,6 +291,7 @@ priolist	dc.b	0,1,2,4,3,5,6	;positions in order of importance. Used by
 
 PlayoffScreen_setup					;Playoff tree layout by gamelevel, one column per round. Used by
 									;PlayoffScreen
+; Data of PlayoffScreen_setup (5 rows): table or constants used by it.
 	dc.w	.next-PlayoffScreen_setup
 	dc.w	.next2-PlayoffScreen_setup
 	dc.w	.next3-PlayoffScreen_setup
@@ -327,6 +370,7 @@ PAttribOverallMask	dc.w	$1fba,$a	;skater Overall: attribute weight bits and colu
 	String	'[   Energy     ]'
 	dc.w	$0000,$2				;energy
 	String	'[   Agility    ]'
+; Instruction bytes inside PAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.w	$1000,$a
 	String	'[    Speed     ]'
 	dc.w	$0800,$000A		; btst #$A,d0
@@ -337,6 +381,7 @@ PAttribOverallMask	dc.w	$1fba,$a	;skater Overall: attribute weight bits and colu
 	String	'[Def. Awareness]'
 	dc.w	$0200,$000A		; andi.b #$A,d0
 	String	'[  Shot Power  ]'
+; Instruction bytes inside PAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0100,$a
 	String	'[Shot  Accuracy]'
 	dc.w	$0010,$000A		; ori.b #$A,(a0)
@@ -347,10 +392,12 @@ PAttribOverallMask	dc.w	$1fba,$a	;skater Overall: attribute weight bits and colu
 	String	'[    Weight    ]'
 	dc.w	$2000,$6				;weight
 	String	'[  Endurance   ]'
+; Instruction bytes inside PAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0008,$a
 	String	'[Aggressiveness]'
 	dc.w	$0001,$000A		; ori.b #$A,d1
 	String	'[   Checking    '
+; Instruction bytes inside PAttribOverallMask that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$0080,$a
 	dc.w	-1
 
@@ -364,6 +411,7 @@ GAttribOverall	String	'[   Overall    ]'	;goalie Overall column title (the ratin
 GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and column value, read as one
 									;long by CalcAttrib callers
 	String	'[   Agility    ]'
+; Instruction bytes inside GAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.w	$1000,$a
 	String	'[    Speed     ]'
 	dc.w	$0800,$000A		; btst #$A,d0
@@ -372,8 +420,10 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	String	'[Def. Awareness]'
 	dc.w	$0200,$000A		; andi.b #$A,d0
 	String	'[ Puck Control ]'
+; Instruction bytes inside GAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0100,$a
 	String	'[ Stick  Right ]'
+; Instruction bytes inside GAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.w	$0008,$a
 	String	'[  Stick Left  ]'
 	dc.w	$0004,$000A		; ori.b #$A,d4
@@ -563,6 +613,7 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	dc.w	$0002,$D0D4		; ori.b #$D4,d2
 	String	'   Other Scores   '
 
+; Instruction bytes inside GAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$02,$C6,$60
 	String	'   Crowd Meter    '
 	dc.w	$0002,$E556		; ori.b #$56,d2
@@ -571,9 +622,11 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	String	'  Record Holders  '
 	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
+; Instruction bytes inside GAttribOverallMask that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 ExitGameText						;Intermission menu for gsp 4
+; Data of ExitGameText (1 row): table or constants used by it.
 	dc.b	$00,$04,$FE,$05,$00,$04,$FE,$04
 	String	'    Exit Game     '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -596,9 +649,11 @@ ExitGameText						;Intermission menu for gsp 4
 	String	'  Record Holders  '
 	dc.w	$0002,$70E0		; ori.b #$E0,d2
 	String	'   Period Stats   '
+; Instruction bytes inside ExitGameText that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 LineEditorMenuText					;Line editor exit menu
+; Data of LineEditorMenuText (1 row): table or constants used by it.
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -607,9 +662,11 @@ LineEditorMenuText					;Line editor exit menu
 	String	'  Save Team Line  '
 	dc.w	$0002,$D046		; ori.b #$46,d2
 	String	'  Load Team Line  '
+; Instruction bytes inside LineEditorMenuText that the assembler would encode differently, kept as words (1 row).
 	dc.b	$00,$02,$CF,$DE,$00,$04,$FF,$00
 
 LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
+; Data of LineEditorMenuNoLoad (1 row): table or constants used by it.
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
 	dc.w	$0003,$C000		; ori.b #$0,d3

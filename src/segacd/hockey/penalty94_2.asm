@@ -28,6 +28,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 .home	bra.w	.uppt
 .away	bra.w	.home
 .uppt	bsr.w	printz
+; Inline data read by printz from the return address (2 rows).
 	dc.w	$0012
 	dc.b	$BF,$01,$19,$20,$20,$20,$16,$17,$18,$19,$BF,$01,$1A,$20,$20,$00
 	bsr.w	GetLowestPen
@@ -223,6 +224,7 @@ USBoard						;Update score board, including the players in the penalty box and t
 	bsr.w	printscores1
 	bsr.w	printz
 	String	CC_Font2Pri,$14,$8
+; Instruction bytes inside USBoard that the assembler would encode differently, kept as words (6 rows).
 	dc.w	$247C,$0001,$834C,$6100,$001C,$6100,$C8E2,$0006
 	dc.w	$BE05,$0800,$247C,$0001,$86B2,$6100,$0008,$4CDF
 	dc.w	$0FFF,$4E75,$41EA,$009C,$4240,$1018,$6B00,$0014
@@ -513,6 +515,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bne.w	.wait
 .clrz	st.b	$17CE2.l		;zamboni off
 	rts
+; Data of Intermission (3 rows): table or constants used by it.
 .next	dc.w	$0004,$22D4,$0004,$2454,$0004,$2454,$0004,$2454
 	dc.w	$0004,$25B0,$0004,$2388,$0004,$2454,$0004,$2454
 	dc.w	$0004,$2454,$0004,$26C4
@@ -616,6 +619,7 @@ NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3
 	ori.b	#$1E,-(a2)
 	ori.b	#$1A,d6
 	ori.b	#$1E,-(a4)
+; Instruction bytes inside NewTicker that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$0008,$0016,$0025,$001F,$000A,$0013,$0026,$001F
 	dc.w	$000C,$000F,$0026,$0020,$000F
 ; Skips when the ticker timer is above $1E0.
@@ -695,6 +699,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	moveq	#$2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print
+; Text of NewTicker3 (5 rows).
 .next2	dc.b	$00,$12,'EA Hockey Nigh'
 	dc.b	't',$00,$00,$18,'Stanley Cup '
 	dc.b	'Qualifier',$00,$00,$0E,'Quar'

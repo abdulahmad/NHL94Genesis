@@ -455,6 +455,7 @@ vtoa						;d0/d1 are x/y distances which are converted into direction 0-7 and
 GetHot						;push long address of structure to get hot spot from. Hot spot x/y
 	
 	btst	d0,d7
+; Instruction bytes inside GetHot that the assembler would encode differently, kept as words (3 rows).
 	dc.w	$0305
 	dc.l	$404
 	dc.w	$0206,$0206
@@ -612,6 +613,7 @@ doplayeracc
 	rts
 goalieacc						;goalie gets acc. in direction d0. Turns facedir one step toward d0
 	ori.b	#$10,d0
+; Instruction bytes inside goalieacc that the assembler would encode differently, kept as words (4 rows).
 	dc.w	$0010,$0010
 	dc.l	$FFF0
 	dc.w	$FFF0
@@ -931,6 +933,7 @@ playeracc
 	bra.w	setpde
 .ex	rts
 MaxSpeed						;max speed values for each rating level 0-$F: ((n+20)*275)^2 (92 used 250)
+; Data of MaxSpeed (4 rows): table or constants used by it.
 	dc.w	$01CD,$9410,$01FC,$E3E1,$022E,$8284,$0262,$6FF9
 	dc.w	$0298,$AC40,$02D1,$3759,$030C,$1144,$0349,$3A01
 	dc.w	$0388,$B190,$03CA,$77F1,$040E,$8D24,$0454,$F129

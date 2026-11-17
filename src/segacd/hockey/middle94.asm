@@ -639,6 +639,7 @@ ReadJoyDataTable	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	dbra	d0,.loop
 	movem.l	(sp)+,d0/a0
 	rts
+; Data of ReadJoyDataTable (2 rows): table or constants used by it.
 	dc.w	$563A,$7E00,$3E39,$0003,$75D2,$E24F,$6400,$0006
 	dc.w	$0A47,$B400,$33C7,$0003,$75D2,$8FFC,$FFFF,$4847
 	rts

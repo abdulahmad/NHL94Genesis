@@ -778,6 +778,7 @@ doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else sk
 	bchg	d0,d6
 	bchg	d0,$250.w
 	andi.l	#$1EC021E,-(a2)
+; Instruction bytes inside doinput_chkanim that the assembler would encode differently, kept as words (1 row).
 	dc.w	$148E,$14C0,$14F2,$1544
 ; doinput: skips when flag 1 of $63 is clear
 doinputCheckAnimFlag
@@ -1064,6 +1065,7 @@ getlchoice2						;add $15 to d0 for each player more or fewer than the other tea
 	ext.w	d0
 	movem.l	(sp)+,d1-d2
 	rts
+; Data of getlchoice2 (4 rows): table or constants used by it.
 .next	dc.w	$0001,$0201,$0200,$0200,$0100,$0102,$0001,$0200
 	dc.w	$0102,$0001,$0203,$04FF,$0304,$FF03,$04FF,$0304
 	dc.w	$FF04,$03FF,$0304,$FF03,$04FF,$0506,$FF05,$06FF
@@ -1511,7 +1513,9 @@ Findhittype						;look for type of swing (forhand or backhand)
 	andi.w	#$7,d0
 	btst	#$3,$4(a3)		;attribute bit 3
 	beq.w	.next
+; Instruction bytes inside Findhittype that the assembler would encode differently, kept as words (1 row).
 	dc.w	$013C,$00F0,$4E75
+; Data of Findhittype (1 row): table or constants used by it.
 .next	dc.w	$013C,$001E,$4E75
 SetShotMode
 	btst	#$2,$17F70.l
@@ -1757,6 +1761,7 @@ shotdiradj						;If the opposing goalie
 	ori.b	#$6,(a0)
 	ori.b	#$0,(a0)
 	ori.b	#$0,d0
+; Instruction bytes inside shotdiradj that the assembler would encode differently, kept as words (4 rows).
 	dc.w	$FFF0
 	dc.l	$FFF0
 	dc.w	$0006,$FFF0
@@ -2586,6 +2591,7 @@ AssistTargetFlip	move.w	$44(a3),d0
 	bne.w	.next2
 	neg.w	d0
 	neg.w	d1
+; Instruction bytes inside AssistTargetFlip that the assembler would encode differently, kept as words (1 row).
 .next2	dc.w	$41FA,$1700
 	bra.w	skateto
 .loop	rts
@@ -2712,6 +2718,7 @@ AssistTargetFlipGoalie	move.w	$44(a3),d0
 	btst.b	#$7,$62(a3)
 	bne.w	.next
 	neg.w	d1
+; Instruction bytes inside AssistTargetFlipGoalie that the assembler would encode differently, kept as words (1 row).
 .next	dc.w	$41FA,$14B6
 	bra.w	skateto
 assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not on the
@@ -3326,6 +3333,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	asr.w	$2A(a3)
 	asr.w	$2A(a3)
 	rts
+; Data of AdjustFacingDirection (2 rows): table or constants used by it.
 .next15	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0
 	dc.w	$14F2,$1544
 assgoalietopuck						;goalie skates out to a loose puck (inserted by
@@ -3579,6 +3587,7 @@ asspuckc						;player a3 is puck handler
 	beq.w	.17
 .16	lea.l	asspuckcExit(pc),a0
 .17	bra.w	skateto
+; Data of asspuckc (16 rows): table or constants used by it.
 .next3	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
 	dc.w	$002A,$4883,$D679,$0001,$7B94,$4279,$0001,$7E34
 	dc.w	$7805,$207C,$0001,$7480,$0C6B,$0006,$0052,$6C00
@@ -3598,9 +3607,11 @@ asspuckc						;player a3 is puck handler
 asspuckcExit
 	rts
 chk4lc						;see if computer should call line change
+; Data of chk4lc (2 rows): table or constants used by it.
 	dc.w	$FF9C
 	dc.w	$FFEC
 	ori.w	#$FFEC,-(a4)
+; Instruction bytes inside chk4lc that the assembler would encode differently, kept as words (1 row).
 	dc.w	$FF88
 	ori.b	#$14,$28(a0)
 	ori.w	#$28,$FFFFFFEC.w
@@ -3888,6 +3899,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	beq.w	check4benchExit
 	adda.w	#$4,sp
 	bra.w	assexit
+; Data of chk4pass (11 rows): table or constants used by it.
 	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439
 	dc.w	$0001,$7BA8,$4882,$D46B,$0000,$9479,$0001,$7B80
 	dc.w	$0C42,$0028,$6E00,$DE22,$0C42,$FFD8,$6D00,$DE1A
@@ -4324,6 +4336,7 @@ asspassrec						;assignment for catching a pass (apassrec)
 	bra.w	assexit
 	move.w	$44(a3),d0
 	move.w	$46(a3),d1
+; Instruction bytes inside asspassrec that the assembler would encode differently, kept as words (1 row).
 	dc.w	$41FA,$7BCA
 	bra.w	skateto
 assshoot						;assignment for computer shooting. Assignment ashoot ($12)
@@ -4718,6 +4731,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	rts
+; Data of SelectPenaltyShotSkaterScreen (4 rows): table or constants used by it.
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
 	dc.b	$00,$03,$05,$01,$04,$00,$00,$00,$00,$00,$FF,$06,$FF,$DD,$FF,$CE	; ................
 	dc.b	$00,$23,$FF,$CE,$FF,$CE,$FF,$F6,$00,$00,$FF,$F1,$00,$32,$FF,$F6	; .#...........2..
@@ -5059,6 +5073,7 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	bls.w	.next4
 	move.w	(a0,d1.w),$16(a2)
 	bra.w	.loop
+; Data of CompLine (3 rows): table or constants used by it.
 .next3	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
 	dc.w	$0000,$0001,$0002,$0000,$0002,$0000,$0000,$0001
 	dc.w	$0000,$0000,$0001,$0000,$0001
@@ -5081,6 +5096,7 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	move.w	-(a0),$16(a2)
 	bra.w	.loop
 .next5
+; Data of CompLine (6 rows): table or constants used by it.
 	dc.b	$00,$00,$00,$01,$00,$02,$00,$00,$00,$02,$00,$01,$00,$00,$00,$01	; ................
 	dc.b	$00,$00,$08,$AB,$00,$01,$00,$62,$67,$00,$05,$1E,$08,$B9,$00,$02	; .......bg.......
 	dc.b	$00,$01,$7F,$70,$08,$B9,$00,$05,$00,$01,$7F,$70,$08,$B9,$00,$00	; ...p.......p....
@@ -5249,6 +5265,7 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 	bmi.w	.next11
 	jsr	$2A41E.l
 .next11	bsr.w	printz
+; Inline data read by printz from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 ; Picks the song for the faceoff
 FaceoffSongPick	moveq	#$36,d0
@@ -5281,6 +5298,7 @@ FaceoffSongPick	moveq	#$36,d0
 	tst.w	$18C0A.l
 	bne.w	FaceoffRandomDelay
 	bsr.w	printsmallz
+; Inline data read by printsmallz from the return address (1 row).
 	dc.b	$00,$06,$FA,$0A,$FE,$04	; ......
 	moveq	#$C,d0
 	moveq	#$3,d1
@@ -5291,6 +5309,7 @@ FaceoffSongPick	moveq	#$36,d0
 	bne.w	.next2
 	exg.l	d0,d1
 .next2	bsr.w	printsmallz
+; Inline data read by printsmallz from the return address (1 row).
 	dc.b	$00,$06,$FB,$01,$FA,$FE	; ......
 ; Prints the line list
 FaceoffLineList	movea.l	#linelist,a1
@@ -5298,6 +5317,7 @@ FaceoffLineList	movea.l	#linelist,a1
 	addi.w	#$4,$18D58.l
 	move.w	d1,d0
 	movea.l	#linelist,a1
+; Instruction bytes inside FaceoffLineList that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6100,$7866
 ; Random delay ($B4 to $12B) before the faceoff
 FaceoffRandomDelay	move.w	#$78,d0
@@ -5348,6 +5368,7 @@ FaceoffTimerStep	subi.w	#$1,$40(a3)
 	bpl.w	updatefaceoff
 	jsr	$2A466.l
 	bra.w	Endfaceoff
+; Data of FaceoffTimerStep (4 rows): table or constants used by it.
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
 	dc.b	$00,$03,$05,$01,$04,$00,$00,$00,$00,$00,$FF,$06,$FF,$DD,$FF,$CE	; ................
 	dc.b	$00,$23,$FF,$CE,$FF,$CE,$FF,$F6,$00,$00,$FF,$F1,$00,$32,$FF,$F6	; .#...........2..

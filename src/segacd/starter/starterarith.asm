@@ -17,6 +17,7 @@ Mul32	move.l	d0,-(sp)
 	clr.w	d0
 	add.l	a0,d0
 	rts
+; Data of Mul32 (1 row): table or constants used by it.
 	dc.b	$22,$2F,$00,$04	; "/..
 ; Loads the second stack argument
 LoadLongArg8	move.l	$8(sp),d0
@@ -115,6 +116,7 @@ BitScanLeft	move.w	d2,d0
 .next	move.l	(sp)+,d3
 	move.w	(sp)+,d2
 	rts
+; Data of BitScanLeft (1 row): table or constants used by it.
 	dc.b	$05,$D2,$00,$00	; ....
 ; Loads a sprite frame descriptor from the stack arguments.
 SetupSpriteFrame	movem.l	d0-d7/a0-a6,-(sp)
@@ -133,6 +135,7 @@ SetupSpriteFrame	movem.l	d0-d7/a0-a6,-(sp)
 	adda.l	d0,a0
 	move.b	$0(a0),d0
 	cmpi.b	#$2,d0
+; Instruction bytes inside SetupSpriteFrame that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6700,$000E
 .loop	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	(sp),$6(sp)
@@ -173,4 +176,5 @@ SetupSpriteFrame	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$3,d0
 	jsr	$C4BC.l
 	bra.w	.loop
+; Data of SetupSpriteFrame (1 row): table or constants used by it.
 	dc.b	$02,$00,$05,$A9,$05,$A9,$00,$FF,$00,$FF	; ..........

@@ -422,6 +422,7 @@ checkagr						;use Agression attribute and RNG to determine if there will be a p
 									;when d0 is small. Called from CCStart, holdcheck and Bcheck
 	bclr	d5,(a6)
 	movep.l	d5,$C2C(a0)
+; Instruction bytes inside checkagr that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$0C2C,$0C2C,$0BFA
 	dc.w	$0BFA,$0B96
 ; Scales the aggression value from $73.
@@ -1604,6 +1605,7 @@ PuckCollisionExit
 ; Puck collision: return
 PuckCollisionReturn	movem.l	(sp)+,d0-d7/a0-a3
 	rts
+; Data of PuckCollisionReturn (5 rows): table or constants used by it.
 	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
 	dc.b	$00,$0D,$00,$0D,$00,$0E,$00,$0E,$00,$0E,$00,$0E,$00,$0F,$00,$0F	; ................
 	dc.b	$00,$0F,$00,$0F,$00,$0F,$00,$0F,$00,$90,$00,$90,$00,$A9,$00,$A9	; ................

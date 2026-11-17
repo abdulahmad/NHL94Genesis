@@ -48,4 +48,5 @@ PicTilesFramesB	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
 PlRecordTable	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
 ; Background image: width, height, then tile data.
 PlBackgroundImage	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
+; Data of PlBackgroundImage (1 row): table or constants used by it.
 	dcb.b	$8DC,0
