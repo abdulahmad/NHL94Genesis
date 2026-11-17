@@ -93,8 +93,8 @@ PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / 
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
 	dc.w	$0014,$2020
-	dc.w	$4D61,$6E75,$616C,$2047,$6F61,$6C69,$6520,$2020
-	dc.w	$0014,$2020,$2041,$7574,$6F20,$476F,$616C,$6965
+	dc.b	'Manual Goalie   '
+	dc.b	$00,$14,'   Auto Goalie'
 	dc.w	$2020,$2020
 Sub_2C59E
 	movem.l	d0-d2/a0-a1,-(sp)
@@ -607,8 +607,8 @@ LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / do
 	dc.w	$0101,$0203,$0405,$1901,$0101,$0203,$0405,$1901
 	dc.w	$0909,$0A0B,$0C0D,$2101,$1111,$1213,$1415,$2101
 	dc.w	$0519,$1A1B,$1C1D,$2901,$0D21,$2223,$2425,$3101
-	dc.w	$1D29,$2A2B,$2C2C,$0101,$2531,$3233,$3434,$0101
-	dc.w	$2531,$3233,$3434,$0101
+	dc.b	$1D,')*+,,',$01,$01,'%12344',$01,$01
+	dc.b	'%12344',$01,$01
 LineEditorExit
 	bsr.w	Sub_2CE80
 	move.w	#$18,(palcount).l
@@ -729,7 +729,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	rts
 AttributeOffsetTbl						;Line slots saved in databuffer ($FF ends)
 	dc.w	$0102,$0304,$0509,$0A0B,$0C0D,$1112,$1314,$1519
-	dc.w	$1A1B,$1C1D,$2122,$2324,$2529,$2A2B,$2C31,$3233
+	dc.b	$1A,$1B,$1C,$1D,'!"#$%)*+,123'
 	dc.w	$34FF
 TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (DisplayPlayerList:
 	

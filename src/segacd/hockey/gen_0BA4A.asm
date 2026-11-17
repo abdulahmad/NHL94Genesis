@@ -105,7 +105,7 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	dc.w	$653A
 	move.l	d0,d0
 	dc.w	$0018,$BF02
-	dc.w	$1053,$656C,$6563,$7420,$6F72,$2072,$6570,$6C61
+	dc.b	$10,'Select or repla'
 	dc.w	$6365,$3A00,$48E7,$FFFE,$3F39,$0001,$A38A,$3F39
 	dc.w	$0001,$A38C,$4EB9,$0003,$8F6E,$0006,$BF05,$0800
 	move.w	#$6,d7
@@ -184,7 +184,7 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$4142,$4344,$4546,$4748,$494A,$4B4C,$4D4E,$4F50
+	dc.b	'ABCDEFGHIJKLMNOP'
 NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
 	subq.w	#$8,(a2)
 	subq.w	#$1,(a4)
@@ -472,21 +472,21 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 .0	jsr	(printsmall).l
 	rts
 	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
-	dc.w	$2520,$2020,$5769,$6E2D,$4C6F,$7373,$2D54,$6965
-	dc.w	$FD04,$FC19,$5573,$6520,$412B,$4320,$746F,$2063
-	dc.w	$6C65,$6172,$2041,$4C4C,$2077,$696E,$2072,$6563
-	dc.w	$6F72,$6473,$FD10,$FC1A,$2020,$4D6F,$7265,$205D
+	dc.b	'%   Win-Loss-Tie'
+	dc.b	$FD,$04,$FC,$19,'Use A+C to c'
+	dc.b	'lear ALL win rec'
+	dc.b	'ords',$FD,$10,$FC,$1A,'  More ]'
 	dc.w	$F900,$0052,$F806,$0312,$08F9,$0147,$6F61,$6C73
-	dc.w	$2020,$2020,$2020,$2020,$2054,$6561,$6D73,$2020
-	dc.w	$2020,$FD04,$FC19,$2020,$2020,$5445,$414D,$204D
-	dc.w	$5553,$5420,$5749,$4E20,$544F,$2051,$5541,$4C49
-	dc.w	$4659,$2020,$2020,$FD10,$FC1A,$5B20,$4D6F,$7265
+	dc.b	'         Teams  '
+	dc.b	'  ',$FD,$04,$FC,$19,'    TEAM M'
+	dc.b	'UST WIN TO QUALI'
+	dc.b	'FY    ',$FD,$10,$FC,$1A,'[ More'
 	dc.w	$205D,$F900,$0052,$F806,$0312,$08F9,$0153,$6176
-	dc.w	$6573,$2020,$2020,$2020,$2020,$2054,$6561,$6D73
-	dc.w	$2020,$2020,$FD04,$FC19,$2020,$2020,$5445,$414D
-	dc.w	$204D,$5553,$5420,$5749,$4E20,$544F,$2051,$5541
-	dc.w	$4C49,$4659,$2020,$2020,$FD10,$FC1A,$5B20,$4D6F
-	dc.w	$7265,$2020,$F900
+	dc.b	'es         Teams'
+	dc.b	'    ',$FD,$04,$FC,$19,'    TEAM'
+	dc.b	' MUST WIN TO QUA'
+	dc.b	'LIFY    ',$FD,$10,$FC,$1A,'[ Mo'
+	dc.b	're  ',$F9,$00
 Sub_27398
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
@@ -629,10 +629,10 @@ Sub_274FA
 	dbra	d7,.lC530
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0028,$2020,$2020,$2020,$2020,$2020,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$2020,$2020,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$0006,$6279,$2000,$0008
-	dc.w	$2076,$732E,$2000
+	dc.b	$00,'(              '
+	dc.b	'                '
+	dc.b	'        ',$00,$06,'by ',$00,$00,$08
+	dc.b	' vs. ',$00
 PrintRecordName
 	move.w	d7,-(sp)
 	neg.w	d7
@@ -844,7 +844,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$0016,$BF04,$0353,$484F,$4F54,$4F55,$5420,$4D4F
+	dc.b	$00,$16,$BF,$04,$03,'SHOOTOUT MO'
 	dc.w	$4445,$BF04,$0500
 ClearShootout						;Clear the player structs (SortCords) and the shootout state.
 	movea.l	#$17480,a0

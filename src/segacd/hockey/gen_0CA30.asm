@@ -265,9 +265,9 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	addi.w	#$1,d2
 	dbra	d1,.loop3
 	rts
-	dc.w	$0012,$2020,$2020,$4F76,$6572,$616C,$6C20,$2020
-	dc.w	$205D,$1F3A,$000A,$0012,$2020,$2020,$4F76,$6572
-	dc.w	$616C,$6C20,$2020,$205D,$1B0F,$000A
+	dc.b	$00,$12,'    Overall   '
+	dc.b	' ]',$1F,':',$00,$0A,$00,$12,'    Over'
+	dc.b	'all    ]',$1B,$0F,$00,$0A
 ShootersPick
 	cmp.w	(TestList).l,d0
 	beq.w	ShootersLoop

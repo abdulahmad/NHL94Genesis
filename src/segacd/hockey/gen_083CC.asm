@@ -575,11 +575,11 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 	bne.w	.1
 	movea.l	#$23E7A,a1		;full name
 .1	jmp	(print).l
-	dc.w	$0014,$4E65,$7720,$596F,$726B,$2049,$736C,$616E
-	dc.w	$6465,$7273,$0012,$4E65,$7720,$596F,$726B,$2052
-	dc.w	$616E,$6765,$7273,$0016,$2020,$2020,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$2020,$2020,$0016,$4E2F
-	dc.w	$4120,$2020,$2020,$2020,$2020,$2020,$2020,$2020
+	dc.b	$00,$14,'New York Islan'
+	dc.b	'ders',$00,$12,'New York R'
+	dc.b	'angers',$00,$16,'        '
+	dc.b	'            ',$00,$16,'N/'
+	dc.b	'A               '
 	dc.w	$2020
 OptionValueOffsets						;Offsets of each option's value Strings. Team 1 / 2 are not read
 									;(PrintOptTeamName); User Records uses the On / Off list
@@ -611,13 +611,13 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 .done	bclr	#$3,(sflags6).l		;normal
 	movem.l	(sp)+,d0-d1
 	rts
-	dc.w	$0010,$506C,$6179,$204D,$6F64,$6520,$2020,$2000
-	dc.w	$0010,$506C,$6179,$6572,$7320,$2020,$2020,$2000
-	dc.w	$0010,$5465,$616D,$2031,$2020,$2020,$2020,$2000
-	dc.w	$0010,$5465,$616D,$2032,$2020,$2020,$2020,$2000
-	dc.w	$0010,$5065,$722E,$204C,$656E,$6774,$6820,$2000
-	dc.w	$0010,$476F,$616C,$6965,$7320,$2020,$2020,$2000
-	dc.w	$0010,$5573,$6572,$2052,$6563,$6F72,$6473,$2000
-	dc.w	$0010,$5065,$6E61,$6C74,$6965,$7320,$2020,$2000
-	dc.w	$0010,$4C69,$6E65,$2043,$6861,$6E67,$6573,$2000
+	dc.b	$00,$10,'Play Mode    ',$00
+	dc.b	$00,$10,'Players      ',$00
+	dc.b	$00,$10,'Team 1       ',$00
+	dc.b	$00,$10,'Team 2       ',$00
+	dc.b	$00,$10,'Per. Length  ',$00
+	dc.b	$00,$10,'Goalies      ',$00
+	dc.b	$00,$10,'User Records ',$00
+	dc.b	$00,$10,'Penalties    ',$00
+	dc.b	$00,$10,'Line Changes ',$00
 	dc.w	$0004,$0000

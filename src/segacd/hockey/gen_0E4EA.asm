@@ -259,8 +259,8 @@ GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from Pr
 	move.w	d1,d0
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
-	dc.w	$334C,$494B,$4E43,$4B43,$3442,$4A49,$4442,$4A37
-	dc.w	$454B,$4738,$4538,$4847,$4846,$5B59
+	dc.b	'3LIKNCKC4BJIDBJ7'
+	dc.b	'EKG8E8HGHF[Y'
 ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) and a3 is not
 	
 	movem.l	d0,-(sp)

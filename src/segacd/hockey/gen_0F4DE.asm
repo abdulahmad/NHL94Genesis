@@ -6,20 +6,20 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 	move.w	(a2,d3.w),-(a0)
 	dc.w	$5A31,$3433
 	dc.w	$3334,$5A00
-	dc.w	$3537,$3537,$3636,$383A,$3938,$5A65
+	dc.b	'5757668:98Ze'
 	dc.w	$4A4B
 	dc.w	$4B00
 	addq.b	#$5,d0
 	move.w	#$3D00,-(a5)
-	dc.w	$5A3C,$3E3F,$3F00,$5A00,$7775,$7600,$5A00,$4042
-	dc.w	$4142,$5A40,$4343,$4544,$5A46,$4F4E,$4F4D,$5A4C
-	dc.w	$5051,$5000,$5A52,$4748,$4749,$5A49,$5455,$5300
-	dc.w	$5A00,$7775,$7600,$5A00,$5657,$5658,$0058,$595B
-	dc.w	$595C,$5A5C,$5D5E,$5D00,$5A5E,$5F60,$6163,$6465
-	dc.w	$6768,$6867,$5A69,$6A6B,$6B00,$5A00,$6C6C,$6D00
-	dc.w	$5A00,$6E6F,$7000,$5A00,$7173,$7100,$5A74,$7775
-	dc.w	$7600,$5A00,$5455,$5300,$5A00,$5455,$5300,$5A00
-	dc.w	$3440,$4249,$585C,$6566
+	dc.b	'Z<>??',$00,'Z',$00,'wuv',$00,'Z',$00,'@B'
+	dc.b	'ABZ@CCEDZFONOMZL'
+	dc.b	'PQP',$00,'ZRGHGIZITUS',$00
+	dc.b	'Z',$00,'wuv',$00,'Z',$00,'VWVX',$00,'XY['
+	dc.b	'Y',$5C,'Z',$5C,']^]',$00,'Z^_`acde'
+	dc.b	'ghhgZijkk',$00,'Z',$00,'llm',$00
+	dc.b	'Z',$00,'nop',$00,'Z',$00,'qsq',$00,'Ztwu'
+	dc.b	'v',$00,'Z',$00,'TUS',$00,'Z',$00,'TUS',$00,'Z',$00
+	dc.b	'4@BIX',$5C,'ef'
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
@@ -542,7 +542,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 PlayedByExit
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
-	dc.w	$000E,$2870,$6C61,$7965,$6420,$6279,$2000,$0002
+	dc.b	$00,$0E,'(played by ',$00,$00,$02
 PlayedByNone
 	movea.l	#$2AE4E,a1
 	bra.w	PlayedByExit

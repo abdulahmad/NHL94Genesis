@@ -367,11 +367,11 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	moveq	#$2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print
-	dc.w	$0012,$4541,$2048,$6F63,$6B65,$7920,$4E69,$6768
-	dc.w	$7400,$0018,$5374,$616E,$6C65,$7920,$4375,$7020
-	dc.w	$5175,$616C,$6966,$6965,$7200,$000E,$5175,$6172
-	dc.w	$7465,$7266,$696E,$616C,$0018,$5374,$616E,$6C65
-	dc.w	$7920,$4375,$7020,$5365,$6D69,$6669,$6E61,$6C00
+	dc.b	$00,$12,'EA Hockey Nigh'
+	dc.b	't',$00,$00,$18,'Stanley Cup '
+	dc.b	'Qualifier',$00,$00,$0E,'Quar'
+	dc.b	'terfinal',$00,$18,'Stanle'
+	dc.b	'y Cup Semifinal',$00
 Sub_3CE8C
 	bsr.w	SetTickerAreaPosition
 	move.w	#$7FF,d2

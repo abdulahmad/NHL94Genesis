@@ -876,7 +876,7 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 	asl.w	#$5,d0
 	move.w	d0,(a5)+		;vram destination
 	rts
-	dc.w	$2044,$444C,$4352,$5800
+	dc.b	' DDLCRX',$00
 addframe
 	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0

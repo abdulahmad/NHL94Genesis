@@ -92,10 +92,10 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .l24826	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$000A,$506C,$6179,$6F66,$6673,$0010,$5175,$6172
-	dc.w	$7465,$7266,$696E,$616C,$7300,$000C,$5365,$6D69
-	dc.w	$6669,$6E61,$6C73,$0008,$4669,$6E61,$6C73,$000C
-	dc.w	$4368,$616D,$7069,$6F6E,$7300
+	dc.b	$00,$0A,'Playoffs',$00,$10,'Quar'
+	dc.b	'terfinals',$00,$00,$0C,'Semi'
+	dc.b	'finals',$00,$08,'Finals',$00,$0C
+	dc.b	'Champions',$00
 InitScoutingDisplay						;Start the text player UpdateScoutingDisplay: VertLineScrolling = -1,
 									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / ScoutingReportTimer;
 									;return a0 =
@@ -429,7 +429,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	dc.w	$0005,$00FF,$800F,$23FC,$0003,$DB90,$0001,$8D66
 	dc.w	$4EB9,$0004,$7DAC,$4EB9,$0003,$6D0A,$33FC,$0018
 	dc.w	$0001,$8D62,$6100,$8EF4,$0012,$F804,$030C,$0143
-	dc.w	$6865,$636B,$2053,$6F75,$6E64,$7C14,$3039,$0001
+	dc.b	'heck Sound|',$14,'09',$00,$01
 	dc.w	$7474,$B079,$0001,$7474,$6700,$FFF8,$4EB9,$0003
 	dc.w	$74F0,$4EB9,$0003,$74BE,$4A01,$6700,$FFE0,$0801
 	dc.w	$0007,$6600,$C12A,$0801,$0003,$6700,$0006,$0646

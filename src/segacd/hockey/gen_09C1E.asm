@@ -240,9 +240,9 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	jsr	(appstring).l
 .lA7E8	movem.l	(sp)+,d0-d7/a1-a6
 	rts
-	dc.w	$000A,$5265,$636F,$7264,$2000,$0008,$2067,$6F61
-	dc.w	$6C73,$0008,$2067,$6F61,$6C00,$0008,$2073,$6176
-	dc.w	$6573,$0008,$2073,$6176,$6500
+	dc.b	$00,$0A,'Record ',$00,$00,$08,' goa'
+	dc.b	'ls',$00,$08,' goal',$00,$00,$08,' sav'
+	dc.b	'es',$00,$08,' save',$00
 CopyString						;Copy String a1 (length word first) to a3
 	movem.l	d0,-(sp)
 	move.w	(a1),d0		;the length word counts the header too
@@ -363,7 +363,7 @@ PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opp
 	jsr	(appstring).l
 	movem.l	(sp)+,d0-d7/a1-a6
 	rts
-	dc.w	$0006,$7673,$2E20
+	dc.b	$00,$06,'vs. '
 AppendRecordHolder						;Append the user name of the record holder (byte 1 of record a0, or read
 									;record d0 / d1 when a0 is 0) to a1 (AppendUserName)
 	movem.l	d0-d7/a1-a2,-(sp)

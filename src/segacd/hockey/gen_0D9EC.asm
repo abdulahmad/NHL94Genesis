@@ -83,15 +83,15 @@ TwoSpacesTxt						;A two space String (printsmall by PrintTwoSpaces)
 	dc.w	$0004,$2020
 ScoutRatingText						;rating names; only ' Overall ' is printed (PrintMatchupRatings, matchup
 	
-	dc.w	$000A,$5368,$6F6F,$7469,$6E67,$000A,$536B,$6174
-	dc.w	$696E,$6700,$000A,$5061,$7373,$696E,$6700,$000A
-	dc.w	$4465,$6665,$6E73,$6500,$000A,$4368,$6563,$6B69
-	dc.w	$6E67,$000A,$4669,$6768,$7469,$6E67,$000E,$476F
-	dc.w	$616C,$6B65,$6570,$696E,$6700,$0012,$506F,$7765
-	dc.w	$7220,$506C,$6179,$2041,$6476,$2E00,$001A,$2D20
-	dc.w	$2020,$2048,$6F6D,$6520,$5465,$616D,$2041,$6476
-	dc.w	$2E20,$2020,$2000,$0012,$2020,$2020,$4F76,$6572
-	dc.w	$616C,$6C20,$2020,$2020,$FFFF
+	dc.b	$00,$0A,'Shooting',$00,$0A,'Skat'
+	dc.b	'ing',$00,$00,$0A,'Passing',$00,$00,$0A
+	dc.b	'Defense',$00,$00,$0A,'Checki'
+	dc.b	'ng',$00,$0A,'Fighting',$00,$0E,'Go'
+	dc.b	'alkeeping',$00,$00,$12,'Powe'
+	dc.b	'r Play Adv.',$00,$00,$1A,'- '
+	dc.b	'   Home Team Adv'
+	dc.b	'.    ',$00,$00,$12,'    Over'
+	dc.b	'all     ',$FF,$FF
 DrawMatchupPictures						;Draw the matchup's 6 x 6 pictures, visitors at x 2, home at x $20, y $F:
 	
 	
@@ -316,12 +316,12 @@ MatchupPosNames						;Position names of matchups 1-6
 	dc.w	$6874
 	movea.l	-(a6),a0
 	dc.w	$6F72
-	dc.w	$7761,$7264,$2020,$0012,$6C65,$6674,$2064,$6566
+	dc.b	'ward  ',$00,$12,'left def'
 	dc.w	$656E
 Sub_28FD0
-	dc.w	$7365,$6D61,$6E20,$0012,$7269,$6768,$7420,$6465
-	dc.w	$6665,$6E73,$656D,$616E,$0012,$2020,$2020,$2067
-	dc.w	$6F61,$6C69,$6520,$2020,$2020
+	dc.b	'seman ',$00,$12,'right de'
+	dc.b	'fenseman',$00,$12,'     g'
+	dc.b	'oalie     '
 GetMatchupPlayers						;matchuphome / matchupvis = the home / visitors player of the matchup.
 	
 	movem.l	d0/a0-a1,-(sp)
@@ -452,7 +452,7 @@ HomeTxt						;name used when the home team has no nickname
 	dc.w	$0006,$486F
 	dc.w	$6D65
 VisitorsTxt						;name used when the visiting team has no nickname
-	dc.w	$000A,$5669,$7369,$746F,$7273
+	dc.b	$00,$0A,'Visitors'
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
 	
 	

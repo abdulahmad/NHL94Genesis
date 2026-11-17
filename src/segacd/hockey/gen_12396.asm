@@ -63,15 +63,15 @@ Sub_2D396
 	dbra	d1,.l12496
 	rts
 	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
-	dc.w	$0012,$2020,$2020,$476F,$616C,$6965,$7320,$2020
-	dc.w	$207D,$0012,$7B20,$2053,$636F,$7269,$6E67,$2020
-	dc.w	$3120,$207D,$0012,$7B20,$2053,$636F,$7269,$6E67
-	dc.w	$2020,$3220,$207D,$0012,$7B20,$2020,$4368,$6563
-	dc.w	$6B69,$6E67,$2020,$207D,$0012,$7B20,$506F,$7765
-	dc.w	$7220,$506C,$6179,$2031,$207D,$0012,$7B20,$506F
-	dc.w	$7765,$7220,$506C,$6179,$2032,$207D,$0012,$7B50
-	dc.w	$656E,$616C,$7479,$204B,$696C,$6C20,$317D,$0012
-	dc.w	$7B50,$656E,$616C,$7479,$204B,$696C,$6C20,$3220
+	dc.b	$00,$12,'    Goalies   '
+	dc.b	' }',$00,$12,'{  Scoring  '
+	dc.b	'1  }',$00,$12,'{  Scoring'
+	dc.b	'  2  }',$00,$12,'{   Chec'
+	dc.b	'king   }',$00,$12,'{ Powe'
+	dc.b	'r Play 1 }',$00,$12,'{ Po'
+	dc.b	'wer Play 2 }',$00,$12,'{P'
+	dc.b	'enalty Kill 1}',$00,$12
+	dc.b	'{Penalty Kill 2 '
 GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
 	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
@@ -93,9 +93,9 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 	dc.w	$0479,$0001,$0001,$8D58,$3200,$0240,$0FFF,$4EB9
 	dc.w	$0003,$90F4,$4EB9,$0003,$8F80,$7004,$0881,$000E
 	dc.w	$6700,$0004,$7005,$43FA,$0008,$4EF9,$0003,$CEBE
-	dc.w	$000A,$4963,$6520,$2020,$2020,$000A,$4265,$6E63
-	dc.w	$6820,$2020,$000A,$496E,$6A75,$7279,$2050,$000A
-	dc.w	$496E,$6A75,$7279,$2047,$0006,$2020,$2020,$0006
+	dc.b	$00,$0A,'Ice     ',$00,$0A,'Benc'
+	dc.b	'h   ',$00,$0A,'Injury P',$00,$0A
+	dc.b	'Injury G',$00,$06,'    ',$00,$06
 	dc.w	$2043,$2020
 AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	add.w	d0,d0
@@ -121,9 +121,9 @@ AttribWeight						;Weight: 140 + 8 * rating lb
 	addq.w	#$1,$6768(a1)
 	moveq	#$79,d2
 	move.l	-(a0),d0
-	dc.w	$000A,$4C65,$6674,$7920,$2020,$E740,$0640,$008C
+	dc.b	$00,$0A,'Lefty   ',$E7,'@',$06,'@',$00,$8C
 	dc.w	$4EB9,$0003,$915E,$4EB9,$0003,$8F80,$4EB9,$0003
-	dc.w	$8F6E,$0008,$206C,$6220,$2000,$4E75
+	dc.b	$8F,'n',$00,$08,' lb  ',$00,'Nu'
 ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes each from ScoreSum),
 									;scrolled with up / down, start exits. Menu item handler
 	moveq	#$A,d0		;SetupScreen d0/d1: row offset / height
@@ -304,7 +304,7 @@ PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 .l12A2A	addi.w	#$1,(printy).l
 	rts
 	dc.w	$0006,$5348,$3200,$0004,$5348,$0004,$2000,$0004
-	dc.w	$5050,$0006,$5050,$3200
+	dc.b	'PP',$00,$06,'PP2',$00
 PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 bytes each from PenSum,
 									;PenSumLength bytes), scrolled as ScoringSummaryScreen. Menu item handler
 	moveq	#$A,d0		;bitmap row $A

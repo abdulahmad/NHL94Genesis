@@ -563,7 +563,7 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 									;bit 2. Called from SetPA
 	dc.w	$0016,$BF04
 	bchg	d1,(a0)
-	dc.w	$454E,$414C,$5459,$2053,$484F,$5421,$BF04,$0500
+	dc.b	'ENALTY SHOT!',$BF,$04,$05,$00
 Sub_40EFA
 	movem.l	d0-d2/a0-a4,-(sp)
 	btst	#$2,$17F70.l
@@ -657,9 +657,9 @@ Sub_40EFA
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
 	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
-	dc.w	$BF0C,$0348,$4154,$2054,$5249,$434B,$21BF,$0C05
+	dc.b	$BF,$0C,$03,'HAT TRICK!',$BF,$0C,$05
 	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
-	dc.w	$0012,$BF0C,$0348,$4154,$2054,$5249,$434B,$21BF
+	dc.b	$00,$12,$BF,$0C,$03,'HAT TRICK!',$BF
 	dc.w	$0C05
 	jsr	(printz).l
 	String	CC_Font1,$B,$2
