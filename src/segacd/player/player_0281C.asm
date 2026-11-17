@@ -45,7 +45,8 @@ PlBlitToBuffer	movem.l	d0-d7/a0-a3,-(sp)
 	bne.w	.loop2
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-LF64Sub4	movem.l	d0-d4,-(sp)
+; Routine of the player screen, saves d0-d4
+PlSaveRegsA	movem.l	d0-d4,-(sp)
 	move.w	#$50,$E0(a6)
 	move.w	d0,d3
 	swap	d0
@@ -130,7 +131,8 @@ BinToBcdCarry	movem.l	d0-d2,-(sp)
 	ori.l	#$25000000,d7
 .next4	movem.l	(sp)+,d0-d2
 	rts
-LF64Sub5	movem.l	d0-d2/a0-a1,-(sp)
+; Routine of the player screen, saves d0-d2/a0-a1
+PlSaveRegsB	movem.l	d0-d2/a0-a1,-(sp)
 	lea.l	.next(pc),a1
 	moveq	#$0,d2
 	clr.b	(a1)+
@@ -327,9 +329,11 @@ VdpWriteCmdD4	andi.l	#$FFFF,d4
 	swap	d4
 	addi.l	#$40000000,d4
 	rts
-LF64_27	addq.w	#$1,$EC(a6)
+; Increments the frame timer
+PlTimerTick	addq.w	#$1,$EC(a6)
 	rts
-LF64_28	move.w	#$1,$102(a6)
+; Vblank handler of the player screen
+PlVblankHandler	move.w	#$1,$102(a6)
 	addi.l	#$1,$96(a6)
 	cmpi.w	#$2,$DE(a6)
 	beq.w	.next9
@@ -642,7 +646,7 @@ LF64_28	move.w	#$1,$102(a6)
 	bsr.w	WaitDmnaSet
 .next13	movem.l	(sp)+,d0-d3/a0-a2
 .next14	tst.w	$FA(a6)
-	beq.w	LF64_29
+	beq.w	PlVblankTimers
 	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	$F6(a6),d0
 	cmp.w	$F4(a6),d0
@@ -670,7 +674,8 @@ LF64_28	move.w	#$1,$102(a6)
 	andi.w	#$3FF,d0
 	move.w	d0,$F2(a6)
 .next18	movem.l	(sp)+,d0-d3/a0-a2
-LF64_29	movem.l	d0-d5/a0-a1,-(sp)
+; Vblank: ticks the timers
+PlVblankTimers	movem.l	d0-d5/a0-a1,-(sp)
 	bsr.w	TickTimers
 	movem.l	(sp)+,d0-d5/a0-a1
 	rts
@@ -825,7 +830,8 @@ DecodePadBits	not.b	d0
 	move.w	(sp)+,d1
 	rts
 .next	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
-LF64Sub7	movem.l	d1/a0,-(sp)
+; Player screen routine
+PlRoutineA	movem.l	d1/a0,-(sp)
 	tst.w	$BC(a6)
 	beq.w	.next
 	bsr.b	.loop
@@ -1015,19 +1021,20 @@ LF64Sub7	movem.l	d1/a0,-(sp)
 .next9	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 ; Saves the vblank vector and points it at the page handler.
 InstallVblankHook	move.l	$6038.w,$D6(a6)
-	lea.l	LF64_37(pc),a0
+	lea.l	PlSubCpuHandshake(pc),a0
 	move.l	a0,$6038.w
 	rts
 ; Restores the saved vblank vector.
 RemoveVblankHook	move.l	$D6(a6),$6038.w
 	rts
-LF64_37	btst.b	#$5,$FF800E.l
+; Handshake with the main CPU through the gate array
+PlSubCpuHandshake	btst.b	#$5,$FF800E.l
 	beq.w	.ex
 	bset.b	#$2,$FF800F.l
 	pea.l	.next(pc)
 	move.l	$D2(a6),-(sp)
 	rts
-.next	bsr.w	LF64Sub7
+.next	bsr.w	PlRoutineA
 .loop	btst.b	#$4,$FF800E.l
 	bne.b	.loop
 	move.w	#$2F,$FF8026.l
@@ -1073,7 +1080,8 @@ TilemapAddr	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bsr.w	PrintTextLine
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
-LF64Sub8	movem.l	d0-d2/a0-a1/a5,-(sp)
+; Player screen routine
+PlRoutineB	movem.l	d0-d2/a0-a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2

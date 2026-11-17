@@ -11,6 +11,8 @@
 	dc.b	$3C,$00,$02,$04,$06,$08,$0A,$0C,$0E,$F0,$11,$13,$15,$17,$19,$1B	; <...............
 	dc.b	$1D,$1F,$21,$23,$25,$27,')+-/1'	; ..!#%')+-/1
 	dcb.b	$9,0
-DispatchTail_12	dc.b	$60,$00,$00,$8E			; `...
-DispatchTail_13	dcb.b	$8C,0
+; Start of a RAM-resident code image (bra over its header)
+RamImageA	dc.b	$60,$00,$00,$8E			; `...
+; Zero padding of image A
+RamImageAPad	dcb.b	$8C,0
 

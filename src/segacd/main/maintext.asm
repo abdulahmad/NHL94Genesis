@@ -107,18 +107,18 @@ ReDraw_A	; Sierra C function name tag: ReDraw (first copy of the module)
 drawprint_A	; Sierra C function name tag: drawprint (first copy of the module)
 	link	a6,#$0
 	move.l	$8(a6),-(sp)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	move.l	$5C(a0),-(sp)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	move.l	$60(a0),-(sp)
 	jsr	DrawTextToPlane(pc)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	addq.l	#$1,$60(a0)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	moveq	#$18,d0
 	cmp.l	$60(a0),d0
 	bgt.b	.next
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	subi.l	#$14,$60(a0)
 .next	jsr	ReDraw_A(pc)
 	unlk	a6
@@ -137,7 +137,7 @@ NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	clr.b	(a4,d0.w)
 .loop	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	DispatchTail_63(pc)
+	jsr	NumStrThunkB(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -145,7 +145,7 @@ NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	DispatchTail_62(pc)
+	jsr	NumStrThunkA(pc)
 	move.l	d0,d6
 	bne.b	.loop
 	bra.b	.next
@@ -298,18 +298,18 @@ InitWorld_A	; Sierra C function name tag: InitWorld (first copy of the module)
 	clr.w	(a0)
 	movea.l	#$A12010,a0
 	clr.w	$2(a0)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	moveq	#$4,d0
 	move.l	d0,$5C(a0)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	move.l	d0,$60(a0)
 	pea.l	LFF3444(pc)
 	jsr	aprint_A(pc)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	move.l	$54(a0),-(sp)
 	pea.l	LFF3434(pc)
 	jsr	aprint_A(pc)
-	lea.l	DispatchTail_12(pc),a0
+	lea.l	RamImageA(pc),a0
 	move.l	$58(a0),-(sp)
 	pea.l	LFF3424(pc)
 	jsr	aprint_A(pc)

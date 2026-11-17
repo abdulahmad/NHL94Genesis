@@ -8,7 +8,7 @@
 ; Draws the career statistics rows from $44(a6).
 PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	$44(a6),d0
-	beq.w	LF64_14
+	beq.w	PlCareerExit
 	movea.l	d0,a2
 	move.w	#$1C3,-(sp)
 	move.w	#$14B,-(sp)
@@ -161,7 +161,8 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	move.b	(a1)+,d1
 	bsr.w	PrintTextLine
 	dbra	d5,.loop15
-LF64_13	move.w	$56(a6),d6
+; Career table: next row
+PlCareerRowNext	move.w	$56(a6),d6
 	beq.w	.next
 	subq.w	#$1,d6
 	movea.l	a2,a0
@@ -169,16 +170,16 @@ LF64_13	move.w	$56(a6),d6
 	lea.l	(a0,d5.w),a0
 	addi.w	#$80,d3
 	cmpi.w	#$656C,$4(a0)
-	beq.w	LF64_15
+	beq.w	PlCareerRowRedo
 	cmpi.w	#$656E,$4(a0)
-	beq.w	LF64_15
+	beq.w	PlCareerRowRedo
 	dbra	d6,.loop
 	movea.l	a0,a3
 	moveq	#$6,d6
 .loop2	cmpi.w	#$656C,$4(a0)
-	beq.w	LF64_15
+	beq.w	PlCareerRowRedo
 	cmpi.w	#$656E,$4(a0)
-	beq.w	LF64_15
+	beq.w	PlCareerRowRedo
 	move.w	(a0),d5
 	lea.l	(a0,d5.w),a0
 	addi.w	#$80,d3
@@ -239,13 +240,15 @@ LF64_13	move.w	$56(a6),d6
 	lea.l	(a2,d5.w),a2
 	addi.w	#$80,d3
 	cmpi.w	#$656C,$4(a2)
-	beq.w	LF64_14
+	beq.w	PlCareerExit
 	cmpi.w	#$656E,$4(a2)
-	beq.w	LF64_14
+	beq.w	PlCareerExit
 	dbra	d6,.loop3
-LF64_14	movem.l	(sp)+,d0-d7/a0-a5
+; Career table: restore registers and return
+PlCareerExit	movem.l	(sp)+,d0-d7/a0-a5
 	rts
-LF64_15	subi.w	#$1,$56(a6)
+; Career table: step the row counter and redo
+PlCareerRowRedo	subi.w	#$1,$56(a6)
 	move.w	#$0,$B0(a6)
-	bra.w	LF64_13
+	bra.w	PlCareerRowNext
 

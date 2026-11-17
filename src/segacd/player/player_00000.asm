@@ -1,9 +1,11 @@
-X_1B9C	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$2C,$7C,$00,$00,$AE,$6E,$9D,$FC	; ........,|...n..
+; Entry stub of the player program (jump block)
+PlayerEntryStub	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$2C,$7C,$00,$00,$AE,$6E,$9D,$FC	; ........,|...n..
 	dc.b	$00,$00,$00,$00,$4F,$FB,$E8,$EA,$2F,$0E,$2C,$7C,$00,$00,$A5,$94	; ....O.../.,|....
 	dc.b	$4D,$FB,$E8,$DE	; M...
-X_1B9CSub1	movem.l	d0-d7/a0-a6,-(sp)
+; Player screen initialisation
+PlInit	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	InstallVblankHook
-	lea.l	LF64_28(pc),a0
+	lea.l	PlVblankHandler(pc),a0
 	move.l	a0,$D2(a6)
 	move.w	d0,$7C(a6)
 	move.w	d1,$7E(a6)
@@ -45,7 +47,8 @@ X_1B9CSub1	movem.l	d0-d7/a0-a6,-(sp)
 	addi.l	#$44,d0
 	addi.l	#$44,d1
 	movea.l	d0,a2
-X_1B9CSub2	movem.l	d0-d2/d7/a0-a1,-(sp)
+; Loads a picture through the tile decoder
+PlLoadPictureA	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -53,7 +56,8 @@ X_1B9CSub2	movem.l	d0-d2/d7/a0-a1,-(sp)
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	movea.l	$FE(a6),a0
 	movea.l	d0,a2
-X_1B9CSub3	movem.l	d0-d2/d7/a0-a1,-(sp)
+; Loads a picture through the tile decoder (second form)
+PlLoadPictureB	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -346,12 +350,12 @@ X_1B9CSub3	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	#$B0000700,d0
 	bsr.w	PlDmaRequest
 	move.w	#$7000,$FC(a6)
-	lea.l	LF64_27(pc),a0
+	lea.l	PlTimerTick(pc),a0
 	move.l	a0,$D2(a6)
 	move.w	#$0,$EC(a6)
 .loop61	tst.w	$EC(a6)
 	beq.b	.loop61
-	lea.l	LF64_28(pc),a0
+	lea.l	PlVblankHandler(pc),a0
 	move.l	a0,$D2(a6)
 	moveq	#$0,d6
 	moveq	#$0,d4
@@ -638,7 +642,7 @@ LCAA	move.l	#$6,d0
 	move.l	d0,d1
 	add.w	$7C(a6),d0
 	add.w	$7E(a6),d1
-	lea.l	X_1B9C(pc),a1
+	lea.l	PlayerEntryStub(pc),a1
 	movea.l	d0,a2
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
@@ -727,7 +731,7 @@ LDEC	movem.l	d0-d7/a1-a2,-(sp)
 	moveq	#$0,d0
 	movea.l	#$91EC,a1
 	suba.l	#$0,a1
-	lea.l	X_1B9C(pc),a2
+	lea.l	PlayerEntryStub(pc),a2
 	adda.l	a2,a1
 	move.w	$2(a1),d0
 	lea.l	$4(a1),a1
@@ -1125,7 +1129,7 @@ PlSelectPicture	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	#$444,$BBCF0.l
 	move.w	#$444,$BBD10.l
 	cmpi.w	#$2,$F8(a6)
-	bne.w	LF64_7
+	bne.w	PlWaitFrameCopy
 	movea.l	a1,a2
 	movem.l	d2,-(sp)
 	move.w	$EE(a6),d3
@@ -1133,7 +1137,8 @@ PlSelectPicture	movem.l	d0-d7/a0-a2,-(sp)
 	bsr.w	PlCopyRectToVdp
 	movem.l	(sp)+,d2
 	dc.w	$6000,$0022
-LF64_7	move.w	#$64,$EC(a6)
+; Waits for the frame timer, then copies the rectangle to VRAM
+PlWaitFrameCopy	move.w	#$64,$EC(a6)
 .loop	tst.w	$EC(a6)
 	bpl.w	.loop
 	moveq	#$0,d3
@@ -1143,7 +1148,8 @@ LF64_7	move.w	#$64,$EC(a6)
 	bsr.w	PlCopyRectToVdp
 .next	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-LF64_8	dc.b	$4E,$75	; Nu
+; Bare rts target
+PlRtsStub	dc.b	$4E,$75	; Nu
 ; Decodes the picture at (a0) into the tile buffer.
 PlDecodePicture	movem.l	d0-d7/a0-a4,-(sp)
 	movea.l	$8(a6),a0
@@ -1321,7 +1327,7 @@ PlDecodePicture	movem.l	d0-d7/a0-a4,-(sp)
 	bne.w	.next6
 	clr.w	$66(a6)
 	move.l	(a0),d1
-.next6	lea.l	LF64_8(pc),a0
+.next6	lea.l	PlRtsStub(pc),a0
 	move.l	#$1,d0
 	move.w	#$7,d7
 	jsr	$6044.w

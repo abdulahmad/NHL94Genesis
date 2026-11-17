@@ -1,7 +1,8 @@
 ; MAIN.BIN $2D2A-$3029. Font bitmaps that follow the display-init rts.
 
 
-DispatchTail_26	dcb.b	$8,0
+; 1bpp font glyph data, image A
+FontGlyphDataA	dcb.b	$8,0
 	dc.b	'    ',$00,$20,$00,$00,$50,$50,$00,$00,$00,$00,$00,$00	;     . ..PP......
 	dc.b	$28,$78,$50,$F0,$A0,$00,$00,' pP ',$10,$50,$70,$20,$00	; (xP.... pP .Pp .
 	dc.b	$50,$A0,$40,$30,$50,$A0,$00,$00,$60,$80,$40,$A8,$90,$68,$00,$00	; P.@0P...`.@..h..

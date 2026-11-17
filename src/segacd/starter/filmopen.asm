@@ -13,7 +13,7 @@ FilmOpen	link	a6,#$FFFC
 	lea.l	$40(a0),a4
 	jsr	InitWorld(pc)
 	move.l	d5,-(sp)
-	pea.l	FilmOpenStr5(pc)
+	pea.l	FilmOpenStrOpening(pc)
 	jsr	aprint(pc)
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
@@ -35,7 +35,7 @@ FilmOpen	link	a6,#$FFFC
 	lea.l	$C(sp),sp
 	beq.b	.next2
 	move.l	d5,-(sp)
-	pea.l	FilmOpenStr4(pc)
+	pea.l	FilmOpenStrBad(pc)
 	jsr	aprint(pc)
 	moveq	#-1,d0
 	addq.w	#$8,sp
@@ -46,7 +46,7 @@ FilmOpen	link	a6,#$FFFC
 	dc.w	$D0BC
 	dc.l	$000007FF
 	move.l	#$800,d1
-	jsr	GetData_15(pc)
+	jsr	DataThunkA(pc)
 	move.l	d0,d6
 	moveq	#$1,d0
 	cmp.l	d6,d0
@@ -70,7 +70,7 @@ FilmOpen	link	a6,#$FFFC
 	moveq	#-1,d0
 	bra.w	.next11
 .next3	move.l	d6,-(sp)
-	pea.l	FilmOpenStr3(pc)
+	pea.l	FilmOpenStrSects(pc)
 	jsr	aprint(pc)
 	move.l	a3,-(sp)
 	move.l	d6,-(sp)
@@ -88,7 +88,7 @@ FilmOpen	link	a6,#$FFFC
 	add.l	$C(a4),d0
 	move.l	d0,$10(a4)
 	move.l	a3,$14(a4)
-	pea.l	FilmOpenStr2(pc)
+	pea.l	FilmOpenStrInit(pc)
 	jsr	aprint(pc)
 	move.l	d5,-(sp)
 	pea.l	$18(a4)
@@ -100,7 +100,7 @@ FilmOpen	link	a6,#$FFFC
 	bra.w	.next11
 .next5	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
-	pea.l	FilmOpenStr1(pc)
+	pea.l	FilmOpenStrTitle(pc)
 	jsr	aprint(pc)
 	moveq	#$0,d5
 	move.l	d5,d6

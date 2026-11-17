@@ -1,4 +1,5 @@
-RestoreBiosSub43	movem.l	d0-d7/a0-a6,-(sp)
+; Sub-CPU interrupt handler
+SubIrqHandler	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$2,$FFFF8024.w
 	beq.w	.next
 	bsr.w	.next2

@@ -253,7 +253,8 @@
 	dcb.b	$A,0
 	dc.b	$5A,$0D,$0D,$00,$00,$00,$00,$77,$07,$77,$79,$00,$90	; Z......w.wy..
 	dcb.b	$13,0
-GetDataSub10	subi.w	#$7,d6
+; Display data table fragment A
+DispTableA	subi.w	#$7,d6
 	bra.w	.next
 	dc.b	$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$07	; ...p...p...p....
 	dcb.b	$A,0
@@ -868,22 +869,27 @@ GetDataSub10	subi.w	#$7,d6
 	dcb.b	$40,0
 	dc.b	'@L`M`N`O`P`Q`R S'	; @L`M`N`O`P`Q`R S
 	dcb.b	$40,0
-GetDataSub11	ori.w	#$4055,(a4)
-	bra.b	GetData_26
+; Display data table fragment B
+DispTableB	ori.w	#$4055,(a4)
+	bra.b	DispTableD
 	dc.b	'`W`X`Y@Z ['	; `W`X`Y@Z [
 	dcb.b	$40,0
-GetDataSub12	negx.w	(a4)+
+; Display data table fragment C
+DispTableC	negx.w	(a4)+
 	negx.w	(a5)+
-	bra.b	GetData_27
+	bra.b	DispTableF
 	dc.b	'`_```a'	; `_```a
-GetData_26	dc.b	'@b@c'	; @b@c
+; Display data table fragment D
+DispTableD	dc.b	'@b@c'	; @b@c
 	dcb.b	$40,0
-GetDataSub13	movea.l	-(a4),a0
+; Display data table fragment E
+DispTableE	movea.l	-(a4),a0
 	negx.w	-(a5)
 	negx.w	-(a6)
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
-GetData_27	dcb.b	$42,0
+; Display data table fragment F
+DispTableF	dcb.b	$42,0
 	dc.b	'`l`m'	; `l`m
 	dcb.b	$15,0
 .next	dcb.b	$D1,0
@@ -980,7 +986,8 @@ GetData_27	dcb.b	$42,0
 	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
 	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
 	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
-GetDataSub15	movem.l	d0-d7/a0-a2,-(sp)
+; Gate array interrupt service A
+GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	#$1,$C450.l
 	tst.w	$C44E.l
 	bne.w	.next2
@@ -1280,7 +1287,8 @@ GateArrayVdpAddrCmd	movem.l	d0-d2,-(sp)
 	dbra	d2,.loop4
 	movem.l	(sp)+,d0-d2
 	rts
-GetDataSub18	movem.l	d0-d7/a0,-(sp)
+; Sends the VDP data through the gate array
+GateArrayVdpSend	movem.l	d0-d7/a0,-(sp)
 	tst.w	$C440.l
 	beq.w	.next3
 .loop	btst.b	#$4,$FF800E.l
@@ -1497,7 +1505,8 @@ TilemapCellCmd	movem.l	d0-d2/a1/a5,-(sp)
 	bclr.b	#$7,$FF800F.l
 	bra.w	.loop4
 .ex	rts
-GetDataSub19	movem.l	d2-d3/a1-a2,-(sp)
+; Writes a tilemap cell
+TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
 	bge.w	.next
 	move.l	d0,d3
@@ -1586,7 +1595,8 @@ GetDataSub19	movem.l	d2-d3/a1-a2,-(sp)
 	dc.b	$00,$FF,$80,$0F	; ....
 .ex	rts
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
-GetDataSub20	movem.l	d0-d7/a0-a4/a6,-(sp)
+; Gate array interrupt service B
+GateArrayIrqB	movem.l	d0-d7/a0-a4/a6,-(sp)
 	btst.b	#$0,$FF800F.l
 	beq.w	.next
 	btst.b	#$1,$FF800E.l
@@ -1603,7 +1613,8 @@ GetDataSub20	movem.l	d0-d7/a0-a4/a6,-(sp)
 	nop
 	movea.l	(sp)+,a5
 	rts
-GetDataSub21	movem.l	d1/a0,-(sp)
+; Writes the communication bytes
+WriteSubCommBytes	movem.l	d1/a0,-(sp)
 	bsr.w	.next3
 	move.b	d0,$2800A.l
 	bsr.w	.next2
@@ -1853,7 +1864,8 @@ GiveWordRam	bset.b	#$0,$FF8003.l
 	dbra	d2,.loop5
 	move.b	#$FF,$FF0011.l
 	rts
-GetDataSub23	movem.l	d0-d1/a0-a1,-(sp)
+; Waits until the sub-CPU takes the data
+WaitSubBusy	movem.l	d0-d1/a0-a1,-(sp)
 .loop	move.w	#$80,d0
 	jsr	$5F22.w
 	bcs.b	.loop

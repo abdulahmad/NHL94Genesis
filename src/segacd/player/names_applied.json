@@ -214,5 +214,73 @@
  "LF64_62": [
   "PlBackgroundImage",
   "Background image: width, height, then tile data."
+ ],
+ "X_1B9C": [
+  "PlayerEntryStub",
+  "Entry stub of the player program (jump block)"
+ ],
+ "X_1B9CSub1": [
+  "PlInit",
+  "Player screen initialisation"
+ ],
+ "X_1B9CSub2": [
+  "PlLoadPictureA",
+  "Loads a picture through the tile decoder"
+ ],
+ "X_1B9CSub3": [
+  "PlLoadPictureB",
+  "Loads a picture through the tile decoder (second form)"
+ ],
+ "LF64_7": [
+  "PlWaitFrameCopy",
+  "Waits for the frame timer, then copies the rectangle to VRAM"
+ ],
+ "LF64_8": [
+  "PlRtsStub",
+  "Bare rts target"
+ ],
+ "LF64_13": [
+  "PlCareerRowNext",
+  "Career table: next row"
+ ],
+ "LF64_14": [
+  "PlCareerExit",
+  "Career table: restore registers and return"
+ ],
+ "LF64_15": [
+  "PlCareerRowRedo",
+  "Career table: step the row counter and redo"
+ ],
+ "LF64Sub4": [
+  "PlSaveRegsA",
+  "Routine of the player screen, saves d0-d4"
+ ],
+ "LF64Sub5": [
+  "PlSaveRegsB",
+  "Routine of the player screen, saves d0-d2/a0-a1"
+ ],
+ "LF64_27": [
+  "PlTimerTick",
+  "Increments the frame timer"
+ ],
+ "LF64_28": [
+  "PlVblankHandler",
+  "Vblank handler of the player screen"
+ ],
+ "LF64_29": [
+  "PlVblankTimers",
+  "Vblank: ticks the timers"
+ ],
+ "LF64_37": [
+  "PlSubCpuHandshake",
+  "Handshake with the main CPU through the gate array"
+ ],
+ "LF64Sub7": [
+  "PlRoutineA",
+  "Player screen routine"
+ ],
+ "LF64Sub8": [
+  "PlRoutineB",
+  "Player screen routine"
  ]
 }

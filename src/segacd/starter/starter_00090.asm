@@ -1120,7 +1120,8 @@ SubChanPitchBend	dcb.b	$80,0
 SubVoiceTrim	dcb.b	$8,0
 ; Flag set to $FF by the reset.
 SubTickFlag	dc.b	$00,$00	; ..
-RestoreBiosSub8	move.w	sr,-(sp)
+; Saves the BIOS call arguments in d0-d3 to the call block
+SetupBiosCallArgs	move.w	sr,-(sp)
 	move.w	d0,$EC90.l
 	move.l	d1,$EC92.l
 	move.l	d2,$EC96.l
@@ -1199,7 +1200,8 @@ RestoreBiosSub8	move.w	sr,-(sp)
 .loop	move.b	(a1)+,(a0)+
 	cmpa.l	a2,a1
 	blt.b	.loop
-RestoreBios_51	rts
+; Bare rts target
+RtsStub	rts
 ; Sends the load commands for the two boot images ($1756C, $DA24).
 LoadBootImages	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
@@ -1538,7 +1540,7 @@ SpriteListReset	movea.l	#$BA8D2,a5
 	rts
 ; Adds the sprites of one object to the list (max $50).
 SpriteListAddObject	cmpi.w	#$50,d6
-	bgt.w	RestoreBios_51
+	bgt.w	RtsStub
 	movem.l	d0-d5/a0,-(sp)
 	adda.l	$4(a0),a0
 	move.w	d2,d5
@@ -1692,23 +1694,24 @@ ReadPadsCombined	movem.l	d0/d2-d4,-(sp)
 	movem.l	(sp)+,d0/d2-d4
 	rts
 	tst.w	d3
-	beq.w	RestoreBios_71
+	beq.w	PadRepeatReturn
 	tst.w	d2
 	bne.w	.next
 	subq.b	#$1,$10B1C.l
-	bpl.w	RestoreBios_71
+	bpl.w	PadRepeatReturn
 	move.b	#$4,$10B1C.l
 	move.w	d3,d1
 	andi.w	#$F,d1
 	rts
 .next	move.b	#$F,$10B1C.l
-RestoreBios_71	rts
+; Return and test block of the pad auto-repeat routine
+PadRepeatReturn	rts
 	tst.w	d3
-	beq.b	RestoreBios_71
+	beq.b	PadRepeatReturn
 	tst.w	d2
 	bne.w	.next
 	subq.b	#$1,$10B1D.l
-	bpl.b	RestoreBios_71
+	bpl.b	PadRepeatReturn
 	move.b	#$4,$10B1D.l
 	move.w	d3,d1
 	andi.w	#$F,d1
@@ -1717,7 +1720,7 @@ RestoreBios_71	rts
 	rts
 ; Auto-repeat counter for held pad directions.
 PadAutoRepeat	tst.w	d3
-	beq.b	RestoreBios_71
+	beq.b	PadRepeatReturn
 	movem.l	a0,-(sp)
 	lea.l	$10B1C.l,a0
 	tst.w	d2
@@ -1798,7 +1801,8 @@ SendCmd2Inline	movea.l	(sp),a0
 	move.l	a0,(sp)
 	moveq	#$2,d0
 	bra.w	SendCmdD0
-RestoreBiosSub24	movem.l	d0/d2-d3/a1,-(sp)
+; Command with d0, d1, a0 in the command buffer
+SendCmdBlockA	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
@@ -1807,7 +1811,8 @@ RestoreBiosSub24	movem.l	d0/d2-d3/a1,-(sp)
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
-RestoreBiosSub25	movem.l	d0/d2-d3/a1,-(sp)
+; Command with d0, d1, a0 in the command buffer (second form)
+SendCmdBlockB	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
@@ -1873,7 +1878,8 @@ ReleaseWordRam	bset.b	#$0,$FFFF8003.w
 ; Empty routine.
 NopReturn	rts
 	dc.b	$4E,$B9,$00,$00,$E3,$F8	; N.....
-RestoreBiosSub26	movem.l	a0-a1,-(sp)
+; Patches a BIOS vector and raises a flag
+HookBiosVector	movem.l	a0-a1,-(sp)
 	movea.l	$EC96.l,a0
 	move.l	(a0),$10ACC.l
 	move.l	#$EA8A,(a0)
@@ -1904,12 +1910,14 @@ RestoreBiosSub26	movem.l	a0-a1,-(sp)
 	addq.l	#$4,sp
 	movem.l	(sp)+,d1-d2
 	rts
-RestoreBiosSub27	movem.l	d0/a0,-(sp)
+; Sends command 6
+SendCmd6	movem.l	d0/a0,-(sp)
 	moveq	#$6,d0
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
-RestoreBiosSub28	movem.l	d0-d3/a0,-(sp)
+; Command with several word arguments
+SendCmdWords	movem.l	d0-d3/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+
@@ -1975,7 +1983,8 @@ SendStateInline	movem.l	d0/a1-a2,-(sp)
 	move.w	(a1),$10B0C.l
 	movem.l	(sp)+,d0/a1-a2
 	rts
-RestoreBiosSub29	movem.l	d0-d3/a0/a2-a3,-(sp)
+; Command carrying the saved state words
+SendCmdState	movem.l	d0-d3/a0/a2-a3,-(sp)
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
 	move.w	$10B0A.l,(a2)+
@@ -2028,7 +2037,8 @@ SendStateWithInline	movem.l	d0/a1-a2,-(sp)
 	move.w	(a1),$10B10.l
 	movem.l	(sp)+,d0/a1-a2
 	rts
-RestoreBiosSub30	movem.l	d1-d4,-(sp)
+; Command sent in a loop over d0
+SendCmdLoop	movem.l	d1-d4,-(sp)
 	clr.w	d4
 	moveq	#$2,d3
 	moveq	#$E,d2
@@ -2054,7 +2064,8 @@ CopyAnimStateToCmd	movem.l	d0/a0-a1,-(sp)
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBiosSub31	movem.l	a1,-(sp)
+; Command with arguments taken from a1
+SendCmdFromA1	movem.l	a1,-(sp)
 	movem.l	$4(sp),a1
 	bsr.w	.next
 	movem.l	a1,$4(sp)
@@ -2084,7 +2095,8 @@ RestoreBiosSub31	movem.l	a1,-(sp)
 	move.w	d0,(a3)
 .next5	movem.l	(sp)+,d0/a0
 	rts
-RestoreBiosSub32	movem.l	d1-d2/a0-a1,-(sp)
+; Command with a list pointed to by a1
+SendCmdListA1	movem.l	d1-d2/a0-a1,-(sp)
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1)+,d2
@@ -2102,7 +2114,7 @@ RestoreBiosSub32	movem.l	d1-d2/a0-a1,-(sp)
 	movem.l	(sp)+,d1-d2/a0-a1
 	rts
 .next3	ext.w	d1
-	beq.w	RestoreBios_71
+	beq.w	PadRepeatReturn
 	cmpi.w	#$61,d1
 	blt.w	.next4
 	cmpi.w	#$7A,d1
@@ -2111,7 +2123,7 @@ RestoreBiosSub32	movem.l	d1-d2/a0-a1,-(sp)
 .next4	addq.w	#$1,d0
 	movea.l	#$10570,a0
 	tst.b	-$20(a0,d1.w)
-	bmi.w	RestoreBios_71
+	bmi.w	PadRepeatReturn
 	addq.w	#$1,d0
 	rts
 ; Sends command $F and keeps the reply word.
@@ -2121,7 +2133,8 @@ SendCmdF	movem.l	d0,-(sp)
 	move.w	$BA450.l,$10BCE.l
 	movem.l	(sp)+,d0
 	rts
-RestoreBiosSub33	movem.l	d0-d1/a0-a1,-(sp)
+; Command with long arguments d4/a2
+SendCmdLongs	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	d4,(a0)+
 	move.l	a2,(a0)+
@@ -2167,7 +2180,8 @@ CommHandshake3	btst.b	#$3,$FFFF8018.w
 	bne.b	.loop
 	bclr.b	#$3,$FFFF8028.w
 	rts
-RestoreBiosSub34	movem.l	d0/a0-a1,-(sp)
+; Command copying 8 bytes from a1
+SendCmdCopy8	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	movea.l	$C(sp),a1
 	move.l	(a1)+,(a0)+
@@ -2179,7 +2193,8 @@ RestoreBiosSub34	movem.l	d0/a0-a1,-(sp)
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBiosSub35	movem.l	d0/a0-a1,-(sp)
+; Command copying 12 bytes from a1
+SendCmdCopy12	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
@@ -2219,7 +2234,8 @@ SendPadStateCmd	movem.l	d0-d3/a0/a2/a6,-(sp)
 	movea.l	a6,a1
 	movem.l	(sp)+,d0-d3/a0/a2/a6
 	rts
-RestoreBiosSub36	movem.l	a0,-(sp)
+; Sends command $13
+SendCmd13	movem.l	a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)
 	moveq	#$13,d0
@@ -2227,22 +2243,25 @@ RestoreBiosSub36	movem.l	a0,-(sp)
 	movem.l	(sp)+,a0
 	rts
 	bsr.w	.next
-	bra.w	RestoreBiosSub29
+	bra.w	SendCmdState
 .next	bra.w	.next2
 .loop	adda.w	(a1),a1
 .next2	dbra	d0,.loop
 	rts
-RestoreBiosSub37	movem.l	d0,-(sp)
+; Sends command $14
+SendCmd14	movem.l	d0,-(sp)
 	moveq	#$14,d0
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
-RestoreBiosSub38	movem.l	d0,-(sp)
+; Sends command $15
+SendCmd15	movem.l	d0,-(sp)
 	moveq	#$15,d0
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
-RestoreBiosSub39	movem.l	d0/a0,-(sp)
+; Sends command $16
+SendCmd16	movem.l	d0/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	$10B22.l,(a0)+
 	move.w	d0,(a0)+
@@ -2250,7 +2269,8 @@ RestoreBiosSub39	movem.l	d0/a0,-(sp)
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
-RestoreBiosSub40	movem.l	d0/a0,-(sp)
+; Sends command $19
+SendCmd19	movem.l	d0/a0,-(sp)
 	move.w	d0,$BA450.l
 	moveq	#$19,d0
 	bsr.w	SendCmdD0
@@ -2261,7 +2281,8 @@ RestoreBiosSub40	movem.l	d0/a0,-(sp)
 	bsr.w	SendCmdD0
 	move.l	(sp)+,d0
 	rts
-RestoreBiosSub41	movem.l	d0-d2/a0,-(sp)
+; Command with three word arguments
+SendCmdWords3	movem.l	d0-d2/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+

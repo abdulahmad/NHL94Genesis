@@ -1,11 +1,14 @@
-DispatchTailSub1	move.l	$4(sp),d1
+; Loads two long stack arguments into d1/d0
+LoadLongArgs	move.l	$4(sp),d1
 	move.l	$8(sp),d0
-DispatchTail_62	lea.l	.next(pc),a0
+; Jump thunk through a computed address (number string)
+NumStrThunkA	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .next	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-DispatchTail_63	lea.l	.next(pc),a0
+; Jump thunk through a computed address (number string)
+NumStrThunkB	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .next	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -20,7 +23,8 @@ DispatchTail_63	lea.l	.next(pc),a0
 	dc.b	$48,$40,$30,$02,$72,$00,$60,$16,$D2,$41,$65,$12,$D4,$42,$D1,$80	; H@0.r.`..Ae..B..
 	dc.b	$B0,$83,$65,$F4,$90,$83,$D2,$41,$08,$C1,$00,$00,$64,$EE,$26,$1F	; ..e....A....d.&.
 	dc.b	$34,$1F,$4E,$75,$00,$00,$00,$00	; 4.Nu....
-DispatchTailSub2	movea.l	#$FFFC00,sp
+; Resets the stack and the sub-CPU communication words
+SubCpuBootReset	movea.l	#$FFFC00,sp
 	move.w	#$0,$A12010.l
 	move.w	#$0,$A12012.l
 	move.w	#$0,$A12014.l
@@ -36,11 +40,12 @@ DispatchTailSub2	movea.l	#$FFFC00,sp
 	bsr.w	GiveWordRamToSub
 	move.l	#$0,$FF6D00.l
 	move.l	#$0,$FF6CFC.l
-	bra.w	DispatchTail_64
-DispatchTail_64	btst.b	#$7,$A1200F.l
-	bne.b	DispatchTail_64
+	bra.w	WaitSubCpuReady
+; Waits for the sub-CPU handshake bits
+WaitSubCpuReady	btst.b	#$7,$A1200F.l
+	bne.b	WaitSubCpuReady
 	btst.b	#$6,$A1200F.l
-	beq.b	DispatchTail_64
+	beq.b	WaitSubCpuReady
 	bset.b	#$7,$A1200E.l
 	move.w	$A12020.l,d0
 	lsl.w	#$2,d0
@@ -52,7 +57,7 @@ DispatchTail_64	btst.b	#$7,$A1200F.l
 	bne.b	.loop
 	bclr.b	#$6,$A1200E.l
 	bclr.b	#$7,$A1200E.l
-	bra.w	DispatchTail_64
+	bra.w	WaitSubCpuReady
 ; Handshakes with the sub CPU on $A1200E/F and reads the comm word $A12020.
 ReadSubCommWord	btst.b	#$7,$A1200F.l
 	bne.b	ReadSubCommWord
@@ -78,7 +83,8 @@ ReadSubCommWord	btst.b	#$7,$A1200F.l
 	bne.b	.loop4
 	bclr.b	#$7,$A1200E.l
 	rts
-DispatchTailSub4	movem.l	d0-d7/a0-a6,-(sp)
+; Calls the handler selected by the sub-CPU command word
+SubCommDispatch	movem.l	d0-d7/a0-a6,-(sp)
 	lsl.w	#$2,d0
 	lea.l	$FF471C.l,a1
 	movea.l	-$4(a1,d0.w),a0
@@ -93,7 +99,7 @@ DispatchTailSub4	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$00,$FF,$4B,$CC,$00,$FF,$4B,$D8,$00,$FF,$4C,$14,$00,$FF,$4C,$22	; ..K...K...L...L"
 	dc.b	$00,$FF,$4C,$30,$00,$FF,$4B,$F0,$00,$FF,$4B,$FC,$00,$FF,$4C,$08	; ..L0..K...K...L.
 	dc.b	$00,$FF,$4C,$3E,$00,$FF,$4C,$AC,$00,$FF,$4D,$8E	; ..L>..L...M.
-	dc.l	DispatchTail_81,DispatchTail_82,DispatchTail_83
+	dc.l	DmaWaitStartB,SmHeaderParseB,DmaAdvancePtrsB
 	dc.b	$00,$FF,$4E,$30,$00,$FF,$4E,$84,$00,$FF,$4F,$C8,$00,$FF,$4E,$5A	; ..N0..N...O...NZ
 	dc.b	$00,$FF,$67,$E8,$00,$FF,$68,$18,$00,$FF,$68,$4A,$00,$FF,$68,$0E	; ..g...h...hJ..h.
 	dc.b	$00,$FF,$68,$AA,$00,$FF,$4D,$38,$00,$FF,$69,$16,$00,$FF,$69,$24	; ..h...M8..i...i$
@@ -106,7 +112,8 @@ DispatchTailSub4	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$4A,$79,$00,$FF,$6C,$F8,$67,$04,$30,$1F,$4E,$73,$33,$FC,$00,$01	; Jy..l.g.0.Ns3...
 	dc.b	$00,$FF,$6C,$F8,$30,$3C,$00,$01,$61,$00,$3E,$0E,$30,$1F,$4E,$73	; ..l.0<..a.>.0.Ns
 	dc.b	$08,$F9,$00,$00,$00,$A1,$20,$00,$4E,$73	; ...... .Ns
-DispatchTailSub5	movem.l	d0-d1/a0-a1,-(sp)
+; Acknowledges a sub-CPU command
+SubCommAck	movem.l	d0-d1/a0-a1,-(sp)
 	bset.b	#$5,$A1200E.l
 	bset.b	#$0,$A12000.l
 	move.w	#$1,$FF6CFA.l
@@ -185,7 +192,8 @@ VdpSetVramWriteAddr	movem.w	d0,-(sp)
 	andi.w	#$3,d0
 	move.w	d0,$C00004.l
 	rts
-DispatchTailSub8	movem.l	d0-d1/a0,-(sp)
+; Sub-CPU command: copy from word RAM
+SubCmdVramCopy	movem.l	d0-d1/a0,-(sp)
 	bsr.w	GiveWordRamToSub
 	bsr.w	WaitDmnaClear
 	bsr.w	ReadSubCommWord

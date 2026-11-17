@@ -4,17 +4,17 @@
 
 
 
-	lea.l	DispatchTail_14(pc),a0
+	lea.l	VdpInitA(pc),a0
 	move.l	$4(sp),(a0)
 	lea.l	.next(pc),a0
 	move.l	$FFFFFD08.w,(a0)
-	lea.l	DispatchTail_15(pc),a0
+	lea.l	DmaServiceA(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	jsr	MAINCODE_A(pc)
-.loop	move.w	DispatchTail_16(pc),d0
+.loop	move.w	DmaBusyFlagA(pc),d0
 	bne.b	.loop
 	movea.l	.next(pc),a0
 	move.w	sr,d0
@@ -23,7 +23,8 @@
 	move.w	d0,sr
 	rts
 .next	ori.b	#$0,d0
-DispatchTail_14	ori.b	#$0,d0
+; Image A: VDP register setup
+VdpInitA	ori.b	#$0,d0
 	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
@@ -64,7 +65,7 @@ DispatchTail_14	ori.b	#$0,d0
 	move.w	#$FF,d0
 .loop2	move.l	d1,(a0)
 	dbra	d0,.loop2
-	lea.l	DispatchTail_26(pc),a1
+	lea.l	FontGlyphDataA(pc),a1
 	move.w	#$2FF,d3
 .loop3	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -79,16 +80,17 @@ DispatchTail_14	ori.b	#$0,d0
 .next3	move.l	d1,(a0)
 	dbra	d3,.loop3
 	rts
-DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
+; Image A: DMA service routine
+DmaServiceA	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
-	lea.l	DispatchTail_16(pc),a2
+	lea.l	DmaBusyFlagA(pc),a2
 	tst.w	(a2)
 	beq.w	.next3
 	movea.l	#$C00000,a0
-	lea.l	DispatchTail_18(pc),a1
+	lea.l	DmaRegBufA(pc),a1
 	move.l	#$C0000000,$4(a0)
-	move.w	DispatchTail_17(pc),d0
+	move.w	DmaModeA(pc),d0
 .loop	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -99,12 +101,12 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	(a1)+,(a0)
 	dbra	d0,.loop
 	clr.w	(a2)
-	move.l	DispatchTail_19(pc),d3
-	lea.l	DispatchTail_23(pc),a2
-	move.l	DispatchTail_20(pc),d2
-	move.l	DispatchTail_22(pc),d7
+	move.l	DmaDestA(pc),d3
+	lea.l	DmaListA(pc),a2
+	move.l	DmaSrcA(pc),d2
+	move.l	DmaStepA(pc),d7
 	subq.w	#$1,d7
-	move.l	DispatchTail_21(pc),d6
+	move.l	DmaLenA(pc),d6
 	moveq	#$7,d0
 	and.w	d6,d0
 	bne.b	.next
@@ -137,19 +139,22 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 .loop5	move.w	(a2)+,(a0)
 	dbra	d5,.loop5
 	dbra	d7,.loop4
-.next2	lea.l	DispatchTail_16+$2(pc),a2
+.next2	lea.l	DmaBusyFlagA+$2(pc),a2
 	eori.w	#$1,(a2)
-.next3	lea.l	DispatchTail_13(pc),a0
+.next3	lea.l	RamImageAPad(pc),a0
 	addq.l	#$1,(a0)
-	move.l	DispatchTail_14(pc),d0
+	move.l	VdpInitA(pc),d0
 	beq.b	.next4
 	movea.l	d0,a0
 	jsr	(a0)
 .next4	movem.l	(sp)+,d0-d7/a0-a5
 	rte
-DispatchTail_16	ori.b	#$0,d0
-DispatchTail_17	ori.b	#$0,d0
-DispatchTail_18	ori.b	#$0,d0
+; DMA busy flag, image A
+DmaBusyFlagA	ori.b	#$0,d0
+; DMA mode word, image A
+DmaModeA	ori.b	#$0,d0
+; DMA register buffer, image A
+DmaRegBufA	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
@@ -181,11 +186,16 @@ DispatchTail_18	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
-DispatchTail_19	dc.l	$E000
-DispatchTail_20	ori.b	#$80,d0
-DispatchTail_21	ori.b	#$0,d0
-DispatchTail_22	ori.b	#$10,d0
-DispatchTail_23	ori.b	#$0,d0
+; DMA destination, image A
+DmaDestA	dc.l	$E000
+; DMA source, image A
+DmaSrcA	ori.b	#$80,d0
+; DMA length, image A
+DmaLenA	ori.b	#$0,d0
+; DMA step, image A
+DmaStepA	ori.b	#$10,d0
+; DMA list, image A
+DmaListA	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
@@ -854,7 +864,7 @@ DrawTextToPlane	link	a6,#$0
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-.loop2	move.w	DispatchTail_16(pc),d0
+.loop2	move.w	DmaBusyFlagA(pc),d0
 	bne.b	.loop2
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
@@ -867,9 +877,9 @@ DrawTextToPlane	link	a6,#$0
 	move.w	#$3FF,d1
 .loop3	move.l	d0,(a0)
 	dbra	d1,.loop3
-	lea.l	DispatchTail_16+$2(pc),a0
+	lea.l	DmaBusyFlagA+$2(pc),a0
 	move.w	#$1,(a0)
-	lea.l	DispatchTail_18(pc),a0
+	lea.l	DmaRegBufA(pc),a0
 	move.l	#$EEE,(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
@@ -878,7 +888,7 @@ DrawTextToPlane	link	a6,#$0
 	clr.l	(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
-	lea.l	DispatchTail_16(pc),a0
+	lea.l	DmaBusyFlagA(pc),a0
 	move.w	#$1,(a0)
 .loop4	move.w	(a0),d0
 	bne.b	.loop4
@@ -887,12 +897,12 @@ DrawTextToPlane	link	a6,#$0
 ; C function: draws a string buffer, waiting for the VDP command queue.
 DrawTextBuffer	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
-	lea.l	DispatchTail_16(pc),a2
+	lea.l	DmaBusyFlagA(pc),a2
 .loop	tst.w	(a2)
 	bne.b	.loop
 	movea.l	#$C00000,a0
 	movea.l	$10(a6),a4
-	lea.l	DispatchTail_19(pc),a1
+	lea.l	DmaDestA(pc),a1
 	move.l	$C(a6),(a1)
 	movea.l	$14(a6),a1
 	cmpi.w	#$534D,(a1)
@@ -900,7 +910,7 @@ DrawTextBuffer	link	a6,#$0
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
-	move.w	DispatchTail_16+$2(pc),d1
+	move.w	DmaBusyFlagA+$2(pc),d1
 	bne.b	.next
 	moveq	#$0,d0
 	move.w	d6,d0
@@ -910,11 +920,11 @@ DrawTextBuffer	link	a6,#$0
 	adda.l	d0,a4
 .next	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	lea.l	DispatchTail_17(pc),a2
+	lea.l	DmaModeA(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
-	lea.l	DispatchTail_18(pc),a2
+	lea.l	DmaRegBufA(pc),a2
 .loop2	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
@@ -925,11 +935,11 @@ DrawTextBuffer	link	a6,#$0
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.loop2
-	lea.l	DispatchTail_21(pc),a3
+	lea.l	DmaLenA(pc),a3
 	move.l	d6,(a3)
-	lea.l	DispatchTail_22(pc),a3
+	lea.l	DmaStepA(pc),a3
 	move.l	d7,(a3)
-	lea.l	DispatchTail_23(pc),a3
+	lea.l	DmaListA(pc),a3
 	move.l	d7,-(sp)
 	move.l	$10(a6),d3
 	lsr.l	#$5,d3
@@ -983,7 +993,7 @@ DrawTextBuffer	link	a6,#$0
 	move.l	(a1)+,(a0)
 .next6	dbra	d4,.loop6
 .next7	dbra	d7,.loop5
-.next8	lea.l	DispatchTail_16(pc),a2
+.next8	lea.l	DmaBusyFlagA(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
