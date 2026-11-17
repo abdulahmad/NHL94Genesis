@@ -233,20 +233,20 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	clr.w	$1A43A.l
 	moveq	#$0,d0
 	moveq	#$1C,d1
-	jsr	$2E728.l
-	jsr	$38F6E.l
+	jsr	(CrowdMeterFadeIn).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
 	move.w	#$8,d0
 	move.w	#$8,d1
-	jsr	$38CA0.l
-	jsr	$38F6E.l
+	jsr	(Framer).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$13,$00	; ......
 	move.w	#$8,d0
 	move.w	#$8,d1
-	jsr	$38CA0.l
-	jsr	$38F6E.l
+	jsr	(Framer).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
 	movea.l	$47D8C.l,a0
@@ -266,13 +266,13 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	moveq	#$6,d2
 	move.w	#$6,d3
 	moveq	#$4,d5
-	jsr	$387E2.l
+	jsr	(dobitmap).l
 	movea.l	#$BBCF0,a0
 	movea.l	#$BBD10,a1
 	move.w	#$7,d0
 .loop3	move.l	(a0)+,(a1)+
 	dbra	d0,.loop3
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
 	movea.l	$47D8C.l,a0
@@ -292,34 +292,34 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	moveq	#$6,d2
 	move.w	#$6,d3
 	moveq	#$4,d5
-	jsr	$387E2.l
-	jsr	$38F6E.l
+	jsr	(dobitmap).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BD,$04,$01,$00	; ......
 	moveq	#$20,d0
 	moveq	#$6,d1
-	jsr	$38CA0.l
-	jsr	$39258.l
+	jsr	(Framer).l
+	jsr	(printbigz).l
 ; Inline data read by $39258 from the return address (2 rows).
 	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
 	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
 	btst.b	#$1,$17F7A.l
 	beq.w	PeriodStatsHeader
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$1C,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$1A	; .....1...2...3..
 	dc.b	$09,$4F,$54,$BE,$20,$09,$54,$6F,$74,$61,$6C,$00	; .OT. .Total.
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$1C,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$1A	; .....<...<...<..
 	dc.b	$0A,$3C,$3C,$BE,$20,$0A,$3C,$3C,$3C,$3C,$3C,$00	; .<<. .<<<<<.
 	bra.w	PeriodStatsLoop
 ; Period stats: prints the period column heads (1, 2, 3 ... Total)
-PeriodStatsHeader	jsr	$38F6E.l
+PeriodStatsHeader	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$16,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$20	; .....1...2...3. 
 	dc.b	$09,$54,$6F,$74,$61,$6C	; .Total
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$16,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$20	; .....<...<...<. 
 	dc.b	$0A,$3C,$3C,$3C,$3C,$3C	; .<<<<<
@@ -327,7 +327,7 @@ PeriodStatsHeader	jsr	$38F6E.l
 PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	bsr.w	PeriodStatsTeamRows
 	move.w	#$18,$18D62.l
-.loop	jsr	$2EDE2.l
+.loop	jsr	(FrameWaitStep).l
 	btst	#$7,d1
 	bne.w	.next3
 	btst	#$2,d1
@@ -393,24 +393,24 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
-	jmp	$2E980.l
+	jmp	(StatsScreenFadeIn).l
 ; Period stats: title when the table shows shots (Shots [ For Goals ])
 PeriodStatsTitleShots	tst.w	$1A43A.l
 	beq.w	PeriodStatsTitleGoals
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$BE,$12,$07,$53,$68,$6F,$74,$73,$BE,$0F,$1A,$5B,$20,$46	; .....Shots...[ F
 	dc.b	$6F,$72,$20,$47,$6F,$61,$6C,$73	; or Goals
 	rts
 ; Period stats: title when the table shows goals (Goals [ For Shots ])
-PeriodStatsTitleGoals	jsr	$38F6E.l
+PeriodStatsTitleGoals	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$BE,$12,$07,$47,$6F,$61,$6C,$73,$BE,$0F,$1A,$46,$6F,$72	; .....Goals...For
 	dc.b	$20,$53,$68,$6F,$74,$73,$20,$5D	;  Shots ]
 	rts
 ; Period stats: team rows of the table
 PeriodStatsTeamRows	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$00,$00,$00	; ......
 	movea.l	#$186B2,a2
@@ -444,7 +444,7 @@ PeriodStatsPeriodRow	lea.l	$344(a2),a0
 	move.w	#$1A,$18D58.l
 	bsr.w	PeriodStatsPrintTotal
 .next2	move.w	#$21,$18D58.l
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	subi.w	#$3,$18D58.l
@@ -453,13 +453,13 @@ PeriodStatsPeriodRow	lea.l	$344(a2),a0
 	cmpi.w	#$64,d0
 	blt.w	.next3
 	move.w	#$3,d1
-.next3	jsr	$3919A.l
-	jsr	$38F80.l
+.next3	jsr	(PushNumberWidth).l
+	jsr	(print).l
 	rts
 ; Period stats: adds a count to the total and prints it
 PeriodStatsPrintTotal	move.w	(a0)+,d0
 	add.w	d0,$1A44A.l
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	subi.w	#$3,$18D58.l
@@ -467,8 +467,8 @@ PeriodStatsPrintTotal	move.w	(a0)+,d0
 	cmpi.w	#$64,d0
 	blt.w	.next
 	move.w	#$3,d1
-.next	jsr	$3919A.l
-	jmp	$38F80.l
+.next	jsr	(PushNumberWidth).l
+	jmp	(print).l
 StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	

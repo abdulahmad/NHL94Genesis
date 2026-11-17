@@ -1731,42 +1731,42 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$17FAE.l,d1
 	ext.l	d1
 	movea.l	#$BC000,a0
-	jsr	$2258E.l
+	jsr	(ReadCrowdRecord).l
 	move.b	$8(a0),d0
 	bne.w	.next
 	move.b	#$50,d0
 .next	andi.w	#$FF,d0
 	move.w	d0,-(sp)
-	jsr	$38D8C.l
+	jsr	(printsmallz).l
 ; Inline data read by $38D8C from the return address (2 rows).
 	dc.b	$00,$14,$FD,$04,$FA,$02,$41,$72,$65,$6E,$61,$20,$52,$65,$63,$6F	; ......Arena Reco
 	dc.b	$72,$64,$FD,$1C	; rd..
 	move.w	(sp)+,d0
 	move.w	#$3,d1
-	jsr	$3919A.l
-	jsr	$38F80.l
-	jsr	$38F6E.l
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
-	jsr	$2AC02.l
+	jsr	(GetLeagueCrowdRecord).l
 	move.w	d0,d1
 	ext.l	d1
 	movea.l	#$BC000,a0
-	jsr	$2258E.l
+	jsr	(ReadCrowdRecord).l
 	move.b	$8(a0),d0
 	bne.w	.next2
 	move.w	#$50,d0
 .next2	andi.w	#$FF,d0
 	move.w	d0,-(sp)
-	jsr	$38D8C.l
+	jsr	(printsmallz).l
 ; Inline data read by $38D8C from the return address (2 rows).
 	dc.b	$00,$16,$FD,$04,$FA,$02,$4C,$65,$61,$67,$75,$65,$20,$52,$65,$63	; ......League Rec
 	dc.b	$6F,$72,$64,$FD,$1C,$00	; ord...
 	move.w	(sp)+,d0
 	move.w	#$3,d1
-	jsr	$3919A.l
-	jsr	$38F80.l
-	jsr	$38F6E.l
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
 ; Crowd meter: restores the registers and returns
@@ -1774,12 +1774,12 @@ CrowdMeterScreenExit	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	ext.l	d0
 	asl.w	#$2,d0
-	jsr	$3708E.l
+	jsr	(Sroot).l
 	addi.w	#$41,d0
 	moveq	#$3,d1
-	jsr	$3919A.l
-	jsr	$38F80.l
-	jsr	$38F6E.l
+	jsr	(PushNumberWidth).l
+	jsr	(print).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
 	rts
@@ -1930,12 +1930,12 @@ StatsScreenFadeIn
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$43434567,$89ABCDEF
 	move.w	$18D4E.l,d4
-	jsr	$393FA.l
-	jsr	$3EC78.l
+	jsr	(AddSmallFontFramer).l
+	jsr	(SetupIceRinkPalRemap).l
 	jsr	$3EC94.l
 	jsr	$3ECA6.l
-	jsr	$3EC60.l
-	jmp	$3F24C.l
+	jsr	(setupIceRinkPal).l
+	jmp	(CopyTeamLinesCheckTeam).l
 ; Data of StatsScreenFadeIn (21 rows): table or constants used by it.
 	dc.b	$04,$79,$00,$01,$00,$01,$8A,$D2,$04,$79,$00,$01,$00,$01,$8A,$D4	; .y.......y......
 	dc.b	$23,$FC,$00,$04,$20,$DC,$00,$01,$8A,$D6,$08,$EA,$00,$02,$00,$32	; #... ..........2
@@ -1968,7 +1968,7 @@ StatsRowsLoop	move.w	#$5,$18D58.l
 	cmp.w	$18AD2.l,d0
 	bne.w	.next
 	move.w	#$8000,$18D5C.l
-.next	jsr	$38F6E.l
+.next	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20	; ..              
 	dc.b	$20,$20,$20,$20,$20,$20,$20,$20	;         
@@ -1976,7 +1976,7 @@ StatsRowsLoop	move.w	#$5,$18D58.l
 StatsRowNoGoalie	tst.w	d0
 	bne.w	StatsRowGoalieName
 	move.w	#$B,$18D58.l
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
 	bra.w	StatsRowsNext
@@ -1990,7 +1990,7 @@ StatsRowGoalieName	movea.l	$1E(a2),a1
 	adda.w	#$8,a1
 .next	dbra	d2,.loop
 	move.w	#$8,$18D58.l
-	jsr	$38F80.l
+	jsr	(print).l
 	move.b	(a1),d2
 	lsr.b	#$4,d2
 	addi.b	#$30,d2
@@ -2002,7 +2002,7 @@ StatsRowGoalieName	movea.l	$1E(a2),a1
 	movea.l	#$17EF2,a1
 	move.w	#$4,(a1)
 	move.w	#$5,$18D58.l
-	jsr	$38F80.l
+	jsr	(print).l
 ; Stats rows: next row
 StatsRowsNext	addi.w	#$1,$18D5A.l
 	addi.w	#$1,d0
@@ -2058,7 +2058,7 @@ FrameWaitStep	move.w	$17474.l,d1
 .loop	cmp.w	$17474.l,d1
 	beq.w	.loop
 	dc.w	$6100,$04FC		; bsr.w X_2F2F0
-	jsr	$37496.l
+	jsr	(nodiag).l
 	tst.b	d1
 	beq.w	FrameWaitStep
 	rts
@@ -2067,15 +2067,15 @@ FrameWaitStep	move.w	$17474.l,d1
 	move.w	$18D64.l,-(sp)
 	bset.b	#$3,$17F6C.l
 	bclr.b	#$4,$17F72.l
-	jsr	$3C3AC.l
+	jsr	(ClrHor).l
 	move.w	#$400,d0
 	move.w	$18D3C.l,d1
 	move.w	#$7FF,d2
-	jsr	$37AA2.l
+	jsr	(DoDMANd2Queue).l
 	move.w	$18D56.l,d4
 	movea.l	$47D68.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	jsr	$2F330.l
 	bclr.b	#$5,$17F6A.l
 	bclr.b	#$5,$17F6E.l
@@ -2084,8 +2084,8 @@ FrameWaitStep	move.w	$17474.l,d1
 .loop2	bsr.w	suba4
 	tst.w	d7
 	bne.w	.loop2
-	jsr	$3F03E.l
-	jsr	$3DD16.l
+	jsr	(SprSort).l
+	jsr	(setvideo).l
 	bclr.b	#$1,$17F6E.l
 	clr.l	$17DCA.l
 	clr.l	$17DCE.l
@@ -2155,7 +2155,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	movem.w	(sp),d0-d1
 	sub.w	$0(a1),d0
 	sub.w	$14(a1),d1
-	jsr	$362F8.l
+	jsr	(vtoa).l
 	btst	#$3,d0
 	bne.w	.next8
 	sub.w	d5,d0
@@ -2188,7 +2188,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	moveq	#$4,d4
 	bsr.w	setpads
 	bsr.w	UpdateCameraPos
-	jsr	$3DD16.l
+	jsr	(setvideo).l
 	bra.w	WaitFramesD7
 .next9	bset.b	#$5,$17F6A.l
 	eori.w	#$4,d5
@@ -2213,7 +2213,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	andi.w	#$FFF,$17DC8.l
 	ori.w	#$E000,$17DC8.l
 	bsr.w	UpdateCameraPos
-	jsr	$3DD16.l
+	jsr	(setvideo).l
 	bra.w	WaitFramesD7
 ; Word pairs: x and y step for each of the 8 directions
 DirectionStepTable	dc.b	$00,$00,$00,$02,$00,$02,$00,$02,$00,$02,$00,$00,$00,$02,$FF,$FE	; ................
@@ -2233,8 +2233,8 @@ DirectionPressCheck	st.b	$18(a5)
 	bsr.w	suba4
 	bsr.w	suba4
 	bsr.w	suba4
-	jsr	$3F03E.l
-	jsr	$3DD16.l
+	jsr	(SprSort).l
+	jsr	(setvideo).l
 	moveq	#$1,d7
 	bclr.b	#$1,$17F6E.l
 .next2	btst.b	#$0,$17F74.l
@@ -2253,8 +2253,8 @@ DirectionPressCheck	st.b	$18(a5)
 	move.w	(sp)+,d0
 	bra.w	WaitFramesD7
 .next3	bsr.w	adda4
-	jsr	$3F03E.l
-	jsr	$3DD16.l
+	jsr	(SprSort).l
+	jsr	(setvideo).l
 	asl.w	#$1,d7
 	bclr.b	#$1,$17F6E.l
 .next4	btst.b	#$1,$17F6E.l
@@ -2263,8 +2263,8 @@ DirectionPressCheck	st.b	$18(a5)
 	bsr.w	adda4
 	move.w	$17F64.l,-(sp)
 	bsr.w	sfx
-	jsr	$3F03E.l
-.next5	jsr	$3DD16.l
+	jsr	(SprSort).l
+.next5	jsr	(setvideo).l
 	btst.b	#$0,$17F74.l
 	bne.w	.next6
 	btst	#$7,d1
@@ -2286,9 +2286,9 @@ DirectionPressCheck	st.b	$18(a5)
 	bclr.b	#$0,$17F74.l
 	jsr	$2F3D6.l
 	bsr.w	adda4
-	jsr	$3F03E.l
+	jsr	(SprSort).l
 	bra.w	WaitFramesD7
-.next7	jmp	$2EEB0.l
+.next7	jmp	(WaitFramesD7).l
 .next8	clr.w	$18AD2.l
 	bset.b	#$1,$17F74.l
 .next9	bsr.w	forceblack
@@ -2297,11 +2297,11 @@ DirectionPressCheck	st.b	$18(a5)
 	movea.l	$17470.l,a4
 	bclr.b	#$4,$17F72.l
 	bsr.w	RestoreReplayFrameCopy
-	jsr	$3F03E.l
+	jsr	(SprSort).l
 	bclr.b	#$3,$17F6C.l
 	move.w	(sp)+,$18D64.l
 	jsr	$2E986.l
-	jsr	$3EC78.l
+	jsr	(SetupIceRinkPalRemap).l
 	jsr	$3EC94.l
 	jsr	$3ECA6.l
 	jsr	$3ECCA.l
@@ -2309,8 +2309,8 @@ DirectionPressCheck	st.b	$18(a5)
 	beq.w	.next10
 	jsr	$3ECEE.l
 	jsr	$3ECDC.l
-.next10	jsr	$3C40A.l
-	jsr	$3DD16.l
+.next10	jsr	(SetHor).l
+	jsr	(setvideo).l
 	move.w	#$18,$18D62.l
 	rts
 
@@ -2326,8 +2326,8 @@ ReadActiveJoypad
 	beq.w	.loop
 	cmpi.w	#$3,$17F94.l
 	bne.s	.next3
-	jmp	$3752C.l
-.next3	jmp	$3754A.l
+	jmp	(ReadJoy3).l
+.next3	jmp	(ReadJoy4).l
 	move.w	#$F0,$1AD56.l
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$2

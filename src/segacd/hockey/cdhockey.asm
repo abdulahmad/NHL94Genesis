@@ -18,7 +18,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.l	#$2203A,-(sp)
 	move.l	$18D66.l,-(sp)
 	rts
-	jsr	$47DB2.l
+	jsr	(ReadJoyData).l
 .loop	btst.b	#$4,$FF800E.l
 	bne.s	.loop
 	move.w	#$2F,$FF8026.l
@@ -93,12 +93,12 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	jsr	$21FC8.l
 	move.w	#$3,d7
 	jsr	$6044.w
-	jsr	$3FDE8.l
+	jsr	(EASportsScreen).l
 	jsr	$2A58C.l
-	jsr	$40102.l
+	jsr	(DefaultMenus).l
 	move.w	$18C0A.l,$18C22.l
 	move.w	$18BFA.l,$18C24.l
-	jsr	$37460.l
+	jsr	(orjoy).l
 	jmp	$3F2D6.l
 .loop11	btst.b	#$7,$FF800E.l
 	bne.s	.loop11

@@ -1167,13 +1167,13 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	jsr	$37B74.l
 	rts
 ; EA Sports screen: waits for the sub CPU reply, then switches the vblank vector
-EASportsScreenCheck	jsr	$374F0.l
+EASportsScreenCheck	jsr	(ReadJoy1).l
 	cmpi.b	#$E0,d3
 	bne.w	rtss2
 	bset.b	#$5,$FF800F.l
 	move.l	#$3DB90,$18D66.l
 	jsr	$47DAC.l
-	jsr	$36D0A.l
+	jsr	(forceblack).l
 	move.w	#$18,$18D62.l
 	bsr.w	printsmallz
 ; Inline data read by printsmallz from the return address (2 rows).
@@ -1184,8 +1184,8 @@ EASportsScreenWait	moveq	#$14,d6
 .loop	move.w	$17474.l,d0
 .loop2	cmp.w	$17474.l,d0
 	beq.w	.loop2
-	jsr	$374F0.l
-	jsr	$374BE.l
+	jsr	(ReadJoy1).l
+	jsr	(ProcessInputWithRepeat).l
 	tst.b	d1
 	beq.w	.loop
 	btst	#$7,d1
@@ -1198,7 +1198,7 @@ EASportsScreenWait	moveq	#$14,d6
 	subi.w	#$1,d6
 .next2	btst	#$5,d1
 	beq.w	.next3
-	jsr	$3710C.l
+	jsr	(sfx).l
 .next3	move.w	d6,d0
 	moveq	#$3,d1
 	bsr.w	PushNumberWidth
@@ -2456,7 +2456,7 @@ ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digi
 	rts
 ; Address error screen: prints the error and the registers
 AddressErrorScreen	bclr.b	#$5,$FF800F.l
-	jsr	$39258.l
+	jsr	(printbigz).l
 ; Inline data read by $39258 from the return address (2 rows).
 	dc.b	$00,$12,$BD,$00,$00,$41,$64,$64,$72,$65,$73,$73,$20,$45,$72,$72	; .....Address Err
 	dc.b	$6F,$72	; or
@@ -2484,7 +2484,7 @@ ErrorScreenPrint	movea.l	#$17EF2,a0
 	move.l	(sp)+,d0
 	bsr.w	PrintHexLong
 	movea.l	#$17EF2,a1
-	jsr	$3926A.l
+	jsr	(printbig).l
 	movea.l	#$C00000,a0
 .loop	btst.b	#$7,$FF800E.l
 	bne.s	.loop

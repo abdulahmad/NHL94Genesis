@@ -215,7 +215,7 @@ updateplayers
 	beq.w	.next38
 	cmp.w	$17FA2.l,d6
 	bne.w	.next38
-	jsr	$3752C.l
+	jsr	(ReadJoy3).l
 	clr.l	d4
 	clr.w	$17F96.l
 	move.w	$17FA6.l,-(sp)
@@ -247,7 +247,7 @@ updateplayers
 	beq.w	.next39
 	cmp.w	$17FA4.l,d6
 	bne.w	.next39
-	jsr	$3754A.l
+	jsr	(ReadJoy4).l
 	move.l	#$2,d4
 	move.w	#$1,$17F96.l
 	move.w	$17FA8.l,-(sp)
@@ -1964,7 +1964,7 @@ BenchGoToBench	clr.w	$6(a3)
 .next	move.w	#$FFFE,$68(a0,d0.w)
 	move.b	$61(a3),d3
 	bsr.w	BenchSetAnimation
-	jmp	$3D770.l
+	jmp	(SetPlayerSide).l
 ; Walks the player towards the bench door
 BenchWalkTarget	btst.b	#$2,$62(a3)
 	bne.w	check4benchExit
@@ -1978,7 +1978,7 @@ BenchFlagBits	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
 BenchSetAnimation	move.b	$60(a3),d0
 	ext.w	d0
 	move.w	d0,$34(a3)
-	jsr	$3D754.l
+	jsr	(Setplass).l
 	st.b	$61(a3)
 	st.b	$60(a3)
 	rts
@@ -2283,7 +2283,7 @@ AssistSkateOrExit	btst.b	#$3,$62(a3)
 .next	sub.b	d7,$40(a3)
 	bpl.w	.next5
 	move.b	$6A(a3),$40(a3)
-	jsr	$2AEDC.l
+	jsr	(ReadGoaliePulled).l
 	bmi.w	.next2
 	btst.b	#$6,$17F7A.l
 	beq.w	.next3
@@ -4554,7 +4554,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 .next	move.w	$18D56.l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	bset.b	#$3,$18D64.l
 	bclr.b	#$0,$17F6A.l
 	bclr.b	#$0,$17F6E.l
@@ -4593,14 +4593,14 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 .loop2	bsr.w	checkwindow
 	dbra	d4,.loop2
 	move.w	#$3C,$17EE0.l
-	jsr	$3D6E2.l
+	jsr	(ResetBench).l
 	movea.l	#$1834C,a2
-	jsr	$3D426.l
-	jsr	$3D5E4.l
+	jsr	(setpersonel).l
+	jsr	(SetupPenaltyShot).l
 	adda.l	#$366,a2
-	jsr	$3D426.l
-	jsr	$3D5E4.l
-	jsr	$3F0C6.l
+	jsr	(setpersonel).l
+	jsr	(SetupPenaltyShot).l
+	jsr	(resetplstuff).l
 	move.l	a3,-(sp)
 	movea.l	#$17A00,a3
 	move.w	#$B,d2
@@ -4621,7 +4621,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
-	jsr	$3D770.l
+	jsr	(SetPlayerSide).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	tst.w	$34(a3)
 	beq.w	.next3
@@ -4659,7 +4659,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 .next9	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
-	jsr	$3D770.l
+	jsr	(SetPlayerSide).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	tst.w	$34(a3)
 	bne.w	.next10
@@ -4688,7 +4688,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	bsr.w	SetSPA
 .next13	suba.l	#$80,a3
 	dbra	d2,.loop3
-	jsr	$3F03E.l
+	jsr	(SprSort).l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
 	move.w	$1936A.l,d0
@@ -4707,11 +4707,11 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	move.w	#$2,d1
 .next15	cmp.w	$17FA6.l,d1
 	bne.w	.next16
-	jsr	$312B8.l
+	jsr	(setc1player).l
 	bra.w	.next17
 .next16	cmp.w	$17FA8.l,d1
 	bne.w	.next17
-	jsr	$312DC.l
+	jsr	(setc2player).l
 .next17	move.w	#$E,d0
 	bsr.w	assreplace
 	bset.b	#$7,$17F70.l
@@ -4811,15 +4811,15 @@ PenaltyShotCleanup	bclr.b	#$4,$17F7C.l
 	clr.l	$17DD2.l
 	bclr.b	#$6,$17F7A.l
 	bclr.b	#$2,$17F7A.l
-	jsr	$2ACA0.l
+	jsr	(CheckScoreLeader).l
 	tst.w	$1A560.l
 	bmi.w	.next3
 	move.w	$1A560.l,d0
 	bra.w	.next4
-.next3	jsr	$2AC4E.l
+.next3	jsr	(RandomFaceoffAnim).l
 	tst.w	d0
 	bmi.w	.next5
-.next4	jsr	$2A456.l
+.next4	jsr	(SetFaceoffAnim).l
 .next5	bclr.b	#$1,$17F76.l
 	bclr.b	#$1,$17F78.l
 	tst.w	$180E6.l
@@ -4848,7 +4848,7 @@ PenaltyShotCleanup	bclr.b	#$4,$17F7C.l
 	bclr.b	#$7,$17F6E.l
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$2,$1A56E.l
-	jsr	$2A478.l
+	jsr	(ChooseSong).l
 	move.w	$1A56A.l,-(sp)
 	bsr.w	song
 .next7	bsr.w	ReturnGoalies
@@ -5166,14 +5166,14 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 .loop	bsr.w	checkwindow
 	dbra	d4,.loop
 	move.w	#$3C,$17EE0.l
-	jsr	$3D6E2.l
+	jsr	(ResetBench).l
 	movea.l	#$1834C,a2
-	jsr	$3D426.l
-	jsr	$3D668.l
+	jsr	(setpersonel).l
+	jsr	(forcepldata).l
 	adda.w	#$366,a2
-	jsr	$3D426.l
-	jsr	$3D668.l
-	jsr	$3F0C6.l
+	jsr	(setpersonel).l
+	jsr	(forcepldata).l
+	jsr	(resetplstuff).l
 	move.l	a3,-(sp)
 	movea.l	#$17480,a3
 	moveq	#$B,d2
@@ -5247,13 +5247,13 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 	bsr.w	SetSPA
 .next10	adda.l	#$80,a3
 	dbra	d2,.loop2
-	jsr	$3F03E.l
+	jsr	(SprSort).l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
 	move.w	$18D56.l,d4
 	movea.l	$47D14.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,$18D4C.l
 	movea.l	$47D30.l,a2
 	addq.l	#$8,a2
@@ -5263,7 +5263,7 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 	beq.w	.next11
 	move.w	$1A560.l,d0
 	bmi.w	.next11
-	jsr	$2A41E.l
+	jsr	(StartArenaAnim).l
 .next11	bsr.w	printz
 ; Inline data read by printz from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
@@ -5351,7 +5351,7 @@ FaceoffRandomDelay	move.w	#$78,d0
 	eori.w	#$800,$6(a0)
 .next3	move.w	#$FFFF,$17EE6.l
 	move.w	#$FFFF,$17EE8.l
-	jsr	$2B2D6.l
+	jsr	(GoalieSwapCheck).l
 	bclr.b	#$6,$17F7C.l
 	bne.w	.next4
 	bclr.b	#$4,$17F7C.l
@@ -5366,7 +5366,7 @@ FaceoffRandomDelay	move.w	#$78,d0
 ; Counts the faceoff timer down and ends the faceoff
 FaceoffTimerStep	subi.w	#$1,$40(a3)
 	bpl.w	updatefaceoff
-	jsr	$2A466.l
+	jsr	(EndArenaAnim).l
 	bra.w	Endfaceoff
 ; Data of FaceoffTimerStep (4 rows): table or constants used by it.
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................

@@ -321,11 +321,11 @@ demoread						;monitor joystick if in demo mode (called every game loop)
 	bne.w	EndDemoExitMode0On
 	tst.w	$18BF8.l
 	beq.w	EndDemoOnPress
-	jsr	$3752C.l
+	jsr	(ReadJoy3).l
 	btst	#$7,d1
 	bne.w	EndDemoExitMode3Off
 	bsr.w	EndDemoOnPress
-	jsr	$3754A.l
+	jsr	(ReadJoy4).l
 	btst	#$7,d1
 	bne.w	EndDemoExitMode4On
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo

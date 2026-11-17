@@ -1051,7 +1051,7 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	bne.s	.loop12
 	bclr.b	#$7,$FF800F.l
 	dbra	d0,.loop10
-	jsr	$36D0A.l
+	jsr	(forceblack).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst.b	#$5,$FF800F.l
@@ -1084,12 +1084,12 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
-	jsr	$36D0A.l
+	jsr	(forceblack).l
 	move.w	#$8000,d0
 	move.w	#$0,d1
 	movea.l	#$AFF60,a0
-	jsr	$37762.l
-	jsr	$3816C.l
+	jsr	(DoDMApro).l
+	jsr	(SetVramQueueFlag).l
 .loop15	btst.b	#$7,$FF800E.l
 	bne.s	.loop15
 	move.w	#$27,$FF8020.l
@@ -1111,7 +1111,7 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 .next3	bclr.b	#$5,$FF800F.l
 .next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
-	jmp	$2E980.l
+	jmp	(StatsScreenFadeIn).l
 AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to a1
 	
 	movem.l	d0/a0-a3,-(sp)
@@ -1316,20 +1316,20 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	move.w	d4,$1A3D2.l
 	movea.l	$47D10.l,a2
 	addq.l	#$8,a2
-	jsr	$38946.l
+	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$91,$23,$45,$60,$89,$AB,$CD,$EF	; .#E`....
 	move.w	d4,$18D42.l
-	jsr	$393E8.l
-	jsr	$38F6E.l
+	jsr	(AddSmallFont).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
-	jsr	$38C06.l
-	jsr	$3EC60.l
-	jsr	$38F6E.l
+	jsr	(eraser).l
+	jsr	(setupIceRinkPal).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
 	movea.l	$47D0C.l,a0
@@ -1342,21 +1342,21 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	moveq	#$28,d2
 	moveq	#$1C,d3
 	moveq	#$D,d5
-	jsr	$387E2.l
+	jsr	(dobitmap).l
 	jsr	$36F72.l
 	move.w	d4,$19392.l
 	addi.w	#$24,d4
 	move.w	d4,$19398.l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,$18D40.l
 	movea.l	$47D38.l,a2
 	addq.l	#$8,a2
-	jsr	$38946.l
+	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$71,$23,$45,$67,$89,$AB,$CD,$EF	; q#Eg....
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$1F,$06,$00	; ......
 	move.w	$17FAE.l,d0
@@ -1371,14 +1371,14 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	subi.w	#$2,d0
 	lsr.w	#$1,d0
 	sub.w	d0,$18D58.l
-	jsr	$38F80.l
-	jsr	$38F6E.l
+	jsr	(print).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$1B,$07,$00	; ......
 	move.w	#$8,d0
 	move.w	#$8,d1
-	jsr	$38CA0.l
-	jsr	$38F6E.l
+	jsr	(Framer).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$8F,$1C,$08,$00	; ......
 	move.w	$17FAE.l,d3
@@ -1402,14 +1402,14 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	clr.w	d1
 	move.w	#$4,d5
 	move.w	$19392.l,d4
-	jsr	$387E2.l
-	jsr	$38F6E.l
+	jsr	(dobitmap).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$02,$00,$00	; ......
 	move.w	#$24,d0
 	move.w	#$6,d1
-	jsr	$38CA0.l
-	jsr	$39258.l
+	jsr	(Framer).l
+	jsr	(printbigz).l
 ; Inline data read by $39258 from the return address (1 row).
 	dc.b	$00,$10,$BF,$0A,$02,$4E,$41,$4D,$45,$20,$20,$45,$4E,$54,$52,$59	; .....NAME  ENTRY
 	bsr.w	ReadNameLog
@@ -1421,7 +1421,7 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	bsr.w	GetLogName
 ; Inline data read by GetLogName from the return address (1 row).
 	dc.w	$6100,$06AC
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$0E,$BF,$07,$06,$4E,$61,$6D,$65,$20,$4C,$6F,$67,$00	; .....Name Log.
 	move.w	#$18,$18D62.l
@@ -1444,7 +1444,7 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	bra.w	NameEntryMoveCursor
 ; Name entry: prints the prompt and the length of the name so far
 NameEntryPrompt	bsr.w	GetNameLength
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$05,$12,$00	; ......
 	tst.w	$1A566.l
@@ -1462,11 +1462,11 @@ NameEntryPrompt	bsr.w	GetNameLength
 	cmp.w	$1A390.l,d1
 	movem.w	(sp)+,d1
 	beq.w	.next2
-	jsr	$3750E.l
+	jsr	(ReadJoy2).l
 	tst.w	d1
 	beq.w	.loop
 	bra.w	.next3
-.next2	jsr	$374F0.l
+.next2	jsr	(ReadJoy1).l
 	tst.w	d1
 	beq.w	.loop
 .next3	btst	#$7,d1
@@ -1518,21 +1518,21 @@ NameEntryPrompt	bsr.w	GetNameLength
 	bsr.w	GetLogName
 	tst.w	$1A566.l
 	bne.w	.next8
-	jsr	$26A4A.l
+	jsr	(NameEntryHelp).l
 	bra.w	NameEntryPrompt
-.next8	jsr	$38F6E.l
+.next8	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$04,$13,$00	; ......
 ; Name entry: blanks the letter under the cursor
 NameEntryClearLetter	add.w	d4,$18D58.l
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	bsr.w	LetterGridPos
 	moveq	#$1,d2
 	move.w	$18D58.l,-(sp)
 	move.w	$18D5A.l,-(sp)
-	jsr	$38C06.l
+	jsr	(eraser).l
 	move.w	(sp)+,$18D5A.l
 	addi.w	#$1,$18D5A.l
 	move.w	(sp)+,$18D58.l
@@ -1569,7 +1569,7 @@ NameEntryApplyRow	add.w	d5,d0
 	moveq	#$1,d2
 	move.w	$18D58.l,-(sp)
 	move.w	$18D5A.l,-(sp)
-	jsr	$38C06.l
+	jsr	(eraser).l
 	move.w	(sp)+,$18D5A.l
 	addi.w	#$1,$18D5A.l
 	move.w	(sp)+,$18D58.l

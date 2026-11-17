@@ -706,23 +706,23 @@ OptionsScreenSetup
 	move.w	d4,$18D42.l
 	movea.l	$47D3C.l,a2
 	addq.l	#$8,a2
-	jsr	$38946.l
+	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$0F,$C0,$45,$67,$89,$AB,$CD,$EF	; ..Eg....
 	move.w	d4,$17EA2.l
 	movea.l	$47D70.l,a2
 	addq.l	#$8,a2
-	jsr	$38946.l
+	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$01,$23,$45,$67,$89,$AB,$CD,$EF	; .#Eg....
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
-	jsr	$38C06.l
-	jsr	$38F6E.l
+	jsr	(eraser).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
 	movea.l	$47D00.l,a0
@@ -735,10 +735,10 @@ OptionsScreenSetup
 	moveq	#$28,d2
 	moveq	#$1C,d3
 	moveq	#$D,d5
-	jsr	$387E2.l
+	jsr	(dobitmap).l
 	move.w	d4,$19394.l
 	addi.w	#$24,d4
-	jsr	$38F6E.l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 	movea.l	$47D04.l,a0
@@ -751,8 +751,8 @@ OptionsScreenSetup
 	moveq	#$28,d2
 	moveq	#$4,d3
 	moveq	#$0,d5
-	jsr	$387E2.l
-	jsr	$38F6E.l
+	jsr	(dobitmap).l
+	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$01,$0E,$00	; ......
 	move.w	d4,$19388.l
@@ -766,20 +766,20 @@ OptionsScreenSetup
 	moveq	#$26,d2
 	moveq	#$D,d3
 	moveq	#$0,d5
-	jsr	$387E2.l
+	jsr	(dobitmap).l
 	move.w	d4,$19392.l
 	addi.w	#$24,d4
 	move.w	d4,$19398.l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,$1939A.l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
-	jsr	$38946.l
+	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$03,$41,$45,$67,$89,$AB,$CD,$EF	; .AEg....
-	jsr	$3EE84.l
+	jsr	(SortObjectsInit).l
 	move.w	#$28,$1749C.l
 	move.w	#$28,$1779C.l
 	st.b	$1834C.l
@@ -818,14 +818,14 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	bset	#$5,$19390.l
 .next	tst.w	$18BF8.l
 	beq.w	.4
-	jsr	$3752C.l
+	jsr	(ReadJoy3).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.3
 	btst	#$5,d1
 	beq.w	.ex
 	bset	#$5,$19390.l
-.3	jsr	$3754A.l
+.3	jsr	(ReadJoy4).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.4
