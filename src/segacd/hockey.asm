@@ -1,3 +1,4 @@
+	include	equates94.asm
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 

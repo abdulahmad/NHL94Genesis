@@ -279,7 +279,7 @@ SPAlistSetFlag6
 ReadCrowdRecord						;Read the 16 byte crowd record block of team d1 from save RAM
 	
 	
-	bclr	#$6,(sflags6).l
+	bclr	#6,(sflags6).l
 ; Moves one 16 byte crowd record between RAM and backup RAM (flag 6 of sflags6 picks the direction)
 CrowdRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
@@ -319,17 +319,17 @@ ReadCrowdRecordBSetFlag6
 	bra.w	TeamRecordBackupIO
 ; Sets the flag and runs NameLogIO (write); ReadNameLog clears it (read).
 WriteNameLog
-	bset	#$6,(sflags6).l
+	bset	#6,(sflags6).l
 	bra.w	NameLogIO
 ReadNameLog						;Read the user name log from save RAM at NameLogBase to namelog. Called
 	
-	bclr	#$6,(sflags6).l
+	bclr	#6,(sflags6).l
 NameLogIO						;A user record block: read or write (sflags6 bit 6)
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.l	#$80,d1
-	move.l	#$DA0,d0
+	move.l	#NameLogBytes,d1
+	move.l	#NameLogBase,d0
 	movea.l	#namelog,a0
-	btst	#$6,(sflags6).l
+	btst	#6,(sflags6).l
 	beq.w	.read
 	jsr	(BackupRamWrite).l
 	bra.w	.x

@@ -9,11 +9,11 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	tst.l	(arenaspritelist).l
 	bne.w	.run
 	move.w	(arenaanim).l,d0
-	asl.w	#$3,d0
+	asl.w	#3,d0
 	movea.l	#$2A26C,a0
 	move.l	(a0,d0.w),(arenaframelist).l
-	move.l	$4(a0,d0.w),(arenaspritelist).l
-	movea.l	$4(a0,d0.w),a2
+	move.l	4(a0,d0.w),(arenaspritelist).l
+	movea.l	4(a0,d0.w),a2
 	adda.w	#$8,a2
 	move.w	(arenaanimchars).l,d4
 	jsr	(DecompressGraphicsPlain).l
@@ -35,7 +35,7 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	move.b	(a0,d0.w),d1		;frame byte
 	ext.w	d1
 	move.w	d1,(arenaframe).l
-	move.b	$1(a0,d0.w),d1
+	move.b	1(a0,d0.w),d1
 	ext.w	d1
 	move.w	d1,(arenaframetime).l
 	cmpi.w	#$FFFF,(arenaframe).l
@@ -93,42 +93,42 @@ StartArenaAnim						;Start arena animation d0 (ArenaAnims): arenaanim = d0, RunA
 									;SetFaceoffAnim set)
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	d0,(arenaanim).l
-	move.l	#$0,(arenaframelist).l
-	move.l	#$0,(arenaspritelist).l
-	move.w	#$1,(arenaframe).l
+	move.l	#0,(arenaframelist).l
+	move.l	#0,(arenaspritelist).l
+	move.w	#1,(arenaframe).l
 	clr.w	(arenaframeidx).l
 	st.b	(faceoffanim).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 SetFaceoffAnim						;Set the faceoff animation: sflags7 bit 0, faceoffanim = d0. Called from
 									;puckfaceoff
-	bset	#$0,(sflags7).l
+	bset	#0,(sflags7).l
 	move.w	d0,(faceoffanim).l
 	rts
 EndArenaAnim
 	move.w	#$FFFF,(arenaanim).l
-	bclr	#$0,(sflags7).l
+	bclr	#0,(sflags7).l
 	rts
 ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or one of
 									;the 8 of RandomSongs at random when 0; $FFFF with gmode bit 4. Called
 									;from StartPer, checkgoal, puckshootout and LeadSong
 	movem.l	d0-d1/a0-a1,-(sp)
-	btst	#$4,(gmode).l		;highlight reel?
+	btst	#gmhl,(gmode).l		;highlight reel?
 	beq.w	.0		;not the highlight reel: pick a song
 	move.w	#$FFFF,d1		;highlights: no song
 	bra.w	.1
-.0	bclr	#$6,(sflags8).l		;clear sflags8 bit 6
+.0	bclr	#6,(sflags8).l		;clear sflags8 bit 6
 	movea.l	#$2A4DC,a0
 	movea.l	#$2A584,a1
 	move.w	(HmTeam).l,d0
-	mulu.w	#$6,d0
+	mulu.w	#6,d0
 	add.w	(SongIndex).l,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1		;team song
 	bne.w	.1		;a team song: use it
-	move.w	#$8,d0		;slot 0: one of the 8 random songs
+	move.w	#8,d0		;slot 0: one of the 8 random songs
 	jsr	(randomd0).l
-	andi.w	#$7,d0
+	andi.w	#7,d0
 	move.b	(a1,d0.w),d1
 .1	move.w	d1,(SongNum).l
 	movem.l	(sp)+,d0-d1/a0-a1

@@ -5,10 +5,10 @@ xyVmMap						;use printx/y/m to set vram address. Returns a0 = Vdata.
 	move.w	(printy).l,d1
 	movea.l	#VmMAP1,a0
 	adda.w	(printm).l,a0
-	move.w	$2(a0),d2
+	move.w	2(a0),d2
 	asl.w	d2,d1
 	add.w	d1,d0
-	asl.w	#$1,d0
+	asl.w	#1,d0
 	add.w	(a0),d0
 	bsr.w	SetVramWriteAddr1
 	movem.l	(sp)+,d0-d2
@@ -17,7 +17,7 @@ eraser						;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = char 
 	
 	movem.l	d0-d2/a0,-(sp)
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.w	d0-d1,-(sp)
 .1	bsr.w	xyVmMap
 	move.w	(sp),d0
@@ -48,12 +48,12 @@ Framer						;frame and fill (uses framer.map graphics and assums tiles are alrea
 	
 	movem.l	d0-d4/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.w	d0-d1,-(sp)
 	move.w	(printa).l,d2
 	add.w	(framercset).l,d2
 	movea.l	(FramerMap).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	adda.w	#$4,a1
 	clr.w	d4
 	bsr.w	.tbline
@@ -105,10 +105,10 @@ printsmallz						;String macro follows the call
 printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup font
 	
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d3/a0/a2-a3,-(sp)
 	movea.l	#smallfontchars,a3
-	btst	#$3,(sflags6).l
+	btst	#3,(sflags6).l
 	beq.w	.start
 	movea.l	#setupfontchars,a3
 .start	bsr.w	xyVmMap
@@ -120,7 +120,7 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	ext.w	d0
 	bgt.w	.nocom
 	neg.w	d0
-	asl.w	#$2,d0
+	asl.w	#2,d0
 	movea.l	#$38EB2,a2
 	movea.l	(a2,d0.w),a2
 	jsr	(a2)
@@ -131,13 +131,13 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	bra.w	.p
 .noblank	cmpi.b	#$5E,d0
 	beq.w	.skip
-	asl.w	#$1,d0
+	asl.w	#1,d0
 	movea.l	(SmallFontMap).l,a2
-	btst	#$3,(sflags6).l
+	btst	#3,(sflags6).l
 	beq.w	.4
 	movea.l	$47D70.l,a2
-.4	adda.l	$4(a2),a2
-	move.w	$4(a2,d0.w),d0
+.4	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
 	move.w	(printfontset).l,d1
 	add.w	(a3,d1.w),d0
 .p	add.w	d2,d0
@@ -229,7 +229,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	
 	
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	xyVmMap
 	move.w	(printa).l,d2
@@ -242,12 +242,12 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	bpl.w	.nocom
 	neg.w	d0
 	move.w	d0,d2
-	asl.w	#$8,d2
-	asl.w	#$1,d2
+	asl.w	#8,d2
+	asl.w	#1,d2
 	andi.w	#$F800,d2
 	move.w	d2,(printa).l
-	andi.w	#$3,d0
-	asl.w	#$2,d0
+	andi.w	#3,d0
+	asl.w	#2,d0
 	subi.w	#$4,d0
 	move.w	d0,(printm).l
 	move.b	(a1)+,d0
@@ -265,14 +265,14 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	bra.w	.p
 .noblank	cmpi.b	#$5E,d0
 	beq.w	.skip
-	asl.w	#$1,d0
+	asl.w	#1,d0
 	movea.l	(SmallFontMap).l,a2
-	btst	#$3,(sflags6).l
+	btst	#3,(sflags6).l
 	beq.w	.2
 	movea.l	$47D70.l,a2
-.2	adda.l	$4(a2),a2
-	move.w	$4(a2,d0.w),d0
-	btst	#$3,(sflags6).l
+.2	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
+	btst	#3,(sflags6).l
 	beq.w	.3
 	add.w	(setupfontchars).l,d0
 	bra.w	.p
@@ -301,12 +301,12 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 FormatAndPrintTime						;d0 bits 14-15 = period, bits 0-13 = seconds
 	swap	d0
 	clr.w	d0
-	rol.l	#$2,d0
+	rol.l	#2,d0
 	movea.l	#$390E4,a1
 	bsr.w	PrintTickerEntry
 	addi.w	#$2,(printx).l
 	swap	d0
-	lsr.w	#$2,d0
+	lsr.w	#2,d0
 	bsr.w	PushTime
 	bra.w	print
 ; Data that follows FormatAndPrintTime (strings, small tables)
@@ -323,7 +323,7 @@ PushTime						;convert d0 into string format of minutes:seconds. Return a1 = str
 	move.b	d0,-(a1)
 	swap	d0
 	ext.l	d0
-	divu.w	#$6,d0
+	divu.w	#6,d0
 	swap	d0
 	addi.w	#$30,d0
 	move.b	d0,-(a1)
@@ -343,7 +343,7 @@ PushTime						;convert d0 into string format of minutes:seconds. Return a1 = str
 .noz	move.l	(sp)+,d0
 	sub.l	a1,d0
 	addi.w	#$2,d0
-	btst	#$0,d0
+	btst	#0,d0
 	beq.w	.1
 	clr.b	-(a1)
 	addi.w	#$1,d0
@@ -366,7 +366,7 @@ PushNumber						;convert d0 into string format of base 10 number, no leading zer
 	move.l	(sp)+,d0
 	sub.l	a1,d0
 	addi.w	#$2,d0
-	btst	#$0,d0
+	btst	#0,d0
 	beq.w	.1
 	clr.b	-(a1)
 	addi.w	#$1,d0
@@ -376,7 +376,7 @@ PushNumber						;convert d0 into string format of base 10 number, no leading zer
 PushNumberWidth						;right-justified number
 	movem.l	d0-d3,-(sp)
 	movea.l	#$17F58,a1
-	moveq	#$1,d2
+	moveq	#1,d2
 	sub.w	d2,d1
 	bra.w	.next
 .mul	mulu.w	#$A,d2
@@ -397,7 +397,7 @@ PushNumberWidth						;right-justified number
 	bne.w	.loop2
 	move.l	a1,d0
 	subi.l	#PushWidthBuf,d0
-	btst	#$0,d0
+	btst	#0,d0
 	beq.w	.00
 	clr.b	(a1)+
 	addi.w	#$1,d0
@@ -427,7 +427,7 @@ appstring						;append string a1 to string a3
 	suba.w	#$1,a0
 .next	dbra	d0,.2
 	move.l	a0,d0
-	btst	#$0,d0
+	btst	#0,d0
 	beq.w	.4
 	clr.b	(a0)+
 	addi.l	#$1,d0
@@ -448,7 +448,7 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 	
 	
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d7/a0/a2,-(sp)
 	move.w	(printx).l,d4
 	move.w	(printy).l,d5
@@ -463,13 +463,13 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 	bpl.w	.nocom
 	neg.w	d0
 	move.w	d0,d6
-	asl.w	#$8,d6
-	asl.w	#$1,d6
+	asl.w	#8,d6
+	asl.w	#1,d6
 	andi.w	#$F800,d6
 	move.w	d6,(printa).l
 	add.w	(BigFontchars).l,d6
-	andi.w	#$3,d0
-	asl.w	#$2,d0
+	andi.w	#3,d0
+	asl.w	#2,d0
 	subi.w	#$4,d0
 	move.w	d0,(printm).l
 	move.b	(a1)+,d4
@@ -497,27 +497,27 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 PrintBigChar						;print big font char d0 (ascii) through bfasciicon
 	subi.w	#$20,d0
 	movea.l	#bfasciicon,a0
-	moveq	#$1,d2
+	moveq	#1,d2
 	move.b	(a0,d0.w),d1
 	ext.w	d1
 	bpl.w	.0
 	neg.w	d1
 	clr.w	d2
-.0	asl.w	#$1,d1
+.0	asl.w	#1,d1
 	movea.l	(BigFontMap).l,a0
-	adda.l	$4(a0),a0
-.loop	move.w	$4(a0,d1.w),d3
+	adda.l	jimdata(a0),a0
+.loop	move.w	mapwords(a0,d1.w),d3
 	bsr.w	PutBigTile
 	move.w	(a0),d7
-	asl.w	#$1,d7
+	asl.w	#1,d7
 	add.w	d7,d1
-	move.w	$4(a0,d1.w),d3
+	move.w	mapwords(a0,d1.w),d3
 	sub.w	d7,d1
-	addq.w	#$1,d5
+	addq.w	#1,d5
 	bsr.w	PutBigTile
-	subq.w	#$1,d5
-	addq.w	#$1,d4
-	addq.w	#$2,d1
+	subq.w	#1,d5
+	addq.w	#1,d4
+	addq.w	#2,d1
 	dbra	d2,.loop
 	rts
 PutBigTile						;write one big font tile to the map at printx / printy
@@ -526,10 +526,10 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	move.w	d5,d0
 	movea.l	#VmMAP1,a0
 	adda.w	(printm).l,a0
-	move.w	$2(a0),d1
+	move.w	2(a0),d1
 	asl.w	d1,d0
 	add.w	d4,d0
-	asl.w	#$1,d0
+	asl.w	#1,d0
 	add.w	(a0),d0
 	bsr.w	SetVramWriteAddr1
 .loop	btst	#$7,$FF800E.l

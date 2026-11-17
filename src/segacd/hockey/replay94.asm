@@ -3,7 +3,7 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	
 	cmpa.l	#$C45C,a4
 	bne.w	.1
-	btst	#$4,(sflags).l
+	btst	#sfwrap,(sflags).l
 	beq.w	.end
 	movea.l	#replayend,a4
 .1	suba.w	#$62,a4
@@ -15,10 +15,10 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	rts
 adda4						;Step forward 1 frame. First handles a reverse
 	
-	bclr	#$6,(sflags4).l
+	bclr	#6,(sflags4).l
 	beq.w	.1
 	movem.l	d0-d7/a0-a6,-(sp)
-	bchg	#$4,(sflags4).l
+	bchg	#4,(sflags4).l
 	move.w	(Hpos).l,-(sp)
 	move.w	(Vpos).l,-(sp)
 	bsr.w	forceblack2
@@ -28,30 +28,30 @@ adda4						;Step forward 1 frame. First handles a reverse
 	clr.w	(Hpos).l
 	clr.w	(Vpos).l
 	move.w	#$7D0,(Oldrow).l
-	move.w	#$1,d0
+	move.w	#1,d0
 .loop	jsr	(setvideo).l
 	jsr	(MenuWaitVblank).l
 	dbra	d0,.loop
 	move.w	(sp)+,(Vpos).l
 	move.w	(sp)+,(Hpos).l
-	move.w	#$1,d0
+	move.w	#1,d0
 	jsr	(setvideo).l
 .loop2	jsr	(MenuWaitVblank).l
 	dbra	d0,.loop2
 	movem.l	a0,-(sp)
 	movea.l	#$17A80,a0
-	move.w	#$1,$8(a0)
+	move.w	#1,oldframe(a0)
 	adda.l	#$80,a0
-	move.w	#$1,$8(a0)
+	move.w	#1,oldframe(a0)
 	movem.l	(sp)+,a0
 	bsr.w	RestoreReplayFrame
-	btst	#$5,(sflags).l
+	btst	#sfscrl,(sflags).l
 	beq.w	.0
 .0	jsr	(ReadActiveJoypadPrint).l
 	move.w	#$64,(palcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 .1	clr.w	d7
-	btst	#$2,(sflags2).l
+	btst	#sf2drec,(sflags2).l
 	beq.w	adda42
 	movem.l	a4,-(sp)
 	bsr.w	NextReplayEntry
@@ -71,15 +71,15 @@ NextReplayEntry	adda.w	#$62,a4
 	rts
 UpdateCameraPos	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
-	btst	#$7,(sflags4).l
+	btst	#7,(sflags4).l
 	beq.w	.0
 	neg.w	d0
 .0	move.w	d0,$0(a5)
-	move.w	$14(a3),d1
-	btst	#$7,(sflags4).l
+	move.w	Ypos(a3),d1
+	btst	#7,(sflags4).l
 	beq.w	.2
 	neg.w	d1
-.2	move.w	d1,$14(a5)
+.2	move.w	d1,Ypos(a5)
 	cmpi.w	#$3C,d0
 	blt.w	.next3
 	move.w	#$3C,d0
@@ -260,9 +260,9 @@ ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
 .3	move.w	(sp)+,d0
 	rts
 updatereplay						;called every frame to save replay events, d7 = elapsed frames
-	btst	#$4,(gmode).l
+	btst	#gmhl,(gmode).l
 	bne.w	updatereplayExit
-	btst	#$2,(sflags2).l
+	btst	#sf2drec,(sflags2).l
 	beq.w	.0
 	tst.w	(replaydelay).l
 	beq.w	.rec
@@ -273,7 +273,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 .0	addi.l	#$62,(recbpr).l
 	cmpi.l	#replayend,(recbpr).l
 	bne.w	.rec
-	bset	#$4,(sflags).l
+	bset	#sfwrap,(sflags).l
 	move.l	#$C45C,(recbpr).l
 .rec	movea.l	(recbpr).l,a0
 	moveq	#$F,d2
@@ -281,41 +281,41 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 .top	clr.l	(a0)
 	move.w	$0(a3),d1
 	andi.w	#$3FF,d1
-	move.w	d1,$2(a0)
+	move.w	d1,2(a0)
 	clr.l	d1
-	move.w	$14(a3),d1
-	asl.w	#$6,d1
-	asl.l	#$4,d1
+	move.w	Ypos(a3),d1
+	asl.w	#6,d1
+	asl.l	#4,d1
 	or.l	d1,(a0)
-	move.w	$6(a3),d1
-	asl.w	#$4,d1
+	move.w	frame(a3),d1
+	asl.w	#4,d1
 	or.w	d1,(a0)
-	move.w	$4(a3),d1
+	move.w	attribute(a3),d1
 	andi.w	#$1800,d1
-	asl.w	#$3,d1
+	asl.w	#3,d1
 	or.w	d1,(a0)
 	adda.w	#$4,a0
 	adda.l	#$80,a3
 	dbra	d2,.top
-	moveq	#$5,d2
+	moveq	#5,d2
 	movea.l	#SortCords,a3
-.loop	move.b	$6F(a3),(a0)+
-	move.w	$34(a3),d0
+.loop	move.b	rostnum(a3),(a0)+
+	move.w	position(a3),d0
 	bpl.w	.n0
 	moveq	#$F,d0
 .n0	andi.w	#$F,d0
 	move.b	d0,(a0)
 	adda.l	#$80,a3
-	move.b	$6F(a3),d0
-	asl.w	#$4,d0
+	move.b	rostnum(a3),d0
+	asl.w	#4,d0
 	or.b	d0,(a0)+
-	move.b	$6F(a3),d0
-	lsr.b	#$4,d0
+	move.b	rostnum(a3),d0
+	lsr.b	#4,d0
 	move.b	d0,(a0)
-	move.w	$34(a3),d0
+	move.w	position(a3),d0
 	bpl.w	.n1
 	moveq	#$F,d0
-.n1	asl.w	#$4,d0
+.n1	asl.w	#4,d0
 	or.b	d0,(a0)+
 	adda.l	#$80,a3
 	dbra	d2,.loop
@@ -330,7 +330,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.b	(PBnum).l,(a0)+
 	move.w	d0,-(sp)
 	move.w	(PadControlBits34).l,d0
-	lsr.w	#$4,d0
+	lsr.w	#4,d0
 	move.b	d0,(a0)+
 	move.w	(sp)+,d0
 	move.w	(Hpos).l,(a0)+

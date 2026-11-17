@@ -2,29 +2,29 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 									;PositionBoxes (PositionBoxesTop when bit 7 of
 									;pflags(a3), the top net)
 	movem.l	d0-d7/a0,-(sp)
-	move.w	$34(a3),d7
+	move.w	position(a3),d7
 	subi.w	#$1,d7		;position 1 is entry 0
 	movea.l	#$292E2,a0
-	btst	#$7,$62(a3)		;which net?
+	btst	#pfgoal,pflags(a3)		;which net?
 	beq.w	.0
 	movea.l	#$292F2,a0
 .0	add.w	d7,d7		;word per position
 	move.w	(a0,d7.w),d0		;X min of the box
-	cmp.w	$44(a3),d0
+	cmp.w	temp3(a3),d0
 	blt.w	.1
-	move.w	d0,$44(a3)		;clamp to the left
-.1	move.w	$2(a0,d7.w),d0		;X max of the box
-	cmp.w	$44(a3),d0
+	move.w	d0,temp3(a3)		;clamp to the left
+.1	move.w	2(a0,d7.w),d0		;X max of the box
+	cmp.w	temp3(a3),d0
 	bgt.w	.2
-	move.w	d0,$44(a3)		;clamp to the right
-.2	move.w	$4(a0,d7.w),d0		;Y min of the box
-	cmp.w	$46(a3),d0
+	move.w	d0,temp3(a3)		;clamp to the right
+.2	move.w	4(a0,d7.w),d0		;Y min of the box
+	cmp.w	temp4(a3),d0
 	blt.w	.3
-	move.w	d0,$46(a3)		;clamp to the bottom
-.3	move.w	$6(a0,d7.w),d0		;Y max of the box
-	cmp.w	$46(a3),d0
+	move.w	d0,temp4(a3)		;clamp to the bottom
+.3	move.w	6(a0,d7.w),d0		;Y max of the box
+	cmp.w	temp4(a3),d0
 	bgt.w	.x
-	move.w	d0,$46(a3)		;clamp to the top
+	move.w	d0,temp4(a3)		;clamp to the top
 .x	movem.l	(sp)+,d0-d7/a0
 	rts
 ; Position limits
@@ -63,14 +63,14 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	bmi.w	AddArenaAnimSpriteExit
 	tst.l	(arenaspritelist).l
 	beq.w	AddArenaAnimSpriteExit		;not loaded: none
-	btst	#$4,(sflags4).l		;check if reverse angle replay
+	btst	#4,(sflags4).l		;check if reverse angle replay
 	bne.w	AddArenaAnimSpriteExit
-	btst	#$3,(sflags2).l
+	btst	#sf2replay,(sflags2).l
 	bne.w	AddArenaAnimSpriteExit		;replay: none
-	btst	#$7,(sflags).l
+	btst	#sfhor,(sflags).l
 	bne.w	AddArenaAnimSpriteExit		;horizontal mode: none
 	movea.l	(arenaspritelist).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	(Hpos).l,d4
 	move.w	(Vpos).l,d5
 	move.w	(arenaframe).l,d0
@@ -78,7 +78,7 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	andi.w	#$F,d2
 	cmpi.w	#$3,d2
 	bls.w	.0
-	moveq	#$3,d2
+	moveq	#3,d2
 .0	bra.w	.next2
 .loop	move.w	d3,d0
 	add.w	d2,d0
@@ -93,9 +93,9 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	movem.l	d0-d5,-(sp)
 	add.w	d0,d0
 	movea.l	a1,a0
-	move.w	$2(a0,d0.w),d1
+	move.w	2(a0,d0.w),d1
 	sub.w	(a0,d0.w),d1
-	lsr.w	#$3,d1
+	lsr.w	#3,d1
 	subi.w	#$1,d1
 	move.w	d1,-(sp)
 	adda.w	(a0,d0.w),a0
@@ -110,23 +110,23 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	subi.w	#$80,d2
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
-.loop2	cmp.w	$2(a0),d2
+.loop2	cmp.w	seY(a0),d2
 	bgt.w	.next4
-	cmp.w	$2(a0),d3
+	cmp.w	seY(a0),d3
 	blt.w	.next4
 	cmp.w	(a0),d0
 	bgt.w	.next4
 	cmp.w	(a0),d1
 	blt.w	.next4
-	move.w	$2(a0),d5
+	move.w	seY(a0),d5
 	addi.w	#$70,d5
 	sub.w	d2,d5
 	move.w	d5,(a6)+
-	move.b	$7(a0),(a6)+
+	move.b	seSize(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	$6(a0),d5
+	move.w	seAttr(a0),d5
 	andi.w	#$F800,d5
-	add.w	$4(a0),d5
+	add.w	seTile(a0),d5
 	add.w	(arenaanimchars).l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
@@ -152,10 +152,10 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 	movea.l	a1,a0
 	move.w	(a0),d0
 	move.w	d0,d5
-	tst.b	-$1(a0,d5.w)		;trailing pad byte?
+	tst.b	-1(a0,d5.w)		;trailing pad byte?
 	bne.w	.0
 	subi.w	#$1,d0		;first pad byte
-	tst.b	-$2(a0,d5.w)		;second pad byte?
+	tst.b	-2(a0,d5.w)		;second pad byte?
 	bne.w	.0
 	subi.w	#$1,d0		;second pad byte
 .0	add.w	(printx).l,d0
@@ -176,7 +176,7 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	jsr	(FormatPlayerNumInitial).l
 	move.w	(a1),d0
 	subi.w	#$2,d0
-	move.w	d0,$2(a1)
+	move.w	d0,2(a1)
 	adda.w	#$2,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts
@@ -233,45 +233,45 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	jsr	$5F22.w
 	jsr	(RelocateLogoBitmaps).l
 	clr.w	(matchup).l
-	moveq	#$0,d0
+	moveq	#0,d0
 	moveq	#$1C,d1
 	jsr	(CrowdMeterFadeIn).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
-	move.w	#$8,d0
-	move.w	#$8,d1
+	move.w	#8,d0
+	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$13,$00	; ......
-	move.w	#$8,d0
-	move.w	#$8,d1
+	move.w	#8,d0
+	move.w	#8,d1
 	jsr	(Framer).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
 	movea.l	$47D8C.l,a0
 	move.w	(VisTeam).l,d0
-	asl.w	#$2,d0
+	asl.w	#2,d0
 	movea.l	(a0,d0.w),a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
-	asl.w	#$3,d0
+	asl.w	#3,d0
 	movea.l	#TeamLogoPalettes,a0
 	subi.w	#$40,d0
 	adda.w	d0,a0
 	adda.l	(a2)+,a1
 	clr.l	d1
 	clr.l	d0
-	moveq	#$6,d2
-	move.w	#$6,d3
-	moveq	#$4,d5
+	moveq	#6,d2
+	move.w	#6,d3
+	moveq	#4,d5
 	jsr	(dobitmap).l
 	movea.l	#$BBCF0,a0
 	movea.l	#$BBD10,a1
-	move.w	#$7,d0
+	move.w	#7,d0
 .loop3	move.l	(a0)+,(a1)+
 	dbra	d0,.loop3
 	jsr	(printz).l
@@ -279,27 +279,27 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
 	movea.l	$47D8C.l,a0
 	move.w	(HomeTeam).l,d0
-	asl.w	#$2,d0
+	asl.w	#2,d0
 	movea.l	(a0,d0.w),a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
-	asl.w	#$3,d0
+	asl.w	#3,d0
 	subi.w	#$40,d0
 	movea.l	#TeamLogoPalettes,a0
 	adda.w	d0,a0
 	adda.l	(a2)+,a1
 	clr.w	d1
 	clr.w	d0
-	moveq	#$6,d2
-	move.w	#$6,d3
-	moveq	#$4,d5
+	moveq	#6,d2
+	move.w	#6,d3
+	moveq	#4,d5
 	jsr	(dobitmap).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BD,$04,$01,$00	; ......
 	moveq	#$20,d0
-	moveq	#$6,d1
+	moveq	#6,d1
 	jsr	(Framer).l
 	jsr	(printbigz).l
 ; Inline data read by $39258 from the return address (2 rows).
@@ -475,13 +475,13 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	
 	
-	moveq	#$9,d0
+	moveq	#9,d0
 	moveq	#$1A,d1
 	jsr	(CrowdMeterFadeIn).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
-	moveq	#$6,d1
+	moveq	#6,d1
 	jsr	(Framer).l
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Game  Statistics',CC_Font3Pri,$7,$1
@@ -501,15 +501,15 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bsr.w	StatScrollHeader
 .loop	jsr	(MenuWaitVblank).l
 	jsr	(ReadActiveJoypad).l
-	btst	#$7,d3
+	btst	#7,d3
 	beq.w	.1
 	jmp	(StatsScreenFadeIn).l
 .1	jsr	(nodiag).l
 	move.w	#$FFFE,d0
-	btst	#$0,d3
+	btst	#0,d3
 	bne.w	.2
 	neg.w	d0
-	btst	#$1,d3
+	btst	#1,d3
 	beq.w	.3
 .2	move.w	d0,(PlayerScrollCtr).l
 .3	bsr.w	.scroll
@@ -569,10 +569,10 @@ StatsReportBlitSetup	move.w	(disflags).l,-(sp)
 	move.w	(sp)+,(disflags).l
 	rts
 StatScrollRow	move.w	(VertLineScrolling).l,d3
-	lsr.w	#$4,d3
+	lsr.w	#4,d3
 	bra.w	StatScrollRowExit
 StatScrollRowEnd	move.w	(VertLineScrolling).l,d3
-	lsr.w	#$4,d3
+	lsr.w	#4,d3
 	addi.w	#$6,d3
 	bra.w	StatScrollRowExit
 ; Return of StatScrollRowEnd
@@ -610,7 +610,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	jsr	(PutTeamBlockDraw).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$1A,$7
-	moveq	#$0,d0
+	moveq	#0,d0
 	jsr	(PutTeamBlockDraw).l
 	bsr.w	StatsReportBlitSetup
 	jsr	(printz).l
@@ -622,7 +622,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	move.w	#$A,d6
 	dc.w	$43FA,$0236		; lea.l X_29F44(pc),a1
 .row	move.w	(a1),d0
-	lsr.w	#$1,d0
+	lsr.w	#1,d0
 	neg.w	d0
 	addi.w	#$15,d0
 	move.w	d0,(printx).l
@@ -631,7 +631,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	move.w	#$22,(printx).l
 	movea.l	#tmstruct,a2
 	bsr.w	PrintStatValue
-	move.w	#$9,(printx).l
+	move.w	#9,(printx).l
 	lea.l	$366(a2),a2
 	bsr.w	PrintStatValue
 	lea.l	$4(a0),a1
@@ -643,13 +643,13 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	
 	
 	movea.l	#mesarea,a3
-	move.w	#$2,(a3)
+	move.w	#2,(a3)
 	cmpi.w	#$FFFF,(a0)
 	bne.w	.1
-	move.w	#$C,d0
+	move.w	#tmscore,d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
-	move.w	#$0,d1
+	move.w	#tmshots,d1
 	move.w	(a2,d1.w),d1
 	beq.w	.0
 	divu.w	d1,d0
@@ -671,7 +671,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	bne.w	.4
 	bsr.w	.8
 .4	jsr	(appstring).l
-	move.w	$2(a0),d0
+	move.w	2(a0),d0
 	bmi.w	.6
 	jsr	(PushNumberWidthString).l
 	String	'/'
@@ -685,7 +685,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
-	move.w	$2(a0),d1
+	move.w	2(a0),d1
 	move.w	(a2,d1.w),d1
 	beq.w	.5
 	divu.w	d1,d0
@@ -695,7 +695,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	String	'%)'
 .6	movea.l	a3,a1
 	move.w	(a1),d0
-	lsr.w	#$1,d0
+	lsr.w	#1,d0
 	sub.w	d0,(printx).l
 	jmp	(print).l
 .7	jmp	(PushNumber).l
@@ -782,10 +782,10 @@ rtsStatTables
 updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for the team
 	
 	
-	btst	#$5,(sflags2).l
+	btst	#sf2pwrplay,(sflags2).l
 	beq.w	.x
 	movea.l	#tmstruct,a2
-	btst	#$6,(sflags2).l
+	btst	#sf2pwrtm,(sflags2).l
 	beq.w	.0
 	movea.l	#awtmstruct,a2
 .0	addi.w	#$1,$354(a2)		;one more second of power play time
@@ -808,12 +808,12 @@ ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) a
 	movem.l	d0,-(sp)
 	tst.w	(cont2team).l
 	beq.w	.0
-	move.w	$52(a3),d0
+	move.w	SCnum(a3),d0
 	cmp.w	(puckc).l,d0
 	bne.w	.x
-.0	cmpi.w	#$2,(msgtimer).l
+.0	cmpi.w	#2,(msgtimer).l
 	ble.w	.x
-	move.w	#$2,(msgtimer).l
+	move.w	#2,(msgtimer).l
 .x	movem.l	(sp)+,d0
 	rts
 ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem prints Manual /
@@ -829,46 +829,46 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	move.w	(cont1team).l,d0
 	cmp.w	(cont2team).l,d0
 	bne.w	.0
-	eori.w	#$1,(goaliemode2).l
+	eori.w	#1,(goaliemode2).l
 	bra.w	.g1
-.0	btst	#$1,(sflags).l
+.0	btst	#sfpj,(sflags).l
 	beq.w	.g1
-	eori.w	#$1,(goaliemode2).l
+	eori.w	#1,(goaliemode2).l
 	bra.w	.chkso
-.g1	eori.w	#$1,(goaliemode1).l
-.chkso	btst	#$0,(gmode2).l
+.g1	eori.w	#1,(goaliemode1).l
+.chkso	btst	#0,(gmode2).l
 	bne.w	.so
-	btst	#$2,(BA_PS_flags).l
+	btst	#2,(BA_PS_flags).l
 	beq.w	.x
-.so	btst	#$1,(sflags).l
+.so	btst	#sfpj,(sflags).l
 	bne.w	.p2
-	cmpi.w	#$2,(OptNOP).l
+	cmpi.w	#2,(OptNOP).l
 	bne.w	.4
-	cmpi.w	#$5,(BA_Sktr_SCnum).l
+	cmpi.w	#5,(BA_Sktr_SCnum).l
 	bgt.w	.x
 	bra.w	.5
-.4	cmpi.w	#$5,(BA_Sktr_SCnum).l
+.4	cmpi.w	#5,(BA_Sktr_SCnum).l
 	ble.w	.x
-.5	move.w	#$0,d0
-	cmpi.w	#$2,(OptNOP).l
+.5	move.w	#0,d0
+	cmpi.w	#2,(OptNOP).l
 	bne.w	.6
-	move.w	#$6,d0
+	move.w	#6,d0
 .6	tst.w	(goaliemode1).l
 	bne.w	.set1
-	move.w	#$5,d0
-	cmpi.w	#$2,(OptNOP).l
+	move.w	#5,d0
+	cmpi.w	#2,(OptNOP).l
 	bne.w	.set1
 	move.w	#$B,d0
 .set1	jsr	(setc1player).l
 	bra.w	.x
-.p2	cmpi.w	#$2,(OptNOP).l
+.p2	cmpi.w	#2,(OptNOP).l
 	bne.w	.9
-	cmpi.w	#$5,(BA_Sktr_SCnum).l
+	cmpi.w	#5,(BA_Sktr_SCnum).l
 	ble.w	.x
 	bra.w	.10
-.9	cmpi.w	#$5,(BA_Sktr_SCnum).l
+.9	cmpi.w	#5,(BA_Sktr_SCnum).l
 	bgt.w	.x
-.10	move.w	#$6,d0
+.10	move.w	#6,d0
 	tst.w	(goaliemode2).l
 	bne.w	.set2		;manual: the goalie
 	move.w	#$B,d0		;skater slot

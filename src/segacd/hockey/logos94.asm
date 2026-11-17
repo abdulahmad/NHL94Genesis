@@ -214,12 +214,12 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 									;clear it (eraser)
 	movem.l	d0/a0-a1,-(sp)
 	movea.l	#awayhotplayer,a0
-	move.w	#$2,(iconx).l
+	move.w	#2,(iconx).l
 	cmpa.l	#tmstruct,a2		;home team?
 	bne.w	.0
 	movea.l	#homehotplayer,a0
 	move.w	#$20,(iconx).l		;home: the home lists and column $20
-.0	move.w	#$0,d0
+.0	move.w	#0,d0
 .loop	move.w	(a0)+,d1		;1 hot player per team
 	cmp.w	(iconplayer).l,d1
 	beq.w	.hot
@@ -228,15 +228,15 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	cmpa.l	#tmstruct,a2
 	bne.w	.1
 	movea.l	#homecoldplayer,a0
-.1	move.w	#$0,d0
+.1	move.w	#0,d0
 .loop2	move.w	(a0)+,d1
 	cmp.w	(iconplayer).l,d1
 	beq.w	.cold
 	dbra	d0,.loop2
 	move.w	(iconx).l,(printx).l
 	move.w	#$19,(printy).l
-	move.w	#$8,d0
-	move.w	#$3,d1
+	move.w	#8,d0
+	move.w	#3,d1
 	move.w	#$7FF,d2		;blank char
 	jsr	(eraser).l
 	bra.w	.x
@@ -255,8 +255,8 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
-	moveq	#$0,d5		;no palette lines
+	move.w	mapheight(a1),d3
+	moveq	#0,d5		;no palette lines
 	jsr	(dobitmap).l
 .x	movem.l	(sp)+,d0/a0-a1
 	rts
