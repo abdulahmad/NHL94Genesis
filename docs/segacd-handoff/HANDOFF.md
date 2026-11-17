@@ -31,7 +31,7 @@
 All of HOCKEY.BIN is now covered: 51 more fragments `src/segacd/hk_<94G file>_<n>.asm` (and `hk_data_<offset>.asm` where no cartridge routine lives), 91 fragments MATCH. The disc lays routines out in the cartridge's source-file order (onetimer, crowd, optsetup, cards, records, shootout, period, ui, hockey, stats, replay, logic, middle, decompress, print, penalty, collide, video, setup), so each fragment name is the 94G file whose routines dominate it.
 
 How they are made (all in `tools/`):
-1. `hockey_pair.py` disassembles each cartridge routine (from `output/obj/nhl94 .lst` after `node tools/build.js retail`) and finds its twin in HOCKEY.BIN by instruction shape. 391 routines pair (names in `name_map.csv`).
+1. `hockey_pair.py` disassembles each cartridge routine (from the listing `output/obj/nhl94 .lst`, which `node tools/build.js retail` writes; copy it and `output/nhl94.bin` to /tmp, because the Sega CD build empties output/obj, then run `tools/hockey_regen.py`) and finds its twin in HOCKEY.BIN by instruction shape. about 550 routines pair (exact match, or the routine start found by aligning the disc code between two exact pairs, which covers routines the CD changed) (names in `name_map.csv`).
 2. `hockey_syms.py` learns cartridge symbol to disc value from the paired routines (1,216 symbols, 94% unambiguous).
 3. `hockey_auto.py` writes a fragment: paired routines as named code, everything else as `dc.w`. It assembles, and any instruction the assembler would encode differently (junk data that decodes as code, size changes) becomes `dc.w`, until the bytes match.
 4. `hockey_align.py` copies the 94G local labels and comments onto the fragment.

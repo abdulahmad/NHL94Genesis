@@ -1,233 +1,193 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
-BA_Goalie_SCnum	equ	$1936A
-BA_Team	equ	$19366
-CC_Font1Pri	equ	$BF
-EnterNameTxt	equ	$26C30
-FormatPlayerNumInitial	equ	$41192
-Framer	equ	$38CA0
-GoalRecTitles	equ	$272F4
-LetterGrid	equ	$26DD0
-LogArrowsClrTxt	equ	$26D4A
-LogArrowsTxt	equ	$26D42
-NameEntryScreen	equ	$26348
-NameLogBytes	equ	$80
-OptUserRec	equ	$18C06
-ReadSRAM	equ	$22452
-SaveRecTitles	equ	$27346
-SelectNameTxt	equ	$26C48
-SortCords	equ	$17480
-TeamRecBase	equ	$D20
-TempBuffer	equ	$17E70
-TempWord1	equ	$17E62
-ThreeStars	equ	$BC000
-WinRecTitles	equ	$272A2
-awayuser	equ	$18BF6
-awtmstruct	equ	$186B2
-cont1team	equ	$17FA6
-cont2team	equ	$17FA8
-cursoron	equ	$1A566
-eraser	equ	$38C06
-homeuser	equ	$18BF4
-move	equ	$2C9C8
-nameentryvis	equ	$1A390
-namelength	equ	$1A38A
-namelog	equ	$1A2FC
-namelogarrows	equ	$1A38E
-namelogsel	equ	$1A38C
-print	equ	$38F80
-printbigz	equ	$39258
-printm	equ	$18D5E
-printsmall	equ	$38D9E
-printx	equ	$18D58
-printy	equ	$18D5A
-printz	equ	$38F6E
-recsort1	equ	$1A3D4
-recsort2	equ	$1A3DC
-sflags6	equ	$17F76
-swap	equ	$2779A
-tmstruct	equ	$1834C
-wingames	equ	$1A404
-winpcts	equ	$1A3EC
-winsort	equ	$1A3E4
-winties	equ	$1A3F4
-X_BBD4	equ	$BBD4
-X_BCF6	equ	$BCF6
 
-	org	$B98E
+	org	$BA4A
 
-	move.w	(sp),(printx).l
-	addi.w	#$1,(printy).l
-	jsr	(printz).l
-	String	'A to go back.'
-	dc.w	$33D7,$0001,$8D58,$0679,$0001,$0001,$8D5A,$4EB9
-	dc.w	$0003,$8F6E,$000E,$4220,$746F,$2063,$616E,$6365
-	dc.w	$6C2E,$33DF,$0001,$8D58,$0679,$0001,$0001,$8D5A
-	dc.w	$4EB9,$0003,$8F6E,$0012,$5354,$4152,$5420,$7768
-	dc.w	$656E,$2064,$6F6E,$652E,$4CDF,$7FFF,$4E75,$227C
-	dc.w	$0001,$A37C,$6100,$0406,$33FC,$0000,$0001,$8D58
-	dc.w	$33FC,$000F,$0001,$8D5A,$303C,$0028,$323C,$000D
-	dc.w	$343C,$07FF,$4EB9,$0003,$8C06,$4EB9,$0003,$8F6E
-	dc.w	$0006,$FE01,$1400,$7016,$7207,$4EB9,$0003,$8CA0
-	dc.w	$6100,$0006,$6000,$FFB2,$48E7,$FFFE,$4EB9,$0003
-	dc.w	$8F6E,$001A,$BF02,$1544,$2D50,$6164,$2075,$702F
-	dc.w	$646F,$776E,$2074,$6F20,$2020,$2000,$4EB9,$0003
-	dc.w	$8F6E,$001A,$BF02,$166D,$6F76,$6520,$6172,$726F
-	dc.w	$7773,$2E20,$2020,$2020,$2020,$2000,$33FC,$0002
-	dc.w	$0001,$8D58,$3F39,$0001,$8D58,$0679,$0001,$0001
-	dc.w	$8D5A,$4EB9,$0003,$8F6E,$0016,$5072,$6573,$7320
-	dc.w	$5354,$4152,$5420,$746F,$2020,$2020,$2020
-	addi.w	#$1,(printy).l
-	move.w	(sp),(printx).l
-	jsr	(printz).l
-	String	'select name.        '
-	dc.w	$0679,$0001,$0001,$8D5A,$33DF,$0001,$8D58,$4EB9
-	dc.w	$0003,$8F6E,$0016,$5072,$6573,$7320,$4220,$746F
-	dc.w	$2065,$6469,$742E,$2020,$2020,$4CDF,$7FFF,$4E75
+NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Press START to
+									;select name.", "Press B to edit.")
+	dc.w	$48E7,$FFFE
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$001A,$BF02,$1544,$2D50,$6164,$2075,$702F,$646F,$776E,$2074,$6F20,$2020,$2000
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$001A,$BF02,$166D,$6F76,$6520,$6172,$726F,$7773,$2E20,$2020,$2020,$2020,$2000
+	dc.w	$33FC,$0002,$0001,$8D58
+	dc.w	$3F39,$0001,$8D58
+	dc.w	$0679,$0001,$0001,$8D5A
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0016,$5072,$6573,$7320,$5354,$4152,$5420,$746F,$2020,$2020,$2020
+	dc.w	$0679,$0001,$0001,$8D5A
+	dc.w	$33D7,$0001,$8D58
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0016,$7365,$6C65,$6374,$206E,$616D,$652E,$2020,$2020,$2020,$2020
+	dc.w	$0679,$0001,$0001,$8D5A
+	dc.w	$33DF,$0001,$8D58
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0016,$5072,$6573,$7320,$4220,$746F,$2065,$6469,$742E,$2020,$2020
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 PrintNamePrompt						;Name entry: "Enter new name:" for an empty name log slot namelogsel, else
 									;"Select or replace:"
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(namelogsel).l,d0
-	mulu.w	#$C,d0		;12 bytes per name
-	movea.l	#namelog,a0
-	movea.l	#EnterNameTxt,a1
-	tst.b	(a0,d0.w)		;empty slot: "Enter new name:"
-	beq.w	.0
-	movea.l	#SelectNameTxt,a1
-.0	jsr	(print).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	dc.w	$48E7,$FFFE
+	dc.w	$3039,$0001,$A38C
+	dc.w	$C0FC,$000C
+	dc.w	$207C,$0001,$A2FC
+	dc.w	$227C,$0002,$6C30
+	dc.w	$4A30,$0000
+	dc.w	$6700,$0008
+	dc.w	$227C,$0002,$6C48
+.lBB42	dc.w	$4EB9,$0003,$8F80
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 SyncLetterCursor						;Name entry: the letter grid cursor d5 = the grid index of the current
 									;letter (FindLetter), 0 when it is not in the grid
-	movem.l	d0-d4/a0-a6,-(sp)
-	move.b	$1A37C.l,d0		;first letter of the name
-	bsr.w	FindLetter		;d0 = its grid index
-	cmpi.w	#$1E,d0		;not in the grid: cursor on the first letter
-	blt.w	.0
-	clr.w	d5
-	bra.w	.x
-.0	move.w	d0,d5
-	movea.l	#LetterGrid,a0
-	move.b	(a0,d5.w),$1A37C.l		;unknown letters are turned into the first grid letter
-.x	movem.l	(sp)+,d0-d4/a0-a6
-	rts
+	dc.w	$48E7,$F8FE
+	dc.w	$1039,$0001,$A37C
+	dc.w	$6100,$0026
+	dc.w	$0C40,$001E
+	dc.w	$6D00,$0008
+	dc.w	$4245
+	dc.w	$6000,$0012
+.lBB6A	dc.w	$3A00
+	dc.w	$207C,$0002,$6DD0
+	dc.w	$13F0,$5000,$0001,$A37C
+.lBB7A	dc.w	$4CDF,$7F1F
+	dc.w	$4E75
 FindLetter						;d0 = index of letter d0 in LetterGrid, $1E when not found
-	movem.l	d1-d3/a0-a6,-(sp)
-	movea.l	#LetterGrid,a0
-	move.b	d0,d1
-	clr.w	d0
-	move.w	#$1E,d3		;31 tries
-.loop	cmp.b	(a0,d0.w),d1
-	beq.w	.x
-	addi.w	#$1,d0
-	dbra	d3,.loop
-	move.w	#$1E,d0		;not found
-.x	movem.l	(sp)+,d1-d3/a0-a6
-	rts
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BF04,$1300,$D979,$0001
-	dc.w	$8D58,$4A79,$0001,$A566,$6700,$000E,$4EB9,$0003
-	dc.w	$8F6E,$0006,$203C,$2000,$4E75
+	dc.w	$48E7,$70FE
+	dc.w	$207C,$0002,$6DD0
+	dc.w	$1200
+	dc.w	$4240
+	dc.w	$363C,$001E
+.lBB92	dc.w	$B230,$0000
+	dc.w	$6700,$000E
+	dc.w	$0640,$0001
+	dc.w	$51CB,$FFF2
+	dc.w	$303C,$001E
+.lBBA6	dc.w	$4CDF,$7F0E
+	dc.w	$4E75
+PrintNameCursor						;Name entry: the " < " cursor
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BF04,$1300
+	dc.w	$D979,$0001,$8D58
+	dc.w	$4A79,$0001,$A566
+	dc.w	$6700,$000E
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$203C,$2000
+	dc.w	$4E75
 PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, cursoron)
-	tst.w	(cursoron).l		;cursor on?
-	beq.w	X_BBD4
-	movea.l	#ThreeStars,a1
-	move.w	#$4,(a1)		;String of 1 letter (length 4)
-	move.b	#$0,$3(a1)
-	movea.l	#LetterGrid,a0
-	move.b	(a0,d5.w),d0		;the letter
-	move.b	d0,$2(a1)
-	jmp	(print).l
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BF18,$1000
-	move.w	d5,d0
-	ext.l	d0
-	divu.w	#$6,d0
-	asl.w	#$1,d0
-	add.w	d0,(printy).l
-	swap	d0
-	asl.w	#$1,d0
-	add.w	d0,(printx).l
-	moveq	#$3,d0
-	moveq	#$3,d1
-	rts
-	dc.w	$0018,$BF02,$1020,$2045,$6E74,$6572,$206E,$6577
-	dc.w	$206E,$616D,$653A,$2000,$0018,$BF02,$1053,$656C
-	dc.w	$6563,$7420,$6F72,$2072,$6570,$6C61,$6365,$3A00
-	dc.w	$48E7,$FFFE,$3F39,$0001,$A38A,$3F39,$0001,$A38C
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BF05,$0800
-	move.w	#$6,d7
-	move.w	#$1,(namelogsel).l
-	movea.l	#TempBuffer,a1
-.lBC8E	bsr.w	GetLogName
-	move.w	(printx).l,-(sp)
-	bsr.w	PrintNameField
-	move.w	(sp)+,(printx).l
-	addi.w	#$1,(printy).l
-	addi.w	#$1,(namelogsel).l
-	dbra	d7,.lBC8E
-	move.w	(sp)+,(namelogsel).l
-	move.w	(sp)+,(namelength).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	dc.w	$4A79,$0001,$A566
+	dc.w	$6700,$FFF6
+	dc.w	$227C,$000B,$C000
+	dc.w	$32BC,$0004
+	dc.w	$137C,$0000,$0003
+	dc.w	$207C,$0002,$6DD0
+	dc.w	$1030,$5000
+	dc.w	$1340,$0002
+	dc.w	$4EF9,$0003,$8F80
+LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a row, 2 cells
+									;apart); d0 / d1 = 3 x 3 box
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BF18,$1000
+	dc.w	$3005
+	dc.w	$48C0
+	dc.w	$80FC,$0006
+	dc.w	$E340
+	dc.w	$D179,$0001,$8D5A
+	dc.w	$4840
+	dc.w	$E340
+	dc.w	$D179,$0001,$8D58
+	dc.w	$7003
+	dc.w	$7203
+	dc.w	$4E75
+PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
+	dc.w	$0018,$BF02
+	dc.w	$1020
+	dc.w	$2045
+	dc.w	$6E74
+	dc.w	$6572
+	dc.w	$206E,$6577
+	dc.w	$206E,$616D
+	dc.w	$653A
+	dc.w	$2000
+	dc.w	$0018,$BF02
+	dc.w	$1053
+	dc.w	$656C
+	dc.w	$6563
+	dc.w	$7420
+	dc.w	$6F72
+	dc.w	$2072,$6570,$6C61,$6365
+	dc.w	$3A00
+	dc.w	$48E7,$FFFE
+	dc.w	$3F39,$0001,$A38A
+	dc.w	$3F39,$0001,$A38C
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BF05,$0800
+	dc.w	$3E3C,$0006
+.lBC80	dc.w	$33FC,$0001,$0001,$A38C
+	dc.w	$227C,$0001,$7E70
+.lBC8E	dc.w	$6100,$017E
+	dc.w	$3F39,$0001,$8D58
+	dc.w	$6100,$00EC
+	dc.w	$33DF,$0001,$8D58
+	dc.w	$0679,$0001,$0001,$8D5A
+	dc.w	$0679,$0001,$0001,$A38C
+	dc.w	$51CF,$FFDA
+	dc.w	$33DF,$0001,$A38C
+.lBCBC	dc.w	$33DF,$0001,$A38A
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 MoveLogArrows						;Name entry: when the name log selection namelogsel changed, erase the old
 									;] [ arrows and print them at the new row (PrintLogArrows)
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	(namelogsel).l,d0
-	cmp.w	(namelogarrows).l,d0		;arrows already there?
-	beq.w	.x		;same row: nothing to do
-	movea.l	#LogArrowsClrTxt,a1
-	bsr.w	X_BCF6		;erase the old ones
-	movea.l	#LogArrowsTxt,a1
-	bsr.w	X_BCF6		;print the new ones
-.x	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	dc.w	$48E7,$FFFE
+	dc.w	$3039,$0001,$A38C
+	dc.w	$B079,$0001,$A38E
+	dc.w	$6700,$0016
+	dc.w	$227C,$0002,$6D4A
+	dc.w	$6100,$0012
+	dc.w	$227C,$0002,$6D42
+	dc.w	$6100,$0008
+.lBCF0	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 	dc.w	$4A79,$0001,$A38E,$6700,$0038,$4EB9,$0003,$8F6E
-	dc.w	$0006,$BF03,$0800
-	move.w	(namelogarrows).l,d0
-	subi.w	#$1,d0
-	add.w	d0,(printy).l
-	move.l	a1,-(sp)
-	jsr	(print).l
-	movea.l	(sp)+,a1
-	adda.w	(a1),a1
-	move.w	#$12,(printx).l
-	jsr	(print).l
-	move.w	(namelogsel).l,(namelogarrows).l
-	rts
-	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
+	dc.w	$0006,$BF03,$0800,$3039,$0001,$A38E,$0440,$0001
+	dc.w	$D179,$0001,$8D5A,$2F09,$4EB9,$0003,$8F80,$225F
+	dc.w	$D2D1,$33FC,$0012,$0001,$8D58,$4EB9,$0003,$8F80
+	dc.w	$33F9,$0001,$A38C,$0001,$A38E,$4E75,$0004,$5D00
+	dc.w	$0004,$5B00,$0004,$2000,$0004,$2000
 GetNameLength						;namelength = length of the name being entered
 									;(up to '-' or 0, at most 12)
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	#$B,d3		;at most 12 characters
-	movea.l	#$1A37C,a0
-	clr.w	(namelength).l
-.loop	cmpi.b	#$2D,(a0)		;a '-' ends the name
-	beq.w	.lBD80
-	tst.b	(a0)+		;so does a 0
-	beq.w	.lBD80
-	addi.w	#$1,(namelength).l
-	dbra	d3,.loop
-.lBD80	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	dc.w	$48E7,$FFFE
+	dc.w	$363C,$000B
+	dc.w	$207C,$0001,$A37C
+	dc.w	$4279,$0001,$A38A
+.lBD66	dc.w	$0C10,$002D
+	dc.w	$6700,$0014
+	dc.w	$4A18
+	dc.w	$6700,$000E
+	dc.w	$0679,$0001,$0001,$A38A
+	dc.w	$51CB,$FFE8
+.lBD80	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 PrintNameField						;Name entry: print the 12 character name field from a1, '-' past the
 									;length namelength
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#ThreeStars,a0
-	move.w	(namelength).l,d0		;(d0 unused)
-	move.w	#$0,d3		;character index
-	move.w	#$E,(a0)+		;String of 12 characters
-.loop	move.b	(a1,d3.w),d1		;the character
-	cmp.w	(namelength).l,d3		;past the name?
-	blt.w	.0		;inside the name: print it
-	move.b	#$2D,d1
-.0	move.b	d1,(a0)+
-	addi.w	#$1,d3		;next character
-	cmpi.w	#$C,d3		;12 characters
-	blt.w	.loop
-	movea.l	#ThreeStars,a1
-	jsr	(print).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	dc.w	$48E7,$FFFE
+	dc.w	$207C,$000B,$C000
+	dc.w	$3039,$0001,$A38A
+	dc.w	$363C,$0000
+	dc.w	$30FC,$000E
+.lBD9E	dc.w	$1231,$3000
+	dc.w	$B679,$0001,$A38A
+	dc.w	$6D00,$0006
+	dc.w	$123C,$002D
+.lBDB0	dc.w	$10C1
+	dc.w	$0643,$0001
+	dc.w	$0C43,$000C
+	dc.w	$6D00,$FFE2
+	dc.w	$227C,$000B,$C000
+	dc.w	$4EB9,$0003,$8F80
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 	dc.w	$4142
 	dc.w	$4344
 	dc.w	$4546
@@ -236,108 +196,228 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	dc.w	$4B4C
 	dc.w	$4D4E
 	dc.w	$4F50
-	dc.w	$5152,$5354,$5556,$5758,$595A,$2E31,$3220,$2D00
-	dc.w	$3F39,$0001,$8D4E,$33F9,$0001,$A3D2,$0001,$8D4E
-	dc.w	$4EB9,$0003,$8CA0,$33DF,$0001,$8D4E,$4E75
+NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
+	dc.w	$5152
+	dc.w	$5354
+	dc.w	$5556
+	dc.w	$5758
+	dc.w	$595A
+	dc.w	$2E31,$3220
+	dc.w	$2D00
+	dc.w	$3F39,$0001,$8D4E
+	dc.w	$33F9,$0001,$A3D2,$0001,$8D4E
+	dc.w	$4EB9,$0003,$8CA0
+	dc.w	$33DF,$0001,$8D4E
+	dc.w	$4E75
 GetLogName						;Copy name log entry namelogsel to a1 ('-' for
 									;empty), namelength = its length
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#namelog,a0
-	move.w	(namelogsel).l,d2
-	mulu.w	#$C,d2		;12 bytes per name
-	move.w	#$0,(namelength).l
-	move.w	#$B,d3		;12 characters
-.loop	move.b	(a0,d2.w),d0
-	beq.w	.0		;0 = unused character
-	bra.w	.1		;a letter: copy it
-.0	move.b	#$2D,d0
-	subi.w	#$1,(namelength).l
-.1	move.b	d0,(a1)+
-	addi.w	#$1,(namelength).l
-	addi.w	#$1,d2		;next character
-	dbra	d3,.loop
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
-	dc.w	$48E7,$FFFE,$207C,$0001,$A2FC,$3039,$0001,$A38C
-	dc.w	$C0FC,$000C,$D0C0,$227C,$0001,$A37C,$383C,$000B
-	dc.w	$0C11,$002D,$6600,$0006,$12BC,$0000,$1219,$B218
-	dc.w	$6600,$000A,$51CC,$FFEA,$6000,$003C,$207C,$0001
-	dc.w	$A2FC,$3039,$0001,$A38C,$C0FC,$000C,$D0C0,$227C
-	dc.w	$0001,$A37C,$383C,$000B,$1219,$0C01,$002D,$6600
-	dc.w	$0006,$123C,$0000,$10C1,$51CC,$FFEE,$6100,$B756
-	dc.w	$4EB9,$0002,$6F06,$2A7C,$0001,$8BF4,$4A79,$0001
-	dc.w	$A390,$6700,$0008,$2A7C,$0001,$8BF6,$4A39,$0001
-	dc.w	$A37C,$6600,$0008,$4279,$0001,$A38C,$3AB9,$0001
-	dc.w	$A38C,$4CDF,$7FFF,$4E75,$48E7,$FFFE,$3E3C,$02D7
-	dc.w	$203C,$0000,$0000,$223C,$0000,$0004,$207C,$000B
-	dc.w	$C000,$3C39,$0001,$A38C,$4245,$4EB9,$0002,$2452
-	dc.w	$BC28,$0001,$6600,$0008,$4228,$0001,$50C5,$BC28
-	dc.w	$0003,$6600,$0008,$4228,$0003,$50C5,$4A45,$6700
-	dc.w	$0008,$4EB9,$0002,$246C,$0680,$0000,$0004,$51CF
-	dc.w	$FFC8,$3E3C,$001B,$203C,$0000,$0B60,$223C,$0000
-	dc.w	$0010,$207C,$000B,$C000,$3C39,$0001,$A38C,$4245
-	dc.w	$4EB9,$0002,$2452,$BC28,$0001,$6600,$0008,$4228
-	dc.w	$0001,$50C5,$BC28,$0003,$6600,$0008,$4228,$0003
-	dc.w	$50C5,$BC28,$0005,$6600,$0008,$4228,$0005,$50C5
-	dc.w	$BC28,$0007,$6600,$0008,$4228,$0007,$50C5,$BC28
-	dc.w	$0009,$6600,$0008,$4228,$0009,$50C5,$BC28,$000B
-	dc.w	$6600,$0008,$4228,$000B,$50C5,$4A45,$6700,$0008
-	dc.w	$4EB9,$0002,$246C,$0680,$0000,$0010,$51CF,$FF90
-	dc.w	$203C,$0000,$0D20,$3639,$0001,$A38C,$E943,$48C3
-	dc.w	$D083,$223C,$0000,$0010,$207C,$000B,$C000,$4EB9
-	dc.w	$0002,$2452,$2F08,$363C,$000F,$4218,$51CB,$FFFC
-	dc.w	$205F,$4EB9,$0002,$246C,$4CDF,$7FFF,$4E75
+	dc.w	$48E7,$FFFE
+	dc.w	$207C,$0001,$A2FC
+	dc.w	$3439,$0001,$A38C
+	dc.w	$C4FC,$000C
+	dc.w	$33FC,$0000,$0001,$A38A
+	dc.w	$363C,$000B
+.lBE2E	dc.w	$1030,$2000
+	dc.w	$6700,$0006
+	dc.w	$6000,$000E
+.lBE3A	dc.w	$103C,$002D
+	dc.w	$0479,$0001,$0001,$A38A
+.lBE46	dc.w	$12C0
+	dc.w	$0679,$0001,$0001,$A38A
+	dc.w	$0642,$0001
+	dc.w	$51CB,$FFD8
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
+StoreUserName						;Name entry: store the name in save RAM
+									;(WriteNameRecord, MakeSRAMChecksum)
+	dc.w	$48E7,$FFFE
+	dc.w	$207C,$0001,$A2FC
+	dc.w	$3039,$0001,$A38C
+	dc.w	$C0FC,$000C
+	dc.w	$D0C0
+	dc.w	$227C,$0001,$A37C
+	dc.w	$383C,$000B
+.lBE7E	dc.w	$0C11,$002D
+	dc.w	$6600,$0006
+	dc.w	$12BC,$0000
+.lBE8A	dc.w	$1219
+	dc.w	$B218
+	dc.w	$6600,$000A
+	dc.w	$51CC,$FFEA
+	dc.w	$6000,$003C
+.lBE9A	dc.w	$207C,$0001,$A2FC
+	dc.w	$3039,$0001,$A38C
+	dc.w	$C0FC,$000C
+	dc.w	$D0C0
+	dc.w	$227C,$0001,$A37C
+	dc.w	$383C,$000B
+.lBEB6	dc.w	$1219
+	dc.w	$0C01,$002D
+	dc.w	$6600,$0006
+	dc.w	$123C,$0000
+.lBEC4	dc.w	$10C1
+	dc.w	$51CC,$FFEE
+	dc.w	$6100,$B756
+	dc.w	$4EB9,$0002,$6F06
+.lBED4	dc.w	$2A7C,$0001,$8BF4
+	dc.w	$4A79,$0001,$A390
+	dc.w	$6700,$0008
+	dc.w	$2A7C,$0001,$8BF6
+.lBEEA	dc.w	$4A39,$0001,$A37C
+	dc.w	$6600,$0008
+	dc.w	$4279,$0001,$A38C
+.lBEFA	dc.w	$3AB9,$0001,$A38C
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
+	dc.w	$48E7,$FFFE
+	dc.w	$3E3C,$02D7
+	dc.w	$203C,$0000,$0000
+	dc.w	$223C,$0000,$0004
+	dc.w	$207C,$000B,$C000
+	dc.w	$3C39,$0001,$A38C
+.lBF26	dc.w	$4245
+	dc.w	$4EB9,$0002,$2452
+	dc.w	$BC28,$0001
+	dc.w	$6600,$0008
+	dc.w	$4228,$0001
+	dc.w	$50C5
+.lBF3C	dc.w	$BC28,$0003
+	dc.w	$6600,$0008
+	dc.w	$4228,$0003
+	dc.w	$50C5
+.lBF4A	dc.w	$4A45
+	dc.w	$6700,$0008
+	dc.w	$4EB9,$0002,$246C
+.lBF56	dc.w	$0680,$0000,$0004
+	dc.w	$51CF,$FFC8
+	dc.w	$3E3C,$001B
+	dc.w	$203C,$0000,$0B60
+	dc.w	$223C,$0000,$0010
+	dc.w	$207C,$000B,$C000
+	dc.w	$3C39,$0001,$A38C
+.lBF7C	dc.w	$4245
+	dc.w	$4EB9,$0002,$2452
+	dc.w	$BC28,$0001
+	dc.w	$6600,$0008
+	dc.w	$4228,$0001
+	dc.w	$50C5
+.lBF92	dc.w	$BC28,$0003
+	dc.w	$6600,$0008
+	dc.w	$4228,$0003
+	dc.w	$50C5
+.lBFA0	dc.w	$BC28,$0005
+	dc.w	$6600,$0008
+	dc.w	$4228,$0005
+	dc.w	$50C5
+.lBFAE	dc.w	$BC28,$0007
+	dc.w	$6600,$0008
+	dc.w	$4228,$0007
+	dc.w	$50C5
+.lBFBC	dc.w	$BC28,$0009
+	dc.w	$6600,$0008
+	dc.w	$4228,$0009
+	dc.w	$50C5
+.lBFCA	dc.w	$BC28,$000B
+	dc.w	$6600,$0008
+	dc.w	$4228,$000B
+	dc.w	$50C5
+.lBFD8	dc.w	$4A45
+	dc.w	$6700,$0008
+	dc.w	$4EB9,$0002,$246C
+.lBFE4	dc.w	$0680,$0000,$0010
+	dc.w	$51CF,$FF90
+	dc.w	$203C,$0000,$0D20
+	dc.w	$3639,$0001,$A38C
+	dc.w	$E943
+	dc.w	$48C3
+	dc.w	$D083
+	dc.w	$223C,$0000,$0010
+	dc.w	$207C,$000B,$C000
+	dc.w	$4EB9,$0002,$2452
+	dc.w	$2F08
+	dc.w	$363C,$000F
+.lC018	dc.w	$4218
+	dc.w	$51CB,$FFFC
+	dc.w	$205F
+	dc.w	$4EB9,$0002,$246C
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEntryScreen) for
 									;the pads in use. Called from Opening2
-	tst.w	(OptUserRec).l
-	bne.w	.x		;user records off: no name entry
-	clr.w	(homeuser).l		;no home user yet
-	clr.w	(awayuser).l		;no away user yet
-	tst.w	(cont1team).l		;controller 1 on a team: enter its name
-	beq.w	.0
-	move.w	(cont1team).l,(nameentryvis).l
-	subi.w	#$1,(nameentryvis).l		;nameentryvis = 0 home, 1 visitors
-	jsr	(NameEntryScreen).l
-.0	tst.w	(cont2team).l
-	beq.w	.x		;controller 2 not on a team
-	movem.w	d0,-(sp)
-	move.w	(cont1team).l,d0
-	cmp.w	(cont2team).l,d0		;same as controller 2?
-	movem.w	(sp)+,d0
-	beq.w	.x		;both pads on the same team: one name only
-	move.w	(cont2team).l,(nameentryvis).l
-	subi.w	#$1,(nameentryvis).l
-	jsr	(NameEntryScreen).l
-.x	rts
+	dc.w	$4A79,$0001,$8C06
+	dc.w	$6600,$006A
+	dc.w	$4279,$0001,$8BF4
+	dc.w	$4279,$0001,$8BF6
+	dc.w	$4A79,$0001,$7FA6
+	dc.w	$6700,$001A
+	dc.w	$33F9,$0001,$7FA6,$0001,$A390
+	dc.w	$0479,$0001,$0001,$A390
+	dc.w	$4EB9,$0002,$6348
+.lC064	dc.w	$4A79,$0001,$7FA8
+	dc.w	$6700,$0032
+	dc.w	$48A7,$8000
+	dc.w	$3039,$0001,$7FA6
+	dc.w	$B079,$0001,$7FA8
+	dc.w	$4C9F,$0001
+	dc.w	$6700,$001A
+	dc.w	$33F9,$0001,$7FA8,$0001,$A390
+	dc.w	$0479,$0001,$0001,$A390
+	dc.w	$4EB9,$0002,$6348
+.lC09E	dc.w	$4E75
 SkipOtherUserName						;Name entry: step the selection namelogsel past the name the other pad
 									;picked (homeuser / awayuser), in the direction on the stack
-	movem.w	d0,-(sp)		;d0 = the step direction (passed on the stack)
-	move.w	(awayuser).l,d0		;the other side's user
-	tst.w	(nameentryvis).l		;which side?
-	beq.w	.0
-	move.w	(homeuser).l,d0		;visitors: the home user
-.0	cmp.w	(namelogsel).l,d0
-	bne.w	.x		;not his slot: keep it
-	move.w	#$1,d0		;his slot: step past it (+1, or -1 when the stack word is negative)
-	tst.w	(sp)
-	bpl.w	.1
-	move.w	#$FFFF,d0
-.1	add.w	d0,(namelogsel).l
-	clr.w	d0		;d0 = 0 tells the caller to check the slot again
-.x	movem.w	(sp)+,d0
-	rts
-	dc.w	$303C,$0000,$323C,$001A,$4EB9,$0002,$E728,$4EB9
-	dc.w	$0003,$8F6E,$0006,$BE01,$0100,$2079,$0004,$7D80
-	dc.w	$2248,$2448,$D1DA,$D3DA,$4241,$4240,$7406,$363C
-	dc.w	$0006,$7A08,$4EB9,$0003,$87E2,$4EB9,$0003,$8F6E
-	dc.w	$0006,$BE21,$0100,$2079,$0004,$7D84,$2248,$2448
-	dc.w	$D1DA,$D3DA,$4241,$4240,$7406,$363C,$0006,$7A00
-	dc.w	$4EB9,$0003,$87E2,$4EB9,$0003,$8F6E,$0006,$BD0B
-	dc.w	$0100
-	move.w	#$12,d0
-	move.w	#$7,d1
-	jsr	(Framer).l
-	jsr	(printbigz).l
+	dc.w	$48A7,$8000
+	dc.w	$3039,$0001,$8BF6
+	dc.w	$4A79,$0001,$A390
+	dc.w	$6700,$0008
+	dc.w	$3039,$0001,$8BF4
+.lC0BA	dc.w	$B079,$0001,$A38C
+	dc.w	$6600,$0018
+	dc.w	$303C,$0001
+	dc.w	$4A57
+	dc.w	$6A00,$0006
+	dc.w	$303C,$FFFF
+.lC0D2	dc.w	$D179,$0001,$A38C
+	dc.w	$4240
+.lC0DA	dc.w	$4C9F,$0001
+	dc.w	$4E75
+RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM record holders
+									;(PrintRecordTitles ... ReadTeamRecords)
+	dc.w	$303C,$0000
+	dc.w	$323C,$001A
+	dc.w	$4EB9,$0002,$E728
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BE01,$0100
+	dc.w	$2079,$0004,$7D80
+	dc.w	$2248
+	dc.w	$2448
+	dc.w	$D1DA
+	dc.w	$D3DA
+	dc.w	$4241
+	dc.w	$4240
+	dc.w	$7406
+	dc.w	$363C,$0006
+	dc.w	$7A08
+	dc.w	$4EB9,$0003,$87E2
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BE21,$0100
+	dc.w	$2079,$0004,$7D84
+	dc.w	$2248
+	dc.w	$2448
+	dc.w	$D1DA
+	dc.w	$D3DA
+	dc.w	$4241
+	dc.w	$4240
+	dc.w	$7406
+	dc.w	$363C,$0006
+	dc.w	$7A00
+	dc.w	$4EB9,$0003,$87E2
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BD0B,$0100
+	dc.w	$303C,$0012
+	dc.w	$323C,$0007
+	dc.w	$4EB9,$0003,$8CA0
+	dc.w	$4EB9,$0003,$9258
 	dc.w	$0018
 	dc.b	$BD,$0E,$02,$52,$65,$63,$6F,$72,$64,$BD,$0D,$05,$48,$6F,$6C,$64,$65,$72,$73,$BD,$01,$09
 	dc.w	$4EB9,$0003,$8D8C,$0010,$F806,$0305,$08F9,$014E
@@ -358,15 +438,15 @@ SkipOtherUserName						;Name entry: step the selection namelogsel past the name 
 	dc.w	$6000,$028A
 PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRecTitles,
 									;SaveRecTitles)
-	movea.l	#WinRecTitles,a1
-	tst.w	(TempWord1).l		;page 0: the win titles
-	beq.w	.0
-	movea.l	#SaveRecTitles,a1
-	cmpi.w	#$2,(TempWord1).l
-	beq.w	.0		;page 2: the saves titles
-	movea.l	#GoalRecTitles,a1
-.0	jsr	(printsmall).l		;print them
-	rts
+	dc.w	$227C,$0002,$72A2
+	dc.w	$4A79,$0001,$7E62
+	dc.w	$6700,$001A
+	dc.w	$227C,$0002,$7346
+	dc.w	$0C79,$0002,$0001,$7E62
+	dc.w	$6700,$0008
+	dc.w	$227C,$0002,$72F4
+.lC29A	dc.w	$4EB9,$0003,$8D9E
+	dc.w	$4E75
 	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
 	dc.w	$2520,$2020,$5769,$6E2D,$4C6F,$7373,$2D54,$6965
 	dc.w	$FD04,$FC19,$5573,$6520,$412B,$4320,$746F,$2063
@@ -399,30 +479,62 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 	dc.w	$8D9E,$33FC,$0024,$0001,$8D58,$3039,$0001,$7E9A
 	dc.w	$323C,$0003,$4EB9,$0003,$919A,$301F,$6000,$0008
 	dc.w	$227C,$0002,$7630,$4EB9,$0003,$8D9E,$0679,$0002
-	dc.w	$0001,$8D5A,$51CF,$FF1A,$4CDF,$7FFF,$4E75,$48E7
-	dc.w	$FFFE,$3F39,$0001,$8D58,$3F39,$0001,$8D5A,$3F39
-	dc.w	$0001,$8D5E,$4EB9,$0003,$8D8C,$0008,$F804,$0200
-	dc.w	$0A00
-	move.w	#$28,d0
-	move.w	#$12,d1
-	jsr	(eraser).l
-	move.w	(sp)+,(printm).l
-	move.w	(sp)+,(printy).l
-	move.w	(sp)+,(printx).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
-	dc.w	$48E7,$FFFE,$4EB9,$0003,$8D8C,$000A,$F804,$0202
-	dc.w	$0AF9,$0000,$3E3C,$0006,$207C,$0001,$A3D4,$0C79
-	dc.w	$0001,$0001,$7E62,$6700,$0008,$207C,$0001,$A3DC
-	dc.w	$247C,$000B,$C000,$33FC,$0002,$0001,$8D58,$1018
-	dc.w	$4880,$E940,$1A32,$0000,$0C79,$0001,$0001,$7E62
-	dc.w	$6700,$0006,$1A32,$0004,$4A05,$6700,$00BC,$6100
-	dc.w	$010C,$33FC,$0012,$0001,$8D58,$3F00,$0C79,$0001
-	dc.w	$0001,$7E62,$6600,$000A,$1032,$0000,$6000,$0006
-	dc.w	$1032,$0004,$0240,$00FF,$323C,$0003,$4EB9,$0003
-	dc.w	$919A,$4EB9,$0003,$8D9E,$301F,$33FC,$0019,$0001
-	dc.w	$8D58,$227C,$0002,$7658,$267C,$0001,$7EF2,$6100
-	dc.w	$E26E,$3F00,$0C79,$0001,$0001,$7E62,$6600,$000A
+	dc.w	$0001,$8D5A,$51CF,$FF1A,$4CDF,$7FFF,$4E75
+ClearRecordArea						;Record Holders: erase the record rows ($28 x $12), keeping printx /
+									;printy / printm
+	dc.w	$48E7,$FFFE
+	dc.w	$3F39,$0001,$8D58
+	dc.w	$3F39,$0001,$8D5A
+	dc.w	$3F39,$0001,$8D5E
+	dc.w	$4EB9,$0003,$8D8C
+	dc.w	$0008,$F804,$0200,$0A00
+	dc.w	$303C,$0028
+	dc.w	$323C,$0012
+	dc.w	$4EB9,$0003,$8C06
+	dc.w	$33DF,$0001,$8D5E
+	dc.w	$33DF,$0001,$8D5A
+	dc.w	$33DF,$0001,$8D58
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
+	dc.w	$48E7,$FFFE
+	dc.w	$4EB9,$0003,$8D8C
+	dc.w	$000A,$F804,$0202,$0AF9,$0000
+	dc.w	$3E3C,$0006
+	dc.w	$207C,$0001,$A3D4
+	dc.w	$0C79,$0001,$0001,$7E62
+	dc.w	$6700,$0008
+	dc.w	$207C,$0001,$A3DC
+.lC52A	dc.w	$247C,$000B,$C000
+	dc.w	$33FC,$0002,$0001,$8D58
+	dc.w	$1018
+	dc.w	$4880
+	dc.w	$E940
+	dc.w	$1A32,$0000
+	dc.w	$0C79,$0001,$0001,$7E62
+	dc.w	$6700,$0006
+	dc.w	$1A32,$0004
+.lC552	dc.w	$4A05
+	dc.w	$6700,$00BC
+	dc.w	$6100,$010C
+	dc.w	$33FC,$0012,$0001,$8D58
+	dc.w	$3F00
+	dc.w	$0C79,$0001,$0001,$7E62
+	dc.w	$6600,$000A
+	dc.w	$1032,$0000
+	dc.w	$6000,$0006
+.lC57A	dc.w	$1032,$0004
+.lC57E	dc.w	$0240,$00FF
+	dc.w	$323C,$0003
+	dc.w	$4EB9,$0003,$919A
+	dc.w	$4EB9,$0003,$8D9E
+	dc.w	$301F
+	dc.w	$33FC,$0019,$0001,$8D58
+	dc.w	$227C,$0002,$7658
+	dc.w	$267C,$0001,$7EF2
+	dc.w	$6100,$E26E
+	dc.w	$3F00
+	dc.w	$0C79,$0001,$0001,$7E62
+	dc.w	$6600,$000A
 	dc.w	$1032,$0001,$6000,$0006,$1032,$0005,$0240,$00FF
 	dc.w	$227C,$0001,$7EF2,$6100,$EB0E,$227C,$0002,$765E
 	dc.w	$267C,$0001,$7EF2,$4EB9,$0003,$9208,$227C,$0001
@@ -442,147 +554,181 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf, the win %
 									;(winpcts), games (wingames) and ties (winties), then sort the rows
 									;(winsort)
-	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#ThreeStars,a0
-	movea.l	#winpcts,a1
-	movea.l	#winties,a6
-	movea.l	#wingames,a5
-	move.w	#$7,d7		;8 user blocks
-.loop	move.b	$8(a0),d0		;wins, big endian
-	lsl.w	#$8,d0
-	move.b	$9(a0),d0
-	move.b	$A(a0),d1		;games, big endian
-	lsl.w	#$8,d1
-	move.b	$B(a0),d1
-	move.w	d1,(a5)+
-	tst.w	d1
-	bne.w	.0
-	clr.w	d0
-	bra.w	.1
-.0	mulu.w	#$64,d0
-	divu.w	d1,d0
-.1	move.b	d0,(a1)+
-	move.b	$C(a0),(a6)+
-	move.b	$D(a0),(a6)+
-	adda.w	#$10,a0		;next 16 byte block
-	dbra	d7,.loop
-	movea.l	#winsort,a1
-	move.l	a1,-(sp)
-	move.w	#$1,d0		;the sort list starts as users 1-7
-	move.w	#$6,d7		;7 users
-.loop2	move.b	d0,(a1)+
-	addi.w	#$1,d0		;next user
-	dbra	d7,.loop2
-	movea.l	(sp),a1
-	movea.l	#winpcts,a0
-	movea.l	#winties,a6
-	movea.l	#wingames,a5
-.loop3	movea.l	(sp),a1
-	move.w	#$5,d7		;6 pairs
-	clr.w	d6
-.loop4	move.b	(a1)+,d1
-	ext.w	d1
-	move.b	(a1),d2
-	ext.w	d2
-	move.b	(a0,d1.w),d0		;this user's %
-	move.b	(a0,d2.w),d3		;next user's %
-	cmp.b	d3,d0
-	bgt.w	.lC7A8
-	blt.w	.swap
-	movem.l	d1-d3,-(sp)
-	add.w	d1,d1
-	add.w	d2,d2
-	move.w	(a6,d1.w),d0		;this user's ties
-	move.w	(a6,d2.w),d3		;next user's ties
-	cmp.w	d3,d0
-	movem.l	(sp)+,d1-d3
-	bgt.w	.lC7A8		;same %: more ties first
-	blt.w	.swap
-	movem.l	d1-d3,-(sp)
-	add.w	d1,d1
-	add.w	d2,d2
-	move.w	(a5,d1.w),d0		;this user's games
-	move.w	(a5,d2.w),d3		;next user's games
-	cmp.w	d3,d0
-	movem.l	(sp)+,d1-d3
-	bge.w	.lC7A8		;same ties: more games first
-.swap	move.b	(a1),d0
-	move.b	-$1(a1),d1		;previous entry
-	move.b	d0,-$1(a1)		;swap them
-	move.b	d1,(a1)
-	st.b	d6
-.lC7A8	dbra	d7,.loop4
-	tst.w	d6
-	bne.w	.loop3		;repeat until no swap
-	movea.l	(sp)+,a1
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	dc.w	$48E7,$FFFE
+	dc.w	$207C,$000B,$C000
+	dc.w	$227C,$0001,$A3EC
+	dc.w	$2C7C,$0001,$A3F4
+	dc.w	$2A7C,$0001,$A404
+	dc.w	$3E3C,$0007
+.lC6D8	dc.w	$1028,$0008
+	dc.w	$E148
+	dc.w	$1028,$0009
+	dc.w	$1228,$000A
+	dc.w	$E149
+	dc.w	$1228,$000B
+	dc.w	$3AC1
+	dc.w	$4A41
+	dc.w	$6600,$0008
+	dc.w	$4240
+	dc.w	$6000,$0008
+.lC6FA	dc.w	$C0FC,$0064
+	dc.w	$80C1
+.lC700	dc.w	$12C0
+	dc.w	$1CE8,$000C
+	dc.w	$1CE8,$000D
+	dc.w	$D0FC,$0010
+	dc.w	$51CF,$FFC8
+	dc.w	$227C,$0001,$A3E4
+	dc.w	$2F09
+	dc.w	$303C,$0001
+	dc.w	$3E3C,$0006
+.lC722	dc.w	$12C0
+	dc.w	$0640,$0001
+	dc.w	$51CF,$FFF8
+	dc.w	$2257
+	dc.w	$207C,$0001,$A3EC
+	dc.w	$2C7C,$0001,$A3F4
+	dc.w	$2A7C,$0001,$A404
+.lC740	dc.w	$2257
+	dc.w	$3E3C,$0005
+	dc.w	$4246
+.lC748	dc.w	$1219
+	dc.w	$4881
+	dc.w	$1411
+	dc.w	$4882
+	dc.w	$1030,$1000
+	dc.w	$1630,$2000
+	dc.w	$B003
+	dc.w	$6E00,$004C
+	dc.w	$6D00,$003A
+	dc.w	$48E7,$7000
+	dc.w	$D241
+	dc.w	$D442
+	dc.w	$3036,$1000
+	dc.w	$3636,$2000
+	dc.w	$B043
+	dc.w	$4CDF,$000E
+	dc.w	$6E00,$002E
+	dc.w	$6D00,$001C
+	dc.w	$48E7,$7000
+	dc.w	$D241
+	dc.w	$D442
+	dc.w	$3035,$1000
+	dc.w	$3635,$2000
+	dc.w	$B043
+	dc.w	$4CDF,$000E
+	dc.w	$6C00,$0010
+.lC79A	dc.w	$1011
+	dc.w	$1229,$FFFF
+	dc.w	$1340,$FFFF
+	dc.w	$1281
+	dc.w	$50C6
+.lC7A8	dc.w	$51CF,$FF9E
+	dc.w	$4A46
+	dc.w	$6600,$FF90
+	dc.w	$225F
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
 ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
-	movem.l	d0-d7/a0-a6,-(sp)
-	move.l	#TeamRecBase,d0		;first user block
-	move.l	#NameLogBytes,d1		;all 8 user blocks
-	movea.l	#ThreeStars,a0
-	jsr	(ReadSRAM).l
-	movea.l	#recsort1,a1		;the goals sort list, or the saves one (bit 6)
-	btst	#$6,(sflags6).l
-	beq.w	.0
-	movea.l	#recsort2,a1
-.0	move.l	a1,-(sp)
-	move.w	#$1,d0		;start with users 1-7
-	move.w	#$6,d7		;7 users
-.loop	move.b	d0,(a1)+
-	addi.w	#$1,d0		;next user
-	dbra	d7,.loop
-	movea.l	(sp),a1
-	movea.l	#ThreeStars,a0
-.loop2	movea.l	(sp),a1
-	move.w	#$5,d7		;6 pairs
-	clr.w	d6
-.loop3	move.b	(a1)+,d1
-	ext.w	d1
-	move.b	(a1),d2
-	ext.w	d2
-	asl.w	#$4,d1		;16 bytes per user record
-	asl.w	#$4,d2
-	move.b	(a0,d1.w),d0		;urgoals: goals record
-	move.b	(a0,d2.w),d3		;next user's
-	btst	#$6,(sflags6).l		;bit 6: sort by saves instead
-	beq.w	.1
-	move.b	$4(a0,d1.w),d0
-	move.b	$4(a0,d2.w),d3
-.1	cmp.b	d3,d0
-	bge.w	.lC84E
-	move.b	(a1),d0
-	move.b	-$1(a1),d1		;previous entry
-	move.b	d0,-$1(a1)		;swap them
-	move.b	d1,(a1)
-	st.b	d6
-.lC84E	dbra	d7,.loop3
-	tst.w	d6		;any swap?
-	bne.w	.loop2		;repeat until no swap
-	movea.l	(sp)+,a1
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
-	dc.w	$48E7,$FFFE,$303C,$FFFF,$4EB9,$0003,$9D96,$4EB9
-	dc.w	$0003,$8F6E,$0006,$BF03,$0200,$701B,$720C,$4EB9
-	dc.w	$0003,$8CA0,$43FA,$013E,$4EB9,$0003,$926A,$3039
-	dc.w	$0001,$936C,$247C,$0001,$834C,$4A79,$0001,$9366
-	dc.w	$6700,$0008,$247C,$0001,$86B2,$4EB9,$0004,$1192
-	dc.w	$3F39,$0001,$8D58,$4EB9,$0003,$8F80,$33DF,$0001
-	dc.w	$8D58,$0679,$0001,$0001,$8D5A,$0679,$0006,$0001
-	dc.w	$8D58,$4EB9,$0003,$8F6E,$000A,$2076,$732E,$BF04
-	dc.w	$0700
-	move.w	(BA_Goalie_SCnum).l,d0
-	asl.w	#$7,d0
-	movea.l	#SortCords,a2
-	adda.w	d0,a2
-	clr.w	d0
-	move.b	$66(a2),d0
-	movea.l	#awtmstruct,a2
-	tst.w	(BA_Team).l
-	beq.w	.lC90E
-	movea.l	#tmstruct,a2
-.lC90E	jsr	(FormatPlayerNumInitial).l
-	jsr	(print).l
-	jsr	(printz).l
-	String	CC_Font1Pri,$4,$9
+	dc.w	$48E7,$FFFE
+	dc.w	$203C,$0000,$0D20
+	dc.w	$223C,$0000,$0080
+	dc.w	$207C,$000B,$C000
+	dc.w	$4EB9,$0002,$2452
+	dc.w	$227C,$0001,$A3D4
+	dc.w	$0839,$0006,$0001,$7F76
+	dc.w	$6700,$0008
+	dc.w	$227C,$0001,$A3DC
+.lC7EE	dc.w	$2F09
+	dc.w	$303C,$0001
+	dc.w	$3E3C,$0006
+.lC7F8	dc.w	$12C0
+	dc.w	$0640,$0001
+	dc.w	$51CF,$FFF8
+	dc.w	$2257
+	dc.w	$207C,$000B,$C000
+.lC80A	dc.w	$2257
+	dc.w	$3E3C,$0005
+	dc.w	$4246
+.lC812	dc.w	$1219
+	dc.w	$4881
+	dc.w	$1411
+	dc.w	$4882
+	dc.w	$E941
+	dc.w	$E942
+	dc.w	$1030,$1000
+	dc.w	$1630,$2000
+	dc.w	$0839,$0006,$0001,$7F76
+	dc.w	$6700,$000A
+	dc.w	$1030,$1004
+	dc.w	$1630,$2004
+.lC83A	dc.w	$B003
+	dc.w	$6C00,$0010
+	dc.w	$1011
+	dc.w	$1229,$FFFF
+	dc.w	$1340,$FFFF
+	dc.w	$1281
+	dc.w	$50C6
+.lC84E	dc.w	$51CF,$FFC2
+	dc.w	$4A46
+	dc.w	$6600,$FFB4
+	dc.w	$225F
+	dc.w	$4CDF,$7FFF
+	dc.w	$4E75
+ShootoutModeBox
+	dc.w	$48E7,$FFFE
+	dc.w	$303C,$FFFF
+	dc.w	$4EB9,$0003,$9D96
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$0006,$BF03,$0200
+	dc.w	$701B
+	dc.w	$720C
+	dc.w	$4EB9,$0003,$8CA0
+	dc.w	$43FA,$013E
+	dc.w	$4EB9,$0003,$926A
+	dc.w	$3039,$0001,$936C
+	dc.w	$247C,$0001,$834C
+	dc.w	$4A79,$0001,$9366
+	dc.w	$6700,$0008
+	dc.w	$247C,$0001,$86B2
+.lC8AA	dc.w	$4EB9,$0004,$1192
+	dc.w	$3F39,$0001,$8D58
+	dc.w	$4EB9,$0003,$8F80
+	dc.w	$33DF,$0001,$8D58
+	dc.w	$0679,$0001,$0001,$8D5A
+	dc.w	$0679,$0006,$0001,$8D58
+	dc.w	$4EB9,$0003,$8F6E
+	dc.w	$000A,$2076,$732E,$BF04,$0700
+	dc.w	$3039,$0001,$936A,$EF40,$247C,$0001,$7480,$D4C0
+	dc.w	$4240,$102A,$0066,$247C,$0001,$86B2,$4A79,$0001
+	dc.w	$9366,$6700,$0008,$247C,$0001,$834C,$4EB9,$0004
+	dc.w	$1192,$4EB9,$0003,$8F80,$4EB9,$0003,$8F6E,$0006
+	dc.w	$BF04,$0900,$227C,$0001,$834C,$2269,$001E,$D2E9
+	dc.w	$0004,$4EB9,$0003,$8F80,$33FC,$0015,$0001,$8D58
+	dc.w	$3039,$0001,$A416,$323C,$0003,$4EB9,$0003,$919A
+	dc.w	$4EB9,$0003,$8F80,$4EB9,$0003,$8F6E,$0006,$BF04
+	dc.w	$0A00,$227C,$0001,$86B2,$2269,$001E,$D2E9,$0004
+	dc.w	$4EB9,$0003,$8F80,$33FC,$0015,$0001,$8D58,$3039
+	dc.w	$0001,$A418,$323C,$0003,$4EB9,$0003,$919A,$4EB9
+	dc.w	$0003,$8F80,$4EB9,$0003,$8F6E,$000A,$BF04,$0C52
+	dc.w	$6F75,$6E64,$2000,$3039,$0001,$A41A,$323C,$0002
+	dc.w	$4EB9,$0003,$919A,$4EB9,$0003,$8F80,$4CDF,$7FFF
+	dc.w	$4E75,$0016,$BF04,$0353,$484F,$4F54,$4F55,$5420
+	dc.w	$4D4F,$4445,$BF04,$0500
+ClearShootout
+	dc.w	$207C,$0001,$7480
+	dc.w	$303C,$03FF
+.lC9E4	dc.w	$4258
+	dc.w	$51C8,$FFFC
+	dc.w	$4279,$0001,$AD72
+	dc.w	$33FC,$0001,$0001,$A41A
+	dc.w	$08B9,$0003,$0001,$7F78
+	dc.w	$4279,$0001,$A416
+	dc.w	$4279,$0001,$A418
+	dc.w	$4279,$0001,$A428
+	dc.w	$4279,$0001,$A436
+	dc.w	$6100,$00F0
+	dc.w	$33FC,$0001,$0001,$A436
+	dc.w	$6100,$00E4
+	dc.w	$4279,$0001,$A436
+	dc.w	$4E75

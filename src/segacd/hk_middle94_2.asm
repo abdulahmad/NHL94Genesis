@@ -4,7 +4,10 @@
 FourWayPlay	equ	$18BF8
 HandleMenuInput	equ	$2C368
 LOAD	equ	$1B000
-ReadJoy1	equ	$374F0
+PadRaw1	equ	$17E46
+PadRaw2	equ	$17E47
+PadRaw3	equ	$17E48
+PadRaw4	equ	$17E49
 ReadJoy2	equ	$3750E
 RunArenaAnim	equ	$2A1AA
 ScoutSubStatus	equ	$17474
@@ -13,6 +16,7 @@ pausepad	equ	$17F94
 updatecrowdf	equ	$2BD28
 X_1C52C	equ	$1C52C
 X_1C54A	equ	$1C54A
+X_1C568	equ	$1C568
 X_21000	equ	$21000
 X_22D16	equ	$22D16
 
@@ -37,7 +41,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	jsr	(RunArenaAnim).l
 	clr.w	(pausepad).l
 	bclr	#$1,$17F6A.l
-	bsr.w	ReadJoy1-LOAD
+	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1		;any press?
 	bne.w	.key
@@ -82,17 +86,23 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bmi.w	.wait
 .ex	movem.l	(sp)+,d4-d7/a0-a3
 	rts
-	dc.w	$3039,$0001,$7474,$B079,$0001,$7474,$6700,$FFF8
-	dc.w	$6100,$0008,$6700,$FFEA,$4E75
+waitjoy						;wait for either joystick input. Return d1 = new button presses. it as
+									;data (no caller found)
+	move.w	(ScoutSubStatus).l,d0		;frame counter
+.0	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.0		;wait for a new frame
+	bsr.w	orjoy		;read the pads
+	beq.w	waitjoy		;no new press: wait again
+	rts
 orjoy						;return d1 = new button presses from either joystick
 	tst.w	(FourWayPlay).l		;check for 4-way play?
 	bne.w	.4way
-	bsr.w	ReadJoy1-LOAD
+	bsr.w	ReadJoy1
 	move.w	d1,-(sp)
 	bsr.w	ReadJoy2-LOAD
 	or.w	(sp)+,d1
 	rts
-.4way	bsr.w	ReadJoy1-LOAD
+.4way	bsr.w	ReadJoy1
 	move.w	d1,-(sp)
 	bsr.w	ReadJoy2-LOAD
 	move.w	d1,-(sp)
@@ -131,13 +141,37 @@ ProcessInputWithRepeat						;nodiag, then key repeat on d1-d3
 	rts
 .chg	move.w	#$F,$17478.l
 	rts
-	dc.w	$1039,$0001,$7E46,$6100,$0070,$3439,$0001,$7E3E
-	dc.w	$33C1,$0001,$7E3E,$3601,$B342,$C242,$4E75,$1039
-	dc.w	$0001,$7E47,$6100,$0052,$3439,$0001,$7E40,$33C1
-	dc.w	$0001,$7E40,$3601,$B342,$C242,$4E75,$1039,$0001
-	dc.w	$7E48,$6100,$0034,$3439,$0001,$7E42,$33C1,$0001
-	dc.w	$7E42,$3601,$B342,$C242,$4E75,$1039,$0001,$7E49
-	dc.w	$6100,$0016,$3439,$0001,$7E44,$33C1,$0001,$7E44
+ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
+									;direction (bit 0-3) and new button (bit 4-7) presses, d1 = new presses
+									;(all 8 bits), d2 = changed buttons (all 8), d3 = held buttons (all 8)
+	move.b	(PadRaw1).l,d0
+	bsr.w	X_1C568		;d1 = buttons down now
+	move.w	$17E3E.l,d2		;last frame's buttons
+	move.w	d1,$17E3E.l
+	move.w	d1,d3
+	eor.w	d1,d2
+	and.w	d2,d1		;d1 = changed and now down = new presses
+	rts
+	move.b	(PadRaw2).l,d0
+	bsr.w	X_1C568
+	move.w	$17E40.l,d2
+	move.w	d1,$17E40.l
+	move.w	d1,d3
+	eor.w	d1,d2
+	and.w	d2,d1
+	rts
+	move.b	(PadRaw3).l,d0
+	bsr.w	X_1C568
+	move.w	$17E42.l,d2
+	move.w	d1,$17E42.l
+	move.w	d1,d3
+	eor.w	d1,d2
+	and.w	d2,d1
+	rts
+	move.b	(PadRaw4).l,d0
+	bsr.w	X_1C568
+	move.w	$17E44.l,d2
+	move.w	d1,$17E44.l
 	dc.w	$3601,$B342,$C242,$4E75,$4600,$4241,$1200,$3F01
 	dc.w	$0240,$00F0,$0241,$000F,$41F9,$0003,$7588,$1230
 	dc.w	$1000,$8041,$321F,$4E75,$0800,$0408,$0607,$0508

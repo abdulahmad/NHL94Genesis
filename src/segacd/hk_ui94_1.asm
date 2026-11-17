@@ -5,12 +5,15 @@ ArenaAnims	equ	$2A26C
 CopyString	equ	$25818
 DecompressGraphicsPlain	equ	$38958
 FaceoffAnims	equ	$2AC8E
+GetLogName	equ	$26E0E
 HmTeam	equ	$1A56C
 LOAD	equ	$1B000
+M68K_RAM	equ	$C45C
 PlayedByTxt	equ	$2AE40
 PushNumberWidth	equ	$3919A
 RandomSongs	equ	$2A584
 ReadCrowdRecord	equ	$2258E
+ReadSRAM	equ	$22452
 Satt	equ	$BBD30
 Sattsize	equ	$17F66
 SetSframe	equ	$3E028
@@ -19,6 +22,7 @@ SongNum	equ	$1A56A
 StanleyCupSprite	equ	$47D94
 TeamSongs	equ	$2A4DC
 TempBuffer	equ	$17E70
+TempWord1	equ	$17E62
 ThreeStars	equ	$BC000
 appendz	equ	$39200
 appstring	equ	$39208
@@ -32,6 +36,7 @@ arenaspritelist	equ	$1A55C
 awtmstruct	equ	$186B2
 energybarchars	equ	$18D46
 faceoffanim	equ	$1A560
+lastsfx	equ	$17F64
 lognametext	equ	$1AD5C
 move	equ	$2C9C8
 namelength	equ	$1A38A
@@ -43,17 +48,24 @@ picturebuf	equ	$1A8C0
 playoffspritex	equ	$17CE4
 playoffspritey	equ	$17CE6
 print	equ	$38F80
+printx	equ	$18D58
+printy	equ	$18D5A
 printz	equ	$38F6E
 randomd0	equ	$37050
+recbpr	equ	$17470
 sopath	equ	$1A8B4
 sopathdir	equ	$1A8BC
 sopathx	equ	$1A8B8
 tmshots	equ	$0
 tmstruct	equ	$1834C
-X_BE0E	equ	$BE0E
+LF5BE	equ	$F5BE
 X_F466	equ	$F466
+X_F5CE	equ	$F5CE
+X_F5F2	equ	$F5F2
 X_F736	equ	$F736
 X_FE50	equ	$FE50
+X_14F5E	equ	$14F5E
+X_14F64	equ	$14F64
 
 	org	$F1AA
 
@@ -137,9 +149,13 @@ StartArenaAnim
 	st.b	(faceoffanim).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$08F9,$0000,$0001,$7F7A,$33C0,$0001,$A560,$4E75
-	dc.w	$33FC,$FFFF,$0001,$A556,$08B9,$0000,$0001,$7F7A
-	dc.w	$4E75
+SetFaceoffAnim
+	bset	#$0,$17F7A.l
+	move.w	d0,(faceoffanim).l
+	rts
+	move.w	#$FFFF,(arenaanim).l
+	bclr	#$0,$17F7A.l
+	rts
 ChooseSong
 	movem.l	d0-d1/a0-a1,-(sp)
 	btst	#$4,$17F68.l
@@ -163,29 +179,96 @@ ChooseSong
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	dc.w	$7775
-	dc.w	$7600,$5A00,$3132,$3000,$5A31,$3433,$3334,$5A00
-	dc.w	$3537,$3537,$3636,$383A,$3938,$5A65,$4A4B,$4B00
-	dc.w	$5A00,$3B3C,$3D00,$5A3C,$3E3F,$3F00,$5A00,$7775
-	dc.w	$7600,$5A00,$4042,$4142,$5A40,$4343,$4544,$5A46
-	dc.w	$4F4E,$4F4D,$5A4C,$5051,$5000,$5A52,$4748,$4749
-	dc.w	$5A49,$5455,$5300,$5A00,$7775,$7600,$5A00,$5657
-	dc.w	$5658,$0058,$595B,$595C,$5A5C,$5D5E,$5D00,$5A5E
-	dc.w	$5F60,$6163,$6465,$6768,$6867,$5A69,$6A6B,$6B00
-	dc.w	$5A00,$6C6C,$6D00,$5A00,$6E6F,$7000,$5A00,$7173
-	dc.w	$7100,$5A74,$7775,$7600,$5A00,$5455,$5300,$5A00
-	dc.w	$5455,$5300,$5A00,$3440,$4249,$585C,$6566,$48E7
-	dc.w	$C080,$223C,$0000,$0100,$203C,$0000,$0E20,$207C
-	dc.w	$0001,$8C26,$4EB9,$0002,$2452,$08B9,$0004,$0001
-	dc.w	$7F6A,$33FC,$FFFF,$0001,$7F64,$23FC,$0000,$C45C
-	dc.w	$0001,$7470,$4CDF,$0103,$4E75,$48E7,$C080,$223C
-	dc.w	$0000,$0100,$203C,$0000,$0E20,$207C,$0001,$8C26
-	dc.w	$4EB9,$0002,$246C,$08B9,$0004,$0001,$7F6A,$33FC
-	dc.w	$FFFF,$0001,$7F64,$23FC,$0000,$C45C,$0001,$7470
-	dc.w	$4CDF,$0103,$4E75,$48E7,$FFFE,$207C,$000B,$C000
-	dc.w	$3E3C,$0007,$4228,$0008,$4228,$0009,$4228,$000A
-	dc.w	$4228,$000B,$D0FC,$0010,$51CF,$FFEA,$203C,$0000
-	dc.w	$0D20,$223C,$0000,$0080,$207C,$000B,$C000,$4EB9
-	dc.w	$0002,$246C,$4CDF,$7FFF,$4E75
+ReadLineData
+	moveq	#$0,d3
+	addq.b	#$5,d0
+	move.w	(a2,d3.w),-(a0)
+	dc.w	$5A31,$3433
+	dc.w	$3334,$5A00
+	dc.w	$3537,$3537,$3636,$383A,$3938,$5A65
+	dc.w	$4A4B
+	dc.w	$4B00
+	addq.b	#$5,d0
+	move.w	#$3D00,-(a5)
+	dc.w	$5A3C
+	dc.w	$3E3F
+	move.w	d0,-(sp)
+	addq.b	#$5,d0
+	dc.w	$7775
+	moveq	#$0,d3
+	addq.b	#$5,d0
+	negx.w	d2
+	dc.w	$4142
+	addq.w	#$5,d0
+	dc.w	$4343
+	dc.w	$4544
+	addq.w	#$5,d6
+	dc.w	$4F4E
+	dc.w	$4F4D
+	addq.w	#$5,a4
+	addq.w	#$8,(a1)
+	addq.b	#$8,d0
+	addq.w	#$5,(a2)
+	dc.w	$4748
+	dc.w	$4749
+	addq.w	#$5,a1
+	addq.w	#$2,(a5)
+	subq.b	#$1,d0
+	addq.b	#$5,d0
+	dc.w	$7775
+	moveq	#$0,d3
+	addq.b	#$5,d0
+	addq.w	#$3,(sp)
+	addq.w	#$3,(a0)+
+	ori.w	#$595B,(a0)+
+	subq.w	#$4,(a4)+
+	addq.w	#$5,(a4)+
+	subq.w	#$6,(a6)+
+	subq.b	#$6,d0
+	addq.w	#$5,(a6)+
+	subq.w	#$7,-(a0)
+	dc.w	$6163
+	dc.w	$6465
+	beq.b	LF5BE
+	dc.w	$6867
+	addq.w	#$5,$6A6B(a1)
+	bmi.w	X_14F5E
+	bge.b	X_F5CE
+	blt.w	X_14F64
+	dc.w	$6E6F
+	moveq	#$0,d0
+	addq.b	#$5,d0
+	dc.w	$7173
+	dc.w	$7100
+	dc.w	$5A74,$7775,$7600,$5A00
+	addq.w	#$2,(a5)
+	subq.b	#$1,d0
+	addq.b	#$5,d0
+	addq.w	#$2,(a5)
+	subq.b	#$1,d0
+	addq.b	#$5,d0
+	movea.w	d0,a2
+	dc.w	$4249
+	addq.w	#$4,(a4)+
+	bcs.b	X_F5F2
+	movem.l	d0-d1/a0,-(sp)
+	move.l	#$100,d1
+	move.l	#$E20,d0
+	movea.l	#$18C26,a0
+	jsr	(ReadSRAM).l
+	bclr	#$4,$17F6A.l
+	move.w	#$FFFF,(lastsfx).l
+	move.l	#M68K_RAM,(recbpr).l
+	movem.l	(sp)+,d0-d1/a0
+	dc.w	$4E75,$48E7,$C080,$223C,$0000,$0100,$203C,$0000
+	dc.w	$0E20,$207C,$0001,$8C26,$4EB9,$0002,$246C,$08B9
+	dc.w	$0004,$0001,$7F6A,$33FC,$FFFF,$0001,$7F64,$23FC
+	dc.w	$0000,$C45C,$0001,$7470,$4CDF,$0103,$4E75,$48E7
+	dc.w	$FFFE,$207C,$000B,$C000,$3E3C,$0007,$4228,$0008
+	dc.w	$4228,$0009,$4228,$000A,$4228,$000B,$D0FC,$0010
+	dc.w	$51CF,$FFEA,$203C,$0000,$0D20,$223C,$0000,$0080
+	dc.w	$207C,$000B,$C000,$4EB9,$0002,$246C,$4CDF,$7FFF
+	dc.w	$4E75
 PSandSOpassdir
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(sopathdir).l,d0
@@ -311,17 +394,37 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	rts
 	dc.w	$3F00,$0444,$0018,$4A79,$0001,$7468,$6708,$2479
 	dc.w	$0004,$7DA8,$6006,$2479,$0004,$7D90,$D4FC,$0008
-	dc.w	$4EB9,$0003,$8958,$301F,$4E75,$0000,$0023,$0000
-	dc.w	$003C,$0000,$0024,$0000,$0025,$0000,$0026,$0000
-	dc.w	$0027,$0000,$0028,$0000,$0029,$0000,$002A,$0000
-	dc.w	$002B,$0000,$002C,$0000,$002D,$0000,$002E,$0000
-	dc.w	$002F,$0000,$0030,$0000,$0031,$0000,$0032,$0000
-	dc.w	$0033,$0000,$0034,$0000,$0035,$0000,$0036,$0000
-	dc.w	$0037,$0000,$0038,$0000,$0039,$0000,$003A,$0000
-	dc.w	$003B,$0000,$003D,$0000,$003E,$48E7,$8020,$4EB9
-	dc.w	$0003,$8F6E,$0004,$2028,$D4FC,$00D0,$6000,$0014
-	dc.w	$48E7,$8020,$4EB9,$0003,$8F6E,$0004,$2028,$D4FC
-	dc.w	$00B6
+	dc.w	$4EB9,$0003,$8958,$301F,$4E75
+TeamGfxListEnd						;end of TeamGfxList (size check below)
+	ori.b	#$23,d0
+	ori.b	#$3C,d0
+	ori.b	#$24,d0
+	ori.b	#$25,d0
+	ori.b	#$26,d0
+	ori.b	#$27,d0
+	ori.b	#$28,d0
+	ori.b	#$29,d0
+	ori.b	#$2A,d0
+	ori.b	#$2B,d0
+	ori.b	#$2C,d0
+	ori.b	#$2D,d0
+	ori.b	#$2E,d0
+	ori.b	#$2F,d0
+	ori.b	#$30,d0
+	ori.b	#$31,d0
+	ori.b	#$32,d0
+	ori.b	#$33,d0
+	ori.b	#$34,d0
+	ori.b	#$35,d0
+	ori.b	#$36,d0
+	ori.b	#$37,d0
+	ori.b	#$38,d0
+	ori.b	#$39,d0
+	ori.b	#$3A,d0
+	ori.b	#$3B,d0
+	dc.w	$0000,$003D,$0000,$003E,$48E7,$8020,$4EB9,$0003
+	dc.w	$8F6E,$0004,$2028,$D4FC,$00D0,$6000,$0014,$48E7
+	dc.w	$8020,$4EB9,$0003,$8F6E,$0004,$2028,$D4FC,$00B6
 PrintParenNumber						;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3 digits,
 									;PushNumberWidth) and ")"
 	move.b	(a2,d0.w),d0
@@ -337,26 +440,82 @@ PrintParenNumber						;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3
 	jsr	(print).l
 	jsr	(printz).l		;print ")"
 	String	')'
-	dc.w	$0679,$0001,$0001,$8D5A,$33FC,$000E,$0001,$8D58
-	dc.w	$4CDF,$0401,$4E75,$0C6B,$193E,$0058,$6700,$00FC
-	dc.w	$0C6B,$1A00,$0058,$6700,$00B2,$0C6B,$18CC,$0058
-	dc.w	$6700,$00C8,$0C6B,$17E8,$0058,$6700,$007E,$0C6B
-	dc.w	$1776,$0058,$6700,$0010,$0C6B,$185A,$0058,$6700
-	dc.w	$0038,$6000,$00E2,$303C,$0124,$0C79,$0056,$0001
-	dc.w	$937E,$6E00,$000E,$0C79,$FFAA,$0001,$937E,$6E00
-	dc.w	$0006,$303C,$0116,$906B,$0014,$6B00,$00BA,$E240
-	dc.w	$D16B,$0014,$6000,$00B0,$303C,$FEDC,$0C79,$0056
-	dc.w	$0001,$937E,$6E00,$000E,$0C79,$FFAA,$0001,$937E
-	dc.w	$6E00,$0006,$303C,$FEEA,$906B,$0014,$6A00,$0088
-	dc.w	$E240,$D16B,$0014,$6000,$007E,$303C,$0082,$082B
-	dc.w	$0003,$0004,$6700,$0006,$303C,$FF7E,$906B,$0000
-	dc.w	$E240,$D16B,$0000,$6000,$005E,$303C,$0088,$082B
-	dc.w	$0003,$0004,$6700,$0006,$303C,$FF78,$906B,$0000
-	dc.w	$E240,$D16B,$0000,$6000,$003E,$303C,$FF7E,$082B
-	dc.w	$0003,$0004,$6700,$0006,$303C,$0082,$906B,$0000
-	dc.w	$E240,$D16B,$0000,$6000,$001E,$303C,$FF78,$082B
-	dc.w	$0003,$0004,$6700,$0006,$303C,$0088,$906B,$0000
-	dc.w	$E240,$D16B,$0000,$4E75
+	addi.w	#$1,(printy).l		;the next line of the goal box
+	move.w	#$E,(printx).l
+	movem.l	(sp)+,d0/a2
+	rts
+PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenchcheckl). For
+									;frames SPAboardfront / SPAboardback (y to $124 / $FEDC, or $116 / $FEEA
+									;by FallXPos) and SPAboardright / SPAbenchcheckr / SPAboardleft /
+									;SPAbenchcheckl (x to +-$82 / $88 by attribute bit 3) of SPA(a3): move
+									;player a3 half way there. Called from updateplayers
+	cmpi.w	#$193E,$58(a3)		;left bench check?
+	beq.w	.12
+	cmpi.w	#$1A00,$58(a3)		;right bench check?
+	beq.w	.8
+	cmpi.w	#$18CC,$58(a3)		;left boards?
+	beq.w	.10
+	cmpi.w	#$17E8,$58(a3)		;right boards?
+	beq.w	.6
+	cmpi.w	#$1776,$58(a3)		;front boards?
+	beq.w	.0
+	cmpi.w	#$185A,$58(a3)		;back boards?
+	beq.w	.3
+	bra.w	.x		;any other frame: nothing to move
+.0	move.w	#$124,d0
+	cmpi.w	#$56,$1937E.l		;right corner: closer wall
+	bgt.w	.1
+	cmpi.w	#$FFAA,$1937E.l		;middle: the full wall
+	bgt.w	.2
+.1	move.w	#$116,d0
+.2	sub.w	$14(a3),d0
+	bmi.w	.x		;already past it
+	asr.w	#$1,d0
+	add.w	d0,$14(a3)
+	bra.w	.x
+.3	move.w	#$FEDC,d0
+	cmpi.w	#$56,$1937E.l		;right corner: closer wall
+	bgt.w	.4
+	cmpi.w	#$FFAA,$1937E.l		;middle: the full wall
+	bgt.w	.5
+.4	move.w	#$FEEA,d0
+.5	sub.w	$14(a3),d0
+	bpl.w	.x		;already past it
+	asr.w	#$1,d0
+	add.w	d0,$14(a3)
+	bra.w	.x
+.6	move.w	#$82,d0
+	btst	#$3,$4(a3)		;attribute bit 3: the other wall
+	beq.w	.7
+	move.w	#$FF7E,d0
+.7	sub.w	$0(a3),d0
+	asr.w	#$1,d0
+	add.w	d0,$0(a3)
+	bra.w	.x
+.8	move.w	#$88,d0		;bench wall X
+	btst	#$3,$4(a3)		;attribute bit 3: the other side
+	beq.w	.9
+	move.w	#$FF78,d0		;other side
+.9	sub.w	$0(a3),d0
+	asr.w	#$1,d0
+	add.w	d0,$0(a3)
+	bra.w	.x
+.10	move.w	#$FF7E,d0		;wall X
+	btst	#$3,$4(a3)		;attribute bit 3: the other side
+	beq.w	.11
+	move.w	#$82,d0		;other side
+.11	sub.w	$0(a3),d0
+	asr.w	#$1,d0
+	add.w	d0,$0(a3)
+	bra.w	.x
+.12	move.w	#$FF78,d0		;bench wall X
+	btst	#$3,$4(a3)		;attribute bit 3: the other side
+	beq.w	.13
+	move.w	#$88,d0		;other side
+.13	sub.w	$0(a3),d0
+	asr.w	#$1,d0
+	add.w	d0,$0(a3)
+.x	rts
 GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd record (crpeak)
 									;(ReadCrowdRecord; 0 counts as $50). Called from PrintCrowdMeter
 	movem.l	d1-d7/a0-a6,-(sp)
@@ -376,8 +535,13 @@ GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd re
 .lFC32	dbra	d1,.loop
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
-	dc.w	$4240,$102A,$0074,$E448,$4E75,$082A,$0001,$0074
-	dc.w	$4E75
+getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
+	clr.w	d0
+	move.b	$74(a2),d0		;move H/F bit into d0 (this is always even)
+	lsr.w	#$2,d0		;shift 2 right (divide by 4)
+	rts
+	btst	#$1,$74(a2)
+	rts
 RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 when fox <= -$40 and
 									;foy <= $C0. Called from puckfaceoff
 	movem.l	a0,-(sp)
@@ -433,18 +597,34 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	lsr.w	#$1,d0
 	move.w	d0,(Sattsize).l
 	rts
-	dc.w	$247C,$0001,$834C,$B46A,$002A,$6700,$0008,$247C
-	dc.w	$0001,$86B2,$4E75,$48E7,$4080,$0839,$0000,$0001
-	dc.w	$7F68,$6600,$0038,$3239,$0001,$7E62,$207C,$0001
-	dc.w	$AD46,$4A44,$6700,$0008,$207C,$0001,$AD4E,$0690
-	dc.w	$0000,$0001,$0C41,$0008,$6700,$0012,$B26B,$0054
-	dc.w	$6700,$000A,$06A8,$0000,$0001,$0004,$4CDF,$0102
-	dc.w	$4E75
+GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of tmstruct.
+									;Called from PrintStartingLine
+	movea.l	#tmstruct,a2
+	cmp.w	$2A(a2),d2		;team d2 is the home team
+	beq.w	.x
+	movea.l	#awtmstruct,a2
+.x	rts
+	movem.l	d1/a0,-(sp)
+	btst	#$0,$17F68.l
+	bne.w	.lFD80
+	move.w	(TempWord1).l,d1
+	movea.l	#$1AD46,a0
+	tst.w	d4
+	beq.w	.lFD62
+	movea.l	#$1AD4E,a0
+.lFD62	addi.l	#$1,(a0)
+	cmpi.w	#$8,d1
+	beq.w	.lFD80
+	cmp.w	$54(a3),d1
+	beq.w	.lFD80
+	addi.l	#$1,$4(a0)
+.lFD80	movem.l	(sp)+,d1/a0
+	rts
 TerminateLogName						;Unreferenced. The GetLogName String at lognametext, ended with 0 at
 									;namelength and its length word made even
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#lognametext,a1
-	bsr.w	X_BE0E
+	bsr.w	GetLogName-LOAD
 	move.w	(namelength).l,d0
 	move.b	#$0,(a1,d0.w)		;end the name with 0
 	addi.w	#$1,d0
@@ -458,7 +638,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	beq.w	X_FE50		;no user: the empty String
 	movea.l	#$1A37E,a1		;the name after a length word
 	move.w	d0,(namelogsel).l
-	bsr.w	X_BE0E
+	bsr.w	GetLogName-LOAD
 	adda.w	(namelength).l,a1		;end the name with 0
 	move.b	#$0,(a1)
 	addi.w	#$1,(namelength).l
@@ -476,17 +656,18 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	movea.l	#TempBuffer,a3
 	jsr	(appendz).l
 	String	')'
-	dc.w	$227C,$0001,$7E70,$4CDF,$7DFF,$4E75,$000E,$2870
-	dc.w	$6C61,$7965,$6420,$6279,$2000,$0002,$227C,$0002
-	dc.w	$AE4E,$6000,$FFE2,$48E7,$FFBE,$3039,$0001,$8BF6
-	dc.w	$6000,$FF56,$6000,$000E,$08B9,$0001,$0001,$7F7C
-	dc.w	$6000,$000A,$08F9,$0001,$0001,$7F7C,$4E75,$0C40
-	dc.w	$0032,$6C00,$0008,$E240,$0640,$0019,$4E75,$48A7
-	dc.w	$C000,$3039,$0001,$7B80,$906B,$0000,$0C40,$001E
-	dc.w	$6E00,$0030,$3239,$0001,$7BA8,$B340,$0240,$8000
-	dc.w	$6700,$0020,$3039,$0001,$7B94,$906B,$0014,$0C40
-	dc.w	$001E,$6E00,$000E,$3239,$0001,$7BAA,$B340,$0240
-	dc.w	$8000,$4C9F,$0003,$4E75
+	movea.l	#TempBuffer,a1		;a1 = the String
+	dc.w	$4CDF,$7DFF,$4E75,$000E,$2870,$6C61,$7965,$6420
+	dc.w	$6279,$2000,$0002,$227C,$0002,$AE4E,$6000,$FFE2
+	dc.w	$48E7,$FFBE,$3039,$0001,$8BF6,$6000,$FF56,$6000
+	dc.w	$000E,$08B9,$0001,$0001,$7F7C,$6000,$000A,$08F9
+	dc.w	$0001,$0001,$7F7C,$4E75,$0C40,$0032,$6C00,$0008
+	dc.w	$E240,$0640,$0019,$4E75,$48A7,$C000,$3039,$0001
+	dc.w	$7B80,$906B,$0000,$0C40,$001E,$6E00,$0030,$3239
+	dc.w	$0001,$7BA8,$B340,$0240,$8000,$6700,$0020,$3039
+	dc.w	$0001,$7B94,$906B,$0014,$0C40,$001E,$6E00,$000E
+	dc.w	$3239,$0001,$7BAA,$B340,$0240,$8000,$4C9F,$0003
+	dc.w	$4E75
 ReadGoaliePulled
 	movem.l	a1,-(sp)
 	movea.l	#tmstruct,a1

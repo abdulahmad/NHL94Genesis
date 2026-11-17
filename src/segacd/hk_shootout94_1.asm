@@ -2,109 +2,70 @@
 	include	macros\genesis.mac
 
 BA_Goalie_SCnum	equ	$1936A
+BA_Skater_Offset	equ	$1936C
 BA_Team	equ	$19366
 CC_Font1Pri	equ	$BF
+CC_Font2	equ	$FE
 CC_Font2Pri	equ	$BE
+CC_Font3	equ	$FD
 CC_SetMapAndPosition	equ	$F8
+EASportsBGMap	equ	$47D0C
 EndShootout	equ	$291CE
 ExitToOpening	equ	$3F2BE
-FormatPlayerNameShort	equ	$41226
 Framer	equ	$38CA0
 GAttribOverall	equ	$41DC0
 GetGoalieCount	equ	$2ED60
 GetNameandAttrib	equ	$2D56A
 GetPlayerCount	equ	$2EDBC
 HomeTeam	equ	$17FAE
+LOAD	equ	$1B000
 MenuWaitVblank	equ	$2C63A
 PAttribOverall	equ	$41C5E
 PlayerScrollCtr	equ	$1A452
 ProcessInputWithRepeat	equ	$374BE
-PushNumberWidth	equ	$3919A
 Satt	equ	$BBD30
 SetupScreen	equ	$2E728
-SortCords	equ	$17480
+ShooterOverallTxt	equ	$27F28
+ShooterOverallTxt2	equ	$27F3E
+StartShootoutPath	equ	$2A686
 TeamList	equ	$1B00C
 TestList	equ	$1A45A
 VertLineScrolling	equ	$1A450
 VisTeam	equ	$17FB0
 awayshooters	equ	$1A42A
-getname	equ	$4112E
+awayshootgoals	equ	$1A418
+dobitmap	equ	$387E2
+eraser	equ	$38C06
 getpzjoy	equ	$2F2F0
 homeshooters	equ	$1A41C
 homeshootgoals	equ	$1A416
 homeshootnum	equ	$1A428
 move	equ	$2C9C8
+null	equ	$1B008
 print	equ	$38F80
 printa	equ	$18D5C
-printbig	equ	$3926A
 printbigz	equ	$39258
-printfontset	equ	$18D60
-printsmall	equ	$38D9E
 printsmallz	equ	$38D8C
-printx	equ	$18D58
 printy	equ	$18D5A
 printz	equ	$38F6E
 scoutcolumn	equ	$1A44E
 screentimer	equ	$1A458
-shootoutdelay	equ	$1AD72
 shootoutteam	equ	$1A436
-tmstruct	equ	$1834C
-X_CC1E	equ	$CC1E
 X_CC80	equ	$CC80
-X_CE44	equ	$CE44
-X_CE8E	equ	$CE8E
-X_CEDC	equ	$CEDC
 X_CF54	equ	$CF54
-X_CF86	equ	$CF86
 X_CF8A	equ	$CF8A
-X_D01E	equ	$D01E
-X_F686	equ	$F686
+X_D0D6	equ	$D0D6
+X_D13E	equ	$D13E
 
-	org	$C926
+	org	$CA30
 
-	movea.l	#tmstruct,a1
-	movea.l	$1E(a1),a1
-	adda.w	$4(a1),a1
-	jsr	(print).l
-	move.w	#$15,(printx).l
-	move.w	(homeshootgoals).l,d0
-	move.w	#$3,d1
-	jsr	(PushNumberWidth).l
-	jsr	(print).l
-	jsr	(printz).l
-	String	CC_Font1Pri,$4,$A
-	dc.w	$227C,$0001,$86B2,$2269,$001E,$D2E9,$0004,$4EB9
-	dc.w	$0003,$8F80,$33FC,$0015,$0001,$8D58,$3039,$0001
-	dc.w	$A418,$323C,$0003,$4EB9,$0003,$919A,$4EB9,$0003
-	dc.w	$8F80,$4EB9,$0003,$8F6E,$000A,$BF04,$0C52,$6F75
-	dc.w	$6E64,$2000,$3039,$0001,$A41A,$323C,$0002,$4EB9
-	dc.w	$0003,$919A,$4EB9,$0003,$8F80,$4CDF,$7FFF,$4E75
-	dc.w	$0016,$BF04,$0353,$484F,$4F54,$4F55,$5420,$4D4F
-	dc.w	$4445,$BF04,$0500
-ClearShootout						;Clear the player structs (SortCords) and the shootout state.
-	movea.l	#SortCords,a0
-	move.w	#$3FF,d0
-.loop	clr.w	(a0)+
-	dbra	d0,.loop
-	clr.w	(shootoutdelay).l
-	move.w	#$1,$1A41A.l
-	bclr	#$3,$17F78.l
-	clr.w	(homeshootgoals).l
-	clr.w	$1A418.l
-	clr.w	(homeshootnum).l
-	clr.w	(shootoutteam).l
-	bsr.w	InitShooters
-	move.w	#$1,(shootoutteam).l
-	bsr.w	InitShooters
-	clr.w	(shootoutteam).l
-	rts
 NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartShootoutPath),
 									;or the end (ExitToOpening).
 	btst	#$3,$17F78.l
 	beq.w	.0		;shootout running?
 	jmp	(ExitToOpening).l		;shootout over: back to the title
 .0	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	X_F686
+	bsr.w	StartShootoutPath-LOAD
 	move.w	(shootoutteam).l,(BA_Team).l
 	move.w	#$B,(BA_Goalie_SCnum).l		;home goalie slot $B
 	movea.l	#homeshooters,a0
@@ -114,7 +75,7 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 	movea.l	#awayshooters,a0
 .1	move.w	(homeshootnum).l,d0
 	add.w	d0,d0
-	move.w	(a0,d0.w),$1936C.l		;this round's shooter
+	move.w	(a0,d0.w),(BA_Skater_Offset).l		;this round's shooter
 	bclr	#$2,$17BE2.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -126,7 +87,7 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	cmpi.w	#$5,$1A41A.l		;round 5 or later?
 	blt.w	.switch		;before round 5: keep going
 	move.w	(homeshootgoals).l,d0
-	cmp.w	$1A418.l,d0		;goals differ?
+	cmp.w	(awayshootgoals).l,d0		;goals differ?
 	beq.w	.switch		;tied: keep going
 	bset	#$3,$17F78.l		;shootout over
 	jsr	(EndShootout).l
@@ -159,24 +120,20 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 	move.w	d1,-(a0)		;store the roster index
 	dbra	d0,.loop
 	rts
-	dc.w	$48E7,$FFFE,$4EB9,$0003,$8F6E,$0006,$BF01,$0D00
-	dc.w	$323C,$0006,$303C,$001E,$4EB9,$0003,$8CA0,$4EB9
-	dc.w	$0003,$9258,$0014,$BF02,$0E53,$484F,$4F54,$4F55
-	dc.w	$5420,$574F,$4E20,$4259
-	addi.w	#$2,(printy).l
-	move.w	(HomeTeam).l,d1
-	move.w	(homeshootgoals).l,d0
-	cmp.w	$1A418.l,d0
-	bgt.w	.lCBAC
-	move.w	(VisTeam).l,d1
-.lCBAC	asl.w	#$2,d1
-	movea.l	#TeamList,a1
-	movea.l	(a1,d1.w),a1
-	adda.w	$4(a1),a1
-	move.w	#$2,(printx).l
-	jsr	(printbig).l
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
+	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	(printz).l
+	String	CC_Font1Pri,$1,$D
+	move.w	#$6,d1
+	move.w	#$1E,d0
+	jsr	(Framer).l		;draw the box
+	jsr	(printbigz).l
+	String	CC_Font1Pri,$2,$E,'SHOOTOUT WON BY'
+	dc.w	$0679,$0002,$0001,$8D5A,$3239,$0001,$7FAE,$3039
+	dc.w	$0001,$A416,$B079,$0001,$A418,$6E00,$0008,$3239
+	dc.w	$0001,$7FB0,$E541,$227C,$0001,$B00C,$2271,$1000
+	dc.w	$D2E9,$0004,$33FC,$0002,$0001,$8D58,$4EB9,$0003
+	dc.w	$926A,$4CDF,$7FFF,$4E75
 ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 									;the 3 shooters of each team
 	btst	#$0,$17F78.l		;shootout?
@@ -245,97 +202,71 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 .2	addi.w	#$1,d1		;next roster index
 	addi.w	#$1,d2
 	dbra	d0,.loop
-	bsr.w	X_D01E
+	bsr.w	ClearShooterScreen
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$3,$1,$0
 	dc.w	$303C,$0012,$323C,$0003,$4EB9,$0003,$8CA0,$4EB9
-	dc.w	$0003,$8D8C,$0006,$FD15,$FC00
-	move.w	#$12,d0
-	move.w	#$3,d1
-	jsr	(Framer).l		;frame of the list
-	jsr	(printsmallz).l
-	String	CC_SetMapAndPosition,$4,$2,$2,$1,'{Select Player}'		;title
-	clr.w	d0
-	bra.w	.scroll
-.loop2	jsr	(MenuWaitVblank).l
-	jsr	(getpzjoy).l
-	jsr	(ProcessInputWithRepeat).l
-	btst	#$7,d1
-	bne.w	X_CC1E		;start: back to the shooters
-	btst	#$5,d1
-	bne.w	.pick
-	moveq	#$1,d0		;down / right: +1
-	btst	#$1,d1
-	bne.w	.scroll
-	btst	#$3,d1
-	bne.w	.page
-	moveq	#-1,d0		;up / left: -1
-	btst	#$0,d1
-	bne.w	.scroll
-	btst	#$2,d1
-	bne.w	.page
-	bra.w	.loop2
-.page	add.w	(scoutcolumn).l,d0
-	bmi.w	.loop2		;before the first page: ignore
-	move.w	d0,(scoutcolumn).l
-	bsr.w	X_CE44
-	bra.w	.loop2
-.scroll	add.w	(VertLineScrolling).l,d0
-	bmi.w	.loop2		;above the first: ignore
-	cmp.w	(screentimer).l,d0
-	bgt.w	.loop2		;past the last: ignore
-	move.w	d0,(VertLineScrolling).l
-	cmp.w	(PlayerScrollCtr).l,d0		;above the rows shown?
-	bgt.w	.8
-	move.w	d0,(PlayerScrollCtr).l
-.8	subi.w	#$5,d0		;6 rows shown
-	cmp.w	(PlayerScrollCtr).l,d0		;below the rows shown?
-	ble.w	.9
-	move.w	d0,(PlayerScrollCtr).l
-.9	bsr.w	X_CE44
-	bra.w	.loop2
-.pick	movea.l	#Satt,a3
-	adda.w	(VertLineScrolling).l,a3
-	clr.w	d0
-	move.b	(a3),d0
-	move.w	(TestList).l,d2
-	movea.l	#homeshooters,a0
-	cmpa.l	#$1834C,a2
-	beq.w	.11
-	movea.l	#awayshooters,a0
-.11	asl.w	#$1,d2		;word per slot
-	move.w	d0,(a0,d2.w)		;store the pick
-	bra.w	X_CC1E
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BE16,$0100
-.lCE50	movea.l	#PAttribOverall,a1
-	cmpi.w	#$5,(TestList).l
-	bne.w	.lCE68
-	movea.l	#GAttribOverall,a1
-.lCE68	move.w	(scoutcolumn).l,d0
-	bra.w	.lCE78
+	dc.w	$0003,$8D8C,$0006,$FD15,$FC00,$303C,$0012,$323C
+	dc.w	$0003,$4EB9,$0003,$8CA0,$4EB9,$0003,$8D8C,$0016
+	dc.w	$F804,$0202,$017B,$5365,$6C65,$6374,$2050,$6C61
+	dc.w	$7965,$727D,$4240,$6000,$0064,$4EB9,$0002,$C63A
+	dc.w	$4EB9,$0002,$F2F0,$4EB9,$0003,$74BE,$0801,$0007
+	dc.w	$6600,$FEA0,$0801,$0005,$6600,$0088,$7001,$0801
+	dc.w	$0001,$6600,$0038,$0801,$0003,$6600,$0018,$70FF
+	dc.w	$0801,$0000,$6600,$0026,$0801,$0002,$6600,$0006
+	dc.w	$6000,$FFB8,$D079,$0001,$A44E,$6B00,$FFAE,$33C0
+	dc.w	$0001,$A44E,$6100,$0082,$6000,$FFA0,$D079,$0001
+	dc.w	$A450,$6B00,$FF96,$B079,$0001,$A458,$6E00,$FF8C
+	dc.w	$33C0,$0001,$A450,$B079,$0001,$A452,$6E00,$0008
+	dc.w	$33C0,$0001,$A452,$0440,$0005,$B079,$0001,$A452
+	dc.w	$6F00,$0008,$33C0,$0001,$A452,$6100,$003C,$6000
+	dc.w	$FF5A,$267C,$000B,$BD30,$D6F9,$0001,$A450,$4240
+	dc.w	$1013,$3439,$0001,$A45A,$207C,$0001,$A41C,$B5FC
+	dc.w	$0001,$834C,$6700,$0008,$207C,$0001,$A42A,$E342
+	dc.w	$3180,$2000,$6000,$FDDC
+PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib)
+	jsr	(printz).l
+	String	CC_Font2Pri,$16,$1
+.loop	movea.l	#PAttribOverall,a1		;skater columns
+	cmpi.w	#$5,(TestList).l		;goalie slot?
+	bne.w	.0
+	movea.l	#GAttribOverall,a1		;goalie columns
+.0	move.w	(scoutcolumn).l,d0
+	bra.w	.1
 	adda.w	(a1),a1
 	adda.w	#$4,a1
-.lCE78	tst.w	(a1)
+.1	tst.w	(a1)
 	dbmi	d0,$CE72
-	bpl.w	X_CE8E
-	subi.w	#$1,(scoutcolumn).l
-	bra.w	.lCE50
-	dc.w	$B3FC,$0004,$1C5E,$6600,$0008,$227C,$0002,$7F28
-	dc.w	$B3FC,$0004,$1DC0,$6600,$0008,$227C,$0002,$7F3E
-	dc.w	$4EB9,$0003,$8F80,$2811,$267C,$000B,$BD30,$3439
-	dc.w	$0001,$A452,$3239,$0001,$A458,$9242,$0C41,$0005
-	dc.w	$6300,$0004,$7205,$33FC,$0002,$0001,$8D5A,$4EB9
-	dc.w	$0003,$8D8C,$0020,$FE04,$FD05,$FA01,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$2020,$2020,$2020,$2020
-	dc.w	$2020,$FD05
-	cmp.w	(VertLineScrolling).l,d2
-	bne.w	.lCF12
+	bpl.w	.found		;page found?
+	subi.w	#$1,(scoutcolumn).l		;past the end: back one page
+	bra.w	.loop
+.found	cmpa.l	#$41C5E,a1		;skater columns?
+	bne.w	.3
+	movea.l	#ShooterOverallTxt,a1		;skater header
+.3	cmpa.l	#$41DC0,a1		;goalie columns?
+	bne.w	.4
+	movea.l	#ShooterOverallTxt2,a1		;goalie header
+.4	jsr	(print).l
+	move.l	(a1),d4		;rating weights
+	movea.l	#Satt,a3
+	move.w	(PlayerScrollCtr).l,d2
+	move.w	(screentimer).l,d1
+	sub.w	d2,d1
+	cmpi.w	#$5,d1		;more than 6?
+	bls.w	.5
+	moveq	#$5,d1		;at most 6 rows
+.5	move.w	#$2,(printy).l
+.loop3	jsr	(printsmallz).l
+	dc.w	$0020
+	dc.b	$FE,$04,$FD,$05,$FA,$01,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$FD,$05
+	cmp.w	(VertLineScrolling).l,d2		;cursor row?
+	bne.w	.6
 	move.w	d7,(printa).l
-.lCF12	clr.w	d0
-	move.b	(a3,d2.w),d0
-	jsr	(GetNameandAttrib).l
+.6	clr.w	d0
+	move.b	(a3,d2.w),d0		;roster index
+	jsr	(GetNameandAttrib).l		;print name and rating
 	addi.w	#$1,d2
-	dbra	d1,X_CEDC
+	dbra	d1,.loop3
 	rts
 	dc.w	$0012,$2020,$2020,$4F76,$6572,$616C,$6C20,$2020
 	dc.w	$205D,$1F3A,$000A,$0012,$2020,$2020,$4F76,$6572
@@ -346,77 +277,78 @@ ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 
 	cmpi.w	#$5,(TestList).l		;on the goalie slot?
 	beq.w	ShootersLoop		;goalie slot: no moving
 	add.w	(TestList).l,d0
-	bmi.w	X_CF86		;above the first?
+	bmi.w	ShootersSelect		;above the first?
 	cmpi.w	#$5,d0		;past the 5th?
 	blt.w	X_CF8A
 	clr.w	d0		;wrap to the first
 	bra.w	X_CF8A
-	dc.w	$303C,$0004,$33C0,$0001,$A45A,$6100,$01AC,$6100
-	dc.w	$0140,$6000,$FC90,$6100,$0080,$48E7,$FCE0,$4EB9
-	dc.w	$0003,$8F6E,$0006,$FD00,$0000,$2279,$0004,$7D0C
-	dc.w	$D3E9,$0004,$247C,$0001,$B008,$4240,$4241,$3411
-	dc.w	$3629,$0002,$7801,$7A00,$4EB9,$0003,$87E2,$4CDF
-	dc.w	$073F,$4EB9,$0003,$8F6E,$0006,$BE07,$0100
-	moveq	#$1A,d0
-	moveq	#$6,d1
-	jsr	(Framer).l
-	jsr	(printbigz).l
-	String	CC_Font2Pri,$A,$4,'  Shootout  ',CC_Font2Pri,$F,$1
+ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the player box,
+									;back to the loop
+	move.w	#$4,d0
+	move.w	d0,(TestList).l
+	bsr.w	X_D13E
+	bsr.w	X_D0D6		;redraw the box
+	bra.w	ShootersLoop		;back to the input loop
+	bsr.w	ClearShooterScreen
+	movem.l	d0-d5/a0-a2,-(sp)
+	jsr	(printz).l
+	String	CC_Font3,$0,$0
+	movea.l	(EASportsBGMap).l,a1
+	adda.l	$4(a1),a1
+	movea.l	#null,a2
+	clr.w	d0
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	$2(a1),d3
+	moveq	#$1,d4
+	moveq	#$0,d5
+	jsr	(dobitmap).l
+	movem.l	(sp)+,d0-d5/a0-a2
+	dc.w	$4EB9,$0003,$8F6E,$0006,$BE07,$0100,$701A,$7206
+	dc.w	$4EB9,$0003,$8CA0,$4EB9,$0003,$9258,$0014,$BE0A
+	dc.w	$0420,$2053,$686F,$6F74,$6F75,$7420,$20BE,$0F01
 	dc.w	$4240,$B5FC,$0001,$834C,$6700,$0006,$303C,$002C
-	dc.w	$4EF9,$0002,$C59E,$4EB9,$0003,$8F6E,$0006,$BE00
-	dc.w	$0000,$7028,$720A,$343C,$07FF,$4EF9,$0003,$8C06
-	dc.w	$4279,$000B,$BD0A,$4279,$000B,$BD2A,$4E75,$4EB9
-	dc.w	$0003,$8D8C,$0008,$FF02,$FD00,$FC0A,$4EB9,$0003
-	dc.w	$8D8C,$0004,$FE04,$4EB9,$0003,$8D8C,$000E,$FD07
-	dc.w	$FC0C,$5368,$6F6F,$7465,$7273,$4EB9,$0003,$8D8C
-	dc.w	$000A,$FD03,$FC0E,$312E,$2000,$4EB9,$0003,$8D8C
-	dc.w	$000A,$FD03,$FC10,$322E,$2000,$4EB9,$0003,$8D8C
-	dc.w	$000A,$FD03,$FC12,$332E,$2000,$4EB9,$0003,$8D8C
-	dc.w	$000A,$FD03,$FC14,$342E,$2000,$4EB9,$0003,$8D8C
-	dc.w	$000A,$FD03,$FC16,$352E,$2000,$4EB9,$0003,$8D8C
-	dc.w	$000C,$FD1A,$FC0C,$476F,$616C,$6965,$4E75,$4EB9
-	dc.w	$0003,$8D8C,$000A,$F804,$0208,$07F9,$0100,$7018
-	dc.w	$7203,$4EB9,$0003,$8CA0,$4EB9,$0003,$8D8C,$0008
-	dc.w	$FD15,$FC08,$FE06
-	movea.l	#homeshooters,a1
-	cmpa.l	#$1834C,a2
-	beq.w	.lD114
-	movea.l	#awayshooters,a1
-.lD114	move.w	(TestList).l,d0
-	asl.w	#$1,d0
-	move.w	(a1,d0.w),d0
-	jsr	(getname).l
-	move.w	(a1),d0
-	lsr.w	#$1,d0
-	sub.w	d0,(printx).l
-	jsr	(printsmall).l
-	clr.w	(printfontset).l
+	dc.w	$4EF9,$0002,$C59E
+ClearShooterScreen						;Shootout shooters: erase the screen
+	jsr	(printz).l
+	String	CC_Font2Pri,$0,$0
+	moveq	#$28,d0
+	moveq	#$A,d1
+	move.w	#$7FF,d2
+	jmp	(eraser).l
+	clr.w	$BBD0A.l
+	clr.w	$BBD2A.l
 	rts
-	dc.w	$48E7,$FFFE,$4EB9,$0003,$8D8C,$0008,$FD06,$FC0E
-	dc.w	$FE06
-	move.w	#$0,d1
-	movea.l	#homeshooters,a0
-	cmpa.l	#$1834C,a2
-	beq.w	.lD16A
-	movea.l	#awayshooters,a0
-.lD16A	move.w	d1,d0
-	asl.w	#$1,d0
-	move.w	(a0,d0.w),d0
-	jsr	(FormatPlayerNameShort).l
-	move.w	(printx).l,-(sp)
-	cmp.w	(TestList).l,d1
-	bne.w	.lD190
-	move.w	#$2,(printfontset).l
-.lD190	cmpi.w	#$5,d1
-	bne.w	.lD1A8
-	move.w	#$19,(printx).l
-	move.w	#$E,(printy).l
-.lD1A8	jsr	(printsmall).l
-	clr.w	(printfontset).l
-	move.w	(sp)+,(printx).l
-	addi.w	#$2,(printy).l
-	addi.w	#$1,d1
-	cmpi.w	#$6,d1
-	blt.w	.lD16A
-	movem.l	(sp)+,d0-d7/a0-a6
-	rts
+	jsr	(printsmallz).l
+	dc.w	$0008
+	dc.b	$FF,$02,$FD,$00,$FC,$0A
+	jsr	(printsmallz).l
+	String	CC_Font2,$4
+	jsr	(printsmallz).l
+	String	CC_Font3,$7,$FC,$C,'Shooters'
+	jsr	(printsmallz).l
+	String	CC_Font3,$3,$FC,$E,'1. '
+	jsr	(printsmallz).l
+	String	CC_Font3,$3,$FC,$10,'2. '
+	jsr	(printsmallz).l
+	String	CC_Font3,$3,$FC,$12,'3. '
+	dc.w	$4EB9,$0003,$8D8C,$000A,$FD03,$FC14,$342E,$2000
+	dc.w	$4EB9,$0003,$8D8C,$000A,$FD03,$FC16,$352E,$2000
+	dc.w	$4EB9,$0003,$8D8C,$000C,$FD1A,$FC0C,$476F,$616C
+	dc.w	$6965,$4E75,$4EB9,$0003,$8D8C,$000A,$F804,$0208
+	dc.w	$07F9,$0100,$7018,$7203,$4EB9,$0003,$8CA0,$4EB9
+	dc.w	$0003,$8D8C,$0008,$FD15,$FC08,$FE06,$227C,$0001
+	dc.w	$A41C,$B5FC,$0001,$834C,$6700,$0008,$227C,$0001
+	dc.w	$A42A,$3039,$0001,$A45A,$E340,$3031,$0000,$4EB9
+	dc.w	$0004,$112E,$3011,$E248,$9179,$0001,$8D58,$4EB9
+	dc.w	$0003,$8D9E,$4279,$0001,$8D60,$4E75,$48E7,$FFFE
+	dc.w	$4EB9,$0003,$8D8C,$0008,$FD06,$FC0E,$FE06,$323C
+	dc.w	$0000,$207C,$0001,$A41C,$B5FC,$0001,$834C,$6700
+	dc.w	$0008,$207C,$0001,$A42A,$3001,$E340,$3030,$0000
+	dc.w	$4EB9,$0004,$1226,$3F39,$0001,$8D58,$B279,$0001
+	dc.w	$A45A,$6600,$000A,$33FC,$0002,$0001,$8D60,$0C41
+	dc.w	$0005,$6600,$0012,$33FC,$0019,$0001,$8D58,$33FC
+	dc.w	$000E,$0001,$8D5A,$4EB9,$0003,$8D9E,$4279,$0001
+	dc.w	$8D60,$33DF,$0001,$8D58,$0679,$0002,$0001,$8D5A
+	dc.w	$0641,$0001,$0C41,$0006,$6D00,$FF9E,$4CDF,$7FFF
+	dc.w	$4E75

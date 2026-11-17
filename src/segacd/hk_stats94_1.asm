@@ -3,17 +3,24 @@
 
 AddPenalty2	equ	$39456
 AwGoals	equ	$186BE
+CC_Font2	equ	$FE
+CC_Font2Pri	equ	$BE
+CC_Font3	equ	$FD
+CC_Font3Pri	equ	$BD
 CC_SetFont	equ	$F9
 CC_SetMapAndPosition	equ	$F8
 ClearPenalties	equ	$2B3A8
 ClearPenaltyBuffer	equ	$39EE4
 Crowdlevel	equ	$17CD2
-FormatPlayerNameShort	equ	$41226
+EASportsBGMap	equ	$47D0C
+ExitToOpening	equ	$3F2BE
 FourWayPlay	equ	$18BF8
 Fprintsmall	equ	$3CEBE
 Framer	equ	$38CA0
-GetShifter	equ	$4081C
+GetForwardCount	equ	$2EDA0
+GetGoalieCount	equ	$2ED60
 HmGoals	equ	$18358
+LOAD	equ	$1B000
 OldVcount	equ	$17476
 OptLine	equ	$18C0A
 OptPlayMode	equ	$18BFA
@@ -27,7 +34,6 @@ ReadJoy3	equ	$3752C
 ReadJoy4	equ	$3754A
 SFXshotfh	equ	$18
 Satt	equ	$BBD30
-ScoresMap	equ	$47D58
 ScoutReport	equ	$8
 ScoutSubStatus	equ	$17474
 SelectedPlayerIdx	equ	$1A454
@@ -45,21 +51,24 @@ dobitmap	equ	$387E2
 gameclock	equ	$180E6
 gamelevel	equ	$18A9E
 gamenum	equ	$18A98
-getname	equ	$4112E
 goaliemode1	equ	$18C0C
 goaliemode2	equ	$18C0E
 linelist	equ	$419F6
 manual	equ	$2C576
-menuitem	equ	$18AD2
+menudraw	equ	$18ADA
 menulist	equ	$18AD6
 move	equ	$2C9C8
+null	equ	$1B008
+palcount	equ	$18D62
+pausepad	equ	$17F94
 print	equ	$38F80
 printa	equ	$18D5C
-printfontset	equ	$18D60
+printbigz	equ	$39258
 printsmall	equ	$38D9E
 printsmallz	equ	$38D8C
 printx	equ	$18D58
 printy	equ	$18D5A
+printz	equ	$38F6E
 puckx	equ	$17B80
 redrawicons	equ	$17F60
 sbut	equ	$7
@@ -69,34 +78,22 @@ sfx	equ	$3710C
 stop_current_song	equ	$47DB0
 swap	equ	$2779A
 tmstruct	equ	$1834C
-X_11016	equ	$11016
 X_11022	equ	$11022
 X_11034	equ	$11034
 X_1104C	equ	$1104C
 X_11060	equ	$11060
-X_11310	equ	$11310
-X_1140E	equ	$1140E
+X_1149C	equ	$1149C
+X_1159E	equ	$1159E
 X_1176C	equ	$1176C
-X_1182E	equ	$1182E
 X_118D4	equ	$118D4
-X_11914	equ	$11914
-X_11B74	equ	$11B74
-X_11BAC	equ	$11BAC
-X_11BDA	equ	$11BDA
 X_11CB7	equ	$11CB7
-X_11D1E	equ	$11D1E
-X_11D26	equ	$11D26
 X_11D7A	equ	$11D7A
-X_11DE8	equ	$11DE8
 X_11E66	equ	$11E66
 X_11E94	equ	$11E94
 X_11EC0	equ	$11EC0
 X_11F08	equ	$11F08
-X_11FAE	equ	$11FAE
 X_1256A	equ	$1256A
-X_13980	equ	$13980
-X_13D60	equ	$13D60
-X_13DA0	equ	$13DA0
+X_13728	equ	$13728
 X_13DBC	equ	$13DBC
 X_142F0	equ	$142F0
 X_14988	equ	$14988
@@ -179,63 +176,71 @@ demoread
 	jsr	(ReadJoy1).l
 	btst	#$7,d1
 	bne.w	X_11022
-	bsr.w	X_11016
+	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy2).l
 	btst	#$7,d1
 	bne.w	X_11034
 	tst.w	(FourWayPlay).l
-	beq.w	X_11016
+	beq.w	EndDemoOnPress
 	jsr	(ReadJoy3).l
 	btst	#$7,d1
 	bne.w	X_1104C
-	bsr.w	X_11016
+	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy4).l
 	btst	#$7,d1
 	bne.w	X_11060
-	dc.w	$4A41,$6700,$396E,$4EF9,$0003,$F2BE,$4279,$0001
-	dc.w	$7F94,$08B9,$0001,$0001,$7F6A,$6000,$0010,$4279
-	dc.w	$0001,$7F94,$08F9,$0001,$0001,$7F6A,$08F9,$0000
-	dc.w	$0001,$7F6A,$4E75,$33FC,$0003,$0001,$7F94,$08B9
-	dc.w	$0001,$0001,$7F6A,$6000,$FFE4,$33FC,$0004,$0001
-	dc.w	$7F94,$08F9,$0001,$0001,$7F6A,$6000,$FFD0,$4EB9
-	dc.w	$0003,$6D0A,$3F00,$3039,$0001,$7474,$B079,$0001
-	dc.w	$7474,$6700,$FFF8,$301F,$4EB9,$0004,$7DAC,$3F39
-	dc.w	$0001,$7F6A,$6100,$022C,$207C,$0004,$1F50,$43FA
-	dc.w	$0152,$0839,$0000,$0001,$7F78,$6700,$000C,$207C
-	dc.w	$0004,$1EB4,$6000,$0012,$082A,$0002,$0032,$6700
-	dc.w	$0008,$207C,$0004,$20DC,$6100,$0228,$6100,$0566
-	dc.w	$6100,$3218,$4EB9,$0003,$E1CE,$4EB9,$0003,$74BE
-	dc.w	$6100,$0280,$6600,$FFE6,$4EB9,$0003,$6D0A,$33DF
-	dc.w	$0001,$7F6A,$0839,$0007,$0001,$7F6A,$6700,$0012
-	dc.w	$4EB9,$0003,$ECB8,$4EB9,$0003,$C40A,$6000,$0008
-	dc.w	$4EB9,$0003,$C3AC,$207C,$00C0,$0000,$0839,$0007
-	dc.w	$00FF,$800E,$66F6,$33FC,$9100,$00FF,$8022,$33FC
-	dc.w	$000A,$00FF,$8020,$08F9,$0006,$00FF,$800F,$0839
-	dc.w	$0006,$00FF,$800E,$67F6,$08F9,$0007,$00FF,$800F
-	dc.w	$08B9,$0006,$00FF,$800F,$0839,$0006,$00FF,$800E
-	dc.w	$66F6,$08B9,$0007,$00FF,$800F,$0839,$0007,$00FF
-	dc.w	$800E,$66F6,$33FC,$9200,$00FF,$8022,$33FC,$000A
-	dc.w	$00FF,$8020,$08F9,$0006,$00FF,$800F,$0839,$0006
-	dc.w	$00FF,$800E,$67F6,$08F9,$0007,$00FF,$800F,$08B9
-	dc.w	$0006,$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6
-	dc.w	$08B9,$0007,$00FF,$800F,$08F9,$0003,$0001,$8D64
-	dc.w	$08B9,$0000,$0001,$7F6A,$4EB9,$0003,$C48C,$4EB9
-	dc.w	$0003,$DD16,$33FC,$0018,$0001,$8D62,$4A79,$0001
-	dc.w	$8D62,$6A00,$FFF8,$33F9,$0001,$7474,$0001,$7476
-	dc.w	$4E75,$207C,$00C0,$0000,$0839,$0007,$00FF,$800E
-	dc.w	$66F6,$33FC,$9100,$00FF,$8022,$33FC,$000A,$00FF
-	dc.w	$8020,$08F9,$0006,$00FF,$800F,$0839,$0006,$00FF
-	dc.w	$800E,$67F6,$08F9,$0007,$00FF,$800F,$08B9,$0006
-	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9
-	dc.w	$0007,$00FF,$800F,$0839,$0007,$00FF,$800E,$66F6
-	dc.w	$33FC,$921C,$00FF,$8022,$33FC,$000A,$00FF,$8020
+EndDemoOnPress
+	tst.w	d1
+	beq.w	X_14988
+	jmp	(ExitToOpening).l
+	clr.w	(pausepad).l
+	bclr	#$1,$17F6A.l
+	bra.w	.l11042
+	clr.w	(pausepad).l
+	bset	#$1,$17F6A.l
+.l11042	bset	#$0,$17F6A.l
+	rts
+	move.w	#$3,(pausepad).l
+	bclr	#$1,$17F6A.l
+	dc.w	$6000,$FFE4,$33FC,$0004,$0001,$7F94,$08F9,$0001
+	dc.w	$0001,$7F6A,$6000,$FFD0,$4EB9,$0003,$6D0A,$3F00
+	dc.w	$3039,$0001,$7474,$B079,$0001,$7474,$6700,$FFF8
+	dc.w	$301F,$4EB9,$0004,$7DAC,$3F39,$0001,$7F6A,$6100
+	dc.w	$022C,$207C,$0004,$1F50,$43FA,$0152,$0839,$0000
+	dc.w	$0001,$7F78,$6700,$000C,$207C,$0004,$1EB4,$6000
+	dc.w	$0012,$082A,$0002,$0032,$6700,$0008,$207C,$0004
+	dc.w	$20DC,$6100,$0228,$6100,$0566,$6100,$3218,$4EB9
+	dc.w	$0003,$E1CE,$4EB9,$0003,$74BE,$6100,$0280,$6600
+	dc.w	$FFE6,$4EB9,$0003,$6D0A,$33DF,$0001,$7F6A,$0839
+	dc.w	$0007,$0001,$7F6A,$6700,$0012,$4EB9,$0003,$ECB8
+	dc.w	$4EB9,$0003,$C40A,$6000,$0008,$4EB9,$0003,$C3AC
+	dc.w	$207C,$00C0,$0000,$0839,$0007,$00FF,$800E,$66F6
+	dc.w	$33FC,$9100,$00FF,$8022,$33FC,$000A,$00FF,$8020
 	dc.w	$08F9,$0006,$00FF,$800F,$0839,$0006,$00FF,$800E
 	dc.w	$67F6,$08F9,$0007,$00FF,$800F,$08B9,$0006,$00FF
 	dc.w	$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9,$0007
-	dc.w	$00FF,$800F,$4EB9,$0003,$C40A,$4EB9,$0003,$DD16
-	dc.w	$4EB9,$0004,$8208,$4EB9,$0003,$8D8C,$0008,$FF03
-	dc.w	$FD00,$FC00,$7020,$721C,$343C,$07FF,$4EF9,$0003
-	dc.w	$8C06
+	dc.w	$00FF,$800F,$0839,$0007,$00FF,$800E,$66F6,$33FC
+	dc.w	$9200,$00FF,$8022,$33FC,$000A,$00FF,$8020,$08F9
+	dc.w	$0006,$00FF,$800F,$0839,$0006,$00FF,$800E,$67F6
+	dc.w	$08F9,$0007,$00FF,$800F,$08B9,$0006,$00FF,$800F
+	dc.w	$0839,$0006,$00FF,$800E,$66F6,$08B9,$0007,$00FF
+	dc.w	$800F,$08F9,$0003,$0001,$8D64,$08B9,$0000,$0001
+	dc.w	$7F6A,$4EB9,$0003,$C48C,$4EB9,$0003,$DD16,$33FC
+	dc.w	$0018,$0001,$8D62,$4A79,$0001,$8D62,$6A00,$FFF8
+	dc.w	$33F9,$0001,$7474,$0001,$7476,$4E75,$207C,$00C0
+	dc.w	$0000,$0839,$0007,$00FF,$800E,$66F6,$33FC,$9100
+	dc.w	$00FF,$8022,$33FC,$000A,$00FF,$8020,$08F9,$0006
+	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$67F6,$08F9
+	dc.w	$0007,$00FF,$800F,$08B9,$0006,$00FF,$800F,$0839
+	dc.w	$0006,$00FF,$800E,$66F6,$08B9,$0007,$00FF,$800F
+	dc.w	$0839,$0007,$00FF,$800E,$66F6,$33FC,$921C,$00FF
+	dc.w	$8022,$33FC,$000A,$00FF,$8020,$08F9,$0006,$00FF
+	dc.w	$800F,$0839,$0006,$00FF,$800E,$67F6,$08F9,$0007
+	dc.w	$00FF,$800F,$08B9,$0006,$00FF,$800F,$0839,$0006
+	dc.w	$00FF,$800E,$66F6,$08B9,$0007,$00FF,$800F,$4EB9
+	dc.w	$0003,$C40A,$4EB9,$0003,$DD16,$4EB9,$0004,$8208
+	dc.w	$4EB9,$0003,$8D8C,$0008,$FF03,$FD00,$FC00,$7020
+	dc.w	$721C,$343C,$07FF,$4EF9,$0003,$8C06
 seta2
 	movea.l	#tmstruct,a2
 	btst	#$1,$17F6A.l
@@ -247,27 +252,41 @@ seta2
 	adda.w	#$366,a2
 .l112F6	rts
 	dc.w	$23C8,$0001,$8AD6,$23C9,$0001,$8ADA,$4279,$0001
-	dc.w	$8AD2,$4279,$0001,$8AD4,$2079,$0001,$8ADA,$4E90
-	dc.w	$4EB9,$0003,$8D8C,$0006,$FE04,$FC0C,$6100,$0024
-	dc.w	$7016,$7206,$4EB9,$0003,$8CA0,$6100,$00B0,$33FC
-	dc.w	$0018,$0001,$8D62,$4A79,$0001,$8D62,$6A00,$FFF8
-	dc.w	$4E75,$33FC,$0005,$0001,$8D58,$0839,$0001,$0001
-	dc.w	$8D64,$6600,$362C,$0679,$0004,$0001,$8D58,$4E75
+	dc.w	$8AD2,$4279,$0001,$8AD4
+DrawMenuScreen
+	movea.l	(menudraw).l,a0
+	jsr	(a0)
+	jsr	(printsmallz).l
+	String	CC_Font2,$4,$FC,$C
+	bsr.w	SetMenuPrintX
+	moveq	#$16,d0
+	moveq	#$6,d1
+	jsr	(Framer).l
+	bsr.w	Pausemode_Pmenu
+	move.w	#$18,(palcount).l
+	tst.w	(palcount).l
+	dc.w	$6A00,$FFF8,$4E75
+SetMenuPrintX
+	move.w	#$5,(printx).l
+	btst	#$1,(disflags).l
+	bne.w	X_14988
+	addi.w	#$4,(printx).l
+	rts
 HandleMenuInput
 	btst	#$7,d1
 	bne.w	.l113DE
 	btst	#$1,d1
 	beq.w	.l11384
-	addi.w	#$1,(menuitem).l
+	addi.w	#$1,$18AD2.l
 	bra.w	Pausemode_Pmenu
 .l11384	btst	#$0,d1
 	beq.w	.l11398
-	subi.w	#$1,(menuitem).l
+	subi.w	#$1,$18AD2.l
 	bra.w	Pausemode_Pmenu
 .l11398	btst	#$5,d1
 	beq.w	.l113DE
 	bsr.w	seta2
-	move.w	(menuitem).l,d0
+	move.w	$18AD2.l,d0
 	movea.l	(menulist).l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
@@ -279,39 +298,54 @@ HandleMenuInput
 	jsr	(a0)
 	bclr	#$1,$17F74.l
 	bne.w	.l113D6
-	bsr.w	X_11310
-.l113D6	tst.w	(menuitem).l
+	bsr.w	DrawMenuScreen
+.l113D6	tst.w	$18AD2.l
 	rts
 .l113DE	eori.b	#$4,ccr
 	rts
 Pausemode_Pmenu
-	move.w	(menuitem).l,d0
+	move.w	$18AD2.l,d0
 	bpl.w	.l113F6
-	clr.w	(menuitem).l
+	clr.w	$18AD2.l
 	clr.w	d0
 .l113F6	movea.l	(menulist).l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
-	bra.w	X_1140E
-	dc.w	$D0D0,$D0FC,$0004,$4A68,$0002,$5BC8,$FFF4,$0640
-	dc.w	$0001,$9179,$0001,$8AD2,$3039,$0001,$8AD2,$B079
-	dc.w	$0001,$8AD4,$6C00,$0008,$33C0,$0001,$8AD4,$0440
-	dc.w	$0003,$B079,$0001,$8AD4,$6F00,$0008,$33C0,$0001
-	dc.w	$8AD4,$6100,$FF02,$33FC,$000D,$0001,$8D5A,$2279
-	dc.w	$0001,$8AD6,$4EB9,$0003,$8D9E,$4EB9,$0003,$8D8C
-	dc.w	$0026,$FB01,$20FB,$FFFA,$0120,$FBFF,$FA01,$20FB
-	dc.w	$FFFA,$0120,$FB12,$20FB,$FFFA,$FF20,$FBFF,$FAFF
-	dc.w	$20FB,$FFFA,$FF20,$D2D1,$3039,$0001,$8AD4,$6000
-	dc.w	$0008,$D2D1,$D2FC,$0004,$51C8,$FFF8,$7203,$33FC
-	dc.w	$000C,$0001,$8D5A,$6100,$FE9E,$3039,$0001,$8AD4
-	dc.w	$6700,$0014,$4EB9,$0003,$8D8C,$000C,$FE05,$FB01
-	dc.w	$FA01,$7BFA,$FF00,$6100,$FE7E,$4EB9,$0003,$8D8C
-	dc.w	$0006,$FB02,$FA01,$2F09,$2279,$0001,$8AD6,$4EB9
-	dc.w	$0003,$8D9E,$B079,$0001,$8AD2,$6600,$0008,$4EB9
-	dc.w	$0003,$8D9E,$225F,$4EB9,$0002,$C528,$0640,$0001
-	dc.w	$D2FC,$0004,$4A69,$0002,$5BC9,$FFBC,$6B00,$0014
-	dc.w	$6100,$FE34,$4EB9,$0003,$8D8C,$0008,$FE05,$FB01
-	dc.w	$7D00,$4E75
+	bra.w	.l1140E
+	adda.w	(a0),a0
+	adda.w	#$4,a0
+	tst.w	$2(a0)
+.l1140E	dbmi	d0,$11404
+	addi.w	#$1,d0
+	sub.w	d0,$18AD2.l
+	move.w	$18AD2.l,d0
+	cmp.w	$18AD4.l,d0
+	bge.w	.l11432
+	move.w	d0,$18AD4.l
+.l11432	subi.w	#$3,d0
+	cmp.w	$18AD4.l,d0
+	ble.w	.l11446
+	move.w	d0,$18AD4.l
+.l11446	bsr.w	SetMenuPrintX
+	move.w	#$D,(printy).l
+	movea.l	(menulist).l,a1
+	jsr	(printsmall).l
+	jsr	(printsmallz).l
+	dc.w	$0026
+	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
+	adda.w	(a1),a1
+	move.w	$18AD4.l,d0
+	bra.w	X_1149C
+	dc.w	$D2D1,$D2FC,$0004,$51C8,$FFF8,$7203,$33FC,$000C
+	dc.w	$0001,$8D5A,$6100,$FE9E,$3039,$0001,$8AD4,$6700
+	dc.w	$0014,$4EB9,$0003,$8D8C,$000C,$FE05,$FB01,$FA01
+	dc.w	$7BFA,$FF00,$6100,$FE7E,$4EB9,$0003,$8D8C,$0006
+	dc.w	$FB02,$FA01,$2F09,$2279,$0001,$8AD6,$4EB9,$0003
+	dc.w	$8D9E,$B079,$0001,$8AD2,$6600,$0008,$4EB9,$0003
+	dc.w	$8D9E,$225F,$4EB9,$0002,$C528,$0640,$0001,$D2FC
+	dc.w	$0004,$4A69,$0002,$5BC9,$FFBC,$6B00,$0014,$6100
+	dc.w	$FE34,$4EB9,$0003,$8D8C,$0008,$FE05,$FB01,$7D00
+	dc.w	$4E75
 PrintMenuItem
 	cmpi.b	#$78,$2(a1)
 	bne.w	.l1156E
@@ -330,19 +364,53 @@ PrintMenuItem
 	bra.w	.l11574
 .l1156E	jsr	(printsmall).l
 .l11574	rts
-	dc.w	$0014,$2020,$4D61,$6E75,$616C,$2047,$6F61,$6C69
-	dc.w	$6520,$2020,$0014,$2020,$2041,$7574,$6F20,$476F
-	dc.w	$616C,$6965,$2020,$2020,$48E7,$E0C0,$3F39,$0001
-	dc.w	$8D64,$08F9,$0002,$0001,$8D64,$227C,$0001,$7FB2
-	dc.w	$D2C0,$7401,$4EB9,$0003,$8BD4,$720A,$0839,$0007
-	dc.w	$00FF,$800E,$66F6,$33D9,$00FF,$8022,$33FC,$000D
-	dc.w	$00FF,$8020,$08F9,$0006,$00FF,$800F,$0839,$0006
-	dc.w	$00FF,$800E,$67F6,$08F9,$0007,$00FF,$800F,$08B9
-	dc.w	$0006,$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6
-	dc.w	$08B9,$0007,$00FF,$800F,$51C9,$FFB2,$0679,$0001
-	dc.w	$0001,$8D5A,$51CA,$FF9E,$0679,$000B,$0001,$8D58
-	dc.w	$0479,$0002,$0001,$8D5A,$33DF,$0001,$8D64,$4CDF
-	dc.w	$0307,$4E75
+PutTeamBlock
+	dc.w	$0014,$2020
+	dc.w	$4D61
+	dc.w	$6E75
+	dc.w	$616C
+	dc.w	$2047
+	dc.w	$6F61
+	dc.w	$6C69
+	dc.w	$6520
+	dc.w	$2020
+	dc.w	$0014,$2020
+	dc.w	$2041
+	dc.w	$7574
+	dc.w	$6F20
+	dc.w	$476F
+	dc.w	$616C
+	dc.w	$6965
+	dc.w	$2020
+	dc.w	$2020
+	dc.w	$48E7,$E0C0
+	dc.w	$3F39,$0001,$8D64
+.l115A8	dc.w	$08F9,$0002,$0001,$8D64
+	dc.w	$227C,$0001,$7FB2
+	dc.w	$D2C0
+	dc.w	$7401
+.l115BA	dc.w	$4EB9,$0003,$8BD4
+	dc.w	$720A
+.l115C2	dc.w	$0839,$0007,$00FF,$800E
+	dc.w	$66F6
+	dc.w	$33D9,$00FF,$8022
+	dc.w	$33FC,$000D,$00FF,$8020
+	dc.w	$08F9,$0006,$00FF,$800F
+.l115E2	dc.w	$0839,$0006,$00FF,$800E
+	dc.w	$67F6
+.l115EC	dc.w	$08F9,$0007,$00FF,$800F
+	dc.w	$08B9,$0006,$00FF,$800F
+.l115FC	dc.w	$0839,$0006,$00FF,$800E
+.l11604	dc.w	$66F6
+	dc.w	$08B9,$0007,$00FF,$800F
+	dc.w	$51C9,$FFB2
+	dc.w	$0679,$0001,$0001,$8D5A
+	dc.w	$51CA,$FF9E
+	dc.w	$0679,$000B,$0001,$8D58
+	dc.w	$0479,$0002,$0001,$8D5A
+	dc.w	$33DF,$0001,$8D64
+	dc.w	$4CDF,$0307
+	dc.w	$4E75
 MenuWaitVblank
 	move.w	d0,-(sp)
 	move.w	(OldVcount).l,d0
@@ -352,48 +420,29 @@ MenuWaitVblank
 	move.w	(OldVcount).l,(ScoutSubStatus).l
 	move.w	(sp)+,d0
 	rts
-	dc.w	$7006,$721A,$6100,$20C2,$4EB9,$0003,$8F6E,$0006
-	dc.w	$BD05,$0000,$701E,$7206,$4EB9,$0003,$8CA0,$4EB9
-	dc.w	$0003,$9258,$000E,$BD0E,$0353,$636F,$7265,$73BD
-	dc.w	$0B01
-	movea.l	(ScoresMap).l,a1
-	lea.l	$8(a1),a2
-	adda.l	$4(a1),a1
-	clr.w	d0
-	clr.w	d1
-	move.w	(a1),d2
-	move.w	$2(a1),d3
-	clr.w	d5
-	jsr	(dobitmap).l
-	jsr	(printsmallz).l
-	String	CC_SetMapAndPosition,$4,$2,$4,$0
-	clr.w	(VertLineScrolling).l
-	bsr.w	X_1176C
-	jsr	(GetShifter).l
-	move.w	d1,d3
-	ble.w	.l116DE
-.l116D6	bsr.w	X_1182E
-	dbra	d3,.l116D6
-.l116DE	clr.w	(SelectedPlayerIdx).l
-	move.w	(printy).l,d0
-	subi.w	#$15,d0
-	bmi.w	.l116FE
-	asl.w	#$3,d0
-	move.w	d0,(SelectedPlayerIdx).l
-	bsr.w	X_118D4
-.l116FE	bsr.w	MenuWaitVblank
-	bsr.w	X_142F0
-	btst	#$7,d3
-	bne.w	X_13980
-	moveq	#-2,d0
-	btst	#$0,d3
-	bne.w	.l11722
-	neg.w	d0
-	btst	#$1,d3
-	beq.w	.l11728
-.l11722	move.w	d0,(PlayerScrollCtr).l
-.l11728	bsr.w	UpdateScoresScroll
-	bra.w	.l116FE
+ShowScores						;"Scores" screen: the other games of the night in gstruct over the Scores
+									;bitmap (ScoresMap); up / down scroll, start exits (ExitStatsScreen). Menu
+									;item handler (menu lists)
+	moveq	#$6,d0		;SetupScreen d0/d1: bitmap row offset / height
+	moveq	#$1A,d1
+	bsr.w	X_13728		;set up the screen
+	jsr	(printz).l
+	String	CC_Font3Pri,$5,$0
+	moveq	#$1E,d0
+	moveq	#$6,d1
+	jsr	(Framer).l		;draw the frame
+	jsr	(printbigz).l
+	String	CC_Font3Pri,$E,$3,'Scores',CC_Font3Pri,$B,$1
+	dc.w	$2279,$0004,$7D58,$45E9,$0008,$D3E9,$0004,$4240
+	dc.w	$4241,$3411,$3629,$0002,$4245,$4EB9,$0003,$87E2
+	dc.w	$4EB9,$0003,$8D8C,$0008,$F804,$0204,$0000,$4279
+	dc.w	$0001,$A450,$6100,$00A4,$4EB9,$0004,$081C,$3601
+	dc.w	$6F00,$000A,$6100,$0156,$51CB,$FFFA,$4279,$0001
+	dc.w	$A454,$3039,$0001,$8D5A,$0440,$0015,$6B00,$000E
+	dc.w	$E740,$33C0,$0001,$A454,$6100,$01D8,$6100,$FF3A
+	dc.w	$6100,$2BEC,$0803,$0007,$6600,$2274,$70FE,$0803
+	dc.w	$0000,$6600,$000C,$4440,$0803,$0001,$6700,$0008
+	dc.w	$33C0,$0001,$A452,$6100,$0006,$6000,$FFD0
 UpdateScoresScroll						;Called every frame by ShowScores: add PlayerScrollCtr to
 									;VertLineScrolling (0 ... SelectedPlayerIdx), stop
 									;on a 24 line boundary (DrawScrollArrows). Falls into UpdateVertScrollReg
@@ -444,34 +493,21 @@ PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digit
 	jsr	(PushNumberWidth).l
 	jmp	(print).l
 	dc.w	$48E7,$C040,$4EB9,$0003,$8D8C,$000A,$F804,$0304
-	dc.w	$06F9,$0100
-	clr.w	d0
-	move.w	(VertLineScrolling).l,d1
-	tst.w	d1
-	sgt.b	d0
-	neg.b	d0
-	cmp.w	(SelectedPlayerIdx).l,d1
-	slt.b	d1
-	neg.b	d1
-	add.b	d1,d0
-	add.b	d1,d0
-	lea.l	X_11914(pc),a1
-	jsr	(Fprintsmall).l
-	movem.l	(sp)+,d0-d1/a1
-	rts
-	dc.w	$000A
-	dc.w	$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA,$1320
-	dc.w	$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA,$0000
-	dc.w	$0032,$7000,$721C,$6100,$1DEA,$4279,$0001,$A44E
-	dc.w	$4279,$0001,$A452,$33FC,$0001,$0001,$A45A,$4EB9
-	dc.w	$0003,$8D8C,$0008,$FF02,$FD00,$FC00,$7028,$721C
-	dc.w	$343C,$07FF,$4EB9,$0003,$8C06,$50F9,$0001,$7F60
-	dc.w	$6100,$0508
+	dc.w	$06F9,$0100,$4240,$3239,$0001,$A450,$4A41,$5EC0
+	dc.w	$4400,$B279,$0001,$A454,$5DC1,$4401,$D001,$D001
+	dc.w	$43FA,$000E,$4EB9,$0003,$CEBE,$4CDF,$0203,$4E75
+	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
+	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
+	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
+	dc.w	$A44E,$4279,$0001,$A452,$33FC,$0001,$0001,$A45A
+	dc.w	$4EB9,$0003,$8D8C,$0008,$FF02,$FD00,$FC00,$7028
+	dc.w	$721C,$343C,$07FF,$4EB9,$0003,$8C06,$50F9,$0001
+	dc.w	$7F60,$6100,$0508
 LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slot
 									;(SelectLinePlayer), up / down /
 									;left / right move the slot cursor (LineCursorTable). Also entered from
 									;SelectLinePlayer when it is done
-	bsr.w	X_11DE8
+	bsr.w	DrawTeamScreen
 	bsr.w	DrawLineIcons
 .loop	bsr.w	MenuWaitVblank		;wait for the next frame
 	bsr.w	X_142F0		;read the pads
@@ -508,9 +544,9 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 									;and let the user pick one (left / right pages the attribute columns). C
 									;stores the pick with SetLineSlot, start goes back. Both return to
 									;LineEditorMenu
-	bsr.w	X_13D60
+	bsr.w	GetGoalieCount-LOAD
 	move.w	d0,d1		;d1 = first forward
-	bsr.w	X_13DA0
+	bsr.w	GetForwardCount-LOAD
 	move.w	(TestList).l,d2
 	andi.w	#$7,d2		;slot within the line
 	cmpi.w	#$2,d2
@@ -535,83 +571,58 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$3,$1,$0
 	dc.w	$7012,$7203,$4EB9,$0003,$8CA0,$4EB9,$0003,$8D8C
-	dc.w	$0006,$FD15,$FC00
-	moveq	#$12,d0
-	moveq	#$3,d1
-	jsr	(Framer).l		;draw the frame
-	jsr	(printsmallz).l
-	String	CC_SetMapAndPosition,$4,$2,$2,$1,'{Select  Player}'
-	clr.w	d0		;draw the list with the cursor
-	bra.w	.vert
-.loop	bsr.w	MenuWaitVblank		;wait for the next frame
-	bsr.w	X_142F0		;read the pads
-	jsr	(ProcessInputWithRepeat).l
-	btst	#$7,d1		;start: back to slot cursor
-	bne.w	LineEditorMenu
-	btst	#$5,d1		;C: take this player
-	bne.w	.pick
-	moveq	#$1,d0
-	btst	#$1,d1
-	bne.w	.vert
-	btst	#$3,d1		;right: next attribute page
-	bne.w	.horz
-	moveq	#-1,d0
-	btst	#$0,d1
-	bne.w	.vert
-	btst	#$2,d1		;left: previous attribute page
-	bne.w	.horz
-	bra.w	.loop
-.horz	add.w	(scoutcolumn).l,d0		;change attribute page (not below 0)
-	bmi.w	.loop		;below 0: ignore
-	move.w	d0,(scoutcolumn).l
-	bsr.w	X_11B74
-	bra.w	.loop
-.vert	add.w	(VertLineScrolling).l,d0		;Cursor row 0..screentimer
-	bmi.w	.loop		;above the top: ignore
-	cmp.w	(screentimer).l,d0		;past the last?
-	bgt.w	.loop
-	move.w	d0,(VertLineScrolling).l
-	cmp.w	(PlayerScrollCtr).l,d0		;above the first row shown?
-	bgt.w	.top
-	move.w	d0,(PlayerScrollCtr).l		;scroll up to it
-.top	subi.w	#$5,d0		;6 rows shown
-	cmp.w	(PlayerScrollCtr).l,d0		;below the last row shown?
-	ble.w	.draw
-	move.w	d0,(PlayerScrollCtr).l		;scroll down to it
-.draw	bsr.w	X_11B74
-	bra.w	.loop
-.pick	movea.l	#Satt,a3		;C: chosen row's roster index
-	adda.w	(VertLineScrolling).l,a3
-	move.b	(a3),d0
-	addi.b	#$1,d0		;SetLineSlot wants 1 based
-	move.w	(TestList).l,d2
-	bsr.w	X_11FAE		;put the picked player in the slot
-	bra.w	LineEditorMenu		;back to the slot cursor
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BE16,$0100
-.l11B80	movea.l	#PAttribColumns,a1
+	dc.w	$0006,$FD15,$FC00,$7012,$7203,$4EB9,$0003,$8CA0
+	dc.w	$4EB9,$0003,$8D8C,$0018,$F804,$0202,$017B,$5365
+	dc.w	$6C65,$6374,$2020,$506C,$6179,$6572,$7D00,$4240
+	dc.w	$6000,$0060,$6100,$FB88,$6100,$283A,$4EB9,$0003
+	dc.w	$74BE,$0801,$0007,$6600,$FEB6,$0801,$0005,$6600
+	dc.w	$0088,$7001,$0801,$0001,$6600,$0038,$0801,$0003
+	dc.w	$6600,$0018,$70FF,$0801,$0000,$6600,$0026,$0801
+	dc.w	$0002,$6600,$0006,$6000,$FFBC,$D079,$0001,$A44E
+	dc.w	$6B00,$FFB2,$33C0,$0001,$A44E,$6100,$006C,$6000
+	dc.w	$FFA4,$D079,$0001,$A450,$6B00,$FF9A,$B079,$0001
+	dc.w	$A458,$6E00,$FF90,$33C0,$0001,$A450,$B079,$0001
+	dc.w	$A452,$6E00,$0008,$33C0,$0001,$A452,$0440,$0005
+	dc.w	$B079,$0001,$A452,$6F00,$0008,$33C0,$0001,$A452
+	dc.w	$6100,$0026,$6000,$FF5E,$267C,$000B,$BD30,$D6F9
+	dc.w	$0001,$A450,$1013,$0600,$0001,$3439,$0001,$A45A
+	dc.w	$6100,$0440,$6000,$FE08
+PrintAttribHeader						;Line editor player list: the column header of attribute page
+									;DispAttribCtr, then 6 rows of names and that attribute, the selected row
+									;highlighted
+	jsr	(printz).l
+	String	CC_Font2Pri,$16,$1
+.top	movea.l	#PAttribColumns,a1		;list of column entries: word length, 4 byte flags, text
 	move.w	(scoutcolumn).l,d0
-	bra.w	.l11B96
+	bra.w	.2
 	adda.w	(a1),a1
 	adda.w	#$4,a1
-.l11B96	tst.w	(a1)
+.2	tst.w	(a1)		;Negative = end of list
 	dbmi	d0,$11B90
-	bpl.w	X_11BAC
-	subi.w	#$1,(scoutcolumn).l
-	bra.w	.l11B80
-	dc.w	$4EB9,$0003,$8F80,$2811,$267C,$000B,$BD30,$3439
-	dc.w	$0001,$A452,$3239,$0001,$A458,$9242,$0C41,$0005
-	dc.w	$6300,$0004,$7205,$33FC,$0002,$0001,$8D5A,$4EB9
-	dc.w	$0003,$8D8C,$0020,$FE04,$FD05,$FA01,$2020,$2020
-	dc.w	$2020,$2020,$2020,$2020,$2020,$2020,$2020,$2020
-	dc.w	$2020,$FD05
-	cmp.w	(VertLineScrolling).l,d2
-	bne.w	.l11C10
-	move.w	d7,(printa).l
-.l11C10	clr.w	d0
-	move.b	(a3,d2.w),d0
-	bsr.w	X_1256A
+	bpl.w	.found
+	subi.w	#$1,(scoutcolumn).l		;past the last page: back one
+	bra.w	.top
+.found	jsr	(print).l
+	move.l	(a1),d4		;column flags for GetNameandAttrib
+	movea.l	#Satt,a3
+	move.w	(PlayerScrollCtr).l,d2		;d2 = first row shown
+	move.w	(screentimer).l,d1
+	sub.w	d2,d1		;rows below the first shown
+	cmpi.w	#$5,d1
+	bls.w	.4
+	moveq	#$5,d1		;at most 6 rows
+.4	move.w	#$2,(printy).l
+.row	jsr	(printsmallz).l
+	dc.w	$0020
+	dc.b	$FE,$04,$FD,$05,$FA,$01,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$FD,$05
+	cmp.w	(VertLineScrolling).l,d2		;cursor row?
+	bne.w	.5
+	move.w	d7,(printa).l		;use the highlight attribute
+.5	clr.w	d0
+	move.b	(a3,d2.w),d0		;roster index
+	bsr.w	X_1256A		;print his name and attributes
 	addi.w	#$1,d2
-	dbra	d1,X_11BDA
+	dbra	d1,.row
 	rts
 DrawLineIcons						;Line editor: draw the line icons for the cursor's line (LineIconGroups
 									;bit masks, DrawLineIcon), then the selected player box
@@ -635,20 +646,10 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	dc.w	$7018,$7203,$4EB9,$0003,$8CA0,$4EB9,$0003,$8D8C
-	dc.w	$0006,$FD15,$FC08
-	move.w	d6,d0		;name of the cursor slot's player
-	jsr	(getname).l
-	move.w	(a1),d0
-	lsr.w	#$1,d0
-	sub.w	d0,(printx).l		;...used to centre it
-	move.w	d7,(printa).l
-	jsr	(printsmall).l		;print it
-	clr.w	(printfontset).l
-	rts
-	btst	d0,d7
-	btst	d3,d7
-	move.b	(a0)+,d4
-	bra.b	X_11D1E
+	dc.w	$0006,$FD15,$FC08,$3006,$4EB9,$0004,$112E,$3011
+	dc.w	$E248,$9179,$0001,$8D58,$33C7,$0001,$8D5C,$4EB9
+	dc.w	$0003,$8D9E,$4279,$0001,$8D60,$4E75,$0107,$0707
+	dc.w	$1818,$6060
 DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its player slots)
 									;at LineIconPosTable (OptLine: the entry before)
 	moveq	#$6,d0		;6 bytes per entry
@@ -669,19 +670,44 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	dc.w	$33D0,$0001,$8D58,$3805,$E744,$0644,$0001,$33E8
 	dc.w	$0002,$0001,$8D5A,$3628,$0004,$47EA,$016C,$33D0
 	dc.w	$0001,$8D58,$4EB9,$0003,$8D8C,$0008,$FBFF,$FA02
-	dc.w	$FE06
+	dc.w	$FE06,$4240,$1033,$4000,$0440,$0001,$4EB9,$0004
+	dc.w	$1226,$B879,$0001,$A45A,$6600,$0012,$3C00,$3E39
+	dc.w	$0001,$8D5C,$33FC,$0002,$0001,$8D60,$4EB9,$0003
+	dc.w	$8D9E,$4279,$0001,$8D60,$0644,$0001,$51CB,$FFB0
+	dc.w	$4E75,$4EB9,$0003,$8D8C,$0008,$FF02,$FD00,$FC0A
+	dc.w	$7028,$7212,$343C,$07FF,$4EB9,$0003,$8C06,$33F9
+	dc.w	$0002,$CE96,$0001,$8D5A,$33F9,$0002,$CE94,$0001
+	dc.w	$8D58,$4A79,$0001,$8C0A,$6700,$000C,$33F9,$0002
+	dc.w	$CE8E,$0001,$8D58,$4EB9,$0003,$8D8C,$0022,$FE04
+	dc.w	$FBFD,$FA02,$4C44,$FBFE,$FA02,$5244,$FBFE,$FA02
+	dc.w	$4C57,$FBFE,$FA02,$4320,$FBFE,$FA02,$5257,$4E75
+DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Line Editor"
+									;title and
+									;the team logo map (PutTeamBlock)
+	bsr.w	X_11E66
+	movem.l	d0-d5/a0-a2,-(sp)
+	jsr	(printz).l
+	String	CC_Font3,$0,$0
+	movea.l	(EASportsBGMap).l,a1
+	adda.l	$4(a1),a1
+	movea.l	#null,a2		;a2 saved/restored around this block
 	clr.w	d0
-	move.b	(a3,d4.w),d0		;player in this slot
-	subi.w	#$1,d0		;0-based
-	jsr	(FormatPlayerNameShort).l
-	cmp.w	(TestList).l,d4		;cursor slot?
-	bne.w	.nocur
-	move.w	d0,d6		;player in the cursor slot
-	move.w	(printa).l,d7
-	move.w	#$2,(printfontset).l		;highlight while printing
-.nocur	jsr	(printsmall).l		;print it
-	clr.w	(printfontset).l
-	addi.w	#$1,d4
-	dbra	d3,X_11D26
-	rts
-	dc.w	$4EB9,$0003,$8D8C,$0008,$FF02,$FD00,$FC0A
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	$2(a1),d3
+	moveq	#$1,d4
+	moveq	#$0,d5
+	jsr	(dobitmap).l
+	movem.l	(sp)+,d0-d5/a0-a2
+	jsr	(printz).l
+	String	CC_Font2Pri,$7,$1
+	moveq	#$1A,d0
+	moveq	#$6,d1
+	jsr	(Framer).l		;draw the frame
+	jsr	(printbigz).l
+	String	CC_Font2Pri,$A,$4,'Line Editor',CC_Font2Pri,$E,$1
+	clr.w	d0		;map offset: home 0, away $2C
+	cmpa.l	#$1834C,a2		;home team?
+	beq.w	X_1159E
+	moveq	#$2C,d0
+	bra.w	X_1159E

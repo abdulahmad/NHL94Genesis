@@ -40,7 +40,7 @@ def nums(op):
 
 
 def main():
-    pairs = [l.strip().split(",") for l in open(sys.argv[1])]
+    pairs = [l.strip().split(",")[:5] for l in open(sys.argv[1])]
     rom = open(sys.argv[2], "rb").read()
     disc = open(sys.argv[3], "rb").read()
     lst = listing_instrs(sys.argv[4])

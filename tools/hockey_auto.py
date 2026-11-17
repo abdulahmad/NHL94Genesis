@@ -8,12 +8,14 @@ that label). Absolute operands are named from syms.csv. The range is emitted as 
 bytes that do not decode become dc.w, so the fragment always round-trips.
 """
 import csv
+import os
 import re
 import sys
 
 sys.path.insert(0, __import__("os").path.dirname(__file__))
 import emit_hockey as H
 
+TAG = str(os.getpid())
 pairs, syms, blobp, a, b, out = sys.argv[1:7]
 a, b = int(a, 16), int(b, 16)
 blob = open(blobp, "rb").read()
@@ -27,11 +29,12 @@ for l in open(syms):
     if x != "0" or len(s) < 4 or re.match(r"^[0-9A-Fa-f]+$", s) or "." in s or re.match(r"^[a-z]{1,3}\d?$", s):
         continue
     names.setdefault(int(v, 16), s)
+inc_names = {n.lower() for n in H.load_names("src/segacd/hockey.inc").values()}
 local = {}
 for l in open(pairs):
-    ca, d, n, cl, dl = l.strip().split(",")
+    ca, d, n, cl, dl = l.strip().split(",")[:5]
     d = int(d, 16)
-    if a <= d < b and len(n) > 2 and n not in H.LABELS.values():
+    if a <= d < b and len(n) > 2 and n not in H.LABELS.values() and n.lower() not in inc_names:
         H.LABELS[d] = n
         names.setdefault(d + 0x1B000, n)
         H.NM_FILE[d] = n
@@ -40,7 +43,7 @@ lines = []
 ext = set()
 ext_ranges = []
 for l in sorted(open(pairs), key=lambda l: int(l.split(",")[1], 16)):
-    ca, d, n, cl, dl = l.strip().split(",")
+    ca, d, n, cl, dl = l.strip().split(",")[:5]
     d, dl = int(d, 16), int(dl)
     if a <= d and d + dl <= b:
         ext_ranges.append((d, d + dl))
@@ -89,13 +92,13 @@ def build(lines, hdr_extra):
 
 def assemble(path):
     try:
-        __import__("os").remove("/tmp/new/auto.bin")
+        __import__("os").remove(("/tmp/new/auto%TAG%.bin").replace("%TAG%", TAG))
     except OSError:
         pass
     import json
     opts = [o for f in json.load(open("tools/segacd.json")) if f["name"] == "scouting" for o in f["options"]]
     rel = path[len("src/"):].replace("/", "\\")
-    r = subprocess.run(["wine", "../assembler/Assembler.exe", "/p", "/m", "/g"] + opts + [rel + ",Z:\\tmp\\new\\auto.bin,Z:\\tmp\\newobj\\auto,Z:\\tmp\\newobj\\auto"], cwd="src", capture_output=True, text=True, env={**__import__("os").environ, "WINEDEBUG": "-all"})
+    r = subprocess.run(["wine", "../assembler/Assembler.exe", "/p", "/m", "/g"] + opts + [rel + (",Z:\\tmp\\new\\auto%TAG%.bin,Z:\\tmp\\newobj\\auto%TAG%,Z:\\tmp\\newobj\\auto%TAG%").replace("%TAG%", TAG)], cwd="src", capture_output=True, text=True, env={**__import__("os").environ, "WINEDEBUG": "-all"})
     errs = []
     for l in r.stdout.replace("\r", "").split("\n"):
         m = re.search(r"\((\d+)\S*\s+(.*)$", l)
@@ -125,21 +128,23 @@ for rnd in range(8):
     if not fixed:
         break
 ref = blob[a:b]
+seen_tgt = {}
 for rnd in range(int(__import__("os").environ.get("ROUNDS", "400"))):
     head, full = build(lines, None)
     open(out, "w").write("\n".join(full) + "\n")
     errs, txt = assemble(out)
-    if not errs and not __import__("os").path.exists("/tmp/new/auto.bin"):
+    if not errs and not __import__("os").path.exists(("/tmp/new/auto%TAG%.bin").replace("%TAG%", TAG)):
         print(txt[-600:])
         break
-    asm = open("/tmp/new/auto.bin", "rb").read() if not errs else b""
+    asm = open(("/tmp/new/auto%TAG%.bin").replace("%TAG%", TAG), "rb").read() if not errs else b""
     if not errs and asm == ref:
         break
     tgt = None
+    extra = []
     tagged = [i for i, l in enumerate(lines) if re.search(r";@[0-9a-f]*$", l)]
     k = 0
     pos = a
-    for ll in open("/tmp/newobj/auto .lst", errors="replace"):
+    for ll in open(("/tmp/newobj/auto%TAG% .lst").replace("%TAG%", TAG), errors="replace"):
         m = re.search(r";@([0-9a-f]*)\s*$", ll)
         if not m:
             continue
@@ -150,17 +155,40 @@ for rnd in range(int(__import__("os").environ.get("ROUNDS", "400"))):
         addr = int(ll[:8], 16)
         fwd = re.search(r"\bL[0-9A-F]{4,5}\b", ll[35:]) or re.search(r"\t(b[a-z]{2}|bsr|bra|db[a-z]+)(\.\w)?\t", ll[35:])
         full = "+" not in ll[9:36] and not fwd and len(exp) <= 16
-        if addr != pos or (got and (got[:4] != exp[:4] or (full and got != exp))):
-            tgt = tagged[k - 1] if addr != pos and k > 0 else tagged[k]
+        if addr != pos:
+            if tgt is None:
+                tgt = tagged[k - 1] if k > 0 else tagged[k]
             break
+        if got and (got[:4] != exp[:4] or (full and got != exp)):
+            if tgt is None:
+                tgt = tagged[k]
+            else:
+                extra.append(tagged[k])
         pos += len(exp) // 2
         k += 1
     if tgt is None:
         print("no listing mismatch found; size", len(asm), len(ref))
         break
+    for ex in extra:
+        mm = re.search(r";@([0-9a-f]+)$", lines[ex])
+        if mm and not re.match(r"^(\S*)\t(dc\.[wb]|String)\t", lines[ex]):
+            raw = bytes.fromhex(mm.group(1))
+            lab = lines[ex].split("\t")[0] if not lines[ex].startswith("\t") else ""
+            lines[ex] = lab + "\tdc.w\t" + ",".join("$%04X" % int.from_bytes(raw[q:q + 2], "big") for q in range(0, len(raw) - 1, 2)) + "\t;@" + raw.hex()
     l = lines[tgt]
     if __import__("os").environ.get("DBG"): print(rnd, tgt, l[:70])
     if re.match(r"^(\S*)\t(dc\.[wb]|String)\t", l):
+        # a String macro that does not reproduce its bytes becomes plain words, then try again
+        if "\tString\t" in l:
+            raw = bytes.fromhex(re.search(r";@([0-9a-f]+)$", l).group(1))
+            lab = l.split("\t")[0] if not l.startswith("\t") else ""
+            lines[tgt] = lab + "\tdc.w\t" + ",".join("$%04X" % int.from_bytes(raw[q:q + 2], "big") for q in range(0, len(raw) - 1, 2)) + "\t;@" + raw.hex()
+            continue
+        if tgt > 0 and re.search(r"\tString\t", lines[tgt - 1]):
+            raw = bytes.fromhex(re.search(r";@([0-9a-f]+)$", lines[tgt - 1]).group(1))
+            lab = lines[tgt - 1].split("\t")[0] if not lines[tgt - 1].startswith("\t") else ""
+            lines[tgt - 1] = lab + "\tdc.w\t" + ",".join("$%04X" % int.from_bytes(raw[q:q + 2], "big") for q in range(0, len(raw) - 1, 2)) + "\t;@" + raw.hex()
+            continue
         # already data: this cannot be fixed here
         # give up on the routine around it: turn it into data
         rn = set(H.LABELS.values())
@@ -170,6 +198,16 @@ for rnd in range(int(__import__("os").environ.get("ROUNDS", "400"))):
         i1 = tgt + 1
         while i1 < len(lines) and lines[i1].split("\t")[0] not in rn:
             i1 += 1
+        seen_tgt[tgt] = seen_tgt.get(tgt, 0) + 1
+        if seen_tgt[tgt] > 2:
+            print("giving up on", lines[i0][:40], "-> whole range as data")
+            for j, lj in enumerate(lines):
+                mm = re.search(r";@([0-9a-f]+)$", lj)
+                if mm and not re.match(r"^(\S*)\t(dc\.[wb])\t", lj):
+                    raw = bytes.fromhex(mm.group(1))
+                    lab = lj.split("\t")[0] if not lj.startswith("\t") else ""
+                    lines[j] = lab + "\tdc.w\t" + ",".join("$%04X" % int.from_bytes(raw[q:q + 2], "big") for q in range(0, len(raw) - 1, 2)) + "\t;@" + raw.hex()
+            continue
         print("routine to data:", lines[i0][:40])
         for j in range(i0, i1):
             mm = re.search(r";@([0-9a-f]+)$", lines[j])

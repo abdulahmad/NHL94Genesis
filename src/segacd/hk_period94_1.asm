@@ -4,27 +4,20 @@
 BA_Sktr_SCnum	equ	$19368
 CC_Font2Pri	equ	$BE
 CC_Font3Pri	equ	$BD
-ExitStatsScreen	equ	$2E980
 FormatPlayerName	equ	$411D6
 FormatPlayerNumInitial	equ	$41192
 Framer	equ	$38CA0
-HomeTeam	equ	$17FAE
 HotColdIcon	equ	$2B3FE
 Hpos	equ	$17CEE
-MenuWaitVblank	equ	$2C63A
 OptNOP	equ	$18BFC
 OptPen	equ	$18C08
-Pausemode_rjoy	equ	$2EDE2
-PlayerScrollCtr	equ	$1A452
 PositionBoxes	equ	$292E2
 PositionBoxesTop	equ	$292F2
 PushNumber	equ	$3915E
-PushNumberWidth	equ	$3919A
+PushTime	equ	$390F4
 PutTeamBlock	equ	$2C59E
-TeamLogoBitmaps	equ	$47D8C
-TeamLogoPalettes	equ	$2AF56
+SetupScreen	equ	$2E728
 TeamRatings	equ	$2A040
-VertLineScrolling	equ	$1A450
 Vpos	equ	$17CEA
 appendz	equ	$39200
 appstring	equ	$39208
@@ -35,34 +28,22 @@ arenaspritelist	equ	$1A55C
 awtmstruct	equ	$186B2
 cont1team	equ	$17FA6
 cont2team	equ	$17FA8
-dobitmap	equ	$387E2
-getpzjoy	equ	$2F2F0
 goaliemode1	equ	$18C0C
 goaliemode2	equ	$18C0E
 iconplayer	equ	$1AD8A
-matchup	equ	$1A43A
-matchuptimer	equ	$1A44A
-matchupvis	equ	$1A440
 mesarea	equ	$17EF2
 move	equ	$2C9C8
-msgtimer	equ	$17F98
-nodiag	equ	$37496
-palcount	equ	$18D62
 print	equ	$38F80
 printbigz	equ	$39258
 printx	equ	$18D58
+printy	equ	$18D5A
 printz	equ	$38F6E
-puckc	equ	$17BE0
-scoutcolumn	equ	$1A44E
 setc1player	equ	$312B8
 setc2player	equ	$312DC
 tmstruct	equ	$1834C
-X_E8BA	equ	$E8BA
-X_E904	equ	$E904
-X_EB02	equ	$EB02
-X_EC3E	equ	$EC3E
-X_ECBE	equ	$ECBE
-X_EDA2	equ	$EDA2
+X_EB5E	equ	$EB5E
+X_EE56	equ	$EE56
+X_EF44	equ	$EF44
 
 	org	$E1CE
 
@@ -262,66 +243,29 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	dc.w	$4281,$4280,$7406,$363C,$0006,$7A04,$4EB9,$0003
 	dc.w	$87E2,$207C,$000B,$BCF0,$227C,$000B,$BD10,$303C
 	dc.w	$0007,$22D8,$51C8,$FFFC,$4EB9,$0003,$8F6E,$0006
-	dc.w	$8E02,$1400
-	movea.l	(TeamLogoBitmaps).l,a0
-	move.w	(HomeTeam).l,d0
-	asl.w	#$2,d0
-	movea.l	(a0,d0.w),a0
-	movea.l	a0,a1
-	movea.l	a0,a2
-	adda.l	(a2)+,a0
-	asl.w	#$3,d0
-	subi.w	#$40,d0
-	movea.l	#TeamLogoPalettes,a0
-	adda.w	d0,a0
-	adda.l	(a2)+,a1
-	clr.w	d1
-	clr.w	d0
-	moveq	#$6,d2
-	move.w	#$6,d3
-	moveq	#$4,d5
-	jsr	(dobitmap).l
-	jsr	(printz).l
-	String	CC_Font3Pri,$4,$1
-	moveq	#$20,d0
-	moveq	#$6,d1
-	jsr	(Framer).l
-	jsr	(printbigz).l
-	String	CC_Font3Pri,$6,$3,'  Period Stats  ',CC_Font2Pri,$6,$1
-	dc.w	$0839,$0001,$0001,$7F7A,$6700,$004A,$4EB9,$0003
-	dc.w	$8F6E,$001C,$BE0C,$0931,$BE11,$0932,$BE16,$0933
-	dc.w	$BE1A,$094F,$54BE,$2009,$546F,$7461,$6C00,$4EB9
-	dc.w	$0003,$8F6E,$001C,$BE0C,$0A3C,$BE11,$0A3C,$BE16
-	dc.w	$0A3C,$BE1A,$0A3C,$3CBE,$200A,$3C3C,$3C3C,$3C00
-	dc.w	$6000,$003A,$4EB9,$0003,$8F6E,$0016,$BE0C,$0931
-	dc.w	$BE11,$0932,$BE16,$0933,$BE20,$0954,$6F74,$616C
-	dc.w	$4EB9,$0003,$8F6E,$0016,$BE0C,$0A3C,$BE11,$0A3C
-	dc.w	$BE16,$0A3C,$BE20,$0A3C,$3C3C,$3C3C
-	bsr.w	X_E8BA
-	bsr.w	X_E904
-	move.w	#$18,(palcount).l
-.lE796	jsr	(Pausemode_rjoy).l
-	btst	#$7,d1
-	bne.w	.lE7F0
-	btst	#$2,d1
-	bne.w	.lE7D4
-	btst	#$3,d1
-	bne.w	.lE7B8
-	bra.w	.lE796
-.lE7B8	tst.w	(matchup).l
-	bne.w	.lE796
-	st.b	(matchup).l
-	bsr.w	X_E8BA
-	bsr.w	X_E904
-	bra.w	.lE796
-.lE7D4	tst.w	(matchup).l
-	beq.w	.lE796
-	clr.w	(matchup).l
-	bsr.w	X_E8BA
-	bsr.w	X_E904
-	bra.w	.lE796
-.lE7F0	movem.l	(sp)+,d0-d7/a0-a6
-	movem.l	d7/a0,-(sp)
+	dc.w	$8E02,$1400,$2079,$0004,$7D8C,$3039,$0001,$7FAE
+	dc.w	$E540,$2070,$0000,$2248,$2448,$D1DA,$E740,$0440
+	dc.w	$0040,$207C,$0002,$AF56,$D0C0,$D3DA,$4241,$4240
+	dc.w	$7406,$363C,$0006,$7A04,$4EB9,$0003,$87E2,$4EB9
+	dc.w	$0003,$8F6E,$0006,$BD04,$0100,$7020,$7206,$4EB9
+	dc.w	$0003,$8CA0,$4EB9,$0003,$9258,$0018,$BD06,$0320
+	dc.w	$2050,$6572,$696F,$6420,$5374,$6174,$7320,$20BE
+	dc.w	$0601,$0839,$0001,$0001,$7F7A,$6700,$004A,$4EB9
+	dc.w	$0003,$8F6E,$001C,$BE0C,$0931,$BE11,$0932,$BE16
+	dc.w	$0933,$BE1A,$094F,$54BE,$2009,$546F,$7461,$6C00
+	dc.w	$4EB9,$0003,$8F6E,$001C,$BE0C,$0A3C,$BE11,$0A3C
+	dc.w	$BE16,$0A3C,$BE1A,$0A3C,$3CBE,$200A,$3C3C,$3C3C
+	dc.w	$3C00,$6000,$003A,$4EB9,$0003,$8F6E,$0016,$BE0C
+	dc.w	$0931,$BE11,$0932,$BE16,$0933,$BE20,$0954,$6F74
+	dc.w	$616C,$4EB9,$0003,$8F6E,$0016,$BE0C,$0A3C,$BE11
+	dc.w	$0A3C,$BE16,$0A3C,$BE20,$0A3C,$3C3C,$3C3C,$6100
+	dc.w	$0132,$6100,$0178,$33FC,$0018,$0001,$8D62,$4EB9
+	dc.w	$0002,$EDE2,$0801,$0007,$6600,$004E,$0801,$0002
+	dc.w	$6600,$002A,$0801,$0003,$6600,$0006,$6000,$FFE0
+	dc.w	$4A79,$0001,$A43A,$6600,$FFD6,$50F9,$0001,$A43A
+	dc.w	$6100,$00F0,$6100,$0136,$6000,$FFC4,$4A79,$0001
+	dc.w	$A43A,$6700,$FFBA,$4279,$0001,$A43A,$6100,$00D4
+	dc.w	$6100,$011A,$6000,$FFA8,$4CDF,$7FFF,$48E7,$0180
 	dc.w	$2079,$0004,$7D8C,$3E3C,$0002,$4EB8,$6044,$4CDF
 	dc.w	$0180,$2F0E,$2C79,$0001,$9360,$0839,$0005,$00FF
 	dc.w	$800F,$6706,$3D3C,$0001,$6004,$3D3C,$0000,$08B9
@@ -351,94 +295,103 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	dc.w	$80E4,$6D00,$001A,$0839,$0001,$0001,$7F7A,$6700
 	dc.w	$000E,$33FC,$001A,$0001,$8D58,$6100,$0042,$33FC
 	dc.w	$0021,$0001,$8D58,$4EB9,$0003,$8F6E,$0006,$2020
-	dc.w	$2000
-	subi.w	#$3,(printx).l
-	move.w	(matchuptimer).l,d0
-	move.w	#$2,d1
-	cmpi.w	#$64,d0
-	blt.w	.lE9E8
-	move.w	#$3,d1
-.lE9E8	jsr	(PushNumberWidth).l
-	jsr	(print).l
-	rts
-	dc.w	$3018,$D179,$0001,$A44A,$4EB9,$0003,$8F6E,$0006
-	dc.w	$2020,$2000,$0479,$0003,$0001,$8D58,$323C,$0002
-	dc.w	$0C40,$0064,$6D00,$0006,$323C,$0003,$4EB9,$0003
-	dc.w	$919A,$4EF9,$0003,$8F80,$7009,$721A,$4EB9,$0002
-	dc.w	$E728,$4EB9,$0003,$8F6E,$0006,$BD04,$0100
+	dc.w	$2000,$0479,$0003,$0001,$8D58,$3039,$0001,$A44A
+	dc.w	$323C,$0002,$0C40,$0064,$6D00,$0006,$323C,$0003
+	dc.w	$4EB9,$0003,$919A,$4EB9,$0003,$8F80,$4E75,$3018
+	dc.w	$D179,$0001,$A44A,$4EB9,$0003,$8F6E,$0006,$2020
+	dc.w	$2000,$0479,$0003,$0001,$8D58,$323C,$0002,$0C40
+	dc.w	$0064,$6D00,$0006,$323C,$0003,$4EB9,$0003,$919A
+	dc.w	$4EF9,$0003,$8F80
+StatsReport						;"Game Statistics" menu item (menu lists): both
+									;teams' totals (DisplayStats). There are more rows than the screen:
+									;up / down scroll them (matchupvis the most, $70 or $30 without penalties,
+									;OptPen), start exits (ExitStatsScreen)
+	moveq	#$9,d0
+	moveq	#$1A,d1
+	jsr	(SetupScreen).l		;set up the screen
+	jsr	(printz).l
+	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
 	moveq	#$6,d1
-	jsr	(Framer).l
+	jsr	(Framer).l		;draw the box
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Game  Statistics',CC_Font3Pri,$7,$1
-	move.w	#$2C,d0
-	jsr	(PutTeamBlock).l
-	addi.w	#$4,(printx).l
-	clr.w	d0
-	jsr	(PutTeamBlock).l
-	clr.w	(scoutcolumn).l
-	clr.w	(VertLineScrolling).l
-	clr.w	(PlayerScrollCtr).l
-	move.w	#$70,(matchupvis).l
-	tst.w	(OptPen).l
-	bne.w	.lEAB2
-	move.w	#$30,(matchupvis).l
-.lEAB2	bsr.w	X_ECBE
-	bsr.w	X_EC3E
-.lEABA	jsr	(MenuWaitVblank).l
-	jsr	(getpzjoy).l
-	btst	#$7,d3
-	beq.w	.lEAD4
-	jmp	(ExitStatsScreen).l
-.lEAD4	jsr	(nodiag).l
-	move.w	#$FFFE,d0
-	btst	#$0,d3
-	bne.w	.lEAF0
-	neg.w	d0
-	btst	#$1,d3
-	beq.w	.lEAF6
-.lEAF0	move.w	d0,(PlayerScrollCtr).l
-.lEAF6	bsr.w	X_EB02
-	bsr.w	X_EC3E
-	bra.w	.lEABA
-	dc.w	$3039,$0001,$A452,$6700,$04EC,$D079,$0001,$A450
-	dc.w	$6B00,$04E2,$B079,$0001,$A440,$6E00,$04D8,$3239
-	dc.w	$0001,$A450,$33C0,$0001,$A450,$0240,$000F,$6600
-	dc.w	$0008,$4279,$0001,$A452,$0241,$000F,$6600,$001E
-	dc.w	$3F00,$0C40,$000E,$6600,$0006,$6100,$00D2,$301F
-	dc.w	$0C40,$0002,$6600,$0006,$6100,$00D0,$3F39,$0001
-	dc.w	$8D64,$08F9,$0002,$0001,$8D64,$207C,$00C0,$0000
-	dc.w	$0839,$0007,$00FF,$800E,$66F6,$23FC,$4002,$0010
-	dc.w	$00FF,$8022,$33FC,$000B,$00FF,$8020,$08F9,$0006
-	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$67F6,$08F9
-	dc.w	$0007,$00FF,$800F,$08B9,$0006,$00FF,$800F,$0839
-	dc.w	$0006,$00FF,$800E,$66F6,$08B9,$0007,$00FF,$800F
-	dc.w	$303C,$FFB0,$D079,$0001,$A450,$0839,$0007,$00FF
-	dc.w	$800E,$66F6,$33C0,$00FF,$8022,$33FC,$000D,$00FF
+	dc.w	$303C,$002C,$4EB9,$0002,$C59E,$0679,$0004,$0001
+	dc.w	$8D58,$4240,$4EB9,$0002,$C59E,$4279,$0001,$A44E
+	dc.w	$4279,$0001,$A450,$4279,$0001,$A452,$33FC,$0070
+	dc.w	$0001,$A440,$4A79,$0001,$8C08,$6600,$000A,$33FC
+	dc.w	$0030,$0001,$A440,$6100,$020A,$6100,$0186,$4EB9
+	dc.w	$0002,$C63A,$4EB9,$0002,$F2F0,$0803,$0007,$6700
+	dc.w	$0008,$4EF9,$0002,$E980,$4EB9,$0003,$7496,$303C
+	dc.w	$FFFE,$0803,$0000,$6600,$000C,$4440,$0803,$0001
+	dc.w	$6700,$0008,$33C0,$0001,$A452,$6100,$000A,$6100
+	dc.w	$0142,$6000,$FFBA,$3039,$0001,$A452,$6700,$04EC
+	dc.w	$D079,$0001,$A450,$6B00,$04E2,$B079,$0001,$A440
+	dc.w	$6E00,$04D8,$3239,$0001,$A450,$33C0,$0001,$A450
+	dc.w	$0240,$000F,$6600,$0008,$4279,$0001,$A452,$0241
+	dc.w	$000F,$6600,$001E,$3F00,$0C40,$000E,$6600,$0006
+	dc.w	$6100,$00D2,$301F,$0C40,$0002,$6600,$0006,$6100
+	dc.w	$00D0,$3F39,$0001,$8D64,$08F9,$0002,$0001,$8D64
+	dc.w	$207C,$00C0,$0000,$0839,$0007,$00FF,$800E,$66F6
+	dc.w	$23FC,$4002,$0010,$00FF,$8022,$33FC,$000B,$00FF
 	dc.w	$8020,$08F9,$0006,$00FF,$800F,$0839,$0006,$00FF
 	dc.w	$800E,$67F6,$08F9,$0007,$00FF,$800F,$08B9,$0006
 	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9
-	dc.w	$0007,$00FF,$800F,$33DF,$0001,$8D64,$4E75,$3639
-	dc.w	$0001,$A450,$E84B,$6000,$0012,$3639,$0001,$A450
-	dc.w	$E84B,$0643,$0006,$6000,$0002,$4E75,$48E7,$FFFE
-	dc.w	$4EB9,$0003,$8D8C,$0004,$F901,$4A79,$0001,$A450
-	dc.w	$6700,$0016,$4EB9,$0003,$8D8C,$000A,$F804,$0326
-	dc.w	$08F9,$017B,$6000,$0012,$4EB9,$0003,$8D8C,$000A
-	dc.w	$F804,$0326,$08F9,$0120,$3039,$0001,$A440,$B079
-	dc.w	$0001,$A450,$6700,$0016,$4EB9,$0003,$8D8C,$000A
-	dc.w	$F804,$0326,$1AF9,$017D,$6000,$0012,$4EB9,$0003
-	dc.w	$8D8C,$000A,$F804,$0326,$1AF9,$0120,$4EB9,$0003
-	dc.w	$8D8C,$0004,$F900,$4CDF,$7FFF,$4E75,$4EB9,$0003
-	dc.w	$8F6E,$0006,$BD02,$0700,$303C,$002C,$4EB9,$0002
-	dc.w	$C59E,$4EB9,$0003,$8F6E,$0006,$BD1A,$0700,$7000
-	dc.w	$4EB9,$0002,$C59E,$6100,$FE74,$4EB9,$0003,$8F6E
-	dc.w	$0006,$BE00,$0000,$7C0E,$43FA,$015A,$4A79,$0001
-	dc.w	$8C08,$6600,$000A,$3C3C,$000A,$43FA,$0236,$3011
-	dc.w	$E248,$4440,$0640,$0015,$33C0,$0001,$8D58,$4EB9
-	dc.w	$0003,$8F80,$2049,$33FC,$0022,$0001,$8D58,$247C
-	dc.w	$0001,$834C,$6100,$0024,$33FC,$0009,$0001,$8D58
-	dc.w	$45EA,$0366,$6100,$0014,$43E8,$0004,$0679,$0002
-	dc.w	$0001,$8D5A,$51CE,$FFB8,$4E75
+	dc.w	$0007,$00FF,$800F,$303C,$FFB0,$D079,$0001,$A450
+	dc.w	$0839,$0007,$00FF,$800E,$66F6,$33C0,$00FF,$8022
+	dc.w	$33FC,$000D,$00FF,$8020,$08F9,$0006,$00FF,$800F
+	dc.w	$0839,$0006,$00FF,$800E,$67F6,$08F9,$0007,$00FF
+	dc.w	$800F,$08B9,$0006,$00FF,$800F,$0839,$0006,$00FF
+	dc.w	$800E,$66F6,$08B9,$0007,$00FF,$800F,$33DF,$0001
+	dc.w	$8D64,$4E75,$3639,$0001,$A450,$E84B,$6000,$0012
+	dc.w	$3639,$0001,$A450,$E84B,$0643,$0006,$6000,$0002
+	dc.w	$4E75,$48E7,$FFFE,$4EB9,$0003,$8D8C,$0004,$F901
+	dc.w	$4A79,$0001,$A450,$6700,$0016,$4EB9,$0003,$8D8C
+	dc.w	$000A,$F804,$0326,$08F9,$017B,$6000,$0012,$4EB9
+	dc.w	$0003,$8D8C,$000A,$F804,$0326,$08F9,$0120,$3039
+	dc.w	$0001,$A440,$B079,$0001,$A450,$6700,$0016,$4EB9
+	dc.w	$0003,$8D8C,$000A,$F804,$0326,$1AF9,$017D,$6000
+	dc.w	$0012,$4EB9,$0003,$8D8C,$000A,$F804,$0326,$1AF9
+	dc.w	$0120,$4EB9,$0003,$8D8C,$0004,$F900,$4CDF,$7FFF
+	dc.w	$4E75
+DisplayStats						;Team logos (PutTeamBlock), then each
+									;TeamStatTextTbl row (TeamStatTextTblNoPen when penalties are off, OptPen)
+									;centred, with the home value at x $22 and the visitors' at x 9
+									;(PrintStatValue); SetStatScroll first
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$7		;visitors logo position
+	move.w	#$2C,d0
+	jsr	(PutTeamBlock).l
+	jsr	(printz).l
+	String	CC_Font3Pri,$1A,$7		;home logo position
+	moveq	#$0,d0
+	jsr	(PutTeamBlock).l
+	bsr.w	X_EB5E
+	jsr	(printz).l
+	String	CC_Font2Pri,$0,$0
+	moveq	#$E,d6		;15 rows
+	lea.l	X_EE56(pc),a1
+	tst.w	(OptPen).l
+	bne.w	.row
+	move.w	#$A,d6		;11 rows
+	lea.l	X_EF44(pc),a1
+.row	move.w	(a1),d0
+	lsr.w	#$1,d0		;half the label width
+	neg.w	d0
+	addi.w	#$15,d0		;centre the label around x $15
+	move.w	d0,(printx).l
+	jsr	(print).l
+	movea.l	a1,a0		;a0 = stat offsets
+	move.w	#$22,(printx).l
+	movea.l	#tmstruct,a2
+	bsr.w	PrintStatValue
+	move.w	#$9,(printx).l
+	lea.l	$366(a2),a2
+	bsr.w	PrintStatValue		;away team value, centred at x 9
+	lea.l	$4(a0),a1
+	addi.w	#$2,(printy).l		;2 map rows per table row
+	dbra	d6,.row
+	rts
 PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at printx: the value
 									;(tmATOP and tmPwrPlayTime are times
 									;PushTime), "/second" if any, " (pct%)" for passing. Offset $FFFF is the
@@ -446,7 +399,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	movea.l	#mesarea,a3
 	move.w	#$2,(a3)		;empty string
 	cmpi.w	#$FFFF,(a0)		;shooting percentage row
-	bne.w	X_EDA2
+	bne.w	.1
 	move.w	#$C,d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
@@ -458,13 +411,31 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	jsr	(appstring).l
 	jsr	(appendz).l
 	String	'%'
-	dc.w	$6000,$0098,$3010,$3032,$0000,$0C50,$0354,$6600
-	dc.w	$000A,$6100,$009E,$6000,$001A,$0C50,$000A,$6700
-	dc.w	$0006,$6100,$0088,$0C50,$000A,$6600,$0006,$6100
-	dc.w	$0082,$4EB9,$0003,$9208,$3028,$0002,$6B00,$005C
-	dc.w	$4EB9,$0003,$9200,$0004,$2F00,$3032,$0000,$4EB9
-	dc.w	$0003,$915E,$4EB9,$0003,$9208,$0C50,$0014,$6600
-	dc.w	$003A,$4EB9,$0003,$9200,$0004,$2028
+	bra.w	.6		;print it
+.1	move.w	(a0),d0
+	move.w	(a2,d0.w),d0
+	cmpi.w	#$354,(a0)		;PP minutes row?
+	bne.w	.2
+	bsr.w	.8
+	bra.w	.4		;time appended
+.2	cmpi.w	#$A,(a0)		;ATOP row?
+	beq.w	.3
+	bsr.w	.7
+.3	cmpi.w	#$A,(a0)		;ATOP row?
+	bne.w	.4
+	bsr.w	.8
+.4	jsr	(appstring).l
+	move.w	$2(a0),d0		;second offset
+	bmi.w	.6
+	jsr	(appendz).l
+	String	'/'
+	move.w	(a2,d0.w),d0
+	jsr	(PushNumber).l
+	jsr	(appstring).l
+	cmpi.w	#$14,(a0)		;passing row?
+	bne.w	.6
+	jsr	(appendz).l
+	String	' ('
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
@@ -476,8 +447,14 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	jsr	(appstring).l
 	jsr	(appendz).l
 	String	'%)'
-	dc.w	$224B,$3011,$E248,$9179,$0001,$8D58,$4EF9,$0003
-	dc.w	$8F80,$4EF9,$0003,$915E,$4EF9,$0003,$90F4,$0008
+.6	movea.l	a3,a1
+	move.w	(a1),d0
+	lsr.w	#$1,d0
+	sub.w	d0,(printx).l
+	jmp	(print).l
+.7	jmp	(PushNumber).l
+.8	jmp	(PushTime).l
+	dc.w	$0008
 	dc.w	$5363,$6F72,$6500,$000C,$FFFF,$0008,$5368,$6F74
 	dc.w	$7300,$0000,$FFFF,$000E,$5368,$6F6F,$7469,$6E67
 	dc.w	$2050,$6374,$FFFF,$FFFF,$000C,$506F,$7765,$7220
@@ -533,11 +510,11 @@ ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) a
 	tst.w	(cont2team).l
 	beq.w	.0
 	move.w	$52(a3),d0
-	cmp.w	(puckc).l,d0
+	cmp.w	$17BE0.l,d0
 	bne.w	.x
-.0	cmpi.w	#$2,(msgtimer).l
+.0	cmpi.w	#$2,$17F98.l
 	ble.w	.x
-	move.w	#$2,(msgtimer).l
+	move.w	#$2,$17F98.l
 .x	movem.l	(sp)+,d0
 	rts
 ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem prints Manual /

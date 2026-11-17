@@ -2,8 +2,11 @@
 	include	macros\genesis.mac
 
 BlankValueTxt	equ	$23EA0
+CC_Font1	equ	$FF
+CC_Font1Pal1	equ	$EF
+CC_Font1Pal3	equ	$CF
 FourWayPlay	equ	$18BF8
-GameSetUpMap	equ	$47D74
+LOAD	equ	$1B000
 LogoBoxMap	equ	$47D7C
 NewYorkITxt	equ	$23E7A
 NewYorkRTxt	equ	$23E8E
@@ -11,13 +14,12 @@ OldVcount	equ	$17476
 OptNOP	equ	$18BFC
 OptPlayMode	equ	$18BFA
 OptionNames	equ	$242B4
-PlayerCardTimer	equ	$24B7C
+PlayerCardScreen	equ	$24C1E
 ProcessInputWithRepeat	equ	$374BE
 ReadJoy1	equ	$374F0
 ReadJoy2	equ	$3750E
 ReadJoy3	equ	$3752C
 ReadJoy4	equ	$3754A
-ResetCardTimer	equ	$24B5E
 ScoutSubStatus	equ	$17474
 TeamList	equ	$1B00C
 TeamLogoBitmaps	equ	$47D8C
@@ -25,6 +27,7 @@ TeamLogoPalettes	equ	$2AF56
 UpdateRosterPlayers	equ	$24894
 dobitmap	equ	$387E2
 homepicchars	equ	$19392
+logobox1chars	equ	$19398
 logoteam	equ	$1938A
 move	equ	$2C9C8
 palcount	equ	$18D62
@@ -34,13 +37,15 @@ printm	equ	$18D5E
 printsmall	equ	$38D9E
 printx	equ	$18D58
 printy	equ	$18D5A
+printz	equ	$38F6E
 setupfirstline	equ	$19384
 setuphome	equ	$1938C
 setupvis	equ	$1938E
 sflags6	equ	$17F76
 vispicchars	equ	$19394
-X_9962	equ	$9962
-X_99C6	equ	$99C6
+X_9898	equ	$9898
+X_9AE8	equ	$9AE8
+X_9B0C	equ	$9B0C
 
 	org	$8E20
 
@@ -184,27 +189,14 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 	dc.w	$FF00,$0000,$2079,$0004,$7D04,$2248,$2448,$D1DA
 	dc.w	$D3DA,$4240,$4241,$7428,$7604,$7A00,$4EB9,$0003
 	dc.w	$87E2,$4EB9,$0003,$8F6E,$0006,$FF01,$0E00,$33C4
-	dc.w	$0001,$9388
-	movea.l	(GameSetUpMap).l,a0
-	movea.l	a0,a1
-	movea.l	a0,a2
-	adda.l	(a2)+,a0
-	adda.l	(a2)+,a1
-	clr.w	d0
-	clr.w	d1
-	moveq	#$26,d2
-	moveq	#$D,d3
-	moveq	#$0,d5
-	jsr	(dobitmap).l
-	move.w	d4,(homepicchars).l
-	addi.w	#$24,d4
-	move.w	d4,$19398.l
-	movea.l	(LogoBoxMap).l,a2
-	dc.w	$508A,$4EB9,$0003,$8958,$33C4,$0001,$939A,$2479
-	dc.w	$0004,$7D7C,$508A,$4EB9,$0003,$8946,$0341,$4567
-	dc.w	$89AB,$CDEF,$4EB9,$0003,$EE84,$33FC,$0028,$0001
-	dc.w	$749C,$33FC,$0028,$0001,$779C,$50F9,$0001,$834C
-	dc.w	$50F9,$0001,$86B2,$4E75
+	dc.w	$0001,$9388,$2079,$0004,$7D74,$2248,$2448,$D1DA
+	dc.w	$D3DA,$4240,$4241,$7426,$760D,$7A00,$4EB9,$0003
+	dc.w	$87E2,$33C4,$0001,$9392,$0644,$0024,$33C4,$0001
+	dc.w	$9398,$2479,$0004,$7D7C,$508A,$4EB9,$0003,$8958
+	dc.w	$33C4,$0001,$939A,$2479,$0004,$7D7C,$508A,$4EB9
+	dc.w	$0003,$8946,$0341,$4567,$89AB,$CDEF,$4EB9,$0003
+	dc.w	$EE84,$33FC,$0028,$0001,$749C,$33FC,$0028,$0001
+	dc.w	$779C,$50F9,$0001,$834C,$50F9,$0001,$86B2,$4E75
 ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (4 with
 									;FourWayPlay); return d1 = the presses, 0 on timeout. C does not return:
 									;it sets setupcardflags bit 5 (next player card sooner). When only one
@@ -257,18 +249,18 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	btst	#$7,$19390.l		;home flagged too?
 	bne.w	.6
 	move.w	(setupvis).l,(logoteam).l
-	bsr.w	X_99C6
+	bsr.w	DrawVisBlock
 .5	btst	#$7,$19390.l		;home block flagged?
 	beq.w	.6
 	move.w	(setuphome).l,(logoteam).l
-	bsr.w	X_9962
+	bsr.w	DrawHomeBlock
 .6	cmpi.l	#$4650,d6		;the first $E10 frames (a minute)?
 	bgt.w	.timer
 	btst	#$0,$19390.l		;card up?
 	bne.w	.timer
-	jsr	(ResetCardTimer).l		;restart the card timer
+	jsr	(ResetCardTimer+LOAD).l		;restart the card timer
 	bra.w	.l965A
-.timer	jsr	(PlayerCardTimer).l
+.timer	jsr	(PlayerCardTimer+LOAD).l
 .l965A	dbra	d6,.loop
 .l965E	rts
 	dc.w	$4279,$0001,$8C16,$0839,$0007,$00FF,$800E,$66F6
@@ -326,19 +318,48 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	dc.w	$8D58,$4EB9,$0003,$8C06,$4EB9,$0003,$8F6E,$0006
 	dc.w	$FF00,$0000,$33FC,$0003,$0001,$8D58,$33FC,$0005
 	dc.w	$0001,$8D5A,$303C,$0019,$323C,$0008,$343C,$07FF
-	dc.w	$4EB9,$0003,$8C06,$4CDF,$00FF,$4E75,$48E7,$FFFE
-	dc.w	$6100,$FF30,$08F9,$0002,$0001,$9390,$08F9,$0006
-	dc.w	$0001,$9390,$6100,$016C,$08B9,$0003,$0001,$9390
-	dc.w	$6700,$0026,$4EB9,$0003,$8F6E,$0006,$EF00,$0000
-	dc.w	$33FC,$0008,$0001,$8D58,$33FC,$0005,$0001,$8D5A
-	dc.w	$7008,$7208,$343C,$07FF,$4EB9,$0003,$8F6E,$0006
-	dc.w	$FF00,$0000,$33FC,$0019,$0001,$8D58,$6000,$0062
-	dc.w	$48E7,$FFFE,$6100,$FECC,$08F9,$0003,$0001,$9390
-	dc.w	$08F9,$0007,$0001,$9390,$6100,$012C,$08B9,$0002
-	dc.w	$0001,$9390,$6700,$0026,$4EB9,$0003,$8F6E,$0006
-	dc.w	$EF00,$0000,$33FC,$0018,$0001,$8D58,$33FC,$0005
-	dc.w	$0001,$8D5A,$7008,$7208,$343C,$07FF,$4EB9,$0003
-	dc.w	$8F6E,$0006,$CF00,$0000,$33FC,$0009,$0001,$8D58
+	dc.w	$4EB9,$0003,$8C06,$4CDF,$00FF,$4E75
+DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo (logoteam)
+									;at x $19, y 6. setupcardflags bit 2
+									;home drawn, bit 6: home logo shown. Called from GameSetUp and
+									;ReadSetupPads
+	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	X_9898
+	bset	#$2,$19390.l		;home side
+	bset	#$6,$19390.l		;home block up
+	bsr.w	X_9AE8		;logo box
+	bclr	#$3,$19390.l		;visitors side?
+	beq.w	.0
+	jsr	(printz).l		;map at the area
+	String	CC_Font1Pal1,$0,$0		;x3
+	move.w	#$8,(printx).l
+	move.w	#$5,(printy).l
+	moveq	#$8,d0
+	moveq	#$8,d1
+	move.w	#$7FF,d2		;blank char
+.0	jsr	(printz).l		;map at the logo
+	String	CC_Font1,$0,$0		;x3
+	move.w	#$19,(printx).l
+	bra.w	DrawTeamLogo
+DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardflags bit 3,
+									;bit 7. Called from GameSetUp and ReadSetupPads
+	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	X_9898
+	bset	#$3,$19390.l		;visitors side
+	bset	#$7,$19390.l		;visitors block up
+	bsr.w	X_9B0C		;logo box
+	bclr	#$2,$19390.l		;home side?
+	beq.w	.0
+	jsr	(printz).l		;map at the area
+	String	CC_Font1Pal1,$0,$0		;x3
+	move.w	#$18,(printx).l
+	move.w	#$5,(printy).l
+	moveq	#$8,d0
+	moveq	#$8,d1
+	move.w	#$7FF,d2		;blank char
+.0	jsr	(printz).l		;map at the logo
+	String	CC_Font1Pal3,$0,$0
+	move.w	#$9,(printx).l
 DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 									;TeamLogoPalettes + team * 8 - $20 (home, color fam
 									;2) or - $40 (visitors, color fam 3), then wait $B4 frames before a player
@@ -382,11 +403,18 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	move.w	#$64,(palcount).l		;fade in
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.w	$3839,$0001,$9398,$33FC,$001C,$0001,$8D58,$6000
-	dc.w	$0034,$3839,$0001,$9398,$33FC,$0018,$0001,$8D58
-	dc.w	$6000,$0022,$3839,$0001,$939A,$33FC,$0003,$0001
-	dc.w	$8D58,$6000,$0010,$3839,$0001,$939A,$33FC,$0008
-	dc.w	$0001,$8D58
+TeamLogoBitmapsEnd						;end of TeamLogoBitmaps (size check below)
+	move.w	(logobox1chars).l,d4
+	move.w	#$1C,(printx).l
+	bra.w	DrawLogoBox
+	move.w	(logobox1chars).l,d4
+	move.w	#$18,(printx).l
+	bra.w	DrawLogoBox
+	move.w	$1939A.l,d4
+	move.w	#$3,(printx).l
+	bra.w	DrawLogoBox
+	move.w	$1939A.l,d4
+	move.w	#$8,(printx).l
 DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to
 									;from LogoBoxRight ... LogoBoxVis
 	clr.w	(printa).l
@@ -405,5 +433,35 @@ DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Br
 	jsr	(dobitmap).l
 	bclr	#$0,(sflags6).l		;normal maps
 	rts
-	dc.w	$33FC,$00AA,$0001,$939E,$0839,$0005,$0001,$9390
-	dc.w	$6700,$000A,$33FC,$0053,$0001,$939E,$4E75
+ResetCardTimer
+	move.w	#$AA,$1939E.l
+	btst	#$5,$19390.l
+	beq.w	.l9B7A
+	move.w	#$53,$1939E.l
+.l9B7A	rts
+PlayerCardTimer
+	subi.w	#$1,$193A2.l
+	bpl.w	.l9C16
+	move.w	#$FFFF,$193A2.l
+	bset	#$0,$19390.l
+	btst	#$0,$19390.l
+	beq.w	.l9C16
+	btst	#$5,$19390.l
+	beq.w	.l9BC4
+	cmpi.w	#$52,$1939E.l
+	bge.w	.l9BC4
+	subi.w	#$50,$1939E.l
+.l9BC4	subi.w	#$1,$1939E.l
+	bmi.w	.l9C18
+	cmpi.w	#$52,$1939E.l
+	bne.w	.l9C16
+	bclr	#$2,$19390.l
+	bclr	#$3,$19390.l
+	bchg	#$1,$19390.l
+	st.b	(setuphome).l
+	st.b	(setupvis).l
+	bclr	#$6,$19390.l
+	bclr	#$7,$19390.l
+	jsr	(PlayerCardScreen).l
+.l9C16	rts
+.l9C18	jmp	(ResetCardTimer+LOAD).l

@@ -1,36 +1,803 @@
 	include	segacd\hockey.inc
 	include	macros\genesis.mac
 
-BA_Goalie_SCnum	equ	$1936A
+CC_Font1Pri	equ	$BF
+CountButtonPress	equ	$2AD3A
+Fprintsmall	equ	$3CEBE
+Framer	equ	$38CA0
+GoalieOdds	equ	$A
 LOAD	equ	$1B000
-PBnum	equ	$18068
-PadControlBits	equ	$17DC8
+OneTimerPass	equ	$2273A
+OneTimerTarget	equ	$227B8
+OptLine	equ	$18C0A
+PuckOnAttackHalf	equ	$22CA4
 ReadGoaliePulled	equ	$2AEDC
 SortCords	equ	$17480
+Sroot	equ	$3708E
+TempWord1	equ	$17E62
+assreplace	equ	$362E4
+c1playernum	equ	$17F9E
+c2playernum	equ	$17FA0
+checkob	equ	$33D20
+cont1team	equ	$17FA6
+cont2team	equ	$17FA8
+dirtab	equ	$36B8E
+eraser	equ	$38C06
+getpde	equ	$3C2A0
+goaliemode1	equ	$18C0C
+goaliemode2	equ	$18C0E
+inputjoy	equ	$1AD7A
 lastplayer	equ	$17E2A
+linebar	equ	$3C746
+linelist	equ	$419F6
+loadTeamStruct	equ	$3C958
 makepde	equ	$3C274
+mesarea	equ	$17EF2
 move	equ	$2C9C8
+onetimerheight	equ	$1937A
+passReceiverPlayerNum	equ	$17E30
 passdir	equ	$17E2C
+passmodetimer	equ	$17F9A
 passspeed	equ	$17E2E
-puckc	equ	$17BE0
+print	equ	$38F80
+printscores1	equ	$3C48C
+printx	equ	$18D58
+printy	equ	$18D5A
+printz	equ	$38F6E
 puckvx	equ	$17BA8
 puckvy	equ	$17BAA
 puckvz	equ	$17BAC
 puckvzadj	equ	$226A8
 puckx	equ	$17B80
 pucky	equ	$17B94
+randomd0	equ	$37050
+setc1player	equ	$312B8
+setc2player	equ	$312DC
+setpde	equ	$3C2C2
+sflags6	equ	$17F76
 sfx	equ	$3710C
+shotplayer	equ	$17E28
 swap	equ	$2779A
+tmstruct	equ	$1834C
+vtoa	equ	$362F8
+X_15606	equ	$15606
+X_15A6E	equ	$15A6E
+X_15B08	equ	$15B08
+X_15B50	equ	$15B50
+X_15C58	equ	$15C58
+X_15C9E	equ	$15C9E
+X_15D64	equ	$15D64
+X_15EC4	equ	$15EC4
+X_16170	equ	$16170
+X_16176	equ	$16176
+X_1617A	equ	$1617A
+X_162A4	equ	$162A4
+X_162FE	equ	$162FE
+X_163CA	equ	$163CA
+X_16448	equ	$16448
+X_167B6	equ	$167B6
 X_167B8	equ	$167B8
 X_167DC	equ	$167DC
-X_16AB6	equ	$16AB6
-X_1B2C4	equ	$1B2C4
+X_1B3C0	equ	$1B3C0
+X_1B3D6	equ	$1B3D6
 X_1C044	equ	$1C044
-X_1C050	equ	$1C050
-X_1C08E	equ	$1C08E
 
-	org	$16528
+	org	$157C4
 
+doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else skate a3
+									;(doplayeracc)
+	bchg	d0,d6
+	bchg	d0,$250.w
+	andi.l	#$1EC021E,-(a2)
+	dc.w	$148E
+	move.b	d0,(a2)+
+	dc.w	$14F2,$1544
+	btst	#$1,$63(a3)
+	beq.w	.0
+	rts
+.0	tst.w	$34(a3)
+	bne.w	X_1B3D6
+	bclr	#$1,$17F70.l
+	cmpi.w	#$24,$0(a3)
+	ble.w	.1
+	tst.w	$28(a3)
+	bmi.w	.1
+	beq.w	.1
+	bset	#$1,$17F70.l
+	clr.w	$28(a3)
+.1	cmpi.w	#$FFDC,$0(a3)
+	bge.w	.2
+	tst.w	$28(a3)
+	bpl.w	.2
+	bset	#$1,$17F70.l
+	clr.w	$28(a3)
+.2	cmpi.w	#$E7,$14(a3)
+	bgt.w	.4
+	cmpi.w	#$FF19,$14(a3)
+	ble.w	.4
+	bra.w	.3
+.3	movem.w	d0-d1,-(sp)
+	move.w	$14(a3),d0
+	move.w	$2A(a3),d1
+	eor.w	d1,d0
+	movem.w	(sp)+,d0-d1
+	bpl.w	.4
+	tst.w	$2A(a3)
+	beq.w	.4
+	bset	#$1,$17F70.l
+	clr.w	$2A(a3)
+.4	btst	#$1,$17F70.l
+	bne.w	X_15606
+	move.w	(TempWord1).l,d0
+	bra.w	X_1B3D6
+doinput_onetimer						;a3 is set for a one-timer: C (bit 5) starts the one-timer shot, else
+									;skate
+	move.w	(TempWord1).l,d0
+	btst	#$3,$64(a3)
+	bne.w	X_15A6E
+	btst	#$5,d1
+	beq.w	X_1B3D6
+	movem.l	d7/a0,-(sp)
+	move.w	(lastplayer).l,d7
+	asl.w	#$7,d7
+	movea.l	#SortCords,a0
+	adda.w	d7,a0
+	tst.w	$34(a0)
+	movem.l	(sp)+,d7/a0
+	beq.w	burst
+	movem.w	d7,-(sp)
+	move.w	$52(a3),d7
+	cmp.w	(passReceiverPlayerNum).l,d7
+	movem.w	(sp)+,d7
+	bne.w	burst
+	tst.w	$17BE0.l
+	bpl.w	burst
+	jsr	(PuckOnAttackHalf).l
+	beq.w	burst
+	move.w	d0,-(sp)
+	move.w	d4,(inputjoy).l
+	move.w	$17F96.l,$1AD7C.l
+	move.w	#$23,d0		;assonetimer
+	jsr	(assreplace).l
+	move.w	(sp)+,d0
+	rts
+doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot by the
+									;buttons
+	bsr.w	checkob-LOAD
+	tst.w	$34(a3)
+	bne.w	.0
+	btst	#$1,$63(a3)
+	bne.w	X_15606
+.0	btst	#$2,$17F6A.l
+	bne.w	passmode
+	btst	#$3,$17F6A.l
+	bne.w	ShotMode
+	btst	#$4,d1
+	beq.w	.1
+	jsr	(CountButtonPress).l
+	bra.w	setpassmode
+.1	btst	#$6,d1
+	beq.w	.ahold
+	tst.w	d4
+	beq.w	.2
+	move.b	#$F,$19381.l
+	bra.w	.ahold
+.2	move.b	#$F,$19380.l
+.ahold	btst	#$6,d3
+	beq.w	.arel
+	tst.w	d4
+	beq.w	.c1
+	subi.b	#$1,$19381.l
+	bpl.w	.4
+	move.b	#$0,$19381.l
+.4	tst.b	$19381.l
+	bne.w	.arel
+	bset	#$3,$17F74.l
+	jsr	(setpassmode+LOAD).l
+	bra.w	X_15B08
+.c1	subi.b	#$1,$19380.l
+	bpl.w	.6
+	move.b	#$0,$19380.l
+.6	tst.b	$19380.l
+	bne.w	.arel
+	bset	#$3,$17F74.l
+	jsr	(setpassmode+LOAD).l
+	bra.w	X_15B08
+.arel	btst	#$6,d3
+	bne.w	.8
+	btst	#$6,d2
+	beq.w	.8
+	bset	#$3,$17F74.l
+	bra.w	setpassmode
+.8	tst.w	$34(a3)
+	bne.w	.shot
+	bra.w	X_1B3D6
+.shot	btst	#$5,d1
+	beq.w	X_1B3D6
+	jsr	(CountButtonPress).l
+	bra.w	X_163CA
+doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the controlled player
+	move.w	$17BE0.l,d5
+	cmp.w	$52(a3),d5
+	beq.w	X_15606
+	btst	#$4,d1
+	beq.w	X_15A6E
+	btst	#$6,$17F74.l
+	bne.w	X_15A6E
+	bsr.w	X_162A4
+	movem.l	d0/a0,-(sp)
+	move.w	(c1playernum).l,d0
+	tst.w	d4
+	beq.w	.0
+	move.w	(c2playernum).l,d0
+.0	tst.w	d0
+	bmi.w	.x
+	asl.w	#$7,d0
+	movea.l	#SortCords,a0
+	adda.w	d0,a0
+	bset	#$6,$64(a0)
+.x	movem.l	(sp)+,d0/a0
+	dc.w	$4E75
+getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
+									;up to object d0, -1 if none
+	movem.l	d1/a0,-(sp)
+	movea.l	#SortCords,a0
+	asl.w	#$7,d0
+	adda.w	d0,a0
+	move.w	#$5,d1
+.loop	tst.w	$34(a0)
+	beq.w	.goalie
+	suba.w	#$80,a0
+	dbra	d1,.loop
+	move.w	#$FFFF,d0
+	bra.w	.end
+.goalie	move.w	$52(a0),d0
+.end	movem.l	(sp)+,d1/a0
+	rts
+faceoffinput						;controller processing for faceoff
+	btst	#$6,$17F74.l
+	beq.w	.0
+	rts
+.0	move.w	$36(a3),d4		;move assnum into d4
+	cmpi.b	#$17,$38(a3,d4.w)		;check if afaceoffpl is in asslist at assnum position
+	bne.w	X_15A6E		;exit if this is not a faceoff player
+	movea.l	#$17EE6,a0		;faceoff direction of puck control variable
+	btst	#$7,$62(a3)		;check which goal shooting on
+	beq.w	.2		;branch if bottom goal
+	movea.l	#$17EE8,a0
+.2	move.w	d0,(a0)		;store dpad for faceoff pull
+	btst	#$1,$63(a3)		;check if anim in progress
+	beq.w	.l15AE8
+	jmp	$30AB0.l
+.l15AE8	btst	#$4,d1		;test for b button press
+	beq.w	.1		;branch if pressed
+	move.w	#$FEA,d1
+	bset	#$1,$63(a3)		;set anim in progress
+	bra.w	X_1B3C0
+.1	move.w	#$1014,d1		;#SPAfaceoffr anim
+	bra.w	X_1B3C0
+	rts
+	tst.w	(OptLine).l
+	bne.w	X_15A6E
+	btst	#$4,$17F7A.l
+	bne.w	X_15A6E
+	jsr	(loadTeamStruct).l
+	bset	#$1,$32(a2)
+	bne.w	X_15A6E
+	btst	#$3,$17F74.l
+	bne.w	.l15B42
+	bclr	#$2,$17F6A.l
+.l15B42	bclr	#$3,$17F6A.l
+	bset	#$3,$63(a3)
+	bsr.w	setlccords
+	cmpi.w	#$F,(printy).l
+	blt.w	.l15B6C
+	bset	#$0,$17F6E.l
+	bra.w	.l15B76
+.l15B6C	jsr	$410EC.l
+	bsr.w	setlccords
+.l15B76	jsr	(Framer).l
+	subi.w	#$2,(printy).l
+	addi.w	#$1,(printx).l
+	moveq	#$2,d4
+.l15B8E	move.w	d4,d0
+	bsr.w	X_15C58
+	tst.w	d0
+	bmi.w	.l15BEC
+	btst	#$1,$32(a2)
+	bne.w	.l15BB0
+	cmp.w	$30(a2),d4
+	bne.w	.l15BE4
+	move.w	$16(a2),d0
+.l15BB0	movea.l	#mesarea,a1
+	move.l	#$44120,(a1)
+	add.b	d4,$2(a1)
+	jsr	(print).l
+	move.w	d0,-(sp)
+	movea.l	#linelist,a1
+	jsr	(Fprintsmall).l
+	move.w	(sp)+,d0
+	jsr	(linebar).l
+	subi.w	#$5,(printx).l
+.l15BE4	subi.w	#$1,(printy).l
+.l15BEC	dbra	d4,.l15B8E
+	movea.l	$1E(a2),a1
+	adda.w	$4(a1),a1
+	adda.w	(a1),a1
+	addi.w	#$2,(printx).l
+	dc.w	$4EF9,$0003,$8F80
+setlccords						;set printx/y to cords for lc box on team a2
+	clr.w	d0
+	cmpa.l	#$1834C,a2
+	bne.w	.0
+	eori.w	#$16,d0
+.0	btst	#$1,$17F68.l		;reverse direction: flip to the other end
+	beq.w	.l15C28
+	eori.w	#$16,d0
+.l15C28	jsr	(printz).l
+	String	CC_Font1Pri,$16,$0
+	add.w	d0,(printy).l
+	moveq	#$2,d0
+	bsr.w	.l15C58
+	moveq	#$6,d1		;3 rows
+	tst.w	d0
+	bpl.w	.ex
+	subi.w	#$1,d1		;no third choice: 2 rows
+	addi.w	#$1,(printy).l
+.ex	moveq	#$9,d0
+	rts
+.l15C58	movem.l	d1-d2,-(sp)
+	move.w	$38C(a2),d2
+	cmpa.l	#$1834C,a2
+	beq.w	getlchoice2
+	move.w	-$340(a2),d2
+getlchoice2						;add $15 to d0 for each player more or fewer than the other team has on
+									;the ice
+	sub.w	$26(a2),d2
+	beq.w	.0
+	addi.w	#$15,d0
+	tst.w	d2
+	bmi.w	.0
+	addi.w	#$15,d0
+.0	move.w	$16(a2),d1
+	add.w	d1,d0
+	add.w	d1,d0
+	add.w	d1,d0
+	lea.l	X_15C9E(pc),a0
+	move.b	(a0,d0.w),d0
+	ext.w	d0
+	movem.l	(sp)+,d1-d2
+	rts
+	dc.w	$0001,$0201,$0200,$0200,$0100,$0102,$0001,$0200
+	dc.w	$0102,$0001,$0203,$04FF,$0304,$FF03,$04FF,$0304
+	dc.w	$FF04,$03FF,$0304,$FF03,$04FF,$0506,$FF05,$06FF
+	dc.w	$0506,$FF05,$06FF,$0506,$FF05,$06FF,$0605,$FF00
+lineinput						;process input for line changes
+									;d1 = new button presses
+	btst	#$3,$17F74.l
+	beq.w	.0
+	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	(passmode+LOAD).l
+	movem.l	(sp)+,d0-d7/a0-a6
+.0	move.w	d1,-(sp)
+	movea.l	#tmstruct,a2
+	btst	#$6,$62(a3)
+	beq.w	.2
+	adda.w	#$366,a2
+.2	bclr	#$0,$32(a2)		;Flag to start lc mode
+	beq.w	.1
+	bsr.w	lcfound_close		;close the old box
+	bsr.w	X_15B50		;start lc mode
+.1	move.w	(sp)+,d1
+	clr.w	d2
+	btst	#$6,d1
+	bne.w	X_15D64
+	addi.w	#$1,d2
+	btst	#$4,d1
+	bne.w	X_15D64
+	addi.w	#$1,d2
+	btst	#$5,d1
+	bne.w	X_15D64
+	btst	#$3,$62(a3)
+	beq.w	.x
+	btst	#$5,$62(a3)
+	bne.w	.x
+	btst	#$0,$63(a3)
+	beq.w	X_1B3D6		;skate with dpad if not fighting
+.x	rts
+	dc.w	$3002,$3542,$0030,$6100,$FEEC,$4A40,$6A00,$0008
+	dc.w	$4EF9,$0003,$0AB0,$08AB,$0003,$0063,$08EB,$0003
+	dc.w	$0062,$4EB9,$0003,$C958,$08AA,$0001,$0032,$3540
+	dc.w	$0016,$4EB9,$0003,$D426
+lcfound_close						;close lc box
+	btst	#$7,$17F6A.l
+	bne.w	X_15EC4
+	bsr.w	setlccords
+	cmpi.w	#$F,(printy).l
+	blt.w	.nollcm
+	bclr	#$0,$17F6E.l
+.nollcm	addi.w	#$1,d1		;d1 = 1 and d2 = $7FF tile: erase the box area
+	move.w	#$7FF,d2
+	bsr.w	eraser-LOAD
+	jmp	(printscores1).l
+burst						;cbut press check/speed. Also entered from check4check burst costs energy
+									;$CC (only when line changes are on, OptLine = 0)
+	jsr	(getpde).l		;get players energy
+	tst.w	(OptLine).l
+	bne.w	.0
+	subi.w	#$CC,d0
+	jsr	(setpde).l		;decrease players energy
+	btst	#$4,$17F7A.l
+	beq.w	.0
+	move.w	#$1000,d0
+.0	lsr.w	#$7,d0		;d0 will be $1000 with lines off
+	move.w	d0,d1		;energy = speed increase (check violence)
+	move.w	$54(a3),d2		;facedir
+	asl.w	#$2,d2
+	movea.l	#dirtab,a0
+	muls.w	(a0,d2.w),d0
+	muls.w	$2(a0,d2.w),d1
+	add.w	d0,$28(a3)		;add to X Vel
+	add.w	d1,$2A(a3)		;add to Y Vel
+	bset	#$5,$62(a3)		;lock in this animation
+	move.w	#$C5E,d1
+	bra.w	X_1B3C0
+Holdplayer						;abut press hold. a0 = the player this one is
+									;assigned to, falls into Acheck
+	bset	#$5,$62(a3)		;lock animation
+	move.w	#$1122,d1		;move anim into d1 - normal hold check
+	tst.w	$32(a3)		;check if impact = 0
+	beq.w	X_1B3C0		;set anim if 0
+	movea.l	#SortCords,a0		;move SortCord into a0
+	move.w	$2E(a3),d0		;move last impact player into d0
+	asl.w	#$7,d0		;calc offset
+	adda.w	d0,a0		;add offset to a0
+Acheck						;start SPAhook, or SPAHold if a0 is ahead
+	bset	#$5,$62(a3)		;lock animation
+	move.w	#$1122,d1		;move anim into d1 - normal hold check
+	tst.w	$32(a3)		;check if impact = 0
+	beq.w	.ex		;branch if 0
+	move.w	$14(a3),d0		;move Ypos checker into d0
+	sub.w	$14(a0),d0		;sub Ypos of player
+	btst	#$7,$62(a3)		;check goal checker is shooting at
+	beq.w	.air		;jump if bottom
+	neg.w	d0		;make d0 negative
+.air	bmi.w	.ex
+	move.w	#$C90,d1		;set anim - hold check stick in air
+.ex	bra.w	X_1B3C0
+setpassmode						;initialize pass mode
+	move.w	$54(a3),(passdir).l		;facedir, default pass direction
+	andi.w	#$7,(passdir).l		;Passes first 3 bits of passdir
+	btst	#$2,$17F70.l
+	beq.w	.0
+	bclr	#$2,$17F78.l
+	bset	#$5,$17F70.l
+	bne.w	X_15A6E
+	bclr	#$5,$17F78.l
+	move.w	#$64,(passmodetimer).l
+.0	bset	#$2,$17F6A.l		;#sfspdir - set pass dir mode
+	dc.w	$4E75
+passmode						;dpad sets passdir until bbut changes
+	btst	#$4,d2		;has b button changed?
+	bne.w	dopass		;yes
+	btst	#$3,$17F74.l		;Not in NHL Hockey Source
+	bne.w	dopass
+	btst	#$3,d0		;look for dpad
+	bne.w	X_15EC4
+	andi.w	#$7,d0		;pass first 3 bits of d0
+	move.w	d0,(passdir).l		;new pass dir
+	bset	#$3,d0
+dopass						;pass the puck in passdir, to the best teammate there if any
+	movem.l	d0-d5/a0-a1,-(sp)
+	bclr	#$2,$17F6A.l		;#sfspdir
+	st.b	$17BE0.l		;player is not puck handler anymore
+	move.b	#$10,$5E(a3)
+	move.w	$52(a3),(lastplayer).l
+	bclr	#$3,$17F74.l		;Not in NHL Hockey Source
+	beq.w	.noot
+	jsr	(OneTimerTarget).l
+	move.w	#$12,(onetimerheight).l
+	btst	#$2,(sflags6).l
+	beq.w	.1
+	move.w	#$3A,(onetimerheight).l
+.1	jsr	(OneTimerPass).l
+	bra.w	.exit
+.noot	moveq	#$8,d0		;moves 8 into d0
+	tst.w	$34(a3)		;checks if goalie
+	beq.w	.calc		;jump if goalie
+	move.b	$6E(a3),d0		;Passacc
+.calc	asl.w	#$2,d0		;d0 = passacc for player, 8 for goalie
+	asr.w	#$1,d0		;change from NHL Hockey Source,
+	addi.w	#$A0,d0
+	move.w	d0,(passspeed).l		;Passspeed = PassAcc (0 to 30 decimal) * 2 + A0 (160 decimal)
+	btst	#$0,$6E(a3)		;Checks to see if bit 0 in Passacc is 0
+	beq.w	.findplayer		;Jumps if 0 (even number)
+	asr.w	#$4,d0		;divide d0 by 16
+	add.w	d0,(passspeed).l		;add d0 to passspeed
+.findplayer	moveq	#-1,d4		;look for closest and best player to pass to
+	moveq	#$5,d3		;Set total number of players (6 total, set to 5)
+	movea.l	#SortCords,a1		;start of the home players' sort objects
+	cmpi.w	#$6,$52(a3)		;compares 6 to SCnum(a3) (current player with puck) to check if
+	blt.w	.0		;Jump if player is Home, continue if Away
+	adda.w	#$300,a1		;Switch to Away Team Players
+	btst	#$2,$17F70.l
+	bne.w	.nopp
+.0	cmpa.l	a1,a3		;Check to see if passing to self
+	beq.w	.next		;skip if this is passing player
+	tst.w	$34(a1)		;position(a1)
+	beq.w	.next		;skip if goalie
+	btst	#$2,$63(a1)		;check if player is unavailable
+	bne.w	.next		;player unavailable
+	move.w	$0(a1),d0		;X Position of receiving player
+	sub.w	(puckx).l,d0		;sub puckx from d0
+	move.w	$14(a1),d1		;Y position of receiving player
+	sub.w	(pucky).l,d1		;sub pucky from d1
+	movem.w	d0-d1,-(sp)		;push to stack
+	bsr.w	vtoa-LOAD		;get direction of pass in d0
+	movem.w	(sp)+,d1-d2		;pop from stack d1 is dX, d2 is dY
+	sub.w	(passdir).l,d0		;sub passdir from d0
+	andi.w	#$7,d0		;pass only lower 3 bits in d0
+	asl.b	#$5,d0		;Multiply d0 by 32 (224 decimal is max)
+	ext.w	d0		;sign extend d0 byte to d0 word
+	asl.w	#$3,d0		;mult d0 by 8 (700 decimal max)
+	muls.w	d0,d0		;square d0 = max is 490000 decimal
+	cmpi.l	#$10000,d0		;compare to 65536 decimal (#256^2: power, SNASM ^ is xor)
+	bhi.w	.next		;if higher branch to next
+	muls.w	d1,d1		;square d1 (dX)
+	muls.w	d2,d2		;square d2 (dY)
+	add.l	d1,d2		;add together
+	add.l	d0,d2		;add modified passdir to d2
+	cmp.l	d4,d2		;compare d4 to d2
+	bhi.w	.next		;branch if higher (player is farther away than the closest player)
+	move.l	d2,d4		;move d2 into d4
+	movea.l	a1,a0		;move a1 address into a0 (receiving player)
+.next	adda.w	#$80,a1		;Skip to next player (80 hex is length of player struct)
+	dbra	d3,.0
+	tst.l	d4		;check if there's a player to pass to
+	bmi.w	.nopp		;skip if no player to pass to
+	bsr.w	passto
+	bra.w	.exit
+.nopp	move.w	(passdir).l,d0		;just hit puck in pass dir not to any player
+	asl.w	#$2,d0
+	movea.l	#dirtab,a0
+	move.w	$2(a0,d0.w),d1		;y inc
+	muls.w	(passspeed).l,d1
+	move.l	#GoalieOdds,d2
+	asl.l	d2,d1
+	divs.w	#$BB8,d1
+	add.w	$2A(a3),d1		;Yvel
+	move.w	d1,(puckvy).l
+	move.w	(a0,d0.w),d1		;X inc
+	muls.w	(passspeed).l,d1
+	asl.l	d2,d1
+	divs.w	#$BB8,d1
+	add.w	$28(a3),d1		;Xvel
+	move.w	d1,(puckvx).l
+	move.w	#$1000,d0
+	bsr.w	randomd0-LOAD
+	move.w	d0,(puckvz).l
+.exit	tst.w	$34(a3)		;$34 = position
+	bne.w	.notgoalie
+	tst.w	(puckvy).l
+	btst	#$7,$62(a3)		;$62 = pflags Checks for what goal team is shooting at (0=bottom, 1=top)
+	beq.w	.g0
+	bmi.w	.nvy
+	bra.w	.notgoalie
+.g0	bmi.w	.notgoalie
+.nvy	neg.w	(puckvy).l		;negative velocity on puck
+.notgoalie	move.w	(puckvx).l,d0		;d0/d1 = puck velocity -> direction for the animation (goalie swing,
+	move.w	(puckvy).l,d1
+	bsr.w	vtoa-LOAD
+	move.w	#$366,d1		;SPA = Sprite Animation
+	tst.w	$34(a3)		;$34 = position
+	beq.w	.e1		;goalie anim.
+	move.w	#$718,d1
+	bsr.w	Findhittype
+	beq.w	.e1
+	move.w	#$78A,d1
+.e1	bsr.w	X_1B3C0		;start the pass animation d1
+	bset	#$5,$62(a3)		;#pfalock, $62 = pflags
+	moveq	#$C,d0		;Rest to rts, not in NHL Hockey Source
+	sub.b	(puckvz).l,d0
+	lsr.w	#$2,d0
+	andi.w	#$3,d0
+	move.w	#$10,d0
+	move.w	d0,-(sp)		;#SFXpass
+	bsr.w	sfx-LOAD
+	movem.l	(sp)+,d0-d5/a0-a1
+	rts
+passto						;pass the puck to player a0: a3 = passer
+	btst	#$3,$62(a3)
+	beq.w	X_1617A
+	tst.w	$34(a3)
+	bne.w	X_1617A
+	movem.l	d0-d1,-(sp)
+	btst	#$3,$62(a0)
+	bne.w	X_16176
+	bset	#$6,$64(a0)		;pflags3 bit 6
+	move.w	(cont1team).l,d1
+	cmp.w	(cont2team).l,d1		;checks to see if 2 player co-op (on same team)
+	bne.w	.h2hor1p
+	move.w	$52(a0),d0		;SCnum of receiver into d0
+	move.w	$52(a3),d1		;SCnum of passer into d1
+	cmp.w	(c1playernum).l,d1		;checks if cont 1 controlling passer
+	bne.w	.p2passing
+	jsr	(setc1player).l
+	bra.w	X_16176
+.p2passing	jsr	(setc2player).l
+	bra.w	X_16176
+.h2hor1p	move.w	#$1,d1
+	btst	#$6,$62(a3)		;check if home or away team
+	beq.w	.0		;branch if home
+	move.w	#$2,d1		;away team
+.0	move.w	$52(a0),d0		;move SCnum of receiver into d0
+	cmp.w	(cont1team).l,d1		;compare cont1 team with d1 (1=home, 2=away)
+	bne.w	X_16170
+	jsr	(setc1player).l
+	bra.w	X_16176
+	dc.w	$4EB9,$0003,$12DC,$4CDF,$0003,$4EB9,$0003,$C958
+	dc.w	$066A,$0001,$0012,$33E8,$0052,$0001,$7E30,$3A39
+	dc.w	$0001,$7E2E,$E445,$C14B,$7013,$6100,$513C,$C14B
+	dc.w	$2F08,$6100,$51BE,$D068,$0000,$9079,$0001,$7B80
+	dc.w	$D268,$0014,$9279,$0001,$7B94,$48A7,$C000,$4C97
+	dc.w	$000C,$E442,$E443,$3028,$0028,$C1FC,$00F0,$4840
+	dc.w	$3228,$002A,$C3FC,$00F0,$4841,$48A7,$C000,$C1C2
+	dc.w	$C3C3,$D041,$E340,$3800,$4C97,$0003,$C1C0,$C3C1
+	dc.w	$CBC5,$4485,$DA80,$DA81,$C5C2,$C7C3,$D682,$C7C5
+	dc.w	$E583,$3004,$C1C0,$9083,$6100,$5E84,$7601,$E445
+	dc.w	$6600,$0004,$7A01,$3400,$4440,$9444,$48C2,$85C5
+	dc.w	$5ACB,$FFF4,$6600,$0006,$0642,$0001,$0C42,$0018
+	dc.w	$6300,$0004,$7418,$13C2,$0001,$7BAC,$0C42,$000C
+	dc.w	$6D00,$000A,$13FC,$000C,$0001,$7BAC,$3002,$E740
+	dc.w	$0440,$000A,$1140,$0040,$0440,$0006,$13C0,$0001
+	dc.w	$7BDE,$4C9F,$0003,$C1C2,$E280,$D05F,$3179,$0001
+	dc.w	$7B80,$0044,$D168,$0044,$C3C2,$E281,$D25F,$3179
+	dc.w	$0001,$7B94,$0046,$D368,$0046,$C4FC,$0078,$4840
+	dc.w	$81C2,$33C0,$0001,$7BA8,$4841,$83C2,$33C1,$0001
+	dc.w	$7BAA,$4E75,$4EF9,$0002,$B4E2
+Sweepcheck						;start sweep check on player a3
+	bset	#$5,$62(a3)
+	move.w	#$B24,d1
+	bra.w	X_1B3C0
+	cmp.w	(c1playernum).l,d0
+	beq.w	.l162DA
+	movem.l	d1/a0-a1,-(sp)
+	move.w	(c1playernum).l,d1
+	bsr.w	restorepl
+	move.w	d0,(c1playernum).l
+	movem.l	(sp)+,d1/a0-a1
+.l162DA	rts
+	cmp.w	(c2playernum).l,d0
+	beq.w	X_162FE
+	movem.l	d1/a0-a1,-(sp)
+	move.w	(c2playernum).l,d1
+	bsr.w	restorepl
+	dc.w	$33C0,$0001,$7FA0,$4CDF,$0302,$4E75
+restorepl						;restore old joy controlled player d1, give d0 the joystick; a d1 in line
+									;change mode keeps control
+	movea.l	#SortCords,a0
+	tst.w	d1
+	blt.w	.spd
+	cmpi.w	#$B,d1
+	bgt.w	.spd
+	asl.w	#$7,d1		;multiply d0 by 80 hex (SCsize)
+	btst	#$3,$63(a0,d1.w)		;#pfnp - no joystick pad
+	beq.w	.cont
+	lsr.w	#$7,d1		;divide by 80 hex
+	move.w	d1,d0
+	rts
+.cont	bclr	#$3,$62(a0,d1.w)		;#pfjoycon
+	btst	#$3,$64(a0,d1.w)		;bit 3, pflags3
+	bne.w	.spd
+	bset	#$1,$62(a0,d1.w)		;#pfna - new assignment
+.spd	tst.w	d0		;checks if d0 0 or higher
+	blt.w	.ex
+	cmpi.w	#$B,d0		;checks if d0 11 or less
+	bgt.w	.ex
+	move.w	d0,d1		;copies d0 into d1
+	asl.w	#$7,d1
+	btst	#$2,$17F70.l
+	bne.w	.chkgoalie
+	btst	#$0,$17F78.l
+	beq.w	.3
+.chkgoalie	tst.w	$34(a0,d1.w)
+	bne.w	.3
+	btst	#$6,$62(a0,d1.w)		;check if home or away
+	beq.w	.0
+	tst.w	(goaliemode2).l
+	bra.w	.1
+.0	tst.w	(goaliemode1).l
+.1	beq.w	.3
+	move.w	#$0,d0		;first position of home SCNum
+	btst	#$6,$62(a0,d1.w)		;check if home or away
+	beq.w	.2
+	move.w	#$6,d0		;first position of away SCNum
+.2	bra.w	.ex
+.3	bset	#$3,$62(a0,d1.w)		;set pfjoycon for SCNum
+.ex	rts
+Findhittype						;look for type of swing (forhand or backhand)
+									;input d0 = launch dir
+									;ouput beq forhand
+	neg.w	d0
+	add.w	$54(a3),d0		;facedir
+	andi.w	#$7,d0
+	btst	#$3,$4(a3)		;attribute bit 3
+	beq.w	.l163C4
+	dc.w	$013C,$00F0,$4E75
+.l163C4	dc.w	$013C,$001E,$4E75
+	btst	#$2,$17F70.l
+	beq.w	.l163FA
+	bclr	#$2,$17F78.l
+	bset	#$5,$17F70.l
+	bne.w	X_15A6E
+	bclr	#$5,$17F78.l
+	move.w	#$64,(passmodetimer).l
+.l163FA	move.w	#$8,(passdir).l
+	bset	#$3,$17F6A.l
+	clr.w	d0
+	move.w	#$128,d1
+	btst	#$7,$62(a3)
+	bne.w	.l1641C
+	neg.w	d1
+.l1641C	sub.w	$0(a3),d0
+	sub.w	$14(a3),d1
+	bsr.w	vtoa-LOAD
+	move.w	#$F,(passspeed).l
+	move.w	#$7FC,d1
+	bsr.w	Findhittype
+	beq.w	X_16448
+	dc.w	$323C,$092E,$33FC,$000F,$0001,$7E2E,$6000,$4F76
+ShotMode						;shot input
+									;swing frame reached (anim frame 7*4): shoot, else dpad sets shot
+									;direction
+	cmpi.w	#$1C,$5A(a3)
+	bge.w	prepshot		;end of animation so shoot
+	btst	#$3,d0		;checks dpad for direction
+	bne.w	.ss0
+	andi.w	#$7,d0		;pass the first 3 bits of d0
+	move.w	d0,(passdir).l		;set shot direction
+.ss0	cmpi.w	#$10,$5A(a3)
+	bge.w	X_167B6		;past full windup so no more passspeed
+	add.w	d7,(passspeed).l
+	cmpi.b	#$14,$6C(a3)		;6C = shot speed
+	bge.w	.checkcbut
+	cmpi.w	#$8,$5A(a3)		;SPANum
+	bgt.w	.chganim
+.checkcbut	btst	#$5,d2		;5 = #cbut
+	beq.w	X_167B6		;button hasnt changed so continue windup
+.chganim	neg.w	$5A(a3)		;end windup and swing through
+	addi.w	#$1C,$5A(a3)		;Add to SPANum
+	rts
+prepshot						;check the conditions before a shot: d0 = SCnum of the opposing goalie
+									;(getGoalieSCnum)
+	bclr	#$4,$17F74.l
+	move.w	#$B,d0
+	btst	#$6,$62(a3)		;check if home or away
+	beq.w	.getGoalie		;gets opponents Goalie SCnum
+	move.w	#$5,d0		;opponent is home
+.getGoalie	jsr	(getGoalieSCnum+LOAD).l
+	tst.w	d0
+	bmi.w	.nogoalie
+	movem.l	a0,-(sp)
+	asl.w	#$7,d0
+	movea.l	#SortCords,a0
+	cmpi.w	#$250,$58(a0,d0.w)		;Checking goalie animations - pad stack right
+	beq.w	.svgoalie
+	cmpi.w	#$2A2,$58(a0,d0.w)		;Checking another goalie animation - pad stack left
+.svgoalie	movem.l	(sp)+,a0		;pop stack value into a0
+	bne.w	.cont
+.nogoalie	cmpi.w	#$1,(passdir).l
+	ble.w	.dir017		;branch if passdir is 0 or 1
+	cmpi.w	#$7,(passdir).l
+	bne.w	.cont		;branch if passdir is not 7
+.dir017	move.w	(pucky).l,d0
+	btst	#$7,$62(a3)		;#pfgoal - goal to shoot at (0=bottom, 1=top)
+	bne.w	.cmppuck		;branch if top
+	neg.w	d0		;flips d0 for compare calc
+.cmppuck	cmpi.w	#$D8,d0		;compares location of puck
+	blt.w	.cont
+	bset	#$4,$17F74.l		;set flag for in-close top shelf shooting
+.cont	bra.w	doshot
 doshot						;stick is at puck so launch puck toward goal
 	movem.l	d0-d7/a0-a3,-(sp)
 	bclr	#$4,$17F78.l
@@ -39,12 +806,12 @@ doshot						;stick is at puck so launch puck toward goal
 	bset	#$4,$17F78.l		;set if breakaway
 .cont	bsr.w	X_167DC
 	move.w	#$5,-(sp)		;#SFXshotwiff - sound effect
-	move.w	$52(a3),$17E28.l
+	move.w	$52(a3),(shotplayer).l
 	bclr	#$3,$17F6A.l		;#sfssdir - shot direction mode
 	bset	#$5,$62(a3)		;#pfalock
 	btst	#$3,$64(a3)		;check if shooting one timer
 	bne.w	.shottype		;jump if yes
-	move.w	(puckc).l,d0		;puck carrier SCnum into d0
+	move.w	$17BE0.l,d0		;puck carrier SCnum into d0
 	cmp.w	$52(a3),d0		;is player puck carrier?
 	bne.w	.ex		;wiffed shot
 .shottype	move.w	#$18,(sp)		;#SFXshotfh
@@ -81,7 +848,7 @@ doshot						;stick is at puck so launch puck toward goal
 	bpl.w	.nbh2
 	clr.w	d0		;clear if negative
 .nbh2	add.w	d0,(sp)		;add to stack current value (Shot SFX)
-	st.b	(puckc).l		;clear puck carrier
+	st.b	$17BE0.l		;clear puck carrier
 	move.b	#$10,$5E(a3)		;5E = nopuck - no puck collision till 0
 	move.w	$52(a3),(lastplayer).l		;SCNum
 	move.w	#$108,d1		;$108 = top goal line Y position
@@ -99,7 +866,7 @@ doshot						;stick is at puck so launch puck toward goal
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
-	bsr.w	X_1C08E
+	bsr.w	Sroot-LOAD
 	tst.w	d0		;distance in pix to goal
 	bne.w	.1
 	addi.w	#$1,d0
@@ -114,7 +881,7 @@ doshot						;stick is at puck so launch puck toward goal
 	bne.w	.perf		;perfect shot in shootout
 	moveq	#$10,d0		;start value for ShA calc
 	add.b	$6D(a3),d0		;shotacc(a3)
-	bsr.w	X_1C050
+	bsr.w	randomd0-LOAD
 	cmpi.w	#$E,d0		;chance of perfect shot
 	bgt.w	.perf		;branch if higher - perfect shot
 .notperf	clr.w	d0
@@ -148,7 +915,7 @@ doshot						;stick is at puck so launch puck toward goal
 	add.w	d0,$4(sp)		;add to y diff
 	move.w	(sp)+,d0		;pop adj value
 	lsr.w	#$1,d0		;divide by 2
-	bsr.w	X_1C050		;RNG result
+	bsr.w	randomd0-LOAD		;RNG result
 	add.w	d0,$4(sp)		;add to Z diff
 .perf	move.w	(passspeed).l,d2		;shot speed
 	muls.w	#$44,d2		;1024/15
@@ -190,143 +957,3 @@ doshot						;stick is at puck so launch puck toward goal
 .ex	bsr.w	sfx-LOAD		;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-	dc.w	$0000,$000C,$0010,$000C,$0010,$0006,$0010,$0000
-	dc.w	$0000,$0000,$FFF0,$0000,$FFF0,$0006,$FFF0,$000C
-	dc.w	$0000,$0006,$082B,$0003,$0064,$6600,$000C,$082B
-	dc.w	$0003,$0062,$6600,$00D8,$7008,$7205,$207C,$0001
-	dc.w	$7400,$082B,$0006,$0062,$6600,$0006,$D0FC,$0300
-	dc.w	$D0FC,$0080,$4A68,$0034,$57C9,$FFF6,$6600,$008C
-	dc.w	$1028,$0028,$4880,$E240,$D068,$0000,$9079,$0001
-	dc.w	$7B80,$1228,$002A,$4881,$E241,$D268,$0014,$9279
-	dc.w	$0001,$7B94,$48A7,$C000,$C1C0,$C3C1,$D081,$5280
-	dc.w	$6100,$5844,$3400,$4C9F,$0003,$7612,$383C,$0108
-	dc.w	$082B,$0007,$0062,$6600,$0004,$4444,$48A7,$1800
-	dc.w	$6100,$005E,$3A04,$4C9F,$0018,$4443,$6100,$0052
-	dc.w	$D845,$4240,$0C44,$002C,$6E00,$0020,$0C44,$FFD4
-	dc.w	$6D00,$0018,$082B,$0007,$0062,$6700,$0004,$4444
-	dc.w	$7002,$4A44,$6A00,$0004,$7006,$33C0,$0001,$7E2C
-	dc.w	$0839,$0002,$0001,$7F70,$6600,$000E,$0839,$0000
-	dc.w	$0001,$7F78,$6700,$0008,$4EB9,$0002,$A648,$4E75
-	dc.w	$9679,$0001,$7B80,$9879,$0001,$7B94,$C9C0,$C7C1
-	dc.w	$9883,$89C2,$4E75
-setpads						;Put SCnum of a3 in the d4 nibble of PadControlBits ; d4 = -2 puck
-									;carrier, 0 / 2 pads, 4 replay target. Falls into rtss3
-	movem.l	d0-d1,-(sp)
-	moveq	#$2,d0
-	add.w	d4,d0
-	add.w	d0,d0
-	move.w	#$FFF0,d1
-	rol.w	d0,d1
-	and.w	d1,(PadControlBits).l
-	move.w	$52(a3),d1
-	asl.w	d0,d1
-	or.w	d1,(PadControlBits).l
-	movem.l	(sp)+,d0-d1
-	dc.w	$4E75,$0839,$0002,$0001,$7F70,$6600,$FFF4,$082B
-	dc.w	$0003,$0062,$6600,$FFEA,$082B,$0004,$0063,$6600
-	dc.w	$FFE0,$4A2B,$0060,$6A00,$000A,$4A2B,$0061,$6B00
-	dc.w	$FFD0,$102B,$0061,$B02B,$0066,$6700,$0032,$302B
-	dc.w	$0036,$0C33,$000B,$0038,$6700,$FFB6,$302B,$0052
-	dc.w	$B079,$0001,$7BE0,$6700,$FFA8,$DEFC,$0004,$08EB
-	dc.w	$0002,$0063,$426B,$0040,$700B,$6000,$4974,$DEFC
-	dc.w	$0004,$08AB,$0002,$0063,$08AB,$0002,$0062,$50EB
-	dc.w	$0061,$50EB,$0060,$302B,$0034,$4A2B,$0060,$6A00
-	dc.w	$0008,$4EF9,$0003,$D754,$102B,$0060,$4880,$3740
-	dc.w	$0034,$4EF9,$0003,$D754,$082B,$0005,$0062,$6600
-	dc.w	$FF50,$0C6B,$0064,$0040,$6700,$00FA,$6100,$FF44
-	dc.w	$082B,$0004,$0063,$6600,$48F8,$08AB,$0001,$0062
-	dc.w	$6700,$002E,$377C,$0008,$0042,$7050,$082B,$0006
-	dc.w	$0062,$6600,$0004,$4440,$3740,$0046,$377C,$0088
-	dc.w	$0044,$446B,$0044,$046B,$0008,$0044,$426B,$0040
-	dc.w	$102B,$0061,$B02B,$0066,$6700,$00FA,$9F6B,$0040
-	dc.w	$6A00,$00D6,$066B,$0008,$0040,$302B,$0014,$906B
-	dc.w	$0046,$0C40,$0028,$6E00,$00C0,$0C40,$FFD8,$6D00
-	dc.w	$00B8,$302B,$0000,$906B,$0044,$0C40,$0020,$6E00
-	dc.w	$00A8,$323C,$050C,$4A6B,$0034,$6600,$0006,$323C
-	dc.w	$0002,$6100,$4968,$08EB,$0002,$0062,$0C6B,$0004
-	dc.w	$0054,$6700,$000E,$066B,$0001,$0054,$026B,$0007
-	dc.w	$0054,$426B,$002A,$377C,$F800,$0028,$0C40,$0010
-	dc.w	$6E00,$0030,$426B,$0028,$0C6B,$0004,$0054,$6600
-	dc.w	$0022,$377C,$F800,$0028,$377C,$0002,$0054,$323C
-	dc.w	$0FAC,$6100,$4918,$08EB,$0005,$0062,$377C,$0064
-	dc.w	$0040,$4E75,$426B,$0006,$4240,$102B,$0066,$D040
-	dc.w	$207C,$0001,$834C,$082B,$0006,$0062,$6700,$0006
-	dc.w	$D0FC,$0366,$31BC,$FFFE,$0068,$162B,$0061,$6100
-	dc.w	$002A,$4EF9,$0003,$D770,$082B,$0002,$0062,$6600
-	dc.w	$FFC2,$302B,$0044,$322B,$0046,$207C,$0003,$3C6E
-	dc.w	$6000,$4502,$08AB,$0002,$0063,$102B,$0060,$4880
-	dc.w	$3740,$0034,$4EB9,$0003,$D754,$50EB,$0061,$50EB
-	dc.w	$0060,$4E75,$082B,$0005,$0062,$6600,$FF86,$08AB
-	dc.w	$0001,$0062,$6700,$0040,$426B,$0028,$426B,$002A
-	dc.w	$302B,$0052,$0440,$0006,$6B00,$0006,$0640,$0001
-	dc.w	$C1FC,$000E,$3740,$0014,$377C,$0088,$0000,$446B
-	dc.w	$0000,$377C,$0002,$0054,$08EB,$0005,$0062,$323C
-	dc.w	$0F6E,$6000,$4848,$377C,$0004,$0054,$08AB,$0002
-	dc.w	$0062,$08AB,$0005,$0063,$08AB,$0002,$0063,$426B
-	dc.w	$0058,$377C,$1000,$0028,$6000,$4726,$082B,$0005
-	dc.w	$0062,$6600,$FF0E,$08AB,$0001,$0062,$6700,$005C
-	dc.w	$08EB,$0002,$0063,$6100,$0106,$78FE,$6100,$FD1C
-	dc.w	$377C,$0008,$0042,$700B,$1239,$0001,$8068,$082B
-	dc.w	$0006,$0062,$6600,$0006,$E849,$4440,$0241,$000F
-	dc.w	$0C41,$0002,$6300,$0004,$7202,$5641,$C3C0,$3741
-	dc.w	$0046,$377C,$0088,$0044,$426B,$0040,$08EB,$0005
-	dc.w	$0063,$426B,$004E,$426B,$0050,$302B,$0014,$906B
-	dc.w	$0046,$0C40,$000C,$6E00,$0094,$0C40,$FFF4,$6D00
-	dc.w	$008C,$302B,$0000,$906B,$0044,$0C40,$FFE8,$6D00
-	dc.w	$007C,$9F6B,$0040,$6A00,$FE7A,$066B,$0008,$0040
-	dc.w	$08EB,$0002,$0062,$323C,$050C,$6100,$4770,$7406
-	dc.w	$4A2B,$0076,$6700,$0004,$7402,$B46B,$0054,$6700
-	dc.w	$000E,$066B,$0001,$0054,$026B,$0007,$0054,$426B
-	dc.w	$002A,$377C,$1000,$0028,$0C40,$FFF8,$6D00,$FE34
-	dc.w	$426B,$0028,$B46B,$0054,$6600,$FE28,$08EB,$0005
-	dc.w	$0062,$377C,$0002,$0054,$323C,$0F6E,$6100,$471E
-	dc.w	$08AB,$0004,$0063,$700D,$6000,$4636,$302B,$0044
-	dc.w	$322B,$0046,$207C,$0003,$1AB6,$6000,$4348,$082B
-	dc.w	$0003,$0062,$6700,$FDEC,$4244,$302B,$0052,$B079
-	dc.w	$0001,$7F9E,$6700,$F5CA,$7802,$6000,$F5C4
-assdopen						;add player a3 to penalty box
-	btst	#$5,$62(a3)
-	bne.w	X_16AB6
-	moveq	#$10,d0
-	btst	#$6,$62(a3)
-	beq.w	.1
-	moveq	#$1,d0
-.1	add.b	d0,(PBnum).l		;Players in penalty box
-	st.b	$34(a3)
-	clr.w	$6(a3)
-	rts
-	dc.w	$082B,$0005,$0062,$6600,$FDA4,$08AB,$0001,$0062
-	dc.w	$6700,$0052,$08EB,$0002,$0062,$08EB,$0002,$0063
-	dc.w	$7010,$72C4,$082B,$0006,$0062,$6700,$0006,$7001
-	dc.w	$4441,$9139,$0001,$8068,$3741,$0014,$426B,$0028
-	dc.w	$426B,$002A,$377C,$0086,$0000,$377C,$0002,$0054
-	dc.w	$08EB,$0005,$0062,$323C,$0FAC,$6100,$465A,$4EF9
-	dc.w	$0003,$F03E,$377C,$0004,$0054,$50EB,$0061,$50EB
-	dc.w	$0060,$08AB,$0003,$0062,$08AB,$0002,$0062,$08AB
-	dc.w	$0005,$0063,$08AB,$0002,$0063,$377C,$F000,$0028
-	dc.w	$6000,$4528
-assgoaliebreakwait						;asstab entry. In a shootout or penalty shot park the idle goalie off the
-									;ice, else exit
-	btst	#$5,$62(a3)		;check if animation locked
-	bne.w	.exit		;exit if so
-	btst	#$2,$17F70.l		;check if pen shot
-	bne.w	.park		;branch if so
-	btst	#$0,$17F78.l		;check for shootout
-	bne.w	.park		;branch if so
-	nop
-	bra.w	X_1B2C4
-.park	clr.w	$28(a3)		;clear Xvel
-	clr.w	$2A(a3)		;clear Yvel
-	movem.l	d0/a0,-(sp)		;push d0 and a0 on stack
-	movea.l	#SortCords,a0		;Home SC Sctruct start
-	move.w	(BA_Goalie_SCnum).l,d0		;move Goalie SCNum into d0
-	asl.w	#$7,d0		;shift d0 7 bits left
-	adda.w	d0,a0		;add d0 to address a0
-	move.w	#$191,$14(a3)		;move 401 decimal into Ypos
-	btst	#$7,$62(a0)		;check if shooting up or down (a0 is goalie being shot on)
-	bne.w	.popstack		;branch if shooting up
-	move.w	#$FE6F,$14(a3)		;move -191 decimal into Ypos (goalie not being shot on)
-.popstack	movem.l	(sp)+,d0/a0
-.exit	rts
-	dc.w	$082B,$0005,$0062,$6600,$000E,$0839,$0000,$0001
-	dc.w	$7F6C,$6700,$44B2,$4E75
