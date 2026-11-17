@@ -132,7 +132,7 @@ ReadCommRegs	move.w	$FFFF801C.w,d0
 	or.w	d1,d0
 	movem.l	(sp)+,d1/a0
 	rts
-; Data of ReadCommRegs (1 row): table or constants used by it.
+; Table of 16 bytes after ReadCommRegs, 16 bytes: $08,$00,$04,$08,$06,$07 ...
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 ; Sends command 3 to the main CPU.
 SendCmd3	movem.l	d0,-(sp)
@@ -225,7 +225,7 @@ ReleaseWordRam	bset.b	#$0,$FFFF8003.w
 	rts
 ; Empty routine.
 NopReturn	rts
-; Data of NopReturn (1 row): table or constants used by it.
+; Table of 6 bytes after NopReturn, 6 bytes: $4E,$B9,$00,$00,$E3,$F8 ...
 	dc.b	$4E,$B9,$00,$00,$E3,$F8	; N.....
 ; Patches a BIOS vector and raises a flag
 HookBiosVector	movem.l	a0-a1,-(sp)

@@ -46,28 +46,24 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	bne.w	.ex
 	bsr.w	EndArenaAnim		;$FE: end the animation
 .ex	rts
-; Data of NextArenaFrame (4 rows): table or constants used by it.
+; Table of 64 bytes after NextArenaFrame, 64 bytes: $00,$02,$A3,$E4,$00,$04 ...
 	dc.b	$00,$02,$A3,$E4,$00,$04,$3A,$7E,$00,$02,$A3,$98,$00,$04,$42,$A2
 	dc.b	$00,$02,$A3,$BE,$00,$04,$42,$A2,$00,$02,$A3,$86,$00,$04,$4F,$A8
 	dc.b	$00,$02,$A3,$30,$00,$04,$5A,$16,$00,$02,$A3,$00,$00,$04,$5A,$16
 	dc.b	$00,$02,$A2,$EA,$00,$04,$69,$42,$00,$02,$A2,$AC,$00,$04,$69,$42
 ArenaFrames1						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames1 (4 rows): table or constants used by it.
 	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
 	dc.b	9,$A,$A,$A,1,$A,2,$A,3,$A,4,$A,5,$A,6,$A
 	dc.b	7,$A,8,$A,9,$A,$A,$A,1,$A,2,$A,3,$A,4,$A
 	dc.b	5,$A,6,$A,7,$A,8,$A,9,$A,$A,$A,$FE,0
 ArenaFrames2						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames2 (2 rows): table or constants used by it.
 	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
 	dc.b	9,$A,$A,$A,$FF,0
 ArenaFrames3						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames3 (3 rows): table or constants used by it.
 	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
 	dc.b	9,$A,$A,$A,$B,$A,$C,$A,$D,$A,$E,$A,$F,$A,$10,$A
 	dc.b	$11,$A,$12,$A,$13,$A,$14,$A,$15,$A,$16,$A,$17,$A,$FE,0
 ArenaFrames4						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames4 (6 rows): table or constants used by it.
 	dc.b	1,8,2,8,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
 	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
 	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
@@ -75,21 +71,17 @@ ArenaFrames4						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $
 	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
 	dc.b	2,8,1,8,$FF,0
 ArenaFrames5						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames5 (2 rows): table or constants used by it.
 	dc.b	1,8,2,8,3,8,4,8,5,8,6,8,7,8,8,8
 	dc.b	$FF,0
 ArenaFrames6						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames6 (3 rows): table or constants used by it.
 	dc.b	1,8,2,8,3,8,4,$1E,5,8,6,8,7,8,8,$1E
 	dc.b	5,8,6,8,7,8,8,$1E,9,8,$A,8,$B,8,$C,8
 	dc.b	$D,8,$E,8,$FE,0
 ArenaFrames7						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames7 (3 rows): table or constants used by it.
 	dc.b	$F,8,$10,8,$11,8,$12,$1E,$13,8,$14,8,$15,8,$16,$1E
 	dc.b	$13,8,$14,8,$15,8,$16,$1E,$17,8,$18,8,$19,8,$1A,8
 	dc.b	$1B,8,$1C,8,$FE,0
 ArenaFrames8						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
-; Data of ArenaFrames8 (4 rows): table or constants used by it.
 	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
 	dc.b	9,$A,$A,$A,$B,$A,$C,$A,$D,$A,$E,$A,$F,$7F,$FE,0
 	dc.b	$08,$F9,$00,$06,$00,$01,$7F,$6A,$33,$FC,$00,$00,$00,$01,$7E,$DC

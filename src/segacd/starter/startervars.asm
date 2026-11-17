@@ -18,7 +18,7 @@ SubIrqHandler	movem.l	d0-d7/a0-a6,-(sp)
 	beq.w	.ex
 	bsr.w	TakeWordRam
 .ex	rts
-; Data of SubIrqHandler (1 row): table or constants used by it.
+; Table of 2 bytes after SubIrqHandler, 2 bytes: $4E,$75 ...
 	dc.b	$4E,$75	; Nu
 ; Calls the $E320 command with an inline parameter block.
 SendCmdE320Inline	movem.l	d0-d7/a0-a6,-(sp)
@@ -110,7 +110,7 @@ SubBootHalt	bra.b	SubBootHalt
 SubBiosCall1A	moveq	#$1A,d0
 	jsr	$E370.l
 	rts
-; Data of SubBiosCall1A (3 rows): table or constants used by it.
+; Table of 42 bytes after SubBiosCall1A, 42 bytes: $00,$00,$00,$00,$00,$00 ...
 	dcb.b	$18,0
 	dc.b	$01,$FF,'HOCKEY.SEG',$00,$00,$00,$00	; ..HOCKEY.SEG....
 	dc.b	$00,$00	; ..

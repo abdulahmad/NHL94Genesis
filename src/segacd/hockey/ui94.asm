@@ -59,6 +59,8 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	dbra	d0,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Picks the picture graphics for the current side and decompresses them.
+UnpackPictureSelectGfx
 	move.w	d0,-(sp)
 	subi.w	#$18,d4
 	tst.w	$17468.l
@@ -99,11 +101,15 @@ TeamGfxListEnd						;end of TeamGfxList (size check below)
 	ori.b	#$3B,d0
 	ori.b	#$3D,d0
 	ori.b	#$3E,d0
+; Prints the opening bracket text before a team graphics entry.
+TeamGfxListEndPrintA
 	movem.l	d0/a2,-(sp)
 	jsr	(printz).l
 	String	' ('
 	adda.w	#$D0,a2
 	bra.w	PrintParenNumber
+; Prints the opening bracket text before a team graphics entry (second form).
+TeamGfxListEndPrintB
 	movem.l	d0/a2,-(sp)
 	jsr	(printz).l
 	String	' ('
@@ -223,6 +229,8 @@ getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
 	move.b	$74(a2),d0
 	lsr.w	#$2,d0
 	rts
+; Return point of getFgtbyte.
+GetFgtByteReturn
 	btst	#$1,$74(a2)
 	rts
 RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 when fox <= -$40 and
@@ -288,6 +296,8 @@ GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of t
 	beq.w	.x
 	movea.l	#awtmstruct,a2
 .x	rts
+; Counts a stat for the team at a0 in the running totals.
+GetTeamStructCount
 	movem.l	d1/a0,-(sp)
 	btst	#$0,$17F68.l
 	bne.w	.next2
@@ -356,6 +366,8 @@ PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDispl
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	$18BF6.l,d0
 	bra.w	PlayedByText
+; Clears flag 1 of $17F7C (played by the away side).
+PlayedByAwayClearFlag
 	bra.w	.next
 	bclr.b	#$1,$17F7C.l
 	dc.w	$6000,$000A		; bra.w X_2AE80

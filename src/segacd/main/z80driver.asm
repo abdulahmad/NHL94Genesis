@@ -49,10 +49,12 @@ Z80MainLoop
 	dc.b	$1F		; $0639 rra
 	dc.b	$E6,$1C		; $063A and $1C
 	dc.b	$32,$40,$06		; $063C ld ($0640),a
-	dc.b	$18,$00		; $063F jr $0641
-	dc.b	$C3,$61,$06		; $0641 jp $0661
+	dc.b	$18,$00		; $063F jr .next
+.next
+	dc.b	$C3,$61,$06		; $0641 jp .next2
 	dc.b	$00,$C3,$D4,$06,$00,$C3,$D4,$07,$00,$C3,$40,$07,$00,$C3,$96,$07		; $0644 data
 	dc.b	$00,$C3,$D4,$07,$00,$C3,$B2,$07,$00,$C3,$D4,$07,$00		; $0654 data
+.next2
 	dc.b	$3A,$32,$00		; $0661 ld a,($0032)
 	dc.b	$E6,$0F		; $0664 and $0F
 	dc.b	$47		; $0666 ld b,a
@@ -61,11 +63,12 @@ Z80MainLoop
 	dc.b	$32,$98,$00		; $066B ld ($0098),a
 	dc.b	$CD,$19,$09		; $066E call Z80GetChannelByte
 	dc.b	$32,$95,$00		; $0671 ld ($0095),a
+.loop
 	dc.b	$CD,$23,$09		; $0674 call Z80FindNoteEntry
 	dc.b	$DD,$22,$96,$00		; $0677 ld ($0096),ix
 	dc.b	$DD,$7E,$00		; $067B ld a,(ix+0)
 	dc.b	$FE,$07		; $067E cp $07
-	dc.b	$20,$12		; $0680 jr nz,$0694
+	dc.b	$20,$12		; $0680 jr nz,.next3
 	dc.b	$3A,$33,$00		; $0682 ld a,($0033)
 	dc.b	$C6,$02		; $0685 add a,$02
 	dc.b	$4F		; $0687 ld c,a
@@ -73,7 +76,8 @@ Z80MainLoop
 	dc.b	$DD,$09		; $068A add ix,bc
 	dc.b	$DD,$7E,$00		; $068C ld a,(ix+0)
 	dc.b	$32,$95,$00		; $068F ld ($0095),a
-	dc.b	$18,$E0		; $0692 jr $0674
+	dc.b	$18,$E0		; $0692 jr .loop
+.next3
 	dc.b	$3A,$33,$00		; $0694 ld a,($0033)
 	dc.b	$32,$9B,$00		; $0697 ld ($009B),a
 	dc.b	$CD,$53,$10		; $069A call Z80DacService
@@ -82,24 +86,28 @@ Z80MainLoop
 	dc.b	$3A,$BB,$00		; $06A4 ld a,($00BB)
 	dc.b	$47		; $06A7 ld b,a
 	dc.b	$0E,$00		; $06A8 ld c,$00
+.loop2
 	dc.b	$CD,$53,$10		; $06AA call Z80DacService
 	dc.b	$CB,$38		; $06AD srl b
-	dc.b	$38,$0E		; $06AF jr c,$06BF
+	dc.b	$38,$0E		; $06AF jr c,.next4
 	dc.b	$3A,$98,$00		; $06B1 ld a,($0098)
 	dc.b	$DD,$BE,$00		; $06B4 cp (ix+0)
-	dc.b	$20,$06		; $06B7 jr nz,$06BF
+	dc.b	$20,$06		; $06B7 jr nz,.next4
 	dc.b	$3A,$9B,$00		; $06B9 ld a,($009B)
 	dc.b	$BE		; $06BC cp (hl)
-	dc.b	$28,$0B		; $06BD jr z,$06CA
+	dc.b	$28,$0B		; $06BD jr z,.next5
+.next4
 	dc.b	$23		; $06BF inc hl
 	dc.b	$DD,$23		; $06C0 inc ix
 	dc.b	$0C		; $06C2 inc c
 	dc.b	$79		; $06C3 ld a,c
 	dc.b	$FE,$06		; $06C4 cp $06
-	dc.b	$20,$E2		; $06C6 jr nz,$06AA
-	dc.b	$18,$04		; $06C8 jr $06CE
+	dc.b	$20,$E2		; $06C6 jr nz,.loop2
+	dc.b	$18,$04		; $06C8 jr .next6
+.next5
 	dc.b	$79		; $06CA ld a,c
 	dc.b	$CD,$46,$09		; $06CB call Z80YmKeyOn
+.next6
 	dc.b	$CD,$8D,$08		; $06CE call Z80MailboxPop
 	dc.b	$C3,$2C,$06		; $06D1 jp Z80MainLoop
 	dc.b	$3A,$32,$00		; $06D4 ld a,($0032)
@@ -110,31 +118,35 @@ Z80MainLoop
 	dc.b	$32,$98,$00		; $06DE ld ($0098),a
 	dc.b	$CD,$19,$09		; $06E1 call Z80GetChannelByte
 	dc.b	$32,$95,$00		; $06E4 ld ($0095),a
+.loop3
 	dc.b	$CD,$23,$09		; $06E7 call Z80FindNoteEntry
 	dc.b	$DD,$22,$96,$00		; $06EA ld ($0096),ix
 	dc.b	$CD,$53,$10		; $06EE call Z80DacService
 	dc.b	$DD,$7E,$00		; $06F1 ld a,(ix+0)
 	dc.b	$FE,$00		; $06F4 cp $00
-	dc.b	$20,$15		; $06F6 jr nz,$070D
+	dc.b	$20,$15		; $06F6 jr nz,.next8
 	dc.b	$CD,$0C,$0A		; $06F8 call $0A0C
 	dc.b	$FE,$FF		; $06FB cp $FF
-	dc.b	$20,$03		; $06FD jr nz,$0702
-	dc.b	$C3,$3A,$07		; $06FF jp $073A
+	dc.b	$20,$03		; $06FD jr nz,.next7
+	dc.b	$C3,$3A,$07		; $06FF jp .next10
+.next7
 	dc.b	$32,$94,$00		; $0702 ld ($0094),a
 	dc.b	$CD,$53,$10		; $0705 call Z80DacService
 	dc.b	$CD,$9E,$0A		; $0708 call $0A9E
-	dc.b	$18,$2D		; $070B jr $073A
+	dc.b	$18,$2D		; $070B jr .next10
+.next8
 	dc.b	$FE,$03		; $070D cp $03
-	dc.b	$20,$12		; $070F jr nz,$0723
+	dc.b	$20,$12		; $070F jr nz,.next9
 	dc.b	$CD,$1F,$0E		; $0711 call $0E1F
 	dc.b	$FE,$05		; $0714 cp $05
-	dc.b	$20,$22		; $0716 jr nz,$073A
+	dc.b	$20,$22		; $0716 jr nz,.next10
 	dc.b	$32,$94,$00		; $0718 ld ($0094),a
 	dc.b	$CD,$53,$10		; $071B call Z80DacService
 	dc.b	$CD,$35,$0E		; $071E call $0E35
-	dc.b	$18,$17		; $0721 jr $073A
+	dc.b	$18,$17		; $0721 jr .next10
+.next9
 	dc.b	$FE,$07		; $0723 cp $07
-	dc.b	$20,$13		; $0725 jr nz,$073A
+	dc.b	$20,$13		; $0725 jr nz,.next10
 	dc.b	$3A,$33,$00		; $0727 ld a,($0033)
 	dc.b	$C6,$02		; $072A add a,$02
 	dc.b	$4F		; $072C ld c,a
@@ -142,7 +154,8 @@ Z80MainLoop
 	dc.b	$DD,$09		; $072F add ix,bc
 	dc.b	$DD,$7E,$00		; $0731 ld a,(ix+0)
 	dc.b	$32,$95,$00		; $0734 ld ($0095),a
-	dc.b	$C3,$E7,$06		; $0737 jp $06E7
+	dc.b	$C3,$E7,$06		; $0737 jp .loop3
+.next10
 	dc.b	$CD,$8D,$08		; $073A call Z80MailboxPop
 	dc.b	$C3,$2C,$06		; $073D jp Z80MainLoop
 	dc.b	$3A,$32,$00		; $0740 ld a,($0032)
@@ -153,7 +166,7 @@ Z80MainLoop
 	dc.b	$32,$98,$00		; $074A ld ($0098),a
 	dc.b	$3A,$33,$00		; $074D ld a,($0033)
 	dc.b	$FE,$01		; $0750 cp $01
-	dc.b	$20,$11		; $0752 jr nz,$0765
+	dc.b	$20,$11		; $0752 jr nz,.next11
 	dc.b	$3A,$98,$00		; $0754 ld a,($0098)
 	dc.b	$C6,$80		; $0757 add a,$80
 	dc.b	$6F		; $0759 ld l,a
@@ -161,9 +174,10 @@ Z80MainLoop
 	dc.b	$3A,$34,$00		; $075C ld a,($0034)
 	dc.b	$77		; $075F ld (hl),a
 	dc.b	$CD,$32,$0F		; $0760 call $0F32
-	dc.b	$18,$2B		; $0763 jr $0790
+	dc.b	$18,$2B		; $0763 jr .next12
+.next11
 	dc.b	$FE,$07		; $0765 cp $07
-	dc.b	$20,$27		; $0767 jr nz,$0790
+	dc.b	$20,$27		; $0767 jr nz,.next12
 	dc.b	$3A,$98,$00		; $0769 ld a,($0098)
 	dc.b	$C6,$00		; $076C add a,$00
 	dc.b	$6F		; $076E ld l,a
@@ -178,7 +192,8 @@ Z80MainLoop
 	dc.b	$DD,$22,$96,$00		; $0784 ld ($0096),ix
 	dc.b	$CD,$53,$10		; $0788 call Z80DacService
 	dc.b	$CD,$FD,$0F		; $078B call $0FFD
-	dc.b	$18,$00		; $078E jr $0790
+	dc.b	$18,$00		; $078E jr .next12
+.next12
 	dc.b	$CD,$8D,$08		; $0790 call Z80MailboxPop
 	dc.b	$C3,$2C,$06		; $0793 jp Z80MainLoop
 	dc.b	$3A,$32,$00		; $0796 ld a,($0032)
@@ -217,14 +232,17 @@ Z80YmKeyOffAll
 	dc.b	$21,$00,$40		; $07DD ld hl,$4000
 	dc.b	$11,$01,$40		; $07E0 ld de,$4001
 	dc.b	$3E,$06		; $07E3 ld a,$06
+.loop
 	dc.b	$CD,$3E,$11		; $07E5 call Z80YmWaitReady
 	dc.b	$36,$28		; $07E8 ld (hl),$28
 	dc.b	$12		; $07EA ld (de),a
+.loop2
 	dc.b	$3D		; $07EB dec a
-	dc.b	$FA,$F5,$07		; $07EC jp m,$07F5
+	dc.b	$FA,$F5,$07		; $07EC jp m,.next
 	dc.b	$FE,$03		; $07EF cp $03
-	dc.b	$28,$F8		; $07F1 jr z,$07EB
-	dc.b	$18,$F0		; $07F3 jr $07E5
+	dc.b	$28,$F8		; $07F1 jr z,.loop2
+	dc.b	$18,$F0		; $07F3 jr .loop
+.next
 	dc.b	$CD,$53,$10		; $07F5 call Z80DacService
 	dc.b	$3E,$3F		; $07F8 ld a,$3F
 	dc.b	$32,$BB,$00		; $07FA ld ($00BB),a
@@ -234,29 +252,33 @@ Z80YmLoadRegisters
 	dc.b	$01,$2F,$08		; $07FE ld bc,$082F
 	dc.b	$21,$00,$40		; $0801 ld hl,$4000
 	dc.b	$11,$01,$40		; $0804 ld de,$4001
+.loop
 	dc.b	$0A		; $0807 ld a,(bc)
 	dc.b	$03		; $0808 inc bc
 	dc.b	$FE,$FF		; $0809 cp $FF
-	dc.b	$28,$09		; $080B jr z,$0816
+	dc.b	$28,$09		; $080B jr z,.next
 	dc.b	$CD,$3E,$11		; $080D call Z80YmWaitReady
 	dc.b	$77		; $0810 ld (hl),a
 	dc.b	$0A		; $0811 ld a,(bc)
 	dc.b	$03		; $0812 inc bc
 	dc.b	$12		; $0813 ld (de),a
-	dc.b	$18,$F1		; $0814 jr $0807
+	dc.b	$18,$F1		; $0814 jr .loop
+.next
 	dc.b	$01,$4A,$08		; $0816 ld bc,$084A
 	dc.b	$21,$02,$40		; $0819 ld hl,$4002
 	dc.b	$11,$03,$40		; $081C ld de,$4003
+.loop2
 	dc.b	$0A		; $081F ld a,(bc)
 	dc.b	$03		; $0820 inc bc
 	dc.b	$FE,$FF		; $0821 cp $FF
-	dc.b	$28,$09		; $0823 jr z,$082E
+	dc.b	$28,$09		; $0823 jr z,.next2
 	dc.b	$CD,$3E,$11		; $0825 call Z80YmWaitReady
 	dc.b	$77		; $0828 ld (hl),a
 	dc.b	$0A		; $0829 ld a,(bc)
 	dc.b	$03		; $082A inc bc
 	dc.b	$12		; $082B ld (de),a
-	dc.b	$18,$F1		; $082C jr $081F
+	dc.b	$18,$F1		; $082C jr .loop2
+.next2
 	dc.b	$C9		; $082E ret
 	dc.b	$22,$00,$27,$00,$28,$00,$28,$01,$28,$02,$28,$04,$28,$05,$28,$06		; $082F data
 	dc.b	$2B,$00,$90,$00,$94,$00,$98,$00,$9C,$00,$FF,$90,$00,$94,$00,$98		; $083F data
@@ -292,10 +314,11 @@ Z80MailboxInit
 	dc.b	$23		; $087F inc hl
 	dc.b	$0E,$41		; $0880 ld c,$41
 	dc.b	$3E,$00		; $0882 ld a,$00
+.loop
 	dc.b	$77		; $0884 ld (hl),a
 	dc.b	$23		; $0885 inc hl
 	dc.b	$0D		; $0886 dec c
-	dc.b	$20,$FB		; $0887 jr nz,$0884
+	dc.b	$20,$FB		; $0887 jr nz,.loop
 	dc.b	$32,$30,$00		; $0889 ld ($0030),a
 	dc.b	$C9		; $088C ret
 ; Takes the next command out of the mailbox into $0032 onward.
@@ -306,16 +329,18 @@ Z80MailboxPop
 	dc.b	$DD,$21,$36,$00		; $0895 ld ix,$0036
 	dc.b	$3A,$31,$00		; $0899 ld a,($0031)
 	dc.b	$3D		; $089C dec a
-	dc.b	$28,$0F		; $089D jr z,$08AE
+	dc.b	$28,$0F		; $089D jr z,.next
 	dc.b	$CB,$27		; $089F sla a
 	dc.b	$CB,$27		; $08A1 sla a
 	dc.b	$4F		; $08A3 ld c,a
+.loop
 	dc.b	$DD,$7E,$00		; $08A4 ld a,(ix+0)
 	dc.b	$77		; $08A7 ld (hl),a
 	dc.b	$DD,$23		; $08A8 inc ix
 	dc.b	$23		; $08AA inc hl
 	dc.b	$0D		; $08AB dec c
-	dc.b	$20,$F6		; $08AC jr nz,$08A4
+	dc.b	$20,$F6		; $08AC jr nz,.loop
+.next
 	dc.b	$3A,$31,$00		; $08AE ld a,($0031)
 	dc.b	$3D		; $08B1 dec a
 	dc.b	$32,$31,$00		; $08B2 ld ($0031),a
@@ -327,38 +352,43 @@ Z80ClearChannelTables
 	dc.b	$21,$00,$02		; $08BB ld hl,$0200
 	dc.b	$3E,$00		; $08BE ld a,$00
 	dc.b	$0E,$80		; $08C0 ld c,$80
+.loop
 	dc.b	$77		; $08C2 ld (hl),a
 	dc.b	$23		; $08C3 inc hl
 	dc.b	$0D		; $08C4 dec c
-	dc.b	$20,$FB		; $08C5 jr nz,$08C2
+	dc.b	$20,$FB		; $08C5 jr nz,.loop
 	dc.b	$21,$80,$02		; $08C7 ld hl,$0280
 	dc.b	$3E,$00		; $08CA ld a,$00
 	dc.b	$0E,$80		; $08CC ld c,$80
+.loop2
 	dc.b	$77		; $08CE ld (hl),a
 	dc.b	$23		; $08CF inc hl
 	dc.b	$0D		; $08D0 dec c
-	dc.b	$20,$FB		; $08D1 jr nz,$08CE
+	dc.b	$20,$FB		; $08D1 jr nz,.loop2
 	dc.b	$21,$00,$03		; $08D3 ld hl,$0300
 	dc.b	$3E,$7F		; $08D6 ld a,$7F
 	dc.b	$0E,$80		; $08D8 ld c,$80
+.loop3
 	dc.b	$77		; $08DA ld (hl),a
 	dc.b	$23		; $08DB inc hl
 	dc.b	$0D		; $08DC dec c
-	dc.b	$20,$FB		; $08DD jr nz,$08DA
+	dc.b	$20,$FB		; $08DD jr nz,.loop3
 	dc.b	$21,$80,$03		; $08DF ld hl,$0380
 	dc.b	$3E,$40		; $08E2 ld a,$40
 	dc.b	$0E,$80		; $08E4 ld c,$80
+.loop4
 	dc.b	$77		; $08E6 ld (hl),a
 	dc.b	$23		; $08E7 inc hl
 	dc.b	$0D		; $08E8 dec c
-	dc.b	$20,$FB		; $08E9 jr nz,$08E6
+	dc.b	$20,$FB		; $08E9 jr nz,.loop4
 	dc.b	$21,$00,$04		; $08EB ld hl,$0400
 	dc.b	$3E,$40		; $08EE ld a,$40
 	dc.b	$0E,$80		; $08F0 ld c,$80
+.loop5
 	dc.b	$77		; $08F2 ld (hl),a
 	dc.b	$23		; $08F3 inc hl
 	dc.b	$0D		; $08F4 dec c
-	dc.b	$20,$FB		; $08F5 jr nz,$08F2
+	dc.b	$20,$FB		; $08F5 jr nz,.loop5
 	dc.b	$C9		; $08F7 ret
 ; Fills the note/volume tables at $0100 and $0200.
 Z80InitNoteTables
@@ -373,10 +403,11 @@ Z80InitNoteTables
 	dc.b	$21,$04,$01		; $090C ld hl,$0104
 	dc.b	$3E,$FF		; $090F ld a,$FF
 	dc.b	$0E,$FC		; $0911 ld c,$FC
+.loop
 	dc.b	$77		; $0913 ld (hl),a
 	dc.b	$23		; $0914 inc hl
 	dc.b	$0D		; $0915 dec c
-	dc.b	$20,$FB		; $0916 jr nz,$0913
+	dc.b	$20,$FB		; $0916 jr nz,.loop
 	dc.b	$C9		; $0918 ret
 ; Reads a byte from the channel table at $0200 indexed by A.
 Z80GetChannelByte
@@ -391,8 +422,9 @@ Z80FindNoteEntry
 	dc.b	$E5		; $0923 push hl
 	dc.b	$21,$00,$01		; $0924 ld hl,$0100
 	dc.b	$0E,$40		; $0927 ld c,$40
+.loop
 	dc.b	$BE		; $0929 cp (hl)
-	dc.b	$20,$0A		; $092A jr nz,$0936
+	dc.b	$20,$0A		; $092A jr nz,.next
 	dc.b	$23		; $092C inc hl
 	dc.b	$23		; $092D inc hl
 	dc.b	$46		; $092E ld b,(hl)
@@ -400,15 +432,17 @@ Z80FindNoteEntry
 	dc.b	$4E		; $0930 ld c,(hl)
 	dc.b	$C5		; $0931 push bc
 	dc.b	$DD,$E1		; $0932 pop ix
-	dc.b	$18,$0E		; $0934 jr $0944
+	dc.b	$18,$0E		; $0934 jr .next2
+.next
 	dc.b	$CD,$53,$10		; $0936 call Z80DacService
 	dc.b	$23		; $0939 inc hl
 	dc.b	$23		; $093A inc hl
 	dc.b	$23		; $093B inc hl
 	dc.b	$23		; $093C inc hl
 	dc.b	$0D		; $093D dec c
-	dc.b	$20,$E9		; $093E jr nz,$0929
+	dc.b	$20,$E9		; $093E jr nz,.loop
 	dc.b	$DD,$21,$00,$00		; $0940 ld ix,$0000
+.next2
 	dc.b	$E1		; $0944 pop hl
 	dc.b	$C9		; $0945 ret
 ; Writes the key on/off register ($28) for the channel in A.
@@ -416,8 +450,9 @@ Z80YmKeyOn
 	dc.b	$47		; $0946 ld b,a
 	dc.b	$21,$00,$40		; $0947 ld hl,$4000
 	dc.b	$FE,$03		; $094A cp $03
-	dc.b	$38,$01		; $094C jr c,$094F
+	dc.b	$38,$01		; $094C jr c,.next
 	dc.b	$3C		; $094E inc a
+.next
 	dc.b	$CD,$3E,$11		; $094F call Z80YmWaitReady
 	dc.b	$36,$28		; $0952 ld (hl),$28
 	dc.b	$23		; $0954 inc hl
@@ -551,29 +586,33 @@ Z80IrqReturn
 Z80DacService
 	dc.b	$D9		; $1053 exx
 	dc.b	$CB,$46		; $1054 bit 0,(hl)
-	dc.b	$28,$73		; $1056 jr z,$10CB
+	dc.b	$28,$73		; $1056 jr z,.next7
 	dc.b	$08		; $1058 ex af,af'
 	dc.b	$3A,$A1,$00		; $1059 ld a,($00A1)
 	dc.b	$F6,$10		; $105C or $10
+.loop
 	dc.b	$CB,$7E		; $105E bit 7,(hl)
-	dc.b	$20,$FC		; $1060 jr nz,$105E
+	dc.b	$20,$FC		; $1060 jr nz,.loop
 	dc.b	$36,$27		; $1062 ld (hl),$27
 	dc.b	$12		; $1064 ld (de),a
+.loop2
 	dc.b	$0A		; $1065 ld a,(bc)
 	dc.b	$03		; $1066 inc bc
 	dc.b	$B7		; $1067 or a
-	dc.b	$28,$11		; $1068 jr z,$107B
+	dc.b	$28,$11		; $1068 jr z,.next
 	dc.b	$FE,$FF		; $106A cp $FF
-	dc.b	$28,$26		; $106C jr z,$1094
+	dc.b	$28,$26		; $106C jr z,.next2
 	dc.b	$FE,$FE		; $106E cp $FE
-	dc.b	$28,$4D		; $1070 jr z,$10BF
+	dc.b	$28,$4D		; $1070 jr z,.next5
+.loop3
 	dc.b	$CB,$7E		; $1072 bit 7,(hl)
-	dc.b	$20,$FC		; $1074 jr nz,$1072
+	dc.b	$20,$FC		; $1074 jr nz,.loop3
 	dc.b	$36,$2A		; $1076 ld (hl),$2A
 	dc.b	$12		; $1078 ld (de),a
-	dc.b	$18,$4F		; $1079 jr $10CA
+	dc.b	$18,$4F		; $1079 jr .next6
+.next
 	dc.b	$CB,$7E		; $107B bit 7,(hl)
-	dc.b	$20,$FC		; $107D jr nz,$107B
+	dc.b	$20,$FC		; $107D jr nz,.next
 	dc.b	$36,$27		; $107F ld (hl),$27
 	dc.b	$3A,$A1,$00		; $1081 ld a,($00A1)
 	dc.b	$E6,$FA		; $1084 and $FA
@@ -582,34 +621,40 @@ Z80DacService
 	dc.b	$3A,$BB,$00		; $108A ld a,($00BB)
 	dc.b	$F6,$20		; $108D or $20
 	dc.b	$32,$BB,$00		; $108F ld ($00BB),a
-	dc.b	$18,$36		; $1092 jr $10CA
+	dc.b	$18,$36		; $1092 jr .next6
+.next2
 	dc.b	$3A,$92,$00		; $1094 ld a,($0092)
 	dc.b	$B7		; $1097 or a
-	dc.b	$28,$03		; $1098 jr z,$109D
+	dc.b	$28,$03		; $1098 jr z,.next3
 	dc.b	$0B		; $109A dec bc
-	dc.b	$18,$2D		; $109B jr $10CA
+	dc.b	$18,$2D		; $109B jr .next6
+.next3
 	dc.b	$3A,$A2,$00		; $109D ld a,($00A2)
 	dc.b	$B7		; $10A0 or a
-	dc.b	$20,$0E		; $10A1 jr nz,$10B1
+	dc.b	$20,$0E		; $10A1 jr nz,.next4
 	dc.b	$3C		; $10A3 inc a
 	dc.b	$32,$A2,$00		; $10A4 ld ($00A2),a
 	dc.b	$3E,$02		; $10A7 ld a,$02
 	dc.b	$32,$92,$00		; $10A9 ld ($0092),a
 	dc.b	$01,$49,$16		; $10AC ld bc,$1649
-	dc.b	$18,$B4		; $10AF jr $1065
+	dc.b	$18,$B4		; $10AF jr .loop2
+.next4
 	dc.b	$3D		; $10B1 dec a
 	dc.b	$32,$A2,$00		; $10B2 ld ($00A2),a
 	dc.b	$3E,$03		; $10B5 ld a,$03
 	dc.b	$32,$92,$00		; $10B7 ld ($0092),a
 	dc.b	$01,$48,$14		; $10BA ld bc,$1448
-	dc.b	$18,$A6		; $10BD jr $1065
+	dc.b	$18,$A6		; $10BD jr .loop2
+.next5
 	dc.b	$0B		; $10BF dec bc
 	dc.b	$3A,$92,$00		; $10C0 ld a,($0092)
 	dc.b	$B7		; $10C3 or a
-	dc.b	$20,$04		; $10C4 jr nz,$10CA
+	dc.b	$20,$04		; $10C4 jr nz,.next6
 	dc.b	$3E,$01		; $10C6 ld a,$01
-	dc.b	$18,$E7		; $10C8 jr $10B1
+	dc.b	$18,$E7		; $10C8 jr .next4
+.next6
 	dc.b	$08		; $10CA ex af,af'
+.next7
 	dc.b	$D9		; $10CB exx
 	dc.b	$C9		; $10CC ret
 	dc.b	$21,$00,$40,$CB,$4E,$28,$59,$3A,$A1,$00,$F6,$20,$CD,$3E,$11,$36		; $10CD data
@@ -624,8 +669,9 @@ Z80DacService
 Z80YmWaitReady
 	dc.b	$E5		; $113E push hl
 	dc.b	$21,$00,$40		; $113F ld hl,$4000
+.loop
 	dc.b	$CB,$7E		; $1142 bit 7,(hl)
-	dc.b	$20,$FC		; $1144 jr nz,$1142
+	dc.b	$20,$FC		; $1144 jr nz,.loop
 	dc.b	$E1		; $1146 pop hl
 	dc.b	$C9		; $1147 ret
 	dc.b	$2E,$00,$67,$48,$06,$00,$3E,$08,$29,$30,$01,$09,$3D,$20,$F9,$E5		; $1148 data

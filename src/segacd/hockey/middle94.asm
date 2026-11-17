@@ -174,7 +174,7 @@ ForceBlackStep
 	move.l	d3,$BBC88.l
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
-	jsr	$222C2.l
+	jsr	(RaiseGateRequest).l
 .loop	btst	#$4,$FF800E.l
 	bne.b	.loop
 	move.w	#$1D,$FF8026.l
@@ -223,6 +223,8 @@ ForceBlackStep
 	move.w	(sp)+,(disflags).l
 	movem.l	(sp)+,d0/a0-a1
 	rts
+; Sets colour RAM to black through the gate array.
+ForceBlackStepCram
 	movem.l	d0/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -386,6 +388,8 @@ song						;play song number. One word passed on stack
 	move.l	(sp),$2(sp)
 	addq.w	#$2,sp
 	rts
+; Checks the CD (BIOS calls $80/$81) before a song starts.
+SongCdCheck
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	#$80,d0
 	jsr	$5F22.w
@@ -625,13 +629,17 @@ ReadJoy	not.b	d0
 	rts
 ; Data that follows ReadJoy (strings, small tables)
 ReadJoyDataTable	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
+; Loads the scouting report text block and clears its pointer slots.
+ScoutingReportTextLoad
 	movem.l	d7/a0,-(sp)
 	move.w	#$2,d7
 	movea.l	#$4820A,a0
 	jsr	$6044.w
 	movem.l	(sp)+,d7/a0
-	jsr	$375B6.l
+	jsr	(ScoutingReportTextClear).l
 	rts
+; Clears the scouting report text pointer table ($2C longs).
+ScoutingReportTextClear
 	movem.l	d0/a0,-(sp)
 	lea.l	(ScoutingReportText).l,a0
 	move.l	#$2B,d0
@@ -639,10 +647,12 @@ ReadJoyDataTable	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	dbra	d0,.loop
 	movem.l	(sp)+,d0/a0
 	rts
-; Data of ReadJoyDataTable (2 rows): table or constants used by it.
+; Table of 16 words after ReadJoyDataTable, 32 bytes: $563A,$7E00,$3E39,$0003,$75D2,$E24F ...
 	dc.w	$563A,$7E00,$3E39,$0003,$75D2,$E24F,$6400,$0006
 	dc.w	$0A47,$B400,$33C7,$0003,$75D2,$8FFC,$FFFF,$4847
 	rts
+; Adds the disc load base to every pointer of the table at $47D88.
+RelocatePointerTableDisc
 	movem.l	d0-d1/a0,-(sp)
 	movea.l	$47D88.l,a0
 	move.l	a0,d1
@@ -658,6 +668,8 @@ ReadJoyDataTable	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	bne.w	.loop3
 	movem.l	(sp)+,d0-d1/a0
 	rts
+; Relocates the pointer table to the word RAM base.
+RelocatePointerTableWordRam
 	movem.l	d0-d1/a0,-(sp)
 	movea.l	#$80000,a0
 	move.l	a0,d1
@@ -685,7 +697,7 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 .loop	move.l	(a0)+,(a1)+
 	dbra	d0,.loop
 	movea.l	$47D88.l,a0
-	jsr	$37620.l
+	jsr	(RelocatePointerTableWordRam).l
 	movea.l	a0,a1
 	adda.l	#$7D0,a1
 	movea.l	#$80000,a2
@@ -712,6 +724,8 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	tst.l	(a0,d1.w)
 	bne.w	.loop2
 	rts
+; Adds the logo bitmap base to its pointer table ($1C entries).
+RelocateLogoBitmaps
 	movem.l	d0-d1/a0,-(sp)
 	movea.l	(TeamLogoBitmaps).l,a0
 	move.l	a0,d1
@@ -720,6 +734,8 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	dbra	d0,.loop4
 	movem.l	(sp)+,d0-d1/a0
 	rts
+; Sends gate array command $3D.
+SubCmd3DSend
 	movem.l	d0-d7/a0-a2,-(sp)
 	bclr	#$5,$FF800F.l
 .loop5	btst	#$7,$FF800E.l
@@ -736,6 +752,8 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	bset	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
+; Clears VRAM from address 0 via setVram.
+ClearVramViaSetVram
 	movem.l	d0-d7/a0-a2,-(sp)
 	moveq	#$0,d0
 	bsr.w	setVram
@@ -802,7 +820,7 @@ DoDMAProQueue
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	jsr	$222C2.l
+	jsr	(RaiseGateRequest).l
 .loop2	btst	#$7,$FF800E.l
 	bne.b	.loop2
 	move.w	#$8,$FF8020.l
@@ -826,6 +844,8 @@ DoDMAProQueue
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
+; Copies d0 bytes from word RAM into the work buffer when the source is in range.
+DmaCopyFromWordRam
 	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
 	bge.w	.next6
@@ -869,7 +889,7 @@ DoDMAProQueue
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	jsr	$222C2.l
+	jsr	(RaiseGateRequest).l
 .loop6	btst	#$4,$FF800E.l
 	bne.b	.loop6
 	move.w	#$32,$FF8026.l
@@ -900,7 +920,7 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	d0,$BBC88.l
 	move.l	d1,$BBC8C.l
 	move.l	d2,$BBC90.l
-	jsr	$222C2.l
+	jsr	(RaiseGateRequest).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
 	move.w	#$1E,$FF8020.l
@@ -939,7 +959,7 @@ DoDMANd2Queue
 	move.l	d0,$BBC88.l
 	move.l	d1,$BBC8C.l
 	move.l	d2,$BBC90.l
-	jsr	$222C2.l
+	jsr	(RaiseGateRequest).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
 	move.w	#$1F,$FF8020.l
@@ -971,6 +991,8 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	dbra	d1,.loop
 	move.w	#$18,(palcount).l
 	bsr.w	ForceBlackBegin
+; Pushes the sub-CPU return state while a VRAM transfer runs.
+SetVramStackPush
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -1563,7 +1585,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 .loop5	btst	#$7,$FF800E.l
 	bne.b	.loop5
 	move.w	#$21,$FF8020.l
-	jsr	$222C2.l
+	jsr	(RaiseGateRequest).l
 	bset	#$6,$FF800F.l
 	jsr	$22268.l
 .loop6	btst	#$6,$FF800E.l

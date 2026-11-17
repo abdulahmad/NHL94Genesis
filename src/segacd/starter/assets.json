@@ -37,6 +37,14 @@
  },
  "starter_0BC64.bin": {
   "start": 48228,
-  "size": 65596
+  "size": 1496
+ },
+ "starter_0C23C.bin": {
+  "start": 49724,
+  "size": 1650
+ },
+ "starter_0C8AE.bin": {
+  "start": 51374,
+  "size": 62450
  }
 }

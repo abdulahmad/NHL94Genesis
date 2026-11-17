@@ -157,7 +157,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	cmp.w	d4,d2
 	ble.w	.next
 .rtss3	rts
-.next	jmp	$3B6A2.l
+.next	jmp	(wallcollb).l
 Create_HotCold_Table						;Fill the hot / cold table (tmHotCold) of team struct a0: 16 bytes for
 	
 	

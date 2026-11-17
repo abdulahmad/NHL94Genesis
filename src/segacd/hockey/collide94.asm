@@ -356,7 +356,7 @@ CheckIntBothSides	movem.l	d0-d4/a0-a3,-(sp)
 	add.b	$67(a2),d0
 	lsr.w	#$1,d0
 	exg.l	a2,a3
-	jsr	$24FB4.l
+	jsr	(PlayerCardDrawPortrait).l
 	exg.l	a2,a3
 	sub.w	$32(a2),d0
 	beq.w	.next5
@@ -648,7 +648,7 @@ FallDown
 	bsr.w	vtoa
 	tst.w	$34(a2)
 	beq.w	FallDownSpeed
-	jsr	$24FB4.l
+	jsr	(PlayerCardDrawPortrait).l
 	btst	#$4,$64(a2)
 	beq.w	FallDownSpeed
 	movem.l	d1-d4,-(sp)
@@ -887,7 +887,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	beq.w	.injurygame
 	bclr	#$5,$17F7A.l
 	move.w	#$FFFD,$68(a0,d1.w)		;update status of player
-	jsr	$2AC46.l		;check Fgt bit 1 of player.
+	jsr	(GetFgtByteReturn).l		;check Fgt bit 1 of player.
 	beq.w	.exit		;jump if Fgt not 2,6,A
 .injurygame	bset	#$5,$17F7A.l		;set injury game bit
 	move.w	#$FFFC,$68(a0,d1.w)		;update status of player
@@ -1112,7 +1112,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 .next19	bset	#$0,$17F72.l
 	bclr	#$3,$17F7C.l
 	bsr.w	ChkShotStat
-	jsr	$47DB0.l
+	jsr	(HockeyRtsStubB).l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0
 .loop	cmp.w	(ScoutSubStatus).l,d0
@@ -1605,7 +1605,7 @@ PuckCollisionExit
 ; Puck collision: return
 PuckCollisionReturn	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-; Data of PuckCollisionReturn (5 rows): table or constants used by it.
+; Table of 80 bytes after PuckCollisionReturn, 80 bytes: $00,$0C,$00,$0C,$00,$0D ...
 	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
 	dc.b	$00,$0D,$00,$0D,$00,$0E,$00,$0E,$00,$0E,$00,$0E,$00,$0F,$00,$0F	; ................
 	dc.b	$00,$0F,$00,$0F,$00,$0F,$00,$0F,$00,$90,$00,$90,$00,$A9,$00,$A9	; ................

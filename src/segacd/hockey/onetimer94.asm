@@ -172,13 +172,13 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$17FA0.l,-(sp)
 	move.w	$17FAC.l,$17FA8.l
 	move.w	$17FA4.l,$17FA0.l
-	jsr	$312DC.l
+	jsr	(setc2player).l
 	move.w	$17FA0.l,$17FA4.l
 	move.w	$17FA8.l,$17FAC.l
 	move.w	(sp)+,$17FA0.l
 	move.w	(sp)+,$17FA8.l
 	bra.w	.next4
-.next	jsr	$312DC.l
+.next	jsr	(setc2player).l
 	bra.w	.next4
 .next2	tst.w	$1AD7C.l
 	bne.w	.next3
@@ -186,18 +186,18 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$17F9E.l,-(sp)
 	move.w	$17FAA.l,$17FA6.l
 	move.w	$17FA2.l,$17F9E.l
-	jsr	$312B8.l
+	jsr	(setc1player).l
 	move.w	$17F9E.l,$17FA2.l
 	move.w	$17FA6.l,$17FAA.l
 	move.w	(sp)+,$17F9E.l
 	move.w	(sp)+,$17FA6.l
 	bra.w	.next4
-.next3	jsr	$312B8.l
+.next3	jsr	(setc1player).l
 	bra.w	.next4
 .next4	move.w	d0,-(sp)
 	bsr.w	PlayerPositionToScreen
 	clr.w	$5A(a3)
-	jsr	$363C0.l
+	jsr	(SetSPA).l
 	bset.b	#$5,$62(a3)
 	bset.b	#$1,$63(a3)
 	move.w	(sp)+,d0
@@ -316,7 +316,7 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 .next25	nop
 .next26	btst.b	#$1,$63(a3)
 	bne.w	.ex
-.next27	jsr	$2AF00.l
+.next27	jsr	(EndOneTimer).l
 .ex	rts
 ; Turns the position of the object in a3 into screen coordinates and draws its marker
 PlayerPositionToScreen	move.w	#$7FC,d1
@@ -328,8 +328,8 @@ PlayerPositionToScreen	move.w	#$7FC,d1
 	bne.w	.next
 	neg.w	d1
 .next	sub.w	$14(a3),d1
-	jsr	$362F8.l
-	jsr	$22D9E.l
+	jsr	(vtoa).l
+	jsr	(CheckOneTimerFacing).l
 	movem.w	(sp)+,d0-d1
 	beq.w	.ex
 	move.w	#$92E,d1
@@ -344,7 +344,7 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 .next	tst.w	d0
 	bpl.w	.next3
 	bra.w	.next2
-; Data of PuckOnAttackHalf (6 rows): table or constants used by it.
+; Table of 41 words after PuckOnAttackHalf, 82 bytes: $3039,$0001,$7E2C,$0640,$0004,$0240 ...
 	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B
 	dc.w	$0054,$B240,$6000,$0044,$6700,$0040,$0641,$0001
 	dc.w	$0241,$0007,$B240,$6700,$0032,$0641,$0001,$0241
@@ -403,4 +403,6 @@ CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d
 .next2	movem.w	(sp)+,d0-d1
 	rts
 	rts
+; Return point of CheckOneTimerFacing.
+CheckOneTimerFacingReturn
 	rts

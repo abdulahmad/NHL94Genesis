@@ -165,11 +165,11 @@ LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a r
 	rts
 PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 PrintNameLogEnterText				;the prompt String of the name entry screen (length word, map and position codes, text)
-; Data of PrintNameLogEnterText (2 rows): table or constants used by it.
+; Text bytes after PrintNameLogEnterText: ".....  Enter new name: ." (24 bytes).
 	dc.w	$0018
 	dc.b	$BF,$02,$10,'  Enter new name: ',$00
 PrintNameLogSelectText				;the prompt String of the Name Log list
-; Data of PrintNameLogSelectText (2 rows): table or constants used by it.
+; Text bytes after PrintNameLogSelectText: ".....Select or replace:." (24 bytes).
 	dc.w	$0018
 	dc.b	$BF,$02,$10,'Select or replace:',$00
 PrintNameLogList					;draw the Name Log list screen: prompt, then the log names
@@ -266,6 +266,8 @@ NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as 
 	subq.w	#$4,(a2)+
 	dc.w	$2E31,$3220		; move.l $20(a1,d3.w),d7
 	move.l	d0,-(a6)
+; Runs the framer with the name entry framer setting.
+NameEntryFramerRun
 	move.w	(framercset).l,-(sp)
 	move.w	$1A3D2.l,(framercset).l
 	jsr	(Framer).l
@@ -320,7 +322,7 @@ StoreUserName						;Name entry: store the name in save RAM
 .2	move.b	d1,(a0)+
 	dbra	d4,.loop2
 	bsr.w	WriteNameLog
-	jsr	$26F06.l
+	jsr	(StoreUserNameSearch).l
 .next2	movea.l	#$18BF4,a5
 	tst.w	$1A390.l
 	beq.w	.next3
@@ -331,6 +333,8 @@ StoreUserName						;Name entry: store the name in save RAM
 .next4	move.w	$1A38C.l,(a5)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Searches the stored names ($2D7 entries) for the entered user name.
+StoreUserNameSearch
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$2D7,d7
 	move.l	#$0,d0
@@ -338,7 +342,7 @@ StoreUserName						;Name entry: store the name in save RAM
 	movea.l	#ThreeStars,a0
 	move.w	$1A38C.l,d6
 .loop3	clr.w	d5
-	jsr	$22452.l
+	jsr	(BackupRamRead).l
 	cmp.b	$1(a0),d6
 	bne.w	.next5
 	clr.b	$1(a0)
@@ -349,7 +353,7 @@ StoreUserName						;Name entry: store the name in save RAM
 	st.b	d5
 .next6	tst.w	d5
 	beq.w	.next7
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 .next7	addi.l	#$4,d0
 	dbra	d7,.loop3
 	move.w	#$1B,d7
@@ -358,7 +362,7 @@ StoreUserName						;Name entry: store the name in save RAM
 	movea.l	#ThreeStars,a0
 	move.w	$1A38C.l,d6
 .loop4	clr.w	d5
-	jsr	$22452.l
+	jsr	(BackupRamRead).l
 	cmp.b	$1(a0),d6
 	bne.w	.next8
 	clr.b	$1(a0)
@@ -385,7 +389,7 @@ StoreUserName						;Name entry: store the name in save RAM
 	st.b	d5
 .next13	tst.w	d5
 	beq.w	.next14
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 .next14	addi.l	#$10,d0
 	dbra	d7,.loop4
 	move.l	#$D20,d0
@@ -395,13 +399,13 @@ StoreUserName						;Name entry: store the name in save RAM
 	add.l	d3,d0
 	move.l	#$10,d1
 	movea.l	#ThreeStars,a0
-	jsr	$22452.l
+	jsr	(BackupRamRead).l
 	move.l	a0,-(sp)
 	move.w	#$F,d3
 .loop5	clr.b	(a0)+
 	dbra	d3,.loop5
 	movea.l	(sp)+,a0
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEntryScreen) for
@@ -414,7 +418,7 @@ UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEnt
 	beq.w	.next
 	move.w	$17FA6.l,$1A390.l
 	subi.w	#$1,$1A390.l
-	jsr	$26348.l
+	jsr	(TrimSpacesMenuSetup).l
 .next	tst.w	$17FA8.l
 	beq.w	.ex
 	movem.w	d0,-(sp)
@@ -424,7 +428,7 @@ UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEnt
 	beq.w	.ex
 	move.w	$17FA8.l,$1A390.l
 	subi.w	#$1,$1A390.l
-	jsr	$26348.l
+	jsr	(TrimSpacesMenuSetup).l
 .ex	rts
 SkipOtherUserName						;Name entry: step the selection namelogsel past the name the other pad
 	
@@ -814,7 +818,7 @@ ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	move.l	#$D20,d0
 	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
-	jsr	$22452.l
+	jsr	(BackupRamRead).l
 	movea.l	#$1A3D4,a1
 	btst	#$6,(sflags6).l
 	beq.w	.0

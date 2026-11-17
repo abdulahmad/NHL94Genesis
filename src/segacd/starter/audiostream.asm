@@ -199,7 +199,7 @@ AudioTime
 	move.l	$C(a6),d0
 	jsr	Mul32(pc)
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
-; Data of AudioTime (2 rows): table or constants used by it.
+; Table of 2 words after AudioTime, 6 bytes: $D0BC,$00001F40 ...
 	dc.w	$D0BC
 	dc.l	$00001F40
 	move.l	#$3E80,d1

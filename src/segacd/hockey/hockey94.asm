@@ -29,8 +29,10 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	lea.l	.next(pc),a0
 	move.w	(a0,d0.w),d0
 	rts
-; Data of GetPeriodTime (1 row): table or constants used by it.
+; Table of 4 words after GetPeriodTime, 8 bytes: $012C,$0258,$04B0,$001E ...
 .next	dc.w	$012C,$0258,$04B0,$001E
+; Period time screen set-up: sets the palette count and the gate command.
+GetPeriodTimeSetup
 	bclr	#$5,$FF800F.l
 	move.w	#$FFFF,(palcount).l
 	move.w	#$8400,d1
@@ -40,8 +42,8 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	bne.w	.next2
 	bset	#$1,$17F7A.l
 .next2	st.b	$1A560.l
-	jsr	$47DAC.l
-	jsr	$3E91C.l
+	jsr	(HockeyRtsStubA).l
+	jsr	(UpdateSoundVdpSetup).l
 	bsr.w	ResetClock
 ; Inline data read by ResetClock from the return address (1 row).
 	dc.w	$0079,$F000,$0001,$7DC8
@@ -87,7 +89,7 @@ GameloopStart	jsr	(assreplace).l
 	cmpi.w	#$2,$180E4.l
 	bge.w	.loop
 	bset	#$7,$17F6E.l
-.loop	jsr	$37206.l
+.loop	jsr	(SongCdCheck).l
 	bsr.w	DoGameFrame
 	bsr.w	demoread
 	btst	#$0,$17F6A.l
@@ -106,10 +108,10 @@ DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	bmi.w	.nosong
 	subi.w	#$1,$1AD6E.l
 	bne.w	.nosong
-	jsr	$47DB0.l
+	jsr	(HockeyRtsStubB).l
 	move.w	$1AD70.l,-(sp)
 	jsr	(song).l
-.nosong	jsr	$25000.l
+.nosong	jsr	(PlayerCardDrawStats).l
 	bsr.w	checkwindow
 	bsr.w	updatereplay
 	jmp	(setvideo).l
@@ -132,7 +134,7 @@ periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jmp	(updatepwrplay).l
 .next	subi.w	#$1,$1806A.l
 	bne.w	updatereplayExit
-	jmp	$40D50.l
+	jmp	(CalcTeamStarScoresPrint).l
 RestoreBenchEnergy						;Called once per second. Restore energy for players on the bench
 	tst.w	$18C0A.l
 	bne.w	.ex
@@ -245,7 +247,7 @@ clockcont						;monitor period clock and initiate various clock activated events
 	tst.w	$180E6.l
 	bne.w	updatereplayExit
 	bset	#$3,(disflags).l
-	jsr	$47DB0.l
+	jsr	(HockeyRtsStubB).l
 	move.w	#$4,-(sp)
 	jsr	(sfx).l
 	bsr.w	freezewindow
@@ -321,17 +323,17 @@ demoread						;monitor joystick if in demo mode (called every game loop)
 	bne.w	EndDemoExitMode0On
 	tst.w	$18BF8.l
 	beq.w	EndDemoOnPress
-	jsr	$3752C.l
+	jsr	(ReadJoy3).l
 	btst	#$7,d1
 	bne.w	EndDemoExitMode3Off
 	bsr.w	EndDemoOnPress
-	jsr	$3754A.l
+	jsr	(ReadJoy4).l
 	btst	#$7,d1
 	bne.w	EndDemoExitMode4On
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
 	beq.w	updatereplayExit
-	jmp	$3F2BE.l
+	jmp	(GameOverCheckScroll).l
 ; Demo end code 0, flag 1 cleared
 EndDemoExitMode0Off
 	clr.w	$17F94.l
@@ -360,7 +362,7 @@ Pausemode	jsr	(forceblack).l
 .loop	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.loop
 	move.w	(sp)+,d0
-	jsr	$47DAC.l
+	jsr	(HockeyRtsStubA).l
 	move.w	$17F6A.l,-(sp)
 	bsr.w	seta2
 	movea.l	#$41F50,a0
@@ -383,7 +385,7 @@ Pausemode	jsr	(forceblack).l
 	move.w	(sp)+,$17F6A.l
 	btst	#$7,$17F6A.l
 	beq.w	.next3
-	jsr	$3ECB8.l
+	jsr	(IceRinkRemapGfxA).l
 	jsr	(SetHor).l
 	bra.w	.next4
 .next3	jsr	(ClrHor).l
@@ -448,7 +450,7 @@ Pausemode	jsr	(forceblack).l
 	bclr	#$7,$FF800F.l
 	jsr	(SetHor).l
 	jsr	(setvideo).l
-	jsr	$48208.l
+	jsr	(HockeyRtsStubC).l
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008

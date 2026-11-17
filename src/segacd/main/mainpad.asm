@@ -3,7 +3,7 @@
 ; in the first 1404 bytes.
 
 
-; Data of the file start (8 rows): table or constants used by it.
+; Table of 1472 bytes after the file start, 1472 bytes: $00,$00,$00,$00,$00,$00 ...
 	dcb.b	$4D,0
 	dc.b	$01						; .
 	dcb.b	$52E,0

@@ -8,15 +8,15 @@ updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
 ; Instruction bytes inside updatecrowdf_cd0 that the assembler would encode differently, kept as words (1 row).
 	dc.w	$060c,$070c,$080c,$090c,$0a0c,$050c,$040c,$030c
 
-; Data of updatecrowdf_cd0 (2 rows): table or constants used by it.
+; Table of 16 words after updatecrowdf_cd0, 32 bytes: $0107,$0207,$0307,$0407,$0507,$0B07 ...
 	dc.w	$0107,$0207,$0307,$0407,$0507,$0b07,$0c07,$0d07
 	dc.w	$0607,$0707,$0807,$0907,$0a07,$0b07,$0c07,$0d07
 
-; Data of updatecrowdf_cd0 (2 rows): table or constants used by it.
+; Table of 16 words after updatecrowdf_cd0, 32 bytes: $0E07,$0F07,$1007,$1107,$1207,$0B07 ...
 	dc.w	$0e07,$0f07,$1007,$1107,$1207,$0b07,$0c07,$0d07
 	dc.w	$1207,$1107,$1007,$0f07,$0e07,$0d07,$0c07,$0b07
 
-; Data of updatecrowdf_cd0 (11 rows): table or constants used by it.
+; Table of 160 words after updatecrowdf_cd0, 176 bytes: $0E03,$0F03,$1003,$1103,$1203,$0B03 ...
 	dc.w	$0e03,$0f03,$1003,$1103,$1203,$0b03,$0c03,$0d03
 	dc.w	$1203,$1103,$1003,$0f03,$0e03,$0d03,$0c03,$0b03
 	dc.b	$00,$03,$C0,$00,$00,$03,$1F,$F2,$00,$03,$20,$E6,$00,$03,$22,$B2
@@ -204,7 +204,7 @@ PenDataInst	dc.w	$2802			;ttmm: slow down $28, 2 minutes
 
 PenShotPenalties					;the penalty shot penalty number for penalty number d0 (word offset), -1
 									;none. Used by PenShotChk
-; Data of PenShotPenalties (2 rows): table or constants used by it.
+; Table of 24 words after PenShotPenalties, 48 bytes: $FFFF,$FFFF,$FFFF,$FFFF,$FFFF,$FFFF ...
 	dc.w	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,$38,$3C
 	dc.w	$36,$3A,$2E,$30,$34,-1,-1,-1,-1,-1,-1,-1
 
@@ -252,7 +252,6 @@ PerLabels2	String	'1',$12			;the same with a blank last entry. Used by printscor
 	String	'  '
 
 sizetab								;sprite size code to tile count. sizetab, used by addframe2
-; Data of sizetab (1 row): table or constants used by it.
 	dc.b	1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16
 
 sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
@@ -626,7 +625,6 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 ExitGameText						;Intermission menu for gsp 4
-; Data of ExitGameText (1 row): table or constants used by it.
 	dc.b	$00,$04,$FE,$05,$00,$04,$FE,$04
 	String	'    Exit Game     '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -653,7 +651,6 @@ ExitGameText						;Intermission menu for gsp 4
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 LineEditorMenuText					;Line editor exit menu
-; Data of LineEditorMenuText (1 row): table or constants used by it.
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -666,7 +663,6 @@ LineEditorMenuText					;Line editor exit menu
 	dc.b	$00,$02,$CF,$DE,$00,$04,$FF,$00
 
 LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
-; Data of LineEditorMenuNoLoad (1 row): table or constants used by it.
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
 	dc.w	$0003,$C000		; ori.b #$0,d3

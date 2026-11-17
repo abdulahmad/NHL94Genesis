@@ -21,7 +21,7 @@ updateplayers
 	cmp.w	$17F8E.l,d0
 	blt.w	.next4
 	bset	#$6,$17F7A.l
-.next4	jsr	$2AE68.l
+.next4	jsr	(PlayedByAwayClearFlag).l
 	tst.w	$17BE0.l
 	bmi.w	.next5
 	bclr	#$7,$17F7C.l
@@ -215,7 +215,7 @@ updateplayers
 	beq.w	.next38
 	cmp.w	$17FA2.l,d6
 	bne.w	.next38
-	jsr	$3752C.l
+	jsr	(ReadJoy3).l
 	clr.l	d4
 	clr.w	$17F96.l
 	move.w	$17FA6.l,-(sp)
@@ -247,7 +247,7 @@ updateplayers
 	beq.w	.next39
 	cmp.w	$17FA4.l,d6
 	bne.w	.next39
-	jsr	$3754A.l
+	jsr	(ReadJoy4).l
 	move.l	#$2,d4
 	move.w	#$1,$17F96.l
 	move.w	$17FA8.l,-(sp)
@@ -758,7 +758,7 @@ doinputExitButtons	btst	#$5,d1
 	beq.w	.next9
 	neg.w	d3
 	adda.w	#$4,a0
-.next9	jsr	$330AC.l
+.next9	jsr	(AdjustFacingDirectionStep).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .next10	move.w	$17BE0.l,d2
@@ -864,7 +864,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bne.w	ShotMode
 	btst	#$4,d1
 	beq.w	.1
-	jsr	$2AD3A.l
+	jsr	(GetTeamStructCount).l
 	bra.w	setpassmode
 .1	btst	#$6,d1
 	beq.w	.ahold
@@ -904,7 +904,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bra.w	doplayeracc
 .shot	btst	#$5,d1
 	beq.w	doplayeracc
-	jsr	$2AD3A.l
+	jsr	(GetTeamStructCount).l
 	bra.w	SetShotMode
 doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the controlled player
 	move.w	$17BE0.l,d5
@@ -989,7 +989,7 @@ SetLCmode2
 	blt.w	.next
 	bset	#$0,$17F6E.l
 	bra.w	.next2
-.next	jsr	$410EC.l
+.next	jsr	(PrintBannerFont1).l
 	bsr.w	setlccords
 .next2	jsr	(Framer).l
 	subi.w	#$2,(printy).l
@@ -1065,7 +1065,7 @@ getlchoice2						;add $15 to d0 for each player more or fewer than the other tea
 	ext.w	d0
 	movem.l	(sp)+,d1-d2
 	rts
-; Data of getlchoice2 (4 rows): table or constants used by it.
+; Table of 32 words after getlchoice2, 64 bytes: $0001,$0201,$0200,$0200,$0100,$0102 ...
 .next	dc.w	$0001,$0201,$0200,$0200,$0100,$0102,$0001,$0200
 	dc.w	$0102,$0001,$0203,$04FF,$0304,$FF03,$04FF,$0304
 	dc.w	$FF04,$03FF,$0304,$FF03,$04FF,$0506,$FF05,$06FF
@@ -1440,7 +1440,7 @@ passto						;pass the puck to player a0: a3 = passer
 	rts
 ; Jumps to the pass routine at $2B4E2.
 PassToJump
-	jmp	$2B4E2.l
+	jmp	(HotColdIconDraw).l
 Sweepcheck						;start sweep check on player a3
 	bset	#$5,$62(a3)
 	move.w	#$B24,d1
@@ -1515,7 +1515,7 @@ Findhittype						;look for type of swing (forhand or backhand)
 	beq.w	.next
 ; Instruction bytes inside Findhittype that the assembler would encode differently, kept as words (1 row).
 	dc.w	$013C,$00F0,$4E75
-; Data of Findhittype (1 row): table or constants used by it.
+; Table of 3 words after Findhittype, 6 bytes: $013C,$001E,$4E75 ...
 .next	dc.w	$013C,$001E,$4E75
 SetShotMode
 	btst	#$2,$17F70.l
@@ -1964,7 +1964,7 @@ BenchGoToBench	clr.w	$6(a3)
 .next	move.w	#$FFFE,$68(a0,d0.w)
 	move.b	$61(a3),d3
 	bsr.w	BenchSetAnimation
-	jmp	$3D770.l
+	jmp	(SetPlayerSide).l
 ; Walks the player towards the bench door
 BenchWalkTarget	btst.b	#$2,$62(a3)
 	bne.w	check4benchExit
@@ -1978,7 +1978,7 @@ BenchFlagBits	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
 BenchSetAnimation	move.b	$60(a3),d0
 	ext.w	d0
 	move.w	d0,$34(a3)
-	jsr	$3D754.l
+	jsr	(Setplass).l
 	st.b	$61(a3)
 	st.b	$60(a3)
 	rts
@@ -2283,7 +2283,7 @@ AssistSkateOrExit	btst.b	#$3,$62(a3)
 .next	sub.b	d7,$40(a3)
 	bpl.w	.next5
 	move.b	$6A(a3),$40(a3)
-	jsr	$2AEDC.l
+	jsr	(ReadGoaliePulled).l
 	bmi.w	.next2
 	btst.b	#$6,$17F7A.l
 	beq.w	.next3
@@ -3133,7 +3133,7 @@ checkanimFlags
 	blt.w	.next36
 	bset	#$1,$63(a3)
 	bne.w	.next36
-	jsr	$330AC.l
+	jsr	(AdjustFacingDirectionStep).l
 .next36	move.w	(a0),d0
 	cmpi.w	#$FC,$17B94.l
 	bgt.w	.next37
@@ -3241,6 +3241,8 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	andi.w	#$7,d1		;wrap to 0-7
 	move.w	d1,$54(a3)		;facedir
 	rts
+; Computes the facing step from the position difference.
+AdjustFacingDirectionStep
 	move.w	(a0),d0
 	sub.w	$0(a3),d0
 	move.w	d3,d1
@@ -3333,7 +3335,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	asr.w	$2A(a3)
 	asr.w	$2A(a3)
 	rts
-; Data of AdjustFacingDirection (2 rows): table or constants used by it.
+; Table of 10 words after AdjustFacingDirection, 20 bytes: $0146,$0178,$0250,$02A2,$01EC,$021E ...
 .next15	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0
 	dc.w	$14F2,$1544
 assgoalietopuck						;goalie skates out to a loose puck (inserted by
@@ -3556,7 +3558,7 @@ asspuckc						;player a3 is puck handler
 	bne.w	.pass
 .shot	bsr.w	CheckPuckHolder2
 	bra.w	.pass
-.soshot	jsr	$2A84A.l
+.soshot	jsr	(NextPathPointCheck).l
 	bne.w	.nodec
 	jsr	(CompShoot).l
 .pass	bsr.w	chk4pass
@@ -3573,7 +3575,7 @@ asspuckc						;player a3 is puck handler
 	bne.w	.path
 	btst	#$0,$17F78.l
 	beq.w	.15
-.path	jsr	$2A7B6.l
+.path	jsr	(NextPathPointStep).l
 	cmpi.b	#$80,$1A8B8.l
 	beq.w	asspuckcExit
 .15	btst	#$7,$62(a3)		;pfgoal - 0 for bottom 1 for top
@@ -3587,7 +3589,7 @@ asspuckc						;player a3 is puck handler
 	beq.w	.17
 .16	lea.l	asspuckcExit(pc),a0
 .17	bra.w	skateto
-; Data of asspuckc (16 rows): table or constants used by it.
+; Table of 123 words after asspuckc, 246 bytes: $4880,$142B,$0028,$4882,$D479,$0001 ...
 .next3	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
 	dc.w	$002A,$4883,$D679,$0001,$7B94,$4279,$0001,$7E34
 	dc.w	$7805,$207C,$0001,$7480,$0C6B,$0006,$0052,$6C00
@@ -3607,7 +3609,7 @@ asspuckc						;player a3 is puck handler
 asspuckcExit
 	rts
 chk4lc						;see if computer should call line change
-; Data of chk4lc (2 rows): table or constants used by it.
+; Table of 2 words after chk4lc, 4 bytes: $FF9C,$FFEC ...
 	dc.w	$FF9C
 	dc.w	$FFEC
 	ori.w	#$FFEC,-(a4)
@@ -3899,7 +3901,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	beq.w	check4benchExit
 	adda.w	#$4,sp
 	bra.w	assexit
-; Data of chk4pass (11 rows): table or constants used by it.
+; Table of 88 words after chk4pass, 176 bytes: $4A79,$0001,$7BE0,$6B00,$DE40,$142B ...
 	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439
 	dc.w	$0001,$7BA8,$4882,$D46B,$0000,$9479,$0001,$7B80
 	dc.w	$0C42,$0028,$6E00,$DE22,$0C42,$FFD8,$6D00,$DE1A
@@ -4554,7 +4556,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 .next	move.w	$18D56.l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	bset.b	#$3,$18D64.l
 	bclr.b	#$0,$17F6A.l
 	bclr.b	#$0,$17F6E.l
@@ -4593,14 +4595,14 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 .loop2	bsr.w	checkwindow
 	dbra	d4,.loop2
 	move.w	#$3C,$17EE0.l
-	jsr	$3D6E2.l
+	jsr	(ResetBench).l
 	movea.l	#$1834C,a2
-	jsr	$3D426.l
-	jsr	$3D5E4.l
+	jsr	(setpersonel).l
+	jsr	(SetupPenaltyShot).l
 	adda.l	#$366,a2
-	jsr	$3D426.l
-	jsr	$3D5E4.l
-	jsr	$3F0C6.l
+	jsr	(setpersonel).l
+	jsr	(SetupPenaltyShot).l
+	jsr	(resetplstuff).l
 	move.l	a3,-(sp)
 	movea.l	#$17A00,a3
 	move.w	#$B,d2
@@ -4621,7 +4623,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
-	jsr	$3D770.l
+	jsr	(SetPlayerSide).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	tst.w	$34(a3)
 	beq.w	.next3
@@ -4659,7 +4661,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 .next9	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
-	jsr	$3D770.l
+	jsr	(SetPlayerSide).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	tst.w	$34(a3)
 	bne.w	.next10
@@ -4688,7 +4690,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	bsr.w	SetSPA
 .next13	suba.l	#$80,a3
 	dbra	d2,.loop3
-	jsr	$3F03E.l
+	jsr	(SprSort).l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
 	move.w	$1936A.l,d0
@@ -4707,11 +4709,11 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	move.w	#$2,d1
 .next15	cmp.w	$17FA6.l,d1
 	bne.w	.next16
-	jsr	$312B8.l
+	jsr	(setc1player).l
 	bra.w	.next17
 .next16	cmp.w	$17FA8.l,d1
 	bne.w	.next17
-	jsr	$312DC.l
+	jsr	(setc2player).l
 .next17	move.w	#$E,d0
 	bsr.w	assreplace
 	bset.b	#$7,$17F70.l
@@ -4731,7 +4733,7 @@ SelectPenaltyShotSkaterScreen	bclr.b	#$1,$62(a3)
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	rts
-; Data of SelectPenaltyShotSkaterScreen (4 rows): table or constants used by it.
+; Table of 52 bytes after SelectPenaltyShotSkaterScreen, 52 bytes: $00,$01,$02,$03,$04,$05 ...
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
 	dc.b	$00,$03,$05,$01,$04,$00,$00,$00,$00,$00,$FF,$06,$FF,$DD,$FF,$CE	; ................
 	dc.b	$00,$23,$FF,$CE,$FF,$CE,$FF,$F6,$00,$00,$FF,$F1,$00,$32,$FF,$F6	; .#...........2..
@@ -4811,15 +4813,15 @@ PenaltyShotCleanup	bclr.b	#$4,$17F7C.l
 	clr.l	$17DD2.l
 	bclr.b	#$6,$17F7A.l
 	bclr.b	#$2,$17F7A.l
-	jsr	$2ACA0.l
+	jsr	(CheckScoreLeader).l
 	tst.w	$1A560.l
 	bmi.w	.next3
 	move.w	$1A560.l,d0
 	bra.w	.next4
-.next3	jsr	$2AC4E.l
+.next3	jsr	(RandomFaceoffAnim).l
 	tst.w	d0
 	bmi.w	.next5
-.next4	jsr	$2A456.l
+.next4	jsr	(SetFaceoffAnim).l
 .next5	bclr.b	#$1,$17F76.l
 	bclr.b	#$1,$17F78.l
 	tst.w	$180E6.l
@@ -4848,7 +4850,7 @@ PenaltyShotCleanup	bclr.b	#$4,$17F7C.l
 	bclr.b	#$7,$17F6E.l
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$2,$1A56E.l
-	jsr	$2A478.l
+	jsr	(ChooseSong).l
 	move.w	$1A56A.l,-(sp)
 	bsr.w	song
 .next7	bsr.w	ReturnGoalies
@@ -5073,7 +5075,7 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	bls.w	.next4
 	move.w	(a0,d1.w),$16(a2)
 	bra.w	.loop
-; Data of CompLine (3 rows): table or constants used by it.
+; Table of 21 words after CompLine, 42 bytes: $0000,$0001,$0002,$0000,$0001,$0000 ...
 .next3	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
 	dc.w	$0000,$0001,$0002,$0000,$0002,$0000,$0000,$0001
 	dc.w	$0000,$0000,$0001,$0000,$0001
@@ -5096,7 +5098,7 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	move.w	-(a0),$16(a2)
 	bra.w	.loop
 .next5
-; Data of CompLine (6 rows): table or constants used by it.
+; Table of 84 bytes after CompLine, 84 bytes: $00,$00,$00,$01,$00,$02 ...
 	dc.b	$00,$00,$00,$01,$00,$02,$00,$00,$00,$02,$00,$01,$00,$00,$00,$01	; ................
 	dc.b	$00,$00,$08,$AB,$00,$01,$00,$62,$67,$00,$05,$1E,$08,$B9,$00,$02	; .......bg.......
 	dc.b	$00,$01,$7F,$70,$08,$B9,$00,$05,$00,$01,$7F,$70,$08,$B9,$00,$00	; ...p.......p....
@@ -5166,14 +5168,14 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 .loop	bsr.w	checkwindow
 	dbra	d4,.loop
 	move.w	#$3C,$17EE0.l
-	jsr	$3D6E2.l
+	jsr	(ResetBench).l
 	movea.l	#$1834C,a2
-	jsr	$3D426.l
-	jsr	$3D668.l
+	jsr	(setpersonel).l
+	jsr	(forcepldata).l
 	adda.w	#$366,a2
-	jsr	$3D426.l
-	jsr	$3D668.l
-	jsr	$3F0C6.l
+	jsr	(setpersonel).l
+	jsr	(forcepldata).l
+	jsr	(resetplstuff).l
 	move.l	a3,-(sp)
 	movea.l	#$17480,a3
 	moveq	#$B,d2
@@ -5247,13 +5249,13 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 	bsr.w	SetSPA
 .next10	adda.l	#$80,a3
 	dbra	d2,.loop2
-	jsr	$3F03E.l
+	jsr	(SprSort).l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
 	move.w	$18D56.l,d4
 	movea.l	$47D14.l,a2
 	addq.l	#$8,a2
-	jsr	$38958.l
+	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,$18D4C.l
 	movea.l	$47D30.l,a2
 	addq.l	#$8,a2
@@ -5263,7 +5265,7 @@ CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 	beq.w	.next11
 	move.w	$1A560.l,d0
 	bmi.w	.next11
-	jsr	$2A41E.l
+	jsr	(StartArenaAnim).l
 .next11	bsr.w	printz
 ; Inline data read by printz from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
@@ -5351,7 +5353,7 @@ FaceoffRandomDelay	move.w	#$78,d0
 	eori.w	#$800,$6(a0)
 .next3	move.w	#$FFFF,$17EE6.l
 	move.w	#$FFFF,$17EE8.l
-	jsr	$2B2D6.l
+	jsr	(GoalieSwapCheck).l
 	bclr.b	#$6,$17F7C.l
 	bne.w	.next4
 	bclr.b	#$4,$17F7C.l
@@ -5366,9 +5368,9 @@ FaceoffRandomDelay	move.w	#$78,d0
 ; Counts the faceoff timer down and ends the faceoff
 FaceoffTimerStep	subi.w	#$1,$40(a3)
 	bpl.w	updatefaceoff
-	jsr	$2A466.l
+	jsr	(EndArenaAnim).l
 	bra.w	Endfaceoff
-; Data of FaceoffTimerStep (4 rows): table or constants used by it.
+; Table of 52 bytes after FaceoffTimerStep, 52 bytes: $00,$01,$02,$03,$04,$05 ...
 	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
 	dc.b	$00,$03,$05,$01,$04,$00,$00,$00,$00,$00,$FF,$06,$FF,$DD,$FF,$CE	; ................
 	dc.b	$00,$23,$FF,$CE,$FF,$CE,$FF,$F6,$00,$00,$FF,$F1,$00,$32,$FF,$F6	; .#...........2..

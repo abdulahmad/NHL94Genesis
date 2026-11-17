@@ -3,142 +3,142 @@ TeamLogoPalettes					;Team logo palettes, 16 colors per team. Used by PeriodStat
 									;24 are the matchup logo palettes of TeamPalettes and incbin those files;
 									;BOS, FLA, HFD and SJ differ and have their own
 		dc.w	$0EEA,$0000,$0042,$0EEA		;ANH, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EEA,$0EEE,$0000,$0888 ...).
 	dc.w	$0EEA,$0EEE,$0000,$0888
 	dc.w	$0AAA,$0068,$008A,$00CE
 	dc.w	$0260,$0040,$0664,$0E8E
 		dc.w	$0EE8,$008C,$0000,$0A0A		;BOS: differs from MatchupPalBOSA.pal
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0A0A,$0EEE,$0000,$0C8C ...).
 	dc.w	$0A0A,$0EEE,$0000,$0C8C
 	dc.w	$008C,$0888,$0068,$0846
 	dc.w	$0044,$0422,$08CE,$02AE
 		dc.w	$0EE8,$0822,$008C,$0EE8		;BUF, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0EC8 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0EC8
 	dc.w	$048C,$0C88,$006C,$0866
 	dc.w	$0268,$0224,$0620,$00CE
 		dc.w	$0EE8,$0006,$008C,$0EE8		;CGY, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$08EE ...).
 	dc.w	$0EE8,$0EEE,$0000,$08EE
 	dc.w	$02CE,$02AE,$026E,$000C
 	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0000,$0006,$0EE8		;CHI, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$08EE ...).
 	dc.w	$0EE8,$0EEE,$0000,$08EE
 	dc.w	$0A8E,$04AC,$0A88,$046C
 	dc.w	$0226,$0644,$022E,$0262
 		dc.w	$0EE8,$0000,$0042,$0EE8		;DAL, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$08AA ...).
 	dc.w	$0EE8,$0EEE,$0000,$08AA
 	dc.w	$0688,$0488,$0466,$0244
 	dc.w	$0260,$0020,$0ACC,$0000
 		dc.w	$0EE8,$0006,$0006,$0EE8		;DET, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0C8E ...).
 	dc.w	$0EE8,$0EEE,$0000,$0C8E
 	dc.w	$086E,$044E,$082E,$020E
 	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0600,$004A,$0EE8		;EDM, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0CEA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0CEA
 	dc.w	$0A8E,$08A8,$044E,$0488
 	dc.w	$002E,$0440,$0400,$0EE8
 		dc.w	$0E0E,$0000,$008C,$0EE8		;FLA: differs from MatchupPalFLAA.pal
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0E00 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0E00
 	dc.w	$0400,$0600,$000E,$000A
 	dc.w	$0288,$0266,$02AA,$0CCC
 		dc.w	$0EE8,$0042,$0822,$0EE8		;HFD: differs from MatchupPalHFDA.pal
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0020 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0020
 	dc.w	$0040,$0A8A,$0020,$0466
 	dc.w	$0200,$0224,$0888,$0422
 		dc.w	$0EE8,$0000,$0000,$0EE8		;LA, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AAA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$0888,$0666,$0444,$0222
 	dc.w	$0CCC,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0600,$0006,$0EE8		;MTL, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$088E ...).
 	dc.w	$0EE8,$0EEE,$0000,$088E
 	dc.w	$026E,$0C68,$002E,$0A24
 	dc.w	$0EAA,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0020,$0006,$0EE8		;NJ, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AAA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$000A,$0888,$000C,$0022
 	dc.w	$0006,$0CCC,$0EE8,$0EE8
 		dc.w	$0EE8,$0822,$004A,$0EE8		;NYI, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AA8 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AA8
 	dc.w	$066E,$0864,$022C,$062A
 	dc.w	$0008,$0622,$0222,$0A8E
 		dc.w	$0EE8,$0600,$0006,$0EE8		;NYR, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AAA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$0C86,$002E,$0C60,$0844
 	dc.w	$0444,$0840,$0008,$0EC8
 		dc.w	$0EE8,$0006,$006A,$0EE8		;OTW, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$068A ...).
 	dc.w	$0EE8,$0EEE,$0000,$068A
 	dc.w	$0688,$0466,$0244,$022C
 	dc.w	$0228,$0008,$0AAA,$0004
 		dc.w	$0EE8,$0000,$004A,$0EE8		;PHI, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0CCC ...).
 	dc.w	$0EE8,$0EEE,$0000,$0CCC
 	dc.w	$088E,$0AAA,$046E,$006E
 	dc.w	$0888,$0666,$002E,$0444
 		dc.w	$0EE8,$0000,$008C,$0EE8		;PIT, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AAA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$088A,$066A,$04EE,$0464
 	dc.w	$0440,$02CE,$0244,$0AEE
 		dc.w	$0EE8,$0600,$0006,$0EE8		;QUE, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0C00 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0C00
 	dc.w	$000E,$0E44,$0ECE,$0E80
 	dc.w	$088E,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0000,$0822,$0EE8		;SJ: differs from MatchupPalSJA.pal
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0860 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0860
 	dc.w	$0642,$0888,$0CA8,$0ACC
 	dc.w	$02AE,$006E,$0048,$046A
 		dc.w	$0EE8,$0822,$006A,$0EE8		;STL, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0602 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0602
 	dc.w	$024C,$0002,$0026,$0068
 	dc.w	$0428,$086E,$0EE8,$0EE8
 		dc.w	$0EE8,$0000,$0600,$0EE8		;TB, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0C86 ...).
 	dc.w	$0EE8,$0EEE,$0000,$0C86
 	dc.w	$0E84,$0A84,$0C44,$0822
 	dc.w	$0E20,$0600,$0A00,$0EA8
 		dc.w	$0EE8,$0600,$0600,$0EE8		;TOR, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0ECA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0ECA
 	dc.w	$0AAA,$0C66,$0822,$0CCC
 	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0000,$008C,$0EE8		;VAN, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$00CE ...).
 	dc.w	$0EE8,$0EEE,$0000,$00CE
 	dc.w	$006A,$004E,$0028,$0022
 	dc.w	$0020,$008E,$0888,$06CE
 		dc.w	$0EE8,$0006,$0600,$0EE8		;WSH, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$022C ...).
 	dc.w	$0EE8,$0EEE,$0000,$022C
 	dc.w	$0C86,$0EA8,$088E,$0842
 	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
 		dc.w	$0EE8,$0600,$0006,$0EE8		;WPG, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$022C ...).
 	dc.w	$0EE8,$0EEE,$0000,$022C
 	dc.w	$0422,$0AAC,$0666,$0CAA
 	dc.w	$0444,$066E,$08CE,$0226
 		dc.w	$0EE8,$0006,$006A,$0EE8		;ASE, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AAA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$0888,$0684,$0444,$022C
 	dc.w	$0008,$0880,$0660,$0440
 		dc.w	$0EE8,$0006,$006A,$0EE8		;ASW, the TeamPalettes matchup logo palette
-; Data of TeamLogoPalettes (3 rows): table or constants used by it.
+; Palette data after TeamLogoPalettes: 12 colour words ($0EE8,$0EEE,$0000,$0AAA ...).
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$0888,$0466,$0444,$022C
 	dc.w	$0008,$0400,$0800,$0C00
@@ -169,12 +169,12 @@ GoalieSwapCheck	movem.l	d0/a0-a3,-(sp)
 	bne.w	.next3
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$1,$1A56E.l
-	jsr	$2A478.l
+	jsr	(ChooseSong).l
 .loop	bset.b	#$6,$17F7C.l
 	bra.w	GoalieSwapCheckRestore
 .next3	move.w	$17FAE.l,$1A56C.l
 	move.w	#$4,$1A56E.l
-	jsr	$2A478.l
+	jsr	(ChooseSong).l
 	bra.w	.loop
 ; Clears flag 5 of $17F6C, restores the flags and returns
 GoalieSwapCheckEnd	bclr.b	#$5,$17F6C.l
@@ -260,6 +260,8 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	jsr	(dobitmap).l
 .next6	movem.l	(sp)+,d0/a0-a1
 	rts
+; Hot/cold icon: draws the icon at the puck position.
+HotColdIconDraw
 	btst	#$6,$17F74.l
 	bne.w	HotColdIconExit
 	movem.l	d0-d6/a0-a1,-(sp)
@@ -340,7 +342,9 @@ HotColdIconExitSetC1
 ; Stub: jumps to setc2player
 HotColdIconExitSetC2
 	jmp	(setc2player).l
-	jsr	$37598.l
+; Loads the graphics block for the hot/cold icon.
+HotColdIconExitSetC2Load
+	jsr	(ScoutingReportTextLoad).l
 	move.w	#$D,d7
 	jsr	$6044.w
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -354,7 +358,7 @@ HotColdIconExitSetC2
 	lea.l	FileLoadTable.l,a3
 	move.w	#$8,d7
 	jsr	$6044.w
-	jsr	$37598.l
+	jsr	(ScoutingReportTextLoad).l
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$1,d0
@@ -432,6 +436,8 @@ HotColdIconExitSetC2
 	move.w	#$2,d0
 	jsr	$5F22.w
 	rts
+; Resets the hot/cold icon state and the stat counters.
+HotColdIconExitReset
 	move.w	#$2,d0
 	jsr	$5F22.w
 	bclr	#$5,$FF800F.l
@@ -441,8 +447,8 @@ HotColdIconExitSetC2
 	clr.l	$1AD4A.l
 	clr.l	$1AD52.l
 	clr.w	$191CE.l
-	jsr	$37598.l
-	jsr	$376F2.l
+	jsr	(ScoutingReportTextLoad).l
+	jsr	(SubCmd3DSend).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -453,7 +459,7 @@ HotColdIconExitSetC2
 .next2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
-	jsr	$2B614.l
+	jsr	(HotColdIconExitSetC2Load).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
@@ -463,7 +469,7 @@ HotColdIconExitSetC2
 .next3	bclr	#$5,$FF800F.l
 .next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
-	jsr	$37752.l
+	jsr	(ClearVramViaSetVram).l
 	lea.l	$1746A.l,a0
 	move.w	#$10,d0
 	jsr	$5F22.w
@@ -508,9 +514,9 @@ HotColdIconExitSetC2
 	clr.w	$180EC.l
 	bsr.w	restoreteams
 	jsr	(InitScores).l
-	jsr	$3E91C.l
+	jsr	(UpdateSoundVdpSetup).l
 	jsr	(LoadCrowdRec).l
-	jmp	$35A94.l
+	jmp	(PeriodOverIntermission).l
 .next9	move.w	#$71,d0
 	movea.l	#$18C42,a0
 .loop3	clr.w	(a0)+

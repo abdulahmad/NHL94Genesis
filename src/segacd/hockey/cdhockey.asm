@@ -1,3 +1,5 @@
+; Sets the sub-CPU vector and sends gate array command $2D (wait for idle, start, wait for ack).
+SubCmd2DSend
 	move.l	#$22018,$6038.w
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -18,7 +20,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.l	#$2203A,-(sp)
 	move.l	$18D66.l,-(sp)
 	rts
-	jsr	$47DB2.l
+	jsr	(ReadJoyData).l
 .loop	btst.b	#$4,$FF800E.l
 	bne.s	.loop
 	move.w	#$2F,$FF8026.l
@@ -43,7 +45,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.w	d0,$193BA.l
 	tst.w	$193BA.l
 	bne.b	.next2
-	jsr	$2243E.l
+	jsr	(BackupRamClear).l
 	move.w	#$0,d0
 	lea.l	$7E000.l,a0
 	lea.l	$17EF2.l,a1
@@ -90,15 +92,15 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	bne.s	.loop10
 	bclr.b	#$7,$FF800F.l
 	move.w	#$FFFF,$17DD6.l
-	jsr	$21FC8.l
+	jsr	(SubCmd2DSend).l
 	move.w	#$3,d7
 	jsr	$6044.w
-	jsr	$3FDE8.l
-	jsr	$2A58C.l
-	jsr	$40102.l
+	jsr	(EASportsScreen).l
+	jsr	(ReadLineDataBackupRead).l
+	jsr	(DefaultMenus).l
 	move.w	$18C0A.l,$18C22.l
 	move.w	$18BFA.l,$18C24.l
-	jsr	$37460.l
+	jsr	(orjoy).l
 	jmp	$3F2D6.l
 .loop11	btst.b	#$7,$FF800E.l
 	bne.s	.loop11
@@ -130,10 +132,14 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	bclr.b	#$7,$FF800F.l
 	jsr	$22268.l
 	rts	
+; Raises gate array request bit 0 of $FF8003 and waits for the acknowledge to clear.
+RaiseGateRequest
 	bset	#$0,$FF8003.l
 .loop19	btst	#$1,$FF8003.l
 	bne.b	.loop19
 	rts
+; Calls the CD BIOS function $80 until it succeeds.
+CdBiosCall80Retry
 	movem.l	d0-d1/a0-a1,-(sp)
 .loop20	move.w	#$80,d0
 	jsr	$5F22.w
@@ -142,7 +148,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	rts
 FileLoadTable					;disc only: the file load list the loader (jsr $6044.w, d7 = 8) reads through a3: 13 word pairs
 									;(count or flag, file number), then one record per file
-; Data of FileLoadTable (15 rows): table or constants used by it.
+; Table of 118 words after FileLoadTable, 236 bytes: $000D,$006C,$000E,$0060,$000E,$0061 ...
 	dc.w	$000D,$006C,$000E,$0060,$000E,$0061,$000E,$0062
 	dc.w	$000E,$0063,$000E,$0064,$000E,$0065,$000E,$0066
 	dc.w	$000E,$0067,$000E,$006D,$000E,$006E,$000E,$006F
@@ -159,7 +165,7 @@ FileLoadTable					;disc only: the file load list the loader (jsr $6044.w, d7 = 8
 	dc.w	$0608,$0B54,$00FF,$FF02,$0202,$00FF,$00FF,$0600
 	dc.w	$0C5A,$00FF,$FF02,$0202,$00FF,$00FF
 FileLoadOrder					;disc only: the order the 13 files are loaded in (a2 of the same call): (2, n) word pairs, $FFFF ends
-; Data of FileLoadOrder (4 rows): table or constants used by it.
+; Table of 27 words after FileLoadOrder, 54 bytes: $0002,$0000,$0002,$0001,$0002,$0002 ...
 	dc.w	$0002,$0000,$0002,$0001,$0002,$0002,$0002,$0003
 	dc.w	$0002,$0004,$0002,$0005,$0002,$0006,$0002,$0007
 	dc.w	$0002,$0008,$0002,$0009,$0002,$000A,$0002,$000B
@@ -170,6 +176,8 @@ BackupRamName					;disc only: the backup RAM file name (_CDBIOS backup call, d0 
 BackupRamNameSize				;disc only: the same name, then the word $003D: the file size in blocks
 ; Text of BackupRamNameSize (1 row).
 	dc.b	'NHLHOCKEY94',0,0,$3D
+; Adds up the $F20 bytes of the backup RAM image at $193BC.
+BackupRamChecksum
 	lea.l	$193BC.l,a0
 	moveq	#$0,d0
 
@@ -177,12 +185,16 @@ BackupRamNameSize				;disc only: the same name, then the word $003D: the file si
 .loop	add.b	(a0)+,d0
 	dbra	d1,.loop
 	rts
+; Clears the $F20-byte backup RAM image at $193BC.
+BackupRamClear
 	lea.l	$193BC.l,a0
 	move.w	#$F1F,d0
 	clr.l	d1
 .loop2	move.b	d1,(a0)+
 	dbra	d0,.loop2
 	rts	
+; Copies d1 bytes from the backup RAM image (offset d0) to a0.
+BackupRamRead
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
@@ -191,6 +203,8 @@ BackupRamNameSize				;disc only: the same name, then the word $003D: the file si
 	dbra	d1,.loop3
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
+; Copies the buffer to the backup RAM image and signals the sub-CPU.
+BackupRamWrite
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
@@ -209,7 +223,7 @@ BackupRamNameSize				;disc only: the same name, then the word $003D: the file si
 	dbra	d1,.loop4
 	tst.w	$193BA.l
 	bmi.w	.next4
-	jsr	$2242A.l
+	jsr	(BackupRamChecksum).l
 	move.l	d0,$1A2DC.l
 	move.w	#$0,d0
 	lea.l	(ThreeStars).l,a0
@@ -251,9 +265,9 @@ SPAlistDraw	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	#$4,d1
 	btst	#$6,(sflags6).l
 	beq.w	.next
-	jsr	$2246C.l
+	jsr	(BackupRamWrite).l
 	bra.w	.next2
-.next	jsr	$22452.l
+.next	jsr	(BackupRamRead).l
 .next2	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 ; Entry that sets sflags6 bit 6, then runs SPAlistDraw.

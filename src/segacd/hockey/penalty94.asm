@@ -77,7 +77,7 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	jsr	(eraser).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	bra.w	.ex
-.next3	jsr	$40DFC.l
+.next3	jsr	(CalcTeamStarScoresShootout).l
 	bclr	#$7,$17F70.l
 .ex	rts
 .next4	btst	#$2,$17F68.l
@@ -439,7 +439,7 @@ Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spo
 	bsr.w	limitfo
 .next6	clr.w	$18064.l
 	bset	#$2,$17F68.l
-	jsr	$47DB0.l
+	jsr	(HockeyRtsStubB).l
 	move.w	#$3,-(sp)
 	bsr.w	sfx
 	move.w	#$A,d0		;whistle (92 used $26)

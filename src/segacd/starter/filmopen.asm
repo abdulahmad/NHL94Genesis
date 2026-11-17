@@ -43,7 +43,7 @@ FilmOpen	link	a6,#$FFFC
 .next2	move.l	$4(a3),d7
 	move.l	d7,d0
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
-; Data of FilmOpen (2 rows): table or constants used by it.
+; Table of 2 words after FilmOpen, 6 bytes: $D0BC,$000007FF ...
 	dc.w	$D0BC
 	dc.l	$000007FF
 	move.l	#$800,d1

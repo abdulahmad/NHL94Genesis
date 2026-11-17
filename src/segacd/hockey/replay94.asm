@@ -24,7 +24,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 	bsr.w	forceblack2
 	jsr	(MenuWaitVblank).l
 	jsr	(MenuWaitVblank).l
-	jsr	$2E986.l
+	jsr	(StatsScreenFadeInClear).l
 	clr.w	$17CEE.l
 	clr.w	$17CEA.l
 	move.w	#$7D0,$17CEC.l
@@ -47,7 +47,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 	bsr.w	RestoreReplayFrame
 	btst	#$5,$17F6A.l
 	beq.w	.0
-.0	jsr	$2F330.l
+.0	jsr	(ReadActiveJoypadPrint).l
 	move.w	#$64,(palcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 .1	clr.w	d7

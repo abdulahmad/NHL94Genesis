@@ -172,7 +172,7 @@ forcepldata						;no skating on/off: force players to correct data (for faceoffs
 	beq.w	.next
 	move.w	$52(a3),-(sp)		;push SCNum to stack
 	move.w	#$F,$52(a3)		;put F into SCNum
-	jsr	$22DDE.l
+	jsr	(CheckOneTimerFacingReturn).l
 	move.w	(sp)+,$52(a3)		;pop original SCNum back into SCNum
 .next	move.w	d0,$34(a3)		;move newpos(d0) into position
 	bmi.w	.next3		;put the requested player on the ice
@@ -235,7 +235,7 @@ setplayer						;bring player onto the ice and set his attributes. d3 = offset of
 									;AttributeCalc (attribute number in TempWord2). Adds the PP / PK, home /
 									;away and third period bonuses (team ScoutReport bytes) to some attributes
 									;and clamps them with ClampNibble
-; Data of setplayer (1 row): table or constants used by it.
+; Table of 2 words after setplayer, 4 bytes: $0203,$0503 ...
 	dc.w	$0203,$0503
 	btst	d2,d0
 

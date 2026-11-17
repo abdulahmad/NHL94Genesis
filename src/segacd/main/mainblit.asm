@@ -410,7 +410,7 @@ PackGlyphBits	movem.l	d0-d3/a0-a2,-(sp)
 	andi.w	#$7F,d2
 	addq.w	#$1,d2
 	bra.b	.loop7
-; Data of PackGlyphBits (16 rows): table or constants used by it.
+; Table of 16 longs after PackGlyphBits, 64 bytes: $00FF2134,$00FF2134,$00FF2150,$00FF216C,$00FF218C,$00FF218C ...
 	dc.l	$FF2134
 	dc.l	$FF2134
 	dc.l	$FF2150

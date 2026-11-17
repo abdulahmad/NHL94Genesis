@@ -19,7 +19,7 @@ InitEngine	link	a6,#$0
 	move.l	#$34000,d7
 .next2	move.l	d7,d0
 	; SNASM rewrites sub.l #imm,dn into subi.l. The disc is 90BC.
-; Data of InitEngine (2 rows): table or constants used by it.
+; Table of 2 words after InitEngine, 6 bytes: $90BC,$00004000 ...
 	dc.w	$90BC
 	dc.l	$00004000
 	move.l	#$800,d1
@@ -33,7 +33,7 @@ InitEngine	link	a6,#$0
 	add.l	d1,d0
 	move.l	d0,$4(a4)
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
-; Data of InitEngine (2 rows): table or constants used by it.
+; Table of 2 words after InitEngine, 6 bytes: $D0BC,$00004000 ...
 	dc.w	$D0BC
 	dc.l	$00004000
 	move.l	d0,-(sp)
