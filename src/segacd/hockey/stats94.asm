@@ -477,11 +477,15 @@ ClearLineEditorMarks
 	rts
 ; Data that follows ClearLineEditorTop (strings, small tables)
 ClearLineEditorTopData	dc.w	$0010,$000C,$0004
-LineIconPosTable						;Line icons: x, y, slot count - 1 per line
-; Data of LineIconPosTable (3 rows): table or constants used by it.
-	dc.w	$0004,$000C,$0004,$0010,$000C,$0004,$001C,$000C
-	dc.w	$0004,$0004,$000C,$0004,$0010,$000C,$0004,$0004
-	dc.w	$000C,$0003,$0010,$000C,$0003,$FFFF
+LineIconPosTable					;Line icons: x, y, slot count - 1 per line
+	dc.w	4,$C,4					;at +2
+	dc.w	$10,$C,4
+	dc.w	$1C,$C,4
+	dc.w	4,$C,4
+	dc.w	$10,$C,4
+	dc.w	4,$C,3
+	dc.w	$10,$C,3
+	dc.w	$FFFF
 LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / down / left /
 	
 ; Data of LineCursorTable (5 rows): table or constants used by it.
@@ -1441,7 +1445,6 @@ StatsListDrawBottomRow	move.w	(VertLineScrolling).l,d3
 	bra.w	DrawStatsRow
 ; Prints the 'Player' column header.
 StatsListDrawHeader	jsr	(printsmallz).l
-; Inline data read by printsmallz from the return address (3 rows).
 	dc.w	$0012
 	dc.b	$F8,$06,$03,$04,$0B,$F9,$01,'Player',$FB,$07,$00
 	dc.w	$43FA,$0344

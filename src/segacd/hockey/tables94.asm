@@ -252,7 +252,6 @@ PerLabels2	String	'1',$12			;the same with a blank last entry. Used by printscor
 	String	'  '
 
 sizetab								;sprite size code to tile count. sizetab, used by addframe2
-; Data of sizetab (1 row): table or constants used by it.
 	dc.b	1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16
 
 sublist								;substitution lists by position (goalie, LD, RD, LW, C, RW, extra
@@ -626,7 +625,6 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 ExitGameText						;Intermission menu for gsp 4
-; Data of ExitGameText (1 row): table or constants used by it.
 	dc.b	$00,$04,$FE,$05,$00,$04,$FE,$04
 	String	'    Exit Game     '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -653,7 +651,6 @@ ExitGameText						;Intermission menu for gsp 4
 	dc.b	$00,$02,$95,$0E,$00,$04,$FF,$00
 
 LineEditorMenuText					;Line editor exit menu
-; Data of LineEditorMenuText (1 row): table or constants used by it.
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -666,7 +663,6 @@ LineEditorMenuText					;Line editor exit menu
 	dc.b	$00,$02,$CF,$DE,$00,$04,$FF,$00
 
 LineEditorMenuNoLoad				;Line editor exit menu without Load Team Line
-; Data of LineEditorMenuNoLoad (1 row): table or constants used by it.
 	dc.b	$00,$06,$FE,$06,$F9,$01,$00,$06,$FE,$04,$F9,$01
 	String	'       Exit       '
 	dc.w	$0003,$C000		; ori.b #$0,d3

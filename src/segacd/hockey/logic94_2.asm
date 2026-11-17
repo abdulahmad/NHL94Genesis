@@ -932,12 +932,23 @@ playeracc
 	addi.w	#$1,d0
 	bra.w	setpde
 .ex	rts
-MaxSpeed						;max speed values for each rating level 0-$F: ((n+20)*275)^2 (92 used 250)
-; Data of MaxSpeed (4 rows): table or constants used by it.
-	dc.w	$01CD,$9410,$01FC,$E3E1,$022E,$8284,$0262,$6FF9
-	dc.w	$0298,$AC40,$02D1,$3759,$030C,$1144,$0349,$3A01
-	dc.w	$0388,$B190,$03CA,$77F1,$040E,$8D24,$0454,$F129
-	dc.w	$049D,$A400,$04E8,$A5A9,$0535,$F624,$0585,$9571
+MaxSpeed							;max speed values for each rating level 0-$F: ((n+20)*275)^2 (92 used 250)
+	dc.l	(20*275)*(20*275)		;$1CD9410
+	dc.l	(21*275)*(21*275)		;$1FCE3E1
+	dc.l	(22*275)*(22*275)		;$22E8284
+	dc.l	(23*275)*(23*275)		;$2626FF9
+	dc.l	(24*275)*(24*275)		;$298AC40
+	dc.l	(25*275)*(25*275)		;$2D13759
+	dc.l	(26*275)*(26*275)		;$30C1144
+	dc.l	(27*275)*(27*275)		;$3493A01
+	dc.l	(28*275)*(28*275)		;$388B190
+	dc.l	(29*275)*(29*275)		;$3CA77F1
+	dc.l	(30*275)*(30*275)		;$40E8D24
+	dc.l	(31*275)*(31*275)		;$454F129
+	dc.l	(32*275)*(32*275)		;$49DA400
+	dc.l	(33*275)*(33*275)		;$4E8A5A9
+	dc.l	(34*275)*(34*275)		;$535F624
+	dc.l	(35*275)*(35*275)		;$5859571
 dostop
 	cmpi.w	#$1000,$28(a3)
 	bgt.w	.next
