@@ -56,9 +56,21 @@ for a, (l, t, tg) in code.items():
 for a in (0x600, 0x62C): labs.setdefault(a, None)
 for a in range(0, 0x100, 4):
     if b[a] == 0xC3 and (b[a + 1] | (b[a + 2] << 8)) in code: labs.setdefault(b[a + 1] | (b[a + 2] << 8), None)
+# branch targets inside a routine get local-style names like the 68000 sources: .loop for a backward target, .next forward
+owner_of = lambda x: max([k for k in labs if k <= x] or [0])
+inner = {}
+for a, (l, t, tg) in sorted(code.items()):
+    if tg is not None and tg in code and tg not in labs and not t.startswith('call'):
+        inner.setdefault(tg, 'loop' if tg <= a else 'next')
+cnt = {}
+loc = {}
+for tg in sorted(inner):
+    o = owner_of(tg); k = inner[tg]; cnt[(o, k)] = cnt.get((o, k), 0) + 1
+    loc[tg] = '.' + k + (str(cnt[(o, k)]) if cnt[(o, k)] > 1 else '')
 lab = {}
 for a in sorted(labs):
     lab[a] = names.get('%04X' % a, ['Z80_%04X' % a, ''])[0] if a else 'Z80SoundDriver'
+lab.update(loc)
 def tx(t):
     return re.sub(r'\$([0-9A-F]{4})\b', lambda m: lab.get(int(m.group(1), 16), m.group(0)) if int(m.group(1), 16) in lab and re.match(r'^(jp|jr|djnz|call)', t) else m.group(0), t)
 out = ['; Z80 sound driver: the program the main CPU uploads to Z80 RAM at $0000 (file $%X-$%X in MAIN.BIN, Z80 address 0 = $%X).' % (START, END, START),

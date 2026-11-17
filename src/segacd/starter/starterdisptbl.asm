@@ -940,8 +940,17 @@ DispTableF	ori.b	#$0,d0
 .next	dcb.b	$D1,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u
 	dcb.b	$202,0
-; Data block of 65596 bytes at $BC64 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; PCM sound bank at the end of STARTER.BIN: two directory records (a 4-byte length word, then the table), then the
+; unsigned 8-bit samples. Loaded into the PCM chip by SubCmdLoadWave.
+; Directory record 1: length word $05D4, then $5D4 bytes of wave / instrument parameters.
+PcmBankDirectoryA
 	incbin	..\Extracted\SegaCD\STARTER\starter_0BC64.bin
+; Directory record 2: length word $066E, then $66E bytes of wave parameters.
+PcmBankDirectoryB
+	incbin	..\Extracted\SegaCD\STARTER\starter_0C23C.bin
+; Sample data: unsigned 8-bit PCM waves (smooth byte sequences), played by the PCM chip.
+PcmSampleData
+	incbin	..\Extracted\SegaCD\STARTER\starter_0C8AE.bin
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$5,d0
