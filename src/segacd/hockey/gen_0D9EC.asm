@@ -80,7 +80,8 @@ PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	movea.l	(sp)+,a1
 	rts
 TwoSpacesTxt						;A two space String (printsmall by PrintTwoSpaces)
-TwoSpacesTxtTbl1	dc.w	$0004,$2020
+; Data that follows TwoSpacesTxt (strings, small tables)
+TwoSpacesTxtData	dc.w	$0004,$2020
 ScoutRatingText						;rating names; only ' Overall ' is printed (PrintMatchupRatings, matchup
 	
 	dc.b	$00,$0A,'Shooting',$00,$0A,'Skat'
@@ -295,29 +296,13 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	jsr	(printsmall).l
 .ex	rts
 MatchupPosNames						;Position names of matchups 1-6
-MatchupPosNamesTbl1	dc.w	$0012,$2020
-	move.l	-(a0),d0
-	movea.l	-(a3),a0
-	bcs.s	*+112
-	moveq	#$65,d2
-	moveq	#$20,d1
-	move.l	-(a0),d0
-	move.l	-(a0),d0
+; Data that follows MatchupPosNames (strings, small tables)
+MatchupPosNamesData	dc.w	$0012,$2020
+	dc.b	'   center     '
 	dc.w	$0012,$206C
-	bcs.s	*+104
-	moveq	#$20,d2
-	bne.s	*+113
-	moveq	#$77,d1
-	dc.w	$6172
-	bcc.s	.next
-	move.l	-(a0),d0
+	dc.b	'eft forward   '
 	dc.w	$0012,$2072
-	bvs.s	*+105
-	bvc.s	*+118
-	movea.l	-(a6),a0
-	ble.s	*+116
-	dc.b	'ward  ',$00,$12,'left def'
-	bcs.s	L2903E
+	dc.b	'ight forward  ',$00,$12,'left defen'
 .next
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
@@ -343,7 +328,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	movea.l	#$29050,a1
 	move.b	(a1,d0.w),d0
 	ext.w	d0
-L2903E	move.w	d0,(matchupslot).l
+	move.w	d0,(matchupslot).l
 	move.b	(a0,d0.w),d0
 	ext.w	d0
 	subi.w	#$1,d0		;player numbers start at 1
@@ -351,7 +336,8 @@ L2903E	move.w	d0,(matchupslot).l
 MatchupLineSlots						;Line slot by matchup 0-6 (0 for the teams, then 4 center, 3 left forward,
 	
 	
-MatchupLineSlotsTbl1	dc.w	$0004,$0305
+; Data that follows MatchupLineSlots (strings, small tables)
+MatchupLineSlotsData	dc.w	$0004,$0305
 	dc.w	$0102
 	dc.l	$4279
 	dc.w	$0001,$A448
@@ -390,14 +376,16 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 HomeAdvMarks						;Home advantage marks, by advframe (0-5)
-HomeAdvMarksTbl1	dc.w	$0002,$912E
+; Data that follows HomeAdvMarks (strings, small tables)
+HomeAdvMarksData	dc.w	$0002,$912E
 	dc.w	$0002,$9134
 	dc.w	$0002,$913A
 	dc.w	$0002,$9140
 	dc.w	$0002,$9140
 	dc.w	$0002,$9140
 VisAdvMarks						;Visitors advantage marks
-VisAdvMarksTbl1	dc.w	$0002,$9146
+; Data that follows VisAdvMarks (strings, small tables)
+VisAdvMarksData	dc.w	$0002,$9146
 	dc.w	$0002,$914C
 	dc.w	$0002,$9152
 	dc.w	$0002,$9158
@@ -449,10 +437,12 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 .next	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname
-HomeTxtTbl1	dc.w	$0006,$486F
-	blt.s	*+103
+; Data that follows HomeTxt (strings, small tables)
+HomeTxtData	dc.w	$0006,$486F
+	dc.b	$6D,$65
 VisitorsTxt						;name used when the visiting team has no nickname
-VisitorsTxtTbl1	dc.b	$00,$0A,'Visitors'
+; Data that follows VisitorsTxt (strings, small tables)
+VisitorsTxtData	dc.b	$00,$0A,'Visitors'
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =
 	
 	
@@ -533,8 +523,10 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	move.w	d0,$46(a3)		;clamp to the top
 .next5	movem.l	(sp)+,d0-d7/a0
 	rts
-ClampPositionBoxTbl1	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
-ClampPositionBoxTbl2	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
+; Position limits
+ClampPositionBoxFirstLimits	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
+; Position limits
+ClampPositionBoxSecondLimits	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$1A414,a0
 	move.l	#$12,d0

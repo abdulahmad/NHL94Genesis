@@ -1,6 +1,8 @@
-GetDataSub1	move.l	$4(sp),d0
+; Loads two long stack arguments
+LoadLongArgs	move.l	$4(sp),d0
 	move.l	$8(sp),d1
-GetData_14	move.l	d0,-(sp)
+; 32-bit multiply
+Mul32	move.l	d0,-(sp)
 	mulu.w	d1,d0
 	movea.l	d0,a0
 	move.l	d1,d0
@@ -16,13 +18,16 @@ GetData_14	move.l	d0,-(sp)
 	add.l	a0,d0
 	rts
 	dc.b	$22,$2F,$00,$04	; "/..
-GetDataSub6	move.l	$8(sp),d0
-GetData_15	lea.l	.next(pc),a0
+; Loads the second stack argument
+LoadLongArg8	move.l	$8(sp),d0
+; Jump thunk through a computed address
+DataThunkA	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .next	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-GetData_16	lea.l	.next(pc),a0
+; Jump thunk through a computed address
+DataThunkB	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .next	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -35,7 +40,8 @@ GetData_16	lea.l	.next(pc),a0
 	dc.b	$30,$01,$48,$40,$80,$DF,$32,$00,'B@H@NuHA'	; 0.H@..2.B@H@NuHA
 	dc.b	$3E,$82,$2F,$03,$34,$00,$26,$01,$72,$01,'B@H@f',$0C	; >./.4.&.r.B@H@f.
 	dc.b	$48,$40	; H@
-GetDataSub7	move.w	d2,d0
+; Bit scan loop
+BitScanLeft	move.w	d2,d0
 	moveq	#$0,d1
 	bra.b	.next
 .loop	add.w	d1,d1

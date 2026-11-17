@@ -6,10 +6,11 @@
 
 
 
-Set1MFlag_7	movem.l	d1/a0-a2,-(sp)
+; Initialises the sound slots
+SndSlotsInit	movem.l	d1/a0-a2,-(sp)
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
-	lea.l	Set1MFlag_42(pc),a2
+	lea.l	SndPtrs(pc),a2
 	adda.l	#$4,a1
 	move.l	a1,(a2)
 	move.w	#$100,$A11100.l
@@ -34,28 +35,28 @@ Set1MFlag_7	movem.l	d1/a0-a2,-(sp)
 	move.w	#$1F4,d0
 .next3	dbra	d0,.next3
 	move.w	#$100,$A11200.l
-	lea.l	Set1MFlag_45(pc),a0
+	lea.l	SndSourceTable(pc),a0
 	move.w	#$4,d0
 .loop2	move.l	#$FFFFFFFF,(a0)+
 	dbra	d0,.loop2
-	lea.l	Set1MFlag_32(pc),a0
+	lea.l	SndBufA(pc),a0
 	move.w	#$7,d0
 .loop3	move.l	#$FFFFFFFF,(a0)+
 	dbra	d0,.loop3
-	lea.l	Set1MFlag_33(pc),a0
+	lea.l	SndBufB(pc),a0
 	move.w	#$7,d0
 .loop4	move.l	#$0,(a0)+
 	dbra	d0,.loop4
-	lea.l	Set1MFlag_34(pc),a0
+	lea.l	SndIdTable(pc),a0
 	move.w	#$7,d0
 .loop5	move.w	#$FFFF,(a0)+
 	dbra	d0,.loop5
 	bsr.w	SndSlotsReset
-	lea.l	Set1MFlag_41(pc),a0
+	lea.l	SndMiscBuf(pc),a0
 	move.w	#$7,d0
 .loop6	move.w	#$0,(a0)+
 	dbra	d0,.loop6
-	lea.l	Set1MFlag_43(pc),a0
+	lea.l	SndWorkBuf(pc),a0
 	move.w	#$0,(a0)
 	andi.b	#$FE,ccr
 	clr.w	d0

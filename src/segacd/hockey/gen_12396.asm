@@ -63,7 +63,8 @@ PlayerListDrawSelected
 	addi.w	#$2,(printy).l
 	dbra	d1,.loop3
 	rts
-CheckPlayerListScrollTbl1	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
+; Data that follows CheckPlayerListScroll (strings, small tables)
+CheckPlayerListScrollData	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
 	dc.b	$00,$12,'    Goalies   '
 	dc.b	' }',$00,$12,'{  Scoring  '
 	dc.b	'1  }',$00,$12,'{  Scoring'
@@ -165,7 +166,7 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 .loop	bsr.w	MenuWaitVblank		;wait for the next frame
 	bsr.w	ReadActiveJoypad		;read the pads
 	btst	#$7,d3		;start: leave
-	bne.w	CrowdMeterScreenSub2
+	bne.w	StatsScreenFadeIn
 	moveq	#-2,d0
 	btst	#$0,d3		;up?
 	bne.w	.set
@@ -347,7 +348,7 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 .loop	bsr.w	MenuWaitVblank		;wait for the next frame
 	bsr.w	ReadActiveJoypad		;d3 = held buttons of the pad that paused
 	btst	#$7,d3		;start?
-	bne.w	CrowdMeterScreenSub2		;Start
+	bne.w	StatsScreenFadeIn		;Start
 	moveq	#-2,d0
 	btst	#$0,d3		;up?
 	bne.w	.set		;up held: scroll up
@@ -560,7 +561,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad		;d1 = new presses, d3 = held
 	btst	#$7,d3
-	bne.w	CrowdMeterScreenSub2		;Start
+	bne.w	StatsScreenFadeIn		;Start
 	btst	#$6,d1		;A?
 	bne.w	.switch
 	jsr	(nodiag).l
@@ -610,16 +611,17 @@ UpdateStatsListScroll						;Stats screen per frame: scroll 0 ... SelectedPlayerI
 	bsr.w	StatColumnHeader		;landed on a row boundary: refresh arrows and stop scrolling
 	clr.w	(PlayerScrollCtr).l
 .0	andi.w	#$F,d1		;old position within its row
-	bne.w	UpdateStatsListScroll_1
+	bne.w	UpdateStatsListScrollWait
 	move.w	d0,-(sp)
 	cmpi.w	#$E,d0		;14 pixels in: moved up, draw the row above
 	bne.w	.1
 	bsr.w	StatsListDrawTopRow
 .1	move.w	(sp)+,d0		;restore the pixels into the row
 	cmpi.w	#$2,d0		;2 pixels in: moved down, draw the row below
-	bne.w	UpdateStatsListScroll_1
+	bne.w	UpdateStatsListScrollWait
 	bsr.w	StatsListDrawBottomRow		;falls into the scroll register write
-UpdateStatsListScroll_1	move.w	(disflags).l,-(sp)
+; Waits for the sub CPU before the next scroll step
+UpdateStatsListScrollWait	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
 .loop	btst	#$7,$FF800E.l
@@ -744,7 +746,7 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	add.w	d4,d3
 	bsr.w	DrawStatsRow
 	dbra	d4,.loop6
-	bra.w	UpdateStatsListScroll_1
+	bra.w	UpdateStatsListScrollWait
 DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, or for
 									;goalies saves, shots and save %
 	movea.l	#$BBD30,a4

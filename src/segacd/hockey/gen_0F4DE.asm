@@ -19,7 +19,8 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 	dc.b	'ghhgZijkk',$00,'Z',$00,'llm',$00
 	dc.b	'Z',$00,'nop',$00,'Z',$00,'qsq',$00,'Ztwu'
 	dc.b	'v',$00,'Z',$00,'TUS',$00,'Z',$00,'TUS',$00,'Z',$00
-ReadLineDataStr1	dc.b	'4@BIX',$5C,'ef'
+; Data that follows ReadLineData (strings, small tables)
+ReadLineDataTexts	dc.b	'4@BIX',$5C,'ef'
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
@@ -69,7 +70,8 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 .next	move.w	d0,$17E2C.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-PSandSOpassdirTbl1	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
+; Data that follows PSandSOpassdir (strings, small tables)
+PSandSOpassdirData	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
 	dc.w	$0008
 StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) at random
 	
@@ -86,7 +88,8 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	bsr.w	NextPathPoint
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-StartShootoutPathTbl1	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
+; Data that follows StartShootoutPath (strings, small tables)
+StartShootoutPathData	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
 	dc.w	$0002,$A712,$0002,$A71E,$0002,$A72A,$0010,$00E2
 	dc.w	$0010,$00D0,$8020,$0005,$FFC9,$00A0,$FFFF,$00C8
 	dc.w	$FFE0,$00D0,$8020,$0005,$FFB0,$0040,$001A,$00BC
@@ -437,7 +440,8 @@ RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 whe
 	move.w	#$6,d0
 .x	movem.l	(sp)+,a0
 	rts
-RandomFaceoffAnimTbl1	dc.w	$0003,$0005,$0003,$0001,$0005,$0002,$0003,$0003
+; Data that follows RandomFaceoffAnim (strings, small tables)
+RandomFaceoffAnimData	dc.w	$0003,$0005,$0003,$0001,$0005,$0002,$0003,$0003
 	dc.w	$FFFF
 CheckScoreLeader						;Compare tmap (players on ice) of tmstruct / awtmstruct and test tmteam of
 	
@@ -542,7 +546,8 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 PlayedByExit
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
-PlayedByExitTbl1	dc.b	$00,$0E,'(played by ',$00,$00,$02
+; Data that follows PlayedByExit (strings, small tables)
+PlayedByExitData	dc.b	$00,$0E,'(played by ',$00,$00,$02
 PlayedByNone
 	movea.l	#$2AE4E,a1
 	bra.w	PlayedByExit
@@ -718,46 +723,49 @@ TeamLogoPalettes					;Team logo palettes, 16 colors per team. Used by PeriodStat
 	dc.w	$0EE8,$0EEE,$0000,$0AAA
 	dc.w	$0888,$0466,$0444,$022C
 	dc.w	$0008,$0400,$0800,$0C00
-L2B2D6	movem.l	d0/a0-a3,-(sp)
+; Compares the goalie of both team structs and updates the swap flags in $17F6C
+GoalieSwapCheck	movem.l	d0/a0-a3,-(sp)
 	move.w	$17F6C.l,-(sp)
 	btst.b	#$1,$17F78.l
-	dc.w	$6600,$00B2
+	bne.w	GoalieSwapCheckRestore
 	movea.l	#$1834C,a2
 	lea.l	$366(a2),a3
 	move.w	$26(a2),d0
 	sub.w	$26(a3),d0
-	dc.w	$6700,$009C
+	beq.w	GoalieSwapCheckRestore
 	bpl.w	.next
 	btst.b	#$6,$17F6C.l
 	bne.w	.next2
-	bsr.w	L2B392
+	bsr.w	GoalieSwapCheckEnd
 	bset.b	#$6,$17F6C.l
 	bra.w	.next2
 .next	exg.l	a2,a3
 	btst.b	#$6,$17F6C.l
 	beq.w	.next2
-	bsr.w	L2B392
+	bsr.w	GoalieSwapCheckEnd
 	bclr.b	#$6,$17F6C.l
 .next2	bset.b	#$5,$17F6C.l
-	dc.w	$6600,$0056
+	bne.w	GoalieSwapCheckRestore
 	cmpa.l	#$1834C,a3
 	bne.w	.next3
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$1,$1A56E.l
 	jsr	$2A478.l
-	bset.b	#$6,$17F7C.l
-	dc.w	$6000,$0028
+.l2B36A	bset.b	#$6,$17F7C.l
+	bra.w	GoalieSwapCheckRestore
 .next3	move.w	$17FAE.l,$1A56C.l
 	move.w	#$4,$1A56E.l
 	jsr	$2A478.l
-	dc.w	$6000,$FFDA
-L2B392	bclr.b	#$5,$17F6C.l
+	bra.w	.l2B36A
+; Clears flag 5 of $17F6C, restores the flags and returns
+GoalieSwapCheckEnd	bclr.b	#$5,$17F6C.l
 	rts
-	move.w	(sp)+,$17F6C.l
+; Restores the flags and registers of GoalieSwapCheck
+GoalieSwapCheckRestore	move.w	(sp)+,$17F6C.l
 	movem.l	(sp)+,d0/a0-a3
 	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
-									;teams' penalty slots (clrTmPdst). Called from clockcont_0
+									;teams' penalty slots (clrTmPdst). Called from clockcontAssists
 	movem.l	d0/a0,-(sp)
 	clr.w	$18068.l
 	clr.w	$18066.l

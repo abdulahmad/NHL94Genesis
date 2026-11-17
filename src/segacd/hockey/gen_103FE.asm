@@ -113,19 +113,22 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	adda.w	#$4,sp
 	pea.l	$2B5FC.l
 	cmp.w	(a1,d4.w),d6
-	beq.w	HotColdIconExitSub1
+	beq.w	HotColdIconExitSweepcheck
 	move.w	d6,d0
 	tst.w	d4
-	beq.w	HotColdIconExitSub2
-	bra.w	HotColdIconExitSub3
+	beq.w	HotColdIconExitSetC1
+	bra.w	HotColdIconExitSetC2
 	movem.l	(sp)+,d0-d6/a0-a1
 HotColdIconExit
 	rts
-HotColdIconExitSub1
+; Stub: jumps to Sweepcheck
+HotColdIconExitSweepcheck
 	jmp	(Sweepcheck).l
-HotColdIconExitSub2
+; Stub: jumps to setc1player
+HotColdIconExitSetC1
 	jmp	(setc1player).l
-HotColdIconExitSub3
+; Stub: jumps to setc2player
+HotColdIconExitSetC2
 	jmp	(setc2player).l
 	jsr	$37598.l
 	move.w	#$D,d7
@@ -358,10 +361,11 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	move.w	#$1E,d0
 	move.w	#$8,$1936C.l
 	move.w	#$B,$1936A.l
-	bra.w	Gameloop_1
+	bra.w	GameloopStart
 Gameloop						;Main loop for game
 	moveq	#$1B,d0
-Gameloop_1	jsr	(assreplace).l
+; Start of the game loop: replaces the assist, sets the flags and the frame vector
+GameloopStart	jsr	(assreplace).l
 	bset	#$2,$17F6C.l
 	bclr	#$4,$17F6A.l
 	move.w	#$FFFF,(lastsfx).l
@@ -551,7 +555,8 @@ clockcont						;monitor period clock and initiate various clock activated events
 	move.w	#$4,-(sp)
 	jsr	(sfx).l
 	bsr.w	freezewindow
-clockcont_0						;End of period. Also entered from puckfaceoff
+; clockcont: pushes the assist list and carries on
+clockcontAssists						;End of period. Also entered from puckfaceoff
 	movea.l	#$17B80,a3
 	move.l	#$18,d0
 	jsr	(AssistListPush).l
@@ -615,41 +620,46 @@ demoread						;monitor joystick if in demo mode (called every game loop)
 	bne.w	updatereplayExit
 	jsr	(ReadJoy1).l
 	btst	#$7,d1
-	bne.w	EndDemoOnPressSub1
+	bne.w	EndDemoExitMode0Off
 	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy2).l
 	btst	#$7,d1
-	bne.w	EndDemoOnPressSub2
+	bne.w	EndDemoExitMode0On
 	tst.w	$18BF8.l
 	beq.w	EndDemoOnPress
 	jsr	$3752C.l
 	btst	#$7,d1
-	bne.w	EndDemoOnPressSub3
+	bne.w	EndDemoExitMode3Off
 	bsr.w	EndDemoOnPress
 	jsr	$3754A.l
 	btst	#$7,d1
-	bne.w	EndDemoOnPressSub4
+	bne.w	EndDemoExitMode4On
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
 	beq.w	updatereplayExit
 	jmp	$3F2BE.l
-EndDemoOnPressSub1
+; Demo end code 0, flag 1 cleared
+EndDemoExitMode0Off
 	clr.w	$17F94.l
 	bclr	#$1,$17F6A.l
-	bra.w	EndDemoOnPress_1
-EndDemoOnPressSub2
+	bra.w	EndDemoExitFinish
+; Demo end code 0, flag 1 set
+EndDemoExitMode0On
 	clr.w	$17F94.l
 	bset	#$1,$17F6A.l
-EndDemoOnPress_1	bset	#$0,$17F6A.l
+; Sets the demo end flag and returns
+EndDemoExitFinish	bset	#$0,$17F6A.l
 	rts
-EndDemoOnPressSub3
+; Demo end code 3, flag 1 cleared
+EndDemoExitMode3Off
 	move.w	#$3,$17F94.l
 	bclr	#$1,$17F6A.l
-	bra.w	EndDemoOnPress_1
-EndDemoOnPressSub4
+	bra.w	EndDemoExitFinish
+; Demo end code 4, flag 1 set
+EndDemoExitMode4On
 	move.w	#$4,$17F94.l
 	bset	#$1,$17F6A.l
-	bra.w	EndDemoOnPress_1
+	bra.w	EndDemoExitFinish
 Pausemode	jsr	(forceblack).l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0

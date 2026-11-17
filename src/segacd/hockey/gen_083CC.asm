@@ -54,9 +54,9 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 .next4	bsr.w	ReadSetupPads
 	tst.w	d1
 	bne.w	.next5
-	bra.w	ReadSetupPadsSub1
+	bra.w	SetupPadsSyncRead
 .next5	btst	#$7,d1
-	bne.w	ReadSetupPadsSub2
+	bne.w	SetupPadsPlayoffLevelRead
 	btst	#$1,d1
 	beq.w	.next13
 	tst.w	(OptNOP).l
@@ -346,7 +346,8 @@ FixModeOptions						;Fix the options a mode does not allow, then print them: Sho
 	bclr	#$3,(sflags6).l		;normal
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-FixModeOptionsTbl1	dc.w	$0005,$0008,$001C,$001C,$0003,$0002,$0002,$0003
+; Data that follows FixModeOptions (strings, small tables)
+FixModeOptionsData	dc.w	$0005,$0008,$001C,$001C,$0003,$0002,$0002,$0003
 	dc.w	$0003,$0005,$000C,$001C,$001C,$0003,$0002,$0002
 	dc.w	$0003,$0003
 ChangeOption
@@ -555,7 +556,8 @@ PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more l
 	movea.l	#$23E14,a1
 .1	move.w	#$2,(printx).l
 	jmp	(print).l
-PrintScrollMarksTbl1	dc.w	$0004,$7B00,$0004,$7D00,$0004,$2000
+; Data that follows PrintScrollMarks (strings, small tables)
+PrintScrollMarksData	dc.w	$0004,$7B00,$0004,$7D00,$0004,$2000
 PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full name of the
 									;two New York teams, $D / $E).
 									;PrintOptionValue
@@ -578,7 +580,8 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 	bne.w	.1
 	movea.l	#$23E7A,a1		;full name
 .1	jmp	(print).l
-PrintOptTeamNameTbl1	dc.b	$00,$14,'New York Islan'
+; Data that follows PrintOptTeamName (strings, small tables)
+PrintOptTeamNameData	dc.b	$00,$14,'New York Islan'
 	dc.b	'ders',$00,$12,'New York R'
 	dc.b	'angers',$00,$16,'        '
 	dc.b	'            ',$00,$16,'N/'
@@ -661,7 +664,8 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 .done	bclr	#$3,(sflags6).l		;normal
 	movem.l	(sp)+,d0-d1
 	rts
-PrintOptionNamesTbl1	dc.b	$00,$10,'Play Mode    ',$00
+; Data that follows PrintOptionNames (strings, small tables)
+PrintOptionNamesData	dc.b	$00,$10,'Play Mode    ',$00
 	dc.b	$00,$10,'Players      ',$00
 	dc.b	$00,$10,'Team 1       ',$00
 	dc.b	$00,$10,'Team 2       ',$00

@@ -22,19 +22,22 @@
 	dc.b	$00,$01,$7F,$72,$08,$B9,$00,$01,$00,$01,$7F,$72,$08,$B9,$00,$00	; ...r.......r....
 	dc.b	$00,$01,$7F,$7E,$08,$B9,$00,$01,$00,$01,$7F,$7E,$08,$B9,$00,$02	; ...~.......~....
 	dc.b	$00,$01,$7F,$7E	; ...~
-L3526C	movem.l	d0-d7/a0-a6,-(sp)
+; Line change screen: fades out and sets the timer
+CompLineScreen	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	forceblack
 .loop	btst.b	#$0,$18D64.l
 	bne.w	.loop
 	move.w	#$3C,$19374.l
 	tst.w	$17EE2.l
-	bne.w	L352A8
+	bne.w	CompLineScreenFlag
 	tst.w	$17EE4.l
-	bne.w	L352A8
+	bne.w	CompLineScreenFlag
 	move.w	#$FFFF,$1A560.l
-	bra.w	L352B0
-L352A8	bclr.b	#$5,$FF800F.l
-L352B0	cmpi.w	#$258,$17CD2.l
+	bra.w	CompLineScreenLimit
+; Clears flag 5 of the gate array flags
+CompLineScreenFlag	bclr.b	#$5,$FF800F.l
+; Limits the line change timer to $258
+CompLineScreenLimit	cmpi.w	#$258,$17CD2.l
 	bls.w	.next
 	move.w	#$258,$17CD2.l
 .next	bset.b	#$3,$18D64.l
@@ -182,7 +185,8 @@ L352B0	cmpi.w	#$258,$17CD2.l
 	jsr	$2A41E.l
 .next11	bsr.w	printz
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-L35594	moveq	#$36,d0
+; Picks the song for the faceoff
+FaceoffSongPick	moveq	#$36,d0
 	tst.w	$17EE2.l
 	bpl.w	.next
 	move.w	#$BE,d0
@@ -210,26 +214,28 @@ L35594	moveq	#$36,d0
 	bsr.w	dobitmap
 	bclr.b	#$0,$17F76.l
 	tst.w	$18C0A.l
-	bne.w	L3565A
+	bne.w	FaceoffRandomDelay
 	bsr.w	printsmallz
 	dc.b	$00,$06,$FA,$0A,$FE,$04	; ......
-L35610	moveq	#$C,d0
+	moveq	#$C,d0
 	moveq	#$3,d1
 	bsr.w	Framer
 	move.w	$18362.l,d0
 	move.w	$186C8.l,d1
 	btst.b	#$1,$17F68.l
-	bne.w	.next
+	bne.w	.next2
 	exg.l	d0,d1
-.next	bsr.w	printsmallz
+.next2	bsr.w	printsmallz
 	dc.b	$00,$06,$FB,$01,$FA,$FE	; ......
-L3563C	movea.l	#linelist,a1
+; Prints the line list
+FaceoffLineList	movea.l	#linelist,a1
 	dc.w	$6100,$787A
 	addi.w	#$4,$18D58.l
 	move.w	d1,d0
 	movea.l	#linelist,a1
 	dc.w	$6100,$7866
-L3565A	move.w	#$78,d0
+; Random delay ($B4 to $12B) before the faceoff
+FaceoffRandomDelay	move.w	#$78,d0
 	bsr.w	randomd0
 	addi.w	#$B4,d0
 	cmpi.w	#$0,$1A556.l
@@ -272,7 +278,8 @@ L3565A	move.w	#$78,d0
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-L35750	subi.w	#$1,$40(a3)
+; Counts the faceoff timer down and ends the faceoff
+FaceoffTimerStep	subi.w	#$1,$40(a3)
 	bpl.w	updatefaceoff
 	jsr	$2A466.l
 	bra.w	Endfaceoff
@@ -420,7 +427,8 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	bclr	#$2,$62(a3)
 	moveq	#$18,d0
 	bra.w	assreplace
-EndfaceoffTbl1	dc.w	$0008,$1000,$0810
+; Data that follows Endfaceoff (strings, small tables)
+EndfaceoffData	dc.w	$0008,$1000,$0810
 PeriodOver						;what to do if period over. Branched to from puckfaceoff when the clock
 									;runs out. After period 3 a tied game goes to
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a
@@ -451,7 +459,8 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	beq.w	.next4
 	jmp	$2BA1E.l
 .next4	jmp	(GameOver).l
-L35AD4	btst.b	#$2,$17F70.l
+; Period over: ends a penalty shot first
+PeriodOverPenaltyShot	btst.b	#$2,$17F70.l
 	beq.w	.next
 	bsr.w	UpdatePenaltyShotEnd
 .next	bclr.b	#$1,$62(a3)
@@ -484,7 +493,7 @@ L35AD4	btst.b	#$2,$17F70.l
 	move.w	$28(a2),$28(a3)
 	move.w	$2A(a2),$2A(a3)
 .next4	bsr.w	PuckIChk
-	bsr.w	L35BC6
+	bsr.w	PeriodOverSwitch
 	btst.b	#$0,$17F68.l
 	bne.w	.next7
 	tst.w	$17BE0.l
@@ -502,12 +511,13 @@ L35AD4	btst.b	#$2,$17F70.l
 .next5	bra.w	.next7
 .next6	move.w	#$78,$42(a3)
 .next7	tst.b	$2C(a3)
-	bne.w	L3B882
+	bne.w	PuckCollisionLimits
 	tst.w	$18(a3)
-	bne.w	L3B882
+	bne.w	PuckCollisionLimits
 	bsr.w	puckunflip
-	bra.w	L3B882
-L35BC6	btst.b	#$5,$17F68.l
+	bra.w	PuckCollisionLimits
+; Period over: switches the teams
+PeriodOverSwitch	btst.b	#$5,$17F68.l
 	beq.w	rtss2
 	btst.b	#$2,$17F70.l
 	bne.w	rtss2

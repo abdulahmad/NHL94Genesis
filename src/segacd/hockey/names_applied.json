@@ -330,5 +330,705 @@
  "GetPlayerNameSub1": [
   "GetPlayerNameBuild",
   "Builds the name text in the message area."
+ ],
+ "L22018": [
+  "VBlankSubCpuHook",
+  "disc only: vertical interrupt entry; hands the frame to the sub CPU through the gate array flags, then runs the game vblank (VBint)"
+ ],
+ "ReadCrowdRecord_1": [
+  "CrowdRecordBackupIO",
+  "Moves one 16 byte crowd record between RAM and backup RAM (flag 6 of sflags6 picks the direction)"
+ ],
+ "ReadCrowdRecord_2": [
+  "TeamRecordBackupIO",
+  "Moves one 16 byte team record between RAM and backup RAM (flag 6 of sflags6 picks the direction)"
+ ],
+ "NameLogIOTbl1": [
+  "NameLogIOData",
+  "Data that follows NameLogIO (strings, small tables)"
+ ],
+ "L2295C": [
+  "PlayerControlUpdate",
+  "Per-player control update for the object in a3 (player number $52, flags $62)"
+ ],
+ "L22C68": [
+  "PlayerPositionToScreen",
+  "Turns the position of the object in a3 into screen coordinates and draws its marker"
+ ],
+ "FixModeOptionsTbl1": [
+  "FixModeOptionsData",
+  "Data that follows FixModeOptions (strings, small tables)"
+ ],
+ "PrintScrollMarksTbl1": [
+  "PrintScrollMarksData",
+  "Data that follows PrintScrollMarks (strings, small tables)"
+ ],
+ "PrintOptTeamNameTbl1": [
+  "PrintOptTeamNameData",
+  "Data that follows PrintOptTeamName (strings, small tables)"
+ ],
+ "PrintOptionNamesTbl1": [
+  "PrintOptionNamesData",
+  "Data that follows PrintOptionNames (strings, small tables)"
+ ],
+ "ReadSetupPadsSub1": [
+  "SetupPadsSyncRead",
+  "Sub CPU handshake that reads the pads for the setup screen"
+ ],
+ "ReadSetupPadsSub2": [
+  "SetupPadsPlayoffLevelRead",
+  "Saves the playoff level, updates it and reads the pads through the sub CPU"
+ ],
+ "PlayerCardScreenTbl1": [
+  "PlayerCardScreenData",
+  "Data that follows PlayerCardScreen (strings, small tables)"
+ ],
+ "PrintRecordHolderTbl1": [
+  "PrintRecordHolderData",
+  "Data that follows PrintRecordHolder (strings, small tables)"
+ ],
+ "PrintRecordVsTbl1": [
+  "PrintRecordVsData",
+  "Data that follows PrintRecordVs (strings, small tables)"
+ ],
+ "UpdateRecordsTbl1": [
+  "UpdateRecordsData",
+  "Data that follows UpdateRecords (strings, small tables)"
+ ],
+ "L25E56": [
+  "LoadRecordsFromDisc",
+  "Loads the records from the disc (loader command 9) and copies them to RAM"
+ ],
+ "CalcAttribTbl1": [
+  "CalcAttribFirstTable",
+  "Rating weight table"
+ ],
+ "CalcAttribTbl2": [
+  "CalcAttribSecondTable",
+  "Rating weight table"
+ ],
+ "CalcAttribTbl3": [
+  "CalcAttribThirdTable",
+  "Rating weight table"
+ ],
+ "L2662C": [
+  "NameEntryPrompt",
+  "Name entry: prints the prompt and the length of the name so far"
+ ],
+ "L26784": [
+  "NameEntryClearLetter",
+  "Name entry: blanks the letter under the cursor"
+ ],
+ "L267DA": [
+  "NameEntryMoveCursor",
+  "Name entry: moves the cursor along the name"
+ ],
+ "LB7DA": [
+  "NameEntryMoveColumn",
+  "Name entry: adds the column step to the letter grid position"
+ ],
+ "L26808": [
+  "NameEntryMoveRow",
+  "Name entry: moves the letter grid row"
+ ],
+ "LB808": [
+  "NameEntryApplyRow",
+  "Name entry: applies the row step to the letter grid position"
+ ],
+ "L268A6": [
+  "NameEntryDone",
+  "Name entry: stores the name and returns"
+ ],
+ "PrintNameCursor_1": [
+  "PrintNameCursorExit",
+  "Return of PrintNameCursor"
+ ],
+ "MoveLogArrowsTbl1": [
+  "MoveLogArrowsData",
+  "Data that follows MoveLogArrows (strings, small tables)"
+ ],
+ "PrintNameFieldStr1": [
+  "PrintNameFieldTexts",
+  "Data that follows PrintNameField (strings, small tables)"
+ ],
+ "PrintRecordTitlesTbl1": [
+  "PrintRecordTitlesData",
+  "Data that follows PrintRecordTitles (strings, small tables)"
+ ],
+ "ClearRecordAreaSub1": [
+  "ClearRecordAreaRows",
+  "Clears the record rows: prints the row prefix and loops over the rows"
+ ],
+ "ClearRecordAreaTbl1": [
+  "ClearRecordAreaData",
+  "Data that follows ClearRecordArea (strings, small tables)"
+ ],
+ "ShootoutShooters_1": [
+  "ShootoutShootersRedraw",
+  "Redraws the shooter selection screen: list, rows and frame"
+ ],
+ "PrintShooterListTbl1": [
+  "PrintShooterListData",
+  "Data that follows PrintShooterList (strings, small tables)"
+ ],
+ "ShootersSelect_1": [
+  "ShootersSelectRedraw",
+  "Stores the chosen shooter and redraws the rows and frame"
+ ],
+ "ScoutSpaceTxtTbl1": [
+  "ScoutSpaceTxtData",
+  "Data that follows ScoutSpaceTxt (strings, small tables)"
+ ],
+ "TwoSpacesTxtTbl1": [
+  "TwoSpacesTxtData",
+  "Data that follows TwoSpacesTxt (strings, small tables)"
+ ],
+ "MatchupPosNamesTbl1": [
+  "MatchupPosNamesData",
+  "Data that follows MatchupPosNames (strings, small tables)"
+ ],
+ "MatchupLineSlotsTbl1": [
+  "MatchupLineSlotsData",
+  "Data that follows MatchupLineSlots (strings, small tables)"
+ ],
+ "HomeAdvMarksTbl1": [
+  "HomeAdvMarksData",
+  "Data that follows HomeAdvMarks (strings, small tables)"
+ ],
+ "VisAdvMarksTbl1": [
+  "VisAdvMarksData",
+  "Data that follows VisAdvMarks (strings, small tables)"
+ ],
+ "HomeTxtTbl1": [
+  "HomeTxtData",
+  "Data that follows HomeTxt (strings, small tables)"
+ ],
+ "VisitorsTxtTbl1": [
+  "VisitorsTxtData",
+  "Data that follows VisitorsTxt (strings, small tables)"
+ ],
+ "ClampPositionBoxTbl1": [
+  "ClampPositionBoxFirstLimits",
+  "Position limits"
+ ],
+ "ClampPositionBoxTbl2": [
+  "ClampPositionBoxSecondLimits",
+  "Position limits"
+ ],
+ "L29508": [
+  "PeriodStatsScreen",
+  "\"Period Stats\" screen: loads the team logos from the disc and draws the shots / goals table"
+ ],
+ "L2974E": [
+  "PeriodStatsHeader",
+  "Period stats: prints the period column heads (1, 2, 3 ... Total)"
+ ],
+ "L29786": [
+  "PeriodStatsLoop",
+  "Period stats: draws the title and rows, then waits for a button"
+ ],
+ "L298BA": [
+  "PeriodStatsTitleShots",
+  "Period stats: title when the table shows shots (Shots [ For Goals ])"
+ ],
+ "L298E4": [
+  "PeriodStatsTitleGoals",
+  "Period stats: title when the table shows goals (Goals [ For Shots ])"
+ ],
+ "L29904": [
+  "PeriodStatsTeamRows",
+  "Period stats: team rows of the table"
+ ],
+ "L2993E": [
+  "PeriodStatsPeriodRow",
+  "Period stats: one row, a0 = the period counts of a team"
+ ],
+ "L299F6": [
+  "PeriodStatsPrintTotal",
+  "Period stats: adds a count to the total and prints it"
+ ],
+ "StatScrollRowEnd_1": [
+  "StatScrollRowExit",
+  "Return of StatScrollRowEnd"
+ ],
+ "GetTeamRatingStr1": [
+  "GetTeamRatingTexts",
+  "Data that follows GetTeamRating (strings, small tables)"
+ ],
+ "TeamSongsTbl1": [
+  "TeamSongsData",
+  "Data that follows TeamSongs (strings, small tables)"
+ ],
+ "ReadLineDataStr1": [
+  "ReadLineDataTexts",
+  "Data that follows ReadLineData (strings, small tables)"
+ ],
+ "PSandSOpassdirTbl1": [
+  "PSandSOpassdirData",
+  "Data that follows PSandSOpassdir (strings, small tables)"
+ ],
+ "StartShootoutPathTbl1": [
+  "StartShootoutPathData",
+  "Data that follows StartShootoutPath (strings, small tables)"
+ ],
+ "RandomFaceoffAnimTbl1": [
+  "RandomFaceoffAnimData",
+  "Data that follows RandomFaceoffAnim (strings, small tables)"
+ ],
+ "PlayedByExitTbl1": [
+  "PlayedByExitData",
+  "Data that follows PlayedByExit (strings, small tables)"
+ ],
+ "L2B2D6": [
+  "GoalieSwapCheck",
+  "Compares the goalie of both team structs and updates the swap flags in $17F6C"
+ ],
+ "L2B392": [
+  "GoalieSwapCheckEnd",
+  "Clears flag 5 of $17F6C, restores the flags and returns"
+ ],
+ "HotColdIconExitSub1": [
+  "HotColdIconExitSweepcheck",
+  "Stub: jumps to Sweepcheck"
+ ],
+ "HotColdIconExitSub2": [
+  "HotColdIconExitSetC1",
+  "Stub: jumps to setc1player"
+ ],
+ "HotColdIconExitSub3": [
+  "HotColdIconExitSetC2",
+  "Stub: jumps to setc2player"
+ ],
+ "Gameloop_1": [
+  "GameloopStart",
+  "Start of the game loop: replaces the assist, sets the flags and the frame vector"
+ ],
+ "clockcont_0": [
+  "clockcontAssists",
+  "clockcont: pushes the assist list and carries on"
+ ],
+ "EndDemoOnPressSub1": [
+  "EndDemoExitMode0Off",
+  "Demo end code 0, flag 1 cleared"
+ ],
+ "EndDemoOnPressSub2": [
+  "EndDemoExitMode0On",
+  "Demo end code 0, flag 1 set"
+ ],
+ "EndDemoOnPress_1": [
+  "EndDemoExitFinish",
+  "Sets the demo end flag and returns"
+ ],
+ "EndDemoOnPressSub3": [
+  "EndDemoExitMode3Off",
+  "Demo end code 3, flag 1 cleared"
+ ],
+ "EndDemoOnPressSub4": [
+  "EndDemoExitMode4On",
+  "Demo end code 4, flag 1 set"
+ ],
+ "PutTeamBlockTbl1": [
+  "PutTeamBlockManualGoalieText",
+  "\"Manual Goalie\" String"
+ ],
+ "PutTeamBlockTbl2": [
+  "PutTeamBlockAutoGoalieText",
+  "\" Auto Goalie\" String"
+ ],
+ "PrintGameInfoSub1": [
+  "PrintGameInfoBody",
+  "Prints the game info lines in the small font"
+ ],
+ "ClearLineEditorTopTbl1": [
+  "ClearLineEditorTopData",
+  "Data that follows ClearLineEditorTop (strings, small tables)"
+ ],
+ "AttributeOffsetTblTbl1": [
+  "AttributeOffsetTblData",
+  "Data that follows AttributeOffsetTbl (strings, small tables)"
+ ],
+ "CheckPlayerListScroll_1": [
+  "CheckPlayerListScrollReset",
+  "Clears the player list scroll counter"
+ ],
+ "CheckPlayerListScrollTbl1": [
+  "CheckPlayerListScrollData",
+  "Data that follows CheckPlayerListScroll (strings, small tables)"
+ ],
+ "UpdateStatsListScroll_1": [
+  "UpdateStatsListScrollWait",
+  "Waits for the sub CPU before the next scroll step"
+ ],
+ "ReadStatColumnTbl1": [
+  "ReadStatColumnData",
+  "Data that follows ReadStatColumn (strings, small tables)"
+ ],
+ "L2E62A": [
+  "CrowdMeterScreenDraw",
+  "Crowd meter: reads the crowd record and prints the level"
+ ],
+ "L2E6F8": [
+  "CrowdMeterScreenExit",
+  "Crowd meter: restores the registers and returns"
+ ],
+ "CrowdMeterScreenSub2": [
+  "StatsScreenFadeIn",
+  "Black out, set the display flags and fade a stats screen in"
+ ],
+ "L2EC7A": [
+  "StatsRowsInit",
+  "Stats rows: starts at row $D"
+ ],
+ "L2EC8A": [
+  "StatsRowsLoop",
+  "Stats rows: prints one row of the table"
+ ],
+ "L2ECCA": [
+  "StatsRowNoGoalie",
+  "Stats rows: prints \"no goalie\" when the team has none"
+ ],
+ "L2ECEE": [
+  "StatsRowGoalieName",
+  "Stats rows: finds the goalie name"
+ ],
+ "L13D4E": [
+  "StatsRowsNext",
+  "Stats rows: next row"
+ ],
+ "L2EDE2": [
+  "FrameWaitStep",
+  "Waits for the next frame count change, then runs the sub CPU step"
+ ],
+ "L2EEB0": [
+  "WaitFramesD7",
+  "Waits until d7 frames have passed"
+ ],
+ "L2F0D8": [
+  "DirectionStepTable",
+  "Word pairs: x and y step for each of the 8 directions"
+ ],
+ "L2F0F8": [
+  "DirectionPressCheck",
+  "Checks the direction buttons after a wait"
+ ],
+ "doinputExit_1": [
+  "doinputExitButtons",
+  "doinput: button checks at the exit"
+ ],
+ "doinput_chkanimSub1": [
+  "doinputCheckAnimFlag",
+  "doinput: skips when flag 1 of $63 is clear"
+ ],
+ "setpassmode_1": [
+  "setpassmodeExit",
+  "Return of setpassmode"
+ ],
+ "doshot_1": [
+  "doshotExit",
+  "Return of doshot"
+ ],
+ "setpads_1": [
+  "setpadsExit",
+  "Return of setpads"
+ ],
+ "L319AC": [
+  "check4benchAlt",
+  "Bench check: flag 5 means skip, a $64 counter means go to the bench"
+ ],
+ "L31AB8": [
+  "BenchGoToBench",
+  "Sends the player to the bench: clears the speed and looks up the team struct"
+ ],
+ "L31AEC": [
+  "BenchWalkTarget",
+  "Walks the player towards the bench door"
+ ],
+ "L31B08": [
+  "BenchFlagBits",
+  "Inline bit and byte data used by the bench code"
+ ],
+ "L31B0E": [
+  "BenchSetAnimation",
+  "Copies $60 to $34 and starts the animation"
+ ],
+ "L31CC2": [
+  "BenchControlledCheck",
+  "Bench: checks the controlled player"
+ ],
+ "assfaceoff_1": [
+  "assfaceoffExit",
+  "Return of assfaceoff"
+ ],
+ "L31ECC": [
+  "AssistTargetSetup",
+  "AI target setup: flags 5 and 1 of $62"
+ ],
+ "L31FDA": [
+  "AssistRandomTimer",
+  "Sets a random timer (0 to $78) in $40"
+ ],
+ "L31FE6": [
+  "AssistSkateOrExit",
+  "Skates to the target or returns"
+ ],
+ "L3252A": [
+  "AssistLimitsTable",
+  "Word table of position limits"
+ ],
+ "L3254A": [
+  "AssistTargetFlip",
+  "Mirrors the target x for the side"
+ ],
+ "L32782": [
+  "AssistLimitsTableGoalie",
+  "Word table of position limits for the goalie"
+ ],
+ "L327A2": [
+  "AssistTargetFlipGoalie",
+  "Mirrors the target for the goalie"
+ ],
+ "checkanimSub1": [
+  "checkanimFlags",
+  "checkanim: stores the frame counter and tests the flags"
+ ],
+ "ClampYPosition_1": [
+  "ClampYPositionExit",
+  "Return of ClampYPosition"
+ ],
+ "chkpk2Sub2": [
+  "CheckPuckHolder2Random",
+  "Random check ($1E) when flag 1 of $64 is set"
+ ],
+ "assbreakaway_1": [
+  "assbreakawayStart",
+  "Clears the breakaway flag and replaces the assist"
+ ],
+ "assnearest_1": [
+  "assnearestCheck",
+  "assnearest: tests the nearest flag and the puck holder"
+ ],
+ "L347BA": [
+  "SelectPenaltyShotSkaterScreen",
+  "Penalty shot: fade out and show the skater selection"
+ ],
+ "EndPenaltyShotPlay_1": [
+  "EndPenaltyShotPlayExit",
+  "Return of EndPenaltyShotPlay"
+ ],
+ "L34CC6": [
+  "PenaltyShotCleanup",
+  "Penalty shot: clears the flags and the timers"
+ ],
+ "L3500C": [
+  "FaceoffContinueClock",
+  "Jumps back into clockcont"
+ ],
+ "L3526C": [
+  "CompLineScreen",
+  "Line change screen: fades out and sets the timer"
+ ],
+ "L352A8": [
+  "CompLineScreenFlag",
+  "Clears flag 5 of the gate array flags"
+ ],
+ "L352B0": [
+  "CompLineScreenLimit",
+  "Limits the line change timer to $258"
+ ],
+ "L35594": [
+  "FaceoffSongPick",
+  "Picks the song for the faceoff"
+ ],
+ "L3563C": [
+  "FaceoffLineList",
+  "Prints the line list"
+ ],
+ "L3565A": [
+  "FaceoffRandomDelay",
+  "Random delay ($B4 to $12B) before the faceoff"
+ ],
+ "L35750": [
+  "FaceoffTimerStep",
+  "Counts the faceoff timer down and ends the faceoff"
+ ],
+ "EndfaceoffTbl1": [
+  "EndfaceoffData",
+  "Data that follows Endfaceoff (strings, small tables)"
+ ],
+ "L35AD4": [
+  "PeriodOverPenaltyShot",
+  "Period over: ends a penalty shot first"
+ ],
+ "L35BC6": [
+  "PeriodOverSwitch",
+  "Period over: switches the teams"
+ ],
+ "goalieacc_1": [
+  "goalieaccControlled",
+  "goalieacc: the controlled goalie case"
+ ],
+ "noturn_1": [
+  "noturnFlag",
+  "noturn: flag 4 swaps the direction"
+ ],
+ "stopnaTbl1": [
+  "stopnaData",
+  "Data that follows stopna (strings, small tables)"
+ ],
+ "WeightedRandomSelectSub1": [
+  "QueueVramWriteFlag",
+  "Pushes the vram write flag on the gate array queue"
+ ],
+ "ReadJoyTbl1": [
+  "ReadJoyDataTable",
+  "Data that follows ReadJoy (strings, small tables)"
+ ],
+ "L3816C": [
+  "SetVramQueueFlag",
+  "Pushes the flag on the queue for setVram"
+ ],
+ "ControlCode_SetMapAndPositionTbl1": [
+  "ControlCode_SetMapAndPositionData",
+  "Data that follows ControlCode_SetMapAndPosition (strings, small tables)"
+ ],
+ "FormatAndPrintTimeTbl1": [
+  "FormatAndPrintTimeData",
+  "Data that follows FormatAndPrintTime (strings, small tables)"
+ ],
+ "FallDownTbl1": [
+  "FallDownData",
+  "Data that follows FallDown (strings, small tables)"
+ ],
+ "FallDownSub1": [
+  "FallDownSpeed",
+  "FallDown: computes the slide speed"
+ ],
+ "FallDownSub2": [
+  "FallDownCheckStage",
+  "FallDown: checks the fall stage"
+ ],
+ "FallDownSub3": [
+  "FallDownStart",
+  "FallDown: starts the fall animation"
+ ],
+ "L3B882": [
+  "PuckCollisionLimits",
+  "Puck collision: checks the position limits"
+ ],
+ "L3B912": [
+  "PuckCollisionCheck",
+  "Puck collision: tests the object"
+ ],
+ "L3BA36": [
+  "PuckCollisionExit",
+  "Puck collision: restores the registers"
+ ],
+ "L20A36": [
+  "PuckCollisionReturn",
+  "Puck collision: return"
+ ],
+ "L3BA8C": [
+  "PuckCollisionTable",
+  "Puck collision: table lookup"
+ ],
+ "L3C002": [
+  "PuckCollisionStick",
+  "Puck collision: stick check"
+ ],
+ "L3C23E": [
+  "PuckCollisionWords",
+  "Four words used by the stick check"
+ ],
+ "DoHiLightsTbl1": [
+  "DoHiLightsData",
+  "Data that follows DoHiLights (strings, small tables)"
+ ],
+ "setplayerTbl1": [
+  "SetupIceVBlankHandler",
+  "Vertical interrupt handler of the ice setup"
+ ],
+ "L3DC16": [
+  "DmaListWait",
+  "Waits for the sub CPU and writes the dma list"
+ ],
+ "showzamTbl1": [
+  "showzamData",
+  "Data that follows showzam (strings, small tables)"
+ ],
+ "showclockTbl1": [
+  "showclockData",
+  "Data that follows showclock (strings, small tables)"
+ ],
+ "showclockSub1": [
+  "showclockVertical",
+  "showclock: vertical rink case"
+ ],
+ "checkssoTbl1": [
+  "checkssoData",
+  "Data that follows checksso (strings, small tables)"
+ ],
+ "defaultsprites_0": [
+  "defaultspritesStart",
+  "Start of defaultsprites"
+ ],
+ "defaultspritesTbl1": [
+  "defaultspritesData",
+  "Data that follows defaultsprites (strings, small tables)"
+ ],
+ "defaultsprites_0Sub1": [
+  "SortObjectsInit",
+  "Sets up the 16 sort objects from .list"
+ ],
+ "ScrollDisplayUpTbl1": [
+  "ScrollDisplayUpData",
+  "Data that follows ScrollDisplayUp (strings, small tables)"
+ ],
+ "PickStartingGoalieTbl1": [
+  "MenuVBlankHandler",
+  "Vertical interrupt handler of the menu screens"
+ ],
+ "DefaultMenusTbl1": [
+  "DefaultMenusData",
+  "Data that follows DefaultMenus (strings, small tables)"
+ ],
+ "AddPlayoffTeamStatsTbl1": [
+  "AddPlayoffTeamStatsData",
+  "Data that follows AddPlayoffTeamStats (strings, small tables)"
+ ],
+ "L412C8": [
+  "AddressErrorScreen",
+  "Address error screen: prints the error and the registers"
+ ],
+ "L4134E": [
+  "ErrorScreenPrint",
+  "Error screen: prints a long as hex"
+ ],
+ "L4152A": [
+  "PrintHexLong",
+  "Prints d0 as 8 hex digits"
+ ],
+ "L2B39C": [
+  "GoalieSwapCheckRestore",
+  "Restores the flags and registers of GoalieSwapCheck"
+ ],
+ "L37174": [
+  "GateArrayCommandSend",
+  "Sends a command word to the sub CPU through the gate array (disc only)"
+ ],
+ "L3DAB8": [
+  "VBlankMainHandler",
+  "Vertical interrupt body: dma list, palettes and the sub CPU handshake"
+ ],
+ "L3DBB0": [
+  "VBlankDmaList",
+  "Vertical interrupt: runs the dma list"
+ ],
+ "L3FE62": [
+  "EASportsScreenCheck",
+  "EA Sports screen: waits for the sub CPU reply, then switches the vblank vector"
+ ],
+ "L3FEAC": [
+  "EASportsScreenWait",
+  "EA Sports screen: frame wait loop"
  ]
 }

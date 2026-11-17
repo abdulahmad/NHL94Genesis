@@ -5,7 +5,8 @@ donothing
 	bne.w	check4benchExit
 	moveq	#$8,d0
 	bra.w	doplayeracc
-L31ECC	btst.b	#$5,$62(a3)
+; AI target setup: flags 5 and 1 of $62
+AssistTargetSetup	btst.b	#$5,$62(a3)
 	bne.w	check4benchExit
 	bclr.b	#$1,$62(a3)
 	beq.w	.next2
@@ -30,7 +31,7 @@ L31ECC	btst.b	#$5,$62(a3)
 	bne.w	check4benchExit
 	bclr.b	#$1,$62(a3)
 	beq.w	.next4
-	bsr.w	L31FDA
+	bsr.w	AssistRandomTimer
 	move.w	#$8,$42(a3)
 	move.w	#$5A,$44(a3)
 	tst.w	$17CEE.l
@@ -53,7 +54,7 @@ L31ECC	btst.b	#$5,$62(a3)
 	bgt.w	.next7
 .next6	clr.w	d1
 .next7	sub.w	d7,$40(a3)
-	bpl.w	L31FE6
+	bpl.w	AssistSkateOrExit
 	bset.b	#$5,$62(a3)
 	move.w	#$E8A,d1
 	move.w	$17E28.l,d0
@@ -61,11 +62,13 @@ L31ECC	btst.b	#$5,$62(a3)
 	bne.w	.next8
 	move.w	#$EFC,d1
 .next8	bsr.w	SetSPA
-L31FDA	moveq	#$78,d0
+; Sets a random timer (0 to $78) in $40
+AssistRandomTimer	moveq	#$78,d0
 	bsr.w	randomd0
 	move.w	d0,$40(a3)
 	rts
-L31FE6	btst.b	#$3,$62(a3)
+; Skates to the target or returns
+AssistSkateOrExit	btst.b	#$3,$62(a3)
 	beq.w	skateto
 	rts
 	btst.b	#$5,$62(a3)
@@ -315,7 +318,7 @@ L31FE6	btst.b	#$3,$62(a3)
 	clr.w	$40(a3)
 	move.w	#$8,$42(a3)
 .next32	sub.b	d7,$40(a3)
-	bpl.w	L3254A
+	bpl.w	AssistTargetFlip
 	move.b	$6B(a3),$40(a3)
 	btst.b	#$6,$17F7A.l
 	beq.w	.next33
@@ -365,9 +368,9 @@ L31FE6	btst.b	#$3,$62(a3)
 	bne.s	.loop6
 	bclr.b	#$7,$FF800F.l
 	andi.w	#$7F,d0
-	bne.w	L3254A
+	bne.w	AssistTargetFlip
 .next37	move.w	d2,$48(a3)
-	lea.l	L3252A(pc),a0
+	lea.l	AssistLimitsTable(pc),a0
 	move.w	$2(a0,d2.w),d0
 	bsr.w	randomd0s
 	add.w	(a0,d2.w),d0
@@ -376,10 +379,12 @@ L31FE6	btst.b	#$3,$62(a3)
 	bsr.w	randomd0s
 	add.w	$4(a0,d2.w),d0
 	move.w	d0,$46(a3)
-	bra.w	L3254A
-L3252A	dc.b	$00,$50,$00,$14,$FF,$BA,$00,$0A,$00,$64,$00,$14,$00,$3A,$00,$05	; .P.......d...:..
+	bra.w	AssistTargetFlip
+; Word table of position limits
+AssistLimitsTable	dc.b	$00,$50,$00,$14,$FF,$BA,$00,$0A,$00,$64,$00,$14,$00,$3A,$00,$05	; .P.......d...:..
 	dc.b	$00,$3C,$00,$32,$00,$E6,$00,$14,$00,$50,$00,$1E,$00,$FA,$00,$14	; .<.2.....P......
-L3254A	move.w	$44(a3),d0
+; Mirrors the target x for the side
+AssistTargetFlip	move.w	$44(a3),d0
 	cmpi.w	#$5,$34(a3)
 	beq.w	.next
 	neg.w	d0
@@ -447,7 +452,7 @@ L3254A	move.w	$44(a3),d0
 	clr.w	$40(a3)
 	move.w	#$8,$42(a3)
 .next9	sub.b	d7,$40(a3)
-	bpl.w	L327A2
+	bpl.w	AssistTargetFlipGoalie
 	move.b	$6B(a3),$40(a3)
 	btst.b	#$6,$17F7A.l
 	beq.w	.next10
@@ -493,9 +498,9 @@ L3254A	move.w	$44(a3),d0
 	bne.s	.loop4
 	bclr.b	#$7,$FF800F.l
 	andi.w	#$7F,d0
-	bne.w	L327A2
+	bne.w	AssistTargetFlipGoalie
 .next14	move.w	d2,$48(a3)
-	lea.l	L32782(pc),a0
+	lea.l	AssistLimitsTableGoalie(pc),a0
 	move.w	$2(a0,d2.w),d0
 	bsr.w	randomd0s
 	add.w	(a0,d2.w),d0
@@ -504,10 +509,12 @@ L3254A	move.w	$44(a3),d0
 	bsr.w	randomd0s
 	add.w	$4(a0,d2.w),d0
 	move.w	d0,$46(a3)
-	bra.w	L327A2
-L32782	dc.b	$00,$00,$00,$3C,$FF,$BA,$00,$0A,$00,$00,$00,$3C,$00,$3C,$00,$0A	; ...<.......<.<..
+	bra.w	AssistTargetFlipGoalie
+; Word table of position limits for the goalie
+AssistLimitsTableGoalie	dc.b	$00,$00,$00,$3C,$FF,$BA,$00,$0A,$00,$00,$00,$3C,$00,$3C,$00,$0A	; ...<.......<.<..
 	dc.b	$00,$00,$00,$28,$00,$AA,$00,$1E,$00,$00,$00,$50,$00,$AA,$00,$14	; ...(.......P....
-L327A2	move.w	$44(a3),d0
+; Mirrors the target for the goalie
+AssistTargetFlipGoalie	move.w	$44(a3),d0
 	move.w	$46(a3),d1
 	btst.b	#$7,$62(a3)
 	bne.w	.next
@@ -554,7 +561,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	bset	#$2,$64(a3)		;set goalie control bit?
 .cont2	movem.w	(sp)+,d0-d1		;pop from stack
 	btst	#$2,$64(a3)		;check goalie ctrl bit
-	bne.w	checkanimSub1		;branch if set
+	bne.w	checkanimFlags		;branch if set
 .na	btst	#$5,$62(a3)		;check if anim lock
 	bne.w	check4benchExit		;exit if so
 	bsr.w	check4bench

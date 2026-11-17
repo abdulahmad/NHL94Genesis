@@ -8,7 +8,8 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	adda.w	#$2,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts
-L29508	dc.w	$0006,$202E
+; "Period Stats" screen: loads the team logos from the disc and draws the shots / goals table
+PeriodStatsScreen	dc.w	$0006,$202E
 	move.l	d0,d0
 	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	d7/a0,-(sp)
@@ -65,17 +66,17 @@ L29508	dc.w	$0006,$202E
 	jsr	$2E728.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
-L295FC	move.w	#$8,d0
+	move.w	#$8,d0
 	move.w	#$8,d1
 	jsr	$38CA0.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BE,$01,$13,$00	; ......
-L29616	move.w	#$8,d0
+	move.w	#$8,d0
 	move.w	#$8,d1
 	jsr	$38CA0.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
-L29630	movea.l	$47D8C.l,a0
+	movea.l	$47D8C.l,a0
 	move.w	$17FB0.l,d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0
@@ -96,11 +97,11 @@ L29630	movea.l	$47D8C.l,a0
 	movea.l	#$BBCF0,a0
 	movea.l	#$BBD10,a1
 	move.w	#$7,d0
-.loop	move.l	(a0)+,(a1)+
-	dbra	d0,.loop
+.loop3	move.l	(a0)+,(a1)+
+	dbra	d0,.loop3
 	jsr	$38F6E.l
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
-L2968C	movea.l	$47D8C.l,a0
+	movea.l	$47D8C.l,a0
 	move.w	$17FAE.l,d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0
@@ -120,29 +121,31 @@ L2968C	movea.l	$47D8C.l,a0
 	jsr	$387E2.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BD,$04,$01,$00	; ......
-L296D2	moveq	#$20,d0
+	moveq	#$20,d0
 	moveq	#$6,d1
 	jsr	$38CA0.l
 	jsr	$39258.l
 	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
 	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
-L296FA	btst.b	#$1,$17F7A.l
-	beq.w	L2974E
+	btst.b	#$1,$17F7A.l
+	beq.w	PeriodStatsHeader
 	jsr	$38F6E.l
 	dc.b	$00,$1C,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$1A	; .....1...2...3..
 	dc.b	$09,$4F,$54,$BE,$20,$09,$54,$6F,$74,$61,$6C,$00	; .OT. .Total.
-L29728	jsr	$38F6E.l
+	jsr	$38F6E.l
 	dc.b	$00,$1C,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$1A	; .....<...<...<..
 	dc.b	$0A,$3C,$3C,$BE,$20,$0A,$3C,$3C,$3C,$3C,$3C,$00	; .<<. .<<<<<.
-L2974A	bra.w	L29786
-L2974E	jsr	$38F6E.l
+	bra.w	PeriodStatsLoop
+; Period stats: prints the period column heads (1, 2, 3 ... Total)
+PeriodStatsHeader	jsr	$38F6E.l
 	dc.b	$00,$16,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$20	; .....1...2...3. 
 	dc.b	$09,$54,$6F,$74,$61,$6C	; .Total
-L2976A	jsr	$38F6E.l
+	jsr	$38F6E.l
 	dc.b	$00,$16,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$20	; .....<...<...<. 
 	dc.b	$0A,$3C,$3C,$3C,$3C,$3C	; .<<<<<
-L29786	bsr.w	L298BA
-	bsr.w	L29904
+; Period stats: draws the title and rows, then waits for a button
+PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
+	bsr.w	PeriodStatsTeamRows
 	move.w	#$18,$18D62.l
 .loop	jsr	$2EDE2.l
 	btst	#$7,d1
@@ -155,14 +158,14 @@ L29786	bsr.w	L298BA
 .next	tst.w	$1A43A.l
 	bne.w	.loop
 	st.b	$1A43A.l
-	bsr.w	L298BA
-	bsr.w	L29904
+	bsr.w	PeriodStatsTitleShots
+	bsr.w	PeriodStatsTeamRows
 	bra.w	.loop
 .next2	tst.w	$1A43A.l
 	beq.w	.loop
 	clr.w	$1A43A.l
-	bsr.w	L298BA
-	bsr.w	L29904
+	bsr.w	PeriodStatsTitleShots
+	bsr.w	PeriodStatsTeamRows
 	bra.w	.loop
 .next3	movem.l	(sp)+,d0-d7/a0-a6
 	movem.l	d7/a0,-(sp)
@@ -211,65 +214,70 @@ L29786	bsr.w	L298BA
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
 	jmp	$2E980.l
-L298BA	tst.w	$1A43A.l
-	beq.w	L298E4
+; Period stats: title when the table shows shots (Shots [ For Goals ])
+PeriodStatsTitleShots	tst.w	$1A43A.l
+	beq.w	PeriodStatsTitleGoals
 	jsr	$38F6E.l
 	dc.b	$00,$18,$BE,$12,$07,$53,$68,$6F,$74,$73,$BE,$0F,$1A,$5B,$20,$46	; .....Shots...[ F
 	dc.b	$6F,$72,$20,$47,$6F,$61,$6C,$73	; or Goals
-L298E2	rts
-L298E4	jsr	$38F6E.l
+	rts
+; Period stats: title when the table shows goals (Goals [ For Shots ])
+PeriodStatsTitleGoals	jsr	$38F6E.l
 	dc.b	$00,$18,$BE,$12,$07,$47,$6F,$61,$6C,$73,$BE,$0F,$1A,$46,$6F,$72	; .....Goals...For
 	dc.b	$20,$53,$68,$6F,$74,$73,$20,$5D	;  Shots ]
-L29902	rts
-L29904	movem.l	d0-d7/a0-a6,-(sp)
+	rts
+; Period stats: team rows of the table
+PeriodStatsTeamRows	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BE,$00,$00,$00	; ......
-L29914	movea.l	#$186B2,a2
+	movea.l	#$186B2,a2
 	move.w	#$E,$18D5A.l
-	bsr.w	L2993E
+	bsr.w	PeriodStatsPeriodRow
 	movea.l	#$1834C,a2
 	move.w	#$16,$18D5A.l
-	bsr.w	L2993E
+	bsr.w	PeriodStatsPeriodRow
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-L2993E	lea.l	$344(a2),a0
+; Period stats: one row, a0 = the period counts of a team
+PeriodStatsPeriodRow	lea.l	$344(a2),a0
 	tst.w	$1A43A.l
 	beq.w	.next
 	lea.l	$34C(a2),a0
 .next	clr.w	$1A44A.l
 	move.w	#$B,$18D58.l
-	bsr.w	L299F6
+	bsr.w	PeriodStatsPrintTotal
 	cmpi.w	#$1,$180E4.l
 	blt.w	.next2
 	move.w	#$10,$18D58.l
-	bsr.w	L299F6
+	bsr.w	PeriodStatsPrintTotal
 	cmpi.w	#$2,$180E4.l
 	blt.w	.next2
 	move.w	#$15,$18D58.l
-	bsr.w	L299F6
+	bsr.w	PeriodStatsPrintTotal
 	cmpi.w	#$3,$180E4.l
 	blt.w	.next2
 	btst.b	#$1,$17F7A.l
 	beq.w	.next2
 	move.w	#$1A,$18D58.l
-	bsr.w	L299F6
+	bsr.w	PeriodStatsPrintTotal
 .next2	move.w	#$21,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
-L299CA	subi.w	#$3,$18D58.l
+	subi.w	#$3,$18D58.l
 	move.w	$1A44A.l,d0
 	move.w	#$2,d1
 	cmpi.w	#$64,d0
-	blt.w	.next
+	blt.w	.next3
 	move.w	#$3,d1
-.next	jsr	$3919A.l
+.next3	jsr	$3919A.l
 	jsr	$38F80.l
 	rts
-L299F6	move.w	(a0)+,d0
+; Period stats: adds a count to the total and prints it
+PeriodStatsPrintTotal	move.w	(a0)+,d0
 	add.w	d0,$1A44A.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
-L29A0A	subi.w	#$3,$18D58.l
+	subi.w	#$3,$18D58.l
 	move.w	#$2,d1
 	cmpi.w	#$64,d0
 	blt.w	.next
@@ -308,7 +316,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	jsr	(ReadActiveJoypad).l
 	btst	#$7,d3
 	beq.w	.1
-	jmp	(CrowdMeterScreenSub2).l
+	jmp	(StatsScreenFadeIn).l
 .1	jsr	(nodiag).l
 	move.w	#$FFFE,d0
 	btst	#$0,d3
@@ -375,12 +383,13 @@ StatsReportBlitSetup	move.w	(disflags).l,-(sp)
 	rts
 StatScrollRow	move.w	(VertLineScrolling).l,d3
 	lsr.w	#$4,d3
-	bra.w	StatScrollRowEnd_1
+	bra.w	StatScrollRowExit
 StatScrollRowEnd	move.w	(VertLineScrolling).l,d3
 	lsr.w	#$4,d3
 	addi.w	#$6,d3
-	bra.w	StatScrollRowEnd_1
-StatScrollRowEnd_1	rts
+	bra.w	StatScrollRowExit
+; Return of StatScrollRowEnd
+StatScrollRowExit	rts
 ; Prints the stats scroll header.
 StatScrollHeader	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
@@ -583,7 +592,8 @@ GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from Pr
 	move.w	d1,d0
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
-GetTeamRatingStr1	dc.b	'3LIKNCKC4BJIDBJ7'
+; Data that follows GetTeamRating (strings, small tables)
+GetTeamRatingTexts	dc.b	'3LIKNCKC4BJIDBJ7'
 	dc.b	'EKG8E8HGHF[Y'
 ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) and a3 is not
 	
@@ -792,4 +802,5 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs						;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)
-TeamSongsTbl1	dc.w	$7775
+; Data that follows TeamSongs (strings, small tables)
+TeamSongsData	dc.w	$7775

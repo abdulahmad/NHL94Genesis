@@ -1,4 +1,5 @@
-DispatchTailSub10	bsr.w	WaitDmnaClear
+; Sub-CPU command: palette copy
+SubCmdCramCopy	bsr.w	WaitDmnaClear
 	move.l	$23BC88.l,d3
 	move.l	$23BC8C.l,d4
 	move.l	$23BC90.l,d5
@@ -224,7 +225,8 @@ DecodePadBits	not.b	d0
 	rts
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
-DispatchTailSub15	movem.l	d0-d7/a0-a6,-(sp)
+; Polls the sub-CPU and controllers
+SubCommPoll	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$0,$A1200F.l
 	beq.w	.next
 	bclr.b	#$1,$A1200E.l
@@ -246,29 +248,34 @@ DispatchTailSub15	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$00,$06,$00,$A1,$20,$0F,$66,$F6,$08,$B9,$00,$06,$00,$A1,$20,$0E	; .... .f....... .
 	dc.b	$08,$B9,$00,$07,$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E	; ...... ....... .
 	dc.b	$61,$00,$BF,$CE,$60,$00,$F5,$6C,$4E,$75	; a...`..lNu
-DispatchTail_69	dc.b	$60,$00,$00,$8E	; `...
-DispatchTail_70	dcb.b	$8C,0
-DispatchTailSub16	lea.l	DispatchTail_71(pc),a0
+; Start of a RAM-resident code image (bra over its header)
+RamImageB	dc.b	$60,$00,$00,$8E	; `...
+; Zero padding of image B
+RamImageBPad	dcb.b	$8C,0
+; Installs the image B DMA callbacks
+DmaInstallB	lea.l	DmaCallbackB(pc),a0
 	move.l	$4(sp),(a0)
 	lea.l	.next(pc),a0
 	move.l	$FFFFFD08.w,(a0)
-	lea.l	DispatchTail_72(pc),a0
+	lea.l	DmaServiceB(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	jsr	MAINCODE(pc)
-.loop	move.w	DispatchTail_73(pc),d0
+.loop	move.w	DmaBusyFlagB(pc),d0
 	bne.b	.loop
-	movea.l	DispatchTailSub16+$3C(pc),a0
+	movea.l	DmaInstallB+$3C(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	rts
 .next	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_71	dc.b	$00,$00,$00,$00	; ....
-DispatchTailSub17	movea.l	#$C00000,a0
+; DMA callback pointer, image B
+DmaCallbackB	dc.b	$00,$00,$00,$00	; ....
+; Image B: VDP register setup
+VdpInitB	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
 	lsl.l	#$2,d0
@@ -308,7 +315,7 @@ DispatchTailSub17	movea.l	#$C00000,a0
 	move.w	#$FF,d0
 .loop2	move.l	d1,(a0)
 	dbra	d0,.loop2
-	lea.l	DispatchTail_88(pc),a1
+	lea.l	FontGlyphDataB(pc),a1
 	move.w	#$2FF,d3
 .loop3	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -323,16 +330,17 @@ DispatchTailSub17	movea.l	#$C00000,a0
 .next3	move.l	d1,(a0)
 	dbra	d3,.loop3
 	rts
-DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
+; Image B: DMA service routine
+DmaServiceB	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
-	lea.l	DispatchTail_73(pc),a2
+	lea.l	DmaBusyFlagB(pc),a2
 	tst.w	(a2)
 	beq.w	.next3
 	movea.l	#$C00000,a0
-	lea.l	DispatchTail_76(pc),a1
+	lea.l	DmaRegBufB(pc),a1
 	move.l	#$C0000000,$4(a0)
-	move.w	DispatchTail_75(pc),d0
+	move.w	DmaPhaseB(pc),d0
 .loop	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -343,12 +351,12 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	(a1)+,(a0)
 	dbra	d0,.loop
 	clr.w	(a2)
-	move.l	DispatchTail_77(pc),d3
-	lea.l	DispatchTail_80(pc),a2
-	move.l	DispatchTail_77+$4(pc),d2
-	move.l	DispatchTail_79(pc),d7
+	move.l	DmaDestB(pc),d3
+	lea.l	DmaListB(pc),a2
+	move.l	DmaDestB+$4(pc),d2
+	move.l	DmaLenB(pc),d7
 	subq.w	#$1,d7
-	move.l	DispatchTail_78(pc),d6
+	move.l	DmaSrcB(pc),d6
 	moveq	#$7,d0
 	and.w	d6,d0
 	bne.b	.next
@@ -381,25 +389,33 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 .loop5	move.w	(a2)+,(a0)
 	dbra	d5,.loop5
 	dbra	d7,.loop4
-.next2	lea.l	DispatchTail_74(pc),a2
+.next2	lea.l	DmaModeB(pc),a2
 	eori.w	#$1,(a2)
-.next3	lea.l	DispatchTail_70(pc),a0
+.next3	lea.l	RamImageBPad(pc),a0
 	addq.l	#$1,(a0)
-	move.l	DispatchTail_71(pc),d0
+	move.l	DmaCallbackB(pc),d0
 	beq.b	.next4
 	movea.l	d0,a0
 	jsr	(a0)
 .next4	movem.l	(sp)+,d0-d7/a0-a5
 	rte
-DispatchTail_73	dc.b	$00,$00	; ..
-DispatchTail_74	dc.b	$00,$00	; ..
-DispatchTail_75	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_76	dcb.b	$80,0
-DispatchTail_77	dc.b	$00,$00,$E0,$00	; ....
+; DMA busy flag, image B
+DmaBusyFlagB	dc.b	$00,$00	; ..
+; DMA mode word, image B
+DmaModeB	dc.b	$00,$00	; ..
+; DMA phase, image B
+DmaPhaseB	dc.b	$00,$00,$00,$00	; ....
+; DMA register buffer, image B
+DmaRegBufB	dcb.b	$80,0
+; DMA destination, image B
+DmaDestB	dc.b	$00,$00,$E0,$00	; ....
 .next	dc.b	$00,$00,$00,$80	; ....
-DispatchTail_78	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
-DispatchTail_80	dcb.b	$5EC,0
+; DMA source, image B
+DmaSrcB	dc.b	$00,$00,$00,$00	; ....
+; DMA length, image B
+DmaLenB	dc.b	$00,$00,$00,$10	; ....
+; DMA list and work area, image B
+DmaListB	dcb.b	$5EC,0
 .next	dcb.b	$414,0
 ; Second copy of DrawTextToPlane.
 DrawTextToPlane_B	link	a6,#$0
@@ -430,7 +446,7 @@ DrawTextToPlane_B	link	a6,#$0
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-.loop2	move.w	DispatchTail_73(pc),d0
+.loop2	move.w	DmaBusyFlagB(pc),d0
 	bne.b	.loop2
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
@@ -443,9 +459,9 @@ DrawTextToPlane_B	link	a6,#$0
 	move.w	#$3FF,d1
 .loop3	move.l	d0,(a0)
 	dbra	d1,.loop3
-	lea.l	DispatchTail_74(pc),a0
+	lea.l	DmaModeB(pc),a0
 	move.w	#$1,(a0)
-	lea.l	DispatchTail_76(pc),a0
+	lea.l	DmaRegBufB(pc),a0
 	move.l	#$EEE,(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
@@ -454,7 +470,7 @@ DrawTextToPlane_B	link	a6,#$0
 	clr.l	(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
-	lea.l	DispatchTail_73(pc),a0
+	lea.l	DmaBusyFlagB(pc),a0
 	move.w	#$1,(a0)
 .loop4	move.w	(a0),d0
 	bne.b	.loop4
@@ -462,35 +478,39 @@ DrawTextToPlane_B	link	a6,#$0
 	rts
 ; Second copy of DrawTextBuffer.
 DrawTextBuffer_B	link	a6,#$0
-DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
-	lea.l	DispatchTail_73(pc),a2
+; Waits for DMA idle, then starts a transfer
+DmaWaitStartB	movem.l	d0-d7/a0-a5,-(sp)
+	lea.l	DmaBusyFlagB(pc),a2
 .loop	tst.w	(a2)
 	bne.b	.loop
 	movea.l	#$C00000,a0
 	movea.l	$10(a6),a4
-	lea.l	DispatchTail_77(pc),a1
+	lea.l	DmaDestB(pc),a1
 	move.l	$C(a6),(a1)
-DispatchTail_82	movea.l	$14(a6),a1
+; Parses a transfer header (magic SM)
+SmHeaderParseB	movea.l	$14(a6),a1
 	cmpi.w	#$534D,(a1)
-	bne.w	DispatchTail_86
+	bne.w	DmaFinishB
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
-	move.w	DispatchTail_74(pc),d1
-	bne.b	DispatchTail_84
+	move.w	DmaModeB(pc),d1
+	bne.b	DmaSetupFromHeaderB
 	moveq	#$0,d0
 	move.w	d6,d0
 	mulu.w	d7,d0
-DispatchTail_83	adda.l	d0,a5
+; Advances the transfer pointers
+DmaAdvancePtrsB	adda.l	d0,a5
 	lsl.l	#$5,d0
 	adda.l	d0,a4
-DispatchTail_84	move.w	$2(a1),d1
+; Sets up DMA from the header fields
+DmaSetupFromHeaderB	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	lea.l	DispatchTail_75(pc),a2
+	lea.l	DmaPhaseB(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
-	lea.l	DispatchTail_76(pc),a2
+	lea.l	DmaRegBufB(pc),a2
 .loop	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
@@ -501,11 +521,11 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.loop
-	lea.l	DispatchTail_78(pc),a3
+	lea.l	DmaSrcB(pc),a3
 	move.l	d6,(a3)
-	lea.l	DispatchTail_79(pc),a3
+	lea.l	DmaLenB(pc),a3
 	move.l	d7,(a3)
-	lea.l	DispatchTail_80(pc),a3
+	lea.l	DmaListB(pc),a3
 	move.l	d7,-(sp)
 	move.l	$10(a6),d3
 	lsr.l	#$5,d3
@@ -539,7 +559,7 @@ DispatchTail_84	move.w	$2(a1),d1
 	lsl.l	#$4,d2
 	move.l	a4,d0
 	bsr.b	VdpDmaSetup
-	bra.b	DispatchTail_86
+	bra.b	DmaFinishB
 	move.l	a4,d0
 	lsl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -559,7 +579,8 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.l	(a1)+,(a0)
 .next5	dbra	d4,.loop5
 .next6	dbra	d7,.loop4
-DispatchTail_86	lea.l	DispatchTail_73(pc),a2
+; Finishes the transfer and restores registers
+DmaFinishB	lea.l	DmaBusyFlagB(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
@@ -600,7 +621,8 @@ VdpDmaSetup	move.l	a1,d1
 	move.l	d0,$4(a0)
 	move.l	(a1),(a0)
 	rts
-DispatchTail_88	dcb.b	$8,0
+; 1bpp font glyph data, image B
+FontGlyphDataB	dcb.b	$8,0
 	dc.b	'    ',$00,$20,$00,$00,$50,$50,$00,$00,$00,$00,$00,$00	;     . ..PP......
 	dc.b	$28,$78,$50,$F0,$A0,$00,$00,' pP ',$10,$50,$70,$20,$00	; (xP.... pP .Pp .
 	dc.b	$50,$A0,$40,$30,$50,$A0,$00,$00,$60,$80,$40,$A8,$90,$68,$00,$00	; P.@0P...`.@..h..
@@ -747,18 +769,18 @@ ReDraw	link	a6,#$0
 	dc.b	$86,'ReDraw',$00,$00,$00	; .ReDraw...
 drawprint	link	a6,#$0
 	move.l	$8(a6),-(sp)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	move.l	$5C(a0),-(sp)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	move.l	$60(a0),-(sp)
 	jsr	DrawTextToPlane_B(pc)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	addq.l	#$1,$60(a0)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	moveq	#$18,d0
 	cmp.l	$60(a0),d0
 	bgt.b	.next
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	subi.l	#$14,$60(a0)
 .next	jsr	ReDraw(pc)
 	unlk	a6
@@ -775,7 +797,7 @@ NumStr	link	a6,#$FFF0
 	clr.b	(a4,d0.w)
 .loop	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	Set1MFlag_2(pc)
+	jsr	NumStrThunkD(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -783,7 +805,7 @@ NumStr	link	a6,#$FFF0
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	Set1MFlag_1(pc)
+	jsr	NumStrThunkC(pc)
 	move.l	d0,d6
 	bne.b	.loop
 	bra.b	.next
@@ -930,18 +952,18 @@ InitWorld	link	a6,#$0
 	clr.w	(a0)
 	movea.l	#$A12010,a0
 	clr.w	$2(a0)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	moveq	#$4,d0
 	move.l	d0,$5C(a0)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	move.l	d0,$60(a0)
 	pea.l	.next3(pc)
 	jsr	aprint(pc)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	move.l	$54(a0),-(sp)
 	pea.l	.next2(pc)
 	jsr	aprint(pc)
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	RamImageB(pc),a0
 	move.l	$58(a0),-(sp)
 	pea.l	.next(pc)
 	jsr	aprint(pc)
@@ -975,12 +997,14 @@ Set1MFlag	link	a6,#$0
 	rts
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
-Set1MFlag_1	lea.l	.next(pc),a0
+; Jump thunk through a computed address (number string)
+NumStrThunkC	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .next	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-Set1MFlag_2	lea.l	.next(pc),a0
+; Jump thunk through a computed address (number string)
+NumStrThunkD	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .next	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -995,7 +1019,8 @@ Set1MFlag_2	lea.l	.next(pc),a0
 	dc.b	$48,$40,$30,$02,$72,$00,$60,$16,$D2,$41,$65,$12,$D4,$42,$D1,$80	; H@0.r.`..Ae..B..
 	dc.b	$B0,$83,$65,$F4,$90,$83,$D2,$41,$08,$C1,$00,$00,$64,$EE,$26,$1F	; ..e....A....d.&.
 	dc.b	$34,$1F,$4E,$75,$00,$00,$00,$00	; 4.Nu....
-Set1MFlagSub1	lea.l	$FF481C.l,a0
+; Sets up VDP and the sub-CPU address for DMA
+VdpDmaBoot	lea.l	$FF481C.l,a0
 	move.w	#$FFFF,$70.l
 	move.w	a0,$A12006.l
 	move.w	#$8A00,$C00004.l
@@ -1010,7 +1035,7 @@ Set1MFlagSub1	lea.l	$FF481C.l,a0
 	bclr.b	#$7,$A1200E.l
 	jsr	$FF4918.l
 	movea.l	#$FFFC00,sp
-	bra.w	DispatchTail_64
+	bra.w	WaitSubCpuReady
 	move.w	#$0,d0
 	lea.l	$FF6E0C.l,a0
 	move.w	#$184F,d1
@@ -1103,7 +1128,7 @@ SetFlagOnce	tst.w	$FF6D84.l
 .next	movem.l	d0-d7/a0-a2,-(sp)
 	st.b	$FF6D8A.l
 	bsr.w	.next2
-	lea.l	Set1MFlag_5(pc),a0
+	lea.l	VdpShadowBuffers(pc),a0
 	moveq	#$3F,d1
 .loop	move.w	#$0,(a0)+
 	dbra	d1,.loop
@@ -1128,7 +1153,7 @@ SetFlagOnce	tst.w	$FF6D84.l
 	jsr	$FF6BD0.l
 	add.w	d2,d2
 	lea.l	$4(a1,d2.w),a0
-	lea.l	Set1MFlag_5(pc),a1
+	lea.l	VdpShadowBuffers(pc),a1
 	moveq	#$1F,d0
 .loop3	move.l	(a0)+,(a1)+
 	dbra	d0,.loop3
@@ -1156,7 +1181,7 @@ SetFlagOnce	tst.w	$FF6D84.l
 	bsr.w	SetTextVector
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-.next2	lea.l	Set1MFlag_4(pc),a0
+.next2	lea.l	VdpRefreshHandler(pc),a0
 	move.l	a0,$FFFD08.l
 	rts
 .next3	movea.l	#$C00000,a1
@@ -1174,7 +1199,8 @@ VdpSetWriteAddrD0	movea.l	#$C00000,a0
 	andi.w	#$3,d0
 	move.l	d0,$4(a0)
 	rts
-Set1MFlag_4	movem.l	d0-d7/a0-a4,-(sp)
+; Interrupt-time VDP refresh
+VdpRefreshHandler	movem.l	d0-d7/a0-a4,-(sp)
 	tst.w	$FF6D8A.l
 	bmi.w	.loop2
 	cmpi.w	#$64,$FF6D8A.l
@@ -1194,7 +1220,7 @@ Set1MFlag_4	movem.l	d0-d7/a0-a4,-(sp)
 	asl.w	d0,d5
 	move.w	d5,d4
 	not.w	d4
-	lea.l	Set1MFlag_5(pc),a1
+	lea.l	VdpShadowBuffers(pc),a1
 	movea.l	#$C00000,a0
 	clr.w	d6
 .loop	move.w	d3,d2
@@ -1232,7 +1258,8 @@ Set1MFlag_4	movem.l	d0-d7/a0-a4,-(sp)
 	dbra	d0,.loop3
 	st.b	$FF6D8A.l
 	bra.w	.loop2
-Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
+; Initialises the VDP registers
+VdpInitRegs	movem.l	d2-d7/a1-a2,-(sp)
 	moveq	#$0,d7
 	lea.l	$C00004.l,a1
 	move.w	#$8154,(a1)
@@ -1310,7 +1337,8 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
-Set1MFlag_5	dcb.b	$80,0
+; VDP shadow register and list buffers
+VdpShadowBuffers	dcb.b	$80,0
 	dc.b	$C3,$00,$06,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .....Q...Q...Q..
 	dc.b	$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .Q...Q...Q...Q..
 	dc.b	$18,$4F,$18,$4F,$14,$48,$16,$49,$18,$4B	; .O.O.H.I.K
@@ -1325,35 +1353,35 @@ Set1MFlag_5	dcb.b	$80,0
 ; Jumps to the handler for the command number in d0.
 Z80CommandSwitch	tst.w	d0
 	bne.b	.next
-	bra.w	Set1MFlag_7
+	bra.w	SndSlotsInit
 .next	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next2
-	bra.w	Set1MFlag_8
+	bra.w	SndSlotsTickAll
 .next2	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next3
-	bra.w	Set1MFlag_9
+	bra.w	SndSlotsSave
 .next3	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next4
-	bra.w	Set1MFlag_10
+	bra.w	SndFindId
 .next4	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next5
-	bra.w	Set1MFlag_11
+	bra.w	Z80UploadBlock
 .next5	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
@@ -1367,28 +1395,28 @@ Z80CommandSwitch	tst.w	d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next7
-	bra.w	Set1MFlag_22
+	bra.w	SndSetSource
 .next7	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next8
-	bra.w	Set1MFlag_23
+	bra.w	SndScanToEnd
 .next8	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next9
-	bra.w	Set1MFlag_24
+	bra.w	Z80LoadBank
 .next9	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	bne.b	.next10
-	bra.w	Set1MFlag_25
+	bra.w	Z80LoadSmall
 .next10	move.w	#$1,d0
 	ori.b	#$1,ccr
 	rts

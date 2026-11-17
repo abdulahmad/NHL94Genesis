@@ -1,6 +1,6 @@
 	move.w	#$F1F,d1
-.loop18	add.b	(a0)+,d0
-	dbra	d1,.loop18
+.loop	add.b	(a0)+,d0
+	dbra	d1,.loop
 	rts
 	dc.w	$41F9,$0001,$93BC,$303C,$0F1F,$4281,$10C1,$51C8
 	dc.w	$FFFC,$4E75
@@ -8,35 +8,35 @@
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-.loop19	move.b	(a1)+,(a0)+
-	dbra	d1,.loop19
+.loop2	move.b	(a1)+,(a0)+
+	dbra	d1,.loop2
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	.next3
+	beq.s	.next
 	move.w	#$1,-(a6)
-	bra.s	.next4
-.next3	move.w	#$0,-(a6)
-.next4	bclr	#$5,$FF800F.l
+	bra.s	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-.loop20	move.b	(a0)+,(a1)+
-	dbra	d1,.loop20
+.loop3	move.b	(a0)+,(a1)+
+	dbra	d1,.loop3
 	tst.w	$193BA.l
-	bmi.w	.next6
+	bmi.w	.next4
 	jsr	$2242A.l
 	move.l	d0,$1A2DC.l
 	move.w	#$0,d0
 	lea.l	(ThreeStars).l,a0
 	lea.l	(mesarea).l,a1
 	jsr	$5F16.w
-	bcs.w	.next5
+	bcs.w	.next3
 	move.w	#$5,d0
 	lea.l	BackupRamName.l,a0
 	jsr	$5F16.w
@@ -44,16 +44,16 @@
 	lea.l	BackupRamNameSize.l,a0
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
-	bcc.w	.next6
-.next5	move.w	#$FFFF,$193BA.l
-.next6	move.l	a6,-(sp)
+	bcc.w	.next4
+.next3	move.w	#$FFFF,$193BA.l
+.next4	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	.next7
+	beq.s	.next5
 	bset	#$5,$FF800F.l
-	bra.s	.next8
-.next7	bclr	#$5,$FF800F.l
-.next8	move.l	a6,$19360.l
+	bra.s	.next6
+.next5	bclr	#$5,$FF800F.l
+.next6	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
@@ -85,7 +85,8 @@ ReadCrowdRecord						;Read the 16 byte crowd record block of team d1 from save R
 	
 	
 	bclr	#$6,(sflags6).l
-ReadCrowdRecord_1	movem.l	d0-d1/a0-a1,-(sp)
+; Moves one 16 byte crowd record between RAM and backup RAM (flag 6 of sflags6 picks the direction)
+CrowdRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$B60,d0
@@ -100,11 +101,12 @@ ReadCrowdRecord_1	movem.l	d0-d1/a0-a1,-(sp)
 ; Sets the flag and reads a crowd record (variant A).
 ReadCrowdRecordASetFlag6
 	bset	#$6,(sflags6).l
-	bra.w	ReadCrowdRecord_1
+	bra.w	CrowdRecordBackupIO
 ; Clears the flag and reads a crowd record (variant B).
 ReadCrowdRecordBClearFlag6
 	bclr	#$6,(sflags6).l
-ReadCrowdRecord_2	movem.l	d0-d1/a0-a1,-(sp)
+; Moves one 16 byte team record between RAM and backup RAM (flag 6 of sflags6 picks the direction)
+TeamRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$D20,d0
@@ -119,7 +121,7 @@ ReadCrowdRecord_2	movem.l	d0-d1/a0-a1,-(sp)
 ; Sets the flag and reads a crowd record (variant B).
 ReadCrowdRecordBSetFlag6
 	bset	#$6,(sflags6).l
-	bra.w	ReadCrowdRecord_2
+	bra.w	TeamRecordBackupIO
 ; Sets the flag and runs NameLogIO (write); ReadNameLog clears it (read).
 WriteNameLog
 	bset	#$6,(sflags6).l
@@ -139,7 +141,8 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 .next	jsr	$22452.l
 .next2	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-NameLogIOTbl1	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
+; Data that follows NameLogIO (strings, small tables)
+NameLogIOData	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
 	dc.w	$00D0,$00EA,$0104,$011E,$0138,$0152,$016C,$0186
 	dc.w	$01A0,$01BA,$01D4,$01EE,$0208,$0222,$023C,$0256
 	dc.w	$0270,$028A,$02A4,$02BE,$02D8
@@ -301,7 +304,8 @@ assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take 
 	dc.b	$67,$00,$01,$38,$08,$EB,$00,$03,$00,$64,$66,$00,$01,$2E,$08,$B9	; g..8.....df.....
 	dc.b	$00,$00,$00,$01,$7E,$C6,$08,$B9,$00,$05,$00,$01,$7F,$7C,$42,$79	; ....~........|By
 	dc.b	$00,$01,$7E,$C6,$42,$79,$00,$01,$7E,$BE,$50,$F9,$00,$01,$7E,$30	; ..~.By..~.P...~0
-L2295C	movem.l	d0-d7/a0-a6,-(sp)
+; Per-player control update for the object in a3 (player number $52, flags $62)
+PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$52(a3),d0
 	move.w	d0,$17EBC.l
 	btst.b	#$3,$62(a3)
@@ -338,7 +342,7 @@ L2295C	movem.l	d0-d7/a0-a6,-(sp)
 .next3	jsr	$312B8.l
 	bra.w	.next4
 .next4	move.w	d0,-(sp)
-	bsr.w	L22C68
+	bsr.w	PlayerPositionToScreen
 	clr.w	$5A(a3)
 	jsr	$363C0.l
 	bset.b	#$5,$62(a3)
@@ -461,7 +465,8 @@ L2295C	movem.l	d0-d7/a0-a6,-(sp)
 	bne.w	.ex
 .next27	jsr	$2AF00.l
 .ex	rts
-L22C68	move.w	#$7FC,d1
+; Turns the position of the object in a3 into screen coordinates and draws its marker
+PlayerPositionToScreen	move.w	#$7FC,d1
 	movem.w	d0-d1,-(sp)
 	move.w	$0(a3),d0
 	neg.w	d0

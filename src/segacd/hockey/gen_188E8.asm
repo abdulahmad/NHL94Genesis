@@ -1,9 +1,9 @@
 ; Checks the puck holder and waits for DMA.
 CheckPuckHolder2
 	bsr.w	chkpk
-	bne.w	chkpk2Sub2
+	bne.w	CheckPuckHolder2Random
 	tst.w	$17E34.l
-	beq.w	chkpk2Sub2
+	beq.w	CheckPuckHolder2Random
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
 	move.w	#$1B,$FF8020.l
@@ -17,7 +17,7 @@ CheckPuckHolder2
 	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d0
-	bne.w	chkpk2Sub2
+	bne.w	CheckPuckHolder2Random
 	move.w	#$58,d0
 	btst	#$7,$62(a3)
 	beq.w	.next
@@ -30,7 +30,8 @@ CheckPuckHolder2
 .next2	bset	#$3,$17F74.l
 	jmp	(dopass).l
 	bra.w	CompShoot
-chkpk2Sub2
+; Random check ($1E) when flag 1 of $64 is set
+CheckPuckHolder2Random
 	btst	#$1,$64(a3)
 	beq.w	.next2
 	move.w	#$1E,d0
@@ -280,17 +281,19 @@ assbreakaway						;assignment for a breakaway: the puck carrier skates in, anyon
 	move.w	$52(a3),d0		;Move SCnum into d0
 	cmp.w	$17BE0.l,d0		;compare puck carrier SCnum with d0
 	beq.w	assnearest		;branch if puck carrier
-assbreakaway_1	bclr	#$1,$64(a3)		;clear breakaway bit
+; Clears the breakaway flag and replaces the assist
+assbreakawayStart	bclr	#$1,$64(a3)		;clear breakaway bit
 	move.w	#$11,d0		;11 - assnearest
 	bsr.w	assreplace
-	bra.w	assnearest_1
+	bra.w	assnearestCheck
 assnearest						;this is a special assignment used for the player who is nearest the puck
 									;but doesn't have it. Assignment anearest ($11)
 									;a2 = a3's team struct, d7 = elapsed frames. temp1 = re-evaluation timer,
 									;temp3 = hold timer
 	jsr	(breakaway).l
-	bmi.w	assbreakaway_1
-assnearest_1	bclr	#$2,$17F74.l
+	bmi.w	assbreakawayStart
+; assnearest: tests the nearest flag and the puck holder
+assnearestCheck	bclr	#$2,$17F74.l
 	bne.w	.chkpuck
 	bclr	#$1,$64(a3)		;clear breakaway bit
 .chkpuck	move.w	$52(a3),d0		;move SCnum into d0

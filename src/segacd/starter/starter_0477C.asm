@@ -48,7 +48,7 @@ NumStr	link	a6,#$FFF0
 	clr.b	(a4,d0.w)
 .loop	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	GetData_16(pc)
+	jsr	DataThunkB(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -56,7 +56,7 @@ NumStr	link	a6,#$FFF0
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	GetData_15(pc)
+	jsr	DataThunkA(pc)
 	move.l	d0,d6
 	bne.b	.loop
 	bra.b	.next
@@ -365,7 +365,8 @@ InitHeap	link	a6,#$0
 	add.l	$8(a0),d0
 	movea.l	d0,a4
 	lea.l	-$10(a4),a4
-InitHeapSub2	move.b	#$48,(a3)
+; Writes a heap block header
+InitHeapBlock	move.b	#$48,(a3)
 	move.b	#$42,$1(a3)
 	clr.w	$2(a3)
 	moveq	#$0,d0

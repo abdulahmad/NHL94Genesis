@@ -28,8 +28,8 @@
   "Reads the pads four times and ORs the results."
  ],
  "RestoreBios_71": [
-  "ReadCommRegs",
-  "Copies the main-CPU comm registers $801C-$801E into the pad/status bytes at $10B14."
+  "PadRepeatReturn",
+  "Return and test block of the pad auto-repeat routine"
  ],
  "RestoreBios_72": [
   "PadAutoRepeat",
@@ -440,8 +440,8 @@
   "Switches all PCM channels off."
  ],
  "GetData_27": [
-  "Buf42_1",
-  "Zero-filled work storage (66 bytes)."
+  "DispTableF",
+  "Display data table fragment F"
  ],
  "GetData_34": [
   "StrWarningA",
@@ -544,16 +544,16 @@
   "Stores start+length in the block record at 8(a6)."
  ],
  "GetData_14": [
-  "LongMulU",
-  "Unsigned 32-bit multiply."
+  "Mul32",
+  "32-bit multiply"
  ],
  "GetData_15": [
-  "LongDivUStub",
-  "Unsigned 32-bit divide stub."
+  "DataThunkA",
+  "Jump thunk through a computed address"
  ],
  "GetData_16": [
-  "LongModUStub",
-  "Unsigned 32-bit remainder stub."
+  "DataThunkB",
+  "Jump thunk through a computed address"
  ],
  "GetData_20": [
   "SetupSpriteFrame",
@@ -698,5 +698,169 @@
  "RestoreBios_122": [
   "CdIrqHook2",
   "Second CD interrupt hook: tracks the sector headers of the running read and decides when it is complete."
+ ],
+ "RestoreBiosSub8": [
+  "SetupBiosCallArgs",
+  "Saves the BIOS call arguments in d0-d3 to the call block"
+ ],
+ "RestoreBios_51": [
+  "RtsStub",
+  "Bare rts target"
+ ],
+ "RestoreBiosSub24": [
+  "SendCmdBlockA",
+  "Command with d0, d1, a0 in the command buffer"
+ ],
+ "RestoreBiosSub25": [
+  "SendCmdBlockB",
+  "Command with d0, d1, a0 in the command buffer (second form)"
+ ],
+ "RestoreBiosSub26": [
+  "HookBiosVector",
+  "Patches a BIOS vector and raises a flag"
+ ],
+ "RestoreBiosSub27": [
+  "SendCmd6",
+  "Sends command 6"
+ ],
+ "RestoreBiosSub28": [
+  "SendCmdWords",
+  "Command with several word arguments"
+ ],
+ "RestoreBiosSub29": [
+  "SendCmdState",
+  "Command carrying the saved state words"
+ ],
+ "RestoreBiosSub30": [
+  "SendCmdLoop",
+  "Command sent in a loop over d0"
+ ],
+ "RestoreBiosSub31": [
+  "SendCmdFromA1",
+  "Command with arguments taken from a1"
+ ],
+ "RestoreBiosSub32": [
+  "SendCmdListA1",
+  "Command with a list pointed to by a1"
+ ],
+ "RestoreBiosSub33": [
+  "SendCmdLongs",
+  "Command with long arguments d4/a2"
+ ],
+ "RestoreBiosSub34": [
+  "SendCmdCopy8",
+  "Command copying 8 bytes from a1"
+ ],
+ "RestoreBiosSub35": [
+  "SendCmdCopy12",
+  "Command copying 12 bytes from a1"
+ ],
+ "RestoreBiosSub36": [
+  "SendCmd13",
+  "Sends command $13"
+ ],
+ "RestoreBiosSub37": [
+  "SendCmd14",
+  "Sends command $14"
+ ],
+ "RestoreBiosSub38": [
+  "SendCmd15",
+  "Sends command $15"
+ ],
+ "RestoreBiosSub39": [
+  "SendCmd16",
+  "Sends command $16"
+ ],
+ "RestoreBiosSub40": [
+  "SendCmd19",
+  "Sends command $19"
+ ],
+ "RestoreBiosSub41": [
+  "SendCmdWords3",
+  "Command with three word arguments"
+ ],
+ "RestoreBiosSub43": [
+  "SubIrqHandler",
+  "Sub-CPU interrupt handler"
+ ],
+ "FilmOpenStr1": [
+  "FilmOpenStrTitle",
+  "Debug text"
+ ],
+ "FilmOpenStr2": [
+  "FilmOpenStrInit",
+  "Debug text"
+ ],
+ "FilmOpenStr3": [
+  "FilmOpenStrSects",
+  "Debug text"
+ ],
+ "FilmOpenStr4": [
+  "FilmOpenStrBad",
+  "Debug text"
+ ],
+ "FilmOpenStr5": [
+  "FilmOpenStrOpening",
+  "Debug text"
+ ],
+ "InitHeapSub2": [
+  "InitHeapBlock",
+  "Writes a heap block header"
+ ],
+ "GetDataSub1": [
+  "LoadLongArgs",
+  "Loads two long stack arguments"
+ ],
+ "GetDataSub6": [
+  "LoadLongArg8",
+  "Loads the second stack argument"
+ ],
+ "GetDataSub7": [
+  "BitScanLeft",
+  "Bit scan loop"
+ ],
+ "GetDataSub10": [
+  "DispTableA",
+  "Display data table fragment A"
+ ],
+ "GetDataSub11": [
+  "DispTableB",
+  "Display data table fragment B"
+ ],
+ "GetDataSub12": [
+  "DispTableC",
+  "Display data table fragment C"
+ ],
+ "GetData_26": [
+  "DispTableD",
+  "Display data table fragment D"
+ ],
+ "GetDataSub13": [
+  "DispTableE",
+  "Display data table fragment E"
+ ],
+ "GetDataSub15": [
+  "GateArrayIrqA",
+  "Gate array interrupt service A"
+ ],
+ "GetDataSub18": [
+  "GateArrayVdpSend",
+  "Sends the VDP data through the gate array"
+ ],
+ "GetDataSub19": [
+  "TilemapPut",
+  "Writes a tilemap cell"
+ ],
+ "GetDataSub20": [
+  "GateArrayIrqB",
+  "Gate array interrupt service B"
+ ],
+ "GetDataSub21": [
+  "WriteSubCommBytes",
+  "Writes the communication bytes"
+ ],
+ "GetDataSub23": [
+  "WaitSubBusy",
+  "Waits until the sub-CPU takes the data"
  ]
 }

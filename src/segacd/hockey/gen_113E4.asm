@@ -92,9 +92,11 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
-PutTeamBlockTbl1	dc.w	$0014,$2020
+; "Manual Goalie" String
+PutTeamBlockManualGoalieText	dc.w	$0014,$2020
 	dc.b	'Manual Goalie   '
-PutTeamBlockTbl2	dc.b	$00,$14,'   Auto Goalie'
+; " Auto Goalie" String
+PutTeamBlockAutoGoalieText	dc.b	$00,$14,'   Auto Goalie'
 	dc.w	$2020,$2020
 ; Draws a team block with display flags set.
 PutTeamBlockDraw
@@ -177,7 +179,7 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad
 	btst	#$7,d3
-	bne.w	CrowdMeterScreenSub2
+	bne.w	StatsScreenFadeIn
 	moveq	#-2,d0
 	btst	#$0,d3
 	bne.w	.set
@@ -294,7 +296,8 @@ PrintGameInfoHeader	movem.l	d0-d1/a1,-(sp)
 	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
 	dc.w	$A44E,$4279,$0001,$A452,$33FC,$0001,$0001,$A45A
-PrintGameInfoSub1
+; Prints the game info lines in the small font
+PrintGameInfoBody
 	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$00
@@ -555,7 +558,7 @@ DrawLineIconErase
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	$18C0A.l
 	beq.w	.next
-	move.w	ClearLineEditorTopTbl1.l,(printx).l
+	move.w	ClearLineEditorTopData.l,(printx).l
 .next	jsr	(printsmallz).l
 	dc.w	$0022
 	dc.b	$FE,$04,$FB,$FD,$FA,$02,$4C,$44,$FB,$FE,$FA,$02,$52,$44,$FB,$FE,$FA,$02,$4C,$57,$FB,$FE,$FA,$02,$43,$20,$FB,$FE,$FA,$02,$52,$57
@@ -602,7 +605,8 @@ ClearLineEditorMarks
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
 	rts
-ClearLineEditorTopTbl1	dc.w	$0010,$000C,$0004
+; Data that follows ClearLineEditorTop (strings, small tables)
+ClearLineEditorTopData	dc.w	$0010,$000C,$0004
 LineIconPosTable						;Line icons: x, y, slot count - 1 per line
 	dc.w	$0004,$000C,$0004,$0010,$000C,$0004,$001C,$000C
 	dc.w	$0004,$0004,$000C,$0004,$0010,$000C,$0004,$0004
@@ -648,8 +652,8 @@ LineEditorExit
 	move.l	(sp)+,$18AD6.l
 	move.l	(sp)+,$18AD2.l
 	tst.w	d0
-	bne.w	PrintGameInfoSub1
-	bra.w	CrowdMeterScreenSub2
+	bne.w	PrintGameInfoBody
+	bra.w	StatsScreenFadeIn
 SetLineSlot						;Put player d0 (1 based) in line slot d2 of team a2; if he is already in
 	
 	movem.l	d0-d2/a0-a1,-(sp)
@@ -733,7 +737,8 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
 AttributeOffsetTbl						;Line slots saved in databuffer ($FF ends)
-AttributeOffsetTblTbl1	dc.w	$0102,$0304,$0509,$0A0B,$0C0D,$1112,$1314,$1519
+; Data that follows AttributeOffsetTbl (strings, small tables)
+AttributeOffsetTblData	dc.w	$0102,$0304,$0509,$0A0B,$0C0D,$1112,$1314,$1519
 	dc.b	$1A,$1B,$1C,$1D,'!"#$%)*+,123'
 	dc.w	$34FF
 TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (DisplayPlayerList:
@@ -781,7 +786,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	bsr.w	ReadActiveJoypad
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
-	bne.w	CrowdMeterScreenSub2
+	bne.w	StatsScreenFadeIn
 	btst	#$6,d1
 	bne.w	.team
 	jsr	(nodiag).l
@@ -817,9 +822,9 @@ CheckPlayerListScroll						;TeamRosterScreen per frame: add PlayerScrollCtr to V
 	move.w	(PlayerScrollCtr).l,d0
 	beq.w	updatereplayExit
 	add.w	(VertLineScrolling).l,d0
-	bmi.w	CheckPlayerListScroll_1
+	bmi.w	CheckPlayerListScrollReset
 	cmpi.w	#$380,d0
-	bgt.w	CheckPlayerListScroll_1
+	bgt.w	CheckPlayerListScrollReset
 ; Scrolling step in units of $80.
 PlayerListScrollStep
 	move.w	(VertLineScrolling).l,d1
@@ -869,7 +874,8 @@ PlayerListScrollStep
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
-CheckPlayerListScroll_1	clr.w	(PlayerScrollCtr).l
+; Clears the player list scroll counter
+CheckPlayerListScrollReset	clr.w	(PlayerScrollCtr).l
 	rts
 ; Selects the player from the high word of d0 and redraws.
 PlayerListSelectHigh	move.l	d0,-(sp)

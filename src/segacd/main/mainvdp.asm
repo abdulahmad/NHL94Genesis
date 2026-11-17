@@ -130,13 +130,13 @@
 .next10	movem.l	(sp)+,d0-d7/a0-a6
 	rte
 .next11	bclr.b	#$6,$23C6E8.l
-	beq.w	DispatchTail_5
+	beq.w	RtsStub
 	lea.l	$23C368.l,a0
 	move.w	#$1C0,d0
 	move.w	$FF284E.l,d1
 	bra.w	CopyToVdp
 .next12	bclr.b	#$5,$23C6E8.l
-	beq.w	DispatchTail_5
+	beq.w	RtsStub
 	lea.l	$23B1E8.l,a0
 	move.w	#$8C0,d0
 	move.w	$FF2862.l,d1
@@ -189,20 +189,21 @@ ReadPads	btst.b	#$3,$A12024.l
 	andi.b	#$3F,d1
 	or.b	d1,d0
 	not.b	d0
-DispatchTail_5	rts
+; Bare rts target
+RtsStub	rts
 ; Vblank timer countdown at $23A8D0.
 TickTimers	btst.b	#$4,$23C6E8.l
-	bne.b	DispatchTail_5
+	bne.b	RtsStub
 	tst.w	$23A8D0.l
-	bmi.b	DispatchTail_5
+	bmi.b	RtsStub
 	cmpi.w	#$64,$23A8D0.l
 	beq.w	.next4
 	subq.w	#$1,$23A8D0.l
-	bmi.b	DispatchTail_5
+	bmi.b	RtsStub
 	clr.l	d0
 	move.w	$23A8D0.l,d0
 	cmpi.w	#$18,d0
-	bgt.b	DispatchTail_5
+	bgt.b	RtsStub
 	divu.w	#$3,d0
 	swap	d0
 	asl.w	#$2,d0
@@ -293,7 +294,7 @@ VramRestoreFromList	lea.l	$23AF16.l,a0
 	beq.w	.next
 	lea.l	$23A8D2.l,a5
 	cmpa.l	a5,a6
-	beq.w	DispatchTail_5
+	beq.w	RtsStub
 .loop	movea.l	(a5)+,a0
 	move.w	(a5)+,d0
 	move.w	(a5)+,d1

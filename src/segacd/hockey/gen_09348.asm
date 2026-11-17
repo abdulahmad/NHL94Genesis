@@ -1,6 +1,6 @@
 ; Installs the options-screen vblank handler and display flags.
 OptionsScreenSetup
-	move.l	#PickStartingGoalieTbl1,(VBint).l
+	move.l	#MenuVBlankHandler,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
@@ -22,25 +22,25 @@ OptionsScreenSetup
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03567564,$89ABCDEF
-L243E6	move.w	d4,$18D42.l
+	move.w	d4,$18D42.l
 	movea.l	$47D3C.l,a2
 	addq.l	#$8,a2
 	jsr	$38946.l
 	dc.b	$0F,$C0,$45,$67,$89,$AB,$CD,$EF	; ..Eg....
-L24402	move.w	d4,$17EA2.l
+	move.w	d4,$17EA2.l
 	movea.l	$47D70.l,a2
 	addq.l	#$8,a2
 	jsr	$38946.l
 	dc.b	$01,$23,$45,$67,$89,$AB,$CD,$EF	; .#Eg....
-L2441E	jsr	$38F6E.l
+	jsr	$38F6E.l
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-L2442A	moveq	#$28,d0
+	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	jsr	$38C06.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
-L24444	movea.l	$47D00.l,a0
+	movea.l	$47D00.l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -55,7 +55,7 @@ L24444	movea.l	$47D00.l,a0
 	addi.w	#$24,d4
 	jsr	$38F6E.l
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-L24478	movea.l	$47D04.l,a0
+	movea.l	$47D04.l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -68,7 +68,7 @@ L24478	movea.l	$47D04.l,a0
 	jsr	$387E2.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$FF,$01,$0E,$00	; ......
-L244A2	move.w	d4,$19388.l
+	move.w	d4,$19388.l
 	movea.l	$47D74.l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -91,7 +91,7 @@ L244A2	move.w	d4,$19388.l
 	addq.l	#$8,a2
 	jsr	$38946.l
 	dc.b	$03,$41,$45,$67,$89,$AB,$CD,$EF	; .AEg....
-L24500	jsr	$3EE84.l
+	jsr	$3EE84.l
 	move.w	#$28,$1749C.l
 	move.w	#$28,$1779C.l
 	st.b	$1834C.l
@@ -163,7 +163,8 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .next2	jsr	(PlayerCardTimer).l
 .next3	dbra	d6,.loop
 .ex	rts
-ReadSetupPadsSub1
+; Sub CPU handshake that reads the pads for the setup screen
+SetupPadsSyncRead
 	clr.w	$18C16.l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -193,7 +194,8 @@ ReadSetupPadsSub1
 	clr.w	(OptNOP).l
 	clr.w	$18C0A.l
 	move.w	#$1,$18C08.l
-ReadSetupPadsSub2
+; Saves the playoff level, updates it and reads the pads through the sub CPU
+SetupPadsPlayoffLevelRead
 	move.w	$18C04.l,-(sp)
 	move.w	(sp),$18C0C.l
 	move.w	(sp)+,$18C0E.l

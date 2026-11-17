@@ -1,4 +1,5 @@
-checkanimSub1
+; checkanim: stores the frame counter and tests the flags
+checkanimFlags
 	move.w	$17B80.l,$1AD58.l
 	btst	#$0,$17F72.l
 	beq.w	.next3
@@ -35,7 +36,7 @@ checkanimSub1
 .next2	bsr.w	SetSPA
 	bset	#$1,$63(a3)
 .next3	btst	#$5,$62(a3)
-	bne.w	ClampYPosition_1
+	bne.w	ClampYPositionExit
 	bsr.w	check4bench
 	bclr	#$1,$62(a3)
 	beq.w	.next4
@@ -54,7 +55,7 @@ checkanimSub1
 	bgt.w	.next7
 	cmpi.w	#$FF2E,$14(a3)
 	blt.w	.next7
-.next5	lea.l	ClampYPosition_1(pc),a0
+.next5	lea.l	ClampYPositionExit(pc),a0
 	moveq	#$4,d0
 	tst.w	$0(a3)
 	bpl.w	.next6
@@ -65,7 +66,7 @@ checkanimSub1
 	neg.w	d1
 	bra.w	skateto
 .next7	btst	#$1,$63(a3)
-	bne.w	ClampYPosition_1
+	bne.w	ClampYPositionExit
 	btst	#$0,$17F72.l
 	beq.w	.next9
 	cmpi.w	#$2C5,$6(a3)
@@ -80,7 +81,7 @@ checkanimSub1
 	btst	#$2,$17F70.l
 	bne.w	.next10
 	btst	#$0,$17F68.l
-	bne.w	ClampYPosition_1
+	bne.w	ClampYPositionExit
 .next10	tst.w	$48(a3)
 	bmi.w	.next13
 	move.w	$52(a3),d0
@@ -407,7 +408,8 @@ ClampYPosition						;d1 = y clamped to +-$103, minus goal line d3. d0 = 0 if a3 
 	bgt.w	.2
 	move.w	#$FEFD,d1
 .2	sub.w	d3,d1
-ClampYPosition_1	rts
+; Return of ClampYPosition
+ClampYPositionExit	rts
 AdjustFacingDirection						;Turn facedir one step toward direction d0
 	move.w	$54(a3),d1		;facedir
 	sub.w	d1,d0		;d0 = wanted - current

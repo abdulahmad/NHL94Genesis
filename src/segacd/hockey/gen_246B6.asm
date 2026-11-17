@@ -313,11 +313,12 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 	dbra	d3,.loop
 	movem.l	(sp)+,d0-d3
 	rts
-ScrollDisplayUpTbl1	dc.w	$0000
+; Data that follows ScrollDisplayUp (strings, small tables)
+ScrollDisplayUpData	dc.w	$0000
 ; Calls the display helpers and the $6044 routine.
 ScrollDisplayUpCall
 	jsr	$37598.l
-	tst.w	ScrollDisplayUpTbl1.l
+	tst.w	ScrollDisplayUpData.l
 	beq.s	.next
 	jsr	$376F2.l
 .next	move.w	#$D,d7
@@ -383,7 +384,7 @@ ScrollDisplayUpCall
 	jsr	$376D4.l
 	st.b	$191CE.l
 	moveq	#$0,d0
-	tst.w	ScrollDisplayUpTbl1.l
+	tst.w	ScrollDisplayUpData.l
 	beq.s	.next2
 	jsr	$37752.l
 .next2	jsr	$21FC8.l
@@ -407,7 +408,7 @@ ScrollDisplayUpCall
 	rts
 EASportsScreen						;Called from Begin. Show the EA Sports screen until a button, or $50 x 4
 									;frames (about 5 s)
-	move.w	#$1,ScrollDisplayUpTbl1.l
+	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
 	move.l	#vb2,(VBint).l
 	bclr	#$1,(disflags).l
@@ -426,18 +427,44 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	jsr	$36F72.l
 	jsr	$37B74.l
 	rts
-	dc.w	$4EB9,$0003,$74F0,$0C03,$00E0,$6600,$C192,$08F9
-	dc.w	$0005,$00FF,$800F,$23FC,$0003,$DB90,$0001,$8D66
-	dc.w	$4EB9,$0004,$7DAC,$4EB9,$0003,$6D0A,$33FC,$0018
-	dc.w	$0001,$8D62,$6100,$8EF4,$0012,$F804,$030C,$0143
-	dc.b	'heck Sound|',$14,'09',$00,$01
-	dc.w	$7474,$B079,$0001,$7474,$6700,$FFF8,$4EB9,$0003
-	dc.w	$74F0,$4EB9,$0003,$74BE,$4A01,$6700,$FFE0,$0801
-	dc.w	$0007,$6600,$C12A,$0801,$0003,$6700,$0006,$0646
-	dc.w	$0001,$0801,$0002,$6700,$0006,$0446,$0001,$0801
-	dc.w	$0005,$6700,$0008,$4EB9,$0003,$710C,$3006,$7203
-	dc.w	$6100,$9296,$33FC,$0017,$0001,$8D58,$6100,$9070
-	dc.w	$6000,$FF9A
+; EA Sports screen: waits for the sub CPU reply, then switches the vblank vector
+EASportsScreenCheck	jsr	$374F0.l
+	cmpi.b	#$E0,d3
+	bne.w	rtss2
+	bset.b	#$5,$FF800F.l
+	move.l	#$3DB90,$18D66.l
+	jsr	$47DAC.l
+	jsr	$36D0A.l
+	move.w	#$18,$18D62.l
+	bsr.w	printsmallz
+	dc.b	$00,$12,$F8,$04,$03,$0C,$01,$43,$68,$65,$63,$6B,$20,$53,$6F,$75	; .......Check Sou
+	dc.b	$6E,$64	; nd
+; EA Sports screen: frame wait loop
+EASportsScreenWait	moveq	#$14,d6
+.l3FEAE	move.w	$17474.l,d0
+.l3FEB4	cmp.w	$17474.l,d0
+	beq.w	.l3FEB4
+	jsr	$374F0.l
+	jsr	$374BE.l
+	tst.b	d1
+	beq.w	.l3FEAE
+	btst	#$7,d1
+	bne.w	rtss2
+	btst	#$3,d1
+	beq.w	.l24EE4
+	addi.w	#$1,d6
+.l24EE4	btst	#$2,d1
+	beq.w	.l24EF0
+	subi.w	#$1,d6
+.l24EF0	btst	#$5,d1
+	beq.w	.l24EFE
+	jsr	$3710C.l
+.l24EFE	move.w	d6,d0
+	moveq	#$3,d1
+	bsr.w	PushNumberWidth
+	move.w	#$17,$18D58.l
+	bsr.w	print
+	bra.w	.l3FEAE
 UpdatePlayoffLevel						;Set pojoy from the number of players for play modes 2 and 3.
 	cmpi.w	#$2,$18BFA.l
 	blt.w	rtss2
@@ -548,7 +575,8 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 .set	move.w	d0,$28(a2)		;store the pick (0 = first goalie)
 .x	movem.l	(sp)+,d0/a0
 	rts
-PickStartingGoalieTbl1	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
+; Vertical interrupt handler of the menu screens
+MenuVBlankHandler	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
 	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$DAC6
 	dc.w	$4EB9,$0003,$6DF6,$5279,$0001,$7474,$4CDF,$7FFF
 	rts
@@ -561,7 +589,8 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 .loop	move.w	(a1)+,(a0)+		;9 options
 	dbra	d0,.loop
 	rts
-DefaultMenusTbl1	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
+; Data that follows DefaultMenus (strings, small tables)
+DefaultMenusData	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	dc.w	$0001
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$18C38,a3

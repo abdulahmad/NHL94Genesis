@@ -655,7 +655,8 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dbra	d0,.loop20
 	move.w	(a1)+,$180F0.l
 	rts
-DoHiLightsTbl1	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4
+; Data that follows DoHiLights (strings, small tables)
+DoHiLightsData	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4
 	dc.w	$0019,$FFD8,$0046,$FFB0,$0000,$00F0,$0022,$005A
 	dc.w	$FFC9,$0050,$0064,$0028,$FFF6,$000A,$FFCE,$0000
 setpersonel

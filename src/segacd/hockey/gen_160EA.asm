@@ -232,14 +232,14 @@ ShotMode						;shot input
 	andi.w	#$7,d0		;pass the first 3 bits of d0
 	move.w	d0,$17E2C.l
 .next	cmpi.w	#$10,$5A(a3)
-	bge.w	doshot_1
+	bge.w	doshotExit
 	add.w	d7,$17E2E.l
 	cmpi.b	#$14,$6C(a3)		;6C = shot speed
 	bge.w	.checkcbut
 	cmpi.w	#$8,$5A(a3)		;SPANum
 	bgt.w	.chganim
 .checkcbut	btst	#$5,d2		;5 = #cbut
-	beq.w	doshot_1		;button hasnt changed so continue windup
+	beq.w	doshotExit		;button hasnt changed so continue windup
 .chganim	neg.w	$5A(a3)		;end windup and swing through
 	addi.w	#$1C,$5A(a3)		;Add to SPANum
 	rts
@@ -431,7 +431,8 @@ doshot						;stick is at puck so launch puck toward goal
 	jsr	(puckvzadj).l		;adjust puckvz for top shelf shot
 .next5	bsr.w	sfx		;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
-doshot_1	rts
+; Return of doshot
+doshotExit	rts
 shotdiradj						;If the opposing goalie
 									;covers the middle of the net, set passdir 2 or 6 to shoot at the open
 									;side, else 0. Skipped for computer players (pfjoycon clear)
@@ -529,27 +530,28 @@ setpads						;Put SCnum of a3 in the d4 nibble of PadControlBits ; d4 = -2 puck
 	asl.w	d0,d1
 	or.w	d1,$17DC8.l
 	movem.l	(sp)+,d0-d1
-setpads_1	rts
+; Return of setpads
+setpadsExit	rts
 check4bench
 	btst	#$2,$17F70.l
-	bne.w	setpads_1
+	bne.w	setpadsExit
 	btst	#$3,$62(a3)
-	bne.w	setpads_1
+	bne.w	setpadsExit
 	btst	#$4,$63(a3)
-	bne.w	setpads_1
+	bne.w	setpadsExit
 	tst.b	$60(a3)
 	bpl.w	.next
 	tst.b	$61(a3)
-	bmi.w	setpads_1
+	bmi.w	setpadsExit
 .next	move.b	$61(a3),d0
 	cmp.b	$66(a3),d0
 	beq.w	.next2
 	move.w	$36(a3),d0
 	cmpi.b	#$B,$38(a3,d0.w)
-	beq.w	setpads_1
+	beq.w	setpadsExit
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
-	beq.w	setpads_1
+	beq.w	setpadsExit
 	adda.w	#$4,sp
 	bset	#$2,$63(a3)
 	clr.w	$40(a3)
@@ -568,52 +570,53 @@ check4bench
 	ext.w	d0
 	move.w	d0,$34(a3)
 	jmp	(Setplass).l
-L319AC	btst.b	#$5,$62(a3)
-	bne.w	setpads_1
+; Bench check: flag 5 means skip, a $64 counter means go to the bench
+check4benchAlt	btst.b	#$5,$62(a3)
+	bne.w	setpadsExit
 	cmpi.w	#$64,$40(a3)
-	beq.w	L31AB8
+	beq.w	BenchGoToBench
 	bsr.w	check4bench
 	btst.b	#$4,$63(a3)
 	bne.w	assexit
 	bclr.b	#$1,$62(a3)
-	beq.w	.l16A04
+	beq.w	.next2
 	move.w	#$8,$42(a3)
 	moveq	#$50,d0
 	btst.b	#$6,$62(a3)
-	bne.w	.l169EC
+	bne.w	.next
 	neg.w	d0
-.l169EC	move.w	d0,$46(a3)
+.next	move.w	d0,$46(a3)
 	move.w	#$88,$44(a3)
 	neg.w	$44(a3)
 	subi.w	#$8,$44(a3)
 	clr.w	$40(a3)
-.l16A04	move.b	$61(a3),d0
+.next2	move.b	$61(a3),d0
 	cmp.b	$66(a3),d0
-	beq.w	L31B08
+	beq.w	BenchFlagBits
 	sub.w	d7,$40(a3)
-	bpl.w	L31AEC
+	bpl.w	BenchWalkTarget
 	addi.w	#$8,$40(a3)
 	move.w	$14(a3),d0
 	sub.w	$46(a3),d0
 	cmpi.w	#$28,d0
-	bgt.w	L31AEC
+	bgt.w	BenchWalkTarget
 	cmpi.w	#$FFD8,d0
-	blt.w	L31AEC
+	blt.w	BenchWalkTarget
 	move.w	$0(a3),d0
 	sub.w	$44(a3),d0
 	cmpi.w	#$20,d0
-	bgt.w	L31AEC
+	bgt.w	BenchWalkTarget
 	move.w	#$50C,d1
 	tst.w	$34(a3)
-	bne.w	.l16A56
+	bne.w	.next3
 	move.w	#$2,d1
-.l16A56	bsr.w	SetSPA
+.next3	bsr.w	SetSPA
 	bset.b	#$2,$62(a3)
 	cmpi.w	#$4,$54(a3)
-	beq.w	.l16A76
+	beq.w	.next4
 	addi.w	#$1,$54(a3)
 	andi.w	#$7,$54(a3)
-.l16A76	clr.w	$2A(a3)
+.next4	clr.w	$2A(a3)
 	move.w	#$F800,$28(a3)
 	cmpi.w	#$10,d0
 	bgt.w	check4benchExit
@@ -628,7 +631,8 @@ L319AC	btst.b	#$5,$62(a3)
 	move.w	#$64,$40(a3)
 check4benchExit
 	rts
-L31AB8	clr.w	$6(a3)
+; Sends the player to the bench: clears the speed and looks up the team struct
+BenchGoToBench	clr.w	$6(a3)
 	clr.w	d0
 	move.b	$66(a3),d0
 	add.w	d0,d0
@@ -638,16 +642,19 @@ L31AB8	clr.w	$6(a3)
 	adda.w	#$366,a0
 .next	move.w	#$FFFE,$68(a0,d0.w)
 	move.b	$61(a3),d3
-	bsr.w	L31B0E
+	bsr.w	BenchSetAnimation
 	jmp	$3D770.l
-L31AEC	btst.b	#$2,$62(a3)
+; Walks the player towards the bench door
+BenchWalkTarget	btst.b	#$2,$62(a3)
 	bne.w	check4benchExit
 	move.w	$44(a3),d0
 	move.w	$46(a3),d1
 	movea.l	#$33C6E,a0
 	bra.w	skateto
-L31B08	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
-L31B0E	move.b	$60(a3),d0
+; Inline bit and byte data used by the bench code
+BenchFlagBits	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
+; Copies $60 to $34 and starts the animation
+BenchSetAnimation	move.b	$60(a3),d0
 	ext.w	d0
 	move.w	d0,$34(a3)
 	jsr	$3D754.l
@@ -684,7 +691,7 @@ L31B0E	move.b	$60(a3),d0
 	bclr.b	#$1,$62(a3)
 	beq.w	.next5
 	bset.b	#$2,$63(a3)
-	bsr.w	L31CC2
+	bsr.w	BenchControlledCheck
 	moveq	#-2,d4
 	bsr.w	setpads
 	move.w	#$8,$42(a3)
@@ -748,7 +755,8 @@ L31B0E	move.b	$60(a3),d0
 	move.w	$46(a3),d1
 	movea.l	#$31AB6,a0
 	bra.w	skateto
-L31CC2	btst.b	#$3,$62(a3)
+; Bench: checks the controlled player
+BenchControlledCheck	btst.b	#$3,$62(a3)
 	beq.w	check4benchExit
 	clr.w	d4
 	move.w	$52(a3),d0
@@ -824,13 +832,14 @@ assgoaliebreakwait						;asstab entry. In a shootout or penalty shot park the id
 .exit	rts
 assfaceoff						;players do nothing until faceoff is over
 	btst	#$5,$62(a3)
-	bne.w	assfaceoff_1
+	bne.w	assfaceoffExit
 	btst	#$0,$17F6C.l
 	beq.w	assexit
-assfaceoff_1	rts
+; Return of assfaceoff
+assfaceoffExit	rts
 assfaceoffpl						;Face off player
 	btst	#$5,$62(a3)
-	bne.w	assfaceoff_1
+	bne.w	assfaceoffExit
 	btst	#$0,$17F6C.l
 	beq.w	.exit
 	bclr	#$1,$62(a3)

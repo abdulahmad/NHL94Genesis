@@ -140,24 +140,24 @@
   "Writes the word-RAM 1M flag word to the sub CPU comm port (Sierra tag Set1MFlag)."
  ],
  "DispatchTail_62": [
-  "LongDivU",
-  "Unsigned 32-bit divide stub (divu.l d1,d0)."
+  "NumStrThunkA",
+  "Jump thunk through a computed address (number string)"
  ],
  "DispatchTail_63": [
-  "LongModU",
-  "Unsigned 32-bit remainder stub."
+  "NumStrThunkB",
+  "Jump thunk through a computed address (number string)"
  ],
  "Set1MFlag_1": [
-  "LongDivU_B",
-  "Second copy of LongDivU."
+  "NumStrThunkC",
+  "Jump thunk through a computed address (number string)"
  ],
  "Set1MFlag_2": [
-  "LongModU_B",
-  "Second copy of LongModU."
+  "NumStrThunkD",
+  "Jump thunk through a computed address (number string)"
  ],
  "DispatchTailSub2": [
-  "ReadSubCommWord",
-  "Handshakes with the sub CPU on $A1200E/F and reads the comm word $A12020."
+  "SubCpuBootReset",
+  "Resets the stack and the sub-CPU communication words"
  ],
  "DispatchTail_65": [
   "SubCommHandshake",
@@ -168,8 +168,8 @@
   "Spins while the word-RAM mode bit is 1M."
  ],
  "DispatchTailSub5": [
-  "WaitDmnaClear",
-  "Spins while the word-RAM DMNA bit is set."
+  "SubCommAck",
+  "Acknowledges a sub-CPU command"
  ],
  "DispatchTail_67": [
   "GiveWordRamToSub",
@@ -180,16 +180,16 @@
   "Spins while the word-RAM DMNA bit is set."
  ],
  "DispatchTailSub8": [
-  "VdpSetCramWriteAddr",
-  "Sets the VDP command for a CRAM write at d0."
+  "SubCmdVramCopy",
+  "Sub-CPU command: copy from word RAM"
  ],
  "DispatchTailSub9": [
   "VdpSetCramWriteAddr",
   "Sets the VDP command for a CRAM write at d0."
  ],
  "DispatchTailSub10": [
-  "PollControllers",
-  "Reads both pads into $FF4F84/$FF4F85 and updates the edge state."
+  "SubCmdCramCopy",
+  "Sub-CPU command: palette copy"
  ],
  "DispatchTailSub11": [
   "ClearVram",
@@ -204,8 +204,8 @@
   "Inverts the raw pad byte and splits it into direction and button bits."
  ],
  "DispatchTailSub16": [
-  "DrawTextToPlane_B",
-  "Second copy of DrawTextToPlane."
+  "DmaInstallB",
+  "Installs the image B DMA callbacks"
  ],
  "DispatchTailSub18": [
   "DrawTextToPlane_B",
@@ -292,112 +292,112 @@
   "Same handshake on flag 3."
  ],
  "DispatchTail_13": [
-  "Buf8C_1",
-  "Zero-filled work storage (140 bytes)."
+  "RamImageAPad",
+  "Zero padding of image A"
  ],
  "DispatchTail_26": [
-  "Buf8_1",
-  "Zero-filled work storage (8 bytes)."
+  "FontGlyphDataA",
+  "1bpp font glyph data, image A"
  ],
  "DispatchTail_70": [
-  "Buf8C_2",
-  "Zero-filled work storage (140 bytes)."
+  "RamImageBPad",
+  "Zero padding of image B"
  ],
  "DispatchTail_71": [
-  "Long1",
-  "Zero-filled work storage (4 bytes)."
+  "DmaCallbackB",
+  "DMA callback pointer, image B"
  ],
  "DispatchTail_73": [
-  "Word1",
-  "Zero-filled work storage (2 bytes)."
+  "DmaBusyFlagB",
+  "DMA busy flag, image B"
  ],
  "DispatchTail_74": [
-  "Word2",
-  "Zero-filled work storage (2 bytes)."
+  "DmaModeB",
+  "DMA mode word, image B"
  ],
  "DispatchTail_75": [
-  "Long2",
-  "Zero-filled work storage (4 bytes)."
+  "DmaPhaseB",
+  "DMA phase, image B"
  ],
  "DispatchTail_76": [
-  "Buf80_1",
-  "Zero-filled work storage (128 bytes)."
+  "DmaRegBufB",
+  "DMA register buffer, image B"
  ],
  "DispatchTail_78": [
-  "Long3",
-  "Zero-filled work storage (4 bytes)."
+  "DmaSrcB",
+  "DMA source, image B"
  ],
  "DispatchTail_80": [
-  "Buf5EC_1",
-  "Zero-filled work storage (1516 bytes)."
+  "DmaListB",
+  "DMA list and work area, image B"
  ],
  "DispatchTail_88": [
-  "Buf8_2",
-  "Zero-filled work storage (8 bytes)."
+  "FontGlyphDataB",
+  "1bpp font glyph data, image B"
  ],
  "Set1MFlag_5": [
-  "Buf80_2",
-  "Zero-filled work storage (128 bytes)."
+  "VdpShadowBuffers",
+  "VDP shadow register and list buffers"
  ],
  "Set1MFlag_31": [
-  "Word3",
-  "Zero-filled work storage (2 bytes)."
+  "SndEnableFlag",
+  "Sound engine enable word"
  ],
  "Set1MFlag_32": [
-  "Buf20_1",
-  "Zero-filled work storage (32 bytes)."
+  "SndBufA",
+  "Sound work buffer A"
  ],
  "Set1MFlag_33": [
-  "Buf20_2",
-  "Zero-filled work storage (32 bytes)."
+  "SndBufB",
+  "Sound work buffer B"
  ],
  "Set1MFlag_34": [
-  "Buf10_1",
-  "Zero-filled work storage (16 bytes)."
+  "SndIdTable",
+  "Sound id table"
  ],
  "Set1MFlag_35": [
-  "Buf10_2",
-  "Zero-filled work storage (16 bytes)."
+  "SndBufC",
+  "Sound work buffer C"
  ],
  "Set1MFlag_36": [
-  "Buf10_3",
-  "Zero-filled work storage (16 bytes)."
+  "SndBufD",
+  "Sound work buffer D"
  ],
  "Set1MFlag_37": [
-  "Buf10_4",
-  "Zero-filled work storage (16 bytes)."
+  "SndBufE",
+  "Sound work buffer E"
  ],
  "Set1MFlag_38": [
-  "Buf20_3",
-  "Zero-filled work storage (32 bytes)."
+  "SndBufF",
+  "Sound work buffer F"
  ],
  "Set1MFlag_39": [
-  "Buf80_3",
-  "Zero-filled work storage (128 bytes)."
+  "SndSlotTable",
+  "Sound slot table"
  ],
  "Set1MFlag_40": [
-  "Buf6_1",
-  "Zero-filled work storage (6 bytes)."
+  "SndStateVars",
+  "Sound engine state variables"
  ],
  "Set1MFlag_41": [
-  "Buf10_5",
-  "Zero-filled work storage (16 bytes)."
+  "SndMiscBuf",
+  "Sound miscellaneous buffer"
  ],
  "Set1MFlag_42": [
-  "Long4",
-  "Zero-filled work storage (4 bytes)."
+  "SndPtrs",
+  "Sound pointers"
  ],
  "Set1MFlag_43": [
-  "Buf8C_3",
-  "Zero-filled work storage (140 bytes)."
+  "SndWorkBuf",
+  "Sound work area"
  ],
  "Set1MFlag_44": [
-  "Word4",
-  "Zero-filled work storage (2 bytes)."
+  "PrgRamReadState",
+  "Program RAM read state"
  ],
  "Set1MFlag_45": [
-  "Buf51_1",
-  "Zero-filled work storage (81 bytes)."
+  "SndSourceTable",
+  "Sound source pointer table and following data"
  ],
  "DispatchTail_9": [
   "VramRestoreFromList",
@@ -446,5 +446,157 @@
  "DispatchTailSub7": [
   "VdpSetVramWriteAddr",
   "Sets the VDP command for a VRAM write at d0."
+ ],
+ "DispatchTail_5": [
+  "RtsStub",
+  "Bare rts target"
+ ],
+ "DispatchTail_12": [
+  "RamImageA",
+  "Start of a RAM-resident code image (bra over its header)"
+ ],
+ "DispatchTail_14": [
+  "VdpInitA",
+  "Image A: VDP register setup"
+ ],
+ "DispatchTail_15": [
+  "DmaServiceA",
+  "Image A: DMA service routine"
+ ],
+ "DispatchTail_16": [
+  "DmaBusyFlagA",
+  "DMA busy flag, image A"
+ ],
+ "DispatchTail_17": [
+  "DmaModeA",
+  "DMA mode word, image A"
+ ],
+ "DispatchTail_18": [
+  "DmaRegBufA",
+  "DMA register buffer, image A"
+ ],
+ "DispatchTail_19": [
+  "DmaDestA",
+  "DMA destination, image A"
+ ],
+ "DispatchTail_20": [
+  "DmaSrcA",
+  "DMA source, image A"
+ ],
+ "DispatchTail_21": [
+  "DmaLenA",
+  "DMA length, image A"
+ ],
+ "DispatchTail_22": [
+  "DmaStepA",
+  "DMA step, image A"
+ ],
+ "DispatchTail_23": [
+  "DmaListA",
+  "DMA list, image A"
+ ],
+ "DispatchTailSub1": [
+  "LoadLongArgs",
+  "Loads two long stack arguments into d1/d0"
+ ],
+ "DispatchTail_64": [
+  "WaitSubCpuReady",
+  "Waits for the sub-CPU handshake bits"
+ ],
+ "DispatchTailSub4": [
+  "SubCommDispatch",
+  "Calls the handler selected by the sub-CPU command word"
+ ],
+ "DispatchTailSub15": [
+  "SubCommPoll",
+  "Polls the sub-CPU and controllers"
+ ],
+ "DispatchTail_69": [
+  "RamImageB",
+  "Start of a RAM-resident code image (bra over its header)"
+ ],
+ "DispatchTailSub17": [
+  "VdpInitB",
+  "Image B: VDP register setup"
+ ],
+ "DispatchTail_72": [
+  "DmaServiceB",
+  "Image B: DMA service routine"
+ ],
+ "DispatchTail_77": [
+  "DmaDestB",
+  "DMA destination, image B"
+ ],
+ "DispatchTail_79": [
+  "DmaLenB",
+  "DMA length, image B"
+ ],
+ "DispatchTail_81": [
+  "DmaWaitStartB",
+  "Waits for DMA idle, then starts a transfer"
+ ],
+ "DispatchTail_82": [
+  "SmHeaderParseB",
+  "Parses a transfer header (magic SM)"
+ ],
+ "DispatchTail_83": [
+  "DmaAdvancePtrsB",
+  "Advances the transfer pointers"
+ ],
+ "DispatchTail_84": [
+  "DmaSetupFromHeaderB",
+  "Sets up DMA from the header fields"
+ ],
+ "DispatchTail_86": [
+  "DmaFinishB",
+  "Finishes the transfer and restores registers"
+ ],
+ "Set1MFlagSub1": [
+  "VdpDmaBoot",
+  "Sets up VDP and the sub-CPU address for DMA"
+ ],
+ "Set1MFlag_4": [
+  "VdpRefreshHandler",
+  "Interrupt-time VDP refresh"
+ ],
+ "Set1MFlagSub4": [
+  "VdpInitRegs",
+  "Initialises the VDP registers"
+ ],
+ "Set1MFlag_7": [
+  "SndSlotsInit",
+  "Initialises the sound slots"
+ ],
+ "Set1MFlag_8": [
+  "SndSlotsTickAll",
+  "Ticks all sound slots"
+ ],
+ "Set1MFlag_9": [
+  "SndSlotsSave",
+  "Stores the sound slot parameters"
+ ],
+ "Set1MFlag_10": [
+  "SndFindId",
+  "Finds a sound id in the table"
+ ],
+ "Set1MFlag_11": [
+  "Z80UploadBlock",
+  "Uploads a block to Z80 RAM"
+ ],
+ "Set1MFlag_22": [
+  "SndSetSource",
+  "Stores a sound source pointer by index"
+ ],
+ "Set1MFlag_23": [
+  "SndScanToEnd",
+  "Scans a sound list to its $FFFF end"
+ ],
+ "Set1MFlag_24": [
+  "Z80LoadBank",
+  "Loads a sound bank to the Z80"
+ ],
+ "Set1MFlag_25": [
+  "Z80LoadSmall",
+  "Loads the small Z80 driver block"
  ]
 }

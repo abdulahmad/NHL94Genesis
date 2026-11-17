@@ -40,13 +40,13 @@ doinput
 	tst.w	$17F96.l
 	bpl.w	.next7
 	tst.w	d4
-	beq.w	EndDemoOnPressSub1
-	bra.w	EndDemoOnPressSub2
+	beq.w	EndDemoExitMode0Off
+	bra.w	EndDemoExitMode0On
 .next7	btst	#$7,d1
 	beq.w	.next8
 	tst.w	$17F96.l
-	beq.w	EndDemoOnPressSub3
-	bra.w	EndDemoOnPressSub4
+	beq.w	EndDemoExitMode3Off
+	bra.w	EndDemoExitMode4On
 .next8	btst	#$7,$17F6A.l
 	beq.w	.next9
 	btst	#$3,d0
@@ -212,10 +212,10 @@ doinput
 .next35	tst.w	$34(a3)
 	bne.w	doinput_onetimer
 	btst	#$6,d1
-	beq.w	doinputExit_1
+	beq.w	doinputExitButtons
 	move.w	$17E62.l,d0
 	cmpi.b	#$8,d0
-	beq.w	doinputExit_1
+	beq.w	doinputExitButtons
 	move.w	d0,$54(a3)
 	move.b	#$8,$5E(a3)
 	move.w	#$2F4,d1
@@ -225,14 +225,15 @@ doinput
 	addi.w	#$96,(Crowdlevel).l
 doinputExit
 	rts
-doinputExit_1	btst	#$5,d1
+; doinput: button checks at the exit
+doinputExitButtons	btst	#$5,d1
 	bne.w	.next3
 	btst	#$5,d3
 	bne.w	.next
 	bclr	#$7,$63(a3)
-	bra.w	doinput_chkanimSub1
+	bra.w	doinputCheckAnimFlag
 .next	btst	#$7,$63(a3)
-	beq.w	doinput_chkanimSub1
+	beq.w	doinputCheckAnimFlag
 	movem.l	d0-d3/a0-a3,-(sp)
 	movea.l	#SPAlist,a0
 	adda.w	$58(a3),a0
@@ -250,7 +251,7 @@ doinputExit_1	btst	#$5,d1
 	move.w	#$A,$5C(a3)
 	rts
 .next3	btst	#$5,$62(a3)
-	bne.w	doinput_chkanimSub1
+	bne.w	doinputCheckAnimFlag
 	movem.w	d0-d1,-(sp)
 	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
@@ -308,7 +309,7 @@ doinputExit_1	btst	#$5,d1
 	cmpi.w	#$108,$17B94.l
 	cmpi.w	#$FEF8,$17B94.l
 	bset	#$1,$63(a3)
-	bne.w	doinput_chkanimSub1
+	bne.w	doinputCheckAnimFlag
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$17E36,a0
 	move.w	#$108,d3
@@ -337,7 +338,8 @@ doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else sk
 	bchg	d0,$250.w
 	andi.l	#$1EC021E,-(a2)
 	dc.w	$148E,$14C0,$14F2,$1544
-doinput_chkanimSub1
+; doinput: skips when flag 1 of $63 is clear
+doinputCheckAnimFlag
 	btst	#$1,$63(a3)
 	beq.w	.next
 	rts
@@ -674,7 +676,7 @@ LineInputSetCoords
 	jsr	(setpersonel).l
 lcfound_close						;close lc box
 	btst	#$7,$17F6A.l
-	bne.w	setpassmode_1
+	bne.w	setpassmodeExit
 	bsr.w	setlccords
 	cmpi.w	#$F,(printy).l
 	blt.w	.nollcm
@@ -739,14 +741,15 @@ setpassmode						;initialize pass mode
 	bclr	#$5,$17F78.l
 	move.w	#$64,$17F9A.l
 .next	bset	#$2,$17F6A.l
-setpassmode_1	rts
+; Return of setpassmode
+setpassmodeExit	rts
 passmode						;dpad sets passdir until bbut changes
 	btst	#$4,d2		;has b button changed?
 	bne.w	dopass		;yes
 	btst	#$3,$17F74.l		;Not in NHL Hockey Source
 	bne.w	dopass
 	btst	#$3,d0		;look for dpad
-	bne.w	setpassmode_1
+	bne.w	setpassmodeExit
 	andi.w	#$7,d0		;pass first 3 bits of d0
 	move.w	d0,$17E2C.l
 	bset	#$3,d0

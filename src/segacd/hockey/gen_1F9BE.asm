@@ -48,7 +48,7 @@ FallDown
 	cmp.w	$32(a2),d0
 	ble.w	.next2
 	move.b	#$3C,$5F(a2)
-	bra.w	FallDownSub3
+	bra.w	FallDownStart
 .next2	tst.w	$34(a3)
 	beq.w	.next4
 	movea.l	#tmstruct,a0
@@ -71,10 +71,10 @@ FallDown
 	sub.w	$14(a2),d1
 	bsr.w	vtoa
 	tst.w	$34(a2)
-	beq.w	FallDownSub1
+	beq.w	FallDownSpeed
 	jsr	$24FB4.l
 	btst	#$4,$64(a2)
-	beq.w	FallDownSub1
+	beq.w	FallDownSpeed
 	movem.l	d1-d4,-(sp)
 	move.w	$28(a2),d1
 	bpl.w	.next5
@@ -109,7 +109,7 @@ FallDown
 	bmi.w	.next10
 	bra.w	.next11
 .next10	movem.l	(sp)+,d1-d4
-	bra.w	FallDownSub1
+	bra.w	FallDownSpeed
 .next11	movem.l	(sp)+,d1-d4
 	bra.w	.next12
 .next12	cmpi.w	#$10C,$14(a2)
@@ -120,7 +120,7 @@ FallDown
 	bgt.w	.next13
 	cmpi.w	#$FF98,$0(a2)
 	blt.w	.next13
-	bra.w	FallDownSub1
+	bra.w	FallDownSpeed
 .next13	cmpi.w	#$B,$52(a3)
 	bgt.w	.next14
 	addi.w	#$A,$17CD8.l
@@ -192,28 +192,32 @@ FallDown
 	bset	#$5,$64(a2)
 	bset	#$0,$62(a2)
 	movem.l	(sp)+,d0/a0
-	bra.w	FallDownSub2
-FallDownTbl1	dc.w	$1776,$1776,$17E8,$17E8,$185A,$185A,$18CC,$18CC
-FallDownSub1
+	bra.w	FallDownCheckStage
+; Data that follows FallDown (strings, small tables)
+FallDownData	dc.w	$1776,$1776,$17E8,$17E8,$185A,$185A,$18CC,$18CC
+; FallDown: computes the slide speed
+FallDownSpeed
 	move.w	#$DD8,d1
 	sub.w	$54(a2),d0
 	addi.w	#$1,d0
 	andi.w	#$7,d0
 	cmpi.w	#$2,d0
-	bls.w	FallDownSub3
+	bls.w	FallDownStart
 	move.w	#$D26,d1
-FallDownSub2
+; FallDown: checks the fall stage
+FallDownCheckStage
 	move.w	$54(a2),d0
 	andi.w	#$3,d0
-	bne.w	FallDownSub3
+	bne.w	FallDownStart
 	cmpi.b	#$14,$75(a3)
-	blt.w	FallDownSub3
+	blt.w	FallDownStart
 	cmpi.w	#$B,$52(a3)
-	bgt.w	FallDownSub3
+	bgt.w	FallDownStart
 	btst	#$5,$64(a2)
-	bne.w	FallDownSub3
+	bne.w	FallDownStart
 	move.w	#$136A,d1
-FallDownSub3
+; FallDown: starts the fall animation
+FallDownStart
 	exg.l	a2,a3
 	bset	#$5,$62(a3)
 	bsr.w	SetSPA
