@@ -1063,14 +1063,14 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	dbra	d0,.loop10
 	jsr	(forceblack).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst.b	#$5,$FF800F.l
 	beq.b	.next
 	move.w	#$1,-(a6)
 	bra.b	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr.b	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(Opt1team).l,d0
 	move.w	(Opt2team).l,d1
@@ -1090,9 +1090,9 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
 	bne.s	.loop14
-	move.w	#$5,$19364.l
+	move.w	#$5,(CdCommandArg).l
 	move.w	#$13,d0
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
 	jsr	(forceblack).l
 	move.w	#$8000,d0
@@ -1113,13 +1113,13 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$7,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next3
 	bset.b	#$5,$FF800F.l
 	bra.b	.next4
 .next3	bclr.b	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jmp	(StatsScreenFadeIn).l
 AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to a1

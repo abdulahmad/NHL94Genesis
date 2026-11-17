@@ -102,7 +102,7 @@ DisplayGameInfo	cmp.w	(gamenum).l,d3
 	beq.w	updatereplayExit
 	moveq	#$10,d0
 	mulu.w	d3,d0
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	adda.w	d0,a0
 	btst	#$1,$E(a0)
 	bne.w	updatereplayExit
@@ -1962,7 +1962,7 @@ StatsScreenFadeInClear
 	dc.b	$D4,$26,$33,$DF,$00,$01,$8A,$D4,$33,$DF,$00,$01,$8A,$D2,$4E,$75		; move.w (a7)+, $18ad4.l / move.w (a7)+, $18ad2.l / rts
 ; Stats rows: starts at row $D
 StatsRowsInit	move.w	#$D,(printy).l
-	move.w	$18AD4.l,d1
+	move.w	(MenuScrollTop).l,d1
 	moveq	#$0,d0
 ; Stats rows: prints one row of the table
 StatsRowsLoop	move.w	#$5,(printx).l

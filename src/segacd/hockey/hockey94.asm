@@ -79,10 +79,10 @@ GameloopStart	jsr	(assreplace).l
 	jsr	(ChooseSong).l
 	move.w	(SongNum).l,-(sp)
 	jsr	(song).l
-	move.w	$1745E.l,$19364.l
+	move.w	$1745E.l,(CdCommandArg).l
 	movea.l	$FF8000.l,a5
 	move.w	#$12,d0
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
 	move.w	#$FFFF,$1745C.l
 	move.w	#$0,$17460.l
@@ -266,7 +266,7 @@ clockcontAssists						;End of period. Also entered from puckfaceoff
 	beq.w	.next2
 	moveq	#$10,d3
 	mulu.w	(gamenum).l,d3
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	adda.w	d3,a0
 	clr.w	d3
 	btst	#$0,$E(a0)
@@ -477,4 +477,4 @@ SetMenuScreenHandler
 	move.l	a0,(menulist).l
 	move.l	a1,(menudraw).l
 	clr.w	(menuitem).l
-	clr.w	$18AD4.l
+	clr.w	(MenuScrollTop).l

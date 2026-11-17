@@ -450,24 +450,24 @@ HotColdIconExitReset
 	jsr	(ScoutingReportTextLoad).l
 	jsr	(SubCmd3DSend).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jsr	(HotColdIconExitSetC2Load).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
 	bset	#$5,$FF800F.l
 	bra.s	.next4
 .next3	bclr	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jsr	(ClearVramViaSetVram).l
 	lea.l	$1746A.l,a0
@@ -484,9 +484,9 @@ HotColdIconExitReset
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
 	bne.b	.loop2
-	move.w	#$5,$19364.l
+	move.w	#$5,(CdCommandArg).l
 	move.w	#$13,d0
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
 	jsr	(ReadJoy1).l
 	cmpi.b	#$E0,d3

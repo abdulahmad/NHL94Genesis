@@ -57,7 +57,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	jsr	$5F16.w
 	bra.b	.next2
 .next	move.w	#$FFFF,(ValidSRAM).l
-.next2	move.l	#$19360,$19360.l
+.next2	move.l	#DiscDmaListPtr,(DiscDmaListPtr).l
 	clr.w	$1AD94.l
 .loop5	btst.b	#$7,$FF800E.l
 	bne.s	.loop5
@@ -209,14 +209,14 @@ BackupRamRead
 BackupRamWrite
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
@@ -242,13 +242,13 @@ BackupRamWrite
 	bcc.w	.next4
 .next3	move.w	#$FFFF,(ValidSRAM).l
 .next4	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next5
 	bset	#$5,$FF800F.l
 	bra.s	.next6
 .next5	bclr	#$5,$FF800F.l
-.next6	move.l	a6,$19360.l
+.next6	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts

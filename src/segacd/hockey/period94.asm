@@ -190,14 +190,14 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	jsr	$6044.w
 	movem.l	(sp)+,d7/a0
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst.b	#$5,$FF800F.l
 	beq.b	.next
 	move.w	#$1,-(a6)
 	bra.b	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr.b	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
@@ -206,13 +206,13 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	move.l	a0,$47D8C.l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next3
 	bset.b	#$5,$FF800F.l
 	bra.b	.next4
 .next3	bclr.b	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	#$2,d0
 	jsr	$5F22.w
@@ -227,9 +227,9 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
 	bne.s	.loop2
-	move.w	#$5,$19364.l
+	move.w	#$5,(CdCommandArg).l
 	move.w	#$13,d0
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
 	jsr	(RelocateLogoBitmaps).l
 	clr.w	(matchup).l
@@ -356,14 +356,14 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	jsr	$6044.w
 	movem.l	(sp)+,d7/a0
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst.b	#$5,$FF800F.l
 	beq.b	.next4
 	move.w	#$1,-(a6)
 	bra.b	.next5
 .next4	move.w	#$0,-(a6)
 .next5	bclr.b	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
@@ -372,13 +372,13 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	move.l	a0,$47D24.l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next6
 	bset.b	#$5,$FF800F.l
 	bra.b	.next7
 .next6	bclr.b	#$5,$FF800F.l
-.next7	move.l	a6,$19360.l
+.next7	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	#$2,d0
 	jsr	$5F22.w
@@ -391,9 +391,9 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
 	bne.s	.loop3
-	move.w	#$5,$19364.l
+	move.w	#$5,(CdCommandArg).l
 	move.w	#$13,d0
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
 	jmp	(StatsScreenFadeIn).l
 ; Period stats: title when the table shows shots (Shots [ For Goals ])

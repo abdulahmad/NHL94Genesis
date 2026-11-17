@@ -530,7 +530,7 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 	cmpi.w	#$1,(gamelevel).l
 	bgt.w	rtss2
 	bsr.w	GetShifter
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
@@ -550,7 +550,7 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 UpdateScores						;update ticker score values. Called from PeriodOver
 	bsr.w	GetShifter
 	move.w	d1,(TickerNum).l
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
@@ -645,7 +645,7 @@ CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next
 	
 	moveq	#$10,d0
 	mulu.w	d3,d0
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	adda.w	d0,a0
 	btst	#$1,$E(a0)
 	bne.w	NewTickerNext
@@ -744,7 +744,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	GetShifter
 	moveq	#$10,d3
 	mulu.w	d1,d3
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	adda.w	d3,a0
 .top	btst	#$2,$E(a0)
 	bne.w	.next

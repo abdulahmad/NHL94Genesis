@@ -458,7 +458,7 @@ doinput
 	bne.w	.3
 	move.b	#$11,(bholdtimer).l
 	bra.w	.4
-.3	move.b	#$11,$17E57.l
+.3	move.b	#$11,(PlayerSwitchDelay).l
 .4	bclr	#$4,d2
 .5	btst	#$7,(gmode2).l
 	beq.w	.6
@@ -570,12 +570,12 @@ doinput
 	bne.w	.bpress
 	tst.w	d4
 	beq.w	.c1
-	tst.b	$17E57.l
+	tst.b	(PlayerSwitchDelay).l
 	beq.w	.noswitch
-	subi.b	#$1,$17E57.l
+	subi.b	#$1,(PlayerSwitchDelay).l
 	bpl.w	.16
-	move.b	#$0,$17E57.l
-.16	tst.b	$17E57.l
+	move.b	#$0,(PlayerSwitchDelay).l
+.16	tst.b	(PlayerSwitchDelay).l
 	bne.w	.bpress
 	tst.w	d4
 	beq.w	.17
@@ -603,7 +603,7 @@ doinput
 	bne.w	.24
 	move.b	#$11,(bholdtimer).l
 	bra.w	.noswitch
-.24	move.b	#$11,$17E57.l
+.24	move.b	#$11,(PlayerSwitchDelay).l
 	bra.w	.noswitch
 .brel	btst	#$4,d2
 	beq.w	.noswitch
@@ -612,7 +612,7 @@ doinput
 	move.w	(bholdtimer).l,d0
 	tst.w	d4
 	beq.w	.28
-	move.b	#$11,$17E57.l
+	move.b	#$11,(PlayerSwitchDelay).l
 	andi.w	#$FF,d0
 	bne.w	PassToJump
 	tst.w	d4

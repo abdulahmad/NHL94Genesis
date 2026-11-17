@@ -458,3 +458,8 @@ awaypresses	equ	$1AD4E			;away team button presses
 awaydirpresses	equ	$1AD52			;away team direction presses
 replayicontimer	equ	$1AD56			;replay icon timer
 TmpPuckX	equ	$1AD58			;temporary puck x
+DiscDmaListPtr	equ	$19360			;pointer to the end of the disc dma/command word list; entries are pushed with -(a6), see DoDMAProQueue
+CdCommandArg	equ	$19364			;word argument buffer passed in a0 to the sub CPU call $5F22
+MenuScrollTop	equ	$18AD4			;first visible row of a scrolling menu (menuitem - 3 when the selection moves past the bottom row)
+PlayerSwitchDelay	equ	$17E57			;frames before the controlled player may switch again, set to $11 when a switch happens
+gstruct	equ	$18A18			;game struct array, one entry per game number (cartridge gstruct)
