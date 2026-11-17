@@ -26,14 +26,15 @@
 
 `src/segacd/scout94.asm` (`HOCKEY.BIN` `$D1D4`, 4090 bytes) replaces scoutopen.asm. It is generated from the cartridge source by `tools/emit_hockey.py` and `tools/hockey_align.py` (94G names, local labels and comments carried over), then annotated by hand where the disc differs (CD speech, `SDKCall`, `_CDBIOS`). `tools/segacd_calls.py` writes each fragment's routine equates from `name_map.csv`. The disc team struct has the goalie word at `$28`; the cartridge `tmgoalie` is `$26`.
 
-## Round 3: the rest of HOCKEY.BIN as named source (hk_*.asm)
+## HOCKEY.BIN is one assembly (round 5)
 
-All of HOCKEY.BIN is now covered: 51 more fragments `src/segacd/hk_<94G file>_<n>.asm` (and `hk_data_<offset>.asm` where no cartridge routine lives), 91 fragments MATCH. The disc lays routines out in the cartridge's source-file order (onetimer, crowd, optsetup, cards, records, shootout, period, ui, hockey, stats, replay, logic, middle, decompress, print, penalty, collide, video, setup), so each fragment name is the 94G file whose routines dominate it.
+`src/segacd/hockey.asm` assembles the whole of HOCKEY.BIN at `org $1B000`, the address the game loads at, so every label is a runtime address and calls are plain labels. There are no equates for functions and no `-LOAD`/`+LOAD`. The parts are in `src/segacd/hockey/`: the hand-written fragments (crowdanim, scout94, scouting, cdrequest, ...) and `gen_<offset>.asm`, generated, in disc order. `output/segacd/hockey.bin` is compared with the whole of `cdbin/HOCKEY.BIN`.
 
-How they are made (all in `tools/`):
-1. `hockey_pair.py` disassembles each cartridge routine (from the listing `output/obj/nhl94 .lst`, which `node tools/build.js retail` writes; copy it and `output/nhl94.bin` to /tmp, because the Sega CD build empties output/obj, then run `tools/hockey_regen.py`) and finds its twin in HOCKEY.BIN by instruction shape. about 550 routines pair (exact match, or the routine start found by aligning the disc code between two exact pairs, which covers routines the CD changed) (names in `name_map.csv`).
-2. `hockey_syms.py` learns cartridge symbol to disc value from the paired routines (1,216 symbols, 94% unambiguous).
-3. `hockey_auto.py` writes a fragment: paired routines as named code, everything else as `dc.w`. It assembles, and any instruction the assembler would encode differently (junk data that decodes as code, size changes) becomes `dc.w`, until the bytes match.
-4. `hockey_align.py` copies the 94G local labels and comments onto the fragment.
+Code is found by following calls and branches from the routines paired with the cartridge (`tools/hockey_flow.py`); everything else is data. Data blocks of 256 bytes or more are assets: `src/segacd/hockey/assets.json` lists them, `tools/extractAssetsSegaCD.js` writes them to `Extracted/SegaCD/HOCKEY/` (like the cartridge's `Extracted/`), and the source `incbin`s them. Smaller data stays as labelled `dc.w`.
 
-Not done: routines the CD changed (they did not pair, so they are still `dc.w` words with no name), and the `dc.w` regions between paired routines (data tables, strings, unpaired code). The next steps are pairing by prefix to name the CD-changed routines, and turning data regions into labelled tables.
+Regenerate (only needed when the pairing or classification changes):
+1. `node tools/build.js retail`, then copy `output/nhl94.bin` and `output/obj/nhl94 .lst` to /tmp (the Sega CD build empties output/obj).
+2. `python3 tools/hockey_pair.py /tmp/nhl94.bin cdbin/HOCKEY.BIN /tmp/nhl94.lst > /tmp/hk_pairs.csv`, then `python3 tools/hockey_syms.py /tmp/hk_pairs.csv /tmp/nhl94.bin cdbin/HOCKEY.BIN /tmp/nhl94.lst > /tmp/hk_syms.csv`.
+3. `python3 tools/hockey_single.py` (writes the parts, then repairs any instruction the assembler would encode differently by turning it into `dc.w`, until the bytes match).
+
+About 550 cartridge routines are paired by instruction shape (routines the CD changed are found by aligning the disc code between two exact pairs). Not done: the generic names. Branch targets inside routines are `L<offset>` labels, call targets with no cartridge twin are `Sub_<runtime address>`, and data that the cartridge has but the disc relocated is still unnamed words.

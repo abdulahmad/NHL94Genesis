@@ -190,6 +190,7 @@ if (args.includes('--segacd')) {
     fs.rmSync(OBJ, { recursive: true, force: true });
     fs.mkdirSync(OBJ, { recursive: true });
     fs.mkdirSync(CD, { recursive: true });
+    require('child_process').execFileSync('node', [path.join(__dirname, 'extractAssetsSegaCD.js')], { stdio: 'ignore' });
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
     begin('assemble');
     const t0 = Date.now();

@@ -20,7 +20,7 @@ md = Cs(CS_ARCH_M68K, CS_MODE_M68K_000 | CS_MODE_BIG_ENDIAN)
 BRANCH = {
     "bra", "bsr", "beq", "bne", "bhi", "bls", "bcc", "bcs", "bpl", "bmi",
     "bvc", "bvs", "bge", "bgt", "ble", "blt", "dbra", "dbf", "dbne", "dbt",
-    "dbeq", "dbhi", "dbcc", "dbcs",
+    "dbeq", "dbhi", "dbcc", "dbcs", "dbmi", "dbpl", "dble", "dblt", "dbge", "dbgt", "dbls", "dbvs", "dbvc",
 }
 
 

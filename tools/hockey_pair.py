@@ -183,7 +183,7 @@ def main():
             for m in cn:
                 fi = first_idx[m]
                 for bi, bj, size in blocks:
-                    if bi == fi and size >= 5 and m not in res:
+                    if bi == fi and size >= 5 and len(prep[m][3]) >= 3 and m not in res:
                         t = bj + (fi - bi)
                         while t > 0 and not dshapes[di[t - 1]].startswith(("rts", "rte", "jmp", "bra")):
                             t -= 1
