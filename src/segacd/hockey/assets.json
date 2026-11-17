@@ -1,32 +1,4 @@
 {
- "hockey_0007C.bin": {
-  "start": 124,
-  "size": 3972
- },
- "hockey_01000.bin": {
-  "start": 4096,
-  "size": 4096
- },
- "hockey_02000.bin": {
-  "start": 8192,
-  "size": 4096
- },
- "hockey_03000.bin": {
-  "start": 12288,
-  "size": 4096
- },
- "hockey_04000.bin": {
-  "start": 16384,
-  "size": 1382
- },
- "hockey_04566.bin": {
-  "start": 17766,
-  "size": 754
- },
- "hockey_04858.bin": {
-  "start": 18520,
-  "size": 3034
- },
  "hockey_05432.bin": {
   "start": 21554,
   "size": 4096

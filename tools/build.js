@@ -191,6 +191,31 @@ if (args.includes('--segacd')) {
     fs.mkdirSync(OBJ, { recursive: true });
     fs.mkdirSync(CD, { recursive: true });
     require('child_process').execFileSync('node', [path.join(__dirname, 'extractAssetsSegaCD.js')], { stdio: 'ignore' });
+    // names: src/segacd/hockey/teamdata.asm holds placeholders instead of the licensed player names and team
+    // nicknames (like src/teamdata94.asm); the extractor wrote the real ones from the disc. Copy with each placeholder
+    // replaced, hockey.asm includes the copy. A name has the length of its placeholder (the Player macro writes the row length).
+    {
+        begin('names');
+        const rd = (f) => { const l = fs.readFileSync(path.join(ROOT, 'Extracted', 'SegaCD', 'HOCKEY', f), 'latin1').split('\n'); if (l[l.length - 1] === '') l.pop(); return l; };
+        const players = rd('PlayerNames.txt'), nicks = rd('TeamNicknames.txt');
+        let p = 0;
+        const srcT = path.join(ROOT, 'src', 'segacd', 'hockey', 'teamdata.asm');
+        const outT = fs.readFileSync(srcT, 'latin1')
+            .replace(/^([ \t]*Player[ \t]+')((?:[^']|'')*)(')/gm, (m, a, ph, z) => {
+                const real = players[p++];
+                if (real === undefined) fail('names', `${rel(srcT)} has more Player rows than PlayerNames.txt has names (${players.length})`);
+                if (real.length !== ph.replace(/''/g, "'").length) fail('names', `Player row ${p}: '${real}' does not have the length of '${ph}'`);
+                return a + real.replace(/'/g, "''") + z;
+            })
+            .replace(/'(N(\d\d)_*)'/g, (m, ph, id) => {
+                const real = nicks[Number(id) - 1];
+                if (real === undefined || real.length !== ph.length) fail('names', `nickname ${id} '${real}' does not fit '${ph}'`);
+                return "'" + real.replace(/'/g, "''") + "'";
+            });
+        if (p !== players.length) fail('names', `PlayerNames.txt has ${players.length} names, teamdata.asm has ${p} Player rows`);
+        fs.writeFileSync(path.join(OBJ, 'hockey_teamdata.asm'), outT, 'latin1');
+        step('names', `${p} player names, ${nicks.length} team nicknames -> ${rel(path.join(OBJ, 'hockey_teamdata.asm'))}`);
+    }
     const exe = path.join(ROOT, 'assembler', 'Assembler.exe');
     begin('assemble');
     const t0 = Date.now();
