@@ -3,12 +3,7 @@
 
 	org	$1B000
 
-	include	segacd\hockey\gen_00000.asm
-	include	segacd\hockey\gen_01000.asm
-	include	segacd\hockey\gen_02000.asm
-	include	segacd\hockey\gen_03000.asm
-	include	segacd\hockey\gen_04000.asm
-	include	segacd\hockey\gen_04858.asm
+	include	..\output\obj\hockey_teamdata.asm
 	include	segacd\hockey\gen_05432.asm
 	include	segacd\hockey\gen_06432.asm
 	include	segacd\hockey\gen_07432.asm

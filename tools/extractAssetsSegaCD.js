@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
+const { teamNames } = require('./segcdTeamNames');
 const files = [['hockey', 'HOCKEY'], ['main', 'MAIN'], ['player', 'PLAYER'], ['starter', 'STARTER']];
 for (const [src, bin] of files) {
     const listPath = path.join(root, 'src', 'segacd', src, 'assets.json');
@@ -14,6 +15,12 @@ for (const [src, bin] of files) {
     fs.mkdirSync(dir, { recursive: true });
     for (const [name, a] of Object.entries(list)) {
         fs.writeFileSync(path.join(dir, name), disc.subarray(a.start, a.start + a.size));
+    }
+    if (bin === 'HOCKEY') {
+        // the licensed text of the team data (player names, team nicknames), for the names step of build.js --segacd
+        const t = teamNames(disc);
+        fs.writeFileSync(path.join(dir, 'PlayerNames.txt'), Buffer.concat(t.players.flatMap((b) => [b, Buffer.from('\n')])));
+        fs.writeFileSync(path.join(dir, 'TeamNicknames.txt'), Buffer.concat(t.nicks.flatMap((b) => [b, Buffer.from('\n')])));
     }
     console.log(`extracted ${Object.keys(list).length} ${bin}.BIN assets`);
 }

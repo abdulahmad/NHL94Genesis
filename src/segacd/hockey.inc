@@ -39,7 +39,6 @@ printy		equ	$18D5A			;cartridge $B02A
 HomeTeamRosterPtr	equ	$1836A		;tmstruct+tmdata
 AwayTeamRosterPtr	equ	$186D0		;awtmstruct+tmdata
 tmdata		equ	$1E			;team data address, as the cartridge
-Teamname	equ	4			;record offset of the word offset to the team name
 tmgoalie	equ	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
 pldsize		equ	8
 
@@ -98,7 +97,6 @@ teamrecbuf	equ	$BC0C8			;SRAM team record buffer
 TempBuffer	equ	$17E70
 sflags6		equ	$17F76
 ThreeStars	equ	$BC000
-TeamList	equ	$1B00C
 PAttribOverallMask	equ	$41C70
 GAttribOverallMask	equ	$41DD2
 PicturePalette	equ	$428A0
