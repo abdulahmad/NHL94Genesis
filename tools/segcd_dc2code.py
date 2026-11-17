@@ -12,7 +12,7 @@ import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import segcd_flow as F, emit_m68k as E, segcd_one as S
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'); os.chdir(root)
-prog = sys.argv[1]; MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 6
+prog = sys.argv[1]; LOOSE = '--loose' in sys.argv; MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 6
 cfg = S.CFG[prog.upper()] if prog != 'hockey' else dict(disc='cdbin/HOCKEY.BIN', base=0x1B000, name='hockey', oaq='-');  base = cfg['base']; d = open(cfg['disc'], 'rb').read()
 ddir = 'src/segacd/' + prog
 errs, txt = S.assemble(cfg)
@@ -27,6 +27,7 @@ for l in open('/tmp/new/%s .lst' % prog, errors='replace').read().replace('\r', 
     if m_ and not m_.group(2).startswith(('dc', 'incbin')): glab.setdefault(int(m_.group(1), 16), m_.group(2))
 files = sorted(f for f in os.listdir(ddir) if f.endswith('.asm') and f not in ('equates.asm', 'teamdata.asm'))
 changed = 0
+RUNS = []; PEND = {}
 for f in files:
     L = open(os.path.join(ddir, f), encoding='latin1').read().split('\n')
     # align this file's lines with the listing
@@ -46,7 +47,7 @@ for f in files:
             e = n + 1
             while e < len(L) and DC.match(L[e]) and not re.match(r'^[A-Za-z_.]', L[e]) and addr[e] is not None: e += 1
             a0 = addr[n]; nx = next((addr[k] for k in range(e, len(L)) if addr[k] is not None and addr[k] != a0), None)
-            if nx is None or nx - a0 < MIN or a0 % 2: out.extend(L[n:e]); n = e; continue
+            if nx is None or nx - a0 < (4 if LOOSE else MIN) or a0 % 2: out.extend(L[n:e]); n = e; continue
             o0, o1 = a0 - base, nx - base
             insns = []; o = o0
             while o < o1:
@@ -55,6 +56,19 @@ for f in files:
                 if d[o:o + 2] == b'\0\0' and all(x == 0 for x in d[o:o1]): break
                 insns.append((o, g)); o += g.size
             ok = bool(insns) and insns[-1][1].mnemonic.split('.')[0] in ('rts', 'rte', 'bra', 'jmp') and (o == o1 or all(x == 0 for x in d[o:o1]))
+            if not ok and LOOSE and insns and o == o1:
+                def mnem(tx):
+                    q = tx.split(';')[0].split('\t')
+                    q = [x for x in q if x.strip()]
+                    if tx[:1] not in ' \t' and tx.strip(): q = q[1:]
+                    return q[0].strip().lower().split('.')[0] if q else ''
+                pm = mnem(L[n - 1]) if n else ''; nm_ = mnem(L[e]) if e < len(L) else ''
+                term = ('rts', 'rte', 'bra', 'jmp', 'dc', 'dcb', 'incbin', '')
+                words = [p_ for p_, g in insns]
+                zero = any(d[p_:p_ + 2] == b'\0\0' for p_ in words)
+                kinds = {g.mnemonic.split('.')[0] for p_, g in insns}
+                if pm not in term + ('jsr', 'bsr') and nm_ not in term and not zero: ok = True          # code on both sides
+                elif False and o1 - o0 >= 12 and not zero and kinds & {'rts', 'bra', 'bsr', 'jsr', 'bne', 'beq', 'dbra', 'rte'} and len(kinds) >= 4 and pm in term: ok = True
             if ok:
                 ends = insns[-1][0] + insns[-1][1].size
                 starts = {p for p, _ in insns}
@@ -66,6 +80,7 @@ for f in files:
                         if not (0 <= t_ < len(d)): ok = False
             if not ok: out.extend(L[n:e]); n = e; continue
             lab = (t.split('\t')[0] if not t.startswith('\t') else '')
+            newl = []; out_real = out; out = newl
             tg = set()
             for p, g in insns:
                 mn = g.mnemonic.split('.')[0]; mm = re.search(r'\$([0-9a-f]+)', g.op_str)
@@ -88,12 +103,30 @@ for f in files:
                     if mm and int(mm.group(1), 16) >= 0x80: text = '#%d,%s' % (int(mm.group(1), 16) - 256, mm.group(2))
                 out.append('%s\t%s\t%s\t;@%s' % (l_, mn2, text, bytes(g.bytes).hex()))
             if ends < o1: out.append('\tdcb.b\t$%X,0' % (o1 - ends))
-            changed += 1; n = e; continue
+            out = out_real; RUNS.append((newl, L[n:e], o0, o1)); out.append(('RUN', len(RUNS) - 1)); changed += 1; n = e; continue
         out.append(t); n += 1
-    open(os.path.join(ddir, f), 'w', encoding='latin1').write('\n'.join(out))
+    PEND[f] = out
 print('runs converted', changed)
+def render(bad):
+    for f, out in PEND.items():
+        lines = []
+        for x in out:
+            if isinstance(x, tuple): lines.extend(RUNS[x[1]][1] if x[1] in bad else RUNS[x[1]][0])
+            else: lines.append(x)
+        open(os.path.join(ddir, f), 'w', encoding='latin1').write('\n'.join(lines))
+bad = set()
 parts = [(0, 0, 'gen', f[:-4]) for f in files]
-ok = S.fixloop(cfg, parts, ddir, d)
+for rnd in range(40):
+    render(bad)
+    ok = S.fixloop(cfg, parts, ddir, d)
+    if ok: break
+    a = '/tmp/new/%s.bin' % prog
+    ob = open(a, 'rb').read() if os.path.exists(a) else b''
+    k = next((i for i in range(min(len(ob), len(d))) if ob[i] != d[i]), None)
+    hit = next((i for i, r in enumerate(RUNS) if k is not None and r[2] <= k < r[3] and i not in bad), None)
+    if hit is None: break
+    bad.add(hit); print('revert run', hit, hex(RUNS[hit][2] + base))
+print('reverted', len(bad))
 for f in files:
     p = os.path.join(ddir, f); t0 = open(p, encoding='latin1').read().split('\n')
     open(p, 'w', encoding='latin1').write('\n'.join(re.sub(r'\t;@[0-9a-f]*\s*$', '', l) for l in t0))
