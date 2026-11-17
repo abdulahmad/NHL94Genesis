@@ -38,12 +38,12 @@ DispatchTailSub9	move.l	#$40000000,$C00004.l
 	move.w	$23C000.l,d0
 .l3E18	move.w	(a1)+,(a0)
 	dbra	d0,.l3E18
-	bsr.w	DispatchTail_65
+	bsr.w	DispatchTail_67
 	rts
 	move.w	$A12022.l,$A11200.l
 	rts
 	tst.w	$FF6CF8.l
-	dc.w	$6600,$0020
+	bne.w	.l3E58
 	moveq	#$0,d1
 	move.w	$A12022.l,d1
 	move.l	d1,d0
@@ -52,22 +52,22 @@ DispatchTailSub9	move.l	#$40000000,$C00004.l
 	adda.l	d0,a0
 	move.w	(a0),d2
 	move.w	#$4,d0
-	dc.w	$6100,$3806
+	bsr.w	Set1MFlag_6
 .l3E58	rts
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	move.w	#$2,d0
 	move.w	$A12022.l,d1
 	move.w	#$100,d4
-	dc.w	$6100,$37EC
+	bsr.w	Set1MFlag_6
 	move.w	(sp)+,sr
 	dc.w	$4E75
 	dc.b	$00,$00,$00,$6B,$00,$6A,$00,$75,$00,$7C,$00,$73,$00,$74,$30,$3C	; ...k.j.u.|.s.t0<
 	dc.b	$00,$01,$61,$00,$37,$D2,$4E,$75	; ..a.7.Nu
 DispatchTailSub10	movem.l	d1/a0,-(sp)
-	dc.w	$6100,$0024
+	bsr.w	.lFF3EB8
 	move.b	d0,$FF4F84.l
-	dc.w	$6100,$000E
+	bsr.w	.lFF3EAC
 	move.b	d0,$FF4F85.l
 	movem.l	(sp)+,d1/a0
 	rts
@@ -92,7 +92,7 @@ DispatchTailSub10	movem.l	d1/a0,-(sp)
 	not.b	d0
 	not.b	d1
 	andi.w	#$F,d1
-	dc.w	$41FA,$0012
+	lea.l	.lFF3F00(pc),a0
 	andi.b	#$F0,d0
 	or.b	(a0,d1.w),d0
 	not.b	d0
@@ -100,7 +100,7 @@ DispatchTailSub10	movem.l	d1/a0,-(sp)
 	dc.w	$4E75
 .lFF3F00	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 DispatchTailSub11	move.b	$FF4F84.l,d0
-	dc.w	$6100,$0034
+	bsr.w	DispatchTail_68
 	move.w	$FF4F7C.l,d2
 	move.w	d1,$FF4F7C.l
 	move.w	d1,d3
@@ -108,14 +108,14 @@ DispatchTailSub11	move.b	$FF4F84.l,d0
 	and.w	d2,d1
 	rts
 DispatchTailSub12	move.b	$FF4F85.l,d0
-	dc.w	$6100,$0016
+	bsr.w	DispatchTail_68
 	move.w	$FF4F7E.l,d2
 	move.w	d1,$FF4F7E.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-.lFF3F4C	not.b	d0
+DispatchTail_68	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
@@ -130,7 +130,7 @@ DispatchTailSub12	move.b	$FF4F85.l,d0
 	dcb.b	$C,0
 DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$0,$A1200F.l
-	dc.w	$6700,$002A
+	beq.w	.l3FC0
 	bclr.b	#$1,$A1200E.l
 	bsr.w	DispatchTailSub10
 	bsr.w	DispatchTailSub11
@@ -138,7 +138,7 @@ DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	DispatchTailSub12
 	or.w	d1,d5
 	cmpi.b	#$80,d5
-	dc.w	$6600,$000A
+	bne.w	.l3FC0
 	bset.b	#$1,$A1200E.l
 .l3FC0	movem.l	(sp)+,d0-d7/a0-a6
 	dc.w	$4E75
@@ -150,18 +150,18 @@ DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$00,$06,$00,$A1,$20,$0F,$66,$F6,$08,$B9,$00,$06,$00,$A1,$20,$0E	; .... .f....... .
 	dc.b	$08,$B9,$00,$07,$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E	; ...... ....... .
 	dc.b	$61,$00,$BF,$CE,$60,$00,$F5,$6C,$4E,$75	; a...`..lNu
-DispatchTail_66	dc.b	$60,$00,$00,$8E	; `...
-DispatchTail_67	dcb.b	$8C,0
-DispatchTailSub14	dc.w	$41FA,$003E
+DispatchTail_69	dc.b	$60,$00,$00,$8E	; `...
+DispatchTail_70	dcb.b	$8C,0
+DispatchTailSub14	lea.l	DispatchTail_71(pc),a0
 	move.l	$4(sp),(a0)
-	dc.w	$41FA,$0032
+	lea.l	.lFF410C(pc),a0
 	move.l	$FFFFFD08.w,(a0)
-	dc.w	$41FA,$00EA
+	lea.l	DispatchTail_72(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
-	dc.w	$4EBA,$1230
+	jsr	MAINCODE(pc)
 .l40F4	dc.w	$303A,$019E
 	bne.b	.l40F4
 	dc.w	$207A,$0010
@@ -171,7 +171,7 @@ DispatchTailSub14	dc.w	$41FA,$003E
 	move.w	d0,sr
 	dc.w	$4E75
 .lFF410C	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_68	dc.b	$00,$00,$00,$00	; ....
+DispatchTail_71	dc.b	$00,$00,$00,$00	; ....
 DispatchTailSub15	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
@@ -212,7 +212,7 @@ DispatchTailSub15	movea.l	#$C00000,a0
 	move.w	#$FF,d0
 .l419A	move.l	d1,(a0)
 	dbra	d0,.l419A
-	dc.w	$43FA,$0DC8
+	lea.l	DispatchTail_85(pc),a1
 	move.w	#$2FF,d3
 .l41A8	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -227,14 +227,14 @@ DispatchTailSub15	movea.l	#$C00000,a0
 .l41C4	move.l	d1,(a0)
 	dbra	d3,.l41A8
 	rts
-.lFF41CC	movem.l	d0-d7/a0-a5,-(sp)
+DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
-	dc.w	$45FA,$00B8
+	lea.l	DispatchTail_73(pc),a2
 	tst.w	(a2)
-	dc.w	$6700,$009C
+	beq.w	.l427E
 	movea.l	#$C00000,a0
-	dc.w	$43FA,$00B0
+	lea.l	DispatchTail_76(pc),a1
 	move.l	#$C0000000,$4(a0)
 	dc.w	$303A,$00A0
 .l41FA	move.l	(a1)+,(a0)
@@ -248,7 +248,7 @@ DispatchTailSub15	movea.l	#$C00000,a0
 	dbra	d0,.l41FA
 	clr.w	(a2)
 	dc.w	$263A,$010A
-	dc.w	$45FA,$0116
+	lea.l	DispatchTail_80(pc),a2
 	dc.w	$243A,$0106
 	dc.w	$2E3A,$010A
 	subq.w	#$1,d7
@@ -285,25 +285,25 @@ DispatchTailSub15	movea.l	#$C00000,a0
 .l426C	move.w	(a2)+,(a0)
 	dbra	d5,.l426C
 	dbra	d7,.l4258
-.l4276	dc.w	$45FA,$001E
+.l4276	lea.l	DispatchTail_74(pc),a2
 	eori.w	#$1,(a2)
-.l427E	lea.l	DispatchTail_67(pc),a0
+.l427E	lea.l	DispatchTail_70(pc),a0
 	addq.l	#$1,(a0)
-	move.l	DispatchTail_68(pc),d0
+	move.l	DispatchTail_71(pc),d0
 	dc.w	$6704
 	movea.l	d0,a0
 	jsr	(a0)
 .l428E	movem.l	(sp)+,d0-d7/a0-a5
 	dc.w	$4E73
-DispatchTail_69	dc.b	$00,$00	; ..
-DispatchTail_70	dc.b	$00,$00	; ..
-DispatchTail_71	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_72	dcb.b	$80,0
-DispatchTail_73	dc.b	$00,$00,$E0,$00	; ....
+DispatchTail_73	dc.b	$00,$00	; ..
+DispatchTail_74	dc.b	$00,$00	; ..
+DispatchTail_75	dc.b	$00,$00,$00,$00	; ....
+DispatchTail_76	dcb.b	$80,0
+DispatchTail_77	dc.b	$00,$00,$E0,$00	; ....
 .lFF4320	dc.b	$00,$00,$00,$80	; ....
-DispatchTail_74	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_75	dc.b	$00,$00,$00,$10	; ....
-DispatchTail_76	dcb.b	$5EC,0
+DispatchTail_78	dc.b	$00,$00,$00,$00	; ....
+DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
+DispatchTail_80	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
 DispatchTailSub16	dc.w	$4E56,$0000
 DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
@@ -333,7 +333,7 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-.l4D84	move.w	DispatchTail_69(pc),d0
+.l4D84	move.w	DispatchTail_73(pc),d0
 	bne.b	.l4D84
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
@@ -346,9 +346,9 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	move.w	#$3FF,d1
 .l4DAA	move.l	d0,(a0)
 	dbra	d1,.l4DAA
-	lea.l	DispatchTail_70(pc),a0
+	lea.l	DispatchTail_74(pc),a0
 	move.w	#$1,(a0)
-	lea.l	DispatchTail_72(pc),a0
+	lea.l	DispatchTail_76(pc),a0
 	move.l	#$EEE,(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
@@ -357,42 +357,42 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	clr.l	(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
-	lea.l	DispatchTail_69(pc),a0
+	lea.l	DispatchTail_73(pc),a0
 	move.w	#$1,(a0)
 .l4DD8	move.w	(a0),d0
 	bne.b	.l4DD8
 	moveq	#$0,d0
 	rts
 DispatchTailSub18	dc.w	$4E56,$0000
-DispatchTailSub19	movem.l	d0-d7/a0-a5,-(sp)
-	lea.l	DispatchTail_69(pc),a2
+DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
+	lea.l	DispatchTail_73(pc),a2
 .l4DEC	tst.w	(a2)
 	bne.b	.l4DEC
 	movea.l	#$C00000,a0
 	movea.l	$10(a6),a4
-	lea.l	DispatchTail_73(pc),a1
+	lea.l	DispatchTail_77(pc),a1
 	move.l	$C(a6),(a1)
-DispatchTailSub20	movea.l	$14(a6),a1
+DispatchTail_82	movea.l	$14(a6),a1
 	cmpi.w	#$534D,(a1)
-	dc.w	$6600,$00DC
+	bne.w	DispatchTail_84
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
-	move.w	DispatchTail_70(pc),d1
+	move.w	DispatchTail_74(pc),d1
 	dc.w	$660C
 	moveq	#$0,d0
 	move.w	d6,d0
 	mulu.w	d7,d0
-DispatchTailSub21	adda.l	d0,a5
+DispatchTail_83	adda.l	d0,a5
 	lsl.l	#$5,d0
 	adda.l	d0,a4
 .lFF4E2A	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	lea.l	DispatchTail_71(pc),a2
+	lea.l	DispatchTail_75(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
-	lea.l	DispatchTail_72(pc),a2
+	lea.l	DispatchTail_76(pc),a2
 .l4E42	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
@@ -403,11 +403,11 @@ DispatchTailSub21	adda.l	d0,a5
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.l4E42
-DispatchTailSub22	lea.l	DispatchTail_74(pc),a3
+DispatchTailSub19	lea.l	DispatchTail_78(pc),a3
 	move.l	d6,(a3)
-	lea.l	DispatchTail_75(pc),a3
+	lea.l	DispatchTail_79(pc),a3
 	move.l	d7,(a3)
-	lea.l	DispatchTail_76(pc),a3
+	lea.l	DispatchTail_80(pc),a3
 	move.l	d7,-(sp)
 	move.l	$10(a6),d3
 	lsr.l	#$5,d3
@@ -418,7 +418,7 @@ DispatchTailSub22	lea.l	DispatchTail_74(pc),a3
 .l4E7E	moveq	#$1,d2
 	move.w	d7,d5
 	dc.w	$6022
-DispatchTailSub23	move.w	d6,d4
+DispatchTailSub20	move.w	d6,d4
 	dc.w	$601A
 .l4E88	subq.w	#$1,d2
 	dc.w	$6608
@@ -433,7 +433,7 @@ DispatchTailSub23	move.w	d6,d4
 	addq.w	#$1,d3
 	move.w	d1,(a3)+
 .l4EA2	dbra	d4,.l4E88
-.lFF4EA6	dbra	d5,DispatchTailSub23
+.lFF4EA6	dbra	d5,DispatchTailSub20
 	move.l	(sp)+,d7
 	moveq	#$0,d2
 	move.w	d6,d2
@@ -461,7 +461,7 @@ DispatchTailSub23	move.w	d6,d4
 	move.l	(a1)+,(a0)
 .l4EE0	dbra	d4,.l4ED0
 .l4EE4	dbra	d7,.l4ECC
-.lFF4EE8	lea.l	DispatchTail_69(pc),a2
+DispatchTail_84	lea.l	DispatchTail_73(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
@@ -501,7 +501,7 @@ DispatchTailSub23	move.w	d6,d4
 	move.l	d0,$4(a0)
 	move.l	(a1),(a0)
 	dc.w	$4E75
-.lFF4F6A	dcb.b	$8,0
+DispatchTail_85	dcb.b	$8,0
 	dc.b	'    ',$00,$20,$00,$00,$50,$50,$00,$00,$00,$00,$00,$00	;     . ..PP......
 	dc.b	$28,$78,$50,$F0,$A0,$00,$00,' pP ',$10,$50,$70,$20,$00	; (xP.... pP .Pp .
 	dc.b	$50,$A0,$40,$30,$50,$A0,$00,$00,$60,$80,$40,$A8,$90,$68,$00,$00	; P.@0P...`.@..h..
@@ -567,11 +567,11 @@ DoDrawTextCommandSub1	movem.l	d6-d7/a4,-(sp)
 .l528A	move.w	d6,d0
 	addq.w	#$1,d6
 	move.b	d7,(a4,d0.w)
-.l5292	dc.w	$4EBA,$0402
+.l5292	jsr	GetCommandFromSub(pc)
 	move.b	d0,d7
 	bne.b	.l527A
 .l529A	move.l	a4,-(sp)
-	dc.w	$4EBA,$023E
+	jsr	aprint(pc)
 	addq.w	#$4,sp
 	movem.l	-$10C(a6),d6-d7/a4
 	unlk	a6
@@ -587,7 +587,7 @@ DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
 	dc.w	$6022
 .l52DA	moveq	#$1,d0
 	move.l	d0,-(sp)
-	dc.w	$4EBA,$03F8
+	jsr	Set1MFlag(pc)
 	move.l	#$200000,-(sp)
 	move.l	d5,-(sp)
 	move.l	d6,-(sp)
@@ -595,9 +595,9 @@ DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
 	jsr	DispatchTailSub18(pc)
 	moveq	#$0,d0
 	move.l	d0,-(sp)
-	dc.w	$4EBA,$03E0
+	jsr	Set1MFlag(pc)
 	addq.w	#$8,sp
-.l52FC	dc.w	$4EBA,$0398
+.l52FC	jsr	GetCommandFromSub(pc)
 	cmpi.w	#$2,d0
 	beq.b	.l52DA
 	movem.l	-$10(a6),d5-d7/a4
@@ -607,9 +607,9 @@ DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
 	dc.b	$00,$00	; ..
 MAINCODE	dc.w	$4E56,$0000
 	move.l	d7,-(sp)
-	dc.w	$4EBA,$02DA
-	dc.w	$487A,$006C
-	dc.w	$4EBA,$01AA
+	jsr	InitWorld(pc)
+	pea.l	.lFF539A(pc)
+	jsr	aprint(pc)
 	addq.w	#$4,sp
 	dc.w	$6026
 .l5338	move.w	d7,d0
@@ -624,14 +624,14 @@ MAINCODE	dc.w	$4E56,$0000
 	dc.w	$6016
 .l5350	ext.l	d7
 	move.l	d7,-(sp)
-	dc.w	$487A,$0038
-	dc.w	$4EBA,$0182
+	pea.l	.lFF538E(pc)
+	jsr	aprint(pc)
 	addq.w	#$8,sp
-.l535E	dc.w	$4EBA,$0336
+.l535E	jsr	GetCommandFromSub(pc)
 	move.w	d0,d7
 	bne.b	.l5338
-.l5366	dc.w	$487A,$001C
-	dc.w	$4EBA,$0170
+.l5366	pea.l	.lFF5384(pc)
+	jsr	aprint(pc)
 	addq.w	#$4,sp
 	move.l	-$4(a6),d7
 	unlk	a6
@@ -648,18 +648,18 @@ ReDraw	dc.w	$4E56,$0000
 	dc.b	$86,'ReDraw',$00,$00,$00	; .ReDraw...
 drawprint	dc.w	$4E56,$0000
 	move.l	$8(a6),-(sp)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	move.l	$5C(a0),-(sp)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	move.l	$60(a0),-(sp)
 	jsr	DispatchTailSub16(pc)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	addq.l	#$1,$60(a0)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	moveq	#$18,d0
 	cmp.l	$60(a0),d0
 	dc.w	$6E0C
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	subi.l	#$14,$60(a0)
 .l540A	jsr	ReDraw(pc)
 	unlk	a6
@@ -676,7 +676,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	clr.b	(a4,d0.w)
 .l543C	move.l	d6,d0
 	moveq	#$A,d1
-	dc.w	$4EBA,$02E2
+	jsr	Set1MFlag_2(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -684,7 +684,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	dc.w	$4EBA,$02AA
+	jsr	Set1MFlag_1(pc)
 	move.l	d0,d6
 	bne.b	.l543C
 	dc.w	$6006
@@ -733,11 +733,11 @@ HexStrSub1	movem.l	d3-d7/a4,-(sp)
 aprint	dc.w	$4E56,$FED8
 aprintSub1	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
-	dc.w	$6000,$0106
+	bra.w	.l55F0
 .l54EC	cmpi.b	#$25,d6
 	dc.w	$6706
 	move.b	d6,(a3)+
-	dc.w	$6000,$00DE
+	bra.w	.l55D4
 .l54F8	moveq	#$8,d4
 	movea.l	$8(a6),a0
 	addq.l	#$1,$8(a6)
@@ -754,7 +754,7 @@ aprintSub1	movem.l	d4-d7/a3-a4,-(sp)
 	move.b	(a0),d6
 .l5524	move.b	d6,d0
 	subi.b	#$25,d0
-	dc.w	$6700,$00A6
+	beq.w	.l55D2
 	subi.b	#$2E,d0
 	dc.w	$6778
 	subq.b	#$5,d0
@@ -765,7 +765,7 @@ aprintSub1	movem.l	d4-d7/a3-a4,-(sp)
 	dc.w	$6768
 	subq.b	#$5,d0
 	dc.w	$6734
-	dc.w	$6000,$008A
+	bra.w	.l55D4
 .l554C	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),d5
@@ -831,20 +831,20 @@ InitWorld	dc.w	$4E56,$0000
 	clr.w	(a0)
 	movea.l	#$A12010,a0
 	clr.w	$2(a0)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	moveq	#$4,d0
 	move.l	d0,$5C(a0)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	move.l	d0,$60(a0)
-	dc.w	$487A,$0056
+	pea.l	.lFF5684(pc)
 	jsr	aprint(pc)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	move.l	$54(a0),-(sp)
-	dc.w	$487A,$0036
+	pea.l	.lFF5674(pc)
 	jsr	aprint(pc)
-	lea.l	DispatchTail_66(pc),a0
+	lea.l	DispatchTail_69(pc),a0
 	move.l	$58(a0),-(sp)
-	dc.w	$487A,$0016
+	pea.l	.lFF5664(pc)
 	jsr	aprint(pc)
 	unlk	a6
 	dc.w	$4E75
@@ -876,12 +876,12 @@ Set1MFlag	dc.w	$4E56,$0000
 	dc.w	$4E75
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
-.lFF5700	dc.w	$41FA,$000A
+Set1MFlag_1	lea.l	.lFF570C(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF570C	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-.lFF5724	dc.w	$41FA,$000A
+Set1MFlag_2	lea.l	.lFF5730(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF5730	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -916,21 +916,21 @@ Set1MFlagSub1	lea.l	$FF481C.l,a0
 	lea.l	$FF6E0C.l,a0
 	move.w	#$184F,d1
 	movea.l	$A12022.l,a1
-	dc.w	$6100,$1DFC
+	bsr.w	Set1MFlag_6
 	lea.l	$FF963C.l,a0
 	move.w	#$0,d1
 	move.w	#$6,d0
-	dc.w	$6100,$1DEA
+	bsr.w	Set1MFlag_6
 	lea.l	$FFA0C6.l,a0
 	move.w	#$7,d0
-	dc.w	$6100,$1DDC
+	bsr.w	Set1MFlag_6
 	jsr	$FF67E8.l
 	rts
 	move.w	#$0,d0
 	lea.l	$FF6E0C.l,a0
 	move.w	#$184F,d1
 	movea.l	$A12022.l,a1
-	dc.w	$6100,$1DBC
+	bsr.w	Set1MFlag_6
 	jsr	$FF67E8.l
 	rts
 	move.w	#$0,$A11200.l
@@ -972,7 +972,7 @@ Set1MFlagSub2	lea.l	$FF485E.l,a0
 	move.w	#$2,d0
 	move.w	$A12028.l,d1
 	move.w	#$100,d4
-	dc.w	$6100,$1CE6
+	bsr.w	Set1MFlag_6
 	move.w	(sp)+,sr
 	dc.w	$4E75
 	dc.b	$13,$F9,$00,$A1,$20,$28,$00,$A1,$00,$03,$4E,$75,$13,$F9,$00,$A1	; .... (....Nu....
@@ -983,13 +983,13 @@ Set1MFlagSub2	lea.l	$FF485E.l,a0
 	dc.b	$00,$04,$20,$3C,$00,$00,$00,$3F,$43,$F9,$00,$FF,$6D,$04,$32,$D0	; .. <...?C...m.2.
 	dc.b	$51,$C8,$FF,$FC,$46,$DF,$4E,$75	; Q...F.Nu
 Set1MFlagSub3	tst.w	$FF6D84.l
-	dc.w	$6600,$000C
+	bne.w	.lFF59F8
 	move.w	#$1,$FF6D84.l
 	rts
 .lFF59F8	movem.l	d0-d7/a0-a2,-(sp)
 	st.b	$FF6D8A.l
-	dc.w	$6100,$00C4
-	dc.w	$41FA,$0384
+	bsr.w	.lFF5AC8
+	lea.l	Set1MFlag_5(pc),a0
 	moveq	#$3F,d1
 .l5A0C	move.w	#$0,(a0)+
 	dbra	d1,.l5A0C
@@ -997,7 +997,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 .l5A1C	tst.w	$FF6D8A.l
 	bpl.w	.l5A1C
 	bsr.w	DispatchTailSub9
-	dc.w	$6100,$00A8
+	bsr.w	.lFF5AD4
 	movea.l	#$C00000,a0
 	move.w	#$8C81,$4(a0)
 	move.w	#$9001,$4(a0)
@@ -1014,7 +1014,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	jsr	$FF6BD0.l
 	add.w	d2,d2
 	lea.l	$4(a1,d2.w),a0
-	dc.w	$43FA,$0318
+	lea.l	Set1MFlag_5(pc),a1
 	moveq	#$1F,d0
 .l5A78	move.l	(a0)+,(a1)+
 	dbra	d0,.l5A78
@@ -1028,7 +1028,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	moveq	#$0,d4
 	move.w	#$C000,d4
 .l5A94	move.l	d4,d0
-	dc.w	$6100,$005A
+	bsr.w	Set1MFlag_3
 .l5A9A	move.w	(a2)+,d6
 	add.w	d5,d6
 	move.w	d6,(a0)
@@ -1042,7 +1042,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	bsr.w	Set1MFlagSub2
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-.lFF5AC8	dc.w	$41FA,$0042
+.lFF5AC8	lea.l	Set1MFlag_4(pc),a0
 	move.l	a0,$FFFD08.l
 	rts
 .lFF5AD4	movea.l	#$C00000,a1
@@ -1051,7 +1051,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 .l5AE8	move.w	#$0,(a1)
 	dbra	d0,.l5AE8
 	rts
-Set1MFlag_1	movea.l	#$C00000,a0
+Set1MFlag_3	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
@@ -1059,17 +1059,17 @@ Set1MFlag_1	movea.l	#$C00000,a0
 	andi.w	#$3,d0
 	move.l	d0,$4(a0)
 	rts
-.lFF5B0C	movem.l	d0-d7/a0-a4,-(sp)
+Set1MFlag_4	movem.l	d0-d7/a0-a4,-(sp)
 	tst.w	$FF6D8A.l
-	dc.w	$6B00,$008C
+	bmi.w	.l5BA4
 	cmpi.w	#$64,$FF6D8A.l
-	dc.w	$6700,$0086
+	beq.w	.l5BAA
 	subq.w	#$1,$FF6D8A.l
-	dc.w	$6B00,$0076
+	bmi.w	.l5BA4
 	clr.l	d0
 	move.w	$FF6D8A.l,d0
 	cmpi.w	#$18,d0
-	dc.w	$6E00,$0066
+	bgt.w	.l5BA4
 	divu.w	#$3,d0
 	swap	d0
 	asl.w	#$2,d0
@@ -1079,7 +1079,7 @@ Set1MFlag_1	movea.l	#$C00000,a0
 	asl.w	d0,d5
 	move.w	d5,d4
 	not.w	d4
-	dc.w	$43FA,$0236
+	lea.l	Set1MFlag_5(pc),a1
 	movea.l	#$C00000,a0
 	clr.w	d6
 .l5B60	move.w	d3,d2
@@ -1093,8 +1093,8 @@ Set1MFlag_1	movea.l	#$C00000,a0
 	move.w	(a1)+,d1
 	and.w	d5,d1
 	cmp.w	d1,d0
-	dc.w	$6700,$001E
-	dc.w	$6D00,$0004
+	beq.w	.l5B9A
+	blt.w	.l5B84
 	neg.w	d2
 .l5B84	add.w	d2,d0
 	and.w	d4,d7
@@ -1130,8 +1130,8 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	move.b	d0,d2
 	move.w	d2,(a1)
 	cmpa.l	#$240000,a0
-	dc.w	$6F00,$0006
-	dc.w	$6000,$000E
+	ble.w	.l5C04
+	bra.w	.l5C10
 .l5C04	moveq	#$1,d7
 	move.w	d1,d6
 	move.l	(a0),d5
@@ -1165,10 +1165,10 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	bne.w	.l5C56
 	move.w	#$8164,$C00004.l
 	tst.w	d7
-	dc.w	$6700,$000C
+	beq.w	.l5C80
 	moveq	#$0,d0
 	move.w	d6,d0
-	bsr.w	Set1MFlag_1
+	bsr.w	Set1MFlag_3
 	move.l	d5,(a0)
 .l5C80	movem.l	(sp)+,d2-d7/a1-a2
 	rts
@@ -1189,13 +1189,13 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 .l5CCC	move.l	(a0)+,(a1)+
 	dbra	d0,.l5CCC
 	move.l	#$FF1006,$FF6D86.l
-	bsr.w	DispatchTail_65
+	bsr.w	DispatchTail_67
 	clr.w	$FF6D84.l
 	dc.w	$4E75
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
-.lFF5D8C	dcb.b	$80,0
+Set1MFlag_5	dcb.b	$80,0
 	dc.b	$C3,$00,$06,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .....Q...Q...Q..
 	dc.b	$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .Q...Q...Q...Q..
 	dc.b	$18,$4F,$18,$4F,$14,$48,$16,$49,$18,$4B	; .O.O.H.I.K
@@ -1207,36 +1207,36 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	dc.b	$FF	; .
 	dcb.b	$200,0
 	dc.b	$FF,$FE,$03,$00,$C0,$00,$00	; .......
-.lFF765C	tst.w	d0
+Set1MFlag_6	tst.w	d0
 	dc.w	$6604
-	dc.w	$6000,$0066
+	bra.w	Set1MFlag_7
 .l7664	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$014C
+	bra.w	Set1MFlag_8
 .l766E	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$03BE
+	bra.w	Set1MFlag_9
 .l7678	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$045E
+	bra.w	Set1MFlag_10
 .l7682	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$04AC
+	bra.w	Set1MFlag_11
 .l768C	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$04FC
+	bra.w	Set1MFlag_12
 .l7696	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$0AFE
+	bra.w	Set1MFlag_22
 .l76A0	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$0B08
+	bra.w	Set1MFlag_23
 .l76AA	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$0B48
+	bra.w	Set1MFlag_24
 .l76B4	dc.w	$0440,$0001
 	dc.w	$6604
-	dc.w	$6000,$0C3C
+	bra.w	Set1MFlag_25
 .l76BE	move.w	#$1,d0
 	ori.b	#$1,ccr
 	dc.w	$4E75

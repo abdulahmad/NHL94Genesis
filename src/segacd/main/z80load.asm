@@ -6,10 +6,10 @@
 
 
 
-.lFF76C8	movem.l	d1/a0-a2,-(sp)
+Set1MFlag_7	movem.l	d1/a0-a2,-(sp)
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
-	lea.l	Set1MFlag_10(pc),a2
+	lea.l	Set1MFlag_42(pc),a2
 	adda.l	#$4,a1
 	move.l	a1,(a2)
 	move.w	#$100,$A11100.l
@@ -19,13 +19,13 @@
 	cmpi.b	#$0,$1(a0)
 	bne.b	.lFF771A
 	move.l	a0,-(sp)
-	bsr.w	Set1MFlag_3
-	bsr.w	Set1MFlag_5
+	bsr.w	Set1MFlag_28
+	bsr.w	Set1MFlag_30
 	lea.l	$A00000.l,a1
 .lFF770C	move.b	(a0)+,(a1)+
 	dbra	d1,.lFF770C
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_4
+	bsr.w	Set1MFlag_29
 	bra.b	.lFF7722
 .lFF771A	move.w	#$6,d0
 	bra.w	.lFF77AC
@@ -34,28 +34,28 @@
 	move.w	#$1F4,d0
 .lFF7736	dbra	d0,.lFF7736
 	move.w	#$100,$A11200.l
-	lea.l	Set1MFlag_12(pc),a0
+	lea.l	Set1MFlag_45(pc),a0
 	move.w	#$4,d0
 .lFF774A	move.l	#$FFFFFFFF,(a0)+
 	dbra	d0,.lFF774A
-	lea.l	Set1MFlag_6(pc),a0
+	lea.l	Set1MFlag_32(pc),a0
 	move.w	#$7,d0
 .lFF775C	move.l	#$FFFFFFFF,(a0)+
 	dbra	d0,.lFF775C
-	lea.l	Set1MFlag_7(pc),a0
+	lea.l	Set1MFlag_33(pc),a0
 	move.w	#$7,d0
 .lFF776E	move.l	#$0,(a0)+
 	dbra	d0,.lFF776E
-	lea.l	Set1MFlag_8(pc),a0
+	lea.l	Set1MFlag_34(pc),a0
 	move.w	#$7,d0
 .lFF7780	move.w	#$FFFF,(a0)+
 	dbra	d0,.lFF7780
-	bsr.w	Set1MFlag_2
-	lea.l	Set1MFlag_9(pc),a0
+	bsr.w	Set1MFlag_16
+	lea.l	Set1MFlag_41(pc),a0
 	move.w	#$7,d0
 .lFF7794	move.w	#$0,(a0)+
 	dbra	d0,.lFF7794
-	lea.l	Set1MFlag_11(pc),a0
+	lea.l	Set1MFlag_43(pc),a0
 	move.w	#$0,(a0)
 	andi.b	#$FE,ccr
 	clr.w	d0

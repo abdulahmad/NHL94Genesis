@@ -66,7 +66,7 @@ def sierra_tags(d):
 
 
 def git_text(path):
-    return subprocess.run(["git", "show", "HEAD:" + path], capture_output=True, text=True).stdout
+    return subprocess.run(["git", "show", "a8233dc:" + path], capture_output=True, text=True).stdout
 
 
 def norm(s):
@@ -181,6 +181,24 @@ def main():
     F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
     print("gap code: %d instructions" % len(insns), flush=True)
 
+    # pointer tables in the gaps: runs of 3 or more longs that each point at an instruction we found
+    ptr_runs = {}
+    i = 0
+    while i < n - 3:
+        if i % 2 == 0 and not cov[i] and not in_hand(base + i):
+            k = 0
+            while i + 4 * k + 4 <= n and not any(cov[i + 4 * k:i + 4 * k + 4]):
+                v = struct.unpack(">I", d[i + 4 * k:i + 4 * k + 4])[0] - base
+                if v in insns:
+                    k += 1
+                else:
+                    break
+            if k >= 3:
+                ptr_runs[i] = k
+                i += 4 * k
+                continue
+        i += 2
+
     # 4. names. A hand label wins, then a hand generic label (L<addr>), then a new generic one.
     anyl = {}
     for name in hand:
@@ -202,6 +220,9 @@ def main():
 
     for _nm, _ad in equ.items():
         NAME(_ad)
+    for _o, _k in ptr_runs.items():
+        for _j in range(_k):
+            NAME(struct.unpack('>I', d[_o + 4 * _j:_o + 4 * _j + 4])[0])
 
     # 5. the gap parts
     gaps = []
@@ -280,7 +301,7 @@ def main():
             lines = []
             o = a
             # split points for labels in the gap
-            pts = sorted({x - base for x in names if a <= x - base < b} | {x - base for x in anyl if a <= x - base < b})
+            pts = sorted({x - base for x in names if a <= x - base < b} | {x - base for x in anyl if a <= x - base < b} | {r for r in ptr_runs if a <= r < b} | {r + 4 * k for r, k in ptr_runs.items() if a <= r + 4 * k < b})
             while o < b:
                 if o in decode:
                     g = decode[o]
@@ -332,6 +353,13 @@ def main():
         i = 0
         L = len(blob)
         while i < L:
+            if o + i in ptr_runs:
+                k = ptr_runs[o + i]
+                for j in range(0, k, 4):
+                    vals = [NAME(struct.unpack(">I", d[o + i + 4 * q:o + i + 4 * q + 4])[0]) for q in range(j, min(j + 4, k))]
+                    res.append("%s\tdc.l\t%s" % (labfn(o + i + 4 * j) if j == 0 else "", ",".join(vals)))
+                i += 4 * k
+                continue
             if blob[i] == 0:
                 j = i
                 while j < L and blob[j] == 0:
@@ -531,12 +559,16 @@ def fixloop(cfg, parts, ddir, d):
             exp_b = exp
             nxt = rows[k + 1][0] - addr if k + 1 < len(rows) else None
             wrong = False
+            mnr = re.sub(r"^\S*\t", "", ll[36:]).strip().split("\t")[0].split(".")[0].lower() if len(ll) > 36 else ""
+            if mnr in E.BRANCH or mnr in ("jsr", "jmp", "bsr", "lea", "pea"):
+                got = got[:4]
+                exp_b = exp_b[:4]
             if "+" in got:
                 got = got.replace("+", "")
                 wrong = not exp_b.startswith(got)
             else:
                 wrong = got != exp_b[:len(got)] or (len(got) < len(exp_b) and False)
-            if nxt is not None and nxt != len(exp_b) // 2 and nxt > 0:
+            if nxt is not None and nxt != len(exp) // 2 and nxt > 0:
                 wrong = True
             if wrong:
                 w = to_words(l)

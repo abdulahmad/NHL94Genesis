@@ -12,25 +12,25 @@ DrawTextSub1	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
 	moveq	#$1,d0
 	move.l	d0,-(sp)
-	dc.w	$4EBA,$05DE
+	jsr	GetTicks_2(pc)
 	moveq	#$3C,d0
 	move.l	d0,-(sp)
-	dc.w	$4EBA,$05D6
+	jsr	GetTicks_2(pc)
 	addq.w	#$8,sp
 	dc.w	$600C
 .l47CE	ext.w	d7
 	ext.l	d7
 	move.l	d7,-(sp)
-	dc.w	$4EBA,$05C8
+	jsr	GetTicks_2(pc)
 	addq.w	#$4,sp
 .l47DA	move.b	(a4)+,d7
 	bne.b	.l47CE
 	moveq	#$3E,d0
 	move.l	d0,-(sp)
-	dc.w	$4EBA,$05BA
+	jsr	GetTicks_2(pc)
 	moveq	#$1,d0
 	move.l	d0,-(sp)
-	dc.w	$4EBA,$05B2
+	jsr	GetTicks_2(pc)
 	addq.w	#$8,sp
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
@@ -47,7 +47,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	clr.b	(a4,d0.w)
 .l4824	move.l	d6,d0
 	moveq	#$A,d1
-	dc.w	$4EBA,$0B2C
+	jsr	GetData_16(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -55,7 +55,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	dc.w	$4EBA,$0AF4
+	jsr	GetData_15(pc)
 	move.l	d0,d6
 	bne.b	.l4824
 	dc.w	$6006
@@ -108,11 +108,11 @@ aprint	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	$8(a6),a0
 	addq.w	#$4,a0
 	move.l	a0,-$4(a6)
-	dc.w	$6000,$00EA
+	bra.w	.l49CA
 .l48E2	cmpi.b	#$25,d6
 	dc.w	$6706
 	move.b	d6,(a3)+
-	dc.w	$6000,$00DE
+	bra.w	.l49CA
 .l48EE	moveq	#$8,d4
 	movea.l	$8(a6),a0
 	addq.l	#$1,$8(a6)
@@ -129,7 +129,7 @@ aprint	movem.l	d4-d7/a3-a4,-(sp)
 	move.b	(a0),d6
 .l491A	move.b	d6,d0
 	subi.b	#$25,d0
-	dc.w	$6700,$00A6
+	beq.w	.l49C8
 	subi.b	#$2E,d0
 	dc.w	$6778
 	subq.b	#$5,d0
@@ -140,7 +140,7 @@ aprint	movem.l	d4-d7/a3-a4,-(sp)
 	dc.w	$6768
 	subq.b	#$5,d0
 	dc.w	$6734
-	dc.w	$6000,$008A
+	bra.w	.l49CA
 .l4942	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),d5
@@ -215,14 +215,14 @@ ffree	movem.l	a3-a4,-(sp)
 	cmp.b	$1(a4),d0
 	dc.w	$670E
 .l4A1E	move.l	a4,-(sp)
-	dc.w	$487A,$008C
+	pea.l	.l25DAE(pc)
 	jsr	HexStr_1(pc)
 	addq.w	#$8,sp
 	dc.w	$6050
 .l4A2C	tst.w	$2(a4)
 	dc.w	$660E
 	move.l	a4,-(sp)
-	dc.w	$487A,$0058
+	pea.l	.l25D8E(pc)
 	jsr	HexStr_1(pc)
 	addq.w	#$8,sp
 	dc.w	$603C
@@ -253,7 +253,7 @@ ffree	movem.l	a3-a4,-(sp)
 findSmallestBlock	dc.w	$4E56,$0000
 findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#$0,d0
 	movea.l	d0,a3
@@ -283,7 +283,7 @@ findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	dc.b	$63,$6B,$00,$00	; ck..
 findSmallestBlock_1	dc.w	$4E56,$0000
 MaxFree	movem.l	d6-d7/a4,-(sp)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#-1,d6
 	dc.w	$601C
@@ -356,10 +356,10 @@ mmalloc	movem.l	d6-d7/a3-a4,-(sp)
 	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	dc.w	$4E56,$0000
 InitHeapSub1	movem.l	a3-a4,-(sp)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	movea.l	$8(a0),a3
-	lea.l	RestoreBios_12(pc),a0
-	lea.l	RestoreBios_12(pc),a1
+	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_75(pc),a1
 	move.l	$C(a1),d0
 	add.l	$8(a0),d0
 	movea.l	d0,a4
@@ -384,41 +384,41 @@ InitHeapSub2	move.b	#$48,(a3)
 InitHeap_1	dc.w	$4E56,$0000
 	move.l	d7,-(sp)
 	clr.w	$FF8020.l
-	dc.w	$487A,$00C0
+	pea.l	.l26052(pc)
 	jsr	HexStr_1(pc)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	moveq	#$F,d7
 	and.l	$8(a0),d7
 	tst.l	d7
 	addq.w	#$4,sp
 	dc.w	$670A
-	dc.w	$487A,$009C
+	pea.l	.l26046(pc)
 	jsr	HexStr_1(pc)
 	addq.w	#$4,sp
-.l4CB2	lea.l	RestoreBios_12(pc),a0
+.l4CB2	lea.l	RestoreBios_75(pc),a0
 	move.l	$8(a0),d0
 	moveq	#$F,d1
 	add.l	d1,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	d2,$8(a0)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	$C(a0),d0
 	sub.l	d7,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	d2,$C(a0)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	$8(a0),-(sp)
-	dc.w	$487A,$004C
+	pea.l	.l26036(pc)
 	jsr	HexStr_1(pc)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	$C(a0),-(sp)
-	dc.w	$487A,$002C
+	pea.l	.l26026(pc)
 	jsr	HexStr_1(pc)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	tst.l	$C(a0)
 	lea.l	$10(sp),sp
 	dc.w	$6704
@@ -432,13 +432,13 @@ InitHeap_1	dc.w	$4E56,$0000
 .l26046	dc.b	'Fixing Heap',$00	; Fixing Heap.
 .l26052	dc.b	'SUBCPU is alive',$00	; SUBCPU is alive.
 GetTicks	dc.w	$4E56,$0000
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	$4(a0),d0
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$88,'GetTicks',$00,$00,$00	; .GetTicks...
 GetTicks_1	dc.w	$4E56,$0000
-.l4D82	lea.l	RestoreBios_12(pc),a0
+.l4D82	lea.l	RestoreBios_75(pc),a0
 	tst.l	$10(a0)
 	bne.b	.l4D82
 	unlk	a6
