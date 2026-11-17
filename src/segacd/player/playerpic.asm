@@ -22,9 +22,9 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	bne.w	.l1DA2
 	tst.b	$5(a3)
 	beq.w	.l1D9E
-	lea.l	LF64_20(pc),a0
+	lea.l	StrPlayerNum(pc),a0
 	bra.w	.l1DA2
-.l1D9E	lea.l	LF64_19(pc),a0
+.l1D9E	lea.l	StrGoalieNum(pc),a0
 .l1DA2	move.w	$80(a6),d0
 	add.w	d0,d0
 	tst.w	(a2,d0.w)
@@ -37,9 +37,9 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	bne.w	.l1DF8
 	btst.b	#$0,$4(a3)
 	beq.w	.l1DD6
-	lea.l	LF64_59(pc),a1
+	lea.l	PicTilesStillB(pc),a1
 	bra.w	.l1E28
-.l1DD6	lea.l	LF64_60(pc),a1
+.l1DD6	lea.l	PicTilesFramesB(pc),a1
 	move.b	$104(a6),d0
 	cmpi.b	#$3,d0
 	blt.w	.l1DEC
@@ -50,9 +50,9 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	bra.w	.l1E28
 .l1DF8	btst.b	#$0,$4(a3)
 	beq.w	.l1E0A
-	lea.l	LF64_57(pc),a1
+	lea.l	PicTilesStillA(pc),a1
 	bra.w	.l1E28
-.l1E0A	lea.l	LF64_58(pc),a1
+.l1E0A	lea.l	PicTilesFramesA(pc),a1
 	move.b	$105(a6),d0
 	cmpi.b	#$7,d0
 	blt.w	.l1E20

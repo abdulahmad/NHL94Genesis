@@ -64,12 +64,12 @@
   "Clears the 32-long command buffer at $BA850."
  ],
  "RestoreBios_96": [
-  "InstallIrqHook1",
-  "Saves the level vector at $5F36 and installs the stream interrupt handler."
+  "Long5",
+  "Zero-filled work storage (4 bytes)."
  ],
  "RestoreBios_97": [
-  "RemoveIrqHook1",
-  "Restores the vector at $5F36."
+  "Buf8_10",
+  "Zero-filled work storage (8 bytes)."
  ],
  "RestoreBios_106": [
   "InstallIrqHook2",
@@ -80,8 +80,8 @@
   "Resets the PCM chip: all channels off, then the control register."
  ],
  "RestoreBios_100": [
-  "PcmInit",
-  "Resets the PCM chip: all channels off, then the control register."
+  "BufA8_1",
+  "Zero-filled work storage (168 bytes)."
  ],
  "RestoreBios_101": [
   "PcmStartChannel0",
@@ -100,8 +100,8 @@
   "Converts the packed BCD byte in d0 to binary."
  ],
  "RestoreBios_112": [
-  "CdMsfBcdToBin",
-  "Converts the BCD minute/second/frame bytes of d0 to binary."
+  "Long7",
+  "Zero-filled work storage (4 bytes)."
  ],
  "Wait_1": [
   "FilmOpen",
@@ -246,5 +246,213 @@
  "CopyData_4": [
   "DisposeEngine",
   "C function DisposeEngine (Sierra C name tag follows it)."
+ ],
+ "aprint_2": [
+  "aprint_3",
+  "C function aprint (Sierra C name tag follows it)."
+ ],
+ "ffree_2": [
+  "ffree_3",
+  "C function ffree (Sierra C name tag follows it)."
+ ],
+ "MaxFree_2": [
+  "MaxFree_3",
+  "C function MaxFree (Sierra C name tag follows it)."
+ ],
+ "mmalloc_2": [
+  "mmalloc_3",
+  "C function mmalloc (Sierra C name tag follows it)."
+ ],
+ "GetData_2": [
+  "AudioPlayPos_2",
+  "C function AudioPlayPos (Sierra C name tag follows it)."
+ ],
+ "GetData_3": [
+  "AudioInit_2",
+  "C function AudioInit (Sierra C name tag follows it)."
+ ],
+ "GetData_4": [
+  "AudioIdle_2",
+  "C function AudioIdle (Sierra C name tag follows it)."
+ ],
+ "GetData_5": [
+  "AudioFeed_2",
+  "C function AudioFeed (Sierra C name tag follows it)."
+ ],
+ "GetData_9": [
+  "AudioSilence_2",
+  "C function AudioSilence (Sierra C name tag follows it)."
+ ],
+ "GetData_10": [
+  "AudioStop_2",
+  "C function AudioStop (Sierra C name tag follows it)."
+ ],
+ "GetData_11": [
+  "AudioTicks_2",
+  "C function AudioTicks (Sierra C name tag follows it)."
+ ],
+ "GetData_12": [
+  "AudioTime_2",
+  "C function AudioTime (Sierra C name tag follows it)."
+ ],
+ "GetData_13": [
+  "AudioBusy_2",
+  "C function AudioBusy (Sierra C name tag follows it)."
+ ],
+ "RestoreBios_1": [
+  "Buf82_1",
+  "Zero-filled work storage (130 bytes)."
+ ],
+ "RestoreBios_22": [
+  "Long1",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "RestoreBios_23": [
+  "Buf200_1",
+  "Zero-filled work storage (512 bytes)."
+ ],
+ "RestoreBios_24": [
+  "Word1",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_25": [
+  "Buf8_1",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_26": [
+  "Word2",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_27": [
+  "Word3",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_28": [
+  "Buf8_2",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_29": [
+  "Buf8_3",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_30": [
+  "Buf8_4",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_31": [
+  "Buf8_5",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_32": [
+  "Buf8_6",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_33": [
+  "Buf8_7",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_34": [
+  "Buf8_8",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_35": [
+  "Buf11_1",
+  "Zero-filled work storage (17 bytes)."
+ ],
+ "RestoreBios_36": [
+  "Byte1",
+  "Zero-filled work storage (1 bytes)."
+ ],
+ "RestoreBios_37": [
+  "Word4",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_38": [
+  "Word5",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_39": [
+  "Byte2",
+  "Zero-filled work storage (1 bytes)."
+ ],
+ "RestoreBios_40": [
+  "Byte3",
+  "Zero-filled work storage (1 bytes)."
+ ],
+ "RestoreBios_41": [
+  "Byte4",
+  "Zero-filled work storage (1 bytes)."
+ ],
+ "RestoreBios_42": [
+  "Word6",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_43": [
+  "Long2",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "RestoreBios_44": [
+  "Buf80_1",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "RestoreBios_45": [
+  "Buf80_2",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "RestoreBios_46": [
+  "Buf80_3",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "RestoreBios_47": [
+  "Buf80_4",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "RestoreBios_48": [
+  "Buf80_5",
+  "Zero-filled work storage (128 bytes)."
+ ],
+ "RestoreBios_49": [
+  "Buf8_9",
+  "Zero-filled work storage (8 bytes)."
+ ],
+ "RestoreBios_50": [
+  "Word7",
+  "Zero-filled work storage (2 bytes)."
+ ],
+ "RestoreBios_92": [
+  "Long3",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "RestoreBios_95": [
+  "Long4",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "RestoreBios_98": [
+  "Buf14_1",
+  "Zero-filled work storage (20 bytes)."
+ ],
+ "RestoreBios_99": [
+  "Long6",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "RestoreBios_115": [
+  "Long8",
+  "Zero-filled work storage (4 bytes)."
+ ],
+ "GetData_27": [
+  "Buf42_1",
+  "Zero-filled work storage (66 bytes)."
+ ],
+ "GetData_34": [
+  "StrWarningA",
+  "Warning screen text."
+ ],
+ "GetData_35": [
+  "StrFormatting",
+  "'FORMATTING...' text."
+ ],
+ "GetData_36": [
+  "StrWarningB",
+  "Warning screen text."
  ]
 }

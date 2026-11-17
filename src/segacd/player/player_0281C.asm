@@ -61,7 +61,8 @@ LF64Sub4	movem.l	d0-d4,-(sp)
 	dbra	d2,.l28AC
 	movem.l	(sp)+,d0-d4
 	rts
-LF64_18	dc.b	$16,'Power play adva'	; .Power play adva
+; Length-prefixed situation names (power play, penalty kill, home/road advantage, skater counts).
+StrSituationTable	dc.b	$16,'Power play adva'	; .Power play adva
 	dc.b	'ntage',$00,$1E,'Penalty k'	; ntage..Penalty k
 	dc.b	'illing disadvant'	; illing disadvant
 	dc.b	$61,$67,$65,$00,$15,'Home team a'	; age..Home team a
@@ -70,8 +71,10 @@ LF64_18	dc.b	$16,'Power play adva'	; .Power play adva
 	dc.b	$00,$14,'Number of forw'	; ..Number of forw
 	dc.b	'ards',$00,$16,'Number of '	; ards..Number of 
 	dc.b	'defensemen',$00	; defensemen.
-LF64_19	dc.b	$0B,'Goalie # ',$00	; .Goalie # .
-LF64_20	dc.b	$0B,'Player # ',$00,$00	; .Player # ..
+; 'Goalie # ' label.
+StrGoalieNum	dc.b	$0B,'Goalie # ',$00	; .Goalie # .
+; 'Player # ' label.
+StrPlayerNum	dc.b	$0B,'Player # ',$00,$00	; .Player # ..
 ; Converts d7 to packed BCD in d1 (abcd loop).
 BinToBcd	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
@@ -192,12 +195,12 @@ PlPrepareSource	movem.l	d0-d7/a1-a5,-(sp)
 .l2B2E	move.b	(a0)+,d0
 	cmpi.b	#$20,d0
 	bne.w	.l2B2E
-	lea.l	LF64_55(pc),a5
+	lea.l	StrSkaterCareerHeaders(pc),a5
 	move.l	a5,$9A(a6)
 	move.w	#$2,$A6(a6)
-	lea.l	LF64_47(pc),a5
+	lea.l	StatColumnWidthsA(pc),a5
 	move.l	a5,$9E(a6)
-	lea.l	LF64_45(pc),a5
+	lea.l	StatColumnIdsSkaterA(pc),a5
 	movea.l	a0,a3
 	movea.l	$2C(a6),a1
 	movea.l	$30(a6),a2
@@ -241,12 +244,12 @@ PlPrepareSource	movem.l	d0-d7/a1-a5,-(sp)
 .l2BE8	addq.w	#$1,d2
 	beq.w	.l2C16
 	movea.l	a2,a1
-	lea.l	LF64_56(pc),a5
+	lea.l	StrGoalieCareerHeaders(pc),a5
 	move.l	a5,$9A(a6)
 	move.w	#$5,$A6(a6)
-	lea.l	LF64_48(pc),a5
+	lea.l	StatColumnWidthsB(pc),a5
 	move.l	a5,$9E(a6)
-	lea.l	LF64_46(pc),a5
+	lea.l	StatColumnIdsSkaterB(pc),a5
 	move.l	a1,d0
 	beq.w	.l2C16
 	moveq	#$0,d0
@@ -1225,36 +1228,54 @@ GateArrayLoadCmd	movem.l	d0-d7/a0-a2,-(sp)
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-LF64_45	dc.b	$00,$00,$00,$01,$00,$02,$00,$05,$00,$06,$00,$07,$FF,$FF	; ..............
-LF64_46	dc.b	$00,$00,$00,$01,$00,$02,$00,$03,$00,$04,$00,$05,$00,$08,$00,$09	; ................
+; Column ids for one skater stat page, $FFFF ends the list.
+StatColumnIdsSkaterA	dc.b	$00,$00,$00,$01,$00,$02,$00,$05,$00,$06,$00,$07,$FF,$FF	; ..............
+; Column ids for the second skater stat page.
+StatColumnIdsSkaterB	dc.b	$00,$00,$00,$01,$00,$02,$00,$03,$00,$04,$00,$05,$00,$08,$00,$09	; ................
 	dc.b	$00,$0A,$00,$0B,$00,$0C,$FF,$FF	; ........
-LF64_47	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03,$03,$03,$04,$00	; ..............
-LF64_48	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03,$03,$03,$05,$03	; ................
+; Column widths for the first page.
+StatColumnWidthsA	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03,$03,$03,$04,$00	; ..............
+; Column widths for the second page.
+StatColumnWidthsB	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03,$03,$03,$05,$03	; ................
 	dc.b	$03,$04	; ..
-LF64_49	dc.b	'Players',$00,$20,$00	; Players. .
-LF64_50	dc.b	'Goalies',$00,$20,$00	; Goalies. .
-LF64_51	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
+; 'Players'.
+StrPlayers	dc.b	'Players',$00,$20,$00	; Players. .
+; 'Goalies'.
+StrGoalies	dc.b	'Goalies',$00,$20,$00	; Goalies. .
+; Skater column headings: Gp G A Pts +/- Pim PP Sh Gw Gt S Pctg.
+StrSkaterStatHeaders	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
 	dc.b	$69,$6D,$00,$50,$50,$00,$53,$68,$00,$47,$77,$00,$47,$74,$00,$53	; im.PP.Sh.Gw.Gt.S
 	dc.b	$00,'Pctg',$FF	; .Pctg.
-LF64_52	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
+; Goalie column headings: Gp Mins Ga Avg. W L T SO En Shts and the per-game forms.
+StrGoalieStatHeaders	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
 	dc.b	$57,$00,$4C,$00,$54,$00,$53,$4F,$00,$45,$6E,$00,'Shts'	; W.L.T.SO.En.Shts
 	dc.b	$00,$70,$47,$50,$00,'pMIN',$00,$70,$47,$41,$00,$70,$41	; .pGP.pMIN.pGA.pA
 	dc.b	$56,$47,$00,$70,$57,$00,$70,$4C,$00,$70,$53,$4F,$00,$70,$45,$4E	; VG.pW.pL.pSO.pEN
 	dc.b	$00,$70,$53,$41,$FF	; .pSA.
-LF64_53	dc.b	'Regular',$00	; Regular.
-LF64_54	dc.b	'Playoff',$00	; Playoff.
-LF64_55	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
+; 'Regular'.
+StrRegular	dc.b	'Regular',$00	; Regular.
+; 'Playoff'.
+StrPlayoff	dc.b	'Playoff',$00	; Playoff.
+; Skater career headings: Season Club Lea Gp G A Tp Pim.
+StrSkaterCareerHeaders	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
 	dc.b	$47,$70,$00,$47,$00,$41,$00,$54,$70,$00,$50,$69,$6D,$00,$47,$70	; Gp.G.A.Tp.Pim.Gp
 	dc.b	$00,$47,$00,$41,$00,$54,$70,$00,$50,$69,$6D,$00	; .G.A.Tp.Pim.
-LF64_56	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
+; Goalie career headings: Season Club Lea Gp W L T Mins Ga So Avg.
+StrGoalieCareerHeaders	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
 	dc.b	$47,$70,$00,$57,$00,$4C,$00,$54,$00,'Mins',$00,$47,$61	; Gp.W.L.T.Mins.Ga
 	dc.b	$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57,$00,$4C,$00,$4D	; .So.Avg.Gp.W.L.M
 	dc.b	$69,$6E,$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$00	; ins.Ga.So.Avg..
-LF64_57	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
-LF64_58	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
+; Picture tile data, single frame (page A).
+PicTilesStillA	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
+; Picture tile data, animation frames (page A).
+PicTilesFramesA	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
 .l6044	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
-LF64_59	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
-LF64_60	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
-LF64_61	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
-LF64_62	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
+; Picture tile data, single frame (page B).
+PicTilesStillB	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
+; Picture tile data, three animation frames (page B), $504 bytes each.
+PicTilesFramesB	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
+; Table of $34-byte records indexed by the current page.
+PlRecordTable	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
+; Background image: width, height, then tile data.
+PlBackgroundImage	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
 	dcb.b	$8DC,0

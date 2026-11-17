@@ -14,11 +14,11 @@ FilmOpen	link	a6,#$FFFC
 	jsr	InitWorld(pc)
 	move.l	d5,-(sp)
 	pea.l	FilmOpenStr5(pc)
-	jsr	aprint_2(pc)
+	jsr	aprint_3(pc)
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
 	pea.l	$800.w
-	jsr	mmalloc_2(pc)
+	jsr	mmalloc_3(pc)
 	movea.l	d0,a3
 	move.l	a3,d0
 	lea.l	$C(sp),sp
@@ -36,7 +36,7 @@ FilmOpen	link	a6,#$FFFC
 	beq.b	.l256AC
 	move.l	d5,-(sp)
 	pea.l	FilmOpenStr4(pc)
-	jsr	aprint_2(pc)
+	jsr	aprint_3(pc)
 	moveq	#-1,d0
 	addq.w	#$8,sp
 	bra.w	Wait_4
@@ -52,7 +52,7 @@ FilmOpen	link	a6,#$FFFC
 	cmp.l	d6,d0
 	bge.b	.l25714
 	move.l	a3,-(sp)
-	jsr	ffree_2(pc)
+	jsr	ffree_3(pc)
 	move.l	d6,d1
 	move.l	d1,d0
 	mulu.w	#$800,d1
@@ -62,7 +62,7 @@ FilmOpen	link	a6,#$FFFC
 	clr.w	d0
 	add.l	d0,d1
 	move.l	d1,-(sp)
-	jsr	mmalloc_2(pc)
+	jsr	mmalloc_3(pc)
 	movea.l	d0,a3
 	move.l	a3,d0
 	addq.w	#$8,sp
@@ -71,7 +71,7 @@ FilmOpen	link	a6,#$FFFC
 	bra.w	Wait_4
 .l256F8	move.l	d6,-(sp)
 	pea.l	FilmOpenStr3(pc)
-	jsr	aprint_2(pc)
+	jsr	aprint_3(pc)
 	move.l	a3,-(sp)
 	move.l	d6,-(sp)
 	move.l	d5,-(sp)
@@ -89,7 +89,7 @@ FilmOpen	link	a6,#$FFFC
 	move.l	d0,$10(a4)
 	move.l	a3,$14(a4)
 	pea.l	FilmOpenStr2(pc)
-	jsr	aprint_2(pc)
+	jsr	aprint_3(pc)
 	move.l	d5,-(sp)
 	pea.l	$18(a4)
 	jsr	InitEngine(pc)
@@ -101,7 +101,7 @@ FilmOpen	link	a6,#$FFFC
 .l25756	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	pea.l	FilmOpenStr1(pc)
-	jsr	aprint_2(pc)
+	jsr	aprint_3(pc)
 	moveq	#$0,d5
 	move.l	d5,d6
 	move.l	d6,d7
@@ -166,7 +166,7 @@ Wait_3	movea.l	$10(a4),a0
 	move.l	d0,-(sp)
 	jsr	RestoreBios_120(pc)
 	pea.l	$30(a4)
-	jsr	GetData_3(pc)
+	jsr	AudioInit(pc)
 	moveq	#$0,d0
 	lea.l	$C(sp),sp
 Wait_4	movem.l	-$1C(a6),d3/d5-d7/a3-a4

@@ -76,5 +76,15 @@ for i, l in enumerate(lines):
             start_label = lab
         elif re.match(r'^\t(?!dc\.b|dcb)\S', l) and not l.lstrip().startswith(';'):
             start_label = '?'
+# labels written as `Placeholder; RealName` (the name tag, noted by an earlier pass): take the name
+for l in lines:
+    m = re.match(r'^(\w+); (\w+)\s*$', l)
+    if m and PH.match(m.group(1)) and m.group(1) not in names:
+        nm, k = m.group(2), 2
+        new = nm
+        while new in used:
+            new = '%s_%d' % (nm, k); k += 1
+        used.add(new)
+        names[m.group(1)] = [new, 'C function %s (Sierra C name tag follows it).' % nm]
 json.dump({k: v for k, v in names.items() if not k.startswith('?')}, open('src/segacd/%s/names.json' % d, 'w'), indent=1)
 print(len(names), 'names')

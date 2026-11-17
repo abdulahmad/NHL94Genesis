@@ -156,8 +156,9 @@ DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$08,$B9,$00,$07,$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E	; ...... ....... .
 	dc.b	$61,$00,$BF,$CE,$60,$00,$F5,$6C,$4E,$75	; a...`..lNu
 DispatchTail_69	dc.b	$60,$00,$00,$8E	; `...
-DispatchTail_70	dcb.b	$8C,0
-DispatchTailSub14	lea.l	DispatchTail_71(pc),a0
+; Zero-filled work storage (140 bytes).
+Buf8C_2	dcb.b	$8C,0
+DispatchTailSub14	lea.l	Long1(pc),a0
 	move.l	$4(sp),(a0)
 	lea.l	.lFF410C(pc),a0
 	move.l	$FFFFFD08.w,(a0)
@@ -176,7 +177,8 @@ DispatchTailSub14	lea.l	DispatchTail_71(pc),a0
 	move.w	d0,sr
 	rts
 .lFF410C	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_71	dc.b	$00,$00,$00,$00	; ....
+; Zero-filled work storage (4 bytes).
+Long1	dc.b	$00,$00,$00,$00	; ....
 DispatchTailSub15	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
@@ -217,7 +219,7 @@ DispatchTailSub15	movea.l	#$C00000,a0
 	move.w	#$FF,d0
 .l419A	move.l	d1,(a0)
 	dbra	d0,.l419A
-	lea.l	DispatchTail_88(pc),a1
+	lea.l	Buf8_2(pc),a1
 	move.w	#$2FF,d3
 .l41A8	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -235,11 +237,11 @@ DispatchTailSub15	movea.l	#$C00000,a0
 DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
-	lea.l	DispatchTail_73(pc),a2
+	lea.l	Word1(pc),a2
 	tst.w	(a2)
 	beq.w	.l427E
 	movea.l	#$C00000,a0
-	lea.l	DispatchTail_76(pc),a1
+	lea.l	Buf80_1(pc),a1
 	move.l	#$C0000000,$4(a0)
 	dc.w	$303A,$00A0
 .l41FA	move.l	(a1)+,(a0)
@@ -253,7 +255,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	dbra	d0,.l41FA
 	clr.w	(a2)
 	dc.w	$263A,$010A
-	lea.l	DispatchTail_80(pc),a2
+	lea.l	Buf5EC_1(pc),a2
 	dc.w	$243A,$0106
 	dc.w	$2E3A,$010A
 	subq.w	#$1,d7
@@ -290,25 +292,31 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 .l426C	move.w	(a2)+,(a0)
 	dbra	d5,.l426C
 	dbra	d7,.l4258
-.l4276	lea.l	DispatchTail_74(pc),a2
+.l4276	lea.l	Word2(pc),a2
 	eori.w	#$1,(a2)
-.l427E	lea.l	DispatchTail_70(pc),a0
+.l427E	lea.l	Buf8C_2(pc),a0
 	addq.l	#$1,(a0)
-	move.l	DispatchTail_71(pc),d0
+	move.l	Long1(pc),d0
 	beq.b	.l428E
 	movea.l	d0,a0
 	jsr	(a0)
 .l428E	movem.l	(sp)+,d0-d7/a0-a5
 	rte
-DispatchTail_73	dc.b	$00,$00	; ..
-DispatchTail_74	dc.b	$00,$00	; ..
-DispatchTail_75	dc.b	$00,$00,$00,$00	; ....
-DispatchTail_76	dcb.b	$80,0
+; Zero-filled work storage (2 bytes).
+Word1	dc.b	$00,$00	; ..
+; Zero-filled work storage (2 bytes).
+Word2	dc.b	$00,$00	; ..
+; Zero-filled work storage (4 bytes).
+Long2	dc.b	$00,$00,$00,$00	; ....
+; Zero-filled work storage (128 bytes).
+Buf80_1	dcb.b	$80,0
 DispatchTail_77	dc.b	$00,$00,$E0,$00	; ....
 .lFF4320	dc.b	$00,$00,$00,$80	; ....
-DispatchTail_78	dc.b	$00,$00,$00,$00	; ....
+; Zero-filled work storage (4 bytes).
+Long3	dc.b	$00,$00,$00,$00	; ....
 DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
-DispatchTail_80	dcb.b	$5EC,0
+; Zero-filled work storage (1516 bytes).
+Buf5EC_1	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
 ; Second copy of DrawTextToPlane.
 DrawTextToPlane_B	link	a6,#$0
@@ -339,7 +347,7 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-.l4D84	move.w	DispatchTail_73(pc),d0
+.l4D84	move.w	Word1(pc),d0
 	bne.b	.l4D84
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
@@ -352,9 +360,9 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	move.w	#$3FF,d1
 .l4DAA	move.l	d0,(a0)
 	dbra	d1,.l4DAA
-	lea.l	DispatchTail_74(pc),a0
+	lea.l	Word2(pc),a0
 	move.w	#$1,(a0)
-	lea.l	DispatchTail_76(pc),a0
+	lea.l	Buf80_1(pc),a0
 	move.l	#$EEE,(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
@@ -363,7 +371,7 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	clr.l	(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
-	lea.l	DispatchTail_73(pc),a0
+	lea.l	Word1(pc),a0
 	move.w	#$1,(a0)
 .l4DD8	move.w	(a0),d0
 	bne.b	.l4DD8
@@ -372,7 +380,7 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 ; Second copy of DrawTextBuffer.
 DrawTextBuffer_B	link	a6,#$0
 DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
-	lea.l	DispatchTail_73(pc),a2
+	lea.l	Word1(pc),a2
 .l4DEC	tst.w	(a2)
 	bne.b	.l4DEC
 	movea.l	#$C00000,a0
@@ -385,7 +393,7 @@ DispatchTail_82	movea.l	$14(a6),a1
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
-	move.w	DispatchTail_74(pc),d1
+	move.w	Word2(pc),d1
 	bne.b	DispatchTail_84
 	moveq	#$0,d0
 	move.w	d6,d0
@@ -395,11 +403,11 @@ DispatchTail_83	adda.l	d0,a5
 	adda.l	d0,a4
 DispatchTail_84	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	lea.l	DispatchTail_75(pc),a2
+	lea.l	Long2(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
-	lea.l	DispatchTail_76(pc),a2
+	lea.l	Buf80_1(pc),a2
 .l4E42	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
@@ -410,11 +418,11 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.l4E42
-DispatchTailSub19	lea.l	DispatchTail_78(pc),a3
+DispatchTailSub19	lea.l	Long3(pc),a3
 	move.l	d6,(a3)
 	lea.l	DispatchTail_79(pc),a3
 	move.l	d7,(a3)
-	lea.l	DispatchTail_80(pc),a3
+	lea.l	Buf5EC_1(pc),a3
 	move.l	d7,-(sp)
 	move.l	$10(a6),d3
 	lsr.l	#$5,d3
@@ -468,7 +476,7 @@ DispatchTail_85	dbra	d5,DispatchTailSub20
 	move.l	(a1)+,(a0)
 .l4EE0	dbra	d4,.l4ED0
 .l4EE4	dbra	d7,.l4ECC
-DispatchTail_86	lea.l	DispatchTail_73(pc),a2
+DispatchTail_86	lea.l	Word1(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
@@ -508,7 +516,8 @@ DispatchTail_87	move.l	a1,d1
 	move.l	d0,$4(a0)
 	move.l	(a1),(a0)
 	rts
-DispatchTail_88	dcb.b	$8,0
+; Zero-filled work storage (8 bytes).
+Buf8_2	dcb.b	$8,0
 	dc.b	'    ',$00,$20,$00,$00,$50,$50,$00,$00,$00,$00,$00,$00	;     . ..PP......
 	dc.b	$28,$78,$50,$F0,$A0,$00,$00,' pP ',$10,$50,$70,$20,$00	; (xP.... pP .Pp .
 	dc.b	$50,$A0,$40,$30,$50,$A0,$00,$00,$60,$80,$40,$A8,$90,$68,$00,$00	; P.@0P...`.@..h..
@@ -998,7 +1007,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 .lFF59F8	movem.l	d0-d7/a0-a2,-(sp)
 	st.b	$FF6D8A.l
 	bsr.w	.lFF5AC8
-	lea.l	Set1MFlag_5(pc),a0
+	lea.l	Buf80_2(pc),a0
 	moveq	#$3F,d1
 .l5A0C	move.w	#$0,(a0)+
 	dbra	d1,.l5A0C
@@ -1023,7 +1032,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	jsr	$FF6BD0.l
 	add.w	d2,d2
 	lea.l	$4(a1,d2.w),a0
-	lea.l	Set1MFlag_5(pc),a1
+	lea.l	Buf80_2(pc),a1
 	moveq	#$1F,d0
 .l5A78	move.l	(a0)+,(a1)+
 	dbra	d0,.l5A78
@@ -1088,7 +1097,7 @@ Set1MFlag_4	movem.l	d0-d7/a0-a4,-(sp)
 	asl.w	d0,d5
 	move.w	d5,d4
 	not.w	d4
-	lea.l	Set1MFlag_5(pc),a1
+	lea.l	Buf80_2(pc),a1
 	movea.l	#$C00000,a0
 	clr.w	d6
 .l5B60	move.w	d3,d2
@@ -1204,7 +1213,8 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
-Set1MFlag_5	dcb.b	$80,0
+; Zero-filled work storage (128 bytes).
+Buf80_2	dcb.b	$80,0
 	dc.b	$C3,$00,$06,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .....Q...Q...Q..
 	dc.b	$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .Q...Q...Q...Q..
 	dc.b	$18,$4F,$18,$4F,$14,$48,$16,$49,$18,$4B	; .O.O.H.I.K

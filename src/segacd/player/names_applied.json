@@ -130,5 +130,89 @@
  "LF64_44": [
   "GateArrayLoadCmd",
   "Loads a command through the gate-array comm registers."
+ ],
+ "LF64_18": [
+  "StrSituationTable",
+  "Length-prefixed situation names (power play, penalty kill, home/road advantage, skater counts)."
+ ],
+ "LF64_19": [
+  "StrGoalieNum",
+  "'Goalie # ' label."
+ ],
+ "LF64_20": [
+  "StrPlayerNum",
+  "'Player # ' label."
+ ],
+ "LF64_45": [
+  "StatColumnIdsSkaterA",
+  "Column ids for one skater stat page, $FFFF ends the list."
+ ],
+ "LF64_46": [
+  "StatColumnIdsSkaterB",
+  "Column ids for the second skater stat page."
+ ],
+ "LF64_47": [
+  "StatColumnWidthsA",
+  "Column widths for the first page."
+ ],
+ "LF64_48": [
+  "StatColumnWidthsB",
+  "Column widths for the second page."
+ ],
+ "LF64_49": [
+  "StrPlayers",
+  "'Players'."
+ ],
+ "LF64_50": [
+  "StrGoalies",
+  "'Goalies'."
+ ],
+ "LF64_51": [
+  "StrSkaterStatHeaders",
+  "Skater column headings: Gp G A Pts +/- Pim PP Sh Gw Gt S Pctg."
+ ],
+ "LF64_52": [
+  "StrGoalieStatHeaders",
+  "Goalie column headings: Gp Mins Ga Avg. W L T SO En Shts and the per-game forms."
+ ],
+ "LF64_53": [
+  "StrRegular",
+  "'Regular'."
+ ],
+ "LF64_54": [
+  "StrPlayoff",
+  "'Playoff'."
+ ],
+ "LF64_55": [
+  "StrSkaterCareerHeaders",
+  "Skater career headings: Season Club Lea Gp G A Tp Pim."
+ ],
+ "LF64_56": [
+  "StrGoalieCareerHeaders",
+  "Goalie career headings: Season Club Lea Gp W L T Mins Ga So Avg."
+ ],
+ "LF64_57": [
+  "PicTilesStillA",
+  "Picture tile data, single frame (page A)."
+ ],
+ "LF64_58": [
+  "PicTilesFramesA",
+  "Picture tile data, animation frames (page A)."
+ ],
+ "LF64_59": [
+  "PicTilesStillB",
+  "Picture tile data, single frame (page B)."
+ ],
+ "LF64_60": [
+  "PicTilesFramesB",
+  "Picture tile data, three animation frames (page B), $504 bytes each."
+ ],
+ "LF64_61": [
+  "PlRecordTable",
+  "Table of $34-byte records indexed by the current page."
+ ],
+ "LF64_62": [
+  "PlBackgroundImage",
+  "Background image: width, height, then tile data."
  ]
 }

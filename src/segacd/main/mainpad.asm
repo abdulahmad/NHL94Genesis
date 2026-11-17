@@ -12,5 +12,6 @@
 	dc.b	$1D,$1F,$21,$23,$25,$27,')+-/1'	; ..!#%')+-/1
 	dcb.b	$9,0
 DispatchTail_12	dc.b	$60,$00,$00,$8E			; `...
-DispatchTail_13	dcb.b	$8C,0
+; Zero-filled work storage (140 bytes).
+Buf8C_1	dcb.b	$8C,0
 

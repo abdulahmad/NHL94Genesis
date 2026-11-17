@@ -6,7 +6,7 @@ DisposeEngine	link	a6,#$0
 	tst.l	(a4)
 	beq.b	.l4EE4
 	move.l	(a4),-(sp)
-	jsr	ffree_2(pc)
+	jsr	ffree_3(pc)
 	addq.w	#$4,sp
 .l4EE4	movea.l	-$4(a6),a4
 	unlk	a6
