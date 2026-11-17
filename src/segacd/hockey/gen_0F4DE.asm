@@ -609,27 +609,27 @@ L2B2D6	movem.l	d0/a0-a3,-(sp)
 	move.w	$26(a2),d0
 	sub.w	$26(a3),d0
 	dc.w	$6700,$009C
-	bpl.w	.l10322
+	bpl.w	.next
 	btst.b	#$6,$17F6C.l
-	bne.w	.l1033C
+	bne.w	.next2
 	bsr.w	L2B392
 	bset.b	#$6,$17F6C.l
-	bra.w	.l1033C
-.l10322	exg.l	a2,a3
+	bra.w	.next2
+.next	exg.l	a2,a3
 	btst.b	#$6,$17F6C.l
-	beq.w	.l1033C
+	beq.w	.next2
 	bsr.w	L2B392
 	bclr.b	#$6,$17F6C.l
-.l1033C	bset.b	#$5,$17F6C.l
+.next2	bset.b	#$5,$17F6C.l
 	dc.w	$6600,$0056
 	cmpa.l	#$1834C,a3
-	bne.w	.l10376
+	bne.w	.next3
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$1,$1A56E.l
 	jsr	$2A478.l
 	bset.b	#$6,$17F7C.l
 	dc.w	$6000,$0028
-.l10376	move.w	$17FAE.l,$1A56C.l
+.next3	move.w	$17FAE.l,$1A56C.l
 	move.w	#$4,$1A56E.l
 	jsr	$2A478.l
 	dc.w	$6000,$FFDA

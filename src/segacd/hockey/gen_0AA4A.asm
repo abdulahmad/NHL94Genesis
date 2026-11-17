@@ -255,67 +255,67 @@ L25E56	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$9,d7
 	jsr	$6044.w
 	movea.l	#$AFF60,a0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop	btst.b	#$7,$FF800E.l
+	bne.s	.loop
 	move.l	#$0,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop2	btst.b	#$6,$FF800E.l
+	beq.s	.loop2
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop3	btst.b	#$6,$FF800E.l
+	bne.s	.loop3
 	bclr.b	#$7,$FF800F.l
 	move.l	#$3FFF,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop4	btst.b	#$7,$FF800E.l
+	bne.s	.loop4
 	move.w	#$16,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop5	btst.b	#$6,$FF800E.l
+	beq.s	.loop5
 	move.l	$FF8010.l,(a0)+
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop6	btst.b	#$6,$FF800E.l
+	bne.s	.loop6
 	bclr.b	#$7,$FF800F.l
-	dc.w	$51C8,$FFB2
+	dbra	d0,.loop4
 	move.l	#$27,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop7	btst.b	#$7,$FF800E.l
+	bne.s	.loop7
 	move.l	#$10,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop8	btst.b	#$6,$FF800E.l
+	beq.s	.loop8
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop9	btst.b	#$6,$FF800E.l
+	bne.s	.loop9
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop10	btst.b	#$7,$FF800E.l
+	bne.s	.loop10
 	move.w	#$15,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop11	btst.b	#$6,$FF800E.l
+	beq.s	.loop11
 	move.w	$FF8010.l,(a0)+
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop12	btst.b	#$6,$FF800E.l
+	bne.s	.loop12
 	bclr.b	#$7,$FF800F.l
-	dc.w	$51C8,$FFB2
+	dbra	d0,.loop10
 	jsr	$36D0A.l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst.b	#$5,$FF800F.l
-	beq.b	.lAFD2
+	beq.b	.next
 	move.w	#$1,-(a6)
-	bra.b	.lAFD6
-.lAFD2	move.w	#$0,-(a6)
-.lAFD6	bclr.b	#$5,$FF800F.l
+	bra.b	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr.b	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	move.w	$18BFE.l,d0
@@ -327,15 +327,15 @@ L25E56	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$21FC8.l
 	move.w	#$2,d0
 	jsr	$5F22.w
-	move.w	#$80,d0
+.loop13	move.w	#$80,d0
 	jsr	$5F22.w
-	dc.w	$6500,$FFF6
-	move.w	#$81,d0
+	bcs.w	.loop13
+.loop14	move.w	#$81,d0
 	jsr	$5F22.w
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
-	dc.w	$66EC
+	bne.s	.loop14
 	move.w	#$5,$19364.l
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
@@ -346,26 +346,26 @@ L25E56	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$AFF60,a0
 	jsr	$37762.l
 	jsr	$3816C.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop15	btst.b	#$7,$FF800E.l
+	bne.s	.loop15
 	move.w	#$27,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop16	btst.b	#$6,$FF800E.l
+	beq.s	.loop16
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop17	btst.b	#$6,$FF800E.l
+	bne.s	.loop17
 	bclr.b	#$7,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.b	.lB0CA
+	beq.b	.next3
 	bset.b	#$5,$FF800F.l
-	bra.b	.lB0D2
-.lB0CA	bclr.b	#$5,$FF800F.l
-.lB0D2	move.l	a6,$19360.l
+	bra.b	.next4
+.next3	bclr.b	#$5,$FF800F.l
+.next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	jmp	$2E980.l
 AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to a1
@@ -608,9 +608,9 @@ L264A0	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$1F,$06,$00	; ......
 L264AC	move.w	$17FAE.l,d0
 	tst.w	$1A390.l
-	beq.w	.lB4C2
+	beq.w	.next
 	move.w	$17FB0.l,d0
-.lB4C2	movea.l	#$1B00C,a1
+.next	movea.l	#$1B00C,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
 	adda.w	$4(a1),a1
@@ -628,9 +628,9 @@ L264F2	move.w	#$8,d0
 	dc.b	$00,$06,$8F,$1C,$08,$00	; ......
 L2650C	move.w	$17FAE.l,d3
 	tst.w	$1A390.l
-	beq.w	.lB522
+	beq.w	.next
 	move.w	$17FB0.l,d3
-.lB522	asl.w	#$2,d3
+.next	asl.w	#$2,d3
 	movea.l	$47D8C.l,a0
 	movea.l	(a0,d3.w),a0
 	movea.l	a0,a1
@@ -682,84 +682,84 @@ L265CA	move.w	#$18,$18D62.l
 	move.w	#$1,$1A566.l
 	bsr.w	NameLetterGrid
 	clr.w	d0
-	dc.w	$6000,$01B0
-	bsr.w	GetNameLength
+	bra.w	L267DA
+L2662C	bsr.w	GetNameLength
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$05,$12,$00	; ......
 L2663C	tst.w	$1A566.l
-	beq.w	.lB654
+	beq.w	.next
 	movea.l	#$1A37C,a1
 	bsr.w	PrintNameField
 	bsr.w	PrintNamePrompt
-.lB654	bsr.w	MoveLogArrows
-	move.w	$17474.l,d0
-	cmp.w	$17474.l,d0
-	dc.w	$6700,$FFF8
+.next	bsr.w	MoveLogArrows
+.loop	move.w	$17474.l,d0
+.loop2	cmp.w	$17474.l,d0
+	beq.w	.loop2
 	movem.w	d1,-(sp)
 	move.w	$17FA6.l,d1
 	subi.w	#$1,d1
 	cmp.w	$1A390.l,d1
 	movem.w	(sp)+,d1
-	beq.w	.lB694
+	beq.w	.next2
 	jsr	$3750E.l
 	tst.w	d1
-	dc.w	$6700,$FFCA
-	bra.w	.lB6A0
-.lB694	jsr	$374F0.l
+	beq.w	.loop
+	bra.w	.next3
+.next2	jsr	$374F0.l
 	tst.w	d1
-	dc.w	$6700,$FFBA
-.lB6A0	btst	#$7,d1
-	dc.w	$6600,$0200
+	beq.w	.loop
+.next3	btst	#$7,d1
+	bne.w	L268A6
 	tst.w	$1A566.l
-	bne.w	.lB6DC
+	bne.w	.next4
 	move.w	#$1,d0
 	btst	#$1,d1
-	bne.w	.lB726
+	bne.w	.next5
 	move.w	#$FFFF,d0
 	btst	#$0,d1
-	bne.w	.lB726
+	bne.w	.next5
 	btst	#$4,d1
-	dc.w	$6700,$FF5C
+	beq.w	L2662C
 	bsr.w	NameLetterGrid
 	clr.w	d0
-	bra.w	.lB726
-.lB6DC	moveq	#-1,d0
+	bra.w	.next5
+.next4	moveq	#-1,d0
 	btst	#$6,d1
-	dc.w	$6600,$00F6
+	bne.w	L267DA
 	neg.w	d0
 	btst	#$5,d1
-	dc.w	$6600,$00EC
+	bne.w	L267DA
 	btst	#$3,d1
-	dc.w	$6600,$0112
+	bne.w	L26808
 	neg.w	d0
 	btst	#$2,d1
-	dc.w	$6600,$0108
+	bne.w	L26808
 	moveq	#$6,d0
 	btst	#$1,d1
-	dc.w	$6600,$00FE
+	bne.w	L26808
 	neg.w	d0
 	btst	#$0,d1
-	dc.w	$6600,$00F4
+	bne.w	L26808
 	btst	#$4,d1
-	dc.w	$6700,$FF10
+	beq.w	L2662C
 	bsr.w	NameLetterGrid
-	dc.w	$6000,$FF08
-.lB726	add.w	d0,$1A38C.l
-	cmpi.w	#$7,$1A38C.l
-	ble.w	.lB740
+	bra.w	L2662C
+.next5	add.w	d0,$1A38C.l
+.loop3	cmpi.w	#$7,$1A38C.l
+	ble.w	.next6
 	move.w	#$1,$1A38C.l
-.lB740	tst.w	$1A38C.l
-	bne.w	.lB752
+.next6	tst.w	$1A38C.l
+	bne.w	.next7
 	move.w	#$7,$1A38C.l
-.lB752	bsr.w	SkipOtherUserName
-	dc.w	$6700,$FFD4
+.next7	bsr.w	SkipOtherUserName
+	beq.w	.loop3
 	movea.l	#$1A37C,a1
 	bsr.w	GetLogName
 	tst.w	$1A566.l
-	bne.w	.lB778
+	bne.w	.next8
 	jsr	$26A4A.l
-	dc.w	$6000,$FEB6
-.lB778	jsr	$38F6E.l
+	bra.w	L2662C
+.next8	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$04,$13,$00	; ......
 L26784	add.w	d4,$18D58.l
 	jsr	$38F6E.l
@@ -777,23 +777,25 @@ L26796	bsr.w	LetterGridPos
 	bsr.w	SyncLetterCursor
 	move.w	d4,d0
 	neg.w	d0
-	bra.w	.lB7DA
-.lB7DA	add.w	d4,d0
+	bra.w	LB7DA
+L267DA
+LB7DA	add.w	d4,d0
 	cmpi.w	#$B,d0
-	dc.w	$6200,$FE4A
+	bhi.w	L2662C
 	move.w	d0,d4
 	bsr.w	PrintNameCursor
 	movea.l	#$1A37C,a0
 	clr.w	d0
 	cmpi.b	#$2D,(a0,d4.w)
-	beq.w	.lB808
+	beq.w	LB808
 	move.b	(a0,d4.w),d0
 	ext.w	d0
 	bsr.w	FindLetter
 	sub.w	d5,d0
-.lB808	add.w	d5,d0
+L26808
+LB808	add.w	d5,d0
 	cmpi.w	#$1D,d0
-	dc.w	$6200,$FE1C
+	bhi.w	L2662C
 	move.w	d0,-(sp)
 	bsr.w	LetterGridPos
 	moveq	#$1,d2
@@ -810,9 +812,9 @@ L26796	bsr.w	LetterGridPos
 	move.w	$18D58.l,-(sp)
 	move.w	$18D5A.l,-(sp)
 	tst.w	$1A566.l
-	beq.w	.lB86E
+	beq.w	.next
 	jsr	$26DF0.l
-.lB86E	move.w	(sp)+,$18D5A.l
+.next	move.w	(sp)+,$18D5A.l
 	addi.w	#$1,$18D5A.l
 	move.w	(sp)+,$18D58.l
 	addi.w	#$1,$18D58.l
@@ -821,8 +823,8 @@ L26796	bsr.w	LetterGridPos
 	movea.l	#$26DD0,a1
 	move.b	(a1,d5.w),d0
 	move.b	d0,(a0,d4.w)
-	dc.w	$6000,$FD88
-	bsr.w	StoreUserName
+	bra.w	L2662C
+L268A6	bsr.w	StoreUserName
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to select letter.",

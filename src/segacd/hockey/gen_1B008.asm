@@ -729,7 +729,7 @@ dostop
 	tst.w	$34(a3)
 	bne.w	stopna
 	jmp	(stopna2).l
-	dc.w	$6000,$002C
+	bra.w	stopna
 .next
 	move.w	#$50C,d1
 	btst	#$4,$62(a3)

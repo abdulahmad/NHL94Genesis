@@ -5,11 +5,11 @@ checkpuckcoll_sfx						;Entered from checkpuckcoll. Puck in the air: sfx 5 once 
 	move.w	#$5,-(sp)
 	bra.w	sfx
 L3B882	cmpi.w	#$190,$14(a3)
-	bgt.w	.l20896
+	bgt.w	.next
 	cmpi.w	#$FE70,$14(a3)
-	bgt.w	.l2089A
-.l20896	clr.w	$2A(a3)
-.l2089A	cmpi.w	#$10,$18(a3)
+	bgt.w	.next2
+.next	clr.w	$2A(a3)
+.next2	cmpi.w	#$10,$18(a3)
 	bgt.w	checkpuckcoll_sfx
 	move.w	$52(a3),d0
 	asl.w	#$1,d0
@@ -17,103 +17,104 @@ L3B882	cmpi.w	#$190,$14(a3)
 	movea.l	#$17CC0,a1
 	movea.l	#$17C80,a2
 	move.w	(a0,d0.w),d1
-	cmpi.w	#$F,d1
-	beq.w	.l208E8
+.loop	cmpi.w	#$F,d1
+	beq.w	.next3
 	clr.w	d4
 	move.b	$1(a1,d1.w),d4
 	move.w	(a2,d4.w),d5
 	sub.w	$14(a3),d5
 	cmpi.w	#$16,d5
-	bgt.w	.l208E8
+	bgt.w	.next3
 	bsr.w	L3B912
 	addq.w	#$1,d1
-	dc.w	$6000,$FFDA
-.l208E8	move.w	(a0,d0.w),d1
-	beq.w	.l20910
-	clr.w	d4
+	bra.w	.loop
+.next3	move.w	(a0,d0.w),d1
+	beq.w	.ex
+.loop2	clr.w	d4
 	move.b	-$1(a1,d1.w),d4
 	move.w	$14(a3),d5
 	sub.w	(a2,d4.w),d5
 	cmpi.w	#$16,d5
-	bgt.w	.l20910
+	bgt.w	.ex
 	bsr.w	L3B912
 	subq.w	#$1,d1
-	dc.w	$6600,$FFE2
-.l20910	rts
+	bne.w	.loop2
+.ex	rts
 L3B912	movem.l	d0-d7/a0-a3,-(sp)
 	lsr.w	#$1,d4
 	cmp.w	$17BE0.l,d4
-	beq.w	.l20A36
+	beq.w	L20A36
 	cmpi.w	#$B,d4
-	bgt.w	.l20A36
+	bgt.w	L20A36
 	asl.w	#$7,d4
 	movea.l	#$17480,a2
 	adda.w	d4,a2
 	btst.b	#$2,$17F70.l
-	beq.w	.l20956
+	beq.w	.next
 	asr.w	#$7,d4
 	cmp.w	$19368.l,d4
-	beq.w	.l20956
+	beq.w	.next
 	cmp.w	$1936A.l,d4
-	bne.w	.l20A36
-.l20956	btst.b	#$2,$62(a2)
-	bne.w	.l20A36
+	bne.w	L20A36
+.next	btst.b	#$2,$62(a2)
+	bne.w	L20A36
 	tst.b	$5E(a2)
-	bne.w	.l20A36
+	bne.w	L20A36
 	btst.b	#$2,$63(a2)
-	bne.w	.l209E0
+	bne.w	.next3
 	cmpi.w	#$5,$18(a3)
-	bgt.w	.l209E0
+	bgt.w	.next3
 	cmpi.w	#$200,$2C(a3)
-	bgt.w	.l209E0
+	bgt.w	.next3
 	move.l	a2,-(sp)
-	dc.w	$6100,$A9D8
+	bsr.w	GetHotCount
 	add.w	$0(a2),d0
 	sub.w	$0(a3),d0
 	cmpi.w	#$E,d0
-	bgt.w	.l209E0
+	bgt.w	.next3
 	cmpi.w	#$FFF2,d0
-	blt.w	.l209E0
+	blt.w	.next3
 	add.w	$14(a2),d1
 	sub.w	$14(a3),d1
 	cmpi.w	#$E,d1
-	bgt.w	.l209E0
+	bgt.w	.next3
 	cmpi.w	#$FFF2,d1
-	blt.w	.l209E0
+	blt.w	.next3
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	move.l	#$C4,d1
 	tst.b	$5E(a3)
-	ble.w	.l209D2
+	ble.w	.next2
 	lsr.w	#$2,d1
-.l209D2	cmp.l	d1,d0
-	bhi.w	.l209E0
+.next2	cmp.l	d1,d0
+	bhi.w	.next3
 	bsr.w	puckstick
-	bra.w	.l20A36
-.l209E0	tst.w	$34(a2)
+	bra.w	L20A36
+.next3	tst.w	$34(a2)
 	beq.w	L3BA8C
 	btst.b	#$3,$64(a2)
-	bne.w	.l20A36
+	bne.w	L20A36
 	move.w	$0(a2),d0
 	sub.w	$0(a3),d0
 	cmpi.w	#$8,d0
-	bgt.w	.l20A36
+	bgt.w	L20A36
 	cmpi.w	#$FFF8,d0
-	blt.w	.l20A36
+	blt.w	L20A36
 	move.w	$14(a2),d1
 	sub.w	$14(a3),d1
 	cmpi.w	#$8,d1
-	bgt.w	.l20A36
+	bgt.w	L20A36
 	cmpi.w	#$FFF8,d1
-	blt.w	.l20A36
+	blt.w	L20A36
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmpi.l	#$40,d0
-	bhi.w	.l20A36
+	bhi.w	L20A36
 	bsr.w	puckbody
-.l20A36	movem.l	(sp)+,d0-d7/a0-a3
+L3BA36
+L20A36	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
 	dc.b	$00,$0D,$00,$0D,$00,$0E,$00,$0E,$00,$0E,$00,$0E,$00,$0F,$00,$0F	; ................
@@ -125,87 +126,87 @@ L3BA8C	move.l	a0,-(sp)
 	clr.w	d0
 	move.b	$68(a2),d0
 	btst.b	#$1,$17F7C.l
-	bne.w	.l20AB2
+	bne.w	.next
 	btst.b	#$6,$17F7A.l
-	beq.w	.l20AB6
-.l20AB2	addi.b	#$2,d0
-.l20AB6	lsr.w	#$1,d0
+	beq.w	.next2
+.next	addi.b	#$2,d0
+.next2	lsr.w	#$1,d0
 	btst.b	#$3,$62(a2)
-	beq.w	.l20AC6
+	beq.w	.next3
 	move.w	#$F,d0
-.l20AC6	add.w	d0,d0
+.next3	add.w	d0,d0
 	btst.b	#$0,$17F78.l
-	beq.w	.l20ADE
+	beq.w	.next4
 	tst.w	d0
-	beq.w	.l20ADE
+	beq.w	.next4
 	subi.w	#$2,d0
-.l20ADE	cmpi.w	#$1E,d0
-	blt.w	.l20AEA
+.next4	cmpi.w	#$1E,d0
+	blt.w	.next5
 	move.w	#$1E,d0
-.l20AEA	move.w	(a0,d0.w),$17EB4.l
+.next5	move.w	(a0,d0.w),$17EB4.l
 	movea.l	#$3BA64,a0
 	clr.l	$17EB6.l
 	move.w	(a0,d0.w),$17EB8.l
 	move.w	$17EB4.l,$17EBA.l
 	neg.w	$17EBA.l
 	btst.b	#$1,$17F76.l
-	beq.w	.l20B3C
+	beq.w	.next6
 	move.w	#$C,$17EB4.l
 	move.l	#$90,$17EB6.l
 	move.w	#$FFF4,$17EBA.l
-.l20B3C	cmpi.w	#$250,$58(a2)
-	beq.w	.l20B50
+.next6	cmpi.w	#$250,$58(a2)
+	beq.w	.next7
 	cmpi.w	#$2A2,$58(a2)
-	bne.w	.l20B6A
-.l20B50	move.w	#$12,$17EB4.l
+	bne.w	.next8
+.next7	move.w	#$12,$17EB4.l
 	move.l	#$144,$17EB6.l
 	move.w	#$FFEE,$17EBA.l
-.l20B6A	movea.l	(sp)+,a0
+.next8	movea.l	(sp)+,a0
 	cmpi.w	#$F,$17B98.l
-	bgt.w	.l20C0A
+	bgt.w	.next14
 	move.w	$0(a2),d0
 	cmpi.w	#$250,$58(a2)
-	beq.w	.l20B98
+	beq.w	.next9
 	cmpi.w	#$2A2,$58(a2)
-	bne.w	.l20BB6
+	bne.w	.next13
 	move.w	#$6,d1
-	bra.w	.l20B9C
-.l20B98	move.w	#$FFFA,d1
-.l20B9C	btst.b	#$7,$62(a2)
-	bne.w	.l20BA8
+	bra.w	.next10
+.next9	move.w	#$FFFA,d1
+.next10	btst.b	#$7,$62(a2)
+	bne.w	.next11
 	neg.w	d1
-.l20BA8	btst.b	#$0,$76(a2)
-	beq.w	.l20BB4
+.next11	btst.b	#$0,$76(a2)
+	beq.w	.next12
 	neg.w	d1
-.l20BB4	add.w	d1,d0
-.l20BB6	sub.w	$0(a3),d0
+.next12	add.w	d1,d0
+.next13	sub.w	$0(a3),d0
 	cmp.w	$17EB4.l,d0
-	bgt.w	.l20C0A
+	bgt.w	.next14
 	cmp.w	$17EBA.l,d0
-	blt.w	.l20C0A
+	blt.w	.next14
 	move.w	$14(a2),d1
 	sub.w	$14(a3),d1
 	cmp.w	$17EB4.l,d1
-	bgt.w	.l20C0A
+	bgt.w	.next14
 	cmp.w	$17EBA.l,d1
-	blt.w	.l20C0A
+	blt.w	.next14
 	movem.w	d0-d1,-(sp)
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmp.l	$17EB6.l,d0
 	movem.w	(sp)+,d0-d1
-	bhi.w	.l20C0A
-	dc.w	$6100,$03FE
-	dc.w	$6000,$FE2E
-.l20C0A	bclr.b	#$2,$17F72.l
-	dc.w	$6700,$FE22
+	bhi.w	.next14
+	bsr.w	L3C002
+	bra.w	L3BA36
+.next14	bclr.b	#$2,$17F72.l
+	beq.w	L3BA36
 	move.w	$17BE0.l,d0
 	cmp.w	$52(a2),d0
-	dc.w	$6700,$FE14
+	beq.w	L3BA36
 	move.w	#$5,-(sp)
 	bsr.w	sfx
-	dc.w	$6000,$FE08
+	bra.w	L3BA36
 puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d0 =
 									;distance^2 (from checkpuckcoll .ccx). A stick check on the puck carrier
 									;can steal the puck (Stk rolls, smaller ranges when the carrier is in the
@@ -447,29 +448,29 @@ L3C002	btst.b	#$4,$17F68.l
 	bne.w	rtss2
 	clr.w	d2
 	cmpi.w	#$8,$18(a3)
-	bgt.w	.l2101E
+	bgt.w	.next
 	addi.w	#$2,d2
-.l2101E	neg.w	d0
+.next	neg.w	d0
 	neg.w	d1
 	bsr.w	vtoa
 	sub.w	$54(a2),d0
 	andi.w	#$7,d0
 	move.w	d0,d1
 	andi.w	#$3,d1
-	bne.w	.l21084
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+	bne.w	.next2
+.loop	btst.b	#$7,$FF800E.l
+	bne.s	.loop
 	move.w	#$1B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop2	btst.b	#$6,$FF800E.l
+	beq.s	.loop2
 	move.w	$FF8010.l,d0
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop3	btst.b	#$6,$FF800E.l
+	bne.s	.loop3
 	bclr.b	#$7,$FF800F.l
-.l21084	andi.w	#$4,d0
+.next2	andi.w	#$4,d0
 	lsr.w	#$2,d0
 	eori.w	#$1,d0
 	add.w	d0,d2
@@ -480,34 +481,34 @@ L3C002	btst.b	#$4,$17F68.l
 	add.b	(a2,d0.w),d1
 	dc.w	$41FA,$01A4
 	btst.b	#$3,$4(a2)
-	beq.w	.l210B2
+	beq.w	.next3
 	eori.w	#$2,d2
-.l210B2	move.w	$6(a2),d0
+.next3	move.w	$6(a2),d0
 	move.w	#$197,-(sp)
 	cmpi.w	#$233,d0
-	blt.w	.l210CA
+	blt.w	.next4
 	move.w	#$292,(sp)
 	dc.w	$41FA,$017E
-.l210CA	sub.w	(sp)+,d0
+.next4	sub.w	(sp)+,d0
 	move.b	(a0,d0.w),d0
 	lsr.w	d2,d0
 	andi.w	#$3,d0
 	bclr.b	#$2,$17F72.l
 	bsr.w	ChkShotStat
-	dc.w	$6100,$9C44
+	bsr.w	a2touchpuck
 	cmpi.w	#$3000,$17BAA.l
-	bgt.w	.l210FE
+	bgt.w	.next5
 	cmpi.w	#$D000,$17BAA.l
-	bgt.w	.l21114
-.l210FE	move.w	#$B,-(sp)
+	bgt.w	.next7
+.next5	move.w	#$B,-(sp)
 	btst.b	#$6,$62(a2)
-	beq.w	.l21110
+	beq.w	.next6
 	move.w	#$D,(sp)
-.l21110	bsr.w	sfx
-.l21114	move.w	#$24,-(sp)
+.next6	bsr.w	sfx
+.next7	move.w	#$24,-(sp)
 	bsr.w	sfx
 	move.w	$17BE0.l,d2
-	bmi.w	.l21194
+	bmi.w	.next9
 	st.b	$17BE0.l
 	asl.w	#$7,d2
 	movea.l	#$17480,a0
@@ -516,23 +517,23 @@ L3C002	btst.b	#$4,$17F68.l
 	move.w	$52(a0),$17E2A.l
 	bclr.b	#$2,$17F6A.l
 	bclr.b	#$3,$17F6A.l
-	clr.w	$2C(a3)
+.loop4	clr.w	$2C(a3)
 	move.b	#$A,$5E(a2)
 	move.w	#$4,$46(a2)
 	move.w	$0(a3),d0
 	sub.w	$0(a2),d0
 	move.w	$14(a3),d1
 	sub.w	$14(a2),d1
-	bne.w	.l2117E
+	bne.w	.next8
 	move.l	a2,-(sp)
-	dc.w	$6100,$A1E6
-.l2117E	move.b	d0,$28(a3)
+	bsr.w	GetHotCount
+.next8	move.b	d0,$28(a3)
 	move.b	d1,$2A(a3)
 	bra.w	puckflip
 	bset.b	#$2,$17F72.l
 	rts
-.l21194	cmpi.w	#$2F4,$58(a2)
-	dc.w	$6700,$FFB8
+.next9	cmpi.w	#$2F4,$58(a2)
+	beq.w	.loop4
 	moveq	#$2,d0
 	add.b	$6C(a2),d0
 	asl.w	#$8,d0
@@ -540,34 +541,34 @@ L3C002	btst.b	#$4,$17F68.l
 	bsr.w	randomd0
 	addi.w	#$C00,d0
 	add.w	d0,d0
-	bpl.w	.l211BA
+	bpl.w	.next10
 	move.w	#$7FFF,d0
-.l211BA	btst.b	#$1,$63(a2)
-	bne.w	.l21202
+.next10	btst.b	#$1,$63(a2)
+	bne.w	.next12
 	cmpi.w	#$2C,$0(a3)
-	bgt.w	.l21202
+	bgt.w	.next12
 	cmpi.w	#$FFD4,$0(a3)
-	blt.w	.l21202
+	blt.w	.next12
 	cmpi.w	#$10E,$14(a3)
-	bgt.w	.l21202
+	bgt.w	.next12
 	cmpi.w	#$FEF2,$14(a3)
-	blt.w	.l21202
+	blt.w	.next12
 	cmpi.w	#$D2,$14(a3)
-	bgt.w	.l21200
+	bgt.w	.next11
 	cmpi.w	#$FF2E,$14(a3)
-	bgt.w	.l21202
-.l21200	asr.w	#$2,d0
-.l21202	cmp.w	$17BA8.l,d0
-	dc.w	$6D00,$FF4A
+	bgt.w	.next12
+.next11	asr.w	#$2,d0
+.next12	cmp.w	$17BA8.l,d0
+	blt.w	.loop4
 	cmp.w	$17BAA.l,d0
-	dc.w	$6D00,$FF40
+	blt.w	.loop4
 	neg.w	d0
 	cmp.w	$17BA8.l,d0
-	dc.w	$6E00,$FF34
+	bgt.w	.loop4
 	cmp.w	$17BAA.l,d0
-	dc.w	$6E00,$FF2A
+	bgt.w	.loop4
 	btst.b	#$2,$63(a2)
-	dc.w	$6600,$FF20
+	bne.w	.loop4
 	clr.w	$2C(a3)
 	bra.w	puckglue
 L3C23E	dc.b	$00,$73,$00,$6E,$00,$70,$00,$72	; .s.n.p.r

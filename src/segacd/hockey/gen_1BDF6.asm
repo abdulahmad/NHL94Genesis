@@ -523,9 +523,9 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	adda.l	#$7D0,a1
 	movea.l	#$80000,a2
 	move.w	(VisTeam).l,d0
-	dc.w	$611C
+	bsr.s	.next
 	move.w	(HomeTeam).l,d0
-	dc.w	$6114
+	bsr.s	.next
 	adda.l	#$EA60,a0
 	move.w	#$2,d7
 	jsr	$6044.w

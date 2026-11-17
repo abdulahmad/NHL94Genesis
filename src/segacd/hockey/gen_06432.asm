@@ -13,81 +13,81 @@
 	bclr	#$7,$FF800F.l
 	rts
 L22018	btst.b	#$5,$FF800E.l
-	beq.w	.l7094
+	beq.w	.ex
 	bset.b	#$2,$FF800F.l
 	move.l	#$2203A,-(sp)
 	move.l	$18D66.l,-(sp)
 	rts
 	jsr	$47DB2.l
-	btst.b	#$4,$FF800E.l
-	dc.w	$66F6
+.loop	btst.b	#$4,$FF800E.l
+	bne.s	.loop
 	move.w	#$2F,$FF8026.l
 	bset.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$67F6
+.loop2	btst.b	#$3,$FF800E.l
+	beq.s	.loop2
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$66F6
+.loop3	btst.b	#$3,$FF800E.l
+	bne.s	.loop3
 	bclr.b	#$4,$FF800F.l
 	bclr.b	#$2,$FF800F.l
 	addq.w	#$1,$17460.l
-.l7094	rts
+.ex	rts
 	movea.l	#$C458,sp
 	movea.l	#$1745C,a0
-	clr.l	(a0)+
+.loop4	clr.l	(a0)+
 	cmpa.l	#$1AD9A,a0
-	dc.w	$6D00,$FFF6
+	blt.w	.loop4
 	move.w	#$C,d7
 	jsr	$6044.w
 	move.w	d0,$193BA.l
 	tst.w	$193BA.l
-	bne.b	.l70FE
+	bne.b	.next2
 	jsr	$2243E.l
 	move.w	#$0,d0
 	lea.l	$7E000.l,a0
 	lea.l	$17EF2.l,a1
 	jsr	$5F16.w
-	bcs.b	.l70F6
+	bcs.b	.next
 	move.w	#$3,d0
 	lea.l	$2240C.l,a0
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
-	bra.b	.l70FE
-.l70F6	move.w	#$FFFF,$193BA.l
-.l70FE	move.l	#$19360,$19360.l
+	bra.b	.next2
+.next	move.w	#$FFFF,$193BA.l
+.next2	move.l	#$19360,$19360.l
 	clr.w	$1AD94.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop5	btst.b	#$7,$FF800E.l
+	bne.s	.loop5
 	movem.l	a0,-(sp)
 	lea.l	$C00004.l,a0
 	move.l	a0,$FF8022.l
 	move.w	#$18,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop6	btst.b	#$6,$FF800E.l
+	beq.s	.loop6
 	move.w	$FF8010.l,d0
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop7	btst.b	#$6,$FF800E.l
+	bne.s	.loop7
 	bclr.b	#$7,$FF800F.l
 	movem.l	(sp)+,a0
 	andi.w	#$1,d0
 	move.w	d0,$18C20.l
-	beq.w	.l7184
+	beq.w	.loop8
 	bset.b	#$0,$1AD94.l
-.l7184	btst.b	#$7,$FF800E.l
-	bne.b	.l7184
+.loop8	btst.b	#$7,$FF800E.l
+	bne.b	.loop8
 	move.w	#$2B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop9	btst.b	#$6,$FF800E.l
+	beq.s	.loop9
 	move.w	$FF8010.l,$18BF8.l
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop10	btst.b	#$6,$FF800E.l
+	bne.s	.loop10
 	bclr.b	#$7,$FF800F.l
 	move.w	#$FFFF,$17DD6.l
 	jsr	$21FC8.l
@@ -100,22 +100,22 @@ L22018	btst.b	#$5,$FF800E.l
 	move.w	$18BFA.l,$18C24.l
 	jsr	$37460.l
 	jmp	$3F2D6.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop11	btst.b	#$7,$FF800E.l
+	bne.s	.loop11
+.loop12	btst.b	#$6,$FF800E.l
+	beq.s	.loop12
 	bset.b	#$6,$FF800F.l
 	bset.b	#$7,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop13	btst.b	#$6,$FF800E.l
+	bne.s	.loop13
 	bclr.b	#$6,$FF800F.l
 	bclr.b	#$7,$FF800F.l
 	rts
-	bclr.b	#$2,$FF8003.l
-	dc.w	$66F6
+.loop14	bclr.b	#$2,$FF8003.l
+	bne.s	.loop14
 	rts
-.loop4	btst	#$1,$FF8003.l
-	beq.b	.loop4
+.loop15	btst	#$1,$FF8003.l
+	beq.b	.loop15
 	rts
 	dc.w	$0839,$0007,$00FF,$800E,$66F6,$33FC,$0007,$00FF
 	dc.w	$8020,$08F9,$0006,$00FF,$800F,$0839,$0006,$00FF
@@ -123,13 +123,13 @@ L22018	btst.b	#$5,$FF800E.l
 	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9
 	dc.w	$0007,$00FF,$800F,$4EB9,$0002,$2268,$4E75
 	bset	#$0,$FF8003.l
-.loop5	btst	#$1,$FF8003.l
-	bne.b	.loop5
+.loop16	btst	#$1,$FF8003.l
+	bne.b	.loop16
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
-.loop6	move.w	#$80,d0
+.loop17	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.b	.loop6
+	bcs.b	.loop17
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_072EA.bin

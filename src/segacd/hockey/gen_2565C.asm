@@ -841,82 +841,82 @@ L4134E	movea.l	#$17EF2,a0
 	movea.l	#$17EF2,a1
 	jsr	$3926A.l
 	movea.l	#$C00000,a0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop	btst.b	#$7,$FF800E.l
+	bne.s	.loop
 	move.w	#$9100,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop2	btst.b	#$6,$FF800E.l
+	beq.s	.loop2
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop3	btst.b	#$6,$FF800E.l
+	bne.s	.loop3
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop4	btst.b	#$7,$FF800E.l
+	bne.s	.loop4
 	move.w	#$9206,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop5	btst.b	#$6,$FF800E.l
+	beq.s	.loop5
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop6	btst.b	#$6,$FF800E.l
+	bne.s	.loop6
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop7	btst.b	#$7,$FF800E.l
+	bne.s	.loop7
 	move.w	#$8F02,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop8	btst.b	#$6,$FF800E.l
+	beq.s	.loop8
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop9	btst.b	#$6,$FF800E.l
+	bne.s	.loop9
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop10	btst.b	#$7,$FF800E.l
+	bne.s	.loop10
 	move.l	#$C0200000,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop11	btst.b	#$6,$FF800E.l
+	beq.s	.loop11
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop12	btst.b	#$6,$FF800E.l
+	bne.s	.loop12
 	bclr.b	#$7,$FF800F.l
 	movea.l	$47D18.l,a1
 	adda.l	(a1),a1
 	adda.w	#$20,a1
 	moveq	#$7,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop13	btst.b	#$7,$FF800E.l
+	bne.s	.loop13
 	move.l	(a1)+,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop14	btst.b	#$6,$FF800E.l
+	beq.s	.loop14
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop15	btst.b	#$6,$FF800E.l
+	bne.s	.loop15
 	bclr.b	#$7,$FF800F.l
-	dc.w	$51C8,$FFB2
+	dbra	d0,.loop13
 	dc.w	$6000,$FFFE
 L4152A	moveq	#$7,d2
-	rol.l	#$4,d0
+.loop	rol.l	#$4,d0
 	move.w	d0,d1
 	andi.w	#$F,d1
 	addi.w	#$30,d1
 	cmpi.w	#$39,d1
-	ble.w	.l26544
+	ble.w	.next
 	addi.w	#$7,d1
-.l26544	move.b	d1,(a0)+
-	dc.w	$51CA,$FFE4
+.next	move.b	d1,(a0)+
+	dbra	d2,.loop
 	rts
 updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
 									;excitement. Used by updatecrowdf.

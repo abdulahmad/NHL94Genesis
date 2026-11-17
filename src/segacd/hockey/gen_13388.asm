@@ -111,9 +111,9 @@ L2E62A	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$BC000,a0
 	jsr	$2258E.l
 	move.b	$8(a0),d0
-	bne.w	.l13658
+	bne.w	.next
 	move.b	#$50,d0
-.l13658	andi.w	#$FF,d0
+.next	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	$38D8C.l
 	dc.b	$00,$14,$FD,$04,$FA,$02,$41,$72,$65,$6E,$61,$20,$52,$65,$63,$6F	; ......Arena Reco
@@ -130,9 +130,9 @@ L2E696	jsr	$2AC02.l
 	movea.l	#$BC000,a0
 	jsr	$2258E.l
 	move.b	$8(a0),d0
-	bne.w	.l136B8
+	bne.w	.next
 	move.w	#$50,d0
-.l136B8	andi.w	#$FF,d0
+.next	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	$38D8C.l
 	dc.b	$00,$16,$FD,$04,$FA,$02,$4C,$65,$61,$67,$75,$65,$20,$52,$65,$63	; ......League Rec
@@ -329,28 +329,28 @@ L2EB00	move.w	$18D4E.l,d4
 L2EC7A	move.w	#$D,$18D5A.l
 	move.w	$18AD4.l,d1
 	moveq	#$0,d0
-	move.w	#$5,$18D58.l
+L2EC8A	move.w	#$5,$18D58.l
 	move.w	#$A000,$18D5C.l
 	cmp.w	$18AD2.l,d0
-	bne.w	.l13CAC
+	bne.w	.next
 	move.w	#$8000,$18D5C.l
-.l13CAC	jsr	$38F6E.l
+.next	jsr	$38F6E.l
 	dc.b	$00,$18,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20	; ..              
 	dc.b	$20,$20,$20,$20,$20,$20,$20,$20	;         
 L2ECCA	tst.w	d0
-	dc.w	$6600,$0020
+	bne.w	L2ECEE
 	move.w	#$B,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
-L2ECEA	bra.w	.l13D4E
-	movea.l	$1E(a2),a1
+L2ECEA	bra.w	L13D4E
+L2ECEE	movea.l	$1E(a2),a1
 	adda.w	$0(a1),a1
 	move.w	d0,d2
 	subi.w	#$1,d2
-	bra.w	.l13D06
-	adda.w	(a1),a1
+	bra.w	.next
+.loop	adda.w	(a1),a1
 	adda.w	#$8,a1
-.l13D06	dc.w	$51CA,$FFF8
+.next	dbra	d2,.loop
 	move.w	#$8,$18D58.l
 	jsr	$38F80.l
 	move.b	(a1),d2
@@ -365,9 +365,9 @@ L2ECEA	bra.w	.l13D4E
 	move.w	#$4,(a1)
 	move.w	#$5,$18D58.l
 	jsr	$38F80.l
-.l13D4E	addi.w	#$1,$18D5A.l
+L13D4E	addi.w	#$1,$18D5A.l
 	addi.w	#$1,d0
-	dc.w	$51C9,$FF2E
+	dbra	d1,L2EC8A
 	rts
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
 	movem.l	d1/a0,-(sp)
@@ -415,15 +415,15 @@ GetPlayerCount
 	movem.l	(sp)+,a0
 	rts
 L2EDE2	move.w	$17474.l,d1
-	cmp.w	$17474.l,d1
-	dc.w	$6700,$FFF8
+.loop	cmp.w	$17474.l,d1
+	beq.w	.loop
 	dc.w	$6100,$04FC
 	jsr	$37496.l
 	tst.b	d1
 	beq.w	L2EDE2
 	rts
 	bclr.b	#$0,$17F74.l
-	dc.w	$6100,$7EFC
+	bsr.w	forceblack
 	move.w	$18D64.l,-(sp)
 	bset.b	#$3,$17F6C.l
 	bclr.b	#$4,$17F72.l
@@ -441,9 +441,9 @@ L2EDE2	move.w	$17474.l,d1
 	bclr.b	#$5,$17F6E.l
 	st.b	$17D6E.l
 	movea.l	$17470.l,a4
-	bsr.w	suba4
+.loop2	bsr.w	suba4
 	tst.w	d7
-	dc.w	$6600,$FFF8
+	bne.w	.loop2
 	jsr	$3F03E.l
 	jsr	$3DD16.l
 	bclr.b	#$1,$17F6E.l
@@ -458,12 +458,12 @@ L2EEB0	move.w	$17474.l,d0
 	bhi.w	L2EEB0
 	move.w	$17474.l,$17476.l
 	tst.w	$1AD56.l
-	bmi.w	.l13EEC
+	bmi.w	.next
 	sub.w	d7,$1AD56.l
-	bpl.w	.l13EEC
+	bpl.w	.next
 	clr.w	$1AD56.l
 	jsr	$2F37E.l
-.l13EEC	movem.l	d0/a3,-(sp)
+.next	movem.l	d0/a3,-(sp)
 	movea.l	#$17A80,a3
 	move.w	#$1,$8(a3)
 	movea.l	#$17B00,a3
@@ -472,56 +472,56 @@ L2EEB0	move.w	$17474.l,d0
 	moveq	#$1,d7
 	dc.w	$6100,$03E0
 	btst.b	#$0,$17F74.l
-	beq.w	.l13F2E
+	beq.w	.next2
 	andi.w	#$FFF0,d0
 	ori.w	#$8,d0
 	andi.w	#$FFF0,d1
 	andi.w	#$FFF0,d3
-.l13F2E	movea.l	#$17D58,a5
+.next2	movea.l	#$17D58,a5
 	btst.b	#$5,$17F6E.l
-	beq.w	.l13F4A
+	beq.w	.next3
 	move.w	d1,d5
 	andi.w	#$F,d5
 	beq.w	L2F0F8
-.l13F4A	btst	#$3,d0
+.next3	btst	#$3,d0
 	bne.w	L2F0F8
 	cmpi.w	#$FF60,$0(a5)
-	bgt.w	.l13F66
+	bgt.w	.next4
 	move.w	#$0,$0(a5)
-	bra.w	.l13F66
-.l13F66	cmpi.w	#$FED0,$14(a5)
-	bgt.w	.l13F76
+	bra.w	.next4
+.next4	cmpi.w	#$FED0,$14(a5)
+	bgt.w	.next5
 	move.w	#$0,$14(a5)
-.l13F76	bset.b	#$5,$17F6A.l
-	bne.w	.l13F92
+.next5	bset.b	#$5,$17F6A.l
+	bne.w	.next6
 	move.w	$17CEE.l,$0(a5)
 	move.w	$17CEA.l,$14(a5)
-.l13F92	move.w	d0,d5
+.next6	move.w	d0,d5
 	andi.w	#$7,d5
 	eori.w	#$4,d5
 	movea.l	#$17480,a1
 	st.b	d3
 	bclr.b	#$5,$17F6E.l
-	beq.w	.l13FB4
+	beq.w	.next7
 	move.w	$16(a5),d3
-.l13FB4	move.w	$0(a5),d0
+.next7	move.w	$0(a5),d0
 	move.w	$14(a5),d1
 	moveq	#$B,d2
 	move.l	#$100,d4
 	movem.w	d0-d1,-(sp)
-	cmp.w	$52(a1),d3
-	beq.w	.l1402E
+.loop	cmp.w	$52(a1),d3
+	beq.w	.next8
 	movem.w	(sp),d0-d1
 	sub.w	$0(a1),d0
 	sub.w	$14(a1),d1
 	jsr	$362F8.l
 	btst	#$3,d0
-	bne.w	.l1402E
+	bne.w	.next8
 	sub.w	d5,d0
 	addi.w	#$1,d0
 	andi.w	#$7,d0
 	cmpi.w	#$2,d0
-	bhi.w	.l1402E
+	bhi.w	.next8
 	movem.w	(sp),d0-d1
 	sub.w	$0(a1),d0
 	sub.w	$14(a1),d1
@@ -529,17 +529,17 @@ L2EEB0	move.w	$17474.l,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmpi.l	#$4,d0
-	bls.w	.l1402E
+	bls.w	.next8
 	cmp.l	d4,d0
-	bhi.w	.l1402E
+	bhi.w	.next8
 	move.l	d0,d4
 	move.w	$52(a1),$16(a5)
 	bset.b	#$5,$17F6E.l
-.l1402E	adda.l	#$80,a1
-	dc.w	$51CA,$FF92
+.next8	adda.l	#$80,a1
+	dbra	d2,.loop
 	adda.w	#$4,sp
 	btst.b	#$5,$17F6E.l
-	beq.w	.l1406A
+	beq.w	.next9
 	move.w	$16(a5),d0
 	asl.w	#$7,d0
 	movea.l	#$17480,a3
@@ -549,25 +549,25 @@ L2EEB0	move.w	$17474.l,d0
 	bsr.w	UpdateCameraPos
 	jsr	$3DD16.l
 	bra.w	L2EEB0
-.l1406A	bset.b	#$5,$17F6A.l
+.next9	bset.b	#$5,$17F6A.l
 	eori.w	#$4,d5
 	asl.w	#$2,d5
 	lea.l	L2F0D8(pc),a0
 	move.w	(a0,d5.w),d0
 	add.w	$0(a5),d0
 	cmpi.w	#$88,d0
-	bgt.w	.l14098
+	bgt.w	.next10
 	cmpi.w	#$FF78,d0
-	blt.w	.l14098
+	blt.w	.next10
 	move.w	d0,$0(a5)
-.l14098	move.w	$2(a0,d5.w),d1
+.next10	move.w	$2(a0,d5.w),d1
 	add.w	$14(a5),d1
 	cmpi.w	#$126,d1
-	bgt.w	.l140B4
+	bgt.w	.next11
 	cmpi.w	#$FEDA,d1
-	blt.w	.l140B4
+	blt.w	.next11
 	move.w	d1,$14(a5)
-.l140B4	movea.l	a5,a3
+.next11	movea.l	a5,a3
 	clr.w	$18(a5)
 	andi.w	#$FFF,$17DC8.l
 	ori.w	#$E000,$17DC8.l
@@ -578,14 +578,14 @@ L2F0D8	dc.b	$00,$00,$00,$02,$00,$02,$00,$02,$00,$02,$00,$00,$00,$02,$FF,$FE	; ..
 	dc.b	$00,$00,$FF,$FE,$FF,$FE,$FF,$FE,$FF,$FE,$00,$00,$FF,$FE,$00,$02	; ................
 L2F0F8	st.b	$18(a5)
 	btst	#$5,d1
-	beq.w	.l14118
+	beq.w	.next
 	btst.b	#$0,$17F74.l
-	bne.w	.l14118
+	bne.w	.next
 	bchg.b	#$1,$17F6E.l
-.l14118	btst	#$6,d3
-	beq.w	.l14152
+.next	btst	#$6,d3
+	beq.w	.next2
 	btst.b	#$0,$17F74.l
-	bne.w	.l14152
+	bne.w	.next2
 	bsr.w	suba4
 	bsr.w	suba4
 	bsr.w	suba4
@@ -594,12 +594,12 @@ L2F0F8	st.b	$18(a5)
 	jsr	$3DD16.l
 	moveq	#$1,d7
 	bclr.b	#$1,$17F6E.l
-.l14152	btst.b	#$0,$17F74.l
-	bne.w	.l141B4
+.next2	btst.b	#$0,$17F74.l
+	bne.w	.next4
 	btst	#$4,d3
-	beq.w	.l141B4
+	beq.w	.next4
 	btst	#$6,d3
-	beq.w	.l1419A
+	beq.w	.next3
 	bclr.b	#$5,$17F6E.l
 	bclr.b	#$5,$17F6A.l
 	move.w	d0,-(sp)
@@ -609,34 +609,34 @@ L2F0F8	st.b	$18(a5)
 	move.w	d0,$17DC8.l
 	move.w	(sp)+,d0
 	bra.w	L2EEB0
-.l1419A	bsr.w	adda4
+.next3	bsr.w	adda4
 	jsr	$3F03E.l
 	jsr	$3DD16.l
 	asl.w	#$1,d7
 	bclr.b	#$1,$17F6E.l
-.l141B4	btst.b	#$1,$17F6E.l
-	beq.w	.l141DA
+.next4	btst.b	#$1,$17F6E.l
+	beq.w	.next5
 	st.b	$17F64.l
 	bsr.w	adda4
 	move.w	$17F64.l,-(sp)
 	bsr.w	sfx
 	jsr	$3F03E.l
-.l141DA	jsr	$3DD16.l
+.next5	jsr	$3DD16.l
 	btst.b	#$0,$17F74.l
-	bne.w	.l14212
+	bne.w	.next6
 	btst	#$7,d1
 	beq.w	L2EEB0
 	jsr	$2F39C.l
 	bclr.b	#$1,$17F6E.l
 	bset.b	#$0,$17F74.l
-	bne.w	.l14212
+	bne.w	.next6
 	bra.w	L2EEB0
-.l14212	btst	#$7,d1
-	bne.w	.l1425C
+.next6	btst	#$7,d1
+	bne.w	.next8
 	btst	#$6,d1
-	bne.w	.l14256
+	bne.w	.next7
 	btst	#$4,d1
-	bne.w	.l1426A
+	bne.w	.next9
 	btst	#$5,d1
 	beq.w	L2EEB0
 	bset.b	#$6,$17F72.l
@@ -645,10 +645,10 @@ L2F0F8	st.b	$18(a5)
 	bsr.w	adda4
 	jsr	$3F03E.l
 	bra.w	L2EEB0
-.l14256	jmp	$2EEB0.l
-.l1425C	clr.w	$18AD2.l
+.next7	jmp	$2EEB0.l
+.next8	clr.w	$18AD2.l
 	bset.b	#$1,$17F74.l
-.l1426A	dc.w	$6100,$7A9E
+.next9	bsr.w	forceblack
 	ori.w	#$F000,$17DC8.l
 	bclr.b	#$5,$17F6A.l
 	movea.l	$17470.l,a4
@@ -663,10 +663,10 @@ L2F0F8	st.b	$18(a5)
 	jsr	$3ECA6.l
 	jsr	$3ECCA.l
 	btst.b	#$4,$18D64.l
-	beq.w	.l142DA
+	beq.w	.next10
 	jsr	$3ECEE.l
 	jsr	$3ECDC.l
-.l142DA	jsr	$3C40A.l
+.next10	jsr	$3C40A.l
 	jsr	$3DD16.l
 	move.w	#$18,$18D62.l
 	rts

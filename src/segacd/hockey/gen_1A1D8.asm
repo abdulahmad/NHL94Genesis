@@ -23,21 +23,21 @@
 	dc.b	$00,$01,$7F,$7E,$08,$B9,$00,$01,$00,$01,$7F,$7E,$08,$B9,$00,$02	; ...~.......~....
 	dc.b	$00,$01,$7F,$7E	; ...~
 L3526C	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$6100,$1A98
-	btst.b	#$0,$18D64.l
-	dc.w	$6600,$FFF6
+	bsr.w	forceblack
+.loop	btst.b	#$0,$18D64.l
+	bne.w	.loop
 	move.w	#$3C,$19374.l
 	tst.w	$17EE2.l
 	bne.w	L352A8
 	tst.w	$17EE4.l
 	bne.w	L352A8
 	move.w	#$FFFF,$1A560.l
-	dc.w	$6000,$000A
+	bra.w	L352B0
 L352A8	bclr.b	#$5,$FF800F.l
-	cmpi.w	#$258,$17CD2.l
-	bls.w	.l1A2C4
+L352B0	cmpi.w	#$258,$17CD2.l
+	bls.w	.next
 	move.w	#$258,$17CD2.l
-.l1A2C4	bset.b	#$3,$18D64.l
+.next	bset.b	#$3,$18D64.l
 	bclr.b	#$0,$17F6A.l
 	bclr.b	#$0,$17F6E.l
 	clr.w	$17E32.l
@@ -79,8 +79,8 @@ L352A8	bclr.b	#$5,$FF800F.l
 	clr.w	$17B84.l
 	bclr.b	#$6,$17F6A.l
 	moveq	#$64,d4
-	dc.w	$6100,$ACEC
-	dc.w	$51CC,$FFFA
+.loop	bsr.w	checkwindow
+	dbra	d4,.loop
 	move.w	#$3C,$17EE0.l
 	jsr	$3D6E2.l
 	movea.l	#$1834C,a2
@@ -93,32 +93,32 @@ L352A8	bclr.b	#$5,$FF800F.l
 	move.l	a3,-(sp)
 	movea.l	#$17480,a3
 	moveq	#$B,d2
-	move.w	#$FF10,$0(a3)
+.loop2	move.w	#$FF10,$0(a3)
 	clr.w	$14(a3)
 	clr.w	$6(a3)
 	move.w	$34(a3),d1
-	bmi.w	.l1A52A
-	beq.w	.l1A46A
+	bmi.w	.next10
+	beq.w	.next4
 	moveq	#$16,d0
 	cmpi.w	#$4,d1
-	bne.w	.l1A466
+	bne.w	.next3
 	movea.l	#$1834C,a2
 	btst.b	#$6,$62(a3)
-	beq.w	.l1A444
+	beq.w	.next2
 	adda.w	#$366,a2
-.l1A444	clr.w	$18(a2)
+.next2	clr.w	$18(a2)
 	move.b	$66(a3),$19(a2)
 	bclr.b	#$7,$17F7C.l
 	st.b	$1A(a2)
 	st.b	$1C(a2)
 	bclr.b	#$3,$32(a2)
 	moveq	#$17,d0
-.l1A466	dc.w	$6100,$0E70
-.l1A46A	move.w	$18372.l,d4
+.next3	bsr.w	AssistListPush
+.next4	move.w	$18372.l,d4
 	btst.b	#$6,$62(a3)
-	beq.w	.l1A480
+	beq.w	.next5
 	move.w	$186D8.l,d4
-.l1A480	neg.w	d4
+.next5	neg.w	d4
 	addi.w	#$6,d4
 	asl.w	#$3,d4
 	movea.l	#$35764,a1
@@ -129,25 +129,25 @@ L352A8	bclr.b	#$5,$FF800F.l
 	move.w	(a1,d4.w),d0
 	move.w	$2(a1,d4.w),d1
 	btst.b	#$7,$62(a3)
-	bne.w	.l1A4B2
+	bne.w	.next6
 	neg.w	d0
 	neg.w	d1
-.l1A4B2	tst.w	$34(a3)
-	beq.w	.l1A4EE
+.next6	tst.w	$34(a3)
+	beq.w	.next9
 	cmpi.w	#$8,d4
-	bgt.w	.l1A4E2
+	bgt.w	.next8
 	move.w	$17EE2.l,d3
 	eor.w	d0,d3
-	bpl.w	.l1A4D8
+	bpl.w	.next7
 	move.w	$17EE4.l,d3
 	asr.w	#$3,d3
 	sub.w	d3,d1
-.l1A4D8	move.w	$17EE2.l,d3
+.next7	move.w	$17EE2.l,d3
 	asr.w	#$2,d3
 	sub.w	d3,d0
-.l1A4E2	add.w	$17EE2.l,d0
+.next8	add.w	$17EE2.l,d0
 	add.w	$17EE4.l,d1
-.l1A4EE	move.w	d0,$0(a3)
+.next9	move.w	d0,$0(a3)
 	move.w	d1,$14(a3)
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
@@ -160,9 +160,9 @@ L352A8	bclr.b	#$5,$FF800F.l
 	bclr.b	#$2,$63(a3)
 	bclr.b	#$5,$62(a3)
 	move.w	#$50C,d1
-	dc.w	$6100,$0E98
-.l1A52A	adda.l	#$80,a3
-	dc.w	$51CA,$FEDA
+	bsr.w	SetSPA
+.next10	adda.l	#$80,a3
+	dbra	d2,.loop2
 	jsr	$3F03E.l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
@@ -176,17 +176,17 @@ L352A8	bclr.b	#$5,$FF800F.l
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$FFFF,$1A556.l
 	btst.b	#$0,$17F7A.l
-	beq.w	.l1A58A
+	beq.w	.next11
 	move.w	$1A560.l,d0
-	bmi.w	.l1A58A
+	bmi.w	.next11
 	jsr	$2A41E.l
-.l1A58A	bsr.w	printz
+.next11	bsr.w	printz
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 L35594	moveq	#$36,d0
 	tst.w	$17EE2.l
-	bpl.w	.l1A5A4
+	bpl.w	.next
 	move.w	#$BE,d0
-.l1A5A4	move.w	d0,$1746C.l
+.next	move.w	d0,$1746C.l
 	subi.w	#$2E,d0
 	asr.w	#$3,d0
 	move.w	d0,$18D58.l
@@ -210,7 +210,7 @@ L35594	moveq	#$36,d0
 	bsr.w	dobitmap
 	bclr.b	#$0,$17F76.l
 	tst.w	$18C0A.l
-	dc.w	$6600,$0056
+	bne.w	L3565A
 	bsr.w	printsmallz
 	dc.b	$00,$06,$FA,$0A,$FE,$04	; ......
 L35610	moveq	#$C,d0
@@ -219,9 +219,9 @@ L35610	moveq	#$C,d0
 	move.w	$18362.l,d0
 	move.w	$186C8.l,d1
 	btst.b	#$1,$17F68.l
-	bne.w	.l1A632
+	bne.w	.next
 	exg.l	d0,d1
-.l1A632	bsr.w	printsmallz
+.next	bsr.w	printsmallz
 	dc.b	$00,$06,$FB,$01,$FA,$FE	; ......
 L3563C	movea.l	#$419F6,a1
 	dc.w	$6100,$787A
@@ -229,23 +229,23 @@ L3563C	movea.l	#$419F6,a1
 	move.w	d1,d0
 	movea.l	#$419F6,a1
 	dc.w	$6100,$7866
-	move.w	#$78,d0
+L3565A	move.w	#$78,d0
 	bsr.w	randomd0
 	addi.w	#$B4,d0
 	cmpi.w	#$0,$1A556.l
-	beq.w	.l1A6A2
+	beq.w	.next
 	cmpi.w	#$1,$1A556.l
-	beq.w	.l1A6A2
+	beq.w	.next
 	cmpi.w	#$5,$1A556.l
-	beq.w	.l1A6A2
+	beq.w	.next
 	cmpi.w	#$4,$1A556.l
-	beq.w	.l1A6A2
+	beq.w	.next
 	cmpi.w	#$2,$1A556.l
-	bne.w	.l1A6AE
-.l1A6A2	cmpi.w	#$10E,d0
-	bgt.w	.l1A6AE
+	bne.w	.next2
+.next	cmpi.w	#$10E,d0
+	bgt.w	.next2
 	move.w	#$10E,d0
-.l1A6AE	move.w	d0,$40(a3)
+.next2	move.w	d0,$40(a3)
 	move.w	#$18,$18D62.l
 	movea.l	#$17CF8,a0
 	move.w	#$1,(a0)
@@ -255,20 +255,20 @@ L3563C	movea.l	#$419F6,a1
 	move.w	#$7,$8(a0)
 	move.w	#$8000,$A(a0)
 	btst.b	#$1,$17F68.l
-	bne.w	.l1A6FA
+	bne.w	.next3
 	eori.w	#$800,$2(a0)
 	eori.w	#$800,$6(a0)
-.l1A6FA	move.w	#$FFFF,$17EE6.l
+.next3	move.w	#$FFFF,$17EE6.l
 	move.w	#$FFFF,$17EE8.l
 	jsr	$2B2D6.l
 	bclr.b	#$6,$17F7C.l
-	bne.w	.l1A728
+	bne.w	.next4
 	bclr.b	#$4,$17F7C.l
-	beq.w	.l1A73A
-.l1A728	bclr.b	#$4,$17F7C.l
+	beq.w	.next5
+.next4	bclr.b	#$4,$17F7C.l
 	move.w	$1A56A.l,-(sp)
 	bsr.w	song
-.l1A73A	move.w	#$18,$18D62.l
+.next5	move.w	#$18,$18D62.l
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -452,27 +452,27 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	jmp	$2BA1E.l
 .next4	jmp	(GameOver).l
 L35AD4	btst.b	#$2,$17F70.l
-	beq.w	.l1AAE4
+	beq.w	.next
 	bsr.w	UpdatePenaltyShotEnd
-.l1AAE4	bclr.b	#$1,$62(a3)
-	beq.w	.l1AAF8
+.next	bclr.b	#$1,$62(a3)
+	beq.w	.next2
 	clr.w	$40(a3)
 	move.w	#$78,$42(a3)
-.l1AAF8	movea.l	#$17E36,a1
+.next2	movea.l	#$17E36,a1
 	sub.w	d7,$2(a1)
 	sub.w	d7,$6(a1)
 	sub.w	d7,$40(a3)
-	bpl.w	.l1AB18
+	bpl.w	.next3
 	addi.w	#$5,$40(a3)
 	bsr.w	findpc
-.l1AB18	move.w	$17BE0.l,d0
-	bmi.w	.l1AB5E
+.next3	move.w	$17BE0.l,d0
+	bmi.w	.next4
 	asl.w	#$7,d0
 	movea.l	#$17480,a2
 	adda.w	d0,a2
-	dc.w	$6100,$01FA
+	bsr.w	a2touchpuck
 	move.l	a2,-(sp)
-	dc.w	$6100,$082E
+	bsr.w	GetHotCount
 	add.w	$0(a2),d0
 	sub.w	$0(a3),d0
 	asr.w	#$2,d0
@@ -483,25 +483,25 @@ L35AD4	btst.b	#$2,$17F70.l
 	add.w	d1,$14(a3)
 	move.w	$28(a2),$28(a3)
 	move.w	$2A(a2),$2A(a3)
-.l1AB5E	bsr.w	PuckIChk
+.next4	bsr.w	PuckIChk
 	bsr.w	L35BC6
 	btst.b	#$0,$17F68.l
-	bne.w	.l1ABAE
+	bne.w	.next7
 	tst.w	$17BE0.l
-	bpl.w	.l1ABA8
+	bpl.w	.next6
 	move.w	$0(a3),d0
 	cmp.w	$1C(a3),d0
-	bne.w	.l1ABA8
+	bne.w	.next6
 	move.w	$14(a3),d0
 	cmp.w	$20(a3),d0
-	bne.w	.l1ABA8
+	bne.w	.next6
 	moveq	#$6,d0
 	subi.w	#$1,$42(a3)
-	bpl.w	.l1ABA4
+	bpl.w	.next5
 	bsr.w	AddPenalty2
-.l1ABA4	bra.w	.l1ABAE
-.l1ABA8	move.w	#$78,$42(a3)
-.l1ABAE	tst.b	$2C(a3)
+.next5	bra.w	.next7
+.next6	move.w	#$78,$42(a3)
+.next7	tst.b	$2C(a3)
 	bne.w	L3B882
 	tst.w	$18(a3)
 	bne.w	L3B882
@@ -518,43 +518,43 @@ L35BC6	btst.b	#$5,$17F68.l
 	bsr.w	ClearOffsidesIfAllPlayers
 	move.w	#$54,d0
 	cmp.w	$14(a3),d0
-	bgt.w	.l1AC40
+	bgt.w	.next3
 	cmp.w	$20(a3),d0
 	ble.w	rtss2
 	addi.w	#$A,d0
 	btst.b	#$1,$17F68.l
-	beq.w	.l1AC18
+	beq.w	.next
 	exg.l	a1,a2
-.l1AC18	moveq	#$5,d2
+.next	moveq	#$5,d2
 	movea.l	$22(a2),a0
-	tst.w	$34(a0)
-	bmi.w	.l1AC36
+.loop	tst.w	$34(a0)
+	bmi.w	.next2
 	cmp.w	$14(a0),d0
-	bge.w	.l1AC36
+	bge.w	.next2
 	bset.b	#$4,$32(a2)
 	rts
-.l1AC36	adda.w	#$80,a0
-	dc.w	$51CA,$FFE2
+.next2	adda.w	#$80,a0
+	dbra	d2,.loop
 	rts
-.l1AC40	neg.w	d0
+.next3	neg.w	d0
 	cmp.w	$14(a3),d0
 	blt.w	rtss2
 	cmp.w	$20(a3),d0
 	bge.w	rtss2
 	subi.w	#$A,d0
 	btst.b	#$1,$17F68.l
-	bne.w	.l1AC64
+	bne.w	.next4
 	exg.l	a1,a2
-.l1AC64	moveq	#$5,d2
+.next4	moveq	#$5,d2
 	movea.l	$22(a2),a0
-	tst.w	$34(a0)
-	bmi.w	.l1AC82
+.loop2	tst.w	$34(a0)
+	bmi.w	.next5
 	cmp.w	$14(a0),d0
-	ble.w	.l1AC82
+	ble.w	.next5
 	bset.b	#$4,$32(a2)
 	rts
-.l1AC82	adda.w	#$80,a0
-	dc.w	$51CA,$FFE2
+.next5	adda.w	#$80,a0
+	dbra	d2,.loop2
 	rts
 ClearOffsidesIfAllPlayers						;a2 = team struct: clear the team offsides flag once no skater is past the
 	

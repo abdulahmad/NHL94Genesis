@@ -6,7 +6,7 @@ ReadJoyData
 	movem.l	d1/a0,-(sp)
 	tst.w	$18BF8.l
 	beq.w	.next
-	dc.w	$6142
+	bsr.s	.loop
 	move.b	d0,$17E46.l
 	bsr.w	.loop4
 	move.b	d0,$17E47.l

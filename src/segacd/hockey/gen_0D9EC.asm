@@ -317,7 +317,7 @@ MatchupPosNamesTbl1	dc.w	$0012,$2020
 	movea.l	-(a6),a0
 	ble.s	*+116
 	dc.b	'ward  ',$00,$12,'left def'
-	bcs.s	*+112
+	bcs.s	L2903E
 .next
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
@@ -343,7 +343,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	movea.l	#$29050,a1
 	move.b	(a1,d0.w),d0
 	ext.w	d0
-	move.w	d0,(matchupslot).l
+L2903E	move.w	d0,(matchupslot).l
 	move.b	(a0,d0.w),d0
 	ext.w	d0
 	subi.w	#$1,d0		;player numbers start at 1

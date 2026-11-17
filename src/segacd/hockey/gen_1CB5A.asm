@@ -263,244 +263,244 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 L3816C	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst.b	#$5,$FF800F.l
-	beq.b	.l1D184
+	beq.b	.next
 	move.w	#$1,-(a6)
-	bra.b	.l1D188
-.l1D184	move.w	#$0,-(a6)
-.l1D188	bclr.b	#$5,$FF800F.l
+	bra.b	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr.b	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	move.w	$18D64.l,-(sp)
 	bset.b	#$2,$18D64.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop	btst.b	#$7,$FF800E.l
+	bne.s	.loop
 	move.w	#$8F02,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop2	btst.b	#$6,$FF800E.l
+	beq.s	.loop2
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop3	btst.b	#$6,$FF800E.l
+	bne.s	.loop3
 	bclr.b	#$7,$FF800F.l
 	clr.w	d0
-	dc.w	$6100,$0526
+	bsr.w	SetVramWriteAddr1
 	clr.l	d1
 	move.w	#$8C00,d0
 	btst.b	#$1,$18D64.l
-	bne.w	.l1D210
+	bne.w	.loop4
 	ori.w	#$81,d0
-.l1D210	btst.b	#$7,$FF800E.l
-	bne.b	.l1D210
+.loop4	btst.b	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop5	btst.b	#$6,$FF800E.l
+	beq.s	.loop5
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop6	btst.b	#$6,$FF800E.l
+	bne.s	.loop6
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop7	btst.b	#$7,$FF800E.l
+	bne.s	.loop7
 	move.w	#$8014,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop8	btst.b	#$6,$FF800E.l
+	beq.s	.loop8
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop9	btst.b	#$6,$FF800E.l
+	bne.s	.loop9
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop10	btst.b	#$7,$FF800E.l
+	bne.s	.loop10
 	move.w	#$8164,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop11	btst.b	#$6,$FF800E.l
+	beq.s	.loop11
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop12	btst.b	#$6,$FF800E.l
+	bne.s	.loop12
 	bclr.b	#$7,$FF800F.l
 	move.w	#$9001,d0
 	cmpi.w	#$6,$18D36.l
-	beq.w	.l1D30C
+	beq.w	.loop13
 	move.w	#$9003,d0
-.l1D30C	btst.b	#$7,$FF800E.l
-	bne.b	.l1D30C
+.loop13	btst.b	#$7,$FF800E.l
+	bne.b	.loop13
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop14	btst.b	#$6,$FF800E.l
+	beq.s	.loop14
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop15	btst.b	#$6,$FF800E.l
+	bne.s	.loop15
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8200,d0
 	move.b	$18D34.l,d0
 	lsr.b	#$2,d0
 	andi.b	#$38,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop16	btst.b	#$7,$FF800E.l
+	bne.s	.loop16
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop17	btst.b	#$6,$FF800E.l
+	beq.s	.loop17
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop18	btst.b	#$6,$FF800E.l
+	bne.s	.loop18
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8400,d0
 	move.b	$18D38.l,d0
 	lsr.b	#$5,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop19	btst.b	#$7,$FF800E.l
+	bne.s	.loop19
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop20	btst.b	#$6,$FF800E.l
+	beq.s	.loop20
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop21	btst.b	#$6,$FF800E.l
+	bne.s	.loop21
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8300,d0
 	move.b	$18D3C.l,d0
 	lsr.b	#$2,d0
 	andi.b	#$3E,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop22	btst.b	#$7,$FF800E.l
+	bne.s	.loop22
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop23	btst.b	#$6,$FF800E.l
+	beq.s	.loop23
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop24	btst.b	#$6,$FF800E.l
+	bne.s	.loop24
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8500,d0
 	move.b	$18D32.l,d0
 	lsr.b	#$1,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop25	btst.b	#$7,$FF800E.l
+	bne.s	.loop25
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop26	btst.b	#$6,$FF800E.l
+	beq.s	.loop26
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop27	btst.b	#$6,$FF800E.l
+	bne.s	.loop27
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8D00,d0
 	move.b	$18D30.l,d0
 	lsr.b	#$2,d0
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop28	btst.b	#$7,$FF800E.l
+	bne.s	.loop28
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop29	btst.b	#$6,$FF800E.l
+	beq.s	.loop29
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop30	btst.b	#$6,$FF800E.l
+	bne.s	.loop30
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop31	btst.b	#$7,$FF800E.l
+	bne.s	.loop31
 	move.w	#$9100,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop32	btst.b	#$6,$FF800E.l
+	beq.s	.loop32
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop33	btst.b	#$6,$FF800E.l
+	bne.s	.loop33
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop34	btst.b	#$7,$FF800E.l
+	bne.s	.loop34
 	move.w	#$9200,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop35	btst.b	#$6,$FF800E.l
+	beq.s	.loop35
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop36	btst.b	#$6,$FF800E.l
+	bne.s	.loop36
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop37	btst.b	#$7,$FF800E.l
+	bne.s	.loop37
 	move.w	#$8700,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop38	btst.b	#$6,$FF800E.l
+	beq.s	.loop38
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop39	btst.b	#$6,$FF800E.l
+	bne.s	.loop39
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop40	btst.b	#$7,$FF800E.l
+	bne.s	.loop40
 	move.w	#$8B00,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop41	btst.b	#$6,$FF800E.l
+	beq.s	.loop41
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop42	btst.b	#$6,$FF800E.l
+	bne.s	.loop42
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop43	btst.b	#$7,$FF800E.l
+	bne.s	.loop43
 	move.l	#$40000010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop44	btst.b	#$6,$FF800E.l
+	beq.s	.loop44
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop45	btst.b	#$6,$FF800E.l
+	bne.s	.loop45
 	bclr.b	#$7,$FF800F.l
-	btst.b	#$7,$FF800E.l
-	dc.w	$66F6
+.loop46	btst.b	#$7,$FF800E.l
+	bne.s	.loop46
 	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$67F6
+.loop47	btst.b	#$6,$FF800E.l
+	beq.s	.loop47
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-	btst.b	#$6,$FF800E.l
-	dc.w	$66F6
+.loop48	btst.b	#$6,$FF800E.l
+	bne.s	.loop48
 	bclr.b	#$7,$FF800F.l
 	move.w	(sp)+,$18D64.l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.b	.l1D70C
+	beq.b	.next3
 	bset.b	#$5,$FF800F.l
-	bra.b	.l1D714
-.l1D70C	bclr.b	#$5,$FF800F.l
-.l1D714	move.l	a6,$19360.l
+	bra.b	.next4
+.next3	bclr.b	#$5,$FF800F.l
+.next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts
 ; Sets the VDP VRAM write command from d0.

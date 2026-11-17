@@ -29,7 +29,7 @@ CheckPuckHolder2
 	bgt.w	CompShoot
 .next2	bset	#$3,$17F74.l
 	jmp	(dopass).l
-	dc.w	$6000,$0144
+	bra.w	CompShoot
 chkpk2Sub2
 	btst	#$1,$64(a3)
 	beq.w	.next2

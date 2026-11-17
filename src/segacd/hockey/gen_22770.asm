@@ -220,42 +220,42 @@ dodmalist
 	rts
 L3DC16	move.w	$18D30.l,d0
 	addi.w	#$2,d0
-	dc.w	$6100,$AB5E
-	btst.b	#$4,$FF800E.l
-	dc.w	$66F6
+	bsr.w	SetVramWriteAddr2
+.loop	btst.b	#$4,$FF800E.l
+	bne.s	.loop
 	move.w	#$31,$FF8026.l
 	move.w	$17CF0.l,$FF8028.l
 	bset.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$67F6
+.loop2	btst.b	#$3,$FF800E.l
+	beq.s	.loop2
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$66F6
+.loop3	btst.b	#$3,$FF800E.l
+	bne.s	.loop3
 	bclr.b	#$4,$FF800F.l
-	btst.b	#$4,$FF800E.l
-	dc.w	$66F6
+.loop4	btst.b	#$4,$FF800E.l
+	bne.s	.loop4
 	move.w	#$30,$FF8026.l
 	move.l	#$40020010,$FF8028.l
 	bset.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$67F6
+.loop5	btst.b	#$3,$FF800E.l
+	beq.s	.loop5
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$66F6
+.loop6	btst.b	#$3,$FF800E.l
+	bne.s	.loop6
 	bclr.b	#$4,$FF800F.l
-	btst.b	#$4,$FF800E.l
-	dc.w	$66F6
+.loop7	btst.b	#$4,$FF800E.l
+	bne.s	.loop7
 	move.w	#$31,$FF8026.l
 	move.w	$17CF2.l,$FF8028.l
 	bset.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$67F6
+.loop8	btst.b	#$3,$FF800E.l
+	beq.s	.loop8
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-	btst.b	#$3,$FF800E.l
-	dc.w	$66F6
+.loop9	btst.b	#$3,$FF800E.l
+	bne.s	.loop9
 	bclr.b	#$4,$FF800F.l
 	rts
 setvideo

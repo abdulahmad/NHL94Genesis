@@ -89,16 +89,16 @@ SelectPenaltyShotSkater						;pick the skater for the penalty shot from team BA_
 .exit	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 L347BA	bclr.b	#$1,$62(a3)
-	beq.w	.l19B52
+	beq.w	.next19
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$6100,$2540
-	btst.b	#$0,$18D64.l
-	dc.w	$6600,$FFF6
+	bsr.w	forceblack
+.loop	btst.b	#$0,$18D64.l
+	bne.w	.loop
 	cmpi.w	#$258,$17CD2.l
-	bls.w	.l197F4
+	bls.w	.next
 	move.w	#$258,$17CD2.l
 	addi.w	#$14,$17CD8.l
-.l197F4	move.w	$18D56.l,d4
+.next	move.w	$18D56.l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
 	jsr	$38958.l
@@ -137,8 +137,8 @@ L347BA	bclr.b	#$1,$62(a3)
 	clr.w	$17B84.l
 	bclr.b	#$6,$17F6A.l
 	moveq	#$64,d4
-	dc.w	$6100,$B7E0
-	dc.w	$51CC,$FFFA
+.loop2	bsr.w	checkwindow
+	dbra	d4,.loop2
 	move.w	#$3C,$17EE0.l
 	jsr	$3D6E2.l
 	movea.l	#$1834C,a2
@@ -151,74 +151,74 @@ L347BA	bclr.b	#$1,$62(a3)
 	move.l	a3,-(sp)
 	movea.l	#$17A00,a3
 	move.w	#$B,d2
-	cmp.w	$19368.l,d2
-	beq.w	.l1994A
+.loop3	cmp.w	$19368.l,d2
+	beq.w	.next2
 	cmp.w	$1936A.l,d2
-	beq.w	.l199D0
+	beq.w	.next7
 	move.w	#$FF10,$0(a3)
 	clr.w	$14(a3)
 	clr.w	$6(a3)
 	move.w	#$20,d0
-	dc.w	$6100,$1994
-	bra.w	.l19A8A
-.l1994A	tst.w	$34(a3)
-	bpl.w	.l1997E
+	bsr.w	AssistListPush
+	bra.w	.next13
+.next2	tst.w	$34(a3)
+	bpl.w	.next4
 	bclr.b	#$2,$63(a3)
-	beq.w	.l1997E
+	beq.w	.next4
 	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
 	jsr	$3D770.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	tst.w	$34(a3)
-	beq.w	.l1997C
-	bpl.w	.l1997E
-.l1997C	nop
-.l1997E	move.w	$17B80.l,d0
+	beq.w	.next3
+	bpl.w	.next4
+.next3	nop
+.next4	move.w	$17B80.l,d0
 	subi.w	#$0,d0
 	move.w	d0,$0(a3)
 	move.w	$17B94.l,d0
 	btst.b	#$7,$62(a3)
-	bne.w	.l199AA
+	bne.w	.next5
 	addi.w	#$10,d0
 	move.w	#$4,$54(a3)
-	bra.w	.l199B4
-.l199AA	addi.w	#$FFF0,d0
+	bra.w	.next6
+.next5	addi.w	#$FFF0,d0
 	move.w	#$0,$54(a3)
-.l199B4	move.w	d0,$14(a3)
+.next6	move.w	d0,$14(a3)
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	clr.w	$2C(a3)
 	move.w	#$11,d0
-	dc.w	$6100,$190E
-	bra.w	.l19A8A
-.l199D0	btst.b	#$0,$17F78.l
-	beq.w	.l199FA
+	bsr.w	AssistListPush
+	bra.w	.next13
+.next7	btst.b	#$0,$17F78.l
+	beq.w	.next8
 	move.b	$1A435.l,$66(a3)
 	tst.w	$1A436.l
-	beq.w	.l19A0C
+	beq.w	.next9
 	move.b	$1A427.l,$66(a3)
-	bra.w	.l19A0C
-.l199FA	tst.w	$34(a3)
-	bpl.w	.l19A2E
+	bra.w	.next9
+.next8	tst.w	$34(a3)
+	bpl.w	.next11
 	bclr.b	#$2,$63(a3)
-	beq.w	.l19A2E
-.l19A0C	movem.l	d0-d7/a0-a6,-(sp)
+	beq.w	.next11
+.next9	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d3
 	move.b	$66(a3),d3
 	jsr	$3D770.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	tst.w	$34(a3)
-	bne.w	.l19A2C
-	bpl.w	.l19A2E
-.l19A2C	nop
-.l19A2E	bclr.b	#$2,$63(a3)
+	bne.w	.next10
+	bpl.w	.next11
+.next10	nop
+.next11	bclr.b	#$2,$63(a3)
 	move.w	#$0,d0
 	move.w	#$E5,d1
 	btst.b	#$7,$62(a3)
-	bne.w	.l19A4A
+	bne.w	.next12
 	move.w	#$FF1B,d1
-.l19A4A	move.w	d0,$0(a3)
+.next12	move.w	d0,$0(a3)
 	move.w	d1,$14(a3)
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
@@ -232,9 +232,9 @@ L347BA	bclr.b	#$1,$62(a3)
 	bclr.b	#$2,$63(a3)
 	bclr.b	#$5,$62(a3)
 	move.w	#$50C,d1
-	dc.w	$6100,$1938
-.l19A8A	suba.l	#$80,a3
-	dc.w	$51CA,$FE8A
+	bsr.w	SetSPA
+.next13	suba.l	#$80,a3
+	dbra	d2,.loop3
 	jsr	$3F03E.l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
@@ -245,36 +245,36 @@ L347BA	bclr.b	#$1,$62(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$FF06,$14(a3)
 	btst.b	#$7,$62(a3)
-	bne.w	.l19ACC
+	bne.w	.next14
 	move.w	#$FA,$14(a3)
-.l19ACC	move.w	$1936A.l,d0
+.next14	move.w	$1936A.l,d0
 	move.w	#$1,d1
 	btst.b	#$6,$62(a3)
-	beq.w	.l19AE4
+	beq.w	.next15
 	move.w	#$2,d1
-.l19AE4	cmp.w	$17FA6.l,d1
-	bne.w	.l19AF8
+.next15	cmp.w	$17FA6.l,d1
+	bne.w	.next16
 	jsr	$312B8.l
-	bra.w	.l19B08
-.l19AF8	cmp.w	$17FA8.l,d1
-	bne.w	.l19B08
+	bra.w	.next17
+.next16	cmp.w	$17FA8.l,d1
+	bne.w	.next17
 	jsr	$312DC.l
-.l19B08	move.w	#$E,d0
-	dc.w	$6100,$17D6
+.next17	move.w	#$E,d0
+	bsr.w	assreplace
 	bset.b	#$7,$17F70.l
 	bset.b	#$2,$17F6C.l
 	move.w	#$190,$17F98.l
 	tst.w	$17FA6.l
-	bne.w	.l19B44
+	bne.w	.next18
 	tst.w	$17FA8.l
-	bne.w	.l19B44
+	bne.w	.next18
 	move.w	#$64,$17F98.l
-.l19B44	move.w	#$18,$18D62.l
+.next18	move.w	#$18,$18D62.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.l19B52	bset.b	#$2,$17F78.l
+.next19	bset.b	#$2,$17F78.l
 	move.w	#$18,d0
-	dc.w	$6100,$1784
+	bsr.w	assreplace
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	rts
@@ -338,18 +338,18 @@ EndPenaltyShotPlay						;stop play after a penalty shot or shootout attempt: fre
 EndPenaltyShotPlay_1	rts
 L34CC6	bclr.b	#$4,$17F7C.l
 	btst.b	#$0,$17F78.l
-	beq.w	.l19CEE
+	beq.w	.next
 	clr.w	$17BA8.l
 	clr.w	$17BAA.l
 	move.w	#$1E,d0
-	dc.w	$6000,$15F8
-.l19CEE	bclr.b	#$1,$62(a3)
+	bra.w	assreplace
+.next	bclr.b	#$1,$62(a3)
 	beq.w	WaitForFaceoffLineChanges
 	bclr.b	#$0,$17F7C.l
-	beq.w	.l19D10
+	beq.w	.next2
 	clr.w	$17EE2.l
 	clr.w	$17EE4.l
-.l19D10	bclr.b	#$7,$17F7A.l
+.next2	bclr.b	#$7,$17F7A.l
 	clr.l	$17DCA.l
 	clr.l	$17DCE.l
 	clr.l	$17DD2.l
@@ -357,45 +357,45 @@ L34CC6	bclr.b	#$4,$17F7C.l
 	bclr.b	#$2,$17F7A.l
 	jsr	$2ACA0.l
 	tst.w	$1A560.l
-	bmi.w	.l19D54
+	bmi.w	.next3
 	move.w	$1A560.l,d0
-	bra.w	.l19D60
-.l19D54	jsr	$2AC4E.l
+	bra.w	.next4
+.next3	jsr	$2AC4E.l
 	tst.w	d0
-	bmi.w	.l19D66
-.l19D60	jsr	$2A456.l
-.l19D66	bclr.b	#$1,$17F76.l
+	bmi.w	.next5
+.next4	jsr	$2A456.l
+.next5	bclr.b	#$1,$17F76.l
 	bclr.b	#$1,$17F78.l
 	tst.w	$180E6.l
 	beq.w	PeriodOver
 	btst.b	#$6,$17F68.l
 	bne.w	PeriodOver
 	cmpi.w	#$3,$180E4.l
-	bne.w	.l19DA8
+	bne.w	.next6
 	move.w	$18358.l,d0
 	cmp.w	$186BE.l,d0
-	dc.w	$6600,$0266
-.l19DA8	btst.b	#$3,$17F68.l
+	bne.w	L3500C
+.next6	btst.b	#$3,$17F68.l
 	bne.w	Stop4Pen
 	move.w	$180EA.l,d0
 	asr.w	#$1,d0
 	cmp.w	$180E6.l,d0
-	bls.w	.l19E20
+	bls.w	.next7
 	cmpi.w	#$3C,$180E6.l
-	blt.w	.l19E20
+	blt.w	.next7
 	btst.b	#$7,$17F6E.l
-	beq.w	.l19E20
+	beq.w	.next7
 	btst.b	#$0,$17F68.l
-	beq.w	.l19E20
+	beq.w	.next7
 	btst.b	#$6,$17F7C.l
-	bne.w	.l19E20
+	bne.w	.next7
 	bclr.b	#$7,$17F6E.l
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$2,$1A56E.l
 	jsr	$2A478.l
 	move.w	$1A56A.l,-(sp)
 	bsr.w	song
-.l19E20	bsr.w	ReturnGoalies
+.next7	bsr.w	ReturnGoalies
 	st.b	$40(a3)
 	st.b	$42(a3)
 	tst.w	$18C0A.l
@@ -404,30 +404,30 @@ L34CC6	bclr.b	#$4,$17F7C.l
 	bclr.b	#$1,$186E4.l
 	movea.l	#$17480,a0
 	moveq	#$B,d0
-	bclr.b	#$3,$63(a0)
+.loop	bclr.b	#$3,$63(a0)
 	adda.w	#$80,a0
-	dc.w	$51C8,$FFF4
+	dbra	d0,.loop
 	move.w	$17FA6.l,d0
 	or.w	$17FA8.l,d0
-	beq.w	.l19EAC
+	beq.w	.next8
 	btst.b	#$7,$17F6A.l
-	beq.w	.l19EAC
-	dc.w	$6100,$1E90
+	beq.w	.next8
+	bsr.w	forceblack
 	bset.b	#$6,$17F6A.l
 	bsr.w	ClrHor
 	move.w	#$18,$18D62.l
 	tst.w	$18C0A.l
-	bne.w	.l19EAC
+	bne.w	.next8
 	btst.b	#$4,$17F7A.l
-	beq.w	.l19EAC
+	beq.w	.next8
 	clr.w	$18D62.l
-.l19EAC	move.w	$17F9E.l,d0
-	bmi.w	.l19EBA
+.next8	move.w	$17F9E.l,d0
+	bmi.w	.next9
 	bsr.w	StartFaceoffLineChange
-.l19EBA	move.w	$17FA0.l,d0
-	bmi.w	.l19EC8
+.next9	move.w	$17FA0.l,d0
+	bmi.w	.next10
 	bsr.w	StartFaceoffLineChange
-.l19EC8	movea.l	#$1834C,a1
+.next10	movea.l	#$1834C,a1
 	lea.l	$366(a1),a2
 	moveq	#$2,d0
 	bsr.w	SetFaceoffComputerLine
@@ -507,7 +507,7 @@ UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change tim
 	bsr.w	SetLCmode2
 .exit	movea.l	(sp)+,a3
 	rts
-	jmp	(clockcont_0).l
+L3500C	jmp	(clockcont_0).l
 ChkGoalies						;computer pulls goalie on delayed penalty. Called from periodicevents
 	btst	#$0,$17F68.l		;check if clock running
 	bne.w	rtss2

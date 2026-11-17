@@ -19,11 +19,11 @@ L29508	dc.w	$0006,$202E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst.b	#$5,$FF800F.l
-	beq.b	.lE540
+	beq.b	.next
 	move.w	#$1,-(a6)
-	bra.b	.lE544
-.lE540	move.w	#$0,-(a6)
-.lE544	bclr.b	#$5,$FF800F.l
+	bra.b	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr.b	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -35,25 +35,25 @@ L29508	dc.w	$0006,$202E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.b	.lE584
+	beq.b	.next3
 	bset.b	#$5,$FF800F.l
-	bra.b	.lE58C
-.lE584	bclr.b	#$5,$FF800F.l
-.lE58C	move.l	a6,$19360.l
+	bra.b	.next4
+.next3	bclr.b	#$5,$FF800F.l
+.next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	move.w	#$2,d0
 	jsr	$5F22.w
 	move.w	#$2,d0
 	jsr	$5F22.w
-	move.w	#$80,d0
+.loop	move.w	#$80,d0
 	jsr	$5F22.w
-	dc.w	$6500,$FFF6
-	move.w	#$81,d0
+	bcs.w	.loop
+.loop2	move.w	#$81,d0
 	jsr	$5F22.w
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
-	dc.w	$66EC
+	bne.s	.loop2
 	move.w	#$5,$19364.l
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
@@ -96,8 +96,8 @@ L29630	movea.l	$47D8C.l,a0
 	movea.l	#$BBCF0,a0
 	movea.l	#$BBD10,a1
 	move.w	#$7,d0
-	move.l	(a0)+,(a1)+
-	dc.w	$51C8,$FFFC
+.loop	move.l	(a0)+,(a1)+
+	dbra	d0,.loop
 	jsr	$38F6E.l
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
 L2968C	movea.l	$47D8C.l,a0
@@ -127,7 +127,7 @@ L296D2	moveq	#$20,d0
 	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
 	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
 L296FA	btst.b	#$1,$17F7A.l
-	dc.w	$6700,$004A
+	beq.w	L2974E
 	jsr	$38F6E.l
 	dc.b	$00,$1C,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$1A	; .....1...2...3..
 	dc.b	$09,$4F,$54,$BE,$20,$09,$54,$6F,$74,$61,$6C,$00	; .OT. .Total.
@@ -135,7 +135,7 @@ L29728	jsr	$38F6E.l
 	dc.b	$00,$1C,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$1A	; .....<...<...<..
 	dc.b	$0A,$3C,$3C,$BE,$20,$0A,$3C,$3C,$3C,$3C,$3C,$00	; .<<. .<<<<<.
 L2974A	bra.w	L29786
-	jsr	$38F6E.l
+L2974E	jsr	$38F6E.l
 	dc.b	$00,$16,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$20	; .....1...2...3. 
 	dc.b	$09,$54,$6F,$74,$61,$6C	; .Total
 L2976A	jsr	$38F6E.l
@@ -144,27 +144,27 @@ L2976A	jsr	$38F6E.l
 L29786	bsr.w	L298BA
 	bsr.w	L29904
 	move.w	#$18,$18D62.l
-	jsr	$2EDE2.l
+.loop	jsr	$2EDE2.l
 	btst	#$7,d1
-	bne.w	.lE7F0
+	bne.w	.next3
 	btst	#$2,d1
-	bne.w	.lE7D4
+	bne.w	.next2
 	btst	#$3,d1
-	bne.w	.lE7B8
-	dc.w	$6000,$FFE0
-.lE7B8	tst.w	$1A43A.l
-	dc.w	$6600,$FFD6
+	bne.w	.next
+	bra.w	.loop
+.next	tst.w	$1A43A.l
+	bne.w	.loop
 	st.b	$1A43A.l
 	bsr.w	L298BA
 	bsr.w	L29904
-	dc.w	$6000,$FFC4
-.lE7D4	tst.w	$1A43A.l
-	dc.w	$6700,$FFBA
+	bra.w	.loop
+.next2	tst.w	$1A43A.l
+	beq.w	.loop
 	clr.w	$1A43A.l
 	bsr.w	L298BA
 	bsr.w	L29904
-	dc.w	$6000,$FFA8
-.lE7F0	movem.l	(sp)+,d0-d7/a0-a6
+	bra.w	.loop
+.next3	movem.l	(sp)+,d0-d7/a0-a6
 	movem.l	d7/a0,-(sp)
 	movea.l	$47D8C.l,a0
 	move.w	#$2,d7
@@ -173,11 +173,11 @@ L29786	bsr.w	L298BA
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst.b	#$5,$FF800F.l
-	beq.b	.lE822
+	beq.b	.next4
 	move.w	#$1,-(a6)
-	bra.b	.lE826
-.lE822	move.w	#$0,-(a6)
-.lE826	bclr.b	#$5,$FF800F.l
+	bra.b	.next5
+.next4	move.w	#$0,-(a6)
+.next5	bclr.b	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -189,35 +189,35 @@ L29786	bsr.w	L298BA
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.b	.lE866
+	beq.b	.next6
 	bset.b	#$5,$FF800F.l
-	bra.b	.lE86E
-.lE866	bclr.b	#$5,$FF800F.l
-.lE86E	move.l	a6,$19360.l
+	bra.b	.next7
+.next6	bclr.b	#$5,$FF800F.l
+.next7	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	move.w	#$2,d0
 	jsr	$5F22.w
-	move.w	#$80,d0
+.loop2	move.w	#$80,d0
 	jsr	$5F22.w
-	dc.w	$6500,$FFF6
-	move.w	#$81,d0
+	bcs.w	.loop2
+.loop3	move.w	#$81,d0
 	jsr	$5F22.w
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
-	dc.w	$66EC
+	bne.s	.loop3
 	move.w	#$5,$19364.l
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
 	jmp	$2E980.l
 L298BA	tst.w	$1A43A.l
-	dc.w	$6700,$0022
+	beq.w	L298E4
 	jsr	$38F6E.l
 	dc.b	$00,$18,$BE,$12,$07,$53,$68,$6F,$74,$73,$BE,$0F,$1A,$5B,$20,$46	; .....Shots...[ F
 	dc.b	$6F,$72,$20,$47,$6F,$61,$6C,$73	; or Goals
 L298E2	rts
-	jsr	$38F6E.l
+L298E4	jsr	$38F6E.l
 	dc.b	$00,$18,$BE,$12,$07,$47,$6F,$61,$6C,$73,$BE,$0F,$1A,$46,$6F,$72	; .....Goals...For
 	dc.b	$20,$53,$68,$6F,$74,$73,$20,$5D	;  Shots ]
 L29902	rts
@@ -234,35 +234,35 @@ L29914	movea.l	#$186B2,a2
 	rts
 L2993E	lea.l	$344(a2),a0
 	tst.w	$1A43A.l
-	beq.w	.lE950
+	beq.w	.next
 	lea.l	$34C(a2),a0
-.lE950	clr.w	$1A44A.l
+.next	clr.w	$1A44A.l
 	move.w	#$B,$18D58.l
 	bsr.w	L299F6
 	cmpi.w	#$1,$180E4.l
-	blt.w	.lE9B6
+	blt.w	.next2
 	move.w	#$10,$18D58.l
 	bsr.w	L299F6
 	cmpi.w	#$2,$180E4.l
-	blt.w	.lE9B6
+	blt.w	.next2
 	move.w	#$15,$18D58.l
 	bsr.w	L299F6
 	cmpi.w	#$3,$180E4.l
-	blt.w	.lE9B6
+	blt.w	.next2
 	btst.b	#$1,$17F7A.l
-	beq.w	.lE9B6
+	beq.w	.next2
 	move.w	#$1A,$18D58.l
 	bsr.w	L299F6
-.lE9B6	move.w	#$21,$18D58.l
+.next2	move.w	#$21,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 L299CA	subi.w	#$3,$18D58.l
 	move.w	$1A44A.l,d0
 	move.w	#$2,d1
 	cmpi.w	#$64,d0
-	blt.w	.lE9E8
+	blt.w	.next
 	move.w	#$3,d1
-.lE9E8	jsr	$3919A.l
+.next	jsr	$3919A.l
 	jsr	$38F80.l
 	rts
 L299F6	move.w	(a0)+,d0
@@ -272,9 +272,9 @@ L299F6	move.w	(a0)+,d0
 L29A0A	subi.w	#$3,$18D58.l
 	move.w	#$2,d1
 	cmpi.w	#$64,d0
-	blt.w	.lEA22
+	blt.w	.next
 	move.w	#$3,d1
-.lEA22	jsr	$3919A.l
+.next	jsr	$3919A.l
 	jmp	$38F80.l
 StatsReport						;"Game Statistics" menu item (menu lists): both
 	

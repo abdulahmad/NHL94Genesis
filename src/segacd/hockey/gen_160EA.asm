@@ -577,14 +577,14 @@ L31AB8	clr.w	$6(a3)
 	add.w	d0,d0
 	movea.l	#$1834C,a0
 	btst.b	#$6,$62(a3)
-	beq.w	.l16AD8
+	beq.w	.next
 	adda.w	#$366,a0
-.l16AD8	move.w	#$FFFE,$68(a0,d0.w)
+.next	move.w	#$FFFE,$68(a0,d0.w)
 	move.b	$61(a3),d3
 	bsr.w	L31B0E
 	jmp	$3D770.l
 	btst.b	#$2,$62(a3)
-	dc.w	$6600,$FFC2
+	bne.w	check4benchExit
 	move.w	$44(a3),d0
 	move.w	$46(a3),d1
 	movea.l	#$33C6E,a0
@@ -598,34 +598,34 @@ L31B0E	move.b	$60(a3),d0
 	st.b	$60(a3)
 	rts
 	btst.b	#$5,$62(a3)
-	dc.w	$6600,$FF86
+	bne.w	check4benchExit
 	bclr.b	#$1,$62(a3)
-	beq.w	.l16B7A
+	beq.w	.next2
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	move.w	$52(a3),d0
 	subi.w	#$6,d0
-	bmi.w	.l16B54
+	bmi.w	.next
 	addi.w	#$1,d0
-.l16B54	muls.w	#$E,d0
+.next	muls.w	#$E,d0
 	move.w	d0,$14(a3)
 	move.w	#$88,$0(a3)
 	neg.w	$0(a3)
 	move.w	#$2,$54(a3)
 	bset.b	#$5,$62(a3)
 	move.w	#$F6E,d1
-	dc.w	$6000,$4848
-.l16B7A	move.w	#$4,$54(a3)
+	bra.w	SetSPA
+.next2	move.w	#$4,$54(a3)
 	bclr.b	#$2,$62(a3)
 	bclr.b	#$5,$63(a3)
 	bclr.b	#$2,$63(a3)
 	clr.w	$58(a3)
 	move.w	#$1000,$28(a3)
-	dc.w	$6000,$4726
+	bra.w	assexit
 	btst.b	#$5,$62(a3)
-	dc.w	$6600,$FF0E
+	bne.w	check4benchExit
 	bclr.b	#$1,$62(a3)
-	beq.w	.l16C0E
+	beq.w	.next5
 	bset.b	#$2,$63(a3)
 	bsr.w	L31CC2
 	moveq	#-2,d4
@@ -634,14 +634,14 @@ L31B0E	move.b	$60(a3),d0
 	moveq	#$B,d0
 	move.b	$18068.l,d1
 	btst.b	#$6,$62(a3)
-	bne.w	.l16BE0
+	bne.w	.next3
 	lsr.w	#$4,d1
 	neg.w	d0
-.l16BE0	andi.w	#$F,d1
+.next3	andi.w	#$F,d1
 	cmpi.w	#$2,d1
-	bls.w	.l16BEE
+	bls.w	.next4
 	moveq	#$2,d1
-.l16BEE	addq.w	#$3,d1
+.next4	addq.w	#$3,d1
 	muls.w	d0,d1
 	move.w	d1,$46(a3)
 	move.w	#$88,$44(a3)
@@ -649,56 +649,56 @@ L31B0E	move.b	$60(a3),d0
 	bset.b	#$5,$63(a3)
 	clr.w	$4E(a3)
 	clr.w	$50(a3)
-.l16C0E	move.w	$14(a3),d0
+.next5	move.w	$14(a3),d0
 	sub.w	$46(a3),d0
 	cmpi.w	#$C,d0
-	bgt.w	.l16CB0
+	bgt.w	.next8
 	cmpi.w	#$FFF4,d0
-	blt.w	.l16CB0
+	blt.w	.next8
 	move.w	$0(a3),d0
 	sub.w	$44(a3),d0
 	cmpi.w	#$FFE8,d0
-	blt.w	.l16CB0
+	blt.w	.next8
 	sub.w	d7,$40(a3)
-	dc.w	$6A00,$FE7A
+	bpl.w	check4benchExit
 	addi.w	#$8,$40(a3)
 	bset.b	#$2,$62(a3)
 	move.w	#$50C,d1
-	dc.w	$6100,$4770
+	bsr.w	SetSPA
 	moveq	#$6,d2
 	tst.b	$76(a3)
-	beq.w	.l16C5E
+	beq.w	.next6
 	moveq	#$2,d2
-.l16C5E	cmp.w	$54(a3),d2
-	beq.w	.l16C72
+.next6	cmp.w	$54(a3),d2
+	beq.w	.next7
 	addi.w	#$1,$54(a3)
 	andi.w	#$7,$54(a3)
-.l16C72	clr.w	$2A(a3)
+.next7	clr.w	$2A(a3)
 	move.w	#$1000,$28(a3)
 	cmpi.w	#$FFF8,d0
-	dc.w	$6D00,$FE34
+	blt.w	check4benchExit
 	clr.w	$28(a3)
 	cmp.w	$54(a3),d2
-	dc.w	$6600,$FE28
+	bne.w	check4benchExit
 	bset.b	#$5,$62(a3)
 	move.w	#$2,$54(a3)
 	move.w	#$F6E,d1
-	dc.w	$6100,$471E
+	bsr.w	SetSPA
 	bclr.b	#$4,$63(a3)
 	moveq	#$D,d0
-	dc.w	$6000,$4636
-.l16CB0	move.w	$44(a3),d0
+	bra.w	assreplace
+.next8	move.w	$44(a3),d0
 	move.w	$46(a3),d1
 	movea.l	#$31AB6,a0
 	bra.w	skateto
 L31CC2	btst.b	#$3,$62(a3)
-	dc.w	$6700,$FDEC
+	beq.w	check4benchExit
 	clr.w	d4
 	move.w	$52(a3),d0
 	cmp.w	$17F9E.l,d0
-	dc.w	$6700,$F5CA
+	beq.w	PassToJump
 	moveq	#$2,d4
-	dc.w	$6000,$F5C4
+	bra.w	PassToJump
 assdopen						;add player a3 to penalty box
 	btst	#$5,$62(a3)
 	bne.w	check4benchExit
