@@ -2,28 +2,28 @@ puckvzadj						;set puckvz for a top shelf shot from the distance to the goal li
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$17B94.l,d0
-	bpl.w	.next
+	bpl.w	.dist
 	neg.w	d0
-.next	subi.w	#$108,d0
-	bpl.w	.next2
+.dist	subi.w	#$108,d0
+	bpl.w	.0
 	neg.w	d0
-.next2	swap	d0
+.0	swap	d0
 	andi.l	#$FFFF0000,d0
 	move.w	$17BAA.l,d1
-	beq.w	.next8
-	bpl.w	.next3
+	beq.w	.x
+	bpl.w	.speed
 	neg.w	d1
-.next3	move.w	#$11,d2
+.speed	move.w	#$11,d2
 	tst.w	$18C20.l
-	beq.w	.next4
+	beq.w	.div
 	move.w	#$16,d2
-.next4	divu.w	d1,d0
+.div	divu.w	d1,d0
 	andi.l	#$FFFF,d0
 	divu.w	d2,d0
 	tst.w	d0
-	bne.w	.next5
+	bne.w	.calc
 	move.w	#$1,d0
-.next5	move.l	#$A0000,d1
+.calc	move.l	#$A0000,d1
 	move.w	d0,d3
 	mulu.w	d2,d0
 	divu.w	d0,d1
@@ -32,14 +32,14 @@ puckvzadj						;set puckvz for a top shelf shot from the distance to the goal li
 	add.w	d4,d2
 	mulu.w	d3,d2
 	cmpi.l	#$7FFF,d2
-	blt.w	.next6
+	blt.w	.addvz
 	move.w	#$7FFF,d2
-.next6	add.w	d2,d1
+.addvz	add.w	d2,d1
 	tst.w	d1
-	bpl.w	.next7
+	bpl.w	.setvz
 	move.w	#$7FFF,d1
-.next7	move.w	d1,$17BAC.l
-.next8	movem.l	(sp)+,d0-d7/a0-a6
+.setvz	move.w	d1,$17BAC.l
+.x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy
 	
@@ -60,9 +60,9 @@ OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puck
 	sub.w	$17B80.l,d1
 	swap	d1
 	tst.w	d0
-	bne.w	.next
+	bne.w	.setv
 	move.w	#$1,d0
-.next	divs.w	d0,d1
+.setv	divs.w	d0,d1
 	move.w	d1,$17BA8.l
 	clr.l	d1
 	move.w	$19378.l,d1
@@ -82,45 +82,45 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$2,(sflags6).l
 	tst.w	$34(a3)
-	bne.w	.next
+	bne.w	.skater
 	movea.l	#$22906,a0
-	bra.w	.next3
-.next	move.w	$14(a3),d0
+	bra.w	.facing
+.skater	move.w	$14(a3),d0
 	btst	#$7,$62(a3)
-	bne.w	.next2
+	bne.w	.near
 	neg.w	d0
-.next2	bset	#$2,(sflags6).l
+.near	bset	#$2,(sflags6).l
 	movea.l	#$228C6,a0
 	cmpi.w	#$58,d0
-	blt.w	.next3
+	blt.w	.facing
 	movea.l	#$228E6,a0
 	bclr	#$2,(sflags6).l
-.next3	move.w	$54(a3),d0
+.facing	move.w	$54(a3),d0
 	btst	#$7,$62(a3)
-	bne.w	.next4
+	bne.w	.offset
 	addi.w	#$4,d0
 	andi.w	#$7,d0
-.next4	asl.w	#$2,d0
+.offset	asl.w	#$2,d0
 	move.w	(a0,d0.w),d1
 	move.w	$2(a0,d0.w),d2
 	cmpa.l	#$228E6,a0
-	bne.w	.next7
+	bne.w	.side
 	move.w	$14(a3),d0
 	bpl.w	.next5
 	neg.w	d0
 .next5	cmpi.w	#$8A,d0
-	blt.w	.next7
+	blt.w	.side
 	move.w	$0(a3),d0
 	bpl.w	.next6
 	neg.w	d0
 .next6	cmpi.w	#$37,d0
-	bgt.w	.next7
+	bgt.w	.side
 	move.w	#$103,d2
-.next7	btst	#$7,$62(a3)
-	bne.w	.next8
+.side	btst	#$7,$62(a3)
+	bne.w	.rand
 	neg.w	d1
 	neg.w	d2
-.next8	move.w	#$A,d0
+.rand	move.w	#$A,d0
 	jsr	(randomd0).l
 	add.w	d0,d1
 	move.w	#$A,d0
@@ -128,18 +128,18 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	add.w	d0,d2
 	move.w	d1,$19376.l
 	tst.w	$34(a3)
-	beq.w	.next10
+	beq.w	.sety
 	sub.w	$0(a3),d1
-	bmi.w	.next9
+	bmi.w	.left
 	subi.w	#$3C,d1
-	bpl.w	.next10
+	bpl.w	.sety
 	neg.w	d1
 	add.w	d1,$19376.l
-	bra.w	.next10
-.next9	addi.w	#$3C,d1
-	bmi.w	.next10
+	bra.w	.sety
+.left	addi.w	#$3C,d1
+	bmi.w	.sety
 	sub.w	d1,$19376.l
-.next10	move.w	d2,$19378.l
+.sety	move.w	d2,$19378.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
@@ -339,11 +339,11 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 	movem.w	d0-d1,-(sp)
 	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
-	bne.w	.next
+	bne.w	.cont
 	neg.w	d0
-.next	tst.w	d0
-	bpl.w	.next3
-	bra.w	.next2
+.cont	tst.w	d0
+	bpl.w	.plus
+	bra.w	.minus
 ; Code kept as words after PuckOnAttackHalf (the 82 bytes are decoded in the row comments).
 	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B		; move.w $17e2c.l, d0 / addi.w #$4, d0 / andi.w #$7, d0 / move.w $54(a3), d1
 	dc.w	$0054,$B240,$6000,$0044,$6700,$0040,$0641,$0001		; cmp.w d0, d1 / bra.w *+70 / beq.w *+66 / addi.w #$1, d1
@@ -351,12 +351,12 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 	dc.w	$0007,$B240,$6700,$0024,$0441,$0003,$0241,$0007		; cmp.w d0, d1 / beq.w *+38 / subi.w #$3, d1 / andi.w #$7, d1
 	dc.w	$B240,$6700,$0016,$0441,$0001,$0241,$0007,$6700		; cmp.w d0, d1 / beq.w *+24 / subi.w #$1, d1 / andi.w #$7, d1 / beq.w *+12
 	dc.w	$000A
-.next2
+.minus
 	move.w	#$0,d0
-	bra.w	.next4
-.next3
+	bra.w	.ex
+.plus
 	move.w	#$1,d0
-.next4	movem.w	(sp)+,d0-d1
+.ex	movem.w	(sp)+,d0-d1
 	rts
 onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
 	
@@ -367,9 +367,9 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	movem.l	d0/a0,-(sp)
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a3)
-	beq.w	.next
+	beq.w	.home
 	lea.l	$366(a0),a0
-.next	clr.w	d0
+.home	clr.w	d0
 	move.b	$66(a3),d0
 	move.w	$1A(a0),$1C(a0)
 	move.w	$18(a0),$1A(a0)
@@ -393,14 +393,14 @@ CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d
 	add.w	d0,d1
 	andi.w	#$7,d1
 	cmpi.w	#$4,d1
-	bgt.w	.next
+	bgt.w	.g0
 	move.w	$4(a3),d0
 	eori.w	#$FFFF,d0
 	andi.w	#$800,d0
-	bra.w	.next2
-.next	move.w	$4(a3),d0
+	bra.w	.ex
+.g0	move.w	$4(a3),d0
 	andi.w	#$800,d0
-.next2	movem.w	(sp)+,d0-d1
+.ex	movem.w	(sp)+,d0-d1
 	rts
 	rts
 ; Return point of CheckOneTimerFacing.

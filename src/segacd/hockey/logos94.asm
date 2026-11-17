@@ -216,22 +216,22 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	movea.l	#$17EAC,a0
 	move.w	#$2,$1AD8C.l
 	cmpa.l	#$1834C,a2		;home team?
-	bne.w	.next
+	bne.w	.0
 	movea.l	#$17EAE,a0
 	move.w	#$20,$1AD8C.l		;home: the home lists and column $20
-.next	move.w	#$0,d0
+.0	move.w	#$0,d0
 .loop	move.w	(a0)+,d1		;1 hot player per team
 	cmp.w	$1AD8A.l,d1
-	beq.w	.next3
+	beq.w	.hot
 	dbra	d0,.loop
 	movea.l	#$17EB0,a0
 	cmpa.l	#$1834C,a2
-	bne.w	.next2
+	bne.w	.1
 	movea.l	#$17EB2,a0
-.next2	move.w	#$0,d0
+.1	move.w	#$0,d0
 .loop2	move.w	(a0)+,d1
 	cmp.w	$1AD8A.l,d1
-	beq.w	.next4
+	beq.w	.cold
 	dbra	d0,.loop2
 	move.w	$1AD8C.l,(printx).l
 	move.w	#$19,(printy).l
@@ -239,13 +239,13 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	move.w	#$3,d1
 	move.w	#$7FF,d2		;blank char
 	jsr	(eraser).l
-	bra.w	.next6
-.next3	move.w	(hoticonchars).l,d4
+	bra.w	.x
+.hot	move.w	(hoticonchars).l,d4
 	movea.l	(HotMap).l,a0
-	bra.w	.next5
-.next4	move.w	(coldiconchars).l,d4
+	bra.w	.draw
+.cold	move.w	(coldiconchars).l,d4
 	movea.l	(ColdMap).l,a0
-.next5	move.w	$1AD8C.l,(printx).l
+.draw	move.w	$1AD8C.l,(printx).l
 	move.w	#$19,(printy).l
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -258,7 +258,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	move.w	$2(a1),d3
 	moveq	#$0,d5		;no palette lines
 	jsr	(dobitmap).l
-.next6	movem.l	(sp)+,d0/a0-a1
+.x	movem.l	(sp)+,d0/a0-a1
 	rts
 ; Hot/cold icon: draws the icon at the puck position.
 HotColdIconDraw

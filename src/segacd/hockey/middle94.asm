@@ -6,10 +6,10 @@ UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words
 	bra.w	.next2
 .loop	move.b	(a0)+,d1		;next nibble (one count per pass)
 	bchg	#$0,d2		;toggle high/low nibble
-	bne.w	.next		;low nibble?
+	bne.w	.lo		;low nibble?
 	suba.w	#$1,a0		;high nibble: read the same byte again next time
 	lsr.w	#$4,d1		;high nibble down
-.next	andi.w	#$F,d1
+.lo	andi.w	#$F,d1
 	move.w	d1,(a1)+
 .next2	dbra	d0,.loop
 	movem.l	(sp)+,d0-d2/a0-a1
@@ -20,12 +20,12 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 	movea.l	#$18BE8,a1		;weights
 	clr.w	d1		;d1 = running total of the weights
 	bra.w	.next
-.loop	add.w	(a1)+,d1
-.next	dbra	d0,.loop
+.sumloop	add.w	(a1)+,d1
+.next	dbra	d0,.sumloop
 	move.w	d1,d0
 	bsr.w	randomd0		;random 0 to total-1
-.loop2	sub.w	-(a1),d0		;minus the weight
-	bpl.w	.loop2
+.findloop	sub.w	-(a1),d0		;minus the weight
+	bpl.w	.findloop
 	suba.l	#$18BE8,a1
 	move.w	a1,d0
 	lsr.w	#$1,d0		;word offset -> index
@@ -94,14 +94,14 @@ forceblack
 	movem.l	d0/a0,-(sp)
 	movea.l	#$BBCB0,a0
 	moveq	#$1F,d0
-.loop	move.l	(a0),-(sp)
+.0	move.l	(a0),-(sp)
 	clr.l	(a0)+
-	dbra	d0,.loop
+	dbra	d0,.0
 	move.w	#$18,(palcount).l
 	bsr.w	ForceBlackBegin
 	moveq	#$1F,d0
-.loop2	move.l	(sp)+,-(a0)
-	dbra	d0,.loop2
+.1	move.l	(sp)+,-(a0)
+	dbra	d0,.1
 	movem.l	(sp)+,d0/a0
 	rts
 forceblack2
@@ -515,7 +515,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bne.w	.resume
 	adda.w	#$2,sp
 	bset	#$7,d1
-	bra.w	.next
+	bra.w	.ex
 .resume	move.w	(sp)+,(ScoutSubStatus).l
 .vid	bsr.w	setvideo
 	move.w	(ScoutSubStatus).l,d0
@@ -523,7 +523,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	beq.w	.0
 	tst.w	d0
 	bmi.w	.wait
-.next	movem.l	(sp)+,d4-d7/a0-a3
+.ex	movem.l	(sp)+,d4-d7/a0-a3
 	rts
 waitjoy						;wait for either joystick input. Return d1 = new button presses. it as
 	
@@ -987,8 +987,8 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 									;color to fade to. Falls into setVram_0
 	movea.l	#$BBCB0,a0
 	moveq	#$3F,d1
-.loop	move.w	d0,(a0)+		;fill the 64 target colors with d0
-	dbra	d1,.loop
+.0	move.w	d0,(a0)+		;fill the 64 target colors with d0
+	dbra	d1,.0
 	move.w	#$18,(palcount).l
 	bsr.w	ForceBlackBegin
 ; Pushes the sub-CPU return state while a VRAM transfer runs.
@@ -1554,20 +1554,20 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)		;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6
 	movea.l	#$BBCB0,a3		;a3 = target palette, a0 = palette data
-	bra.w	.next3
-.loop	move.b	(a0,d0.w),(a3,d0.w)		;copy the color
-	dbra	d0,.loop
-.loop2	adda.l	#$20,a0		;next line
+	bra.w	.00
+.01	move.b	(a0,d0.w),(a3,d0.w)		;copy the color
+	dbra	d0,.01
+.02	adda.l	#$20,a0		;next line
 	adda.l	#$20,a3		;next line
-.next3	moveq	#$1F,d0
+.00	moveq	#$1F,d0
 	lsr.w	#$1,d5		;d5 bit n = copy palette line n; stop when no bits left
-	bcs.w	.loop
-	bne.w	.loop2
+	bcs.w	.01
+	bne.w	.02
 	move.w	(printa).l,d5		;d5 = tile attribute bits (priority/palette/flip) from printa
 	andi.w	#$F800,d5		;attribute bits
 	move.w	$E(sp),d2
 	subi.w	#$1,d2
-.loop3	bsr.w	xyVmMap		;set vram address from printx/printy/printm, a0 = Vdata
+.loop2	bsr.w	xyVmMap		;set vram address from printx/printy/printm, a0 = Vdata
 	move.w	d6,d0
 	mulu.w	(a1),d0
 	add.w	$2(sp),d0
@@ -1576,12 +1576,12 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	subi.w	#$1,d1
 	move.w	d1,(ThreeStars).l		;map word (map data starts 4 bytes in)
 	lea.l	$BC002.l,a0
-.loop4	move.w	$4(a1,d0.w),d3
+.loop1	move.w	$4(a1,d0.w),d3
 	add.w	d4,d3		;add the start char
 	eor.w	d5,d3		;xor the attribute bits
 	move.w	d3,(a0)+		;write the name table entry
 	addi.w	#$2,d0
-	dbra	d1,.loop4
+	dbra	d1,.loop1
 .loop5	btst	#$7,$FF800E.l
 	bne.b	.loop5
 	move.w	#$21,$FF8020.l
@@ -1597,11 +1597,11 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	bclr	#$7,$FF800F.l
 	addi.w	#$1,(printy).l
 	addi.w	#$1,d6
-	dbra	d2,.loop3
+	dbra	d2,.loop2
 	btst	#$0,(sflags6).l
-	bne.w	.next4
+	bne.w	.0
 	jsr	(DecompressGraphicsPlain).l
-.next4	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
+.0	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,(disflags).l
 	move.w	(sp)+,(printy).l
 	move.l	a6,-(sp)

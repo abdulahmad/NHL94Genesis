@@ -13,9 +13,9 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	move.w	$1936C.l,d0
 	movea.l	#tmstruct,a2
 	tst.w	$19366.l
-	beq.w	.next
+	beq.w	.0
 	movea.l	#awtmstruct,a2
-.next	jsr	(FormatPlayerNumInitial).l
+.0	jsr	(FormatPlayerNumInitial).l
 	move.w	(printx).l,-(sp)
 	jsr	(print).l
 	move.w	(sp)+,(printx).l
@@ -31,9 +31,9 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	move.b	$66(a2),d0		;goalie roster index
 	movea.l	#awtmstruct,a2
 	tst.w	$19366.l
-	beq.w	.next2
+	beq.w	.1
 	movea.l	#tmstruct,a2
-.next2	jsr	(FormatPlayerNumInitial).l
+.1	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$9
@@ -98,10 +98,10 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 	move.w	#$B,$1936A.l
 	movea.l	#$1A41C,a0
 	tst.w	$1A436.l
-	beq.w	.next
+	beq.w	.1
 	move.w	#$5,$1936A.l
 	movea.l	#$1A42A,a0
-.next	move.w	$1A428.l,d0
+.1	move.w	$1A428.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),$1936C.l
 	bclr	#$2,$17BE2.l
@@ -111,16 +111,16 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$0,$1A437.l
-	beq.w	.next
+	beq.w	.switch
 	cmpi.w	#$5,$1A41A.l
-	blt.w	.next
+	blt.w	.switch
 	move.w	$1A416.l,d0
 	cmp.w	$1A418.l,d0
-	beq.w	.next
+	beq.w	.switch
 	bset	#$3,$17F78.l
 	jsr	(ScoutStubSetup).l
 	bra.w	.x
-.next	eori.w	#$1,$1A436.l
+.switch	eori.w	#$1,$1A436.l
 	bne.w	.x
 	addi.w	#$1,$1A428.l
 	cmpi.w	#$5,$1A428.l

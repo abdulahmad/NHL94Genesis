@@ -330,11 +330,11 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 	move.l	#$DA0,d0
 	movea.l	#$1A2FC,a0
 	btst	#$6,(sflags6).l
-	beq.w	.next
+	beq.w	.read
 	jsr	(BackupRamWrite).l
-	bra.w	.next2
-.next	jsr	(BackupRamRead).l
-.next2	movem.l	(sp)+,d0-d7/a0-a6
+	bra.w	.x
+.read	jsr	(BackupRamRead).l
+.x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Data that follows NameLogIO (strings, small tables)
 NameLogIOData	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6

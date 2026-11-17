@@ -68,11 +68,11 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$1A8BC.l,d0
 	btst	#$7,$62(a3)
-	bne.w	.next
+	bne.w	.0
 	movea.l	#$2A674,a0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
-.next	move.w	d0,$17E2C.l
+.0	move.w	d0,$17E2C.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Data that follows PSandSOpassdir (strings, small tables)
@@ -105,7 +105,7 @@ StartShootoutPathData	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
 NextPathPoint
 	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.b	#$80,$1A8B8.l
-	beq.w	.next2
+	beq.w	.x
 	addi.w	#$1,$1A8B6.l
 	move.w	$1A8B6.l,d0
 	asl.w	#$2,d0
@@ -115,16 +115,16 @@ NextPathPoint
 	movea.l	(a0,d1.w),a0
 	move.w	(a0,d0.w),$1A8B8.l
 	btst	#$0,$76(a3)
-	beq.w	.next
+	beq.w	.0
 	neg.w	$1A8B8.l
-.next	move.w	$2(a0,d0.w),$1A8BA.l
+.0	move.w	$2(a0,d0.w),$1A8BA.l
 	cmpi.b	#$80,$4(a0,d0.w)
-	bne.w	.next2
+	bne.w	.x
 	bset	#$3,$17F7A.l
 	clr.w	$1A8BE.l
 	move.b	$5(a0,d0.w),$1A8BF.l
 	move.w	$6(a0,d0.w),$1A8BC.l
-.next2	movem.l	(sp)+,d0-d7/a0-a6
+.x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Shootout path: steps the shooter to the next path point.
 NextPathPointStep

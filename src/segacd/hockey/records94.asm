@@ -8,7 +8,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	move.w	#$7FF,d2		;blank char
 	jsr	(eraser).l
 	bchg	#$0,$1A567.l
-	bne.w	.next
+	bne.w	.1
 	jsr	(printz).l
 	String	CC_Font1Pri,$19,$11
 	movea.l	#$26DD0,a0		;print the 5 rows of 6 letters
@@ -48,9 +48,9 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	addi.w	#$1,(printy).l
 	jsr	(printz).l
 	String	'START when done.'
-.loop3	movem.l	(sp)+,d0-d7/a0-a6
+.x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.next	movea.l	#$1A37C,a1
+.1	movea.l	#$1A37C,a1
 	bsr.w	GetLogName		;copy the log name
 	move.w	#$0,(printx).l
 	move.w	#$F,(printy).l
@@ -64,7 +64,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	moveq	#$7,d1
 	jsr	(Framer).l
 	bsr.w	NameEntryHelp
-	bra.w	.loop3
+	bra.w	.x
 
 NameEntryHelp						;Name entry help text ("D-Pad up/down to move arrows.", "Press START to
 	
@@ -230,12 +230,12 @@ GetNameLength						;namelength = length of the name being entered
 	movea.l	#$1A37C,a0
 	clr.w	$1A38A.l
 .loop	cmpi.b	#$2D,(a0)
-	beq.w	.next
+	beq.w	.x
 	tst.b	(a0)+
-	beq.w	.next
+	beq.w	.x
 	addi.w	#$1,$1A38A.l
 	dbra	d3,.loop
-.next	movem.l	(sp)+,d0-d7/a0-a6
+.x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PrintNameField						;Name entry: print the 12 character name field from a1, '-' past the
 	
@@ -283,10 +283,10 @@ GetLogName						;Copy name log entry namelogsel to a1 ('-' for
 	move.w	#$B,d3
 .loop	move.b	(a0,d2.w),d0
 	beq.w	.0
-	bra.w	.next
+	bra.w	.1
 .0	move.b	#$2D,d0
 	subi.w	#$1,$1A38A.l
-.next	move.b	d0,(a1)+
+.1	move.b	d0,(a1)+
 	addi.w	#$1,$1A38A.l
 	addi.w	#$1,d2
 	dbra	d3,.loop
@@ -306,10 +306,10 @@ StoreUserName						;Name entry: store the name in save RAM
 	move.b	#$0,(a1)
 .0	move.b	(a1)+,d1
 	cmp.b	(a0)+,d1
-	bne.w	.next
+	bne.w	.1
 	dbra	d4,.loop
-	bra.w	.next2
-.next	movea.l	#$1A2FC,a0
+	bra.w	.3
+.1	movea.l	#$1A2FC,a0
 	move.w	$1A38C.l,d0
 	mulu.w	#$C,d0
 	adda.w	d0,a0
@@ -323,14 +323,14 @@ StoreUserName						;Name entry: store the name in save RAM
 	dbra	d4,.loop2
 	bsr.w	WriteNameLog
 	jsr	(StoreUserNameSearch).l
-.next2	movea.l	#$18BF4,a5
+.3	movea.l	#$18BF4,a5
 	tst.w	$1A390.l
-	beq.w	.next3
+	beq.w	.4
 	movea.l	#$18BF6,a5
-.next3	tst.b	$1A37C.l
-	bne.w	.next4
+.4	tst.b	$1A37C.l
+	bne.w	.5
 	clr.w	$1A38C.l
-.next4	move.w	$1A38C.l,(a5)
+.5	move.w	$1A38C.l,(a5)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Searches the stored names ($2D7 entries) for the entered user name.
@@ -411,39 +411,39 @@ StoreUserNameSearch
 UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEntryScreen) for
 	
 	tst.w	$18C06.l
-	bne.w	.ex
+	bne.w	.x
 	clr.w	$18BF4.l
 	clr.w	$18BF6.l
 	tst.w	$17FA6.l
-	beq.w	.next
+	beq.w	.0
 	move.w	$17FA6.l,$1A390.l
 	subi.w	#$1,$1A390.l
 	jsr	(TrimSpacesMenuSetup).l
-.next	tst.w	$17FA8.l
-	beq.w	.ex
+.0	tst.w	$17FA8.l
+	beq.w	.x
 	movem.w	d0,-(sp)
 	move.w	$17FA6.l,d0
 	cmp.w	$17FA8.l,d0
 	movem.w	(sp)+,d0
-	beq.w	.ex
+	beq.w	.x
 	move.w	$17FA8.l,$1A390.l
 	subi.w	#$1,$1A390.l
 	jsr	(TrimSpacesMenuSetup).l
-.ex	rts
+.x	rts
 SkipOtherUserName						;Name entry: step the selection namelogsel past the name the other pad
 	
 	movem.w	d0,-(sp)
 	move.w	$18BF6.l,d0
 	tst.w	$1A390.l
-	beq.w	.next
+	beq.w	.0
 	move.w	$18BF4.l,d0
-.next	cmp.w	$1A38C.l,d0
+.0	cmp.w	$1A38C.l,d0
 	bne.w	.x
 	move.w	#$1,d0
 	tst.w	(sp)
-	bpl.w	.next2
+	bpl.w	.1
 	move.w	#$FFFF,d0
-.next2	add.w	d0,$1A38C.l
+.1	add.w	d0,$1A38C.l
 	clr.w	d0
 .x	movem.w	(sp)+,d0
 	rts
@@ -504,9 +504,9 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	jsr	(ReadActiveJoypad).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
-	beq.w	.next
+	beq.w	.1
 	jmp	(StatsScreenFadeIn).l
-.next	tst.w	$17E62.l
+.1	tst.w	$17E62.l
 	bne.w	.right
 	btst	#$6,d3
 	beq.w	.right

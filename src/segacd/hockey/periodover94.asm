@@ -5,17 +5,17 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	addi.w	#$1,$180E4.l		;period number
 	bchg	#$1,$17F68.l		;flip the attack direction
 	cmpi.w	#$3,$180E4.l		;period 3 or later?
-	blt.w	.next2
-	beq.w	.next		;period 3 just ended
+	blt.w	.0
+	beq.w	.1		;period 3 just ended
 	move.w	#$3,$180E4.l		;overtime done: stay at 3
 	tst.w	$18BFA.l
-	bne.w	.next
+	bne.w	.1
 	move.w	#$4,$180E4.l
-.next	move.w	$18358.l,d0
+.1	move.w	$18358.l,d0
 	sub.w	$186BE.l,d0
-	beq.w	.next2		;tied: play overtime
+	beq.w	.0		;tied: play overtime
 	move.w	#$4,$180E4.l		;game over
-.next2	bsr.w	forceblack
+.0	bsr.w	forceblack
 ; End of period: resets the clock, scores, then runs the intermission.
 PeriodOverIntermission
 	jsr	(ResetClock).l

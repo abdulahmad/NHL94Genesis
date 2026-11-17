@@ -4,10 +4,10 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 									;DecompressGraphicsPlain); then count down the frame time arenaframetime
 									;by d7 and step (NextArenaFrame). Called from periodicevents and waitxsr
 	tst.w	$1A556.l
-	bmi.w	.ex
+	bmi.w	.x2
 	movem.l	d0-d7/a0-a6,-(sp)
 	tst.l	$1A55C.l
-	bne.w	.next
+	bne.w	.run
 	move.w	$1A556.l,d0
 	asl.w	#$3,d0
 	movea.l	#$2A26C,a0
@@ -19,13 +19,13 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	jsr	(DecompressGraphicsPlain).l
 	clr.w	$1A552.l
 	bsr.w	NextArenaFrame
-	bra.w	.next2
-.next	sub.w	d7,$1A554.l
-	bpl.w	.next2
+	bra.w	.x
+.run	sub.w	d7,$1A554.l
+	bpl.w	.x
 	addi.w	#$1,$1A552.l
 	bsr.w	NextArenaFrame		;read the next frame
-.next2	movem.l	(sp)+,d0-d7/a0-a6
-.ex	rts
+.x	movem.l	(sp)+,d0-d7/a0-a6
+.x2	rts
 NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, arenaframetime
 									;= time; frame $FF loops to the start, $FE ends the animation
 									;(EndArenaAnim)
@@ -39,13 +39,13 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	ext.w	d1
 	move.w	d1,$1A554.l
 	cmpi.w	#$FFFF,$1A550.l
-	bne.w	.next
+	bne.w	.0
 	clr.w	$1A552.l
 	bra.w	NextArenaFrame
-.next	cmpi.w	#$FFFE,$1A550.l
-	bne.w	.ex
+.0	cmpi.w	#$FFFE,$1A550.l
+	bne.w	.x
 	bsr.w	EndArenaAnim		;$FE: end the animation
-.ex	rts
+.x	rts
 ; Table of 64 bytes after NextArenaFrame, 64 bytes: $00,$02,$A3,$E4,$00,$04 ...
 	dc.b	$00,$02,$A3,$E4,$00,$04,$3A,$7E,$00,$02,$A3,$98,$00,$04,$42,$A2
 	dc.b	$00,$02,$A3,$BE,$00,$04,$42,$A2,$00,$02,$A3,$86,$00,$04,$4F,$A8
@@ -114,10 +114,10 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 									;from StartPer, checkgoal, puckshootout and LeadSong
 	movem.l	d0-d1/a0-a1,-(sp)
 	btst	#$4,$17F68.l		;highlight reel?
-	beq.w	.next		;not the highlight reel: pick a song
+	beq.w	.0		;not the highlight reel: pick a song
 	move.w	#$FFFF,d1		;highlights: no song
-	bra.w	.next2
-.next	bclr	#$6,$17F7C.l		;clear sflags8 bit 6
+	bra.w	.1
+.0	bclr	#$6,$17F7C.l		;clear sflags8 bit 6
 	movea.l	#$2A4DC,a0
 	movea.l	#$2A584,a1
 	move.w	$1A56C.l,d0
@@ -125,12 +125,12 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	add.w	$1A56E.l,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1		;team song
-	bne.w	.next2		;a team song: use it
+	bne.w	.1		;a team song: use it
 	move.w	#$8,d0		;slot 0: one of the 8 random songs
 	jsr	(randomd0).l
 	andi.w	#$7,d0
 	move.b	(a1,d0.w),d1
-.next2	move.w	d1,$1A56A.l
+.1	move.w	d1,$1A56A.l
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs						;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)

@@ -12,13 +12,13 @@ setupice_highlight
 	bsr.w	CopyTeamBlockMapDataFill
 	bsr.w	setupIceRinkPal
 	btst	#$1,$17F68.l
-	beq.w	.next
+	beq.w	.gok
 	movea.l	#$17480,a3
 	moveq	#$B,d0
 .loop	bchg	#$7,$62(a3)
 	adda.w	#$80,a3
 	dbra	d0,.loop
-.next	bsr.w	CopyTeamLinesCheckTeam
+.gok	bsr.w	CopyTeamLinesCheckTeam
 	move.w	#$FFFF,$17DC8.l
 	move.w	#$FFFF,$17DD6.l
 	clr.l	$17DCA.l
@@ -59,8 +59,8 @@ setupIceRinkPal
 	adda.l	(a0),a0
 	moveq	#$F,d0
 	movea.l	#$BBCB0,a1
-.loop	move.l	(a0)+,(a1)+
-	dbra	d0,.loop
+.ipal	move.l	(a0)+,(a1)+
+	dbra	d0,.ipal
 	rts
 ; Decompresses the rink palette with remap.
 SetupIceRinkPalRemap
@@ -402,20 +402,20 @@ SprSort						;sort objects in struct SortObj and set corresponding tables for ke
 	movea.l	#$17C80,a1
 	movea.l	#$17480,a0
 	move.w	#$F,d3
-.loop	move.w	$14(a0),d4
+.loop0	move.w	$14(a0),d4
 	btst	#$7,$17F6A.l
-	beq.w	.next
+	beq.w	.101
 	move.w	$0(a0),d4
-.next	move.w	d4,(a1)+
+.101	move.w	d4,(a1)+
 	adda.w	#$80,a0
-	dbra	d3,.loop
+	dbra	d3,.loop0
 	movea.l	#$17C80,a1
-.loop2	clr.w	d4
+.loop	clr.w	d4
 	movea.l	#$17CC0,a0
 	move.w	#$E,d3
 	clr.w	d0
 	clr.w	d1
-.loop3	move.b	(a0)+,d0
+.0	move.b	(a0)+,d0
 	move.b	(a0),d1
 	move.w	(a1,d0.w),d2
 	cmp.w	(a1,d1.w),d2
@@ -428,31 +428,31 @@ SprSort						;sort objects in struct SortObj and set corresponding tables for ke
 	subq.w	#$1,d2
 	move.w	d2,(a2,d1.w)
 	st.b	d4
-.next2	dbra	d3,.loop3
+.next2	dbra	d3,.0
 	tst.w	d4
-	bne.w	.loop2
+	bne.w	.loop
 	movem.l	(sp)+,d0-d4/a0-a2
 	rts
 resetplstuff
 	movem.l	d0-d2/a0-a3,-(sp)
 	movea.l	#tmstruct,a2
-	bsr.w	.next
+	bsr.w	.top
 	movea.l	#awtmstruct,a2
-	bsr.w	.next
+	bsr.w	.top
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
-.next	bclr	#$4,$32(a2)
+.top	bclr	#$4,$32(a2)
 	moveq	#$5,d2
 	movea.l	$22(a2),a3
 .loop	clr.b	$63(a3)
 	tst.w	$34(a3)
-	bmi.w	.next2
+	bmi.w	.next
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
 	clr.w	$32(a3)
 	clr.b	$5E(a3)
 	andi.b	#$C2,$62(a3)
-.next2	adda.w	#$80,a3
+.next	adda.w	#$80,a3
 	dbra	d2,.loop
 	rts
 clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
@@ -826,7 +826,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 									;p_music_vblank, rte
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$2,(disflags).l
-	bne.w	.next2
+	bne.w	.nograph
 	movea.l	#$BBD30,a0
 	move.w	$17F66.l,d0
 	beq.w	.next
@@ -850,7 +850,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	bne.b	.loop3
 	bclr	#$4,$FF800F.l
 .next	jsr	(ForceBlackStep).l
-.next2	addq.w	#$1,(ScoutSubStatus).l
+.nograph	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Text of VBlank_Playoff (4 rows).
@@ -1033,9 +1033,9 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 .roster	movea.l	$1E(a1),a1
 	adda.w	$0(a1),a1
 	bra.w	.next5
-.loop4	adda.w	(a1),a1
+.loop5	adda.w	(a1),a1
 	adda.w	#$8,a1		;skip the fixed part
-.next5	dbra	d1,.loop4
+.next5	dbra	d1,.loop5
 	bra.w	.append		;a1 = player name
 .27	movea.l	(AwayTeamRosterPtr).l,a1
 	adda.w	$4(a1),a1
@@ -1244,10 +1244,10 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 									;Called from PrintOptions. 92 TeamIcons drew name bars (dotb)
 	movem.l	d0-d7/a0-a2,-(sp)
 	cmpi.w	#$4,$18BFA.l
-	beq.w	.next
+	beq.w	.opt
 	tst.w	$18BFA.l
 	bne.w	.draw
-.next	move.w	$18BFE.l,(HomeTeam).l
+.opt	move.w	$18BFE.l,(HomeTeam).l
 	move.w	$18C00.l,(VisTeam).l
 .draw	bsr.w	printz		;teams set: print them
 	String	CC_Font1Pri,$7,$1
@@ -1451,13 +1451,13 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	clr.w	$C(a1)
 	clr.w	$8(a1)
 	bclr	#$1,$E(a1)		;hilite requested
-	bsr.w	.next
+	bsr.w	.sett
 	adda.w	#$10,a1
 	dbra	d1,.loop
 	bsr.w	FigureJoy		;assign the pads
 .nogames	movem.l	(sp)+,d0-d4/a0-a3
 	rts
-.next	cmpi.w	#$2,$18A9C.l
+.sett	cmpi.w	#$2,$18A9C.l
 	beq.w	.1
 	cmpi.w	#$3,$18A9C.l
 	beq.w	.1
@@ -1484,11 +1484,11 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	clr.w	$17FAA.l
 	clr.w	$17FAC.l
 	tst.w	$18C16.l
-	beq.w	.next12
+	beq.w	.init
 	tst.w	$18BFA.l
-	beq.w	.next10		;regular season
+	beq.w	.fjnpo		;regular season
 	btst	#$0,$17F78.l
-	bne.w	.next10
+	bne.w	.fjnpo
 	bsr.w	GetShifter		;d1 = last game
 	movea.l	#$18AA6,a0
 	move.w	$18AA0.l,d2
@@ -1500,59 +1500,59 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	st.b	$18A98.l
 	clr.w	d0
 .f0	cmp.w	$0(a1),d2		;first team?
-	beq.w	.next3
+	beq.w	.it1
 	cmp.w	$2(a1),d2		;second team?
-	beq.w	.next
+	beq.w	.it2
 	suba.w	#$10,a1		;previous game
 	dbra	d1,.f0
-	bra.w	.next13
-.next	moveq	#$4,d0
+	bra.w	.ex
+.it2	moveq	#$4,d0
 	tst.w	$18BF8.l
-	beq.w	.next2
+	beq.w	.it22
 	move.w	#$5,d0
-.next2	move.w	$0(a1),$18C00.l
+.it22	move.w	$0(a1),$18C00.l
 	move.w	$2(a1),$18BFE.l
-	bra.w	.next4
-.next3	clr.w	d0
+	bra.w	.itx
+.it1	clr.w	d0
 	move.w	$2(a1),$18C00.l
 	move.w	$0(a1),$18BFE.l
-.next4	add.w	$18AA2.l,d0
+.itx	add.w	$18AA2.l,d0
 	move.w	d1,$18A98.l
 	move.w	$0(a1),(HomeTeam).l
 	move.w	$2(a1),(VisTeam).l
 	asl.w	#$2,d0		;4 bytes an entry
-	lea.l	.next8(pc),a0
+	lea.l	.pojoylist(pc),a0
 	tst.w	$18BF8.l
-	beq.w	.next5
+	beq.w	.0
 	lea.l	.next9(pc),a0
-.next5	move.w	(a0,d0.w),$17FA6.l
+.0	move.w	(a0,d0.w),$17FA6.l
 	move.w	$2(a0,d0.w),$17FA8.l
 	tst.w	$18BF8.l
-	beq.w	.next13
+	beq.w	.ex
 	cmpi.w	#$4,d0		;layout 1?
-	beq.w	.next6		;pojoy 1: cont3team / cont4team = cont1team / cont2team
+	beq.w	.1		;pojoy 1: cont3team / cont4team = cont1team / cont2team
 	cmpi.w	#$18,d0		;layout 6?
-	beq.w	.next6
+	beq.w	.1
 	bra.w	.2
-.next6	move.w	$17FA6.l,$17FAA.l
+.1	move.w	$17FA6.l,$17FAA.l
 	move.w	$17FA8.l,$17FAC.l
-	bra.w	.next13
+	bra.w	.ex
 .2	cmpi.w	#$8,d0		;layout 2?
-	beq.w	.next7		;pojoy 2: cont3team = cont1team, cont4team 0
+	beq.w	.3		;pojoy 2: cont3team = cont1team, cont4team 0
 	cmpi.w	#$1C,d0		;layout 7?
-	beq.w	.next7
-	bra.w	.next13
-.next7	move.w	$17FA6.l,$17FAA.l
+	beq.w	.3
+	bra.w	.ex
+.3	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
-	bra.w	.next13
+	bra.w	.ex
 ; Table of 16 words after FigureJoy, 32 bytes: $0001,$0000,$0001,$0001,$0001,$0002 ...
-.next8	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
+.pojoylist	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
 	dc.w	$0002,$0000,$0002,$0002,$0002,$0001,$0001,$0002
 ; Table of 20 words after FigureJoy, 40 bytes: $0001,$0000,$0001,$0002,$0001,$0002 ...
 .next9	dc.w	$0001,$0000,$0001,$0002,$0001,$0002,$0001,$0001
 	dc.w	$0001,$0002,$0002,$0000,$0002,$0001,$0002,$0001
 	dc.w	$0002,$0002,$0002,$0001
-.next10
+.fjnpo
 	move.w	(OptNOP).l,d0
 	asl.w	#$2,d0
 	lea.l	InitializeGameStructures(pc),a0
@@ -1562,14 +1562,14 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	bne.w	.next11
 	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
-	bra.w	.next12
+	bra.w	.init
 .next11	cmpi.w	#$18,d0
-	bne.w	.next12
+	bne.w	.init
 	move.w	$17FA6.l,$17FAA.l
 	move.w	$17FA8.l,$17FAC.l
-.next12
+.init
 	bsr.w	InitTeamMask
-.next13
+.ex
 	movem.l	(sp)+,d0-d3/a0-a1
 	rts
 InitializeGameStructures						;Random team pairs for all 8 gstruct games, none of them HomeTeam or
@@ -1790,9 +1790,9 @@ GetShifter						;Returns d1 = number of games - 1, d2 = first bit of WinBits
 	moveq	#-16,d2
 	moveq	#$10,d1
 	move.w	$18A9E.l,d0
-.loop	add.w	d1,d2
+.3	add.w	d1,d2
 	lsr.w	#$1,d1
-	dbra	d0,.loop
+	dbra	d0,.3
 	subi.w	#$1,d1
 	move.l	(sp)+,d0
 	rts
@@ -1907,23 +1907,23 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	dbra	d1,.loop
 	addi.w	#$1,$18A9C.l
 	cmpi.w	#$7,$18A9C.l
-	beq.w	.next2
+	beq.w	.nextround
 	move.w	$18A98.l,d0
 	mulu.w	#$10,d0
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
 	cmpi.w	#$4,$4(a0)
-	beq.w	.next
+	beq.w	.cround
 	cmpi.w	#$4,$6(a0)
 	bne.w	rtss2
-.next	cmpi.w	#$3,$18A9E.l
-	bge.w	.next2
+.cround	cmpi.w	#$3,$18A9E.l
+	bge.w	.nextround
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
-.loop2	cmp.w	$18A98.l,d1
+.cr0	cmp.w	$18A98.l,d1
 	beq.w	.crn
 	cmpi.w	#$4,$4(a0)
 	beq.w	.crn
@@ -1933,29 +1933,29 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	move.l	#$C8,d0
 	jsr	(randomd0).l
 	andi.w	#$1,d0
-	beq.w	.loop2
+	beq.w	.cr0
 	subi.w	#$1,$4(a0)
 	addi.w	#$1,$6(a0)
-	bra.w	.loop2
+	bra.w	.cr0
 .crn	suba.w	#$10,a0
-	dbra	d1,.loop2
+	dbra	d1,.cr0
 	movea.l	#$18D26,a3
 	bsr.w	WritePassBits
 	bset	#$2,$17F6E.l
-.next2	clr.w	$18A9C.l
+.nextround	clr.w	$18A9C.l
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
 	clr.w	d3
-.loop3	cmpi.w	#$4,$4(a0)
+.loop2	cmpi.w	#$4,$4(a0)
 	beq.w	.2
 	bset	d1,d3
 .2	clr.w	$4(a0)
 	clr.w	$6(a0)
 	suba.w	#$10,a0
-	dbra	d1,.loop3
+	dbra	d1,.loop2
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
@@ -1965,7 +1965,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	addi.w	#$1,$18A9E.l
 	rts
 .notbos	clr.w	d3
-.loop4	move.w	$A(a0),d0
+.loop3	move.w	$A(a0),d0
 	cmp.w	$C(a0),d0
 	bhi.w	.3
 	bset	d1,d3
@@ -1973,7 +1973,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.nb2
 	bchg	d1,d3
 .nb2	suba.w	#$10,a0
-	dbra	d1,.loop4
+	dbra	d1,.loop3
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
@@ -1995,8 +1995,8 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	movem.l	d0/a1,-(sp)
 	bset	#$3,(disflags).l
 	move.w	(ScoutSubStatus).l,d0
-.loop	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.loop
+.loop2	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.loop2
 	movem.l	(sp)+,d0/a1
 	movem.l	d0-d5/a0-a4,-(sp)
 	jsr	(printz).l
@@ -2019,7 +2019,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bsr.w	CalcStarScores
 	move.w	#$12,(printy).l
 	moveq	#$2,d2
-.loop2	bsr.w	TakeTopStarScore
+.loop	bsr.w	TakeTopStarScore
 	move.w	#$1A,(printx).l
 	addi.w	#$1,(printy).l
 	movea.l	$1E(a2),a1
@@ -2029,7 +2029,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bsr.w	GetPlayerNameBuild
 	move.w	#$3,(printx).l
 	jsr	(print).l
-	dbra	d2,.loop2
+	dbra	d2,.loop
 	move.w	$18358.l,d0
 	sub.w	$186BE.l,d0
 	ble.w	.nosong		;home didn't win
@@ -2377,10 +2377,10 @@ GetPlayerNumInitial
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
 	move.w	$180EE.l,d0
-	bpl.w	.next
+	bpl.w	.get
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
-.next	bsr.w	FormatPlayerNumInitial
+.get	bsr.w	FormatPlayerNumInitial
 	movem.l	(sp)+,d0/a2
 	rts
 FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in

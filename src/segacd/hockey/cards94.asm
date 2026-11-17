@@ -2,29 +2,29 @@ ResetCardTimer						;Reset the player card timer cardtimer to $AA ($53 if C was 
 									;Called from ReadSetupPads, PrintOptions and PlayerCardTimer
 	move.w	#$AA,$1939E.l		;normal wait
 	btst	#$5,$19390.l		;C held (bit 5): use the shorter wait
-	beq.w	.ex
+	beq.w	.x
 	move.w	#$53,$1939E.l		;shorter wait
-.ex	rts
+.x	rts
 PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the first minute of
 									;its wait. When carddelay runs out set setupcardflags bit 0; then count
 									;cardtimer down (C skips $50); at $52 switch sides (bit 1), forget the
 									;logos and draw the next card (PlayerCardScreen); below 0 restart the
 									;timer (ResetCardTimer)
 	subi.w	#$1,$193A2.l		;count down the start delay
-	bpl.w	.ex
+	bpl.w	.x
 	move.w	#$FFFF,$193A2.l		;keep it run out
 	bset	#$0,$19390.l		;first run out: the cards may start
 	btst	#$0,$19390.l		;cards allowed?
-	beq.w	.ex
+	beq.w	.x
 	btst	#$5,$19390.l		;C held?
 	beq.w	.next
 	cmpi.w	#$52,$1939E.l		;timer below $52?
 	bge.w	.next
 	subi.w	#$50,$1939E.l		;skip $50 of the wait
 .next	subi.w	#$1,$1939E.l
-	bmi.w	.next2		;timer ran out: start the next cycle
+	bmi.w	.1		;timer ran out: start the next cycle
 	cmpi.w	#$52,$1939E.l
-	bne.w	.ex		;only at $52 is a new card drawn
+	bne.w	.x		;only at $52 is a new card drawn
 	bclr	#$2,$19390.l		;clear setupcardflags bits 2 and 3
 	bclr	#$3,$19390.l
 	bchg	#$1,$19390.l		;the next card goes on the other side
@@ -33,8 +33,8 @@ PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the 
 	bclr	#$6,$19390.l
 	bclr	#$7,$19390.l
 	jsr	(PlayerCardScreen).l
-.ex	rts
-.next2	jmp	(ResetCardTimer).l
+.x	rts
+.1	jmp	(ResetCardTimer).l
 
 PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set: visitors, logo
 									;box and picture on the left (column 3), text frame at $B; clear: home,

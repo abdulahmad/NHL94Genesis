@@ -2,11 +2,11 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	
 	
 	cmpa.l	#$C45C,a4
-	bne.w	.next
+	bne.w	.1
 	btst	#$4,$17F6A.l
 	beq.w	.end
 	movea.l	#$173B0,a4
-.next	suba.w	#$62,a4
+.1	suba.w	#$62,a4
 	cmpa.l	$17470.l,a4
 	bne.w	RestoreReplayFrameCopy
 	adda.w	#$62,a4
@@ -72,28 +72,28 @@ NextReplayEntry	adda.w	#$62,a4
 UpdateCameraPos	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
 	btst	#$7,$17F72.l
-	beq.w	.next
+	beq.w	.0
 	neg.w	d0
-.next	move.w	d0,$0(a5)
+.0	move.w	d0,$0(a5)
 	move.w	$14(a3),d1
 	btst	#$7,$17F72.l
-	beq.w	.next2
+	beq.w	.2
 	neg.w	d1
-.next2	move.w	d1,$14(a5)
+.2	move.w	d1,$14(a5)
 	cmpi.w	#$3C,d0
 	blt.w	.next3
 	move.w	#$3C,d0
 .next3	cmpi.w	#$FFC4,d0
-	bgt.w	.next4
+	bgt.w	.1
 	move.w	#$FFC4,d0
-.next4	move.w	d0,$17CEE.l
+.1	move.w	d0,$17CEE.l
 	cmpi.w	#$100,d1
 	blt.w	.next5
 	move.w	#$100,d1
 .next5	cmpi.w	#$FF38,d1
-	bgt.w	.next6
+	bgt.w	.3
 	move.w	#$FF38,d1
-.next6	move.w	d1,$17CEA.l
+.3	move.w	d1,$17CEA.l
 	movem.l	(sp)+,d0-d2
 	rts
 RestoreReplayFrame	btst	#$4,$17F72.l
@@ -245,37 +245,37 @@ ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
 	move.w	d0,-(sp)
 	move.w	#$3C,d0
 	cmp.w	$17CEE.l,d0
-	blt.w	.next
+	blt.w	.0
 	move.w	#$FFC4,d0
 	cmp.w	$17CEE.l,d0
-	ble.w	.next2
-.next	move.w	d0,$17CEE.l
-.next2	move.w	#$100,d0
+	ble.w	.1
+.0	move.w	d0,$17CEE.l
+.1	move.w	#$100,d0
 	cmp.w	$17CEA.l,d0
-	blt.w	.next3
+	blt.w	.2
 	move.w	#$FF38,d0
 	cmp.w	$17CEA.l,d0
-	ble.w	.next4
-.next3	move.w	d0,$17CEA.l
-.next4	move.w	(sp)+,d0
+	ble.w	.3
+.2	move.w	d0,$17CEA.l
+.3	move.w	(sp)+,d0
 	rts
 updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	btst	#$4,$17F68.l
 	bne.w	updatereplayExit
 	btst	#$2,$17F6C.l
-	beq.w	.next
+	beq.w	.0
 	tst.w	$1AD92.l
-	beq.w	.next2
+	beq.w	.rec
 	subi.w	#$1,$1AD92.l
-	bpl.w	.next
+	bpl.w	.0
 	clr.w	$1AD92.l
-	bra.w	.next2
-.next	addi.l	#$62,$17470.l
+	bra.w	.rec
+.0	addi.l	#$62,$17470.l
 	cmpi.l	#$173B0,$17470.l
-	bne.w	.next2
+	bne.w	.rec
 	bset	#$4,$17F6A.l
 	move.l	#$C45C,$17470.l
-.next2	movea.l	$17470.l,a0
+.rec	movea.l	$17470.l,a0
 	moveq	#$F,d2
 	movea.l	#$17480,a3
 .top	clr.l	(a0)

@@ -291,22 +291,22 @@ priolist	dc.b	0,1,2,4,3,5,6	;positions in order of importance. Used by
 PlayoffScreen_setup					;Playoff tree layout by gamelevel, one column per round. Used by
 									;PlayoffScreen
 ; Data of PlayoffScreen_setup (5 rows): table or constants used by it.
-	dc.w	.next-PlayoffScreen_setup
-	dc.w	.next2-PlayoffScreen_setup
-	dc.w	.next3-PlayoffScreen_setup
-	dc.w	.next4-PlayoffScreen_setup
-	dc.w	.next5-PlayoffScreen_setup
+	dc.w	.l0-PlayoffScreen_setup
+	dc.w	.l1-PlayoffScreen_setup
+	dc.w	.l2-PlayoffScreen_setup
+	dc.w	.l3-PlayoffScreen_setup
+	dc.w	.l4-PlayoffScreen_setup
 
 	;tree graphics for level 0: teams-1 then x,y per team (PlayoffScreen_doteam), arrows-1 then x,d0 per arrow
 	;(PlayoffScreen_doarrow), scores-1 then x,y per score (PlayoffScreen_doscores, negative: none)
-.next	dc.b	16-1					;level 0: 16 team blocks, then arrows and series scores
+.l0	dc.b	16-1					;level 0: 16 team blocks, then arrows and series scores
 	dc.b	46,2,46,5,46,8,46,11,46,14,46,17,46,20,46,23
 	dc.b	71,2,71,5,71,8,71,11,71,14,71,17,71,20,71,23
 	dc.b	1,57,0,69,10
 	dc.b	7,50,4,50,10,50,16,50,22,75,4,75,10,75,16,75,22
 
 	;tree graphics for level 1
-.next2	dc.b	16+8-1					;level 1: 16+8 team blocks
+.l1	dc.b	16+8-1					;level 1: 16+8 team blocks
 	dc.b	32,2,32,5,32,8,32,11,32,14,32,17,32,20,32,23
 	dc.b	85,2,85,5,85,8,85,11,85,14,85,17,85,20,85,23
 	dc.b	46,4,46,10,46,15,46,21
@@ -315,7 +315,7 @@ PlayoffScreen_setup					;Playoff tree layout by gamelevel, one column per round.
 	dc.b	3,50,8,50,18,75,8,75,18
 
 	;tree graphics for level 2
-.next3	dc.b	16+8+4-1				;level 2: 16+8+4 team blocks
+.l2	dc.b	16+8+4-1				;level 2: 16+8+4 team blocks
 	dc.b	18,2,18,5,18,8,18,11,18,14,18,17,18,20,18,23
 	dc.b	99,2,99,5,99,8,99,11,99,14,99,17,99,20,99,23
 	dc.b	32,4,32,10,32,15,32,21
@@ -326,7 +326,7 @@ PlayoffScreen_setup					;Playoff tree layout by gamelevel, one column per round.
 	dc.b	1,50,13,75,13
 
 	;tree graphics for level 3
-.next4	dc.b	16+8+4+2-1				;level 3: 16+8+4+2 team blocks
+.l3	dc.b	16+8+4+2-1				;level 3: 16+8+4+2 team blocks
 	dc.b	4,2,4,5,4,8,4,11,4,14,4,17,4,20,4,23
 	dc.b	113,2,113,5,113,8,113,11,113,14,113,17,113,20,113,23
 	dc.b	18,4,18,10,18,15,18,21
@@ -339,7 +339,7 @@ PlayoffScreen_setup					;Playoff tree layout by gamelevel, one column per round.
 	dc.b	0,63,23
 
 	;tree graphics for level 4
-.next5	dc.b	16+8+4+2+1-1			;level 4: 16+8+4+2+1 team blocks
+.l4	dc.b	16+8+4+2+1-1			;level 4: 16+8+4+2+1 team blocks
 	dc.b	4,2,4,5,4,8,4,11,4,14,4,17,4,20,4,23
 	dc.b	113,2,113,5,113,8,113,11,113,14,113,17,113,20,113,23
 	dc.b	18,4,18,10,18,15,18,21
