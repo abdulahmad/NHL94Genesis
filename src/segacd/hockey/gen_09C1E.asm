@@ -205,7 +205,235 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	bset	#$5,(sflags6).l
 .next3	movem.l	(sp)+,d0/a0
 .ex2	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0A060.bin
+TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per team (28
+									;teams, TeamList order). A is the matchup logo palette (the
+									;TeamLogoPalettes
+									;entry, except BOS, FLA, HFD, SJ), B the other side (A with colors 1-2 and
+									;3-4 swapped). Used by TeamIcons and the player cards
+		dc.w	$0EEA,$0000,$0042,$0EEA		;ANH matchup logo palette
+	dc.w	$0EEA,$0EEE,$0000,$0888
+	dc.w	$0AAA,$0068,$008A,$00CE
+	dc.w	$0260,$0040,$0664,$0E8E
+		dc.w	$0EEA,$0EEA,$0EEA,$0000		;ANH other side
+	dc.w	$0042,$0EEE,$0000,$0888
+	dc.w	$0AAA,$0068,$008A,$00CE
+	dc.w	$0260,$0040,$0664,$0E8E
+		dc.w	$0EE8,$0000,$008C,$0EE8		;BOS matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0C8C
+	dc.w	$008C,$0888,$0068,$0846
+	dc.w	$0044,$0422,$08CE,$02AE
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;BOS other side
+	dc.w	$008C,$0EEE,$0000,$0C8C
+	dc.w	$008C,$0888,$0068,$0846
+	dc.w	$0044,$0422,$08CE,$02AE
+		dc.w	$0EE8,$0822,$008C,$0EE8		;BUF matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0EC8
+	dc.w	$048C,$0C88,$006C,$0866
+	dc.w	$0268,$0224,$0620,$00CE
+		dc.w	$0EE8,$0EE8,$0EE8,$0822		;BUF other side
+	dc.w	$008C,$0EEE,$0000,$0EC8
+	dc.w	$048C,$0C88,$006C,$0866
+	dc.w	$0268,$0224,$0620,$00CE
+		dc.w	$0EE8,$0006,$008C,$0EE8		;CGY matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$08EE
+	dc.w	$02CE,$02AE,$026E,$000C
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0006		;CGY other side
+	dc.w	$008C,$0EEE,$0000,$08EE
+	dc.w	$02CE,$02AE,$026E,$000C
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0000,$0006,$0EE8		;CHI matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$08EE
+	dc.w	$0A8E,$04AC,$0A88,$046C
+	dc.w	$0226,$0644,$022E,$0262
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;CHI other side
+	dc.w	$0006,$0EEE,$0000,$08EE
+	dc.w	$0A8E,$04AC,$0A88,$046C
+	dc.w	$0226,$0644,$022E,$0262
+		dc.w	$0EE8,$0000,$0042,$0EE8		;DAL matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$08AA
+	dc.w	$0688,$0488,$0466,$0244
+	dc.w	$0260,$0020,$0ACC,$0000
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;DAL other side
+	dc.w	$0042,$0EEE,$0000,$08AA
+	dc.w	$0688,$0488,$0466,$0244
+	dc.w	$0260,$0020,$0ACC,$0000
+		dc.w	$0EE8,$0006,$0006,$0EE8		;DET matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0C8E
+	dc.w	$086E,$044E,$082E,$020E
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0006		;DET other side
+	dc.w	$0006,$0EEE,$0000,$0C8E
+	dc.w	$086E,$044E,$082E,$020E
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0600,$004A,$0EE8		;EDM matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0CEA
+	dc.w	$0A8E,$08A8,$044E,$0488
+	dc.w	$002E,$0440,$0400,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0600		;EDM other side
+	dc.w	$004A,$0EEE,$0000,$0CEA
+	dc.w	$0A8E,$08A8,$044E,$0488
+	dc.w	$002E,$0440,$0400,$0EE8
+		dc.w	$0EEA,$004A,$0600,$0EEA		;FLA matchup logo palette
+	dc.w	$0EEA,$0EEE,$0000,$000A
+	dc.w	$0004,$0046,$008E,$0CEE
+	dc.w	$0466,$0442,$0EC6,$0200
+		dc.w	$0EEA,$0EEA,$0EEA,$004A		;FLA other side
+	dc.w	$0600,$0EEE,$0000,$000A
+	dc.w	$0004,$0046,$008E,$0CEE
+	dc.w	$0466,$0442,$0EC6,$0200
+		dc.w	$0EE8,$0042,$0822,$0EE8		;HFD matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$00E8
+	dc.w	$04C4,$0A8A,$00A2,$0466
+	dc.w	$0600,$0224,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0042		;HFD other side
+	dc.w	$0822,$0EEE,$0000,$00E8
+	dc.w	$04C4,$0A8A,$00A2,$0466
+	dc.w	$0600,$0224,$0EE8,$0EE8
+		dc.w	$0EE8,$0000,$0000,$0EE8		;LA matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0AAA
+	dc.w	$0888,$0666,$0444,$0222
+	dc.w	$0CCC,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;LA other side
+	dc.w	$0000,$0EEE,$0000,$0AAA
+	dc.w	$0888,$0666,$0444,$0222
+	dc.w	$0CCC,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0600,$0006,$0EE8		;MTL matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$088E
+	dc.w	$026E,$0C68,$002E,$0A24
+	dc.w	$0EAA,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0600		;MTL other side
+	dc.w	$0006,$0EEE,$0000,$088E
+	dc.w	$026E,$0C68,$002E,$0A24
+	dc.w	$0EAA,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0020,$0006,$0EE8		;NJ matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0AAA
+	dc.w	$000A,$0888,$000C,$0022
+	dc.w	$0006,$0CCC,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0020		;NJ other side
+	dc.w	$0006,$0EEE,$0000,$0AAA
+	dc.w	$000A,$0888,$000C,$0022
+	dc.w	$0006,$0CCC,$0EE8,$0EE8
+		dc.w	$0EE8,$0822,$004A,$0EE8		;NYI matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0AA8
+	dc.w	$066E,$0864,$022C,$062A
+	dc.w	$0008,$0622,$0222,$0A8E
+		dc.w	$0EE8,$0EE8,$0EE8,$0822		;NYI other side
+	dc.w	$004A,$0EEE,$0000,$0AA8
+	dc.w	$066E,$0864,$022C,$062A
+	dc.w	$0008,$0622,$0222,$0A8E
+		dc.w	$0EE8,$0600,$0006,$0EE8		;NYR matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0AAA
+	dc.w	$0C86,$002E,$0C60,$0844
+	dc.w	$0444,$0840,$0008,$0EC8
+		dc.w	$0EE8,$0EE8,$0EE8,$0600		;NYR other side
+	dc.w	$0006,$0EEE,$0000,$0AAA
+	dc.w	$0C86,$002E,$0C60,$0844
+	dc.w	$0444,$0840,$0008,$0EC8
+		dc.w	$0EE8,$0006,$006A,$0EE8		;OTW matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$068A
+	dc.w	$0688,$0466,$0244,$022C
+	dc.w	$0228,$0008,$0AAA,$0004
+		dc.w	$0EE8,$0EE8,$0EE8,$0006		;OTW other side
+	dc.w	$006A,$0EEE,$0000,$068A
+	dc.w	$0688,$0466,$0244,$022C
+	dc.w	$0228,$0008,$0AAA,$0004
+		dc.w	$0EE8,$0000,$004A,$0EE8		;PHI matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0CCC
+	dc.w	$088E,$0AAA,$046E,$006E
+	dc.w	$0888,$0666,$002E,$0444
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;PHI other side
+	dc.w	$004A,$0EEE,$0000,$0CCC
+	dc.w	$088E,$0AAA,$046E,$006E
+	dc.w	$0888,$0666,$002E,$0444
+		dc.w	$0EE8,$0000,$008C,$0EE8		;PIT matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0AAA
+	dc.w	$088A,$066A,$04EE,$0464
+	dc.w	$0440,$02CE,$0244,$0AEE
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;PIT other side
+	dc.w	$008C,$0EEE,$0000,$0AAA
+	dc.w	$088A,$066A,$04EE,$0464
+	dc.w	$0440,$02CE,$0244,$0AEE
+		dc.w	$0EE8,$0600,$0006,$0EE8		;QUE matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0C00
+	dc.w	$000E,$0E44,$0ECE,$0E80
+	dc.w	$088E,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0600		;QUE other side
+	dc.w	$0006,$0EEE,$0000,$0C00
+	dc.w	$000E,$0E44,$0ECE,$0E80
+	dc.w	$088E,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0000,$0860,$0EE8		;SJ matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0860
+	dc.w	$0642,$0888,$0CA8,$0ACC
+	dc.w	$02AE,$006E,$0048,$046A
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;SJ other side
+	dc.w	$0860,$0EEE,$0000,$0860
+	dc.w	$0642,$0888,$0CA8,$0ACC
+	dc.w	$02AE,$006E,$0048,$046A
+		dc.w	$0EE8,$0822,$006A,$0EE8		;STL matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0602
+	dc.w	$024C,$0002,$0026,$0068
+	dc.w	$0428,$086E,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0822		;STL other side
+	dc.w	$006A,$0EEE,$0000,$0602
+	dc.w	$024C,$0002,$0026,$0068
+	dc.w	$0428,$086E,$0EE8,$0EE8
+		dc.w	$0EE8,$0000,$0600,$0EE8		;TB matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0C86
+	dc.w	$0E84,$0A84,$0C44,$0822
+	dc.w	$0E20,$0600,$0A00,$0EA8
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;TB other side
+	dc.w	$0600,$0EEE,$0000,$0C86
+	dc.w	$0E84,$0A84,$0C44,$0822
+	dc.w	$0E20,$0600,$0A00,$0EA8
+		dc.w	$0EE8,$0600,$0600,$0EE8		;TOR matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0ECA
+	dc.w	$0AAA,$0C66,$0822,$0CCC
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0600		;TOR other side
+	dc.w	$0600,$0EEE,$0000,$0ECA
+	dc.w	$0AAA,$0C66,$0822,$0CCC
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0000,$008C,$0EE8		;VAN matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$00CE
+	dc.w	$006A,$004E,$0028,$0022
+	dc.w	$0020,$008E,$0888,$06CE
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;VAN other side
+	dc.w	$008C,$0EEE,$0000,$00CE
+	dc.w	$006A,$004E,$0028,$0022
+	dc.w	$0020,$008E,$0888,$06CE
+		dc.w	$0EE8,$0006,$0600,$0EE8		;WSH matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$022C
+	dc.w	$0C86,$0EA8,$088E,$0842
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0EE8,$0EE8,$0006		;WSH other side
+	dc.w	$0600,$0EEE,$0000,$022C
+	dc.w	$0C86,$0EA8,$088E,$0842
+	dc.w	$0EE8,$0EE8,$0EE8,$0EE8
+		dc.w	$0EE8,$0600,$0006,$0EE8		;WPG matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$022C
+	dc.w	$0422,$0AAC,$0666,$0CAA
+	dc.w	$0444,$066E,$08CE,$0226
+		dc.w	$0EE8,$0EE8,$0EE8,$0600		;WPG other side
+	dc.w	$0006,$0EEE,$0000,$022C
+	dc.w	$0422,$0AAC,$0666,$0CAA
+	dc.w	$0444,$066E,$08CE,$0226
+		dc.w	$0EE8,$0000,$004A,$0EE8		;ASE matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0688
+	dc.w	$0464,$0244,$0222,$004E
+	dc.w	$000A,$0022,$0AAA,$0000
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;ASE other side
+	dc.w	$004A,$0EEE,$0000,$0688
+	dc.w	$0464,$0244,$0222,$004E
+	dc.w	$000A,$0022,$0AAA,$0000
+		dc.w	$0EE8,$0000,$004A,$0EE8		;ASW matchup logo palette
+	dc.w	$0EE8,$0EEE,$0000,$0688
+	dc.w	$0464,$0244,$0222,$004E
+	dc.w	$000A,$0022,$0AAA,$0000
+		dc.w	$0EE8,$0EE8,$0EE8,$0000		;ASW other side
+	dc.w	$004A,$0EEE,$0000,$0688
+	dc.w	$0464,$0244,$0222,$004E
+	dc.w	$000A,$0022,$0AAA,$0000
 	movem.l	d0-d7/a1-a6,-(sp)
 	move.l	a1,-(sp)
 	movea.l	a1,a3

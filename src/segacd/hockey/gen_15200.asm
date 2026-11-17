@@ -565,7 +565,7 @@ SetLCmode2
 	add.b	d4,$2(a1)
 	jsr	(print).l
 	move.w	d0,-(sp)
-	movea.l	#$419F6,a1
+	movea.l	#linelist,a1
 	jsr	(PrintTickerEntry).l
 	move.w	(sp)+,d0
 	jsr	(linebar).l

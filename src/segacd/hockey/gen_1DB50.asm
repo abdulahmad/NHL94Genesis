@@ -533,7 +533,7 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 	rts
 PrintBigChar						;print big font char d0 (ascii) through bfasciicon
 	subi.w	#$20,d0
-	movea.l	#$419BA,a0
+	movea.l	#bfasciicon,a0
 	moveq	#$1,d2
 	move.b	(a0,d0.w),d1
 	ext.w	d1
@@ -638,7 +638,7 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 	bne.w	.next5
 	move.b	$53(a3),-(a1)
 	move.b	d0,-(a1)
-	movea.l	#$4165C,a0
+	movea.l	#Penaltylist,a0
 	adda.w	(a0,d0.w),a0
 	tst.b	$1(a0)
 	beq.w	.next5
@@ -695,7 +695,7 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	beq.w	rtss2
 	clr.w	d0
 	move.b	-$2(a0),d0
-	movea.l	#$4165C,a1
+	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
 	tst.b	$1(a1)
 	beq.w	.loop
@@ -736,7 +736,7 @@ PenShotChk						;a3 = checker, a2 = player hit, d0 = penalty. If a2 is on a brea
 	beq.w	.next
 .loop	move.w	#$FFFF,d1
 	bra.w	.next3
-.next	movea.l	#$4198A,a0
+.next	movea.l	#PenShotPenalties,a0
 	move.w	(a0,d0.w),d1
 	bmi.w	.next3
 	move.w	$52(a2),d2
@@ -828,7 +828,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bra.w	.next10
 .next	clr.w	d0
 	move.b	(a0),d0
-	movea.l	#$4165C,a1
+	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
 	bclr	#$5,$17F74.l
 	clr.w	d2
@@ -956,7 +956,7 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	bne.w	.next2
 	clr.w	d0
 	move.b	-$2(a0),d0
-	movea.l	#$4165C,a1
+	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
 	tst.b	$1(a1)
 	beq.w	.next
@@ -973,7 +973,7 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	bne.w	.loop
 	clr.w	d0
 	move.b	-$2(a0),d0
-	movea.l	#$4165C,a1
+	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
 	clr.w	d1
 	move.b	$0(a1),d1

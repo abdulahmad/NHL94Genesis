@@ -519,9 +519,9 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 	beq.w	PrintOptTeamName		;print the team
 	movea.l	#$18BFA,a0
 	move.w	(a0,d7.w),d3
-	movea.l	#$23ECC,a0
+	movea.l	#OptionValueOffsets,a0
 	adda.w	(a0,d7.w),a0		;its value Strings
-	cmpa.l	#$24104,a0		;period length?
+	cmpa.l	#PerLengthValues,a0		;period length?
 	bne.w	.next
 	cmpi.w	#$4,$18BFA.l
 	bne.w	.next
@@ -584,9 +584,56 @@ PrintOptTeamNameTbl1	dc.b	$00,$14,'New York Islan'
 	dc.b	'            ',$00,$16,'N/'
 	dc.b	'A               '
 	dc.w	$2020
-OptionValueOffsets						;Offsets of each option's value Strings. Team 1 / 2 are not read
+OptionValueOffsets					;Offsets of each option's value Strings. Team 1 / 2 are not read
 									;(PrintOptTeamName); User Records uses the On / Off list
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_08ECC.bin
+	dc.w	PlayModeValues-OptionValueOffsets,PlayersValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,PerLengthValues-OptionValueOffsets
+	dc.w	GoaliesValues-OptionValueOffsets,UserRecValues-OptionValueOffsets,PenaltiesValues-OptionValueOffsets,LineChangeValues-OptionValueOffsets
+PlayModeValues						;Play Mode: OptPlayMode 0-4
+	String	'Regular Season      '
+	String	'Continue Playoffs   '
+	String	'New Playoffs        '
+	String	'New Playoffs/7 game '
+	String	'Shootout            '
+PlayersValues						;Players: OptNOP 0-7, then the FourWayPlay list (+$B0)
+	String	'Demo                '
+	String	'One - Home          '
+	String	'One - Visitor       '
+	String	'Two - Teammates     '
+	String	'Two - Head to Head  '
+	String	'Two - Head to Head  '
+	String	'Two - Teammates     '
+	String	'One                 '
+	String	'Demo                '
+	String	'One - Home          '
+	String	'One - Visitor       '
+	String	'Two - Teammates     '
+	String	'Two - Head to Head  '
+	String	'Three               '
+	String	'Four                '
+	String	'Two - Head to Head  '
+	String	'Two - Teammates     '
+	String	'Three               '
+	String	'Four                '
+	String	'One                 '
+PerLengthValues						;Per. Length
+	String	'5 Minutes           '
+	String	'10 Minutes          '
+	String	'20 Minutes          '
+	String	'30 Seconds          '
+GoaliesValues						;Goalies
+	String	'Manual Control      '
+	String	'Auto Control        '
+PenaltiesValues						;Penalties option values
+	String	'Off                 '
+	String	'On                  '
+	String	'On, Except Off-sides'
+UserRecValues						;User Records, and the unread Team 1 / 2 entries
+	String	'On                  '
+	String	'Off                 '
+LineChangeValues					;Line Changes (Off, On, Auto)
+	String	'On                  '
+	String	'Off                 '
+	String	'Auto                '
 PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows apart from row $F
 									;- setupfirstline * 2, rows $F-$19 only.
 									;from

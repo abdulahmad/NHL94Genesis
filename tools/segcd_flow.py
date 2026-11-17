@@ -15,6 +15,7 @@ BR = ("bra", "bsr", "beq", "bne", "bhi", "bls", "bcc", "bcs", "bpl", "bmi", "bvc
       "dbra", "dbf", "dbne", "dbt", "dbeq", "dbhi", "dbcc", "dbcs", "dbmi", "dbpl", "dble", "dblt", "dbge", "dbgt",
       "dbls", "dbvs", "dbvc")
 STRICT = True
+JOIN = set()  # offsets where running into covered bytes is a normal end (set by the generator)
 INLINE = {}   # bsr/jsr target address -> number of inline data bytes that follow the call (set by the generator)
 STOP = ("rts", "rte", "jmp", "bra", "rtr", "illegal")
 SUSPECT = ("illegal", "reset", "stop")
@@ -237,6 +238,9 @@ def find_code_seeded(d, base, seeds, covered, insns, string_calls):
         natural = False
         while True:
             if pc in insns or pc in path:
+                natural = True
+                break
+            if pc in JOIN:     # falls into code that is decoded elsewhere (the end of an asset)
                 natural = True
                 break
             if not (0 <= pc < n - 1) or covered[pc]:

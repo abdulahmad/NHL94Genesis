@@ -1,4 +1,3 @@
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_06432.bin
 	move.l	#$22018,$6038.w
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -50,7 +49,7 @@ L22018	btst.b	#$5,$FF800E.l
 	jsr	$5F16.w
 	bcs.b	.next
 	move.w	#$3,d0
-	lea.l	$2240C.l,a0
+	lea.l	BackupRamName.l,a0
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
 	bra.b	.next2
@@ -132,6 +131,31 @@ L22018	btst.b	#$5,$FF800E.l
 	bcs.b	.loop17
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_072EA.bin
+FileLoadTable					;disc only: the file load list the loader (jsr $6044.w, d7 = 8) reads through a3: 13 word pairs
+									;(count or flag, file number), then one record per file
+	dc.w	$000D,$006C,$000E,$0060,$000E,$0061,$000E,$0062
+	dc.w	$000E,$0063,$000E,$0064,$000E,$0065,$000E,$0066
+	dc.w	$000E,$0067,$000E,$006D,$000E,$006E,$000E,$006F
+	dc.w	$000E,$006B,$000E,$0600,$0A60,$00FF,$FF02,$0202
+	dc.w	$00FF,$00FF,$0600,$0754,$00FF,$FF02,$0202,$00FF
+	dc.w	$00FF,$0600,$0254,$00FF,$FF02,$0202,$00FF,$00FF
+	dc.w	$0600,$0154,$00FF,$FF02,$0202,$00FF,$00FF,$0600
+	dc.w	$0654,$00FF,$FF02,$0202,$00FF,$00FF,$0600,$045A
+	dc.w	$00FF,$FF02,$0202,$00FF,$00FF,$0600,$005A,$00FF
+	dc.w	$FF02,$0202,$00FF,$00FF,$0600,$035A,$00FF,$FF02
+	dc.w	$0202,$00FF,$00FF,$0600,$0554,$00FF,$FF02,$0202
+	dc.w	$0096,$00FF,$0600,$085A,$00FF,$FF02,$0202,$00FF
+	dc.w	$00FF,$0600,$095A,$00FF,$FF02,$0202,$00FF,$00FF
+	dc.w	$0608,$0B54,$00FF,$FF02,$0202,$00FF,$00FF,$0600
+	dc.w	$0C5A,$00FF,$FF02,$0202,$00FF,$00FF
+FileLoadOrder					;disc only: the order the 13 files are loaded in (a2 of the same call): (2, n) word pairs, $FFFF ends
+	dc.w	$0002,$0000,$0002,$0001,$0002,$0002,$0002,$0003
+	dc.w	$0002,$0004,$0002,$0005,$0002,$0006,$0002,$0007
+	dc.w	$0002,$0008,$0002,$0009,$0002,$000A,$0002,$000B
+	dc.w	$0002,$000C,$FFFF
+BackupRamName					;disc only: the backup RAM file name (_CDBIOS backup call, d0 = 3), padded to 16 bytes
+	dc.b	'NHLHOCKEY94',0,0,0,0,0
+BackupRamNameSize				;disc only: the same name, then the word $003D: the file size in blocks
+	dc.b	'NHLHOCKEY94',0,0,$3D
 	lea.l	$193BC.l,a0
 	moveq	#$0,d0

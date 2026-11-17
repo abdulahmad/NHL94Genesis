@@ -224,10 +224,10 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
-.loop	movea.l	#$41C5E,a1
+.loop	movea.l	#PAttribOverall,a1
 	cmpi.w	#$5,(TestList).l
 	bne.w	.0
-	movea.l	#$41DC0,a1
+	movea.l	#GAttribOverall,a1
 .0	move.w	(scoutcolumn).l,d0
 	bra.w	.1
 .loop2	adda.w	(a1),a1
@@ -237,10 +237,10 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	bpl.w	.found
 	subi.w	#$1,(scoutcolumn).l
 	bra.w	.loop
-.found	cmpa.l	#$41C5E,a1
+.found	cmpa.l	#PAttribOverall,a1
 	bne.w	.3
 	movea.l	#$27F28,a1
-.3	cmpa.l	#$41DC0,a1
+.3	cmpa.l	#GAttribOverall,a1
 	bne.w	.4
 	movea.l	#$27F3E,a1
 .4	jsr	(print).l

@@ -255,7 +255,7 @@ DisplayGameInfo	cmp.w	$18A98.l,d3
 	bsr.w	PrintGameInfo
 	move.w	$8(a0),d0
 	subi.w	#$1,d0
-	movea.l	#$41A34,a1
+	movea.l	#PerLabels,a1
 	move.w	#$1C,(printx).l
 	jsr	(PrintTickerEntry).l
 	addi.w	#$2,(printy).l
@@ -432,7 +432,7 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 	
 	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
-.top	movea.l	#$41C48,a1
+.top	movea.l	#PAttribColumns,a1
 	move.w	(scoutcolumn).l,d0
 	bra.w	.2
 .loop	adda.w	(a1),a1
@@ -512,7 +512,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 .0	move.w	(a0),(printx).l
 	move.w	$2(a0),(printy).l
 	move.w	d5,d0
-	movea.l	#$419F6,a1
+	movea.l	#linelist,a1
 	move.w	#$8000,(printa).l
 	jsr	(PrintTickerEntry).l
 	jsr	(printsmallz).l
@@ -623,13 +623,13 @@ LineEditorExit
 	move.l	$18AD6.l,-(sp)
 	move.l	$18ADA.l,-(sp)
 	movea.l	#$3C000,a1
-	movea.l	#$427D8,a0
+	movea.l	#LineEditorMenuText,a0
 	movea.l	#$18C26,a3
 	move.w	$2A(a2),d0
 	addi.w	#$1,d0
 	cmp.b	(a3),d0
 	beq.w	.next
-	movea.l	#$42848,a0
+	movea.l	#LineEditorMenuNoLoad,a0
 .next	jsr	(printsmallz).l
 	String	CC_Font1,$2
 	bsr.w	SetMenuScreenHandler

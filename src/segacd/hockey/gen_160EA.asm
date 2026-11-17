@@ -568,7 +568,64 @@ check4bench
 	ext.w	d0
 	move.w	d0,$34(a3)
 	jmp	(Setplass).l
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_169AC.bin
+L319AC	btst.b	#$5,$62(a3)
+	bne.w	setpads_1
+	cmpi.w	#$64,$40(a3)
+	beq.w	L31AB8
+	bsr.w	check4bench
+	btst.b	#$4,$63(a3)
+	bne.w	assexit
+	bclr.b	#$1,$62(a3)
+	beq.w	.l16A04
+	move.w	#$8,$42(a3)
+	moveq	#$50,d0
+	btst.b	#$6,$62(a3)
+	bne.w	.l169EC
+	neg.w	d0
+.l169EC	move.w	d0,$46(a3)
+	move.w	#$88,$44(a3)
+	neg.w	$44(a3)
+	subi.w	#$8,$44(a3)
+	clr.w	$40(a3)
+.l16A04	move.b	$61(a3),d0
+	cmp.b	$66(a3),d0
+	beq.w	L31B08
+	sub.w	d7,$40(a3)
+	bpl.w	L31AEC
+	addi.w	#$8,$40(a3)
+	move.w	$14(a3),d0
+	sub.w	$46(a3),d0
+	cmpi.w	#$28,d0
+	bgt.w	L31AEC
+	cmpi.w	#$FFD8,d0
+	blt.w	L31AEC
+	move.w	$0(a3),d0
+	sub.w	$44(a3),d0
+	cmpi.w	#$20,d0
+	bgt.w	L31AEC
+	move.w	#$50C,d1
+	tst.w	$34(a3)
+	bne.w	.l16A56
+	move.w	#$2,d1
+.l16A56	bsr.w	SetSPA
+	bset.b	#$2,$62(a3)
+	cmpi.w	#$4,$54(a3)
+	beq.w	.l16A76
+	addi.w	#$1,$54(a3)
+	andi.w	#$7,$54(a3)
+.l16A76	clr.w	$2A(a3)
+	move.w	#$F800,$28(a3)
+	cmpi.w	#$10,d0
+	bgt.w	check4benchExit
+	clr.w	$28(a3)
+	cmpi.w	#$4,$54(a3)
+	bne.w	check4benchExit
+	move.w	#$F800,$28(a3)
+	move.w	#$2,$54(a3)
+	move.w	#$FAC,d1
+	bsr.w	SetSPA
+	bset.b	#$5,$62(a3)
+	move.w	#$64,$40(a3)
 check4benchExit
 	rts
 L31AB8	clr.w	$6(a3)
@@ -583,13 +640,13 @@ L31AB8	clr.w	$6(a3)
 	move.b	$61(a3),d3
 	bsr.w	L31B0E
 	jmp	$3D770.l
-	btst.b	#$2,$62(a3)
+L31AEC	btst.b	#$2,$62(a3)
 	bne.w	check4benchExit
 	move.w	$44(a3),d0
 	move.w	$46(a3),d1
 	movea.l	#$33C6E,a0
 	bra.w	skateto
-	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
+L31B08	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
 L31B0E	move.b	$60(a3),d0
 	ext.w	d0
 	move.w	d0,$34(a3)
@@ -732,7 +789,7 @@ assepen						;player a3 should exit penalty area
 	bset	#$5,$62(a3)
 	move.w	#$FAC,d1
 	bsr.w	SetSPA
-	jmp	(SprSortSetup).l
+	jmp	(SprSort).l
 .nna	move.w	#$4,$54(a3)
 	st.b	$61(a3)
 	st.b	$60(a3)

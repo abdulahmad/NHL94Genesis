@@ -41,6 +41,7 @@ for i in range(0, n - 4, 2):
         j = i + 2
         while j < n - 2 and d[j:j + 2] == b'\x00\x00': j += 2
         seeds.append(j)
+F.JOIN = {v['start'] + v['size'] for v in assets.values()}
 insns = {}; calls = set(); labs = set()
 F.find_code_seeded(d, base, seeds, cov, insns, SC)
 F.sweep(d, base, cov, insns, calls, labs, SC)

@@ -676,7 +676,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	$2A9D0.l
-	bsr.w	SprSortSetup
+	bsr.w	SprSort
 	btst	#$0,$17F6A.l
 	bne.w	.next
 	bsr.w	printz
@@ -695,7 +695,7 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bne.w	.p
 	clr.w	$17CF0.l
 	clr.w	$17CF2.l
-	bsr.w	SprSortSetup
+	bsr.w	SprSort
 	bsr.w	printz
 	String	CC_Font2,$0,$0
 	movea.l	$47D6C.l,a1
@@ -740,11 +740,11 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	bsr.w	printz
 	String	CC_Font1Pri,$1,$18
 	move.w	$180E4.l,d0
-	movea.l	#$41A34,a1
+	movea.l	#PerLabels,a1
 	btst	#$1,$17F78.l
 	beq.w	.1
 	move.w	#$4,d0
-	movea.l	#$41A48,a1
+	movea.l	#PerLabels2,a1
 .1	bsr.w	PrintTickerEntry
 	bsr.w	EASNLogo
 	btst	#$0,$17F6E.l
@@ -770,7 +770,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	btst	#$0,$17F78.l
 	beq.w	.2
 	move.w	#$4,d0
-.2	movea.l	#$41A48,a1
+.2	movea.l	#PerLabels2,a1
 	bsr.w	SkipListEntries
 	move.w	(a1),d0
 	lsr.w	#$1,d0
@@ -907,7 +907,7 @@ getlinee						;d0 = line number, a2 = team struct. Return d0 = energy level of t
 	adda.w	d0,a1
 	clr.l	d0
 	clr.w	d1
-	movea.l	#$41AD6,a0
+	movea.l	#priolist,a0
 	move.w	$26(a2),d4
 	bra.w	.next
 .loop	clr.w	d5
