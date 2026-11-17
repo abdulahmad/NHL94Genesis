@@ -1,9 +1,9 @@
 {
- "player_040C4.bin": {
+ "PicTilesStillA.bin": {
   "start": 16580,
   "size": 1284
  },
- "player_045C8.bin": {
+ "PicTilesFramesA.bin": {
   "start": 17864,
   "size": 6780
  },
@@ -11,19 +11,19 @@
   "start": 24644,
   "size": 2208
  },
- "player_068E4.bin": {
+ "PicTilesStillB.bin": {
   "start": 26852,
   "size": 1284
  },
- "player_06DE8.bin": {
+ "PicTilesFramesB.bin": {
   "start": 28136,
   "size": 3852
  },
- "player_07CF4.bin": {
+ "PlRecordTable.bin": {
   "start": 31988,
   "size": 1456
  },
- "player_082A4.bin": {
+ "PlBackgroundImage.bin": {
   "start": 33444,
   "size": 8944
  }
