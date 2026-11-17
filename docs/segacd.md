@@ -107,8 +107,7 @@ Verified bytes are 22,690 of the 410,162 bytes in the four code files (5.5%). `M
 | `src/segacd/cdcrowd.asm` | `cdbin/HOCKEY.BIN` `$238CE` | crowd-volume slew, no PSG write (78) |
 | `src/segacd/cdstart.asm` | `cdbin/HOCKEY.BIN` `$24D66` | CD-DA mode, seek track 4, repeat it (130) |
 | `src/segacd/scoutopen.asm` | `cdbin/HOCKEY.BIN` `$D2B6` | scouting screen open, song `$7A` (226) |
-| `src/segacd/scouttext.asm` | `cdbin/HOCKEY.BIN` `$2486C` | scouting text player (542) |
-| `src/segacd/scouttok.asm` | `cdbin/HOCKEY.BIN` `$24A8A` | scouting script tokens (384) |
+| `src/segacd/scouting.asm` | `cdbin/HOCKEY.BIN` `$2486C` | InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, with the cartridge labels (926) |
 | `src/segacd/scoutload.asm` | `cdbin/HOCKEY.BIN` `$24C12` | scouting file directory load (340) |
 | `src/segacd/playerpic.asm` | `cdbin/PLAYER.BIN` `$1D54` | player photo picker (700) |
 | `src/segacd/playercareer.asm` | `cdbin/PLAYER.BIN` `$2010` | career-stat rows (960) |

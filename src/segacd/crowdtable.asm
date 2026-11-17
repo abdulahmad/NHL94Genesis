@@ -5,6 +5,7 @@
 
 	org	$2654C
 
+updatecrowdf_cd0					;$fftt frame/time for various levels of crowd (disc address $4154C)
 	dc.w	$010C,$020C,$030C,$040C,$050C,$0A0C,$090C,$080C
 	dc.w	$060C,$070C,$080C,$090C,$0A0C,$050C,$040C,$030C
 	dc.w	$0107,$0207,$0307,$0407,$0507,$0B07,$0C07,$0D07
