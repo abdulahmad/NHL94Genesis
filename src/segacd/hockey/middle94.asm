@@ -34,14 +34,14 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 ; Pushes the vram write flag on the gate array queue
 QueueVramWriteFlag
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -81,13 +81,13 @@ QueueVramWriteFlag
 	movem.l	(sp)+,d0-d4/a0-a2
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next4
 	bset	#$5,$FF800F.l
 	bra.s	.next5
 .next4	bclr	#$5,$FF800F.l
-.next5	move.l	a6,$19360.l
+.next5	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 forceblack
@@ -125,26 +125,26 @@ ForceBlackBegin
 	bclr	#$2,(disflags).l
 	move.l	#vb2,(VBint).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	bset	#$5,$FF800F.l
 .loop	tst.w	(palcount).l
 	bpl.w	.loop
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
 	bset	#$5,$FF800F.l
 	bra.s	.next4
 .next3	bclr	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(sp)+,(disflags).l
 	move.l	(sp)+,(VBint).l
@@ -419,22 +419,22 @@ SongCdCheck
 .next3	tst.w	$1745C.l
 	ble.s	.next7
 .next4	move.w	#$0,$1745C.l
-	move.w	$1745E.l,$19364.l
+	move.w	$1745E.l,(CdCommandArg).l
 	cmpi.w	#$2,$1745E.l
 	bne.s	.next5
 	move.w	#$300,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
-	move.w	$1745E.l,$19364.l
+	move.w	$1745E.l,(CdCommandArg).l
 	bra.s	.next6
 .next5	move.w	#$400,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
-.next6	lea.l	$19364.l,a0
+.next6	lea.l	(CdCommandArg).l,a0
 	move.w	#$12,d0
 	jsr	$5F22.w
 	move.w	#$12,d0
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
 .next7	movem.l	(sp)+,d0-d2/a0-a1
 	rts
@@ -768,14 +768,14 @@ DoDMApro
 ; Queues a DMA command in the list at $19360.
 DoDMAProQueue
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
@@ -834,13 +834,13 @@ DoDMAProQueue
 	bclr	#$7,$FF800F.l
 	jsr	(WaitGateAck).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next4
 	bset	#$5,$FF800F.l
 	bra.s	.next5
 .next4	bclr	#$5,$FF800F.l
-.next5	move.l	a6,$19360.l
+.next5	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
@@ -906,14 +906,14 @@ DmaCopyFromWordRam
 	rts
 DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -935,26 +935,26 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	jsr	(WaitGateAck).l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
 	bset	#$5,$FF800F.l
 	bra.s	.next4
 .next3	bclr	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 ; Queues a DMA command in the list at $19360.
 DoDMANd2Queue
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.l	d0,$BBC88.l
 	move.l	d1,$BBC8C.l
@@ -973,13 +973,13 @@ DoDMANd2Queue
 	bclr	#$7,$FF800F.l
 	jsr	(WaitGateAck).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
 	bset	#$5,$FF800F.l
 	bra.s	.next4
 .next3	bclr	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 
@@ -994,14 +994,14 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 ; Pushes the sub-CPU return state while a VRAM transfer runs.
 SetVramStackPush
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -1238,25 +1238,25 @@ SetVramStackPush
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
 	bset	#$5,$FF800F.l
 	bra.s	.next4
 .next3	bclr	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 ; Pushes the flag on the queue for setVram
 SetVramQueueFlag	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst.b	#$5,$FF800F.l
 	beq.b	.next
 	move.w	#$1,-(a6)
 	bra.b	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr.b	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset.b	#$2,(disflags).l
@@ -1482,13 +1482,13 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bclr.b	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next3
 	bset.b	#$5,$FF800F.l
 	bra.b	.next4
 .next3	bclr.b	#$5,$FF800F.l
-.next4	move.l	a6,$19360.l
+.next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 ; Sets the VDP VRAM write command from d0.
@@ -1539,14 +1539,14 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 									;color fam 1-4. printy is restored and the tiles go last through
 									;DecompressGraphics (returns d4 = end char)
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(printy).l,-(sp)
 	move.w	(disflags).l,-(sp)
@@ -1605,12 +1605,12 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	move.w	(sp)+,(disflags).l
 	move.w	(sp)+,(printy).l
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next5
 	bset	#$5,$FF800F.l
 	bra.s	.next6
 .next5	bclr	#$5,$FF800F.l
-.next6	move.l	a6,$19360.l
+.next6	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts

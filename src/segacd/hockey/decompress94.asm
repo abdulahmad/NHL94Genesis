@@ -7,14 +7,14 @@ DecompressGraphicsPlain						;Clear remapTablePtr, fall into DecompressGraphics
 	clr.l	(remapTablePtr).l
 ; Queues the decompress command in the list at $19360.
 DecompressGraphicsQueue	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
 .next2	bclr	#$5,$FF800F.l
-	move.l	a6,$19360.l
+	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d0-d1/a0-a6,-(sp)
 	moveq	#$0,d0
@@ -37,13 +37,13 @@ DecompressGraphicsQueue	move.l	a6,-(sp)
 	bsr.w	DecompressBytecode
 .next4	movem.l	(sp)+,d0-d1/a0-a6
 	move.l	a6,-(sp)
-	movea.l	$19360.l,a6
+	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next5
 	bset	#$5,$FF800F.l
 	bra.s	.next6
 .next5	bclr	#$5,$FF800F.l
-.next6	move.l	a6,$19360.l
+.next6	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer. d1 = vram

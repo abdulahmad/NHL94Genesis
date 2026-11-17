@@ -75,13 +75,13 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,(menuitem).l		;no item below the last
 	move.w	(menuitem).l,d0
-	cmp.w	$18AD4.l,d0
+	cmp.w	(MenuScrollTop).l,d0
 	bge.w	.next3
-	move.w	d0,$18AD4.l		;scroll up
+	move.w	d0,(MenuScrollTop).l		;scroll up
 .next3	subi.w	#$3,d0		;selection - 3 = first visible item if it is on the bottom row
-	cmp.w	$18AD4.l,d0
+	cmp.w	(MenuScrollTop).l,d0
 	ble.w	.print
-	move.w	d0,$18AD4.l		;scroll down
+	move.w	d0,(MenuScrollTop).l		;scroll down
 .print	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).l
 	movea.l	(menulist).l,a1
@@ -91,7 +91,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	dc.w	$0026
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
 	adda.w	(a1),a1
-	move.w	$18AD4.l,d0		;skip to the first item shown
+	move.w	(MenuScrollTop).l,d0		;skip to the first item shown
 	bra.w	.next5
 .skip	adda.w	(a1),a1
 	adda.w	#$4,a1
@@ -99,7 +99,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	moveq	#$3,d1		;4 rows
 	move.w	#$C,(printy).l
 	bsr.w	SetMenuPrintX
-	move.w	$18AD4.l,d0
+	move.w	(MenuScrollTop).l,d0
 	beq.w	.row
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).

@@ -702,7 +702,7 @@ GameOverCleanup
 	clr.w	d4
 	move.b	(a0)+,d4
 	bmi.w	.next2
-	movea.l	#$18A18,a2
+	movea.l	#gstruct,a2
 .loop7	move.b	(a0)+,$18D59.l
 	move.b	(a0)+,$18D5B.l
 	bsr.w	PlayoffScreen_doscores
@@ -1154,11 +1154,11 @@ ScrollDisplayUpCall
 	move.w	#$96,d0
 	jsr	$5F22.w
 	jsr	(CdBiosCall80Retry).l
-	move.w	#$4,$19364.l
-	lea.l	$19364.l,a0
+	move.w	#$4,(CdCommandArg).l
+	lea.l	(CdCommandArg).l,a0
 	move.w	#$15,d0
 	jsr	$5F22.w
-	lea.l	$19364.l,a0
+	lea.l	(CdCommandArg).l,a0
 	move.w	#$13,d0
 	jsr	$5F22.w
 	move.l	#$400,d1
@@ -1412,7 +1412,7 @@ DefaultMenusRandomPick
 	beq.w	MakeTree
 	clr.w	(bosgames).l
 	moveq	#$7,d0
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 .loop3	clr.w	$4(a0)
 	clr.w	$6(a0)
 	adda.w	#$10,a0
@@ -1446,7 +1446,7 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	movea.l	#potree,a0
 	adda.w	d2,a0
 	adda.w	d2,a0		;(2 bytes a game)
-	movea.l	#$18A18,a1
+	movea.l	#gstruct,a1
 .loop	clr.w	$A(a1)		;gstruct: gss1
 	clr.w	$C(a1)
 	clr.w	$8(a1)
@@ -1493,7 +1493,7 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	movea.l	#potree,a0
 	move.w	(potreeteam).l,d2
 	move.b	(a0,d2.w),d2
-	movea.l	#$18A18,a1
+	movea.l	#gstruct,a1
 	moveq	#$10,d4
 	mulu.w	d1,d4		;times the last game
 	adda.w	d4,a1		;a1 = last game
@@ -1589,7 +1589,7 @@ InitTeamMask
 	bset	d1,d3
 	move.w	(VisTeam).l,d1
 	bset	d1,d3
-	movea.l	#$18A18,a1
+	movea.l	#gstruct,a1
 	moveq	#$7,d2
 .loop	bsr.w	.loop2
 	move.w	d0,$0(a1)
@@ -1718,7 +1718,7 @@ WritePassBits						;Transfer the game variables to the bits at a3 (pojoy range 8
 	bsr.w	PushBits
 	moveq	#$5,d1
 	moveq	#$7,d2
-	movea.l	#$18A18,a1
+	movea.l	#gstruct,a1
 .loop	move.w	$4(a1),d0
 	bsr.w	PushBits
 	move.w	$6(a1),d0
@@ -1880,11 +1880,11 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
 	move.w	(gamenum).l,d0
 	mulu.w	#$10,d0
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	move.w	(HmGoals).l,$A(a0,d0.w)
 	move.w	(AwGoals).l,$C(a0,d0.w)
 	bsr.w	GetShifter
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
@@ -1910,7 +1910,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.nextround
 	move.w	(gamenum).l,d0
 	mulu.w	#$10,d0
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	adda.w	d0,a0
 	cmpi.w	#$4,$4(a0)
 	beq.w	.cround
@@ -1919,7 +1919,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 .cround	cmpi.w	#$3,(gamelevel).l
 	bge.w	.nextround
 	bsr.w	GetShifter
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
@@ -1944,7 +1944,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	bset	#$2,(sflags3).l
 .nextround	clr.w	(bosgames).l
 	bsr.w	GetShifter
-	movea.l	#$18A18,a0
+	movea.l	#gstruct,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
