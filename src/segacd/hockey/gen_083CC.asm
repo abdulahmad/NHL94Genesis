@@ -5,13 +5,13 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 									;demo (SetupDemo).
 	jsr	$2A58C.l
 	movea.l	#$18C38,a3
-	jsr	(Sub_4057C).l
+	jsr	(InitializeGameStructuresSub2).l
 	move.w	$18C22.l,$18C0A.l
 	move.w	$18C24.l,$18BFA.l
 	bclr	#$1,$17F7A.l		;no overtime
 	jsr	$29302.l
 	jsr	(ReadNameLog).l		;read the SRAM name list
-	bsr.w	Sub_24348		;build the screen
+	bsr.w	PrintOptionNamesSub1		;build the screen
 	clr.w	$19384.l
 	clr.w	$19386.l
 	bsr.w	PrintOptionNames
@@ -29,10 +29,10 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	bra.w	.reggame
 .l8456	cmpi.w	#$2,$18BFA.l
 	blt.w	.l8466
-	bsr.w	Sub_23798
+	bsr.w	GameSetUpSub3
 .l8466	cmpi.w	#$1,$18BFA.l
 	bne.w	.reggame		;not continue playoffs
-	bsr.w	Sub_2379E
+	bsr.w	GameSetUpSub4
 .reggame	clr.w	d7		;menu line 0 (d7 = line * 2 = offset in OptPlayMode ... OptLine)
 	clr.w	d0
 	bsr.w	MoveMenuFrame		;frame the line
@@ -45,7 +45,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	bsr.w	DrawVisBlock
 	move.w	#$18,(palcount).l
 	bclr	#$2,(disflags).l		;dfng: fade in graphics now
-Sub_234C2
+GameSetUpSub1
 	cmpi.w	#$4,$18BFA.l
 	bne.w	.l84E6
 	move.w	#$1,$18C0A.l
@@ -54,9 +54,9 @@ Sub_234C2
 .l84E6	bsr.w	ReadSetupPads
 	tst.w	d1
 	bne.w	.l84F4
-	bra.w	Sub_24660
+	bra.w	ReadSetupPadsSub1
 .l84F4	btst	#$7,d1
-	bne.w	Sub_24720
+	bne.w	ReadSetupPadsSub2
 	btst	#$1,d1
 	beq.w	.l85A0
 	tst.w	(OptNOP).l
@@ -93,7 +93,7 @@ Sub_234C2
 .l8590	move.w	#$4,d0
 .l8594	bsr.w	MoveMenuFrame
 	bsr.w	FixModeOptions
-	bra.w	Sub_234C2
+	bra.w	GameSetUpSub1
 .l85A0	btst	#$0,d1
 	beq.w	.l862E
 	tst.w	(OptNOP).l
@@ -124,12 +124,12 @@ Sub_234C2
 .l861E	move.w	#$FFFC,d0
 .l8622	bsr.w	MoveMenuFrame
 	bsr.w	FixModeOptions
-	bra.w	Sub_234C2
+	bra.w	GameSetUpSub1
 .l862E	moveq	#$1,d2
 	btst	#$3,d1
 	bne.w	.l8642
 	btst	#$2,d1
-	beq.w	Sub_234C2
+	beq.w	GameSetUpSub1
 	moveq	#-1,d2
 .l8642	cmpi.w	#$4,$18BFA.l
 	beq.w	.l8654
@@ -166,7 +166,7 @@ Sub_234C2
 	bsr.w	DrawVisBlock
 	move.w	(HomeTeam).l,$1938A.l
 .l8712	tst.w	(sp)+
-	bra.w	Sub_2378E
+	bra.w	GameSetUpSub2
 	dc.w	$301F,$B079,$0001,$7FB0,$6700,$006C,$33F9,$0001
 	dc.w	$7FB0,$0001,$938A,$48A7,$8000,$3039,$0001,$7FB0
 	dc.w	$B079,$0001,$7FB0,$4C9F,$0001,$6700,$0010,$33F9
@@ -175,13 +175,13 @@ Sub_234C2
 	dc.w	$6700,$0024,$33F9,$0001,$7FAE,$0001,$938C,$33F9
 	dc.w	$0001,$7FAE,$0001,$938A,$6100,$11E0,$33F9,$0001
 	dc.w	$7FB0,$0001,$938A
-Sub_2378E
+GameSetUpSub2
 	bsr.w	FixModeOptions
-	bra.w	Sub_234C2
+	bra.w	GameSetUpSub1
 	dc.w	$4E75
-Sub_23798
+GameSetUpSub3
 	jmp	$401C4.l
-Sub_2379E
+GameSetUpSub4
 	jmp	$40132.l
 MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 lines and
 									;scrolls: setupfirstline = first line shown
@@ -268,7 +268,7 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 	bclr	#$0,(sflags6).l		;normal maps
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.w	d7,d3
-	bsr.w	L8984		;the new frame
+	bsr.w	SetFrameRectUnused_1		;the new frame
 	move.w	#$6000,(printa).l
 	jmp	(Framer).l
 .l891E	jsr	(printz).l
@@ -295,7 +295,7 @@ SetFrameRectUnused						;An unused copy of SetFrameRect without its printz that 
 	bne.w	SetFrameRectUnusedExit
 	moveq	#$5,d1
 	rts
-L8984	jsr	(printz).l
+SetFrameRectUnused_1	jsr	(printz).l
 	String	CC_Font1,$10,$E
 	add.w	d3,(printy).l
 	move.w	$19384.l,d0
@@ -461,9 +461,9 @@ ChangeOption
 	cmpi.w	#$4,$18BFA.l
 	beq.w	SetFrameRectUnusedExit
 	tst.w	d7
-	beq.w	Sub_23798
+	beq.w	GameSetUpSub3
 	cmpi.w	#$4,d7
-	beq.w	Sub_23798
+	beq.w	GameSetUpSub3
 	rts
 WrapOption						;d3 + d2, wrapped into d5 ... d4-1. Called from ChangeOption
 	add.w	d2,d3

@@ -16,9 +16,9 @@
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l7488
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l748C
 .l7488	move.w	#$0,-(a6)
 .l748C	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -49,17 +49,17 @@
 .l7508	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l751E
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l7526
 .l751E	bclr	#$5,$FF800F.l
 .l7526	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Sub_22534
+SPAlistSub1
 	bclr	#$6,(sflags6).l
-L753C	movem.l	d0-d1/a0-a1,-(sp)
+SPAlist_1	movem.l	d0-d1/a0-a1,-(sp)
 	asl.l	#$2,d0
 	addi.l	#$0,d0
 	movea.l	#$2266E,a1
@@ -76,14 +76,14 @@ L753C	movem.l	d0-d1/a0-a1,-(sp)
 .l7576	jsr	$22452.l
 .l757C	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Sub_22582
+SPAlistSub2
 	bset	#$6,(sflags6).l
-	bra.w	L753C
+	bra.w	SPAlist_1
 ReadCrowdRecord						;Read the 16 byte crowd record block of team d1 from save RAM
 	
 	
 	bclr	#$6,(sflags6).l
-L7596	movem.l	d0-d1/a0-a1,-(sp)
+ReadCrowdRecord_1	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$B60,d0
@@ -95,12 +95,12 @@ L7596	movem.l	d0-d1/a0-a1,-(sp)
 .l75C0	jsr	$22452.l
 .l75C6	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Sub_225CC
+ReadCrowdRecordSub1
 	bset	#$6,(sflags6).l
-	bra.w	L7596
-Sub_225D8
+	bra.w	ReadCrowdRecord_1
+ReadCrowdRecordSub2
 	bclr	#$6,(sflags6).l
-L75E0	movem.l	d0-d1/a0-a1,-(sp)
+ReadCrowdRecord_2	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$D20,d0
@@ -112,10 +112,10 @@ L75E0	movem.l	d0-d1/a0-a1,-(sp)
 .l760A	jsr	$22452.l
 .l7610	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Sub_22616
+ReadCrowdRecordSub3
 	bset	#$6,(sflags6).l
-	bra.w	L75E0
-Sub_22622
+	bra.w	ReadCrowdRecord_2
+ReadCrowdRecordSub4
 	bset	#$6,(sflags6).l
 	bra.w	NameLogIO
 ReadNameLog						;Read the user name log from save RAM at NameLogBase to namelog. Called
@@ -295,20 +295,20 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 	bne.w	.l7CBA
 	neg.w	d0
 .l7CBA	tst.w	d0
-	bpl.w	Sub_22D1E
-	bra.w	Sub_22D16
+	bpl.w	PuckOnAttackHalfSub2
+	bra.w	PuckOnAttackHalfSub1
 	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B
 	dc.w	$0054,$B240,$6000,$0044,$6700,$0040,$0641,$0001
 	dc.w	$0241,$0007,$B240,$6700,$0032,$0641,$0001,$0241
 	dc.w	$0007,$B240,$6700,$0024,$0441,$0003,$0241,$0007
 	dc.w	$B240,$6700,$0016,$0441,$0001,$0241,$0007,$6700
 	dc.w	$000A
-Sub_22D16
+PuckOnAttackHalfSub1
 	move.w	#$0,d0
-	bra.w	L7D22
-Sub_22D1E
+	bra.w	PuckOnAttackHalf_1
+PuckOnAttackHalfSub2
 	move.w	#$1,d0
-L7D22	movem.w	(sp)+,d0-d1
+PuckOnAttackHalf_1	movem.w	(sp)+,d0-d1
 	rts
 onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
 	

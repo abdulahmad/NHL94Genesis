@@ -117,7 +117,7 @@ UpdatePenaltyShotEnd						;end the penalty shot when the goalie has the puck, th
 	bne.w	.finishshot
 	rts
 .finishshot	btst	#$6,$17F70.l
-	bne.w	L19CC4
+	bne.w	EndPenaltyShotPlay_1
 	bset	#$6,$17F70.l
 	move.w	#$A,d0
 	jsr	(AddPenalty2).l
@@ -142,9 +142,9 @@ EndPenaltyShotPlay						;stop play after a penalty shot or shootout attempt: fre
 	move.b	$17F9C.l,$61(a0,d0.w)
 	movem.l	(sp)+,d0/a0
 	jsr	(CountShootoutGoals).l
-L19CC4	rts
+EndPenaltyShotPlay_1	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_19CC6.bin
-L19EDC	tst.w	$18C0A.l
+SetFaceoffComputerLine	tst.w	$18C0A.l
 	bne.w	rtss2
 	btst	#$4,$17F7A.l
 	bne.w	.l19F06
@@ -164,7 +164,7 @@ StartFaceoffLineChange						;start the line change box for team d0's sort object
 	adda.w	d0,a3
 	bclr	#$3,$63(a3)
 	move.l	a2,-(sp)
-	bsr.w	Sub_30B08
+	bsr.w	faceoffinputExitSub1
 	movea.l	(sp)+,a2
 	btst	#$3,$63(a3)
 	beq.w	.exit
@@ -190,7 +190,7 @@ WaitForFaceoffLineChanges						;run both teams' faceoff line change timers (temp
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	moveq	#$1,d0
-	bsr.w	L19EDC
+	bsr.w	SetFaceoffComputerLine
 	move.w	#$FFFF,$1A568.l
 	move.w	#$1C,d0		;puckfaceoff2
 	bra.w	assreplace
@@ -215,7 +215,7 @@ UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change tim
 	btst	#$3,$63(a3)
 	beq.w	.exit
 	clr.w	d2
-	bsr.w	Sub_30D64
+	bsr.w	lineinputSub1
 	bsr.w	SetLCmode2
 .exit	movea.l	(sp)+,a3
 	rts
@@ -292,7 +292,7 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	moveq	#$3,d0		;d0 = first of the 2 special lines (3-4) used with a man advantage
 	move.w	$26(a2),d1		;tmap
 	sub.w	$26(a1),d1		;compare the numbers of active players
-	beq.w	L1A15A		;equal: normal line
+	beq.w	CompLine_1		;equal: normal line
 	bpl.w	.0
 	addi.w	#$2,d0		;fewer players: lines 5-6 instead
 .0	move.w	d0,-(sp)		;find pk/pp line
@@ -305,11 +305,11 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	bge.w	.1
 	addi.w	#$1,(sp)		;second one has more energy: take it
 .1	move.w	(sp)+,$16(a2)		;tmline
-Sub_35154
+CompLineSub1
 	movem.l	(sp)+,d0-d2/a0
 	rts
-L1A15A	cmpa.l	#$1834C,a2
-	bne.w	Sub_351D8
+CompLine_1	cmpa.l	#$1834C,a2
+	bne.w	CompLineSub2
 	moveq	#$2,d1
 	dc.w	$41FA,$0046
 	cmpi.w	#$2,$180E4.l
@@ -325,9 +325,9 @@ L1A15A	cmpa.l	#$1834C,a2
 	move.w	(a0,d1.w),d0
 	bsr.w	getlinee
 	cmpi.w	#$C00,d0
-	bls.w	Sub_351D8
+	bls.w	CompLineSub2
 	move.w	(a0,d1.w),$16(a2)
-	bra.w	Sub_35154
+	bra.w	CompLineSub1
 	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
 	dc.w	$0000,$0001,$0002,$0000,$0002,$0000,$0000,$0001
 	dc.w	$0000,$0000,$0001,$0000,$0001

@@ -46,7 +46,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	bset	#$2,$64(a3)		;set goalie control bit?
 .cont2	movem.w	(sp)+,d0-d1		;pop from stack
 	btst	#$2,$64(a3)		;check goalie ctrl bit
-	bne.w	Sub_32930		;branch if set
+	bne.w	checkanimSub1		;branch if set
 .na	btst	#$5,$62(a3)		;check if anim lock
 	bne.w	check4benchExit		;exit if so
 	bsr.w	check4bench

@@ -1,15 +1,15 @@
 ScoutParaOffset
 	cmpi.w	#$1A,d0
-	bne.s	*+44
+	bne.s	.lDA1C
 	move.w	#$EA,d0
 	cmpi.w	#$1A,(HomeTeam).l
-	bge.s	*+10
+	bge.s	.lDA08
 	add.w	(HomeTeam).l,d0
-	bra.s	*+22
+	bra.s	.lDA1C
 .lDA08	cmpi.w	#$1A,(VisTeam).l
-	bge.s	*+8
+	bge.s	.lDA18
 	addi.w	#$1A,d0
-	bra.s	*+6
+	bra.s	.lDA1C
 .lDA18	addi.w	#$1B,d0
 .lDA1C	movea.l	(ScoutingReportText).l,a1
 	movea.l	a1,a2
@@ -309,7 +309,7 @@ MatchupPosNames						;Position names of matchups 1-6
 	bne.s	*+113
 	moveq	#$77,d1
 	dc.w	$6172
-	bcc.s	Sub_28FD0
+	bcc.s	MatchupPosNamesSub1
 	move.l	-(a0),d0
 	dc.w	$0012,$2072
 	bvs.s	*+105
@@ -318,7 +318,7 @@ MatchupPosNames						;Position names of matchups 1-6
 	ble.s	*+116
 	dc.b	'ward  ',$00,$12,'left def'
 	bcs.s	*+112
-Sub_28FD0
+MatchupPosNamesSub1
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
 	dc.b	'oalie     '
@@ -485,7 +485,7 @@ ScoutStub						;An empty routine
 	move.w	#$6,d3
 	bra.w	.lE268
 .lE216	movem.w	d2-d3,-(sp)
-	jsr	(Sub_3D770).l
+	jsr	(setplayerSub1).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
 	tst.w	$17CEA.l
@@ -495,7 +495,7 @@ ScoutStub						;An empty routine
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
-	jsr	(Sub_362D8).l
+	jsr	(assexitSub1).l
 	bclr	#$5,$62(a3)
 	bclr	#$1,$63(a3)
 	bclr	#$2,$62(a3)
@@ -576,10 +576,10 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	$17CEE.l,d4
 	move.w	$17CEA.l,d5
 	move.w	$1A550.l,d0
-	bra.w	Sub_293DC
+	bra.w	AddArenaAnimSpriteSub1
 	dc.w	$0242,$000F,$0C42,$0003,$6300,$0004,$7403,$6000
 	dc.w	$000A,$3003,$D042,$6100,$0008,$51CA,$FFF6,$4E75
-Sub_293DC
+AddArenaAnimSpriteSub1
 	ext.w	d0
 	beq.w	AddArenaAnimSpriteExit
 	cmpi.w	#$40,d6

@@ -11,7 +11,7 @@
 ## Status 2026-11-17 (rounds 5-6)
 - HOCKEY.BIN is one assembly (`src/segacd/hockey.asm` + `hockey/gen_*.asm`), MATCH, no function equates. Assets are extracted like the cartridge (`tools/extractAssetsSegaCD.js`, `hockey/assets.json`).
 - Round 6: 62 disc-only routines named from their cartridge twins (`tools/hockey_subnames.py`, fuzzy shape match >= 0.9), about 2,000 dc.w lines turned back into code (`hockey_dc2code.py`, `hockey_dc2code2.py`, `hockey_fixdc.py`), text tables as dc.b (`hockey_dcstr.py`), short branches (`hockey_dcbr.py`, targets written `*+N`).
-- Still generic in HOCKEY.BIN: about 100 `Sub_<addr>` (CD-only or CD-changed routines, no cartridge twin above 0.9), about 110 `L<hex>` cross-routine branch targets, about 700 dc lines (tables, strings, mis-decodable data).
+- Round 7: short-branch targets labeled, 18 more names from cartridge twins, 50 L labels made local, the rest numbered per routine (`<Routine>_<n>`, `<Routine>Sub<n>`; `hockey_seqnames.py`). These are CD-only or CD-changed entry points with no cartridge twin. About 700 dc lines remain (tables, strings, undecodable data).
 - MAIN.BIN (23%), STARTER.BIN (3%) and PLAYER.BIN (6%) are mostly undisassembled; their fragments still use `X_xxxx` equates for code outside the fragment. Bringing them to the HOCKEY structure means disassembling the rest of each file first.
 
 ## Coverage (from NHL94Genesis `docs/segacd.md`, 2026-11-10)

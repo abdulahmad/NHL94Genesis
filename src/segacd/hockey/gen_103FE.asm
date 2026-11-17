@@ -113,19 +113,19 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	adda.w	#$4,sp
 	pea.l	$2B5FC.l
 	cmp.w	(a1,d4.w),d6
-	beq.w	Sub_2B602
+	beq.w	HotColdIconExitSub1
 	move.w	d6,d0
 	tst.w	d4
-	beq.w	Sub_2B608
-	bra.w	Sub_2B60E
+	beq.w	HotColdIconExitSub2
+	bra.w	HotColdIconExitSub3
 	movem.l	(sp)+,d0-d6/a0-a1
 HotColdIconExit
 	rts
-Sub_2B602
+HotColdIconExitSub1
 	jmp	(Sweepcheck).l
-Sub_2B608
+HotColdIconExitSub2
 	jmp	(setc1player).l
-Sub_2B60E
+HotColdIconExitSub3
 	jmp	(setc2player).l
 	jsr	$37598.l
 	move.w	#$D,d7
@@ -233,9 +233,9 @@ Sub_2B60E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l10850
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l10854
 .l10850	move.w	#$0,-(a6)
 .l10854	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -244,9 +244,9 @@ Sub_2B60E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l10880
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l10888
 .l10880	bclr	#$5,$FF800F.l
 .l10888	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -358,10 +358,10 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	move.w	#$1E,d0
 	move.w	#$8,$1936C.l
 	move.w	#$B,$1936A.l
-	bra.w	L10AB0
+	bra.w	Gameloop_1
 Gameloop						;Main loop for game
 	moveq	#$1B,d0
-L10AB0	jsr	(assreplace).l
+Gameloop_1	jsr	(assreplace).l
 	bset	#$2,$17F6C.l
 	bclr	#$4,$17F6A.l
 	move.w	#$FFFF,(lastsfx).l
@@ -394,7 +394,7 @@ L10AB0	jsr	(assreplace).l
 	bsr.w	demoread
 	btst	#$0,$17F6A.l
 	beq.w	.l10B6C
-	bsr.w	L11074
+	bsr.w	Pausemode
 	bra.w	.l10B6C
 DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	move.w	(ScoutSubStatus).l,d7
@@ -554,7 +554,7 @@ clockcont						;monitor period clock and initiate various clock activated events
 clockcont_0						;End of period. Also entered from puckfaceoff
 	movea.l	#$17B80,a3
 	move.l	#$18,d0
-	jsr	(Sub_362D8).l
+	jsr	(assexitSub1).l
 	cmpi.w	#$2,$180E4.l
 	blt.w	.l10F98
 	move.l	#$7,d0
@@ -591,7 +591,7 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	adda.w	#$300,a3
 .t2	tst.w	$34(a3)
 	ble.w	.l10F62
-	jsr	(Sub_362D8).l
+	jsr	(assexitSub1).l
 	move.l	#$7,d0
 .l10F62	adda.w	#$80,a3
 	dbra	d2,.t2
@@ -615,42 +615,42 @@ demoread						;monitor joystick if in demo mode (called every game loop)
 	bne.w	updatereplayExit
 	jsr	(ReadJoy1).l
 	btst	#$7,d1
-	bne.w	Sub_2C022
+	bne.w	EndDemoOnPressSub1
 	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy2).l
 	btst	#$7,d1
-	bne.w	Sub_2C034
+	bne.w	EndDemoOnPressSub2
 	tst.w	$18BF8.l
 	beq.w	EndDemoOnPress
 	jsr	$3752C.l
 	btst	#$7,d1
-	bne.w	Sub_2C04C
+	bne.w	EndDemoOnPressSub3
 	bsr.w	EndDemoOnPress
 	jsr	$3754A.l
 	btst	#$7,d1
-	bne.w	Sub_2C060
+	bne.w	EndDemoOnPressSub4
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
 	beq.w	updatereplayExit
 	jmp	$3F2BE.l
-Sub_2C022
+EndDemoOnPressSub1
 	clr.w	$17F94.l
 	bclr	#$1,$17F6A.l
-	bra.w	L11042
-Sub_2C034
+	bra.w	EndDemoOnPress_1
+EndDemoOnPressSub2
 	clr.w	$17F94.l
 	bset	#$1,$17F6A.l
-L11042	bset	#$0,$17F6A.l
+EndDemoOnPress_1	bset	#$0,$17F6A.l
 	rts
-Sub_2C04C
+EndDemoOnPressSub3
 	move.w	#$3,$17F94.l
 	bclr	#$1,$17F6A.l
-	bra.w	L11042
-Sub_2C060
+	bra.w	EndDemoOnPress_1
+EndDemoOnPressSub4
 	move.w	#$4,$17F94.l
 	bset	#$1,$17F6A.l
-	bra.w	L11042
-L11074	jsr	(forceblack).l
+	bra.w	EndDemoOnPress_1
+Pausemode	jsr	(forceblack).l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0
 .l11082	cmp.w	(ScoutSubStatus).l,d0
@@ -668,9 +668,9 @@ L11074	jsr	(forceblack).l
 .l110BE	btst	#$2,$32(a2)
 	beq.w	.l110CE
 	movea.l	#$420DC,a0
-.l110CE	bsr.w	Sub_2C2F8
+.l110CE	bsr.w	seta2Sub1
 .l110D2	bsr.w	MenuWaitVblank
-	bsr.w	Sub_2F2F0
+	bsr.w	GetPlayerCountSub1
 	jsr	(showclock).l
 	jsr	(ProcessInputWithRepeat).l
 	bsr.w	HandleMenuInput
@@ -763,7 +763,7 @@ seta2						;Set a2 to the team struct of the pause joystick also called from
 .seta21	beq.w	.x
 	adda.w	#$366,a2
 .x	rts
-Sub_2C2F8
+seta2Sub1
 	move.l	a0,$18AD6.l
 	move.l	a1,$18ADA.l
 	clr.w	$18AD2.l

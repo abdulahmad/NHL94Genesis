@@ -1,4 +1,4 @@
-Sub_32930
+checkanimSub1
 	move.w	$17B80.l,$1AD58.l
 	btst	#$0,$17F72.l
 	beq.w	.l179E8
@@ -35,7 +35,7 @@ Sub_32930
 .l179DE	bsr.w	SetSPA
 	bset	#$1,$63(a3)
 .l179E8	btst	#$5,$62(a3)
-	bne.w	L18056
+	bne.w	ClampYPosition_1
 	bsr.w	check4bench
 	bclr	#$1,$62(a3)
 	beq.w	.l17A0E
@@ -54,7 +54,7 @@ Sub_32930
 	bgt.w	.l17A6E
 	cmpi.w	#$FF2E,$14(a3)
 	blt.w	.l17A6E
-.l17A4A	lea.l	L18056(pc),a0
+.l17A4A	lea.l	ClampYPosition_1(pc),a0
 	moveq	#$4,d0
 	tst.w	$0(a3)
 	bpl.w	.l17A5A
@@ -65,7 +65,7 @@ Sub_32930
 	neg.w	d1
 	bra.w	skateto
 .l17A6E	btst	#$1,$63(a3)
-	bne.w	L18056
+	bne.w	ClampYPosition_1
 	btst	#$0,$17F72.l
 	beq.w	.l17AA8
 	cmpi.w	#$2C5,$6(a3)
@@ -80,7 +80,7 @@ Sub_32930
 	btst	#$2,$17F70.l
 	bne.w	.l17AC8
 	btst	#$0,$17F68.l
-	bne.w	L18056
+	bne.w	ClampYPosition_1
 .l17AC8	tst.w	$48(a3)
 	bmi.w	.l17B0C
 	move.w	$52(a3),d0
@@ -110,7 +110,7 @@ Sub_32930
 	btst	#$2,$64(a3)
 	bne.w	.l17B4C
 	moveq	#$1D,d0
-	bra.w	Sub_362D8
+	bra.w	assexitSub1
 .l17B4C	move.w	$17B94.l,d0
 	move.w	$14(a3),d1
 	eor.w	d0,d1
@@ -394,7 +394,7 @@ Sub_32930
 .l18020	cmp.w	d0,d1
 	blt.w	.l17F34
 	moveq	#$F,d0
-	bra.w	Sub_362D8
+	bra.w	assexitSub1
 ClampYPosition						;d1 = y clamped to +-$103, minus goal line d3. d0 = 0 if a3 has the puck
 	move.w	$17BE0.l,d2
 	cmp.w	$52(a3),d2		;is this player the puck carrier?
@@ -407,7 +407,7 @@ ClampYPosition						;d1 = y clamped to +-$103, minus goal line d3. d0 = 0 if a3 
 	bgt.w	.2
 	move.w	#$FEFD,d1
 .2	sub.w	d3,d1
-L18056	rts
+ClampYPosition_1	rts
 AdjustFacingDirection						;Turn facedir one step toward direction d0
 	move.w	$54(a3),d1		;facedir
 	sub.w	d1,d0		;d0 = wanted - current
@@ -726,7 +726,7 @@ asspuckc						;player a3 is puck handler
 	btst	#$0,$17F78.l
 	bne.w	.soshot
 	bsr.w	checkob
-	bsr.w	Sub_337F2
+	bsr.w	chk4lcSub1
 	btst	#$0,$17F78.l
 	bne.w	.soshot
 	btst	#$2,$17F70.l
@@ -743,7 +743,7 @@ asspuckc						;player a3 is puck handler
 	beq.w	.shot
 	btst	#$1,$17475.l
 	bne.w	.pass
-.shot	bsr.w	Sub_338E8
+.shot	bsr.w	chkpk2Sub1
 	bra.w	.pass
 .soshot	jsr	$2A84A.l
 	bne.w	.nodec
@@ -805,7 +805,7 @@ chk4lc						;see if computer should call line change
 	ori.b	#$DC,d0
 	ori.b	#$E6,(a4)
 	ori.b	#$E6,(a6)+
-Sub_337F2
+chk4lcSub1
 	btst	#$4,$17F7A.l
 	bne.w	.l188B4
 	move.w	$17B94.l,d0

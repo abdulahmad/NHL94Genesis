@@ -32,7 +32,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	bne.w	.2
 	bsr.w	TeamLogoBitmapsEnd		;home logo box
 	bra.w	.3
-.2	bsr.w	Sub_24AFA
+.2	bsr.w	TeamLogoBitmapsEndSub1
 	addi.w	#$1,$193A0.l		;each visitors card moves to the next featured player
 .3	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3 / add.b
@@ -307,7 +307,7 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	move.w	d1,d4
 	ext.l	d0
 	movea.l	#$C45C,a0
-	bsr.w	Sub_22534		;his save record into M68K_RAM
+	bsr.w	SPAlistSub1		;his save record into M68K_RAM
 	move.b	(a0),d0		;byte 0 = the record value
 	ext.w	d0
 	movea.l	#TeamList,a5
@@ -376,7 +376,7 @@ AppendRecordHolder						;Append the user name of the record holder (byte 1 of re
 	ext.l	d1
 	ext.l	d0
 	movea.l	#$C45C,a0
-	bsr.w	Sub_22534
+	bsr.w	SPAlistSub1
 	movea.l	#$C45C,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$1(a0),d2
@@ -397,7 +397,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	ext.l	d1
 	ext.l	d0
 	movea.l	#$C45C,a0
-	bsr.w	Sub_22534
+	bsr.w	SPAlistSub1
 	movea.l	#$C45C,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$3(a0),d2

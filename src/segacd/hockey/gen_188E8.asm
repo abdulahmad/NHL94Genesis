@@ -1,8 +1,8 @@
-Sub_338E8
+chkpk2Sub1
 	bsr.w	chkpk
-	bne.w	Sub_33986
+	bne.w	chkpk2Sub2
 	tst.w	$17E34.l
-	beq.w	Sub_33986
+	beq.w	chkpk2Sub2
 .l188FA	btst	#$7,$FF800E.l
 	bne.b	.l188FA
 	move.w	#$1B,$FF8020.l
@@ -16,7 +16,7 @@ Sub_338E8
 	bne.b	.l18934
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d0
-	bne.w	Sub_33986
+	bne.w	chkpk2Sub2
 	move.w	#$58,d0
 	btst	#$7,$62(a3)
 	beq.w	.l1896C
@@ -29,7 +29,7 @@ Sub_338E8
 .l18974	bset	#$3,$17F74.l
 	jmp	(dopass).l
 	dc.w	$6000,$0144
-Sub_33986
+chkpk2Sub2
 	btst	#$1,$64(a3)
 	beq.w	.l189D2
 	move.w	#$1E,d0
@@ -279,17 +279,17 @@ assbreakaway						;assignment for a breakaway: the puck carrier skates in, anyon
 	move.w	$52(a3),d0		;Move SCnum into d0
 	cmp.w	$17BE0.l,d0		;compare puck carrier SCnum with d0
 	beq.w	assnearest		;branch if puck carrier
-L18DEA	bclr	#$1,$64(a3)		;clear breakaway bit
+assbreakaway_1	bclr	#$1,$64(a3)		;clear breakaway bit
 	move.w	#$11,d0		;11 - assnearest
 	bsr.w	assreplace
-	bra.w	L18E06
+	bra.w	assnearest_1
 assnearest						;this is a special assignment used for the player who is nearest the puck
 									;but doesn't have it. Assignment anearest ($11)
 									;a2 = a3's team struct, d7 = elapsed frames. temp1 = re-evaluation timer,
 									;temp3 = hold timer
 	jsr	(breakaway).l
-	bmi.w	L18DEA
-L18E06	bclr	#$2,$17F74.l
+	bmi.w	assbreakaway_1
+assnearest_1	bclr	#$2,$17F74.l
 	bne.w	.chkpuck
 	bclr	#$1,$64(a3)		;clear breakaway bit
 .chkpuck	move.w	$52(a3),d0		;move SCnum into d0
@@ -331,7 +331,7 @@ L18E06	bclr	#$2,$17F74.l
 	beq.w	checkanim		;branch if goalie
 	moveq	#$10,d0
 	btst	#$3,$62(a3)		;pfjoycon - check if controlled
-	beq.w	Sub_362D8		;jump if not
+	beq.w	assexitSub1		;jump if not
 	rts		;human controlled: leave as is
 .nopc	sub.b	d7,$40(a3)		;subtract d7 (elapsed frames) from temp1
 	bpl.w	.nodec		;jump if positive
@@ -383,7 +383,7 @@ L18E06	bclr	#$2,$17F74.l
 	cmpi.b	#$13,$38(a0,d0.w)		;check if current assignment is asspassrec
 	beq.w	.next		;branch if a0 is going to receive puck
 	move.l	a0,-(sp)		;push onto stack
-	bsr.w	Sub_36362		;get hot spot
+	bsr.w	GetHotSub1		;get hot spot
 	add.w	$0(a0),d0		;Xpos to d0
 	sub.w	$17B80.l,d0
 	add.w	$14(a0),d1
@@ -417,7 +417,7 @@ L18E06	bclr	#$2,$17F74.l
 	exg.l	a1,a3		;swap addresses
 	bclr	#$0,$62(a3)		;clear pfdoff
 	moveq	#$11,d0
-	bsr.w	Sub_362D8		;... and give him the assnearest assignment
+	bsr.w	assexitSub1		;... and give him the assnearest assignment
 	exg.l	a1,a3
 	bra.w	assexit		;I (old a3) drop this assignment
 .de1	btst	#$5,$62(a3)		;pfalock - check if locked in animation
@@ -518,7 +518,7 @@ L18E06	bclr	#$2,$17F74.l
 	blt.w	.chkcont		;branch if less than (within 15 pix in X direction)
 .exit	rts
 .chkcont	btst	#$5,(sflags6).l		;check if puckc is in the slot
-	beq.w	L1922A		;branch if not in slot
+	beq.w	check4check_1		;branch if not in slot
 	move.b	$75(a3),d0		;move Chk into d0
 	ext.w	d0		;clear top byte of d0
 	movem.l	d0/a3,-(sp)		;push to stack
@@ -527,7 +527,7 @@ L18E06	bclr	#$2,$17F74.l
 	blt.w	.chkcont2		;branch if less
 	move.b	#$1E,d0		;move 1E into d0
 .chkcont2	move.b	d0,$75(a3)		;move d0 into Chk
-	bsr.w	L1922A
+	bsr.w	check4check_1
 	movem.l	(sp)+,d0/a3		;pop off stack
 	move.b	d0,$75(a3)		;move original Chk into player
 	rts
@@ -536,7 +536,7 @@ check4check						;look for good opportunity for checking opponent. Falls in from
 									;the checking rating first, then look for an opponent within 30 units
 									;whom a3 is facing
 	bsr.w	skatetopuck
-L1922A	tst.w	$34(a3)		;check if goalie
+check4check_1	tst.w	$34(a3)		;check if goalie
 	bne.w	.player		;branch if not
 	rts
 .player	move.w	#$28,d0		;start with 28 hex (40 decimal)

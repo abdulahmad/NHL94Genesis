@@ -31,6 +31,10 @@ for i, (a, n) in enumerate(labs):
     cands.append((a, n, tuple(hp.shape(x) for x in ins)))
 used = {n for _, n in labs if False}
 subs = sorted({int(m, 16) for f in glob.glob('src/segacd/hockey/gen_*.asm') for m in re.findall(r'Sub_([0-9A-F]+)', open(f).read())})
+LABS = sorted({int(m, 16) for f in glob.glob('src/segacd/hockey/gen_*.asm') for m in re.findall(r'^L([0-9A-F]{4,5})\b', open(f).read(), re.M)})
+if len(sys.argv) > 6 and sys.argv[6] == 'L':
+    subs = [x + 0x1B000 for x in LABS]
+PFX = 'L' if len(sys.argv) > 6 and sys.argv[6] == 'L' else 'Sub_'
 import bisect
 dk = [d for d, _ in chain]
 out = {}
@@ -65,7 +69,7 @@ if len(sys.argv) > 5 and sys.argv[5] == 'fuzzy':
         t = [k for k, x in enumerate(ins) if x.mnemonic.split('.')[0] in ('rts', 'rte', 'jmp', 'bra')]
         if not t: continue
         sh = [hp.shape(x) for x in ins[:t[0] + 1]]
-        if len(sh) < 4: continue
+        if len(sh) < (8 if PFX == 'L' else 4): continue
         sc = []
         for a, n, cs in cands:
             if abs(len(cs) - len(sh)) > max(3, len(sh) // 4): continue
@@ -75,7 +79,7 @@ if len(sys.argv) > 5 and sys.argv[5] == 'fuzzy':
         res[s_] = sc
     for s_ in sorted(res):
         for r, a, n in res[s_]:
-            if n in taken or n in existing:
+            if n in taken or n in existing or n.startswith('rts'):
                 continue
             taken.add(n); out[s_] = n
             break
@@ -83,4 +87,4 @@ if len(sys.argv) > 5 and sys.argv[5] == 'fuzzy':
         pass
     print('--- all')
     for s_, n in sorted(out.items()):
-        print('Sub_%X %s' % (s_, n))
+        print('%s%X %s' % (PFX, s_ - (0x1B000 if PFX == 'L' else 0), n))

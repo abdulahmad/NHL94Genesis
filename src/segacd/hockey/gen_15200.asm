@@ -40,13 +40,13 @@ doinput
 	tst.w	$17F96.l
 	bpl.w	.l152C0
 	tst.w	d4
-	beq.w	Sub_2C022
-	bra.w	Sub_2C034
+	beq.w	EndDemoOnPressSub1
+	bra.w	EndDemoOnPressSub2
 .l152C0	btst	#$7,d1
 	beq.w	.l152D6
 	tst.w	$17F96.l
-	beq.w	Sub_2C04C
-	bra.w	Sub_2C060
+	beq.w	EndDemoOnPressSub3
+	bra.w	EndDemoOnPressSub4
 .l152D6	btst	#$7,$17F6A.l
 	beq.w	.l152F2
 	btst	#$3,d0
@@ -122,7 +122,7 @@ doinput
 	cmp.w	$17BE0.l,d0
 	movem.w	(sp)+,d0
 	beq.w	.l1543C
-	bra.w	Sub_312A4
+	bra.w	passtoSub1
 .l1543C	btst	#$4,d3
 	beq.w	.l154DC
 	tst.w	$19374.l
@@ -173,25 +173,25 @@ doinput
 	beq.w	.l1554C
 	move.b	#$11,$17E57.l
 	andi.w	#$FF,d0
-	bne.w	Sub_312A4
+	bne.w	passtoSub1
 	tst.w	d4
 	beq.w	.l1553E
 	tst.w	$18C0E.l
 	bra.w	.l15544
 .l1553E	tst.w	$18C0C.l
-.l15544	bne.w	Sub_312A4
+.l15544	bne.w	passtoSub1
 	bra.w	.l15576
 .l1554C	move.b	#$11,$17E56.l
 	andi.w	#$FF00,d0
-	bne.w	Sub_312A4
+	bne.w	passtoSub1
 	tst.w	d4
 	beq.w	.l1556C
 	tst.w	$18C0E.l
 	bra.w	.l15572
 .l1556C	tst.w	$18C0C.l
-.l15572	bne.w	Sub_312A4
+.l15572	bne.w	passtoSub1
 .l15576	tst.w	$19374.l
-	bne.w	Sub_312A4
+	bne.w	passtoSub1
 	move.w	#$5,d0
 	cmpi.w	#$5,d6
 	ble.w	.l15590
@@ -212,10 +212,10 @@ doinput
 .l155C2	tst.w	$34(a3)
 	bne.w	doinput_onetimer
 	btst	#$6,d1
-	beq.w	L15608
+	beq.w	doinputExit_1
 	move.w	$17E62.l,d0
 	cmpi.b	#$8,d0
-	beq.w	L15608
+	beq.w	doinputExit_1
 	move.w	d0,$54(a3)
 	move.b	#$8,$5E(a3)
 	move.w	#$2F4,d1
@@ -225,14 +225,14 @@ doinput
 	addi.w	#$96,(Crowdlevel).l
 doinputExit
 	rts
-L15608	btst	#$5,d1
+doinputExit_1	btst	#$5,d1
 	bne.w	.l1566C
 	btst	#$5,d3
 	bne.w	.l15622
 	bclr	#$7,$63(a3)
-	bra.w	Sub_307D8
+	bra.w	doinput_chkanimSub1
 .l15622	btst	#$7,$63(a3)
-	beq.w	Sub_307D8
+	beq.w	doinput_chkanimSub1
 	movem.l	d0-d3/a0-a3,-(sp)
 	movea.l	#SPAlist,a0
 	adda.w	$58(a3),a0
@@ -250,7 +250,7 @@ L15608	btst	#$5,d1
 	move.w	#$A,$5C(a3)
 	rts
 .l1566C	btst	#$5,$62(a3)
-	bne.w	Sub_307D8
+	bne.w	doinput_chkanimSub1
 	movem.w	d0-d1,-(sp)
 	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
@@ -308,7 +308,7 @@ L15608	btst	#$5,d1
 	cmpi.w	#$108,$17B94.l
 	cmpi.w	#$FEF8,$17B94.l
 	bset	#$1,$63(a3)
-	bne.w	Sub_307D8
+	bne.w	doinput_chkanimSub1
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$17E36,a0
 	move.w	#$108,d3
@@ -337,7 +337,7 @@ doinput_chkanim						;Nothing while a3's animation runs (pflags2 bit 1); else sk
 	bchg	d0,$250.w
 	andi.l	#$1EC021E,-(a2)
 	dc.w	$148E,$14C0,$14F2,$1544
-Sub_307D8
+doinput_chkanimSub1
 	btst	#$1,$63(a3)
 	beq.w	.l157E4
 	rts
@@ -440,7 +440,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bne.w	.arel
 	bset	#$3,$17F74.l
 	jsr	(setpassmode).l
-	bra.w	Sub_30B08
+	bra.w	faceoffinputExitSub1
 .c1	subi.b	#$1,$19380.l
 	bpl.w	.6
 	move.b	#$0,$19380.l
@@ -448,7 +448,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bne.w	.arel
 	bset	#$3,$17F74.l
 	jsr	(setpassmode).l
-	bra.w	Sub_30B08
+	bra.w	faceoffinputExitSub1
 .arel	btst	#$6,d3
 	bne.w	.8
 	btst	#$6,d2
@@ -470,7 +470,7 @@ doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the contr
 	beq.w	doinput_islockedExit
 	btst	#$6,$17F74.l
 	bne.w	doinput_islockedExit
-	bsr.w	Sub_312A4
+	bsr.w	passtoSub1
 	movem.l	d0/a0,-(sp)
 	move.w	$17F9E.l,d0
 	tst.w	d4
@@ -525,7 +525,7 @@ faceoffinput						;controller processing for faceoff
 	bra.w	SetSPA
 faceoffinputExit
 	rts
-Sub_30B08
+faceoffinputExitSub1
 	tst.w	$18C0A.l
 	bne.w	doinput_islockedExit
 	btst	#$4,$17F7A.l
@@ -551,7 +551,7 @@ SetLCmode2
 	addi.w	#$1,(printx).l
 	moveq	#$2,d4
 .l15B8E	move.w	d4,d0
-	bsr.w	Sub_30C58
+	bsr.w	setlccordsSub1
 	tst.w	d0
 	bmi.w	.l15BEC
 	btst	#$1,$32(a2)
@@ -565,7 +565,7 @@ SetLCmode2
 	jsr	(print).l
 	move.w	d0,-(sp)
 	movea.l	#$419F6,a1
-	jsr	(Sub_3CEBE).l
+	jsr	(SetTickerAreaPositionSub1).l
 	move.w	(sp)+,d0
 	jsr	(linebar).l
 	subi.w	#$5,(printx).l
@@ -588,7 +588,7 @@ setlccords						;set printx/y to cords for lc box on team a2
 	String	CC_Font1Pri,$16,$0
 	add.w	d0,(printy).l
 	moveq	#$2,d0
-	bsr.w	Sub_30C58
+	bsr.w	setlccordsSub1
 	moveq	#$6,d1		;3 rows
 	tst.w	d0
 	bpl.w	.ex
@@ -596,7 +596,7 @@ setlccords						;set printx/y to cords for lc box on team a2
 	addi.w	#$1,(printy).l
 .ex	moveq	#$9,d0
 	rts
-Sub_30C58
+setlccordsSub1
 	movem.l	d1-d2,-(sp)
 	move.w	$38C(a2),d2
 	cmpa.l	#$1834C,a2
@@ -642,13 +642,13 @@ lineinput						;process input for line changes
 .1	move.w	(sp)+,d1
 	clr.w	d2
 	btst	#$6,d1
-	bne.w	Sub_30D64
+	bne.w	lineinputSub1
 	addi.w	#$1,d2
 	btst	#$4,d1
-	bne.w	Sub_30D64
+	bne.w	lineinputSub1
 	addi.w	#$1,d2
 	btst	#$5,d1
-	bne.w	Sub_30D64
+	bne.w	lineinputSub1
 	btst	#$3,$62(a3)
 	beq.w	.x
 	btst	#$5,$62(a3)
@@ -656,10 +656,10 @@ lineinput						;process input for line changes
 	btst	#$0,$63(a3)
 	beq.w	doplayeracc		;skate with dpad if not fighting
 .x	rts
-Sub_30D64
+lineinputSub1
 	move.w	d2,d0
 	move.w	d2,$30(a2)
-	bsr.w	Sub_30C58
+	bsr.w	setlccordsSub1
 	tst.w	d0
 	bpl.w	.l15D7A
 	jmp	$30AB0.l
@@ -671,7 +671,7 @@ Sub_30D64
 	jsr	(setpersonel).l
 lcfound_close						;close lc box
 	btst	#$7,$17F6A.l
-	bne.w	L15EC4
+	bne.w	setpassmode_1
 	bsr.w	setlccords
 	cmpi.w	#$F,(printy).l
 	blt.w	.nollcm
@@ -736,14 +736,14 @@ setpassmode						;initialize pass mode
 	bclr	#$5,$17F78.l
 	move.w	#$64,$17F9A.l
 .l15EBC	bset	#$2,$17F6A.l
-L15EC4	rts
+setpassmode_1	rts
 passmode						;dpad sets passdir until bbut changes
 	btst	#$4,d2		;has b button changed?
 	bne.w	dopass		;yes
 	btst	#$3,$17F74.l		;Not in NHL Hockey Source
 	bne.w	dopass
 	btst	#$3,d0		;look for dpad
-	bne.w	L15EC4
+	bne.w	setpassmode_1
 	andi.w	#$7,d0		;pass first 3 bits of d0
 	move.w	d0,$17E2C.l
 	bset	#$3,d0

@@ -5,14 +5,14 @@ GetStatColumn						;d2 = stat column d1 for player d0. Goalies only have PIM (bt
 	move.w	d0,d2
 	move.w	(sp)+,d0
 	cmp.w	d2,d0		;goalie?
-	bge.w	Sub_2E3A4		;skater: read the column as is
+	bge.w	ReadStatColumnSub1		;skater: read the column as is
 	clr.w	d2		;goalie: columns 1 and 2 (A, Pts) show column 1 (assists), the rest 0
 	dc.w	$033C,$0006,$6700
 	dc.w	$15E8
 ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct byte arrays
 									;(StatColumnOffsets); d7 = 1: the playoff tables (GetStatsValue)
 	moveq	#$1,d1
-Sub_2E3A4
+ReadStatColumnSub1
 	tst.w	d7
 	bne.w	.l133D2
 	dc.w	$43FA,$0076
@@ -63,7 +63,7 @@ Sub_2E3A4
 	dc.b	'   ]',$00,$16,'[  Shots O'
 	dc.b	'n Goal   ]',$00,$16,'[ Pe'
 	dc.b	'nalty Minutes   '
-Sub_2E4EE
+ReadStatColumnSub2
 	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$2,$B,CC_SetFont,$1
@@ -78,7 +78,7 @@ Sub_2E4EE
 	add.b	d1,d0
 	add.b	d1,d0
 	dc.w	$43FA,$000E
-	jsr	(Sub_3CEBE).l
+	jsr	(SetTickerAreaPositionSub1).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
 	dc.w	$000A
@@ -86,14 +86,14 @@ CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrow
 									;the arena and league records; start exits. Menu item handler
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1353A.bin
-Sub_2E728
+CrowdMeterScreenSub1
 	movem.l	d0-d1/a2,-(sp)
 	jsr	(forceblack).l
 	bclr	#$0,(disflags).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	move.w	$18D32.l,d0
-	jsr	(Sub_3871E).l
+	jsr	(setVramSub1).l
 .l13754	btst	#$7,$FF800E.l
 	bne.b	.l13754
 	move.l	#$0,$FF8022.l
@@ -132,7 +132,7 @@ Sub_2E728
 	bne.b	.l13836
 	bclr	#$7,$FF800F.l
 	clr.w	d0
-	jsr	(Sub_3871E).l
+	jsr	(setVramSub1).l
 .l13850	btst	#$7,$FF800E.l
 	bne.b	.l13850
 	move.l	#$0,$FF8022.l
@@ -164,12 +164,12 @@ Sub_2E728
 	dc.w	$0003,$8F6E,$0006,$FE00,$0000,$7040,$7220,$343C
 	dc.w	$07FF,$4EB9,$0003,$8C06,$33FC,$0018,$0001,$8D62
 	dc.w	$4CDF,$0403,$4E75
-Sub_2E980
+CrowdMeterScreenSub2
 	jsr	(forceblack).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	move.w	$18D30.l,d0
-	jsr	(Sub_3871E).l
+	jsr	(setVramSub1).l
 .l139A0	btst	#$7,$FF800E.l
 	bne.b	.l139A0
 	move.l	#$0,$FF8022.l

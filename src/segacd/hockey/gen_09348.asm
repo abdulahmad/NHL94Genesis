@@ -1,4 +1,4 @@
-Sub_24348
+PrintOptionNamesSub1
 	move.l	#$400D0,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$0,(disflags).l
@@ -88,7 +88,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .l9654	jsr	(PlayerCardTimer).l
 .l965A	dbra	d6,.l952A
 .l965E	rts
-Sub_24660
+ReadSetupPadsSub1
 	clr.w	$18C16.l
 .l9666	btst	#$7,$FF800E.l
 	bne.b	.l9666
@@ -118,7 +118,7 @@ Sub_24660
 	clr.w	(OptNOP).l
 	clr.w	$18C0A.l
 	move.w	#$1,$18C08.l
-Sub_24720
+ReadSetupPadsSub2
 	move.w	$18C04.l,-(sp)
 	move.w	(sp),$18C0C.l
 	move.w	(sp)+,$18C0E.l
@@ -182,7 +182,7 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	rts
 	rts
 	dc.w	$4E75
-L9898	movem.l	d0-d7,-(sp)
+CheckNOPUnused_1	movem.l	d0-d7,-(sp)
 	bclr	#$0,$19390.l
 	beq.w	.l995C
 	bclr	#$6,$19390.l
@@ -223,10 +223,10 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	L9898
+	bsr.w	CheckNOPUnused_1
 	bset	#$2,$19390.l
 	bset	#$6,$19390.l
-	bsr.w	L9AE8
+	bsr.w	TeamLogoBitmapsEnd_1
 	bclr	#$3,$19390.l
 	beq.w	.0
 	jsr	(printz).l
@@ -243,10 +243,10 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardflags bit 3,
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	L9898
+	bsr.w	CheckNOPUnused_1
 	bset	#$3,$19390.l
 	bset	#$7,$19390.l
-	bsr.w	L9B0C
+	bsr.w	TeamLogoBitmapsEnd_2
 	bclr	#$2,$19390.l
 	beq.w	.0
 	jsr	(printz).l
@@ -306,14 +306,14 @@ TeamLogoBitmapsEnd						;end of TeamLogoBitmaps (size check below)
 	move.w	$19398.l,d4
 	move.w	#$1C,(printx).l
 	bra.w	DrawLogoBox
-L9AE8	move.w	$19398.l,d4
+TeamLogoBitmapsEnd_1	move.w	$19398.l,d4
 	move.w	#$18,(printx).l
 	bra.w	DrawLogoBox
-Sub_24AFA
+TeamLogoBitmapsEndSub1
 	move.w	$1939A.l,d4
 	move.w	#$3,(printx).l
 	bra.w	DrawLogoBox
-L9B0C	move.w	$1939A.l,d4
+TeamLogoBitmapsEnd_2	move.w	$1939A.l,d4
 	move.w	#$8,(printx).l
 DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to
 	
