@@ -1,43 +1,45 @@
-limitfo
+limitfo						;limit face off to 5-20 feet from walls of rink.
+	
 	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$207C,$0001,$8022
-L1EB4E	bsr.w	L1EB62
+.loop	bsr.w	.lf
 	adda.w	#$2,a0
 	tst.w	(a0)
-	bne.w	L1EB4E
+	bne.w	.loop
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-L1EB62	move.b	$1(a0),d0
+.lf	move.b	$1(a0),d0
 	andi.w	#$7F,d0
 	asl.w	#$7,d0
 	dc.w	$227C,$0001,$7480
 	move.w	#$58,d1
 	btst	#$7,$62(a1,d0.w)
-	bne.w	L1EB98
+	bne.w	.0
 	neg.w	d1
 	cmp.w	$17EE4.l,d1
 	blt.w	rtss2
 	move.w	#$FFBF,$17EE4.l
-	bra.w	L1EBAA
-L1EB98	cmp.w	$17EE4.l,d1
+	bra.w	.sx
+.0	cmp.w	$17EE4.l,d1
 	bgt.w	rtss2
 	move.w	#$41,$17EE4.l
-L1EBAA	move.w	#$46,d0
+.sx	move.w	#$46,d0
 	tst.w	$17EE2.l
-	bpl.w	L1EBBA
+	bpl.w	.1
 	neg.w	d0
-L1EBBA	move.w	d0,$17EE2.l
+.1	move.w	d0,$17EE2.l
 	rts
-UpdatePA
+UpdatePA						;animate ref in ref window. Runs ShowThreeStars for game over, and the
+	
 	dc.w	$4A79,$0001,$806E
 	bmi.w	rtss2
 	dc.w	$9F79,$0001,$806E
-	bpl.w	L1EBDA
+	bpl.w	.l1EBDA
 	bsr.w	SetPA2
-L1EBDA	dc.w	$0C79,$0004,$0001,$8072
-	bne.w	L1EBEA
+.l1EBDA	dc.w	$0C79,$0004,$0001,$8072
+	bne.w	.l1EBEA
 	bsr.w	ShowThreeStars
-L1EBEA	dc.w	$9F79,$0001,$806C
+.l1EBEA	dc.w	$9F79,$0001,$806C
 	bpl.w	rtss2
 	dc.w	$33FC,$7FFF,$0001,$806C
 	bsr.w	ClearPenaltyMessage
@@ -51,27 +53,29 @@ L1EBEA	dc.w	$9F79,$0001,$806C
 Sub_39C1C
 	dc.w	$33C0,$0001,$8072
 	cmpi.w	#$2E,d0
-	blt.w	L1EC2C
+	blt.w	.l1EC2C
 	rts
-L1EC2C	dc.w	$4279,$0001,$8070
+.l1EC2C	dc.w	$4279,$0001,$8070
 	bsr.w	prefmes
 	cmpi.w	#$E,d0
-	bne.w	L1EC42
+	bne.w	.l1EC42
 	bsr.w	Sub_40EFA
-L1EC42	btst	#$0,$17F78.l
-	beq.w	L1EC60
+.l1EC42	btst	#$0,$17F78.l
+	beq.w	.l1EC60
 	btst	#$3,$17F78.l
-	beq.w	L1EC60
+	beq.w	.l1EC60
 	jsr	(ShootoutWonBy).l
-L1EC60	dc.w	$33FC,$7FFF,$0001,$806C
+.l1EC60	dc.w	$33FC,$7FFF,$0001,$806C
 	btst	#$7,$17F6A.l
 	beq.w	SetPA2
 	dc.w	$33FC,$003C,$0001,$806C
-SetPA2
+SetPA2						;update animation for ref. Next frame/delay pair from the Penaltylist
+	
+	
 	movem.l	d0-d2/a0-a1,-(sp)
 	moveq	#$40,d0
 	dc.w	$4A79,$0001,$8070
-	bmi.w	L1ECF8
+	bmi.w	.pr
 	dc.w	$3039,$0001,$8070
 	dc.w	$0679,$0002,$0001,$8070
 	dc.w	$3239,$0001,$8072
@@ -80,98 +84,100 @@ SetPA2
 	adda.w	#$2,a0
 	adda.w	(a0),a0
 	move.w	(a0,d0.w),d0
-	bpl.w	L1ECC0
+	bpl.w	.0
 	neg.w	d0
 	dc.w	$50F9,$0001,$8070
-L1ECC0	clr.w	d1
+.0	clr.w	d1
 	move.b	d0,d1
 	asl.w	#$3,d1
 	dc.w	$33C1,$0001,$806E
 	btst	#$0,$17F78.l
-	beq.w	L1ECF6
+	beq.w	.1
 	btst	#$3,$17F78.l
-	beq.w	L1ECF6
+	beq.w	.1
 	move.w	d0,-(sp)
 	dc.w	$3039,$0001,$806E
 	add.w	d0,d0
 	dc.w	$33C0,$0001,$806E
 	move.w	(sp)+,d0
-L1ECF6	lsr.w	#$8,d0
-L1ECF8	bsr.w	PushRef
+.1	lsr.w	#$8,d0
+.pr	bsr.w	PushRef
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-PushRef
+PushRef						;tell vblank what to display. d0 = ref frame, $40 clears the window. The
+	
 	movem.l	d0-d2/a0-a1,-(sp)
 	cmpi.w	#$40,d0
-	beq.w	L1ED66
+	beq.w	.clearit
 	mulu.w	#$70,d0
 	movea.l	$47D1C.l,a0
 	btst	#$7,$17F6A.l
-	beq.w	L1ED2A
+	beq.w	.m1
 	movea.l	$47D20.l,a0
-L1ED2A	adda.l	$4(a0),a0
+.m1	adda.l	$4(a0),a0
 	adda.w	#$4,a0
 	adda.w	d0,a0
 	movea.l	#$18074,a1
 	dc.w	$3439,$0001,$8D56
 	btst	#$7,$17F6A.l
-	bne.w	L1ED50
+	bne.w	.4
 	ori.w	#$8000,d2
-L1ED50	moveq	#$37,d0
-L1ED52	move.w	(a0)+,(a1)
+.4	moveq	#$37,d0
+.1	move.w	(a0)+,(a1)
 	add.w	d2,(a1)+
-	dbra	d0,L1ED52
+	dbra	d0,.1
 	bset	#$1,$17F6C.l
-	bra.w	L1ED90
-L1ED66	btst	#$7,$17F6A.l
-	bne.w	L1ED8A
+	bra.w	.ex
+.clearit	btst	#$7,$17F6A.l
+	bne.w	.cl
 	movea.l	#$18074,a1
 	moveq	#$37,d0
-L1ED7A	move.w	#$7FF,(a1)+
-	dbra	d0,L1ED7A
+.2	move.w	#$7FF,(a1)+
+	dbra	d0,.2
 	bset	#$1,$17F6C.l
-L1ED8A	moveq	#-1,d0
+.cl	moveq	#-1,d0
 	bsr.w	prefmes
-L1ED90	movem.l	(sp)+,d0-d2/a0-a1
+.ex	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-prefmes
+prefmes						;print message for penalty d0 (negative clears it). Vertical mode: framed
+	
 	movem.l	d0-d2/a1,-(sp)
 	btst	#$7,$17F6A.l
-	bne.w	L1EE26
+	bne.w	.hor
 	tst.w	d0
-	bpl.w	L1EDC6
+	bpl.w	.noblank
 	bsr.w	printz
 	String	CC_Font1Pri,$0,$A
 	moveq	#$D,d0
 	moveq	#$3,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	bra.w	L1EE56
-L1EDC6	bsr.w	printz
+	bra.w	.ex
+.noblank	bsr.w	printz
 	String	CC_Font1Pri,$5,$A
 	dc.w	$227C,$0004,$165C
 	adda.w	(a1,d0.w),a1
 	adda.w	#$2,a1
 	move.w	(a1),d0
 	subi.w	#$2,d0
-	beq.w	L1EE56
+	beq.w	.ex
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
-	bpl.w	L1EDFA
+	bpl.w	.nb0
 	clr.w	(printx).l
-L1EDFA	move.w	(a1),d0
+.nb0	move.w	(a1),d0
 	tst.b	-$1(a1,d0.w)
-	bne.w	L1EE08
+	bne.w	.nb1
 	subi.w	#$1,d0
-L1EE08	moveq	#$3,d1
+.nb1	moveq	#$3,d1
 	bsr.w	Framer
 	subi.w	#$2,(printy).l
 	addi.w	#$1,(printx).l
 	bsr.w	print
-	bra.w	L1EE56
-L1EE26	bsr.w	ClearPenaltyMessage
+	bra.w	.ex
+.hor	bsr.w	ClearPenaltyMessage
 	tst.w	d0
-	bmi.w	L1EE56
+	bmi.w	.ex
 	bsr.w	printz
 	String	CC_Font1Pri,$11,$B
 	dc.w	$227C,$0004,$165C
@@ -181,42 +187,49 @@ L1EE26	bsr.w	ClearPenaltyMessage
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	bsr.w	print
-L1EE56	movem.l	(sp)+,d0-d2/a1
+.ex	movem.l	(sp)+,d0-d2/a1
 	rts
-ClearPenaltyMessage
+ClearPenaltyMessage						;Blank the horizontal mode penalty message line (22 spaces at x 5, y $B).
+	
 	bsr.w	printz
 	String	CC_Font1Pri,$5,$B,'                      '
 	rts
-PenGoalStuff
+PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring team.
+	
+	
+	
+	
 	movem.l	d0-d2/a0,-(sp)
 	cmpi.w	#$6,$26(a1)
-	bne.w	L1EE90
+	bne.w	.1
 	bsr.w	ClearPenaltyBuffer
-L1EE90	move.w	$26(a2),d2
+.1	move.w	$26(a2),d2
 	cmp.w	$26(a1),d2
-	ble.w	L1EEDE
+	ble.w	.ex
 	lea.l	$9C(a1),a0
-L1EEA0	clr.w	d2
+.0	clr.w	d2
 	move.b	(a0)+,d2
-	bmi.w	L1EEDE
+	bmi.w	.ex
 	btst	#$6,$68(a1,d2.w)
-	bne.w	L1EEA0
+	bne.w	.0
 	clr.w	$68(a1,d2.w)
 	bsr.w	L1EFEC
 	bset	#$0,$17F7E.l
 	addi.w	#$1,$26(a1)
 	addi.w	#$1,$2(a2)
-	bset	#$0,$1837E.l
-	bset	#$0,$186E4.l
-L1EEDE	movem.l	(sp)+,d0-d2/a0
+	bset	#$0,$1837E.l		;home tmflags: tmflcc
+	bset	#$0,$186E4.l		;visitors tmflags: tmflcc
+.ex	movem.l	(sp)+,d0-d2/a0
 	rts
-ClearPenaltyBuffer
+ClearPenaltyBuffer						;Clear PenBuf. Called from clockcont and PenGoalStuff
 	moveq	#$1F,d0
 	dc.w	$207C,$0001,$8022
-L1EEEC	clr.w	(a0)+
-	dbra	d0,L1EEEC
+.l1EEEC	clr.w	(a0)+
+	dbra	d0,.l1EEEC
 	rts
-updatepentime
+updatepentime						;update the time remaining on all penalized players, once a second. Sets
+	
+	
 	bclr	#$6,$17F6E.l
 	btst	#$0,$17F68.l
 	bne.w	rtss2
@@ -228,80 +241,87 @@ updatepentime
 	jsr	(updatePPTeamTime).l
 	movea.l	#tmstruct,a2
 	bsr.w	updatepentime_ut
-	adda.w	#$366,a2
-updatepentime_ut
+	adda.w	#$366,a2		;tmsize
+updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the first two players
+	
+	
+	
 	lea.l	$9C(a2),a0
 	movea.l	#mesarea,a1
 	moveq	#$2,d1
 	moveq	#$2,d3
-L1EF48	clr.w	d0
+.next	clr.w	d0
 	move.b	(a0)+,d0
-	bmi.w	L1EF76
+	bmi.w	.done
 	btst	#$6,$68(a2,d0.w)
-	bne.w	L1EFC4
+	bne.w	.1
 	subi.w	#$1,d1
-	bmi.w	L1EF48
+	bmi.w	.next
 	move.w	d0,(a1)+
 	subi.w	#$1,$68(a2,d0.w)
-	bne.w	L1EF72
+	bne.w	.cont
 	bsr.w	L1EFEC
-L1EF72	bra.w	L1EF48
-L1EF76	move.w	(mesarea).l,d0
+.cont	bra.w	.next
+.done	move.w	(mesarea).l,d0
 	cmpi.w	#$1,d1
-	beq.w	L1EFA0
+	beq.w	.0
 	tst.w	d1
-	bne.w	L1EF92
-	bsr.w	L1EFA0
-	bra.w	L1EF9A
-L1EF92	cmpi.w	#$FFFF,d1
+	bne.w	.n1
+	bsr.w	.0
+	bra.w	.two
+.n1	cmpi.w	#$FFFF,d1
 	bne.w	rtss2
-L1EF9A	move.w	(TextBuffer).l,d0
-L1EFA0	cmpi.w	#$5,$68(a2,d0.w)
+.two	move.w	(TextBuffer).l,d0
+.0	cmpi.w	#$5,$68(a2,d0.w)
 	bgt.w	rtss2
 	move.w	#$1,-(sp)
 	tst.w	$68(a2,d0.w)
-	bne.w	L1EFBE
+	bne.w	.snd
 	bsr.w	releasepl
 	move.w	#$2,(sp)
-L1EFBE	bsr.w	sfx
+.snd	bsr.w	sfx
 	rts
-L1EFC4	subi.w	#$1,$68(a2,d0.w)
+.1	subi.w	#$1,$68(a2,d0.w)
 	btst	#$3,$68(a2,d0.w)
-	beq.w	L1EF48
+	beq.w	.next
 	btst	#$4,$68(a2,d0.w)
 	bne.w	RemovePlayerFromList
 	move.w	#$1000,$68(a2,d0.w)
 	bra.w	L1EFEC
-RemovePlayerFromList
+RemovePlayerFromList						;Remove the entry before a0 from a penalty box list by shifting the rest
+	
+	
 	clr.w	$68(a2,d0.w)
 L1EFEC	moveq	#-1,d2
-L1EFEE	addi.w	#$1,d2
+.shift	addi.w	#$1,d2
 	move.b	(a0,d2.w),-$1(a0,d2.w)
-	bpl.w	L1EFEE
-	suba.w	#$1,a0
+	bpl.w	.shift
+	suba.w	#$1,a0		;a0 = the slot that was removed
 	rts
-chkatop
+chkatop						;attack time of possession stat update. Called once a second from
+	
 	moveq	#$0,d1
 	dc.w	$3039,$0001,$7B94
 	cmpi.w	#$58,d0
-	bgt.w	L1F022
+	bgt.w	.1
 	move.l	#$366,d1
 	neg.w	d0
 	cmpi.w	#$58,d0
 	blt.w	rtss2
-L1F022	btst	#$1,$17F68.l
-	beq.w	L1F032
+.1	btst	#$1,$17F68.l
+	beq.w	.0
 	eori.w	#$366,d1
-L1F032	movea.l	#tmstruct,a2
+.0	movea.l	#tmstruct,a2
 	addi.w	#$1,$A(a2,d1.w)
 	rts
-releasepl
+releasepl						;player's penalty time is up so let him out (if appropriate). a2 = team,
+	
 	movem.l	d0-d3/a0-a3,-(sp)
 	movea.l	$22(a2),a3
 	suba.w	#$80,a3
-L1F04C	adda.w	#$80,a3
+.0	adda.w	#$80,a3
 	tst.w	$34(a3)
-	bpl.w	L1F04C
+	bpl.w	.0
 	move.w	d0,d3
 	lsr.w	#$1,d3
 	move.w	$26(a2),d1
@@ -310,228 +330,238 @@ L1F04C	adda.w	#$80,a3
 	bset	#$0,$186E4.l
 	movea.l	#$41AD6,a0
 	tst.w	$28(a2)
-	bpl.w	L1F088
+	bpl.w	.1
 	adda.w	#$1,a0
-L1F088	clr.w	$34(a3)
+.1	clr.w	$34(a3)
 	move.b	(a0,d1.w),$35(a3)
 	bsr.w	Setplass
 	bsr.w	Sub_3D770
 	bset	#$2,$63(a3)
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
-GetLowestPen
+GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0 = power
+	
 	clr.w	d0
 	clr.w	d3
 	lea.l	$9C(a2),a0
-L1F0AE	clr.w	d2
+.getstatus	clr.w	d2
 	move.b	(a0)+,d2
-	bmi.w	L1F0CC
+	bmi.w	.endoflist
 	move.w	$68(a2,d2.w),d2
 	btst	#$E,d2
-	bne.w	L1F0AE
+	bne.w	.getstatus
 	sub.w	d3,d2
 	add.w	d2,d0
 	move.w	d2,d3
-	bra.w	L1F0AE
-L1F0CC	cmpi.w	#$6,$26(a3)
+	bra.w	.getstatus
+.endoflist	cmpi.w	#$6,$26(a3)
 	beq.w	rtss2
 	sub.w	d3,d0
 	lea.l	$9C(a3),a0
 	clr.w	d2
-L1F0DE	move.b	(a0)+,d2
+.getstatusopp	move.b	(a0)+,d2
 	bmi.w	rtss2
 	btst	#$6,$68(a3,d2.w)
-	bne.w	L1F0DE
+	bne.w	.getstatusopp
 	cmp.w	$68(a3,d2.w),d0
 	blt.w	rtss2
 	add.w	d3,d0
 	rts
-checkcoll
+checkcoll						;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check wall
+									;collision (around the hot spot and the end of the stick) and player
+									;collisions, then move a3 in the OOlist sort order by its y. If a player
+									;collision set collflag, restore the old x/y instead. Called from
+									;updateplayers
 	clr.w	$17EEE.l
-	btst	#$7,$17F6A.l
-	beq.w	L1F10E
+	btst	#$7,$17F6A.l		;check if in horiz mode
+	beq.w	.l1F10E		;branch if not horizontal
 	exg.l	d2,d3
-L1F10E	btst	#$2,$62(a3)
-	bne.w	L1F180
+.l1F10E	btst	#$2,$62(a3)		;check if in no collision mode
+	bne.w	.l1F180		;branch if no collision
 	movem.l	d0-d7,-(sp)
-	move.w	$0(a3),d2
-	move.w	$14(a3),d3
+	move.w	$0(a3),d2		;Xpos
+	move.w	$14(a3),d3		;Ypos - check coll around hot spot with wall
 	dc.w	$33EB,$004A,$0001,$7CF4
 	dc.w	$33EB,$004C,$0001,$7CF6
 	bsr.w	checkwallcoll
 	move.w	$4E(a3),d0
 	or.w	$50(a3),d0
-	bne.w	L1F178
-	cmpi.w	#$B,$52(a3)
-	bgt.w	L1F178
+	bne.w	.l1F178		;coll didnt happen
+	cmpi.w	#$B,$52(a3)		;check if a3 is a player
+	bgt.w	.l1F178		;branch if not a player
 	movem.l	(sp),d0-d7
 	move.l	a3,-(sp)
 	bsr.w	Sub_36362
-	move.w	$0(a3),d2
+	move.w	$0(a3),d2		;Xpos
 	move.w	$14(a3),d3
 	add.w	d0,d2
-	add.w	d1,d3
+	add.w	d1,d3		;check coll around end of stick with wall
 	dc.w	$33FC,$0001,$0001,$7CF4
 	dc.w	$33FC,$0001,$0001,$7CF6
 	bsr.w	checkwallcoll
-L1F178	movem.l	(sp)+,d0-d7
-	bsr.w	checkplcoll
-L1F180	tst.w	$17EEE.l
-	bne.w	L1F204
+.l1F178	movem.l	(sp)+,d0-d7
+	bsr.w	checkplcoll		;check coll with other players
+.l1F180	tst.w	$17EEE.l		;now check order of sprites
+	bne.w	.l1F204
 	move.w	$52(a3),d0
-	asl.w	#$1,d0
+	asl.w	#$1,d0		;current object number
 	movea.l	#$17CA0,a0
 	movea.l	#$17CC0,a1
 	movea.l	#$17C80,a2
-	move.w	(a0,d0.w),d1
-L1F1A6	cmpi.w	#$F,d1
-	beq.w	L1F1D2
+	move.w	(a0,d0.w),d1		;current objects pos in OOlist
+.l1F1A6	cmpi.w	#$F,d1		;Sortobjs-1
+	beq.w	.l1F1D2		;is it top sprite on screen
 	clr.w	d4
-	move.b	$1(a1,d1.w),d4
-	cmp.w	(a2,d4.w),d3
-	ble.w	L1F1D2
+	move.b	$1(a1,d1.w),d4		;next higher object number
+	cmp.w	(a2,d4.w),d3		;YPos of next higher object
+	ble.w	.l1F1D2
 	addq.w	#$1,(a0,d0.w)
 	subq.w	#$1,(a0,d4.w)
-	move.b	d4,(a1,d1.w)
-	move.b	d0,$1(a1,d1.w)
+	move.b	d4,(a1,d1.w)		;next higher object into this entry
+	move.b	d0,$1(a1,d1.w)		;this object into the next entry
 	addq.w	#$1,d1
-	bra.w	L1F1A6
-L1F1D2	move.w	(a0,d0.w),d1
-	beq.w	L1F1FE
-L1F1DA	clr.w	d4
-	move.b	-$1(a1,d1.w),d4
-	cmp.w	(a2,d4.w),d3
-	bge.w	L1F1FE
+	bra.w	.l1F1A6
+.l1F1D2	move.w	(a0,d0.w),d1		;current objects pos in OOlist
+	beq.w	.l1F1FE
+.l1F1DA	clr.w	d4
+	move.b	-$1(a1,d1.w),d4		;next lower object number
+	cmp.w	(a2,d4.w),d3		;compare to Y pos of next lower object
+	bge.w	.l1F1FE
 	subq.w	#$1,(a0,d0.w)
 	addq.w	#$1,(a0,d4.w)
-	move.b	d4,(a1,d1.w)
-	move.b	d0,-$1(a1,d1.w)
+	move.b	d4,(a1,d1.w)		;next lower object into this entry
+	move.b	d0,-$1(a1,d1.w)		;this object into the previous entry
 	subq.w	#$1,d1
-	bne.w	L1F1DA
-L1F1FE	move.w	d3,(a2,d0.w)
+	bne.w	.l1F1DA
+.l1F1FE	move.w	d3,(a2,d0.w)		;update Ylist
 	rts
-L1F204	move.w	$1C(a3),$0(a3)
-	move.w	$20(a3),$14(a3)
+.l1F204	move.w	$1C(a3),$0(a3)		;move OldXpos into Xpos
+	move.w	$20(a3),$14(a3)		;move OldYpos into Ypos
 	rts
-checkplcoll
-	btst	#$5,$63(a3)
-	bne.w	L1F28E
+checkplcoll						;check collision with other players. d2/d3 = x/y cords, a3 = struct. Walk
+									;up and down the OOlist from a3 and call checkcx for each object within
+									;$10 in y. Called from checkcoll
+	btst	#$5,$63(a3)		;no player collision?
+	bne.w	.l1F28E
 	cmpi.w	#$B,$52(a3)
-	bgt.w	L1F28E
+	bgt.w	.l1F28E
 	move.w	$52(a3),d0
-	asl.w	#$1,d0
+	asl.w	#$1,d0		;current object number
 	movea.l	#$17CA0,a0
 	movea.l	#$17CC0,a1
 	movea.l	#$17C80,a2
-	move.w	(a0,d0.w),d1
-L1F242	cmpi.w	#$F,d1
-	beq.w	L1F268
+	move.w	(a0,d0.w),d1		;current objects pos in OOlist
+.l1F242	cmpi.w	#$F,d1		;#sortobjs-1
+	beq.w	.l1F268		;it is top sprite on screen
 	clr.w	d4
-	move.b	$1(a1,d1.w),d4
-	move.w	(a2,d4.w),d5
+	move.b	$1(a1,d1.w),d4		;next higher object number
+	move.w	(a2,d4.w),d5		;y pos of next higher object
 	sub.w	d3,d5
 	cmpi.w	#$10,d5
-	bgt.w	L1F268
+	bgt.w	.l1F268		;no higher sprite coll
 	bsr.w	checkcx
 	addq.w	#$1,d1
-	bra.w	L1F242
-L1F268	move.w	(a0,d0.w),d1
-	beq.w	L1F28E
-L1F270	clr.w	d4
-	move.b	-$1(a1,d1.w),d4
+	bra.w	.l1F242
+.l1F268	move.w	(a0,d0.w),d1
+	beq.w	.l1F28E
+.l1F270	clr.w	d4		;loop: lower neighbours
+	move.b	-$1(a1,d1.w),d4		;next lower object number
 	move.w	d3,d5
-	sub.w	(a2,d4.w),d5
+	sub.w	(a2,d4.w),d5		;y pos of next lower object
 	cmpi.w	#$10,d5
-	bgt.w	L1F28E
+	bgt.w	.l1F28E
 	bsr.w	checkcx
 	subq.w	#$1,d1
-	bne.w	L1F270
-L1F28E	rts
-checkcx
+	bne.w	.l1F270
+.l1F28E	rts
+checkcx						;d4 = obj. # * 2 for possible collision so check x range and distance for
+									;collision. d2 = x, d5 = delta y, a3 = moving object. Opposing players add
+									;impact and run newcheck, checkint, checkcheck and checkfight (an rts);
+									;then momentum moves from a3 to a2. Called from checkplcoll
 	movem.l	d0-d7/a0-a3,-(sp)
 	asl.w	#$6,d4
 	dc.w	$247C,$0001,$7480
-	adda.w	d4,a2
-	btst	#$2,$62(a2)
-	bne.w	L1F432
-	btst	#$5,$63(a2)
-	bne.w	L1F432
-	cmpi.w	#$B,$52(a2)
-	bgt.w	L1F432
-	move.w	$0(a2),d0
-	btst	#$7,$17F6A.l
-	beq.w	L1F2D0
+	adda.w	d4,a2		;add d4 to a2. a2 now address of SCStruct-1
+	btst	#$2,$62(a2)		;test pfnc pflags = no collision mode
+	bne.w	.l1F432		;object has no collision mode on
+	btst	#$5,$63(a2)		;pf2npc(pflags2) = another no collision mode
+	bne.w	.l1F432		;exit if no collision mode on
+	cmpi.w	#$B,$52(a2)		;comparing 11 with SCnum for player. Player SCnum are 0-11.
+	bgt.w	.l1F432
+	move.w	$0(a2),d0		;Xpos
+	btst	#$7,$17F6A.l		;sfhor(sflags) = screen in horizontal mode
+	beq.w	.l1F2D0		;branch if not in horiz mode
 	move.w	$14(a2),d0
-L1F2D0	sub.w	d2,d0
-	cmpi.w	#$FFF0,d0
-	blt.w	L1F432
-	cmpi.w	#$10,d0
-	bgt.w	L1F432
+.l1F2D0	sub.w	d2,d0		;subtract d2 from d0
+	cmpi.w	#$FFF0,d0		;compare delta Xpos to -collrad*2
+	blt.w	.l1F432		;branch if less than
+	cmpi.w	#$10,d0		;compare delta Xpos to collrad*2
+	bgt.w	.l1F432		;branch if greater than
 	muls.w	d5,d5
 	muls.w	d0,d0
 	add.l	d5,d0
-	cmpi.l	#$100,d0
-	bgt.w	L1F432
-	move.w	#$0,$17EF0.l
-	move.b	$62(a3),d6
-	move.b	$62(a2),d0
-	eor.b	d0,d6
-	move.w	$28(a3),d0
-	sub.w	$28(a2),d0
+	cmpi.l	#$100,d0		;compare d0 to (collrad*2)*(collrad*2)
+	bgt.w	.l1F432		;branch if outside of radius
+	move.w	#$0,$17EF0.l		;evalue = elasticity value
+	move.b	$62(a3),d6		;move pflags into d6
+	move.b	$62(a2),d0		;move pflags into d0
+	eor.b	d0,d6		;xor d0 with d6
+	move.w	$28(a3),d0		;Now do momentum transfer from object a3 to object a2 Xvel
+	sub.w	$28(a2),d0		;subtract Xvel a2 from Xvel a3 (Vx)
 	move.w	$2A(a3),d1
-	sub.w	$2A(a2),d1
-	move.w	$0(a3),d2
-	sub.w	$0(a2),d2
+	sub.w	$2A(a2),d1		;subtract Yvel a2 from Yvel a3 (Vy)
+	move.w	$0(a3),d2		;Xpos
+	sub.w	$0(a2),d2		;subtract Xpos of a2 from Xpos of a3
 	neg.w	d2
 	move.w	$14(a3),d3
-	sub.w	$14(a2),d3
+	sub.w	$14(a2),d3		;subtract Ypos of a2 from Ypos of a3
 	neg.w	d3
 	movem.w	d0-d1,-(sp)
 	muls.w	d3,d1
 	muls.w	d2,d0
 	add.l	d0,d1
-	bmi.w	L1F438
+	bmi.w	.l1F438		;no collision if v1n < 0
 	asr.l	#$4,d1
 	btst	#$6,d6
-	beq.w	L1F3A4
+	beq.w	.l1F3A4		;players are on same team
 	move.w	d1,d4
 	lsr.w	#$8,d4
 	cmpi.w	#$5,d4
-	bgt.w	L1F34E
-	moveq	#$5,d4
-L1F34E	add.w	d4,$32(a3)
+	bgt.w	.l1F34E
+	moveq	#$5,d4		;minimum impact value
+.l1F34E	add.w	d4,$32(a3)
 	add.w	d4,$32(a2)
 	btst	#$0,$63(a2)
-	bne.w	L1F366
-	move.w	$52(a3),$2E(a2)
-L1F366	btst	#$0,$63(a3)
-	bne.w	L1F376
-	move.w	$52(a2),$2E(a3)
-L1F376	cmpi.w	#$14,d4
-	blt.w	L1F398
-	move.w	$17BE0.l,d0
+	bne.w	.l1F366
+	move.w	$52(a3),$2E(a2)		;SCnum(a3), impactp(a2) = moves a3 SCnum into past impact player for a2
+.l1F366	btst	#$0,$63(a3)
+	bne.w	.l1F376
+	move.w	$52(a2),$2E(a3)		;SCnum(a2), impactp(a3) = moves a2 SCnum into past impact player for a3
+.l1F376	cmpi.w	#$14,d4		;impact under 20: no check sound
+	blt.w	.l1F398
+	move.w	$17BE0.l,d0		;check sound only if one of them has the puck
 	cmp.w	$52(a3),d0
-	beq.w	L1F394
+	beq.w	.l1F394
 	cmp.w	$52(a2),d0
-	bne.w	L1F398
-L1F394	bsr.w	newcheck
-L1F398	bsr.w	checkint
+	bne.w	.l1F398
+.l1F394	bsr.w	newcheck
+.l1F398	bsr.w	checkint		;interference, check and fight tests
 	bsr.w	L1F55C
 	bsr.w	Sub_3AF3E
-L1F3A4	move.w	d1,d4
+.l1F3A4	move.w	d1,d4
 	movem.w	(sp)+,d0-d1
-	tst.w	$17EEE.l
-	bmi.w	L1F432
+	tst.w	$17EEE.l		;set to -1 by holdcheck / Bcheck: no transfer
+	bmi.w	.l1F432
 	muls.w	d2,d1
 	muls.w	d3,d0
 	sub.l	d1,d0
 	asr.l	#$4,d0
 	move.w	d0,d5
 	clr.w	d0
-	move.b	$67(a3),d0
+	move.b	$67(a3),d0		;wgt, m1 in calc below
 	addi.w	#$8C,d0
 	clr.w	d1
-	move.b	$67(a2),d1
+	move.b	$67(a2),d1		;wgt, m2 in calc below
 	addi.w	#$8C,d1
 	move.w	$17EF0.l,d7
 	mulu.w	d1,d7
@@ -558,7 +588,7 @@ L1F3A4	move.w	d1,d4
 	asr.l	#$4,d3
 	add.w	$2A(a2),d3
 	move.w	d3,$2A(a3)
-	movem.w	(sp)+,d2-d3
+	movem.w	(sp)+,d2-d3		;Pop d2 and d3 off stack
 	muls.w	d1,d2
 	asr.l	#$4,d2
 	add.w	d2,$28(a2)
@@ -566,90 +596,94 @@ L1F3A4	move.w	d1,d4
 	asr.l	#$4,d3
 	add.w	d3,$2A(a2)
 	st.b	$17EEE.l
-L1F432	movem.l	(sp)+,d0-d7/a0-a3
+.l1F432	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-L1F438	addq.w	#$4,sp
-	bra.w	L1F432
-newcheck
+.l1F438	addq.w	#$4,sp
+	bra.w	.l1F432
+newcheck						;start a new check sound: one of 4 sounds $1C-$1F, never the last one
+									;again. Called from checkcx; FallDown branches here when the player who
+									;fell did not have the puck
 	move.l	d0,-(sp)
 	moveq	#$3,d0
 	bsr.w	randomd0
-	addq.w	#$1,d0
+	addq.w	#$1,d0		;1-3 sounds on from the last one
 	dc.w	$D079,$0001,$7F62
 	andi.w	#$3,d0
 	dc.w	$33C0,$0001,$7F62
-	addi.w	#$1C,d0
+	addi.w	#$1C,d0		;first check sound (92 used 18)
 	move.w	d0,-(sp)
 	bsr.w	sfx
 	move.l	(sp)+,d0
 	rts
-checkint
+checkint						;check for interference penalty. player a2 interferes with a3 or
+									;vice-versa; goalie is only player who can cause an interference call.
+									;Called from checkcx
 	move.l	d0,-(sp)
-	bsr.w	L1F478
+	bsr.w	.l1F478
 	exg.l	a2,a3
-	bsr.w	L1F478
+	bsr.w	.l1F478
 	exg.l	a2,a3
 	move.l	(sp)+,d0
 	rts
-L1F478	tst.w	$34(a2)
-	bne.w	rtss2
-	btst	#$0,$17F68.l
-	bne.w	rtss2
-	move.w	$17BE0.l,d0
-	cmp.w	$52(a3),d0
-	beq.w	L1F4A4
-	cmpi.w	#$19,$32(a3)
-	ble.w	rtss2
-L1F4A4	cmpi.w	#$2,$32(a3)
-	ble.w	rtss2
+.l1F478	tst.w	$34(a2)
+	bne.w	rtss2		;exits if not goalie
+	btst	#$0,$17F68.l		;test gmclock(gmode). Is there play
+	bne.w	rtss2		;no fall downs during celebration
+	move.w	$17BE0.l,d0		;Puck carrier's SCnum
+	cmp.w	$52(a3),d0		;SCnum of this struct
+	beq.w	.l1F4A4		;jump if a3 carrying puck
+	cmpi.w	#$19,$32(a3)		;compare $19 to impact
+	ble.w	rtss2		;exit if less than or equal
+.l1F4A4	cmpi.w	#$2,$32(a3)		;compare 2 to impact
+	ble.w	rtss2		;exit if impact is less than 2
 	exg.l	a2,a3
 	bsr.w	Sub_3A9BE
 	exg.l	a2,a3
-	cmpi.w	#$1E,$32(a2)
-	ble.w	rtss2
-	btst	#$4,$63(a3)
-	bne.w	rtss2
+	cmpi.w	#$1E,$32(a2)		;compare 30 decimal to impact
+	ble.w	rtss2		;exit if impact is less than 30 decimal
+	btst	#$4,$63(a3)		;pf2pen(pflags2) - Check if player already committed a penalty
+	bne.w	rtss2		;exit if player is already penalized
 	tst.w	$34(a2)
-	bne.w	rtss2
-	move.w	#$1,d0
-	btst	#$6,$62(a3)
-	beq.w	L1F4E4
-	move.w	#$2,d0
-L1F4E4	dc.w	$B079,$0001,$7FA6
-	beq.w	L1F4F8
+	bne.w	rtss2		;double check to make sure player is goalie
+	move.w	#$1,d0		;set d0 to team1 value
+	btst	#$6,$62(a3)		;check if home or away
+	beq.w	.l1F4E4		;jump if home (team1)
+	move.w	#$2,d0		;set d0 to team2 value
+.l1F4E4	dc.w	$B079,$0001,$7FA6
+	beq.w	.l1F4F8
 	dc.w	$B079,$0001,$7FA8
-	bne.w	L1F502
-L1F4F8	btst	#$3,$62(a3)
-	beq.w	rtss2
-L1F502	move.w	$14(a2),d0
-	btst	#$7,$62(a2)
-	beq.w	L1F512
-	neg.w	d0
-L1F512	cmpi.w	#$EF,d0
+	bne.w	.l1F502		;branch if controlled by CPU
+.l1F4F8	btst	#$3,$62(a3)		;pfjoycon - check if player controlled
+	beq.w	rtss2		;exit if not player controlled
+.l1F502	move.w	$14(a2),d0
+	btst	#$7,$62(a2)		;pfgoal - 0 shooting bottom, 1 shooting top
+	beq.w	.l1F512
+	neg.w	d0		;negative d0 if shooting bottom
+.l1F512	cmpi.w	#$EF,d0		;compare to Ypos. Looks like it compares to both ends of crease
 	blt.w	rtss2
 	cmpi.w	#$10A,d0
 	bgt.w	rtss2
-	move.w	$0(a2),d0
-	cmpi.w	#$14,d0
+	move.w	$0(a2),d0		;Xpos
+	cmpi.w	#$14,d0		;compare Xpos to goalpost
 	bgt.w	rtss2
-	cmpi.w	#$FFEC,d0
+	cmpi.w	#$FFEC,d0		;compare Xpos to goalpost
 	blt.w	rtss2
 	move.w	#$28,d0
 	sub.b	$73(a3),d0
 	bsr.w	randomd0
-	cmpi.w	#$4,d0
+	cmpi.w	#$4,d0		;d0 = RNG(28-aggres)
 	bhi.w	rtss2
-	btst	#$4,$17F68.l
+	btst	#$4,$17F68.l		;Check if highlight, exit if so
 	bne.w	rtss2
 	moveq	#$22,d0
 	bra.w	AddPenalty
 L1F55C	movem.l	d0-d4/a0-a3,-(sp)
-	bsr.w	L1F570
+	bsr.w	.l1F570
 	exg.l	a2,a3
-	bsr.w	L1F570
+	bsr.w	.l1F570
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
-L1F570	cmpi.w	#$C90,$58(a2)
+.l1F570	cmpi.w	#$C90,$58(a2)
 	beq.w	Sub_3A822
 	cmpi.w	#$1122,$58(a2)
 	beq.w	Sub_3A822
@@ -658,10 +692,10 @@ L1F570	cmpi.w	#$C90,$58(a2)
 	cmpi.w	#$C5E,$58(a3)
 	bne.w	rtss2
 	btst	#$0,$17F68.l
-	beq.w	L1F5B0
+	beq.w	.l1F5B0
 	move.w	#$100,$32(a3)
 	move.w	#$100,$32(a2)
-L1F5B0	move.w	$0(a2),d0
+.l1F5B0	move.w	$0(a2),d0
 	sub.w	$0(a3),d0
 	move.w	$14(a2),d1
 	sub.w	$14(a3),d1
@@ -669,11 +703,11 @@ L1F5B0	move.w	$0(a2),d0
 	sub.w	$54(a3),d0
 	andi.w	#$7,d0
 	btst	#$3,$4(a3)
-	beq.w	L1F5E0
+	beq.w	.l1F5E0
 	neg.w	d0
 	addi.w	#$8,d0
 	andi.w	#$7,d0
-L1F5E0	asl.w	#$1,d0
+.l1F5E0	asl.w	#$1,d0
 	dc.w	$41FA,$0168
 	move.w	(a0,d0.w),d1
 	bset	#$5,$62(a3)
@@ -684,69 +718,76 @@ L1F5E0	asl.w	#$1,d0
 	blt.w	rtss2
 	moveq	#$78,d0
 	btst	#$3,$62(a3)
-	beq.w	L1F612
+	beq.w	.l1F612
 	asl.w	#$1,d0
-L1F612	sub.b	$67(a3),d0
+.l1F612	sub.b	$67(a3),d0
 	add.b	$67(a2),d0
 	lsr.w	#$1,d0
 	exg.l	a2,a3
 	jsr	$24FB4.l
 	exg.l	a2,a3
 	sub.w	$32(a2),d0
-	beq.w	L1F6D4
-	bmi.w	L1F6D4
+	beq.w	.l1F6D4
+	bmi.w	.l1F6D4
 	btst	#$4,$64(a3)
-	bne.w	L1F6D4
+	bne.w	.l1F6D4
 	bsr.w	randomd0
 	dc.w	$4279,$0001,$7E62
 	move.b	$75(a3),$17E63.l
 	dc.w	$E2F9,$0001,$7E62
 	cmp.b	$17E63.l,d0
-	ble.w	L1F6D4
+	ble.w	.l1F6D4
 	bsr.w	Sub_3A75C
 	cmpi.w	#$4,d0
 	bhi.w	rtss2
 	btst	#$4,$17F68.l
 	bne.w	rtss2
-L1F676	btst	#$7,$FF800E.l
-	bne.b	L1F676
+.l1F676	btst	#$7,$FF800E.l
+	bne.b	.l1F676
 	move.w	#$1C,$FF8020.l
 	bset	#$6,$FF800F.l
-L1F690	btst	#$6,$FF800E.l
-	beq.b	L1F690
+.l1F690	btst	#$6,$FF800E.l
+	beq.b	.l1F690
 	move.b	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L1F6B0	btst	#$6,$FF800E.l
-	bne.b	L1F6B0
+.l1F6B0	btst	#$6,$FF800E.l
+	bne.b	.l1F6B0
 	bclr	#$7,$FF800F.l
 	andi.w	#$2,d0
 	addi.w	#$16,d0
 	jsr	(PenShotChk).l
 	bra.w	AddPenalty
-L1F6D4	bsr.w	Sub_3A75C
+.l1F6D4	bsr.w	Sub_3A75C
 	cmpi.w	#$3,d0
-	bhi.w	L1F748
+	bhi.w	.l1F748
 	btst	#$4,$17F68.l
-	bne.w	L1F748
-L1F6EC	btst	#$7,$FF800E.l
-	bne.b	L1F6EC
+	bne.w	.l1F748
+.l1F6EC	btst	#$7,$FF800E.l
+	bne.b	.l1F6EC
 	move.w	#$1C,$FF8020.l
 	bset	#$6,$FF800F.l
-L1F706	btst	#$6,$FF800E.l
-	beq.b	L1F706
+.l1F706	btst	#$6,$FF800E.l
+	beq.b	.l1F706
 	move.b	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L1F726	btst	#$6,$FF800E.l
-	bne.b	L1F726
+.l1F726	btst	#$6,$FF800E.l
+	bne.b	.l1F726
 	bclr	#$7,$FF800F.l
 	andi.w	#$2,d0
 	addi.w	#$1A,d0
 	bsr.w	PenShotChk
 	bsr.w	AddPenalty
-L1F748	bra.w	Sub_3A9BE
-checkagr
+.l1F748	bra.w	Sub_3A9BE
+checkagr						;use Agression attribute and RNG to determine if there will be a penalty.
+									;a3 = checking player, a2 = player being checked. d0 =
+									;randomd0(((40 - Agr) / 2) * 13), doubled for a joystick player, halved
+									;within $28 of the puck in x and y.
+									;Then: a2 on a breakaway rolls randomd0 again, of 8 / 7 / 4 / 3 by a2's
+									;distance in y from the goal line; and d0 = $7F (no penalty) while the
+									;other team has a delayed penalty (DelayedPen). The callers call a penalty
+									;when d0 is small. Called from CCStart, holdcheck and Bcheck
 	bclr	d5,(a6)
 	movep.l	d5,$C2C(a0)
 	dc.w	$0C2C,$0C2C,$0BFA
@@ -757,49 +798,49 @@ Sub_3A75C
 	lsr.b	#$1,d0
 	mulu.w	#$D,d0
 	btst	#$3,$62(a3)
-	beq.w	L1F776
+	beq.w	.l1F776
 	asl.w	#$1,d0
-L1F776	move.w	$0(a3),d1
+.l1F776	move.w	$0(a3),d1
 	dc.w	$9279,$0001,$7B80
 	cmpi.w	#$28,d1
-	bgt.w	L1F7AC
+	bgt.w	.l1F7AC
 	cmpi.w	#$FFD8,d1
-	blt.w	L1F7AC
+	blt.w	.l1F7AC
 	move.w	$14(a3),d1
 	dc.w	$9279,$0001,$7B94
 	cmpi.w	#$28,d1
-	bgt.w	L1F7AC
+	bgt.w	.l1F7AC
 	cmpi.w	#$FFD8,d1
-	blt.w	L1F7AC
+	blt.w	.l1F7AC
 	asr.w	#$1,d0
-L1F7AC	bsr.w	randomd0
+.l1F7AC	bsr.w	randomd0
 	btst	#$1,$64(a2)
-	beq.w	L1F7F6
+	beq.w	.l1F7F6
 	move.w	$14(a2),d1
-	bpl.w	L1F7C4
+	bpl.w	.l1F7C4
 	neg.w	d1
-L1F7C4	subi.w	#$108,d1
+.l1F7C4	subi.w	#$108,d1
 	neg.w	d1
 	move.w	#$8,d0
 	cmpi.w	#$75,d1
-	bgt.w	L1F7F2
+	bgt.w	.l1F7F2
 	move.w	#$7,d0
 	cmpi.w	#$3A,d1
-	bgt.w	L1F7F2
+	bgt.w	.l1F7F2
 	move.w	#$4,d0
 	cmpi.w	#$2C,d1
-	bgt.w	L1F7F2
+	bgt.w	.l1F7F2
 	move.w	#$3,d0
-L1F7F2	bsr.w	randomd0
-L1F7F6	btst	#$6,$62(a3)
-	bne.w	L1F810
+.l1F7F2	bsr.w	randomd0
+.l1F7F6	btst	#$6,$62(a3)
+	bne.w	.l1F810
 	btst	#$2,$17F7E.l
-	bne.w	L1F81C
-	bra.w	L1F820
-L1F810	btst	#$1,$17F7E.l
-	beq.w	L1F820
-L1F81C	move.w	#$7F,d0
-L1F820	rts
+	bne.w	.l1F81C
+	bra.w	.l1F820
+.l1F810	btst	#$1,$17F7E.l
+	beq.w	.l1F820
+.l1F81C	move.w	#$7F,d0
+.l1F820	rts
 Sub_3A822
 	btst	#$5,$62(a3)
 	bne.w	rtss2
@@ -819,9 +860,9 @@ Sub_3A822
 	bhi.w	rtss2
 	move.w	$17BE0.l,d0
 	cmp.w	$52(a3),d0
-	bne.w	L1F87C
+	bne.w	.l1F87C
 	bclr	#$3,$17F6A.l
-L1F87C	move.w	$28(a3),d0
+.l1F87C	move.w	$28(a3),d0
 	add.w	$28(a2),d0
 	asr.w	#$1,d0
 	move.w	d0,$28(a3)
@@ -838,21 +879,21 @@ L1F87C	move.w	$28(a3),d0
 	bset	#$5,$62(a3)
 	move.w	#$CC2,d1
 	cmpi.w	#$C90,$58(a3)
-	beq.w	L1F8C8
+	beq.w	.l1F8C8
 	move.w	#$1154,d1
-L1F8C8	bsr.w	Sub_363C0
+.l1F8C8	bsr.w	Sub_363C0
 	bsr.w	Sub_3A75C
 	cmpi.w	#$6,d0
-	bhi.w	L1F900
+	bhi.w	.l1F900
 	btst	#$4,$17F68.l
-	bne.w	L1F900
+	bne.w	.l1F900
 	move.w	#$24,d0
 	cmpi.w	#$CC2,$58(a3)
-	beq.w	L1F8F6
+	beq.w	.l1F8F6
 	move.w	#$1E,d0
-L1F8F6	jsr	(PenShotChk).l
+.l1F8F6	jsr	(PenShotChk).l
 	bsr.w	AddPenalty
-L1F900	exg.l	a2,a3
+.l1F900	exg.l	a2,a3
 	st.b	$17EEE.l
 	rts
 Sub_3A90A
@@ -863,21 +904,21 @@ Sub_3A90A
 	btst	#$0,$63(a3)
 	bne.w	rtss2
 	dc.w	$4A79,$0001,$8C08
-	bne.w	L1F96C
+	bne.w	.l1F96C
 	btst	#$3,$62(a2)
-	beq.w	L1F96C
+	beq.w	.l1F96C
 	moveq	#$20,d0
 	add.b	$75(a2),d0
 	sub.b	$68(a3),d0
 	btst	#$1,$17F7C.l
-	bne.w	L1F95C
+	bne.w	.l1F95C
 	btst	#$6,$17F7A.l
-	beq.w	L1F960
-L1F95C	subi.b	#$2,d0
-L1F960	bsr.w	randomd0
+	beq.w	.l1F960
+.l1F95C	subi.b	#$2,d0
+.l1F960	bsr.w	randomd0
 	cmpi.w	#$18,d0
 	blt.w	rtss2
-L1F96C	move.w	$0(a3),d0
+.l1F96C	move.w	$0(a3),d0
 	sub.w	$0(a2),d0
 	move.w	$14(a3),d1
 	sub.w	$14(a2),d1
@@ -891,10 +932,10 @@ L1F96C	move.w	$0(a3),d0
 	bsr.w	Sub_3A9BE
 	bsr.w	Sub_3A75C
 	cmpi.w	#$4,d0
-	bhi.w	L1F9B4
+	bhi.w	.l1F9B4
 	move.w	#$20,d0
 	jsr	(PenShotChk).l
 	bsr.w	AddPenalty
-L1F9B4	exg.l	a2,a3
+.l1F9B4	exg.l	a2,a3
 	st.b	$17EEE.l
 	rts

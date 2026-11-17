@@ -1,214 +1,225 @@
-checkpuckcoll_sfx
+checkpuckcoll_sfx						;Entered from checkpuckcoll. Puck in the air: sfx 5 once when sflags4 bit
+									;2 is set
 	bclr	#$2,$17F72.l
 	beq.w	rtss2
 	move.w	#$5,-(sp)
 	bra.w	sfx
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_20882.bin
-puckstick
-	tst.w	$34(a2)
-	bne.w	L20C44
+puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d0 =
+									;distance^2 (from checkpuckcoll .ccx). A stick check on the puck carrier
+									;can steal the puck (Stk rolls, smaller ranges when the carrier is in the
+									;slot, sflags6 bit 5), else a slow enough puck is caught (puckglue); a
+									;one-timer shoots it (onetimershot). Uses the slot ranges and the
+									;skater, or no highlight: the stick takes the puck (steal check if someone
+									;has it)
+	tst.w	$34(a2)		;a2 = player who collided
+	bne.w	.l20C44		;branch if not goalie
 	btst	#$4,$17F68.l
-	bne.w	rtss2
-L20C44	bclr	#$0,$62(a2)
-	move.w	$17BE0.l,d1
-	bmi.w	L20D3A
+	bne.w	rtss2		;exit if so (goalie always lets the shot in)
+.l20C44	bclr	#$0,$62(a2)
+	move.w	$17BE0.l,d1		;move puckc into d1
+	bmi.w	.l20D3A		;branch if no puck carrier
 	asl.w	#$7,d1
 	dc.w	$207C,$0001,$7480
-	adda.w	d1,a0
+	adda.w	d1,a0		;a0 = Struct of puck carrier
 	move.b	$62(a0),d1
 	move.b	$62(a2),d2
-	eor.w	d1,d2
-	btst	#$6,d2
-	beq.w	rtss2
-	btst	#$5,(sflags6).l
-	beq.w	L20C8A
-	cmpi.l	#$40,d0
+	eor.w	d1,d2		;compare pflags of each player
+	btst	#$6,d2		;check if on same team
+	beq.w	rtss2		;no stealing from teammate
+	btst	#$5,(sflags6).l		;check if puckc is in slot
+	beq.w	.l20C8A
+	cmpi.l	#$40,d0		;steal range met: goalies always steal, nobody steals from a goalie
 	bhi.w	rtss2
-	bra.w	L20C94
-L20C8A	cmpi.l	#$24,d0
+	bra.w	.l20C94
+.l20C8A	cmpi.l	#$24,d0
 	bhi.w	rtss2
-L20C94	tst.w	$34(a2)
-	beq.w	L20CEA
+.l20C94	tst.w	$34(a2)		;check if colliding player is goalie
+	beq.w	.l20CEA
 	tst.w	$34(a0)
-	beq.w	rtss2
+	beq.w	rtss2		;no stealing from goalie
 	move.b	$71(a0),d0
 	lsr.b	#$1,d0
-	bsr.w	makepde
+	bsr.w	makepde		;adjust for energy level
 	move.w	d0,-(sp)
-	exg.l	a0,a2
-	move.b	$71(a0),d0
-	lsr.b	#$1,d0
-	bsr.w	makepde
-	exg.l	a0,a2
+	exg.l	a0,a2		;swap a2 and a0 (a0 now collider)
+	move.b	$71(a0),d0		;Stk for collider
+	lsr.b	#$1,d0		;divie by 2
+	bsr.w	makepde		;adjust for energy
+	exg.l	a0,a2		;swap back (a0 now puckc)
 	neg.w	d0
-	add.w	(sp)+,d0
-	addi.w	#$24,d0
+	add.w	(sp)+,d0		;add puckc modified Stk
+	addi.w	#$24,d0		;add 24 hex (36 decimal)
 	bsr.w	randomd0
-	btst	#$5,(sflags6).l
-	beq.w	L20CE2
-	cmpi.w	#$4,d0
-	bhi.w	rtss2
-	bra.w	L20CEA
-L20CE2	cmpi.w	#$2,d0
-	bhi.w	rtss2
-L20CEA	move.b	$71(a0),d0
+	btst	#$5,(sflags6).l		;check if puckc is in slot
+	beq.w	.l20CE2
+	cmpi.w	#$4,d0		;steal: the carrier cannot touch the puck for a while (stick handling,
+	bhi.w	rtss2		;exit if higher (not losing puck)
+	bra.w	.l20CEA
+.l20CE2	cmpi.w	#$2,d0		;compare 2 to d0
+	bhi.w	rtss2		;exit if higher (not losing puck)
+.l20CEA	move.b	$71(a0),d0		;Stk of puckc
 	lsr.b	#$1,d0
-	bsr.w	makepde
-	addi.w	#$14,d0
-	move.b	d0,$5E(a0)
-	exg.l	a0,a2
-	move.b	$71(a0),d0
+	bsr.w	makepde		;adj for energy
+	addi.w	#$14,d0		;add 14 hex (20 dec)
+	move.b	d0,$5E(a0)		;move result into nopuck (cant get puck timer)
+	exg.l	a0,a2		;swap a0 and a2 (a0 now collider)
+	move.b	$71(a0),d0		;Stk of collider
 	lsr.b	#$1,d0
-	bsr.w	makepde
-	addi.w	#$14,d0
-	move.b	d0,$5E(a0)
+	bsr.w	makepde		;adj for energy
+	addi.w	#$14,d0		;add 14 hex (20 dec)
+	move.b	d0,$5E(a0)		;move result into nopuck
 	exg.l	a0,a2
 	dc.w	$33E8,$0052,$0001,$7E2A
-	bclr	#$2,$17F6A.l
-	bclr	#$3,$17F6A.l
-L20D2A	move.w	#$6,-(sp)
+	bclr	#$2,$17F6A.l		;clear pass dir mode
+	bclr	#$3,$17F6A.l		;clear shot dir mode
+.l20D2A	move.w	#$6,-(sp)
 	bsr.w	sfx
-	bsr.w	Sub_35D28
-	bra.w	Sub_3C246
-L20D3A	tst.w	$34(a2)
-	bne.w	L20D4C
+	bsr.w	Sub_35D28		;deflect
+	bra.w	Sub_3C246		;no carrier (goalie in the smaller range): one-timer check
+.l20D3A	tst.w	$34(a2)
+	bne.w	.l20D4C
 	cmpi.l	#$40,d0
-	bhi.w	rtss2
-L20D4C	btst	#$3,$64(a2)
-	beq.w	L20D78
-	cmpi.l	#$64,d0
-	bhi.w	L20DCC
+	bhi.w	rtss2		;smaller range for stealing puck
+.l20D4C	btst	#$3,$64(a2)
+	beq.w	.l20D78
+	cmpi.l	#$64,d0		;not a one-timer, or past its frame: catch or deflect by puck speed
+	bhi.w	.l20DCC
 	cmpi.w	#$18,$5A(a2)
-	bge.w	L20D78
+	bge.w	.l20D78
 	move.w	#$18,$5A(a2)
 	bset	#$7,$17F7C.l
-L20D78	dc.w	$3039,$0001,$7BA8
+.l20D78	dc.w	$3039,$0001,$7BA8
 	dc.w	$3239,$0001,$7BAA
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	clr.w	d1
-	btst	#$4,$17F6C.l
-	bne.w	L20DAA
-	btst	#$3,$64(a2)
-	bne.w	L20DC0
+	btst	#$4,$17F6C.l		;check if shot was taken
+	bne.w	.l20DAA
+	btst	#$3,$64(a2)		;check if one timer
+	bne.w	.l20DC0
 	move.b	$71(a2),d1
 	mulu.w	#$15E,d1
-L20DAA	addi.w	#$32C8,d1
+.l20DAA	addi.w	#$32C8,d1
 	mulu.w	d1,d1
 	cmp.l	d1,d0
 	bls.w	puckglue
 	move.b	#$8,$5E(a2)
-	bra.w	L20D2A
-L20DC0	exg.l	a2,a3
+	bra.w	.l20D2A
+.l20DC0	exg.l	a2,a3
 	jsr	(onetimershot).l
 	exg.l	a2,a3
 	rts
-L20DCC	cmpi.l	#$144,d0
-	bhi.w	L20DE6
+.l20DCC	cmpi.l	#$144,d0
+	bhi.w	.l20DE6
 	cmpi.w	#$18,$5A(a2)
-	bge.w	L20DE6
+	bge.w	.l20DE6
 	move.w	#$18,$5A(a2)
-L20DE6	rts
-puckglue
+.l20DE6	rts
+puckglue						;part of puckstick that puckgoalie also branches to. Player a2 takes the
+									;puck: faceoff and pass stats, crowd song, goalie hold time (temp5), then
+									;.setd0player
 	move.w	#$7,-(sp)
-	move.w	$52(a2),d0
-	move.w	d0,$17BE0.l
-	movea.l	#tmstruct,a0
+	move.w	$52(a2),d0		;move SCnum into d0
+	move.w	d0,$17BE0.l		;move d0 into puckc
+	movea.l	#tmstruct,a0		;Move Home Stats struct into a0
 	lea.l	$366(a0),a1
-	btst	#$6,$62(a2)
-	bne.w	L20E0C
+	btst	#$6,$62(a2)		;check if player is home or away
+	bne.w	.l20E0C
 	exg.l	a0,a1
-L20E0C	st.b	$1A(a0)
-	st.b	$1C(a0)
-	bset	#$3,$32(a0)
-	bclr	#$4,$17F6E.l
-	beq.w	L20E4E
-	addi.w	#$1,$E(a1)
+.l20E0C	st.b	$1A(a0)		;FF into assist 1
+	st.b	$1C(a0)		;FF into assist 2
+	bset	#$3,$32(a0)		;set a flag (not sure what)
+	bclr	#$4,$17F6E.l		;clear flag (not sure what, might have to do with faceoff)
+	beq.w	.l20E4E		;branch if it was cleared already
+	addi.w	#$1,$E(a1)		;add 1 to faceoff won
 	addi.w	#$C8,(Crowdlevel).l
-	move.w	#$C,(sp)
-	cmpa.l	#$1834C,a1
-	bne.w	L20E4E
+	move.w	#$C,(sp)		;move C to stack
+	cmpa.l	#$1834C,a1		;compare if a1 is home
+	bne.w	.l20E4E
 	dc.w	$0679,$000A,$0001,$7CD8
-	move.w	#$B,(sp)
-L20E4E	bsr.w	sfx
-	move.w	$52(a2),d0
+	move.w	#$B,(sp)		;Move B into stack
+.l20E4E	bsr.w	sfx
+	move.w	$52(a2),d0		;move SCnum into d0
 	dc.w	$B079,$0001,$7E30
-	bne.w	L20E66
+	bne.w	.l20E66
 	addi.w	#$1,$14(a1)
-L20E66	dc.w	$50F9,$0001,$7E30
-	bclr	#$2,$17F6A.l
-	bclr	#$3,$17F6A.l
-	tst.w	$34(a2)
-	bne.w	L20E9E
+.l20E66	dc.w	$50F9,$0001,$7E30
+	bclr	#$2,$17F6A.l		;clear pass dir mode
+	bclr	#$3,$17F6A.l		;clear shot dir mode
+	tst.w	$34(a2)		;check if a2 is goalie
+	bne.w	.l20E9E
 	bsr.w	ChkShotStat
-	move.w	#$8C,$48(a2)
-	cmpi.w	#$2F4,$58(a2)
-	bne.w	L20E9E
-	move.w	#$5,$48(a2)
-L20E9E	dc.w	$B079,$0001,$7F9E
+	move.w	#$8C,$48(a2)		;move 8C to temp5 - countdown for faceoff?
+	cmpi.w	#$2F4,$58(a2)		;check for goalie dive animation
+	bne.w	.l20E9E		;branch if not equal
+	move.w	#$5,$48(a2)		;set temp5 to 5
+.l20E9E	dc.w	$B079,$0001,$7F9E
 	beq.w	rtss2
 	dc.w	$B079,$0001,$7FA0
 	beq.w	rtss2
 	dc.w	$4A79,$0001,$7FAA
-	beq.w	L20EC6
+	beq.w	.l20EC6
 	dc.w	$B079,$0001,$7FA2
 	beq.w	rtss2
-L20EC6	dc.w	$4A79,$0001,$7FAC
-	beq.w	L20EDA
+.l20EC6	dc.w	$4A79,$0001,$7FAC
+	beq.w	.l20EDA
 	dc.w	$B079,$0001,$7FA4
 	beq.w	rtss2
-L20EDA	dc.w	$4A79,$0001,$7FAA
-	bne.w	L20EEE
+.l20EDA	dc.w	$4A79,$0001,$7FAA
+	bne.w	.l20EEE
 	dc.w	$4A79,$0001,$7FAC
-	beq.w	L20F16
-L20EEE	movem.l	d0/a3,-(sp)
+	beq.w	.l20F16		;branch if no team
+.l20EEE	movem.l	d0/a3,-(sp)
 	asl.w	#$7,d0
 	dc.w	$267C,$0001,$7480
 	tst.w	$34(a3,d0.w)
-	bne.w	L20F12
-	btst	#$3,$62(a3,d0.w)
-	beq.w	L20F12
-	movem.l	(sp)+,d0/a3
+	bne.w	.l20F12
+	btst	#$3,$62(a3,d0.w)		;check if d0 player controlled
+	beq.w	.l20F12
+	movem.l	(sp)+,d0/a3		;exit if player controlled
 	rts
-L20F12	movem.l	(sp)+,d0/a3
-L20F16	cmpi.w	#$6,d0
+.l20F12	movem.l	(sp)+,d0/a3
+.l20F16	cmpi.w	#$6,d0
 	slt.b	d1
 	ext.w	d1
 	addi.w	#$2,d1
 	dc.w	$3439,$0001,$7E2A
 	dc.w	$B479,$0001,$7FA0
-	beq.w	L20F42
+	beq.w	.l20F42
 	dc.w	$B279,$0001,$7FA6
-	bne.w	L20F42
+	bne.w	.l20F42
 	jmp	(Sub_312B8).l
-L20F42	dc.w	$B279,$0001,$7FA8
-	bne.w	L20F52
+.l20F42	dc.w	$B279,$0001,$7FA8
+	bne.w	.l20F52
 	jmp	(Sub_312DC).l
-L20F52	dc.w	$B279,$0001,$7FA6
+.l20F52	dc.w	$B279,$0001,$7FA6
 	bne.w	rtss2
 	jmp	(Sub_312B8).l
-puckbody
+puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckcoll
+									;.ccx). The puck bounces off. A high puck (Zpos > 8) that is fast makes a2
+									;fall (FallDown, Zpos > $C); a slower one starts SPAcatch on a2
 	btst	#$3,$64(a2)
-	bne.w	rtss2
+	bne.w	rtss2		;real hit (low or near center): a2 touched the puck
 	cmpi.w	#$8,$18(a3)
-	bgt.w	L20F80
+	bgt.w	.l20F80
 	move.w	d0,d1
-	andi.w	#$F,d1
+	andi.w	#$F,d1		;radius^2 from center
 	bne.w	rtss2
-L20F80	bsr.w	Sub_35D28
+.l20F80	bsr.w	Sub_35D28		;real hit: a2 touched the puck
 	move.w	#$24,-(sp)
 	bsr.w	sfx
 	clr.w	$2C(a3)
 	move.b	#$8,$5E(a2)
-	move.w	$0(a3),d0
+	move.w	$0(a3),d0		;Xpos
 	sub.w	$0(a2),d0
 	move.w	$14(a3),d1
 	sub.w	$14(a2),d1
-	bne.w	L20FB0
+	bne.w	.l20FB0
 	move.l	a2,-(sp)
 	bsr.w	Sub_36362
-L20FB0	move.w	$28(a3),d2
+.l20FB0	move.w	$28(a3),d2
 	move.w	$2A(a3),d3
 	move.b	d0,$28(a3)
 	move.b	d1,$2A(a3)
@@ -217,19 +228,19 @@ L20FB0	move.w	$28(a3),d2
 	ble.w	rtss2
 	muls.w	d2,d2
 	muls.w	d3,d3
-	add.l	d3,d2
-	cmpi.l	#$9000000,d2
-	bls.w	L20FEA
+	add.l	d3,d2		;slow puck: a2 catches it (SPAcatch) unless locked
+	cmpi.l	#$9000000,d2		;fast puck
+	bls.w	.l20FEA
 	cmpi.w	#$C,$18(a3)
 	bgt.w	Sub_3A9BE
 	rts
-L20FEA	bset	#$5,$62(a2)
+.l20FEA	bset	#$5,$62(a2)
 	bne.w	rtss2
 	move.w	#$10D0,d1
 	exg.l	a2,a3
 	bsr.w	Sub_363C0
 	exg.l	a2,a3
-rtss2
+rtss2						;shared rts
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_21002.bin
 Sub_3C246
@@ -244,64 +255,69 @@ Sub_3C246
 	bsr.w	randomd0
 	move.w	d0,$2C(a3)
 	bra.w	puckflip
-makepde
+makepde						;pass d0 as value to be scaled by player a0's energy level (full energy
+									;while sflags7 bit 4 is set). Return d0 as result
 	ext.w	d0
 	move.w	d0,-(sp)
 	movem.l	d1/a2-a3,-(sp)
 	movea.l	a0,a3
 	bsr.w	getpde
 	btst	#$4,$17F7A.l
-	beq.w	L21292
+	beq.w	.l21292
 	move.w	#$1000,d0
-L21292	movem.l	(sp)+,d1/a2-a3
+.l21292	movem.l	(sp)+,d1/a2-a3
 	muls.w	(sp)+,d0
 	asl.l	#$4,d0
 	swap	d0
-	ext.l	d0
+	ext.l	d0		;d0 = d0 * energy / 4096
 	rts
-getpde
+getpde						;get player a3's energy level into d0. Return a2 = his team struct, d1 =
+									;pnum*2
 	movea.l	#tmstruct,a2
-	btst	#$6,$62(a3)
-	beq.w	L212B4
+	btst	#$6,$62(a3)		;#pfteam - home or away
+	beq.w	.l212B4
 	adda.w	#$366,a2
-L212B4	move.b	$66(a3),d1
+.l212B4	move.b	$66(a3),d1
 	ext.w	d1
 	add.w	d1,d1
 	move.w	$34(a2,d1.w),d0
 	rts
 Sub_3C2C2
 	tst.w	d0
-	bpl.w	L212CA
+	bpl.w	.l212CA
 	clr.w	d0
-L212CA	move.w	d0,$34(a2,d1.w)
+.l212CA	move.w	d0,$34(a2,d1.w)
 	rts
-updatepwrplay
+updatepwrplay						;show graphic and time remaining for power plays. Nothing when gmode2 bit
+	
+	
+	
 	btst	#$1,$17F78.l
 	bne.w	rtss2
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a3
 	move.w	$26(a2),d0
 	sub.w	$26(a3),d0
-	beq.w	L2139C
-	bpl.w	L21312
+	beq.w	.clrpwrplay
+	bpl.w	.t0
 	btst	#$6,$17F6C.l
-	bne.w	L2132C
-	bsr.w	L2139C
+	bne.w	.upp
+	bsr.w	.clrpwrplay
 	bset	#$6,$17F6C.l
-	bra.w	L2132C
-L21312	exg.l	a2,a3
+	bra.w	.upp
+.t0	exg.l	a2,a3
 	btst	#$6,$17F6C.l
-	beq.w	L2132C
-	bsr.w	L2139C
+	beq.w	.upp
+	bsr.w	.clrpwrplay
 	bclr	#$6,$17F6C.l
-L2132C	bset	#$5,$17F6C.l
-	bne.w	L21350
+.upp	bset	#$5,$17F6C.l
+	bne.w	.uppt
 	addi.w	#$1,$4(a3)
 	cmpa.l	#$1834C,a3
-	bne.w	L2134C
-L21348	bra.w	L21350
-L2134C	bra.w	L21348
-L21350	bsr.w	printz
+	bne.w	.away
+.home	bra.w	.uppt
+.away	bra.w	.home
+.uppt	bsr.w	printz
 	dc.w	$0012
 	dc.b	$BF,$01,$19,$20,$20,$20,$16,$17,$18,$19,$BF,$01,$1A,$20,$20,$00
 	bsr.w	GetLowestPen
@@ -318,10 +334,11 @@ L21350	bsr.w	printz
 	bsr.w	appstring
 	movea.l	a3,a1
 	bra.w	print
-L2139C	bclr	#$5,$17F6C.l
+.clrpwrplay	bclr	#$5,$17F6C.l
 	beq.w	rtss2
 	bra.w	EASNLogo
-ClrHor
+ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktiles and
+	
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$7,$17F6A.l
 	dc.w	$33FC,$03E8,$0001,$7CEC
@@ -332,7 +349,7 @@ ClrHor
 	jsr	$2A9D0.l
 	bsr.w	Sub_3F03E
 	btst	#$0,$17F6A.l
-	bne.w	L21404
+	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1,$0,$0
 	moveq	#$20,d0
@@ -340,13 +357,13 @@ ClrHor
 	move.w	#$7FF,d2
 	bsr.w	eraser
 	bsr.w	printscores1
-L21404	movem.l	(sp)+,d0-d7/a0-a6
+.ex	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-SetHor
+SetHor						;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$7,$17F6A.l
-L21416	btst	#$0,(disflags).l
-	bne.w	L21416
+.p	btst	#$0,(disflags).l
+	bne.w	.p
 	dc.w	$4279,$0001,$7CF0
 	dc.w	$4279,$0001,$7CF2
 	bsr.w	Sub_3F03E
@@ -365,21 +382,27 @@ L21416	btst	#$0,(disflags).l
 	bsr.w	dobitmap
 	bsr.w	USBoard
 	btst	#$0,$17F6A.l
-	bne.w	L21486
+	bne.w	.ex
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
 	bsr.w	Sub_37AA2
-L21486	movem.l	(sp)+,d0-d7/a0-a6
+.ex	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-printscores1
+printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
+	
+	
+	
+	
+	
+	
 	movem.l	d0-d2/a0-a3,-(sp)
 	btst	#$7,$17F6A.l
-	bne.w	L21548
+	bne.w	.sbscreen
 	bclr	#$7,$17F74.l
-	beq.w	L214B0
+	beq.w	.0
 	dc.w	$33FC,$0078,$0001,$7F82
-L214B0	bsr.w	printz
+.0	bsr.w	printz
 	String	CC_Font1Pri,$0,$17
 	moveq	#$9,d0
 	moveq	#$5,d1
@@ -390,13 +413,13 @@ L214B0	bsr.w	printz
 	move.w	$180E4.l,d0
 	movea.l	#$41A34,a1
 	btst	#$1,$17F78.l
-	beq.w	L214F6
+	beq.w	.1
 	move.w	#$4,d0
 	movea.l	#$41A48,a1
-L214F6	bsr.w	Sub_3CEBE
+.1	bsr.w	Sub_3CEBE
 	bsr.w	EASNLogo
 	btst	#$0,$17F6E.l
-	bne.w	L21542
+	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1Pri,$17,$17
 	moveq	#$8,d0
@@ -410,15 +433,15 @@ L214F6	bsr.w	Sub_3CEBE
 	String	CC_Font1Pri,$18,$18
 	adda.w	#$366,a2
 	bsr.w	printscores1_ps
-L21542	movem.l	(sp)+,d0-d2/a0-a3
+.ex	movem.l	(sp)+,d0-d2/a0-a3
 	rts
-L21548	bsr.w	printz
+.sbscreen	bsr.w	printz
 	String	CC_Font2Pri,$11,$2
 	move.w	$180E4.l,d0
 	btst	#$0,$17F78.l
-	beq.w	L21568
+	beq.w	.2
 	move.w	#$4,d0
-L21568	movea.l	#$41A48,a1
+.2	movea.l	#$41A48,a1
 	bsr.w	Sub_3CEC6
 	move.w	(a1),d0
 	lsr.w	#$1,d0
@@ -431,11 +454,12 @@ L21568	movea.l	#$41A48,a1
 	bsr.w	PrintTeamLogoAndScore
 	bsr.w	printz
 	String	CC_Font2Pri,$8,$2
-	adda.w	#$366,a2
+	adda.w	#$366,a2		;tmsize
 	moveq	#$2C,d0
 	bsr.w	PrintTeamLogoAndScore
-	bra.w	L21542
-printscores1_ps
+	bra.w	.ex
+printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
+	
 	movea.l	$1E(a2),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
@@ -444,8 +468,11 @@ printscores1_ps
 	move.w	$C(a2),d0
 	moveq	#$2,d1
 	bsr.w	PushNumberWidth
-	bra.w	print
-PrintTeamLogoAndScore
+	bra.w	print		;print the score and return
+PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5 columns left of
+	
+	
+	
 	move.w	(printx).l,-(sp)
 	subi.w	#$5,(printx).l
 	jsr	(Sub_2C59E).l
@@ -453,17 +480,18 @@ PrintTeamLogoAndScore
 	addi.w	#$2,(printy).l
 	move.w	$C(a2),d0
 	cmpi.w	#$A,d0
-	bge.w	L21604
-	bra.w	L2160C
-L21604	subi.w	#$1,(printx).l
-L2160C	bsr.w	PushNumber
+	bge.w	.0
+	bra.w	.1
+.0	subi.w	#$1,(printx).l
+.1	bsr.w	PushNumber
 	move.w	(a1),d0
 	subi.w	#$2,d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	addi.w	#$1,(printx).l
 	bra.w	printbig
-EASNLogo
+EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power
+	
 	btst	#$5,$17F6C.l
 	bne.w	rtss2
 	bsr.w	printz
@@ -478,7 +506,8 @@ EASNLogo
 	dc.w	$3839,$0001,$8D50
 	clr.w	d5
 	bra.w	dobitmap
-USBoard
+USBoard						;Update score board, including the players in the penalty box and their
+	
 	movem.l	d0-d7/a0-a3,-(sp)
 	bset	#$3,(disflags).l
 	bsr.w	printscores1
@@ -490,7 +519,9 @@ USBoard
 	dc.w	$0832,$0006,$0068,$6600,$FFF0,$6100,$0024,$6000
 	dc.w	$FFE8,$41EA,$009C,$4240,$1018,$6B00,$F934,$0832
 	dc.w	$0006,$0068,$6700,$FFF0,$6100,$0006,$6000,$FFE8
-pplpen
+pplpen						;print one penalty box line: player number and time remaining. a2 = team,
+	
+	
 	cmpi.w	#$A,(printy).l
 	bhi.w	rtss2
 	move.w	$68(a2,d0.w),d2
@@ -498,9 +529,9 @@ pplpen
 	movea.l	$1E(a2),a1
 	adda.w	$0(a1),a1
 	lsr.w	#$1,d0
-L216FE	adda.w	(a1),a1
+.find	adda.w	(a1),a1
 	adda.w	#$8,a1
-	dbra	d0,L216FE
+	dbra	d0,.find
 	clr.w	d0
 	move.b	-$8(a1),d0
 	move.w	(printx).l,-(sp)
@@ -513,9 +544,10 @@ L216FE	adda.w	(a1),a1
 	bsr.w	PushTime
 	bsr.w	print
 	move.w	(sp)+,(printx).l
-	addi.w	#$1,(printy).l
+	addi.w	#$1,(printy).l		;next row
 	rts
-linebar
+linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitmap from
+	
 	movem.l	d0-d5/a0-a2,-(sp)
 	bsr.w	getlinee
 	move.w	(printa).l,-(sp)
@@ -523,9 +555,9 @@ linebar
 	ext.l	d0
 	divu.w	#$100,d0
 	cmpi.w	#$F,d0
-	bls.w	L2176C
+	bls.w	.ok
 	moveq	#$F,d0
-L2176C	moveq	#$F,d1
+.ok	moveq	#$F,d1
 	sub.w	d0,d1
 	clr.w	d0
 	movea.l	$47D40.l,a1
@@ -539,7 +571,7 @@ L2176C	moveq	#$F,d1
 	move.w	(sp)+,(printa).l
 	movem.l	(sp)+,d0-d5/a0-a2
 	rts
-getlinee
+getlinee						;d0 = line number, a2 = team struct. Return d0 = energy level of this line
 	movem.l	d1-d5/a0-a3,-(sp)
 	lea.l	$16C(a2),a1
 	asl.w	#$3,d0
@@ -548,36 +580,36 @@ getlinee
 	clr.w	d1
 	movea.l	#$41AD6,a0
 	move.w	$26(a2),d4
-	bra.w	L217D6
-L217BC	clr.w	d5
+	bra.w	.l217D6
+.loop	clr.w	d5
 	move.b	(a0,d4.w),d5
-	beq.w	L217D6
+	beq.w	.l217D6
 	clr.w	d3
 	move.b	(a1,d5.w),d3
 	asl.w	#$1,d3
 	addi.w	#$1,d1
 	add.w	$32(a2,d3.w),d0
-L217D6	dbra	d4,L217BC
+.l217D6	dbra	d4,.loop
 	divu.w	d1,d0
 	movem.l	(sp)+,d1-d5/a0-a3
 	rts
-AvgCline
+AvgCline						;Return d0 = average energy of current line on team a2
 	movem.l	d1-d3/a0,-(sp)
 	clr.l	d0
 	clr.w	d1
 	moveq	#$5,d2
 	movea.l	$22(a2),a0
-L217F0	tst.w	$34(a0)
-	ble.w	L21808
+.loop	tst.w	$34(a0)
+	ble.w	.next
 	clr.w	d3
 	move.b	$66(a0),d3
 	add.w	d3,d3
 	add.w	$34(a2,d3.w),d0
 	addi.w	#$1,d1
-L21808	adda.w	#$80,a0
-	dbra	d2,L217F0
+.next	adda.w	#$80,a0
+	dbra	d2,.loop
 	tst.w	d1
-	beq.w	L21818
+	beq.w	.ex
 	divu.w	d1,d0
-L21818	movem.l	(sp)+,d1-d3/a0
+.ex	movem.l	(sp)+,d1-d3/a0
 	rts

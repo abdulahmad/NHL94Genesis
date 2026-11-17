@@ -6,5 +6,5 @@
 	dc.w	$0001,$E180,$0001,$E462,$0001,$E73E,$0001,$EA00
 	dc.w	$0001,$ECBE,$0001,$EFA4,$0001,$F292,$0001,$F858
 	dc.w	$0001,$F566,$0001,$B07C,$0001,$B382
-AllStarsEast
+AllStarsEast						;team record: All Stars East (ASE), team 26
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0007C.bin

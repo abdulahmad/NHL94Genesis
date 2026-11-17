@@ -1,18 +1,20 @@
-GetStatColumn
+GetStatColumn						;d2 = stat column d1 for player d0. Goalies only have PIM (btst d1,#6
+									;picks the columns kept)
 	move.w	d0,-(sp)
 	bsr.w	GetGoalieCount
 	move.w	d0,d2
 	move.w	(sp)+,d0
-	cmp.w	d2,d0
-	bge.w	Sub_2E3A4
-	clr.w	d2
+	cmp.w	d2,d0		;goalie?
+	bge.w	Sub_2E3A4		;skater: read the column as is
+	clr.w	d2		;goalie: columns 1 and 2 (A, Pts) show column 1 (assists), the rest 0
 	dc.w	$033C,$0006,$6700
 	dc.w	$15E8
-ReadStatColumn
+ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct byte arrays
+									;(StatColumnOffsets); d7 = 1: the playoff tables (GetStatsValue)
 	moveq	#$1,d1
 Sub_2E3A4
 	tst.w	d7
-	bne.w	L133D2
+	bne.w	.l133D2
 	dc.w	$43FA,$0076
 	asl.w	#$2,d1
 	adda.w	d1,a1
@@ -28,15 +30,15 @@ Sub_2E3A4
 	move.b	(a2,d1.l),d3
 	add.w	d3,d2
 	rts
-L133D2	asl.w	#$2,d1
+.l133D2	asl.w	#$2,d1
 	add.w	d0,d0
 	clr.w	d2
-	bsr.w	L133E8
+	bsr.w	.l133E8
 	addi.w	#$2,d1
-	bsr.w	L133E8
+	bsr.w	.l133E8
 	lsr.w	#$1,d0
 	rts
-L133E8	movea.l	#$2E40E,a1
+.l133E8	movea.l	#$2E40E,a1
 	tst.w	(a1,d1.w)
 	beq.w	Sub_2F988
 	movea.w	(a1,d1.w),a1
@@ -80,7 +82,8 @@ Sub_2E4EE
 	movem.l	(sp)+,d0-d1/a1
 	rts
 	dc.w	$000A
-CrowdMeterScreen
+CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
+									;the arena and league records; start exits. Menu item handler
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1353A.bin
 Sub_2E728
@@ -91,56 +94,56 @@ Sub_2E728
 	bset	#$2,(disflags).l
 	dc.w	$3039,$0001,$8D32
 	dc.w	$4EB9,$0003,$871E
-L13754	btst	#$7,$FF800E.l
-	bne.b	L13754
+.l13754	btst	#$7,$FF800E.l
+	bne.b	.l13754
 	dc.w	$23FC,$0000,$0000,$00FF,$8022
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-L13778	btst	#$6,$FF800E.l
-	beq.b	L13778
+.l13778	btst	#$6,$FF800E.l
+	beq.b	.l13778
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L13792	btst	#$6,$FF800E.l
-	bne.b	L13792
+.l13792	btst	#$6,$FF800E.l
+	bne.b	.l13792
 	bclr	#$7,$FF800F.l
-L137A4	btst	#$7,$FF800E.l
-	bne.b	L137A4
+.l137A4	btst	#$7,$FF800E.l
+	bne.b	.l137A4
 	move.w	#$8C81,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L137C6	btst	#$6,$FF800E.l
-	beq.b	L137C6
+.l137C6	btst	#$6,$FF800E.l
+	beq.b	.l137C6
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L137E0	btst	#$6,$FF800E.l
-	bne.b	L137E0
+.l137E0	btst	#$6,$FF800E.l
+	bne.b	.l137E0
 	bclr	#$7,$FF800F.l
 	move.w	#$6,$18D3E.l
-L137FA	btst	#$7,$FF800E.l
-	bne.b	L137FA
+.l137FA	btst	#$7,$FF800E.l
+	bne.b	.l137FA
 	move.w	#$8D00,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L1381C	btst	#$6,$FF800E.l
-	beq.b	L1381C
+.l1381C	btst	#$6,$FF800E.l
+	beq.b	.l1381C
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L13836	btst	#$6,$FF800E.l
-	bne.b	L13836
+.l13836	btst	#$6,$FF800E.l
+	bne.b	.l13836
 	bclr	#$7,$FF800F.l
 	clr.w	d0
 	dc.w	$4EB9,$0003,$871E
-L13850	btst	#$7,$FF800E.l
-	bne.b	L13850
+.l13850	btst	#$7,$FF800E.l
+	bne.b	.l13850
 	dc.w	$23FC,$0000,$0000,$00FF,$8022
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-L13874	btst	#$6,$FF800E.l
-	beq.b	L13874
+.l13874	btst	#$6,$FF800E.l
+	beq.b	.l13874
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L1388E	btst	#$6,$FF800E.l
-	bne.b	L1388E
+.l1388E	btst	#$6,$FF800E.l
+	bne.b	.l1388E
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	bclr	#$1,(disflags).l
@@ -167,58 +170,58 @@ Sub_2E980
 	bset	#$2,(disflags).l
 	move.w	$18D30.l,d0
 	dc.w	$4EB9,$0003,$871E
-L139A0	btst	#$7,$FF800E.l
-	bne.b	L139A0
+.l139A0	btst	#$7,$FF800E.l
+	bne.b	.l139A0
 	dc.w	$23FC,$0000,$0000,$00FF,$8022
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-L139C4	btst	#$6,$FF800E.l
-	beq.b	L139C4
+.l139C4	btst	#$6,$FF800E.l
+	beq.b	.l139C4
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L139DE	btst	#$6,$FF800E.l
-	bne.b	L139DE
+.l139DE	btst	#$6,$FF800E.l
+	bne.b	.l139DE
 	bclr	#$7,$FF800F.l
 	move.w	#$8D00,d0
 	move.b	$18D30.l,d0
 	lsr.b	#$2,d0
-L139FC	btst	#$7,$FF800E.l
-	bne.b	L139FC
+.l139FC	btst	#$7,$FF800E.l
+	bne.b	.l139FC
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L13A1C	btst	#$6,$FF800E.l
-	beq.b	L13A1C
+.l13A1C	btst	#$6,$FF800E.l
+	beq.b	.l13A1C
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L13A36	btst	#$6,$FF800E.l
-	bne.b	L13A36
+.l13A36	btst	#$6,$FF800E.l
+	bne.b	.l13A36
 	bclr	#$7,$FF800F.l
-L13A48	btst	#$7,$FF800E.l
-	bne.b	L13A48
+.l13A48	btst	#$7,$FF800E.l
+	bne.b	.l13A48
 	move.w	#$8C00,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L13A6A	btst	#$6,$FF800E.l
-	beq.b	L13A6A
+.l13A6A	btst	#$6,$FF800E.l
+	beq.b	.l13A6A
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L13A84	btst	#$6,$FF800E.l
-	bne.b	L13A84
+.l13A84	btst	#$6,$FF800E.l
+	bne.b	.l13A84
 	bclr	#$7,$FF800F.l
 	move.w	#$5,$18D3E.l
-L13A9E	tst.w	(palcount).l
-	bpl.w	L13A9E
+.l13A9E	tst.w	(palcount).l
+	bpl.w	.l13A9E
 	move.w	(sp)+,(disflags).l
 	bset	#$1,(disflags).l
 	dc.w	$3839,$0001,$8D48
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
-	beq.w	L13AD8
+	beq.w	.l13AD8
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
-L13AD8	jsr	(DecompressGraphicsPlain).l
+.l13AD8	jsr	(DecompressGraphicsPlain).l
 	jsr	$2A9D0.l
 	dc.w	$3839,$0001,$8D42
 	movea.l	(SmallFontMap).l,a2
@@ -226,35 +229,37 @@ L13AD8	jsr	(DecompressGraphicsPlain).l
 	dc.w	$4EB9,$0003,$8946
 	dc.l	$43434567,$89ABCDEF
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_13B00.bin
-GetGoalieCount
+GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
 	movem.l	d1/a0,-(sp)
 	movea.l	$1E(a2),a0
 	adda.w	$A(a0),a0
-	move.w	(a0),d1
+	move.w	(a0),d1		;word with one nibble per goalie slot
 	clr.w	d0
-L13D70	addi.w	#$1,d0
+.count	addi.w	#$1,d0		;count nibbles by shifting 4 bits out until the word is 0
 	asl.w	#$4,d1
-	bne.w	L13D70
+	bne.w	.count
 	movem.l	(sp)+,d1/a0
 	rts
-GetDefenseStart
+GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetForwardCount),
+									;the roster index of the first defenseman (roster order is goalies,
+									;forwards, defense). Called from the high ROM player cards
 	movem.l	a0,-(sp)
 	bsr.w	GetGoalieCount
 	move.w	d0,-(sp)
 	movea.l	$1E(a2),a0
 	adda.w	$8(a0),a0
 	move.b	$3(a0),d0
-	lsr.w	#$4,d0
+	lsr.w	#$4,d0		;high nibble
 	add.w	(sp)+,d0
 	movem.l	(sp)+,a0
 	rts
-GetForwardCount
+GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
 	movem.l	a0,-(sp)
 	movea.l	$1E(a2),a0
 	adda.w	$8(a0),a0
 	move.b	$3(a0),d0
-	lsr.w	#$4,d0
-	andi.w	#$F,d0
+	lsr.w	#$4,d0		;high nibble = forward count
+	andi.w	#$F,d0		;forward count
 	movem.l	(sp)+,a0
 	rts
 Sub_2EDBC
@@ -262,11 +267,11 @@ Sub_2EDBC
 	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0
 	clr.w	d0
-L13DCA	addi.w	#$1,d0
+.l13DCA	addi.w	#$1,d0
 	adda.w	(a0),a0
 	adda.w	#$8,a0
 	cmpi.w	#$2,(a0)
-	bne.w	L13DCA
+	bne.w	.l13DCA
 	movem.l	(sp)+,a0
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_13DE2.bin
