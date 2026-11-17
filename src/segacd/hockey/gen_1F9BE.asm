@@ -1,4 +1,4 @@
-Sub_3A9BE
+FallDown
 	cmpi.w	#$B,$52(a2)
 	bgt.w	rtss2
 	cmpi.w	#$145C,$58(a2)
@@ -129,7 +129,7 @@ Sub_3A9BE
 	move.b	#$0,$40(a3)
 	move.b	#$0,$65(a3)
 	move.w	#$1AC2,d1
-	jsr	(Sub_363C0).l
+	jsr	(SetSPA).l
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	move.w	(sp)+,d1
@@ -216,7 +216,7 @@ Sub_3AD66
 Sub_3AD94
 	exg.l	a2,a3
 	bset	#$5,$62(a3)
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 	tst.w	$34(a3)
 	beq.w	.l1FDC2
@@ -246,14 +246,14 @@ Sub_3AD94
 	bne.w	.l1FE72
 	exg.l	a2,a3
 	move.w	#$145C,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 	bsr.w	setInjuryType
 	btst	#$5,$17F7A.l
 	bne.w	.l1FE4C
 	exg.l	a2,a3
 	move.w	#$1AF4,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 .l1FE4C	move.w	#$4,$1806A.l
 	moveq	#$14,d0
@@ -481,10 +481,10 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	neg.w	d0
 .l20172	move.w	d0,$2A(a3)
 	move.w	#$1000,d0
-	bsr.w	Sub_37044
+	bsr.w	randomd0s
 	move.w	d0,$28(a3)
 	move.w	#$1000,d0
-	bsr.w	Sub_37044
+	bsr.w	randomd0s
 	move.w	d0,$2C(a3)
 	bra.w	puckflip
 .l20192	neg.w	$2C(a3)
@@ -591,7 +591,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 .l20398	movea.l	#$180F2,a0
 	dc.w	$D0F9,$0001,$80F0
 	dc.w	$0679,$0006,$0001,$80F0
-	bsr.w	Sub_3B51E
+	bsr.w	GetPeriodTimeRemaining
 	move.w	d0,(a0)+
 	moveq	#$2,d0
 	add.w	$26(a2),d0
@@ -654,11 +654,11 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	st.b	$17E3C.l
 	bset	#$2,$62(a3)
 	move.w	#$1A,d0
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	move.l	a3,-(sp)
 	adda.w	#$80,a3
 	move.w	#$102E,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	movea.l	$22(a1),a3
 	moveq	#$E,d0
 	bsr.w	AddPenalty2
@@ -680,7 +680,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	dbra	d3,.l204E6
 	movea.l	(sp)+,a3
 	rts
-Sub_3B51E
+GetPeriodTimeRemaining
 	move.w	$180E4.l,d0
 	swap	d0
 	clr.w	d0
@@ -794,7 +794,7 @@ L206A2	cmpi.w	#$E,$52(a3)
 	asr.w	$2A(a3)
 	adda.w	#$80,a3
 	move.w	#$1078,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	movea.l	(sp)+,a3
 	move.w	#$E,-(sp)
 	bsr.w	sfx

@@ -83,7 +83,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	dc.w	$207C,$000B,$BD30
 	dc.w	$3039,$0001,$7F66
 	dc.w	$3239,$0001,$8D32
-	dc.w	$4EB9,$0003,$777C
+	jsr	(Sub_3777C).l
 	move.w	#$2F,-(sp)
 	bsr.w	sfx
 	bclr	#$0,$17F6C.l
@@ -155,7 +155,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	clr.w	$17B98.l
 	bclr	#$2,$62(a3)
 	moveq	#$18,d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 	dc.w	$0008,$1000,$0810
 PeriodOver						;what to do if period over. Branched to from puckfaceoff when the clock
 									;runs out. After period 3 a tied game goes to
@@ -174,14 +174,14 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	dc.w	$9079,$0001,$86BE
 	beq.w	.l1AA90		;tied: play overtime
 	move.w	#$4,$180E4.l		;game over
-.l1AA90	bsr.w	Sub_36D0A
+.l1AA90	bsr.w	forceblack
 	jsr	(ResetClock).l
 	move.w	#$79,-(sp)
 	bsr.w	song
 	bsr.w	UpdateScores
 	cmpi.w	#$4,$180E4.l
 	bne.w	.l1AAB8
-	dc.w	$4EB9,$0004,$0838
+	jsr	(AddPlayoffTeamStats).l
 .l1AAB8	bsr.w	Intermission
 	cmpi.w	#$4,$180E4.l
 	beq.w	.l1AACE
@@ -229,7 +229,7 @@ a2offsides						;player a2 touched the puck: offsides penalty if his team is fla
 	bsr.w	AddPenalty
 	exg.l	a2,a3
 	rts
-Sub_35D28
+a2touchpuck
 	move.w	$0(a2),$17ECA.l
 	move.w	$14(a2),$17ECC.l
 	move.w	$52(a2),$17EC8.l
@@ -334,7 +334,7 @@ puckflip						;start puck spinning. a3 = puck, d0 bit 0 = flip. Called from chec
 	andi.w	#$3,$54(a3)
 	st.b	$5C(a3)
 	move.w	#$46A,d1
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 	dc.w	$0C6B,$018A,$0006,$6600,$002A,$376B,$FF80,$0000
 	dc.w	$376B,$FF94,$0014,$426B,$0018,$7014,$0839,$0007
 	dc.w	$0001,$7F6A,$6700,$0004,$7000,$0673,$0001,$0000

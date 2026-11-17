@@ -40,7 +40,7 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 	dc.w	$23FC,$0000,$C45C,$0001,$7470
 	movem.l	(sp)+,d0-d1/a0
 	rts
-Sub_2A604
+ClearWinRecords
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
 	move.w	#$7,d7
@@ -76,14 +76,14 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 .lF68A	move.w	#$7,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	cmpi.w	#$6,d0
 	bgt.w	.lF68A
 	dc.w	$33C0,$0001,$A8B4
 	bclr	#$3,$17F7A.l
 	move.w	#$FFFF,$1A8B6.l
 	dc.w	$4279,$0001,$A8B8
-	bsr.w	Sub_2A736
+	bsr.w	NextPathPoint
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
@@ -94,7 +94,7 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	dc.w	$FFCE,$0008,$0020,$00D0,$8028,$0006,$001C,$00F4
 	dc.w	$0008,$00E0,$8020,$0006,$FFE6,$00F8,$0000,$00E0
 	dc.w	$8020,$0002
-Sub_2A736
+NextPathPoint
 	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$0C39,$0080,$0001,$A8B8
 	beq.w	.lF7B0
@@ -149,7 +149,7 @@ Sub_2A736
 	ble.w	.lF834
 .lF82C	cmpi.w	#$A,d1
 	bgt.w	.lF838
-.lF834	bsr.w	Sub_2A736
+.lF834	bsr.w	NextPathPoint
 .lF838	dc.w	$3039,$0001,$A8B8
 	move.w	$1A8BA.l,d1
 .lF844	movem.l	(sp)+,d2-d7/a0-a6
@@ -263,7 +263,7 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	dc.w	$6006
 .lF9E6	movea.l	$47D90.l,a2
 .lF9EC	adda.w	#$8,a2
-	dc.w	$4EB9,$0003,$8958
+	jsr	(DecompressGraphicsPlain).l
 	move.w	(sp)+,d0
 	rts
 TeamGfxListEnd						;end of TeamGfxList (size check below)
@@ -296,12 +296,12 @@ TeamGfxListEnd						;end of TeamGfxList (size check below)
 	ori.b	#$3D,d0
 	ori.b	#$3E,d0
 	movem.l	d0/a2,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	' ('
 	adda.w	#$D0,a2
 	bra.w	PrintParenNumber
 	movem.l	d0/a2,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	' ('
 	adda.w	#$B6,a2
 PrintParenNumber						;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3 digits,
@@ -316,8 +316,8 @@ PrintParenNumber						;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3
 	ble.w	.0
 	move.w	#$3,d1
 .0	jsr	(PushNumberWidth).l
-	dc.w	$4EB9,$0003,$8F80
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(print).l
+	jsr	(printz).l
 	String	')'
 	addi.w	#$1,(printy).l
 	move.w	#$E,(printx).l
@@ -426,7 +426,7 @@ RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 whe
 	movem.l	a0,-(sp)
 	movea.l	#$2AC8E,a0
 	move.w	#$64,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	andi.w	#$7,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
@@ -465,7 +465,7 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	dc.w	$3039,$0001,$7CE4
 	dc.w	$3239,$0001,$7CE6
 	move.w	#$1,d2
-	dc.w	$4EB9,$0003,$E028
+	jsr	(SetSframe).l
 	cmpa.l	#$BBD30,a6
 	bne.w	.0
 	clr.l	(a6)+
@@ -517,7 +517,7 @@ PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name)
 	dc.w	$3039,$0001,$8BF4
 PlayedByText						;PlayedByHome / PlayedByAway body
 	tst.w	d0
-	beq.w	Sub_2AE50
+	beq.w	PlayedByNone
 	movea.l	#$1A37E,a1
 	dc.w	$33C0,$0001,$A38C
 	bsr.w	GetLogName
@@ -534,18 +534,18 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	bsr.w	CopyString
 	movea.l	(sp)+,a1
 	movea.l	#TempBuffer,a3
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movea.l	#TempBuffer,a3
-	dc.w	$4EB9,$0003,$9200
+	jsr	(Sub_39200).l
 	String	')'
 	movea.l	#TempBuffer,a1
-Sub_2AE3A
+PlayedByExit
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 	dc.w	$000E,$2870,$6C61,$7965,$6420,$6279,$2000,$0002
-Sub_2AE50
+PlayedByNone
 	movea.l	#$2AE4E,a1
-	bra.w	Sub_2AE3A
+	bra.w	PlayedByExit
 PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	dc.w	$3039,$0001,$8BF6
@@ -588,10 +588,10 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	dc.w	$50F9,$0001,$7EBC
 	move.w	d1,-(sp)
 	move.w	#$50C,d1
-	dc.w	$4EB9,$0003,$63C0
+	jsr	(SetSPA).l
 	tst.w	$34(a3)
 	bpl.w	.lFF40
-	dc.w	$4EB9,$0003,$62C4
+	jsr	(assexit).l
 	bra.w	.lFF46
 .lFF40	jsr	(Setplass).l
 .lFF46	clr.w	$5A(a3)

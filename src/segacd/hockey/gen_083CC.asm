@@ -5,7 +5,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 									;demo (SetupDemo).
 	jsr	$2A58C.l
 	dc.w	$267C,$0001,$8C38
-	dc.w	$4EB9,$0004,$057C
+	jsr	(Sub_4057C).l
 	dc.w	$33F9,$0001,$8C22,$0001,$8C0A
 	dc.w	$33F9,$0001,$8C24,$0001,$8BFA
 	bclr	#$1,$17F7A.l		;no overtime
@@ -18,10 +18,10 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	dc.w	$4A79,$0001,$8C16
 	bne.w	.l8440
 	moveq	#$1C,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	dc.w	$33C0,$0001,$8BFE
 	moveq	#$1C,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	dc.w	$33C0,$0001,$8C00
 .l8440	dc.w	$50F9,$0001,$8C16
 	dc.w	$0C79,$0004,$0001,$8BFA
@@ -133,10 +133,10 @@ Sub_234C2
 	moveq	#-1,d2
 .l8642	dc.w	$0C79,$0004,$0001,$8BFA
 	beq.w	.l8654
-	dc.w	$4EB9,$0004,$0318
+	jsr	(FigureJoy).l
 .l8654	dc.w	$3F39,$0001,$8C00
 	dc.w	$3F39,$0001,$8BFE
-	bsr.w	Sub_23A8C
+	bsr.w	ChangeOption
 	move.w	(sp)+,d0
 	dc.w	$0C79,$0004,$0001,$8BFA
 	beq.w	.l867C
@@ -264,13 +264,13 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 	moveq	#$17,d2
 	moveq	#$0,d5		;no palette lines
 	bset	#$0,(sflags6).l
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	bclr	#$0,(sflags6).l		;normal maps
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.w	d7,d3
 	bsr.w	L8984		;the new frame
 	move.w	#$6000,(printa).l
-	dc.w	$4EF9,$0003,$8CA0
+	jmp	(Framer).l
 .l891E	jsr	(printz).l
 	String	CC_Font1,$10,$E
 	move.w	#$17,d0
@@ -339,14 +339,14 @@ FixModeOptions						;Fix the options a mode does not allow, then print them: Sho
 	beq.w	.3
 	bsr.w	PrintOptionNames
 .3	bset	#$3,(sflags6).l		;print all
-	bsr.w	Sub_23CB6		;print the options
+	bsr.w	PrintOptions		;print the options
 	bclr	#$3,(sflags6).l		;normal
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	dc.w	$0005,$0008,$001C,$001C,$0003,$0002,$0002,$0003
 	dc.w	$0003,$0005,$000C,$001C,$001C,$0003,$0002,$0002
 	dc.w	$0003,$0003
-Sub_23A8C
+ChangeOption
 	tst.w	d7
 	bne.w	.l8B0C
 	movem.w	d0/d2,-(sp)
@@ -475,12 +475,12 @@ WrapOption						;d3 + d2, wrapped into d5 ... d4-1. Called from ChangeOption
 	blt.w	Sub_239CA
 	move.w	d5,d3
 	rts
-Sub_23CB6
+PrintOptions
 	move.w	d7,d6
 	move.l	#$FFFFFFFE,d7
 .l8CBE	addi.w	#$2,d7
 	clr.w	d2
-	bsr.w	Sub_23A8C
+	bsr.w	ChangeOption
 	movem.l	d7,-(sp)
 	asr.w	#$1,d7
 	dc.w	$BE79,$0001,$9384
@@ -491,16 +491,16 @@ Sub_23CB6
 	bne.w	.l8CBE
 	bsr.w	PrintScrollMarks
 	move.w	d6,d7
-	dc.w	$4EB9,$0003,$FF4C
+	jsr	(TeamIcons).l
 	btst	#$0,$19390.l
 	bne.w	.l8D06
-	dc.w	$4EB9,$0002,$4B5E
+	jsr	(ResetCardTimer).l
 .l8D06	rts
 PrintOptionValue						;print the value of option d7 at x $11 on its line (past row $1B:
 									;nothing). Team 1 / 2 go to PrintOptTeamName Per. Length in
 									;Shootout prints 'N/A'; Players with FourWayPlay uses the second list
 									;(+$B0). Called from PrintOptions
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$11,$10
 	dc.w	$3039,$0001,$9384
 	add.w	d0,d0		;2 rows a line
@@ -523,7 +523,7 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 	dc.w	$0C79,$0004,$0001,$8BFA
 	bne.w	.l8D8A
 	movea.l	#$23EB6,a1
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 .l8D8A	dc.w	$4A79,$0001,$8BF8
 	beq.w	.loop
 	cmpi.w	#$2,d7		;players line?
@@ -532,7 +532,7 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 .loop	movea.l	a0,a1
 	adda.w	(a0),a0
 	dbra	d3,.loop
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more lines follow
 									;(first line < 3), '{' at row $F when lines are above (first line > 0),
 									;else a space
@@ -544,21 +544,21 @@ PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more l
 	beq.w	.0
 	movea.l	#$23E18,a1
 .0	move.w	#$2,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movea.l	#$23E1C,a1
 	move.w	#$F,(printy).l
 	dc.w	$4A79,$0001,$9384
 	beq.w	.1
 	movea.l	#$23E14,a1
 .1	move.w	#$2,(printx).l
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 	dc.w	$0004,$7B00,$0004,$7D00,$0004,$2000
 PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full name of the
 									;two New York teams, $D / $E).
 									;PrintOptionValue
 	move.w	(printx).l,-(sp)
 	movea.l	#$23EA0,a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	(sp)+,(printx).l
 	dc.w	$227C,$0001,$8BFA
 	move.w	(a1,d7.w),d3
@@ -605,7 +605,7 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 	move.w	#$3,(printx).l
 	move.w	#$0,(printa).l
 	dc.w	$33FC,$0000,$0001,$8D5E
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 .1	addi.w	#$2,(printy).l		;2 rows on
 	bra.w	.loop
 .done	bclr	#$3,(sflags6).l		;normal

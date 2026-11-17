@@ -28,7 +28,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	move.w	#$8,d0
 	move.w	#$3,d1
 	move.w	#$7FF,d2		;blank char
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	bra.w	.l104DC
 .l1048E	move.w	(hoticonchars).l,d4
 	movea.l	(HotMap).l,a0
@@ -47,7 +47,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	move.w	(a1),d2
 	move.w	$2(a1),d3
 	moveq	#$0,d5		;no palette lines
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 .l104DC	movem.l	(sp)+,d0/a0-a1
 	rts
 	btst	#$6,$17F74.l
@@ -122,11 +122,11 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 Sub_2B600
 	rts
 Sub_2B602
-	dc.w	$4EF9,$0003,$12AA
+	jmp	(Sweepcheck).l
 Sub_2B608
-	dc.w	$4EF9,$0003,$12B8
+	jmp	(setc1player).l
 Sub_2B60E
-	dc.w	$4EF9,$0003,$12DC
+	jmp	(setc2player).l
 	jsr	$37598.l
 	move.w	#$D,d7
 	jsr	$6044.w
@@ -269,7 +269,7 @@ Sub_2B60E
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
-	dc.w	$4EB9,$0003,$74F0
+	jsr	(ReadJoy1).l
 	cmpi.b	#$E0,d3
 	bne.w	.l108F8
 	dc.w	$33FC,$0003,$0001,$8C02
@@ -294,7 +294,7 @@ Sub_2B60E
 	clr.w	$180E4.l
 	dc.w	$4279,$0001,$80EC
 	bsr.w	restoreteams
-	dc.w	$4EB9,$0003,$CB50
+	jsr	(InitScores).l
 	jsr	$3E91C.l
 	jsr	(LoadCrowdRec).l
 	jmp	$35A94.l
@@ -324,7 +324,7 @@ ResetClock						;set period length and stop clock
 	dc.w	$33C0,$0001,$80EA
 	dc.w	$33C0,$0001,$747E
 	asr.w	#$1,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	dc.w	$9179,$0001,$747E
 	bset	#$0,$17F68.l
 	rts
@@ -361,7 +361,7 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	bra.w	L10AB0
 Gameloop						;Main loop for game
 	moveq	#$1B,d0
-L10AB0	jsr	(Sub_362E4).l
+L10AB0	jsr	(assreplace).l
 	bset	#$2,$17F6C.l
 	bclr	#$4,$17F6A.l
 	move.w	#$FFFF,(lastsfx).l
@@ -378,7 +378,7 @@ L10AB0	jsr	(Sub_362E4).l
 	dc.w	$33FC,$0000,$0001,$A56E
 	jsr	(ChooseSong).l
 	dc.w	$3F39,$0001,$A56A
-	dc.w	$4EB9,$0003,$71D2
+	jsr	(song).l
 	move.w	$1745E.l,$19364.l
 	movea.l	$FF8000.l,a5
 	move.w	#$12,d0
@@ -402,7 +402,7 @@ DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	beq.w	DoGameFrame
 	dc.w	$33F9,$0001,$7474,$0001,$7476
 	bsr.w	periodicevents
-	bsr.w	Sub_2F98A
+	bsr.w	updateplayers
 	dc.w	$4A79,$0001,$AD6E
 	beq.w	.nosong
 	bmi.w	.nosong
@@ -410,28 +410,28 @@ DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	bne.w	.nosong
 	jsr	$47DB0.l
 	dc.w	$3F39,$0001,$AD70
-	dc.w	$4EB9,$0003,$71D2
+	jsr	(song).l
 .nosong	jsr	$25000.l
-	bsr.w	Sub_300B2
+	bsr.w	checkwindow
 	bsr.w	updatereplay
-	dc.w	$4EF9,$0003,$DD16
+	jmp	(setvideo).l
 periodicevents						;Called every time thru game loop with d7 = elapsed frames
-	dc.w	$4EB9,$0003,$94F2
+	jsr	(PenaltyManager).l
 	bsr.w	updatecrowdf
 	jsr	(RunArenaAnim).l
-	dc.w	$4EB9,$0003,$E8CE
+	jsr	(updatesound).l
 	bsr.w	clockcont
 	btst	#$7,$17F6A.l
 	bne.w	Sub_2F988
 	dc.w	$9F79,$0001,$747C
 	bpl.w	Sub_2F988
 	dc.w	$0679,$0018,$0001,$747C
-	dc.w	$4EB9,$0003,$5012
+	jsr	(ChkGoalies).l
 	bsr.w	UpdateCwdExcite
 	bsr.w	CheckLateGameSong
 	bsr.w	RestoreBenchEnergy
 	bsr.w	.l10C44
-	dc.w	$4EF9,$0003,$C2D0
+	jmp	(updatepwrplay).l
 .l10C44	subi.w	#$1,$1806A.l
 	bne.w	Sub_2F988
 	jmp	$40D50.l
@@ -465,7 +465,7 @@ CheckLateGameSong						;Called once per second. 3rd period: choose and play a so
 	dc.w	$33FC,$0005,$0001,$A56E
 	jsr	(ChooseSong).l
 	dc.w	$3F39,$0001,$A56A
-	dc.w	$4EB9,$0003,$71D2
+	jsr	(song).l
 .l10CEC	rts
 UpdateCwdExcite						;called once per second. Track peak and running total of crowd excitement,
 	
@@ -549,12 +549,12 @@ clockcont						;monitor period clock and initiate various clock activated events
 	bset	#$3,(disflags).l
 	jsr	$47DB0.l
 	move.w	#$4,-(sp)
-	dc.w	$4EB9,$0003,$710C
+	jsr	(sfx).l
 	bsr.w	freezewindow
 clockcont_0						;End of period. Also entered from puckfaceoff
 	dc.w	$267C,$0001,$7B80
 	dc.w	$203C,$0000,$0018
-	dc.w	$4EB9,$0003,$62D8
+	jsr	(Sub_362D8).l
 	cmpi.w	#$2,$180E4.l
 	blt.w	.l10F98
 	dc.w	$203C,$0000,$0007
@@ -591,7 +591,7 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	adda.w	#$300,a3
 .t2	tst.w	$34(a3)
 	ble.w	.l10F62
-	dc.w	$4EB9,$0003,$62D8
+	jsr	(Sub_362D8).l
 	dc.w	$203C,$0000,$0007
 .l10F62	adda.w	#$80,a3
 	dbra	d2,.t2
@@ -601,23 +601,23 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	bset	#$6,$17F68.l
 	jsr	(ClearPenalties).l
 	move.w	#$4,d0
-	dc.w	$4EF9,$0003,$9456
+	jmp	(AddPenalty2).l
 .l10F98	cmpi.w	#$3,$180E4.l
 	bne.w	.l10FAE
 	dc.w	$4A79,$0001,$8BFA
 	beq.w	.eog
 .l10FAE	move.w	#$2,d0
-	dc.w	$4EF9,$0003,$9456
+	jmp	(AddPenalty2).l
 demoread						;monitor joystick if in demo mode (called every game loop)
 	dc.w	$4A79,$0001,$7FA6
 	bne.w	Sub_2F988
 	dc.w	$4A79,$0001,$7FA8
 	bne.w	Sub_2F988
-	dc.w	$4EB9,$0003,$74F0
+	jsr	(ReadJoy1).l
 	btst	#$7,d1
 	bne.w	Sub_2C022
 	bsr.w	EndDemoOnPress
-	dc.w	$4EB9,$0003,$750E
+	jsr	(ReadJoy2).l
 	btst	#$7,d1
 	bne.w	Sub_2C034
 	dc.w	$4A79,$0001,$8BF8
@@ -650,7 +650,7 @@ Sub_2C060
 	dc.w	$33FC,$0004,$0001,$7F94
 	bset	#$1,$17F6A.l
 	bra.w	L11042
-L11074	jsr	(Sub_36D0A).l
+L11074	jsr	(forceblack).l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0
 .l11082	cmp.w	(ScoutSubStatus).l,d0
@@ -671,16 +671,16 @@ L11074	jsr	(Sub_36D0A).l
 .l110CE	bsr.w	Sub_2C2F8
 .l110D2	bsr.w	MenuWaitVblank
 	bsr.w	Sub_2F2F0
-	dc.w	$4EB9,$0003,$E1CE
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(showclock).l
+	jsr	(ProcessInputWithRepeat).l
 	bsr.w	HandleMenuInput
 	bne.w	.l110D2
-	dc.w	$4EB9,$0003,$6D0A
+	jsr	(forceblack).l
 	move.w	(sp)+,$17F6A.l
 	btst	#$7,$17F6A.l
 	beq.w	.l11116
 	jsr	$3ECB8.l
-	dc.w	$4EB9,$0003,$C40A
+	jsr	(SetHor).l
 	bra.w	.l1111C
 .l11116	jsr	(ClrHor).l
 .l1111C	movea.l	#$C00000,a0
@@ -710,8 +710,8 @@ L11074	jsr	(Sub_36D0A).l
 	bclr	#$7,$FF800F.l
 	bset	#$3,(disflags).l
 	bclr	#$0,$17F6A.l
-	dc.w	$4EB9,$0003,$C48C
-	dc.w	$4EB9,$0003,$DD16
+	jsr	(printscores1).l
+	jsr	(setvideo).l
 	move.w	#$18,(palcount).l
 .l111E2	tst.w	(palcount).l
 	bpl.w	.l111E2
@@ -742,16 +742,16 @@ L11074	jsr	(Sub_36D0A).l
 .l11288	btst	#$6,$FF800E.l
 	bne.b	.l11288
 	bclr	#$7,$FF800F.l
-	dc.w	$4EB9,$0003,$C40A
-	dc.w	$4EB9,$0003,$DD16
+	jsr	(SetHor).l
+	jsr	(setvideo).l
 	jsr	$48208.l
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$03,$FD,$00,$FC,$00
 	moveq	#$20,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
-	dc.w	$4EF9,$0003,$8C06
+	jmp	(eraser).l
 seta2						;Set a2 to the team struct of the pause joystick also called from
 	
 	movea.l	#tmstruct,a2
@@ -772,12 +772,12 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 	
 	dc.w	$2079,$0001,$8ADA
 	jsr	(a0)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font2,$4,$FC,$C
 	bsr.w	SetMenuPrintX
 	moveq	#$16,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	bsr.w	Pausemode_Pmenu
 	move.w	#$18,(palcount).l
 .l1133E	tst.w	(palcount).l

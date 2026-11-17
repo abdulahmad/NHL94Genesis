@@ -1,5 +1,5 @@
 Sub_338E8
-	bsr.w	Sub_338B6
+	bsr.w	chkpk
 	bne.w	Sub_33986
 	tst.w	$17E34.l
 	beq.w	Sub_33986
@@ -33,7 +33,7 @@ Sub_33986
 	btst	#$1,$64(a3)
 	beq.w	.l189D2
 	move.w	#$1E,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	addi.w	#$82,d0
 	dc.w	$B079,$0001,$7B94
 	blt.w	.l189B8
@@ -42,7 +42,7 @@ Sub_33986
 	bgt.w	.l189B8
 	bra.w	.l189D2
 .l189B8	move.w	#$2,d0
-	dc.w	$4EB9,$0003,$7044
+	jsr	(randomd0s).l
 	add.w	$54(a3),d0
 	andi.w	#$7,d0
 	move.w	d0,$54(a3)
@@ -127,7 +127,7 @@ CompShoot						;computer shot: drop the return address and aim from the puck's d
 	moveq	#$14,d1
 .0	move.w	d1,$42(a3)
 	moveq	#$12,d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 chk4pass						;player a3 looks for good pass (computer controlled)
 	tst.w	$17E34.l
 	bne.w	.dp0		;an opponent is close: always consider a pass
@@ -217,7 +217,7 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	tst.w	$34(a3)
 	beq.w	Sub_31AB6
 	adda.w	#$4,sp
-	bra.w	Sub_362C4
+	bra.w	assexit
 	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439
 	dc.w	$0001,$7BA8,$4882,$D46B,$0000,$9479,$0001,$7B80
 	dc.w	$0C42,$0028,$6E00,$DE22,$0C42,$FFD8,$6D00,$DE1A
@@ -281,7 +281,7 @@ assbreakaway						;assignment for a breakaway: the puck carrier skates in, anyon
 	beq.w	assnearest		;branch if puck carrier
 L18DEA	bclr	#$1,$64(a3)		;clear breakaway bit
 	move.w	#$11,d0		;11 - assnearest
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	bra.w	L18E06
 assnearest						;this is a special assignment used for the player who is nearest the puck
 									;but doesn't have it. Assignment anearest ($11)
@@ -302,14 +302,14 @@ L18E06	bclr	#$2,$17F74.l
 	jsr	(BreakawayOffsidesFlagSet).l
 	beq.w	.chkbreak
 	move.w	#$22,d0		;22 - assbreakaway if flag set
-	bsr.w	Sub_362E4		;assreplace with assbreakaway
+	bsr.w	assreplace		;assreplace with assbreakaway
 	bra.w	.chkbreak
 .chkbreak	bclr	#$1,$62(a3)		;pfna - clear new assignment
 	beq.w	.nna
 	btst	#$1,$64(a3)		;check if breakaway
 	beq.w	.chkbreak2		;jump if not
 	move.w	#$2,-(sp)		;ding SFX
-	dc.w	$4EB9,$0003,$710C
+	jsr	(sfx).l
 .chkbreak2	btst	#$1,$64(a3)		;check if breakaway
 	beq.w	.nobreak		;jump if not
 	movem.l	a2,-(sp)		;push a2 to stack
@@ -328,7 +328,7 @@ L18E06	bclr	#$2,$17F74.l
 	cmp.w	$17BE0.l,d1
 	bne.w	.nopc		;jumps if not
 	tst.w	$34(a3)		;check if goalie
-	beq.w	Sub_32926		;branch if goalie
+	beq.w	checkanim		;branch if goalie
 	moveq	#$10,d0
 	btst	#$3,$62(a3)		;pfjoycon - check if controlled
 	beq.w	Sub_362D8		;jump if not
@@ -419,7 +419,7 @@ L18E06	bclr	#$2,$17F74.l
 	moveq	#$11,d0
 	bsr.w	Sub_362D8		;... and give him the assnearest assignment
 	exg.l	a1,a3
-	bra.w	Sub_362C4		;I (old a3) drop this assignment
+	bra.w	assexit		;I (old a3) drop this assignment
 .de1	btst	#$5,$62(a3)		;pfalock - check if locked in animation
 	bne.w	Sub_31AB6		;exit if locked
 	moveq	#$2,d1		;move 2 into d1
@@ -448,7 +448,7 @@ L18E06	bclr	#$2,$17F74.l
 	btst	#$5,$17F70.l		;check bit 5
 	beq.w	.nodec2		;jump if not set
 .gmclock	btst	#$0,$17F68.l		;check if clock running
-	bne.w	Sub_31EB2		;branch if not
+	bne.w	donothing		;branch if not
 .nodec2	btst	#$3,$62(a3)		;pfjoycon - check if controlled
 	bne.w	Sub_31AB6		;jump if controlled
 	btst	#$2,$32(a2)		;tmfmid of tmflags(a2)
@@ -597,9 +597,9 @@ asspassrec						;assignment for catching a pass (apassrec)
 	btst	#$5,$62(a3)		;pfalock - animation lock
 	bne.w	Sub_31AB6		;exit if locked
 	btst	#$0,$17F68.l		;gmclock - check if clock running
-	bne.w	Sub_31EB2		;exit if clock stopped
+	bne.w	donothing		;exit if clock stopped
 	btst	#$3,$62(a3)		;pfjoycon - joystick controlled?
-	bne.w	Sub_362C4		;exit if controlled
+	bne.w	assexit		;exit if controlled
 	bclr	#$1,$62(a3)		;#pfna - clear new assignment
 	beq.w	.nna
 	bset	#$0,$62(a3)		;#pfdoff - set decceleration off
@@ -637,27 +637,27 @@ asspassrec						;assignment for catching a pass (apassrec)
 	bgt.w	.nozone
 	bra.w	.atkzone
 .nozone	move.w	#$8,d0		;outside of attack zone
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	tst.w	d0		;check if d0 is zero
 	bne.w	.pop
 .atkzone	move.w	(sp)+,d0
 	dc.w	$33FC,$FFFF,$0001,$AD7A
 	move.w	#$23,d0
-	dc.w	$4EF9,$0003,$62E4
+	jmp	(assreplace).l
 .pop	move.w	(sp)+,d0
 .ex2	sub.b	d7,$40(a3)
 	bpl.w	Sub_31AB6
 .exit	bclr	#$0,$62(a3)
-	bra.w	Sub_362C4
+	bra.w	assexit
 	dc.w	$302B,$0044,$322B,$0046,$41FA,$7BCA,$6000,$1BCE
 assshoot						;assignment for computer shooting. Assignment ashoot ($12)
 	btst	#$5,$62(a3)		;pfalock - animation locked
 	bne.w	Sub_31AB6
 	bclr	#$1,$62(a3)		;clear pfna
 	beq.w	.nna
-	bra.w	Sub_313CA		;first frame: start the shot (temp2 = swing time set by CompShoot)
+	bra.w	SetShotMode		;first frame: start the shot (temp2 = swing time set by CompShoot)
 .nna	btst	#$3,$17F6A.l		;#sfssdir
-	beq.w	Sub_362C4		;no: the shot is done
+	beq.w	assexit		;no: the shot is done
 	clr.w	d2
 	sub.w	d7,$42(a3)		;count the swing time down
 	bpl.w	ShotMode		;still swinging: feed ShotMode no buttons
@@ -718,14 +718,14 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 	st.b	$42(a3)
 .selectskater	bset	#$2,$17F70.l
 	movem.w	d1-d2,-(sp)
-	dc.w	$4EB9,$0003,$4666
+	jsr	(SelectPenaltyShotSkater).l
 	bmi.w	.noeligible
 	movem.w	(sp)+,d1-d2
 	bra.w	.checkgoalie
 .noeligible	movem.w	(sp)+,d1-d2
 	bclr	#$2,$17F70.l
 	move.w	#$1B,d0		;puckfaceoff
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	rts
 .checkgoalie	movem.w	d1-d2,-(sp)
 	dc.w	$3039,$0001,$936A
@@ -759,4 +759,4 @@ puckshootout						;puck logic for the shootout: on a new assignment clear the pa
 .startpenshot	movem.w	(sp)+,d1-d2
 	movea.l	#tmstruct,a2
 	move.w	#$1F,d0		;puckpenshot
-	bra.w	Sub_362E4
+	bra.w	assreplace

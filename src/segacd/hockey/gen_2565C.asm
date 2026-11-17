@@ -499,7 +499,7 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 .l25DA4	jsr	(printz).l
 	dc.w	$0022
 	dc.b	$BF,$0C,$04,$49,$6E,$6A,$75,$72,$79,$20,$74,$6F,$3A,$BF,$0C,$06,$4F,$75,$74,$20,$66,$6F,$72,$20,$67,$61,$6D,$65,$BF,$0C,$05,$00
-.l25DCC	bsr.w	Sub_4116C
+.l25DCC	bsr.w	GetPlayerNumInitial
 	jsr	(print).l
 	btst	#$0,$17BE3.l
 	beq.w	.l25DF6
@@ -697,7 +697,7 @@ Sub_4112E
 	movea.l	#mesarea,a1
 	movem.l	(sp)+,d0-d3/a0/a2-a3
 	rts
-Sub_4116C
+GetPlayerNumInitial
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
 	dc.w	$3039,$0001,$80EE

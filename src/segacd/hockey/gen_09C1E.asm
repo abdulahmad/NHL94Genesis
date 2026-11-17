@@ -6,7 +6,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 									;his user records (PrintRecordValue, PrintRecordHolder, PrintRecordVs).
 									;Called from PlayerCardTimer
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3
 	move.w	#$1C,(printx).l		;visitors: erase the other logo box at $1C
 	btst	#$1,$19390.l		;which side?
@@ -16,8 +16,8 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	#$8,d0		;clear the 8 x 8 logo area
 	move.w	#$8,d1
 	move.w	#$7FF,d2		;blank char
-	dc.w	$4EB9,$0003,$8C06
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(eraser).l
+	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3
 	move.w	#$3,(printx).l
 	btst	#$1,$19390.l
@@ -27,7 +27,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	#$19,d0		;clear the 25 x 8 card area
 	move.w	#$8,d1
 	move.w	#$7FF,d2		;blank char
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	btst	#$1,$19390.l		;which side?
 	bne.w	.2
 	bsr.w	TeamLogoBitmapsEnd		;home logo box
@@ -78,10 +78,10 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.l	$BBCD2.l,-(sp)		;keep palette colors $22-$29: dobitmap overwrites them
 	move.l	$BBCD6.l,-(sp)
 	move.w	#$2,d5
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	move.l	(sp)+,$BBCD6.l
 	move.l	(sp)+,$BBCD2.l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$0,$0		;(the routine here)
 	move.w	#$6000,(printa).l
 	move.w	#$3,(printx).l
@@ -96,7 +96,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	addi.w	#$1,$193A4.l
 	move.w	(printy).l,$193A6.l
 	addi.w	#$1,$193A6.l
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	move.w	$193A4.l,(printx).l		;text inside the frame
 	move.w	$193A6.l,(printy).l
 	move.w	#$0,(printa).l
@@ -122,13 +122,13 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	adda.w	(a2),a2
 	move.b	(a2),d0
 	ext.w	d0
-	dc.w	$4EB9,$0004,$12A8
+	jsr	(ConvertByteToDigits).l
 	move.w	#$2000,$4(a3)
 	movea.l	(sp)+,a1
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movea.l	a3,a1
 	bset	#$3,(sflags6).l
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 	movea.l	#mesarea,a1
 	move.w	$193A8.l,d0
@@ -141,29 +141,29 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	$193A4.l,(printx).l		;left edge of the text
 	addi.w	#$2,(printy).l		;two rows down
 	bset	#$3,(sflags6).l		;card font
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 	movea.l	#mesarea,a1
 	move.w	$193A8.l,d0
 	move.w	$19396.l,d1
 	dc.w	$207C,$0000,$C45C
-	dc.w	$4EB9,$0002,$591A
+	jsr	(PrintRecordHolder).l
 	move.w	$193A4.l,(printx).l
 	cmpi.w	#$2,(a1)		;no record holder: skip the line
 	beq.w	.11
 	addi.w	#$1,(printy).l
 	bset	#$3,(sflags6).l		;card font
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 .11	movea.l	#mesarea,a1
 	move.w	$193A8.l,d0
 	move.w	$19396.l,d1
 	dc.w	$207C,$0000,$C45C
-	dc.w	$4EB9,$0002,$5962
+	jsr	(PrintRecordVs).l
 	move.w	$193A4.l,(printx).l		;left edge of the text
 	addi.w	#$1,(printy).l
 	bset	#$3,(sflags6).l		;card font
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 .fade	move.w	#$64,(palcount).l		;fade the palette in over $64 frames
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -224,7 +224,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	bsr.w	AppendNumber
 	movea.l	(sp),a3
 	movea.l	#TempBuffer,a1
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	dc.w	$3039,$0001,$7E64
 	movea.l	#$25808,a1
 	cmpi.w	#$1,d0
@@ -237,7 +237,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	bne.w	.lA7E0
 	movea.l	#$25800,a1
 .lA7E0	movea.l	(sp)+,a3
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 .lA7E8	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 	dc.w	$000A,$5265,$636F,$7264,$2000,$0008,$2067,$6F61
@@ -360,7 +360,7 @@ PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opp
 	movea.l	#TempBuffer,a1
 	bsr.w	AppendRecordVs		;user name and opponent
 	movea.l	(sp)+,a3
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 	dc.w	$0006,$7673,$2E20
@@ -407,9 +407,9 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	bsr.w	AppendUserName
 	movea.l	a1,a3
 	dc.w	$227C,$0002,$5A4A
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movem.l	(sp)+,d0/a1
 	move.b	$2(a0),d0
-	dc.w	$4EB9,$0002,$60E0
+	jsr	(AppendTeamName).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

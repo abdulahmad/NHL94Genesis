@@ -189,7 +189,7 @@ OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puck
 	mulu.w	d1,d0
 	swap	d0
 	andi.l	#$FFFF0000,d0
-	dc.w	$4EB9,$0003,$708E
+	jsr	(Sroot).l
 	dc.w	$33C0,$0001,$7BAC
 	ext.l	d0
 	move.w	#$3,d4
@@ -211,7 +211,7 @@ OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puck
 	dc.w	$33C1,$0001,$7BAA
 	dc.w	$267C,$0001,$7B80
 	dc.w	$3039,$0001,$7BAC
-	dc.w	$4EB9,$0003,$5EF8
+	jsr	(puckflip).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing from
@@ -260,10 +260,10 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	neg.w	d1
 	neg.w	d2
 .l786A	move.w	#$A,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	add.w	d0,d1
 	move.w	#$A,d0
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	add.w	d0,d2
 	dc.w	$33C1,$0001,$9376
 	tst.w	$34(a3)
@@ -315,7 +315,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	
 	
 	dc.w	$33FC,$0004,$0001,$7E2C
-	dc.w	$4EB9,$0003,$1528
+	jsr	(doshot).l
 	movem.l	d0/a0,-(sp)
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a3)
@@ -436,7 +436,7 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	dc.w	$3039,$0001,$7CD8
 	ext.l	d0
 	asl.w	#$2,d0
-	dc.w	$4EB9,$0003,$708E
+	jsr	(Sroot).l
 	addi.w	#$41,d0
 	dc.w	$33C0,$0001,$7F8C
 	dc.w	$B079,$0001,$7F92
@@ -508,7 +508,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	cmpi.l	#$42,d3
 	bls.w	.exit
 	exg.l	d0,d3
-	dc.w	$4EB9,$0003,$708E
+	jsr	(Sroot).l
 	exg.l	d0,d3
 	ext.l	d0
 	asl.l	#$8,d0
@@ -545,7 +545,7 @@ Create_HotCold_Table						;Fill the hot / cold table (tmHotCold) of team struct 
 	move.w	#$19F,d1
 HotColdLoop						;The Create_HotCold_Table loop
 	move.w	#$9,d0
-	dc.w	$4EB9,$0003,$7044
+	jsr	(randomd0s).l
 	move.l	a0,-(sp)
 	adda.l	#$1A4,a0
 	move.b	d0,(a0,d1.w)

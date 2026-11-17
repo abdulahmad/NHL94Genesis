@@ -440,7 +440,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	move.l	a0,-(sp)
 	clr.w	$18374.l
 	clr.w	$186DA.l
-	dc.w	$4EB9,$0003,$F11E
+	jsr	(clearTeamStats).l
 	jsr	(restoreteams).l
 	dc.w	$50F9,$0001,$7F9E
 	dc.w	$50F9,$0001,$7FA0
@@ -470,7 +470,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	st.b	$17E38.l
 	st.b	$17E3C.l
 	jsr	$47DAC.l
-	bsr.w	Sub_3EB3C
+	bsr.w	setupice_highlight
 	move.w	#$1,$17468.l
 	bsr.w	ClrHor
 	move.w	#$0,$17468.l
@@ -510,7 +510,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	.l22326
 	adda.w	#$366,a2
 	bsr.w	.l22326
-	bsr.w	Sub_3F0C6
+	bsr.w	resetplstuff
 	moveq	#$B,d0
 	movea.l	#$3D3F6,a0
 	dc.w	$227C,$0001,$7480
@@ -566,7 +566,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	movem.l	(sp)+,d1/a0
 	dc.w	$3179,$0001,$8358,$000A
 	dc.w	$3179,$0001,$86BE,$000C
-	bsr.w	Sub_36D0A
+	bsr.w	forceblack
 	moveq	#$F,d0
 	dc.w	$207C,$0001,$7480
 .l22282	clr.w	$0(a0)
@@ -575,7 +575,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	.l223D8
 	bsr.w	Sub_3F24C
 	bsr.w	SetHor
-	bsr.w	Sub_3DD16
+	bsr.w	setvideo
 	jsr	$2C1F8.l
 	jsr	(DrawMenuScreen).l
 	move.w	#$18,(palcount).l
@@ -608,7 +608,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .l2231E	bsr.w	.l2234A
 	bra.w	.l2230C
 .l22326	jsr	(reenergizeteam).l
-	bsr.w	Sub_3D426
+	bsr.w	setpersonel
 	bsr.w	forcepldata
 	st.b	$18(a2)
 	bclr	#$7,$17F7C.l
@@ -653,7 +653,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4
 	dc.w	$0019,$FFD8,$0046,$FFB0,$0000,$00F0,$0022,$005A
 	dc.w	$FFC9,$0050,$0064,$0028,$FFF6,$000A,$FFCE,$0000
-Sub_3D426
+setpersonel
 	movem.l	d0-d5/a0-a4,-(sp)
 	movea.l	$22(a2),a3
 	moveq	#$5,d4
@@ -753,7 +753,7 @@ SetPlList						;create PlList of players who we want on the ice now. a2 = team s
 	beq.w	.l22570
 .l22584	dbra	d4,.l2252E
 	rts
-.l2258A	jsr	(Sub_2EDBC).l		;then try the players from d0 down
+.l2258A	jsr	(GetPlayerCount).l		;then try the players from d0 down
 	move.w	d0,d3
 .l22592	move.w	d3,d0		;d0 = candidate player number, d3 counts down
 	subi.w	#$1,d3
@@ -793,7 +793,7 @@ SetupPenaltyShot						;Penalty shot set up for team a2 (called from puckpenshot)
 	beq.w	.l22636
 	bset	#$2,$63(a3)		;set player unavailable
 	move.w	#$20,d0		;assgoaliebreakwait
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	bra.w	.l22652
 .l22618	bsr.w	Setplass
 	move.b	$61(a3),$17F9C.l
@@ -883,7 +883,7 @@ Setplass						;set players (a3) initial assignment from .alist by position
 	bmi.w	rtss2
 	dc.w	$41FA,$000A
 	move.b	(a0,d0.w),d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 	dc.w	$0E02		;assgoalie
 setplayer						;bring player onto the ice and set his attributes. d3 = offset of player
 									;on roster, a3 = sortcord of player. Reads the roster bytes through

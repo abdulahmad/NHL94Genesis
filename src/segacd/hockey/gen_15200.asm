@@ -1,4 +1,4 @@
-Sub_30200
+doinput
 	btst	#$4,d1
 	beq.w	.l1521E
 	btst	#$5,d1
@@ -84,7 +84,7 @@ Sub_30200
 	dc.w	$33C4,$0001,$AD7A
 	move.w	$17F96.l,$1AD7C.l
 	move.w	#$23,d0
-	dc.w	$4EB9,$0003,$62E4
+	jsr	(assreplace).l
 	movem.l	(sp)+,d0-d2/a0/a3
 	rts
 .l15396	movem.l	(sp)+,d0-d2/a0/a3
@@ -207,8 +207,8 @@ Sub_30200
 	movem.l	(sp)+,d0/a3
 	bne.w	Sub_30606
 	tst.w	d4
-	beq.w	Sub_312B8
-	bra.w	Sub_312DC
+	beq.w	setc1player
+	bra.w	setc2player
 .l155C2	tst.w	$34(a3)
 	bne.w	doinput_onetimer
 	btst	#$6,d1
@@ -219,7 +219,7 @@ Sub_30200
 	move.w	d0,$54(a3)
 	move.b	#$8,$5E(a3)
 	move.w	#$2F4,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	bset	#$1,$63(a3)
 	bset	#$5,$62(a3)
 	addi.w	#$96,(Crowdlevel).l
@@ -342,7 +342,7 @@ Sub_307D8
 	beq.w	.l157E4
 	rts
 .l157E4	tst.w	$34(a3)
-	bne.w	Sub_363D6
+	bne.w	doplayeracc
 	bclr	#$1,$17F70.l
 	cmpi.w	#$24,$0(a3)
 	ble.w	.l15816
@@ -375,14 +375,14 @@ Sub_307D8
 .l15876	btst	#$1,$17F70.l
 	bne.w	Sub_30606
 	dc.w	$3039,$0001,$7E62
-	bra.w	Sub_363D6
+	bra.w	doplayeracc
 doinput_onetimer						;a3 is set for a one-timer: C (bit 5) starts the one-timer shot, else
 									;skate
 	dc.w	$3039,$0001,$7E62
 	btst	#$3,$64(a3)
 	bne.w	Sub_30A6E
 	btst	#$5,d1
-	beq.w	Sub_363D6
+	beq.w	doplayeracc
 	movem.l	d7/a0,-(sp)
 	dc.w	$3E39,$0001,$7E2A
 	asl.w	#$7,d7
@@ -404,7 +404,7 @@ doinput_onetimer						;a3 is set for a one-timer: C (bit 5) starts the one-timer
 	dc.w	$33C4,$0001,$AD7A
 	move.w	$17F96.l,$1AD7C.l
 	move.w	#$23,d0
-	dc.w	$4EB9,$0003,$62E4
+	jsr	(assreplace).l
 	move.w	(sp)+,d0
 	rts
 doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot by the
@@ -439,7 +439,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 .4	tst.b	$19381.l
 	bne.w	.arel
 	bset	#$3,$17F74.l
-	dc.w	$4EB9,$0003,$0E7C
+	jsr	(setpassmode).l
 	bra.w	Sub_30B08
 .c1	subi.b	#$1,$19380.l
 	bpl.w	.6
@@ -447,7 +447,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 .6	tst.b	$19380.l
 	bne.w	.arel
 	bset	#$3,$17F74.l
-	dc.w	$4EB9,$0003,$0E7C
+	jsr	(setpassmode).l
 	bra.w	Sub_30B08
 .arel	btst	#$6,d3
 	bne.w	.8
@@ -457,11 +457,11 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bra.w	setpassmode
 .8	tst.w	$34(a3)
 	bne.w	.shot
-	bra.w	Sub_363D6
+	bra.w	doplayeracc
 .shot	btst	#$5,d1
-	beq.w	Sub_363D6
+	beq.w	doplayeracc
 	jsr	$2AD3A.l
-	bra.w	Sub_313CA
+	bra.w	SetShotMode
 doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the controlled player
 	move.w	$17BE0.l,d5
 	cmp.w	$52(a3),d5
@@ -520,9 +520,9 @@ faceoffinput						;controller processing for faceoff
 	beq.w	.1		;branch if pressed
 	move.w	#$FEA,d1
 	bset	#$1,$63(a3)		;set anim in progress
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 .1	move.w	#$1014,d1		;#SPAfaceoffr anim
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 Sub_30B06
 	rts
 Sub_30B08
@@ -538,7 +538,7 @@ Sub_30B08
 	bclr	#$2,$17F6A.l
 .l15B42	bclr	#$3,$17F6A.l
 	bset	#$3,$63(a3)
-Sub_30B50
+SetLCmode2
 	bsr.w	setlccords
 	cmpi.w	#$F,(printy).l
 	blt.w	.l15B6C
@@ -562,12 +562,12 @@ Sub_30B50
 .l15BB0	movea.l	#mesarea,a1
 	move.l	#$44120,(a1)
 	add.b	d4,$2(a1)
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	move.w	d0,-(sp)
 	movea.l	#$419F6,a1
-	dc.w	$4EB9,$0003,$CEBE
+	jsr	(Sub_3CEBE).l
 	move.w	(sp)+,d0
-	dc.w	$4EB9,$0003,$C746
+	jsr	(linebar).l
 	subi.w	#$5,(printx).l
 .l15BE4	subi.w	#$1,(printy).l
 .l15BEC	dbra	d4,.l15B8E
@@ -575,7 +575,7 @@ Sub_30B50
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	addi.w	#$2,(printx).l
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 setlccords						;set printx/y to cords for lc box on team a2
 	clr.w	d0
 	cmpa.l	#$1834C,a2
@@ -628,7 +628,7 @@ lineinput						;process input for line changes
 	btst	#$3,$17F74.l
 	beq.w	.0
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$0EC6
+	jsr	(passmode).l
 	movem.l	(sp)+,d0-d7/a0-a6
 .0	move.w	d1,-(sp)
 	movea.l	#tmstruct,a2
@@ -638,7 +638,7 @@ lineinput						;process input for line changes
 .2	bclr	#$0,$32(a2)		;Flag to start lc mode
 	beq.w	.1
 	bsr.w	lcfound_close		;close the old box
-	bsr.w	Sub_30B50		;start lc mode
+	bsr.w	SetLCmode2		;start lc mode
 .1	move.w	(sp)+,d1
 	clr.w	d2
 	btst	#$6,d1
@@ -654,7 +654,7 @@ lineinput						;process input for line changes
 	btst	#$5,$62(a3)
 	bne.w	.x
 	btst	#$0,$63(a3)
-	beq.w	Sub_363D6		;skate with dpad if not fighting
+	beq.w	doplayeracc		;skate with dpad if not fighting
 .x	rts
 Sub_30D64
 	move.w	d2,d0
@@ -668,7 +668,7 @@ Sub_30D64
 	jsr	$3C958.l
 	bclr	#$1,$32(a2)
 	move.w	d0,$16(a2)
-	dc.w	$4EB9,$0003,$D426
+	jsr	(setpersonel).l
 lcfound_close						;close lc box
 	btst	#$7,$17F6A.l
 	bne.w	L15EC4
@@ -679,14 +679,14 @@ lcfound_close						;close lc box
 .nollcm	addi.w	#$1,d1		;d1 = 1 and d2 = $7FF tile: erase the box area
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	dc.w	$4EF9,$0003,$C48C
+	jmp	(printscores1).l
 burst						;cbut press check/speed. Also entered from check4check burst costs energy
 									;$CC (only when line changes are on, OptLine = 0)
-	dc.w	$4EB9,$0003,$C2A0
+	jsr	(getpde).l
 	dc.w	$4A79,$0001,$8C0A
 	bne.w	.0
 	subi.w	#$CC,d0
-	dc.w	$4EB9,$0003,$C2C2
+	jsr	(setpde).l
 	btst	#$4,$17F7A.l
 	beq.w	.0
 	move.w	#$1000,d0
@@ -701,13 +701,13 @@ burst						;cbut press check/speed. Also entered from check4check burst costs en
 	add.w	d1,$2A(a3)		;add to Y Vel
 	bset	#$5,$62(a3)		;lock in this animation
 	move.w	#$C5E,d1
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 Holdplayer						;abut press hold. a0 = the player this one is
 									;assigned to, falls into Acheck
 	bset	#$5,$62(a3)		;lock animation
 	move.w	#$1122,d1		;move anim into d1 - normal hold check
 	tst.w	$32(a3)		;check if impact = 0
-	beq.w	Sub_363C0		;set anim if 0
+	beq.w	SetSPA		;set anim if 0
 	dc.w	$207C,$0001,$7480
 	move.w	$2E(a3),d0		;move last impact player into d0
 	asl.w	#$7,d0		;calc offset
@@ -724,7 +724,7 @@ Acheck						;start SPAhook, or SPAHold if a0 is ahead
 	neg.w	d0		;make d0 negative
 .air	bmi.w	.ex
 	move.w	#$C90,d1		;set anim - hold check stick in air
-.ex	bra.w	Sub_363C0
+.ex	bra.w	SetSPA
 setpassmode						;initialize pass mode
 	dc.w	$33EB,$0054,$0001,$7E2C
 	dc.w	$0279,$0007,$0001,$7E2C
@@ -855,7 +855,7 @@ dopass						;pass the puck in passdir, to the best teammate there if any
 	bsr.w	Findhittype
 	beq.w	.e1
 	move.w	#$78A,d1
-.e1	bsr.w	Sub_363C0		;start the pass animation d1
+.e1	bsr.w	SetSPA		;start the pass animation d1
 	bset	#$5,$62(a3)		;#pfalock, $62 = pflags
 	moveq	#$C,d0		;Rest to rts, not in NHL Hockey Source
 	dc.w	$9039,$0001,$7BAC

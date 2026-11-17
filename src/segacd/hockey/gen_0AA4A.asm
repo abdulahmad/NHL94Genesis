@@ -203,19 +203,19 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 	rts
 .lAD8C	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
-	dc.w	$4EB9,$0002,$ED60
+	jsr	(GetGoalieCount).l
 	move.w	d0,$193AA.l
 	movea.l	#awtmstruct,a2
-	dc.w	$4EB9,$0002,$ED60
+	jsr	(GetGoalieCount).l
 	move.w	d0,$193AC.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .lADBA	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
-	dc.w	$4EB9,$0002,$EDBC
+	jsr	(GetPlayerCount).l
 	move.w	d0,$193AE.l
 	movea.l	#awtmstruct,a2
-	dc.w	$4EB9,$0002,$EDBC
+	jsr	(GetPlayerCount).l
 	move.w	d0,$193B0.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -264,7 +264,7 @@ AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to
 	adda.w	(a0),a0
 	movea.l	a1,a3
 	movea.l	a0,a1
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movem.l	(sp)+,d0/a0-a3
 	rts
 CalcAttrib						;The overall rating of player d0: his attributes weighted by
@@ -440,27 +440,27 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$6,(Map1col).l
 	move.w	#$0,d0
-	dc.w	$4EB9,$0003,$7B5A
+	jsr	(setVram).l
 	bset	#$5,$FF800F.l
-	dc.w	$4EB9,$0003,$7460
+	jsr	(orjoy).l
 	move.w	d4,(framercset).l
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$91234567,$89ABCDEF
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0B3EE.bin
 NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to select letter.",
 									;"A to go back.")
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$1,$14
 	move.w	#$16,d0
 	move.w	#$7,d1
 	move.w	#$7FF,d2		;blank char
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	bchg	#$0,$1A567.l
 	bne.w	.lBA00
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$19,$11
 	movea.l	#$26DD0,a0		;print the 5 rows of 6 letters
 	moveq	#$4,d0		;5 rows
@@ -471,33 +471,33 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	move.b	#$20,(a1)+
 	dbra	d1,.lB8FE
 	movea.l	#mesarea,a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	addi.w	#$2,(printy).l
 	subi.w	#$C,(printx).l
 	dbra	d0,.lB8F2
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2,$1,$14
 	moveq	#$16,d0
 	moveq	#$7,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Framer).l
+	jsr	(printz).l
 	String	CC_Font1Pri,$2,$15,'D-Pad to a letter.'
 	move.w	#$2,(printx).l
 	addi.w	#$1,(printy).l
 	move.w	(printx).l,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'C to select letter.'
 	move.w	(sp),(printx).l
 	addi.w	#$1,(printy).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'A to go back.'
 	move.w	(sp),(printx).l
 	addi.w	#$1,(printy).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'B to cancel.'
 	move.w	(sp)+,(printx).l
 	addi.w	#$1,(printy).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	'START when done.'
 .lB9FA	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -508,11 +508,11 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	move.w	#$28,d0
 	move.w	#$D,d1
 	move.w	#$7FF,d2		;blank char
-	dc.w	$4EB9,$0003,$8C06
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(eraser).l
+	jsr	(printz).l
 	String	CC_Font2,$1,$14
 	moveq	#$16,d0
 	moveq	#$7,d1
-	dc.w	$4EB9,$0003,$8CA0
+	jsr	(Framer).l
 	bsr.w	NameEntryHelp
 	bra.w	.lB9FA

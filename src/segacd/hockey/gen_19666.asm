@@ -120,7 +120,7 @@ UpdatePenaltyShotEnd						;end the penalty shot when the goalie has the puck, th
 	bne.w	L19CC4
 	bset	#$6,$17F70.l
 	move.w	#$A,d0
-	dc.w	$4EB9,$0003,$9456
+	jsr	(AddPenalty2).l
 EndPenaltyShotPlay						;stop play after a penalty shot or shootout attempt: freeze the window,
 									;stop the clock, clear the penalty shot flags
 	jsr	(freezewindow).l
@@ -153,7 +153,7 @@ L19EDC	dc.w	$4A79,$0001,$8C0A
 	dc.w	$B079,$0001,$7FA8
 	beq.w	rtss2
 .l19F06	bsr.w	CompLine
-	dc.w	$4EB9,$0003,$D426
+	jsr	(setpersonel).l
 	bsr.w	printscores1
 	dc.w	$33FC,$2710,$0001,$7F82
 	rts
@@ -193,7 +193,7 @@ WaitForFaceoffLineChanges						;run both teams' faceoff line change timers (temp
 	bsr.w	L19EDC
 	move.w	#$FFFF,$1A568.l
 	move.w	#$1C,d0		;puckfaceoff2
-	bra.w	Sub_362E4
+	bra.w	assreplace
 UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change timer at offset d0 of a3
 	tst.w	(a3,d0.w)
 	bmi.w	rtss2
@@ -207,7 +207,7 @@ UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change tim
 .checkactive	btst	#$3,$63(a0,d1.w)
 	bne.w	.countdown
 	st.b	(a3,d0.w)
-	bra.w	Sub_30B50
+	bra.w	SetLCmode2
 .countdown	sub.w	d7,(a3,d0.w)
 	bpl.w	rtss2
 	move.l	a3,-(sp)
@@ -216,10 +216,10 @@ UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change tim
 	beq.w	.exit
 	clr.w	d2
 	bsr.w	Sub_30D64
-	bsr.w	Sub_30B50
+	bsr.w	SetLCmode2
 .exit	movea.l	(sp)+,a3
 	rts
-	dc.w	$4EF9,$0002,$BE98
+	jmp	(clockcont_0).l
 ChkGoalies						;computer pulls goalie on delayed penalty. Called from periodicevents
 	btst	#$0,$17F68.l		;check if clock running
 	bne.w	rtss2
@@ -242,7 +242,7 @@ ChkGoalies						;computer pulls goalie on delayed penalty. Called from periodice
 	btst	#$3,$17F68.l		;#gmpendel - delayed penalty called
 	beq.w	.l1A070
 	st.b	$28(a2)		;sets to FFFF (no goalie)
-	dc.w	$4EF9,$0003,$D426
+	jmp	(setpersonel).l
 .l1A070	dc.w	$B079,$0001,$7FA6
 	beq.w	rtss2
 	dc.w	$B079,$0001,$7FA8
@@ -285,7 +285,7 @@ CPgoalie						;see if computer should pull his goalie. d1 = puck/faceoff y. Fall
 .0	tst.w	d1
 	bmi.w	rtss2		;exit if d1 negative (faceoff in own zone)
 	st.b	$28(a2)		;set to FFFF (no goalie)
-	dc.w	$4EF9,$0003,$D426
+	jmp	(setpersonel).l
 CompLine						;find good line for comp to switch to. a2 = team, a1 = other team. Called
 									;from chk4lc and puckfaceoff
 	movem.l	d0-d2/a0,-(sp)

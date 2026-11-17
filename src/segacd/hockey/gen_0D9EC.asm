@@ -67,15 +67,15 @@ PrintMatchupRating						;Print the team rating of team a0 (GetTeamRating: the Te
 	movea.l	(sp)+,a2
 	move.l	d0,-(sp)
 	move.w	#$2,d1
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(PushNumberWidth).l
+	jsr	(printsmall).l
 	move.l	(sp)+,d0
 	rts
 PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	move.l	a1,-(sp)
 	move.w	(printx).l,-(sp)
 	dc.w	$227C,$0002,$8B22
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	(sp)+,(printx).l
 	movea.l	(sp)+,a1
 	rts
@@ -176,7 +176,7 @@ DrawMatchupBitmap						;6 x 6 dobitmap, then erase the 8 x 3 name area at y $19 
 	move.w	#$6,d2
 	clr.w	d0
 	clr.w	d1
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	cmpi.w	#$14,(printx).l
 	bgt.w	.0
 	move.w	#$2,(printx).l
@@ -186,7 +186,7 @@ DrawMatchupBitmap						;6 x 6 dobitmap, then erase the 8 x 3 name area at y $19 
 	move.w	#$8,d0
 	move.w	#$3,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	rts
 GetTeamLogo						;Return a0 = the logo bitmap of team d3 (TeamLogoBitmaps table)
 	asl.w	#$2,d3
@@ -203,7 +203,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	
 	tst.w	(matchup).l
 	bne.w	.matchup
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$1,$16,$16,CC_SetFont,$1
 	lea.l	ScoutRatingText(pc),a1
 	move.w	#$0,d7
@@ -219,22 +219,22 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 .0	move.w	#$2,(printfontset).l
 	move.w	(printy).l,-(sp)
 	subi.w	#$3,(printy).l
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	(sp)+,(printy).l
 .1	addi.w	#$1,d7
 	tst.w	(a1)
 	bpl.w	.loop
 	move.w	#$2,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$17,'                                        '
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$22,$16
 	movea.l	#tmstruct,a0
 	movea.l	#awtmstruct,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(homerating).l
 	move.w	#$2,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$4,$16
 	exg.l	a0,a2
 	bsr.w	PrintMatchupRating
@@ -246,9 +246,9 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bra.w	.lDE62
 .lDE60	adda.w	(a1),a1
 .lDE62	dbra	d0,.lDE60
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$1,$D,$13,CC_SetFont,$1
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	#$16,(printy).l
 	move.w	#$2,(printfontset).l
 	movea.l	#tmstruct,a2
@@ -257,9 +257,9 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bne.w	.4
 	move.l	(GAttribOverallMask).l,d4
 .4	move.w	(matchuphome).l,d0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$17,'                                        '
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$23,$17
 	bsr.w	PrintPlayerNameRight
 	bsr.w	CalcAttrib
@@ -268,18 +268,18 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bsr.w	AttribAdjust
 	move.w	#$2,d1
 	move.w	d0,(homerating).l
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(printz).l
 	String	CC_Font1,$22,$16
 	bsr.w	PrintTwoSpaces
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	movea.l	#awtmstruct,a2
 	move.l	(PAttribOverallMask).l,d4
 	tst.w	(matchupslot).l
 	bne.w	.5
 	move.l	(GAttribOverallMask).l,d4
 .5	move.w	(matchupvis).l,d0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$0,$17
 	bsr.w	PrintPlayerNameRight
 	bsr.w	CalcAttrib
@@ -288,11 +288,11 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bsr.w	AttribAdjust
 	move.w	d0,(visrating).l
 	move.w	#$2,d1		;2 digits
-	dc.w	$4EB9,$0003,$919A
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(PushNumberWidth).l
+	jsr	(printz).l
 	String	CC_Font1,$4,$16
 	bsr.w	PrintTwoSpaces
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 .lDF8C	rts
 MatchupPosNames						;Position names of matchups 1-6
 	dc.w	$0012,$2020
@@ -383,9 +383,9 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	bra.w	.3
 .2	movea.l	#EvenAdvTxt,a1
 .3	move.w	#$2,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$13,$16
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	move.w	#$0,(printfontset).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -471,7 +471,7 @@ ScoutStub						;An empty routine
 	rts
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$2,$17F6C.l
-	dc.w	$4EB9,$0003,$0094
+	jsr	(freezewindow).l
 	dc.w	$33FC,$0060,$0001,$AD72
 	dc.w	$267C,$0001,$7480
 	move.w	#$0,d0
@@ -485,7 +485,7 @@ ScoutStub						;An empty routine
 	move.w	#$6,d3
 	bra.w	.lE268
 .lE216	movem.w	d2-d3,-(sp)
-	dc.w	$4EB9,$0003,$D770
+	jsr	(Sub_3D770).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
 	dc.w	$4A79,$0001,$7CEA
@@ -495,7 +495,7 @@ ScoutStub						;An empty routine
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
-	dc.w	$4EB9,$0003,$62D8
+	jsr	(Sub_362D8).l
 	bclr	#$5,$62(a3)
 	bclr	#$1,$63(a3)
 	bclr	#$2,$62(a3)
@@ -642,7 +642,7 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$33C0,$0001,$AD8A
 	move.l	a2,-(sp)
-	dc.w	$4EB9,$0004,$11D6
+	jsr	(FormatPlayerName).l
 	movea.l	a1,a0
 	move.w	(a0),d0
 	move.w	d0,d5
@@ -658,8 +658,8 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 	neg.w	d0
 	add.w	d0,(printx).l
 .lE4D4	movea.l	a0,a1
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movea.l	(sp)+,a2
-	dc.w	$4EB9,$0002,$B3FE
+	jsr	(HotColdIcon).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts

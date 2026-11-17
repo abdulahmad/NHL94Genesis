@@ -699,7 +699,7 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	bmi.w	.l1E5B4
 	bset	#$2,$17F6C.l
 	move.w	(ScoutSubStatus).l,-(sp)
-	bsr.w	Sub_36D0A
+	bsr.w	forceblack
 	move.w	(sp)+,(ScoutSubStatus).l
 	bsr.w	SetHor
 	dc.w	$3839,$0001,$8D56
@@ -739,7 +739,7 @@ PenShotChk						;a3 = checker, a2 = player hit, d0 = penalty. If a2 is on a brea
 	move.w	$52(a2),d2
 	movem.w	d0-d1,-(sp)
 	move.w	d2,d0
-	dc.w	$4EB9,$0003,$96AE
+	jsr	(getBAplayerInfo).l
 	movem.w	(sp)+,d0-d1
 	bpl.w	.l1E6A0
 	bclr	#$3,$17F70.l
@@ -836,7 +836,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bne.w	.l1E800
 	bset	#$5,$17F74.l
 .l1E800	movem.l	d0-d1/a1-a4,-(sp)
-	bsr.w	Sub_3B51E
+	bsr.w	GetPeriodTimeRemaining
 	movea.l	#$1825C,a4
 	dc.w	$D8F9,$0001,$825A
 	dc.w	$0C79,$00EC,$0001,$825A
@@ -897,15 +897,15 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	st.b	(a0)
 	movem.l	(sp)+,a0
 	move.w	#$C,d0
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	movem.l	(sp)+,d0-d1/a1-a4
-	bsr.w	Sub_39C1C
+	bsr.w	SetPA
 	bsr.w	USBoard
 	bra.w	.l1E964
 .l1E90E	clr.w	(a0)
 	btst	#$7,$17F6A.l
 	bne.w	.l1E78A
-	bsr.w	Sub_39C1C
+	bsr.w	SetPA
 	bra.w	.l1E964
 .l1E924	movea.l	#tmstruct,a2
 	bsr.w	InProgress_ap
@@ -918,7 +918,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	btst	#$3,$17F70.l
 	beq.w	.l1E960
 	move.w	#$1E,d0		;puckshootout: penalty shot
-.l1E960	bsr.w	Sub_362E4
+.l1E960	bsr.w	assreplace
 .l1E964	movem.l	(sp)+,d0/a0-a3
 	rts
 InProgress_ap						;a2 = team. Clears tmpdst bit 5, counts players kept off the ice by
@@ -982,7 +982,7 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 .l1EA3E	bset	#$3,$17F68.l
 	bne.w	.l1E9BC
 	move.w	#$2C,d0
-	bsr.w	Sub_39C1C
+	bsr.w	SetPA
 	bra.w	.l1E9BC
 Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spot from
 	
@@ -1043,4 +1043,4 @@ Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spo
 	move.w	#$3,-(sp)
 	bsr.w	sfx
 	move.w	#$A,d0		;whistle (92 used $26)
-	bra.w	Sub_39C1C
+	bra.w	SetPA

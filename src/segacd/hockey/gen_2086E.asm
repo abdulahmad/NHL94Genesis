@@ -75,8 +75,8 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	bclr	#$3,$17F6A.l		;clear shot dir mode
 .l20D2A	move.w	#$6,-(sp)
 	bsr.w	sfx
-	bsr.w	Sub_35D28		;deflect
-	bra.w	Sub_3C246		;no carrier (goalie in the smaller range): one-timer check
+	bsr.w	a2touchpuck		;deflect
+	bra.w	deflect		;no carrier (goalie in the smaller range): one-timer check
 .l20D3A	tst.w	$34(a2)
 	bne.w	.l20D4C
 	cmpi.l	#$40,d0
@@ -190,13 +190,13 @@ puckglue						;part of puckstick that puckgoalie also branches to. Player a2 tak
 	beq.w	.l20F42
 	dc.w	$B279,$0001,$7FA6
 	bne.w	.l20F42
-	jmp	(Sub_312B8).l
+	jmp	(setc1player).l
 .l20F42	dc.w	$B279,$0001,$7FA8
 	bne.w	.l20F52
-	jmp	(Sub_312DC).l
+	jmp	(setc2player).l
 .l20F52	dc.w	$B279,$0001,$7FA6
 	bne.w	rtss2
-	jmp	(Sub_312B8).l
+	jmp	(setc1player).l
 puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckcoll
 									;.ccx). The puck bounces off. A high puck (Zpos > 8) that is fast makes a2
 									;fall (FallDown, Zpos > $C); a slower one starts SPAcatch on a2
@@ -207,7 +207,7 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	move.w	d0,d1
 	andi.w	#$F,d1		;radius^2 from center
 	bne.w	rtss2
-.l20F80	bsr.w	Sub_35D28		;real hit: a2 touched the puck
+.l20F80	bsr.w	a2touchpuck		;real hit: a2 touched the puck
 	move.w	#$24,-(sp)
 	bsr.w	sfx
 	clr.w	$2C(a3)
@@ -232,24 +232,24 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	cmpi.l	#$9000000,d2		;fast puck
 	bls.w	.l20FEA
 	cmpi.w	#$C,$18(a3)
-	bgt.w	Sub_3A9BE
+	bgt.w	FallDown
 	rts
 .l20FEA	bset	#$5,$62(a2)
 	bne.w	rtss2
 	move.w	#$10D0,d1
 	exg.l	a2,a3
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 rtss2						;shared rts
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_21002.bin
-Sub_3C246
+deflect
 	st.b	$17BE0.l
 	move.w	#$1000,d0
-	bsr.w	Sub_37044
+	bsr.w	randomd0s
 	move.w	d0,$2A(a3)
 	move.w	#$1000,d0
-	bsr.w	Sub_37044
+	bsr.w	randomd0s
 	move.w	d0,$28(a3)
 	move.w	#$1000,d0
 	bsr.w	randomd0
@@ -282,7 +282,7 @@ getpde						;get player a3's energy level into d0. Return a2 = his team struct, 
 	add.w	d1,d1
 	move.w	$34(a2,d1.w),d0
 	rts
-Sub_3C2C2
+setpde
 	tst.w	d0
 	bpl.w	.l212CA
 	clr.w	d0

@@ -32,11 +32,11 @@ Sub_32930
 	btst	#$7,$62(a3)
 	beq.w	.l179DE
 	move.w	#$1684,d1
-.l179DE	bsr.w	Sub_363C0
+.l179DE	bsr.w	SetSPA
 	bset	#$1,$63(a3)
 .l179E8	btst	#$5,$62(a3)
 	bne.w	L18056
-	bsr.w	Sub_31906
+	bsr.w	check4bench
 	bclr	#$1,$62(a3)
 	beq.w	.l17A0E
 	clr.w	$40(a3)
@@ -76,7 +76,7 @@ Sub_32930
 	bra.w	.l17AA8
 .l17AA2	move.w	#$0,$54(a3)
 .l17AA8	move.w	#$2,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	btst	#$2,$17F70.l
 	bne.w	.l17AC8
 	btst	#$0,$17F68.l
@@ -206,7 +206,7 @@ Sub_32930
 	move.w	d0,$54(a3)
 	move.b	#$8,$5E(a3)
 	move.w	#$2F4,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	bset	#$1,$63(a3)
 	addi.w	#$96,(Crowdlevel).l
 	rts
@@ -361,7 +361,7 @@ Sub_32930
 .l17F82	move.b	$43(a3),d2
 	ext.w	d2
 	cmpi.w	#$7,d2
-	ble.w	Sub_36878
+	ble.w	playeracc
 	bra.w	stopna
 .l17F94	tst.w	$17BE0.l
 	bpl.w	.l17F34
@@ -515,7 +515,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	cmpi.b	#$B,$73(a3)
 	blt.w	.l18202
 	move.w	#$1AA,d1
-.l18202	bsr.w	Sub_363C0
+.l18202	bsr.w	SetSPA
 	addi.w	#$96,(Crowdlevel).l
 	dc.w	$0679,$000A,$0001,$7CD8
 	asr.w	$28(a3)
@@ -528,10 +528,10 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 assgoalietopuck						;goalie skates out to a loose puck (inserted by
 									;assgoalie)
 	btst	#$3,$62(a3)		;human controlled goalie: nothing to do
-	bne.w	Sub_362C4
+	bne.w	assexit
 	btst	#$0,$17F68.l		;clock stopped: nothing to do
-	bne.w	Sub_362C4
-	bsr.w	Sub_31906
+	bne.w	assexit
+	bsr.w	check4bench
 	bclr	#$1,$62(a3)		;new assignment? (clears the flag)
 	beq.w	.0
 	clr.w	$40(a3)
@@ -545,21 +545,21 @@ assgoalietopuck						;goalie skates out to a loose puck (inserted by
 .1	lsr.b	#$2,d0
 	move.b	d0,$40(a3)		;reload timer = defensive rating / 4
 	tst.w	$17BE0.l
-	bpl.w	Sub_362C4		;someone has the puck: stay
+	bpl.w	assexit		;someone has the puck: stay
 	dc.w	$4A79,$0001,$7BAA
 	btst	#$7,$62(a3)
 	beq.w	.dir
 	eori.b	#$8,ccr		;flip N for the other goal end
-.dir	bmi.w	Sub_362C4		;puck moving away from this goalie
+.dir	bmi.w	assexit		;puck moving away from this goalie
 	movea.l	#tmstruct,a1		;load home team struct into a1
 	lea.l	$366(a1),a2		;load away team struct into a2
 	btst	#$6,$62(a3)		;check if player is home or away
 	beq.w	.t0		;branch if home
 	exg.l	a1,a2		;swap if away
 .t0	cmpi.l	#$E10,$2C(a1)		;each team's nearest distance^2 (tmnear) vs limits
-	blt.w	Sub_362C4
+	blt.w	assexit
 	cmpi.l	#$640,$2C(a2)
-	blt.w	Sub_362C4
+	blt.w	assexit
 .go	bra.w	skatetopuck
 breakaway						;puck carrier a3 on a breakaway: beep on a new assignment and check the
 									;skating direction toward the net
@@ -567,7 +567,7 @@ breakaway						;puck carrier a3 on a breakaway: beep on a new assignment and che
 	bclr	#$1,$62(a3)		;pfna - clear new assignment
 	beq.w	.nna		;jump if no new assignment
 	move.w	#$2,-(sp)		;ding SFX
-	dc.w	$4EB9,$0003,$710C
+	jsr	(sfx).l
 	movem.l	a2,-(sp)		;push a2 on stack
 	movea.l	#tmstruct,a2		;move Home Team Struct into a2
 	btst	#$6,$62(a3)		;pfteam - check if home or away
@@ -649,14 +649,14 @@ chkpuckc						;puck carrier a3: check for a breakaway (not in a shootout or pena
 	bpl.w	asspuckc		;currently skating towards net in Y
 .0	bclr	#$1,$64(a3)		;clear breakaway bit
 	move.w	#$10,d0		;asspuckc
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 asspuckc						;player a3 is puck handler
 	bclr	#$2,$17F74.l
 	bne.w	.0
 	bclr	#$1,$64(a3)
 .0	move.w	$17BE0.l,d0
 	cmp.w	$52(a3),d0
-	bne.w	Sub_362C4
+	bne.w	assexit
 	btst	#$2,$17F70.l
 	beq.w	.1
 	cmpi.w	#$1,$17F98.l
@@ -668,22 +668,22 @@ asspuckc						;player a3 is puck handler
 	jsr	(BreakawayOffsidesFlagSet).l
 	beq.w	.2		;branch if breakaway flag not set
 	move.w	#$21,d0		;chkpuckc assignment
-	bsr.w	Sub_362E4
+	bsr.w	assreplace
 	bra.w	.2
 .2	btst	#$5,$62(a3)
 	bne.w	Sub_337C8
 	btst	#$2,$17F70.l
 	bne.w	.3
 	btst	#$0,$17F68.l
-	bne.w	Sub_31EB2
+	bne.w	donothing
 .3	btst	#$3,$62(a3)
-	bne.w	Sub_362C4
+	bne.w	assexit
 	bclr	#$1,$62(a3)
 	beq.w	.7
 	btst	#$1,$64(a3)
 	beq.w	.4
 	move.w	#$2,-(sp)
-	dc.w	$4EB9,$0003,$710C
+	jsr	(sfx).l
 .4	btst	#$1,$64(a3)
 	beq.w	.6
 	movem.l	a2,-(sp)
@@ -747,7 +747,7 @@ asspuckc						;player a3 is puck handler
 	bra.w	.pass
 .soshot	jsr	$2A84A.l
 	bne.w	.nodec
-	dc.w	$4EB9,$0003,$3AC8
+	jsr	(CompShoot).l
 .pass	bsr.w	chk4pass
 .nodec	moveq	#$6,d0
 	add.w	$44(a3),d0		;add temp3 to d0
@@ -841,11 +841,11 @@ Sub_337F2
 	cmpi.w	#$C00,d0
 	bhi.w	Sub_31AB6
 	bsr.w	CompLine
-	dc.w	$4EB9,$0003,$D426
-	dc.w	$4EB9,$0003,$C48C
+	jsr	(setpersonel).l
+	jsr	(printscores1).l
 	bra.w	CompShoot
 .l188B4	rts
-Sub_338B6
+chkpk
 	btst	#$5,$17F6C.l
 	bne.w	chkpk2
 	eori.b	#$4,ccr

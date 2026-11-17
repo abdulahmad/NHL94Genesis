@@ -105,7 +105,7 @@ Sub_36DF6
 	move.w	(sp)+,(disflags).l
 	movem.l	(sp)+,d0/a0-a1
 	rts
-Sub_37044
+randomd0s
 	move.w	d0,-(sp)
 	asl.w	#$1,d0
 	bsr.w	randomd0
@@ -347,7 +347,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bset	#$7,d1
 	bra.w	.ex
 .resume	move.w	(sp)+,(ScoutSubStatus).l
-.vid	bsr.w	Sub_3DD16
+.vid	bsr.w	setvideo
 	move.w	(ScoutSubStatus).l,d0
 .0	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.0
@@ -573,7 +573,7 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	bsr.w	setVram
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-Sub_37762
+DoDMApro
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	bsr.w	Sub_3777C

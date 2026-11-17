@@ -368,7 +368,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	dbra	d2,.l1D866
 	btst	#$0,(sflags6).l
 	bne.w	.l1D90E
-	dc.w	$4EB9,$0003,$8958
+	jsr	(DecompressGraphicsPlain).l
 .l1D90E	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,(disflags).l
 	move.w	(sp)+,(printy).l
@@ -412,7 +412,7 @@ L1D95E	move.l	a6,-(sp)
 	asl.w	#$4,d0
 	pea.l	$389CA.l
 	tst.l	$18AE4.l
-	beq.w	Sub_37762
+	beq.w	DoDMApro
 	movea.l	$18AE4.l,a1
 	bra.w	Sub_36C14
 .l1D9C0	andi.w	#$7FFF,d0
@@ -435,7 +435,7 @@ DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer
 	movea.l	#ThreeStars,a3
 	movea.l	#$18AE4,a4
 	movea.l	#Sub_36C14,a5
-	movea.l	#Sub_37762,a6
+	movea.l	#DoDMApro,a6
 	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	d1,d3
 	clr.w	d1

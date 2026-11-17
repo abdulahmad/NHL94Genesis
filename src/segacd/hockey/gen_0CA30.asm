@@ -61,12 +61,12 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 	rts
 ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pri,$1,$D
 	move.w	#$6,d1
 	move.w	#$1E,d0
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font1Pri,$2,$E,'SHOOTOUT WON BY'
 	addi.w	#$2,(printy).l
 	move.w	(HomeTeam).l,d1
@@ -79,7 +79,7 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	movea.l	(a1,d1.w),a1
 	adda.w	$4(a1),a1
 	move.w	#$2,(printx).l
-	dc.w	$4EB9,$0003,$926A
+	jsr	(printbig).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ShootoutShooters						;Shootout shooters menu item (menu lists): pick
@@ -88,26 +88,26 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	beq.w	LCC80
 	moveq	#$0,d0
 	moveq	#$1C,d1
-	dc.w	$4EB9,$0002,$E728
+	jsr	(Sub_2E728).l
 	clr.w	(scoutcolumn).l
 	clr.w	(PlayerScrollCtr).l
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$00
 	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
-	bsr.w	Sub_28038
+	jsr	(eraser).l
+	bsr.w	ResetShooterScroll
 	bsr.w	Sub_28046
 	move.w	#$0,(TestList).l
 LCC1E	bsr.w	Sub_27F9C
 	bsr.w	Sub_2813E
 	bsr.w	Sub_280D6
 ShootersLoop						;Shootout shooters: the input loop
-	dc.w	$4EB9,$0002,$C63A
-	dc.w	$4EB9,$0002,$F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(MenuWaitVblank).l
+	jsr	(Sub_2F2F0).l
+	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	LCC80
 	move.w	#$1,d0
@@ -118,10 +118,10 @@ ShootersLoop						;Shootout shooters: the input loop
 	bne.w	ShootersMove
 	move.w	#$0,d0
 	btst	#$2,d1
-	bne.w	Sub_27F54
+	bne.w	ShootersPick
 	move.w	#$5,d0
 	btst	#$3,d1
-	bne.w	Sub_27F54
+	bne.w	ShootersPick
 	btst	#$5,d1
 	bne.w	ShooterSelectList
 	bra.w	ShootersLoop
@@ -135,9 +135,9 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 .0	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a0,d0.w),d6
-	dc.w	$4EB9,$0002,$ED60
+	jsr	(GetGoalieCount).l
 	move.w	d0,d1
-	dc.w	$4EB9,$0002,$EDBC
+	jsr	(GetPlayerCount).l
 	sub.w	d1,d0
 	subi.w	#$1,d0
 	cmpi.w	#$5,(TestList).l
@@ -158,23 +158,23 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	addi.w	#$1,d2
 	dbra	d0,.loop
 	bsr.w	ClearShooterScreen
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$3,$1,$0
 	move.w	#$12,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Framer).l
+	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC
 	move.w	#$12,d0
 	move.w	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Framer).l
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$1,'{Select Player}'
 	clr.w	d0
 	bra.w	.scroll
 .loop2	jsr	(MenuWaitVblank).l
-	dc.w	$4EB9,$0002,$F2F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(Sub_2F2F0).l
+	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	LCC1E
 	btst	#$5,d1
@@ -222,7 +222,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	d0,(a0,d2.w)
 	bra.w	LCC1E
 PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
 .loop	movea.l	#$41C5E,a1
 	cmpi.w	#$5,(TestList).l
@@ -261,14 +261,14 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	move.w	d7,(printa).l
 .6	clr.w	d0
 	move.b	(a3,d2.w),d0
-	dc.w	$4EB9,$0002,$D56A
+	jsr	(GetNameandAttrib).l
 	addi.w	#$1,d2
 	dbra	d1,.loop3
 	rts
 	dc.w	$0012,$2020,$2020,$4F76,$6572,$616C,$6C20,$2020
 	dc.w	$205D,$1F3A,$000A,$0012,$2020,$2020,$4F76,$6572
 	dc.w	$616C,$6C20,$2020,$205D,$1B0F,$000A
-Sub_27F54
+ShootersPick
 	cmp.w	(TestList).l,d0
 	beq.w	ShootersLoop
 	bra.w	LCF8A
@@ -292,7 +292,7 @@ LCF8A	move.w	d0,(TestList).l
 Sub_27F9C
 	bsr.w	ClearShooterScreen
 	movem.l	d0-d5/a0-a2,-(sp)
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3,$0,$0
 	movea.l	(EASportsBGMap).l,a1
 	adda.l	$4(a1),a1
@@ -303,14 +303,14 @@ Sub_27F9C
 	move.w	$2(a1),d3
 	moveq	#$1,d4
 	moveq	#$0,d5
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	movem.l	(sp)+,d0-d5/a0-a2
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$7,$1
 	moveq	#$1A,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font2Pri,$A,$4,'  Shootout  ',CC_Font2Pri,$F,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
@@ -318,44 +318,44 @@ Sub_27F9C
 	move.w	#$2C,d0
 .lD018	jmp	(Sub_2C59E).l
 ClearShooterScreen						;Shootout shooters: erase the screen
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$28,d0
 	moveq	#$A,d1
 	move.w	#$7FF,d2
-	dc.w	$4EF9,$0003,$8C06
-Sub_28038
+	jmp	(eraser).l
+ResetShooterScroll
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
 	rts
 Sub_28046
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font2,$4
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$7,$FC,$C,'Shooters'
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$3,$FC,$E,'1. '
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$3,$FC,$10,'2. '
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$3,$FC,$12,'3. '
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$3,$FC,$14,'4. '
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$3,$FC,$16,'5. '
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$1A,$FC,$C,'Goalie'
 	rts
 Sub_280D6
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
 	moveq	#$3,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(Framer).l
+	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC,$8,CC_Font2,$6
 	dc.w	$227C,$0001,$A41C
 	cmpa.l	#$1834C,a2
@@ -364,16 +364,16 @@ Sub_280D6
 .lD114	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a1,d0.w),d0
-	dc.w	$4EB9,$0004,$112E
+	jsr	(Sub_4112E).l
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
-	dc.w	$4EB9,$0003,$8D9E
+	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	rts
 Sub_2813E
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_Font3,$6,$FC,$E,CC_Font2,$6
 	move.w	#$0,d1
 	dc.w	$207C,$0001,$A41C
@@ -444,9 +444,9 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	movea.l	#TempBuffer,a1
 	bset	#$7,(sflags6).l
 	bsr.w	AppendUserName
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	dc.w	$227C,$0002,$8292
-	dc.w	$4EB9,$0003,$9208
+	jsr	(appstring).l
 	movea.l	a3,a1		;a1 = 'by <name> '
 	bra.w	.lD284
 .lD27E	movea.l	#ScoutEmptyTxt,a1
@@ -494,9 +494,9 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(BuildHotColdLists).l		;hot / cold players for the text
 	clr.w	(advframe).l		;advantage mark frame
 	move.w	#$7A,-(sp)		;song $7A
-	dc.w	$4EB9,$0003,$71D2
+	jsr	(song).l
 	move.l	#vb2,(VBint).l
-	dc.w	$4EB9,$0003,$F11E
+	jsr	(clearTeamStats).l
 	move.l	a0,-(sp)
 	movea.l	#tmstruct,a0
 	jsr	(Create_HotCold_Table).l		;new random hot / cold tables (end of the team structs)
@@ -508,7 +508,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$6,(Map1col).l
 	move.w	#$6,(Map2col).l
 	move.w	#$0,d0		;fade to color
-	dc.w	$4EB9,$0003,$7B5A
+	jsr	(setVram).l
 	move.w	#$2,d4		;vram chars from 2
 	move.w	d4,(homepicchars).l		;home picture chars (6 x 6)
 	addi.w	#$24,d4
@@ -517,20 +517,20 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	d4,(BigFontchars).l
 	movea.l	(BigFontMap).l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05431567,$79ABCDEF
 	dc.w	$4EB9,$0003,$93E8		;remap table
 	move.w	d4,(smallfont2chars).l		;framer tiles (as AddFramer), remapped
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$0A234567,$89ABCDEF
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
 	move.w	d4,(framercset).l
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$05422561,$89ABCDEF
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2,$0,$0
 	movea.l	(EASportsBGMap).l,a0		;the jsr, the string and this (ori.b x4)
 	movea.l	a0,a1		;a1 = map header
@@ -542,28 +542,28 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	moveq	#$28,d2		;40 x 28 background
 	moveq	#$1C,d3
 	moveq	#$3,d5		;color fam 1-2
-	dc.w	$4EB9,$0003,$87E2
-	dc.w	$4EB9,$0003,$9258
+	jsr	(dobitmap).l
+	jsr	(printbigz).l
 	String	CC_Font1Pal2,$C,$D,'MATCHUPS'
 	move.w	#$0,(printfontset).l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1,$10,$11,'ADVANTAGE:'
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pal2,$6,$3
 	moveq	#$21,d0		;33 x 9 text box frame
 	moveq	#$9,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Framer).l
+	jsr	(printz).l
 	String	CC_Font2Pal2,$1,$E		;(and dropped a word)
 	move.w	#$8,d0		;8 x 8 frame: visitors picture
 	move.w	#$8,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Framer).l
+	jsr	(printz).l
 	String	CC_Font2Pal2,$1F,$E		;(and dropped a word)
 	move.w	#$8,d0		;8 x 8 frame: home picture
 	move.w	#$8,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Framer).l
+	jsr	(printz).l
 	String	CC_Font1,$1,$1
 	movea.l	(RonBarrMap).l,a0		;Ron Barr picture: palette offset, then map header offset
 	movea.l	a0,a1		;a1 = map header
@@ -575,15 +575,15 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	(a1),d2
 	move.w	$2(a1),d3
 	moveq	#$C,d5		;color fam 3-4
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	movea.l	(HotMap).l,a2
 	adda.l	#$8,a2
 	move.w	d4,(hoticonchars).l
-	dc.w	$4EB9,$0003,$8958
+	jsr	(DecompressGraphicsPlain).l
 	movea.l	(ColdMap).l,a2
 	adda.l	#$8,a2
 	move.w	d4,(coldiconchars).l
-	dc.w	$4EB9,$0003,$8958
+	jsr	(DecompressGraphicsPlain).l
 	clr.w	(matchup).l		;matchup 0: the teams
 	clr.w	(scoutunused).l
 	move.w	#$10D,(matchuptimer).l		;frames to the next matchup
@@ -598,7 +598,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bset	#$5,$FF800F.l
 .lD52E	tst.w	(palcount).l
 	bpl.w	.lD52E
-	dc.w	$4EB9,$0003,$F86C
+	jsr	(InitScoutingDisplay).l
 	move.w	#$1B,(a0)+
 	move.w	#$1D,(a0)+		;blank line
 	move.w	#$1A,(a0)+
@@ -679,7 +679,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	(asv).l
 	move.w	#$7FFF,(screentimer).l		;frames left on the screen
 	move.l	#$8CA0,(scoutwait).l		;then 36000 more when OptNOP is not 0
-	dc.w	$4EB9,$0003,$7652
+	jsr	(CompareHotColdTotals).l
 .lD642	btst	#$7,$FF800E.l
 	bne.b	.lD642
 	move.w	#$3C,$FF8020.l
@@ -729,9 +729,9 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 .lD730	bsr.w	ScoutParaOffset
 	move.l	d0,(scoutparaoff).l
 	move.l	d1,-(sp)
-	dc.w	$4EB9,$0003,$74F0
+	jsr	(ReadJoy1).l
 	move.w	d3,d5
-	dc.w	$4EB9,$0003,$750E
+	jsr	(ReadJoy2).l
 	or.w	d3,d5
 	btst	#$1,$1AD77.l
 	bne.w	.lD870
@@ -803,7 +803,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	$21FC8.l
 	bset	#$5,$FF800F.l
 .lD888	moveq	#$0,d0
-	dc.w	$4EB9,$0003,$72D0
+	jsr	(waitx).l
 	btst	#$1,$1AD77.l
 	dc.w	$6712
 	movea.l	#$FFFFFFFF,a0

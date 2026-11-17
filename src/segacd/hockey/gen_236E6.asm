@@ -1,4 +1,4 @@
-Sub_3E6E6
+addframe2
 	move.w	$4(a3),-(sp)
 	movem.l	d0-d5/a0-a2,-(sp)
 	move.w	$6(a3),d4
@@ -205,7 +205,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	move.w	d4,$18D54.l
 	bsr.w	Sub_3ED9A
 	move.w	d4,$18C1C.l
-	bsr.w	Sub_3EC60
+	bsr.w	setupIceRinkPal
 	bsr.w	Sub_393FA
 	dc.w	$33C4,$0001,$8D42
 	movea.l	(SmallFontMap).l,a2
@@ -227,9 +227,9 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	dc.w	$0001,$8D64,$23FC,$0003,$DAB8,$0001,$8D66,$08B9
 	dc.w	$0000,$0001,$8D64,$08B9,$0002,$0001,$8D64,$08F9
 	dc.w	$0005,$00FF,$800F,$4CDF,$7FFF,$4E75
-Sub_3EB3C
+setupice_highlight
 	movem.l	d0-d7/a0-a6,-(sp)
-	jsr	(Sub_36D0A).l
+	jsr	(forceblack).l
 	bclr	#$0,$17F6A.l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -239,7 +239,7 @@ Sub_3EB3C
 	st.b	$17CE2.l
 	move.w	$18D54.l,d4
 	bsr.w	Sub_3ED9A
-	bsr.w	Sub_3EC60
+	bsr.w	setupIceRinkPal
 	btst	#$1,$17F68.l
 	beq.w	.l23BA6
 	dc.w	$267C,$0001,$7480
@@ -262,19 +262,19 @@ Sub_3EB3C
 	movea.l	#$17D04,a3
 	clr.w	d0
 	clr.w	d1
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 	adda.w	#$1C,a3
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 	adda.w	#$1C,a3
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 	adda.w	#$1C,a3
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 	adda.w	#$1C,a3
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 	adda.w	#$1C,a3
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 	move.l	a5,$191CA.l
-	bsr.w	Sub_3DBF0
+	bsr.w	dodmalist
 	move.w	#$1C,(palcount).l
 	move.w	(sp)+,(disflags).l
 	move.l	#$3DAB8,(VBint).l
@@ -283,7 +283,7 @@ Sub_3EB3C
 	bset	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-Sub_3EC60
+setupIceRinkPal
 	movea.l	$47D18.l,a0
 	adda.l	(a0),a0
 	moveq	#$F,d0
@@ -470,7 +470,7 @@ Sub_3F03E
 	bne.w	.l2407C
 	movem.l	(sp)+,d0-d4/a0-a2
 	rts
-Sub_3F0C6
+resetplstuff
 	movem.l	d0-d2/a0-a3,-(sp)
 	movea.l	#tmstruct,a2
 	bsr.w	.l240E4
@@ -485,7 +485,7 @@ Sub_3F0C6
 	tst.w	$34(a3)
 	bmi.w	.l24114
 	move.w	#$50C,d1
-	jsr	(Sub_363C0).l
+	jsr	(SetSPA).l
 	clr.w	$32(a3)
 	clr.b	$5E(a3)
 	andi.b	#$C2,$62(a3)
@@ -603,7 +603,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	move.w	#$1,$3FC0A.l
 	bsr.w	Sub_3FC0C
 .l242D2	bra.w	Sub_3F2DC
-	dc.w	$4EB9,$0004,$8208
+	jsr	$48208.l
 Sub_3F2DC
 	jsr	$48208.l
 	bclr	#$5,$FF800F.l

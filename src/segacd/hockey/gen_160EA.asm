@@ -14,9 +14,9 @@ passto						;pass the puck to player a0: a3 = passer
 	move.w	$52(a3),d1		;SCnum of passer into d1
 	dc.w	$B279,$0001,$7F9E
 	bne.w	.p2passing
-	dc.w	$4EB9,$0003,$12B8
+	jsr	(setc1player).l
 	bra.w	.stack
-.p2passing	jsr	(Sub_312DC).l
+.p2passing	jsr	(setc2player).l
 	bra.w	.stack
 .h2hor1p	move.w	#$1,d1
 	btst	#$6,$62(a3)		;check if home or away team
@@ -25,9 +25,9 @@ passto						;pass the puck to player a0: a3 = passer
 .0	move.w	$52(a0),d0		;move SCnum of receiver into d0
 	dc.w	$B279,$0001,$7FA6
 	bne.w	.diffteam
-	dc.w	$4EB9,$0003,$12B8
+	jsr	(setc1player).l
 	bra.w	.stack
-.diffteam	jsr	(Sub_312DC).l
+.diffteam	jsr	(setc2player).l
 .stack	movem.l	(sp)+,d0-d1
 .l1617A	jsr	$3C958.l
 	addi.w	#$1,$12(a2)
@@ -125,8 +125,8 @@ Sub_312A4
 Sweepcheck						;start sweep check on player a3
 	bset	#$5,$62(a3)
 	move.w	#$B24,d1
-	bra.w	Sub_363C0
-Sub_312B8
+	bra.w	SetSPA
+setc1player
 	dc.w	$B079,$0001,$7F9E
 	beq.w	.l162DA
 	movem.l	d1/a0-a1,-(sp)
@@ -135,7 +135,7 @@ Sub_312B8
 	dc.w	$33C0,$0001,$7F9E
 	movem.l	(sp)+,d1/a0-a1
 .l162DA	rts
-Sub_312DC
+setc2player
 	dc.w	$B079,$0001,$7FA0
 	beq.w	.l162FE
 	movem.l	d1/a0-a1,-(sp)
@@ -196,7 +196,7 @@ Findhittype						;look for type of swing (forhand or backhand)
 	beq.w	.l163C4
 	dc.w	$013C,$00F0,$4E75
 .l163C4	dc.w	$013C,$001E,$4E75
-Sub_313CA
+SetShotMode
 	btst	#$2,$17F70.l
 	beq.w	.l163FA
 	bclr	#$2,$17F78.l
@@ -220,7 +220,7 @@ Sub_313CA
 	beq.w	.l16448
 	move.w	#$92E,d1
 	dc.w	$33FC,$000F,$0001,$7E2E
-.l16448	bra.w	Sub_363C0
+.l16448	bra.w	SetSPA
 ShotMode						;shot input
 									;swing frame reached (anim frame 7*4): shoot, else dpad sets shot
 									;direction
@@ -306,7 +306,7 @@ doshot						;stick is at puck so launch puck toward goal
 	move.b	$6C(a3),d0		;6C = shotspd (ShP)
 	lsr.b	#$1,d0		;divide by 2
 	movea.l	a3,a0		;move a3 address into a0
-	dc.w	$4EB9,$0003,$C274
+	jsr	(makepde).l
 	addi.w	#$14,d0
 	dc.w	$C0F9,$0001,$7E2E
 	mulu.w	#$5249,d0
@@ -375,7 +375,7 @@ doshot						;stick is at puck so launch puck toward goal
 	blt.w	.cont3
 	move.w	#$88,d0
 .cont3	move.w	d0,-(sp)		;push adjusting value: 2(sp) / 4(sp) = x / y diff pushed before
-	bsr.w	Sub_37044		;RNG adj value
+	bsr.w	randomd0s		;RNG adj value
 	add.w	d0,$2(sp)		;add result to x diff
 	move.w	(sp),d0		;move adjusting value into d0
 	cmpi.w	#$3C,d0		;compare to $3C (max adjustment in Y)
@@ -385,7 +385,7 @@ doshot						;stick is at puck so launch puck toward goal
 .lessx	tst.w	$4(sp)
 	bpl.w	.ycalc
 	lsr.w	#$1,d0
-.ycalc	bsr.w	Sub_37044		;RNG adjustment
+.ycalc	bsr.w	randomd0s		;RNG adjustment
 	add.w	d0,$4(sp)		;add to y diff
 	move.w	(sp)+,d0		;pop adj value
 	lsr.w	#$1,d0		;divide by 2
@@ -528,7 +528,7 @@ setpads						;Put SCnum of a3 in the d4 nibble of PadControlBits ; d4 = -2 puck
 	dc.w	$8379,$0001,$7DC8
 	movem.l	(sp)+,d0-d1
 L16904	rts
-Sub_31906
+check4bench
 	btst	#$2,$17F70.l
 	bne.w	L16904
 	btst	#$3,$62(a3)
@@ -552,7 +552,7 @@ Sub_31906
 	bset	#$2,$63(a3)
 	clr.w	$40(a3)
 	moveq	#$B,d0
-	bra.w	Sub_362E4
+	bra.w	assreplace
 .l16972	adda.w	#$4,sp
 	bclr	#$2,$63(a3)
 	bclr	#$2,$62(a3)
@@ -561,11 +561,11 @@ Sub_31906
 	move.w	$34(a3),d0
 	tst.b	$60(a3)
 	bpl.w	.l1699C
-	dc.w	$4EF9,$0003,$D754
+	jmp	(Setplass).l
 .l1699C	move.b	$60(a3),d0
 	ext.w	d0
 	move.w	d0,$34(a3)
-	dc.w	$4EF9,$0003,$D754
+	jmp	(Setplass).l
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_169AC.bin
 Sub_31AB6
 	rts
@@ -602,8 +602,8 @@ assepen						;player a3 should exit penalty area
 	move.w	#$2,$54(a3)
 	bset	#$5,$62(a3)
 	move.w	#$FAC,d1
-	bsr.w	Sub_363C0
-	dc.w	$4EF9,$0003,$F03E
+	bsr.w	SetSPA
+	jmp	(Sub_3F03E).l
 .nna	move.w	#$4,$54(a3)
 	st.b	$61(a3)
 	st.b	$60(a3)
@@ -612,7 +612,7 @@ assepen						;player a3 should exit penalty area
 	bclr	#$5,$63(a3)		;pf2npc
 	bclr	#$2,$63(a3)		;pf2unav
 	move.w	#$F000,$28(a3)
-	bra.w	Sub_362C4
+	bra.w	assexit
 assgoaliebreakwait						;asstab entry. In a shootout or penalty shot park the idle goalie off the
 									;ice, else exit
 	btst	#$5,$62(a3)		;check if animation locked
@@ -622,7 +622,7 @@ assgoaliebreakwait						;asstab entry. In a shootout or penalty shot park the id
 	btst	#$0,$17F78.l		;check for shootout
 	bne.w	.park		;branch if so
 	nop
-	bra.w	Sub_362C4
+	bra.w	assexit
 .park	clr.w	$28(a3)		;clear Xvel
 	clr.w	$2A(a3)		;clear Yvel
 	movem.l	d0/a0,-(sp)		;push d0 and a0 on stack
@@ -640,7 +640,7 @@ assfaceoff						;players do nothing until faceoff is over
 	btst	#$5,$62(a3)
 	bne.w	L16E14
 	btst	#$0,$17F6C.l
-	beq.w	Sub_362C4
+	beq.w	assexit
 L16E14	rts
 assfaceoffpl						;Face off player
 	btst	#$5,$62(a3)
@@ -674,7 +674,7 @@ assfaceoffpl						;Face off player
 	beq.w	.d
 	move.w	#$1014,d1
 .d	bset	#$1,$63(a3)
-	bra.w	Sub_363C0
+	bra.w	SetSPA
 .exit	move.b	#$14,$5E(a3)
-	bra.w	Sub_362C4
+	bra.w	assexit
 	dc.w	$4E75,$4E75

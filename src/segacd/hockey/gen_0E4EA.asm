@@ -1,7 +1,7 @@
 SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String without its first 2
 	
 	movem.l	d0-d7/a0/a2-a3,-(sp)
-	dc.w	$4EB9,$0004,$1192
+	jsr	(FormatPlayerNumInitial).l
 	move.w	(a1),d0
 	subi.w	#$2,d0
 	move.w	d0,$2(a1)
@@ -15,19 +15,19 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	moveq	#$9,d0
 	moveq	#$1A,d1
-	dc.w	$4EB9,$0002,$E728
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Sub_2E728).l
+	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
 	moveq	#$6,d1
-	dc.w	$4EB9,$0003,$8CA0
-	dc.w	$4EB9,$0003,$9258
+	jsr	(Framer).l
+	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Game  Statistics',CC_Font3Pri,$7,$1
 	move.w	#$2C,d0
-	dc.w	$4EB9,$0002,$C59E
+	jsr	(Sub_2C59E).l
 	addi.w	#$4,(printx).l
 	clr.w	d0
-	dc.w	$4EB9,$0002,$C59E
+	jsr	(Sub_2C59E).l
 	clr.w	(scoutcolumn).l
 	clr.w	(VertLineScrolling).l
 	clr.w	(PlayerScrollCtr).l
@@ -38,10 +38,10 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 .0	bsr.w	DisplayStats
 	bsr.w	LEC3E
 .loop	jsr	(MenuWaitVblank).l
-	dc.w	$4EB9,$0002,$F2F0
+	jsr	(Sub_2F2F0).l
 	btst	#$7,d3
 	beq.w	.1
-	dc.w	$4EF9,$0002,$E980
+	jmp	(Sub_2E980).l
 .1	jsr	(nodiag).l
 	move.w	#$FFFE,d0
 	btst	#$0,d3
@@ -54,11 +54,11 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bsr.w	LEC3E
 	bra.w	.loop
 .scroll	move.w	(PlayerScrollCtr).l,d0
-	beq.w	Sub_29FF6
+	beq.w	rtsStatTables
 	add.w	(VertLineScrolling).l,d0
-	bmi.w	Sub_29FF6
+	bmi.w	rtsStatTables
 	cmp.w	(matchupvis).l,d0
-	bgt.w	Sub_29FF6
+	bgt.w	rtsStatTables
 	move.w	(VertLineScrolling).l,d1
 	move.w	d0,(VertLineScrolling).l
 	andi.w	#$F,d0
@@ -114,11 +114,11 @@ LEC2C	move.w	(VertLineScrolling).l,d3
 	bra.w	LEC3C
 LEC3C	rts
 LEC3E	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetFont,$1
 	tst.w	(VertLineScrolling).l
 	beq.w	.lEC6A
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$8,CC_SetFont,$1,'{'
 	bra.w	.lEC7A
 .lEC6A	jsr	(printsmallz).l
@@ -126,7 +126,7 @@ LEC3E	movem.l	d0-d7/a0-a6,-(sp)
 .lEC7A	move.w	(matchupvis).l,d0
 	cmp.w	(VertLineScrolling).l,d0
 	beq.w	.lEC9E
-	dc.w	$4EB9,$0003,$8D8C
+	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$1A,CC_SetFont,$1,'}'
 	bra.w	.lECAE
 .lEC9E	jsr	(printsmallz).l
@@ -139,16 +139,16 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	
 	
 	
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$2,$7
 	move.w	#$2C,d0
-	dc.w	$4EB9,$0002,$C59E
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(Sub_2C59E).l
+	jsr	(printz).l
 	String	CC_Font3Pri,$1A,$7
 	moveq	#$0,d0
-	dc.w	$4EB9,$0002,$C59E
+	jsr	(Sub_2C59E).l
 	bsr.w	LEB5E
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$E,d6
 	dc.w	$43FA,$015A
@@ -161,7 +161,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	neg.w	d0
 	addi.w	#$15,d0
 	move.w	d0,(printx).l
-	dc.w	$4EB9,$0003,$8F80
+	jsr	(print).l
 	movea.l	a1,a0
 	move.w	#$22,(printx).l
 	movea.l	#tmstruct,a2
@@ -189,8 +189,8 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	beq.w	.0
 	divu.w	d1,d0
 .0	jsr	(PushNumber).l
-	dc.w	$4EB9,$0003,$9208
-	dc.w	$4EB9,$0003,$9200
+	jsr	(appstring).l
+	jsr	(Sub_39200).l
 	String	'%'
 	bra.w	.6
 .1	move.w	(a0),d0
@@ -208,14 +208,14 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 .4	jsr	(appstring).l
 	move.w	$2(a0),d0
 	bmi.w	.6
-	dc.w	$4EB9,$0003,$9200
+	jsr	(Sub_39200).l
 	String	'/'
 	move.w	(a2,d0.w),d0
-	dc.w	$4EB9,$0003,$915E
-	dc.w	$4EB9,$0003,$9208
+	jsr	(PushNumber).l
+	jsr	(appstring).l
 	cmpi.w	#$14,(a0)
 	bne.w	.6
-	dc.w	$4EB9,$0003,$9200
+	jsr	(Sub_39200).l
 	String	' ('
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
@@ -225,18 +225,18 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	beq.w	.5
 	divu.w	d1,d0
 .5	jsr	(PushNumber).l
-	dc.w	$4EB9,$0003,$9208
-	dc.w	$4EB9,$0003,$9200
+	jsr	(appstring).l
+	jsr	(Sub_39200).l
 	String	'%)'
 .6	movea.l	a3,a1
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
-	dc.w	$4EF9,$0003,$8F80
+	jmp	(print).l
 .lEE4A	jmp	(PushNumber).l
 .lEE50	jmp	(PushTime).l
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0EE56.bin
-Sub_29FF6
+rtsStatTables
 	rts
 updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for the team
 	
@@ -317,7 +317,7 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	cmpi.w	#$2,(OptNOP).l
 	bne.w	.set1
 	move.w	#$B,d0
-.set1	jsr	(Sub_312B8).l
+.set1	jsr	(setc1player).l
 	bra.w	.x
 .p2	cmpi.w	#$2,(OptNOP).l
 	bne.w	.lF180
@@ -330,7 +330,7 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	dc.w	$4A79,$0001,$8C0E
 	bne.w	.set2		;manual: the goalie
 	move.w	#$B,d0		;skater slot
-.set2	jsr	(Sub_312DC).l
+.set2	jsr	(setc2player).l
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first time, its
@@ -351,7 +351,7 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	movea.l	$4(a0,d0.w),a2
 	adda.w	#$8,a2
 	dc.w	$3839,$0001,$A54E
-	dc.w	$4EB9,$0003,$8958
+	jsr	(DecompressGraphicsPlain).l
 	dc.w	$4279,$0001,$A552
 	bsr.w	NextArenaFrame
 	bra.w	.lF218
@@ -379,7 +379,7 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	bra.w	NextArenaFrame
 .lF25A	dc.w	$0C79,$FFFE,$0001,$A550
 	bne.w	.lF26A
-	bsr.w	Sub_2A466		;$FE: end the animation
+	bsr.w	EndArenaAnim		;$FE: end the animation
 .lF26A	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0F26C.bin
 StartArenaAnim						;Start arena animation d0 (ArenaAnims): arenaanim = d0, RunArenaAnim loads
@@ -400,7 +400,7 @@ SetFaceoffAnim						;Set the faceoff animation: sflags7 bit 0, faceoffanim = d0.
 	bset	#$0,$17F7A.l
 	dc.w	$33C0,$0001,$A560
 	rts
-Sub_2A466
+EndArenaAnim
 	dc.w	$33FC,$FFFF,$0001,$A556
 	bclr	#$0,$17F7A.l
 	rts
@@ -422,7 +422,7 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	move.b	(a0,d0.w),d1		;team song
 	bne.w	.lF4D0		;a team song: use it
 	move.w	#$8,d0		;slot 0: one of the 8 random songs
-	dc.w	$4EB9,$0003,$7050
+	jsr	(randomd0).l
 	andi.w	#$7,d0
 	move.b	(a1,d0.w),d1
 .lF4D0	dc.w	$33C1,$0001,$A56A

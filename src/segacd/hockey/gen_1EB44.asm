@@ -50,7 +50,7 @@ UpdatePA						;animate ref in ref window. Runs ShowThreeStars for game over, and
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	bra.w	print
-Sub_39C1C
+SetPA
 	dc.w	$33C0,$0001,$8072
 	cmpi.w	#$2E,d0
 	blt.w	.l1EC2C
@@ -637,7 +637,7 @@ checkint						;check for interference penalty. player a2 interferes with a3 or
 .l1F4A4	cmpi.w	#$2,$32(a3)		;compare 2 to impact
 	ble.w	rtss2		;exit if impact is less than 2
 	exg.l	a2,a3
-	bsr.w	Sub_3A9BE
+	bsr.w	FallDown
 	exg.l	a2,a3
 	cmpi.w	#$1E,$32(a2)		;compare 30 decimal to impact
 	ble.w	rtss2		;exit if impact is less than 30 decimal
@@ -684,11 +684,11 @@ L1F55C	movem.l	d0-d4/a0-a3,-(sp)
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
 .l1F570	cmpi.w	#$C90,$58(a2)
-	beq.w	Sub_3A822
+	beq.w	holdcheck
 	cmpi.w	#$1122,$58(a2)
-	beq.w	Sub_3A822
+	beq.w	holdcheck
 	cmpi.w	#$B24,$58(a2)
-	beq.w	Sub_3A90A
+	beq.w	Bcheck
 	cmpi.w	#$C5E,$58(a3)
 	bne.w	rtss2
 	btst	#$0,$17F68.l
@@ -711,7 +711,7 @@ L1F55C	movem.l	d0-d4/a0-a3,-(sp)
 	dc.w	$41FA,$0168
 	move.w	(a0,d0.w),d1
 	bset	#$5,$62(a3)
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	tst.w	$34(a2)
 	beq.w	rtss2
 	cmpi.w	#$14,d4
@@ -779,7 +779,7 @@ L1F55C	movem.l	d0-d4/a0-a3,-(sp)
 	addi.w	#$1A,d0
 	bsr.w	PenShotChk
 	bsr.w	AddPenalty
-.l1F748	bra.w	Sub_3A9BE
+.l1F748	bra.w	FallDown
 checkagr						;use Agression attribute and RNG to determine if there will be a penalty.
 									;a3 = checking player, a2 = player being checked. d0 =
 									;randomd0(((40 - Agr) / 2) * 13), doubled for a joystick player, halved
@@ -841,7 +841,7 @@ Sub_3A75C
 	beq.w	.l1F820
 .l1F81C	move.w	#$7F,d0
 .l1F820	rts
-Sub_3A822
+holdcheck
 	btst	#$5,$62(a3)
 	bne.w	rtss2
 	tst.w	$34(a3)
@@ -874,14 +874,14 @@ Sub_3A822
 	move.w	d0,$2A(a2)
 	bset	#$5,$62(a3)
 	move.w	#$CF4,d1
-	bsr.w	Sub_363C0
+	bsr.w	SetSPA
 	exg.l	a2,a3
 	bset	#$5,$62(a3)
 	move.w	#$CC2,d1
 	cmpi.w	#$C90,$58(a3)
 	beq.w	.l1F8C8
 	move.w	#$1154,d1
-.l1F8C8	bsr.w	Sub_363C0
+.l1F8C8	bsr.w	SetSPA
 	bsr.w	Sub_3A75C
 	cmpi.w	#$6,d0
 	bhi.w	.l1F900
@@ -896,7 +896,7 @@ Sub_3A822
 .l1F900	exg.l	a2,a3
 	st.b	$17EEE.l
 	rts
-Sub_3A90A
+Bcheck
 	btst	#$5,$62(a3)
 	bne.w	rtss2
 	tst.w	$34(a3)
@@ -929,7 +929,7 @@ Sub_3A90A
 	cmpi.w	#$2,d0
 	bhi.w	rtss2
 	exg.l	a2,a3
-	bsr.w	Sub_3A9BE
+	bsr.w	FallDown
 	bsr.w	Sub_3A75C
 	cmpi.w	#$4,d0
 	bhi.w	.l1F9B4

@@ -3,7 +3,7 @@ Sub_2F2F0
 	bne.w	.l14310
 .l142FA	btst	#$1,$17F6A.l
 	dc.w	$6706
-	dc.w	$4EF9,$0003,$750E
+	jmp	(ReadJoy2).l
 .l1430A	jmp	(ReadJoy1).l
 .l14310	dc.w	$4A79,$0001,$7F94
 	beq.w	.l142FA
@@ -12,7 +12,7 @@ Sub_2F2F0
 	jmp	$3752C.l
 .l1432A	jmp	$3754A.l
 	move.w	#$F0,$1AD56.l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font3Pri,$2,$2
 	moveq	#$20,d0
 	moveq	#$55,d1
@@ -26,7 +26,7 @@ Sub_2F2F0
 	movea.l	$47D64.l,a1
 .l1436E	adda.l	$4(a1),a1
 	movea.l	#$1B008,a2
-	dc.w	$4EF9,$0003,$87E2
+	jmp	(dobitmap).l
 	dc.w	$4EB9,$0003,$8F6E,$0006,$BD02,$0200,$303C,$0008
 	dc.w	$323C,$0004,$343C,$07FF,$4EF9,$0003,$8C06,$50F9
 	dc.w	$0001,$AD56,$4EB9,$0003,$8F6E,$0006,$BD02,$0000
@@ -34,7 +34,7 @@ Sub_2F2F0
 	dc.w	$0000,$2279,$0004,$7D68,$D3E9,$0004,$247C,$0001
 	dc.w	$B008,$4EF9,$0003,$87E2,$4EB9,$0003,$8F6E,$0006
 	dc.w	$BD02,$0200,$303C,$0010,$323C,$000B,$343C,$07FF
-	dc.w	$4EF9,$0003,$8C06
+	jmp	(eraser).l
 suba4						;a4 = current replay frame. Back up 1 frame and set video parameters for
 	
 	
@@ -58,7 +58,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 	bchg	#$4,$17F72.l
 	dc.w	$3F39,$0001,$7CEE
 	dc.w	$3F39,$0001,$7CEA
-	bsr.w	Sub_36D38
+	bsr.w	forceblack2
 	jsr	(MenuWaitVblank).l
 	jsr	(MenuWaitVblank).l
 	jsr	$2E986.l
@@ -66,13 +66,13 @@ adda4						;Step forward 1 frame. First handles a reverse
 	dc.w	$4279,$0001,$7CEA
 	dc.w	$33FC,$07D0,$0001,$7CEC
 	move.w	#$1,d0
-.loop	jsr	(Sub_3DD16).l
+.loop	jsr	(setvideo).l
 	jsr	(MenuWaitVblank).l
 	dbra	d0,.loop
 	dc.w	$33DF,$0001,$7CEA
 	dc.w	$33DF,$0001,$7CEE
 	move.w	#$1,d0
-	dc.w	$4EB9,$0003,$DD16
+	jsr	(setvideo).l
 .l144A2	jsr	(MenuWaitVblank).l
 	dbra	d0,.l144A2
 	movem.l	a0,-(sp)
@@ -272,7 +272,7 @@ L145BC	movem.l	d0-d2/a0/a6,-(sp)
 	beq.w	.l147EC
 	dc.w	$4479,$0001,$7CEE
 	dc.w	$4479,$0001,$7CEA
-	dc.w	$4EB9,$0002,$F7FA
+	jsr	(ClampReplayView).l
 .l147EC	bclr	#$7,$17F72.l
 	movem.l	(sp)+,d0-d2/a0/a6
 	rts
@@ -372,7 +372,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	dc.w	$30F9,$0001,$7CEA
 Sub_2F988
 	rts
-Sub_2F98A
+updateplayers
 	btst	#$7,$17F6A.l
 	bne.w	.l149F4
 	dc.w	$0079,$000F,$0001,$7DC8
@@ -575,14 +575,14 @@ Sub_2F98A
 	bsr.w	ReadJoy1
 	clr.w	d4
 	move.w	#$FFFF,$17F96.l
-	bsr.w	Sub_30200
+	bsr.w	doinput
 	bra.w	.l14D72
 .l14D52	dc.w	$BC79,$0001,$7FA0
 	bne.w	.l14D72
 	bsr.w	ReadJoy2
 	dc.w	$283C,$0000,$0002
 	move.w	#$FFFF,$17F96.l
-	bsr.w	Sub_30200
+	bsr.w	doinput
 .l14D72	cmpi.w	#$B,d6
 	bgt.w	.l14F4C
 	dc.w	$4A79,$0001,$7FAA
@@ -604,7 +604,7 @@ Sub_2F98A
 	move.w	$19382.l,$19380.l
 	dc.w	$3F39,$0001,$7DC8
 	dc.w	$33F9,$0001,$7DD6,$0001,$7DC8
-	bsr.w	Sub_30200
+	bsr.w	doinput
 	dc.w	$33F9,$0001,$7DC8,$0001,$7DD6
 	dc.w	$33DF,$0001,$7DC8
 	move.w	$19380.l,$19382.l
@@ -636,7 +636,7 @@ Sub_2F98A
 	move.w	$19382.l,$19380.l
 	dc.w	$3F39,$0001,$7DC8
 	dc.w	$33F9,$0001,$7DD6,$0001,$7DC8
-	bsr.w	Sub_30200
+	bsr.w	doinput
 	dc.w	$33F9,$0001,$7DC8,$0001,$7DD6
 	dc.w	$33DF,$0001,$7DC8
 	move.w	$19380.l,$19382.l
@@ -734,7 +734,7 @@ freezewindow						;lock scrolling to the current position
 	dc.w	$33F9,$0001,$7CEE,$0001,$7EDC
 	bset	#$6,$17F6A.l
 	rts
-Sub_300B2
+checkwindow
 	move.w	$17EDE.l,d2
 	move.w	$17EDC.l,d3
 	btst	#$6,$17F6A.l

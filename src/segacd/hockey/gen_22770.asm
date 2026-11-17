@@ -206,7 +206,7 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 	dc.w	$3239,$0001,$8D32,$6100,$9D0A,$2C79,$0001,$91CA
 	dc.w	$BDFC,$0001,$8D6A,$6700,$E428,$3226,$3026,$2066
 	dc.w	$6100,$9CF0,$BDFC,$0001,$8D6A,$6E00,$FFEE,$4E75
-Sub_3DBF0
+dodmalist
 	movea.l	$191CA.l,a6
 	cmpa.l	#$18D6A,a6
 	beq.w	rtss2
@@ -218,7 +218,7 @@ Sub_3DBF0
 	bgt.w	.l22C00
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_22C16.bin
-Sub_3DD16
+setvideo
 	movem.l	d0-d7/a0-a6,-(sp)
 .l22D1A	btst	#$0,(disflags).l
 	bne.w	.l22D1A
@@ -402,18 +402,18 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	move.w	#$12A,d1		;y (92 128+200)
 	moveq	#$1,d2		;frame
 	dc.w	$3639,$0001,$8D56
-	bsr.w	Sub_3E028
+	bsr.w	SetSframe
 	move.w	d0,d2
 	lsr.w	#$1,d2
 	ext.l	d2
 	divu.w	#$3,d2
 	swap	d2
 	addi.w	#$2,d2		;frame 2 + (x/2 mod 3)
-	bsr.w	Sub_3E028
+	bsr.w	SetSframe
 	moveq	#$5,d2
 	dc.w	$3839,$0001,$8358
 	dc.w	$B879,$0001,$86BE
-	bls.w	Sub_3E028		;home not ahead: frame 5
+	bls.w	SetSframe		;home not ahead: frame 5
 	move.w	d0,d2
 	subi.w	#$DA,d2
 	bpl.w	.pos
@@ -425,10 +425,10 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	moveq	#$18,d2
 .l23000	lea.l	$3E00E.l,a1
 	move.w	(a1,d2.w),d2
-	bra.w	Sub_3E028
+	bra.w	SetSframe
 	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
 	dc.w	$0007,$0008,$0007,$0006,$0005
-Sub_3E028
+SetSframe
 	cmpi.w	#$40,d6
 	bge.w	rtss2
 	movem.l	d0-d5/a0,-(sp)
@@ -744,7 +744,7 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	add.w	$4(a1,d2.w),d3
 	move.w	d3,$6(a3)
 	move.w	$6(a1,d2.w),$4(a3)		;flip bits
-	bra.w	Sub_3E6E6
+	bra.w	addframe2
 	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
 	dc.w	$0074,$0000,$0002,$0000,$0074,$FF9C,$0001,$1000		;.xspot = 116, .yspot = 100
 	dc.w	$0000,$FF9C,$0000,$1000,$FF8C,$FF9C,$0001,$1800
@@ -758,7 +758,7 @@ setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOli
 	asl.w	#$6,d1		;mult by 64
 	dc.w	$267C,$0001,$7480
 	adda.w	d1,a3
-	bsr.w	Sub_3E6BC
+	bsr.w	addframe
 	dbra	d0,.top
 	rts
 setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), moving
@@ -767,7 +767,7 @@ setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), mov
 	move.w	#$6,d0		;ffo obj -1
 	movea.l	#$17D04,a3		;move start of struct into a3
 .top	movea.l	a6,a0		;per object: a0 = first sprite this object writes
-	bsr.w	Sub_3E6BC
+	bsr.w	addframe
 	cmpa.l	a6,a0
 	beq.w	.next		;no sprites added
 	move.w	$2(a3),d1		;x offset (set by QueuePadLabel)
@@ -877,7 +877,7 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 	move.w	d0,(a5)+		;vram destination
 	rts
 	dc.w	$2044,$444C,$4352,$5800
-Sub_3E6BC
+addframe
 	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
 	move.w	$14(a3),d1
@@ -886,6 +886,6 @@ Sub_3E6BC
 	bsr.w	find3d
 	cmpi.w	#$4E20,d1
 	beq.w	.l236E0
-	bsr.w	Sub_3E6E6
+	bsr.w	addframe2
 .l236E0	movem.l	(sp)+,d0-d2
 	rts

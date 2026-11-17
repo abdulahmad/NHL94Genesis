@@ -1,16 +1,16 @@
-Sub_31EB2
+donothing
 	btst	#$5,$62(a3)
 	bne.w	Sub_31AB6
 	btst	#$3,$62(a3)
 	bne.w	Sub_31AB6
 	moveq	#$8,d0
-	bra.w	Sub_363D6
+	bra.w	doplayeracc
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_16ECC.bin
 assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not on the
 									;joystick leaves through assexit
 	btst	#$3,$62(a3)		;is player joystick controlled?
 	bne.w	.goaliectrl		;branch is so
-	bra.w	Sub_362C4
+	bra.w	assexit
 .goaliectrl	btst	#$1,$62(a3)		;check if new assignment
 	bne.w	.na		;branch if new assignment
 	movem.w	d0-d1,-(sp)		;push to stack
@@ -24,7 +24,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	bne.w	.l1780C		;branch if so
 	move.w	d0,-(sp)		;push to stack
 	move.w	#$8,d0		;clock stoppage due to goalie out of range
-	dc.w	$4EB9,$0003,$9456
+	jsr	(AddPenalty2).l
 	move.w	(sp)+,d0
 .l1780C	dc.w	$9079,$0001,$7CEE
 	dc.w	$9279,$0001,$7CEA
@@ -49,7 +49,7 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	bne.w	Sub_32930		;branch if set
 .na	btst	#$5,$62(a3)		;check if anim lock
 	bne.w	Sub_31AB6		;exit if so
-	bsr.w	Sub_31906
+	bsr.w	check4bench
 	bclr	#$1,$62(a3)		;clear new assignment bit
 	beq.w	.nna		;branch if already cleared
 	clr.w	$40(a3)		;clear temp1
@@ -87,6 +87,6 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	cmp.w	$17BE0.l,d0		;compare puckc to d0
 	beq.w	.ex		;jump to assgoaliecpu if the same
 .ex	rts
-Sub_32926
+checkanim
 	btst	#$3,$62(a3)
 	bne.w	assgoaliectrl

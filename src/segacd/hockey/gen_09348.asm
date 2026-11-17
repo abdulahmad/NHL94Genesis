@@ -13,13 +13,13 @@ Sub_24348
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$6,(Map1col).l
 	dc.w	$203C,$0000,$0000
-	dc.w	$4EB9,$0003,$7B5A
-	dc.w	$4EB9,$0003,$7460
+	jsr	(setVram).l
+	jsr	(orjoy).l
 	jsr	$24866.l
 	move.w	d4,(framercset).l
 	movea.l	$47D78.l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03567564,$89ABCDEF
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_093E6.bin
 ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (4 with
@@ -36,8 +36,8 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	dc.w	$33F9,$0001,$7474,$0001,$7476
 	bclr	#$5,$19390.l
 	jsr	$24894.l
-	dc.w	$4EB9,$0003,$74F0
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ReadJoy1).l
+	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.1
 	btst	#$5,d1
@@ -47,7 +47,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	move.w	#$53,$1939E.l
 .0	bset	#$5,$19390.l
 .1	jsr	(ReadJoy2).l
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.l95A6
 	btst	#$5,d1
@@ -56,14 +56,14 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .l95A6	dc.w	$4A79,$0001,$8BF8
 	beq.w	.4
 	jsr	$3752C.l
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.3
 	btst	#$5,d1
 	beq.w	.l965E
 	bset	#$5,$19390.l
 .3	jsr	$3754A.l
-	dc.w	$4EB9,$0003,$74BE
+	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.4
 	btst	#$5,d1
@@ -83,7 +83,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	bgt.w	.l9654
 	btst	#$0,$19390.l
 	bne.w	.l9654
-	dc.w	$4EB9,$0002,$4B5E
+	jsr	(ResetCardTimer).l
 	bra.w	.l965A
 .l9654	jsr	(PlayerCardTimer).l
 .l965A	dbra	d6,.l952A
@@ -122,7 +122,7 @@ Sub_24720
 	move.w	$18C04.l,-(sp)
 	dc.w	$33D7,$0001,$8C0C
 	dc.w	$33DF,$0001,$8C0E
-	dc.w	$4EB9,$0003,$FF16
+	jsr	(UpdatePlayoffLevel).l
 .l9738	btst	#$7,$FF800E.l
 	bne.b	.l9738
 	move.w	#$1B,$FF8020.l
@@ -157,7 +157,7 @@ Sub_24720
 	bne.w	.l9828
 	dc.w	$33FC,$0000,$0001,$8BFA
 	bset	#$0,$17F78.l
-	dc.w	$4EB9,$0002,$79DA
+	jsr	(ClearShootout).l
 .l9828	jmp	(MakeTree).l
 CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no effect
 	tst.w	(OptNOP).l
@@ -173,11 +173,11 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	moveq	#$2,d4
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8958
+	jsr	(DecompressGraphicsPlain).l
 	dc.w	$33C4,$0001,$939C
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
-	dc.w	$4EB9,$0003,$8946
+	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$03412567,$89ABCDEF
 	rts
 	rts
@@ -187,7 +187,7 @@ L9898	movem.l	d0-d7,-(sp)
 	beq.w	.l995C
 	bclr	#$6,$19390.l
 	bclr	#$7,$19390.l
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pal1,$0,$0
 	move.w	#$5,(printy).l
 	moveq	#$8,d0
@@ -196,26 +196,26 @@ L9898	movem.l	d0-d7,-(sp)
 	btst	#$1,$19390.l
 	beq.w	.l9920
 	move.w	#$3,(printx).l
-	dc.w	$4EB9,$0003,$8C06
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(eraser).l
+	jsr	(printz).l
 	String	CC_Font1,$0,$0
 	move.w	#$B,(printx).l
 	move.w	#$5,(printy).l
 	move.w	#$19,d0
 	move.w	#$8,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 	bra.w	.l995C
 .l9920	move.w	#$1C,(printx).l
-	dc.w	$4EB9,$0003,$8C06
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(eraser).l
+	jsr	(printz).l
 	String	CC_Font1,$0,$0
 	move.w	#$3,(printx).l
 	move.w	#$5,(printy).l
 	move.w	#$19,d0
 	move.w	#$8,d1
 	move.w	#$7FF,d2
-	dc.w	$4EB9,$0003,$8C06
+	jsr	(eraser).l
 .l995C	movem.l	(sp)+,d0-d7
 	rts
 DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo (logoteam)
@@ -229,7 +229,7 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	bsr.w	L9AE8
 	bclr	#$3,$19390.l
 	beq.w	.0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pal1,$0,$0
 	move.w	#$8,(printx).l
 	move.w	#$5,(printy).l
@@ -249,7 +249,7 @@ DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardfl
 	bsr.w	L9B0C
 	bclr	#$2,$19390.l
 	beq.w	.0
-	dc.w	$4EB9,$0003,$8F6E
+	jsr	(printz).l
 	String	CC_Font1Pal1,$0,$0
 	move.w	#$18,(printx).l
 	move.w	#$5,(printy).l
@@ -330,7 +330,7 @@ DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Br
 	clr.w	d1
 	move.w	#$0,d5
 	bset	#$0,(sflags6).l
-	dc.w	$4EB9,$0003,$87E2
+	jsr	(dobitmap).l
 	bclr	#$0,(sflags6).l
 	rts
 ResetCardTimer						;Reset the player card timer cardtimer to $AA ($53 if C was pressed).
@@ -367,6 +367,6 @@ PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the 
 	dc.w	$50F9,$0001,$938E
 	bclr	#$6,$19390.l
 	bclr	#$7,$19390.l
-	dc.w	$4EB9,$0002,$4C1E
+	jsr	(PlayerCardScreen).l
 .l9C16	rts
 .l9C18	jmp	(ResetCardTimer).l
