@@ -1,3 +1,8 @@
+; Scoreboard, ticker and highlights. This file shows the power play graphic and the time remaining,
+; switches the rink between its horizontal and vertical views (ClrHor, SetHor), draws the scoreboard and
+; the energy bars, counts shot stats, runs the end of period intermission, the ticker scores and the
+; highlights (DoHiLights).
+
 updatepwrplay						;show graphic and time remaining for power plays. Nothing when gmode2 bit
 	
 	
