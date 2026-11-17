@@ -509,15 +509,40 @@ SndSlotAdd	movem.l	d0-d1/a0,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	dc.w	$0668,$0001,$0122
 	movem.l	(sp)+,d0-d1/a0
-	dc.w	$4E75
-Set1MFlag_19	dc.b	$48,$E7,$C0,$E0,$45,$FA,$05,$58,$0C,$6A,$00,$00,$01,$22,$67,$5E	; H...E..X.j..."g^
-	dc.b	$41,$FA,$05,$EE,$0C,$50,$FF,$FF,$67,$54,$04,$50,$00,$01,$66,$48	; A....P..gT.P..fH
-	dc.b	$10,$28,$00,$03,$02,$00,$00,$F0,$E1,'HH@0(',$00,$02	; .(.......HH@0(..
-	dc.b	$02,$00,$00,$0F,$00,$00,$00,$80,$61,$00,$FD,$06,$4A,$40,$67,$06	; ........a...J@g.
-	dc.b	$06,$50,$00,$01,$60,$22,$43,$FA,$05,$B8,$30,$3A,$06,$34,$04,$40	; .P..`"C...0:.4.@
-	dc.b	$00,$01,$E5,$48,$20,$B1,$00,$00,$23,$BC,$FF,$FF,$FF,$FF,$00,$00	; ...H ...#.......
-	dc.b	$04,$6A,$00,$01,$01,$22,$60,$AC,$D0,$FC,$00,$04,$60,$A6,$4C,$DF	; .j..."`.....`.L.
-	dc.b	$07,$03,$4E,$75	; ..Nu
+	rts
+Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
+	lea.l	Set1MFlag_31(pc),a2
+	cmpi.w	#$0,$122(a2)
+	dc.w	$675E
+	lea.l	Set1MFlag_39(pc),a0
+.l7ED0	cmpi.w	#$FFFF,(a0)
+	dc.w	$6754
+	dc.w	$0450,$0001
+	dc.w	$6648
+	move.b	$3(a0),d0
+	andi.b	#$F0,d0
+	lsl.w	#$8,d0
+	swap	d0
+	move.w	$2(a0),d0
+	andi.b	#$F,d0
+	ori.b	#$80,d0
+	bsr.w	Z80PlayIfLoaded
+	tst.w	d0
+	dc.w	$6706
+	dc.w	$0650,$0001
+	dc.w	$6022
+.l7F02	lea.l	Set1MFlag_39(pc),a1
+	dc.w	$303A,$0634
+	dc.w	$0440,$0001
+	lsl.w	#$2,d0
+	move.l	(a1,d0.w),(a0)
+	move.l	#$FFFFFFFF,(a1,d0.w)
+	dc.w	$046A,$0001,$0122
+	dc.w	$60AC
+.l7F24	adda.w	#$4,a0
+	dc.w	$60A6
+.l7F2A	movem.l	(sp)+,d0-d1/a0-a2
+	rts
 ; Starts a sound stream from the table at $A00072.
 Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	bsr.w	Z80RequestBus
@@ -882,7 +907,8 @@ Set1MFlag_35	dcb.b	$10,0
 Set1MFlag_36	dcb.b	$10,0
 Set1MFlag_37	dcb.b	$10,0
 Set1MFlag_38	dcb.b	$20,0
-Set1MFlag_39	dcb.b	$82,0
+Set1MFlag_39	dcb.b	$80,0
+.lFF853C	dc.b	$00,$00	; ..
 Set1MFlag_40	dc.b	$00,$00,$00,$00,$00,$00	; ......
 .lFF8544	dc.b	$00,$00,$00,$00	; ....
 .lFF8548	dc.b	$00,$00	; ..

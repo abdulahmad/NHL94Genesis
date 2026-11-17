@@ -78,10 +78,10 @@ PlShowPicture	movem.l	d0-d7/a0-a5,-(sp)
 	bsr.w	PlDmaRequest
 	move.w	#$209,d0
 	move.w	#$14,d1
-	lea.l	LF64_45(pc),a0
+	lea.l	LF64_49(pc),a0
 	cmpi.w	#$2,$54(a6)
 	bne.w	.l24F4
-	lea.l	LF64_46(pc),a0
+	lea.l	LF64_50(pc),a0
 .l24F4	bsr.w	TilemapAddr
 	movea.l	a0,a4
 	bsr.w	PlBuildPortraitTiles
@@ -94,10 +94,10 @@ PlShowPicture	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	#$20202020,(a0)+
 	move.b	#$0,(a0)
 	move.w	#$7,$BA(a6)
-	lea.l	LF64_47(pc),a3
+	lea.l	LF64_51(pc),a3
 	cmpi.w	#$2,$54(a6)
 	bne.w	.l2544
-	lea.l	LF64_48(pc),a3
+	lea.l	LF64_52(pc),a3
 	move.w	#$E,$BA(a6)
 .l2544	movea.l	a2,a0
 	cmpi.w	#$0,$58(a6)

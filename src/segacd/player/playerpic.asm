@@ -37,9 +37,9 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	bne.w	.l1DF8
 	btst.b	#$0,$4(a3)
 	beq.w	.l1DD6
-	lea.l	LF64_53(pc),a1
+	lea.l	LF64_59(pc),a1
 	bra.w	.l1E28
-.l1DD6	lea.l	LF64_54(pc),a1
+.l1DD6	lea.l	LF64_60(pc),a1
 	move.b	$104(a6),d0
 	cmpi.b	#$3,d0
 	blt.w	.l1DEC
@@ -50,9 +50,9 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	bra.w	.l1E28
 .l1DF8	btst.b	#$0,$4(a3)
 	beq.w	.l1E0A
-	lea.l	LF64_51(pc),a1
+	lea.l	LF64_57(pc),a1
 	bra.w	.l1E28
-.l1E0A	lea.l	LF64_52(pc),a1
+.l1E0A	lea.l	LF64_58(pc),a1
 	move.b	$105(a6),d0
 	cmpi.b	#$7,d0
 	blt.w	.l1E20

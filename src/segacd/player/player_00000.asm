@@ -371,7 +371,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,$DE(a6)
 .l83E	tst.w	$DE(a6)
 	bne.w	.l83E
-	lea.l	LF64_56(pc),a1
+	lea.l	LF64_62(pc),a1
 	move.l	a1,$74(a6)
 	movea.l	$74(a6),a1
 	move.w	$2(a1),d0
@@ -1284,7 +1284,7 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	beq.w	.l17E4
 	move.w	$7E(a6),d0
 .l17E4	mulu.w	#$34,d0
-	lea.l	LF64_55(pc),a0
+	lea.l	LF64_61(pc),a0
 	adda.l	d0,a0
 	move.l	a0,$68(a6)
 	bra.w	.l1852

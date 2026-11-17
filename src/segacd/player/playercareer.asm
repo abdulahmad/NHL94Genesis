@@ -102,11 +102,11 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 .l2168	btst.b	#$6,$FF800E.l
 	bne.b	.l2168
 	bclr.b	#$7,$FF800F.l
-	lea.l	LF64_49(pc),a0
+	lea.l	LF64_53(pc),a0
 	move.w	$A6(a6),d1
 	cmp.w	$58(a6),d1
 	bge.w	.l218E
-	lea.l	LF64_50(pc),a0
+	lea.l	LF64_54(pc),a0
 .l218E	movea.l	$8E(a6),a5
 	move.w	#$7,d1
 	bsr.w	PrintTextLine

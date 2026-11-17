@@ -321,7 +321,7 @@ InitWorld_A	; Sierra C function name tag: InitWorld (first copy of the module)
 	dc.b	' Start: %x',$00,$00,'MAIN'	;  Start: %x..MAIN
 	dc.b	'CPU is alive',$00,$00	; CPU is alive..
 ; Waits for a command word from the sub CPU ($A12020) (Sierra tag GetCommandFromSub).
-GetCommandFromSub_A; GetCommandFromSub
+GetCommandFromSub_A	; Sierra C function name tag: GetCommandFromSub (first copy of the module)
 	link	a6,#$0
 	movem.l	d7/a3-a4,-(sp)
 	movea.l	#$A12010,a3
@@ -340,7 +340,7 @@ GetCommandFromSub_A; GetCommandFromSub
 	dc.b	$91,'GetCommandFromS'	; .GetCommandFromS
 	dc.b	$75,$62,$00,$00			; ub..
 ; Writes the word-RAM 1M flag word to the sub CPU comm port (Sierra tag Set1MFlag).
-Set1MFlag_A; Set1MFlag
+Set1MFlag_A	; Sierra C function name tag: Set1MFlag (first copy of the module)
 	link	a6,#$0
 	movea.l	#$A12010,a0
 	move.w	$A(a6),$2(a0)

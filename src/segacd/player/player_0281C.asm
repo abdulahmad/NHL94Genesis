@@ -173,26 +173,88 @@ PlPrepareSource	movem.l	d0-d7/a1-a5,-(sp)
 	movea.l	a1,a2
 	adda.l	d0,a2
 	bra.w	.l2B02
-	dc.b	$30,$12,$45,$F2,$08,$08	; 0.E...
-.l2B02	dc.b	$51,$C9,$FF,$F8,$30,$12,$41,$F2,$08,$00,$2D,$48,$00,$50,$57,$40	; Q...0.A...-H.PW@
-	dc.b	$20,$4A,$54,$88,$22,$6E,$00,$8E,$12,$18,$67,$00,$00,$08,$12,$C1	;  JT."n....g.....
-	dc.b	$51,$C8,$FF,$F6,$12,$BC,$00,$00,$20,$6E,$00,$8E,$10,$18,$0C,$00	; Q....... n......
-	dc.b	$00,$20,$66,$00,$FF,$F8,$4B,$FA,$15,$1F,$2D,$4D,$00,$9A,$3D,$7C	; . f...K...-M..=|
-	dc.b	$00,$02,$00,$A6,$4B,$FA,$14,$62,$2D,$4D,$00,$9E,$4B,$FA,$14,$34	; ....K..b-M..K..4
-	dc.b	'&H"n',$00,$2C,$24,$6E,$00,$30,$0C,$6E,$00,$00,$00,$18	; &H"n.,$n.0.n....
-	dc.b	$67,$00,$00,$0A,$22,$6E,$00,$3C,$24,$6E,$00,$40,$20,$09,$67,$00	; g..."n.<$n.@ .g.
-	dc.b	$00,$A4,$70,$00,$74,$FE,$28,$49,$D9,$FC,$00,$00,$00,$05,$20,$4B	; ..p.t.(I...... K
-	dc.b	$10,$18,$12,$1C,$00,$00,$00,$20,$00,$01,$00,$20,$B2,$00,$67,$00	; ....... ... ..g.
-	dc.b	$FF,$F0,$0C,$2C,$00,$2C,$FF,$FF,$67,$00,$00,$28,$72,$00,$32,$11	; ...,.,..g..(r.2.
-	dc.b	$43,$F1,$18,$00,$0C,$69,$65,$6C,$00,$04,$67,$00,$00,$3A,$0C,$69	; C....iel..g..:.i
-	dc.b	$65,$6E,$00,$04,$66,$00,$FF,$E8,$32,$11,$43,$F1,$18,$00,$60,$00	; en..f...2.C...`.
-	dc.b	$FF,$B6,$2D,$49,$00,$44,$30,$2E,$00,$5A,$D0,$40,$3D,$75,$00,$00	; ..-I.D0..Z.@=u..
-	dc.b	$00,$58,$6A,$00,$00,$48,$3D,$7C,$00,$00,$00,$B0,$04,$6E,$00,$01	; .Xj..H=|.....n..
-	dc.b	$00,$5A,$60,$00,$FF,$E2,$52,$42,$67,$00,$00,'*"JK',$FA	; .Z`...RBg..*"JK.
-	dc.b	$14,$93,$2D,$4D,$00,$9A,$3D,$7C,$00,$05,$00,$A6,$4B,$FA,$13,$B8	; ..-M..=|....K...
-	dc.b	$2D,$4D,$00,$9E,$4B,$FA,$13,$8A,$20,$09,$67,$00,$00,$08,$70,$00	; -M..K... .g...p.
-	dc.b	$60,$00,$FF,$64,$2D,$7C,$00,$00,$00,$00,$00,$44,$20,$6E,$00,$8E	; `..d-|.....D n..
-	dc.b	$4C,$DF,$3E,$FF,$4E,$75	; L.>.Nu
+.l2AFC	move.w	(a2),d0
+	lea.l	$8(a2,d0.l),a2
+.l2B02	dbra	d1,.l2AFC
+	move.w	(a2),d0
+	lea.l	(a2,d0.l),a0
+	move.l	a0,$50(a6)
+	subq.w	#$3,d0
+	movea.l	a2,a0
+	addq.l	#$2,a0
+	movea.l	$8E(a6),a1
+.l2B1A	move.b	(a0)+,d1
+	beq.w	.l2B26
+	move.b	d1,(a1)+
+	dbra	d0,.l2B1A
+.l2B26	move.b	#$0,(a1)
+	movea.l	$8E(a6),a0
+.l2B2E	move.b	(a0)+,d0
+	cmpi.b	#$20,d0
+	bne.w	.l2B2E
+	lea.l	LF64_55(pc),a5
+	move.l	a5,$9A(a6)
+	move.w	#$2,$A6(a6)
+	lea.l	LF64_47(pc),a5
+	move.l	a5,$9E(a6)
+	lea.l	LF64_45(pc),a5
+	movea.l	a0,a3
+	movea.l	$2C(a6),a1
+	movea.l	$30(a6),a2
+	cmpi.w	#$0,$18(a6)
+	beq.w	.l2B6E
+	movea.l	$3C(a6),a1
+	movea.l	$40(a6),a2
+.l2B6E	move.l	a1,d0
+	beq.w	.l2C16
+	moveq	#$0,d0
+	moveq	#-2,d2
+.l2B78	movea.l	a1,a4
+	adda.l	#$5,a4
+	movea.l	a3,a0
+.l2B82	move.b	(a0)+,d0
+	move.b	(a4)+,d1
+	ori.b	#$20,d0
+	ori.b	#$20,d1
+	cmp.b	d0,d1
+	beq.w	.l2B82
+	cmpi.b	#$2C,-$1(a4)
+	beq.w	.l2BC4
+	moveq	#$0,d1
+.l2BA0	move.w	(a1),d1
+	lea.l	(a1,d1.l),a1
+	cmpi.w	#$656C,$4(a1)
+	beq.w	.l2BE8
+	cmpi.w	#$656E,$4(a1)
+	bne.w	.l2BA0
+	move.w	(a1),d1
+	lea.l	(a1,d1.l),a1
+	bra.w	.l2B78
+.l2BC4	move.l	a1,$44(a6)
+.l2BC8	move.w	$5A(a6),d0
+	add.w	d0,d0
+	move.w	(a5,d0.w),$58(a6)
+	bpl.w	.l2C1E
+	move.w	#$0,$B0(a6)
+	subi.w	#$1,$5A(a6)
+	bra.w	.l2BC8
+.l2BE8	addq.w	#$1,d2
+	beq.w	.l2C16
+	movea.l	a2,a1
+	lea.l	LF64_56(pc),a5
+	move.l	a5,$9A(a6)
+	move.w	#$5,$A6(a6)
+	lea.l	LF64_48(pc),a5
+	move.l	a5,$9E(a6)
+	lea.l	LF64_46(pc),a5
+	move.l	a1,d0
+	beq.w	.l2C16
+	moveq	#$0,d0
+	bra.w	.l2B78
+.l2C16	move.l	#$0,$44(a6)
+.l2C1E	movea.l	$8E(a6),a0
+	movem.l	(sp)+,d0-d7/a1-a5
+	rts
 ; Queues a DMA request in the $DE-$E4 block and waits for it.
 PlDmaRequest	move.w	d0,$E0(a6)
 	swap	d0
@@ -1163,35 +1225,36 @@ GateArrayLoadCmd	movem.l	d0-d7/a0-a2,-(sp)
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-	dc.b	$00,$00,$00,$01,$00,$02,$00,$05,$00,$06,$00,$07,$FF,$FF,$00,$00	; ................
-	dc.b	$00,$01,$00,$02,$00,$03,$00,$04,$00,$05,$00,$08,$00,$09,$00,$0A	; ................
-	dc.b	$00,$0B,$00,$0C,$FF,$FF,$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03	; ................
-	dc.b	$03,$03,$04,$00,$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03	; ................
-	dc.b	$03,$03,$05,$03,$03,$04	; ......
-LF64_45	dc.b	'Players',$00,$20,$00	; Players. .
-LF64_46	dc.b	'Goalies',$00,$20,$00	; Goalies. .
-LF64_47	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
+LF64_45	dc.b	$00,$00,$00,$01,$00,$02,$00,$05,$00,$06,$00,$07,$FF,$FF	; ..............
+LF64_46	dc.b	$00,$00,$00,$01,$00,$02,$00,$03,$00,$04,$00,$05,$00,$08,$00,$09	; ................
+	dc.b	$00,$0A,$00,$0B,$00,$0C,$FF,$FF	; ........
+LF64_47	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03,$03,$03,$04,$00	; ..............
+LF64_48	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03,$03,$03,$05,$03	; ................
+	dc.b	$03,$04	; ..
+LF64_49	dc.b	'Players',$00,$20,$00	; Players. .
+LF64_50	dc.b	'Goalies',$00,$20,$00	; Goalies. .
+LF64_51	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
 	dc.b	$69,$6D,$00,$50,$50,$00,$53,$68,$00,$47,$77,$00,$47,$74,$00,$53	; im.PP.Sh.Gw.Gt.S
 	dc.b	$00,'Pctg',$FF	; .Pctg.
-LF64_48	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
+LF64_52	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
 	dc.b	$57,$00,$4C,$00,$54,$00,$53,$4F,$00,$45,$6E,$00,'Shts'	; W.L.T.SO.En.Shts
 	dc.b	$00,$70,$47,$50,$00,'pMIN',$00,$70,$47,$41,$00,$70,$41	; .pGP.pMIN.pGA.pA
 	dc.b	$56,$47,$00,$70,$57,$00,$70,$4C,$00,$70,$53,$4F,$00,$70,$45,$4E	; VG.pW.pL.pSO.pEN
 	dc.b	$00,$70,$53,$41,$FF	; .pSA.
-LF64_49	dc.b	'Regular',$00	; Regular.
-LF64_50	dc.b	'Playoff',$00,'Season',$00,$43	; Playoff.Season.C
-	dc.b	$6C,$75,$62,$00,$4C,$65,$61,$00,$47,$70,$00,$47,$00,$41,$00,$54	; lub.Lea.Gp.G.A.T
-	dc.b	$70,$00,$50,$69,$6D,$00,$47,$70,$00,$47,$00,$41,$00,$54,$70,$00	; p.Pim.Gp.G.A.Tp.
-	dc.b	$50,$69,$6D,$00,'Season',$00,'Club',$00	; Pim.Season.Club.
-	dc.b	$4C,$65,$61,$00,$47,$70,$00,$57,$00,$4C,$00,$54,$00,$4D,$69,$6E	; Lea.Gp.W.L.T.Min
-	dc.b	$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57	; s.Ga.So.Avg.Gp.W
-	dc.b	$00,$4C,$00,'Mins',$00,$47,$61,$00,$53,$6F,$00,$41,$76	; .L.Mins.Ga.So.Av
-	dc.b	$67,$00,$00	; g..
-LF64_51	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
-LF64_52	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
+LF64_53	dc.b	'Regular',$00	; Regular.
+LF64_54	dc.b	'Playoff',$00	; Playoff.
+LF64_55	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
+	dc.b	$47,$70,$00,$47,$00,$41,$00,$54,$70,$00,$50,$69,$6D,$00,$47,$70	; Gp.G.A.Tp.Pim.Gp
+	dc.b	$00,$47,$00,$41,$00,$54,$70,$00,$50,$69,$6D,$00	; .G.A.Tp.Pim.
+LF64_56	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
+	dc.b	$47,$70,$00,$57,$00,$4C,$00,$54,$00,'Mins',$00,$47,$61	; Gp.W.L.T.Mins.Ga
+	dc.b	$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57,$00,$4C,$00,$4D	; .So.Avg.Gp.W.L.M
+	dc.b	$69,$6E,$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$00	; ins.Ga.So.Avg..
+LF64_57	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
+LF64_58	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
 .l6044	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
-LF64_53	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
-LF64_54	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
-LF64_55	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
-LF64_56	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
+LF64_59	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
+LF64_60	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
+LF64_61	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
+LF64_62	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
 	dcb.b	$8DC,0
