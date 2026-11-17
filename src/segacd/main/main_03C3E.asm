@@ -240,14 +240,28 @@ SubCommPoll	movem.l	d0-d7/a0-a6,-(sp)
 	bset.b	#$1,$A1200E.l
 .next	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-	dc.b	$4E,$73,$08,$F9,$00,$06,$00,$A1,$20,$0E,$08,$39,$00,$06,$00,$A1	; Ns...... ..9....
-	dc.b	$20,$0F,$66,$F6,$08,$B9,$00,$06,$00,$A1,$20,$0E,$08,$B9,$00,$07	;  .f....... .....
-	dc.b	$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E,$61,$00,$18,$1A	; .. ....... .a...
-	dc.b	$2F,$3C,$00,$FF,$4F,$88,$61,$00,$00,$42,$DF,$FC,$00,$00,$00,$04	; /<..O.a..B......
-	dc.b	$60,$00,$F5,$A0,$4E,$75,$08,$F9,$00,$06,$00,$A1,$20,$0E,$08,$39	; `...Nu...... ..9
-	dc.b	$00,$06,$00,$A1,$20,$0F,$66,$F6,$08,$B9,$00,$06,$00,$A1,$20,$0E	; .... .f....... .
-	dc.b	$08,$B9,$00,$07,$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E	; ...... ....... .
-	dc.b	$61,$00,$BF,$CE,$60,$00,$F5,$6C,$4E,$75	; a...`..lNu
+	rte	
+	bset.b	#$6,$A1200E.l
+.loop	btst.b	#$6,$A1200F.l
+	bne.b	.loop
+	bclr.b	#$6,$A1200E.l
+	bclr.b	#$7,$A1200E.l
+	move.b	#$0,$A1200E.l
+	dc.w	$6100,$181A
+	move.l	#$FF4F88,-(sp)
+	bsr.w	RamImageB
+	adda.l	#$4,sp
+	bra.w	SubCpuBootReset
+	rts	
+	bset.b	#$6,$A1200E.l
+.loop2	btst.b	#$6,$A1200F.l
+	bne.b	.loop2
+	bclr.b	#$6,$A1200E.l
+	bclr.b	#$7,$A1200E.l
+	move.b	#$0,$A1200E.l
+	bsr.w	RunSubCommand
+	bra.w	SubCpuBootReset
+	rts	
 ; Start of a RAM-resident code image (bra over its header)
 RamImageB	dc.b	$60,$00,$00,$8E	; `...
 ; Zero padding of image B

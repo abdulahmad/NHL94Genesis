@@ -878,7 +878,9 @@ DispTableB	ori.w	#$4055,(a4)
 DispTableC	negx.w	(a4)+
 	negx.w	(a5)+
 	bra.b	DispTableF
-	dc.b	'`_```a'	; `_```a
+	dc.w	$605F
+	dc.w	$6060
+	dc.w	$6061
 ; Display data table fragment D
 DispTableD	dc.b	'@b@c'	; @b@c
 	dcb.b	$40,0
@@ -889,8 +891,24 @@ DispTableE	movea.l	-(a4),a0
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
 ; Display data table fragment F
-DispTableF	dcb.b	$42,0
-	dc.b	'`l`m'	; `l`m
+DispTableF	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	ori.b	#$0,d0
+	dc.w	$0000,$606C
+	dc.w	$606D
 	dcb.b	$15,0
 .next	dcb.b	$D1,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u

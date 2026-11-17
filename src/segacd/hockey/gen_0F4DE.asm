@@ -751,12 +751,12 @@ GoalieSwapCheck	movem.l	d0/a0-a3,-(sp)
 	move.w	$17FAE.l,$1A56C.l
 	move.w	#$1,$1A56E.l
 	jsr	$2A478.l
-.l2B36A	bset.b	#$6,$17F7C.l
+.loop	bset.b	#$6,$17F7C.l
 	bra.w	GoalieSwapCheckRestore
 .next3	move.w	$17FAE.l,$1A56C.l
 	move.w	#$4,$1A56E.l
 	jsr	$2A478.l
-	bra.w	.l2B36A
+	bra.w	.loop
 ; Clears flag 5 of $17F6C, restores the flags and returns
 GoalieSwapCheckEnd	bclr.b	#$5,$17F6C.l
 	rts

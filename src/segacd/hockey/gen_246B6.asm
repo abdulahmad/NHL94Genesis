@@ -441,30 +441,30 @@ EASportsScreenCheck	jsr	$374F0.l
 	dc.b	$6E,$64	; nd
 ; EA Sports screen: frame wait loop
 EASportsScreenWait	moveq	#$14,d6
-.l3FEAE	move.w	$17474.l,d0
-.l3FEB4	cmp.w	$17474.l,d0
-	beq.w	.l3FEB4
+.loop	move.w	$17474.l,d0
+.loop2	cmp.w	$17474.l,d0
+	beq.w	.loop2
 	jsr	$374F0.l
 	jsr	$374BE.l
 	tst.b	d1
-	beq.w	.l3FEAE
+	beq.w	.loop
 	btst	#$7,d1
 	bne.w	rtss2
 	btst	#$3,d1
-	beq.w	.l24EE4
+	beq.w	.next
 	addi.w	#$1,d6
-.l24EE4	btst	#$2,d1
-	beq.w	.l24EF0
+.next	btst	#$2,d1
+	beq.w	.next2
 	subi.w	#$1,d6
-.l24EF0	btst	#$5,d1
-	beq.w	.l24EFE
+.next2	btst	#$5,d1
+	beq.w	.next3
 	jsr	$3710C.l
-.l24EFE	move.w	d6,d0
+.next3	move.w	d6,d0
 	moveq	#$3,d1
 	bsr.w	PushNumberWidth
 	move.w	#$17,$18D58.l
 	bsr.w	print
-	bra.w	.l3FEAE
+	bra.w	.loop
 UpdatePlayoffLevel						;Set pojoy from the number of players for play modes 2 and 3.
 	cmpi.w	#$2,$18BFA.l
 	blt.w	rtss2

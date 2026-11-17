@@ -185,43 +185,43 @@ SetupIceVBlankHandler
 ; Vertical interrupt body: dma list, palettes and the sub CPU handshake
 VBlankMainHandler	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$2,$18D64.l
-	bne.w	.l22ADC
+	bne.w	.next2
 	bclr.b	#$0,$18D64.l
-	beq.w	.l22AD8
+	beq.w	.next
 	bsr.w	VBlankDmaList
-.l22AD8	bsr.w	ForceBlackStep
-.l22ADC	btst.b	#$0,$17F6A.l
-	bne.w	.l22B50
+.next	bsr.w	ForceBlackStep
+.next2	btst.b	#$0,$17F6A.l
+	bne.w	.loop
 	btst.b	#$2,$17F78.l
-	bne.w	.l22B00
+	bne.w	.next3
 	btst.b	#$0,$17F68.l
-	bne.w	.l22B50
-.l22B00	btst.b	#$1,$17F78.l
-	bne.w	.l22B5C
+	bne.w	.loop
+.next3	btst.b	#$1,$17F78.l
+	bne.w	.next4
 	tst.w	$180E6.l
-	beq.w	.l22B50
+	beq.w	.loop
 	subi.w	#$AAA,$180E8.l
-	bcc.w	.l22B50
+	bcc.w	.loop
 	bset.b	#$3,$18D64.l
 	subq.w	#$1,$180E6.l
 	cmpi.w	#$3D,$180E6.l
-	bgt.w	.l22B50
+	bgt.w	.loop
 	cmpi.w	#$3C,$180E6.l
-	blt.w	.l22B50
+	blt.w	.loop
 	move.w	#$2,-(sp)
 	bsr.w	GateArrayCommandSend
-.l22B50	addq.w	#$1,$17474.l
+.loop	addq.w	#$1,$17474.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.l22B5C	tst.w	$193B6.l
-	beq.w	.l22B50
+.next4	tst.w	$193B6.l
+	beq.w	.loop
 	subi.w	#$AAA,$193B8.l
-	bcc.w	.l22B50
+	bcc.w	.loop
 	bset.b	#$3,$18D64.l
 	btst.b	#$7,$17F78.l
-	bne.w	.l22B50
+	bne.w	.loop
 	subq.w	#$1,$193B6.l
-	bra.w	.l22B50
+	bra.w	.loop
 vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: falls
 									;into IRQ7
 	movem.l	d0-d7/a0-a6,-(sp)
