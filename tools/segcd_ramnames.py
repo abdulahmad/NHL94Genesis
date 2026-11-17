@@ -70,6 +70,32 @@ _eq = collections.defaultdict(list)
 for _m in re.finditer(r'^(\w+)\s+equ\s+\$([0-9A-F]{5})\b', _inc, re.M): _eq[int(_m.group(2), 16)].append(_m.group(1))
 for _a, _n in _eq.items():
     if len(_n) == 1 and 0x17000 <= _a < 0x20000 and _a not in ok: ok[_a] = _n[0]
+# --lst PATH (the cartridge listing, output/obj/nhl94 .lst after `node tools/build.js retail`): the disc's RAM is the
+# cartridge's moved by a different amount per block of variables. An address between two names that hockey.inc
+# already has, both moved by the same amount, is the cartridge variable at (address - amount).
+_lst = next((a[6:] for a in sys.argv if a.startswith('--lst=')), None)
+if _lst:
+    import bisect
+    _cart = {}
+    for _l in open(_lst, encoding='latin-1'):
+        _m = re.match(r'^[0-9A-F]{8} =FFFF([0-9A-F]{4})\s+(\w+)\s+rs\.[bwl]\s+', _l)
+        if _m: _cart[_m.group(2)] = int(_m.group(1), 16)
+    _by = collections.defaultdict(list)
+    for _n, _a in _cart.items(): _by[_a].append(_n)
+    _known = sorted((_a, _a - _cart[_n]) for _n, _al in [(n, a) for a, ns in _eq.items() for n in ns] for _a in [_al] if _n in _cart)
+    _keys = [k[0] for k in _known]
+    _raw = set()
+    for _f in glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')):
+        for _l in open(_f, encoding='latin-1'):
+            for _m in re.finditer(r'(?<![\w$])#?\(?\$([0-9A-F]{5})\)?(\.l)?(?!\w)', _l.split(';')[0]): _raw.add(int(_m.group(1), 16))
+    _n2 = 0
+    for _A in sorted(_raw):
+        if not 0x17000 <= _A < 0x20000 or _A in ok: continue
+        _i = bisect.bisect_left(_keys, _A)
+        if not _i or _i >= len(_known) or _known[_i - 1][1] != _known[_i][1]: continue
+        _c = _by.get(_A - _known[_i][1], [])
+        if len(_c) == 1 and _c[0] not in LABELS: ok[_A] = _c[0]; _n2 += 1
+    print(f'{_n2} more addresses from the cartridge block offsets')
 print(f'{len(votes)} addresses with votes, {len(ok)} agreed (>= {MIN} votes), {len(votes) - len(ok)} left')
 if not APPLY:
     for a, n in sorted(ok.items()): print(f'  ${a:X} {n}')

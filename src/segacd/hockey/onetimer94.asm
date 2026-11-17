@@ -279,7 +279,7 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 	neg.w	$5A(a3)
 	addi.w	#$18,$5A(a3)
 	bra.w	.next23
-.next19	add.w	d7,$17EBE.l
+.next19	add.w	d7,(onetimerclock).l
 	bra.w	.next21
 .next20	bset.b	#$2,(onetimerflags).l
 	btst.b	#$1,(onetimerflags).l

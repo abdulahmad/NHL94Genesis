@@ -30,7 +30,7 @@ setupice_highlight
 	movea.l	#DMAList,a5
 	movea.l	#$BBD30,a6
 	moveq	#$1,d6
-	movea.l	#$17D04,a3
+	movea.l	#pads,a3
 	clr.w	d0
 	clr.w	d1
 	bsr.w	addframe2
@@ -73,7 +73,7 @@ SetupIceRinkPalRemap
 	rts
 ; Decompresses the fifth ice rink graphics set with the remap.
 IceRinkRemapGfxE
-	move.w	$18D46.l,d4
+	move.w	(energybarchars).l,d4
 	movea.l	$47D40.l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
@@ -157,7 +157,7 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 ; Fills the four map entries from the table at $3EE08.
 CopyTeamBlockMapDataFill
 	movea.l	#$3EE08,a2
-	movea.l	#$17DD8,a3
+	movea.l	#sso,a3
 	moveq	#$3,d0
 .loop	move.w	#$FFFF,$8(a3)
 	move.w	(a2)+,$0(a3)
@@ -169,7 +169,7 @@ CopyTeamBlockMapDataFill
 	adda.w	#$14,a3
 	dbra	d0,.loop
 	movea.l	#$3EE30,a2
-	movea.l	#$17D04,a3
+	movea.l	#pads,a3
 	move.l	#$6,d0
 .loop2	st.b	$8(a3)
 	move.w	(a2)+,$0(a3)
@@ -653,7 +653,7 @@ GameOverCleanup
 	dbra	d0,.loop
 	move.w	#$860,$BBCDC.l
 	move.w	#$860,$BBCFC.l
-	move.w	d4,$18D46.l
+	move.w	d4,(energybarchars).l
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$104,$17CE8.l
 	move.w	#$A0,(playoffspritey).l
@@ -670,7 +670,7 @@ GameOverCleanup
 .loop4	btst	#$6,$FF800E.l
 	bne.b	.loop4
 	bclr	#$7,$FF800F.l
-	movea.l	#$18AA6,a1
+	movea.l	#potree,a1
 	movea.l	#PlayoffScreen_setup,a0
 	move.w	(gamelevel).l,d0
 	asl.w	#$1,d0
@@ -803,7 +803,7 @@ PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (
 									;printx/printy; the user's team (potreeteam entry of potree) is
 									;highlighted (printa $6000)
 	movem.l	d0-d7/a0-a3,-(sp)
-	movea.l	#$18AA6,a0
+	movea.l	#potree,a0
 	move.w	(potreeteam).l,d0
 	move.b	(a0,d0.w),d0
 	add.b	d0,d0
@@ -1424,7 +1424,7 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	movem.l	d0-d4/a0-a3,-(sp)
 	move.w	(postarts).l,d1
 	asl.w	#$4,d1		;16 bytes a tree
-	movea.l	#$18AA6,a0
+	movea.l	#potree,a0
 	movea.l	#$1FFDA,a1
 	adda.w	d1,a1
 	move.l	(a1),(a0)		;first round: 16 teams from the tree
@@ -1443,7 +1443,7 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	bsr.w	GetShifter		;d1 = games, d2 = first
 	tst.w	d1		;any games left?
 	bmi.w	.nogames		;playoffs over
-	movea.l	#$18AA6,a0
+	movea.l	#potree,a0
 	adda.w	d2,a0
 	adda.w	d2,a0		;(2 bytes a game)
 	movea.l	#$18A18,a1
@@ -1490,7 +1490,7 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	btst	#$0,(gmode2).l
 	bne.w	.fjnpo
 	bsr.w	GetShifter		;d1 = last game
-	movea.l	#$18AA6,a0
+	movea.l	#potree,a0
 	move.w	(potreeteam).l,d2
 	move.b	(a0,d2.w),d2
 	movea.l	#$18A18,a1
@@ -1803,7 +1803,7 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	cmpi.w	#$1,(OptPlayMode).l
 	blt.w	rtss2
 	bsr.w	ReadTeamStats
-	movea.l	#$18AA6,a0
+	movea.l	#potree,a0
 	move.w	(potreeteam).l,d2
 	move.b	(a0,d2.w),d2
 	movea.l	#tmstruct,a2
@@ -2079,7 +2079,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	bne.w	.x
 	tst.w	d3
 	beq.w	.x
-	movea.l	#$180EC,a0
+	movea.l	#ChkCnt,a0
 	adda.w	(ScoreSumbytes).l,a0
 	clr.w	d0
 	btst	#$7,$2(a0)
@@ -2244,7 +2244,7 @@ ShowGoalBoxDraw
 	jsr	(lcfound_close).l
 	adda.w	#$366,a2
 	jsr	(lcfound_close).l
-	movea.l	#$180EC,a4
+	movea.l	#ChkCnt,a4
 	adda.w	(ScoreSumbytes).l,a4
 	jsr	(printz).l
 	String	CC_Font1Pri,$B,$2
@@ -2259,11 +2259,11 @@ ShowGoalBoxDraw
 .next2	jsr	(Framer).l
 	jsr	(UpdateRecordsGoalieCounts).l
 	movea.l	#tmstruct,a2
-	move.w	$193AA.l,$17E98.l
+	move.w	(homegoalies).l,(scorergoalies).l
 	btst	#$7,$2(a4)
 	beq.w	.next3
 	adda.w	#$366,a2
-	move.w	$193AC.l,$17E98.l
+	move.w	(awaygoalies).l,(scorergoalies).l
 .next3	lea.l	.next9(pc),a1
 	bclr	#$0,(DelayedPen).l
 	beq.w	.next4
@@ -2276,7 +2276,7 @@ ShowGoalBoxDraw
 	movem.w	d1,-(sp)
 	clr.w	d1
 	move.b	$3(a4),d1
-	cmp.w	$17E98.l,d1
+	cmp.w	(scorergoalies).l,d1
 	movem.w	(sp)+,d1
 	blt.w	.next6
 	adda.w	(a1),a1
@@ -2298,14 +2298,14 @@ ShowGoalBoxDraw
 	movem.w	d1,-(sp)
 	clr.w	d1
 	move.b	$3(a4),d1
-	cmp.w	$17E98.l,d1
+	cmp.w	(scorergoalies).l,d1
 	movem.w	(sp)+,d1
 	blt.w	.next7
 	jsr	(TeamGfxListEndPrintB).l
 .next7	clr.w	d0
 	move.b	$4(a4),d0
 	bmi.w	.next8
-	bclr	#$5,$17F72.l
+	bclr	#$5,(sflags4).l
 	bne.w	.next8
 	jsr	(printz).l
 	String	CC_Font1Pri,$E,$6,'Assist by:',CC_Font1Pri,$C,$7
@@ -2324,7 +2324,7 @@ ShowGoalBoxDraw
 	jsr	(print).l
 	move.w	(sp)+,d0
 	jsr	(TeamGfxListEndPrintA).l
-.next8	bclr	#$5,$17F72.l
+.next8	bclr	#$5,(sflags4).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
 ; Table of 24 words after ShowGoalBoxDraw, 32 bytes: $000E,$BF0F,$0347,$4F41,$4C21,$BF0C ...

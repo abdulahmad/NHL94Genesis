@@ -27,7 +27,7 @@ ReadLineDataBackupRead
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
-	movea.l	#$18C26,a0
+	movea.l	#databuffer,a0
 	jsr	(BackupRamRead).l
 	bclr	#$4,(sflags).l
 	move.w	#$FFFF,(lastsfx).l
@@ -39,7 +39,7 @@ ReadLineDataBackupWrite
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
-	movea.l	#$18C26,a0
+	movea.l	#databuffer,a0
 	jsr	(BackupRamWrite).l
 	bclr	#$4,(sflags).l
 	move.w	#$FFFF,(lastsfx).l

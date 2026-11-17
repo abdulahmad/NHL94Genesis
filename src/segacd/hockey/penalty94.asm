@@ -237,7 +237,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bset	#$5,(sflags5).l
 .1	movem.l	d0-d1/a1-a4,-(sp)
 	bsr.w	GetPeriodTimeRemaining
-	movea.l	#$1825C,a4
+	movea.l	#PenSum,a4
 	adda.w	(PenSumLength).l,a4
 	cmpi.w	#$EC,(PenSumLength).l
 	beq.w	.full
@@ -564,7 +564,7 @@ PushRef						;tell vblank what to display. d0 = ref frame, $40 clears the window
 .m1	adda.l	$4(a0),a0
 	adda.w	#$4,a0
 	adda.w	d0,a0
-	movea.l	#$18074,a1
+	movea.l	#RefRamMap,a1
 	move.w	(ExtraChars).l,d2
 	btst	#$7,(sflags).l
 	bne.w	.4
@@ -577,7 +577,7 @@ PushRef						;tell vblank what to display. d0 = ref frame, $40 clears the window
 	bra.w	.ex
 .clearit	btst	#$7,(sflags).l
 	bne.w	.cl
-	movea.l	#$18074,a1
+	movea.l	#RefRamMap,a1
 	moveq	#$37,d0
 .2	move.w	#$7FF,(a1)+
 	dbra	d0,.2

@@ -636,10 +636,10 @@ FallDown
 	move.b	$66(a3),d0
 	adda.w	d0,a0
 	addi.b	#$1,$11E(a0)
-	addi.w	#$1,$180EC.l
+	addi.w	#$1,(ChkCnt).l
 	tst.b	$74(a3)
 	bne.w	.chkpos
-	addi.w	#$2,$180EC.l
+	addi.w	#$2,(ChkCnt).l
 .chkpos	move.b	#$78,$5E(a2)
 	move.w	$0(a3),d0
 	sub.w	$0(a2),d0
@@ -835,7 +835,7 @@ FallDownStart
 	move.w	#$1AF4,d1
 	bsr.w	SetSPA
 	exg.l	a2,a3
-.next2	move.w	#$4,$1806A.l
+.next2	move.w	#$4,(InjCntDown).l
 	moveq	#$14,d0
 	tst.w	$34(a3)
 	beq.w	AddPenalty2
@@ -1098,7 +1098,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bra.w	.next15
 .next14	tst.w	(pucky).l
 	bpl.w	rtss2
-.next15	bset	#$5,$17F72.l
+.next15	bset	#$5,(sflags4).l
 	tst.w	(shootoutteam).l
 	beq.w	.next16
 	addi.w	#$1,(awayshootgoals).l
@@ -1109,7 +1109,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bra.w	.next19
 .next18	btst	#$0,(gmode).l
 	bne.w	rtss2
-.next19	bset	#$0,$17F72.l
+.next19	bset	#$0,(sflags4).l
 	bclr	#$3,(sflags8).l
 	bsr.w	ChkShotStat
 	jsr	(HockeyRtsStubB).l
@@ -1131,7 +1131,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	beq.w	.next21
 	exg.l	a1,a2
 .next21	addi.w	#$1,$C(a2)
-	btst	#$5,$17F72.l
+	btst	#$5,(sflags4).l
 	beq.w	.next22
 	btst	#$0,(gmode2).l
 	bne.w	.next22
@@ -1168,7 +1168,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 .next27	cmpi.w	#$168,(ScoreSumbytes).l
 	bne.w	.next28
 	subi.w	#$6,(ScoreSumbytes).l
-.next28	movea.l	#$180F2,a0
+.next28	movea.l	#ScoreSum,a0
 	adda.w	(ScoreSumbytes).l,a0
 	addi.w	#$6,(ScoreSumbytes).l
 	bsr.w	GetPeriodTimeRemaining
@@ -1485,7 +1485,7 @@ wallcoll						;d0 = cosine, d1 = sine of angle of incidence with wall, a3 = obje
 
 checkpuckcoll_sfx						;Entered from checkpuckcoll. Puck in the air: sfx 5 once when sflags4 bit
 									;2 is set
-	bclr	#$2,$17F72.l
+	bclr	#$2,(sflags4).l
 	beq.w	rtss2
 	move.w	#$5,-(sp)
 	bra.w	sfx
@@ -1634,24 +1634,24 @@ PuckCollisionTable	move.l	a0,-(sp)
 .next4	cmpi.w	#$1E,d0
 	blt.w	.next5
 	move.w	#$1E,d0
-.next5	move.w	(a0,d0.w),$17EB4.l
+.next5	move.w	(a0,d0.w),(ChkBodyG).l
 	movea.l	#$3BA64,a0
-	clr.l	$17EB6.l
+	clr.l	(ChkBodySqG).l
 	move.w	(a0,d0.w),$17EB8.l
-	move.w	$17EB4.l,$17EBA.l
-	neg.w	$17EBA.l
+	move.w	(ChkBodyG).l,(NegChkBodyG).l
+	neg.w	(NegChkBodyG).l
 	btst.b	#$1,(sflags6).l
 	beq.w	.next6
-	move.w	#$C,$17EB4.l
-	move.l	#$90,$17EB6.l
-	move.w	#$FFF4,$17EBA.l
+	move.w	#$C,(ChkBodyG).l
+	move.l	#$90,(ChkBodySqG).l
+	move.w	#$FFF4,(NegChkBodyG).l
 .next6	cmpi.w	#$250,$58(a2)
 	beq.w	.next7
 	cmpi.w	#$2A2,$58(a2)
 	bne.w	.next8
-.next7	move.w	#$12,$17EB4.l
-	move.l	#$144,$17EB6.l
-	move.w	#$FFEE,$17EBA.l
+.next7	move.w	#$12,(ChkBodyG).l
+	move.l	#$144,(ChkBodySqG).l
+	move.w	#$FFEE,(NegChkBodyG).l
 .next8	movea.l	(sp)+,a0
 	cmpi.w	#$F,(puckz).l
 	bgt.w	.next14
@@ -1671,26 +1671,26 @@ PuckCollisionTable	move.l	a0,-(sp)
 	neg.w	d1
 .next12	add.w	d1,d0
 .next13	sub.w	$0(a3),d0
-	cmp.w	$17EB4.l,d0
+	cmp.w	(ChkBodyG).l,d0
 	bgt.w	.next14
-	cmp.w	$17EBA.l,d0
+	cmp.w	(NegChkBodyG).l,d0
 	blt.w	.next14
 	move.w	$14(a2),d1
 	sub.w	$14(a3),d1
-	cmp.w	$17EB4.l,d1
+	cmp.w	(ChkBodyG).l,d1
 	bgt.w	.next14
-	cmp.w	$17EBA.l,d1
+	cmp.w	(NegChkBodyG).l,d1
 	blt.w	.next14
 	movem.w	d0-d1,-(sp)
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
-	cmp.l	$17EB6.l,d0
+	cmp.l	(ChkBodySqG).l,d0
 	movem.w	(sp)+,d0-d1
 	bhi.w	.next14
 	bsr.w	PuckCollisionStick
 	bra.w	PuckCollisionExit
-.next14	bclr.b	#$2,$17F72.l
+.next14	bclr.b	#$2,(sflags4).l
 	beq.w	PuckCollisionExit
 	move.w	(puckc).l,d0
 	cmp.w	$52(a2),d0
@@ -1985,7 +1985,7 @@ PuckCollisionStick	btst.b	#$4,(gmode).l
 	move.b	(a0,d0.w),d0
 	lsr.w	d2,d0
 	andi.w	#$3,d0
-	bclr.b	#$2,$17F72.l
+	bclr.b	#$2,(sflags4).l
 	bsr.w	ChkShotStat
 	bsr.w	a2touchpuck
 	cmpi.w	#$3000,(puckvy).l
@@ -2022,7 +2022,7 @@ PuckCollisionStick	btst.b	#$4,(gmode).l
 .next8	move.b	d0,$28(a3)
 	move.b	d1,$2A(a3)
 	bra.w	puckflip
-	bset.b	#$2,$17F72.l
+	bset.b	#$2,(sflags4).l
 	rts
 .next9	cmpi.w	#$2F4,$58(a2)
 	beq.w	.loop4
@@ -2121,7 +2121,7 @@ setpersonel
 	dbra	d4,.loop
 	bsr.w	SetPlList
 	moveq	#$5,d4
-	movea.l	#$18AC6,a4
+	movea.l	#PlList,a4
 .1	clr.w	d5
 	move.b	(a4,d4.w),d5
 	beq.w	.next
@@ -2138,7 +2138,7 @@ setpersonel
 	clr.b	(a4,d4.w)
 .next	dbra	d4,.1
 	moveq	#$5,d4
-	movea.l	#$18AC6,a4
+	movea.l	#PlList,a4
 .3	clr.w	d5
 	move.b	(a4,d4.w),d5
 	beq.w	.next3
@@ -2163,7 +2163,7 @@ SetPlList						;create PlList of players who we want on the ice now. a2 = team s
 									;Takes the current line (tmline) by priolist; an unavailable
 									;player (in the box or injured, -3 / -4) is replaced from sublist, or from
 									;the whole roster
-	movea.l	#$18AC6,a4
+	movea.l	#PlList,a4
 	clr.l	(a4)		;goalie present: use the position priority list from the start
 	clr.w	$4(a4)
 	movea.l	#priolist,a0
@@ -2376,20 +2376,20 @@ SetPlayerSide
 	movea.l	$1E(a0),a0
 	move.l	a0,-(sp)
 	adda.w	$8(a0),a0
-	clr.l	$18AE0.l
+	clr.l	(PPBonus).l
 	tst.w	$34(a3)
 	beq.w	.next10
 	btst	#$5,(sflags2).l
 	beq.w	.next5
 	jsr	(chkpk2).l
 	beq.w	.next4
-	move.b	$1(a0),$18AE0.l
-	andi.b	#$F,$18AE0.l
+	move.b	$1(a0),(PPBonus).l
+	andi.b	#$F,(PPBonus).l
 	bra.w	.next5
 .next4	move.b	$1(a0),d0
 	lsr.b	#$4,d0
 	neg.b	d0
-	move.b	d0,$18AE1.l
+	move.b	d0,(PKBonus).l
 .next5	move.b	$2(a0),d0
 	andi.b	#$F,d0
 	neg.b	d0
@@ -2397,7 +2397,7 @@ SetPlayerSide
 	bne.w	.next6
 	move.b	$2(a0),d0
 	lsr.b	#$4,d0
-.next6	move.b	d0,$18AE3.l
+.next6	move.b	d0,(HmAwBonus).l
 	cmpi.w	#$2,(gsp).l
 	blt.w	.next10
 	bgt.w	.next7
@@ -2412,7 +2412,7 @@ SetPlayerSide
 	beq.w	.next8
 	eori.b	#$8,ccr
 .next8	bpl.w	.next10
-.next9	move.b	#$2,$18AE2.l
+.next9	move.b	#$2,(ThirdPBonus).l
 .next10	movea.l	(sp)+,a0
 	adda.w	$0(a0),a0
 .loop	adda.w	(a0),a0
@@ -2438,10 +2438,10 @@ SetPlayerSide
 	andi.b	#$F,d3
 	move.w	#$5,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE0.l,d3
-	add.b	$18AE1.l,d3
-	add.b	$18AE3.l,d3
-	add.b	$18AE2.l,d3
+	add.b	(PPBonus).l,d3
+	add.b	(PKBonus).l,d3
+	add.b	(HmAwBonus).l,d3
+	add.b	(ThirdPBonus).l,d3
 	bsr.w	.next12
 	lsr.b	#$1,d3
 	eori.b	#$F,d3
@@ -2452,7 +2452,7 @@ SetPlayerSide
 	lsr.b	#$4,d3
 	move.w	#$6,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE3.l,d3
+	add.b	(HmAwBonus).l,d3
 	bsr.w	.next12
 	lsr.b	#$1,d3
 	eori.b	#$F,d3
@@ -2469,7 +2469,7 @@ SetPlayerSide
 	lsr.b	#$4,d3
 	move.w	#$8,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE2.l,d3
+	add.b	(ThirdPBonus).l,d3
 	bsr.w	.next12
 	move.b	d3,$75(a3)
 	bclr	#$3,$4(a3)
@@ -2484,18 +2484,18 @@ SetPlayerSide
 	lsr.b	#$4,d3
 	move.w	#$A,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE0.l,d3
-	add.b	$18AE1.l,d3
-	add.b	$18AE3.l,d3
+	add.b	(PPBonus).l,d3
+	add.b	(PKBonus).l,d3
+	add.b	(HmAwBonus).l,d3
 	bsr.w	.next12
 	move.b	d3,$71(a3)
 	move.b	$5(a0),d3
 	andi.b	#$F,d3
 	move.w	#$B,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE0.l,d3
-	add.b	$18AE1.l,d3
-	add.b	$18AE3.l,d3
+	add.b	(PPBonus).l,d3
+	add.b	(PKBonus).l,d3
+	add.b	(HmAwBonus).l,d3
 	bsr.w	.next12
 	move.b	d3,$6D(a3)
 	move.b	$6(a0),d3
@@ -2507,16 +2507,16 @@ SetPlayerSide
 	andi.b	#$F,d3
 	move.w	#$D,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE2.l,d3
-	add.b	$18AE2.l,d3
+	add.b	(ThirdPBonus).l,d3
+	add.b	(ThirdPBonus).l,d3
 	bsr.w	.next12
 	move.b	d3,$70(a3)
 	move.b	$7(a0),d3
 	lsr.b	#$4,d3
 	move.w	#$E,(TempWord2).l
 	jsr	(AttributeCalc).l
-	add.b	$18AE0.l,d3
-	add.b	$18AE3.l,d3
+	add.b	(PPBonus).l,d3
+	add.b	(HmAwBonus).l,d3
 	bsr.w	.next12
 	move.b	d3,$6E(a3)
 	move.b	$7(a0),$73(a3)
@@ -2569,7 +2569,7 @@ VBlankMainHandler	movem.l	d0-d7/a0-a6,-(sp)
 	rts
 .next4	tst.w	(shootoutclock).l
 	beq.w	.loop
-	subi.w	#$AAA,$193B8.l
+	subi.w	#$AAA,(shootoutjiffy).l
 	bcc.w	.loop
 	bset.b	#$3,(disflags).l
 	btst.b	#$7,(gmode2).l

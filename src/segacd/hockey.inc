@@ -403,3 +403,58 @@ lognametext	equ	$1AD5C			;the unused TerminateLogName's GetLogName String text (
 songdelay	equ	$1AD6E			;frames until the delayed song starts
 delayedsong	equ	$1AD70			;song waiting to start
 shootoutdelay	equ	$1AD72			;Frames before the shootout ends
+
+; --- variables named from the cartridge twin of each routine (tools/segcd_ramnames.py) ---
+NumCwdExciteLvl	equ	$17CDC			;crowd level sample count.
+pads	equ	$17D04			;face-off ice pad object (93 pads object 0). Not joypads
+Joy1Struct	equ	$17D20			;controller 1 and 2 arrow objects (93 pads+ffosize, two ffo)
+CameraPosStruct	equ	$17D58			;scroll camera: tracked object, target and the lead on the scroll
+replayactive	equ	$17D6E			;set by ReplayMode.
+Joy3Struct	equ	$17D74			;controller 3 arrow object (4 Way Play; 93 had glovestruct here)
+Joy4Struct	equ	$17D90			;controller 4 arrow object (4 Way Play)
+glovestruct	equ	$17DAC			;gloves object, pads+(4*ffosize).
+sso	equ	$17DD8			;screen objects not tied to the rink scroll: 2 arrows for off screen
+puckcross	equ	$17E36			;xcord / frames, top entry then bottom (93G rs.w 4)
+TempLegSpd	equ	$17E6E			;temporary: leg speed
+scorergoalies	equ	$17E98			;first goalie slot of the scoring team (scorer check in setup)
+recties	equ	$17E9A			;team record: ties
+reclosses	equ	$17E9C			;team record: losses
+recwins	equ	$17E9E			;team record: wins
+ChkBodyG	equ	$17EB4			;body check strength of the goalie
+ChkBodySqG	equ	$17EB6			;body check strength squared, goalie
+NegChkBodyG	equ	$17EBA			;negated body check strength of the goalie
+onetimerclock	equ	$17EBE			;one timer timing clocks
+clockram	equ	$17ED4			;ram for dma transfer of clock digits
+PushWidthBuf	equ	$17F56			;PushNumberWidth string: length word, then digits.
+PushNumberBuf	equ	$17F5E			;PushNumber builds its string down from here.
+sflags4	equ	$17F72			;94 flag word: reverse angle replay (bits 4, 6, 7), slot, penalty shot
+CwdChkCnt	equ	$17F86			;Crowd meter update count
+InjCntDown	equ	$1806A			;frames until the injury box is shown after an injury
+RefRamMap	equ	$18074			;ref cam map words (refwidth x refheight)
+ChkCnt	equ	$180EC			;check counter for the player check stat
+ScoreSum	equ	$180F2			;scoring summary: 6 bytes per goal (scorer, assists, time)
+PenSum	equ	$1825C			;penalty summary log, 4 bytes per penalty.
+potree	equ	$18AA6			;team in the tree
+PlList	equ	$18AC6			;list of players used differently
+PPBonus	equ	$18AE0			;check bonuses, cleared together by clr.l.
+PKBonus	equ	$18AE1			;penalty kill bonus
+ThirdPBonus	equ	$18AE2			;third period bonus
+HmAwBonus	equ	$18AE3			;home / visitor bonus
+dmaram	equ	$18C1C			;dma ram area.
+databuffer	equ	$18C26			;scratch data buffer
+energybarchars	equ	$18D46			;vram tiles for the energy bar
+logobox1chars	equ	$19398			;logo box 1 characters
+logobox2chars	equ	$1939A			;logo box 2 characters
+homegoalies	equ	$193AA			;home team goalies
+awaygoalies	equ	$193AC			;away team goalies
+homeplayers	equ	$193AE			;Players of the home team (CountPlayers)
+awayplayers	equ	$193B0			;Players of the away team (CountPlayers)
+shootoutjiffy	equ	$193B8			;shootout frame counter
+nameframechars	equ	$1A3D2			;Name entry frame chars (NameEntryFramer)
+shootoutstate	equ	$1A414			;first of the 19 words ClearGameStats clears (shootout
+homepresses	equ	$1AD46			;home team button presses
+homedirpresses	equ	$1AD4A			;home team direction presses
+awaypresses	equ	$1AD4E			;away team button presses
+awaydirpresses	equ	$1AD52			;away team direction presses
+replayicontimer	equ	$1AD56			;replay icon timer
+TmpPuckX	equ	$1AD58			;temporary puck x

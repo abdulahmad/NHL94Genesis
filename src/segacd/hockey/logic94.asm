@@ -752,7 +752,7 @@ doinputExitButtons	btst	#$5,d1
 	bset	#$1,$63(a3)
 	bne.w	doinputCheckAnimFlag
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$17E36,a0
+	movea.l	#puckcross,a0
 	move.w	#$108,d3
 	btst	#$7,$62(a3)
 	beq.w	.next9
@@ -2808,20 +2808,20 @@ checkanim
 
 ; checkanim: stores the frame counter and tests the flags
 checkanimFlags
-	move.w	(puckx).l,$1AD58.l
-	btst	#$0,$17F72.l
+	move.w	(puckx).l,(TmpPuckX).l
+	btst	#$0,(sflags4).l
 	beq.w	.next3
 	btst	#$1,$63(a3)
 	bne.w	.next3
-	btst	#$1,$17F72.l
+	btst	#$1,(sflags4).l
 	beq.w	.next
-	btst	#$3,$17F72.l
+	btst	#$3,(sflags4).l
 	bne.w	.next3
 	cmpi.w	#$2C4,$6(a3)
 	bne.w	.next3
 	cmpi.w	#$2C8,$6(a3)
 	bne.w	.next3
-	bset	#$3,$17F72.l
+	bset	#$3,(sflags4).l
 	move.w	#$1C,-(sp)
 	bsr.w	sfx
 	bra.w	.next3
@@ -2835,8 +2835,8 @@ checkanimFlags
 	bgt.w	.next3
 	cmpi.w	#$FFEC,$0(a3)
 	ble.w	.next3
-	bset	#$1,$17F72.l
-	bclr	#$3,$17F72.l
+	bset	#$1,(sflags4).l
+	bclr	#$3,(sflags4).l
 	move.w	#$1596,d1
 	btst	#$7,$62(a3)
 	beq.w	.next2
@@ -2875,7 +2875,7 @@ checkanimFlags
 	bra.w	skateto
 .next7	btst	#$1,$63(a3)
 	bne.w	ClampYPositionExit
-	btst	#$0,$17F72.l
+	btst	#$0,(sflags4).l
 	beq.w	.next9
 	cmpi.w	#$2C5,$6(a3)
 	beq.w	.next8
@@ -3019,7 +3019,7 @@ checkanimFlags
 	bset	#$1,$63(a3)
 	addi.w	#$96,(Crowdlevel).l
 	rts
-.next23	movea.l	#$17E36,a0
+.next23	movea.l	#puckcross,a0
 	move.w	#$104,d3
 	btst	#$7,$62(a3)
 	beq.w	.next24
@@ -3054,9 +3054,9 @@ checkanimFlags
 	sub.w	$0(a0),d0
 	asr.w	#$1,d0
 	add.w	$0(a0),d0
-	move.w	d0,$1AD58.l
+	move.w	d0,(TmpPuckX).l
 	movea.l	(sp)+,a0
-.next27	move.w	$1AD58.l,d0
+.next27	move.w	(TmpPuckX).l,d0
 	move.w	(pucky).l,d1
 	bsr.w	ClampYPosition
 	bsr.w	vtoa
@@ -3073,7 +3073,7 @@ checkanimFlags
 .next29	move.w	d0,d1
 	muls.w	(puckvx).l,d0
 	swap	d0
-	add.w	$1AD58.l,d0
+	add.w	(TmpPuckX).l,d0
 	muls.w	(puckvy).l,d1
 	swap	d1
 	add.w	(pucky).l,d1
@@ -3140,7 +3140,7 @@ checkanimFlags
 	cmpi.w	#$FF04,(pucky).l
 	bgt.w	.loop5
 .next37	moveq	#$18,d0
-	tst.w	$1AD58.l
+	tst.w	(TmpPuckX).l
 	bpl.w	.loop5
 	neg.w	d0
 .loop5	move.w	d2,d1
@@ -4169,7 +4169,7 @@ assnearestCheck	bclr	#$2,(sflags5).l
 	move.w	#$FFBC,d1		;move FFBC into d1
 .spdboost	btst	#$5,(sflags6).l		;check if puckc is in the slot
 	beq.w	.noslot		;branch if not
-	move.b	$69(a3),$17E6E.l		;legspd into TempLegSpd
+	move.b	$69(a3),(TempLegSpd).l		;legspd into TempLegSpd
 	addi.b	#$6,$69(a3)		;add 6 to legspd
 	btst	#$1,(sflags8).l		;check if crowd meter broken (always is)
 	bne.w	.spdboostex		;jump if set
@@ -4181,7 +4181,7 @@ assnearestCheck	bclr	#$2,(sflags5).l
 	move.b	#$1E,$69(a3)		;limit legspd to $1E (30 decimal)
 .cont	lea.l	$341EE.l,a0
 	bsr.w	skateto
-	move.b	$17E6E.l,$69(a3)		;move original legpsd back into player
+	move.b	(TempLegSpd).l,$69(a3)		;move original legpsd back into player
 	bra.w	.chkslot
 .noslot	lea.l	$341EE.l,a0
 	bsr.w	skateto
@@ -5691,7 +5691,7 @@ findpc						;find puck crossing lines: calculate when puck will cross goalline (
 	
 	
 	movem.l	d0-d4/a1-a2,-(sp)
-	movea.l	#$17E36,a1
+	movea.l	#puckcross,a1
 	move.w	#$88,d1
 	move.w	#$108,d4
 	bsr.w	.calc
@@ -6175,7 +6175,7 @@ goalieaccControlled	btst	#$3,$62(a3)
 	move.w	$54(a3),d0
 	bra.w	.checkadjust
 .usevtoa	bsr.w	vtoa
-.checkadjust	btst	#$0,$17F72.l
+.checkadjust	btst	#$0,(sflags4).l
 	bne.w	.adjustkeepdir
 	bsr.w	AdjustFacingDirection
 	movem.w	(sp)+,d0-d1

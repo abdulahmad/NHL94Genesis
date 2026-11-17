@@ -504,7 +504,7 @@ LineEditorExit
 	move.l	(menudraw).l,-(sp)
 	movea.l	#$3C000,a1
 	movea.l	#LineEditorMenuText,a0
-	movea.l	#$18C26,a3
+	movea.l	#databuffer,a3
 	move.w	$2A(a2),d0
 	addi.w	#$1,d0
 	cmp.b	(a3),d0
@@ -549,7 +549,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	
 	
 	movem.l	d0-d4/a0/a3,-(sp)
-	movea.l	#$18C26,a0
+	movea.l	#databuffer,a0
 	adda.w	#$1,a0
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
@@ -582,7 +582,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into databuffer and
 	
 	movem.l	d0-d4/a0-a3,-(sp)
-	movea.l	#$18C26,a0
+	movea.l	#databuffer,a0
 	move.w	$2A(a2),d0
 	addi.w	#$1,d0
 	move.b	d0,(a0)+
@@ -1049,7 +1049,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#$7FF,d2		;blank tile
 	jsr	(eraser).l
 	move.w	(sp)+,(printy).l
-	movea.l	#$180F2,a0
+	movea.l	#ScoreSum,a0
 	move.w	(a0,d3.w),d0		;goal time
 	move.w	#$1,(printx).l
 	jsr	(FormatAndPrintTime).l
@@ -1236,7 +1236,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	move.w	#$7FF,d2		;blank tile
 	jsr	(eraser).l
 	move.w	(sp)+,(printy).l
-	movea.l	#$1825C,a0
+	movea.l	#PenSum,a0
 	move.w	(a0,d3.w),d0		;penalty time
 	move.w	#$1,(printx).l
 	jsr	(FormatAndPrintTime).l
@@ -1295,7 +1295,7 @@ PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of 
 									;team as PlayerStatsList with d7 = 1. Called and the menu lists
 	movem.l	a2,-(sp)
 	jsr	(ReadTeamStats).l
-	movea.l	#$18AA6,a0
+	movea.l	#potree,a0
 	move.w	(potreeteam).l,d0
 	move.b	(a0,d0.w),d0		;his team
 	movea.l	#tmstruct,a2
@@ -1919,7 +1919,7 @@ StatsScreenFadeInClear
 	move.w	(rinkvrcset).l,d4
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
@@ -2068,7 +2068,7 @@ FrameWaitStep	move.w	(ScoutSubStatus).l,d1
 	bsr.w	forceblack
 	move.w	(disflags).l,-(sp)
 	bset.b	#$3,(sflags2).l
-	bclr.b	#$4,$17F72.l
+	bclr.b	#$4,(sflags4).l
 	jsr	(ClrHor).l
 	move.w	#$400,d0
 	move.w	(VmMAP3).l,d1
@@ -2081,7 +2081,7 @@ FrameWaitStep	move.w	(ScoutSubStatus).l,d1
 	jsr	(ReadActiveJoypadPrint).l
 	bclr.b	#$5,(sflags).l
 	bclr.b	#$5,(sflags3).l
-	st.b	$17D6E.l
+	st.b	(replayactive).l
 	movea.l	(recbpr).l,a4
 .loop2	bsr.w	suba4
 	tst.w	d7
@@ -2100,11 +2100,11 @@ WaitFramesD7	move.w	(ScoutSubStatus).l,d0
 	cmp.w	d0,d7
 	bhi.w	WaitFramesD7
 	move.w	(ScoutSubStatus).l,(OldVcount).l
-	tst.w	$1AD56.l
+	tst.w	(replayicontimer).l
 	bmi.w	.next
-	sub.w	d7,$1AD56.l
+	sub.w	d7,(replayicontimer).l
 	bpl.w	.next
-	clr.w	$1AD56.l
+	clr.w	(replayicontimer).l
 	jsr	(ControllerTextClear).l
 .next	movem.l	d0/a3,-(sp)
 	movea.l	#$17A80,a3
@@ -2120,7 +2120,7 @@ WaitFramesD7	move.w	(ScoutSubStatus).l,d0
 	ori.w	#$8,d0
 	andi.w	#$FFF0,d1
 	andi.w	#$FFF0,d3
-.next2	movea.l	#$17D58,a5
+.next2	movea.l	#CameraPosStruct,a5
 	btst.b	#$5,(sflags3).l
 	beq.w	.next3
 	move.w	d1,d5
@@ -2284,7 +2284,7 @@ DirectionPressCheck	st.b	$18(a5)
 	bne.w	.next9
 	btst	#$5,d1
 	beq.w	WaitFramesD7
-	bset.b	#$6,$17F72.l
+	bset.b	#$6,(sflags4).l
 	bclr.b	#$0,(sflags5).l
 	jsr	(ControllerPictureClear).l
 	bsr.w	adda4
@@ -2297,7 +2297,7 @@ DirectionPressCheck	st.b	$18(a5)
 	ori.w	#$F000,(PadControlBits).l
 	bclr.b	#$5,(sflags).l
 	movea.l	(recbpr).l,a4
-	bclr.b	#$4,$17F72.l
+	bclr.b	#$4,(sflags4).l
 	bsr.w	RestoreReplayFrameCopy
 	jsr	(SprSort).l
 	bclr.b	#$3,(sflags2).l
@@ -2332,7 +2332,7 @@ ReadActiveJoypad
 .next3	jmp	(ReadJoy4).l
 ; Prints the controller text on the pad test screen.
 ReadActiveJoypadPrint
-	move.w	#$F0,$1AD56.l
+	move.w	#$F0,(replayicontimer).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$2
 	moveq	#$20,d0
@@ -2342,7 +2342,7 @@ ReadActiveJoypadPrint
 	move.w	(rinkvrcset).l,d4
 	move.w	#$0,d5
 	movea.l	$47D18.l,a1
-	btst	#$4,$17F72.l
+	btst	#$4,(sflags4).l
 	beq.w	.next4
 	movea.l	$47D64.l,a1
 .next4	adda.l	$4(a1),a1
@@ -2358,7 +2358,7 @@ ControllerTextClear
 	jmp	(eraser).l
 ; Draws the controller picture on the pad screen and arms the text timer.
 ControllerPictureDraw
-	st.b	$1AD56.l
+	st.b	(replayicontimer).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$0
 	moveq	#$0,d0
