@@ -45,7 +45,7 @@ CopyData_2	link	a6,#$0
 	move.l	d0,$C(a4)
 	move.l	$C(a6),$10(a4)
 	move.l	d0,$14(a4)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	a4,$1C(a0)
 	move.l	a4,-(sp)
 	jsr	EngineIdle(pc)

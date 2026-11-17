@@ -253,7 +253,7 @@ ffree	movem.l	a3-a4,-(sp)
 findSmallestBlock	dc.w	$4E56,$0000
 findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#$0,d0
 	movea.l	d0,a3
@@ -283,7 +283,7 @@ findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	dc.b	$63,$6B,$00,$00	; ck..
 findSmallestBlock_1	dc.w	$4E56,$0000
 MaxFree	movem.l	d6-d7/a4,-(sp)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#-1,d6
 	dc.w	$601C
@@ -356,10 +356,10 @@ mmalloc	movem.l	d6-d7/a3-a4,-(sp)
 	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	dc.w	$4E56,$0000
 InitHeapSub1	movem.l	a3-a4,-(sp)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	movea.l	$8(a0),a3
-	lea.l	RestoreBios_75(pc),a0
-	lea.l	RestoreBios_75(pc),a1
+	lea.l	RestoreBios_85(pc),a0
+	lea.l	RestoreBios_85(pc),a1
 	move.l	$C(a1),d0
 	add.l	$8(a0),d0
 	movea.l	d0,a4
@@ -386,7 +386,7 @@ InitHeap_1	dc.w	$4E56,$0000
 	clr.w	$FF8020.l
 	pea.l	.l26052(pc)
 	jsr	HexStr_1(pc)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	moveq	#$F,d7
 	and.l	$8(a0),d7
 	tst.l	d7
@@ -395,30 +395,30 @@ InitHeap_1	dc.w	$4E56,$0000
 	pea.l	.l26046(pc)
 	jsr	HexStr_1(pc)
 	addq.w	#$4,sp
-.l4CB2	lea.l	RestoreBios_75(pc),a0
+.l4CB2	lea.l	RestoreBios_85(pc),a0
 	move.l	$8(a0),d0
 	moveq	#$F,d1
 	add.l	d1,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	d2,$8(a0)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	$C(a0),d0
 	sub.l	d7,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	d2,$C(a0)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	$8(a0),-(sp)
 	pea.l	.l26036(pc)
 	jsr	HexStr_1(pc)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	$C(a0),-(sp)
 	pea.l	.l26026(pc)
 	jsr	HexStr_1(pc)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	tst.l	$C(a0)
 	lea.l	$10(sp),sp
 	dc.w	$6704
@@ -432,13 +432,13 @@ InitHeap_1	dc.w	$4E56,$0000
 .l26046	dc.b	'Fixing Heap',$00	; Fixing Heap.
 .l26052	dc.b	'SUBCPU is alive',$00	; SUBCPU is alive.
 GetTicks	dc.w	$4E56,$0000
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	move.l	$4(a0),d0
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$88,'GetTicks',$00,$00,$00	; .GetTicks...
 GetTicks_1	dc.w	$4E56,$0000
-.l4D82	lea.l	RestoreBios_75(pc),a0
+.l4D82	lea.l	RestoreBios_85(pc),a0
 	tst.l	$10(a0)
 	bne.b	.l4D82
 	unlk	a6

@@ -35,6 +35,8 @@ CFG = {
               ("filmclose", 0x473A, 0x477C), ("filmcmd", 0x4D9E, 0x4DCA), ("filmbuf", 0x4E26, 0x4EC0), ("subheap", 0x4FA8, 0x5068),
               ("audiostream", 0x508C, 0x5304), ("cdfade", 0x54F6, 0x556E)],
         opts_off=("subboot", "subheap", "pcmclear", "cdcwait", "pcmchip", "audiostream", "cdfade"), string_calls=(),
+        # calls that read inline data from the return address: 18 bytes of command words, or a length word
+        inline_calls={0x24620: 18, 0xE320: 18, 0x24958: "w"},
     ),
     "MAIN": dict(
         disc="cdbin/MAIN.BIN", base=0xFF0000, name="main", asset_min=512,
@@ -155,6 +157,8 @@ def main():
         names.setdefault(ad, nm)
 
     # 3. code in the gaps
+    F.INLINE.clear()
+    F.INLINE.update(cfg.get("inline_calls", {}))
     cov = bytearray(n)
     for a, b in ((x - base, y - base) for x, y in hand_ranges):
         for k in range(a, b):
@@ -176,8 +180,9 @@ def main():
             seeds.add(v - base)
     link = [i for i in range(0, n - 1, 2) if d[i:i + 2] in (b"\x4e\x56", b"\x48\xe7") and not cov[i]]
     insns, calls, labs = {}, set(), set()
-    F.find_code_seeded(d, base, sorted(seeds), cov, insns, cfg["string_calls"])
+    # prologues first: a pointer-looking word can point into the middle of an instruction
     F.find_code_seeded(d, base, link, cov, insns, cfg["string_calls"])
+    F.find_code_seeded(d, base, sorted(seeds), cov, insns, cfg["string_calls"])
     F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
     print("gap code: %d instructions" % len(insns), flush=True)
 

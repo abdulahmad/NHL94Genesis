@@ -979,9 +979,9 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 	dc.b	'NHLHOCKEY94',$00,$00,$3D,$41,$F9	; NHLHOCKEY94..=A.
 	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
 	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
-	dc.b	$51,$C8,$FF,$FC,$4E,$75,$48,$E7,$FF,$E0,$33,$FC	; Q...NuH...3.
-GetDataSub14	ori.b	#$0,d1
-	and.w	(a0),d2
+	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
+GetDataSub14	movem.l	d0-d7/a0-a2,-(sp)
+	move.w	#$1,$C450.l
 	tst.w	$C44E.l
 	bne.w	GetData_25
 	bset.b	#$5,$FF800F.l

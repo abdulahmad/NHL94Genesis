@@ -6,11 +6,11 @@
 
 Wait_23	link	a6,#$0
 	move.l	a4,-(sp)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_85(pc),a0
 	lea.l	$40(a0),a4
 	pea.l	$30(a4)
 	jsr	GetData_10(pc)
-	jsr	RestoreBios_100(pc)
+	jsr	RestoreBios_110(pc)
 	pea.l	$18(a4)
 	jsr	CopyData_3(pc)
 	moveq	#-1,d0

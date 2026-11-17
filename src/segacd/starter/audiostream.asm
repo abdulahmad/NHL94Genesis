@@ -15,7 +15,7 @@ GetData_2; AudioPlayPos
 	bne.b	.l263A0
 	moveq	#$0,d0
 	bra.b	.l263C0
-.l263A0	jsr	RestoreBios_93(pc)
+.l263A0	jsr	RestoreBios_103(pc)
 	moveq	#$C,d1
 	asr.l	d1,d0
 	move.l	d0,-$4(a6)
@@ -42,7 +42,7 @@ GetData_3; AudioInit
 	move.l	d1,$4(a4)
 	move.l	d1,$8(a4)
 	move.l	d1,$C(a4)
-	jsr	RestoreBios_90(pc)
+	jsr	RestoreBios_100(pc)
 	movea.l	-$4(a6),a4
 	unlk	a6
 	rts
@@ -68,7 +68,7 @@ GetData_4; AudioIdle
 	jsr	GetData_16(pc)
 	move.l	d0,-(sp)
 	move.l	$8(a4),-(sp)
-	jsr	RestoreBios_94(pc)
+	jsr	RestoreBios_104(pc)
 	addq.l	#$1,$4(a4)
 	addi.l	#$1000,$8(a4)
 	subi.l	#$1000,$C(a4)
@@ -105,7 +105,7 @@ GetData_7	tst.l	$C(a4)
 	moveq	#$8,d0
 	cmp.l	$4(a4),d0
 	bgt.b	GetData_6
-.l264C2	jsr	RestoreBios_91(pc)
+.l264C2	jsr	RestoreBios_101(pc)
 	moveq	#$0,d0
 	move.l	d0,(a4)
 GetData_8	movea.l	-$4(a6),a4
@@ -137,7 +137,7 @@ GetData_9; AudioSilence
 	moveq	#$0,d7
 .l26518	move.l	d7,-(sp)
 	move.l	a4,-(sp)
-	jsr	RestoreBios_94(pc)
+	jsr	RestoreBios_104(pc)
 	addq.w	#$8,sp
 	move.l	d7,d0
 	addq.l	#$1,d7
@@ -146,7 +146,7 @@ GetData_9; AudioSilence
 	bgt.b	.l26518
 	move.l	a4,-(sp)
 	jsr	aprint_1(pc)
-	jsr	RestoreBios_91(pc)
+	jsr	RestoreBios_101(pc)
 	moveq	#$0,d0
 	move.l	d0,(a3)
 	addq.w	#$4,sp
@@ -157,7 +157,7 @@ GetData_9; AudioSilence
 	dc.b	$8C,'AudioSilence',$00,$00,$00	; .AudioSilence...
 GetData_10; AudioStop
 	link	a6,#$0
-	jsr	RestoreBios_92(pc)
+	jsr	RestoreBios_102(pc)
 	unlk	a6
 	rts
 ; AudioStop
@@ -172,7 +172,7 @@ GetData_11; AudioTicks
 	move.l	(a4),d1
 	lsl.l	d0,d1
 	move.l	d1,-$4(a6)
-	jsr	RestoreBios_93(pc)
+	jsr	RestoreBios_103(pc)
 	move.l	#$FFF,d1
 	and.l	d0,d1
 	move.l	-$4(a6),d0
