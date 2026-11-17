@@ -464,7 +464,7 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 	move.w	(VisTeam).l,d1
 	move.w	d1,d0
 	asl.w	#$6,d0		;64 bytes per team
-	movea.l	#$25060,a0
+	movea.l	#TeamPalettes,a0
 	move.l	$26(a0,d0.w),$BBCD6.l		;B palette colors into palette 1
 	move.w	$1939C.l,d4
 	bsr.w	DrawTeamBitmap
@@ -473,7 +473,7 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 	move.w	(HomeTeam).l,d1
 	move.w	d1,d0
 	asl.w	#$6,d0		;64 bytes per team
-	movea.l	#$25060,a0
+	movea.l	#TeamPalettes,a0
 	move.l	$2(a0,d0.w),$BBCD2.l		;A palette colors into palette 1
 	move.w	#$EEE,$BBCDA.l		;colour 5 white
 	move.w	#$2,d4		;first bitmap char

@@ -223,11 +223,11 @@ L35610	moveq	#$C,d0
 	exg.l	d0,d1
 .next	bsr.w	printsmallz
 	dc.b	$00,$06,$FB,$01,$FA,$FE	; ......
-L3563C	movea.l	#$419F6,a1
+L3563C	movea.l	#linelist,a1
 	dc.w	$6100,$787A
 	addi.w	#$4,$18D58.l
 	move.w	d1,d0
-	movea.l	#$419F6,a1
+	movea.l	#linelist,a1
 	dc.w	$6100,$7866
 L3565A	move.w	#$78,d0
 	bsr.w	randomd0

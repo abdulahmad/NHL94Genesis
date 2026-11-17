@@ -515,16 +515,16 @@ DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, 
 .loop3	addi.w	#$1,d3
 	asl.w	#$4,d1
 	bne.w	.loop3
-	movea.l	#$433AA,a0
+	movea.l	#NoPicGoalie1,a0
 	btst	#$0,$4(a6)
 	bne.w	.3
-	movea.l	#$43714,a0
+	movea.l	#NoPicGoalie2,a0
 .3	cmp.w	d3,d0
 	blt.w	.x
-	movea.l	#$43040,a0
+	movea.l	#NoPicSkater2,a0
 	btst	#$0,$4(a6)
 	bne.w	.x
-	movea.l	#$42CD6,a0
+	movea.l	#NoPicSkater1,a0
 .x	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even length
@@ -637,7 +637,7 @@ L2650C	move.w	$17FAE.l,d3
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
 	asl.w	#$3,d3
-	movea.l	#$2AF56,a0
+	movea.l	#TeamLogoPalettes,a0
 	subi.w	#$40,d3
 	adda.w	d3,a0
 	adda.l	(a2)+,a1

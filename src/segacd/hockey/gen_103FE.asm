@@ -137,8 +137,8 @@ HotColdIconExitSub3
 	move.l	a0,$47DA0.l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	movea.l	$47DA0.l,a1
-	lea.l	$223D6.l,a2
-	lea.l	$222EA.l,a3
+	lea.l	FileLoadOrder.l,a2
+	lea.l	FileLoadTable.l,a3
 	move.w	#$8,d7
 	jsr	$6044.w
 	jsr	$37598.l

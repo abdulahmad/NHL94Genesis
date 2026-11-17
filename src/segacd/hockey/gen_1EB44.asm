@@ -79,7 +79,7 @@ SetPA2						;update animation for ref. Next frame/delay pair from the Penaltylis
 	move.w	$18070.l,d0
 	addi.w	#$2,$18070.l
 	move.w	$18072.l,d1
-	movea.l	#$4165C,a0
+	movea.l	#Penaltylist,a0
 	adda.w	(a0,d1.w),a0
 	adda.w	#$2,a0
 	adda.w	(a0),a0
@@ -155,7 +155,7 @@ prefmes						;print message for penalty d0 (negative clears it). Vertical mode: 
 	bra.w	.next
 .noblank	bsr.w	printz
 	String	CC_Font1Pri,$5,$A
-	movea.l	#$4165C,a1
+	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
 	adda.w	#$2,a1
 	move.w	(a1),d0
@@ -180,7 +180,7 @@ prefmes						;print message for penalty d0 (negative clears it). Vertical mode: 
 	bmi.w	.next
 	bsr.w	printz
 	String	CC_Font1Pri,$11,$B
-	movea.l	#$4165C,a1
+	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
 	adda.w	#$2,a1
 	move.w	(a1),d0
@@ -329,7 +329,7 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 	addi.w	#$1,$26(a2)
 	bset	#$0,$1837E.l
 	bset	#$0,$186E4.l
-	movea.l	#$41AD6,a0
+	movea.l	#priolist,a0
 	tst.w	$28(a2)
 	bpl.w	.1
 	adda.w	#$1,a0

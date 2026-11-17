@@ -1,3 +1,5 @@
+TileNumberTables					;disc only: tables of VDP tile numbers (word rows of consecutive numbers), then the pointer
+									;slots the file loader fills ($47CFC and up: ScoutingReportText, BigFontMap ...)
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_2C65C.bin
 	rts
 	rts

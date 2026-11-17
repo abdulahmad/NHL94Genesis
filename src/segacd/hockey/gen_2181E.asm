@@ -338,7 +338,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	bsr.w	PrintTickerEntry
 	move.w	$8(a0),d0
 	subi.w	#$1,d0
-	movea.l	#$41A34,a1
+	movea.l	#PerLabels,a1
 	bsr.w	SkipListEntries
 	move.w	(a1),d0
 	lsr.w	#$1,d0
@@ -530,7 +530,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	clr.w	$2A(a1)
 	adda.w	#$80,a1
 	dbra	d0,.loop8
-	bsr.w	SprSortSetup
+	bsr.w	SprSort
 	move.w	#$18,(palcount).l
 	move.w	(ScoutSubStatus).l,$17476.l
 	move.w	#$B4,-(sp)
@@ -713,7 +713,7 @@ SetPlList						;create PlList of players who we want on the ice now. a2 = team s
 	movea.l	#$18AC6,a4
 	clr.l	(a4)		;goalie present: use the position priority list from the start
 	clr.w	$4(a4)
-	movea.l	#$41AD6,a0
+	movea.l	#priolist,a0
 	tst.w	$28(a2)
 	bpl.w	.next		;branch if theres a goalie
 	adda.w	#$1,a0		;add 1 to a0
@@ -748,7 +748,7 @@ SetPlList						;create PlList of players who we want on the ice now. a2 = team s
 	move.b	$6(a4,d4.w),d0		;move 6+a4+d4 into d0 (previous d5)
 	ext.w	d0
 	asl.w	#$1,d0
-	movea.l	#$41A6C,a0		;move sublist into a0
+	movea.l	#sublist,a0		;move sublist into a0
 	adda.w	(a0,d0.w),a0		;move a0+d0 into a0
 .loop3	clr.w	d0
 	move.b	(a0)+,d0

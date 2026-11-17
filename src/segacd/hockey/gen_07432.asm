@@ -38,10 +38,10 @@
 	jsr	$5F16.w
 	bcs.w	.next5
 	move.w	#$5,d0
-	lea.l	$2240C.l,a0
+	lea.l	BackupRamName.l,a0
 	jsr	$5F16.w
 	move.w	#$4,d0
-	lea.l	$2241C.l,a0
+	lea.l	BackupRamNameSize.l,a0
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
 	bcc.w	.next6

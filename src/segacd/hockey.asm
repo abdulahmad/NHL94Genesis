@@ -4,7 +4,7 @@
 	org	$1B000
 
 	include	..\output\obj\hockey_teamdata.asm
-	include	segacd\hockey\gen_05432.asm
+	include	frames94.asm					;sprite animation tables, the same file the cartridge includes
 	include	segacd\hockey\gen_06432.asm
 	include	segacd\hockey\gen_07432.asm
 	include	segacd\hockey\gen_083CC.asm

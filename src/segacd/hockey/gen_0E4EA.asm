@@ -83,7 +83,7 @@ L29630	movea.l	$47D8C.l,a0
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
 	asl.w	#$3,d0
-	movea.l	#$2AF56,a0
+	movea.l	#TeamLogoPalettes,a0
 	subi.w	#$40,d0
 	adda.w	d0,a0
 	adda.l	(a2)+,a1
@@ -109,7 +109,7 @@ L2968C	movea.l	$47D8C.l,a0
 	adda.l	(a2)+,a0
 	asl.w	#$3,d0
 	subi.w	#$40,d0
-	movea.l	#$2AF56,a0
+	movea.l	#TeamLogoPalettes,a0
 	adda.w	d0,a0
 	adda.l	(a2)+,a1
 	clr.w	d1
@@ -504,7 +504,62 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	jmp	(print).l
 .next	jmp	(PushNumber).l
 .next2	jmp	(PushTime).l
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0EE56.bin
+TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
+									;none). 15 rows
+	String	'Score'
+	dc.b	$00,$0C,$FF,$FF
+	String	'Shots'
+	dc.b	$00,$00,$FF,$FF
+	String	'Shooting Pct'
+	dc.w	$FFFF,$FFFF
+	String	'Power Play'
+	dc.b	$00,$02,$00,$04
+	String	'PP Minutes'
+	dc.b	$03,$54,$FF,$FF
+	String	'PP Shots'
+	dc.b	$03,$56,$FF,$FF
+	String	'SH Goals'
+	dc.b	$03,$58,$FF,$FF
+	String	'Breakaways'
+	dc.b	$03,$5C,$03,$5A
+	String	'One-Timers'
+	dc.b	$03,$60,$03,$5E
+	String	'Penalty Shots'
+	dc.b	$03,$64,$03,$62
+	String	'Faceoffs Won'
+	dc.b	$00,$0E,$FF,$FF
+	String	'Body Checks'
+	dc.b	$00,$10,$FF,$FF
+	String	'Penalties'
+	dc.b	$00,$06,$00,$08
+	String	'Attack Zone'
+	dc.b	$00,$0A,$FF,$FF
+	String	'Passing'
+	dc.b	$00,$14,$00,$12
+TeamStatTextTblNoPen				;The rows without the power play ones, used when penalties are off. 11
+									;rows
+	String	'Score'
+	dc.b	$00,$0C,$FF,$FF
+	String	'Shots'
+	dc.b	$00,$00,$FF,$FF
+	String	'Shooting Pct'
+	dc.w	$FFFF,$FFFF
+	String	'Breakaways'
+	dc.b	$03,$5C,$03,$5A
+	String	'One-Timers'
+	dc.b	$03,$60,$03,$5E
+	String	'Penalty Shots'
+	dc.b	$03,$64,$03,$62
+	String	'Faceoffs Won'
+	dc.b	$00,$0E,$FF,$FF
+	String	'Body Checks'
+	dc.b	$00,$10,$FF,$FF
+	String	'Penalties'
+	dc.b	$00,$06,$00,$08
+	String	'Attack Zone'
+	dc.b	$00,$0A,$FF,$FF
+	String	'Passing'
+	dc.b	$00,$14,$00,$12
 rtsStatTables
 	rts
 updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for the team
@@ -650,7 +705,46 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	bne.w	.ex
 	bsr.w	EndArenaAnim		;$FE: end the animation
 .ex	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0F26C.bin
+	dc.b	$00,$02,$A3,$E4,$00,$04,$3A,$7E,$00,$02,$A3,$98,$00,$04,$42,$A2
+	dc.b	$00,$02,$A3,$BE,$00,$04,$42,$A2,$00,$02,$A3,$86,$00,$04,$4F,$A8
+	dc.b	$00,$02,$A3,$30,$00,$04,$5A,$16,$00,$02,$A3,$00,$00,$04,$5A,$16
+	dc.b	$00,$02,$A2,$EA,$00,$04,$69,$42,$00,$02,$A2,$AC,$00,$04,$69,$42
+ArenaFrames1						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
+	dc.b	9,$A,$A,$A,1,$A,2,$A,3,$A,4,$A,5,$A,6,$A
+	dc.b	7,$A,8,$A,9,$A,$A,$A,1,$A,2,$A,3,$A,4,$A
+	dc.b	5,$A,6,$A,7,$A,8,$A,9,$A,$A,$A,$FE,0
+ArenaFrames2						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
+	dc.b	9,$A,$A,$A,$FF,0
+ArenaFrames3						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
+	dc.b	9,$A,$A,$A,$B,$A,$C,$A,$D,$A,$E,$A,$F,$A,$10,$A
+	dc.b	$11,$A,$12,$A,$13,$A,$14,$A,$15,$A,$16,$A,$17,$A,$FE,0
+ArenaFrames4						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,8,2,8,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
+	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
+	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
+	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
+	dc.b	3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C,3,$3C,4,$3C
+	dc.b	2,8,1,8,$FF,0
+ArenaFrames5						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,8,2,8,3,8,4,8,5,8,6,8,7,8,8,8
+	dc.b	$FF,0
+ArenaFrames6						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,8,2,8,3,8,4,$1E,5,8,6,8,7,8,8,$1E
+	dc.b	5,8,6,8,7,8,8,$1E,9,8,$A,8,$B,8,$C,8
+	dc.b	$D,8,$E,8,$FE,0
+ArenaFrames7						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	$F,8,$10,8,$11,8,$12,$1E,$13,8,$14,8,$15,8,$16,$1E
+	dc.b	$13,8,$14,8,$15,8,$16,$1E,$17,8,$18,8,$19,8,$1A,8
+	dc.b	$1B,8,$1C,8,$FE,0
+ArenaFrames8						;ArenaAnims frame list: (frame, time) byte pairs, $FF loops, $FE ends
+	dc.b	1,$A,2,$A,3,$A,4,$A,5,$A,6,$A,7,$A,8,$A
+	dc.b	9,$A,$A,$A,$B,$A,$C,$A,$D,$A,$E,$A,$F,$7F,$FE,0
+	dc.b	$08,$F9,$00,$06,$00,$01,$7F,$6A,$33,$FC,$00,$00,$00,$01,$7E,$DC
+	dc.b	$33,$FC,$01,$60,$00,$01,$7E,$DE
+	rts
 StartArenaAnim						;Start arena animation d0 (ArenaAnims): arenaanim = d0, RunArenaAnim loads
 									;it. Called from FallDown (7)
 									;ShowGoalBox (0 on a home hat trick) and puckfaceoff2 (the one

@@ -32,7 +32,7 @@ addframe2
 	move.w	$4(a2),d2
 	clr.w	d4
 	move.b	$7(a2),d4
-	movea.l	#$41A5C,a0
+	movea.l	#sizetab,a0
 	move.b	(a0,d4.w),d4
 	cmp.w	$8(sp),d4
 	bgt.w	.next2
@@ -399,7 +399,7 @@ defaultspritesTbl1	dc.w	$0000,$0000,$FFFF,$0188,$0000,$0007,$0000,$0000
 defaultsprites_0Sub1
 	clr.w	d6
 	movea.l	#$17CC0,a1
-	lea.l	SprSort(pc),a2
+	lea	.list(pc),a2
 	movea.l	#$17480,a3
 	movea.l	#$17CA0,a4
 .loop	moveq	#$1F,d0
@@ -430,13 +430,170 @@ defaultsprites_0Sub1
 	addq.w	#$1,d6
 	cmpi.w	#$10,d6
 	bne.w	.loop
-	bra.w	SprSortSetup
+	bra.w	SprSort
+.list								;start values of the 16 sort objects
+	dc.w	$180					;xcord,ycord,zcord,frame,att,crsize,radx,rady,asslist,pflags home team
+	dc.w	$C0
+	dc.w	0
+	dc.w	1
+	dc.w	0
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$80
+	dc.w	$FF38					;home player 2
+	dc.w	$FF9C
+	dc.w	0
+	dc.w	1
+	dc.w	0
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$80
+	dc.w	$FF38					;home player 3
+	dc.w	$FFB0
+	dc.w	0
+	dc.w	1
+	dc.w	0
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$80
+	dc.w	$FF38					;home player 4
+	dc.w	$FFC4
+	dc.w	0
+	dc.w	1
+	dc.w	0
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$80
+	dc.w	$FF38					;home player 5
+	dc.w	$FFD8
+	dc.w	0
+	dc.w	1
+	dc.w	0
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$80
+	dc.w	$FF38					;home player 6
+	dc.w	$FFEC
+	dc.w	0
+	dc.w	1
+	dc.w	0
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$80
+	dc.w	$C0						;visitor team
+	dc.w	$C0
+	dc.w	0
+	dc.w	1
+	dc.w	1
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$40
+	dc.w	$FF38					;visitor player 2
+	dc.w	$28
+	dc.w	0
+	dc.w	1
+	dc.w	1
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$40
+	dc.w	$FF38					;visitor player 3
+	dc.w	$3C
+	dc.w	0
+	dc.w	1
+	dc.w	1
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$40
+	dc.w	$FF38					;visitor player 4
+	dc.w	$50
+	dc.w	0
+	dc.w	1
+	dc.w	1
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$40
+	dc.w	$FF38					;visitor player 5
+	dc.w	$64
+	dc.w	0
+	dc.w	1
+	dc.w	1
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$40
+	dc.w	$FF38					;visitor player 6
+	dc.w	$78
+	dc.w	0
+	dc.w	1
+	dc.w	1
+	dc.w	$14
+	dc.w	8
+	dc.w	4
+	dc.w	0
+	dc.w	$40
+	dc.w	0						;goal net
+	dc.w	$10C
+	dc.w	0
+	dc.w	SPFgoal					;92 used $18E
+	dc.w	0
+	dc.w	$B
+	dc.w	$14
+	dc.w	6
+	dc.w	0
+	dc.w	0
+	dc.w	0						;goal net 2
+	dc.w	$FEF4
+	dc.w	0
+	dc.w	SPFgoal+1
+	dc.w	0
+	dc.w	$11
+	dc.w	$14
+	dc.w	6
+	dc.w	0
+	dc.w	0
+	dc.w	0						;puck
+	dc.w	0
+	dc.w	0
+	dc.w	SPFpuck+1
+	dc.w	0
+	dc.w	1
+	dc.w	5
+	dc.w	5
+	dc.w	$18
+	dc.w	1
+	dc.w	0						;puck shadow
+	dc.w	0
+	dc.w	0
+	dc.w	SPFpuck					;92 used $183, 4 chars
+	dc.w	0
+	dc.w	$11
+	dc.w	3
+	dc.w	3
+	dc.w	$19
+	dc.w	4
 SprSort						;sort objects in struct SortObj and set corresponding tables for keeping
-	
-	bclr	d0,d0
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_23F00.bin
-; Sets up the sprite sort buffers.
-SprSortSetup
+									;them sorted later (Ylist, OOlist, OOlistpos)
 	movem.l	d0-d4/a0-a2,-(sp)
 	movea.l	#$17CA0,a2
 	movea.l	#$17C80,a1
@@ -707,7 +864,7 @@ GameOverCleanup
 	bne.b	.loop4
 	bclr	#$7,$FF800F.l
 	movea.l	#$18AA6,a1
-	movea.l	#$41ADE,a0
+	movea.l	#PlayoffScreen_setup,a0
 	move.w	$18A9E.l,d0
 	asl.w	#$1,d0
 	adda.w	(a0,d0.w),a0

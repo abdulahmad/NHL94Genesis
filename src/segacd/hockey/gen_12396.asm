@@ -8,11 +8,11 @@ PlayerListDrawSelected
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
 	String	CC_Font3,$16,$FC,$9
-.loop	movea.l	#$41C48,a1
+.loop	movea.l	#PAttribColumns,a1
 	move.w	(scoutcolumn).l,d0
 	tst.w	(SelectedPlayerIdx).l
 	bne.w	.next
-	movea.l	#$41DAA,a1
+	movea.l	#GAttribColumns,a1
 	bra.w	.next
 .loop2	adda.w	(a1),a1
 	adda.w	#$4,a1
@@ -46,7 +46,7 @@ PlayerListDrawSelected
 	asl.w	#$3,d0
 	lea.l	$16C(a2),a3
 	lea.l	$1(a3,d0.w),a3
-	movea.l	#$41A20,a5
+	movea.l	#PlayerPositionText,a5
 	moveq	#$4,d1
 	cmpi.w	#$5,(SelectedPlayerIdx).l
 	ble.w	.loop3
@@ -471,7 +471,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	jsr	(print).l
 	move.b	$2(a0,d3.w),d0
 	andi.w	#$7F,d0
-	movea.l	#$4165C,a3
+	movea.l	#Penaltylist,a3
 	adda.w	(a3,d0.w),a3
 	clr.w	d0
 	move.b	$1(a3),d0		;penalty minutes

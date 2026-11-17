@@ -97,11 +97,7 @@ teamrecbuf	equ	$BC0C8			;SRAM team record buffer
 TempBuffer	equ	$17E70
 sflags6		equ	$17F76
 ThreeStars	equ	$BC000
-PAttribOverallMask	equ	$41C70
-GAttribOverallMask	equ	$41DD2
-PicturePalette	equ	$428A0
 picturebuf	equ	$1A8C0
-TeamLogoPalettes	equ	$2AF56
 TeamLogoBitmaps	equ	$47D8C			;pointer, a loaded file here
 ScoutSubStatus	equ	$17474			;disc only: word the sub CPU sets when the speech clip is done
 
