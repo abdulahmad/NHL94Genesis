@@ -370,7 +370,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 .next	asl.w	#$7,d0
 	movea.l	#$17480,a3
 	adda.w	d0,a3
-	bsr.w	.next3
+	bsr.w	ChkShotStatSwapStructs
 	addi.w	#$1,$0(a2)
 	btst	#$5,$17F6C.l
 	beq.w	.2
@@ -398,6 +398,8 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	addi.b	#$1,(a1,d0.w)
 .next2	movem.l	(sp)+,d0-d1/a1-a3
 	rts
+; Picks the shooting team struct and swaps it for the other side when needed
+ChkShotStatSwapStructs
 .next3	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	btst	#$6,$62(a3)
@@ -912,7 +914,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	CopyTeamLinesCheckTeam
 	bsr.w	SetHor
 	bsr.w	setvideo
-	jsr	$2C1F8.l
+	jsr	(PausemodeVdpFill).l
 	jsr	(DrawMenuScreen).l
 	move.w	#$18,(palcount).l
 	move.w	#$79,-(sp)

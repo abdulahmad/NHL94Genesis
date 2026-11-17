@@ -860,18 +860,18 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 .next	dc.w	$41FA,$000E		; lea.l X_2D5A6(pc),a0
 	adda.w	(a0,d4.w),a0
 	jmp	(a0)
-; Table of 106 words after GetNameandAttrib, 164 bytes: $4CDF,$331F,$4E75,$000C,$009E,$00E8 ...
-	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8
-	dc.w	$00C0,$D040,$3032,$0068,$6A00,$001E,$4640,$0C40
-	dc.w	$0003,$6300,$000A,$7001,$6000,$0004,$7003,$43FA
-	dc.w	$0040,$4EF9,$0003,$CEBE,$0800,$000C,$6600,$FFEE
-	dc.w	$0479,$0001,$0001,$8D58,$3200,$0240,$0FFF,$4EB9
-	dc.w	$0003,$90F4,$4EB9,$0003,$8F80,$7004,$0881,$000E
-	dc.w	$6700,$0004,$7005,$43FA,$0008,$4EF9,$0003,$CEBE
-	dc.b	$00,$0A,'Ice     ',$00,$0A,'Benc'
-	dc.b	'h   ',$00,$0A,'Injury P',$00,$0A
-	dc.b	'Injury G',$00,$06,'    ',$00,$06
-	dc.w	$2043,$2020
+; Code kept as words after GetNameandAttrib (the 164 bytes are decoded in the row comments).
+	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8		; movem.l (a7)+, d0-d4/a0-a1/a4-a5 / rts / ori.l #$e8010e, (a6)+ / ori.l #$c0d040, $3032.w
+	dc.w	$00C0,$D040,$3032,$0068,$6A00,$001E,$4640,$0C40		; ori.w #$6a00, $1e(a0) / not.w d0 / cmpi.w #$3, d0
+	dc.w	$0003,$6300,$000A,$7001,$6000,$0004,$7003,$43FA		; bls.w *+12 / moveq #$1, d0 / bra.w *+6 / moveq #$3, d0 / lea.l $100070(pc), a1
+	dc.w	$0040,$4EF9,$0003,$CEBE,$0800,$000C,$6600,$FFEE		; jmp $3cebe.l / btst.b #$c, d0 / bne.w *-16
+	dc.w	$0479,$0001,$0001,$8D58,$3200,$0240,$0FFF,$4EB9		; subi.w #$1, $18d58.l / move.w d0, d1 / andi.w #$fff, d0 / jsr $390f4.l
+	dc.w	$0003,$90F4,$4EB9,$0003,$8F80,$7004,$0881,$000E		; jsr $38f80.l / moveq #$4, d0 / bclr.b #$e, d1
+	dc.w	$6700,$0004,$7005,$43FA,$0008,$4EF9,$0003,$CEBE		; beq.w *+6 / moveq #$5, d0 / lea.l $100070(pc), a1 / jmp $3cebe.l
+	dc.b	$00,$0A,'Ice     ',$00,$0A,'Benc'		; bcs.b *+34 / move.l -(a0), d0 / move.l -(a0), d0 / clr.w -(a5) / bgt.b *+101
+	dc.b	'h   ',$00,$0A,'Injury P',$00,$0A		; bvc.b *+34 / move.l -(a0), d0 / bpl.b *+119 / moveq #$79, d1 / movea.l (a0), a0
+	dc.b	'Injury G',$00,$06,'    ',$00,$06		; bpl.b *+119 / moveq #$79, d1 / movea.l d7, a0 / ori.b #$20, d6 / move.l -(a0), d0 / ori.b #$43, d6
+	dc.w	$2043,$2020		; move.l -(a0), d0
 AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	add.w	d0,d0
 	move.w	$34(a2,d0.w),d0		;his energy
@@ -1707,23 +1707,23 @@ StatColumnHeader
 .next	dc.w	$000A
 CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
-; Table of 245 words after CrowdMeterScreen, 250 bytes: $20FB,$FFFA,$0C20,$F900,$000A,$7B ...
-	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
-	dc.b	$7B,$FB,$FF,$FA,$0C,$20,$F9,$00,$00,$0A,$20,$FB,$FF,$FA,$0C,$7D	; {.... .... ....}
-	dc.b	$F9,$00,$00,$0A,$7B,$FB,$FF,$FA,$0C,$7D,$F9,$00,$70,$09,$72,$1C	; ....{....}..p.r.
-	dc.b	$61,$00,$01,$CC,$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$06,$01,$00	; a...N....n......
-	dc.b	$70,$1C,$72,$06,$4E,$B9,$00,$03,$8C,$A0,$4E,$B9,$00,$03,$92,$58	; p.r.N.....N....X
-	dc.b	$00,$14,$BD,$09,$04,$43,$72,$6F,$77,$64,$20,$20,$4D,$65,$74,$65	; .....Crowd  Mete
-	dc.b	$72,$BD,$07,$01,$70,$2C,$61,$00,$E0,$0C,$06,$79,$00,$04,$00,$01	; r...p,a....y....
-	dc.b	$8D,$58,$42,$40,$61,$00,$DF,$FE,$61,$00,$00,$12,$61,$00,$08,$3A	; .XB@a...a...a..:
-	dc.b	$08,$01,$00,$07,$66,$00,$03,$D0,$60,$00,$FF,$F2,$4E,$B9,$00,$03	; ....f...`...N...
-	dc.b	$8D,$8C,$00,$16,$F8,$04,$02,$04,$0C,$43,$75,$72,$72,$65,$6E,$74	; .........Current
-	dc.b	$20,$4C,$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$D8,$61,$00	;  Level..09..|.a.
-	dc.b	$01,$24,$4E,$B9,$00,$03,$8D,$8C,$00,$16,$FD,$04,$FA,$02,$41,$76	; .$N...........Av
-	dc.b	$65,$72,$61,$67,$65,$20,$4C,$65,$76,$65,$6C,$FD,$1C,$00,$20,$39	; erage Level... 9
-	dc.b	$00,$01,$7C,$DE,$80,$F9,$00,$01,$7C,$DC,$61,$00,$00,$F8,$4E,$B9	; ..|.....|.a...N.
-	dc.b	$00,$03,$8D,$8C,$00,$12,$FD,$04,$FA,$02,$50,$65,$61,$6B,$20,$4C	; ..........Peak L
-	dc.b	$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$DA,$61,$00,$00,$D6	; evel..09..|.a...
+; Code kept as words after CrowdMeterScreen (the 250 bytes are decoded in the row comments).
+	dc.w	$20FB,$FFFA,$0C20,$F900,$000A		; move.l ([$c30f902], $a), (a0)+
+	dc.b	$7B,$FB,$FF,$FA,$0C,$20,$F9,$00,$00,$0A,$20,$FB,$FF,$FA,$0C,$7D		; dc.w $fffa / cmpi.b #$0, -(a0) / move.l ([$c8df916], $a), (a0)+
+	dc.b	$F9,$00,$00,$0A,$7B,$FB,$FF,$FA,$0C,$7D,$F9,$00,$70,$09,$72,$1C		; dc.w $fffa / dc.w $f900 / moveq #$9, d0 / moveq #$1c, d1
+	dc.b	$61,$00,$01,$CC,$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$06,$01,$00		; bsr.w *+462 / jsr $38f6e.l / ori.b #$6, d6 / btst.l d0, d0
+	dc.b	$70,$1C,$72,$06,$4E,$B9,$00,$03,$8C,$A0,$4E,$B9,$00,$03,$92,$58		; moveq #$1c, d0 / moveq #$6, d1 / jsr $38ca0.l / jsr $39258.l
+	dc.b	$00,$14,$BD,$09,$04,$43,$72,$6F,$77,$64,$20,$20,$4D,$65,$74,$65		; ori.b #$9, (a4) / subi.w #$726f, d3 / move.l -(a0), d0 / moveq #$65, d2
+	dc.b	$72,$BD,$07,$01,$70,$2C,$61,$00,$E0,$0C,$06,$79,$00,$04,$00,$01		; moveq #$bd, d1 / btst.l d3, d1 / moveq #$2c, d0 / bsr.w *-8178 / addi.w #$4, $18d58.l
+	dc.b	$8D,$58,$42,$40,$61,$00,$DF,$FE,$61,$00,$00,$12,$61,$00,$08,$3A		; clr.w d0 / bsr.w *-8192 / bsr.w *+20 / bsr.w *+2108
+	dc.b	$08,$01,$00,$07,$66,$00,$03,$D0,$60,$00,$FF,$F2,$4E,$B9,$00,$03		; btst.b #$7, d1 / bne.w *+978 / bra.w *-12 / jsr $38d8c.l
+	dc.b	$8D,$8C,$00,$16,$F8,$04,$02,$04,$0C,$43,$75,$72,$72,$65,$6E,$74		; ori.b #$4, (a6) / andi.b #$43, d4 / moveq #$65, d1 / bgt.b *+118
+	dc.b	$20,$4C,$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$D8,$61,$00		; movea.l a4, a0 / bcs.b *+120 / bcs.b *+110 / dc.w $fd1c / move.w $17cd8.l, d0 / bsr.w *+294
+	dc.b	$01,$24,$4E,$B9,$00,$03,$8D,$8C,$00,$16,$FD,$04,$FA,$02,$41,$76		; jsr $38d8c.l / ori.b #$4, (a6) / dc.w $fa02
+	dc.b	$65,$72,$61,$67,$65,$20,$4C,$65,$76,$65,$6C,$FD,$1C,$00,$20,$39		; bcs.b *+116 / bsr.b *+105 / bcs.b *+34 / moveq #$65, d3 / bge.b *-1 / move.b d0, d6 / move.l $17cde.l, d0
+	dc.b	$00,$01,$7C,$DE,$80,$F9,$00,$01,$7C,$DC,$61,$00,$00,$F8,$4E,$B9		; divu.w $17cdc.l, d0 / bsr.w *+250 / jsr $38d8c.l
+	dc.b	$00,$03,$8D,$8C,$00,$12,$FD,$04,$FA,$02,$50,$65,$61,$6B,$20,$4C		; ori.b #$4, (a2) / dc.w $fa02 / addq.w #$8, -(a5) / bsr.b *+109 / movea.l a4, a0
+	dc.b	$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$DA,$61,$00,$00,$D6		; bcs.b *+120 / bcs.b *+110 / dc.w $fd1c / move.w $17cda.l, d0 / bsr.w *+216
 ; Crowd meter: reads the crowd record and prints the level
 CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	$193BA.l
@@ -1934,32 +1934,32 @@ StatsScreenFadeInClear
 	move.w	$18D4E.l,d4
 	jsr	(AddSmallFontFramer).l
 	jsr	(SetupIceRinkPalRemap).l
-	jsr	$3EC94.l
-	jsr	$3ECA6.l
+	jsr	(IceRinkRemapGfxE).l
+	jsr	(IceRinkRemapGfxF).l
 	jsr	(setupIceRinkPal).l
 	jmp	(CopyTeamLinesCheckTeam).l
-; Table of 336 bytes after StatsScreenFadeIn, 336 bytes: $04,$79,$00,$01,$00,$01 ...
-	dc.b	$04,$79,$00,$01,$00,$01,$8A,$D2,$04,$79,$00,$01,$00,$01,$8A,$D4	; .y.......y......
-	dc.b	$23,$FC,$00,$04,$20,$DC,$00,$01,$8A,$D6,$08,$EA,$00,$02,$00,$32	; #... ..........2
-	dc.b	$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$05,$0C,$00,$70,$16,$72,$06	; N....n......p.r.
-	dc.b	$4E,$B9,$00,$03,$8C,$A0,$4E,$B9,$00,$03,$8F,$6E,$00,$10,$BD,$0C	; N.....N....n....
-	dc.b	$0E,$54,$69,$6D,$65,$6F,$75,$74,$BD,$11,$0F,$00,$22,$6A,$00,$1E	; .Timeout...."j..
-	dc.b	$D2,$E9,$00,$04,$30,$11,$E2,$48,$91,$79,$00,$01,$8D,$58,$4E,$B9	; ....0..H.y...XN.
-	dc.b	$00,$03,$8F,$80,$24,$7C,$00,$01,$83,$4C,$4E,$B9,$00,$03,$C9,$B6	; ....$|...LN.....
-	dc.b	$D5,$FC,$00,$00,$03,$66,$4E,$B9,$00,$03,$C9,$B6,$70,$78,$4E,$F9	; .....fN.....pxN.
-	dc.b	$00,$03,$72,$D0,$3F,$39,$00,$01,$8A,$D2,$3F,$39,$00,$01,$8A,$D4	; ..r.?9....?9....
-	dc.b	$61,$00,$01,$A4,$33,$C0,$00,$01,$8A,$D4,$4E,$B9,$00,$03,$8F,$6E	; a...3.....N....n
-	dc.b	$00,$06,$BD,$04,$0C,$00,$70,$18,$72,$03,$D2,$79,$00,$01,$8A,$D4	; ......p.r..y....
-	dc.b	$4E,$B9,$00,$03,$8C,$A0,$30,$2A,$00,$28,$6A,$00,$00,$04,$70,$FF	; N.....0*.(j...p.
-	dc.b	$06,$40,$00,$01,$33,$C0,$00,$01,$8A,$D2,$61,$00,$00,$84,$61,$00	; .@..3.....a...a.
-	dc.b	$01,$E8,$08,$01,$00,$07,$66,$00,$00,$48,$08,$01,$00,$05,$66,$00	; ......f..H....f.
-	dc.b	$00,$40,$08,$01,$00,$01,$67,$00,$00,$1A,$30,$39,$00,$01,$8A,$D2	; .@....g...09....
-	dc.b	$52,$40,$B0,$79,$00,$01,$8A,$D4,$6E,$00,$FF,$D0,$33,$C0,$00,$01	; R@.y....n...3...
-	dc.b	$8A,$D2,$08,$01,$00,$00,$67,$00,$FF,$C2,$04,$79,$00,$01,$00,$01	; ......g....y....
-	dc.b	$8A,$D2,$6A,$00,$FF,$B6,$42,$79,$00,$01,$8A,$D2,$60,$00,$FF,$AC	; ..j...By....`...
-	dc.b	$30,$39,$00,$01,$8A,$D2,$04,$40,$00,$01,$6A,$00,$00,$0C,$0C,$6A	; 09.....@..j....j
-	dc.b	$FF,$FF,$00,$28,$6D,$00,$00,$0C,$35,$40,$00,$28,$4E,$B9,$00,$03	; ...(m...5@.(N...
-	dc.b	$D4,$26,$33,$DF,$00,$01,$8A,$D4,$33,$DF,$00,$01,$8A,$D2,$4E,$75	; .&3.....3.....Nu
+; Code kept as bytes after StatsScreenFadeIn (the 336 bytes are decoded in the row comments).
+	dc.b	$04,$79,$00,$01,$00,$01,$8A,$D2,$04,$79,$00,$01,$00,$01,$8A,$D4		; subi.w #$1, $18ad2.l / subi.w #$1, $18ad4.l
+	dc.b	$23,$FC,$00,$04,$20,$DC,$00,$01,$8A,$D6,$08,$EA,$00,$02,$00,$32		; move.l #$420dc, $18ad6.l / bset.b #$2, $32(a2)
+	dc.b	$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$05,$0C,$00,$70,$16,$72,$06		; jsr $38f6e.l / ori.b #$5, d6 / cmpi.b #$16, d0 / moveq #$6, d1
+	dc.b	$4E,$B9,$00,$03,$8C,$A0,$4E,$B9,$00,$03,$8F,$6E,$00,$10,$BD,$0C		; jsr $38ca0.l / jsr $38f6e.l / ori.b #$c, (a0)
+	dc.b	$0E,$54,$69,$6D,$65,$6F,$75,$74,$BD,$11,$0F,$00,$22,$6A,$00,$1E		; bvs.b *+111 / bcs.b *+113 / eor.b d6, (a1) / btst.l d7, d0 / movea.l $1e(a2), a1
+	dc.b	$D2,$E9,$00,$04,$30,$11,$E2,$48,$91,$79,$00,$01,$8D,$58,$4E,$B9		; adda.w $4(a1), a1 / move.w (a1), d0 / lsr.w #$1, d0 / sub.w d0, $18d58.l / jsr $38f80.l
+	dc.b	$00,$03,$8F,$80,$24,$7C,$00,$01,$83,$4C,$4E,$B9,$00,$03,$C9,$B6		; movea.l #$1834c, a2 / jsr $3c9b6.l
+	dc.b	$D5,$FC,$00,$00,$03,$66,$4E,$B9,$00,$03,$C9,$B6,$70,$78,$4E,$F9		; adda.l #$366, a2 / jsr $3c9b6.l / moveq #$78, d0 / jmp $372d0.l
+	dc.b	$00,$03,$72,$D0,$3F,$39,$00,$01,$8A,$D2,$3F,$39,$00,$01,$8A,$D4		; move.w $18ad2.l, -(a7) / move.w $18ad4.l, -(a7)
+	dc.b	$61,$00,$01,$A4,$33,$C0,$00,$01,$8A,$D4,$4E,$B9,$00,$03,$8F,$6E		; bsr.w *+422 / move.w d0, $18ad4.l / jsr $38f6e.l
+	dc.b	$00,$06,$BD,$04,$0C,$00,$70,$18,$72,$03,$D2,$79,$00,$01,$8A,$D4		; ori.b #$4, d6 / cmpi.b #$18, d0 / moveq #$3, d1 / add.w $18ad4.l, d1
+	dc.b	$4E,$B9,$00,$03,$8C,$A0,$30,$2A,$00,$28,$6A,$00,$00,$04,$70,$FF		; jsr $38ca0.l / move.w $28(a2), d0 / bpl.w *+6 / moveq #$ff, d0
+	dc.b	$06,$40,$00,$01,$33,$C0,$00,$01,$8A,$D2,$61,$00,$00,$84,$61,$00		; addi.w #$1, d0 / move.w d0, $18ad2.l / bsr.w *+134 / bsr.w *+490
+	dc.b	$01,$E8,$08,$01,$00,$07,$66,$00,$00,$48,$08,$01,$00,$05,$66,$00		; btst.b #$7, d1 / bne.w *+74 / btst.b #$5, d1 / bne.w *+66
+	dc.b	$00,$40,$08,$01,$00,$01,$67,$00,$00,$1A,$30,$39,$00,$01,$8A,$D2		; btst.b #$1, d1 / beq.w *+28 / move.w $18ad2.l, d0
+	dc.b	$52,$40,$B0,$79,$00,$01,$8A,$D4,$6E,$00,$FF,$D0,$33,$C0,$00,$01		; addq.w #$1, d0 / cmp.w $18ad4.l, d0 / bgt.w *-46 / move.w d0, $18ad2.l
+	dc.b	$8A,$D2,$08,$01,$00,$00,$67,$00,$FF,$C2,$04,$79,$00,$01,$00,$01		; btst.b #$0, d1 / beq.w *-60 / subi.w #$1, $18ad2.l
+	dc.b	$8A,$D2,$6A,$00,$FF,$B6,$42,$79,$00,$01,$8A,$D2,$60,$00,$FF,$AC		; bpl.w *-72 / clr.w $18ad2.l / bra.w *-82
+	dc.b	$30,$39,$00,$01,$8A,$D2,$04,$40,$00,$01,$6A,$00,$00,$0C,$0C,$6A		; move.w $18ad2.l, d0 / subi.w #$1, d0 / bpl.w *+14 / cmpi.w #$ffff, $28(a2)
+	dc.b	$FF,$FF,$00,$28,$6D,$00,$00,$0C,$35,$40,$00,$28,$4E,$B9,$00,$03		; blt.w *+14 / move.w d0, $28(a2) / jsr $3d426.l
+	dc.b	$D4,$26,$33,$DF,$00,$01,$8A,$D4,$33,$DF,$00,$01,$8A,$D2,$4E,$75		; move.w (a7)+, $18ad4.l / move.w (a7)+, $18ad2.l / rts
 ; Stats rows: starts at row $D
 StatsRowsInit	move.w	#$D,$18D5A.l
 	move.w	$18AD4.l,d1
@@ -2105,7 +2105,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	sub.w	d7,$1AD56.l
 	bpl.w	.next
 	clr.w	$1AD56.l
-	jsr	$2F37E.l
+	jsr	(ControllerTextClear).l
 .next	movem.l	d0/a3,-(sp)
 	movea.l	#$17A80,a3
 	move.w	#$1,$8(a3)
@@ -2271,7 +2271,7 @@ DirectionPressCheck	st.b	$18(a5)
 	bne.w	.next6
 	btst	#$7,d1
 	beq.w	WaitFramesD7
-	jsr	$2F39C.l
+	jsr	(ControllerPictureDraw).l
 	bclr.b	#$1,$17F6E.l
 	bset.b	#$0,$17F74.l
 	bne.w	.next6
@@ -2286,7 +2286,7 @@ DirectionPressCheck	st.b	$18(a5)
 	beq.w	WaitFramesD7
 	bset.b	#$6,$17F72.l
 	bclr.b	#$0,$17F74.l
-	jsr	$2F3D6.l
+	jsr	(ControllerPictureClear).l
 	bsr.w	adda4
 	jsr	(SprSort).l
 	bra.w	WaitFramesD7
@@ -2304,8 +2304,8 @@ DirectionPressCheck	st.b	$18(a5)
 	move.w	(sp)+,$18D64.l
 	jsr	(StatsScreenFadeInClear).l
 	jsr	(SetupIceRinkPalRemap).l
-	jsr	$3EC94.l
-	jsr	$3ECA6.l
+	jsr	(IceRinkRemapGfxE).l
+	jsr	(IceRinkRemapGfxF).l
 	jsr	(IceRinkRemapGfxB).l
 	btst.b	#$4,$18D64.l
 	beq.w	.next10
@@ -2348,12 +2348,34 @@ ReadActiveJoypadPrint
 .next4	adda.l	$4(a1),a1
 	movea.l	#$1B008,a2
 	jmp	(dobitmap).l
-; Table of 56 words after ReadActiveJoypad, 112 bytes: $4EB9,$0003,$8F6E,$0006,$BD02,$0200 ...
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BD02,$0200,$303C,$0008
-	dc.w	$323C,$0004,$343C,$07FF,$4EF9,$0003,$8C06,$50F9
-	dc.w	$0001,$AD56,$4EB9,$0003,$8F6E,$0006,$BD02,$0000
-	dc.w	$7000,$7200,$7410,$760B,$3839,$0001,$8D56,$3A3C
-	dc.w	$0000,$2279,$0004,$7D68,$D3E9,$0004,$247C,$0001
-	dc.w	$B008,$4EF9,$0003,$87E2,$4EB9,$0003,$8F6E,$0006
-	dc.w	$BD02,$0200,$303C,$0010,$323C,$000B,$343C,$07FF
+; Clears the controller text on the pad screen: prints an empty string and erases the 8x4 text box.
+ControllerTextClear
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$2
+	move.w	#$8,d0
+	move.w	#$4,d1
+	move.w	#$7FF,d2
+	jmp	(eraser).l
+; Draws the controller picture on the pad screen and arms the text timer.
+ControllerPictureDraw
+	st.b	$1AD56.l
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$0
+	moveq	#$0,d0
+	moveq	#$0,d1
+	moveq	#$10,d2
+	moveq	#$B,d3
+	move.w	$18D56.l,d4
+	move.w	#$0,d5
+	movea.l	$47D68.l,a1
+	adda.l	$4(a1),a1
+	movea.l	#$1B008,a2
+	jmp	(dobitmap).l
+; Erases the controller picture (16x11 tiles) from the pad screen.
+ControllerPictureClear
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$2
+	move.w	#$10,d0
+	move.w	#$B,d1
+	move.w	#$7FF,d2
 	jmp	(eraser).l

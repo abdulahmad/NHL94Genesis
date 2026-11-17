@@ -21,7 +21,7 @@ GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	d0,d2
 	move.w	$C448.l,d1
 	lea.l	$4(a1),a0
-	jsr	$2790E.l
+	jsr	(TilemapPut).l
 	add.w	d2,d2
 	add.w	d2,$C448.l
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -38,7 +38,7 @@ GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	d1,d5
 	lsr.w	#$5,d5
 	lea.l	$4(a1),a0
-	jsr	$2790E.l
+	jsr	(TilemapPut).l
 	add.w	d2,d2
 	add.w	d2,$C448.l
 	lea.l	$4(a1,d2.w),a0
@@ -116,7 +116,7 @@ GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	$C448.l,d1
 	move.w	d1,$C44A.l
 	lea.l	$4(a1),a0
-	jsr	$2790E.l
+	jsr	(TilemapPut).l
 	move.w	#$C000,d0
 	bsr.w	GateArrayVdpAddrCmd
 	tst.w	$C44C.l
@@ -561,7 +561,7 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	jsr	$2801A.l
+	jsr	(GiveWordRam).l
 .loop2	btst.b	#$7,$FF800E.l
 	bne.b	.loop2
 	move.w	#$8,$FF8020.l
@@ -573,7 +573,7 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 .loop4	btst.b	#$6,$FF800E.l
 	bne.b	.loop4
 	bclr.b	#$7,$FF800F.l
-	jsr	$2800E.l
+	jsr	(WaitDmnaSet).l
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
 	move.l	$6038.w,$C42E.l
@@ -599,13 +599,13 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	move.l	#$27A9E,-(sp)
 	move.l	$C432.l,-(sp)
 	rts
-; Table of 84 bytes after TilemapPut, 84 bytes: $4E,$B9,$00,$02,$7B,$38 ...
-	dc.b	$4E,$B9,$00,$02,$7B,$38,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6	; N...{8.9......f.
-	dc.b	$33,$FC,$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F	; 3../...&........
-	dc.b	$08,$39,$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF	; .9......g.......
-	dc.b	$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF	; ...........9....
-	dc.b	$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02	; ..f.............
-	dc.b	$00,$FF,$80,$0F	; ....
+; Code kept as bytes after TilemapPut (the 84 bytes are decoded in the row comments).
+	dc.b	$4E,$B9,$00,$02,$7B,$38,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6		; jsr $27b38.l / btst.b #$4, $ff800e.l / bne.b *-8
+	dc.b	$33,$FC,$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F		; move.w #$2f, $ff8026.l / bset.b #$3, $ff800f.l
+	dc.b	$08,$39,$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF		; btst.b #$3, $ff800e.l / beq.b *-8 / bset.b #$4, $ff800f.l
+	dc.b	$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF		; bclr.b #$3, $ff800f.l / btst.b #$3, $ff800e.l
+	dc.b	$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02		; bne.b *-8 / bclr.b #$4, $ff800f.l / bclr.b #$2, $ff800f.l
+	dc.b	$00,$FF,$80,$0F
 .ex	rts
 ; Table of 8 bytes after TilemapPut, 8 bytes: $2F,$0D,$40,$E7,$46,$FC ...
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
@@ -674,12 +674,12 @@ WriteSubCommBytes	movem.l	d1/a0,-(sp)
 	bne.b	.loop9
 	bclr.b	#$4,$FF800F.l
 	bra.w	.next
-; Table of 78 bytes after WriteSubCommBytes, 78 bytes: $08,$39,$00,$04,$00,$FF ...
-	dc.b	$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$13,$FC,$00,$3C,$00,$FF	; .9......f....<..
-	dc.b	$80,$28,$33,$FC,$00,$35,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF	; .(3..5...&......
-	dc.b	$80,$0F,$08,$39,$00,$04,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04	; ...9......g.....
-	dc.b	$00,$FF,$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03	; .............9..
-	dc.b	$00,$FF,$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F	; ....f.........
+; Code kept as bytes after WriteSubCommBytes (the 78 bytes are decoded in the row comments).
+	dc.b	$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$13,$FC,$00,$3C,$00,$FF		; btst.b #$4, $ff800e.l / bne.b *-8 / move.b #$3c, $ff8028.l
+	dc.b	$80,$28,$33,$FC,$00,$35,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF		; move.w #$35, $ff8026.l / bset.b #$3, $ff800f.l
+	dc.b	$80,$0F,$08,$39,$00,$04,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04		; btst.b #$4, $ff800e.l / beq.b *-8 / bset.b #$4, $ff800f.l
+	dc.b	$00,$FF,$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03		; bclr.b #$3, $ff800f.l / btst.b #$3, $ff800e.l
+	dc.b	$00,$FF,$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F		; bne.b *-8 / bclr.b #$4, $ff800f.l
 .next	movem.l	d1/a0,-(sp)
 	bra.w	.next4
 .next2	movem.l	d1/a0,-(sp)

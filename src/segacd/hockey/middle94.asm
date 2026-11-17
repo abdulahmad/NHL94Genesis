@@ -186,7 +186,7 @@ ForceBlackStep
 .loop3	btst	#$3,$FF800E.l
 	bne.b	.loop3
 	bclr	#$4,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 	rts
 .next	movem.l	d0/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
@@ -832,7 +832,7 @@ DoDMAProQueue
 .loop4	btst	#$6,$FF800E.l
 	bne.b	.loop4
 	bclr	#$7,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
@@ -901,7 +901,7 @@ DmaCopyFromWordRam
 .loop8	btst	#$3,$FF800E.l
 	bne.b	.loop8
 	bclr	#$4,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
 DoDMA_nd2						;vram to vram copy by dma, protected from vblank
@@ -932,7 +932,7 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 .loop3	btst	#$6,$FF800E.l
 	bne.b	.loop3
 	bclr	#$7,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
@@ -971,7 +971,7 @@ DoDMANd2Queue
 .loop3	btst	#$6,$FF800E.l
 	bne.b	.loop3
 	bclr	#$7,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
@@ -1587,7 +1587,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	move.w	#$21,$FF8020.l
 	jsr	(RaiseGateRequest).l
 	bset	#$6,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 .loop6	btst	#$6,$FF800E.l
 	beq.b	.loop6
 	bset	#$7,$FF800F.l

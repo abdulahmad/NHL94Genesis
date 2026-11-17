@@ -167,14 +167,14 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	(HomeTeam).l,$1938A.l
 .next27	tst.w	(sp)+
 	bra.w	.next28
-; Table of 59 words after GameSetUp, 118 bytes: $301F,$B079,$0001,$7FB0,$6700,$006C ...
-	dc.w	$301F,$B079,$0001,$7FB0,$6700,$006C,$33F9,$0001
-	dc.w	$7FB0,$0001,$938A,$48A7,$8000,$3039,$0001,$7FB0
-	dc.w	$B079,$0001,$7FB0,$4C9F,$0001,$6700,$0010,$33F9
-	dc.w	$0001,$7FB0,$0001,$938E,$6100,$1274,$48A7,$8000
-	dc.w	$3039,$0001,$938C,$B079,$0001,$7FAE,$4C9F,$0001
-	dc.w	$6700,$0024,$33F9,$0001,$7FAE,$0001,$938C,$33F9
-	dc.w	$0001,$7FAE,$0001,$938A,$6100,$11E0,$33F9,$0001
+; Code kept as words after GameSetUp (the 118 bytes are decoded in the row comments).
+	dc.w	$301F,$B079,$0001,$7FB0,$6700,$006C,$33F9,$0001		; move.w (a7)+, d0 / cmp.w $17fb0.l, d0 / beq.w *+110 / move.w $17fb0.l, $1938a.l
+	dc.w	$7FB0,$0001,$938A,$48A7,$8000,$3039,$0001,$7FB0		; movem.w d0, -(a7) / move.w $17fb0.l, d0
+	dc.w	$B079,$0001,$7FB0,$4C9F,$0001,$6700,$0010,$33F9		; cmp.w $17fb0.l, d0 / movem.w (a7)+, d0 / beq.w *+18 / move.w $17fb0.l, $1938e.l
+	dc.w	$0001,$7FB0,$0001,$938E,$6100,$1274,$48A7,$8000		; bsr.w *+4726 / movem.w d0, -(a7)
+	dc.w	$3039,$0001,$938C,$B079,$0001,$7FAE,$4C9F,$0001		; move.w $1938c.l, d0 / cmp.w $17fae.l, d0 / movem.w (a7)+, d0
+	dc.w	$6700,$0024,$33F9,$0001,$7FAE,$0001,$938C,$33F9		; beq.w *+38 / move.w $17fae.l, $1938c.l / move.w $17fae.l, $1938a.l
+	dc.w	$0001,$7FAE,$0001,$938A,$6100,$11E0,$33F9,$0001		; bsr.w *+4578 / move.w $17fb0.l, $1938a.l
 	dc.w	$7FB0,$0001,$938A
 .next28
 	bsr.w	FixModeOptions

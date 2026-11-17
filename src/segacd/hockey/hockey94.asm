@@ -366,7 +366,7 @@ Pausemode	jsr	(forceblack).l
 	move.w	$17F6A.l,-(sp)
 	bsr.w	seta2
 	movea.l	#$41F50,a0
-	lea.l	.next5(pc),a1
+	lea.l	PausemodeVdpFill(pc),a1
 	btst	#$0,$17F78.l
 	beq.w	.next
 	movea.l	#$41EB4,a0
@@ -423,6 +423,8 @@ Pausemode	jsr	(forceblack).l
 	bpl.w	.loop9
 	move.w	(ScoutSubStatus).l,$17476.l
 	rts
+; Pause mode: fills VDP memory through the gate array
+PausemodeVdpFill
 .next5	movea.l	#$C00000,a0
 .loop10	btst	#$7,$FF800E.l
 	bne.b	.loop10

@@ -1,6 +1,6 @@
-; Data block of 600 bytes at $556E in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 600 bytes at $2686E: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; not read by any code in STARTER (no absolute, pc-relative or word RAM reference to it was found).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0556E.bin
-; Table of 976 bytes after the file start, 976 bytes: $00,$00,$00,$00,$00,$00 ...
+; 976 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$B,0
 	dc.b	$BD,$00,$63,$00,$05,$FF,$FF,$00,$00,$00,$08,$00,$00,$00,$07,$00	; ..c.............
 	dc.b	$00,$00,$06,$00,$00,$00,$05,$00,$00,$00,$04,$00,$00,$00,$03,$00	; ................
@@ -26,12 +26,12 @@
 	dc.b	$00,$00,$04,$00,$00,$00,$05,$00,$00,$00,$06,$00,$00,$00,$07,$00	; ................
 	dc.b	$00,$00,$08,$00,$32,$FF,$FF,$FF,$FF	; ....2....
 	dcb.b	$286,0
-; 20 zero bytes after the file start (padding or space the program fills at run time).
-.next	dcb.b	$14,0
-; 20 zero bytes after the file start (padding or space the program fills at run time).
-.next2	dcb.b	$14,0
-; Table of 2640 bytes after the file start, 2640 bytes: $00,$00,$00,$00,$00,$00 ...
-.next3	dcb.b	$1C,0
+; Zero bytes that the overlay covers at run time (BackupBufferChecksumImage runs here).
+	dcb.b	$14,0
+; Zero bytes that the overlay covers at run time (BackupBufferClearImage runs here).
+	dcb.b	$14,0
+; Zero bytes that the overlay covers at run time (GateArrayIrqA starts here).
+	dcb.b	$1C,0
 	dc.b	$3D,$2A,$00,$00,$3D,$AA,$01,$E9	; =*..=...
 	dcb.b	$3C,0
 	dc.b	$02,$22,$22,$22	; ."""
@@ -201,13 +201,13 @@
 	dc.b	$BB,$BB,$BB,$22,$BB,$BB,$BB,$22,$BB,$BB,$BB,$22,$BB,$BB,$BB,$22	; ..."..."..."..."
 	dc.b	$BB,$22,$22,$22,$9B,$B2,$22,$22,$B9,$B2,$22,$22	; ."""..""..""
 .next4	incbin	..\Extracted\SegaCD\STARTER\starter_0660E.bin
-; Table of 40 bytes after the file start, 40 bytes: $00,$00,$00,$00,$00,$00 ...
+; 40 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$11,0
 	dc.b	$90,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70	; ....p...p...p
 	dcb.b	$A,0
-; Data block of 601 bytes at $6869 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 601 bytes at $27B69: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; overwritten at run time by the overlay that starts at $26CA0 (stale bytes on the disc).
 	incbin	..\Extracted\SegaCD\STARTER\starter_06869.bin
-; Table of 588 bytes after the file start, 588 bytes: $00,$00,$00,$00,$00,$00 ...
+; 588 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$14,0
 	dc.b	'""""wfg',$82,$31,$13,$33,$52	; """"wfg.1.3R
 	dcb.b	$1F,0
@@ -251,7 +251,7 @@
 ; Text of the file start (1 row).
 .next5	dc.b	$22,$BB,$BB,$B2,'""+"',$B2,$22,$22,$BB	; "...""+"."".
 .next6	incbin	..\Extracted\SegaCD\STARTER\starter_06D1A.bin
-; Table of 135 bytes after the file start, 135 bytes: $00,$00,$00,$00,$00,$00 ...
+; 135 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$8,0
 	dc.b	$97,$90,$00,$00,$00,$09,$79	; ......y
 	dcb.b	$18,0
@@ -266,7 +266,7 @@
 ; Display data table fragment A
 DispTableA	subi.w	#$7,d6
 	bra.w	.next
-; Table of 110 bytes after DispTableA, 110 bytes: $00,$00,$00,$70,$00,$00 ...
+; 110 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dc.b	$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$07	; ...p...p...p....
 	dcb.b	$A,0
 	dc.b	$70,$00,$77,$70,$07,$00,$70,$07,$07,$00,$77,$70,$07,$00,$70,$07	; p.wp..p...wp..p.
@@ -366,9 +366,9 @@ DispTableA	subi.w	#$7,d6
 	dcb.b	$10,0
 	dc.b	$99,$99,$B9,$92,$14,$56,$78,$9B,$11,$14,$46,$89,$54,$55,$66,$99	; .....Vx...F.TUf.
 	dcb.b	$10,0
-; Data block of 1093 bytes at $7512 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 1093 bytes at $28812: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; not read by any code in STARTER (no absolute, pc-relative or word RAM reference to it was found).
 	incbin	..\Extracted\SegaCD\STARTER\starter_07512.bin
-; Table of 891 bytes after DispTableA, 891 bytes: $00,$00,$00,$00,$00,$00 ...
+; 891 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$B,0
 	dc.b	$0B,$BB,$2B,$B2,$0B,$BB,$BB,$22,$0B,$BB,$BB,$B2,$0B,$BB,$BB,$BB	; ..+...."........
 	dc.b	$0B,$BB,$BB,$B2,$0B,$BB,$BB,$B2,$0B,$BB,$BB,$BB,$0B,$BB,$B9,$B2	; ................
@@ -427,9 +427,9 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$B0,$00,$00,$00,$20,$00,$00,$00,$B0,$00,$00,$00,$22,$00,$00,$00	; .... ......."...
 	dc.b	$BB,$BB,$2B,$B2,$89,$99,$99,$87,'DUVT',$11,$11,$11,$44	; ..+.....DUVT...D
 	dcb.b	$10,0
-; Data block of 654 bytes at $7CD2 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 654 bytes at $28FD2: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; not read by any code in STARTER (no absolute, pc-relative or word RAM reference to it was found).
 	incbin	..\Extracted\SegaCD\STARTER\starter_07CD2.bin
-; Table of 418 bytes after DispTableA, 418 bytes: $00,$00,$00,$00,$00,$00 ...
+; 418 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$1F,0
 	dc.b	$02,$00,$00,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$00	; ................
 	dc.b	$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00,$02,$00	; ................
@@ -456,9 +456,9 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$20,$00,$00,$00,$00,$00,$22,$00,$00,$00,$22,$00,$00,$00,$02,$00	;  ....."...".....
 	dc.b	$00,$00,$02	; ...
 	dcb.b	$10,0
-; Data block of 2080 bytes at $8102 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 2080 bytes at $29402: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; not read by any code in STARTER (no absolute, pc-relative or word RAM reference to it was found).
 	incbin	..\Extracted\SegaCD\STARTER\starter_08102.bin
-; Table of 6438 bytes after DispTableA, 6438 bytes: $00,$00,$00,$00,$00,$00 ...
+; 6438 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$17,0
 	dc.b	$77,$00,$00,$00,$77	; w...w
 	dcb.b	$18,0
@@ -861,13 +861,13 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$39,$B1,$41,$E4,$41,$E5,$41,$E6,$00,$00,$00,$00,$39,$B1,$41,$E7	; 9.A.A.A.....9.A.
 	dc.b	$41,$E8	; A.
 	dcb.b	$1EE,0
-; Data block of 1568 bytes at $A248 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 1568 bytes at $2B548: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; not read by any code in STARTER (no absolute, pc-relative or word RAM reference to it was found).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0A248.bin
 ; 29 zero bytes after DispTableA (padding or space the program fills at run time).
 	dcb.b	$1D,0
-; Data block of 2845 bytes at $A885 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
+; 2845 bytes at $2BB85: unreferenced 4bpp-looking pixel data (mostly nibble values 2 and B) between the film player and the PCM bank; not read by any code in STARTER (no absolute, pc-relative or word RAM reference to it was found).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0A885.bin
-; Table of 1232 bytes after DispTableA, 1232 bytes: $00,$00,$00,$00,$00,$00 ...
+; 1232 bytes of the same unreferenced pixel data / zero fill (see the block above).
 	dcb.b	$200,0
 	dc.b	$40,$01,$40,$02,$40,$03,$40,$04,$40,$05,$40,$06,$40,$07,$40,$08	; @.@.@.@.@.@.@.@.
 	dcb.b	$40,0
@@ -951,7 +951,12 @@ PcmBankDirectoryB
 ; Sample data: unsigned 8-bit PCM waves (smooth byte sequences), played by the PCM chip.
 PcmSampleData
 	incbin	..\Extracted\SegaCD\STARTER\starter_0C8AE.bin
-	movem.l	d0-d2/d7/a0-a1,-(sp)
+; From here to the end of the file is an overlay: the file keeps it at $3CFA0, the program runs it at $26CA0 (file
+; address minus $16300) on top of the bytes that the stale low copies below hold. `obj` assembles it for its run address,
+; so calls and pointers into it use the labels.
+	obj	$26CA0
+; Hand-off sequence: BIOS call 5, status handshakes $2E / $3F around the word RAM hand-over, then jumps to $B00E.
+StarterBootHandshake	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$5,d0
 	jsr	$6044.w
@@ -999,46 +1004,62 @@ PcmSampleData
 	bset.b	#$5,$FF800F.l
 	bset.b	#$2,$FF8033.l
 	jmp	$B00E.l
-	move.w	#$0,d0
+; Mounts the backup RAM (BRMINIT), reads the save file into the buffer at $7F000 and checks its checksum; clears the
+; buffer and formats the RAM when the file is missing or damaged.
+BackupRamMountVerify	move.w	#$0,d0
 	move.w	#$B,d7
 	jsr	$6044.w
-	jsr	$26EAA.l
+	jsr	(BackupBufferClearImage).l
 	move.w	#$0,d0
 	lea.l	$7D000.l,a0
 	lea.l	$7C000.l,a1
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMINIT
 	bcc.w	.next2
-	jsr	$26EBE.l
+	jsr	(GateArrayIrqA).l
 	cmpi.w	#$FFFF,$C442.l
 	beq.w	.next4
 	move.w	#$6,d0
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMFORMAT
 .next2	move.w	#$3,d0
-	lea.l	$26E78.l,a0
+	lea.l	BackupFileName.l,a0
 	lea.l	$7F000.l,a1
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMREAD
 	bcs.w	.next3
-	jsr	$26E96.l
+	jsr	(BackupBufferChecksumImage).l
 	cmp.l	$7FF20.l,d0
 	beq.w	.ex
-	jsr	$26EAA.l
+	jsr	(BackupBufferClearImage).l
 .next3	move.w	#$5,d0
-	lea.l	$26E78.l,a0
-	jsr	$5F16.w
+	lea.l	BackupFileName.l,a0
+	jsr	BiosBuram.w		;BRMDEL
 	move.w	#$1,d0
 	lea.l	$C452.l,a1
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMSTAT
 	cmpi.w	#$3D,d0
 	bge.w	.ex
 	move.w	#$1,$C44C.l
-	jsr	$26EBE.l
+	jsr	(GateArrayIrqA).l
 .next4	move.w	#$FFFF,d0
 	move.w	#$B,d7
 	jsr	$6044.w
 .ex	rts
-; Text of DispTableF (5 rows).
-	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00	; NHLHOCKEY94.....
-	dc.b	'NHLHOCKEY94',$00,$00,$3D,$41,$F9	; NHLHOCKEY94..=A.
-	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
-	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
-	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
+; Two 16-byte file name records (the second has a trailing $3D): the backup RAM file name.
+BackupFileName
+	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00
+	dc.b	'NHLHOCKEY94',$00,$00,$3D
+; Image of the routine that runs in the slot at $26E96: adds up the $F20 bytes of the buffer at $7F000 into d0.
+BackupBufferChecksumImage
+	lea.l	$7F000.l,a0
+	moveq	#$0,d0
+	move.w	#$F1F,d1
+.loop	add.b	(a0)+,d0
+	dbra	d1,.loop
+	rts
+; Image of the routine that runs in the slot at $26EAA: clears the $F20 bytes of the buffer at $7F000.
+BackupBufferClearImage
+	lea.l	$7F000.l,a0
+	move.w	#$F1F,d0
+	clr.l	d1
+.loop	move.b	d1,(a0)+
+	dbra	d0,.loop
+	rts

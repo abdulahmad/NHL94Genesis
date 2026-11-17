@@ -2,6 +2,9 @@
 
 	org	$21300
 
+; Sega CD sub CPU BIOS: backup RAM call (d0 = function: 0 BRMINIT, 1 BRMSTAT, 2 BRMSERCH, 3 BRMREAD, 4 BRMWRITE, 5 BRMDEL, 6 BRMFORMAT).
+BiosBuram	equ	$5F16
+
 	include	segacd\starter\subboot.asm
 	include	segacd\starter\startersubpcm.asm
 	include	segacd\starter\starterbios.asm
@@ -34,3 +37,5 @@
 	include	segacd\starter\starterdisptbl.asm
 	include	segacd\starter\startergate.asm
 	include	segacd\starter\starterstr.asm
+
+	objend

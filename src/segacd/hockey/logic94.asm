@@ -114,7 +114,7 @@ updateplayers
 	bmi.w	.next21
 	add.w	d0,d0
 	addi.w	#$138,d0
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	addi.w	#$1,(a2,d0.w)
 .next21	cmpi.w	#$145C,$58(a3)
 	beq.w	.next32
@@ -281,7 +281,7 @@ updateplayers
 	asl.w	#$2,d1
 	movea.l	#$415CC,a0
 	movea.l	(a0,d1.w),a0
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	jsr	(a0)
 	clr.w	$4E(a3)
 	clr.w	$50(a3)
@@ -947,9 +947,9 @@ getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 	rts
 faceoffinput						;controller processing for faceoff
 	btst	#$6,$17F74.l
-	beq.w	.0
-	rts
-.0	move.w	$36(a3),d4		;move assnum into d4
+	beq.w	FaceoffInputBody
+FaceoffInputReturn	rts
+FaceoffInputBody	move.w	$36(a3),d4		;move assnum into d4
 	cmpi.b	#$17,$38(a3,d4.w)		;check if afaceoffpl is in asslist at assnum position
 	bne.w	doinput_islockedExit		;exit if this is not a faceoff player
 	movea.l	#$17EE6,a0		;faceoff direction of puck control variable
@@ -959,7 +959,7 @@ faceoffinput						;controller processing for faceoff
 .2	move.w	d0,(a0)		;store dpad for faceoff pull
 	btst	#$1,$63(a3)		;check if anim in progress
 	beq.w	.next
-	jmp	$30AB0.l
+	jmp	(FaceoffInputReturn).l
 .next	btst	#$4,d1		;test for b button press
 	beq.w	.1		;branch if pressed
 	move.w	#$FEA,d1
@@ -975,7 +975,7 @@ FaceoffInputCheckLocked
 	bne.w	doinput_islockedExit
 	btst	#$4,$17F7A.l
 	bne.w	doinput_islockedExit
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	bset	#$1,$32(a2)
 	bne.w	doinput_islockedExit
 	btst	#$3,$17F74.l
@@ -1110,10 +1110,10 @@ LineInputSetCoords
 	bsr.w	SetLcCoordsForSide
 	tst.w	d0
 	bpl.w	.next
-	jmp	$30AB0.l
+	jmp	(FaceoffInputReturn).l
 .next	bclr	#$3,$63(a3)
 	bset	#$3,$62(a3)
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	bclr	#$1,$32(a2)
 	move.w	d0,$16(a2)
 	jsr	(setpersonel).l
@@ -1347,7 +1347,7 @@ passto						;pass the puck to player a0: a3 = passer
 	bra.w	.stack
 .diffteam	jsr	(setc2player).l
 .stack	movem.l	(sp)+,d0-d1
-.next	jsr	$3C958.l
+.next	jsr	(ChkShotStatSwapStructs).l
 	addi.w	#$1,$12(a2)
 	move.w	$52(a0),$17E30.l
 	move.w	$17E2E.l,d5
@@ -3901,18 +3901,18 @@ chk4pass						;player a3 looks for good pass (computer controlled)
 	beq.w	check4benchExit
 	adda.w	#$4,sp
 	bra.w	assexit
-; Table of 88 words after chk4pass, 176 bytes: $4A79,$0001,$7BE0,$6B00,$DE40,$142B ...
-	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439
-	dc.w	$0001,$7BA8,$4882,$D46B,$0000,$9479,$0001,$7B80
-	dc.w	$0C42,$0028,$6E00,$DE22,$0C42,$FFD8,$6D00,$DE1A
-	dc.w	$122B,$002A,$9239,$0001,$7BAA,$4881,$D26B,$0014
-	dc.w	$9279,$0001,$7B94,$0C41,$0028,$6E00,$DDFC,$0C41
-	dc.w	$FFD8,$6D00,$DDF4,$302B,$0000,$9079,$0001,$7B80
-	dc.w	$322B,$0014,$9279,$0001,$7B94,$6100,$261E,$0839
-	dc.w	$0005,$0001,$7F68,$6700,$0038,$322B,$0014,$082B
-	dc.w	$0007,$0062,$6600,$0004,$4441,$0441,$0058,$0C41
-	dc.w	$000A,$6E00,$001C,$0C41,$FFCE,$6D00,$0014,$7002
-	dc.w	$322B,$0000,$B279,$0001,$7B80,$6E00,$0004,$7006
+; Code kept as words after chk4pass (the 176 bytes are decoded in the row comments).
+	dc.w	$4A79,$0001,$7BE0,$6B00,$DE40,$142B,$0028,$9439		; tst.w $17be0.l / bmi.w *-8638 / move.b $28(a3), d2 / sub.b $17ba8.l, d2
+	dc.w	$0001,$7BA8,$4882,$D46B,$0000,$9479,$0001,$7B80		; ext.w d2 / add.w $0(a3), d2 / sub.w $17b80.l, d2
+	dc.w	$0C42,$0028,$6E00,$DE22,$0C42,$FFD8,$6D00,$DE1A		; cmpi.w #$28, d2 / bgt.w *-8668 / cmpi.w #$ffd8, d2 / blt.w *-8676
+	dc.w	$122B,$002A,$9239,$0001,$7BAA,$4881,$D26B,$0014		; move.b $2a(a3), d1 / sub.b $17baa.l, d1 / ext.w d1 / add.w $14(a3), d1
+	dc.w	$9279,$0001,$7B94,$0C41,$0028,$6E00,$DDFC,$0C41		; sub.w $17b94.l, d1 / cmpi.w #$28, d1 / bgt.w *-8706 / cmpi.w #$ffd8, d1
+	dc.w	$FFD8,$6D00,$DDF4,$302B,$0000,$9079,$0001,$7B80		; blt.w *-8714 / move.w $0(a3), d0 / sub.w $17b80.l, d0
+	dc.w	$322B,$0014,$9279,$0001,$7B94,$6100,$261E,$0839		; move.w $14(a3), d1 / sub.w $17b94.l, d1 / bsr.w *+9760 / btst.b #$5, $17f68.l
+	dc.w	$0005,$0001,$7F68,$6700,$0038,$322B,$0014,$082B		; beq.w *+58 / move.w $14(a3), d1 / btst.b #$7, $62(a3)
+	dc.w	$0007,$0062,$6600,$0004,$4441,$0441,$0058,$0C41		; bne.w *+6 / neg.w d1 / subi.w #$58, d1 / cmpi.w #$a, d1
+	dc.w	$000A,$6E00,$001C,$0C41,$FFCE,$6D00,$0014,$7002		; bgt.w *+30 / cmpi.w #$ffce, d1 / blt.w *+22 / moveq #$2, d0
+	dc.w	$322B,$0000,$B279,$0001,$7B80,$6E00,$0004,$7006		; move.w $0(a3), d1 / cmp.w $17b80.l, d1 / bgt.w *+6 / moveq #$6, d0
 	rts
 checkob						;bring up little warning ref if a player on your team is over blue line
 	btst	#$5,$17F68.l
