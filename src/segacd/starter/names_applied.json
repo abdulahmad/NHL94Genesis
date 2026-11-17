@@ -1,7 +1,7 @@
 {
  "RestoreBios_17": [
-  "DelayShort",
-  "Busy-wait of about 40 loop passes (hardware settling delay)."
+  "SubCmdRunList",
+  "Command 5: walk a list of (key, value) word pairs ending in $FFFF and apply each through TableLookupWord."
  ],
  "RestoreBios_53": [
   "ScreenSetupA",
@@ -68,32 +68,32 @@
   "Calls $E370 with function $1A."
  ],
  "RestoreBios_97": [
-  "Buf8_10",
-  "Zero-filled work storage (8 bytes)."
+  "FilmEntryVector",
+  "Entry vector of the movie driver (bra to FilmSwitch). FilmOpen, FilmTask and FilmClose address the driver variables that follow relative to it."
  ],
  "RestoreBios_106": [
-  "LoadSmImage",
-  "Unpacks an 'SM' image (header $534D) into memory."
+  "CdReadState",
+  "State block of CdBiosReadSequence."
  ],
  "RestoreBios_107": [
-  "PcmInit",
-  "Resets the PCM chip: all channels off, then the control register."
+  "FilmSwitch",
+  "Movie switch: word at 4(sp) = 0 opens the film, 1 runs a task step, anything else closes it and restores the vectors."
  ],
  "RestoreBios_100": [
-  "BufA8_1",
-  "Zero-filled work storage (168 bytes)."
+  "FilmSavedArg1",
+  "First pointer saved by FilmSwitch from the caller."
  ],
  "RestoreBios_101": [
-  "Long4",
-  "Zero-filled work storage (4 bytes)."
+  "CdReadSectorsLeft",
+  "Sector count of the running CD read (negative = error)."
  ],
  "RestoreBios_102": [
-  "Long5",
-  "Zero-filled work storage (4 bytes)."
+  "CdReadDest",
+  "Destination address of the running CD read."
  ],
  "RestoreBios_104": [
-  "RemoveIrqHook1",
-  "Restores the vector at $5F36."
+  "FilmSavedVectors",
+  "Six longs saved by FilmSwitch (the caller pointers it installs)."
  ],
  "RestoreBiosSub48": [
   "BcdToBin",
@@ -200,8 +200,8 @@
   "Sends command $F and keeps the reply word."
  ],
  "RestoreBios_103": [
-  "InstallIrqHook1",
-  "Saves the level vector at $5F36 and installs the stream interrupt handler."
+  "CdReadLastMsf",
+  "Last minute/second/frame position seen by the CD interrupt hook."
  ],
  "RestoreBios_113": [
   "PcmInit",
@@ -212,16 +212,16 @@
   "Writes the PCM control register and enables channel 0."
  ],
  "RestoreBios_108": [
-  "PcmStartChannel0",
-  "Writes the PCM control register and enables channel 0."
+  "SavedBiosVector5F36",
+  "The BIOS vector at $5F36, saved while the first interrupt hook is installed."
  ],
  "RestoreBios_109": [
   "InstallIrqHook1",
   "Saves the level vector at $5F36 and installs the stream interrupt handler."
  ],
  "RestoreBios_111": [
-  "PcmSetControl",
-  "Writes d0 (with bit 7) to the PCM control register."
+  "CdIrqHook1",
+  "First CD interrupt hook: counts a tick and calls FilmTickCallback."
  ],
  "RestoreBios_119": [
   "InstallIrqHook2",
@@ -300,140 +300,140 @@
   "C function AudioBusy (Sierra C name tag follows it)."
  ],
  "RestoreBios_1": [
-  "Buf82_1",
-  "Zero-filled work storage (130 bytes)."
+  "SubCommandQueue",
+  "Queue of pending sub-CPU commands: a word count, then one long argument per entry."
  ],
  "RestoreBios_22": [
-  "Long1",
-  "Zero-filled work storage (4 bytes)."
+  "SubMasterVolumes",
+  "Master volume words (left, right), $100 after a reset."
  ],
  "RestoreBios_23": [
-  "Buf200_1",
-  "Zero-filled work storage (512 bytes)."
+  "SubInstrTable",
+  "$100 word entries keyed by instrument number; $FFFF marks an unused entry."
  ],
  "RestoreBios_24": [
-  "Word1",
-  "Zero-filled work storage (2 bytes)."
+  "SubListCount",
+  "Entry count of the list SubCmdRunList is walking."
  ],
  "RestoreBios_25": [
-  "Buf8_1",
-  "Zero-filled work storage (8 bytes)."
+  "SubTablePtrs",
+  "Two table pointers set by SubCmdSetTablePtr ($FFFFFFFF = not set)."
  ],
  "RestoreBios_26": [
-  "Word2",
-  "Zero-filled work storage (2 bytes)."
+  "SubTickBusy",
+  "Re-entry guard of the PCM tick."
  ],
  "RestoreBios_27": [
-  "Word3",
-  "Zero-filled work storage (2 bytes)."
+  "SubPcmOnOffShadow",
+  "Shadow of the PCM chip on/off register ($FF0011); a set bit keeps the voice silent."
  ],
  "RestoreBios_28": [
-  "Buf8_2",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceChan",
+  "MIDI channel of each of the 8 voices."
  ],
  "RestoreBios_29": [
-  "Buf8_3",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceInstr",
+  "Instrument index of each voice."
  ],
  "RestoreBios_30": [
-  "Buf8_4",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceNote",
+  "Note number of each voice."
  ],
  "RestoreBios_31": [
-  "Buf8_5",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceVelocity",
+  "Velocity (level) of each voice."
  ],
  "RestoreBios_32": [
-  "Buf8_6",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceAge",
+  "Allocation order of each voice; the smallest value is stolen first."
  ],
  "RestoreBios_33": [
-  "Buf8_7",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceRelease",
+  "Release instrument key of each voice ($FF = none)."
  ],
  "RestoreBios_34": [
-  "Buf8_8",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceDecay",
+  "Decay step of each voice."
  ],
  "RestoreBios_35": [
-  "Buf11_1",
-  "Zero-filled work storage (17 bytes)."
+  "SubVoiceTimer",
+  "One word timer per voice."
  ],
  "RestoreBios_36": [
-  "Byte1",
-  "Zero-filled work storage (1 bytes)."
+  "SubVoiceReleasing",
+  "Bit mask of the voices in their release phase."
  ],
  "RestoreBios_37": [
-  "Word4",
-  "Zero-filled work storage (2 bytes)."
+  "SubLastStopwatch",
+  "Stopwatch value ($FF800C) at the last tick."
  ],
  "RestoreBios_38": [
-  "Word5",
-  "Zero-filled work storage (2 bytes)."
+  "SubVoiceIndex",
+  "Voice counter shared by the voice loops."
  ],
  "RestoreBios_39": [
-  "Byte2",
-  "Zero-filled work storage (1 bytes)."
+  "SubCmdChannel",
+  "MIDI channel of the command being handled."
  ],
  "RestoreBios_40": [
-  "Byte3",
-  "Zero-filled work storage (1 bytes)."
+  "SubCmdNote",
+  "Note number of the command being handled."
  ],
  "RestoreBios_41": [
-  "Byte4",
-  "Zero-filled work storage (1 bytes)."
+  "SubCmdInstrKey",
+  "Instrument key being looked up for the current command."
  ],
  "RestoreBios_42": [
-  "Word6",
-  "Zero-filled work storage (2 bytes)."
+  "SubFoundVoiceParam",
+  "Parameter stored by FindKeyIndex next to the voice it found."
  ],
  "RestoreBios_43": [
-  "Long2",
-  "Zero-filled work storage (4 bytes)."
+  "SubCurInstrRecord",
+  "Pointer to the instrument record found for the current command."
  ],
  "RestoreBios_44": [
-  "Buf80_1",
-  "Zero-filled work storage (128 bytes)."
+  "SubChanProgram",
+  "Program number of each of the 16 MIDI channels."
  ],
  "RestoreBios_45": [
-  "Buf80_2",
-  "Zero-filled work storage (128 bytes)."
+  "SubChanModulation",
+  "Modulation setting of each MIDI channel, 0 after a reset."
  ],
  "RestoreBios_46": [
-  "Buf80_3",
-  "Zero-filled work storage (128 bytes)."
+  "SubChanVolume",
+  "Volume of each MIDI channel ($7F after a reset)."
  ],
  "RestoreBios_47": [
-  "Buf80_4",
-  "Zero-filled work storage (128 bytes)."
+  "SubChanPan",
+  "Pan of each MIDI channel ($40 = centre after a reset)."
  ],
  "RestoreBios_48": [
-  "Buf80_5",
-  "Zero-filled work storage (128 bytes)."
+  "SubChanPitchBend",
+  "Pitch bend of each MIDI channel ($40 = centre after a reset)."
  ],
  "RestoreBios_49": [
-  "Buf8_9",
-  "Zero-filled work storage (8 bytes)."
+  "SubVoiceTrim",
+  "Per-voice level trim, $FF after a reset."
  ],
  "RestoreBios_50": [
-  "Word7",
-  "Zero-filled work storage (2 bytes)."
+  "SubTickFlag",
+  "Flag set to $FF by the reset."
  ],
  "RestoreBios_92": [
   "SendCmdE320Inline",
   "Calls the $E320 command with an inline parameter block."
  ],
  "RestoreBios_95": [
-  "Long4",
-  "Zero-filled work storage (4 bytes)."
+  "SubBootHalt",
+  "Endless loop after a failed boot step."
  ],
  "RestoreBios_98": [
-  "Long3",
-  "Zero-filled work storage (4 bytes)."
+  "FilmIrqTicks",
+  "Long counter incremented by the first CD interrupt hook."
  ],
  "RestoreBios_99": [
-  "Long6",
-  "Zero-filled work storage (4 bytes)."
+  "FilmSavedArg2",
+  "Second pointer saved by FilmSwitch from the caller."
  ],
  "RestoreBios_115": [
   "PcmMuteAllChannels",
@@ -536,8 +536,8 @@
   "Writes d0 (with bit 7) to the PCM control register."
  ],
  "RestoreBios_118": [
-  "Long7",
-  "Zero-filled work storage (4 bytes)."
+  "SavedBiosVector5F90",
+  "The BIOS vector at $5F90, saved while the second interrupt hook is installed."
  ],
  "GetData_1": [
   "SetBlockEnd",
@@ -596,8 +596,8 @@
   "Restores the vector at $5F90."
  ],
  "RestoreBios_121": [
-  "Long8",
-  "Zero-filled work storage (4 bytes)."
+  "CdHeaderBuf",
+  "Four bytes read by the CD interrupt hook (BCD minute/second/frame header)."
  ],
  "RestoreBios_123": [
   "CdBiosCall8",
@@ -616,8 +616,8 @@
   "Converts the BCD minute/second/frame bytes of d0 to binary."
  ],
  "RestoreBios_105": [
-  "Long6",
-  "Zero-filled work storage (4 bytes)."
+  "FilmTickCallback",
+  "Callback called by the first CD interrupt hook every tick (0 = none)."
  ],
  "RestoreBios_87": [
   "CommHandshake1",
@@ -638,5 +638,65 @@
  "RestoreBios_91": [
   "SendPadStateCmd",
   "Sends the pad state registers in the command buffer."
+ ],
+ "RestoreBios_2": [
+  "SubCommandDispatchLow",
+  "Commands $00-$7F: compare chain from the command number in d0 to its handler; $80 and up go to SubCommandDispatchHigh."
+ ],
+ "RestoreBios_3": [
+  "SubVoiceUpdateLoop",
+  "Per-voice loop of the PCM tick: refreshes the level of each of the 8 voices (voice counter in SubVoiceIndex)."
+ ],
+ "RestoreBios_4": [
+  "SubVoiceCalcLevel",
+  "Computes the level of voice d1 from the envelope steps and writes it to the PCM chip."
+ ],
+ "RestoreBios_5": [
+  "SubVoiceUpdateNext",
+  "Advances to the next of the 8 voices and loops back to SubVoiceUpdateLoop."
+ ],
+ "RestoreBios_7": [
+  "SubCmdReset",
+  "Command 0: reset the sound driver (master volume $100, voice slots empty, channel tables to defaults)."
+ ],
+ "RestoreBios_8": [
+  "SubCmdAllocVoice",
+  "Command 3: pick a free PCM voice (else the one with the smallest age); voice in d0, carry set if none."
+ ],
+ "RestoreBios_15": [
+  "SubCmdSetMasterVolume",
+  "Command 2: d1 selects how the left/right master volume words are set."
+ ],
+ "RestoreBios_16": [
+  "SubCmdSetTablePtr",
+  "Command 4: store the pointer in a0 in slot d1 of SubTablePtrs."
+ ],
+ "RestoreBios_20": [
+  "SubCmdNop",
+  "Command 7: does nothing."
+ ],
+ "RestoreBios_18": [
+  "SubCmdLoadWaveCopy",
+  "Copies the sample at a0 into PCM wave RAM, switching banks through the control register."
+ ],
+ "RestoreBios_19": [
+  "SubCmdAdjustInstrWord",
+  "Command 9: set or add d2 to the 16-bit pointer at offsets 5/6 of the instrument record found by key d1."
+ ],
+ "RestoreBiosSub6": [
+  "SubCmdLoadWave",
+  "Command 6: load a sample into PCM wave RAM; carry set with d0 = 4 if it does not fit."
+ ],
+ "RestoreBios_93": [
+  "SubBootRetry",
+  "Retries the BIOS call at $E298 while the result stays negative."
+ ],
+ "RestoreBios_94": [
+  "SubBootExit",
+  "Restores all registers and returns from the boot sequence."
+ ],
+ "RestoreBios_122": [
+  "CdIrqHook2",
+  "Second CD interrupt hook: tracks the sector headers of the running read and decides when it is complete."
  ]
 }

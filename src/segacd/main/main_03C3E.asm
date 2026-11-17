@@ -258,9 +258,9 @@ DispatchTailSub16	lea.l	DispatchTail_71(pc),a0
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	jsr	MAINCODE(pc)
-.loop	dc.w	$303A,$019E
+.loop	move.w	DispatchTail_73(pc),d0
 	bne.b	.loop
-	dc.w	$207A,$0010
+	movea.l	DispatchTailSub16+$3C(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
@@ -332,7 +332,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	lea.l	DispatchTail_76(pc),a1
 	move.l	#$C0000000,$4(a0)
-	dc.w	$303A,$00A0
+	move.w	DispatchTail_75(pc),d0
 .loop	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -343,12 +343,12 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	(a1)+,(a0)
 	dbra	d0,.loop
 	clr.w	(a2)
-	dc.w	$263A,$010A
+	move.l	DispatchTail_77(pc),d3
 	lea.l	DispatchTail_80(pc),a2
-	dc.w	$243A,$0106
-	dc.w	$2E3A,$010A
+	move.l	DispatchTail_77+$4(pc),d2
+	move.l	DispatchTail_79(pc),d7
 	subq.w	#$1,d7
-	dc.w	$2C3A,$0100
+	move.l	DispatchTail_78(pc),d6
 	moveq	#$7,d0
 	and.w	d6,d0
 	bne.b	.next

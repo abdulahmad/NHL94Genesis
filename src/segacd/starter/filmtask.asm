@@ -8,9 +8,9 @@
 FilmTask	link	a6,#$FFFC
 	movem.l	d7/a3-a4,-(sp)
 	move.l	#$C0000,-$4(a6)
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	lea.l	$40(a0),a4
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	tst.l	$38(a0)
 	beq.b	.next
 	moveq	#-2,d0
@@ -19,7 +19,7 @@ FilmTask	link	a6,#$FFFC
 	bge.b	.next2
 	moveq	#-1,d0
 	bra.w	.next12
-.next2	lea.l	RestoreBios_97(pc),a0
+.next2	lea.l	FilmEntryVector(pc),a0
 	moveq	#$1,d0
 	cmp.l	$3C(a0),d0
 	bne.b	.next3
@@ -53,7 +53,7 @@ FilmTask	link	a6,#$FFFC
 	move.l	d7,-(sp)
 	pea.l	$30(a4)
 	jsr	AudioFeed(pc)
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	moveq	#-1,d0
 	cmp.l	$3C(a0),d0
 	lea.l	$C(sp),sp

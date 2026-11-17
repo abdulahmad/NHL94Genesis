@@ -9,7 +9,7 @@ FilmOpen	link	a6,#$FFFC
 	movem.l	d3/d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
 	move.l	#$C0000,-$4(a6)
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	lea.l	$40(a0),a4
 	jsr	InitWorld(pc)
 	move.l	d5,-(sp)
@@ -126,34 +126,34 @@ FilmOpen	link	a6,#$FFFC
 .next8	movea.l	$10(a4),a0
 	cmp.l	$C(a0),d7
 	blt.b	.loop
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	moveq	#$0,d0
 	move.l	d0,$3C(a0)
 	tst.l	d6
 	bne.b	.next9
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	moveq	#-1,d0
 	move.l	d0,$3C(a0)
 .next9	tst.l	d5
 	bne.b	.next10
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	moveq	#$1,d0
 	move.l	d0,$3C(a0)
-.next10	lea.l	RestoreBios_97(pc),a0
+.next10	lea.l	FilmEntryVector(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$20(a0),(a1)
-	lea.l	RestoreBios_97(pc),a0
-	lea.l	RestoreBios_97(pc),a1
+	lea.l	FilmEntryVector(pc),a0
+	lea.l	FilmEntryVector(pc),a1
 	move.l	$28(a1),d0
 	add.l	d0,d0
 	add.l	$24(a0),d0
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	move.l	$2C(a0),d1
 	asl.l	#$7,d1
 	add.l	d0,d1
 	movea.l	-$4(a6),a0
 	move.l	d1,$4(a0)
-	lea.l	RestoreBios_97(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$30(a0),$8(a1)
 	jsr	SwapMeg(pc)

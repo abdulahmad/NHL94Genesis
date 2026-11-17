@@ -35,7 +35,7 @@ RestoreBiosSub45	movem.l	(sp)+,a1
 	bsr.w	SubBiosCall1A
 	jsr	$EA0C.l
 	move.l	$EC92.l,d1
-	beq.w	RestoreBios_94
+	beq.w	SubBootExit
 	movem.l	d1,-(sp)
 	move.w	$FFFF8004.w,$EC8E.l
 	lea.l	$ECA2.l,a0
@@ -67,15 +67,16 @@ RestoreBiosSub47	move.l	#$0,-(sp)
 	jsr	$ECB4.l
 	adda.w	#$26,sp
 	tst.w	d0
-	bmi.w	RestoreBios_95
-RestoreBios_93	jsr	$E298.l
+	bmi.w	SubBootHalt
+; Retries the BIOS call at $E298 while the result stays negative.
+SubBootRetry	jsr	$E298.l
 	btst	#$7,d1
 RestoreBiosSub48	bne.w	.next
 	move.w	#$1,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp
 	tst.w	d0
-	bge.b	RestoreBios_93
+	bge.b	SubBootRetry
 .next	move.w	#$2,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp
@@ -97,9 +98,11 @@ RestoreBiosSub48	bne.w	.next
 	move.l	$ECB0.l,$602C.w
 	bset.b	#$2,$FFFF8024.w
 	bset.b	#$2,$FFFF8033.w
-RestoreBios_94	movem.l	(sp)+,d0-d7/a0-a6
+; Restores all registers and returns from the boot sequence.
+SubBootExit	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-RestoreBios_95	bra.b	RestoreBios_95
+; Endless loop after a failed boot step.
+SubBootHalt	bra.b	SubBootHalt
 ; Calls $E370 with function $1A.
 SubBiosCall1A	moveq	#$1A,d0
 	jsr	$E370.l
@@ -107,13 +110,23 @@ SubBiosCall1A	moveq	#$1A,d0
 	dcb.b	$18,0
 	dc.b	$01,$FF,'HOCKEY.SEG',$00,$00,$00,$00	; ..HOCKEY.SEG....
 	dc.b	$00,$00	; ..
-RestoreBios_97	bra.w	RestoreBios_107
-RestoreBios_98	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_99	dc.b	$00,$01,$00,$00	; ....
-RestoreBios_100	dc.b	$00,$06,$00,$00	; ....
-RestoreBios_101	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_102	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_103	dcb.b	$8,0
-RestoreBios_104	dcb.b	$14,0
-RestoreBios_105	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_106	dcb.b	$A8,0
+; Entry vector of the movie driver (bra to FilmSwitch). FilmOpen, FilmTask and FilmClose address the driver variables that follow relative to it.
+FilmEntryVector	bra.w	FilmSwitch
+; Long counter incremented by the first CD interrupt hook.
+FilmIrqTicks	dc.b	$00,$00,$00,$00	; ....
+; Second pointer saved by FilmSwitch from the caller.
+FilmSavedArg2	dc.b	$00,$01,$00,$00	; ....
+; First pointer saved by FilmSwitch from the caller.
+FilmSavedArg1	dc.b	$00,$06,$00,$00	; ....
+; Sector count of the running CD read (negative = error).
+CdReadSectorsLeft	dc.b	$00,$00,$00,$00	; ....
+; Destination address of the running CD read.
+CdReadDest	dc.b	$00,$00,$00,$00	; ....
+; Last minute/second/frame position seen by the CD interrupt hook.
+CdReadLastMsf	dcb.b	$8,0
+; Six longs saved by FilmSwitch (the caller pointers it installs).
+FilmSavedVectors	dcb.b	$14,0
+; Callback called by the first CD interrupt hook every tick (0 = none).
+FilmTickCallback	dc.b	$00,$00,$00,$00	; ....
+; State block of CdBiosReadSequence.
+CdReadState	dcb.b	$A8,0

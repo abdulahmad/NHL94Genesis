@@ -5,69 +5,71 @@
 	dcb.b	$72,0
 	dc.b	$4E,$F9,$00,$00,$D8,$5A	; N....Z
 ; Dispatches the command number in d0 (below $80 by a compare chain, the rest to the high handler).
-SubCommandDispatch	bra.w	RestoreBios_2
-RestoreBios_1	dcb.b	$82,0
-RestoreBios_2	cmpi.b	#$80,d0
+SubCommandDispatch	bra.w	SubCommandDispatchLow
+; Queue of pending sub-CPU commands: a word count, then one long argument per entry.
+SubCommandQueue	dcb.b	$82,0
+; Commands $00-$7F: compare chain from the command number in d0 to its handler; $80 and up go to SubCommandDispatchHigh.
+SubCommandDispatchLow	cmpi.b	#$80,d0
 	bcs.b	.next
 	bra.w	SubCommandDispatchHigh
 .next	tst.w	d0
 	bne.b	.next2
-	bra.w	RestoreBios_7
+	bra.w	SubCmdReset
 .next2	subi.w	#$1,d0
 	bne.b	.next3
 	bra.w	.next11
 .next3	subi.w	#$1,d0
 	bne.b	.next4
 	nop
-	bra.w	RestoreBios_15
+	bra.w	SubCmdSetMasterVolume
 .next4	subi.w	#$1,d0
 	bne.b	.next5
-	bra.w	RestoreBios_8
+	bra.w	SubCmdAllocVoice
 .next5	subi.w	#$1,d0
 	bne.b	.next6
 	nop
 .next6	subi.w	#$1,d0
 	bne.b	.next7
-	bra.w	RestoreBios_16
+	bra.w	SubCmdSetTablePtr
 .next7	subi.w	#$1,d0
 	bne.b	.next8
-	bra.w	RestoreBios_17
+	bra.w	SubCmdRunList
 .next8	subi.w	#$1,d0
 	bne.b	.next9
-	bra.w	RestoreBios_20
+	bra.w	SubCmdNop
 .next9	subi.w	#$1,d0
 	bne.b	.next10
-	bra.w	RestoreBios_19
+	bra.w	SubCmdAdjustInstrWord
 .next10	move.w	#$1,d0
 	ori.b	#$1,ccr
 	rts
 .next11	movem.l	d0-d7/a0-a6,-(sp)
-	lea.l	RestoreBios_26(pc),a0
+	lea.l	SubTickBusy(pc),a0
 	cmpi.w	#$0,(a0)
 	beq.b	.next12
 	bra.b	.next14
 .next12	move.w	#$FFFF,(a0)
 	bsr.w	.next15
 	move.w	$FF800C.l,d0
-	dc.w	$907A,$0FF0
+	sub.w	SubLastStopwatch(pc),d0
 	andi.w	#$FFF,d0
 	cmpi.w	#$20,d0
 	bcs.b	.next13
 	bsr.w	.next18
-	lea.l	RestoreBios_37(pc),a0
+	lea.l	SubLastStopwatch(pc),a0
 	move.w	$FF800C.l,d0
 	move.w	d0,(a0)
-.next13	lea.l	RestoreBios_26(pc),a0
+.next13	lea.l	SubTickBusy(pc),a0
 	move.w	#$0,(a0)
 .next14	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .next15	movem.l	d0-d1/a0-a1,-(sp)
-.loop	lea.l	RestoreBios_1(pc),a0
+.loop	lea.l	SubCommandQueue(pc),a0
 	cmpi.w	#$0,(a0)
 	beq.b	.next17
 	move.l	$2(a0),d0
 	bsr.w	SubCommandDispatchHigh
-	lea.l	RestoreBios_1(pc),a0
+	lea.l	SubCommandQueue(pc),a0
 	move.w	(a0),d0
 	move.w	#$FFFF,(a0)
 	adda.l	#$2,a0
@@ -79,51 +81,52 @@ RestoreBios_2	cmpi.b	#$80,d0
 	subi.w	#$1,d1
 .loop2	move.l	(a1)+,(a0)+
 	dbra	d1,.loop2
-.next16	lea.l	RestoreBios_1(pc),a0
+.next16	lea.l	SubCommandQueue(pc),a0
 	subi.w	#$1,d0
 	move.w	d0,(a0)
 	bra.b	.loop
 .next17	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 .next18	movem.l	d1-d4/a0-a2,-(sp)
-	lea.l	RestoreBios_38(pc),a0
+	lea.l	SubVoiceIndex(pc),a0
 	move.w	#$0,(a0)
-RestoreBios_3	dc.w	$103A,$0F1A
-	dc.w	$343A,$0F64
+; Per-voice loop of the PCM tick: refreshes the level of each of the 8 voices (voice counter in SubVoiceIndex).
+SubVoiceUpdateLoop	move.b	SubPcmOnOffShadow(pc),d0
+	move.w	SubVoiceIndex(pc),d2
 	btst	d2,d0
-	bne.w	RestoreBios_5
+	bne.w	SubVoiceUpdateNext
 	lsl.w	#$2,d2
 	lea.l	$FF0021.l,a0
 	cmpi.b	#$0,$2(a0,d2.w)
 	bne.b	.next
-	lea.l	RestoreBios_27(pc),a0
-	dc.w	$303A,$0F46
+	lea.l	SubPcmOnOffShadow(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	(a0),d2
 	bset	d0,d2
 	move.b	d2,(a0)
 	move.b	d2,$FF0011.l
 	bsr.w	DelayShort
-	bra.w	RestoreBios_5
-.next	dc.w	$343A,$0F2E
-	lea.l	RestoreBios_33(pc),a0
+	bra.w	SubVoiceUpdateNext
+.next	move.w	SubVoiceIndex(pc),d2
+	lea.l	SubVoiceRelease(pc),a0
 	cmpi.b	#$FF,(a0,d2.w)
-	beq.w	RestoreBios_5
+	beq.w	SubVoiceUpdateNext
 	clr.w	d1
 	move.b	(a0,d2.w),d1
 	move.w	#$4,d0
 	bsr.w	TableLookupWord
-	bcs.w	RestoreBios_5
-	lea.l	RestoreBios_35(pc),a1
-	dc.w	$303A,$0F06
+	bcs.w	SubVoiceUpdateNext
+	lea.l	SubVoiceTimer(pc),a1
+	move.w	SubVoiceIndex(pc),d0
 	lsl.w	#$1,d0
 	move.w	$FF800C.l,d1
-	dc.w	$927A,$0EF8
+	sub.w	SubLastStopwatch(pc),d1
 	andi.w	#$FFF,d1
 	lsr.w	#$5,d1
 	add.w	(a1,d0.w),d1
 	move.w	d1,(a1,d0.w)
-	lea.l	RestoreBios_34(pc),a2
-	dc.w	$323A,$0EE4
+	lea.l	SubVoiceDecay(pc),a2
+	move.w	SubVoiceIndex(pc),d1
 	clr.w	d2
 	move.b	(a2,d1.w),d2
 	addi.w	#$1,d2
@@ -140,8 +143,8 @@ RestoreBios_3	dc.w	$103A,$0F1A
 	move.b	(a2,d1.w),d2
 	cmp.b	$2(a0),d2
 	bne.b	.next2
-	lea.l	RestoreBios_36(pc),a1
-	dc.w	$363A,$0EA6
+	lea.l	SubVoiceReleasing(pc),a1
+	move.w	SubVoiceIndex(pc),d3
 	btst	d3,(a1)
 	beq.b	.next2
 	move.b	$1(a0),(a2,d1.w)
@@ -149,16 +152,16 @@ RestoreBios_3	dc.w	$103A,$0F1A
 .next2	addi.b	#$1,d2
 	cmp.b	(a0),d2
 	bcs.b	.next3
-	lea.l	RestoreBios_27(pc),a0
-	dc.w	$303A,$0E8A
+	lea.l	SubPcmOnOffShadow(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	(a0),d1
 	bset	d0,d1
 	move.b	d1,$FF0011.l
 	move.b	d1,(a0)
 	bsr.w	DelayShort
-	bra.w	RestoreBios_5
-.next3	lea.l	RestoreBios_34(pc),a1
-	dc.w	$303A,$0E6E
+	bra.w	SubVoiceUpdateNext
+.next3	lea.l	SubVoiceDecay(pc),a1
+	move.w	SubVoiceIndex(pc),d0
 	clr.w	d1
 	move.b	(a1,d0.w),d1
 	lsl.w	#$1,d1
@@ -169,16 +172,17 @@ RestoreBios_3	dc.w	$103A,$0F1A
 	clr.w	d2
 	move.b	$1(a0,d1.w),d2
 	sub.b	$3(a0,d1.w),d2
-	bra.b	RestoreBios_4
+	bra.b	SubVoiceCalcLevel
 .next4	clr.w	d2
 	move.b	$3(a0,d1.w),d2
 RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
-RestoreBios_4	cmpi.b	#$0,d2
+; Computes the level of voice d1 from the envelope steps and writes it to the PCM chip.
+SubVoiceCalcLevel	cmpi.b	#$0,d2
 	bne.b	.next
 	move.b	$1(a0,d1.w),d2
 	bra.b	.next3
-.next	lea.l	RestoreBios_35(pc),a1
-	dc.w	$303A,$0E2E
+.next	lea.l	SubVoiceTimer(pc),a1
+	move.w	SubVoiceIndex(pc),d0
 	lsl.w	#$1,d0
 	move.w	(a1,d0.w),d3
 	lsl.w	#$8,d3
@@ -199,8 +203,8 @@ RestoreBios_4	cmpi.b	#$0,d2
 	clr.w	d2
 	move.b	$1(a0,d1.w),d2
 	add.w	d3,d2
-.next3	lea.l	RestoreBios_31(pc),a1
-	dc.w	$303A,$0DF2
+.next3	lea.l	SubVoiceVelocity(pc),a1
+	move.w	SubVoiceIndex(pc),d0
 	clr.w	d3
 	move.b	(a1,d0.w),d3
 	lsl.w	#$1,d3
@@ -211,11 +215,12 @@ RestoreBios_4	cmpi.b	#$0,d2
 	bsr.w	DelayShort
 	move.b	d2,$FF0001.l
 	bsr.w	DelayShort
-RestoreBios_5	lea.l	RestoreBios_38(pc),a0
+; Advances to the next of the 8 voices and loops back to SubVoiceUpdateLoop.
+SubVoiceUpdateNext	lea.l	SubVoiceIndex(pc),a0
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
 	beq.b	.next
-	bra.w	RestoreBios_3
+	bra.w	SubVoiceUpdateLoop
 .next	movem.l	(sp)+,d1-d4/a0-a2
 	rts
 ; Second level for commands $80 and up, by range.
@@ -244,7 +249,7 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	ori.b	#$1,ccr
 	rts
 .next8	movem.l	d1-d2/a0-a1,-(sp)
-	lea.l	RestoreBios_22(pc),a0
+	lea.l	SubMasterVolumes(pc),a0
 	move.b	d0,d1
 	andi.w	#$F,d1
 	move.l	d0,d2
@@ -259,20 +264,20 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	swap	d1
 	andi.w	#$FF,d1
 	move.w	d1,$264(a0)
-	dc.w	$343A,$0D3C
-	lea.l	RestoreBios_44(pc),a0
+	move.w	SubCmdChannel(pc),d2
+	lea.l	SubChanProgram(pc),a0
 	clr.w	d1
 	move.b	(a0,d2.w),d1
-.loop	lea.l	RestoreBios_41(pc),a0
+.loop	lea.l	SubCmdInstrKey(pc),a0
 	move.w	d1,(a0)
 	move.w	#$0,d0
 	bsr.w	TableLookupWord
 	bcs.w	.next15
-	lea.l	RestoreBios_43(pc),a1
+	lea.l	SubCurInstrRecord(pc),a1
 	move.l	a0,(a1)
 	cmpi.b	#$7,(a0)
 	bne.b	.next9
-	dc.w	$303A,$0D12
+	move.w	SubCmdNote(pc),d0
 	addi.w	#$1,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
@@ -280,36 +285,36 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 .next9	bsr.w	FindKeyIndex
 	bcc.b	.next10
 	bra.w	.next15
-.next10	dc.w	$303A,$0CF4
-	lea.l	RestoreBios_28(pc),a0
-	dc.w	$11BA,$0CEF,$0000
-	lea.l	RestoreBios_29(pc),a0
-	dc.w	$11BA,$0CEB,$0000
-	lea.l	RestoreBios_30(pc),a0
-	dc.w	$11BA,$0CDD,$0000
-	lea.l	RestoreBios_31(pc),a0
-	dc.w	$11BA,$0CD5,$0000
-	lea.l	RestoreBios_32(pc),a0
-	dc.w	$227A,$0CD0
+.next10	move.w	SubVoiceIndex(pc),d0
+	lea.l	SubVoiceChan(pc),a0
+	move.b	SubCmdChannel+$1(pc),(a0,d0.w)
+	lea.l	SubVoiceInstr(pc),a0
+	move.b	SubCmdInstrKey+$1(pc),(a0,d0.w)
+	lea.l	SubVoiceNote(pc),a0
+	move.b	SubCmdNote+$1(pc),(a0,d0.w)
+	lea.l	SubVoiceVelocity(pc),a0
+	move.b	SubCmdNote+$3(pc),(a0,d0.w)
+	lea.l	SubVoiceAge(pc),a0
+	movea.l	SubCurInstrRecord(pc),a1
 	move.b	$1(a1),(a0,d0.w)
-	dc.w	$303A,$0CC4
+	move.w	SubFoundVoiceParam(pc),d0
 	btst	#$0,d0
 	beq.b	.next11
 	btst	#$1,d0
 	beq.b	.next14
-.next11	dc.w	$103A,$0C5C
-	dc.w	$323A,$0CA6
+.next11	move.b	SubPcmOnOffShadow(pc),d0
+	move.w	SubVoiceIndex(pc),d1
 	bset	d1,d0
 	move.b	d0,$FF0011.l
 	bsr.w	DelayShort
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
 	bsr.w	DelayShort
-	dc.w	$207A,$0C94
+	movea.l	SubCurInstrRecord(pc),a0
 	clr.w	d0
 	move.b	$2(a0),d0
 	lsl.w	#$1,d0
-	lea.l	RestoreBios_23(pc),a1
+	lea.l	SubInstrTable(pc),a1
 	move.w	(a1,d0.w),d1
 	lsr.w	#$8,d1
 	move.b	d1,$FF000D.l
@@ -330,8 +335,8 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	bsr.w	.next24
 	bsr.w	ScaleValueByTables
 .next14	bsr.w	CalcLevelDelta
-	lea.l	RestoreBios_27(pc),a0
-	dc.w	$303A,$0C2A
+	lea.l	SubPcmOnOffShadow(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	(a0),d1
 	bclr	d0,d1
 	move.b	d1,$FF0011.l
@@ -347,14 +352,14 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	swap	d2
 	lsr.w	#$8,d2
 	or.b	d2,d1
-	lea.l	RestoreBios_39(pc),a0
+	lea.l	SubCmdChannel(pc),a0
 	move.w	d1,(a0)
 	move.w	d0,d1
 	lsr.w	#$8,d1
-	lea.l	RestoreBios_40(pc),a0
+	lea.l	SubCmdNote(pc),a0
 	move.w	d1,(a0)
-	lea.l	RestoreBios_44(pc),a0
-	dc.w	$303A,$0BEA
+	lea.l	SubChanProgram(pc),a0
+	move.w	SubCmdChannel(pc),d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 .loop2	move.w	#$0,d0
@@ -362,7 +367,7 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	bcs.w	.next20
 	cmpi.b	#$7,(a0)
 	bne.b	.next17
-	dc.w	$303A,$0BD0
+	move.w	SubCmdNote(pc),d0
 	addi.w	#$1,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
@@ -372,12 +377,12 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	move.b	$6(a0),d0
 	cmpi.w	#$FFFF,d0
 	beq.w	.next20
-	dc.w	$103A,$0B5C
+	move.b	SubPcmOnOffShadow(pc),d0
 	clr.w	d1
-	lea.l	RestoreBios_28(pc),a1
-	lea.l	RestoreBios_30(pc),a2
-	dc.w	$343A,$0B9E
-	dc.w	$363A,$0B9C
+	lea.l	SubVoiceChan(pc),a1
+	lea.l	SubVoiceNote(pc),a2
+	move.w	SubCmdChannel(pc),d2
+	move.w	SubCmdNote(pc),d3
 .loop3	btst	d1,d0
 	bne.b	.next19
 	cmp.b	(a1),d2
@@ -386,23 +391,23 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	bne.b	.next19
 	cmpi.b	#$FF,$D(a0)
 	beq.b	.next18
-	lea.l	RestoreBios_36(pc),a1
+	lea.l	SubVoiceReleasing(pc),a1
 	bclr.b	d1,(a1)
-	lea.l	RestoreBios_38(pc),a1
+	lea.l	SubVoiceIndex(pc),a1
 	move.w	d1,(a1)
 	clr.w	d1
 	move.b	$D(a0),d1
 	move.w	#$4,d0
 	bsr.w	TableLookupWord
 	bcs.b	.next20
-	lea.l	RestoreBios_34(pc),a1
-	dc.w	$303A,$0B60
+	lea.l	SubVoiceDecay(pc),a1
+	move.w	SubVoiceIndex(pc),d0
 	move.b	$2(a0),(a1,d0.w)
 	lsl.w	#$1,d0
-	lea.l	RestoreBios_35(pc),a1
+	lea.l	SubVoiceTimer(pc),a1
 	move.w	#$0,(a1,d0.w)
 	bra.b	.next20
-.next18	lea.l	RestoreBios_27(pc),a0
+.next18	lea.l	SubPcmOnOffShadow(pc),a0
 	bset	d1,d0
 	move.b	d0,(a0)
 	move.b	d0,$FF0011.l
@@ -426,7 +431,7 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	andi.w	#$F,d2
 	or.b	d1,d2
 	lsr.w	#$8,d0
-	lea.l	RestoreBios_44(pc),a0
+	lea.l	SubChanProgram(pc),a0
 	move.b	d0,(a0,d2.w)
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
@@ -439,19 +444,19 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	andi.w	#$F,d2
 	or.b	d1,d2
 	lsr.w	#$8,d0
-	lea.l	RestoreBios_48(pc),a0
+	lea.l	SubChanPitchBend(pc),a0
 	move.b	d0,(a0,d2.w)
-	lea.l	RestoreBios_38(pc),a0
+	lea.l	SubVoiceIndex(pc),a0
 	move.w	#$0,(a0)
-.loop4	dc.w	$303A,$0AC6
-	dc.w	$123A,$0A74
+.loop4	move.w	SubVoiceIndex(pc),d0
+	move.b	SubPcmOnOffShadow(pc),d1
 	btst	d0,d1
 	beq.b	.next23
-	lea.l	RestoreBios_28(pc),a0
+	lea.l	SubVoiceChan(pc),a0
 	cmp.b	(a0,d0.w),d2
 	bne.b	.next23
 	bsr.w	CalcLevelDelta
-.next23	lea.l	RestoreBios_38(pc),a0
+.next23	lea.l	SubVoiceIndex(pc),a0
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
 	bne.b	.loop4
@@ -459,23 +464,23 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
 .next24	movem.l	d1-d2/a0,-(sp)
-	dc.w	$207A,$0A9E
+	movea.l	SubCurInstrRecord(pc),a0
 	clr.w	d1
 	move.b	$D(a0),d1
-	lea.l	RestoreBios_33(pc),a0
-	dc.w	$303A,$0A84
+	lea.l	SubVoiceRelease(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	d1,(a0,d0.w)
 	cmpi.b	#$FF,d1
 	beq.b	.next25
 	move.w	#$4,d0
 	bsr.w	TableLookupWord
 	bcc.b	.next26
-.next25	dc.w	$303A,$0A6C
+.next25	move.w	SubVoiceIndex(pc),d0
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
 	bsr.w	DelayShort
-	lea.l	RestoreBios_31(pc),a0
-	dc.w	$303A,$0A56
+	lea.l	SubVoiceVelocity(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	(a0,d0.w),d1
 	lsl.w	#$1,d1
 	move.b	d1,$FF0001.l
@@ -484,66 +489,67 @@ SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	bra.b	.next27
 .next26	clr.w	d0
 	move.b	$4(a0),d0
-	lea.l	RestoreBios_31(pc),a0
-	dc.w	$323A,$0A34
+	lea.l	SubVoiceVelocity(pc),a0
+	move.w	SubVoiceIndex(pc),d1
 	clr.w	d2
 	move.b	(a0,d1.w),d2
 	lsl.w	#$1,d2
 	mulu.w	d2,d0
 	lsr.w	#$8,d0
-	dc.w	$323A,$0A24
+	move.w	SubVoiceIndex(pc),d1
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
 	bsr.w	DelayShort
 	move.b	d0,$FF0001.l
 	bsr.w	DelayShort
-	lea.l	RestoreBios_34(pc),a0
-	dc.w	$303A,$0A04
+	lea.l	SubVoiceDecay(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	#$0,(a0,d0.w)
-	lea.l	RestoreBios_36(pc),a0
+	lea.l	SubVoiceReleasing(pc),a0
 	bset.b	d0,(a0)
 	lsl.w	#$1,d0
-	lea.l	RestoreBios_35(pc),a0
+	lea.l	SubVoiceTimer(pc),a0
 	move.w	#$0,(a0,d0.w)
 	clr.w	d0
 .next27	movem.l	(sp)+,d1-d2/a0
 	rts
-RestoreBios_7	movem.l	d0/a0-a1,-(sp)
-	lea.l	RestoreBios_22(pc),a0
+; Command 0: reset the sound driver (master volume $100, voice slots empty, channel tables to defaults).
+SubCmdReset	movem.l	d0/a0-a1,-(sp)
+	lea.l	SubMasterVolumes(pc),a0
 	move.w	#$100,$0(a0)
 	move.w	#$100,$2(a0)
-	lea.l	RestoreBios_25(pc),a1
+	lea.l	SubTablePtrs(pc),a1
 	move.w	#$1,d0
 .loop	move.l	#$FFFFFFFF,(a1)+
 	dbra	d0,.loop
 	move.b	#$FF,$210(a0)
-	lea.l	RestoreBios_44(pc),a0
+	lea.l	SubChanProgram(pc),a0
 	move.w	#$7F,d0
 .loop2	move.b	#$0,(a0)+
 	dbra	d0,.loop2
-	lea.l	RestoreBios_45(pc),a0
+	lea.l	SubChanModulation(pc),a0
 	move.w	#$7F,d0
 .loop3	move.b	#$0,(a0)+
 	dbra	d0,.loop3
-	lea.l	RestoreBios_46(pc),a0
+	lea.l	SubChanVolume(pc),a0
 	move.w	#$7F,d0
 .loop4	move.b	#$7F,(a0)+
 	dbra	d0,.loop4
-	lea.l	RestoreBios_47(pc),a0
+	lea.l	SubChanPan(pc),a0
 	move.w	#$7F,d0
 .loop5	move.b	#$40,(a0)+
 	dbra	d0,.loop5
-	lea.l	RestoreBios_48(pc),a0
+	lea.l	SubChanPitchBend(pc),a0
 	move.w	#$7F,d0
 .loop6	move.b	#$40,(a0)+
 	dbra	d0,.loop6
-	lea.l	RestoreBios_49(pc),a0
+	lea.l	SubVoiceTrim(pc),a0
 	move.w	#$7,d0
 .loop7	move.b	#$FF,(a0)+
 	dbra	d0,.loop7
-	lea.l	RestoreBios_50(pc),a0
+	lea.l	SubTickFlag(pc),a0
 	move.b	#$FF,(a0)
-	lea.l	RestoreBios_1(pc),a0
+	lea.l	SubCommandQueue(pc),a0
 	move.w	#$0,(a0)
 	move.b	#$80,$FF000F.l
 	bsr.w	DelayShort
@@ -564,17 +570,18 @@ RestoreBios_7	movem.l	d0/a0-a1,-(sp)
 	nop
 	nop
 	dbra	d0,.loop9
-	lea.l	RestoreBios_26(pc),a0
+	lea.l	SubTickBusy(pc),a0
 	move.w	#$0,(a0)
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBios_8	movem.l	d1-d7/a0,-(sp)
-	dc.w	$103A,$089E
+; Command 3: pick a free PCM voice (else the one with the smallest age); voice in d0, carry set if none.
+SubCmdAllocVoice	movem.l	d1-d7/a0,-(sp)
+	move.b	SubPcmOnOffShadow(pc),d0
 	move.w	#$7,d5
 .loop	btst	d5,d0
 	bne.b	.next2
 	dbra	d5,.loop
-	lea.l	RestoreBios_32(pc),a0
+	lea.l	SubVoiceAge(pc),a0
 	move.w	#$FFFF,d5
 	move.b	#$FF,d6
 	clr.w	d0
@@ -591,21 +598,21 @@ RestoreBios_8	movem.l	d1-d7/a0,-(sp)
 	move.w	#$7,d0
 	ori.b	#$1,ccr
 	bra.w	.next4
-.next2	lea.l	RestoreBios_38(pc),a0
+.next2	lea.l	SubVoiceIndex(pc),a0
 	move.w	d5,(a0)
-	lea.l	RestoreBios_27(pc),a0
+	lea.l	SubPcmOnOffShadow(pc),a0
 	move.b	(a0),d0
 	bset	d5,d0
 	move.b	d0,$FF0011.l
 	bsr.w	DelayShort
-	lea.l	RestoreBios_23(pc),a0
+	lea.l	SubInstrTable(pc),a0
 	lsl.w	#$1,d1
 	cmpi.w	#$FFFF,(a0,d1.w)
 	bne.b	.next3
 	move.b	#$3,d0
 	ori.b	#$1,ccr
 	bra.w	.next4
-.next3	dc.w	$303A,$0872
+.next3	move.w	SubVoiceIndex(pc),d0
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
 	move.w	(a0,d1.w),d0
@@ -625,34 +632,34 @@ RestoreBios_8	movem.l	d1-d7/a0,-(sp)
 	bsr.w	DelayShort
 	move.b	d4,$FF0003.l
 	bsr.w	DelayShort
-	lea.l	RestoreBios_27(pc),a0
-	dc.w	$303A,$080E
+	lea.l	SubPcmOnOffShadow(pc),a0
+	move.w	SubVoiceIndex(pc),d0
 	move.b	(a0),d1
 	bclr	d0,d1
 	move.b	d1,(a0)
 	move.b	d1,$FF0011.l
 	bsr.w	DelayShort
-	lea.l	RestoreBios_28(pc),a0
+	lea.l	SubVoiceChan(pc),a0
 	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_29(pc),a0
+	lea.l	SubVoiceInstr(pc),a0
 	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_30(pc),a0
+	lea.l	SubVoiceNote(pc),a0
 	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_31(pc),a0
+	lea.l	SubVoiceVelocity(pc),a0
 	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_32(pc),a0
+	lea.l	SubVoiceAge(pc),a0
 	move.b	#$0,(a0,d0.w)
-	lea.l	RestoreBios_33(pc),a0
+	lea.l	SubVoiceRelease(pc),a0
 	move.b	#$FF,(a0,d0.w)
 .next4	movem.l	(sp)+,d1-d7/a0
 	rts
 ; Sums signed differences between table values and the record at a0.
 CalcLevelDelta	movem.l	d1-d6/a0-a1,-(sp)
-	dc.w	$207A,$07C0
+	movea.l	SubCurInstrRecord(pc),a0
 	clr.w	d0
 	clr.w	d1
-	dc.w	$343A,$07AC
-	lea.l	RestoreBios_30(pc),a1
+	move.w	SubVoiceIndex(pc),d2
+	lea.l	SubVoiceNote(pc),a1
 	move.b	(a1,d2.w),d3
 	cmp.b	$3(a0),d3
 	blt.b	.next
@@ -662,8 +669,8 @@ CalcLevelDelta	movem.l	d1-d6/a0-a1,-(sp)
 .next	move.b	$3(a0),d3
 	sub.b	(a1,d2.w),d3
 	sub.b	d3,d0
-.next2	dc.w	$343A,$078A
-	lea.l	RestoreBios_48(pc),a1
+.next2	move.w	SubCmdChannel(pc),d2
+	lea.l	SubChanPitchBend(pc),a1
 	clr.w	d3
 	move.b	(a1,d2.w),d3
 	cmpi.b	#$40,d3
@@ -717,7 +724,7 @@ CalcLevelDelta	movem.l	d1-d6/a0-a1,-(sp)
 	mulu.w	d1,d3
 	lsr.w	#$8,d3
 	add.w	d3,d2
-	dc.w	$303A,$06F0
+	move.w	SubVoiceIndex(pc),d0
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
 	bsr.w	DelayShort
@@ -744,15 +751,15 @@ CalcLevelDelta	movem.l	d1-d6/a0-a1,-(sp)
 	dc.b	$80,$00	; ..
 ; Scales a value through three byte tables and a lookup.
 ScaleValueByTables	movem.l	d1-d3/a0,-(sp)
-	dc.w	$303A,$05FA
-	lea.l	RestoreBios_28(pc),a0
+	move.w	SubVoiceIndex(pc),d0
+	lea.l	SubVoiceChan(pc),a0
 	clr.w	d3
 	move.b	(a0,d0.w),d3
-	lea.l	RestoreBios_46(pc),a0
+	lea.l	SubChanVolume(pc),a0
 	clr.w	d2
 	move.b	(a0,d3.w),d2
 	lsl.w	#$1,d2
-	lea.l	RestoreBios_44(pc),a0
+	lea.l	SubChanProgram(pc),a0
 	clr.w	d1
 	move.b	(a0,d3.w),d1
 	move.w	#$0,d0
@@ -764,16 +771,16 @@ ScaleValueByTables	movem.l	d1-d3/a0,-(sp)
 	lsr.w	#$8,d2
 	move.w	d3,d0
 	lsr.w	#$4,d0
-	lea.l	RestoreBios_49(pc),a0
+	lea.l	SubVoiceTrim(pc),a0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 	mulu.w	d1,d2
 	lsr.w	#$8,d2
 	clr.w	d1
-	dc.w	$123A,$0844
+	move.b	SubTickFlag(pc),d1
 	mulu.w	d1,d2
 	lsr.w	#$8,d2
-	lea.l	RestoreBios_47(pc),a0
+	lea.l	SubChanPan(pc),a0
 	clr.w	d1
 	move.b	(a0,d3.w),d1
 	cmpi.b	#$40,d1
@@ -800,7 +807,7 @@ ScaleValueByTables	movem.l	d1-d3/a0,-(sp)
 	lsr.w	#$8,d2
 	lsr.b	#$4,d2
 	or.b	d2,d0
-.next3	dc.w	$323A,$0562
+.next3	move.w	SubVoiceIndex(pc),d1
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
 	bsr.w	DelayShort
@@ -811,49 +818,49 @@ ScaleValueByTables	movem.l	d1-d3/a0,-(sp)
 	rts
 ; Finds the index of the key byte d0 in the 8-entry table and stores it.
 FindKeyIndex	movem.l	d1-d2/a0,-(sp)
-	lea.l	RestoreBios_42(pc),a0
+	lea.l	SubFoundVoiceParam(pc),a0
 	move.w	#$0,(a0)
-	dc.w	$207A,$053E
+	movea.l	SubCurInstrRecord(pc),a0
 RestoreBiosSub3	btst.b	#$0,$C(a0)
 	beq.b	.next2
-	lea.l	RestoreBios_29(pc),a0
-	dc.w	$303A,$052A
-	dc.w	$123A,$04D0
+	lea.l	SubVoiceInstr(pc),a0
+	move.w	SubCmdInstrKey(pc),d0
+	move.b	SubPcmOnOffShadow(pc),d1
 	clr.w	d2
 .loop	btst	d2,d1
 	bne.b	.next
 	cmp.b	(a0)+,d0
 	bne.b	.next
-	lea.l	RestoreBios_38(pc),a0
+	lea.l	SubVoiceIndex(pc),a0
 	move.w	d2,(a0)
-	lea.l	RestoreBios_43(pc),a0
+	lea.l	SubCurInstrRecord(pc),a0
 	clr.w	d0
 	move.b	$C(a0),d0
-	lea.l	RestoreBios_42(pc),a0
+	lea.l	SubFoundVoiceParam(pc),a0
 	move.w	d0,(a0)
 	clr.w	d0
 	bra.b	RestoreBios_13
 .next	addi.w	#$1,d2
 	cmpi.w	#$8,d2
 	bne.b	.loop
-.next2	dc.w	$103A,$049E
+.next2	move.b	SubPcmOnOffShadow(pc),d0
 	clr.w	d1
 .loop2	btst	d1,d0
 	beq.b	.next3
-	lea.l	RestoreBios_38(pc),a0
+	lea.l	SubVoiceIndex(pc),a0
 	move.w	d1,(a0)
 	clr.w	d0
 	bra.b	RestoreBios_13
 .next3	addi.w	#$1,d1
 	cmpi.w	#$8,d1
 	bne.b	.loop2
-	dc.w	$207A,$04DA
+	movea.l	SubCurInstrRecord(pc),a0
 	move.b	$1(a0),d0
-	lea.l	RestoreBios_32(pc),a0
+	lea.l	SubVoiceAge(pc),a0
 RestoreBiosSub4	clr.w	d1
 RestoreBios_12	cmp.b	(a0)+,d0
 RestoreBiosSub5	bhi.b	.next
-	lea.l	RestoreBios_38(pc),a0
+	lea.l	SubVoiceIndex(pc),a0
 	move.w	d1,(a0)
 	clr.w	d0
 	bra.b	RestoreBios_13
@@ -865,7 +872,7 @@ RestoreBios_13	movem.l	(sp)+,d1-d2/a0
 	rts
 ; Looks up the pair (d0,d1) in the table list and returns the word, carry set if absent.
 TableLookupWord	movem.l	d1-d4/a1-a2,-(sp)
-	lea.l	RestoreBios_25(pc),a1
+	lea.l	SubTablePtrs(pc),a1
 	move.w	#$2,d2
 .loop	cmpi.l	#$FFFFFFFF,(a1)
 	beq.b	.next2
@@ -902,25 +909,26 @@ TableLookupWord	movem.l	d1-d4/a1-a2,-(sp)
 	ori.b	#$1,ccr
 .next3	movem.l	(sp)+,d1-d4/a1-a2
 	rts
-RestoreBios_15	move.l	a0,-(sp)
+; Command 2: d1 selects how the left/right master volume words are set.
+SubCmdSetMasterVolume	move.l	a0,-(sp)
 	or.w	d1,d1
 	bne.b	.next
-	lea.l	RestoreBios_22(pc),a0
+	lea.l	SubMasterVolumes(pc),a0
 	move.w	#$100,$2(a0)
 	clr.w	d0
 	bra.b	.next5
 .next	cmpi.w	#$1,d1
 	bne.b	.next2
-	lea.l	RestoreBios_22(pc),a0
+	lea.l	SubMasterVolumes(pc),a0
 	move.w	$0(a0),$2(a0)
 	clr.w	d0
 	bra.b	.next5
 .next2	cmpi.w	#$2,d1
 	bne.b	.next4
-	lea.l	RestoreBios_22(pc),a0
+	lea.l	SubMasterVolumes(pc),a0
 	move.w	$2(a0),$0(a0)
 	move.w	$2(a0),d0
-	lea.l	RestoreBios_23(pc),a0
+	lea.l	SubInstrTable(pc),a0
 	move.w	#$FF,d1
 .loop	cmpi.w	#$FFFF,(a0)
 	beq.b	.next3
@@ -936,13 +944,15 @@ RestoreBios_15	move.l	a0,-(sp)
 .next5	clr.w	d0
 	movea.l	(sp)+,a0
 	rts
-RestoreBios_16	movem.l	d1/a1,-(sp)
+; Command 4: store the pointer in a0 in slot d1 of SubTablePtrs.
+SubCmdSetTablePtr	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
-	lea.l	RestoreBios_25(pc),a1
+	lea.l	SubTablePtrs(pc),a1
 	move.l	a0,(a1,d1.w)
 	movem.l	(sp)+,d1/a1
 	rts
-RestoreBios_17	movem.l	d1/a0-a1,-(sp)
+; Command 5: walk a list of (key, value) word pairs ending in $FFFF and apply each through TableLookupWord.
+SubCmdRunList	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
 .loop	cmpi.w	#$FFFF,(a1)
 	bne.b	.next
@@ -956,17 +966,17 @@ RestoreBios_17	movem.l	d1/a0-a1,-(sp)
 	bne.b	.next3
 	bsr.w	.next6
 	bcs.b	.next5
-	lea.l	RestoreBios_23(pc),a0
+	lea.l	SubInstrTable(pc),a0
 	move.w	$2(a1),d0
 	lsl.w	#$1,d0
-	dc.w	$323A,$0116
+	move.w	SubMasterVolumes(pc),d1
 	move.w	d1,(a0,d0.w)
-	dc.w	$D27A,$0312
+	add.w	SubListCount(pc),d1
 	or.b	d1,d1
 	beq.b	.next2
 	andi.w	#$FF00,d1
 	addi.w	#$100,d1
-.next2	lea.l	RestoreBios_22(pc),a0
+.next2	lea.l	SubMasterVolumes(pc),a0
 	move.w	d1,(a0)
 .next3	adda.l	#$4,a1
 	bra.b	.loop
@@ -974,24 +984,26 @@ RestoreBios_17	movem.l	d1/a0-a1,-(sp)
 .next5	movem.l	(sp)+,d1/a0-a1
 	rts
 .next6	movem.l	d1-d2/a0-a1,-(sp)
-	lea.l	RestoreBios_24(pc),a1
+	lea.l	SubListCount(pc),a1
 	move.w	d0,(a1)
-	dc.w	$323A,$00DC
-	beq.b	RestoreBios_18
+	move.w	SubMasterVolumes(pc),d1
+	beq.b	SubCmdLoadWaveCopy
 	clr.w	d1
-	dc.w	$927A,$00D4
-RestoreBiosSub6	cmp.w	d0,d1
-	bhi.b	RestoreBios_18
+	sub.w	SubMasterVolumes(pc),d1
+; Command 6: load a sample into PCM wave RAM; carry set with d0 = 4 if it does not fit.
+SubCmdLoadWave	cmp.w	d0,d1
+	bhi.b	SubCmdLoadWaveCopy
 	move.w	#$4,d0
 	ori.b	#$1,ccr
 	dc.w	$6056
-RestoreBios_18	dc.w	$343A,$00C2
+; Copies the sample at a0 into PCM wave RAM, switching banks through the control register.
+SubCmdLoadWaveCopy	dc.w	$343A,$00C2
 	lsr.w	#$8,d2
 	lsr.w	#$4,d2
 	ori.b	#$80,d2
 	move.b	d2,$FF000F.l
 	bsr.w	DelayShort
-	dc.w	$323A,$00AC
+	move.w	SubMasterVolumes(pc),d1
 	andi.l	#$FFF,d1
 	lsl.l	#$1,d1
 	addi.l	#$FF2001,d1
@@ -1009,7 +1021,8 @@ RestoreBios_18	dc.w	$343A,$00C2
 	clr.w	d0
 .next2	movem.l	(sp)+,d1-d2/a0-a1
 	rts
-RestoreBios_19	movem.l	d1-d3/a0,-(sp)
+; Command 9: set or add d2 to the 16-bit pointer at offsets 5/6 of the instrument record found by key d1.
+SubCmdAdjustInstrWord	movem.l	d1-d3/a0,-(sp)
 	movem.l	d2-d3,-(sp)
 	move.w	#$0,d0
 	bsr.w	TableLookupWord
@@ -1036,7 +1049,8 @@ RestoreBios_19	movem.l	d1-d3/a0,-(sp)
 	jsr	$5F22.l
 	bcs.b	.loop
 	rts
-RestoreBios_20	rts
+; Command 7: does nothing.
+SubCmdNop	rts
 ; Busy-wait of about 40 loop passes (hardware settling delay).
 DelayShort	move.l	d0,-(sp)
 	move.w	#$28,d0
@@ -1044,39 +1058,68 @@ DelayShort	move.l	d0,-(sp)
 	dbra	d0,.loop
 	move.l	(sp)+,d0
 	rts
-RestoreBios_22	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_23	dcb.b	$200,0
-RestoreBios_24	dc.b	$00,$00	; ..
-RestoreBios_25	dcb.b	$8,0
-RestoreBios_26	dc.b	$00,$00	; ..
-RestoreBios_27	dc.b	$00,$00	; ..
-RestoreBios_28	dcb.b	$8,0
-RestoreBios_29	dcb.b	$8,0
-RestoreBios_30	dcb.b	$8,0
-RestoreBios_31	dcb.b	$8,0
-RestoreBios_32	dcb.b	$8,0
-RestoreBios_33	dcb.b	$8,0
-RestoreBios_34	dcb.b	$8,0
-RestoreBios_35	dcb.b	$11,0
-RestoreBios_36	dc.b	$00	; .
-RestoreBios_37	dc.b	$00,$00	; ..
-RestoreBios_38	dc.b	$00,$00	; ..
-RestoreBios_39	dc.b	$00	; .
+; Master volume words (left, right), $100 after a reset.
+SubMasterVolumes	dc.b	$00,$00,$00,$00	; ....
+; $100 word entries keyed by instrument number; $FFFF marks an unused entry.
+SubInstrTable	dcb.b	$200,0
+; Entry count of the list SubCmdRunList is walking.
+SubListCount	dc.b	$00,$00	; ..
+; Two table pointers set by SubCmdSetTablePtr ($FFFFFFFF = not set).
+SubTablePtrs	dcb.b	$8,0
+; Re-entry guard of the PCM tick.
+SubTickBusy	dc.b	$00,$00	; ..
+; Shadow of the PCM chip on/off register ($FF0011); a set bit keeps the voice silent.
+SubPcmOnOffShadow	dc.b	$00,$00	; ..
+; MIDI channel of each of the 8 voices.
+SubVoiceChan	dcb.b	$8,0
+; Instrument index of each voice.
+SubVoiceInstr	dcb.b	$8,0
+; Note number of each voice.
+SubVoiceNote	dcb.b	$8,0
+; Velocity (level) of each voice.
+SubVoiceVelocity	dcb.b	$8,0
+; Allocation order of each voice; the smallest value is stolen first.
+SubVoiceAge	dcb.b	$8,0
+; Release instrument key of each voice ($FF = none).
+SubVoiceRelease	dcb.b	$8,0
+; Decay step of each voice.
+SubVoiceDecay	dcb.b	$8,0
+; One word timer per voice.
+SubVoiceTimer	dcb.b	$11,0
+; Bit mask of the voices in their release phase.
+SubVoiceReleasing	dc.b	$00	; .
+; Stopwatch value ($FF800C) at the last tick.
+SubLastStopwatch	dc.b	$00,$00	; ..
+; Voice counter shared by the voice loops.
+SubVoiceIndex	dc.b	$00,$00	; ..
+; MIDI channel of the command being handled.
+SubCmdChannel	dc.b	$00	; .
 .next	dc.b	$00	; .
-RestoreBios_40	dc.b	$00	; .
+; Note number of the command being handled.
+SubCmdNote	dc.b	$00	; .
 .next	dc.b	$00,$00	; ..
 .next2	dc.b	$00	; .
-RestoreBios_41	dc.b	$00	; .
+; Instrument key being looked up for the current command.
+SubCmdInstrKey	dc.b	$00	; .
 .next	dc.b	$00	; .
-RestoreBios_42	dc.b	$00,$00	; ..
-RestoreBios_43	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_44	dcb.b	$80,0
-RestoreBios_45	dcb.b	$80,0
-RestoreBios_46	dcb.b	$80,0
-RestoreBios_47	dcb.b	$80,0
-RestoreBios_48	dcb.b	$80,0
-RestoreBios_49	dcb.b	$8,0
-RestoreBios_50	dc.b	$00,$00	; ..
+; Parameter stored by FindKeyIndex next to the voice it found.
+SubFoundVoiceParam	dc.b	$00,$00	; ..
+; Pointer to the instrument record found for the current command.
+SubCurInstrRecord	dc.b	$00,$00,$00,$00	; ....
+; Program number of each of the 16 MIDI channels.
+SubChanProgram	dcb.b	$80,0
+; Modulation setting of each MIDI channel, 0 after a reset.
+SubChanModulation	dcb.b	$80,0
+; Volume of each MIDI channel ($7F after a reset).
+SubChanVolume	dcb.b	$80,0
+; Pan of each MIDI channel ($40 = centre after a reset).
+SubChanPan	dcb.b	$80,0
+; Pitch bend of each MIDI channel ($40 = centre after a reset).
+SubChanPitchBend	dcb.b	$80,0
+; Per-voice level trim, $FF after a reset.
+SubVoiceTrim	dcb.b	$8,0
+; Flag set to $FF by the reset.
+SubTickFlag	dc.b	$00,$00	; ..
 RestoreBiosSub8	move.w	sr,-(sp)
 	move.w	d0,$EC90.l
 	move.l	d1,$EC92.l

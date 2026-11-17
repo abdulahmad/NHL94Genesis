@@ -12,7 +12,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	lea.l	Set1MFlag_36(pc),a3
 	lea.l	Set1MFlag_37(pc),a2
 	lea.l	Set1MFlag_38(pc),a1
-.loop	dc.w	$3C3A,$0D4C
+.loop	move.w	Set1MFlag_40(pc),d6
 	lsl.w	#$1,d6
 	move.w	d6,d7
 	lsl.w	#$1,d7
@@ -66,7 +66,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	andi.b	#$F0,d0
 	cmpi.b	#$90,d0
 	bne.w	.next8
-	dc.w	$303A,$0CB0
+	move.w	Set1MFlag_40(pc),d0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
 	move.b	$1(a0,d5.l),d0
@@ -95,7 +95,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	swap	d0
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
-	dc.w	$323A,$0C62
+	move.w	Set1MFlag_40(pc),d1
 	lsl.w	#$4,d1
 	move.b	$2(a1,d7.w),d0
 	andi.b	#$F,d0
@@ -126,7 +126,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bne.b	.next11
 	move.l	a0,-(sp)
 	move.b	$1(a0,d5.l),d1
-	dc.w	$303A,$0C1C
+	move.w	Set1MFlag_40(pc),d0
 	lsl.w	#$1,d0
 	clr.w	d2
 	move.b	$2(a1,d7.w),d2
@@ -141,7 +141,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 .next10	move.w	d3,(a0,d0.w)
 	movea.l	(sp)+,a0
 	bra.b	.next12
-.next11	dc.w	$303A,$0BF0
+.next11	move.w	Set1MFlag_40(pc),d0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
 	move.b	$1(a0,d5.l),d0
@@ -166,7 +166,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bra.b	.next18
 .next13	cmpi.b	#$C0,d0
 	bne.b	.next15
-	dc.w	$303A,$0BB8
+	move.w	Set1MFlag_40(pc),d0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
 	swap	d0
@@ -190,7 +190,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bra.b	.next18
 .next15	cmpi.b	#$E0,d0
 	bne.b	.next17
-	dc.w	$303A,$0B86
+	move.w	Set1MFlag_40(pc),d0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
 	swap	d0
@@ -467,16 +467,16 @@ Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_43(pc),a1
 	cmpi.w	#$0,(a1)
 	beq.b	.next3
-	dc.w	$207A,$085A
+	movea.l	Set1MFlag_42(pc),a0
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
 .loop	cmpi.w	#$FFFF,(a0)
 	bne.b	.next2
-	dc.w	$207A,$0848
+	movea.l	Set1MFlag_42(pc),a0
 	bsr.w	PrgRamReadWait
 	move.w	#$1F4,d0
 .next	dbra	d0,.next
-	dc.w	$207A,$0838
+	movea.l	Set1MFlag_42(pc),a0
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
 	bra.b	.loop
@@ -492,7 +492,7 @@ Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	dbra	d0,.loop2
 	lea.l	Set1MFlag_43(pc),a1
 	move.w	#$0,(a1)
-	dc.w	$207A,$080C
+	movea.l	Set1MFlag_42(pc),a0
 	bsr.w	PrgRamReadWait
 .next3	movem.l	(sp)+,d0-d1/a0-a1
 	rts
@@ -637,7 +637,7 @@ SndSlotsTick	movem.l	d0-d1/a0-a2,-(sp)
 	opt	osq+
 	bra.b	.next2
 .next	lea.l	Set1MFlag_39(pc),a1
-	dc.w	$303A,$0634
+	move.w	Set1MFlag_31+$122(pc),d0
 	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d0
@@ -699,7 +699,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	bra.w	.next5
 .next	cmpi.b	#$2,$A00072.l
 	bne.b	.next3
-	dc.w	$207A,$056E
+	movea.l	Set1MFlag_40+$6(pc),a0
 	cmpa.l	#$0,a0
 	bne.b	.next2
 	bsr.w	Z80ReleaseBus
@@ -715,7 +715,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	bra.b	.next5
 .next3	cmpi.b	#$3,$A00072.l
 	bne.w	.next8
-	dc.w	$207A,$052C
+	movea.l	Set1MFlag_40+$6(pc),a0
 	cmpa.l	#$0,a0
 	bne.b	.next4
 	bsr.w	Z80ReleaseBus
@@ -746,7 +746,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 	clr.l	d0
-	dc.w	$303A,$04BE
+	move.w	Set1MFlag_40+$A(pc),d0
 	cmpi.w	#$FFFF,d0
 	beq.b	.next7
 	move.b	#$FF,(a1)
@@ -1001,7 +1001,7 @@ PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 PrgRamReadWait	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	bcc.b	.next3
-	dc.w	$303A,$022E
+	move.w	Set1MFlag_44(pc),d0
 	btst	#$2,d0
 	beq.b	.next
 	andi.w	#$FFC0,d0
