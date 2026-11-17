@@ -1,13 +1,13 @@
 {
- "main_0863D.bin": {
+ "SndEffectTable.bin": {
   "start": 34365,
   "size": 328
  },
- "main_08785.bin": {
+ "SndEffectScripts.bin": {
   "start": 34693,
   "size": 1255
  },
- "main_08C6C.bin": {
+ "FmInstrumentPatches.bin": {
   "start": 35948,
   "size": 1112
  }

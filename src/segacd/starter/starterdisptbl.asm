@@ -944,13 +944,13 @@ DispTableF	ori.b	#$0,d0
 ; unsigned 8-bit samples. Loaded into the PCM chip by SubCmdLoadWave.
 ; Directory record 1: length word $05D4, then $5D4 bytes of wave / instrument parameters.
 PcmBankDirectoryA
-	incbin	..\Extracted\SegaCD\STARTER\starter_0BC64.bin
+	incbin	..\Extracted\SegaCD\STARTER\PcmBankDirectoryA.bin
 ; Directory record 2: length word $066E, then $66E bytes of wave parameters.
 PcmBankDirectoryB
-	incbin	..\Extracted\SegaCD\STARTER\starter_0C23C.bin
+	incbin	..\Extracted\SegaCD\STARTER\PcmBankDirectoryB.bin
 ; Sample data: unsigned 8-bit PCM waves (smooth byte sequences), played by the PCM chip.
 PcmSampleData
-	incbin	..\Extracted\SegaCD\STARTER\starter_0C8AE.bin
+	incbin	..\Extracted\SegaCD\STARTER\PcmSampleData.bin
 ; From here to the end of the file is an overlay: the file keeps it at $3CFA0, the program runs it at $26CA0 (file
 ; address minus $16300) on top of the bytes that the stale low copies below hold. `obj` assembles it for its run address,
 ; so calls and pointers into it use the labels.

@@ -1076,14 +1076,14 @@ SndSourceTable	dcb.b	$51,0
 ; Sound effect table: 82 records of 4 bytes (a length or priority byte, 3, the effect number, 0), the effects
 ; the main CPU starts through the Z80 sound driver.
 SndEffectTable
-	incbin	..\Extracted\SegaCD\MAIN\main_0863D.bin
+	incbin	..\Extracted\SegaCD\MAIN\SndEffectTable.bin
 ; Sound effect scripts: command streams (note, FM register and DAC commands) the effect table points into.
 SndEffectScripts
-	incbin	..\Extracted\SegaCD\MAIN\main_08785.bin
+	incbin	..\Extracted\SegaCD\MAIN\SndEffectScripts.bin
 ; FM instrument patches, 36 bytes each. The cartridge's fm_instrument_patches holds the same patches at 32 bytes
 ; each (the first 32 bytes of every record here), so this is the disc's longer record form.
 FmInstrumentPatches
-	incbin	..\Extracted\SegaCD\MAIN\main_08C6C.bin
+	incbin	..\Extracted\SegaCD\MAIN\FmInstrumentPatches.bin
 ; Table of 23356 bytes after SndSourceTable, 23356 bytes: $00,$00,$00,$00,$00,$00 ...
 	dcb.b	$9,0
 	dc.b	$01,$00,$00,$00,$02,$00,$00,$00,$03,$00,$00,$00,$04,$00,$00,$00	; ................

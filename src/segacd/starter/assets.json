@@ -35,15 +35,15 @@
   "start": 43141,
   "size": 2845
  },
- "starter_0BC64.bin": {
+ "PcmBankDirectoryA.bin": {
   "start": 48228,
   "size": 1496
  },
- "starter_0C23C.bin": {
+ "PcmBankDirectoryB.bin": {
   "start": 49724,
   "size": 1650
  },
- "starter_0C8AE.bin": {
+ "PcmSampleData.bin": {
   "start": 51374,
   "size": 62450
  }

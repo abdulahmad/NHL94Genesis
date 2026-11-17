@@ -36,17 +36,17 @@ StrGoalieCareerHeaders	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Clu
 	dc.b	$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57,$00,$4C,$00,$4D	; .So.Avg.Gp.W.L.M
 	dc.b	$69,$6E,$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$00	; ins.Ga.So.Avg..
 ; Picture tile data, single frame (page A).
-PicTilesStillA	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
+PicTilesStillA	incbin	..\Extracted\SegaCD\PLAYER\PicTilesStillA.bin
 ; Picture tile data, animation frames (page A).
-PicTilesFramesA	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
+PicTilesFramesA	incbin	..\Extracted\SegaCD\PLAYER\PicTilesFramesA.bin
 .next	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
 ; Picture tile data, single frame (page B).
-PicTilesStillB	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
+PicTilesStillB	incbin	..\Extracted\SegaCD\PLAYER\PicTilesStillB.bin
 ; Picture tile data, three animation frames (page B), $504 bytes each.
-PicTilesFramesB	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
+PicTilesFramesB	incbin	..\Extracted\SegaCD\PLAYER\PicTilesFramesB.bin
 ; Table of $34-byte records indexed by the current page.
-PlRecordTable	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
+PlRecordTable	incbin	..\Extracted\SegaCD\PLAYER\PlRecordTable.bin
 ; Background image: width, height, then tile data.
-PlBackgroundImage	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
+PlBackgroundImage	incbin	..\Extracted\SegaCD\PLAYER\PlBackgroundImage.bin
 ; 2268 zero bytes after PlBackgroundImage (padding or space the program fills at run time).
 	dcb.b	$8DC,0

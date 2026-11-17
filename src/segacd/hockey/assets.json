@@ -1,29 +1,29 @@
 {
- "hockey_278A0.bin": {
+ "PicturePalette.bin": {
   "start": 161952,
   "size": 1078
  },
- "hockey_27CD6.bin": {
+ "NoPicSkater1.bin": {
   "start": 163030,
   "size": 874
  },
- "hockey_28040.bin": {
+ "NoPicSkater2.bin": {
   "start": 163904,
   "size": 874
  },
- "hockey_283AA.bin": {
+ "NoPicGoalie1.bin": {
   "start": 164778,
   "size": 874
  },
- "hockey_28714.bin": {
+ "NoPicGoalie2.bin": {
   "start": 165652,
   "size": 874
  },
- "hockey_28A7E.bin": {
+ "Card001.bin": {
   "start": 166526,
   "size": 874
  },
- "hockey_28DE8.bin": {
+ "NHLPALogoMapDisc.bin": {
   "start": 167400,
   "size": 2164
  },
@@ -39,7 +39,7 @@
   "start": 177756,
   "size": 4096
  },
- "hockey_2C65C.bin": {
+ "TileNumberTables.bin": {
   "start": 181852,
   "size": 1872
  }
