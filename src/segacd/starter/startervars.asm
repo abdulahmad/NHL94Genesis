@@ -18,11 +18,13 @@ SubIrqHandler	movem.l	d0-d7/a0-a6,-(sp)
 	beq.w	.ex
 	bsr.w	TakeWordRam
 .ex	rts
+; Data of SubIrqHandler (1 row): table or constants used by it.
 	dc.b	$4E,$75	; Nu
 ; Calls the $E320 command with an inline parameter block.
 SendCmdE320Inline	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	a1,-(sp)
 	jsr	$E320.l
+; Inline data read by $E320 from the return address (2 rows).
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$08	; ............. ..
 	dc.b	$00,$00	; ..
 	movem.l	(sp)+,a1
@@ -108,6 +110,7 @@ SubBootHalt	bra.b	SubBootHalt
 SubBiosCall1A	moveq	#$1A,d0
 	jsr	$E370.l
 	rts
+; Data of SubBiosCall1A (3 rows): table or constants used by it.
 	dcb.b	$18,0
 	dc.b	$01,$FF,'HOCKEY.SEG',$00,$00,$00,$00	; ..HOCKEY.SEG....
 	dc.b	$00,$00	; ..

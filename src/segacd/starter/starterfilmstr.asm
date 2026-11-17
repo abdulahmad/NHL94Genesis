@@ -1,3 +1,4 @@
+; Sierra C name tag of the routine above (length byte, 'FilmOpen', zero padding).
 	dc.b	$88,'FilmOpen',$00,$00,$48	; .FilmOpen..H
 ; Debug text
 FilmOpenStrTitle	dc.b	'Film Open',$00	; Film Open.

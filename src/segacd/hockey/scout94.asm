@@ -50,6 +50,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 .next2	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutEmptyTxt						;empty String: no name number in the crowd record
+; Data of ScoutEmptyTxt (3 rows): table or constants used by it.
 	dc.w	2
 	dc.w	6							;the String 'by ' of the next label
 	dc.b	'by ',$00
@@ -116,17 +117,20 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	movea.l	(BigFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
+; Inline data read by DecompressGraphicsWithRemap from the return address (2 rows).
 	dc.l	$05431567,$79ABCDEF
 	dc.w	$4EB9,$0003,$93E8		;remap table
 	move.w	d4,(smallfont2chars).l		;framer tiles (as AddFramer), remapped
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
+; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$0A234567,$89ABCDEF
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
 	move.w	d4,(framercset).l
 	jsr	(DecompressGraphicsWithRemap).l
+; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$05422561,$89ABCDEF
 	jsr	(printz).l
 	String	CC_Font2,$0,$0
@@ -420,7 +424,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.w	.next11
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-.next9	dc.w	$6100,$0764
+.next9	dc.w	$6100,$0764		; bsr.w X_29058
 	move.w	#$1,d0
 	tst.w	(ScoutLastPara).l
 	beq.s	.next10
@@ -430,7 +434,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.w	.next13
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-	dc.w	$6100,$0732
+	dc.w	$6100,$0732		; bsr.w X_29058
 	tst.w	(ScoutLastPara).l
 	beq.s	.next12
 	bsr.w	PageMatchup
@@ -556,6 +560,7 @@ TwoSpacesTxt						;A two space String (printsmall by PrintTwoSpaces)
 TwoSpacesTxtData	dc.w	$0004,$2020
 ScoutRatingText						;rating names; only ' Overall ' is printed (PrintMatchupRatings, matchup
 	
+; Text of ScoutRatingText (9 rows).
 	dc.b	$00,$0A,'Shooting',$00,$0A,'Skat'
 	dc.b	'ing',$00,$00,$0A,'Passing',$00,$00,$0A
 	dc.b	'Defense',$00,$00,$0A,'Checki'
@@ -776,6 +781,7 @@ MatchupPosNamesData	dc.w	$0012,$2020
 	dc.w	$0012,$2072
 	dc.b	'ight forward  ',$00,$12,'left defen'
 .next
+; Text of MatchupPosNamesData (3 rows).
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
 	dc.b	'oalie     '
@@ -864,30 +870,39 @@ VisAdvMarksData	dc.w	$0002,$9146
 	dc.w	$0002,$9158
 	dc.w	$0002,$9158
 HomeAdv0Txt						;home advantage marks: none
+; Data of HomeAdv0Txt (1 row): table or constants used by it.
 	dc.w	$0006,$2020
 	move.l	d0,d0
 HomeAdv1Txt						;home advantage: one mark
+; Data of HomeAdv1Txt (1 row): table or constants used by it.
 	dc.w	$0006,$5D20
 	move.l	d0,d0
 HomeAdv2Txt						;home advantage: two marks
+; Data of HomeAdv2Txt (1 row): table or constants used by it.
 	dc.w	$0006,$5D5D
 	move.l	d0,d0
 HomeAdv3Txt						;home advantage: three marks
+; Data of HomeAdv3Txt (1 row): table or constants used by it.
 	dc.w	$0006,$5D5D
 	subq.b	#$6,d0
 VisAdv0Txt						;visitors advantage marks: none
+; Data of VisAdv0Txt (1 row): table or constants used by it.
 	dc.w	$0006,$2020
 	move.l	d0,d0
 VisAdv1Txt						;visitors advantage: one mark
+; Data of VisAdv1Txt (1 row): table or constants used by it.
 	dc.w	$0006,$2020
 	subq.b	#$5,d0
 VisAdv2Txt						;visitors advantage: two marks
+; Data of VisAdv2Txt (1 row): table or constants used by it.
 	dc.w	$0006,$205B
 	subq.b	#$5,d0
 VisAdv3Txt						;visitors advantage: three marks
+; Data of VisAdv3Txt (1 row): table or constants used by it.
 	dc.w	$0006,$5B5B
 	subq.b	#$5,d0
 EvenAdvTxt						;Even teams
+; Data of EvenAdvTxt (1 row): table or constants used by it.
 	dc.w	$0006,$2020
 	move.l	d0,d0
 GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct): return a1 =

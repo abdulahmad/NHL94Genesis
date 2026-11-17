@@ -1,3 +1,4 @@
+; Data of the file start (6 rows): table or constants used by it.
 	dcb.b	$1390,0
 	dc.b	'HOCKEY.BIN',$00,$00,$01,$FF	; HOCKEY.BIN....
 	dcb.b	$14,0
@@ -736,12 +737,14 @@ CalcLevelDelta	movem.l	d1-d6/a0-a1,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,d1-d6/a0-a1
 	rts
+; Data of CalcLevelDelta (6 rows): table or constants used by it.
 	dc.b	$00,$80,$00,$88,$00,$90,$00,$98,$00,$A2,$00,$AB,$00,$B5,$00,$C0	; ................
 	dc.b	$00,$CB,$00,$D7,$00,$E4,$00,$F2,$01,$00,$01,$0F,$01,$1F,$01,$30	; ...............0
 	dc.b	$01,$43,$01,$56,$01,$6A,$01,$80,$01,$96,$01,$AF,$01,$C8,$01,$E3	; .C.V.j..........
 	dc.b	$02,$00,$02,$1E,$02,$3F,$02,$61,$02,$85,$02,$AB,$02,$D4,$02,$FF	; .....?.a........
 	dc.b	$03,$2D,$03,$5D,$03,$90,$03,$C7,$04,$00,$04,$3D,$04,$7D,$04,$C2	; .-.].......=.}..
 	dc.b	$05,$0A,$05,$57,$05,$A8,$05,$FE,$06,$59,$06,$BA,$07,$21,$07,$8D	; ...W.....Y...!..
+; Data of CalcLevelDelta (7 rows): table or constants used by it.
 .next9	dc.b	$08,$00,$08,$7A,$08,$FB,$09,$83,$0A,$14,$0A,$AE,$0B,$50,$0B,$FD	; ...z.........P..
 	dc.b	$0C,$B3,$0D,$74,$0E,$41,$0F,$1A,$10,$00,$10,$F4,$11,$F6,$13,$07	; ...t.A..........
 	dc.b	$14,$29,$15,$56,$16,$A1,$17,$F9,$19,$66,$1A,$E9,$1C,$82,$1E,$34	; .).V.....f.....4
@@ -995,6 +998,7 @@ SubCmdLoadWave	cmp.w	d0,d1
 	bhi.b	SubCmdLoadWaveCopy
 	move.w	#$4,d0
 	ori.b	#$1,ccr
+; Instruction bytes inside SubCmdLoadWave that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6056
 ; Copies the sample at a0 into PCM wave RAM, switching banks through the control register.
 SubCmdLoadWaveCopy	dc.w	$343A,$00C2
@@ -1094,13 +1098,17 @@ SubLastStopwatch	dc.b	$00,$00	; ..
 SubVoiceIndex	dc.b	$00,$00	; ..
 ; MIDI channel of the command being handled.
 SubCmdChannel	dc.b	$00	; .
+; Data of SubCmdChannel (1 row): table or constants used by it.
 .next	dc.b	$00	; .
 ; Note number of the command being handled.
 SubCmdNote	dc.b	$00	; .
+; Data of SubCmdNote (1 row): table or constants used by it.
 .next	dc.b	$00,$00	; ..
+; Data of SubCmdNote (1 row): table or constants used by it.
 .next2	dc.b	$00	; .
 ; Instrument key being looked up for the current command.
 SubCmdInstrKey	dc.b	$00	; .
+; Data of SubCmdInstrKey (1 row): table or constants used by it.
 .next	dc.b	$00	; .
 ; Parameter stored by FindKeyIndex next to the voice it found.
 SubFoundVoiceParam	dc.b	$00,$00	; ..

@@ -599,6 +599,7 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	move.l	#$27A9E,-(sp)
 	move.l	$C432.l,-(sp)
 	rts
+; Data of TilemapPut (6 rows): table or constants used by it.
 	dc.b	$4E,$B9,$00,$02,$7B,$38,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6	; N...{8.9......f.
 	dc.b	$33,$FC,$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F	; 3../...&........
 	dc.b	$08,$39,$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF	; .9......g.......
@@ -606,6 +607,7 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	dc.b	$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02	; ..f.............
 	dc.b	$00,$FF,$80,$0F	; ....
 .ex	rts
+; Data of TilemapPut (1 row): table or constants used by it.
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
 ; Gate array interrupt service B
 GateArrayIrqB	movem.l	d0-d7/a0-a4/a6,-(sp)
@@ -672,6 +674,7 @@ WriteSubCommBytes	movem.l	d1/a0,-(sp)
 	bne.b	.loop9
 	bclr.b	#$4,$FF800F.l
 	bra.w	.next
+; Data of WriteSubCommBytes (5 rows): table or constants used by it.
 	dc.b	$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$13,$FC,$00,$3C,$00,$FF	; .9......f....<..
 	dc.b	$80,$28,$33,$FC,$00,$35,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF	; .(3..5...&......
 	dc.b	$80,$0F,$08,$39,$00,$04,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04	; ...9......g.....
@@ -731,6 +734,7 @@ WriteSubCommBytes	movem.l	d1/a0,-(sp)
 .loop21	btst.b	#$3,$FF800E.l
 	bne.b	.loop21
 	bclr.b	#$4,$FF800F.l
+; Instruction bytes inside WriteSubCommBytes that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6000,$013C
 .next5	moveq	#$0,d0
 .loop22	btst.b	#$4,$FF800E.l
@@ -795,6 +799,7 @@ WriteSubCommBytes	movem.l	d1/a0,-(sp)
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
+; Data of WriteSubCommBytes (1 row): table or constants used by it.
 .next7	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 ; Reads the pad byte at $2800A and computes newly pressed buttons.
 UpdatePadStateSub	move.b	$2800A.l,d0
@@ -840,6 +845,7 @@ UpdatePadStateSub	move.b	$2800A.l,d0
 	or.w	d1,d0
 	move.w	(sp)+,d1
 	rts
+; Data of UpdatePadStateSub (2 rows): table or constants used by it.
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
 ; Spins until DMNA is set.
@@ -862,6 +868,7 @@ GiveWordRam	bset.b	#$0,$FF8003.l
 	bclr.b	#$6,$FF800F.l
 	bclr.b	#$7,$FF800F.l
 	rts
+; Data of GiveWordRam (4 rows): table or constants used by it.
 	dc.b	$34,$3C,$00,$07,$16,$02,$06,$43,$00,$40,$13,$C3,$00,$FF,$00,$0F	; 4<.....C.@......
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$0D,$13,$FC,$00,$00,$00,$FF,$00,$0B	; ................
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$09,$51,$CA,$FF,$DA,$13,$FC,$00,$40	; ........Q......@

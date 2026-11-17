@@ -147,6 +147,7 @@ assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take 
 	
 	
 	ori.w	#$C2,$74(a4,d0.w)
+; Instruction bytes inside assonetimer that the assembler would encode differently, kept as words (9 rows).
 	dc.b	$00,$C2,$00,$74,$00,$C2,$00,$74,$00,$C2,$FF,$8C,$00,$C2,$FF,$8C	; ...t...t........
 	dc.b	$00,$C2,$FF,$8C,$00,$C2,$FF,$8C,$00,$C2,$FF,$FB,$00,$AB,$FF,$FB	; ................
 	dc.b	$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB	; ................
@@ -343,6 +344,7 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 .next	tst.w	d0
 	bpl.w	.next3
 	bra.w	.next2
+; Data of PuckOnAttackHalf (6 rows): table or constants used by it.
 	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B
 	dc.w	$0054,$B240,$6000,$0044,$6700,$0040,$0641,$0001
 	dc.w	$0241,$0007,$B240,$6700,$0032,$0641,$0001,$0241

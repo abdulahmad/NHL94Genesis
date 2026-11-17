@@ -1,3 +1,4 @@
+; Sierra C name tag of the routine above (length byte, 'InitEngine', zero padding).
 	dc.b	$8A,'InitEngine',$00,$00,$00	; .InitEngine...
 ; C function DisposeEngine (Sierra C name tag follows it).
 DisposeEngine	link	a6,#$0
@@ -11,6 +12,7 @@ DisposeEngine	link	a6,#$0
 .next	movea.l	-$4(a6),a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'DisposeEngine', zero padding).
 	dc.b	$8D,'DisposeEngine',$00,$00	; .DisposeEngine..
 GetSectDst	link	a6,#$0
 	movem.l	d7/a4,-(sp)
@@ -19,6 +21,7 @@ GetSectDst	link	a6,#$0
 	moveq	#$0,d7
 	move.l	$8(a4),d0
 	sub.l	$C(a4),d0
+; Instruction bytes inside GetSectDst that the assembler would encode differently, kept as words (1 row).
 	dc.w	$D0BC,$0000,$0800
 	cmp.l	$4(a4),d0
 	bge.b	.next
@@ -33,6 +36,7 @@ GetSectDst	link	a6,#$0
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'GetSectDst', zero padding).
 	dc.b	$8A,'GetSectDst',$00,$00,$00	; .GetSectDst...
 PeekSectDst	link	a6,#$0
 	movem.l	d7/a4,-(sp)
@@ -41,6 +45,7 @@ PeekSectDst	link	a6,#$0
 	moveq	#$0,d7
 	move.l	$8(a4),d0
 	sub.l	$C(a4),d0
+; Instruction bytes inside PeekSectDst that the assembler would encode differently, kept as words (1 row).
 	dc.w	$D0BC,$0000,$0800
 	cmp.l	$4(a4),d0
 	bge.b	.next
@@ -53,4 +58,5 @@ PeekSectDst	link	a6,#$0
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'PeekSectDst', zero padding).
 	dc.b	$8B,'PeekSectDst',$00,$00	; .PeekSectDst..

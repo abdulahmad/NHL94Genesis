@@ -68,6 +68,7 @@ SetupIceRinkPalRemap
 	movea.l	$47D4C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
+; Inline data read by DecompressGraphicsWithRemap from the return address (3 rows).
 	dc.w	$7123,$4567,$89AB,$CDEF,$4E75,$3839,$0001,$8D46
 	dc.w	$2479,$0004,$7D40,$508A,$6000,$9CB4,$3839,$0001
 	dc.w	$8D4A,$2479,$0004,$7D2C,$508A,$6000,$9CA2
@@ -168,6 +169,7 @@ defaultspritesStart						;objects which are tied to screen scrolling and have ve
 	
 	ori.b	#$0,d0
 	ori.b	#$0,d0
+; Instruction bytes inside defaultspritesStart that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$0009,$0000,$0000,$0000,$0000,$0009,$0000,$0000
 	dc.w	$0000,$0000,$0009,$0000,$0000,$0000,$0000,$0009
 ; Data that follows defaultsprites (strings, small tables)
@@ -685,6 +687,7 @@ GameOverCleanup
 	dbra	d4,.loop7
 .next2	bsr.w	printsmallz
 	String	CC_SetMapAndPosition,$1,$1,$41,$1A
+; Instruction bytes inside GameOverCleanup that the assembler would encode differently, kept as words (12 rows).
 	dc.w	$43FA,$02AE,$3039,$0001,$8A9E,$6100,$D938,$3011
 	dc.w	$E248,$9179,$0001,$8D58,$6100,$9802,$4A79,$0001
 	dc.w	$8A9E,$6700,$0020,$6100,$99C4,$001A,$CD0A,$0150
@@ -827,6 +830,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .next2	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Text of VBlank_Playoff (4 rows).
 	dc.b	$00,$0A,'Playoffs',$00,$10,'Quar'
 	dc.b	'terfinals',$00,$00,$0C,'Semi'
 	dc.b	'finals',$00,$08,'Finals',$00,$0C
@@ -1172,6 +1176,7 @@ EASportsScreenCheck	jsr	$374F0.l
 	jsr	$36D0A.l
 	move.w	#$18,$18D62.l
 	bsr.w	printsmallz
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.b	$00,$12,$F8,$04,$03,$0C,$01,$43,$68,$65,$63,$6B,$20,$53,$6F,$75	; .......Check Sou
 	dc.b	$6E,$64	; nd
 ; EA Sports screen: frame wait loop
@@ -1513,8 +1518,10 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 .next7	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
 	bra.w	.next13
+; Data of FigureJoy (2 rows): table or constants used by it.
 .next8	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
 	dc.w	$0002,$0000,$0002,$0002,$0002,$0001,$0001,$0002
+; Data of FigureJoy (3 rows): table or constants used by it.
 .next9	dc.w	$0001,$0000,$0001,$0002,$0001,$0002,$0001,$0001
 	dc.w	$0001,$0002,$0002,$0000,$0002,$0001,$0002,$0001
 	dc.w	$0002,$0002,$0002,$0001
@@ -2121,10 +2128,12 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	btst	#$5,$17F7A.l
 	bne.w	.next2
 	jsr	(printz).l
+; Inline data read by printz from the return address (2 rows).
 	dc.w	$0024
 	dc.b	$BF,$0C,$04,'Injury to:',$BF,$0C,$06,'Out for period',$BF,$0C,$05,$00
 	bra.w	.next3
 .next2	jsr	(printz).l
+; Inline data read by printz from the return address (2 rows).
 	dc.w	$0022
 	dc.b	$BF,$0C,$04,'Injury to:',$BF,$0C,$06,'Out for game',$BF,$0C,$05,$00
 .next3	bsr.w	GetPlayerNumInitial
@@ -2189,8 +2198,10 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 									;StartArenaAnim (home hat trick),
 									;PrintPlayerGoals and PrintPlayerAssists; BA_PS_flags bit 2 sets sflags2
 									;bit 2. Called from SetPA
+; Data of ShowGoalBox (1 row): table or constants used by it.
 	dc.w	$0016,$BF04
 	bchg	d1,(a0)
+; Text of ShowGoalBox (1 row).
 	dc.b	'ENALTY SHOT!',$BF,$04,$05,$00
 ; Draws the goal box after the flag checks.
 ShowGoalBoxDraw
@@ -2285,8 +2296,10 @@ ShowGoalBoxDraw
 .next8	bclr	#$5,$17F72.l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
+; Data of ShowGoalBoxDraw (2 rows): table or constants used by it.
 .next9	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
 	dc.b	$BF,$0C,$03,'HAT TRICK!',$BF,$0C,$05
+; Data of ShowGoalBoxDraw (3 rows): table or constants used by it.
 .next10	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
 	dc.b	$00,$12,$BF,$0C,$03,'HAT TRICK!',$BF
 	dc.w	$0C05
@@ -2444,11 +2457,13 @@ ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digi
 ; Address error screen: prints the error and the registers
 AddressErrorScreen	bclr.b	#$5,$FF800F.l
 	jsr	$39258.l
+; Inline data read by $39258 from the return address (2 rows).
 	dc.b	$00,$12,$BD,$00,$00,$41,$64,$64,$72,$65,$73,$73,$20,$45,$72,$72	; .....Address Err
 	dc.b	$6F,$72	; or
 	move.l	$A(sp),d0
 	move.l	$2(sp),d1
 	bra.w	ErrorScreenPrint
+; Data of AddressErrorScreen (6 rows): table or constants used by it.
 	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$18	; ........N....X..
 	dc.b	$BD,$00,$00,$49,$6C,$6C,$65,$67,$61,$6C,$20,$49,$6E,$73,$74,$72	; ...Illegal Instr
 	dc.b	$75,$63,$74,$69,$6F,$6E,$20,$2F,$00,$02,$22,$00,$60,$00,$00,$2C	; uction /..".`..,

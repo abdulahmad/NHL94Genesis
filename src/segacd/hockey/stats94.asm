@@ -152,6 +152,7 @@ PrintGameInfoHeader	movem.l	d0-d1/a1,-(sp)
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
+; Data of PrintGameInfoHeader (4 rows): table or constants used by it.
 .next	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
@@ -159,6 +160,7 @@ PrintGameInfoHeader	movem.l	d0-d1/a1,-(sp)
 ; Prints the game info lines in the small font
 PrintGameInfoBody
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$00
 	moveq	#$28,d0
@@ -316,6 +318,7 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 	moveq	#$5,d1
 .4	move.w	#$2,(printy).l
 .row	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0020
 	dc.b	$FE,$04,$FD,$05,$FA,$01,'                      ',$FD,$05
 	cmp.w	(VertLineScrolling).l,d2
@@ -330,7 +333,7 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 DrawLineIcons						;Line editor: draw the line icons for the cursor's line (LineIconGroups
 	
 	moveq	#$6,d5
-	dc.w	$41FA,$008F
+	dc.w	$41FA,$008F		; lea.l X_2CCB7(pc),a0
 	move.w	(TestList).l,d0
 	lsr.w	#$3,d0
 	adda.w	d0,a0
@@ -365,6 +368,7 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	btst	d0,d7
 	btst	d3,d7
 	move.b	(a0)+,d4
+; Instruction bytes inside DrawLineIcons that the assembler would encode differently, kept as words (1 row).
 	dc.w	$6060
 DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its player slots)
 	
@@ -392,6 +396,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	lea.l	$16C(a2),a3
 .slot	move.w	(a0),(printx).l
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
 	dc.b	$FB,$FF,$FA,$02,$FE,$06
 	clr.w	d0
@@ -411,6 +416,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 ; Erases the line icon area after printing.
 DrawLineIconErase
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
 	moveq	#$28,d0
@@ -423,6 +429,7 @@ DrawLineIconErase
 	beq.w	.next
 	move.w	ClearLineEditorTopData.l,(printx).l
 .next	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0022
 	dc.b	$FE,$04,$FB,$FD,$FA,$02,$4C,$44,$FB,$FE,$FA,$02,$52,$44,$FB,$FE,$FA,$02,$4C,$57,$FB,$FE,$FA,$02,$43,$20,$FB,$FE,$FA,$02,$52,$57
 	rts
@@ -471,11 +478,13 @@ ClearLineEditorMarks
 ; Data that follows ClearLineEditorTop (strings, small tables)
 ClearLineEditorTopData	dc.w	$0010,$000C,$0004
 LineIconPosTable						;Line icons: x, y, slot count - 1 per line
+; Data of LineIconPosTable (3 rows): table or constants used by it.
 	dc.w	$0004,$000C,$0004,$0010,$000C,$0004,$001C,$000C
 	dc.w	$0004,$0004,$000C,$0004,$0010,$000C,$0004,$0004
 	dc.w	$000C,$0003,$0010,$000C,$0003,$FFFF
 LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / down / left /
 	
+; Data of LineCursorTable (5 rows): table or constants used by it.
 	dc.w	$0101,$0203,$0405,$1901,$0101,$0203,$0405,$1901
 	dc.w	$0909,$0A0B,$0C0D,$2101,$1111,$1213,$1415,$2101
 	dc.w	$0519,$1A1B,$1C1D,$2901,$0D21,$2223,$2425,$3101
@@ -627,6 +636,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	moveq	#$2C,d0
 .next	bsr.w	PutTeamBlockDraw
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9,$00
 	jsr	(printz).l
@@ -761,7 +771,7 @@ PlayerListDrawSelected
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$7,$3,$2,$9,CC_SetFont,$1
 	move.w	(SelectedPlayerIdx).l,d0
-	dc.w	$43FA,$012C
+	dc.w	$43FA,$012C		; lea.l X_2D4DA(pc),a1
 	jsr	(SkipListEntries).l
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
@@ -835,7 +845,7 @@ CheckPlayerListScrollData	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
 GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
 	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
-	dc.w	$487A,$0030
+	dc.w	$487A,$0030		; pea.l X_2D5A0(pc)
 	jsr	(GetPlayerNameBuild).l
 	jsr	(print).l
 	move.w	#$1E,(printx).l
@@ -843,9 +853,10 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 	bls.w	.next
 	jsr	(CalcAttrib).l
 	swap	d4
-.next	dc.w	$41FA,$000E
+.next	dc.w	$41FA,$000E		; lea.l X_2D5A6(pc),a0
 	adda.w	(a0,d4.w),a0
 	jmp	(a0)
+; Data of GetNameandAttrib (11 rows): table or constants used by it.
 	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8
 	dc.w	$00C0,$D040,$3032,$0068,$6A00,$001E,$4640,$0C40
 	dc.w	$0003,$6300,$000A,$7001,$6000,$0004,$7003,$43FA
@@ -866,6 +877,7 @@ AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	ble.w	AttribPrintPct
 	moveq	#$64,d0
 	bra.w	AttribPrintPct		;print it
+; Data of AttribEnergy (2 rows): table or constants used by it.
 	dc.w	$0240,$000E,$0441,$0001,$C0FC,$0064,$80C1,$4EB9
 	dc.w	$0002,$AE82
 AttribPrintPct
@@ -875,12 +887,14 @@ AttribPrintPct
 	jsr	(printz).l
 	String	'    '
 	rts
+; Data of AttribPrintPct (2 rows): table or constants used by it.
 	dc.w	$0240,$0001,$0A40,$0001,$43FA,$0008,$4EF9,$0003
 	dc.w	$CEBE,$000A
 AttribWeight						;Weight: 140 + 8 * rating lb
 	addq.w	#$1,$6768(a1)
 	moveq	#$79,d2
 	move.l	-(a0),d0
+; Text of AttribWeight (3 rows).
 	dc.b	$00,$0A,'Lefty   ',$E7,'@',$06,'@',$00,$8C
 	dc.w	$4EB9,$0003,$915E,$4EB9,$0003,$8F80,$4EB9,$0003
 	dc.b	$8F,'n',$00,$08,' lb  ',$00,'Nu'
@@ -902,6 +916,7 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 	clr.w	d0
 	bsr.w	PutTeamBlockDraw
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,'^Per^^Time^^Tm^^Goal/Assist^^^^^^^^P/S^^',$F9,$00,$00
 	clr.l	d0
@@ -1044,7 +1059,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#$C,(printx).l
 	jsr	(print).l
 	move.w	#$23,(printx).l
-	dc.w	$43FA,$0060
+	dc.w	$43FA,$0060		; lea.l X_2DA34(pc),a1
 	move.b	$2(a0,d3.w),d0
 	andi.w	#$7F,d0
 	jsr	(PrintTickerEntry).l
@@ -1064,6 +1079,7 @@ PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	jsr	(print).l
 .next	addi.w	#$1,(printy).l
 	rts
+; Data of PrintScorerName (2 rows): table or constants used by it.
 	dc.w	$0006,$5348,$3200,$0004,$5348,$0004,$2000,$0004
 	dc.b	'PP',$00,$06,'PP2',$00
 PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 bytes each from PenSum,
@@ -1084,6 +1100,7 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 	clr.w	d0
 	bsr.w	PutTeamBlockDraw
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,'^Per^^Time^^Tm^^Player/Penalty^^^^min^^^',$F9,$00,$00
 	clr.l	d0
@@ -1266,6 +1283,7 @@ PenaltyEntryHeader
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
+; Data of PenaltyEntryHeader (3 rows): table or constants used by it.
 .next	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1120,$F900,$000A,$20FB,$FFFA,$117D,$F900,$000A
 	dc.w	$7BFB,$FFFA,$117D,$F900
@@ -1284,6 +1302,7 @@ PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of 
 	bsr.w	PlayerStatsList
 	movem.l	(sp)+,a2
 	rts
+; Data of PlayoffStatsScreen (1 row): table or constants used by it.
 	dc.w	$4247
 PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the column headers,
 									;the players sorted by the selected column (left / right), up / down
@@ -1305,6 +1324,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	String	CC_Font3Pri,$7,$4,'Playoff  Stats',CC_Font3Pri,$E,$1
 	bra.w	.team
 .title	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$001C
 	dc.b	$F8,$06,$03,$0C,$1A,$F9,$01,'A^-^Switch^Teams',$F9,$00,$00
 	jsr	(printbigz).l
@@ -1421,6 +1441,7 @@ StatsListDrawBottomRow	move.w	(VertLineScrolling).l,d3
 	bra.w	DrawStatsRow
 ; Prints the 'Player' column header.
 StatsListDrawHeader	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (3 rows).
 	dc.w	$0012
 	dc.b	$F8,$06,$03,$04,$0B,$F9,$01,'Player',$FB,$07,$00
 	dc.w	$43FA,$0344
@@ -1444,7 +1465,7 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font3Pal3Pri,$A,$8
-	dc.w	$43FA,$0314
+	dc.w	$43FA,$0314		; lea.l X_2E46A(pc),a1
 	moveq	#$1,d0
 	add.w	(scoutcolumn).l,d0
 	jsr	(PrintTickerEntry).l
@@ -1600,6 +1621,7 @@ GetStatColumn						;d2 = stat column d1 for player d0. Goalies only have PIM (bt
 	cmp.w	d2,d0		;goalie?
 	bge.w	ReadStatColumnTable		;skater: read the column as is
 	clr.w	d2		;goalie: columns 1 and 2 (A, Pts) show column 1 (assists), the rest 0
+; Instruction bytes inside GetStatColumn that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$033C,$0006,$6700
 	dc.w	$15E8
 ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct byte arrays
@@ -1609,7 +1631,7 @@ ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct 
 ReadStatColumnTable
 	tst.w	d7
 	bne.w	.next
-	dc.w	$43FA,$0076
+	dc.w	$43FA,$0076		; lea.l X_2E422(pc),a1
 	asl.w	#$2,d1
 	adda.w	d1,a1
 	clr.l	d1
@@ -1678,9 +1700,11 @@ StatColumnHeader
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
+; Data of StatColumnHeader (1 row): table or constants used by it.
 .next	dc.w	$000A
 CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
+; Data of CrowdMeterScreen (16 rows): table or constants used by it.
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
 	dc.b	$7B,$FB,$FF,$FA,$0C,$20,$F9,$00,$00,$0A,$20,$FB,$FF,$FA,$0C,$7D	; {.... .... ....}
 	dc.b	$F9,$00,$00,$0A,$7B,$FB,$FF,$FA,$0C,$7D,$F9,$00,$70,$09,$72,$1C	; ....{....}..p.r.
@@ -1711,6 +1735,7 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 .next	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	$38D8C.l
+; Inline data read by $38D8C from the return address (2 rows).
 	dc.b	$00,$14,$FD,$04,$FA,$02,$41,$72,$65,$6E,$61,$20,$52,$65,$63,$6F	; ......Arena Reco
 	dc.b	$72,$64,$FD,$1C	; rd..
 	move.w	(sp)+,d0
@@ -1718,6 +1743,7 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$3919A.l
 	jsr	$38F80.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
 	jsr	$2AC02.l
 	move.w	d0,d1
@@ -1730,6 +1756,7 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 .next2	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	$38D8C.l
+; Inline data read by $38D8C from the return address (2 rows).
 	dc.b	$00,$16,$FD,$04,$FA,$02,$4C,$65,$61,$67,$75,$65,$20,$52,$65,$63	; ......League Rec
 	dc.b	$6F,$72,$64,$FD,$1C,$00	; ord...
 	move.w	(sp)+,d0
@@ -1737,6 +1764,7 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$3919A.l
 	jsr	$38F80.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
 ; Crowd meter: restores the registers and returns
 CrowdMeterScreenExit	movem.l	(sp)+,d0-d7/a0-a6
@@ -1749,6 +1777,7 @@ CrowdMeterScreenExit	movem.l	(sp)+,d0-d7/a0-a6
 	jsr	$3919A.l
 	jsr	$38F80.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
 	rts
 ; Forces black and sets display flags for the crowd meter screen.
@@ -1817,6 +1846,7 @@ CrowdMeterFadeIn
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
+; Inline data read by DecompressGraphicsWithRemap from the return address (13 rows).
 	dc.l	$91234567,$89ABCDEF
 	dc.w	$3839,$0001,$8D42,$4EB9,$0003,$93E8,$4EB9,$0003
 	dc.w	$8F6E,$0006,$BD00,$0000,$2279,$0004,$7D0C,$D3E9
@@ -1894,6 +1924,7 @@ StatsScreenFadeIn
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
+; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$43434567,$89ABCDEF
 	move.w	$18D4E.l,d4
 	jsr	$393FA.l
@@ -1902,6 +1933,7 @@ StatsScreenFadeIn
 	jsr	$3ECA6.l
 	jsr	$3EC60.l
 	jmp	$3F24C.l
+; Data of StatsScreenFadeIn (21 rows): table or constants used by it.
 	dc.b	$04,$79,$00,$01,$00,$01,$8A,$D2,$04,$79,$00,$01,$00,$01,$8A,$D4	; .y.......y......
 	dc.b	$23,$FC,$00,$04,$20,$DC,$00,$01,$8A,$D6,$08,$EA,$00,$02,$00,$32	; #... ..........2
 	dc.b	$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$05,$0C,$00,$70,$16,$72,$06	; N....n......p.r.
@@ -1934,6 +1966,7 @@ StatsRowsLoop	move.w	#$5,$18D58.l
 	bne.w	.next
 	move.w	#$8000,$18D5C.l
 .next	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20	; ..              
 	dc.b	$20,$20,$20,$20,$20,$20,$20,$20	;         
 ; Stats rows: prints "no goalie" when the team has none
@@ -1941,6 +1974,7 @@ StatsRowNoGoalie	tst.w	d0
 	bne.w	StatsRowGoalieName
 	move.w	#$B,$18D58.l
 	jsr	$38F6E.l
+; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
 	bra.w	StatsRowsNext
 ; Stats rows: finds the goalie name
@@ -2020,7 +2054,7 @@ GetPlayerCount
 FrameWaitStep	move.w	$17474.l,d1
 .loop	cmp.w	$17474.l,d1
 	beq.w	.loop
-	dc.w	$6100,$04FC
+	dc.w	$6100,$04FC		; bsr.w X_2F2F0
 	jsr	$37496.l
 	tst.b	d1
 	beq.w	FrameWaitStep
@@ -2074,7 +2108,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	move.w	#$1,$8(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#$1,d7
-	dc.w	$6100,$03E0
+	dc.w	$6100,$03E0		; bsr.w X_2F2F0
 	btst.b	#$0,$17F74.l
 	beq.w	.next2
 	andi.w	#$FFF0,d0
@@ -2307,6 +2341,7 @@ ReadActiveJoypad
 .next4	adda.l	$4(a1),a1
 	movea.l	#$1B008,a2
 	jmp	(dobitmap).l
+; Data of ReadActiveJoypad (7 rows): table or constants used by it.
 	dc.w	$4EB9,$0003,$8F6E,$0006,$BD02,$0200,$303C,$0008
 	dc.w	$323C,$0004,$343C,$07FF,$4EF9,$0003,$8C06,$50F9
 	dc.w	$0001,$AD56,$4EB9,$0003,$8F6E,$0006,$BD02,$0000

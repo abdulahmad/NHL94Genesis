@@ -142,6 +142,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	rts
 FileLoadTable					;disc only: the file load list the loader (jsr $6044.w, d7 = 8) reads through a3: 13 word pairs
 									;(count or flag, file number), then one record per file
+; Data of FileLoadTable (15 rows): table or constants used by it.
 	dc.w	$000D,$006C,$000E,$0060,$000E,$0061,$000E,$0062
 	dc.w	$000E,$0063,$000E,$0064,$000E,$0065,$000E,$0066
 	dc.w	$000E,$0067,$000E,$006D,$000E,$006E,$000E,$006F
@@ -158,13 +159,16 @@ FileLoadTable					;disc only: the file load list the loader (jsr $6044.w, d7 = 8
 	dc.w	$0608,$0B54,$00FF,$FF02,$0202,$00FF,$00FF,$0600
 	dc.w	$0C5A,$00FF,$FF02,$0202,$00FF,$00FF
 FileLoadOrder					;disc only: the order the 13 files are loaded in (a2 of the same call): (2, n) word pairs, $FFFF ends
+; Data of FileLoadOrder (4 rows): table or constants used by it.
 	dc.w	$0002,$0000,$0002,$0001,$0002,$0002,$0002,$0003
 	dc.w	$0002,$0004,$0002,$0005,$0002,$0006,$0002,$0007
 	dc.w	$0002,$0008,$0002,$0009,$0002,$000A,$0002,$000B
 	dc.w	$0002,$000C,$FFFF
 BackupRamName					;disc only: the backup RAM file name (_CDBIOS backup call, d0 = 3), padded to 16 bytes
+; Text of BackupRamName (1 row).
 	dc.b	'NHLHOCKEY94',0,0,0,0,0
 BackupRamNameSize				;disc only: the same name, then the word $003D: the file size in blocks
+; Text of BackupRamNameSize (1 row).
 	dc.b	'NHLHOCKEY94',0,0,$3D
 	lea.l	$193BC.l,a0
 	moveq	#$0,d0

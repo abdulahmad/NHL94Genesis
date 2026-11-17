@@ -4,13 +4,14 @@ ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; s
 	moveq	#$0,d3
 	addq.b	#$5,d0
 	move.w	(a2,d3.w),-(a0)
-	dc.w	$5A31,$3433
-	dc.w	$3334,$5A00
-	dc.b	'5757668:98Ze'
-	dc.w	$4A4B
-	dc.w	$4B00
+	dc.w	$5A31,$3433		; addq.b #$5,$33(a1,d3.w)
+	dc.w	$3334,$5A00		; move.w (a4,d5.l * 2),-(a1)
+	dc.w	$3537,$3537,$3636,$383A,$3938,$5A65		; move.w ([$3636383A,sp],d3.w * 4,$39385A65),-(a2)
+	dc.w	$4A4B		; dc.w $4A4B
+	dc.w	$4B00		; dc.w $4B00
 	addq.b	#$5,d0
 	move.w	#$3D00,-(a5)
+; Text of ReadLineData (8 rows).
 	dc.b	'Z<>??',$00,'Z',$00,'wuv',$00,'Z',$00,'@B'
 	dc.b	'ABZ@CCEDZFONOMZL'
 	dc.b	'PQP',$00,'ZRGHGIZITUS',$00

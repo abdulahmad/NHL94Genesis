@@ -21,6 +21,7 @@ DoDrawTextCommand	link	a6,#$FF00
 	movem.l	-$10C(a6),d6-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'DoDrawTextComma', zero padding).
 	dc.b	$91,'DoDrawTextComma'	; .DoDrawTextComma
 	dc.b	$6E,$64,$00,$00	; nd..
 DoMoviePlayBack	link	a6,#$0
@@ -48,6 +49,7 @@ DoMoviePlayBack	link	a6,#$0
 	movem.l	-$10(a6),d5-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'DoMoviePlayBack', zero padding).
 	dc.b	$8F,'DoMoviePlayBack'	; .DoMoviePlayBack
 	dc.b	$00,$00	; ..
 MAINCODE	link	a6,#$0
@@ -81,15 +83,20 @@ MAINCODE	link	a6,#$0
 	move.l	-$4(a6),d7
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'MAINCODE', zero padding).
 	dc.b	$88,'MAINCODE',$00,$00,$38	; .MAINCODE..8
+; Text of MAINCODE (1 row).
 .next6	dc.b	'Main Done',$00	; Main Done.
+; Text of MAINCODE (1 row).
 .next7	dc.b	'Command: %d',$00	; Command: %d.
+; Text of MAINCODE (3 rows).
 .next8	dc.b	'MAINCPU ready to'	; MAINCPU ready to
 	dc.b	' handle commands'	;  handle commands
 	dc.b	$00,$00	; ..
 ReDraw	link	a6,#$0
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'ReDraw', zero padding).
 	dc.b	$86,'ReDraw',$00,$00,$00	; .ReDraw...
 drawprint	link	a6,#$0
 	move.l	$8(a6),-(sp)
@@ -109,6 +116,7 @@ drawprint	link	a6,#$0
 .next	jsr	ReDraw(pc)
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'drawprint', zero padding).
 	dc.b	$89,'drawprint',$00,$00	; .drawprint..
 NumStr	link	a6,#$FFF0
 	movem.l	d6-d7/a3-a4,-(sp)
@@ -140,6 +148,7 @@ NumStr	link	a6,#$FFF0
 	movem.l	-$20(a6),d6-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'NumStr', zero padding).
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	link	a6,#$0
 	movem.l	d3-d7/a4,-(sp)
@@ -174,6 +183,7 @@ HexStr	link	a6,#$0
 	movem.l	-$18(a6),d3-d7/a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'HexStr', zero padding).
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
 aprint	link	a6,#$FED8
 	movem.l	d4-d7/a3-a4,-(sp)
@@ -270,6 +280,7 @@ aprint	link	a6,#$FED8
 .next11	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'aprint', zero padding).
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
 InitWorld	link	a6,#$0
 	movea.l	#$A12010,a0
@@ -293,9 +304,13 @@ InitWorld	link	a6,#$0
 	jsr	aprint(pc)
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'InitWorld', zero padding).
 	dc.b	$89,'InitWorld',$00,$32	; .InitWorld.2
+; Text of InitWorld (1 row).
 .next	dc.b	'Heap Size : %x',$00,$00	; Heap Size : %x..
+; Text of InitWorld (1 row).
 .next2	dc.b	'Heap Start: %x',$00,$00	; Heap Start: %x..
+; Text of InitWorld (2 rows).
 .next3	dc.b	'MAINCPU is alive'	; MAINCPU is alive
 	dc.b	$00,$00	; ..
 GetCommandFromSub	link	a6,#$0
@@ -312,6 +327,7 @@ GetCommandFromSub	link	a6,#$0
 	movem.l	-$C(a6),d7/a3-a4
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'GetCommandFromS', zero padding).
 	dc.b	$91,'GetCommandFromS'	; .GetCommandFromS
 	dc.b	$75,$62,$00,$00	; ub..
 Set1MFlag	link	a6,#$0
@@ -319,30 +335,104 @@ Set1MFlag	link	a6,#$0
 	move.w	$A(a6),$2(a0)
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'Set1MFlag', zero padding).
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
 ; Jump thunk through a computed address (number string)
 NumStrThunkC	lea.l	.next(pc),a0
 	movea.w	#$2,a1
-	dc.w	$4EF0,$92FE
-.next	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
-	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
+	dc.w	$4EF0,$92FE		; jmp -$2(a0,a1.w): enters the code that follows
+.next	dc.w	$6006		; bra.b $8
+	dc.w	$4C41,$0801		; divs.l d1,d0
+	dc.w	$4E75		; rts 
+	dc.w	$4EBA,$0024		; jsr $2e(pc)
+	dc.w	$2001		; move.l d1, d0
+	dc.w	$4E75		; rts 
+	dc.w	$222F,$0004		; move.l $4(a7), d1
+	dc.w	$202F,$0008		; move.l $8(a7), d0
 ; Jump thunk through a computed address (number string)
 NumStrThunkD	lea.l	.next(pc),a0
 	movea.w	#$2,a1
-	dc.w	$4EF0,$92FE
-.next	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
-	dc.b	$6B,$06,$4E,$BA,$00,'FNuD',$81,$4E,$BA,$00,$3E,$44,$81	; k.N..FNuD.N..>D.
-	dc.b	$4E,$75,$44,$80,$4A,$81,$6B,$0A,$4E,$BA,$00,$30,$44,$80,$44,$81	; NuD.J.k.N..0D.D.
-	dc.b	$4E,$75,$44,$81,$4E,$BA,$00,$24,$44,$80,'Nu"/',$00,$04	; NuD.N..$D.Nu"/..
-	dc.b	$20,$2F,$00,$08,$41,$FA,$00,$0A,$32,$7C,$00,$02,$4E,$F0,$92,$FE	;  /..A...2|..N...
-	dc.b	$60,$08,$4C,$41,$00,$01,$C3,'@Nu?',$01,'HAJA'	; `.LA...@Nu?.HAJA
-	dc.b	$66,$1C,$22,$00,'BAHAg',$0A,$82,$D7,'HAH@'	; f.".BAHAg...HAH@
-	dc.b	$30,$01,$48,$40,$80,$DF,$32,$00,'B@H@NuHA'	; 0.H@..2.B@H@NuHA
-	dc.b	$3E,$82,$2F,$03,$34,$00,$26,$01,$72,$01,'B@H@f',$0C	; >./.4.&.r.B@H@f.
-	dc.b	$48,$40,$30,$02,$72,$00,$60,$16,$D2,$41,$65,$12,$D4,$42,$D1,$80	; H@0.r.`..Ae..B..
-	dc.b	$B0,$83,$65,$F4,$90,$83,$D2,$41,$08,$C1,$00,$00,$64,$EE,$26,$1F	; ..e....A....d.&.
-	dc.b	$34,$1F,$4E,$75,$00,$00,$00,$00	; 4.Nu....
+	dc.w	$4EF0,$92FE		; jmp -$2(a0,a1.w): enters the code that follows
+.next	dc.w	$6008		; bra.b $a
+	dc.w	$4C41,$0801		; divs.l d1,d0
+	dc.w	$C340		; exg.l d1, d0
+	dc.w	$4E75		; rts 
+	dc.w	$4A80		; tst.l d0
+	dc.w	$6B14		; bmi.b $22
+	dc.w	$4A81		; tst.l d1
+	dc.w	$6B06		; bmi.b $18
+	dc.w	$4EBA,$0046		; jsr $5a(pc)
+	dc.w	$4E75		; rts 
+	dc.w	$4481		; neg.l d1
+	dc.w	$4EBA,$003E		; jsr $5a(pc)
+	dc.w	$4481		; neg.l d1
+	dc.w	$4E75		; rts 
+	dc.w	$4480		; neg.l d0
+	dc.w	$4A81		; tst.l d1
+	dc.w	$6B0A		; bmi.b $32
+	dc.w	$4EBA,$0030		; jsr $5a(pc)
+	dc.w	$4480		; neg.l d0
+	dc.w	$4481		; neg.l d1
+	dc.w	$4E75		; rts 
+	dc.w	$4481		; neg.l d1
+	dc.w	$4EBA,$0024		; jsr $5a(pc)
+	dc.w	$4480		; neg.l d0
+	dc.w	$4E75		; rts 
+	dc.w	$222F,$0004		; move.l $4(a7), d1
+	dc.w	$202F,$0008		; move.l $8(a7), d0
+	dc.w	$41FA,$000A		; lea.l $50(pc), a0
+	dc.w	$327C,$0002		; movea.w #$2, a1
+	dc.w	$4EF0,$92FE		; jmp -$2(a0, a1.w)
+	dc.w	$6008		; bra.b $5a
+	dc.w	$4C41,$0001		; divu.l d1,d0
+	dc.w	$C340		; exg.l d1, d0
+	dc.w	$4E75		; rts 
+	dc.w	$3F01		; move.w d1, -(a7)
+	dc.w	$4841		; swap d1
+	dc.w	$4A41		; tst.w d1
+	dc.w	$661C		; bne.b $7e
+	dc.w	$2200		; move.l d0, d1
+	dc.w	$4241		; clr.w d1
+	dc.w	$4841		; swap d1
+	dc.w	$670A		; beq.b $74
+	dc.w	$82D7		; divu.w (a7), d1
+	dc.w	$4841		; swap d1
+	dc.w	$4840		; swap d0
+	dc.w	$3001		; move.w d1, d0
+	dc.w	$4840		; swap d0
+	dc.w	$80DF		; divu.w (a7)+, d0
+	dc.w	$3200		; move.w d0, d1
+	dc.w	$4240		; clr.w d0
+	dc.w	$4840		; swap d0
+	dc.w	$4E75		; rts 
+	dc.w	$4841		; swap d1
+	dc.w	$3E82		; move.w d2, (a7)
+	dc.w	$2F03		; move.l d3, -(a7)
+	dc.w	$3400		; move.w d0, d2
+	dc.w	$2601		; move.l d1, d3
+	dc.w	$7201		; moveq #$1, d1
+	dc.w	$4240		; clr.w d0
+	dc.w	$4840		; swap d0
+	dc.w	$660C		; bne.b $9c
+	dc.w	$4840		; swap d0
+	dc.w	$3002		; move.w d2, d0
+	dc.w	$7200		; moveq #$0, d1
+	dc.w	$6016		; bra.b $ae
+	dc.w	$D241		; add.w d1, d1
+	dc.w	$6512		; bcs.b $ae
+	dc.w	$D442		; add.w d2, d2
+	dc.w	$D180		; addx.l d0, d0
+	dc.w	$B083		; cmp.l d3, d0
+	dc.w	$65F4		; bcs.b $98
+	dc.w	$9083		; sub.l d3, d0
+	dc.w	$D241		; add.w d1, d1
+	dc.w	$08C1,$0000		; bset.b #$0, d1
+	dc.w	$64EE		; bcc.b $9c
+	dc.w	$261F		; move.l (a7)+, d3
+	dc.w	$341F		; move.w (a7)+, d2
+	dc.w	$4E75		; rts 
+	dc.w	$0000,$0000		; ori.b #$0, d0
 ; Sets up VDP and the sub-CPU address for DMA
 VdpDmaBoot	lea.l	$FF481C.l,a0
 	move.w	#$FFFF,$70.l
@@ -658,6 +748,7 @@ VdpInitRegs	movem.l	d2-d7/a1-a2,-(sp)
 	bsr.w	GiveWordRamToSub
 	clr.w	$FF6D84.l
 	rts
+; Data of VdpInitRegs (3 rows): table or constants used by it.
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
@@ -670,6 +761,7 @@ VdpShadowBuffers	dcb.b	$80,0
 	incbin	..\Extracted\SegaCD\MAIN\main_0640C.bin
 .next	incbin	..\Extracted\SegaCD\MAIN\main_067E8.bin
 .next2	incbin	..\Extracted\SegaCD\MAIN\main_06BD0.bin
+; Data of VdpShadowBuffers (4 rows): table or constants used by it.
 	dcb.b	$301,0
 	dc.b	$FF	; .
 	dcb.b	$200,0

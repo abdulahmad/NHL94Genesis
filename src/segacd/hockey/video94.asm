@@ -12,14 +12,14 @@ VBlankDmaList	bsr.w	DmaListWait
 	movea.l	#$BBD30,a0
 	move.w	$17F66.l,d0
 	move.w	$18D32.l,d1
-	dc.w	$6100,$9D0A
+	dc.w	$6100,$9D0A		; bsr.w X_378D2
 	movea.l	$191CA.l,a6
 	cmpa.l	#$18D6A,a6
 	beq.w	rtss2
 .loop	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
-	dc.w	$6100,$9CF0
+	dc.w	$6100,$9CF0		; bsr.w X_378D2
 	cmpa.l	#$18D6A,a6
 	bgt.w	.loop
 	rts	
@@ -692,6 +692,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;(none while sflags7 bit 7 is set).
 									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
+; Data of QueuePadLabel (1 row): table or constants used by it.
 	dc.w	$49FA,$0098
 	clr.w	$2(a0)		;x offset (setffo adds it to the sprites)
 	move.w	d1,d2
@@ -737,6 +738,7 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 	asl.w	#$5,d0
 	move.w	d0,(a5)+		;vram destination
 	rts
+; Text of uppads_pd (1 row).
 	dc.b	' DDLCRX',$00
 addframe
 	movem.l	d0-d2,-(sp)
@@ -964,6 +966,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
+; Inline data read by DecompressGraphicsWithRemap from the return address (16 rows).
 	dc.w	$4343,$4567,$89AB,$CDEF,$33C4,$0001,$8D40,$2479
 	dc.w	$0004,$7D38,$508A,$6100,$9EEE,$7123,$4567,$89AB
 	dc.w	$CDEF,$6100,$029C,$33C4,$0001,$8D56,$0839,$0001

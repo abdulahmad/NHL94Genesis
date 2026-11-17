@@ -14,11 +14,13 @@ LoadBootImages	movem.l	d0-d7/a0-a6,-(sp)
 	bset.b	#$2,$FFFF8024.w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
+; Data of LoadBootImages (1 row): table or constants used by it.
 	dc.b	$00,$02,$00,$00,$FF,$FF	; ......
 ; Screen setup with inline palette words.
 ScreenSetupA	movem.l	d0-d7/a0-a6,-(sp)
 	andi.b	#$EF,$BC6E8.l
 	bsr.w	SendCmd2Inline
+; Inline data read by SendCmd2Inline from the return address (2 rows).
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
 	bsr.w	SendCmd3
@@ -44,6 +46,7 @@ ScreenSetupA	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	d1
 	dbne	d6,.loop2
 	bsr.w	SendCmd2Inline
+; Inline data read by SendCmd2Inline from the return address (2 rows).
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -89,6 +92,7 @@ AnimTick	movem.l	d0-d6/a0-a2,-(sp)
 	bset.b	#$1,$BC6E8.l
 .next4	movem.l	(sp)+,d0-d6/a0-a2
 	rts
+; Data of AnimTick (2 rows): table or constants used by it.
 	dc.b	$00,$1E,$00,$00,$00,$1E,$00,$01,$00,$1E,$00,$01,$00,$04,$00,$01	; ................
 	dc.b	$00,$06,$FF,$FF	; ....
 ; Screen setup, second variant.
@@ -97,6 +101,7 @@ ScreenSetupB	andi.b	#$9C,$BC6E8.l
 	move.w	#$1,d4
 	move.w	d4,$10AF0.l
 	bsr.w	SendStateWithInline
+; Inline data read by SendStateWithInline from the return address (1 row).
 	dc.b	$00,$08,$F8,$00,$01,$00,$00,$00	; ........
 	movea.l	$109D8.l,a2
 	lea.l	(a2),a0
@@ -176,6 +181,7 @@ ScreenSetupB	andi.b	#$9C,$BC6E8.l
 ; Screen setup, third variant.
 ScreenSetupC	andi.b	#$9C,$BC6E8.l
 	bsr.w	SendCmd2Inline
+; Inline data read by SendCmd2Inline from the return address (2 rows).
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
 	bsr.w	SendCmd3
@@ -186,12 +192,14 @@ ScreenSetupC	andi.b	#$9C,$BC6E8.l
 	bsr.w	SendCmdD0
 	clr.w	$10B22.l
 	bsr.w	SendStateInline
+; Inline data read by SendStateInline from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 	move.l	#$80,d0
 	moveq	#$20,d1
 	move.l	#$7FF,d2
 	jsr	$E4D6.l
 	bsr.w	SendStateInline
+; Inline data read by SendStateInline from the return address (1 row).
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
 	move.l	#$80,d0
 	moveq	#$20,d1
@@ -199,6 +207,7 @@ ScreenSetupC	andi.b	#$9C,$BC6E8.l
 	jsr	$E4D6.l
 	moveq	#$1C,d4
 	bsr.w	SendStateInline
+; Inline data read by SendStateInline from the return address (1 row).
 	dc.b	$00,$06,$FE,$00,$13,$00	; ......
 	movea.l	$10984.l,a1
 	adda.l	$4(a1),a1
@@ -211,6 +220,7 @@ ScreenSetupC	andi.b	#$9C,$BC6E8.l
 	moveq	#$0,d5
 	jsr	$E51C.l
 	bsr.w	SendStateInline
+; Inline data read by SendStateInline from the return address (1 row).
 	dc.b	$00,$06,$FD,$00,$00,$00	; ......
 	movea.l	$10984.l,a0
 	movea.l	a0,a1
@@ -229,6 +239,7 @@ ScreenSetupC	andi.b	#$9C,$BC6E8.l
 	jsr	$E12A.l
 	bsr.w	CopyAnimStateToCmd
 	bsr.w	SendStateInline
+; Inline data read by SendStateInline from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 	lea.l	$25F0E.l,a1
 	bsr.w	CalcScrollPhase
@@ -241,6 +252,7 @@ ScreenSetupC	andi.b	#$9C,$BC6E8.l
 .loop	bsr.w	WaitFrameAndUpdate
 	dbra	d3,.loop
 	bsr.w	SendStateInline
+; Inline data read by SendStateInline from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
 	lea.l	$25F36.l,a1
 .loop2	bsr.w	CalcScrollPhase

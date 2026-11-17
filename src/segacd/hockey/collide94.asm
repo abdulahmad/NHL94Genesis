@@ -422,6 +422,7 @@ checkagr						;use Agression attribute and RNG to determine if there will be a p
 									;when d0 is small. Called from CCStart, holdcheck and Bcheck
 	bclr	d5,(a6)
 	movep.l	d5,$C2C(a0)
+; Instruction bytes inside checkagr that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$0C2C,$0C2C,$0BFA
 	dc.w	$0BFA,$0B96
 ; Scales the aggression value from $73.
@@ -1604,6 +1605,7 @@ PuckCollisionExit
 ; Puck collision: return
 PuckCollisionReturn	movem.l	(sp)+,d0-d7/a0-a3
 	rts
+; Data of PuckCollisionReturn (5 rows): table or constants used by it.
 	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
 	dc.b	$00,$0D,$00,$0D,$00,$0E,$00,$0E,$00,$0E,$00,$0E,$00,$0F,$00,$0F	; ................
 	dc.b	$00,$0F,$00,$0F,$00,$0F,$00,$0F,$00,$90,$00,$90,$00,$A9,$00,$A9	; ................
@@ -1969,7 +1971,7 @@ PuckCollisionStick	btst.b	#$4,$17F68.l
 	move.w	(a0,d2.w),d0
 	moveq	#$F,d1
 	add.b	(a2,d0.w),d1
-	dc.w	$41FA,$01A4
+	dc.w	$41FA,$01A4		; lea.l X_3C246(pc),a0
 	btst.b	#$3,$4(a2)
 	beq.w	.next3
 	eori.w	#$2,d2
@@ -1978,7 +1980,7 @@ PuckCollisionStick	btst.b	#$4,$17F68.l
 	cmpi.w	#$233,d0
 	blt.w	.next4
 	move.w	#$292,(sp)
-	dc.w	$41FA,$017E
+	dc.w	$41FA,$017E		; lea.l X_3C246(pc),a0
 .next4	sub.w	(sp)+,d0
 	move.b	(a0,d0.w),d0
 	lsr.w	d2,d0

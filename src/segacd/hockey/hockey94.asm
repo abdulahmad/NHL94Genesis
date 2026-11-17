@@ -29,6 +29,7 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	lea.l	.next(pc),a0
 	move.w	(a0,d0.w),d0
 	rts
+; Data of GetPeriodTime (1 row): table or constants used by it.
 .next	dc.w	$012C,$0258,$04B0,$001E
 	bclr	#$5,$FF800F.l
 	move.w	#$FFFF,(palcount).l
@@ -42,6 +43,7 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 	jsr	$47DAC.l
 	jsr	$3E91C.l
 	bsr.w	ResetClock
+; Inline data read by ResetClock from the return address (1 row).
 	dc.w	$0079,$F000,$0001,$7DC8
 	st.b	$17F9E.l
 	st.b	$17FA0.l
@@ -448,6 +450,7 @@ Pausemode	jsr	(forceblack).l
 	jsr	(setvideo).l
 	jsr	$48208.l
 	jsr	(printsmallz).l
+; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
 	dc.b	$FF,$03,$FD,$00,$FC,$00
 	moveq	#$20,d0

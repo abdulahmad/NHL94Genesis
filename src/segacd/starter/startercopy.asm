@@ -1,3 +1,4 @@
+; Sierra C name tag of the routine above (length byte, 'SendCommandToMa', zero padding).
 	dc.b	$91,'SendCommandToMa'	; .SendCommandToMa
 	dc.b	$69,$6E,$00,$00	; in..
 CopyData	link	a6,#$0
@@ -23,4 +24,5 @@ CopyData	link	a6,#$0
 	movem.l	-$10(a6),d4-d7
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'CopyData', zero padding).
 	dc.b	$88,'CopyData',$00,$00,$00	; .CopyData...

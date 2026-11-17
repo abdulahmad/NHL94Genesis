@@ -177,4 +177,5 @@ Wait	link	a6,#$0
 	movem.l	-$8(a6),d6-d7
 	unlk	a6
 	rts
+; Sierra C name tag of the routine above (length byte, 'Wait', zero padding).
 	dc.b	$84,'Wait',$00,$00,$00	; .Wait...

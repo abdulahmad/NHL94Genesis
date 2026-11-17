@@ -12,7 +12,7 @@ import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import segcd_flow as F, emit_m68k as E, segcd_one as S
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'); os.chdir(root)
-prog = sys.argv[1]; LOOSE = '--loose' in sys.argv; MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 6
+prog = sys.argv[1]; LOOSE = '--loose' in sys.argv; COMMENT = '--comment' in sys.argv; MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 6
 cfg = S.CFG[prog.upper()] if prog != 'hockey' else dict(disc='cdbin/HOCKEY.BIN', base=0x1B000, name='hockey', oaq='-');  base = cfg['base']; d = open(cfg['disc'], 'rb').read()
 ddir = 'src/segacd/' + prog
 errs, txt = S.assemble(cfg)
@@ -101,7 +101,11 @@ for f in files:
                 if kind == 'moveq':
                     mm = re.match(r'#\$([0-9A-F]+),(.*)', text)
                     if mm and int(mm.group(1), 16) >= 0x80: text = '#%d,%s' % (int(mm.group(1), 16) - 256, mm.group(2))
-                out.append('%s\t%s\t%s\t;@%s' % (l_, mn2, text, bytes(g.bytes).hex()))
+                if COMMENT:
+                    raw = bytes(g.bytes)
+                    out.append('%s\tdc.w\t%s\t\t; %s %s' % (l_, ','.join('$%04X' % int.from_bytes(raw[q:q + 2], 'big') for q in range(0, len(raw), 2)), mn2, text))
+                else:
+                    out.append('%s\t%s\t%s\t;@%s' % (l_, mn2, text, bytes(g.bytes).hex()))
             if ends < o1: out.append('\tdcb.b\t$%X,0' % (o1 - ends))
             out = out_real; RUNS.append((newl, L[n:e], o0, o1)); out.append(('RUN', len(RUNS) - 1)); changed += 1; n = e; continue
         out.append(t); n += 1
@@ -118,7 +122,9 @@ bad = set()
 parts = [(0, 0, 'gen', f[:-4]) for f in files]
 for rnd in range(40):
     render(bad)
-    ok = S.fixloop(cfg, parts, ddir, d)
+    ok = True if COMMENT else S.fixloop(cfg, parts, ddir, d)
+    if COMMENT:
+        errs, _t = S.assemble(cfg); ok = not errs and open('/tmp/new/%s.bin' % prog, 'rb').read() == d
     if ok: break
     a = '/tmp/new/%s.bin' % prog
     ob = open(a, 'rb').read() if os.path.exists(a) else b''
