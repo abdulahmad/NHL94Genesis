@@ -1027,12 +1027,19 @@ LF64_37	btst.b	#$5,$FF800E.l
 	pea.l	.l3BC2(pc)
 	move.l	$D2(a6),-(sp)
 	rts
-.l3BC2	dc.b	$61,$00,$FB,$80,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$33,$FC	; a....9......f.3.
-	dc.b	$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F,$08,$39	; ./...&.........9
-	dc.b	$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF,$80,$0F	; ......g.........
-	dc.b	$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF,$80,$0E	; .........9......
-	dc.b	$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02,$00,$FF	; f...............
-	dc.b	$80,$0F	; ..
+.l3BC2	bsr.w	LF64Sub7
+.l3BC6	btst.b	#$4,$FF800E.l
+	bne.b	.l3BC6
+	move.w	#$2F,$FF8026.l
+	bset.b	#$3,$FF800F.l
+.l3BE0	btst.b	#$3,$FF800E.l
+	beq.b	.l3BE0
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.l3BFA	btst.b	#$3,$FF800E.l
+	bne.b	.l3BFA
+	bclr.b	#$4,$FF800F.l
+	bclr.b	#$2,$FF800F.l
 .l3C14	rts
 ; Turns a linear cell index in d0 into a nametable address (40 columns).
 TilemapAddr	movem.l	d0-d2/a0-a1/a5,-(sp)

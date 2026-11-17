@@ -1,7 +1,6 @@
 GetDataSub1	move.l	$4(sp),d0
 	move.l	$8(sp),d1
-; Unsigned 32-bit multiply.
-LongMulU	move.l	d0,-(sp)
+GetData_14	move.l	d0,-(sp)
 GetDataSub2	mulu.w	d1,d0
 	movea.l	d0,a0
 GetDataSub3	move.l	d1,d0
@@ -18,14 +17,12 @@ GetDataSub5	swap	d0
 	rts
 	dc.b	$22,$2F,$00,$04	; "/..
 GetDataSub6	move.l	$8(sp),d0
-; Unsigned 32-bit divide stub.
-LongDivUStub	lea.l	.l2663E(pc),a0
+GetData_15	lea.l	.l2663E(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .l2663E	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-; Unsigned 32-bit remainder stub.
-LongModUStub	lea.l	.l26662(pc),a0
+GetData_16	lea.l	.l26662(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .l26662	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.

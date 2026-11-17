@@ -9,7 +9,7 @@
 Set1MFlag_7	movem.l	d1/a0-a2,-(sp)
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
-	lea.l	Long4(pc),a2
+	lea.l	Set1MFlag_42(pc),a2
 	adda.l	#$4,a1
 	move.l	a1,(a2)
 	move.w	#$100,$A11100.l

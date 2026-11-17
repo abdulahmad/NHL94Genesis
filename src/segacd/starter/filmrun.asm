@@ -80,9 +80,9 @@ RemoveIrqHook1	movea.l	RestoreBios_108(pc),a0
 	move.w	(sp)+,sr
 	rts
 RestoreBios_111	movem.l	d0/a0,-(sp)
-	lea.l	Long3(pc),a0
+	lea.l	RestoreBios_98(pc),a0
 	addq.l	#$1,(a0)
-	move.l	Long6(pc),d0
+	move.l	RestoreBios_105(pc),d0
 	beq.b	.l251A4
 	movea.l	d0,a0
 	jsr	(a0)

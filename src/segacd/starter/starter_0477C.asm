@@ -48,7 +48,7 @@ NumStr	link	a6,#$FFF0
 	clr.b	(a4,d0.w)
 .l4824	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	LongModUStub(pc)
+	jsr	GetData_16(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -56,7 +56,7 @@ NumStr	link	a6,#$FFF0
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	LongDivUStub(pc)
+	jsr	GetData_15(pc)
 	move.l	d0,d6
 	bne.b	.l4824
 	bra.b	.l484C

@@ -46,7 +46,7 @@ FilmOpen	link	a6,#$FFFC
 	dc.w	$D0BC
 	dc.l	$000007FF
 	move.l	#$800,d1
-	jsr	LongDivUStub(pc)
+	jsr	GetData_15(pc)
 	move.l	d0,d6
 	moveq	#$1,d0
 	cmp.l	d6,d0

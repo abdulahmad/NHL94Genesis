@@ -186,6 +186,17 @@ def main():
     F.find_code_seeded(d, base, link, cov, insns, cfg["string_calls"])
     F.find_code_seeded(d, base, sorted(seeds), cov, insns, cfg["string_calls"])
     F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
+    # `pea label(pc)` pushes a return address: the label is code
+    pea_t = []
+    for p0 in list(insns):
+        g0 = F.decode_at(d, p0, base)
+        if g0 and g0.mnemonic.startswith("pea") and "(pc)" in g0.op_str:
+            m0 = re.search(r"\$([0-9a-f]+)", g0.op_str)
+            if m0 and 0 <= int(m0.group(1), 16) - base < n and not cov[int(m0.group(1), 16) - base]:
+                pea_t.append(int(m0.group(1), 16) - base)
+    if pea_t:
+        F.find_code_seeded(d, base, sorted(set(pea_t)), cov, insns, cfg["string_calls"])
+        F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
     print("gap code: %d instructions" % len(insns), flush=True)
 
     # pointer tables in the gaps: runs of 3 or more longs that each point at an instruction we found

@@ -248,7 +248,7 @@ DispatchTailSub15	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$61,$00,$BF,$CE,$60,$00,$F5,$6C,$4E,$75	; a...`..lNu
 DispatchTail_69	dc.b	$60,$00,$00,$8E	; `...
 DispatchTail_70	dcb.b	$8C,0
-DispatchTailSub16	lea.l	Long1(pc),a0
+DispatchTailSub16	lea.l	DispatchTail_71(pc),a0
 	move.l	$4(sp),(a0)
 	lea.l	.lFF410C(pc),a0
 	move.l	$FFFFFD08.w,(a0)
@@ -267,8 +267,7 @@ DispatchTailSub16	lea.l	Long1(pc),a0
 	move.w	d0,sr
 	rts
 .lFF410C	dc.b	$00,$00,$00,$00	; ....
-; Zero-filled work storage (4 bytes).
-Long1	dc.b	$00,$00,$00,$00	; ....
+DispatchTail_71	dc.b	$00,$00,$00,$00	; ....
 DispatchTailSub17	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
@@ -327,7 +326,7 @@ DispatchTailSub17	movea.l	#$C00000,a0
 DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
-	lea.l	Word1(pc),a2
+	lea.l	DispatchTail_73(pc),a2
 	tst.w	(a2)
 	beq.w	.l427E
 	movea.l	#$C00000,a0
@@ -382,27 +381,23 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 .l426C	move.w	(a2)+,(a0)
 	dbra	d5,.l426C
 	dbra	d7,.l4258
-.l4276	lea.l	Word2(pc),a2
+.l4276	lea.l	DispatchTail_74(pc),a2
 	eori.w	#$1,(a2)
 .l427E	lea.l	DispatchTail_70(pc),a0
 	addq.l	#$1,(a0)
-	move.l	Long1(pc),d0
+	move.l	DispatchTail_71(pc),d0
 	beq.b	.l428E
 	movea.l	d0,a0
 	jsr	(a0)
 .l428E	movem.l	(sp)+,d0-d7/a0-a5
 	rte
-; Zero-filled work storage (2 bytes).
-Word1	dc.b	$00,$00	; ..
-; Zero-filled work storage (2 bytes).
-Word2	dc.b	$00,$00	; ..
-; Zero-filled work storage (4 bytes).
-Long2	dc.b	$00,$00,$00,$00	; ....
+DispatchTail_73	dc.b	$00,$00	; ..
+DispatchTail_74	dc.b	$00,$00	; ..
+DispatchTail_75	dc.b	$00,$00,$00,$00	; ....
 DispatchTail_76	dcb.b	$80,0
 DispatchTail_77	dc.b	$00,$00,$E0,$00	; ....
 .lFF4320	dc.b	$00,$00,$00,$80	; ....
-; Zero-filled work storage (4 bytes).
-Long3	dc.b	$00,$00,$00,$00	; ....
+DispatchTail_78	dc.b	$00,$00,$00,$00	; ....
 DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
 DispatchTail_80	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
@@ -435,7 +430,7 @@ DrawTextToPlane_B	link	a6,#$0
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-.l4D84	move.w	Word1(pc),d0
+.l4D84	move.w	DispatchTail_73(pc),d0
 	bne.b	.l4D84
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
@@ -448,7 +443,7 @@ DrawTextToPlane_B	link	a6,#$0
 	move.w	#$3FF,d1
 .l4DAA	move.l	d0,(a0)
 	dbra	d1,.l4DAA
-	lea.l	Word2(pc),a0
+	lea.l	DispatchTail_74(pc),a0
 	move.w	#$1,(a0)
 	lea.l	DispatchTail_76(pc),a0
 	move.l	#$EEE,(a0)+
@@ -459,7 +454,7 @@ DrawTextToPlane_B	link	a6,#$0
 	clr.l	(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
-	lea.l	Word1(pc),a0
+	lea.l	DispatchTail_73(pc),a0
 	move.w	#$1,(a0)
 .l4DD8	move.w	(a0),d0
 	bne.b	.l4DD8
@@ -468,7 +463,7 @@ DrawTextToPlane_B	link	a6,#$0
 ; Second copy of DrawTextBuffer.
 DrawTextBuffer_B	link	a6,#$0
 DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
-	lea.l	Word1(pc),a2
+	lea.l	DispatchTail_73(pc),a2
 .l4DEC	tst.w	(a2)
 	bne.b	.l4DEC
 	movea.l	#$C00000,a0
@@ -481,7 +476,7 @@ DispatchTail_82	movea.l	$14(a6),a1
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
-	move.w	Word2(pc),d1
+	move.w	DispatchTail_74(pc),d1
 	bne.b	DispatchTail_84
 	moveq	#$0,d0
 	move.w	d6,d0
@@ -491,7 +486,7 @@ DispatchTail_83	adda.l	d0,a5
 	adda.l	d0,a4
 DispatchTail_84	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	lea.l	Long2(pc),a2
+	lea.l	DispatchTail_75(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
@@ -506,7 +501,7 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.l4E42
-DispatchTailSub21	lea.l	Long3(pc),a3
+DispatchTailSub21	lea.l	DispatchTail_78(pc),a3
 	move.l	d6,(a3)
 	lea.l	DispatchTail_79(pc),a3
 	move.l	d7,(a3)
@@ -564,7 +559,7 @@ DispatchTail_85	dbra	d5,DispatchTailSub22
 	move.l	(a1)+,(a0)
 .l4EE0	dbra	d4,.l4ED0
 .l4EE4	dbra	d7,.l4ECC
-DispatchTail_86	lea.l	Word1(pc),a2
+DispatchTail_86	lea.l	DispatchTail_73(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
@@ -780,7 +775,7 @@ NumStr	link	a6,#$FFF0
 	clr.b	(a4,d0.w)
 .l543C	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	LongModU_B(pc)
+	jsr	Set1MFlag_2(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -788,7 +783,7 @@ NumStr	link	a6,#$FFF0
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	LongDivU_B(pc)
+	jsr	Set1MFlag_1(pc)
 	move.l	d0,d6
 	bne.b	.l543C
 	bra.b	.l5464
@@ -980,14 +975,12 @@ Set1MFlag	link	a6,#$0
 	rts
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
-; Second copy of LongDivU.
-LongDivU_B	lea.l	.lFF570C(pc),a0
+Set1MFlag_1	lea.l	.lFF570C(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF570C	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-; Second copy of LongModU.
-LongModU_B	lea.l	.lFF5730(pc),a0
+Set1MFlag_2	lea.l	.lFF5730(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF5730	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -1082,13 +1075,26 @@ SetTextVector	lea.l	$FF485E.l,a0
 	bsr.w	Z80CommandSwitch
 	move.w	(sp)+,sr
 	rts
-	dc.b	$13,$F9,$00,$A1,$20,$28,$00,$A1,$00,$03,$4E,$75,$13,$F9,$00,$A1	; .... (....Nu....
-	dc.b	$20,$28,$00,$A1,$00,$05,$4E,$75,$13,$F9,$00,$A1,$00,$03,$00,$A1	;  (....Nu........
-	dc.b	$20,$18,$4E,$75,$13,$F9,$00,$A1,$00,$05,$00,$A1,$20,$18,$4E,$75	;  .Nu........ .Nu
-	dc.b	$33,$F9,$00,$A1,$20,$28,$00,$C0,$00,$04,$4E,$75,$40,$E7,$46,$FC	; 3... (....Nu@.F.
-	dc.b	$27,$00,$20,$7C,$00,$C0,$00,$00,$23,$FC,$00,$00,$00,$20,$00,$C0	; .. |....#.... ..
-	dc.b	$00,$04,$20,$3C,$00,$00,$00,$3F,$43,$F9,$00,$FF,$6D,$04,$32,$D0	; .. <...?C...m.2.
-	dc.b	$51,$C8,$FF,$FC,$46,$DF,$4E,$75	; Q...F.Nu
+	move.b	$A12028.l,$A10003.l
+	rts
+	move.b	$A12028.l,$A10005.l
+	rts
+	move.b	$A10003.l,$A12018.l
+	rts
+	move.b	$A10005.l,$A12018.l
+	rts
+	move.w	$A12028.l,$C00004.l
+	rts
+	move.w	sr,-(sp)
+	move.w	#$2700,sr
+	movea.l	#$C00000,a0
+	move.l	#$20,$C00004.l
+	move.l	#$3F,d0
+	lea.l	$FF6D04.l,a1
+.l59DA	move.w	(a0),(a1)+
+	dbra	d0,.l59DA
+	move.w	(sp)+,sr
+	rts
 ; Sets the flag at $FF6D84 to 1 if it is clear.
 SetFlagOnce	tst.w	$FF6D84.l
 	bne.w	.lFF59F8

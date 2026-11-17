@@ -137,7 +137,7 @@ NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	clr.b	(a4,d0.w)
 .lFF31FC	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	LongModU(pc)
+	jsr	DispatchTail_63(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -145,7 +145,7 @@ NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	LongDivU(pc)
+	jsr	DispatchTail_62(pc)
 	move.l	d0,d6
 	bne.b	.lFF31FC
 	bra.b	DispatchTail_42

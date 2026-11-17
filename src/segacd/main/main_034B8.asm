@@ -1,13 +1,11 @@
 DispatchTailSub1	move.l	$4(sp),d1
 	move.l	$8(sp),d0
-; Unsigned 32-bit divide stub (divu.l d1,d0).
-LongDivU	lea.l	.lFF34CC(pc),a0
+DispatchTail_62	lea.l	.lFF34CC(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF34CC	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-; Unsigned 32-bit remainder stub.
-LongModU	lea.l	.lFF34F0(pc),a0
+DispatchTail_63	lea.l	.lFF34F0(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF34F0	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -233,14 +231,31 @@ VdpSetCramWriteAddr	movem.w	d0,-(sp)
 	rts
 	bsr.w	GiveWordRamToSub
 	rts
-	dc.b	$61,$00,$FF,$02,$33,$F9,$00,$23,$BC,$88,$00,$C0,$00,$04,$33,$F9	; a...3..#......3.
-	dc.b	$00,$23,$BC,$8A,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$8C,$00,$C0	; .#......3..#....
-	dc.b	$00,$04,$33,$F9,$00,$23,$BC,$8E,$00,$C0,$00,$04,$33,$F9,$00,$23	; ..3..#......3..#
-	dc.b	$BC,$90,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$92,$00,$C0,$00,$04	; ......3..#......
-	dc.b	$33,$F9,$00,$23,$BC,$94,$00,$C0,$00,$04,$43,$F9,$00,$C0,$00,$04	; 3..#......C.....
-	dc.b	$23,$F9,$00,$23,$BC,$9E,$00,$FF,$6C,$E8,$32,$B9,$00,$FF,$6C,$EA	; #..#....l.2...l.
-	dc.b	$32,$B9,$00,$FF,$6C,$E8,$3F,$39,$00,$C0,$00,$04,$08,$2F,$00,$01	; 2...l.?9...../..
-	dc.b	$00,$01,$54,$4F,$66,$00,$FF,$F0,$33,$FC,$81,$64,$00,$C0,$00,$04	; ..TOf...3..d....
-	dc.b	$43,$F9,$00,$C0,$00,$00,$28,$39,$00,$23,$BC,$9A,$E5,$84,$E4,$4C	; C.....(9.#.....L
-	dc.b	$00,$44,$40,$00,$48,$44,$02,$44,$00,$03,$23,$44,$00,$04,$22,$B9	; .D@.HD.D..#D..".
-	dc.b	$00,$23,$BC,$96,$61,$00,$FE,$6A,$4E,$75	; .#..a..jNu
+	bsr.w	WaitDmnaClear
+	move.w	$23BC88.l,$C00004.l
+	move.w	$23BC8A.l,$C00004.l
+	move.w	$23BC8C.l,$C00004.l
+	move.w	$23BC8E.l,$C00004.l
+	move.w	$23BC90.l,$C00004.l
+	move.w	$23BC92.l,$C00004.l
+	move.w	$23BC94.l,$C00004.l
+	lea.l	$C00004.l,a1
+	move.l	$23BC9E.l,$FF6CE8.l
+	move.w	$FF6CEA.l,(a1)
+	move.w	$FF6CE8.l,(a1)
+.l3AF8	move.w	$C00004.l,-(sp)
+	btst.b	#$1,$1(sp)
+	addq.w	#$2,sp
+	bne.w	.l3AF8
+	move.w	#$8164,$C00004.l
+	lea.l	$C00000.l,a1
+	move.l	$23BC9A.l,d4
+	asl.l	#$2,d4
+	lsr.w	#$2,d4
+	ori.w	#$4000,d4
+	swap	d4
+	andi.w	#$3,d4
+	move.l	d4,$4(a1)
+	move.l	$23BC96.l,(a1)
+	bsr.w	GiveWordRamToSub
+	rts
