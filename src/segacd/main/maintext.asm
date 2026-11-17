@@ -9,20 +9,20 @@ DoDrawTextCommand_A	; Sierra C function name tag: DoDrawTextCommand (first copy 
 	movem.l	d6-d7/a4,-(sp)
 	lea.l	-$100(a6),a4
 	clr.w	d6
-	bra.b	DispatchTail_29
-DispatchTail_28	cmpi.b	#$1,d7
-	bne.b	.lFF304A
+	bra.b	.next2
+.loop	cmpi.b	#$1,d7
+	bne.b	.next
 	move.w	d6,d0
 	addq.w	#$1,d6
 	clr.b	(a4,d0.w)
-	bra.b	DispatchTail_30
-.lFF304A	move.w	d6,d0
+	bra.b	.next3
+.next	move.w	d6,d0
 	addq.w	#$1,d6
 	move.b	d7,(a4,d0.w)
-DispatchTail_29	jsr	GetCommandFromSub_A(pc)
+.next2	jsr	GetCommandFromSub_A(pc)
 	move.b	d0,d7
-	bne.b	DispatchTail_28
-DispatchTail_30	move.l	a4,-(sp)
+	bne.b	.loop
+.next3	move.l	a4,-(sp)
 	jsr	aprint_A(pc)
 	addq.w	#$4,sp
 	movem.l	-$10C(a6),d6-d7/a4
@@ -38,8 +38,8 @@ DoMoviePlayBack_A	; Sierra C function name tag: DoMoviePlayBack (first copy of t
 	move.l	(a4),d5
 	move.l	$4(a4),d6
 	move.l	$8(a4),d7
-	bra.b	DispatchTail_33
-DispatchTail_32	moveq	#$1,d0
+	bra.b	.next
+.loop	moveq	#$1,d0
 	move.l	d0,-(sp)
 	jsr	Set1MFlag_A(pc)
 	move.l	#$200000,-(sp)
@@ -51,9 +51,9 @@ DispatchTail_32	moveq	#$1,d0
 	move.l	d0,-(sp)
 	jsr	Set1MFlag_A(pc)
 	addq.w	#$8,sp
-DispatchTail_33	jsr	GetCommandFromSub_A(pc)
+.next	jsr	GetCommandFromSub_A(pc)
 	cmpi.w	#$2,d0
-	beq.b	DispatchTail_32
+	beq.b	.loop
 	movem.l	-$10(a6),d5-d7/a4
 	unlk	a6
 	rts
@@ -67,26 +67,26 @@ MAINCODE_A	; Sierra C function name tag: MAINCODE (first copy of the module)
 	pea.l	LFF315A(pc)
 	jsr	aprint_A(pc)
 	addq.w	#$4,sp
-	bra.b	DispatchTail_36
-DispatchTail_35	move.w	d7,d0
+	bra.b	.next4
+.loop	move.w	d7,d0
 	subq.w	#$1,d0
-	beq.b	.lFF3104
+	beq.b	.next
 	subq.w	#$2,d0
-	beq.b	.lFF310A
-	bra.b	.lFF3110
-.lFF3104	jsr	DoDrawTextCommand_A(pc)
-	bra.b	DispatchTail_36
-.lFF310A	jsr	DoMoviePlayBack_A(pc)
-	bra.b	DispatchTail_37
-.lFF3110	ext.l	d7
+	beq.b	.next2
+	bra.b	.next3
+.next	jsr	DoDrawTextCommand_A(pc)
+	bra.b	.next4
+.next2	jsr	DoMoviePlayBack_A(pc)
+	bra.b	.next5
+.next3	ext.l	d7
 	move.l	d7,-(sp)
 	pea.l	LFF314E(pc)
 	jsr	aprint_A(pc)
 	addq.w	#$8,sp
-DispatchTail_36	jsr	GetCommandFromSub_A(pc)
+.next4	jsr	GetCommandFromSub_A(pc)
 	move.w	d0,d7
-	bne.b	DispatchTail_35
-DispatchTail_37	pea.l	LFF3144(pc)
+	bne.b	.loop
+.next5	pea.l	LFF3144(pc)
 	jsr	aprint_A(pc)
 	addq.w	#$4,sp
 	move.l	-$4(a6),d7
@@ -117,10 +117,10 @@ drawprint_A	; Sierra C function name tag: drawprint (first copy of the module)
 	lea.l	DispatchTail_12(pc),a0
 	moveq	#$18,d0
 	cmp.l	$60(a0),d0
-	bgt.b	.lFF31CA
+	bgt.b	.next
 	lea.l	DispatchTail_12(pc),a0
 	subi.l	#$14,$60(a0)
-.lFF31CA	jsr	ReDraw_A(pc)
+.next	jsr	ReDraw_A(pc)
 	unlk	a6
 	rts
 ; drawprint
@@ -135,7 +135,7 @@ NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	move.w	d7,d0
 	addq.w	#$1,d7
 	clr.b	(a4,d0.w)
-.lFF31FC	move.l	d6,d0
+.loop	move.l	d6,d0
 	moveq	#$A,d1
 	jsr	DispatchTail_63(pc)
 	moveq	#$30,d1
@@ -147,12 +147,12 @@ NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	moveq	#$A,d1
 	jsr	DispatchTail_62(pc)
 	move.l	d0,d6
-	bne.b	.lFF31FC
-	bra.b	DispatchTail_42
-DispatchTail_41	subq.w	#$1,d7
+	bne.b	.loop
+	bra.b	.next
+.loop2	subq.w	#$1,d7
 	move.b	(a4,d7.w),(a3)+
-DispatchTail_42	tst.w	d7
-	bne.b	DispatchTail_41
+.next	tst.w	d7
+	bne.b	.loop2
 	movem.l	-$20(a6),d6-d7/a3-a4
 	unlk	a6
 	rts
@@ -168,26 +168,26 @@ HexStr_A	; Sierra C function name tag: HexStr (first copy of the module)
 	move.l	d4,d7
 	subq.l	#$1,d7
 	moveq	#$0,d3
-	bra.b	DispatchTail_45
-DispatchTail_44	moveq	#$F,d6
+	bra.b	.next3
+.loop	moveq	#$F,d6
 	and.l	d5,d6
 	asr.l	#$4,d5
 	moveq	#$9,d0
 	cmp.l	d6,d0
-	blt.b	.lFF3272
+	blt.b	.next
 	move.b	d6,d0
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.b	d0,(a4,d7.l)
-	bra.b	.lFF327C
-.lFF3272	move.b	d6,d0
+	bra.b	.next2
+.next	move.b	d6,d0
 	moveq	#-55,d1
 	sub.b	d1,d0
 	move.b	d0,(a4,d7.l)
-.lFF327C	move.l	d7,d0
+.next2	move.l	d7,d0
 	subq.l	#$1,d7
-DispatchTail_45	cmp.l	d7,d3
-	ble.b	DispatchTail_44
+.next3	cmp.l	d7,d3
+	ble.b	.loop
 	clr.b	(a4,d4.w)
 	movem.l	-$18(a6),d3-d7/a4
 	unlk	a6
@@ -198,18 +198,18 @@ aprint_A	; Sierra C function name tag: aprint (first copy of the module)
 	link	a6,#$FED8
 	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
-	bra.w	DispatchTail_58
-DispatchTail_47	cmpi.b	#$25,d6
-	beq.b	.lFF32B8
+	bra.w	.next11
+.loop	cmpi.b	#$25,d6
+	beq.b	.next
 	move.b	d6,(a3)+
-	bra.w	DispatchTail_57
-.lFF32B8	moveq	#$8,d4
+	bra.w	.next10
+.next	moveq	#$8,d4
 	movea.l	$8(a6),a0
 	addq.l	#$1,$8(a6)
 	move.b	(a0),d6
 	move.b	d6,d0
 	subi.b	#$2A,d0
-	bne.b	.lFF32E4
+	bne.b	.next2
 	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.w	-$2(a0),d4
@@ -217,21 +217,21 @@ DispatchTail_47	cmpi.b	#$25,d6
 	addq.l	#$1,$8(a6)
 	movea.l	d0,a0
 	move.b	(a0),d6
-.lFF32E4	move.b	d6,d0
+.next2	move.b	d6,d0
 	subi.b	#$25,d0
-	beq.w	DispatchTail_56
+	beq.w	.next9
 	subi.b	#$2E,d0
-	beq.b	DispatchTail_53
+	beq.b	.next7
 	subq.b	#$5,d0
-	beq.b	DispatchTail_50
+	beq.b	.next5
 	subi.b	#$C,d0
-	beq.b	.lFF330C
+	beq.b	.next3
 	subi.b	#$F,d0
-	beq.b	DispatchTail_53
+	beq.b	.next7
 	subq.b	#$5,d0
-	beq.b	DispatchTail_50
-	bra.w	DispatchTail_57
-.lFF330C	addq.l	#$4,-$4(a6)
+	beq.b	.next5
+	bra.w	.next10
+.next3	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),d5
 	move.l	a4,-(sp)
@@ -241,14 +241,14 @@ DispatchTail_47	cmpi.b	#$25,d6
 	jsr	NumStr_A(pc)
 	clr.w	d7
 	lea.l	$C(sp),sp
-	bra.b	DispatchTail_49
-DispatchTail_48	move.b	(a4,d7.w),(a3)+
+	bra.b	.next4
+.loop2	move.b	(a4,d7.w),(a3)+
 	move.w	d7,d0
 	addq.w	#$1,d7
-DispatchTail_49	tst.b	(a4,d7.w)
-	bne.b	DispatchTail_48
-	bra.b	DispatchTail_57
-DispatchTail_50	addq.l	#$4,-$4(a6)
+.next4	tst.b	(a4,d7.w)
+	bne.b	.loop2
+	bra.b	.next10
+.next5	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),d5
 	move.l	a4,-(sp)
@@ -258,36 +258,36 @@ DispatchTail_50	addq.l	#$4,-$4(a6)
 	jsr	HexStr_A(pc)
 	clr.w	d7
 	lea.l	$C(sp),sp
-	bra.b	DispatchTail_52
-DispatchTail_51	move.b	(a4,d7.w),(a3)+
+	bra.b	.next6
+.loop3	move.b	(a4,d7.w),(a3)+
 	move.w	d7,d0
 	addq.w	#$1,d7
-DispatchTail_52	tst.b	(a4,d7.w)
-	bne.b	DispatchTail_51
-	bra.b	DispatchTail_57
-DispatchTail_53	addq.l	#$4,-$4(a6)
+.next6	tst.b	(a4,d7.w)
+	bne.b	.loop3
+	bra.b	.next10
+.next7	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),-$8(a6)
-	bra.b	DispatchTail_55
-DispatchTail_54	move.l	-$8(a6),d0
+	bra.b	.next8
+.loop4	move.l	-$8(a6),d0
 	addq.l	#$1,-$8(a6)
 	movea.l	d0,a0
 	move.b	(a0),(a3)+
-DispatchTail_55	movea.l	-$8(a6),a0
+.next8	movea.l	-$8(a6),a0
 	tst.b	(a0)
-	bne.b	DispatchTail_54
-	bra.b	DispatchTail_57
-DispatchTail_56	move.b	d6,(a3)+
-DispatchTail_57	move.l	$8(a6),d0
+	bne.b	.loop4
+	bra.b	.next10
+.next9	move.b	d6,(a3)+
+.next10	move.l	$8(a6),d0
 	addq.l	#$1,$8(a6)
 	movea.l	d0,a0
 	move.b	(a0),d6
-	bne.w	DispatchTail_47
+	bne.w	.loop
 	clr.b	(a3)+
 	pea.l	-$108(a6)
 	jsr	drawprint_A(pc)
 	addq.w	#$4,sp
-DispatchTail_58	movem.l	-$140(a6),d4-d7/a3-a4
+.next11	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
 	rts
 ; aprint
@@ -326,11 +326,11 @@ GetCommandFromSub_A	; Sierra C function name tag: GetCommandFromSub (first copy 
 	movem.l	d7/a3-a4,-(sp)
 	movea.l	#$A12010,a3
 	movea.l	#$A12020,a4
-.lFF346A	move.w	(a4),d7
-	beq.b	.lFF346A
+.loop	move.w	(a4),d7
+	beq.b	.loop
 	move.w	#$1,(a3)
-.lFF3472	tst.w	(a4)
-	bne.b	.lFF3472
+.loop2	tst.w	(a4)
+	bne.b	.loop2
 	clr.w	(a3)
 	move.w	d7,d0
 	movem.l	-$C(a6),d7/a3-a4

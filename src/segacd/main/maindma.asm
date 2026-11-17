@@ -12,8 +12,8 @@ ProcessTileCmdList	movem.l	d0-d1/a0,-(sp)
 	move.w	d4,d1
 	asl.w	#$5,d1
 	move.w	(a0)+,d0
-	beq.b	.lFF02B0
-	bmi.b	.lFF02A6
+	beq.b	.next2
+	bmi.b	.next
 	add.w	d0,d4
 	asl.w	#$4,d0
 	pea.l	$FF12B0.l
@@ -21,10 +21,10 @@ ProcessTileCmdList	movem.l	d0-d1/a0,-(sp)
 	beq.w	CopyToVdpLocked
 	movea.l	$FF2912.l,a1
 	bra.w	LoadTilesLocked
-.lFF02A6	andi.w	#$7FFF,d0
+.next	andi.w	#$7FFF,d0
 	add.w	d0,d4
 	bsr.w	PackGlyphBits
-.lFF02B0	movem.l	(sp)+,d0-d1/a0
+.next2	movem.l	(sp)+,d0-d1/a0
 	rts
 ; Interrupts off, VDP busy flag set, then loads d1 blocks from a0.
 LoadTilesLocked	move.w	sr,-(sp)
@@ -36,23 +36,23 @@ LoadTilesLocked	move.w	sr,-(sp)
 	movea.l	a0,a2
 	bsr.w	VdpSetWriteAddr
 	subq.w	#$1,d1
-.lFF02D8	moveq	#$3,d0
+.loop	moveq	#$3,d0
 	move.w	(a2)+,d2
 	clr.w	d3
-.lFF02DE	move.w	d2,d4
+.loop2	move.w	d2,d4
 	andi.w	#$F,d4
 	lsr.w	#$1,d4
 	move.b	(a1,d4.w),d4
 	btst	#$0,d2
-	bne.w	.lFF02F4
+	bne.w	.next
 	lsr.w	#$4,d4
-.lFF02F4	andi.w	#$F,d4
+.next	andi.w	#$F,d4
 	or.b	d4,d3
 	ror.w	#$4,d3
 	ror.w	#$4,d2
-	dbra	d0,.lFF02DE
+	dbra	d0,.loop2
 	move.w	d3,(a0)
-	dbra	d1,.lFF02D8
+	dbra	d1,.loop
 	movem.l	(sp)+,d0-d4/a0-a2
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,sr
@@ -60,16 +60,16 @@ LoadTilesLocked	move.w	sr,-(sp)
 ; Expands tile data from a3 into 32-byte tiles at a1 (d3 selects the format).
 ExpandTileData	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	d1,d0
-	bne.w	.lFF0324
+	bne.w	.next
 	move.w	#$100,d0
-.lFF0324	btst	#$0,d3
-	beq.w	.lFF037A
+.next	btst	#$0,d3
+	beq.w	.next2
 	lsr.w	#$5,d0
 	subq.w	#$1,d0
-.lFF0330	lea.l	$20(a1),a1
+.loop	lea.l	$20(a1),a1
 	move.b	(a3)+,d1
-	dbne	d0,.lFF0330
-	beq.w	.lFF03A4
+	dbne	d0,.loop
+	beq.w	.next4
 	add.w	d4,d1
 	subq.w	#$1,d1
 	asl.w	#$5,d1
@@ -90,21 +90,21 @@ ExpandTileData	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
-	dbra	d0,.lFF0330
-	bra.w	.lFF03A4
-.lFF037A	lsr.w	#$1,d0
+	dbra	d0,.loop
+	bra.w	.next4
+.next2	lsr.w	#$1,d0
 	move.w	d3,d1
 	add.w	d0,d3
 	add.w	d0,d3
 	movea.l	a1,a0
 	tst.l	$FF2912.l
-	beq.w	.lFF039C
+	beq.w	.next3
 	movea.l	$FF2912.l,a1
 	bsr.w	LoadTilesLocked
-	bra.w	.lFF03A4
-.lFF039C	bsr.w	CopyToVdpLocked
-	bra.w	.lFF03A4
-.lFF03A4	movem.l	(sp)+,d0-d1/a0-a1
+	bra.w	.next4
+.next3	bsr.w	CopyToVdpLocked
+	bra.w	.next4
+.next4	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
@@ -112,8 +112,8 @@ ExpandTileData	movem.l	d0-d1/a0-a1,-(sp)
 	bsr.w	VdpSetWriteAddr
 	move.w	#$3FFF,d0
 	clr.l	d1
-.lFF03C4	move.l	d1,(a0)
-	dbra	d0,.lFF03C4
+.loop2	move.l	d1,(a0)
+	dbra	d0,.loop2
 	move.w	(sp)+,$23C6E8.l
 	rts
 ; CopyToVdp with the VDP busy flag set.
@@ -124,10 +124,10 @@ CopyToVdpLocked	move.w	$23C6E8.l,-(sp)
 	rts
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
-	bsr.w	.lFF0406
+	bsr.w	.next
 	move.w	(sp)+,$23C6E8.l
 	rts
-.lFF0406	lea.l	$23A450.l,a1
+.next	lea.l	$23A450.l,a1
 	move.w	(a1)+,d0
 	move.w	(a1)+,d1
 	movea.l	(a1)+,a0
@@ -137,26 +137,26 @@ CopyToVdp	movem.l	d2-d3/a1,-(sp)
 	move.w	d0,d2
 	add.w	d2,d2
 	add.w	a0,d2
-	bcc.w	.lFF044A
-	beq.w	.lFF044A
+	bcc.w	.next2
+	beq.w	.next2
 	lsr.w	#$1,d2
 	sub.w	d2,d0
 	movem.l	d0/a0,-(sp)
-	bsr.w	.lFF0446
+	bsr.w	.next
 	movem.l	(sp)+,d0/a0
 	add.w	d0,d0
 	add.w	d0,d1
 	adda.w	d0,a0
 	move.w	d2,d0
-	bra.w	.lFF044A
-.lFF0446	movem.l	d2-d3/a1,-(sp)
-.lFF044A	lea.l	$C00004.l,a1
+	bra.w	.next2
+.next	movem.l	d2-d3/a1,-(sp)
+.next2	lea.l	$C00004.l,a1
 	cmpa.l	#$200000,a0
-	blt.w	.lFF0466
+	blt.w	.next3
 	cmpa.l	#$240000,a0
-	bge.w	.lFF0466
+	bge.w	.next3
 	addq.l	#$2,a0
-.lFF0466	move.w	#$8154,(a1)
+.next3	move.w	#$8154,(a1)
 	move.w	#$8F02,(a1)
 	move.w	#$9300,d2
 	move.b	d0,d2
@@ -193,9 +193,9 @@ CopyToVdp	movem.l	d2-d3/a1,-(sp)
 	bsr.w	WaitVdpDmaDone
 	move.w	#$8164,(a1)
 	cmpa.l	#$200000,a0
-	blt.w	.lFF04FC
+	blt.w	.next4
 	cmpa.l	#$240000,a0
-	bge.w	.lFF04FC
+	bge.w	.next4
 	move.l	d3,d0
 	ori.w	#$4000,d0
 	swap	d0
@@ -203,5 +203,5 @@ CopyToVdp	movem.l	d2-d3/a1,-(sp)
 	move.l	d0,(a1)
 	subq.l	#$2,a0
 	move.l	(a0),-$4(a1)
-.lFF04FC	cmpa.w	#$0,a0
+.next4	cmpa.w	#$0,a0
 

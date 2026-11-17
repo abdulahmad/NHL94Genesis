@@ -14,11 +14,11 @@ FallDown
 	cmpi.w	#$136A,$58(a2)
 	beq.w	rtss2
 	cmpa.l	$1AD7E.l,a2
-	bne.w	.l1FA1A
+	bne.w	.next
 	cmpa.l	$1AD82.l,a3
-	bne.w	.l1FA1A
+	bne.w	.next
 	rts
-.l1FA1A	move.l	a2,$1AD7E.l
+.next	move.l	a2,$1AD7E.l
 	move.l	a3,$1AD82.l
 	btst	#$3,$64(a2)
 	bne.w	rtss2
@@ -26,45 +26,45 @@ FallDown
 	bne.w	rtss2
 	move.w	#$11E6,d1
 	btst	#$4,$64(a3)
-	bne.w	.l1FAC0
+	bne.w	.next2
 	cmpi.b	#$18,$71(a2)
-	blt.w	.l1FAC0
+	blt.w	.next2
 	tst.b	$5F(a2)
-	bne.w	.l1FAC0
-.l1FA5A	btst	#$7,$FF800E.l
-	bne.b	.l1FA5A
+	bne.w	.next2
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1FA74	btst	#$6,$FF800E.l
-	beq.b	.l1FA74
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1FA94	btst	#$6,$FF800E.l
-	bne.b	.l1FA94
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$F,d0
 	addi.w	#$10,d0
 	cmp.w	$32(a2),d0
-	ble.w	.l1FAC0
+	ble.w	.next2
 	move.b	#$3C,$5F(a2)
 	bra.w	FallDownSub3
-.l1FAC0	tst.w	$34(a3)
-	beq.w	.l1FB08
+.next2	tst.w	$34(a3)
+	beq.w	.next4
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a3)
-	beq.w	.l1FADC
+	beq.w	.next3
 	adda.w	#$366,a0
-.l1FADC	addi.w	#$1,$10(a0)
+.next3	addi.w	#$1,$10(a0)
 	clr.w	d0
 	move.b	$66(a3),d0
 	adda.w	d0,a0
 	addi.b	#$1,$11E(a0)
 	addi.w	#$1,$180EC.l
 	tst.b	$74(a3)
-	bne.w	.l1FB08
+	bne.w	.next4
 	addi.w	#$2,$180EC.l
-.l1FB08	move.b	#$78,$5E(a2)
+.next4	move.b	#$78,$5E(a2)
 	move.w	$0(a3),d0
 	sub.w	$0(a2),d0
 	move.w	$14(a3),d1
@@ -77,52 +77,52 @@ FallDown
 	beq.w	FallDownSub1
 	movem.l	d1-d4,-(sp)
 	move.w	$28(a2),d1
-	bpl.w	.l1FB48
+	bpl.w	.next5
 	neg.w	d1
-.l1FB48	move.w	$2A(a2),d2
-	bpl.w	.l1FB52
+.next5	move.w	$2A(a2),d2
+	bpl.w	.next6
 	neg.w	d2
-.l1FB52	move.w	$0(a2),d3
+.next6	move.w	$0(a2),d3
 	sub.w	$0(a3),d3
 	move.w	$14(a2),d4
 	sub.w	$14(a3),d4
 	cmpi.w	#$108,$14(a3)
-	bgt.w	.l1FBAC
+	bgt.w	.next9
 	cmpi.w	#$FEF8,$14(a3)
-	blt.w	.l1FBA2
+	blt.w	.next8
 	tst.w	$0(a3)
-	bpl.w	.l1FB90
+	bpl.w	.next7
 	tst.w	d3
-	bpl.w	.l1FBB6
+	bpl.w	.next10
 	cmpi.w	#$FFFD,d3
-	bgt.w	.l1FBB6
-	bra.w	.l1FBBE
-.l1FB90	tst.w	d3
-	bmi.w	.l1FBB6
+	bgt.w	.next10
+	bra.w	.next11
+.next7	tst.w	d3
+	bmi.w	.next10
 	cmpi.w	#$3,d3
-	blt.w	.l1FBB6
-	bra.w	.l1FBBE
-.l1FBA2	tst.w	d4
-	bpl.w	.l1FBB6
-	bra.w	.l1FBBE
-.l1FBAC	tst.w	d4
-	bmi.w	.l1FBB6
-	bra.w	.l1FBBE
-.l1FBB6	movem.l	(sp)+,d1-d4
+	blt.w	.next10
+	bra.w	.next11
+.next8	tst.w	d4
+	bpl.w	.next10
+	bra.w	.next11
+.next9	tst.w	d4
+	bmi.w	.next10
+	bra.w	.next11
+.next10	movem.l	(sp)+,d1-d4
 	bra.w	FallDownSub1
-.l1FBBE	movem.l	(sp)+,d1-d4
-	bra.w	.l1FBC6
-.l1FBC6	cmpi.w	#$10C,$14(a2)
-	bgt.w	.l1FBF2
+.next11	movem.l	(sp)+,d1-d4
+	bra.w	.next12
+.next12	cmpi.w	#$10C,$14(a2)
+	bgt.w	.next13
 	cmpi.w	#$FEF4,$14(a2)
-	blt.w	.l1FBF2
+	blt.w	.next13
 	cmpi.w	#$68,$0(a2)
-	bgt.w	.l1FBF2
+	bgt.w	.next13
 	cmpi.w	#$FF98,$0(a2)
-	blt.w	.l1FBF2
+	blt.w	.next13
 	bra.w	FallDownSub1
-.l1FBF2	cmpi.w	#$B,$52(a3)
-	bgt.w	.l1FC2E
+.next13	cmpi.w	#$B,$52(a3)
+	bgt.w	.next14
 	addi.w	#$A,$17CD8.l
 	addi.w	#$96,(Crowdlevel).l
 	move.w	d1,-(sp)
@@ -133,61 +133,61 @@ FallDown
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	move.w	(sp)+,d1
-.l1FC2E	movem.l	d0/a0,-(sp)
+.next14	movem.l	d0/a0,-(sp)
 	cmpi.w	#$10C,$14(a2)
-	bgt.w	.l1FC5E
+	bgt.w	.next16
 	cmpi.w	#$FEF4,$14(a2)
-	blt.w	.l1FC66
+	blt.w	.next17
 	tst.w	$0(a2)
-	bmi.w	.l1FC56
+	bmi.w	.next15
 	move.w	#$2,d0
-	bra.w	.l1FC6A
-.l1FC56	move.w	#$6,d0
-	bra.w	.l1FC6A
-.l1FC5E	move.w	#$0,d0
-	bra.w	.l1FC6A
-.l1FC66	move.w	#$4,d0
-.l1FC6A	add.w	d0,d0
+	bra.w	.next18
+.next15	move.w	#$6,d0
+	bra.w	.next18
+.next16	move.w	#$0,d0
+	bra.w	.next18
+.next17	move.w	#$4,d0
+.next18	add.w	d0,d0
 	movea.l	#$3AD3A,a0
 	move.w	(a0,d0.w),d1
 	move.w	$14(a2),$1937C.l
 	move.w	$0(a2),$1937E.l
 	cmpi.w	#$18CC,d1
-	bne.w	.l1FCC6
+	bne.w	.next19
 	cmpi.w	#$59,$14(a2)
-	bgt.w	.l1FCC6
+	bgt.w	.next19
 	cmpi.w	#$FFA7,$14(a2)
-	blt.w	.l1FCC6
+	blt.w	.next19
 	move.w	d0,-(sp)
 	move.w	#$7,d0
 	jsr	(StartArenaAnim).l
 	move.w	(sp)+,d0
 	move.w	#$193E,d1
 	btst	#$3,$4(a2)
-	beq.w	.l1FD1E
+	beq.w	.next22
 	move.w	#$1A00,d1
-	bra.w	.l1FD1E
-.l1FCC6	cmpi.w	#$17E8,d1
-	bne.w	.l1FCF8
+	bra.w	.next22
+.next19	cmpi.w	#$17E8,d1
+	bne.w	.next20
 	cmpi.w	#$38,$14(a2)
-	bgt.w	.l1FCF8
+	bgt.w	.next20
 	cmpi.w	#$FFC8,$14(a2)
-	blt.w	.l1FCF8
+	blt.w	.next20
 	move.w	#$1A00,d1
 	btst	#$3,$4(a2)
-	beq.w	.l1FD1E
+	beq.w	.next22
 	move.w	#$193E,d1
-	bra.w	.l1FD1E
-.l1FCF8	btst	#$3,$4(a2)
-	beq.w	.l1FD1E
+	bra.w	.next22
+.next20	btst	#$3,$4(a2)
+	beq.w	.next22
 	cmpi.w	#$17E8,d1
-	beq.w	.l1FD1A
+	beq.w	.next21
 	cmpi.w	#$18CC,d1
-	bne.w	.l1FD1E
+	bne.w	.next22
 	move.w	#$17E8,d1
-	bra.w	.l1FD1E
-.l1FD1A	move.w	#$18CC,d1
-.l1FD1E	clr.w	$28(a2)
+	bra.w	.next22
+.next21	move.w	#$18CC,d1
+.next22	clr.w	$28(a2)
 	clr.w	$2A(a2)
 	bset	#$5,$64(a2)
 	bset	#$0,$62(a2)
@@ -219,43 +219,43 @@ FallDownSub3
 	bsr.w	SetSPA
 	exg.l	a2,a3
 	tst.w	$34(a3)
-	beq.w	.l1FDC2
+	beq.w	.next
 	tst.w	$34(a2)
-	beq.w	.l1FDC2
+	beq.w	.next
 	addi.w	#$12C,(Crowdlevel).l
 	addi.w	#$F,$17CD8.l
-.l1FDC2	move.w	$17BE0.l,d0
+.next	move.w	$17BE0.l,d0
 	bmi.w	newcheck
 	cmp.w	$52(a2),d0
 	bne.w	newcheck
 	st.b	$17BE0.l
 	btst	#$4,$17F68.l
-	bne.w	.l1FE72
+	bne.w	.next3
 	cmpi.w	#$DD8,$58(a2)
-	bne.w	.l1FE72
+	bne.w	.next3
 	move.w	$54(a2),d0
 	andi.w	#$3,d0
-	bne.w	.l1FE72
+	bne.w	.next3
 	btst	#$4,$63(a2)
-	bne.w	.l1FE72
+	bne.w	.next3
 	move.l	#$A0,d0
 	bsr.w	randomd0
 	cmp.w	$32(a2),d0
-	bgt.w	.l1FE72
+	bgt.w	.next3
 	btst	#$0,$17F68.l
-	bne.w	.l1FE72
+	bne.w	.next3
 	exg.l	a2,a3
 	move.w	#$145C,d1
 	bsr.w	SetSPA
 	exg.l	a2,a3
 	bsr.w	setInjuryType
 	btst	#$5,$17F7A.l
-	bne.w	.l1FE4C
+	bne.w	.next2
 	exg.l	a2,a3
 	move.w	#$1AF4,d1
 	bsr.w	SetSPA
 	exg.l	a2,a3
-.l1FE4C	move.w	#$4,$1806A.l
+.next2	move.w	#$4,$1806A.l
 	moveq	#$14,d0
 	tst.w	$34(a3)
 	beq.w	AddPenalty2
@@ -264,11 +264,11 @@ FallDownSub3
 	moveq	#$12,d0
 	bsr.w	AddPenalty2
 	bra.w	Stop4Pen
-.l1FE72	move.w	#$B,-(sp)
+.next3	move.w	#$B,-(sp)
 	btst	#$6,$62(a2)
-	bne.w	.l1FE84
+	bne.w	.next4
 	move.w	#$C,(sp)
-.l1FE84	bsr.w	sfx
+.next4	bsr.w	sfx
 	rts
 setInjuryType						;determines if injury will be for period or game. a2 = player injured, a3
 									;= player checking. Marks a2 unavailable, pumps up the crowd, plays sfx
@@ -338,7 +338,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	cmp.w	d4,d2
 	bgt.w	.1
 	movea.l	#$17B00,a2
-	bsr.w	.l2001C
+	bsr.w	.next
 	bra.w	.2
 .0	neg.w	d5
 	cmp.w	d5,d3
@@ -349,7 +349,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	cmp.w	d4,d2
 	bgt.w	.1
 	movea.l	#$17A80,a2
-	bsr.w	.l2001C
+	bsr.w	.next
 	bra.w	.2
 .1	sub.w	d4,d2		;corner circle: d2/d3 = offset from the circle centre
 	sub.w	d5,d3
@@ -391,7 +391,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	cmp.w	d4,d2
 	ble.w	wallcollb
 	rts
-.l2001C	cmpi.w	#$D,$18(a3)
+.next	cmpi.w	#$D,$18(a3)
 	bgt.w	rtss2
 	cmpi.w	#$E,$52(a3)
 	bne.w	checkgoalp
@@ -413,44 +413,44 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	blt.w	rtss2
 	st.b	$17EEE.l
 	cmpi.w	#$D,$24(a3)
-	blt.w	.l20080
+	blt.w	.next2
 	move.w	$24(a3),$18(a3)
-	bra.w	.l20192
-.l20080	bclr	#$7,$62(a3)
+	bra.w	.next9
+.next2	bclr	#$7,$62(a3)
 	move.w	$17BE0.l,d0
-	bmi.w	.l200C2
+	bmi.w	.next4
 	st.b	$17BE0.l
 	asl.w	#$7,d0
 	movea.l	#$17480,a0
 	move.b	#$8,$5E(a0,d0.w)
 	move.w	$17B94.l,d1
 	btst	#$7,$62(a0,d0.w)
-	bne.w	.l200B6
+	bne.w	.next3
 	neg.w	d1
-.l200B6	tst.w	d1
-	bpl.w	.l200C2
+.next3	tst.w	d1
+	bpl.w	.next4
 	bset	#$7,$62(a3)
-.l200C2	move.w	#$FF00,d0
+.next4	move.w	#$FF00,d0
 	move.l	$14(a3),d1
 	sub.l	$20(a3),d1
 	asr.l	#$8,d1
-	beq.w	.l201A0
-	bmi.w	.l200DC
+	beq.w	.next10
+	bmi.w	.next5
 	neg.w	d0
 	neg.w	d5
-.l200DC	add.w	d3,d5
+.next5	add.w	d3,d5
 	move.l	$0(a3),d3
 	sub.l	$1C(a3),d3
 	asr.l	#$8,d3
 	muls.w	d3,d5
 	divs.w	d1,d5
-	bvs.w	.l201A0
+	bvs.w	.next10
 	sub.w	d5,d2
 	cmp.w	d4,d2
-	blt.w	.l201A0
+	blt.w	.next10
 	neg.w	d4
 	cmp.w	d4,d2
-	bgt.w	.l201A0
+	bgt.w	.next10
 	clr.w	d1
 	move.w	$14(a3),d3
 	eor.w	d0,d3
@@ -459,27 +459,27 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	btst	#$7,$62(a3)
 	bne.w	wallcoll
 	cmpi.w	#$D,$18(a3)
-	beq.w	.l20134
+	beq.w	.next6
 	subi.w	#$1,d4
 	cmp.w	d4,d2
-	bgt.w	.l20134
+	bgt.w	.next6
 	neg.w	d4
 	cmp.w	d4,d2
-	bge.w	.l201B8
-.l20134	bsr.w	ChkShotStat
+	bge.w	.next11
+.next6	bsr.w	ChkShotStat
 	move.w	#$25,-(sp)
 	btst	#$0,$17F68.l
-	bne.w	.l2015C
+	bne.w	.next7
 	move.w	#$8,(sp)
 	addi.w	#$12C,(Crowdlevel).l
 	addi.w	#$28,$17CD8.l
-.l2015C	bsr.w	sfx
+.next7	bsr.w	sfx
 	move.w	#$1000,d0
 	bsr.w	randomd0
 	tst.w	$14(a3)
-	bmi.w	.l20172
+	bmi.w	.next8
 	neg.w	d0
-.l20172	move.w	d0,$2A(a3)
+.next8	move.w	d0,$2A(a3)
 	move.w	#$1000,d0
 	bsr.w	randomd0s
 	move.w	d0,$28(a3)
@@ -487,21 +487,21 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bsr.w	randomd0s
 	move.w	d0,$2C(a3)
 	bra.w	puckflip
-.l20192	neg.w	$2C(a3)
+.next9	neg.w	$2C(a3)
 	bpl.w	rtss2
 	neg.w	$2C(a3)
 	rts
-.l201A0	clr.w	d0
+.next10	clr.w	d0
 	move.w	#$100,d1
 	move.w	$0(a3),d2
 	sub.w	$1C(a3),d2
 	bmi.w	wallcoll
 	neg.w	d1
 	bra.w	wallcoll
-.l201B8	btst	#$2,$17F70.l
-	beq.w	.l20250
+.next11	btst	#$2,$17F70.l
+	beq.w	.next18
 	btst	#$0,$17F78.l
-	bne.w	.l201F6
+	bne.w	.next12
 	movem.l	d0/a0,-(sp)
 	move.w	$19368.l,d0
 	asl.w	#$7,d0
@@ -509,34 +509,34 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	adda.w	d0,a0
 	btst	#$7,$62(a0)
 	movem.l	(sp)+,d0/a0
-	bne.w	.l20200
-	bra.w	.l2020E
-.l201F6	tst.w	$1A436.l
-	bne.w	.l2020E
-.l20200	tst.w	$17B94.l
+	bne.w	.next13
+	bra.w	.next14
+.next12	tst.w	$1A436.l
+	bne.w	.next14
+.next13	tst.w	$17B94.l
 	bmi.w	rtss2
-	bra.w	.l20218
-.l2020E	tst.w	$17B94.l
+	bra.w	.next15
+.next14	tst.w	$17B94.l
 	bpl.w	rtss2
-.l20218	bset	#$5,$17F72.l
+.next15	bset	#$5,$17F72.l
 	tst.w	$1A436.l
-	beq.w	.l20236
+	beq.w	.next16
 	addi.w	#$1,$1A418.l
-	bra.w	.l2023E
-.l20236	addi.w	#$1,$1A416.l
-.l2023E	bset	#$0,$17F7C.l
+	bra.w	.next17
+.next16	addi.w	#$1,$1A416.l
+.next17	bset	#$0,$17F7C.l
 	jsr	(EndPenaltyShotPlay).l
-	bra.w	.l2025C
-.l20250	btst	#$0,$17F68.l
+	bra.w	.next19
+.next18	btst	#$0,$17F68.l
 	bne.w	rtss2
-.l2025C	bset	#$0,$17F72.l
+.next19	bset	#$0,$17F72.l
 	bclr	#$3,$17F7C.l
 	bsr.w	ChkShotStat
 	jsr	$47DB0.l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0
-.l2027E	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.l2027E
+.loop	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.loop
 	move.w	(sp)+,d0
 	move.w	#$0,-(sp)
 	bsr.w	sfx
@@ -545,50 +545,50 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	tst.w	$14(a3)
-	bpl.w	.l202B4
+	bpl.w	.next20
 	exg.l	a1,a2
-.l202B4	btst	#$1,$17F68.l
-	beq.w	.l202C2
+.next20	btst	#$1,$17F68.l
+	beq.w	.next21
 	exg.l	a1,a2
-.l202C2	addi.w	#$1,$C(a2)
+.next21	addi.w	#$1,$C(a2)
 	btst	#$5,$17F72.l
-	beq.w	.l202E6
+	beq.w	.next22
 	btst	#$0,$17F78.l
-	bne.w	.l202E6
+	bne.w	.next22
 	addi.w	#$1,$364(a2)
-.l202E6	bclr	#$4,$17F78.l
-	beq.w	.l202F8
+.next22	bclr	#$4,$17F78.l
+	beq.w	.next23
 	addi.w	#$1,$35C(a2)
-.l202F8	btst	#$5,$17F6C.l
-	beq.w	.l2032E
+.next23	btst	#$5,$17F6C.l
+	beq.w	.next25
 	btst	#$6,$17F6C.l
-	bne.w	.l20324
+	bne.w	.next24
 	cmpa.l	#$186B2,a2
-	bne.w	.l2032E
-.l2031A	addi.w	#$1,$358(a2)
-	bra.w	.l2032E
-.l20324	cmpa.l	#$1834C,a2
-	beq.w	.l2031A
-.l2032E	movem.l	d0/a2,-(sp)
+	bne.w	.next25
+.loop2	addi.w	#$1,$358(a2)
+	bra.w	.next25
+.next24	cmpa.l	#$1834C,a2
+	beq.w	.loop2
+.next25	movem.l	d0/a2,-(sp)
 	move.w	$180E4.l,d0
 	add.w	d0,d0
 	adda.w	d0,a2
 	addi.w	#$1,$344(a2)
 	movem.l	(sp)+,d0/a2
 	bclr	#$7,$17F7C.l
-	beq.w	.l20358
+	beq.w	.next26
 	addi.w	#$1,$360(a2)
-.l20358	cmpa.l	#$1834C,a2
-	bne.w	.l20384
+.next26	cmpa.l	#$1834C,a2
+	bne.w	.next27
 	move.w	(HomeTeam).l,$1A56C.l
 	move.w	#$3,$1A56E.l
 	jsr	(ChooseSong).l
 	move.w	$1A56A.l,-(sp)
 	bsr.w	song
-.l20384	cmpi.w	#$168,$180F0.l
-	bne.w	.l20398
+.next27	cmpi.w	#$168,$180F0.l
+	bne.w	.next28
 	subi.w	#$6,$180F0.l
-.l20398	movea.l	#$180F2,a0
+.next28	movea.l	#$180F2,a0
 	adda.w	$180F0.l,a0
 	addi.w	#$6,$180F0.l
 	bsr.w	GetPeriodTimeRemaining
@@ -599,55 +599,55 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	move.b	d0,(a0)+
 	addi.w	#$1E,$17CD8.l
 	cmpa.l	#$1834C,a2
-	beq.w	.l203DE
+	beq.w	.next29
 	subi.w	#$14,$17CD8.l
 	bset	#$7,-$1(a0)
-.l203DE	move.w	$18(a2),d0
+.next29	move.w	$18(a2),d0
 	move.b	d0,(a0)+
 	move.w	#$FFFF,(a0)
 	addi.w	#$B6,d0
 	addi.b	#$1,(a2,d0.w)
 	move.w	$1A(a2),d0
-	bmi.w	.l2042A
+	bmi.w	.next30
 	cmp.w	$18(a2),d0
-	beq.w	.l2042A
+	beq.w	.next30
 	move.b	d0,(a0)+
 	addi.w	#$D0,d0
 	addi.b	#$1,(a2,d0.w)
 	move.w	$1C(a2),d0
-	bmi.w	.l2042A
+	bmi.w	.next30
 	cmp.w	$18(a2),d0
-	beq.w	.l2042A
+	beq.w	.next30
 	move.b	d0,(a0)
 	addi.w	#$D0,d0
 	addi.b	#$1,(a2,d0.w)
-.l2042A	move.w	$28(a1),d0
-	bmi.w	.l2043C
+.next30	move.w	$28(a1),d0
+	bmi.w	.next31
 	addi.w	#$B6,d0
 	addi.b	#$1,(a1,d0.w)
-.l2043C	bsr.w	ChkShotStat
+.next31	bsr.w	ChkShotStat
 	bsr.w	PenGoalStuff
 	bclr	#$3,$17F70.l
 	bsr.w	printscores1
 	move.w	#$2710,$17F82.l
 	btst	#$0,$17F78.l
-	beq.w	.l20468
-	bra.w	.l2046E
-.l20468	moveq	#$7,d0
-	bsr.w	.l204DE
-.l2046E	clr.w	$17EEE.l
+	beq.w	.next32
+	bra.w	.next33
+.next32	moveq	#$7,d0
+	bsr.w	.next36
+.next33	clr.w	$17EEE.l
 	clr.w	$28(a3)
 	clr.w	$2A(a3)
 	moveq	#$6,d0
 	tst.w	$0(a3)
-	bpl.w	.l20488
+	bpl.w	.next34
 	neg.w	d0
-.l20488	move.w	d0,$0(a3)
+.next34	move.w	d0,$0(a3)
 	move.w	#$110,d0
 	tst.w	$14(a3)
-	bpl.w	.l2049A
+	bpl.w	.next35
 	neg.w	d0
-.l2049A	move.w	d0,$14(a3)
+.next35	move.w	d0,$14(a3)
 	move.w	#$600,$2C(a3)
 	clr.w	$18(a3)
 	st.b	$17E38.l
@@ -664,20 +664,20 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bsr.w	AddPenalty2
 	movea.l	(sp)+,a3
 	rts
-.l204DE	move.l	a3,-(sp)
+.next36	move.l	a3,-(sp)
 	movea.l	$22(a2),a3
 	moveq	#$5,d3
-.l204E6	tst.w	$34(a3)
-	ble.w	.l20512
+.loop3	tst.w	$34(a3)
+	ble.w	.next38
 	btst	#$0,$63(a3)
-	bne.w	.l20512
+	bne.w	.next38
 	bclr	#$2,$62(a3)
 	bclr	#$3,$64(a3)
-	beq.w	.l2050E
+	beq.w	.next37
 	jsr	(EndOneTimer).l
-.l2050E	bsr.w	AssistListPush
-.l20512	adda.w	#$80,a3
-	dbra	d3,.l204E6
+.next37	bsr.w	AssistListPush
+.next38	adda.w	#$80,a3
+	dbra	d3,.loop3
 	movea.l	(sp)+,a3
 	rts
 GetPeriodTimeRemaining
@@ -704,15 +704,15 @@ checkgoalp	btst	#$5,$63(a3)
 	muls.w	d2,d2
 	divu.w	#$400,d2
 	cmpi.w	#$100,d2
-	bhi.w	.l205CA
+	bhi.w	.next
 	asl.w	#$4,d3
 	muls.w	d3,d3
 	divu.w	#$79,d3
 	add.w	d2,d3
 	cmpi.w	#$100,d3
-	bhi.w	.l205CA
+	bhi.w	.next
 	movem.w	(sp)+,d2-d3
-	bsr.w	.l205D0
+	bsr.w	.next2
 	movem.w	d2-d3,-(sp)
 	movem.w	d0-d1,-(sp)
 	muls.w	d0,d0
@@ -729,42 +729,42 @@ checkgoalp	btst	#$5,$63(a3)
 	bset	#$4,(sflags6).l
 	bsr.w	wallcoll
 	bclr	#$4,(sflags6).l
-.l205CA	movem.w	(sp)+,d2-d3
+.next	movem.w	(sp)+,d2-d3
 	rts
-.l205D0	movem.l	d0-d1,-(sp)
-.l205D4	btst	#$7,$FF800E.l
-	bne.b	.l205D4
+.next2	movem.l	d0-d1,-(sp)
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l205EE	btst	#$6,$FF800E.l
-	beq.b	.l205EE
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l2060E	btst	#$6,$FF800E.l
-	bne.b	.l2060E
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$1F,d0
-	bne.w	.l2066A
+	bne.w	.next3
 	move.w	$17B94.l,d0
 	sub.w	$14(a2),d0
 	cmpi.w	#$28,d0
-	bgt.w	.l2066A
+	bgt.w	.next3
 	cmpi.w	#$FFD8,d0
-	blt.w	.l2066A
+	blt.w	.next3
 	move.w	$28(a3),d0
 	move.w	$2A(a3),d1
 	cmpi.w	#$2000,d0
-	bgt.w	.l20670
+	bgt.w	.next4
 	cmpi.w	#$E000,d0
-	blt.w	.l20670
+	blt.w	.next4
 	cmpi.w	#$2000,d1
-	bgt.w	.l20670
+	bgt.w	.next4
 	cmpi.w	#$E000,d1
-	blt.w	.l20670
-.l2066A	movem.l	(sp)+,d0-d1
+	blt.w	.next4
+.next3	movem.l	(sp)+,d0-d1
 	rts
-.l20670	adda.w	#$C,sp
+.next4	adda.w	#$C,sp
 	asr.w	#$2,d0
 	asr.w	#$2,d1
 	move.w	d0,$28(a2)
@@ -779,11 +779,11 @@ checkgoalp	btst	#$5,$63(a3)
 wallcollb	cmpi.w	#$E,$52(a3)
 	bne.w	wallcoll
 	cmpi.w	#$1D,$18(a3)
-	bgt.w	.l20714
+	bgt.w	.next
 	cmpi.w	#$12,$18(a3)
 	bls.w	wallcoll
 	cmpi.w	#$118,$14(a3)
-	blt.w	.l20714
+	blt.w	.next
 	cmpi.w	#$D,$0(a3)
 	blt.w	wallcoll
 	cmpi.w	#$F,$0(a3)
@@ -800,12 +800,12 @@ wallcollb	cmpi.w	#$E,$52(a3)
 	bsr.w	sfx
 	addi.w	#$258,(Crowdlevel).l
 	addi.w	#$F,$17CD8.l
-.l20714	bset	#$6,$17F6A.l
+.next	bset	#$6,$17F6A.l
 	bset	#$2,$62(a3)
 	tst.w	$14(a3)
-	bpl.w	.l20730
+	bpl.w	.next2
 	ori.w	#$8000,$4(a3)
-.l20730	clr.w	$86(a3)
+.next2	clr.w	$86(a3)
 	btst	#$0,$17F68.l
 	bne.w	rtss2
 	move.l	a3,-(sp)

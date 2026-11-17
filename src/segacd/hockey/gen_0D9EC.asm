@@ -1,29 +1,29 @@
 ScoutParaOffset
 	cmpi.w	#$1A,d0
-	bne.s	.lDA1C
+	bne.s	.next3
 	move.w	#$EA,d0
 	cmpi.w	#$1A,(HomeTeam).l
-	bge.s	.lDA08
+	bge.s	.next
 	add.w	(HomeTeam).l,d0
-	bra.s	.lDA1C
-.lDA08	cmpi.w	#$1A,(VisTeam).l
-	bge.s	.lDA18
+	bra.s	.next3
+.next	cmpi.w	#$1A,(VisTeam).l
+	bge.s	.next2
 	addi.w	#$1A,d0
-	bra.s	.lDA1C
-.lDA18	addi.w	#$1B,d0
-.lDA1C	movea.l	(ScoutingReportText).l,a1
+	bra.s	.next3
+.next2	addi.w	#$1B,d0
+.next3	movea.l	(ScoutingReportText).l,a1
 	movea.l	a1,a2
 	move.w	#$0,d1
-	bra.w	.lDA4A
-.lDA2C	addq.w	#$1,d1
-.lDA2E	cmpi.b	#$D,(a2)+
-	bne.w	.lDA2E
+	bra.w	.next4
+.loop	addq.w	#$1,d1
+.loop2	cmpi.b	#$D,(a2)+
+	bne.w	.loop2
 	cmpi.b	#$A,(a2)
-	bne.w	.lDA4A
+	bne.w	.next4
 	addq.l	#$1,a2
 	cmpi.b	#$21,-$3(a2)
-	beq.w	.lDA2C
-.lDA4A	dbra	d0,.lDA2C
+	beq.w	.loop
+.next4	dbra	d0,.loop
 	suba.l	a1,a2
 	move.l	a2,d0
 	rts
@@ -41,18 +41,18 @@ PageMatchup						;Page the matchup by d0 (+1 / -1, 0-6 wrapping), restart the pa
 	bsr.w	GetMatchupPlayers
 	bsr.w	DrawMatchupPictures
 	move.w	(ScoutSubStatus).l,d0
-.lDA8C	cmp.w	(ScoutSubStatus).l,d0
-	beq.b	.lDA8C
-.lDA94	btst	#$7,$FF800E.l
-	bne.b	.lDA94
+.loop	cmp.w	(ScoutSubStatus).l,d0
+	beq.b	.loop
+.loop2	btst	#$7,$FF800E.l
+	bne.b	.loop2
 	move.w	#$3C,$FF8020.l
 	bset	#$6,$FF800F.l
-.lDAAE	btst	#$6,$FF800E.l
-	beq.b	.lDAAE
+.loop3	btst	#$6,$FF800E.l
+	beq.b	.loop3
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lDAC8	btst	#$6,$FF800E.l
-	bne.b	.lDAC8
+.loop4	btst	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr	#$7,$FF800F.l
 	bsr.w	PrintMatchupRatings
 	rts
@@ -239,13 +239,13 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	exg.l	a0,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(visrating).l
-	bra.w	.lDF8C
+	bra.w	.ex
 .matchup	move.w	(matchup).l,d0
 	subi.w	#$1,d0
 	movea.l	#$28F8E,a1
-	bra.w	.lDE62
-.lDE60	adda.w	(a1),a1
-.lDE62	dbra	d0,.lDE60
+	bra.w	.next
+.loop2	adda.w	(a1),a1
+.next	dbra	d0,.loop2
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$1,$D,$13,CC_SetFont,$1
 	jsr	(printsmall).l
@@ -293,7 +293,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	String	CC_Font1,$4,$16
 	bsr.w	PrintTwoSpaces
 	jsr	(printsmall).l
-.lDF8C	rts
+.ex	rts
 MatchupPosNames						;Position names of matchups 1-6
 MatchupPosNamesTbl1	dc.w	$0012,$2020
 	move.l	-(a0),d0
@@ -309,7 +309,7 @@ MatchupPosNamesTbl1	dc.w	$0012,$2020
 	bne.s	*+113
 	moveq	#$77,d1
 	dc.w	$6172
-	bcc.s	MatchupPosNamesSub1
+	bcc.s	.next
 	move.l	-(a0),d0
 	dc.w	$0012,$2072
 	bvs.s	*+105
@@ -318,7 +318,7 @@ MatchupPosNamesTbl1	dc.w	$0012,$2020
 	ble.s	*+116
 	dc.b	'ward  ',$00,$12,'left def'
 	bcs.s	*+112
-MatchupPosNamesSub1
+.next
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
 	dc.b	'oalie     '
@@ -441,12 +441,12 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	adda.w	(a1),a1
 	adda.w	(a1),a1
 	cmpi.w	#$2,(a1)
-	bne.w	.lE194
+	bne.w	.next
 	movea.l	#$2919A,a1
 	cmpa.l	#$1834C,a2
-	beq.w	.lE194
+	beq.w	.next
 	movea.l	#$291A0,a1
-.lE194	movem.l	(sp)+,d0/a0/a2
+.next	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname
 HomeTxtTbl1	dc.w	$0006,$486F
@@ -477,21 +477,21 @@ ScoutStub						;An empty routine
 	move.w	#$0,d0
 	move.w	$1A416.l,d2
 	cmp.w	$1A418.l,d2
-	bgt.w	.lE206
+	bgt.w	.next
 	move.w	#$6,d0
-.lE206	asl.w	#$7,d0
+.next	asl.w	#$7,d0
 	adda.w	d0,a3
 	move.w	#$4,d2
 	move.w	#$6,d3
-	bra.w	.lE268
-.lE216	movem.w	d2-d3,-(sp)
+	bra.w	.next3
+.loop	movem.w	d2-d3,-(sp)
 	jsr	(SetPlayerSide).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
 	tst.w	$17CEA.l
-	bmi.w	.lE238
+	bmi.w	.next2
 	move.w	#$FF10,d0
-.lE238	add.w	$17CEA.l,d0
+.next2	add.w	$17CEA.l,d0
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
@@ -500,8 +500,8 @@ ScoutStub						;An empty routine
 	bclr	#$1,$63(a3)
 	bclr	#$2,$62(a3)
 	movem.w	(sp)+,d2-d3
-.lE268	adda.l	#$80,a3
-	dbra	d2,.lE216
+.next3	adda.l	#$80,a3
+	dbra	d2,.loop
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for position(a3) in
@@ -512,42 +512,42 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	subi.w	#$1,d7		;position 1 is entry 0
 	movea.l	#$292E2,a0
 	btst	#$7,$62(a3)		;which net?
-	beq.w	.lE29A
+	beq.w	.next
 	movea.l	#$292F2,a0
-.lE29A	add.w	d7,d7		;word per position
+.next	add.w	d7,d7		;word per position
 	move.w	(a0,d7.w),d0		;X min of the box
 	cmp.w	$44(a3),d0
-	blt.w	.lE2AC
+	blt.w	.next2
 	move.w	d0,$44(a3)		;clamp to the left
-.lE2AC	move.w	$2(a0,d7.w),d0		;X max of the box
+.next2	move.w	$2(a0,d7.w),d0		;X max of the box
 	cmp.w	$44(a3),d0
-	bgt.w	.lE2BC
+	bgt.w	.next3
 	move.w	d0,$44(a3)		;clamp to the right
-.lE2BC	move.w	$4(a0,d7.w),d0		;Y min of the box
+.next3	move.w	$4(a0,d7.w),d0		;Y min of the box
 	cmp.w	$46(a3),d0
-	blt.w	.lE2CC
+	blt.w	.next4
 	move.w	d0,$46(a3)		;clamp to the bottom
-.lE2CC	move.w	$6(a0,d7.w),d0		;Y max of the box
+.next4	move.w	$6(a0,d7.w),d0		;Y max of the box
 	cmp.w	$46(a3),d0
-	bgt.w	.lE2DC
+	bgt.w	.next5
 	move.w	d0,$46(a3)		;clamp to the top
-.lE2DC	movem.l	(sp)+,d0-d7/a0
+.next5	movem.l	(sp)+,d0-d7/a0
 	rts
 ClampPositionBoxTbl1	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
 ClampPositionBoxTbl2	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$1A414,a0
 	move.l	#$12,d0
-.lE312	clr.w	(a0)+
-	dbra	d0,.lE312
+.loop	clr.w	(a0)+
+	dbra	d0,.loop
 	movea.l	#tmstruct,a0
 	move.w	#$365,d0
-.lE322	clr.w	(a0)+
-	dbra	d0,.lE322
+.loop2	clr.w	(a0)+
+	dbra	d0,.loop2
 	movea.l	#$18022,a0
 	move.l	#$24,d0
-.lE334	clr.w	(a0)+
-	dbra	d0,.lE334
+.loop3	clr.w	(a0)+
+	dbra	d0,.loop3
 	clr.w	$17F70.l
 	clr.w	$17F72.l
 	clr.w	(sflags6).l
@@ -576,10 +576,10 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	$17CEE.l,d4
 	move.w	$17CEA.l,d5
 	move.w	$1A550.l,d0
-	bra.w	AddArenaAnimSpriteSub1
+	bra.w	.next
 	dc.w	$0242,$000F,$0C42,$0003,$6300,$0004,$7403,$6000
 	dc.w	$000A,$3003,$D042,$6100,$0008,$51CA,$FFF6,$4E75
-AddArenaAnimSpriteSub1
+.next
 	ext.w	d0
 	beq.w	AddArenaAnimSpriteExit
 	cmpi.w	#$40,d6
@@ -604,14 +604,14 @@ AddArenaAnimSpriteSub1
 	subi.w	#$80,d2
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
-.lE428	cmp.w	$2(a0),d2
-	bgt.w	.lE480
+.loop	cmp.w	$2(a0),d2
+	bgt.w	.next2
 	cmp.w	$2(a0),d3
-	blt.w	.lE480
+	blt.w	.next2
 	cmp.w	(a0),d0
-	bgt.w	.lE480
+	bgt.w	.next2
 	cmp.w	(a0),d1
-	blt.w	.lE480
+	blt.w	.next2
 	move.w	$2(a0),d5
 	addi.w	#$70,d5
 	sub.w	d2,d5
@@ -629,10 +629,10 @@ AddArenaAnimSpriteSub1
 	move.w	d5,(a6)+
 	addi.w	#$1,d6
 	cmpi.w	#$40,d6
-	beq.w	.lE488
-.lE480	adda.w	#$8,a0
-	dbra	d4,.lE428
-.lE488	movem.l	(sp)+,d0-d5
+	beq.w	.next3
+.next2	adda.w	#$8,a0
+	dbra	d4,.loop
+.next3	movem.l	(sp)+,d0-d5
 AddArenaAnimSpriteExit
 	rts
 PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerName), moved left so
@@ -647,17 +647,17 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 	move.w	(a0),d0
 	move.w	d0,d5
 	tst.b	-$1(a0,d5.w)		;trailing pad byte?
-	bne.w	.lE4BE
+	bne.w	.next
 	subi.w	#$1,d0		;first pad byte
 	tst.b	-$2(a0,d5.w)		;second pad byte?
-	bne.w	.lE4BE
+	bne.w	.next
 	subi.w	#$1,d0		;second pad byte
-.lE4BE	add.w	(printx).l,d0
+.next	add.w	(printx).l,d0
 	subi.w	#$29,d0		;past column $29?
-	bmi.w	.lE4D4		;fits: leave printx
+	bmi.w	.next2		;fits: leave printx
 	neg.w	d0
 	add.w	d0,(printx).l
-.lE4D4	movea.l	a0,a1
+.next2	movea.l	a0,a1
 	jsr	(print).l
 	movea.l	(sp)+,a2
 	jsr	(HotColdIcon).l

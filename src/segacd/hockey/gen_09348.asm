@@ -31,9 +31,9 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	
 	
 	move.l	#$5460,d6
-.l952A	move.w	(ScoutSubStatus).l,d1
+.loop	move.w	(ScoutSubStatus).l,d1
 	sub.w	$17476.l,d1
-	beq.w	.l952A
+	beq.w	.loop
 	move.w	(ScoutSubStatus).l,$17476.l
 	bclr	#$5,$19390.l
 	jsr	$24894.l
@@ -42,7 +42,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	tst.w	d1
 	beq.w	.1
 	btst	#$5,d1
-	beq.w	.l965E
+	beq.w	.ex
 	btst	#$5,d2
 	beq.w	.0
 	move.w	#$53,$1939E.l
@@ -50,25 +50,25 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .1	jsr	(ReadJoy2).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
-	beq.w	.l95A6
+	beq.w	.next
 	btst	#$5,d1
-	beq.w	.l965E
+	beq.w	.ex
 	bset	#$5,$19390.l
-.l95A6	tst.w	$18BF8.l
+.next	tst.w	$18BF8.l
 	beq.w	.4
 	jsr	$3752C.l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.3
 	btst	#$5,d1
-	beq.w	.l965E
+	beq.w	.ex
 	bset	#$5,$19390.l
 .3	jsr	$3754A.l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.4
 	btst	#$5,d1
-	beq.w	.l965E
+	beq.w	.ex
 	bset	#$5,$19390.l
 .4	btst	#$6,$19390.l
 	beq.w	.5
@@ -81,39 +81,39 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	move.w	$1938C.l,$1938A.l
 	bsr.w	DrawHomeBlock
 .6	cmpi.l	#$4650,d6
-	bgt.w	.l9654
+	bgt.w	.next2
 	btst	#$0,$19390.l
-	bne.w	.l9654
+	bne.w	.next2
 	jsr	(ResetCardTimer).l
-	bra.w	.l965A
-.l9654	jsr	(PlayerCardTimer).l
-.l965A	dbra	d6,.l952A
-.l965E	rts
+	bra.w	.next3
+.next2	jsr	(PlayerCardTimer).l
+.next3	dbra	d6,.loop
+.ex	rts
 ReadSetupPadsSub1
 	clr.w	$18C16.l
-.l9666	btst	#$7,$FF800E.l
-	bne.b	.l9666
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l9680	btst	#$6,$FF800E.l
-	beq.b	.l9680
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,$18C18.l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l96A4	btst	#$6,$FF800E.l
-	bne.b	.l96A4
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
-.l96B6	btst	#$7,$FF800E.l
-	bne.b	.l96B6
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l96D0	btst	#$6,$FF800E.l
-	beq.b	.l96D0
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	move.w	$FF8010.l,$18C1A.l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l96F4	btst	#$6,$FF800E.l
-	bne.b	.l96F4
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	clr.w	$18BFA.l
 	clr.w	(OptNOP).l
@@ -124,42 +124,42 @@ ReadSetupPadsSub2
 	move.w	(sp),$18C0C.l
 	move.w	(sp)+,$18C0E.l
 	jsr	(UpdatePlayoffLevel).l
-.l9738	btst	#$7,$FF800E.l
-	bne.b	.l9738
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l9752	btst	#$6,$FF800E.l
-	beq.b	.l9752
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,$18C18.l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l9776	btst	#$6,$FF800E.l
-	bne.b	.l9776
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
-.l9788	btst	#$7,$FF800E.l
-	bne.b	.l9788
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l97A2	btst	#$6,$FF800E.l
-	beq.b	.l97A2
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	move.w	$FF8010.l,$18C1A.l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l97C6	btst	#$6,$FF800E.l
-	bne.b	.l97C6
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	$18C0A.l,$18C22.l
 	cmpi.w	#$2,$18C0A.l
-	bne.w	.l97FC
+	bne.w	.next
 	clr.w	$18C0A.l
 	bset	#$4,$17F7A.l
-.l97FC	move.w	$18BFA.l,$18C24.l
+.next	move.w	$18BFA.l,$18C24.l
 	cmpi.w	#$4,$18BFA.l
-	bne.w	.l9828
+	bne.w	.next2
 	move.w	#$0,$18BFA.l
 	bset	#$0,$17F78.l
 	jsr	(ClearShootout).l
-.l9828	jmp	(MakeTree).l
+.next2	jmp	(MakeTree).l
 CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no effect
 	tst.w	(OptNOP).l
 	beq.w	.x
@@ -186,7 +186,7 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 ; Prints the message selected by the flag bits at $19390.
 PrintFlaggedMessage	movem.l	d0-d7,-(sp)
 	bclr	#$0,$19390.l
-	beq.w	.l995C
+	beq.w	.next2
 	bclr	#$6,$19390.l
 	bclr	#$7,$19390.l
 	jsr	(printz).l
@@ -196,7 +196,7 @@ PrintFlaggedMessage	movem.l	d0-d7,-(sp)
 	moveq	#$8,d1
 	move.w	#$7FF,d2
 	btst	#$1,$19390.l
-	beq.w	.l9920
+	beq.w	.next
 	move.w	#$3,(printx).l
 	jsr	(eraser).l
 	jsr	(printz).l
@@ -207,8 +207,8 @@ PrintFlaggedMessage	movem.l	d0-d7,-(sp)
 	move.w	#$8,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-	bra.w	.l995C
-.l9920	move.w	#$1C,(printx).l
+	bra.w	.next2
+.next	move.w	#$1C,(printx).l
 	jsr	(eraser).l
 	jsr	(printz).l
 	String	CC_Font1,$0,$0
@@ -218,7 +218,7 @@ PrintFlaggedMessage	movem.l	d0-d7,-(sp)
 	move.w	#$8,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-.l995C	movem.l	(sp)+,d0-d7
+.next2	movem.l	(sp)+,d0-d7
 	rts
 DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo (logoteam)
 	
@@ -270,9 +270,9 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	move.w	#$6,(printy).l
 	move.w	(homepicchars).l,d4
 	btst	#$2,$19390.l
-	bne.w	.l9A4E
+	bne.w	.next
 	move.w	(vispicchars).l,d4
-.l9A4E	move.w	$1938A.l,d3
+.next	move.w	$1938A.l,d3
 	asl.w	#$2,d3
 	movea.l	(TeamLogoBitmaps).l,a0
 	movea.l	(a0,d3.w),a0
@@ -342,29 +342,29 @@ ResetCardTimer						;Reset the player card timer cardtimer to $AA ($53 if C was 
 									;Called from ReadSetupPads, PrintOptions and PlayerCardTimer
 	move.w	#$AA,$1939E.l		;normal wait
 	btst	#$5,$19390.l		;C held (bit 5): use the shorter wait
-	beq.w	.l9B7A
+	beq.w	.ex
 	move.w	#$53,$1939E.l		;shorter wait
-.l9B7A	rts
+.ex	rts
 PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the first minute of
 									;its wait. When carddelay runs out set setupcardflags bit 0; then count
 									;cardtimer down (C skips $50); at $52 switch sides (bit 1), forget the
 									;logos and draw the next card (PlayerCardScreen); below 0 restart the
 									;timer (ResetCardTimer)
 	subi.w	#$1,$193A2.l		;count down the start delay
-	bpl.w	.l9C16
+	bpl.w	.ex
 	move.w	#$FFFF,$193A2.l		;keep it run out
 	bset	#$0,$19390.l		;first run out: the cards may start
 	btst	#$0,$19390.l		;cards allowed?
-	beq.w	.l9C16
+	beq.w	.ex
 	btst	#$5,$19390.l		;C held?
-	beq.w	.l9BC4
+	beq.w	.next
 	cmpi.w	#$52,$1939E.l		;timer below $52?
-	bge.w	.l9BC4
+	bge.w	.next
 	subi.w	#$50,$1939E.l		;skip $50 of the wait
-.l9BC4	subi.w	#$1,$1939E.l
-	bmi.w	.l9C18		;timer ran out: start the next cycle
+.next	subi.w	#$1,$1939E.l
+	bmi.w	.next2		;timer ran out: start the next cycle
 	cmpi.w	#$52,$1939E.l
-	bne.w	.l9C16		;only at $52 is a new card drawn
+	bne.w	.ex		;only at $52 is a new card drawn
 	bclr	#$2,$19390.l		;clear setupcardflags bits 2 and 3
 	bclr	#$3,$19390.l
 	bchg	#$1,$19390.l		;the next card goes on the other side
@@ -373,5 +373,5 @@ PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the 
 	bclr	#$6,$19390.l
 	bclr	#$7,$19390.l
 	jsr	(PlayerCardScreen).l
-.l9C16	rts
-.l9C18	jmp	(ResetCardTimer).l
+.ex	rts
+.next2	jmp	(ResetCardTimer).l

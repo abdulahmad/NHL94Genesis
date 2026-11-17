@@ -1,22 +1,22 @@
 RestoreBiosSub43	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$2,$FFFF8024.w
-	beq.w	.l3AA0
-	bsr.w	.l24DAC
-	bsr.w	.l24DD0
-.l3AA0	addq.w	#$1,$10AE0.l
+	beq.w	.next
+	bsr.w	.next2
+	bsr.w	.next4
+.next	addq.w	#$1,$10AE0.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.l24DAC	btst.b	#$1,$10912.l
-	beq.w	.l3AC6
+.next2	btst.b	#$1,$10912.l
+	beq.w	.next3
 	bsr.w	ReleaseWordRam
 	bset.b	#$0,$10912.l
 	rts
-.l3AC6	bclr.b	#$0,$10912.l
+.next3	bclr.b	#$0,$10912.l
 	rts
-.l24DD0	btst.b	#$0,$10912.l
-	beq.w	.l3AE0
+.next4	btst.b	#$0,$10912.l
+	beq.w	.ex
 	bsr.w	TakeWordRam
-.l3AE0	rts
+.ex	rts
 	dc.b	$4E,$75	; Nu
 ; Calls the $E320 command with an inline parameter block.
 SendCmdE320Inline	movem.l	d0-d7/a0-a6,-(sp)
@@ -70,13 +70,13 @@ RestoreBiosSub47	move.l	#$0,-(sp)
 	bmi.w	RestoreBios_95
 RestoreBios_93	jsr	$E298.l
 	btst	#$7,d1
-RestoreBiosSub48	bne.w	.l3C04
+RestoreBiosSub48	bne.w	.next
 	move.w	#$1,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp
 	tst.w	d0
 	bge.b	RestoreBios_93
-.l3C04	move.w	#$2,-(sp)
+.next	move.w	#$2,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp
 	jsr	$E3BC.l

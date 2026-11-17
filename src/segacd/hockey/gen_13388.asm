@@ -15,7 +15,7 @@ ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct 
 ; Selects the stat column table and indexes it.
 ReadStatColumnTable
 	tst.w	d7
-	bne.w	.l133D2
+	bne.w	.next
 	dc.w	$43FA,$0076
 	asl.w	#$2,d1
 	adda.w	d1,a1
@@ -31,15 +31,15 @@ ReadStatColumnTable
 	move.b	(a2,d1.l),d3
 	add.w	d3,d2
 	rts
-.l133D2	asl.w	#$2,d1
+.next	asl.w	#$2,d1
 	add.w	d0,d0
 	clr.w	d2
-	bsr.w	.l133E8
+	bsr.w	.next2
 	addi.w	#$2,d1
-	bsr.w	.l133E8
+	bsr.w	.next2
 	lsr.w	#$1,d0
 	rts
-.l133E8	movea.l	#$2E40E,a1
+.next2	movea.l	#$2E40E,a1
 	tst.w	(a1,d1.w)
 	beq.w	updatereplayExit
 	movea.w	(a1,d1.w),a1
@@ -80,11 +80,11 @@ StatColumnHeader
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	lea.l	.l2E52E(pc),a1
+	lea.l	.next(pc),a1
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-.l2E52E	dc.w	$000A
+.next	dc.w	$000A
 CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
@@ -98,56 +98,56 @@ CrowdMeterFadeIn
 	bset	#$2,(disflags).l
 	move.w	$18D32.l,d0
 	jsr	(SetVramWriteAddr1).l
-.l13754	btst	#$7,$FF800E.l
-	bne.b	.l13754
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-.l13778	btst	#$6,$FF800E.l
-	beq.b	.l13778
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l13792	btst	#$6,$FF800E.l
-	bne.b	.l13792
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
-.l137A4	btst	#$7,$FF800E.l
-	bne.b	.l137A4
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	#$8C81,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-.l137C6	btst	#$6,$FF800E.l
-	beq.b	.l137C6
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l137E0	btst	#$6,$FF800E.l
-	bne.b	.l137E0
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	#$6,$18D3E.l
-.l137FA	btst	#$7,$FF800E.l
-	bne.b	.l137FA
+.loop7	btst	#$7,$FF800E.l
+	bne.b	.loop7
 	move.w	#$8D00,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1381C	btst	#$6,$FF800E.l
-	beq.b	.l1381C
+.loop8	btst	#$6,$FF800E.l
+	beq.b	.loop8
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l13836	btst	#$6,$FF800E.l
-	bne.b	.l13836
+.loop9	btst	#$6,$FF800E.l
+	bne.b	.loop9
 	bclr	#$7,$FF800F.l
 	clr.w	d0
 	jsr	(SetVramWriteAddr1).l
-.l13850	btst	#$7,$FF800E.l
-	bne.b	.l13850
+.loop10	btst	#$7,$FF800E.l
+	bne.b	.loop10
 	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-.l13874	btst	#$6,$FF800E.l
-	beq.b	.l13874
+.loop11	btst	#$6,$FF800E.l
+	beq.b	.loop11
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1388E	btst	#$6,$FF800E.l
-	bne.b	.l1388E
+.loop12	btst	#$6,$FF800E.l
+	bne.b	.loop12
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	bclr	#$1,(disflags).l
@@ -174,58 +174,58 @@ CrowdMeterScreenSub2
 	bset	#$2,(disflags).l
 	move.w	$18D30.l,d0
 	jsr	(SetVramWriteAddr1).l
-.l139A0	btst	#$7,$FF800E.l
-	bne.b	.l139A0
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-.l139C4	btst	#$6,$FF800E.l
-	beq.b	.l139C4
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l139DE	btst	#$6,$FF800E.l
-	bne.b	.l139DE
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$8D00,d0
 	move.b	$18D30.l,d0
 	lsr.b	#$2,d0
-.l139FC	btst	#$7,$FF800E.l
-	bne.b	.l139FC
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-.l13A1C	btst	#$6,$FF800E.l
-	beq.b	.l13A1C
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l13A36	btst	#$6,$FF800E.l
-	bne.b	.l13A36
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
-.l13A48	btst	#$7,$FF800E.l
-	bne.b	.l13A48
+.loop7	btst	#$7,$FF800E.l
+	bne.b	.loop7
 	move.w	#$8C00,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-.l13A6A	btst	#$6,$FF800E.l
-	beq.b	.l13A6A
+.loop8	btst	#$6,$FF800E.l
+	beq.b	.loop8
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l13A84	btst	#$6,$FF800E.l
-	bne.b	.l13A84
+.loop9	btst	#$6,$FF800E.l
+	bne.b	.loop9
 	bclr	#$7,$FF800F.l
 	move.w	#$5,$18D3E.l
-.l13A9E	tst.w	(palcount).l
-	bpl.w	.l13A9E
+.loop10	tst.w	(palcount).l
+	bpl.w	.loop10
 	move.w	(sp)+,(disflags).l
 	bset	#$1,(disflags).l
 	move.w	$18D48.l,d4
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
-	beq.w	.l13AD8
+	beq.w	.next
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
-.l13AD8	jsr	(DecompressGraphicsPlain).l
+.next	jsr	(DecompressGraphicsPlain).l
 	jsr	$2A9D0.l
 	move.w	$18D42.l,d4
 	movea.l	(SmallFontMap).l,a2
@@ -271,11 +271,11 @@ GetPlayerCount
 	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0
 	clr.w	d0
-.l13DCA	addi.w	#$1,d0
+.loop	addi.w	#$1,d0
 	adda.w	(a0),a0
 	adda.w	#$8,a0
 	cmpi.w	#$2,(a0)
-	bne.w	.l13DCA
+	bne.w	.loop
 	movem.l	(sp)+,a0
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_13DE2.bin

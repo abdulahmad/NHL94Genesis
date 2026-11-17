@@ -78,31 +78,31 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 StatsReportBlitSetup	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.lEB72	btst	#$7,$FF800E.l
-	bne.b	.lEB72
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.lEB96	btst	#$6,$FF800E.l
-	beq.b	.lEB96
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lEBB0	btst	#$6,$FF800E.l
-	bne.b	.lEBB0
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FFB0,d0
 	add.w	(VertLineScrolling).l,d0
-.lEBCC	btst	#$7,$FF800E.l
-	bne.b	.lEBCC
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.lEBEC	btst	#$6,$FF800E.l
-	beq.b	.lEBEC
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lEC06	btst	#$6,$FF800E.l
-	bne.b	.lEC06
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
@@ -119,21 +119,21 @@ StatScrollHeader	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetFont,$1
 	tst.w	(VertLineScrolling).l
-	beq.w	.lEC6A
+	beq.w	.next
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$8,CC_SetFont,$1,'{'
-	bra.w	.lEC7A
-.lEC6A	jsr	(printsmallz).l
+	bra.w	.next2
+.next	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$8,CC_SetFont,$1,' '
-.lEC7A	move.w	(matchupvis).l,d0
+.next2	move.w	(matchupvis).l,d0
 	cmp.w	(VertLineScrolling).l,d0
-	beq.w	.lEC9E
+	beq.w	.next3
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$1A,CC_SetFont,$1,'}'
-	bra.w	.lECAE
-.lEC9E	jsr	(printsmallz).l
+	bra.w	.next4
+.next3	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$1A,CC_SetFont,$1,' '
-.lECAE	jsr	(printsmallz).l
+.next4	jsr	(printsmallz).l
 	String	CC_SetFont
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -199,14 +199,14 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a2,d0.w),d0
 	cmpi.w	#$354,(a0)
 	bne.w	.2
-	bsr.w	.lEE50
+	bsr.w	.next2
 	bra.w	.4
 .2	cmpi.w	#$A,(a0)
 	beq.w	.3
-	bsr.w	.lEE4A
+	bsr.w	.next
 .3	cmpi.w	#$A,(a0)
 	bne.w	.4
-	bsr.w	.lEE50
+	bsr.w	.next2
 .4	jsr	(appstring).l
 	move.w	$2(a0),d0
 	bmi.w	.6
@@ -235,8 +235,8 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	jmp	(print).l
-.lEE4A	jmp	(PushNumber).l
-.lEE50	jmp	(PushTime).l
+.next	jmp	(PushNumber).l
+.next2	jmp	(PushTime).l
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0EE56.bin
 rtsStatTables
 	rts
@@ -290,12 +290,12 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	cmp.w	$17FA8.l,d0
 	bne.w	.0
 	eori.w	#$1,$18C0E.l
-	bra.w	.lF0D4
+	bra.w	.next
 .0	btst	#$1,$17F6A.l
-	beq.w	.lF0D4
+	beq.w	.next
 	eori.w	#$1,$18C0E.l
 	bra.w	.chkso
-.lF0D4	eori.w	#$1,$18C0C.l
+.next	eori.w	#$1,$18C0C.l
 .chkso	btst	#$0,$17F78.l
 	bne.w	.so
 	btst	#$2,$17F70.l
@@ -303,17 +303,17 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 .so	btst	#$1,$17F6A.l
 	bne.w	.p2
 	cmpi.w	#$2,(OptNOP).l
-	bne.w	.lF11C
+	bne.w	.next2
 	cmpi.w	#$5,$19368.l
 	bgt.w	.x
 	bra.w	.5
-.lF11C	cmpi.w	#$5,$19368.l
+.next2	cmpi.w	#$5,$19368.l
 	ble.w	.x
 .5	move.w	#$0,d0
 	cmpi.w	#$2,(OptNOP).l
-	bne.w	.lF13C
+	bne.w	.next3
 	move.w	#$6,d0
-.lF13C	tst.w	$18C0C.l
+.next3	tst.w	$18C0C.l
 	bne.w	.set1
 	move.w	#$5,d0
 	cmpi.w	#$2,(OptNOP).l
@@ -322,13 +322,13 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 .set1	jsr	(setc1player).l
 	bra.w	.x
 .p2	cmpi.w	#$2,(OptNOP).l
-	bne.w	.lF180
+	bne.w	.next4
 	cmpi.w	#$5,$19368.l
 	ble.w	.x
-	bra.w	.lF18C
-.lF180	cmpi.w	#$5,$19368.l
+	bra.w	.next5
+.next4	cmpi.w	#$5,$19368.l
 	bgt.w	.x
-.lF18C	move.w	#$6,d0
+.next5	move.w	#$6,d0
 	tst.w	$18C0E.l
 	bne.w	.set2		;manual: the goalie
 	move.w	#$B,d0		;skater slot
@@ -341,10 +341,10 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 									;DecompressGraphicsPlain); then count down the frame time arenaframetime
 									;by d7 and step (NextArenaFrame). Called from periodicevents and waitxsr
 	tst.w	$1A556.l
-	bmi.w	.lF21C
+	bmi.w	.ex
 	movem.l	d0-d7/a0-a6,-(sp)
 	tst.l	$1A55C.l
-	bne.w	.lF202
+	bne.w	.next
 	move.w	$1A556.l,d0
 	asl.w	#$3,d0
 	movea.l	#$2A26C,a0
@@ -356,13 +356,13 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	jsr	(DecompressGraphicsPlain).l
 	clr.w	$1A552.l
 	bsr.w	NextArenaFrame
-	bra.w	.lF218
-.lF202	sub.w	d7,$1A554.l
-	bpl.w	.lF218
+	bra.w	.next2
+.next	sub.w	d7,$1A554.l
+	bpl.w	.next2
 	addi.w	#$1,$1A552.l
 	bsr.w	NextArenaFrame		;read the next frame
-.lF218	movem.l	(sp)+,d0-d7/a0-a6
-.lF21C	rts
+.next2	movem.l	(sp)+,d0-d7/a0-a6
+.ex	rts
 NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, arenaframetime
 									;= time; frame $FF loops to the start, $FE ends the animation
 									;(EndArenaAnim)
@@ -376,13 +376,13 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	ext.w	d1
 	move.w	d1,$1A554.l
 	cmpi.w	#$FFFF,$1A550.l
-	bne.w	.lF25A
+	bne.w	.next
 	clr.w	$1A552.l
 	bra.w	NextArenaFrame
-.lF25A	cmpi.w	#$FFFE,$1A550.l
-	bne.w	.lF26A
+.next	cmpi.w	#$FFFE,$1A550.l
+	bne.w	.ex
 	bsr.w	EndArenaAnim		;$FE: end the animation
-.lF26A	rts
+.ex	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0F26C.bin
 StartArenaAnim						;Start arena animation d0 (ArenaAnims): arenaanim = d0, RunArenaAnim loads
 									;it. Called from FallDown (7)
@@ -411,10 +411,10 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 									;from StartPer, checkgoal, puckshootout and LeadSong
 	movem.l	d0-d1/a0-a1,-(sp)
 	btst	#$4,$17F68.l		;highlight reel?
-	beq.w	.lF490		;not the highlight reel: pick a song
+	beq.w	.next		;not the highlight reel: pick a song
 	move.w	#$FFFF,d1		;highlights: no song
-	bra.w	.lF4D0
-.lF490	bclr	#$6,$17F7C.l		;clear sflags8 bit 6
+	bra.w	.next2
+.next	bclr	#$6,$17F7C.l		;clear sflags8 bit 6
 	movea.l	#$2A4DC,a0
 	movea.l	#$2A584,a1
 	move.w	$1A56C.l,d0
@@ -422,12 +422,12 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	add.w	$1A56E.l,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1		;team song
-	bne.w	.lF4D0		;a team song: use it
+	bne.w	.next2		;a team song: use it
 	move.w	#$8,d0		;slot 0: one of the 8 random songs
 	jsr	(randomd0).l
 	andi.w	#$7,d0
 	move.b	(a1,d0.w),d1
-.lF4D0	move.w	d1,$1A56A.l
+.next2	move.w	d1,$1A56A.l
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs						;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)

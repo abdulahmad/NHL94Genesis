@@ -17,29 +17,29 @@ RemoveIrqHook2	movea.l	RestoreBios_118(pc),a0
 	rts
 RestoreBios_121	dc.b	$00,$00,$00,$00	; ....
 RestoreBios_122	movem.l	d0-d3/a0-a2/a5,-(sp)
-	pea.l	.l413E(pc)
+	pea.l	.next(pc)
 	move.w	sr,-(sp)
 	movea.l	RestoreBios_118(pc),a2
 	jmp	(a2)
-.l413E	movea.l	#$FF8000,a5
+.next	movea.l	#$FF8000,a5
 	move.l	RestoreBios_101(pc),d3
-	beq.w	.l421C
-	bgt.b	.l41C6
+	beq.w	.loop2
+	bgt.b	.next5
 	andi.w	#$F8FF,$4(a5)
 	ori.w	#$300,$4(a5)
 	move.w	#$8B,d0
 	jsr	$5F22.w
-	bcs.w	.l421C
+	bcs.w	.loop2
 	move.l	RestoreBios_102(pc),d0
-	bne.b	.l4176
+	bne.b	.next2
 	bsr.w	PeekSectDst
 	tst.l	d0
-	beq.w	.l4222
-.l4176	movea.l	d0,a0
+	beq.w	.next8
+.next2	movea.l	d0,a0
 	lea.l	RestoreBios_121(pc),a1
 	move.w	#$8C,d0
 	jsr	$5F22.w
-	bcs.w	.l421C
+	bcs.w	.loop2
 	move.w	#$8D,d0
 	jsr	$5F22.w
 	move.l	RestoreBios_121(pc),d0
@@ -47,50 +47,50 @@ RestoreBios_122	movem.l	d0-d3/a0-a2/a5,-(sp)
 	bsr.w	CdMsfBcdToBin
 	move.l	RestoreBios_103(pc),d1
 	cmp.l	d0,d1
-	bne.b	.l421C
+	bne.b	.loop2
 	lea.l	RestoreBios_102(pc),a1
 	tst.l	(a1)
-	beq.b	.l41B6
+	beq.b	.next3
 	addi.l	#$800,(a1)
-	bra.b	.l41BA
-.l41B6	bsr.w	GetSectDst
-.l41BA	neg.l	d3
+	bra.b	.next4
+.next3	bsr.w	GetSectDst
+.next4	neg.l	d3
 	subq.w	#$1,d3
 	lea.l	RestoreBios_101(pc),a1
 	move.l	d3,(a1)
-	bra.b	.l421C
-.l41C6	movea.l	#$FF8000,a5
+	bra.b	.loop2
+.next5	movea.l	#$FF8000,a5
 	andi.w	#$F8FF,$4(a5)
 	ori.w	#$500,$4(a5)
 	move.l	RestoreBios_102(pc),d0
-	bne.b	.l41E6
+	bne.b	.next6
 	bsr.w	GetSectDst
 	tst.l	d0
-	beq.b	.l4222
-.l41E6	lsr.l	#$3,d0
+	beq.b	.next8
+.next6	lsr.l	#$3,d0
 	move.w	d0,$A(a5)
 	move.w	#$8B,d0
 	jsr	$5F22.w
-	bcs.b	.l422A
-.l41F6	btst.b	#$7,$4(a5)
-	beq.b	.l41F6
-	bcs.b	.l422A
+	bcs.b	.next9
+.loop	btst.b	#$7,$4(a5)
+	beq.b	.loop
+	bcs.b	.next9
 	move.w	#$8D,d0
 	jsr	$5F22.w
 	lea.l	RestoreBios_102(pc),a1
 	tst.l	(a1)
-	beq.b	.l4216
+	beq.b	.next7
 	addi.l	#$800,(a1)
-.l4216	lea.l	RestoreBios_101(pc),a1
+.next7	lea.l	RestoreBios_101(pc),a1
 	subq.l	#$1,(a1)
-.l421C	movem.l	(sp)+,d0-d3/a0-a2/a5
+.loop2	movem.l	(sp)+,d0-d3/a0-a2/a5
 	rte
-.l4222	lea.l	RestoreBios_101(pc),a1
+.next8	lea.l	RestoreBios_101(pc),a1
 	clr.l	(a1)
-	bra.b	.l421C
-.l422A	lea.l	RestoreBios_106(pc),a1
+	bra.b	.loop2
+.next9	lea.l	RestoreBios_106(pc),a1
 	move.l	#$FFFFFFFF,(a1)
-	bra.b	.l421C
+	bra.b	.loop2
 ; Clears a flag and calls CD BIOS function 8.
 CdBiosCall8	lea.l	RestoreBios_101(pc),a1
 	clr.l	(a1)
@@ -106,7 +106,7 @@ CdBiosReadSequence	link	a6,#$FFFC
 	moveq	#$5,d4
 	moveq	#-1,d5
 	subq.l	#$1,d4
-	beq.b	.l4298
+	beq.b	.next
 	moveq	#$0,d0
 	move.w	#$96,d0
 	jsr	$5F22.w
@@ -123,7 +123,7 @@ CdBiosReadSequence	link	a6,#$FFFC
 	lea.l	RestoreBios_103(pc),a1
 	move.l	d3,(a1)
 	moveq	#$0,d5
-.l4298	move.l	d5,d0
+.next	move.l	d5,d0
 	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	rts
@@ -166,11 +166,11 @@ Wait	link	a6,#$0
 	move.l	$8(a6),d6
 	jsr	GetTicks(pc)
 	move.l	d0,d7
-.l4318	jsr	GetTicks(pc)
+.loop	jsr	GetTicks(pc)
 	move.l	d7,d1
 	add.l	d6,d1
 	cmp.l	d0,d1
-	bgt.b	.l4318
+	bgt.b	.loop
 	movem.l	-$8(a6),d6-d7
 	unlk	a6
 	rts

@@ -2,8 +2,8 @@ addframe2
 	move.w	$4(a3),-(sp)
 	movem.l	d0-d5/a0-a2,-(sp)
 	move.w	$6(a3),d4
-	bmi.w	.l23868
-	beq.w	.l23868
+	bmi.w	.next8
+	beq.w	.next8
 	andi.w	#$F800,d4
 	eor.w	d4,$4(a3)
 	move.w	$6(a3),d4
@@ -12,7 +12,7 @@ addframe2
 	adda.l	$4(a2),a2
 	add.w	d4,d4
 	cmp.w	$2(a2),d4
-	bge.w	.l23868
+	bge.w	.next8
 	move.w	$2(a2,d4.w),d5
 	sub.w	(a2,d4.w),d5
 	lsr.w	#$3,d5
@@ -20,33 +20,33 @@ addframe2
 	adda.w	(a2,d4.w),a2
 	clr.w	d3
 	clr.w	d4
-.l23734	move.w	d0,-(sp)
+.loop	move.w	d0,-(sp)
 	move.w	$6(a3),d0
 	andi.w	#$7FF,d0
 	cmp.w	$8(a3),d0
-	beq.w	.l237CA
+	beq.w	.next4
 	tst.w	d5
-	bne.w	.l23750
+	bne.w	.next
 	move.w	d0,$8(a3)
-.l23750	movem.w	d0-d4,-(sp)
+.next	movem.w	d0-d4,-(sp)
 	move.w	$4(a2),d2
 	clr.w	d4
 	move.b	$7(a2),d4
 	movea.l	#$41A5C,a0
 	move.b	(a0,d4.w),d4
 	cmp.w	$8(sp),d4
-	bgt.w	.l23794
+	bgt.w	.next2
 	cmp.w	$4(sp),d2
-	blt.w	.l23794
+	blt.w	.next2
 	move.w	$4(sp),d0
 	add.w	$8(sp),d0
 	sub.w	d2,d0
 	sub.w	d4,d0
-	bmi.w	.l23794
+	bmi.w	.next2
 	movem.w	(sp)+,d0-d1
 	adda.w	#$6,sp
-	bra.w	.l237C6
-.l23794	add.w	$8(sp),d3
+	bra.w	.next3
+.next2	add.w	$8(sp),d3
 	movem.w	(sp)+,d0-d1
 	adda.w	#$6,sp
 	movem.w	d0-d4,-(sp)
@@ -61,30 +61,30 @@ addframe2
 	move.w	d4,(a5)+
 	move.w	d3,(a5)+
 	movem.w	(sp)+,d0-d4
-.l237C6	move.b	d3,$A(a3,d5.w)
-.l237CA	move.w	(sp)+,d0
+.next3	move.b	d3,$A(a3,d5.w)
+.next4	move.w	(sp)+,d0
 	movem.w	d0-d2,-(sp)
 	move.w	$2(a2),d2
 	btst	#$4,$4(a3)
-	beq.w	.l237F2
+	beq.w	.next5
 	move.b	$7(a2),d2
 	andi.w	#$3,d2
 	addi.w	#$1,d2
 	asl.w	#$3,d2
 	neg.w	d2
 	sub.w	$2(a2),d2
-.l237F2	add.w	d2,d1
+.next5	add.w	d2,d1
 	move.w	d1,(a6)
 	move.w	(a2),d2
 	btst	#$3,$4(a3)
-	beq.w	.l23814
+	beq.w	.next6
 	move.b	$7(a2),d2
 	andi.w	#$C,d2
 	addi.w	#$4,d2
 	asl.w	#$1,d2
 	neg.w	d2
 	sub.w	(a2),d2
-.l23814	add.w	d2,d0
+.next6	add.w	d2,d0
 	move.w	d0,$6(a6)
 	move.b	$7(a2),$2(a6)
 	move.b	d6,$3(a6)
@@ -93,47 +93,47 @@ addframe2
 	eor.w	d0,d2
 	andi.w	#$F800,d2
 	btst	#$0,$5(a3)
-	beq.w	.l23848
+	beq.w	.next7
 	btst	#$E,d2
-	beq.w	.l23848
+	beq.w	.next7
 	bset	#$D,d2
-.l23848	or.b	$A(a3,d5.w),d2
+.next7	or.b	$A(a3,d5.w),d2
 	add.w	$12(a3),d2
 	move.w	d2,$4(a6)
 	movem.w	(sp)+,d0-d2
 	addi.w	#$1,d6
 	adda.w	#$8,a6
 	adda.w	#$8,a2
-	dbra	d5,.l23734
-.l23868	movem.l	(sp)+,d0-d5/a0-a2
+	dbra	d5,.loop
+.next8	movem.l	(sp)+,d0-d5/a0-a2
 	move.w	(sp)+,$4(a3)
 	rts
 find3d						;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 =
 									;xscreen, d1 = yscreen, or d1 = $4E20 when off screen
 	btst	#$7,$17F6A.l
-	beq.w	.l2388A
+	beq.w	.next
 	exg.l	d0,d1
 	neg.w	d0
 	subi.w	#$C5,d1
-	bra.w	.l23896
-.l2388A	sub.w	$17CEE.l,d0
+	bra.w	.next2
+.next	sub.w	$17CEE.l,d0
 	sub.w	$17CEA.l,d1
-.l23896	cmpi.w	#$90,d0
-	bgt.w	.l238C8
+.next2	cmpi.w	#$90,d0
+	bgt.w	.next3
 	cmpi.w	#$FF70,d0
-	blt.w	.l238C8
+	blt.w	.next3
 	addi.w	#$100,d0		;128+128
 	add.w	d2,d1
 	asr.w	#$1,d2
 	add.w	d2,d1		;y + 1.5 * height
 	cmpi.w	#$90,d1		;112+32
-	bgt.w	.l238C8
+	bgt.w	.next3
 	cmpi.w	#$FF70,d1
-	blt.w	.l238C8
+	blt.w	.next3
 	neg.w	d1
 	addi.w	#$F0,d1		;112+128
 	rts
-.l238C8	move.w	#$4E20,d1
+.next3	move.w	#$4E20,d1
 	rts
 updatesound						;move the crowd noise volume (psg noise channel, asv) toward Crowdlevel.
 									;Called from periodicevents
@@ -141,19 +141,19 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	asl.w	#$3,d0
 	addi.w	#$400,d0
 	cmpi.w	#$EFF,d0
-	bls.w	.l238E6
+	bls.w	.next
 	move.w	#$EFF,d0
-.l238E6	moveq	#$28,d2		;max step 40 (d0 = target level, asv = current)
+.next	moveq	#$28,d2		;max step 40 (d0 = target level, asv = current)
 	sub.w	(asv).l,d0
 	cmp.w	d2,d0
-	bgt.w	.l238FC
+	bgt.w	.next2
 	neg.w	d2
 	cmp.w	d2,d0
-	bge.w	.l2390C		;within 40: no change
-.l238FC	add.w	d2,(asv).l		;step asv toward the target
-	bpl.w	.l2390C
+	bge.w	.next3		;within 40: no change
+.next2	add.w	d2,(asv).l		;step asv toward the target
+	bpl.w	.next3
 	clr.w	(asv).l
-.l2390C	move.b	(asv).l,d0		;psg: noise channel setup, then attenuation below
+.next3	move.b	(asv).l,d0		;psg: noise channel setup, then attenuation below
 	eori.b	#$F,d0
 	ori.b	#$F0,d0
 	rts
@@ -185,10 +185,10 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
-	beq.w	.l239D4
+	beq.w	.next4
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
-.l239D4	bsr.w	DecompressGraphicsPlain
+.next4	bsr.w	DecompressGraphicsPlain
 	jsr	$2A9D0.l
 	move.w	d4,$18D50.l
 	bsr.w	SetupIceRinkPalRemap
@@ -241,13 +241,13 @@ setupice_highlight
 	bsr.w	CopyTeamBlockMapDataFill
 	bsr.w	setupIceRinkPal
 	btst	#$1,$17F68.l
-	beq.w	.l23BA6
+	beq.w	.next
 	movea.l	#$17480,a3
 	moveq	#$B,d0
-.l23B98	bchg	#$7,$62(a3)
+.loop	bchg	#$7,$62(a3)
 	adda.w	#$80,a3
-	dbra	d0,.l23B98
-.l23BA6	bsr.w	CopyTeamLinesCheckTeam
+	dbra	d0,.loop
+.next	bsr.w	CopyTeamLinesCheckTeam
 	move.w	#$FFFF,$17DC8.l
 	move.w	#$FFFF,$17DD6.l
 	clr.l	$17DCA.l
@@ -288,8 +288,8 @@ setupIceRinkPal
 	adda.l	(a0),a0
 	moveq	#$F,d0
 	movea.l	#$BBCB0,a1
-.l23C70	move.l	(a0)+,(a1)+
-	dbra	d0,.l23C70
+.loop	move.l	(a0)+,(a1)+
+	dbra	d0,.loop
 	rts
 ; Decompresses the rink palette with remap.
 SetupIceRinkPalRemap
@@ -360,7 +360,7 @@ CopyTeamBlockMapDataFill
 	movea.l	#$3EE08,a2
 	movea.l	#$17DD8,a3
 	moveq	#$3,d0
-.l23DA8	move.w	#$FFFF,$8(a3)
+.loop	move.w	#$FFFF,$8(a3)
 	move.w	(a2)+,$0(a3)
 	move.w	(a2)+,$2(a3)
 	move.w	(a2)+,$6(a3)
@@ -368,11 +368,11 @@ CopyTeamBlockMapDataFill
 	move.w	d4,$12(a3)
 	add.w	(a2)+,d4
 	adda.w	#$14,a3
-	dbra	d0,.l23DA8
+	dbra	d0,.loop
 	movea.l	#$3EE30,a2
 	movea.l	#$17D04,a3
 	move.l	#$6,d0
-.l23DDE	st.b	$8(a3)
+.loop2	st.b	$8(a3)
 	move.w	(a2)+,$0(a3)
 	move.w	(a2)+,$14(a3)
 	move.w	(a2)+,$18(a3)
@@ -381,7 +381,7 @@ CopyTeamBlockMapDataFill
 	move.w	d4,$12(a3)
 	add.w	(a2)+,d4
 	adda.w	#$1C,a3
-	dbra	d0,.l23DDE
+	dbra	d0,.loop2
 	bra.w	defaultsprites_0Sub1
 defaultsprites_0						;objects which are tied to screen scrolling and have velocity: the 16
 	
@@ -402,10 +402,10 @@ defaultsprites_0Sub1
 	lea.l	SprSort(pc),a2
 	movea.l	#$17480,a3
 	movea.l	#$17CA0,a4
-.l23E9C	moveq	#$1F,d0
+.loop	moveq	#$1F,d0
 	movea.l	a3,a0
-.l23EA0	clr.l	(a0)+
-	dbra	d0,.l23EA0
+.loop2	clr.l	(a0)+
+	dbra	d0,.loop2
 	move.w	d6,$52(a3)
 	st.b	$8(a3)
 	st.b	$66(a3)
@@ -429,7 +429,7 @@ defaultsprites_0Sub1
 	move.w	d6,(a4)+
 	addq.w	#$1,d6
 	cmpi.w	#$10,d6
-	bne.w	.l23E9C
+	bne.w	.loop
 	bra.w	SprSortSetup
 SprSort						;sort objects in struct SortObj and set corresponding tables for keeping
 	
@@ -442,24 +442,24 @@ SprSortSetup
 	movea.l	#$17C80,a1
 	movea.l	#$17480,a0
 	move.w	#$F,d3
-.l24058	move.w	$14(a0),d4
+.loop	move.w	$14(a0),d4
 	btst	#$7,$17F6A.l
-	beq.w	.l2406C
+	beq.w	.next
 	move.w	$0(a0),d4
-.l2406C	move.w	d4,(a1)+
+.next	move.w	d4,(a1)+
 	adda.w	#$80,a0
-	dbra	d3,.l24058
+	dbra	d3,.loop
 	movea.l	#$17C80,a1
-.l2407C	clr.w	d4
+.loop2	clr.w	d4
 	movea.l	#$17CC0,a0
 	move.w	#$E,d3
 	clr.w	d0
 	clr.w	d1
-.l2408C	move.b	(a0)+,d0
+.loop3	move.b	(a0)+,d0
 	move.b	(a0),d1
 	move.w	(a1,d0.w),d2
 	cmp.w	(a1,d1.w),d2
-	ble.w	.l240B6
+	ble.w	.next2
 	move.b	d0,(a0)
 	move.b	d1,-$1(a0)
 	move.l	a0,d2
@@ -468,32 +468,32 @@ SprSortSetup
 	subq.w	#$1,d2
 	move.w	d2,(a2,d1.w)
 	st.b	d4
-.l240B6	dbra	d3,.l2408C
+.next2	dbra	d3,.loop3
 	tst.w	d4
-	bne.w	.l2407C
+	bne.w	.loop2
 	movem.l	(sp)+,d0-d4/a0-a2
 	rts
 resetplstuff
 	movem.l	d0-d2/a0-a3,-(sp)
 	movea.l	#tmstruct,a2
-	bsr.w	.l240E4
+	bsr.w	.next
 	movea.l	#awtmstruct,a2
-	bsr.w	.l240E4
+	bsr.w	.next
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
-.l240E4	bclr	#$4,$32(a2)
+.next	bclr	#$4,$32(a2)
 	moveq	#$5,d2
 	movea.l	$22(a2),a3
-.l240F0	clr.b	$63(a3)
+.loop	clr.b	$63(a3)
 	tst.w	$34(a3)
-	bmi.w	.l24114
+	bmi.w	.next2
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
 	clr.w	$32(a3)
 	clr.b	$5E(a3)
 	andi.b	#$C2,$62(a3)
-.l24114	adda.w	#$80,a3
-	dbra	d2,.l240F0
+.next2	adda.w	#$80,a3
+	dbra	d2,.loop
 	rts
 clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / cold table
 	
@@ -507,9 +507,9 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	movea.l	#$184F0,a0
 	movea.l	#$1A574,a2
 	movea.l	#$1A714,a3
-.l2414A	move.b	(a0)+,(a2)+
+.loop	move.b	(a0)+,(a2)+
 	move.b	(a1)+,(a3)+
-	dbra	d0,.l2414A
+	dbra	d0,.loop
 	movem.l	(sp)+,a1-a3
 	move.l	#$365,d0
 	movea.l	#tmstruct,a0
@@ -525,9 +525,9 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	movea.l	#$184F0,a0
 	movea.l	#$1A574,a2
 	movea.l	#$1A714,a3
-.l24198	move.b	(a2)+,(a0)+
+.loop4	move.b	(a2)+,(a0)+
 	move.b	(a3)+,(a1)+
-	dbra	d0,.l24198
+	dbra	d0,.loop4
 	movem.l	(sp)+,a1-a3
 	move.w	(sp)+,$186DA.l
 	move.w	(sp)+,$18374.l
@@ -539,14 +539,14 @@ setteams						;Use hometeam/visteam to set team structures (InitTeamStructure fo
 	movea.l	#tmstruct,a2
 	move.w	(HomeTeam).l,d0
 	move.l	#$17480,$22(a2)
-	bsr.w	.l241F6
+	bsr.w	.next
 	movea.l	#awtmstruct,a2
 	move.w	(VisTeam).l,d0
 	move.l	#$17780,$22(a2)
-	bsr.w	.l241F6
+	bsr.w	.next
 	movem.l	(sp)+,d0/a0-a2
 	rts
-.l241F6	move.w	d0,$2A(a2)
+.next	move.w	d0,$2A(a2)
 	movea.l	#TeamList,a0
 	asl.w	#$2,d0
 	move.l	(a0,d0.w),$1E(a2)
@@ -576,23 +576,23 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 CopyTeamLinesCheckTeam
 	clr.w	d1
 	cmpi.w	#$13,(VisTeam).l
-	beq.w	.l2426A
+	beq.w	.next
 	cmpi.w	#$13,(HomeTeam).l
-	beq.w	.l2426A
-	bra.w	.l24272
-.l2426A	move.w	#$860,$BBCDC.l
-.l24272	movea.l	#tmstruct,a0
-	bsr.w	.l24282
+	beq.w	.next
+	bra.w	.next2
+.next	move.w	#$860,$BBCDC.l
+.next2	movea.l	#tmstruct,a0
+	bsr.w	.next3
 	moveq	#$20,d1
 	adda.w	#$366,a0
-.l24282	movea.l	$1E(a0),a2
+.next3	movea.l	$1E(a0),a2
 	adda.w	$2(a2),a2
 	adda.w	d1,a2
 	movea.l	#$BBCF0,a1
 	adda.w	d1,a1
 	moveq	#$7,d0
-.l24296	move.l	(a2)+,(a1)+
-	dbra	d0,.l24296
+.loop	move.l	(a2)+,(a1)+
+	dbra	d0,.loop
 	rts
 GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsScreen
 	
@@ -603,35 +603,35 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	jsr	(PlayoffStatsScreen).l
 .po	bsr.w	GameOverCleanup
 	tst.w	$191CE.l
-	bne.s	.l242D2
+	bne.s	.next
 	move.w	#$1,ScrollDisplayUpTbl1.l
 	bsr.w	ScrollDisplayUpCall
-.l242D2	bra.w	GameOverSub1
+.next	bra.w	.next2
 	jsr	$48208.l
-GameOverSub1
+.next2
 	jsr	$48208.l
 	bclr	#$5,$FF800F.l
 	movea.l	#$C458,sp
 	movea.l	#$1745C,a0
-.l242F6	clr.l	(a0)+
+.loop	clr.l	(a0)+
 	cmpa.l	#$18BF0,a0
-	blt.w	.l242F6
+	blt.w	.loop
 	move.l	#vb2,(VBint).l
 	bset	#$5,$FF800F.l
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
 	bsr.w	GameOverCleanup
 	btst	#$0,$17F78.l
-	bne.w	.l24336
+	bne.w	.next3
 	jsr	(ScoutingReport).l
-.l24336	jmp	$2B7F8.l
+.next3	jmp	$2B7F8.l
 ; Resets scroll state and clears the display request.
 GameOverCleanup
 	tst.w	$191CE.l
-	bne.s	.l24350
+	bne.s	.next
 	move.w	#$0,ScrollDisplayUpTbl1.l
 	bsr.w	ScrollDisplayUpCall
-.l24350	bclr	#$5,$FF800F.l
+.next	bclr	#$5,$FF800F.l
 	tst.w	$18BFA.l
 	beq.w	rtss2
 	move.l	#VBlank_Playoff,(VBint).l
@@ -683,10 +683,10 @@ GameOverCleanup
 	adda.l	(a1),a1
 	moveq	#$7,d0
 	movea.l	#$BBCF0,a0
-.l2444A	move.l	-$40(a0),$20(a0)
+.loop	move.l	-$40(a0),$20(a0)
 	move.l	(a1)+,-$40(a0)
 	move.l	-$20(a0),(a0)+
-	dbra	d0,.l2444A
+	dbra	d0,.loop
 	move.w	#$860,$BBCDC.l
 	move.w	#$860,$BBCFC.l
 	move.w	d4,$18D46.l
@@ -694,17 +694,17 @@ GameOverCleanup
 	move.w	#$104,$17CE8.l
 	move.w	#$A0,$17CE6.l
 	movea.l	#$C00004,a0
-.l2448C	btst	#$7,$FF800E.l
-	bne.b	.l2448C
+.loop2	btst	#$7,$FF800E.l
+	bne.b	.loop2
 	move.w	#$9202,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-.l244AE	btst	#$6,$FF800E.l
-	beq.b	.l244AE
+.loop3	btst	#$6,$FF800E.l
+	beq.b	.loop3
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l244C8	btst	#$6,$FF800E.l
-	bne.b	.l244C8
+.loop4	btst	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr	#$7,$FF800F.l
 	movea.l	#$18AA6,a1
 	movea.l	#$41ADE,a0
@@ -713,7 +713,7 @@ GameOverCleanup
 	adda.w	(a0,d0.w),a0
 	clr.w	d4
 	move.b	(a0)+,d4
-.l244F6	bsr.w	printz
+.loop5	bsr.w	printz
 	String	CC_Font1,$0,$0
 	move.b	(a0)+,$18D59.l
 	move.b	(a0)+,$18D5B.l
@@ -721,30 +721,30 @@ GameOverCleanup
 	move.b	(a1)+,d1
 	add.w	d1,d1
 	bsr.w	PlayoffScreen_doteam
-	dbra	d4,.l244F6
+	dbra	d4,.loop5
 	clr.w	d4
 	move.b	(a0)+,d4
-.l2451E	bsr.w	printz
+.loop6	bsr.w	printz
 	String	CC_Font1,$0,$2
 	move.b	(a0)+,$18D59.l
 	clr.w	d0
 	move.b	(a0)+,d0
 	bsr.w	PlayoffScreen_doarrow
-	dbra	d4,.l2451E
+	dbra	d4,.loop6
 	bsr.w	printz
 	String	CC_Font1Pal1,$0,$0
 	cmpi.w	#$7,$18A9C.l
-	beq.w	.l24576
+	beq.w	.next2
 	clr.w	d4
 	move.b	(a0)+,d4
-	bmi.w	.l24576
+	bmi.w	.next2
 	movea.l	#$18A18,a2
-.l2455E	move.b	(a0)+,$18D59.l
+.loop7	move.b	(a0)+,$18D59.l
 	move.b	(a0)+,$18D5B.l
 	bsr.w	PlayoffScreen_doscores
 	adda.w	#$10,a2
-	dbra	d4,.l2455E
-.l24576	bsr.w	printsmallz
+	dbra	d4,.loop7
+.next2	bsr.w	printsmallz
 	String	CC_SetMapAndPosition,$1,$1,$41,$1A
 	dc.w	$43FA,$02AE,$3039,$0001,$8A9E,$6100,$D938,$3011
 	dc.w	$E248,$9179,$0001,$8D58,$6100,$9802,$4A79,$0001

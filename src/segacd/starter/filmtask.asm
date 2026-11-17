@@ -12,35 +12,35 @@ FilmTask	link	a6,#$FFFC
 	lea.l	$40(a0),a4
 	lea.l	RestoreBios_97(pc),a0
 	tst.l	$38(a0)
-	beq.b	.l258B4
+	beq.b	.next
 	moveq	#-2,d0
-	bra.w	Wait_22
-.l258B4	tst.l	$40(a4)
-	bge.b	.l258C0
+	bra.w	.next12
+.next	tst.l	$40(a4)
+	bge.b	.next2
 	moveq	#-1,d0
-	bra.w	Wait_22
-.l258C0	lea.l	RestoreBios_97(pc),a0
+	bra.w	.next12
+.next2	lea.l	RestoreBios_97(pc),a0
 	moveq	#$1,d0
 	cmp.l	$3C(a0),d0
-	bne.b	.l258D6
+	bne.b	.next3
 	pea.l	$30(a4)
 	jsr	AudioSilence(pc)
 	addq.w	#$4,sp
-.l258D6	movea.l	$10(a4),a0
+.next3	movea.l	$10(a4),a0
 	move.l	$40(a4),d0
 	addq.l	#$1,$40(a4)
 	asl.l	#$4,d0
 	lea.l	$10(a0,d0.l),a3
 	moveq	#-1,d0
 	cmp.l	$8(a3),d0
-	bne.w	Wait_17
-	bra.b	Wait_12
-Wait_11	pea.l	$18(a4)
+	bne.w	.next7
+	bra.b	.next4
+.loop	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	pea.l	$30(a4)
 	jsr	AudioIdle(pc)
 	addq.w	#$8,sp
-Wait_12	move.l	$4(a3),-(sp)
+.next4	move.l	$4(a3),-(sp)
 	move.l	(a3),d0
 	add.l	$8(a4),d0
 	move.l	d0,-(sp)
@@ -48,7 +48,7 @@ Wait_12	move.l	$4(a3),-(sp)
 	jsr	GetData(pc)
 	move.l	d0,d7
 	lea.l	$C(sp),sp
-	beq.b	Wait_11
+	beq.b	.loop
 	move.l	$4(a3),-(sp)
 	move.l	d7,-(sp)
 	pea.l	$30(a4)
@@ -57,30 +57,30 @@ Wait_12	move.l	$4(a3),-(sp)
 	moveq	#-1,d0
 	cmp.l	$3C(a0),d0
 	lea.l	$C(sp),sp
-	bne.b	Wait_15
-	bra.b	Wait_14
-Wait_13	pea.l	$30(a4)
+	bne.b	.next6
+	bra.b	.next5
+.loop2	pea.l	$30(a4)
 	jsr	AudioIdle(pc)
 	addq.w	#$4,sp
-Wait_14	pea.l	$30(a4)
+.next5	pea.l	$30(a4)
 	jsr	AudioBusy(pc)
 	tst.w	d0
 	addq.w	#$4,sp
-	bne.b	Wait_13
-Wait_15	move.l	$4(a3),-(sp)
+	bne.b	.loop2
+.next6	move.l	$4(a3),-(sp)
 	move.l	(a3),d0
 	add.l	$8(a4),d0
 	move.l	d0,-(sp)
 	pea.l	$18(a4)
 	jsr	SetBlockEnd(pc)
 	lea.l	$C(sp),sp
-	bra.w	Wait_21
-Wait_16	pea.l	$30(a4)
+	bra.w	.next10
+.loop3	pea.l	$30(a4)
 	jsr	AudioIdle(pc)
 	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	addq.w	#$8,sp
-Wait_17	move.l	$4(a3),-(sp)
+.next7	move.l	$4(a3),-(sp)
 	move.l	(a3),d0
 	add.l	$8(a4),d0
 	move.l	d0,-(sp)
@@ -88,47 +88,47 @@ Wait_17	move.l	$4(a3),-(sp)
 	jsr	GetData(pc)
 	move.l	d0,d7
 	lea.l	$C(sp),sp
-	beq.b	Wait_16
+	beq.b	.loop3
 	movea.l	d7,a0
 	cmpi.w	#$534D,(a0)
-	bne.b	Wait_20
+	bne.b	.next9
 	move.l	d7,-(sp)
 	move.l	-$4(a6),-(sp)
 	jsr	LoadSmImage(pc)
 	move.l	#$7FFFFFFF,d7
 	and.l	$8(a3),d7
-	bra.b	Wait_19
-Wait_18	pea.l	$30(a4)
+	bra.b	.next8
+.loop4	pea.l	$30(a4)
 	jsr	AudioIdle(pc)
 	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	addq.w	#$8,sp
-Wait_19	pea.l	$258.w
+.next8	pea.l	$258.w
 	pea.l	$30(a4)
 	jsr	AudioTime(pc)
 	cmp.l	d0,d7
 	addq.w	#$8,sp
-	bgt.b	Wait_18
+	bgt.b	.loop4
 	jsr	SwapMeg(pc)
 	moveq	#$2,d0
 	move.l	d0,-(sp)
 	jsr	SendCommandToMain(pc)
 	addq.w	#$4,sp
-Wait_20	move.l	$4(a3),-(sp)
+.next9	move.l	$4(a3),-(sp)
 	move.l	(a3),d0
 	add.l	$8(a4),d0
 	move.l	d0,-(sp)
 	pea.l	$18(a4)
 	jsr	SetBlockEnd(pc)
 	lea.l	$C(sp),sp
-Wait_21	movea.l	$10(a4),a0
+.next10	movea.l	$10(a4),a0
 	move.l	$40(a4),d0
 	cmp.l	$C(a0),d0
-	bne.b	.l25A20
+	bne.b	.next11
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
-.l25A20	move.l	$40(a4),d0
-Wait_22	movem.l	-$10(a6),d7/a3-a4
+.next11	move.l	$40(a4),d0
+.next12	movem.l	-$10(a6),d7/a3-a4
 	unlk	a6
 	rts
 

@@ -22,10 +22,10 @@ FilmOpen	link	a6,#$FFFC
 	movea.l	d0,a3
 	move.l	a3,d0
 	lea.l	$C(sp),sp
-	bne.b	.l2567E
+	bne.b	.next
 	moveq	#-1,d0
-	bra.w	Wait_4
-.l2567E	move.l	a3,-(sp)
+	bra.w	.next11
+.next	move.l	a3,-(sp)
 	moveq	#$1,d0
 	move.l	d0,-(sp)
 	move.l	d5,-(sp)
@@ -33,14 +33,14 @@ FilmOpen	link	a6,#$FFFC
 	jsr	WaitIODone(pc)
 	cmpi.l	#$46494C4D,(a3)
 	lea.l	$C(sp),sp
-	beq.b	.l256AC
+	beq.b	.next2
 	move.l	d5,-(sp)
 	pea.l	FilmOpenStr4(pc)
 	jsr	aprint(pc)
 	moveq	#-1,d0
 	addq.w	#$8,sp
-	bra.w	Wait_4
-.l256AC	move.l	$4(a3),d7
+	bra.w	.next11
+.next2	move.l	$4(a3),d7
 	move.l	d7,d0
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
 	dc.w	$D0BC
@@ -50,7 +50,7 @@ FilmOpen	link	a6,#$FFFC
 	move.l	d0,d6
 	moveq	#$1,d0
 	cmp.l	d6,d0
-	bge.b	.l25714
+	bge.b	.next4
 	move.l	a3,-(sp)
 	jsr	ffree(pc)
 	move.l	d6,d1
@@ -66,10 +66,10 @@ FilmOpen	link	a6,#$FFFC
 	movea.l	d0,a3
 	move.l	a3,d0
 	addq.w	#$8,sp
-	bne.b	.l256F8
+	bne.b	.next3
 	moveq	#-1,d0
-	bra.w	Wait_4
-.l256F8	move.l	d6,-(sp)
+	bra.w	.next11
+.next3	move.l	d6,-(sp)
 	pea.l	FilmOpenStr3(pc)
 	jsr	aprint(pc)
 	move.l	a3,-(sp)
@@ -78,7 +78,7 @@ FilmOpen	link	a6,#$FFFC
 	jsr	CdBiosReadSequence(pc)
 	jsr	WaitIODone(pc)
 	lea.l	$14(sp),sp
-.l25714	move.l	$4(a3),$8(a4)
+.next4	move.l	$4(a3),$8(a4)
 	move.l	a3,d0
 	moveq	#$10,d1
 	add.l	d1,d0
@@ -95,10 +95,10 @@ FilmOpen	link	a6,#$FFFC
 	jsr	InitEngine(pc)
 	tst.w	d0
 	lea.l	$C(sp),sp
-	beq.b	.l25756
+	beq.b	.next5
 	moveq	#-1,d0
-	bra.w	Wait_4
-.l25756	pea.l	$18(a4)
+	bra.w	.next11
+.next5	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
 	pea.l	FilmOpenStr1(pc)
 	jsr	aprint(pc)
@@ -106,8 +106,8 @@ FilmOpen	link	a6,#$FFFC
 	move.l	d5,d6
 	move.l	d6,d7
 	addq.w	#$8,sp
-	bra.b	Wait_3
-Wait_2	movea.l	$10(a4),a0
+	bra.b	.next8
+.loop	movea.l	$10(a4),a0
 	move.l	d7,d0
 	asl.l	#$4,d0
 	lea.l	$10(a0,d0.l),a3
@@ -115,31 +115,31 @@ Wait_2	movea.l	$10(a4),a0
 	cmp.l	$8(a3),d0
 	seq.b	d3
 	neg.b	d3
-	beq.b	.l2578E
+	beq.b	.next6
 	move.l	d5,d0
 	addq.l	#$1,d5
-	bra.b	.l25792
-.l2578E	move.l	d6,d0
+	bra.b	.next7
+.next6	move.l	d6,d0
 	addq.l	#$1,d6
-.l25792	move.l	d7,d0
+.next7	move.l	d7,d0
 	addq.l	#$1,d7
-Wait_3	movea.l	$10(a4),a0
+.next8	movea.l	$10(a4),a0
 	cmp.l	$C(a0),d7
-	blt.b	Wait_2
+	blt.b	.loop
 	lea.l	RestoreBios_97(pc),a0
 	moveq	#$0,d0
 	move.l	d0,$3C(a0)
 	tst.l	d6
-	bne.b	.l257B8
+	bne.b	.next9
 	lea.l	RestoreBios_97(pc),a0
 	moveq	#-1,d0
 	move.l	d0,$3C(a0)
-.l257B8	tst.l	d5
-	bne.b	.l257C6
+.next9	tst.l	d5
+	bne.b	.next10
 	lea.l	RestoreBios_97(pc),a0
 	moveq	#$1,d0
 	move.l	d0,$3C(a0)
-.l257C6	lea.l	RestoreBios_97(pc),a0
+.next10	lea.l	RestoreBios_97(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$20(a0),(a1)
 	lea.l	RestoreBios_97(pc),a0
@@ -169,7 +169,7 @@ Wait_3	movea.l	$10(a4),a0
 	jsr	AudioInit(pc)
 	moveq	#$0,d0
 	lea.l	$C(sp),sp
-Wait_4	movem.l	-$1C(a6),d3/d5-d7/a3-a4
+.next11	movem.l	-$1C(a6),d3/d5-d7/a3-a4
 	unlk	a6
 	rts
 

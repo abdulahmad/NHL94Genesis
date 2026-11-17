@@ -6,7 +6,7 @@
 
 	lea.l	DispatchTail_14(pc),a0
 	move.l	$4(sp),(a0)
-	lea.l	.lFF1ECC(pc),a0
+	lea.l	.next(pc),a0
 	move.l	$FFFFFD08.w,(a0)
 	lea.l	DispatchTail_15(pc),a0
 	move.w	sr,d0
@@ -14,15 +14,15 @@
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	jsr	MAINCODE_A(pc)
-.lFF1EB4	move.w	DispatchTail_16(pc),d0
-	bne.b	.lFF1EB4
-	movea.l	.lFF1ECC(pc),a0
+.loop	move.w	DispatchTail_16(pc),d0
+	bne.b	.loop
+	movea.l	.next(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	rts
-.lFF1ECC	ori.b	#$0,d0
+.next	ori.b	#$0,d0
 DispatchTail_14	ori.b	#$0,d0
 	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
@@ -34,8 +34,8 @@ DispatchTail_14	ori.b	#$0,d0
 	move.l	d0,$4(a0)
 	moveq	#$0,d0
 	move.l	#$3FFF,d1
-.lFF1EF8	move.l	d0,(a0)
-	dbra	d1,.lFF1EF8
+.loop	move.l	d0,(a0)
+	dbra	d1,.loop
 	moveq	#$0,d0
 	move.l	#$C0000000,$4(a0)
 	move.l	#$EEE,(a0)
@@ -48,12 +48,12 @@ DispatchTail_14	ori.b	#$0,d0
 	move.l	d0,(a0)
 	move.w	#$9001,$4(a0)
 	move.w	#$8B00,$4(a0)
-	bsr.b	.lFF1F3E
+	bsr.b	.next
 	move.w	#$8238,$4(a0)
 	move.w	#$857C,$4(a0)
 	move.w	#$8D3F,$4(a0)
 	rts
-.lFF1F3E	move.w	#$8F02,$4(a0)
+.next	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
 	lsl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -62,34 +62,34 @@ DispatchTail_14	ori.b	#$0,d0
 	move.l	d0,$4(a0)
 	moveq	#$0,d1
 	move.w	#$FF,d0
-.lFF1F5A	move.l	d1,(a0)
-	dbra	d0,.lFF1F5A
+.loop2	move.l	d1,(a0)
+	dbra	d0,.loop2
 	lea.l	DispatchTail_26(pc),a1
 	move.w	#$2FF,d3
-.lFF1F68	move.b	(a1)+,d0
+.loop3	move.b	(a1)+,d0
 	moveq	#$7,d2
-.lFF1F6C	lsl.l	#$4,d1
+.loop4	lsl.l	#$4,d1
 	add.b	d0,d0
-	bcs.b	.lFF1F7C
+	bcs.b	.next2
 	ori.b	#$2,d1
-	dbra	d2,.lFF1F6C
-	bra.b	.lFF1F84
-.lFF1F7C	ori.b	#$1,d1
-	dbra	d2,.lFF1F6C
-.lFF1F84	move.l	d1,(a0)
-	dbra	d3,.lFF1F68
+	dbra	d2,.loop4
+	bra.b	.next3
+.next2	ori.b	#$1,d1
+	dbra	d2,.loop4
+.next3	move.l	d1,(a0)
+	dbra	d3,.loop3
 	rts
 DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
 	lea.l	DispatchTail_16(pc),a2
 	tst.w	(a2)
-	beq.w	.lFF203E
+	beq.w	.next3
 	movea.l	#$C00000,a0
 	lea.l	DispatchTail_18(pc),a1
 	move.l	#$C0000000,$4(a0)
 	move.w	DispatchTail_17(pc),d0
-.lFF1FBA	move.l	(a1)+,(a0)
+.loop	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -97,7 +97,7 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
-	dbra	d0,.lFF1FBA
+	dbra	d0,.loop
 	clr.w	(a2)
 	move.l	DispatchTail_19(pc),d3
 	lea.l	DispatchTail_23(pc),a2
@@ -107,10 +107,10 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	DispatchTail_21(pc),d6
 	moveq	#$7,d0
 	and.w	d6,d0
-	bne.b	.lFF2016
+	bne.b	.next
 	lsr.w	#$3,d6
 	subq.w	#$1,d6
-.lFF1FF0	move.w	d6,d5
+.loop2	move.w	d6,d5
 	move.l	d3,d0
 	add.l	d2,d3
 	lsl.l	#$2,d0
@@ -118,15 +118,15 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-.lFF2004	move.l	(a2)+,(a0)
+.loop3	move.l	(a2)+,(a0)
 	move.l	(a2)+,(a0)
 	move.l	(a2)+,(a0)
 	move.l	(a2)+,(a0)
-	dbra	d5,.lFF2004
-	dbra	d7,.lFF1FF0
-	bra.b	.lFF2036
-.lFF2016	subq.w	#$1,d6
-.lFF2018	move.w	d6,d5
+	dbra	d5,.loop3
+	dbra	d7,.loop2
+	bra.b	.next2
+.next	subq.w	#$1,d6
+.loop4	move.w	d6,d5
 	move.l	d3,d0
 	add.l	d2,d3
 	lsl.l	#$2,d0
@@ -134,18 +134,18 @@ DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-.lFF202C	move.w	(a2)+,(a0)
-	dbra	d5,.lFF202C
-	dbra	d7,.lFF2018
-.lFF2036	lea.l	DispatchTail_16+$2(pc),a2
+.loop5	move.w	(a2)+,(a0)
+	dbra	d5,.loop5
+	dbra	d7,.loop4
+.next2	lea.l	DispatchTail_16+$2(pc),a2
 	eori.w	#$1,(a2)
-.lFF203E	lea.l	DispatchTail_13(pc),a0
+.next3	lea.l	DispatchTail_13(pc),a0
 	addq.l	#$1,(a0)
 	move.l	DispatchTail_14(pc),d0
-	beq.b	.lFF204E
+	beq.b	.next4
 	movea.l	d0,a0
 	jsr	(a0)
-.lFF204E	movem.l	(sp)+,d0-d7/a0-a5
+.next4	movem.l	(sp)+,d0-d7/a0-a5
 	rte
 DispatchTail_16	ori.b	#$0,d0
 DispatchTail_17	ori.b	#$0,d0
@@ -845,17 +845,17 @@ DrawTextToPlane	link	a6,#$0
 	move.l	d0,$4(a0)
 	moveq	#$0,d0
 	movea.l	$10(a6),a1
-.lFF2B2E	move.b	(a1)+,d0
-	beq.b	.lFF2B36
+.loop	move.b	(a1)+,d0
+	beq.b	.next
 	move.w	d0,(a0)
-	bra.b	.lFF2B2E
-.lFF2B36	movem.l	(sp)+,d0-d7/a0-a5
+	bra.b	.loop
+.next	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-.lFF2B44	move.w	DispatchTail_16(pc),d0
-	bne.b	.lFF2B44
+.loop2	move.w	DispatchTail_16(pc),d0
+	bne.b	.loop2
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
 	lsl.l	#$2,d0
@@ -865,8 +865,8 @@ DrawTextToPlane	link	a6,#$0
 	move.l	d0,$4(a0)
 	moveq	#$0,d0
 	move.w	#$3FF,d1
-.lFF2B6A	move.l	d0,(a0)
-	dbra	d1,.lFF2B6A
+.loop3	move.l	d0,(a0)
+	dbra	d1,.loop3
 	lea.l	DispatchTail_16+$2(pc),a0
 	move.w	#$1,(a0)
 	lea.l	DispatchTail_18(pc),a0
@@ -880,42 +880,42 @@ DrawTextToPlane	link	a6,#$0
 	clr.l	(a0)+
 	lea.l	DispatchTail_16(pc),a0
 	move.w	#$1,(a0)
-.lFF2B98	move.w	(a0),d0
-	bne.b	.lFF2B98
+.loop4	move.w	(a0),d0
+	bne.b	.loop4
 	moveq	#$0,d0
 	rts
 ; C function: draws a string buffer, waiting for the VDP command queue.
 DrawTextBuffer	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	lea.l	DispatchTail_16(pc),a2
-.lFF2BAC	tst.w	(a2)
-	bne.b	.lFF2BAC
+.loop	tst.w	(a2)
+	bne.b	.loop
 	movea.l	#$C00000,a0
 	movea.l	$10(a6),a4
 	lea.l	DispatchTail_19(pc),a1
 	move.l	$C(a6),(a1)
 	movea.l	$14(a6),a1
 	cmpi.w	#$534D,(a1)
-	bne.w	.lFF2CA8
+	bne.w	.next8
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
 	move.w	DispatchTail_16+$2(pc),d1
-	bne.b	.lFF2BEA
+	bne.b	.next
 	moveq	#$0,d0
 	move.w	d6,d0
 	mulu.w	d7,d0
 	adda.l	d0,a5
 	lsl.l	#$5,d0
 	adda.l	d0,a4
-.lFF2BEA	move.w	$2(a1),d1
+.next	move.w	$2(a1),d1
 	andi.w	#$3,d1
 	lea.l	DispatchTail_17(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
 	lea.l	DispatchTail_18(pc),a2
-.lFF2C02	move.l	(a1)+,(a2)+
+.loop2	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
@@ -924,7 +924,7 @@ DrawTextBuffer	link	a6,#$0
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
-	dbra	d0,.lFF2C02
+	dbra	d0,.loop2
 	lea.l	DispatchTail_21(pc),a3
 	move.l	d6,(a3)
 	lea.l	DispatchTail_22(pc),a3
@@ -935,45 +935,45 @@ DrawTextBuffer	link	a6,#$0
 	lsr.l	#$5,d3
 	add.w	a5,d3
 	move.l	$8(a6),d0
-	beq.b	.lFF2C3E
+	beq.b	.next2
 	bset	#$F,d3
-.lFF2C3E	moveq	#$1,d2
+.next2	moveq	#$1,d2
 	move.w	d7,d5
-	bra.b	.lFF2C66
-.lFF2C44	move.w	d6,d4
-	bra.b	.lFF2C62
-.lFF2C48	subq.w	#$1,d2
-	bne.b	.lFF2C54
+	bra.b	.next5
+.loop3	move.w	d6,d4
+	bra.b	.next4
+.loop4	subq.w	#$1,d2
+	bne.b	.next3
 	move.l	(a1)+,d7
 	moveq	#$11,d1
 	ror.l	d1,d7
 	moveq	#$10,d2
-.lFF2C54	move.w	d7,d1
+.next3	move.w	d7,d1
 	rol.l	#$2,d7
 	andi.w	#$6000,d1
 	add.w	d3,d1
 	addq.w	#$1,d3
 	move.w	d1,(a3)+
-.lFF2C62	dbra	d4,.lFF2C48
-.lFF2C66	dbra	d5,.lFF2C44
+.next4	dbra	d4,.loop4
+.next5	dbra	d5,.loop3
 	move.l	(sp)+,d7
 	moveq	#$0,d2
 	move.w	d6,d2
 	mulu.w	d7,d2
 	lsl.l	#$4,d2
 	move.l	a4,d0
-	bsr.b	.lFF2CBE
-	bra.b	.lFF2CA8
+	bsr.b	.next9
+	bra.b	.next8
 	move.l	a4,d0
 	lsl.l	#$2,d0
 	lsr.w	#$2,d0
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-	bra.b	.lFF2CA4
-.lFF2C8C	move.w	d6,d4
-	bra.b	.lFF2CA0
-.lFF2C90	move.l	(a1)+,(a0)
+	bra.b	.next7
+.loop5	move.w	d6,d4
+	bra.b	.next6
+.loop6	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -981,16 +981,16 @@ DrawTextBuffer	link	a6,#$0
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
-.lFF2CA0	dbra	d4,.lFF2C90
-.lFF2CA4	dbra	d7,.lFF2C8C
-.lFF2CA8	lea.l	DispatchTail_16(pc),a2
+.next6	dbra	d4,.loop6
+.next7	dbra	d7,.loop5
+.next8	lea.l	DispatchTail_16(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	lea.l	$10(sp),sp
 	jmp	(a0)
-.lFF2CBE	move.l	a1,d1
+.next9	move.l	a1,d1
 	addq.w	#$2,d1
 	lsr.l	#$1,d1
 	move.w	#$8F02,$4(a0)

@@ -13,12 +13,12 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 									;skater, or no highlight: the stick takes the puck (steal check if someone
 									;has it)
 	tst.w	$34(a2)		;a2 = player who collided
-	bne.w	.l20C44		;branch if not goalie
+	bne.w	.next		;branch if not goalie
 	btst	#$4,$17F68.l
 	bne.w	rtss2		;exit if so (goalie always lets the shot in)
-.l20C44	bclr	#$0,$62(a2)
+.next	bclr	#$0,$62(a2)
 	move.w	$17BE0.l,d1		;move puckc into d1
-	bmi.w	.l20D3A		;branch if no puck carrier
+	bmi.w	.next6		;branch if no puck carrier
 	asl.w	#$7,d1
 	movea.l	#$17480,a0
 	adda.w	d1,a0		;a0 = Struct of puck carrier
@@ -28,14 +28,14 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	btst	#$6,d2		;check if on same team
 	beq.w	rtss2		;no stealing from teammate
 	btst	#$5,(sflags6).l		;check if puckc is in slot
-	beq.w	.l20C8A
+	beq.w	.next2
 	cmpi.l	#$40,d0		;steal range met: goalies always steal, nobody steals from a goalie
 	bhi.w	rtss2
-	bra.w	.l20C94
-.l20C8A	cmpi.l	#$24,d0
+	bra.w	.next3
+.next2	cmpi.l	#$24,d0
 	bhi.w	rtss2
-.l20C94	tst.w	$34(a2)		;check if colliding player is goalie
-	beq.w	.l20CEA
+.next3	tst.w	$34(a2)		;check if colliding player is goalie
+	beq.w	.next5
 	tst.w	$34(a0)
 	beq.w	rtss2		;no stealing from goalie
 	move.b	$71(a0),d0
@@ -52,13 +52,13 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	addi.w	#$24,d0		;add 24 hex (36 decimal)
 	bsr.w	randomd0
 	btst	#$5,(sflags6).l		;check if puckc is in slot
-	beq.w	.l20CE2
+	beq.w	.next4
 	cmpi.w	#$4,d0		;steal: the carrier cannot touch the puck for a while (stick handling,
 	bhi.w	rtss2		;exit if higher (not losing puck)
-	bra.w	.l20CEA
-.l20CE2	cmpi.w	#$2,d0		;compare 2 to d0
+	bra.w	.next5
+.next4	cmpi.w	#$2,d0		;compare 2 to d0
 	bhi.w	rtss2		;exit if higher (not losing puck)
-.l20CEA	move.b	$71(a0),d0		;Stk of puckc
+.next5	move.b	$71(a0),d0		;Stk of puckc
 	lsr.b	#$1,d0
 	bsr.w	makepde		;adj for energy
 	addi.w	#$14,d0		;add 14 hex (20 dec)
@@ -73,50 +73,50 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	move.w	$52(a0),$17E2A.l
 	bclr	#$2,$17F6A.l		;clear pass dir mode
 	bclr	#$3,$17F6A.l		;clear shot dir mode
-.l20D2A	move.w	#$6,-(sp)
+.loop	move.w	#$6,-(sp)
 	bsr.w	sfx
 	bsr.w	a2touchpuck		;deflect
 	bra.w	deflect		;no carrier (goalie in the smaller range): one-timer check
-.l20D3A	tst.w	$34(a2)
-	bne.w	.l20D4C
+.next6	tst.w	$34(a2)
+	bne.w	.next7
 	cmpi.l	#$40,d0
 	bhi.w	rtss2		;smaller range for stealing puck
-.l20D4C	btst	#$3,$64(a2)
-	beq.w	.l20D78
+.next7	btst	#$3,$64(a2)
+	beq.w	.next8
 	cmpi.l	#$64,d0		;not a one-timer, or past its frame: catch or deflect by puck speed
-	bhi.w	.l20DCC
+	bhi.w	.next11
 	cmpi.w	#$18,$5A(a2)
-	bge.w	.l20D78
+	bge.w	.next8
 	move.w	#$18,$5A(a2)
 	bset	#$7,$17F7C.l
-.l20D78	move.w	$17BA8.l,d0
+.next8	move.w	$17BA8.l,d0
 	move.w	$17BAA.l,d1
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	clr.w	d1
 	btst	#$4,$17F6C.l		;check if shot was taken
-	bne.w	.l20DAA
+	bne.w	.next9
 	btst	#$3,$64(a2)		;check if one timer
-	bne.w	.l20DC0
+	bne.w	.next10
 	move.b	$71(a2),d1
 	mulu.w	#$15E,d1
-.l20DAA	addi.w	#$32C8,d1
+.next9	addi.w	#$32C8,d1
 	mulu.w	d1,d1
 	cmp.l	d1,d0
 	bls.w	puckglue
 	move.b	#$8,$5E(a2)
-	bra.w	.l20D2A
-.l20DC0	exg.l	a2,a3
+	bra.w	.loop
+.next10	exg.l	a2,a3
 	jsr	(onetimershot).l
 	exg.l	a2,a3
 	rts
-.l20DCC	cmpi.l	#$144,d0
-	bhi.w	.l20DE6
+.next11	cmpi.l	#$144,d0
+	bhi.w	.ex
 	cmpi.w	#$18,$5A(a2)
-	bge.w	.l20DE6
+	bge.w	.ex
 	move.w	#$18,$5A(a2)
-.l20DE6	rts
+.ex	rts
 puckglue						;part of puckstick that puckgoalie also branches to. Player a2 takes the
 									;puck: faceoff and pass stats, crowd song, goalie hold time (temp5), then
 									;.setd0player
@@ -126,75 +126,75 @@ puckglue						;part of puckstick that puckgoalie also branches to. Player a2 tak
 	movea.l	#tmstruct,a0		;Move Home Stats struct into a0
 	lea.l	$366(a0),a1
 	btst	#$6,$62(a2)		;check if player is home or away
-	bne.w	.l20E0C
+	bne.w	.next
 	exg.l	a0,a1
-.l20E0C	st.b	$1A(a0)		;FF into assist 1
+.next	st.b	$1A(a0)		;FF into assist 1
 	st.b	$1C(a0)		;FF into assist 2
 	bset	#$3,$32(a0)		;set a flag (not sure what)
 	bclr	#$4,$17F6E.l		;clear flag (not sure what, might have to do with faceoff)
-	beq.w	.l20E4E		;branch if it was cleared already
+	beq.w	.next2		;branch if it was cleared already
 	addi.w	#$1,$E(a1)		;add 1 to faceoff won
 	addi.w	#$C8,(Crowdlevel).l
 	move.w	#$C,(sp)		;move C to stack
 	cmpa.l	#$1834C,a1		;compare if a1 is home
-	bne.w	.l20E4E
+	bne.w	.next2
 	addi.w	#$A,$17CD8.l
 	move.w	#$B,(sp)		;Move B into stack
-.l20E4E	bsr.w	sfx
+.next2	bsr.w	sfx
 	move.w	$52(a2),d0		;move SCnum into d0
 	cmp.w	$17E30.l,d0
-	bne.w	.l20E66
+	bne.w	.next3
 	addi.w	#$1,$14(a1)
-.l20E66	st.b	$17E30.l
+.next3	st.b	$17E30.l
 	bclr	#$2,$17F6A.l		;clear pass dir mode
 	bclr	#$3,$17F6A.l		;clear shot dir mode
 	tst.w	$34(a2)		;check if a2 is goalie
-	bne.w	.l20E9E
+	bne.w	.next4
 	bsr.w	ChkShotStat
 	move.w	#$8C,$48(a2)		;move 8C to temp5 - countdown for faceoff?
 	cmpi.w	#$2F4,$58(a2)		;check for goalie dive animation
-	bne.w	.l20E9E		;branch if not equal
+	bne.w	.next4		;branch if not equal
 	move.w	#$5,$48(a2)		;set temp5 to 5
-.l20E9E	cmp.w	$17F9E.l,d0
+.next4	cmp.w	$17F9E.l,d0
 	beq.w	rtss2
 	cmp.w	$17FA0.l,d0
 	beq.w	rtss2
 	tst.w	$17FAA.l
-	beq.w	.l20EC6
+	beq.w	.next5
 	cmp.w	$17FA2.l,d0
 	beq.w	rtss2
-.l20EC6	tst.w	$17FAC.l
-	beq.w	.l20EDA
+.next5	tst.w	$17FAC.l
+	beq.w	.next6
 	cmp.w	$17FA4.l,d0
 	beq.w	rtss2
-.l20EDA	tst.w	$17FAA.l
-	bne.w	.l20EEE
+.next6	tst.w	$17FAA.l
+	bne.w	.next7
 	tst.w	$17FAC.l
-	beq.w	.l20F16		;branch if no team
-.l20EEE	movem.l	d0/a3,-(sp)
+	beq.w	.next9		;branch if no team
+.next7	movem.l	d0/a3,-(sp)
 	asl.w	#$7,d0
 	movea.l	#$17480,a3
 	tst.w	$34(a3,d0.w)
-	bne.w	.l20F12
+	bne.w	.next8
 	btst	#$3,$62(a3,d0.w)		;check if d0 player controlled
-	beq.w	.l20F12
+	beq.w	.next8
 	movem.l	(sp)+,d0/a3		;exit if player controlled
 	rts
-.l20F12	movem.l	(sp)+,d0/a3
-.l20F16	cmpi.w	#$6,d0
+.next8	movem.l	(sp)+,d0/a3
+.next9	cmpi.w	#$6,d0
 	slt.b	d1
 	ext.w	d1
 	addi.w	#$2,d1
 	move.w	$17E2A.l,d2
 	cmp.w	$17FA0.l,d2
-	beq.w	.l20F42
+	beq.w	.next10
 	cmp.w	$17FA6.l,d1
-	bne.w	.l20F42
+	bne.w	.next10
 	jmp	(setc1player).l
-.l20F42	cmp.w	$17FA8.l,d1
-	bne.w	.l20F52
+.next10	cmp.w	$17FA8.l,d1
+	bne.w	.next11
 	jmp	(setc2player).l
-.l20F52	cmp.w	$17FA6.l,d1
+.next11	cmp.w	$17FA6.l,d1
 	bne.w	rtss2
 	jmp	(setc1player).l
 puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckcoll
@@ -203,11 +203,11 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	btst	#$3,$64(a2)
 	bne.w	rtss2		;real hit (low or near center): a2 touched the puck
 	cmpi.w	#$8,$18(a3)
-	bgt.w	.l20F80
+	bgt.w	.next
 	move.w	d0,d1
 	andi.w	#$F,d1		;radius^2 from center
 	bne.w	rtss2
-.l20F80	bsr.w	a2touchpuck		;real hit: a2 touched the puck
+.next	bsr.w	a2touchpuck		;real hit: a2 touched the puck
 	move.w	#$24,-(sp)
 	bsr.w	sfx
 	clr.w	$2C(a3)
@@ -216,10 +216,10 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	sub.w	$0(a2),d0
 	move.w	$14(a3),d1
 	sub.w	$14(a2),d1
-	bne.w	.l20FB0
+	bne.w	.next2
 	move.l	a2,-(sp)
 	bsr.w	GetHotCount
-.l20FB0	move.w	$28(a3),d2
+.next2	move.w	$28(a3),d2
 	move.w	$2A(a3),d3
 	move.b	d0,$28(a3)
 	move.b	d1,$2A(a3)
@@ -230,11 +230,11 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	muls.w	d3,d3
 	add.l	d3,d2		;slow puck: a2 catches it (SPAcatch) unless locked
 	cmpi.l	#$9000000,d2		;fast puck
-	bls.w	.l20FEA
+	bls.w	.next3
 	cmpi.w	#$C,$18(a3)
 	bgt.w	FallDown
 	rts
-.l20FEA	bset	#$5,$62(a2)
+.next3	bset	#$5,$62(a2)
 	bne.w	rtss2
 	move.w	#$10D0,d1
 	exg.l	a2,a3
@@ -263,9 +263,9 @@ makepde						;pass d0 as value to be scaled by player a0's energy level (full en
 	movea.l	a0,a3
 	bsr.w	getpde
 	btst	#$4,$17F7A.l
-	beq.w	.l21292
+	beq.w	.next
 	move.w	#$1000,d0
-.l21292	movem.l	(sp)+,d1/a2-a3
+.next	movem.l	(sp)+,d1/a2-a3
 	muls.w	(sp)+,d0
 	asl.l	#$4,d0
 	swap	d0
@@ -275,18 +275,18 @@ getpde						;get player a3's energy level into d0. Return a2 = his team struct, 
 									;pnum*2
 	movea.l	#tmstruct,a2
 	btst	#$6,$62(a3)		;#pfteam - home or away
-	beq.w	.l212B4
+	beq.w	.next
 	adda.w	#$366,a2
-.l212B4	move.b	$66(a3),d1
+.next	move.b	$66(a3),d1
 	ext.w	d1
 	add.w	d1,d1
 	move.w	$34(a2,d1.w),d0
 	rts
 setpde
 	tst.w	d0
-	bpl.w	.l212CA
+	bpl.w	.next
 	clr.w	d0
-.l212CA	move.w	d0,$34(a2,d1.w)
+.next	move.w	d0,$34(a2,d1.w)
 	rts
 updatepwrplay						;show graphic and time remaining for power plays. Nothing when gmode2 bit
 	
@@ -580,16 +580,16 @@ getlinee						;d0 = line number, a2 = team struct. Return d0 = energy level of t
 	clr.w	d1
 	movea.l	#$41AD6,a0
 	move.w	$26(a2),d4
-	bra.w	.l217D6
+	bra.w	.next
 .loop	clr.w	d5
 	move.b	(a0,d4.w),d5
-	beq.w	.l217D6
+	beq.w	.next
 	clr.w	d3
 	move.b	(a1,d5.w),d3
 	asl.w	#$1,d3
 	addi.w	#$1,d1
 	add.w	$32(a2,d3.w),d0
-.l217D6	dbra	d4,.loop
+.next	dbra	d4,.loop
 	divu.w	d1,d0
 	movem.l	(sp)+,d1-d5/a0-a3
 	rts

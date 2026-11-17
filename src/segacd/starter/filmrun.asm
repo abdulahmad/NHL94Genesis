@@ -7,7 +7,7 @@
 
 
 RestoreBios_107	tst.w	$4(sp)
-	bne.b	.l250F6
+	bne.b	.next
 	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
 	lea.l	RestoreBios_100(pc),a0
@@ -32,25 +32,25 @@ RestoreBios_107	tst.w	$4(sp)
 	unlk	a6
 	tst.l	d0
 	rts
-.l250F6	link	a6,#$0
+.next	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
 	move.w	$8(a6),d0
 	subq.w	#$1,d0
-	bne.b	.l2510C
+	bne.b	.next2
 	jsr	FilmTask(pc)
-	bra.b	.l2511A
-.l2510C	jsr	FilmClose(pc)
+	bra.b	.next3
+.next2	jsr	FilmClose(pc)
 	jsr	RemoveIrqHook1(pc)
 	jsr	RemoveIrqHook2(pc)
 	moveq	#$0,d0
-.l2511A	movem.l	(sp)+,d1-d7/a0-a5
+.next3	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	tst.l	d0
 	rts
 	move.w	$0.w,d0
-.l25128	addq.w	#$1,$0.w
+.loop	addq.w	#$1,$0.w
 	cmp.w	$0.w,d0
-	beq.b	.l25128
+	beq.b	.loop
 	move.w	d0,$0.w
 	clr.l	$8.w
 	clr.l	$C.w
@@ -83,9 +83,9 @@ RestoreBios_111	movem.l	d0/a0,-(sp)
 	lea.l	RestoreBios_98(pc),a0
 	addq.l	#$1,(a0)
 	move.l	RestoreBios_105(pc),d0
-	beq.b	.l251A4
+	beq.b	.next
 	movea.l	d0,a0
 	jsr	(a0)
-.l251A4	movem.l	(sp)+,d0/a0
+.next	movem.l	(sp)+,d0/a0
 	rts
 

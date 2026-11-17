@@ -9,10 +9,10 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 	move.w	#$B,$1936A.l
 	movea.l	#$1A41C,a0
 	tst.w	$1A436.l
-	beq.w	.lCA7A
+	beq.w	.next
 	move.w	#$5,$1936A.l
 	movea.l	#$1A42A,a0
-.lCA7A	move.w	$1A428.l,d0
+.next	move.w	$1A428.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),$1936C.l
 	bclr	#$2,$17BE2.l
@@ -22,16 +22,16 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$0,$1A437.l
-	beq.w	.lCAD6
+	beq.w	.next
 	cmpi.w	#$5,$1A41A.l
-	blt.w	.lCAD6
+	blt.w	.next
 	move.w	$1A416.l,d0
 	cmp.w	$1A418.l,d0
-	beq.w	.lCAD6
+	beq.w	.next
 	bset	#$3,$17F78.l
 	jsr	$291CE.l
 	bra.w	.x
-.lCAD6	eori.w	#$1,$1A436.l
+.next	eori.w	#$1,$1A436.l
 	bne.w	.x
 	addi.w	#$1,$1A428.l
 	cmpi.w	#$5,$1A428.l
@@ -178,7 +178,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	btst	#$7,d1
 	bne.w	ShootoutShooters_1
 	btst	#$5,d1
-	bne.w	.lCE0E
+	bne.w	.next
 	moveq	#$1,d0
 	btst	#$1,d1
 	bne.w	.scroll
@@ -209,7 +209,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	d0,(PlayerScrollCtr).l
 .9	bsr.w	PrintShooterList
 	bra.w	.loop2
-.lCE0E	movea.l	#$BBD30,a3
+.next	movea.l	#$BBD30,a3
 	adda.w	(VertLineScrolling).l,a3
 	clr.w	d0
 	move.b	(a3),d0
@@ -315,9 +315,9 @@ ShootersSelectDraw
 	String	CC_Font2Pri,$A,$4,'  Shootout  ',CC_Font2Pri,$F,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
-	beq.w	.lD018
+	beq.w	.next
 	move.w	#$2C,d0
-.lD018	jmp	(PutTeamBlockDraw).l
+.next	jmp	(PutTeamBlockDraw).l
 ClearShooterScreen						;Shootout shooters: erase the screen
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
@@ -362,9 +362,9 @@ ShooterScreenFrame
 	String	CC_Font3,$15,$FC,$8,CC_Font2,$6
 	movea.l	#$1A41C,a1
 	cmpa.l	#$1834C,a2
-	beq.w	.lD114
+	beq.w	.next
 	movea.l	#$1A42A,a1
-.lD114	move.w	(TestList).l,d0
+.next	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a1,d0.w),d0
 	jsr	(GetPlayerNameBuild).l
@@ -382,27 +382,27 @@ ShooterScreenRows
 	move.w	#$0,d1
 	movea.l	#$1A41C,a0
 	cmpa.l	#$1834C,a2
-	beq.w	.lD16A
+	beq.w	.loop
 	movea.l	#$1A42A,a0
-.lD16A	move.w	d1,d0
+.loop	move.w	d1,d0
 	asl.w	#$1,d0
 	move.w	(a0,d0.w),d0
 	jsr	$41226.l
 	move.w	(printx).l,-(sp)
 	cmp.w	(TestList).l,d1
-	bne.w	.lD190
+	bne.w	.next
 	move.w	#$2,(printfontset).l
-.lD190	cmpi.w	#$5,d1
-	bne.w	.lD1A8
+.next	cmpi.w	#$5,d1
+	bne.w	.next2
 	move.w	#$19,(printx).l
 	move.w	#$E,(printy).l
-.lD1A8	jsr	(printsmall).l
+.next2	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	move.w	(sp)+,(printx).l
 	addi.w	#$2,(printy).l
 	addi.w	#$1,d1
 	cmpi.w	#$6,d1
-	blt.w	.lD16A
+	blt.w	.loop
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ScoutCrowdRecord						;The text player's '@' (UpdateScoutingDisplay): return a1 = the home
@@ -419,9 +419,9 @@ ScoutCrowdRecord						;The text player's '@' (UpdateScoutingDisplay): return a1 
 	movea.l	#TempBuffer,a1
 	clr.w	d0
 	move.b	$8(a0),d0		;crowd record
-	bne.w	.lD204
+	bne.w	.next
 	move.b	#$50,d0		;none saved: 80 dB
-.lD204	move.l	a1,-(sp)
+.next	move.l	a1,-(sp)
 	jsr	(AppendNumber).l		;d0 as a decimal String at a1
 	movea.l	(sp)+,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a6
@@ -437,7 +437,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	jsr	(ReadCrowdRecord).l		;read the HomeTeam record
 	movea.l	(sp)+,a0
 	tst.b	$9(a0)
-	beq.w	.lD27E
+	beq.w	.next
 	movea.l	#ThreeStars,a3
 	movea.l	#$2828C,a1
 	move.l	a3,-(sp)
@@ -452,9 +452,9 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	movea.l	#$28292,a1
 	jsr	(appstring).l
 	movea.l	a3,a1		;a1 = 'by <name> '
-	bra.w	.lD284
-.lD27E	movea.l	#ScoutEmptyTxt,a1
-.lD284	movem.l	(sp)+,d0-d7/a0/a2-a6
+	bra.w	.next2
+.next	movea.l	#ScoutEmptyTxt,a1
+.next2	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutEmptyTxt						;empty String: no name number in the crowd record
 	ori.b	#$6,d2
@@ -486,8 +486,8 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	movea.l	(ScoutSpeechTable).l,a0
 	movea.l	#$C458,a1
 	move.w	#$DAC,d0
-.lD2D2	move.l	(a0)+,(a1)+
-	dbra	d0,.lD2D2
+.loop	move.l	(a0)+,(a1)+
+	dbra	d0,.loop
 	move.l	(ScoutSpeechTable).l,d1
 	subi.l	#$C458,d1
 	sub.l	d1,(ScoutSpeechTable).l
@@ -600,8 +600,8 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$18,(palcount).l
 	move.l	#vb2,(VBint).l
 	bset	#$5,$FF800F.l
-.lD52E	tst.w	(palcount).l
-	bpl.w	.lD52E
+.loop2	tst.w	(palcount).l
+	bpl.w	.loop2
 	jsr	(InitScoutingDisplay).l
 	move.w	#$1B,(a0)+
 	move.w	#$1D,(a0)+		;blank line
@@ -684,27 +684,27 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$7FFF,(screentimer).l		;frames left on the screen
 	move.l	#$8CA0,(scoutwait).l		;then 36000 more when OptNOP is not 0
 	jsr	(CompareHotColdTotals).l
-.lD642	btst	#$7,$FF800E.l
-	bne.b	.lD642
+.loop3	btst	#$7,$FF800E.l
+	bne.b	.loop3
 	move.w	#$3C,$FF8020.l
 	bset	#$6,$FF800F.l
-.lD65C	btst	#$6,$FF800E.l
-	beq.b	.lD65C
+.loop4	btst	#$6,$FF800E.l
+	beq.b	.loop4
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lD676	btst	#$6,$FF800E.l
-	bne.b	.lD676
+.loop5	btst	#$6,$FF800E.l
+	bne.b	.loop5
 	bclr	#$7,$FF800F.l
 	bclr	#$5,$FF800F.l
 	move.w	#$F,d7
 	jsr	$6044.w
 	move.w	#$0,(ScoutLastPara).l
-.lD6A0	movea.l	#$0,a0
+.loop6	movea.l	#$0,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
 	jsr	$6044.w
 	tst.w	d0
-	beq.w	.lD6A0
+	beq.w	.loop6
 	movea.l	#$FFFFFFFF,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
@@ -714,7 +714,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	movea.l	#TestList,a0
 	move.w	(a0,d0.w),d1
 	btst	#$F,d1
-	beq.s	.lD720
+	beq.s	.next
 	bclr	#$F,d1
 	move.w	d1,(a0,d0.w)
 	move.l	d1,-(sp)
@@ -726,11 +726,11 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$0,(advcount).l
 	bsr.w	PrintAdvantageMarks
 	move.l	(sp)+,d1
-.lD720	move.l	d1,d0
+.next	move.l	d1,d0
 	cmpi.w	#$21,d0
-	bne.s	.lD730
+	bne.s	.next2
 	move.w	#$1,(ScoutLastPara).l
-.lD730	bsr.w	ScoutParaOffset
+.next2	bsr.w	ScoutParaOffset
 	move.l	d0,(scoutparaoff).l
 	move.l	d1,-(sp)
 	jsr	(ReadJoy1).l
@@ -738,18 +738,18 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(ReadJoy2).l
 	or.w	d3,d5
 	btst	#$1,$1AD77.l
-	bne.w	.lD870
+	bne.w	.next6
 	move.l	(sp)+,d1
-.lD75A	btst	#$7,$FF800E.l
-	bne.b	.lD75A
+.loop7	btst	#$7,$FF800E.l
+	bne.b	.loop7
 	move.w	#$2E,$FF8020.l
 	bset	#$6,$FF800F.l
-.lD774	btst	#$6,$FF800E.l
-	beq.b	.lD774
+.loop8	btst	#$6,$FF800E.l
+	beq.b	.loop8
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lD78E	btst	#$6,$FF800E.l
-	bne.b	.lD78E
+.loop9	btst	#$6,$FF800E.l
+	bne.b	.loop9
 	bclr	#$7,$FF800F.l
 	bset	#$5,$FF800F.l
 	movea.l	#$FF8000,a5
@@ -764,13 +764,13 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$0,d7
 	jsr	$6044.w
 	tst.w	(ScoutLastPara).l
-	bne.s	.lD824
+	bne.s	.next3
 	move.w	(SelectedPlayerIdx).l,d0
 	movea.l	#TestList,a0
-.lD7E6	addi.w	#$2,d0
+.loop10	addi.w	#$2,d0
 	move.w	(a0,d0.w),d1
 	cmpi.w	#$1D,d1
-	beq.w	.lD7E6
+	beq.w	.loop10
 	bclr	#$F,d1
 	move.l	d1,d0
 	bsr.w	ScoutParaOffset
@@ -782,93 +782,93 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	lea.l	(ScoutCDArg).l,a0
 	move.w	#$18,d0
 	jsr	$5F22.w
-.lD824	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,$FF800F.l
 	move.w	#$6,d7
 	jsr	$6044.w
 	cmpi.w	#$5A,d3
-	beq.s	.lD858
+	beq.s	.next4
 	cmpi.w	#$3F1,d3
-	beq.s	.lD858
+	beq.s	.next4
 	cmpi.w	#$97,d3
-	beq.s	.lD858
+	beq.s	.next4
 	cmpi.w	#$392,d3
-	beq.s	.lD858
+	beq.s	.next4
 	cmpi.w	#$405,d3
-	beq.s	.lD858
+	beq.s	.next4
 	move.w	#$400,d1
-	bra.s	.lD85C
-.lD858	move.w	#$380,d1
-.lD85C	move.w	#$9,d0
+	bra.s	.next5
+.next4	move.w	#$380,d1
+.next5	move.w	#$9,d0
 	move.w	#$FF,d2
 	move.w	#$FFFF,d3
 	move.w	#$10,d7
 	jsr	$6044.w
-.lD870	move.l	#vb2,(VBint).l
+.next6	move.l	#vb2,(VBint).l
 	jsr	$21FC8.l
 	bset	#$5,$FF800F.l
-.lD888	moveq	#$0,d0
+.loop11	moveq	#$0,d0
 	jsr	(waitx).l
 	btst	#$1,$1AD77.l
-	beq.s	.lD8AC
+	beq.s	.next7
 	movea.l	#$FFFFFFFF,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
 	jsr	$6044.w		;d1 = new presses
-.lD8AC	subi.w	#$1,(matchuptimer).l
-	bpl.w	.lD8C0		;not run out
+.next7	subi.w	#$1,(matchuptimer).l
+	bpl.w	.next8		;not run out
 	move.w	#$10E,(matchuptimer).l		;restart
-.lD8C0	bsr.w	PrintAdvantageMarks
+.next8	bsr.w	PrintAdvantageMarks
 	btst	#$7,d1		;Start?
-	bne.w	.lD9CA
+	bne.w	.next17
 	cmpi.w	#$10E,(matchuptimer).l
-	beq.w	.lD8F2		;timer ran out: next matchup
+	beq.w	.next9		;timer ran out: next matchup
 	btst	#$5,d1		;C?
-	beq.w	.lD90A
+	beq.w	.next11
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-.lD8F2	dc.w	$6100,$0764
+.next9	dc.w	$6100,$0764
 	move.w	#$1,d0
 	tst.w	(ScoutLastPara).l
-	beq.s	.lD906
+	beq.s	.next10
 	bsr.w	PageMatchup
-.lD906	bra.w	.lD94C
-.lD90A	btst	#$6,d1		;A?
-	beq.w	.lD938
+.next10	bra.w	.next14
+.next11	btst	#$6,d1		;A?
+	beq.w	.next13
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
 	dc.w	$6100,$0732
 	tst.w	(ScoutLastPara).l
-	beq.s	.lD934
+	beq.s	.next12
 	bsr.w	PageMatchup
-.lD934	bra.w	.lD94C
-.lD938	clr.w	(asv).l		;normal text speed
+.next12	bra.w	.next14
+.next13	clr.w	(asv).l		;normal text speed
 	btst	#$1,d1		;down?
-	beq.w	.lD94C
+	beq.w	.next14
 	st.b	(asv).l		;down: type the rest without delays
-.lD94C	btst	#$1,$1AD77.l		;down held (waitx pad bits)
-	beq.w	.lD95E
+.next14	btst	#$1,$1AD77.l		;down held (waitx pad bits)
+	beq.w	.next15
 	st.b	(asv).l
-.lD95E	jsr	(UpdateScoutingDisplay).l
+.next15	jsr	(UpdateScoutingDisplay).l
 	tst.w	(ScoutLastPara).l
-	bne.s	.lD99A
+	bne.s	.next16
 	cmpi.w	#$FF00,(PlayerScrollCtr).l
-	bne.s	.lD99A
+	bne.s	.next16
 	move.l	#$A9,(scoutparaoff).l
 	move.w	(SelectedPlayerIdx).l,d0
 	movea.l	#TestList,a0
 	move.w	(a0,d0.w),d0
 	cmpi.w	#$1D,d0
-	beq.s	.lD99A
-	bra.w	.lD6A0
-.lD99A	subi.w	#$1,(screentimer).l
-	bpl.w	.lD888
+	beq.s	.next16
+	bra.w	.loop6
+.next16	subi.w	#$1,(screentimer).l
+	bpl.w	.loop11
 	tst.w	(OptNOP).l
-	beq.w	.lD9CA		;OptNOP 0: leave when the text is done
+	beq.w	.next17		;OptNOP 0: leave when the text is done
 	move.w	#$FFFF,(screentimer).l		;else wait for start, up to scoutwait frames
 	subi.l	#$1,(scoutwait).l
-	bpl.w	.lD888
-	beq.w	.lD888
-.lD9CA	movea.l	#$FFFFFFFF,a0
+	bpl.w	.loop11
+	beq.w	.loop11
+.next17	movea.l	#$FFFFFFFF,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
 	jsr	$6044.w

@@ -16,7 +16,7 @@ LoadSmImage	link	a6,#$0
 	movea.l	$8(a6),a0
 	movea.l	$C(a6),a1
 	cmpi.w	#$534D,(a1)
-	bne.w	.l252C4
+	bne.w	.next6
 	move.w	$8(a1),d0
 	ext.l	d0
 	move.w	$A(a1),d7
@@ -30,15 +30,15 @@ LoadSmImage	link	a6,#$0
 	move.w	#$C,d0
 	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	beq.b	.l251EC
+	beq.b	.next
 	add.w	d6,d0
-.l251EC	addq.w	#$1,d1
+.next	addq.w	#$1,d1
 	lsl.w	#$5,d1
 	add.w	d1,d0
 	lsr.w	#$2,d0
 	subq.w	#$1,d0
-.l251F6	move.l	(a1)+,(a0)+
-	dbra	d0,.l251F6
+.loop	move.l	(a1)+,(a0)+
+	dbra	d0,.loop
 	move.l	(a1)+,d0
 	movea.l	a1,a2
 	adda.l	d0,a1
@@ -49,18 +49,18 @@ LoadSmImage	link	a6,#$0
 	adda.l	d6,a1
 	moveq	#$1,d3
 	subq.w	#$1,d7
-.l25210	subq.w	#$1,d3
-	bne.b	.l25218
+.loop2	subq.w	#$1,d3
+	bne.b	.next2
 	move.l	(a4)+,d5
 	moveq	#$10,d3
-.l25218	add.l	d5,d5
-	bcs.b	.l25244
+.next2	add.l	d5,d5
+	bcs.b	.next4
 	add.l	d5,d5
-	bcs.b	.l2522C
+	bcs.b	.next3
 	lea.l	$20(a0),a0
-	dbra	d7,.l25210
-	bra.w	.l252C4
-.l2522C	move.l	(a1)+,(a0)+
+	dbra	d7,.loop2
+	bra.w	.next6
+.next3	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
@@ -68,12 +68,12 @@ LoadSmImage	link	a6,#$0
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
-	dbra	d7,.l25210
-	bra.w	.l252C4
-.l25244	add.l	d5,d5
-	bcs.b	.l25278
+	dbra	d7,.loop2
+	bra.w	.next6
+.next4	add.l	d5,d5
+	bcs.b	.next5
 	moveq	#$3,d4
-.l2524A	moveq	#$0,d0
+.loop3	moveq	#$0,d0
 	move.b	(a1)+,d0
 	lsl.w	#$2,d0
 	move.l	(a2,d0.w),d0
@@ -89,11 +89,11 @@ LoadSmImage	link	a6,#$0
 	swap	d1
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+
-	dbra	d4,.l2524A
-	dbra	d7,.l25210
-	bra.b	.l252C4
-.l25278	moveq	#$3,d4
-.l2527A	moveq	#$0,d0
+	dbra	d4,.loop3
+	dbra	d7,.loop2
+	bra.b	.next6
+.next5	moveq	#$3,d4
+.loop4	moveq	#$0,d0
 	move.b	(a1)+,d0
 	add.w	d0,d0
 	move.w	(a3,d0.w),d1
@@ -122,9 +122,9 @@ LoadSmImage	link	a6,#$0
 	move.b	d0,d1
 	move.l	d1,(a0)+
 	move.l	d2,(a0)+
-	dbra	d4,.l2527A
-	dbra	d7,.l25210
-.l252C4	movem.l	(sp)+,d0-d7/a0-a5
+	dbra	d4,.loop4
+	dbra	d7,.loop2
+.next6	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	addq.w	#$8,sp

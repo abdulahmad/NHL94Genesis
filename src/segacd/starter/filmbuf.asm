@@ -11,13 +11,13 @@ InitEngine	link	a6,#$0
 	jsr	MaxFree(pc)
 	move.l	d0,d7
 	cmpi.l	#$14000,d7
-	bge.b	.l26144
+	bge.b	.next
 	moveq	#-1,d0
-	bra.b	.l261B6
-.l26144	cmpi.l	#$34000,d7
-	ble.b	.l26152
+	bra.b	.next4
+.next	cmpi.l	#$34000,d7
+	ble.b	.next2
 	move.l	#$34000,d7
-.l26152	move.l	d7,d0
+.next2	move.l	d7,d0
 	; SNASM rewrites sub.l #imm,dn into subi.l. The disc is 90BC.
 	dc.w	$90BC
 	dc.l	$00004000
@@ -38,10 +38,10 @@ InitEngine	link	a6,#$0
 	jsr	mmalloc(pc)
 	move.l	d0,(a4)
 	addq.w	#$4,sp
-	bne.b	.l26190
+	bne.b	.next3
 	moveq	#-1,d0
-	bra.b	.l261B6
-.l26190	moveq	#$0,d0
+	bra.b	.next4
+.next3	moveq	#$0,d0
 	move.l	d0,$8(a4)
 	move.l	d0,$C(a4)
 	move.l	$C(a6),$10(a4)
@@ -52,7 +52,7 @@ InitEngine	link	a6,#$0
 	jsr	EngineIdle(pc)
 	moveq	#$0,d0
 	addq.w	#$4,sp
-.l261B6	movem.l	-$8(a6),d7/a4
+.next4	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	rts
 

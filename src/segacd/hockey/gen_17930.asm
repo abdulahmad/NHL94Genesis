@@ -1,207 +1,207 @@
 checkanimSub1
 	move.w	$17B80.l,$1AD58.l
 	btst	#$0,$17F72.l
-	beq.w	.l179E8
+	beq.w	.next3
 	btst	#$1,$63(a3)
-	bne.w	.l179E8
+	bne.w	.next3
 	btst	#$1,$17F72.l
-	beq.w	.l17990
+	beq.w	.next
 	btst	#$3,$17F72.l
-	bne.w	.l179E8
+	bne.w	.next3
 	cmpi.w	#$2C4,$6(a3)
-	bne.w	.l179E8
+	bne.w	.next3
 	cmpi.w	#$2C8,$6(a3)
-	bne.w	.l179E8
+	bne.w	.next3
 	bset	#$3,$17F72.l
 	move.w	#$1C,-(sp)
 	bsr.w	sfx
-	bra.w	.l179E8
-.l17990	movem.w	d0-d1,-(sp)
+	bra.w	.next3
+.next	movem.w	d0-d1,-(sp)
 	move.w	$17B94.l,d0
 	move.w	$14(a3),d1
 	eor.w	d1,d0
 	movem.w	(sp)+,d0-d1
-	bmi.w	.l179E8
+	bmi.w	.next3
 	cmpi.w	#$14,$0(a3)
-	bgt.w	.l179E8
+	bgt.w	.next3
 	cmpi.w	#$FFEC,$0(a3)
-	ble.w	.l179E8
+	ble.w	.next3
 	bset	#$1,$17F72.l
 	bclr	#$3,$17F72.l
 	move.w	#$1596,d1
 	btst	#$7,$62(a3)
-	beq.w	.l179DE
+	beq.w	.next2
 	move.w	#$1684,d1
-.l179DE	bsr.w	SetSPA
+.next2	bsr.w	SetSPA
 	bset	#$1,$63(a3)
-.l179E8	btst	#$5,$62(a3)
+.next3	btst	#$5,$62(a3)
 	bne.w	ClampYPosition_1
 	bsr.w	check4bench
 	bclr	#$1,$62(a3)
-	beq.w	.l17A0E
+	beq.w	.next4
 	clr.w	$40(a3)
 	move.w	#$8,$42(a3)
 	st.b	$46(a3)
-.l17A0E	cmpi.w	#$34,$0(a3)
-	bgt.w	.l17A4A
+.next4	cmpi.w	#$34,$0(a3)
+	bgt.w	.next5
 	cmpi.w	#$FFCC,$0(a3)
-	blt.w	.l17A4A
+	blt.w	.next5
 	cmpi.w	#$10E,$14(a3)
-	bgt.w	.l17A4A
+	bgt.w	.next5
 	cmpi.w	#$FEF2,$14(a3)
-	blt.w	.l17A4A
+	blt.w	.next5
 	cmpi.w	#$D2,$14(a3)
-	bgt.w	.l17A6E
+	bgt.w	.next7
 	cmpi.w	#$FF2E,$14(a3)
-	blt.w	.l17A6E
-.l17A4A	lea.l	ClampYPosition_1(pc),a0
+	blt.w	.next7
+.next5	lea.l	ClampYPosition_1(pc),a0
 	moveq	#$4,d0
 	tst.w	$0(a3)
-	bpl.w	.l17A5A
+	bpl.w	.next6
 	neg.w	d0
-.l17A5A	move.w	#$E4,d1
+.next6	move.w	#$E4,d1
 	btst	#$7,$62(a3)
 	beq.w	skateto
 	neg.w	d1
 	bra.w	skateto
-.l17A6E	btst	#$1,$63(a3)
+.next7	btst	#$1,$63(a3)
 	bne.w	ClampYPosition_1
 	btst	#$0,$17F72.l
-	beq.w	.l17AA8
+	beq.w	.next9
 	cmpi.w	#$2C5,$6(a3)
-	beq.w	.l17AA2
+	beq.w	.next8
 	cmpi.w	#$2C9,$6(a3)
-	bne.w	.l17AA8
+	bne.w	.next9
 	move.w	#$4,$54(a3)
-	bra.w	.l17AA8
-.l17AA2	move.w	#$0,$54(a3)
-.l17AA8	move.w	#$2,d1
+	bra.w	.next9
+.next8	move.w	#$0,$54(a3)
+.next9	move.w	#$2,d1
 	bsr.w	SetSPA
 	btst	#$2,$17F70.l
-	bne.w	.l17AC8
+	bne.w	.next10
 	btst	#$0,$17F68.l
 	bne.w	ClampYPosition_1
-.l17AC8	tst.w	$48(a3)
-	bmi.w	.l17B0C
+.next10	tst.w	$48(a3)
+	bmi.w	.next13
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
-	beq.w	.l17AE6
+	beq.w	.next11
 	st.b	$48(a3)
-	bra.w	.l17B0C
-.l17AE6	sub.w	d7,$48(a3)
-	bpl.w	.l17B0C
+	bra.w	.next13
+.next11	sub.w	d7,$48(a3)
+	bpl.w	.next13
 	btst	#$2,$17F70.l
-	beq.w	.l17B06
+	beq.w	.next12
 	bset	#$4,$17F70.l
-	bra.w	.l17B0C
-.l17B06	moveq	#$8,d0
+	bra.w	.next13
+.next12	moveq	#$8,d0
 	bsr.w	AddPenalty2
-.l17B0C	sub.b	d7,$40(a3)
-	bpl.w	.l17F82
+.next13	sub.b	d7,$40(a3)
+	bpl.w	.next39
 	move.b	$6B(a3),d0
-	beq.w	.l17B2C
+	beq.w	.next14
 	btst	#$6,$17F7A.l
-	beq.w	.l17B2C
+	beq.w	.next14
 	subi.b	#$1,d0
-.l17B2C	lsr.b	#$2,d0
+.next14	lsr.b	#$2,d0
 	move.b	d0,$40(a3)
 	btst	#$3,$62(a3)
-	beq.w	.l17B4C
+	beq.w	.next15
 	btst	#$2,$64(a3)
-	bne.w	.l17B4C
+	bne.w	.next15
 	moveq	#$1D,d0
 	bra.w	AssistListPush
-.l17B4C	move.w	$17B94.l,d0
+.next15	move.w	$17B94.l,d0
 	move.w	$14(a3),d1
 	eor.w	d0,d1
-	bpl.w	.l17B72
+	bpl.w	.next16
 	clr.w	d0
 	move.w	#$F4,d2
 	btst	#$7,$62(a3)
-	beq.w	.l17F34
+	beq.w	.loop5
 	neg.w	d2
-	bra.w	.l17F34
-.l17B72	subi.w	#$1,$46(a3)
-	bpl.w	.l17B82
+	bra.w	.loop5
+.next16	subi.w	#$1,$46(a3)
+	bpl.w	.next17
 	move.w	#$FFFF,$46(a3)
-.l17B82	move.w	$52(a3),d0
+.next17	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
-	bne.w	.l17C6C
+	bne.w	.next20
 	tst.w	$48(a3)
-	bpl.w	.l17B9E
+	bpl.w	.next18
 	move.w	#$5A,$48(a3)
-.l17B9E	st.b	$46(a3)
+.next18	st.b	$46(a3)
 	cmpi.w	#$5A,$48(a3)
-	bgt.w	.l17D12
-.l17BAC	btst	#$7,$FF800E.l
-	bne.b	.l17BAC
+	bgt.w	.next23
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l17BC6	btst	#$6,$FF800E.l
-	beq.b	.l17BC6
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l17BE6	btst	#$6,$FF800E.l
-	bne.b	.l17BE6
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d0
-	bne.w	.l17D12
+	bne.w	.next23
 	moveq	#$5,d0
 	movea.l	#$17480,a0
 	btst	#$6,$62(a3)
-	bne.w	.l17C16
+	bne.w	.loop4
 	adda.w	#$300,a0
-.l17C16	btst	#$2,$63(a0)
-	bne.w	.l17C54
+.loop4	btst	#$2,$63(a0)
+	bne.w	.next19
 	move.w	$17B94.l,d1
 	sub.w	$14(a0),d1
 	cmpi.w	#$1C,d1
-	bgt.w	.l17C54
+	bgt.w	.next19
 	cmpi.w	#$FFE4,d1
-	blt.w	.l17C54
+	blt.w	.next19
 	move.w	$17B80.l,d1
 	sub.w	$0(a0),d1
 	cmpi.w	#$19,d1
-	bgt.w	.l17C54
+	bgt.w	.next19
 	cmpi.w	#$FFE7,d1
-	bgt.w	.l17D12
-.l17C54	adda.w	#$80,a0
-	dbra	d0,.l17C16
+	bgt.w	.next23
+.next19	adda.w	#$80,a0
+	dbra	d0,.loop4
 	move.w	#$1,$17E34.l
 	bsr.w	chk4pass
-	bra.w	.l17D12
-.l17C6C	tst.w	$46(a3)
-	bne.w	.l17D12
+	bra.w	.next23
+.next20	tst.w	$46(a3)
+	bne.w	.next23
 	tst.w	$17BE0.l
-	bpl.w	.l17D12
+	bpl.w	.next23
 	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
 	cmpi.w	#$14,d0
-	bgt.w	.l17D12
+	bgt.w	.next23
 	cmpi.w	#$FFEC,d0
-	blt.w	.l17D12
+	blt.w	.next23
 	move.w	$17B94.l,d1
 	cmpi.w	#$108,d1
-	bgt.w	.l17D12
+	bgt.w	.next23
 	cmpi.w	#$FEF8,d1
-	blt.w	.l17D12
+	blt.w	.next23
 	sub.w	$14(a3),d1
 	cmpi.w	#$1E,d1
-	bgt.w	.l17D12
+	bgt.w	.next23
 	cmpi.w	#$FFE2,d1
-	blt.w	.l17D12
+	blt.w	.next23
 	movem.w	d0-d1,-(sp)
 	move.w	$17BA8.l,d0
-	bpl.w	.l17CD2
+	bpl.w	.next21
 	neg.w	d0
-.l17CD2	move.w	$17BAA.l,d1
-	bpl.w	.l17CDE
+.next21	move.w	$17BAA.l,d1
+	bpl.w	.next22
 	neg.w	d1
-.l17CDE	add.w	d1,d0
+.next22	add.w	d1,d0
 	cmpi.w	#$1000,d0
 	movem.w	(sp)+,d0-d1
-	bgt.w	.l17D12
+	bgt.w	.next23
 	bsr.w	vtoa
 	move.w	d0,$54(a3)
 	move.b	#$8,$5E(a3)
@@ -210,32 +210,32 @@ checkanimSub1
 	bset	#$1,$63(a3)
 	addi.w	#$96,(Crowdlevel).l
 	rts
-.l17D12	movea.l	#$17E36,a0
+.next23	movea.l	#$17E36,a0
 	move.w	#$104,d3
 	btst	#$7,$62(a3)
-	beq.w	.l17D2C
+	beq.w	.next24
 	adda.w	#$4,a0
 	neg.w	d3
-.l17D2C	cmpi.w	#$104,$14(a3)
-	bgt.w	.l17D40
+.next24	cmpi.w	#$104,$14(a3)
+	bgt.w	.next25
 	cmpi.w	#$FEFC,$14(a3)
-	bgt.w	.l17D6A
-.l17D40	clr.w	d2
+	bgt.w	.next26
+.next25	clr.w	d2
 	clr.w	d0
 	cmpi.w	#$2C,$0(a3)
-	bgt.w	.l17F34
+	bgt.w	.loop5
 	cmpi.w	#$FFD4,$0(a3)
-	blt.w	.l17F34
+	blt.w	.loop5
 	move.w	#$88,d0
 	tst.w	$0(a3)
-	bpl.w	.l17F34
+	bpl.w	.loop5
 	neg.w	d0
-	bra.w	.l17F34
-.l17D6A	tst.w	$17BE0.l
-	bmi.w	.l17DAC
+	bra.w	.loop5
+.next26	tst.w	$17BE0.l
+	bmi.w	.next27
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
-	beq.w	.l17DAC
+	beq.w	.next27
 	move.l	a0,-(sp)
 	movea.l	#$17480,a0
 	move.w	$17BE0.l,d0
@@ -247,7 +247,7 @@ checkanimSub1
 	add.w	$0(a0),d0
 	move.w	d0,$1AD58.l
 	movea.l	(sp)+,a0
-.l17DAC	move.w	$1AD58.l,d0
+.next27	move.w	$1AD58.l,d0
 	move.w	$17B94.l,d1
 	bsr.w	ClampYPosition
 	bsr.w	vtoa
@@ -257,11 +257,11 @@ checkanimSub1
 	asl.w	#$4,d0
 	addi.w	#$A0,d0
 	cmpi.w	#$DB,$17B94.l
-	bgt.w	.l17DEC
+	bgt.w	.next28
 	cmpi.w	#$FF25,$17B94.l
-	bgt.w	.l17DF0
-.l17DEC	subi.w	#$40,d0
-.l17DF0	move.w	d0,d1
+	bgt.w	.next29
+.next28	subi.w	#$40,d0
+.next29	move.w	d0,d1
 	muls.w	$17BA8.l,d0
 	swap	d0
 	add.w	$1AD58.l,d0
@@ -274,67 +274,67 @@ checkanimSub1
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmpi.l	#$384,d0
-	bhi.w	.l17E2E
+	bhi.w	.next30
 	movem.w	(sp)+,d0-d1
-	bra.w	.l17E58
-.l17E2E	bsr.w	Sroot
+	bra.w	.next32
+.next30	bsr.w	Sroot
 	moveq	#$1,d2
 	add.w	d0,d2
 	moveq	#$12,d4
 	btst	#$3,$17F6A.l
-	beq.w	.l17E48
+	beq.w	.next31
 	addi.w	#$8,d4
-.l17E48	movem.w	(sp)+,d0-d1
+.next31	movem.w	(sp)+,d0-d1
 	muls.w	d4,d1
 	addi.w	#$8,d4
 	muls.w	d4,d0
 	divs.w	d2,d0
 	divs.w	d2,d1
-.l17E58	add.w	d3,d1
+.next32	add.w	d3,d1
 	move.w	d1,d2
 	btst	#$0,$17F78.l
-	bne.w	.l17EC0
+	bne.w	.next34
 	btst	#$2,$17F70.l
-	bne.w	.l17EC0
+	bne.w	.next34
 	btst	#$3,$17F6A.l
-	beq.w	.l17EC0
+	beq.w	.next34
 	cmpi.w	#$D0,$17B94.l
-	bgt.w	.l17E9C
+	bgt.w	.next33
 	cmpi.w	#$FF30,$17B94.l
-	blt.w	.l17E9C
-	bra.w	.l17EC0
-.l17E9C	cmpi.w	#$14,$0(a3)
-	bgt.w	.l17EC0
+	blt.w	.next33
+	bra.w	.next34
+.next33	cmpi.w	#$14,$0(a3)
+	bgt.w	.next34
 	cmpi.w	#$FFEC,$0(a3)
-	blt.w	.l17EC0
+	blt.w	.next34
 	btst	#$1,$180E7.l
-	bne.w	.l17EC0
-	bra.w	.l17EE4
-.l17EC0	cmpi.w	#$22,$2(a0)
-	bhi.w	.l17F34
+	bne.w	.next34
+	bra.w	.next35
+.next34	cmpi.w	#$22,$2(a0)
+	bhi.w	.loop5
 	cmpi.w	#$18,(a0)
-	bgt.w	.l17F94
+	bgt.w	.next40
 	cmpi.w	#$FFE8,(a0)
-	blt.w	.l17F94
+	blt.w	.next40
 	cmpi.w	#$C,$2(a0)
-	bhi.w	.l17F0C
-.l17EE4	cmpi.w	#$108,$17B94.l
-	bgt.w	.l17F0C
+	bhi.w	.next36
+.next35	cmpi.w	#$108,$17B94.l
+	bgt.w	.next36
 	cmpi.w	#$FEF8,$17B94.l
-	blt.w	.l17F0C
+	blt.w	.next36
 	bset	#$1,$63(a3)
-	bne.w	.l17F0C
+	bne.w	.next36
 	jsr	$330AC.l
-.l17F0C	move.w	(a0),d0
+.next36	move.w	(a0),d0
 	cmpi.w	#$FC,$17B94.l
-	bgt.w	.l17F26
+	bgt.w	.next37
 	cmpi.w	#$FF04,$17B94.l
-	bgt.w	.l17F34
-.l17F26	moveq	#$18,d0
+	bgt.w	.loop5
+.next37	moveq	#$18,d0
 	tst.w	$1AD58.l
-	bpl.w	.l17F34
+	bpl.w	.loop5
 	neg.w	d0
-.l17F34	move.w	d2,d1
+.loop5	move.w	d2,d1
 	movem.w	d0-d1,-(sp)
 	move.b	$28(a3),d0
 	ext.w	d0
@@ -347,52 +347,52 @@ checkanimSub1
 	add.w	(sp)+,d1
 	sub.w	$14(a3),d1
 	cmpi.w	#$4,d0
-	bgt.w	.l17F7A
+	bgt.w	.next38
 	cmpi.w	#$FFFC,d0
-	blt.w	.l17F7A
+	blt.w	.next38
 	cmpi.w	#$4,d1
-	bgt.w	.l17F7A
+	bgt.w	.next38
 	cmpi.w	#$FFFC,d1
-	blt.w	.l17F7A
+	blt.w	.next38
 	clr.w	d0
 	clr.w	d1
-.l17F7A	bsr.w	vtoa
+.next38	bsr.w	vtoa
 	move.b	d0,$43(a3)
-.l17F82	move.b	$43(a3),d2
+.next39	move.b	$43(a3),d2
 	ext.w	d2
 	cmpi.w	#$7,d2
 	ble.w	playeracc
 	bra.w	stopna
-.l17F94	tst.w	$17BE0.l
-	bpl.w	.l17F34
+.next40	tst.w	$17BE0.l
+	bpl.w	.loop5
 	btst	#$2,$17ECE.l
-	bne.w	.l17F34
+	bne.w	.loop5
 	movea.l	#tmstruct,a1
 	lea.l	$366(a1),a2
 	btst	#$6,$62(a3)
-	beq.w	.l17FC0
+	beq.w	.next41
 	exg.l	a1,a2
-.l17FC0	cmpi.l	#$1324,$2C(a1)
-	blt.w	.l17F34
+.next41	cmpi.l	#$1324,$2C(a1)
+	blt.w	.loop5
 	cmpi.l	#$9C4,$2C(a2)
-	blt.w	.l17F34
+	blt.w	.loop5
 	cmpi.w	#$E0,$17B94.l
-	bgt.w	.l17FF0
+	bgt.w	.next42
 	cmpi.w	#$FF20,$17B94.l
-	bgt.w	.l17F34
-.l17FF0	tst.w	$17BAA.l
+	bgt.w	.loop5
+.next42	tst.w	$17BAA.l
 	btst	#$7,$62(a3)
-	beq.w	.l18004
+	beq.w	.next43
 	eori.b	#$8,ccr
-.l18004	bmi.w	.l17F34
+.next43	bmi.w	.loop5
 	move.w	$17BA8.l,d0
-	bpl.w	.l18014
+	bpl.w	.next44
 	neg.w	d0
-.l18014	move.w	$17BAA.l,d1
-	bpl.w	.l18020
+.next44	move.w	$17BAA.l,d1
+	bpl.w	.next45
 	neg.w	d1
-.l18020	cmp.w	d0,d1
-	blt.w	.l17F34
+.next45	cmp.w	d0,d1
+	blt.w	.loop5
 	moveq	#$F,d0
 	bra.w	AssistListPush
 ClampYPosition						;d1 = y clamped to +-$103, minus goal line d3. d0 = 0 if a3 has the puck
@@ -441,81 +441,81 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	move.w	d0,d3
 	lsr.w	#$2,d0
 	btst	#$3,$4(a3)
-	beq.w	.l180D6
+	beq.w	.next
 	eori.w	#$1,d0
-.l180D6	cmpi.w	#$8,$17B98.l
-	bgt.w	.l180F2
+.next	cmpi.w	#$8,$17B98.l
+	bgt.w	.next2
 	cmpi.w	#$800,$17BAC.l
-	bgt.w	.l180F2
-	bra.w	.l18120
-.l180F2	movem.l	d0,-(sp)
+	bgt.w	.next2
+	bra.w	.next4
+.next2	movem.l	d0,-(sp)
 	move.w	$0(a3),d0
 	sub.w	(a0),d0
 	cmpi.w	#$10,d0
-	bgt.w	.l18118
+	bgt.w	.next3
 	cmpi.w	#$FFF0,d0
-	blt.w	.l18118
+	blt.w	.next3
 	movem.l	(sp)+,d0
 	addi.w	#$6,d0
-	bra.w	.l181DA
-.l18118	movem.l	(sp)+,d0
-	bra.w	.l181DA
-.l18120	addi.w	#$4,d0
+	bra.w	.next13
+.next3	movem.l	(sp)+,d0
+	bra.w	.next13
+.next4	addi.w	#$4,d0
 	cmpi.w	#$8,$2(a0)
-	bls.w	.l181B0
+	bls.w	.next10
 	cmpi.w	#$2,$54(a3)
-	beq.w	.l181DA
+	beq.w	.next13
 	cmpi.w	#$6,$54(a3)
-	beq.w	.l181DA
+	beq.w	.next13
 	tst.w	$17BE0.l
-	bmi.w	.l181DA
+	bmi.w	.next13
 	subi.w	#$2,d0
 	move.w	d1,-(sp)
 	move.w	#$1000,d1
 	move.w	d1,$28(a3)
 	ori.w	#$1,d0
 	btst	#$7,$62(a3)
-	bne.w	.l1816C
+	bne.w	.next5
 	eori.w	#$1,d0
-.l1816C	move.w	#$FFFA,d1
+.next5	move.w	#$FFFA,d1
 	tst.w	$28(a3)
-	bmi.w	.l1817C
+	bmi.w	.next6
 	neg.w	$28(a3)
-.l1817C	tst.w	$0(a3)
-	bpl.w	.l18198
+.next6	tst.w	$0(a3)
+	bpl.w	.next8
 	tst.w	$28(a3)
-	bpl.w	.l18190
+	bpl.w	.next7
 	neg.w	$28(a3)
-.l18190	move.w	#$6,d1
+.next7	move.w	#$6,d1
 	eori.w	#$1,d0
-.l18198	add.w	d1,$0(a3)
+.next8	add.w	d1,$0(a3)
 	btst	#$0,$76(a3)
-	beq.w	.l181AA
+	beq.w	.next9
 	eori.w	#$1,d0
-.l181AA	move.w	(sp)+,d1
-	bra.w	.l181DA
-.l181B0	movem.l	d0,-(sp)
+.next9	move.w	(sp)+,d1
+	bra.w	.next13
+.next10	movem.l	d0,-(sp)
 	move.w	$0(a3),d0
 	sub.w	(a0),d0
 	cmpi.w	#$10,d0
-	ble.w	.l181CA
+	ble.w	.next11
 	movem.l	(sp)+,d0
-	bra.w	.l181D6
-.l181CA	cmpi.w	#$FFF0,d0
+	bra.w	.next12
+.next11	cmpi.w	#$FFF0,d0
 	movem.l	(sp)+,d0
-	bgt.w	.l181DA
-.l181D6	addi.w	#$4,d0
-.l181DA	add.w	d0,d0
-	lea.l	.l33228(pc),a1
+	bgt.w	.next13
+.next12	addi.w	#$4,d0
+.next13	add.w	d0,d0
+	lea.l	.next15(pc),a1
 	move.w	(a1,d0.w),d1
 	cmpi.w	#$178,d1
-	bne.w	.l18202
+	bne.w	.next14
 	andi.w	#$3,d3
-	beq.w	.l18202
+	beq.w	.next14
 	cmpi.b	#$B,$73(a3)
-	blt.w	.l18202
+	blt.w	.next14
 	move.w	#$1AA,d1
-.l18202	bsr.w	SetSPA
+.next14	bsr.w	SetSPA
 	addi.w	#$96,(Crowdlevel).l
 	addi.w	#$A,$17CD8.l
 	asr.w	$28(a3)
@@ -523,7 +523,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	asr.w	$2A(a3)
 	asr.w	$2A(a3)
 	rts
-.l33228	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0
+.next15	dc.w	$0146,$0178,$0250,$02A2,$01EC,$021E,$148E,$14C0
 	dc.w	$14F2,$1544
 assgoalietopuck						;goalie skates out to a loose puck (inserted by
 									;assgoalie)
@@ -697,17 +697,17 @@ asspuckc						;player a3 is puck handler
 	movem.l	(sp)+,a2
 .6	clr.w	$40(a3)
 	move.w	#$8,$42(a3)
-.l1853C	btst	#$7,$FF800E.l
-	bne.b	.l1853C
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l18556	btst	#$6,$FF800E.l
-	beq.b	.l18556
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l18576	btst	#$6,$FF800E.l
-	bne.b	.l18576
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d0
 	move.w	d0,$44(a3)
@@ -735,9 +735,9 @@ asspuckc						;player a3 is puck handler
 	bne.w	.shot
 	move.w	#$1,d0
 	btst	#$6,$62(a3)
-	beq.w	.l18616
+	beq.w	.next
 	move.w	#$2,d0
-.l18616	cmp.w	$17FA6.l,d0
+.next	cmp.w	$17FA6.l,d0
 	beq.w	.shot
 	cmp.w	$17FA8.l,d0
 	beq.w	.shot
@@ -766,17 +766,17 @@ asspuckc						;player a3 is puck handler
 	cmpi.b	#$80,$1A8B8.l
 	beq.w	asspuckcExit
 .15	btst	#$7,$62(a3)		;pfgoal - 0 for bottom 1 for top
-	bne.w	.l186AE
+	bne.w	.next2
 	neg.w	d0
 	neg.w	d1
-.l186AE	lea.l	.l336D2(pc),a0
+.next2	lea.l	.next3(pc),a0
 	btst	#$2,$17F70.l
 	bne.w	.16
 	btst	#$0,$17F78.l
 	beq.w	.17
 .16	lea.l	asspuckcExit(pc),a0
 .17	bra.w	skateto
-.l336D2	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
+.next3	dc.w	$4880,$142B,$0028,$4882,$D479,$0001,$7B80,$162B
 	dc.w	$002A,$4883,$D679,$0001,$7B94,$4279,$0001,$7E34
 	dc.w	$7805,$207C,$0001,$7480,$0C6B,$0006,$0052,$6C00
 	dc.w	$0006,$D0FC,$0300,$1228,$0028,$4881,$D268,$0000
@@ -808,26 +808,26 @@ chk4lc						;see if computer should call line change
 ; Checks the line-change input state.
 CheckForLineChange
 	btst	#$4,$17F7A.l
-	bne.w	.l188B4
+	bne.w	.ex
 	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
-	bne.w	.l18810
+	bne.w	.next
 	neg.w	d0
-.l18810	tst.w	d0
+.next	tst.w	d0
 	bmi.w	check4benchExit
 	cmpi.w	#$58,d0
 	bgt.w	check4benchExit
-.l1881E	btst	#$7,$FF800E.l
-	bne.b	.l1881E
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l18838	btst	#$6,$FF800E.l
-	beq.b	.l18838
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l18858	btst	#$6,$FF800E.l
-	bne.b	.l18858
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d0
 	bne.w	check4benchExit
@@ -836,16 +836,16 @@ CheckForLineChange
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	btst	#$6,$62(a3)
-	beq.w	.l18892
+	beq.w	.next2
 	exg.l	a1,a2
-.l18892	jsr	(AvgCline).l
+.next2	jsr	(AvgCline).l
 	cmpi.w	#$C00,d0
 	bhi.w	check4benchExit
 	bsr.w	CompLine
 	jsr	(setpersonel).l
 	jsr	(printscores1).l
 	bra.w	CompShoot
-.l188B4	rts
+.ex	rts
 chkpk
 	btst	#$5,$17F6C.l
 	bne.w	chkpk2

@@ -1,7 +1,7 @@
 Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	cmpi.w	#$1234,(a0)
-	bne.w	.l7A2A
+	bne.w	.next21
 	bsr.w	SndSlotsTick
 	bsr.w	Z80StartStream
 	lea.l	Set1MFlag_40(pc),a0
@@ -12,14 +12,14 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	lea.l	Set1MFlag_36(pc),a3
 	lea.l	Set1MFlag_37(pc),a2
 	lea.l	Set1MFlag_38(pc),a1
-.l77F0	dc.w	$3C3A,$0D4C
+.loop	dc.w	$3C3A,$0D4C
 	lsl.w	#$1,d6
 	move.w	d6,d7
 	lsl.w	#$1,d7
 	cmpi.l	#$FFFFFFFF,(a6,d7.w)
-	beq.w	.l7A16
+	beq.w	.next20
 	tst.w	(a4,d6.w)
-	beq.b	.l784E
+	beq.b	.next2
 	move.w	(a3,d6.w),d1
 	add.w	(a2,d6.w),d1
 	move.w	d1,d2
@@ -28,44 +28,44 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	add.w	(a1,d7.w),d1
 	move.w	#$0,(a1,d7.w)
 	cmp.w	(a4,d6.w),d1
-	bge.b	.l783E
+	bge.b	.next
 	move.w	(a4,d6.w),d3
 	sub.w	d1,d3
 	move.w	d3,(a4,d6.w)
 	move.w	d2,(a2,d6.w)
-	bra.w	.l7A16
-.l783E	sub.w	(a4,d6.w),d1
+	bra.w	.next20
+.next	sub.w	(a4,d6.w),d1
 	lsl.w	#$8,d1
 	or.w	d2,d1
 	move.w	d1,(a2,d6.w)
 	clr.w	(a4,d6.w)
-.l784E	movea.l	(a6,d7.w),a0
+.next2	movea.l	(a6,d7.w),a0
 	move.l	(a5,d7.w),d5
-.l7856	tst.b	(a0,d5.l)
-	bpl.b	.l7864
+.loop2	tst.b	(a0,d5.l)
+	bpl.b	.next3
 	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
-	bra.b	.l7856
-.l7864	opt	oaq-
+	bra.b	.loop2
+.next3	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
 	tst.b	(a0,d5.l)
-	bpl.b	.l787C
+	bpl.b	.next4
 	move.b	(a0,d5.l),$2(a1,d7.w)
 	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
-.l787C	move.b	$2(a1,d7.w),d0
+.next4	move.b	$2(a1,d7.w),d0
 	andi.b	#$F0,d0
 	cmpi.b	#$90,d0
-	bne.w	.l790C
+	bne.w	.next8
 	dc.w	$303A,$0CB0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -76,20 +76,20 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	beq.b	.l78B6
+	beq.b	.next5
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,(a1,d7.w)
 	opt	oaq+
 	opt	osq+
-	bra.w	.l7A16
-.l78B6	clr.l	d0
+	bra.w	.next20
+.next5	clr.l	d0
 	move.b	$2(a0,d5.l),d0
-	bpl.b	.l78CA
+	bpl.b	.next6
 	andi.l	#$7F,d0
 	lsl.l	#$7,d0
 	or.b	$3(a0,d5.l),d0
-.l78CA	lsl.l	#$8,d0
+.next6	lsl.l	#$8,d0
 	move.w	(a3,d6.w),d3
 	divu.w	d3,d0
 	swap	d0
@@ -106,24 +106,24 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	addi.l	#$2,d5
 	opt	oaq+
 	opt	osq+
-.l78F4	tst.b	(a0,d5.l)
-	bpl.b	.l7902
+.loop3	tst.b	(a0,d5.l)
+	bpl.b	.next7
 	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
-	bra.b	.l78F4
-.l7902	opt	oaq-
+	bra.b	.loop3
+.next7	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
-	bra.w	.l79F4
-.l790C	cmpi.b	#$B0,d0
-	bne.b	.l797E
+	bra.w	.next18
+.next8	cmpi.b	#$B0,d0
+	bne.b	.next13
 	cmpi.b	#$12,(a0,d5.l)
-	bne.b	.l794C
+	bne.b	.next11
 	move.l	a0,-(sp)
 	move.b	$1(a0,d5.l),d1
 	dc.w	$303A,$0C1C
@@ -134,14 +134,14 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	lea.l	Set1MFlag_41(pc),a0
 	move.w	(a0,d0.w),d3
 	cmpi.b	#$0,d1
-	bne.b	.l7942
+	bne.b	.next9
 	bclr	d2,d3
-	bra.b	.l7944
-.l7942	bset	d2,d3
-.l7944	move.w	d3,(a0,d0.w)
+	bra.b	.next10
+.next9	bset	d2,d3
+.next10	move.w	d3,(a0,d0.w)
 	movea.l	(sp)+,a0
-	bra.b	.l7976
-.l794C	dc.w	$303A,$0BF0
+	bra.b	.next12
+.next11	dc.w	$303A,$0BF0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
 	move.b	$1(a0,d5.l),d0
@@ -151,21 +151,21 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	beq.b	.l7976
+	beq.b	.next12
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,(a1,d7.w)
 	opt	oaq+
 	opt	osq+
-	bra.w	.l7A16
-.l7976	opt	oaq-
+	bra.w	.next20
+.next12	opt	oaq-
 	opt	osq-
 	addi.l	#$2,d5
 	opt	oaq+
 	opt	osq+
-	bra.b	.l79F4
-.l797E	cmpi.b	#$C0,d0
-	bne.b	.l79B0
+	bra.b	.next18
+.next13	cmpi.b	#$C0,d0
+	bne.b	.next15
 	dc.w	$303A,$0BB8
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -175,21 +175,21 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	beq.b	.l79A8
+	beq.b	.next14
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,(a1,d7.w)
 	opt	oaq+
 	opt	osq+
-	bra.b	.l7A16
-.l79A8	opt	oaq-
+	bra.b	.next20
+.next14	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
-	bra.b	.l79F4
-.l79B0	cmpi.b	#$E0,d0
-	bne.b	.l79E2
+	bra.b	.next18
+.next15	cmpi.b	#$E0,d0
+	bne.b	.next17
 	dc.w	$303A,$0B86
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -199,44 +199,44 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	beq.b	.l79DA
+	beq.b	.next16
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,(a1,d7.w)
 	opt	oaq+
 	opt	osq+
-	bra.b	.l7A16
-.l79DA	opt	oaq-
+	bra.b	.next20
+.next16	opt	oaq-
 	opt	osq-
 	addi.l	#$1,d5
 	opt	oaq+
 	opt	osq+
-	bra.b	.l79F4
-.l79E2	cmpi.b	#$FF,$2(a1,d7.w)
-	bne.b	.l79F4
+	bra.b	.next18
+.next17	cmpi.b	#$FF,$2(a1,d7.w)
+	bne.b	.next18
 	move.l	#$FFFFFFFF,(a6,d7.w)
-	bra.b	.l7A16
-.l79F4	move.l	d5,(a5,d7.w)
+	bra.b	.next20
+.next18	move.l	d5,(a5,d7.w)
 	clr.w	d2
 	move.b	(a0,d5.l),d2
-	bpl.b	.l7A0A
+	bpl.b	.next19
 	andi.b	#$7F,d2
 	lsl.w	#$7,d2
 	or.b	$1(a0,d5.l),d2
-.l7A0A	move.w	d2,(a4,d6.w)
+.next19	move.w	d2,(a4,d6.w)
 	tst.w	d2
-	bne.b	.l7A16
-	bra.w	.l77F0
-.l7A16	lea.l	Set1MFlag_40(pc),a0
+	bne.b	.next20
+	bra.w	.loop
+.next20	lea.l	Set1MFlag_40(pc),a0
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,(a0)
 	opt	oaq+
 	opt	osq+
 	cmpi.w	#$8,(a0)
-	blt.w	.l77F0
+	blt.w	.loop
 	bsr.w	Z80LoadPending
-.l7A2A	andi.b	#$FE,ccr
+.next21	andi.b	#$FE,ccr
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
@@ -247,21 +247,21 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	move.w	d4,$1CE(a0)
 	lea.l	Set1MFlag_32(pc),a1
 	clr.w	d0
-.l7A52	cmpi.l	#$FFFFFFFF,(a1)+
-	beq.b	.l7A6A
+.loop	cmpi.l	#$FFFFFFFF,(a1)+
+	beq.b	.next
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	cmpi.w	#$8,d0
-	bne.b	.l7A52
+	bne.b	.loop
 	move.w	#$7,d0
-	bra.b	.l7AD4
-.l7A6A	move.w	d0,$1C6(a0)
+	bra.b	.next2
+.next	move.w	d0,$1C6(a0)
 	move.w	#$3,d0
 	bsr.w	SndFindSource
-	bcs.b	.l7AD4
+	bcs.b	.next2
 	clr.l	d1
 	move.b	$1(a0),d1
 	lsl.w	#$8,d1
@@ -288,26 +288,26 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	move.w	$1C8(a1),$42(a1,d0.w)
 	move.w	#$1234,$0(a1)
 	clr.w	d0
-	bra.b	.l7AD8
-.l7AD4	ori.b	#$1,ccr
-.l7AD8	movem.l	(sp)+,d1-d4/a0-a1
+	bra.b	.next3
+.next2	ori.b	#$1,ccr
+.next3	movem.l	(sp)+,d1-d4/a0-a1
 	rts
 Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
 	lea.l	Set1MFlag_34(pc),a0
 	clr.w	d0
-.l7AE8	cmp.w	(a0)+,d1
-	beq.b	.l7B00
+.loop	cmp.w	(a0)+,d1
+	beq.b	.next
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,d0
 	opt	oaq+
 	opt	osq+
 	cmpi.w	#$8,d0
-	bne.b	.l7AE8
+	bne.b	.loop
 	move.w	#$3,d0
 	ori.b	#$1,ccr
-	bra.b	.l7B30
-.l7B00	lea.l	Set1MFlag_31(pc),a0
+	bra.b	.next2
+.next	lea.l	Set1MFlag_31(pc),a0
 	move.w	d0,$1C6(a0)
 	lsl.w	#$1,d0
 	lea.l	Set1MFlag_34(pc),a0
@@ -319,7 +319,7 @@ Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
 	move.w	$1C6(a0),d0
 	bsr.w	SndSlotFind
 	clr.w	d0
-.l7B30	movem.l	(sp)+,d1-d2/a0
+.next2	movem.l	(sp)+,d1-d2/a0
 	rts
 Set1MFlag_11	movem.l	d1-d2/a0,-(sp)
 	move.w	sr,-(sp)
@@ -357,8 +357,8 @@ Z80ReadStatus	movem.l	a0-a1,-(sp)
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
 	move.w	#$1FF,d0
-.l7BBE	move.b	#$0,(a1)+
-	dbra	d0,.l7BBE
+.loop	move.b	#$0,(a1)+
+	dbra	d0,.loop
 	clr.l	d0
 	move.b	$A00026.l,d0
 	lsl.w	#$8,d0
@@ -366,8 +366,8 @@ Z80ReadStatus	movem.l	a0-a1,-(sp)
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
 	move.w	#$1FF,d0
-.l7BE2	move.b	#$0,(a1)+
-	dbra	d0,.l7BE2
+.loop2	move.b	#$0,(a1)+
+	dbra	d0,.loop2
 	bsr.w	Z80ReleaseBus
 	move.w	#$1234,$0(a0)
 	clr.w	d0
@@ -384,25 +384,25 @@ Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 	move.w	d0,d3
 	andi.w	#$F,d3
 	btst	d3,d2
-	bne.b	.l7C20
+	bne.b	.next
 	bsr.w	Z80QueueCommand
-	bra.b	.l7C24
-.l7C20	bsr.w	.lFF7C2A
-.l7C24	movem.l	(sp)+,d1-d3/a0
+	bra.b	.next2
+.next	bsr.w	.next3
+.next2	movem.l	(sp)+,d1-d3/a0
 	rts
-.lFF7C2A	movem.l	d1-d2/a0,-(sp)
+.next3	movem.l	d1-d2/a0,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,(a0)
 	lea.l	Set1MFlag_43(pc),a0
 	move.w	(a0),d2
 	cmpi.w	#$20,d2
-	bne.b	.l7C54
+	bne.b	.next4
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	move.w	#$FFFF,d0
 	ori.b	#$1,ccr
-	bra.b	.l7C70
-.l7C54	move.w	d2,d1
+	bra.b	.next5
+.next4	move.w	d2,d1
 	lsl.w	#$2,d1
 	opt	oaq-
 	opt	osq-
@@ -419,31 +419,31 @@ Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	clr.w	d0
-.l7C70	movem.l	(sp)+,d1-d2/a0
+.next5	movem.l	(sp)+,d1-d2/a0
 	rts
 ; Appends command d0 to the Z80 driver command queue.
 Z80QueueCommand	movem.l	d1/a0,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
-.l7C84	bsr.w	Z80RequestBus
+.loop	bsr.w	Z80RequestBus
 	lea.l	$A00030.l,a0
 	tst.b	(a0)
-	beq.b	.l7CA2
+	beq.b	.next
 	bsr.w	Z80ReleaseBus
 	move.w	#$64,d1
-.l7C9A	opt	oaq-
+.loop2	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d1
 	opt	oaq+
 	opt	osq+
-	bne.b	.l7C9A
-	bra.b	.l7C84
-.l7CA2	adda.l	#$1,a0
+	bne.b	.loop2
+	bra.b	.loop
+.next	adda.l	#$1,a0
 	cmpi.b	#$18,(a0)
-	blt.b	.l7CB4
+	blt.b	.next2
 	move.w	#$FFFF,d0
-	bra.b	.l7CDC
-.l7CB4	clr.w	d1
+	bra.b	.next3
+.next2	clr.w	d1
 	move.b	(a0),d1
 	lsl.w	#$2,d1
 	move.b	d0,$1(a0,d1.w)
@@ -457,7 +457,7 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 	dc.w	$0601,$0001
 	move.b	d1,(a0)
 	move.w	#$0,d0
-.l7CDC	bsr.w	Z80ReleaseBus
+.next3	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d1/a0
@@ -466,21 +466,21 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_43(pc),a1
 	cmpi.w	#$0,(a1)
-	beq.b	.l7D54
+	beq.b	.next3
 	dc.w	$207A,$085A
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
-.l7D0A	cmpi.w	#$FFFF,(a0)
-	bne.b	.l7D2E
+.loop	cmpi.w	#$FFFF,(a0)
+	bne.b	.next2
 	dc.w	$207A,$0848
 	bsr.w	PrgRamReadWait
 	move.w	#$1F4,d0
-.l7D1C	dbra	d0,.l7D1C
+.next	dbra	d0,.next
 	dc.w	$207A,$0838
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
-	bra.b	.l7D0A
-.l7D2E	move.w	(a1),d0
+	bra.b	.loop
+.next2	move.w	(a1),d0
 	move.w	(a0),d1
 	add.w	d1,d0
 	move.w	d0,(a0)+
@@ -488,13 +488,13 @@ Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	ext.l	d1
 	adda.l	d1,a0
 	move.w	(a1)+,d0
-.l7D3E	move.l	(a1)+,(a0)+
-	dbra	d0,.l7D3E
+.loop2	move.l	(a1)+,(a0)+
+	dbra	d0,.loop2
 	lea.l	Set1MFlag_43(pc),a1
 	move.w	#$0,(a1)
 	dc.w	$207A,$080C
 	bsr.w	PrgRamReadWait
-.l7D54	movem.l	(sp)+,d0-d1/a0-a1
+.next3	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 ; Copies a sound block into Z80 RAM, checking the free space.
 Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
@@ -506,28 +506,28 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	move.b	$A00023.l,d2
 	add.w	d1,d2
 	cmpi.w	#$1F00,d2
-	bcs.b	.l7D8C
+	bcs.b	.next
 	move.w	#$4,d0
 	ori.b	#$1,ccr
-	bra.w	.l7E18
-.l7D8C	lea.l	$A00100.l,a1
+	bra.w	.next3
+.next	lea.l	$A00100.l,a1
 	move.w	#$40,d2
-.l7D96	cmpi.b	#$FF,(a1)
-	beq.b	.l7DC0
+.loop	cmpi.b	#$FF,(a1)
+	beq.b	.next2
 	adda.l	#$4,a1
 	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d2
 	opt	oaq+
 	opt	osq+
-	bne.b	.l7D96
+	bne.b	.loop
 	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	move.w	#$7,d0
 	ori.b	#$1,ccr
-	bra.w	.l7E18
-.l7DC0	move.b	d0,(a1)
+	bra.w	.next3
+.next2	move.b	d0,(a1)
 	move.b	d1,$1(a1)
 	move.b	$A00022.l,d2
 	move.b	d2,$2(a1)
@@ -538,13 +538,13 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	move.b	$A00022.l,d2
 	lsl.w	#$8,d2
 	move.b	$A00023.l,d2
-.l7DF0	move.b	(a0)+,(a1,d2.w)
+.loop2	move.b	(a0)+,(a1,d2.w)
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,d2
 	opt	oaq+
 	opt	osq+
-	dbra	d1,.l7DF0
+	dbra	d1,.loop2
 	move.b	d2,$A00023.l
 	lsr.w	#$8,d2
 	move.b	d2,$A00022.l
@@ -552,7 +552,7 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
-.l7E18	movem.l	(sp)+,d0-d2/a0-a1
+.next3	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 ; Marks all 32 sound slots as empty.
 SndSlotsReset	movem.l	d0-d1/a0-a1,-(sp)
@@ -562,8 +562,8 @@ SndSlotsReset	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_39(pc),a1
 	move.w	#$1F,d1
 	move.l	#$FFFFFFFF,d0
-.l7E40	move.l	d0,(a1)+
-	dbra	d1,.l7E40
+.loop	move.l	d0,(a1)+
+	dbra	d1,.loop
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
@@ -574,21 +574,21 @@ SndSlotFind	movem.l	d0-d2/a0-a1,-(sp)
 	lea.l	Set1MFlag_39(pc),a1
 	move.w	$122(a0),d1
 	clr.w	d2
-.l7E6A	cmpi.w	#$0,d1
-	beq.b	.l7E8A
+.loop	cmpi.w	#$0,d1
+	beq.b	.next2
 	move.b	$3(a1),d2
 	lsr.b	#$4,d2
 	cmp.w	d0,d2
-	bne.b	.l7E7E
+	bne.b	.next
 	move.w	#$1,(a1)
-.l7E7E	adda.l	#$4,a1
+.next	adda.l	#$4,a1
 	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d1
 	opt	oaq+
 	opt	osq+
-	bra.b	.l7E6A
-.l7E8A	move.w	#$1234,$0(a0)
+	bra.b	.loop
+.next2	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 ; Stores d0 in the next free sound slot.
@@ -610,16 +610,16 @@ SndSlotAdd	movem.l	d0-d1/a0,-(sp)
 SndSlotsTick	movem.l	d0-d1/a0-a2,-(sp)
 	lea.l	Set1MFlag_31(pc),a2
 	cmpi.w	#$0,$122(a2)
-	beq.b	.l7F2A
+	beq.b	.next3
 	lea.l	Set1MFlag_39(pc),a0
-.l7ED0	cmpi.w	#$FFFF,(a0)
-	beq.b	.l7F2A
+.loop	cmpi.w	#$FFFF,(a0)
+	beq.b	.next3
 	opt	oaq-
 	opt	osq-
 	subi.w	#$1,(a0)
 	opt	oaq+
 	opt	osq+
-	bne.b	.l7F24
+	bne.b	.next2
 	move.b	$3(a0),d0
 	andi.b	#$F0,d0
 	lsl.w	#$8,d0
@@ -629,14 +629,14 @@ SndSlotsTick	movem.l	d0-d1/a0-a2,-(sp)
 	ori.b	#$80,d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	beq.b	.l7F02
+	beq.b	.next
 	opt	oaq-
 	opt	osq-
 	addi.w	#$1,(a0)
 	opt	oaq+
 	opt	osq+
-	bra.b	.l7F24
-.l7F02	lea.l	Set1MFlag_39(pc),a1
+	bra.b	.next2
+.next	lea.l	Set1MFlag_39(pc),a1
 	dc.w	$303A,$0634
 	opt	oaq-
 	opt	osq-
@@ -651,38 +651,38 @@ SndSlotsTick	movem.l	d0-d1/a0-a2,-(sp)
 	subi.w	#$1,$122(a2)
 	opt	oaq+
 	opt	osq+
-	bra.b	.l7ED0
-.l7F24	adda.w	#$4,a0
-	bra.b	.l7ED0
-.l7F2A	movem.l	(sp)+,d0-d1/a0-a2
+	bra.b	.loop
+.next2	adda.w	#$4,a0
+	bra.b	.loop
+.next3	movem.l	(sp)+,d0-d1/a0-a2
 	rts
 ; Starts a sound stream from the table at $A00072.
 Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	bsr.w	Z80RequestBus
 	tst.b	$A00072.l
-	beq.w	.l80B8
+	beq.w	.next8
 	cmpi.b	#$1,$A00072.l
-	bne.b	.l7FCA
+	bne.b	.next
 	clr.w	d1
 	move.b	$A00073.l,d1
 	move.w	#$1,d0
 	bsr.w	SndFindSource
-	bcs.w	.l80B8
+	bcs.w	.next8
 	cmpa.l	#$FFFFFFFF,a0
-	beq.w	.l80B8
+	beq.w	.next8
 	lea.l	Set1MFlag_31(pc),a1
 	move.l	a0,$126(a1)
 	move.l	a0,-(sp)
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
-.l7F7C	move.b	(a0),d0
+.loop	move.b	(a0),d0
 	cmp.b	(a0),d0
-	bne.b	.l7F7C
+	bne.b	.loop
 	lsl.w	#$8,d0
 	adda.l	#$1,a0
-.l7F8A	move.b	(a0),d0
+.loop2	move.b	(a0),d0
 	cmp.b	(a0),d0
-	bne.b	.l7F8A
+	bne.b	.loop2
 	move.w	d0,$12E(a1)
 	adda.l	#$1,a0
 	movea.l	(sp)+,a0
@@ -696,69 +696,69 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	move.b	$A00025.l,d0
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
-	bra.w	.l804A
-.l7FCA	cmpi.b	#$2,$A00072.l
-	bne.b	.l800A
+	bra.w	.next5
+.next	cmpi.b	#$2,$A00072.l
+	bne.b	.next3
 	dc.w	$207A,$056E
 	cmpa.l	#$0,a0
-	bne.b	.l7FF0
+	bne.b	.next2
 	bsr.w	Z80ReleaseBus
 	bsr.w	Z80ReadStatus
 	bsr.w	Z80RequestBus
-	bra.w	.l80B8
-.l7FF0	clr.l	d0
+	bra.w	.next8
+.next2	clr.l	d0
 	move.b	$A00024.l,d0
 	lsl.w	#$8,d0
 	move.b	$A00025.l,d0
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
-	bra.b	.l804A
-.l800A	cmpi.b	#$3,$A00072.l
-	bne.w	.l80B8
+	bra.b	.next5
+.next3	cmpi.b	#$3,$A00072.l
+	bne.w	.next8
 	dc.w	$207A,$052C
 	cmpa.l	#$0,a0
-	bne.b	.l8032
+	bne.b	.next4
 	bsr.w	Z80ReleaseBus
 	bsr.w	Z80ReadStatus
 	bsr.w	Z80RequestBus
-	bra.w	.l80B8
-.l8032	clr.l	d0
+	bra.w	.next8
+.next4	clr.l	d0
 	move.b	$A00026.l,d0
 	lsl.w	#$8,d0
 	move.b	$A00027.l,d0
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
-.l804A	move.l	a0,-(sp)
+.next5	move.l	a0,-(sp)
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
 	move.w	#$1FF,d1
-.l8058	move.b	(a0)+,(a1)+
-	beq.b	.l807A
-	dbra	d1,.l8058
+.loop3	move.b	(a0)+,(a1)+
+	beq.b	.next6
+	dbra	d1,.loop3
 	lea.l	Set1MFlag_31(pc),a1
 	move.l	$12A(a1),d0
 	addi.l	#$200,d0
 	move.l	d0,$12A(a1)
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
-	bra.b	.l80B8
-.l807A	suba.l	#$1,a1
+	bra.b	.next8
+.next6	suba.l	#$1,a1
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 	clr.l	d0
 	dc.w	$303A,$04BE
 	cmpi.w	#$FFFF,d0
-	beq.b	.l80AC
+	beq.b	.next7
 	move.b	#$FF,(a1)
 	lea.l	Set1MFlag_31(pc),a1
 	movea.l	$126(a1),a0
 	adda.l	#$2,a0
 	adda.l	d0,a0
 	move.l	a0,$12A(a1)
-	bra.b	.l80B8
-.l80AC	lea.l	Set1MFlag_31(pc),a1
+	bra.b	.next8
+.next7	lea.l	Set1MFlag_31(pc),a1
 	move.l	#$0,$12A(a1)
-.l80B8	move.b	#$0,$A00072.l
+.next8	move.b	#$0,$A00072.l
 	bsr.w	Z80ReleaseBus
 	movem.l	(sp)+,d1-d2/a0
 	rts
@@ -766,58 +766,58 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	lea.l	Set1MFlag_45(pc),a1
 	move.w	#$4,d2
-.l80D6	cmpi.l	#$FFFFFFFF,(a1)
-	beq.w	.l8180
+.loop	cmpi.l	#$FFFFFFFF,(a1)
+	beq.w	.next
 	movea.l	(a1),a0
 	movea.l	a0,a2
 	move.l	a0,-(sp)
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
 	clr.l	d3
-.l80F0	move.b	(a0),d3
+.loop2	move.b	(a0),d3
 	cmp.b	(a0),d3
-	bne.b	.l80F0
+	bne.b	.loop2
 	adda.l	#$1,a0
 	lsl.w	#$8,d3
-.l80FE	move.b	(a0),d3
+.loop3	move.b	(a0),d3
 	cmp.b	(a0),d3
-	bne.b	.l80FE
+	bne.b	.loop3
 	adda.l	#$1,a0
 	move.l	d3,d4
 	lsl.w	#$2,d4
 	adda.l	d4,a2
 	adda.l	#$2,a2
-.l8116	move.b	(a0),d4
+.loop4	move.b	(a0),d4
 	cmp.b	(a0),d4
-	bne.b	.l8116
+	bne.b	.loop4
 	cmp.b	d4,d0
-	bne.b	.l8154
-.l8120	move.b	$1(a0),d4
+	bne.b	.loop8
+.loop5	move.b	$1(a0),d4
 	cmp.b	$1(a0),d4
-	bne.b	.l8120
+	bne.b	.loop5
 	cmp.b	d4,d1
-	bne.b	.l8154
+	bne.b	.loop8
 	clr.w	d0
-.l8130	move.b	$2(a0),d0
+.loop6	move.b	$2(a0),d0
 	cmp.b	$2(a0),d0
-	bne.b	.l8130
+	bne.b	.loop6
 	lsl.w	#$8,d0
-.l813C	move.b	$3(a0),d0
+.loop7	move.b	$3(a0),d0
 	cmp.b	$3(a0),d0
-	bne.b	.l813C
+	bne.b	.loop7
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 	movea.l	a2,a0
 	andi.b	#$FE,ccr
-	bra.b	.l8196
-.l8154	clr.l	d4
+	bra.b	.next2
+.loop8	clr.l	d4
 	move.b	$2(a0),d4
 	cmp.b	$2(a0),d4
-	bne.b	.l8154
+	bne.b	.loop8
 	lsl.w	#$8,d4
-.l8162	move.b	$3(a0),d4
+.loop9	move.b	$3(a0),d4
 	cmp.b	$3(a0),d4
-	bne.b	.l8162
+	bne.b	.loop9
 	adda.l	d4,a2
 	adda.l	#$4,a0
 	opt	oaq-
@@ -825,19 +825,19 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	subi.w	#$1,d3
 	opt	oaq+
 	opt	osq+
-	bne.b	.l8116
+	bne.b	.loop4
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
-.l8180	adda.l	#$4,a1
+.next	adda.l	#$4,a1
 	opt	oaq-
 	opt	osq-
 	subi.w	#$1,d2
 	opt	oaq+
 	opt	osq+
-	bne.w	.l80D6
+	bne.w	.loop
 	move.w	#$3,d0
 	ori.b	#$1,ccr
-.l8196	movem.l	(sp)+,d1-d4/a1-a2
+.next2	movem.l	(sp)+,d1-d4/a1-a2
 	rts
 Set1MFlag_22	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
@@ -847,45 +847,45 @@ Set1MFlag_22	movem.l	d1/a1,-(sp)
 	rts
 Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
-.l81B6	cmpi.w	#$FFFF,(a1)
-	bne.b	.l81C0
+.loop	cmpi.w	#$FFFF,(a1)
+	bne.b	.next
 	clr.w	d0
-	bra.b	.l81F4
-.l81C0	move.w	(a1),d0
+	bra.b	.next4
+.next	move.w	(a1),d0
 	move.w	$2(a1),d1
 	bsr.w	SndFindSource
-	bcs.b	.l81F0
+	bcs.b	.next3
 	cmpi.w	#$0,(a1)
-	bne.b	.l81E8
+	bne.b	.next2
 	cmpi.b	#$6,(a0)
-	bcc.b	.l81E8
+	bcc.b	.next2
 	move.w	d0,d1
 	move.w	$2(a1),d0
 	bsr.w	Z80LoadBlock
-	bcs.b	.l81F0
-	bra.w	.l81E8
-.l81E8	adda.l	#$4,a1
-	bra.b	.l81B6
-.l81F0	ori.b	#$1,ccr
-.l81F4	movem.l	(sp)+,d1/a0-a1
+	bcs.b	.next3
+	bra.w	.next2
+.next2	adda.l	#$4,a1
+	bra.b	.loop
+.next3	ori.b	#$1,ccr
+.next4	movem.l	(sp)+,d1/a0-a1
 	rts
 Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,(a1)
 	bsr.w	Z80RequestBus
-.l820A	cmpi.w	#$FFFF,(a0)
-	beq.w	.l82E4
+.loop	cmpi.w	#$FFFF,(a0)
+	beq.w	.next5
 	cmpi.w	#$6,(a0)
-	bcc.w	.l82DA
+	bcc.w	.next4
 	lea.l	$A00100.l,a1
 	move.w	$2(a0),d0
 	move.w	#$3F,d1
-.l8228	cmp.b	(a1),d0
-	beq.b	.l823A
+.loop2	cmp.b	(a1),d0
+	beq.b	.next
 	adda.l	#$4,a1
-	dbra	d1,.l8228
-	bra.w	.l82DA
-.l823A	clr.w	d0
+	dbra	d1,.loop2
+	bra.w	.next4
+.next	clr.w	d0
 	move.b	$1(a1),d0
 	clr.w	d1
 	move.b	$2(a1),d1
@@ -894,8 +894,8 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	move.w	d1,d2
 	add.w	d0,d2
 	lea.l	$A00000.l,a2
-.l8256	cmpi.w	#$1F00,d2
-	beq.b	.l826C
+.loop3	cmpi.w	#$1F00,d2
+	beq.b	.next2
 	move.b	(a2,d2.w),(a2,d1.w)
 	opt	oaq-
 	opt	osq-
@@ -907,8 +907,8 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	addi.w	#$1,d1
 	opt	oaq+
 	opt	osq+
-	bra.b	.l8256
-.l826C	clr.w	d1
+	bra.b	.loop3
+.next2	clr.w	d1
 	move.b	$2(a1),d1
 	lsl.w	#$8,d1
 	move.b	$3(a1),d1
@@ -918,19 +918,19 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	move.b	#$FF,$3(a1)
 	lea.l	$A00100.l,a1
 	move.w	#$3F,d2
-.l8298	cmpi.b	#$FF,(a1)
-	bne.w	.l82BC
+.loop4	cmpi.b	#$FF,(a1)
+	bne.w	.next3
 	clr.w	d3
 	move.b	$2(a1),d3
 	lsl.w	#$8,d3
 	move.b	$3(a1),d3
 	cmp.w	d1,d3
-	bcc.b	.l82BC
+	bcc.b	.next3
 	sub.w	d0,d3
 	move.b	d3,$3(a1)
 	lsr.w	#$8,d3
 	move.b	d3,$2(a1)
-.l82BC	dbra	d2,.l8298
+.next3	dbra	d2,.loop4
 	lea.l	$A00022.l,a1
 	clr.w	d1
 	move.b	(a1),d1
@@ -940,9 +940,9 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	move.b	d1,$1(a1)
 	lsr.w	#$8,d1
 	move.b	d1,(a1)
-.l82DA	adda.l	#$4,a0
-	bra.w	.l820A
-.l82E4	bsr.w	Z80ReleaseBus
+.next4	adda.l	#$4,a0
+	bra.w	.loop
+.next5	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
@@ -954,8 +954,8 @@ Set1MFlag_25	movem.l	a0-a1,-(sp)
 	bsr.w	Z80RequestBus
 	lea.l	$A00100.l,a0
 	move.w	#$FF,d0
-.l8312	move.b	#$FF,(a0)+
-	dbra	d0,.l8312
+.loop	move.b	#$FF,(a0)+
+	dbra	d0,.loop
 	lea.l	$A00020.l,a0
 	lea.l	$A00022.l,a1
 	move.b	(a0)+,(a1)+
@@ -968,8 +968,8 @@ Set1MFlag_25	movem.l	a0-a1,-(sp)
 	rts
 ; Requests the Z80 bus and waits for it.
 Z80RequestBus	move.w	#$100,$A11100.l
-.l8346	btst.b	#$8,$A11100.l
-	bne.b	.l8346
+.loop	btst.b	#$8,$A11100.l
+	bne.b	.loop
 	rts
 ; Gives the Z80 bus back.
 Z80ReleaseBus	move.w	#$0,$A11100.l
@@ -977,11 +977,11 @@ Z80ReleaseBus	move.w	#$0,$A11100.l
 ; Prepares reading from sub-CPU PRG RAM when the address is at or above $80000.
 PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 	cmpa.l	#$80000,a0
-	bcc.w	.l83AA
+	bcc.w	.next2
 	move.b	#$3,$A12001.l
-.l8372	move.w	$A12000.l,d0
+.loop	move.w	$A12000.l,d0
 	btst	#$1,d0
-	beq.b	.l8372
+	beq.b	.loop
 	move.l	a0,d0
 	swap	d0
 	andi.w	#$6,d0
@@ -990,43 +990,43 @@ PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 	move.w	$A12002.l,d1
 	move.w	d1,(a1)
 	btst	#$2,d1
-	beq.b	.l839E
+	beq.b	.next
 	bset	#$1,d0
-.l839E	andi.w	#$FF00,d1
+.next	andi.w	#$FF00,d1
 	or.w	d0,d1
 	move.w	d1,$A12002.l
-.l83AA	movem.l	(sp)+,d0-d1/a1
+.next2	movem.l	(sp)+,d0-d1/a1
 	rts
 ; Waits until the PRG-RAM read window is ready.
 PrgRamReadWait	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
-	bcc.b	.l83F8
+	bcc.b	.next3
 	dc.w	$303A,$022E
 	btst	#$2,d0
-	beq.b	.l83CE
+	beq.b	.next
 	andi.w	#$FFC0,d0
 	bset	#$1,d0
-	bra.b	.l83D2
-.l83CE	andi.w	#$FFC0,d0
-.l83D2	move.w	d0,$A12002.l
+	bra.b	.next2
+.next	andi.w	#$FFC0,d0
+.next2	move.w	d0,$A12002.l
 	move.w	#$1,$A12000.l
-.l83E0	move.w	$A12000.l,d0
+.loop	move.w	$A12000.l,d0
 	btst	#$1,d0
-	bne.b	.l83E0
+	bne.b	.loop
 	move.w	$A12000.l,d0
 	btst	#$1,d0
-	bne.b	.l83E0
-.l83F8	move.l	(sp)+,d0
+	bne.b	.loop
+.next3	move.l	(sp)+,d0
 	rts
 ; Maps a0 into the PRG-RAM window address.
 PrgRamMapAddr	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
-	bcc.b	.l8416
+	bcc.b	.next
 	move.l	a0,d0
 	andi.l	#$1FFFF,d0
 	ori.l	#$20000,d0
 	movea.l	d0,a0
-.l8416	move.l	(sp)+,d0
+.next	move.l	(sp)+,d0
 	rts
 Set1MFlag_31	dc.b	$00,$00	; ..
 Set1MFlag_32	dcb.b	$20,0
@@ -1037,10 +1037,10 @@ Set1MFlag_36	dcb.b	$10,0
 Set1MFlag_37	dcb.b	$10,0
 Set1MFlag_38	dcb.b	$20,0
 Set1MFlag_39	dcb.b	$80,0
-.lFF853C	dc.b	$00,$00	; ..
+.next	dc.b	$00,$00	; ..
 Set1MFlag_40	dc.b	$00,$00,$00,$00,$00,$00	; ......
-.lFF8544	dc.b	$00,$00,$00,$00	; ....
-.lFF8548	dc.b	$00,$00	; ..
+.next	dc.b	$00,$00,$00,$00	; ....
+.next2	dc.b	$00,$00	; ..
 Set1MFlag_41	dcb.b	$10,0
 Set1MFlag_42	dc.b	$00,$00,$00,$00	; ....
 Set1MFlag_43	dcb.b	$8C,0

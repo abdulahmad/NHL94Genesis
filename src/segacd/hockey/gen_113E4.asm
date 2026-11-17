@@ -4,28 +4,28 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 									;Called from DrawMenuScreen and
 									;HandleMenuInput
 	move.w	$18AD2.l,d0
-	bpl.w	.l113F6
+	bpl.w	.next
 	clr.w	$18AD2.l		;no item above the first
 	clr.w	d0
-.l113F6	movea.l	$18AD6.l,a0
+.next	movea.l	$18AD6.l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
-	bra.w	.l1140E
-.l11404	adda.w	(a0),a0		;advance to the next item entry
+	bra.w	.next2
+.loop	adda.w	(a0),a0		;advance to the next item entry
 	adda.w	#$4,a0
 	tst.w	$2(a0)		;negative: the last item
-.l1140E	dbmi	d0,.l11404		;stop after d0 items or at the last item
+.next2	dbmi	d0,.loop		;stop after d0 items or at the last item
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,$18AD2.l		;no item below the last
 	move.w	$18AD2.l,d0
 	cmp.w	$18AD4.l,d0
-	bge.w	.l11432
+	bge.w	.next3
 	move.w	d0,$18AD4.l		;scroll up
-.l11432	subi.w	#$3,d0		;selection - 3 = first visible item if it is on the bottom row
+.next3	subi.w	#$3,d0		;selection - 3 = first visible item if it is on the bottom row
 	cmp.w	$18AD4.l,d0
-	ble.w	.l11446
+	ble.w	.next4
 	move.w	d0,$18AD4.l		;scroll down
-.l11446	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
+.next4	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).l
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
@@ -34,19 +34,19 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
 	adda.w	(a1),a1
 	move.w	$18AD4.l,d0		;skip to the first item shown
-	bra.w	.l1149C
-.l11496	adda.w	(a1),a1
+	bra.w	.next5
+.loop2	adda.w	(a1),a1
 	adda.w	#$4,a1
-.l1149C	dbra	d0,.l11496
+.next5	dbra	d0,.loop2
 	moveq	#$3,d1		;4 rows
 	move.w	#$C,(printy).l
 	bsr.w	SetMenuPrintX
 	move.w	$18AD4.l,d0
-	beq.w	.l114CA
+	beq.w	.loop3
 	jsr	(printsmallz).l
 	dc.w	$000C
 	dc.b	$FE,$05,$FB,$01,$FA,$01,$7B,$FA,$FF,$00
-.l114CA	bsr.w	SetMenuPrintX
+.loop3	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
 	dc.w	$0006
 	dc.b	$FB,$02,$FA,$01
@@ -54,41 +54,41 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
 	cmp.w	$18AD2.l,d0
-	bne.w	.l114F8
+	bne.w	.next6
 	jsr	(printsmall).l
-.l114F8	movea.l	(sp)+,a1
+.next6	movea.l	(sp)+,a1
 	jsr	(PrintMenuItem).l
 	addi.w	#$1,d0
 	adda.w	#$4,a1
 	tst.w	$2(a1)		;negative: the last item
-	dbmi	d1,.l114CA
-	bmi.w	.l11526
+	dbmi	d1,.loop3
+	bmi.w	.ex
 	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
 	String	CC_Font2,$5,$FB,$1,'}'
-.l11526	rts
+.ex	rts
 PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text starts with
 									;'x' is the goalie option: it prints Manual Goalie
 									;(.manual) when the pause team word is 0, else Auto Goalie (.auto):
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
 									;Pausemode_Pmenu
 	cmpi.b	#$78,$2(a1)		;first char 'x'
-	bne.w	.l1156E
+	bne.w	.next4
 	move.l	a1,-(sp)
 	movea.l	#$2C576,a1
 	btst	#$1,$17F6A.l
-	beq.w	.l11550
+	beq.w	.next
 	tst.w	$18C0E.l
-	bra.w	.l11556
-.l11550	tst.w	$18C0C.l
-.l11556	beq.w	.l11560
+	bra.w	.next2
+.next	tst.w	$18C0C.l
+.next2	beq.w	.next3
 	movea.l	#$2C58A,a1
-.l11560	jsr	(printsmall).l
+.next3	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1		;skip the 'x' item text
-	bra.w	.l11574
-.l1156E	jsr	(printsmall).l
-.l11574	rts
+	bra.w	.ex
+.next4	jsr	(printsmall).l
+.ex	rts
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
@@ -104,23 +104,23 @@ PutTeamBlockDraw
 	movea.l	#$17FB2,a1
 	adda.w	d0,a1
 	moveq	#$1,d2
-.l115BA	jsr	(xyVmMap).l
+.loop	jsr	(xyVmMap).l
 	moveq	#$A,d1
-.l115C2	btst	#$7,$FF800E.l
-	bne.b	.l115C2
+.loop2	btst	#$7,$FF800E.l
+	bne.b	.loop2
 	move.w	(a1)+,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l115E2	btst	#$6,$FF800E.l
-	beq.b	.l115E2
+.loop3	btst	#$6,$FF800E.l
+	beq.b	.loop3
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l115FC	btst	#$6,$FF800E.l
-	bne.b	.l115FC
+.loop4	btst	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr	#$7,$FF800F.l
-	dbra	d1,.l115C2
+	dbra	d1,.loop2
 	addi.w	#$1,(printy).l
-	dbra	d2,.l115BA
+	dbra	d2,.loop
 	addi.w	#$B,(printx).l
 	subi.w	#$2,(printy).l
 	move.w	(sp)+,(disflags).l
@@ -131,8 +131,8 @@ MenuWaitVblank						;wait till Vcount changes, then resync Vcount. Saves d0. Rea
 	move.w	d0,-(sp)
 	move.w	$17476.l,d0
 	move.w	$17476.l,d0
-.l11648	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.l11648
+.loop	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.loop
 	move.w	$17476.l,(ScoutSubStatus).l
 	move.w	(sp)+,d0
 	rts
@@ -208,31 +208,31 @@ UpdateScoresScroll						;Called every frame by ShowScores: add PlayerScrollCtr t
 ScoresScrollBlitSetup	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l11780	btst	#$7,$FF800E.l
-	bne.b	.l11780
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l117A4	btst	#$6,$FF800E.l
-	beq.b	.l117A4
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l117BE	btst	#$6,$FF800E.l
-	bne.b	.l117BE
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FFD0,d0
 	add.w	(VertLineScrolling).l,d0
-.l117DA	btst	#$7,$FF800E.l
-	bne.b	.l117DA
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l117FA	btst	#$6,$FF800E.l
-	beq.b	.l117FA
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l11814	btst	#$6,$FF800E.l
-	bne.b	.l11814
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
@@ -286,11 +286,11 @@ PrintGameInfoHeader	movem.l	d0-d1/a1,-(sp)
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	lea.l	.l2C914(pc),a1
+	lea.l	.next(pc),a1
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-.l2C914	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
+.next	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
 	dc.w	$A44E,$4279,$0001,$A452,$33FC,$0001,$0001,$A45A
@@ -389,7 +389,7 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	btst	#$7,d1
 	bne.w	LineEditorMenu
 	btst	#$5,d1
-	bne.w	.l11B54
+	bne.w	.next
 	moveq	#$1,d0
 	btst	#$1,d1
 	bne.w	.vert
@@ -420,7 +420,7 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	move.w	d0,(PlayerScrollCtr).l
 .draw	bsr.w	PrintAttribHeader
 	bra.w	.loop
-.l11B54	movea.l	#$BBD30,a3
+.next	movea.l	#$BBD30,a3
 	adda.w	(VertLineScrolling).l,a3
 	move.b	(a3),d0
 	addi.b	#$1,d0		;SetLineSlot wants 1 based
@@ -476,13 +476,13 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	suba.w	#$1,a0
 .0	move.b	(a0),d0
 	cmp.b	$17F60.l,d0
-	beq.w	.l11C58
+	beq.w	.loop
 	move.b	d0,$17F60.l
 	bsr.w	DrawLineIconErase
-.l11C58	btst	d5,$17F60.l
-	beq.w	.l11C66
+.loop	btst	d5,$17F60.l
+	beq.w	.next
 	bsr.w	DrawLineIcon
-.l11C66	dbra	d5,.l11C58
+.next	dbra	d5,.loop
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
@@ -554,9 +554,9 @@ DrawLineIconErase
 	move.w	$2CE96.l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	$18C0A.l
-	beq.w	.l11DBE
+	beq.w	.next
 	move.w	ClearLineEditorTopTbl1.l,(printx).l
-.l11DBE	jsr	(printsmallz).l
+.next	jsr	(printsmallz).l
 	dc.w	$0022
 	dc.b	$FE,$04,$FB,$FD,$FA,$02,$4C,$44,$FB,$FE,$FA,$02,$52,$44,$FB,$FE,$FA,$02,$4C,$57,$FB,$FE,$FA,$02,$43,$20,$FB,$FE,$FA,$02,$52,$57
 	rts
@@ -617,8 +617,8 @@ LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / do
 LineEditorExit
 	bsr.w	ClearLineEditorMarks
 	move.w	#$18,(palcount).l
-.l11F14	tst.w	(palcount).l
-	bpl.w	.l11F14
+.loop	tst.w	(palcount).l
+	bpl.w	.loop
 	move.l	$18AD2.l,-(sp)
 	move.l	$18AD6.l,-(sp)
 	move.l	$18ADA.l,-(sp)
@@ -628,19 +628,19 @@ LineEditorExit
 	move.w	$2A(a2),d0
 	addi.w	#$1,d0
 	cmp.b	(a3),d0
-	beq.w	.l11F56
+	beq.w	.next
 	movea.l	#$42848,a0
-.l11F56	jsr	(printsmallz).l
+.next	jsr	(printsmallz).l
 	String	CC_Font1,$2
 	bsr.w	SetMenuScreenHandler
-.l11F64	bsr.w	MenuWaitVblank
+.loop2	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad
 	jsr	(ProcessInputWithRepeat).l
 	move.w	d1,-(sp)
 	bsr.w	HandleMenuInput
 	move.w	(sp)+,d1
 	andi.w	#$A0,d1
-	beq.w	.l11F64
+	beq.w	.loop2
 	jsr	(printsmallz).l
 	String	CC_SetFont
 	move.w	$18AD2.l,d0
@@ -755,9 +755,9 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	String	CC_Font3Pri,$9,$4,'Team  Roster',CC_Font3Pri,$E,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
-	beq.w	.l1212C
+	beq.w	.next
 	moveq	#$2C,d0
-.l1212C	bsr.w	PutTeamBlockDraw
+.next	bsr.w	PutTeamBlockDraw
 	jsr	(printsmallz).l
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9,$00
@@ -828,44 +828,44 @@ PlayerListScrollStep
 	divs.w	#$80,d0
 	swap	d0
 	tst.w	d0
-	bne.w	.l12284
+	bne.w	.next
 	clr.w	(PlayerScrollCtr).l
-.l12284	andi.w	#$7F,d1
-	bne.w	.l122A4
+.next	andi.w	#$7F,d1
+	bne.w	.next3
 	cmpi.w	#$7E,d0
-	bne.w	.l12298
+	bne.w	.next2
 	bsr.w	PlayerListSelectHigh
-.l12298	cmpi.w	#$2,d0
-	bne.w	.l122A4
+.next2	cmpi.w	#$2,d0
+	bne.w	.next3
 	bsr.w	PlayerListSelectHighNext
-.l122A4	move.w	(disflags).l,-(sp)
+.next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l122B8	btst	#$7,$FF800E.l
-	bne.b	.l122B8
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l122DC	btst	#$6,$FF800E.l
-	beq.b	.l122DC
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l122F6	btst	#$6,$FF800E.l
-	bne.b	.l122F6
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FF90,d0
 	add.w	(VertLineScrolling).l,d0
-.l12312	btst	#$7,$FF800E.l
-	bne.b	.l12312
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l12332	btst	#$6,$FF800E.l
-	beq.b	.l12332
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1234C	btst	#$6,$FF800E.l
-	bne.b	.l1234C
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts

@@ -17,16 +17,16 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	move.w	$0(a3),d0		;Xpos
 	move.w	$14(a3),d1		;Ypos
 	cmpi.w	#$AA,d1		;compare $AA to Ypos
-	bgt.w	.l1780C
+	bgt.w	.next
 	cmpi.w	#$FF56,d1		;check -$AA to Ypos
-	blt.w	.l1780C		;branch if less than
+	blt.w	.next		;branch if less than
 	btst	#$0,$17F68.l		;check if clock stopped
-	bne.w	.l1780C		;branch if so
+	bne.w	.next		;branch if so
 	move.w	d0,-(sp)		;push to stack
 	move.w	#$8,d0		;clock stoppage due to goalie out of range
 	jsr	(AddPenalty2).l
 	move.w	(sp)+,d0
-.l1780C	sub.w	$17CEE.l,d0
+.next	sub.w	$17CEE.l,d0
 	sub.w	$17CEA.l,d1
 	bclr	#$2,$64(a3)		;clear goalie control bit?
 	cmpi.w	#$74,d0		;compare $74 to Xpos diff
@@ -69,10 +69,10 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 .mbfo	sub.w	d7,$48(a3)		;subtract d7(frames elapsed) from temp5
 	bpl.w	.nofo		;branch if more than 0
 	btst	#$2,$17F70.l		;check bit 2
-	beq.w	.l178EA		;branch if not set
+	beq.w	.next2		;branch if not set
 	bset	#$4,$17F70.l
 	bra.w	.nofo
-.l178EA	moveq	#$8,d0
+.next2	moveq	#$8,d0
 	bsr.w	AddPenalty2
 .nofo	sub.b	d7,$40(a3)		;sub d7(frames elapsed) from temp1
 	bpl.w	.ex		;branch if positive

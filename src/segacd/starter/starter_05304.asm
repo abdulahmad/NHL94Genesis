@@ -7,9 +7,9 @@ GetDataSub3	move.l	d1,d0
 GetDataSub4	mulu.w	(sp)+,d1
 	clr.w	d0
 GetDataSub5	swap	d0
-	beq.b	.l531E
+	beq.b	.next
 	mulu.w	(sp),d0
-.l531E	addq.l	#$2,sp
+.next	addq.l	#$2,sp
 	add.w	d1,d0
 	swap	d0
 	clr.w	d0
@@ -17,15 +17,15 @@ GetDataSub5	swap	d0
 	rts
 	dc.b	$22,$2F,$00,$04	; "/..
 GetDataSub6	move.l	$8(sp),d0
-GetData_15	lea.l	.l2663E(pc),a0
+GetData_15	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
-.l2663E	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
+.next	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-GetData_16	lea.l	.l26662(pc),a0
+GetData_16	lea.l	.next(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
-.l26662	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
+.next	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
 	dc.b	$6B,$06,$4E,$BA,$00,'FNuD',$81,$4E,$BA,$00,$3E,$44,$81	; k.N..FNuD.N..>D.
 	dc.b	$4E,$75,$44,$80,$4A,$81,$6B,$0A,$4E,$BA,$00,$30,$44,$80,$44,$81	; NuD.J.k.N..0D.D.
 	dc.b	$4E,$75,$44,$81,$4E,$BA,$00,$24,$44,$80,'Nu"/',$00,$04	; NuD.N..$D.Nu"/..
@@ -74,23 +74,23 @@ GetData_21	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	(sp),$6(sp)
 	addq.l	#$6,sp
 	rts
-.l546A	tst.w	d1
+.next	tst.w	d1
 	bne.w	GetData_22
 	tst.w	d2
 	bne.w	GetData_22
 	move.w	$4(a0),d0
 	sub.w	$2(a0),d0
-	beq.w	.l5488
+	beq.w	.next2
 	jsr	$E488.l
-.l5488	add.w	$2(a0),d0
+.next2	add.w	$2(a0),d0
 	move.w	d0,d2
 	moveq	#$0,d1
 	move.b	$1(a0),d1
 	move.w	$8(a0),d0
 	sub.w	$6(a0),d0
-	beq.w	.l54A6
+	beq.w	.next3
 	jsr	$E488.l
-.l54A6	add.w	$6(a0),d0
+.next3	add.w	$6(a0),d0
 	move.w	d0,d3
 	move.w	#$3,d0
 GetDataSub9	move.w	#$FFFF,d4
@@ -100,9 +100,9 @@ GetData_22	move.w	d1,d3
 	move.w	d2,d4
 	move.w	$4(a0),d0
 	sub.w	$2(a0),d0
-	beq.w	.l54D2
+	beq.w	.next
 	jsr	$E488.l
-.l54D2	add.w	$2(a0),d0
+.next	add.w	$2(a0),d0
 	move.w	d0,d2
 	moveq	#$0,d1
 	move.b	$1(a0),d1

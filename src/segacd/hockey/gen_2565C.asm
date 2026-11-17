@@ -13,9 +13,9 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	bsr.w	ResolveGames
 	bsr.w	MakeTree
 	cmpi.w	#$4,$18A9E.l
-	beq.w	.l256D4
+	beq.w	.next
 	tst.w	$18A98.l
-	bmi.w	.l256D4
+	bmi.w	.next
 	movea.l	#$18C38,a3
 	bsr.w	WritePassBits
 	jsr	$2A5C8.l
@@ -24,7 +24,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	movea.l	#$18D26,a3
 	bsr.w	InitPlayerSlots
 	bra.w	MakeTree
-.l256D4	movea.l	#$18C38,a3
+.next	movea.l	#$18C38,a3
 	bsr.w	ClrPassBits
 	jsr	$2A5C8.l
 	move.w	#$2,$18BFA.l
@@ -129,9 +129,9 @@ GetShifter						;Returns d1 = number of games - 1, d2 = first bit of WinBits
 	moveq	#-16,d2
 	moveq	#$10,d1
 	move.w	$18A9E.l,d0
-.l25828	add.w	d1,d2
+.loop	add.w	d1,d2
 	lsr.w	#$1,d1
-	dbra	d0,.l25828
+	dbra	d0,.loop
 	subi.w	#$1,d1
 	move.l	(sp)+,d0
 	rts
@@ -245,23 +245,23 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	dbra	d1,.loop
 	addi.w	#$1,$18A9C.l
 	cmpi.w	#$7,$18A9C.l
-	beq.w	.l25A62
+	beq.w	.next2
 	move.w	$18A98.l,d0
 	mulu.w	#$10,d0
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
 	cmpi.w	#$4,$4(a0)
-	beq.w	.l259E4
+	beq.w	.next
 	cmpi.w	#$4,$6(a0)
 	bne.w	rtss2
-.l259E4	cmpi.w	#$3,$18A9E.l
-	bge.w	.l25A62
+.next	cmpi.w	#$3,$18A9E.l
+	bge.w	.next2
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
-.l25A00	cmp.w	$18A98.l,d1
+.loop4	cmp.w	$18A98.l,d1
 	beq.w	.crn
 	cmpi.w	#$4,$4(a0)
 	beq.w	.crn
@@ -271,16 +271,16 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	move.l	#$C8,d0
 	jsr	(randomd0).l
 	andi.w	#$1,d0
-	beq.w	.l25A00
+	beq.w	.loop4
 	subi.w	#$1,$4(a0)
 	addi.w	#$1,$6(a0)
-	bra.w	.l25A00
+	bra.w	.loop4
 .crn	suba.w	#$10,a0
-	dbra	d1,.l25A00
+	dbra	d1,.loop4
 	movea.l	#$18D26,a3
 	bsr.w	WritePassBits
 	bset	#$2,$17F6E.l
-.l25A62	clr.w	$18A9C.l
+.next2	clr.w	$18A9C.l
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
@@ -383,10 +383,10 @@ TakeTopStarScore						;Take the highest of the 52 star scores at ThreeStars and 
 	clr.l	d0
 	moveq	#$33,d2
 .find	cmp.l	(a4)+,d0
-	bge.w	.l25C14
+	bge.w	.next
 	lea.l	-$4(a4),a1
 	move.l	(a1),d0
-.l25C14	dbra	d2,.find
+.next	dbra	d2,.find
 	clr.l	(a1)
 	move.l	a1,d0
 	subi.l	#$BC000,d0
@@ -491,27 +491,27 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	moveq	#$5,d1
 	jsr	(Framer).l
 	btst	#$5,$17F7A.l
-	bne.w	.l25DA4
+	bne.w	.next2
 	jsr	(printz).l
 	dc.w	$0024
 	dc.b	$BF,$0C,$04,'Injury to:',$BF,$0C,$06,'Out for period',$BF,$0C,$05,$00
-	bra.w	.l25DCC
-.l25DA4	jsr	(printz).l
+	bra.w	.next3
+.next2	jsr	(printz).l
 	dc.w	$0022
 	dc.b	$BF,$0C,$04,'Injury to:',$BF,$0C,$06,'Out for game',$BF,$0C,$05,$00
-.l25DCC	bsr.w	GetPlayerNumInitial
+.next3	bsr.w	GetPlayerNumInitial
 	jsr	(print).l
 	btst	#$0,$17BE3.l
-	beq.w	.l25DF6
+	beq.w	.next4
 	jsr	(printz).l
 	String	CC_Font1Pri,$14,$6,'the game'
-.l25DF6	movem.l	(sp)+,d0-d2/a0-a4
+.next4	movem.l	(sp)+,d0-d2/a0-a4
 	rts
 	bset	#$7,$17F78.l
 	btst	#$0,$17F78.l
-	beq.w	.l25E16
+	beq.w	.next5
 	jmp	(ShootoutModeBox).l
-.l25E16	movem.l	d0-d2/a0-a4,-(sp)
+.next5	movem.l	d0-d2/a0-a4,-(sp)
 	move.w	#$FFFF,d0
 	jsr	(prefmes).l
 	jsr	(printz).l
@@ -529,9 +529,9 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	move.b	$66(a2),d0
 	movea.l	#tmstruct,a2
 	tst.w	$19366.l
-	beq.w	.l25E70
+	beq.w	.next6
 	movea.l	#awtmstruct,a2
-.l25E70	bsr.w	FormatPlayerNumInitial
+.next6	bsr.w	FormatPlayerNumInitial
 	jsr	(print).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$7
@@ -547,9 +547,9 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	move.w	$19370.l,d0
 	movea.l	#awtmstruct,a2
 	tst.w	$19366.l
-	beq.w	.l25ED2
+	beq.w	.next7
 	movea.l	#tmstruct,a2
-.l25ED2	jsr	(FormatPlayerNumInitial).l
+.next7	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
@@ -568,9 +568,9 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 ShowGoalBoxDraw
 	movem.l	d0-d2/a0-a4,-(sp)
 	btst	#$2,$17F70.l
-	beq.w	.l25F12
+	beq.w	.next
 	bset	#$2,$17F6C.l
-.l25F12	movea.l	#tmstruct,a2
+.next	movea.l	#tmstruct,a2
 	jsr	(lcfound_close).l
 	adda.w	#$366,a2
 	jsr	(lcfound_close).l
@@ -581,43 +581,43 @@ ShowGoalBoxDraw
 	moveq	#$13,d0
 	move.w	#$5,d1
 	tst.b	$4(a4)
-	bmi.w	.l25F5E
+	bmi.w	.next2
 	addi.w	#$2,d1
 	tst.b	$5(a4)
-	bmi.w	.l25F5E
+	bmi.w	.next2
 	addi.w	#$1,d1
-.l25F5E	jsr	(Framer).l
+.next2	jsr	(Framer).l
 	jsr	$25D8C.l
 	movea.l	#tmstruct,a2
 	move.w	$193AA.l,$17E98.l
 	btst	#$7,$2(a4)
-	beq.w	.l25F92
+	beq.w	.next3
 	adda.w	#$366,a2
 	move.w	$193AC.l,$17E98.l
-.l25F92	lea.l	.l410AA(pc),a1
+.next3	lea.l	.next9(pc),a1
 	bclr	#$0,$17F7E.l
-	beq.w	.l25FA6
-	lea.l	.l410CA(pc),a1
-.l25FA6	clr.w	d0
+	beq.w	.next4
+	lea.l	.next10(pc),a1
+.next4	clr.w	d0
 	move.b	$3(a4),d0
 	addi.w	#$B6,d0
 	cmpi.b	#$3,(a2,d0.w)
-	bne.w	.l25FF0
+	bne.w	.next6
 	movem.w	d1,-(sp)
 	clr.w	d1
 	move.b	$3(a4),d1
 	cmp.w	$17E98.l,d1
 	movem.w	(sp)+,d1
-	blt.w	.l25FF0
+	blt.w	.next6
 	adda.w	(a1),a1
 	move.w	d0,-(sp)
 	move.w	$2A(a2),d0
 	cmp.w	(HomeTeam).l,d0
-	bne.w	.l25FEE
+	bne.w	.next5
 	move.w	#$0,d0
 	jsr	(StartArenaAnim).l
-.l25FEE	move.w	(sp)+,d0
-.l25FF0	jsr	(printbig).l
+.next5	move.w	(sp)+,d0
+.next6	jsr	(printbig).l
 	clr.w	d0
 	move.b	$3(a4),d0
 	move.w	d0,-(sp)
@@ -630,13 +630,13 @@ ShowGoalBoxDraw
 	move.b	$3(a4),d1
 	cmp.w	$17E98.l,d1
 	movem.w	(sp)+,d1
-	blt.w	.l26030
+	blt.w	.next7
 	jsr	$2AA80.l
-.l26030	clr.w	d0
+.next7	clr.w	d0
 	move.b	$4(a4),d0
-	bmi.w	.l2609C
+	bmi.w	.next8
 	bclr	#$5,$17F72.l
-	bne.w	.l2609C
+	bne.w	.next8
 	jsr	(printz).l
 	String	CC_Font1Pri,$E,$6,'Assist by:',CC_Font1Pri,$C,$7
 	move.w	d0,-(sp)
@@ -646,7 +646,7 @@ ShowGoalBoxDraw
 	jsr	$2AA6A.l
 	clr.w	d0
 	move.b	$5(a4),d0
-	bmi.w	.l2609C
+	bmi.w	.next8
 	jsr	(printz).l
 	String	CC_Font1Pri,$C,$8
 	move.w	d0,-(sp)
@@ -654,12 +654,12 @@ ShowGoalBoxDraw
 	jsr	(print).l
 	move.w	(sp)+,d0
 	jsr	$2AA6A.l
-.l2609C	bclr	#$5,$17F72.l
+.next8	bclr	#$5,$17F72.l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-.l410AA	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
+.next9	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
 	dc.b	$BF,$0C,$03,'HAT TRICK!',$BF,$0C,$05
-.l410CA	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
+.next10	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
 	dc.b	$00,$12,$BF,$0C,$03,'HAT TRICK!',$BF
 	dc.w	$0C05
 	jsr	(printz).l
@@ -703,10 +703,10 @@ GetPlayerNumInitial
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
 	move.w	$180EE.l,d0
-	bpl.w	.l26188
+	bpl.w	.next
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
-.l26188	bsr.w	FormatPlayerNumInitial
+.next	bsr.w	FormatPlayerNumInitial
 	movem.l	(sp)+,d0/a2
 	rts
 FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in
@@ -795,10 +795,10 @@ FinalizeTextBuffer						;mesarea length word = a1 - mesarea, with a 0 pad byte w
 ; Skips d0 entries of an offset-linked text list.
 SkipTextEntries	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0
-	bra.w	.l262A2
-.l2629C	adda.w	(a0),a0
+	bra.w	.next
+.loop	adda.w	(a0),a0
 	adda.w	#$8,a0
-.l262A2	dbra	d0,.l2629C
+.next	dbra	d0,.loop
 	rts
 ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digits of bcd byte d0
 	

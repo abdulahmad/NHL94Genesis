@@ -19,7 +19,7 @@ SelectPenaltyShotSkater						;pick the skater for the penalty shot from team BA_
 	cmpi.b	#$1,d0
 	ble.w	.nextplayer
 	btst	#$0,$17F78.l
-	bne.w	.l19774
+	bne.w	.next
 	cmpi.w	#$FFFE,$68(a0,d7.w)
 	beq.w	.scorecandidate
 	cmpi.w	#$FFFF,$68(a0,d7.w)
@@ -73,11 +73,11 @@ SelectPenaltyShotSkater						;pick the skater for the penalty shot from team BA_
 .doneplayers	tst.w	d5
 	bmi.w	.noeligible
 	move.w	d5,$1936C.l
-.l19774	move.w	#$0,$19368.l
+.next	move.w	#$0,$19368.l
 	tst.w	$19366.l
-	beq.w	.l1978E
+	beq.w	.next2
 	move.w	#$6,$19368.l
-.l1978E	move.w	$19368.l,d0
+.next2	move.w	$19368.l,d0
 	asl.w	#$7,d0
 	movea.l	#$17480,a3
 	adda.w	d0,a3
@@ -95,22 +95,22 @@ UpdatePenaltyShotEnd						;end the penalty shot when the goalie has the puck, th
 	move.w	$17BE0.l,d0
 	cmp.w	$1936A.l,d0
 	movem.w	(sp)+,d0
-	beq.w	.l19C00
+	beq.w	.next2
 	btst	#$5,$17F70.l
-	beq.w	.l19C08
+	beq.w	.next3
 	btst	#$5,$17F78.l
 	bne.w	.puckloose
 	tst.w	$17BE0.l
-	bpl.w	.l19BEC
+	bpl.w	.next
 	bset	#$5,$17F78.l
 .puckloose	tst.w	$17BE0.l
-	bpl.w	.l19C00
-.l19BEC	tst.w	$17F9A.l
-	bmi.w	.l19C00
+	bpl.w	.next2
+.next	tst.w	$17F9A.l
+	bmi.w	.next2
 	subq.w	#$1,$17F9A.l
-	bra.w	.l19C08
-.l19C00	bset	#$4,$17F70.l
-.l19C08	tst.w	$193B6.l
+	bra.w	.next3
+.next2	bset	#$4,$17F70.l
+.next3	tst.w	$193B6.l
 	bne.w	.checkended
 	bset	#$4,$17F70.l
 .checkended	btst	#$4,$17F70.l
@@ -147,12 +147,12 @@ EndPenaltyShotPlay_1	rts
 SetFaceoffComputerLine	tst.w	$18C0A.l
 	bne.w	rtss2
 	btst	#$4,$17F7A.l
-	bne.w	.l19F06
+	bne.w	.next
 	cmp.w	$17FA6.l,d0
 	beq.w	rtss2
 	cmp.w	$17FA8.l,d0
 	beq.w	rtss2
-.l19F06	bsr.w	CompLine
+.next	bsr.w	CompLine
 	jsr	(setpersonel).l
 	bsr.w	printscores1
 	move.w	#$2710,$17F82.l
@@ -240,10 +240,10 @@ ChkGoalies						;computer pulls goalie on delayed penalty. Called from periodice
 .chkpen	tst.w	d1
 	bpl.w	rtss2
 	btst	#$3,$17F68.l		;#gmpendel - delayed penalty called
-	beq.w	.l1A070
+	beq.w	.next
 	st.b	$28(a2)		;sets to FFFF (no goalie)
 	jmp	(setpersonel).l
-.l1A070	cmp.w	$17FA6.l,d0
+.next	cmp.w	$17FA6.l,d0
 	beq.w	rtss2
 	cmp.w	$17FA8.l,d0
 	beq.w	rtss2
@@ -292,7 +292,7 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	moveq	#$3,d0		;d0 = first of the 2 special lines (3-4) used with a man advantage
 	move.w	$26(a2),d1		;tmap
 	sub.w	$26(a1),d1		;compare the numbers of active players
-	beq.w	CompLine_1		;equal: normal line
+	beq.w	.next		;equal: normal line
 	bpl.w	.0
 	addi.w	#$2,d0		;fewer players: lines 5-6 instead
 .0	move.w	d0,-(sp)		;find pk/pp line
@@ -305,29 +305,29 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	bge.w	.1
 	addi.w	#$1,(sp)		;second one has more energy: take it
 .1	move.w	(sp)+,$16(a2)		;tmline
-CompLineSub1
+.loop
 	movem.l	(sp)+,d0-d2/a0
 	rts
-CompLine_1	cmpa.l	#$1834C,a2
-	bne.w	CompLineSub2
+.next	cmpa.l	#$1834C,a2
+	bne.w	.next4
 	moveq	#$2,d1
-	lea.l	.l351AE(pc),a0
+	lea.l	.next3(pc),a0
 	cmpi.w	#$2,$180E4.l
-	bne.w	.l1A18E
+	bne.w	.next2
 	move.w	$C(a2),d2
 	cmp.w	$C(a1),d2
-	beq.w	.l1A18E
+	beq.w	.next2
 	adda.w	#$E,a0
-	bgt.w	.l1A18E
+	bgt.w	.next2
 	adda.w	#$E,a0
-.l1A18E	move.w	$16(a1),d1
+.next2	move.w	$16(a1),d1
 	asl.w	#$1,d1
 	move.w	(a0,d1.w),d0
 	bsr.w	getlinee
 	cmpi.w	#$C00,d0
-	bls.w	CompLineSub2
+	bls.w	.next4
 	move.w	(a0,d1.w),$16(a2)
-	bra.w	CompLineSub1
-.l351AE	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
+	bra.w	.loop
+.next3	dc.w	$0000,$0001,$0002,$0000,$0001,$0000,$0001,$0002
 	dc.w	$0000,$0001,$0002,$0000,$0002,$0000,$0000,$0001
 	dc.w	$0000,$0000,$0001,$0000,$0001

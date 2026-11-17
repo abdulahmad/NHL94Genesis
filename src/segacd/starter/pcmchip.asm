@@ -8,35 +8,35 @@
 PcmInit	movea.l	#$FF0000,a0
 	move.b	#$FF,$11(a0)
 	moveq	#$14,d0
-.l252DE	dbra	d0,.l252DE
+.next	dbra	d0,.next
 	move.b	#$C0,$F(a0)
 	moveq	#$14,d0
-.l252EA	dbra	d0,.l252EA
+.next2	dbra	d0,.next2
 	move.b	#$FF,$1(a0)
 	moveq	#$14,d0
-.l252F6	dbra	d0,.l252F6
+.next3	dbra	d0,.next3
 	move.b	#$FF,$3(a0)
 	moveq	#$14,d0
-.l25302	dbra	d0,.l25302
+.next4	dbra	d0,.next4
 	move.b	#$4,$7(a0)
 	moveq	#$14,d0
-.l2530E	dbra	d0,.l2530E
+.next5	dbra	d0,.next5
 	clr.b	$5(a0)
 	moveq	#$14,d0
-.l25318	dbra	d0,.l25318
+.next6	dbra	d0,.next6
 	clr.b	$B(a0)
 	moveq	#$14,d0
-.l25322	dbra	d0,.l25322
+.next7	dbra	d0,.next7
 	clr.b	$9(a0)
 	moveq	#$14,d0
-.l2532C	dbra	d0,.l2532C
+.next8	dbra	d0,.next8
 	clr.b	$D(a0)
 	moveq	#$14,d0
-.l25336	dbra	d0,.l25336
+.next9	dbra	d0,.next9
 	move.w	#$88,d0
 	move.b	d0,$F(a0)
 	moveq	#$14,d0
-.l25344	dbra	d0,.l25344
+.next10	dbra	d0,.next10
 	move.b	#$FF,$2001(a0)
 	move.b	#$FF,$2002(a0)
 	rts
@@ -44,7 +44,7 @@ PcmInit	movea.l	#$FF0000,a0
 PcmStartChannel0	movea.l	#$FF0000,a0
 	move.b	#$80,$F(a0)
 	moveq	#$14,d0
-.l25364	dbra	d0,.l25364
+.next	dbra	d0,.next
 	move.b	#$FE,$11(a0)
 	rts
 ; Switches all PCM channels off.
@@ -55,12 +55,12 @@ PcmMuteAllChannels	movea.l	#$FF0000,a0
 PcmReadStatus	movea.l	#$FF0000,a0
 	lea.l	$21(a0),a0
 	moveq	#$14,d0
-.l2538A	dbra	d0,.l2538A
+.next	dbra	d0,.next
 	move.b	(a0),d1
 	move.b	(a0),d1
 	addq.w	#$2,a0
 	moveq	#$14,d0
-.l25396	dbra	d0,.l25396
+.next2	dbra	d0,.next2
 	moveq	#$0,d0
 	move.b	(a0),d0
 	move.b	(a0),d0
@@ -73,14 +73,14 @@ PcmSetControl	movea.l	#$FF0000,a0
 	ori.w	#$80,d0
 	move.b	d0,$F(a0)
 	moveq	#$14,d0
-.l253BA	dbra	d0,.l253BA
+.next	dbra	d0,.next
 	move.b	d0,$F(a0)
 	moveq	#$14,d0
-.l253C4	dbra	d0,.l253C4
+.next2	dbra	d0,.next2
 	lea.l	$2001(a0),a0
 	movea.l	$4(sp),a1
 	move.w	#$1FF,d3
-.l253D4	move.b	(a1)+,(a0)
+.loop	move.b	(a1)+,(a0)
 	addq.w	#$2,a0
 	move.b	(a1)+,(a0)
 	addq.w	#$2,a0
@@ -96,7 +96,7 @@ PcmSetControl	movea.l	#$FF0000,a0
 	addq.w	#$2,a0
 	move.b	(a1)+,(a0)
 	addq.w	#$2,a0
-	dbra	d3,.l253D4
+	dbra	d3,.loop
 	rts
 
 	opt	oaq-

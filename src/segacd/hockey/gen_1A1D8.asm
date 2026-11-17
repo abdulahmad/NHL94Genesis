@@ -1,34 +1,34 @@
-CompLineSub2
+.next4
 	moveq	#$2,d1
-	lea.l	.l35218(pc),a0
+	lea.l	.next5(pc),a0
 	cmpi.w	#$2,$180E4.l
-	bne.w	.l1A202
+	bne.w	.loop2
 	move.w	$C(a2),d2
 	cmp.w	$C(a1),d2
-	beq.w	.l1A202
+	beq.w	.loop2
 	adda.w	#$6,a0
-	bgt.w	.l1A202
+	bgt.w	.loop2
 	adda.w	#$6,a0
-.l1A202	move.w	(a0)+,d0
+.loop2	move.w	(a0)+,d0
 	bsr.w	getlinee
 	cmpi.w	#$C00,d0
-	dbhi	d1,.l1A202
+	dbhi	d1,.loop2
 	move.w	-(a0),$16(a2)
-	bra.w	CompLineSub1
-.l35218	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
+	bra.w	.loop
+.next5	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
 ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer for each human team
 	move.w	#$FFFF,$17F9E.l
 	move.w	#$FFFF,$17FA0.l
 	tst.w	$17FA6.l
-	beq.w	.l1A7B8
+	beq.w	.next
 	clr.w	d4
 	bsr.w	PassToJump
-.l1A7B8	tst.w	$17FA8.l
-	beq.w	.l1A7C8
+.next	tst.w	$17FA8.l
+	beq.w	.next2
 	moveq	#$2,d4
 	bsr.w	PassToJump
-.l1A7C8	tst.w	$17FAA.l
-	beq.w	.l1A818
+.next2	tst.w	$17FAA.l
+	beq.w	.next3
 	move.w	$17FA6.l,-(sp)
 	move.w	$17FAA.l,$17FA6.l
 	move.w	$17F9E.l,-(sp)
@@ -39,8 +39,8 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	move.w	$17FA6.l,$17FAA.l
 	move.w	(sp)+,$17F9E.l
 	move.w	(sp)+,$17FA6.l
-.l1A818	tst.w	$17FAC.l
-	beq.w	.l1A86A
+.next3	tst.w	$17FAC.l
+	beq.w	.ex
 	move.w	$17FA8.l,-(sp)
 	move.w	$17FAC.l,$17FA8.l
 	move.w	$17FA0.l,-(sp)
@@ -51,7 +51,7 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	move.w	$17FA8.l,$17FAC.l
 	move.w	(sp)+,$17FA0.l
 	move.w	(sp)+,$17FA8.l
-.l1A86A	rts
+.ex	rts
 updatefaceoff						;a3 = puck. Drop animation frame from temp1; at 0 erases the faceoff box
 	move.w	$40(a3),d0
 	beq.w	.erase
@@ -119,17 +119,17 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	btst	#$3,d0
 	bne.w	.nojoy
 	andi.w	#$7,d0
-.l1A990	btst	#$7,$FF800E.l
-	bne.b	.l1A990
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1A9AA	btst	#$6,$FF800E.l
-	beq.b	.l1A9AA
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	move.w	$FF8010.l,d1
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1A9CA	btst	#$6,$FF800E.l
-	bne.b	.l1A9CA
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	andi.w	#$3,d1
 	bne.w	.nj2
@@ -164,29 +164,29 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	addi.w	#$1,$180E4.l		;period number
 	bchg	#$1,$17F68.l		;flip the attack direction
 	cmpi.w	#$3,$180E4.l		;period 3 or later?
-	blt.w	.l1AA90
-	beq.w	.l1AA78		;period 3 just ended
+	blt.w	.next2
+	beq.w	.next		;period 3 just ended
 	move.w	#$3,$180E4.l		;overtime done: stay at 3
 	tst.w	$18BFA.l
-	bne.w	.l1AA78
+	bne.w	.next
 	move.w	#$4,$180E4.l
-.l1AA78	move.w	$18358.l,d0
+.next	move.w	$18358.l,d0
 	sub.w	$186BE.l,d0
-	beq.w	.l1AA90		;tied: play overtime
+	beq.w	.next2		;tied: play overtime
 	move.w	#$4,$180E4.l		;game over
-.l1AA90	bsr.w	forceblack
+.next2	bsr.w	forceblack
 	jsr	(ResetClock).l
 	move.w	#$79,-(sp)
 	bsr.w	song
 	bsr.w	UpdateScores
 	cmpi.w	#$4,$180E4.l
-	bne.w	.l1AAB8
+	bne.w	.next3
 	jsr	(AddPlayoffTeamStats).l
-.l1AAB8	bsr.w	Intermission
+.next3	bsr.w	Intermission
 	cmpi.w	#$4,$180E4.l
-	beq.w	.l1AACE
+	beq.w	.next4
 	jmp	$2BA1E.l
-.l1AACE	jmp	(GameOver).l
+.next4	jmp	(GameOver).l
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1AAD4.bin
 ClearOffsidesIfAllPlayers						;a2 = team struct: clear the team offsides flag once no skater is past the
 	
@@ -235,36 +235,36 @@ a2touchpuck
 	move.w	$52(a2),$17EC8.l
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a2)
-	beq.w	.l1AD54
+	beq.w	.next
 	lea.l	$366(a0),a0
-.l1AD54	clr.w	d0
+.next	clr.w	d0
 	move.b	$66(a2),d0
 	btst	#$3,$64(a2)
-	beq.w	.l1AD6C
+	beq.w	.next2
 	bset	#$7,$17F7C.l
-.l1AD6C	cmp.w	$18(a0),d0
-	beq.w	.l1AD9A
+.next2	cmp.w	$18(a0),d0
+	beq.w	.next4
 	bclr	#$3,$32(a0)
-	bne.w	.l1AD8A
+	bne.w	.next3
 	move.w	$1A(a0),$1C(a0)
 	move.w	$18(a0),$1A(a0)
-.l1AD8A	move.w	d0,$18(a0)
+.next3	move.w	d0,$18(a0)
 	cmp.w	$1C(a0),d0
-	bne.w	.l1AD9A
+	bne.w	.next4
 	st.b	$1C(a0)
-.l1AD9A	bclr	#$4,$17F6C.l
+.next4	bclr	#$4,$17F6C.l
 	bsr.w	a2offsides
 	btst	#$2,$17ECE.l
-	beq.w	.l1AE06
+	beq.w	.next6
 	btst	#$0,$17ECE.l
-	beq.w	.l1AE06
+	beq.w	.next6
 	tst.w	$34(a2)
-	beq.w	.l1AE06
+	beq.w	.next6
 	btst	#$1,$17ECE.l
-	bne.w	.l1ADFC
+	bne.w	.next5
 	btst	#$7,$62(a2)
-	beq.w	.l1AE06
-.l1ADDC	clr.w	d0
+	beq.w	.next6
+.loop	clr.w	d0
 	move.b	$17ECF.l,d0
 	asl.w	#$7,d0
 	move.l	a3,-(sp)
@@ -274,22 +274,22 @@ a2touchpuck
 	bsr.w	AddPenalty
 	movea.l	(sp)+,a3
 	rts
-.l1ADFC	btst	#$7,$62(a2)
-	beq.w	.l1ADDC
-.l1AE06	clr.b	$17ECE.l
+.next5	btst	#$7,$62(a2)
+	beq.w	.loop
+.next6	clr.b	$17ECE.l
 	move.b	$53(a2),$17ECF.l
 	move.w	$17B94.l,d0
 	btst	#$7,$62(a2)
-	beq.w	.l1AE2E
+	beq.w	.next7
 	bset	#$1,$17ECE.l
 	neg.w	d0
-.l1AE2E	bmi.w	rtss2
+.next7	bmi.w	rtss2
 	move.w	$18372.l,d0
 	sub.w	$186D8.l,d0
 	btst	#$6,$62(a2)
-	beq.w	.l1AE4A
+	beq.w	.next8
 	neg.w	d0
-.l1AE4A	bmi.w	rtss2
+.next8	bmi.w	rtss2
 	bset	#$2,$17ECE.l
 	rts
 PuckIChk						;check for icing of puck penalty. Called from pucknorm
@@ -301,14 +301,14 @@ PuckIChk						;check for icing of puck penalty. Called from pucknorm
 	bpl.w	rtss2
 	move.w	#$108,d0
 	btst	#$1,$17ECE.l
-	bne.w	.l1AE98
+	bne.w	.next
 	neg.w	d0
 	cmp.w	$17B94.l,d0
-	bgt.w	.l1AEA2
+	bgt.w	.next2
 	rts
-.l1AE98	cmp.w	$17B94.l,d0
+.next	cmp.w	$17B94.l,d0
 	bgt.w	rtss2
-.l1AEA2	cmpi.w	#$2C,$17B80.l
+.next2	cmpi.w	#$2C,$17B80.l
 	bgt.w	.set
 	cmpi.w	#$FFD4,$17B80.l
 	blt.w	.set

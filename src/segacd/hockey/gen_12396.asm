@@ -8,27 +8,27 @@ PlayerListDrawSelected
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
 	String	CC_Font3,$16,$FC,$9
-.l123C8	movea.l	#$41C48,a1
+.loop	movea.l	#$41C48,a1
 	move.w	(scoutcolumn).l,d0
 	tst.w	(SelectedPlayerIdx).l
-	bne.w	.l123EE
+	bne.w	.next
 	movea.l	#$41DAA,a1
-	bra.w	.l123EE
-.l123E8	adda.w	(a1),a1
+	bra.w	.next
+.loop2	adda.w	(a1),a1
 	adda.w	#$4,a1
-.l123EE	tst.w	(a1)
-	dbmi	d0,.l123E8
-	bpl.w	.l12404
+.next	tst.w	(a1)
+	dbmi	d0,.loop2
+	bpl.w	.next2
 	subi.w	#$1,(scoutcolumn).l
-	bra.w	.l123C8
-.l12404	jsr	(printsmall).l
+	bra.w	.loop
+.next2	jsr	(printsmall).l
 	move.l	(a1),d4
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$0,$0,CC_SetFont,$0
 	btst	#$0,$1A455.l
-	beq.w	.l12430
+	beq.w	.next3
 	addi.w	#$10,(printy).l
-.l12430	move.w	(printy).l,-(sp)
+.next3	move.w	(printy).l,-(sp)
 	moveq	#$28,d0
 	moveq	#$10,d1
 	move.w	#$7FF,d2
@@ -42,16 +42,16 @@ PlayerListDrawSelected
 	move.l	#$1020304,(a3)
 	move.w	(SelectedPlayerIdx).l,d0
 	subi.w	#$1,d0
-	bmi.w	.l12496
+	bmi.w	.loop3
 	asl.w	#$3,d0
 	lea.l	$16C(a2),a3
 	lea.l	$1(a3,d0.w),a3
 	movea.l	#$41A20,a5
 	moveq	#$4,d1
 	cmpi.w	#$5,(SelectedPlayerIdx).l
-	ble.w	.l12496
+	ble.w	.loop3
 	subi.w	#$1,d1
-.l12496	move.w	#$2,(printx).l
+.loop3	move.w	#$2,(printx).l
 	movea.l	a5,a1
 	jsr	(print).l
 	movea.l	a1,a5
@@ -61,7 +61,7 @@ PlayerListDrawSelected
 	subi.w	#$1,d0
 	bsr.w	GetNameandAttrib
 	addi.w	#$2,(printy).l
-	dbra	d1,.l12496
+	dbra	d1,.loop3
 	rts
 CheckPlayerListScrollTbl1	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
 	dc.b	$00,$12,'    Goalies   '
@@ -81,10 +81,10 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 	jsr	(print).l
 	move.w	#$1E,(printx).l
 	cmpi.w	#$2,d4		;status or energy column?
-	bls.w	.l12596
+	bls.w	.next
 	jsr	(CalcAttrib).l
 	swap	d4
-.l12596	dc.w	$41FA,$000E
+.next	dc.w	$41FA,$000E
 	adda.w	(a0,d4.w),a0
 	jmp	(a0)
 	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8
@@ -190,51 +190,51 @@ ScoringScrollStep	move.w	(VertLineScrolling).l,d1
 	divs.w	#$20,d0
 	swap	d0
 	tst.w	d0
-	bne.w	.l12820
+	bne.w	.next
 	bsr.w	PenaltyEntryHeader
 	clr.w	(PlayerScrollCtr).l
-.l12820	andi.w	#$1F,d1
-	bne.w	.l12844
+.next	andi.w	#$1F,d1
+	bne.w	.next3
 	move.l	d0,-(sp)
 	cmpi.w	#$1E,d0
-	bne.w	.l12836
-	bsr.w	.l12904
-.l12836	move.l	(sp)+,d0
+	bne.w	.next2
+	bsr.w	.next4
+.next2	move.l	(sp)+,d0
 	cmpi.w	#$2,d0
-	bne.w	.l12844
-	bsr.w	.l12936
-.l12844	move.w	(disflags).l,-(sp)
+	bne.w	.next3
+	bsr.w	.next5
+.next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l12858	btst	#$7,$FF800E.l
-	bne.b	.l12858
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1287C	btst	#$6,$FF800E.l
-	beq.b	.l1287C
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l12896	btst	#$6,$FF800E.l
-	bne.b	.l12896
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	moveq	#-80,d0
 	add.w	(VertLineScrolling).l,d0
-.l128B0	btst	#$7,$FF800E.l
-	bne.b	.l128B0
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l128D0	btst	#$6,$FF800E.l
-	beq.b	.l128D0
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l128EA	btst	#$6,$FF800E.l
-	bne.b	.l128EA
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
-.l12904	move.l	d0,-(sp)
+.next4	move.l	d0,-(sp)
 	swap	d0
 	moveq	#$6,d3
 	mulu.w	d0,d3
@@ -248,7 +248,7 @@ ScoringScrollStep	move.w	(VertLineScrolling).l,d1
 	bsr.w	DrawScoringRow
 	move.l	(sp)+,d0
 	rts
-.l12936	move.l	d0,-(sp)
+.next5	move.l	d0,-(sp)
 	swap	d0
 	addi.w	#$4,d0
 	moveq	#$6,d3
@@ -300,10 +300,10 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.b	$5(a0,d3.w),d0		;second assist, falls into PrintScorerName
 PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	ext.w	d0
-	bmi.w	.l12A2A
+	bmi.w	.next
 	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
-.l12A2A	addi.w	#$1,(printy).l
+.next	addi.w	#$1,(printy).l
 	rts
 	dc.w	$0006,$5348,$3200,$0004,$5348,$0004,$2000,$0004
 	dc.b	'PP',$00,$06,'PP2',$00
@@ -372,54 +372,54 @@ PenaltyScrollStep	move.w	(VertLineScrolling).l,d1
 	divs.w	#$18,d0
 	swap	d0
 	tst.w	d0
-	bne.w	.l12B96
+	bne.w	.next
 	bsr.w	PenaltyEntryHeader
 	clr.w	(PlayerScrollCtr).l
-.l12B96	ext.l	d1
+.next	ext.l	d1
 	divs.w	#$18,d1
 	swap	d1
 	tst.w	d1
-	bne.w	.l12BC0
+	bne.w	.next3
 	move.l	d0,-(sp)
 	cmpi.w	#$16,d0
-	bne.w	.l12BB2
-	bsr.w	.l12C82
-.l12BB2	move.l	(sp)+,d0
+	bne.w	.next2
+	bsr.w	.next4
+.next2	move.l	(sp)+,d0
 	cmpi.w	#$2,d0
-	bne.w	.l12BC0
-	bsr.w	.l12CB4
-.l12BC0	move.w	(disflags).l,-(sp)
+	bne.w	.next3
+	bsr.w	.next5
+.next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l12BD4	btst	#$7,$FF800E.l
-	bne.b	.l12BD4
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l12BF8	btst	#$6,$FF800E.l
-	beq.b	.l12BF8
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l12C12	btst	#$6,$FF800E.l
-	bne.b	.l12C12
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FFB0,d0
 	add.w	(VertLineScrolling).l,d0
-.l12C2E	btst	#$7,$FF800E.l
-	bne.b	.l12C2E
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l12C4E	btst	#$6,$FF800E.l
-	beq.b	.l12C4E
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l12C68	btst	#$6,$FF800E.l
-	bne.b	.l12C68
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
-.l12C82	move.l	d0,-(sp)
+.next4	move.l	d0,-(sp)
 	swap	d0
 	move.w	d0,d3
 	asl.w	#$2,d3
@@ -433,7 +433,7 @@ PenaltyScrollStep	move.w	(VertLineScrolling).l,d1
 	bsr.w	DisplayPenaltyEntry
 	move.l	(sp)+,d0
 	rts
-.l12CB4	move.l	d0,-(sp)
+.next5	move.l	d0,-(sp)
 	swap	d0
 	addi.w	#$5,d0
 	move.w	d0,d3
@@ -503,11 +503,11 @@ PenaltyEntryHeader
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	lea.l	.l2DDF0(pc),a1
+	lea.l	.next(pc),a1
 	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-.l2DDF0	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
+.next	dc.w	$000A,$20FB,$FFFA,$1120,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1120,$F900,$000A,$20FB,$FFFA,$117D,$F900,$000A
 	dc.w	$7BFB,$FFFA,$117D,$F900
 PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of the potreeteam
@@ -622,31 +622,31 @@ UpdateStatsListScroll						;Stats screen per frame: scroll 0 ... SelectedPlayerI
 UpdateStatsListScroll_1	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l1300E	btst	#$7,$FF800E.l
-	bne.b	.l1300E
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l13032	btst	#$6,$FF800E.l
-	beq.b	.l13032
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1304C	btst	#$6,$FF800E.l
-	bne.b	.l1304C
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FF98,d0
 	add.w	(VertLineScrolling).l,d0
-.l13068	btst	#$7,$FF800E.l
-	bne.b	.l13068
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l13088	btst	#$6,$FF800E.l
-	beq.b	.l13088
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l130A2	btst	#$6,$FF800E.l
-	bne.b	.l130A2
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
@@ -666,17 +666,17 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	dc.w	$43FA,$0344
 	moveq	#$5,d3
 	tst.w	(scoutcolumn).l
-	bmi.w	.l13104
+	bmi.w	.loop
 	adda.w	(a1),a1
 	clr.w	d3
-.l13104	move.w	#$8000,(printa).l
+.loop	move.w	#$8000,(printa).l
 	cmp.w	(scoutcolumn).l,d3
-	bne.w	.l1311E
+	bne.w	.next
 	move.w	#$C000,(printa).l
-.l1311E	jsr	(printsmall).l
+.next	jsr	(printsmall).l
 	addi.w	#$1,d3
 	cmpi.w	#$5,d3
-	blt.w	.l13104
+	blt.w	.loop
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$9,$7
 	moveq	#$16,d0
@@ -692,58 +692,58 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	movea.l	#$BBD30,a3
 	clr.l	d6
 	tst.w	(scoutcolumn).l
-	bpl.w	.l1318A
+	bpl.w	.loop2
 	bsr.w	GetGoalieCount
 	bset	d0,d6
 	subi.w	#$1,d6
 	not.l	d6
-.l1318A	moveq	#-1,d4
+.loop2	moveq	#-1,d4
 	st.b	d5
 	bsr.w	GetPlayerCount
-	bra.w	.l131D8
-.l13196	btst	d0,d6
-	bne.w	.l131D8
+	bra.w	.next3
+.loop3	btst	d0,d6
+	bne.w	.next3
 	clr.w	d2
 	move.w	(scoutcolumn).l,d1
-	bmi.w	.l131AC
+	bmi.w	.next2
 	bsr.w	GetStatColumn
-.l131AC	ext.l	d2
+.next2	ext.l	d2
 	asl.l	#$8,d2
 	movea.l	$1E(a2),a1
 	adda.w	$0(a1),a1
 	move.w	d0,d1
 	suba.w	#$8,a1
-.l131BE	adda.w	#$8,a1
+.loop4	adda.w	#$8,a1
 	adda.w	(a1),a1
-	dbra	d1,.l131BE
+	dbra	d1,.loop4
 	move.b	#$FF,d2
 	sub.b	(a1),d2
 	cmp.l	d4,d2
-	ble.w	.l131D8
+	ble.w	.next3
 	move.l	d2,d4
 	move.w	d0,d5
-.l131D8	dbra	d0,.l13196
+.next3	dbra	d0,.loop3
 	bset	d5,d6
 	move.b	d5,(a3)+
-	bpl.w	.l1318A
+	bpl.w	.loop2
 	moveq	#$5,d0
-.l131E6	st.b	(a3,d0.w)
-	dbra	d0,.l131E6
+.loop5	st.b	(a3,d0.w)
+	dbra	d0,.loop5
 	move.l	a3,d0
 	subi.l	#$BBD36,d0
-	bpl.w	.l131FC
+	bpl.w	.next4
 	clr.w	d0
-.l131FC	asl.w	#$4,d0
+.next4	asl.w	#$4,d0
 	move.w	d0,(SelectedPlayerIdx).l
 	cmp.w	(VertLineScrolling).l,d0
-	bcc.w	.l13214
+	bcc.w	.next5
 	move.w	d0,(VertLineScrolling).l
-.l13214	moveq	#$5,d4
-.l13216	move.w	(VertLineScrolling).l,d3
+.next5	moveq	#$5,d4
+.loop6	move.w	(VertLineScrolling).l,d3
 	lsr.w	#$4,d3
 	add.w	d4,d3
 	bsr.w	DrawStatsRow
-	dbra	d4,.l13216
+	dbra	d4,.loop6
 	bra.w	UpdateStatsListScroll_1
 DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, or for
 									;goalies saves, shots and save %
@@ -793,7 +793,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	addi.w	#$1,d5
 	cmpi.w	#$5,d5		;5 columns
 	bne.w	.col
-	bra.w	.l13386
+	bra.w	.ex
 .goalie	clr.w	d0		;Shots against
 	move.b	(a4),d0
 	moveq	#$3,d1		;column 3 (SOG array)
@@ -829,4 +829,4 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	jsr	(print).l
 	jsr	(printz).l
 	String	'%'
-.l13386	rts
+.ex	rts
