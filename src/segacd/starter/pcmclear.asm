@@ -1,7 +1,8 @@
+	opt	oaq+
+	opt	osq+
 ; STARTER.BIN PCM wipe, file $3A0C-$3A75, runtime $24D0C-$24D75.
 ; Clears all eight channels and their wave RAM, then mutes them.
 
-	org	$24D0C
 
 	move.w	#$7,d2
 L24D10	move.b	d2,d3
@@ -24,3 +25,6 @@ L24D5E	move.b	d1,$0(a0)
 	dbra	d2,L24D4C
 	move.b	#$FF,$FF0011.l
 	rts
+
+	opt	oaq-
+	opt	osq-

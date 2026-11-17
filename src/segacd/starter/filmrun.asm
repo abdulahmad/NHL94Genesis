@@ -4,28 +4,17 @@
 ; Word is 1: FilmTask. Any other value: FilmClose, then restore the vectors.
 ; See docs/segacd_film.md.
 
-X_24FE8	equ	$24FE8
-X_24FB8	equ	$24FB8
-X_25418	equ	$25418
-X_25A3A	equ	$25A3A
-X_2588C	equ	$2588C
-X_25636	equ	$25636
-X_253FE	equ	$253FE
-X_24FD4	equ	$24FD4
-X_24FBC	equ	$24FBC
-X_24FC0	equ	$24FC0
 
-	org	$25094
 
-	tst.w	$4(sp)
+L25094	tst.w	$4(sp)
 	bne.b	L250F6
 	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
-	lea.l	X_24FC0(pc),a0
+	lea.l	L24FC0(pc),a0
 	move.l	$12(a6),(a0)
-	lea.l	X_24FBC(pc),a0
+	lea.l	L24FBC(pc),a0
 	move.l	$E(a6),(a0)
-	lea.l	X_24FD4(pc),a0
+	lea.l	L24FD4(pc),a0
 	move.l	$22(a6),(a0)+
 	move.l	$1E(a6),(a0)+
 	move.l	$1A(a6),(a0)+
@@ -35,9 +24,9 @@ X_24FC0	equ	$24FC0
 	movea.l	#$FF8000,a5
 	ori.w	#$4,$2(a5)
 	jsr	L25164(pc)
-	jsr	X_253FE(pc)
+	jsr	L253FE(pc)
 	move.l	$A(a6),-(sp)
-	jsr	X_25636(pc)
+	jsr	L25636(pc)
 	addq.w	#$4,sp
 	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
@@ -48,11 +37,11 @@ L250F6	link	a6,#$0
 	move.w	$8(a6),d0
 	subq.w	#$1,d0
 	bne.b	L2510C
-	jsr	X_2588C(pc)
+	jsr	L2588C(pc)
 	bra.b	L2511A
-L2510C	jsr	X_25A3A(pc)
+L2510C	jsr	L25A3A(pc)
 	jsr	L2517E(pc)
-	jsr	X_25418(pc)
+	jsr	L25418(pc)
 	moveq	#$0,d0
 L2511A	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
@@ -89,11 +78,12 @@ L2517E	movea.l	L25160(pc),a0
 	move.w	(sp)+,sr
 	rts
 L25190	movem.l	d0/a0,-(sp)
-	lea.l	X_24FB8(pc),a0
+	lea.l	L24FB8(pc),a0
 	addq.l	#$1,(a0)
-	move.l	X_24FE8(pc),d0
+	move.l	L24FE8(pc),d0
 	beq.b	L251A4
 	movea.l	d0,a0
 	jsr	(a0)
 L251A4	movem.l	(sp)+,d0/a0
 	rts
+
