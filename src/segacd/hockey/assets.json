@@ -1,0 +1,182 @@
+{
+ "hockey_0007C.bin": {
+  "start": 124,
+  "size": 3972
+ },
+ "hockey_01000.bin": {
+  "start": 4096,
+  "size": 4096
+ },
+ "hockey_02000.bin": {
+  "start": 8192,
+  "size": 4096
+ },
+ "hockey_03000.bin": {
+  "start": 12288,
+  "size": 4096
+ },
+ "hockey_04000.bin": {
+  "start": 16384,
+  "size": 1382
+ },
+ "hockey_04566.bin": {
+  "start": 17766,
+  "size": 754
+ },
+ "hockey_04858.bin": {
+  "start": 18520,
+  "size": 3034
+ },
+ "hockey_05432.bin": {
+  "start": 21554,
+  "size": 4096
+ },
+ "hockey_06432.bin": {
+  "start": 25650,
+  "size": 2966
+ },
+ "hockey_07018.bin": {
+  "start": 28696,
+  "size": 592
+ },
+ "hockey_072EA.bin": {
+  "start": 29418,
+  "size": 320
+ },
+ "hockey_078CC.bin": {
+  "start": 30924,
+  "size": 984
+ },
+ "hockey_08ECC.bin": {
+  "start": 36556,
+  "size": 876
+ },
+ "hockey_093E6.bin": {
+  "start": 37862,
+  "size": 318
+ },
+ "hockey_0A060.bin": {
+  "start": 41056,
+  "size": 1792
+ },
+ "hockey_0AE54.bin": {
+  "start": 44628,
+  "size": 652
+ },
+ "hockey_0B3EE.bin": {
+  "start": 46062,
+  "size": 1218
+ },
+ "hockey_0E508.bin": {
+  "start": 58632,
+  "size": 1318
+ },
+ "hockey_0EE56.bin": {
+  "start": 61014,
+  "size": 416
+ },
+ "hockey_0F26C.bin": {
+  "start": 62060,
+  "size": 434
+ },
+ "hockey_0FF56.bin": {
+  "start": 65366,
+  "size": 1106
+ },
+ "hockey_1353A.bin": {
+  "start": 79162,
+  "size": 494
+ },
+ "hockey_13B00.bin": {
+  "start": 80640,
+  "size": 608
+ },
+ "hockey_13DE2.bin": {
+  "start": 81378,
+  "size": 1294
+ },
+ "hockey_169AC.bin": {
+  "start": 92588,
+  "size": 266
+ },
+ "hockey_16AB8.bin": {
+  "start": 92856,
+  "size": 554
+ },
+ "hockey_16ECC.bin": {
+  "start": 93900,
+  "size": 2290
+ },
+ "hockey_197BA.bin": {
+  "start": 104378,
+  "size": 998
+ },
+ "hockey_19CC6.bin": {
+  "start": 105670,
+  "size": 534
+ },
+ "hockey_1A218.bin": {
+  "start": 107032,
+  "size": 1408
+ },
+ "hockey_1AAD4.bin": {
+  "start": 109268,
+  "size": 440
+ },
+ "hockey_1D16C.bin": {
+  "start": 119148,
+  "size": 1458
+ },
+ "hockey_20882.bin": {
+  "start": 133250,
+  "size": 942
+ },
+ "hockey_21002.bin": {
+  "start": 135170,
+  "size": 580
+ },
+ "hockey_22C16.bin": {
+  "start": 142358,
+  "size": 256
+ },
+ "hockey_23F00.bin": {
+  "start": 147200,
+  "size": 318
+ },
+ "hockey_262C8.bin": {
+  "start": 156360,
+  "size": 644
+ },
+ "hockey_2655C.bin": {
+  "start": 157020,
+  "size": 256
+ },
+ "hockey_2665C.bin": {
+  "start": 157276,
+  "size": 4096
+ },
+ "hockey_2765C.bin": {
+  "start": 161372,
+  "size": 4096
+ },
+ "hockey_2865C.bin": {
+  "start": 165468,
+  "size": 4096
+ },
+ "hockey_2965C.bin": {
+  "start": 169564,
+  "size": 4096
+ },
+ "hockey_2A65C.bin": {
+  "start": 173660,
+  "size": 4096
+ },
+ "hockey_2B65C.bin": {
+  "start": 177756,
+  "size": 4096
+ },
+ "hockey_2C65C.bin": {
+  "start": 181852,
+  "size": 1872
+ }
+}

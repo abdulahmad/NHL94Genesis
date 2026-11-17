@@ -23,6 +23,8 @@ REMAP_CALLS = {0x38946}  # DecompressGraphicsWithRemap: an 8 byte remap table fo
 
 NM_FILE = {}  # file offset -> routine name, from docs/segacd-handoff/name_map.csv
 LAST_PC = 0
+PLUS = "+LOAD"   # added to an in-module label used as an absolute address
+MINUS = "-LOAD"  # added to a name used as a branch target
 LABELS = {}   # file offset -> global label name (from label:ADDR=Name items)
 
 
@@ -131,7 +133,7 @@ def emit_code(blob, start, end, names):
         if k == "ins" and p.mnemonic.split(".")[0] in E.BRANCH:
             d = E.target_of(p)
             if d is not None and not (start <= d < end) and d in NM_FILE and d not in labels:
-                labels[d] = NM_FILE[d] + "-LOAD"
+                labels[d] = NM_FILE[d] + MINUS
     out = ["\torg\t$%X" % start, ""]
     ext = set()
     for a, k, p in items:
@@ -150,14 +152,14 @@ def emit_code(blob, start, end, names):
             def nm(m):
                 v = int(m.group(1), 16)
                 if v in names:
-                    return "(%s).l" % (names[v] + ("+LOAD" if names[v] in LABELS.values() else ""))
+                    return "(%s).l" % (names[v] + (PLUS if names[v] in LABELS.values() else ""))
                 return m.group(0)
             text2 = re.sub(r"\$([0-9A-F]+)\.[Ll]", nm, text)
             if p.mnemonic in ("movea.l", "move.l") and text2.startswith("#$"):
                 m = re.match(r"#\$([0-9A-F]+),(.*)", text2)
                 if m and int(m.group(1), 16) in names:
                     nn = names[int(m.group(1), 16)]
-                    text2 = "#%s,%s" % (nn + ("+LOAD" if nn in LABELS.values() else ""), m.group(2))
+                    text2 = "#%s,%s" % (nn + (PLUS if nn in LABELS.values() else ""), m.group(2))
             mn = p.mnemonic
             if kind in ("btst", "bclr", "bset", "bchg") and re.search(r",d[0-7]$", text2.replace(" ", "")):
                 mn = kind

@@ -44,7 +44,6 @@ tmgoalie	equ	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
 pldsize		equ	8
 
 ; routines of the cartridge that HOCKEY.BIN calls at these addresses
-rtss2		equ	$21000			;a bare rts
 
 ; --- ScoutingReport (scout94.asm) ---
 advframe	equ	$1A446			;advantage mark frame
