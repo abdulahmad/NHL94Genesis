@@ -177,7 +177,9 @@ for k, v in list(code_assets.items()):
     f, i, olab = inc_of[k]
     text0 = open(f).read(); assets0 = open(apath).read()
     lines, na = gen(k, v)
-    if olab:
+    if olab and lines and lines[0].split('\t')[0] == olab:
+        pass
+    elif olab:
         if lines and lines[0].startswith('\t'): lines.insert(0, olab)
         elif lines: lines[0] = olab + '\n' + lines[0]
     L = text0.split('\n'); L[i:i + 1] = lines
