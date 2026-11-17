@@ -98,7 +98,7 @@ ScoresScrollBlitSetup	move.w	(disflags).l,-(sp)
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
-DisplayGameInfo	cmp.w	$18A98.l,d3
+DisplayGameInfo	cmp.w	(gamenum).l,d3
 	beq.w	updatereplayExit
 	moveq	#$10,d0
 	mulu.w	d3,d0
@@ -167,7 +167,7 @@ PrintGameInfoBody
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-	st.b	$17F60.l
+	st.b	(redrawicons).l
 	bsr.w	ClearLineEditorMarks
 LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slot
 	
@@ -195,7 +195,7 @@ LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slo
 	btst	#$2,d1
 	beq.w	.loop
 .move	add.w	(TestList).l,d0
-	tst.w	$18C0A.l
+	tst.w	(OptLine).l
 	beq.w	.set
 	cmpi.w	#$1,d0
 	blt.w	.loop
@@ -337,15 +337,15 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	move.w	(TestList).l,d0
 	lsr.w	#$3,d0
 	adda.w	d0,a0
-	tst.w	$18C0A.l
+	tst.w	(OptLine).l
 	beq.w	.0
 	suba.w	#$1,a0
 .0	move.b	(a0),d0
-	cmp.b	$17F60.l,d0
+	cmp.b	(redrawicons).l,d0
 	beq.w	.line
-	move.b	d0,$17F60.l
+	move.b	d0,(redrawicons).l
 	bsr.w	DrawLineIconErase
-.line	btst	d5,$17F60.l
+.line	btst	d5,(redrawicons).l
 	beq.w	.next
 	bsr.w	DrawLineIcon
 .next	dbra	d5,.line
@@ -376,7 +376,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	mulu.w	d5,d0
 	lea.l	LineIconPosTable(pc),a0
 	adda.w	d0,a0
-	tst.w	$18C0A.l
+	tst.w	(OptLine).l
 	beq.w	.0
 	suba.w	#$6,a0
 .0	move.w	(a0),(printx).l
@@ -425,7 +425,7 @@ DrawLineIconErase
 	jsr	(eraser).l
 	move.w	$2CE96.l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
-	tst.w	$18C0A.l
+	tst.w	(OptLine).l
 	beq.w	.next
 	move.w	ClearLineEditorTopData.l,(printx).l
 .next	jsr	(printsmallz).l
@@ -459,7 +459,7 @@ DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Lin
 	jsr	(printbigz).l
 	String	CC_Font2Pri,$A,$4,'Line Editor',CC_Font2Pri,$E,$1
 	clr.w	d0
-	cmpa.l	#$1834C,a2
+	cmpa.l	#tmstruct,a2
 	beq.w	PutTeamBlockDraw
 	moveq	#$2C,d0
 	bra.w	PutTeamBlockDraw
@@ -499,9 +499,9 @@ LineEditorExit
 	move.w	#$18,(palcount).l
 .loop	tst.w	(palcount).l
 	bpl.w	.loop
-	move.l	$18AD2.l,-(sp)
-	move.l	$18AD6.l,-(sp)
-	move.l	$18ADA.l,-(sp)
+	move.l	(menuitem).l,-(sp)
+	move.l	(menulist).l,-(sp)
+	move.l	(menudraw).l,-(sp)
 	movea.l	#$3C000,a1
 	movea.l	#LineEditorMenuText,a0
 	movea.l	#$18C26,a3
@@ -523,10 +523,10 @@ LineEditorExit
 	beq.w	.loop2
 	jsr	(printsmallz).l
 	String	CC_SetFont
-	move.w	$18AD2.l,d0
-	move.l	(sp)+,$18ADA.l
-	move.l	(sp)+,$18AD6.l
-	move.l	(sp)+,$18AD2.l
+	move.w	(menuitem).l,d0
+	move.l	(sp)+,(menudraw).l
+	move.l	(sp)+,(menulist).l
+	move.l	(sp)+,(menuitem).l
 	tst.w	d0
 	bne.w	PrintGameInfoBody
 	bra.w	StatsScreenFadeIn
@@ -635,7 +635,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$9,$4,'Team  Roster',CC_Font3Pri,$E,$1
 	clr.w	d0
-	cmpa.l	#$1834C,a2
+	cmpa.l	#tmstruct,a2
 	beq.w	.home
 	moveq	#$2C,d0
 .home	bsr.w	PutTeamBlockDraw
@@ -690,7 +690,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	bsr.w	PlayerListDrawSelected
 	bra.w	.scroll
 .team	lea.l	$366(a2),a2
-	cmpa.l	#$186B2,a2
+	cmpa.l	#awtmstruct,a2
 	beq.w	.redraw
 	movea.l	#tmstruct,a2		;away -> back to home
 	bra.w	.redraw
@@ -924,7 +924,7 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,'^Per^^Time^^Tm^^Goal/Assist^^^^^^^^P/S^^',$F9,$00,$00
 	clr.l	d0
-	move.w	$180F0.l,d0
+	move.w	(ScoreSumbytes).l,d0
 	divu.w	#$6,d0		;goals
 	asl.w	#$5,d0		;32 pixels per entry
 	move.w	d0,(VertLineScrolling).l		;start at the end
@@ -1108,7 +1108,7 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,'^Per^^Time^^Tm^^Player/Penalty^^^^min^^^',$F9,$00,$00
 	clr.l	d0
-	move.w	$1825A.l,d0
+	move.w	(PenSumLength).l,d0
 	lsr.w	#$2,d0		;/4 bytes per entry = number of penalties
 	mulu.w	#$18,d0		;24 pixels per entry
 	move.w	d0,(VertLineScrolling).l		;start at the end
@@ -1296,7 +1296,7 @@ PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of 
 	movem.l	a2,-(sp)
 	jsr	(ReadTeamStats).l
 	movea.l	#$18AA6,a0
-	move.w	$18AA0.l,d0
+	move.w	(potreeteam).l,d0
 	move.b	(a0,d0.w),d0		;his team
 	movea.l	#tmstruct,a2
 	cmp.w	$2A(a2),d0		;is it home?
@@ -1334,7 +1334,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$8,$4,'Player  Stats',CC_Font3Pri,$E,$1
 .team	clr.w	d0		;TeamBlockMap offset: 0 for the home struct, $30 for the away struct
-	cmpa.l	#$1834C,a2		;home team?
+	cmpa.l	#tmstruct,a2		;home team?
 	beq.w	.home
 	moveq	#$2C,d0
 .home	bsr.w	PutTeamBlockDraw		;draw the team block, then the list
@@ -1374,7 +1374,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 .switch	tst.w	d7		;No team switch in playoff stats
 	bne.w	.scroll
 	lea.l	$366(a2),a2
-	cmpa.l	#$186B2,a2		;was the home team?
+	cmpa.l	#awtmstruct,a2		;was the home team?
 	beq.w	.redraw		;was home, now away
 	movea.l	#tmstruct,a2		;was away, back to home
 	bra.w	.redraw
@@ -1726,9 +1726,9 @@ CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrow
 	dc.b	$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$DA,$61,$00,$00,$D6		; bcs.b *+120 / bcs.b *+110 / dc.w $fd1c / move.w $17cda.l, d0 / bsr.w *+216
 ; Crowd meter: reads the crowd record and prints the level
 CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
-	tst.w	$193BA.l
+	tst.w	(ValidSRAM).l
 	bmi.w	CrowdMeterScreenExit
-	move.w	$17FAE.l,d1
+	move.w	(HomeTeam).l,d1
 	ext.l	d1
 	movea.l	#$BC000,a0
 	jsr	(ReadCrowdRecord).l
@@ -1790,7 +1790,7 @@ CrowdMeterFadeIn
 	bclr	#$0,(disflags).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	move.w	$18D32.l,d0
+	move.w	(VSPRITES).l,d0
 	jsr	(SetVramWriteAddr1).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -1816,7 +1816,7 @@ CrowdMeterFadeIn
 .loop6	btst	#$6,$FF800E.l
 	bne.b	.loop6
 	bclr	#$7,$FF800F.l
-	move.w	#$6,$18D3E.l
+	move.w	#$6,(Map3col).l
 .loop7	btst	#$7,$FF800E.l
 	bne.b	.loop7
 	move.w	#$8D00,$FF8022.l
@@ -1870,7 +1870,7 @@ StatsScreenFadeIn
 StatsScreenFadeInClear
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	move.w	$18D30.l,d0
+	move.w	(VSCRLPM).l,d0
 	jsr	(SetVramWriteAddr1).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -1885,7 +1885,7 @@ StatsScreenFadeInClear
 	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$8D00,d0
-	move.b	$18D30.l,d0
+	move.b	(VSCRLPM).l,d0
 	lsr.b	#$2,d0
 .loop4	btst	#$7,$FF800E.l
 	bne.b	.loop4
@@ -1911,12 +1911,12 @@ StatsScreenFadeInClear
 .loop9	btst	#$6,$FF800E.l
 	bne.b	.loop9
 	bclr	#$7,$FF800F.l
-	move.w	#$5,$18D3E.l
+	move.w	#$5,(Map3col).l
 .loop10	tst.w	(palcount).l
 	bpl.w	.loop10
 	move.w	(sp)+,(disflags).l
 	bset	#$1,(disflags).l
-	move.w	$18D48.l,d4
+	move.w	(rinkvrcset).l,d4
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
@@ -1925,13 +1925,13 @@ StatsScreenFadeInClear
 	addq.l	#$8,a2
 .next	jsr	(DecompressGraphicsPlain).l
 	jsr	(UnpackPictureSelectGfx).l
-	move.w	$18D42.l,d4
+	move.w	(smallfontchars).l,d4
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$43434567,$89ABCDEF
-	move.w	$18D4E.l,d4
+	move.w	(framercset).l,d4
 	jsr	(AddSmallFontFramer).l
 	jsr	(SetupIceRinkPalRemap).l
 	jsr	(IceRinkRemapGfxE).l
@@ -1961,15 +1961,15 @@ StatsScreenFadeInClear
 	dc.b	$FF,$FF,$00,$28,$6D,$00,$00,$0C,$35,$40,$00,$28,$4E,$B9,$00,$03		; blt.w *+14 / move.w d0, $28(a2) / jsr $3d426.l
 	dc.b	$D4,$26,$33,$DF,$00,$01,$8A,$D4,$33,$DF,$00,$01,$8A,$D2,$4E,$75		; move.w (a7)+, $18ad4.l / move.w (a7)+, $18ad2.l / rts
 ; Stats rows: starts at row $D
-StatsRowsInit	move.w	#$D,$18D5A.l
+StatsRowsInit	move.w	#$D,(printy).l
 	move.w	$18AD4.l,d1
 	moveq	#$0,d0
 ; Stats rows: prints one row of the table
-StatsRowsLoop	move.w	#$5,$18D58.l
-	move.w	#$A000,$18D5C.l
-	cmp.w	$18AD2.l,d0
+StatsRowsLoop	move.w	#$5,(printx).l
+	move.w	#$A000,(printa).l
+	cmp.w	(menuitem).l,d0
 	bne.w	.next
-	move.w	#$8000,$18D5C.l
+	move.w	#$8000,(printa).l
 .next	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
 	dc.b	$00,$18,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20	; ..              
@@ -1977,7 +1977,7 @@ StatsRowsLoop	move.w	#$5,$18D58.l
 ; Stats rows: prints "no goalie" when the team has none
 StatsRowNoGoalie	tst.w	d0
 	bne.w	StatsRowGoalieName
-	move.w	#$B,$18D58.l
+	move.w	#$B,(printx).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
@@ -1991,22 +1991,22 @@ StatsRowGoalieName	movea.l	$1E(a2),a1
 .loop	adda.w	(a1),a1
 	adda.w	#$8,a1
 .next	dbra	d2,.loop
-	move.w	#$8,$18D58.l
+	move.w	#$8,(printx).l
 	jsr	(print).l
 	move.b	(a1),d2
 	lsr.b	#$4,d2
 	addi.b	#$30,d2
-	move.b	d2,$17EF4.l
+	move.b	d2,(TextBuffer).l
 	move.b	(a1),d2
 	andi.b	#$F,d2
 	addi.b	#$30,d2
 	move.b	d2,$17EF5.l
-	movea.l	#$17EF2,a1
+	movea.l	#mesarea,a1
 	move.w	#$4,(a1)
-	move.w	#$5,$18D58.l
+	move.w	#$5,(printx).l
 	jsr	(print).l
 ; Stats rows: next row
-StatsRowsNext	addi.w	#$1,$18D5A.l
+StatsRowsNext	addi.w	#$1,(printy).l
 	addi.w	#$1,d0
 	dbra	d1,StatsRowsLoop
 	rts
@@ -2056,50 +2056,50 @@ GetPlayerCount
 	movem.l	(sp)+,a0
 	rts
 ; Waits for the next frame count change, then runs the sub CPU step
-FrameWaitStep	move.w	$17474.l,d1
-.loop	cmp.w	$17474.l,d1
+FrameWaitStep	move.w	(ScoutSubStatus).l,d1
+.loop	cmp.w	(ScoutSubStatus).l,d1
 	beq.w	.loop
 	dc.w	$6100,$04FC		; bsr.w X_2F2F0
 	jsr	(nodiag).l
 	tst.b	d1
 	beq.w	FrameWaitStep
 	rts
-	bclr.b	#$0,$17F74.l
+	bclr.b	#$0,(sflags5).l
 	bsr.w	forceblack
-	move.w	$18D64.l,-(sp)
-	bset.b	#$3,$17F6C.l
+	move.w	(disflags).l,-(sp)
+	bset.b	#$3,(sflags2).l
 	bclr.b	#$4,$17F72.l
 	jsr	(ClrHor).l
 	move.w	#$400,d0
-	move.w	$18D3C.l,d1
+	move.w	(VmMAP3).l,d1
 	move.w	#$7FF,d2
 	jsr	(DoDMANd2Queue).l
-	move.w	$18D56.l,d4
+	move.w	(ExtraChars).l,d4
 	movea.l	$47D68.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	(ReadActiveJoypadPrint).l
-	bclr.b	#$5,$17F6A.l
-	bclr.b	#$5,$17F6E.l
+	bclr.b	#$5,(sflags).l
+	bclr.b	#$5,(sflags3).l
 	st.b	$17D6E.l
-	movea.l	$17470.l,a4
+	movea.l	(recbpr).l,a4
 .loop2	bsr.w	suba4
 	tst.w	d7
 	bne.w	.loop2
 	jsr	(SprSort).l
 	jsr	(setvideo).l
-	bclr.b	#$1,$17F6E.l
-	clr.l	$17DCA.l
+	bclr.b	#$1,(sflags3).l
+	clr.l	(padcont).l
 	clr.l	$17DCE.l
 	clr.l	$17DD2.l
-	move.w	#$18,$18D62.l
+	move.w	#$18,(palcount).l
 	moveq	#$1,d7
 ; Waits until d7 frames have passed
-WaitFramesD7	move.w	$17474.l,d0
-	sub.w	$17476.l,d0
+WaitFramesD7	move.w	(ScoutSubStatus).l,d0
+	sub.w	(OldVcount).l,d0
 	cmp.w	d0,d7
 	bhi.w	WaitFramesD7
-	move.w	$17474.l,$17476.l
+	move.w	(ScoutSubStatus).l,(OldVcount).l
 	tst.w	$1AD56.l
 	bmi.w	.next
 	sub.w	d7,$1AD56.l
@@ -2114,14 +2114,14 @@ WaitFramesD7	move.w	$17474.l,d0
 	movem.l	(sp)+,d0/a3
 	moveq	#$1,d7
 	dc.w	$6100,$03E0		; bsr.w X_2F2F0
-	btst.b	#$0,$17F74.l
+	btst.b	#$0,(sflags5).l
 	beq.w	.next2
 	andi.w	#$FFF0,d0
 	ori.w	#$8,d0
 	andi.w	#$FFF0,d1
 	andi.w	#$FFF0,d3
 .next2	movea.l	#$17D58,a5
-	btst.b	#$5,$17F6E.l
+	btst.b	#$5,(sflags3).l
 	beq.w	.next3
 	move.w	d1,d5
 	andi.w	#$F,d5
@@ -2135,16 +2135,16 @@ WaitFramesD7	move.w	$17474.l,d0
 .next4	cmpi.w	#$FED0,$14(a5)
 	bgt.w	.next5
 	move.w	#$0,$14(a5)
-.next5	bset.b	#$5,$17F6A.l
+.next5	bset.b	#$5,(sflags).l
 	bne.w	.next6
-	move.w	$17CEE.l,$0(a5)
-	move.w	$17CEA.l,$14(a5)
+	move.w	(Hpos).l,$0(a5)
+	move.w	(Vpos).l,$14(a5)
 .next6	move.w	d0,d5
 	andi.w	#$7,d5
 	eori.w	#$4,d5
-	movea.l	#$17480,a1
+	movea.l	#SortCords,a1
 	st.b	d3
-	bclr.b	#$5,$17F6E.l
+	bclr.b	#$5,(sflags3).l
 	beq.w	.next7
 	move.w	$16(a5),d3
 .next7	move.w	$0(a5),d0
@@ -2177,22 +2177,22 @@ WaitFramesD7	move.w	$17474.l,d0
 	bhi.w	.next8
 	move.l	d0,d4
 	move.w	$52(a1),$16(a5)
-	bset.b	#$5,$17F6E.l
+	bset.b	#$5,(sflags3).l
 .next8	adda.l	#$80,a1
 	dbra	d2,.loop
 	adda.w	#$4,sp
-	btst.b	#$5,$17F6E.l
+	btst.b	#$5,(sflags3).l
 	beq.w	.next9
 	move.w	$16(a5),d0
 	asl.w	#$7,d0
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 	adda.w	d0,a3
 	moveq	#$4,d4
 	bsr.w	setpads
 	bsr.w	UpdateCameraPos
 	jsr	(setvideo).l
 	bra.w	WaitFramesD7
-.next9	bset.b	#$5,$17F6A.l
+.next9	bset.b	#$5,(sflags).l
 	eori.w	#$4,d5
 	asl.w	#$2,d5
 	lea.l	DirectionStepTable(pc),a0
@@ -2212,8 +2212,8 @@ WaitFramesD7	move.w	$17474.l,d0
 	move.w	d1,$14(a5)
 .next11	movea.l	a5,a3
 	clr.w	$18(a5)
-	andi.w	#$FFF,$17DC8.l
-	ori.w	#$E000,$17DC8.l
+	andi.w	#$FFF,(PadControlBits).l
+	ori.w	#$E000,(PadControlBits).l
 	bsr.w	UpdateCameraPos
 	jsr	(setvideo).l
 	bra.w	WaitFramesD7
@@ -2224,12 +2224,12 @@ DirectionStepTable	dc.b	$00,$00,$00,$02,$00,$02,$00,$02,$00,$02,$00,$00,$00,$02,
 DirectionPressCheck	st.b	$18(a5)
 	btst	#$5,d1
 	beq.w	.next
-	btst.b	#$0,$17F74.l
+	btst.b	#$0,(sflags5).l
 	bne.w	.next
-	bchg.b	#$1,$17F6E.l
+	bchg.b	#$1,(sflags3).l
 .next	btst	#$6,d3
 	beq.w	.next2
-	btst.b	#$0,$17F74.l
+	btst.b	#$0,(sflags5).l
 	bne.w	.next2
 	bsr.w	suba4
 	bsr.w	suba4
@@ -2238,42 +2238,42 @@ DirectionPressCheck	st.b	$18(a5)
 	jsr	(SprSort).l
 	jsr	(setvideo).l
 	moveq	#$1,d7
-	bclr.b	#$1,$17F6E.l
-.next2	btst.b	#$0,$17F74.l
+	bclr.b	#$1,(sflags3).l
+.next2	btst.b	#$0,(sflags5).l
 	bne.w	.next4
 	btst	#$4,d3
 	beq.w	.next4
 	btst	#$6,d3
 	beq.w	.next3
-	bclr.b	#$5,$17F6E.l
-	bclr.b	#$5,$17F6A.l
+	bclr.b	#$5,(sflags3).l
+	bclr.b	#$5,(sflags).l
 	move.w	d0,-(sp)
-	move.w	$17DC8.l,d0
+	move.w	(PadControlBits).l,d0
 	andi.w	#$FFF,d0
 	ori.w	#$E000,d0
-	move.w	d0,$17DC8.l
+	move.w	d0,(PadControlBits).l
 	move.w	(sp)+,d0
 	bra.w	WaitFramesD7
 .next3	bsr.w	adda4
 	jsr	(SprSort).l
 	jsr	(setvideo).l
 	asl.w	#$1,d7
-	bclr.b	#$1,$17F6E.l
-.next4	btst.b	#$1,$17F6E.l
+	bclr.b	#$1,(sflags3).l
+.next4	btst.b	#$1,(sflags3).l
 	beq.w	.next5
-	st.b	$17F64.l
+	st.b	(lastsfx).l
 	bsr.w	adda4
-	move.w	$17F64.l,-(sp)
+	move.w	(lastsfx).l,-(sp)
 	bsr.w	sfx
 	jsr	(SprSort).l
 .next5	jsr	(setvideo).l
-	btst.b	#$0,$17F74.l
+	btst.b	#$0,(sflags5).l
 	bne.w	.next6
 	btst	#$7,d1
 	beq.w	WaitFramesD7
 	jsr	(ControllerPictureDraw).l
-	bclr.b	#$1,$17F6E.l
-	bset.b	#$0,$17F74.l
+	bclr.b	#$1,(sflags3).l
+	bset.b	#$0,(sflags5).l
 	bne.w	.next6
 	bra.w	WaitFramesD7
 .next6	btst	#$7,d1
@@ -2285,48 +2285,48 @@ DirectionPressCheck	st.b	$18(a5)
 	btst	#$5,d1
 	beq.w	WaitFramesD7
 	bset.b	#$6,$17F72.l
-	bclr.b	#$0,$17F74.l
+	bclr.b	#$0,(sflags5).l
 	jsr	(ControllerPictureClear).l
 	bsr.w	adda4
 	jsr	(SprSort).l
 	bra.w	WaitFramesD7
 .next7	jmp	(WaitFramesD7).l
-.next8	clr.w	$18AD2.l
-	bset.b	#$1,$17F74.l
+.next8	clr.w	(menuitem).l
+	bset.b	#$1,(sflags5).l
 .next9	bsr.w	forceblack
-	ori.w	#$F000,$17DC8.l
-	bclr.b	#$5,$17F6A.l
-	movea.l	$17470.l,a4
+	ori.w	#$F000,(PadControlBits).l
+	bclr.b	#$5,(sflags).l
+	movea.l	(recbpr).l,a4
 	bclr.b	#$4,$17F72.l
 	bsr.w	RestoreReplayFrameCopy
 	jsr	(SprSort).l
-	bclr.b	#$3,$17F6C.l
-	move.w	(sp)+,$18D64.l
+	bclr.b	#$3,(sflags2).l
+	move.w	(sp)+,(disflags).l
 	jsr	(StatsScreenFadeInClear).l
 	jsr	(SetupIceRinkPalRemap).l
 	jsr	(IceRinkRemapGfxE).l
 	jsr	(IceRinkRemapGfxF).l
 	jsr	(IceRinkRemapGfxB).l
-	btst.b	#$4,$18D64.l
+	btst.b	#$4,(disflags).l
 	beq.w	.next10
 	jsr	(IceRinkRemapGfxD).l
 	jsr	(IceRinkRemapGfxC).l
 .next10	jsr	(SetHor).l
 	jsr	(setvideo).l
-	move.w	#$18,$18D62.l
+	move.w	#$18,(palcount).l
 	rts
 
 ; Reads joypad 2 or 1 depending on the port flag.
 ReadActiveJoypad
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	bne.w	.next2
-.loop	btst	#$1,$17F6A.l
+.loop	btst	#$1,(sflags).l
 	beq.s	.next
 	jmp	(ReadJoy2).l
 .next	jmp	(ReadJoy1).l
-.next2	tst.w	$17F94.l
+.next2	tst.w	(pausepad).l
 	beq.w	.loop
-	cmpi.w	#$3,$17F94.l
+	cmpi.w	#$3,(pausepad).l
 	bne.s	.next3
 	jmp	(ReadJoy3).l
 .next3	jmp	(ReadJoy4).l
@@ -2339,7 +2339,7 @@ ReadActiveJoypadPrint
 	moveq	#$55,d1
 	moveq	#$8,d2
 	moveq	#$4,d3
-	move.w	$18D48.l,d4
+	move.w	(rinkvrcset).l,d4
 	move.w	#$0,d5
 	movea.l	$47D18.l,a1
 	btst	#$4,$17F72.l
@@ -2365,7 +2365,7 @@ ControllerPictureDraw
 	moveq	#$0,d1
 	moveq	#$10,d2
 	moveq	#$B,d3
-	move.w	$18D56.l,d4
+	move.w	(ExtraChars).l,d4
 	move.w	#$0,d5
 	movea.l	$47D68.l,a1
 	adda.l	$4(a1),a1

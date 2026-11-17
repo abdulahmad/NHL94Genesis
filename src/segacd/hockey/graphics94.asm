@@ -39,21 +39,21 @@ HockeyRtsStubB
 	rts
 ReadJoyData
 	movem.l	d1/a0,-(sp)
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.next
 	bsr.s	.loop
-	move.b	d0,$17E46.l
+	move.b	d0,(PadRaw1).l
 	bsr.w	.loop4
-	move.b	d0,$17E47.l
+	move.b	d0,(PadRaw2).l
 	bsr.w	.loop7
-	move.b	d0,$17E48.l
+	move.b	d0,(PadRaw3).l
 	bsr.w	.loop10
-	move.b	d0,$17E49.l
+	move.b	d0,(PadRaw4).l
 	bra.w	.next2
 .next	bsr.w	.next5
-	move.b	d0,$17E46.l
+	move.b	d0,(PadRaw1).l
 	bsr.w	.next4
-	move.b	d0,$17E47.l
+	move.b	d0,(PadRaw2).l
 .next2	movem.l	(sp)+,d1/a0
 	rts
 .loop	btst	#$4,$FF800E.l

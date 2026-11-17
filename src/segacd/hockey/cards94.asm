@@ -1,37 +1,37 @@
 ResetCardTimer						;Reset the player card timer cardtimer to $AA ($53 if C was pressed).
 									;Called from ReadSetupPads, PrintOptions and PlayerCardTimer
-	move.w	#$AA,$1939E.l		;normal wait
-	btst	#$5,$19390.l		;C held (bit 5): use the shorter wait
+	move.w	#$AA,(cardtimer).l		;normal wait
+	btst	#$5,(setupcardflags).l		;C held (bit 5): use the shorter wait
 	beq.w	.x
-	move.w	#$53,$1939E.l		;shorter wait
+	move.w	#$53,(cardtimer).l		;shorter wait
 .x	rts
 PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the first minute of
 									;its wait. When carddelay runs out set setupcardflags bit 0; then count
 									;cardtimer down (C skips $50); at $52 switch sides (bit 1), forget the
 									;logos and draw the next card (PlayerCardScreen); below 0 restart the
 									;timer (ResetCardTimer)
-	subi.w	#$1,$193A2.l		;count down the start delay
+	subi.w	#$1,(carddelay).l		;count down the start delay
 	bpl.w	.x
-	move.w	#$FFFF,$193A2.l		;keep it run out
-	bset	#$0,$19390.l		;first run out: the cards may start
-	btst	#$0,$19390.l		;cards allowed?
+	move.w	#$FFFF,(carddelay).l		;keep it run out
+	bset	#$0,(setupcardflags).l		;first run out: the cards may start
+	btst	#$0,(setupcardflags).l		;cards allowed?
 	beq.w	.x
-	btst	#$5,$19390.l		;C held?
+	btst	#$5,(setupcardflags).l		;C held?
 	beq.w	.next
-	cmpi.w	#$52,$1939E.l		;timer below $52?
+	cmpi.w	#$52,(cardtimer).l		;timer below $52?
 	bge.w	.next
-	subi.w	#$50,$1939E.l		;skip $50 of the wait
-.next	subi.w	#$1,$1939E.l
+	subi.w	#$50,(cardtimer).l		;skip $50 of the wait
+.next	subi.w	#$1,(cardtimer).l
 	bmi.w	.1		;timer ran out: start the next cycle
-	cmpi.w	#$52,$1939E.l
+	cmpi.w	#$52,(cardtimer).l
 	bne.w	.x		;only at $52 is a new card drawn
-	bclr	#$2,$19390.l		;clear setupcardflags bits 2 and 3
-	bclr	#$3,$19390.l
-	bchg	#$1,$19390.l		;the next card goes on the other side
-	st.b	$1938C.l
-	st.b	$1938E.l
-	bclr	#$6,$19390.l
-	bclr	#$7,$19390.l
+	bclr	#$2,(setupcardflags).l		;clear setupcardflags bits 2 and 3
+	bclr	#$3,(setupcardflags).l
+	bchg	#$1,(setupcardflags).l		;the next card goes on the other side
+	st.b	(setuphome).l
+	st.b	(setupvis).l
+	bclr	#$6,(setupcardflags).l
+	bclr	#$7,(setupcardflags).l
 	jsr	(PlayerCardScreen).l
 .x	rts
 .1	jmp	(ResetCardTimer).l
@@ -47,7 +47,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3
 	move.w	#$1C,(printx).l		;visitors: erase the other logo box at $1C
-	btst	#$1,$19390.l		;which side?
+	btst	#$1,(setupcardflags).l		;which side?
 	bne.w	.0
 	move.w	#$3,(printx).l		;home: erase the one at 3
 .0	move.w	#$5,(printy).l
@@ -58,7 +58,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3
 	move.w	#$3,(printx).l
-	btst	#$1,$19390.l
+	btst	#$1,(setupcardflags).l
 	bne.w	.1
 	move.w	#$B,(printx).l
 .1	move.w	#$5,(printy).l
@@ -66,31 +66,31 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	#$8,d1
 	move.w	#$7FF,d2		;blank char
 	jsr	(eraser).l
-	btst	#$1,$19390.l		;which side?
+	btst	#$1,(setupcardflags).l		;which side?
 	bne.w	.2
 	bsr.w	TeamLogoBitmapsEnd		;home logo box
 	bra.w	.3
 .2	bsr.w	DrawLogoBoxHomeLeft
-	addi.w	#$1,$193A0.l		;each visitors card moves to the next featured player
+	addi.w	#$1,(featuredplayer).l		;each visitors card moves to the next featured player
 .3	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3 / add.b
-	cmpi.w	#$6,$193A0.l
+	cmpi.w	#$6,(featuredplayer).l
 	blt.w	.4
-	clr.w	$193A0.l		;back to the first picture
+	clr.w	(featuredplayer).l		;back to the first picture
 .4	move.w	(HomeTeam).l,d0
 	move.w	#$1D,(printx).l
-	btst	#$1,$19390.l		;which side?
+	btst	#$1,(setupcardflags).l		;which side?
 	beq.w	.5
 	move.w	(VisTeam).l,d0
 	move.w	#$4,(printx).l
 .5	move.w	#$6,(printy).l
 	move.w	(homepicchars).l,d4
-	move.w	$193A0.l,d3
+	move.w	(featuredplayer).l,d3
 	mulu.w	#$6,d3		;6 bytes per entry: picture.l + roster index.w
 	asl.w	#$2,d0		;team number * 4 to index the list of team lists
 	movea.l	$47D88.l,a0		;pictures of each team: picture.l, roster index.w entries
 	movea.l	(a0,d0.w),a0		;this team's list
-	move.w	$4(a0,d3.w),$19396.l
+	move.w	$4(a0,d3.w),(cardroster).l
 	movea.l	(a0,d3.w),a0		;the picture
 	movea.l	a0,a1		;a1 = picture header
 	movea.l	a0,a2
@@ -124,31 +124,31 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	#$6000,(printa).l
 	move.w	#$3,(printx).l
 	move.w	#$19,d0
-	btst	#$1,$19390.l		;which side?
+	btst	#$1,(setupcardflags).l		;which side?
 	beq.w	.8
 	move.w	#$B,(printx).l
 	move.w	#$19,d0
 .8	move.w	#$5,(printy).l
 	move.w	#$8,d1
-	move.w	(printx).l,$193A4.l		;text inside the frame starts one in and one down
-	addi.w	#$1,$193A4.l
-	move.w	(printy).l,$193A6.l
-	addi.w	#$1,$193A6.l
+	move.w	(printx).l,(cardprintx).l		;text inside the frame starts one in and one down
+	addi.w	#$1,(cardprintx).l
+	move.w	(printy).l,(cardprinty).l
+	addi.w	#$1,(cardprinty).l
 	jsr	(Framer).l
-	move.w	$193A4.l,(printx).l		;text inside the frame
-	move.w	$193A6.l,(printy).l
+	move.w	(cardprintx).l,(printx).l		;text inside the frame
+	move.w	(cardprinty).l,(printy).l
 	move.w	#$0,(printa).l
-	move.w	#$0,$18D5E.l
+	move.w	#$0,(printm).l
 	move.w	(HomeTeam).l,d0
-	btst	#$1,$19390.l		;which side?
+	btst	#$1,(setupcardflags).l		;which side?
 	beq.w	.9
 	move.w	(VisTeam).l,d0
-.9	move.w	d0,$193A8.l
+.9	move.w	d0,(cardteamnum).l
 	movea.l	#TeamList,a2
 	asl.w	#$2,d0
 	movea.l	(a2,d0.w),a2
 	adda.w	$0(a2),a2		;a2 = first player record of the team
-	move.w	$19396.l,d0		;skip cardroster players to reach the featured one
+	move.w	(cardroster).l,d0		;skip cardroster players to reach the featured one
 	bra.w	.next
 .loop2	adda.w	(a2),a2
 	adda.w	#$8,a2
@@ -169,24 +169,24 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 	movea.l	#mesarea,a1
-	move.w	$193A8.l,d0
-	move.w	$19396.l,d1
-	tst.w	$193BA.l
+	move.w	(cardteamnum).l,d0
+	move.w	(cardroster).l,d1
+	tst.w	(ValidSRAM).l
 	bmi.w	.fade
 	jsr	(UpdateRecordsCopyName).l
 	cmpi.w	#$2,(a1)		;PrintRecordValue left an empty string: no records to show
 	beq.w	.fade
-	move.w	$193A4.l,(printx).l		;left edge of the text
+	move.w	(cardprintx).l,(printx).l		;left edge of the text
 	addi.w	#$2,(printy).l		;two rows down
 	bset	#$3,(sflags6).l		;card font
 	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 	movea.l	#mesarea,a1
-	move.w	$193A8.l,d0
-	move.w	$19396.l,d1
+	move.w	(cardteamnum).l,d0
+	move.w	(cardroster).l,d1
 	movea.l	#$C45C,a0
 	jsr	(PrintRecordHolder).l
-	move.w	$193A4.l,(printx).l
+	move.w	(cardprintx).l,(printx).l
 	cmpi.w	#$2,(a1)		;no record holder: skip the line
 	beq.w	.11
 	addi.w	#$1,(printy).l
@@ -194,11 +194,11 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	jsr	(printsmall).l
 	bclr	#$3,(sflags6).l		;normal font
 .11	movea.l	#mesarea,a1
-	move.w	$193A8.l,d0
-	move.w	$19396.l,d1
+	move.w	(cardteamnum).l,d0
+	move.w	(cardroster).l,d1
 	movea.l	#$C45C,a0
 	jsr	(PrintRecordVs).l
-	move.w	$193A4.l,(printx).l		;left edge of the text
+	move.w	(cardprintx).l,(printx).l		;left edge of the text
 	addi.w	#$1,(printy).l
 	bset	#$3,(sflags6).l		;card font
 	jsr	(printsmall).l
@@ -213,10 +213,10 @@ PlayerCardDrawPortrait
 	movem.l	d0-d7,-(sp)
 	move.w	$0(a2),d2
 	move.w	$14(a2),d3
-	move.w	$4A(a2),$17CF4.l
-	addi.w	#$17,$17CF4.l
-	move.w	$4C(a2),$17CF6.l
-	addi.w	#$17,$17CF6.l
+	move.w	$4A(a2),(wcradiusx).l
+	addi.w	#$17,(wcradiusx).l
+	move.w	$4C(a2),(wcradiusy).l
+	addi.w	#$17,(wcradiusy).l
 	movem.l	a0-a6,-(sp)
 	exg.l	a2,a3
 	jsr	(checkcornercoll).l
@@ -227,11 +227,11 @@ PlayerCardDrawPortrait
 ; Player card screen: draws the stat block of the selected player.
 PlayerCardDrawStats
 	bclr	#$5,(sflags6).l
-	tst.w	$17BE0.l
+	tst.w	(puckc).l
 	bmi.w	.ex2
 	movem.l	d0/a0,-(sp)
-	movea.l	#$17480,a0
-	move.w	$17BE0.l,d0
+	movea.l	#SortCords,a0
+	move.w	(puckc).l,d0
 	asl.w	#$7,d0
 	adda.w	d0,a0
 	move.w	$14(a0),d0
@@ -548,12 +548,12 @@ UpdateRecordsCopyName
 	move.w	#$2,(a1)
 	bra.w	.next4
 .next	movea.l	#TempBuffer,a1
-	move.w	d0,$17E64.l
+	move.w	d0,(TempWord2).l
 	bsr.w	AppendNumber
 	movea.l	(sp),a3
 	movea.l	#TempBuffer,a1
 	jsr	(appstring).l
-	move.w	$17E64.l,d0
+	move.w	(TempWord2).l,d0
 	movea.l	#$25808,a1
 	cmpi.w	#$1,d0
 	bne.w	.next2
@@ -753,9 +753,9 @@ UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0)
 UpdateRecordsData	dc.w	$0004,$2000
 ; Starts the record update: skipped when records are off or a game is in progress.
 UpdateRecordsStart
-	tst.w	$193BA.l
+	tst.w	(ValidSRAM).l
 	bmi.w	.ex
-	tst.w	$18C06.l
+	tst.w	(OptUserRec).l
 	bne.w	.ex
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	UpdateRecordsGoalieCounts
@@ -775,8 +775,8 @@ UpdateRecordsStart
 	bsr.w	.next12
 	clr.w	d7
 	movea.l	#tmstruct,a1
-	move.w	$18BF4.l,d4
-	move.w	$18BF6.l,d5
+	move.w	(homeuser).l,d4
+	move.w	(awayuser).l,d5
 	move.w	(HomeTeam).l,d1
 	move.w	(VisTeam).l,d2
 	move.w	$193AA.l,d6
@@ -784,8 +784,8 @@ UpdateRecordsStart
 	movea.l	#ThreeStars,a0
 	bsr.w	.next6
 	movea.l	#awtmstruct,a1
-	move.w	$18BF6.l,d4
-	move.w	$18BF4.l,d5
+	move.w	(awayuser).l,d4
+	move.w	(homeuser).l,d5
 	move.w	(VisTeam).l,d1
 	move.w	(HomeTeam).l,d2
 	move.w	$193AC.l,d6
@@ -793,18 +793,18 @@ UpdateRecordsStart
 	movea.l	#ThreeStars,a0
 	bsr.w	.next6
 	movea.l	#ThreeStars,a0
-	move.w	$18BF4.l,d1
+	move.w	(homeuser).l,d1
 	ext.l	d1
-	move.w	$18BF6.l,d2
+	move.w	(awayuser).l,d2
 	move.w	(HomeTeam).l,d3
 	move.w	(VisTeam).l,d4
 	movea.l	#tmstruct,a1
 	movea.l	#awtmstruct,a2
 	bsr.w	.next
 	movea.l	#ThreeStars,a0
-	move.w	$18BF6.l,d1
+	move.w	(awayuser).l,d1
 	ext.l	d1
-	move.w	$18BF4.l,d2
+	move.w	(homeuser).l,d2
 	move.w	(VisTeam).l,d3
 	move.w	(HomeTeam).l,d4
 	movea.l	#awtmstruct,a1
@@ -888,13 +888,13 @@ UpdateRecordsStart
 	clr.w	d3
 .loop	move.w	d6,d0
 	addi.w	#$EA,d0
-	move.b	(a1,d0.w),$17E62.l
+	move.b	(a1,d0.w),(TempWord1).l
 	addi.w	#$FFCC,d0
 	move.b	(a1,d0.w),d0
-	sub.b	d0,$17E62.l
-	cmp.b	$17E62.l,d3
+	sub.b	d0,(TempWord1).l
+	cmp.b	(TempWord1).l,d3
 	bge.w	.next8
-	move.b	$17E62.l,d3
+	move.b	(TempWord1).l,d3
 .next8	dbra	d6,.loop
 	cmp.b	$4(a0),d3
 	ble.w	.next9
@@ -907,9 +907,9 @@ UpdateRecordsStart
 	bne.w	.next10
 	move.b	$8(a0),d3
 	andi.w	#$FF,d3
-	cmp.w	$17F92.l,d3
+	cmp.w	(CrowdPeak).l,d3
 	bge.w	.next10
-	move.w	$17F92.l,d3
+	move.w	(CrowdPeak).l,d3
 	st.b	d7
 	move.b	d3,$8(a0)
 	move.b	d4,$9(a0)
@@ -942,7 +942,7 @@ UpdateRecordsStart
 	move.b	d4,$0(a0)
 	move.b	$18BF5.l,$1(a0)
 	move.b	$18BF7.l,$3(a0)
-	cmpa.l	#$1834C,a2
+	cmpa.l	#tmstruct,a2
 	beq.w	.next15
 	move.b	$18BF7.l,$1(a0)
 	move.b	$18BF5.l,$3(a0)
@@ -979,7 +979,7 @@ AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, s
 	beq.w	.2
 	move.w	#$B,d0
 	clr.w	d3
-	movea.l	#$1A2FC,a0
+	movea.l	#namelog,a0
 	mulu.w	#$C,d2
 	adda.l	d2,a0
 .loop	move.b	(a0,d3.w),d1
@@ -1072,9 +1072,9 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 .next2	bclr.b	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
-	move.w	$18BFE.l,d0
-	move.w	$18C00.l,d1
-	move.w	$18BF8.l,d2
+	move.w	(Opt1team).l,d0
+	move.w	(Opt2team).l,d1
+	move.w	(FourWayPlay).l,d2
 	move.w	#$5,d7
 	jsr	$6044.w
 	jsr	(HotColdIconExitSetC2Load).l
@@ -1143,8 +1143,8 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	
 	
 	move.l	a6,-(sp)
-	clr.w	$1A570.l
-	clr.w	$1A572.l
+	clr.w	(OvrDivisor).l
+	clr.w	(OvrDividend).l
 	movea.l	#$26266,a6
 	cmp.l	(PAttribOverallMask).l,d4
 	bne.w	.1
@@ -1200,8 +1200,8 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	move.w	d7,-(sp)
 	move.b	-$1(a4,d2.w),d7
 	ext.w	d7
-	add.w	d7,$1A570.l
-	addi.w	#$1,$1A572.l
+	add.w	d7,(OvrDivisor).l
+	addi.w	#$1,(OvrDividend).l
 	move.w	(sp)+,d7
 	neg.w	d2
 	bra.w	.00
@@ -1221,9 +1221,9 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	beq.w	.3
 	move.w	#$64,d1
 	movem.l	d6-d7,-(sp)
-	move.w	$1A570.l,d6
+	move.w	(OvrDivisor).l,d6
 	ext.l	d6
-	move.w	$1A572.l,d7
+	move.w	(OvrDividend).l,d7
 	divs.w	d7,d6
 	add.w	d6,d0
 	movem.l	(sp)+,d6-d7
@@ -1307,11 +1307,11 @@ TrimSpacesMenuSetup
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l
-	move.w	#$0,$18D30.l
-	move.w	#$B400,$18D32.l
-	move.w	#$B800,$18D3C.l
-	move.w	#$5,$18D3E.l
-	move.w	#$C000,$18D38.l
+	move.w	#$0,(VSCRLPM).l
+	move.w	#$B400,(VSPRITES).l
+	move.w	#$B800,(VmMAP3).l
+	move.w	#$5,(Map3col).l
+	move.w	#$C000,(VmMAP2).l
 	move.w	#$6,(Map2col).l
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$6,(Map1col).l
@@ -1331,7 +1331,7 @@ TrimSpacesMenuSetup
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$91,$23,$45,$60,$89,$AB,$CD,$EF	; .#E`....
-	move.w	d4,$18D42.l
+	move.w	d4,(smallfontchars).l
 	jsr	(AddSmallFont).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
@@ -1356,13 +1356,13 @@ TrimSpacesMenuSetup
 	moveq	#$D,d5
 	jsr	(dobitmap).l
 	jsr	(ForceBlackStepCram).l
-	move.w	d4,$19392.l
+	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
 	move.w	d4,$19398.l
 	movea.l	$47D7C.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	move.w	d4,$18D40.l
+	move.w	d4,(BigFontchars).l
 	movea.l	$47D38.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
@@ -1371,10 +1371,10 @@ TrimSpacesMenuSetup
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$1F,$06,$00	; ......
-	move.w	$17FAE.l,d0
-	tst.w	$1A390.l
+	move.w	(HomeTeam).l,d0
+	tst.w	(nameentryvis).l
 	beq.w	.next
-	move.w	$17FB0.l,d0
+	move.w	(VisTeam).l,d0
 .next	movea.l	#$1B00C,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
@@ -1382,7 +1382,7 @@ TrimSpacesMenuSetup
 	move.w	(a1),d0
 	subi.w	#$2,d0
 	lsr.w	#$1,d0
-	sub.w	d0,$18D58.l
+	sub.w	d0,(printx).l
 	jsr	(print).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
@@ -1393,10 +1393,10 @@ TrimSpacesMenuSetup
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$8F,$1C,$08,$00	; ......
-	move.w	$17FAE.l,d3
-	tst.w	$1A390.l
+	move.w	(HomeTeam).l,d3
+	tst.w	(nameentryvis).l
 	beq.w	.next2
-	move.w	$17FB0.l,d3
+	move.w	(VisTeam).l,d3
 .next2	asl.w	#$2,d3
 	movea.l	$47D8C.l,a0
 	movea.l	(a0,d3.w),a0
@@ -1413,7 +1413,7 @@ TrimSpacesMenuSetup
 	clr.w	d0
 	clr.w	d1
 	move.w	#$4,d5
-	move.w	$19392.l,d4
+	move.w	(homepicchars).l,d4
 	jsr	(dobitmap).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
@@ -1425,32 +1425,32 @@ TrimSpacesMenuSetup
 ; Inline data read by $39258 from the return address (1 row).
 	dc.b	$00,$10,$BF,$0A,$02,$4E,$41,$4D,$45,$20,$20,$45,$4E,$54,$52,$59	; .....NAME  ENTRY
 	bsr.w	ReadNameLog
-	clr.w	$1A38E.l
-	move.w	#$1,$1A38C.l
+	clr.w	(namelogarrows).l
+	move.w	#$1,(namelogsel).l
 	clr.w	d0
 	bsr.w	SkipOtherUserName
-	movea.l	#$1A37C,a1
+	movea.l	#nameentrybuf,a1
 	bsr.w	GetLogName
 ; Inline data read by GetLogName from the return address (1 row).
 	dc.w	$6100,$06AC
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$0E,$BF,$07,$06,$4E,$61,$6D,$65,$20,$4C,$6F,$67,$00	; .....Name Log.
-	move.w	#$18,$18D62.l
-	bclr.b	#$2,$18D64.l
+	move.w	#$18,(palcount).l
+	bclr.b	#$2,(disflags).l
 	clr.w	d4
 	bsr.w	SyncLetterCursor
 	bsr.w	PrintNameCursor
 	bsr.w	LetterGridPos
-	move.w	$18D58.l,-(sp)
-	move.w	$18D5A.l,-(sp)
+	move.w	(printx).l,-(sp)
+	move.w	(printy).l,-(sp)
 	jsr	(NameEntryFramerRun).l
-	move.w	(sp)+,$18D5A.l
-	addi.w	#$1,$18D5A.l
-	move.w	(sp)+,$18D58.l
-	addi.w	#$1,$18D58.l
+	move.w	(sp)+,(printy).l
+	addi.w	#$1,(printy).l
+	move.w	(sp)+,(printx).l
+	addi.w	#$1,(printx).l
 	bsr.w	PrintCurLetter
-	move.w	#$1,$1A566.l
+	move.w	#$1,(cursoron).l
 	bsr.w	NameLetterGrid
 	clr.w	d0
 	bra.w	NameEntryMoveCursor
@@ -1459,19 +1459,19 @@ NameEntryPrompt	bsr.w	GetNameLength
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$05,$12,$00	; ......
-	tst.w	$1A566.l
+	tst.w	(cursoron).l
 	beq.w	.next
-	movea.l	#$1A37C,a1
+	movea.l	#nameentrybuf,a1
 	bsr.w	PrintNameField
 	bsr.w	PrintNamePrompt
 .next	bsr.w	MoveLogArrows
-.loop	move.w	$17474.l,d0
-.loop2	cmp.w	$17474.l,d0
+.loop	move.w	(ScoutSubStatus).l,d0
+.loop2	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.loop2
 	movem.w	d1,-(sp)
-	move.w	$17FA6.l,d1
+	move.w	(cont1team).l,d1
 	subi.w	#$1,d1
-	cmp.w	$1A390.l,d1
+	cmp.w	(nameentryvis).l,d1
 	movem.w	(sp)+,d1
 	beq.w	.next2
 	jsr	(ReadJoy2).l
@@ -1483,7 +1483,7 @@ NameEntryPrompt	bsr.w	GetNameLength
 	beq.w	.loop
 .next3	btst	#$7,d1
 	bne.w	NameEntryDone
-	tst.w	$1A566.l
+	tst.w	(cursoron).l
 	bne.w	.next4
 	move.w	#$1,d0
 	btst	#$1,d1
@@ -1517,18 +1517,18 @@ NameEntryPrompt	bsr.w	GetNameLength
 	beq.w	NameEntryPrompt
 	bsr.w	NameLetterGrid
 	bra.w	NameEntryPrompt
-.next5	add.w	d0,$1A38C.l
-.loop3	cmpi.w	#$7,$1A38C.l
+.next5	add.w	d0,(namelogsel).l
+.loop3	cmpi.w	#$7,(namelogsel).l
 	ble.w	.next6
-	move.w	#$1,$1A38C.l
-.next6	tst.w	$1A38C.l
+	move.w	#$1,(namelogsel).l
+.next6	tst.w	(namelogsel).l
 	bne.w	.next7
-	move.w	#$7,$1A38C.l
+	move.w	#$7,(namelogsel).l
 .next7	bsr.w	SkipOtherUserName
 	beq.w	.loop3
-	movea.l	#$1A37C,a1
+	movea.l	#nameentrybuf,a1
 	bsr.w	GetLogName
-	tst.w	$1A566.l
+	tst.w	(cursoron).l
 	bne.w	.next8
 	jsr	(NameEntryHelp).l
 	bra.w	NameEntryPrompt
@@ -1536,19 +1536,19 @@ NameEntryPrompt	bsr.w	GetNameLength
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BF,$04,$13,$00	; ......
 ; Name entry: blanks the letter under the cursor
-NameEntryClearLetter	add.w	d4,$18D58.l
+NameEntryClearLetter	add.w	d4,(printx).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
 	bsr.w	LetterGridPos
 	moveq	#$1,d2
-	move.w	$18D58.l,-(sp)
-	move.w	$18D5A.l,-(sp)
+	move.w	(printx).l,-(sp)
+	move.w	(printy).l,-(sp)
 	jsr	(eraser).l
-	move.w	(sp)+,$18D5A.l
-	addi.w	#$1,$18D5A.l
-	move.w	(sp)+,$18D58.l
-	addi.w	#$1,$18D58.l
+	move.w	(sp)+,(printy).l
+	addi.w	#$1,(printy).l
+	move.w	(sp)+,(printx).l
+	addi.w	#$1,(printx).l
 	bsr.w	PrintCurLetter
 	bsr.w	SyncLetterCursor
 	move.w	d4,d0
@@ -1562,7 +1562,7 @@ NameEntryMoveColumn	add.w	d4,d0
 	bhi.w	NameEntryPrompt
 	move.w	d0,d4
 	bsr.w	PrintNameCursor
-	movea.l	#$1A37C,a0
+	movea.l	#nameentrybuf,a0
 	clr.w	d0
 	cmpi.b	#$2D,(a0,d4.w)
 	beq.w	NameEntryApplyRow
@@ -1579,27 +1579,27 @@ NameEntryApplyRow	add.w	d5,d0
 	move.w	d0,-(sp)
 	bsr.w	LetterGridPos
 	moveq	#$1,d2
-	move.w	$18D58.l,-(sp)
-	move.w	$18D5A.l,-(sp)
+	move.w	(printx).l,-(sp)
+	move.w	(printy).l,-(sp)
 	jsr	(eraser).l
-	move.w	(sp)+,$18D5A.l
-	addi.w	#$1,$18D5A.l
-	move.w	(sp)+,$18D58.l
-	addi.w	#$1,$18D58.l
+	move.w	(sp)+,(printy).l
+	addi.w	#$1,(printy).l
+	move.w	(sp)+,(printx).l
+	addi.w	#$1,(printx).l
 	bsr.w	PrintCurLetter
 	move.w	(sp)+,d5
 	bsr.w	LetterGridPos
-	move.w	$18D58.l,-(sp)
-	move.w	$18D5A.l,-(sp)
-	tst.w	$1A566.l
+	move.w	(printx).l,-(sp)
+	move.w	(printy).l,-(sp)
+	tst.w	(cursoron).l
 	beq.w	.next
 	jsr	(NameEntryFramerRun).l
-.next	move.w	(sp)+,$18D5A.l
-	addi.w	#$1,$18D5A.l
-	move.w	(sp)+,$18D58.l
-	addi.w	#$1,$18D58.l
+.next	move.w	(sp)+,(printy).l
+	addi.w	#$1,(printy).l
+	move.w	(sp)+,(printx).l
+	addi.w	#$1,(printx).l
 	bsr.w	PrintCurLetter
-	movea.l	#$1A37C,a0
+	movea.l	#nameentrybuf,a0
 	movea.l	#$26DD0,a1
 	move.b	(a1,d5.w),d0
 	move.b	d0,(a0,d4.w)

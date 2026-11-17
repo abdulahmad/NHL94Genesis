@@ -29,9 +29,9 @@ ReadLineDataBackupRead
 	move.l	#$E20,d0
 	movea.l	#$18C26,a0
 	jsr	(BackupRamRead).l
-	bclr	#$4,$17F6A.l
+	bclr	#$4,(sflags).l
 	move.w	#$FFFF,(lastsfx).l
-	move.l	#$C45C,$17470.l
+	move.l	#$C45C,(recbpr).l
 	movem.l	(sp)+,d0-d1/a0
 	rts
 ; Writes the line buffer into the backup RAM image.
@@ -41,9 +41,9 @@ ReadLineDataBackupWrite
 	move.l	#$E20,d0
 	movea.l	#$18C26,a0
 	jsr	(BackupRamWrite).l
-	bclr	#$4,$17F6A.l
+	bclr	#$4,(sflags).l
 	move.w	#$FFFF,(lastsfx).l
-	move.l	#$C45C,$17470.l
+	move.l	#$C45C,(recbpr).l
 	movem.l	(sp)+,d0-d1/a0
 	rts
 ClearWinRecords
@@ -66,13 +66,13 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	$1A8BC.l,d0
+	move.w	(sopathdir).l,d0
 	btst	#$7,$62(a3)
 	bne.w	.0
 	movea.l	#$2A674,a0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
-.0	move.w	d0,$17E2C.l
+.0	move.w	d0,(passdir).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Data that follows PSandSOpassdir (strings, small tables)
@@ -86,10 +86,10 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	jsr	(randomd0).l
 	cmpi.w	#$6,d0
 	bgt.w	.loop
-	move.w	d0,$1A8B4.l
-	bclr	#$3,$17F7A.l
-	move.w	#$FFFF,$1A8B6.l
-	clr.w	$1A8B8.l
+	move.w	d0,(sopath).l
+	bclr	#$3,(sflags7).l
+	move.w	#$FFFF,(sopathpoint).l
+	clr.w	(sopathx).l
 	bsr.w	NextPathPoint
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -104,35 +104,35 @@ StartShootoutPathData	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
 	dc.w	$8020,$0002
 NextPathPoint
 	movem.l	d0-d7/a0-a6,-(sp)
-	cmpi.b	#$80,$1A8B8.l
+	cmpi.b	#$80,(sopathx).l
 	beq.w	.x
-	addi.w	#$1,$1A8B6.l
-	move.w	$1A8B6.l,d0
+	addi.w	#$1,(sopathpoint).l
+	move.w	(sopathpoint).l,d0
 	asl.w	#$2,d0
 	movea.l	#$2A6C2,a0
-	move.w	$1A8B4.l,d1
+	move.w	(sopath).l,d1
 	asl.w	#$2,d1
 	movea.l	(a0,d1.w),a0
-	move.w	(a0,d0.w),$1A8B8.l
+	move.w	(a0,d0.w),(sopathx).l
 	btst	#$0,$76(a3)
 	beq.w	.0
-	neg.w	$1A8B8.l
-.0	move.w	$2(a0,d0.w),$1A8BA.l
+	neg.w	(sopathx).l
+.0	move.w	$2(a0,d0.w),(sopathy).l
 	cmpi.b	#$80,$4(a0,d0.w)
 	bne.w	.x
-	bset	#$3,$17F7A.l
-	clr.w	$1A8BE.l
+	bset	#$3,(sflags7).l
+	clr.w	(sopathend).l
 	move.b	$5(a0,d0.w),$1A8BF.l
-	move.w	$6(a0,d0.w),$1A8BC.l
+	move.w	$6(a0,d0.w),(sopathdir).l
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Shootout path: steps the shooter to the next path point.
 NextPathPointStep
 	movem.l	d2-d7/a0-a6,-(sp)
-	cmpi.b	#$80,$1A8B8.l
+	cmpi.b	#$80,(sopathx).l
 	beq.w	.next11
-	move.w	$1A8B8.l,d0
-	move.w	$1A8BA.l,d1
+	move.w	(sopathx).l,d0
+	move.w	(sopathy).l,d1
 	btst	#$7,$62(a3)
 	bne.w	.next3
 	neg.w	d0
@@ -160,33 +160,33 @@ NextPathPointStep
 .next8	cmpi.w	#$A,d1
 	bgt.w	.next10
 .next9	bsr.w	NextPathPoint
-.next10	move.w	$1A8B8.l,d0
-	move.w	$1A8BA.l,d1
+.next10	move.w	(sopathx).l,d0
+	move.w	(sopathy).l,d1
 .next11	movem.l	(sp)+,d2-d7/a0-a6
 	rts
 ; Shootout path: checks the current point before moving on.
 NextPathPointCheck
 	movem.l	d0-d7/a0-a6,-(sp)
-	btst	#$1,$17F78.l
+	btst	#$1,(gmode2).l
 	beq.w	.next17
 	move.w	$52(a3),d0
-	cmp.w	$17BE0.l,d0
+	cmp.w	(puckc).l,d0
 	bne.w	.next17
-	cmpi.w	#$3,$193B6.l
+	cmpi.w	#$3,(shootoutclock).l
 	ble.w	.next16
-	cmpi.b	#$80,$1A8B8.l
+	cmpi.b	#$80,(sopathx).l
 	beq.w	.next16
-	btst	#$3,$17F7A.l
+	btst	#$3,(sflags7).l
 	bne.w	.next12
-	tst.w	$17BA8.l
+	tst.w	(puckvx).l
 	bne.w	.next17
-	tst.w	$17BAA.l
+	tst.w	(puckvy).l
 	bne.w	.next17
-	cmpi.w	#$F,$193B6.l
+	cmpi.w	#$F,(shootoutclock).l
 	blt.w	.next16
 	bra.w	.next17
-.next12	move.w	$1A8B8.l,d0
-	move.w	$1A8BA.l,d1
+.next12	move.w	(sopathx).l,d0
+	move.w	(sopathy).l,d1
 	btst	#$7,$62(a3)
 	bne.w	.next13
 	neg.w	d0
@@ -197,9 +197,9 @@ NextPathPointCheck
 .next14	sub.w	$14(a3),d1
 	bpl.w	.next15
 	neg.w	d1
-.next15	cmp.w	$1A8BE.l,d0
+.next15	cmp.w	(sopathend).l,d0
 	bgt.w	.next17
-	cmp.w	$1A8BE.l,d1
+	cmp.w	(sopathend).l,d1
 	bgt.w	.next17
 .next16	clr.w	d0
 	bra.w	.next18

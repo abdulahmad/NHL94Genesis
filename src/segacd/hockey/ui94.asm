@@ -3,7 +3,7 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#picturebuf,a0
-	movea.l	#$1AD42,a1
+	movea.l	#picturebits,a1
 	move.w	(a2)+,d0
 	move.w	d0,(a0)+
 	asl.w	#$3,d0
@@ -152,9 +152,9 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	beq.w	.3
 	bra.w	.x
 .0	move.w	#$124,d0
-	cmpi.w	#$56,$1937E.l
+	cmpi.w	#$56,(FallXPos).l
 	bgt.w	.1
-	cmpi.w	#$FFAA,$1937E.l
+	cmpi.w	#$FFAA,(FallXPos).l
 	bgt.w	.2
 .1	move.w	#$116,d0
 .2	sub.w	$14(a3),d0
@@ -163,9 +163,9 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	add.w	d0,$14(a3)
 	bra.w	.x
 .3	move.w	#$FEDC,d0
-	cmpi.w	#$56,$1937E.l
+	cmpi.w	#$56,(FallXPos).l
 	bgt.w	.4
-	cmpi.w	#$FFAA,$1937E.l
+	cmpi.w	#$FFAA,(FallXPos).l
 	bgt.w	.5
 .4	move.w	#$FEEA,d0
 .5	sub.w	$14(a3),d0
@@ -242,9 +242,9 @@ RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 whe
 	andi.w	#$7,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
-	cmpi.w	#$FFC0,$17EE2.l
+	cmpi.w	#$FFC0,(fox).l
 	bgt.w	.x
-	cmpi.w	#$C0,$17EE4.l
+	cmpi.w	#$C0,(foy).l
 	bgt.w	.x
 	move.w	#$6,d0
 .x	movem.l	(sp)+,a0
@@ -275,8 +275,8 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	movea.l	$47D94.l,a0
 	move.w	$18D46.l,d3
 	ori.w	#$8000,d3
-	move.w	$17CE4.l,d0
-	move.w	$17CE6.l,d1
+	move.w	(playoffspritex).l,d0
+	move.w	(playoffspritey).l,d1
 	move.w	#$1,d2
 	jsr	(SetSframe).l
 	cmpa.l	#$BBD30,a6
@@ -287,7 +287,7 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	move.l	a6,d0
 	subi.l	#$BBD30,d0
 	lsr.w	#$1,d0
-	move.w	d0,$17F66.l
+	move.w	d0,(Sattsize).l
 	rts
 GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of tmstruct.
 	
@@ -299,9 +299,9 @@ GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of t
 ; Counts a stat for the team at a0 in the running totals.
 GetTeamStructCount
 	movem.l	d1/a0,-(sp)
-	btst	#$0,$17F68.l
+	btst	#$0,(gmode).l
 	bne.w	.next2
-	move.w	$17E62.l,d1
+	move.w	(TempWord1).l,d1
 	movea.l	#$1AD46,a0
 	tst.w	d4
 	beq.w	.next
@@ -317,9 +317,9 @@ GetTeamStructCount
 TerminateLogName						;Unreferenced. The GetLogName String at lognametext, ended with 0 at
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	movea.l	#$1AD5C,a1
+	movea.l	#lognametext,a1
 	bsr.w	GetLogName
-	move.w	$1A38A.l,d0
+	move.w	(namelength).l,d0
 	move.b	#$0,(a1,d0.w)
 	addi.w	#$1,d0
 	andi.w	#$FFFE,d0
@@ -329,20 +329,20 @@ TerminateLogName						;Unreferenced. The GetLogName String at lognametext, ended
 PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name), or an
 	
 	movem.l	d0-d7/a0/a2-a6,-(sp)
-	move.w	$18BF4.l,d0
+	move.w	(homeuser).l,d0
 PlayedByText						;PlayedByHome / PlayedByAway body
 	tst.w	d0
 	beq.w	PlayedByNone
 	movea.l	#$1A37E,a1
-	move.w	d0,$1A38C.l
+	move.w	d0,(namelogsel).l
 	bsr.w	GetLogName
-	adda.w	$1A38A.l,a1
+	adda.w	(namelength).l,a1
 	move.b	#$0,(a1)
-	addi.w	#$1,$1A38A.l
-	andi.w	#$FFFE,$1A38A.l
-	addi.w	#$2,$1A38A.l
-	move.w	$1A38A.l,$1A37C.l
-	movea.l	#$1A37C,a1
+	addi.w	#$1,(namelength).l
+	andi.w	#$FFFE,(namelength).l
+	addi.w	#$2,(namelength).l
+	move.w	(namelength).l,(nameentrybuf).l
+	movea.l	#nameentrybuf,a1
 	move.l	a1,-(sp)
 	movea.l	#TempBuffer,a3
 	movea.l	#$2AE40,a1
@@ -364,13 +364,13 @@ PlayedByNone
 	bra.w	PlayedByExit
 PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)
-	move.w	$18BF6.l,d0
+	move.w	(awayuser).l,d0
 	bra.w	PlayedByText
 ; Clears flag 1 of $17F7C (played by the away side).
 PlayedByAwayClearFlag
 	bra.w	.next
-	bclr.b	#$1,$17F7C.l
+	bclr.b	#$1,(sflags8).l
 	dc.w	$6000,$000A		; bra.w X_2AE80
 .next
-	bset	#$1,$17F7C.l
+	bset	#$1,(sflags8).l
 	rts

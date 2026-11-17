@@ -4,7 +4,7 @@ xyVmMap						;use printx/y/m to set vram address. Returns a0 = Vdata.
 	move.w	(printx).l,d0
 	move.w	(printy).l,d1
 	movea.l	#VmMAP1,a0
-	adda.w	$18D5E.l,a0
+	adda.w	(printm).l,a0
 	move.w	$2(a0),d2
 	asl.w	d2,d1
 	add.w	d1,d0
@@ -107,10 +107,10 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movem.l	d0-d3/a0/a2-a3,-(sp)
-	movea.l	#$18D42,a3
+	movea.l	#smallfontchars,a3
 	btst	#$3,(sflags6).l
 	beq.w	.start
-	movea.l	#$17EA2,a3
+	movea.l	#setupfontchars,a3
 .start	bsr.w	xyVmMap
 	move.w	(printa).l,d2
 	move.w	(a1)+,d3
@@ -181,7 +181,7 @@ ControlCode_SetMapAndPositionData	dc.w	$0003,$C000
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
-	move.w	d0,$18D5E.l
+	move.w	d0,(printm).l
 	bra.w	xyVmMap
 .next2	move.b	(a1)+,d2
 	andi.w	#$7,d2
@@ -202,18 +202,18 @@ ControlCode_SetMapAndPositionData	dc.w	$0003,$C000
 	move.b	(a1)+,d0
 	ext.w	d0
 	subi.w	#$1,d3
-	add.w	d0,$18D58.l
+	add.w	d0,(printx).l
 	bra.w	xyVmMap
 	move.b	(a1)+,d0
 	ext.w	d0
 	subi.w	#$1,d3
-	add.w	d0,$18D5A.l
+	add.w	d0,(printy).l
 	bra.w	xyVmMap
 	clr.w	d0
 	move.b	(a1)+,d0
 	subi.w	#$1,d3
 	asl.w	#$1,d0
-	move.w	d0,$18D60.l
+	move.w	d0,(printfontset).l
 	rts	
 printz						;print the String that follows the bsr/jsr to this routine, then return
 	
@@ -249,7 +249,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
-	move.w	d0,$18D5E.l
+	move.w	d0,(printm).l
 	move.b	(a1)+,d0
 	ext.w	d0
 	move.w	d0,(printx).l
@@ -274,9 +274,9 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	move.w	$4(a2,d0.w),d0
 	btst	#$3,(sflags6).l
 	beq.w	.3
-	add.w	$17EA2.l,d0
+	add.w	(setupfontchars).l,d0
 	bra.w	.p
-.3	add.w	$18D42.l,d0
+.3	add.w	(smallfontchars).l,d0
 .p	add.w	d2,d0
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -471,7 +471,7 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
-	move.w	d0,$18D5E.l
+	move.w	d0,(printm).l
 	move.b	(a1)+,d4
 	ext.w	d4
 	move.w	d4,(printx).l
@@ -525,7 +525,7 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	movem.l	d1/a0,-(sp)
 	move.w	d5,d0
 	movea.l	#VmMAP1,a0
-	adda.w	$18D5E.l,a0
+	adda.w	(printm).l,a0
 	move.w	$2(a0),d1
 	asl.w	d1,d0
 	add.w	d4,d0
@@ -548,7 +548,7 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	rts
 AddSmallFont						;transfer smallfont.map tiles to vram. d4 = char to start tiles at, return
 	
-	move.w	d4,$18D42.l
+	move.w	d4,(smallfontchars).l
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain

@@ -10,60 +10,60 @@ LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (Rea
 	andi.w	#$FF,d0
 	bra.w	.ex
 .none	move.w	#$50,d0
-.ex	move.w	d0,$17F8E.l
+.ex	move.w	d0,(CrowdRecord).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 7) from
 	
 	
 	
-	btst	#$7,$17F6A.l
+	btst	#$7,(sflags).l
 	bne.w	.ex1
-	btst	#$0,$17F78.l
+	btst	#$0,(gmode2).l
 	bne.w	.ex1
-	btst	#$0,$17F6E.l
+	btst	#$0,(sflags3).l
 	bne.w	.ex2
-	btst	#$7,$17F74.l
+	btst	#$7,(sflags5).l
 	bne.w	.chkoff
-	tst.w	$17F82.l
+	tst.w	(crowdnoisedelay).l
 	beq.w	.chkon
-	subi.w	#$1,$17F82.l
+	subi.w	#$1,(crowdnoisedelay).l
 	bpl.w	.ex1
-	clr.w	$17F82.l
+	clr.w	(crowdnoisedelay).l
 .ex2	rts
-.chkon	move.w	$17F8E.l,d0
-	move.w	d0,$17F90.l
-	subi.w	#$B,$17F90.l
+.chkon	move.w	(CrowdRecord).l,d0
+	move.w	d0,(CrowdAvg).l
+	subi.w	#$B,(CrowdAvg).l
 	subi.w	#$49,d0
 	muls.w	d0,d0
 	asr.l	#$2,d0
 	addi.w	#$6,d0
-	cmp.w	$17CD8.l,d0
+	cmp.w	(CwdExciteLvl).l,d0
 	bgt.w	.ex1
-	bset	#$7,$17F74.l
+	bset	#$7,(sflags5).l
 	rts
-.chkoff	move.w	$17F90.l,d0
+.chkoff	move.w	(CrowdAvg).l,d0
 	subi.w	#$41,d0
 	muls.w	d0,d0
 	asr.l	#$2,d0
-	cmp.w	$17CD8.l,d0
+	cmp.w	(CwdExciteLvl).l,d0
 	blt.w	.meter
-	bclr	#$7,$17F74.l
-.meter	sub.w	d7,$17F84.l
+	bclr	#$7,(sflags5).l
+.meter	sub.w	d7,(CwdChkCntr).l
 	bpl.w	.ex1
-	move.w	#$14,$17F84.l
+	move.w	#$14,(CwdChkCntr).l
 	addi.w	#$1,$17F86.l
-	move.w	$17CD8.l,d0
+	move.w	(CwdExciteLvl).l,d0
 	ext.l	d0
 	asl.w	#$2,d0
 	jsr	(Sroot).l
 	addi.w	#$41,d0
-	move.w	d0,$17F8C.l
-	cmp.w	$17F92.l,d0
+	move.w	d0,(CurCrowdMeter).l
+	cmp.w	(CrowdPeak).l,d0
 	ble.w	.chkrec
-	move.w	d0,$17F92.l
-.chkrec	move.w	$17F8C.l,d0
-	cmp.w	$17F8E.l,d0
+	move.w	d0,(CrowdPeak).l
+.chkrec	move.w	(CurCrowdMeter).l,d0
+	cmp.w	(CrowdRecord).l,d0
 	blt.w	.stack
 	bra.w	.stack
 .stack	movem.l	d0-d7/a0-a6,-(sp)
@@ -92,9 +92,9 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	
 	bclr	#$4,$64(a3)
 	move.w	#$88,d4
-	sub.w	$17CF4.l,d4
+	sub.w	(wcradiusx).l,d4
 	move.w	#$12A,d5
-	sub.w	$17CF6.l,d5
+	sub.w	(wcradiusy).l,d5
 	movem.w	d2-d5,-(sp)
 	neg.w	d4
 	neg.w	d5
@@ -185,7 +185,7 @@ Clamp0to100						;unused: clamp d3 to 0 ... 100
 AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3, limited to 0
 	
 	movem.l	d0-d2/a1,-(sp)
-	move.w	$17E64.l,d1
+	move.w	(TempWord2).l,d1
 	movea.l	#tmstruct,a1
 	btst	#$6,$62(a3)
 	beq.w	.attribmath
@@ -215,46 +215,46 @@ NextHomeHotPlayer						;d1 = the next home hot player (homehotidx index into the
 	
 	
 	movem.l	d0/a0,-(sp)
-	movea.l	#$17EAE,a0
-	move.w	$17EA6.l,d0
+	movea.l	#homehotplayer,a0
+	move.w	(homehotidx).l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
-	cmpi.w	#$0,$17EA6.l
+	cmpi.w	#$0,(homehotidx).l
 	bge.w	.x
-	addi.w	#$1,$17EA6.l
+	addi.w	#$1,(homehotidx).l
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
 NextAwayHotPlayer						;The same for the away team (awayhotplayer, awayhotidx), a1 = awtmstruct.
 	
 	movem.l	d0/a0,-(sp)
-	movea.l	#$17EAC,a0
-	move.w	$17EA4.l,d0
+	movea.l	#awayhotplayer,a0
+	move.w	(awayhotidx).l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
-	cmpi.w	#$0,$17EA4.l
+	cmpi.w	#$0,(awayhotidx).l
 	bge.w	.x
-	addi.w	#$1,$17EA4.l
+	addi.w	#$1,(awayhotidx).l
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
 	rts
 BuildHotColdLists						;Build the hot / cold player lists of both teams (SortHotColdStarters,
 	
-	clr.w	$17EA4.l
-	clr.w	$17EA6.l
+	clr.w	(awayhotidx).l
+	clr.w	(homehotidx).l
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a0
 	bsr.w	SortHotColdStarters
-	movea.l	#$17EAE,a0
+	movea.l	#homehotplayer,a0
 	bsr.w	CopyHottestPlayer
-	movea.l	#$17EB2,a0
+	movea.l	#homecoldplayer,a0
 	bsr.w	CopyColdestPlayer
 	movea.l	#awtmstruct,a0
 	bsr.w	SortHotColdStarters
-	movea.l	#$17EAC,a0
+	movea.l	#awayhotplayer,a0
 	bsr.w	CopyHottestPlayer
-	movea.l	#$17EB0,a0
+	movea.l	#awaycoldplayer,a0
 	bsr.w	CopyColdestPlayer
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -307,13 +307,13 @@ SortHotColdStarters						;Sum the hot / cold values of the 6 starters of team a0
 NextHomeColdPlayer						;d1 = the next home cold player (homecoldidx, homecoldplayer), a1 =
 	
 	movem.l	d0/a0,-(sp)
-	movea.l	#$17EB2,a0
-	move.w	$17EAA.l,d0
+	movea.l	#homecoldplayer,a0
+	move.w	(homecoldidx).l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
-	cmpi.w	#$0,$17EAA.l
+	cmpi.w	#$0,(homecoldidx).l
 	bge.w	.x
-	addi.w	#$1,$17EAA.l
+	addi.w	#$1,(homecoldidx).l
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
@@ -321,13 +321,13 @@ NextAwayColdPlayer						;The same for the away team (awaycoldidx, awaycoldplayer
 	
 	
 	movem.l	d0/a0,-(sp)
-	movea.l	#$17EB0,a0
-	move.w	$17EA8.l,d0
+	movea.l	#awaycoldplayer,a0
+	move.w	(awaycoldidx).l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
-	cmpi.w	#$0,$17EA8.l
+	cmpi.w	#$0,(awaycoldidx).l
 	bge.w	.x
-	addi.w	#$1,$17EA8.l
+	addi.w	#$1,(awaycoldidx).l
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
@@ -356,12 +356,12 @@ CopyColdestPlayer						;Copy the coldest player (TempBuffer+10) to the list at a
 	movem.l	d1-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a0
 	bsr.w	GetHotColdTotal
-	move.w	d1,$17E62.l
+	move.w	d1,(TempWord1).l
 	movea.l	#awtmstruct,a0
 	bsr.w	GetHotColdTotal
-	move.w	d1,$17E64.l
-	move.w	$17E62.l,d1
-	move.w	$17E64.l,d2
+	move.w	d1,(TempWord2).l
+	move.w	(TempWord1).l,d1
+	move.w	(TempWord2).l,d2
 	sub.w	d1,d2
 	move.w	#$0,(awayhotter).l
 	tst.w	d2

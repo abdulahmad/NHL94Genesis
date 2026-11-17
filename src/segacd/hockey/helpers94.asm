@@ -6,19 +6,19 @@ AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from Attr
 	addi.w	#$19,d0
 .exit	rts
 	movem.w	d0-d1,-(sp)
-	move.w	$17B80.l,d0
+	move.w	(puckx).l,d0
 	sub.w	$0(a3),d0
 	cmpi.w	#$1E,d0
 	bgt.w	.next
-	move.w	$17BA8.l,d1
+	move.w	(puckvx).l,d1
 	eor.w	d1,d0
 	andi.w	#$8000,d0
 	beq.w	.next
-	move.w	$17B94.l,d0
+	move.w	(pucky).l,d0
 	sub.w	$14(a3),d0
 	cmpi.w	#$1E,d0
 	bgt.w	.next
-	move.w	$17BAA.l,d1
+	move.w	(puckvy).l,d1
 	eor.w	d1,d0
 	andi.w	#$8000,d0
 .next	movem.w	(sp)+,d0-d1
@@ -40,8 +40,8 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	bclr	#$3,$64(a3)
 	bclr	#$5,$62(a3)
 	bclr	#$1,$63(a3)
-	clr.w	$17EC6.l
-	st.b	$17EBC.l
+	clr.w	(onetimerflags).l
+	st.b	(onetimerplayer).l
 	move.w	d1,-(sp)
 	move.w	#$50C,d1
 	jsr	(SetSPA).l

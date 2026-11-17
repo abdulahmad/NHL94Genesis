@@ -7,7 +7,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	
 	
 	
-	btst	#$1,$17F78.l
+	btst	#$1,(gmode2).l
 	bne.w	rtss2
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a3
@@ -15,20 +15,20 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	sub.w	$26(a3),d0
 	beq.w	.clrpwrplay
 	bpl.w	.t0
-	btst	#$6,$17F6C.l
+	btst	#$6,(sflags2).l
 	bne.w	.upp
 	bsr.w	.clrpwrplay
-	bset	#$6,$17F6C.l
+	bset	#$6,(sflags2).l
 	bra.w	.upp
 .t0	exg.l	a2,a3
-	btst	#$6,$17F6C.l
+	btst	#$6,(sflags2).l
 	beq.w	.upp
 	bsr.w	.clrpwrplay
-	bclr	#$6,$17F6C.l
-.upp	bset	#$5,$17F6C.l
+	bclr	#$6,(sflags2).l
+.upp	bset	#$5,(sflags2).l
 	bne.w	.uppt
 	addi.w	#$1,$4(a3)
-	cmpa.l	#$1834C,a3
+	cmpa.l	#tmstruct,a3
 	bne.w	.away
 .home	bra.w	.uppt
 .away	bra.w	.home
@@ -50,21 +50,21 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	bsr.w	appstring
 	movea.l	a3,a1
 	bra.w	print
-.clrpwrplay	bclr	#$5,$17F6C.l
+.clrpwrplay	bclr	#$5,(sflags2).l
 	beq.w	rtss2
 	bra.w	EASNLogo
 ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktiles and
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	bclr	#$7,$17F6A.l
-	move.w	#$3E8,$17CEC.l
-	move.w	$18D48.l,d4
+	bclr	#$7,(sflags).l
+	move.w	#$3E8,(Oldrow).l
+	move.w	(rinkvrcset).l,d4
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	(UnpackPictureSelectGfx).l
 	bsr.w	SprSort
-	btst	#$0,$17F6A.l
+	btst	#$0,(sflags).l
 	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1,$0,$0
@@ -77,11 +77,11 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	rts
 SetHor						;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
-	bset	#$7,$17F6A.l
+	bset	#$7,(sflags).l
 .p	btst	#$0,(disflags).l
 	bne.w	.p
-	clr.w	$17CF0.l
-	clr.w	$17CF2.l
+	clr.w	(Hscroll).l
+	clr.w	(Vscroll).l
 	bsr.w	SprSort
 	bsr.w	printz
 	String	CC_Font2,$0,$0
@@ -93,11 +93,11 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	move.w	#$0,d1
 	moveq	#$20,d2
 	moveq	#$1C,d3
-	move.w	$18D48.l,d4
+	move.w	(rinkvrcset).l,d4
 	moveq	#$0,d5
 	bsr.w	dobitmap
 	bsr.w	USBoard
-	btst	#$0,$17F6A.l
+	btst	#$0,(sflags).l
 	bne.w	.ex
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
@@ -113,11 +113,11 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	
 	
 	movem.l	d0-d2/a0-a3,-(sp)
-	btst	#$7,$17F6A.l
+	btst	#$7,(sflags).l
 	bne.w	.sbscreen
-	bclr	#$7,$17F74.l
+	bclr	#$7,(sflags5).l
 	beq.w	.0
-	move.w	#$78,$17F82.l
+	move.w	#$78,(crowdnoisedelay).l
 .0	bsr.w	printz
 	String	CC_Font1Pri,$0,$17
 	moveq	#$9,d0
@@ -126,15 +126,15 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	bset	#$3,(disflags).l
 	bsr.w	printz
 	String	CC_Font1Pri,$1,$18
-	move.w	$180E4.l,d0
+	move.w	(gsp).l,d0
 	movea.l	#PerLabels,a1
-	btst	#$1,$17F78.l
+	btst	#$1,(gmode2).l
 	beq.w	.1
 	move.w	#$4,d0
 	movea.l	#PerLabels2,a1
 .1	bsr.w	PrintTickerEntry
 	bsr.w	EASNLogo
-	btst	#$0,$17F6E.l
+	btst	#$0,(sflags3).l
 	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1Pri,$17,$17
@@ -153,8 +153,8 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	rts
 .sbscreen	bsr.w	printz
 	String	CC_Font2Pri,$11,$2
-	move.w	$180E4.l,d0
-	btst	#$0,$17F78.l
+	move.w	(gsp).l,d0
+	btst	#$0,(gmode2).l
 	beq.w	.2
 	move.w	#$4,d0
 .2	movea.l	#PerLabels2,a1
@@ -208,7 +208,7 @@ PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5
 	bra.w	printbig
 EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power
 	
-	btst	#$5,$17F6C.l
+	btst	#$5,(sflags2).l
 	bne.w	rtss2
 	bsr.w	printz
 	String	CC_Font1Pri,$1,$19
@@ -219,7 +219,7 @@ EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if 
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	$2(a1),d3
-	move.w	$18D50.l,d4
+	move.w	(EASNcset).l,d4
 	clr.w	d5
 	bra.w	dobitmap
 USBoard						;Update score board, including the players in the penalty box and their
@@ -336,22 +336,22 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	
 	
 	
-	btst	#$0,$17F68.l
+	btst	#$0,(gmode).l
 	bne.w	rtss2
-	btst	#$4,$17F68.l
+	btst	#$4,(gmode).l
 	bne.w	rtss2
-	bclr	#$4,$17F6C.l
+	bclr	#$4,(sflags2).l
 	bne.w	.Cwdupdate
 	btst	#$0,$17F72.l
 	beq.w	rtss2
-	bclr	#$3,$17F7C.l
+	bclr	#$3,(sflags8).l
 	bne.w	.0
-	bset	#$3,$17F7C.l
+	bset	#$3,(sflags8).l
 	bra.w	rtss2
 .0	movem.l	d0-d1/a1-a3,-(sp)
 	move.l	a4,-(sp)
 	movea.l	#$180EC,a4
-	adda.w	$180F0.l,a4
+	adda.w	(ScoreSumbytes).l,a4
 	movea.l	#tmstruct,a2
 	btst	#$7,$2(a4)
 	beq.w	.pllookup
@@ -370,16 +370,16 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	bra.w	.addShot
 .Cwdupdate	movem.l	d0-d1/a1-a3,-(sp)
 	addi.w	#$64,(Crowdlevel).l
-	addi.w	#$A,$17CD8.l
-	move.w	$17E28.l,d0
+	addi.w	#$A,(CwdExciteLvl).l
+	move.w	(shotplayer).l,d0
 .addShot	asl.w	#$7,d0
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 	adda.w	d0,a3
 	bsr.w	ChkShotStatSwapStructs
 	addi.w	#$1,$0(a2)
-	btst	#$5,$17F6C.l
+	btst	#$5,(sflags2).l
 	beq.w	.2
-	btst	#$6,$17F6C.l
+	btst	#$6,(sflags2).l
 	bne.w	.1
 	btst	#$6,$62(a3)
 	bne.w	.2
@@ -388,7 +388,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 .1	btst	#$6,$62(a3)
 	bne.w	.PPshot
 .2	move.l	a2,-(sp)
-	move.w	$180E4.l,d0
+	move.w	(gsp).l,d0
 	add.w	d0,d0
 	adda.w	d0,a2
 	addi.w	#$1,$34C(a2)
@@ -421,7 +421,7 @@ SetupTeamForIntermission						;Reset the bench, then for each team refill energy
 	exg.l	a2,a3
 .r	bsr.w	reenergizeteam
 	clr.w	$16(a3)
-	tst.w	$18C0A.l
+	tst.w	(OptLine).l
 	bne.w	rtss2
 	move.w	$26(a3),d0
 	sub.w	$26(a2),d0
@@ -464,38 +464,38 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	
 	
 	
-	cmpi.w	#$4,$180E4.l
+	cmpi.w	#$4,(gsp).l
 	bne.w	.1
-	move.w	#$0,$180E6.l
+	move.w	#$0,(gameclock).l
 	jsr	(UpdateRecordsStart).l
 .1	bsr.w	SetupTeamForIntermission
 	moveq	#$F,d0
-	movea.l	#$17480,a0
+	movea.l	#SortCords,a0
 .clr	clr.w	$0(a0)
 	adda.w	#$80,a0
 	dbra	d0,.clr
-	move.w	$18D56.l,d4
+	move.w	(ExtraChars).l,d4
 	movea.l	$47D34.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
-	move.w	#$140,$17CE2.l
-	move.w	$180E4.l,d0
-	tst.w	$18BFA.l
+	move.w	#$140,(Zamx).l
+	move.w	(gsp).l,d0
+	tst.w	(OptPlayMode).l
 	beq.w	.ss
 	addi.w	#$5,d0
 .ss	asl.w	#$2,d0
 	lea.l	.next(pc),a0
 	movea.l	(a0,d0.w),a0
-	btst	#$0,$17F78.l
+	btst	#$0,(gmode2).l
 	beq.w	.2
 	movea.l	#$42250,a0
-.2	bset	#$0,$17F6A.l
+.2	bset	#$0,(sflags).l
 	movea.l	#$2C1F8,a1
 	jsr	(SetMenuScreenHandler).l
 	bsr.w	GetShifter
-	move.w	d1,$18ADE.l
+	move.w	d1,(TickerNum).l
 	bset	#$5,$FF800F.l
-.top	tst.w	$18ADE.l
+.top	tst.w	(TickerNum).l
 	bmi.w	.doh
 	bsr.w	NewTickerNext
 	bsr.w	NewTicker3
@@ -508,33 +508,33 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bsr.w	waitxsr
 	btst	#$7,d1
 	beq.w	.top
-.clrh	bset	#$3,$17F6E.l
+.clrh	bset	#$3,(sflags3).l
 .doh	bsr.w	DoHiLights
-	bclr	#$3,$17F6E.l
+	bclr	#$3,(sflags3).l
 	bne.w	.clrz
 .wait	move.w	#$1E0,d0
 	bsr.w	waitxsr
 	btst	#$7,d1
 	bne.w	.clrz
-	tst.w	$17FA6.l
+	tst.w	(cont1team).l
 	bne.w	.wait
-	tst.w	$17FA8.l
+	tst.w	(cont2team).l
 	bne.w	.wait
-.clrz	st.b	$17CE2.l		;zamboni off
+.clrz	st.b	(Zamx).l		;zamboni off
 	rts
 ; Table of 20 words after Intermission, 40 bytes: $0004,$22D4,$0004,$2454,$0004,$2454 ...
 .next	dc.w	$0004,$22D4,$0004,$2454,$0004,$2454,$0004,$2454
 	dc.w	$0004,$25B0,$0004,$2388,$0004,$2454,$0004,$2454
 	dc.w	$0004,$2454,$0004,$26C4
 InitScores						;initialize other games scores/period in playoffs. Called from StartGame
-	cmpi.w	#$1,$18A9E.l
+	cmpi.w	#$1,(gamelevel).l
 	bgt.w	rtss2
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.top	cmp.w	$18A98.l,d1
+.top	cmp.w	(gamenum).l,d1
 	beq.w	.next2
 	btst	#$2,$E(a0)
 	bne.w	.next2
@@ -549,12 +549,12 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 	rts
 UpdateScores						;update ticker score values. Called from PeriodOver
 	bsr.w	GetShifter
-	move.w	d1,$18ADE.l
+	move.w	d1,(TickerNum).l
 	movea.l	#$18A18,a0
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.top	cmp.w	$18A98.l,d1
+.top	cmp.w	(gamenum).l,d1
 	beq.w	.next
 	bclr	#$1,$E(a0)
 	btst	#$2,$E(a0)
@@ -599,7 +599,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	andi.w	#$70,d0
 	lsr.w	#$1,d0
 	lea.l	NewTicker(pc),a1
-	move.l	(a1,d0.w),$18BE8.l
+	move.l	(a1,d0.w),(nibblebuffer).l
 	move.l	$4(a1,d0.w),$18BEC.l
 	asl.w	#$2,d1
 	movea.l	#TeamList,a1
@@ -610,7 +610,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	asl.w	#$3,d0
 	lea.l	NewTicker(pc),a1
 	move.l	(a1,d0.w),d1
-	add.l	d1,$18BE8.l
+	add.l	d1,(nibblebuffer).l
 	move.l	$4(a1,d0.w),d1
 	add.l	d1,$18BEC.l
 	moveq	#$4,d0
@@ -632,14 +632,14 @@ NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3
 ; Skips when the ticker timer is above $1E0.
 NewTickerCheckBusy
 	moveq	#-1,d3
-	cmpi.w	#$1E0,$180E6.l
+	cmpi.w	#$1E0,(gameclock).l
 	bgt.w	rtss2
 ; Takes the next queued ticker message.
 NewTickerNext
-	move.w	$18ADE.l,d3
+	move.w	(TickerNum).l,d3
 	bmi.w	rtss2
-	subi.w	#$1,$18ADE.l
-	cmp.w	$18A98.l,d3
+	subi.w	#$1,(TickerNum).l
+	cmp.w	(gamenum).l,d3
 	beq.w	NewTickerNext
 CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next ticker game if a
 	
@@ -667,8 +667,8 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	String	'                        '
 	move.w	(sp),(printx).l
 	moveq	#$1,d0
-	add.w	$18A9E.l,d0
-	tst.w	$18BFA.l
+	add.w	(gamelevel).l,d0
+	tst.w	(OptPlayMode).l
 	bne.w	.next
 	clr.w	d0
 .next	lea.l	.next2(pc),a1
@@ -722,7 +722,7 @@ SetTickerAreaPosition						;Set printx/printy/printm for the ticker box (x 3, y 
 	
 	bsr.w	printz
 	String	CC_Font3Pri,$3,$17
-	btst	#$0,$17F6A.l
+	btst	#$0,(sflags).l
 	bne.w	.1
 	bsr.w	printz
 	String	CC_Font1Pri,$3,$17
@@ -755,13 +755,13 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dbra	d1,.top
 	rts
 .next2	movem.l	d0-d7/a0-a6,-(sp)
-.loop	btst	#$3,$17F6E.l
+.loop	btst	#$3,(sflags3).l
 	bne.w	.next9
 	bsr.w	.next13
 	move.w	d1,d3
 	bsr.w	CheckGameTickerStatus
 	bsr.w	NewTicker3
-	btst	#$3,$17F6E.l
+	btst	#$3,(sflags3).l
 	bne.w	.next8
 	move.w	#$4,(printx).l
 	subi.w	#$6,(printy).l
@@ -776,8 +776,8 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	waitxsr
 	btst	#$7,d1
 	bne.w	.next8
-	st.b	$17CE2.l
-	clr.w	$17CD8.l
+	st.b	(Zamx).l
+	clr.w	(CwdExciteLvl).l
 	move.w	$0(a0),(HomeTeam).l
 	move.w	$2(a0),(VisTeam).l
 	move.l	a0,-(sp)
@@ -785,31 +785,31 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	clr.w	$186DA.l
 	jsr	(clearTeamStats).l
 	jsr	(restoreteams).l
-	st.b	$17F9E.l
-	st.b	$17FA0.l
-	clr.w	$17FA6.l
-	clr.w	$17FA8.l
+	st.b	(c1playernum).l
+	st.b	(c2playernum).l
+	clr.w	(cont1team).l
+	clr.w	(cont2team).l
 	moveq	#$78,d0
 	bsr.w	randomd0
 	addi.w	#$3C,d0
-	move.w	d0,$180E6.l
+	move.w	d0,(gameclock).l
 	movea.l	(sp),a0
-	move.w	$8(a0),$180E4.l
-	subi.w	#$1,$180E4.l
-	move.w	$A(a0),$18358.l
-	move.w	$C(a0),$186BE.l
-	move.b	#$10,$17F68.l
+	move.w	$8(a0),(gsp).l
+	subi.w	#$1,(gsp).l
+	move.w	$A(a0),(HmGoals).l
+	move.w	$C(a0),(AwGoals).l
+	move.b	#$10,(gmode).l
 	btst	#$0,$180E5.l
 	beq.w	.next3
-	bset	#$1,$17F68.l
-.next3	clr.b	$17F6A.l
-	move.b	#$4,$17F6C.l
-	clr.b	$17F6E.l
+	bset	#$1,(gmode).l
+.next3	clr.b	(sflags).l
+	move.b	#$4,(sflags2).l
+	clr.b	(sflags3).l
 	bclr	#$4,(disflags).l
 	bset	#$3,(disflags).l
-	clr.w	$17E32.l
-	clr.b	$17ECE.l
-	st.b	$1806E.l
+	clr.w	(glovecords).l
+	clr.b	(iflags).l
+	st.b	(RefCnt).l
 	st.b	$17E38.l
 	st.b	$17E3C.l
 	jsr	(HockeyRtsStubA).l
@@ -842,12 +842,12 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .loop7	btst	#$6,$FF800E.l
 	bne.b	.loop7
 	bclr	#$7,$FF800F.l
-	move.w	$18D56.l,d4
+	move.w	(ExtraChars).l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
-	clr.w	$17CEA.l
-	clr.w	$17CEE.l
+	clr.w	(Vpos).l
+	clr.w	(Hpos).l
 	bsr.w	ResetBench
 	movea.l	#tmstruct,a2
 	bsr.w	.next10
@@ -856,7 +856,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	resetplstuff
 	moveq	#$B,d0
 	movea.l	#$3D3F6,a0
-	movea.l	#$17480,a1
+	movea.l	#SortCords,a1
 .loop8	move.w	$34(a1),d1
 	btst	#$7,$62(a1)
 	bne.w	.next4
@@ -870,10 +870,10 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dbra	d0,.loop8
 	bsr.w	SprSort
 	move.w	#$18,(palcount).l
-	move.w	(ScoutSubStatus).l,$17476.l
+	move.w	(ScoutSubStatus).l,(OldVcount).l
 	move.w	#$B4,-(sp)
 .loop9	jsr	(DoGameFrame).l
-	btst	#$0,$17F68.l
+	btst	#$0,(gmode).l
 	beq.w	.next5
 	subi.w	#$1,(sp)
 	bmi.w	.next7
@@ -882,8 +882,8 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bne.w	.next6
 	btst	#$7,d1
 	beq.w	.loop9
-.next6	move.w	$18358.l,d0
-	cmp.w	$186BE.l,d0
+.next6	move.w	(HmGoals).l,d0
+	cmp.w	(AwGoals).l,d0
 	bne.w	.next7
 .loop10	btst	#$7,$FF800E.l
 	bne.b	.loop10
@@ -898,20 +898,20 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bne.b	.loop12
 	bclr	#$7,$FF800F.l
 	andi.w	#$1,d0
-	add.w	d0,$18358.l
+	add.w	d0,(HmGoals).l
 	eori.w	#$1,d0
-	add.w	d0,$186BE.l
+	add.w	d0,(AwGoals).l
 .next7	adda.w	#$2,sp
 	movea.l	(sp)+,a0
 	movem.l	d1/a0,-(sp)
 	jsr	(HockeyRtsStubC).l
 	jsr	(HockeyRtsStubA).l
 	movem.l	(sp)+,d1/a0
-	move.w	$18358.l,$A(a0)
-	move.w	$186BE.l,$C(a0)
+	move.w	(HmGoals).l,$A(a0)
+	move.w	(AwGoals).l,$C(a0)
 	bsr.w	forceblack
 	moveq	#$F,d0
-	movea.l	#$17480,a0
+	movea.l	#SortCords,a0
 .loop13	clr.w	$0(a0)
 	adda.w	#$80,a0
 	dbra	d0,.loop13
@@ -942,7 +942,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	waitxsr
 	btst	#$7,d1
 	beq.w	.loop15
-.loop14	bset	#$3,$17F6E.l
+.loop14	bset	#$3,(sflags3).l
 .loop15	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .next8	bsr.w	.next14
@@ -954,7 +954,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	setpersonel
 	bsr.w	forcepldata
 	st.b	$18(a2)
-	bclr	#$7,$17F7C.l
+	bclr	#$7,(sflags8).l
 	st.b	$1A(a2)
 	st.b	$1C(a2)
 	rts
@@ -980,18 +980,18 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .next12	move.w	#$5,$8(a0)
 	rts
 .next13	move.w	#$557,d0
-	movea.l	#$17F68,a1
+	movea.l	#gmode,a1
 	movea.l	#$C45C,a2
 .loop19	move.w	(a1)+,(a2)+
 	dbra	d0,.loop19
-	move.w	$180F0.l,(a2)+
+	move.w	(ScoreSumbytes).l,(a2)+
 	rts
 .next14	move.w	#$557,d0
-	movea.l	#$17F68,a2
+	movea.l	#gmode,a2
 	movea.l	#$C45C,a1
 .loop20	move.w	(a1)+,(a2)+
 	dbra	d0,.loop20
-	move.w	(a1)+,$180F0.l
+	move.w	(a1)+,(ScoreSumbytes).l
 	rts
 ; Data that follows DoHiLights (strings, small tables)
 DoHiLightsData	dc.w	$0000,$FF10,$FFBA,$FF74,$0014,$FF92,$FF9C,$FFC4

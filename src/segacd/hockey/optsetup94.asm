@@ -4,53 +4,53 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 									;begins the game (SetupStart), and $5460 frames without a press start a
 									;demo (SetupDemo).
 	jsr	(ReadLineDataBackupRead).l
-	movea.l	#$18C38,a3
+	movea.l	#passbits,a3
 	jsr	(InitPlayerSlots).l
-	move.w	$18C22.l,$18C0A.l
-	move.w	$18C24.l,$18BFA.l
-	bclr	#$1,$17F7A.l		;no overtime
+	move.w	(TmpOptLine2).l,(OptLine).l
+	move.w	(TempOptPlayMode).l,(OptPlayMode).l
+	bclr	#$1,(sflags7).l		;no overtime
 	jsr	(ClampPositionBoxClear).l
 	jsr	(ReadNameLog).l		;read the SRAM name list
 	bsr.w	OptionsScreenSetup		;build the screen
-	clr.w	$19384.l
-	clr.w	$19386.l
+	clr.w	(setupfirstline).l
+	clr.w	(setupprevline).l
 	bsr.w	PrintOptionNames
-	tst.w	$18C16.l
+	tst.w	(demoflag).l
 	bne.w	.next
 	moveq	#$1C,d0
 	jsr	(randomd0).l
-	move.w	d0,$18BFE.l
+	move.w	d0,(Opt1team).l
 	moveq	#$1C,d0
 	jsr	(randomd0).l
-	move.w	d0,$18C00.l
-.next	st.b	$18C16.l
-	cmpi.w	#$4,$18BFA.l
+	move.w	d0,(Opt2team).l
+.next	st.b	(demoflag).l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.newplay
 	bra.w	.reggame
-.newplay	cmpi.w	#$2,$18BFA.l
+.newplay	cmpi.w	#$2,(OptPlayMode).l
 	blt.w	.contplay
 	bsr.w	GameSetUpJumpA
-.contplay	cmpi.w	#$1,$18BFA.l
+.contplay	cmpi.w	#$1,(OptPlayMode).l
 	bne.w	.reggame		;not continue playoffs
 	bsr.w	GameSetUpJumpB
 .reggame	clr.w	d7		;menu line 0 (d7 = line * 2 = offset in OptPlayMode ... OptLine)
 	clr.w	d0
 	bsr.w	MoveMenuFrame		;frame the line
 	bsr.w	FixModeOptions		;print the options
-	move.w	(HomeTeam).l,$1938C.l
-	move.w	(HomeTeam).l,$1938A.l
+	move.w	(HomeTeam).l,(setuphome).l
+	move.w	(HomeTeam).l,(logoteam).l
 	bsr.w	DrawHomeBlock
-	move.w	(VisTeam).l,$1938E.l
-	move.w	(VisTeam).l,$1938A.l
+	move.w	(VisTeam).l,(setupvis).l
+	move.w	(VisTeam).l,(logoteam).l
 	bsr.w	DrawVisBlock
 	move.w	#$18,(palcount).l
 	bclr	#$2,(disflags).l		;dfng: fade in graphics now
 .loop
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.0
-	move.w	#$1,$18C0A.l
-	move.w	#$0,$18C08.l
-	move.w	#$1,$18C06.l
+	move.w	#$1,(OptLine).l
+	move.w	#$0,(OptPen).l
+	move.w	#$1,(OptUserRec).l
 .0	bsr.w	ReadSetupPads
 	tst.w	d1
 	bne.w	.1
@@ -66,7 +66,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	#$4,d0
 	bra.w	.3
 .2	move.w	#$2,d0
-.3	cmpi.w	#$4,$18BFA.l
+.3	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.next8
 	tst.w	(OptNOP).l
 	bne.w	.next8
@@ -76,7 +76,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	bra.w	.8
 .next8	cmpi.w	#$6,d7
 	bne.w	.next9
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.next9
 	tst.w	(OptNOP).l
 	bne.w	.7
@@ -84,11 +84,11 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	bra.w	.8
 .next9	cmpi.w	#$A,d7
 	bne.w	.8
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.6
 	clr.w	d0
 	bra.w	.8
-.6	tst.w	$193BA.l
+.6	tst.w	(ValidSRAM).l
 	bpl.w	.8
 .7	move.w	#$4,d0
 .8	bsr.w	MoveMenuFrame
@@ -103,7 +103,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	#$FFFC,d0
 	bra.w	.next15
 .10	move.w	#$FFFE,d0
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.next15
 	tst.w	(OptNOP).l
 	bne.w	.next15
@@ -113,13 +113,13 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	bra.w	.14
 .next15	cmpi.w	#$A,d7
 	bne.w	.next16
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.13
 .next16	cmpi.w	#$E,d7
 	bne.w	.14
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.13
-	tst.w	$193BA.l
+	tst.w	(ValidSRAM).l
 	bpl.w	.14
 .13	move.w	#$FFFC,d0
 .14	bsr.w	MoveMenuFrame
@@ -131,40 +131,40 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	btst	#$2,d1
 	beq.w	.loop
 	moveq	#-1,d2
-.16	cmpi.w	#$4,$18BFA.l
+.16	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.17
 	jsr	(FigureJoy).l
-.17	move.w	$18C00.l,-(sp)
-	move.w	$18BFE.l,-(sp)
+.17	move.w	(Opt2team).l,-(sp)
+	move.w	(Opt1team).l,-(sp)
 	bsr.w	ChangeOption
 	move.w	(sp)+,d0
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.18
-	tst.w	$18BFA.l
+	tst.w	(OptPlayMode).l
 	bne.w	.19
-.18	move.w	$18BFE.l,(HomeTeam).l
-	move.w	$18C00.l,(VisTeam).l
-.19	move.w	(HomeTeam).l,$1938A.l
-	btst	#$6,$19390.l
+.18	move.w	(Opt1team).l,(HomeTeam).l
+	move.w	(Opt2team).l,(VisTeam).l
+.19	move.w	(HomeTeam).l,(logoteam).l
+	btst	#$6,(setupcardflags).l
 	beq.w	.20
 	movem.w	d0,-(sp)
-	move.w	$1938C.l,d0
+	move.w	(setuphome).l,d0
 	cmp.w	(HomeTeam).l,d0
 	movem.w	(sp)+,d0
 	beq.w	.21
-.20	move.w	(HomeTeam).l,$1938C.l
+.20	move.w	(HomeTeam).l,(setuphome).l
 	bsr.w	DrawHomeBlock
-.21	btst	#$7,$19390.l
+.21	btst	#$7,(setupcardflags).l
 	beq.w	.22
 	movem.w	d0,-(sp)
-	move.w	$1938E.l,d0
+	move.w	(setupvis).l,d0
 	cmp.w	(VisTeam).l,d0
 	movem.w	(sp)+,d0
 	beq.w	.23
-.22	move.w	(VisTeam).l,$1938E.l
-	move.w	(VisTeam).l,$1938A.l
+.22	move.w	(VisTeam).l,(setupvis).l
+	move.w	(VisTeam).l,(logoteam).l
 	bsr.w	DrawVisBlock
-	move.w	(HomeTeam).l,$1938A.l
+	move.w	(HomeTeam).l,(logoteam).l
 .23	tst.w	(sp)+
 	bra.w	.fix
 ; Code kept as words after GameSetUp (the 118 bytes are decoded in the row comments).
@@ -193,21 +193,21 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 									;skips lines 1-3, new playoffs line 3 (Team 2). The old frame is erased by
 									;redrawing the SetupMenuMap background under it. Called from GameSetUp
 	move.w	d7,d3
-.optionup	bclr	#$2,$17F74.l		;not scrolled yet
+.optionup	bclr	#$2,(sflags5).l		;not scrolled yet
 	tst.w	d0		;direction?
 	bpl.w	.optiondown
 	move.w	d0,-(sp)
 	move.w	d7,d0
 	asr.w	#$1,d0		;lines
-	cmp.w	$19384.l,d0
+	cmp.w	(setupfirstline).l,d0
 	bne.w	.noscroll
-	move.w	$19384.l,$19386.l
-	bset	#$2,$17F74.l
-	subi.w	#$1,$19384.l
+	move.w	(setupfirstline).l,(setupprevline).l
+	bset	#$2,(sflags5).l
+	subi.w	#$1,(setupfirstline).l
 	bpl.w	.noscroll
-	clr.w	$19384.l
+	clr.w	(setupfirstline).l
 .noscroll	move.w	(sp)+,d0
-.optiondown	move.w	d7,$17E62.l
+.optiondown	move.w	d7,(TempWord1).l
 	add.w	d0,d7
 	bpl.w	.0		;not above line 0
 	clr.w	d7		;clamp to line 0
@@ -216,44 +216,44 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 	move.w	d0,-(sp)
 	move.w	d7,d0
 	asr.w	#$1,d0		;lines
-	sub.w	$19384.l,d0
+	sub.w	(setupfirstline).l,d0
 	cmpi.w	#$5,d0		;past row 5?
 	bgt.w	.scrolldown		;below the frame: scroll
 	bra.w	.2
-.scrolldown	move.w	$19384.l,$19386.l
-	bset	#$2,$17F74.l
-	addi.w	#$1,$19384.l
+.scrolldown	move.w	(setupfirstline).l,(setupprevline).l
+	bset	#$2,(sflags5).l
+	addi.w	#$1,(setupfirstline).l
 	move.w	d7,d0
 	asr.w	#$1,d0
-	sub.w	$19384.l,d0
+	sub.w	(setupfirstline).l,d0
 	cmpi.w	#$5,d0
 	ble.w	.1
-	addi.w	#$1,$19384.l
-.1	cmpi.w	#$3,$19384.l
+	addi.w	#$1,(setupfirstline).l
+.1	cmpi.w	#$3,(setupfirstline).l
 	ble.w	.2
-	move.w	#$3,$19384.l
+	move.w	#$3,(setupfirstline).l
 .2	move.w	(sp)+,d0
-.3	btst	#$2,$17F74.l		;scrolled?
+.3	btst	#$2,(sflags5).l		;scrolled?
 	bne.w	.4
-	move.w	$19384.l,$19386.l
+	move.w	(setupfirstline).l,(setupprevline).l
 .4	cmpi.w	#$12,d7		;past the last line (Line Changes)
 	blt.w	.contplayoffs
 	sub.w	d0,d7
-.contplayoffs	cmpi.w	#$1,$18BFA.l
+.contplayoffs	cmpi.w	#$1,(OptPlayMode).l
 	bne.w	.newplay
 	tst.w	d7		;top line?
 	beq.w	.newplay
 	cmpi.w	#$6,d7		;line 6 or above?
 	bls.w	.optionup
-.newplay	cmpi.w	#$2,$18BFA.l
+.newplay	cmpi.w	#$2,(OptPlayMode).l
 	blt.w	.5
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.5
 	cmpi.w	#$6,d7		;line 6?
 	beq.w	.optionup
 .5	bsr.w	.next7		;printx $10, printy $E, 23 x 13
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	$19388.l,d4
+	move.w	(setupmenuchars).l,d4
 	movea.l	$47D74.l,a0		;menu background: redraw that part (sflags6 bit 0) over the old frame
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -282,7 +282,7 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 SetFrameRectUnused						;An unused copy of SetFrameRect without its printz that uses setupprevline
 									;and stops at row $18
 	add.w	d3,(printy).l
-	move.w	$19386.l,d0
+	move.w	(setupprevline).l,d0
 	add.w	d0,d0		;2 rows a line
 	sub.w	d0,(printy).l
 	cmpi.w	#$18,(printy).l		;below row $18?
@@ -290,9 +290,9 @@ SetFrameRectUnused						;An unused copy of SetFrameRect without its printz that 
 	move.w	#$18,(printy).l
 .0	moveq	#$17,d0
 	moveq	#$3,d1
-	cmpi.w	#$2,$18BFA.l
+	cmpi.w	#$2,(OptPlayMode).l
 	blt.w	SetFrameRectUnusedExit
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,d3		;line 4?
 	bne.w	SetFrameRectUnusedExit
@@ -302,14 +302,14 @@ SetFrameRectUnused						;An unused copy of SetFrameRect without its printz that 
 PrintFont1Title	jsr	(printz).l
 	String	CC_Font1,$10,$E
 	add.w	d3,(printy).l
-	move.w	$19384.l,d0
+	move.w	(setupfirstline).l,d0
 	add.w	d0,d0
 	sub.w	d0,(printy).l
 	moveq	#$17,d0
 	moveq	#$3,d1
-	cmpi.w	#$2,$18BFA.l
+	cmpi.w	#$2,(OptPlayMode).l
 	blt.w	SetFrameRectUnusedExit
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	SetFrameRectUnusedExit
 	cmpi.w	#$4,d3
 	bne.w	SetFrameRectUnusedExit
@@ -322,24 +322,24 @@ FixModeOptions						;Fix the options a mode does not allow, then print them: Sho
 									;then the values (PrintOptions) in the setup font (sflags6 bit 3:
 									;printsmall uses setupfontchars). Called from GameSetUp
 	movem.l	d0-d7/a0-a6,-(sp)
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.0
-	move.w	#$1,$18C06.l
+	move.w	#$1,(OptUserRec).l
 .0	tst.w	(OptNOP).l
 	bne.w	.1
-	move.w	#$1,$18C06.l
+	move.w	#$1,(OptUserRec).l
 .1	tst.w	(OptNOP).l		;one player?
 	bne.w	.2
-	move.w	#$0,$18C04.l		;Off
-	move.w	#$0,$18C0C.l
-	move.w	#$0,$18C0E.l
+	move.w	#$0,(OptGoalie).l		;Off
+	move.w	#$0,(goaliemode1).l
+	move.w	#$0,(goaliemode2).l
 	tst.w	(OptNOP).l		;one player?
 	bne.w	.2
-	move.w	#$1,$18C04.l		;goalie on auto
-	move.w	#$1,$18C0C.l
-	move.w	#$1,$18C0E.l
-.2	move.w	$19384.l,d0
-	cmp.w	$19386.l,d0
+	move.w	#$1,(OptGoalie).l		;goalie on auto
+	move.w	#$1,(goaliemode1).l
+	move.w	#$1,(goaliemode2).l
+.2	move.w	(setupfirstline).l,d0
+	cmp.w	(setupprevline).l,d0
 	beq.w	.3
 	bsr.w	PrintOptionNames
 .3	bset	#$3,(sflags6).l		;print all
@@ -357,43 +357,43 @@ ChangeOption
 	movem.w	d0/d2,-(sp)
 	tst.w	d2
 	beq.w	.1
-	move.w	$18BFA.l,d0
+	move.w	(OptPlayMode).l,d0
 	add.w	d2,d0
 	bpl.w	.next
 	move.w	#$4,d0
 .next	cmpi.w	#$4,d0
 	bne.w	.1
-	move.w	$18C06.l,$18C10.l
-	move.w	$18C08.l,$18C12.l
-	move.w	$18C0A.l,$18C14.l
+	move.w	(OptUserRec).l,(TmpOptUserRec).l
+	move.w	(OptPen).l,(TmpOptPen).l
+	move.w	(OptLine).l,(TmpOptLine).l
 .1	movem.w	(sp)+,d0/d2
 	tst.w	d7
 	bne.w	.next3
 	tst.w	d2
 	beq.w	.next3
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.next3
-	move.w	$18C10.l,$18C06.l
-	move.w	$18C12.l,$18C08.l
-	move.w	$18C14.l,$18C0A.l
-.next3	movea.l	#$18BFA,a2
+	move.w	(TmpOptUserRec).l,(OptUserRec).l
+	move.w	(TmpOptPen).l,(OptPen).l
+	move.w	(TmpOptLine).l,(OptLine).l
+.next3	movea.l	#OptPlayMode,a2
 	movea.l	#$23A68,a3
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.3
 	movea.l	#$23A7A,a3
 .3	clr.w	d5
 	move.w	(a3,d7.w),d4
 	move.w	(a2,d7.w),d3
-	cmpi.w	#$2,$18BFA.l
+	cmpi.w	#$2,(OptPlayMode).l
 	blt.w	.next5
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.next5
 	cmpi.w	#$4,d7
 	bne.w	.next5
 	moveq	#$1A,d4
 .next5	cmpi.w	#$2,d7
 	bne.w	.wrap
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.9
 	movem.w	d2,-(sp)
 	add.w	(OptNOP).l,d2
@@ -419,21 +419,21 @@ ChangeOption
 	bra.w	.9
 .next9	addi.w	#$1,d2
 .9	moveq	#$5,d5
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.10
 	move.w	#$A,d4
 	addi.w	#$2,d5
-.10	cmpi.w	#$4,$18BFA.l
+.10	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.11
-	tst.w	$18BFA.l
+	tst.w	(OptPlayMode).l
 	bne.w	.loop
 .11	clr.w	d5
 	moveq	#$5,d4
-.loop	tst.w	$18BF8.l
+.loop	tst.w	(FourWayPlay).l
 	beq.w	.wrap
 	addi.w	#$2,d4
 .wrap	bsr.w	WrapOption
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.set
 	cmpi.w	#$2,d7
 	bne.w	.set
@@ -452,18 +452,18 @@ ChangeOption
 .set	move.w	d3,(a2,d7.w)
 	tst.w	d2
 	beq.w	SetFrameRectUnusedExit
-	cmpi.w	#$1,$18BFA.l
+	cmpi.w	#$1,(OptPlayMode).l
 	bne.w	.16
 	tst.w	d7
 	bne.w	.16
 	jsr	(DefaultMenusInit).l
-	move.w	$18A9E.l,d0
-	or.w	$18A9C.l,d0
+	move.w	(gamelevel).l,d0
+	or.w	(bosgames).l,d0
 	beq.w	.loop
 	rts
-.16	cmpi.w	#$2,$18BFA.l
+.16	cmpi.w	#$2,(OptPlayMode).l
 	blt.w	SetFrameRectUnusedExit
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	SetFrameRectUnusedExit
 	tst.w	d7
 	beq.w	GameSetUpJumpA
@@ -488,7 +488,7 @@ PrintOptions
 	bsr.w	ChangeOption
 	movem.l	d7,-(sp)
 	asr.w	#$1,d7
-	cmp.w	$19384.l,d7
+	cmp.w	(setupfirstline).l,d7
 	movem.l	(sp)+,d7
 	blt.w	.next
 	bsr.w	PrintOptionValue
@@ -497,7 +497,7 @@ PrintOptions
 	bsr.w	PrintScrollMarks
 	move.w	d6,d7
 	jsr	(TeamIcons).l
-	btst	#$0,$19390.l
+	btst	#$0,(setupcardflags).l
 	bne.w	.x
 	jsr	(ResetCardTimer).l
 .x	rts
@@ -507,7 +507,7 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 									;(+$B0). Called from PrintOptions
 	jsr	(printz).l
 	String	CC_Font1Pri,$11,$10
-	move.w	$19384.l,d0
+	move.w	(setupfirstline).l,d0
 	add.w	d0,d0		;2 rows a line
 	sub.w	d0,(printy).l
 	add.w	d7,(printy).l
@@ -519,17 +519,17 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 	beq.w	PrintOptTeamName		;print the team
 	cmpi.w	#$6,d7		;visitors line?
 	beq.w	PrintOptTeamName		;print the team
-	movea.l	#$18BFA,a0
+	movea.l	#OptPlayMode,a0
 	move.w	(a0,d7.w),d3
 	movea.l	#OptionValueOffsets,a0
 	adda.w	(a0,d7.w),a0		;its value Strings
 	cmpa.l	#PerLengthValues,a0		;period length?
 	bne.w	.0
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.0
 	movea.l	#$23EB6,a1
 	jmp	(print).l
-.0	tst.w	$18BF8.l
+.0	tst.w	(FourWayPlay).l
 	beq.w	.loop
 	cmpi.w	#$2,d7		;players line?
 	bne.w	.loop
@@ -543,16 +543,16 @@ PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more l
 									;else a space
 	move.w	#$19,(printy).l
 	movea.l	#$23E1C,a1
-	cmpi.w	#$3,$19384.l
+	cmpi.w	#$3,(setupfirstline).l
 	beq.w	.0
-	cmpi.w	#$4,$18BFA.l
+	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.0
 	movea.l	#$23E18,a1
 .0	move.w	#$2,(printx).l
 	jsr	(print).l
 	movea.l	#$23E1C,a1
 	move.w	#$F,(printy).l
-	tst.w	$19384.l
+	tst.w	(setupfirstline).l
 	beq.w	.1
 	movea.l	#$23E14,a1
 .1	move.w	#$2,(printx).l
@@ -566,7 +566,7 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 	movea.l	#$23EA0,a1
 	jsr	(print).l
 	move.w	(sp)+,(printx).l
-	movea.l	#$18BFA,a1
+	movea.l	#OptPlayMode,a1
 	move.w	(a1,d7.w),d3
 	movea.l	#TeamList,a1
 	asl.w	#$2,d3
@@ -647,7 +647,7 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 	bset	#$3,(sflags6).l		;print all
 	movea.l	#$242B4,a1
 	move.w	#$F,d0
-	move.w	$19384.l,d1
+	move.w	(setupfirstline).l,d1
 	add.w	d1,d1		;2 rows a line
 	sub.w	d1,d0
 	move.w	d0,(printy).l
@@ -659,7 +659,7 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 	bgt.w	.done
 	move.w	#$3,(printx).l
 	move.w	#$0,(printa).l
-	move.w	#$0,$18D5E.l
+	move.w	#$0,(printm).l
 	jsr	(printsmall).l
 .1	addi.w	#$2,(printy).l		;2 rows on
 	bra.w	.loop
@@ -685,11 +685,11 @@ OptionsScreenSetup
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l
-	move.w	#$0,$18D30.l
-	move.w	#$B400,$18D32.l
-	move.w	#$B800,$18D3C.l
-	move.w	#$5,$18D3E.l
-	move.w	#$C000,$18D38.l
+	move.w	#$0,(VSCRLPM).l
+	move.w	#$B400,(VSPRITES).l
+	move.w	#$B800,(VmMAP3).l
+	move.w	#$5,(Map3col).l
+	move.w	#$C000,(VmMAP2).l
 	move.w	#$6,(Map2col).l
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$6,(Map1col).l
@@ -703,13 +703,13 @@ OptionsScreenSetup
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$03567564,$89ABCDEF
-	move.w	d4,$18D42.l
+	move.w	d4,(smallfontchars).l
 	movea.l	$47D3C.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$0F,$C0,$45,$67,$89,$AB,$CD,$EF	; ..Eg....
-	move.w	d4,$17EA2.l
+	move.w	d4,(setupfontchars).l
 	movea.l	$47D70.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
@@ -736,7 +736,7 @@ OptionsScreenSetup
 	moveq	#$1C,d3
 	moveq	#$D,d5
 	jsr	(dobitmap).l
-	move.w	d4,$19394.l
+	move.w	d4,(vispicchars).l
 	addi.w	#$24,d4
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
@@ -755,7 +755,7 @@ OptionsScreenSetup
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$01,$0E,$00	; ......
-	move.w	d4,$19388.l
+	move.w	d4,(setupmenuchars).l
 	movea.l	$47D74.l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -767,7 +767,7 @@ OptionsScreenSetup
 	moveq	#$D,d3
 	moveq	#$0,d5
 	jsr	(dobitmap).l
-	move.w	d4,$19392.l
+	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
 	move.w	d4,$19398.l
 	movea.l	$47D7C.l,a2
@@ -782,8 +782,8 @@ OptionsScreenSetup
 	jsr	(SortObjectsInit).l
 	move.w	#$28,$1749C.l
 	move.w	#$28,$1779C.l
-	st.b	$1834C.l
-	st.b	$186B2.l
+	st.b	(tmstruct).l
+	st.b	(awtmstruct).l
 	rts
 ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (4 with
 	
@@ -794,10 +794,10 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	
 	move.l	#$5460,d6
 .loop	move.w	(ScoutSubStatus).l,d1
-	sub.w	$17476.l,d1
+	sub.w	(OldVcount).l,d1
 	beq.w	.loop
-	move.w	(ScoutSubStatus).l,$17476.l
-	bclr	#$5,$19390.l
+	move.w	(ScoutSubStatus).l,(OldVcount).l
+	bclr	#$5,(setupcardflags).l
 	jsr	(CheckNOPUnusedReturn).l
 	jsr	(ReadJoy1).l
 	jsr	(ProcessInputWithRepeat).l
@@ -807,16 +807,16 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	beq.w	.x
 	btst	#$5,d2
 	beq.w	.0
-	move.w	#$53,$1939E.l
-.0	bset	#$5,$19390.l
+	move.w	#$53,(cardtimer).l
+.0	bset	#$5,(setupcardflags).l
 .1	jsr	(ReadJoy2).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.2
 	btst	#$5,d1
 	beq.w	.x
-	bset	#$5,$19390.l
-.2	tst.w	$18BF8.l
+	bset	#$5,(setupcardflags).l
+.2	tst.w	(FourWayPlay).l
 	beq.w	.4
 	jsr	(ReadJoy3).l
 	jsr	(ProcessInputWithRepeat).l
@@ -824,27 +824,27 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	beq.w	.3
 	btst	#$5,d1
 	beq.w	.x
-	bset	#$5,$19390.l
+	bset	#$5,(setupcardflags).l
 .3	jsr	(ReadJoy4).l
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.4
 	btst	#$5,d1
 	beq.w	.x
-	bset	#$5,$19390.l
-.4	btst	#$6,$19390.l
+	bset	#$5,(setupcardflags).l
+.4	btst	#$6,(setupcardflags).l
 	beq.w	.5
-	btst	#$7,$19390.l
+	btst	#$7,(setupcardflags).l
 	bne.w	.6
-	move.w	$1938E.l,$1938A.l
+	move.w	(setupvis).l,(logoteam).l
 	bsr.w	DrawVisBlock
-.5	btst	#$7,$19390.l
+.5	btst	#$7,(setupcardflags).l
 	beq.w	.6
-	move.w	$1938C.l,$1938A.l
+	move.w	(setuphome).l,(logoteam).l
 	bsr.w	DrawHomeBlock
 .6	cmpi.l	#$4650,d6
 	bgt.w	.timer
-	btst	#$0,$19390.l
+	btst	#$0,(setupcardflags).l
 	bne.w	.timer
 	jsr	(ResetCardTimer).l
 	bra.w	.next3
@@ -853,14 +853,14 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .x	rts
 ; Sub CPU handshake that reads the pads for the setup screen
 SetupPadsSyncRead
-	clr.w	$18C16.l
+	clr.w	(demoflag).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
 .loop2	btst	#$6,$FF800E.l
 	beq.b	.loop2
-	move.w	$FF8010.l,$18C18.l
+	move.w	$FF8010.l,(seed).l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
 .loop3	btst	#$6,$FF800E.l
@@ -878,15 +878,15 @@ SetupPadsSyncRead
 .loop6	btst	#$6,$FF800E.l
 	bne.b	.loop6
 	bclr	#$7,$FF800F.l
-	clr.w	$18BFA.l
+	clr.w	(OptPlayMode).l
 	clr.w	(OptNOP).l
-	clr.w	$18C0A.l
-	move.w	#$1,$18C08.l
+	clr.w	(OptLine).l
+	move.w	#$1,(OptPen).l
 ; Saves the playoff level, updates it and reads the pads through the sub CPU
 SetupPadsPlayoffLevelRead
-	move.w	$18C04.l,-(sp)
-	move.w	(sp),$18C0C.l
-	move.w	(sp)+,$18C0E.l
+	move.w	(OptGoalie).l,-(sp)
+	move.w	(sp),(goaliemode1).l
+	move.w	(sp)+,(goaliemode2).l
 	jsr	(UpdatePlayoffLevel).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -894,7 +894,7 @@ SetupPadsPlayoffLevelRead
 	bset	#$6,$FF800F.l
 .loop2	btst	#$6,$FF800E.l
 	beq.b	.loop2
-	move.w	$FF8010.l,$18C18.l
+	move.w	$FF8010.l,(seed).l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
 .loop3	btst	#$6,$FF800E.l
@@ -912,16 +912,16 @@ SetupPadsPlayoffLevelRead
 .loop6	btst	#$6,$FF800E.l
 	bne.b	.loop6
 	bclr	#$7,$FF800F.l
-	move.w	$18C0A.l,$18C22.l
-	cmpi.w	#$2,$18C0A.l
+	move.w	(OptLine).l,(TmpOptLine2).l
+	cmpi.w	#$2,(OptLine).l
 	bne.w	.next
-	clr.w	$18C0A.l
-	bset	#$4,$17F7A.l
-.next	move.w	$18BFA.l,$18C24.l
-	cmpi.w	#$4,$18BFA.l
+	clr.w	(OptLine).l
+	bset	#$4,(sflags7).l
+.next	move.w	(OptPlayMode).l,(TempOptPlayMode).l
+	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.next2
-	move.w	#$0,$18BFA.l
-	bset	#$0,$17F78.l
+	move.w	#$0,(OptPlayMode).l
+	bset	#$0,(gmode2).l
 	jsr	(ClearShootout).l
 .next2	jmp	(MakeTree).l
 CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and returns: no effect
@@ -941,7 +941,7 @@ LoadTeamGraphicsPair
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	move.w	d4,$1939C.l
+	move.w	d4,(teambitmapchars).l
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
@@ -954,17 +954,17 @@ CheckNOPUnusedReturn
 	rts
 ; Prints the message selected by the flag bits at $19390.
 PrintFlaggedMessage	movem.l	d0-d7,-(sp)
-	bclr	#$0,$19390.l
+	bclr	#$0,(setupcardflags).l
 	beq.w	.next2
-	bclr	#$6,$19390.l
-	bclr	#$7,$19390.l
+	bclr	#$6,(setupcardflags).l
+	bclr	#$7,(setupcardflags).l
 	jsr	(printz).l
 	String	CC_Font1Pal1,$0,$0
 	move.w	#$5,(printy).l
 	moveq	#$8,d0
 	moveq	#$8,d1
 	move.w	#$7FF,d2
-	btst	#$1,$19390.l
+	btst	#$1,(setupcardflags).l
 	beq.w	.next
 	move.w	#$3,(printx).l
 	jsr	(eraser).l
@@ -995,10 +995,10 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	PrintFlaggedMessage
-	bset	#$2,$19390.l
-	bset	#$6,$19390.l
+	bset	#$2,(setupcardflags).l
+	bset	#$6,(setupcardflags).l
 	bsr.w	DrawLogoBoxVisitor
-	bclr	#$3,$19390.l
+	bclr	#$3,(setupcardflags).l
 	beq.w	.0
 	jsr	(printz).l
 	String	CC_Font1Pal1,$0,$0
@@ -1015,10 +1015,10 @@ DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardfl
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	PrintFlaggedMessage
-	bset	#$3,$19390.l
-	bset	#$7,$19390.l
+	bset	#$3,(setupcardflags).l
+	bset	#$7,(setupcardflags).l
 	bsr.w	DrawLogoBoxHomeRight
-	bclr	#$2,$19390.l
+	bclr	#$2,(setupcardflags).l
 	beq.w	.0
 	jsr	(printz).l
 	String	CC_Font1Pal1,$0,$0
@@ -1035,13 +1035,13 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	
 	
 	
-	move.w	#$B4,$193A2.l
+	move.w	#$B4,(carddelay).l
 	move.w	#$6,(printy).l
 	move.w	(homepicchars).l,d4
-	btst	#$2,$19390.l
+	btst	#$2,(setupcardflags).l
 	bne.w	.0
 	move.w	(vispicchars).l,d4
-.0	move.w	$1938A.l,d3
+.0	move.w	(logoteam).l,d3
 	asl.w	#$2,d3
 	movea.l	(TeamLogoBitmaps).l,a0
 	movea.l	(a0,d3.w),a0
@@ -1050,7 +1050,7 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	adda.l	(a2)+,a0
 	asl.w	#$3,d3
 	movea.l	#TeamLogoPalettes,a0
-	btst	#$2,$19390.l
+	btst	#$2,(setupcardflags).l
 	beq.w	.1
 	subi.w	#$20,d3
 	bra.w	.2
@@ -1064,7 +1064,7 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	move.l	$BBCD2.l,-(sp)
 	move.l	$BBCD6.l,-(sp)
 	move.w	#$4,d5
-	btst	#$2,$19390.l
+	btst	#$2,(setupcardflags).l
 	beq.w	.draw
 	move.w	#$2,d5
 .draw	jsr	(dobitmap).l

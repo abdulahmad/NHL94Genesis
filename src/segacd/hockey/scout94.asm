@@ -918,7 +918,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	cmpi.w	#$2,(a1)
 	bne.w	.x
 	movea.l	#$2919A,a1
-	cmpa.l	#$1834C,a2
+	cmpa.l	#tmstruct,a2
 	beq.w	.x
 	movea.l	#$291A0,a1
 .x	movem.l	(sp)+,d0/a0/a2
@@ -949,13 +949,13 @@ ScoutStub						;An empty routine
 ; Scouting screen set-up: freezes the window and clears the pick state.
 ScoutStubSetup
 	movem.l	d0-d7/a0-a6,-(sp)
-	bset	#$2,$17F6C.l
+	bset	#$2,(sflags2).l
 	jsr	(freezewindow).l
-	move.w	#$60,$1AD72.l
-	movea.l	#$17480,a3
+	move.w	#$60,(shootoutdelay).l
+	movea.l	#SortCords,a3
 	move.w	#$0,d0
-	move.w	$1A416.l,d2
-	cmp.w	$1A418.l,d2
+	move.w	(homeshootgoals).l,d2
+	cmp.w	(awayshootgoals).l,d2
 	bgt.w	.next
 	move.w	#$6,d0
 .next	asl.w	#$7,d0
@@ -967,10 +967,10 @@ ScoutStubSetup
 	jsr	(SetPlayerSide).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
-	tst.w	$17CEA.l
+	tst.w	(Vpos).l
 	bmi.w	.next2
 	move.w	#$FF10,d0
-.next2	add.w	$17CEA.l,d0
+.next2	add.w	(Vpos).l,d0
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0

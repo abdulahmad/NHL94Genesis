@@ -1,6 +1,6 @@
 DrawMenuScreen						;Call the draw routine, frame the menu box, print the items and fade in.
 	
-	movea.l	$18ADA.l,a0
+	movea.l	(menudraw).l,a0
 	jsr	(a0)
 	jsr	(printsmallz).l
 	String	CC_Font2,$4,$FC,$C
@@ -28,17 +28,17 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	bne.w	.next5
 	btst	#$1,d1
 	beq.w	.up
-	addi.w	#$1,$18AD2.l
+	addi.w	#$1,(menuitem).l
 	bra.w	Pausemode_Pmenu
 .up	btst	#$0,d1
 	beq.w	.sel
-	subi.w	#$1,$18AD2.l
+	subi.w	#$1,(menuitem).l
 	bra.w	Pausemode_Pmenu
 .sel	btst	#$5,d1
 	beq.w	.next5
 	bsr.w	seta2
-	move.w	$18AD2.l,d0
-	movea.l	$18AD6.l,a0
+	move.w	(menuitem).l,d0
+	movea.l	(menulist).l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.next3
@@ -47,10 +47,10 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	dbra	d0,.3
 	movea.l	(a0),a0
 	jsr	(a0)
-	bclr	#$1,$17F74.l
+	bclr	#$1,(sflags5).l
 	bne.w	.noredraw
 	bsr.w	DrawMenuScreen
-.noredraw	tst.w	$18AD2.l		;item 0 (resume) leaves the menu
+.noredraw	tst.w	(menuitem).l		;item 0 (resume) leaves the menu
 	rts
 .next5	eori.b	#$4,ccr		;invert Z
 	rts
@@ -60,11 +60,11 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 									;there are items above / below.
 									;Called from DrawMenuScreen and
 									;HandleMenuInput
-	move.w	$18AD2.l,d0
+	move.w	(menuitem).l,d0
 	bpl.w	.0
-	clr.w	$18AD2.l		;no item above the first
+	clr.w	(menuitem).l		;no item above the first
 	clr.w	d0
-.0	movea.l	$18AD6.l,a0
+.0	movea.l	(menulist).l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.2
@@ -73,8 +73,8 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	tst.w	$2(a0)		;negative: the last item
 .2	dbmi	d0,.next		;stop after d0 items or at the last item
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
-	sub.w	d0,$18AD2.l		;no item below the last
-	move.w	$18AD2.l,d0
+	sub.w	d0,(menuitem).l		;no item below the last
+	move.w	(menuitem).l,d0
 	cmp.w	$18AD4.l,d0
 	bge.w	.next3
 	move.w	d0,$18AD4.l		;scroll up
@@ -84,7 +84,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	move.w	d0,$18AD4.l		;scroll down
 .print	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).l
-	movea.l	$18AD6.l,a1
+	movea.l	(menulist).l,a1
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
@@ -111,9 +111,9 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	dc.w	$0006
 	dc.b	$FB,$02,$FA,$01
 	move.l	a1,-(sp)
-	movea.l	$18AD6.l,a1
+	movea.l	(menulist).l,a1
 	jsr	(printsmall).l
-	cmp.w	$18AD2.l,d0
+	cmp.w	(menuitem).l,d0
 	bne.w	.nosel
 	jsr	(printsmall).l
 .nosel	movea.l	(sp)+,a1
@@ -136,11 +136,11 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	bne.w	.plain
 	move.l	a1,-(sp)
 	movea.l	#$2C576,a1
-	btst	#$1,$17F6A.l
+	btst	#$1,(sflags).l
 	beq.w	.homegoalie
-	tst.w	$18C0E.l
+	tst.w	(goaliemode2).l
 	bra.w	.chkgoalie
-.homegoalie	tst.w	$18C0C.l
+.homegoalie	tst.w	(goaliemode1).l
 .chkgoalie	beq.w	.print
 	movea.l	#$2C58A,a1
 .print	jsr	(printsmall).l
@@ -163,7 +163,7 @@ PutTeamBlockDraw
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	movea.l	#$17FB2,a1
+	movea.l	#Teamblocksmap,a1
 	adda.w	d0,a1
 	moveq	#$1,d2
 .loop	jsr	(xyVmMap).l
@@ -191,10 +191,10 @@ PutTeamBlockDraw
 MenuWaitVblank						;wait till Vcount changes, then resync Vcount. Saves d0. Reads OldVcount
 									;twice (93 once). Called from PauseMode, and the stats code
 	move.w	d0,-(sp)
-	move.w	$17476.l,d0
-	move.w	$17476.l,d0
+	move.w	(OldVcount).l,d0
+	move.w	(OldVcount).l,d0
 .wait	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.wait
-	move.w	$17476.l,(ScoutSubStatus).l
+	move.w	(OldVcount).l,(ScoutSubStatus).l
 	move.w	(sp)+,d0
 	rts
