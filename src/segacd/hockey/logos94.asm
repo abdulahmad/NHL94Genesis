@@ -144,53 +144,53 @@ TeamLogoPalettes					;Team logo palettes, 16 colors per team. Used by PeriodStat
 	dc.w	$0008,$0400,$0800,$0C00
 ; Compares the goalie of both team structs and updates the swap flags in $17F6C
 GoalieSwapCheck	movem.l	d0/a0-a3,-(sp)
-	move.w	$17F6C.l,-(sp)
-	btst.b	#$1,$17F78.l
+	move.w	(sflags2).l,-(sp)
+	btst.b	#$1,(gmode2).l
 	bne.w	GoalieSwapCheckRestore
-	movea.l	#$1834C,a2
+	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a3
 	move.w	$26(a2),d0
 	sub.w	$26(a3),d0
 	beq.w	GoalieSwapCheckRestore
 	bpl.w	.next
-	btst.b	#$6,$17F6C.l
+	btst.b	#$6,(sflags2).l
 	bne.w	.next2
 	bsr.w	GoalieSwapCheckEnd
-	bset.b	#$6,$17F6C.l
+	bset.b	#$6,(sflags2).l
 	bra.w	.next2
 .next	exg.l	a2,a3
-	btst.b	#$6,$17F6C.l
+	btst.b	#$6,(sflags2).l
 	beq.w	.next2
 	bsr.w	GoalieSwapCheckEnd
-	bclr.b	#$6,$17F6C.l
-.next2	bset.b	#$5,$17F6C.l
+	bclr.b	#$6,(sflags2).l
+.next2	bset.b	#$5,(sflags2).l
 	bne.w	GoalieSwapCheckRestore
-	cmpa.l	#$1834C,a3
+	cmpa.l	#tmstruct,a3
 	bne.w	.next3
-	move.w	$17FAE.l,$1A56C.l
-	move.w	#$1,$1A56E.l
+	move.w	(HomeTeam).l,(HmTeam).l
+	move.w	#$1,(SongIndex).l
 	jsr	(ChooseSong).l
-.loop	bset.b	#$6,$17F7C.l
+.loop	bset.b	#$6,(sflags8).l
 	bra.w	GoalieSwapCheckRestore
-.next3	move.w	$17FAE.l,$1A56C.l
-	move.w	#$4,$1A56E.l
+.next3	move.w	(HomeTeam).l,(HmTeam).l
+	move.w	#$4,(SongIndex).l
 	jsr	(ChooseSong).l
 	bra.w	.loop
 ; Clears flag 5 of $17F6C, restores the flags and returns
-GoalieSwapCheckEnd	bclr.b	#$5,$17F6C.l
+GoalieSwapCheckEnd	bclr.b	#$5,(sflags2).l
 	rts
 ; Restores the flags and registers of GoalieSwapCheck
-GoalieSwapCheckRestore	move.w	(sp)+,$17F6C.l
+GoalieSwapCheckRestore	move.w	(sp)+,(sflags2).l
 	movem.l	(sp)+,d0/a0-a3
 	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
 									;teams' penalty slots (clrTmPdst). Called from clockcontAssists
 	movem.l	d0/a0,-(sp)
-	clr.w	$18068.l
-	clr.w	$18066.l
-	clr.w	$18064.l
+	clr.w	(PBnum).l
+	clr.w	(Penaltytimer).l
+	clr.w	(PenCntDwn).l
 	move.w	#$10,d0
-	movea.l	#$18022,a0
+	movea.l	#PenBuf,a0
 .loop	clr.l	(a0)+
 	dbra	d0,.loop
 	movea.l	#tmstruct,a0
@@ -213,27 +213,27 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 									;homehotplayer, ColdMap when awaycoldplayer / homecoldplayer, else
 									;clear it (eraser)
 	movem.l	d0/a0-a1,-(sp)
-	movea.l	#$17EAC,a0
-	move.w	#$2,$1AD8C.l
-	cmpa.l	#$1834C,a2		;home team?
+	movea.l	#awayhotplayer,a0
+	move.w	#$2,(iconx).l
+	cmpa.l	#tmstruct,a2		;home team?
 	bne.w	.0
-	movea.l	#$17EAE,a0
-	move.w	#$20,$1AD8C.l		;home: the home lists and column $20
+	movea.l	#homehotplayer,a0
+	move.w	#$20,(iconx).l		;home: the home lists and column $20
 .0	move.w	#$0,d0
 .loop	move.w	(a0)+,d1		;1 hot player per team
-	cmp.w	$1AD8A.l,d1
+	cmp.w	(iconplayer).l,d1
 	beq.w	.hot
 	dbra	d0,.loop
-	movea.l	#$17EB0,a0
-	cmpa.l	#$1834C,a2
+	movea.l	#awaycoldplayer,a0
+	cmpa.l	#tmstruct,a2
 	bne.w	.1
-	movea.l	#$17EB2,a0
+	movea.l	#homecoldplayer,a0
 .1	move.w	#$0,d0
 .loop2	move.w	(a0)+,d1
-	cmp.w	$1AD8A.l,d1
+	cmp.w	(iconplayer).l,d1
 	beq.w	.cold
 	dbra	d0,.loop2
-	move.w	$1AD8C.l,(printx).l
+	move.w	(iconx).l,(printx).l
 	move.w	#$19,(printy).l
 	move.w	#$8,d0
 	move.w	#$3,d1
@@ -245,7 +245,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	bra.w	.draw
 .cold	move.w	(coldiconchars).l,d4
 	movea.l	(ColdMap).l,a0
-.draw	move.w	$1AD8C.l,(printx).l
+.draw	move.w	(iconx).l,(printx).l
 	move.w	#$19,(printy).l
 	movea.l	a0,a1
 	movea.l	a0,a2
@@ -262,26 +262,26 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	rts
 ; Hot/cold icon: draws the icon at the puck position.
 HotColdIconDraw
-	btst	#$6,$17F74.l
+	btst	#$6,(sflags5).l
 	bne.w	HotColdIconExit
 	movem.l	d0-d6/a0-a1,-(sp)
-	move.w	$17BA8.l,d0
+	move.w	(puckvx).l,d0
 	asr.w	#$8,d0
-	add.w	$17B80.l,d0
-	move.w	$17BAA.l,d1
+	add.w	(puckx).l,d0
+	move.w	(puckvy).l,d1
 	asr.w	#$8,d1
-	add.w	$17B94.l,d1
+	add.w	(pucky).l,d1
 	movem.w	d0-d1,-(sp)
 	moveq	#$5,d2
 	move.w	d4,d3
 	eori.w	#$2,d3
 	moveq	#-1,d5
-	movea.l	#$17480,a0
-	movea.l	#$17FA6,a1
+	movea.l	#SortCords,a0
+	movea.l	#cont1team,a1
 	cmpi.w	#$1,(a1,d4.w)
 	beq.w	.next7
 	adda.w	#$300,a0
-.next7	movea.l	#$17F9E,a1
+.next7	movea.l	#c1playernum,a1
 .loop3	tst.w	$34(a0)
 	ble.w	.next10
 	btst	#$2,$63(a0)
@@ -293,15 +293,15 @@ HotColdIconDraw
 	beq.w	.next8
 	btst	#$3,$62(a0)
 	bne.w	.next10
-.next8	btst	#$2,$17F70.l
+.next8	btst	#$2,(BA_PS_flags).l
 	beq.w	.next9
 	movem.l	d0,-(sp)
-	move.w	$19368.l,d0
+	move.w	(BA_Sktr_SCnum).l,d0
 	cmp.w	$52(a0),d0
 	movem.l	(sp)+,d0
 	beq.w	.next9
 	movem.l	d0,-(sp)
-	move.w	$1936A.l,d0
+	move.w	(BA_Goalie_SCnum).l,d0
 	cmp.w	$52(a0),d0
 	movem.l	(sp)+,d0
 	bne.w	.next10
@@ -441,7 +441,7 @@ HotColdIconExitReset
 	move.w	#$2,d0
 	jsr	$5F22.w
 	bclr	#$5,$FF800F.l
-	st.b	$1A556.l
+	st.b	(arenaanim).l
 	clr.l	$1AD46.l
 	clr.l	$1AD4E.l
 	clr.l	$1AD4A.l
@@ -491,16 +491,16 @@ HotColdIconExitReset
 	jsr	(ReadJoy1).l
 	cmpi.b	#$E0,d3
 	bne.w	.next5
-	move.w	#$3,$18C02.l
-.next5	clr.b	$17F68.l
-	cmpi.w	#$1,$18C08.l
+	move.w	#$3,(Optperlen).l
+.next5	clr.b	(gmode).l
+	cmpi.w	#$1,(OptPen).l
 	bne.w	.next6
-	bset	#$5,$17F68.l
-.next6	cmpi.w	#$1,$18BFA.l
+	bset	#$5,(gmode).l
+.next6	cmpi.w	#$1,(OptPlayMode).l
 	ble.w	.next7
 	bsr.w	.next9
 .next7	jsr	(clearTeamStats).l
-	btst	#$0,$17F78.l
+	btst	#$0,(gmode2).l
 	beq.w	.next8
 	move.l	a0,-(sp)
 	movea.l	#tmstruct,a0
@@ -508,9 +508,9 @@ HotColdIconExitReset
 	movea.l	#awtmstruct,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
-.next8	clr.w	$180F0.l
-	clr.w	$1825A.l
-	clr.w	$180E4.l
+.next8	clr.w	(ScoreSumbytes).l
+	clr.w	(PenSumLength).l
+	clr.w	(gsp).l
 	clr.w	$180EC.l
 	bsr.w	restoreteams
 	jsr	(InitScores).l

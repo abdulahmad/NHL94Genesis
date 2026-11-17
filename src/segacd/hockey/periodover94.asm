@@ -2,19 +2,19 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 									;runs out. After period 3 a tied game goes to
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a
 									;tied playoff game plays on. Falls into PeriodOver_sp
-	addi.w	#$1,$180E4.l		;period number
-	bchg	#$1,$17F68.l		;flip the attack direction
-	cmpi.w	#$3,$180E4.l		;period 3 or later?
+	addi.w	#$1,(gsp).l		;period number
+	bchg	#$1,(gmode).l		;flip the attack direction
+	cmpi.w	#$3,(gsp).l		;period 3 or later?
 	blt.w	.0
 	beq.w	.1		;period 3 just ended
-	move.w	#$3,$180E4.l		;overtime done: stay at 3
-	tst.w	$18BFA.l
+	move.w	#$3,(gsp).l		;overtime done: stay at 3
+	tst.w	(OptPlayMode).l
 	bne.w	.1
-	move.w	#$4,$180E4.l
-.1	move.w	$18358.l,d0
-	sub.w	$186BE.l,d0
+	move.w	#$4,(gsp).l
+.1	move.w	(HmGoals).l,d0
+	sub.w	(AwGoals).l,d0
 	beq.w	.0		;tied: play overtime
-	move.w	#$4,$180E4.l		;game over
+	move.w	#$4,(gsp).l		;game over
 .0	bsr.w	forceblack
 ; End of period: resets the clock, scores, then runs the intermission.
 PeriodOverIntermission
@@ -22,16 +22,16 @@ PeriodOverIntermission
 	move.w	#$79,-(sp)
 	bsr.w	song
 	bsr.w	UpdateScores
-	cmpi.w	#$4,$180E4.l
+	cmpi.w	#$4,(gsp).l
 	bne.w	.next3
 	jsr	(AddPlayoffTeamStats).l
 .next3	bsr.w	Intermission
-	cmpi.w	#$4,$180E4.l
+	cmpi.w	#$4,(gsp).l
 	beq.w	.next4
 	jmp	(GetPeriodTimeSetup).l
 .next4	jmp	(GameOver).l
 ; Period over: ends a penalty shot first
-PeriodOverPenaltyShot	btst.b	#$2,$17F70.l
+PeriodOverPenaltyShot	btst.b	#$2,(BA_PS_flags).l
 	beq.w	.next
 	bsr.w	UpdatePenaltyShotEnd
 .next	bclr.b	#$1,$62(a3)
@@ -45,10 +45,10 @@ PeriodOverPenaltyShot	btst.b	#$2,$17F70.l
 	bpl.w	.next3
 	addi.w	#$5,$40(a3)
 	bsr.w	findpc
-.next3	move.w	$17BE0.l,d0
+.next3	move.w	(puckc).l,d0
 	bmi.w	.next4
 	asl.w	#$7,d0
-	movea.l	#$17480,a2
+	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	bsr.w	a2touchpuck
 	move.l	a2,-(sp)
@@ -65,9 +65,9 @@ PeriodOverPenaltyShot	btst.b	#$2,$17F70.l
 	move.w	$2A(a2),$2A(a3)
 .next4	bsr.w	PuckIChk
 	bsr.w	PeriodOverSwitch
-	btst.b	#$0,$17F68.l
+	btst.b	#$0,(gmode).l
 	bne.w	.next7
-	tst.w	$17BE0.l
+	tst.w	(puckc).l
 	bpl.w	.next6
 	move.w	$0(a3),d0
 	cmp.w	$1C(a3),d0
@@ -88,11 +88,11 @@ PeriodOverPenaltyShot	btst.b	#$2,$17F70.l
 	bsr.w	puckunflip
 	bra.w	PuckCollisionLimits
 ; Period over: switches the teams
-PeriodOverSwitch	btst.b	#$5,$17F68.l
+PeriodOverSwitch	btst.b	#$5,(gmode).l
 	beq.w	rtss2
-	btst.b	#$2,$17F70.l
+	btst.b	#$2,(BA_PS_flags).l
 	bne.w	rtss2
-	movea.l	#$1834C,a1
+	movea.l	#tmstruct,a1
 	lea.l	$366(a1),a2
 	bsr.w	ClearOffsidesIfAllPlayers
 	exg.l	a1,a2
@@ -103,7 +103,7 @@ PeriodOverSwitch	btst.b	#$5,$17F68.l
 	cmp.w	$20(a3),d0
 	ble.w	rtss2
 	addi.w	#$A,d0
-	btst.b	#$1,$17F68.l
+	btst.b	#$1,(gmode).l
 	beq.w	.next
 	exg.l	a1,a2
 .next	moveq	#$5,d2
@@ -123,7 +123,7 @@ PeriodOverSwitch	btst.b	#$5,$17F68.l
 	cmp.w	$20(a3),d0
 	bge.w	rtss2
 	subi.w	#$A,d0
-	btst.b	#$1,$17F68.l
+	btst.b	#$1,(gmode).l
 	bne.w	.next4
 	exg.l	a1,a2
 .next4	moveq	#$5,d2

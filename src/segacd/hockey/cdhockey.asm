@@ -18,7 +18,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	beq.w	.ex
 	bset.b	#$2,$FF800F.l
 	move.l	#$2203A,-(sp)
-	move.l	$18D66.l,-(sp)
+	move.l	(VBint).l,-(sp)
 	rts
 	jsr	(ReadJoyData).l
 .loop	btst.b	#$4,$FF800E.l
@@ -42,13 +42,13 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	blt.w	.loop4
 	move.w	#$C,d7
 	jsr	$6044.w
-	move.w	d0,$193BA.l
-	tst.w	$193BA.l
+	move.w	d0,(ValidSRAM).l
+	tst.w	(ValidSRAM).l
 	bne.b	.next2
 	jsr	(BackupRamClear).l
 	move.w	#$0,d0
 	lea.l	$7E000.l,a0
-	lea.l	$17EF2.l,a1
+	lea.l	(mesarea).l,a1
 	jsr	$5F16.w
 	bcs.b	.next
 	move.w	#$3,d0
@@ -56,7 +56,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
 	bra.b	.next2
-.next	move.w	#$FFFF,$193BA.l
+.next	move.w	#$FFFF,(ValidSRAM).l
 .next2	move.l	#$19360,$19360.l
 	clr.w	$1AD94.l
 .loop5	btst.b	#$7,$FF800E.l
@@ -76,7 +76,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	bclr.b	#$7,$FF800F.l
 	movem.l	(sp)+,a0
 	andi.w	#$1,d0
-	move.w	d0,$18C20.l
+	move.w	d0,(PalMode).l
 	beq.w	.loop8
 	bset.b	#$0,$1AD94.l
 .loop8	btst.b	#$7,$FF800E.l
@@ -85,21 +85,21 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	bset.b	#$6,$FF800F.l
 .loop9	btst.b	#$6,$FF800E.l
 	beq.s	.loop9
-	move.w	$FF8010.l,$18BF8.l
+	move.w	$FF8010.l,(FourWayPlay).l
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
 .loop10	btst.b	#$6,$FF800E.l
 	bne.s	.loop10
 	bclr.b	#$7,$FF800F.l
-	move.w	#$FFFF,$17DD6.l
+	move.w	#$FFFF,(PadControlBits34).l
 	jsr	(SubCmd2DSend).l
 	move.w	#$3,d7
 	jsr	$6044.w
 	jsr	(EASportsScreen).l
 	jsr	(ReadLineDataBackupRead).l
 	jsr	(DefaultMenus).l
-	move.w	$18C0A.l,$18C22.l
-	move.w	$18BFA.l,$18C24.l
+	move.w	(OptLine).l,(TmpOptLine2).l
+	move.w	(OptPlayMode).l,(TempOptPlayMode).l
 	jsr	(orjoy).l
 	jmp	(GameOverCallTail).l
 .loop11	btst.b	#$7,$FF800E.l
@@ -223,7 +223,7 @@ BackupRamWrite
 	subq.l	#$1,d1
 .loop4	move.b	(a0)+,(a1)+
 	dbra	d1,.loop4
-	tst.w	$193BA.l
+	tst.w	(ValidSRAM).l
 	bmi.w	.next4
 	jsr	(BackupRamChecksum).l
 	move.l	d0,$1A2DC.l
@@ -240,7 +240,7 @@ BackupRamWrite
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
 	bcc.w	.next4
-.next3	move.w	#$FFFF,$193BA.l
+.next3	move.w	#$FFFF,(ValidSRAM).l
 .next4	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
@@ -328,7 +328,7 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	#$80,d1
 	move.l	#$DA0,d0
-	movea.l	#$1A2FC,a0
+	movea.l	#namelog,a0
 	btst	#$6,(sflags6).l
 	beq.w	.read
 	jsr	(BackupRamWrite).l

@@ -3,11 +3,11 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	
 	cmpa.l	#$C45C,a4
 	bne.w	.1
-	btst	#$4,$17F6A.l
+	btst	#$4,(sflags).l
 	beq.w	.end
-	movea.l	#$173B0,a4
+	movea.l	#replayend,a4
 .1	suba.w	#$62,a4
-	cmpa.l	$17470.l,a4
+	cmpa.l	(recbpr).l,a4
 	bne.w	RestoreReplayFrameCopy
 	adda.w	#$62,a4
 .end	bsr.w	RestoreReplayFrameCopy
@@ -19,21 +19,21 @@ adda4						;Step forward 1 frame. First handles a reverse
 	beq.w	.1
 	movem.l	d0-d7/a0-a6,-(sp)
 	bchg	#$4,$17F72.l
-	move.w	$17CEE.l,-(sp)
-	move.w	$17CEA.l,-(sp)
+	move.w	(Hpos).l,-(sp)
+	move.w	(Vpos).l,-(sp)
 	bsr.w	forceblack2
 	jsr	(MenuWaitVblank).l
 	jsr	(MenuWaitVblank).l
 	jsr	(StatsScreenFadeInClear).l
-	clr.w	$17CEE.l
-	clr.w	$17CEA.l
-	move.w	#$7D0,$17CEC.l
+	clr.w	(Hpos).l
+	clr.w	(Vpos).l
+	move.w	#$7D0,(Oldrow).l
 	move.w	#$1,d0
 .loop	jsr	(setvideo).l
 	jsr	(MenuWaitVblank).l
 	dbra	d0,.loop
-	move.w	(sp)+,$17CEA.l
-	move.w	(sp)+,$17CEE.l
+	move.w	(sp)+,(Vpos).l
+	move.w	(sp)+,(Hpos).l
 	move.w	#$1,d0
 	jsr	(setvideo).l
 .loop2	jsr	(MenuWaitVblank).l
@@ -45,27 +45,27 @@ adda4						;Step forward 1 frame. First handles a reverse
 	move.w	#$1,$8(a0)
 	movem.l	(sp)+,a0
 	bsr.w	RestoreReplayFrame
-	btst	#$5,$17F6A.l
+	btst	#$5,(sflags).l
 	beq.w	.0
 .0	jsr	(ReadActiveJoypadPrint).l
 	move.w	#$64,(palcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 .1	clr.w	d7
-	btst	#$2,$17F6C.l
+	btst	#$2,(sflags2).l
 	beq.w	adda42
 	movem.l	a4,-(sp)
 	bsr.w	NextReplayEntry
-	cmpa.l	$17470.l,a4
+	cmpa.l	(recbpr).l,a4
 	movem.l	(sp)+,a4
 	beq.w	updatereplayExit
 adda42						;adda4 without the sf2drec look-ahead: stop at the record point, else show
 	
-	cmpa.l	$17470.l,a4
+	cmpa.l	(recbpr).l,a4
 	beq.w	updatereplayExit
 	bsr.w	RestoreReplayFrameCopy
 ; Advances the replay pointer by $62 and wraps at the end of the buffer.
 NextReplayEntry	adda.w	#$62,a4
-	cmpa.l	#$173B0,a4
+	cmpa.l	#replayend,a4
 	bne.w	updatereplayExit
 	movea.l	#$C45C,a4
 	rts
@@ -86,14 +86,14 @@ UpdateCameraPos	movem.l	d0-d2,-(sp)
 .next3	cmpi.w	#$FFC4,d0
 	bgt.w	.1
 	move.w	#$FFC4,d0
-.1	move.w	d0,$17CEE.l
+.1	move.w	d0,(Hpos).l
 	cmpi.w	#$100,d1
 	blt.w	.next5
 	move.w	#$100,d1
 .next5	cmpi.w	#$FF38,d1
 	bgt.w	.3
 	move.w	#$FF38,d1
-.3	move.w	d1,$17CEA.l
+.3	move.w	d1,(Vpos).l
 	movem.l	(sp)+,d0-d2
 	rts
 RestoreReplayFrame	btst	#$4,$17F72.l
@@ -104,7 +104,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	#$4761C,a6
 	movea.l	a4,a0
 	moveq	#$F,d1
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 .loop	move.w	$2(a0),d2
 	andi.w	#$3FF,d2
 	btst	#$9,d2
@@ -172,7 +172,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	adda.l	#$80,a3
 	dbra	d1,.loop
 	moveq	#$5,d2
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 .loop2	move.b	(a0)+,$6F(a3)
 	move.b	(a0),d0
 	andi.w	#$F,d0
@@ -198,7 +198,7 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	dbra	d2,.loop2
 	move.b	(a0)+,d0
 	ext.w	d0
-	move.w	d0,$17B98.l
+	move.w	d0,(puckz).l
 	move.b	(a0)+,d0
 	ext.w	d0
 	move.w	d0,$17C18.l
@@ -209,34 +209,34 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	move.b	(a0)+,d7
 	move.w	(a0)+,d0
 	andi.w	#$FFF,d0
-	andi.w	#$F000,$17DC8.l
-	or.w	d0,$17DC8.l
+	andi.w	#$F000,(PadControlBits).l
+	or.w	d0,(PadControlBits).l
 	move.w	(a0)+,(Crowdframe).l
-	move.w	(a0)+,$17E32.l
-	move.b	(a0)+,$18068.l
+	move.w	(a0)+,(glovecords).l
+	move.b	(a0)+,(PBnum).l
 	clr.w	d0
 	move.b	(a0)+,d0
 	lsl.w	#$4,d0
 	ori.w	#$F00F,d0
-	move.w	d0,$17DD6.l
-	btst	#$5,$17F6A.l
+	move.w	d0,(PadControlBits34).l
+	btst	#$5,(sflags).l
 	beq.w	.next13
 	movea.l	a5,a3
-	btst	#$5,$17F6E.l
+	btst	#$5,(sflags3).l
 	beq.w	.next12
 	clr.w	$18(a5)
 	move.w	$16(a5),d0
 	asl.w	#$7,d0
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 	adda.w	d0,a3
 .next12	bsr.w	UpdateCameraPos
 	bra.w	.next14
-.next13	move.w	(a0)+,$17CEE.l
-	move.w	(a0)+,$17CEA.l
+.next13	move.w	(a0)+,(Hpos).l
+	move.w	(a0)+,(Vpos).l
 	btst	#$4,$17F72.l
 	beq.w	.next14
-	neg.w	$17CEE.l
-	neg.w	$17CEA.l
+	neg.w	(Hpos).l
+	neg.w	(Vpos).l
 	jsr	(ClampReplayView).l
 .next14	bclr	#$7,$17F72.l
 	movem.l	(sp)+,d0-d2/a0/a6
@@ -244,40 +244,40 @@ RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
 	move.w	d0,-(sp)
 	move.w	#$3C,d0
-	cmp.w	$17CEE.l,d0
+	cmp.w	(Hpos).l,d0
 	blt.w	.0
 	move.w	#$FFC4,d0
-	cmp.w	$17CEE.l,d0
+	cmp.w	(Hpos).l,d0
 	ble.w	.1
-.0	move.w	d0,$17CEE.l
+.0	move.w	d0,(Hpos).l
 .1	move.w	#$100,d0
-	cmp.w	$17CEA.l,d0
+	cmp.w	(Vpos).l,d0
 	blt.w	.2
 	move.w	#$FF38,d0
-	cmp.w	$17CEA.l,d0
+	cmp.w	(Vpos).l,d0
 	ble.w	.3
-.2	move.w	d0,$17CEA.l
+.2	move.w	d0,(Vpos).l
 .3	move.w	(sp)+,d0
 	rts
 updatereplay						;called every frame to save replay events, d7 = elapsed frames
-	btst	#$4,$17F68.l
+	btst	#$4,(gmode).l
 	bne.w	updatereplayExit
-	btst	#$2,$17F6C.l
+	btst	#$2,(sflags2).l
 	beq.w	.0
-	tst.w	$1AD92.l
+	tst.w	(replaydelay).l
 	beq.w	.rec
-	subi.w	#$1,$1AD92.l
+	subi.w	#$1,(replaydelay).l
 	bpl.w	.0
-	clr.w	$1AD92.l
+	clr.w	(replaydelay).l
 	bra.w	.rec
-.0	addi.l	#$62,$17470.l
-	cmpi.l	#$173B0,$17470.l
+.0	addi.l	#$62,(recbpr).l
+	cmpi.l	#replayend,(recbpr).l
 	bne.w	.rec
-	bset	#$4,$17F6A.l
-	move.l	#$C45C,$17470.l
-.rec	movea.l	$17470.l,a0
+	bset	#$4,(sflags).l
+	move.l	#$C45C,(recbpr).l
+.rec	movea.l	(recbpr).l,a0
 	moveq	#$F,d2
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 .top	clr.l	(a0)
 	move.w	$0(a3),d1
 	andi.w	#$3FF,d1
@@ -298,7 +298,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	adda.l	#$80,a3
 	dbra	d2,.top
 	moveq	#$5,d2
-	movea.l	#$17480,a3
+	movea.l	#SortCords,a3
 .loop	move.b	$6F(a3),(a0)+
 	move.w	$34(a3),d0
 	bpl.w	.n0
@@ -324,16 +324,16 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.b	$17F65.l,(a0)+
 	bset	#$7,$17F65.l
 	move.b	d7,(a0)+
-	move.w	$17DC8.l,(a0)+
+	move.w	(PadControlBits).l,(a0)+
 	move.w	(Crowdframe).l,(a0)+
-	move.w	$17E32.l,(a0)+
-	move.b	$18068.l,(a0)+
+	move.w	(glovecords).l,(a0)+
+	move.b	(PBnum).l,(a0)+
 	move.w	d0,-(sp)
-	move.w	$17DD6.l,d0
+	move.w	(PadControlBits34).l,d0
 	lsr.w	#$4,d0
 	move.b	d0,(a0)+
 	move.w	(sp)+,d0
-	move.w	$17CEE.l,(a0)+
-	move.w	$17CEA.l,(a0)+
+	move.w	(Hpos).l,(a0)+
+	move.w	(Vpos).l,(a0)+
 updatereplayExit
 	rts

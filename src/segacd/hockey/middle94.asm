@@ -1,7 +1,7 @@
 UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words at
 									;nibblebuffer
 	movem.l	d0-d2/a0-a1,-(sp)
-	movea.l	#$18BE8,a1		;a1 = output words
+	movea.l	#nibblebuffer,a1		;a1 = output words
 	clr.w	d2		;d2 bit 0 = which nibble is next
 	bra.w	.next2
 .loop	move.b	(a0)+,d1		;next nibble (one count per pass)
@@ -17,7 +17,7 @@ UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words
 WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 									;return a weighted random index
 	movem.l	d1/a1,-(sp)
-	movea.l	#$18BE8,a1		;weights
+	movea.l	#nibblebuffer,a1		;weights
 	clr.w	d1		;d1 = running total of the weights
 	bra.w	.next
 .sumloop	add.w	(a1)+,d1
@@ -26,7 +26,7 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 	bsr.w	randomd0		;random 0 to total-1
 .findloop	sub.w	-(a1),d0		;minus the weight
 	bpl.w	.findloop
-	suba.l	#$18BE8,a1
+	suba.l	#nibblebuffer,a1
 	move.w	a1,d0
 	lsr.w	#$1,d0		;word offset -> index
 	movem.l	(sp)+,d1/a1
@@ -270,7 +270,7 @@ randomd0						;d0 = range. Return random number in d0 (0 <= d0 < range)
 	movem.l	d0-d2,-(sp)
 	move.w	$18C1A.l,d0
 	move.w	d0,d1
-	move.w	$18C18.l,d2
+	move.w	(seed).l,d2
 	mulu.w	#$E62D,d0
 	mulu.w	#$BB40,d1
 	mulu.w	#$E62D,d2
@@ -279,7 +279,7 @@ randomd0						;d0 = range. Return random number in d0 (0 <= d0 < range)
 	add.w	d1,d0
 	swap	d0
 	addq.l	#$1,d0
-	move.l	d0,$18C18.l
+	move.l	d0,(seed).l
 	asr.l	#$8,d0
 	mulu.w	$2(sp),d0
 	swap	d0
@@ -452,7 +452,7 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	or.w	d3,(waitxpad).l
 	tst.w	d1
 	bne.w	rtss2
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.1
 	bsr.w	ReadJoy3
 	or.w	d3,(waitxpad).l
@@ -472,36 +472,36 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	movem.l	d4-d7/a0-a3,-(sp)
 	neg.w	d0
 	move.w	d0,(ScoutSubStatus).l
-.wait	cmpi.w	#$708,$17CE2.l
+.wait	cmpi.w	#$708,(Zamx).l
 	bhi.w	.nz
-	addi.w	#$1,$17CE2.l
+	addi.w	#$1,(Zamx).l
 .nz	moveq	#$1,d7
 	jsr	(updatecrowdf).l
 	jsr	(RunArenaAnim).l
-	clr.w	$17F94.l
-	bclr	#$1,$17F6A.l
+	clr.w	(pausepad).l
+	bclr	#$1,(sflags).l
 	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	clr.w	$17F94.l
-	bset	#$1,$17F6A.l
+	clr.w	(pausepad).l
+	bset	#$1,(sflags).l
 	bsr.w	ReadJoy2
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.vid
-	bclr	#$1,$17F6A.l
-	move.w	#$3,$17F94.l
+	bclr	#$1,(sflags).l
+	move.w	#$3,(pausepad).l
 	bsr.w	ReadJoy3
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	beq.w	.vid
-	bset	#$1,$17F6A.l
-	move.w	#$4,$17F94.l
+	bset	#$1,(sflags).l
+	move.w	#$4,(pausepad).l
 	bsr.w	ReadJoy4
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
@@ -534,7 +534,7 @@ waitjoy						;wait for either joystick input. Return d1 = new button presses. it
 	beq.w	waitjoy
 	rts
 orjoy						;return d1 = new button presses from either joystick
-	tst.w	$18BF8.l
+	tst.w	(FourWayPlay).l
 	bne.w	.4way
 	bsr.w	ReadJoy1
 	move.w	d1,-(sp)
@@ -573,45 +573,45 @@ ProcessInputWithRepeat						;nodiag, then key repeat on d1-d3
 	beq.w	rtss2
 	tst.w	d2
 	bne.w	.chg
-	subi.w	#$1,$17478.l
+	subi.w	#$1,(repeatdelayframes).l
 	bpl.w	rtss2
-	move.w	#$4,$17478.l
+	move.w	#$4,(repeatdelayframes).l
 	move.w	d3,d1
 	rts
-.chg	move.w	#$F,$17478.l
+.chg	move.w	#$F,(repeatdelayframes).l
 	rts
 ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
 	
 	
-	move.b	$17E46.l,d0
+	move.b	(PadRaw1).l,d0
 	bsr.w	ReadJoy
-	move.w	$17E3E.l,d2
-	move.w	d1,$17E3E.l
+	move.w	(lj1).l,d2
+	move.w	d1,(lj1).l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1		;d1 = changed and now down = new presses
 	rts
 ReadJoy2						;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	move.b	$17E47.l,d0
+	move.b	(PadRaw2).l,d0
 	bsr.w	ReadJoy
-	move.w	$17E40.l,d2
-	move.w	d1,$17E40.l
+	move.w	(lj2).l,d2
+	move.w	d1,(lj2).l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-ReadJoy3	move.b	$17E48.l,d0
+ReadJoy3	move.b	(PadRaw3).l,d0
 	bsr.w	ReadJoy
-	move.w	$17E42.l,d2
-	move.w	d1,$17E42.l
+	move.w	(lj3).l,d2
+	move.w	d1,(lj3).l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-ReadJoy4	move.b	$17E49.l,d0
+ReadJoy4	move.b	(PadRaw4).l,d0
 	bsr.w	ReadJoy
-	move.w	$17E44.l,d2
-	move.w	d1,$17E44.l
+	move.w	(lj4).l,d2
+	move.w	d1,(lj4).l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
@@ -1104,7 +1104,7 @@ SetVramStackPush
 	bne.b	.loop22
 	bclr	#$7,$FF800F.l
 	move.w	#$8400,d0
-	move.b	$18D38.l,d0
+	move.b	(VmMAP2).l,d0
 	lsr.b	#$5,d0
 .loop23	btst	#$7,$FF800E.l
 	bne.b	.loop23
@@ -1119,7 +1119,7 @@ SetVramStackPush
 	bne.b	.loop25
 	bclr	#$7,$FF800F.l
 	move.w	#$8300,d0
-	move.b	$18D3C.l,d0
+	move.b	(VmMAP3).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$3E,d0
 .loop26	btst	#$7,$FF800E.l
@@ -1135,7 +1135,7 @@ SetVramStackPush
 	bne.b	.loop28
 	bclr	#$7,$FF800F.l
 	move.w	#$8500,d0
-	move.b	$18D32.l,d0
+	move.b	(VSPRITES).l,d0
 	lsr.b	#$1,d0
 .loop29	btst	#$7,$FF800E.l
 	bne.b	.loop29
@@ -1150,7 +1150,7 @@ SetVramStackPush
 	bne.b	.loop31
 	bclr	#$7,$FF800F.l
 	move.w	#$8D00,d0
-	move.b	$18D30.l,d0
+	move.b	(VSCRLPM).l,d0
 	lsr.b	#$2,d0
 .loop32	btst	#$7,$FF800E.l
 	bne.b	.loop32
@@ -1258,8 +1258,8 @@ SetVramQueueFlag	move.l	a6,-(sp)
 .next2	bclr.b	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
-	move.w	$18D64.l,-(sp)
-	bset.b	#$2,$18D64.l
+	move.w	(disflags).l,-(sp)
+	bset.b	#$2,(disflags).l
 .loop	btst.b	#$7,$FF800E.l
 	bne.s	.loop
 	move.w	#$8F02,$FF8022.l
@@ -1276,7 +1276,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bsr.w	SetVramWriteAddr1
 	clr.l	d1
 	move.w	#$8C00,d0
-	btst.b	#$1,$18D64.l
+	btst.b	#$1,(disflags).l
 	bne.w	.loop4
 	ori.w	#$81,d0
 .loop4	btst.b	#$7,$FF800E.l
@@ -1316,7 +1316,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bne.s	.loop12
 	bclr.b	#$7,$FF800F.l
 	move.w	#$9001,d0
-	cmpi.w	#$6,$18D36.l
+	cmpi.w	#$6,(Map1col).l
 	beq.w	.loop13
 	move.w	#$9003,d0
 .loop13	btst.b	#$7,$FF800E.l
@@ -1332,7 +1332,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bne.s	.loop15
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8200,d0
-	move.b	$18D34.l,d0
+	move.b	(VmMAP1).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$38,d0
 .loop16	btst.b	#$7,$FF800E.l
@@ -1348,7 +1348,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bne.s	.loop18
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8400,d0
-	move.b	$18D38.l,d0
+	move.b	(VmMAP2).l,d0
 	lsr.b	#$5,d0
 .loop19	btst.b	#$7,$FF800E.l
 	bne.s	.loop19
@@ -1363,7 +1363,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bne.s	.loop21
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8300,d0
-	move.b	$18D3C.l,d0
+	move.b	(VmMAP3).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$3E,d0
 .loop22	btst.b	#$7,$FF800E.l
@@ -1379,7 +1379,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bne.s	.loop24
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8500,d0
-	move.b	$18D32.l,d0
+	move.b	(VSPRITES).l,d0
 	lsr.b	#$1,d0
 .loop25	btst.b	#$7,$FF800E.l
 	bne.s	.loop25
@@ -1394,7 +1394,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	bne.s	.loop27
 	bclr.b	#$7,$FF800F.l
 	move.w	#$8D00,d0
-	move.b	$18D30.l,d0
+	move.b	(VSCRLPM).l,d0
 	lsr.b	#$2,d0
 .loop28	btst.b	#$7,$FF800E.l
 	bne.s	.loop28
@@ -1480,7 +1480,7 @@ SetVramQueueFlag	move.l	a6,-(sp)
 .loop48	btst.b	#$6,$FF800E.l
 	bne.s	.loop48
 	bclr.b	#$7,$FF800F.l
-	move.w	(sp)+,$18D64.l
+	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+

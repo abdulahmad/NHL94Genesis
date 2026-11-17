@@ -42,16 +42,16 @@ ClampPositionBoxClear
 	move.w	#$365,d0
 .loop2	clr.w	(a0)+
 	dbra	d0,.loop2
-	movea.l	#$18022,a0
+	movea.l	#PenBuf,a0
 	move.l	#$24,d0
 .loop3	clr.w	(a0)+
 	dbra	d0,.loop3
-	clr.w	$17F70.l
+	clr.w	(BA_PS_flags).l
 	clr.w	$17F72.l
 	clr.w	(sflags6).l
-	clr.w	$17F78.l
-	clr.w	$19390.l
-	clr.w	$193A0.l
+	clr.w	(gmode2).l
+	clr.w	(setupcardflags).l
+	clr.w	(featuredplayer).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite list
@@ -59,21 +59,21 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 									;at most) for the pieces inside the view (Hpos / Vpos). Not in a reverse
 									;angle replay (sflags4 bit 4), sflags2 bit 3 or sflags bit 7. Called from
 									;setvideo
-	tst.w	$1A556.l
+	tst.w	(arenaanim).l
 	bmi.w	AddArenaAnimSpriteExit
-	tst.l	$1A55C.l
+	tst.l	(arenaspritelist).l
 	beq.w	AddArenaAnimSpriteExit		;not loaded: none
 	btst	#$4,$17F72.l		;check if reverse angle replay
 	bne.w	AddArenaAnimSpriteExit
-	btst	#$3,$17F6C.l
+	btst	#$3,(sflags2).l
 	bne.w	AddArenaAnimSpriteExit		;replay: none
-	btst	#$7,$17F6A.l
+	btst	#$7,(sflags).l
 	bne.w	AddArenaAnimSpriteExit		;horizontal mode: none
-	movea.l	$1A55C.l,a1
+	movea.l	(arenaspritelist).l,a1
 	adda.l	$4(a1),a1
-	move.w	$17CEE.l,d4
-	move.w	$17CEA.l,d5
-	move.w	$1A550.l,d0
+	move.w	(Hpos).l,d4
+	move.w	(Vpos).l,d5
+	move.w	(arenaframe).l,d0
 	bra.w	.spr
 	andi.w	#$F,d2
 	cmpi.w	#$3,d2
@@ -127,7 +127,7 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	$6(a0),d5
 	andi.w	#$F800,d5
 	add.w	$4(a0),d5
-	add.w	$1A54E.l,d5
+	add.w	(arenaanimchars).l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
 	addi.w	#$70,d5
@@ -146,7 +146,7 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 									;two not counted), then the icon of HotColdIcon. Called from
 									;PrintMatchupRatings
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	d0,$1AD8A.l
+	move.w	d0,(iconplayer).l
 	move.l	a2,-(sp)
 	jsr	(FormatPlayerName).l
 	movea.l	a1,a0
@@ -232,7 +232,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
 	jsr	(RelocateLogoBitmaps).l
-	clr.w	$1A43A.l
+	clr.w	(matchup).l
 	moveq	#$0,d0
 	moveq	#$1C,d1
 	jsr	(CrowdMeterFadeIn).l
@@ -252,7 +252,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
 	movea.l	$47D8C.l,a0
-	move.w	$17FB0.l,d0
+	move.w	(VisTeam).l,d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0
 	movea.l	a0,a1
@@ -278,7 +278,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
 	movea.l	$47D8C.l,a0
-	move.w	$17FAE.l,d0
+	move.w	(HomeTeam).l,d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0
 	movea.l	a0,a1
@@ -305,7 +305,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 ; Inline data read by $39258 from the return address (2 rows).
 	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
 	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
-	btst.b	#$1,$17F7A.l
+	btst.b	#$1,(sflags7).l
 	beq.w	PeriodStatsHeader
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
@@ -328,7 +328,7 @@ PeriodStatsHeader	jsr	(printz).l
 ; Period stats: draws the title and rows, then waits for a button
 PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	bsr.w	PeriodStatsTeamRows
-	move.w	#$18,$18D62.l
+	move.w	#$18,(palcount).l
 .loop	jsr	(FrameWaitStep).l
 	btst	#$7,d1
 	bne.w	.next3
@@ -337,15 +337,15 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	btst	#$3,d1
 	bne.w	.next
 	bra.w	.loop
-.next	tst.w	$1A43A.l
+.next	tst.w	(matchup).l
 	bne.w	.loop
-	st.b	$1A43A.l
+	st.b	(matchup).l
 	bsr.w	PeriodStatsTitleShots
 	bsr.w	PeriodStatsTeamRows
 	bra.w	.loop
-.next2	tst.w	$1A43A.l
+.next2	tst.w	(matchup).l
 	beq.w	.loop
-	clr.w	$1A43A.l
+	clr.w	(matchup).l
 	bsr.w	PeriodStatsTitleShots
 	bsr.w	PeriodStatsTeamRows
 	bra.w	.loop
@@ -397,7 +397,7 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	jsr	$5F22.w
 	jmp	(StatsScreenFadeIn).l
 ; Period stats: title when the table shows shots (Shots [ For Goals ])
-PeriodStatsTitleShots	tst.w	$1A43A.l
+PeriodStatsTitleShots	tst.w	(matchup).l
 	beq.w	PeriodStatsTitleGoals
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (2 rows).
@@ -415,42 +415,42 @@ PeriodStatsTeamRows	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$00,$00,$00	; ......
-	movea.l	#$186B2,a2
-	move.w	#$E,$18D5A.l
+	movea.l	#awtmstruct,a2
+	move.w	#$E,(printy).l
 	bsr.w	PeriodStatsPeriodRow
-	movea.l	#$1834C,a2
-	move.w	#$16,$18D5A.l
+	movea.l	#tmstruct,a2
+	move.w	#$16,(printy).l
 	bsr.w	PeriodStatsPeriodRow
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Period stats: one row, a0 = the period counts of a team
 PeriodStatsPeriodRow	lea.l	$344(a2),a0
-	tst.w	$1A43A.l
+	tst.w	(matchup).l
 	beq.w	.next
 	lea.l	$34C(a2),a0
-.next	clr.w	$1A44A.l
-	move.w	#$B,$18D58.l
+.next	clr.w	(matchuptimer).l
+	move.w	#$B,(printx).l
 	bsr.w	PeriodStatsPrintTotal
-	cmpi.w	#$1,$180E4.l
+	cmpi.w	#$1,(gsp).l
 	blt.w	.next2
-	move.w	#$10,$18D58.l
+	move.w	#$10,(printx).l
 	bsr.w	PeriodStatsPrintTotal
-	cmpi.w	#$2,$180E4.l
+	cmpi.w	#$2,(gsp).l
 	blt.w	.next2
-	move.w	#$15,$18D58.l
+	move.w	#$15,(printx).l
 	bsr.w	PeriodStatsPrintTotal
-	cmpi.w	#$3,$180E4.l
+	cmpi.w	#$3,(gsp).l
 	blt.w	.next2
-	btst.b	#$1,$17F7A.l
+	btst.b	#$1,(sflags7).l
 	beq.w	.next2
-	move.w	#$1A,$18D58.l
+	move.w	#$1A,(printx).l
 	bsr.w	PeriodStatsPrintTotal
-.next2	move.w	#$21,$18D58.l
+.next2	move.w	#$21,(printx).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
-	subi.w	#$3,$18D58.l
-	move.w	$1A44A.l,d0
+	subi.w	#$3,(printx).l
+	move.w	(matchuptimer).l,d0
 	move.w	#$2,d1
 	cmpi.w	#$64,d0
 	blt.w	.next3
@@ -460,11 +460,11 @@ PeriodStatsPeriodRow	lea.l	$344(a2),a0
 	rts
 ; Period stats: adds a count to the total and prints it
 PeriodStatsPrintTotal	move.w	(a0)+,d0
-	add.w	d0,$1A44A.l
+	add.w	d0,(matchuptimer).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
-	subi.w	#$3,$18D58.l
+	subi.w	#$3,(printx).l
 	move.w	#$2,d1
 	cmpi.w	#$64,d0
 	blt.w	.next
@@ -494,7 +494,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	clr.w	(VertLineScrolling).l
 	clr.w	(PlayerScrollCtr).l
 	move.w	#$70,(matchupvis).l
-	tst.w	$18C08.l
+	tst.w	(OptPen).l
 	bne.w	.0
 	move.w	#$30,(matchupvis).l
 .0	bsr.w	DisplayStats
@@ -617,7 +617,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	String	CC_Font2Pri,$0,$0
 	moveq	#$E,d6
 	dc.w	$43FA,$015A		; lea.l X_29E56(pc),a1
-	tst.w	$18C08.l
+	tst.w	(OptPen).l
 	bne.w	.row
 	move.w	#$A,d6
 	dc.w	$43FA,$0236		; lea.l X_29F44(pc),a1
@@ -782,10 +782,10 @@ rtsStatTables
 updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for the team
 	
 	
-	btst	#$5,$17F6C.l
+	btst	#$5,(sflags2).l
 	beq.w	.x
 	movea.l	#tmstruct,a2
-	btst	#$6,$17F6C.l
+	btst	#$6,(sflags2).l
 	beq.w	.0
 	movea.l	#awtmstruct,a2
 .0	addi.w	#$1,$354(a2)		;one more second of power play time
@@ -806,14 +806,14 @@ GetTeamRatingTexts	dc.b	'3LIKNCKC4BJIDBJ7'
 ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) and a3 is not
 	
 	movem.l	d0,-(sp)
-	tst.w	$17FA8.l
+	tst.w	(cont2team).l
 	beq.w	.0
 	move.w	$52(a3),d0
-	cmp.w	$17BE0.l,d0
+	cmp.w	(puckc).l,d0
 	bne.w	.x
-.0	cmpi.w	#$2,$17F98.l
+.0	cmpi.w	#$2,(msgtimer).l
 	ble.w	.x
-	move.w	#$2,$17F98.l
+	move.w	#$2,(msgtimer).l
 .x	movem.l	(sp)+,d0
 	rts
 ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem prints Manual /
@@ -826,34 +826,34 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	(OptNOP).l
 	beq.w	.chkso
-	move.w	$17FA6.l,d0
-	cmp.w	$17FA8.l,d0
+	move.w	(cont1team).l,d0
+	cmp.w	(cont2team).l,d0
 	bne.w	.0
-	eori.w	#$1,$18C0E.l
+	eori.w	#$1,(goaliemode2).l
 	bra.w	.g1
-.0	btst	#$1,$17F6A.l
+.0	btst	#$1,(sflags).l
 	beq.w	.g1
-	eori.w	#$1,$18C0E.l
+	eori.w	#$1,(goaliemode2).l
 	bra.w	.chkso
-.g1	eori.w	#$1,$18C0C.l
-.chkso	btst	#$0,$17F78.l
+.g1	eori.w	#$1,(goaliemode1).l
+.chkso	btst	#$0,(gmode2).l
 	bne.w	.so
-	btst	#$2,$17F70.l
+	btst	#$2,(BA_PS_flags).l
 	beq.w	.x
-.so	btst	#$1,$17F6A.l
+.so	btst	#$1,(sflags).l
 	bne.w	.p2
 	cmpi.w	#$2,(OptNOP).l
 	bne.w	.4
-	cmpi.w	#$5,$19368.l
+	cmpi.w	#$5,(BA_Sktr_SCnum).l
 	bgt.w	.x
 	bra.w	.5
-.4	cmpi.w	#$5,$19368.l
+.4	cmpi.w	#$5,(BA_Sktr_SCnum).l
 	ble.w	.x
 .5	move.w	#$0,d0
 	cmpi.w	#$2,(OptNOP).l
 	bne.w	.6
 	move.w	#$6,d0
-.6	tst.w	$18C0C.l
+.6	tst.w	(goaliemode1).l
 	bne.w	.set1
 	move.w	#$5,d0
 	cmpi.w	#$2,(OptNOP).l
@@ -863,13 +863,13 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	bra.w	.x
 .p2	cmpi.w	#$2,(OptNOP).l
 	bne.w	.9
-	cmpi.w	#$5,$19368.l
+	cmpi.w	#$5,(BA_Sktr_SCnum).l
 	ble.w	.x
 	bra.w	.10
-.9	cmpi.w	#$5,$19368.l
+.9	cmpi.w	#$5,(BA_Sktr_SCnum).l
 	bgt.w	.x
 .10	move.w	#$6,d0
-	tst.w	$18C0E.l
+	tst.w	(goaliemode2).l
 	bne.w	.set2		;manual: the goalie
 	move.w	#$B,d0		;skater slot
 .set2	jsr	(setc2player).l
