@@ -2188,7 +2188,8 @@ assfaceoffpl						;Face off player
 	bra.w	SetSPA
 .exit	move.b	#$14,$5E(a3)
 	bra.w	assexit
-	dc.w	$4E75,$4E75
+	rts	
+	rts	
 
 donothing
 	btst	#$5,$62(a3)
@@ -4321,7 +4322,10 @@ asspassrec						;assignment for catching a pass (apassrec)
 	bpl.w	check4benchExit
 .exit	bclr	#$0,$62(a3)
 	bra.w	assexit
-	dc.w	$302B,$0044,$322B,$0046,$41FA,$7BCA,$6000,$1BCE
+	move.w	$44(a3),d0
+	move.w	$46(a3),d1
+	dc.w	$41FA,$7BCA
+	bra.w	skateto
 assshoot						;assignment for computer shooting. Assignment ashoot ($12)
 	btst	#$5,$62(a3)		;pfalock - animation locked
 	bne.w	check4benchExit

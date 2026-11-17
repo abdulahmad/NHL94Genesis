@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import segcd_flow as F, emit_m68k as E, segcd_one as S
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'); os.chdir(root)
 prog = sys.argv[1]; MIN = int(sys.argv[sys.argv.index('--min') + 1]) if '--min' in sys.argv else 6
-cfg = S.CFG[prog.upper()]; base = cfg['base']; d = open(cfg['disc'], 'rb').read()
+cfg = S.CFG[prog.upper()] if prog != 'hockey' else dict(disc='cdbin/HOCKEY.BIN', base=0x1B000, name='hockey', oaq='-');  base = cfg['base']; d = open(cfg['disc'], 'rb').read()
 ddir = 'src/segacd/' + prog
 errs, txt = S.assemble(cfg)
 rows = []
@@ -25,7 +25,7 @@ glab = {}
 for l in open('/tmp/new/%s .lst' % prog, errors='replace').read().replace('\r', '').split('\n'):
     m_ = re.match(r'^([0-9A-F]{8}) (?:[0-9A-F]{2,4} ?)*[+ ]+([A-Za-z_]\w*)\t', l)
     if m_ and not m_.group(2).startswith(('dc', 'incbin')): glab.setdefault(int(m_.group(1), 16), m_.group(2))
-files = sorted(f for f in os.listdir(ddir) if f.endswith('.asm') and f not in ('equates.asm',))
+files = sorted(f for f in os.listdir(ddir) if f.endswith('.asm') and f not in ('equates.asm', 'teamdata.asm'))
 changed = 0
 for f in files:
     L = open(os.path.join(ddir, f), encoding='latin1').read().split('\n')

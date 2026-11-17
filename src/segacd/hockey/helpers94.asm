@@ -5,11 +5,24 @@ AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from Attr
 	asr.w	#$1,d0
 	addi.w	#$19,d0
 .ex	rts
-	dc.w	$48A7,$C000,$3039,$0001,$7B80,$906B,$0000,$0C40
-	dc.w	$001E,$6E00,$0030,$3239,$0001,$7BA8,$B340,$0240
-	dc.w	$8000,$6700,$0020,$3039,$0001,$7B94,$906B,$0014
-	dc.w	$0C40,$001E,$6E00,$000E,$3239,$0001,$7BAA,$B340
-	dc.w	$0240,$8000,$4C9F,$0003,$4E75
+	movem.w	d0-d1,-(sp)
+	move.w	$17B80.l,d0
+	sub.w	$0(a3),d0
+	cmpi.w	#$1E,d0
+	bgt.w	.next
+	move.w	$17BA8.l,d1
+	eor.w	d1,d0
+	andi.w	#$8000,d0
+	beq.w	.next
+	move.w	$17B94.l,d0
+	sub.w	$14(a3),d0
+	cmpi.w	#$1E,d0
+	bgt.w	.next
+	move.w	$17BAA.l,d1
+	eor.w	d1,d0
+	andi.w	#$8000,d0
+.next	movem.w	(sp)+,d0-d1
+	rts	
 ReadGoaliePulled						;Z clear when the team of a3 pulled its goalie ($26 of the team struct).
 	
 	movem.l	a1,-(sp)

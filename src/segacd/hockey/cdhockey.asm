@@ -117,19 +117,27 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 .loop15	btst	#$1,$FF8003.l
 	beq.b	.loop15
 	rts
-	dc.w	$0839,$0007,$00FF,$800E,$66F6,$33FC,$0007,$00FF
-	dc.w	$8020,$08F9,$0006,$00FF,$800F,$0839,$0006,$00FF
-	dc.w	$800E,$67F6,$08F9,$0007,$00FF,$800F,$08B9,$0006
-	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9
-	dc.w	$0007,$00FF,$800F,$4EB9,$0002,$2268,$4E75
-	bset	#$0,$FF8003.l
-.loop16	btst	#$1,$FF8003.l
+.loop16	btst.b	#$7,$FF800E.l
 	bne.b	.loop16
+	move.w	#$7,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.loop17	btst.b	#$6,$FF800E.l
+	beq.b	.loop17
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.loop18	btst.b	#$6,$FF800E.l
+	bne.b	.loop18
+	bclr.b	#$7,$FF800F.l
+	jsr	$22268.l
+	rts	
+	bset	#$0,$FF8003.l
+.loop19	btst	#$1,$FF8003.l
+	bne.b	.loop19
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
-.loop17	move.w	#$80,d0
+.loop20	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.b	.loop17
+	bcs.b	.loop20
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 FileLoadTable					;disc only: the file load list the loader (jsr $6044.w, d7 = 8) reads through a3: 13 word pairs
@@ -165,14 +173,18 @@ BackupRamNameSize				;disc only: the same name, then the word $003D: the file si
 .loop	add.b	(a0)+,d0
 	dbra	d1,.loop
 	rts
-	dc.w	$41F9,$0001,$93BC,$303C,$0F1F,$4281,$10C1,$51C8
-	dc.w	$FFFC,$4E75
+	lea.l	$193BC.l,a0
+	move.w	#$F1F,d0
+	clr.l	d1
+.loop2	move.b	d1,(a0)+
+	dbra	d0,.loop2
+	rts	
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-.loop2	move.b	(a1)+,(a0)+
-	dbra	d1,.loop2
+.loop3	move.b	(a1)+,(a0)+
+	dbra	d1,.loop3
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
@@ -189,8 +201,8 @@ BackupRamNameSize				;disc only: the same name, then the word $003D: the file si
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-.loop3	move.b	(a0)+,(a1)+
-	dbra	d1,.loop3
+.loop4	move.b	(a0)+,(a1)+
+	dbra	d1,.loop4
 	tst.w	$193BA.l
 	bmi.w	.next4
 	jsr	$2242A.l

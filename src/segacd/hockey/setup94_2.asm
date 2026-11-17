@@ -75,10 +75,18 @@ SetupIceRinkPalRemap
 	movea.l	$47D20.l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-	dc.w	$3839,$0001,$8D56,$2479,$0004,$7D1C,$508A,$6000
-	dc.w	$9C7E,$3839,$0001,$8D4C,$2479,$0004,$7D30,$508A
-	dc.w	$6000,$9C6C,$3839,$0001,$8D56,$2479,$0004,$7D14
-	dc.w	$508A,$6000,$9C5A
+	move.w	$18D56.l,d4
+	movea.l	$47D1C.l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain
+	move.w	$18D4C.l,d4
+	movea.l	$47D30.l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain
+	move.w	$18D56.l,d4
+	movea.l	$47D14.l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain
 setupTeamBlocksMap						;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C and copy the home
 	
 	
@@ -722,7 +730,8 @@ PlayoffScreen_scrup						;Move the tree one step (PlayerScrollCtr) and stop on a
 	bne.w	rtss2
 	clr.w	(PlayerScrollCtr).l
 	rts
-	dc.w	$DEFC,$0004,$4E75
+	adda.w	#$4,sp
+	rts	
 
 waitxc1						;Each time palcount runs out, eor the color
 									;word at palfadenew+$42 with $EE and restart palcount at $18; then wait
@@ -2527,7 +2536,7 @@ ErrorScreenPrint	movea.l	#$17EF2,a0
 	bne.s	.loop15
 	bclr.b	#$7,$FF800F.l
 	dbra	d0,.loop13
-	dc.w	$6000,$FFFE
+.next	bra.w	.next
 ; Prints d0 as 8 hex digits
 PrintHexLong	moveq	#$7,d2
 .loop	rol.l	#$4,d0

@@ -8,10 +8,21 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Vertical interrupt: runs the dma list
-VBlankDmaList	dc.w	$6100,$0064,$207C,$000B,$BD30,$3039,$0001,$7F66
-	dc.w	$3239,$0001,$8D32,$6100,$9D0A,$2C79,$0001,$91CA
-	dc.w	$BDFC,$0001,$8D6A,$6700,$E428,$3226,$3026,$2066
-	dc.w	$6100,$9CF0,$BDFC,$0001,$8D6A,$6E00,$FFEE,$4E75
+VBlankDmaList	bsr.w	DmaListWait
+	movea.l	#$BBD30,a0
+	move.w	$17F66.l,d0
+	move.w	$18D32.l,d1
+	dc.w	$6100,$9D0A
+	movea.l	$191CA.l,a6
+	cmpa.l	#$18D6A,a6
+	beq.w	rtss2
+.loop	move.w	-(a6),d1
+	move.w	-(a6),d0
+	movea.l	-(a6),a0
+	dc.w	$6100,$9CF0
+	cmpa.l	#$18D6A,a6
+	bgt.w	.loop
+	rts	
 dodmalist
 	movea.l	$191CA.l,a6
 	cmpa.l	#$18D6A,a6

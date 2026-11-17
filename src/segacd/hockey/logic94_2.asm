@@ -145,13 +145,28 @@ puckflip						;start puck spinning. a3 = puck, d0 bit 0 = flip. Called from chec
 	st.b	$5C(a3)
 	move.w	#$46A,d1
 	bra.w	SetSPA
-	dc.w	$0C6B,$018A,$0006,$6600,$002A,$376B,$FF80,$0000
-	dc.w	$376B,$FF94,$0014,$426B,$0018,$7014,$0839,$0007
-	dc.w	$0001,$7F6A,$6700,$0004,$7000,$0673,$0001,$0000
-	dc.b	'NuJk',$00,$06,'g',$00,'`',$B6,'Bk',$00,$00,'7|'
-	dc.w	$012C,$0014,$377C,$000E,$0018,$4A6B,$FF94,$6A00
-	dc.w	$0012,$377C,$8000,$0004,$446B,$0014,$046B,$0001
-	dc.w	$0018,$4E75
+	cmpi.w	#$18A,$6(a3)
+	bne.w	.next2
+	move.w	-$80(a3),$0(a3)
+	move.w	-$6C(a3),$14(a3)
+	clr.w	$18(a3)
+	moveq	#$14,d0
+	btst.b	#$7,$17F6A.l
+	beq.w	.next
+	moveq	#$0,d0
+.next	addi.w	#$1,(a3,d0.w)
+	rts	
+.next2	tst.w	$6(a3)
+	beq.w	rtss2
+	clr.w	$0(a3)
+	move.w	#$12C,$14(a3)
+	move.w	#$E,$18(a3)
+	tst.w	-$6C(a3)
+	bpl.w	.ex
+	move.w	#$8000,$4(a3)
+	neg.w	$14(a3)
+	subi.w	#$1,$18(a3)
+.ex	rts	
 findpc						;find puck crossing lines: calculate when puck will cross goalline (if at
 	
 	

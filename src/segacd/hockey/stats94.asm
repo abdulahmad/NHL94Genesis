@@ -362,7 +362,10 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	rts
-	dc.w	$0107,$0707,$1818,$6060		;the entry before LineIconGroups (read with OptLine set)
+	btst	d0,d7
+	btst	d3,d7
+	move.b	(a0)+,d4
+	dc.w	$6060
 DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its player slots)
 	
 	moveq	#$6,d0
