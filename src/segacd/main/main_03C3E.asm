@@ -1219,31 +1219,67 @@ Set1MFlag_5	dcb.b	$80,0
 Set1MFlag_6	tst.w	d0
 	bne.b	.l7664
 	bra.w	Set1MFlag_7
-.l7664	dc.w	$0440,$0001
+.l7664	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l766E
 	bra.w	Set1MFlag_8
-.l766E	dc.w	$0440,$0001
+.l766E	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7678
 	bra.w	Set1MFlag_9
-.l7678	dc.w	$0440,$0001
+.l7678	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7682
 	bra.w	Set1MFlag_10
-.l7682	dc.w	$0440,$0001
+.l7682	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l768C
 	bra.w	Set1MFlag_11
-.l768C	dc.w	$0440,$0001
+.l768C	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7696
 	bra.w	Z80ReadStatus
-.l7696	dc.w	$0440,$0001
+.l7696	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l76A0
 	bra.w	Set1MFlag_22
-.l76A0	dc.w	$0440,$0001
+.l76A0	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l76AA
 	bra.w	Set1MFlag_23
-.l76AA	dc.w	$0440,$0001
+.l76AA	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l76B4
 	bra.w	Set1MFlag_24
-.l76B4	dc.w	$0440,$0001
+.l76B4	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	bne.b	.l76BE
 	bra.w	Set1MFlag_25
 .l76BE	move.w	#$1,d0

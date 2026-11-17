@@ -43,13 +43,25 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.l	(a5,d7.w),d5
 .l7856	tst.b	(a0,d5.l)
 	bpl.b	.l7864
-	dc.w	$0685,$0000,$0001
+	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7856
-.l7864	dc.w	$0685,$0000,$0001
+.l7864	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	tst.b	(a0,d5.l)
 	bpl.b	.l787C
 	move.b	(a0,d5.l),$2(a1,d7.w)
-	dc.w	$0685,$0000,$0001
+	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 .l787C	move.b	$2(a1,d7.w),d0
 	andi.b	#$F0,d0
 	cmpi.b	#$90,d0
@@ -65,7 +77,11 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l78B6
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.w	.l7A16
 .l78B6	clr.l	d0
 	move.b	$2(a0,d5.l),d0
@@ -85,12 +101,24 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	andi.b	#$F,d0
 	or.b	d1,d0
 	bsr.w	SndSlotAdd
-	dc.w	$0685,$0000,$0002
+	opt	oaq-
+	opt	osq-
+	addi.l	#$2,d5
+	opt	oaq+
+	opt	osq+
 .l78F4	tst.b	(a0,d5.l)
 	bpl.b	.l7902
-	dc.w	$0685,$0000,$0001
+	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l78F4
-.l7902	dc.w	$0685,$0000,$0001
+.l7902	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.w	.l79F4
 .l790C	cmpi.b	#$B0,d0
 	bne.b	.l797E
@@ -124,9 +152,17 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l7976
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.w	.l7A16
-.l7976	dc.w	$0685,$0000,$0002
+.l7976	opt	oaq-
+	opt	osq-
+	addi.l	#$2,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l79F4
 .l797E	cmpi.b	#$C0,d0
 	bne.b	.l79B0
@@ -140,9 +176,17 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l79A8
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7A16
-.l79A8	dc.w	$0685,$0000,$0001
+.l79A8	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l79F4
 .l79B0	cmpi.b	#$E0,d0
 	bne.b	.l79E2
@@ -156,9 +200,17 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l79DA
-	dc.w	$0671,$0001,$7000
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a1,d7.w)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7A16
-.l79DA	dc.w	$0685,$0000,$0001
+.l79DA	opt	oaq-
+	opt	osq-
+	addi.l	#$1,d5
+	opt	oaq+
+	opt	osq+
 	bra.b	.l79F4
 .l79E2	cmpi.b	#$FF,$2(a1,d7.w)
 	bne.b	.l79F4
@@ -176,7 +228,11 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bne.b	.l7A16
 	bra.w	.l77F0
 .l7A16	lea.l	Set1MFlag_40(pc),a0
-	dc.w	$0650,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a0)
+	opt	oaq+
+	opt	osq+
 	cmpi.w	#$8,(a0)
 	blt.w	.l77F0
 	bsr.w	Z80LoadPending
@@ -193,7 +249,11 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	clr.w	d0
 .l7A52	cmpi.l	#$FFFFFFFF,(a1)+
 	beq.b	.l7A6A
-	dc.w	$0640,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	cmpi.w	#$8,d0
 	bne.b	.l7A52
 	move.w	#$7,d0
@@ -207,7 +267,11 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	lsl.w	#$8,d1
 	move.b	(a0),d1
 	lsl.w	#$1,d1
-	dc.w	$0641,$0002
+	opt	oaq-
+	opt	osq-
+	addi.w	#$2,d1
+	opt	oaq+
+	opt	osq+
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,$0(a1)
 	move.w	$1C6(a1),d0
@@ -233,7 +297,11 @@ Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
 	clr.w	d0
 .l7AE8	cmp.w	(a0)+,d1
 	beq.b	.l7B00
-	dc.w	$0640,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	cmpi.w	#$8,d0
 	bne.b	.l7AE8
 	move.w	#$3,d0
@@ -336,9 +404,17 @@ Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 	bra.b	.l7C70
 .l7C54	move.w	d2,d1
 	lsl.w	#$2,d1
-	dc.w	$0641,$0002
+	opt	oaq-
+	opt	osq-
+	addi.w	#$2,d1
+	opt	oaq+
+	opt	osq+
 	move.l	d0,(a0,d1.w)
-	dc.w	$0642,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	move.w	d2,(a0)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
@@ -355,7 +431,11 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 	beq.b	.l7CA2
 	bsr.w	Z80ReleaseBus
 	move.w	#$64,d1
-.l7C9A	dc.w	$0441,$0001
+.l7C9A	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d1
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7C9A
 	bra.b	.l7C84
 .l7CA2	adda.l	#$1,a0
@@ -435,7 +515,11 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 .l7D96	cmpi.b	#$FF,(a1)
 	beq.b	.l7DC0
 	adda.l	#$4,a1
-	dc.w	$0442,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7D96
 	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
@@ -455,7 +539,11 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	lsl.w	#$8,d2
 	move.b	$A00023.l,d2
 .l7DF0	move.b	(a0)+,(a1,d2.w)
-	dc.w	$0642,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	dbra	d1,.l7DF0
 	move.b	d2,$A00023.l
 	lsr.w	#$8,d2
@@ -494,7 +582,11 @@ SndSlotFind	movem.l	d0-d2/a0-a1,-(sp)
 	bne.b	.l7E7E
 	move.w	#$1,(a1)
 .l7E7E	adda.l	#$4,a1
-	dc.w	$0441,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d1
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7E6A
 .l7E8A	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
@@ -507,7 +599,11 @@ SndSlotAdd	movem.l	d0-d1/a0,-(sp)
 	lea.l	Set1MFlag_39(pc),a0
 	move.l	d0,(a0,d1.w)
 	lea.l	Set1MFlag_31(pc),a0
-	dc.w	$0668,$0001,$0122
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,$122(a0)
+	opt	oaq+
+	opt	osq+
 	movem.l	(sp)+,d0-d1/a0
 	rts
 Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
@@ -517,7 +613,11 @@ Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
 	lea.l	Set1MFlag_39(pc),a0
 .l7ED0	cmpi.w	#$FFFF,(a0)
 	beq.b	.l7F2A
-	dc.w	$0450,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,(a0)
+	opt	oaq+
+	opt	osq+
 	bne.b	.l7F24
 	move.b	$3(a0),d0
 	andi.b	#$F0,d0
@@ -529,15 +629,27 @@ Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	beq.b	.l7F02
-	dc.w	$0650,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,(a0)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7F24
 .l7F02	lea.l	Set1MFlag_39(pc),a1
 	dc.w	$303A,$0634
-	dc.w	$0440,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d0
+	opt	oaq+
+	opt	osq+
 	lsl.w	#$2,d0
 	move.l	(a1,d0.w),(a0)
 	move.l	#$FFFFFFFF,(a1,d0.w)
-	dc.w	$046A,$0001,$0122
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,$122(a2)
+	opt	oaq+
+	opt	osq+
 	bra.b	.l7ED0
 .l7F24	adda.w	#$4,a0
 	bra.b	.l7ED0
@@ -707,12 +819,20 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	bne.b	.l8162
 	adda.l	d4,a2
 	adda.l	#$4,a0
-	dc.w	$0443,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d3
+	opt	oaq+
+	opt	osq+
 	bne.b	.l8116
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 .l8180	adda.l	#$4,a1
-	dc.w	$0442,$0001
+	opt	oaq-
+	opt	osq-
+	subi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
 	bne.w	.l80D6
 	move.w	#$3,d0
 	ori.b	#$1,ccr
@@ -776,8 +896,16 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 .l8256	cmpi.w	#$1F00,d2
 	beq.b	.l826C
 	move.b	(a2,d2.w),(a2,d1.w)
-	dc.w	$0642,$0001
-	dc.w	$0641,$0001
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d2
+	opt	oaq+
+	opt	osq+
+	opt	oaq-
+	opt	osq-
+	addi.w	#$1,d1
+	opt	oaq+
+	opt	osq+
 	bra.b	.l8256
 .l826C	clr.w	d1
 	move.b	$2(a1),d1
