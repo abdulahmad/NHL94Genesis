@@ -754,15 +754,3 @@ VdpInitRegs	movem.l	d2-d7/a1-a2,-(sp)
 	dcb.b	$94,0
 ; VDP shadow register and list buffers
 VdpShadowBuffers	dcb.b	$80,0
-	dc.b	$C3,$00,$06,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .....Q...Q...Q..
-	dc.b	$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00,$C3,$51,$10,$00	; .Q...Q...Q...Q..
-	dc.b	$18,$4F,$18,$4F,$14,$48,$16,$49,$18,$4B	; .O.O.H.I.K
-	dcb.b	$5D6,0
-	incbin	..\Extracted\SegaCD\MAIN\main_0640C.bin
-.next	incbin	..\Extracted\SegaCD\MAIN\main_067E8.bin
-.next2	incbin	..\Extracted\SegaCD\MAIN\main_06BD0.bin
-; Data of VdpShadowBuffers (4 rows): table or constants used by it.
-	dcb.b	$301,0
-	dc.b	$FF	; .
-	dcb.b	$200,0
-	dc.b	$FF,$FE,$03,$00,$C0,$00,$00	; .......

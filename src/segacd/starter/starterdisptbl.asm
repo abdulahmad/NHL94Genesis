@@ -1,3 +1,4 @@
+; Data block of 600 bytes at $556E in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0556E.bin
 ; Data of the file start (25 rows): table or constants used by it.
 	dcb.b	$B,0
@@ -204,6 +205,7 @@
 	dcb.b	$11,0
 	dc.b	$90,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70	; ....p...p...p
 	dcb.b	$A,0
+; Data block of 601 bytes at $6869 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_06869.bin
 ; Data of the file start (40 rows): table or constants used by it.
 	dcb.b	$14,0
@@ -364,6 +366,7 @@ DispTableA	subi.w	#$7,d6
 	dcb.b	$10,0
 	dc.b	$99,$99,$B9,$92,$14,$56,$78,$9B,$11,$14,$46,$89,$54,$55,$66,$99	; .....Vx...F.TUf.
 	dcb.b	$10,0
+; Data block of 1093 bytes at $7512 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_07512.bin
 ; Data of DispTableA (58 rows): table or constants used by it.
 	dcb.b	$B,0
@@ -424,6 +427,7 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$B0,$00,$00,$00,$20,$00,$00,$00,$B0,$00,$00,$00,$22,$00,$00,$00	; .... ......."...
 	dc.b	$BB,$BB,$2B,$B2,$89,$99,$99,$87,'DUVT',$11,$11,$11,$44	; ..+.....DUVT...D
 	dcb.b	$10,0
+; Data block of 654 bytes at $7CD2 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_07CD2.bin
 ; Data of DispTableA (26 rows): table or constants used by it.
 	dcb.b	$1F,0
@@ -452,6 +456,7 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$20,$00,$00,$00,$00,$00,$22,$00,$00,$00,$22,$00,$00,$00,$02,$00	;  ....."...".....
 	dc.b	$00,$00,$02	; ...
 	dcb.b	$10,0
+; Data block of 2080 bytes at $8102 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_08102.bin
 ; Data of DispTableA (402 rows): table or constants used by it.
 	dcb.b	$17,0
@@ -856,9 +861,11 @@ DispTableA	subi.w	#$7,d6
 	dc.b	$39,$B1,$41,$E4,$41,$E5,$41,$E6,$00,$00,$00,$00,$39,$B1,$41,$E7	; 9.A.A.A.....9.A.
 	dc.b	$41,$E8	; A.
 	dcb.b	$1EE,0
+; Data block of 1568 bytes at $A248 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0A248.bin
 ; Data of DispTableA (1 row): table or constants used by it.
 	dcb.b	$1D,0
+; Data block of 2845 bytes at $A885 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0A885.bin
 ; Data of DispTableA (23 rows): table or constants used by it.
 	dcb.b	$200,0
@@ -933,6 +940,7 @@ DispTableF	ori.b	#$0,d0
 .next	dcb.b	$D1,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u
 	dcb.b	$202,0
+; Data block of 65596 bytes at $BC64 in STARTER.BIN: film player / boot screen data (not plain 4bpp tiles; the stream starts with a length word, so it is packed).
 	incbin	..\Extracted\SegaCD\STARTER\starter_0BC64.bin
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7

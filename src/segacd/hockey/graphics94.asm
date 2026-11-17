@@ -18,10 +18,13 @@ NHLPALogoMapDisc					;disc only: graphics after Card001 (through the end of $2B6
 									;cartridge's NHLPALogoMap data from byte $780 to $49B4, then more map data
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_28DE8.bin
 
+; Continuation of the graphics block above (4096 bytes at $2965C in HOCKEY.BIN).
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_2965C.bin
 
+; Continuation of the graphics block above (4096 bytes at $2A65C in HOCKEY.BIN).
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_2A65C.bin
 
+; Continuation of the graphics block above (4096 bytes at $2B65C in HOCKEY.BIN).
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_2B65C.bin
 
 TileNumberTables					;disc only: tables of VDP tile numbers (word rows of consecutive numbers), then the pointer

@@ -18,6 +18,7 @@
 	include	segacd\main\mainctrl.asm
 	include	segacd\main\maindrawb.asm
 	include	segacd\main\maincmd.asm
+	include	segacd\main\z80driver.asm
 	include	segacd\main\mainsound.asm
 	include	segacd\main\z80load.asm
 	include	segacd\main\mainsound2.asm
