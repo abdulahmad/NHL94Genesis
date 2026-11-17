@@ -235,7 +235,7 @@ checkob						;bring up little warning ref if a player on your team is over blue 
 	btst	#$5,$17F68.l
 	beq.w	check4benchExit
 	btst	#$2,$17F70.l
-	bne.w	.ex2
+	bne.w	.ex
 	movem.l	d0-d1/a0,-(sp)
 	moveq	#$5,d0		;6 players of a3's team
 	movea.l	#$17480,a0
@@ -257,15 +257,15 @@ checkob						;bring up little warning ref if a player on your team is over blue 
 .nob	moveq	#$40,d0		;no one offside: d0 = $40 = clear the ref window (PushRef)
 	bclr	#$7,$17F6C.l		;clear the offsides ref flag
 	bne.w	.next		;it was on: update the ref
-.ex	movem.l	(sp)+,d0-d1/a0
-.ex2	rts
+.loop	movem.l	(sp)+,d0-d1/a0
+.ex	rts
 .ob	moveq	#$6,d0
 	bset	#$7,$17F6C.l		;someone is offsides: show the little ref
-	bne.w	.ex		;already shown
+	bne.w	.loop		;already shown
 .next	tst.w	$1806E.l
-	bpl.w	.ex
+	bpl.w	.loop
 	bsr.w	PushRef
-	bra.w	.ex
+	bra.w	.loop
 .next2	cmp.w	$17B94.l,d1
 	blt.w	.nob
 .top1	tst.w	$34(a0)		;loop over the team's players (top goal)
@@ -612,11 +612,11 @@ asspassrec						;assignment for catching a pass (apassrec)
 	bpl.w	.exit		;exit if puck still in possession
 	addi.w	#$1,$46(a3)		;add to temp4
 	beq.w	.next		;branch if temp4 is zero
-	bpl.w	.ex2		;branch if temp4 is positive
+	bpl.w	.next3		;branch if temp4 is positive
 .next	tst.w	$17EBC.l
-	bpl.w	.ex2
+	bpl.w	.next3
 	tst.w	$34(a3)		;test if goalie
-	beq.w	.ex2		;exit if goalie
+	beq.w	.next3		;exit if goalie
 	move.w	d0,-(sp)		;push d0 on stack
 	clr.w	$46(a3)		;clear temp4
 	move.w	#$1,d0
@@ -647,7 +647,7 @@ asspassrec						;assignment for catching a pass (apassrec)
 	move.w	#$23,d0
 	jmp	(assreplace).l
 .pop	move.w	(sp)+,d0
-.ex2	sub.b	d7,$40(a3)
+.next3	sub.b	d7,$40(a3)
 	bpl.w	check4benchExit
 .exit	bclr	#$0,$62(a3)
 	bra.w	assexit

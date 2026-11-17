@@ -261,7 +261,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
-.loop4	cmp.w	$18A98.l,d1
+.loop2	cmp.w	$18A98.l,d1
 	beq.w	.crn
 	cmpi.w	#$4,$4(a0)
 	beq.w	.crn
@@ -271,12 +271,12 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	move.l	#$C8,d0
 	jsr	(randomd0).l
 	andi.w	#$1,d0
-	beq.w	.loop4
+	beq.w	.loop2
 	subi.w	#$1,$4(a0)
 	addi.w	#$1,$6(a0)
-	bra.w	.loop4
+	bra.w	.loop2
 .crn	suba.w	#$10,a0
-	dbra	d1,.loop4
+	dbra	d1,.loop2
 	movea.l	#$18D26,a3
 	bsr.w	WritePassBits
 	bset	#$2,$17F6E.l
@@ -287,13 +287,13 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	mulu.w	d1,d3
 	adda.w	d3,a0
 	clr.w	d3
-.loop2	cmpi.w	#$4,$4(a0)
+.loop3	cmpi.w	#$4,$4(a0)
 	beq.w	.2
 	bset	d1,d3
 .2	clr.w	$4(a0)
 	clr.w	$6(a0)
 	suba.w	#$10,a0
-	dbra	d1,.loop2
+	dbra	d1,.loop3
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
@@ -303,7 +303,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	addi.w	#$1,$18A9E.l
 	rts
 .notbos	clr.w	d3
-.loop3	move.w	$A(a0),d0
+.loop4	move.w	$A(a0),d0
 	cmp.w	$C(a0),d0
 	bhi.w	.3
 	bset	d1,d3
@@ -311,7 +311,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.nb2
 	bchg	d1,d3
 .nb2	suba.w	#$10,a0
-	dbra	d1,.loop3
+	dbra	d1,.loop4
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
@@ -333,8 +333,8 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	movem.l	d0/a1,-(sp)
 	bset	#$3,(disflags).l
 	move.w	(ScoutSubStatus).l,d0
-.loop2	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.loop2
+.loop	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.loop
 	movem.l	(sp)+,d0/a1
 	movem.l	d0-d5/a0-a4,-(sp)
 	jsr	(printz).l
@@ -357,7 +357,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bsr.w	CalcStarScores
 	move.w	#$12,(printy).l
 	moveq	#$2,d2
-.loop	bsr.w	TakeTopStarScore
+.loop2	bsr.w	TakeTopStarScore
 	move.w	#$1A,(printx).l
 	addi.w	#$1,(printy).l
 	movea.l	$1E(a2),a1
@@ -367,7 +367,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bsr.w	GetPlayerNameBuild
 	move.w	#$3,(printx).l
 	jsr	(print).l
-	dbra	d2,.loop
+	dbra	d2,.loop2
 	move.w	$18358.l,d0
 	sub.w	$186BE.l,d0
 	ble.w	.nosong		;home didn't win

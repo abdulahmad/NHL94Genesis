@@ -1,7 +1,7 @@
 skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to skate to,
 	
 	sub.b	d7,$42(a3)
-	bpl.w	.ex
+	bpl.w	.next
 	addi.b	#$C,$42(a3)
 	bsr.w	avdgoal
 	movem.w	d0-d1,-(sp)
@@ -29,10 +29,10 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 .nvt	jsr	(a0)
 	move.b	d0,$43(a3)
 	cmpi.w	#$7,d0
-	ble.w	.ex
+	ble.w	.next
 	move.w	$28(a3),d0
 	or.w	$2A(a3),d0
-	bne.w	.ex
+	bne.w	.next
 	move.w	$17B80.l,d0
 	move.w	$17B94.l,d1
 	btst	#$0,$17BE3.l
@@ -43,7 +43,7 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 	sub.w	$14(a3),d1
 	bsr.w	vtoa
 	sub.w	$54(a3),d0
-	beq.w	.ex
+	beq.w	.next
 	neg.w	d0
 	andi.w	#$4,d0
 	lsr.w	#$1,d0
@@ -51,7 +51,7 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 	add.w	$54(a3),d0
 	andi.w	#$7,d0
 	move.w	d0,$54(a3)
-.ex	clr.w	d0
+.next	clr.w	d0
 	move.b	$43(a3),d0
 	bra.w	doplayeracc
 avdgoal	clr.w	$17EEA.l
@@ -144,7 +144,7 @@ skatetopuckinit						;d0/d1 = puck x/y plus half the high byte of its
 skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	bsr.w	skatetopuckinit
 	sub.b	d7,$42(a3)
-	bpl.w	.ex
+	bpl.w	.next
 	addi.b	#$A,$42(a3)
 	bsr.w	avdgoal
 	movem.w	d0-d1,-(sp)
@@ -163,13 +163,13 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	bsr.w	vtoa
 	move.b	d0,$43(a3)
 	tst.w	$34(a3)
-	beq.w	.ex
+	beq.w	.next
 	move.w	$17BA8.l,d0
 	move.w	$17BAA.l,d1
 	bsr.w	vtoa
 	eori.w	#$4,d0
 	cmp.w	$54(a3),d0
-	beq.w	.ex
+	beq.w	.next
 	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
 	move.w	$17B94.l,d1
@@ -178,15 +178,15 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	bsr.w	vtoa
 	cmp.w	$54(a3),d0
 	movem.w	(sp)+,d0-d1
-	bne.w	.ex
+	bne.w	.next
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmpi.l	#$384,d0
-	bls.w	.ex
+	bls.w	.next
 	cmpi.l	#$5A4,d0
 	bls.w	Sweepcheck
-.ex	move.b	$43(a3),d0
+.next	move.b	$43(a3),d0
 	bra.w	doplayeracc
 assexit
 	addi.w	#$1,$36(a3)

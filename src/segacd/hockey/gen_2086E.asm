@@ -349,7 +349,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	jsr	$2A9D0.l
 	bsr.w	SprSortSetup
 	btst	#$0,$17F6A.l
-	bne.w	.ex
+	bne.w	.next
 	bsr.w	printz
 	String	CC_Font1,$0,$0
 	moveq	#$20,d0
@@ -357,7 +357,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	move.w	#$7FF,d2
 	bsr.w	eraser
 	bsr.w	printscores1
-.ex	movem.l	(sp)+,d0-d7/a0-a6
+.next	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 SetHor						;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -382,12 +382,12 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bsr.w	dobitmap
 	bsr.w	USBoard
 	btst	#$0,$17F6A.l
-	bne.w	.ex
+	bne.w	.next
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
 	bsr.w	DoDMANd2Queue
-.ex	movem.l	(sp)+,d0-d7/a0-a6
+.next	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
 	
@@ -419,7 +419,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 .1	bsr.w	PrintTickerEntry
 	bsr.w	EASNLogo
 	btst	#$0,$17F6E.l
-	bne.w	.ex
+	bne.w	.loop
 	bsr.w	printz
 	String	CC_Font1Pri,$17,$17
 	moveq	#$8,d0
@@ -433,7 +433,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	String	CC_Font1Pri,$18,$18
 	adda.w	#$366,a2
 	bsr.w	printscores1_ps
-.ex	movem.l	(sp)+,d0-d2/a0-a3
+.loop	movem.l	(sp)+,d0-d2/a0-a3
 	rts
 .sbscreen	bsr.w	printz
 	String	CC_Font2Pri,$11,$2
@@ -457,7 +457,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	adda.w	#$366,a2		;tmsize
 	moveq	#$2C,d0
 	bsr.w	PrintTeamLogoAndScore
-	bra.w	.ex
+	bra.w	.loop
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 	
 	movea.l	$1E(a2),a1
@@ -609,7 +609,7 @@ AvgCline						;Return d0 = average energy of current line on team a2
 .next	adda.w	#$80,a0
 	dbra	d2,.loop
 	tst.w	d1
-	beq.w	.ex
+	beq.w	.next2
 	divu.w	d1,d0
-.ex	movem.l	(sp)+,d1-d3/a0
+.next2	movem.l	(sp)+,d1-d3/a0
 	rts

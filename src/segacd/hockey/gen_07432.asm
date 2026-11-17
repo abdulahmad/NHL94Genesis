@@ -404,9 +404,9 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	
 	
 	btst	#$7,$17F6A.l
-	bne.w	.ex1
+	bne.w	.ex2
 	btst	#$0,$17F78.l
-	bne.w	.ex1
+	bne.w	.ex2
 	btst	#$0,$17F6E.l
 	bne.w	.ex
 	btst	#$7,$17F74.l
@@ -414,7 +414,7 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	tst.w	$17F82.l
 	beq.w	.next
 	subi.w	#$1,$17F82.l
-	bpl.w	.ex1
+	bpl.w	.ex2
 	clr.w	$17F82.l
 .ex	rts
 .next	move.w	$17F8E.l,d0
@@ -425,7 +425,7 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	asr.l	#$2,d0
 	addi.w	#$6,d0
 	cmp.w	$17CD8.l,d0
-	bgt.w	.ex1
+	bgt.w	.ex2
 	bset	#$7,$17F74.l
 	rts
 .next2	move.w	$17F90.l,d0
@@ -436,7 +436,7 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	blt.w	.next3
 	bclr	#$7,$17F74.l
 .next3	sub.w	d7,$17F84.l
-	bpl.w	.ex1
+	bpl.w	.ex2
 	move.w	#$14,$17F84.l
 	addi.w	#$1,$17F86.l
 	move.w	$17CD8.l,d0
@@ -454,7 +454,7 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	bra.w	.stack
 .stack	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
-.ex1	rts
+.ex2	rts
 stopna2						;Slow Xvel and Yvel of a3 toward 0 by $7D0. Called from goalieacc
 	tst.w	$28(a3)
 	bpl.w	.xp

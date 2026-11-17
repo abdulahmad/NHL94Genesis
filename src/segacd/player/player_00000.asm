@@ -82,13 +82,13 @@ X_1B9CSub4	movem.l	d0-d2/d7/a0-a1,-(sp)
 	add.l	d2,$C(a6)
 	move.l	$8(a0),$14(a6)
 	add.l	d2,$14(a6)
-X_1B9CSub5	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$40,d0
 	jsr	$6044.w
 	move.l	a0,$70(a6)
 	movem.l	(sp)+,d0-d2/d7/a0-a1
-X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$22,d0
 	jsr	$6044.w
@@ -640,7 +640,7 @@ LCAA	move.l	#$6,d0
 	add.w	$7E(a6),d1
 	lea.l	X_1B9C(pc),a1
 	movea.l	d0,a2
-LCAASub1	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -660,7 +660,7 @@ LCAASub1	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$2(a2),a2
 	move.l	a2,$48(a6)
 	movea.l	d1,a2
-LCAASub2	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -668,9 +668,9 @@ LCAASub2	movem.l	d0-d2/d7/a0-a1,-(sp)
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	movea.l	$20(a6),a2
 	move.l	a2,d2
-.loop	add.l	d2,(a2)+
+.loop2	add.l	d2,(a2)+
 	tst.w	(a2)
-	bpl.w	.loop
+	bpl.w	.loop2
 	lea.l	$34(a6),a3
 	lea.l	-$10(a2),a4
 	move.l	(a4)+,(a3)+
@@ -1275,58 +1275,58 @@ PlDecodePicture	movem.l	d0-d7/a0-a4,-(sp)
 .loop23	btst.b	#$6,$FF800E.l
 	bne.b	.loop23
 	bclr.b	#$7,$FF800F.l
-LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$2,d7
 	movea.l	$A2(a6),a0
 	jsr	$6044.w
 	move.w	$7C(a6),d0
 	cmpi.w	#$0,$18(a6)
-	beq.w	.next
+	beq.w	.next3
 	move.w	$7E(a6),d0
-.next	mulu.w	#$34,d0
+.next3	mulu.w	#$34,d0
 	lea.l	PlRecordTable(pc),a0
 	adda.l	d0,a0
 	move.l	a0,$68(a6)
-	bra.w	.next3
-.loop	bset.b	#$5,$FF800F.l
-.loop2	moveq	#$7,d0
+	bra.w	.next5
+.loop24	bset.b	#$5,$FF800F.l
+.loop25	moveq	#$7,d0
 	bsr.w	LEAA
 	bsr.w	UpdatePad1
 	move.w	d1,d5
 	bsr.w	UpdatePad2
 	or.w	d1,d5
 	cmpi.b	#$10,d5
-	bne.w	.next2
+	bne.w	.next4
 	addi.w	#$1,$66(a6)
-	bra.w	.next3
-.next2	cmpi.b	#$20,d5
-	beq.w	.next3
-	cmpi.b	#$4,d5
-	beq.w	.loop2
-	cmpi.b	#$1,d5
-	beq.w	.loop2
-	cmpi.b	#$2,d5
-	beq.w	.loop2
-	cmpi.b	#$0,d5
-	beq.w	.loop2
-	move.w	d5,$AE(a6)
 	bra.w	.next5
-.next3	movea.l	$68(a6),a0
+.next4	cmpi.b	#$20,d5
+	beq.w	.next5
+	cmpi.b	#$4,d5
+	beq.w	.loop25
+	cmpi.b	#$1,d5
+	beq.w	.loop25
+	cmpi.b	#$2,d5
+	beq.w	.loop25
+	cmpi.b	#$0,d5
+	beq.w	.loop25
+	move.w	d5,$AE(a6)
+	bra.w	.next7
+.next5	movea.l	$68(a6),a0
 	moveq	#$0,d1
 	move.w	$66(a6),d1
 	add.w	d1,d1
 	add.w	d1,d1
 	move.l	(a0,d1.l),d1
 	cmpi.l	#$FFFFFFFF,d1
-	bne.w	.next4
+	bne.w	.next6
 	clr.w	$66(a6)
 	move.l	(a0),d1
-.next4	lea.l	LF64_8(pc),a0
+.next6	lea.l	LF64_8(pc),a0
 	move.l	#$1,d0
 	move.w	#$7,d7
 	jsr	$6044.w
-	bra.w	.loop
-.next5	movea.l	$74(a6),a1
+	bra.w	.loop24
+.next7	movea.l	$74(a6),a1
 	move.w	$2(a1),d0
 	lea.l	$4(a1),a1
 	lsl.w	#$4,d0
@@ -1335,11 +1335,11 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$BC000,a2
 	move.l	a2,$E4(a6)
 	subq.w	#$1,d0
-.loop3	move.w	(a1)+,(a2)+
-	dbra	d0,.loop3
+.loop26	move.w	(a1)+,(a2)+
+	dbra	d0,.loop26
 	move.w	#$1,$DE(a6)
-.loop4	tst.w	$DE(a6)
-	bne.w	.loop4
+.loop27	tst.w	$DE(a6)
+	bne.w	.loop27
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.w	#$B000,d3
 	move.l	#$80,d6
@@ -1348,71 +1348,71 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$1C,$E2(a6)
 	clr.w	$E0(a6)
 	move.w	#$A,$DE(a6)
-.loop5	tst.w	$DE(a6)
-	bne.w	.loop5
+.loop28	tst.w	$DE(a6)
+	bne.w	.loop28
 	move.l	#$1000,d0
 	bsr.w	PlDmaRequest
 	move.l	#$20001000,d0
 	bsr.w	PlDmaRequest
-.loop6	btst.b	#$7,$FF800E.l
-	bne.b	.loop6
+.loop29	btst.b	#$7,$FF800E.l
+	bne.b	.loop29
 	move.l	#$70000003,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop7	btst.b	#$6,$FF800E.l
-	beq.b	.loop7
+.loop30	btst.b	#$6,$FF800E.l
+	beq.b	.loop30
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop8	btst.b	#$6,$FF800E.l
-	bne.b	.loop8
+.loop31	btst.b	#$6,$FF800E.l
+	bne.b	.loop31
 	bclr.b	#$7,$FF800F.l
-.loop9	btst.b	#$7,$FF800E.l
-	bne.b	.loop9
+.loop32	btst.b	#$7,$FF800E.l
+	bne.b	.loop32
 	move.w	#$0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop10	btst.b	#$6,$FF800E.l
-	beq.b	.loop10
+.loop33	btst.b	#$6,$FF800E.l
+	beq.b	.loop33
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop11	btst.b	#$6,$FF800E.l
-	bne.b	.loop11
+.loop34	btst.b	#$6,$FF800E.l
+	bne.b	.loop34
 	bclr.b	#$7,$FF800F.l
-.loop12	btst.b	#$7,$FF800E.l
-	bne.b	.loop12
+.loop35	btst.b	#$7,$FF800E.l
+	bne.b	.loop35
 	move.w	$F2(a6),$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop13	btst.b	#$6,$FF800E.l
-	beq.b	.loop13
+.loop36	btst.b	#$6,$FF800E.l
+	beq.b	.loop36
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop14	btst.b	#$6,$FF800E.l
-	bne.b	.loop14
+.loop37	btst.b	#$6,$FF800E.l
+	bne.b	.loop37
 	bclr.b	#$7,$FF800F.l
-.loop15	btst.b	#$7,$FF800E.l
-	bne.b	.loop15
+.loop38	btst.b	#$7,$FF800E.l
+	bne.b	.loop38
 	move.l	#$40000010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop16	btst.b	#$6,$FF800E.l
-	beq.b	.loop16
+.loop39	btst.b	#$6,$FF800E.l
+	beq.b	.loop39
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop17	btst.b	#$6,$FF800E.l
-	bne.b	.loop17
+.loop40	btst.b	#$6,$FF800E.l
+	bne.b	.loop40
 	bclr.b	#$7,$FF800F.l
-.loop18	btst.b	#$7,$FF800E.l
-	bne.b	.loop18
+.loop41	btst.b	#$7,$FF800E.l
+	bne.b	.loop41
 	move.w	#$0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop19	btst.b	#$6,$FF800E.l
-	beq.b	.loop19
+.loop42	btst.b	#$6,$FF800E.l
+	beq.b	.loop42
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop20	btst.b	#$6,$FF800E.l
-	bne.b	.loop20
+.loop43	btst.b	#$6,$FF800E.l
+	bne.b	.loop43
 	bclr.b	#$7,$FF800F.l
 	move.w	#$0,d3
 	andi.w	#$7FFF,d5
@@ -1420,8 +1420,8 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a2,a1
 	bsr.w	PlCopyRectToVdp
 	move.w	#$4,$DE(a6)
-.loop21	tst.w	$DE(a6)
-	bne.w	.loop21
+.loop44	tst.w	$DE(a6)
+	bne.w	.loop44
 	move.w	$EE(a6),d3
 	andi.w	#$7FFF,d5
 	move.l	#$100,d6
@@ -1429,35 +1429,35 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	PlCopyRectToVdp
 	move.l	#$1000,d0
 	bsr.w	PlDmaRequest
-.loop22	btst.b	#$7,$FF800E.l
-	bne.b	.loop22
+.loop45	btst.b	#$7,$FF800E.l
+	bne.b	.loop45
 	move.l	#$70000003,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop23	btst.b	#$6,$FF800E.l
-	beq.b	.loop23
+.loop46	btst.b	#$6,$FF800E.l
+	beq.b	.loop46
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop24	btst.b	#$6,$FF800E.l
-	bne.b	.loop24
+.loop47	btst.b	#$6,$FF800E.l
+	bne.b	.loop47
 	bclr.b	#$7,$FF800F.l
-.loop25	btst.b	#$7,$FF800E.l
-	bne.b	.loop25
+.loop48	btst.b	#$7,$FF800E.l
+	bne.b	.loop48
 	move.w	$F2(a6),$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop26	btst.b	#$6,$FF800E.l
-	beq.b	.loop26
+.loop49	btst.b	#$6,$FF800E.l
+	beq.b	.loop49
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop27	btst.b	#$6,$FF800E.l
-	bne.b	.loop27
+.loop50	btst.b	#$6,$FF800E.l
+	bne.b	.loop50
 	bclr.b	#$7,$FF800F.l
 	clr.w	$E2(a6)
 	clr.w	$E0(a6)
 	move.w	#$A,$DE(a6)
-.loop28	tst.w	$DE(a6)
-	bne.w	.loop28
+.loop51	tst.w	$DE(a6)
+	bne.w	.loop51
 	move.l	#$B0000800,d0
 	bsr.w	PlDmaRequest
 	bsr.w	LCAA

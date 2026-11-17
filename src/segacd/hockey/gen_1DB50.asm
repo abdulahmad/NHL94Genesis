@@ -419,7 +419,7 @@ PushNumberWidth						;right-justified number
 .mul	mulu.w	#$A,d2
 .next	dbra	d1,.mul
 	moveq	#$20,d3
-.loop2	ext.l	d0
+.loop	ext.l	d0
 	divu.w	d2,d0
 	bne.w	.0
 	cmpi.w	#$1,d2
@@ -431,7 +431,7 @@ PushNumberWidth						;right-justified number
 .put	move.b	d0,(a1)+
 	swap	d0
 	divu.w	#$A,d2
-	bne.w	.loop2
+	bne.w	.loop
 	move.l	a1,d0
 	subi.l	#$17F56,d0
 	btst	#$0,d0
@@ -458,7 +458,7 @@ appstring						;append string a1 to string a3
 	dbeq	d0,.0
 .1	move.w	(a1)+,d0
 	subi.w	#$3,d0
-	bmi.w	.ex
+	bmi.w	.next2
 .2	move.b	(a1)+,(a0)+
 	bne.w	.next
 	suba.w	#$1,a0
@@ -470,7 +470,7 @@ appstring						;append string a1 to string a3
 	addi.l	#$1,d0
 .4	sub.l	a3,d0
 	move.w	d0,(a3)
-.ex	movem.l	(sp)+,d0/a0
+.next2	movem.l	(sp)+,d0/a0
 	rts
 printbigz						;String macro follows the call
 	move.l	a1,-(sp)

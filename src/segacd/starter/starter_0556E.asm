@@ -890,7 +890,7 @@ GetData_27	dcb.b	$42,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u
 	dcb.b	$202,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_0BC64.bin
-GetDataSub14	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$5,d0
 	jsr	$6044.w
@@ -946,22 +946,22 @@ GetDataSub14	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$7D000.l,a0
 	lea.l	$7C000.l,a1
 	jsr	$5F16.w
-	bcc.w	.next
+	bcc.w	.next2
 	jsr	$26EBE.l
 	cmpi.w	#$FFFF,$C442.l
-	beq.w	.next3
+	beq.w	.next4
 	move.w	#$6,d0
 	jsr	$5F16.w
-.next	move.w	#$3,d0
+.next2	move.w	#$3,d0
 	lea.l	$26E78.l,a0
 	lea.l	$7F000.l,a1
 	jsr	$5F16.w
-	bcs.w	.next2
+	bcs.w	.next3
 	jsr	$26E96.l
 	cmp.l	$7FF20.l,d0
 	beq.w	.ex
 	jsr	$26EAA.l
-.next2	move.w	#$5,d0
+.next3	move.w	#$5,d0
 	lea.l	$26E78.l,a0
 	jsr	$5F16.w
 	move.w	#$1,d0
@@ -971,7 +971,7 @@ GetDataSub14	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bge.w	.ex
 	move.w	#$1,$C44C.l
 	jsr	$26EBE.l
-.next3	move.w	#$FFFF,d0
+.next4	move.w	#$FFFF,d0
 	move.w	#$B,d7
 	jsr	$6044.w
 .ex	rts
@@ -983,7 +983,7 @@ GetDataSub14	movem.l	d0-d2/d7/a0-a1,-(sp)
 GetDataSub15	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	#$1,$C450.l
 	tst.w	$C44E.l
-	bne.w	GetData_28
+	bne.w	.next2
 	bset.b	#$5,$FF800F.l
 	movea.l	#$BBCB0,a1
 	moveq	#$1F,d0
@@ -1005,7 +1005,7 @@ GetDataSub15	movem.l	d0-d7/a0-a2,-(sp)
 	jsr	$2790E.l
 	add.w	d2,d2
 	add.w	d2,$C448.l
-GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$61,d0
 	jsr	$6044.w
@@ -1025,8 +1025,8 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$4(a1,d2.w),a0
 	movea.l	#$BBCB0,a1
 	moveq	#$1F,d0
-.loop	move.l	(a0)+,(a1)+
-	dbra	d0,.loop
+.loop3	move.l	(a0)+,(a1)+
+	dbra	d0,.loop3
 	move.l	#$EEE,$BBCD2.l
 	move.l	#$4440666,$BBCF2.l
 	move.w	#$E000,d0
@@ -1040,44 +1040,44 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$80,d7
 	moveq	#$0,d4
 	move.w	#$E000,d4
-.loop2	move.l	d4,d0
+.loop4	move.l	d4,d0
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
 	swap	d0
 	andi.w	#$3,d0
-.loop3	btst.b	#$7,$FF800E.l
-	bne.b	.loop3
+.loop5	btst.b	#$7,$FF800E.l
+	bne.b	.loop5
 	move.l	d0,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop4	btst.b	#$6,$FF800E.l
-	beq.b	.loop4
+.loop6	btst.b	#$6,$FF800E.l
+	beq.b	.loop6
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop5	btst.b	#$6,$FF800E.l
-	bne.b	.loop5
-	bclr.b	#$7,$FF800F.l
-.loop6	move.w	(a2)+,d6
-	add.w	d5,d6
-.loop7	btst.b	#$7,$FF800E.l
+.loop7	btst.b	#$6,$FF800E.l
 	bne.b	.loop7
+	bclr.b	#$7,$FF800F.l
+.loop8	move.w	(a2)+,d6
+	add.w	d5,d6
+.loop9	btst.b	#$7,$FF800E.l
+	bne.b	.loop9
 	move.w	d6,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop8	btst.b	#$6,$FF800E.l
-	beq.b	.loop8
+.loop10	btst.b	#$6,$FF800E.l
+	beq.b	.loop10
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop9	btst.b	#$6,$FF800E.l
-	bne.b	.loop9
+.loop11	btst.b	#$6,$FF800E.l
+	bne.b	.loop11
 	bclr.b	#$7,$FF800F.l
-	dbra	d1,.loop6
+	dbra	d1,.loop8
 	move.w	d3,d1
 	add.w	d7,d4
-	dbra	d2,.loop2
-GetDataSub17	movem.l	d0-d2/d7/a0-a1,-(sp)
+	dbra	d2,.loop4
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$40,d0
 	jsr	$6044.w
@@ -1088,8 +1088,8 @@ GetDataSub17	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lsl.w	#$3,d0
 	move.l	#$11111111,d1
 	lea.l	$4(a1),a1
-.loop	add.l	d1,(a1)+
-	dbra	d0,.loop
+.loop12	add.l	d1,(a1)+
+	dbra	d0,.loop12
 	movea.l	$C43A.l,a1
 	move.w	$2(a1),d0
 	lsl.w	#$4,d0
@@ -1111,105 +1111,105 @@ GetDataSub17	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	d1,d3
 	moveq	#$2,d2
 	move.w	#$80,d7
-.loop2	move.l	d4,d0
+.loop13	move.l	d4,d0
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
 	swap	d0
 	andi.w	#$3,d0
-.loop3	btst.b	#$7,$FF800E.l
-	bne.b	.loop3
+.loop14	btst.b	#$7,$FF800E.l
+	bne.b	.loop14
 	move.l	d0,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop4	btst.b	#$6,$FF800E.l
-	beq.b	.loop4
+.loop15	btst.b	#$6,$FF800E.l
+	beq.b	.loop15
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop5	btst.b	#$6,$FF800E.l
-	bne.b	.loop5
+.loop16	btst.b	#$6,$FF800E.l
+	bne.b	.loop16
 	bclr.b	#$7,$FF800F.l
-.loop6	btst.b	#$7,$FF800E.l
-	bne.b	.loop6
+.loop17	btst.b	#$7,$FF800E.l
+	bne.b	.loop17
 	move.w	d5,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop7	btst.b	#$6,$FF800E.l
-	beq.b	.loop7
+.loop18	btst.b	#$6,$FF800E.l
+	beq.b	.loop18
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop8	btst.b	#$6,$FF800E.l
-	bne.b	.loop8
+.loop19	btst.b	#$6,$FF800E.l
+	bne.b	.loop19
 	bclr.b	#$7,$FF800F.l
 	addi.w	#$1,d5
-	dbra	d1,.loop6
+	dbra	d1,.loop17
 	move.w	d3,d1
 	add.w	d7,d4
-	dbra	d2,.loop2
-.loop9	btst.b	#$7,$FF800E.l
-	bne.b	.loop9
+	dbra	d2,.loop13
+.loop20	btst.b	#$7,$FF800E.l
+	bne.b	.loop20
 	move.l	#$74000003,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop10	btst.b	#$6,$FF800E.l
-	beq.b	.loop10
+.loop21	btst.b	#$6,$FF800E.l
+	beq.b	.loop21
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop11	btst.b	#$6,$FF800E.l
-	bne.b	.loop11
+.loop22	btst.b	#$6,$FF800E.l
+	bne.b	.loop22
 	bclr.b	#$7,$FF800F.l
-.loop12	btst.b	#$7,$FF800E.l
-	bne.b	.loop12
+.loop23	btst.b	#$7,$FF800E.l
+	bne.b	.loop23
 	move.w	#$3B,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.loop13	btst.b	#$6,$FF800E.l
-	beq.b	.loop13
+.loop24	btst.b	#$6,$FF800E.l
+	beq.b	.loop24
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.loop14	btst.b	#$6,$FF800E.l
-	bne.b	.loop14
+.loop25	btst.b	#$6,$FF800E.l
+	bne.b	.loop25
 	bclr.b	#$7,$FF800F.l
 	move.w	#$3B,$C444.l
 	lea.l	StrWarningA(pc),a0
 	move.w	#$5B,d0
 	moveq	#$9,d1
-.loop15	bsr.w	TilemapCellCmd
+.loop26	bsr.w	TilemapCellCmd
 	addi.w	#$28,d0
-	dbra	d1,.loop15
+	dbra	d1,.loop26
 .next	bset.b	#$5,$FF800F.l
 	move.w	#$18,$C43E.l
-.loop16	tst.w	$C43E.l
-	bpl.w	.loop16
+.loop27	tst.w	$C43E.l
+	bpl.w	.loop27
 	move.w	#$1,$C44E.l
-GetData_28	tst.w	$C44C.l
-	bne.w	.next5
-.loop	clr.w	$C446.l
-.loop2	tst.w	$C446.l
-	beq.w	.loop2
+.next2	tst.w	$C44C.l
+	bne.w	.next7
+.loop28	clr.w	$C446.l
+.loop29	tst.w	$C446.l
+	beq.w	.loop29
 	bsr.w	UpdatePadStateSub
 	cmpi.b	#$4,d1
-	beq.w	.next
-	cmpi.b	#$8,d1
-	beq.w	.next2
-	cmpi.b	#$20,d1
 	beq.w	.next3
-	bra.w	.loop
-.next	tst.w	$C442.l
-	bpl.w	.loop
+	cmpi.b	#$8,d1
+	beq.w	.next4
+	cmpi.b	#$20,d1
+	beq.w	.next5
+	bra.w	.loop28
+.next3	tst.w	$C442.l
+	bpl.w	.loop28
 	clr.w	$C442.l
 	move.w	#$FFFE,$C440.l
-	bra.w	.loop3
-.next2	tst.w	$C442.l
-	bmi.w	.loop
+	bra.w	.loop30
+.next4	tst.w	$C442.l
+	bmi.w	.loop28
 	move.w	#$FFFF,$C442.l
 	move.w	#$2,$C440.l
-.loop3	tst.w	$C440.l
-	bne.w	.loop3
-	bra.w	.loop
-.next3	cmpi.w	#$FFFF,$C442.l
-	beq.w	.next4
+.loop30	tst.w	$C440.l
+	bne.w	.loop30
+	bra.w	.loop28
+.next5	cmpi.w	#$FFFF,$C442.l
+	beq.w	.next6
 	lea.l	StrFormatting(pc),a0
 	move.w	#$213,d0
 	bsr.w	TilemapCellCmd
@@ -1217,30 +1217,30 @@ GetData_28	tst.w	$C44C.l
 	moveq	#$F,d2
 	move.w	d2,d3
 	addi.w	#$A,d0
-.loop4	clr.w	$C446.l
-.loop5	tst.w	$C446.l
-	beq.w	.loop5
-	dbra	d2,.loop4
+.loop31	clr.w	$C446.l
+.loop32	tst.w	$C446.l
+	beq.w	.loop32
+	dbra	d2,.loop31
 	move.w	d3,d2
 	bsr.w	TilemapCellCmd
 	addi.w	#$1,d0
-	dbra	d1,.loop4
-.next4	bra.w	.next6
-.next5	move.w	#$C000,d0
+	dbra	d1,.loop31
+.next6	bra.w	.next8
+.next7	move.w	#$C000,d0
 	bsr.w	GateArrayVdpAddrCmd
 	move.w	#$B,d1
 	move.w	#$5B,d0
 	lea.l	StrWarningB(pc),a0
-.loop6	bsr.w	TilemapCellCmd
+.loop33	bsr.w	TilemapCellCmd
 	addi.w	#$28,d0
-	dbra	d1,.loop6
-.loop7	clr.w	$C446.l
-.loop8	tst.w	$C446.l
-	beq.w	.loop8
+	dbra	d1,.loop33
+.loop34	clr.w	$C446.l
+.loop35	tst.w	$C446.l
+	beq.w	.loop35
 	bsr.w	UpdatePadStateSub
 	cmpi.b	#$20,d1
-	bne.w	.loop7
-.next6	movem.l	(sp)+,d0-d7/a0-a2
+	bne.w	.loop34
+.next8	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 ; Sends a VDP write address through the gate-array command.
 GateArrayVdpAddrCmd	movem.l	d0-d2,-(sp)

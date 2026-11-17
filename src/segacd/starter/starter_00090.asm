@@ -1010,7 +1010,7 @@ RestoreBios_18	dc.w	$343A,$00C2
 .next2	movem.l	(sp)+,d1-d2/a0-a1
 	rts
 RestoreBios_19	movem.l	d1-d3/a0,-(sp)
-RestoreBiosSub7	movem.l	d2-d3,-(sp)
+	movem.l	d2-d3,-(sp)
 	move.w	#$0,d0
 	bsr.w	TableLookupWord
 	movem.l	(sp)+,d2-d3
@@ -1496,7 +1496,7 @@ SpriteListReset	movea.l	#$BA8D2,a5
 ; Adds the sprites of one object to the list (max $50).
 SpriteListAddObject	cmpi.w	#$50,d6
 	bgt.w	RestoreBios_51
-RestoreBiosSub19	movem.l	d0-d5/a0,-(sp)
+	movem.l	d0-d5/a0,-(sp)
 	adda.l	$4(a0),a0
 	move.w	d2,d5
 	andi.w	#$7FF,d2
@@ -1675,7 +1675,7 @@ RestoreBios_71	rts
 ; Auto-repeat counter for held pad directions.
 PadAutoRepeat	tst.w	d3
 	beq.b	RestoreBios_71
-RestoreBiosSub21	movem.l	a0,-(sp)
+	movem.l	a0,-(sp)
 	lea.l	$10B1C.l,a0
 	tst.w	d2
 	bne.w	.next
@@ -1698,7 +1698,7 @@ ReadCommRegs	move.w	$FFFF801C.w,d0
 	lsr.w	#$8,d0
 	move.b	d0,$10B16.l
 	moveq	#$0,d0
-RestoreBiosSub22	movem.l	a0,-(sp)
+	movem.l	a0,-(sp)
 	lea.l	$10B14.l,a0
 	move.b	(a0,d4.w),d0
 	bsr.w	.next
@@ -1731,7 +1731,7 @@ RestoreBiosSub22	movem.l	a0,-(sp)
 	rts
 .next	clr.w	d1
 	move.b	d0,d1
-RestoreBiosSub23	movem.l	d1/a0,-(sp)
+	movem.l	d1/a0,-(sp)
 	andi.w	#$F0,d0
 	andi.w	#$F,d1
 	lea.l	$E300.l,a0

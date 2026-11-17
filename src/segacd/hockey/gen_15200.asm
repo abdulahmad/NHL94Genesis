@@ -592,10 +592,10 @@ setlccords						;set printx/y to cords for lc box on team a2
 	bsr.w	SetLcCoordsForSide
 	moveq	#$6,d1		;3 rows
 	tst.w	d0
-	bpl.w	.ex
+	bpl.w	.next2
 	subi.w	#$1,d1		;no third choice: 2 rows
 	addi.w	#$1,(printy).l
-.ex	moveq	#$9,d0
+.next2	moveq	#$9,d0
 	rts
 ; Picks the line-change coordinates for the current side.
 SetLcCoordsForSide
@@ -719,15 +719,15 @@ Acheck						;start SPAhook, or SPAHold if a0 is ahead
 	bset	#$5,$62(a3)		;lock animation
 	move.w	#$1122,d1		;move anim into d1 - normal hold check
 	tst.w	$32(a3)		;check if impact = 0
-	beq.w	.ex		;branch if 0
+	beq.w	.next		;branch if 0
 	move.w	$14(a3),d0		;move Ypos checker into d0
 	sub.w	$14(a0),d0		;sub Ypos of player
 	btst	#$7,$62(a3)		;check goal checker is shooting at
 	beq.w	.air		;jump if bottom
 	neg.w	d0		;make d0 negative
-.air	bmi.w	.ex
+.air	bmi.w	.next
 	move.w	#$C90,d1		;set anim - hold check stick in air
-.ex	bra.w	SetSPA
+.next	bra.w	SetSPA
 setpassmode						;initialize pass mode
 	move.w	$54(a3),$17E2C.l
 	andi.w	#$7,$17E2C.l
@@ -774,10 +774,10 @@ dopass						;pass the puck in passdir, to the best teammate there if any
 	addi.w	#$A0,d0
 	move.w	d0,$17E2E.l
 	btst	#$0,$6E(a3)		;Checks to see if bit 0 in Passacc is 0
-	beq.w	.next2		;Jumps if 0 (even number)
+	beq.w	.next		;Jumps if 0 (even number)
 	asr.w	#$4,d0		;divide d0 by 16
 	add.w	d0,$17E2E.l
-.next2	moveq	#-1,d4
+.next	moveq	#-1,d4
 	moveq	#$5,d3
 	movea.l	#$17480,a1
 	cmpi.w	#$6,$52(a3)		;compares 6 to SCnum(a3) (current player with puck) to check if
@@ -786,11 +786,11 @@ dopass						;pass the puck in passdir, to the best teammate there if any
 	btst	#$2,$17F70.l
 	bne.w	.next3
 .0	cmpa.l	a1,a3		;Check to see if passing to self
-	beq.w	.next		;skip if this is passing player
+	beq.w	.next2		;skip if this is passing player
 	tst.w	$34(a1)		;position(a1)
-	beq.w	.next		;skip if goalie
+	beq.w	.next2		;skip if goalie
 	btst	#$2,$63(a1)		;check if player is unavailable
-	bne.w	.next		;player unavailable
+	bne.w	.next2		;player unavailable
 	move.w	$0(a1),d0		;X Position of receiving player
 	sub.w	$17B80.l,d0
 	move.w	$14(a1),d1
@@ -805,16 +805,16 @@ dopass						;pass the puck in passdir, to the best teammate there if any
 	asl.w	#$3,d0		;mult d0 by 8 (700 decimal max)
 	muls.w	d0,d0		;square d0 = max is 490000 decimal
 	cmpi.l	#$10000,d0		;compare to 65536 decimal (#256^2: power, SNASM ^ is xor)
-	bhi.w	.next		;if higher branch to next
+	bhi.w	.next2		;if higher branch to next
 	muls.w	d1,d1		;square d1 (dX)
 	muls.w	d2,d2		;square d2 (dY)
 	add.l	d1,d2		;add together
 	add.l	d0,d2		;add modified passdir to d2
 	cmp.l	d4,d2		;compare d4 to d2
-	bhi.w	.next		;branch if higher (player is farther away than the closest player)
+	bhi.w	.next2		;branch if higher (player is farther away than the closest player)
 	move.l	d2,d4		;move d2 into d4
 	movea.l	a1,a0		;move a1 address into a0 (receiving player)
-.next	adda.w	#$80,a1		;Skip to next player (80 hex is length of player struct)
+.next2	adda.w	#$80,a1		;Skip to next player (80 hex is length of player struct)
 	dbra	d3,.0
 	tst.l	d4		;check if there's a player to pass to
 	bmi.w	.next3		;skip if no player to pass to

@@ -20,7 +20,7 @@ RestoreBiosSub43	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$4E,$75	; Nu
 ; Calls the $E320 command with an inline parameter block.
 SendCmdE320Inline	movem.l	d0-d7/a0-a6,-(sp)
-RestoreBiosSub44	movem.l	a1,-(sp)
+	movem.l	a1,-(sp)
 	jsr	$E320.l
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$08	; ............. ..
 	dc.b	$00,$00	; ..
@@ -36,7 +36,7 @@ RestoreBiosSub45	movem.l	(sp)+,a1
 	jsr	$EA0C.l
 	move.l	$EC92.l,d1
 	beq.w	RestoreBios_94
-RestoreBiosSub46	movem.l	d1,-(sp)
+	movem.l	d1,-(sp)
 	move.w	$FFFF8004.w,$EC8E.l
 	lea.l	$ECA2.l,a0
 	move.w	#$10,d0

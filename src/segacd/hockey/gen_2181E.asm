@@ -32,7 +32,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	beq.w	.foundplayer
 	adda.w	#$80,a2
 	dbra	d1,.findplayer
-	bra.w	.ex
+	bra.w	.next2
 .foundplayer	move.w	$52(a2),d0
 	bra.w	.next
 .Cwdupdate	movem.l	d0-d1/a1-a3,-(sp)
@@ -42,7 +42,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 .next	asl.w	#$7,d0
 	movea.l	#$17480,a3
 	adda.w	d0,a3
-	bsr.w	.next2
+	bsr.w	.next3
 	addi.w	#$1,$0(a2)
 	btst	#$5,$17F6C.l
 	beq.w	.2
@@ -65,12 +65,12 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	addi.w	#$EA,d0
 	addi.b	#$1,(a2,d0.w)
 	move.w	$28(a1),d0
-	bmi.w	.ex
+	bmi.w	.next2
 	addi.w	#$EA,d0
 	addi.b	#$1,(a1,d0.w)
-.ex	movem.l	(sp)+,d0-d1/a1-a3
+.next2	movem.l	(sp)+,d0-d1/a1-a3
 	rts
-.next2	movea.l	#tmstruct,a2
+.next3	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	btst	#$6,$62(a3)
 	beq.w	rtss2
@@ -238,12 +238,12 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.w	$A(a0),d0
 	sub.w	$C(a0),d0
 	cmpi.w	#$1,d0
-	bgt.w	.ex
+	bgt.w	.next
 	cmpi.w	#$FFFF,d0
-	blt.w	.ex
+	blt.w	.next
 	move.w	#$3,$8(a0)
 	bset	#$1,$E(a0)
-	bra.w	.ex
+	bra.w	.next
 .o	addi.w	#$1,$8(a0)
 	move.w	$0(a0),d0
 	move.w	$2(a0),d1
@@ -253,7 +253,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.w	$0(a0),d1
 	bsr.w	.getscore
 	add.w	d0,$C(a0)
-.ex	movem.l	(sp)+,d0-d1/a0-a1
+.next	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 .getscore	asl.w	#$2,d0
 	movea.l	#TeamList,a1

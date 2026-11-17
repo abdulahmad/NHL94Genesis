@@ -487,11 +487,11 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	cmpi.w	#$3,d2
 	bls.w	.pb0
 	moveq	#$3,d2		;max 3
-.pb0	bra.w	.next2
+.pb0	bra.w	.next
 .pbt	move.w	d3,d0		;frame = first frame + counter
 	add.w	d2,d0
 	bsr.w	.sc
-.next2	dbra	d2,.pbt
+.next	dbra	d2,.pbt
 	rts
 .sc	ext.w	d0
 	beq.w	rtss2
@@ -521,13 +521,13 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	addi.w	#$70,d3		;112
 	move.w	(sp)+,d4
 .loop	cmp.w	$2(a0),d2		;per sprite: skip it if outside the window d0-d3
-	bgt.w	.next
+	bgt.w	.next2
 	cmp.w	$2(a0),d3
-	blt.w	.next
+	blt.w	.next2
 	cmp.w	(a0),d0
-	bgt.w	.next
+	bgt.w	.next2
 	cmp.w	(a0),d1
-	blt.w	.next
+	blt.w	.next2
 	move.w	$2(a0),d5
 	addi.w	#$70,d5		;128-16
 	sub.w	d2,d5
@@ -546,7 +546,7 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	addi.w	#$1,d6
 	cmpi.w	#$40,d6
 	beq.w	.next3
-.next	adda.w	#$8,a0
+.next2	adda.w	#$8,a0
 	dbra	d4,.loop
 .next3	movem.l	(sp)+,d0-d5
 .ex	rts

@@ -288,7 +288,7 @@ doshot						;stick is at puck so launch puck toward goal
 	bne.w	.shottype		;jump if yes
 	move.w	$17BE0.l,d0		;puck carrier SCnum into d0
 	cmp.w	$52(a3),d0		;is player puck carrier?
-	bne.w	.ex		;wiffed shot
+	bne.w	.next5		;wiffed shot
 .shottype	move.w	#$18,(sp)		;#SFXshotfh
 	bset	#$4,$17F6C.l		;#sf2shot - shot was taken
 	cmpi.w	#$92E,$58(a3)
@@ -413,7 +413,7 @@ doshot						;stick is at puck so launch puck toward goal
 	bne.w	.next3
 	move.w	#$C7F0,$17BAA.l
 .next3	move.w	(sp)+,d1
-	beq.w	.ex
+	beq.w	.next5
 	mulu.w	$17E2E.l,d1
 	mulu.w	#$44,d1		;1024/15
 	divu.w	d3,d1		;by d3 = distance in pix to goal
@@ -425,11 +425,11 @@ doshot						;stick is at puck so launch puck toward goal
 	move.w	#$1800,d3		;set max puckvz
 .next4	move.w	d3,$17BAC.l
 	bclr	#$4,$17F74.l		;check in-close top shelf bit
-	beq.w	.ex		;if bit was cleared, exit
+	beq.w	.next5		;if bit was cleared, exit
 	btst	#$3,$64(a3)		;check if one timer
-	bne.w	.ex		;branch if so
+	bne.w	.next5		;branch if so
 	jsr	(puckvzadj).l		;adjust puckvz for top shelf shot
-.ex	bsr.w	sfx		;play the shot sound
+.next5	bsr.w	sfx		;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
 doshot_1	rts
 shotdiradj						;If the opposing goalie

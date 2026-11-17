@@ -20,7 +20,7 @@ BR = {'bra','bne','beq','bcc','bcs','bhi','bls','bpl','bmi','bge','blt','bgt','b
       'dbra','dbf','dbne','dbeq','dbt','dbcc','dbcs','dbhi','dbls','dbpl','dbmi','dbge','dblt','dbgt','dble','dbvc','dbvs','jmp'}
 lab = re.compile(r'^(\.?[A-Za-z_][A-Za-z_0-9]*)(:?)(?=\s|$)')
 PLACE = re.compile(r'^(?:[A-Za-z]+(?:_\d+|Sub\d+))$')
-LOCPL = re.compile(r'^\.l[0-9A-Fa-f]+$')
+LOCPL = re.compile(r'^\.(l[0-9A-Fa-f]+|lz\d+|loop\d*|next\d*|ex\d*)$')
 tok = re.compile(r'(?<![A-Za-z0-9_])(\.?[A-Za-z_][A-Za-z_0-9]*)')
 
 lines = []          # [file_idx, text]
@@ -111,6 +111,8 @@ for k, (n, op, opr, cut, e) in enumerate(info):
         if cur is not None: extent[cur] = (s, k)
         cur = n; s = k
 if cur is not None: extent[cur] = (s, len(info))
+UNIQ = '--uniq' in sys.argv
+uq = [0]
 SKIPOP = {'rts','rte','rtr'}
 for owner, dl in loc_defs.items():
     if owner is None: continue
@@ -118,7 +120,7 @@ for owner, dl in loc_defs.items():
     cnt = collections.Counter()
     used = set()
     for k in range(s, e):
-        if info[k][0] and info[k][0].startswith('.'): used.add(info[k][0])
+        if info[k][0] and info[k][0].startswith('.') and not LOCPL.match(info[k][0]): used.add(info[k][0])
     for k, name in dl:
         r = refs_to(owner, name, s, e)
         back = any(rk > k for rk, _ in r)       # a branch after the label jumps back to it
@@ -131,6 +133,10 @@ for owner, dl in loc_defs.items():
         if back: base_n = 'loop'
         elif first.split('.')[0] in SKIPOP or first in ('unlk',): base_n = 'ex'
         else: base_n = 'next'
+        if UNIQ:
+            uq[0] += 1
+            newname[(owner, name)] = '.lz%d' % uq[0]
+            continue
         while True:
             cnt[base_n] += 1
             nn = '.' + base_n + (str(cnt[base_n]) if cnt[base_n] > 1 else '')

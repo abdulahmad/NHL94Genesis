@@ -435,10 +435,10 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 .top	movea.l	#$41C48,a1
 	move.w	(scoutcolumn).l,d0
 	bra.w	.2
-.next	adda.w	(a1),a1
+.loop	adda.w	(a1),a1
 	adda.w	#$4,a1
 .2	tst.w	(a1)
-	dbmi	d0,.next
+	dbmi	d0,.loop
 	bpl.w	.found
 	subi.w	#$1,(scoutcolumn).l
 	bra.w	.top
@@ -678,7 +678,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
-.next	move.b	(a3),d2
+.loop	move.b	(a3),d2
 	bmi.w	.done
 	bchg	#$0,d4
 	bne.w	.hi
@@ -696,7 +696,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	andi.w	#$FF,d0
 	move.b	(a3)+,d2
 	bsr.w	SetLineSlot
-	bra.w	.next
+	bra.w	.loop
 .done	movem.l	(sp)+,d0-d4/a0/a3
 	rts
 EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into databuffer and
@@ -713,7 +713,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
-.next	move.b	(a3)+,d2
+.loop	move.b	(a3)+,d2
 	bmi.w	.done
 	move.b	(a1,d2.w),d3
 	subi.b	#$1,d3
@@ -725,10 +725,10 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 .pack	bchg	#$0,d4
 	bne.w	.hi
 	move.b	d3,(a0)
-	bra.w	.next
+	bra.w	.loop
 .hi	asl.b	#$4,d3
 	or.b	d3,(a0)+
-	bra.w	.next
+	bra.w	.loop
 .done	jsr	$2A5C8.l
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts

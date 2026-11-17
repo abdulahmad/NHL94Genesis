@@ -346,7 +346,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bne.w	.resume
 	adda.w	#$2,sp
 	bset	#$7,d1
-	bra.w	.ex
+	bra.w	.next
 .resume	move.w	(sp)+,(ScoutSubStatus).l
 .vid	bsr.w	setvideo
 	move.w	(ScoutSubStatus).l,d0
@@ -354,7 +354,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	beq.w	.0
 	tst.w	d0
 	bmi.w	.wait
-.ex	movem.l	(sp)+,d4-d7/a0-a3
+.next	movem.l	(sp)+,d4-d7/a0-a3
 	rts
 waitjoy						;wait for either joystick input. Return d1 = new button presses. it as
 	

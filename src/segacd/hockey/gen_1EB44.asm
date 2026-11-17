@@ -127,7 +127,7 @@ PushRef						;tell vblank what to display. d0 = ref frame, $40 clears the window
 	add.w	d2,(a1)+
 	dbra	d0,.1
 	bset	#$1,$17F6C.l
-	bra.w	.ex
+	bra.w	.next
 .clearit	btst	#$7,$17F6A.l
 	bne.w	.cl
 	movea.l	#$18074,a1
@@ -137,7 +137,7 @@ PushRef						;tell vblank what to display. d0 = ref frame, $40 clears the window
 	bset	#$1,$17F6C.l
 .cl	moveq	#-1,d0
 	bsr.w	prefmes
-.ex	movem.l	(sp)+,d0-d2/a0-a1
+.next	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 prefmes						;print message for penalty d0 (negative clears it). Vertical mode: framed
 	
@@ -152,7 +152,7 @@ prefmes						;print message for penalty d0 (negative clears it). Vertical mode: 
 	moveq	#$3,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	bra.w	.ex
+	bra.w	.next
 .noblank	bsr.w	printz
 	String	CC_Font1Pri,$5,$A
 	movea.l	#$4165C,a1
@@ -160,7 +160,7 @@ prefmes						;print message for penalty d0 (negative clears it). Vertical mode: 
 	adda.w	#$2,a1
 	move.w	(a1),d0
 	subi.w	#$2,d0
-	beq.w	.ex
+	beq.w	.next
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	bpl.w	.nb0
@@ -174,10 +174,10 @@ prefmes						;print message for penalty d0 (negative clears it). Vertical mode: 
 	subi.w	#$2,(printy).l
 	addi.w	#$1,(printx).l
 	bsr.w	print
-	bra.w	.ex
+	bra.w	.next
 .hor	bsr.w	ClearPenaltyMessage
 	tst.w	d0
-	bmi.w	.ex
+	bmi.w	.next
 	bsr.w	printz
 	String	CC_Font1Pri,$11,$B
 	movea.l	#$4165C,a1
@@ -187,7 +187,7 @@ prefmes						;print message for penalty d0 (negative clears it). Vertical mode: 
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	bsr.w	print
-.ex	movem.l	(sp)+,d0-d2/a1
+.next	movem.l	(sp)+,d0-d2/a1
 	rts
 ClearPenaltyMessage						;Blank the horizontal mode penalty message line (22 spaces at x 5, y $B).
 	
@@ -205,11 +205,11 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	bsr.w	ClearPenaltyBuffer
 .1	move.w	$26(a2),d2
 	cmp.w	$26(a1),d2
-	ble.w	.ex
+	ble.w	.next
 	lea.l	$9C(a1),a0
 .0	clr.w	d2
 	move.b	(a0)+,d2
-	bmi.w	.ex
+	bmi.w	.next
 	btst	#$6,$68(a1,d2.w)
 	bne.w	.0
 	clr.w	$68(a1,d2.w)
@@ -219,7 +219,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	addi.w	#$1,$2(a2)
 	bset	#$0,$1837E.l		;home tmflags: tmflcc
 	bset	#$0,$186E4.l		;visitors tmflags: tmflcc
-.ex	movem.l	(sp)+,d0-d2/a0
+.next	movem.l	(sp)+,d0-d2/a0
 	rts
 ClearPenaltyBuffer						;Clear PenBuf. Called from clockcont and PenGoalStuff
 	moveq	#$1F,d0
@@ -250,18 +250,18 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	movea.l	#mesarea,a1
 	moveq	#$2,d1
 	moveq	#$2,d3
-.next	clr.w	d0
+.loop	clr.w	d0
 	move.b	(a0)+,d0
 	bmi.w	.done
 	btst	#$6,$68(a2,d0.w)
 	bne.w	.1
 	subi.w	#$1,d1
-	bmi.w	.next
+	bmi.w	.loop
 	move.w	d0,(a1)+
 	subi.w	#$1,$68(a2,d0.w)
 	bne.w	.cont
 	bsr.w	ShiftListDown
-.cont	bra.w	.next
+.cont	bra.w	.loop
 .done	move.w	(mesarea).l,d0
 	cmpi.w	#$1,d1
 	beq.w	.0
@@ -283,7 +283,7 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	rts
 .1	subi.w	#$1,$68(a2,d0.w)
 	btst	#$3,$68(a2,d0.w)
-	beq.w	.next
+	beq.w	.loop
 	btst	#$4,$68(a2,d0.w)
 	bne.w	RemovePlayerFromList
 	move.w	#$1000,$68(a2,d0.w)

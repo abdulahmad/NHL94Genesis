@@ -177,12 +177,12 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	movea.l	#TextBuffer,a0
 	clr.w	d1
 .loop	cmpi.b	#$21,(a2)
-	bne.w	.loop2
+	bne.w	.next
 	addq.l	#$3,a2
-.loop2	cmpi.b	#$D,(a2)		;end of line?
+.next	cmpi.b	#$D,(a2)		;end of line?
 	beq.w	.print		;yes: print what we have
 	addi.w	#$1,d0
-.loop3	move.b	(a2),(a0)+
+.loop2	move.b	(a2),(a0)+
 	addi.w	#$1,d1
 	cmpi.b	#$2C,(a2)
 	beq.w	.4
@@ -192,17 +192,17 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 .5	cmpi.b	#$20,(a2)+		;space ends the word
 	bne.w	.loop		;not a space: next character
 	cmpi.b	#$20,(a2)		;more spaces?
-	beq.w	.next		;copy them too
-	bra.w	.next2
-.next	addi.w	#$14,(ScoutingReportTimer).l
+	beq.w	.next2		;copy them too
+	bra.w	.next3
+.next2	addi.w	#$14,(ScoutingReportTimer).l
 	addq.l	#$1,a2
-	bra.w	.loop3
-.next2	subi.w	#$1,d0
+	bra.w	.loop2
+.next3	subi.w	#$1,d0
 	cmpa.l	a2,a1
-	ble.w	.next3
+	ble.w	.next4
 	move.w	#$FF00,(PlayerScrollCtr).l
 	bra.s	.print
-.next3	suba.l	a1,a2		;offset into the script
+.next4	suba.l	a1,a2		;offset into the script
 	move.w	a2,(PlayerScrollCtr).l		;offset of the next word
 .print	move.w	d1,(mesarea).l
 	addi.w	#$2,(mesarea).l		;plus the length word
@@ -211,7 +211,7 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	clr.b	(a0)
 	addi.w	#$1,(mesarea).l		;count the pad
 .7	movea.l	#mesarea,a1
-.loop4	cmpi.w	#$1D,d0		;past column 29?
+.loop3	cmpi.w	#$1D,d0		;past column 29?
 	ble.w	.8
 	bsr.w	ScrollDisplayUp		;wrap to a new line
 .8	bsr.w	printz		;map 1 at 9,4
@@ -270,10 +270,10 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 .24	move.w	$28(a1),d1
 .roster	movea.l	$1E(a1),a1
 	adda.w	$0(a1),a1
-	bra.w	.next4
-.loop5	adda.w	(a1),a1
+	bra.w	.next5
+.loop4	adda.w	(a1),a1
 	adda.w	#$8,a1		;skip the fixed part
-.next4	dbra	d1,.loop5
+.next5	dbra	d1,.loop4
 	bra.w	.append		;a1 = player name
 .27	movea.l	(AwayTeamRosterPtr).l,a1
 	adda.w	$4(a1),a1
@@ -288,9 +288,9 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	move.w	(a1),d1
 	subi.w	#$2,d1
 	tst.b	$1(a1,d1.w)		;pad byte?
-	bne.w	.loop4
+	bne.w	.loop3
 	subi.w	#$1,d1		;less the pad byte
-	bra.w	.loop4		;print it
+	bra.w	.loop3		;print it
 ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrolling + 1; at 7
 									;lines, scroll the 8 rows up by vram dma (DoDMA_nd2)
 	clr.w	(scoutcolumn).l
