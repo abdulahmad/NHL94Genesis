@@ -1,23 +1,23 @@
-.lFF77B8	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$41FA,$0C5C
+Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	cmpi.w	#$1234,(a0)
-	dc.w	$6600,$0264
-	dc.w	$6100,$06F2
-	dc.w	$6100,$0762
-	dc.w	$41FA,$0D6C
+	bne.w	.l7A2A
+	bsr.w	Set1MFlag_19
+	bsr.w	Set1MFlag_20
+	lea.l	Set1MFlag_40(pc),a0
 	move.w	#$0,(a0)
-	dc.w	$4DFA,$0C42
-	dc.w	$4BFA,$0C5E
-	dc.w	$49FA,$0C8A
-	dc.w	$47FA,$0C96
-	dc.w	$45FA,$0CA2
-	dc.w	$43FA,$0CAE
+	lea.l	Set1MFlag_32(pc),a6
+	lea.l	Set1MFlag_33(pc),a5
+	lea.l	Set1MFlag_35(pc),a4
+	lea.l	Set1MFlag_36(pc),a3
+	lea.l	Set1MFlag_37(pc),a2
+	lea.l	Set1MFlag_38(pc),a1
 .l77F0	dc.w	$3C3A,$0D4C
 	lsl.w	#$1,d6
 	move.w	d6,d7
 	lsl.w	#$1,d7
 	cmpi.l	#$FFFFFFFF,(a6,d7.w)
-	dc.w	$6700,$0212
+	beq.w	.l7A16
 	tst.w	(a4,d6.w)
 	dc.w	$6742
 	move.w	(a3,d6.w),d1
@@ -33,7 +33,7 @@
 	sub.w	d1,d3
 	move.w	d3,(a4,d6.w)
 	move.w	d2,(a2,d6.w)
-	dc.w	$6000,$01DA
+	bra.w	.l7A16
 .l783E	sub.w	(a4,d6.w),d1
 	lsl.w	#$8,d1
 	or.w	d2,d1
@@ -53,7 +53,7 @@
 .l787C	move.b	$2(a1,d7.w),d0
 	andi.b	#$F0,d0
 	cmpi.b	#$90,d0
-	dc.w	$6600,$0082
+	bne.w	.l790C
 	dc.w	$303A,$0CB0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -62,11 +62,11 @@
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	dc.w	$6100,$0356
+	bsr.w	Set1MFlag_13
 	tst.w	d0
 	dc.w	$670A
 	dc.w	$0671,$0001,$7000
-	dc.w	$6000,$0162
+	bra.w	.l7A16
 .l78B6	clr.l	d0
 	move.b	$2(a0,d5.l),d0
 	dc.w	$6A0C
@@ -84,14 +84,14 @@
 	move.b	$2(a1,d7.w),d0
 	andi.b	#$F,d0
 	or.b	d1,d0
-	dc.w	$6100,$05AA
+	bsr.w	Set1MFlag_18
 	dc.w	$0685,$0000,$0002
 .l78F4	tst.b	(a0,d5.l)
 	dc.w	$6A08
 	dc.w	$0685,$0000,$0001
 	dc.w	$60F2
 .l7902	dc.w	$0685,$0000,$0001
-	dc.w	$6000,$00EA
+	bra.w	.l79F4
 .l790C	cmpi.b	#$B0,d0
 	dc.w	$666C
 	cmpi.b	#$12,(a0,d5.l)
@@ -103,7 +103,7 @@
 	clr.w	d2
 	move.b	$2(a1,d7.w),d2
 	andi.b	#$F,d2
-	dc.w	$41FA,$0C18
+	lea.l	Set1MFlag_41(pc),a0
 	move.w	(a0,d0.w),d3
 	cmpi.b	#$0,d1
 	dc.w	$6604
@@ -121,11 +121,11 @@
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	dc.w	$6100,$0296
+	bsr.w	Set1MFlag_13
 	tst.w	d0
 	dc.w	$670A
 	dc.w	$0671,$0001,$7000
-	dc.w	$6000,$00A2
+	bra.w	.l7A16
 .l7976	dc.w	$0685,$0000,$0002
 	dc.w	$6076
 .l797E	cmpi.b	#$C0,d0
@@ -137,7 +137,7 @@
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	dc.w	$6100,$0262
+	bsr.w	Set1MFlag_13
 	tst.w	d0
 	dc.w	$6708
 	dc.w	$0671,$0001,$7000
@@ -153,7 +153,7 @@
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	dc.w	$6100,$0230
+	bsr.w	Set1MFlag_13
 	tst.w	d0
 	dc.w	$6708
 	dc.w	$0671,$0001,$7000
@@ -174,22 +174,22 @@
 .l7A0A	move.w	d2,(a4,d6.w)
 	tst.w	d2
 	dc.w	$6604
-	dc.w	$6000,$FDDC
-.l7A16	dc.w	$41FA,$0B26
+	bra.w	.l77F0
+.l7A16	lea.l	Set1MFlag_40(pc),a0
 	dc.w	$0650,$0001
 	cmpi.w	#$8,(a0)
-	dc.w	$6D00,$FDCC
-	dc.w	$6100,$02C8
+	blt.w	.l77F0
+	bsr.w	Set1MFlag_15
 .l7A2A	andi.b	#$FE,ccr
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.lFF7A34	movem.l	d1-d4/a0-a1,-(sp)
-	dc.w	$41FA,$09E0
+Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	d1,$1C8(a0)
 	move.w	d2,$1CA(a0)
 	move.w	d3,$1CC(a0)
 	move.w	d4,$1CE(a0)
-	dc.w	$43FA,$09CE
+	lea.l	Set1MFlag_32(pc),a1
 	clr.w	d0
 .l7A52	cmpi.l	#$FFFFFFFF,(a1)+
 	dc.w	$6710
@@ -200,7 +200,7 @@
 	dc.w	$606A
 .l7A6A	move.w	d0,$1C6(a0)
 	move.w	#$3,d0
-	dc.w	$6100,$0656
+	bsr.w	Set1MFlag_21
 	dc.w	$655C
 	clr.l	d1
 	move.b	$1(a0),d1
@@ -208,13 +208,13 @@
 	move.b	(a0),d1
 	lsl.w	#$1,d1
 	dc.w	$0641,$0002
-	dc.w	$43FA,$0990
+	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,$0(a1)
 	move.w	$1C6(a1),d0
 	lsl.w	#$2,d0
 	move.l	a0,$2(a1,d0.w)
 	move.l	d1,$22(a1,d0.w)
-	dc.w	$41FA,$09FA
+	lea.l	Set1MFlag_38(pc),a0
 	move.l	#$0,(a0,d0.w)
 	move.w	$1C6(a1),d0
 	lsl.w	#$1,d0
@@ -228,8 +228,8 @@
 .l7AD4	ori.b	#$1,ccr
 .l7AD8	movem.l	(sp)+,d1-d4/a0-a1
 	rts
-.lFF7ADE	movem.l	d1-d2/a0,-(sp)
-	dc.w	$41FA,$0978
+Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
+	lea.l	Set1MFlag_34(pc),a0
 	clr.w	d0
 .l7AE8	cmp.w	(a0)+,d1
 	dc.w	$6714
@@ -239,48 +239,48 @@
 	move.w	#$3,d0
 	ori.b	#$1,ccr
 	dc.w	$6030
-.l7B00	dc.w	$41FA,$0918
+.l7B00	lea.l	Set1MFlag_31(pc),a0
 	move.w	d0,$1C6(a0)
 	lsl.w	#$1,d0
-	dc.w	$41FA,$0950
+	lea.l	Set1MFlag_34(pc),a0
 	move.w	#$FFFF,(a0,d0.w)
 	lsl.w	#$1,d0
-	dc.w	$41FA,$0904
+	lea.l	Set1MFlag_32(pc),a0
 	move.l	#$FFFFFFFF,(a0,d0.w)
-	dc.w	$41FA,$08F6
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	$1C6(a0),d0
-	dc.w	$6100,$0326
+	bsr.w	Set1MFlag_17
 	clr.w	d0
 .l7B30	movem.l	(sp)+,d1-d2/a0
 	rts
-.lFF7B36	movem.l	d1-d2/a0,-(sp)
+Set1MFlag_11	movem.l	d1-d2/a0,-(sp)
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
-	dc.w	$6100,$07FC
+	bsr.w	Set1MFlag_26
 	lea.l	$A00000.l,a0
 	move.b	$A00028.l,d0
 	lsl.w	#$8,d0
 	move.b	$A00029.l,d0
 	move.b	d1,$3(a0,d0.w)
-	dc.w	$6100,$07F4
+	bsr.w	Set1MFlag_27
 	move.w	(sp)+,sr
 	move.l	#$0,d0
 	move.b	#$7F,d0
 	lsl.w	#$8,d0
 	move.b	#$CF,d0
-	dc.w	$6100,$0102
+	bsr.w	Set1MFlag_14
 	move.l	#$7F0000,d0
 	move.w	d2,d0
 	lsl.w	#$8,d0
 	move.b	#$9F,d0
-	dc.w	$6100,$00F0
+	bsr.w	Set1MFlag_14
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
-.lFF7B90	movem.l	a0-a1,-(sp)
-	dc.w	$41FA,$0884
+Set1MFlag_12	movem.l	a0-a1,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
-	dc.w	$6100,$079E
+	bsr.w	Set1MFlag_26
 	clr.l	d0
 	move.b	$A00024.l,d0
 	lsl.w	#$8,d0
@@ -299,13 +299,13 @@
 	move.w	#$1FF,d0
 .l7BE2	move.b	#$0,(a1)+
 	dbra	d0,.l7BE2
-	dc.w	$6100,$0766
+	bsr.w	Set1MFlag_27
 	move.w	#$1234,$0(a0)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
 	rts
-.lFF7BFC	movem.l	d1-d3/a0,-(sp)
-	dc.w	$41FA,$0948
+Set1MFlag_13	movem.l	d1-d3/a0,-(sp)
+	lea.l	Set1MFlag_41(pc),a0
 	move.l	d0,d1
 	swap	d1
 	lsr.w	#$8,d1
@@ -315,19 +315,19 @@
 	andi.w	#$F,d3
 	btst	d3,d2
 	dc.w	$6606
-	dc.w	$6100,$005A
+	bsr.w	Set1MFlag_14
 	dc.w	$6004
-.l7C20	dc.w	$6100,$0008
+.l7C20	bsr.w	.lFF7C2A
 .l7C24	movem.l	(sp)+,d1-d3/a0
 	rts
 .lFF7C2A	movem.l	d1-d2/a0,-(sp)
-	dc.w	$41FA,$07EA
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,(a0)
-	dc.w	$41FA,$0926
+	lea.l	Set1MFlag_43(pc),a0
 	move.w	(a0),d2
 	cmpi.w	#$20,d2
 	dc.w	$6612
-	dc.w	$41FA,$07D6
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	move.w	#$FFFF,d0
 	ori.b	#$1,ccr
@@ -338,19 +338,19 @@
 	move.l	d0,(a0,d1.w)
 	dc.w	$0642,$0001
 	move.w	d2,(a0)
-	dc.w	$41FA,$07B2
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	clr.w	d0
 .l7C70	movem.l	(sp)+,d1-d2/a0
 	rts
-.lFF7C76	movem.l	d1/a0,-(sp)
-	dc.w	$41FA,$079E
+Set1MFlag_14	movem.l	d1/a0,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
-.l7C84	dc.w	$6100,$06B8
+.l7C84	bsr.w	Set1MFlag_26
 	lea.l	$A00030.l,a0
 	tst.b	(a0)
 	dc.w	$6710
-	dc.w	$6100,$06BE
+	bsr.w	Set1MFlag_27
 	move.w	#$64,d1
 .l7C9A	dc.w	$0441,$0001
 	dc.w	$66FA
@@ -374,27 +374,27 @@
 	dc.w	$0601,$0001
 	move.b	d1,(a0)
 	move.w	#$0,d0
-.l7CDC	dc.w	$6100,$0674
-	dc.w	$41FA,$0738
+.l7CDC	bsr.w	Set1MFlag_27
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d1/a0
 	rts
-.lFF7CF0	movem.l	d0-d1/a0-a1,-(sp)
-	dc.w	$43FA,$0868
+Set1MFlag_15	movem.l	d0-d1/a0-a1,-(sp)
+	lea.l	Set1MFlag_43(pc),a1
 	cmpi.w	#$0,(a1)
 	dc.w	$6756
 	dc.w	$207A,$085A
-	dc.w	$6100,$0658
-	dc.w	$6100,$06F4
+	bsr.w	Set1MFlag_28
+	bsr.w	Set1MFlag_30
 .l7D0A	cmpi.w	#$FFFF,(a0)
 	dc.w	$661E
 	dc.w	$207A,$0848
-	dc.w	$6100,$069A
+	bsr.w	Set1MFlag_29
 	move.w	#$1F4,d0
 .l7D1C	dbra	d0,.l7D1C
 	dc.w	$207A,$0838
-	dc.w	$6100,$0636
-	dc.w	$6100,$06D2
+	bsr.w	Set1MFlag_28
+	bsr.w	Set1MFlag_30
 	bra.b	.l7D0A
 .l7D2E	move.w	(a1),d0
 	move.w	(a0),d1
@@ -406,16 +406,16 @@
 	move.w	(a1)+,d0
 .l7D3E	move.l	(a1)+,(a0)+
 	dbra	d0,.l7D3E
-	dc.w	$43FA,$0818
+	lea.l	Set1MFlag_43(pc),a1
 	move.w	#$0,(a1)
 	dc.w	$207A,$080C
-	dc.w	$6100,$065E
+	bsr.w	Set1MFlag_29
 .l7D54	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
-	dc.w	$43FA,$06BA
+	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,(a1)
-	dc.w	$6100,$05D6
+	bsr.w	Set1MFlag_26
 	move.b	$A00022.l,d2
 	lsl.w	#$8,d2
 	move.b	$A00023.l,d2
@@ -424,7 +424,7 @@ Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
 	dc.w	$650C
 	move.w	#$4,d0
 	ori.b	#$1,ccr
-	dc.w	$6000,$008E
+	bra.w	.l7E18
 .l7D8C	lea.l	$A00100.l,a1
 	move.w	#$40,d2
 .l7D96	cmpi.b	#$FF,(a1)
@@ -432,12 +432,12 @@ Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
 	adda.l	#$4,a1
 	dc.w	$0442,$0001
 	dc.w	$66EE
-	dc.w	$6100,$05A8
-	dc.w	$43FA,$066C
+	bsr.w	Set1MFlag_27
+	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	move.w	#$7,d0
 	ori.b	#$1,ccr
-	dc.w	$6000,$005A
+	bra.w	.l7E18
 .l7DC0	move.b	d0,(a1)
 	move.b	d1,$1(a1)
 	move.b	$A00022.l,d2
@@ -451,21 +451,21 @@ Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
 	move.b	$A00023.l,d2
 .l7DF0	move.b	(a0)+,(a1,d2.w)
 	dc.w	$0642,$0001
-	dc.w	$51C9,$FFF6
+	dbra	d1,.l7DF0
 	move.b	d2,$A00023.l
 	lsr.w	#$8,d2
 	move.b	d2,$A00022.l
-	dc.w	$6100,$0546
-	dc.w	$43FA,$060A
+	bsr.w	Set1MFlag_27
+	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
 .l7E18	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
-	dc.w	$41FA,$05F6
+Set1MFlag_16	movem.l	d0-d1/a0-a1,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
 	move.w	#$0,$122(a0)
-	dc.w	$43FA,$0688
+	lea.l	Set1MFlag_39(pc),a1
 	move.w	#$1F,d1
 	move.l	#$FFFFFFFF,d0
 .l7E40	move.l	d0,(a1)+
@@ -473,10 +473,10 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-.lFF7E52	movem.l	d0-d2/a0-a1,-(sp)
-	dc.w	$41FA,$05C2
+Set1MFlag_17	movem.l	d0-d2/a0-a1,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
-	dc.w	$43FA,$065A
+	lea.l	Set1MFlag_39(pc),a1
 	move.w	$122(a0),d1
 	clr.w	d2
 .l7E6A	cmpi.w	#$0,d1
@@ -492,17 +492,17 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 .l7E8A	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-.lFF7E96	movem.l	d0-d1/a0,-(sp)
-	dc.w	$41FA,$057E
+Set1MFlag_18	movem.l	d0-d1/a0,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	$122(a0),d1
 	lsl.w	#$2,d1
-	dc.w	$41FA,$0616
+	lea.l	Set1MFlag_39(pc),a0
 	move.l	d0,(a0,d1.w)
-	dc.w	$41FA,$056C
+	lea.l	Set1MFlag_31(pc),a0
 	dc.w	$0668,$0001,$0122
 	movem.l	(sp)+,d0-d1/a0
 	dc.w	$4E75
-.lFF7EBC	dc.b	$48,$E7,$C0,$E0,$45,$FA,$05,$58,$0C,$6A,$00,$00,$01,$22,$67,$5E	; H...E..X.j..."g^
+Set1MFlag_19	dc.b	$48,$E7,$C0,$E0,$45,$FA,$05,$58,$0C,$6A,$00,$00,$01,$22,$67,$5E	; H...E..X.j..."g^
 	dc.b	$41,$FA,$05,$EE,$0C,$50,$FF,$FF,$67,$54,$04,$50,$00,$01,$66,$48	; A....P..gT.P..fH
 	dc.b	$10,$28,$00,$03,$02,$00,$00,$F0,$E1,'HH@0(',$00,$02	; .(.......HH@0(..
 	dc.b	$02,$00,$00,$0F,$00,$00,$00,$80,$61,$00,$FD,$06,$4A,$40,$67,$06	; ........a...J@g.
@@ -510,24 +510,24 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	dc.b	$00,$01,$E5,$48,$20,$B1,$00,$00,$23,$BC,$FF,$FF,$FF,$FF,$00,$00	; ...H ...#.......
 	dc.b	$04,$6A,$00,$01,$01,$22,$60,$AC,$D0,$FC,$00,$04,$60,$A6,$4C,$DF	; .j..."`.....`.L.
 	dc.b	$07,$03,$4E,$75	; ..Nu
-.lFF7F30	movem.l	d1-d2/a0,-(sp)
-	dc.w	$6100,$0408
+Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
+	bsr.w	Set1MFlag_26
 	tst.b	$A00072.l
-	dc.w	$6700,$0178
+	beq.w	.l80B8
 	cmpi.b	#$1,$A00072.l
 	dc.w	$667E
 	clr.w	d1
 	move.b	$A00073.l,d1
 	move.w	#$1,d0
-	dc.w	$6100,$0170
-	dc.w	$6500,$015A
+	bsr.w	Set1MFlag_21
+	bcs.w	.l80B8
 	cmpa.l	#$FFFFFFFF,a0
-	dc.w	$6700,$0150
-	dc.w	$43FA,$04AE
+	beq.w	.l80B8
+	lea.l	Set1MFlag_31(pc),a1
 	move.l	a0,$126(a1)
 	move.l	a0,-(sp)
-	dc.w	$6100,$03E6
-	dc.w	$6100,$0482
+	bsr.w	Set1MFlag_28
+	bsr.w	Set1MFlag_30
 .l7F7C	move.b	(a0),d0
 	cmp.b	(a0),d0
 	bne.b	.l7F7C
@@ -539,7 +539,7 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	d0,$12E(a1)
 	adda.l	#$1,a0
 	movea.l	(sp)+,a0
-	dc.w	$6100,$0412
+	bsr.w	Set1MFlag_29
 	movea.l	$126(a1),a0
 	adda.l	#$2,a0
 	move.l	a0,$12A(a1)
@@ -549,16 +549,16 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	move.b	$A00025.l,d0
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
-	dc.w	$6000,$0082
+	bra.w	.l804A
 .l7FCA	cmpi.b	#$2,$A00072.l
 	dc.w	$6636
 	dc.w	$207A,$056E
 	cmpa.l	#$0,a0
 	dc.w	$6610
-	dc.w	$6100,$0370
-	dc.w	$6100,$FBAA
-	dc.w	$6100,$0354
-	dc.w	$6000,$00CA
+	bsr.w	Set1MFlag_27
+	bsr.w	Set1MFlag_12
+	bsr.w	Set1MFlag_26
+	bra.w	.l80B8
 .l7FF0	clr.l	d0
 	move.b	$A00024.l,d0
 	lsl.w	#$8,d0
@@ -567,14 +567,14 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	d0,a1
 	dc.w	$6040
 .l800A	cmpi.b	#$3,$A00072.l
-	dc.w	$6600,$00A4
+	bne.w	.l80B8
 	dc.w	$207A,$052C
 	cmpa.l	#$0,a0
 	dc.w	$6610
-	dc.w	$6100,$032E
-	dc.w	$6100,$FB68
-	dc.w	$6100,$0312
-	dc.w	$6000,$0088
+	bsr.w	Set1MFlag_27
+	bsr.w	Set1MFlag_12
+	bsr.w	Set1MFlag_26
+	bra.w	.l80B8
 .l8032	clr.l	d0
 	move.b	$A00026.l,d0
 	lsl.w	#$8,d0
@@ -582,49 +582,49 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
 .l804A	move.l	a0,-(sp)
-	dc.w	$6100,$030E
-	dc.w	$6100,$03AA
+	bsr.w	Set1MFlag_28
+	bsr.w	Set1MFlag_30
 	move.w	#$1FF,d1
 .l8058	move.b	(a0)+,(a1)+
 	dc.w	$671E
 	dbra	d1,.l8058
-	dc.w	$43FA,$03B8
+	lea.l	Set1MFlag_31(pc),a1
 	move.l	$12A(a1),d0
 	addi.l	#$200,d0
 	move.l	d0,$12A(a1)
 	movea.l	(sp)+,a0
-	dc.w	$6100,$033A
+	bsr.w	Set1MFlag_29
 	dc.w	$603E
 .l807A	suba.l	#$1,a1
 	movea.l	(sp)+,a0
-	dc.w	$6100,$032C
+	bsr.w	Set1MFlag_29
 	clr.l	d0
 	dc.w	$303A,$04BE
 	cmpi.w	#$FFFF,d0
 	dc.w	$671A
 	move.b	#$FF,(a1)
-	dc.w	$43FA,$0382
+	lea.l	Set1MFlag_31(pc),a1
 	movea.l	$126(a1),a0
 	adda.l	#$2,a0
 	adda.l	d0,a0
 	move.l	a0,$12A(a1)
 	dc.w	$600C
-.l80AC	dc.w	$43FA,$036C
+.l80AC	lea.l	Set1MFlag_31(pc),a1
 	move.l	#$0,$12A(a1)
 .l80B8	move.b	#$0,$A00072.l
-	dc.w	$6100,$0290
+	bsr.w	Set1MFlag_27
 	movem.l	(sp)+,d1-d2/a0
 	rts
-.lFF80CA	movem.l	d1-d4/a1-a2,-(sp)
-	dc.w	$43FA,$051C
+Set1MFlag_21	movem.l	d1-d4/a1-a2,-(sp)
+	lea.l	Set1MFlag_45(pc),a1
 	move.w	#$4,d2
 .l80D6	cmpi.l	#$FFFFFFFF,(a1)
-	dc.w	$6700,$00A2
+	beq.w	.l8180
 	movea.l	(a1),a0
 	movea.l	a0,a2
 	move.l	a0,-(sp)
-	dc.w	$6100,$0274
-	dc.w	$6100,$0310
+	bsr.w	Set1MFlag_28
+	bsr.w	Set1MFlag_30
 	clr.l	d3
 .l80F0	move.b	(a0),d3
 	cmp.b	(a0),d3
@@ -658,7 +658,7 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	cmp.b	$3(a0),d0
 	bne.b	.l813C
 	movea.l	(sp)+,a0
-	dc.w	$6100,$0266
+	bsr.w	Set1MFlag_29
 	movea.l	a2,a0
 	andi.b	#$FE,ccr
 	dc.w	$6042
@@ -675,21 +675,21 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$0443,$0001
 	dc.w	$669C
 	movea.l	(sp)+,a0
-	dc.w	$6100,$0232
+	bsr.w	Set1MFlag_29
 .l8180	adda.l	#$4,a1
 	dc.w	$0442,$0001
-	dc.w	$6600,$FF4A
+	bne.w	.l80D6
 	move.w	#$3,d0
 	ori.b	#$1,ccr
 .l8196	movem.l	(sp)+,d1-d4/a1-a2
 	rts
-.lFF819C	movem.l	d1/a1,-(sp)
+Set1MFlag_22	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
-	dc.w	$43FA,$0448
+	lea.l	Set1MFlag_45(pc),a1
 	move.l	a0,(a1,d1.w)
 	movem.l	(sp)+,d1/a1
 	rts
-.lFF81B0	movem.l	d1/a0-a1,-(sp)
+Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
 .l81B6	cmpi.w	#$FFFF,(a1)
 	dc.w	$6604
@@ -697,7 +697,7 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$6034
 .l81C0	move.w	(a1),d0
 	move.w	$2(a1),d1
-	dc.w	$6100,$FF02
+	bsr.w	Set1MFlag_21
 	dc.w	$6524
 	cmpi.w	#$0,(a1)
 	dc.w	$6616
@@ -705,22 +705,22 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$6410
 	move.w	d0,d1
 	move.w	$2(a1),d0
-	dc.w	$6100,$FB7A
+	bsr.w	Set1MFlagSub5
 	dc.w	$650C
-	dc.w	$6000,$0002
+	bra.w	.l81E8
 .l81E8	adda.l	#$4,a1
 	bra.b	.l81B6
 .l81F0	ori.b	#$1,ccr
 .l81F4	movem.l	(sp)+,d1/a0-a1
 	rts
-.lFF81FA	movem.l	d1-d3/a0-a2,-(sp)
-	dc.w	$43FA,$021A
+Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
+	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,(a1)
-	dc.w	$6100,$0136
+	bsr.w	Set1MFlag_26
 .l820A	cmpi.w	#$FFFF,(a0)
-	dc.w	$6700,$00D4
+	beq.w	.l82E4
 	cmpi.w	#$6,(a0)
-	dc.w	$6400,$00C2
+	bcc.w	.l82DA
 	lea.l	$A00100.l,a1
 	move.w	$2(a0),d0
 	move.w	#$3F,d1
@@ -728,7 +728,7 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	dc.w	$670E
 	adda.l	#$4,a1
 	dbra	d1,.l8228
-	dc.w	$6000,$00A2
+	bra.w	.l82DA
 .l823A	clr.w	d0
 	move.b	$1(a1),d0
 	clr.w	d1
@@ -755,7 +755,7 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	$A00100.l,a1
 	move.w	#$3F,d2
 .l8298	cmpi.b	#$FF,(a1)
-	dc.w	$6600,$001E
+	bne.w	.l82BC
 	clr.w	d3
 	move.b	$2(a1),d3
 	lsl.w	#$8,d3
@@ -777,17 +777,17 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	lsr.w	#$8,d1
 	move.b	d1,(a1)
 .l82DA	adda.l	#$4,a0
-	dc.w	$6000,$FF28
-.l82E4	dc.w	$6100,$006C
-	dc.w	$43FA,$0130
+	bra.w	.l820A
+.l82E4	bsr.w	Set1MFlag_27
+	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
 	movem.l	(sp)+,d1-d3/a0-a2
 	rts
-.lFF82F8	movem.l	a0-a1,-(sp)
-	dc.w	$41FA,$011C
+Set1MFlag_25	movem.l	a0-a1,-(sp)
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,(a0)
-	dc.w	$6100,$0038
+	bsr.w	Set1MFlag_26
 	lea.l	$A00100.l,a0
 	move.w	#$FF,d0
 .l8312	move.b	#$FF,(a0)+
@@ -796,21 +796,21 @@ Set1MFlag_2	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	$A00022.l,a1
 	move.b	(a0)+,(a1)+
 	move.b	(a0),(a1)
-	dc.w	$6100,$0026
-	dc.w	$41FA,$00EA
+	bsr.w	Set1MFlag_27
+	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
 	rts
-.lFF833E	move.w	#$100,$A11100.l
+Set1MFlag_26	move.w	#$100,$A11100.l
 .l8346	btst.b	#$8,$A11100.l
 	bne.b	.l8346
 	rts
-.lFF8352	move.w	#$0,$A11100.l
+Set1MFlag_27	move.w	#$0,$A11100.l
 	rts
-Set1MFlag_3	movem.l	d0-d1/a1,-(sp)
+Set1MFlag_28	movem.l	d0-d1/a1,-(sp)
 	cmpa.l	#$80000,a0
-	dc.w	$6400,$0042
+	bcc.w	.l83AA
 	move.b	#$3,$A12001.l
 .l8372	move.w	$A12000.l,d0
 	btst	#$1,d0
@@ -819,7 +819,7 @@ Set1MFlag_3	movem.l	d0-d1/a1,-(sp)
 	swap	d0
 	andi.w	#$6,d0
 	lsl.w	#$5,d0
-	dc.w	$43FA,$0260
+	lea.l	Set1MFlag_44(pc),a1
 	move.w	$A12002.l,d1
 	move.w	d1,(a1)
 	btst	#$2,d1
@@ -830,7 +830,7 @@ Set1MFlag_3	movem.l	d0-d1/a1,-(sp)
 	move.w	d1,$A12002.l
 .l83AA	movem.l	(sp)+,d0-d1/a1
 	rts
-Set1MFlag_4	move.l	d0,-(sp)
+Set1MFlag_29	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$643E
 	dc.w	$303A,$022E
@@ -850,7 +850,7 @@ Set1MFlag_4	move.l	d0,-(sp)
 	bne.b	.l83E0
 .l83F8	move.l	(sp)+,d0
 	rts
-Set1MFlag_5	move.l	d0,-(sp)
+Set1MFlag_30	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$6410
 	move.l	a0,d0
@@ -859,23 +859,23 @@ Set1MFlag_5	move.l	d0,-(sp)
 	movea.l	d0,a0
 .l8416	move.l	(sp)+,d0
 	rts
-.lFF841A	dc.b	$00,$00	; ..
-Set1MFlag_6	dcb.b	$20,0
-Set1MFlag_7	dcb.b	$20,0
-Set1MFlag_8	dcb.b	$10,0
-.lFF846C	dcb.b	$10,0
-.lFF847C	dcb.b	$10,0
-.lFF848C	dcb.b	$10,0
-.lFF849C	dcb.b	$20,0
-.lFF84BC	dcb.b	$82,0
-.lFF853E	dc.b	$00,$00,$00,$00,$00,$00	; ......
+Set1MFlag_31	dc.b	$00,$00	; ..
+Set1MFlag_32	dcb.b	$20,0
+Set1MFlag_33	dcb.b	$20,0
+Set1MFlag_34	dcb.b	$10,0
+Set1MFlag_35	dcb.b	$10,0
+Set1MFlag_36	dcb.b	$10,0
+Set1MFlag_37	dcb.b	$10,0
+Set1MFlag_38	dcb.b	$20,0
+Set1MFlag_39	dcb.b	$82,0
+Set1MFlag_40	dc.b	$00,$00,$00,$00,$00,$00	; ......
 .lFF8544	dc.b	$00,$00,$00,$00	; ....
 .lFF8548	dc.b	$00,$00	; ..
-Set1MFlag_9	dcb.b	$10,0
-Set1MFlag_10	dc.b	$00,$00,$00,$00	; ....
-Set1MFlag_11	dcb.b	$8C,0
-.lFF85EA	dc.b	$00,$00	; ..
-Set1MFlag_12	dcb.b	$51,0
+Set1MFlag_41	dcb.b	$10,0
+Set1MFlag_42	dc.b	$00,$00,$00,$00	; ....
+Set1MFlag_43	dcb.b	$8C,0
+Set1MFlag_44	dc.b	$00,$00	; ..
+Set1MFlag_45	dcb.b	$51,0
 	incbin	..\Extracted\SegaCD\MAIN\main_0863D.bin
 	dcb.b	$9,0
 	dc.b	$01,$00,$00,$00,$02,$00,$00,$00,$03,$00,$00,$00,$04,$00,$00,$00	; ................

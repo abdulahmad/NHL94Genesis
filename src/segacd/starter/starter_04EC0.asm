@@ -13,7 +13,7 @@ CopyData_3	dc.w	$4E56,$0000
 	dc.b	$8D,'DisposeEngine',$00,$00	; .DisposeEngine..
 GetSectDst	dc.w	$4E56,$0000
 GetSectDstSub1	movem.l	d7/a4,-(sp)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
 	move.l	$8(a4),d0
@@ -23,7 +23,7 @@ GetSectDstSub1	movem.l	d7/a4,-(sp)
 	dc.w	$6C1C
 	move.l	$8(a4),d0
 	move.l	$4(a4),d1
-	dc.w	$4EBA,$042A
+	jsr	GetData_16(pc)
 	move.l	d0,d7
 	add.l	(a4),d7
 	addq.l	#$1,$10(a4)
@@ -35,7 +35,7 @@ GetSectDstSub1	movem.l	d7/a4,-(sp)
 	dc.b	$8A,'GetSectDst',$00,$00,$00	; .GetSectDst...
 PeekSectDst	dc.w	$4E56,$0000
 PeekSectDstSub1	movem.l	d7/a4,-(sp)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
 	move.l	$8(a4),d0
@@ -45,7 +45,7 @@ PeekSectDstSub1	movem.l	d7/a4,-(sp)
 	dc.w	$6C10
 	move.l	$8(a4),d0
 	move.l	$4(a4),d1
-	dc.w	$4EBA,$03CE
+	jsr	GetData_16(pc)
 	move.l	d0,d7
 	add.l	(a4),d7
 .l4F8E	move.l	d7,d0

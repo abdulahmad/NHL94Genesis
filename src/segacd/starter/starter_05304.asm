@@ -16,12 +16,12 @@ GetDataSub4	swap	d0
 	dc.w	$4E75
 	dc.b	$22,$2F,$00,$04	; "/..
 GetDataSub5	move.l	$8(sp),d0
-GetData_15	dc.w	$41FA,$000A
+GetData_15	lea.l	.l2663E(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .l2663E	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-GetData_16	dc.w	$41FA,$000A
+GetData_16	lea.l	.l26662(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .l26662	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -51,34 +51,34 @@ GetDataSub7	addx.l	d0,d0
 	move.w	(sp)+,d2
 	dc.w	$4E75
 	dc.b	$05,$D2,$00,$00	; ....
-.l2671A	movem.l	d0-d7/a0-a6,-(sp)
+GetData_19	movem.l	d0-d7/a0-a6,-(sp)
 	moveq	#$0,d0
 	move.w	$40(sp),d2
 	move.w	$42(sp),d1
 	move.w	$44(sp),d0
-	dc.w	$6B00,$0030
+	bmi.w	GetData_20
 	move.w	d0,$10ADA.l
 	cmpi.w	#$FFFF,d0
-	dc.w	$6700,$0022
+	beq.w	GetData_20
 	cmpi.w	#$1,d0
-	dc.w	$6C00,$001A
+	bge.w	GetData_20
 	lea.l	$104EC.l,a0
 	mulu.w	#$A,d0
 	adda.l	d0,a0
 	move.b	$0(a0),d0
 	cmpi.b	#$2,d0
 	dc.w	$6700,$000E
-GetData_19	movem.l	(sp)+,d0-d7/a0-a6
+GetData_20	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	(sp),$6(sp)
 	addq.l	#$6,sp
 	rts
 .l546A	tst.w	d1
-	dc.w	$6600,$004E
+	bne.w	GetData_21
 	tst.w	d2
-	dc.w	$6600,$0048
+	bne.w	GetData_21
 	move.w	$4(a0),d0
 	sub.w	$2(a0),d0
-	dc.w	$6700,$0008
+	beq.w	.l5488
 	jsr	$E488.l
 .l5488	add.w	$2(a0),d0
 	move.w	d0,d2
@@ -86,19 +86,19 @@ GetData_19	movem.l	(sp)+,d0-d7/a0-a6
 	move.b	$1(a0),d1
 	move.w	$8(a0),d0
 	sub.w	$6(a0),d0
-	dc.w	$6700,$0008
+	beq.w	.l54A6
 	jsr	$E488.l
 .l54A6	add.w	$6(a0),d0
 	move.w	d0,d3
 	move.w	#$3,d0
 GetDataSub8	move.w	#$FFFF,d4
 	jsr	$C4BC.l
-	bra.b	GetData_19
-.l267BC	move.w	d1,d3
+	bra.b	GetData_20
+GetData_21	move.w	d1,d3
 	move.w	d2,d4
 	move.w	$4(a0),d0
 	sub.w	$2(a0),d0
-	dc.w	$6700,$0008
+	beq.w	.l54D2
 	jsr	$E488.l
 .l54D2	add.w	$2(a0),d0
 	move.w	d0,d2

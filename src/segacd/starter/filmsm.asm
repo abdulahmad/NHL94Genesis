@@ -10,7 +10,7 @@
 ; See docs/segacd_film.md.
 
 
-RestoreBios_26	link	a6,#$0
+RestoreBios_89	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8(a6),a0
 	movea.l	$C(a6),a1

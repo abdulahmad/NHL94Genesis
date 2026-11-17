@@ -1,10 +1,10 @@
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-DispatchTail_62	dc.w	$41FA,$000A
+DispatchTail_62	lea.l	.lFF34CC(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF34CC	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-DispatchTail_63	dc.w	$41FA,$000A
+DispatchTail_63	lea.l	.lFF34F0(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF34F0	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -30,12 +30,12 @@ DispatchTailSub1	movea.l	#$FFFC00,sp
 	move.w	#$0,$A1201E.l
 	move.b	#$0,$A1200E.l
 	move.w	#$0,$FF6CEE.l
-	dc.w	$6100,$0318
-	dc.w	$6100,$035E
-	dc.w	$6100,$039A
+	bsr.w	DispatchTail_65
+	bsr.w	DispatchTail_66
+	bsr.w	DispatchTail_67
 	move.l	#$0,$FF6D00.l
 	move.l	#$0,$FF6CFC.l
-	dc.w	$6000,$0002
+	bra.w	DispatchTail_64
 DispatchTail_64	btst.b	#$7,$A1200F.l
 	bne.b	DispatchTail_64
 	btst.b	#$6,$A1200F.l
@@ -90,20 +90,20 @@ DispatchTailSub3	movem.l	d0-d7/a0-a6,-(sp)
 	dc.b	$00,$FF,$4B,$9C,$00,$FF,$4B,$A8,$00,$FF,$4B,$B4,$00,$FF,$4B,$C0	; ..K...K...K...K.
 	dc.b	$00,$FF,$4B,$CC,$00,$FF,$4B,$D8,$00,$FF,$4C,$14,$00,$FF,$4C,$22	; ..K...K...L...L"
 	dc.b	$00,$FF,$4C,$30,$00,$FF,$4B,$F0,$00,$FF,$4B,$FC,$00,$FF,$4C,$08	; ..L0..K...K...L.
-	dc.b	$00,$FF,$4C,$3E,$00,$FF,$4C,$AC,$00,$FF,$4D,$8E,$00,$FF,$4D,$E4	; ..L>..L...M...M.
-	dc.b	$00,$FF,$4E,$02,$00,$FF,$4E,$24,$00,$FF,$4E,$30,$00,$FF,$4E,$84	; ..N...N$..N0..N.
-	dc.b	$00,$FF,$4F,$C8,$00,$FF,$4E,$5A,$00,$FF,$67,$E8,$00,$FF,$68,$18	; ..O...NZ..g...h.
-	dc.b	$00,$FF,$68,$4A,$00,$FF,$68,$0E,$00,$FF,$68,$AA,$00,$FF,$4D,$38	; ..hJ..h...h...M8
-	dc.b	$00,$FF,$69,$16,$00,$FF,$69,$24,$00,$FF,$69,$32,$00,$FF,$69,$3C	; ..i...i$..i2..i<
-	dc.b	$00,$FF,$69,$48,$00,$FF,$4A,$92,$00,$FF,$69,$54,$00,$FF,$69,$60	; ..iH..J...iT..i`
-	dc.b	$00,$FF,$69,$88,$00,$FF,$69,$7C,$00,$FF,$69,$94,$00,$FF,$69,$A0	; ..i...i|..i...i.
-	dc.b	$00,$FF,$69,$AC,$00,$FF,$4C,$AC,$00,$FF,$4D,$8E,$00,$FF,$69,$B8	; ..i...L...M...i.
-	dc.b	$00,$FF,$69,$E4,$00,$FF,$50,$0C,$00,$FF,$6C,$86,$00,$FF,$68,$8A	; ..i...P...l...h.
-	dc.b	$3F,$00,$10,$39,$00,$C0,$00,$08,$0C,$00,$00,$64,$64,$0A,$33,$FC	; ?..9.......dd.3.
-	dc.b	$00,$00,$00,$FF,$6C,$F8,$60,$08,$4A,$79,$00,$FF,$6C,$F8,$67,$04	; ....l.`.Jy..l.g.
-	dc.b	$30,$1F,$4E,$73,$33,$FC,$00,$01,$00,$FF,$6C,$F8,$30,$3C,$00,$01	; 0.Ns3.....l.0<..
-	dc.b	$61,$00,$3E,$0E,$30,$1F,$4E,$73,$08,$F9,$00,$00,$00,$A1,$20,$00	; a.>.0.Ns...... .
-	dc.b	$4E,$73	; Ns
+	dc.b	$00,$FF,$4C,$3E,$00,$FF,$4C,$AC,$00,$FF,$4D,$8E	; ..L>..L...M.
+	dc.l	DispatchTail_81,DispatchTail_82,DispatchTail_83
+	dc.b	$00,$FF,$4E,$30,$00,$FF,$4E,$84,$00,$FF,$4F,$C8,$00,$FF,$4E,$5A	; ..N0..N...O...NZ
+	dc.b	$00,$FF,$67,$E8,$00,$FF,$68,$18,$00,$FF,$68,$4A,$00,$FF,$68,$0E	; ..g...h...hJ..h.
+	dc.b	$00,$FF,$68,$AA,$00,$FF,$4D,$38,$00,$FF,$69,$16,$00,$FF,$69,$24	; ..h...M8..i...i$
+	dc.b	$00,$FF,$69,$32,$00,$FF,$69,$3C,$00,$FF,$69,$48,$00,$FF,$4A,$92	; ..i2..i<..iH..J.
+	dc.b	$00,$FF,$69,$54,$00,$FF,$69,$60,$00,$FF,$69,$88,$00,$FF,$69,$7C	; ..iT..i`..i...i|
+	dc.b	$00,$FF,$69,$94,$00,$FF,$69,$A0,$00,$FF,$69,$AC,$00,$FF,$4C,$AC	; ..i...i...i...L.
+	dc.b	$00,$FF,$4D,$8E,$00,$FF,$69,$B8,$00,$FF,$69,$E4,$00,$FF,$50,$0C	; ..M...i...i...P.
+	dc.b	$00,$FF,$6C,$86,$00,$FF,$68,$8A,$3F,$00,$10,$39,$00,$C0,$00,$08	; ..l...h.?..9....
+	dc.b	$0C,$00,$00,$64,$64,$0A,$33,$FC,$00,$00,$00,$FF,$6C,$F8,$60,$08	; ...dd.3.....l.`.
+	dc.b	$4A,$79,$00,$FF,$6C,$F8,$67,$04,$30,$1F,$4E,$73,$33,$FC,$00,$01	; Jy..l.g.0.Ns3...
+	dc.b	$00,$FF,$6C,$F8,$30,$3C,$00,$01,$61,$00,$3E,$0E,$30,$1F,$4E,$73	; ..l.0<..a.>.0.Ns
+	dc.b	$08,$F9,$00,$00,$00,$A1,$20,$00,$4E,$73	; ...... .Ns
 DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 	bset.b	#$5,$A1200E.l
 	bset.b	#$0,$A12000.l
@@ -117,7 +117,7 @@ DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 .l389C	btst.b	#$2,$A1200F.l
 	dc.w	$6608
 	dbra	d0,.l389C
-	dc.w	$6000,$005E
+	bra.w	.l390A
 .l38AE	btst.b	#$4,$A1200F.l
 	bne.b	.l38AE
 	btst.b	#$3,$A1200F.l
@@ -138,8 +138,8 @@ DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 .l390A	bclr.b	#$5,$A1200E.l
 	movem.l	(sp)+,d0-d1/a0-a1
 	rte
-.lFF3918	btst.b	#$7,$A1200F.l
-	bne.b	.lFF3918
+DispatchTail_65	btst.b	#$7,$A1200F.l
+	bne.b	DispatchTail_65
 .l3922	btst.b	#$6,$A1200F.l
 	bne.b	.l3922
 	bset.b	#$6,$A1200E.l
@@ -151,8 +151,8 @@ DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 	bne.b	.l394E
 	bclr.b	#$7,$A1200E.l
 	rts
-.lFF3962	btst.b	#$2,$A12003.l
-	bne.b	.lFF3962
+DispatchTail_66	btst.b	#$2,$A12003.l
+	bne.b	DispatchTail_66
 	rts
 	move.l	d0,-(sp)
 	move.w	#$4000,$C00004.l
@@ -165,7 +165,7 @@ DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 DispatchTailSub5	btst.b	#$1,$A12003.l
 	bne.b	DispatchTailSub5
 	rts
-DispatchTail_65	bset.b	#$1,$A12003.l
+DispatchTail_67	bset.b	#$1,$A12003.l
 .l39AA	btst.b	#$0,$A12003.l
 	bne.b	.l39AA
 	rts
@@ -179,7 +179,7 @@ DispatchTailSub6	movem.w	d0,-(sp)
 	move.w	d0,$C00004.l
 	rts
 DispatchTailSub7	movem.l	d0-d1/a0,-(sp)
-	bsr.w	DispatchTail_65
+	bsr.w	DispatchTail_67
 	bsr.w	DispatchTailSub5
 	bsr.w	DispatchTailSub2
 	move.w	d0,d1
@@ -199,7 +199,7 @@ DispatchTailSub8	movem.w	d0,-(sp)
 	andi.w	#$3,d0
 	move.w	d0,$C00004.l
 	rts
-	bsr.w	DispatchTail_65
+	bsr.w	DispatchTail_67
 	bsr.w	DispatchTailSub5
 	bsr.w	DispatchTailSub2
 	move.w	d0,d1
@@ -212,7 +212,7 @@ DispatchTailSub8	movem.w	d0,-(sp)
 	move.w	$A12022.l,d0
 	move.w	#$0,$A12010.l
 	dc.w	$0139,$00A1,$1100
-	dc.w	$6600,$000A
+	bne.w	.l3A76
 	move.w	#$4,$A12010.l
 .l3A76	rts
 	movea.l	$A12022.l,a0
@@ -221,7 +221,7 @@ DispatchTailSub8	movem.w	d0,-(sp)
 	movea.l	$A12022.l,a0
 	clr.w	(a0)
 	rts
-	bsr.w	DispatchTail_65
+	bsr.w	DispatchTail_67
 	dc.w	$4E75
 	dc.b	$61,$00,$FF,$02,$33,$F9,$00,$23,$BC,$88,$00,$C0,$00,$04,$33,$F9	; a...3..#......3.
 	dc.b	$00,$23,$BC,$8A,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$8C,$00,$C0	; .#......3..#....

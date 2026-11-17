@@ -8,7 +8,7 @@ Wait_1	link	a6,#$FFFC
 	movem.l	d3/d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
 	move.l	#$C0000,-$4(a6)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	lea.l	$40(a0),a4
 	jsr	InitHeap_1(pc)
 	move.l	d5,-(sp)
@@ -28,7 +28,7 @@ Wait_1	link	a6,#$FFFC
 	moveq	#$1,d0
 	move.l	d0,-(sp)
 	move.l	d5,-(sp)
-	jsr	RestoreBios_36(pc)
+	jsr	RestoreBios_101(pc)
 	jsr	GetTicks_1(pc)
 	cmpi.l	#$46494C4D,(a3)
 	lea.l	$C(sp),sp
@@ -74,7 +74,7 @@ Wait_1	link	a6,#$FFFC
 	move.l	a3,-(sp)
 	move.l	d6,-(sp)
 	move.l	d5,-(sp)
-	jsr	RestoreBios_36(pc)
+	jsr	RestoreBios_101(pc)
 	jsr	GetTicks_1(pc)
 	lea.l	$14(sp),sp
 .l25714	move.l	$4(a3),$8(a4)
@@ -125,34 +125,34 @@ Wait_2	movea.l	$10(a4),a0
 Wait_3	movea.l	$10(a4),a0
 	cmp.l	$C(a0),d7
 	blt.b	Wait_2
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	moveq	#$0,d0
 	move.l	d0,$3C(a0)
 	tst.l	d6
 	bne.b	.l257B8
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	moveq	#-1,d0
 	move.l	d0,$3C(a0)
 .l257B8	tst.l	d5
 	bne.b	.l257C6
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	moveq	#$1,d0
 	move.l	d0,$3C(a0)
-.l257C6	lea.l	RestoreBios_12(pc),a0
+.l257C6	lea.l	RestoreBios_75(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$20(a0),(a1)
-	lea.l	RestoreBios_12(pc),a0
-	lea.l	RestoreBios_12(pc),a1
+	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_75(pc),a1
 	move.l	$28(a1),d0
 	add.l	d0,d0
 	add.l	$24(a0),d0
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	move.l	$2C(a0),d1
 	asl.l	#$7,d1
 	add.l	d0,d1
 	movea.l	-$4(a6),a0
 	move.l	d1,$4(a0)
-	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_75(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$30(a0),$8(a1)
 	jsr	Wait_24(pc)
@@ -163,7 +163,7 @@ Wait_3	movea.l	$10(a4),a0
 	move.l	d0,$40(a4)
 	moveq	#$3C,d0
 	move.l	d0,-(sp)
-	jsr	RestoreBios_37(pc)
+	jsr	RestoreBios_103(pc)
 	pea.l	$30(a4)
 	jsr	GetData_3(pc)
 	moveq	#$0,d0
