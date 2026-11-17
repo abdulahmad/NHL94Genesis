@@ -23,13 +23,18 @@ import emit_m68k as E
 import segcd_flow as F
 
 CFG = {
+    "PLAYER": dict(
+        disc="cdbin/PLAYER.BIN", base=0x0, name="player", asset_min=512, oaq="-", ptr_seeds=False,
+        hand=[("playerpic", 0x1D54, 0x2010), ("playercareer", 0x2010, 0x23D0), ("playerpage", 0x23D0, 0x281C)],
+        opts_off=(), string_calls=(),
+    ),
     "MAIN": dict(
         disc="cdbin/MAIN.BIN", base=0xFF0000, name="main", asset_min=512,
         hand=[("maincd", 0x0, 0x272), ("maindma", 0x272, 0x500), ("maincont", 0x500, 0xCB8), ("mainblit", 0xCB8, 0x12C0),
               ("mainvdp", 0x12C0, 0x1840), ("mainpad", 0x1840, 0x1E90), ("maindisp", 0x1E90, 0x2D2A),
               ("mainfont", 0x2D2A, 0x302A), ("maintext", 0x302A, 0x34B8), ("hwread", 0x3B3C, 0x3C3E),
               ("z80load", 0x76C8, 0x77B8)],
-        opts_off=("hwread", "z80load"),
+        opts_off=("hwread", "z80load"), oaq="+", ptr_seeds=True,
         string_calls=(),
     ),
 }
@@ -104,7 +109,7 @@ def main():
         src = git_text("src/segacd/%s.asm" % name).split("\n")
         hand[name] = dict(a=a, b=b, src=src, addr=map_lines(src, name))
     hack = {}  # label -> address, from `org X` followed by a bare label (maincd's link stubs)
-    s = hand["maincd"]["src"]
+    s = hand["maincd"]["src"] if "maincd" in hand else []
     for i, l in enumerate(s):
         m = re.match(r"^\torg\t\$([0-9A-F]+)\s*$", l)
         if m and i + 1 < len(s) and re.match(r"^[A-Za-z_]\w*\s*$", s[i + 1]) and int(m.group(1), 16) != base:
@@ -156,6 +161,8 @@ def main():
             for m in re.finditer(r"\$(FF[0-9A-F]{4})\b", ln):
                 pass
     for i in range(0, n - 3, 2):
+        if not cfg["ptr_seeds"]:
+            break
         v = struct.unpack(">I", d[i:i + 4])[0]
         if base <= v < base + n and v % 2 == 0 and not cov[v - base]:
             seeds.add(v - base)
@@ -434,15 +441,15 @@ def main():
     return parts, ddir
 
 
-def asm_opts():
+def asm_opts(cfg):
     return ["/o", "d-", "/o", "s-", "/o", "r+", "/o", "l+", "/o", "l.", "/o", "ow+", "/o", "op-", "/o", "os+", "/o", "oz-",
-            "/o", "omq-", "/o", "oaq+", "/o", "osq+"]
+            "/o", "omq-", "/o", "oaq" + cfg["oaq"], "/o", "osq" + cfg["oaq"]]
 
 
 def assemble(cfg):
     t = "Z:\\tmp\\new\\" + cfg["name"]
     os.makedirs("/tmp/new", exist_ok=True)
-    r = subprocess.run(["wine", "../assembler/Assembler.exe", "/p", "/m", "/g"] + asm_opts() +
+    r = subprocess.run(["wine", "../assembler/Assembler.exe", "/p", "/m", "/g"] + asm_opts(cfg) +
                        ["segacd\\%s.asm,%s.bin,%s,%s" % (cfg["name"], t, t, t)],
                        cwd="src", capture_output=True, text=True, env={**os.environ, "WINEDEBUG": "-all"})
     txt = r.stdout.replace("\r", "")

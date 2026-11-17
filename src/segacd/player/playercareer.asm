@@ -3,16 +3,9 @@
 ; End of a list is the word $656C or $656E at offset 4.
 ; See docs/segacd_stats.md.
 
-X_129C	equ	$129C
-X_3D26	equ	$3D26
-X_4051	equ	$4051
-X_4049	equ	$4049
-X_11DA	equ	$11DA
-X_3C16	equ	$3C16
 
-	org	$2010
 
-	movem.l	d0-d7/a0-a5,-(sp)
+L2010	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	$44(a6),d0
 	beq.w	L23BA
 	movea.l	d0,a2
@@ -30,7 +23,7 @@ L2028	moveq	#$0,d1
 	adda.l	#$2,a0
 L204A	move.w	(sp)+,d0
 	move.w	#$1D,d1
-	bsr.w	X_3C16
+	bsr.w	L3C16
 	dbra	d5,L2028
 	moveq	#$0,d1
 	move.w	(a2),d1
@@ -49,7 +42,7 @@ L207E	move.b	(a0)+,(a1)+
 	movea.l	$8E(a6),a0
 	move.w	#$1EB,d0
 	move.w	#$1D,d1
-	bsr.w	X_3C16
+	bsr.w	L3C16
 	moveq	#$3,d5
 L2096	move.w	(a2),d1
 	lea.l	(a2,d1.w),a2
@@ -85,7 +78,7 @@ L20E0	subq.b	#$1,d0
 	beq.w	L2104
 	addi.b	#$1,$B6(a6)
 L2104	move.w	#$9,$B8(a6)
-	bsr.w	X_11DA
+	bsr.w	L11DA
 	movea.l	$9E(a6),a0
 	moveq	#$F,d3
 	add.b	$1(a0),d3
@@ -108,14 +101,14 @@ L214E	btst.b	#$6,$FF800E.l
 L2168	btst.b	#$6,$FF800E.l
 	bne.b	L2168
 	bclr.b	#$7,$FF800F.l
-	lea.l	X_4049(pc),a0
+	lea.l	L4049(pc),a0
 	move.w	$A6(a6),d1
 	cmp.w	$58(a6),d1
 	bge.w	L218E
-	lea.l	X_4051(pc),a0
+	lea.l	L4051(pc),a0
 L218E	movea.l	$8E(a6),a5
 	move.w	#$7,d1
-	bsr.w	X_3D26
+	bsr.w	L3D26
 	move.l	#$B702,d3
 	movea.l	$9A(a6),a0
 	movea.l	$9E(a6),a1
@@ -141,7 +134,7 @@ L21F0	btst.b	#$6,$FF800E.l
 	movea.l	$8E(a6),a5
 L220A	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	X_3D26
+	bsr.w	L3D26
 	dbra	d5,L220A
 	move.w	#$0,$B4(a6)
 	movea.l	$8E(a6),a4
@@ -149,7 +142,7 @@ L2220	tst.b	(a4)+
 	bne.w	L2220
 	move.b	#$20,-$1(a4)
 	movea.l	$8E(a6),a4
-	bsr.w	X_129C
+	bsr.w	L129C
 	move.w	#$2,$B4(a6)
 	cmpi.w	#$0,$58(a6)
 	beq.w	L225A
@@ -165,7 +158,7 @@ L225A	move.l	a1,$FE(a6)
 	movea.l	$8E(a6),a5
 L2266	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	X_3D26
+	bsr.w	L3D26
 	dbra	d5,L2266
 L2272	move.w	$56(a6),d6
 	beq.w	L22C8
@@ -218,14 +211,14 @@ L2328	btst.b	#$6,$FF800E.l
 	movea.l	$8E(a6),a5
 L2342	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	X_3D26
+	bsr.w	L3D26
 	dbra	d5,L2342
 	movea.l	$8E(a6),a4
 L2352	tst.b	(a4)+
 	bne.w	L2352
 	move.b	#$20,-$1(a4)
 	movea.l	$8E(a6),a4
-	bsr.w	X_129C
+	bsr.w	L129C
 	movea.l	a2,a0
 	moveq	#$0,d1
 	move.b	$2(a0),d1
@@ -239,7 +232,7 @@ L2352	tst.b	(a4)+
 	movea.l	$8E(a6),a5
 L238C	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	X_3D26
+	bsr.w	L3D26
 	dbra	d5,L238C
 	move.w	(a2),d5
 	lea.l	(a2,d5.w),a2
@@ -254,3 +247,4 @@ L23BA	movem.l	(sp)+,d0-d7/a0-a5
 L23C0	subi.w	#$1,$56(a6)
 	move.w	#$0,$B0(a6)
 	bra.w	L2272
+

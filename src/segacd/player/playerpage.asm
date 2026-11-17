@@ -2,30 +2,12 @@
 ; Players/Goalies columns, or the power-play and home/road lines at $28D0.
 ; See docs/segacd_stats.md.
 
-X_EBC	equ	$EBC
-X_10D8	equ	$10D8
-X_281C	equ	$281C
-X_F64	equ	$F64
-X_29B6	equ	$29B6
-X_2972	equ	$2972
-X_28D0	equ	$28D0
-X_3E18	equ	$3E18
-X_4004	equ	$4004
-X_3FDE	equ	$3FDE
-X_129C	equ	$129C
-X_3FD4	equ	$3FD4
-X_3FCA	equ	$3FCA
-X_2C28	equ	$2C28
-X_3C16	equ	$3C16
-X_3EEA	equ	$3EEA
-X_11DA	equ	$11DA
 
-	org	$23D0
 
-	movem.l	d0-d7/a0-a5,-(sp)
+L23D0	movem.l	d0-d7/a0-a5,-(sp)
 	move.b	#$5,$B6(a6)
 	move.w	#$8,$B8(a6)
-	bsr.w	X_11DA
+	bsr.w	L11DA
 	move.w	#$0,$B4(a6)
 	move.w	$7C(a6),d0
 	cmpi.w	#$0,$18(a6)
@@ -47,11 +29,11 @@ L2424	move.w	(a0),d0
 	lea.l	(a0,d0.l),a0
 	movea.l	a0,a2
 	move.w	(a0)+,d0
-	bsr.w	X_3EEA
+	bsr.w	L3EEA
 	move.w	(sp)+,d0
 	move.w	#$19,d1
 	movea.l	$8E(a6),a0
-	bsr.w	X_3C16
+	bsr.w	L3C16
 	movea.l	a2,a0
 	dbra	d3,L2424
 	move.w	$54(a6),d0
@@ -92,16 +74,16 @@ L24C4	move.w	(a5),d4
 	dbra	d5,L24AA
 	movea.l	a2,a5
 L24D0	move.l	#$B6800080,d0
-	bsr.w	X_2C28
+	bsr.w	L2C28
 	move.w	#$209,d0
 	move.w	#$14,d1
-	lea.l	X_3FCA(pc),a0
+	lea.l	L3FCA(pc),a0
 	cmpi.w	#$2,$54(a6)
 	bne.w	L24F4
-	lea.l	X_3FD4(pc),a0
-L24F4	bsr.w	X_3C16
+	lea.l	L3FD4(pc),a0
+L24F4	bsr.w	L3C16
 	movea.l	a0,a4
-	bsr.w	X_129C
+	bsr.w	L129C
 	movea.l	$8E(a6),a0
 	movea.l	a0,a2
 	move.l	#$20202020,(a0)+
@@ -111,10 +93,10 @@ L24F4	bsr.w	X_3C16
 	move.l	#$20202020,(a0)+
 	move.b	#$0,(a0)
 	move.w	#$7,$BA(a6)
-	lea.l	X_3FDE(pc),a3
+	lea.l	L3FDE(pc),a3
 	cmpi.w	#$2,$54(a6)
 	bne.w	L2544
-	lea.l	X_4004(pc),a3
+	lea.l	L4004(pc),a3
 	move.w	#$E,$BA(a6)
 L2544	movea.l	a2,a0
 	cmpi.w	#$0,$58(a6)
@@ -136,7 +118,7 @@ L2572	adda.l	#$5,a2
 	move.w	#$21C,d0
 	move.w	#$14,d1
 	movea.l	$8E(a6),a0
-	bsr.w	X_3C16
+	bsr.w	L3C16
 	moveq	#$5,d5
 	moveq	#$0,d3
 	move.w	#$B782,d3
@@ -167,17 +149,17 @@ L25E4	btst.b	#$6,$FF800E.l
 	moveq	#$0,d1
 	move.b	(a2),d1
 	lea.l	(a3,d1.w),a4
-	bsr.w	X_129C
+	bsr.w	L129C
 	move.b	$1(a2),d1
 	sub.b	(a2),d1
-	bsr.w	X_3E18
+	bsr.w	L3E18
 	moveq	#$0,d6
 	move.b	$1(a2),d6
 	lea.l	(a3,d6.w),a4
 	move.b	#$13,d0
 	sub.b	d1,d0
 	move.b	d0,d1
-	bsr.w	X_3E18
+	bsr.w	L3E18
 	adda.l	#$2,a2
 	move.w	$58(a6),d0
 	adda.w	d0,a2
@@ -186,7 +168,7 @@ L2642	moveq	#$0,d0
 	move.b	(a2)+,d0
 	lea.l	(a3,d0.w),a4
 	move.w	#$5,d1
-	bsr.w	X_3E18
+	bsr.w	L3E18
 	dbra	d6,L2642
 	addi.w	#$80,d3
 	lea.l	(a5,d4.w),a5
@@ -199,8 +181,8 @@ L2670	moveq	#$0,d0
 	move.w	$8(a1),d0
 	adda.l	d0,a1
 	move.l	#$B6800340,d0
-	bsr.w	X_2C28
-	lea.l	X_28D0(pc),a0
+	bsr.w	L2C28
+	lea.l	L28D0(pc),a0
 	moveq	#$2,d4
 	move.w	#$1E1,d5
 	movea.l	a0,a2
@@ -212,17 +194,17 @@ L2698	move.b	(a1)+,d2
 	movea.l	a2,a0
 	moveq	#$0,d0
 	move.b	(a0)+,d0
-	bsr.w	X_3EEA
+	bsr.w	L3EEA
 	movea.l	$8E(a6),a0
 	move.w	d1,d7
 	mulu.w	#$64,d7
 	cmpi.w	#$1,d4
 	bge.w	L26C8
 	move.w	d1,d7
-	bsr.w	X_2972
+	bsr.w	L2972
 	bra.w	L26D0
 L26C8	divu.w	#$2,d7
-	bsr.w	X_29B6
+	bsr.w	L29B6
 L26D0	move.b	#$20,-$2(a0,d0.w)
 	moveq	#$4,d3
 	subq.w	#$1,d0
@@ -234,14 +216,14 @@ L26DA	move.l	d7,d1
 	addi.w	#$28,d5
 	move.w	d5,d0
 	move.w	#$27,d1
-	bsr.w	X_3C16
+	bsr.w	L3C16
 	moveq	#$0,d0
 	movea.l	a2,a0
 	move.b	(a0),d0
 	lea.l	(a0,d0.l),a0
 	movea.l	a0,a2
 	move.b	(a0)+,d0
-	bsr.w	X_3EEA
+	bsr.w	L3EEA
 	movea.l	$8E(a6),a0
 	move.w	d2,d7
 	mulu.w	#$64,d7
@@ -249,15 +231,15 @@ L26DA	move.l	d7,d1
 	beq.w	L271E
 	bra.w	L272A
 L271E	divu.w	#$7,d7
-	bsr.w	X_29B6
+	bsr.w	L29B6
 	bra.w	L2744
 L272A	cmpi.w	#$1,d4
 	bge.w	L273C
 	move.w	d2,d7
-	bsr.w	X_2972
+	bsr.w	L2972
 	bra.w	L2744
 L273C	divu.w	#$2,d7
-	bsr.w	X_29B6
+	bsr.w	L29B6
 L2744	move.b	#$20,-$2(a0,d0.w)
 	moveq	#$4,d3
 	subq.w	#$1,d0
@@ -269,7 +251,7 @@ L274E	move.l	d7,d1
 	addi.w	#$28,d5
 	move.w	d5,d0
 	move.w	#$27,d1
-	bsr.w	X_3C16
+	bsr.w	L3C16
 	moveq	#$0,d0
 	movea.l	a2,a0
 	move.b	(a0),d0
@@ -282,11 +264,11 @@ L277A	cmpi.w	#$0,$B0(a6)
 	ble.w	L279E
 	move.w	#$D,d0
 	move.w	#$0,d1
-	bsr.w	X_F64
+	bsr.w	LF64
 	bra.w	L27D4
 L279E	moveq	#$F,d0
 	moveq	#$0,d1
-	bsr.w	X_F64
+	bsr.w	LF64
 	cmpi.w	#$2,$B0(a6)
 	bne.w	L27D4
 	move.w	#$50,d0
@@ -297,14 +279,14 @@ L279E	moveq	#$F,d0
 	move.w	#$100,d1
 	move.l	#$B7800080,d2
 	move.w	#$0,d3
-	bsr.w	X_281C
+	bsr.w	L281C
 L27D4	move.w	$B0(a6),d0
-	bsr.w	X_10D8
+	bsr.w	L10D8
 	move.w	#$0,$B0(a6)
 	moveq	#$1C,d0
 	moveq	#$0,d1
-	bsr.w	X_F64
-	bsr.w	X_EBC
+	bsr.w	LF64
+	bsr.w	LEBC
 L27EE	move.w	#$50,d0
 	move.w	$EE(a6),d1
 	subi.w	#$2000,d1
@@ -312,9 +294,10 @@ L27EE	move.w	#$50,d0
 	move.w	#$100,d1
 	move.l	#$B0000080,d2
 	move.w	#$1B,d3
-	bsr.w	X_281C
+	bsr.w	L281C
 	moveq	#$0,d0
 	moveq	#$0,d1
-	bsr.w	X_F64
+	bsr.w	LF64
 L2816	movem.l	(sp)+,d0-d7/a0-a5
 	rts
+
