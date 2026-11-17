@@ -28,24 +28,24 @@
   "Clears the sub-CPU communication registers $8020-$802C."
  ],
  "RestoreBios_71": [
+  "ReadCommRegs",
+  "Copies the main-CPU comm registers $801C-$801E into the pad/status bytes at $10B14."
+ ],
+ "RestoreBios_72": [
+  "SendCmd3",
+  "Sends command 3 to the main CPU."
+ ],
+ "RestoreBios_75": [
+  "ClearCommRegs",
+  "Clears the sub-CPU communication registers $8020-$802C."
+ ],
+ "RestoreBios_76": [
   "TakeWordRam",
   "Waits until word RAM is granted to the sub CPU and notes it."
  ],
- "RestoreBios_72": [
+ "RestoreBios_77": [
   "ReleaseWordRam",
   "Returns word RAM to the main CPU."
- ],
- "RestoreBios_75": [
-  "CommHandshake0",
-  "Sets and clears handshake flag 0 in $8028 after the main CPU answers on $8018."
- ],
- "RestoreBios_76": [
-  "CommHandshake1",
-  "Handshake flag 1."
- ],
- "RestoreBios_77": [
-  "CommHandshake2",
-  "Handshake flag 2."
  ],
  "RestoreBios_78": [
   "CommHandshake3",
@@ -60,8 +60,8 @@
   "Clears the 32-long command buffer at $BA850."
  ],
  "RestoreBios_67": [
-  "ReadCommRegs",
-  "Copies the main-CPU comm registers $801C-$801E into the pad/status bytes at $10B14."
+  "ClearCmdBuffer",
+  "Clears the 32-long command buffer at $BA850."
  ],
  "RestoreBios_96": [
   "InstallIrqHook1",
@@ -76,8 +76,8 @@
   "Saves the vector at $5F90 and installs the second handler."
  ],
  "RestoreBios_107": [
-  "RemoveIrqHook2",
-  "Restores the vector at $5F90."
+  "PcmInit",
+  "Resets the PCM chip: all channels off, then the control register."
  ],
  "RestoreBios_100": [
   "PcmInit",
@@ -92,8 +92,8 @@
   "Switches all PCM channels off."
  ],
  "RestoreBios_104": [
-  "PcmSetControl",
-  "Writes d0 (with bit 7) to the PCM control register."
+  "RemoveIrqHook1",
+  "Restores the vector at $5F36."
  ],
  "RestoreBiosSub48": [
   "BcdToBin",
@@ -156,6 +156,94 @@
   "C function InitEngine (Sierra C name tag follows it)."
  ],
  "CopyData_3": [
+  "InitEngine",
+  "C function InitEngine (Sierra C name tag follows it)."
+ ],
+ "RestoreBios_21": [
+  "DelayShort",
+  "Busy-wait of about 40 loop passes (hardware settling delay)."
+ ],
+ "RestoreBios_57": [
+  "WaitFrameTick",
+  "Waits until the frame counter at $10AE0 changes."
+ ],
+ "RestoreBios_65": [
+  "WaitCountdown",
+  "Stores -d0 in the frame counter and waits until it counts up past zero."
+ ],
+ "RestoreBios_66": [
+  "SendCmd4Args",
+  "Puts d4/a2 in the command buffer and sends command 4."
+ ],
+ "RestoreBios_74": [
+  "SendCmdD0",
+  "Sends the command in d0 through the gate-array comm registers and waits for the acknowledge."
+ ],
+ "RestoreBios_81": [
+  "CommHandshake0",
+  "Sets and clears handshake flag 0 in $8028 after the main CPU answers on $8018."
+ ],
+ "RestoreBios_82": [
+  "CommHandshake1",
+  "Handshake flag 1."
+ ],
+ "RestoreBios_83": [
+  "CommHandshake2",
+  "Handshake flag 2."
+ ],
+ "RestoreBios_84": [
+  "CommHandshake3",
+  "Handshake flag 3."
+ ],
+ "RestoreBios_85": [
+  "SendCmd5",
+  "Sends command 5 with the value from $1094C."
+ ],
+ "RestoreBios_103": [
+  "InstallIrqHook1",
+  "Saves the level vector at $5F36 and installs the stream interrupt handler."
+ ],
+ "RestoreBios_113": [
+  "InstallIrqHook2",
+  "Saves the vector at $5F90 and installs the second handler."
+ ],
+ "RestoreBios_114": [
+  "RemoveIrqHook2",
+  "Restores the vector at $5F90."
+ ],
+ "RestoreBios_108": [
+  "PcmStartChannel0",
+  "Writes the PCM control register and enables channel 0."
+ ],
+ "RestoreBios_109": [
+  "PcmMuteAllChannels",
+  "Switches all PCM channels off."
+ ],
+ "RestoreBios_111": [
+  "PcmSetControl",
+  "Writes d0 (with bit 7) to the PCM control register."
+ ],
+ "RestoreBios_119": [
+  "CdMsfBcdToBin",
+  "Converts the BCD minute/second/frame bytes of d0 to binary."
+ ],
+ "HexStr_1": [
+  "aprint_2",
+  "C function aprint (Sierra C name tag follows it)."
+ ],
+ "aprint_1": [
+  "ffree_2",
+  "C function ffree (Sierra C name tag follows it)."
+ ],
+ "findSmallestBlock_1": [
+  "MaxFree_2",
+  "C function MaxFree (Sierra C name tag follows it)."
+ ],
+ "MaxFree_1": [
+  "mmalloc_2",
+  "C function mmalloc (Sierra C name tag follows it)."
+ ],
+ "CopyData_4": [
   "DisposeEngine",
   "C function DisposeEngine (Sierra C name tag follows it)."
  ]

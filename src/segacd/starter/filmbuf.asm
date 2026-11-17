@@ -8,7 +8,7 @@
 InitEngine	link	a6,#$0
 	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
-	jsr	MaxFree(pc)
+	jsr	MaxFree_2(pc)
 	move.l	d0,d7
 	cmpi.l	#$14000,d7
 	bge.b	.l26144
@@ -35,7 +35,7 @@ InitEngine	link	a6,#$0
 	dc.w	$D0BC
 	dc.l	$00004000
 	move.l	d0,-(sp)
-	jsr	mmalloc(pc)
+	jsr	mmalloc_2(pc)
 	move.l	d0,(a4)
 	addq.w	#$4,sp
 	bne.b	.l26190
@@ -46,7 +46,7 @@ InitEngine	link	a6,#$0
 	move.l	d0,$C(a4)
 	move.l	$C(a6),$10(a4)
 	move.l	d0,$14(a4)
-	lea.l	RestoreBios_85(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	move.l	a4,$1C(a0)
 	move.l	a4,-(sp)
 	jsr	EngineIdle(pc)

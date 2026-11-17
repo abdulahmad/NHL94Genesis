@@ -19,7 +19,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.l	#$FFFFFFFF,(a6,d7.w)
 	beq.w	.l7A16
 	tst.w	(a4,d6.w)
-	dc.w	$6742
+	beq.b	.l784E
 	move.w	(a3,d6.w),d1
 	add.w	(a2,d6.w),d1
 	move.w	d1,d2
@@ -28,7 +28,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	add.w	(a1,d7.w),d1
 	move.w	#$0,(a1,d7.w)
 	cmp.w	(a4,d6.w),d1
-	dc.w	$6C12
+	bge.b	.l783E
 	move.w	(a4,d6.w),d3
 	sub.w	d1,d3
 	move.w	d3,(a4,d6.w)
@@ -42,12 +42,12 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 .l784E	movea.l	(a6,d7.w),a0
 	move.l	(a5,d7.w),d5
 .l7856	tst.b	(a0,d5.l)
-	dc.w	$6A08
+	bpl.b	.l7864
 	dc.w	$0685,$0000,$0001
-	dc.w	$60F2
+	bra.b	.l7856
 .l7864	dc.w	$0685,$0000,$0001
 	tst.b	(a0,d5.l)
-	dc.w	$6A0C
+	bpl.b	.l787C
 	move.b	(a0,d5.l),$2(a1,d7.w)
 	dc.w	$0685,$0000,$0001
 .l787C	move.b	$2(a1,d7.w),d0
@@ -64,12 +64,12 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	dc.w	$670A
+	beq.b	.l78B6
 	dc.w	$0671,$0001,$7000
 	bra.w	.l7A16
 .l78B6	clr.l	d0
 	move.b	$2(a0,d5.l),d0
-	dc.w	$6A0C
+	bpl.b	.l78CA
 	andi.l	#$7F,d0
 	lsl.l	#$7,d0
 	or.b	$3(a0,d5.l),d0
@@ -87,15 +87,15 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	SndSlotAdd
 	dc.w	$0685,$0000,$0002
 .l78F4	tst.b	(a0,d5.l)
-	dc.w	$6A08
+	bpl.b	.l7902
 	dc.w	$0685,$0000,$0001
-	dc.w	$60F2
+	bra.b	.l78F4
 .l7902	dc.w	$0685,$0000,$0001
 	bra.w	.l79F4
 .l790C	cmpi.b	#$B0,d0
-	dc.w	$666C
+	bne.b	.l797E
 	cmpi.b	#$12,(a0,d5.l)
-	dc.w	$6632
+	bne.b	.l794C
 	move.l	a0,-(sp)
 	move.b	$1(a0,d5.l),d1
 	dc.w	$303A,$0C1C
@@ -106,13 +106,13 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	lea.l	Set1MFlag_41(pc),a0
 	move.w	(a0,d0.w),d3
 	cmpi.b	#$0,d1
-	dc.w	$6604
+	bne.b	.l7942
 	bclr	d2,d3
-	dc.w	$6002
+	bra.b	.l7944
 .l7942	bset	d2,d3
 .l7944	move.w	d3,(a0,d0.w)
 	movea.l	(sp)+,a0
-	dc.w	$602A
+	bra.b	.l7976
 .l794C	dc.w	$303A,$0BF0
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -123,13 +123,13 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	dc.w	$670A
+	beq.b	.l7976
 	dc.w	$0671,$0001,$7000
 	bra.w	.l7A16
 .l7976	dc.w	$0685,$0000,$0002
-	dc.w	$6076
+	bra.b	.l79F4
 .l797E	cmpi.b	#$C0,d0
-	dc.w	$662C
+	bne.b	.l79B0
 	dc.w	$303A,$0BB8
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -139,13 +139,13 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	dc.w	$6708
+	beq.b	.l79A8
 	dc.w	$0671,$0001,$7000
-	dc.w	$606E
+	bra.b	.l7A16
 .l79A8	dc.w	$0685,$0000,$0001
-	dc.w	$6044
+	bra.b	.l79F4
 .l79B0	cmpi.b	#$E0,d0
-	dc.w	$662C
+	bne.b	.l79E2
 	dc.w	$303A,$0B86
 	lsl.w	#$8,d0
 	lsl.w	#$4,d0
@@ -155,25 +155,25 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	dc.w	$6708
+	beq.b	.l79DA
 	dc.w	$0671,$0001,$7000
-	dc.w	$603C
+	bra.b	.l7A16
 .l79DA	dc.w	$0685,$0000,$0001
-	dc.w	$6012
+	bra.b	.l79F4
 .l79E2	cmpi.b	#$FF,$2(a1,d7.w)
-	dc.w	$660A
+	bne.b	.l79F4
 	move.l	#$FFFFFFFF,(a6,d7.w)
-	dc.w	$6022
+	bra.b	.l7A16
 .l79F4	move.l	d5,(a5,d7.w)
 	clr.w	d2
 	move.b	(a0,d5.l),d2
-	dc.w	$6A0A
+	bpl.b	.l7A0A
 	andi.b	#$7F,d2
 	lsl.w	#$7,d2
 	or.b	$1(a0,d5.l),d2
 .l7A0A	move.w	d2,(a4,d6.w)
 	tst.w	d2
-	dc.w	$6604
+	bne.b	.l7A16
 	bra.w	.l77F0
 .l7A16	lea.l	Set1MFlag_40(pc),a0
 	dc.w	$0650,$0001
@@ -192,16 +192,16 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	lea.l	Set1MFlag_32(pc),a1
 	clr.w	d0
 .l7A52	cmpi.l	#$FFFFFFFF,(a1)+
-	dc.w	$6710
+	beq.b	.l7A6A
 	dc.w	$0640,$0001
 	cmpi.w	#$8,d0
-	dc.w	$66EE
+	bne.b	.l7A52
 	move.w	#$7,d0
-	dc.w	$606A
+	bra.b	.l7AD4
 .l7A6A	move.w	d0,$1C6(a0)
 	move.w	#$3,d0
 	bsr.w	SndFindSource
-	dc.w	$655C
+	bcs.b	.l7AD4
 	clr.l	d1
 	move.b	$1(a0),d1
 	lsl.w	#$8,d1
@@ -224,7 +224,7 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	move.w	$1C8(a1),$42(a1,d0.w)
 	move.w	#$1234,$0(a1)
 	clr.w	d0
-	dc.w	$6004
+	bra.b	.l7AD8
 .l7AD4	ori.b	#$1,ccr
 .l7AD8	movem.l	(sp)+,d1-d4/a0-a1
 	rts
@@ -232,13 +232,13 @@ Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
 	lea.l	Set1MFlag_34(pc),a0
 	clr.w	d0
 .l7AE8	cmp.w	(a0)+,d1
-	dc.w	$6714
+	beq.b	.l7B00
 	dc.w	$0640,$0001
 	cmpi.w	#$8,d0
-	dc.w	$66F2
+	bne.b	.l7AE8
 	move.w	#$3,d0
 	ori.b	#$1,ccr
-	dc.w	$6030
+	bra.b	.l7B30
 .l7B00	lea.l	Set1MFlag_31(pc),a0
 	move.w	d0,$1C6(a0)
 	lsl.w	#$1,d0
@@ -316,9 +316,9 @@ Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 	move.w	d0,d3
 	andi.w	#$F,d3
 	btst	d3,d2
-	dc.w	$6606
+	bne.b	.l7C20
 	bsr.w	Z80QueueCommand
-	dc.w	$6004
+	bra.b	.l7C24
 .l7C20	bsr.w	.lFF7C2A
 .l7C24	movem.l	(sp)+,d1-d3/a0
 	rts
@@ -328,12 +328,12 @@ Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 	lea.l	Set1MFlag_43(pc),a0
 	move.w	(a0),d2
 	cmpi.w	#$20,d2
-	dc.w	$6612
+	bne.b	.l7C54
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	move.w	#$FFFF,d0
 	ori.b	#$1,ccr
-	dc.w	$601C
+	bra.b	.l7C70
 .l7C54	move.w	d2,d1
 	lsl.w	#$2,d1
 	dc.w	$0641,$0002
@@ -352,17 +352,17 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 .l7C84	bsr.w	Z80RequestBus
 	lea.l	$A00030.l,a0
 	tst.b	(a0)
-	dc.w	$6710
+	beq.b	.l7CA2
 	bsr.w	Z80ReleaseBus
 	move.w	#$64,d1
 .l7C9A	dc.w	$0441,$0001
-	dc.w	$66FA
-	dc.w	$60E2
+	bne.b	.l7C9A
+	bra.b	.l7C84
 .l7CA2	adda.l	#$1,a0
 	cmpi.b	#$18,(a0)
-	dc.w	$6D06
+	blt.b	.l7CB4
 	move.w	#$FFFF,d0
-	dc.w	$6028
+	bra.b	.l7CDC
 .l7CB4	clr.w	d1
 	move.b	(a0),d1
 	lsl.w	#$2,d1
@@ -386,12 +386,12 @@ Z80QueueCommand	movem.l	d1/a0,-(sp)
 Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_43(pc),a1
 	cmpi.w	#$0,(a1)
-	dc.w	$6756
+	beq.b	.l7D54
 	dc.w	$207A,$085A
 	bsr.w	PrgRamReadBegin
 	bsr.w	PrgRamMapAddr
 .l7D0A	cmpi.w	#$FFFF,(a0)
-	dc.w	$661E
+	bne.b	.l7D2E
 	dc.w	$207A,$0848
 	bsr.w	PrgRamReadWait
 	move.w	#$1F4,d0
@@ -426,17 +426,17 @@ Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	move.b	$A00023.l,d2
 	add.w	d1,d2
 	cmpi.w	#$1F00,d2
-	dc.w	$650C
+	bcs.b	.l7D8C
 	move.w	#$4,d0
 	ori.b	#$1,ccr
 	bra.w	.l7E18
 .l7D8C	lea.l	$A00100.l,a1
 	move.w	#$40,d2
 .l7D96	cmpi.b	#$FF,(a1)
-	dc.w	$6724
+	beq.b	.l7DC0
 	adda.l	#$4,a1
 	dc.w	$0442,$0001
-	dc.w	$66EE
+	bne.b	.l7D96
 	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
@@ -487,15 +487,15 @@ SndSlotFind	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	$122(a0),d1
 	clr.w	d2
 .l7E6A	cmpi.w	#$0,d1
-	dc.w	$671A
+	beq.b	.l7E8A
 	move.b	$3(a1),d2
 	lsr.b	#$4,d2
 	cmp.w	d0,d2
-	dc.w	$6604
+	bne.b	.l7E7E
 	move.w	#$1,(a1)
 .l7E7E	adda.l	#$4,a1
 	dc.w	$0441,$0001
-	dc.w	$60E0
+	bra.b	.l7E6A
 .l7E8A	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
@@ -513,12 +513,12 @@ SndSlotAdd	movem.l	d0-d1/a0,-(sp)
 Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
 	lea.l	Set1MFlag_31(pc),a2
 	cmpi.w	#$0,$122(a2)
-	dc.w	$675E
+	beq.b	.l7F2A
 	lea.l	Set1MFlag_39(pc),a0
 .l7ED0	cmpi.w	#$FFFF,(a0)
-	dc.w	$6754
+	beq.b	.l7F2A
 	dc.w	$0450,$0001
-	dc.w	$6648
+	bne.b	.l7F24
 	move.b	$3(a0),d0
 	andi.b	#$F0,d0
 	lsl.w	#$8,d0
@@ -528,9 +528,9 @@ Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
 	ori.b	#$80,d0
 	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
-	dc.w	$6706
+	beq.b	.l7F02
 	dc.w	$0650,$0001
-	dc.w	$6022
+	bra.b	.l7F24
 .l7F02	lea.l	Set1MFlag_39(pc),a1
 	dc.w	$303A,$0634
 	dc.w	$0440,$0001
@@ -538,9 +538,9 @@ Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
 	move.l	(a1,d0.w),(a0)
 	move.l	#$FFFFFFFF,(a1,d0.w)
 	dc.w	$046A,$0001,$0122
-	dc.w	$60AC
+	bra.b	.l7ED0
 .l7F24	adda.w	#$4,a0
-	dc.w	$60A6
+	bra.b	.l7ED0
 .l7F2A	movem.l	(sp)+,d0-d1/a0-a2
 	rts
 ; Starts a sound stream from the table at $A00072.
@@ -549,7 +549,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	tst.b	$A00072.l
 	beq.w	.l80B8
 	cmpi.b	#$1,$A00072.l
-	dc.w	$667E
+	bne.b	.l7FCA
 	clr.w	d1
 	move.b	$A00073.l,d1
 	move.w	#$1,d0
@@ -585,10 +585,10 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	movea.l	d0,a1
 	bra.w	.l804A
 .l7FCA	cmpi.b	#$2,$A00072.l
-	dc.w	$6636
+	bne.b	.l800A
 	dc.w	$207A,$056E
 	cmpa.l	#$0,a0
-	dc.w	$6610
+	bne.b	.l7FF0
 	bsr.w	Z80ReleaseBus
 	bsr.w	Z80ReadStatus
 	bsr.w	Z80RequestBus
@@ -599,12 +599,12 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	move.b	$A00025.l,d0
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
-	dc.w	$6040
+	bra.b	.l804A
 .l800A	cmpi.b	#$3,$A00072.l
 	bne.w	.l80B8
 	dc.w	$207A,$052C
 	cmpa.l	#$0,a0
-	dc.w	$6610
+	bne.b	.l8032
 	bsr.w	Z80ReleaseBus
 	bsr.w	Z80ReadStatus
 	bsr.w	Z80RequestBus
@@ -620,7 +620,7 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	bsr.w	PrgRamMapAddr
 	move.w	#$1FF,d1
 .l8058	move.b	(a0)+,(a1)+
-	dc.w	$671E
+	beq.b	.l807A
 	dbra	d1,.l8058
 	lea.l	Set1MFlag_31(pc),a1
 	move.l	$12A(a1),d0
@@ -628,21 +628,21 @@ Z80StartStream	movem.l	d1-d2/a0,-(sp)
 	move.l	d0,$12A(a1)
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
-	dc.w	$603E
+	bra.b	.l80B8
 .l807A	suba.l	#$1,a1
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 	clr.l	d0
 	dc.w	$303A,$04BE
 	cmpi.w	#$FFFF,d0
-	dc.w	$671A
+	beq.b	.l80AC
 	move.b	#$FF,(a1)
 	lea.l	Set1MFlag_31(pc),a1
 	movea.l	$126(a1),a0
 	adda.l	#$2,a0
 	adda.l	d0,a0
 	move.l	a0,$12A(a1)
-	dc.w	$600C
+	bra.b	.l80B8
 .l80AC	lea.l	Set1MFlag_31(pc),a1
 	move.l	#$0,$12A(a1)
 .l80B8	move.b	#$0,$A00072.l
@@ -678,12 +678,12 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	cmp.b	(a0),d4
 	bne.b	.l8116
 	cmp.b	d4,d0
-	dc.w	$6634
+	bne.b	.l8154
 .l8120	move.b	$1(a0),d4
 	cmp.b	$1(a0),d4
 	bne.b	.l8120
 	cmp.b	d4,d1
-	dc.w	$6626
+	bne.b	.l8154
 	clr.w	d0
 .l8130	move.b	$2(a0),d0
 	cmp.b	$2(a0),d0
@@ -696,7 +696,7 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	bsr.w	PrgRamReadWait
 	movea.l	a2,a0
 	andi.b	#$FE,ccr
-	dc.w	$6042
+	bra.b	.l8196
 .l8154	clr.l	d4
 	move.b	$2(a0),d4
 	cmp.b	$2(a0),d4
@@ -708,7 +708,7 @@ SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	adda.l	d4,a2
 	adda.l	#$4,a0
 	dc.w	$0443,$0001
-	dc.w	$669C
+	bne.b	.l8116
 	movea.l	(sp)+,a0
 	bsr.w	PrgRamReadWait
 .l8180	adda.l	#$4,a1
@@ -727,21 +727,21 @@ Set1MFlag_22	movem.l	d1/a1,-(sp)
 Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
 .l81B6	cmpi.w	#$FFFF,(a1)
-	dc.w	$6604
+	bne.b	.l81C0
 	clr.w	d0
-	dc.w	$6034
+	bra.b	.l81F4
 .l81C0	move.w	(a1),d0
 	move.w	$2(a1),d1
 	bsr.w	SndFindSource
-	dc.w	$6524
+	bcs.b	.l81F0
 	cmpi.w	#$0,(a1)
-	dc.w	$6616
+	bne.b	.l81E8
 	cmpi.b	#$6,(a0)
-	dc.w	$6410
+	bcc.b	.l81E8
 	move.w	d0,d1
 	move.w	$2(a1),d0
 	bsr.w	Z80LoadBlock
-	dc.w	$650C
+	bcs.b	.l81F0
 	bra.w	.l81E8
 .l81E8	adda.l	#$4,a1
 	bra.b	.l81B6
@@ -760,7 +760,7 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	move.w	$2(a0),d0
 	move.w	#$3F,d1
 .l8228	cmp.b	(a1),d0
-	dc.w	$670E
+	beq.b	.l823A
 	adda.l	#$4,a1
 	dbra	d1,.l8228
 	bra.w	.l82DA
@@ -774,11 +774,11 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	add.w	d0,d2
 	lea.l	$A00000.l,a2
 .l8256	cmpi.w	#$1F00,d2
-	dc.w	$6710
+	beq.b	.l826C
 	move.b	(a2,d2.w),(a2,d1.w)
 	dc.w	$0642,$0001
 	dc.w	$0641,$0001
-	dc.w	$60EA
+	bra.b	.l8256
 .l826C	clr.w	d1
 	move.b	$2(a1),d1
 	lsl.w	#$8,d1
@@ -796,7 +796,7 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	lsl.w	#$8,d3
 	move.b	$3(a1),d3
 	cmp.w	d1,d3
-	dc.w	$640C
+	bcc.b	.l82BC
 	sub.w	d0,d3
 	move.b	d3,$3(a1)
 	lsr.w	#$8,d3
@@ -861,7 +861,7 @@ PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 	move.w	$A12002.l,d1
 	move.w	d1,(a1)
 	btst	#$2,d1
-	dc.w	$6704
+	beq.b	.l839E
 	bset	#$1,d0
 .l839E	andi.w	#$FF00,d1
 	or.w	d0,d1
@@ -871,13 +871,13 @@ PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 ; Waits until the PRG-RAM read window is ready.
 PrgRamReadWait	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
-	dc.w	$643E
+	bcc.b	.l83F8
 	dc.w	$303A,$022E
 	btst	#$2,d0
-	dc.w	$670A
+	beq.b	.l83CE
 	andi.w	#$FFC0,d0
 	bset	#$1,d0
-	dc.w	$6004
+	bra.b	.l83D2
 .l83CE	andi.w	#$FFC0,d0
 .l83D2	move.w	d0,$A12002.l
 	move.w	#$1,$A12000.l
@@ -892,7 +892,7 @@ PrgRamReadWait	move.l	d0,-(sp)
 ; Maps a0 into the PRG-RAM window address.
 PrgRamMapAddr	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
-	dc.w	$6410
+	bcc.b	.l8416
 	move.l	a0,d0
 	andi.l	#$1FFFF,d0
 	ori.l	#$20000,d0

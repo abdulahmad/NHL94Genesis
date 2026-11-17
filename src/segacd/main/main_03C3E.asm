@@ -62,7 +62,7 @@ ClearVram	move.l	#$40000000,$C00004.l
 	move.w	#$100,d4
 	bsr.w	Set1MFlag_6
 	move.w	(sp)+,sr
-	dc.w	$4E75
+	rts
 	dc.b	$00,$00,$00,$6B,$00,$6A,$00,$75,$00,$7C,$00,$73,$00,$74,$30,$3C	; ...k.j.u.|.s.t0<
 	dc.b	$00,$01,$61,$00,$37,$D2,$4E,$75	; ..a.7.Nu
 ; Reads both pads into $FF4F84/$FF4F85 and updates the edge state.
@@ -75,7 +75,7 @@ PollControllers	movem.l	d1/a0,-(sp)
 	rts
 .lFF3EAC	movem.l	d1/a0,-(sp)
 	lea.l	$A10005.l,a0
-	dc.w	$600A
+	bra.b	.lFF3EC2
 .lFF3EB8	movem.l	d1/a0,-(sp)
 	lea.l	$A10003.l,a0
 .lFF3EC2	moveq	#$0,d0
@@ -99,7 +99,7 @@ PollControllers	movem.l	d1/a0,-(sp)
 	or.b	(a0,d1.w),d0
 	not.b	d0
 	movem.l	(sp)+,d1/a0
-	dc.w	$4E75
+	rts
 .lFF3F00	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 ; Decodes pad 1 and computes the newly pressed buttons.
 UpdatePad1	move.b	$FF4F84.l,d0
@@ -130,7 +130,7 @@ DecodePadBits	not.b	d0
 	move.b	(a0,d1.w),d1
 	or.w	d1,d0
 	move.w	(sp)+,d1
-	dc.w	$4E75
+	rts
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
 DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
@@ -146,7 +146,7 @@ DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	bne.w	.l3FC0
 	bset.b	#$1,$A1200E.l
 .l3FC0	movem.l	(sp)+,d0-d7/a0-a6
-	dc.w	$4E75
+	rts
 	dc.b	$4E,$73,$08,$F9,$00,$06,$00,$A1,$20,$0E,$08,$39,$00,$06,$00,$A1	; Ns...... ..9....
 	dc.b	$20,$0F,$66,$F6,$08,$B9,$00,$06,$00,$A1,$20,$0E,$08,$B9,$00,$07	;  .f....... .....
 	dc.b	$00,$A1,$20,$0E,$13,$FC,$00,$00,$00,$A1,$20,$0E,$61,$00,$18,$1A	; .. ....... .a...
@@ -174,7 +174,7 @@ DispatchTailSub14	lea.l	DispatchTail_71(pc),a0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
-	dc.w	$4E75
+	rts
 .lFF410C	dc.b	$00,$00,$00,$00	; ....
 DispatchTail_71	dc.b	$00,$00,$00,$00	; ....
 DispatchTailSub15	movea.l	#$C00000,a0
@@ -201,7 +201,7 @@ DispatchTailSub15	movea.l	#$C00000,a0
 	move.l	d0,(a0)
 	move.w	#$9001,$4(a0)
 	move.w	#$8B00,$4(a0)
-	dc.w	$6114
+	bsr.b	.lFF417E
 	move.w	#$8238,$4(a0)
 	move.w	#$857C,$4(a0)
 	move.w	#$8D3F,$4(a0)
@@ -217,16 +217,16 @@ DispatchTailSub15	movea.l	#$C00000,a0
 	move.w	#$FF,d0
 .l419A	move.l	d1,(a0)
 	dbra	d0,.l419A
-	lea.l	DispatchTail_85(pc),a1
+	lea.l	DispatchTail_88(pc),a1
 	move.w	#$2FF,d3
 .l41A8	move.b	(a1)+,d0
 	moveq	#$7,d2
 .l41AC	lsl.l	#$4,d1
 	add.b	d0,d0
-	dc.w	$650A
+	bcs.b	.l41BC
 	ori.b	#$2,d1
 	dbra	d2,.l41AC
-	dc.w	$6008
+	bra.b	.l41C4
 .l41BC	ori.b	#$1,d1
 	dbra	d2,.l41AC
 .l41C4	move.l	d1,(a0)
@@ -260,7 +260,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	dc.w	$2C3A,$0100
 	moveq	#$7,d0
 	and.w	d6,d0
-	dc.w	$662A
+	bne.b	.l4256
 	lsr.w	#$3,d6
 	subq.w	#$1,d6
 .l4230	move.w	d6,d5
@@ -277,7 +277,7 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	(a2)+,(a0)
 	dbra	d5,.l4244
 	dbra	d7,.l4230
-	dc.w	$6020
+	bra.b	.l4276
 .l4256	subq.w	#$1,d6
 .l4258	move.w	d6,d5
 	move.l	d3,d0
@@ -295,11 +295,11 @@ DispatchTail_72	movem.l	d0-d7/a0-a5,-(sp)
 .l427E	lea.l	DispatchTail_70(pc),a0
 	addq.l	#$1,(a0)
 	move.l	DispatchTail_71(pc),d0
-	dc.w	$6704
+	beq.b	.l428E
 	movea.l	d0,a0
 	jsr	(a0)
 .l428E	movem.l	(sp)+,d0-d7/a0-a5
-	dc.w	$4E73
+	rte
 DispatchTail_73	dc.b	$00,$00	; ..
 DispatchTail_74	dc.b	$00,$00	; ..
 DispatchTail_75	dc.b	$00,$00,$00,$00	; ....
@@ -311,8 +311,8 @@ DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
 DispatchTail_80	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
 ; Second copy of DrawTextToPlane.
-DrawTextToPlane_B	dc.w	$4E56,$0000
-	movem.l	d0-d7/a0-a5,-(sp)
+DrawTextToPlane_B	link	a6,#$0
+DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
 	move.l	$C(a6),d0
@@ -331,7 +331,7 @@ DrawTextToPlane_B	dc.w	$4E56,$0000
 	moveq	#$0,d0
 	movea.l	$10(a6),a1
 .l4D6E	move.b	(a1)+,d0
-	dc.w	$6704
+	beq.b	.l4D76
 	move.w	d0,(a0)
 	bra.b	.l4D6E
 .l4D76	movem.l	(sp)+,d0-d7/a0-a5
@@ -370,7 +370,7 @@ DrawTextToPlane_B	dc.w	$4E56,$0000
 	moveq	#$0,d0
 	rts
 ; Second copy of DrawTextBuffer.
-DrawTextBuffer_B	dc.w	$4E56,$0000
+DrawTextBuffer_B	link	a6,#$0
 DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
 	lea.l	DispatchTail_73(pc),a2
 .l4DEC	tst.w	(a2)
@@ -381,19 +381,19 @@ DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	$C(a6),(a1)
 DispatchTail_82	movea.l	$14(a6),a1
 	cmpi.w	#$534D,(a1)
-	bne.w	DispatchTail_84
+	bne.w	DispatchTail_86
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
 	move.w	DispatchTail_74(pc),d1
-	dc.w	$660C
+	bne.b	DispatchTail_84
 	moveq	#$0,d0
 	move.w	d6,d0
 	mulu.w	d7,d0
 DispatchTail_83	adda.l	d0,a5
 	lsl.l	#$5,d0
 	adda.l	d0,a4
-.lFF4E2A	move.w	$2(a1),d1
+DispatchTail_84	move.w	$2(a1),d1
 	andi.w	#$3,d1
 	lea.l	DispatchTail_75(pc),a2
 	move.w	d1,(a2)
@@ -420,15 +420,15 @@ DispatchTailSub19	lea.l	DispatchTail_78(pc),a3
 	lsr.l	#$5,d3
 	add.w	a5,d3
 	move.l	$8(a6),d0
-	dc.w	$6704
+	beq.b	.l4E7E
 	bset	#$F,d3
 .l4E7E	moveq	#$1,d2
 	move.w	d7,d5
-	dc.w	$6022
+	bra.b	DispatchTail_85
 DispatchTailSub20	move.w	d6,d4
-	dc.w	$601A
+	bra.b	.l4EA2
 .l4E88	subq.w	#$1,d2
-	dc.w	$6608
+	bne.b	.l4E94
 	move.l	(a1)+,d7
 	moveq	#$11,d1
 	ror.l	d1,d7
@@ -440,24 +440,24 @@ DispatchTailSub20	move.w	d6,d4
 	addq.w	#$1,d3
 	move.w	d1,(a3)+
 .l4EA2	dbra	d4,.l4E88
-.lFF4EA6	dbra	d5,DispatchTailSub20
+DispatchTail_85	dbra	d5,DispatchTailSub20
 	move.l	(sp)+,d7
 	moveq	#$0,d2
 	move.w	d6,d2
 	mulu.w	d7,d2
 	lsl.l	#$4,d2
 	move.l	a4,d0
-	dc.w	$6146
-	dc.w	$602E
+	bsr.b	DispatchTail_87
+	bra.b	DispatchTail_86
 	move.l	a4,d0
 	lsl.l	#$2,d0
 	lsr.w	#$2,d0
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-	dc.w	$6018
+	bra.b	.l4EE4
 .l4ECC	move.w	d6,d4
-	dc.w	$6010
+	bra.b	.l4EE0
 .l4ED0	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -468,14 +468,14 @@ DispatchTailSub20	move.w	d6,d4
 	move.l	(a1)+,(a0)
 .l4EE0	dbra	d4,.l4ED0
 .l4EE4	dbra	d7,.l4ECC
-DispatchTail_84	lea.l	DispatchTail_73(pc),a2
+DispatchTail_86	lea.l	DispatchTail_73(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	lea.l	$10(sp),sp
 	jmp	(a0)
-.lFF4EFE	move.l	a1,d1
+DispatchTail_87	move.l	a1,d1
 	addq.w	#$2,d1
 	lsr.l	#$1,d1
 	move.w	#$8F02,$4(a0)
@@ -507,8 +507,8 @@ DispatchTail_84	lea.l	DispatchTail_73(pc),a2
 	andi.w	#$FF7F,d0
 	move.l	d0,$4(a0)
 	move.l	(a1),(a0)
-	dc.w	$4E75
-DispatchTail_85	dcb.b	$8,0
+	rts
+DispatchTail_88	dcb.b	$8,0
 	dc.b	'    ',$00,$20,$00,$00,$50,$50,$00,$00,$00,$00,$00,$00	;     . ..PP......
 	dc.b	$28,$78,$50,$F0,$A0,$00,$00,' pP ',$10,$50,$70,$20,$00	; (xP.... pP .Pp .
 	dc.b	$50,$A0,$40,$30,$50,$A0,$00,$00,$60,$80,$40,$A8,$90,$68,$00,$00	; P.@0P...`.@..h..
@@ -560,17 +560,17 @@ DispatchTail_85	dcb.b	$8,0
 	dc.b	$40,$80,$40,$40,$20,$00,'       ',$00,$40,$20	; @.@@ .       .@ 
 	dc.b	$20,$10,$20,$20,$40,$00,$00,$00,$50,$A0	;  .  @...P.
 	dcb.b	$C,0
-DoDrawTextCommand	dc.w	$4E56,$FF00
-	movem.l	d6-d7/a4,-(sp)
+DoDrawTextCommand	link	a6,#$FF00
+DoDrawTextCommandSub1	movem.l	d6-d7/a4,-(sp)
 	lea.l	-$100(a6),a4
 	clr.w	d6
-	dc.w	$6018
+	bra.b	.l5292
 .l527A	cmpi.b	#$1,d7
-	dc.w	$660A
+	bne.b	.l528A
 	move.w	d6,d0
 	addq.w	#$1,d6
 	clr.b	(a4,d0.w)
-	dc.w	$6010
+	bra.b	.l529A
 .l528A	move.w	d6,d0
 	addq.w	#$1,d6
 	move.b	d7,(a4,d0.w)
@@ -582,16 +582,16 @@ DoDrawTextCommand	dc.w	$4E56,$FF00
 	addq.w	#$4,sp
 	movem.l	-$10C(a6),d6-d7/a4
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$91,'DoDrawTextComma'	; .DoDrawTextComma
 	dc.b	$6E,$64,$00,$00	; nd..
-DoMoviePlayBack	dc.w	$4E56,$0000
-	movem.l	d5-d7/a4,-(sp)
+DoMoviePlayBack	link	a6,#$0
+DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
 	movea.l	#$200000,a4
 	move.l	(a4),d5
 	move.l	$4(a4),d6
 	move.l	$8(a4),d7
-	dc.w	$6022
+	bra.b	.l52FC
 .l52DA	moveq	#$1,d0
 	move.l	d0,-(sp)
 	jsr	Set1MFlag(pc)
@@ -609,26 +609,26 @@ DoMoviePlayBack	dc.w	$4E56,$0000
 	beq.b	.l52DA
 	movem.l	-$10(a6),d5-d7/a4
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$8F,'DoMoviePlayBack'	; .DoMoviePlayBack
 	dc.b	$00,$00	; ..
-MAINCODE	dc.w	$4E56,$0000
+MAINCODE	link	a6,#$0
 	move.l	d7,-(sp)
 	jsr	InitWorld(pc)
 	pea.l	.lFF539A(pc)
 	jsr	aprint(pc)
 	addq.w	#$4,sp
-	dc.w	$6026
+	bra.b	.l535E
 .l5338	move.w	d7,d0
 	subq.w	#$1,d0
-	dc.w	$6706
+	beq.b	.l5344
 	subq.w	#$2,d0
-	dc.w	$6708
-	dc.w	$600C
+	beq.b	.l534A
+	bra.b	.l5350
 .l5344	jsr	DoDrawTextCommand(pc)
-	dc.w	$6014
+	bra.b	.l535E
 .l534A	jsr	DoMoviePlayBack(pc)
-	dc.w	$6016
+	bra.b	.l5366
 .l5350	ext.l	d7
 	move.l	d7,-(sp)
 	pea.l	.lFF538E(pc)
@@ -642,18 +642,18 @@ MAINCODE	dc.w	$4E56,$0000
 	addq.w	#$4,sp
 	move.l	-$4(a6),d7
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$88,'MAINCODE',$00,$00,$38	; .MAINCODE..8
 .lFF5384	dc.b	'Main Done',$00	; Main Done.
 .lFF538E	dc.b	'Command: %d',$00	; Command: %d.
 .lFF539A	dc.b	'MAINCPU ready to'	; MAINCPU ready to
 	dc.b	' handle commands'	;  handle commands
 	dc.b	$00,$00	; ..
-ReDraw	dc.w	$4E56,$0000
+ReDraw	link	a6,#$0
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$86,'ReDraw',$00,$00,$00	; .ReDraw...
-drawprint	dc.w	$4E56,$0000
+drawprint	link	a6,#$0
 	move.l	$8(a6),-(sp)
 	lea.l	DispatchTail_69(pc),a0
 	move.l	$5C(a0),-(sp)
@@ -665,15 +665,15 @@ drawprint	dc.w	$4E56,$0000
 	lea.l	DispatchTail_69(pc),a0
 	moveq	#$18,d0
 	cmp.l	$60(a0),d0
-	dc.w	$6E0C
+	bgt.b	.l540A
 	lea.l	DispatchTail_69(pc),a0
 	subi.l	#$14,$60(a0)
 .l540A	jsr	ReDraw(pc)
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$89,'drawprint',$00,$00	; .drawprint..
-NumStr	dc.w	$4E56,$FFF0
-	movem.l	d6-d7/a3-a4,-(sp)
+NumStr	link	a6,#$FFF0
+NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
 	lea.l	-$10(a6),a4
 	move.l	$8(a6),d6
@@ -694,17 +694,17 @@ NumStr	dc.w	$4E56,$FFF0
 	jsr	LongDivU_B(pc)
 	move.l	d0,d6
 	bne.b	.l543C
-	dc.w	$6006
+	bra.b	.l5464
 .l545E	subq.w	#$1,d7
 	move.b	(a4,d7.w),(a3)+
 .l5464	tst.w	d7
 	bne.b	.l545E
 	movem.l	-$20(a6),d6-d7/a3-a4
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
-HexStr	dc.w	$4E56,$0000
-	movem.l	d3-d7/a4,-(sp)
+HexStr	link	a6,#$0
+HexStrSub1	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
 	move.l	$8(a6),d5
 	movea.l	$10(a6),a4
@@ -712,18 +712,18 @@ HexStr	dc.w	$4E56,$0000
 	move.l	d4,d7
 	subq.l	#$1,d7
 	moveq	#$0,d3
-	dc.w	$6026
+	bra.b	.l54C0
 .l549A	moveq	#$F,d6
 	and.l	d5,d6
 	asr.l	#$4,d5
 	moveq	#$9,d0
 	cmp.l	d6,d0
-	dc.w	$6D0C
+	blt.b	.l54B2
 	move.b	d6,d0
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.b	d0,(a4,d7.l)
-	dc.w	$600A
+	bra.b	.l54BC
 .l54B2	move.b	d6,d0
 	moveq	#-55,d1
 	sub.b	d1,d0
@@ -735,14 +735,14 @@ HexStr	dc.w	$4E56,$0000
 	clr.b	(a4,d4.w)
 	movem.l	-$18(a6),d3-d7/a4
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
-aprint	dc.w	$4E56,$FED8
-	movem.l	d4-d7/a3-a4,-(sp)
+aprint	link	a6,#$FED8
+aprintSub1	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
 	bra.w	.l55F0
 .l54EC	cmpi.b	#$25,d6
-	dc.w	$6706
+	beq.b	.l54F8
 	move.b	d6,(a3)+
 	bra.w	.l55D4
 .l54F8	moveq	#$8,d4
@@ -751,7 +751,7 @@ aprint	dc.w	$4E56,$FED8
 	move.b	(a0),d6
 	move.b	d6,d0
 	subi.b	#$2A,d0
-	dc.w	$6618
+	bne.b	.l5524
 	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.w	-$2(a0),d4
@@ -763,15 +763,15 @@ aprint	dc.w	$4E56,$FED8
 	subi.b	#$25,d0
 	beq.w	.l55D2
 	subi.b	#$2E,d0
-	dc.w	$6778
+	beq.b	.l55AC
 	subq.b	#$5,d0
-	dc.w	$6744
+	beq.b	.l557C
 	subi.b	#$C,d0
-	dc.w	$670E
+	beq.b	.l554C
 	subi.b	#$F,d0
-	dc.w	$6768
+	beq.b	.l55AC
 	subq.b	#$5,d0
-	dc.w	$6734
+	beq.b	.l557C
 	bra.w	.l55D4
 .l554C	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
@@ -783,13 +783,13 @@ aprint	dc.w	$4E56,$FED8
 	jsr	NumStr(pc)
 	clr.w	d7
 	lea.l	$C(sp),sp
-	dc.w	$6008
+	bra.b	.l5574
 .l556C	move.b	(a4,d7.w),(a3)+
 	move.w	d7,d0
 	addq.w	#$1,d7
 .l5574	tst.b	(a4,d7.w)
 	bne.b	.l556C
-	dc.w	$6058
+	bra.b	.l55D4
 .l557C	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),d5
@@ -800,17 +800,17 @@ aprint	dc.w	$4E56,$FED8
 	jsr	HexStr(pc)
 	clr.w	d7
 	lea.l	$C(sp),sp
-	dc.w	$6008
+	bra.b	.l55A4
 .l559C	move.b	(a4,d7.w),(a3)+
 	move.w	d7,d0
 	addq.w	#$1,d7
 .l55A4	tst.b	(a4,d7.w)
 	bne.b	.l559C
-	dc.w	$6028
+	bra.b	.l55D4
 .l55AC	addq.l	#$4,-$4(a6)
 	movea.l	-$4(a6),a0
 	move.l	-$4(a0),-$8(a6)
-	dc.w	$600C
+	bra.b	.l55C8
 .l55BC	move.l	-$8(a6),d0
 	addq.l	#$1,-$8(a6)
 	movea.l	d0,a0
@@ -818,7 +818,7 @@ aprint	dc.w	$4E56,$FED8
 .l55C8	movea.l	-$8(a6),a0
 	tst.b	(a0)
 	bne.b	.l55BC
-	dc.w	$6002
+	bra.b	.l55D4
 .l55D2	move.b	d6,(a3)+
 .l55D4	move.l	$8(a6),d0
 	addq.l	#$1,$8(a6)
@@ -831,9 +831,9 @@ aprint	dc.w	$4E56,$FED8
 	addq.w	#$4,sp
 .l55F0	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
-InitWorld	dc.w	$4E56,$0000
+InitWorld	link	a6,#$0
 	movea.l	#$A12010,a0
 	clr.w	(a0)
 	movea.l	#$A12010,a0
@@ -854,14 +854,14 @@ InitWorld	dc.w	$4E56,$0000
 	pea.l	.lFF5664(pc)
 	jsr	aprint(pc)
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$89,'InitWorld',$00,$32	; .InitWorld.2
 .lFF5664	dc.b	'Heap Size : %x',$00,$00	; Heap Size : %x..
 .lFF5674	dc.b	'Heap Start: %x',$00,$00	; Heap Start: %x..
 .lFF5684	dc.b	'MAINCPU is alive'	; MAINCPU is alive
 	dc.b	$00,$00	; ..
-GetCommandFromSub	dc.w	$4E56,$0000
-	movem.l	d7/a3-a4,-(sp)
+GetCommandFromSub	link	a6,#$0
+GetCommandFromSubSub1	movem.l	d7/a3-a4,-(sp)
 	movea.l	#$A12010,a3
 	movea.l	#$A12020,a4
 .l56AA	move.w	(a4),d7
@@ -873,14 +873,14 @@ GetCommandFromSub	dc.w	$4E56,$0000
 	move.w	d7,d0
 	movem.l	-$C(a6),d7/a3-a4
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$91,'GetCommandFromS'	; .GetCommandFromS
 	dc.b	$75,$62,$00,$00	; ub..
-Set1MFlag	dc.w	$4E56,$0000
+Set1MFlag	link	a6,#$0
 	movea.l	#$A12010,a0
 	move.w	$A(a6),$2(a0)
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
 ; Second copy of LongDivU.
@@ -955,9 +955,9 @@ Set1MFlagSub1	lea.l	$FF481C.l,a0
 	move.b	$A10003.l,d0
 	andi.b	#$3,d0
 	cmpi.b	#$0,d0
-	dc.w	$660A
+	bne.b	.l58FC
 	move.w	#$1,$A12010.l
-	dc.w	$6010
+	bra.b	.l590C
 .l58FC	move.w	#$0,$A12010.l
 	move.b	#$40,$A1000B.l
 .l590C	move.w	#$100,$A11200.l
@@ -983,7 +983,7 @@ Set1MFlagSub2	lea.l	$FF485E.l,a0
 	move.w	#$100,d4
 	bsr.w	Set1MFlag_6
 	move.w	(sp)+,sr
-	dc.w	$4E75
+	rts
 	dc.b	$13,$F9,$00,$A1,$20,$28,$00,$A1,$00,$03,$4E,$75,$13,$F9,$00,$A1	; .... (....Nu....
 	dc.b	$20,$28,$00,$A1,$00,$05,$4E,$75,$13,$F9,$00,$A1,$00,$03,$00,$A1	;  (....Nu........
 	dc.b	$20,$18,$4E,$75,$13,$F9,$00,$A1,$00,$05,$00,$A1,$20,$18,$4E,$75	;  .Nu........ .Nu
@@ -1200,7 +1200,7 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	move.l	#$FF1006,$FF6D86.l
 	bsr.w	GiveWordRamToSub
 	clr.w	$FF6D84.l
-	dc.w	$4E75
+	rts
 	dcb.b	$E,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$94,0
@@ -1217,35 +1217,35 @@ Set1MFlag_5	dcb.b	$80,0
 	dcb.b	$200,0
 	dc.b	$FF,$FE,$03,$00,$C0,$00,$00	; .......
 Set1MFlag_6	tst.w	d0
-	dc.w	$6604
+	bne.b	.l7664
 	bra.w	Set1MFlag_7
 .l7664	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l766E
 	bra.w	Set1MFlag_8
 .l766E	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l7678
 	bra.w	Set1MFlag_9
 .l7678	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l7682
 	bra.w	Set1MFlag_10
 .l7682	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l768C
 	bra.w	Set1MFlag_11
 .l768C	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l7696
 	bra.w	Z80ReadStatus
 .l7696	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l76A0
 	bra.w	Set1MFlag_22
 .l76A0	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l76AA
 	bra.w	Set1MFlag_23
 .l76AA	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l76B4
 	bra.w	Set1MFlag_24
 .l76B4	dc.w	$0440,$0001
-	dc.w	$6604
+	bne.b	.l76BE
 	bra.w	Set1MFlag_25
 .l76BE	move.w	#$1,d0
 	ori.b	#$1,ccr
-	dc.w	$4E75
+	rts

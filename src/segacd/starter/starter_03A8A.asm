@@ -16,11 +16,11 @@ RestoreBiosSub41	movem.l	d0-d7/a0-a6,-(sp)
 .l24DD0	btst.b	#$0,$10912.l
 	beq.w	.l3AE0
 	bsr.w	TakeWordRam
-.l3AE0	dc.w	$4E75
+.l3AE0	rts
 	dc.b	$4E,$75	; Nu
-RestoreBios_80	movem.l	d0-d7/a0-a6,-(sp)
+RestoreBios_86	movem.l	d0-d7/a0-a6,-(sp)
 RestoreBiosSub42	movem.l	a1,-(sp)
-	dc.w	$4EB9,$0000,$E320
+	jsr	$E320.l
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$08	; ............. ..
 	dc.b	$00,$00	; ..
 RestoreBiosSub43	movem.l	(sp)+,a1
@@ -31,10 +31,10 @@ RestoreBiosSub43	movem.l	(sp)+,a1
 	bsr.w	WaitCountdown
 	jsr	$1055C.l
 	jsr	$EA76.l
-	bsr.w	RestoreBios_84
+	bsr.w	RestoreBios_90
 	jsr	$EA0C.l
 	move.l	$EC92.l,d1
-	beq.w	RestoreBios_82
+	beq.w	RestoreBios_88
 RestoreBiosSub44	movem.l	d1,-(sp)
 	move.w	$FFFF8004.w,$EC8E.l
 	lea.l	$ECA2.l,a0
@@ -66,15 +66,15 @@ RestoreBiosSub45	move.l	#$0,-(sp)
 	jsr	$ECB4.l
 	adda.w	#$26,sp
 	tst.w	d0
-	bmi.w	RestoreBios_83
-RestoreBios_81	jsr	$E298.l
+	bmi.w	RestoreBios_89
+RestoreBios_87	jsr	$E298.l
 	btst	#$7,d1
 RestoreBiosSub46	bne.w	.l3C04
 	move.w	#$1,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp
 	tst.w	d0
-	bge.b	RestoreBios_81
+	bge.b	RestoreBios_87
 .l3C04	move.w	#$2,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp
@@ -96,22 +96,22 @@ RestoreBiosSub46	bne.w	.l3C04
 	move.l	$ECB0.l,$602C.w
 	bset.b	#$2,$FFFF8024.w
 	bset.b	#$2,$FFFF8033.w
-RestoreBios_82	movem.l	(sp)+,d0-d7/a0-a6
+RestoreBios_88	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-RestoreBios_83	bra.b	RestoreBios_83
-RestoreBios_84	moveq	#$1A,d0
+RestoreBios_89	bra.b	RestoreBios_89
+RestoreBios_90	moveq	#$1A,d0
 	jsr	$E370.l
-	dc.w	$4E75
+	rts
 	dcb.b	$18,0
 	dc.b	$01,$FF,'HOCKEY.SEG',$00,$00,$00,$00	; ..HOCKEY.SEG....
 	dc.b	$00,$00	; ..
-RestoreBios_85	dc.w	$6000,$00DE
-RestoreBios_86	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_87	dc.b	$00,$01,$00,$00	; ....
-RestoreBios_88	dc.b	$00,$06,$00,$00	; ....
-RestoreBios_89	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_90	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_91	dcb.b	$8,0
-RestoreBios_92	dcb.b	$14,0
-RestoreBios_93	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_94	dcb.b	$A8,0
+RestoreBios_91	bra.w	RestoreBios_101
+RestoreBios_92	dc.b	$00,$00,$00,$00	; ....
+RestoreBios_93	dc.b	$00,$01,$00,$00	; ....
+RestoreBios_94	dc.b	$00,$06,$00,$00	; ....
+RestoreBios_95	dc.b	$00,$00,$00,$00	; ....
+RestoreBios_96	dc.b	$00,$00,$00,$00	; ....
+RestoreBios_97	dcb.b	$8,0
+RestoreBios_98	dcb.b	$14,0
+RestoreBios_99	dc.b	$00,$00,$00,$00	; ....
+RestoreBios_100	dcb.b	$A8,0

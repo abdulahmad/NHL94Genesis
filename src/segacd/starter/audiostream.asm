@@ -15,7 +15,7 @@ GetData_2; AudioPlayPos
 	bne.b	.l263A0
 	moveq	#$0,d0
 	bra.b	.l263C0
-.l263A0	jsr	RestoreBios_103(pc)
+.l263A0	jsr	RestoreBios_110(pc)
 	moveq	#$C,d1
 	asr.l	d1,d0
 	move.l	d0,-$4(a6)
@@ -121,7 +121,7 @@ GetData_9; AudioSilence
 	cmp.l	(a3),d0
 	bne.b	.l2653C
 	pea.l	$1000.w
-	jsr	mmalloc(pc)
+	jsr	mmalloc_2(pc)
 	movea.l	d0,a4
 	moveq	#$0,d7
 	move.l	#$400,d3
@@ -145,7 +145,7 @@ GetData_9; AudioSilence
 	cmp.l	d7,d0
 	bgt.b	.l26518
 	move.l	a4,-(sp)
-	jsr	ffree(pc)
+	jsr	ffree_2(pc)
 	jsr	PcmStartChannel0(pc)
 	moveq	#$0,d0
 	move.l	d0,(a3)
@@ -172,7 +172,7 @@ GetData_11; AudioTicks
 	move.l	(a4),d1
 	lsl.l	d0,d1
 	move.l	d1,-$4(a6)
-	jsr	RestoreBios_103(pc)
+	jsr	RestoreBios_110(pc)
 	move.l	#$FFF,d1
 	and.l	d0,d1
 	move.l	-$4(a6),d0

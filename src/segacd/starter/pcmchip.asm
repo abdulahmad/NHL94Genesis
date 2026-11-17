@@ -51,7 +51,7 @@ PcmStartChannel0	movea.l	#$FF0000,a0
 PcmMuteAllChannels	movea.l	#$FF0000,a0
 	move.b	#$FF,$11(a0)
 	rts
-RestoreBios_103	movea.l	#$FF0000,a0
+RestoreBios_110	movea.l	#$FF0000,a0
 	lea.l	$21(a0),a0
 	moveq	#$14,d0
 .l2538A	dbra	d0,.l2538A

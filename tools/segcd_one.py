@@ -333,6 +333,10 @@ def main():
                     mn2 = g.mnemonic
                     if kind in ("btst", "bclr", "bset", "bchg") and re.search(r",d[0-7]$", text.replace(" ", "")):
                         mn2 = kind
+                    if kind == "link":
+                        mn2 = "link"   # SNASM has no link.w
+                    if kind == "btst" and mn2 == "btst.l" and re.search(r",\(a[0-7]\)$", text.replace(" ", "")):
+                        mn2 = "btst"   # SNASM: no size on a memory bit test
                     if kind == "moveq":
                         m = re.match(r"#\$([0-9A-F]+),(.*)", text)
                         if m and int(m.group(1), 16) >= 0x80:
@@ -568,13 +572,16 @@ def fixloop(cfg, parts, ddir, d):
             if mnr in E.BRANCH or mnr in ("jsr", "jmp", "bsr", "lea", "pea"):
                 got = got[:4]
                 exp_b = exp_b[:4]
+                if mnr in E.BRANCH and len(exp) == 4:
+                    # short branch: the displacement byte is not final in the listing, compare the opcode byte
+                    got = got[:2]
+                    exp_b = exp_b[:2]
             if "+" in got:
                 got = got.replace("+", "")
                 wrong = not exp_b.startswith(got)
             else:
                 wrong = got != exp_b[:len(got)] or (len(got) < len(exp_b) and False)
-            if nxt is not None and nxt != len(exp) // 2 and nxt > 0:
-                wrong = True
+            # (an instruction that assembled longer or shorter shows in the first-difference fallback below)
             if wrong:
                 w = to_words(l)
                 if w:

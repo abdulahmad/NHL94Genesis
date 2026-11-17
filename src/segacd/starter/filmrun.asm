@@ -6,15 +6,15 @@
 
 
 
-.l25094	tst.w	$4(sp)
+RestoreBios_101	tst.w	$4(sp)
 	bne.b	.l250F6
 	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
-	lea.l	RestoreBios_88(pc),a0
+	lea.l	RestoreBios_94(pc),a0
 	move.l	$12(a6),(a0)
-	lea.l	RestoreBios_87(pc),a0
+	lea.l	RestoreBios_93(pc),a0
 	move.l	$E(a6),(a0)
-	lea.l	RestoreBios_92(pc),a0
+	lea.l	RestoreBios_98(pc),a0
 	move.l	$22(a6),(a0)+
 	move.l	$1E(a6),(a0)+
 	move.l	$1A(a6),(a0)+
@@ -62,27 +62,27 @@
 	clr.l	$24.w
 	move.l	#$208008,$80.w
 	rts
-RestoreBios_95	ori.b	#$0,d0
+RestoreBios_102	ori.b	#$0,d0
 ; Saves the level vector at $5F36 and installs the stream interrupt handler.
-InstallIrqHook1	lea.l	RestoreBios_95(pc),a0
+InstallIrqHook1	lea.l	RestoreBios_102(pc),a0
 	move.l	$5F36.w,(a0)
-	lea.l	RestoreBios_98(pc),a0
+	lea.l	RestoreBios_105(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F36.w
 	move.w	(sp)+,sr
 	rts
 ; Restores the vector at $5F36.
-RemoveIrqHook1	movea.l	RestoreBios_95(pc),a0
+RemoveIrqHook1	movea.l	RestoreBios_102(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F36.w
 	move.w	(sp)+,sr
 	rts
-RestoreBios_98	movem.l	d0/a0,-(sp)
-	lea.l	RestoreBios_86(pc),a0
+RestoreBios_105	movem.l	d0/a0,-(sp)
+	lea.l	RestoreBios_92(pc),a0
 	addq.l	#$1,(a0)
-	move.l	RestoreBios_93(pc),d0
+	move.l	RestoreBios_99(pc),d0
 	beq.b	.l251A4
 	movea.l	d0,a0
 	jsr	(a0)
