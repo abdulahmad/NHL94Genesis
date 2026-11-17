@@ -357,7 +357,8 @@ PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDispl
 	move.w	$18BF6.l,d0
 	bra.w	PlayedByText
 	bra.w	.next
-	dc.w	$08B9,$0001,$0001,$7F7C,$6000,$000A
+	bclr.b	#$1,$17F7C.l
+	dc.w	$6000,$000A
 .next
 	bset	#$1,$17F7C.l
 	rts

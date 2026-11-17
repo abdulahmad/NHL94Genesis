@@ -354,12 +354,24 @@ sfx						;play sound effect number. One word passed on stack
 	addq.w	#$2,sp
 	rts
 ; Sends a command word to the sub CPU through the gate array (disc only)
-GateArrayCommandSend	dc.w	$2F00,$302F,$0008,$33C0,$00FF,$8028,$0839,$0004
-	dc.w	$00FF,$800E,$66F6,$33FC,$0034,$00FF,$8026,$08F9
-	dc.w	$0003,$00FF,$800F,$0839,$0003,$00FF,$800E,$67F6
-	dc.w	$08F9,$0004,$00FF,$800F,$08B9,$0003,$00FF,$800F
-	dc.w	$0839,$0003,$00FF,$800E,$66F6,$08B9,$0004,$00FF
-	dc.w	$800F,$4CDF,$0001,$2F57,$0002,$544F,$4E75
+GateArrayCommandSend	move.l	d0,-(sp)
+	move.w	$8(sp),d0
+	move.w	d0,$FF8028.l
+.loop	btst.b	#$4,$FF800E.l
+	bne.b	.loop
+	move.w	#$34,$FF8026.l
+	bset.b	#$3,$FF800F.l
+.loop2	btst.b	#$3,$FF800E.l
+	beq.b	.loop2
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.loop3	btst.b	#$3,$FF800E.l
+	bne.b	.loop3
+	bclr.b	#$4,$FF800F.l
+	movem.l	(sp)+,d0
+	move.l	(sp),$2(sp)
+	addq.w	#$2,sp
+	rts	
 song						;play song number. One word passed on stack
 	move.l	d0,-(sp)
 	move.w	$8(sp),d0

@@ -199,10 +199,22 @@ ControlCode_SetMapAndPositionData	dc.w	$0003,$C000
 	subi.w	#$1,d3
 	move.w	d0,(printy).l
 	bra.w	xyVmMap
-	dc.w	$1019,$4880,$0443,$0001,$D179,$0001,$8D58,$6000
-	dc.w	$FC8C,$1019,$4880,$0443,$0001,$D179,$0001,$8D5A
-	dc.w	$6000,$FC7A,$4240,$1019,$0443,$0001,$E340,$33C0
-	dc.w	$0001,$8D60,$4E75
+	move.b	(a1)+,d0
+	ext.w	d0
+	subi.w	#$1,d3
+	add.w	d0,$18D58.l
+	bra.w	xyVmMap
+	move.b	(a1)+,d0
+	ext.w	d0
+	subi.w	#$1,d3
+	add.w	d0,$18D5A.l
+	bra.w	xyVmMap
+	clr.w	d0
+	move.b	(a1)+,d0
+	subi.w	#$1,d3
+	asl.w	#$1,d0
+	move.w	d0,$18D60.l
+	rts	
 printz						;print the String that follows the bsr/jsr to this routine, then return
 	
 	move.l	a1,-(sp)

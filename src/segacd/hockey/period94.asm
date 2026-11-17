@@ -72,10 +72,18 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	$17CEE.l,d4
 	move.w	$17CEA.l,d5
 	move.w	$1A550.l,d0
-	bra.w	.next
-	dc.w	$0242,$000F,$0C42,$0003,$6300,$0004,$7403,$6000
-	dc.w	$000A,$3003,$D042,$6100,$0008,$51CA,$FFF6,$4E75
-.next
+	bra.w	.next3
+	andi.w	#$F,d2
+	cmpi.w	#$3,d2
+	bls.w	.next
+	moveq	#$3,d2
+.next	bra.w	.next2
+.loop	move.w	d3,d0
+	add.w	d2,d0
+	dc.w	$6100,$0008
+.next2	dbra	d2,.loop
+	rts	
+.next3
 	ext.w	d0
 	beq.w	AddArenaAnimSpriteExit
 	cmpi.w	#$40,d6
@@ -100,14 +108,14 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	subi.w	#$80,d2
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
-.loop	cmp.w	$2(a0),d2
-	bgt.w	.next2
+.loop2	cmp.w	$2(a0),d2
+	bgt.w	.next4
 	cmp.w	$2(a0),d3
-	blt.w	.next2
+	blt.w	.next4
 	cmp.w	(a0),d0
-	bgt.w	.next2
+	bgt.w	.next4
 	cmp.w	(a0),d1
-	blt.w	.next2
+	blt.w	.next4
 	move.w	$2(a0),d5
 	addi.w	#$70,d5
 	sub.w	d2,d5
@@ -125,10 +133,10 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	d5,(a6)+
 	addi.w	#$1,d6
 	cmpi.w	#$40,d6
-	beq.w	.next3
-.next2	adda.w	#$8,a0
-	dbra	d4,.loop
-.next3	movem.l	(sp)+,d0-d5
+	beq.w	.next5
+.next4	adda.w	#$8,a0
+	dbra	d4,.loop2
+.next5	movem.l	(sp)+,d0-d5
 AddArenaAnimSpriteExit
 	rts
 PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerName), moved left so
