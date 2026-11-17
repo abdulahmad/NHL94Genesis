@@ -14,7 +14,7 @@
 	asl.w	#$2,d0
 	subq.w	#$4,d0
 	move.w	d0,$FF2DB8.l
-	bra.w	LinkedCall_8
+	bra.w	TilemapCellAddr
 .lFF0CE2	move.b	(a1)+,d2
 	andi.w	#$7,d2
 	subq.w	#$1,d3
@@ -25,22 +25,22 @@
 	move.b	(a1)+,d0
 	subq.w	#$1,d3
 	move.w	d0,$FF2DB2.l
-	bra.w	LinkedCall_8
+	bra.w	TilemapCellAddr
 .lFF0D04	clr.w	d0
 	move.b	(a1)+,d0
 	subq.w	#$1,d3
 	move.w	d0,$FF2DB4.l
-	bra.w	LinkedCall_8
+	bra.w	TilemapCellAddr
 	move.b	(a1)+,d0
 	ext.w	d0
 	subq.w	#$1,d3
 	add.w	d0,$FF2DB2.l
-	bra.w	LinkedCall_8
+	bra.w	TilemapCellAddr
 	move.b	(a1)+,d0
 	ext.w	d0
 	subq.w	#$1,d3
 	add.w	d0,$FF2DB4.l
-	bra.w	LinkedCall_8
+	bra.w	TilemapCellAddr
 .lFF0D34	clr.w	d0
 	move.b	(a1)+,d0
 	subq.w	#$1,d3
@@ -57,7 +57,7 @@
 	move.w	(a2)+,$FF287C.l
 	move.w	(a2)+,$FF287E.l
 	movea.l	a2,a1
-	bsr.w	LinkedCall_18
+	bsr.w	PrintStringBox
 	lea.l	$23A450.l,a2
 	move.w	$FF2DB6.l,(a2)+
 	move.w	$FF2DB2.l,(a2)+
@@ -67,7 +67,7 @@
 	rts
 	move.l	a1,-(sp)
 	movea.l	$4(sp),a1
-	bsr.w	LinkedCall_18
+	bsr.w	PrintStringBox
 	move.l	a1,$4(sp)
 	movea.l	(sp)+,a1
 	rts
@@ -80,7 +80,7 @@
 	move.w	(a1)+,$FF287A.l
 	move.w	(a1)+,$FF287C.l
 	move.w	(a1)+,$FF287E.l
-	bsr.w	LinkedCall_18
+	bsr.w	PrintStringBox
 	lea.l	$23A450.l,a1
 	move.w	$FF2DB6.l,(a1)+
 	move.w	$FF2DB2.l,(a1)+
@@ -102,7 +102,7 @@
 	move.w	(a0)+,$FF2DB8.l
 	adda.l	#$180000,a1
 	bset.b	#$4,$23C6E8.l
-	bsr.w	LinkedCall_8
+	bsr.w	TilemapCellAddr
 	neg.w	d1
 	addq.w	#$3,d1
 	moveq	#$2,d2
@@ -123,7 +123,7 @@
 	movea.l	(a0)+,a2
 	move.l	a0,$FF2912.l
 	adda.l	#$180000,a2
-	bsr.w	LinkedCall_1
+	bsr.w	ProcessTileCmdList
 	lea.l	$23A450.l,a0
 	move.l	d4,(a0)
 	rts
@@ -143,7 +143,7 @@
 	move.w	d4,(a5)+
 	move.w	$FF2DB4.l,(a5)
 	rts
-.lFF0EFA	bsr.w	LinkedCall_8
+.lFF0EFA	bsr.w	TilemapCellAddr
 	addq.w	#$1,$FF2DB4.l
 	bsr.w	.lFF0F22
 	addq.w	#$2,d4
@@ -189,11 +189,12 @@ DispatchTail	bset.b	#$3,$A12018.l
 	rts
 	move.l	a1,-(sp)
 	movea.l	$4(sp),a1
-	bsr.w	DispatchTail_1
+	bsr.w	DrawLines
 	move.l	a1,$4(sp)
 	movea.l	(sp)+,a1
 	rts
-DispatchTail_1	movem.l	d0-d3,-(sp)
+; Draws a list of line segments held at a1.
+DrawLines	movem.l	d0-d3,-(sp)
 	move.w	$E(a1),d3
 	bra.w	.lFF0FFE
 .lFF0FE2	lea.l	(a1),a0
@@ -255,13 +256,14 @@ DispatchTail_1	movem.l	d0-d3,-(sp)
 	move.l	d0,$FF290E.l
 	move.w	$FF290E.l,(a1)
 	move.w	$FF2910.l,(a1)
-	bsr.w	LinkedCall_6
+	bsr.w	WaitVdpDmaDone
 	move.w	#$8164,(a1)
 	move.w	#$8F02,(a1)
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0-d3/a1
 	rts
-DispatchTail_2	movem.l	d3/a1,-(sp)
+; VdpSetWriteAddr taking the address in d1 and keeping a1.
+VdpSetWriteAddrD1	movem.l	d3/a1,-(sp)
 	movea.l	#$C00000,a1
 	andi.l	#$FFFF,d1
 	asl.l	#$2,d1
@@ -281,9 +283,10 @@ DispatchTail_2	movem.l	d3/a1,-(sp)
 	movem.l	(sp)+,d3/a1
 	rts
 	lea.l	$23A450.l,a1
-	bsr.w	DispatchTail_1
+	bsr.w	DrawLines
 	rts
-DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
+; Packs the glyph bitmap at a0 into 4-bit pixels at $FF2916.
+PackGlyphBits	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	d1,d3
 	clr.w	d1
 	clr.w	d2
@@ -300,7 +303,7 @@ DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
 .lFF113C	move.b	(a0)+,(a1,d1.w)
 	addq.b	#$1,d1
 	bne.w	.lFF114A
-	bsr.w	LinkedCall_3
+	bsr.w	ExpandTileData
 .lFF114A	dbra	d0,.lFF113C
 	rts
 	move.b	-$1(a0),d0
@@ -308,7 +311,7 @@ DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
 .lFF1158	clr.b	(a1,d1.w)
 	addq.b	#$1,d1
 	bne.w	.lFF1166
-	bsr.w	LinkedCall_3
+	bsr.w	ExpandTileData
 .lFF1166	dbra	d0,.lFF1158
 	rts
 	move.b	-$1(a0),d0
@@ -318,7 +321,7 @@ DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
 .lFF1178	move.b	d2,(a1,d1.w)
 	addq.b	#$1,d1
 	bne.w	.lFF1186
-	bsr.w	LinkedCall_3
+	bsr.w	ExpandTileData
 .lFF1186	dbra	d0,.lFF1178
 	rts
 	move.b	-$1(a0),d0
@@ -334,7 +337,7 @@ DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
 	addq.b	#$1,d2
 	addq.b	#$1,d1
 	bne.w	.lFF11B8
-	bsr.w	LinkedCall_3
+	bsr.w	ExpandTileData
 .lFF11B8	dbra	d0,.lFF11A6
 	rts
 	move.b	-$1(a0),d0
@@ -385,7 +388,7 @@ DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
 	subq.b	#$1,d2
 	addq.b	#$1,d1
 	bne.w	.lFF1246
-	bsr.w	LinkedCall_3
+	bsr.w	ExpandTileData
 .lFF1246	dbra	d0,.lFF1234
 	rts
 	move.b	-$1(a0),d0
@@ -393,7 +396,7 @@ DispatchTail_3	movem.l	d0-d3/a0-a2,-(sp)
 	addq.w	#$2,d0
 	move.b	(a0)+,d2
 	bne.b	.lFF1230
-	bsr.w	LinkedCall_3
+	bsr.w	ExpandTileData
 	addq.l	#$4,sp
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts

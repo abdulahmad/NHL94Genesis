@@ -4,7 +4,7 @@
 
 
 
-DispatchTail_27; DoDrawTextCommand
+DoDrawTextCommand_A	; Sierra C function name tag: DoDrawTextCommand (first copy of the module)
 	link	a6,#$FF00
 	movem.l	d6-d7/a4,-(sp)
 	lea.l	-$100(a6),a4
@@ -19,11 +19,11 @@ DispatchTail_28	cmpi.b	#$1,d7
 .lFF304A	move.w	d6,d0
 	addq.w	#$1,d6
 	move.b	d7,(a4,d0.w)
-DispatchTail_29	jsr	DispatchTail_60(pc)
+DispatchTail_29	jsr	GetCommandFromSub_A(pc)
 	move.b	d0,d7
 	bne.b	DispatchTail_28
 DispatchTail_30	move.l	a4,-(sp)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	addq.w	#$4,sp
 	movem.l	-$10C(a6),d6-d7/a4
 	unlk	a6
@@ -31,7 +31,7 @@ DispatchTail_30	move.l	a4,-(sp)
 ; DoDrawTextCommand
 	dc.b	$91,'DoDrawTextComma'	; .DoDrawTextComma
 	dc.b	$6E,$64,$00,$00			; nd..
-DispatchTail_31; DoMoviePlayBack
+DoMoviePlayBack_A	; Sierra C function name tag: DoMoviePlayBack (first copy of the module)
 	link	a6,#$0
 	movem.l	d5-d7/a4,-(sp)
 	movea.l	#$200000,a4
@@ -41,17 +41,17 @@ DispatchTail_31; DoMoviePlayBack
 	bra.b	DispatchTail_33
 DispatchTail_32	moveq	#$1,d0
 	move.l	d0,-(sp)
-	jsr	DispatchTail_61(pc)
+	jsr	Set1MFlag_A(pc)
 	move.l	#$200000,-(sp)
 	move.l	d5,-(sp)
 	move.l	d6,-(sp)
 	move.l	d7,-(sp)
-	jsr	DispatchTail_25(pc)
+	jsr	DrawTextBuffer(pc)
 	moveq	#$0,d0
 	move.l	d0,-(sp)
-	jsr	DispatchTail_61(pc)
+	jsr	Set1MFlag_A(pc)
 	addq.w	#$8,sp
-DispatchTail_33	jsr	DispatchTail_60(pc)
+DispatchTail_33	jsr	GetCommandFromSub_A(pc)
 	cmpi.w	#$2,d0
 	beq.b	DispatchTail_32
 	movem.l	-$10(a6),d5-d7/a4
@@ -60,12 +60,12 @@ DispatchTail_33	jsr	DispatchTail_60(pc)
 ; DoMoviePlayBack
 	dc.b	$8F,'DoMoviePlayBack'	; .DoMoviePlayBack
 	dc.b	$00,$00					; ..
-DispatchTail_34; MAINCODE
+MAINCODE_A	; Sierra C function name tag: MAINCODE (first copy of the module)
 	link	a6,#$0
 	move.l	d7,-(sp)
-	jsr	DispatchTail_59(pc)
+	jsr	InitWorld_A(pc)
 	pea.l	LFF315A(pc)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	addq.w	#$4,sp
 	bra.b	DispatchTail_36
 DispatchTail_35	move.w	d7,d0
@@ -74,20 +74,20 @@ DispatchTail_35	move.w	d7,d0
 	subq.w	#$2,d0
 	beq.b	.lFF310A
 	bra.b	.lFF3110
-.lFF3104	jsr	DispatchTail_27(pc)
+.lFF3104	jsr	DoDrawTextCommand_A(pc)
 	bra.b	DispatchTail_36
-.lFF310A	jsr	DispatchTail_31(pc)
+.lFF310A	jsr	DoMoviePlayBack_A(pc)
 	bra.b	DispatchTail_37
 .lFF3110	ext.l	d7
 	move.l	d7,-(sp)
 	pea.l	LFF314E(pc)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	addq.w	#$8,sp
-DispatchTail_36	jsr	DispatchTail_60(pc)
+DispatchTail_36	jsr	GetCommandFromSub_A(pc)
 	move.w	d0,d7
 	bne.b	DispatchTail_35
 DispatchTail_37	pea.l	LFF3144(pc)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	addq.w	#$4,sp
 	move.l	-$4(a6),d7
 	unlk	a6
@@ -98,20 +98,20 @@ DispatchTail_37	pea.l	LFF3144(pc)
 	dc.b	$64,$00,'MAINCPU ready '	; d.MAINCPU ready 
 	dc.b	'to handle comman'	; to handle comman
 	dc.b	$64,$73,$00,$00			; ds..
-DispatchTail_38; ReDraw
+ReDraw_A	; Sierra C function name tag: ReDraw (first copy of the module)
 	link	a6,#$0
 	unlk	a6
 	rts
 ; ReDraw
 	dc.b	$86,'ReDraw',$00,$00,$00	; .ReDraw...
-DispatchTail_39; drawprint
+drawprint_A	; Sierra C function name tag: drawprint (first copy of the module)
 	link	a6,#$0
 	move.l	$8(a6),-(sp)
 	lea.l	DispatchTail_12(pc),a0
 	move.l	$5C(a0),-(sp)
 	lea.l	DispatchTail_12(pc),a0
 	move.l	$60(a0),-(sp)
-	jsr	DispatchTail_24(pc)
+	jsr	DrawTextToPlane(pc)
 	lea.l	DispatchTail_12(pc),a0
 	addq.l	#$1,$60(a0)
 	lea.l	DispatchTail_12(pc),a0
@@ -120,12 +120,12 @@ DispatchTail_39; drawprint
 	bgt.b	.lFF31CA
 	lea.l	DispatchTail_12(pc),a0
 	subi.l	#$14,$60(a0)
-.lFF31CA	jsr	DispatchTail_38(pc)
+.lFF31CA	jsr	ReDraw_A(pc)
 	unlk	a6
 	rts
 ; drawprint
 	dc.b	$89,'drawprint',$00,$00	; .drawprint..
-DispatchTail_40; NumStr
+NumStr_A	; Sierra C function name tag: NumStr (first copy of the module)
 	link	a6,#$FFF0
 	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
@@ -137,7 +137,7 @@ DispatchTail_40; NumStr
 	clr.b	(a4,d0.w)
 .lFF31FC	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	DispatchTail_63(pc)
+	jsr	LongModU(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -145,7 +145,7 @@ DispatchTail_40; NumStr
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	DispatchTail_62(pc)
+	jsr	LongDivU(pc)
 	move.l	d0,d6
 	bne.b	.lFF31FC
 	bra.b	DispatchTail_42
@@ -158,7 +158,7 @@ DispatchTail_42	tst.w	d7
 	rts
 ; NumStr
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
-DispatchTail_43; HexStr
+HexStr_A	; Sierra C function name tag: HexStr (first copy of the module)
 	link	a6,#$0
 	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
@@ -194,7 +194,7 @@ DispatchTail_45	cmp.l	d7,d3
 	rts
 ; HexStr
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
-DispatchTail_46; aprint
+aprint_A	; Sierra C function name tag: aprint (first copy of the module)
 	link	a6,#$FED8
 	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
@@ -238,7 +238,7 @@ DispatchTail_47	cmpi.b	#$25,d6
 	ext.l	d4
 	move.l	d4,-(sp)
 	move.l	d5,-(sp)
-	jsr	DispatchTail_40(pc)
+	jsr	NumStr_A(pc)
 	clr.w	d7
 	lea.l	$C(sp),sp
 	bra.b	DispatchTail_49
@@ -255,7 +255,7 @@ DispatchTail_50	addq.l	#$4,-$4(a6)
 	ext.l	d4
 	move.l	d4,-(sp)
 	move.l	d5,-(sp)
-	jsr	DispatchTail_43(pc)
+	jsr	HexStr_A(pc)
 	clr.w	d7
 	lea.l	$C(sp),sp
 	bra.b	DispatchTail_52
@@ -285,14 +285,14 @@ DispatchTail_57	move.l	$8(a6),d0
 	bne.w	DispatchTail_47
 	clr.b	(a3)+
 	pea.l	-$108(a6)
-	jsr	DispatchTail_39(pc)
+	jsr	drawprint_A(pc)
 	addq.w	#$4,sp
 DispatchTail_58	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
 	rts
 ; aprint
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
-DispatchTail_59; InitWorld
+InitWorld_A	; Sierra C function name tag: InitWorld (first copy of the module)
 	link	a6,#$0
 	movea.l	#$A12010,a0
 	clr.w	(a0)
@@ -304,15 +304,15 @@ DispatchTail_59; InitWorld
 	lea.l	DispatchTail_12(pc),a0
 	move.l	d0,$60(a0)
 	pea.l	LFF3444(pc)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	lea.l	DispatchTail_12(pc),a0
 	move.l	$54(a0),-(sp)
 	pea.l	LFF3434(pc)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	lea.l	DispatchTail_12(pc),a0
 	move.l	$58(a0),-(sp)
 	pea.l	LFF3424(pc)
-	jsr	DispatchTail_46(pc)
+	jsr	aprint_A(pc)
 	unlk	a6
 	rts
 ; InitWorld
@@ -320,7 +320,8 @@ DispatchTail_59; InitWorld
 	dc.b	' Size : %x',$00,$00,'Heap'	;  Size : %x..Heap
 	dc.b	' Start: %x',$00,$00,'MAIN'	;  Start: %x..MAIN
 	dc.b	'CPU is alive',$00,$00	; CPU is alive..
-DispatchTail_60; GetCommandFromSub
+; Waits for a command word from the sub CPU ($A12020) (Sierra tag GetCommandFromSub).
+GetCommandFromSub_A; GetCommandFromSub
 	link	a6,#$0
 	movem.l	d7/a3-a4,-(sp)
 	movea.l	#$A12010,a3
@@ -338,7 +339,8 @@ DispatchTail_60; GetCommandFromSub
 ; GetCommandFromSub
 	dc.b	$91,'GetCommandFromS'	; .GetCommandFromS
 	dc.b	$75,$62,$00,$00			; ub..
-DispatchTail_61; Set1MFlag
+; Writes the word-RAM 1M flag word to the sub CPU comm port (Sierra tag Set1MFlag).
+Set1MFlag_A; Set1MFlag
 	link	a6,#$0
 	movea.l	#$A12010,a0
 	move.w	$A(a6),$2(a0)

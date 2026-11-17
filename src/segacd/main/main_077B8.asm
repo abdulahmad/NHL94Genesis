@@ -3,7 +3,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.w	#$1234,(a0)
 	bne.w	.l7A2A
 	bsr.w	Set1MFlag_19
-	bsr.w	Set1MFlag_20
+	bsr.w	Z80StartStream
 	lea.l	Set1MFlag_40(pc),a0
 	move.w	#$0,(a0)
 	lea.l	Set1MFlag_32(pc),a6
@@ -62,7 +62,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	bsr.w	Set1MFlag_13
+	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	dc.w	$670A
 	dc.w	$0671,$0001,$7000
@@ -84,7 +84,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	$2(a1,d7.w),d0
 	andi.b	#$F,d0
 	or.b	d1,d0
-	bsr.w	Set1MFlag_18
+	bsr.w	SndSlotAdd
 	dc.w	$0685,$0000,$0002
 .l78F4	tst.b	(a0,d5.l)
 	dc.w	$6A08
@@ -121,7 +121,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	bsr.w	Set1MFlag_13
+	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	dc.w	$670A
 	dc.w	$0671,$0001,$7000
@@ -137,7 +137,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	bsr.w	Set1MFlag_13
+	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	dc.w	$6708
 	dc.w	$0671,$0001,$7000
@@ -153,7 +153,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	move.b	(a0,d5.l),d0
 	lsl.w	#$8,d0
 	move.b	$2(a1,d7.w),d0
-	bsr.w	Set1MFlag_13
+	bsr.w	Z80PlayIfLoaded
 	tst.w	d0
 	dc.w	$6708
 	dc.w	$0671,$0001,$7000
@@ -179,7 +179,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$0650,$0001
 	cmpi.w	#$8,(a0)
 	blt.w	.l77F0
-	bsr.w	Set1MFlag_15
+	bsr.w	Z80LoadPending
 .l7A2A	andi.b	#$FE,ccr
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -200,7 +200,7 @@ Set1MFlag_9	movem.l	d1-d4/a0-a1,-(sp)
 	dc.w	$606A
 .l7A6A	move.w	d0,$1C6(a0)
 	move.w	#$3,d0
-	bsr.w	Set1MFlag_21
+	bsr.w	SndFindSource
 	dc.w	$655C
 	clr.l	d1
 	move.b	$1(a0),d1
@@ -249,38 +249,39 @@ Set1MFlag_10	movem.l	d1-d2/a0,-(sp)
 	move.l	#$FFFFFFFF,(a0,d0.w)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	$1C6(a0),d0
-	bsr.w	Set1MFlag_17
+	bsr.w	SndSlotFind
 	clr.w	d0
 .l7B30	movem.l	(sp)+,d1-d2/a0
 	rts
 Set1MFlag_11	movem.l	d1-d2/a0,-(sp)
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80RequestBus
 	lea.l	$A00000.l,a0
 	move.b	$A00028.l,d0
 	lsl.w	#$8,d0
 	move.b	$A00029.l,d0
 	move.b	d1,$3(a0,d0.w)
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	move.w	(sp)+,sr
 	move.l	#$0,d0
 	move.b	#$7F,d0
 	lsl.w	#$8,d0
 	move.b	#$CF,d0
-	bsr.w	Set1MFlag_14
+	bsr.w	Z80QueueCommand
 	move.l	#$7F0000,d0
 	move.w	d2,d0
 	lsl.w	#$8,d0
 	move.b	#$9F,d0
-	bsr.w	Set1MFlag_14
+	bsr.w	Z80QueueCommand
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
-Set1MFlag_12	movem.l	a0-a1,-(sp)
+; Reads the Z80 driver status byte at $A00024.
+Z80ReadStatus	movem.l	a0-a1,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80RequestBus
 	clr.l	d0
 	move.b	$A00024.l,d0
 	lsl.w	#$8,d0
@@ -299,12 +300,13 @@ Set1MFlag_12	movem.l	a0-a1,-(sp)
 	move.w	#$1FF,d0
 .l7BE2	move.b	#$0,(a1)+
 	dbra	d0,.l7BE2
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	move.w	#$1234,$0(a0)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
 	rts
-Set1MFlag_13	movem.l	d1-d3/a0,-(sp)
+; Looks up d0 in the loaded-sound bitmap and starts it or queues a load.
+Z80PlayIfLoaded	movem.l	d1-d3/a0,-(sp)
 	lea.l	Set1MFlag_41(pc),a0
 	move.l	d0,d1
 	swap	d1
@@ -315,7 +317,7 @@ Set1MFlag_13	movem.l	d1-d3/a0,-(sp)
 	andi.w	#$F,d3
 	btst	d3,d2
 	dc.w	$6606
-	bsr.w	Set1MFlag_14
+	bsr.w	Z80QueueCommand
 	dc.w	$6004
 .l7C20	bsr.w	.lFF7C2A
 .l7C24	movem.l	(sp)+,d1-d3/a0
@@ -343,14 +345,15 @@ Set1MFlag_13	movem.l	d1-d3/a0,-(sp)
 	clr.w	d0
 .l7C70	movem.l	(sp)+,d1-d2/a0
 	rts
-Set1MFlag_14	movem.l	d1/a0,-(sp)
+; Appends command d0 to the Z80 driver command queue.
+Z80QueueCommand	movem.l	d1/a0,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
-.l7C84	bsr.w	Set1MFlag_26
+.l7C84	bsr.w	Z80RequestBus
 	lea.l	$A00030.l,a0
 	tst.b	(a0)
 	dc.w	$6710
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	move.w	#$64,d1
 .l7C9A	dc.w	$0441,$0001
 	dc.w	$66FA
@@ -374,27 +377,28 @@ Set1MFlag_14	movem.l	d1/a0,-(sp)
 	dc.w	$0601,$0001
 	move.b	d1,(a0)
 	move.w	#$0,d0
-.l7CDC	bsr.w	Set1MFlag_27
+.l7CDC	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d1/a0
 	rts
-Set1MFlag_15	movem.l	d0-d1/a0-a1,-(sp)
+; Loads the pending sound blocks into the Z80 driver.
+Z80LoadPending	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_43(pc),a1
 	cmpi.w	#$0,(a1)
 	dc.w	$6756
 	dc.w	$207A,$085A
-	bsr.w	Set1MFlag_28
-	bsr.w	Set1MFlag_30
+	bsr.w	PrgRamReadBegin
+	bsr.w	PrgRamMapAddr
 .l7D0A	cmpi.w	#$FFFF,(a0)
 	dc.w	$661E
 	dc.w	$207A,$0848
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 	move.w	#$1F4,d0
 .l7D1C	dbra	d0,.l7D1C
 	dc.w	$207A,$0838
-	bsr.w	Set1MFlag_28
-	bsr.w	Set1MFlag_30
+	bsr.w	PrgRamReadBegin
+	bsr.w	PrgRamMapAddr
 	bra.b	.l7D0A
 .l7D2E	move.w	(a1),d0
 	move.w	(a0),d1
@@ -409,13 +413,14 @@ Set1MFlag_15	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_43(pc),a1
 	move.w	#$0,(a1)
 	dc.w	$207A,$080C
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 .l7D54	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
+; Copies a sound block into Z80 RAM, checking the free space.
+Z80LoadBlock	movem.l	d0-d2/a0-a1,-(sp)
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,(a1)
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80RequestBus
 	move.b	$A00022.l,d2
 	lsl.w	#$8,d2
 	move.b	$A00023.l,d2
@@ -432,7 +437,7 @@ Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
 	adda.l	#$4,a1
 	dc.w	$0442,$0001
 	dc.w	$66EE
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	move.w	#$7,d0
@@ -455,13 +460,14 @@ Set1MFlagSub5	movem.l	d0-d2/a0-a1,-(sp)
 	move.b	d2,$A00023.l
 	lsr.w	#$8,d2
 	move.b	d2,$A00022.l
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
 .l7E18	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-Set1MFlag_16	movem.l	d0-d1/a0-a1,-(sp)
+; Marks all 32 sound slots as empty.
+SndSlotsReset	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
 	move.w	#$0,$122(a0)
@@ -473,7 +479,8 @@ Set1MFlag_16	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-Set1MFlag_17	movem.l	d0-d2/a0-a1,-(sp)
+; Looks for the sound slot whose id matches d0.
+SndSlotFind	movem.l	d0-d2/a0-a1,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,$0(a0)
 	lea.l	Set1MFlag_39(pc),a1
@@ -492,7 +499,8 @@ Set1MFlag_17	movem.l	d0-d2/a0-a1,-(sp)
 .l7E8A	move.w	#$1234,$0(a0)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
-Set1MFlag_18	movem.l	d0-d1/a0,-(sp)
+; Stores d0 in the next free sound slot.
+SndSlotAdd	movem.l	d0-d1/a0,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	$122(a0),d1
 	lsl.w	#$2,d1
@@ -510,8 +518,9 @@ Set1MFlag_19	dc.b	$48,$E7,$C0,$E0,$45,$FA,$05,$58,$0C,$6A,$00,$00,$01,$22,$67,$5
 	dc.b	$00,$01,$E5,$48,$20,$B1,$00,$00,$23,$BC,$FF,$FF,$FF,$FF,$00,$00	; ...H ...#.......
 	dc.b	$04,$6A,$00,$01,$01,$22,$60,$AC,$D0,$FC,$00,$04,$60,$A6,$4C,$DF	; .j..."`.....`.L.
 	dc.b	$07,$03,$4E,$75	; ..Nu
-Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
-	bsr.w	Set1MFlag_26
+; Starts a sound stream from the table at $A00072.
+Z80StartStream	movem.l	d1-d2/a0,-(sp)
+	bsr.w	Z80RequestBus
 	tst.b	$A00072.l
 	beq.w	.l80B8
 	cmpi.b	#$1,$A00072.l
@@ -519,15 +528,15 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 	clr.w	d1
 	move.b	$A00073.l,d1
 	move.w	#$1,d0
-	bsr.w	Set1MFlag_21
+	bsr.w	SndFindSource
 	bcs.w	.l80B8
 	cmpa.l	#$FFFFFFFF,a0
 	beq.w	.l80B8
 	lea.l	Set1MFlag_31(pc),a1
 	move.l	a0,$126(a1)
 	move.l	a0,-(sp)
-	bsr.w	Set1MFlag_28
-	bsr.w	Set1MFlag_30
+	bsr.w	PrgRamReadBegin
+	bsr.w	PrgRamMapAddr
 .l7F7C	move.b	(a0),d0
 	cmp.b	(a0),d0
 	bne.b	.l7F7C
@@ -539,7 +548,7 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 	move.w	d0,$12E(a1)
 	adda.l	#$1,a0
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 	movea.l	$126(a1),a0
 	adda.l	#$2,a0
 	move.l	a0,$12A(a1)
@@ -555,9 +564,9 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 	dc.w	$207A,$056E
 	cmpa.l	#$0,a0
 	dc.w	$6610
-	bsr.w	Set1MFlag_27
-	bsr.w	Set1MFlag_12
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80ReleaseBus
+	bsr.w	Z80ReadStatus
+	bsr.w	Z80RequestBus
 	bra.w	.l80B8
 .l7FF0	clr.l	d0
 	move.b	$A00024.l,d0
@@ -571,9 +580,9 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 	dc.w	$207A,$052C
 	cmpa.l	#$0,a0
 	dc.w	$6610
-	bsr.w	Set1MFlag_27
-	bsr.w	Set1MFlag_12
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80ReleaseBus
+	bsr.w	Z80ReadStatus
+	bsr.w	Z80RequestBus
 	bra.w	.l80B8
 .l8032	clr.l	d0
 	move.b	$A00026.l,d0
@@ -582,8 +591,8 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 	addi.l	#$A00000,d0
 	movea.l	d0,a1
 .l804A	move.l	a0,-(sp)
-	bsr.w	Set1MFlag_28
-	bsr.w	Set1MFlag_30
+	bsr.w	PrgRamReadBegin
+	bsr.w	PrgRamMapAddr
 	move.w	#$1FF,d1
 .l8058	move.b	(a0)+,(a1)+
 	dc.w	$671E
@@ -593,11 +602,11 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 	addi.l	#$200,d0
 	move.l	d0,$12A(a1)
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 	dc.w	$603E
 .l807A	suba.l	#$1,a1
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 	clr.l	d0
 	dc.w	$303A,$04BE
 	cmpi.w	#$FFFF,d0
@@ -612,10 +621,11 @@ Set1MFlag_20	movem.l	d1-d2/a0,-(sp)
 .l80AC	lea.l	Set1MFlag_31(pc),a1
 	move.l	#$0,$12A(a1)
 .l80B8	move.b	#$0,$A00072.l
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	movem.l	(sp)+,d1-d2/a0
 	rts
-Set1MFlag_21	movem.l	d1-d4/a1-a2,-(sp)
+; Finds the sound source for the request in d0/d1 in the list at 4 sources.
+SndFindSource	movem.l	d1-d4/a1-a2,-(sp)
 	lea.l	Set1MFlag_45(pc),a1
 	move.w	#$4,d2
 .l80D6	cmpi.l	#$FFFFFFFF,(a1)
@@ -623,8 +633,8 @@ Set1MFlag_21	movem.l	d1-d4/a1-a2,-(sp)
 	movea.l	(a1),a0
 	movea.l	a0,a2
 	move.l	a0,-(sp)
-	bsr.w	Set1MFlag_28
-	bsr.w	Set1MFlag_30
+	bsr.w	PrgRamReadBegin
+	bsr.w	PrgRamMapAddr
 	clr.l	d3
 .l80F0	move.b	(a0),d3
 	cmp.b	(a0),d3
@@ -658,7 +668,7 @@ Set1MFlag_21	movem.l	d1-d4/a1-a2,-(sp)
 	cmp.b	$3(a0),d0
 	bne.b	.l813C
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 	movea.l	a2,a0
 	andi.b	#$FE,ccr
 	dc.w	$6042
@@ -675,7 +685,7 @@ Set1MFlag_21	movem.l	d1-d4/a1-a2,-(sp)
 	dc.w	$0443,$0001
 	dc.w	$669C
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 .l8180	adda.l	#$4,a1
 	dc.w	$0442,$0001
 	bne.w	.l80D6
@@ -697,7 +707,7 @@ Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 	dc.w	$6034
 .l81C0	move.w	(a1),d0
 	move.w	$2(a1),d1
-	bsr.w	Set1MFlag_21
+	bsr.w	SndFindSource
 	dc.w	$6524
 	cmpi.w	#$0,(a1)
 	dc.w	$6616
@@ -705,7 +715,7 @@ Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 	dc.w	$6410
 	move.w	d0,d1
 	move.w	$2(a1),d0
-	bsr.w	Set1MFlagSub5
+	bsr.w	Z80LoadBlock
 	dc.w	$650C
 	bra.w	.l81E8
 .l81E8	adda.l	#$4,a1
@@ -716,7 +726,7 @@ Set1MFlag_23	movem.l	d1/a0-a1,-(sp)
 Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$0,(a1)
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80RequestBus
 .l820A	cmpi.w	#$FFFF,(a0)
 	beq.w	.l82E4
 	cmpi.w	#$6,(a0)
@@ -778,7 +788,7 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 	move.b	d1,(a1)
 .l82DA	adda.l	#$4,a0
 	bra.w	.l820A
-.l82E4	bsr.w	Set1MFlag_27
+.l82E4	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a1
 	move.w	#$1234,(a1)
 	clr.w	d0
@@ -787,7 +797,7 @@ Set1MFlag_24	movem.l	d1-d3/a0-a2,-(sp)
 Set1MFlag_25	movem.l	a0-a1,-(sp)
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$0,(a0)
-	bsr.w	Set1MFlag_26
+	bsr.w	Z80RequestBus
 	lea.l	$A00100.l,a0
 	move.w	#$FF,d0
 .l8312	move.b	#$FF,(a0)+
@@ -796,19 +806,22 @@ Set1MFlag_25	movem.l	a0-a1,-(sp)
 	lea.l	$A00022.l,a1
 	move.b	(a0)+,(a1)+
 	move.b	(a0),(a1)
-	bsr.w	Set1MFlag_27
+	bsr.w	Z80ReleaseBus
 	lea.l	Set1MFlag_31(pc),a0
 	move.w	#$1234,(a0)
 	clr.w	d0
 	movem.l	(sp)+,a0-a1
 	rts
-Set1MFlag_26	move.w	#$100,$A11100.l
+; Requests the Z80 bus and waits for it.
+Z80RequestBus	move.w	#$100,$A11100.l
 .l8346	btst.b	#$8,$A11100.l
 	bne.b	.l8346
 	rts
-Set1MFlag_27	move.w	#$0,$A11100.l
+; Gives the Z80 bus back.
+Z80ReleaseBus	move.w	#$0,$A11100.l
 	rts
-Set1MFlag_28	movem.l	d0-d1/a1,-(sp)
+; Prepares reading from sub-CPU PRG RAM when the address is at or above $80000.
+PrgRamReadBegin	movem.l	d0-d1/a1,-(sp)
 	cmpa.l	#$80000,a0
 	bcc.w	.l83AA
 	move.b	#$3,$A12001.l
@@ -830,7 +843,8 @@ Set1MFlag_28	movem.l	d0-d1/a1,-(sp)
 	move.w	d1,$A12002.l
 .l83AA	movem.l	(sp)+,d0-d1/a1
 	rts
-Set1MFlag_29	move.l	d0,-(sp)
+; Waits until the PRG-RAM read window is ready.
+PrgRamReadWait	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$643E
 	dc.w	$303A,$022E
@@ -850,7 +864,8 @@ Set1MFlag_29	move.l	d0,-(sp)
 	bne.b	.l83E0
 .l83F8	move.l	(sp)+,d0
 	rts
-Set1MFlag_30	move.l	d0,-(sp)
+; Maps a0 into the PRG-RAM window address.
+PrgRamMapAddr	move.l	d0,-(sp)
 	cmpa.l	#$80000,a0
 	dc.w	$6410
 	move.l	a0,d0

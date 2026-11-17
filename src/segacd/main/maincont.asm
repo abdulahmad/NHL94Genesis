@@ -12,9 +12,10 @@
 .lFF0514	move.w	(sp)+,sr
 	movem.l	(sp)+,d2-d3/a1
 	rts
-LinkedCall_6	move.w	$C00004.l,d2
+; Spins until the VDP status DMA-busy bit clears.
+WaitVdpDmaDone	move.w	$C00004.l,d2
 	btst	#$1,d2
-	bne.b	LinkedCall_6
+	bne.b	WaitVdpDmaDone
 	rts
 	lea.l	$23A450.l,a0
 	move.w	(a0)+,$FF284E.l
@@ -33,7 +34,7 @@ LinkedCall_6	move.w	$C00004.l,d2
 .lFF0574	move.w	d0,(a0)+
 	dbra	d1,.lFF0574
 	move.w	#$18,$23A8D0.l
-	bsr.w	LinkedCall_10
+	bsr.w	WaitVblank
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	move.w	#$8F02,$C00004.l
@@ -91,7 +92,8 @@ LinkedCall_6	move.w	$C00004.l,d2
 	move.l	#$0,(a0)
 	move.w	(sp)+,$23C6E8.l
 	rts
-LinkedCall_7	movea.l	#$C00000,a0
+; Sets the VDP VRAM write address from d0 (returns the data port in a0).
+VdpSetWriteAddr	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
@@ -99,7 +101,8 @@ LinkedCall_7	movea.l	#$C00000,a0
 	andi.w	#$3,d0
 	move.l	d0,$4(a0)
 	rts
-LinkedCall_8	movem.l	d0-d2,-(sp)
+; Turns the current plane cursor into a nametable address.
+TilemapCellAddr	movem.l	d0-d2,-(sp)
 	move.w	$FF2DB2.l,d0
 	move.w	$FF2DB4.l,d1
 	lea.l	$FF2852.l,a0
@@ -109,16 +112,17 @@ LinkedCall_8	movem.l	d0-d2,-(sp)
 	add.w	d1,d0
 	add.w	d0,d0
 	add.w	(a0),d0
-	bsr.w	LinkedCall_7
+	bsr.w	VdpSetWriteAddr
 	movem.l	(sp)+,d0-d2
 	rts
-LinkedCall_9	movem.l	d0-d3/a0,-(sp)
+; Fills a tilemap rectangle with the tile in d2.
+FillTilemapRect	movem.l	d0-d3/a0,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	moveq	#-1,d3
 	add.w	$FF285E.l,d3
 	movem.w	d0-d1,-(sp)
-.lFF0706	bsr.w	LinkedCall_8
+.lFF0706	bsr.w	TilemapCellAddr
 	move.w	(sp),d0
 	subq.w	#$1,d0
 .lFF070E	move.w	d2,(a0)
@@ -131,7 +135,8 @@ LinkedCall_9	movem.l	d0-d3/a0,-(sp)
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0-d3/a0
 	rts
-LinkedCall_10	move.w	sr,-(sp)
+; Enables interrupts and waits for the vertical blank counter.
+WaitVblank	move.w	sr,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bclr.b	#$4,$23C6E8.l
 	move.w	#$2500,sr
@@ -148,16 +153,17 @@ LinkedCall_10	move.w	sr,-(sp)
 	move.b	#$1,$FF2A18.l
 	movem.l	(sp)+,d0/a0
 	rts
-LinkedCall_11	bset.b	#$4,$23C6E8.l
+; Clears both plane nametables in VRAM.
+ClearVdpPlanes	bset.b	#$4,$23C6E8.l
 	andi.b	#$9C,$23C6E8.l
 	move.w	$FF284E.l,d0
-	bsr.w	LinkedCall_7
+	bsr.w	VdpSetWriteAddr
 	moveq	#$0,d1
 	move.w	#$DF,d0
 .lFF079C	move.l	d1,(a0)
 	dbra	d0,.lFF079C
 	move.w	$FF2850.l,d0
-	bsr.w	LinkedCall_7
+	bsr.w	VdpSetWriteAddr
 	moveq	#$0,d0
 	move.l	d0,(a0)
 	move.l	d0,(a0)
@@ -170,7 +176,7 @@ LinkedCall_11	bset.b	#$4,$23C6E8.l
 	move.w	(a0)+,$FF2DB2.l
 	move.w	(a0)+,$FF2DB4.l
 	move.w	(a0)+,$FF2DB8.l
-	bsr.w	LinkedCall_9
+	bsr.w	FillTilemapRect
 	lea.l	$23A450.l,a0
 	move.w	$FF2DB2.l,(a0)+
 	move.w	$FF2DB4.l,(a0)+
@@ -180,9 +186,10 @@ LinkedCall_11	bset.b	#$4,$23C6E8.l
 	move.w	(a0)+,d0
 	move.w	(a0)+,d1
 	move.w	(a0)+,d2
-	bsr.w	DispatchTail_2
+	bsr.w	VdpSetWriteAddrD1
 	rts
-LinkedCall_12	move.w	$FF2DB4.l,-(sp)
+; Prints a glyph string into the tilemap at the cursor.
+PrintGlyphs	move.w	$FF2DB4.l,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)
@@ -192,7 +199,7 @@ LinkedCall_12	move.w	$FF2DB4.l,-(sp)
 	andi.w	#$F800,d5
 	move.w	$E(sp),d2
 	subq.w	#$1,d2
-.lFF083A	bsr.w	LinkedCall_8
+.lFF083A	bsr.w	TilemapCellAddr
 	move.w	d6,d0
 	mulu.w	(a1),d0
 	add.w	$2(sp),d0
@@ -223,17 +230,19 @@ LinkedCall_12	move.w	$FF2DB4.l,-(sp)
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,$FF2DB4.l
 	rts
-LinkedCall_13	move.w	$23C6E8.l,-(sp)
+; Prints one glyph and advances the cursor.
+PrintCharAdvance	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	moveq	#$1,d1
 	lea.l	$FF2A1A.l,a3
-	bsr.w	DispatchTail_3
+	bsr.w	PackGlyphBits
 	clr.w	d1
 	move.b	$FF2A18.l,d1
 	add.w	d1,d4
 	move.w	(sp)+,$23C6E8.l
 	rts
-LinkedCall_14	move.w	$FF2DB4.l,-(sp)
+; PrintGlyphs variant using the $23A850 buffer.
+PrintGlyphsAlt	move.w	$FF2DB4.l,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)
@@ -252,7 +261,7 @@ LinkedCall_17	moveq	#$1F,d0
 	andi.w	#$F800,d5
 	move.w	$E(sp),d2
 	subq.w	#$1,d2
-.lFF0922	bsr.w	LinkedCall_8
+.lFF0922	bsr.w	TilemapCellAddr
 	move.w	d6,d0
 	mulu.w	(a1),d0
 	add.w	$2(sp),d0
@@ -290,7 +299,7 @@ LinkedCall_17	moveq	#$1F,d0
 	move.w	(a5)+,$FF2DB2.l
 	move.w	(a5)+,$FF2DB4.l
 	move.w	(a5)+,$FF2DB8.l
-	bsr.w	LinkedCall_14
+	bsr.w	PrintGlyphsAlt
 	lea.l	$23A450.l,a5
 	move.w	d4,(a5)+
 	move.w	$FF2DB6.l,(a5)+
@@ -302,7 +311,7 @@ LinkedCall_17	moveq	#$1F,d0
 	movea.l	(a5)+,a0
 	adda.l	#$180000,a0
 	move.w	(a5),d4
-	bsr.w	LinkedCall_13
+	bsr.w	PrintCharAdvance
 	move.w	d4,$23A450.l
 	rts
 	lea.l	$23A450.l,a5
@@ -322,13 +331,13 @@ LinkedCall_17	moveq	#$1F,d0
 	move.w	(a5)+,$FF2DB2.l
 	move.w	(a5)+,$FF2DB4.l
 	move.w	(a5),$FF2DB8.l
-	bsr.w	LinkedCall_12
+	bsr.w	PrintGlyphs
 	move.w	d4,$23A450.l
 	rts
 .lFF0A3A	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	LinkedCall_8
+	bsr.w	TilemapCellAddr
 	move.w	$FF2DB6.l,d2
 	move.w	(a1)+,d3
 	subq.w	#$2,d3
@@ -353,7 +362,7 @@ LinkedCall_17	moveq	#$1F,d0
 	move.b	(a1)+,d1
 	ext.w	d1
 	move.w	d1,$FF2DB4.l
-	bsr.w	LinkedCall_8
+	bsr.w	TilemapCellAddr
 	subq.w	#$2,d3
 	bra.w	.lFF0AD8
 .lFF0AA8	cmpi.b	#$40,d0
@@ -391,11 +400,12 @@ LinkedCall_17	moveq	#$1F,d0
 	move.w	$FF2DB2.l,(a1)+
 	move.w	$FF2DB4.l,(a1)
 	rts
-LinkedCall_18	move.w	$23C6E8.l,-(sp)
+; Prints a counted string with the plane parameters at $FF287A.
+PrintStringBox	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d3/a0/a2-a3,-(sp)
 	lea.l	$FF287A.l,a3
-	bsr.w	LinkedCall_8
+	bsr.w	TilemapCellAddr
 	move.w	$FF2DB6.l,d2
 	move.w	(a1)+,d3
 	subq.w	#$2,d3
@@ -433,7 +443,7 @@ LinkedCall_18	move.w	$23C6E8.l,-(sp)
 	addq.w	#$1,$FF2DB2.l
 	rts
 .lFF0BE2	addq.w	#$1,$FF2DB2.l
-	bra.w	LinkedCall_8
+	bra.w	TilemapCellAddr
 .lFF0BEC	cmpi.b	#$61,d0
 	blt.w	.lFF0C00
 	cmpi.b	#$7A,d0
@@ -476,7 +486,7 @@ LinkedCall_18	move.w	$23C6E8.l,-(sp)
 	add.w	$FF2DB2.l,d0
 	add.w	d0,d0
 	add.w	(a0),d0
-	bsr.w	LinkedCall_7
+	bsr.w	VdpSetWriteAddr
 	move.w	d6,(a0)
 	movem.l	(sp)+,d1/a0
 	rts

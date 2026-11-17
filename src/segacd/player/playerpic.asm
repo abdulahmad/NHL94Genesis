@@ -5,17 +5,18 @@
 
 
 
-LF64_11	movem.l	d0-d7/a0-a4,-(sp)
+; Draws the selected picture into the tilemap.
+PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	movea.l	$1C(a6),a1
 	movea.l	$48(a6),a2
 	cmpi.w	#$0,$18(a6)
 	beq.w	.l1D72
 	movea.l	$20(a6),a1
 	movea.l	$4C(a6),a2
-.l1D72	bsr.w	LF64_23
+.l1D72	bsr.w	PlPrepareSource
 	move.w	#$D3,d0
 	move.w	#$1E,d1
-	bsr.w	LF64_38
+	bsr.w	TilemapAddr
 	movea.l	$50(a6),a3
 	tst.l	$44(a6)
 	bne.w	.l1DA2
@@ -60,7 +61,7 @@ LF64_11	movem.l	d0-d7/a0-a4,-(sp)
 .l1E20	mulu.w	#$504,d0
 	lea.l	(a1,d0.l),a1
 .l1E28	move.w	$EE(a6),d0
-	bsr.w	LF64_12
+	bsr.w	PlDrawCareerStats
 	lea.l	$2(a1),a1
 	move.w	(a1)+,d0
 	lsl.w	#$4,d0
@@ -92,7 +93,7 @@ LF64_11	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	d1,d7
 	move.w	d1,d2
 .l1EB4	move.w	d3,d4
-	bsr.w	LF64_26
+	bsr.w	VdpWriteCmdD4
 .l1EBA	btst.b	#$7,$FF800E.l
 	bne.b	.l1EBA
 	move.l	d4,$FF8022.l
@@ -144,9 +145,9 @@ LF64_11	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$100,d1
 	move.l	#$B8000080,d2
 	move.w	#$0,d3
-	bsr.w	LF64_17
+	bsr.w	PlBlitToBuffer
 .l1FBE	move.w	$B0(a6),d0
-	bsr.w	LF64_1
+	bsr.w	PlDrawPage
 	move.w	#$0,$B0(a6)
 	moveq	#$1C,d0
 	moveq	#$0,d1
@@ -159,12 +160,12 @@ LF64_11	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$100,d1
 	move.l	#$B0000080,d2
 	move.w	#$1B,d3
-	bsr.w	LF64_17
+	bsr.w	PlBlitToBuffer
 	move.w	#$0,$B0(a6)
 	moveq	#$0,d0
 	moveq	#$0,d1
 	bsr.w	LF64
-	bsr.w	LF64_10
+	bsr.w	PlUnpackNibbles
 	movem.l	(sp)+,d0-d7/a0-a4
 	rts
 

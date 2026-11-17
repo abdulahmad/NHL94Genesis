@@ -2,13 +2,13 @@ X_1B9C	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$2C,$7C,$00,$00,$AE,$6E,$9D,$FC	; ..
 	dc.b	$00,$00,$00,$00,$4F,$FB,$E8,$EA,$2F,$0E,$2C,$7C,$00,$00,$A5,$94	; ....O.../.,|....
 	dc.b	$4D,$FB,$E8,$DE	; M...
 X_1B9CSub1	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	LF64_35
+	bsr.w	InstallVblankHook
 	lea.l	LF64_28(pc),a0
 	move.l	a0,$D2(a6)
 	move.w	d0,$7C(a6)
 	move.w	d1,$7E(a6)
 	move.w	d2,$BC(a6)
-	bsr.w	LF64_44
+	bsr.w	GateArrayLoadCmd
 	move.w	#$6,d7
 	jsr	$6044.w
 	move.l	a0,$DA(a6)
@@ -340,11 +340,11 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bclr.b	#$7,$FF800F.l
 	move.l	#$7A0,$62(a6)
 	move.l	#$1000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.l	#$20001000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.l	#$B0000700,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.w	#$7000,$FC(a6)
 	lea.l	LF64_27(pc),a0
 	move.l	a0,$D2(a6)
@@ -389,25 +389,25 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.w	.l87E
 	adda.l	#$4,a1
 	move.l	a1,$78(a6)
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 	move.w	d4,d0
-	bsr.w	LF64_6
-	bsr.w	LF64_10
+	bsr.w	PlSelectPicture
+	bsr.w	PlUnpackNibbles
 	move.w	#$18,$EC(a6)
 .l8A4	tst.w	$EC(a6)
 	bpl.w	.l8A4
 	bsr.w	LDEC
 	move.w	#$7,$BA(a6)
 .l8B6	move.l	#$B0000700,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.w	d4,d7
-	bsr.w	LF64_32
+	bsr.w	UpdatePad1
 	move.b	d0,$BE(a6)
 	move.b	d1,$BF(a6)
 	move.b	d2,$C0(a6)
 	move.b	d3,$C1(a6)
 	move.w	d1,d5
-	bsr.w	LF64_33
+	bsr.w	UpdatePad2
 	or.w	d1,d5
 	or.b	d0,$BE(a6)
 	or.b	d1,$BF(a6)
@@ -425,7 +425,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	ble.w	.l8B6
 	subi.w	#$1,$5A(a6)
 	move.w	#$4,$B0(a6)
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.l8B6
@@ -435,7 +435,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	ble.w	.l8B6
 	subi.w	#$1,$58(a6)
 	move.w	#$4,$B0(a6)
-	bsr.w	LF64_16
+	bsr.w	PlShowPicture
 	move.b	#$0,$C1(a6)
 	moveq	#$7,d0
 	bsr.w	LEAA
@@ -450,7 +450,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	beq.w	.l8B6
 	addi.w	#$1,$5A(a6)
 	move.w	#$3,$B0(a6)
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.l8B6
@@ -461,7 +461,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bgt.w	.l8B6
 	addi.w	#$1,$58(a6)
 	move.w	#$3,$B0(a6)
-	bsr.w	LF64_16
+	bsr.w	PlShowPicture
 	move.b	#$0,$C1(a6)
 	moveq	#$7,d0
 	bsr.w	LEAA
@@ -516,7 +516,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	clr.w	$56(a6)
 	clr.w	$58(a6)
 	move.w	#$0,$B0(a6)
-	bsr.w	LF64_16
+	bsr.w	PlShowPicture
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.lBC4
@@ -526,7 +526,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$0,$56(a6)
 	move.w	#$0,$5A(a6)
 	move.w	#$0,$B0(a6)
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.lBC4
@@ -536,7 +536,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.w	.lB12
 	addi.w	#$1,$56(a6)
 	move.w	#$1,$B0(a6)
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 	bra.w	.l8B6
 .lB12	cmpi.w	#$1,d4
 	bne.w	.lB38
@@ -544,7 +544,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.w	.lB38
 	addi.w	#$1,$56(a6)
 	move.w	#$1,$B0(a6)
-	bsr.w	LF64_16
+	bsr.w	PlShowPicture
 	bra.w	.l8B6
 .lB38	cmpi.b	#$2,d5
 	bne.w	.l8B6
@@ -556,7 +556,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	clr.w	$56(a6)
 	bra.w	.l8B6
 .lB60	move.w	#$2,$B0(a6)
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 	bra.w	.l8B6
 .lB6E	cmpi.w	#$1,d4
 	bne.w	.l8B6
@@ -566,7 +566,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	blt.w	.l8B6
 	subi.w	#$1,$56(a6)
 	move.w	#$2,$B0(a6)
-	bsr.w	LF64_16
+	bsr.w	PlShowPicture
 	bra.w	.l8B6
 .lB9E	cmpi.w	#$0,d4
 	bge.w	.lBB2
@@ -584,7 +584,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	d4,d0
 	clr.w	$56(a6)
 	clr.w	$58(a6)
-	bsr.w	LF64_6
+	bsr.w	PlSelectPicture
 	move.w	#$64,$EC(a6)
 .lBDE	tst.w	$EC(a6)
 	bpl.w	.lBDE
@@ -596,10 +596,10 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	beq.w	.lC02
 .lC02	cmpi.w	#$0,d4
 	bne.w	.lC0E
-	bsr.w	LF64_11
+	bsr.w	PlDrawPicture
 .lC0E	cmpi.w	#$1,d4
 	bne.w	.lC1A
-	bsr.w	LF64_16
+	bsr.w	PlShowPicture
 .lC1A	cmpi.w	#$2,$F8(a6)
 	beq.w	.lC38
 	move.w	#$140,$F4(a6)
@@ -609,7 +609,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 .lC38	moveq	#$0,d6
 	cmpi.w	#$2,d4
 	bne.w	.l8B6
-	bsr.w	LF64_9
+	bsr.w	PlDecodePicture
 	move.w	$AE(a6),d5
 	bra.w	.l8EE
 .lC4E	movea.l	#$BBCB0,a0
@@ -619,7 +619,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$18,$EC(a6)
 .lC62	tst.w	$EC(a6)
 	bpl.w	.lC62
-	bsr.w	LF64_44
+	bsr.w	GateArrayLoadCmd
 	bclr.b	#$5,$FF800F.l
 	move.l	#$3FFF,d0
 	movea.l	$DA(a6),a1
@@ -629,7 +629,7 @@ X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	#$13,d0
 .lC92	move.l	(a1)+,(a2)+
 	dbra	d0,.lC92
-	bsr.w	LF64_36
+	bsr.w	RemoveVblankHook
 	movem.l	(sp)+,d0-d7/a0-a6
 	movea.l	(sp)+,a6
 	move.w	#$4,d7
@@ -720,7 +720,7 @@ LDEC	movem.l	d0-d7/a1-a2,-(sp)
 	swap	d2
 	move.w	#$100,d2
 	move.w	#$13,d3
-	bsr.w	LF64_17
+	bsr.w	PlBlitToBuffer
 	moveq	#$14,d0
 	moveq	#$0,d1
 	bsr.w	LF64
@@ -747,12 +747,12 @@ LDEC	movem.l	d0-d7/a1-a2,-(sp)
 	lsr.w	#$5,d5
 	move.l	#$B296,d3
 	move.l	#$80,d6
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 	clr.l	$96(a6)
-.lE7C	bsr.w	LF64_32
+.lE7C	bsr.w	UpdatePad1
 	tst.w	d1
 	bne.w	.lE9C
-	bsr.w	LF64_33
+	bsr.w	UpdatePad2
 	tst.w	d1
 	bne.w	.lE9C
 	cmpi.l	#$258,$96(a6)
@@ -821,7 +821,8 @@ LF64	addi.w	#$9200,d0
 	bne.b	.lFF2
 	bclr.b	#$7,$FF800F.l
 	rts
-LF64Sub1	movem.l	d0-d6,-(sp)
+; Sets up the tile window parameters (d0 position, d1 size) for a text box.
+PlSetupWindow	movem.l	d0-d6,-(sp)
 	moveq	#$0,d2
 	move.w	d0,d1
 	swap	d0
@@ -866,7 +867,8 @@ LF64Sub1	movem.l	d0-d6,-(sp)
 	dbra	d6,.l101E
 	movem.l	(sp)+,d0-d6
 	rts
-LF64_1	movem.l	d0-d7/a0-a4,-(sp)
+; Draws the page selected by d0 (1 or 2, otherwise the default page).
+PlDrawPage	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	$F2(a6),d2
 	moveq	#$4,d3
 	move.w	#$0,$E2(a6)
@@ -878,25 +880,25 @@ LF64_1	movem.l	d0-d7/a0-a4,-(sp)
 	cmpi.w	#$4,d0
 	beq.w	.l1108
 	neg.w	d3
-.l1108	bsr.w	LF64_5
+.l1108	bsr.w	PlUploadTiles
 	move.w	#$E8,d7
 	cmpi.w	#$8,$B8(a6)
 	beq.w	.l111E
 	move.w	#$F0,d7
 .l111E	move.w	d7,d0
-	bsr.w	LF64_3
+	bsr.w	PlOffsetSpriteTable
 	move.w	$EE(a6),d0
 	subi.w	#$2000,d0
 	addi.w	#$CF8,d0
 	swap	d0
 	move.w	#$100,d0
-	bsr.w	LF64Sub1
+	bsr.w	PlSetupWindow
 	move.w	$EE(a6),d0
 	subi.w	#$2000,d0
 	addi.w	#$D50,d0
 	swap	d0
 	move.w	#$100,d0
-	bsr.w	LF64Sub1
+	bsr.w	PlSetupWindow
 	move.w	d2,$E2(a6)
 	move.w	d3,$E0(a6)
 	moveq	#$9,d0
@@ -909,7 +911,7 @@ LF64_1	movem.l	d0-d7/a0-a4,-(sp)
 	bsr.w	LF64
 	neg.w	d7
 	move.w	d7,d0
-	bsr.w	LF64_3
+	bsr.w	PlOffsetSpriteTable
 	move.w	#$50,d0
 	move.w	$EE(a6),d1
 	subi.w	#$2000,d1
@@ -917,7 +919,7 @@ LF64_1	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$100,d1
 	move.l	#$B0000080,d2
 	move.w	#$1B,d3
-	bsr.w	LF64_17
+	bsr.w	PlBlitToBuffer
 	move.w	$F2(a6),$E2(a6)
 	move.w	#$0,$E0(a6)
 	move.w	#$9,$DE(a6)
@@ -932,7 +934,8 @@ LF64_1	movem.l	d0-d7/a0-a4,-(sp)
 	dbra	d1,.l11C2
 .l11D4	movem.l	(sp)+,d0-d7/a0-a4
 	rts
-LF64_2	movem.l	d0-d7/a0-a1,-(sp)
+; Fills the picture buffers with the background pattern.
+PlFillBackground	movem.l	d0-d7/a0-a1,-(sp)
 	movea.l	$8A(a6),a0
 	move.l	#$7DF,d0
 	move.l	#$33333333,d1
@@ -968,7 +971,8 @@ LF64_2	movem.l	d0-d7/a0-a1,-(sp)
 	move.b	#$0,-$5(a1)
 	movem.l	(sp)+,d0-d7/a0-a1
 	rts
-LF64_3	movem.l	d1/a1,-(sp)
+; Adds d0 to the Y position of all 80 sprite entries.
+PlOffsetSpriteTable	movem.l	d1/a1,-(sp)
 	movea.l	$92(a6),a1
 	move.w	#$140,$E0(a6)
 	move.w	#$E800,$E2(a6)
@@ -982,7 +986,8 @@ LF64_3	movem.l	d1/a1,-(sp)
 	bne.w	.l128E
 	movem.l	(sp)+,d1/a1
 	rts
-LF64_4	movem.l	d0-d4/a0-a4,-(sp)
+; Builds the portrait tile data from the source at $70(a6).
+PlBuildPortraitTiles	movem.l	d0-d4/a0-a4,-(sp)
 	movea.l	$70(a6),a0
 	lea.l	$4(a0),a0
 	movea.l	$8A(a6),a1
@@ -1039,7 +1044,8 @@ LF64_4	movem.l	d0-d4/a0-a4,-(sp)
 	addi.w	#$1,$B4(a6)
 	movem.l	(sp)+,d0-d4/a0-a4
 	rts
-LF64_5	movem.l	d0/a0-a1,-(sp)
+; Copies the tile buffer to $BC000 and queues the VRAM upload.
+PlUploadTiles	movem.l	d0/a0-a1,-(sp)
 	movea.l	$8A(a6),a0
 	move.w	#$7DF,d0
 	movea.l	#$BC000,a1
@@ -1053,7 +1059,8 @@ LF64_5	movem.l	d0/a0-a1,-(sp)
 	bne.w	.l1368
 	movem.l	(sp)+,d0/a0-a1
 	rts
-LF64_6	movem.l	d0-d7/a0-a2,-(sp)
+; Picks the picture pointer for index d0 (page A or B).
+PlSelectPicture	movem.l	d0-d7/a0-a2,-(sp)
 	lea.l	$0(a6),a0
 	lsl.w	#$2,d0
 	cmpi.w	#$0,$18(a6)
@@ -1123,7 +1130,7 @@ LF64_6	movem.l	d0-d7/a0-a2,-(sp)
 LF64Sub2	movem.l	d2,-(sp)
 	move.w	$EE(a6),d3
 	move.l	#$100,d6
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 	movem.l	(sp)+,d2
 	dc.w	$6000,$0022
 LF64_7	move.w	#$64,$EC(a6)
@@ -1133,11 +1140,12 @@ LF64_7	move.w	#$64,$EC(a6)
 	move.w	$EE(a6),d3
 	move.l	#$100,d6
 	movea.l	a1,a2
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 .l14CA	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 LF64_8	dc.b	$4E,$75	; Nu
-LF64_9	movem.l	d0-d7/a0-a4,-(sp)
+; Decodes the picture at (a0) into the tile buffer.
+PlDecodePicture	movem.l	d0-d7/a0-a4,-(sp)
 	movea.l	$8(a6),a0
 	cmpi.w	#$0,$18(a6)
 	beq.w	.l14E8
@@ -1154,7 +1162,7 @@ LF64_9	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$B000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 .l151A	btst.b	#$7,$FF800E.l
 	bne.b	.l151A
 	move.w	#$921C,$FF8022.l
@@ -1182,19 +1190,19 @@ LF64_9	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$B000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 	move.w	#$4000,$FC(a6)
 .l15B8	move.l	#$1000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.l	#$20001000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.w	#$3,$DE(a6)
 .l15D2	tst.w	$DE(a6)
 	bne.w	.l15D2
 	move.w	#$2000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 .l15EA	btst.b	#$7,$FF800E.l
 	bne.b	.l15EA
 	move.w	#$9200,$FF8022.l
@@ -1283,9 +1291,9 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 .l17F6	bset.b	#$5,$FF800F.l
 .l17FE	moveq	#$7,d0
 	bsr.w	LEAA
-	bsr.w	LF64_32
+	bsr.w	UpdatePad1
 	move.w	d1,d5
-	bsr.w	LF64_33
+	bsr.w	UpdatePad2
 	or.w	d1,d5
 	cmpi.b	#$10,d5
 	bne.w	.l1822
@@ -1336,16 +1344,16 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$B000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 	move.w	#$1C,$E2(a6)
 	clr.w	$E0(a6)
 	move.w	#$A,$DE(a6)
 .l18E6	tst.w	$DE(a6)
 	bne.w	.l18E6
 	move.l	#$1000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	move.l	#$20001000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 .l1902	btst.b	#$7,$FF800E.l
 	bne.b	.l1902
 	move.l	#$70000003,$FF8022.l
@@ -1410,7 +1418,7 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	andi.w	#$7FFF,d5
 	move.l	#$100,d6
 	movea.l	a2,a1
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 	move.w	#$4,$DE(a6)
 .l1AA6	tst.w	$DE(a6)
 	bne.w	.l1AA6
@@ -1418,9 +1426,9 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	andi.w	#$7FFF,d5
 	move.l	#$100,d6
 	movea.l	a2,a1
-	bsr.w	LF64_25
+	bsr.w	PlCopyRectToVdp
 	move.l	#$1000,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 .l1ACC	btst.b	#$7,$FF800E.l
 	bne.b	.l1ACC
 	move.l	#$70000003,$FF8022.l
@@ -1451,12 +1459,13 @@ LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 .l1B78	tst.w	$DE(a6)
 	bne.w	.l1B78
 	move.l	#$B0000800,d0
-	bsr.w	LF64_24
+	bsr.w	PlDmaRequest
 	bsr.w	LCAA
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a4
 	rts
-LF64_10	movem.l	d0-d7/a0-a4,-(sp)
+; Unpacks 4-bit pixel data from $50(a6) into the buffer.
+PlUnpackNibbles	movem.l	d0-d7/a0-a4,-(sp)
 	moveq	#$0,d4
 	move.w	#$500,d4
 	moveq	#$0,d1

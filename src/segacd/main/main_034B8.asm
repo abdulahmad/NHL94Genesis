@@ -1,10 +1,12 @@
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-DispatchTail_62	lea.l	.lFF34CC(pc),a0
+; Unsigned 32-bit divide stub (divu.l d1,d0).
+LongDivU	lea.l	.lFF34CC(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF34CC	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-DispatchTail_63	lea.l	.lFF34F0(pc),a0
+; Unsigned 32-bit remainder stub.
+LongModU	lea.l	.lFF34F0(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF34F0	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -30,9 +32,9 @@ DispatchTailSub1	movea.l	#$FFFC00,sp
 	move.w	#$0,$A1201E.l
 	move.b	#$0,$A1200E.l
 	move.w	#$0,$FF6CEE.l
-	bsr.w	DispatchTail_65
-	bsr.w	DispatchTail_66
-	bsr.w	DispatchTail_67
+	bsr.w	SubCommHandshake
+	bsr.w	WaitWordRamMode2M
+	bsr.w	GiveWordRamToSub
 	move.l	#$0,$FF6D00.l
 	move.l	#$0,$FF6CFC.l
 	bra.w	DispatchTail_64
@@ -52,10 +54,11 @@ DispatchTail_64	btst.b	#$7,$A1200F.l
 	bclr.b	#$6,$A1200E.l
 	bclr.b	#$7,$A1200E.l
 	bra.w	DispatchTail_64
-DispatchTailSub2	btst.b	#$7,$A1200F.l
-	bne.b	DispatchTailSub2
+; Handshakes with the sub CPU on $A1200E/F and reads the comm word $A12020.
+ReadSubCommWord	btst.b	#$7,$A1200F.l
+	bne.b	ReadSubCommWord
 	btst.b	#$6,$A1200F.l
-	beq.b	DispatchTailSub2
+	beq.b	ReadSubCommWord
 	bset.b	#$7,$A1200E.l
 	move.w	$A12020.l,d0
 	bset.b	#$6,$A1200E.l
@@ -138,8 +141,9 @@ DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 .l390A	bclr.b	#$5,$A1200E.l
 	movem.l	(sp)+,d0-d1/a0-a1
 	rte
-DispatchTail_65	btst.b	#$7,$A1200F.l
-	bne.b	DispatchTail_65
+; Two-phase flag handshake with the sub CPU.
+SubCommHandshake	btst.b	#$7,$A1200F.l
+	bne.b	SubCommHandshake
 .l3922	btst.b	#$6,$A1200F.l
 	bne.b	.l3922
 	bset.b	#$6,$A1200E.l
@@ -151,8 +155,9 @@ DispatchTail_65	btst.b	#$7,$A1200F.l
 	bne.b	.l394E
 	bclr.b	#$7,$A1200E.l
 	rts
-DispatchTail_66	btst.b	#$2,$A12003.l
-	bne.b	DispatchTail_66
+; Spins while the word-RAM mode bit is 1M.
+WaitWordRamMode2M	btst.b	#$2,$A12003.l
+	bne.b	WaitWordRamMode2M
 	rts
 	move.l	d0,-(sp)
 	move.w	#$4000,$C00004.l
@@ -162,14 +167,17 @@ DispatchTail_66	btst.b	#$2,$A12003.l
 	dbra	d0,.l3986
 	move.l	(sp)+,d0
 	rts
-DispatchTailSub5	btst.b	#$1,$A12003.l
-	bne.b	DispatchTailSub5
+; Spins while the word-RAM DMNA bit is set.
+WaitDmnaClear	btst.b	#$1,$A12003.l
+	bne.b	WaitDmnaClear
 	rts
-DispatchTail_67	bset.b	#$1,$A12003.l
+; Sets DMNA and waits until the sub CPU has taken word RAM.
+GiveWordRamToSub	bset.b	#$1,$A12003.l
 .l39AA	btst.b	#$0,$A12003.l
 	bne.b	.l39AA
 	rts
-DispatchTailSub6	movem.w	d0,-(sp)
+; Sets the VDP command for a VRAM write at d0.
+VdpSetVramWriteAddr	movem.w	d0,-(sp)
 	andi.w	#$3FFF,d0
 	ori.w	#$4000,d0
 	move.w	d0,$C00004.l
@@ -179,18 +187,19 @@ DispatchTailSub6	movem.w	d0,-(sp)
 	move.w	d0,$C00004.l
 	rts
 DispatchTailSub7	movem.l	d0-d1/a0,-(sp)
-	bsr.w	DispatchTail_67
-	bsr.w	DispatchTailSub5
-	bsr.w	DispatchTailSub2
+	bsr.w	GiveWordRamToSub
+	bsr.w	WaitDmnaClear
+	bsr.w	ReadSubCommWord
 	move.w	d0,d1
-	bsr.w	DispatchTailSub2
-	bsr.w	DispatchTailSub6
+	bsr.w	ReadSubCommWord
+	bsr.w	VdpSetVramWriteAddr
 	lea.l	$200000.l,a0
 .l39FA	move.w	(a0)+,$C00000.l
 	dbra	d1,.l39FA
 	movem.l	(sp)+,d0-d1/a0
 	rts
-DispatchTailSub8	movem.w	d0,-(sp)
+; Sets the VDP command for a CRAM write at d0.
+VdpSetCramWriteAddr	movem.w	d0,-(sp)
 	andi.w	#$3FFF,d0
 	ori.w	#$C000,d0
 	move.w	d0,$C00004.l
@@ -199,12 +208,12 @@ DispatchTailSub8	movem.w	d0,-(sp)
 	andi.w	#$3,d0
 	move.w	d0,$C00004.l
 	rts
-	bsr.w	DispatchTail_67
-	bsr.w	DispatchTailSub5
-	bsr.w	DispatchTailSub2
+	bsr.w	GiveWordRamToSub
+	bsr.w	WaitDmnaClear
+	bsr.w	ReadSubCommWord
 	move.w	d0,d1
-	bsr.w	DispatchTailSub2
-	bsr.w	DispatchTailSub8
+	bsr.w	ReadSubCommWord
+	bsr.w	VdpSetCramWriteAddr
 	lea.l	$200000.l,a0
 .l3A4A	move.w	(a0)+,$C00000.l
 	dbra	d1,.l3A4A
@@ -221,7 +230,7 @@ DispatchTailSub8	movem.w	d0,-(sp)
 	movea.l	$A12022.l,a0
 	clr.w	(a0)
 	rts
-	bsr.w	DispatchTail_67
+	bsr.w	GiveWordRamToSub
 	dc.w	$4E75
 	dc.b	$61,$00,$FF,$02,$33,$F9,$00,$23,$BC,$88,$00,$C0,$00,$04,$33,$F9	; a...3..#......3.
 	dc.b	$00,$23,$BC,$8A,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$8C,$00,$C0	; .#......3..#....

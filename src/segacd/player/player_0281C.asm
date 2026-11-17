@@ -1,4 +1,5 @@
-LF64_17	movem.l	d0-d7/a0-a3,-(sp)
+; Blits a rectangle into the buffer at $BC000.
+PlBlitToBuffer	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$BC000,a0
 	move.w	d0,d4
 	movea.w	d1,a1
@@ -71,7 +72,8 @@ LF64_18	dc.b	$16,'Power play adva'	; .Power play adva
 	dc.b	'defensemen',$00	; defensemen.
 LF64_19	dc.b	$0B,'Goalie # ',$00	; .Goalie # .
 LF64_20	dc.b	$0B,'Player # ',$00,$00	; .Player # ..
-LF64_21	movem.l	d0-d2,-(sp)
+; Converts d7 to packed BCD in d1 (abcd loop).
+BinToBcd	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
 	moveq	#$0,d2
 	abcd.b	d0,d1
@@ -92,7 +94,8 @@ LF64_21	movem.l	d0-d2,-(sp)
 	ori.l	#$200000,d7
 .l29B0	movem.l	(sp)+,d0-d2
 	rts
-LF64_22	movem.l	d0-d2,-(sp)
+; Packed BCD conversion that counts the overflow in d2.
+BinToBcdCarry	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
 	moveq	#$0,d1
 	moveq	#$0,d2
@@ -142,7 +145,8 @@ LF64Sub5	movem.l	d0-d2/a0-a1,-(sp)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 .l2A50	dcb.b	$50,0
-LF64_23	movem.l	d0-d7/a1-a5,-(sp)
+; Chooses the source pointers for the current page.
+PlPrepareSource	movem.l	d0-d7/a1-a5,-(sp)
 	moveq	#$0,d0
 	movea.l	$1C(a6),a1
 	movea.l	$48(a6),a2
@@ -189,7 +193,8 @@ LF64_23	movem.l	d0-d7/a1-a5,-(sp)
 	dc.b	$2D,$4D,$00,$9E,$4B,$FA,$13,$8A,$20,$09,$67,$00,$00,$08,$70,$00	; -M..K... .g...p.
 	dc.b	$60,$00,$FF,$64,$2D,$7C,$00,$00,$00,$00,$00,$44,$20,$6E,$00,$8E	; `..d-|.....D n..
 	dc.b	$4C,$DF,$3E,$FF,$4E,$75	; L.>.Nu
-LF64_24	move.w	d0,$E0(a6)
+; Queues a DMA request in the $DE-$E4 block and waits for it.
+PlDmaRequest	move.w	d0,$E0(a6)
 	swap	d0
 	move.w	d0,$E2(a6)
 	move.l	$62(a6),$E4(a6)
@@ -205,14 +210,15 @@ LF64_24	move.w	d0,$E0(a6)
 .l2C60	tst.w	$DE(a6)
 	bne.w	.l2C60
 	rts
-LF64_25	move.w	(a1)+,d1
+; Copies a rectangle of tilemap data to the VDP.
+PlCopyRectToVdp	move.w	(a1)+,d1
 	subq.w	#$1,d1
 	move.w	d1,d2
 	move.w	(a1)+,d7
 	subq.w	#$1,d7
 .l2C74	moveq	#$0,d4
 	move.w	d3,d4
-	bsr.w	LF64_26
+	bsr.w	VdpWriteCmdD4
 .l2C7C	btst.b	#$7,$FF800E.l
 	bne.b	.l2C7C
 	move.l	d4,$FF8022.l
@@ -249,7 +255,8 @@ LF64_25	move.w	(a1)+,d1
 	move.w	d1,d2
 	dbra	d7,.l2C74
 	rts
-LF64_26	andi.l	#$FFFF,d4
+; Turns the VRAM address in d4 into a VDP write command.
+VdpWriteCmdD4	andi.l	#$FFFF,d4
 	lsl.l	#$2,d4
 	lsr.w	#$2,d4
 	swap	d4
@@ -344,7 +351,7 @@ LF64_28	move.w	#$1,$102(a6)
 	bra.w	.l33FC
 .l2F36	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l2F42	btst.b	#$4,$FF800E.l
 	bne.b	.l2F42
 	move.w	#$2C,$FF8026.l
@@ -356,7 +363,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l2F76	btst.b	#$3,$FF800E.l
 	bne.b	.l2F76
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 	bra.w	.l33FC
 .l2F90	movem.l	d0-d3/a0-a2,-(sp)
 .l2F94	btst.b	#$4,$FF800E.l
@@ -392,7 +399,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l3046	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	moveq	#$0,d0
-	bsr.w	LF64_30
+	bsr.w	GateArrayLoadFont
 .l3054	btst.b	#$4,$FF800E.l
 	bne.b	.l3054
 	move.w	#$39,$FF8026.l
@@ -469,7 +476,7 @@ LF64_28	move.w	#$1,$102(a6)
 	move.l	d0,$BBC8C.l
 	move.w	$E4(a6),d0
 	move.l	d0,$BBC90.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l3224	btst.b	#$4,$FF800E.l
 	bne.b	.l3224
 	move.w	#$3A,$FF8026.l
@@ -481,7 +488,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l3258	btst.b	#$3,$FF800E.l
 	bne.b	.l3258
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 	bra.w	.l33FC
 .l3272	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
@@ -491,7 +498,7 @@ LF64_28	move.w	#$1,$102(a6)
 	move.w	$E2(a6),d0
 	move.l	d0,$BBC8C.l
 	move.l	$E4(a6),$BBC90.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l329C	btst.b	#$4,$FF800E.l
 	bne.b	.l329C
 	move.w	#$3B,$FF8026.l
@@ -503,7 +510,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l32D0	btst.b	#$3,$FF800E.l
 	bne.b	.l32D0
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 	bra.w	.l33FC
 .l32EA	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
@@ -555,7 +562,7 @@ LF64_28	move.w	#$1,$102(a6)
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l33B2	btst.b	#$4,$FF800E.l
 	bne.b	.l33B2
 	move.w	#$32,$FF8026.l
@@ -567,7 +574,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l33E6	btst.b	#$3,$FF800E.l
 	bne.b	.l33E6
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 .l33FC	movem.l	(sp)+,d0-d3/a0-a2
 .l3400	tst.w	$FA(a6)
 	beq.w	LF64_29
@@ -579,7 +586,7 @@ LF64Sub6	movem.l	d0-d3/a0-a2,-(sp)
 	beq.w	.l3424
 	neg.w	d0
 .l3424	add.w	$F2(a6),d0
-	bsr.w	LF64_30
+	bsr.w	GateArrayLoadFont
 	addi.w	#$6,$F6(a6)
 	bra.w	.l346E
 .l3436	move.w	$F6(a6),d0
@@ -592,18 +599,19 @@ LF64Sub6	movem.l	d0-d3/a0-a2,-(sp)
 	bne.w	.l3456
 	neg.w	d0
 .l3456	add.w	$F2(a6),d0
-	bsr.w	LF64_30
+	bsr.w	GateArrayLoadFont
 	clr.w	$FA(a6)
 	clr.w	$F6(a6)
 	andi.w	#$3FF,d0
 	move.w	d0,$F2(a6)
 .l346E	movem.l	(sp)+,d0-d3/a0-a2
 LF64_29	movem.l	d0-d5/a0-a1,-(sp)
-	bsr.w	LF64_31
+	bsr.w	TickTimers
 	movem.l	(sp)+,d0-d5/a0-a1
 	rts
-LF64_30	btst.b	#$4,$FF800E.l
-	bne.b	LF64_30
+; Sends the font load command through the gate-array registers.
+GateArrayLoadFont	btst.b	#$4,$FF800E.l
+	bne.b	GateArrayLoadFont
 	move.w	#$30,$FF8026.l
 	move.l	#$70000003,$FF8028.l
 	bset.b	#$3,$FF800F.l
@@ -639,7 +647,8 @@ LF64_30	btst.b	#$4,$FF800E.l
 	bne.b	.l3556
 	bclr.b	#$4,$FF800F.l
 	rts
-LF64_31	tst.w	$EC(a6)
+; Countdown timer tick at $EC(a6).
+TickTimers	tst.w	$EC(a6)
 	bmi.w	.l3606
 	cmpi.w	#$64,$EC(a6)
 	beq.w	.l3608
@@ -661,7 +670,7 @@ LF64_31	tst.w	$EC(a6)
 	move.l	d3,$BBC88.l
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l35BC	btst.b	#$4,$FF800E.l
 	bne.b	.l35BC
 	move.w	#$1D,$FF8026.l
@@ -673,7 +682,7 @@ LF64_31	tst.w	$EC(a6)
 .l35F0	btst.b	#$3,$FF800E.l
 	bne.b	.l35F0
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 .l3606	rts
 .l3608	movea.l	#$BBCB0,a1
 .l360E	btst.b	#$4,$FF800E.l
@@ -704,16 +713,18 @@ LF64_31	tst.w	$EC(a6)
 	dbra	d0,.l3660
 	st.b	$EC(a6)
 	rts
-LF64_32	move.b	$C2(a6),d0
-	bsr.w	LF64_34
+; Decodes pad 1 and computes newly pressed buttons.
+UpdatePad1	move.b	$C2(a6),d0
+	bsr.w	DecodePadBits
 	move.w	$C6(a6),d2
 	move.w	d1,$C6(a6)
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-LF64_33	move.b	$C3(a6),d0
-	bsr.w	LF64_34
+; Decodes pad 2 and computes newly pressed buttons.
+UpdatePad2	move.b	$C3(a6),d0
+	bsr.w	DecodePadBits
 	move.w	$C8(a6),d2
 	move.w	d1,$C8(a6)
 	move.w	d1,d3
@@ -721,7 +732,7 @@ LF64_33	move.b	$C3(a6),d0
 	and.w	d2,d1
 	rts
 	move.b	$C4(a6),d0
-	bsr.w	LF64_34
+	bsr.w	DecodePadBits
 	move.w	$CA(a6),d2
 	move.w	d1,$CA(a6)
 	move.w	d1,d3
@@ -729,14 +740,15 @@ LF64_33	move.b	$C3(a6),d0
 	and.w	d2,d1
 	rts
 	move.b	$C5(a6),d0
-	bsr.w	LF64_34
+	bsr.w	DecodePadBits
 	move.w	$CC(a6),d2
 	move.w	d1,$CC(a6)
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-LF64_34	not.b	d0
+; Inverts the raw pad byte and splits direction and button bits.
+DecodePadBits	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
@@ -936,11 +948,13 @@ LF64Sub7	movem.l	d1/a0,-(sp)
 	movem.l	(sp)+,d1/a0
 	rts
 .l3B7C	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
-LF64_35	move.l	$6038.w,$D6(a6)
+; Saves the vblank vector and points it at the page handler.
+InstallVblankHook	move.l	$6038.w,$D6(a6)
 	lea.l	LF64_37(pc),a0
 	move.l	a0,$6038.w
 	rts
-LF64_36	move.l	$D6(a6),$6038.w
+; Restores the saved vblank vector.
+RemoveVblankHook	move.l	$D6(a6),$6038.w
 	rts
 LF64_37	btst.b	#$5,$FF800E.l
 	beq.w	.l3C14
@@ -955,7 +969,8 @@ LF64_37	btst.b	#$5,$FF800E.l
 	dc.b	$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02,$00,$FF	; f...............
 	dc.b	$80,$0F	; ..
 .l3C14	rts
-LF64_38	movem.l	d0-d2/a0-a1/a5,-(sp)
+; Turns a linear cell index in d0 into a nametable address (40 columns).
+TilemapAddr	movem.l	d0-d2/a0-a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2
@@ -983,7 +998,7 @@ LF64_38	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bne.b	.l3C7C
 	bclr.b	#$7,$FF800F.l
 	movea.l	$8E(a6),a5
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
 LF64Sub8	movem.l	d0-d2/a0-a1/a5,-(sp)
@@ -1015,10 +1030,11 @@ LF64Sub8	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bne.b	.l3D06
 	bclr.b	#$7,$FF800F.l
 	movea.l	$8E(a6),a5
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
-LF64_39	move.w	#$7A0,d0
+; Prints a zero-terminated string with the special characters at a0.
+PrintTextLine	move.w	#$7A0,d0
 	bset	#$E,d0
 .l3D2E	moveq	#$0,d2
 	move.b	(a0)+,d2
@@ -1069,7 +1085,8 @@ LF64_39	move.w	#$7A0,d0
 	subq.l	#$1,a5
 .l3E14	clr.b	(a5)+
 	rts
-LF64_40	movem.l	d0-d2/a4,-(sp)
+; Prints a string at a4 (stops at 0 or $FF).
+PrintTextPlain	movem.l	d0-d2/a4,-(sp)
 	move.w	#$7A0,d0
 	bset	#$E,d0
 .l3E24	moveq	#$0,d2
@@ -1111,7 +1128,8 @@ LF64_40	movem.l	d0-d2/a4,-(sp)
 	dbra	d1,.l3E94
 .l3EE4	movem.l	(sp)+,d0-d2/a4
 	rts
-LF64_41	movem.l	d0/a0-a1,-(sp)
+; Copies at most d0 characters of a0 to the string buffer $8E(a6).
+CopyStringToBuffer	movem.l	d0/a0-a1,-(sp)
 	movea.l	$8E(a6),a1
 .l3EF2	move.b	(a0)+,(a1)+
 	beq.w	.l3EFE
@@ -1119,14 +1137,17 @@ LF64_41	movem.l	d0/a0-a1,-(sp)
 	clr.b	(a1)
 .l3EFE	movem.l	(sp)+,d0/a0-a1
 	rts
-LF64_42	btst.b	#$1,$FF8003.l
-	beq.b	LF64_42
+; Spins until the word-RAM DMNA bit is set.
+WaitDmnaSet	btst.b	#$1,$FF8003.l
+	beq.b	WaitDmnaSet
 	rts
-LF64_43	bset.b	#$0,$FF8003.l
+; Sets the word-RAM request bit and waits until it is granted.
+GiveWordRam	bset.b	#$0,$FF8003.l
 .l3F18	btst.b	#$1,$FF8003.l
 	bne.b	.l3F18
 	rts
-LF64_44	movem.l	d0-d7/a0-a2,-(sp)
+; Loads a command through the gate-array comm registers.
+GateArrayLoadCmd	movem.l	d0-d7/a0-a2,-(sp)
 	bclr.b	#$5,$FF800F.l
 .l3F30	btst.b	#$7,$FF800E.l
 	bne.b	.l3F30

@@ -19,13 +19,13 @@ Set1MFlag_7	movem.l	d1/a0-a2,-(sp)
 	cmpi.b	#$0,$1(a0)
 	bne.b	.lFF771A
 	move.l	a0,-(sp)
-	bsr.w	Set1MFlag_28
-	bsr.w	Set1MFlag_30
+	bsr.w	PrgRamReadBegin
+	bsr.w	PrgRamMapAddr
 	lea.l	$A00000.l,a1
 .lFF770C	move.b	(a0)+,(a1)+
 	dbra	d1,.lFF770C
 	movea.l	(sp)+,a0
-	bsr.w	Set1MFlag_29
+	bsr.w	PrgRamReadWait
 	bra.b	.lFF7722
 .lFF771A	move.w	#$6,d0
 	bra.w	.lFF77AC
@@ -50,7 +50,7 @@ Set1MFlag_7	movem.l	d1/a0-a2,-(sp)
 	move.w	#$7,d0
 .lFF7780	move.w	#$FFFF,(a0)+
 	dbra	d0,.lFF7780
-	bsr.w	Set1MFlag_16
+	bsr.w	SndSlotsReset
 	lea.l	Set1MFlag_41(pc),a0
 	move.w	#$7,d0
 .lFF7794	move.w	#$0,(a0)+

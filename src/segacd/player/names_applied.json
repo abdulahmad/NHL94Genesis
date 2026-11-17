@@ -1,0 +1,134 @@
+{
+ "LF64Sub1": [
+  "PlSetupWindow",
+  "Sets up the tile window parameters (d0 position, d1 size) for a text box."
+ ],
+ "LF64_1": [
+  "PlDrawPage",
+  "Draws the page selected by d0 (1 or 2, otherwise the default page)."
+ ],
+ "LF64_2": [
+  "PlFillBackground",
+  "Fills the picture buffers with the background pattern."
+ ],
+ "LF64_3": [
+  "PlOffsetSpriteTable",
+  "Adds d0 to the Y position of all 80 sprite entries."
+ ],
+ "LF64_4": [
+  "PlBuildPortraitTiles",
+  "Builds the portrait tile data from the source at $70(a6)."
+ ],
+ "LF64_5": [
+  "PlUploadTiles",
+  "Copies the tile buffer to $BC000 and queues the VRAM upload."
+ ],
+ "LF64_6": [
+  "PlSelectPicture",
+  "Picks the picture pointer for index d0 (page A or B)."
+ ],
+ "LF64_9": [
+  "PlDecodePicture",
+  "Decodes the picture at (a0) into the tile buffer."
+ ],
+ "LF64_10": [
+  "PlUnpackNibbles",
+  "Unpacks 4-bit pixel data from $50(a6) into the buffer."
+ ],
+ "LF64_11": [
+  "PlDrawPicture",
+  "Draws the selected picture into the tilemap."
+ ],
+ "LF64_12": [
+  "PlDrawCareerStats",
+  "Draws the career statistics rows from $44(a6)."
+ ],
+ "LF64_16": [
+  "PlShowPicture",
+  "Prepares the buffers and shows the current picture."
+ ],
+ "LF64_17": [
+  "PlBlitToBuffer",
+  "Blits a rectangle into the buffer at $BC000."
+ ],
+ "LF64_21": [
+  "BinToBcd",
+  "Converts d7 to packed BCD in d1 (abcd loop)."
+ ],
+ "LF64_22": [
+  "BinToBcdCarry",
+  "Packed BCD conversion that counts the overflow in d2."
+ ],
+ "LF64_23": [
+  "PlPrepareSource",
+  "Chooses the source pointers for the current page."
+ ],
+ "LF64_24": [
+  "PlDmaRequest",
+  "Queues a DMA request in the $DE-$E4 block and waits for it."
+ ],
+ "LF64_25": [
+  "PlCopyRectToVdp",
+  "Copies a rectangle of tilemap data to the VDP."
+ ],
+ "LF64_26": [
+  "VdpWriteCmdD4",
+  "Turns the VRAM address in d4 into a VDP write command."
+ ],
+ "LF64_30": [
+  "GateArrayLoadFont",
+  "Sends the font load command through the gate-array registers."
+ ],
+ "LF64_31": [
+  "TickTimers",
+  "Countdown timer tick at $EC(a6)."
+ ],
+ "LF64_32": [
+  "UpdatePad1",
+  "Decodes pad 1 and computes newly pressed buttons."
+ ],
+ "LF64_33": [
+  "UpdatePad2",
+  "Decodes pad 2 and computes newly pressed buttons."
+ ],
+ "LF64_34": [
+  "DecodePadBits",
+  "Inverts the raw pad byte and splits direction and button bits."
+ ],
+ "LF64_35": [
+  "InstallVblankHook",
+  "Saves the vblank vector and points it at the page handler."
+ ],
+ "LF64_36": [
+  "RemoveVblankHook",
+  "Restores the saved vblank vector."
+ ],
+ "LF64_38": [
+  "TilemapAddr",
+  "Turns a linear cell index in d0 into a nametable address (40 columns)."
+ ],
+ "LF64_39": [
+  "PrintTextLine",
+  "Prints a zero-terminated string with the special characters at a0."
+ ],
+ "LF64_40": [
+  "PrintTextPlain",
+  "Prints a string at a4 (stops at 0 or $FF)."
+ ],
+ "LF64_41": [
+  "CopyStringToBuffer",
+  "Copies at most d0 characters of a0 to the string buffer $8E(a6)."
+ ],
+ "LF64_42": [
+  "WaitDmnaSet",
+  "Spins until the word-RAM DMNA bit is set."
+ ],
+ "LF64_43": [
+  "GiveWordRam",
+  "Sets the word-RAM request bit and waits until it is granted."
+ ],
+ "LF64_44": [
+  "GateArrayLoadCmd",
+  "Loads a command through the gate-array comm registers."
+ ]
+}
