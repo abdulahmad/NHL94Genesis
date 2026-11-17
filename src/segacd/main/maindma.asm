@@ -2,16 +2,11 @@
 ; Word-RAM blit and VDP DMA. Continues the call at the end of maincd.asm.
 ; Assemble with /o oz- (see tools/segacd.json; npm run build:segacd).
 
-X_FF051C	equ	$FF051C
-X_FF069C	equ	$FF069C
-X_FF110E	equ	$FF110E
-X_FF1912	equ	$FF1912
 
-	org	$FF0272
 
-	lea.l	X_FF1912(pc),a0
+LinkedCall	lea.l	LFF1912(pc),a0
 	clr.l	(a0)
-	movem.l	d0-d1/a0,-(sp)
+LFF0278	movem.l	d0-d1/a0,-(sp)
 	movea.l	a2,a0
 	move.w	d4,d1
 	asl.w	#$5,d1
@@ -27,7 +22,7 @@ X_FF1912	equ	$FF1912
 	bra.w	LFF02B6
 LFF02A6	andi.w	#$7FFF,d0
 	add.w	d0,d4
-	bsr.w	X_FF110E
+	bsr.w	LFF110E
 LFF02B0	movem.l	(sp)+,d0-d1/a0
 	rts
 LFF02B6	move.w	sr,-(sp)
@@ -37,7 +32,7 @@ LFF02B6	move.w	sr,-(sp)
 	movem.l	d0-d4/a0-a2,-(sp)
 	exg.l	d0,d1
 	movea.l	a0,a2
-	bsr.w	X_FF069C
+	bsr.w	LFF069C
 	subq.w	#$1,d1
 LFF02D8	moveq	#$3,d0
 	move.w	(a2)+,d2
@@ -60,7 +55,7 @@ LFF02F4	andi.w	#$F,d4
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,sr
 	rts
-	movem.l	d0-d1/a0-a1,-(sp)
+LFF0316	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	d1,d0
 	bne.w	LFF0324
 	move.w	#$100,d0
@@ -111,7 +106,7 @@ LFF03A4	movem.l	(sp)+,d0-d1/a0-a1
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	moveq	#$0,d0
-	bsr.w	X_FF069C
+	bsr.w	LFF069C
 	move.w	#$3FFF,d0
 	clr.l	d1
 LFF03C4	move.l	d1,(a0)
@@ -190,7 +185,7 @@ LFF0466	move.w	#$8154,(a1)
 	move.w	#$2700,sr
 	move.w	$FF2910.l,(a1)
 	move.w	$FF290E.l,(a1)
-	bsr.w	X_FF051C
+	bsr.w	LFF051C
 	move.w	#$8164,(a1)
 	cmpa.l	#$200000,a0
 	blt.w	LFF04FC
@@ -204,3 +199,4 @@ LFF0466	move.w	#$8154,(a1)
 	subq.l	#$2,a0
 	move.l	(a0),-$4(a1)
 LFF04FC	cmpa.w	#$0,a0
+

@@ -1,0 +1,236 @@
+	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
+LFF34C0	dc.w	$41FA,$000A
+	movea.w	#$2,a1
+	dc.w	$4EF0,$92FE
+LFF34CC	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
+	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
+LFF34E4	dc.w	$41FA,$000A
+	movea.w	#$2,a1
+	dc.w	$4EF0,$92FE
+LFF34F0	dc.b	$60,$08,$4C,$41,$08,$01,$C3,$40,$4E,$75,$4A,$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
+	dc.b	$6B,$06,$4E,$BA,$00,$46,$4E,$75,$44,$81,$4E,$BA,$00,$3E,$44,$81	; k.N..FNuD.N..>D.
+	dc.b	$4E,$75,$44,$80,$4A,$81,$6B,$0A,$4E,$BA,$00,$30,$44,$80,$44,$81	; NuD.J.k.N..0D.D.
+	dc.b	$4E,$75,$44,$81,$4E,$BA,$00,$24,$44,$80,$4E,$75,$22,$2F,$00,$04	; NuD.N..$D.Nu"/..
+	dc.b	$20,$2F,$00,$08,$41,$FA,$00,$0A,$32,$7C,$00,$02,$4E,$F0,$92,$FE	;  /..A...2|..N...
+	dc.b	$60,$08,$4C,$41,$00,$01,$C3,$40,$4E,$75,$3F,$01,$48,$41,$4A,$41	; `.LA...@Nu?.HAJA
+	dc.b	$66,$1C,$22,$00,$42,$41,$48,$41,$67,$0A,$82,$D7,$48,$41,$48,$40	; f.".BAHAg...HAH@
+	dc.b	$30,$01,$48,$40,$80,$DF,$32,$00,$42,$40,$48,$40,$4E,$75,$48,$41	; 0.H@..2.B@H@NuHA
+	dc.b	$3E,$82,$2F,$03,$34,$00,$26,$01,$72,$01,$42,$40,$48,$40,$66,$0C	; >./.4.&.r.B@H@f.
+	dc.b	$48,$40,$30,$02,$72,$00,$60,$16,$D2,$41,$65,$12,$D4,$42,$D1,$80	; H@0.r.`..Ae..B..
+	dc.b	$B0,$83,$65,$F4,$90,$83,$D2,$41,$08,$C1,$00,$00,$64,$EE,$26,$1F	; ..e....A....d.&.
+	dc.b	$34,$1F,$4E,$75,$00,$00,$00,$00	; 4.Nu....
+Sub_FF35A8	movea.l	#$FFFC00,sp
+	move.w	#$0,$A12010.l
+	move.w	#$0,$A12012.l
+	move.w	#$0,$A12014.l
+	move.w	#$0,$A12016.l
+	move.w	#$0,$A12018.l
+	move.w	#$0,$A1201A.l
+	move.w	#$0,$A1201C.l
+	move.w	#$0,$A1201E.l
+	move.b	#$0,$A1200E.l
+	move.w	#$0,$FF6CEE.l
+	dc.w	$6100,$0318
+	dc.w	$6100,$035E
+	dc.w	$6100,$039A
+	move.l	#$0,$FF6D00.l
+	move.l	#$0,$FF6CFC.l
+	dc.w	$6000,$0002
+LFF3622	btst.b	#$7,$A1200F.l
+	bne.b	LFF3622
+	btst.b	#$6,$A1200F.l
+	beq.b	LFF3622
+	bset.b	#$7,$A1200E.l
+	move.w	$A12020.l,d0
+	lsl.w	#$2,d0
+	lea.l	$FF471C.l,a1
+	movea.l	-$4(a1,d0.w),a0
+	jsr	(a0)
+	bset.b	#$6,$A1200E.l
+.l365A	btst.b	#$6,$A1200F.l
+	bne.b	.l365A
+	bclr.b	#$6,$A1200E.l
+	bclr.b	#$7,$A1200E.l
+	bra.w	LFF3622
+Sub_FF3678	btst.b	#$7,$A1200F.l
+	bne.b	Sub_FF3678
+	btst.b	#$6,$A1200F.l
+	beq.b	Sub_FF3678
+	bset.b	#$7,$A1200E.l
+	move.w	$A12020.l,d0
+	bset.b	#$6,$A1200E.l
+.l36A2	btst.b	#$6,$A1200F.l
+	bne.b	.l36A2
+	bclr.b	#$6,$A1200E.l
+	bclr.b	#$7,$A1200E.l
+	rts
+.l36BE	btst.b	#$7,$A1200F.l
+	bne.b	.l36BE
+	move.w	d0,$A12010.l
+	bset.b	#$6,$A1200E.l
+.l36D6	btst.b	#$6,$A1200F.l
+	beq.b	.l36D6
+	bset.b	#$7,$A1200E.l
+	bclr.b	#$6,$A1200E.l
+.l36F0	btst.b	#$6,$A1200F.l
+	bne.b	.l36F0
+	bclr.b	#$7,$A1200E.l
+	rts
+Sub_FF3704	movem.l	d0-d7/a0-a6,-(sp)
+	lsl.w	#$2,d0
+	lea.l	$FF471C.l,a1
+	movea.l	-$4(a1,d0.w),a0
+	jsr	(a0)
+	movem.l	(sp)+,d0-d7/a0-a6
+	dc.w	$4E75
+	dc.b	$00,$FF,$49,$6E,$00,$FF,$49,$DA,$00,$FF,$4A,$2E,$00,$FF,$4A,$56	; ..In..I...J...JV
+	dc.b	$00,$FF,$4A,$78,$00,$FF,$4A,$82,$00,$FF,$4A,$8C,$00,$FF,$4A,$92	; ..Jx..J...J...J.
+	dc.b	$00,$FF,$4B,$3C,$00,$FF,$4B,$48,$00,$FF,$4B,$54,$00,$FF,$4B,$60	; ..K<..KH..KT..K`
+	dc.b	$00,$FF,$4B,$6C,$00,$FF,$4B,$78,$00,$FF,$4B,$84,$00,$FF,$4B,$90	; ..Kl..Kx..K...K.
+	dc.b	$00,$FF,$4B,$9C,$00,$FF,$4B,$A8,$00,$FF,$4B,$B4,$00,$FF,$4B,$C0	; ..K...K...K...K.
+	dc.b	$00,$FF,$4B,$CC,$00,$FF,$4B,$D8,$00,$FF,$4C,$14,$00,$FF,$4C,$22	; ..K...K...L...L"
+	dc.b	$00,$FF,$4C,$30,$00,$FF,$4B,$F0,$00,$FF,$4B,$FC,$00,$FF,$4C,$08	; ..L0..K...K...L.
+	dc.b	$00,$FF,$4C,$3E,$00,$FF,$4C,$AC,$00,$FF,$4D,$8E,$00,$FF,$4D,$E4	; ..L>..L...M...M.
+	dc.b	$00,$FF,$4E,$02,$00,$FF,$4E,$24,$00,$FF,$4E,$30,$00,$FF,$4E,$84	; ..N...N$..N0..N.
+	dc.b	$00,$FF,$4F,$C8,$00,$FF,$4E,$5A,$00,$FF,$67,$E8,$00,$FF,$68,$18	; ..O...NZ..g...h.
+	dc.b	$00,$FF,$68,$4A,$00,$FF,$68,$0E,$00,$FF,$68,$AA,$00,$FF,$4D,$38	; ..hJ..h...h...M8
+	dc.b	$00,$FF,$69,$16,$00,$FF,$69,$24,$00,$FF,$69,$32,$00,$FF,$69,$3C	; ..i...i$..i2..i<
+	dc.b	$00,$FF,$69,$48,$00,$FF,$4A,$92,$00,$FF,$69,$54,$00,$FF,$69,$60	; ..iH..J...iT..i`
+	dc.b	$00,$FF,$69,$88,$00,$FF,$69,$7C,$00,$FF,$69,$94,$00,$FF,$69,$A0	; ..i...i|..i...i.
+	dc.b	$00,$FF,$69,$AC,$00,$FF,$4C,$AC,$00,$FF,$4D,$8E,$00,$FF,$69,$B8	; ..i...L...M...i.
+	dc.b	$00,$FF,$69,$E4,$00,$FF,$50,$0C,$00,$FF,$6C,$86,$00,$FF,$68,$8A	; ..i...P...l...h.
+	dc.b	$3F,$00,$10,$39,$00,$C0,$00,$08,$0C,$00,$00,$64,$64,$0A,$33,$FC	; ?..9.......dd.3.
+	dc.b	$00,$00,$00,$FF,$6C,$F8,$60,$08,$4A,$79,$00,$FF,$6C,$F8,$67,$04	; ....l.`.Jy..l.g.
+	dc.b	$30,$1F,$4E,$73,$33,$FC,$00,$01,$00,$FF,$6C,$F8,$30,$3C,$00,$01	; 0.Ns3.....l.0<..
+	dc.b	$61,$00,$3E,$0E,$30,$1F,$4E,$73,$08,$F9,$00,$00,$00,$A1,$20,$00	; a.>.0.Ns...... .
+	dc.b	$4E,$73	; Ns
+Sub_FF385E	movem.l	d0-d1/a0-a1,-(sp)
+	bset.b	#$5,$A1200E.l
+	bset.b	#$0,$A12000.l
+	move.w	#$1,$FF6CFA.l
+	move.l	#$32,d0
+.l3880	btst.b	#$2,$A1200F.l
+	dc.w	$6624
+	dbra	d0,.l3880
+	bclr.b	#$5,$A1200E.l
+	move.l	#$19,d0
+.l389C	btst.b	#$2,$A1200F.l
+	dc.w	$6608
+	dbra	d0,.l389C
+	dc.w	$6000,$005E
+.l38AE	btst.b	#$4,$A1200F.l
+	bne.b	.l38AE
+	btst.b	#$3,$A1200F.l
+	beq.b	.l38AE
+	bset.b	#$4,$A1200E.l
+	move.w	$A12026.l,d0
+	lsl.w	#$2,d0
+	lea.l	$FF471C.l,a1
+	movea.l	-$4(a1,d0.w),a0
+	jsr	(a0)
+	bset.b	#$3,$A1200E.l
+.l38E6	btst.b	#$3,$A1200F.l
+	bne.b	.l38E6
+	bclr.b	#$3,$A1200E.l
+	bclr.b	#$4,$A1200E.l
+	tst.w	$FF6CFA.l
+	bne.w	.l38AE
+.l390A	bclr.b	#$5,$A1200E.l
+	movem.l	(sp)+,d0-d1/a0-a1
+	rte
+LFF3918	btst.b	#$7,$A1200F.l
+	bne.b	LFF3918
+.l3922	btst.b	#$6,$A1200F.l
+	bne.b	.l3922
+	bset.b	#$6,$A1200E.l
+.l3934	btst.b	#$6,$A1200F.l
+	beq.b	.l3934
+	bset.b	#$7,$A1200E.l
+	bclr.b	#$6,$A1200E.l
+.l394E	btst.b	#$6,$A1200F.l
+	bne.b	.l394E
+	bclr.b	#$7,$A1200E.l
+	rts
+LFF3962	btst.b	#$2,$A12003.l
+	bne.b	LFF3962
+	rts
+	move.l	d0,-(sp)
+	move.w	#$4000,$C00004.l
+	move.w	#$0,$C00004.l
+	move.l	#$8000,d0
+.l3986	move.w	#$0,$C00000.l
+	dbra	d0,.l3986
+	move.l	(sp)+,d0
+	rts
+Sub_FF3996	btst.b	#$1,$A12003.l
+	bne.b	Sub_FF3996
+	rts
+LFF39A2	bset.b	#$1,$A12003.l
+.l39AA	btst.b	#$0,$A12003.l
+	bne.b	.l39AA
+	rts
+Sub_FF39B6	movem.w	d0,-(sp)
+	andi.w	#$3FFF,d0
+	ori.w	#$4000,d0
+	move.w	d0,$C00004.l
+	movem.w	(sp)+,d0
+	rol.w	#$2,d0
+	andi.w	#$3,d0
+	move.w	d0,$C00004.l
+	rts
+Sub_FF39DA	movem.l	d0-d1/a0,-(sp)
+	bsr.w	LFF39A2
+	bsr.w	Sub_FF3996
+	bsr.w	Sub_FF3678
+	move.w	d0,d1
+	bsr.w	Sub_FF3678
+	bsr.w	Sub_FF39B6
+	lea.l	$200000.l,a0
+.l39FA	move.w	(a0)+,$C00000.l
+	dbra	d1,.l39FA
+	movem.l	(sp)+,d0-d1/a0
+	rts
+Sub_FF3A0A	movem.w	d0,-(sp)
+	andi.w	#$3FFF,d0
+	ori.w	#$C000,d0
+	move.w	d0,$C00004.l
+	movem.w	(sp)+,d0
+	rol.w	#$2,d0
+	andi.w	#$3,d0
+	move.w	d0,$C00004.l
+	rts
+	bsr.w	LFF39A2
+	bsr.w	Sub_FF3996
+	bsr.w	Sub_FF3678
+	move.w	d0,d1
+	bsr.w	Sub_FF3678
+	bsr.w	Sub_FF3A0A
+	lea.l	$200000.l,a0
+.l3A4A	move.w	(a0)+,$C00000.l
+	dbra	d1,.l3A4A
+	rts
+	move.w	$A12022.l,d0
+	move.w	#$0,$A12010.l
+	dc.w	$0139,$00A1,$1100
+	dc.w	$6600,$000A
+	move.w	#$4,$A12010.l
+.l3A76	rts
+	movea.l	$A12022.l,a0
+	clr.b	(a0)
+	rts
+	movea.l	$A12022.l,a0
+	clr.w	(a0)
+	rts
+	bsr.w	LFF39A2
+	dc.w	$4E75
+	dc.b	$61,$00,$FF,$02,$33,$F9,$00,$23,$BC,$88,$00,$C0,$00,$04,$33,$F9	; a...3..#......3.
+	dc.b	$00,$23,$BC,$8A,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$8C,$00,$C0	; .#......3..#....
+	dc.b	$00,$04,$33,$F9,$00,$23,$BC,$8E,$00,$C0,$00,$04,$33,$F9,$00,$23	; ..3..#......3..#
+	dc.b	$BC,$90,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$92,$00,$C0,$00,$04	; ......3..#......
+	dc.b	$33,$F9,$00,$23,$BC,$94,$00,$C0,$00,$04,$43,$F9,$00,$C0,$00,$04	; 3..#......C.....
+	dc.b	$23,$F9,$00,$23,$BC,$9E,$00,$FF,$6C,$E8,$32,$B9,$00,$FF,$6C,$EA	; #..#....l.2...l.
+	dc.b	$32,$B9,$00,$FF,$6C,$E8,$3F,$39,$00,$C0,$00,$04,$08,$2F,$00,$01	; 2...l.?9...../..
+	dc.b	$00,$01,$54,$4F,$66,$00,$FF,$F0,$33,$FC,$81,$64,$00,$C0,$00,$04	; ..TOf...3..d....
+	dc.b	$43,$F9,$00,$C0,$00,$00,$28,$39,$00,$23,$BC,$9A,$E5,$84,$E4,$4C	; C.....(9.#.....L
+	dc.b	$00,$44,$40,$00,$48,$44,$02,$44,$00,$03,$23,$44,$00,$04,$22,$B9	; .D@.HD.D..#D..".
+	dc.b	$00,$23,$BC,$96,$61,$00,$FE,$6A,$4E,$75	; .#..a..jNu

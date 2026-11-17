@@ -8,7 +8,6 @@
 ;	$FF0000-$FF34B7 is transcribed and verified. This file is $FF0000-$FF0271.
 ;	maindma.asm through maintext.asm continue it.
 
-	org	$FF0000
 
 MainEntry	jmp	$FF45A8				;slot at $FF45A8 is zero in MAIN.BIN (filled at load, or unused)
 
@@ -157,15 +156,3 @@ CallLinkedPtr	lea	$23A450,a0
 	move.l	d4,(a0)
 	rts
 
-; Bodies live later in MAIN.BIN. The labels keep the branches above honest.
-LinkedCall
-	org	$FF0F2C
-DispatchPrep
-	org	$FF0F52
-DispatchBody
-	org	$FF0F78
-DispatchAfter
-	org	$FF0F9E
-DispatchTail
-	org	$FF1884
-LinkedPtr

@@ -25,3 +25,4 @@ desktop.ini
 lst/
 !.vscode/
 !.vscode/settings.json
+tools/__pycache__/

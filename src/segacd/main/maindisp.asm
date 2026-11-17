@@ -2,11 +2,7 @@
 ; Installs a VBlank handler, calls MAINCODE, then sets up the VDP and tiles.
 ; Assemble with /o oz- (see tools/segacd.json; npm run build:segacd).
 
-X_FF1E04	equ	$FF1E04
-X_FF2D2A	equ	$FF2D2A
-X_FF30E2	equ	$FF30E2
 
-	org	$FF1E90
 
 	lea.l	LFF1ED0(pc),a0
 	move.l	$4(sp),(a0)
@@ -17,7 +13,7 @@ X_FF30E2	equ	$FF30E2
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
-	jsr	X_FF30E2(pc)
+	jsr	LFF30E2(pc)
 LFF1EB4	move.w	LFF2054(pc),d0
 	bne.b	LFF1EB4
 	movea.l	LFF1ECC(pc),a0
@@ -68,7 +64,7 @@ LFF1F3E	move.w	#$8F02,$4(a0)
 	move.w	#$FF,d0
 LFF1F5A	move.l	d1,(a0)
 	dbra	d0,LFF1F5A
-	lea.l	X_FF2D2A(pc),a1
+	lea.l	LFF2D2A(pc),a1
 	move.w	#$2FF,d3
 LFF1F68	move.b	(a1)+,d0
 	moveq	#$7,d2
@@ -143,7 +139,7 @@ LFF202C	move.w	(a2)+,(a0)
 	dbra	d7,LFF2018
 LFF2036	lea.l	LFF2054+$2(pc),a2
 	eori.w	#$1,(a2)
-LFF203E	lea.l	X_FF1E04(pc),a0
+LFF203E	lea.l	LFF1E04(pc),a0
 	addq.l	#$1,(a0)
 	move.l	LFF1ED0(pc),d0
 	beq.b	LFF204E
@@ -829,7 +825,7 @@ LFF20EC	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
-	link	a6,#$0
+LFF2AEC	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
@@ -887,7 +883,7 @@ LFF2B98	move.w	(a0),d0
 	bne.b	LFF2B98
 	moveq	#$0,d0
 	rts
-	link	a6,#$0
+LFF2BA0	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	lea.l	LFF2054(pc),a2
 LFF2BAC	tst.w	(a2)
@@ -1025,3 +1021,4 @@ LFF2CBE	move.l	a1,d1
 	move.l	d0,$4(a0)
 	move.l	(a1),(a0)
 	rts
+
