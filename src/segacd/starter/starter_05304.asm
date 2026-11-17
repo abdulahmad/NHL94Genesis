@@ -6,14 +6,14 @@ GetDataSub2	move.l	d1,d0
 GetDataSub3	mulu.w	(sp)+,d1
 	clr.w	d0
 GetDataSub4	swap	d0
-	dc.w	$6702
+	beq.b	.l531E
 	mulu.w	(sp),d0
 .l531E	addq.l	#$2,sp
 	add.w	d1,d0
 	swap	d0
 	clr.w	d0
 	add.l	a0,d0
-	dc.w	$4E75
+	rts
 	dc.b	$22,$2F,$00,$04	; "/..
 GetDataSub5	move.l	$8(sp),d0
 GetData_15	lea.l	.l2663E(pc),a0
@@ -36,9 +36,9 @@ GetData_16	lea.l	.l26662(pc),a0
 	dc.b	$48,$40	; H@
 GetDataSub6	move.w	d2,d0
 	moveq	#$0,d1
-	dc.w	$6016
+	bra.b	GetData_19
 GetData_17	add.w	d1,d1
-	dc.w	$6512
+	bcs.b	GetData_19
 GetData_18	add.w	d2,d2
 GetDataSub7	addx.l	d0,d0
 	cmp.l	d3,d0
@@ -47,35 +47,35 @@ GetDataSub7	addx.l	d0,d0
 	add.w	d1,d1
 	bset	#$0,d1
 	bcc.b	GetData_18
-.l26710	move.l	(sp)+,d3
+GetData_19	move.l	(sp)+,d3
 	move.w	(sp)+,d2
-	dc.w	$4E75
+	rts
 	dc.b	$05,$D2,$00,$00	; ....
-GetData_19	movem.l	d0-d7/a0-a6,-(sp)
+GetData_20	movem.l	d0-d7/a0-a6,-(sp)
 	moveq	#$0,d0
 	move.w	$40(sp),d2
 	move.w	$42(sp),d1
 	move.w	$44(sp),d0
-	bmi.w	GetData_20
+	bmi.w	GetData_21
 	move.w	d0,$10ADA.l
 	cmpi.w	#$FFFF,d0
-	beq.w	GetData_20
+	beq.w	GetData_21
 	cmpi.w	#$1,d0
-	bge.w	GetData_20
+	bge.w	GetData_21
 	lea.l	$104EC.l,a0
 	mulu.w	#$A,d0
 	adda.l	d0,a0
 	move.b	$0(a0),d0
 	cmpi.b	#$2,d0
 	dc.w	$6700,$000E
-GetData_20	movem.l	(sp)+,d0-d7/a0-a6
+GetData_21	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	(sp),$6(sp)
 	addq.l	#$6,sp
 	rts
 .l546A	tst.w	d1
-	bne.w	GetData_21
+	bne.w	GetData_22
 	tst.w	d2
-	bne.w	GetData_21
+	bne.w	GetData_22
 	move.w	$4(a0),d0
 	sub.w	$2(a0),d0
 	beq.w	.l5488
@@ -93,8 +93,8 @@ GetData_20	movem.l	(sp)+,d0-d7/a0-a6
 	move.w	#$3,d0
 GetDataSub8	move.w	#$FFFF,d4
 	jsr	$C4BC.l
-	bra.b	GetData_20
-GetData_21	move.w	d1,d3
+	bra.b	GetData_21
+GetData_22	move.w	d1,d3
 	move.w	d2,d4
 	move.w	$4(a0),d0
 	sub.w	$2(a0),d0
@@ -106,5 +106,5 @@ GetData_21	move.w	d1,d3
 	move.b	$1(a0),d1
 	move.w	#$3,d0
 	jsr	$C4BC.l
-	dc.w	$6000,$FF74
+	bra.w	GetData_21
 	dc.b	$02,$00,$05,$A9,$05,$A9,$00,$FF,$00,$FF	; ..........

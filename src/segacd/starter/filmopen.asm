@@ -4,20 +4,21 @@
 
 
 
-Wait_1	link	a6,#$FFFC
+; C function FilmOpen (Sierra C name tag follows it).
+FilmOpen	link	a6,#$FFFC
 	movem.l	d3/d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
 	move.l	#$C0000,-$4(a6)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	lea.l	$40(a0),a4
-	jsr	InitHeap_1(pc)
+	jsr	InitWorld(pc)
 	move.l	d5,-(sp)
-	pea.l	Wait_9(pc)
-	jsr	HexStr_1(pc)
+	pea.l	FilmOpenStr5(pc)
+	jsr	aprint_2(pc)
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
 	pea.l	$800.w
-	jsr	MaxFree_1(pc)
+	jsr	mmalloc_2(pc)
 	movea.l	d0,a3
 	move.l	a3,d0
 	lea.l	$C(sp),sp
@@ -28,14 +29,14 @@ Wait_1	link	a6,#$FFFC
 	moveq	#$1,d0
 	move.l	d0,-(sp)
 	move.l	d5,-(sp)
-	jsr	RestoreBios_101(pc)
-	jsr	GetTicks_1(pc)
+	jsr	RestoreBios_118(pc)
+	jsr	WaitIODone(pc)
 	cmpi.l	#$46494C4D,(a3)
 	lea.l	$C(sp),sp
 	beq.b	.l256AC
 	move.l	d5,-(sp)
-	pea.l	Wait_8(pc)
-	jsr	HexStr_1(pc)
+	pea.l	FilmOpenStr4(pc)
+	jsr	aprint_2(pc)
 	moveq	#-1,d0
 	addq.w	#$8,sp
 	bra.w	Wait_4
@@ -51,7 +52,7 @@ Wait_1	link	a6,#$FFFC
 	cmp.l	d6,d0
 	bge.b	.l25714
 	move.l	a3,-(sp)
-	jsr	aprint_1(pc)
+	jsr	ffree_2(pc)
 	move.l	d6,d1
 	move.l	d1,d0
 	mulu.w	#$800,d1
@@ -61,7 +62,7 @@ Wait_1	link	a6,#$FFFC
 	clr.w	d0
 	add.l	d0,d1
 	move.l	d1,-(sp)
-	jsr	MaxFree_1(pc)
+	jsr	mmalloc_2(pc)
 	movea.l	d0,a3
 	move.l	a3,d0
 	addq.w	#$8,sp
@@ -69,13 +70,13 @@ Wait_1	link	a6,#$FFFC
 	moveq	#-1,d0
 	bra.w	Wait_4
 .l256F8	move.l	d6,-(sp)
-	pea.l	Wait_7(pc)
-	jsr	HexStr_1(pc)
+	pea.l	FilmOpenStr3(pc)
+	jsr	aprint_2(pc)
 	move.l	a3,-(sp)
 	move.l	d6,-(sp)
 	move.l	d5,-(sp)
-	jsr	RestoreBios_101(pc)
-	jsr	GetTicks_1(pc)
+	jsr	RestoreBios_118(pc)
+	jsr	WaitIODone(pc)
 	lea.l	$14(sp),sp
 .l25714	move.l	$4(a3),$8(a4)
 	move.l	a3,d0
@@ -87,11 +88,11 @@ Wait_1	link	a6,#$FFFC
 	add.l	$C(a4),d0
 	move.l	d0,$10(a4)
 	move.l	a3,$14(a4)
-	pea.l	Wait_6(pc)
-	jsr	HexStr_1(pc)
+	pea.l	FilmOpenStr2(pc)
+	jsr	aprint_2(pc)
 	move.l	d5,-(sp)
 	pea.l	$18(a4)
-	jsr	CopyData_2(pc)
+	jsr	InitEngine(pc)
 	tst.w	d0
 	lea.l	$C(sp),sp
 	beq.b	.l25756
@@ -99,8 +100,8 @@ Wait_1	link	a6,#$FFFC
 	bra.w	Wait_4
 .l25756	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
-	pea.l	Wait_5(pc)
-	jsr	HexStr_1(pc)
+	pea.l	FilmOpenStr1(pc)
+	jsr	aprint_2(pc)
 	moveq	#$0,d5
 	move.l	d5,d6
 	move.l	d6,d7
@@ -125,45 +126,45 @@ Wait_2	movea.l	$10(a4),a0
 Wait_3	movea.l	$10(a4),a0
 	cmp.l	$C(a0),d7
 	blt.b	Wait_2
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	moveq	#$0,d0
 	move.l	d0,$3C(a0)
 	tst.l	d6
 	bne.b	.l257B8
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	moveq	#-1,d0
 	move.l	d0,$3C(a0)
 .l257B8	tst.l	d5
 	bne.b	.l257C6
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	moveq	#$1,d0
 	move.l	d0,$3C(a0)
-.l257C6	lea.l	RestoreBios_75(pc),a0
+.l257C6	lea.l	RestoreBios_91(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$20(a0),(a1)
-	lea.l	RestoreBios_75(pc),a0
-	lea.l	RestoreBios_75(pc),a1
+	lea.l	RestoreBios_91(pc),a0
+	lea.l	RestoreBios_91(pc),a1
 	move.l	$28(a1),d0
 	add.l	d0,d0
 	add.l	$24(a0),d0
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	move.l	$2C(a0),d1
 	asl.l	#$7,d1
 	add.l	d0,d1
 	movea.l	-$4(a6),a0
 	move.l	d1,$4(a0)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$30(a0),$8(a1)
-	jsr	Wait_24(pc)
+	jsr	SwapMeg(pc)
 	moveq	#$3,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	moveq	#$0,d0
 	move.l	d0,$40(a4)
 	moveq	#$3C,d0
 	move.l	d0,-(sp)
-	jsr	RestoreBios_103(pc)
+	jsr	RestoreBios_120(pc)
 	pea.l	$30(a4)
 	jsr	GetData_3(pc)
 	moveq	#$0,d0

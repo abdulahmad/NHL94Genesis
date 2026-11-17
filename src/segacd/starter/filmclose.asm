@@ -4,22 +4,23 @@
 
 
 
-Wait_23	link	a6,#$0
+; C function FilmClose (Sierra C name tag follows it).
+FilmClose	link	a6,#$0
 	move.l	a4,-(sp)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	lea.l	$40(a0),a4
 	pea.l	$30(a4)
 	jsr	GetData_10(pc)
-	jsr	RestoreBios_100(pc)
+	jsr	RestoreBios_117(pc)
 	pea.l	$18(a4)
-	jsr	CopyData_3(pc)
+	jsr	DisposeEngine(pc)
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
 	move.l	$14(a4),-(sp)
-	jsr	aprint_1(pc)
+	jsr	ffree_2(pc)
 	moveq	#$3,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	moveq	#$0,d0
 	movea.l	-$4(a6),a4
 	unlk	a6

@@ -35,6 +35,8 @@ CFG = {
               ("filmclose", 0x473A, 0x477C), ("filmcmd", 0x4D9E, 0x4DCA), ("filmbuf", 0x4E26, 0x4EC0), ("subheap", 0x4FA8, 0x5068),
               ("audiostream", 0x508C, 0x5304), ("cdfade", 0x54F6, 0x556E)],
         opts_off=("subboot", "subheap", "pcmclear", "cdcwait", "pcmchip", "audiostream", "cdfade"), string_calls=(),
+        # calls that read inline data from the return address: 18 bytes of command words, or a length word
+        inline_calls={0x24620: 18, 0xE320: 18, 0x24958: "w"},
     ),
     "MAIN": dict(
         disc="cdbin/MAIN.BIN", base=0xFF0000, name="main", asset_min=512,
@@ -155,6 +157,8 @@ def main():
         names.setdefault(ad, nm)
 
     # 3. code in the gaps
+    F.INLINE.clear()
+    F.INLINE.update(cfg.get("inline_calls", {}))
     cov = bytearray(n)
     for a, b in ((x - base, y - base) for x, y in hand_ranges):
         for k in range(a, b):
@@ -176,8 +180,9 @@ def main():
             seeds.add(v - base)
     link = [i for i in range(0, n - 1, 2) if d[i:i + 2] in (b"\x4e\x56", b"\x48\xe7") and not cov[i]]
     insns, calls, labs = {}, set(), set()
-    F.find_code_seeded(d, base, sorted(seeds), cov, insns, cfg["string_calls"])
+    # prologues first: a pointer-looking word can point into the middle of an instruction
     F.find_code_seeded(d, base, link, cov, insns, cfg["string_calls"])
+    F.find_code_seeded(d, base, sorted(seeds), cov, insns, cfg["string_calls"])
     F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
     print("gap code: %d instructions" % len(insns), flush=True)
 
@@ -328,6 +333,10 @@ def main():
                     mn2 = g.mnemonic
                     if kind in ("btst", "bclr", "bset", "bchg") and re.search(r",d[0-7]$", text.replace(" ", "")):
                         mn2 = kind
+                    if kind == "link":
+                        mn2 = "link"   # SNASM has no link.w
+                    if kind == "btst" and mn2 == "btst.l" and re.search(r",\(a[0-7]\)$", text.replace(" ", "")):
+                        mn2 = "btst"   # SNASM: no size on a memory bit test
                     if kind == "moveq":
                         m = re.match(r"#\$([0-9A-F]+),(.*)", text)
                         if m and int(m.group(1), 16) >= 0x80:
@@ -563,13 +572,16 @@ def fixloop(cfg, parts, ddir, d):
             if mnr in E.BRANCH or mnr in ("jsr", "jmp", "bsr", "lea", "pea"):
                 got = got[:4]
                 exp_b = exp_b[:4]
+                if mnr in E.BRANCH and len(exp) == 4:
+                    # short branch: the displacement byte is not final in the listing, compare the opcode byte
+                    got = got[:2]
+                    exp_b = exp_b[:2]
             if "+" in got:
                 got = got.replace("+", "")
                 wrong = not exp_b.startswith(got)
             else:
                 wrong = got != exp_b[:len(got)] or (len(got) < len(exp_b) and False)
-            if nxt is not None and nxt != len(exp) // 2 and nxt > 0:
-                wrong = True
+            # (an instruction that assembled longer or shorter shows in the first-difference fallback below)
             if wrong:
                 w = to_words(l)
                 if w:

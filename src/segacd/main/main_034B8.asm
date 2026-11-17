@@ -85,7 +85,7 @@ DispatchTailSub3	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	-$4(a1,d0.w),a0
 	jsr	(a0)
 	movem.l	(sp)+,d0-d7/a0-a6
-	dc.w	$4E75
+	rts
 	dc.b	$00,$FF,$49,$6E,$00,$FF,$49,$DA,$00,$FF,$4A,$2E,$00,$FF,$4A,$56	; ..In..I...J...JV
 	dc.b	$00,$FF,$4A,$78,$00,$FF,$4A,$82,$00,$FF,$4A,$8C,$00,$FF,$4A,$92	; ..Jx..J...J...J.
 	dc.b	$00,$FF,$4B,$3C,$00,$FF,$4B,$48,$00,$FF,$4B,$54,$00,$FF,$4B,$60	; ..K<..KH..KT..K`
@@ -113,12 +113,12 @@ DispatchTailSub4	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	#$1,$FF6CFA.l
 	move.l	#$32,d0
 .l3880	btst.b	#$2,$A1200F.l
-	dc.w	$6624
+	bne.b	.l38AE
 	dbra	d0,.l3880
 	bclr.b	#$5,$A1200E.l
 	move.l	#$19,d0
 .l389C	btst.b	#$2,$A1200F.l
-	dc.w	$6608
+	bne.b	.l38AE
 	dbra	d0,.l389C
 	bra.w	.l390A
 .l38AE	btst.b	#$4,$A1200F.l
@@ -231,7 +231,7 @@ VdpSetCramWriteAddr	movem.w	d0,-(sp)
 	clr.w	(a0)
 	rts
 	bsr.w	GiveWordRamToSub
-	dc.w	$4E75
+	rts
 	dc.b	$61,$00,$FF,$02,$33,$F9,$00,$23,$BC,$88,$00,$C0,$00,$04,$33,$F9	; a...3..#......3.
 	dc.b	$00,$23,$BC,$8A,$00,$C0,$00,$04,$33,$F9,$00,$23,$BC,$8C,$00,$C0	; .#......3..#....
 	dc.b	$00,$04,$33,$F9,$00,$23,$BC,$8E,$00,$C0,$00,$04,$33,$F9,$00,$23	; ..3..#......3..#

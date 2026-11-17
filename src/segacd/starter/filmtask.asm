@@ -4,12 +4,13 @@
 
 
 
-Wait_10	link	a6,#$FFFC
+; C function FilmTask (Sierra C name tag follows it).
+FilmTask	link	a6,#$FFFC
 	movem.l	d7/a3-a4,-(sp)
 	move.l	#$C0000,-$4(a6)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	lea.l	$40(a0),a4
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	tst.l	$38(a0)
 	beq.b	.l258B4
 	moveq	#-2,d0
@@ -18,7 +19,7 @@ Wait_10	link	a6,#$FFFC
 	bge.b	.l258C0
 	moveq	#-1,d0
 	bra.w	Wait_22
-.l258C0	lea.l	RestoreBios_75(pc),a0
+.l258C0	lea.l	RestoreBios_91(pc),a0
 	moveq	#$1,d0
 	cmp.l	$3C(a0),d0
 	bne.b	.l258D6
@@ -52,7 +53,7 @@ Wait_12	move.l	$4(a3),-(sp)
 	move.l	d7,-(sp)
 	pea.l	$30(a4)
 	jsr	GetData_5(pc)
-	lea.l	RestoreBios_75(pc),a0
+	lea.l	RestoreBios_91(pc),a0
 	moveq	#-1,d0
 	cmp.l	$3C(a0),d0
 	lea.l	$C(sp),sp
@@ -93,7 +94,7 @@ Wait_17	move.l	$4(a3),-(sp)
 	bne.b	Wait_20
 	move.l	d7,-(sp)
 	move.l	-$4(a6),-(sp)
-	jsr	RestoreBios_89(pc)
+	jsr	RestoreBios_106(pc)
 	move.l	#$7FFFFFFF,d7
 	and.l	$8(a3),d7
 	bra.b	Wait_19
@@ -108,10 +109,10 @@ Wait_19	pea.l	$258.w
 	cmp.l	d0,d7
 	addq.w	#$8,sp
 	bgt.b	Wait_18
-	jsr	Wait_24(pc)
+	jsr	SwapMeg(pc)
 	moveq	#$2,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	addq.w	#$4,sp
 Wait_20	move.l	$4(a3),-(sp)
 	move.l	(a3),d0

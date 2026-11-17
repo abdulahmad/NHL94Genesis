@@ -4,7 +4,8 @@
 ; Init, start channel 0, stop, read the play address, load one $1000-byte bank.
 
 
-RestoreBios_90	movea.l	#$FF0000,a0
+; Resets the PCM chip: all channels off, then the control register.
+PcmInit	movea.l	#$FF0000,a0
 	move.b	#$FF,$11(a0)
 	moveq	#$14,d0
 .l252DE	dbra	d0,.l252DE
@@ -39,16 +40,18 @@ RestoreBios_90	movea.l	#$FF0000,a0
 	move.b	#$FF,$2001(a0)
 	move.b	#$FF,$2002(a0)
 	rts
-RestoreBios_91	movea.l	#$FF0000,a0
+; Writes the PCM control register and enables channel 0.
+PcmStartChannel0	movea.l	#$FF0000,a0
 	move.b	#$80,$F(a0)
 	moveq	#$14,d0
 .l25364	dbra	d0,.l25364
 	move.b	#$FE,$11(a0)
 	rts
-RestoreBios_92	movea.l	#$FF0000,a0
+; Switches all PCM channels off.
+PcmMuteAllChannels	movea.l	#$FF0000,a0
 	move.b	#$FF,$11(a0)
 	rts
-RestoreBios_93	movea.l	#$FF0000,a0
+RestoreBios_110	movea.l	#$FF0000,a0
 	lea.l	$21(a0),a0
 	moveq	#$14,d0
 .l2538A	dbra	d0,.l2538A
@@ -63,7 +66,8 @@ RestoreBios_93	movea.l	#$FF0000,a0
 	lsl.w	#$8,d0
 	move.b	d1,d0
 	rts
-RestoreBios_94	movea.l	#$FF0000,a0
+; Writes d0 (with bit 7) to the PCM control register.
+PcmSetControl	movea.l	#$FF0000,a0
 	move.l	$8(sp),d0
 	ori.w	#$80,d0
 	move.b	d0,$F(a0)

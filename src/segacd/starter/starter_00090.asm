@@ -4,68 +4,68 @@
 	dc.b	$FF,$FF	; ..
 	dcb.b	$72,0
 	dc.b	$4E,$F9,$00,$00,$D8,$5A	; N....Z
-RestoreBiosSub1	dc.w	$6000,$0084
+RestoreBiosSub1	bra.w	RestoreBios_2
 RestoreBios_1	dcb.b	$82,0
-.l22842	cmpi.b	#$80,d0
-	dc.w	$6504
-	bra.w	RestoreBios_4
+RestoreBios_2	cmpi.b	#$80,d0
+	bcs.b	.l154C
+	bra.w	RestoreBios_6
 .l154C	tst.w	d0
-	dc.w	$6604
-	bra.w	RestoreBios_5
+	bne.b	.l1554
+	bra.w	RestoreBios_7
 .l1554	subi.w	#$1,d0
-	dc.w	$6604
+	bne.b	.l155E
 	bra.w	.l228AE
 .l155E	subi.w	#$1,d0
-	dc.w	$6606
+	bne.b	.l156A
 	nop
-	bra.w	RestoreBios_12
+	bra.w	RestoreBios_15
 .l156A	subi.w	#$1,d0
-	dc.w	$6604
-	bra.w	RestoreBios_6
+	bne.b	.l1574
+	bra.w	RestoreBios_8
 .l1574	subi.w	#$1,d0
-	dc.w	$6602
+	bne.b	.l157C
 	nop
 .l157C	subi.w	#$1,d0
-	dc.w	$6604
-	bra.w	RestoreBios_13
-.l1586	subi.w	#$1,d0
-	dc.w	$6604
-	bra.w	RestoreBios_14
-.l1590	subi.w	#$1,d0
-	dc.w	$6604
+	bne.b	.l1586
 	bra.w	RestoreBios_16
+.l1586	subi.w	#$1,d0
+	bne.b	.l1590
+	bra.w	RestoreBios_17
+.l1590	subi.w	#$1,d0
+	bne.b	.l159A
+	bra.w	RestoreBios_20
 .l159A	subi.w	#$1,d0
-	dc.w	$6604
-	bra.w	RestoreBios_15
+	bne.b	.l15A4
+	bra.w	RestoreBios_19
 .l15A4	move.w	#$1,d0
 	ori.b	#$1,ccr
 	rts
 .l228AE	movem.l	d0-d7/a0-a6,-(sp)
-	lea.l	RestoreBios_22(pc),a0
+	lea.l	RestoreBios_26(pc),a0
 	cmpi.w	#$0,(a0)
-	dc.w	$6702
-	dc.w	$6034
+	beq.b	.l15BE
+	bra.b	.l15F2
 .l15BE	move.w	#$FFFF,(a0)
 	bsr.w	.l228F8
 	move.w	$FF800C.l,d0
 	dc.w	$907A,$0FF0
 	andi.w	#$FFF,d0
 	cmpi.w	#$20,d0
-	dc.w	$6510
+	bcs.b	.l15EA
 	bsr.w	.l2294A
-	lea.l	RestoreBios_33(pc),a0
+	lea.l	RestoreBios_37(pc),a0
 	move.w	$FF800C.l,d0
 	move.w	d0,(a0)
-.l15EA	lea.l	RestoreBios_22(pc),a0
+.l15EA	lea.l	RestoreBios_26(pc),a0
 	move.w	#$0,(a0)
 .l15F2	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .l228F8	movem.l	d0-d1/a0-a1,-(sp)
 .l15FC	lea.l	RestoreBios_1(pc),a0
 	cmpi.w	#$0,(a0)
-	dc.w	$673E
+	beq.b	.l1644
 	move.l	$2(a0),d0
-	bsr.w	RestoreBios_4
+	bsr.w	RestoreBios_6
 	lea.l	RestoreBios_1(pc),a0
 	move.w	(a0),d0
 	move.w	#$FFFF,(a0)
@@ -74,7 +74,7 @@ RestoreBios_1	dcb.b	$82,0
 	adda.l	#$4,a1
 	move.w	d0,d1
 	subi.w	#$1,d1
-	dc.w	$670A
+	beq.b	.l1638
 	subi.w	#$1,d1
 .l1632	move.l	(a1)+,(a0)+
 	dbra	d1,.l1632
@@ -85,34 +85,34 @@ RestoreBios_1	dcb.b	$82,0
 .l1644	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 .l2294A	movem.l	d1-d4/a0-a2,-(sp)
-	lea.l	RestoreBios_34(pc),a0
+	lea.l	RestoreBios_38(pc),a0
 	move.w	#$0,(a0)
-RestoreBios_2	dc.w	$103A,$0F1A
+RestoreBios_3	dc.w	$103A,$0F1A
 	dc.w	$343A,$0F64
 	btst	d2,d0
-	bne.w	RestoreBios_3
+	bne.w	RestoreBios_5
 	lsl.w	#$2,d2
 	lea.l	$FF0021.l,a0
 	cmpi.b	#$0,$2(a0,d2.w)
-	dc.w	$661C
-	lea.l	RestoreBios_23(pc),a0
+	bne.b	.l1690
+	lea.l	RestoreBios_27(pc),a0
 	dc.w	$303A,$0F46
 	move.b	(a0),d2
 	bset	d0,d2
 	move.b	d2,(a0)
 	move.b	d2,$FF0011.l
-	bsr.w	RestoreBios_17
-	bra.w	RestoreBios_3
+	bsr.w	DelayShort
+	bra.w	RestoreBios_5
 .l1690	dc.w	$343A,$0F2E
-	lea.l	RestoreBios_29(pc),a0
+	lea.l	RestoreBios_33(pc),a0
 	cmpi.b	#$FF,(a0,d2.w)
-	beq.w	RestoreBios_3
+	beq.w	RestoreBios_5
 	clr.w	d1
 	move.b	(a0,d2.w),d1
 	move.w	#$4,d0
-	bsr.w	RestoreBios_11
-	bcs.w	RestoreBios_3
-	lea.l	RestoreBios_31(pc),a1
+	bsr.w	RestoreBios_14
+	bcs.w	RestoreBios_5
+	lea.l	RestoreBios_35(pc),a1
 	dc.w	$303A,$0F06
 	lsl.w	#$1,d0
 	move.w	$FF800C.l,d1
@@ -121,7 +121,7 @@ RestoreBios_2	dc.w	$103A,$0F1A
 	lsr.w	#$5,d1
 	add.w	(a1,d0.w),d1
 	move.w	d1,(a1,d0.w)
-	lea.l	RestoreBios_30(pc),a2
+	lea.l	RestoreBios_34(pc),a2
 	dc.w	$323A,$0EE4
 	clr.w	d2
 	move.b	(a2,d1.w),d2
@@ -131,32 +131,32 @@ RestoreBios_2	dc.w	$103A,$0F1A
 	clr.w	d3
 	move.b	(a0,d2.w),d3
 	cmp.w	(a1,d0.w),d3
-	dc.w	$6452
+	bcc.b	.l174C
 	move.w	(a1,d0.w),d2
 	sub.w	d3,d2
 	move.w	d2,(a1,d0.w)
 	addi.b	#$1,(a2,d1.w)
 	move.b	(a2,d1.w),d2
 	cmp.b	$2(a0),d2
-	dc.w	$6614
-	lea.l	RestoreBios_32(pc),a1
+	bne.b	.l1728
+	lea.l	RestoreBios_36(pc),a1
 	dc.w	$363A,$0EA6
-	dc.w	$0711
-	dc.w	$6708
+	btst	d3,(a1)
+	beq.b	.l1728
 	move.b	$1(a0),(a2,d1.w)
-	dc.w	$6024
+	bra.b	.l174C
 .l1728	addi.b	#$1,d2
 	cmp.b	(a0),d2
-	dc.w	$651C
-	lea.l	RestoreBios_23(pc),a0
+	bcs.b	.l174C
+	lea.l	RestoreBios_27(pc),a0
 	dc.w	$303A,$0E8A
 	move.b	(a0),d1
 	bset	d0,d1
 	move.b	d1,$FF0011.l
 	move.b	d1,(a0)
-	bsr.w	RestoreBios_17
-	bra.w	RestoreBios_3
-.l174C	lea.l	RestoreBios_30(pc),a1
+	bsr.w	DelayShort
+	bra.w	RestoreBios_5
+.l174C	lea.l	RestoreBios_34(pc),a1
 	dc.w	$303A,$0E6E
 	clr.w	d1
 	move.b	(a1,d0.w),d1
@@ -164,19 +164,19 @@ RestoreBios_2	dc.w	$103A,$0F1A
 	addi.w	#$3,d1
 	move.b	$1(a0,d1.w),d0
 	cmp.b	$3(a0,d1.w),d0
-	dc.w	$650C
+	bcs.b	.l1776
 	clr.w	d2
 	move.b	$1(a0,d1.w),d2
 	sub.b	$3(a0,d1.w),d2
-	dc.w	$600A
+	bra.b	RestoreBios_4
 .l1776	clr.w	d2
 	move.b	$3(a0,d1.w),d2
 RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
-.l22A80	cmpi.b	#$0,d2
-	dc.w	$6606
+RestoreBios_4	cmpi.b	#$0,d2
+	bne.b	.l178C
 	move.b	$1(a0,d1.w),d2
-	dc.w	$603C
-.l178C	lea.l	RestoreBios_31(pc),a1
+	bra.b	.l17C8
+.l178C	lea.l	RestoreBios_35(pc),a1
 	dc.w	$303A,$0E2E
 	lsl.w	#$1,d0
 	move.w	(a1,d0.w),d3
@@ -186,19 +186,19 @@ RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
 	divu.w	d4,d3
 	move.b	$1(a0,d1.w),d0
 	cmp.b	$3(a0,d1.w),d0
-	dc.w	$650E
+	bcs.b	.l17BC
 	mulu.w	d2,d3
 	lsr.w	#$8,d3
 	clr.w	d2
 	move.b	$1(a0,d1.w),d2
 	sub.w	d3,d2
-	dc.w	$600C
+	bra.b	.l17C8
 .l17BC	mulu.w	d2,d3
 	lsr.w	#$8,d3
 	clr.w	d2
 	move.b	$1(a0,d1.w),d2
 	add.w	d3,d2
-.l17C8	lea.l	RestoreBios_27(pc),a1
+.l17C8	lea.l	RestoreBios_31(pc),a1
 	dc.w	$303A,$0DF2
 	clr.w	d3
 	move.b	(a1,d0.w),d3
@@ -207,42 +207,42 @@ RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
 	lsr.w	#$8,d2
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d2,$FF0001.l
-	bsr.w	RestoreBios_17
-RestoreBios_3	lea.l	RestoreBios_34(pc),a0
+	bsr.w	DelayShort
+RestoreBios_5	lea.l	RestoreBios_38(pc),a0
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
-	dc.w	$6704
-	bra.w	RestoreBios_2
+	beq.b	.l1806
+	bra.w	RestoreBios_3
 .l1806	movem.l	(sp)+,d1-d4/a0-a2
 	rts
-RestoreBios_4	cmpi.b	#$8F,d0
-	dc.w	$6E04
+RestoreBios_6	cmpi.b	#$8F,d0
+	bgt.b	.l1816
 	bra.w	.l22CAE
 .l1816	cmpi.b	#$9F,d0
-	dc.w	$6E04
+	bgt.b	.l1820
 	bra.w	.l22B56
 .l1820	cmpi.b	#$AF,d0
-	dc.w	$6E02
-	dc.w	$6024
+	bgt.b	.l1828
+	bra.b	.l184C
 .l1828	cmpi.b	#$BF,d0
-	dc.w	$6E02
+	bgt.b	.l1830
 	nop
 .l1830	cmpi.b	#$CF,d0
-	dc.w	$6E04
+	bgt.b	.l183A
 	bra.w	.l22DB0
 .l183A	cmpi.b	#$DF,d0
-	dc.w	$6E02
-	dc.w	$600A
+	bgt.b	.l1842
+	bra.b	.l184C
 .l1842	cmpi.b	#$EF,d0
-	dc.w	$6E04
+	bgt.b	.l184C
 	bra.w	.l22DD4
 .l184C	move.w	#$1,d0
 	ori.b	#$1,ccr
 	rts
 .l22B56	movem.l	d1-d2/a0-a1,-(sp)
-	lea.l	RestoreBios_18(pc),a0
+	lea.l	RestoreBios_22(pc),a0
 	move.b	d0,d1
 	andi.w	#$F,d1
 	move.l	d0,d2
@@ -258,82 +258,82 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	andi.w	#$FF,d1
 	move.w	d1,$264(a0)
 	dc.w	$343A,$0D3C
-	lea.l	RestoreBios_40(pc),a0
+	lea.l	RestoreBios_44(pc),a0
 	clr.w	d1
 	move.b	(a0,d2.w),d1
-.l1892	lea.l	RestoreBios_37(pc),a0
+.l1892	lea.l	RestoreBios_41(pc),a0
 	move.w	d1,(a0)
 	move.w	#$0,d0
-	bsr.w	RestoreBios_11
+	bsr.w	RestoreBios_14
 	bcs.w	.l19A8
-	lea.l	RestoreBios_39(pc),a1
+	lea.l	RestoreBios_43(pc),a1
 	move.l	a0,(a1)
 	cmpi.b	#$7,(a0)
-	dc.w	$6610
+	bne.b	.l18C0
 	dc.w	$303A,$0D12
 	addi.w	#$1,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 	bra.b	.l1892
-.l18C0	bsr.w	RestoreBios_9
-	dc.w	$6404
+.l18C0	bsr.w	RestoreBios_11
+	bcc.b	.l18CA
 	bra.w	.l19A8
 .l18CA	dc.w	$303A,$0CF4
-	lea.l	RestoreBios_24(pc),a0
-	dc.w	$11BA,$0CEF,$0000
-	lea.l	RestoreBios_25(pc),a0
-	dc.w	$11BA,$0CEB,$0000
-	lea.l	RestoreBios_26(pc),a0
-	dc.w	$11BA,$0CDD,$0000
-	lea.l	RestoreBios_27(pc),a0
-	dc.w	$11BA,$0CD5,$0000
 	lea.l	RestoreBios_28(pc),a0
+	dc.w	$11BA,$0CEF,$0000
+	lea.l	RestoreBios_29(pc),a0
+	dc.w	$11BA,$0CEB,$0000
+	lea.l	RestoreBios_30(pc),a0
+	dc.w	$11BA,$0CDD,$0000
+	lea.l	RestoreBios_31(pc),a0
+	dc.w	$11BA,$0CD5,$0000
+	lea.l	RestoreBios_32(pc),a0
 	dc.w	$227A,$0CD0
 	move.b	$1(a1),(a0,d0.w)
 	dc.w	$303A,$0CC4
 	btst	#$0,d0
-	dc.w	$6706
+	beq.b	.l1914
 	btst	#$1,d0
-	dc.w	$6778
+	beq.b	.l198C
 .l1914	dc.w	$103A,$0C5C
 	dc.w	$323A,$0CA6
 	bset	d1,d0
 	move.b	d0,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	dc.w	$207A,$0C94
 	clr.w	d0
 	move.b	$2(a0),d0
 	lsl.w	#$1,d0
-	lea.l	RestoreBios_19(pc),a1
+	lea.l	RestoreBios_23(pc),a1
 	move.w	(a1,d0.w),d1
 	lsr.w	#$8,d1
 	move.b	d1,$FF000D.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	$5(a0),d1
 	lsl.w	#$8,d1
 	move.b	$6(a0),d1
 	cmpi.w	#$FFFF,d1
-	dc.w	$6604
+	bne.b	.l196A
 	clr.w	d1
-	dc.w	$6004
+	bra.b	.l196E
 .l196A	add.w	(a1,d0.w),d1
 .l196E	move.b	d1,$FF0009.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lsr.w	#$8,d1
 	move.b	d1,$FF000B.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	bsr.w	.l22E28
-	bsr.w	RestoreBios_8
-.l198C	bsr.w	RestoreBios_7
-	lea.l	RestoreBios_23(pc),a0
+	bsr.w	RestoreBios_10
+.l198C	bsr.w	RestoreBios_9
+	lea.l	RestoreBios_27(pc),a0
 	dc.w	$303A,$0C2A
 	move.b	(a0),d1
 	bclr	d0,d1
 	move.b	d1,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d1,(a0)
 .l19A8	movem.l	(sp)+,d1-d2/a0-a1
 	rts
@@ -345,21 +345,21 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	swap	d2
 	lsr.w	#$8,d2
 	or.b	d2,d1
-	lea.l	RestoreBios_35(pc),a0
+	lea.l	RestoreBios_39(pc),a0
 	move.w	d1,(a0)
 	move.w	d0,d1
 	lsr.w	#$8,d1
-	lea.l	RestoreBios_36(pc),a0
-	move.w	d1,(a0)
 	lea.l	RestoreBios_40(pc),a0
+	move.w	d1,(a0)
+	lea.l	RestoreBios_44(pc),a0
 	dc.w	$303A,$0BEA
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 .l19E0	move.w	#$0,d0
-	bsr.w	RestoreBios_11
+	bsr.w	RestoreBios_14
 	bcs.w	.l1AAA
 	cmpi.b	#$7,(a0)
-	dc.w	$6610
+	bne.b	.l1A02
 	dc.w	$303A,$0BD0
 	addi.w	#$1,d0
 	clr.w	d1
@@ -372,41 +372,41 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	beq.w	.l1AAA
 	dc.w	$103A,$0B5C
 	clr.w	d1
-	lea.l	RestoreBios_24(pc),a1
-	lea.l	RestoreBios_26(pc),a2
+	lea.l	RestoreBios_28(pc),a1
+	lea.l	RestoreBios_30(pc),a2
 	dc.w	$343A,$0B9E
 	dc.w	$363A,$0B9C
 .l1A2A	btst	d1,d0
-	dc.w	$665E
+	bne.b	.l1A8C
 	cmp.b	(a1),d2
-	dc.w	$665A
+	bne.b	.l1A8C
 	cmp.b	(a2),d3
-	dc.w	$6656
+	bne.b	.l1A8C
 	cmpi.b	#$FF,$D(a0)
-	dc.w	$6738
-	lea.l	RestoreBios_32(pc),a1
+	beq.b	.l1A76
+	lea.l	RestoreBios_36(pc),a1
 	bclr.b	d1,(a1)
-	lea.l	RestoreBios_34(pc),a1
+	lea.l	RestoreBios_38(pc),a1
 	move.w	d1,(a1)
 	clr.w	d1
 	move.b	$D(a0),d1
 	move.w	#$4,d0
-	bsr.w	RestoreBios_11
-	dc.w	$6550
-	lea.l	RestoreBios_30(pc),a1
+	bsr.w	RestoreBios_14
+	bcs.b	.l1AAA
+	lea.l	RestoreBios_34(pc),a1
 	dc.w	$303A,$0B60
 	move.b	$2(a0),(a1,d0.w)
 	lsl.w	#$1,d0
-	lea.l	RestoreBios_31(pc),a1
+	lea.l	RestoreBios_35(pc),a1
 	move.w	#$0,(a1,d0.w)
-	dc.w	$6034
-.l1A76	lea.l	RestoreBios_23(pc),a0
+	bra.b	.l1AAA
+.l1A76	lea.l	RestoreBios_27(pc),a0
 	bset	d1,d0
 	move.b	d0,(a0)
 	move.b	d0,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
-	dc.w	$601E
+	bra.b	.l1AAA
 .l1A8C	adda.l	#$1,a1
 	adda.l	#$1,a2
 	addi.w	#$1,d1
@@ -424,7 +424,7 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	andi.w	#$F,d2
 	or.b	d1,d2
 	lsr.w	#$8,d0
-	lea.l	RestoreBios_40(pc),a0
+	lea.l	RestoreBios_44(pc),a0
 	move.b	d0,(a0,d2.w)
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
@@ -437,19 +437,19 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	andi.w	#$F,d2
 	or.b	d1,d2
 	lsr.w	#$8,d0
-	lea.l	RestoreBios_44(pc),a0
+	lea.l	RestoreBios_48(pc),a0
 	move.b	d0,(a0,d2.w)
-	lea.l	RestoreBios_34(pc),a0
+	lea.l	RestoreBios_38(pc),a0
 	move.w	#$0,(a0)
 .l1AF8	dc.w	$303A,$0AC6
 	dc.w	$123A,$0A74
 	btst	d0,d1
-	dc.w	$670E
-	lea.l	RestoreBios_24(pc),a0
+	beq.b	.l1B12
+	lea.l	RestoreBios_28(pc),a0
 	cmp.b	(a0,d0.w),d2
-	dc.w	$6604
-	bsr.w	RestoreBios_7
-.l1B12	lea.l	RestoreBios_34(pc),a0
+	bne.b	.l1B12
+	bsr.w	RestoreBios_9
+.l1B12	lea.l	RestoreBios_38(pc),a0
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
 	bne.b	.l1AF8
@@ -460,29 +460,29 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	dc.w	$207A,$0A9E
 	clr.w	d1
 	move.b	$D(a0),d1
-	lea.l	RestoreBios_29(pc),a0
+	lea.l	RestoreBios_33(pc),a0
 	dc.w	$303A,$0A84
 	move.b	d1,(a0,d0.w)
 	cmpi.b	#$FF,d1
-	dc.w	$670A
+	beq.b	.l1B52
 	move.w	#$4,d0
-	bsr.w	RestoreBios_11
-	dc.w	$642E
+	bsr.w	RestoreBios_14
+	bcc.b	.l1B80
 .l1B52	dc.w	$303A,$0A6C
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
-	bsr.w	RestoreBios_17
-	lea.l	RestoreBios_27(pc),a0
+	bsr.w	DelayShort
+	lea.l	RestoreBios_31(pc),a0
 	dc.w	$303A,$0A56
 	move.b	(a0,d0.w),d1
 	lsl.w	#$1,d1
 	move.b	d1,$FF0001.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
-	dc.w	$6058
+	bra.b	.l1BD8
 .l1B80	clr.w	d0
 	move.b	$4(a0),d0
-	lea.l	RestoreBios_27(pc),a0
+	lea.l	RestoreBios_31(pc),a0
 	dc.w	$323A,$0A34
 	clr.w	d2
 	move.b	(a0,d1.w),d2
@@ -492,59 +492,59 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	dc.w	$323A,$0A24
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d0,$FF0001.l
-	bsr.w	RestoreBios_17
-	lea.l	RestoreBios_30(pc),a0
+	bsr.w	DelayShort
+	lea.l	RestoreBios_34(pc),a0
 	dc.w	$303A,$0A04
 	move.b	#$0,(a0,d0.w)
-	lea.l	RestoreBios_32(pc),a0
+	lea.l	RestoreBios_36(pc),a0
 	bset.b	d0,(a0)
 	lsl.w	#$1,d0
-	lea.l	RestoreBios_31(pc),a0
+	lea.l	RestoreBios_35(pc),a0
 	move.w	#$0,(a0,d0.w)
 	clr.w	d0
 .l1BD8	movem.l	(sp)+,d1-d2/a0
 	rts
-RestoreBios_5	movem.l	d0/a0-a1,-(sp)
-	lea.l	RestoreBios_18(pc),a0
+RestoreBios_7	movem.l	d0/a0-a1,-(sp)
+	lea.l	RestoreBios_22(pc),a0
 	move.w	#$100,$0(a0)
 	move.w	#$100,$2(a0)
-	lea.l	RestoreBios_21(pc),a1
+	lea.l	RestoreBios_25(pc),a1
 	move.w	#$1,d0
 .l1BFA	move.l	#$FFFFFFFF,(a1)+
 	dbra	d0,.l1BFA
 	move.b	#$FF,$210(a0)
-	lea.l	RestoreBios_40(pc),a0
+	lea.l	RestoreBios_44(pc),a0
 	move.w	#$7F,d0
 .l1C12	move.b	#$0,(a0)+
 	dbra	d0,.l1C12
-	lea.l	RestoreBios_41(pc),a0
+	lea.l	RestoreBios_45(pc),a0
 	move.w	#$7F,d0
 .l1C22	move.b	#$0,(a0)+
 	dbra	d0,.l1C22
-	lea.l	RestoreBios_42(pc),a0
+	lea.l	RestoreBios_46(pc),a0
 	move.w	#$7F,d0
 .l1C32	move.b	#$7F,(a0)+
 	dbra	d0,.l1C32
-	lea.l	RestoreBios_43(pc),a0
+	lea.l	RestoreBios_47(pc),a0
 	move.w	#$7F,d0
 .l1C42	move.b	#$40,(a0)+
 	dbra	d0,.l1C42
-	lea.l	RestoreBios_44(pc),a0
+	lea.l	RestoreBios_48(pc),a0
 	move.w	#$7F,d0
 .l1C52	move.b	#$40,(a0)+
 	dbra	d0,.l1C52
-	lea.l	RestoreBios_45(pc),a0
+	lea.l	RestoreBios_49(pc),a0
 	move.w	#$7,d0
 .l1C62	move.b	#$FF,(a0)+
 	dbra	d0,.l1C62
-	lea.l	RestoreBios_46(pc),a0
+	lea.l	RestoreBios_50(pc),a0
 	move.b	#$FF,(a0)
 	lea.l	RestoreBios_1(pc),a0
 	move.w	#$0,(a0)
 	move.b	#$80,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	$FF2001.l,a0
 	move.w	#$EB,d0
 .l1C90	move.b	#$80,(a0)
@@ -562,22 +562,22 @@ RestoreBios_5	movem.l	d0/a0-a1,-(sp)
 	nop
 	nop
 	dbra	d0,.l1CAA
-	lea.l	RestoreBios_22(pc),a0
+	lea.l	RestoreBios_26(pc),a0
 	move.w	#$0,(a0)
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBios_6	movem.l	d1-d7/a0,-(sp)
+RestoreBios_8	movem.l	d1-d7/a0,-(sp)
 	dc.w	$103A,$089E
 	move.w	#$7,d5
 .l1CDA	btst	d5,d0
-	dc.w	$663C
+	bne.b	.l1D1A
 	dbra	d5,.l1CDA
-	lea.l	RestoreBios_28(pc),a0
+	lea.l	RestoreBios_32(pc),a0
 	move.w	#$FFFF,d5
 	move.b	#$FF,d6
 	clr.w	d0
 .l1CF0	cmp.b	(a0),d6
-	dc.w	$6504
+	bcs.b	.l1CF8
 	move.w	d0,d5
 	move.b	(a0),d6
 .l1CF8	adda.l	#$1,a0
@@ -585,21 +585,21 @@ RestoreBios_6	movem.l	d1-d7/a0,-(sp)
 	cmpi.w	#$8,d0
 	bne.b	.l1CF0
 	cmpi.w	#$FFFF,d5
-	dc.w	$660C
+	bne.b	.l1D1A
 	move.w	#$7,d0
 	ori.b	#$1,ccr
 	bra.w	.l1E00
-.l1D1A	lea.l	RestoreBios_34(pc),a0
+.l1D1A	lea.l	RestoreBios_38(pc),a0
 	move.w	d5,(a0)
-	lea.l	RestoreBios_23(pc),a0
+	lea.l	RestoreBios_27(pc),a0
 	move.b	(a0),d0
 	bset	d5,d0
 	move.b	d0,$FF0011.l
-	bsr.w	RestoreBios_17
-	lea.l	RestoreBios_19(pc),a0
+	bsr.w	DelayShort
+	lea.l	RestoreBios_23(pc),a0
 	lsl.w	#$1,d1
 	cmpi.w	#$FFFF,(a0,d1.w)
-	dc.w	$660C
+	bne.b	.l1D4C
 	move.b	#$3,d0
 	ori.b	#$1,ccr
 	bra.w	.l1E00
@@ -609,66 +609,74 @@ RestoreBios_6	movem.l	d1-d7/a0,-(sp)
 	move.w	(a0,d1.w),d0
 	lsr.w	#$8,d0
 	move.b	d0,$FF000D.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	#$0,$FF0009.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	#$0,$FF000B.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d2,$FF0005.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lsr.w	#$8,d2
 	move.b	d2,$FF0007.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d3,$FF0001.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d4,$FF0003.l
-	bsr.w	RestoreBios_17
-	lea.l	RestoreBios_23(pc),a0
+	bsr.w	DelayShort
+	lea.l	RestoreBios_27(pc),a0
 	dc.w	$303A,$080E
 	move.b	(a0),d1
 	bclr	d0,d1
 	move.b	d1,(a0)
 	move.b	d1,$FF0011.l
-	bsr.w	RestoreBios_17
-	lea.l	RestoreBios_24(pc),a0
-	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_25(pc),a0
-	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_26(pc),a0
-	move.b	#$FF,(a0,d0.w)
-	lea.l	RestoreBios_27(pc),a0
-	move.b	#$FF,(a0,d0.w)
+	bsr.w	DelayShort
 	lea.l	RestoreBios_28(pc),a0
-	move.b	#$0,(a0,d0.w)
+	move.b	#$FF,(a0,d0.w)
 	lea.l	RestoreBios_29(pc),a0
 	move.b	#$FF,(a0,d0.w)
+	lea.l	RestoreBios_30(pc),a0
+	move.b	#$FF,(a0,d0.w)
+	lea.l	RestoreBios_31(pc),a0
+	move.b	#$FF,(a0,d0.w)
+	lea.l	RestoreBios_32(pc),a0
+	move.b	#$0,(a0,d0.w)
+	lea.l	RestoreBios_33(pc),a0
+	move.b	#$FF,(a0,d0.w)
 .l1E00	movem.l	(sp)+,d1-d7/a0
-	dc.w	$4E75
-RestoreBios_7	dc.b	$48,$E7,$7E,$C0,$20,$7A,$07,$C0,'B@BA4:',$07,$AC	; H.~. z..B@BA4:..
-	dc.b	$43,$FA,$07,$6C,$16,$31,$20,$00,$B6,$28	; C..l.1 ..(
-RestoreBiosSub3	dc.w	$0003,$6D08
+	rts
+RestoreBios_9	movem.l	d1-d6/a0-a1,-(sp)
+	dc.w	$207A,$07C0
+	clr.w	d0
+	clr.w	d1
+	dc.w	$343A,$07AC
+	lea.l	RestoreBios_30(pc),a1
+	move.b	(a1,d2.w),d3
+	cmp.b	$3(a0),d3
+	blt.b	.l1E2C
 	sub.b	$3(a0),d3
 	add.b	d3,d0
-	dc.w	$600A
-	dc.b	$16,$28,$00,$03,$96,$31,$20,$00,$90,$03	; .(...1 ...
-.l23136	dc.w	$343A,$078A
-	lea.l	RestoreBios_44(pc),a1
+	bra.b	.l1E36
+.l1E2C	move.b	$3(a0),d3
+	sub.b	(a1,d2.w),d3
+	sub.b	d3,d0
+.l1E36	dc.w	$343A,$078A
+	lea.l	RestoreBios_48(pc),a1
 	clr.w	d3
 	move.b	(a1,d2.w),d3
 	cmpi.b	#$40,d3
-	dc.w	$673C
-	dc.w	$6D1C
+	beq.b	.l1E86
+	blt.b	.l1E68
 	subi.b	#$40,d3
 	lsl.w	#$2,d3
 	clr.w	d4
 	move.b	$7(a0),d4
 	mulu.w	d4,d3
 	add.b	d3,d1
-	dc.w	$6404
+	bcc.b	.l1E62
 	addi.b	#$1,d0
 .l1E62	lsr.w	#$8,d3
 	add.b	d3,d0
-	dc.w	$601E
+	bra.b	.l1E86
 .l1E68	move.b	#$40,d3
 	sub.b	(a1,d2.w),d3
 	lsl.w	#$2,d3
@@ -676,26 +684,26 @@ RestoreBiosSub3	dc.w	$0003,$6D08
 	move.b	$8(a0),d4
 	mulu.w	d4,d3
 	sub.b	d3,d1
-	dc.w	$6404
+	bcc.b	.l1E82
 	subi.b	#$1,d0
 .l1E82	lsr.w	#$8,d3
 	sub.b	d3,d0
 .l1E86	clr.w	d2
 	move.b	$4(a0),d2
 	cmpi.b	#$0,d2
-	dc.w	$6724
+	beq.b	.l1EB6
 	btst	#$7,d2
-	dc.w	$660C
+	bne.b	.l1EA4
 	lsl.b	#$1,d2
 	add.b	d2,d1
-	dc.w	$6418
+	bcc.b	.l1EB6
 	addi.b	#$1,d0
-	dc.w	$6012
+	bra.b	.l1EB6
 .l1EA4	eori.b	#$FF,d2
 	addi.b	#$1,d2
 	lsl.b	#$1,d2
 	sub.b	d2,d1
-	dc.w	$6404
+	bcc.b	.l1EB6
 	subi.b	#$1,d0
 .l1EB6	ext.w	d0
 	lsl.w	#$1,d0
@@ -709,15 +717,15 @@ RestoreBiosSub3	dc.w	$0003,$6D08
 	dc.w	$303A,$06F0
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d2,$FF0005.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lsr.w	#$8,d2
 	move.b	d2,$FF0007.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
 	movem.l	(sp)+,d1-d6/a0-a1
-	dc.w	$4E75
+	rts
 	dc.b	$00,$80,$00,$88,$00,$90,$00,$98,$00,$A2,$00,$AB,$00,$B5,$00,$C0	; ................
 	dc.b	$00,$CB,$00,$D7,$00,$E4,$00,$F2,$01,$00,$01,$0F,$01,$1F,$01,$30	; ...............0
 	dc.b	$01,$43,$01,$56,$01,$6A,$01,$80,$01,$96,$01,$AF,$01,$C8,$01,$E3	; .C.V.j..........
@@ -731,20 +739,20 @@ RestoreBiosSub3	dc.w	$0003,$6D08
 	dc.b	$32,$CC,$35,$D1,$39,$04,$3C,$68,$40,$00,$43,$CE,$47,$D6,$4C,$1C	; 2.5.9.<h@.C.G.L.
 	dc.b	$50,$A3,$55,$6E,$5A,$82,$5F,$E4,$65,$98,$6B,$A3,$72,$09,$78,$D1	; P.UnZ._.e.k.r.x.
 	dc.b	$80,$00	; ..
-RestoreBios_8	movem.l	d1-d3/a0,-(sp)
+RestoreBios_10	movem.l	d1-d3/a0,-(sp)
 	dc.w	$303A,$05FA
-	lea.l	RestoreBios_24(pc),a0
+	lea.l	RestoreBios_28(pc),a0
 	clr.w	d3
 	move.b	(a0,d0.w),d3
-	lea.l	RestoreBios_42(pc),a0
+	lea.l	RestoreBios_46(pc),a0
 	clr.w	d2
 	move.b	(a0,d3.w),d2
 	lsl.w	#$1,d2
-	lea.l	RestoreBios_40(pc),a0
+	lea.l	RestoreBios_44(pc),a0
 	clr.w	d1
 	move.b	(a0,d3.w),d1
 	move.w	#$0,d0
-	bsr.w	RestoreBios_11
+	bsr.w	RestoreBios_14
 	bcs.w	.l207A
 	clr.w	d1
 	move.b	$B(a0),d1
@@ -752,7 +760,7 @@ RestoreBios_8	movem.l	d1-d3/a0,-(sp)
 	lsr.w	#$8,d2
 	move.w	d3,d0
 	lsr.w	#$4,d0
-	lea.l	RestoreBios_45(pc),a0
+	lea.l	RestoreBios_49(pc),a0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 	mulu.w	d1,d2
@@ -761,17 +769,17 @@ RestoreBios_8	movem.l	d1-d3/a0,-(sp)
 	dc.w	$123A,$0844
 	mulu.w	d1,d2
 	lsr.w	#$8,d2
-	lea.l	RestoreBios_43(pc),a0
+	lea.l	RestoreBios_47(pc),a0
 	clr.w	d1
 	move.b	(a0,d3.w),d1
 	cmpi.b	#$40,d1
-	dc.w	$660A
+	bne.b	.l2034
 	lsr.b	#$4,d2
 	move.b	d2,d0
 	lsl.b	#$4,d0
 	or.b	d2,d0
-	dc.w	$6028
-.l2034	dc.w	$6E12
+	bra.b	.l205C
+.l2034	bgt.b	.l2048
 	move.b	d2,d0
 	lsr.b	#$4,d0
 	lsl.w	#$2,d1
@@ -779,7 +787,7 @@ RestoreBios_8	movem.l	d1-d3/a0,-(sp)
 	lsr.w	#$8,d2
 	andi.b	#$F0,d2
 	or.b	d2,d0
-	dc.w	$6014
+	bra.b	.l205C
 .l2048	move.b	d2,d0
 	andi.b	#$F0,d0
 	subi.w	#$40,d1
@@ -791,70 +799,70 @@ RestoreBios_8	movem.l	d1-d3/a0,-(sp)
 .l205C	dc.w	$323A,$0562
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d0,$FF0003.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
 .l207A	movem.l	(sp)+,d1-d3/a0
 	rts
-RestoreBios_9	movem.l	d1-d2/a0,-(sp)
-	lea.l	RestoreBios_38(pc),a0
+RestoreBios_11	movem.l	d1-d2/a0,-(sp)
+	lea.l	RestoreBios_42(pc),a0
 	move.w	#$0,(a0)
 	dc.w	$207A,$053E
-RestoreBiosSub4	btst.b	#$0,$C(a0)
-	dc.w	$673A
-	lea.l	RestoreBios_25(pc),a0
+RestoreBiosSub3	btst.b	#$0,$C(a0)
+	beq.b	.l20D2
+	lea.l	RestoreBios_29(pc),a0
 	dc.w	$303A,$052A
 	dc.w	$123A,$04D0
 	clr.w	d2
 .l20A6	btst	d2,d1
-	dc.w	$661E
+	bne.b	.l20C8
 	cmp.b	(a0)+,d0
-	dc.w	$661A
-	lea.l	RestoreBios_34(pc),a0
+	bne.b	.l20C8
+	lea.l	RestoreBios_38(pc),a0
 	move.w	d2,(a0)
-	lea.l	RestoreBios_39(pc),a0
+	lea.l	RestoreBios_43(pc),a0
 	clr.w	d0
 	move.b	$C(a0),d0
-	lea.l	RestoreBios_38(pc),a0
+	lea.l	RestoreBios_42(pc),a0
 	move.w	d0,(a0)
 	clr.w	d0
-	dc.w	$6052
+	bra.b	RestoreBios_13
 .l20C8	addi.w	#$1,d2
 	cmpi.w	#$8,d2
 	bne.b	.l20A6
 .l20D2	dc.w	$103A,$049E
 	clr.w	d1
 .l20D8	btst	d1,d0
-	dc.w	$670A
-	lea.l	RestoreBios_34(pc),a0
+	beq.b	.l20E6
+	lea.l	RestoreBios_38(pc),a0
 	move.w	d1,(a0)
 	clr.w	d0
-	dc.w	$6034
+	bra.b	RestoreBios_13
 .l20E6	addi.w	#$1,d1
 	cmpi.w	#$8,d1
 	bne.b	.l20D8
 	dc.w	$207A,$04DA
 	move.b	$1(a0),d0
-	lea.l	RestoreBios_28(pc),a0
-RestoreBiosSub5	clr.w	d1
-RestoreBios_10	cmp.b	(a0)+,d0
-RestoreBiosSub6	dc.w	$620A
-	lea.l	RestoreBios_34(pc),a0
+	lea.l	RestoreBios_32(pc),a0
+RestoreBiosSub4	clr.w	d1
+RestoreBios_12	cmp.b	(a0)+,d0
+RestoreBiosSub5	bhi.b	.l210C
+	lea.l	RestoreBios_38(pc),a0
 	move.w	d1,(a0)
 	clr.w	d0
-	dc.w	$600E
+	bra.b	RestoreBios_13
 .l210C	addi.w	#$1,d1
 	cmpi.w	#$8,d1
-	bne.b	RestoreBios_10
+	bne.b	RestoreBios_12
 	ori.b	#$1,ccr
-.l2341A	movem.l	(sp)+,d1-d2/a0
+RestoreBios_13	movem.l	(sp)+,d1-d2/a0
 	rts
-RestoreBios_11	movem.l	d1-d4/a1-a2,-(sp)
-	lea.l	RestoreBios_21(pc),a1
+RestoreBios_14	movem.l	d1-d4/a1-a2,-(sp)
+	lea.l	RestoreBios_25(pc),a1
 	move.w	#$2,d2
 .l212C	cmpi.l	#$FFFFFFFF,(a1)
-	dc.w	$6746
+	beq.b	.l217A
 	movea.l	(a1),a2
 	move.b	(a2)+,d3
 	lsl.w	#$8,d3
@@ -865,14 +873,14 @@ RestoreBios_11	movem.l	d1-d4/a1-a2,-(sp)
 	add.l	a2,d4
 	movea.l	d4,a0
 .l2146	cmp.b	(a2),d0
-	dc.w	$6616
+	bne.b	.l2160
 	cmp.b	$1(a2),d1
-	dc.w	$6610
+	bne.b	.l2160
 	move.b	$2(a2),d0
 	lsl.w	#$8,d0
 	move.b	$3(a2),d0
 	andi.b	#$FE,ccr
-	dc.w	$602E
+	bra.b	.l218E
 .l2160	clr.l	d4
 	move.b	$2(a2),d4
 	lsl.w	#$8,d4
@@ -888,71 +896,71 @@ RestoreBios_11	movem.l	d1-d4/a1-a2,-(sp)
 	ori.b	#$1,ccr
 .l218E	movem.l	(sp)+,d1-d4/a1-a2
 	rts
-RestoreBios_12	move.l	a0,-(sp)
+RestoreBios_15	move.l	a0,-(sp)
 	or.w	d1,d1
-	dc.w	$660E
-	lea.l	RestoreBios_18(pc),a0
+	bne.b	.l21A8
+	lea.l	RestoreBios_22(pc),a0
 	move.w	#$100,$2(a0)
 	clr.w	d0
-	dc.w	$6056
+	bra.b	.l21FE
 .l21A8	cmpi.w	#$1,d1
-	dc.w	$660E
-	lea.l	RestoreBios_18(pc),a0
+	bne.b	.l21BC
+	lea.l	RestoreBios_22(pc),a0
 	move.w	$0(a0),$2(a0)
 	clr.w	d0
-	dc.w	$6042
+	bra.b	.l21FE
 .l21BC	cmpi.w	#$2,d1
-	dc.w	$6634
-	lea.l	RestoreBios_18(pc),a0
+	bne.b	.l21F6
+	lea.l	RestoreBios_22(pc),a0
 	move.w	$2(a0),$0(a0)
 	move.w	$2(a0),d0
-	lea.l	RestoreBios_19(pc),a0
+	lea.l	RestoreBios_23(pc),a0
 	move.w	#$FF,d1
 .l21D8	cmpi.w	#$FFFF,(a0)
-	dc.w	$670A
+	beq.b	.l21E8
 	cmp.w	(a0),d0
 	bhi.w	.l21E8
 	move.w	#$FFFF,(a0)
 .l21E8	adda.l	#$2,a0
 	dbra	d1,.l21D8
 	clr.w	d0
-	dc.w	$6008
+	bra.b	.l21FE
 .l21F6	move.w	#$5,d0
 	ori.b	#$1,ccr
 .l21FE	clr.w	d0
 	movea.l	(sp)+,a0
 	rts
-RestoreBios_13	movem.l	d1/a1,-(sp)
+RestoreBios_16	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
-	lea.l	RestoreBios_21(pc),a1
+	lea.l	RestoreBios_25(pc),a1
 	move.l	a0,(a1,d1.w)
 	movem.l	(sp)+,d1/a1
 	rts
-RestoreBios_14	movem.l	d1/a0-a1,-(sp)
+RestoreBios_17	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
 .l221E	cmpi.w	#$FFFF,(a1)
-	dc.w	$6604
+	bne.b	.l2228
 	clr.w	d0
-	dc.w	$604C
+	bra.b	.l2274
 .l2228	move.w	(a1),d0
 	move.w	$2(a1),d1
-	bsr.w	RestoreBios_11
-	dc.w	$653C
+	bsr.w	RestoreBios_14
+	bcs.b	.l2270
 	cmpi.w	#$2,(a1)
-	dc.w	$662E
+	bne.b	.l2268
 	bsr.w	.l2357A
-	dc.w	$6534
-	lea.l	RestoreBios_19(pc),a0
+	bcs.b	.l2274
+	lea.l	RestoreBios_23(pc),a0
 	move.w	$2(a1),d0
 	lsl.w	#$1,d0
 	dc.w	$323A,$0116
 	move.w	d1,(a0,d0.w)
 	dc.w	$D27A,$0312
 	or.b	d1,d1
-	dc.w	$6708
+	beq.b	.l2262
 	andi.w	#$FF00,d1
 	addi.w	#$100,d1
-.l2262	lea.l	RestoreBios_18(pc),a0
+.l2262	lea.l	RestoreBios_22(pc),a0
 	move.w	d1,(a0)
 .l2268	adda.l	#$4,a1
 	bra.b	.l221E
@@ -960,23 +968,23 @@ RestoreBios_14	movem.l	d1/a0-a1,-(sp)
 .l2274	movem.l	(sp)+,d1/a0-a1
 	rts
 .l2357A	movem.l	d1-d2/a0-a1,-(sp)
-	lea.l	RestoreBios_20(pc),a1
+	lea.l	RestoreBios_24(pc),a1
 	move.w	d0,(a1)
 	dc.w	$323A,$00DC
-	dc.w	$6714
+	beq.b	RestoreBios_18
 	clr.w	d1
 	dc.w	$927A,$00D4
-RestoreBiosSub7	cmp.w	d0,d1
-	dc.w	$620A
+RestoreBiosSub6	cmp.w	d0,d1
+	bhi.b	RestoreBios_18
 	move.w	#$4,d0
 	ori.b	#$1,ccr
 	dc.w	$6056
-.l2359E	dc.w	$343A,$00C2
+RestoreBios_18	dc.w	$343A,$00C2
 	lsr.w	#$8,d2
 	lsr.w	#$4,d2
 	ori.b	#$80,d2
 	move.b	d2,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	dc.w	$323A,$00AC
 	andi.l	#$FFF,d1
 	lsl.l	#$1,d1
@@ -986,28 +994,28 @@ RestoreBiosSub7	cmp.w	d0,d1
 	move.b	d1,(a1)
 	adda.l	#$2,a1
 	cmpa.l	#$FF4001,a1
-	dc.w	$6614
+	bne.b	.l22EE
 	addi.b	#$1,d2
 	move.b	d2,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	movea.l	#$FF2001,a1
 .l22EE	dbra	d0,.l22C8
 	clr.w	d0
 .l22F4	movem.l	(sp)+,d1-d2/a0-a1
 	rts
-RestoreBios_15	movem.l	d1-d3/a0,-(sp)
-RestoreBiosSub8	movem.l	d2-d3,-(sp)
+RestoreBios_19	movem.l	d1-d3/a0,-(sp)
+RestoreBiosSub7	movem.l	d2-d3,-(sp)
 	move.w	#$0,d0
-	bsr.w	RestoreBios_11
+	bsr.w	RestoreBios_14
 	movem.l	(sp)+,d2-d3
-	dc.w	$652C
+	bcs.b	.l233C
 	cmpi.w	#$0,d3
-	dc.w	$660E
+	bne.b	.l2324
 	move.b	d2,$6(a0)
 	lsr.w	#$8,d2
 	move.b	d2,$5(a0)
 	clr.w	d0
-	dc.w	$6018
+	bra.b	.l233C
 .l2324	move.b	$5(a0),d0
 	lsl.w	#$8,d0
 	move.b	$6(a0),d0
@@ -1022,47 +1030,48 @@ RestoreBiosSub8	movem.l	d2-d3,-(sp)
 	jsr	$5F22.l
 	bcs.b	.l2342
 	rts
-RestoreBios_16	rts
-RestoreBios_17	move.l	d0,-(sp)
+RestoreBios_20	rts
+; Busy-wait of about 40 loop passes (hardware settling delay).
+DelayShort	move.l	d0,-(sp)
 	move.w	#$28,d0
 .l2358	nop
 	dbra	d0,.l2358
 	move.l	(sp)+,d0
-	dc.w	$4E75
-RestoreBios_18	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_19	dcb.b	$200,0
-RestoreBios_20	dc.b	$00,$00	; ..
-RestoreBios_21	dcb.b	$8,0
-RestoreBios_22	dc.b	$00,$00	; ..
-RestoreBios_23	dc.b	$00,$00	; ..
-RestoreBios_24	dcb.b	$8,0
+	rts
+RestoreBios_22	dc.b	$00,$00,$00,$00	; ....
+RestoreBios_23	dcb.b	$200,0
+RestoreBios_24	dc.b	$00,$00	; ..
 RestoreBios_25	dcb.b	$8,0
-RestoreBios_26	dcb.b	$8,0
-RestoreBios_27	dcb.b	$8,0
+RestoreBios_26	dc.b	$00,$00	; ..
+RestoreBios_27	dc.b	$00,$00	; ..
 RestoreBios_28	dcb.b	$8,0
 RestoreBios_29	dcb.b	$8,0
 RestoreBios_30	dcb.b	$8,0
-RestoreBios_31	dcb.b	$11,0
-RestoreBios_32	dc.b	$00	; .
-RestoreBios_33	dc.b	$00,$00	; ..
-RestoreBios_34	dc.b	$00,$00	; ..
-RestoreBios_35	dc.b	$00	; .
-.l238C3	dc.b	$00	; .
+RestoreBios_31	dcb.b	$8,0
+RestoreBios_32	dcb.b	$8,0
+RestoreBios_33	dcb.b	$8,0
+RestoreBios_34	dcb.b	$8,0
+RestoreBios_35	dcb.b	$11,0
 RestoreBios_36	dc.b	$00	; .
+RestoreBios_37	dc.b	$00,$00	; ..
+RestoreBios_38	dc.b	$00,$00	; ..
+RestoreBios_39	dc.b	$00	; .
+.l238C3	dc.b	$00	; .
+RestoreBios_40	dc.b	$00	; .
 .l238C5	dc.b	$00,$00	; ..
 .l238C7	dc.b	$00	; .
-RestoreBios_37	dc.b	$00	; .
+RestoreBios_41	dc.b	$00	; .
 .l238C9	dc.b	$00	; .
-RestoreBios_38	dc.b	$00,$00	; ..
-RestoreBios_39	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_40	dcb.b	$80,0
-RestoreBios_41	dcb.b	$80,0
-RestoreBios_42	dcb.b	$80,0
-RestoreBios_43	dcb.b	$80,0
+RestoreBios_42	dc.b	$00,$00	; ..
+RestoreBios_43	dc.b	$00,$00,$00,$00	; ....
 RestoreBios_44	dcb.b	$80,0
-RestoreBios_45	dcb.b	$8,0
-RestoreBios_46	dc.b	$00,$00	; ..
-RestoreBiosSub9	move.w	sr,-(sp)
+RestoreBios_45	dcb.b	$80,0
+RestoreBios_46	dcb.b	$80,0
+RestoreBios_47	dcb.b	$80,0
+RestoreBios_48	dcb.b	$80,0
+RestoreBios_49	dcb.b	$8,0
+RestoreBios_50	dc.b	$00,$00	; ..
+RestoreBiosSub8	move.w	sr,-(sp)
 	move.w	d0,$EC90.l
 	move.l	d1,$EC92.l
 	move.l	d2,$EC96.l
@@ -1089,27 +1098,27 @@ RestoreBiosSub9	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	movea.l	$EC96.l,a0
 	move.l	$10ACC.l,(a0)
-	bsr.w	RestoreBios_63
+	bsr.w	ClearCommRegs
 	move.w	(sp)+,sr
 	rts
 	move.w	#$0,$BC6E8.l
 	bsr.w	.l23C4C
-	bsr.w	RestoreBios_48
-	bsr.w	RestoreBios_66
-	bsr.w	GetData_24
+	bsr.w	RestoreBios_52
+	bsr.w	RestoreBios_78
+	bsr.w	GetData_25
 	move.l	#$400,-(sp)
-	bsr.w	GetData_23
-	bsr.w	RestoreBios_71
-	bsr.w	RestoreBios_49
-	bsr.w	RestoreBios_50
-	bsr.w	RestoreBios_72
+	bsr.w	GetData_24
+	bsr.w	SendCmd5
+	bsr.w	RestoreBios_53
+	bsr.w	RestoreBios_55
+	bsr.w	RestoreBios_86
 	move.w	$EC90.l,-(sp)
-	bsr.w	GetData_22
-	move.l	#$4000200,-(sp)
 	bsr.w	GetData_23
+	move.l	#$4000200,-(sp)
+	bsr.w	GetData_24
 	bsr.w	.l23C4C
-	bsr.w	RestoreBios_51
-	bsr.w	RestoreBios_60
+	bsr.w	RestoreBios_56
+	bsr.w	ClearCmdBuffer
 	rts
 .l23C4C	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
@@ -1141,8 +1150,8 @@ RestoreBiosSub9	move.w	sr,-(sp)
 .l23CDC	move.b	(a1)+,(a0)+
 	cmpa.l	a2,a1
 	blt.b	.l23CDC
-RestoreBios_47	rts
-RestoreBios_48	movem.l	d0-d7/a0-a6,-(sp)
+RestoreBios_51	rts
+RestoreBios_52	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
 	move.w	#$2,d0
 	moveq	#$2,d1
@@ -1156,19 +1165,41 @@ RestoreBios_48	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	RestoreBiosSub1
 	bset.b	#$2,$FFFF8024.w
 	movem.l	(sp)+,d0-d7/a0-a6
-	dc.w	$4E75
+	rts
 	dc.b	$00,$02,$00,$00,$FF,$FF	; ......
-RestoreBios_49	dc.b	$48,$E7,$FF,$FE,$02,$39,$00,$EF,$00,$0B,$C6,$E8,$61,$00,$08,$E8	; H....9......a...
+RestoreBios_53	movem.l	d0-d7/a0-a6,-(sp)
+	andi.b	#$EF,$BC6E8.l
+	bsr.w	RestoreBios_73
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
-	dc.b	$0C,$CC,$61,$00,$08,$C2,$78,$01,$33,$C4,$00,$01,$0A,$F0,$20,$79	; ..a...x.3..... y
-	dc.b	$00,$01,$09,$DC,$45,$E8,$00,$08,$61,$00,$06,$C6,$43,$F9,$00,$0B	; ....E...a...C...
-	dc.b	$A8,$50,$D1,$D0,$70,$1F,$22,$D8,$51,$C8,$FF,$FC,$33,$FC,$00,$18	; .P..p.".Q...3...
-	dc.b	$00,$0B,$A8,$D0,$3C,$3C,$00,$F0,$33,$FC,$00,$0A,$00,$01,$0B,$6C	; ....<<..3......l
-	dc.b	$42,$79,$00,$01,$0B,$6E,$47,$F9,$00,$00,$DB,$78,$61,$00,$00,$2E	; By...nG....xa...
-	dc.b	$61,$00,$05,$10,$61,$00,$06,$F8,$72,$00,$4A,$41,$56,$CE,$FF,$EE	; a...a...r.JAV...
-	dc.b	$61,$00,$08,$74,$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06	; a..t............
-	dc.b	$00,$20,$00,$00,$0C,$CC,$4C,$DF,$7F,$FF,$4E,$75	; . ....L...Nu
-RestoreBiosSub10	movem.l	d0-d6/a0-a2,-(sp)
+	dc.b	$0C,$CC	; ..
+RestoreBiosSub9	bsr.w	SendCmd3
+	moveq	#$1,d4
+	move.w	d4,$10AF0.l
+	movea.l	$109DC.l,a0
+	lea.l	$8(a0),a2
+	bsr.w	SendCmd4Args
+	lea.l	$BA850.l,a1
+	adda.l	(a0),a0
+	moveq	#$1F,d0
+.l2A70	move.l	(a0)+,(a1)+
+	dbra	d0,.l2A70
+	move.w	#$18,$BA8D0.l
+	move.w	#$F0,d6
+	move.w	#$A,$10B6C.l
+	clr.w	$10B6E.l
+	lea.l	$DB78.l,a3
+.l2A96	bsr.w	RestoreBios_54
+	bsr.w	WaitFrameTick
+	bsr.w	RestoreBios_68
+	moveq	#$0,d1
+	tst.w	d1
+	dbne	d6,.l2A96
+	bsr.w	RestoreBios_73
+	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
+	dc.b	$0C,$CC	; ..
+RestoreBiosSub10	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+RestoreBios_54	movem.l	d0-d6/a0-a2,-(sp)
 	btst.b	#$1,$BC6E8.l
 	bne.w	.l2B72
 	cmpi.w	#$10,$10B6E.l
@@ -1181,17 +1212,17 @@ RestoreBiosSub10	movem.l	d0-d6/a0-a2,-(sp)
 	bne.w	.l2B20
 	move.w	#$0,-(sp)
 	move.l	#$0,-(sp)
-	bsr.w	GetData_19
+	bsr.w	GetData_20
 	move.w	#$1,d0
-	bsr.w	RestoreBios_58
+	bsr.w	WaitCountdown
 	move.w	#$0,-(sp)
 	move.l	#$0,-(sp)
-	bsr.w	GetData_19
+	bsr.w	GetData_20
 .l2B20	tst.w	-$2(a3)
 	bpl.w	.l2B2A
 	subq.w	#$4,a3
 .l2B2A	addq.w	#$1,$10B6E.l
-	bsr.w	RestoreBios_53
+	bsr.w	RestoreBios_58
 	movea.l	$109DC.l,a0
 	move.w	$10B6E.l,d2
 	move.w	$10AF0.l,d4
@@ -1200,43 +1231,98 @@ RestoreBiosSub10	movem.l	d0-d6/a0-a2,-(sp)
 	cmpi.w	#$3,d2
 	blt.w	.l2B5A
 	move.w	#$88,d1
-.l2B5A	bsr.w	RestoreBios_54
+.l2B5A	bsr.w	RestoreBios_59
 	subq.w	#$1,d2
 	bne.b	.l2B46
-	bsr.w	RestoreBios_55
-	bsr.w	RestoreBios_56
+	bsr.w	RestoreBios_60
+	bsr.w	RestoreBios_61
 	bset.b	#$1,$BC6E8.l
 .l2B72	movem.l	(sp)+,d0-d6/a0-a2
-	dc.w	$4E75
+	rts
 	dc.b	$00,$1E,$00,$00,$00,$1E,$00,$01,$00,$1E,$00,$01,$00,$04,$00,$01	; ................
 	dc.b	$00,$06,$FF,$FF	; ....
-RestoreBios_50	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$07,$7A,$38,$3C,$00,$01	; .9......a..z8<..
-	dc.b	$33,$C4,$00,$01,$0A,$F0,$61,$00,$0A,$B4,$00,$08,$F8,$00,$01,$00	; 3.....a.........
-	dc.b	$00,$00,$24,$79,$00,$01,$09,$D8,$41,$D2,$43,$D2,$D1,$DA,$D3,$DA	; ..$y....A.C.....
-	dc.b	'B@BA4',$11,$36,$29,$00,$02,$7A,$0F,$61,$00,$09,$52	; B@BA4.6)..z.a..R
-	dc.b	$20,$7C,$00,$01,$07,$D0,$22,$7C,$00,$01,$07,$CC,$24,$7C,$00,$01	;  |...."|....$|..
-	dc.b	$07,$CA,$47,$F9,$00,$01,$0A,$F0,$28,$79,$00,$01,$09,$E0,$61,$00	; ..G.....(y....a.
-	dc.b	$05,$16,$20,$7C,$00,$01,$08,$22,$22,$7C,$00,$01,$08,$1E,$24,$7C	; .. |...""|....$|
-	dc.b	$00,$01,$08,$1C,$47,$F9,$00,$01,$0A,$F0,$28,$79,$00,$01,$09,$E0	; ....G.....(y....
-	dc.b	$61,$00,$04,$F4,$20,$7C,$00,$01,$08,$74,$22,$7C,$00,$01,$08,$70	; a... |...t"|...p
-	dc.b	$24,$7C,$00,$01,$08,$6E,$47,$F9,$00,$01,$0A,$F0,$28,$79,$00,$01	; $|...nG.....(y..
-	dc.b	$09,$E0,$61,$00,$04,$D2,$20,$7C,$00,$01,$08,$C6,$22,$7C,$00,$01	; ..a... |...."|..
-	dc.b	$08,$C2,$24,$7C,$00,$01,$08,$C0,$47,$F9,$00,$01,$0A,$F0,$28,$79	; ..$|....G.....(y
-	dc.b	$00,$01,$09,$E0,$61,$00,$04,$B0,$33,$FC,$00,$20,$00,$0B,$A8,$D0	; ....a...3.. ....
-	dc.b	$3E,$3C,$00,$B4,$61,$00,$00,$16,$61,$00,$03,$46,$61,$00,$05,$2E	; ><..a...a..Fa...
-	dc.b	$4A,$41,$56,$CF,$FF,$F0,$61,$00,$04,$D8,$4E,$75,$08,$39,$00,$01	; JAV...a...Nu.9..
-	dc.b	$00,$0B,$C6,$E8,$66,$00,$00,$9E,$61,$00,$03,$44,$38,$39,$00,$01	; ....f...a..D89..
-	dc.b	$0A,$F0,$24,$7C,$00,$01,$07,$CA,$26,$7C,$00,$01,$07,$D0,$28,$7C	; ..$|....&|....(|
-	dc.b	$00,$01,$07,$CC,$20,$79,$00,$01,$09,$E0,$61,$00,$04,$12,$38,$39	; .... y....a...89
-	dc.b	$00,$01,$0A,$F0,$24,$7C,$00,$01,$08,$1C,$26,$7C,$00,$01,$08,$22	; ....$|....&|..."
-	dc.b	$28,$7C,$00,$01,$08,$1E,$20,$79,$00,$01,$09,$E0,$61,$00,$03,$F0	; (|.... y....a...
-	dc.b	$38,$39,$00,$01,$0A,$F0,$24,$7C,$00,$01,$08,$6E,$26,$7C,$00,$01	; 89....$|...n&|..
-	dc.b	$08,$74,$28,$7C,$00,$01,$08,$70,$20,$79,$00,$01,$09,$E0,$61,$00	; .t(|...p y....a.
-	dc.b	$03,$CE,$38,$39,$00,$01,$0A,$F0,$24,$7C,$00,$01,$08,$C0,$26,$7C	; ..89....$|....&|
-	dc.b	$00,$01,$08,$C6,$28,$7C,$00,$01,$08,$C2,$20,$79,$00,$01,$09,$E0	; ....(|.... y....
-	dc.b	$61,$00,$03,$AC,$61,$00,$03,$28,$61,$00,$03,$58,$08,$F9,$00,$01	; a...a..(a..X....
-	dc.b	$00,$0B,$C6,$E8,$4E,$75	; ....Nu
-RestoreBios_51	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9......a.......
+RestoreBios_55	andi.b	#$9C,$BC6E8.l
+	bsr.w	SendCmd3
+	move.w	#$1,d4
+	move.w	d4,$10AF0.l
+	bsr.w	RestoreBios_80
+	dc.b	$00,$08,$F8,$00,$01,$00,$00,$00	; ........
+RestoreBiosSub11	movea.l	$109D8.l,a2
+	lea.l	(a2),a0
+	lea.l	(a2),a1
+	adda.l	(a2)+,a0
+	adda.l	(a2)+,a1
+	clr.w	d0
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	$2(a1),d3
+	moveq	#$F,d5
+	bsr.w	RestoreBios_79
+	movea.l	#$107D0,a0
+	movea.l	#$107CC,a1
+	movea.l	#$107CA,a2
+	lea.l	$10AF0.l,a3
+	movea.l	$109E0.l,a4
+	bsr.w	RestoreBios_64
+	movea.l	#$10822,a0
+	movea.l	#$1081E,a1
+	movea.l	#$1081C,a2
+	lea.l	$10AF0.l,a3
+	movea.l	$109E0.l,a4
+	bsr.w	RestoreBios_64
+	movea.l	#$10874,a0
+	movea.l	#$10870,a1
+	movea.l	#$1086E,a2
+	lea.l	$10AF0.l,a3
+	movea.l	$109E0.l,a4
+	bsr.w	RestoreBios_64
+	movea.l	#$108C6,a0
+	movea.l	#$108C2,a1
+	movea.l	#$108C0,a2
+	lea.l	$10AF0.l,a3
+	movea.l	$109E0.l,a4
+	bsr.w	RestoreBios_64
+	move.w	#$20,$BA8D0.l
+	move.w	#$B4,d7
+.l2C60	bsr.w	.l23F78
+	bsr.w	WaitFrameTick
+	bsr.w	RestoreBios_68
+	tst.w	d1
+	dbne	d7,.l2C60
+	bsr.w	ClearCmdBuffer
+	rts
+.l23F78	btst.b	#$1,$BC6E8.l
+	bne.w	.l2D20
+	bsr.w	RestoreBios_58
+	move.w	$10AF0.l,d4
+	movea.l	#$107CA,a2
+	movea.l	#$107D0,a3
+	movea.l	#$107CC,a4
+	movea.l	$109E0.l,a0
+	bsr.w	RestoreBios_62
+	move.w	$10AF0.l,d4
+	movea.l	#$1081C,a2
+	movea.l	#$10822,a3
+	movea.l	#$1081E,a4
+	movea.l	$109E0.l,a0
+	bsr.w	RestoreBios_62
+	move.w	$10AF0.l,d4
+	movea.l	#$1086E,a2
+	movea.l	#$10874,a3
+	movea.l	#$10870,a4
+	movea.l	$109E0.l,a0
+	bsr.w	RestoreBios_62
+	move.w	$10AF0.l,d4
+	movea.l	#$108C0,a2
+	movea.l	#$108C6,a3
+	movea.l	#$108C2,a4
+	movea.l	$109E0.l,a0
+	bsr.w	RestoreBios_62
+	bsr.w	RestoreBios_60
+	bsr.w	RestoreBios_61
+	bset.b	#$1,$BC6E8.l
+.l2D20	rts
+RestoreBios_56	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9......a.......
 	dc.b	$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00,$0C,$CC,$61,$00	; ......... ....a.
 	dc.b	$05,$CE,$61,$00,$0A,$9A,$33,$F9,$00,$01,$0B,$CE,$00,$01,$0B,$2A	; ..a...3........*
 	dc.b	$33,$F9,$00,$01,$0B,$CE,$00,$01,$0B,$2C,$70,$1C,$61,$00,$06,$10	; 3........,p.a...
@@ -1265,7 +1351,7 @@ RestoreBios_51	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,
 	dc.b	$33,$DF,$00,$01,$0B,$0C,$30,$11,$E2,$40,$44,$40,$06,$40,$00,$10	; 3.....0..@D@.@..
 	dc.b	$33,$C0,$00,$01,$0B,$0A,$61,$00,$0A,$1C,$52,$79,$00,$01,$0B,$0C	; 3.....a...Ry....
 	dc.b	$02,$79,$00,$1F,$00,$01,$0B,$0C,$4A,$69,$00,$02,$6A,$D8,$4E,$75	; .y......Ji..j.Nu
-RestoreBiosSub11	movem.l	d0-d7/a0-a6,-(sp)
+RestoreBiosSub12	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$10AE0.l,d0
 .l2EFC	cmp.w	$10AE0.l,d0
 	beq.b	.l2EFC
@@ -1273,13 +1359,17 @@ RestoreBiosSub11	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$E198.l
 	btst	#$7,d1
 	movem.l	(sp)+,d0-d7/a0-a6
-	beq.w	RestoreBios_52
+	beq.w	.l242AA
 	addq.l	#$4,sp
-	dc.w	$4E75
-.l2421E	dc.b	$41,$F9,$00,$0B,$A4,$50,$30,$B9,$00,$01,$0B,$22,$70,$1D,$61,$00	; A....P0...."p.a.
-	dc.b	$04,$42,$30,$3C,$00,$DF,$41,$F9,$00,$0B,$C3,$68,$72,$7F,$D2,$79	; .B0<..A....hr..y
-	dc.b	$00,$01	; ..
-RestoreBiosSub12	dc.w	$0B20
+	rts
+.l2421E	lea.l	$BA450.l,a0
+	move.w	$10B22.l,(a0)
+	moveq	#$1D,d0
+	bsr.w	SendCmdD0
+	move.w	#$DF,d0
+	lea.l	$BC368.l,a0
+	moveq	#$7F,d1
+	add.w	$10B20.l,d1
 .l2F42	clr.l	(a0)+
 	cmpi.w	#$48,d0
 	ble.w	.l2F50
@@ -1290,7 +1380,7 @@ RestoreBiosSub12	dc.w	$0B20
 	cmpi.w	#$B4,$10B20.l
 	blt.w	.l2F9E
 	subq.w	#$1,$10B24.l
-	bpl.w	RestoreBios_52
+	bpl.w	.l242AA
 	move.w	#$12C,d0
 	jsr	$E488.l
 	move.w	d0,$10B24.l
@@ -1300,20 +1390,21 @@ RestoreBiosSub12	dc.w	$0B20
 	move.w	#$FEB4,$10B20.l
 .l2F9E	move.w	$10B28.l,d0
 	add.w	d0,$10B20.l
-RestoreBios_52	rts
-	move.w	d0,-(sp)
+.l242AA	rts
+; Waits until the frame counter at $10AE0 changes.
+WaitFrameTick	move.w	d0,-(sp)
 	move.w	$10AE2.l,d0
 .l2FB4	cmp.w	$10AE0.l,d0
 	beq.b	.l2FB4
 	move.w	$10AE0.l,$10AE2.l
 	move.w	(sp)+,d0
 	rts
-RestoreBios_53	movea.l	#$BA8D2,a5
+RestoreBios_58	movea.l	#$BA8D2,a5
 	movea.l	#$BAF16,a6
 	moveq	#$1,d6
 	rts
-RestoreBios_54	cmpi.w	#$50,d6
-	bgt.w	RestoreBios_47
+RestoreBios_59	cmpi.w	#$50,d6
+	bgt.w	RestoreBios_51
 RestoreBiosSub13	movem.l	d0-d5/a0,-(sp)
 	adda.l	$4(a0),a0
 	move.w	d2,d5
@@ -1343,7 +1434,7 @@ RestoreBiosSub13	movem.l	d0-d5/a0,-(sp)
 	dbra	d3,.l3002
 .l3034	movem.l	(sp)+,d0-d5/a0
 	rts
-RestoreBios_55	moveq	#-1,d0
+RestoreBios_60	moveq	#-1,d0
 	add.w	d6,d0
 	bne.w	.l3048
 	moveq	#$1,d0
@@ -1359,7 +1450,7 @@ RestoreBios_55	moveq	#-1,d0
 	move.w	d0,$BB1E6.l
 	move.l	a5,$BAF12.l
 	rts
-RestoreBios_56	movea.l	#$BC6F0,a0
+RestoreBios_61	movea.l	#$BC6F0,a0
 	lea.l	$BA8D2.l,a1
 	move.l	#$80000,d1
 .l3080	cmpa.l	$BAF12.l,a1
@@ -1380,7 +1471,7 @@ RestoreBios_56	movea.l	#$BC6F0,a0
 .l30B0	move.l	a0,$10AC8.l
 	rts
 .l30B8	bra.b	.l30B8
-	movea.l	(a4),a1
+RestoreBios_62	movea.l	(a4),a1
 	move.w	$2(a1),d2
 	subq.w	#$1,(a2)
 	bpl.w	.l30F2
@@ -1401,36 +1492,39 @@ RestoreBios_56	movea.l	#$BC6F0,a0
 	move.w	$2(a1),d2
 	move.l	a1,(a4)
 .l30F2	tst.w	d2
-	bmi.w	RestoreBios_57
+	bmi.w	RestoreBios_63
 	move.w	(a3)+,d0
 RestoreBiosSub14	move.w	(a3),d1
-	bsr.w	RestoreBios_54
-RestoreBios_57	rts
-	move.w	d4,(a3)
+	bsr.w	RestoreBios_59
+RestoreBios_63	rts
+RestoreBios_64	move.w	d4,(a3)
 	move.l	a0,(a1)
 	addq.l	#$4,(a1)
 	move.w	$4(a0),(a2)
 	movea.l	a4,a0
 	lea.l	$8(a0),a2
-	bsr.w	RestoreBios_59
+	bsr.w	SendCmd4Args
 	rts
-RestoreBios_58	neg.w	d0
+; Stores -d0 in the frame counter and waits until it counts up past zero.
+WaitCountdown	neg.w	d0
 	move.w	d0,$10AE0.l
 .l3120	tst.w	$10AE0.l
 	bmi.b	.l3120
 	rts
-RestoreBios_59	movem.l	d0-d1/a0,-(sp)
+; Puts d4/a2 in the command buffer and sends command 4.
+SendCmd4Args	movem.l	d0-d1/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	d4,(a0)+
 	move.l	a2,(a0)
 	moveq	#$4,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a0
 	move.l	(a0),d4
 	movem.l	(sp)+,d0-d1/a0
-	dc.w	$4E75
-RestoreBios_60	dc.b	$48,$E7,$80,$80,$41,$F9,$00,$0B	; H...A...
-RestoreBiosSub15	dc.w	$A850
+	rts
+; Clears the 32-long command buffer at $BA850.
+ClearCmdBuffer	movem.l	d0/a0,-(sp)
+	lea.l	$BA850.l,a0
 	moveq	#$1F,d0
 .l3158	move.l	(a0),-(sp)
 	clr.l	(a0)+
@@ -1447,36 +1541,44 @@ RestoreBiosSub15	dc.w	$A850
 .l3188	tst.w	$BA8D0.l
 	bpl.b	.l3188
 	move.w	(sp)+,$BC6E8.l
-	dc.w	$4E75
-	dc.b	$48,$E7,$B8,$00,$42,$67,$78,$03,$61,$00,$00,$A8,$61,$00,$00,$6C	; H...Bgx.a...a..l
-	dc.b	$83,$57,$51,$CC,$FF,$F4,$32,$1F,$4C,$DF	; .WQ...2.L.
-RestoreBiosSub16	dc.w	$001D,$4E75
+	rts
+RestoreBios_68	movem.l	d0/d2-d4,-(sp)
+	clr.w	-(sp)
+	moveq	#$3,d4
+.l31A0	bsr.w	ReadCommRegs
+	bsr.w	RestoreBios_70
+	or.w	d1,(sp)
+	dbra	d4,.l31A0
+	move.w	(sp)+,d1
+	movem.l	(sp)+,d0/d2-d4
+	rts
 	tst.w	d3
-	beq.w	RestoreBios_61
+	beq.w	RestoreBios_69
 	tst.w	d2
 	bne.w	.l31DC
 	subq.b	#$1,$10B1C.l
-	bpl.w	RestoreBios_61
+	bpl.w	RestoreBios_69
 	move.b	#$4,$10B1C.l
 	move.w	d3,d1
 	andi.w	#$F,d1
 	rts
 .l31DC	move.b	#$F,$10B1C.l
-RestoreBios_61	rts
+RestoreBios_69	rts
 	tst.w	d3
-	beq.b	RestoreBios_61
+	beq.b	RestoreBios_69
 	tst.w	d2
 	bne.w	.l3208
 	subq.b	#$1,$10B1D.l
-	bpl.b	RestoreBios_61
+	bpl.b	RestoreBios_69
 	move.b	#$4,$10B1D.l
 	move.w	d3,d1
 	andi.w	#$F,d1
 	rts
 .l3208	move.b	#$F,$10B1D.l
-	dc.w	$4E75
-	dc.b	$4A,$43,$67,$CE	; JCg.
-RestoreBiosSub17	movem.l	a0,-(sp)
+	rts
+RestoreBios_70	tst.w	d3
+	beq.b	RestoreBios_69
+RestoreBiosSub15	movem.l	a0,-(sp)
 	lea.l	$10B1C.l,a0
 	tst.w	d2
 	bne.w	.l323E
@@ -1488,11 +1590,18 @@ RestoreBiosSub17	movem.l	a0,-(sp)
 	bra.w	.l3244
 .l323E	move.b	#$F,(a0,d4.w)
 .l3244	movem.l	(sp)+,a0
-	dc.w	$4E75
-	dc.b	$30,$38,$80,$1C,$13,$C0,$00,$01,$0B,$15,$E0,$48,$13,$C0,$00,$01	; 08.........H....
-	dc.b	$0B,$14,$30,$38,$80,$1E,$13,$C0,$00,$01,$0B,$17,$E0,$48,$13,$C0	; ..08.........H..
-	dc.b	$00,$01,$0B,$16,$70,$00	; ....p.
-RestoreBiosSub18	movem.l	a0,-(sp)
+	rts
+; Copies the main-CPU comm registers $801C-$801E into the pad/status bytes at $10B14.
+ReadCommRegs	move.w	$FFFF801C.w,d0
+	move.b	d0,$10B15.l
+	lsr.w	#$8,d0
+	move.b	d0,$10B14.l
+	move.w	$FFFF801E.w,d0
+	move.b	d0,$10B17.l
+	lsr.w	#$8,d0
+	move.b	d0,$10B16.l
+	moveq	#$0,d0
+RestoreBiosSub16	movem.l	a0,-(sp)
 	lea.l	$10B14.l,a0
 	move.b	(a0,d4.w),d0
 	bsr.w	.l245DE
@@ -1525,64 +1634,67 @@ RestoreBiosSub18	movem.l	a0,-(sp)
 	rts
 .l245DE	clr.w	d1
 	move.b	d0,d1
-RestoreBiosSub19	movem.l	d1/a0,-(sp)
+RestoreBiosSub17	movem.l	d1/a0,-(sp)
 	andi.w	#$F0,d0
 	andi.w	#$F,d1
 	lea.l	$E300.l,a0
 	move.b	(a0,d1.w),d1
 	or.w	d1,d0
 	movem.l	(sp)+,d1/a0
-	dc.w	$4E75
+	rts
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
-RestoreBiosSub20	movem.l	d0,-(sp)
+; Sends command 3 to the main CPU.
+SendCmd3	movem.l	d0,-(sp)
 	moveq	#$3,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
-	movea.l	(sp),a0
+RestoreBios_73	movea.l	(sp),a0
 	lea.l	$BA450.l,a1
 	moveq	#$8,d0
 .l332A	move.w	(a0)+,(a1)+
 	dbra	d0,.l332A
 	move.l	a0,(sp)
 	moveq	#$2,d0
-	bra.w	RestoreBios_62
-RestoreBiosSub21	movem.l	d0/d2-d3/a1,-(sp)
+	bra.w	SendCmdD0
+RestoreBiosSub18	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
 	move.l	a0,(a1)
 	moveq	#$0,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
-RestoreBiosSub22	movem.l	d0/d2-d3/a1,-(sp)
+RestoreBiosSub19	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
 	move.l	a0,(a1)
 	moveq	#$1,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
-RestoreBios_62	move.w	d0,$FFFF8020.w
+; Sends the command in d0 through the gate-array comm registers and waits for the acknowledge.
+SendCmdD0	move.w	d0,$FFFF8020.w
 	bset.b	#$6,$FFFF800F.w
 .l337A	btst.b	#$6,$FFFF800E.w
 	beq.b	.l337A
 	bclr.b	#$6,$FFFF800F.w
 	move.w	#$0,$FFFF8020.w
 	bclr.b	#$1,$FFFF8024.w
-	bsr.w	RestoreBios_67
-	bsr.w	RestoreBios_65
-	bsr.w	RestoreBios_68
+	bsr.w	CommHandshake0
+	bsr.w	ReleaseWordRam
+	bsr.w	CommHandshake1
 .l33A0	btst.b	#$0,$FFFF8014.w
 	beq.b	.l33A0
 	bset.b	#$1,$FFFF8024.w
-	bsr.w	RestoreBios_69
-	bsr.w	RestoreBios_64
-	bsr.w	RestoreBios_70
+	bsr.w	CommHandshake2
+	bsr.w	TakeWordRam
+	bsr.w	CommHandshake3
 	rts
-RestoreBios_63	move.w	#$0,$FFFF8020.w
+; Clears the sub-CPU communication registers $8020-$802C.
+ClearCommRegs	move.w	#$0,$FFFF8020.w
 	move.w	#$0,$FFFF8022.w
 	move.w	#$0,$FFFF8024.w
 	move.w	#$0,$FFFF8026.w
@@ -1601,13 +1713,15 @@ RestoreBios_63	move.w	#$0,$FFFF8020.w
 	bne.b	.l3406
 	bclr.b	#$7,$FFFF800F.w
 	rts
-RestoreBios_64	btst.b	#$1,$FFFF8003.w
-	beq.b	RestoreBios_64
+; Waits until word RAM is granted to the sub CPU and notes it.
+TakeWordRam	btst.b	#$1,$FFFF8003.w
+	beq.b	TakeWordRam
 	btst.b	#$0,$FFFF8003.w
-	bne.b	RestoreBios_64
+	bne.b	TakeWordRam
 	bset.b	#$1,$10912.l
 	rts
-RestoreBios_65	bset.b	#$0,$FFFF8003.w
+; Returns word RAM to the main CPU.
+ReleaseWordRam	bset.b	#$0,$FFFF8003.w
 	bclr.b	#$1,$10912.l
 	rts
 	lea.l	$10ADA.l,a0
@@ -1615,9 +1729,9 @@ RestoreBios_65	bset.b	#$0,$FFFF8003.w
 	cmpa.l	#$10BD8,a0
 	blt.b	.l3446
 	rts
-RestoreBios_66	dc.w	$4E75
+RestoreBios_78	rts
 	dc.b	$4E,$B9,$00,$00,$E3,$F8	; N.....
-RestoreBiosSub23	movem.l	a0-a1,-(sp)
+RestoreBiosSub20	movem.l	a0-a1,-(sp)
 	movea.l	$EC96.l,a0
 	move.l	(a0),$10ACC.l
 	move.l	#$EA8A,(a0)
@@ -1648,12 +1762,12 @@ RestoreBiosSub23	movem.l	a0-a1,-(sp)
 	addq.l	#$4,sp
 	movem.l	(sp)+,d1-d2
 	rts
-RestoreBiosSub24	movem.l	d0/a0,-(sp)
+RestoreBiosSub21	movem.l	d0/a0,-(sp)
 	moveq	#$6,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
-RestoreBiosSub25	movem.l	d0-d3/a0,-(sp)
+RestoreBiosSub22	movem.l	d0-d3/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+
@@ -1662,21 +1776,30 @@ RestoreBiosSub25	movem.l	d0-d3/a0,-(sp)
 	move.w	$10B0C.l,(a0)+
 	move.w	$10B10.l,(a0)+
 	moveq	#$7,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a0
 	move.w	(a0)+,$10B0A.l
 	move.w	(a0)+,$10B0C.l
 	move.w	(a0)+,$10B10.l
 	movem.l	(sp)+,d0-d3/a0
-	dc.w	$4E75
-	dc.b	$48,$E7,$F6,$F2,$4D,$F9,$00,$0B,$A4,$50,$2C,$C8,$2C,$C9,$2C,$CA	; H...M....P,.,.,.
-	dc.b	$2C,$C0,$2C,$C1,$2C,$C2,$2C,$C3,$2C,$C4,$2C,$C5,$3C,$F9,$00,$01	; ,.,.,.,.,.,.<...
-	dc.b	$0B,$0E,$3C,$F9	; ..<.
-RestoreBiosSub26	dc.w	$0001,$0B0A
+	rts
+RestoreBios_79	movem.l	d0-d3/d5-d6/a0-a3/a6,-(sp)
+	lea.l	$BA450.l,a6
+	move.l	a0,(a6)+
+	move.l	a1,(a6)+
+	move.l	a2,(a6)+
+	move.l	d0,(a6)+
+	move.l	d1,(a6)+
+	move.l	d2,(a6)+
+	move.l	d3,(a6)+
+	move.l	d4,(a6)+
+	move.l	d5,(a6)+
+	move.w	$10B0E.l,(a6)+
+	move.w	$10B0A.l,(a6)+
 	move.w	$10B0C.l,(a6)+
 	move.w	$10B10.l,(a6)+
 	moveq	#$8,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a6
 	move.w	(a6)+,d4
 	move.w	(a6)+,$10B0E.l
@@ -1685,7 +1808,7 @@ RestoreBiosSub26	dc.w	$0001,$0B0A
 	move.w	(a6)+,$10B10.l
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3/a6
 	rts
-RestoreBiosSub27	movem.l	d0/a1-a2,-(sp)
+RestoreBiosSub23	movem.l	d0/a1-a2,-(sp)
 	movea.l	$C(sp),a1
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
@@ -1700,7 +1823,7 @@ RestoreBiosSub27	movem.l	d0/a1-a2,-(sp)
 	dbra	d0,.l35AE
 	move.l	a1,$C(sp)
 	moveq	#$B,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
 	move.w	(a1)+,$10B10.l
@@ -1708,7 +1831,7 @@ RestoreBiosSub27	movem.l	d0/a1-a2,-(sp)
 	move.w	(a1),$10B0C.l
 	movem.l	(sp)+,d0/a1-a2
 	rts
-RestoreBiosSub28	movem.l	d0-d3/a0/a2-a3,-(sp)
+RestoreBiosSub24	movem.l	d0-d3/a0/a2-a3,-(sp)
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
 	move.w	$10B0A.l,(a2)+
@@ -1724,7 +1847,7 @@ RestoreBiosSub28	movem.l	d0-d3/a0/a2-a3,-(sp)
 .l3622	move.w	(a1)+,(a2)+
 	dbra	d0,.l3622
 	moveq	#$C,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a2
 	move.w	(a2)+,$10B0E.l
 	move.w	(a2)+,$10B0A.l
@@ -1733,7 +1856,7 @@ RestoreBiosSub28	movem.l	d0-d3/a0/a2-a3,-(sp)
 	move.w	(a2),$10B10.l
 	movem.l	(sp)+,d0-d3/a0/a2-a3
 	rts
-RestoreBiosSub29	movem.l	d0/a1-a2,-(sp)
+RestoreBios_80	movem.l	d0/a1-a2,-(sp)
 	movea.l	$C(sp),a1
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
@@ -1750,7 +1873,7 @@ RestoreBiosSub29	movem.l	d0/a1-a2,-(sp)
 .l369C	move.w	(a1)+,(a2)+
 	dbra	d0,.l369C
 	moveq	#$D,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	move.l	a1,$C(sp)
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
@@ -1760,7 +1883,7 @@ RestoreBiosSub29	movem.l	d0/a1-a2,-(sp)
 	move.w	(a1),$10B10.l
 	movem.l	(sp)+,d0/a1-a2
 	rts
-RestoreBiosSub30	movem.l	d1-d4,-(sp)
+RestoreBiosSub25	movem.l	d1-d4,-(sp)
 	clr.w	d4
 	moveq	#$2,d3
 	moveq	#$E,d2
@@ -1775,17 +1898,17 @@ RestoreBiosSub30	movem.l	d1-d4,-(sp)
 	move.w	d4,d0
 	movem.l	(sp)+,d1-d4
 	rts
-RestoreBiosSub31	movem.l	d0/a0-a1,-(sp)
+RestoreBiosSub26	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	lea.l	$10AE4.l,a1
 .l370C	move.w	(a1)+,(a0)+
 	cmpa.l	#$10B08,a1
 	blt.b	.l370C
 	moveq	#$E,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBiosSub32	movem.l	a1,-(sp)
+RestoreBiosSub27	movem.l	a1,-(sp)
 	movem.l	$4(sp),a1
 	bsr.w	.l24A3C
 	movem.l	a1,$4(sp)
@@ -1815,7 +1938,7 @@ RestoreBiosSub32	movem.l	a1,-(sp)
 	move.w	d0,(a3)
 .l377A	movem.l	(sp)+,d0/a0
 	rts
-RestoreBiosSub33	movem.l	d1-d2/a0-a1,-(sp)
+RestoreBiosSub28	movem.l	d1-d2/a0-a1,-(sp)
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1)+,d2
@@ -1833,7 +1956,7 @@ RestoreBiosSub33	movem.l	d1-d2/a0-a1,-(sp)
 	movem.l	(sp)+,d1-d2/a0-a1
 	rts
 .l24AB2	ext.w	d1
-	beq.w	RestoreBios_61
+	beq.w	RestoreBios_69
 	cmpi.w	#$61,d1
 	blt.w	.l37CC
 	cmpi.w	#$7A,d1
@@ -1842,16 +1965,16 @@ RestoreBiosSub33	movem.l	d1-d2/a0-a1,-(sp)
 .l37CC	addq.w	#$1,d0
 	movea.l	#$10570,a0
 	tst.b	-$20(a0,d1.w)
-	bmi.w	RestoreBios_61
+	bmi.w	RestoreBios_69
 	addq.w	#$1,d0
 	rts
-RestoreBiosSub34	movem.l	d0,-(sp)
+RestoreBiosSub29	movem.l	d0,-(sp)
 	moveq	#$F,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	move.w	$BA450.l,$10BCE.l
 	movem.l	(sp)+,d0
 	rts
-RestoreBiosSub35	movem.l	d0-d1/a0-a1,-(sp)
+RestoreBiosSub30	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	d4,(a0)+
 	move.l	a2,(a0)+
@@ -1859,41 +1982,45 @@ RestoreBiosSub35	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	moveq	#$10,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a0
 	move.l	(a0),d4
 	movem.l	(sp)+,d0-d1/a0-a1
 	addq.l	#$8,(sp)
 	rts
-RestoreBios_67	btst.b	#$0,$FFFF8018.w
-	beq.b	RestoreBios_67
+; Sets and clears handshake flag 0 in $8028 after the main CPU answers on $8018.
+CommHandshake0	btst.b	#$0,$FFFF8018.w
+	beq.b	CommHandshake0
 	bset.b	#$0,$FFFF8028.w
 .l3834	btst.b	#$0,$FFFF8018.w
 	bne.b	.l3834
 	bclr.b	#$0,$FFFF8028.w
 	rts
-RestoreBios_68	btst.b	#$1,$FFFF8018.w
-	beq.b	RestoreBios_68
+; Handshake flag 1.
+CommHandshake1	btst.b	#$1,$FFFF8018.w
+	beq.b	CommHandshake1
 	bset.b	#$1,$FFFF8028.w
 .l3852	btst.b	#$1,$FFFF8018.w
 	bne.b	.l3852
 	bclr.b	#$1,$FFFF8028.w
 	rts
-RestoreBios_69	btst.b	#$2,$FFFF8018.w
-	beq.b	RestoreBios_69
+; Handshake flag 2.
+CommHandshake2	btst.b	#$2,$FFFF8018.w
+	beq.b	CommHandshake2
 	bset.b	#$2,$FFFF8028.w
 .l3870	btst.b	#$2,$FFFF8018.w
 	bne.b	.l3870
 	bclr.b	#$2,$FFFF8028.w
 	rts
-RestoreBios_70	btst.b	#$3,$FFFF8018.w
-	beq.b	RestoreBios_70
+; Handshake flag 3.
+CommHandshake3	btst.b	#$3,$FFFF8018.w
+	beq.b	CommHandshake3
 	bset.b	#$3,$FFFF8028.w
 .l388E	btst.b	#$3,$FFFF8018.w
 	bne.b	.l388E
 	bclr.b	#$3,$FFFF8028.w
 	rts
-RestoreBiosSub36	movem.l	d0/a0-a1,-(sp)
+RestoreBiosSub31	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	movea.l	$C(sp),a1
 	move.l	(a1)+,(a0)+
@@ -1902,25 +2029,26 @@ RestoreBiosSub36	movem.l	d0/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	a1,$C(sp)
 	moveq	#$12,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBiosSub37	movem.l	d0/a0-a1,-(sp)
+RestoreBiosSub32	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	moveq	#$12,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBios_71	lea.l	$BA450.l,a0
+; Sends command 5 with the value from $1094C.
+SendCmd5	lea.l	$BA450.l,a0
 	move.l	$1094C.l,(a0)+
 	moveq	#$5,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	rts
-RestoreBiosSub38	movem.l	d0-d3/a0/a2/a6,-(sp)
+RestoreBiosSub33	movem.l	d0-d3/a0/a2/a6,-(sp)
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
 	move.w	$10B10.l,(a2)+
@@ -1934,7 +2062,7 @@ RestoreBiosSub38	movem.l	d0-d3/a0/a2/a6,-(sp)
 	dbra	d0,.l3924
 	movea.l	a1,a6
 	moveq	#$B,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
 	move.w	(a1)+,$10B10.l
@@ -1943,57 +2071,57 @@ RestoreBiosSub38	movem.l	d0-d3/a0/a2/a6,-(sp)
 	movea.l	a6,a1
 	movem.l	(sp)+,d0-d3/a0/a2/a6
 	rts
-RestoreBiosSub39	movem.l	a0,-(sp)
+RestoreBiosSub34	movem.l	a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)
 	moveq	#$13,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,a0
 	rts
 	bsr.w	.l24C78
-	bra.w	RestoreBiosSub28
+	bra.w	RestoreBiosSub24
 .l24C78	bra.w	.l397E
 .l397C	adda.w	(a1),a1
 .l397E	dbra	d0,.l397C
 	rts
-RestoreBiosSub40	movem.l	d0,-(sp)
+RestoreBiosSub35	movem.l	d0,-(sp)
 	moveq	#$14,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
-RestoreBiosSub41	movem.l	d0,-(sp)
+RestoreBiosSub36	movem.l	d0,-(sp)
 	moveq	#$15,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
-RestoreBiosSub42	movem.l	d0/a0,-(sp)
+RestoreBiosSub37	movem.l	d0/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	$10B22.l,(a0)+
 	move.w	d0,(a0)+
 	moveq	#$16,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
-RestoreBiosSub43	movem.l	d0/a0,-(sp)
+RestoreBiosSub38	movem.l	d0/a0,-(sp)
 	move.w	d0,$BA450.l
 	moveq	#$19,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
 	move.l	d0,-(sp)
 	moveq	#$17,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	move.l	(sp)+,d0
 	rts
-RestoreBiosSub44	movem.l	d0-d2/a0,-(sp)
+RestoreBiosSub39	movem.l	d0-d2/a0,-(sp)
 	lea.l	$BA450.l,a0
-RestoreBiosSub45	move.w	d0,(a0)+
+RestoreBiosSub40	move.w	d0,(a0)+
 	move.w	d1,(a0)+
 	move.w	d2,(a0)+
 	moveq	#$18,d0
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0-d2/a0
 	rts
 .l3A00	bset.b	#$2,$FF8003.l
 	bne.b	.l3A00
-	dc.w	$4E75
+	rts

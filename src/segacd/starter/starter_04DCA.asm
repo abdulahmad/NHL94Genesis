@@ -1,6 +1,6 @@
 	dc.b	$91,'SendCommandToMa'	; .SendCommandToMa
 	dc.b	$69,$6E,$00,$00	; in..
-CopyData	dc.w	$4E56,$0000
+CopyData	link	a6,#$0
 CopyDataSub1	movem.l	d4-d7,-(sp)
 	move.l	$C(a6),d4
 	move.l	$8(a6),d5
@@ -10,7 +10,7 @@ CopyDataSub1	movem.l	d4-d7,-(sp)
 	asr.l	#$2,d0
 	move.l	d0,d6
 	moveq	#$0,d7
-	dc.w	$600E
+	bra.b	CopyData_2
 CopyData_1	movea.l	d5,a0
 CopyDataSub2	addq.l	#$4,d5
 	movea.l	d4,a1
@@ -18,9 +18,9 @@ CopyDataSub2	addq.l	#$4,d5
 	move.l	(a0),(a1)
 	move.l	d7,d0
 	addq.l	#$1,d7
-.l2610C	cmp.l	d7,d6
+CopyData_2	cmp.l	d7,d6
 	bgt.b	CopyData_1
 	movem.l	-$10(a6),d4-d7
 	unlk	a6
-	dc.w	$4E75
+	rts
 	dc.b	$88,'CopyData',$00,$00,$00	; .CopyData...

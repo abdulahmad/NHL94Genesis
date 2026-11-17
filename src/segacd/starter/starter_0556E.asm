@@ -254,7 +254,7 @@
 	dc.b	$5A,$0D,$0D,$00,$00,$00,$00,$77,$07,$77,$79,$00,$90	; Z......w.wy..
 	dcb.b	$13,0
 GetDataSub9	subi.w	#$7,d6
-	dc.w	$6000,$0070
+	bra.w	.l28318
 	dc.b	$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$07	; ...p...p...p....
 	dcb.b	$A,0
 	dc.b	$70,$00,$77,$70,$07,$00,$70,$07,$07,$00,$77,$70,$07,$00,$70,$07	; p.wp..p...wp..p.
@@ -869,21 +869,21 @@ GetDataSub9	subi.w	#$7,d6
 	dc.b	'@L`M`N`O`P`Q`R S'	; @L`M`N`O`P`Q`R S
 	dcb.b	$40,0
 GetDataSub10	ori.w	#$4055,(a4)
-	dc.w	$6056
+	bra.b	GetData_26
 	dc.b	'`W`X`Y@Z ['	; `W`X`Y@Z [
 	dcb.b	$40,0
 GetDataSub11	negx.w	(a4)+
 	negx.w	(a5)+
-	dc.w	$605E
+	bra.b	GetData_27
 	dc.b	'`_```a'	; `_```a
-.l2CBCE	dc.b	'@b@c'	; @b@c
+GetData_26	dc.b	'@b@c'	; @b@c
 	dcb.b	$40,0
 GetDataSub12	movea.l	-(a4),a0
 	negx.w	-(a5)
 	negx.w	-(a6)
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
-.l2CC26	dcb.b	$42,0
+GetData_27	dcb.b	$42,0
 	dc.b	'`l`m'	; `l`m
 	dcb.b	$15,0
 .l2CC81	dcb.b	$D1,0
@@ -910,7 +910,7 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bclr.b	#$7,$FF800F.l
 	bset.b	#$5,$FF800F.l
 	bset.b	#$2,$FF8033.l
-	bsr.w	GetData_30
+	bsr.w	GetData_33
 .l1BD18	btst.b	#$7,$FF800E.l
 	bne.b	.l1BD18
 	move.w	#$3F,$FF8020.l
@@ -922,7 +922,7 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 .l1BD4C	btst.b	#$6,$FF800E.l
 	bne.b	.l1BD4C
 	bclr.b	#$7,$FF800F.l
-	bsr.w	GetData_29
+	bsr.w	GetData_32
 	move.l	$B090.l,$6038.w
 .l1BD6A	btst.b	#$7,$FF800E.l
 	bne.b	.l1BD6A
@@ -974,16 +974,16 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 .l1BE6A	move.w	#$FFFF,d0
 	move.w	#$B,d7
 	jsr	$6044.w
-.l1BE76	dc.w	$4E75
+.l1BE76	rts
 	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00	; NHLHOCKEY94.....
 	dc.b	'NHLHOCKEY94',$00,$00,$3D,$41,$F9	; NHLHOCKEY94..=A.
 	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
 	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
-	dc.b	$51,$C8,$FF,$FC,$4E,$75,$48,$E7,$FF,$E0,$33,$FC	; Q...NuH...3.
-GetDataSub14	ori.b	#$0,d1
-	and.w	(a0),d2
+	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
+GetDataSub14	movem.l	d0-d7/a0-a2,-(sp)
+	move.w	#$1,$C450.l
 	tst.w	$C44E.l
-	bne.w	GetData_25
+	bne.w	GetData_28
 	bset.b	#$5,$FF800F.l
 	movea.l	#$BBCB0,a1
 	moveq	#$1F,d0
@@ -1030,7 +1030,7 @@ GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	#$EEE,$BBCD2.l
 	move.l	#$4440666,$BBCF2.l
 	move.w	#$E000,d0
-	bsr.w	GetData_26
+	bsr.w	GetData_29
 	move.w	(a0)+,d1
 	move.w	(a0)+,d2
 	movea.l	a0,a2
@@ -1099,7 +1099,7 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$4(a1),a0
 	jsr	$2790E.l
 	move.w	#$C000,d0
-	bsr.w	GetData_26
+	bsr.w	GetData_29
 	tst.w	$C44C.l
 	bne.w	.l1C280
 	moveq	#$0,d4
@@ -1172,10 +1172,10 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.b	.l1C250
 	bclr.b	#$7,$FF800F.l
 	move.w	#$3B,$C444.l
-	lea.l	GetData_31(pc),a0
+	lea.l	GetData_34(pc),a0
 	move.w	#$5B,d0
 	moveq	#$9,d1
-.l1C274	bsr.w	GetData_27
+.l1C274	bsr.w	GetData_30
 	addi.w	#$28,d0
 	dbra	d1,.l1C274
 .l1C280	bset.b	#$5,$FF800F.l
@@ -1183,12 +1183,12 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 .l1C290	tst.w	$C43E.l
 	bpl.w	.l1C290
 	move.w	#$1,$C44E.l
-GetData_25	tst.w	$C44C.l
+GetData_28	tst.w	$C44C.l
 	bne.w	.l1C368
 .l1C2AC	clr.w	$C446.l
 .l1C2B2	tst.w	$C446.l
 	beq.w	.l1C2B2
-	bsr.w	GetData_28
+	bsr.w	GetData_31
 	cmpi.b	#$4,d1
 	beq.w	.l1C2DC
 	cmpi.b	#$8,d1
@@ -1210,9 +1210,9 @@ GetData_25	tst.w	$C44C.l
 	bra.w	.l1C2AC
 .l1C320	cmpi.w	#$FFFF,$C442.l
 	beq.w	.l1C364
-	lea.l	GetData_32(pc),a0
+	lea.l	GetData_35(pc),a0
 	move.w	#$213,d0
-	bsr.w	GetData_27
+	bsr.w	GetData_30
 	moveq	#$3,d1
 	moveq	#$F,d2
 	move.w	d2,d3
@@ -1222,27 +1222,27 @@ GetData_25	tst.w	$C44C.l
 	beq.w	.l1C348
 	dbra	d2,.l1C342
 	move.w	d3,d2
-	bsr.w	GetData_27
+	bsr.w	GetData_30
 	addi.w	#$1,d0
 	dbra	d1,.l1C342
 .l1C364	bra.w	.l1C3A4
 .l1C368	move.w	#$C000,d0
-	bsr.w	GetData_26
+	bsr.w	GetData_29
 	move.w	#$B,d1
 	move.w	#$5B,d0
-	lea.l	GetData_33(pc),a0
-.l1C37C	bsr.w	GetData_27
+	lea.l	GetData_36(pc),a0
+.l1C37C	bsr.w	GetData_30
 	addi.w	#$28,d0
 	dbra	d1,.l1C37C
 .l1C388	clr.w	$C446.l
 .l1C38E	tst.w	$C446.l
 	beq.w	.l1C38E
-	bsr.w	GetData_28
+	bsr.w	GetData_31
 	cmpi.b	#$20,d1
 	bne.w	.l1C388
 .l1C3A4	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-GetData_26	movem.l	d0-d2,-(sp)
+GetData_29	movem.l	d0-d2,-(sp)
 	move.w	#$0,d1
 	lsr.w	#$5,d1
 	moveq	#$0,d2
@@ -1388,7 +1388,7 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 	move.l	d3,$BBC88.l
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
-	bsr.w	GetData_30
+	bsr.w	GetData_33
 .l1C6F4	btst.b	#$4,$FF800E.l
 	bne.b	.l1C6F4
 	move.w	#$1D,$FF8026.l
@@ -1400,7 +1400,7 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 .l1C728	btst.b	#$3,$FF800E.l
 	bne.b	.l1C728
 	bclr.b	#$4,$FF800F.l
-	bsr.w	GetData_29
+	bsr.w	GetData_32
 .l1C73E	movem.l	(sp)+,d0-d7/a0
 	rts
 .l1C744	movea.l	#$BBCB0,a1
@@ -1433,7 +1433,7 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 	st.b	$C43E.l
 	movem.l	(sp)+,d0-d7/a0
 	rts
-GetData_27	movem.l	d0-d2/a1/a5,-(sp)
+GetData_30	movem.l	d0-d2/a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2
@@ -1575,20 +1575,20 @@ GetDataSub18	movem.l	d2-d3/a1-a2,-(sp)
 	bset.b	#$2,$FF800F.l
 	move.l	#$27A9E,-(sp)
 	move.l	$C432.l,-(sp)
-	dc.w	$4E75
+	rts
 	dc.b	$4E,$B9,$00,$02,$7B,$38,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6	; N...{8.9......f.
 	dc.b	$33,$FC,$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F	; 3../...&........
 	dc.b	$08,$39,$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF	; .9......g.......
 	dc.b	$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF	; ...........9....
 	dc.b	$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02	; ..f.............
 	dc.b	$00,$FF,$80,$0F	; ....
-.l3DDF2	dc.w	$4E75
+.l3DDF2	rts
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
 GetDataSub19	movem.l	d0-d7/a0-a4/a6,-(sp)
 	btst.b	#$0,$FF800F.l
 	beq.w	.l1CB1E
 	btst.b	#$1,$FF800E.l
-	dc.w	$6708
+	beq.b	.l1CB1E
 	move.w	#$A,d7
 	jsr	$6044.w
 .l1CB1E	movem.l	(sp)+,d0-d7/a0-a4/a6
@@ -1646,7 +1646,7 @@ GetDataSub20	movem.l	d1/a0,-(sp)
 .l1CC36	btst.b	#$3,$FF800E.l
 	bne.b	.l1CC36
 	bclr.b	#$4,$FF800F.l
-	dc.w	$6000,$0050
+	bra.w	.l3DF9A
 	dc.b	$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$13,$FC,$00,$3C,$00,$FF	; .9......f....<..
 	dc.b	$80,$28,$33,$FC,$00,$35,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF	; .(3..5...&......
 	dc.b	$80,$0F,$08,$39,$00,$04,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04	; ...9......g.....
@@ -1769,9 +1769,9 @@ GetDataSub20	movem.l	d1/a0,-(sp)
 	or.b	(a0,d1.w),d0
 	not.b	d0
 	movem.l	(sp)+,d1/a0
-	dc.w	$4E75
+	rts
 .l3E24A	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
-GetData_28	move.b	$2800A.l,d0
+GetData_31	move.b	$2800A.l,d0
 	bsr.w	.l3E2D2
 	move.w	$28002.l,d2
 	move.w	d1,$28002.l
@@ -1813,13 +1813,13 @@ GetData_28	move.b	$2800A.l,d0
 	move.b	(a0,d1.w),d1
 	or.w	d1,d0
 	move.w	(sp)+,d1
-	dc.w	$4E75
+	rts
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
-GetData_29	btst.b	#$1,$FF8003.l
-	beq.b	GetData_29
+GetData_32	btst.b	#$1,$FF8003.l
+	beq.b	GetData_32
 	rts
-GetData_30	bset.b	#$0,$FF8003.l
+GetData_33	bset.b	#$0,$FF8003.l
 .l1D022	btst.b	#$1,$FF8003.l
 	bne.b	.l1D022
 	rts
@@ -1833,7 +1833,7 @@ GetData_30	bset.b	#$0,$FF8003.l
 	bne.b	.l1D052
 	bclr.b	#$6,$FF800F.l
 	bclr.b	#$7,$FF800F.l
-	dc.w	$4E75
+	rts
 	dc.b	$34,$3C,$00,$07,$16,$02,$06,$43,$00,$40,$13,$C3,$00,$FF,$00,$0F	; 4<.....C.@......
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$0D,$13,$FC,$00,$00,$00,$FF,$00,$0B	; ................
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$09,$51,$CA,$FF,$DA,$13,$FC,$00,$40	; ........Q......@
@@ -1857,7 +1857,7 @@ GetDataSub22	movem.l	d0-d1/a0-a1,-(sp)
 .l1D0F2	bclr.b	#$2,$FF8003.l
 	bne.b	.l1D0F2
 	rts
-GetData_31	dc.b	'    WARNING!!   '	;     WARNING!!   
+GetData_34	dc.b	'    WARNING!!   '	;     WARNING!!   
 	dc.b	$20,$20,$00,'Backup ram is'	;   .Backup ram is
 	dc.b	' NOT ',$00,'formatted.'	;  NOT .formatted.
 	dc.b	' Do you ',$00,'want to'	;  Do you .want to
@@ -1869,9 +1869,9 @@ GetData_31	dc.b	'    WARNING!!   '	;     WARNING!!
 	dc.b	'on to  ',$00,'confirm.'	; on to  .confirm.
 	dc.b	'          ',$00,'     '	;           .     
 	dc.b	'             ',$00	;              .
-GetData_32	dc.b	'FORMATTING',$00,$2E,$00,$2E,$00,$2E	; FORMATTING......
+GetData_35	dc.b	'FORMATTING',$00,$2E,$00,$2E,$00,$2E	; FORMATTING......
 	dc.b	$00,$2E,$00	; ...
-GetData_33	dc.b	'    WARNING!!   '	;     WARNING!!   
+GetData_36	dc.b	'    WARNING!!   '	;     WARNING!!   
 	dc.b	$20,$20,$00,'Not enough ro'	;   .Not enough ro
 	dc.b	'om to',$00,'save game '	; om to.save game 
 	dc.b	'status. ',$00,'To save'	; status. .To save

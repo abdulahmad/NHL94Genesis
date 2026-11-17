@@ -15,6 +15,7 @@ BR = ("bra", "bsr", "beq", "bne", "bhi", "bls", "bcc", "bcs", "bpl", "bmi", "bvc
       "dbra", "dbf", "dbne", "dbt", "dbeq", "dbhi", "dbcc", "dbcs", "dbmi", "dbpl", "dble", "dblt", "dbge", "dbgt",
       "dbls", "dbvs", "dbvc")
 STRICT = True
+INLINE = {}   # bsr/jsr target address -> number of inline data bytes that follow the call (set by the generator)
 STOP = ("rts", "rte", "jmp", "bra", "rtr", "illegal")
 SUSPECT = ("illegal", "reset", "stop")
 
@@ -25,6 +26,11 @@ def is_zero_word(g):
     if b[:2] != b"\x00\x00":
         return False
     return not (g.mnemonic.startswith("ori.b") and len(b) == 4 and b[2] == 0 and b[3] != 0 and g.op_str.endswith("d0"))
+
+
+def inline_len(d, at, spec):
+    """Inline data bytes after a call: a number, or 'w' = the word at `at` gives the length (itself included)."""
+    return int.from_bytes(d[at:at + 2], "big") if spec == "w" else spec
 
 
 def decode_at(d, pc, base):
@@ -250,6 +256,12 @@ def find_code_seeded(d, base, seeds, covered, insns, string_calls):
                     break
                 pq.append(tgt)
                 (pcalls if mn == "bsr" else plabels).add(tgt)
+                if mn == "bsr" and base + tgt in INLINE:
+                    nb = inline_len(d, pc + g.size, INLINE[base + tgt])
+                    for k in range(nb):
+                        path[pc + g.size + k] = -1
+                    pc += g.size + nb
+                    continue
             elif mn in ("jsr", "jmp") and "(pc)" in g.op_str and m:
                 tgt = int(m.group(1), 16) - base
                 if 0 <= tgt < n:
@@ -258,6 +270,12 @@ def find_code_seeded(d, base, seeds, covered, insns, string_calls):
             elif mn in ("jsr", "jmp") and len(g.bytes) in (4, 6):
                 t = abs_target(g, base, n)
                 if t is not None:
+                    if mn == "jsr" and len(g.bytes) == 6 and t in INLINE:
+                        nb = inline_len(d, pc + 6, INLINE[t])
+                        for k in range(nb):
+                            path[pc + 6 + k] = -1
+                        pc += 6 + nb
+                        continue
                     if mn == "jsr" and len(g.bytes) == 6 and t in string_calls:
                         ln = int.from_bytes(d[pc + 6:pc + 8], "big")
                         for k in range(ln):

@@ -5,7 +5,8 @@
 ; See docs/segacd_film.md.
 
 
-GetTicks_2	link	a6,#$0
+; C function SendCommandToMain (Sierra C name tag follows it).
+SendCommandToMain	link	a6,#$0
 	movem.l	a3-a4,-(sp)
 	movea.l	#$FF8010,a4
 	movea.l	#$FF8020,a3
