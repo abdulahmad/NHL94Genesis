@@ -34,7 +34,7 @@ BiosBuram	equ	$5F16
 	include	segacd\starter\audiostream.asm
 	include	segacd\starter\starterarith.asm
 	include	segacd\starter\cdfade.asm
-	include	segacd\starter\starterdisptbl.asm
+	include	segacd\starter\starterdata.asm
 	include	segacd\starter\startergate.asm
 	include	segacd\starter\starterstr.asm
 
