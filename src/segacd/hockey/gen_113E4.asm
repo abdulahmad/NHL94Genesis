@@ -451,7 +451,7 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 .4	move.w	#$2,(printy).l
 .row	jsr	(printsmallz).l
 	dc.w	$0020
-	dc.b	$FE,$04,$FD,$05,$FA,$01,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$FD,$05
+	dc.b	$FE,$04,$FD,$05,$FA,$01,'                      ',$FD,$05
 	cmp.w	(VertLineScrolling).l,d2
 	bne.w	.5
 	move.w	d7,(printa).l
@@ -755,7 +755,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 .l1212C	bsr.w	PutTeamBlockSub1
 	jsr	(printsmallz).l
 	dc.w	$0034
-	dc.b	$F8,$06,$03,$02,$0C,$F9,$01,$50,$6F,$73,$2E,$5E,$50,$6C,$61,$79,$65,$72,$FD,$1E,$FC,$0C,$52,$61,$74,$69,$6E,$67,$FD,$0C,$FC,$1A,$41,$5E,$2D,$5E,$53,$77,$69,$74,$63,$68,$5E,$54,$65,$61,$6D,$73,$F9,$00
+	dc.b	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9,$00
 	jsr	(printz).l
 	String	CC_Font3Pri,$1,$8
 	moveq	#$12,d0

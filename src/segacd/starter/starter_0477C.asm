@@ -1,14 +1,14 @@
-	dc.b	$89,$46,$69,$6C,$6D,$43,$6C,$6F,$73,$65,$00,$00	; .FilmClose..
-L25A88	dc.w	$4E56,$0000
+	dc.b	$89,'FilmClose',$00,$00	; .FilmClose..
+Wait_24	dc.w	$4E56,$0000
 .l478C	movea.l	#$FF8010,a0
 	tst.w	$2(a0)
 	bne.b	.l478C
 	eori.w	#$1,$FF8002.l
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$87,$53,$77,$61,$70,$4D,$65,$67,$00,$00	; .SwapMeg..
+	dc.b	$87,'SwapMeg',$00,$00	; .SwapMeg..
 DrawText	dc.w	$4E56,$0000
-Sub_25AB2	movem.l	d7/a4,-(sp)
+DrawTextSub1	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
 	moveq	#$1,d0
 	move.l	d0,-(sp)
@@ -35,9 +35,9 @@ Sub_25AB2	movem.l	d7/a4,-(sp)
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$88,$44,$72,$61,$77,$54,$65,$78,$74,$00,$00,$00	; .DrawText...
+	dc.b	$88,'DrawText',$00,$00,$00	; .DrawText...
 NumStr	dc.w	$4E56,$FFF0
-Sub_25B0A	movem.l	d6-d7/a3-a4,-(sp)
+NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
 	lea.l	-$10(a6),a4
 	move.l	$8(a6),d6
@@ -66,9 +66,9 @@ Sub_25B0A	movem.l	d6-d7/a3-a4,-(sp)
 	movem.l	-$20(a6),d6-d7/a3-a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$86,$4E,$75,$6D,$53,$74,$72,$00,$00,$00	; .NumStr...
+	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	dc.w	$4E56,$0000
-Sub_25B68	movem.l	d3-d7/a4,-(sp)
+HexStrSub1	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
 	move.l	$8(a6),d5
 	movea.l	$10(a6),a4
@@ -100,8 +100,8 @@ Sub_25B68	movem.l	d3-d7/a4,-(sp)
 	movem.l	-$18(a6),d3-d7/a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$86,$48,$65,$78,$53,$74,$72,$00,$00,$00	; .HexStr...
-L25BC4	dc.w	$4E56,$FED8
+	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
+HexStr_1	dc.w	$4E56,$FED8
 aprint	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
 	lea.l	-$108(a6),a3
@@ -200,8 +200,8 @@ aprint	movem.l	d4-d7/a3-a4,-(sp)
 	movem.l	-$140(a6),d4-d7/a3-a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$86,$61,$70,$72,$69,$6E,$74,$00,$00,$00	; .aprint...
-L25CFA	dc.w	$4E56,$0000
+	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
+aprint_1	dc.w	$4E56,$0000
 ffree	movem.l	a3-a4,-(sp)
 	movea.l	$8(a6),a3
 	movea.l	a3,a4
@@ -216,14 +216,14 @@ ffree	movem.l	a3-a4,-(sp)
 	dc.w	$670E
 .l4A1E	move.l	a4,-(sp)
 	dc.w	$487A,$008C
-	jsr	L25BC4(pc)
+	jsr	HexStr_1(pc)
 	addq.w	#$8,sp
 	dc.w	$6050
 .l4A2C	tst.w	$2(a4)
 	dc.w	$660E
 	move.l	a4,-(sp)
 	dc.w	$487A,$0058
-	jsr	L25BC4(pc)
+	jsr	HexStr_1(pc)
 	addq.w	#$8,sp
 	dc.w	$603C
 .l4A40	tst.l	$4(a4)
@@ -245,15 +245,15 @@ ffree	movem.l	a3-a4,-(sp)
 .l4A7C	movem.l	-$8(a6),a3-a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$85,$66,$66,$72,$65,$65,$00,$40	; .ffree.@
-L25D8E	dc.b	$54,$72,$69,$65,$64,$20,$74,$6F,$20,$66,$66,$72,$65,$65,$20,$61	; Tried to ffree a
-	dc.b	$20,$66,$72,$65,$65,$20,$62,$6C,$6F,$63,$6B,$3A,$20,$25,$78,$00	;  free block: %x.
-L25DAE	dc.b	$54,$72,$69,$65,$64,$20,$74,$6F,$20,$66,$66,$72,$65,$65,$20,$61	; Tried to ffree a
-	dc.b	$20,$62,$61,$64,$20,$62,$6C,$6F,$63,$6B,$3A,$20,$25,$78,$00,$00	;  bad block: %x..
+	dc.b	$85,'ffree',$00,$40	; .ffree.@
+.l25D8E	dc.b	'Tried to ffree a'	; Tried to ffree a
+	dc.b	' free block: %x',$00	;  free block: %x.
+.l25DAE	dc.b	'Tried to ffree a'	; Tried to ffree a
+	dc.b	' bad block: %x',$00,$00	;  bad block: %x..
 findSmallestBlock	dc.w	$4E56,$0000
-Sub_25DD2	movem.l	d5-d7/a3-a4,-(sp)
+findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#$0,d0
 	movea.l	d0,a3
@@ -279,11 +279,11 @@ Sub_25DD2	movem.l	d5-d7/a3-a4,-(sp)
 	movem.l	-$14(a6),d5-d7/a3-a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$91,$66,$69,$6E,$64,$53,$6D,$61,$6C,$6C,$65,$73,$74,$42,$6C,$6F	; .findSmallestBlo
+	dc.b	$91,'findSmallestBlo'	; .findSmallestBlo
 	dc.b	$63,$6B,$00,$00	; ck..
-L25E34	dc.w	$4E56,$0000
+findSmallestBlock_1	dc.w	$4E56,$0000
 MaxFree	movem.l	d6-d7/a4,-(sp)
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#-1,d6
 	dc.w	$601C
@@ -304,8 +304,8 @@ MaxFree	movem.l	d6-d7/a4,-(sp)
 	movem.l	-$C(a6),d6-d7/a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$87,$4D,$61,$78,$46,$72,$65,$65,$00,$00	; .MaxFree..
-L25E7E	dc.w	$4E56,$0000
+	dc.b	$87,'MaxFree',$00,$00	; .MaxFree..
+MaxFree_1	dc.w	$4E56,$0000
 mmalloc	movem.l	d6-d7/a3-a4,-(sp)
 	move.l	$8(a6),d7
 	move.l	d7,d0
@@ -353,18 +353,18 @@ mmalloc	movem.l	d6-d7/a3-a4,-(sp)
 .l4BFC	movem.l	-$10(a6),d6-d7/a3-a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$87,$6D,$6D,$61,$6C,$6C,$6F,$63,$00,$00	; .mmalloc..
+	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	dc.w	$4E56,$0000
-Sub_25F14	movem.l	a3-a4,-(sp)
-	lea.l	L24FB4(pc),a0
+InitHeapSub1	movem.l	a3-a4,-(sp)
+	lea.l	RestoreBios_12(pc),a0
 	movea.l	$8(a0),a3
-	lea.l	L24FB4(pc),a0
-	lea.l	L24FB4(pc),a1
+	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_12(pc),a1
 	move.l	$C(a1),d0
 	add.l	$8(a0),d0
 	movea.l	d0,a4
 	lea.l	-$10(a4),a4
-Sub_25F36	move.b	#$48,(a3)
+InitHeapSub2	move.b	#$48,(a3)
 	move.b	#$42,$1(a3)
 	clr.w	$2(a3)
 	moveq	#$0,d0
@@ -380,45 +380,45 @@ Sub_25F36	move.b	#$48,(a3)
 	movem.l	-$8(a6),a3-a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$88,$49,$6E,$69,$74,$48,$65,$61,$70,$00,$00,$00	; .InitHeap...
-L25F84	dc.w	$4E56,$0000
+	dc.b	$88,'InitHeap',$00,$00,$00	; .InitHeap...
+InitHeap_1	dc.w	$4E56,$0000
 	move.l	d7,-(sp)
 	clr.w	$FF8020.l
 	dc.w	$487A,$00C0
-	jsr	L25BC4(pc)
-	lea.l	L24FB4(pc),a0
+	jsr	HexStr_1(pc)
+	lea.l	RestoreBios_12(pc),a0
 	moveq	#$F,d7
 	and.l	$8(a0),d7
 	tst.l	d7
 	addq.w	#$4,sp
 	dc.w	$670A
 	dc.w	$487A,$009C
-	jsr	L25BC4(pc)
+	jsr	HexStr_1(pc)
 	addq.w	#$4,sp
-.l4CB2	lea.l	L24FB4(pc),a0
+.l4CB2	lea.l	RestoreBios_12(pc),a0
 	move.l	$8(a0),d0
 	moveq	#$F,d1
 	add.l	d1,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	d2,$8(a0)
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	$C(a0),d0
 	sub.l	d7,d0
 	moveq	#-16,d2
 	and.l	d0,d2
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	d2,$C(a0)
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	$8(a0),-(sp)
 	dc.w	$487A,$004C
-	jsr	L25BC4(pc)
-	lea.l	L24FB4(pc),a0
+	jsr	HexStr_1(pc)
+	lea.l	RestoreBios_12(pc),a0
 	move.l	$C(a0),-(sp)
 	dc.w	$487A,$002C
-	jsr	L25BC4(pc)
-	lea.l	L24FB4(pc),a0
+	jsr	HexStr_1(pc)
+	lea.l	RestoreBios_12(pc),a0
 	tst.l	$C(a0)
 	lea.l	$10(sp),sp
 	dc.w	$6704
@@ -426,21 +426,21 @@ L25F84	dc.w	$4E56,$0000
 .l4D12	move.l	-$4(a6),d7
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$89,$49,$6E,$69,$74,$57,$6F,$72,$6C,$64,$00,$3C	; .InitWorld.<
-L26026	dc.b	$48,$65,$61,$70,$20,$53,$69,$7A,$65,$20,$3A,$20,$25,$78,$00,$00	; Heap Size : %x..
-L26036	dc.b	$48,$65,$61,$70,$20,$53,$74,$61,$72,$74,$3A,$20,$25,$78,$00,$00	; Heap Start: %x..
-L26046	dc.b	$46,$69,$78,$69,$6E,$67,$20,$48,$65,$61,$70,$00	; Fixing Heap.
-L26052	dc.b	$53,$55,$42,$43,$50,$55,$20,$69,$73,$20,$61,$6C,$69,$76,$65,$00	; SUBCPU is alive.
+	dc.b	$89,'InitWorld',$00,$3C	; .InitWorld.<
+.l26026	dc.b	'Heap Size : %x',$00,$00	; Heap Size : %x..
+.l26036	dc.b	'Heap Start: %x',$00,$00	; Heap Start: %x..
+.l26046	dc.b	'Fixing Heap',$00	; Fixing Heap.
+.l26052	dc.b	'SUBCPU is alive',$00	; SUBCPU is alive.
 GetTicks	dc.w	$4E56,$0000
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	$4(a0),d0
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$88,$47,$65,$74,$54,$69,$63,$6B,$73,$00,$00,$00	; .GetTicks...
-L2607E	dc.w	$4E56,$0000
-.l4D82	lea.l	L24FB4(pc),a0
+	dc.b	$88,'GetTicks',$00,$00,$00	; .GetTicks...
+GetTicks_1	dc.w	$4E56,$0000
+.l4D82	lea.l	RestoreBios_12(pc),a0
 	tst.l	$10(a0)
 	bne.b	.l4D82
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$8A,$57,$61,$69,$74,$49,$4F,$44,$6F,$6E,$65,$00,$00,$00	; .WaitIODone...
+	dc.b	$8A,'WaitIODone',$00,$00,$00	; .WaitIODone...

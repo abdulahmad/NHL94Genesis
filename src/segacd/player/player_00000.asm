@@ -1,14 +1,14 @@
 X_1B9C	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$2C,$7C,$00,$00,$AE,$6E,$9D,$FC	; ........,|...n..
 	dc.b	$00,$00,$00,$00,$4F,$FB,$E8,$EA,$2F,$0E,$2C,$7C,$00,$00,$A5,$94	; ....O.../.,|....
 	dc.b	$4D,$FB,$E8,$DE	; M...
-Sub_24	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	L3B8C
-	lea.l	L2D54(pc),a0
+X_1B9CSub1	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	LF64_35
+	lea.l	LF64_28(pc),a0
 	move.l	a0,$D2(a6)
 	move.w	d0,$7C(a6)
 	move.w	d1,$7E(a6)
 	move.w	d2,$BC(a6)
-	bsr.w	L3F24
+	bsr.w	LF64_44
 	move.w	#$6,d7
 	jsr	$6044.w
 	move.l	a0,$DA(a6)
@@ -45,7 +45,7 @@ Sub_24	movem.l	d0-d7/a0-a6,-(sp)
 	addi.l	#$44,d0
 	addi.l	#$44,d1
 	movea.l	d0,a2
-Sub_E8	movem.l	d0-d2/d7/a0-a1,-(sp)
+X_1B9CSub2	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -53,7 +53,7 @@ Sub_E8	movem.l	d0-d2/d7/a0-a1,-(sp)
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	movea.l	$FE(a6),a0
 	movea.l	d0,a2
-Sub_104	movem.l	d0-d2/d7/a0-a1,-(sp)
+X_1B9CSub3	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -68,7 +68,7 @@ Sub_104	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	$8(a0),$8(a6)
 	add.l	d2,$8(a6)
 	movea.l	d1,a2
-Sub_13E	movem.l	d0-d2/d7/a0-a1,-(sp)
+X_1B9CSub4	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -82,13 +82,13 @@ Sub_13E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	add.l	d2,$C(a6)
 	move.l	$8(a0),$14(a6)
 	add.l	d2,$14(a6)
-Sub_176	movem.l	d0-d2/d7/a0-a1,-(sp)
+X_1B9CSub5	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$40,d0
 	jsr	$6044.w
 	move.l	a0,$70(a6)
 	movem.l	(sp)+,d0-d2/d7/a0-a1
-Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
+X_1B9CSub6	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$22,d0
 	jsr	$6044.w
@@ -340,18 +340,18 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bclr.b	#$7,$FF800F.l
 	move.l	#$7A0,$62(a6)
 	move.l	#$1000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.l	#$20001000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.l	#$B0000700,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.w	#$7000,$FC(a6)
-	lea.l	L2D4E(pc),a0
+	lea.l	LF64_27(pc),a0
 	move.l	a0,$D2(a6)
 	move.w	#$0,$EC(a6)
 .l7F0	tst.w	$EC(a6)
 	beq.b	.l7F0
-	lea.l	L2D54(pc),a0
+	lea.l	LF64_28(pc),a0
 	move.l	a0,$D2(a6)
 	moveq	#$0,d6
 	moveq	#$0,d4
@@ -371,7 +371,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,$DE(a6)
 .l83E	tst.w	$DE(a6)
 	bne.w	.l83E
-	lea.l	L82A4(pc),a1
+	lea.l	LF64_56(pc),a1
 	move.l	a1,$74(a6)
 	movea.l	$74(a6),a1
 	move.w	$2(a1),d0
@@ -389,25 +389,25 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.w	.l87E
 	adda.l	#$4,a1
 	move.l	a1,$78(a6)
-	bsr.w	L1D54
+	bsr.w	LF64_11
 	move.w	d4,d0
-	bsr.w	L1376
-	bsr.w	L1B9C
+	bsr.w	LF64_6
+	bsr.w	LF64_10
 	move.w	#$18,$EC(a6)
 .l8A4	tst.w	$EC(a6)
 	bpl.w	.l8A4
 	bsr.w	LDEC
 	move.w	#$7,$BA(a6)
 .l8B6	move.l	#$B0000700,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.w	d4,d7
-	bsr.w	L36B6
+	bsr.w	LF64_32
 	move.b	d0,$BE(a6)
 	move.b	d1,$BF(a6)
 	move.b	d2,$C0(a6)
 	move.b	d3,$C1(a6)
 	move.w	d1,d5
-	bsr.w	L36CE
+	bsr.w	LF64_33
 	or.w	d1,d5
 	or.b	d0,$BE(a6)
 	or.b	d1,$BF(a6)
@@ -425,7 +425,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	ble.w	.l8B6
 	subi.w	#$1,$5A(a6)
 	move.w	#$4,$B0(a6)
-	bsr.w	L1D54
+	bsr.w	LF64_11
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.l8B6
@@ -435,7 +435,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	ble.w	.l8B6
 	subi.w	#$1,$58(a6)
 	move.w	#$4,$B0(a6)
-	bsr.w	L23D0
+	bsr.w	LF64_16
 	move.b	#$0,$C1(a6)
 	moveq	#$7,d0
 	bsr.w	LEAA
@@ -450,7 +450,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	beq.w	.l8B6
 	addi.w	#$1,$5A(a6)
 	move.w	#$3,$B0(a6)
-	bsr.w	L1D54
+	bsr.w	LF64_11
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.l8B6
@@ -461,7 +461,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bgt.w	.l8B6
 	addi.w	#$1,$58(a6)
 	move.w	#$3,$B0(a6)
-	bsr.w	L23D0
+	bsr.w	LF64_16
 	move.b	#$0,$C1(a6)
 	moveq	#$7,d0
 	bsr.w	LEAA
@@ -516,7 +516,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	clr.w	$56(a6)
 	clr.w	$58(a6)
 	move.w	#$0,$B0(a6)
-	bsr.w	L23D0
+	bsr.w	LF64_16
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.lBC4
@@ -526,7 +526,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$0,$56(a6)
 	move.w	#$0,$5A(a6)
 	move.w	#$0,$B0(a6)
-	bsr.w	L1D54
+	bsr.w	LF64_11
 	moveq	#$7,d0
 	bsr.w	LEAA
 	bra.w	.lBC4
@@ -536,7 +536,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.w	.lB12
 	addi.w	#$1,$56(a6)
 	move.w	#$1,$B0(a6)
-	bsr.w	L1D54
+	bsr.w	LF64_11
 	bra.w	.l8B6
 .lB12	cmpi.w	#$1,d4
 	bne.w	.lB38
@@ -544,7 +544,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bne.w	.lB38
 	addi.w	#$1,$56(a6)
 	move.w	#$1,$B0(a6)
-	bsr.w	L23D0
+	bsr.w	LF64_16
 	bra.w	.l8B6
 .lB38	cmpi.b	#$2,d5
 	bne.w	.l8B6
@@ -556,7 +556,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	clr.w	$56(a6)
 	bra.w	.l8B6
 .lB60	move.w	#$2,$B0(a6)
-	bsr.w	L1D54
+	bsr.w	LF64_11
 	bra.w	.l8B6
 .lB6E	cmpi.w	#$1,d4
 	bne.w	.l8B6
@@ -566,7 +566,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	blt.w	.l8B6
 	subi.w	#$1,$56(a6)
 	move.w	#$2,$B0(a6)
-	bsr.w	L23D0
+	bsr.w	LF64_16
 	bra.w	.l8B6
 .lB9E	cmpi.w	#$0,d4
 	bge.w	.lBB2
@@ -584,7 +584,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	d4,d0
 	clr.w	$56(a6)
 	clr.w	$58(a6)
-	bsr.w	L1376
+	bsr.w	LF64_6
 	move.w	#$64,$EC(a6)
 .lBDE	tst.w	$EC(a6)
 	bpl.w	.lBDE
@@ -596,10 +596,10 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	beq.w	.lC02
 .lC02	cmpi.w	#$0,d4
 	bne.w	.lC0E
-	bsr.w	L1D54
+	bsr.w	LF64_11
 .lC0E	cmpi.w	#$1,d4
 	bne.w	.lC1A
-	bsr.w	L23D0
+	bsr.w	LF64_16
 .lC1A	cmpi.w	#$2,$F8(a6)
 	beq.w	.lC38
 	move.w	#$140,$F4(a6)
@@ -609,7 +609,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 .lC38	moveq	#$0,d6
 	cmpi.w	#$2,d4
 	bne.w	.l8B6
-	bsr.w	L14D2
+	bsr.w	LF64_9
 	move.w	$AE(a6),d5
 	bra.w	.l8EE
 .lC4E	movea.l	#$BBCB0,a0
@@ -619,7 +619,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$18,$EC(a6)
 .lC62	tst.w	$EC(a6)
 	bpl.w	.lC62
-	bsr.w	L3F24
+	bsr.w	LF64_44
 	bclr.b	#$5,$FF800F.l
 	move.l	#$3FFF,d0
 	movea.l	$DA(a6),a1
@@ -629,7 +629,7 @@ Sub_18E	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	#$13,d0
 .lC92	move.l	(a1)+,(a2)+
 	dbra	d0,.lC92
-	bsr.w	L3B9C
+	bsr.w	LF64_36
 	movem.l	(sp)+,d0-d7/a0-a6
 	movea.l	(sp)+,a6
 	move.w	#$4,d7
@@ -640,7 +640,7 @@ LCAA	move.l	#$6,d0
 	add.w	$7E(a6),d1
 	lea.l	X_1B9C(pc),a1
 	movea.l	d0,a2
-Sub_CC0	movem.l	d0-d2/d7/a0-a1,-(sp)
+LCAASub1	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -660,7 +660,7 @@ Sub_CC0	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$2(a2),a2
 	move.l	a2,$48(a6)
 	movea.l	d1,a2
-Sub_CFE	movem.l	d0-d2/d7/a0-a1,-(sp)
+LCAASub2	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -720,7 +720,7 @@ LDEC	movem.l	d0-d7/a1-a2,-(sp)
 	swap	d2
 	move.w	#$100,d2
 	move.w	#$13,d3
-	bsr.w	L281C
+	bsr.w	LF64_17
 	moveq	#$14,d0
 	moveq	#$0,d1
 	bsr.w	LF64
@@ -747,12 +747,12 @@ LDEC	movem.l	d0-d7/a1-a2,-(sp)
 	lsr.w	#$5,d5
 	move.l	#$B296,d3
 	move.l	#$80,d6
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 	clr.l	$96(a6)
-.lE7C	bsr.w	L36B6
+.lE7C	bsr.w	LF64_32
 	tst.w	d1
 	bne.w	.lE9C
-	bsr.w	L36CE
+	bsr.w	LF64_33
 	tst.w	d1
 	bne.w	.lE9C
 	cmpi.l	#$258,$96(a6)
@@ -821,7 +821,7 @@ LF64	addi.w	#$9200,d0
 	bne.b	.lFF2
 	bclr.b	#$7,$FF800F.l
 	rts
-Sub_1006	movem.l	d0-d6,-(sp)
+LF64Sub1	movem.l	d0-d6,-(sp)
 	moveq	#$0,d2
 	move.w	d0,d1
 	swap	d0
@@ -866,7 +866,7 @@ Sub_1006	movem.l	d0-d6,-(sp)
 	dbra	d6,.l101E
 	movem.l	(sp)+,d0-d6
 	rts
-L10D8	movem.l	d0-d7/a0-a4,-(sp)
+LF64_1	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	$F2(a6),d2
 	moveq	#$4,d3
 	move.w	#$0,$E2(a6)
@@ -878,25 +878,25 @@ L10D8	movem.l	d0-d7/a0-a4,-(sp)
 	cmpi.w	#$4,d0
 	beq.w	.l1108
 	neg.w	d3
-.l1108	bsr.w	L1336
+.l1108	bsr.w	LF64_5
 	move.w	#$E8,d7
 	cmpi.w	#$8,$B8(a6)
 	beq.w	.l111E
 	move.w	#$F0,d7
 .l111E	move.w	d7,d0
-	bsr.w	L1262
+	bsr.w	LF64_3
 	move.w	$EE(a6),d0
 	subi.w	#$2000,d0
 	addi.w	#$CF8,d0
 	swap	d0
 	move.w	#$100,d0
-	bsr.w	Sub_1006
+	bsr.w	LF64Sub1
 	move.w	$EE(a6),d0
 	subi.w	#$2000,d0
 	addi.w	#$D50,d0
 	swap	d0
 	move.w	#$100,d0
-	bsr.w	Sub_1006
+	bsr.w	LF64Sub1
 	move.w	d2,$E2(a6)
 	move.w	d3,$E0(a6)
 	moveq	#$9,d0
@@ -909,7 +909,7 @@ L10D8	movem.l	d0-d7/a0-a4,-(sp)
 	bsr.w	LF64
 	neg.w	d7
 	move.w	d7,d0
-	bsr.w	L1262
+	bsr.w	LF64_3
 	move.w	#$50,d0
 	move.w	$EE(a6),d1
 	subi.w	#$2000,d1
@@ -917,7 +917,7 @@ L10D8	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$100,d1
 	move.l	#$B0000080,d2
 	move.w	#$1B,d3
-	bsr.w	L281C
+	bsr.w	LF64_17
 	move.w	$F2(a6),$E2(a6)
 	move.w	#$0,$E0(a6)
 	move.w	#$9,$DE(a6)
@@ -932,7 +932,7 @@ L10D8	movem.l	d0-d7/a0-a4,-(sp)
 	dbra	d1,.l11C2
 .l11D4	movem.l	(sp)+,d0-d7/a0-a4
 	rts
-L11DA	movem.l	d0-d7/a0-a1,-(sp)
+LF64_2	movem.l	d0-d7/a0-a1,-(sp)
 	movea.l	$8A(a6),a0
 	move.l	#$7DF,d0
 	move.l	#$33333333,d1
@@ -968,7 +968,7 @@ L11DA	movem.l	d0-d7/a0-a1,-(sp)
 	move.b	#$0,-$5(a1)
 	movem.l	(sp)+,d0-d7/a0-a1
 	rts
-L1262	movem.l	d1/a1,-(sp)
+LF64_3	movem.l	d1/a1,-(sp)
 	movea.l	$92(a6),a1
 	move.w	#$140,$E0(a6)
 	move.w	#$E800,$E2(a6)
@@ -982,7 +982,7 @@ L1262	movem.l	d1/a1,-(sp)
 	bne.w	.l128E
 	movem.l	(sp)+,d1/a1
 	rts
-L129C	movem.l	d0-d4/a0-a4,-(sp)
+LF64_4	movem.l	d0-d4/a0-a4,-(sp)
 	movea.l	$70(a6),a0
 	lea.l	$4(a0),a0
 	movea.l	$8A(a6),a1
@@ -1039,7 +1039,7 @@ L129C	movem.l	d0-d4/a0-a4,-(sp)
 	addi.w	#$1,$B4(a6)
 	movem.l	(sp)+,d0-d4/a0-a4
 	rts
-L1336	movem.l	d0/a0-a1,-(sp)
+LF64_5	movem.l	d0/a0-a1,-(sp)
 	movea.l	$8A(a6),a0
 	move.w	#$7DF,d0
 	movea.l	#$BC000,a1
@@ -1053,7 +1053,7 @@ L1336	movem.l	d0/a0-a1,-(sp)
 	bne.w	.l1368
 	movem.l	(sp)+,d0/a0-a1
 	rts
-L1376	movem.l	d0-d7/a0-a2,-(sp)
+LF64_6	movem.l	d0-d7/a0-a2,-(sp)
 	lea.l	$0(a6),a0
 	lsl.w	#$2,d0
 	cmpi.w	#$0,$18(a6)
@@ -1118,26 +1118,26 @@ L1376	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	#$444,$BBCF0.l
 	move.w	#$444,$BBD10.l
 	cmpi.w	#$2,$F8(a6)
-	bne.w	L14AA
+	bne.w	LF64_7
 	movea.l	a1,a2
-Sub_1490	movem.l	d2,-(sp)
+LF64Sub2	movem.l	d2,-(sp)
 	move.w	$EE(a6),d3
 	move.l	#$100,d6
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 	movem.l	(sp)+,d2
 	dc.w	$6000,$0022
-L14AA	move.w	#$64,$EC(a6)
+LF64_7	move.w	#$64,$EC(a6)
 .l14B0	tst.w	$EC(a6)
 	bpl.w	.l14B0
 	moveq	#$0,d3
 	move.w	$EE(a6),d3
 	move.l	#$100,d6
 	movea.l	a1,a2
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 .l14CA	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-L14D0	dc.b	$4E,$75	; Nu
-L14D2	movem.l	d0-d7/a0-a4,-(sp)
+LF64_8	dc.b	$4E,$75	; Nu
+LF64_9	movem.l	d0-d7/a0-a4,-(sp)
 	movea.l	$8(a6),a0
 	cmpi.w	#$0,$18(a6)
 	beq.w	.l14E8
@@ -1154,7 +1154,7 @@ L14D2	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$B000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 .l151A	btst.b	#$7,$FF800E.l
 	bne.b	.l151A
 	move.w	#$921C,$FF8022.l
@@ -1182,19 +1182,19 @@ L14D2	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$B000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 	move.w	#$4000,$FC(a6)
 .l15B8	move.l	#$1000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.l	#$20001000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.w	#$3,$DE(a6)
 .l15D2	tst.w	$DE(a6)
 	bne.w	.l15D2
 	move.w	#$2000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 .l15EA	btst.b	#$7,$FF800E.l
 	bne.b	.l15EA
 	move.w	#$9200,$FF8022.l
@@ -1267,7 +1267,7 @@ L14D2	movem.l	d0-d7/a0-a4,-(sp)
 .l17B0	btst.b	#$6,$FF800E.l
 	bne.b	.l17B0
 	bclr.b	#$7,$FF800F.l
-Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
+LF64Sub3	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$2,d7
 	movea.l	$A2(a6),a0
 	jsr	$6044.w
@@ -1276,16 +1276,16 @@ Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
 	beq.w	.l17E4
 	move.w	$7E(a6),d0
 .l17E4	mulu.w	#$34,d0
-	lea.l	L7CF4(pc),a0
+	lea.l	LF64_55(pc),a0
 	adda.l	d0,a0
 	move.l	a0,$68(a6)
 	bra.w	.l1852
 .l17F6	bset.b	#$5,$FF800F.l
 .l17FE	moveq	#$7,d0
 	bsr.w	LEAA
-	bsr.w	L36B6
+	bsr.w	LF64_32
 	move.w	d1,d5
-	bsr.w	L36CE
+	bsr.w	LF64_33
 	or.w	d1,d5
 	cmpi.b	#$10,d5
 	bne.w	.l1822
@@ -1313,7 +1313,7 @@ Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
 	bne.w	.l1874
 	clr.w	$66(a6)
 	move.l	(a0),d1
-.l1874	lea.l	L14D0(pc),a0
+.l1874	lea.l	LF64_8(pc),a0
 	move.l	#$1,d0
 	move.w	#$7,d7
 	jsr	$6044.w
@@ -1336,16 +1336,16 @@ Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$B000,d3
 	move.l	#$80,d6
 	movea.l	a2,a1
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 	move.w	#$1C,$E2(a6)
 	clr.w	$E0(a6)
 	move.w	#$A,$DE(a6)
 .l18E6	tst.w	$DE(a6)
 	bne.w	.l18E6
 	move.l	#$1000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	move.l	#$20001000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 .l1902	btst.b	#$7,$FF800E.l
 	bne.b	.l1902
 	move.l	#$70000003,$FF8022.l
@@ -1410,7 +1410,7 @@ Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
 	andi.w	#$7FFF,d5
 	move.l	#$100,d6
 	movea.l	a2,a1
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 	move.w	#$4,$DE(a6)
 .l1AA6	tst.w	$DE(a6)
 	bne.w	.l1AA6
@@ -1418,9 +1418,9 @@ Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
 	andi.w	#$7FFF,d5
 	move.l	#$100,d6
 	movea.l	a2,a1
-	bsr.w	L2C6A
+	bsr.w	LF64_25
 	move.l	#$1000,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 .l1ACC	btst.b	#$7,$FF800E.l
 	bne.b	.l1ACC
 	move.l	#$70000003,$FF8022.l
@@ -1451,12 +1451,12 @@ Sub_17C2	movem.l	d0-d7/a0-a6,-(sp)
 .l1B78	tst.w	$DE(a6)
 	bne.w	.l1B78
 	move.l	#$B0000800,d0
-	bsr.w	L2C28
+	bsr.w	LF64_24
 	bsr.w	LCAA
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a4
 	rts
-L1B9C	movem.l	d0-d7/a0-a4,-(sp)
+LF64_10	movem.l	d0-d7/a0-a4,-(sp)
 	moveq	#$0,d4
 	move.w	#$500,d4
 	moveq	#$0,d1
@@ -1473,7 +1473,7 @@ L1B9C	movem.l	d0-d7/a0-a4,-(sp)
 	moveq	#$25,d3
 	movea.l	$78(a6),a0
 	movea.l	a0,a1
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	move.l	#$3844,d5
 	move.w	#$500,d4
 	andi.b	#$F,d1
@@ -1483,7 +1483,7 @@ L1B9C	movem.l	d0-d7/a0-a4,-(sp)
 	moveq	#$2,d0
 	moveq	#$25,d3
 	movea.l	a1,a0
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	move.l	#$3802,d5
 	move.w	#$500,d4
 	cmpi.b	#$47,$B7(a6)
@@ -1498,35 +1498,35 @@ L1B9C	movem.l	d0-d7/a0-a4,-(sp)
 	movea.w	#$130,a2
 	move.w	#$20,d3
 	movea.l	a1,a0
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	bra.w	.l1C86
 .l1C36	moveq	#$7,d0
 	movea.w	#$110,a2
 	move.w	#$20,d3
 	movea.l	a1,a0
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	bra.w	.l1C86
 .l1C4A	moveq	#$7,d0
 	movea.w	#$120,a2
 	move.w	#$20,d3
 	movea.l	a1,a0
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	bra.w	.l1C86
 .l1C5E	moveq	#$7,d0
 	movea.w	#$100,a2
 	move.w	#$20,d3
 	movea.l	a1,a0
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	bra.w	.l1C86
 .l1C72	moveq	#$7,d0
 	movea.w	#$F0,a2
 	move.w	#$20,d3
 	movea.l	a1,a0
-	bsr.w	L1C8C
+	bsr.w	.l1C8C
 	bra.w	.l1C86
 .l1C86	movem.l	(sp)+,d0-d7/a0-a4
 	rts
-L1C8C	moveq	#$2,d7
+.l1C8C	moveq	#$2,d7
 	move.w	d0,d2
 	add.w	d3,d3
 	lea.l	(a0,a2.w),a0

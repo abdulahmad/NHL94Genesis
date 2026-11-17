@@ -5,9 +5,9 @@
 
 
 	movem.l	d0-d1/a0-a1,-(sp)
-L24D7A	move.w	#$80,d0
+.l24D7A	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.b	L24D7A
+	bcs.b	.l24D7A
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 

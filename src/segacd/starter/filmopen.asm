@@ -4,54 +4,54 @@
 
 
 
-L25636	link	a6,#$FFFC
+Wait_1	link	a6,#$FFFC
 	movem.l	d3/d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
 	move.l	#$C0000,-$4(a6)
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	lea.l	$40(a0),a4
-	jsr	L25F84(pc)
+	jsr	InitHeap_1(pc)
 	move.l	d5,-(sp)
-	pea.l	L2587C(pc)
-	jsr	L25BC4(pc)
+	pea.l	Wait_9(pc)
+	jsr	HexStr_1(pc)
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
 	pea.l	$800.w
-	jsr	L25E7E(pc)
+	jsr	MaxFree_1(pc)
 	movea.l	d0,a3
 	move.l	a3,d0
 	lea.l	$C(sp),sp
-	bne.b	L2567E
+	bne.b	.l2567E
 	moveq	#-1,d0
-	bra.w	L2582E
-L2567E	move.l	a3,-(sp)
+	bra.w	Wait_4
+.l2567E	move.l	a3,-(sp)
 	moveq	#$1,d0
 	move.l	d0,-(sp)
 	move.l	d5,-(sp)
-	jsr	L25546(pc)
-	jsr	L2607E(pc)
+	jsr	RestoreBios_36(pc)
+	jsr	GetTicks_1(pc)
 	cmpi.l	#$46494C4D,(a3)
 	lea.l	$C(sp),sp
-	beq.b	L256AC
+	beq.b	.l256AC
 	move.l	d5,-(sp)
-	pea.l	L2586A(pc)
-	jsr	L25BC4(pc)
+	pea.l	Wait_8(pc)
+	jsr	HexStr_1(pc)
 	moveq	#-1,d0
 	addq.w	#$8,sp
-	bra.w	L2582E
-L256AC	move.l	$4(a3),d7
+	bra.w	Wait_4
+.l256AC	move.l	$4(a3),d7
 	move.l	d7,d0
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
 	dc.w	$D0BC
 	dc.l	$000007FF
 	move.l	#$800,d1
-	jsr	L26632(pc)
+	jsr	GetData_15(pc)
 	move.l	d0,d6
 	moveq	#$1,d0
 	cmp.l	d6,d0
-	bge.b	L25714
+	bge.b	.l25714
 	move.l	a3,-(sp)
-	jsr	L25CFA(pc)
+	jsr	aprint_1(pc)
 	move.l	d6,d1
 	move.l	d1,d0
 	mulu.w	#$800,d1
@@ -61,23 +61,23 @@ L256AC	move.l	$4(a3),d7
 	clr.w	d0
 	add.l	d0,d1
 	move.l	d1,-(sp)
-	jsr	L25E7E(pc)
+	jsr	MaxFree_1(pc)
 	movea.l	d0,a3
 	move.l	a3,d0
 	addq.w	#$8,sp
-	bne.b	L256F8
+	bne.b	.l256F8
 	moveq	#-1,d0
-	bra.w	L2582E
-L256F8	move.l	d6,-(sp)
-	pea.l	L2585A(pc)
-	jsr	L25BC4(pc)
+	bra.w	Wait_4
+.l256F8	move.l	d6,-(sp)
+	pea.l	Wait_7(pc)
+	jsr	HexStr_1(pc)
 	move.l	a3,-(sp)
 	move.l	d6,-(sp)
 	move.l	d5,-(sp)
-	jsr	L25546(pc)
-	jsr	L2607E(pc)
+	jsr	RestoreBios_36(pc)
+	jsr	GetTicks_1(pc)
 	lea.l	$14(sp),sp
-L25714	move.l	$4(a3),$8(a4)
+.l25714	move.l	$4(a3),$8(a4)
 	move.l	a3,d0
 	moveq	#$10,d1
 	add.l	d1,d0
@@ -87,26 +87,26 @@ L25714	move.l	$4(a3),$8(a4)
 	add.l	$C(a4),d0
 	move.l	d0,$10(a4)
 	move.l	a3,$14(a4)
-	pea.l	L2584E(pc)
-	jsr	L25BC4(pc)
+	pea.l	Wait_6(pc)
+	jsr	HexStr_1(pc)
 	move.l	d5,-(sp)
 	pea.l	$18(a4)
-	jsr	L26126(pc)
+	jsr	CopyData_2(pc)
 	tst.w	d0
 	lea.l	$C(sp),sp
-	beq.b	L25756
+	beq.b	.l25756
 	moveq	#-1,d0
-	bra.w	L2582E
-L25756	pea.l	$18(a4)
+	bra.w	Wait_4
+.l25756	pea.l	$18(a4)
 	jsr	EngineIdle(pc)
-	pea.l	L25844(pc)
-	jsr	L25BC4(pc)
+	pea.l	Wait_5(pc)
+	jsr	HexStr_1(pc)
 	moveq	#$0,d5
 	move.l	d5,d6
 	move.l	d6,d7
 	addq.w	#$8,sp
-	bra.b	L25796
-L25770	movea.l	$10(a4),a0
+	bra.b	Wait_3
+Wait_2	movea.l	$10(a4),a0
 	move.l	d7,d0
 	asl.l	#$4,d0
 	lea.l	$10(a0,d0.l),a3
@@ -114,61 +114,61 @@ L25770	movea.l	$10(a4),a0
 	cmp.l	$8(a3),d0
 	seq.b	d3
 	neg.b	d3
-	beq.b	L2578E
+	beq.b	.l2578E
 	move.l	d5,d0
 	addq.l	#$1,d5
-	bra.b	L25792
-L2578E	move.l	d6,d0
+	bra.b	.l25792
+.l2578E	move.l	d6,d0
 	addq.l	#$1,d6
-L25792	move.l	d7,d0
+.l25792	move.l	d7,d0
 	addq.l	#$1,d7
-L25796	movea.l	$10(a4),a0
+Wait_3	movea.l	$10(a4),a0
 	cmp.l	$C(a0),d7
-	blt.b	L25770
-	lea.l	L24FB4(pc),a0
+	blt.b	Wait_2
+	lea.l	RestoreBios_12(pc),a0
 	moveq	#$0,d0
 	move.l	d0,$3C(a0)
 	tst.l	d6
-	bne.b	L257B8
-	lea.l	L24FB4(pc),a0
+	bne.b	.l257B8
+	lea.l	RestoreBios_12(pc),a0
 	moveq	#-1,d0
 	move.l	d0,$3C(a0)
-L257B8	tst.l	d5
-	bne.b	L257C6
-	lea.l	L24FB4(pc),a0
+.l257B8	tst.l	d5
+	bne.b	.l257C6
+	lea.l	RestoreBios_12(pc),a0
 	moveq	#$1,d0
 	move.l	d0,$3C(a0)
-L257C6	lea.l	L24FB4(pc),a0
+.l257C6	lea.l	RestoreBios_12(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$20(a0),(a1)
-	lea.l	L24FB4(pc),a0
-	lea.l	L24FB4(pc),a1
+	lea.l	RestoreBios_12(pc),a0
+	lea.l	RestoreBios_12(pc),a1
 	move.l	$28(a1),d0
 	add.l	d0,d0
 	add.l	$24(a0),d0
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	move.l	$2C(a0),d1
 	asl.l	#$7,d1
 	add.l	d0,d1
 	movea.l	-$4(a6),a0
 	move.l	d1,$4(a0)
-	lea.l	L24FB4(pc),a0
+	lea.l	RestoreBios_12(pc),a0
 	movea.l	-$4(a6),a1
 	move.l	$30(a0),$8(a1)
-	jsr	L25A88(pc)
+	jsr	Wait_24(pc)
 	moveq	#$3,d0
 	move.l	d0,-(sp)
-	jsr	L2609E(pc)
+	jsr	GetTicks_2(pc)
 	moveq	#$0,d0
 	move.l	d0,$40(a4)
 	moveq	#$3C,d0
 	move.l	d0,-(sp)
-	jsr	L25606(pc)
+	jsr	RestoreBios_37(pc)
 	pea.l	$30(a4)
-	jsr	L263D8(pc)
+	jsr	GetData_3(pc)
 	moveq	#$0,d0
 	lea.l	$C(sp),sp
-L2582E	movem.l	-$1C(a6),d3/d5-d7/a3-a4
+Wait_4	movem.l	-$1C(a6),d3/d5-d7/a3-a4
 	unlk	a6
 	rts
 

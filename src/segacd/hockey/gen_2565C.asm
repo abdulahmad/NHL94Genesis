@@ -494,11 +494,11 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	bne.w	.l25DA4
 	jsr	(printz).l
 	dc.w	$0024
-	dc.b	$BF,$0C,$04,$49,$6E,$6A,$75,$72,$79,$20,$74,$6F,$3A,$BF,$0C,$06,$4F,$75,$74,$20,$66,$6F,$72,$20,$70,$65,$72,$69,$6F,$64,$BF,$0C,$05,$00
+	dc.b	$BF,$0C,$04,'Injury to:',$BF,$0C,$06,'Out for period',$BF,$0C,$05,$00
 	bra.w	.l25DCC
 .l25DA4	jsr	(printz).l
 	dc.w	$0022
-	dc.b	$BF,$0C,$04,$49,$6E,$6A,$75,$72,$79,$20,$74,$6F,$3A,$BF,$0C,$06,$4F,$75,$74,$20,$66,$6F,$72,$20,$67,$61,$6D,$65,$BF,$0C,$05,$00
+	dc.b	$BF,$0C,$04,'Injury to:',$BF,$0C,$06,'Out for game',$BF,$0C,$05,$00
 .l25DCC	bsr.w	GetPlayerNumInitial
 	jsr	(print).l
 	btst	#$0,$17BE3.l

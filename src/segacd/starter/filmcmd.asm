@@ -5,15 +5,15 @@
 ; See docs/segacd_film.md.
 
 
-L2609E	link	a6,#$0
+GetTicks_2	link	a6,#$0
 	movem.l	a3-a4,-(sp)
 	movea.l	#$FF8010,a4
 	movea.l	#$FF8020,a3
-L260B2	tst.w	(a4)
-	bne.b	L260B2
+.l260B2	tst.w	(a4)
+	bne.b	.l260B2
 	move.w	$A(a6),(a3)
-L260BA	tst.w	(a4)
-	beq.b	L260BA
+.l260BA	tst.w	(a4)
+	beq.b	.l260BA
 	clr.w	(a3)
 	movem.l	-$8(a6),a3-a4
 	unlk	a6

@@ -1,12 +1,12 @@
 	dcb.b	$1390,0
-	dc.b	$48,$4F,$43,$4B,$45,$59,$2E,$42,$49,$4E,$00,$00,$01,$FF	; HOCKEY.BIN....
+	dc.b	'HOCKEY.BIN',$00,$00,$01,$FF	; HOCKEY.BIN....
 	dcb.b	$14,0
 	dc.b	$FF,$FF	; ..
 	dcb.b	$72,0
 	dc.b	$4E,$F9,$00,$00,$D8,$5A	; N....Z
-Sub_227BC	dc.w	$6000,$0084
-L227C0	dcb.b	$82,0
-L22842	cmpi.b	#$80,d0
+RestoreBiosSub1	dc.w	$6000,$0084
+RestoreBios_1	dcb.b	$82,0
+.l22842	cmpi.b	#$80,d0
 	dc.w	$6504
 	dc.w	$6000,$02C2
 .l154C	tst.w	d0
@@ -40,7 +40,7 @@ L22842	cmpi.b	#$80,d0
 .l15A4	move.w	#$1,d0
 	ori.b	#$1,ccr
 	rts
-L228AE	movem.l	d0-d7/a0-a6,-(sp)
+.l228AE	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$41FA,$0FBC
 	cmpi.w	#$0,(a0)
 	dc.w	$6702
@@ -60,13 +60,13 @@ L228AE	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$0,(a0)
 .l15F2	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-L228F8	movem.l	d0-d1/a0-a1,-(sp)
-.l15FC	lea.l	L227C0(pc),a0
+.l228F8	movem.l	d0-d1/a0-a1,-(sp)
+.l15FC	lea.l	RestoreBios_1(pc),a0
 	cmpi.w	#$0,(a0)
 	dc.w	$673E
 	move.l	$2(a0),d0
 	dc.w	$6100,$0200
-	lea.l	L227C0(pc),a0
+	lea.l	RestoreBios_1(pc),a0
 	move.w	(a0),d0
 	move.w	#$FFFF,(a0)
 	adda.l	#$2,a0
@@ -78,16 +78,16 @@ L228F8	movem.l	d0-d1/a0-a1,-(sp)
 	subi.w	#$1,d1
 .l1632	move.l	(a1)+,(a0)+
 	dbra	d1,.l1632
-.l1638	lea.l	L227C0(pc),a0
+.l1638	lea.l	RestoreBios_1(pc),a0
 	subi.w	#$1,d0
 	move.w	d0,(a0)
 	bra.b	.l15FC
 .l1644	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-L2294A	movem.l	d1-d4/a0-a2,-(sp)
+.l2294A	movem.l	d1-d4/a0-a2,-(sp)
 	dc.w	$41FA,$0F70
 	move.w	#$0,(a0)
-L22956	dc.w	$103A,$0F1A
+RestoreBios_2	dc.w	$103A,$0F1A
 	dc.w	$343A,$0F64
 	btst	d2,d0
 	dc.w	$6600,$0192
@@ -171,8 +171,8 @@ L22956	dc.w	$103A,$0F1A
 	dc.w	$600A
 .l1776	clr.w	d2
 	move.b	$3(a0,d1.w),d2
-Sub_22A7C	sub.b	$1(a0,d1.w),d2
-L22A80	cmpi.b	#$0,d2
+RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
+.l22A80	cmpi.b	#$0,d2
 	dc.w	$6606
 	move.b	$1(a0,d1.w),d2
 	dc.w	$603C
@@ -193,18 +193,18 @@ L22A80	cmpi.b	#$0,d2
 	move.b	$1(a0,d1.w),d2
 	sub.w	d3,d2
 	dc.w	$600C
-L22ABC	dc.b	$C6,$C2,$E0,$4B,$42,$42,$14,$30,$10,$01,$D4,$43	; ...KBB.0...C
-L22AC8	dc.b	$43,$FA,$0D,$C2,$30,$3A,$0D,$F2,$42,$43,$16,$31,$00,$00,$E3,$4B	; C...0:..BC.1...K
+.l22ABC	dc.b	$C6,$C2,$E0,$4B,$42,$42,$14,$30,$10,$01,$D4,$43	; ...KBB.0...C
+.l22AC8	dc.b	$43,$FA,$0D,$C2,$30,$3A,$0D,$F2,$42,$43,$16,$31,$00,$00,$E3,$4B	; C...0:..BC.1...K
 	dc.b	$C4,$C3,$E0,$4A,$00,$00,$00,$C0,$13,$C0,$00,$FF,$00,$0F,$61,$00	; ...J..........a.
 	dc.b	$0B,$6A,$13,$C2,$00,$FF,$00,$01,$61,$00,$0B,$60	; .j......a..`
-L22AF4	dc.w	$41FA,$0DCA
+.l22AF4	dc.w	$41FA,$0DCA
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
 	dc.w	$6704
-	bra.w	L22956
+	bra.w	RestoreBios_2
 .l1806	movem.l	(sp)+,d1-d4/a0-a2
 	rts
-L22B0C	cmpi.b	#$8F,d0
+.l22B0C	cmpi.b	#$8F,d0
 	dc.w	$6E04
 	dc.w	$6000,$019A
 .l1816	cmpi.b	#$9F,d0
@@ -228,7 +228,7 @@ L22B0C	cmpi.b	#$8F,d0
 .l184C	move.w	#$1,d0
 	ori.b	#$1,ccr
 	rts
-L22B56	movem.l	d1-d2/a0-a1,-(sp)
+.l22B56	movem.l	d1-d2/a0-a1,-(sp)
 	dc.w	$41FA,$0B06
 	move.b	d0,d1
 	andi.w	#$F,d1
@@ -324,7 +324,7 @@ L22B56	movem.l	d1-d2/a0-a1,-(sp)
 	move.b	d1,(a0)
 .l19A8	movem.l	(sp)+,d1-d2/a0-a1
 	rts
-L22CAE	movem.l	d1-d3/a0-a2,-(sp)
+.l22CAE	movem.l	d1-d3/a0-a2,-(sp)
 	clr.w	d1
 	move.b	d0,d1
 	andi.b	#$F,d1
@@ -403,7 +403,7 @@ L22CAE	movem.l	d1-d3/a0-a2,-(sp)
 	ori.b	#$1,ccr
 .l1AAA	movem.l	(sp)+,d1-d3/a0-a2
 	rts
-L22DB0	movem.l	d1-d2/a0,-(sp)
+.l22DB0	movem.l	d1-d2/a0,-(sp)
 	move.l	d0,d1
 	swap	d1
 	lsr.w	#$8,d1
@@ -416,7 +416,7 @@ L22DB0	movem.l	d1-d2/a0,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
-L22DD4	movem.l	d1-d2/a0,-(sp)
+.l22DD4	movem.l	d1-d2/a0,-(sp)
 	move.l	d0,d1
 	swap	d1
 	lsr.w	#$8,d1
@@ -443,17 +443,17 @@ L22DD4	movem.l	d1-d2/a0,-(sp)
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
 	dc.w	$4E75
-L22E28	dc.b	$48,$E7,$60,$80,$20,$7A,$0A,$9E,$42,$41,$12,$28,$00,$0D,$41,$FA	; H.`. z..BA.(..A.
+.l22E28	dc.b	$48,$E7,$60,$80,$20,$7A,$0A,$9E,$42,$41,$12,$28,$00,$0D,$41,$FA	; H.`. z..BA.(..A.
 	dc.b	$0A,$64,$30,$3A,$0A,$84,$11,$81,$00,$00,$0C,$01,$00,$FF,$67,$0A	; .d0:..........g.
-	dc.b	$30,$3C,$00,$04,$61,$00,$05,$D2,$64,$2E,$30,$3A,$0A,$6C,$00,$00	; 0<..a...d.0:.l..
+	dc.b	$30,$3C,$00,$04,$61,$00,$05,$D2,'d.0:',$0A,$6C,$00,$00	; 0<..a...d.0:.l..
 	dc.b	$00,$C0,$13,$C0,$00,$FF,$00,$0F,$61,$00,$07,$F0,$41,$FA,$0A,$26	; ........a...A..&
 	dc.b	$30,$3A,$0A,$56,$12,$30,$00,$00,$E3,$49,$13,$C1,$00,$FF,$00,$01	; 0:.V.0...I......
-	dc.b	$61,$00,$07,$D8,$42,$40,$60,$58,$42,$40,$10,$28,$00,$04,$41,$FA	; a...B@`XB@.(..A.
+	dc.b	$61,$00,$07,$D8,'B@`XB@',$10,$28,$00,$04,$41,$FA	; a...B@`XB@.(..A.
 	dc.b	$0A,$04,$32,$3A,$0A,$34,$42,$42,$14,$30,$10,$00,$E3,$4A,$C0,$C2	; ..2:.4BB.0...J..
 	dc.b	$E0,$48,$32,$3A,$0A,$24,$00,$01,$00,$C0,$13,$C1,$00,$FF,$00,$0F	; .H2:.$..........
 	dc.b	$61,$00,$07,$A8,$13,$C0,$00,$FF,$00,$01,$61,$00,$07,$9E,$41,$FA	; a.........a...A.
 	dc.b	$09,$EC,$30,$3A,$0A,$04,$11,$BC,$00,$00,$00,$00	; ..0:........
-Sub_22EC4	dc.w	$41FA,$09F7
+RestoreBiosSub3	dc.w	$41FA,$09F7
 	bset.b	d0,(a0)
 	lsl.w	#$1,d0
 	dc.w	$41FA,$09DE
@@ -461,7 +461,7 @@ Sub_22EC4	dc.w	$41FA,$09F7
 	clr.w	d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
-L22EDE	movem.l	d0/a0-a1,-(sp)
+.l22EDE	movem.l	d0/a0-a1,-(sp)
 	dc.w	$41FA,$077E
 	move.w	#$100,$0(a0)
 	move.w	#$100,$2(a0)
@@ -496,7 +496,7 @@ L22EDE	movem.l	d0/a0-a1,-(sp)
 	dbra	d0,.l1C62
 	dc.w	$41FA,$0BEC
 	move.b	#$FF,(a0)
-	lea.l	L227C0(pc),a0
+	lea.l	RestoreBios_1(pc),a0
 	move.w	#$0,(a0)
 	move.b	#$80,$FF000F.l
 	dc.w	$6100,$06CE
@@ -521,7 +521,7 @@ L22EDE	movem.l	d0/a0-a1,-(sp)
 	move.w	#$0,(a0)
 	movem.l	(sp)+,d0/a0-a1
 	rts
-L22FCE	movem.l	d1-d7/a0,-(sp)
+.l22FCE	movem.l	d1-d7/a0,-(sp)
 	dc.w	$103A,$089E
 	move.w	#$7,d5
 .l1CDA	btst	d5,d0
@@ -558,7 +558,7 @@ L22FCE	movem.l	d1-d7/a0,-(sp)
 	move.b	#$3,d0
 	ori.b	#$1,ccr
 	dc.w	$6000,$00B6
-L2304C	dc.b	$30,$3A,$08,$72,$00,$00,$00,$C0,$13,$C0,$00,$FF,$00,$0F,$30,$30	; 0:.r..........00
+.l2304C	dc.b	$30,$3A,$08,$72,$00,$00,$00,$C0,$13,$C0,$00,$FF,$00,$0F,$30,$30	; 0:.r..........00
 	dc.b	$10,$00,$E0,$48,$13,$C0,$00,$FF,$00,$0D,$61,$00,$05,$EA,$13,$FC	; ...H......a.....
 	dc.b	$00,$00,$00,$FF,$00,$09,$61,$00,$05,$DE,$13,$FC,$00,$00,$00,$FF	; ......a.........
 	dc.b	$00,$0B,$61,$00,$05,$D2,$13,$C2,$00,$FF,$00,$05,$61,$00,$05,$C8	; ..a.........a...
@@ -570,16 +570,16 @@ L2304C	dc.b	$30,$3A,$08,$72,$00,$00,$00,$C0,$13,$C0,$00,$FF,$00,$0F,$30,$30	; 0:
 	dc.b	$11,$BC,$00,$FF,$00,$00,$41,$FA,$07,$A8,$11,$BC,$00,$FF,$00,$00	; ......A.........
 	dc.b	$41,$FA,$07,$A6,$11,$BC,$00,$00,$00,$00,$41,$FA,$07,$A4,$11,$BC	; A.........A.....
 	dc.b	$00,$FF,$00,$00	; ....
-L23100	movem.l	(sp)+,d1-d7/a0
+.l23100	movem.l	(sp)+,d1-d7/a0
 	dc.w	$4E75
-L23106	dc.b	$48,$E7,$7E,$C0,$20,$7A,$07,$C0,$42,$40,$42,$41,$34,$3A,$07,$AC	; H.~. z..B@BA4:..
+.l23106	dc.b	$48,$E7,$7E,$C0,$20,$7A,$07,$C0,'B@BA4:',$07,$AC	; H.~. z..B@BA4:..
 	dc.b	$43,$FA,$07,$6C,$16,$31,$20,$00,$B6,$28	; C..l.1 ..(
-Sub_23120	dc.w	$0003,$6D08
+RestoreBiosSub4	dc.w	$0003,$6D08
 	sub.b	$3(a0),d3
 	add.b	d3,d0
 	dc.w	$600A
 	dc.b	$16,$28,$00,$03,$96,$31,$20,$00,$90,$03	; .(...1 ...
-L23136	dc.w	$343A,$078A
+.l23136	dc.w	$343A,$078A
 	dc.w	$43FA,$0994
 	clr.w	d3
 	move.b	(a1,d2.w),d3
@@ -619,9 +619,9 @@ L23136	dc.w	$343A,$078A
 	dc.w	$6418
 	addi.b	#$1,d0
 	dc.w	$6012
-L231A4	dc.b	$0A,$02,$00,$FF,$06,$02,$00,$01,$E3,$0A,$92,$02,$64,$04,$04,$00	; ............d...
+.l231A4	dc.b	$0A,$02,$00,$FF,$06,$02,$00,$01,$E3,$0A,$92,$02,$64,$04,$04,$00	; ............d...
 	dc.b	$00,$01	; ..
-L231B6	dc.b	$48,$80,$E3,$48,$43,$FA,$00,$A2,$34,$31,$00,$00,$36,$31,$00,$02	; H..HC...41..61..
+.l231B6	dc.b	$48,$80,$E3,$48,$43,$FA,$00,$A2,$34,$31,$00,$00,$36,$31,$00,$02	; H..HC...41..61..
 	dc.b	$96,$42,$C6,$C1,$E0,$4B,$D4,$43,$30,$3A,$06,$F0,$00,$00,$00,$C0	; .B...K.C0:......
 	dc.b	$13,$C0,$00,$FF,$00,$0F,$61,$00,$04,$74,$13,$C2,$00,$FF,$00,$05	; ......a..t......
 	dc.b	$61,$00,$04,$6A,$E0,$4A,$13,$C2,$00,$FF,$00,$07,$61,$00,$04,$5E	; a..j.J......a..^
@@ -638,7 +638,7 @@ L231B6	dc.b	$48,$80,$E3,$48,$43,$FA,$00,$A2,$34,$31,$00,$00,$36,$31,$00,$02	; H.
 	dc.b	$28,$51,$2A,$B7,$2D,$41,$2F,$F2,$32,$CC,$35,$D1,$39,$04,$3C,$68	; (Q*.-A/.2.5.9.<h
 	dc.b	$40,$00,$43,$CE,$47,$D6,$4C,$1C,$50,$A3,$55,$6E,$5A,$82,$5F,$E4	; @.C.G.L.P.UnZ._.
 	dc.b	$65,$98,$6B,$A3,$72,$09,$78,$D1,$80,$00	; e.k.r.x...
-L232C0	movem.l	d1-d3/a0,-(sp)
+.l232C0	movem.l	d1-d3/a0,-(sp)
 	dc.w	$303A,$05FA
 	dc.w	$41FA,$05AA
 	clr.w	d3
@@ -704,11 +704,11 @@ L232C0	movem.l	d1-d3/a0,-(sp)
 	clr.w	d0
 .l207A	movem.l	(sp)+,d1-d3/a0
 	rts
-L23380	movem.l	d1-d2/a0,-(sp)
+.l23380	movem.l	d1-d2/a0,-(sp)
 	dc.w	$41FA,$0544
 	move.w	#$0,(a0)
 	dc.w	$207A,$053E
-Sub_23390	btst.b	#$0,$C(a0)
+RestoreBiosSub5	btst.b	#$0,$C(a0)
 	dc.w	$673A
 	dc.w	$41FA,$04E2
 	dc.w	$303A,$052A
@@ -744,20 +744,20 @@ Sub_23390	btst.b	#$0,$C(a0)
 	dc.w	$207A,$04DA
 	move.b	$1(a0),d0
 	dc.w	$41FA,$049A
-Sub_233FC	clr.w	d1
-L233FE	cmp.b	(a0)+,d0
-Sub_23400	dc.w	$620A
+RestoreBiosSub6	clr.w	d1
+RestoreBios_3	cmp.b	(a0)+,d0
+RestoreBiosSub7	dc.w	$620A
 	dc.w	$41FA,$04BC
 	move.w	d1,(a0)
 	clr.w	d0
 	dc.w	$600E
 .l210C	addi.w	#$1,d1
 	cmpi.w	#$8,d1
-	bne.b	L233FE
+	bne.b	RestoreBios_3
 	ori.b	#$1,ccr
-L2341A	movem.l	(sp)+,d1-d2/a0
+.l2341A	movem.l	(sp)+,d1-d2/a0
 	rts
-L23420	movem.l	d1-d4/a1-a2,-(sp)
+RestoreBios_4	movem.l	d1-d4/a1-a2,-(sp)
 	dc.w	$43FA,$0442
 	move.w	#$2,d2
 	cmpi.l	#$FFFFFFFF,(a1)
@@ -780,13 +780,13 @@ L23420	movem.l	d1-d4/a1-a2,-(sp)
 	move.b	$3(a2),d0
 	andi.b	#$FE,ccr
 	dc.w	$602E
-L23460	dc.b	$42,$84,$18,$2A,$00,$02,$E1,$4C,$18,$2A,$00,$03,$D1,$C4,$D5,$FC	; B..*...L.*......
+.l23460	dc.b	$42,$84,$18,$2A,$00,$02,$E1,$4C,$18,$2A,$00,$03,$D1,$C4,$D5,$FC	; B..*...L.*......
 	dc.b	$00,$00,$00,$04,$04,$43,$00,$01,$66,$CC	; .....C..f.
-L2347A	dc.b	$D3,$FC,$00,$00,$00,$04,$04,$42,$00,$01,$66,$A6,$30,$3C,$00,$03	; .......B..f.0<..
+.l2347A	dc.b	$D3,$FC,$00,$00,$00,$04,$04,$42,$00,$01,$66,$A6,$30,$3C,$00,$03	; .......B..f.0<..
 	dc.b	$00,$3C,$00,$01	; .<..
-L2348E	dc.b	$4C,$DF	; L.
-Sub_23490	dc.w	$061E,$4E75
-L23494	move.l	a0,-(sp)
+.l2348E	dc.b	$4C,$DF	; L.
+RestoreBiosSub8	dc.w	$061E,$4E75
+.l23494	move.l	a0,-(sp)
 	or.w	d1,d1
 	dc.w	$660E
 	dc.w	$41FA,$01C6
@@ -820,13 +820,13 @@ L23494	move.l	a0,-(sp)
 .l21FE	clr.w	d0
 	movea.l	(sp)+,a0
 	rts
-L23504	movem.l	d1/a1,-(sp)
+.l23504	movem.l	d1/a1,-(sp)
 	lsl.w	#$2,d1
 	dc.w	$43FA,$035C
 	move.l	a0,(a1,d1.w)
 	movem.l	(sp)+,d1/a1
 	rts
-L23518	movem.l	d1/a0-a1,-(sp)
+.l23518	movem.l	d1/a0-a1,-(sp)
 	movea.l	a0,a1
 .l221E	cmpi.w	#$FFFF,(a1)
 	dc.w	$6604
@@ -834,7 +834,7 @@ L23518	movem.l	d1/a0-a1,-(sp)
 	dc.w	$604C
 .l2228	move.w	(a1),d0
 	move.w	$2(a1),d1
-	bsr.w	L23420
+	bsr.w	RestoreBios_4
 	dc.w	$653C
 	cmpi.w	#$2,(a1)
 	dc.w	$662E
@@ -857,19 +857,19 @@ L23518	movem.l	d1/a0-a1,-(sp)
 .l2270	ori.b	#$1,ccr
 .l2274	movem.l	(sp)+,d1/a0-a1
 	rts
-L2357A	movem.l	d1-d2/a0-a1,-(sp)
+.l2357A	movem.l	d1-d2/a0-a1,-(sp)
 	dc.w	$43FA,$02E6
 	move.w	d0,(a1)
 	dc.w	$323A,$00DC
 	dc.w	$6714
 	clr.w	d1
 	dc.w	$927A,$00D4
-Sub_23590	cmp.w	d0,d1
+RestoreBiosSub9	cmp.w	d0,d1
 	dc.w	$620A
 	move.w	#$4,d0
 	ori.b	#$1,ccr
 	dc.w	$6056
-L2359E	dc.w	$343A,$00C2
+.l2359E	dc.w	$343A,$00C2
 	lsr.w	#$8,d2
 	lsr.w	#$4,d2
 	ori.b	#$80,d2
@@ -893,10 +893,10 @@ L2359E	dc.w	$343A,$00C2
 	clr.w	d0
 .l22F4	movem.l	(sp)+,d1-d2/a0-a1
 	rts
-L235FA	movem.l	d1-d3/a0,-(sp)
-Sub_235FE	movem.l	d2-d3,-(sp)
+.l235FA	movem.l	d1-d3/a0,-(sp)
+RestoreBiosSub10	movem.l	d2-d3,-(sp)
 	move.w	#$0,d0
-	bsr.w	L23420
+	bsr.w	RestoreBios_4
 	movem.l	(sp)+,d2-d3
 	dc.w	$652C
 	cmpi.w	#$0,d3
@@ -920,47 +920,47 @@ Sub_235FE	movem.l	d2-d3,-(sp)
 	jsr	$5F22.l
 	bcs.b	.l2342
 	rts
-L23650	rts
-L23652	move.l	d0,-(sp)
+.l23650	rts
+.l23652	move.l	d0,-(sp)
 	move.w	#$28,d0
 .l2358	nop
 	dbra	d0,.l2358
 	move.l	(sp)+,d0
 	dc.w	$4E75
-L23662	dc.b	$00,$00,$00,$00	; ....
-L23666	dcb.b	$200,0
-L23866	dc.b	$00,$00	; ..
-L23868	dcb.b	$8,0
-L23870	dc.b	$00,$00	; ..
-L23872	dc.b	$00,$00	; ..
-L23874	dcb.b	$8,0
-L2387C	dcb.b	$8,0
-L23884	dcb.b	$8,0
-L2388C	dcb.b	$8,0
-L23894	dcb.b	$8,0
-L2389C	dcb.b	$8,0
-L238A4	dcb.b	$8,0
-L238AC	dcb.b	$11,0
-L238BD	dc.b	$00	; .
-L238BE	dc.b	$00,$00	; ..
-L238C0	dc.b	$00,$00	; ..
-L238C2	dc.b	$00	; .
-L238C3	dc.b	$00	; .
-L238C4	dc.b	$00	; .
-L238C5	dc.b	$00,$00	; ..
-L238C7	dc.b	$00	; .
-L238C8	dc.b	$00	; .
-L238C9	dc.b	$00	; .
-L238CA	dc.b	$00,$00	; ..
-L238CC	dc.b	$00,$00,$00,$00	; ....
-L238D0	dcb.b	$80,0
-L23950	dcb.b	$80,0
-L239D0	dcb.b	$80,0
-L23A50	dcb.b	$80,0
-L23AD0	dcb.b	$80,0
-L23B50	dcb.b	$8,0
-L23B58	dc.b	$00,$00	; ..
-Sub_23B5A	move.w	sr,-(sp)
+.l23662	dc.b	$00,$00,$00,$00	; ....
+.l23666	dcb.b	$200,0
+.l23866	dc.b	$00,$00	; ..
+.l23868	dcb.b	$8,0
+.l23870	dc.b	$00,$00	; ..
+.l23872	dc.b	$00,$00	; ..
+.l23874	dcb.b	$8,0
+.l2387C	dcb.b	$8,0
+.l23884	dcb.b	$8,0
+.l2388C	dcb.b	$8,0
+.l23894	dcb.b	$8,0
+.l2389C	dcb.b	$8,0
+.l238A4	dcb.b	$8,0
+.l238AC	dcb.b	$11,0
+.l238BD	dc.b	$00	; .
+.l238BE	dc.b	$00,$00	; ..
+.l238C0	dc.b	$00,$00	; ..
+.l238C2	dc.b	$00	; .
+.l238C3	dc.b	$00	; .
+.l238C4	dc.b	$00	; .
+.l238C5	dc.b	$00,$00	; ..
+.l238C7	dc.b	$00	; .
+.l238C8	dc.b	$00	; .
+.l238C9	dc.b	$00	; .
+.l238CA	dc.b	$00,$00	; ..
+.l238CC	dc.b	$00,$00,$00,$00	; ....
+.l238D0	dcb.b	$80,0
+.l23950	dcb.b	$80,0
+.l239D0	dcb.b	$80,0
+.l23A50	dcb.b	$80,0
+.l23AD0	dcb.b	$80,0
+.l23B50	dcb.b	$8,0
+.l23B58	dc.b	$00,$00	; ..
+RestoreBiosSub11	move.w	sr,-(sp)
 	move.w	d0,$EC90.l
 	move.l	d1,$EC92.l
 	move.l	d2,$EC96.l
@@ -1009,7 +1009,7 @@ Sub_23B5A	move.w	sr,-(sp)
 	dc.w	$6100,$03DE
 	dc.w	$6100,$0804
 	rts
-L23C4C	movem.l	d0-d7/a0-a6,-(sp)
+.l23C4C	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
 	lea.l	$80000.l,a0
 	move.l	a0,$10984.l
@@ -1036,27 +1036,27 @@ L23C4C	movem.l	d0-d7/a0-a6,-(sp)
 	bset.b	#$2,$FFFF8024.w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-L23CDC	move.b	(a1)+,(a0)+
+.l23CDC	move.b	(a1)+,(a0)+
 	cmpa.l	a2,a1
-	blt.b	L23CDC
-L23CE2	rts
-L23CE4	movem.l	d0-d7/a0-a6,-(sp)
+	blt.b	.l23CDC
+RestoreBios_5	rts
+.l23CE4	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
 	move.w	#$2,d0
 	moveq	#$2,d1
-	bsr.w	Sub_227BC
+	bsr.w	RestoreBiosSub1
 	lea.l	$1756C.l,a0
 	move.w	#$0,d1
 	move.w	#$5,d0
-	bsr.w	Sub_227BC
+	bsr.w	RestoreBiosSub1
 	lea.l	$DA24.l,a0
 	move.w	#$6,d0
-	bsr.w	Sub_227BC
+	bsr.w	RestoreBiosSub1
 	bset.b	#$2,$FFFF8024.w
 	movem.l	(sp)+,d0-d7/a0-a6
 	dc.w	$4E75
 	dc.b	$00,$02,$00,$00,$FF,$FF	; ......
-L23D2A	dc.b	$48,$E7,$FF,$FE,$02,$39,$00,$EF,$00,$0B,$C6,$E8,$61,$00,$08,$E8	; H....9......a...
+.l23D2A	dc.b	$48,$E7,$FF,$FE,$02,$39,$00,$EF,$00,$0B,$C6,$E8,$61,$00,$08,$E8	; H....9......a...
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC,$61,$00,$08,$C2,$78,$01,$33,$C4,$00,$01,$0A,$F0,$20,$79	; ..a...x.3..... y
 	dc.b	$00,$01,$09,$DC,$45,$E8,$00,$08,$61,$00,$06,$C6,$43,$F9,$00,$0B	; ....E...a...C...
@@ -1066,7 +1066,7 @@ L23D2A	dc.b	$48,$E7,$FF,$FE,$02,$39,$00,$EF,$00,$0B,$C6,$E8,$61,$00,$08,$E8	; H.
 	dc.b	$61,$00,$05,$10,$61,$00,$06,$F8,$72,$00,$4A,$41,$56,$CE,$FF,$EE	; a...a...r.JAV...
 	dc.b	$61,$00,$08,$74,$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06	; a..t............
 	dc.b	$00,$20,$00,$00,$0C,$CC,$4C,$DF,$7F,$FF,$4E,$75	; . ....L...Nu
-Sub_23DC6	movem.l	d0-d6/a0-a2,-(sp)
+RestoreBiosSub12	movem.l	d0-d6/a0-a2,-(sp)
 	btst.b	#$1,$BC6E8.l
 	dc.w	$6600,$009E
 	cmpi.w	#$10,$10B6E.l
@@ -1108,10 +1108,10 @@ Sub_23DC6	movem.l	d0-d6/a0-a2,-(sp)
 	dc.w	$4E75
 	dc.b	$00,$1E,$00,$00,$00,$1E,$00,$01,$00,$1E,$00,$01,$00,$04,$00,$01	; ................
 	dc.b	$00,$06,$FF,$FF	; ....
-L23E8C	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$07,$7A,$38,$3C,$00,$01	; .9......a..z8<..
+.l23E8C	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$07,$7A,$38,$3C,$00,$01	; .9......a..z8<..
 	dc.b	$33,$C4,$00,$01,$0A,$F0,$61,$00,$0A,$B4,$00,$08,$F8,$00,$01,$00	; 3.....a.........
 	dc.b	$00,$00,$24,$79,$00,$01,$09,$D8,$41,$D2,$43,$D2,$D1,$DA,$D3,$DA	; ..$y....A.C.....
-	dc.b	$42,$40,$42,$41,$34,$11,$36,$29,$00,$02,$7A,$0F,$61,$00,$09,$52	; B@BA4.6)..z.a..R
+	dc.b	'B@BA4',$11,$36,$29,$00,$02,$7A,$0F,$61,$00,$09,$52	; B@BA4.6)..z.a..R
 	dc.b	$20,$7C,$00,$01,$07,$D0,$22,$7C,$00,$01,$07,$CC,$24,$7C,$00,$01	;  |...."|....$|..
 	dc.b	$07,$CA,$47,$F9,$00,$01,$0A,$F0,$28,$79,$00,$01,$09,$E0,$61,$00	; ..G.....(y....a.
 	dc.b	$05,$16,$20,$7C,$00,$01,$08,$22,$22,$7C,$00,$01,$08,$1E,$24,$7C	; .. |...""|....$|
@@ -1134,19 +1134,19 @@ L23E8C	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$07,$7A,$38,$3C,$00,$01	; .9
 	dc.b	$00,$01,$08,$C6,$28,$7C,$00,$01,$08,$C2,$20,$79,$00,$01,$09,$E0	; ....(|.... y....
 	dc.b	$61,$00,$03,$AC,$61,$00,$03,$28,$61,$00,$03,$58,$08,$F9,$00,$01	; a...a..(a..X....
 	dc.b	$00,$0B,$C6,$E8,$4E,$75	; ....Nu
-L24022	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9......a.......
+.l24022	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9......a.......
 	dc.b	$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00,$0C,$CC,$61,$00	; ......... ....a.
 	dc.b	$05,$CE,$61,$00,$0A,$9A,$33,$F9,$00,$01,$0B,$CE,$00,$01,$0B,$2A	; ..a...3........*
 	dc.b	$33,$F9,$00,$01,$0B,$CE,$00,$01,$0B,$2C,$70,$1C,$61,$00,$06,$10	; 3........,p.a...
 	dc.b	$42,$79,$00,$01,$0B,$22,$61,$00,$08,$12,$00,$06,$FF,$00,$00,$00	; By..."a.........
-	dc.b	$20,$3C,$00,$00,$00,$80,$72,$20,$24,$3C,$00,$00,$07,$FF,$4E,$B9	;  <....r $<....N.
+	dc.b	$20,$3C,$00,$00,$00,$80,'r $<',$00,$00,$07,$FF,$4E,$B9	;  <....r $<....N.
 	dc.b	$00,$00,$E4,$D6,$61,$00,$07,$F4,$00,$06,$FE,$00,$00,$00,$20,$3C	; ....a......... <
-	dc.b	$00,$00,$00,$80,$72,$20,$24,$3C,$00,$00,$07,$FF,$4E,$B9,$00,$00	; ....r $<....N...
+	dc.b	$00,$00,$00,$80,'r $<',$00,$00,$07,$FF,$4E,$B9,$00,$00	; ....r $<....N...
 	dc.b	$E4,$D6,$78,$1C,$61,$00,$07,$D4,$00,$06,$FE,$00,$13,$00,$22,$79	; ..x.a........."y
 	dc.b	$00,$01,$09,$84,$D3,$E9,$00,$04,$45,$F9,$00,$0B,$C6,$EC,$42,$40	; ........E.....B@
 	dc.b	$72,$13,$34,$11,$36,$29,$00,$02,$96,$41,$7A,$00,$4E,$B9,$00,$00	; r.4.6)...Az.N...
 	dc.b	$E5,$1C,$61,$00,$07,$A6,$00,$06,$FD,$00,$00,$00,$20,$79,$00,$01	; ..a......... y..
-	dc.b	$09,$84,$22,$48,$24,$48,$D1,$DA,$D3,$DA,$42,$40,$42,$41,$34,$11	; .."H$H....B@BA4.
+	dc.b	$09,$84,'"H$H',$D1,$DA,$D3,$DA,'B@BA4',$11	; .."H$H....B@BA4.
 	dc.b	$36,$29,$00,$02,$7A,$0F,$4E,$B9,$00,$00,$E5,$1C,$33,$C4,$00,$01	; 6)..z.N.....3...
 	dc.b	$0A,$FE,$24,$79,$00,$01,$09,$4C,$50,$8A,$4E,$B9,$00,$00,$E1,$2A	; ..$y...LP.N....*
 	dc.b	$61,$00,$08,$E8,$61,$00,$07,$64,$00,$06,$FF,$00,$00,$00,$43,$F9	; a...a..d......C.
@@ -1157,13 +1157,13 @@ L24022	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9
 	dc.b	$00,$00,$43,$F9,$00,$02,$5F,$36,$61,$00,$00,$2A,$D2,$D1,$78,$3F	; ..C..._6a..*..x?
 	dc.b	$61,$00,$00,$7E,$61,$00,$00,$7A,$52,$79,$00,$01,$0B,$22,$51,$CC	; a..~a..zRy..."Q.
 	dc.b	$FF,$F0,$78,$78,$61,$00,$00,$6A,$51,$CC,$FF,$FA,$4A,$69,$00,$02	; ..xxa..jQ...Ji..
-	dc.b	$6A,$D6,$4E,$75,$30,$39,$00,$01,$0B,$22,$E6,$40,$06,$40,$00,$1C	; j.Nu09...".@.@..
+	dc.b	$6A,$D6,'Nu09',$00,$01,$0B,$22,$E6,$40,$06,$40,$00,$1C	; j.Nu09...".@.@..
 	dc.b	$02,$40,$00,$1F,$33,$C0,$00,$01,$0B,$0C,$3F,$00,$42,$79,$00,$01	; .@..3.....?.By..
 	dc.b	$0B,$0A,$70,$20,$72,$09,$34,$3C,$07,$FF,$4E,$B9,$00,$00,$E4,$D6	; ..p r.4<..N.....
 	dc.b	$33,$DF,$00,$01,$0B,$0C,$30,$11,$E2,$40,$44,$40,$06,$40,$00,$10	; 3.....0..@D@.@..
 	dc.b	$33,$C0,$00,$01,$0B,$0A,$61,$00,$0A,$1C,$52,$79,$00,$01,$0B,$0C	; 3.....a...Ry....
 	dc.b	$02,$79,$00,$1F,$00,$01,$0B,$0C,$4A,$69,$00,$02,$6A,$D8,$4E,$75	; .y......Ji..j.Nu
-Sub_241F2	movem.l	d0-d7/a0-a6,-(sp)
+RestoreBiosSub13	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$10AE0.l,d0
 .l2EFC	cmp.w	$10AE0.l,d0
 	beq.b	.l2EFC
@@ -1174,10 +1174,10 @@ Sub_241F2	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$6700,$0092
 	addq.l	#$4,sp
 	dc.w	$4E75
-L2421E	dc.b	$41,$F9,$00,$0B,$A4,$50,$30,$B9,$00,$01,$0B,$22,$70,$1D,$61,$00	; A....P0...."p.a.
+.l2421E	dc.b	$41,$F9,$00,$0B,$A4,$50,$30,$B9,$00,$01,$0B,$22,$70,$1D,$61,$00	; A....P0...."p.a.
 	dc.b	$04,$42,$30,$3C,$00,$DF,$41,$F9,$00,$0B,$C3,$68,$72,$7F,$D2,$79	; .B0<..A....hr..y
 	dc.b	$00,$01	; ..
-Sub_24240	dc.w	$0B20
+RestoreBiosSub14	dc.w	$0B20
 .l2F42	clr.l	(a0)+
 	cmpi.w	#$48,d0
 	dc.w	$6F00,$0006
@@ -1198,7 +1198,7 @@ Sub_24240	dc.w	$0B20
 	move.w	#$FEB4,$10B20.l
 .l2F9E	move.w	$10B28.l,d0
 	add.w	d0,$10B20.l
-L242AA	rts
+.l242AA	rts
 	move.w	d0,-(sp)
 	move.w	$10AE2.l,d0
 .l2FB4	cmp.w	$10AE0.l,d0
@@ -1206,13 +1206,13 @@ L242AA	rts
 	move.w	$10AE0.l,$10AE2.l
 	move.w	(sp)+,d0
 	rts
-L242CA	movea.l	#$BA8D2,a5
+.l242CA	movea.l	#$BA8D2,a5
 	movea.l	#$BAF16,a6
 	moveq	#$1,d6
 	rts
-L242DA	cmpi.w	#$50,d6
-	bgt.w	L23CE2
-Sub_242E2	movem.l	d0-d5/a0,-(sp)
+RestoreBios_6	cmpi.w	#$50,d6
+	bgt.w	RestoreBios_5
+RestoreBiosSub15	movem.l	d0-d5/a0,-(sp)
 	adda.l	$4(a0),a0
 	move.w	d2,d5
 	andi.w	#$7FF,d2
@@ -1241,7 +1241,7 @@ Sub_242E2	movem.l	d0-d5/a0,-(sp)
 	dbra	d3,.l3002
 .l3034	movem.l	(sp)+,d0-d5/a0
 	rts
-L2433A	moveq	#-1,d0
+.l2433A	moveq	#-1,d0
 	add.w	d6,d0
 	dc.w	$6600,$0008
 	moveq	#$1,d0
@@ -1257,7 +1257,7 @@ L2433A	moveq	#-1,d0
 	move.w	d0,$BB1E6.l
 	move.l	a5,$BAF12.l
 	rts
-L2436E	movea.l	#$BC6F0,a0
+.l2436E	movea.l	#$BC6F0,a0
 	lea.l	$BA8D2.l,a1
 	move.l	#$80000,d1
 .l3080	cmpa.l	$BAF12.l,a1
@@ -1301,9 +1301,9 @@ L2436E	movea.l	#$BC6F0,a0
 .l30F2	tst.w	d2
 	dc.w	$6B00,$000A
 	move.w	(a3)+,d0
-Sub_243FA	move.w	(a3),d1
-	bsr.w	L242DA
-L24400	rts
+RestoreBiosSub16	move.w	(a3),d1
+	bsr.w	RestoreBios_6
+.l24400	rts
 	move.w	d4,(a3)
 	move.l	a0,(a1)
 	addq.l	#$4,(a1)
@@ -1312,12 +1312,12 @@ L24400	rts
 	lea.l	$8(a0),a2
 	dc.w	$6100,$0016
 	rts
-L24418	neg.w	d0
+.l24418	neg.w	d0
 	move.w	d0,$10AE0.l
 .l3120	tst.w	$10AE0.l
 	bmi.b	.l3120
 	rts
-L2442A	movem.l	d0-d1/a0,-(sp)
+.l2442A	movem.l	d0-d1/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	d4,(a0)+
 	move.l	a2,(a0)
@@ -1327,8 +1327,8 @@ L2442A	movem.l	d0-d1/a0,-(sp)
 	move.l	(a0),d4
 	movem.l	(sp)+,d0-d1/a0
 	dc.w	$4E75
-L2444C	dc.b	$48,$E7,$80,$80,$41,$F9,$00,$0B	; H...A...
-Sub_24454	dc.w	$A850
+.l2444C	dc.b	$48,$E7,$80,$80,$41,$F9,$00,$0B	; H...A...
+RestoreBiosSub17	dc.w	$A850
 	moveq	#$1F,d0
 .l3158	move.l	(a0),-(sp)
 	clr.l	(a0)+
@@ -1340,7 +1340,7 @@ Sub_24454	dc.w	$A850
 	dbra	d0,.l316E
 	movem.l	(sp)+,d0/a0
 	rts
-L2447A	move.w	$BC6E8.l,-(sp)
+.l2447A	move.w	$BC6E8.l,-(sp)
 	bclr.b	#$4,$BC6E8.l
 .l3188	tst.w	$BA8D0.l
 	bpl.b	.l3188
@@ -1348,7 +1348,7 @@ L2447A	move.w	$BC6E8.l,-(sp)
 	dc.w	$4E75
 	dc.b	$48,$E7,$B8,$00,$42,$67,$78,$03,$61,$00,$00,$A8,$61,$00,$00,$6C	; H...Bgx.a...a..l
 	dc.b	$83,$57,$51,$CC,$FF,$F4,$32,$1F,$4C,$DF	; .WQ...2.L.
-Sub_244B2	dc.w	$001D,$4E75
+RestoreBiosSub18	dc.w	$001D,$4E75
 	tst.w	d3
 	dc.w	$6700,$002A
 	tst.w	d2
@@ -1360,13 +1360,13 @@ Sub_244B2	dc.w	$001D,$4E75
 	andi.w	#$F,d1
 	rts
 .l31DC	move.b	#$F,$10B1C.l
-L244E4	rts
+RestoreBios_7	rts
 	tst.w	d3
-	beq.b	L244E4
+	beq.b	RestoreBios_7
 	tst.w	d2
 	dc.w	$6600,$001A
 	subq.b	#$1,$10B1D.l
-	bpl.b	L244E4
+	bpl.b	RestoreBios_7
 	move.b	#$4,$10B1D.l
 	move.w	d3,d1
 	andi.w	#$F,d1
@@ -1374,7 +1374,7 @@ L244E4	rts
 .l3208	move.b	#$F,$10B1D.l
 	dc.w	$4E75
 	dc.b	$4A,$43,$67,$CE	; JCg.
-Sub_24516	movem.l	a0,-(sp)
+RestoreBiosSub19	movem.l	a0,-(sp)
 	lea.l	$10B1C.l,a0
 	tst.w	d2
 	dc.w	$6600,$001A
@@ -1390,7 +1390,7 @@ Sub_24516	movem.l	a0,-(sp)
 	dc.b	$30,$38,$80,$1C,$13,$C0,$00,$01,$0B,$15,$E0,$48,$13,$C0,$00,$01	; 08.........H....
 	dc.b	$0B,$14,$30,$38,$80,$1E,$13,$C0,$00,$01,$0B,$17,$E0,$48,$13,$C0	; ..08.........H..
 	dc.b	$00,$01,$0B,$16,$70,$00	; ....p.
-Sub_24570	movem.l	a0,-(sp)
+RestoreBiosSub20	movem.l	a0,-(sp)
 	lea.l	$10B14.l,a0
 	move.b	(a0,d4.w),d0
 	dc.w	$6100,$005E
@@ -1421,9 +1421,9 @@ Sub_24570	movem.l	a0,-(sp)
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L245DE	clr.w	d1
+.l245DE	clr.w	d1
 	move.b	d0,d1
-Sub_245E2	movem.l	d1/a0,-(sp)
+RestoreBiosSub21	movem.l	d1/a0,-(sp)
 	andi.w	#$F0,d0
 	andi.w	#$F,d1
 	lea.l	$E300.l,a0
@@ -1432,7 +1432,7 @@ Sub_245E2	movem.l	d1/a0,-(sp)
 	movem.l	(sp)+,d1/a0
 	dc.w	$4E75
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
-Sub_24610	movem.l	d0,-(sp)
+RestoreBiosSub22	movem.l	d0,-(sp)
 	moveq	#$3,d0
 	dc.w	$6100,$0058
 	movem.l	(sp)+,d0
@@ -1445,7 +1445,7 @@ Sub_24610	movem.l	d0,-(sp)
 	move.l	a0,(sp)
 	moveq	#$2,d0
 	dc.w	$6000,$003A
-Sub_24638	movem.l	d0/d2-d3/a1,-(sp)
+RestoreBiosSub23	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
@@ -1454,7 +1454,7 @@ Sub_24638	movem.l	d0/d2-d3/a1,-(sp)
 	dc.w	$6100,$0024
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
-Sub_24654	movem.l	d0/d2-d3/a1,-(sp)
+RestoreBiosSub24	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
@@ -1463,7 +1463,7 @@ Sub_24654	movem.l	d0/d2-d3/a1,-(sp)
 	dc.w	$6100,$0008
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
-L24670	move.w	d0,$FFFF8020.w
+RestoreBios_8	move.w	d0,$FFFF8020.w
 	bset.b	#$6,$FFFF800F.w
 .l337A	btst.b	#$6,$FFFF800E.w
 	beq.b	.l337A
@@ -1480,7 +1480,7 @@ L24670	move.w	d0,$FFFF8020.w
 	dc.w	$6100,$0062
 	dc.w	$6100,$04C8
 	rts
-L246BC	move.w	#$0,$FFFF8020.w
+.l246BC	move.w	#$0,$FFFF8020.w
 	move.w	#$0,$FFFF8022.w
 	move.w	#$0,$FFFF8024.w
 	move.w	#$0,$FFFF8026.w
@@ -1499,13 +1499,13 @@ L246BC	move.w	#$0,$FFFF8020.w
 	bne.b	.l3406
 	bclr.b	#$7,$FFFF800F.w
 	rts
-L24716	btst.b	#$1,$FFFF8003.w
-	beq.b	L24716
+RestoreBios_9	btst.b	#$1,$FFFF8003.w
+	beq.b	RestoreBios_9
 	btst.b	#$0,$FFFF8003.w
-	bne.b	L24716
+	bne.b	RestoreBios_9
 	bset.b	#$1,$10912.l
 	rts
-L24730	bset.b	#$0,$FFFF8003.w
+RestoreBios_10	bset.b	#$0,$FFFF8003.w
 	bclr.b	#$1,$10912.l
 	rts
 	lea.l	$10ADA.l,a0
@@ -1513,9 +1513,9 @@ L24730	bset.b	#$0,$FFFF8003.w
 	cmpa.l	#$10BD8,a0
 	blt.b	.l3446
 	rts
-L24752	dc.w	$4E75
+.l24752	dc.w	$4E75
 	dc.b	$4E,$B9,$00,$00,$E3,$F8	; N.....
-Sub_2475A	movem.l	a0-a1,-(sp)
+RestoreBiosSub25	movem.l	a0-a1,-(sp)
 	movea.l	$EC96.l,a0
 	move.l	(a0),$10ACC.l
 	move.l	#$EA8A,(a0)
@@ -1527,7 +1527,7 @@ Sub_2475A	movem.l	a0-a1,-(sp)
 	dc.w	$6100,$0006
 	sub.w	(sp)+,d0
 	rts
-L24788	movem.l	d0-d2,-(sp)
+.l24788	movem.l	d0-d2,-(sp)
 	move.w	$10B2C.l,d0
 	move.w	d0,d1
 	move.w	$10B2A.l,d2
@@ -1546,12 +1546,12 @@ L24788	movem.l	d0-d2,-(sp)
 	addq.l	#$4,sp
 	movem.l	(sp)+,d1-d2
 	rts
-Sub_247C6	movem.l	d0/a0,-(sp)
+RestoreBiosSub26	movem.l	d0/a0,-(sp)
 	moveq	#$6,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0/a0
 	rts
-Sub_247D6	movem.l	d0-d3/a0,-(sp)
+RestoreBiosSub27	movem.l	d0-d3/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+
@@ -1560,7 +1560,7 @@ Sub_247D6	movem.l	d0-d3/a0,-(sp)
 	move.w	$10B0C.l,(a0)+
 	move.w	$10B10.l,(a0)+
 	moveq	#$7,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	lea.l	$BA450.l,a0
 	move.w	(a0)+,$10B0A.l
 	move.w	(a0)+,$10B0C.l
@@ -1570,11 +1570,11 @@ Sub_247D6	movem.l	d0-d3/a0,-(sp)
 	dc.b	$48,$E7,$F6,$F2,$4D,$F9,$00,$0B,$A4,$50,$2C,$C8,$2C,$C9,$2C,$CA	; H...M....P,.,.,.
 	dc.b	$2C,$C0,$2C,$C1,$2C,$C2,$2C,$C3,$2C,$C4,$2C,$C5,$3C,$F9,$00,$01	; ,.,.,.,.,.,.<...
 	dc.b	$0B,$0E,$3C,$F9	; ..<.
-Sub_24840	dc.w	$0001,$0B0A
+RestoreBiosSub28	dc.w	$0001,$0B0A
 	move.w	$10B0C.l,(a6)+
 	move.w	$10B10.l,(a6)+
 	moveq	#$8,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	lea.l	$BA450.l,a6
 	move.w	(a6)+,d4
 	move.w	(a6)+,$10B0E.l
@@ -1583,7 +1583,7 @@ Sub_24840	dc.w	$0001,$0B0A
 	move.w	(a6)+,$10B10.l
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3/a6
 	rts
-Sub_2487C	movem.l	d0/a1-a2,-(sp)
+RestoreBiosSub29	movem.l	d0/a1-a2,-(sp)
 	movea.l	$C(sp),a1
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
@@ -1598,7 +1598,7 @@ Sub_2487C	movem.l	d0/a1-a2,-(sp)
 	dbra	d0,.l35AE
 	move.l	a1,$C(sp)
 	moveq	#$B,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
 	move.w	(a1)+,$10B10.l
@@ -1606,7 +1606,7 @@ Sub_2487C	movem.l	d0/a1-a2,-(sp)
 	move.w	(a1),$10B0C.l
 	movem.l	(sp)+,d0/a1-a2
 	rts
-Sub_248E2	movem.l	d0-d3/a0/a2-a3,-(sp)
+RestoreBiosSub30	movem.l	d0-d3/a0/a2-a3,-(sp)
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
 	move.w	$10B0A.l,(a2)+
@@ -1622,7 +1622,7 @@ Sub_248E2	movem.l	d0-d3/a0/a2-a3,-(sp)
 .l3622	move.w	(a1)+,(a2)+
 	dbra	d0,.l3622
 	moveq	#$C,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	lea.l	$BA450.l,a2
 	move.w	(a2)+,$10B0E.l
 	move.w	(a2)+,$10B0A.l
@@ -1631,7 +1631,7 @@ Sub_248E2	movem.l	d0-d3/a0/a2-a3,-(sp)
 	move.w	(a2),$10B10.l
 	movem.l	(sp)+,d0-d3/a0/a2-a3
 	rts
-Sub_24958	movem.l	d0/a1-a2,-(sp)
+RestoreBiosSub31	movem.l	d0/a1-a2,-(sp)
 	movea.l	$C(sp),a1
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
@@ -1648,7 +1648,7 @@ Sub_24958	movem.l	d0/a1-a2,-(sp)
 .l369C	move.w	(a1)+,(a2)+
 	dbra	d0,.l369C
 	moveq	#$D,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	move.l	a1,$C(sp)
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
@@ -1658,7 +1658,7 @@ Sub_24958	movem.l	d0/a1-a2,-(sp)
 	move.w	(a1),$10B10.l
 	movem.l	(sp)+,d0/a1-a2
 	rts
-Sub_249D6	movem.l	d1-d4,-(sp)
+RestoreBiosSub32	movem.l	d1-d4,-(sp)
 	clr.w	d4
 	moveq	#$2,d3
 	moveq	#$E,d2
@@ -1673,23 +1673,23 @@ Sub_249D6	movem.l	d1-d4,-(sp)
 	move.w	d4,d0
 	movem.l	(sp)+,d1-d4
 	rts
-Sub_249FC	movem.l	d0/a0-a1,-(sp)
+RestoreBiosSub33	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	lea.l	$10AE4.l,a1
 .l370C	move.w	(a1)+,(a0)+
 	cmpa.l	#$10B08,a1
 	blt.b	.l370C
 	moveq	#$E,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0/a0-a1
 	rts
-Sub_24A22	movem.l	a1,-(sp)
+RestoreBiosSub34	movem.l	a1,-(sp)
 	movem.l	$4(sp),a1
 	dc.w	$6100,$000E
 	movem.l	a1,$4(sp)
 	movem.l	(sp)+,a1
 	rts
-L24A3C	movem.l	d0/a0,-(sp)
+.l24A3C	movem.l	d0/a0,-(sp)
 	lea.l	$2(a3),a0
 	move.w	(a3),d0
 	subq.w	#$3,d0
@@ -1713,7 +1713,7 @@ L24A3C	movem.l	d0/a0,-(sp)
 	move.w	d0,(a3)
 .l377A	movem.l	(sp)+,d0/a0
 	rts
-Sub_24A80	movem.l	d1-d2/a0-a1,-(sp)
+RestoreBiosSub35	movem.l	d1-d2/a0-a1,-(sp)
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1)+,d2
@@ -1730,8 +1730,8 @@ Sub_24A80	movem.l	d1-d2/a0-a1,-(sp)
 .l37A8	dbra	d2,.l3790
 	movem.l	(sp)+,d1-d2/a0-a1
 	rts
-L24AB2	ext.w	d1
-	beq.w	L244E4
+.l24AB2	ext.w	d1
+	beq.w	RestoreBios_7
 	cmpi.w	#$61,d1
 	dc.w	$6D00,$000E
 	cmpi.w	#$7A,d1
@@ -1740,16 +1740,16 @@ L24AB2	ext.w	d1
 .l37CC	addq.w	#$1,d0
 	movea.l	#$10570,a0
 	tst.b	-$20(a0,d1.w)
-	bmi.w	L244E4
+	bmi.w	RestoreBios_7
 	addq.w	#$1,d0
 	rts
-Sub_24AE0	movem.l	d0,-(sp)
+RestoreBiosSub36	movem.l	d0,-(sp)
 	moveq	#$F,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	move.w	$BA450.l,$10BCE.l
 	movem.l	(sp)+,d0
 	rts
-Sub_24AFA	movem.l	d0-d1/a0-a1,-(sp)
+RestoreBiosSub37	movem.l	d0-d1/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	d4,(a0)+
 	move.l	a2,(a0)+
@@ -1757,41 +1757,41 @@ Sub_24AFA	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	moveq	#$10,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	lea.l	$BA450.l,a0
 	move.l	(a0),d4
 	movem.l	(sp)+,d0-d1/a0-a1
 	addq.l	#$8,(sp)
 	rts
-L24B26	btst.b	#$0,$FFFF8018.w
-	beq.b	L24B26
+.l24B26	btst.b	#$0,$FFFF8018.w
+	beq.b	.l24B26
 	bset.b	#$0,$FFFF8028.w
 .l3834	btst.b	#$0,$FFFF8018.w
 	bne.b	.l3834
 	bclr.b	#$0,$FFFF8028.w
 	rts
-L24B44	btst.b	#$1,$FFFF8018.w
-	beq.b	L24B44
+.l24B44	btst.b	#$1,$FFFF8018.w
+	beq.b	.l24B44
 	bset.b	#$1,$FFFF8028.w
 .l3852	btst.b	#$1,$FFFF8018.w
 	bne.b	.l3852
 	bclr.b	#$1,$FFFF8028.w
 	rts
-L24B62	btst.b	#$2,$FFFF8018.w
-	beq.b	L24B62
+.l24B62	btst.b	#$2,$FFFF8018.w
+	beq.b	.l24B62
 	bset.b	#$2,$FFFF8028.w
 .l3870	btst.b	#$2,$FFFF8018.w
 	bne.b	.l3870
 	bclr.b	#$2,$FFFF8028.w
 	rts
-L24B80	btst.b	#$3,$FFFF8018.w
-	beq.b	L24B80
+.l24B80	btst.b	#$3,$FFFF8018.w
+	beq.b	.l24B80
 	bset.b	#$3,$FFFF8028.w
 .l388E	btst.b	#$3,$FFFF8018.w
 	bne.b	.l388E
 	bclr.b	#$3,$FFFF8028.w
 	rts
-Sub_24B9E	movem.l	d0/a0-a1,-(sp)
+RestoreBiosSub38	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	movea.l	$C(sp),a1
 	move.l	(a1)+,(a0)+
@@ -1800,25 +1800,25 @@ Sub_24B9E	movem.l	d0/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	a1,$C(sp)
 	moveq	#$12,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0/a0-a1
 	rts
-Sub_24BC4	movem.l	d0/a0-a1,-(sp)
+RestoreBiosSub39	movem.l	d0/a0-a1,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	moveq	#$12,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0/a0-a1
 	rts
-L24BE2	lea.l	$BA450.l,a0
+.l24BE2	lea.l	$BA450.l,a0
 	move.l	$1094C.l,(a0)+
 	moveq	#$5,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	rts
-Sub_24BF6	movem.l	d0-d3/a0/a2/a6,-(sp)
+RestoreBiosSub40	movem.l	d0-d3/a0/a2/a6,-(sp)
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+
 	move.w	$10B10.l,(a2)+
@@ -1832,7 +1832,7 @@ Sub_24BF6	movem.l	d0-d3/a0/a2/a6,-(sp)
 	dbra	d0,.l3924
 	movea.l	a1,a6
 	moveq	#$B,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
 	move.w	(a1)+,$10B10.l
@@ -1841,55 +1841,55 @@ Sub_24BF6	movem.l	d0-d3/a0/a2/a6,-(sp)
 	movea.l	a6,a1
 	movem.l	(sp)+,d0-d3/a0/a2/a6
 	rts
-Sub_24C58	movem.l	a0,-(sp)
+RestoreBiosSub41	movem.l	a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)
 	moveq	#$13,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,a0
 	rts
 	dc.w	$6100,$0006
-	bra.w	Sub_248E2
-L24C78	dc.w	$6000,$0004
+	bra.w	RestoreBiosSub30
+.l24C78	dc.w	$6000,$0004
 .l397C	adda.w	(a1),a1
 .l397E	dbra	d0,.l397C
 	rts
-Sub_24C84	movem.l	d0,-(sp)
+RestoreBiosSub42	movem.l	d0,-(sp)
 	moveq	#$14,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0
 	rts
-Sub_24C94	movem.l	d0,-(sp)
+RestoreBiosSub43	movem.l	d0,-(sp)
 	moveq	#$15,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0
 	rts
-Sub_24CA4	movem.l	d0/a0,-(sp)
+RestoreBiosSub44	movem.l	d0/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	$10B22.l,(a0)+
 	move.w	d0,(a0)+
 	moveq	#$16,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0/a0
 	rts
-Sub_24CC2	movem.l	d0/a0,-(sp)
+RestoreBiosSub45	movem.l	d0/a0,-(sp)
 	move.w	d0,$BA450.l
 	moveq	#$19,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0/a0
 	rts
 	move.l	d0,-(sp)
 	moveq	#$17,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	move.l	(sp)+,d0
 	rts
-Sub_24CE4	movem.l	d0-d2/a0,-(sp)
+RestoreBiosSub46	movem.l	d0-d2/a0,-(sp)
 	lea.l	$BA450.l,a0
-Sub_24CEE	move.w	d0,(a0)+
+RestoreBiosSub47	move.w	d0,(a0)+
 	move.w	d1,(a0)+
 	move.w	d2,(a0)+
 	moveq	#$18,d0
-	bsr.w	L24670
+	bsr.w	RestoreBios_8
 	movem.l	(sp)+,d0-d2/a0
 	rts
 .l3A00	bset.b	#$2,$FF8003.l

@@ -4,26 +4,26 @@
 
 
 
-	lea.l	LFF1ED0(pc),a0
+	lea.l	DispatchTail_14(pc),a0
 	move.l	$4(sp),(a0)
-	lea.l	LFF1ECC(pc),a0
+	lea.l	.lFF1ECC(pc),a0
 	move.l	$FFFFFD08.w,(a0)
-	lea.l	LFF1F8C(pc),a0
+	lea.l	DispatchTail_15(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
-	jsr	LFF30E2(pc)
-LFF1EB4	move.w	LFF2054(pc),d0
-	bne.b	LFF1EB4
-	movea.l	LFF1ECC(pc),a0
+	jsr	DispatchTail_34(pc)
+.lFF1EB4	move.w	DispatchTail_16(pc),d0
+	bne.b	.lFF1EB4
+	movea.l	.lFF1ECC(pc),a0
 	move.w	sr,d0
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
 	rts
-LFF1ECC	ori.b	#$0,d0
-LFF1ED0	ori.b	#$0,d0
+.lFF1ECC	ori.b	#$0,d0
+DispatchTail_14	ori.b	#$0,d0
 	movea.l	#$C00000,a0
 	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
@@ -34,8 +34,8 @@ LFF1ED0	ori.b	#$0,d0
 	move.l	d0,$4(a0)
 	moveq	#$0,d0
 	move.l	#$3FFF,d1
-LFF1EF8	move.l	d0,(a0)
-	dbra	d1,LFF1EF8
+.lFF1EF8	move.l	d0,(a0)
+	dbra	d1,.lFF1EF8
 	moveq	#$0,d0
 	move.l	#$C0000000,$4(a0)
 	move.l	#$EEE,(a0)
@@ -48,12 +48,12 @@ LFF1EF8	move.l	d0,(a0)
 	move.l	d0,(a0)
 	move.w	#$9001,$4(a0)
 	move.w	#$8B00,$4(a0)
-	bsr.b	LFF1F3E
+	bsr.b	.lFF1F3E
 	move.w	#$8238,$4(a0)
 	move.w	#$857C,$4(a0)
 	move.w	#$8D3F,$4(a0)
 	rts
-LFF1F3E	move.w	#$8F02,$4(a0)
+.lFF1F3E	move.w	#$8F02,$4(a0)
 	moveq	#$0,d0
 	lsl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -62,34 +62,34 @@ LFF1F3E	move.w	#$8F02,$4(a0)
 	move.l	d0,$4(a0)
 	moveq	#$0,d1
 	move.w	#$FF,d0
-LFF1F5A	move.l	d1,(a0)
-	dbra	d0,LFF1F5A
-	lea.l	LFF2D2A(pc),a1
+.lFF1F5A	move.l	d1,(a0)
+	dbra	d0,.lFF1F5A
+	lea.l	DispatchTail_26(pc),a1
 	move.w	#$2FF,d3
-LFF1F68	move.b	(a1)+,d0
+.lFF1F68	move.b	(a1)+,d0
 	moveq	#$7,d2
-LFF1F6C	lsl.l	#$4,d1
+.lFF1F6C	lsl.l	#$4,d1
 	add.b	d0,d0
-	bcs.b	LFF1F7C
+	bcs.b	.lFF1F7C
 	ori.b	#$2,d1
-	dbra	d2,LFF1F6C
-	bra.b	LFF1F84
-LFF1F7C	ori.b	#$1,d1
-	dbra	d2,LFF1F6C
-LFF1F84	move.l	d1,(a0)
-	dbra	d3,LFF1F68
+	dbra	d2,.lFF1F6C
+	bra.b	.lFF1F84
+.lFF1F7C	ori.b	#$1,d1
+	dbra	d2,.lFF1F6C
+.lFF1F84	move.l	d1,(a0)
+	dbra	d3,.lFF1F68
 	rts
-LFF1F8C	movem.l	d0-d7/a0-a5,-(sp)
+DispatchTail_15	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$A12000,a0
 	bset.b	#$0,(a0)
-	lea.l	LFF2054(pc),a2
+	lea.l	DispatchTail_16(pc),a2
 	tst.w	(a2)
-	beq.w	LFF203E
+	beq.w	.lFF203E
 	movea.l	#$C00000,a0
-	lea.l	LFF205C(pc),a1
+	lea.l	DispatchTail_18(pc),a1
 	move.l	#$C0000000,$4(a0)
-	move.w	LFF2058(pc),d0
-LFF1FBA	move.l	(a1)+,(a0)
+	move.w	DispatchTail_17(pc),d0
+.lFF1FBA	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -97,20 +97,20 @@ LFF1FBA	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
-	dbra	d0,LFF1FBA
+	dbra	d0,.lFF1FBA
 	clr.w	(a2)
-	move.l	LFF20DC(pc),d3
-	lea.l	LFF20EC(pc),a2
-	move.l	LFF20E0(pc),d2
-	move.l	LFF20E8(pc),d7
+	move.l	DispatchTail_19(pc),d3
+	lea.l	DispatchTail_23(pc),a2
+	move.l	DispatchTail_20(pc),d2
+	move.l	DispatchTail_22(pc),d7
 	subq.w	#$1,d7
-	move.l	LFF20E4(pc),d6
+	move.l	DispatchTail_21(pc),d6
 	moveq	#$7,d0
 	and.w	d6,d0
-	bne.b	LFF2016
+	bne.b	.lFF2016
 	lsr.w	#$3,d6
 	subq.w	#$1,d6
-LFF1FF0	move.w	d6,d5
+.lFF1FF0	move.w	d6,d5
 	move.l	d3,d0
 	add.l	d2,d3
 	lsl.l	#$2,d0
@@ -118,15 +118,15 @@ LFF1FF0	move.w	d6,d5
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-LFF2004	move.l	(a2)+,(a0)
+.lFF2004	move.l	(a2)+,(a0)
 	move.l	(a2)+,(a0)
 	move.l	(a2)+,(a0)
 	move.l	(a2)+,(a0)
-	dbra	d5,LFF2004
-	dbra	d7,LFF1FF0
-	bra.b	LFF2036
-LFF2016	subq.w	#$1,d6
-LFF2018	move.w	d6,d5
+	dbra	d5,.lFF2004
+	dbra	d7,.lFF1FF0
+	bra.b	.lFF2036
+.lFF2016	subq.w	#$1,d6
+.lFF2018	move.w	d6,d5
 	move.l	d3,d0
 	add.l	d2,d3
 	lsl.l	#$2,d0
@@ -134,22 +134,22 @@ LFF2018	move.w	d6,d5
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-LFF202C	move.w	(a2)+,(a0)
-	dbra	d5,LFF202C
-	dbra	d7,LFF2018
-LFF2036	lea.l	LFF2054+$2(pc),a2
+.lFF202C	move.w	(a2)+,(a0)
+	dbra	d5,.lFF202C
+	dbra	d7,.lFF2018
+.lFF2036	lea.l	DispatchTail_16+$2(pc),a2
 	eori.w	#$1,(a2)
-LFF203E	lea.l	LFF1E04(pc),a0
+.lFF203E	lea.l	DispatchTail_13(pc),a0
 	addq.l	#$1,(a0)
-	move.l	LFF1ED0(pc),d0
-	beq.b	LFF204E
+	move.l	DispatchTail_14(pc),d0
+	beq.b	.lFF204E
 	movea.l	d0,a0
 	jsr	(a0)
-LFF204E	movem.l	(sp)+,d0-d7/a0-a5
+.lFF204E	movem.l	(sp)+,d0-d7/a0-a5
 	rte
-LFF2054	ori.b	#$0,d0
-LFF2058	ori.b	#$0,d0
-LFF205C	ori.b	#$0,d0
+DispatchTail_16	ori.b	#$0,d0
+DispatchTail_17	ori.b	#$0,d0
+DispatchTail_18	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
@@ -181,11 +181,11 @@ LFF205C	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
-LFF20DC	dc.l	$E000
-LFF20E0	ori.b	#$80,d0
-LFF20E4	ori.b	#$0,d0
-LFF20E8	ori.b	#$10,d0
-LFF20EC	ori.b	#$0,d0
+DispatchTail_19	dc.l	$E000
+DispatchTail_20	ori.b	#$80,d0
+DispatchTail_21	ori.b	#$0,d0
+DispatchTail_22	ori.b	#$10,d0
+DispatchTail_23	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
@@ -825,7 +825,7 @@ LFF20EC	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
-LFF2AEC	link	a6,#$0
+DispatchTail_24	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
@@ -844,17 +844,17 @@ LFF2AEC	link	a6,#$0
 	move.l	d0,$4(a0)
 	moveq	#$0,d0
 	movea.l	$10(a6),a1
-LFF2B2E	move.b	(a1)+,d0
-	beq.b	LFF2B36
+.lFF2B2E	move.b	(a1)+,d0
+	beq.b	.lFF2B36
 	move.w	d0,(a0)
-	bra.b	LFF2B2E
-LFF2B36	movem.l	(sp)+,d0-d7/a0-a5
+	bra.b	.lFF2B2E
+.lFF2B36	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	lea.l	$C(sp),sp
 	jmp	(a0)
-LFF2B44	move.w	LFF2054(pc),d0
-	bne.b	LFF2B44
+.lFF2B44	move.w	DispatchTail_16(pc),d0
+	bne.b	.lFF2B44
 	movea.l	#$C00000,a0
 	move.l	#$E000,d0
 	lsl.l	#$2,d0
@@ -864,11 +864,11 @@ LFF2B44	move.w	LFF2054(pc),d0
 	move.l	d0,$4(a0)
 	moveq	#$0,d0
 	move.w	#$3FF,d1
-LFF2B6A	move.l	d0,(a0)
-	dbra	d1,LFF2B6A
-	lea.l	LFF2054+$2(pc),a0
+.lFF2B6A	move.l	d0,(a0)
+	dbra	d1,.lFF2B6A
+	lea.l	DispatchTail_16+$2(pc),a0
 	move.w	#$1,(a0)
-	lea.l	LFF205C(pc),a0
+	lea.l	DispatchTail_18(pc),a0
 	move.l	#$EEE,(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
@@ -877,43 +877,43 @@ LFF2B6A	move.l	d0,(a0)
 	clr.l	(a0)+
 	clr.l	(a0)+
 	clr.l	(a0)+
-	lea.l	LFF2054(pc),a0
+	lea.l	DispatchTail_16(pc),a0
 	move.w	#$1,(a0)
-LFF2B98	move.w	(a0),d0
-	bne.b	LFF2B98
+.lFF2B98	move.w	(a0),d0
+	bne.b	.lFF2B98
 	moveq	#$0,d0
 	rts
-LFF2BA0	link	a6,#$0
+DispatchTail_25	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
-	lea.l	LFF2054(pc),a2
-LFF2BAC	tst.w	(a2)
-	bne.b	LFF2BAC
+	lea.l	DispatchTail_16(pc),a2
+.lFF2BAC	tst.w	(a2)
+	bne.b	.lFF2BAC
 	movea.l	#$C00000,a0
 	movea.l	$10(a6),a4
-	lea.l	LFF20DC(pc),a1
+	lea.l	DispatchTail_19(pc),a1
 	move.l	$C(a6),(a1)
 	movea.l	$14(a6),a1
 	cmpi.w	#$534D,(a1)
-	bne.w	LFF2CA8
+	bne.w	.lFF2CA8
 	move.w	$8(a1),d6
 	move.w	$A(a1),d7
 	suba.l	a5,a5
-	move.w	LFF2054+$2(pc),d1
-	bne.b	LFF2BEA
+	move.w	DispatchTail_16+$2(pc),d1
+	bne.b	.lFF2BEA
 	moveq	#$0,d0
 	move.w	d6,d0
 	mulu.w	d7,d0
 	adda.l	d0,a5
 	lsl.l	#$5,d0
 	adda.l	d0,a4
-LFF2BEA	move.w	$2(a1),d1
+.lFF2BEA	move.w	$2(a1),d1
 	andi.w	#$3,d1
-	lea.l	LFF2058(pc),a2
+	lea.l	DispatchTail_17(pc),a2
 	move.w	d1,(a2)
 	move.w	d1,d0
 	lea.l	$C(a1),a1
-	lea.l	LFF205C(pc),a2
-LFF2C02	move.l	(a1)+,(a2)+
+	lea.l	DispatchTail_18(pc),a2
+.lFF2C02	move.l	(a1)+,(a2)+
 	clr.w	-$4(a2)
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
@@ -922,56 +922,56 @@ LFF2C02	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
-	dbra	d0,LFF2C02
-	lea.l	LFF20E4(pc),a3
+	dbra	d0,.lFF2C02
+	lea.l	DispatchTail_21(pc),a3
 	move.l	d6,(a3)
-	lea.l	LFF20E8(pc),a3
+	lea.l	DispatchTail_22(pc),a3
 	move.l	d7,(a3)
-	lea.l	LFF20EC(pc),a3
+	lea.l	DispatchTail_23(pc),a3
 	move.l	d7,-(sp)
 	move.l	$10(a6),d3
 	lsr.l	#$5,d3
 	add.w	a5,d3
 	move.l	$8(a6),d0
-	beq.b	LFF2C3E
+	beq.b	.lFF2C3E
 	bset	#$F,d3
-LFF2C3E	moveq	#$1,d2
+.lFF2C3E	moveq	#$1,d2
 	move.w	d7,d5
-	bra.b	LFF2C66
-LFF2C44	move.w	d6,d4
-	bra.b	LFF2C62
-LFF2C48	subq.w	#$1,d2
-	bne.b	LFF2C54
+	bra.b	.lFF2C66
+.lFF2C44	move.w	d6,d4
+	bra.b	.lFF2C62
+.lFF2C48	subq.w	#$1,d2
+	bne.b	.lFF2C54
 	move.l	(a1)+,d7
 	moveq	#$11,d1
 	ror.l	d1,d7
 	moveq	#$10,d2
-LFF2C54	move.w	d7,d1
+.lFF2C54	move.w	d7,d1
 	rol.l	#$2,d7
 	andi.w	#$6000,d1
 	add.w	d3,d1
 	addq.w	#$1,d3
 	move.w	d1,(a3)+
-LFF2C62	dbra	d4,LFF2C48
-LFF2C66	dbra	d5,LFF2C44
+.lFF2C62	dbra	d4,.lFF2C48
+.lFF2C66	dbra	d5,.lFF2C44
 	move.l	(sp)+,d7
 	moveq	#$0,d2
 	move.w	d6,d2
 	mulu.w	d7,d2
 	lsl.l	#$4,d2
 	move.l	a4,d0
-	bsr.b	LFF2CBE
-	bra.b	LFF2CA8
+	bsr.b	.lFF2CBE
+	bra.b	.lFF2CA8
 	move.l	a4,d0
 	lsl.l	#$2,d0
 	lsr.w	#$2,d0
 	bset	#$E,d0
 	swap	d0
 	move.l	d0,$4(a0)
-	bra.b	LFF2CA4
-LFF2C8C	move.w	d6,d4
-	bra.b	LFF2CA0
-LFF2C90	move.l	(a1)+,(a0)
+	bra.b	.lFF2CA4
+.lFF2C8C	move.w	d6,d4
+	bra.b	.lFF2CA0
+.lFF2C90	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -979,16 +979,16 @@ LFF2C90	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
-LFF2CA0	dbra	d4,LFF2C90
-LFF2CA4	dbra	d7,LFF2C8C
-LFF2CA8	lea.l	LFF2054(pc),a2
+.lFF2CA0	dbra	d4,.lFF2C90
+.lFF2CA4	dbra	d7,.lFF2C8C
+.lFF2CA8	lea.l	DispatchTail_16(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5
 	unlk	a6
 	movea.l	(sp)+,a0
 	lea.l	$10(sp),sp
 	jmp	(a0)
-LFF2CBE	move.l	a1,d1
+.lFF2CBE	move.l	a1,d1
 	addq.w	#$2,d1
 	lsr.l	#$1,d1
 	move.w	#$8F02,$4(a0)

@@ -1,19 +1,19 @@
-	dc.b	$8A,$49,$6E,$69,$74,$45,$6E,$67,$69,$6E,$65,$00,$00,$00	; .InitEngine...
-L261CE	dc.w	$4E56,$0000
+	dc.b	$8A,'InitEngine',$00,$00,$00	; .InitEngine...
+CopyData_3	dc.w	$4E56,$0000
 	move.l	a4,-(sp)
 	movea.l	$8(a6),a4
 	tst.l	(a4)
 	dc.w	$6708
 	move.l	(a4),-(sp)
-	jsr	L25CFA(pc)
+	jsr	aprint_1(pc)
 	addq.w	#$4,sp
 .l4EE4	movea.l	-$4(a6),a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$8D,$44,$69,$73,$70,$6F,$73,$65,$45,$6E,$67,$69,$6E,$65,$00,$00	; .DisposeEngine..
+	dc.b	$8D,'DisposeEngine',$00,$00	; .DisposeEngine..
 GetSectDst	dc.w	$4E56,$0000
-Sub_26200	movem.l	d7/a4,-(sp)
-	lea.l	L24FB4(pc),a0
+GetSectDstSub1	movem.l	d7/a4,-(sp)
+	lea.l	RestoreBios_12(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
 	move.l	$8(a4),d0
@@ -32,10 +32,10 @@ Sub_26200	movem.l	d7/a4,-(sp)
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$8A,$47,$65,$74,$53,$65,$63,$74,$44,$73,$74,$00,$00,$00	; .GetSectDst...
+	dc.b	$8A,'GetSectDst',$00,$00,$00	; .GetSectDst...
 PeekSectDst	dc.w	$4E56,$0000
-Sub_2625C	movem.l	d7/a4,-(sp)
-	lea.l	L24FB4(pc),a0
+PeekSectDstSub1	movem.l	d7/a4,-(sp)
+	lea.l	RestoreBios_12(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
 	move.l	$8(a4),d0
@@ -52,4 +52,4 @@ Sub_2625C	movem.l	d7/a4,-(sp)
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	dc.w	$4E75
-	dc.b	$8B,$50,$65,$65,$6B,$53,$65,$63,$74,$44,$73,$74,$00,$00	; .PeekSectDst..
+	dc.b	$8B,'PeekSectDst',$00,$00	; .PeekSectDst..
