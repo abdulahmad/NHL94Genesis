@@ -2,8 +2,10 @@
 
 ## Now
 - Unit: none in progress.
-- Last check: 2026-11-10, `npm run build:segacd` on Windows: MATCH 41 fragments, 0 errors. `build:retail` not run (needs the retail ROM).
-- Next: PLAN.md step 0 (add a coverage script), then step 1.
+- Last check: 2026-11-17, `npm run build:segacd` (Linux, wine): MATCH 40 fragments, 0 errors (scouttext and scouttok merged into scouting.asm). `build:retail` MATCH.
+- 2026-11-17 alignment review: the HOCKEY.BIN fragments that are cartridge routines now read like the cartridge source: 94G names, local labels, RAM names from `src/segacd/hockey.inc`, `name_map.csv` filled. Done: updatecrowdf, updatesound, sfx, song, InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, ScoutingReport (first part). Not cartridge code (SDK, disc loader, CD-DA): left with disc labels (L1xxxx).
+- Finding: the disc team struct has the goalie word at `$28`, the cartridge `tmgoalie` is `$26`. Say so in 94G if that is wrong there.
+- Next: PLAN.md step 1, the rest of ScoutingReport and the other HOCKEY routines, using `hockey.inc` names; step 0 coverage script still open.
 - Open questions: the `$37xxx`-`$39xxx` image (PLAN.md step 2).
 
 ## Coverage (from NHL94Genesis `docs/segacd.md`, 2026-11-10)

@@ -14,4 +14,5 @@
 * **Before you stop:** update HANDOFF.md (Now block) and push. Nothing lives only in a chat.
 
 ## Learned
-(none yet)
+- 2026-11-17 labels: a fragment that is a cartridge routine uses the 94G global label and `.n` local labels (SNASM `/o l.`). A label that is also an `equ` in `src/segacd/hockey.inc` clashes, so routines defined in a fragment are not equated there. Fragments of one routine are merged into one file so local labels work. (scouting.asm)
+- 2026-11-17 names: call-target names come from `tools/segacd_relocs.py` pairs or from the position in the 94G routine; the position is checked by the build, because every name is only an `equ` or a label and the bytes must still MATCH.

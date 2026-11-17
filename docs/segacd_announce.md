@@ -38,7 +38,7 @@ And in goal tonight, [ for { and ] for }.
 
 The later chunks are picture and tile blocks, not PCM. The credit line `Announcer:` / `Ron Barr` is in `STARTER.BIN` at file `$1B032`, in the credits text, next to `Player Ratings:` and `Player Card Photos:`.
 
-`scouttext.asm` (`$2486C`) is `InitScoutingDisplay` plus the word typer (`UpdateScoutingDisplay`).
+`scouting.asm` (`$2486C`, formerly `scouttext.asm` and `scouttok.asm`) is `InitScoutingDisplay`, the word typer (`UpdateScoutingDisplay`) and `ScrollDisplayUp`, written with the cartridge's own local labels (`.9` to `.30`) and variable names from `src/segacd/hockey.inc`.
 
 | Disc | Cartridge role |
 | --- | --- |
@@ -52,7 +52,7 @@ The later chunks are picture and tile blocks, not PCM. The credit line `Announce
 | `$17462` | byte offset into that script |
 | `$17EF2` | the word just typed, as a counted string |
 
-A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the `!` and the CR/LF after a wrapped line, so the sentence continues. The other special bytes are handled in `scouttok.asm`:
+A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the `!` and the CR/LF after a wrapped line, so the sentence continues. The other special bytes are handled in `scouting.asm`:
 
 | Byte | Call | What the cartridge routine returns |
 | --- | --- | --- |
@@ -68,7 +68,7 @@ A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the 
 
 The typer then calls `printz` (`$1DF6E`) with the inline string whose length word is `$0006`: flag `$FF` (`CC_Font1`), x `9`, y `4`. It adds the attribute counter `$1A44E` to print x and the line scroll to print y, calls `print` (`$1DF80`), and adds the word length to the attribute counter.
 
-`ScrollDisplayUp` is the tail of `scouttok.asm`. At seven lines it calls `$379D6` eight times to scroll the text window. Nothing in the typer, the token handlers, or the scroll calls `_CDBIOS` or the PCM stream.
+`ScrollDisplayUp` is the tail of `scouting.asm`. At seven lines it calls `$379D6` eight times to scroll the text window. Nothing in the typer, the token handlers, or the scroll calls `_CDBIOS` or the PCM stream.
 
 `scoutload.asm` (`$24C12`) is the loader just after that scroll. It stops where `cdstart.asm` begins (`$24D66`). It tests `$3FC0A` and, when it is set, calls `$376F2`. It then calls the SDK entry `$6044` with `d7 = $D`, then with `d7 = 1` and `d0 = 0`, then with `d7 = 3`. It adds the returned pointer to a run of longs. Those longs become `$47CFC` (the script base) and the picture and font pointers the screen uses (`$47D54` is the Ron Barr picture the open path draws). The words it relocates are the directory of the file the SDK returns for id 0.
 

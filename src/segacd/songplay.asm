@@ -3,10 +3,12 @@
 ; $19364, MSCPLAY1 ($12) once, then sets $1745C to $FFFF.
 ; See docs/segacd_song.md.
 
+song	equ	$371D2				;cdrequest.asm, the cartridge song
+
 	org	$10B1E
 
 	move.w	$1A56A.l,-(sp)
-	jsr	$371D2.l
+	jsr	(song).l				;song
 	move.w	$1745E.l,$19364.l
 	movea.l	$FF8000.l,a5
 	move.w	#$12,d0
