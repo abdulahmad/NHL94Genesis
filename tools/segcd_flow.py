@@ -256,6 +256,12 @@ def find_code_seeded(d, base, seeds, covered, insns, string_calls):
                     break
                 pq.append(tgt)
                 (pcalls if mn == "bsr" else plabels).add(tgt)
+                if mn == "bsr" and base + tgt in string_calls:
+                    ln = int.from_bytes(d[pc + g.size:pc + g.size + 2], "big")
+                    for k in range(ln):
+                        path[pc + g.size + k] = -1
+                    pc += g.size + ln
+                    continue
                 if mn == "bsr" and base + tgt in INLINE:
                     nb = inline_len(d, pc + g.size, INLINE[base + tgt])
                     for k in range(nb):

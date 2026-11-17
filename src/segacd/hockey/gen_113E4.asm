@@ -4,28 +4,28 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 									;Called from DrawMenuScreen and
 									;HandleMenuInput
 	move.w	$18AD2.l,d0
-	bpl.w	.l113F6
+	bpl.w	.next
 	clr.w	$18AD2.l		;no item above the first
 	clr.w	d0
-.l113F6	movea.l	$18AD6.l,a0
+.next	movea.l	$18AD6.l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
-	bra.w	.l1140E
-.l11404	adda.w	(a0),a0		;advance to the next item entry
+	bra.w	.next2
+.loop	adda.w	(a0),a0		;advance to the next item entry
 	adda.w	#$4,a0
 	tst.w	$2(a0)		;negative: the last item
-.l1140E	dbmi	d0,.l11404		;stop after d0 items or at the last item
+.next2	dbmi	d0,.loop		;stop after d0 items or at the last item
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,$18AD2.l		;no item below the last
 	move.w	$18AD2.l,d0
 	cmp.w	$18AD4.l,d0
-	bge.w	.l11432
+	bge.w	.next3
 	move.w	d0,$18AD4.l		;scroll up
-.l11432	subi.w	#$3,d0		;selection - 3 = first visible item if it is on the bottom row
+.next3	subi.w	#$3,d0		;selection - 3 = first visible item if it is on the bottom row
 	cmp.w	$18AD4.l,d0
-	ble.w	.l11446
+	ble.w	.next4
 	move.w	d0,$18AD4.l		;scroll down
-.l11446	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
+.next4	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).l
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
@@ -34,19 +34,19 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	dc.b	$FB,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$FF,$FA,$01,$20,$FB,$12,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20,$FB,$FF,$FA,$FF,$20
 	adda.w	(a1),a1
 	move.w	$18AD4.l,d0		;skip to the first item shown
-	bra.w	.l1149C
-.l11496	adda.w	(a1),a1
+	bra.w	.next5
+.loop2	adda.w	(a1),a1
 	adda.w	#$4,a1
-.l1149C	dbra	d0,.l11496
+.next5	dbra	d0,.loop2
 	moveq	#$3,d1		;4 rows
 	move.w	#$C,(printy).l
 	bsr.w	SetMenuPrintX
 	move.w	$18AD4.l,d0
-	beq.w	.l114CA
+	beq.w	.loop3
 	jsr	(printsmallz).l
 	dc.w	$000C
 	dc.b	$FE,$05,$FB,$01,$FA,$01,$7B,$FA,$FF,$00
-.l114CA	bsr.w	SetMenuPrintX
+.loop3	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
 	dc.w	$0006
 	dc.b	$FB,$02,$FA,$01
@@ -54,41 +54,41 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
 	cmp.w	$18AD2.l,d0
-	bne.w	.l114F8
+	bne.w	.next6
 	jsr	(printsmall).l
-.l114F8	movea.l	(sp)+,a1
+.next6	movea.l	(sp)+,a1
 	jsr	(PrintMenuItem).l
 	addi.w	#$1,d0
 	adda.w	#$4,a1
 	tst.w	$2(a1)		;negative: the last item
-	dbmi	d1,.l114CA
-	bmi.w	.l11526
+	dbmi	d1,.loop3
+	bmi.w	.ex
 	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
 	String	CC_Font2,$5,$FB,$1,'}'
-.l11526	rts
+.ex	rts
 PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text starts with
 									;'x' is the goalie option: it prints Manual Goalie
 									;(.manual) when the pause team word is 0, else Auto Goalie (.auto):
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
 									;Pausemode_Pmenu
 	cmpi.b	#$78,$2(a1)		;first char 'x'
-	bne.w	.l1156E
+	bne.w	.next4
 	move.l	a1,-(sp)
 	movea.l	#$2C576,a1
 	btst	#$1,$17F6A.l
-	beq.w	.l11550
+	beq.w	.next
 	tst.w	$18C0E.l
-	bra.w	.l11556
-.l11550	tst.w	$18C0C.l
-.l11556	beq.w	.l11560
+	bra.w	.next2
+.next	tst.w	$18C0C.l
+.next2	beq.w	.next3
 	movea.l	#$2C58A,a1
-.l11560	jsr	(printsmall).l
+.next3	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1		;skip the 'x' item text
-	bra.w	.l11574
-.l1156E	jsr	(printsmall).l
-.l11574	rts
+	bra.w	.ex
+.next4	jsr	(printsmall).l
+.ex	rts
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
@@ -96,30 +96,31 @@ PutTeamBlockTbl1	dc.w	$0014,$2020
 	dc.b	'Manual Goalie   '
 PutTeamBlockTbl2	dc.b	$00,$14,'   Auto Goalie'
 	dc.w	$2020,$2020
-PutTeamBlockSub1
+; Draws a team block with display flags set.
+PutTeamBlockDraw
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$17FB2,a1
 	adda.w	d0,a1
 	moveq	#$1,d2
-.l115BA	jsr	(xyVmMap).l
+.loop	jsr	(xyVmMap).l
 	moveq	#$A,d1
-.l115C2	btst	#$7,$FF800E.l
-	bne.b	.l115C2
+.loop2	btst	#$7,$FF800E.l
+	bne.b	.loop2
 	move.w	(a1)+,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l115E2	btst	#$6,$FF800E.l
-	beq.b	.l115E2
+.loop3	btst	#$6,$FF800E.l
+	beq.b	.loop3
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l115FC	btst	#$6,$FF800E.l
-	bne.b	.l115FC
+.loop4	btst	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr	#$7,$FF800F.l
-	dbra	d1,.l115C2
+	dbra	d1,.loop2
 	addi.w	#$1,(printy).l
-	dbra	d2,.l115BA
+	dbra	d2,.loop
 	addi.w	#$B,(printx).l
 	subi.w	#$2,(printy).l
 	move.w	(sp)+,(disflags).l
@@ -130,8 +131,8 @@ MenuWaitVblank						;wait till Vcount changes, then resync Vcount. Saves d0. Rea
 	move.w	d0,-(sp)
 	move.w	$17476.l,d0
 	move.w	$17476.l,d0
-.l11648	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.l11648
+.loop	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.loop
 	move.w	$17476.l,(ScoutSubStatus).l
 	move.w	(sp)+,d0
 	rts
@@ -140,7 +141,7 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	
 	moveq	#$6,d0
 	moveq	#$1A,d1
-	bsr.w	CrowdMeterScreenSub1
+	bsr.w	CrowdMeterFadeIn
 	jsr	(printz).l
 	String	CC_Font3Pri,$5,$0
 	moveq	#$1E,d0
@@ -160,7 +161,7 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$4,$0
 	clr.w	(VertLineScrolling).l
-	bsr.w	UpdateScoresScroll_1
+	bsr.w	ScoresScrollBlitSetup
 	jsr	(GetShifter).l
 	move.w	d1,d3
 	ble.w	.skip
@@ -172,9 +173,9 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	bmi.w	.loop
 	asl.w	#$3,d0
 	move.w	d0,(SelectedPlayerIdx).l
-	bsr.w	PrintGameInfo_1
+	bsr.w	PrintGameInfoHeader
 .loop	bsr.w	MenuWaitVblank
-	bsr.w	GetPlayerCountSub1
+	bsr.w	ReadActiveJoypad
 	btst	#$7,d3
 	bne.w	CrowdMeterScreenSub2
 	moveq	#-2,d0
@@ -200,37 +201,38 @@ UpdateScoresScroll						;Called every frame by ShowScores: add PlayerScrollCtr t
 	divu.w	#$18,d0
 	swap	d0
 	tst.w	d0
-	bne.w	UpdateScoresScroll_1
-	bsr.w	PrintGameInfo_1
+	bne.w	ScoresScrollBlitSetup
+	bsr.w	PrintGameInfoHeader
 	clr.w	(PlayerScrollCtr).l
-UpdateScoresScroll_1	move.w	(disflags).l,-(sp)
+; Sets up the VDP DMA write for the scores scroll.
+ScoresScrollBlitSetup	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l11780	btst	#$7,$FF800E.l
-	bne.b	.l11780
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l117A4	btst	#$6,$FF800E.l
-	beq.b	.l117A4
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l117BE	btst	#$6,$FF800E.l
-	bne.b	.l117BE
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FFD0,d0
 	add.w	(VertLineScrolling).l,d0
-.l117DA	btst	#$7,$FF800E.l
-	bne.b	.l117DA
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l117FA	btst	#$6,$FF800E.l
-	beq.b	.l117FA
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l11814	btst	#$6,$FF800E.l
-	bne.b	.l11814
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
@@ -255,7 +257,7 @@ DisplayGameInfo	cmp.w	$18A98.l,d3
 	subi.w	#$1,d0
 	movea.l	#$41A34,a1
 	move.w	#$1C,(printx).l
-	jsr	(SetTickerAreaPositionSub1).l
+	jsr	(PrintTickerEntry).l
 	addi.w	#$2,(printy).l
 	rts
 PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digits) at x $18
@@ -270,7 +272,8 @@ PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digit
 	moveq	#$2,d1
 	jsr	(PushNumberWidth).l
 	jmp	(print).l
-PrintGameInfo_1	movem.l	d0-d1/a1,-(sp)
+; Prints the game info header.
+PrintGameInfoHeader	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$4,$6,CC_SetFont,$1
 	clr.w	d0
@@ -283,11 +286,11 @@ PrintGameInfo_1	movem.l	d0-d1/a1,-(sp)
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	lea.l	.l2C914(pc),a1
-	jsr	(SetTickerAreaPositionSub1).l
+	lea.l	.next(pc),a1
+	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-.l2C914	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
+.next	dc.w	$000A,$20FB,$FFFA,$1320,$F900,$000A,$7BFB,$FFFA
 	dc.w	$1320,$F900,$000A,$20FB,$FFFA,$137D,$F900,$08EA
 	dc.w	$0000,$0032,$7000,$721C,$6100,$1DEA,$4279,$0001
 	dc.w	$A44E,$4279,$0001,$A452,$33FC,$0001,$0001,$A45A
@@ -300,7 +303,7 @@ PrintGameInfoSub1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	st.b	$17F60.l
-	bsr.w	ClearLineEditorTopSub1
+	bsr.w	ClearLineEditorMarks
 LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slot
 	
 	
@@ -308,7 +311,7 @@ LineEditorMenu						;Slot cursor loop: start exits, C picks a player for the slo
 	bsr.w	DrawTeamScreen
 	bsr.w	DrawLineIcons
 .loop	bsr.w	MenuWaitVblank
-	bsr.w	GetPlayerCountSub1
+	bsr.w	ReadActiveJoypad
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	LineEditorExit
@@ -381,12 +384,12 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	clr.w	d0
 	bra.w	.vert
 .loop	bsr.w	MenuWaitVblank
-	bsr.w	GetPlayerCountSub1
+	bsr.w	ReadActiveJoypad
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	LineEditorMenu
 	btst	#$5,d1
-	bne.w	.l11B54
+	bne.w	.next
 	moveq	#$1,d0
 	btst	#$1,d1
 	bne.w	.vert
@@ -417,7 +420,7 @@ SelectLinePlayer						;Line editor: C pressed on slot TestList. Build the list o
 	move.w	d0,(PlayerScrollCtr).l
 .draw	bsr.w	PrintAttribHeader
 	bra.w	.loop
-.l11B54	movea.l	#$BBD30,a3
+.next	movea.l	#$BBD30,a3
 	adda.w	(VertLineScrolling).l,a3
 	move.b	(a3),d0
 	addi.b	#$1,d0		;SetLineSlot wants 1 based
@@ -432,10 +435,10 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 .top	movea.l	#$41C48,a1
 	move.w	(scoutcolumn).l,d0
 	bra.w	.2
-.next	adda.w	(a1),a1
+.loop	adda.w	(a1),a1
 	adda.w	#$4,a1
 .2	tst.w	(a1)
-	dbmi	d0,.next
+	dbmi	d0,.loop
 	bpl.w	.found
 	subi.w	#$1,(scoutcolumn).l
 	bra.w	.top
@@ -473,13 +476,13 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	suba.w	#$1,a0
 .0	move.b	(a0),d0
 	cmp.b	$17F60.l,d0
-	beq.w	.l11C58
+	beq.w	.loop
 	move.b	d0,$17F60.l
-	bsr.w	DrawLineIconSub1
-.l11C58	btst	d5,$17F60.l
-	beq.w	.l11C66
+	bsr.w	DrawLineIconErase
+.loop	btst	d5,$17F60.l
+	beq.w	.next
 	bsr.w	DrawLineIcon
-.l11C66	dbra	d5,.l11C58
+.next	dbra	d5,.loop
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
@@ -488,7 +491,7 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC,$8
 	move.w	d6,d0
-	jsr	(GetPlayerNameSub1).l
+	jsr	(GetPlayerNameBuild).l
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
@@ -511,7 +514,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	move.w	d5,d0
 	movea.l	#$419F6,a1
 	move.w	#$8000,(printa).l
-	jsr	(SetTickerAreaPositionSub1).l
+	jsr	(PrintTickerEntry).l
 	jsr	(printsmallz).l
 	String	' Line'
 	move.w	(a0),(printx).l
@@ -539,7 +542,8 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	addi.w	#$1,d4
 	dbra	d3,.slot
 	rts
-DrawLineIconSub1
+; Erases the line icon area after printing.
+DrawLineIconErase
 	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
@@ -550,9 +554,9 @@ DrawLineIconSub1
 	move.w	$2CE96.l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	$18C0A.l
-	beq.w	.l11DBE
+	beq.w	.next
 	move.w	ClearLineEditorTopTbl1.l,(printx).l
-.l11DBE	jsr	(printsmallz).l
+.next	jsr	(printsmallz).l
 	dc.w	$0022
 	dc.b	$FE,$04,$FB,$FD,$FA,$02,$4C,$44,$FB,$FE,$FA,$02,$52,$44,$FB,$FE,$FA,$02,$4C,$57,$FB,$FE,$FA,$02,$43,$20,$FB,$FE,$FA,$02,$52,$57
 	rts
@@ -583,9 +587,9 @@ DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Lin
 	String	CC_Font2Pri,$A,$4,'Line Editor',CC_Font2Pri,$E,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
-	beq.w	PutTeamBlockSub1
+	beq.w	PutTeamBlockDraw
 	moveq	#$2C,d0
-	bra.w	PutTeamBlockSub1
+	bra.w	PutTeamBlockDraw
 ClearLineEditorTop						;Erase 40 x 10 at the top of map 2
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
@@ -593,7 +597,8 @@ ClearLineEditorTop						;Erase 40 x 10 at the top of map 2
 	moveq	#$A,d1
 	move.w	#$7FF,d2
 	jmp	(eraser).l
-ClearLineEditorTopSub1
+; Clears two marker words.
+ClearLineEditorMarks
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
 	rts
@@ -610,10 +615,10 @@ LineCursorTable						;The slot after a cursor move: indexed by slot + 8 (up / do
 	dc.b	$1D,')*+,,',$01,$01,'%12344',$01,$01
 	dc.b	'%12344',$01,$01
 LineEditorExit
-	bsr.w	ClearLineEditorTopSub1
+	bsr.w	ClearLineEditorMarks
 	move.w	#$18,(palcount).l
-.l11F14	tst.w	(palcount).l
-	bpl.w	.l11F14
+.loop	tst.w	(palcount).l
+	bpl.w	.loop
 	move.l	$18AD2.l,-(sp)
 	move.l	$18AD6.l,-(sp)
 	move.l	$18ADA.l,-(sp)
@@ -623,19 +628,19 @@ LineEditorExit
 	move.w	$2A(a2),d0
 	addi.w	#$1,d0
 	cmp.b	(a3),d0
-	beq.w	.l11F56
+	beq.w	.next
 	movea.l	#$42848,a0
-.l11F56	jsr	(printsmallz).l
+.next	jsr	(printsmallz).l
 	String	CC_Font1,$2
-	bsr.w	seta2Sub1
-.l11F64	bsr.w	MenuWaitVblank
-	bsr.w	GetPlayerCountSub1
+	bsr.w	SetMenuScreenHandler
+.loop2	bsr.w	MenuWaitVblank
+	bsr.w	ReadActiveJoypad
 	jsr	(ProcessInputWithRepeat).l
 	move.w	d1,-(sp)
 	bsr.w	HandleMenuInput
 	move.w	(sp)+,d1
 	andi.w	#$A0,d1
-	beq.w	.l11F64
+	beq.w	.loop2
 	jsr	(printsmallz).l
 	String	CC_SetFont
 	move.w	$18AD2.l,d0
@@ -673,7 +678,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
-.next	move.b	(a3),d2
+.loop	move.b	(a3),d2
 	bmi.w	.done
 	bchg	#$0,d4
 	bne.w	.hi
@@ -691,7 +696,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	andi.w	#$FF,d0
 	move.b	(a3)+,d2
 	bsr.w	SetLineSlot
-	bra.w	.next
+	bra.w	.loop
 .done	movem.l	(sp)+,d0-d4/a0/a3
 	rts
 EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into databuffer and
@@ -708,7 +713,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
-.next	move.b	(a3)+,d2
+.loop	move.b	(a3)+,d2
 	bmi.w	.done
 	move.b	(a1,d2.w),d3
 	subi.b	#$1,d3
@@ -720,10 +725,10 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 .pack	bchg	#$0,d4
 	bne.w	.hi
 	move.b	d3,(a0)
-	bra.w	.next
+	bra.w	.loop
 .hi	asl.b	#$4,d3
 	or.b	d3,(a0)+
-	bra.w	.next
+	bra.w	.loop
 .done	jsr	$2A5C8.l
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
@@ -736,7 +741,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	
 	moveq	#$D,d0
 	moveq	#$17,d1
-	bsr.w	CrowdMeterScreenSub1
+	bsr.w	CrowdMeterFadeIn
 	moveq	#$1,d0
 	add.w	$16(a2),d0
 	move.w	d0,(SelectedPlayerIdx).l
@@ -750,9 +755,9 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	String	CC_Font3Pri,$9,$4,'Team  Roster',CC_Font3Pri,$E,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
-	beq.w	.l1212C
+	beq.w	.next
 	moveq	#$2C,d0
-.l1212C	bsr.w	PutTeamBlockSub1
+.next	bsr.w	PutTeamBlockDraw
 	jsr	(printsmallz).l
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$02,$0C,$F9,$01,'Pos.^Player',$FD,$1E,$FC,$0C,'Rating',$FD,$0C,$FC,$1A,'A^-^Switch^Teams',$F9,$00
@@ -766,14 +771,14 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	moveq	#$12,d0
 	moveq	#$3,d1
 	jsr	(Framer).l
-	bsr.w	CheckPlayerListScrollSub2
+	bsr.w	PlayerListDrawSelected
 	move.w	(SelectedPlayerIdx).l,d0
 	mulu.w	#$80,d0
 	move.w	d0,(VertLineScrolling).l
-	bsr.w	CheckPlayerListScrollSub1
+	bsr.w	PlayerListScrollStep
 	clr.w	(PlayerScrollCtr).l
 .loop	bsr.w	MenuWaitVblank
-	bsr.w	GetPlayerCountSub1
+	bsr.w	ReadActiveJoypad
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
 	bne.w	CrowdMeterScreenSub2
@@ -800,7 +805,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 .col	add.w	(scoutcolumn).l,d0
 	bmi.w	.scroll
 	move.w	d0,(scoutcolumn).l
-	bsr.w	CheckPlayerListScrollSub2
+	bsr.w	PlayerListDrawSelected
 	bra.w	.scroll
 .team	lea.l	$366(a2),a2
 	cmpa.l	#$186B2,a2
@@ -815,66 +820,69 @@ CheckPlayerListScroll						;TeamRosterScreen per frame: add PlayerScrollCtr to V
 	bmi.w	CheckPlayerListScroll_1
 	cmpi.w	#$380,d0
 	bgt.w	CheckPlayerListScroll_1
-CheckPlayerListScrollSub1
+; Scrolling step in units of $80.
+PlayerListScrollStep
 	move.w	(VertLineScrolling).l,d1
 	move.w	d0,(VertLineScrolling).l
 	ext.l	d0
 	divs.w	#$80,d0
 	swap	d0
 	tst.w	d0
-	bne.w	.l12284
+	bne.w	.next
 	clr.w	(PlayerScrollCtr).l
-.l12284	andi.w	#$7F,d1
-	bne.w	.l122A4
+.next	andi.w	#$7F,d1
+	bne.w	.next3
 	cmpi.w	#$7E,d0
-	bne.w	.l12298
-	bsr.w	CheckPlayerListScroll_2
-.l12298	cmpi.w	#$2,d0
-	bne.w	.l122A4
-	bsr.w	CheckPlayerListScroll_3
-.l122A4	move.w	(disflags).l,-(sp)
+	bne.w	.next2
+	bsr.w	PlayerListSelectHigh
+.next2	cmpi.w	#$2,d0
+	bne.w	.next3
+	bsr.w	PlayerListSelectHighNext
+.next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.l122B8	btst	#$7,$FF800E.l
-	bne.b	.l122B8
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l122DC	btst	#$6,$FF800E.l
-	beq.b	.l122DC
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l122F6	btst	#$6,$FF800E.l
-	bne.b	.l122F6
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FF90,d0
 	add.w	(VertLineScrolling).l,d0
-.l12312	btst	#$7,$FF800E.l
-	bne.b	.l12312
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l12332	btst	#$6,$FF800E.l
-	beq.b	.l12332
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1234C	btst	#$6,$FF800E.l
-	bne.b	.l1234C
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
 CheckPlayerListScroll_1	clr.w	(PlayerScrollCtr).l
 	rts
-CheckPlayerListScroll_2	move.l	d0,-(sp)
+; Selects the player from the high word of d0 and redraws.
+PlayerListSelectHigh	move.l	d0,-(sp)
 	swap	d0
 	move.w	d0,(SelectedPlayerIdx).l
-	bsr.w	CheckPlayerListScrollSub2
+	bsr.w	PlayerListDrawSelected
 	move.l	(sp)+,d0
 	rts
-CheckPlayerListScroll_3	move.l	d0,-(sp)
+; Selects the player after the high word of d0 and redraws.
+PlayerListSelectHighNext	move.l	d0,-(sp)
 	swap	d0
 	addi.w	#$1,d0
 	move.w	d0,(SelectedPlayerIdx).l
-	bsr.w	CheckPlayerListScrollSub2
+	bsr.w	PlayerListDrawSelected
 	move.l	(sp)+,d0
 	rts

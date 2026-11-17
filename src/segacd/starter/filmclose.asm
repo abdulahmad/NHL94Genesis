@@ -7,7 +7,7 @@
 ; C function FilmClose (Sierra C name tag follows it).
 FilmClose	link	a6,#$0
 	move.l	a4,-(sp)
-	lea.l	RestoreBios_91(pc),a0
+	lea.l	FilmEntryVector(pc),a0
 	lea.l	$40(a0),a4
 	pea.l	$30(a4)
 	jsr	AudioStop(pc)

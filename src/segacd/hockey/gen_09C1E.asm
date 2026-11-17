@@ -32,7 +32,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	bne.w	.2
 	bsr.w	TeamLogoBitmapsEnd		;home logo box
 	bra.w	.3
-.2	bsr.w	TeamLogoBitmapsEndSub1
+.2	bsr.w	DrawLogoBoxHomeLeft
 	addi.w	#$1,$193A0.l		;each visitors card moves to the next featured player
 .3	jsr	(printz).l
 	String	CC_Font1,$0,$0		;x3 / add.b
@@ -111,10 +111,10 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movea.l	(a2,d0.w),a2
 	adda.w	$0(a2),a2		;a2 = first player record of the team
 	move.w	$19396.l,d0		;skip cardroster players to reach the featured one
-	bra.w	.l9E7A
+	bra.w	.next
 .loop2	adda.w	(a2),a2
 	adda.w	#$8,a2
-.l9E7A	dbra	d0,.loop2
+.next	dbra	d0,.loop2
 	movea.l	#mesarea,a3
 	lea.l	$2(a3),a1		;text after the header
 	move.w	#$6,(a3)		;string header: 6 = print mode
@@ -169,7 +169,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	tst.w	$34(a2)
-	beq.w	.l9FFE
+	beq.w	.ex
 	movem.l	d0-d7,-(sp)
 	move.w	$0(a2),d2
 	move.w	$14(a2),d3
@@ -183,10 +183,10 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	exg.l	a2,a3
 	movem.l	(sp)+,a0-a6
 	movem.l	(sp)+,d0-d7
-.l9FFE	rts
+.ex	rts
 	bclr	#$5,(sflags6).l
 	tst.w	$17BE0.l
-	bmi.w	.lA05E
+	bmi.w	.ex2
 	movem.l	d0/a0,-(sp)
 	movea.l	#$17480,a0
 	move.w	$17BE0.l,d0
@@ -194,17 +194,17 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	adda.w	d0,a0
 	move.w	$14(a0),d0
 	btst	#$7,$62(a0)
-	bne.w	.lA036
+	bne.w	.next2
 	neg.w	d0
-.lA036	cmpi.w	#$58,d0
-	blt.w	.lA05A
+.next2	cmpi.w	#$58,d0
+	blt.w	.next3
 	cmpi.w	#$47,$0(a0)
-	bgt.w	.lA05A
+	bgt.w	.next3
 	cmpi.w	#$FFB9,$0(a0)
-	blt.w	.lA05A
+	blt.w	.next3
 	bset	#$5,(sflags6).l
-.lA05A	movem.l	(sp)+,d0/a0
-.lA05E	rts
+.next3	movem.l	(sp)+,d0/a0
+.ex2	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0A060.bin
 	movem.l	d0-d7/a1-a6,-(sp)
 	move.l	a1,-(sp)
@@ -215,11 +215,11 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movem.l	(sp)+,d0-d1
 	bsr.w	GetRecordValue
 	tst.w	d0
-	bne.w	.lA78E
+	bne.w	.next4
 	movea.l	(sp)+,a1
 	move.w	#$2,(a1)
-	bra.w	.lA7E8
-.lA78E	movea.l	#TempBuffer,a1
+	bra.w	.next7
+.next4	movea.l	#TempBuffer,a1
 	move.w	d0,$17E64.l
 	bsr.w	AppendNumber
 	movea.l	(sp),a3
@@ -228,17 +228,17 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	$17E64.l,d0
 	movea.l	#$25808,a1
 	cmpi.w	#$1,d0
-	bne.w	.lA7C6
+	bne.w	.next5
 	movea.l	#$25810,a1
-.lA7C6	tst.w	d1
-	bne.w	.lA7E0
+.next5	tst.w	d1
+	bne.w	.next6
 	movea.l	#$257F8,a1
 	cmpi.w	#$1,d0
-	bne.w	.lA7E0
+	bne.w	.next6
 	movea.l	#$25800,a1
-.lA7E0	movea.l	(sp)+,a3
+.next6	movea.l	(sp)+,a3
 	jsr	(appstring).l
-.lA7E8	movem.l	(sp)+,d0-d7/a1-a6
+.next7	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 PlayerCardScreenTbl1	dc.b	$00,$0A,'Record ',$00,$00,$08,' goa'
 	dc.b	'ls',$00,$08,' goal',$00,$00,$08,' sav'
@@ -297,17 +297,17 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	movea.l	(a2,d0.w),a2
 	adda.w	$0(a2),a2		;a2 = the team's first player record
 	move.w	d1,d0		;skip d1 records to reach the player
-	bra.w	.lA8C2
+	bra.w	.next
 .loop	adda.w	(a2),a2
 	adda.w	#$8,a2
-.lA8C2	dbra	d0,.loop
+.next	dbra	d0,.loop
 	move.w	d1,d0
 	move.w	(sp)+,d1
 	move.w	d0,d5
 	move.w	d1,d4
 	ext.l	d0
 	movea.l	#$C45C,a0
-	bsr.w	SPAlistSub1		;his save record into M68K_RAM
+	bsr.w	SPAlistClearFlag6		;his save record into M68K_RAM
 	move.b	(a0),d0		;byte 0 = the record value
 	ext.w	d0
 	movea.l	#TeamList,a5
@@ -376,7 +376,7 @@ AppendRecordHolder						;Append the user name of the record holder (byte 1 of re
 	ext.l	d1
 	ext.l	d0
 	movea.l	#$C45C,a0
-	bsr.w	SPAlistSub1
+	bsr.w	SPAlistClearFlag6
 	movea.l	#$C45C,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$1(a0),d2
@@ -397,7 +397,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	ext.l	d1
 	ext.l	d0
 	movea.l	#$C45C,a0
-	bsr.w	SPAlistSub1
+	bsr.w	SPAlistClearFlag6
 	movea.l	#$C45C,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$3(a0),d2

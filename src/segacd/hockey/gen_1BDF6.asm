@@ -1,8 +1,9 @@
-forceblack2Sub2
+; One fade countdown step.
+ForceBlackStep
 	tst.w	(palcount).l
 	bmi.w	rtss2
 	cmpi.w	#$64,(palcount).l
-	beq.w	.l1BEA0
+	beq.w	.next
 	subq.w	#$1,(palcount).l
 	bmi.w	rtss2
 	clr.l	d0
@@ -22,50 +23,50 @@ forceblack2Sub2
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
 	jsr	$222C2.l
-.l1BE52	btst	#$4,$FF800E.l
-	bne.b	.l1BE52
+.loop	btst	#$4,$FF800E.l
+	bne.b	.loop
 	move.w	#$1D,$FF8026.l
 	bset	#$3,$FF800F.l
-.l1BE6C	btst	#$3,$FF800E.l
-	beq.b	.l1BE6C
+.loop2	btst	#$3,$FF800E.l
+	beq.b	.loop2
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l1BE86	btst	#$3,$FF800E.l
-	bne.b	.l1BE86
+.loop3	btst	#$3,$FF800E.l
+	bne.b	.loop3
 	bclr	#$4,$FF800F.l
 	jsr	$22268.l
 	rts
-.l1BEA0	movem.l	d0/a0-a1,-(sp)
+.next	movem.l	d0/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$BBCB0,a1
 	movea.l	#$C00000,a0
-.l1BEBE	btst	#$4,$FF800E.l
-	bne.b	.l1BEBE
+.loop4	btst	#$4,$FF800E.l
+	bne.b	.loop4
 	move.w	#$30,$FF8026.l
 	move.l	#$C0000000,$FF8028.l
 	bset	#$3,$FF800F.l
-.l1BEE2	btst	#$3,$FF800E.l
-	beq.b	.l1BEE2
+.loop5	btst	#$3,$FF800E.l
+	beq.b	.loop5
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l1BEFC	btst	#$3,$FF800E.l
-	bne.b	.l1BEFC
+.loop6	btst	#$3,$FF800E.l
+	bne.b	.loop6
 	bclr	#$4,$FF800F.l
 	moveq	#$1F,d0
-.l1BF10	btst	#$4,$FF800E.l
-	bne.b	.l1BF10
+.loop7	btst	#$4,$FF800E.l
+	bne.b	.loop7
 	move.w	#$33,$FF8026.l
 	move.l	(a1)+,$FF8028.l
 	bset	#$3,$FF800F.l
-.l1BF30	btst	#$3,$FF800E.l
-	beq.b	.l1BF30
+.loop8	btst	#$3,$FF800E.l
+	beq.b	.loop8
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l1BF4A	btst	#$3,$FF800E.l
-	bne.b	.l1BF4A
+.loop9	btst	#$3,$FF800E.l
+	bne.b	.loop9
 	bclr	#$4,$FF800F.l
-	dbra	d0,.l1BF10
+	dbra	d0,.loop7
 	st.b	(palcount).l
 	move.w	(sp)+,(disflags).l
 	movem.l	(sp)+,d0/a0-a1
@@ -75,32 +76,32 @@ forceblack2Sub2
 	bset	#$2,(disflags).l
 	movea.l	#$BBCB0,a1
 	movea.l	#$C00000,a0
-.l1BF90	btst	#$7,$FF800E.l
-	bne.b	.l1BF90
+.loop10	btst	#$7,$FF800E.l
+	bne.b	.loop10
 	move.l	#$C0000000,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1BFB4	btst	#$6,$FF800E.l
-	beq.b	.l1BFB4
+.loop11	btst	#$6,$FF800E.l
+	beq.b	.loop11
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1BFCE	btst	#$6,$FF800E.l
-	bne.b	.l1BFCE
+.loop12	btst	#$6,$FF800E.l
+	bne.b	.loop12
 	bclr	#$7,$FF800F.l
 	moveq	#$1F,d0
-.l1BFE2	btst	#$7,$FF800E.l
-	bne.b	.l1BFE2
+.loop13	btst	#$7,$FF800E.l
+	bne.b	.loop13
 	move.l	(a1)+,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1C002	btst	#$6,$FF800E.l
-	beq.b	.l1C002
+.loop14	btst	#$6,$FF800E.l
+	beq.b	.loop14
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1C01C	btst	#$6,$FF800E.l
-	bne.b	.l1C01C
+.loop15	btst	#$6,$FF800E.l
+	bne.b	.loop15
 	bclr	#$7,$FF800F.l
-	dbra	d0,.l1BFE2
+	dbra	d0,.loop13
 	st.b	(palcount).l
 	move.w	(sp)+,(disflags).l
 	movem.l	(sp)+,d0/a0-a1
@@ -185,16 +186,16 @@ sfx						;play sound effect number. One word passed on stack
 	bmi.w	.none
 	move.w	d0,(lastsfx).l
 	move.w	d0,$FF8022.l
-.l1C122	btst	#$7,$FF800E.l
-	bne.b	.l1C122
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$26,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1C13C	btst	#$6,$FF800E.l
-	beq.b	.l1C13C
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1C156	btst	#$6,$FF800E.l
-	bne.b	.l1C156
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 .none	movem.l	(sp)+,d0
 	move.l	(sp),$2(sp)
@@ -223,50 +224,50 @@ song						;play song number. One word passed on stack
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.w	.l1C2CA
+	bcs.w	.next7
 	move.w	#$81,d0
 	jsr	$5F22.w
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$500,d2
-	bne.s	.l1C234
+	bne.s	.next
 	move.w	#$2,$1745E.l
-	bra.s	.l1C26E
-.l1C234	cmpi.w	#$100,d2
-	bne.s	.l1C25C
+	bra.s	.next4
+.next	cmpi.w	#$100,d2
+	bne.s	.next2
 	move.b	$7(a0),d0
 	cmpi.b	#$FF,d0
-	beq.s	.l1C25C
+	beq.s	.next2
 	cmpi.b	#$2,d0
-	beq.s	.l1C25C
+	beq.s	.next2
 	cmpi.b	#$7,$7(a0)
-	bge.s	.l1C25C
+	bge.s	.next2
 	move.w	#$2,$1745E.l
-	bra.s	.l1C26E
-.l1C25C	cmpi.w	#$0,d2
-	bne.s	.l1C266
-	bra.w	.l1C26E
-.l1C266	tst.w	$1745C.l
-	ble.s	.l1C2CA
-.l1C26E	move.w	#$0,$1745C.l
+	bra.s	.next4
+.next2	cmpi.w	#$0,d2
+	bne.s	.next3
+	bra.w	.next4
+.next3	tst.w	$1745C.l
+	ble.s	.next7
+.next4	move.w	#$0,$1745C.l
 	move.w	$1745E.l,$19364.l
 	cmpi.w	#$2,$1745E.l
-	bne.s	.l1C2A2
+	bne.s	.next5
 	move.w	#$300,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
 	move.w	$1745E.l,$19364.l
-	bra.s	.l1C2AE
-.l1C2A2	move.w	#$400,d1
+	bra.s	.next6
+.next5	move.w	#$400,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
-.l1C2AE	lea.l	$19364.l,a0
+.next6	lea.l	$19364.l,a0
 	move.w	#$12,d0
 	jsr	$5F22.w
 	move.w	#$12,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
-.l1C2CA	movem.l	(sp)+,d0-d2/a0-a1
+.next7	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	
@@ -345,7 +346,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bne.w	.resume
 	adda.w	#$2,sp
 	bset	#$7,d1
-	bra.w	.ex
+	bra.w	.next
 .resume	move.w	(sp)+,(ScoutSubStatus).l
 .vid	bsr.w	setvideo
 	move.w	(ScoutSubStatus).l,d0
@@ -353,7 +354,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	beq.w	.0
 	tst.w	d0
 	bmi.w	.wait
-.ex	movem.l	(sp)+,d4-d7/a0-a3
+.next	movem.l	(sp)+,d4-d7/a0-a3
 	rts
 waitjoy						;wait for either joystick input. Return d1 = new button presses. it as
 	
@@ -468,8 +469,8 @@ ReadJoyTbl1	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	movem.l	d0/a0,-(sp)
 	lea.l	(ScoutingReportText).l,a0
 	move.l	#$2B,d0
-.l1C5C6	clr.l	(a0)+
-	dbra	d0,.l1C5C6
+.loop	clr.l	(a0)+
+	dbra	d0,.loop
 	movem.l	(sp)+,d0/a0
 	rts
 	dc.w	$563A,$7E00,$3E39,$0003,$75D2,$E24F,$6400,$0006
@@ -479,15 +480,15 @@ ReadJoyTbl1	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	movea.l	$47D88.l,a0
 	move.l	a0,d1
 	moveq	#$1B,d0
-.l1C602	add.l	d1,(a0)+
-	dbra	d0,.l1C602
-.l1C608	add.l	d1,(a0)+
+.loop2	add.l	d1,(a0)+
+	dbra	d0,.loop2
+.loop3	add.l	d1,(a0)+
 	addq.l	#$2,a0
 	tst.l	(a0)
-	bne.w	.l1C608
+	bne.w	.loop3
 	addq.l	#$4,a0
 	tst.l	(a0)
-	bne.w	.l1C608
+	bne.w	.loop3
 	movem.l	(sp)+,d0-d1/a0
 	rts
 	movem.l	d0-d1/a0,-(sp)
@@ -495,15 +496,15 @@ ReadJoyTbl1	dc.w	$0800,$0408,$0607,$0508,$0201,$0308,$0808,$0808
 	move.l	a0,d1
 	sub.l	$47D88.l,d1
 	moveq	#$1B,d0
-.l1C634	add.l	d1,(a0)+
-	dbra	d0,.l1C634
-.l1C63A	add.l	d1,(a0)+
+.loop4	add.l	d1,(a0)+
+	dbra	d0,.loop4
+.loop5	add.l	d1,(a0)+
 	addq.l	#$2,a0
 	tst.l	(a0)
-	bne.w	.l1C63A
+	bne.w	.loop5
 	addq.l	#$4,a0
 	tst.l	(a0)
-	bne.w	.l1C63A
+	bne.w	.loop5
 	movem.l	(sp)+,d0-d1/a0
 	rts
 CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal into TempWord1 /
@@ -514,56 +515,56 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 	movea.l	$47D88.l,a0
 	movea.l	#$80000,a1
 	move.w	#$88B8,d0
-.l1C666	move.l	(a0)+,(a1)+
-	dbra	d0,.l1C666
+.loop	move.l	(a0)+,(a1)+
+	dbra	d0,.loop
 	movea.l	$47D88.l,a0
 	jsr	$37620.l
 	movea.l	a0,a1
 	adda.l	#$7D0,a1
 	movea.l	#$80000,a2
 	move.w	(VisTeam).l,d0
-	dc.w	$611C
+	bsr.s	.next
 	move.w	(HomeTeam).l,d0
-	dc.w	$6114
+	bsr.s	.next
 	adda.l	#$EA60,a0
 	move.w	#$2,d7
 	jsr	$6044.w
 	movem.l	(sp)+,d0-d3/a0-a4
 	rts
-.l1C6AA	move.w	d0,d2
+.next	move.w	d0,d2
 	asl.w	#$2,d2
 	move.l	(a0,d2.w),d1
 	sub.l	a0,d1
-.l1C6B4	move.w	#$12C,d3
+.loop2	move.w	#$12C,d3
 	movea.l	(a2,d1.w),a3
 	movea.l	a1,a4
-.l1C6BE	move.l	(a3)+,(a1)+
-	dbra	d3,.l1C6BE
+.loop3	move.l	(a3)+,(a1)+
+	dbra	d3,.loop3
 	move.l	a4,(a0,d1.w)
 	addq.w	#$6,d1
 	tst.l	(a0,d1.w)
-	bne.w	.l1C6B4
+	bne.w	.loop2
 	rts
 	movem.l	d0-d1/a0,-(sp)
 	movea.l	(TeamLogoBitmaps).l,a0
 	move.l	a0,d1
 	move.l	#$1B,d0
-.l1C6E6	add.l	d1,(a0)+
-	dbra	d0,.l1C6E6
+.loop4	add.l	d1,(a0)+
+	dbra	d0,.loop4
 	movem.l	(sp)+,d0-d1/a0
 	rts
 	movem.l	d0-d7/a0-a2,-(sp)
 	bclr	#$5,$FF800F.l
-.l1C6FE	btst	#$7,$FF800E.l
-	bne.b	.l1C6FE
+.loop5	btst	#$7,$FF800E.l
+	bne.b	.loop5
 	move.w	#$3D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1C718	btst	#$6,$FF800E.l
-	beq.b	.l1C718
+.loop6	btst	#$6,$FF800E.l
+	beq.b	.loop6
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1C732	btst	#$6,$FF800E.l
-	bne.b	.l1C732
+.loop7	btst	#$6,$FF800E.l
+	bne.b	.loop7
 	bclr	#$7,$FF800F.l
 	bset	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a2
@@ -576,30 +577,31 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 DoDMApro
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	bsr.w	DoDMAproSub1
+	bsr.w	DoDMAProQueue
 	move.w	(sp)+,(disflags).l
 	rts
-DoDMAproSub1
+; Queues a DMA command in the list at $19360.
+DoDMAProQueue
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	.l1C794
+	beq.s	.next
 	move.w	#$1,-(a6)
-	bra.s	.l1C798
-.l1C794	move.w	#$0,-(a6)
-.l1C798	bclr	#$5,$FF800F.l
+	bra.s	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
-	bge.w	.l1C7CC
+	bge.w	.next3
 	move.l	d0,d3
 	lsr.w	#$1,d3
 	lea.l	(ThreeStars).l,a2
-.l1C7C0	move.l	(a0)+,(a2)+
-	dbra	d3,.l1C7C0
+.loop	move.l	(a0)+,(a2)+
+	dbra	d3,.loop
 	lea.l	(ThreeStars).l,a0
-.l1C7CC	lea.l	$C00004.l,a1
+.next3	lea.l	$C00004.l,a1
 	move.l	(a0),$BBC96.l
 	move.l	d1,$BBC9A.l
 	adda.l	#$180002,a0
@@ -634,39 +636,39 @@ DoDMAproSub1
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
 	jsr	$222C2.l
-.l1C85A	btst	#$7,$FF800E.l
-	bne.b	.l1C85A
+.loop2	btst	#$7,$FF800E.l
+	bne.b	.loop2
 	move.w	#$8,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1C874	btst	#$6,$FF800E.l
-	beq.b	.l1C874
+.loop3	btst	#$6,$FF800E.l
+	beq.b	.loop3
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1C88E	btst	#$6,$FF800E.l
-	bne.b	.l1C88E
+.loop4	btst	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr	#$7,$FF800F.l
 	jsr	$22268.l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	.l1C8BC
+	beq.s	.next4
 	bset	#$5,$FF800F.l
-	bra.s	.l1C8C4
-.l1C8BC	bclr	#$5,$FF800F.l
-.l1C8C4	move.l	a6,$19360.l
+	bra.s	.next5
+.next4	bclr	#$5,$FF800F.l
+.next5	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
 	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
-	bge.w	.l1C8F6
+	bge.w	.next6
 	move.l	d0,d3
 	lsr.w	#$1,d3
 	lea.l	(ThreeStars).l,a2
-.l1C8EA	move.l	(a0)+,(a2)+
-	dbra	d3,.l1C8EA
+.loop5	move.l	(a0)+,(a2)+
+	dbra	d3,.loop5
 	lea.l	(ThreeStars).l,a0
-.l1C8F6	lea.l	$C00004.l,a1
+.next6	lea.l	$C00004.l,a1
 	move.l	(a0),$BBC96.l
 	move.l	d1,$BBC9A.l
 	adda.l	#$180002,a0
@@ -701,16 +703,16 @@ DoDMAproSub1
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
 	jsr	$222C2.l
-.l1C984	btst	#$4,$FF800E.l
-	bne.b	.l1C984
+.loop6	btst	#$4,$FF800E.l
+	bne.b	.loop6
 	move.w	#$32,$FF8026.l
 	bset	#$3,$FF800F.l
-.l1C99E	btst	#$3,$FF800E.l
-	beq.b	.l1C99E
+.loop7	btst	#$3,$FF800E.l
+	beq.b	.loop7
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l1C9B8	btst	#$3,$FF800E.l
-	bne.b	.l1C9B8
+.loop8	btst	#$3,$FF800E.l
+	bne.b	.loop8
 	bclr	#$4,$FF800F.l
 	jsr	$22268.l
 	movem.l	(sp)+,d2-d3/a1-a2
@@ -719,11 +721,11 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	.l1C9EE
+	beq.s	.next
 	move.w	#$1,-(a6)
-	bra.s	.l1C9F2
-.l1C9EE	move.w	#$0,-(a6)
-.l1C9F2	bclr	#$5,$FF800F.l
+	bra.s	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
@@ -732,63 +734,64 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	d1,$BBC8C.l
 	move.l	d2,$BBC90.l
 	jsr	$222C2.l
-.l1CA28	btst	#$7,$FF800E.l
-	bne.b	.l1CA28
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1E,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1CA42	btst	#$6,$FF800E.l
-	beq.b	.l1CA42
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1CA5C	btst	#$6,$FF800E.l
-	bne.b	.l1CA5C
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	jsr	$22268.l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	.l1CA90
+	beq.s	.next3
 	bset	#$5,$FF800F.l
-	bra.s	.l1CA98
-.l1CA90	bclr	#$5,$FF800F.l
-.l1CA98	move.l	a6,$19360.l
+	bra.s	.next4
+.next3	bclr	#$5,$FF800F.l
+.next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts
-DoDMA_nd2Sub1
+; Queues a DMA command in the list at $19360.
+DoDMANd2Queue
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	.l1CABA
+	beq.s	.next
 	move.w	#$1,-(a6)
-	bra.s	.l1CABE
-.l1CABA	move.w	#$0,-(a6)
-.l1CABE	bclr	#$5,$FF800F.l
+	bra.s	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	move.l	d0,$BBC88.l
 	move.l	d1,$BBC8C.l
 	move.l	d2,$BBC90.l
 	jsr	$222C2.l
-.l1CAE6	btst	#$7,$FF800E.l
-	bne.b	.l1CAE6
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$1F,$FF8020.l
 	bset	#$6,$FF800F.l
-.l1CB00	btst	#$6,$FF800E.l
-	beq.b	.l1CB00
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l1CB1A	btst	#$6,$FF800E.l
-	bne.b	.l1CB1A
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	jsr	$22268.l
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	.l1CB48
+	beq.s	.next3
 	bset	#$5,$FF800F.l
-	bra.s	.l1CB50
-.l1CB48	bclr	#$5,$FF800F.l
-.l1CB50	move.l	a6,$19360.l
+	bra.s	.next4
+.next3	bclr	#$5,$FF800F.l
+.next4	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts

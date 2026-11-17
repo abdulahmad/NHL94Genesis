@@ -1,68 +1,69 @@
-setplayerSub1
+; Chooses the team structure for the player.
+SetPlayerSide
 	bclr	#$6,$63(a3)
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a3)
-	beq.w	.l2278A
+	beq.w	.next
 	adda.w	#$366,a0
-.l2278A	move.b	d3,$66(a3)
+.next	move.b	d3,$66(a3)
 	moveq	#$A,d0
 	ext.w	d3
 	add.w	d3,d3
 	move.w	$68(a0,d3.w),d1
-	bpl.w	.l227A6
+	bpl.w	.next2
 	moveq	#$9,d0
 	cmpi.w	#$FFFE,d1
-	bne.w	.l227B4
-.l227A6	bsr.w	assexitSub1
+	bne.w	.next3
+.next2	bsr.w	AssistListPush
 	bclr	#$5,$62(a3)
 	clr.w	$58(a3)
-.l227B4	move.w	#$FFFF,$68(a0,d3.w)
+.next3	move.w	#$FFFF,$68(a0,d3.w)
 	lsr.w	#$1,d3
 	movea.l	$1E(a0),a0
 	move.l	a0,-(sp)
 	adda.w	$8(a0),a0
 	clr.l	$18AE0.l
 	tst.w	$34(a3)
-	beq.w	.l22878
+	beq.w	.next10
 	btst	#$5,$17F6C.l
-	beq.w	.l2280C
+	beq.w	.next5
 	jsr	(chkpk2).l
-	beq.w	.l227FE
+	beq.w	.next4
 	move.b	$1(a0),$18AE0.l
 	andi.b	#$F,$18AE0.l
-	bra.w	.l2280C
-.l227FE	move.b	$1(a0),d0
+	bra.w	.next5
+.next4	move.b	$1(a0),d0
 	lsr.b	#$4,d0
 	neg.b	d0
 	move.b	d0,$18AE1.l
-.l2280C	move.b	$2(a0),d0
+.next5	move.b	$2(a0),d0
 	andi.b	#$F,d0
 	neg.b	d0
 	btst	#$6,$62(a3)
-	bne.w	.l22826
+	bne.w	.next6
 	move.b	$2(a0),d0
 	lsr.b	#$4,d0
-.l22826	move.b	d0,$18AE3.l
+.next6	move.b	d0,$18AE3.l
 	cmpi.w	#$2,$180E4.l
-	blt.w	.l22878
-	bgt.w	.l2284E
+	blt.w	.next10
+	bgt.w	.next7
 	jsr	(GetPeriodTime).l
 	lsr.w	#$1,d0
 	cmp.w	$180E6.l,d0
-	bgt.w	.l22878
-.l2284E	move.w	$18358.l,d0
+	bgt.w	.next10
+.next7	move.w	$18358.l,d0
 	sub.w	$186BE.l,d0
-	beq.w	.l22870
+	beq.w	.next9
 	btst	#$6,$62(a3)
-	beq.w	.l2286C
+	beq.w	.next8
 	eori.b	#$8,ccr
-.l2286C	bpl.w	.l22878
-.l22870	move.b	#$2,$18AE2.l
-.l22878	movea.l	(sp)+,a0
+.next8	bpl.w	.next10
+.next9	move.b	#$2,$18AE2.l
+.next10	movea.l	(sp)+,a0
 	adda.w	$0(a0),a0
-.l2287E	adda.w	(a0),a0
+.loop	adda.w	(a0),a0
 	adda.w	#$8,a0
-	dbra	d3,.l2287E
+	dbra	d3,.loop
 	suba.w	#$8,a0
 	move.b	(a0),$6F(a3)
 	move.b	$1(a0),d3
@@ -87,7 +88,7 @@ setplayerSub1
 	add.b	$18AE1.l,d3
 	add.b	$18AE3.l,d3
 	add.b	$18AE2.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	lsr.b	#$1,d3
 	eori.b	#$F,d3
 	addi.b	#$F,d3
@@ -98,7 +99,7 @@ setplayerSub1
 	move.w	#$6,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE3.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	lsr.b	#$1,d3
 	eori.b	#$F,d3
 	addi.b	#$F,d3
@@ -115,15 +116,15 @@ setplayerSub1
 	move.w	#$8,$17E64.l
 	jsr	(AttributeCalc).l
 	add.b	$18AE2.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	move.b	d3,$75(a3)
 	bclr	#$3,$4(a3)
 	move.b	$4(a0),$76(a3)
 	andi.b	#$1,$76(a3)
 	eori.b	#$1,$76(a3)
-	bne.w	.l229A6
+	bne.w	.next11
 	bset	#$3,$4(a3)
-.l229A6	move.b	$4(a0),$74(a3)
+.next11	move.b	$4(a0),$74(a3)
 	andi.b	#$E,$74(a3)
 	move.b	$5(a0),d3
 	lsr.b	#$4,d3
@@ -132,7 +133,7 @@ setplayerSub1
 	add.b	$18AE0.l,d3
 	add.b	$18AE1.l,d3
 	add.b	$18AE3.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	move.b	d3,$71(a3)
 	move.b	$5(a0),d3
 	andi.b	#$F,d3
@@ -141,7 +142,7 @@ setplayerSub1
 	add.b	$18AE0.l,d3
 	add.b	$18AE1.l,d3
 	add.b	$18AE3.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	move.b	d3,$6D(a3)
 	move.b	$6(a0),d3
 	lsr.b	#$4,d3
@@ -154,7 +155,7 @@ setplayerSub1
 	jsr	(AttributeCalc).l
 	add.b	$18AE2.l,d3
 	add.b	$18AE2.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	move.b	d3,$70(a3)
 	move.b	$7(a0),d3
 	lsr.b	#$4,d3
@@ -162,7 +163,7 @@ setplayerSub1
 	jsr	(AttributeCalc).l
 	add.b	$18AE0.l,d3
 	add.b	$18AE3.l,d3
-	bsr.w	.l22AA2
+	bsr.w	.next12
 	move.b	d3,$6E(a3)
 	move.b	$7(a0),$73(a3)
 	move.b	$73(a3),d3
@@ -172,13 +173,13 @@ setplayerSub1
 	move.b	d3,$73(a3)
 	andi.b	#$F,$73(a3)
 	rts
-.l22AA2	tst.b	d3
-	bpl.w	.l22AAA
+.next12	tst.b	d3
+	bpl.w	.next13
 	clr.w	d3
-.l22AAA	cmpi.b	#$1E,d3
-	ble.w	.l22AB6
+.next13	cmpi.b	#$1E,d3
+	ble.w	.ex
 	move.w	#$1E,d3
-.l22AB6	rts
+.ex	rts
 setplayerTbl1	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0016
 	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$00DA
 	dc.w	$6100,$931C,$0839,$0000,$0001,$7F6A,$6600,$006A
@@ -198,7 +199,7 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$2,(disflags).l
 	bne.w	.nograph
-	bsr.w	forceblack2Sub2
+	bsr.w	ForceBlackStep
 .nograph	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -210,18 +211,57 @@ dodmalist
 	movea.l	$191CA.l,a6
 	cmpa.l	#$18D6A,a6
 	beq.w	rtss2
-.l22C00	move.w	-(a6),d1
+.loop	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
-	bsr.w	DoDMAproSub1
+	bsr.w	DoDMAProQueue
 	cmpa.l	#$18D6A,a6
-	bgt.w	.l22C00
+	bgt.w	.loop
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_22C16.bin
+L3DC16	move.w	$18D30.l,d0
+	addi.w	#$2,d0
+	bsr.w	SetVramWriteAddr2
+.loop	btst.b	#$4,$FF800E.l
+	bne.s	.loop
+	move.w	#$31,$FF8026.l
+	move.w	$17CF0.l,$FF8028.l
+	bset.b	#$3,$FF800F.l
+.loop2	btst.b	#$3,$FF800E.l
+	beq.s	.loop2
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.loop3	btst.b	#$3,$FF800E.l
+	bne.s	.loop3
+	bclr.b	#$4,$FF800F.l
+.loop4	btst.b	#$4,$FF800E.l
+	bne.s	.loop4
+	move.w	#$30,$FF8026.l
+	move.l	#$40020010,$FF8028.l
+	bset.b	#$3,$FF800F.l
+.loop5	btst.b	#$3,$FF800E.l
+	beq.s	.loop5
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.loop6	btst.b	#$3,$FF800E.l
+	bne.s	.loop6
+	bclr.b	#$4,$FF800F.l
+.loop7	btst.b	#$4,$FF800E.l
+	bne.s	.loop7
+	move.w	#$31,$FF8026.l
+	move.w	$17CF2.l,$FF8028.l
+	bset.b	#$3,$FF800F.l
+.loop8	btst.b	#$3,$FF800E.l
+	beq.s	.loop8
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.loop9	btst.b	#$3,$FF800E.l
+	bne.s	.loop9
+	bclr.b	#$4,$FF800F.l
+	rts
 setvideo
 	movem.l	d0-d7/a0-a6,-(sp)
-.l22D1A	btst	#$0,(disflags).l
-	bne.w	.l22D1A
+.loop	btst	#$0,(disflags).l
+	bne.w	.loop
 	movea.l	#$18D6A,a5
 	bsr.w	updatescroll
 	movea.l	#$BBD30,a6
@@ -237,10 +277,10 @@ setvideo
 	bsr.w	showref
 	jsr	(Crowd_Noise).l
 	cmpa.l	#$BBD30,a6
-	bne.w	.l22D72
+	bne.w	.next
 	clr.l	(a6)+
 	clr.l	(a6)+
-.l22D72	clr.b	-$5(a6)
+.next	clr.b	-$5(a6)
 	move.l	a6,d0
 	subi.l	#$BBD30,d0
 	lsr.w	#$1,d0
@@ -349,8 +389,8 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	movea.l	#$17CF8,a3
 	moveq	#$2,d0
 .loop	move.w	(a3),d4
-	bmi.w	.l22F98
-	beq.w	.l22F98
+	bmi.w	.next
+	beq.w	.next
 	movea.l	$47D30.l,a2
 	adda.l	$4(a2),a2
 	add.w	d4,d4
@@ -390,7 +430,7 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 	adda.w	#$8,a2
 	dbra	d5,.loop2
 	adda.w	#$4,a3
-.l22F98	dbra	d0,.loop
+.next	dbra	d0,.loop
 	rts
 showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draws frame
 									;1, frame 2-4 picked by x, then frame 5 (home score not ahead) or a .ftab
@@ -421,9 +461,9 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 .pos	lsr.w	#$2,d2		;(x-$DA)/4
 	add.w	d2,d2		;word index
 	cmpi.w	#$1A,d2
-	blt.w	.l23000
+	blt.w	.next
 	moveq	#$18,d2
-.l23000	lea.l	showzamTbl1.l,a1
+.next	lea.l	showzamTbl1.l,a1
 	move.w	(a1,d2.w),d2
 	bra.w	SetSframe
 showzamTbl1	dc.w	$0005,$0006,$0007,$0008,$0007,$0008,$0007,$0008		;frame by (x-$DA)/4
@@ -439,7 +479,7 @@ SetSframe
 	lsr.w	#$3,d4
 	subi.w	#$1,d4
 	adda.w	(a0,d2.w),a0
-.l2304C	move.w	$2(a0),(a6)
+.loop	move.w	$2(a0),(a6)
 	add.w	d1,(a6)+
 	move.b	$7(a0),(a6)+
 	move.b	d6,(a6)+
@@ -452,16 +492,16 @@ SetSframe
 	add.w	d0,(a6)+
 	addi.w	#$1,d6
 	cmpi.w	#$40,d6
-	beq.w	.l23080
+	beq.w	.next
 	adda.w	#$8,a0
-	dbra	d4,.l2304C
-.l23080	movem.l	(sp)+,d0-d5/a0
+	dbra	d4,.loop
+.next	movem.l	(sp)+,d0-d5/a0
 	rts
 showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the two
 									;Crowdframe frames. a5 = dma list, a6 = sprite table, d6 = link counter.
 									;No crowd in a reverse angle replay. Called from setvideo
 	btst	#$4,$17F72.l		;check if reverse angle replay
-	bne.w	.l231CC		;branch if so
+	bne.w	.ex		;branch if so
 	movea.l	$47D2C.l,a1
 	adda.l	$4(a1),a1		;a1 = frame offset table
 	move.w	$17CEE.l,d4
@@ -486,11 +526,11 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	cmpi.w	#$3,d2
 	bls.w	.pb0
 	moveq	#$3,d2		;max 3
-.pb0	bra.w	.l23106
+.pb0	bra.w	.next
 .pbt	move.w	d3,d0		;frame = first frame + counter
 	add.w	d2,d0
 	bsr.w	.sc
-.l23106	dbra	d2,.pbt
+.next	dbra	d2,.pbt
 	rts
 .sc	ext.w	d0
 	beq.w	rtss2
@@ -520,13 +560,13 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	addi.w	#$70,d3		;112
 	move.w	(sp)+,d4
 .loop	cmp.w	$2(a0),d2		;per sprite: skip it if outside the window d0-d3
-	bgt.w	.next
+	bgt.w	.next2
 	cmp.w	$2(a0),d3
-	blt.w	.next
+	blt.w	.next2
 	cmp.w	(a0),d0
-	bgt.w	.next
+	bgt.w	.next2
 	cmp.w	(a0),d1
-	blt.w	.next
+	blt.w	.next2
 	move.w	$2(a0),d5
 	addi.w	#$70,d5		;128-16
 	sub.w	d2,d5
@@ -544,11 +584,11 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	move.w	d5,(a6)+
 	addi.w	#$1,d6
 	cmpi.w	#$40,d6
-	beq.w	.l231C8
-.next	adda.w	#$8,a0
+	beq.w	.next3
+.next2	adda.w	#$8,a0
 	dbra	d4,.loop
-.l231C8	movem.l	(sp)+,d0-d5
-.l231CC	rts
+.next3	movem.l	(sp)+,d0-d5
+.ex	rts
 showclock						;put the game clock on screen. Called from setvideo and PauseMode. On the
 									;horizontal rink the clock is printed (printz / print with .digits; not in
 									;a shootout, gmode2 bit 0). On the vertical rink (.3) it goes in the dma
@@ -615,40 +655,40 @@ showclockSub1
 	move.w	d0,$17ED4.l
 	move.w	$180E6.l,d0
 	btst	#$1,$17F78.l
-	beq.w	.l232FC
+	beq.w	.next
 	move.w	$193B6.l,d0
-.l232FC	ext.l	d0
+.next	ext.l	d0
 	divu.w	#$A,d0
-	bsr.w	.l23360
+	bsr.w	.next4
 	divu.w	#$6,d0
-	bsr.w	.l23360
+	bsr.w	.next4
 	suba.w	#$2,a0
 	divu.w	#$A,d0
-	bsr.w	.l23360
+	bsr.w	.next4
 	swap	d0
 	tst.l	d0
-	bne.w	.l23326
+	bne.w	.next2
 	moveq	#-16,d0
 	swap	d0
-.l23326	bsr.w	.l23360
+.next2	bsr.w	.next4
 	move.l	a0,(a5)+
 	move.w	#$5,(a5)+
 	movea.l	#VmMAP1,a1
 	moveq	#$18,d0
 	moveq	#$3,d2
 	btst	#$7,$17F6A.l
-	beq.w	.l23350
+	beq.w	.next3
 	movea.l	#$18D38,a1
 	moveq	#$5,d0
 	moveq	#$D,d2
-.l23350	move.w	$2(a1),d1
+.next3	move.w	$2(a1),d1
 	asl.w	d1,d0
 	add.w	d2,d0
 	asl.w	#$1,d0
 	add.w	(a1),d0
 	move.w	d0,(a5)+
 	rts
-.l23360	swap	d0
+.next4	swap	d0
 	asl.w	#$1,d0
 	move.w	$64(a1,d0.w),d0
 	add.w	$18D42.l,d0
@@ -704,12 +744,12 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 .6	move.w	(sp)+,d0
 .7	move.w	$14(a0),d1
 	btst	#$7,$17F6A.l
-	beq.w	.l23446
+	beq.w	.next
 	exg.l	d0,d1		;horizontal view: swap axes
 	neg.w	d0
 	subi.w	#$C5,d1		;horoff
 	bra.w	.hord
-.l23446	sub.w	$17CEE.l,d0
+.next	sub.w	$17CEE.l,d0
 	sub.w	$17CEA.l,d1
 .hord	clr.w	d2
 	cmpi.w	#$74,d0		;.xoff = 116
@@ -797,7 +837,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 	movea.l	#$17DCA,a1		;last label code per pad
 	movea.l	#$17480,a2
 	move.w	$17DC8.l,d3
-.l235B0	cmpi.w	#$1,d4
+.loop	cmpi.w	#$1,d4
 	bne.w	.nibble
 	move.w	$17DD6.l,d3
 	lsr.w	#$4,d3
@@ -824,7 +864,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 .next	lsr.w	#$4,d3
 	adda.w	#$1C,a0
 	adda.w	#$2,a1
-	dbra	d4,.l235B0
+	dbra	d4,.loop
 	rts
 QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code: bits 7-4
 									;and 3-0 are digits ($F = blank), bits 10-8 index ButtonLabelCharTable
@@ -882,10 +922,10 @@ addframe
 	move.w	$0(a3),d0
 	move.w	$14(a3),d1
 	move.w	$18(a3),d2
-	bmi.w	.l236E0
+	bmi.w	.next
 	bsr.w	find3d
 	cmpi.w	#$4E20,d1
-	beq.w	.l236E0
+	beq.w	.next
 	bsr.w	addframe2
-.l236E0	movem.l	(sp)+,d0-d2
+.next	movem.l	(sp)+,d0-d2
 	rts

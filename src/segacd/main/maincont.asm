@@ -3,13 +3,13 @@
 
 
 
-	bge.w	.lFF0514
+	bge.w	.next5
 	ori.w	#$4000,d3
 	swap	d3
 	andi.w	#$3,d3
 	move.l	d3,(a1)
 	move.l	(a0),-$4(a1)
-.lFF0514	move.w	(sp)+,sr
+.next5	move.w	(sp)+,sr
 	movem.l	(sp)+,d2-d3/a1
 	rts
 ; Spins until the VDP status DMA-busy bit clears.
@@ -31,8 +31,8 @@ WaitVdpDmaDone	move.w	$C00004.l,d2
 	move.w	(a0)+,d0
 	movea.l	#$23A850,a0
 	moveq	#$3F,d1
-.lFF0574	move.w	d0,(a0)+
-	dbra	d1,.lFF0574
+.loop	move.w	d0,(a0)+
+	dbra	d1,.loop
 	move.w	#$18,$23A8D0.l
 	bsr.w	WaitVblank
 	move.w	$23C6E8.l,-(sp)
@@ -42,25 +42,25 @@ WaitVdpDmaDone	move.w	$C00004.l,d2
 	move.w	#$8C00,d0
 	move.w	#$5,$FF285C.l
 	btst.b	#$3,$23C6E8.l
-	bne.w	.lFF05C6
+	bne.w	.next
 	move.w	#$6,$FF285C.l
 	ori.w	#$81,d0
-.lFF05C6	move.w	d0,$4(a0)
+.next	move.w	d0,$4(a0)
 	move.w	#$8004,$4(a0)
 	move.w	#$8164,$4(a0)
 	move.w	$FF2854.l,d0
 	move.w	d0,$FF2858.l
 	subq.w	#$5,d0
 	cmpi.w	#$1,d0
-	bls.w	.lFF05EE
+	bls.w	.next2
 	moveq	#$3,d0
-.lFF05EE	cmpi.w	#$40,$FF285E.l
-	bne.w	.lFF05FE
+.next2	cmpi.w	#$40,$FF285E.l
+	bne.w	.next3
 	ori.w	#$10,d0
-.lFF05FE	cmpi.w	#$80,$FF285E.l
-	bne.w	.lFF060E
+.next3	cmpi.w	#$80,$FF285E.l
+	bne.w	.next4
 	ori.w	#$30,d0
-.lFF060E	ori.w	#$9000,d0
+.next4	ori.w	#$9000,d0
 	move.w	d0,$4(a0)
 	move.w	#$8200,d0
 	move.b	$FF2852.l,d0
@@ -122,15 +122,15 @@ FillTilemapRect	movem.l	d0-d3/a0,-(sp)
 	moveq	#-1,d3
 	add.w	$FF285E.l,d3
 	movem.w	d0-d1,-(sp)
-.lFF0706	bsr.w	TilemapCellAddr
+.loop	bsr.w	TilemapCellAddr
 	move.w	(sp),d0
 	subq.w	#$1,d0
-.lFF070E	move.w	d2,(a0)
-	dbra	d0,.lFF070E
+.loop2	move.w	d2,(a0)
+	dbra	d0,.loop2
 	addq.w	#$1,$FF2DB4.l
 	and.w	d3,$FF2DB4.l
 	subq.w	#$1,$2(sp)
-	bne.b	.lFF0706
+	bne.b	.loop
 	addq.l	#$4,sp
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0-d3/a0
@@ -140,16 +140,16 @@ WaitVblank	move.w	sr,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bclr.b	#$4,$23C6E8.l
 	move.w	#$2500,sr
-.lFF0748	tst.w	$23A8D0.l
-	bpl.b	.lFF0748
+.loop	tst.w	$23A8D0.l
+	bpl.b	.loop
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,sr
 	rts
 	movem.l	d0/a0,-(sp)
 	lea.l	$FF2A1A.l,a0
 	move.w	#$1CB,d0
-.lFF0768	clr.w	(a0)+
-	dbra	d0,.lFF0768
+.loop2	clr.w	(a0)+
+	dbra	d0,.loop2
 	move.b	#$1,$FF2A18.l
 	movem.l	(sp)+,d0/a0
 	rts
@@ -160,8 +160,8 @@ ClearVdpPlanes	bset.b	#$4,$23C6E8.l
 	bsr.w	VdpSetWriteAddr
 	moveq	#$0,d1
 	move.w	#$DF,d0
-.lFF079C	move.l	d1,(a0)
-	dbra	d0,.lFF079C
+.loop	move.l	d1,(a0)
+	dbra	d0,.loop
 	move.w	$FF2850.l,d0
 	bsr.w	VdpSetWriteAddr
 	moveq	#$0,d0
@@ -199,21 +199,21 @@ PrintGlyphs	move.w	$FF2DB4.l,-(sp)
 	andi.w	#$F800,d5
 	move.w	$E(sp),d2
 	subq.w	#$1,d2
-.lFF083A	bsr.w	TilemapCellAddr
+.loop	bsr.w	TilemapCellAddr
 	move.w	d6,d0
 	mulu.w	(a1),d0
 	add.w	$2(sp),d0
 	asl.w	#$1,d0
 	move.w	$A(sp),d1
 	subq.w	#$1,d1
-.lFF084E	move.w	$4(a1,d0.w),d3
+.loop2	move.w	$4(a1,d0.w),d3
 	move.w	d3,-(sp)
 	andi.w	#$7FF,d3
 	tst.b	(a3,d3.w)
-	bne.w	.lFF086E
+	bne.w	.next
 	move.b	$FF2A18.l,(a3,d3.w)
 	addq.b	#$1,$FF2A18.l
-.lFF086E	move.b	(a3,d3.w),d3
+.next	move.b	(a3,d3.w),d3
 	andi.w	#$FF,d3
 	subq.w	#$1,d3
 	add.w	d4,d3
@@ -222,10 +222,10 @@ PrintGlyphs	move.w	$FF2DB4.l,-(sp)
 	eor.w	d5,d3
 	move.w	d3,(a0)
 	addq.w	#$2,d0
-	dbra	d1,.lFF084E
+	dbra	d1,.loop2
 	addq.w	#$1,$FF2DB4.l
 	addq.w	#$1,d6
-	dbra	d2,.lFF083A
+	dbra	d2,.loop
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,$FF2DB4.l
@@ -248,36 +248,36 @@ PrintGlyphsAlt	move.w	$FF2DB4.l,-(sp)
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)
 	move.w	d1,d6
 	lea.l	$23A850.l,a3
-	bra.w	LinkedCall_17
-LinkedCall_15	move.b	(a0,d0.w),(a3,d0.w)
-	dbra	d0,LinkedCall_15
-LinkedCall_16	adda.w	#$20,a0
+	bra.w	.next
+.loop	move.b	(a0,d0.w),(a3,d0.w)
+	dbra	d0,.loop
+.loop2	adda.w	#$20,a0
 	adda.w	#$20,a3
-LinkedCall_17	moveq	#$1F,d0
+.next	moveq	#$1F,d0
 	lsr.w	#$1,d5
-	bcs.b	LinkedCall_15
-	bne.b	LinkedCall_16
+	bcs.b	.loop
+	bne.b	.loop2
 	move.w	$FF2DB6.l,d5
 	andi.w	#$F800,d5
 	move.w	$E(sp),d2
 	subq.w	#$1,d2
-.lFF0922	bsr.w	TilemapCellAddr
+.loop3	bsr.w	TilemapCellAddr
 	move.w	d6,d0
 	mulu.w	(a1),d0
 	add.w	$2(sp),d0
 	asl.w	#$1,d0
 	move.w	$A(sp),d1
 	subq.w	#$1,d1
-.lFF0936	move.w	$4(a1,d0.w),d3
+.loop4	move.w	$4(a1,d0.w),d3
 	add.w	d4,d3
 	eor.w	d5,d3
 	move.w	d3,(a0)
 	addq.w	#$2,d0
-	dbra	d1,.lFF0936
+	dbra	d1,.loop4
 	addq.w	#$1,$FF2DB4.l
 	addq.w	#$1,d6
-	dbra	d2,.lFF0922
-	bsr.w	TileCmdListInit
+	dbra	d2,.loop3
+	bsr.w	LinkedCall
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,$FF2DB4.l
@@ -334,18 +334,18 @@ LinkedCall_17	moveq	#$1F,d0
 	bsr.w	PrintGlyphs
 	move.w	d4,$23A450.l
 	rts
-.lFF0A3A	move.w	$23C6E8.l,-(sp)
+.loop5	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	TilemapCellAddr
 	move.w	$FF2DB6.l,d2
 	move.w	(a1)+,d3
 	subq.w	#$2,d3
-	bra.w	.lFF0AD8
-.lFF0A5E	move.b	(a1)+,d0
-	beq.w	.lFF0AD8
+	bra.w	.next5
+.loop6	move.b	(a1)+,d0
+	beq.w	.next5
 	ext.w	d0
-	bpl.w	.lFF0AA8
+	bpl.w	.next2
 	neg.w	d0
 	move.w	d0,d2
 	asl.w	#$8,d2
@@ -364,26 +364,26 @@ LinkedCall_17	moveq	#$1F,d0
 	move.w	d1,$FF2DB4.l
 	bsr.w	TilemapCellAddr
 	subq.w	#$2,d3
-	bra.w	.lFF0AD8
-.lFF0AA8	cmpi.b	#$40,d0
-	bne.w	.lFF0AB8
+	bra.w	.next5
+.next2	cmpi.b	#$40,d0
+	bne.w	.next3
 	move.w	#$7FF,d0
-	bra.w	.lFF0ACE
-.lFF0AB8	asl.w	#$1,d0
+	bra.w	.next4
+.next3	asl.w	#$1,d0
 	movea.l	$FF2884.l,a2
 	adda.l	$4(a2),a2
 	move.w	$4(a2,d0.w),d0
 	add.w	$FF287A.l,d0
-.lFF0ACE	add.w	d2,d0
+.next4	add.w	d2,d0
 	move.w	d0,(a0)
 	addq.w	#$1,$FF2DB2.l
-.lFF0AD8	dbra	d3,.lFF0A5E
+.next5	dbra	d3,.loop6
 	movem.l	(sp)+,d0-d3/a0/a2
 	move.w	(sp)+,$23C6E8.l
 	rts
 	move.l	a1,-(sp)
 	movea.l	$4(sp),a1
-	bsr.w	.lFF0A3A
+	bsr.w	.loop5
 	move.l	a1,$4(sp)
 	movea.l	(sp)+,a1
 	rts
@@ -393,7 +393,7 @@ LinkedCall_17	moveq	#$1F,d0
 	move.w	(a1)+,$FF2DB2.l
 	move.w	(a1)+,$FF2DB4.l
 	move.w	(a1)+,$FF287A.l
-	bsr.w	.lFF0A3A
+	bsr.w	.loop5
 	lea.l	$23A450.l,a1
 	move.w	$FF2DB6.l,(a1)+
 	move.w	$FF2DB8.l,(a1)+
@@ -409,72 +409,72 @@ PrintStringBox	move.w	$23C6E8.l,-(sp)
 	move.w	$FF2DB6.l,d2
 	move.w	(a1)+,d3
 	subq.w	#$2,d3
-	bra.w	.lFF0B8C
-.lFF0B6C	move.b	(a1)+,d0
+	bra.w	.next2
+.loop	move.b	(a1)+,d0
 	ext.w	d0
-	bgt.w	.lFF0B88
+	bgt.w	.next
 	neg.w	d0
 	asl.w	#$2,d0
 	movea.l	#$FF1C94,a2
 	movea.l	(a2,d0.w),a2
 	jsr	(a2)
-	bra.w	.lFF0B8C
-.lFF0B88	bsr.w	.lFF0B9C
-.lFF0B8C	dbra	d3,.lFF0B6C
+	bra.w	.next2
+.next	bsr.w	.next3
+.next2	dbra	d3,.loop
 	movem.l	(sp)+,d0-d3/a0/a2-a3
 	move.w	(sp)+,$23C6E8.l
 	rts
-.lFF0B9C	move.w	$FF2DBA.l,d1
+.next3	move.w	$FF2DBA.l,d1
 	cmpi.w	#$4,d1
-	beq.w	.lFF0BEC
+	beq.w	.next7
 	cmpi.b	#$40,d0
-	bne.w	.lFF0BBA
+	bne.w	.next4
 	move.w	#$7FF,d0
-	bra.w	.lFF0BD6
-.lFF0BBA	cmpi.b	#$5E,d0
-	beq.w	.lFF0BE2
+	bra.w	.next5
+.next4	cmpi.b	#$5E,d0
+	beq.w	.next6
 	asl.w	#$1,d0
 	movea.l	$FF2884.l,a2
 	adda.l	$4(a2),a2
 	move.w	$4(a2,d0.w),d0
 	add.w	(a3,d1.w),d0
-.lFF0BD6	add.w	d2,d0
+.next5	add.w	d2,d0
 	move.w	d0,(a0)
 	addq.w	#$1,$FF2DB2.l
 	rts
-.lFF0BE2	addq.w	#$1,$FF2DB2.l
+.next6	addq.w	#$1,$FF2DB2.l
 	bra.w	TilemapCellAddr
-.lFF0BEC	cmpi.b	#$61,d0
-	blt.w	.lFF0C00
+.next7	cmpi.b	#$61,d0
+	blt.w	.next8
 	cmpi.b	#$7A,d0
-	bgt.w	.lFF0C00
+	bgt.w	.next8
 	addi.w	#$FFE0,d0
-.lFF0C00	movem.l	d4-d7/a0,-(sp)
+.next8	movem.l	d4-d7/a0,-(sp)
 	subi.w	#$20,d0
 	lea.l	$FF2DBC.l,a0
 	moveq	#$1,d4
 	move.b	(a0,d0.w),d5
 	ext.w	d5
-	bpl.w	.lFF0C1E
+	bpl.w	.next9
 	neg.w	d5
 	clr.w	d4
-.lFF0C1E	add.w	d5,d5
+.next9	add.w	d5,d5
 	movea.l	$FF2888.l,a0
 	adda.l	$4(a0),a0
-.lFF0C2A	bsr.w	.lFF0C58
+.loop2	bsr.w	.next10
 	move.w	(a0),d7
 	add.w	d7,d7
 	add.w	d7,d5
 	addq.w	#$1,$FF2DB4.l
-	bsr.w	.lFF0C58
+	bsr.w	.next10
 	sub.w	d7,d5
 	subq.w	#$1,$FF2DB4.l
 	addq.w	#$1,$FF2DB2.l
 	addq.w	#$2,d5
-	dbra	d4,.lFF0C2A
+	dbra	d4,.loop2
 	movem.l	(sp)+,d4-d7/a0
 	rts
-.lFF0C58	movem.l	d1/a0,-(sp)
+.next10	movem.l	d1/a0,-(sp)
 	move.w	(a3,d1.w),d6
 	add.w	$4(a0,d5.w),d6
 	add.w	d2,d6

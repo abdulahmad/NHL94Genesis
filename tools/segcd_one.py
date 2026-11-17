@@ -36,7 +36,7 @@ CFG = {
               ("audiostream", 0x508C, 0x5304), ("cdfade", 0x54F6, 0x556E)],
         opts_off=("subboot", "subheap", "pcmclear", "cdcwait", "pcmchip", "audiostream", "cdfade"), string_calls=(),
         # calls that read inline data from the return address: 18 bytes of command words, or a length word
-        inline_calls={0x24620: 18, 0xE320: 18, 0x24958: "w"},
+        inline_calls={0x24620: 18, 0xE320: 18, 0x24958: "w", 0x2487C: "w"},
     ),
     "MAIN": dict(
         disc="cdbin/MAIN.BIN", base=0xFF0000, name="main", asset_min=512,
@@ -179,11 +179,24 @@ def main():
         if base <= v < base + n and v % 2 == 0 and not cov[v - base]:
             seeds.add(v - base)
     link = [i for i in range(0, n - 1, 2) if d[i:i + 2] in (b"\x4e\x56", b"\x48\xe7") and not cov[i]]
+    # the first byte after each hand fragment starts a routine too (the code before it is not in insns)
+    link += [y - base for x, y in hand_ranges if 0 <= y - base < n - 1 and (y - base) % 2 == 0 and not cov[y - base] and (y - base) not in link]
     insns, calls, labs = {}, set(), set()
     # prologues first: a pointer-looking word can point into the middle of an instruction
     F.find_code_seeded(d, base, link, cov, insns, cfg["string_calls"])
     F.find_code_seeded(d, base, sorted(seeds), cov, insns, cfg["string_calls"])
     F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
+    # `pea label(pc)` pushes a return address: the label is code
+    pea_t = []
+    for p0 in list(insns):
+        g0 = F.decode_at(d, p0, base)
+        if g0 and g0.mnemonic.startswith("pea") and "(pc)" in g0.op_str:
+            m0 = re.search(r"\$([0-9a-f]+)", g0.op_str)
+            if m0 and 0 <= int(m0.group(1), 16) - base < n and not cov[int(m0.group(1), 16) - base]:
+                pea_t.append(int(m0.group(1), 16) - base)
+    if pea_t:
+        F.find_code_seeded(d, base, sorted(set(pea_t)), cov, insns, cfg["string_calls"])
+        F.sweep(d, base, cov, insns, calls, labs, cfg["string_calls"])
     print("gap code: %d instructions" % len(insns), flush=True)
 
     # pointer tables in the gaps: runs of 3 or more longs that each point at an instruction we found

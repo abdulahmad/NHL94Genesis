@@ -44,12 +44,12 @@ ClearWinRecords
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
 	move.w	#$7,d7
-.lF612	clr.b	$8(a0)
+.loop	clr.b	$8(a0)
 	clr.b	$9(a0)
 	clr.b	$A(a0)
 	clr.b	$B(a0)
 	adda.w	#$10,a0
-	dbra	d7,.lF612
+	dbra	d7,.loop
 	move.l	#$D20,d0
 	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
@@ -62,11 +62,11 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$1A8BC.l,d0
 	btst	#$7,$62(a3)
-	bne.w	.lF668
+	bne.w	.next
 	movea.l	#$2A674,a0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
-.lF668	move.w	d0,$17E2C.l
+.next	move.w	d0,$17E2C.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PSandSOpassdirTbl1	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
@@ -75,10 +75,10 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-.lF68A	move.w	#$7,d0
+.loop	move.w	#$7,d0
 	jsr	(randomd0).l
 	cmpi.w	#$6,d0
-	bgt.w	.lF68A
+	bgt.w	.loop
 	move.w	d0,$1A8B4.l
 	bclr	#$3,$17F7A.l
 	move.w	#$FFFF,$1A8B6.l
@@ -97,7 +97,7 @@ StartShootoutPathTbl1	dc.w	$0002,$A6DE,$0002,$A6EA,$0002,$A6FA,$0002,$A706
 NextPathPoint
 	movem.l	d0-d7/a0-a6,-(sp)
 	cmpi.b	#$80,$1A8B8.l
-	beq.w	.lF7B0
+	beq.w	.next2
 	addi.w	#$1,$1A8B6.l
 	move.w	$1A8B6.l,d0
 	asl.w	#$2,d0
@@ -107,92 +107,92 @@ NextPathPoint
 	movea.l	(a0,d1.w),a0
 	move.w	(a0,d0.w),$1A8B8.l
 	btst	#$0,$76(a3)
-	beq.w	.lF780
+	beq.w	.next
 	neg.w	$1A8B8.l
-.lF780	move.w	$2(a0,d0.w),$1A8BA.l
+.next	move.w	$2(a0,d0.w),$1A8BA.l
 	cmpi.b	#$80,$4(a0,d0.w)
-	bne.w	.lF7B0
+	bne.w	.next2
 	bset	#$3,$17F7A.l
 	clr.w	$1A8BE.l
 	move.b	$5(a0,d0.w),$1A8BF.l
 	move.w	$6(a0,d0.w),$1A8BC.l
-.lF7B0	movem.l	(sp)+,d0-d7/a0-a6
+.next2	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	movem.l	d2-d7/a0-a6,-(sp)
 	cmpi.b	#$80,$1A8B8.l
-	beq.w	.lF844
+	beq.w	.next11
 	move.w	$1A8B8.l,d0
 	move.w	$1A8BA.l,d1
 	btst	#$7,$62(a3)
-	bne.w	.lF7E0
+	bne.w	.next3
 	neg.w	d0
 	neg.w	d1
-.lF7E0	sub.w	$0(a3),d0
-	bpl.w	.lF7EA
+.next3	sub.w	$0(a3),d0
+	bpl.w	.next4
 	neg.w	d0
-.lF7EA	tst.w	$28(a3)
-	bne.w	.lF802
+.next4	tst.w	$28(a3)
+	bne.w	.next5
 	tst.w	$2A(a3)
-	bne.w	.lF802
+	bne.w	.next5
 	cmpi.w	#$12,d0
-	ble.w	.lF80A
-.lF802	cmpi.w	#$A,d0
-	bgt.w	.lF838
-.lF80A	sub.w	$14(a3),d1
-	bpl.w	.lF814
+	ble.w	.next6
+.next5	cmpi.w	#$A,d0
+	bgt.w	.next10
+.next6	sub.w	$14(a3),d1
+	bpl.w	.next7
 	neg.w	d1
-.lF814	tst.w	$28(a3)
-	bne.w	.lF82C
+.next7	tst.w	$28(a3)
+	bne.w	.next8
 	tst.w	$2A(a3)
-	bne.w	.lF82C
+	bne.w	.next8
 	cmpi.w	#$12,d1
-	ble.w	.lF834
-.lF82C	cmpi.w	#$A,d1
-	bgt.w	.lF838
-.lF834	bsr.w	NextPathPoint
-.lF838	move.w	$1A8B8.l,d0
+	ble.w	.next9
+.next8	cmpi.w	#$A,d1
+	bgt.w	.next10
+.next9	bsr.w	NextPathPoint
+.next10	move.w	$1A8B8.l,d0
 	move.w	$1A8BA.l,d1
-.lF844	movem.l	(sp)+,d2-d7/a0-a6
+.next11	movem.l	(sp)+,d2-d7/a0-a6
 	rts
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$1,$17F78.l
-	beq.w	.lF8F8
+	beq.w	.next17
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
-	bne.w	.lF8F8
+	bne.w	.next17
 	cmpi.w	#$3,$193B6.l
-	ble.w	.lF8F2
+	ble.w	.next16
 	cmpi.b	#$80,$1A8B8.l
-	beq.w	.lF8F2
+	beq.w	.next16
 	btst	#$3,$17F7A.l
-	bne.w	.lF8B0
+	bne.w	.next12
 	tst.w	$17BA8.l
-	bne.w	.lF8F8
+	bne.w	.next17
 	tst.w	$17BAA.l
-	bne.w	.lF8F8
+	bne.w	.next17
 	cmpi.w	#$F,$193B6.l
-	blt.w	.lF8F2
-	bra.w	.lF8F8
-.lF8B0	move.w	$1A8B8.l,d0
+	blt.w	.next16
+	bra.w	.next17
+.next12	move.w	$1A8B8.l,d0
 	move.w	$1A8BA.l,d1
 	btst	#$7,$62(a3)
-	bne.w	.lF8CA
+	bne.w	.next13
 	neg.w	d0
 	neg.w	d1
-.lF8CA	sub.w	$0(a3),d0
-	bpl.w	.lF8D4
+.next13	sub.w	$0(a3),d0
+	bpl.w	.next14
 	neg.w	d0
-.lF8D4	sub.w	$14(a3),d1
-	bpl.w	.lF8DE
+.next14	sub.w	$14(a3),d1
+	bpl.w	.next15
 	neg.w	d1
-.lF8DE	cmp.w	$1A8BE.l,d0
-	bgt.w	.lF8F8
+.next15	cmp.w	$1A8BE.l,d0
+	bgt.w	.next17
 	cmp.w	$1A8BE.l,d1
-	bgt.w	.lF8F8
-.lF8F2	clr.w	d0
-	bra.w	.lF8FC
-.lF8F8	move.w	#$1,d0
-.lF8FC	movem.l	(sp)+,d0-d7/a0-a6
+	bgt.w	.next17
+.next16	clr.w	d0
+	bra.w	.next18
+.next17	move.w	#$1,d0
+.next18	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixels to 4 bit
 	
@@ -258,11 +258,11 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	move.w	d0,-(sp)
 	subi.w	#$18,d4
 	tst.w	$17468.l
-	beq.s	.lF9E6
+	beq.s	.next
 	movea.l	$47DA8.l,a2
-	bra.s	.lF9EC
-.lF9E6	movea.l	$47D90.l,a2
-.lF9EC	adda.w	#$8,a2
+	bra.s	.next2
+.next	movea.l	$47D90.l,a2
+.next2	adda.w	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	move.w	(sp)+,d0
 	rts
@@ -408,10 +408,10 @@ GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd re
 	bne.w	.0
 	move.w	#$50,d2
 .0	cmp.w	d7,d2
-	ble.w	.lFC32
+	ble.w	.next
 	move.w	d2,d7
 	move.w	d1,d0
-.lFC32	dbra	d1,.loop
+.next	dbra	d1,.loop
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
 getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
@@ -485,19 +485,19 @@ GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of t
 .x	rts
 	movem.l	d1/a0,-(sp)
 	btst	#$0,$17F68.l
-	bne.w	.lFD80
+	bne.w	.next2
 	move.w	$17E62.l,d1
 	movea.l	#$1AD46,a0
 	tst.w	d4
-	beq.w	.lFD62
+	beq.w	.next
 	movea.l	#$1AD4E,a0
-.lFD62	addi.l	#$1,(a0)
+.next	addi.l	#$1,(a0)
 	cmpi.w	#$8,d1
-	beq.w	.lFD80
+	beq.w	.next2
 	cmp.w	$54(a3),d1
-	beq.w	.lFD80
+	beq.w	.next2
 	addi.l	#$1,$4(a0)
-.lFD80	movem.l	(sp)+,d1/a0
+.next2	movem.l	(sp)+,d1/a0
 	rts
 TerminateLogName						;Unreferenced. The GetLogName String at lognametext, ended with 0 at
 	
@@ -536,7 +536,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	movea.l	#TempBuffer,a3
 	jsr	(appstring).l
 	movea.l	#TempBuffer,a3
-	jsr	(PushNumberWidthSub1).l
+	jsr	(PushNumberWidthString).l
 	String	')'
 	movea.l	#TempBuffer,a1
 PlayedByExit
@@ -550,18 +550,18 @@ PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDispl
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	$18BF6.l,d0
 	bra.w	PlayedByText
-	bra.w	PlayedByAwaySub1
+	bra.w	.next
 	dc.w	$08B9,$0001,$0001,$7F7C,$6000,$000A
-PlayedByAwaySub1
+.next
 	bset	#$1,$17F7C.l
 	rts
 AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from AttribRating,
 	
 	cmpi.w	#$32,d0
-	bge.w	.lFE90
+	bge.w	.ex
 	asr.w	#$1,d0
 	addi.w	#$19,d0
-.lFE90	rts
+.ex	rts
 	dc.w	$48A7,$C000,$3039,$0001,$7B80,$906B,$0000,$0C40
 	dc.w	$001E,$6E00,$0030,$3239,$0001,$7BA8,$B340,$0240
 	dc.w	$8000,$6700,$0020,$3039,$0001,$7B94,$906B,$0014
@@ -572,9 +572,9 @@ ReadGoaliePulled						;Z clear when the team of a3 pulled its goalie ($26 of the
 	movem.l	a1,-(sp)
 	movea.l	#tmstruct,a1
 	btst	#$6,$62(a3)
-	beq.w	.lFEF6
+	beq.w	.next
 	movea.l	#awtmstruct,a1
-.lFEF6	tst.w	$28(a1)
+.next	tst.w	$28(a1)
 	movem.l	(sp)+,a1
 	rts
 EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA
@@ -590,16 +590,54 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
 	tst.w	$34(a3)
-	bpl.w	.lFF40
+	bpl.w	.next
 	jsr	(assexit).l
-	bra.w	.lFF46
-.lFF40	jsr	(Setplass).l
-.lFF46	clr.w	$5A(a3)
+	bra.w	.next2
+.next	jsr	(Setplass).l
+.next2	clr.w	$5A(a3)
 	st.b	$5C(a3)
 	move.w	(sp)+,d1
 	movem.l	(sp)+,d0/a0
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0FF56.bin
+L2B2D6	movem.l	d0/a0-a3,-(sp)
+	move.w	$17F6C.l,-(sp)
+	btst.b	#$1,$17F78.l
+	dc.w	$6600,$00B2
+	movea.l	#$1834C,a2
+	lea.l	$366(a2),a3
+	move.w	$26(a2),d0
+	sub.w	$26(a3),d0
+	dc.w	$6700,$009C
+	bpl.w	.next
+	btst.b	#$6,$17F6C.l
+	bne.w	.next2
+	bsr.w	L2B392
+	bset.b	#$6,$17F6C.l
+	bra.w	.next2
+.next	exg.l	a2,a3
+	btst.b	#$6,$17F6C.l
+	beq.w	.next2
+	bsr.w	L2B392
+	bclr.b	#$6,$17F6C.l
+.next2	bset.b	#$5,$17F6C.l
+	dc.w	$6600,$0056
+	cmpa.l	#$1834C,a3
+	bne.w	.next3
+	move.w	$17FAE.l,$1A56C.l
+	move.w	#$1,$1A56E.l
+	jsr	$2A478.l
+	bset.b	#$6,$17F7C.l
+	dc.w	$6000,$0028
+.next3	move.w	$17FAE.l,$1A56C.l
+	move.w	#$4,$1A56E.l
+	jsr	$2A478.l
+	dc.w	$6000,$FFDA
+L2B392	bclr.b	#$5,$17F6C.l
+	rts
+	move.w	(sp)+,$17F6C.l
+	movem.l	(sp)+,d0/a0-a3
+	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
 									;teams' penalty slots (clrTmPdst). Called from clockcont_0
 	movem.l	d0/a0,-(sp)
@@ -608,8 +646,8 @@ ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf
 	clr.w	$18064.l
 	move.w	#$10,d0
 	movea.l	#$18022,a0
-.l103C8	clr.l	(a0)+
-	dbra	d0,.l103C8
+.loop	clr.l	(a0)+
+	dbra	d0,.loop
 	movea.l	#tmstruct,a0
 	bsr.w	clrTmPdst
 	movea.l	#awtmstruct,a0
@@ -620,7 +658,7 @@ clrTmPdst						;Put all 26 players of team struct a0 on the bench (tmpdst -2), t
 									;end word -1
 	move.w	#$19,d0		;19 = 25 decimal (max roster size)
 	adda.w	#$68,a0		;tmpdst
-.l103F0	move.w	#$FFFE,(a0)+		;-2 = bench
-	dbra	d0,.l103F0
+.loop	move.w	#$FFFE,(a0)+		;-2 = bench
+	dbra	d0,.loop
 	move.w	#$FFFF,(a0)
 	rts

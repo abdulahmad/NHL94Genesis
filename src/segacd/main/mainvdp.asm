@@ -66,11 +66,11 @@
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	bset.b	#$0,$A12014.l
-.lFF1438	btst.b	#$1,$A12024.l
-	beq.b	.lFF1438
-	bsr.w	SubHandshake2
+.loop9	btst.b	#$1,$A12024.l
+	beq.b	.loop9
+	bsr.w	DispatchAfter
 	bsr.w	GiveWordRAM
-	bsr.w	SubHandshake3
+	bsr.w	DispatchTail
 	move.w	(sp)+,sr
 	move.w	#$8004,$C00004.l
 	bsr.w	ClearMainComm
@@ -103,39 +103,39 @@
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset.b	#$0,$A12000.l
 	btst.b	#$2,$A12024.l
-	beq.w	.lFF1578
+	beq.w	.next10
 	bsr.w	TakeWordRam
 	btst.b	#$4,$23C6E8.l
-	bne.w	.lFF1570
+	bne.w	.next9
 	bsr.w	TickTimers
 	btst.b	#$2,$23C6E8.l
-	bne.w	.lFF1538
+	bne.w	.next6
 	bclr.b	#$1,$23C6E8.l
-	bne.w	.lFF1550
+	bne.w	.next7
 	bclr.b	#$0,$23C6E8.l
-	bne.w	.lFF1560
-	bra.w	.lFF1570
-.lFF1538	bclr.b	#$0,$23C6E8.l
-	bne.w	.lFF1560
+	bne.w	.next8
+	bra.w	.next9
+.next6	bclr.b	#$0,$23C6E8.l
+	bne.w	.next8
 	bclr.b	#$1,$23C6E8.l
-	beq.w	.lFF1570
-.lFF1550	bsr.w	VramRestoreFromList
+	beq.w	.next9
+.next7	bsr.w	VramRestoreFromList
 	bset.b	#$2,$23C6E8.l
-	bra.w	.lFF1570
-.lFF1560	bsr.w	.lFF157E
-	bsr.w	.lFF159E
+	bra.w	.next9
+.next8	bsr.w	.next11
+	bsr.w	.next12
 	bclr.b	#$2,$23C6E8.l
-.lFF1570	bsr.w	ReadPads
+.next9	bsr.w	ReadPads
 	bsr.w	ReleaseWordRam
-.lFF1578	movem.l	(sp)+,d0-d7/a0-a6
+.next10	movem.l	(sp)+,d0-d7/a0-a6
 	rte
-.lFF157E	bclr.b	#$6,$23C6E8.l
+.next11	bclr.b	#$6,$23C6E8.l
 	beq.w	DispatchTail_5
 	lea.l	$23C368.l,a0
 	move.w	#$1C0,d0
 	move.w	$FF284E.l,d1
 	bra.w	CopyToVdp
-.lFF159E	bclr.b	#$5,$23C6E8.l
+.next12	bclr.b	#$5,$23C6E8.l
 	beq.w	DispatchTail_5
 	lea.l	$23B1E8.l,a0
 	move.w	#$8C0,d0
@@ -144,30 +144,30 @@
 	bra.w	CopyToVdp
 ; Reads both control pads (or the CD-side pad state) into $FF284A/$FF284B.
 ReadPads	btst.b	#$3,$A12024.l
-	bne.w	.lFF1602
+	bne.w	.next
 	lea.l	$A10003.l,a0
-	bsr.w	.lFF167A
+	bsr.w	.next2
 	move.b	d0,$FF284A.l
 	lea.l	$A10005.l,a0
-	bsr.w	.lFF167A
+	bsr.w	.next2
 	move.b	d0,$FF284B.l
 	move.b	$FF284A.l,d0
 	lsl.w	#$8,d0
 	move.b	$FF284B.l,d0
 	move.w	d0,$A1201C.l
 	rts
-.lFF1602	lea.l	$A10003.l,a0
+.next	lea.l	$A10003.l,a0
 	move.b	#$C,$A10005.l
-	bsr.w	.lFF167A
+	bsr.w	.next2
 	move.b	d0,$FF284A.l
 	move.b	#$1C,$A10005.l
-	bsr.w	.lFF167A
+	bsr.w	.next2
 	move.b	d0,$FF284B.l
 	move.b	#$2C,$A10005.l
-	bsr.w	.lFF167A
+	bsr.w	.next2
 	move.b	d0,$FF284C.l
 	move.b	#$3C,$A10005.l
-	bsr.w	.lFF167A
+	bsr.w	.next2
 	move.b	d0,$FF284D.l
 	move.b	$FF284A.l,d0
 	lsl.w	#$8,d0
@@ -178,7 +178,7 @@ ReadPads	btst.b	#$3,$A12024.l
 	move.b	$FF284D.l,d0
 	move.w	d0,$A1201E.l
 	rts
-.lFF167A	move.b	#$0,(a0)
+.next2	move.b	#$0,(a0)
 	nop
 	nop
 	move.b	(a0),d0
@@ -196,7 +196,7 @@ TickTimers	btst.b	#$4,$23C6E8.l
 	tst.w	$23A8D0.l
 	bmi.b	DispatchTail_5
 	cmpi.w	#$64,$23A8D0.l
-	beq.w	.lFF175A
+	beq.w	.next4
 	subq.w	#$1,$23A8D0.l
 	bmi.b	DispatchTail_5
 	clr.l	d0
@@ -215,7 +215,7 @@ TickTimers	btst.b	#$4,$23C6E8.l
 	movea.l	#$23A850,a1
 	movea.l	#$C00000,a0
 	clr.w	d6
-.lFF16F0	move.w	d3,d2
+.loop	move.w	d3,d2
 	move.w	d6,d0
 	swap	d0
 	move.w	#$20,d0
@@ -226,10 +226,10 @@ TickTimers	btst.b	#$4,$23C6E8.l
 	move.w	(a1)+,d1
 	and.w	d5,d1
 	cmp.w	d1,d0
-	beq.w	.lFF172A
-	blt.w	.lFF1714
+	beq.w	.next2
+	blt.w	.next
 	neg.w	d2
-.lFF1714	add.w	d2,d0
+.next	add.w	d2,d0
 	and.w	d4,d7
 	or.w	d0,d7
 	move.l	#$C000,d0
@@ -237,51 +237,51 @@ TickTimers	btst.b	#$4,$23C6E8.l
 	swap	d0
 	move.l	d0,$4(a0)
 	move.w	d7,(a0)
-.lFF172A	addq.w	#$2,d6
+.next2	addq.w	#$2,d6
 	cmpi.w	#$80,d6
-	bne.b	.lFF16F0
+	bne.b	.loop
 	rts
 	movem.l	d1-d4,-(sp)
 	clr.w	d4
 	moveq	#$2,d3
 	moveq	#$E,d2
-.lFF173E	move.w	d0,d1
+.loop2	move.w	d0,d1
 	and.w	d2,d1
-	beq.w	.lFF174C
+	beq.w	.next3
 	add.w	d2,d1
 	and.w	d2,d1
 	or.w	d1,d4
-.lFF174C	asl.w	#$4,d2
-	dbra	d3,.lFF173E
+.next3	asl.w	#$4,d2
+	dbra	d3,.loop2
 	move.w	d4,d0
 	movem.l	(sp)+,d1-d4
 	rts
-.lFF175A	movem.l	d0/a0-a1,-(sp)
+.next4	movem.l	d0/a0-a1,-(sp)
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movea.l	#$23A850,a1
 	movea.l	#$C00000,a0
 	move.l	#$C0000000,$4(a0)
 	moveq	#$1F,d0
-.lFF1782	move.l	(a1)+,(a0)
-	dbra	d0,.lFF1782
+.loop3	move.l	(a1)+,(a0)
+	dbra	d0,.loop3
 	st.b	$23A8D0.l
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0/a0-a1
 	rts
 ; Waits for and takes word RAM for the main CPU.
 TakeWordRam	btst.b	#$1,$FF2A16.l
-	beq.w	.lFF17B4
+	beq.w	.next
 	bsr.w	WaitWordRAM
 	bset.b	#$0,$FF2A16.l
 	rts
-.lFF17B4	bclr.b	#$0,$FF2A16.l
+.next	bclr.b	#$0,$FF2A16.l
 	rts
 ; Gives word RAM back to the sub CPU if it was taken.
 ReleaseWordRam	btst.b	#$0,$FF2A16.l
-	beq.w	.lFF17CE
+	beq.w	.ex
 	bsr.w	GiveWordRAM
-.lFF17CE	rts
+.ex	rts
 ; Copies each saved region from the list at $23A8D2 back to the VDP, then the base region.
 VramRestoreFromList	lea.l	$23AF16.l,a0
 	move.w	$23B1E6.l,d0
@@ -290,25 +290,25 @@ VramRestoreFromList	lea.l	$23AF16.l,a0
 	movea.l	$23AF12.l,a6
 	adda.l	#$180000,a6
 	btst.b	#$0,$23C6EA.l
-	beq.w	DispatchTail_11
+	beq.w	.next
 	lea.l	$23A8D2.l,a5
 	cmpa.l	a5,a6
 	beq.w	DispatchTail_5
-.lFF180A	movea.l	(a5)+,a0
+.loop	movea.l	(a5)+,a0
 	move.w	(a5)+,d0
 	move.w	(a5)+,d1
 	adda.l	#$180000,a0
 	bsr.w	CopyToVdp
 	cmpa.l	a6,a5
-	bcs.b	.lFF180A
+	bcs.b	.loop
 	rts
-DispatchTail_10	move.w	-(a6),d1
+.loop2	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
 	adda.l	#$180000,a0
 	bsr.w	CopyToVdp
-DispatchTail_11	cmpa.l	#$23A8D2,a6
-	bne.b	DispatchTail_10
+.next	cmpa.l	#$23A8D2,a6
+	bne.b	.loop2
 	rts
 	bsr.w	ReadPads
 	rts

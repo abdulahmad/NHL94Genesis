@@ -13,19 +13,19 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	move.w	#$1C3,-(sp)
 	move.w	#$14B,-(sp)
 	moveq	#$1,d5
-.l2028	moveq	#$0,d1
+.loop	moveq	#$0,d1
 	move.w	(a2),d1
 	lea.l	(a2,d1.w),a2
 	movea.l	a2,a0
 	adda.l	#$5,a0
 	cmpi.w	#$1,d5
-	bne.w	.l204A
+	bne.w	.next
 	move.b	(a0),$B7(a6)
 	adda.l	#$2,a0
-.l204A	move.w	(sp)+,d0
+.next	move.w	(sp)+,d0
 	move.w	#$1D,d1
 	bsr.w	TilemapAddr
-	dbra	d5,.l2028
+	dbra	d5,.loop
 	moveq	#$0,d1
 	move.w	(a2),d1
 	lea.l	(a2,d1.w),a2
@@ -36,37 +36,37 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	move.b	(a0)+,(a1)+
 	move.b	(a0)+,(a1)+
 	move.b	#$20,(a1)+
-.l2076	cmpi.b	#$20,(a0)+
-	bne.w	.l2076
-.l207E	move.b	(a0)+,(a1)+
-	bne.w	.l207E
+.loop2	cmpi.b	#$20,(a0)+
+	bne.w	.loop2
+.loop3	move.b	(a0)+,(a1)+
+	bne.w	.loop3
 	movea.l	$8E(a6),a0
 	move.w	#$1EB,d0
 	move.w	#$1D,d1
 	bsr.w	TilemapAddr
 	moveq	#$3,d5
-.l2096	move.w	(a2),d1
+.loop4	move.w	(a2),d1
 	lea.l	(a2,d1.w),a2
-	dbra	d5,.l2096
+	dbra	d5,.loop4
 	movea.l	a2,a3
 	moveq	#$0,d0
 	moveq	#$0,d3
-.l20A6	move.b	$5(a3),d1
+.loop5	move.b	$5(a3),d1
 	sub.b	$4(a3),d1
 	cmp.b	d1,d0
-	bgt.w	.l20B6
+	bgt.w	.next2
 	move.b	d1,d0
-.l20B6	move.w	(a3),d3
+.next2	move.w	(a3),d3
 	lea.l	(a3,d3.w),a3
 	cmpi.w	#$656C,$4(a3)
-	beq.w	.l20D0
+	beq.w	.next3
 	cmpi.w	#$656E,$4(a3)
-	bne.w	.l20A6
-.l20D0	movea.l	$9E(a6),a0
+	bne.w	.loop5
+.next3	movea.l	$9E(a6),a0
 	cmpi.b	#$A,d0
-	bge.w	.l20E0
+	bge.w	.next4
 	move.b	#$A,d0
-.l20E0	subq.b	#$1,d0
+.next4	subq.b	#$1,d0
 	move.b	d0,$1(a0)
 	moveq	#$0,d1
 	move.b	(a0)+,d1
@@ -76,9 +76,9 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	move.b	d1,$B6(a6)
 	swap	d1
 	tst.w	d1
-	beq.w	.l2104
+	beq.w	.next5
 	addi.b	#$1,$B6(a6)
-.l2104	move.w	#$9,$B8(a6)
+.next5	move.w	#$9,$B8(a6)
 	bsr.w	PlFillBackground
 	movea.l	$9E(a6),a0
 	moveq	#$F,d3
@@ -90,24 +90,24 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	lsr.w	#$2,d2
 	swap	d2
 	addi.l	#$40000000,d2
-.l212E	btst.b	#$7,$FF800E.l
-	bne.b	.l212E
+.loop6	btst.b	#$7,$FF800E.l
+	bne.b	.loop6
 	move.l	d2,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l214E	btst.b	#$6,$FF800E.l
-	beq.b	.l214E
+.loop7	btst.b	#$6,$FF800E.l
+	beq.b	.loop7
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l2168	btst.b	#$6,$FF800E.l
-	bne.b	.l2168
+.loop8	btst.b	#$6,$FF800E.l
+	bne.b	.loop8
 	bclr.b	#$7,$FF800F.l
 	lea.l	StrRegular(pc),a0
 	move.w	$A6(a6),d1
 	cmp.w	$58(a6),d1
-	bge.w	.l218E
+	bge.w	.next6
 	lea.l	StrPlayoff(pc),a0
-.l218E	movea.l	$8E(a6),a5
+.next6	movea.l	$8E(a6),a5
 	move.w	#$7,d1
 	bsr.w	PrintTextLine
 	move.l	#$B702,d3
@@ -118,75 +118,75 @@ PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	lsr.w	#$2,d2
 	swap	d2
 	addi.l	#$40000000,d2
-.l21B6	btst.b	#$7,$FF800E.l
-	bne.b	.l21B6
+.loop9	btst.b	#$7,$FF800E.l
+	bne.b	.loop9
 	move.l	d2,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l21D6	btst.b	#$6,$FF800E.l
-	beq.b	.l21D6
+.loop10	btst.b	#$6,$FF800E.l
+	beq.b	.loop10
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l21F0	btst.b	#$6,$FF800E.l
-	bne.b	.l21F0
+.loop11	btst.b	#$6,$FF800E.l
+	bne.b	.loop11
 	bclr.b	#$7,$FF800F.l
 	moveq	#$2,d5
 	moveq	#$0,d1
 	movea.l	$8E(a6),a5
-.l220A	moveq	#$0,d1
+.loop12	moveq	#$0,d1
 	move.b	(a1)+,d1
 	bsr.w	PrintTextLine
-	dbra	d5,.l220A
+	dbra	d5,.loop12
 	move.w	#$0,$B4(a6)
 	movea.l	$8E(a6),a4
-.l2220	tst.b	(a4)+
-	bne.w	.l2220
+.loop13	tst.b	(a4)+
+	bne.w	.loop13
 	move.b	#$20,-$1(a4)
 	movea.l	$8E(a6),a4
 	bsr.w	PlBuildPortraitTiles
 	move.w	#$2,$B4(a6)
 	cmpi.w	#$0,$58(a6)
-	beq.w	.l225A
+	beq.w	.next7
 	move.w	$58(a6),d5
 	subq.w	#$1,d5
-.l224A	tst.b	(a0)+
-	bne.w	.l224A
+.loop14	tst.b	(a0)+
+	bne.w	.loop14
 	adda.l	#$1,a1
-	dbra	d5,.l224A
-.l225A	move.l	a1,$FE(a6)
+	dbra	d5,.loop14
+.next7	move.l	a1,$FE(a6)
 	moveq	#$2,d5
 	moveq	#$0,d1
 	movea.l	$8E(a6),a5
-.l2266	moveq	#$0,d1
+.loop15	moveq	#$0,d1
 	move.b	(a1)+,d1
 	bsr.w	PrintTextLine
-	dbra	d5,.l2266
+	dbra	d5,.loop15
 LF64_13	move.w	$56(a6),d6
-	beq.w	.l22C8
+	beq.w	.next
 	subq.w	#$1,d6
 	movea.l	a2,a0
-.l227E	move.w	(a0),d5
+.loop	move.w	(a0),d5
 	lea.l	(a0,d5.w),a0
 	addi.w	#$80,d3
 	cmpi.w	#$656C,$4(a0)
 	beq.w	LF64_15
 	cmpi.w	#$656E,$4(a0)
 	beq.w	LF64_15
-	dbra	d6,.l227E
+	dbra	d6,.loop
 	movea.l	a0,a3
 	moveq	#$6,d6
-.l22A4	cmpi.w	#$656C,$4(a0)
+.loop2	cmpi.w	#$656C,$4(a0)
 	beq.w	LF64_15
 	cmpi.w	#$656E,$4(a0)
 	beq.w	LF64_15
 	move.w	(a0),d5
 	lea.l	(a0,d5.w),a0
 	addi.w	#$80,d3
-	dbra	d6,.l22A4
+	dbra	d6,.loop2
 	movea.l	a3,a2
-.l22C8	move.l	#$B802,d3
+.next	move.l	#$B802,d3
 	moveq	#$6,d6
-.l22D0	movea.l	a2,a0
+.loop3	movea.l	a2,a0
 	moveq	#$0,d5
 	move.b	$2(a0),d5
 	lea.l	$3(a0,d5.w),a0
@@ -196,27 +196,27 @@ LF64_13	move.w	$56(a6),d6
 	lsr.w	#$2,d2
 	swap	d2
 	addi.l	#$40000000,d2
-.l22EE	btst.b	#$7,$FF800E.l
-	bne.b	.l22EE
+.loop4	btst.b	#$7,$FF800E.l
+	bne.b	.loop4
 	move.l	d2,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l230E	btst.b	#$6,$FF800E.l
-	beq.b	.l230E
+.loop5	btst.b	#$6,$FF800E.l
+	beq.b	.loop5
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l2328	btst.b	#$6,$FF800E.l
-	bne.b	.l2328
+.loop6	btst.b	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr.b	#$7,$FF800F.l
 	move.w	#$2,d5
 	movea.l	$8E(a6),a5
-.l2342	moveq	#$0,d1
+.loop7	moveq	#$0,d1
 	move.b	(a1)+,d1
 	bsr.w	PrintTextLine
-	dbra	d5,.l2342
+	dbra	d5,.loop7
 	movea.l	$8E(a6),a4
-.l2352	tst.b	(a4)+
-	bne.w	.l2352
+.loop8	tst.b	(a4)+
+	bne.w	.loop8
 	move.b	#$20,-$1(a4)
 	movea.l	$8E(a6),a4
 	bsr.w	PlBuildPortraitTiles
@@ -231,10 +231,10 @@ LF64_13	move.w	$56(a6),d6
 	movea.l	$FE(a6),a1
 	move.w	#$2,d5
 	movea.l	$8E(a6),a5
-.l238C	moveq	#$0,d1
+.loop9	moveq	#$0,d1
 	move.b	(a1)+,d1
 	bsr.w	PrintTextLine
-	dbra	d5,.l238C
+	dbra	d5,.loop9
 	move.w	(a2),d5
 	lea.l	(a2,d5.w),a2
 	addi.w	#$80,d3
@@ -242,7 +242,7 @@ LF64_13	move.w	$56(a6),d6
 	beq.w	LF64_14
 	cmpi.w	#$656E,$4(a2)
 	beq.w	LF64_14
-	dbra	d6,.l22D0
+	dbra	d6,.loop3
 LF64_14	movem.l	(sp)+,d0-d7/a0-a5
 	rts
 LF64_15	subi.w	#$1,$56(a6)

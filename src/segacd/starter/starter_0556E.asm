@@ -24,9 +24,9 @@
 	dc.b	$00,$00,$04,$00,$00,$00,$05,$00,$00,$00,$06,$00,$00,$00,$07,$00	; ................
 	dc.b	$00,$00,$08,$00,$32,$FF,$FF,$FF,$FF	; ....2....
 	dcb.b	$286,0
-.l26E96	dcb.b	$14,0
-.l26EAA	dcb.b	$14,0
-.l26EBE	dcb.b	$1C,0
+.next	dcb.b	$14,0
+.next2	dcb.b	$14,0
+.next3	dcb.b	$1C,0
 	dc.b	$3D,$2A,$00,$00,$3D,$AA,$01,$E9	; =*..=...
 	dcb.b	$3C,0
 	dc.b	$02,$22,$22,$22	; ."""
@@ -195,7 +195,7 @@
 	dc.b	$BB,$BB,$B2,$2B,$BB,$BB,$B2,$2B,$BB,$BB,$BB,$BB,$BB,$BB,$BB,$2B	; ...+...+.......+
 	dc.b	$BB,$BB,$BB,$22,$BB,$BB,$BB,$22,$BB,$BB,$BB,$22,$BB,$BB,$BB,$22	; ..."..."..."..."
 	dc.b	$BB,$22,$22,$22,$9B,$B2,$22,$22,$B9,$B2,$22,$22	; ."""..""..""
-.l2790E	incbin	..\Extracted\SegaCD\STARTER\starter_0660E.bin
+.next4	incbin	..\Extracted\SegaCD\STARTER\starter_0660E.bin
 	dcb.b	$11,0
 	dc.b	$90,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70	; ....p...p...p
 	dcb.b	$A,0
@@ -240,8 +240,8 @@
 	dc.b	$07,$77,$70,$00,$02,$BB,$96,$9B,$02,$B9,$B6,$9B,$02,$B9,$88,$BB	; .wp.............
 	dc.b	$02,$B9,$99,$B2,$02,$B9,$B9,$BB,$02,$2B,$B8,$B2,$02,$2B,$BB,$22	; .........+...+."
 	dc.b	$02,$22,$22,$22,$BB,$BB,$BB,$BB,$BB,$BB,$BB,$BB,$2B,$BB,$BB,$BB	; ."""........+...
-.l2800E	dc.b	$22,$BB,$BB,$B2,'""+"',$B2,$22,$22,$BB	; "...""+"."".
-.l2801A	incbin	..\Extracted\SegaCD\STARTER\starter_06D1A.bin
+.next5	dc.b	$22,$BB,$BB,$B2,'""+"',$B2,$22,$22,$BB	; "...""+"."".
+.next6	incbin	..\Extracted\SegaCD\STARTER\starter_06D1A.bin
 	dcb.b	$8,0
 	dc.b	$97,$90,$00,$00,$00,$09,$79	; ......y
 	dcb.b	$18,0
@@ -253,8 +253,8 @@
 	dcb.b	$A,0
 	dc.b	$5A,$0D,$0D,$00,$00,$00,$00,$77,$07,$77,$79,$00,$90	; Z......w.wy..
 	dcb.b	$13,0
-GetDataSub9	subi.w	#$7,d6
-	bra.w	.l28318
+GetDataSub10	subi.w	#$7,d6
+	bra.w	.next
 	dc.b	$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$70,$00,$00,$00,$07	; ...p...p...p....
 	dcb.b	$A,0
 	dc.b	$70,$00,$77,$70,$07,$00,$70,$07,$07,$00,$77,$70,$07,$00,$70,$07	; p.wp..p...wp..p.
@@ -264,7 +264,7 @@ GetDataSub9	subi.w	#$7,d6
 	dc.b	$91,$11,$00,$09,$11,$11,$00,$00,$63,$33,$00,$00,$00,$00,$11,$11	; ........c3......
 	dc.b	$11,$31,$11,$11,$17,$31,$11,$11,$16,$21,$71,$11,$16,$61,$69,$11	; .1...1...!q..ai.
 	dc.b	$73,$11,$C6,$11	; s...
-.l28318	dc.b	$62,$11,$00,$63,$00,$63,$00,$00,$00,$00,$11,$11,$11,$16,$11,$11	; b..c.c..........
+.next	dc.b	$62,$11,$00,$63,$00,$63,$00,$00,$00,$00,$11,$11,$11,$16,$11,$11	; b..c.c..........
 	dc.b	$11,$13,$11,$11,$11,$13,$16,$61,$11,$73,$16,$21,$11,$32,$1C,$E1	; .......a.s.!.2..
 	dc.b	$11,$33,$30,$06,$36,$00,$00,$00,$00,$00,$39,$11,$13,$E6,$31,$11	; .30.6.....9...1.
 	dc.b	$6C,$14,$21,$11,$31,$11,$91,$11,$37,$61,$11,$11,$19,$21,$11,$11	; l.!.1...7a...!..
@@ -868,73 +868,72 @@ GetDataSub9	subi.w	#$7,d6
 	dcb.b	$40,0
 	dc.b	'@L`M`N`O`P`Q`R S'	; @L`M`N`O`P`Q`R S
 	dcb.b	$40,0
-GetDataSub10	ori.w	#$4055,(a4)
+GetDataSub11	ori.w	#$4055,(a4)
 	bra.b	GetData_26
 	dc.b	'`W`X`Y@Z ['	; `W`X`Y@Z [
 	dcb.b	$40,0
-GetDataSub11	negx.w	(a4)+
+GetDataSub12	negx.w	(a4)+
 	negx.w	(a5)+
-	bra.b	Buf42_1
+	bra.b	GetData_27
 	dc.b	'`_```a'	; `_```a
 GetData_26	dc.b	'@b@c'	; @b@c
 	dcb.b	$40,0
-GetDataSub12	movea.l	-(a4),a0
+GetDataSub13	movea.l	-(a4),a0
 	negx.w	-(a5)
 	negx.w	-(a6)
 	dc.w	$6067
 	dc.b	'`h i j k',$00,$00,$00,$00	; `h i j k....
-; Zero-filled work storage (66 bytes).
-Buf42_1	dcb.b	$42,0
+GetData_27	dcb.b	$42,0
 	dc.b	'`l`m'	; `l`m
 	dcb.b	$15,0
-.l2CC81	dcb.b	$D1,0
+.next	dcb.b	$D1,0
 	dc.b	'@n@o@p@q@r@s@t u'	; @n@o@p@q@r@s@t u
 	dcb.b	$202,0
 	incbin	..\Extracted\SegaCD\STARTER\starter_0BC64.bin
-GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$5,d0
 	jsr	$6044.w
 	movea.l	a0,a0
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	move.l	$B090.l,$6038.w
-.l1BCBE	btst.b	#$7,$FF800E.l
-	bne.b	.l1BCBE
+.loop	btst.b	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$2E,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1BCD8	btst.b	#$6,$FF800E.l
-	beq.b	.l1BCD8
+.loop2	btst.b	#$6,$FF800E.l
+	beq.b	.loop2
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1BCF2	btst.b	#$6,$FF800E.l
-	bne.b	.l1BCF2
+.loop3	btst.b	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr.b	#$7,$FF800F.l
 	bset.b	#$5,$FF800F.l
 	bset.b	#$2,$FF8033.l
 	bsr.w	GiveWordRam
-.l1BD18	btst.b	#$7,$FF800E.l
-	bne.b	.l1BD18
+.loop4	btst.b	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	#$3F,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1BD32	btst.b	#$6,$FF800E.l
-	beq.b	.l1BD32
+.loop5	btst.b	#$6,$FF800E.l
+	beq.b	.loop5
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1BD4C	btst.b	#$6,$FF800E.l
-	bne.b	.l1BD4C
+.loop6	btst.b	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr.b	#$7,$FF800F.l
 	bsr.w	WaitDmnaSet
 	move.l	$B090.l,$6038.w
-.l1BD6A	btst.b	#$7,$FF800E.l
-	bne.b	.l1BD6A
+.loop7	btst.b	#$7,$FF800E.l
+	bne.b	.loop7
 	move.w	#$2E,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1BD84	btst.b	#$6,$FF800E.l
-	beq.b	.l1BD84
+.loop8	btst.b	#$6,$FF800E.l
+	beq.b	.loop8
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1BD9E	btst.b	#$6,$FF800E.l
-	bne.b	.l1BD9E
+.loop9	btst.b	#$6,$FF800E.l
+	bne.b	.loop9
 	bclr.b	#$7,$FF800F.l
 	bset.b	#$5,$FF800F.l
 	bset.b	#$2,$FF8033.l
@@ -947,52 +946,52 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$7D000.l,a0
 	lea.l	$7C000.l,a1
 	jsr	$5F16.w
-	bcc.w	.l1BE0A
+	bcc.w	.next2
 	jsr	$26EBE.l
 	cmpi.w	#$FFFF,$C442.l
-	beq.w	.l1BE6A
+	beq.w	.next4
 	move.w	#$6,d0
 	jsr	$5F16.w
-.l1BE0A	move.w	#$3,d0
+.next2	move.w	#$3,d0
 	lea.l	$26E78.l,a0
 	lea.l	$7F000.l,a1
 	jsr	$5F16.w
-	bcs.w	.l1BE38
+	bcs.w	.next3
 	jsr	$26E96.l
 	cmp.l	$7FF20.l,d0
-	beq.w	.l1BE76
+	beq.w	.ex
 	jsr	$26EAA.l
-.l1BE38	move.w	#$5,d0
+.next3	move.w	#$5,d0
 	lea.l	$26E78.l,a0
 	jsr	$5F16.w
 	move.w	#$1,d0
 	lea.l	$C452.l,a1
 	jsr	$5F16.w
 	cmpi.w	#$3D,d0
-	bge.w	.l1BE76
+	bge.w	.ex
 	move.w	#$1,$C44C.l
 	jsr	$26EBE.l
-.l1BE6A	move.w	#$FFFF,d0
+.next4	move.w	#$FFFF,d0
 	move.w	#$B,d7
 	jsr	$6044.w
-.l1BE76	rts
+.ex	rts
 	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00	; NHLHOCKEY94.....
 	dc.b	'NHLHOCKEY94',$00,$00,$3D,$41,$F9	; NHLHOCKEY94..=A.
 	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
 	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
 	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
-GetDataSub14	movem.l	d0-d7/a0-a2,-(sp)
+GetDataSub15	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	#$1,$C450.l
 	tst.w	$C44E.l
-	bne.w	GetData_28
+	bne.w	.next2
 	bset.b	#$5,$FF800F.l
 	movea.l	#$BBCB0,a1
 	moveq	#$1F,d0
-.l1BEE4	clr.l	(a1)+
-	dbra	d0,.l1BEE4
+.loop	clr.l	(a1)+
+	dbra	d0,.loop
 	move.w	#$64,$C43E.l
-.l1BEF2	tst.w	$C43E.l
-	bpl.w	.l1BEF2
+.loop2	tst.w	$C43E.l
+	bpl.w	.loop2
 	move.l	#$2,d7
 	movea.l	#$80000,a0
 	jsr	$6044.w
@@ -1006,7 +1005,7 @@ GetDataSub14	movem.l	d0-d7/a0-a2,-(sp)
 	jsr	$2790E.l
 	add.w	d2,d2
 	add.w	d2,$C448.l
-GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$61,d0
 	jsr	$6044.w
@@ -1026,8 +1025,8 @@ GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$4(a1,d2.w),a0
 	movea.l	#$BBCB0,a1
 	moveq	#$1F,d0
-.l1BF8A	move.l	(a0)+,(a1)+
-	dbra	d0,.l1BF8A
+.loop3	move.l	(a0)+,(a1)+
+	dbra	d0,.loop3
 	move.l	#$EEE,$BBCD2.l
 	move.l	#$4440666,$BBCF2.l
 	move.w	#$E000,d0
@@ -1041,44 +1040,44 @@ GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$80,d7
 	moveq	#$0,d4
 	move.w	#$E000,d4
-.l1BFC2	move.l	d4,d0
+.loop4	move.l	d4,d0
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
 	swap	d0
 	andi.w	#$3,d0
-.l1BFD8	btst.b	#$7,$FF800E.l
-	bne.b	.l1BFD8
+.loop5	btst.b	#$7,$FF800E.l
+	bne.b	.loop5
 	move.l	d0,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1BFF8	btst.b	#$6,$FF800E.l
-	beq.b	.l1BFF8
+.loop6	btst.b	#$6,$FF800E.l
+	beq.b	.loop6
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C012	btst.b	#$6,$FF800E.l
-	bne.b	.l1C012
+.loop7	btst.b	#$6,$FF800E.l
+	bne.b	.loop7
 	bclr.b	#$7,$FF800F.l
-.l1C024	move.w	(a2)+,d6
+.loop8	move.w	(a2)+,d6
 	add.w	d5,d6
-.l1C028	btst.b	#$7,$FF800E.l
-	bne.b	.l1C028
+.loop9	btst.b	#$7,$FF800E.l
+	bne.b	.loop9
 	move.w	d6,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C048	btst.b	#$6,$FF800E.l
-	beq.b	.l1C048
+.loop10	btst.b	#$6,$FF800E.l
+	beq.b	.loop10
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C062	btst.b	#$6,$FF800E.l
-	bne.b	.l1C062
+.loop11	btst.b	#$6,$FF800E.l
+	bne.b	.loop11
 	bclr.b	#$7,$FF800F.l
-	dbra	d1,.l1C024
+	dbra	d1,.loop8
 	move.w	d3,d1
 	add.w	d7,d4
-	dbra	d2,.l1BFC2
-GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
+	dbra	d2,.loop4
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$40,d0
 	jsr	$6044.w
@@ -1089,8 +1088,8 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lsl.w	#$3,d0
 	move.l	#$11111111,d1
 	lea.l	$4(a1),a1
-.l1C0B0	add.l	d1,(a1)+
-	dbra	d0,.l1C0B0
+.loop12	add.l	d1,(a1)+
+	dbra	d0,.loop12
 	movea.l	$C43A.l,a1
 	move.w	$2(a1),d0
 	lsl.w	#$4,d0
@@ -1102,7 +1101,7 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$C000,d0
 	bsr.w	GateArrayVdpAddrCmd
 	tst.w	$C44C.l
-	bne.w	.l1C280
+	bne.w	.next
 	moveq	#$0,d4
 	move.w	#$C31A,d4
 	move.w	#$20,d5
@@ -1112,105 +1111,105 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	d1,d3
 	moveq	#$2,d2
 	move.w	#$80,d7
-.l1C106	move.l	d4,d0
+.loop13	move.l	d4,d0
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
 	swap	d0
 	andi.w	#$3,d0
-.l1C11C	btst.b	#$7,$FF800E.l
-	bne.b	.l1C11C
+.loop14	btst.b	#$7,$FF800E.l
+	bne.b	.loop14
 	move.l	d0,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C13C	btst.b	#$6,$FF800E.l
-	beq.b	.l1C13C
+.loop15	btst.b	#$6,$FF800E.l
+	beq.b	.loop15
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C156	btst.b	#$6,$FF800E.l
-	bne.b	.l1C156
+.loop16	btst.b	#$6,$FF800E.l
+	bne.b	.loop16
 	bclr.b	#$7,$FF800F.l
-.l1C168	btst.b	#$7,$FF800E.l
-	bne.b	.l1C168
+.loop17	btst.b	#$7,$FF800E.l
+	bne.b	.loop17
 	move.w	d5,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C188	btst.b	#$6,$FF800E.l
-	beq.b	.l1C188
+.loop18	btst.b	#$6,$FF800E.l
+	beq.b	.loop18
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C1A2	btst.b	#$6,$FF800E.l
-	bne.b	.l1C1A2
+.loop19	btst.b	#$6,$FF800E.l
+	bne.b	.loop19
 	bclr.b	#$7,$FF800F.l
 	addi.w	#$1,d5
-	dbra	d1,.l1C168
+	dbra	d1,.loop17
 	move.w	d3,d1
 	add.w	d7,d4
-	dbra	d2,.l1C106
-.l1C1C4	btst.b	#$7,$FF800E.l
-	bne.b	.l1C1C4
+	dbra	d2,.loop13
+.loop20	btst.b	#$7,$FF800E.l
+	bne.b	.loop20
 	move.l	#$74000003,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C1E8	btst.b	#$6,$FF800E.l
-	beq.b	.l1C1E8
+.loop21	btst.b	#$6,$FF800E.l
+	beq.b	.loop21
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C202	btst.b	#$6,$FF800E.l
-	bne.b	.l1C202
+.loop22	btst.b	#$6,$FF800E.l
+	bne.b	.loop22
 	bclr.b	#$7,$FF800F.l
-.l1C214	btst.b	#$7,$FF800E.l
-	bne.b	.l1C214
+.loop23	btst.b	#$7,$FF800E.l
+	bne.b	.loop23
 	move.w	#$3B,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C236	btst.b	#$6,$FF800E.l
-	beq.b	.l1C236
+.loop24	btst.b	#$6,$FF800E.l
+	beq.b	.loop24
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C250	btst.b	#$6,$FF800E.l
-	bne.b	.l1C250
+.loop25	btst.b	#$6,$FF800E.l
+	bne.b	.loop25
 	bclr.b	#$7,$FF800F.l
 	move.w	#$3B,$C444.l
 	lea.l	StrWarningA(pc),a0
 	move.w	#$5B,d0
 	moveq	#$9,d1
-.l1C274	bsr.w	TilemapCellCmd
+.loop26	bsr.w	TilemapCellCmd
 	addi.w	#$28,d0
-	dbra	d1,.l1C274
-.l1C280	bset.b	#$5,$FF800F.l
+	dbra	d1,.loop26
+.next	bset.b	#$5,$FF800F.l
 	move.w	#$18,$C43E.l
-.l1C290	tst.w	$C43E.l
-	bpl.w	.l1C290
+.loop27	tst.w	$C43E.l
+	bpl.w	.loop27
 	move.w	#$1,$C44E.l
-GetData_28	tst.w	$C44C.l
-	bne.w	.l1C368
-.l1C2AC	clr.w	$C446.l
-.l1C2B2	tst.w	$C446.l
-	beq.w	.l1C2B2
+.next2	tst.w	$C44C.l
+	bne.w	.next7
+.loop28	clr.w	$C446.l
+.loop29	tst.w	$C446.l
+	beq.w	.loop29
 	bsr.w	UpdatePadStateSub
 	cmpi.b	#$4,d1
-	beq.w	.l1C2DC
+	beq.w	.next3
 	cmpi.b	#$8,d1
-	beq.w	.l1C2F8
+	beq.w	.next4
 	cmpi.b	#$20,d1
-	beq.w	.l1C320
-	bra.w	.l1C2AC
-.l1C2DC	tst.w	$C442.l
-	bpl.w	.l1C2AC
+	beq.w	.next5
+	bra.w	.loop28
+.next3	tst.w	$C442.l
+	bpl.w	.loop28
 	clr.w	$C442.l
 	move.w	#$FFFE,$C440.l
-	bra.w	.l1C312
-.l1C2F8	tst.w	$C442.l
-	bmi.w	.l1C2AC
+	bra.w	.loop30
+.next4	tst.w	$C442.l
+	bmi.w	.loop28
 	move.w	#$FFFF,$C442.l
 	move.w	#$2,$C440.l
-.l1C312	tst.w	$C440.l
-	bne.w	.l1C312
-	bra.w	.l1C2AC
-.l1C320	cmpi.w	#$FFFF,$C442.l
-	beq.w	.l1C364
+.loop30	tst.w	$C440.l
+	bne.w	.loop30
+	bra.w	.loop28
+.next5	cmpi.w	#$FFFF,$C442.l
+	beq.w	.next6
 	lea.l	StrFormatting(pc),a0
 	move.w	#$213,d0
 	bsr.w	TilemapCellCmd
@@ -1218,30 +1217,30 @@ GetData_28	tst.w	$C44C.l
 	moveq	#$F,d2
 	move.w	d2,d3
 	addi.w	#$A,d0
-.l1C342	clr.w	$C446.l
-.l1C348	tst.w	$C446.l
-	beq.w	.l1C348
-	dbra	d2,.l1C342
+.loop31	clr.w	$C446.l
+.loop32	tst.w	$C446.l
+	beq.w	.loop32
+	dbra	d2,.loop31
 	move.w	d3,d2
 	bsr.w	TilemapCellCmd
 	addi.w	#$1,d0
-	dbra	d1,.l1C342
-.l1C364	bra.w	.l1C3A4
-.l1C368	move.w	#$C000,d0
+	dbra	d1,.loop31
+.next6	bra.w	.next8
+.next7	move.w	#$C000,d0
 	bsr.w	GateArrayVdpAddrCmd
 	move.w	#$B,d1
 	move.w	#$5B,d0
 	lea.l	StrWarningB(pc),a0
-.l1C37C	bsr.w	TilemapCellCmd
+.loop33	bsr.w	TilemapCellCmd
 	addi.w	#$28,d0
-	dbra	d1,.l1C37C
-.l1C388	clr.w	$C446.l
-.l1C38E	tst.w	$C446.l
-	beq.w	.l1C38E
+	dbra	d1,.loop33
+.loop34	clr.w	$C446.l
+.loop35	tst.w	$C446.l
+	beq.w	.loop35
 	bsr.w	UpdatePadStateSub
 	cmpi.b	#$20,d1
-	bne.w	.l1C388
-.l1C3A4	movem.l	(sp)+,d0-d7/a0-a2
+	bne.w	.loop34
+.next8	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 ; Sends a VDP write address through the gate-array command.
 GateArrayVdpAddrCmd	movem.l	d0-d2,-(sp)
@@ -1253,131 +1252,131 @@ GateArrayVdpAddrCmd	movem.l	d0-d2,-(sp)
 	lsr.w	#$2,d2
 	swap	d2
 	addi.l	#$40000000,d2
-.l1C3C4	btst.b	#$7,$FF800E.l
-	bne.b	.l1C3C4
+.loop	btst.b	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	d2,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C3E4	btst.b	#$6,$FF800E.l
-	beq.b	.l1C3E4
+.loop2	btst.b	#$6,$FF800E.l
+	beq.b	.loop2
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C3FE	btst.b	#$6,$FF800E.l
-	bne.b	.l1C3FE
+.loop3	btst.b	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr.b	#$7,$FF800F.l
 	move.w	#$7FF,d2
-.l1C414	btst.b	#$7,$FF800E.l
-	bne.b	.l1C414
+.loop4	btst.b	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d1,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C434	btst.b	#$6,$FF800E.l
-	beq.b	.l1C434
+.loop5	btst.b	#$6,$FF800E.l
+	beq.b	.loop5
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C44E	btst.b	#$6,$FF800E.l
-	bne.b	.l1C44E
+.loop6	btst.b	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr.b	#$7,$FF800F.l
-	dbra	d2,.l1C414
+	dbra	d2,.loop4
 	movem.l	(sp)+,d0-d2
 	rts
-GetDataSub17	movem.l	d0-d7/a0,-(sp)
+GetDataSub18	movem.l	d0-d7/a0,-(sp)
 	tst.w	$C440.l
-	beq.w	.l1C69A
-.l1C478	btst.b	#$4,$FF800E.l
-	bne.b	.l1C478
+	beq.w	.next3
+.loop	btst.b	#$4,$FF800E.l
+	bne.b	.loop
 	move.w	#$30,$FF8026.l
 	move.l	#$74000003,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C49C	btst.b	#$3,$FF800E.l
-	beq.b	.l1C49C
+.loop2	btst.b	#$3,$FF800E.l
+	beq.b	.loop2
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C4B6	btst.b	#$3,$FF800E.l
-	bne.b	.l1C4B6
+.loop3	btst.b	#$3,$FF800E.l
+	bne.b	.loop3
 	bclr.b	#$4,$FF800F.l
-.l1C4C8	btst.b	#$4,$FF800E.l
-	bne.b	.l1C4C8
+.loop4	btst.b	#$4,$FF800E.l
+	bne.b	.loop4
 	move.w	#$31,$FF8026.l
 	move.w	$C444.l,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C4EC	btst.b	#$3,$FF800E.l
-	beq.b	.l1C4EC
+.loop5	btst.b	#$3,$FF800E.l
+	beq.b	.loop5
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C506	btst.b	#$3,$FF800E.l
-	bne.b	.l1C506
+.loop6	btst.b	#$3,$FF800E.l
+	bne.b	.loop6
 	bclr.b	#$4,$FF800F.l
 	move.w	$C440.l,d0
 	add.w	d0,$C444.l
 	tst.w	$C440.l
-	bpl.w	.l1C5E2
+	bpl.w	.next
 	cmpi.w	#$0,$C444.l
-	bgt.w	.l1C69A
+	bgt.w	.next3
 	clr.w	$C444.l
-.l1C540	btst.b	#$4,$FF800E.l
-	bne.b	.l1C540
+.loop7	btst.b	#$4,$FF800E.l
+	bne.b	.loop7
 	move.w	#$30,$FF8026.l
 	move.l	#$74000003,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C564	btst.b	#$3,$FF800E.l
-	beq.b	.l1C564
+.loop8	btst.b	#$3,$FF800E.l
+	beq.b	.loop8
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C57E	btst.b	#$3,$FF800E.l
-	bne.b	.l1C57E
+.loop9	btst.b	#$3,$FF800E.l
+	bne.b	.loop9
 	bclr.b	#$4,$FF800F.l
-.l1C590	btst.b	#$4,$FF800E.l
-	bne.b	.l1C590
+.loop10	btst.b	#$4,$FF800E.l
+	bne.b	.loop10
 	move.w	#$31,$FF8026.l
 	move.w	#$0,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C5B2	btst.b	#$3,$FF800E.l
-	beq.b	.l1C5B2
+.loop11	btst.b	#$3,$FF800E.l
+	beq.b	.loop11
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C5CC	btst.b	#$3,$FF800E.l
-	bne.b	.l1C5CC
+.loop12	btst.b	#$3,$FF800E.l
+	bne.b	.loop12
 	bclr.b	#$4,$FF800F.l
-	bra.w	.l1C694
-.l1C5E2	cmpi.w	#$3B,$C444.l
-	blt.w	.l1C69A
-.l1C5EE	btst.b	#$4,$FF800E.l
-	bne.b	.l1C5EE
+	bra.w	.next2
+.next	cmpi.w	#$3B,$C444.l
+	blt.w	.next3
+.loop13	btst.b	#$4,$FF800E.l
+	bne.b	.loop13
 	move.w	#$30,$FF8026.l
 	move.l	#$74000003,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C612	btst.b	#$3,$FF800E.l
-	beq.b	.l1C612
+.loop14	btst.b	#$3,$FF800E.l
+	beq.b	.loop14
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C62C	btst.b	#$3,$FF800E.l
-	bne.b	.l1C62C
+.loop15	btst.b	#$3,$FF800E.l
+	bne.b	.loop15
 	bclr.b	#$4,$FF800F.l
-.l1C63E	btst.b	#$4,$FF800E.l
-	bne.b	.l1C63E
+.loop16	btst.b	#$4,$FF800E.l
+	bne.b	.loop16
 	move.w	#$31,$FF8026.l
 	move.w	#$3B,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C660	btst.b	#$3,$FF800E.l
-	beq.b	.l1C660
+.loop17	btst.b	#$3,$FF800E.l
+	beq.b	.loop17
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C67A	btst.b	#$3,$FF800E.l
-	bne.b	.l1C67A
+.loop18	btst.b	#$3,$FF800E.l
+	bne.b	.loop18
 	bclr.b	#$4,$FF800F.l
 	move.w	#$3B,$C444.l
-.l1C694	clr.w	$C440.l
-.l1C69A	tst.w	$C43E.l
-	bmi.w	.l1C73E
+.next2	clr.w	$C440.l
+.next3	tst.w	$C43E.l
+	bmi.w	.next4
 	cmpi.w	#$64,$C43E.l
-	beq.w	.l1C744
+	beq.w	.next5
 	subq.w	#$1,$C43E.l
-	bmi.w	.l1C73E
+	bmi.w	.next4
 	clr.l	d0
 	move.w	$C43E.l,d0
 	cmpi.w	#$18,d0
-	bgt.w	.l1C73E
+	bgt.w	.next4
 	divu.w	#$3,d0
 	swap	d0
 	asl.w	#$2,d0
@@ -1391,47 +1390,47 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
 	bsr.w	GiveWordRam
-.l1C6F4	btst.b	#$4,$FF800E.l
-	bne.b	.l1C6F4
+.loop19	btst.b	#$4,$FF800E.l
+	bne.b	.loop19
 	move.w	#$1D,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1C70E	btst.b	#$3,$FF800E.l
-	beq.b	.l1C70E
+.loop20	btst.b	#$3,$FF800E.l
+	beq.b	.loop20
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C728	btst.b	#$3,$FF800E.l
-	bne.b	.l1C728
+.loop21	btst.b	#$3,$FF800E.l
+	bne.b	.loop21
 	bclr.b	#$4,$FF800F.l
 	bsr.w	WaitDmnaSet
-.l1C73E	movem.l	(sp)+,d0-d7/a0
+.next4	movem.l	(sp)+,d0-d7/a0
 	rts
-.l1C744	movea.l	#$BBCB0,a1
-.l1C74A	btst.b	#$4,$FF800E.l
-	bne.b	.l1C74A
+.next5	movea.l	#$BBCB0,a1
+.loop22	btst.b	#$4,$FF800E.l
+	bne.b	.loop22
 	move.w	#$30,$FF8026.l
 	move.l	#$C0000000,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C76E	btst.b	#$3,$FF800E.l
-	beq.b	.l1C76E
+.loop23	btst.b	#$3,$FF800E.l
+	beq.b	.loop23
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C788	btst.b	#$3,$FF800E.l
-	bne.b	.l1C788
+.loop24	btst.b	#$3,$FF800E.l
+	bne.b	.loop24
 	bclr.b	#$4,$FF800F.l
 	moveq	#$1F,d0
-.l1C79C	btst.b	#$4,$FF800E.l
-	bne.b	.l1C79C
+.loop25	btst.b	#$4,$FF800E.l
+	bne.b	.loop25
 	move.w	#$33,$FF8026.l
 	move.l	(a1)+,$FF8028.l
 	bset.b	#$3,$FF800F.l
-.l1C7BC	btst.b	#$3,$FF800E.l
-	beq.b	.l1C7BC
+.loop26	btst.b	#$3,$FF800E.l
+	beq.b	.loop26
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1C7D6	btst.b	#$3,$FF800E.l
-	bne.b	.l1C7D6
+.loop27	btst.b	#$3,$FF800E.l
+	bne.b	.loop27
 	bclr.b	#$4,$FF800F.l
-	dbra	d0,.l1C79C
+	dbra	d0,.loop25
 	st.b	$C43E.l
 	movem.l	(sp)+,d0-d7/a0
 	rts
@@ -1451,63 +1450,63 @@ TilemapCellCmd	movem.l	d0-d2/a1/a5,-(sp)
 	lsr.w	#$2,d2
 	swap	d2
 	addi.l	#$40000000,d2
-.l1C824	btst.b	#$7,$FF800E.l
-	bne.b	.l1C824
+.loop	btst.b	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	d2,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C844	btst.b	#$6,$FF800E.l
-	beq.b	.l1C844
+.loop2	btst.b	#$6,$FF800E.l
+	beq.b	.loop2
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C85E	btst.b	#$6,$FF800E.l
-	bne.b	.l1C85E
+.loop3	btst.b	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr.b	#$7,$FF800F.l
-	bsr.w	.l3DB7A
+	bsr.w	.next
 	movem.l	(sp)+,d0-d2/a1/a5
 	rts
-.l3DB7A	move.w	$C44A.l,d0
+.next	move.w	$C44A.l,d0
 	lsr.w	#$5,d0
 	bset	#$D,d0
-.l1C886	moveq	#$0,d2
+.loop4	moveq	#$0,d2
 	move.b	(a0)+,d2
-	beq.w	.l1C90C
+	beq.w	.ex
 	cmpi.b	#$22,d2
-	beq.w	.l1C8AA
+	beq.w	.next2
 	cmpi.b	#$5F,d2
-	beq.w	.l1C8AA
+	beq.w	.next2
 	cmpi.b	#$24,d2
-	beq.w	.l1C8B2
-	bra.w	.l1C8B6
-.l1C8AA	move.b	#$20,d2
-	bra.w	.l1C8B6
-.l1C8B2	move.b	#$22,d2
-.l1C8B6	subi.b	#$20,d2
+	beq.w	.next3
+	bra.w	.next4
+.next2	move.b	#$20,d2
+	bra.w	.next4
+.next3	move.b	#$22,d2
+.next4	subi.b	#$20,d2
 	add.w	d0,d2
-.l1C8BC	btst.b	#$7,$FF800E.l
-	bne.b	.l1C8BC
+.loop5	btst.b	#$7,$FF800E.l
+	bne.b	.loop5
 	move.w	d2,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C8DC	btst.b	#$6,$FF800E.l
-	beq.b	.l1C8DC
+.loop6	btst.b	#$6,$FF800E.l
+	beq.b	.loop6
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C8F6	btst.b	#$6,$FF800E.l
-	bne.b	.l1C8F6
+.loop7	btst.b	#$6,$FF800E.l
+	bne.b	.loop7
 	bclr.b	#$7,$FF800F.l
-	bra.w	.l1C886
-.l1C90C	rts
-GetDataSub18	movem.l	d2-d3/a1-a2,-(sp)
+	bra.w	.loop4
+.ex	rts
+GetDataSub19	movem.l	d2-d3/a1-a2,-(sp)
 	cmpa.l	#$80000,a0
-	bge.w	.l1C932
+	bge.w	.next
 	move.l	d0,d3
 	lsr.w	#$1,d3
 	lea.l	$BC000.l,a2
-.l1C926	move.l	(a0)+,(a2)+
-	dbra	d3,.l1C926
+.loop	move.l	(a0)+,(a2)+
+	dbra	d3,.loop
 	lea.l	$BC000.l,a0
-.l1C932	lea.l	$C00004.l,a1
+.next	lea.l	$C00004.l,a1
 	move.l	(a0),$BBC96.l
 	move.l	d1,$BBC9A.l
 	adda.l	#$180002,a0
@@ -1542,38 +1541,38 @@ GetDataSub18	movem.l	d2-d3/a1-a2,-(sp)
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
 	jsr	$2801A.l
-.l1C9C0	btst.b	#$7,$FF800E.l
-	bne.b	.l1C9C0
+.loop2	btst.b	#$7,$FF800E.l
+	bne.b	.loop2
 	move.w	#$8,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1C9DA	btst.b	#$6,$FF800E.l
-	beq.b	.l1C9DA
+.loop3	btst.b	#$6,$FF800E.l
+	beq.b	.loop3
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1C9F4	btst.b	#$6,$FF800E.l
-	bne.b	.l1C9F4
+.loop4	btst.b	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr.b	#$7,$FF800F.l
 	jsr	$2800E.l
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
 	move.l	$6038.w,$C42E.l
 	move.l	#$27A74,$6038.w
-.l1CA22	btst.b	#$7,$FF800E.l
-	bne.b	.l1CA22
+.loop5	btst.b	#$7,$FF800E.l
+	bne.b	.loop5
 	move.w	#$2D,$FF8020.l
 	bset.b	#$6,$FF800F.l
-.l1CA3C	btst.b	#$6,$FF800E.l
-	beq.b	.l1CA3C
+.loop6	btst.b	#$6,$FF800E.l
+	beq.b	.loop6
 	bset.b	#$7,$FF800F.l
 	bclr.b	#$6,$FF800F.l
-.l1CA56	btst.b	#$6,$FF800E.l
-	bne.b	.l1CA56
+.loop7	btst.b	#$6,$FF800E.l
+	bne.b	.loop7
 	bclr.b	#$7,$FF800F.l
 	rts
 	move.l	$C42E.l,$6038.w
 	rts
 	btst.b	#$5,$FF800E.l
-	beq.w	.l3DDF2
+	beq.w	.ex
 	move.w	#$1,$C446.l
 	bset.b	#$2,$FF800F.l
 	move.l	#$27A9E,-(sp)
@@ -1585,16 +1584,16 @@ GetDataSub18	movem.l	d2-d3/a1-a2,-(sp)
 	dc.b	$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF	; ...........9....
 	dc.b	$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02	; ..f.............
 	dc.b	$00,$FF,$80,$0F	; ....
-.l3DDF2	rts
+.ex	rts
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
-GetDataSub19	movem.l	d0-d7/a0-a4/a6,-(sp)
+GetDataSub20	movem.l	d0-d7/a0-a4/a6,-(sp)
 	btst.b	#$0,$FF800F.l
-	beq.w	.l1CB1E
+	beq.w	.next
 	btst.b	#$1,$FF800E.l
-	beq.b	.l1CB1E
+	beq.b	.next
 	move.w	#$A,d7
 	jsr	$6044.w
-.l1CB1E	movem.l	(sp)+,d0-d7/a0-a4/a6
+.next	movem.l	(sp)+,d0-d7/a0-a4/a6
 	movea.l	#$FF8000,a5
 	move.w	(sp)+,sr
 	nop
@@ -1604,179 +1603,179 @@ GetDataSub19	movem.l	d0-d7/a0-a4/a6,-(sp)
 	nop
 	movea.l	(sp)+,a5
 	rts
-GetDataSub20	movem.l	d1/a0,-(sp)
-	bsr.w	.l3DFAA
+GetDataSub21	movem.l	d1/a0,-(sp)
+	bsr.w	.next3
 	move.b	d0,$2800A.l
-	bsr.w	.l3DFA2
+	bsr.w	.next2
 	move.b	d0,$2800B.l
 	movem.l	(sp)+,d1/a0
 	rts
-.l1CB56	btst.b	#$4,$FF800E.l
-	bne.b	.l1CB56
+.loop	btst.b	#$4,$FF800E.l
+	bne.b	.loop
 	move.b	#$C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CB78	btst.b	#$4,$FF800E.l
-	beq.b	.l1CB78
+.loop2	btst.b	#$4,$FF800E.l
+	beq.b	.loop2
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CB92	btst.b	#$3,$FF800E.l
-	bne.b	.l1CB92
+.loop3	btst.b	#$3,$FF800E.l
+	bne.b	.loop3
 	bclr.b	#$4,$FF800F.l
-	bra.w	.l3DF9A
-.l1CBA8	btst.b	#$4,$FF800E.l
-	bne.b	.l1CBA8
+	bra.w	.next
+.loop4	btst.b	#$4,$FF800E.l
+	bne.b	.loop4
 	move.b	#$1C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CBCA	btst.b	#$4,$FF800E.l
-	beq.b	.l1CBCA
+.loop5	btst.b	#$4,$FF800E.l
+	beq.b	.loop5
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CBE4	btst.b	#$3,$FF800E.l
-	bne.b	.l1CBE4
+.loop6	btst.b	#$3,$FF800E.l
+	bne.b	.loop6
 	bclr.b	#$4,$FF800F.l
-	bra.w	.l3DF9A
-.l1CBFA	btst.b	#$4,$FF800E.l
-	bne.b	.l1CBFA
+	bra.w	.next
+.loop7	btst.b	#$4,$FF800E.l
+	bne.b	.loop7
 	move.b	#$2C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CC1C	btst.b	#$4,$FF800E.l
-	beq.b	.l1CC1C
+.loop8	btst.b	#$4,$FF800E.l
+	beq.b	.loop8
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CC36	btst.b	#$3,$FF800E.l
-	bne.b	.l1CC36
+.loop9	btst.b	#$3,$FF800E.l
+	bne.b	.loop9
 	bclr.b	#$4,$FF800F.l
-	bra.w	.l3DF9A
+	bra.w	.next
 	dc.b	$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$13,$FC,$00,$3C,$00,$FF	; .9......f....<..
 	dc.b	$80,$28,$33,$FC,$00,$35,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF	; .(3..5...&......
 	dc.b	$80,$0F,$08,$39,$00,$04,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04	; ...9......g.....
 	dc.b	$00,$FF,$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03	; .............9..
 	dc.b	$00,$FF,$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F	; ....f.........
-.l3DF9A	movem.l	d1/a0,-(sp)
-	bra.w	.l3DFAE
-.l3DFA2	movem.l	d1/a0,-(sp)
-	bra.w	.l3E0E8
-.l3DFAA	movem.l	d1/a0,-(sp)
-.l3DFAE	moveq	#$0,d0
-.l1CCB0	btst.b	#$4,$FF800E.l
-	bne.b	.l1CCB0
+.next	movem.l	d1/a0,-(sp)
+	bra.w	.next4
+.next2	movem.l	d1/a0,-(sp)
+	bra.w	.next5
+.next3	movem.l	d1/a0,-(sp)
+.next4	moveq	#$0,d0
+.loop10	btst.b	#$4,$FF800E.l
+	bne.b	.loop10
 	move.b	#$0,$FF8028.l
 	move.w	#$36,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CCD2	btst.b	#$3,$FF800E.l
-	beq.b	.l1CCD2
+.loop11	btst.b	#$3,$FF800E.l
+	beq.b	.loop11
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CCEC	btst.b	#$3,$FF800E.l
-	bne.b	.l1CCEC
+.loop12	btst.b	#$3,$FF800E.l
+	bne.b	.loop12
 	bclr.b	#$4,$FF800F.l
-.l1CCFE	btst.b	#$4,$FF800E.l
-	bne.b	.l1CCFE
+.loop13	btst.b	#$4,$FF800E.l
+	bne.b	.loop13
 	move.w	#$37,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CD18	btst.b	#$3,$FF800E.l
-	beq.b	.l1CD18
+.loop14	btst.b	#$3,$FF800E.l
+	beq.b	.loop14
 	move.b	$FF8018.l,d0
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CD38	btst.b	#$3,$FF800E.l
-	bne.b	.l1CD38
+.loop15	btst.b	#$3,$FF800E.l
+	bne.b	.loop15
 	bclr.b	#$4,$FF800F.l
-.l1CD4A	btst.b	#$4,$FF800E.l
-	bne.b	.l1CD4A
+.loop16	btst.b	#$4,$FF800E.l
+	bne.b	.loop16
 	move.b	#$40,$FF8028.l
 	move.w	#$36,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CD6C	btst.b	#$3,$FF800E.l
-	beq.b	.l1CD6C
+.loop17	btst.b	#$3,$FF800E.l
+	beq.b	.loop17
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CD86	btst.b	#$3,$FF800E.l
-	bne.b	.l1CD86
+.loop18	btst.b	#$3,$FF800E.l
+	bne.b	.loop18
 	bclr.b	#$4,$FF800F.l
-.l1CD98	btst.b	#$4,$FF800E.l
-	bne.b	.l1CD98
+.loop19	btst.b	#$4,$FF800E.l
+	bne.b	.loop19
 	move.w	#$37,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CDB2	btst.b	#$3,$FF800E.l
-	beq.b	.l1CDB2
+.loop20	btst.b	#$3,$FF800E.l
+	beq.b	.loop20
 	move.b	$FF8018.l,d1
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CDD2	btst.b	#$3,$FF800E.l
-	bne.b	.l1CDD2
+.loop21	btst.b	#$3,$FF800E.l
+	bne.b	.loop21
 	bclr.b	#$4,$FF800F.l
 	dc.w	$6000,$013C
-.l3E0E8	moveq	#$0,d0
-.l1CDEA	btst.b	#$4,$FF800E.l
-	bne.b	.l1CDEA
+.next5	moveq	#$0,d0
+.loop22	btst.b	#$4,$FF800E.l
+	bne.b	.loop22
 	move.b	#$0,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CE0C	btst.b	#$4,$FF800E.l
-	beq.b	.l1CE0C
+.loop23	btst.b	#$4,$FF800E.l
+	beq.b	.loop23
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CE26	btst.b	#$3,$FF800E.l
-	bne.b	.l1CE26
+.loop24	btst.b	#$3,$FF800E.l
+	bne.b	.loop24
 	bclr.b	#$4,$FF800F.l
-.l1CE38	btst.b	#$4,$FF800E.l
-	bne.b	.l1CE38
+.loop25	btst.b	#$4,$FF800E.l
+	bne.b	.loop25
 	move.w	#$38,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CE52	btst.b	#$3,$FF800E.l
-	beq.b	.l1CE52
+.loop26	btst.b	#$3,$FF800E.l
+	beq.b	.loop26
 	move.b	$FF8018.l,d0
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CE72	btst.b	#$3,$FF800E.l
-	bne.b	.l1CE72
+.loop27	btst.b	#$3,$FF800E.l
+	bne.b	.loop27
 	bclr.b	#$4,$FF800F.l
-.l1CE84	btst.b	#$4,$FF800E.l
-	bne.b	.l1CE84
+.loop28	btst.b	#$4,$FF800E.l
+	bne.b	.loop28
 	move.b	#$40,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CEA6	btst.b	#$4,$FF800E.l
-	beq.b	.l1CEA6
+.loop29	btst.b	#$4,$FF800E.l
+	beq.b	.loop29
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CEC0	btst.b	#$3,$FF800E.l
-	bne.b	.l1CEC0
+.loop30	btst.b	#$3,$FF800E.l
+	bne.b	.loop30
 	bclr.b	#$4,$FF800F.l
-.l1CED2	btst.b	#$4,$FF800E.l
-	bne.b	.l1CED2
+.loop31	btst.b	#$4,$FF800E.l
+	bne.b	.loop31
 	move.w	#$38,$FF8026.l
 	bset.b	#$3,$FF800F.l
-.l1CEEC	btst.b	#$3,$FF800E.l
-	beq.b	.l1CEEC
+.loop32	btst.b	#$3,$FF800E.l
+	beq.b	.loop32
 	move.b	$FF8018.l,d1
 	bset.b	#$4,$FF800F.l
 	bclr.b	#$3,$FF800F.l
-.l1CF0C	btst.b	#$3,$FF800E.l
-	bne.b	.l1CF0C
+.loop33	btst.b	#$3,$FF800E.l
+	bne.b	.loop33
 	bclr.b	#$4,$FF800F.l
-	bra.w	.l1CF22
-.l1CF22	asl.b	#$2,d0
+	bra.w	.next6
+.next6	asl.b	#$2,d0
 	andi.b	#$C0,d0
 	andi.b	#$3F,d1
 	or.b	d1,d0
 	not.b	d0
 	not.b	d1
 	andi.w	#$F,d1
-	lea.l	.l3E24A(pc),a0
+	lea.l	.next7(pc),a0
 	andi.b	#$F0,d0
 	or.b	(a0,d1.w),d0
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-.l3E24A	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
+.next7	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
 ; Reads the pad byte at $2800A and computes newly pressed buttons.
 UpdatePadStateSub	move.b	$2800A.l,d0
-	bsr.w	.l3E2D2
+	bsr.w	.next
 	move.w	$28002.l,d2
 	move.w	d1,$28002.l
 	move.w	d1,d3
@@ -1784,7 +1783,7 @@ UpdatePadStateSub	move.b	$2800A.l,d0
 	and.w	d2,d1
 	rts
 	move.b	$2800B.l,d0
-	bsr.w	.l3E2D2
+	bsr.w	.next
 	move.w	$28004.l,d2
 	move.w	d1,$28004.l
 	move.w	d1,d3
@@ -1792,7 +1791,7 @@ UpdatePadStateSub	move.b	$2800A.l,d0
 	and.w	d2,d1
 	rts
 	move.b	$2800C.l,d0
-	bsr.w	.l3E2D2
+	bsr.w	.next
 	move.w	$28006.l,d2
 	move.w	d1,$28006.l
 	move.w	d1,d3
@@ -1800,14 +1799,14 @@ UpdatePadStateSub	move.b	$2800A.l,d0
 	and.w	d2,d1
 	rts
 	move.b	$2800D.l,d0
-	bsr.w	.l3E2D2
+	bsr.w	.next
 	move.w	$28008.l,d2
 	move.w	d1,$28008.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-.l3E2D2	not.b	d0
+.next	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
@@ -1826,17 +1825,17 @@ WaitDmnaSet	btst.b	#$1,$FF8003.l
 	rts
 ; Sets the word-RAM request bit and waits for the grant.
 GiveWordRam	bset.b	#$0,$FF8003.l
-.l1D022	btst.b	#$1,$FF8003.l
-	bne.b	.l1D022
+.loop	btst.b	#$1,$FF8003.l
+	bne.b	.loop
 	rts
-.l1D02E	btst.b	#$7,$FF800E.l
-	bne.b	.l1D02E
-.l1D038	btst.b	#$6,$FF800E.l
-	beq.b	.l1D038
+.loop2	btst.b	#$7,$FF800E.l
+	bne.b	.loop2
+.loop3	btst.b	#$6,$FF800E.l
+	beq.b	.loop3
 	bset.b	#$6,$FF800F.l
 	bset.b	#$7,$FF800F.l
-.l1D052	btst.b	#$6,$FF800E.l
-	bne.b	.l1D052
+.loop4	btst.b	#$6,$FF800E.l
+	bne.b	.loop4
 	bclr.b	#$6,$FF800F.l
 	bclr.b	#$7,$FF800F.l
 	rts
@@ -1844,24 +1843,24 @@ GiveWordRam	bset.b	#$0,$FF8003.l
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$0D,$13,$FC,$00,$00,$00,$FF,$00,$0B	; ................
 	dc.b	$13,$FC,$00,$00,$00,$FF,$00,$09,$51,$CA,$FF,$DA,$13,$FC,$00,$40	; ........Q......@
 	dc.b	$00,$FF,$00,$0F,$13,$FC,$00,$80,$00,$FF,$00,$0F,$34,$3C,$00,$0F	; ............4<..
-GetDataSub21	move.w	#$FFF,d0
+.loop5	move.w	#$FFF,d0
 	move.l	#$0,d1
 	movea.l	#$FF2001,a0
 	move.b	d2,$FF000D.l
-.l1D0C4	move.b	d1,$0(a0)
+.loop6	move.b	d1,$0(a0)
 	adda.w	#$2,a0
-	dbra	d0,.l1D0C4
-	dbra	d2,GetDataSub21
+	dbra	d0,.loop6
+	dbra	d2,.loop5
 	move.b	#$FF,$FF0011.l
 	rts
-GetDataSub22	movem.l	d0-d1/a0-a1,-(sp)
-.l1D0E2	move.w	#$80,d0
+GetDataSub23	movem.l	d0-d1/a0-a1,-(sp)
+.loop	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.b	.l1D0E2
+	bcs.b	.loop
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-.l1D0F2	bclr.b	#$2,$FF8003.l
-	bne.b	.l1D0F2
+.loop2	bclr.b	#$2,$FF8003.l
+	bne.b	.loop2
 	rts
 ; Warning screen text.
 StrWarningA	dc.b	'    WARNING!!   '	;     WARNING!!   

@@ -1,100 +1,101 @@
-; Zero-filled work storage (4 bytes).
-Long7	dc.b	$00,$00,$00,$00	; ....
+; The BIOS vector at $5F90, saved while the second interrupt hook is installed.
+SavedBiosVector5F90	dc.b	$00,$00,$00,$00	; ....
 ; Saves the vector at $5F90 and installs the second handler.
-InstallIrqHook2	lea.l	Long7(pc),a0
+InstallIrqHook2	lea.l	SavedBiosVector5F90(pc),a0
 	move.l	$5F90.w,(a0)
-	lea.l	RestoreBios_116(pc),a0
+	lea.l	CdIrqHook2(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F90.w
 	move.w	(sp)+,sr
 	rts
 ; Restores the vector at $5F90.
-RemoveIrqHook2	movea.l	Long7(pc),a0
+RemoveIrqHook2	movea.l	SavedBiosVector5F90(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F90.w
 	move.w	(sp)+,sr
 	rts
-; Zero-filled work storage (4 bytes).
-Long8	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_116	movem.l	d0-d3/a0-a2/a5,-(sp)
-	pea.l	.l413E(pc)
+; Four bytes read by the CD interrupt hook (BCD minute/second/frame header).
+CdHeaderBuf	dc.b	$00,$00,$00,$00	; ....
+; Second CD interrupt hook: tracks the sector headers of the running read and decides when it is complete.
+CdIrqHook2	movem.l	d0-d3/a0-a2/a5,-(sp)
+	pea.l	.next(pc)
 	move.w	sr,-(sp)
-	movea.l	Long7(pc),a2
+	movea.l	SavedBiosVector5F90(pc),a2
 	jmp	(a2)
-.l413E	movea.l	#$FF8000,a5
-	move.l	Long4(pc),d3
-	beq.w	.l421C
-	bgt.b	.l41C6
+.next	movea.l	#$FF8000,a5
+	move.l	CdReadSectorsLeft(pc),d3
+	beq.w	.loop2
+	bgt.b	.next5
 	andi.w	#$F8FF,$4(a5)
 	ori.w	#$300,$4(a5)
 	move.w	#$8B,d0
 	jsr	$5F22.w
-	bcs.w	.l421C
-	move.l	Long5(pc),d0
-	bne.b	.l4176
+	bcs.w	.loop2
+	move.l	CdReadDest(pc),d0
+	bne.b	.next2
 	bsr.w	PeekSectDst
 	tst.l	d0
-	beq.w	.l4222
-.l4176	movea.l	d0,a0
-	lea.l	Long8(pc),a1
+	beq.w	.next8
+.next2	movea.l	d0,a0
+	lea.l	CdHeaderBuf(pc),a1
 	move.w	#$8C,d0
 	jsr	$5F22.w
-	bcs.w	.l421C
+	bcs.w	.loop2
 	move.w	#$8D,d0
 	jsr	$5F22.w
-	move.l	Long8(pc),d0
+	move.l	CdHeaderBuf(pc),d0
 	andi.l	#$FFFFFF00,d0
 	bsr.w	CdMsfBcdToBin
-	move.l	Buf8_10(pc),d1
+	move.l	CdReadLastMsf(pc),d1
 	cmp.l	d0,d1
-	bne.b	.l421C
-	lea.l	Long5(pc),a1
+	bne.b	.loop2
+	lea.l	CdReadDest(pc),a1
 	tst.l	(a1)
-	beq.b	.l41B6
+	beq.b	.next3
 	addi.l	#$800,(a1)
-	bra.b	.l41BA
-.l41B6	bsr.w	GetSectDst
-.l41BA	neg.l	d3
+	bra.b	.next4
+.next3	bsr.w	GetSectDst
+.next4	neg.l	d3
 	subq.w	#$1,d3
-	lea.l	Long4(pc),a1
+	lea.l	CdReadSectorsLeft(pc),a1
 	move.l	d3,(a1)
-	bra.b	.l421C
-.l41C6	movea.l	#$FF8000,a5
+	bra.b	.loop2
+.next5	movea.l	#$FF8000,a5
 	andi.w	#$F8FF,$4(a5)
 	ori.w	#$500,$4(a5)
-	move.l	Long5(pc),d0
-	bne.b	.l41E6
+	move.l	CdReadDest(pc),d0
+	bne.b	.next6
 	bsr.w	GetSectDst
 	tst.l	d0
-	beq.b	.l4222
-.l41E6	lsr.l	#$3,d0
+	beq.b	.next8
+.next6	lsr.l	#$3,d0
 	move.w	d0,$A(a5)
 	move.w	#$8B,d0
 	jsr	$5F22.w
-	bcs.b	.l422A
-.l41F6	btst.b	#$7,$4(a5)
-	beq.b	.l41F6
-	bcs.b	.l422A
+	bcs.b	.next9
+.loop	btst.b	#$7,$4(a5)
+	beq.b	.loop
+	bcs.b	.next9
 	move.w	#$8D,d0
 	jsr	$5F22.w
-	lea.l	Long5(pc),a1
+	lea.l	CdReadDest(pc),a1
 	tst.l	(a1)
-	beq.b	.l4216
+	beq.b	.next7
 	addi.l	#$800,(a1)
-.l4216	lea.l	Long4(pc),a1
+.next7	lea.l	CdReadSectorsLeft(pc),a1
 	subq.l	#$1,(a1)
-.l421C	movem.l	(sp)+,d0-d3/a0-a2/a5
+.loop2	movem.l	(sp)+,d0-d3/a0-a2/a5
 	rte
-.l4222	lea.l	Long4(pc),a1
+.next8	lea.l	CdReadSectorsLeft(pc),a1
 	clr.l	(a1)
-	bra.b	.l421C
-.l422A	lea.l	BufA8_1(pc),a1
+	bra.b	.loop2
+.next9	lea.l	CdReadState(pc),a1
 	move.l	#$FFFFFFFF,(a1)
-	bra.b	.l421C
+	bra.b	.loop2
 ; Clears a flag and calls CD BIOS function 8.
-CdBiosCall8	lea.l	Long4(pc),a1
+CdBiosCall8	lea.l	CdReadSectorsLeft(pc),a1
 	clr.l	(a1)
 	move.w	#$8,d0
 	jsr	$5F22.w
@@ -103,12 +104,12 @@ CdBiosCall8	lea.l	Long4(pc),a1
 CdBiosReadSequence	link	a6,#$FFFC
 	movem.l	d1-d7/a0-a5,-(sp)
 	movea.l	#$FF8000,a5
-	lea.l	BufA8_1(pc),a1
+	lea.l	CdReadState(pc),a1
 	clr.l	(a1)
 	moveq	#$5,d4
 	moveq	#-1,d5
 	subq.l	#$1,d4
-	beq.b	.l4298
+	beq.b	.next
 	moveq	#$0,d0
 	move.w	#$96,d0
 	jsr	$5F22.w
@@ -117,15 +118,15 @@ CdBiosReadSequence	link	a6,#$FFFC
 	lea.l	$8(a6),a0
 	move.w	#$17,d0
 	jsr	$5F22.w
-	lea.l	Long5(pc),a1
+	lea.l	CdReadDest(pc),a1
 	move.l	$10(a6),(a1)
-	lea.l	Long4(pc),a1
+	lea.l	CdReadSectorsLeft(pc),a1
 	neg.l	d2
 	move.l	d2,(a1)
-	lea.l	Buf8_10(pc),a1
+	lea.l	CdReadLastMsf(pc),a1
 	move.l	d3,(a1)
 	moveq	#$0,d5
-.l4298	move.l	d5,d0
+.next	move.l	d5,d0
 	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	rts
@@ -168,11 +169,11 @@ Wait	link	a6,#$0
 	move.l	$8(a6),d6
 	jsr	GetTicks(pc)
 	move.l	d0,d7
-.l4318	jsr	GetTicks(pc)
+.loop	jsr	GetTicks(pc)
 	move.l	d7,d1
 	add.l	d6,d1
 	cmp.l	d0,d1
-	bgt.b	.l4318
+	bgt.b	.loop
 	movem.l	-$8(a6),d6-d7
 	unlk	a6
 	rts

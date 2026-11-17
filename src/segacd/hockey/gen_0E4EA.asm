@@ -8,14 +8,281 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	adda.w	#$2,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0E508.bin
+L29508	dc.w	$0006,$202E
+	move.l	d0,d0
+	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d7/a0,-(sp)
+	movea.l	$47D24.l,a0
+	move.w	#$2,d7
+	jsr	$6044.w
+	movem.l	(sp)+,d7/a0
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	btst.b	#$5,$FF800F.l
+	beq.b	.next
+	move.w	#$1,-(a6)
+	bra.b	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr.b	#$5,$FF800F.l
+	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	movem.l	d0-d2/d7/a0-a1,-(sp)
+	move.w	#$1,d7
+	move.w	#$4,d0
+	jsr	$6044.w
+	move.l	a0,$47D8C.l
+	movem.l	(sp)+,d0-d2/d7/a0-a1
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	tst.w	(a6)+
+	beq.b	.next3
+	bset.b	#$5,$FF800F.l
+	bra.b	.next4
+.next3	bclr.b	#$5,$FF800F.l
+.next4	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	move.w	#$2,d0
+	jsr	$5F22.w
+	move.w	#$2,d0
+	jsr	$5F22.w
+.loop	move.w	#$80,d0
+	jsr	$5F22.w
+	bcs.w	.loop
+.loop2	move.w	#$81,d0
+	jsr	$5F22.w
+	move.w	(a0),d2
+	andi.w	#$FF00,d2
+	cmpi.w	#$0,d2
+	bne.s	.loop2
+	move.w	#$5,$19364.l
+	move.w	#$13,d0
+	lea.l	$19364.l,a0
+	jsr	$5F22.w
+	jsr	$376D4.l
+	clr.w	$1A43A.l
+	moveq	#$0,d0
+	moveq	#$1C,d1
+	jsr	$2E728.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
+L295FC	move.w	#$8,d0
+	move.w	#$8,d1
+	jsr	$38CA0.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BE,$01,$13,$00	; ......
+L29616	move.w	#$8,d0
+	move.w	#$8,d1
+	jsr	$38CA0.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
+L29630	movea.l	$47D8C.l,a0
+	move.w	$17FB0.l,d0
+	asl.w	#$2,d0
+	movea.l	(a0,d0.w),a0
+	movea.l	a0,a1
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
+	asl.w	#$3,d0
+	movea.l	#$2AF56,a0
+	subi.w	#$40,d0
+	adda.w	d0,a0
+	adda.l	(a2)+,a1
+	clr.l	d1
+	clr.l	d0
+	moveq	#$6,d2
+	move.w	#$6,d3
+	moveq	#$4,d5
+	jsr	$387E2.l
+	movea.l	#$BBCF0,a0
+	movea.l	#$BBD10,a1
+	move.w	#$7,d0
+.loop	move.l	(a0)+,(a1)+
+	dbra	d0,.loop
+	jsr	$38F6E.l
+	dc.b	$00,$06,$8E,$02,$14,$00	; ......
+L2968C	movea.l	$47D8C.l,a0
+	move.w	$17FAE.l,d0
+	asl.w	#$2,d0
+	movea.l	(a0,d0.w),a0
+	movea.l	a0,a1
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
+	asl.w	#$3,d0
+	subi.w	#$40,d0
+	movea.l	#$2AF56,a0
+	adda.w	d0,a0
+	adda.l	(a2)+,a1
+	clr.w	d1
+	clr.w	d0
+	moveq	#$6,d2
+	move.w	#$6,d3
+	moveq	#$4,d5
+	jsr	$387E2.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BD,$04,$01,$00	; ......
+L296D2	moveq	#$20,d0
+	moveq	#$6,d1
+	jsr	$38CA0.l
+	jsr	$39258.l
+	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
+	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
+L296FA	btst.b	#$1,$17F7A.l
+	beq.w	L2974E
+	jsr	$38F6E.l
+	dc.b	$00,$1C,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$1A	; .....1...2...3..
+	dc.b	$09,$4F,$54,$BE,$20,$09,$54,$6F,$74,$61,$6C,$00	; .OT. .Total.
+L29728	jsr	$38F6E.l
+	dc.b	$00,$1C,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$1A	; .....<...<...<..
+	dc.b	$0A,$3C,$3C,$BE,$20,$0A,$3C,$3C,$3C,$3C,$3C,$00	; .<<. .<<<<<.
+L2974A	bra.w	L29786
+L2974E	jsr	$38F6E.l
+	dc.b	$00,$16,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$20	; .....1...2...3. 
+	dc.b	$09,$54,$6F,$74,$61,$6C	; .Total
+L2976A	jsr	$38F6E.l
+	dc.b	$00,$16,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$20	; .....<...<...<. 
+	dc.b	$0A,$3C,$3C,$3C,$3C,$3C	; .<<<<<
+L29786	bsr.w	L298BA
+	bsr.w	L29904
+	move.w	#$18,$18D62.l
+.loop	jsr	$2EDE2.l
+	btst	#$7,d1
+	bne.w	.next3
+	btst	#$2,d1
+	bne.w	.next2
+	btst	#$3,d1
+	bne.w	.next
+	bra.w	.loop
+.next	tst.w	$1A43A.l
+	bne.w	.loop
+	st.b	$1A43A.l
+	bsr.w	L298BA
+	bsr.w	L29904
+	bra.w	.loop
+.next2	tst.w	$1A43A.l
+	beq.w	.loop
+	clr.w	$1A43A.l
+	bsr.w	L298BA
+	bsr.w	L29904
+	bra.w	.loop
+.next3	movem.l	(sp)+,d0-d7/a0-a6
+	movem.l	d7/a0,-(sp)
+	movea.l	$47D8C.l,a0
+	move.w	#$2,d7
+	jsr	$6044.w
+	movem.l	(sp)+,d7/a0
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	btst.b	#$5,$FF800F.l
+	beq.b	.next4
+	move.w	#$1,-(a6)
+	bra.b	.next5
+.next4	move.w	#$0,-(a6)
+.next5	bclr.b	#$5,$FF800F.l
+	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	movem.l	d0-d2/d7/a0-a1,-(sp)
+	move.w	#$1,d7
+	move.w	#$2,d0
+	jsr	$6044.w
+	move.l	a0,$47D24.l
+	movem.l	(sp)+,d0-d2/d7/a0-a1
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	tst.w	(a6)+
+	beq.b	.next6
+	bset.b	#$5,$FF800F.l
+	bra.b	.next7
+.next6	bclr.b	#$5,$FF800F.l
+.next7	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	move.w	#$2,d0
+	jsr	$5F22.w
+.loop2	move.w	#$80,d0
+	jsr	$5F22.w
+	bcs.w	.loop2
+.loop3	move.w	#$81,d0
+	jsr	$5F22.w
+	move.w	(a0),d2
+	andi.w	#$FF00,d2
+	cmpi.w	#$0,d2
+	bne.s	.loop3
+	move.w	#$5,$19364.l
+	move.w	#$13,d0
+	lea.l	$19364.l,a0
+	jsr	$5F22.w
+	jmp	$2E980.l
+L298BA	tst.w	$1A43A.l
+	beq.w	L298E4
+	jsr	$38F6E.l
+	dc.b	$00,$18,$BE,$12,$07,$53,$68,$6F,$74,$73,$BE,$0F,$1A,$5B,$20,$46	; .....Shots...[ F
+	dc.b	$6F,$72,$20,$47,$6F,$61,$6C,$73	; or Goals
+L298E2	rts
+L298E4	jsr	$38F6E.l
+	dc.b	$00,$18,$BE,$12,$07,$47,$6F,$61,$6C,$73,$BE,$0F,$1A,$46,$6F,$72	; .....Goals...For
+	dc.b	$20,$53,$68,$6F,$74,$73,$20,$5D	;  Shots ]
+L29902	rts
+L29904	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BE,$00,$00,$00	; ......
+L29914	movea.l	#$186B2,a2
+	move.w	#$E,$18D5A.l
+	bsr.w	L2993E
+	movea.l	#$1834C,a2
+	move.w	#$16,$18D5A.l
+	bsr.w	L2993E
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+L2993E	lea.l	$344(a2),a0
+	tst.w	$1A43A.l
+	beq.w	.next
+	lea.l	$34C(a2),a0
+.next	clr.w	$1A44A.l
+	move.w	#$B,$18D58.l
+	bsr.w	L299F6
+	cmpi.w	#$1,$180E4.l
+	blt.w	.next2
+	move.w	#$10,$18D58.l
+	bsr.w	L299F6
+	cmpi.w	#$2,$180E4.l
+	blt.w	.next2
+	move.w	#$15,$18D58.l
+	bsr.w	L299F6
+	cmpi.w	#$3,$180E4.l
+	blt.w	.next2
+	btst.b	#$1,$17F7A.l
+	beq.w	.next2
+	move.w	#$1A,$18D58.l
+	bsr.w	L299F6
+.next2	move.w	#$21,$18D58.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
+L299CA	subi.w	#$3,$18D58.l
+	move.w	$1A44A.l,d0
+	move.w	#$2,d1
+	cmpi.w	#$64,d0
+	blt.w	.next
+	move.w	#$3,d1
+.next	jsr	$3919A.l
+	jsr	$38F80.l
+	rts
+L299F6	move.w	(a0)+,d0
+	add.w	d0,$1A44A.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
+L29A0A	subi.w	#$3,$18D58.l
+	move.w	#$2,d1
+	cmpi.w	#$64,d0
+	blt.w	.next
+	move.w	#$3,d1
+.next	jsr	$3919A.l
+	jmp	$38F80.l
 StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	
 	
 	moveq	#$9,d0
 	moveq	#$1A,d1
-	jsr	(CrowdMeterScreenSub1).l
+	jsr	(CrowdMeterFadeIn).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
@@ -24,10 +291,10 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Game  Statistics',CC_Font3Pri,$7,$1
 	move.w	#$2C,d0
-	jsr	(PutTeamBlockSub1).l
+	jsr	(PutTeamBlockDraw).l
 	addi.w	#$4,(printx).l
 	clr.w	d0
-	jsr	(PutTeamBlockSub1).l
+	jsr	(PutTeamBlockDraw).l
 	clr.w	(scoutcolumn).l
 	clr.w	(VertLineScrolling).l
 	clr.w	(PlayerScrollCtr).l
@@ -36,9 +303,9 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bne.w	.0
 	move.w	#$30,(matchupvis).l
 .0	bsr.w	DisplayStats
-	bsr.w	StatScrollRowEnd_2
+	bsr.w	StatScrollHeader
 .loop	jsr	(MenuWaitVblank).l
-	jsr	(GetPlayerCountSub1).l
+	jsr	(ReadActiveJoypad).l
 	btst	#$7,d3
 	beq.w	.1
 	jmp	(CrowdMeterScreenSub2).l
@@ -51,7 +318,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	beq.w	.3
 .2	move.w	d0,(PlayerScrollCtr).l
 .3	bsr.w	.scroll
-	bsr.w	StatScrollRowEnd_2
+	bsr.w	StatScrollHeader
 	bra.w	.loop
 .scroll	move.w	(PlayerScrollCtr).l,d0
 	beq.w	rtsStatTables
@@ -65,43 +332,44 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bne.w	.5
 	clr.w	(PlayerScrollCtr).l
 .5	andi.w	#$F,d1
-	bne.w	StatsReport_1
+	bne.w	StatsReportBlitSetup
 	move.w	d0,-(sp)
 	cmpi.w	#$E,d0
 	bne.w	.6
 	bsr.w	StatScrollRow
 .6	move.w	(sp)+,d0
 	cmpi.w	#$2,d0
-	bne.w	StatsReport_1
+	bne.w	StatsReportBlitSetup
 	bsr.w	StatScrollRowEnd
-StatsReport_1	move.w	(disflags).l,-(sp)
+; Sets up the VDP DMA write for the stats report.
+StatsReportBlitSetup	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.lEB72	btst	#$7,$FF800E.l
-	bne.b	.lEB72
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.l	#$40020010,$FF8022.l
 	move.w	#$B,$FF8020.l
 	bset	#$6,$FF800F.l
-.lEB96	btst	#$6,$FF800E.l
-	beq.b	.lEB96
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lEBB0	btst	#$6,$FF800E.l
-	bne.b	.lEBB0
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	move.w	#$FFB0,d0
 	add.w	(VertLineScrolling).l,d0
-.lEBCC	btst	#$7,$FF800E.l
-	bne.b	.lEBCC
+.loop4	btst	#$7,$FF800E.l
+	bne.b	.loop4
 	move.w	d0,$FF8022.l
 	move.w	#$D,$FF8020.l
 	bset	#$6,$FF800F.l
-.lEBEC	btst	#$6,$FF800E.l
-	beq.b	.lEBEC
+.loop5	btst	#$6,$FF800E.l
+	beq.b	.loop5
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.lEC06	btst	#$6,$FF800E.l
-	bne.b	.lEC06
+.loop6	btst	#$6,$FF800E.l
+	bne.b	.loop6
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
@@ -113,25 +381,26 @@ StatScrollRowEnd	move.w	(VertLineScrolling).l,d3
 	addi.w	#$6,d3
 	bra.w	StatScrollRowEnd_1
 StatScrollRowEnd_1	rts
-StatScrollRowEnd_2	movem.l	d0-d7/a0-a6,-(sp)
+; Prints the stats scroll header.
+StatScrollHeader	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetFont,$1
 	tst.w	(VertLineScrolling).l
-	beq.w	.lEC6A
+	beq.w	.next
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$8,CC_SetFont,$1,'{'
-	bra.w	.lEC7A
-.lEC6A	jsr	(printsmallz).l
+	bra.w	.next2
+.next	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$8,CC_SetFont,$1,' '
-.lEC7A	move.w	(matchupvis).l,d0
+.next2	move.w	(matchupvis).l,d0
 	cmp.w	(VertLineScrolling).l,d0
-	beq.w	.lEC9E
+	beq.w	.next3
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$1A,CC_SetFont,$1,'}'
-	bra.w	.lECAE
-.lEC9E	jsr	(printsmallz).l
+	bra.w	.next4
+.next3	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$26,$1A,CC_SetFont,$1,' '
-.lECAE	jsr	(printsmallz).l
+.next4	jsr	(printsmallz).l
 	String	CC_SetFont
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -142,12 +411,12 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$7
 	move.w	#$2C,d0
-	jsr	(PutTeamBlockSub1).l
+	jsr	(PutTeamBlockDraw).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$1A,$7
 	moveq	#$0,d0
-	jsr	(PutTeamBlockSub1).l
-	bsr.w	StatsReport_1
+	jsr	(PutTeamBlockDraw).l
+	bsr.w	StatsReportBlitSetup
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$E,d6
@@ -190,32 +459,32 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	divu.w	d1,d0
 .0	jsr	(PushNumber).l
 	jsr	(appstring).l
-	jsr	(PushNumberWidthSub1).l
+	jsr	(PushNumberWidthString).l
 	String	'%'
 	bra.w	.6
 .1	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
 	cmpi.w	#$354,(a0)
 	bne.w	.2
-	bsr.w	.lEE50
+	bsr.w	.next2
 	bra.w	.4
 .2	cmpi.w	#$A,(a0)
 	beq.w	.3
-	bsr.w	.lEE4A
+	bsr.w	.next
 .3	cmpi.w	#$A,(a0)
 	bne.w	.4
-	bsr.w	.lEE50
+	bsr.w	.next2
 .4	jsr	(appstring).l
 	move.w	$2(a0),d0
 	bmi.w	.6
-	jsr	(PushNumberWidthSub1).l
+	jsr	(PushNumberWidthString).l
 	String	'/'
 	move.w	(a2,d0.w),d0
 	jsr	(PushNumber).l
 	jsr	(appstring).l
 	cmpi.w	#$14,(a0)
 	bne.w	.6
-	jsr	(PushNumberWidthSub1).l
+	jsr	(PushNumberWidthString).l
 	String	' ('
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
@@ -226,15 +495,15 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	divu.w	d1,d0
 .5	jsr	(PushNumber).l
 	jsr	(appstring).l
-	jsr	(PushNumberWidthSub1).l
+	jsr	(PushNumberWidthString).l
 	String	'%)'
 .6	movea.l	a3,a1
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	jmp	(print).l
-.lEE4A	jmp	(PushNumber).l
-.lEE50	jmp	(PushTime).l
+.next	jmp	(PushNumber).l
+.next2	jmp	(PushTime).l
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0EE56.bin
 rtsStatTables
 	rts
@@ -288,12 +557,12 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	cmp.w	$17FA8.l,d0
 	bne.w	.0
 	eori.w	#$1,$18C0E.l
-	bra.w	.lF0D4
+	bra.w	.next
 .0	btst	#$1,$17F6A.l
-	beq.w	.lF0D4
+	beq.w	.next
 	eori.w	#$1,$18C0E.l
 	bra.w	.chkso
-.lF0D4	eori.w	#$1,$18C0C.l
+.next	eori.w	#$1,$18C0C.l
 .chkso	btst	#$0,$17F78.l
 	bne.w	.so
 	btst	#$2,$17F70.l
@@ -301,17 +570,17 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 .so	btst	#$1,$17F6A.l
 	bne.w	.p2
 	cmpi.w	#$2,(OptNOP).l
-	bne.w	.lF11C
+	bne.w	.next2
 	cmpi.w	#$5,$19368.l
 	bgt.w	.x
 	bra.w	.5
-.lF11C	cmpi.w	#$5,$19368.l
+.next2	cmpi.w	#$5,$19368.l
 	ble.w	.x
 .5	move.w	#$0,d0
 	cmpi.w	#$2,(OptNOP).l
-	bne.w	.lF13C
+	bne.w	.next3
 	move.w	#$6,d0
-.lF13C	tst.w	$18C0C.l
+.next3	tst.w	$18C0C.l
 	bne.w	.set1
 	move.w	#$5,d0
 	cmpi.w	#$2,(OptNOP).l
@@ -320,13 +589,13 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 .set1	jsr	(setc1player).l
 	bra.w	.x
 .p2	cmpi.w	#$2,(OptNOP).l
-	bne.w	.lF180
+	bne.w	.next4
 	cmpi.w	#$5,$19368.l
 	ble.w	.x
-	bra.w	.lF18C
-.lF180	cmpi.w	#$5,$19368.l
+	bra.w	.next5
+.next4	cmpi.w	#$5,$19368.l
 	bgt.w	.x
-.lF18C	move.w	#$6,d0
+.next5	move.w	#$6,d0
 	tst.w	$18C0E.l
 	bne.w	.set2		;manual: the goalie
 	move.w	#$B,d0		;skater slot
@@ -339,10 +608,10 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 									;DecompressGraphicsPlain); then count down the frame time arenaframetime
 									;by d7 and step (NextArenaFrame). Called from periodicevents and waitxsr
 	tst.w	$1A556.l
-	bmi.w	.lF21C
+	bmi.w	.ex
 	movem.l	d0-d7/a0-a6,-(sp)
 	tst.l	$1A55C.l
-	bne.w	.lF202
+	bne.w	.next
 	move.w	$1A556.l,d0
 	asl.w	#$3,d0
 	movea.l	#$2A26C,a0
@@ -354,13 +623,13 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	jsr	(DecompressGraphicsPlain).l
 	clr.w	$1A552.l
 	bsr.w	NextArenaFrame
-	bra.w	.lF218
-.lF202	sub.w	d7,$1A554.l
-	bpl.w	.lF218
+	bra.w	.next2
+.next	sub.w	d7,$1A554.l
+	bpl.w	.next2
 	addi.w	#$1,$1A552.l
 	bsr.w	NextArenaFrame		;read the next frame
-.lF218	movem.l	(sp)+,d0-d7/a0-a6
-.lF21C	rts
+.next2	movem.l	(sp)+,d0-d7/a0-a6
+.ex	rts
 NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, arenaframetime
 									;= time; frame $FF loops to the start, $FE ends the animation
 									;(EndArenaAnim)
@@ -374,13 +643,13 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	ext.w	d1
 	move.w	d1,$1A554.l
 	cmpi.w	#$FFFF,$1A550.l
-	bne.w	.lF25A
+	bne.w	.next
 	clr.w	$1A552.l
 	bra.w	NextArenaFrame
-.lF25A	cmpi.w	#$FFFE,$1A550.l
-	bne.w	.lF26A
+.next	cmpi.w	#$FFFE,$1A550.l
+	bne.w	.ex
 	bsr.w	EndArenaAnim		;$FE: end the animation
-.lF26A	rts
+.ex	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0F26C.bin
 StartArenaAnim						;Start arena animation d0 (ArenaAnims): arenaanim = d0, RunArenaAnim loads
 									;it. Called from FallDown (7)
@@ -409,10 +678,10 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 									;from StartPer, checkgoal, puckshootout and LeadSong
 	movem.l	d0-d1/a0-a1,-(sp)
 	btst	#$4,$17F68.l		;highlight reel?
-	beq.w	.lF490		;not the highlight reel: pick a song
+	beq.w	.next		;not the highlight reel: pick a song
 	move.w	#$FFFF,d1		;highlights: no song
-	bra.w	.lF4D0
-.lF490	bclr	#$6,$17F7C.l		;clear sflags8 bit 6
+	bra.w	.next2
+.next	bclr	#$6,$17F7C.l		;clear sflags8 bit 6
 	movea.l	#$2A4DC,a0
 	movea.l	#$2A584,a1
 	move.w	$1A56C.l,d0
@@ -420,12 +689,12 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	add.w	$1A56E.l,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1		;team song
-	bne.w	.lF4D0		;a team song: use it
+	bne.w	.next2		;a team song: use it
 	move.w	#$8,d0		;slot 0: one of the 8 random songs
 	jsr	(randomd0).l
 	andi.w	#$7,d0
 	move.b	(a1,d0.w),d1
-.lF4D0	move.w	d1,$1A56A.l
+.next2	move.w	d1,$1A56A.l
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs						;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)

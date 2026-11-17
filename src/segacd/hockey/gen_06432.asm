@@ -1,20 +1,121 @@
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_06432.bin
 	move.l	#$22018,$6038.w
-.l6FD0	btst	#$7,$FF800E.l
-	bne.b	.l6FD0
+.loop	btst	#$7,$FF800E.l
+	bne.b	.loop
 	move.w	#$2D,$FF8020.l
 	bset	#$6,$FF800F.l
-.l6FEA	btst	#$6,$FF800E.l
-	beq.b	.l6FEA
+.loop2	btst	#$6,$FF800E.l
+	beq.b	.loop2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-.l7004	btst	#$6,$FF800E.l
-	bne.b	.l7004
+.loop3	btst	#$6,$FF800E.l
+	bne.b	.loop3
 	bclr	#$7,$FF800F.l
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_07018.bin
-.l7268	btst	#$1,$FF8003.l
-	beq.b	.l7268
+L22018	btst.b	#$5,$FF800E.l
+	beq.w	.ex
+	bset.b	#$2,$FF800F.l
+	move.l	#$2203A,-(sp)
+	move.l	$18D66.l,-(sp)
+	rts
+	jsr	$47DB2.l
+.loop	btst.b	#$4,$FF800E.l
+	bne.s	.loop
+	move.w	#$2F,$FF8026.l
+	bset.b	#$3,$FF800F.l
+.loop2	btst.b	#$3,$FF800E.l
+	beq.s	.loop2
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.loop3	btst.b	#$3,$FF800E.l
+	bne.s	.loop3
+	bclr.b	#$4,$FF800F.l
+	bclr.b	#$2,$FF800F.l
+	addq.w	#$1,$17460.l
+.ex	rts
+	movea.l	#$C458,sp
+	movea.l	#$1745C,a0
+.loop4	clr.l	(a0)+
+	cmpa.l	#$1AD9A,a0
+	blt.w	.loop4
+	move.w	#$C,d7
+	jsr	$6044.w
+	move.w	d0,$193BA.l
+	tst.w	$193BA.l
+	bne.b	.next2
+	jsr	$2243E.l
+	move.w	#$0,d0
+	lea.l	$7E000.l,a0
+	lea.l	$17EF2.l,a1
+	jsr	$5F16.w
+	bcs.b	.next
+	move.w	#$3,d0
+	lea.l	$2240C.l,a0
+	lea.l	$193BC.l,a1
+	jsr	$5F16.w
+	bra.b	.next2
+.next	move.w	#$FFFF,$193BA.l
+.next2	move.l	#$19360,$19360.l
+	clr.w	$1AD94.l
+.loop5	btst.b	#$7,$FF800E.l
+	bne.s	.loop5
+	movem.l	a0,-(sp)
+	lea.l	$C00004.l,a0
+	move.l	a0,$FF8022.l
+	move.w	#$18,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.loop6	btst.b	#$6,$FF800E.l
+	beq.s	.loop6
+	move.w	$FF8010.l,d0
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.loop7	btst.b	#$6,$FF800E.l
+	bne.s	.loop7
+	bclr.b	#$7,$FF800F.l
+	movem.l	(sp)+,a0
+	andi.w	#$1,d0
+	move.w	d0,$18C20.l
+	beq.w	.loop8
+	bset.b	#$0,$1AD94.l
+.loop8	btst.b	#$7,$FF800E.l
+	bne.b	.loop8
+	move.w	#$2B,$FF8020.l
+	bset.b	#$6,$FF800F.l
+.loop9	btst.b	#$6,$FF800E.l
+	beq.s	.loop9
+	move.w	$FF8010.l,$18BF8.l
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+.loop10	btst.b	#$6,$FF800E.l
+	bne.s	.loop10
+	bclr.b	#$7,$FF800F.l
+	move.w	#$FFFF,$17DD6.l
+	jsr	$21FC8.l
+	move.w	#$3,d7
+	jsr	$6044.w
+	jsr	$3FDE8.l
+	jsr	$2A58C.l
+	jsr	$40102.l
+	move.w	$18C0A.l,$18C22.l
+	move.w	$18BFA.l,$18C24.l
+	jsr	$37460.l
+	jmp	$3F2D6.l
+.loop11	btst.b	#$7,$FF800E.l
+	bne.s	.loop11
+.loop12	btst.b	#$6,$FF800E.l
+	beq.s	.loop12
+	bset.b	#$6,$FF800F.l
+	bset.b	#$7,$FF800F.l
+.loop13	btst.b	#$6,$FF800E.l
+	bne.s	.loop13
+	bclr.b	#$6,$FF800F.l
+	bclr.b	#$7,$FF800F.l
+	rts
+.loop14	bclr.b	#$2,$FF8003.l
+	bne.s	.loop14
+	rts
+.loop15	btst	#$1,$FF8003.l
+	beq.b	.loop15
 	rts
 	dc.w	$0839,$0007,$00FF,$800E,$66F6,$33FC,$0007,$00FF
 	dc.w	$8020,$08F9,$0006,$00FF,$800F,$0839,$0006,$00FF
@@ -22,13 +123,13 @@
 	dc.w	$00FF,$800F,$0839,$0006,$00FF,$800E,$66F6,$08B9
 	dc.w	$0007,$00FF,$800F,$4EB9,$0002,$2268,$4E75
 	bset	#$0,$FF8003.l
-.l72CA	btst	#$1,$FF8003.l
-	bne.b	.l72CA
+.loop16	btst	#$1,$FF8003.l
+	bne.b	.loop16
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
-.l72DA	move.w	#$80,d0
+.loop17	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.b	.l72DA
+	bcs.b	.loop17
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_072EA.bin

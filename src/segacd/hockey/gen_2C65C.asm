@@ -5,190 +5,190 @@
 ReadJoyData
 	movem.l	d1/a0,-(sp)
 	tst.w	$18BF8.l
-	beq.w	.l2CDEA
-	dc.w	$6142
+	beq.w	.next
+	bsr.s	.loop
 	move.b	d0,$17E46.l
-	bsr.w	.l2CE56
+	bsr.w	.loop4
 	move.b	d0,$17E47.l
-	bsr.w	.l2CEA8
+	bsr.w	.loop7
 	move.b	d0,$17E48.l
-	bsr.w	.l2CEFA
+	bsr.w	.loop10
 	move.b	d0,$17E49.l
-	bra.w	.l2CDFE
-.l2CDEA	bsr.w	.l2CF58
+	bra.w	.next2
+.next	bsr.w	.next5
 	move.b	d0,$17E46.l
-	bsr.w	.l2CF50
+	bsr.w	.next4
 	move.b	d0,$17E47.l
-.l2CDFE	movem.l	(sp)+,d1/a0
+.next2	movem.l	(sp)+,d1/a0
 	rts
-.l2CE04	btst	#$4,$FF800E.l
-	bne.b	.l2CE04
+.loop	btst	#$4,$FF800E.l
+	bne.b	.loop
 	move.b	#$C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2CE26	btst	#$4,$FF800E.l
-	beq.b	.l2CE26
+.loop2	btst	#$4,$FF800E.l
+	beq.b	.loop2
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2CE40	btst	#$3,$FF800E.l
-	bne.b	.l2CE40
+.loop3	btst	#$3,$FF800E.l
+	bne.b	.loop3
 	bclr	#$4,$FF800F.l
-	bra.w	.l2CF48
-.l2CE56	btst	#$4,$FF800E.l
-	bne.b	.l2CE56
+	bra.w	.next3
+.loop4	btst	#$4,$FF800E.l
+	bne.b	.loop4
 	move.b	#$1C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2CE78	btst	#$4,$FF800E.l
-	beq.b	.l2CE78
+.loop5	btst	#$4,$FF800E.l
+	beq.b	.loop5
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2CE92	btst	#$3,$FF800E.l
-	bne.b	.l2CE92
+.loop6	btst	#$3,$FF800E.l
+	bne.b	.loop6
 	bclr	#$4,$FF800F.l
-	bra.w	.l2CF48
-.l2CEA8	btst	#$4,$FF800E.l
-	bne.b	.l2CEA8
+	bra.w	.next3
+.loop7	btst	#$4,$FF800E.l
+	bne.b	.loop7
 	move.b	#$2C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2CECA	btst	#$4,$FF800E.l
-	beq.b	.l2CECA
+.loop8	btst	#$4,$FF800E.l
+	beq.b	.loop8
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2CEE4	btst	#$3,$FF800E.l
-	bne.b	.l2CEE4
+.loop9	btst	#$3,$FF800E.l
+	bne.b	.loop9
 	bclr	#$4,$FF800F.l
-	bra.w	.l2CF48
-.l2CEFA	btst	#$4,$FF800E.l
-	bne.b	.l2CEFA
+	bra.w	.next3
+.loop10	btst	#$4,$FF800E.l
+	bne.b	.loop10
 	move.b	#$3C,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2CF1C	btst	#$4,$FF800E.l
-	beq.b	.l2CF1C
+.loop11	btst	#$4,$FF800E.l
+	beq.b	.loop11
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2CF36	btst	#$3,$FF800E.l
-	bne.b	.l2CF36
+.loop12	btst	#$3,$FF800E.l
+	bne.b	.loop12
 	bclr	#$4,$FF800F.l
-.l2CF48	movem.l	d1/a0,-(sp)
-	bra.w	.l2CF5C
-.l2CF50	movem.l	d1/a0,-(sp)
-	bra.w	.l2D096
-.l2CF58	movem.l	d1/a0,-(sp)
-.l2CF5C	moveq	#$0,d0
-.l2CF5E	btst	#$4,$FF800E.l
-	bne.b	.l2CF5E
+.next3	movem.l	d1/a0,-(sp)
+	bra.w	.next6
+.next4	movem.l	d1/a0,-(sp)
+	bra.w	.next7
+.next5	movem.l	d1/a0,-(sp)
+.next6	moveq	#$0,d0
+.loop13	btst	#$4,$FF800E.l
+	bne.b	.loop13
 	move.b	#$0,$FF8028.l
 	move.w	#$36,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2CF80	btst	#$3,$FF800E.l
-	beq.b	.l2CF80
+.loop14	btst	#$3,$FF800E.l
+	beq.b	.loop14
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2CF9A	btst	#$3,$FF800E.l
-	bne.b	.l2CF9A
+.loop15	btst	#$3,$FF800E.l
+	bne.b	.loop15
 	bclr	#$4,$FF800F.l
-.l2CFAC	btst	#$4,$FF800E.l
-	bne.b	.l2CFAC
+.loop16	btst	#$4,$FF800E.l
+	bne.b	.loop16
 	move.w	#$37,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2CFC6	btst	#$3,$FF800E.l
-	beq.b	.l2CFC6
+.loop17	btst	#$3,$FF800E.l
+	beq.b	.loop17
 	move.b	$FF8018.l,d0
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2CFE6	btst	#$3,$FF800E.l
-	bne.b	.l2CFE6
+.loop18	btst	#$3,$FF800E.l
+	bne.b	.loop18
 	bclr	#$4,$FF800F.l
-.l2CFF8	btst	#$4,$FF800E.l
-	bne.b	.l2CFF8
+.loop19	btst	#$4,$FF800E.l
+	bne.b	.loop19
 	move.b	#$40,$FF8028.l
 	move.w	#$36,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2D01A	btst	#$3,$FF800E.l
-	beq.b	.l2D01A
+.loop20	btst	#$3,$FF800E.l
+	beq.b	.loop20
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2D034	btst	#$3,$FF800E.l
-	bne.b	.l2D034
+.loop21	btst	#$3,$FF800E.l
+	bne.b	.loop21
 	bclr	#$4,$FF800F.l
-.l2D046	btst	#$4,$FF800E.l
-	bne.b	.l2D046
+.loop22	btst	#$4,$FF800E.l
+	bne.b	.loop22
 	move.w	#$37,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2D060	btst	#$3,$FF800E.l
-	beq.b	.l2D060
+.loop23	btst	#$3,$FF800E.l
+	beq.b	.loop23
 	move.b	$FF8018.l,d1
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2D080	btst	#$3,$FF800E.l
-	bne.b	.l2D080
+.loop24	btst	#$3,$FF800E.l
+	bne.b	.loop24
 	bclr	#$4,$FF800F.l
-	bra.w	.l2D1D0
-.l2D096	moveq	#$0,d0
-.l2D098	btst	#$4,$FF800E.l
-	bne.b	.l2D098
+	bra.w	.next8
+.next7	moveq	#$0,d0
+.loop25	btst	#$4,$FF800E.l
+	bne.b	.loop25
 	move.b	#$0,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2D0BA	btst	#$4,$FF800E.l
-	beq.b	.l2D0BA
+.loop26	btst	#$4,$FF800E.l
+	beq.b	.loop26
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2D0D4	btst	#$3,$FF800E.l
-	bne.b	.l2D0D4
+.loop27	btst	#$3,$FF800E.l
+	bne.b	.loop27
 	bclr	#$4,$FF800F.l
-.l2D0E6	btst	#$4,$FF800E.l
-	bne.b	.l2D0E6
+.loop28	btst	#$4,$FF800E.l
+	bne.b	.loop28
 	move.w	#$38,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2D100	btst	#$3,$FF800E.l
-	beq.b	.l2D100
+.loop29	btst	#$3,$FF800E.l
+	beq.b	.loop29
 	move.b	$FF8018.l,d0
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2D120	btst	#$3,$FF800E.l
-	bne.b	.l2D120
+.loop30	btst	#$3,$FF800E.l
+	bne.b	.loop30
 	bclr	#$4,$FF800F.l
-.l2D132	btst	#$4,$FF800E.l
-	bne.b	.l2D132
+.loop31	btst	#$4,$FF800E.l
+	bne.b	.loop31
 	move.b	#$40,$FF8028.l
 	move.w	#$35,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2D154	btst	#$4,$FF800E.l
-	beq.b	.l2D154
+.loop32	btst	#$4,$FF800E.l
+	beq.b	.loop32
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2D16E	btst	#$3,$FF800E.l
-	bne.b	.l2D16E
+.loop33	btst	#$3,$FF800E.l
+	bne.b	.loop33
 	bclr	#$4,$FF800F.l
-.l2D180	btst	#$4,$FF800E.l
-	bne.b	.l2D180
+.loop34	btst	#$4,$FF800E.l
+	bne.b	.loop34
 	move.w	#$38,$FF8026.l
 	bset	#$3,$FF800F.l
-.l2D19A	btst	#$3,$FF800E.l
-	beq.b	.l2D19A
+.loop35	btst	#$3,$FF800E.l
+	beq.b	.loop35
 	move.b	$FF8018.l,d1
 	bset	#$4,$FF800F.l
 	bclr	#$3,$FF800F.l
-.l2D1BA	btst	#$3,$FF800E.l
-	bne.b	.l2D1BA
+.loop36	btst	#$3,$FF800E.l
+	bne.b	.loop36
 	bclr	#$4,$FF800F.l
-	bra.w	.l2D1D0
-.l2D1D0	asl.b	#$2,d0
+	bra.w	.next8
+.next8	asl.b	#$2,d0
 	andi.b	#$C0,d0
 	andi.b	#$3F,d1
 	or.b	d1,d0
 	not.b	d0
 	not.b	d1
 	andi.w	#$F,d1
-	lea.l	.l481F8(pc),a0
+	lea.l	.next9(pc),a0
 	andi.b	#$F0,d0
 	or.b	(a0,d1.w),d0
 	not.b	d0
 	movem.l	(sp)+,d1/a0
 	rts
-.l481F8	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
+.next9	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
 	rts

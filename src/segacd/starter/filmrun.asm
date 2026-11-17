@@ -6,15 +6,16 @@
 
 
 
-RestoreBios_101	tst.w	$4(sp)
-	bne.b	.l250F6
+; Movie switch: word at 4(sp) = 0 opens the film, 1 runs a task step, anything else closes it and restores the vectors.
+FilmSwitch	tst.w	$4(sp)
+	bne.b	.next
 	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
-	lea.l	RestoreBios_94(pc),a0
+	lea.l	FilmSavedArg1(pc),a0
 	move.l	$12(a6),(a0)
-	lea.l	RestoreBios_93(pc),a0
+	lea.l	FilmSavedArg2(pc),a0
 	move.l	$E(a6),(a0)
-	lea.l	Buf14_1(pc),a0
+	lea.l	FilmSavedVectors(pc),a0
 	move.l	$22(a6),(a0)+
 	move.l	$1E(a6),(a0)+
 	move.l	$1A(a6),(a0)+
@@ -32,25 +33,25 @@ RestoreBios_101	tst.w	$4(sp)
 	unlk	a6
 	tst.l	d0
 	rts
-.l250F6	link	a6,#$0
+.next	link	a6,#$0
 	movem.l	d1-d7/a0-a5,-(sp)
 	move.w	$8(a6),d0
 	subq.w	#$1,d0
-	bne.b	.l2510C
+	bne.b	.next2
 	jsr	FilmTask(pc)
-	bra.b	.l2511A
-.l2510C	jsr	FilmClose(pc)
+	bra.b	.next3
+.next2	jsr	FilmClose(pc)
 	jsr	RemoveIrqHook1(pc)
 	jsr	RemoveIrqHook2(pc)
 	moveq	#$0,d0
-.l2511A	movem.l	(sp)+,d1-d7/a0-a5
+.next3	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	tst.l	d0
 	rts
 	move.w	$0.w,d0
-.l25128	addq.w	#$1,$0.w
+.loop	addq.w	#$1,$0.w
 	cmp.w	$0.w,d0
-	beq.b	.l25128
+	beq.b	.loop
 	move.w	d0,$0.w
 	clr.l	$8.w
 	clr.l	$C.w
@@ -62,30 +63,32 @@ RestoreBios_101	tst.w	$4(sp)
 	clr.l	$24.w
 	move.l	#$208008,$80.w
 	rts
-RestoreBios_102	ori.b	#$0,d0
+; The BIOS vector at $5F36, saved while the first interrupt hook is installed.
+SavedBiosVector5F36	ori.b	#$0,d0
 ; Saves the level vector at $5F36 and installs the stream interrupt handler.
-InstallIrqHook1	lea.l	RestoreBios_102(pc),a0
+InstallIrqHook1	lea.l	SavedBiosVector5F36(pc),a0
 	move.l	$5F36.w,(a0)
-	lea.l	RestoreBios_105(pc),a0
+	lea.l	CdIrqHook1(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F36.w
 	move.w	(sp)+,sr
 	rts
 ; Restores the vector at $5F36.
-RemoveIrqHook1	movea.l	RestoreBios_102(pc),a0
+RemoveIrqHook1	movea.l	SavedBiosVector5F36(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F36.w
 	move.w	(sp)+,sr
 	rts
-RestoreBios_105	movem.l	d0/a0,-(sp)
-	lea.l	Long3(pc),a0
+; First CD interrupt hook: counts a tick and calls FilmTickCallback.
+CdIrqHook1	movem.l	d0/a0,-(sp)
+	lea.l	FilmIrqTicks(pc),a0
 	addq.l	#$1,(a0)
-	move.l	Long6(pc),d0
-	beq.b	.l251A4
+	move.l	FilmTickCallback(pc),d0
+	beq.b	.next
 	movea.l	d0,a0
 	jsr	(a0)
-.l251A4	movem.l	(sp)+,d0/a0
+.next	movem.l	(sp)+,d0/a0
 	rts
 

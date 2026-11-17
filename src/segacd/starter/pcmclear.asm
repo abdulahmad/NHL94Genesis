@@ -5,24 +5,24 @@
 
 
 	move.w	#$7,d2
-.l24D10	move.b	d2,d3
+.loop2	move.b	d2,d3
 	addi.w	#$40,d3
 	move.b	d3,$FF000F.l
 	move.b	#$0,$FF000D.l
 	move.b	#$0,$FF000B.l
 	move.b	#$0,$FF0009.l
-	dbra	d2,.l24D10
+	dbra	d2,.loop2
 	move.b	#$40,$FF000F.l
 	move.b	#$80,$FF000F.l
 	move.w	#$F,d2
-.l24D4C	move.w	#$FFF,d0
+.loop3	move.w	#$FFF,d0
 	moveq	#$0,d1
 	movea.l	#$FF2001,a0
 	move.b	d2,$FF000D.l
-.l24D5E	move.b	d1,$0(a0)
+.loop4	move.b	d1,$0(a0)
 	addq.w	#$2,a0
-	dbra	d0,.l24D5E
-	dbra	d2,.l24D4C
+	dbra	d0,.loop4
+	dbra	d2,.loop3
 	move.b	#$FF,$FF0011.l
 	rts
 

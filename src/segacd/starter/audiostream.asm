@@ -13,22 +13,22 @@ AudioPlayPos
 	movea.l	$8(a6),a4
 	moveq	#-1,d0
 	cmp.l	(a4),d0
-	bne.b	.l263A0
+	bne.b	.next
 	moveq	#$0,d0
-	bra.b	.l263C0
-.l263A0	jsr	PcmReadStatus(pc)
+	bra.b	.next3
+.next	jsr	PcmReadStatus(pc)
 	moveq	#$C,d1
 	asr.l	d1,d0
 	move.l	d0,-$4(a6)
 	move.l	(a4),d0
 	moveq	#$8,d1
-	jsr	LongModUStub(pc)
+	jsr	GetData_16(pc)
 	move.l	-$4(a6),d1
 	cmp.l	d1,d0
-	beq.b	.l263BE
+	beq.b	.next2
 	addq.l	#$1,(a4)
-.l263BE	move.l	(a4),d0
-.l263C0	movea.l	-$8(a6),a4
+.next2	move.l	(a4),d0
+.next3	movea.l	-$8(a6),a4
 	unlk	a6
 	rts
 ; AudioPlayPos
@@ -60,15 +60,15 @@ AudioIdle
 	move.l	d0,d7
 	tst.l	$C(a4)
 	addq.w	#$4,sp
-	beq.b	.l2646A
+	beq.b	.next
 	move.l	$4(a4),d0
 	sub.l	d7,d0
 	moveq	#$8,d1
 	cmp.l	d0,d1
-	ble.b	.l2646A
+	ble.b	.next
 	move.l	$4(a4),d0
 	moveq	#$8,d1
-	jsr	LongModUStub(pc)
+	jsr	GetData_16(pc)
 	move.l	d0,-(sp)
 	move.l	$8(a4),-(sp)
 	jsr	PcmSetControl(pc)
@@ -77,10 +77,10 @@ AudioIdle
 	subi.l	#$1000,$C(a4)
 	tst.l	$C(a4)
 	addq.w	#$8,sp
-	bge.b	.l2646A
+	bge.b	.next
 	moveq	#$0,d0
 	move.l	d0,$C(a4)
-.l2646A	movem.l	-$8(a6),d7/a4
+.next	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	rts
 ; AudioIdle
@@ -99,20 +99,20 @@ AudioFeed
 	moveq	#-1,d0
 	cmp.l	(a4),d0
 	addq.w	#$8,sp
-	bne.b	GetData_8
-	bra.b	GetData_7
-GetData_6	move.l	a4,-(sp)
+	bne.b	.next3
+	bra.b	.next
+.loop	move.l	a4,-(sp)
 	jsr	AudioIdle(pc)
 	addq.w	#$4,sp
-GetData_7	tst.l	$C(a4)
-	ble.b	.l264C2
+.next	tst.l	$C(a4)
+	ble.b	.next2
 	moveq	#$8,d0
 	cmp.l	$4(a4),d0
-	bgt.b	GetData_6
-.l264C2	jsr	PcmStartChannel0(pc)
+	bgt.b	.loop
+.next2	jsr	PcmStartChannel0(pc)
 	moveq	#$0,d0
 	move.l	d0,(a4)
-GetData_8	movea.l	-$4(a6),a4
+.next3	movea.l	-$4(a6),a4
 	unlk	a6
 	rts
 ; AudioFeed
@@ -124,23 +124,23 @@ AudioSilence
 	movea.l	$8(a6),a3
 	moveq	#-1,d0
 	cmp.l	(a3),d0
-	bne.b	.l2653C
+	bne.b	.next
 	pea.l	$1000.w
 	jsr	mmalloc(pc)
 	movea.l	d0,a4
 	moveq	#$0,d7
 	move.l	#$400,d3
 	addq.w	#$4,sp
-.l26504	move.l	d7,d0
+.loop	move.l	d7,d0
 	asl.l	#$2,d0
 	moveq	#$0,d1
 	move.l	d1,(a4,d0.l)
 	move.l	d7,d0
 	addq.l	#$1,d7
 	cmp.l	d7,d3
-	bgt.b	.l26504
+	bgt.b	.loop
 	moveq	#$0,d7
-.l26518	move.l	d7,-(sp)
+.loop2	move.l	d7,-(sp)
 	move.l	a4,-(sp)
 	jsr	PcmSetControl(pc)
 	addq.w	#$8,sp
@@ -148,14 +148,14 @@ AudioSilence
 	addq.l	#$1,d7
 	moveq	#$8,d0
 	cmp.l	d7,d0
-	bgt.b	.l26518
+	bgt.b	.loop2
 	move.l	a4,-(sp)
 	jsr	ffree(pc)
 	jsr	PcmStartChannel0(pc)
 	moveq	#$0,d0
 	move.l	d0,(a3)
 	addq.w	#$4,sp
-.l2653C	movem.l	-$10(a6),d3/d7/a3-a4
+.next	movem.l	-$10(a6),d3/d7/a3-a4
 	unlk	a6
 	rts
 ; AudioSilence
@@ -197,12 +197,12 @@ AudioTime
 	jsr	AudioTicks(pc)
 	move.l	d0,d1
 	move.l	$C(a6),d0
-	jsr	LongMulU(pc)
+	jsr	GetData_14(pc)
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
 	dc.w	$D0BC
 	dc.l	$00001F40
 	move.l	#$3E80,d1
-	jsr	LongDivUStub(pc)
+	jsr	GetData_15(pc)
 	unlk	a6
 	rts
 ; AudioTime
