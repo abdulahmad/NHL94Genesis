@@ -758,8 +758,8 @@ UpdateRecordsStart
 	tst.w	$18C06.l
 	bne.w	.ex
 	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	.next17
-	bsr.w	.next18
+	bsr.w	UpdateRecordsGoalieCounts
+	bsr.w	UpdateRecordsPlayerCounts
 	move.w	(HomeTeam).l,d1
 	ext.l	d1
 	movea.l	#ThreeStars,a0
@@ -951,7 +951,8 @@ UpdateRecordsStart
 .next16	addi.w	#$1,d0
 	dbra	d2,.loop2
 	rts
-.next17	movem.l	d0-d7/a0-a6,-(sp)
+; Stores the goalie counts of both teams
+UpdateRecordsGoalieCounts	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetGoalieCount).l
 	move.w	d0,$193AA.l
@@ -960,7 +961,8 @@ UpdateRecordsStart
 	move.w	d0,$193AC.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.next18	movem.l	d0-d7/a0-a6,-(sp)
+; Stores the player counts of both teams
+UpdateRecordsPlayerCounts	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetPlayerCount).l
 	move.w	d0,$193AE.l

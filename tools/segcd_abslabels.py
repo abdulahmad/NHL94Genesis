@@ -28,7 +28,7 @@ for f, L in files.items():
         while k < len(rows) and norm(rows[k][1]) != nt and k - j < 60: k += 1
         if k < len(rows) and norm(rows[k][1]) == nt:
             a = rows[k][0]; j = k + 1
-            if a in N and not re.match(r'^\S', t) and not re.match(r'^\s*(dc|dcb)\.', t) and (a, f) not in [(x[3], x[0]) for x in ins]: ins.append((f, i, N[a], a))
+            if a in N and (not re.match(r'^\S', t) or t.startswith('.')) and not re.match(r'^\s*(dc|dcb)\.', t) and (a, f) not in [(x[3], x[0]) for x in ins]: ins.append((f, i, N[a], a))
 def apply(skip):
     for f in files: files[f] = list(orig[f])
     for f in files:

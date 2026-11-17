@@ -101,7 +101,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.w	$18C0A.l,$18C22.l
 	move.w	$18BFA.l,$18C24.l
 	jsr	(orjoy).l
-	jmp	$3F2D6.l
+	jmp	(GameOverCallTail).l
 .loop11	btst.b	#$7,$FF800E.l
 	bne.s	.loop11
 .loop12	btst.b	#$6,$FF800E.l
@@ -116,6 +116,8 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 .loop14	bclr.b	#$2,$FF8003.l
 	bne.s	.loop14
 	rts
+; Waits until the sub-CPU acknowledges (gate array bit 1 of $FF8003 set)
+WaitGateAck
 .loop15	btst	#$1,$FF8003.l
 	beq.b	.loop15
 	rts
@@ -130,7 +132,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 .loop18	btst.b	#$6,$FF800E.l
 	bne.b	.loop18
 	bclr.b	#$7,$FF800F.l
-	jsr	$22268.l
+	jsr	(WaitGateAck).l
 	rts	
 ; Raises gate array request bit 0 of $FF8003 and waits for the acknowledge to clear.
 RaiseGateRequest

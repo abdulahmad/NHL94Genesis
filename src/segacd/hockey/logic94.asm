@@ -114,7 +114,7 @@ updateplayers
 	bmi.w	.next21
 	add.w	d0,d0
 	addi.w	#$138,d0
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	addi.w	#$1,(a2,d0.w)
 .next21	cmpi.w	#$145C,$58(a3)
 	beq.w	.next32
@@ -281,7 +281,7 @@ updateplayers
 	asl.w	#$2,d1
 	movea.l	#$415CC,a0
 	movea.l	(a0,d1.w),a0
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	jsr	(a0)
 	clr.w	$4E(a3)
 	clr.w	$50(a3)
@@ -947,9 +947,9 @@ getGoalieSCnum						;d0 = SCnum of the goalie in the 6 sort objects
 	rts
 faceoffinput						;controller processing for faceoff
 	btst	#$6,$17F74.l
-	beq.w	.0
-	rts
-.0	move.w	$36(a3),d4		;move assnum into d4
+	beq.w	FaceoffInputBody
+FaceoffInputReturn	rts
+FaceoffInputBody	move.w	$36(a3),d4		;move assnum into d4
 	cmpi.b	#$17,$38(a3,d4.w)		;check if afaceoffpl is in asslist at assnum position
 	bne.w	doinput_islockedExit		;exit if this is not a faceoff player
 	movea.l	#$17EE6,a0		;faceoff direction of puck control variable
@@ -959,7 +959,7 @@ faceoffinput						;controller processing for faceoff
 .2	move.w	d0,(a0)		;store dpad for faceoff pull
 	btst	#$1,$63(a3)		;check if anim in progress
 	beq.w	.next
-	jmp	$30AB0.l
+	jmp	(FaceoffInputReturn).l
 .next	btst	#$4,d1		;test for b button press
 	beq.w	.1		;branch if pressed
 	move.w	#$FEA,d1
@@ -975,7 +975,7 @@ FaceoffInputCheckLocked
 	bne.w	doinput_islockedExit
 	btst	#$4,$17F7A.l
 	bne.w	doinput_islockedExit
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	bset	#$1,$32(a2)
 	bne.w	doinput_islockedExit
 	btst	#$3,$17F74.l
@@ -1110,10 +1110,10 @@ LineInputSetCoords
 	bsr.w	SetLcCoordsForSide
 	tst.w	d0
 	bpl.w	.next
-	jmp	$30AB0.l
+	jmp	(FaceoffInputReturn).l
 .next	bclr	#$3,$63(a3)
 	bset	#$3,$62(a3)
-	jsr	$3C958.l
+	jsr	(ChkShotStatSwapStructs).l
 	bclr	#$1,$32(a2)
 	move.w	d0,$16(a2)
 	jsr	(setpersonel).l
@@ -1347,7 +1347,7 @@ passto						;pass the puck to player a0: a3 = passer
 	bra.w	.stack
 .diffteam	jsr	(setc2player).l
 .stack	movem.l	(sp)+,d0-d1
-.next	jsr	$3C958.l
+.next	jsr	(ChkShotStatSwapStructs).l
 	addi.w	#$1,$12(a2)
 	move.w	$52(a0),$17E30.l
 	move.w	$17E2E.l,d5

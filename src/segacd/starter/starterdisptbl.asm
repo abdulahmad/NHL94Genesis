@@ -26,12 +26,12 @@
 	dc.b	$00,$00,$04,$00,$00,$00,$05,$00,$00,$00,$06,$00,$00,$00,$07,$00	; ................
 	dc.b	$00,$00,$08,$00,$32,$FF,$FF,$FF,$FF	; ....2....
 	dcb.b	$286,0
-; 20 zero bytes after the file start (padding or space the program fills at run time).
-.next	dcb.b	$14,0
-; 20 zero bytes after the file start (padding or space the program fills at run time).
-.next2	dcb.b	$14,0
-; Table of 2640 bytes after the file start, 2640 bytes: $00,$00,$00,$00,$00,$00 ...
-.next3	dcb.b	$1C,0
+; Zero bytes that the overlay covers at run time (BackupBufferChecksumImage runs here).
+	dcb.b	$14,0
+; Zero bytes that the overlay covers at run time (BackupBufferClearImage runs here).
+	dcb.b	$14,0
+; Zero bytes that the overlay covers at run time (GateArrayIrqA starts here).
+	dcb.b	$1C,0
 	dc.b	$3D,$2A,$00,$00,$3D,$AA,$01,$E9	; =*..=...
 	dcb.b	$3C,0
 	dc.b	$02,$22,$22,$22	; ."""
@@ -951,7 +951,12 @@ PcmBankDirectoryB
 ; Sample data: unsigned 8-bit PCM waves (smooth byte sequences), played by the PCM chip.
 PcmSampleData
 	incbin	..\Extracted\SegaCD\STARTER\starter_0C8AE.bin
-	movem.l	d0-d2/d7/a0-a1,-(sp)
+; From here to the end of the file is an overlay: the file keeps it at $3CFA0, the program runs it at $26CA0 (file
+; address minus $16300) on top of the bytes that the stale low copies below hold. `obj` assembles it for its run address,
+; so calls and pointers into it use the labels.
+	obj	$26CA0
+; Hand-off sequence: BIOS call 5, status handshakes $2E / $3F around the word RAM hand-over, then jumps to $B00E.
+StarterBootHandshake	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$5,d0
 	jsr	$6044.w
@@ -999,46 +1004,62 @@ PcmSampleData
 	bset.b	#$5,$FF800F.l
 	bset.b	#$2,$FF8033.l
 	jmp	$B00E.l
-	move.w	#$0,d0
+; Mounts the backup RAM (BRMINIT), reads the save file into the buffer at $7F000 and checks its checksum; clears the
+; buffer and formats the RAM when the file is missing or damaged.
+BackupRamMountVerify	move.w	#$0,d0
 	move.w	#$B,d7
 	jsr	$6044.w
-	jsr	$26EAA.l
+	jsr	(BackupBufferClearImage).l
 	move.w	#$0,d0
 	lea.l	$7D000.l,a0
 	lea.l	$7C000.l,a1
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMINIT
 	bcc.w	.next2
-	jsr	$26EBE.l
+	jsr	(GateArrayIrqA).l
 	cmpi.w	#$FFFF,$C442.l
 	beq.w	.next4
 	move.w	#$6,d0
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMFORMAT
 .next2	move.w	#$3,d0
-	lea.l	$26E78.l,a0
+	lea.l	BackupFileName.l,a0
 	lea.l	$7F000.l,a1
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMREAD
 	bcs.w	.next3
-	jsr	$26E96.l
+	jsr	(BackupBufferChecksumImage).l
 	cmp.l	$7FF20.l,d0
 	beq.w	.ex
-	jsr	$26EAA.l
+	jsr	(BackupBufferClearImage).l
 .next3	move.w	#$5,d0
-	lea.l	$26E78.l,a0
-	jsr	$5F16.w
+	lea.l	BackupFileName.l,a0
+	jsr	BiosBuram.w		;BRMDEL
 	move.w	#$1,d0
 	lea.l	$C452.l,a1
-	jsr	$5F16.w
+	jsr	BiosBuram.w		;BRMSTAT
 	cmpi.w	#$3D,d0
 	bge.w	.ex
 	move.w	#$1,$C44C.l
-	jsr	$26EBE.l
+	jsr	(GateArrayIrqA).l
 .next4	move.w	#$FFFF,d0
 	move.w	#$B,d7
 	jsr	$6044.w
 .ex	rts
-; Text of DispTableF (5 rows).
-	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00	; NHLHOCKEY94.....
-	dc.b	'NHLHOCKEY94',$00,$00,$3D,$41,$F9	; NHLHOCKEY94..=A.
-	dc.b	$00,$07,$F0,$00,$70,$00,$32,$3C,$0F,$1F,$D0,$18,$51,$C9,$FF,$FC	; ....p.2<....Q...
-	dc.b	$4E,$75,$41,$F9,$00,$07,$F0,$00,$30,$3C,$0F,$1F,$42,$81,$10,$C1	; NuA.....0<..B...
-	dc.b	$51,$C8,$FF,$FC,$4E,$75	; Q...Nu
+; Two 16-byte file name records (the second has a trailing $3D): the backup RAM file name.
+BackupFileName
+	dc.b	'NHLHOCKEY94',$00,$00,$00,$00,$00
+	dc.b	'NHLHOCKEY94',$00,$00,$3D
+; Image of the routine that runs in the slot at $26E96: adds up the $F20 bytes of the buffer at $7F000 into d0.
+BackupBufferChecksumImage
+	lea.l	$7F000.l,a0
+	moveq	#$0,d0
+	move.w	#$F1F,d1
+.loop	add.b	(a0)+,d0
+	dbra	d1,.loop
+	rts
+; Image of the routine that runs in the slot at $26EAA: clears the $F20 bytes of the buffer at $7F000.
+BackupBufferClearImage
+	lea.l	$7F000.l,a0
+	move.w	#$F1F,d0
+	clr.l	d1
+.loop	move.b	d1,(a0)+
+	dbra	d0,.loop
+	rts

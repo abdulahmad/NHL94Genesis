@@ -1934,8 +1934,8 @@ StatsScreenFadeInClear
 	move.w	$18D4E.l,d4
 	jsr	(AddSmallFontFramer).l
 	jsr	(SetupIceRinkPalRemap).l
-	jsr	$3EC94.l
-	jsr	$3ECA6.l
+	jsr	(IceRinkRemapGfxE).l
+	jsr	(IceRinkRemapGfxF).l
 	jsr	(setupIceRinkPal).l
 	jmp	(CopyTeamLinesCheckTeam).l
 ; Table of 336 bytes after StatsScreenFadeIn, 336 bytes: $04,$79,$00,$01,$00,$01 ...
@@ -2105,7 +2105,7 @@ WaitFramesD7	move.w	$17474.l,d0
 	sub.w	d7,$1AD56.l
 	bpl.w	.next
 	clr.w	$1AD56.l
-	jsr	$2F37E.l
+	jsr	(ControllerTextClear).l
 .next	movem.l	d0/a3,-(sp)
 	movea.l	#$17A80,a3
 	move.w	#$1,$8(a3)
@@ -2271,7 +2271,7 @@ DirectionPressCheck	st.b	$18(a5)
 	bne.w	.next6
 	btst	#$7,d1
 	beq.w	WaitFramesD7
-	jsr	$2F39C.l
+	jsr	(ControllerPictureDraw).l
 	bclr.b	#$1,$17F6E.l
 	bset.b	#$0,$17F74.l
 	bne.w	.next6
@@ -2286,7 +2286,7 @@ DirectionPressCheck	st.b	$18(a5)
 	beq.w	WaitFramesD7
 	bset.b	#$6,$17F72.l
 	bclr.b	#$0,$17F74.l
-	jsr	$2F3D6.l
+	jsr	(ControllerPictureClear).l
 	bsr.w	adda4
 	jsr	(SprSort).l
 	bra.w	WaitFramesD7
@@ -2304,8 +2304,8 @@ DirectionPressCheck	st.b	$18(a5)
 	move.w	(sp)+,$18D64.l
 	jsr	(StatsScreenFadeInClear).l
 	jsr	(SetupIceRinkPalRemap).l
-	jsr	$3EC94.l
-	jsr	$3ECA6.l
+	jsr	(IceRinkRemapGfxE).l
+	jsr	(IceRinkRemapGfxF).l
 	jsr	(IceRinkRemapGfxB).l
 	btst.b	#$4,$18D64.l
 	beq.w	.next10
@@ -2348,12 +2348,34 @@ ReadActiveJoypadPrint
 .next4	adda.l	$4(a1),a1
 	movea.l	#$1B008,a2
 	jmp	(dobitmap).l
-; Table of 56 words after ReadActiveJoypad, 112 bytes: $4EB9,$0003,$8F6E,$0006,$BD02,$0200 ...
-	dc.w	$4EB9,$0003,$8F6E,$0006,$BD02,$0200,$303C,$0008
-	dc.w	$323C,$0004,$343C,$07FF,$4EF9,$0003,$8C06,$50F9
-	dc.w	$0001,$AD56,$4EB9,$0003,$8F6E,$0006,$BD02,$0000
-	dc.w	$7000,$7200,$7410,$760B,$3839,$0001,$8D56,$3A3C
-	dc.w	$0000,$2279,$0004,$7D68,$D3E9,$0004,$247C,$0001
-	dc.w	$B008,$4EF9,$0003,$87E2,$4EB9,$0003,$8F6E,$0006
-	dc.w	$BD02,$0200,$303C,$0010,$323C,$000B,$343C,$07FF
+; Clears the controller text on the pad screen: prints an empty string and erases the 8x4 text box.
+ControllerTextClear
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$2
+	move.w	#$8,d0
+	move.w	#$4,d1
+	move.w	#$7FF,d2
+	jmp	(eraser).l
+; Draws the controller picture on the pad screen and arms the text timer.
+ControllerPictureDraw
+	st.b	$1AD56.l
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$0
+	moveq	#$0,d0
+	moveq	#$0,d1
+	moveq	#$10,d2
+	moveq	#$B,d3
+	move.w	$18D56.l,d4
+	move.w	#$0,d5
+	movea.l	$47D68.l,a1
+	adda.l	$4(a1),a1
+	movea.l	#$1B008,a2
+	jmp	(dobitmap).l
+; Erases the controller picture (16x11 tiles) from the pad screen.
+ControllerPictureClear
+	jsr	(printz).l
+	String	CC_Font3Pri,$2,$2
+	move.w	#$10,d0
+	move.w	#$B,d1
+	move.w	#$7FF,d2
 	jmp	(eraser).l

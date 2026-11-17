@@ -68,10 +68,21 @@ SetupIceRinkPalRemap
 	movea.l	$47D4C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
-; Inline data read by DecompressGraphicsWithRemap from the return address (3 rows).
-	dc.w	$7123,$4567,$89AB,$CDEF,$4E75,$3839,$0001,$8D46
-	dc.w	$2479,$0004,$7D40,$508A,$6000,$9CB4,$3839,$0001
-	dc.w	$8D4A,$2479,$0004,$7D2C,$508A,$6000,$9CA2
+; Inline data read by DecompressGraphicsWithRemap from the return address (the remap table, 4 words).
+	dc.w	$7123,$4567,$89AB,$CDEF
+	rts
+; Decompresses the fifth ice rink graphics set with the remap.
+IceRinkRemapGfxE
+	move.w	$18D46.l,d4
+	movea.l	$47D40.l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain
+; Decompresses the sixth ice rink graphics set with the remap.
+IceRinkRemapGfxF
+	move.w	$18D4A.l,d4
+	movea.l	$47D2C.l,a2
+	addq.l	#$8,a2
+	bra.w	DecompressGraphicsPlain
 ; Decompresses the first ice rink graphics set with the remap.
 IceRinkRemapGfxA
 	move.w	$18D56.l,d4
@@ -557,9 +568,11 @@ GameOverCheckScroll
 	bne.s	.next
 	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
-.next	bra.w	.next2
+.next	bra.w	GameOverRtsCall
+; Entered by jumping from the game over screen set-up: calls the rts stub, then continues in the clean-up
+GameOverCallTail
 	jsr	(HockeyRtsStubC).l
-.next2
+GameOverRtsCall
 	jsr	(HockeyRtsStubC).l
 	bclr	#$5,$FF800F.l
 	movea.l	#$C458,sp
@@ -2244,7 +2257,7 @@ ShowGoalBoxDraw
 	bmi.w	.next2
 	addi.w	#$1,d1
 .next2	jsr	(Framer).l
-	jsr	$25D8C.l
+	jsr	(UpdateRecordsGoalieCounts).l
 	movea.l	#tmstruct,a2
 	move.w	$193AA.l,$17E98.l
 	btst	#$7,$2(a4)

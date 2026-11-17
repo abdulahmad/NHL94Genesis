@@ -21,7 +21,7 @@ GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	d0,d2
 	move.w	$C448.l,d1
 	lea.l	$4(a1),a0
-	jsr	$2790E.l
+	jsr	(TilemapPut).l
 	add.w	d2,d2
 	add.w	d2,$C448.l
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -38,7 +38,7 @@ GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	d1,d5
 	lsr.w	#$5,d5
 	lea.l	$4(a1),a0
-	jsr	$2790E.l
+	jsr	(TilemapPut).l
 	add.w	d2,d2
 	add.w	d2,$C448.l
 	lea.l	$4(a1,d2.w),a0
@@ -116,7 +116,7 @@ GateArrayIrqA	movem.l	d0-d7/a0-a2,-(sp)
 	move.w	$C448.l,d1
 	move.w	d1,$C44A.l
 	lea.l	$4(a1),a0
-	jsr	$2790E.l
+	jsr	(TilemapPut).l
 	move.w	#$C000,d0
 	bsr.w	GateArrayVdpAddrCmd
 	tst.w	$C44C.l
@@ -561,7 +561,7 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	jsr	$2801A.l
+	jsr	(GiveWordRam).l
 .loop2	btst.b	#$7,$FF800E.l
 	bne.b	.loop2
 	move.w	#$8,$FF8020.l
@@ -573,7 +573,7 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 .loop4	btst.b	#$6,$FF800E.l
 	bne.b	.loop4
 	bclr.b	#$7,$FF800F.l
-	jsr	$2800E.l
+	jsr	(WaitDmnaSet).l
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
 	move.l	$6038.w,$C42E.l
