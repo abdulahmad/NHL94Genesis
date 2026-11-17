@@ -175,7 +175,7 @@ SubVoiceUpdateLoop	move.b	SubPcmOnOffShadow(pc),d0
 	bra.b	SubVoiceCalcLevel
 .next4	clr.w	d2
 	move.b	$3(a0,d1.w),d2
-RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
+	sub.b	$1(a0,d1.w),d2
 ; Computes the level of voice d1 from the envelope steps and writes it to the PCM chip.
 SubVoiceCalcLevel	cmpi.b	#$0,d2
 	bne.b	.next
@@ -821,7 +821,7 @@ FindKeyIndex	movem.l	d1-d2/a0,-(sp)
 	lea.l	SubFoundVoiceParam(pc),a0
 	move.w	#$0,(a0)
 	movea.l	SubCurInstrRecord(pc),a0
-RestoreBiosSub3	btst.b	#$0,$C(a0)
+	btst.b	#$0,$C(a0)
 	beq.b	.next2
 	lea.l	SubVoiceInstr(pc),a0
 	move.w	SubCmdInstrKey(pc),d0
@@ -839,7 +839,7 @@ RestoreBiosSub3	btst.b	#$0,$C(a0)
 	lea.l	SubFoundVoiceParam(pc),a0
 	move.w	d0,(a0)
 	clr.w	d0
-	bra.b	RestoreBios_13
+	bra.b	.next5
 .next	addi.w	#$1,d2
 	cmpi.w	#$8,d2
 	bne.b	.loop
@@ -850,25 +850,25 @@ RestoreBiosSub3	btst.b	#$0,$C(a0)
 	lea.l	SubVoiceIndex(pc),a0
 	move.w	d1,(a0)
 	clr.w	d0
-	bra.b	RestoreBios_13
+	bra.b	.next5
 .next3	addi.w	#$1,d1
 	cmpi.w	#$8,d1
 	bne.b	.loop2
 	movea.l	SubCurInstrRecord(pc),a0
 	move.b	$1(a0),d0
 	lea.l	SubVoiceAge(pc),a0
-RestoreBiosSub4	clr.w	d1
-RestoreBios_12	cmp.b	(a0)+,d0
-RestoreBiosSub5	bhi.b	.next
+	clr.w	d1
+.loop3	cmp.b	(a0)+,d0
+	bhi.b	.next4
 	lea.l	SubVoiceIndex(pc),a0
 	move.w	d1,(a0)
 	clr.w	d0
-	bra.b	RestoreBios_13
-.next	addi.w	#$1,d1
+	bra.b	.next5
+.next4	addi.w	#$1,d1
 	cmpi.w	#$8,d1
-	bne.b	RestoreBios_12
+	bne.b	.loop3
 	ori.b	#$1,ccr
-RestoreBios_13	movem.l	(sp)+,d1-d2/a0
+.next5	movem.l	(sp)+,d1-d2/a0
 	rts
 ; Looks up the pair (d0,d1) in the table list and returns the word, carry set if absent.
 TableLookupWord	movem.l	d1-d4/a1-a2,-(sp)
@@ -1223,7 +1223,7 @@ ScreenSetupA	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	SendCmd2Inline
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
-RestoreBiosSub9	bsr.w	SendCmd3
+	bsr.w	SendCmd3
 	moveq	#$1,d4
 	move.w	d4,$10AF0.l
 	movea.l	$109DC.l,a0
@@ -1248,7 +1248,7 @@ RestoreBiosSub9	bsr.w	SendCmd3
 	bsr.w	SendCmd2Inline
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
-RestoreBiosSub10	movem.l	(sp)+,d0-d7/a0-a6
+	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Advances the screen animation script by one tick.
 AnimTick	movem.l	d0-d6/a0-a2,-(sp)
@@ -1300,7 +1300,7 @@ ScreenSetupB	andi.b	#$9C,$BC6E8.l
 	move.w	d4,$10AF0.l
 	bsr.w	SendStateWithInline
 	dc.b	$00,$08,$F8,$00,$01,$00,$00,$00	; ........
-RestoreBiosSub11	movea.l	$109D8.l,a2
+	movea.l	$109D8.l,a2
 	lea.l	(a2),a0
 	lea.l	(a2),a1
 	adda.l	(a2)+,a0
@@ -1380,7 +1380,7 @@ ScreenSetupC	andi.b	#$9C,$BC6E8.l
 	bsr.w	SendCmd2Inline
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
-RestoreBiosSub12	bsr.w	SendCmd3
+	bsr.w	SendCmd3
 	bsr.w	SendCmdF
 	move.w	$10BCE.l,$10B2A.l
 	move.w	$10BCE.l,$10B2C.l
@@ -1389,20 +1389,20 @@ RestoreBiosSub12	bsr.w	SendCmd3
 	clr.w	$10B22.l
 	bsr.w	SendStateInline
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-RestoreBiosSub13	move.l	#$80,d0
+	move.l	#$80,d0
 	moveq	#$20,d1
 	move.l	#$7FF,d2
 	jsr	$E4D6.l
 	bsr.w	SendStateInline
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
-RestoreBiosSub14	move.l	#$80,d0
+	move.l	#$80,d0
 	moveq	#$20,d1
 	move.l	#$7FF,d2
 	jsr	$E4D6.l
 	moveq	#$1C,d4
 	bsr.w	SendStateInline
 	dc.b	$00,$06,$FE,$00,$13,$00	; ......
-RestoreBiosSub15	movea.l	$10984.l,a1
+	movea.l	$10984.l,a1
 	adda.l	$4(a1),a1
 	lea.l	$BC6EC.l,a2
 	clr.w	d0
@@ -1414,7 +1414,7 @@ RestoreBiosSub15	movea.l	$10984.l,a1
 	jsr	$E51C.l
 	bsr.w	SendStateInline
 	dc.b	$00,$06,$FD,$00,$00,$00	; ......
-RestoreBiosSub16	movea.l	$10984.l,a0
+	movea.l	$10984.l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -1432,7 +1432,7 @@ RestoreBiosSub16	movea.l	$10984.l,a0
 	bsr.w	CopyAnimStateToCmd
 	bsr.w	SendStateInline
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-RestoreBiosSub17	lea.l	$25F0E.l,a1
+	lea.l	$25F0E.l,a1
 	bsr.w	CalcScrollPhase
 	addi.w	#$40,$10B22.l
 	clr.w	$10B20.l
@@ -1444,19 +1444,19 @@ RestoreBiosSub17	lea.l	$25F0E.l,a1
 	dbra	d3,.loop
 	bsr.w	SendStateInline
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-RestoreBiosSub18	lea.l	$25F36.l,a1
-.loop	bsr.w	CalcScrollPhase
+	lea.l	$25F36.l,a1
+.loop2	bsr.w	CalcScrollPhase
 	adda.w	(a1),a1
 	moveq	#$3F,d4
-.loop2	bsr.w	WaitFrameAndUpdate
+.loop3	bsr.w	WaitFrameAndUpdate
 	bsr.w	WaitFrameAndUpdate
 	addq.w	#$1,$10B22.l
-	dbra	d4,.loop2
-	moveq	#$78,d4
-.loop3	bsr.w	WaitFrameAndUpdate
 	dbra	d4,.loop3
+	moveq	#$78,d4
+.loop4	bsr.w	WaitFrameAndUpdate
+	dbra	d4,.loop4
 	tst.w	$2(a1)
-	bpl.b	.loop
+	bpl.b	.loop2
 	rts
 ; Derives the scroll phase from the counter at $10B22.
 CalcScrollPhase	move.w	$10B22.l,d0
@@ -1629,11 +1629,11 @@ AnimNextFrame	movea.l	(a4),a1
 	move.w	$2(a1),d2
 	move.l	a1,(a4)
 .next4	tst.w	d2
-	bmi.w	RestoreBios_65
+	bmi.w	.ex
 	move.w	(a3)+,d0
-RestoreBiosSub20	move.w	(a3),d1
+	move.w	(a3),d1
 	bsr.w	SpriteListAddObject
-RestoreBios_65	rts
+.ex	rts
 ; Stores the animation state and sends command 4.
 QueueAnimCmd	move.w	d4,(a3)
 	move.l	a0,(a1)
@@ -2263,7 +2263,7 @@ RestoreBiosSub40	movem.l	d0/a0,-(sp)
 	rts
 RestoreBiosSub41	movem.l	d0-d2/a0,-(sp)
 	lea.l	$BA450.l,a0
-RestoreBiosSub42	move.w	d0,(a0)+
+	move.w	d0,(a0)+
 	move.w	d1,(a0)+
 	move.w	d2,(a0)+
 	moveq	#$18,d0

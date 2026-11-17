@@ -68,7 +68,7 @@ X_1B9CSub3	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	$8(a0),$8(a6)
 	add.l	d2,$8(a6)
 	movea.l	d1,a2
-X_1B9CSub4	movem.l	d0-d2/d7/a0-a1,-(sp)
+	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
@@ -1127,7 +1127,7 @@ PlSelectPicture	movem.l	d0-d7/a0-a2,-(sp)
 	cmpi.w	#$2,$F8(a6)
 	bne.w	LF64_7
 	movea.l	a1,a2
-LF64Sub2	movem.l	d2,-(sp)
+	movem.l	d2,-(sp)
 	move.w	$EE(a6),d3
 	move.l	#$100,d6
 	bsr.w	PlCopyRectToVdp

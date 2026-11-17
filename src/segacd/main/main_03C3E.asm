@@ -501,7 +501,7 @@ DispatchTail_84	move.w	$2(a1),d1
 	move.l	(a1)+,(a2)+
 	move.l	(a1)+,(a2)+
 	dbra	d0,.loop
-DispatchTailSub21	lea.l	DispatchTail_78(pc),a3
+	lea.l	DispatchTail_78(pc),a3
 	move.l	d6,(a3)
 	lea.l	DispatchTail_79(pc),a3
 	move.l	d7,(a3)
@@ -516,9 +516,9 @@ DispatchTailSub21	lea.l	DispatchTail_78(pc),a3
 .next	moveq	#$1,d2
 	move.w	d7,d5
 	bra.b	.next4
-.loop	move.w	d6,d4
+.loop2	move.w	d6,d4
 	bra.b	.next3
-.loop2	subq.w	#$1,d2
+.loop3	subq.w	#$1,d2
 	bne.b	.next2
 	move.l	(a1)+,d7
 	moveq	#$11,d1
@@ -530,8 +530,8 @@ DispatchTailSub21	lea.l	DispatchTail_78(pc),a3
 	add.w	d3,d1
 	addq.w	#$1,d3
 	move.w	d1,(a3)+
-.next3	dbra	d4,.loop2
-.next4	dbra	d5,.loop
+.next3	dbra	d4,.loop3
+.next4	dbra	d5,.loop2
 	move.l	(sp)+,d7
 	moveq	#$0,d2
 	move.w	d6,d2
@@ -547,9 +547,9 @@ DispatchTailSub21	lea.l	DispatchTail_78(pc),a3
 	swap	d0
 	move.l	d0,$4(a0)
 	bra.b	.next6
-.loop3	move.w	d6,d4
+.loop4	move.w	d6,d4
 	bra.b	.next5
-.loop4	move.l	(a1)+,(a0)
+.loop5	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
@@ -557,8 +557,8 @@ DispatchTailSub21	lea.l	DispatchTail_78(pc),a3
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
 	move.l	(a1)+,(a0)
-.next5	dbra	d4,.loop4
-.next6	dbra	d7,.loop3
+.next5	dbra	d4,.loop5
+.next6	dbra	d7,.loop4
 DispatchTail_86	lea.l	DispatchTail_73(pc),a2
 	move.w	#$1,(a2)
 	movem.l	(sp)+,d0-d7/a0-a5

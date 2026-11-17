@@ -24,7 +24,7 @@ SendCmdE320Inline	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$E320.l
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$08	; ............. ..
 	dc.b	$00,$00	; ..
-RestoreBiosSub45	movem.l	(sp)+,a1
+	movem.l	(sp)+,a1
 	bsr.w	SendCmd3
 	move.l	#$4000400,-(sp)
 	jsr	$10540.l
@@ -58,7 +58,7 @@ RestoreBiosSub45	movem.l	(sp)+,a1
 	move.l	#$0,-(sp)
 	move.l	#$0,-(sp)
 	move.l	#$E000,-(sp)
-RestoreBiosSub47	move.l	#$0,-(sp)
+	move.l	#$0,-(sp)
 	move.l	#$0,-(sp)
 	move.l	$EC9E.l,-(sp)
 	move.l	$EC9A.l,-(sp)
@@ -71,7 +71,7 @@ RestoreBiosSub47	move.l	#$0,-(sp)
 ; Retries the BIOS call at $E298 while the result stays negative.
 SubBootRetry	jsr	$E298.l
 	btst	#$7,d1
-RestoreBiosSub48	bne.w	.next
+	bne.w	.next
 	move.w	#$1,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp

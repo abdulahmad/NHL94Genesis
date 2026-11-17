@@ -643,33 +643,33 @@ LF64_28	move.w	#$1,$102(a6)
 .next13	movem.l	(sp)+,d0-d3/a0-a2
 .next14	tst.w	$FA(a6)
 	beq.w	LF64_29
-LF64Sub6	movem.l	d0-d3/a0-a2,-(sp)
+	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	$F6(a6),d0
 	cmp.w	$F4(a6),d0
-	bgt.w	.next2
+	bgt.w	.next16
 	cmpi.w	#$1,$F8(a6)
-	beq.w	.next
+	beq.w	.next15
 	neg.w	d0
-.next	add.w	$F2(a6),d0
+.next15	add.w	$F2(a6),d0
 	bsr.w	GateArrayLoadFont
 	addi.w	#$6,$F6(a6)
-	bra.w	.next4
-.next2	move.w	$F6(a6),d0
+	bra.w	.next18
+.next16	move.w	$F6(a6),d0
 	subi.w	#$6,d0
 	move.w	d0,$F6(a6)
 	sub.w	$F4(a6),d0
 	neg.w	d0
 	add.w	$F6(a6),d0
 	tst.w	$F8(a6)
-	bne.w	.next3
+	bne.w	.next17
 	neg.w	d0
-.next3	add.w	$F2(a6),d0
+.next17	add.w	$F2(a6),d0
 	bsr.w	GateArrayLoadFont
 	clr.w	$FA(a6)
 	clr.w	$F6(a6)
 	andi.w	#$3FF,d0
 	move.w	d0,$F2(a6)
-.next4	movem.l	(sp)+,d0-d3/a0-a2
+.next18	movem.l	(sp)+,d0-d3/a0-a2
 LF64_29	movem.l	d0-d5/a0-a1,-(sp)
 	bsr.w	TickTimers
 	movem.l	(sp)+,d0-d5/a0-a1
