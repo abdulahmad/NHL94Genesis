@@ -2498,13 +2498,13 @@ AddressErrorScreen	bclr.b	#$5,$FF800F.l
 	move.l	$A(sp),d0
 	move.l	$2(sp),d1
 	bra.w	ErrorScreenPrint
-; Table of 90 bytes after AddressErrorScreen, 90 bytes: $08,$B9,$00,$05,$00,$FF ...
-	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$18	; ........N....X..
-	dc.b	$BD,$00,$00,$49,$6C,$6C,$65,$67,$61,$6C,$20,$49,$6E,$73,$74,$72	; ...Illegal Instr
-	dc.b	$75,$63,$74,$69,$6F,$6E,$20,$2F,$00,$02,$22,$00,$60,$00,$00,$2C	; uction /..".`..,
-	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$16	; ........N....X..
-	dc.b	$BD,$00,$00,$44,$69,$76,$69,$73,$69,$6F,$6E,$20,$62,$79,$20,$7A	; ...Division by z
-	dc.b	$65,$72,$6F,$00,$20,$2F,$00,$02,$22,$00	; ero. /..".
+; Code kept as bytes after AddressErrorScreen (the 90 bytes are decoded in the row comments).
+	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$18		; bclr.b #$5, $ff800f.l / jsr $39258.l / ori.b #$0, (a0)+
+	dc.b	$BD,$00,$00,$49,$6C,$6C,$65,$67,$61,$6C,$20,$49,$6E,$73,$74,$72		; bge.b *+110 / bcs.b *+105 / bsr.b *+110 / movea.l a1, a0 / bgt.b *+117 / moveq #$72, d2
+	dc.b	$75,$63,$74,$69,$6F,$6E,$20,$2F,$00,$02,$22,$00,$60,$00,$00,$2C		; moveq #$69, d2 / ble.b *+112 / move.l $2(a7), d0 / move.l d0, d1 / bra.w *+46
+	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$16		; bclr.b #$5, $ff800f.l / jsr $39258.l / ori.b #$0, (a6)
+	dc.b	$BD,$00,$00,$44,$69,$76,$69,$73,$69,$6F,$6E,$20,$62,$79,$20,$7A		; ori.w #$6976, d4 / bvs.b *+117 / bvs.b *+113 / bgt.b *+34 / bhi.b *+123 / movea.l $1065c2(pc), a0
+	dc.b	$65,$72,$6F,$00,$20,$2F,$00,$02,$22,$00		; ble.w *+8241 / ori.b #$0, d2
 ; Error screen: prints a long as hex
 ErrorScreenPrint	movea.l	#$17EF2,a0
 	move.w	#$18,(a0)+
