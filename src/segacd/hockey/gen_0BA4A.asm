@@ -95,21 +95,20 @@ LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a r
 	moveq	#$3,d1
 	rts
 PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
-PrintNameLogTbl1	dc.w	$0018,$BF02
-	move.b	-(a0),d0
-	movea.l	d5,a0
-	bgt.s	*+118
-	bcs.s	*+116
-	movea.l	$6577(a6),a0
-	movea.l	$616D(a6),a0
-	bcs.s	PrintNameLogSub1
-	move.l	d0,d0
-PrintNameLogTbl2	dc.w	$0018,$BF02
-	dc.b	$10,'Select or repla'
-	dc.w	$6365,$3A00,$48E7,$FFFE,$3F39,$0001,$A38A,$3F39
-	dc.w	$0001,$A38C,$4EB9,$0003,$8F6E,$0006,$BF05,$0800
+PrintNameLogEnterText				;the prompt String of the name entry screen (length word, map and position codes, text)
+	dc.w	$0018
+	dc.b	$BF,$02,$10,'  Enter new name: ',$00
+PrintNameLogSelectText				;the prompt String of the Name Log list
+	dc.w	$0018
+	dc.b	$BF,$02,$10,'Select or replace:',$00
+PrintNameLogList					;draw the Name Log list screen: prompt, then the log names
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	$1A38A.l,-(sp)
+	move.w	$1A38C.l,-(sp)
+	jsr	(printz).l				;the String that follows
+	dc.w	$0006,$BF05,$0800
 	move.w	#$6,d7
-PrintNameLogSub1
+PrintNameLogRows
 	move.w	#$1,$1A38C.l
 	movea.l	#TempBuffer,a1
 .loop	bsr.w	GetLogName

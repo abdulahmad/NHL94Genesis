@@ -296,28 +296,11 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 .ex	rts
 MatchupPosNames						;Position names of matchups 1-6
 MatchupPosNamesTbl1	dc.w	$0012,$2020
-	move.l	-(a0),d0
-	movea.l	-(a3),a0
-	bcs.s	*+112
-	moveq	#$65,d2
-	moveq	#$20,d1
-	move.l	-(a0),d0
-	move.l	-(a0),d0
+	dc.b	'   center     '
 	dc.w	$0012,$206C
-	bcs.s	*+104
-	moveq	#$20,d2
-	bne.s	*+113
-	moveq	#$77,d1
-	dc.w	$6172
-	bcc.s	.next
-	move.l	-(a0),d0
+	dc.b	'eft forward   '
 	dc.w	$0012,$2072
-	bvs.s	*+105
-	bvc.s	*+118
-	movea.l	-(a6),a0
-	ble.s	*+116
-	dc.b	'ward  ',$00,$12,'left def'
-	bcs.s	L2903E
+	dc.b	'ight forward  ',$00,$12,'left defen'
 .next
 	dc.b	'seman ',$00,$12,'right de'
 	dc.b	'fenseman',$00,$12,'     g'
@@ -450,7 +433,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	rts
 HomeTxt						;name used when the home team has no nickname
 HomeTxtTbl1	dc.w	$0006,$486F
-	blt.s	*+103
+	dc.b	$6D,$65
 VisitorsTxt						;name used when the visiting team has no nickname
 VisitorsTxtTbl1	dc.b	$00,$0A,'Visitors'
 GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): return a1 =

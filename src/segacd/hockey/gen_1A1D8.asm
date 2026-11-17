@@ -213,15 +213,15 @@ L35594	moveq	#$36,d0
 	bne.w	L3565A
 	bsr.w	printsmallz
 	dc.b	$00,$06,$FA,$0A,$FE,$04	; ......
-L35610	moveq	#$C,d0
+	moveq	#$C,d0
 	moveq	#$3,d1
 	bsr.w	Framer
 	move.w	$18362.l,d0
 	move.w	$186C8.l,d1
 	btst.b	#$1,$17F68.l
-	bne.w	.next
+	bne.w	.next2
 	exg.l	d0,d1
-.next	bsr.w	printsmallz
+.next2	bsr.w	printsmallz
 	dc.b	$00,$06,$FB,$01,$FA,$FE	; ......
 L3563C	movea.l	#linelist,a1
 	dc.w	$6100,$787A

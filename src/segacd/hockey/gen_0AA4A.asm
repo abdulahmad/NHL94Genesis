@@ -565,23 +565,23 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$91234567,$89ABCDEF
-L263EE	move.w	d4,$1A3D2.l
+	move.w	d4,$1A3D2.l
 	movea.l	$47D10.l,a2
 	addq.l	#$8,a2
 	jsr	$38946.l
 	dc.b	$91,$23,$45,$60,$89,$AB,$CD,$EF	; .#E`....
-L2640A	move.w	d4,$18D42.l
+	move.w	d4,$18D42.l
 	jsr	$393E8.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-L26422	moveq	#$28,d0
+	moveq	#$28,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	jsr	$38C06.l
 	jsr	$3EC60.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
-L26442	movea.l	$47D0C.l,a0
+	movea.l	$47D0C.l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -604,9 +604,9 @@ L26442	movea.l	$47D0C.l,a0
 	addq.l	#$8,a2
 	jsr	$38946.l
 	dc.b	$71,$23,$45,$67,$89,$AB,$CD,$EF	; q#Eg....
-L264A0	jsr	$38F6E.l
+	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$1F,$06,$00	; ......
-L264AC	move.w	$17FAE.l,d0
+	move.w	$17FAE.l,d0
 	tst.w	$1A390.l
 	beq.w	.next
 	move.w	$17FB0.l,d0
@@ -621,16 +621,16 @@ L264AC	move.w	$17FAE.l,d0
 	jsr	$38F80.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$1B,$07,$00	; ......
-L264F2	move.w	#$8,d0
+	move.w	#$8,d0
 	move.w	#$8,d1
 	jsr	$38CA0.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$8F,$1C,$08,$00	; ......
-L2650C	move.w	$17FAE.l,d3
+	move.w	$17FAE.l,d3
 	tst.w	$1A390.l
-	beq.w	.next
+	beq.w	.next2
 	move.w	$17FB0.l,d3
-.next	asl.w	#$2,d3
+.next2	asl.w	#$2,d3
 	movea.l	$47D8C.l,a0
 	movea.l	(a0,d3.w),a0
 	movea.l	a0,a1
@@ -650,12 +650,12 @@ L2650C	move.w	$17FAE.l,d3
 	jsr	$387E2.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$02,$00,$00	; ......
-L2656C	move.w	#$24,d0
+	move.w	#$24,d0
 	move.w	#$6,d1
 	jsr	$38CA0.l
 	jsr	$39258.l
 	dc.b	$00,$10,$BF,$0A,$02,$4E,$41,$4D,$45,$20,$20,$45,$4E,$54,$52,$59	; .....NAME  ENTRY
-L26590	bsr.w	ReadNameLog
+	bsr.w	ReadNameLog
 	clr.w	$1A38E.l
 	move.w	#$1,$1A38C.l
 	clr.w	d0
@@ -665,7 +665,7 @@ L26590	bsr.w	ReadNameLog
 	dc.w	$6100,$06AC
 	jsr	$38F6E.l
 	dc.b	$00,$0E,$BF,$07,$06,$4E,$61,$6D,$65,$20,$4C,$6F,$67,$00	; .....Name Log.
-L265CA	move.w	#$18,$18D62.l
+	move.w	#$18,$18D62.l
 	bclr.b	#$2,$18D64.l
 	clr.w	d4
 	bsr.w	SyncLetterCursor
@@ -686,7 +686,7 @@ L265CA	move.w	#$18,$18D62.l
 L2662C	bsr.w	GetNameLength
 	jsr	$38F6E.l
 	dc.b	$00,$06,$BF,$05,$12,$00	; ......
-L2663C	tst.w	$1A566.l
+	tst.w	$1A566.l
 	beq.w	.next
 	movea.l	#$1A37C,a1
 	bsr.w	PrintNameField
@@ -764,7 +764,7 @@ L2663C	tst.w	$1A566.l
 L26784	add.w	d4,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
-L26796	bsr.w	LetterGridPos
+	bsr.w	LetterGridPos
 	moveq	#$1,d2
 	move.w	$18D58.l,-(sp)
 	move.w	$18D5A.l,-(sp)

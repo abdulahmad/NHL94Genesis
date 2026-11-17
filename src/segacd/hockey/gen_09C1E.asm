@@ -443,11 +443,11 @@ TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per te
 	movem.l	(sp)+,d0-d1
 	bsr.w	GetRecordValue
 	tst.w	d0
-	bne.w	.next4
+	bne.w	.next
 	movea.l	(sp)+,a1
 	move.w	#$2,(a1)
-	bra.w	.next7
-.next4	movea.l	#TempBuffer,a1
+	bra.w	.next4
+.next	movea.l	#TempBuffer,a1
 	move.w	d0,$17E64.l
 	bsr.w	AppendNumber
 	movea.l	(sp),a3
@@ -456,17 +456,17 @@ TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per te
 	move.w	$17E64.l,d0
 	movea.l	#$25808,a1
 	cmpi.w	#$1,d0
-	bne.w	.next5
+	bne.w	.next2
 	movea.l	#$25810,a1
-.next5	tst.w	d1
-	bne.w	.next6
+.next2	tst.w	d1
+	bne.w	.next3
 	movea.l	#$257F8,a1
 	cmpi.w	#$1,d0
-	bne.w	.next6
+	bne.w	.next3
 	movea.l	#$25800,a1
-.next6	movea.l	(sp)+,a3
+.next3	movea.l	(sp)+,a3
 	jsr	(appstring).l
-.next7	movem.l	(sp)+,d0-d7/a1-a6
+.next4	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 PlayerCardScreenTbl1	dc.b	$00,$0A,'Record ',$00,$00,$08,' goa'
 	dc.b	'ls',$00,$08,' goal',$00,$00,$08,' sav'

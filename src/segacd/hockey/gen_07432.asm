@@ -1,6 +1,6 @@
 	move.w	#$F1F,d1
-.loop18	add.b	(a0)+,d0
-	dbra	d1,.loop18
+.loop	add.b	(a0)+,d0
+	dbra	d1,.loop
 	rts
 	dc.w	$41F9,$0001,$93BC,$303C,$0F1F,$4281,$10C1,$51C8
 	dc.w	$FFFC,$4E75
@@ -8,35 +8,35 @@
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-.loop19	move.b	(a1)+,(a0)+
-	dbra	d1,.loop19
+.loop2	move.b	(a1)+,(a0)+
+	dbra	d1,.loop2
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	.next3
+	beq.s	.next
 	move.w	#$1,-(a6)
-	bra.s	.next4
-.next3	move.w	#$0,-(a6)
-.next4	bclr	#$5,$FF800F.l
+	bra.s	.next2
+.next	move.w	#$0,-(a6)
+.next2	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-.loop20	move.b	(a0)+,(a1)+
-	dbra	d1,.loop20
+.loop3	move.b	(a0)+,(a1)+
+	dbra	d1,.loop3
 	tst.w	$193BA.l
-	bmi.w	.next6
+	bmi.w	.next4
 	jsr	$2242A.l
 	move.l	d0,$1A2DC.l
 	move.w	#$0,d0
 	lea.l	(ThreeStars).l,a0
 	lea.l	(mesarea).l,a1
 	jsr	$5F16.w
-	bcs.w	.next5
+	bcs.w	.next3
 	move.w	#$5,d0
 	lea.l	BackupRamName.l,a0
 	jsr	$5F16.w
@@ -44,16 +44,16 @@
 	lea.l	BackupRamNameSize.l,a0
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
-	bcc.w	.next6
-.next5	move.w	#$FFFF,$193BA.l
-.next6	move.l	a6,-(sp)
+	bcc.w	.next4
+.next3	move.w	#$FFFF,$193BA.l
+.next4	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	.next7
+	beq.s	.next5
 	bset	#$5,$FF800F.l
-	bra.s	.next8
-.next7	bclr	#$5,$FF800F.l
-.next8	move.l	a6,$19360.l
+	bra.s	.next6
+.next5	bclr	#$5,$FF800F.l
+.next6	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts

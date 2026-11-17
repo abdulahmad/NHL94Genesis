@@ -457,9 +457,9 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 .next2	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutEmptyTxt						;empty String: no name number in the crowd record
-	ori.b	#$6,d2
-	bhi.s	*+123
-	move.l	d0,d0
+	dc.w	2
+	dc.w	6							;the String 'by ' of the next label
+	dc.b	'by ',$00
 ScoutSpaceTxt						;space after the name
 ScoutSpaceTxtTbl1	dc.w	$0004,$2000
 GetTeamCity						;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,

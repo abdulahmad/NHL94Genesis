@@ -118,26 +118,26 @@ L2E62A	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	$38D8C.l
 	dc.b	$00,$14,$FD,$04,$FA,$02,$41,$72,$65,$6E,$61,$20,$52,$65,$63,$6F	; ......Arena Reco
 	dc.b	$72,$64,$FD,$1C	; rd..
-L2E678	move.w	(sp)+,d0
+	move.w	(sp)+,d0
 	move.w	#$3,d1
 	jsr	$3919A.l
 	jsr	$38F80.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
-L2E696	jsr	$2AC02.l
+	jsr	$2AC02.l
 	move.w	d0,d1
 	ext.l	d1
 	movea.l	#$BC000,a0
 	jsr	$2258E.l
 	move.b	$8(a0),d0
-	bne.w	.next
+	bne.w	.next2
 	move.w	#$50,d0
-.next	andi.w	#$FF,d0
+.next2	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	$38D8C.l
 	dc.b	$00,$16,$FD,$04,$FA,$02,$4C,$65,$61,$67,$75,$65,$20,$52,$65,$63	; ......League Rec
 	dc.b	$6F,$72,$64,$FD,$1C,$00	; ord...
-L2E6DA	move.w	(sp)+,d0
+	move.w	(sp)+,d0
 	move.w	#$3,d1
 	jsr	$3919A.l
 	jsr	$38F80.l
@@ -154,7 +154,7 @@ L2E6F8	movem.l	(sp)+,d0-d7/a0-a6
 	jsr	$38F80.l
 	jsr	$38F6E.l
 	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
-L2E726	rts
+	rts
 ; Forces black and sets display flags for the crowd meter screen.
 CrowdMeterFadeIn
 	movem.l	d0-d1/a2,-(sp)
@@ -298,7 +298,7 @@ CrowdMeterScreenSub2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 	dc.l	$43434567,$89ABCDEF
-L2EB00	move.w	$18D4E.l,d4
+	move.w	$18D4E.l,d4
 	jsr	$393FA.l
 	jsr	$3EC78.l
 	jsr	$3EC94.l
@@ -342,7 +342,7 @@ L2ECCA	tst.w	d0
 	move.w	#$B,$18D58.l
 	jsr	$38F6E.l
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
-L2ECEA	bra.w	L13D4E
+	bra.w	L13D4E
 L2ECEE	movea.l	$1E(a2),a1
 	adda.w	$0(a1),a1
 	move.w	d0,d2
