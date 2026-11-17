@@ -117,3 +117,13 @@ CC_Font3	equ	$FD
 CC_Font1Pal1	equ	$EF
 CC_Font1Pal2	equ	$DF
 CC_Font2Pal2	equ	$DE
+CC_Font1Pal3	equ	$CF
+CC_Font2Pal3	equ	$CE
+CC_Font3Pal3	equ	$CD
+CC_Font1Pri	equ	$BF
+CC_Font2Pri	equ	$BE
+CC_Font3Pri	equ	$BD
+CC_Font2Pal2Pri	equ	$9E
+CC_Font1Pal3Pri	equ	$8F
+CC_Font2Pal3Pri	equ	$8E
+CC_Font3Pal3Pri	equ	$8D
