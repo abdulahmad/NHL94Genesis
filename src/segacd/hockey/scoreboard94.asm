@@ -65,7 +65,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	jsr	(UnpackPictureSelectGfx).l
 	bsr.w	SprSort
 	btst	#$0,$17F6A.l
-	bne.w	.next
+	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1,$0,$0
 	moveq	#$20,d0
@@ -73,7 +73,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	move.w	#$7FF,d2
 	bsr.w	eraser
 	bsr.w	printscores1
-.next	movem.l	(sp)+,d0-d7/a0-a6
+.ex	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 SetHor						;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -98,12 +98,12 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bsr.w	dobitmap
 	bsr.w	USBoard
 	btst	#$0,$17F6A.l
-	bne.w	.next
+	bne.w	.ex
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
 	bsr.w	DoDMANd2Queue
-.next	movem.l	(sp)+,d0-d7/a0-a6
+.ex	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
 	
@@ -135,7 +135,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 .1	bsr.w	PrintTickerEntry
 	bsr.w	EASNLogo
 	btst	#$0,$17F6E.l
-	bne.w	.loop
+	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1Pri,$17,$17
 	moveq	#$8,d0
@@ -149,7 +149,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	String	CC_Font1Pri,$18,$18
 	adda.w	#$366,a2
 	bsr.w	printscores1_ps
-.loop	movem.l	(sp)+,d0-d2/a0-a3
+.ex	movem.l	(sp)+,d0-d2/a0-a3
 	rts
 .sbscreen	bsr.w	printz
 	String	CC_Font2Pri,$11,$2
@@ -173,7 +173,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	adda.w	#$366,a2		;tmsize
 	moveq	#$2C,d0
 	bsr.w	PrintTeamLogoAndScore
-	bra.w	.loop
+	bra.w	.ex
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 	
 	movea.l	$1E(a2),a1
@@ -326,9 +326,9 @@ AvgCline						;Return d0 = average energy of current line on team a2
 .next	adda.w	#$80,a0
 	dbra	d2,.loop
 	tst.w	d1
-	beq.w	.next2
+	beq.w	.ex
 	divu.w	d1,d0
-.next2	movem.l	(sp)+,d1-d3/a0
+.ex	movem.l	(sp)+,d1-d3/a0
 	rts
 
 ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team, shooter
@@ -365,14 +365,14 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	beq.w	.foundplayer
 	adda.w	#$80,a2
 	dbra	d1,.findplayer
-	bra.w	.next2
+	bra.w	.ex
 .foundplayer	move.w	$52(a2),d0
-	bra.w	.next
+	bra.w	.addShot
 .Cwdupdate	movem.l	d0-d1/a1-a3,-(sp)
 	addi.w	#$64,(Crowdlevel).l
 	addi.w	#$A,$17CD8.l
 	move.w	$17E28.l,d0
-.next	asl.w	#$7,d0
+.addShot	asl.w	#$7,d0
 	movea.l	#$17480,a3
 	adda.w	d0,a3
 	bsr.w	ChkShotStatSwapStructs
@@ -398,10 +398,10 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	addi.w	#$EA,d0
 	addi.b	#$1,(a2,d0.w)
 	move.w	$28(a1),d0
-	bmi.w	.next2
+	bmi.w	.ex
 	addi.w	#$EA,d0
 	addi.b	#$1,(a1,d0.w)
-.next2	movem.l	(sp)+,d0-d1/a1-a3
+.ex	movem.l	(sp)+,d0-d1/a1-a3
 	rts
 ; Picks the shooting team struct and swaps it for the other side when needed
 ChkShotStatSwapStructs
@@ -471,9 +471,9 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 .1	bsr.w	SetupTeamForIntermission
 	moveq	#$F,d0
 	movea.l	#$17480,a0
-.loop	clr.w	$0(a0)
+.clr	clr.w	$0(a0)
 	adda.w	#$80,a0
-	dbra	d0,.loop
+	dbra	d0,.clr
 	move.w	$18D56.l,d4
 	movea.l	$47D34.l,a2
 	addq.l	#$8,a2
@@ -495,7 +495,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bsr.w	GetShifter
 	move.w	d1,$18ADE.l
 	bset	#$5,$FF800F.l
-.loop2	tst.w	$18ADE.l
+.top	tst.w	$18ADE.l
 	bmi.w	.doh
 	bsr.w	NewTickerNext
 	bsr.w	NewTicker3
@@ -507,7 +507,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	move.w	#$3C,d0
 	bsr.w	waitxsr
 	btst	#$7,d1
-	beq.w	.loop2
+	beq.w	.top
 .clrh	bset	#$3,$17F6E.l
 .doh	bsr.w	DoHiLights
 	bclr	#$3,$17F6E.l
@@ -534,7 +534,7 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.loop	cmp.w	$18A98.l,d1
+.top	cmp.w	$18A98.l,d1
 	beq.w	.next2
 	btst	#$2,$E(a0)
 	bne.w	.next2
@@ -545,7 +545,7 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 .0	bsr.w	SetScore
 .next	dbra	d0,.0
 .next2	suba.w	#$10,a0
-	dbra	d1,.loop
+	dbra	d1,.top
 	rts
 UpdateScores						;update ticker score values. Called from PeriodOver
 	bsr.w	GetShifter
@@ -554,14 +554,14 @@ UpdateScores						;update ticker score values. Called from PeriodOver
 	moveq	#$10,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
-.loop	cmp.w	$18A98.l,d1
+.top	cmp.w	$18A98.l,d1
 	beq.w	.next
 	bclr	#$1,$E(a0)
 	btst	#$2,$E(a0)
 	bne.w	.next
 	bsr.w	SetScore
 .next	suba.w	#$10,a0
-	dbra	d1,.loop
+	dbra	d1,.top
 	rts
 SetScore						;add to score for game in a0. After period 3 a game within one goal goes
 	
@@ -574,12 +574,12 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.w	$A(a0),d0
 	sub.w	$C(a0),d0
 	cmpi.w	#$1,d0
-	bgt.w	.next
+	bgt.w	.ex
 	cmpi.w	#$FFFF,d0
-	blt.w	.next
+	blt.w	.ex
 	move.w	#$3,$8(a0)
 	bset	#$1,$E(a0)
-	bra.w	.next
+	bra.w	.ex
 .o	addi.w	#$1,$8(a0)
 	move.w	$0(a0),d0
 	move.w	$2(a0),d1
@@ -589,7 +589,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.w	$0(a0),d1
 	bsr.w	.getscore
 	add.w	d0,$C(a0)
-.next	movem.l	(sp)+,d0-d1/a0-a1
+.ex	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 .getscore	asl.w	#$2,d0
 	movea.l	#TeamList,a1

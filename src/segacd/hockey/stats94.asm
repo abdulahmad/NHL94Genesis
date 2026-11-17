@@ -300,10 +300,10 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 .top	movea.l	#PAttribColumns,a1
 	move.w	(scoutcolumn).l,d0
 	bra.w	.2
-.loop	adda.w	(a1),a1
+.next	adda.w	(a1),a1
 	adda.w	#$4,a1
 .2	tst.w	(a1)
-	dbmi	d0,.loop
+	dbmi	d0,.next
 	bpl.w	.found
 	subi.w	#$1,(scoutcolumn).l
 	bra.w	.top
@@ -342,13 +342,13 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	suba.w	#$1,a0
 .0	move.b	(a0),d0
 	cmp.b	$17F60.l,d0
-	beq.w	.loop
+	beq.w	.line
 	move.b	d0,$17F60.l
 	bsr.w	DrawLineIconErase
-.loop	btst	d5,$17F60.l
+.line	btst	d5,$17F60.l
 	beq.w	.next
 	bsr.w	DrawLineIcon
-.next	dbra	d5,.loop
+.next	dbra	d5,.line
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
@@ -508,9 +508,9 @@ LineEditorExit
 	move.w	$2A(a2),d0
 	addi.w	#$1,d0
 	cmp.b	(a3),d0
-	beq.w	.next
+	beq.w	.0
 	movea.l	#LineEditorMenuNoLoad,a0
-.next	jsr	(printsmallz).l
+.0	jsr	(printsmallz).l
 	String	CC_Font1,$2
 	bsr.w	SetMenuScreenHandler
 .loop2	bsr.w	MenuWaitVblank
@@ -558,7 +558,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
-.loop	move.b	(a3),d2
+.next	move.b	(a3),d2
 	bmi.w	.done
 	bchg	#$0,d4
 	bne.w	.hi
@@ -576,7 +576,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	andi.w	#$FF,d0
 	move.b	(a3)+,d2
 	bsr.w	SetLineSlot
-	bra.w	.loop
+	bra.w	.next
 .done	movem.l	(sp)+,d0-d4/a0/a3
 	rts
 EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into databuffer and
@@ -593,7 +593,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	movea.l	#$2D0B2,a3
 	clr.w	d4
 	clr.w	d2
-.loop	move.b	(a3)+,d2
+.next	move.b	(a3)+,d2
 	bmi.w	.done
 	move.b	(a1,d2.w),d3
 	subi.b	#$1,d3
@@ -605,10 +605,10 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 .pack	bchg	#$0,d4
 	bne.w	.hi
 	move.b	d3,(a0)
-	bra.w	.loop
+	bra.w	.next
 .hi	asl.b	#$4,d3
 	or.b	d3,(a0)+
-	bra.w	.loop
+	bra.w	.next
 .done	jsr	(ReadLineDataBackupWrite).l
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
@@ -636,9 +636,9 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	String	CC_Font3Pri,$9,$4,'Team  Roster',CC_Font3Pri,$E,$1
 	clr.w	d0
 	cmpa.l	#$1834C,a2
-	beq.w	.next
+	beq.w	.home
 	moveq	#$2C,d0
-.next	bsr.w	PutTeamBlockDraw
+.home	bsr.w	PutTeamBlockDraw
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0034
@@ -1577,7 +1577,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	addi.w	#$1,d5
 	cmpi.w	#$5,d5		;5 columns
 	bne.w	.col
-	bra.w	.ex
+	bra.w	.x
 .goalie	clr.w	d0		;Shots against
 	move.b	(a4),d0
 	moveq	#$3,d1		;column 3 (SOG array)
@@ -1613,7 +1613,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	jsr	(print).l
 	jsr	(printz).l
 	String	'%'
-.ex	rts
+.x	rts
 
 GetStatColumn						;d2 = stat column d1 for player d0. Goalies only have PIM (btst d1,#6
 									;picks the columns kept)

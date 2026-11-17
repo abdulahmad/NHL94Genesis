@@ -6,26 +6,26 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	subi.w	#$1,d7		;position 1 is entry 0
 	movea.l	#$292E2,a0
 	btst	#$7,$62(a3)		;which net?
-	beq.w	.next
+	beq.w	.0
 	movea.l	#$292F2,a0
-.next	add.w	d7,d7		;word per position
+.0	add.w	d7,d7		;word per position
 	move.w	(a0,d7.w),d0		;X min of the box
 	cmp.w	$44(a3),d0
-	blt.w	.next2
+	blt.w	.1
 	move.w	d0,$44(a3)		;clamp to the left
-.next2	move.w	$2(a0,d7.w),d0		;X max of the box
+.1	move.w	$2(a0,d7.w),d0		;X max of the box
 	cmp.w	$44(a3),d0
-	bgt.w	.next3
+	bgt.w	.2
 	move.w	d0,$44(a3)		;clamp to the right
-.next3	move.w	$4(a0,d7.w),d0		;Y min of the box
+.2	move.w	$4(a0,d7.w),d0		;Y min of the box
 	cmp.w	$46(a3),d0
-	blt.w	.next4
+	blt.w	.3
 	move.w	d0,$46(a3)		;clamp to the bottom
-.next4	move.w	$6(a0,d7.w),d0		;Y max of the box
+.3	move.w	$6(a0,d7.w),d0		;Y max of the box
 	cmp.w	$46(a3),d0
-	bgt.w	.next5
+	bgt.w	.x
 	move.w	d0,$46(a3)		;clamp to the top
-.next5	movem.l	(sp)+,d0-d7/a0
+.x	movem.l	(sp)+,d0-d7/a0
 	rts
 ; Position limits
 ClampPositionBoxFirstLimits	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
@@ -74,18 +74,18 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	$17CEE.l,d4
 	move.w	$17CEA.l,d5
 	move.w	$1A550.l,d0
-	bra.w	.next3
+	bra.w	.spr
 	andi.w	#$F,d2
 	cmpi.w	#$3,d2
-	bls.w	.next
+	bls.w	.0
 	moveq	#$3,d2
-.next	bra.w	.next2
+.0	bra.w	.next2
 .loop	move.w	d3,d0
 	add.w	d2,d0
 	dc.w	$6100,$0008		; bsr.w X_293DC
 .next2	dbra	d2,.loop
 	rts	
-.next3
+.spr
 	ext.w	d0
 	beq.w	AddArenaAnimSpriteExit
 	cmpi.w	#$40,d6
@@ -135,10 +135,10 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	move.w	d5,(a6)+
 	addi.w	#$1,d6
 	cmpi.w	#$40,d6
-	beq.w	.next5
+	beq.w	.x
 .next4	adda.w	#$8,a0
 	dbra	d4,.loop2
-.next5	movem.l	(sp)+,d0-d5
+.x	movem.l	(sp)+,d0-d5
 AddArenaAnimSpriteExit
 	rts
 PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerName), moved left so
@@ -153,17 +153,17 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 	move.w	(a0),d0
 	move.w	d0,d5
 	tst.b	-$1(a0,d5.w)		;trailing pad byte?
-	bne.w	.next
+	bne.w	.0
 	subi.w	#$1,d0		;first pad byte
 	tst.b	-$2(a0,d5.w)		;second pad byte?
-	bne.w	.next
+	bne.w	.0
 	subi.w	#$1,d0		;second pad byte
-.next	add.w	(printx).l,d0
+.0	add.w	(printx).l,d0
 	subi.w	#$29,d0		;past column $29?
-	bmi.w	.next2		;fits: leave printx
+	bmi.w	.1		;fits: leave printx
 	neg.w	d0
 	add.w	d0,(printx).l
-.next2	movea.l	a0,a1
+.1	movea.l	a0,a1
 	jsr	(print).l
 	movea.l	(sp)+,a2
 	jsr	(HotColdIcon).l
@@ -662,14 +662,14 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a2,d0.w),d0
 	cmpi.w	#$354,(a0)
 	bne.w	.2
-	bsr.w	.next2
+	bsr.w	.8
 	bra.w	.4
 .2	cmpi.w	#$A,(a0)
 	beq.w	.3
-	bsr.w	.next
+	bsr.w	.7
 .3	cmpi.w	#$A,(a0)
 	bne.w	.4
-	bsr.w	.next2
+	bsr.w	.8
 .4	jsr	(appstring).l
 	move.w	$2(a0),d0
 	bmi.w	.6
@@ -698,8 +698,8 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	jmp	(print).l
-.next	jmp	(PushNumber).l
-.next2	jmp	(PushTime).l
+.7	jmp	(PushNumber).l
+.8	jmp	(PushTime).l
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
 	String	'Score'
@@ -830,12 +830,12 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	cmp.w	$17FA8.l,d0
 	bne.w	.0
 	eori.w	#$1,$18C0E.l
-	bra.w	.next
+	bra.w	.g1
 .0	btst	#$1,$17F6A.l
-	beq.w	.next
+	beq.w	.g1
 	eori.w	#$1,$18C0E.l
 	bra.w	.chkso
-.next	eori.w	#$1,$18C0C.l
+.g1	eori.w	#$1,$18C0C.l
 .chkso	btst	#$0,$17F78.l
 	bne.w	.so
 	btst	#$2,$17F70.l
@@ -843,17 +843,17 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 .so	btst	#$1,$17F6A.l
 	bne.w	.p2
 	cmpi.w	#$2,(OptNOP).l
-	bne.w	.next2
+	bne.w	.4
 	cmpi.w	#$5,$19368.l
 	bgt.w	.x
 	bra.w	.5
-.next2	cmpi.w	#$5,$19368.l
+.4	cmpi.w	#$5,$19368.l
 	ble.w	.x
 .5	move.w	#$0,d0
 	cmpi.w	#$2,(OptNOP).l
-	bne.w	.next3
+	bne.w	.6
 	move.w	#$6,d0
-.next3	tst.w	$18C0C.l
+.6	tst.w	$18C0C.l
 	bne.w	.set1
 	move.w	#$5,d0
 	cmpi.w	#$2,(OptNOP).l
@@ -862,13 +862,13 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 .set1	jsr	(setc1player).l
 	bra.w	.x
 .p2	cmpi.w	#$2,(OptNOP).l
-	bne.w	.next4
+	bne.w	.9
 	cmpi.w	#$5,$19368.l
 	ble.w	.x
-	bra.w	.next5
-.next4	cmpi.w	#$5,$19368.l
+	bra.w	.10
+.9	cmpi.w	#$5,$19368.l
 	bgt.w	.x
-.next5	move.w	#$6,d0
+.10	move.w	#$6,d0
 	tst.w	$18C0E.l
 	bne.w	.set2		;manual: the goalie
 	move.w	#$B,d0		;skater slot

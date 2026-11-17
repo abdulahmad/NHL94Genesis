@@ -147,9 +147,9 @@ Opcode_CopyBackwardReverseMedium						;opcode E. Distance 0 is the end code
 	move.b	(a0)+,d2
 	bne.b	CopyBackwardReverseRun
 	tst.w	d1		;end of data
-	beq.w	.next		;buffer empty
+	beq.w	.fin		;buffer empty
 	bsr.w	FlushOutputBuffer
-.next	addq.w	#$4,sp		;drop the handler return: rts goes to DecompressBytecode's caller
+.fin	addq.w	#$4,sp		;drop the handler return: rts goes to DecompressBytecode's caller
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
 Opcode_CopyBackwardReverseLong						;opcode F
@@ -166,18 +166,18 @@ Opcode_CopyBackwardReverseLong						;opcode F
 FlushOutputBuffer						;Write d1 bytes (0 = 256) of the ring buffer to vram d3, advance d3
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	d1,d0
-	bne.w	.next
+	bne.w	.size
 	move.w	#$100,d0		;full buffer
-.next	lsr.w	#$1,d0		;bytes to words
+.size	lsr.w	#$1,d0		;bytes to words
 	move.w	d3,d1		;vram address
 	add.w	d0,d3
 	add.w	d0,d3
 	movea.l	a1,a0
 	tst.l	(a4)
-	beq.w	.next2
+	beq.w	.dma
 	movea.l	(a4),a1		;remap table
 	jsr	(a5)		;remap
-	bra.w	.next3
-.next2	jsr	(a6)
-.next3	movem.l	(sp)+,d0-d1/a0-a1
+	bra.w	.done
+.dma	jsr	(a6)
+.done	movem.l	(sp)+,d0-d1/a0-a1
 	rts

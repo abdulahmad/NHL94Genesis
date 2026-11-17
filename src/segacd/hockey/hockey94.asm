@@ -11,11 +11,11 @@ restoreteams						;Put both teams' rosters on the bench
 ResetClock						;set period length and stop clock
 	bsr.w	GetPeriodTime
 	cmpi.w	#$3,$180E4.l
-	blt.w	.next
+	blt.w	.0
 	tst.w	$18BFA.l
-	bne.w	.next
+	bne.w	.0
 	move.w	#$258,d0
-.next	move.w	d0,$180E6.l
+.0	move.w	d0,$180E6.l
 	move.w	d0,$180EA.l
 	move.w	d0,$1747E.l
 	asr.w	#$1,d0
@@ -26,11 +26,11 @@ ResetClock						;set period length and stop clock
 GetPeriodTime						;Return d0 = period length in seconds for the period length option
 	move.w	$18C02.l,d0
 	asl.w	#$1,d0
-	lea.l	.next(pc),a0
+	lea.l	.timetab(pc),a0
 	move.w	(a0,d0.w),d0
 	rts
 ; Table of 4 words after GetPeriodTime, 8 bytes: $012C,$0258,$04B0,$001E ...
-.next	dc.w	$012C,$0258,$04B0,$001E
+.timetab	dc.w	$012C,$0258,$04B0,$001E
 ; Period time screen set-up: sets the palette count and the gate command.
 GetPeriodTimeSetup
 	bclr	#$5,$FF800F.l
@@ -154,27 +154,27 @@ RestoreBenchEnergy						;Called once per second. Restore energy for players on t
 CheckLateGameSong						;Called once per second. 3rd period: choose and play a song once at the
 	
 	cmpi.w	#$2,$180E4.l
-	bne.w	.ex
+	bne.w	.x
 	btst	#$4,$17F68.l
-	bne.w	.ex
+	bne.w	.x
 	move.w	$180E6.l,d0
 	cmp.w	$1747E.l,d0
-	bgt.w	.ex
+	bgt.w	.x
 	st.b	$1747E.l
 	move.w	(HomeTeam).l,$1A56C.l
 	move.w	#$5,$1A56E.l
 	jsr	(ChooseSong).l
 	move.w	$1A56A.l,-(sp)
 	jsr	(song).l
-.ex	rts
+.x	rts
 UpdateCwdExcite						;called once per second. Track peak and running total of crowd excitement,
 	
 	
 	move.w	$17CD8.l,d0
 	cmp.w	$17CDA.l,d0
-	bls.w	.next
+	bls.w	.less
 	move.w	d0,$17CDA.l
-.next	ext.l	d0
+.less	ext.l	d0
 	add.l	d0,$17CDE.l
 	addi.w	#$1,$17CDC.l
 	subi.w	#$1,$17CD8.l
@@ -359,8 +359,8 @@ EndDemoExitMode4On
 Pausemode	jsr	(forceblack).l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0
-.loop	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.loop
+.vb	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.vb
 	move.w	(sp)+,d0
 	jsr	(HockeyRtsStubA).l
 	move.w	$17F6A.l,-(sp)
@@ -368,28 +368,28 @@ Pausemode	jsr	(forceblack).l
 	movea.l	#$41F50,a0
 	lea.l	PausemodeVdpFill(pc),a1
 	btst	#$0,$17F78.l
-	beq.w	.next
+	beq.w	.chk2
 	movea.l	#$41EB4,a0
-	bra.w	.next2
-.next	btst	#$2,$32(a2)
-	beq.w	.next2
+	bra.w	.0
+.chk2	btst	#$2,$32(a2)
+	beq.w	.0
 	movea.l	#$420DC,a0
-.next2	bsr.w	SetMenuScreenHandler
-.loop2	bsr.w	MenuWaitVblank
+.0	bsr.w	SetMenuScreenHandler
+.loop	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad
 	jsr	(showclock).l
 	jsr	(ProcessInputWithRepeat).l
 	bsr.w	HandleMenuInput
-	bne.w	.loop2
+	bne.w	.loop
 	jsr	(forceblack).l
 	move.w	(sp)+,$17F6A.l
 	btst	#$7,$17F6A.l
-	beq.w	.next3
+	beq.w	.clr
 	jsr	(IceRinkRemapGfxA).l
 	jsr	(SetHor).l
-	bra.w	.next4
-.next3	jsr	(ClrHor).l
-.next4	movea.l	#$C00000,a0
+	bra.w	.hor
+.clr	jsr	(ClrHor).l
+.hor	movea.l	#$C00000,a0
 .loop3	btst	#$7,$FF800E.l
 	bne.b	.loop3
 	move.w	#$9100,$FF8022.l
@@ -419,8 +419,8 @@ Pausemode	jsr	(forceblack).l
 	jsr	(printscores1).l
 	jsr	(setvideo).l
 	move.w	#$18,(palcount).l
-.loop9	tst.w	(palcount).l
-	bpl.w	.loop9
+.wait	tst.w	(palcount).l
+	bpl.w	.wait
 	move.w	(ScoutSubStatus).l,$17476.l
 	rts
 ; Pause mode: fills VDP memory through the gate array
@@ -465,10 +465,10 @@ seta2						;Set a2 to the team struct of the pause joystick also called from
 	
 	movea.l	#tmstruct,a2
 	btst	#$1,$17F6A.l
-	beq.w	.next
+	beq.w	.seta20
 	cmpi.w	#$1,$17FA8.l
 	bra.w	.seta21
-.next	cmpi.w	#$1,$17FA6.l
+.seta20	cmpi.w	#$1,$17FA6.l
 .seta21	beq.w	.x
 	adda.w	#$366,a2
 .x	rts

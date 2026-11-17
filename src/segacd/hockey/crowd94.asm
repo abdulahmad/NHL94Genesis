@@ -8,9 +8,9 @@ LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (Rea
 	move.b	$8(a0),d0
 	beq.w	.none
 	andi.w	#$FF,d0
-	bra.w	.next
+	bra.w	.ex
 .none	move.w	#$50,d0
-.next	move.w	d0,$17F8E.l
+.ex	move.w	d0,$17F8E.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 7) from
@@ -18,20 +18,20 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	
 	
 	btst	#$7,$17F6A.l
-	bne.w	.ex2
+	bne.w	.ex1
 	btst	#$0,$17F78.l
-	bne.w	.ex2
+	bne.w	.ex1
 	btst	#$0,$17F6E.l
-	bne.w	.ex
+	bne.w	.ex2
 	btst	#$7,$17F74.l
-	bne.w	.next2
+	bne.w	.chkoff
 	tst.w	$17F82.l
-	beq.w	.next
+	beq.w	.chkon
 	subi.w	#$1,$17F82.l
-	bpl.w	.ex2
+	bpl.w	.ex1
 	clr.w	$17F82.l
-.ex	rts
-.next	move.w	$17F8E.l,d0
+.ex2	rts
+.chkon	move.w	$17F8E.l,d0
 	move.w	d0,$17F90.l
 	subi.w	#$B,$17F90.l
 	subi.w	#$49,d0
@@ -39,18 +39,18 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	asr.l	#$2,d0
 	addi.w	#$6,d0
 	cmp.w	$17CD8.l,d0
-	bgt.w	.ex2
+	bgt.w	.ex1
 	bset	#$7,$17F74.l
 	rts
-.next2	move.w	$17F90.l,d0
+.chkoff	move.w	$17F90.l,d0
 	subi.w	#$41,d0
 	muls.w	d0,d0
 	asr.l	#$2,d0
 	cmp.w	$17CD8.l,d0
-	blt.w	.next3
+	blt.w	.meter
 	bclr	#$7,$17F74.l
-.next3	sub.w	d7,$17F84.l
-	bpl.w	.ex2
+.meter	sub.w	d7,$17F84.l
+	bpl.w	.ex1
 	move.w	#$14,$17F84.l
 	addi.w	#$1,$17F86.l
 	move.w	$17CD8.l,d0
@@ -60,15 +60,15 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	addi.w	#$41,d0
 	move.w	d0,$17F8C.l
 	cmp.w	$17F92.l,d0
-	ble.w	.next4
+	ble.w	.chkrec
 	move.w	d0,$17F92.l
-.next4	move.w	$17F8C.l,d0
+.chkrec	move.w	$17F8C.l,d0
 	cmp.w	$17F8E.l,d0
 	blt.w	.stack
 	bra.w	.stack
 .stack	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
-.ex2	rts
+.ex1	rts
 stopna2						;Slow Xvel and Yvel of a3 toward 0 by $7D0. Called from goalieacc
 	tst.w	$28(a3)
 	bpl.w	.xp

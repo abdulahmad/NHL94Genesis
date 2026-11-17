@@ -1,10 +1,10 @@
 AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from AttribRating,
 	
 	cmpi.w	#$32,d0
-	bge.w	.ex
+	bge.w	.exit
 	asr.w	#$1,d0
 	addi.w	#$19,d0
-.ex	rts
+.exit	rts
 	movem.w	d0-d1,-(sp)
 	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
@@ -28,9 +28,9 @@ ReadGoaliePulled						;Z clear when the team of a3 pulled its goalie ($26 of the
 	movem.l	a1,-(sp)
 	movea.l	#tmstruct,a1
 	btst	#$6,$62(a3)
-	beq.w	.next
+	beq.w	.chkgoalie
 	movea.l	#awtmstruct,a1
-.next	tst.w	$28(a1)
+.chkgoalie	tst.w	$28(a1)
 	movem.l	(sp)+,a1
 	rts
 EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, SetSPA
@@ -46,11 +46,11 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
 	tst.w	$34(a3)
-	bpl.w	.next
+	bpl.w	.0
 	jsr	(assexit).l
-	bra.w	.next2
-.next	jsr	(Setplass).l
-.next2	clr.w	$5A(a3)
+	bra.w	.1
+.0	jsr	(Setplass).l
+.1	clr.w	$5A(a3)
 	st.b	$5C(a3)
 	move.w	(sp)+,d1
 	movem.l	(sp)+,d0/a0

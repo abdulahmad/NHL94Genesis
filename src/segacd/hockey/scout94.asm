@@ -12,9 +12,9 @@ ScoutCrowdRecord						;The text player's '@' (UpdateScoutingDisplay): return a1 
 	movea.l	#TempBuffer,a1
 	clr.w	d0
 	move.b	$8(a0),d0		;crowd record
-	bne.w	.next
+	bne.w	.0
 	move.b	#$50,d0		;none saved: 80 dB
-.next	move.l	a1,-(sp)
+.0	move.l	a1,-(sp)
 	jsr	(AppendNumber).l		;d0 as a decimal String at a1
 	movea.l	(sp)+,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a6
@@ -30,7 +30,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	jsr	(ReadCrowdRecord).l		;read the HomeTeam record
 	movea.l	(sp)+,a0
 	tst.b	$9(a0)
-	beq.w	.next
+	beq.w	.0
 	movea.l	#ThreeStars,a3
 	movea.l	#$2828C,a1
 	move.l	a3,-(sp)
@@ -45,9 +45,9 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	movea.l	#$28292,a1
 	jsr	(appstring).l
 	movea.l	a3,a1		;a1 = 'by <name> '
-	bra.w	.next2
-.next	movea.l	#ScoutEmptyTxt,a1
-.next2	movem.l	(sp)+,d0-d7/a0/a2-a6
+	bra.w	.x
+.0	movea.l	#ScoutEmptyTxt,a1
+.x	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutEmptyTxt						;empty String: no name number in the crowd record
 ; Ascending offset table of 6 words after ScoutEmptyTxt ($0002,$0006 ...).
@@ -404,7 +404,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 .next6	move.l	#vb2,(VBint).l
 	jsr	(SubCmd2DSend).l
 	bset	#$5,$FF800F.l
-.loop11	moveq	#$0,d0
+.top	moveq	#$0,d0
 	jsr	(waitx).l
 	btst	#$1,$1AD77.l
 	beq.s	.next7
@@ -413,15 +413,15 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$10,d7
 	jsr	$6044.w		;d1 = new presses
 .next7	subi.w	#$1,(matchuptimer).l
-	bpl.w	.next8		;not run out
+	bpl.w	.2		;not run out
 	move.w	#$10E,(matchuptimer).l		;restart
-.next8	bsr.w	PrintAdvantageMarks
+.2	bsr.w	PrintAdvantageMarks
 	btst	#$7,d1		;Start?
 	bne.w	.next17
 	cmpi.w	#$10E,(matchuptimer).l
 	beq.w	.next9		;timer ran out: next matchup
 	btst	#$5,d1		;C?
-	beq.w	.next11
+	beq.w	.4
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
 .next9	dc.w	$6100,$0764		; bsr.w X_29058
@@ -429,24 +429,24 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	tst.w	(ScoutLastPara).l
 	beq.s	.next10
 	bsr.w	PageMatchup
-.next10	bra.w	.next14
-.next11	btst	#$6,d1		;A?
-	beq.w	.next13
+.next10	bra.w	.6
+.4	btst	#$6,d1		;A?
+	beq.w	.5
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
 	dc.w	$6100,$0732		; bsr.w X_29058
 	tst.w	(ScoutLastPara).l
 	beq.s	.next12
 	bsr.w	PageMatchup
-.next12	bra.w	.next14
-.next13	clr.w	(asv).l		;normal text speed
+.next12	bra.w	.6
+.5	clr.w	(asv).l		;normal text speed
 	btst	#$1,d1		;down?
-	beq.w	.next14
+	beq.w	.6
 	st.b	(asv).l		;down: type the rest without delays
-.next14	btst	#$1,$1AD77.l		;down held (waitx pad bits)
-	beq.w	.next15
+.6	btst	#$1,$1AD77.l		;down held (waitx pad bits)
+	beq.w	.upd
 	st.b	(asv).l
-.next15	jsr	(UpdateScoutingDisplay).l
+.upd	jsr	(UpdateScoutingDisplay).l
 	tst.w	(ScoutLastPara).l
 	bne.s	.next16
 	cmpi.w	#$FF00,(PlayerScrollCtr).l
@@ -459,13 +459,13 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.s	.next16
 	bra.w	.loop6
 .next16	subi.w	#$1,(screentimer).l
-	bpl.w	.loop11
+	bpl.w	.top
 	tst.w	(OptNOP).l
 	beq.w	.next17		;OptNOP 0: leave when the text is done
 	move.w	#$FFFF,(screentimer).l		;else wait for start, up to scoutwait frames
 	subi.l	#$1,(scoutwait).l
-	bpl.w	.loop11
-	beq.w	.loop11
+	bpl.w	.top
+	beq.w	.top
 .next17	movea.l	#$FFFFFFFF,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
@@ -717,7 +717,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	exg.l	a0,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(visrating).l
-	bra.w	.ex
+	bra.w	.x
 .matchup	move.w	(matchup).l,d0
 	subi.w	#$1,d0
 	movea.l	#$28F8E,a1
@@ -771,7 +771,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	String	CC_Font1,$4,$16
 	bsr.w	PrintTwoSpaces
 	jsr	(printsmall).l
-.ex	rts
+.x	rts
 MatchupPosNames						;Position names of matchups 1-6
 ; Data that follows MatchupPosNames (strings, small tables)
 MatchupPosNamesData	dc.w	$0012,$2020
@@ -916,12 +916,12 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	adda.w	(a1),a1
 	adda.w	(a1),a1
 	cmpi.w	#$2,(a1)
-	bne.w	.next
+	bne.w	.x
 	movea.l	#$2919A,a1
 	cmpa.l	#$1834C,a2
-	beq.w	.next
+	beq.w	.x
 	movea.l	#$291A0,a1
-.next	movem.l	(sp)+,d0/a0/a2
+.x	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname
 ; Data that follows HomeTxt (strings, small tables)

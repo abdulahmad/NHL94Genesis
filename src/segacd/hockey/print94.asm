@@ -262,7 +262,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 .nocom	cmpi.b	#$40,d0
 	bne.w	.noblank
 	move.w	#$7FF,d0
-	bra.w	.next2
+	bra.w	.p
 .noblank	cmpi.b	#$5E,d0
 	beq.w	.skip
 	asl.w	#$1,d0
@@ -273,11 +273,11 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 .2	adda.l	$4(a2),a2
 	move.w	$4(a2,d0.w),d0
 	btst	#$3,(sflags6).l
-	beq.w	.next
+	beq.w	.3
 	add.w	$17EA2.l,d0
-	bra.w	.next2
-.next	add.w	$18D42.l,d0
-.next2	add.w	d2,d0
+	bra.w	.p
+.3	add.w	$18D42.l,d0
+.p	add.w	d2,d0
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
 	move.w	d0,$FF8022.l
@@ -382,7 +382,7 @@ PushNumberWidth						;right-justified number
 .mul	mulu.w	#$A,d2
 .next	dbra	d1,.mul
 	moveq	#$20,d3
-.loop	ext.l	d0
+.loop2	ext.l	d0
 	divu.w	d2,d0
 	bne.w	.0
 	cmpi.w	#$1,d2
@@ -394,7 +394,7 @@ PushNumberWidth						;right-justified number
 .put	move.b	d0,(a1)+
 	swap	d0
 	divu.w	#$A,d2
-	bne.w	.loop
+	bne.w	.loop2
 	move.l	a1,d0
 	subi.l	#$17F56,d0
 	btst	#$0,d0
@@ -421,7 +421,7 @@ appstring						;append string a1 to string a3
 	dbeq	d0,.0
 .1	move.w	(a1)+,d0
 	subi.w	#$3,d0
-	bmi.w	.next2
+	bmi.w	.ex
 .2	move.b	(a1)+,(a0)+
 	bne.w	.next
 	suba.w	#$1,a0
@@ -433,7 +433,7 @@ appstring						;append string a1 to string a3
 	addi.l	#$1,d0
 .4	sub.l	a3,d0
 	move.w	d0,(a3)
-.next2	movem.l	(sp)+,d0/a0
+.ex	movem.l	(sp)+,d0/a0
 	rts
 printbigz						;String macro follows the call
 	move.l	a1,-(sp)

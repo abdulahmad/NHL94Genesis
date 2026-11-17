@@ -27,14 +27,14 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	btst	#$7,d1
 	bne.w	.next5
 	btst	#$1,d1
-	beq.w	.next
+	beq.w	.up
 	addi.w	#$1,$18AD2.l
 	bra.w	Pausemode_Pmenu
-.next	btst	#$0,d1
-	beq.w	.next2
+.up	btst	#$0,d1
+	beq.w	.sel
 	subi.w	#$1,$18AD2.l
 	bra.w	Pausemode_Pmenu
-.next2	btst	#$5,d1
+.sel	btst	#$5,d1
 	beq.w	.next5
 	bsr.w	seta2
 	move.w	$18AD2.l,d0
@@ -42,15 +42,15 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	adda.w	(a0),a0
 	adda.w	(a0),a0
 	bra.w	.next3
-.loop	adda.w	#$4,a0
+.3	adda.w	#$4,a0
 .next3	adda.w	(a0),a0
-	dbra	d0,.loop
+	dbra	d0,.3
 	movea.l	(a0),a0
 	jsr	(a0)
 	bclr	#$1,$17F74.l
-	bne.w	.next4
+	bne.w	.noredraw
 	bsr.w	DrawMenuScreen
-.next4	tst.w	$18AD2.l		;item 0 (resume) leaves the menu
+.noredraw	tst.w	$18AD2.l		;item 0 (resume) leaves the menu
 	rts
 .next5	eori.b	#$4,ccr		;invert Z
 	rts
@@ -61,17 +61,17 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 									;Called from DrawMenuScreen and
 									;HandleMenuInput
 	move.w	$18AD2.l,d0
-	bpl.w	.next
+	bpl.w	.0
 	clr.w	$18AD2.l		;no item above the first
 	clr.w	d0
-.next	movea.l	$18AD6.l,a0
+.0	movea.l	$18AD6.l,a0
 	adda.w	(a0),a0
 	adda.w	(a0),a0
-	bra.w	.next2
-.loop	adda.w	(a0),a0		;advance to the next item entry
+	bra.w	.2
+.next	adda.w	(a0),a0		;advance to the next item entry
 	adda.w	#$4,a0
 	tst.w	$2(a0)		;negative: the last item
-.next2	dbmi	d0,.loop		;stop after d0 items or at the last item
+.2	dbmi	d0,.next		;stop after d0 items or at the last item
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,$18AD2.l		;no item below the last
 	move.w	$18AD2.l,d0
@@ -80,9 +80,9 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	move.w	d0,$18AD4.l		;scroll up
 .next3	subi.w	#$3,d0		;selection - 3 = first visible item if it is on the bottom row
 	cmp.w	$18AD4.l,d0
-	ble.w	.next4
+	ble.w	.print
 	move.w	d0,$18AD4.l		;scroll down
-.next4	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
+.print	bsr.w	SetMenuPrintX		;print the menu: title, then marker columns, then the 4 rows
 	move.w	#$D,(printy).l
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
@@ -93,19 +93,19 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	adda.w	(a1),a1
 	move.w	$18AD4.l,d0		;skip to the first item shown
 	bra.w	.next5
-.loop2	adda.w	(a1),a1
+.skip	adda.w	(a1),a1
 	adda.w	#$4,a1
-.next5	dbra	d0,.loop2
+.next5	dbra	d0,.skip
 	moveq	#$3,d1		;4 rows
 	move.w	#$C,(printy).l
 	bsr.w	SetMenuPrintX
 	move.w	$18AD4.l,d0
-	beq.w	.loop3
+	beq.w	.row
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$000C
 	dc.b	$FE,$05,$FB,$01,$FA,$01,$7B,$FA,$FF,$00
-.loop3	bsr.w	SetMenuPrintX
+.row	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0006
@@ -114,41 +114,41 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	movea.l	$18AD6.l,a1
 	jsr	(printsmall).l
 	cmp.w	$18AD2.l,d0
-	bne.w	.next6
+	bne.w	.nosel
 	jsr	(printsmall).l
-.next6	movea.l	(sp)+,a1
+.nosel	movea.l	(sp)+,a1
 	jsr	(PrintMenuItem).l
 	addi.w	#$1,d0
 	adda.w	#$4,a1
 	tst.w	$2(a1)		;negative: the last item
-	dbmi	d1,.loop3
-	bmi.w	.ex
+	dbmi	d1,.row
+	bmi.w	.x
 	bsr.w	SetMenuPrintX
 	jsr	(printsmallz).l
 	String	CC_Font2,$5,$FB,$1,'}'
-.ex	rts
+.x	rts
 PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text starts with
 									;'x' is the goalie option: it prints Manual Goalie
 									;(.manual) when the pause team word is 0, else Auto Goalie (.auto):
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
 									;Pausemode_Pmenu
 	cmpi.b	#$78,$2(a1)		;first char 'x'
-	bne.w	.next4
+	bne.w	.plain
 	move.l	a1,-(sp)
 	movea.l	#$2C576,a1
 	btst	#$1,$17F6A.l
-	beq.w	.next
+	beq.w	.homegoalie
 	tst.w	$18C0E.l
-	bra.w	.next2
-.next	tst.w	$18C0C.l
-.next2	beq.w	.next3
+	bra.w	.chkgoalie
+.homegoalie	tst.w	$18C0C.l
+.chkgoalie	beq.w	.print
 	movea.l	#$2C58A,a1
-.next3	jsr	(printsmall).l
+.print	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1		;skip the 'x' item text
-	bra.w	.ex
-.next4	jsr	(printsmall).l
-.ex	rts
+	bra.w	.x
+.plain	jsr	(printsmall).l
+.x	rts
 PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
@@ -193,8 +193,8 @@ MenuWaitVblank						;wait till Vcount changes, then resync Vcount. Saves d0. Rea
 	move.w	d0,-(sp)
 	move.w	$17476.l,d0
 	move.w	$17476.l,d0
-.loop	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	.loop
+.wait	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.wait
 	move.w	$17476.l,(ScoutSubStatus).l
 	move.w	(sp)+,d0
 	rts
