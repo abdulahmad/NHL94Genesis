@@ -88,7 +88,7 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	beq.w	ShootersExit
 	moveq	#$0,d0
 	moveq	#$1C,d1
-	jsr	(CrowdMeterScreenSub1).l
+	jsr	(CrowdMeterFadeIn).l
 	clr.w	(scoutcolumn).l
 	clr.w	(PlayerScrollCtr).l
 	jsr	(printsmallz).l
@@ -99,14 +99,14 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	bsr.w	ResetShooterScroll
-	bsr.w	ResetShooterScrollSub1
+	bsr.w	ShooterScreenTitles
 	move.w	#$0,(TestList).l
-ShootoutShooters_1	bsr.w	ShootersSelectSub1
-	bsr.w	ResetShooterScrollSub3
-	bsr.w	ResetShooterScrollSub2
+ShootoutShooters_1	bsr.w	ShootersSelectDraw
+	bsr.w	ShooterScreenRows
+	bsr.w	ShooterScreenFrame
 ShootersLoop						;Shootout shooters: the input loop
 	jsr	(MenuWaitVblank).l
-	jsr	(GetPlayerCountSub1).l
+	jsr	(ReadActiveJoypad).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	ShootersExit
@@ -173,7 +173,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	clr.w	d0
 	bra.w	.scroll
 .loop2	jsr	(MenuWaitVblank).l
-	jsr	(GetPlayerCountSub1).l
+	jsr	(ReadActiveJoypad).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
 	bne.w	ShootoutShooters_1
@@ -286,10 +286,11 @@ ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the 
 	
 	move.w	#$4,d0
 ShootersSelect_1	move.w	d0,(TestList).l
-	bsr.w	ResetShooterScrollSub3
-	bsr.w	ResetShooterScrollSub2
+	bsr.w	ShooterScreenRows
+	bsr.w	ShooterScreenFrame
 	bra.w	ShootersLoop		;back to the input loop
-ShootersSelectSub1
+; Clears the shooter screen and draws its backdrop.
+ShootersSelectDraw
 	bsr.w	ClearShooterScreen
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
@@ -316,7 +317,7 @@ ShootersSelectSub1
 	cmpa.l	#$1834C,a2
 	beq.w	.lD018
 	move.w	#$2C,d0
-.lD018	jmp	(PutTeamBlockSub1).l
+.lD018	jmp	(PutTeamBlockDraw).l
 ClearShooterScreen						;Shootout shooters: erase the screen
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
@@ -328,7 +329,8 @@ ResetShooterScroll
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
 	rts
-ResetShooterScrollSub1
+; Prints the shooter screen heading.
+ShooterScreenTitles
 	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
@@ -349,7 +351,8 @@ ResetShooterScrollSub1
 	jsr	(printsmallz).l
 	String	CC_Font3,$1A,$FC,$C,'Goalie'
 	rts
-ResetShooterScrollSub2
+; Prints the shooter screen frame.
+ShooterScreenFrame
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
@@ -364,14 +367,15 @@ ResetShooterScrollSub2
 .lD114	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a1,d0.w),d0
-	jsr	(GetPlayerNameSub1).l
+	jsr	(GetPlayerNameBuild).l
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	rts
-ResetShooterScrollSub3
+; Prints the shooter rows.
+ShooterScreenRows
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_Font3,$6,$FC,$E,CC_Font2,$6

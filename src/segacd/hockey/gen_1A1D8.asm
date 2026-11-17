@@ -22,11 +22,11 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	tst.w	$17FA6.l
 	beq.w	.l1A7B8
 	clr.w	d4
-	bsr.w	passtoSub1
+	bsr.w	PassToJump
 .l1A7B8	tst.w	$17FA8.l
 	beq.w	.l1A7C8
 	moveq	#$2,d4
-	bsr.w	passtoSub1
+	bsr.w	PassToJump
 .l1A7C8	tst.w	$17FAA.l
 	beq.w	.l1A818
 	move.w	$17FA6.l,-(sp)
@@ -34,7 +34,7 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	move.w	$17F9E.l,-(sp)
 	move.w	#$FFFF,$17F9E.l
 	clr.w	d4
-	jsr	(passtoSub1).l
+	jsr	(PassToJump).l
 	move.w	$17F9E.l,$17FA2.l
 	move.w	$17FA6.l,$17FAA.l
 	move.w	(sp)+,$17F9E.l
@@ -46,7 +46,7 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	move.w	$17FA0.l,-(sp)
 	move.w	#$FFFF,$17FA0.l
 	move.w	#$2,d4
-	jsr	(passtoSub1).l
+	jsr	(PassToJump).l
 	move.w	$17FA0.l,$17FA4.l
 	move.w	$17FA8.l,$17FAC.l
 	move.w	(sp)+,$17FA0.l
@@ -83,7 +83,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	movea.l	#$BBD30,a0
 	move.w	$17F66.l,d0
 	move.w	$18D32.l,d1
-	jsr	(DoDMAproSub1).l
+	jsr	(DoDMAProQueue).l
 	move.w	#$2F,-(sp)
 	bsr.w	sfx
 	bclr	#$0,$17F6C.l

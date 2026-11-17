@@ -179,7 +179,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
-	bsr.w	DoDMA_nd2Sub1
+	bsr.w	DoDMANd2Queue
 	clr.w	d4
 	move.w	d4,$18D48.l
 	movea.l	$47D18.l,a2
@@ -191,7 +191,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 .l239D4	bsr.w	DecompressGraphicsPlain
 	jsr	$2A9D0.l
 	move.w	d4,$18D50.l
-	bsr.w	setupIceRinkPalSub1
+	bsr.w	SetupIceRinkPalRemap
 	move.w	d4,$18D46.l
 	movea.l	$47D40.l,a2
 	addq.l	#$8,a2
@@ -203,10 +203,10 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	move.w	d4,$1A54E.l
 	addi.w	#$32,d4
 	move.w	d4,$18D54.l
-	bsr.w	CopyTeamBlockMapDataSub1
+	bsr.w	CopyTeamBlockMapDataFill
 	move.w	d4,$18C1C.l
 	bsr.w	setupIceRinkPal
-	bsr.w	AddSmallFontSub1
+	bsr.w	AddSmallFontFramer
 	move.w	d4,$18D42.l
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
@@ -238,7 +238,7 @@ setupice_highlight
 	move.w	#$7D0,$17CEC.l
 	st.b	$17CE2.l
 	move.w	$18D54.l,d4
-	bsr.w	CopyTeamBlockMapDataSub1
+	bsr.w	CopyTeamBlockMapDataFill
 	bsr.w	setupIceRinkPal
 	btst	#$1,$17F68.l
 	beq.w	.l23BA6
@@ -247,7 +247,7 @@ setupice_highlight
 .l23B98	bchg	#$7,$62(a3)
 	adda.w	#$80,a3
 	dbra	d0,.l23B98
-.l23BA6	bsr.w	CopyTeamLinesSub1
+.l23BA6	bsr.w	CopyTeamLinesCheckTeam
 	move.w	#$FFFF,$17DC8.l
 	move.w	#$FFFF,$17DD6.l
 	clr.l	$17DCA.l
@@ -255,7 +255,7 @@ setupice_highlight
 	clr.l	$17DD2.l
 	st.b	$17F9E.l
 	st.b	$17FA0.l
-	bsr.w	setupIceRinkPalSub1
+	bsr.w	SetupIceRinkPalRemap
 	movea.l	#$18D6A,a5
 	movea.l	#$BBD30,a6
 	moveq	#$1,d6
@@ -291,7 +291,8 @@ setupIceRinkPal
 .l23C70	move.l	(a0)+,(a1)+
 	dbra	d0,.l23C70
 	rts
-setupIceRinkPalSub1
+; Decompresses the rink palette with remap.
+SetupIceRinkPalRemap
 	move.w	$18D50.l,d4
 	movea.l	$47D4C.l,a2
 	addq.l	#$8,a2
@@ -354,7 +355,8 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	addi.w	#$20,d1
 	dbra	d3,.row
 	rts
-CopyTeamBlockMapDataSub1
+; Fills the four map entries from the table at $3EE08.
+CopyTeamBlockMapDataFill
 	movea.l	#$3EE08,a2
 	movea.l	#$17DD8,a3
 	moveq	#$3,d0
@@ -428,12 +430,13 @@ defaultsprites_0Sub1
 	addq.w	#$1,d6
 	cmpi.w	#$10,d6
 	bne.w	.l23E9C
-	bra.w	SprSortSub1
+	bra.w	SprSortSetup
 SprSort						;sort objects in struct SortObj and set corresponding tables for keeping
 	
 	bclr	d0,d0
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_23F00.bin
-SprSortSub1
+; Sets up the sprite sort buffers.
+SprSortSetup
 	movem.l	d0-d4/a0-a2,-(sp)
 	movea.l	#$17CA0,a2
 	movea.l	#$17C80,a1
@@ -569,7 +572,8 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 .copy	move.l	(a0)+,(a1)+
 	dbra	d0,.copy
 	rts
-CopyTeamLinesSub1
+; Checks teams for the special team number $13.
+CopyTeamLinesCheckTeam
 	clr.w	d1
 	cmpi.w	#$13,(VisTeam).l
 	beq.w	.l2426A
@@ -597,11 +601,11 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	beq.w	.po
 	bclr	#$1,$17F6A.l
 	jsr	(PlayoffStatsScreen).l
-.po	bsr.w	GameOverSub2
+.po	bsr.w	GameOverCleanup
 	tst.w	$191CE.l
 	bne.s	.l242D2
 	move.w	#$1,ScrollDisplayUpTbl1.l
-	bsr.w	ScrollDisplayUpSub1
+	bsr.w	ScrollDisplayUpCall
 .l242D2	bra.w	GameOverSub1
 	jsr	$48208.l
 GameOverSub1
@@ -616,16 +620,17 @@ GameOverSub1
 	bset	#$5,$FF800F.l
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
-	bsr.w	GameOverSub2
+	bsr.w	GameOverCleanup
 	btst	#$0,$17F78.l
 	bne.w	.l24336
 	jsr	(ScoutingReport).l
 .l24336	jmp	$2B7F8.l
-GameOverSub2
+; Resets scroll state and clears the display request.
+GameOverCleanup
 	tst.w	$191CE.l
 	bne.s	.l24350
 	move.w	#$0,ScrollDisplayUpTbl1.l
-	bsr.w	ScrollDisplayUpSub1
+	bsr.w	ScrollDisplayUpCall
 .l24350	bclr	#$5,$FF800F.l
 	tst.w	$18BFA.l
 	beq.w	rtss2
@@ -654,7 +659,7 @@ GameOverSub2
 	moveq	#$2,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	bsr.w	AddSmallFontSub2
+	bsr.w	AddSmallFontAlt
 	bsr.w	AddSmallFont
 	movea.l	$47D50.l,a2
 	addq.l	#$8,a2

@@ -1,4 +1,5 @@
-chkpk2Sub1
+; Checks the puck holder and waits for DMA.
+CheckPuckHolder2
 	bsr.w	chkpk
 	bne.w	chkpk2Sub2
 	tst.w	$17E34.l
@@ -331,7 +332,7 @@ assnearest_1	bclr	#$2,$17F74.l
 	beq.w	checkanim		;branch if goalie
 	moveq	#$10,d0
 	btst	#$3,$62(a3)		;pfjoycon - check if controlled
-	beq.w	assexitSub1		;jump if not
+	beq.w	AssistListPush		;jump if not
 	rts		;human controlled: leave as is
 .nopc	sub.b	d7,$40(a3)		;subtract d7 (elapsed frames) from temp1
 	bpl.w	.nodec		;jump if positive
@@ -383,7 +384,7 @@ assnearest_1	bclr	#$2,$17F74.l
 	cmpi.b	#$13,$38(a0,d0.w)		;check if current assignment is asspassrec
 	beq.w	.next		;branch if a0 is going to receive puck
 	move.l	a0,-(sp)		;push onto stack
-	bsr.w	GetHotSub1		;get hot spot
+	bsr.w	GetHotCount		;get hot spot
 	add.w	$0(a0),d0		;Xpos to d0
 	sub.w	$17B80.l,d0
 	add.w	$14(a0),d1
@@ -417,7 +418,7 @@ assnearest_1	bclr	#$2,$17F74.l
 	exg.l	a1,a3		;swap addresses
 	bclr	#$0,$62(a3)		;clear pfdoff
 	moveq	#$11,d0
-	bsr.w	assexitSub1		;... and give him the assnearest assignment
+	bsr.w	AssistListPush		;... and give him the assnearest assignment
 	exg.l	a1,a3
 	bra.w	assexit		;I (old a3) drop this assignment
 .de1	btst	#$5,$62(a3)		;pfalock - check if locked in animation
@@ -518,7 +519,7 @@ assnearest_1	bclr	#$2,$17F74.l
 	blt.w	.chkcont		;branch if less than (within 15 pix in X direction)
 .exit	rts
 .chkcont	btst	#$5,(sflags6).l		;check if puckc is in the slot
-	beq.w	check4check_1		;branch if not in slot
+	beq.w	CheckCheckerSet		;branch if not in slot
 	move.b	$75(a3),d0		;move Chk into d0
 	ext.w	d0		;clear top byte of d0
 	movem.l	d0/a3,-(sp)		;push to stack
@@ -527,7 +528,7 @@ assnearest_1	bclr	#$2,$17F74.l
 	blt.w	.chkcont2		;branch if less
 	move.b	#$1E,d0		;move 1E into d0
 .chkcont2	move.b	d0,$75(a3)		;move d0 into Chk
-	bsr.w	check4check_1
+	bsr.w	CheckCheckerSet
 	movem.l	(sp)+,d0/a3		;pop off stack
 	move.b	d0,$75(a3)		;move original Chk into player
 	rts
@@ -536,7 +537,8 @@ check4check						;look for good opportunity for checking opponent. Falls in from
 									;the checking rating first, then look for an opponent within 30 units
 									;whom a3 is facing
 	bsr.w	skatetopuck
-check4check_1	tst.w	$34(a3)		;check if goalie
+; Returns unless the player has a checker set at $34.
+CheckCheckerSet	tst.w	$34(a3)		;check if goalie
 	bne.w	.player		;branch if not
 	rts
 .player	move.w	#$28,d0		;start with 28 hex (40 decimal)

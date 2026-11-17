@@ -149,7 +149,7 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	bsr.w	avdgoal
 	movem.w	d0-d1,-(sp)
 	move.l	a3,-(sp)
-	bsr.w	GetHotSub1
+	bsr.w	GetHotCount
 	neg.b	d0
 	neg.b	d1
 	sub.b	$28(a3),d0
@@ -193,7 +193,8 @@ assexit
 	andi.w	#$7,$36(a3)
 	bset	#$1,$62(a3)
 	rts
-assexitSub1
+; Pushes a player on the assist ring buffer ($36 index).
+AssistListPush
 	subi.w	#$1,$36(a3)
 	andi.w	#$7,$36(a3)
 assreplace
@@ -243,7 +244,8 @@ GetHot						;push long address of structure to get hot spot from. Hot spot x/y
 	dc.w	$0206,$0206
 	btst	d0,d7
 	btst	d1,d5
-GetHotSub1
+; Counts the hot entries of a record.
+GetHotCount
 	movem.l	a0-a1,-(sp)
 	movea.l	$C(sp),a0
 	clr.w	d0
@@ -809,7 +811,7 @@ WeightedRandomSelectSub1
 	movem.l	d0-d4/a0-a2,-(sp)
 	exg.l	d0,d1
 	movea.l	a0,a2
-	bsr.w	setVramSub1
+	bsr.w	SetVramWriteAddr1
 	subi.w	#$1,d1
 .l1BC5E	moveq	#$3,d0
 	move.w	(a2)+,d2
@@ -859,7 +861,7 @@ forceblack
 	clr.l	(a0)+
 	dbra	d0,.l1BD16
 	move.w	#$18,(palcount).l
-	bsr.w	forceblack2Sub1
+	bsr.w	ForceBlackBegin
 	moveq	#$1F,d0
 .l1BD2C	move.l	(sp)+,-(a0)
 	dbra	d0,.l1BD2C
@@ -873,13 +875,14 @@ forceblack2
 	clr.l	(a0)+
 	dbra	d0,.l1BD44
 	move.w	#$64,(palcount).l
-	bsr.w	forceblack2Sub1
+	bsr.w	ForceBlackBegin
 	moveq	#$1F,d0
 .l1BD5A	move.l	(sp)+,-(a0)
 	dbra	d0,.l1BD5A
 	movem.l	(sp)+,d0/a0
 	rts
-forceblack2Sub1
+; Saves the VBint and flags and installs the fade handler.
+ForceBlackBegin
 	move.l	(VBint).l,-(sp)
 	move.w	(disflags).l,-(sp)
 	bclr	#$2,(disflags).l

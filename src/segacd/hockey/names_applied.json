@@ -1,0 +1,334 @@
+{
+ "SPAlistSub1": [
+  "SPAlistClearFlag6",
+  "Entry that clears sflags6 bit 6, then runs SPAlist_1."
+ ],
+ "SPAlistSub2": [
+  "SPAlistSetFlag6",
+  "Entry that sets sflags6 bit 6, then runs SPAlist_1."
+ ],
+ "ReadCrowdRecordSub1": [
+  "ReadCrowdRecordASetFlag6",
+  "Sets the flag and reads a crowd record (variant A)."
+ ],
+ "ReadCrowdRecordSub2": [
+  "ReadCrowdRecordBClearFlag6",
+  "Clears the flag and reads a crowd record (variant B)."
+ ],
+ "ReadCrowdRecordSub3": [
+  "ReadCrowdRecordBSetFlag6",
+  "Sets the flag and reads a crowd record (variant B)."
+ ],
+ "ReadCrowdRecordSub4": [
+  "WriteNameLog",
+  "Sets the flag and runs NameLogIO (write); ReadNameLog clears it (read)."
+ ],
+ "TeamLogoBitmapsEnd_1": [
+  "DrawLogoBoxVisitor",
+  "Draws the visitor logo box at x=$18."
+ ],
+ "TeamLogoBitmapsEndSub1": [
+  "DrawLogoBoxHomeLeft",
+  "Draws a logo box at x=3 from the value at $1939A."
+ ],
+ "TeamLogoBitmapsEnd_2": [
+  "DrawLogoBoxHomeRight",
+  "Draws a logo box at x=8 from the value at $1939A."
+ ],
+ "PrintRecordTitlesSub1": [
+  "PrintRecordTitlesBody",
+  "Prints the record titles with ThreeStars data."
+ ],
+ "ShootersSelectSub1": [
+  "ShootersSelectDraw",
+  "Clears the shooter screen and draws its backdrop."
+ ],
+ "ResetShooterScrollSub1": [
+  "ShooterScreenTitles",
+  "Prints the shooter screen heading."
+ ],
+ "ResetShooterScrollSub2": [
+  "ShooterScreenFrame",
+  "Prints the shooter screen frame."
+ ],
+ "ResetShooterScrollSub3": [
+  "ShooterScreenRows",
+  "Prints the shooter rows."
+ ],
+ "StatsReport_1": [
+  "StatsReportBlitSetup",
+  "Sets up the VDP DMA write for the stats report."
+ ],
+ "StatScrollRowEnd_2": [
+  "StatScrollHeader",
+  "Prints the stats scroll header."
+ ],
+ "seta2Sub1": [
+  "SetMenuScreenHandler",
+  "Stores the menu handler pointers and clears the cursor."
+ ],
+ "PutTeamBlockSub1": [
+  "PutTeamBlockDraw",
+  "Draws a team block with display flags set."
+ ],
+ "UpdateScoresScroll_1": [
+  "ScoresScrollBlitSetup",
+  "Sets up the VDP DMA write for the scores scroll."
+ ],
+ "PrintGameInfo_1": [
+  "PrintGameInfoHeader",
+  "Prints the game info header."
+ ],
+ "CheckPlayerListScroll_2": [
+  "PlayerListSelectHigh",
+  "Selects the player from the high word of d0 and redraws."
+ ],
+ "CheckPlayerListScroll_3": [
+  "PlayerListSelectHighNext",
+  "Selects the player after the high word of d0 and redraws."
+ ],
+ "CheckPlayerListScrollSub2": [
+  "PlayerListDrawSelected",
+  "Draws the selected player's entry."
+ ],
+ "CheckScoringScroll_1": [
+  "ScoringScrollStep",
+  "Scrolling step in units of $20."
+ ],
+ "CheckPenaltyScroll_1": [
+  "PenaltyScrollStep",
+  "Scrolling step in units of $18."
+ ],
+ "UpdateStatsListScroll_2": [
+  "StatsListDrawTopRow",
+  "Draws the first visible stats row."
+ ],
+ "UpdateStatsListScroll_3": [
+  "StatsListDrawBottomRow",
+  "Draws the stats row six lines below the first."
+ ],
+ "UpdateStatsListScroll_4": [
+  "StatsListDrawHeader",
+  "Prints the 'Player' column header."
+ ],
+ "GetPlayerCountSub1": [
+  "ReadActiveJoypad",
+  "Reads joypad 2 or 1 depending on the port flag."
+ ],
+ "check4check_1": [
+  "CheckCheckerSet",
+  "Returns unless the player has a checker set at $34."
+ ],
+ "forceblack2Sub1": [
+  "ForceBlackBegin",
+  "Saves the VBint and flags and installs the fade handler."
+ ],
+ "forceblack2Sub2": [
+  "ForceBlackStep",
+  "One fade countdown step."
+ ],
+ "setVramSub1": [
+  "SetVramWriteAddr1",
+  "Sets the VDP VRAM write command from d0."
+ ],
+ "setVramSub2": [
+  "SetVramWriteAddr2",
+  "Second copy of SetVramWriteAddr1."
+ ],
+ "NewTickerSub2": [
+  "NewTickerNext",
+  "Takes the next queued ticker message."
+ ],
+ "SetTickerAreaPositionSub2": [
+  "SkipListEntries",
+  "Skips d0 offset-linked entries starting at a1."
+ ],
+ "RemovePlayerFromList_1": [
+  "ShiftListDown",
+  "Shifts the byte list down by one entry."
+ ],
+ "checkint_1": [
+  "CheckIntBothSides",
+  "Runs the check for both a3 and a2."
+ ],
+ "CopyTeamBlockMapDataSub1": [
+  "CopyTeamBlockMapDataFill",
+  "Fills the four map entries from the table at $3EE08."
+ ],
+ "ClearLineEditorTopSub1": [
+  "ClearLineEditorMarks",
+  "Clears two marker words."
+ ],
+ "FinalizeTextBuffer_1": [
+  "SkipTextEntries",
+  "Skips d0 entries of an offset-linked text list."
+ ],
+ "GameSetUpSub3": [
+  "GameSetUpJumpA",
+  "Jumps to the disc routine at $401C4."
+ ],
+ "GameSetUpSub4": [
+  "GameSetUpJumpB",
+  "Jumps to the disc routine at $40132."
+ ],
+ "SetFrameRectUnused_1": [
+  "PrintFont1Title",
+  "Prints a title in font 1 and adjusts printy."
+ ],
+ "PrintOptionNamesSub1": [
+  "OptionsScreenSetup",
+  "Installs the options-screen vblank handler and display flags."
+ ],
+ "CheckNOPUnused_1": [
+  "PrintFlaggedMessage",
+  "Prints the message selected by the flag bits at $19390."
+ ],
+ "DrawLineIconSub1": [
+  "DrawLineIconErase",
+  "Erases the line icon area after printing."
+ ],
+ "CheckPlayerListScrollSub1": [
+  "PlayerListScrollStep",
+  "Scrolling step in units of $80."
+ ],
+ "DisplayPenaltyEntrySub1": [
+  "PenaltyEntryHeader",
+  "Prints the penalty entry header."
+ ],
+ "ReadStatColumnSub1": [
+  "ReadStatColumnTable",
+  "Selects the stat column table and indexes it."
+ ],
+ "ReadStatColumnSub2": [
+  "StatColumnHeader",
+  "Prints the stat column header."
+ ],
+ "CrowdMeterScreenSub1": [
+  "CrowdMeterFadeIn",
+  "Forces black and sets display flags for the crowd meter screen."
+ ],
+ "adda42_1": [
+  "NextReplayEntry",
+  "Advances the replay pointer by $62 and wraps at the end of the buffer."
+ ],
+ "RestoreReplayFrame_1": [
+  "RestoreReplayFrameCopy",
+  "Copies the saved replay sprite state back."
+ ],
+ "faceoffinputExitSub1": [
+  "FaceoffInputCheckLocked",
+  "Leaves faceoff input when the player is locked."
+ ],
+ "setlccordsSub1": [
+  "SetLcCoordsForSide",
+  "Picks the line-change coordinates for the current side."
+ ],
+ "lineinputSub1": [
+  "LineInputSetCoords",
+  "Stores the choice and sets its coordinates."
+ ],
+ "passtoSub1": [
+  "PassToJump",
+  "Jumps to the pass routine at $2B4E2."
+ ],
+ "shotdiradjSub1": [
+  "ShotDirAdjustCheck",
+  "Checks the direction bits before adjusting a shot."
+ ],
+ "chk4lcSub1": [
+  "CheckForLineChange",
+  "Checks the line-change input state."
+ ],
+ "chkpk2Sub1": [
+  "CheckPuckHolder2",
+  "Checks the puck holder and waits for DMA."
+ ],
+ "assexitSub1": [
+  "AssistListPush",
+  "Pushes a player on the assist ring buffer ($36 index)."
+ ],
+ "GetHotSub1": [
+  "GetHotCount",
+  "Counts the hot entries of a record."
+ ],
+ "DoDMAproSub1": [
+  "DoDMAProQueue",
+  "Queues a DMA command in the list at $19360."
+ ],
+ "DoDMA_nd2Sub1": [
+  "DoDMANd2Queue",
+  "Queues a DMA command in the list at $19360."
+ ],
+ "DecompressGraphicsPlain_1": [
+  "DecompressGraphicsQueue",
+  "Queues the decompress command in the list at $19360."
+ ],
+ "PushNumberWidthSub1": [
+  "PushNumberWidthString",
+  "Appends the number string, then returns through a1."
+ ],
+ "AddSmallFontSub1": [
+  "AddSmallFontFramer",
+  "Loads the small font from the framer map."
+ ],
+ "AddSmallFontSub2": [
+  "AddSmallFontAlt",
+  "Loads the small font from the second map."
+ ],
+ "checkagrSub1": [
+  "CheckAggressionScale",
+  "Scales the aggression value from $73."
+ ],
+ "NewTickerSub1": [
+  "NewTickerCheckBusy",
+  "Skips when the ticker timer is above $1E0."
+ ],
+ "NewTicker3Sub1": [
+  "NewTickerErase",
+  "Sets the ticker position and erases it."
+ ],
+ "SetTickerAreaPositionSub1": [
+  "PrintTickerEntry",
+  "Skips to the entry and prints it small."
+ ],
+ "setplayerSub1": [
+  "SetPlayerSide",
+  "Chooses the team structure for the player."
+ ],
+ "setupIceRinkPalSub1": [
+  "SetupIceRinkPalRemap",
+  "Decompresses the rink palette with remap."
+ ],
+ "SprSortSub1": [
+  "SprSortSetup",
+  "Sets up the sprite sort buffers."
+ ],
+ "CopyTeamLinesSub1": [
+  "CopyTeamLinesCheckTeam",
+  "Checks teams for the special team number $13."
+ ],
+ "GameOverSub2": [
+  "GameOverCleanup",
+  "Resets scroll state and clears the display request."
+ ],
+ "ScrollDisplayUpSub1": [
+  "ScrollDisplayUpCall",
+  "Calls the display helpers and the $6044 routine."
+ ],
+ "InitializeGameStructuresSub1": [
+  "InitTeamMask",
+  "Builds the mask of the two playing teams."
+ ],
+ "InitializeGameStructuresSub2": [
+  "InitPlayerSlots",
+  "Initialises the player slot structures."
+ ],
+ "ShowGoalBoxSub1": [
+  "ShowGoalBoxDraw",
+  "Draws the goal box after the flag checks."
+ ],
+ "GetPlayerNameSub1": [
+  "GetPlayerNameBuild",
+  "Builds the name text in the message area."
+ ]
+}

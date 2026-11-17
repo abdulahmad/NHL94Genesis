@@ -110,7 +110,7 @@ checkanimSub1
 	btst	#$2,$64(a3)
 	bne.w	.l17B4C
 	moveq	#$1D,d0
-	bra.w	assexitSub1
+	bra.w	AssistListPush
 .l17B4C	move.w	$17B94.l,d0
 	move.w	$14(a3),d1
 	eor.w	d0,d1
@@ -394,7 +394,7 @@ checkanimSub1
 .l18020	cmp.w	d0,d1
 	blt.w	.l17F34
 	moveq	#$F,d0
-	bra.w	assexitSub1
+	bra.w	AssistListPush
 ClampYPosition						;d1 = y clamped to +-$103, minus goal line d3. d0 = 0 if a3 has the puck
 	move.w	$17BE0.l,d2
 	cmp.w	$52(a3),d2		;is this player the puck carrier?
@@ -726,7 +726,7 @@ asspuckc						;player a3 is puck handler
 	btst	#$0,$17F78.l
 	bne.w	.soshot
 	bsr.w	checkob
-	bsr.w	chk4lcSub1
+	bsr.w	CheckForLineChange
 	btst	#$0,$17F78.l
 	bne.w	.soshot
 	btst	#$2,$17F70.l
@@ -743,7 +743,7 @@ asspuckc						;player a3 is puck handler
 	beq.w	.shot
 	btst	#$1,$17475.l
 	bne.w	.pass
-.shot	bsr.w	chkpk2Sub1
+.shot	bsr.w	CheckPuckHolder2
 	bra.w	.pass
 .soshot	jsr	$2A84A.l
 	bne.w	.nodec
@@ -805,7 +805,8 @@ chk4lc						;see if computer should call line change
 	ori.b	#$DC,d0
 	ori.b	#$E6,(a4)
 	ori.b	#$E6,(a6)+
-chk4lcSub1
+; Checks the line-change input state.
+CheckForLineChange
 	btst	#$4,$17F7A.l
 	bne.w	.l188B4
 	move.w	$17B94.l,d0

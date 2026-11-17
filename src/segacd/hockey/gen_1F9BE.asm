@@ -675,7 +675,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bclr	#$3,$64(a3)
 	beq.w	.l2050E
 	jsr	(EndOneTimer).l
-.l2050E	bsr.w	assexitSub1
+.l2050E	bsr.w	AssistListPush
 .l20512	adda.w	#$80,a3
 	dbra	d3,.l204E6
 	movea.l	(sp)+,a3

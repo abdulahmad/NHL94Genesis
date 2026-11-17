@@ -59,7 +59,7 @@ SetPA
 	bsr.w	prefmes
 	cmpi.w	#$E,d0
 	bne.w	.l1EC42
-	bsr.w	ShowGoalBoxSub1
+	bsr.w	ShowGoalBoxDraw
 .l1EC42	btst	#$0,$17F78.l
 	beq.w	.l1EC60
 	btst	#$3,$17F78.l
@@ -213,7 +213,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	btst	#$6,$68(a1,d2.w)
 	bne.w	.0
 	clr.w	$68(a1,d2.w)
-	bsr.w	RemovePlayerFromList_1
+	bsr.w	ShiftListDown
 	bset	#$0,$17F7E.l
 	addi.w	#$1,$26(a1)
 	addi.w	#$1,$2(a2)
@@ -260,7 +260,7 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	move.w	d0,(a1)+
 	subi.w	#$1,$68(a2,d0.w)
 	bne.w	.cont
-	bsr.w	RemovePlayerFromList_1
+	bsr.w	ShiftListDown
 .cont	bra.w	.next
 .done	move.w	(mesarea).l,d0
 	cmpi.w	#$1,d1
@@ -287,12 +287,13 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	btst	#$4,$68(a2,d0.w)
 	bne.w	RemovePlayerFromList
 	move.w	#$1000,$68(a2,d0.w)
-	bra.w	RemovePlayerFromList_1
+	bra.w	ShiftListDown
 RemovePlayerFromList						;Remove the entry before a0 from a penalty box list by shifting the rest
 	
 	
 	clr.w	$68(a2,d0.w)
-RemovePlayerFromList_1	moveq	#-1,d2
+; Shifts the byte list down by one entry.
+ShiftListDown	moveq	#-1,d2
 .shift	addi.w	#$1,d2
 	move.b	(a0,d2.w),-$1(a0,d2.w)
 	bpl.w	.shift
@@ -335,7 +336,7 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 .1	clr.w	$34(a3)
 	move.b	(a0,d1.w),$35(a3)
 	bsr.w	Setplass
-	bsr.w	setplayerSub1
+	bsr.w	SetPlayerSide
 	bset	#$2,$63(a3)
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
@@ -391,7 +392,7 @@ checkcoll						;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check
 	bgt.w	.l1F178		;branch if not a player
 	movem.l	(sp),d0-d7
 	move.l	a3,-(sp)
-	bsr.w	GetHotSub1
+	bsr.w	GetHotCount
 	move.w	$0(a3),d2		;Xpos
 	move.w	$14(a3),d3
 	add.w	d0,d2
@@ -546,7 +547,7 @@ checkcx						;d4 = obj. # * 2 for possible collision so check x range and distan
 	bne.w	.l1F398
 .l1F394	bsr.w	newcheck
 .l1F398	bsr.w	checkint		;interference, check and fight tests
-	bsr.w	checkint_1
+	bsr.w	CheckIntBothSides
 	bsr.w	setInjuryTypeExit
 .l1F3A4	move.w	d1,d4
 	movem.w	(sp)+,d0-d1
@@ -677,7 +678,8 @@ checkint						;check for interference penalty. player a2 interferes with a3 or
 	bne.w	rtss2
 	moveq	#$22,d0
 	bra.w	AddPenalty
-checkint_1	movem.l	d0-d4/a0-a3,-(sp)
+; Runs the check for both a3 and a2.
+CheckIntBothSides	movem.l	d0-d4/a0-a3,-(sp)
 	bsr.w	.l1F570
 	exg.l	a2,a3
 	bsr.w	.l1F570
@@ -737,7 +739,7 @@ checkint_1	movem.l	d0-d4/a0-a3,-(sp)
 	lsr.w	$17E62.l
 	cmp.b	$17E63.l,d0
 	ble.w	.l1F6D4
-	bsr.w	checkagrSub1
+	bsr.w	CheckAggressionScale
 	cmpi.w	#$4,d0
 	bhi.w	rtss2
 	btst	#$4,$17F68.l
@@ -758,7 +760,7 @@ checkint_1	movem.l	d0-d4/a0-a3,-(sp)
 	addi.w	#$16,d0
 	jsr	(PenShotChk).l
 	bra.w	AddPenalty
-.l1F6D4	bsr.w	checkagrSub1
+.l1F6D4	bsr.w	CheckAggressionScale
 	cmpi.w	#$3,d0
 	bhi.w	.l1F748
 	btst	#$4,$17F68.l
@@ -792,7 +794,8 @@ checkagr						;use Agression attribute and RNG to determine if there will be a p
 	movep.l	d5,$C2C(a0)
 	dc.w	$0C2C,$0C2C,$0BFA
 	dc.w	$0BFA,$0B96
-checkagrSub1
+; Scales the aggression value from $73.
+CheckAggressionScale
 	move.w	#$28,d0
 	sub.b	$73(a3),d0
 	lsr.b	#$1,d0
@@ -882,7 +885,7 @@ holdcheck
 	beq.w	.l1F8C8
 	move.w	#$1154,d1
 .l1F8C8	bsr.w	SetSPA
-	bsr.w	checkagrSub1
+	bsr.w	CheckAggressionScale
 	cmpi.w	#$6,d0
 	bhi.w	.l1F900
 	btst	#$4,$17F68.l
@@ -930,7 +933,7 @@ Bcheck
 	bhi.w	rtss2
 	exg.l	a2,a3
 	bsr.w	FallDown
-	bsr.w	checkagrSub1
+	bsr.w	CheckAggressionScale
 	cmpi.w	#$4,d0
 	bhi.w	.l1F9B4
 	move.w	#$20,d0

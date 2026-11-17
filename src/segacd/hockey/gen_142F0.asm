@@ -1,4 +1,5 @@
-GetPlayerCountSub1
+; Reads joypad 2 or 1 depending on the port flag.
+ReadActiveJoypad
 	tst.w	$18BF8.l
 	bne.w	.l14310
 .l142FA	btst	#$1,$17F6A.l
@@ -45,9 +46,9 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	movea.l	#$173B0,a4
 .l14410	suba.w	#$62,a4
 	cmpa.l	$17470.l,a4
-	bne.w	RestoreReplayFrame_1
+	bne.w	RestoreReplayFrameCopy
 	adda.w	#$62,a4
-.end	bsr.w	RestoreReplayFrame_1
+.end	bsr.w	RestoreReplayFrameCopy
 	clr.w	d7
 	rts
 adda4						;Step forward 1 frame. First handles a reverse
@@ -91,7 +92,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 	btst	#$2,$17F6C.l
 	beq.w	adda42
 	movem.l	a4,-(sp)
-	bsr.w	adda42_1
+	bsr.w	NextReplayEntry
 	cmpa.l	$17470.l,a4
 	movem.l	(sp)+,a4
 	beq.w	updatereplayExit
@@ -99,8 +100,9 @@ adda42						;adda4 without the sf2drec look-ahead: stop at the record point, els
 	
 	cmpa.l	$17470.l,a4
 	beq.w	updatereplayExit
-	bsr.w	RestoreReplayFrame_1
-adda42_1	adda.w	#$62,a4
+	bsr.w	RestoreReplayFrameCopy
+; Advances the replay pointer by $62 and wraps at the end of the buffer.
+NextReplayEntry	adda.w	#$62,a4
 	cmpa.l	#$173B0,a4
 	bne.w	updatereplayExit
 	movea.l	#$C45C,a4
@@ -133,9 +135,10 @@ UpdateCameraPos	movem.l	d0-d2,-(sp)
 	movem.l	(sp)+,d0-d2
 	rts
 RestoreReplayFrame	btst	#$4,$17F72.l
-	beq.w	RestoreReplayFrame_1
+	beq.w	RestoreReplayFrameCopy
 	bset	#$7,$17F72.l
-RestoreReplayFrame_1	movem.l	d0-d2/a0/a6,-(sp)
+; Copies the saved replay sprite state back.
+RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	#$4761C,a6
 	movea.l	a4,a0
 	moveq	#$F,d1

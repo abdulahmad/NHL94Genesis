@@ -218,7 +218,7 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	sub.w	$14(a2),d1
 	bne.w	.l20FB0
 	move.l	a2,-(sp)
-	bsr.w	GetHotSub1
+	bsr.w	GetHotCount
 .l20FB0	move.w	$28(a3),d2
 	move.w	$2A(a3),d3
 	move.b	d0,$28(a3)
@@ -326,7 +326,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	movea.l	$1E(a3),a0
 	movea.l	#mesarea,a3
 	move.w	#$2,(a3)
-	bsr.w	PushNumberWidthSub1
+	bsr.w	PushNumberWidthString
 	String	CC_Font1Pri,$1,$19
 	adda.w	$4(a0),a0
 	adda.w	(a0),a0
@@ -347,7 +347,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	$2A9D0.l
-	bsr.w	SprSortSub1
+	bsr.w	SprSortSetup
 	btst	#$0,$17F6A.l
 	bne.w	.ex
 	bsr.w	printz
@@ -366,7 +366,7 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bne.w	.p
 	clr.w	$17CF0.l
 	clr.w	$17CF2.l
-	bsr.w	SprSortSub1
+	bsr.w	SprSortSetup
 	bsr.w	printz
 	String	CC_Font2,$0,$0
 	movea.l	$47D6C.l,a1
@@ -386,7 +386,7 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
-	bsr.w	DoDMA_nd2Sub1
+	bsr.w	DoDMANd2Queue
 .ex	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 printscores1						;Draw scoreboard. Vertical rink: period box and the score box (team names
@@ -416,7 +416,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	beq.w	.1
 	move.w	#$4,d0
 	movea.l	#$41A48,a1
-.1	bsr.w	SetTickerAreaPositionSub1
+.1	bsr.w	PrintTickerEntry
 	bsr.w	EASNLogo
 	btst	#$0,$17F6E.l
 	bne.w	.ex
@@ -442,7 +442,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	beq.w	.2
 	move.w	#$4,d0
 .2	movea.l	#$41A48,a1
-	bsr.w	SetTickerAreaPositionSub2
+	bsr.w	SkipListEntries
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
@@ -475,7 +475,7 @@ PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5
 	
 	move.w	(printx).l,-(sp)
 	subi.w	#$5,(printx).l
-	jsr	(PutTeamBlockSub1).l
+	jsr	(PutTeamBlockDraw).l
 	move.w	(sp)+,(printx).l
 	addi.w	#$2,(printy).l
 	move.w	$C(a2),d0

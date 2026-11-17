@@ -164,7 +164,7 @@ StartFaceoffLineChange						;start the line change box for team d0's sort object
 	adda.w	d0,a3
 	bclr	#$3,$63(a3)
 	move.l	a2,-(sp)
-	bsr.w	faceoffinputExitSub1
+	bsr.w	FaceoffInputCheckLocked
 	movea.l	(sp)+,a2
 	btst	#$3,$63(a3)
 	beq.w	.exit
@@ -215,7 +215,7 @@ UpdateFaceoffLineChangeTimer						;count down one team's faceoff line change tim
 	btst	#$3,$63(a3)
 	beq.w	.exit
 	clr.w	d2
-	bsr.w	lineinputSub1
+	bsr.w	LineInputSetCoords
 	bsr.w	SetLCmode2
 .exit	movea.l	(sp)+,a3
 	rts

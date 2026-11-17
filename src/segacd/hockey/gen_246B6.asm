@@ -73,7 +73,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	move.w	$18D32.l,d1
 	jsr	$378D2.l
 	move.w	$18D30.l,d0
-	bsr.w	setVramSub2
+	bsr.w	SetVramWriteAddr2
 	move.w	#$FEA0,d0
 	add.w	(scoutcolumn).l,d0
 .l247D4	btst	#$4,$FF800E.l		;graphics not allowed?
@@ -88,7 +88,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .l2480E	btst	#$3,$FF800E.l
 	bne.b	.l2480E
 	bclr	#$4,$FF800F.l
-.l24820	jsr	(forceblack2Sub2).l
+.l24820	jsr	(ForceBlackStep).l
 .l24826	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -314,7 +314,8 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 	movem.l	(sp)+,d0-d3
 	rts
 ScrollDisplayUpTbl1	dc.w	$0000
-ScrollDisplayUpSub1
+; Calls the display helpers and the $6044 routine.
+ScrollDisplayUpCall
 	jsr	$37598.l
 	tst.w	ScrollDisplayUpTbl1.l
 	beq.s	.l24C20
@@ -407,7 +408,7 @@ ScrollDisplayUpSub1
 EASportsScreen						;Called from Begin. Show the EA Sports screen until a button, or $50 x 4
 									;frames (about 5 s)
 	move.w	#$1,ScrollDisplayUpTbl1.l
-	bsr.w	ScrollDisplayUpSub1
+	bsr.w	ScrollDisplayUpCall
 	move.l	#vb2,(VBint).l
 	bclr	#$1,(disflags).l
 	move.w	#$5,$18D3E.l
@@ -564,7 +565,7 @@ DefaultMenusTbl1	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	dc.w	$0001
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$18C38,a3
-	bsr.w	InitializeGameStructuresSub2
+	bsr.w	InitPlayerSlots
 	move.w	$18A9E.l,d0
 	or.w	$18A9C.l,d0
 	beq.w	.l251BE
@@ -769,7 +770,7 @@ FigureJoySub1
 	move.w	$17FA6.l,$17FAA.l
 	move.w	$17FA8.l,$17FAC.l
 FigureJoySub2
-	bsr.w	InitializeGameStructuresSub1
+	bsr.w	InitTeamMask
 FigureJoySub3
 	movem.l	(sp)+,d0-d3/a0-a1
 	rts
@@ -782,7 +783,8 @@ InitializeGameStructures						;Random team pairs for all 8 gstruct games, none o
 	ori.b	#$2,d1
 	ori.b	#$2,d1
 	ori.b	#$2,d1
-InitializeGameStructuresSub1
+; Builds the mask of the two playing teams.
+InitTeamMask
 	st.b	$18A98.l
 	clr.l	d3
 	move.w	(HomeTeam).l,d1
@@ -803,7 +805,8 @@ InitializeGameStructuresSub1
 	bset	d0,d3
 	bne.w	.l2556C
 	rts
-InitializeGameStructuresSub2
+; Initialises the player slot structures.
+InitPlayerSlots
 	moveq	#$4,d0
 	lea.l	$A(a3),a0
 .l25582	move.w	-(a0),-(sp)

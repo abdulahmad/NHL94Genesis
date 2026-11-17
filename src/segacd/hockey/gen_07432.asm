@@ -57,7 +57,8 @@
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-SPAlistSub1
+; Entry that clears sflags6 bit 6, then runs SPAlist_1.
+SPAlistClearFlag6
 	bclr	#$6,(sflags6).l
 SPAlist_1	movem.l	d0-d1/a0-a1,-(sp)
 	asl.l	#$2,d0
@@ -76,7 +77,8 @@ SPAlist_1	movem.l	d0-d1/a0-a1,-(sp)
 .l7576	jsr	$22452.l
 .l757C	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-SPAlistSub2
+; Entry that sets sflags6 bit 6, then runs SPAlist_1.
+SPAlistSetFlag6
 	bset	#$6,(sflags6).l
 	bra.w	SPAlist_1
 ReadCrowdRecord						;Read the 16 byte crowd record block of team d1 from save RAM
@@ -95,10 +97,12 @@ ReadCrowdRecord_1	movem.l	d0-d1/a0-a1,-(sp)
 .l75C0	jsr	$22452.l
 .l75C6	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-ReadCrowdRecordSub1
+; Sets the flag and reads a crowd record (variant A).
+ReadCrowdRecordASetFlag6
 	bset	#$6,(sflags6).l
 	bra.w	ReadCrowdRecord_1
-ReadCrowdRecordSub2
+; Clears the flag and reads a crowd record (variant B).
+ReadCrowdRecordBClearFlag6
 	bclr	#$6,(sflags6).l
 ReadCrowdRecord_2	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
@@ -112,10 +116,12 @@ ReadCrowdRecord_2	movem.l	d0-d1/a0-a1,-(sp)
 .l760A	jsr	$22452.l
 .l7610	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-ReadCrowdRecordSub3
+; Sets the flag and reads a crowd record (variant B).
+ReadCrowdRecordBSetFlag6
 	bset	#$6,(sflags6).l
 	bra.w	ReadCrowdRecord_2
-ReadCrowdRecordSub4
+; Sets the flag and runs NameLogIO (write); ReadNameLog clears it (read).
+WriteNameLog
 	bset	#$6,(sflags6).l
 	bra.w	NameLogIO
 ReadNameLog						;Read the user name log from save RAM at NameLogBase to namelog. Called

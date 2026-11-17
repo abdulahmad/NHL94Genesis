@@ -485,7 +485,7 @@ ScoutStub						;An empty routine
 	move.w	#$6,d3
 	bra.w	.lE268
 .lE216	movem.w	d2-d3,-(sp)
-	jsr	(setplayerSub1).l
+	jsr	(SetPlayerSide).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
 	tst.w	$17CEA.l
@@ -495,7 +495,7 @@ ScoutStub						;An empty routine
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
-	jsr	(assexitSub1).l
+	jsr	(AssistListPush).l
 	bclr	#$5,$62(a3)
 	bclr	#$1,$63(a3)
 	bclr	#$2,$62(a3)

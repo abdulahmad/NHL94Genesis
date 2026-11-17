@@ -536,7 +536,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	movea.l	#TempBuffer,a3
 	jsr	(appstring).l
 	movea.l	#TempBuffer,a3
-	jsr	(PushNumberWidthSub1).l
+	jsr	(PushNumberWidthString).l
 	String	')'
 	movea.l	#TempBuffer,a1
 PlayedByExit

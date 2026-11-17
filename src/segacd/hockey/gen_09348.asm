@@ -1,4 +1,5 @@
-PrintOptionNamesSub1
+; Installs the options-screen vblank handler and display flags.
+OptionsScreenSetup
 	move.l	#PickStartingGoalieTbl1,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$0,(disflags).l
@@ -182,7 +183,8 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	rts
 	rts
 	rts
-CheckNOPUnused_1	movem.l	d0-d7,-(sp)
+; Prints the message selected by the flag bits at $19390.
+PrintFlaggedMessage	movem.l	d0-d7,-(sp)
 	bclr	#$0,$19390.l
 	beq.w	.l995C
 	bclr	#$6,$19390.l
@@ -223,10 +225,10 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 	
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	CheckNOPUnused_1
+	bsr.w	PrintFlaggedMessage
 	bset	#$2,$19390.l
 	bset	#$6,$19390.l
-	bsr.w	TeamLogoBitmapsEnd_1
+	bsr.w	DrawLogoBoxVisitor
 	bclr	#$3,$19390.l
 	beq.w	.0
 	jsr	(printz).l
@@ -243,10 +245,10 @@ DrawHomeBlock						;Draw the home team block: the logo box and the HomeTeam logo
 DrawVisBlock						;The same for the visitors: logo box, logo at x 9. setupcardflags bit 3,
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	CheckNOPUnused_1
+	bsr.w	PrintFlaggedMessage
 	bset	#$3,$19390.l
 	bset	#$7,$19390.l
-	bsr.w	TeamLogoBitmapsEnd_2
+	bsr.w	DrawLogoBoxHomeRight
 	bclr	#$2,$19390.l
 	beq.w	.0
 	jsr	(printz).l
@@ -306,14 +308,17 @@ TeamLogoBitmapsEnd						;end of TeamLogoBitmaps (size check below)
 	move.w	$19398.l,d4
 	move.w	#$1C,(printx).l
 	bra.w	DrawLogoBox
-TeamLogoBitmapsEnd_1	move.w	$19398.l,d4
+; Draws the visitor logo box at x=$18.
+DrawLogoBoxVisitor	move.w	$19398.l,d4
 	move.w	#$18,(printx).l
 	bra.w	DrawLogoBox
-TeamLogoBitmapsEndSub1
+; Draws a logo box at x=3 from the value at $1939A.
+DrawLogoBoxHomeLeft
 	move.w	$1939A.l,d4
 	move.w	#$3,(printx).l
 	bra.w	DrawLogoBox
-TeamLogoBitmapsEnd_2	move.w	$1939A.l,d4
+; Draws a logo box at x=8 from the value at $1939A.
+DrawLogoBoxHomeRight	move.w	$1939A.l,d4
 	move.w	#$8,(printx).l
 DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Branched to
 	

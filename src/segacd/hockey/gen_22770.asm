@@ -1,4 +1,5 @@
-setplayerSub1
+; Chooses the team structure for the player.
+SetPlayerSide
 	bclr	#$6,$63(a3)
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a3)
@@ -13,7 +14,7 @@ setplayerSub1
 	moveq	#$9,d0
 	cmpi.w	#$FFFE,d1
 	bne.w	.l227B4
-.l227A6	bsr.w	assexitSub1
+.l227A6	bsr.w	AssistListPush
 	bclr	#$5,$62(a3)
 	clr.w	$58(a3)
 .l227B4	move.w	#$FFFF,$68(a0,d3.w)
@@ -198,7 +199,7 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$2,(disflags).l
 	bne.w	.nograph
-	bsr.w	forceblack2Sub2
+	bsr.w	ForceBlackStep
 .nograph	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -213,7 +214,7 @@ dodmalist
 .l22C00	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
-	bsr.w	DoDMAproSub1
+	bsr.w	DoDMAProQueue
 	cmpa.l	#$18D6A,a6
 	bgt.w	.l22C00
 	rts

@@ -36,10 +36,10 @@ passto						;pass the puck to player a0: a3 = passer
 	asr.w	#$2,d5
 	exg.l	a0,a3
 	moveq	#$13,d0
-	bsr.w	assexitSub1
+	bsr.w	AssistListPush
 	exg.l	a0,a3
 	move.l	a0,-(sp)
-	bsr.w	GetHotSub1
+	bsr.w	GetHotCount
 	add.w	$0(a0),d0
 	sub.w	$17B80.l,d0
 	add.w	$14(a0),d1
@@ -120,7 +120,8 @@ passto						;pass the puck to player a0: a3 = passer
 	divs.w	d2,d1
 	move.w	d1,$17BAA.l
 	rts
-passtoSub1
+; Jumps to the pass routine at $2B4E2.
+PassToJump
 	jmp	$2B4E2.l
 Sweepcheck						;start sweep check on player a3
 	bset	#$5,$62(a3)
@@ -278,7 +279,7 @@ doshot						;stick is at puck so launch puck toward goal
 	btst	#$1,$64(a3)		;check if player on breakaway
 	beq.w	.cont
 	bset	#$4,$17F78.l		;set if breakaway
-.cont	bsr.w	shotdiradjSub1
+.cont	bsr.w	ShotDirAdjustCheck
 	move.w	#$5,-(sp)		;#SFXshotwiff - sound effect
 	move.w	$52(a3),$17E28.l
 	bclr	#$3,$17F6A.l		;#sfssdir - shot direction mode
@@ -443,7 +444,8 @@ shotdiradj						;If the opposing goalie
 	dc.l	$FFF0
 	dc.w	$0006,$FFF0
 	dc.w	$000C,$0000,$0006
-shotdiradjSub1
+; Checks the direction bits before adjusting a shot.
+ShotDirAdjustCheck
 	btst	#$3,$64(a3)
 	bne.w	.l167F0
 	btst	#$3,$62(a3)
@@ -603,7 +605,7 @@ assepen						;player a3 should exit penalty area
 	bset	#$5,$62(a3)
 	move.w	#$FAC,d1
 	bsr.w	SetSPA
-	jmp	(SprSortSub1).l
+	jmp	(SprSortSetup).l
 .nna	move.w	#$4,$54(a3)
 	st.b	$61(a3)
 	st.b	$60(a3)

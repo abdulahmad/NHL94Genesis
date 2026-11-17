@@ -1,4 +1,5 @@
-forceblack2Sub2
+; One fade countdown step.
+ForceBlackStep
 	tst.w	(palcount).l
 	bmi.w	rtss2
 	cmpi.w	#$64,(palcount).l
@@ -576,10 +577,11 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 DoDMApro
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	bsr.w	DoDMAproSub1
+	bsr.w	DoDMAProQueue
 	move.w	(sp)+,(disflags).l
 	rts
-DoDMAproSub1
+; Queues a DMA command in the list at $19360.
+DoDMAProQueue
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -755,7 +757,8 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 .l1CA98	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts
-DoDMA_nd2Sub1
+; Queues a DMA command in the list at $19360.
+DoDMANd2Queue
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l

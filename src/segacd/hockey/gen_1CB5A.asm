@@ -5,7 +5,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 .l1CB62	move.w	d0,(a0)+		;fill the 64 target colors with d0
 	dbra	d1,.l1CB62
 	move.w	#$18,(palcount).l
-	bsr.w	forceblack2Sub1
+	bsr.w	ForceBlackBegin
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -31,7 +31,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	bne.b	.l1CBEA
 	bclr	#$7,$FF800F.l
 	clr.w	d0
-	bsr.w	setVramSub1
+	bsr.w	SetVramWriteAddr1
 	clr.l	d1
 .l1CC04	btst	#$7,$FF800E.l
 	bne.b	.l1CC04
@@ -261,7 +261,8 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	movea.l	(sp)+,a6
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1D16C.bin
-setVramSub1
+; Sets the VDP VRAM write command from d0.
+SetVramWriteAddr1
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -281,7 +282,8 @@ setVramSub1
 	bne.b	.l1D76C
 	bclr	#$7,$FF800F.l
 	rts
-setVramSub2
+; Second copy of SetVramWriteAddr1.
+SetVramWriteAddr2
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -384,12 +386,13 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	rts
 DecompressGraphicsWithRemap						;DecompressGraphics, then return 8 bytes past the call (remap table)
 	move.l	(sp),$18AE4.l
-	bsr.w	DecompressGraphicsPlain_1
+	bsr.w	DecompressGraphicsQueue
 	addi.l	#$8,(sp)
 	rts
 DecompressGraphicsPlain						;Clear remapTablePtr, fall into DecompressGraphics
 	clr.l	$18AE4.l
-DecompressGraphicsPlain_1	move.l	a6,-(sp)
+; Queues the decompress command in the list at $19360.
+DecompressGraphicsQueue	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.l1D976

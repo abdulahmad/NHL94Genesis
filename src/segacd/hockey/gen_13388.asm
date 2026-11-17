@@ -5,14 +5,15 @@ GetStatColumn						;d2 = stat column d1 for player d0. Goalies only have PIM (bt
 	move.w	d0,d2
 	move.w	(sp)+,d0
 	cmp.w	d2,d0		;goalie?
-	bge.w	ReadStatColumnSub1		;skater: read the column as is
+	bge.w	ReadStatColumnTable		;skater: read the column as is
 	clr.w	d2		;goalie: columns 1 and 2 (A, Pts) show column 1 (assists), the rest 0
 	dc.w	$033C,$0006,$6700
 	dc.w	$15E8
 ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct byte arrays
 									;(StatColumnOffsets); d7 = 1: the playoff tables (GetStatsValue)
 	moveq	#$1,d1
-ReadStatColumnSub1
+; Selects the stat column table and indexes it.
+ReadStatColumnTable
 	tst.w	d7
 	bne.w	.l133D2
 	dc.w	$43FA,$0076
@@ -64,7 +65,8 @@ ReadStatColumnTbl1	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
 	dc.b	'   ]',$00,$16,'[  Shots O'
 	dc.b	'n Goal   ]',$00,$16,'[ Pe'
 	dc.b	'nalty Minutes   '
-ReadStatColumnSub2
+; Prints the stat column header.
+StatColumnHeader
 	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$2,$B,CC_SetFont,$1
@@ -79,7 +81,7 @@ ReadStatColumnSub2
 	add.b	d1,d0
 	add.b	d1,d0
 	lea.l	.l2E52E(pc),a1
-	jsr	(SetTickerAreaPositionSub1).l
+	jsr	(PrintTickerEntry).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
 .l2E52E	dc.w	$000A
@@ -87,14 +89,15 @@ CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrow
 									;the arena and league records; start exits. Menu item handler
 	dc.w	$20FB,$FFFA,$0C20,$F900,$000A
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1353A.bin
-CrowdMeterScreenSub1
+; Forces black and sets display flags for the crowd meter screen.
+CrowdMeterFadeIn
 	movem.l	d0-d1/a2,-(sp)
 	jsr	(forceblack).l
 	bclr	#$0,(disflags).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	move.w	$18D32.l,d0
-	jsr	(setVramSub1).l
+	jsr	(SetVramWriteAddr1).l
 .l13754	btst	#$7,$FF800E.l
 	bne.b	.l13754
 	move.l	#$0,$FF8022.l
@@ -133,7 +136,7 @@ CrowdMeterScreenSub1
 	bne.b	.l13836
 	bclr	#$7,$FF800F.l
 	clr.w	d0
-	jsr	(setVramSub1).l
+	jsr	(SetVramWriteAddr1).l
 .l13850	btst	#$7,$FF800E.l
 	bne.b	.l13850
 	move.l	#$0,$FF8022.l
@@ -170,7 +173,7 @@ CrowdMeterScreenSub2
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	move.w	$18D30.l,d0
-	jsr	(setVramSub1).l
+	jsr	(SetVramWriteAddr1).l
 .l139A0	btst	#$7,$FF800E.l
 	bne.b	.l139A0
 	move.l	#$0,$FF8022.l

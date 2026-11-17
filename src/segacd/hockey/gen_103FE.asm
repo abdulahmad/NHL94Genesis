@@ -554,7 +554,7 @@ clockcont						;monitor period clock and initiate various clock activated events
 clockcont_0						;End of period. Also entered from puckfaceoff
 	movea.l	#$17B80,a3
 	move.l	#$18,d0
-	jsr	(assexitSub1).l
+	jsr	(AssistListPush).l
 	cmpi.w	#$2,$180E4.l
 	blt.w	.l10F98
 	move.l	#$7,d0
@@ -591,7 +591,7 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	adda.w	#$300,a3
 .t2	tst.w	$34(a3)
 	ble.w	.l10F62
-	jsr	(assexitSub1).l
+	jsr	(AssistListPush).l
 	move.l	#$7,d0
 .l10F62	adda.w	#$80,a3
 	dbra	d2,.t2
@@ -668,9 +668,9 @@ Pausemode	jsr	(forceblack).l
 .l110BE	btst	#$2,$32(a2)
 	beq.w	.l110CE
 	movea.l	#$420DC,a0
-.l110CE	bsr.w	seta2Sub1
+.l110CE	bsr.w	SetMenuScreenHandler
 .l110D2	bsr.w	MenuWaitVblank
-	bsr.w	GetPlayerCountSub1
+	bsr.w	ReadActiveJoypad
 	jsr	(showclock).l
 	jsr	(ProcessInputWithRepeat).l
 	bsr.w	HandleMenuInput
@@ -763,7 +763,8 @@ seta2						;Set a2 to the team struct of the pause joystick also called from
 .seta21	beq.w	.x
 	adda.w	#$366,a2
 .x	rts
-seta2Sub1
+; Stores the menu handler pointers and clears the cursor.
+SetMenuScreenHandler
 	move.l	a0,$18AD6.l
 	move.l	a1,$18ADA.l
 	clr.w	$18AD2.l

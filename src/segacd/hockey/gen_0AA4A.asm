@@ -63,7 +63,7 @@ UpdateRecordsTbl1	dc.w	$0004,$2000
 	movem.l	(sp)+,d0-d7/a0-a6
 .lAB76	rts
 .lAB78	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	ReadCrowdRecordSub2
+	bsr.w	ReadCrowdRecordBClearFlag6
 	st.b	d7
 	movem.w	d0,-(sp)
 	clr.w	d0
@@ -121,7 +121,7 @@ UpdateRecordsTbl1	dc.w	$0004,$2000
 	move.b	d3,$5(a0)
 	move.b	d4,$6(a0)
 	move.b	d2,$7(a0)
-.lAC4A	bsr.w	ReadCrowdRecordSub3
+.lAC4A	bsr.w	ReadCrowdRecordBSetFlag6
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .lAC54	movem.l	d0-d7/a0-a6,-(sp)
@@ -167,12 +167,12 @@ UpdateRecordsTbl1	dc.w	$0004,$2000
 	move.b	d2,$A(a0)
 .lACFE	tst.w	d7
 	beq.w	.lAD08
-	bsr.w	ReadCrowdRecordSub1
+	bsr.w	ReadCrowdRecordASetFlag6
 .lAD08	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 .lAD0E	clr.l	d0
 	move.w	#$19,d2
-.lAD14	bsr.w	SPAlistSub1
+.lAD14	bsr.w	SPAlistClearFlag6
 	cmp.w	d5,d0
 	blt.w	.lAD2E
 	move.w	d0,-(sp)
@@ -197,7 +197,7 @@ UpdateRecordsTbl1	dc.w	$0004,$2000
 	move.b	$18BF7.l,$1(a0)
 	move.b	$18BF5.l,$3(a0)
 .lAD7A	move.b	d6,$2(a0)
-	bsr.w	SPAlistSub2
+	bsr.w	SPAlistSetFlag6
 .lAD82	addi.w	#$1,d0
 	dbra	d2,.lAD14
 	rts

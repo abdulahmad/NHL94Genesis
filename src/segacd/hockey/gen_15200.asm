@@ -122,7 +122,7 @@ doinput
 	cmp.w	$17BE0.l,d0
 	movem.w	(sp)+,d0
 	beq.w	.l1543C
-	bra.w	passtoSub1
+	bra.w	PassToJump
 .l1543C	btst	#$4,d3
 	beq.w	.l154DC
 	tst.w	$19374.l
@@ -173,25 +173,25 @@ doinput
 	beq.w	.l1554C
 	move.b	#$11,$17E57.l
 	andi.w	#$FF,d0
-	bne.w	passtoSub1
+	bne.w	PassToJump
 	tst.w	d4
 	beq.w	.l1553E
 	tst.w	$18C0E.l
 	bra.w	.l15544
 .l1553E	tst.w	$18C0C.l
-.l15544	bne.w	passtoSub1
+.l15544	bne.w	PassToJump
 	bra.w	.l15576
 .l1554C	move.b	#$11,$17E56.l
 	andi.w	#$FF00,d0
-	bne.w	passtoSub1
+	bne.w	PassToJump
 	tst.w	d4
 	beq.w	.l1556C
 	tst.w	$18C0E.l
 	bra.w	.l15572
 .l1556C	tst.w	$18C0C.l
-.l15572	bne.w	passtoSub1
+.l15572	bne.w	PassToJump
 .l15576	tst.w	$19374.l
-	bne.w	passtoSub1
+	bne.w	PassToJump
 	move.w	#$5,d0
 	cmpi.w	#$5,d6
 	ble.w	.l15590
@@ -440,7 +440,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bne.w	.arel
 	bset	#$3,$17F74.l
 	jsr	(setpassmode).l
-	bra.w	faceoffinputExitSub1
+	bra.w	FaceoffInputCheckLocked
 .c1	subi.b	#$1,$19380.l
 	bpl.w	.6
 	move.b	#$0,$19380.l
@@ -448,7 +448,7 @@ doinput_ispc						;a3 has the puck: pass mode, shot mode, or start a pass / shot
 	bne.w	.arel
 	bset	#$3,$17F74.l
 	jsr	(setpassmode).l
-	bra.w	faceoffinputExitSub1
+	bra.w	FaceoffInputCheckLocked
 .arel	btst	#$6,d3
 	bne.w	.8
 	btst	#$6,d2
@@ -470,7 +470,7 @@ doinput_islocked						;a3 is locked in an animation: B (bit 4) changes the contr
 	beq.w	doinput_islockedExit
 	btst	#$6,$17F74.l
 	bne.w	doinput_islockedExit
-	bsr.w	passtoSub1
+	bsr.w	PassToJump
 	movem.l	d0/a0,-(sp)
 	move.w	$17F9E.l,d0
 	tst.w	d4
@@ -525,7 +525,8 @@ faceoffinput						;controller processing for faceoff
 	bra.w	SetSPA
 faceoffinputExit
 	rts
-faceoffinputExitSub1
+; Leaves faceoff input when the player is locked.
+FaceoffInputCheckLocked
 	tst.w	$18C0A.l
 	bne.w	doinput_islockedExit
 	btst	#$4,$17F7A.l
@@ -551,7 +552,7 @@ SetLCmode2
 	addi.w	#$1,(printx).l
 	moveq	#$2,d4
 .l15B8E	move.w	d4,d0
-	bsr.w	setlccordsSub1
+	bsr.w	SetLcCoordsForSide
 	tst.w	d0
 	bmi.w	.l15BEC
 	btst	#$1,$32(a2)
@@ -565,7 +566,7 @@ SetLCmode2
 	jsr	(print).l
 	move.w	d0,-(sp)
 	movea.l	#$419F6,a1
-	jsr	(SetTickerAreaPositionSub1).l
+	jsr	(PrintTickerEntry).l
 	move.w	(sp)+,d0
 	jsr	(linebar).l
 	subi.w	#$5,(printx).l
@@ -588,7 +589,7 @@ setlccords						;set printx/y to cords for lc box on team a2
 	String	CC_Font1Pri,$16,$0
 	add.w	d0,(printy).l
 	moveq	#$2,d0
-	bsr.w	setlccordsSub1
+	bsr.w	SetLcCoordsForSide
 	moveq	#$6,d1		;3 rows
 	tst.w	d0
 	bpl.w	.ex
@@ -596,7 +597,8 @@ setlccords						;set printx/y to cords for lc box on team a2
 	addi.w	#$1,(printy).l
 .ex	moveq	#$9,d0
 	rts
-setlccordsSub1
+; Picks the line-change coordinates for the current side.
+SetLcCoordsForSide
 	movem.l	d1-d2,-(sp)
 	move.w	$38C(a2),d2
 	cmpa.l	#$1834C,a2
@@ -642,13 +644,13 @@ lineinput						;process input for line changes
 .1	move.w	(sp)+,d1
 	clr.w	d2
 	btst	#$6,d1
-	bne.w	lineinputSub1
+	bne.w	LineInputSetCoords
 	addi.w	#$1,d2
 	btst	#$4,d1
-	bne.w	lineinputSub1
+	bne.w	LineInputSetCoords
 	addi.w	#$1,d2
 	btst	#$5,d1
-	bne.w	lineinputSub1
+	bne.w	LineInputSetCoords
 	btst	#$3,$62(a3)
 	beq.w	.x
 	btst	#$5,$62(a3)
@@ -656,10 +658,11 @@ lineinput						;process input for line changes
 	btst	#$0,$63(a3)
 	beq.w	doplayeracc		;skate with dpad if not fighting
 .x	rts
-lineinputSub1
+; Stores the choice and sets its coordinates.
+LineInputSetCoords
 	move.w	d2,d0
 	move.w	d2,$30(a2)
-	bsr.w	setlccordsSub1
+	bsr.w	SetLcCoordsForSide
 	tst.w	d0
 	bpl.w	.l15D7A
 	jmp	$30AB0.l

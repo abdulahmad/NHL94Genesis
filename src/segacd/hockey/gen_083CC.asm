@@ -5,13 +5,13 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 									;demo (SetupDemo).
 	jsr	$2A58C.l
 	movea.l	#$18C38,a3
-	jsr	(InitializeGameStructuresSub2).l
+	jsr	(InitPlayerSlots).l
 	move.w	$18C22.l,$18C0A.l
 	move.w	$18C24.l,$18BFA.l
 	bclr	#$1,$17F7A.l		;no overtime
 	jsr	$29302.l
 	jsr	(ReadNameLog).l		;read the SRAM name list
-	bsr.w	PrintOptionNamesSub1		;build the screen
+	bsr.w	OptionsScreenSetup		;build the screen
 	clr.w	$19384.l
 	clr.w	$19386.l
 	bsr.w	PrintOptionNames
@@ -29,10 +29,10 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	bra.w	.reggame
 .l8456	cmpi.w	#$2,$18BFA.l
 	blt.w	.l8466
-	bsr.w	GameSetUpSub3
+	bsr.w	GameSetUpJumpA
 .l8466	cmpi.w	#$1,$18BFA.l
 	bne.w	.reggame		;not continue playoffs
-	bsr.w	GameSetUpSub4
+	bsr.w	GameSetUpJumpB
 .reggame	clr.w	d7		;menu line 0 (d7 = line * 2 = offset in OptPlayMode ... OptLine)
 	clr.w	d0
 	bsr.w	MoveMenuFrame		;frame the line
@@ -179,9 +179,11 @@ GameSetUpSub2
 	bsr.w	FixModeOptions
 	bra.w	GameSetUpSub1
 	rts
-GameSetUpSub3
+; Jumps to the disc routine at $401C4.
+GameSetUpJumpA
 	jmp	$401C4.l
-GameSetUpSub4
+; Jumps to the disc routine at $40132.
+GameSetUpJumpB
 	jmp	$40132.l
 MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 lines and
 									;scrolls: setupfirstline = first line shown
@@ -268,7 +270,7 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 	bclr	#$0,(sflags6).l		;normal maps
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.w	d7,d3
-	bsr.w	SetFrameRectUnused_1		;the new frame
+	bsr.w	PrintFont1Title		;the new frame
 	move.w	#$6000,(printa).l
 	jmp	(Framer).l
 .l891E	jsr	(printz).l
@@ -295,7 +297,8 @@ SetFrameRectUnused						;An unused copy of SetFrameRect without its printz that 
 	bne.w	SetFrameRectUnusedExit
 	moveq	#$5,d1
 	rts
-SetFrameRectUnused_1	jsr	(printz).l
+; Prints a title in font 1 and adjusts printy.
+PrintFont1Title	jsr	(printz).l
 	String	CC_Font1,$10,$E
 	add.w	d3,(printy).l
 	move.w	$19384.l,d0
@@ -461,9 +464,9 @@ ChangeOption
 	cmpi.w	#$4,$18BFA.l
 	beq.w	SetFrameRectUnusedExit
 	tst.w	d7
-	beq.w	GameSetUpSub3
+	beq.w	GameSetUpJumpA
 	cmpi.w	#$4,d7
-	beq.w	GameSetUpSub3
+	beq.w	GameSetUpJumpA
 	rts
 WrapOption						;d3 + d2, wrapped into d5 ... d4-1. Called from ChangeOption
 	add.w	d2,d3
