@@ -130,11 +130,11 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	ble.w	.next11
 	move.w	#$E,d0
 	move.w	#$0,d1
-	bsr.w	LF64
+	bsr.w	PlSetWindowRegCmd
 	bra.w	.next12
 .next11	moveq	#$10,d0
 	moveq	#$0,d1
-	bsr.w	LF64
+	bsr.w	PlSetWindowRegCmd
 	cmpi.w	#$2,$B0(a6)
 	bne.w	.next12
 	move.w	#$50,d0
@@ -151,8 +151,8 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$0,$B0(a6)
 	moveq	#$1C,d0
 	moveq	#$0,d1
-	bsr.w	LF64
-	bsr.w	LEBC
+	bsr.w	PlSetWindowRegCmd
+	bsr.w	PlSetScrollCmd
 .next13	move.w	#$50,d0
 	move.w	$EE(a6),d1
 	subi.w	#$2000,d1
@@ -164,7 +164,7 @@ PlDrawPicture	movem.l	d0-d7/a0-a4,-(sp)
 	move.w	#$0,$B0(a6)
 	moveq	#$0,d0
 	moveq	#$0,d1
-	bsr.w	LF64
+	bsr.w	PlSetWindowRegCmd
 	bsr.w	PlUnpackNibbles
 	movem.l	(sp)+,d0-d7/a0-a4
 	rts

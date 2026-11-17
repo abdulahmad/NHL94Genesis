@@ -12,8 +12,12 @@
 	include	segacd\main\maindisp.asm
 	include	segacd\main\mainfont.asm
 	include	segacd\main\maintext.asm
-	include	segacd\main\main_034B8.asm
+	include	segacd\main\mainsubcomm.asm
 	include	segacd\main\hwread.asm
-	include	segacd\main\main_03C3E.asm
+	include	segacd\main\mainsubcmd.asm
+	include	segacd\main\mainctrl.asm
+	include	segacd\main\maindrawb.asm
+	include	segacd\main\maincmd.asm
+	include	segacd\main\mainsound.asm
 	include	segacd\main\z80load.asm
-	include	segacd\main\main_077B8.asm
+	include	segacd\main\mainsound2.asm

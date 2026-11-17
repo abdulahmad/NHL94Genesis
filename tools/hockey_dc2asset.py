@@ -65,7 +65,7 @@ for f in files:
                 if DC.match(t2) and not LAB.match(t2) and addr[idx[e]] is not None: e += 1
                 else: break
             a0 = addr[g]; a1 = end_of(idx[e - 1])
-            if a1 is not None and a1 - a0 >= MIN and a0 >= base + 0x5432 and 'segacd/hockey/gen_' in f and os.environ.get('DC_ONLY', 'gen_') in f:
+            if a1 is not None and a1 - a0 >= MIN and a0 >= base + 0x5432 and 'segacd/hockey/' in f and os.environ.get('DC_ONLY', '') in f:
                 key = 'hockey_%05X.bin' % (a0 - base)
                 head = LAB.match(t).group(0) if LAB.match(t) else ''
                 saved[key] = {'file': f, 'lines': L[s:e]}

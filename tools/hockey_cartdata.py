@@ -163,7 +163,7 @@ def main():
     key, cart = sys.argv[1], int(sys.argv[2], 16)
     assets = json.load(open(apath))
     s, n = assets[key]['start'], assets[key]['size']
-    gens = [f for f in glob.glob('src/segacd/hockey/gen_*.asm') if key in open(f, encoding='latin1').read()]
+    gens = [f for f in glob.glob('src/segacd/hockey/*.asm') if key in open(f, encoding='latin1').read()]
     assert len(gens) == 1, gens
     f = gens[0]
     orig = open(f, encoding='latin1').read()

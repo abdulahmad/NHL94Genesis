@@ -1,11 +1,11 @@
 {
  "SPAlistSub1": [
   "SPAlistClearFlag6",
-  "Entry that clears sflags6 bit 6, then runs SPAlist_1."
+  "Entry that clears sflags6 bit 6, then runs SPAlistDraw."
  ],
  "SPAlistSub2": [
   "SPAlistSetFlag6",
-  "Entry that sets sflags6 bit 6, then runs SPAlist_1."
+  "Entry that sets sflags6 bit 6, then runs SPAlistDraw."
  ],
  "ReadCrowdRecordSub1": [
   "ReadCrowdRecordASetFlag6",

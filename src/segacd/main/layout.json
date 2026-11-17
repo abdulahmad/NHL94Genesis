@@ -1,0 +1,39 @@
+{
+ "prog": "main",
+ "files": {
+  "main_034B8": [
+   [
+    "mainsubcomm",
+    null
+   ]
+  ],
+  "main_03C3E": [
+   [
+    "mainsubcmd",
+    null
+   ],
+   [
+    "mainctrl",
+    "ClearVram"
+   ],
+   [
+    "maindrawb",
+    "RamImageB"
+   ],
+   [
+    "maincmd",
+    "DoDrawTextCommand"
+   ],
+   [
+    "mainsound",
+    "Z80CommandSwitch"
+   ]
+  ],
+  "main_077B8": [
+   [
+    "mainsound2",
+    null
+   ]
+  ]
+ }
+}
