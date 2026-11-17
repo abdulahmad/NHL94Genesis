@@ -9,9 +9,8 @@
 ; The epilogue pops the return address and jumps through it.
 ; See docs/segacd_film.md.
 
-	org	$251AA
 
-	link	a6,#$0
+L251AA	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8(a6),a0
 	movea.l	$C(a6),a1
@@ -129,3 +128,4 @@ L252C4	movem.l	(sp)+,d0-d7/a0-a5
 	movea.l	(sp)+,a0
 	addq.w	#$8,sp
 	jmp	(a0)
+

@@ -23,13 +23,26 @@ import emit_m68k as E
 import segcd_flow as F
 
 CFG = {
+    "PLAYER": dict(
+        disc="cdbin/PLAYER.BIN", base=0x0, name="player", asset_min=512, oaq="-", ptr_seeds=False,
+        hand=[("playerpic", 0x1D54, 0x2010), ("playercareer", 0x2010, 0x23D0), ("playerpage", 0x23D0, 0x281C)],
+        opts_off=(), string_calls=(),
+    ),
+    "STARTER": dict(
+        disc="cdbin/STARTER.BIN", base=0x21300, name="starter", asset_min=512, oaq="-", ptr_seeds=True,
+        hand=[("subboot", 0x0, 0x90), ("pcmclear", 0x3A0C, 0x3A76), ("cdcwait", 0x3A76, 0x3A8A), ("filmrun", 0x3D94, 0x3EAA),
+              ("filmsm", 0x3EAA, 0x3FD0), ("pcmchip", 0x3FD0, 0x40FA), ("filmopen", 0x4336, 0x4538), ("filmtask", 0x458C, 0x472E),
+              ("filmclose", 0x473A, 0x477C), ("filmcmd", 0x4D9E, 0x4DCA), ("filmbuf", 0x4E26, 0x4EC0), ("subheap", 0x4FA8, 0x5068),
+              ("audiostream", 0x508C, 0x5304), ("cdfade", 0x54F6, 0x556E)],
+        opts_off=("subboot", "subheap", "pcmclear", "cdcwait", "pcmchip", "audiostream", "cdfade"), string_calls=(),
+    ),
     "MAIN": dict(
         disc="cdbin/MAIN.BIN", base=0xFF0000, name="main", asset_min=512,
         hand=[("maincd", 0x0, 0x272), ("maindma", 0x272, 0x500), ("maincont", 0x500, 0xCB8), ("mainblit", 0xCB8, 0x12C0),
               ("mainvdp", 0x12C0, 0x1840), ("mainpad", 0x1840, 0x1E90), ("maindisp", 0x1E90, 0x2D2A),
               ("mainfont", 0x2D2A, 0x302A), ("maintext", 0x302A, 0x34B8), ("hwread", 0x3B3C, 0x3C3E),
               ("z80load", 0x76C8, 0x77B8)],
-        opts_off=("hwread", "z80load"),
+        opts_off=("hwread", "z80load"), oaq="+", ptr_seeds=True,
         string_calls=(),
     ),
 }
@@ -44,7 +57,7 @@ def sierra_tags(d):
             ln = b & 0x7F
             if 3 <= ln < 40 and i + 1 + ln <= len(d):
                 t = d[i + 1:i + 1 + ln]
-                if t[0:1].isalpha() and all(chr(c).isalnum() or chr(c) == "_" for c in t):
+                if t[0:1].isalpha() and all(c < 128 and (chr(c).isalnum() or chr(c) == "_") for c in t):
                     end = i + 1 + ln
                     pad = (2 - (end % 2)) % 2
                     if d[end:end + pad] == b"\0" * pad:
@@ -104,7 +117,7 @@ def main():
         src = git_text("src/segacd/%s.asm" % name).split("\n")
         hand[name] = dict(a=a, b=b, src=src, addr=map_lines(src, name))
     hack = {}  # label -> address, from `org X` followed by a bare label (maincd's link stubs)
-    s = hand["maincd"]["src"]
+    s = hand["maincd"]["src"] if "maincd" in hand else []
     for i, l in enumerate(s):
         m = re.match(r"^\torg\t\$([0-9A-F]+)\s*$", l)
         if m and i + 1 < len(s) and re.match(r"^[A-Za-z_]\w*\s*$", s[i + 1]) and int(m.group(1), 16) != base:
@@ -156,6 +169,8 @@ def main():
             for m in re.finditer(r"\$(FF[0-9A-F]{4})\b", ln):
                 pass
     for i in range(0, n - 3, 2):
+        if not cfg["ptr_seeds"]:
+            break
         v = struct.unpack(">I", d[i:i + 4])[0]
         if base <= v < base + n and v % 2 == 0 and not cov[v - base]:
             seeds.add(v - base)
@@ -427,22 +442,23 @@ def main():
         if kind == "hand" and nm in cfg["opts_off"]:
             p0 = "%s/%s.asm" % (ddir, nm)
             t0 = open(p0).read()
-            if not t0.startswith("\topt\toaq-"):
-                open(p0, "w").write("\topt\toaq-\n\topt\tosq-\n" + t0 + "\topt\toaq+\n\topt\tosq+\n")
+            flip = "+" if cfg["oaq"] == "-" else "-"
+            if not t0.startswith("\topt\toaq" + flip):
+                open(p0, "w").write("\topt\toaq%s\n\topt\tosq%s\n" % (flip, flip) + t0 + "\topt\toaq%s\n\topt\tosq%s\n" % (cfg["oaq"], cfg["oaq"]))
         top.append("\tinclude\tsegacd\\%s\\%s.asm" % (cfg["name"], nm))
     open("src/segacd/%s.asm" % cfg["name"], "w").write("\n".join(top) + "\n")
     return parts, ddir
 
 
-def asm_opts():
+def asm_opts(cfg):
     return ["/o", "d-", "/o", "s-", "/o", "r+", "/o", "l+", "/o", "l.", "/o", "ow+", "/o", "op-", "/o", "os+", "/o", "oz-",
-            "/o", "omq-", "/o", "oaq+", "/o", "osq+"]
+            "/o", "omq-", "/o", "oaq" + cfg["oaq"], "/o", "osq" + cfg["oaq"]]
 
 
 def assemble(cfg):
     t = "Z:\\tmp\\new\\" + cfg["name"]
     os.makedirs("/tmp/new", exist_ok=True)
-    r = subprocess.run(["wine", "../assembler/Assembler.exe", "/p", "/m", "/g"] + asm_opts() +
+    r = subprocess.run(["wine", "../assembler/Assembler.exe", "/p", "/m", "/g"] + asm_opts(cfg) +
                        ["segacd\\%s.asm,%s.bin,%s,%s" % (cfg["name"], t, t, t)],
                        cwd="src", capture_output=True, text=True, env={**os.environ, "WINEDEBUG": "-all"})
     txt = r.stdout.replace("\r", "")

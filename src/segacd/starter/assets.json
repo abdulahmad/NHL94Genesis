@@ -1,0 +1,42 @@
+{
+ "starter_0556E.bin": {
+  "start": 21870,
+  "size": 600
+ },
+ "starter_0660E.bin": {
+  "start": 26126,
+  "size": 563
+ },
+ "starter_06869.bin": {
+  "start": 26729,
+  "size": 601
+ },
+ "starter_06D1A.bin": {
+  "start": 27930,
+  "size": 513
+ },
+ "starter_07512.bin": {
+  "start": 29970,
+  "size": 1093
+ },
+ "starter_07CD2.bin": {
+  "start": 31954,
+  "size": 654
+ },
+ "starter_08102.bin": {
+  "start": 33026,
+  "size": 2080
+ },
+ "starter_0A248.bin": {
+  "start": 41544,
+  "size": 1568
+ },
+ "starter_0A885.bin": {
+  "start": 43141,
+  "size": 2845
+ },
+ "starter_0BC64.bin": {
+  "start": 48228,
+  "size": 65596
+ }
+}

@@ -1,3 +1,5 @@
+	opt	oaq+
+	opt	osq+
 ;	NHL 94 Sega CD, sub CPU boot (the front of STARTER.BIN).
 ;	Runtime base is $21300: the opening jmp lands on a Sierra C `link a6,#0`
 ;	at $262A8 (file offset $4FA8), which is the SDK heap/film startup.
@@ -8,7 +10,6 @@
 ;	$6044 is the sub CPU BIOS dispatcher (function number in d7).
 ;	$1B000 is inside HOCKEY.BIN, the game.
 
-	org	$21300
 
 SubBoot	move.l	$6038.w,$B090		;keep the BIOS vector the game will call through
 	jmp	$262A8						;C runtime (link a6). Does not return here
@@ -35,3 +36,6 @@ RestoreBios	move.l	$B090,$6038.w
 	adda.w	#$C,sp					;BIOS function 0 takes 3 long arguments
 	bclr.b	#5,$FF800F
 	jmp	$1B000						;into the game
+
+	opt	oaq-
+	opt	osq-

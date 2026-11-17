@@ -67,21 +67,6 @@ function compareAt(builtRel, discRel, discOff, length) {
 }
 
 compareAt('output/segacd/main.bin', 'cdbin/MAIN.BIN', 0x0, 0xEC00);
-compare('output/segacd/subboot.bin', 'cdbin/STARTER.BIN', 0x90);
-compareAt('output/segacd/subheap.bin', 'cdbin/STARTER.BIN', 0x4FA8, 0xC0);
-compareAt('output/segacd/pcmclear.bin', 'cdbin/STARTER.BIN', 0x3A0C, 0x6A);
-compareAt('output/segacd/cdcwait.bin', 'cdbin/STARTER.BIN', 0x3A76, 0x14);
-compareAt('output/segacd/pcmchip.bin', 'cdbin/STARTER.BIN', 0x3FD0, 0x12A);
-compareAt('output/segacd/audiostream.bin', 'cdbin/STARTER.BIN', 0x508C, 0x278);
-compareAt('output/segacd/cdfade.bin', 'cdbin/STARTER.BIN', 0x54F6, 0x78);
-compareAt('output/segacd/filmrun.bin', 'cdbin/STARTER.BIN', 0x3D94, 0x116);
-compareAt('output/segacd/filmcmd.bin', 'cdbin/STARTER.BIN', 0x4D9E, 0x2C);
-compareAt('output/segacd/filmbuf.bin', 'cdbin/STARTER.BIN', 0x4E26, 0x9A);
+compareAt('output/segacd/starter.bin', 'cdbin/STARTER.BIN', 0x0, 0x1D5B8);
 compareAt('output/segacd/hockey.bin', 'cdbin/HOCKEY.BIN', 0x0, 0x2D20A);
-compareAt('output/segacd/playerpic.bin', 'cdbin/PLAYER.BIN', 0x1D54, 0x2BC);
-compareAt('output/segacd/playercareer.bin', 'cdbin/PLAYER.BIN', 0x2010, 0x3C0);
-compareAt('output/segacd/playerpage.bin', 'cdbin/PLAYER.BIN', 0x23D0, 0x44C);
-compareAt('output/segacd/filmopen.bin', 'cdbin/STARTER.BIN', 0x4336, 0x202);
-compareAt('output/segacd/filmsm.bin', 'cdbin/STARTER.BIN', 0x3EAA, 0x126);
-compareAt('output/segacd/filmtask.bin', 'cdbin/STARTER.BIN', 0x458C, 0x1A2);
-compareAt('output/segacd/filmclose.bin', 'cdbin/STARTER.BIN', 0x473A, 0x42);
+compareAt('output/segacd/player.bin', 'cdbin/PLAYER.BIN', 0x0, 0xAE70);

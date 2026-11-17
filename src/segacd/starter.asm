@@ -1,0 +1,29 @@
+	include	macros\genesis.mac
+
+	org	$21300
+
+	include	segacd\starter\subboot.asm
+	include	segacd\starter\starter_00090.asm
+	include	segacd\starter\pcmclear.asm
+	include	segacd\starter\cdcwait.asm
+	include	segacd\starter\starter_03A8A.asm
+	include	segacd\starter\filmrun.asm
+	include	segacd\starter\filmsm.asm
+	include	segacd\starter\pcmchip.asm
+	include	segacd\starter\starter_040FA.asm
+	include	segacd\starter\filmopen.asm
+	include	segacd\starter\starter_04538.asm
+	include	segacd\starter\filmtask.asm
+	include	segacd\starter\starter_0472E.asm
+	include	segacd\starter\filmclose.asm
+	include	segacd\starter\starter_0477C.asm
+	include	segacd\starter\filmcmd.asm
+	include	segacd\starter\starter_04DCA.asm
+	include	segacd\starter\filmbuf.asm
+	include	segacd\starter\starter_04EC0.asm
+	include	segacd\starter\subheap.asm
+	include	segacd\starter\starter_05068.asm
+	include	segacd\starter\audiostream.asm
+	include	segacd\starter\starter_05304.asm
+	include	segacd\starter\cdfade.asm
+	include	segacd\starter\starter_0556E.asm

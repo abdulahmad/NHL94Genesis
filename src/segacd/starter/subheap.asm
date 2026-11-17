@@ -1,3 +1,5 @@
+	opt	oaq+
+	opt	osq+
 ;	Sub CPU heap helpers from STARTER.BIN, linked at $21300.
 ;	Sierra C puts the function name after the rts. These two are EngineIdle
 ;	and GetData. Verified against STARTER.BIN file offset $4FA8.
@@ -10,7 +12,6 @@ MoveBlock	equ	$260DE				;three long arguments
 AllocAlign	equ	$26656				;tiny lea / jmp thunk
 SegHead		equ	$24FB4				;HOCKEY.SEG object
 
-	org	$262A8
 
 ; a4 = heap. If $10(SegHead) is clear and the free gap is at least $8000,
 ; call GateCall(block, $1000, 0).
@@ -74,3 +75,6 @@ GetData	link	a6,#0
 	unlk	a6
 	rts
 	dc.b	$87,'GetData',0,0
+
+	opt	oaq-
+	opt	osq-
