@@ -25,20 +25,21 @@
 	dc.b	$36,$02,$48,$43,$36,$02,$E2,'HS@#',$C3,$00,$FF,$6C,$E8	; 6.HC6..HS@#...l.
 	dc.b	$32,$B9,$00,$FF,$6C,$E8,$32,$B9,$00,$FF,$6C,$EA,$51,$C8,$FF,$EC	; 2...l.2...l.Q...
 	dc.b	$61,$00,$FB,$C2,$4E,$75	; a...Nu
-DispatchTailSub9	move.l	#$40000000,$C00004.l
+; Writes zeros over all 64 KB of VRAM.
+ClearVram	move.l	#$40000000,$C00004.l
 	move.w	#$3FFF,d0
 	movea.l	#$C00000,a0
 	clr.l	d1
 .l3DFA	move.l	d1,(a0)
 	dbra	d0,.l3DFA
 	rts
-	bsr.w	DispatchTailSub5
+	bsr.w	WaitDmnaClear
 	lea.l	$C00000.l,a0
 	lea.l	$23C002.l,a1
 	move.w	$23C000.l,d0
 .l3E18	move.w	(a1)+,(a0)
 	dbra	d0,.l3E18
-	bsr.w	DispatchTail_67
+	bsr.w	GiveWordRamToSub
 	rts
 	move.w	$A12022.l,$A11200.l
 	rts
@@ -64,7 +65,8 @@ DispatchTailSub9	move.l	#$40000000,$C00004.l
 	dc.w	$4E75
 	dc.b	$00,$00,$00,$6B,$00,$6A,$00,$75,$00,$7C,$00,$73,$00,$74,$30,$3C	; ...k.j.u.|.s.t0<
 	dc.b	$00,$01,$61,$00,$37,$D2,$4E,$75	; ..a.7.Nu
-DispatchTailSub10	movem.l	d1/a0,-(sp)
+; Reads both pads into $FF4F84/$FF4F85 and updates the edge state.
+PollControllers	movem.l	d1/a0,-(sp)
 	bsr.w	.lFF3EB8
 	move.b	d0,$FF4F84.l
 	bsr.w	.lFF3EAC
@@ -99,23 +101,26 @@ DispatchTailSub10	movem.l	d1/a0,-(sp)
 	movem.l	(sp)+,d1/a0
 	dc.w	$4E75
 .lFF3F00	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
-DispatchTailSub11	move.b	$FF4F84.l,d0
-	bsr.w	DispatchTail_68
+; Decodes pad 1 and computes the newly pressed buttons.
+UpdatePad1	move.b	$FF4F84.l,d0
+	bsr.w	DecodePadBits
 	move.w	$FF4F7C.l,d2
 	move.w	d1,$FF4F7C.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-DispatchTailSub12	move.b	$FF4F85.l,d0
-	bsr.w	DispatchTail_68
+; Decodes pad 2 and computes the newly pressed buttons.
+UpdatePad2	move.b	$FF4F85.l,d0
+	bsr.w	DecodePadBits
 	move.w	$FF4F7E.l,d2
 	move.w	d1,$FF4F7E.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-DispatchTail_68	not.b	d0
+; Inverts the raw pad byte and splits it into direction and button bits.
+DecodePadBits	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
@@ -132,10 +137,10 @@ DispatchTailSub13	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$0,$A1200F.l
 	beq.w	.l3FC0
 	bclr.b	#$1,$A1200E.l
-	bsr.w	DispatchTailSub10
-	bsr.w	DispatchTailSub11
+	bsr.w	PollControllers
+	bsr.w	UpdatePad1
 	move.w	d1,d5
-	bsr.w	DispatchTailSub12
+	bsr.w	UpdatePad2
 	or.w	d1,d5
 	cmpi.b	#$80,d5
 	bne.w	.l3FC0
@@ -305,7 +310,8 @@ DispatchTail_78	dc.b	$00,$00,$00,$00	; ....
 DispatchTail_79	dc.b	$00,$00,$00,$10	; ....
 DispatchTail_80	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
-DispatchTailSub16	dc.w	$4E56,$0000
+; Second copy of DrawTextToPlane.
+DrawTextToPlane_B	dc.w	$4E56,$0000
 DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
@@ -363,7 +369,8 @@ DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
 	bne.b	.l4DD8
 	moveq	#$0,d0
 	rts
-DispatchTailSub18	dc.w	$4E56,$0000
+; Second copy of DrawTextBuffer.
+DrawTextBuffer_B	dc.w	$4E56,$0000
 DispatchTail_81	movem.l	d0-d7/a0-a5,-(sp)
 	lea.l	DispatchTail_73(pc),a2
 .l4DEC	tst.w	(a2)
@@ -592,7 +599,7 @@ DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
 	move.l	d5,-(sp)
 	move.l	d6,-(sp)
 	move.l	d7,-(sp)
-	jsr	DispatchTailSub18(pc)
+	jsr	DrawTextBuffer_B(pc)
 	moveq	#$0,d0
 	move.l	d0,-(sp)
 	jsr	Set1MFlag(pc)
@@ -652,7 +659,7 @@ drawprint	dc.w	$4E56,$0000
 	move.l	$5C(a0),-(sp)
 	lea.l	DispatchTail_69(pc),a0
 	move.l	$60(a0),-(sp)
-	jsr	DispatchTailSub16(pc)
+	jsr	DrawTextToPlane_B(pc)
 	lea.l	DispatchTail_69(pc),a0
 	addq.l	#$1,$60(a0)
 	lea.l	DispatchTail_69(pc),a0
@@ -676,7 +683,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	clr.b	(a4,d0.w)
 .l543C	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	Set1MFlag_2(pc)
+	jsr	LongModU_B(pc)
 	moveq	#$30,d1
 	add.b	d1,d0
 	move.w	d7,d1
@@ -684,7 +691,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	move.b	d0,(a4,d1.w)
 	move.l	d6,d0
 	moveq	#$A,d1
-	jsr	Set1MFlag_1(pc)
+	jsr	LongDivU_B(pc)
 	move.l	d0,d6
 	bne.b	.l543C
 	dc.w	$6006
@@ -876,12 +883,14 @@ Set1MFlag	dc.w	$4E56,$0000
 	dc.w	$4E75
 	dc.b	$89,'Set1MFlag',$00,$00,$22,$2F,$00,$04	; .Set1MFlag.."/..
 	dc.b	$20,$2F,$00,$08	;  /..
-Set1MFlag_1	lea.l	.lFF570C(pc),a0
+; Second copy of LongDivU.
+LongDivU_B	lea.l	.lFF570C(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF570C	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-Set1MFlag_2	lea.l	.lFF5730(pc),a0
+; Second copy of LongModU.
+LongModU_B	lea.l	.lFF5730(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .lFF5730	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -996,7 +1005,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	move.w	#$18,$FF6D8A.l
 .l5A1C	tst.w	$FF6D8A.l
 	bpl.w	.l5A1C
-	bsr.w	DispatchTailSub9
+	bsr.w	ClearVram
 	bsr.w	.lFF5AD4
 	movea.l	#$C00000,a0
 	move.w	#$8C81,$4(a0)
@@ -1172,7 +1181,7 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	move.l	d5,(a0)
 .l5C80	movem.l	(sp)+,d2-d7/a1-a2
 	rts
-	bsr.w	DispatchTailSub5
+	bsr.w	WaitDmnaClear
 	movea.l	#$C00004,a0
 	move.w	#$8B00,(a0)
 	move.w	#$9100,(a0)
@@ -1189,7 +1198,7 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 .l5CCC	move.l	(a0)+,(a1)+
 	dbra	d0,.l5CCC
 	move.l	#$FF1006,$FF6D86.l
-	bsr.w	DispatchTail_67
+	bsr.w	GiveWordRamToSub
 	clr.w	$FF6D84.l
 	dc.w	$4E75
 	dcb.b	$E,0
@@ -1224,7 +1233,7 @@ Set1MFlag_6	tst.w	d0
 	bra.w	Set1MFlag_11
 .l768C	dc.w	$0440,$0001
 	dc.w	$6604
-	bra.w	Set1MFlag_12
+	bra.w	Z80ReadStatus
 .l7696	dc.w	$0440,$0001
 	dc.w	$6604
 	bra.w	Set1MFlag_22

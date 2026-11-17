@@ -95,7 +95,7 @@ RestoreBios_100	lea.l	RestoreBios_79(pc),a1
 	jsr	$5F22.w
 	rts
 RestoreBios_101	dc.w	$4E56,$FFFC
-RestoreBiosSub52	movem.l	d1-d7/a0-a5,-(sp)
+RestoreBiosSub50	movem.l	d1-d7/a0-a5,-(sp)
 	movea.l	#$FF8000,a5
 	lea.l	RestoreBios_84(pc),a1
 	clr.l	(a1)
@@ -123,7 +123,7 @@ RestoreBiosSub52	movem.l	d1-d7/a0-a5,-(sp)
 	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	rts
-RestoreBiosSub53	move.l	d1,-(sp)
+RestoreBiosSub51	move.l	d1,-(sp)
 	move.b	d0,d1
 	andi.w	#$FF,d1
 	lsr.w	#$4,d1
@@ -135,19 +135,19 @@ RestoreBiosSub53	move.l	d1,-(sp)
 RestoreBios_102	movem.l	d1-d2,-(sp)
 	lsr.l	#$8,d0
 	move.l	d0,d1
-	jsr	RestoreBiosSub53(pc)
+	jsr	RestoreBiosSub51(pc)
 	move.b	d0,d2
 	andi.l	#$FF,d2
 	move.l	d1,d0
 	lsr.l	#$8,d0
 	move.l	d0,d1
-	jsr	RestoreBiosSub53(pc)
+	jsr	RestoreBiosSub51(pc)
 	andi.l	#$FF,d0
 	mulu.w	#$4B,d0
 	add.l	d0,d2
 	move.l	d1,d0
 	lsr.l	#$8,d0
-	jsr	RestoreBiosSub53(pc)
+	jsr	RestoreBiosSub51(pc)
 	andi.l	#$FF,d0
 	mulu.w	#$1194,d0
 	add.l	d0,d2

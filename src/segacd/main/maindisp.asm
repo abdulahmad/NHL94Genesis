@@ -13,7 +13,7 @@
 	ori.w	#$2700,sr
 	move.l	a0,$FFFFFD08.w
 	move.w	d0,sr
-	jsr	DispatchTail_34(pc)
+	jsr	MAINCODE_A(pc)
 .lFF1EB4	move.w	DispatchTail_16(pc),d0
 	bne.b	.lFF1EB4
 	movea.l	.lFF1ECC(pc),a0
@@ -825,7 +825,8 @@ DispatchTail_23	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
 	ori.b	#$0,d0
-DispatchTail_24	link	a6,#$0
+; C function: draws text to the plane at $E000 (args on the stack).
+DrawTextToPlane	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
@@ -883,7 +884,8 @@ DispatchTail_24	link	a6,#$0
 	bne.b	.lFF2B98
 	moveq	#$0,d0
 	rts
-DispatchTail_25	link	a6,#$0
+; C function: draws a string buffer, waiting for the VDP command queue.
+DrawTextBuffer	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	lea.l	DispatchTail_16(pc),a2
 .lFF2BAC	tst.w	(a2)

@@ -17,16 +17,16 @@
 	move.w	#$8B00,$4(a0)
 	move.w	#$921C,$4(a0)
 	bclr.b	#$4,$23C6E8.l
-	bsr.w	LinkedCall_11
+	bsr.w	ClearVdpPlanes
 	rts
 	move.w	#$800,d0
 	move.w	$FF2852.l,d1
 	move.w	#$7FF,d2
-	bsr.w	DispatchTail_2
+	bsr.w	VdpSetWriteAddrD1
 	move.w	#$1000,d0
 	move.w	$FF2856.l,d1
 	move.w	#$7FF,d2
-	bsr.w	DispatchTail_2
+	bsr.w	VdpSetWriteAddrD1
 	rts
 	lea.l	$23A450.l,a1
 	move.w	(a1)+,$FF2A24.l
@@ -104,10 +104,10 @@
 	bset.b	#$0,$A12000.l
 	btst.b	#$2,$A12024.l
 	beq.w	.lFF1578
-	bsr.w	DispatchTail_7
+	bsr.w	TakeWordRam
 	btst.b	#$4,$23C6E8.l
 	bne.w	.lFF1570
-	bsr.w	DispatchTail_6
+	bsr.w	TickTimers
 	btst.b	#$2,$23C6E8.l
 	bne.w	.lFF1538
 	bclr.b	#$1,$23C6E8.l
@@ -125,8 +125,8 @@
 .lFF1560	bsr.w	.lFF157E
 	bsr.w	.lFF159E
 	bclr.b	#$2,$23C6E8.l
-.lFF1570	bsr.w	DispatchTail_4
-	bsr.w	DispatchTail_8
+.lFF1570	bsr.w	ReadPads
+	bsr.w	ReleaseWordRam
 .lFF1578	movem.l	(sp)+,d0-d7/a0-a6
 	rte
 .lFF157E	bclr.b	#$6,$23C6E8.l
@@ -134,15 +134,16 @@
 	lea.l	$23C368.l,a0
 	move.w	#$1C0,d0
 	move.w	$FF284E.l,d1
-	bra.w	LinkedCall_5
+	bra.w	CopyToVdp
 .lFF159E	bclr.b	#$5,$23C6E8.l
 	beq.w	DispatchTail_5
 	lea.l	$23B1E8.l,a0
 	move.w	#$8C0,d0
 	move.w	$FF2862.l,d1
 	asl.w	#$5,d1
-	bra.w	LinkedCall_5
-DispatchTail_4	btst.b	#$3,$A12024.l
+	bra.w	CopyToVdp
+; Reads both control pads (or the CD-side pad state) into $FF284A/$FF284B.
+ReadPads	btst.b	#$3,$A12024.l
 	bne.w	.lFF1602
 	lea.l	$A10003.l,a0
 	bsr.w	.lFF167A
@@ -189,7 +190,8 @@ DispatchTail_4	btst.b	#$3,$A12024.l
 	or.b	d1,d0
 	not.b	d0
 DispatchTail_5	rts
-DispatchTail_6	btst.b	#$4,$23C6E8.l
+; Vblank timer countdown at $23A8D0.
+TickTimers	btst.b	#$4,$23C6E8.l
 	bne.b	DispatchTail_5
 	tst.w	$23A8D0.l
 	bmi.b	DispatchTail_5
@@ -267,21 +269,23 @@ DispatchTail_6	btst.b	#$4,$23C6E8.l
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0/a0-a1
 	rts
-DispatchTail_7	btst.b	#$1,$FF2A16.l
+; Waits for and takes word RAM for the main CPU.
+TakeWordRam	btst.b	#$1,$FF2A16.l
 	beq.w	.lFF17B4
 	bsr.w	WaitWordRAM
 	bset.b	#$0,$FF2A16.l
 	rts
 .lFF17B4	bclr.b	#$0,$FF2A16.l
 	rts
-DispatchTail_8	btst.b	#$0,$FF2A16.l
+; Gives word RAM back to the sub CPU if it was taken.
+ReleaseWordRam	btst.b	#$0,$FF2A16.l
 	beq.w	.lFF17CE
 	bsr.w	GiveWordRAM
 .lFF17CE	rts
 DispatchTail_9	lea.l	$23AF16.l,a0
 	move.w	$23B1E6.l,d0
 	move.w	$FF2850.l,d1
-	bsr.w	LinkedCall_5
+	bsr.w	CopyToVdp
 	movea.l	$23AF12.l,a6
 	adda.l	#$180000,a6
 	btst.b	#$0,$23C6EA.l
@@ -293,7 +297,7 @@ DispatchTail_9	lea.l	$23AF16.l,a0
 	move.w	(a5)+,d0
 	move.w	(a5)+,d1
 	adda.l	#$180000,a0
-	bsr.w	LinkedCall_5
+	bsr.w	CopyToVdp
 	cmpa.l	a6,a5
 	bcs.b	.lFF180A
 	rts
@@ -301,10 +305,10 @@ DispatchTail_10	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
 	adda.l	#$180000,a0
-	bsr.w	LinkedCall_5
+	bsr.w	CopyToVdp
 DispatchTail_11	cmpa.l	#$23A8D2,a6
 	bne.b	DispatchTail_10
 	rts
-	bsr.w	DispatchTail_4
+	bsr.w	ReadPads
 	rts
 

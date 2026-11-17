@@ -1,4 +1,4 @@
-RestoreBiosSub48	movem.l	d0-d7/a0-a6,-(sp)
+RestoreBiosSub46	movem.l	d0-d7/a0-a6,-(sp)
 	btst.b	#$2,$FFFF8024.w
 	beq.w	.l3AA0
 	bsr.w	.l24DAC
@@ -24,7 +24,7 @@ RestoreBios_72	dc.b	$48,$E7,$FF,$FE,$48,$E7,$00,$40,$4E,$B9,$00,$00,$E3,$20,$00,
 	dc.b	$00,$01,$05,$40,$30,$3C,$00,$01,$61,$00,$F5,$FA,$4E,$B9,$00,$01	; ...@0<..a...N...
 	dc.b	$05,$5C,$4E,$B9,$00,$00,$EA,$76,$61,$00,$01,$52,$4E,$B9,$00,$00	; ..N....va..RN...
 	dc.b	$EA,$0C,$22,$39,$00,$00,$EC,$92,$67,$00,$01,$3A	; .."9....g..:
-RestoreBiosSub49	movem.l	d1,-(sp)
+RestoreBiosSub47	movem.l	d1,-(sp)
 	move.w	$FFFF8004.w,$EC8E.l
 	lea.l	$ECA2.l,a0
 	move.w	#$10,d0
@@ -46,7 +46,7 @@ RestoreBiosSub49	movem.l	d1,-(sp)
 	move.l	#$0,-(sp)
 	move.l	#$0,-(sp)
 	move.l	#$E000,-(sp)
-RestoreBiosSub50	move.l	#$0,-(sp)
+RestoreBiosSub48	move.l	#$0,-(sp)
 	move.l	#$0,-(sp)
 	move.l	$EC9E.l,-(sp)
 	move.l	$EC9A.l,-(sp)
@@ -58,7 +58,7 @@ RestoreBiosSub50	move.l	#$0,-(sp)
 	bmi.w	RestoreBios_74
 RestoreBios_73	jsr	$E298.l
 	btst	#$7,d1
-RestoreBiosSub51	bne.w	.l3C04
+RestoreBiosSub49	bne.w	.l3C04
 	move.w	#$1,-(sp)
 	jsr	$ECB4.l
 	addq.l	#$2,sp

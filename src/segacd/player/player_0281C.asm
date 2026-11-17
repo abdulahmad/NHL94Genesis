@@ -1,4 +1,5 @@
-LF64_17	movem.l	d0-d7/a0-a3,-(sp)
+; Blits a rectangle into the buffer at $BC000.
+PlBlitToBuffer	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$BC000,a0
 	move.w	d0,d4
 	movea.w	d1,a1
@@ -71,7 +72,8 @@ LF64_18	dc.b	$16,'Power play adva'	; .Power play adva
 	dc.b	'defensemen',$00	; defensemen.
 LF64_19	dc.b	$0B,'Goalie # ',$00	; .Goalie # .
 LF64_20	dc.b	$0B,'Player # ',$00,$00	; .Player # ..
-LF64_21	movem.l	d0-d2,-(sp)
+; Converts d7 to packed BCD in d1 (abcd loop).
+BinToBcd	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
 	moveq	#$0,d2
 	abcd.b	d0,d1
@@ -92,7 +94,8 @@ LF64_21	movem.l	d0-d2,-(sp)
 	ori.l	#$200000,d7
 .l29B0	movem.l	(sp)+,d0-d2
 	rts
-LF64_22	movem.l	d0-d2,-(sp)
+; Packed BCD conversion that counts the overflow in d2.
+BinToBcdCarry	movem.l	d0-d2,-(sp)
 	moveq	#$1,d0
 	moveq	#$0,d1
 	moveq	#$0,d2
@@ -142,7 +145,8 @@ LF64Sub5	movem.l	d0-d2/a0-a1,-(sp)
 	movem.l	(sp)+,d0-d2/a0-a1
 	rts
 .l2A50	dcb.b	$50,0
-LF64_23	movem.l	d0-d7/a1-a5,-(sp)
+; Chooses the source pointers for the current page.
+PlPrepareSource	movem.l	d0-d7/a1-a5,-(sp)
 	moveq	#$0,d0
 	movea.l	$1C(a6),a1
 	movea.l	$48(a6),a2
@@ -169,27 +173,90 @@ LF64_23	movem.l	d0-d7/a1-a5,-(sp)
 	movea.l	a1,a2
 	adda.l	d0,a2
 	bra.w	.l2B02
-	dc.b	$30,$12,$45,$F2,$08,$08	; 0.E...
-.l2B02	dc.b	$51,$C9,$FF,$F8,$30,$12,$41,$F2,$08,$00,$2D,$48,$00,$50,$57,$40	; Q...0.A...-H.PW@
-	dc.b	$20,$4A,$54,$88,$22,$6E,$00,$8E,$12,$18,$67,$00,$00,$08,$12,$C1	;  JT."n....g.....
-	dc.b	$51,$C8,$FF,$F6,$12,$BC,$00,$00,$20,$6E,$00,$8E,$10,$18,$0C,$00	; Q....... n......
-	dc.b	$00,$20,$66,$00,$FF,$F8,$4B,$FA,$15,$1F,$2D,$4D,$00,$9A,$3D,$7C	; . f...K...-M..=|
-	dc.b	$00,$02,$00,$A6,$4B,$FA,$14,$62,$2D,$4D,$00,$9E,$4B,$FA,$14,$34	; ....K..b-M..K..4
-	dc.b	'&H"n',$00,$2C,$24,$6E,$00,$30,$0C,$6E,$00,$00,$00,$18	; &H"n.,$n.0.n....
-	dc.b	$67,$00,$00,$0A,$22,$6E,$00,$3C,$24,$6E,$00,$40,$20,$09,$67,$00	; g..."n.<$n.@ .g.
-	dc.b	$00,$A4,$70,$00,$74,$FE,$28,$49,$D9,$FC,$00,$00,$00,$05,$20,$4B	; ..p.t.(I...... K
-	dc.b	$10,$18,$12,$1C,$00,$00,$00,$20,$00,$01,$00,$20,$B2,$00,$67,$00	; ....... ... ..g.
-	dc.b	$FF,$F0,$0C,$2C,$00,$2C,$FF,$FF,$67,$00,$00,$28,$72,$00,$32,$11	; ...,.,..g..(r.2.
-	dc.b	$43,$F1,$18,$00,$0C,$69,$65,$6C,$00,$04,$67,$00,$00,$3A,$0C,$69	; C....iel..g..:.i
-	dc.b	$65,$6E,$00,$04,$66,$00,$FF,$E8,$32,$11,$43,$F1,$18,$00,$60,$00	; en..f...2.C...`.
-	dc.b	$FF,$B6,$2D,$49,$00,$44,$30,$2E,$00,$5A,$D0,$40,$3D,$75,$00,$00	; ..-I.D0..Z.@=u..
-	dc.b	$00,$58,$6A,$00,$00,$48,$3D,$7C,$00,$00,$00,$B0,$04,$6E,$00,$01	; .Xj..H=|.....n..
-	dc.b	$00,$5A,$60,$00,$FF,$E2,$52,$42,$67,$00,$00,'*"JK',$FA	; .Z`...RBg..*"JK.
-	dc.b	$14,$93,$2D,$4D,$00,$9A,$3D,$7C,$00,$05,$00,$A6,$4B,$FA,$13,$B8	; ..-M..=|....K...
-	dc.b	$2D,$4D,$00,$9E,$4B,$FA,$13,$8A,$20,$09,$67,$00,$00,$08,$70,$00	; -M..K... .g...p.
-	dc.b	$60,$00,$FF,$64,$2D,$7C,$00,$00,$00,$00,$00,$44,$20,$6E,$00,$8E	; `..d-|.....D n..
-	dc.b	$4C,$DF,$3E,$FF,$4E,$75	; L.>.Nu
-LF64_24	move.w	d0,$E0(a6)
+.l2AFC	move.w	(a2),d0
+	lea.l	$8(a2,d0.l),a2
+.l2B02	dbra	d1,.l2AFC
+	move.w	(a2),d0
+	lea.l	(a2,d0.l),a0
+	move.l	a0,$50(a6)
+	subq.w	#$3,d0
+	movea.l	a2,a0
+	addq.l	#$2,a0
+	movea.l	$8E(a6),a1
+.l2B1A	move.b	(a0)+,d1
+	beq.w	.l2B26
+	move.b	d1,(a1)+
+	dbra	d0,.l2B1A
+.l2B26	move.b	#$0,(a1)
+	movea.l	$8E(a6),a0
+.l2B2E	move.b	(a0)+,d0
+	cmpi.b	#$20,d0
+	bne.w	.l2B2E
+	lea.l	LF64_55(pc),a5
+	move.l	a5,$9A(a6)
+	move.w	#$2,$A6(a6)
+	lea.l	LF64_47(pc),a5
+	move.l	a5,$9E(a6)
+	lea.l	LF64_45(pc),a5
+	movea.l	a0,a3
+	movea.l	$2C(a6),a1
+	movea.l	$30(a6),a2
+	cmpi.w	#$0,$18(a6)
+	beq.w	.l2B6E
+	movea.l	$3C(a6),a1
+	movea.l	$40(a6),a2
+.l2B6E	move.l	a1,d0
+	beq.w	.l2C16
+	moveq	#$0,d0
+	moveq	#-2,d2
+.l2B78	movea.l	a1,a4
+	adda.l	#$5,a4
+	movea.l	a3,a0
+.l2B82	move.b	(a0)+,d0
+	move.b	(a4)+,d1
+	ori.b	#$20,d0
+	ori.b	#$20,d1
+	cmp.b	d0,d1
+	beq.w	.l2B82
+	cmpi.b	#$2C,-$1(a4)
+	beq.w	.l2BC4
+	moveq	#$0,d1
+.l2BA0	move.w	(a1),d1
+	lea.l	(a1,d1.l),a1
+	cmpi.w	#$656C,$4(a1)
+	beq.w	.l2BE8
+	cmpi.w	#$656E,$4(a1)
+	bne.w	.l2BA0
+	move.w	(a1),d1
+	lea.l	(a1,d1.l),a1
+	bra.w	.l2B78
+.l2BC4	move.l	a1,$44(a6)
+.l2BC8	move.w	$5A(a6),d0
+	add.w	d0,d0
+	move.w	(a5,d0.w),$58(a6)
+	bpl.w	.l2C1E
+	move.w	#$0,$B0(a6)
+	subi.w	#$1,$5A(a6)
+	bra.w	.l2BC8
+.l2BE8	addq.w	#$1,d2
+	beq.w	.l2C16
+	movea.l	a2,a1
+	lea.l	LF64_56(pc),a5
+	move.l	a5,$9A(a6)
+	move.w	#$5,$A6(a6)
+	lea.l	LF64_48(pc),a5
+	move.l	a5,$9E(a6)
+	lea.l	LF64_46(pc),a5
+	move.l	a1,d0
+	beq.w	.l2C16
+	moveq	#$0,d0
+	bra.w	.l2B78
+.l2C16	move.l	#$0,$44(a6)
+.l2C1E	movea.l	$8E(a6),a0
+	movem.l	(sp)+,d0-d7/a1-a5
+	rts
+; Queues a DMA request in the $DE-$E4 block and waits for it.
+PlDmaRequest	move.w	d0,$E0(a6)
 	swap	d0
 	move.w	d0,$E2(a6)
 	move.l	$62(a6),$E4(a6)
@@ -205,14 +272,15 @@ LF64_24	move.w	d0,$E0(a6)
 .l2C60	tst.w	$DE(a6)
 	bne.w	.l2C60
 	rts
-LF64_25	move.w	(a1)+,d1
+; Copies a rectangle of tilemap data to the VDP.
+PlCopyRectToVdp	move.w	(a1)+,d1
 	subq.w	#$1,d1
 	move.w	d1,d2
 	move.w	(a1)+,d7
 	subq.w	#$1,d7
 .l2C74	moveq	#$0,d4
 	move.w	d3,d4
-	bsr.w	LF64_26
+	bsr.w	VdpWriteCmdD4
 .l2C7C	btst.b	#$7,$FF800E.l
 	bne.b	.l2C7C
 	move.l	d4,$FF8022.l
@@ -249,7 +317,8 @@ LF64_25	move.w	(a1)+,d1
 	move.w	d1,d2
 	dbra	d7,.l2C74
 	rts
-LF64_26	andi.l	#$FFFF,d4
+; Turns the VRAM address in d4 into a VDP write command.
+VdpWriteCmdD4	andi.l	#$FFFF,d4
 	lsl.l	#$2,d4
 	lsr.w	#$2,d4
 	swap	d4
@@ -344,7 +413,7 @@ LF64_28	move.w	#$1,$102(a6)
 	bra.w	.l33FC
 .l2F36	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l2F42	btst.b	#$4,$FF800E.l
 	bne.b	.l2F42
 	move.w	#$2C,$FF8026.l
@@ -356,7 +425,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l2F76	btst.b	#$3,$FF800E.l
 	bne.b	.l2F76
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 	bra.w	.l33FC
 .l2F90	movem.l	d0-d3/a0-a2,-(sp)
 .l2F94	btst.b	#$4,$FF800E.l
@@ -392,7 +461,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l3046	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
 	moveq	#$0,d0
-	bsr.w	LF64_30
+	bsr.w	GateArrayLoadFont
 .l3054	btst.b	#$4,$FF800E.l
 	bne.b	.l3054
 	move.w	#$39,$FF8026.l
@@ -469,7 +538,7 @@ LF64_28	move.w	#$1,$102(a6)
 	move.l	d0,$BBC8C.l
 	move.w	$E4(a6),d0
 	move.l	d0,$BBC90.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l3224	btst.b	#$4,$FF800E.l
 	bne.b	.l3224
 	move.w	#$3A,$FF8026.l
@@ -481,7 +550,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l3258	btst.b	#$3,$FF800E.l
 	bne.b	.l3258
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 	bra.w	.l33FC
 .l3272	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
@@ -491,7 +560,7 @@ LF64_28	move.w	#$1,$102(a6)
 	move.w	$E2(a6),d0
 	move.l	d0,$BBC8C.l
 	move.l	$E4(a6),$BBC90.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l329C	btst.b	#$4,$FF800E.l
 	bne.b	.l329C
 	move.w	#$3B,$FF8026.l
@@ -503,7 +572,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l32D0	btst.b	#$3,$FF800E.l
 	bne.b	.l32D0
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 	bra.w	.l33FC
 .l32EA	movem.l	d0-d3/a0-a2,-(sp)
 	clr.w	$DE(a6)
@@ -555,7 +624,7 @@ LF64_28	move.w	#$1,$102(a6)
 	move.l	d0,d3
 	ori.l	#$804000,d0
 	move.l	d0,$BBC9E.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l33B2	btst.b	#$4,$FF800E.l
 	bne.b	.l33B2
 	move.w	#$32,$FF8026.l
@@ -567,7 +636,7 @@ LF64_28	move.w	#$1,$102(a6)
 .l33E6	btst.b	#$3,$FF800E.l
 	bne.b	.l33E6
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 .l33FC	movem.l	(sp)+,d0-d3/a0-a2
 .l3400	tst.w	$FA(a6)
 	beq.w	LF64_29
@@ -579,7 +648,7 @@ LF64Sub6	movem.l	d0-d3/a0-a2,-(sp)
 	beq.w	.l3424
 	neg.w	d0
 .l3424	add.w	$F2(a6),d0
-	bsr.w	LF64_30
+	bsr.w	GateArrayLoadFont
 	addi.w	#$6,$F6(a6)
 	bra.w	.l346E
 .l3436	move.w	$F6(a6),d0
@@ -592,18 +661,19 @@ LF64Sub6	movem.l	d0-d3/a0-a2,-(sp)
 	bne.w	.l3456
 	neg.w	d0
 .l3456	add.w	$F2(a6),d0
-	bsr.w	LF64_30
+	bsr.w	GateArrayLoadFont
 	clr.w	$FA(a6)
 	clr.w	$F6(a6)
 	andi.w	#$3FF,d0
 	move.w	d0,$F2(a6)
 .l346E	movem.l	(sp)+,d0-d3/a0-a2
 LF64_29	movem.l	d0-d5/a0-a1,-(sp)
-	bsr.w	LF64_31
+	bsr.w	TickTimers
 	movem.l	(sp)+,d0-d5/a0-a1
 	rts
-LF64_30	btst.b	#$4,$FF800E.l
-	bne.b	LF64_30
+; Sends the font load command through the gate-array registers.
+GateArrayLoadFont	btst.b	#$4,$FF800E.l
+	bne.b	GateArrayLoadFont
 	move.w	#$30,$FF8026.l
 	move.l	#$70000003,$FF8028.l
 	bset.b	#$3,$FF800F.l
@@ -639,7 +709,8 @@ LF64_30	btst.b	#$4,$FF800E.l
 	bne.b	.l3556
 	bclr.b	#$4,$FF800F.l
 	rts
-LF64_31	tst.w	$EC(a6)
+; Countdown timer tick at $EC(a6).
+TickTimers	tst.w	$EC(a6)
 	bmi.w	.l3606
 	cmpi.w	#$64,$EC(a6)
 	beq.w	.l3608
@@ -661,7 +732,7 @@ LF64_31	tst.w	$EC(a6)
 	move.l	d3,$BBC88.l
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
-	bsr.w	LF64_43
+	bsr.w	GiveWordRam
 .l35BC	btst.b	#$4,$FF800E.l
 	bne.b	.l35BC
 	move.w	#$1D,$FF8026.l
@@ -673,7 +744,7 @@ LF64_31	tst.w	$EC(a6)
 .l35F0	btst.b	#$3,$FF800E.l
 	bne.b	.l35F0
 	bclr.b	#$4,$FF800F.l
-	bsr.w	LF64_42
+	bsr.w	WaitDmnaSet
 .l3606	rts
 .l3608	movea.l	#$BBCB0,a1
 .l360E	btst.b	#$4,$FF800E.l
@@ -704,16 +775,18 @@ LF64_31	tst.w	$EC(a6)
 	dbra	d0,.l3660
 	st.b	$EC(a6)
 	rts
-LF64_32	move.b	$C2(a6),d0
-	bsr.w	LF64_34
+; Decodes pad 1 and computes newly pressed buttons.
+UpdatePad1	move.b	$C2(a6),d0
+	bsr.w	DecodePadBits
 	move.w	$C6(a6),d2
 	move.w	d1,$C6(a6)
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-LF64_33	move.b	$C3(a6),d0
-	bsr.w	LF64_34
+; Decodes pad 2 and computes newly pressed buttons.
+UpdatePad2	move.b	$C3(a6),d0
+	bsr.w	DecodePadBits
 	move.w	$C8(a6),d2
 	move.w	d1,$C8(a6)
 	move.w	d1,d3
@@ -721,7 +794,7 @@ LF64_33	move.b	$C3(a6),d0
 	and.w	d2,d1
 	rts
 	move.b	$C4(a6),d0
-	bsr.w	LF64_34
+	bsr.w	DecodePadBits
 	move.w	$CA(a6),d2
 	move.w	d1,$CA(a6)
 	move.w	d1,d3
@@ -729,14 +802,15 @@ LF64_33	move.b	$C3(a6),d0
 	and.w	d2,d1
 	rts
 	move.b	$C5(a6),d0
-	bsr.w	LF64_34
+	bsr.w	DecodePadBits
 	move.w	$CC(a6),d2
 	move.w	d1,$CC(a6)
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-LF64_34	not.b	d0
+; Inverts the raw pad byte and splits direction and button bits.
+DecodePadBits	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
@@ -936,11 +1010,13 @@ LF64Sub7	movem.l	d1/a0,-(sp)
 	movem.l	(sp)+,d1/a0
 	rts
 .l3B7C	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
-LF64_35	move.l	$6038.w,$D6(a6)
+; Saves the vblank vector and points it at the page handler.
+InstallVblankHook	move.l	$6038.w,$D6(a6)
 	lea.l	LF64_37(pc),a0
 	move.l	a0,$6038.w
 	rts
-LF64_36	move.l	$D6(a6),$6038.w
+; Restores the saved vblank vector.
+RemoveVblankHook	move.l	$D6(a6),$6038.w
 	rts
 LF64_37	btst.b	#$5,$FF800E.l
 	beq.w	.l3C14
@@ -955,7 +1031,8 @@ LF64_37	btst.b	#$5,$FF800E.l
 	dc.b	$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02,$00,$FF	; f...............
 	dc.b	$80,$0F	; ..
 .l3C14	rts
-LF64_38	movem.l	d0-d2/a0-a1/a5,-(sp)
+; Turns a linear cell index in d0 into a nametable address (40 columns).
+TilemapAddr	movem.l	d0-d2/a0-a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2
@@ -983,7 +1060,7 @@ LF64_38	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bne.b	.l3C7C
 	bclr.b	#$7,$FF800F.l
 	movea.l	$8E(a6),a5
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
 LF64Sub8	movem.l	d0-d2/a0-a1/a5,-(sp)
@@ -1015,10 +1092,11 @@ LF64Sub8	movem.l	d0-d2/a0-a1/a5,-(sp)
 	bne.b	.l3D06
 	bclr.b	#$7,$FF800F.l
 	movea.l	$8E(a6),a5
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	movem.l	(sp)+,d0-d2/a0-a1/a5
 	rts
-LF64_39	move.w	#$7A0,d0
+; Prints a zero-terminated string with the special characters at a0.
+PrintTextLine	move.w	#$7A0,d0
 	bset	#$E,d0
 .l3D2E	moveq	#$0,d2
 	move.b	(a0)+,d2
@@ -1069,7 +1147,8 @@ LF64_39	move.w	#$7A0,d0
 	subq.l	#$1,a5
 .l3E14	clr.b	(a5)+
 	rts
-LF64_40	movem.l	d0-d2/a4,-(sp)
+; Prints a string at a4 (stops at 0 or $FF).
+PrintTextPlain	movem.l	d0-d2/a4,-(sp)
 	move.w	#$7A0,d0
 	bset	#$E,d0
 .l3E24	moveq	#$0,d2
@@ -1111,7 +1190,8 @@ LF64_40	movem.l	d0-d2/a4,-(sp)
 	dbra	d1,.l3E94
 .l3EE4	movem.l	(sp)+,d0-d2/a4
 	rts
-LF64_41	movem.l	d0/a0-a1,-(sp)
+; Copies at most d0 characters of a0 to the string buffer $8E(a6).
+CopyStringToBuffer	movem.l	d0/a0-a1,-(sp)
 	movea.l	$8E(a6),a1
 .l3EF2	move.b	(a0)+,(a1)+
 	beq.w	.l3EFE
@@ -1119,14 +1199,17 @@ LF64_41	movem.l	d0/a0-a1,-(sp)
 	clr.b	(a1)
 .l3EFE	movem.l	(sp)+,d0/a0-a1
 	rts
-LF64_42	btst.b	#$1,$FF8003.l
-	beq.b	LF64_42
+; Spins until the word-RAM DMNA bit is set.
+WaitDmnaSet	btst.b	#$1,$FF8003.l
+	beq.b	WaitDmnaSet
 	rts
-LF64_43	bset.b	#$0,$FF8003.l
+; Sets the word-RAM request bit and waits until it is granted.
+GiveWordRam	bset.b	#$0,$FF8003.l
 .l3F18	btst.b	#$1,$FF8003.l
 	bne.b	.l3F18
 	rts
-LF64_44	movem.l	d0-d7/a0-a2,-(sp)
+; Loads a command through the gate-array comm registers.
+GateArrayLoadCmd	movem.l	d0-d7/a0-a2,-(sp)
 	bclr.b	#$5,$FF800F.l
 .l3F30	btst.b	#$7,$FF800E.l
 	bne.b	.l3F30
@@ -1142,35 +1225,36 @@ LF64_44	movem.l	d0-d7/a0-a2,-(sp)
 	bset.b	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-	dc.b	$00,$00,$00,$01,$00,$02,$00,$05,$00,$06,$00,$07,$FF,$FF,$00,$00	; ................
-	dc.b	$00,$01,$00,$02,$00,$03,$00,$04,$00,$05,$00,$08,$00,$09,$00,$0A	; ................
-	dc.b	$00,$0B,$00,$0C,$FF,$FF,$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03	; ................
-	dc.b	$03,$03,$04,$00,$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03	; ................
-	dc.b	$03,$03,$05,$03,$03,$04	; ......
-LF64_45	dc.b	'Players',$00,$20,$00	; Players. .
-LF64_46	dc.b	'Goalies',$00,$20,$00	; Goalies. .
-LF64_47	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
+LF64_45	dc.b	$00,$00,$00,$01,$00,$02,$00,$05,$00,$06,$00,$07,$FF,$FF	; ..............
+LF64_46	dc.b	$00,$00,$00,$01,$00,$02,$00,$03,$00,$04,$00,$05,$00,$08,$00,$09	; ................
+	dc.b	$00,$0A,$00,$0B,$00,$0C,$FF,$FF	; ........
+LF64_47	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$03,$03,$03,$04,$00	; ..............
+LF64_48	dc.b	$07,$FF,$05,$03,$03,$03,$03,$04,$03,$02,$04,$03,$03,$03,$05,$03	; ................
+	dc.b	$03,$04	; ..
+LF64_49	dc.b	'Players',$00,$20,$00	; Players. .
+LF64_50	dc.b	'Goalies',$00,$20,$00	; Goalies. .
+LF64_51	dc.b	$47,$70,$00,$47,$00,$41,$00,$50,$74,$73,$00,$2B,$2F,$2D,$00,$50	; Gp.G.A.Pts.+/-.P
 	dc.b	$69,$6D,$00,$50,$50,$00,$53,$68,$00,$47,$77,$00,$47,$74,$00,$53	; im.PP.Sh.Gw.Gt.S
 	dc.b	$00,'Pctg',$FF	; .Pctg.
-LF64_48	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
+LF64_52	dc.b	$47,$70,$00,'Mins',$00,$47,$61,$00,'Avg.',$00	; Gp.Mins.Ga.Avg..
 	dc.b	$57,$00,$4C,$00,$54,$00,$53,$4F,$00,$45,$6E,$00,'Shts'	; W.L.T.SO.En.Shts
 	dc.b	$00,$70,$47,$50,$00,'pMIN',$00,$70,$47,$41,$00,$70,$41	; .pGP.pMIN.pGA.pA
 	dc.b	$56,$47,$00,$70,$57,$00,$70,$4C,$00,$70,$53,$4F,$00,$70,$45,$4E	; VG.pW.pL.pSO.pEN
 	dc.b	$00,$70,$53,$41,$FF	; .pSA.
-LF64_49	dc.b	'Regular',$00	; Regular.
-LF64_50	dc.b	'Playoff',$00,'Season',$00,$43	; Playoff.Season.C
-	dc.b	$6C,$75,$62,$00,$4C,$65,$61,$00,$47,$70,$00,$47,$00,$41,$00,$54	; lub.Lea.Gp.G.A.T
-	dc.b	$70,$00,$50,$69,$6D,$00,$47,$70,$00,$47,$00,$41,$00,$54,$70,$00	; p.Pim.Gp.G.A.Tp.
-	dc.b	$50,$69,$6D,$00,'Season',$00,'Club',$00	; Pim.Season.Club.
-	dc.b	$4C,$65,$61,$00,$47,$70,$00,$57,$00,$4C,$00,$54,$00,$4D,$69,$6E	; Lea.Gp.W.L.T.Min
-	dc.b	$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57	; s.Ga.So.Avg.Gp.W
-	dc.b	$00,$4C,$00,'Mins',$00,$47,$61,$00,$53,$6F,$00,$41,$76	; .L.Mins.Ga.So.Av
-	dc.b	$67,$00,$00	; g..
-LF64_51	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
-LF64_52	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
+LF64_53	dc.b	'Regular',$00	; Regular.
+LF64_54	dc.b	'Playoff',$00	; Playoff.
+LF64_55	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
+	dc.b	$47,$70,$00,$47,$00,$41,$00,$54,$70,$00,$50,$69,$6D,$00,$47,$70	; Gp.G.A.Tp.Pim.Gp
+	dc.b	$00,$47,$00,$41,$00,$54,$70,$00,$50,$69,$6D,$00	; .G.A.Tp.Pim.
+LF64_56	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Club.Lea.
+	dc.b	$47,$70,$00,$57,$00,$4C,$00,$54,$00,'Mins',$00,$47,$61	; Gp.W.L.T.Mins.Ga
+	dc.b	$00,$53,$6F,$00,$41,$76,$67,$00,$47,$70,$00,$57,$00,$4C,$00,$4D	; .So.Avg.Gp.W.L.M
+	dc.b	$69,$6E,$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$00	; ins.Ga.So.Avg..
+LF64_57	incbin	..\Extracted\SegaCD\PLAYER\player_040C4.bin
+LF64_58	incbin	..\Extracted\SegaCD\PLAYER\player_045C8.bin
 .l6044	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
-LF64_53	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
-LF64_54	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
-LF64_55	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
-LF64_56	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
+LF64_59	incbin	..\Extracted\SegaCD\PLAYER\player_068E4.bin
+LF64_60	incbin	..\Extracted\SegaCD\PLAYER\player_06DE8.bin
+LF64_61	incbin	..\Extracted\SegaCD\PLAYER\player_07CF4.bin
+LF64_62	incbin	..\Extracted\SegaCD\PLAYER\player_082A4.bin
 	dcb.b	$8DC,0

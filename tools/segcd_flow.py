@@ -19,6 +19,14 @@ STOP = ("rts", "rte", "jmp", "bra", "rtr", "illegal")
 SUSPECT = ("illegal", "reset", "stop")
 
 
+def is_zero_word(g):
+    """A 0000 first word is padding, except in a real ori.b #imm,d0 (0000 00ii, ii not 0)."""
+    b = bytes(g.bytes)
+    if b[:2] != b"\x00\x00":
+        return False
+    return not (g.mnemonic.startswith("ori.b") and len(b) == 4 and b[2] == 0 and b[3] != 0 and g.op_str.endswith("d0"))
+
+
 def decode_at(d, pc, base):
     for i in md.disasm(d[pc:pc + 12], base + pc):
         return i
@@ -64,7 +72,7 @@ def find_code(d, base, seeds, string_calls=(), data_refs=None):
                 ok = False
                 break
             g = decode_at(d, pc, base)
-            if g is None or g.size < 2 or pc + g.size > n or g.mnemonic.split(".")[0] in SUSPECT or bytes(g.bytes[:2]) == b"\x00\x00":
+            if g is None or g.size < 2 or pc + g.size > n or g.mnemonic.split(".")[0] in SUSPECT or is_zero_word(g):
                 ok = False
                 break
             if any(covered[pc + k] for k in range(g.size)):
@@ -136,7 +144,7 @@ def runs(covered, val=1):
 
 
 def zeroish(g, d, pc):
-    return g.mnemonic.startswith("ori.b") and bytes(g.bytes[:2]) == b"\x00\x00" or bytes(g.bytes[:2]) == b"\x00\x00"
+    return g.mnemonic.startswith("ori.b") and is_zero_word(g) or is_zero_word(g)
 
 
 def sweep(d, base, covered, insns, calls, labels, string_calls=(), rounds=6):
@@ -174,7 +182,7 @@ def sweep(d, base, covered, insns, calls, labels, string_calls=(), rounds=6):
                 g = decode_at(d, pc, base)
                 if g is None or g.size < 2 or g.mnemonic.split(".")[0] in SUSPECT:
                     break
-                if bytes(g.bytes[:2]) == b"\x00\x00":
+                if is_zero_word(g):
                     zero += 1
                     if zero >= 2:
                         break
@@ -229,7 +237,7 @@ def find_code_seeded(d, base, seeds, covered, insns, string_calls):
                 ok = False
                 break
             g = decode_at(d, pc, base)
-            if g is None or g.size < 2 or pc + g.size > n or g.mnemonic.split(".")[0] in SUSPECT or bytes(g.bytes[:2]) == b"\x00\x00" or any(covered[pc + k] for k in range(g.size)):
+            if g is None or g.size < 2 or pc + g.size > n or g.mnemonic.split(".")[0] in SUSPECT or is_zero_word(g) or any(covered[pc + k] for k in range(g.size)):
                 ok = False
                 break
             mn = g.mnemonic.split(".")[0]

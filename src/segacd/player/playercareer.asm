@@ -5,7 +5,8 @@
 
 
 
-LF64_12	movem.l	d0-d7/a0-a5,-(sp)
+; Draws the career statistics rows from $44(a6).
+PlDrawCareerStats	movem.l	d0-d7/a0-a5,-(sp)
 	move.l	$44(a6),d0
 	beq.w	LF64_14
 	movea.l	d0,a2
@@ -23,7 +24,7 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 	adda.l	#$2,a0
 .l204A	move.w	(sp)+,d0
 	move.w	#$1D,d1
-	bsr.w	LF64_38
+	bsr.w	TilemapAddr
 	dbra	d5,.l2028
 	moveq	#$0,d1
 	move.w	(a2),d1
@@ -42,7 +43,7 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8E(a6),a0
 	move.w	#$1EB,d0
 	move.w	#$1D,d1
-	bsr.w	LF64_38
+	bsr.w	TilemapAddr
 	moveq	#$3,d5
 .l2096	move.w	(a2),d1
 	lea.l	(a2,d1.w),a2
@@ -78,7 +79,7 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 	beq.w	.l2104
 	addi.b	#$1,$B6(a6)
 .l2104	move.w	#$9,$B8(a6)
-	bsr.w	LF64_2
+	bsr.w	PlFillBackground
 	movea.l	$9E(a6),a0
 	moveq	#$F,d3
 	add.b	$1(a0),d3
@@ -101,14 +102,14 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 .l2168	btst.b	#$6,$FF800E.l
 	bne.b	.l2168
 	bclr.b	#$7,$FF800F.l
-	lea.l	LF64_49(pc),a0
+	lea.l	LF64_53(pc),a0
 	move.w	$A6(a6),d1
 	cmp.w	$58(a6),d1
 	bge.w	.l218E
-	lea.l	LF64_50(pc),a0
+	lea.l	LF64_54(pc),a0
 .l218E	movea.l	$8E(a6),a5
 	move.w	#$7,d1
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	move.l	#$B702,d3
 	movea.l	$9A(a6),a0
 	movea.l	$9E(a6),a1
@@ -134,7 +135,7 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8E(a6),a5
 .l220A	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	dbra	d5,.l220A
 	move.w	#$0,$B4(a6)
 	movea.l	$8E(a6),a4
@@ -142,7 +143,7 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 	bne.w	.l2220
 	move.b	#$20,-$1(a4)
 	movea.l	$8E(a6),a4
-	bsr.w	LF64_4
+	bsr.w	PlBuildPortraitTiles
 	move.w	#$2,$B4(a6)
 	cmpi.w	#$0,$58(a6)
 	beq.w	.l225A
@@ -158,7 +159,7 @@ LF64_12	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8E(a6),a5
 .l2266	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	dbra	d5,.l2266
 LF64_13	move.w	$56(a6),d6
 	beq.w	.l22C8
@@ -211,14 +212,14 @@ LF64_13	move.w	$56(a6),d6
 	movea.l	$8E(a6),a5
 .l2342	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	dbra	d5,.l2342
 	movea.l	$8E(a6),a4
 .l2352	tst.b	(a4)+
 	bne.w	.l2352
 	move.b	#$20,-$1(a4)
 	movea.l	$8E(a6),a4
-	bsr.w	LF64_4
+	bsr.w	PlBuildPortraitTiles
 	movea.l	a2,a0
 	moveq	#$0,d1
 	move.b	$2(a0),d1
@@ -232,7 +233,7 @@ LF64_13	move.w	$56(a6),d6
 	movea.l	$8E(a6),a5
 .l238C	moveq	#$0,d1
 	move.b	(a1)+,d1
-	bsr.w	LF64_39
+	bsr.w	PrintTextLine
 	dbra	d5,.l238C
 	move.w	(a2),d5
 	lea.l	(a2,d5.w),a2

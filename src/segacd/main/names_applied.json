@@ -1,0 +1,274 @@
+{
+ "LinkedCall_1": [
+  "ProcessTileCmdList",
+  "Walks a command list at a2 and loads tile data for each entry (uses the $FF12B0 helper)."
+ ],
+ "LinkedCall_2": [
+  "LoadTilesLocked",
+  "Interrupts off, VDP busy flag set, then loads d1 blocks from a0."
+ ],
+ "LinkedCall_3": [
+  "ExpandTileData",
+  "Expands tile data from a3 into 32-byte tiles at a1 (d3 selects the format)."
+ ],
+ "LinkedCall_4": [
+  "CopyToVdpLocked",
+  "CopyToVdp with the VDP busy flag set."
+ ],
+ "LinkedCall_5": [
+  "CopyToVdp",
+  "Copies d0 words from a0 to the VDP data port; splits the copy at a 64 KB boundary."
+ ],
+ "LinkedCall_6": [
+  "WaitVdpDmaDone",
+  "Spins until the VDP status DMA-busy bit clears."
+ ],
+ "LinkedCall_7": [
+  "VdpSetWriteAddr",
+  "Sets the VDP VRAM write address from d0 (returns the data port in a0)."
+ ],
+ "LinkedCall_8": [
+  "TilemapCellAddr",
+  "Turns the current plane cursor into a nametable address."
+ ],
+ "LinkedCall_9": [
+  "FillTilemapRect",
+  "Fills a tilemap rectangle with the tile in d2."
+ ],
+ "LinkedCall_10": [
+  "WaitVblank",
+  "Enables interrupts and waits for the vertical blank counter."
+ ],
+ "LinkedCall_11": [
+  "ClearVdpPlanes",
+  "Clears both plane nametables in VRAM."
+ ],
+ "LinkedCall_12": [
+  "PrintGlyphs",
+  "Prints a glyph string into the tilemap at the cursor."
+ ],
+ "LinkedCall_13": [
+  "PrintCharAdvance",
+  "Prints one glyph and advances the cursor."
+ ],
+ "LinkedCall_14": [
+  "PrintGlyphsAlt",
+  "PrintGlyphs variant using the $23A850 buffer."
+ ],
+ "LinkedCall_18": [
+  "PrintStringBox",
+  "Prints a counted string with the plane parameters at $FF287A."
+ ],
+ "DispatchTail_1": [
+  "DrawLines",
+  "Draws a list of line segments held at a1."
+ ],
+ "DispatchTail_2": [
+  "VdpSetWriteAddrD1",
+  "VdpSetWriteAddr taking the address in d1 and keeping a1."
+ ],
+ "DispatchTail_3": [
+  "PackGlyphBits",
+  "Packs the glyph bitmap at a0 into 4-bit pixels at $FF2916."
+ ],
+ "DispatchTail_4": [
+  "ReadPads",
+  "Reads both control pads (or the CD-side pad state) into $FF284A/$FF284B."
+ ],
+ "DispatchTail_6": [
+  "TickTimers",
+  "Vblank timer countdown at $23A8D0."
+ ],
+ "DispatchTail_7": [
+  "TakeWordRam",
+  "Waits for and takes word RAM for the main CPU."
+ ],
+ "DispatchTail_8": [
+  "ReleaseWordRam",
+  "Gives word RAM back to the sub CPU if it was taken."
+ ],
+ "DispatchTail_24": [
+  "DrawTextToPlane",
+  "C function: draws text to the plane at $E000 (args on the stack)."
+ ],
+ "DispatchTail_25": [
+  "DrawTextBuffer",
+  "C function: draws a string buffer, waiting for the VDP command queue."
+ ],
+ "DispatchTail_27": [
+  "DoDrawTextCommand_A",
+  ""
+ ],
+ "DispatchTail_31": [
+  "DoMoviePlayBack_A",
+  ""
+ ],
+ "DispatchTail_34": [
+  "MAINCODE_A",
+  ""
+ ],
+ "DispatchTail_38": [
+  "ReDraw_A",
+  ""
+ ],
+ "DispatchTail_39": [
+  "drawprint_A",
+  ""
+ ],
+ "DispatchTail_40": [
+  "NumStr_A",
+  ""
+ ],
+ "DispatchTail_43": [
+  "HexStr_A",
+  ""
+ ],
+ "DispatchTail_46": [
+  "aprint_A",
+  ""
+ ],
+ "DispatchTail_59": [
+  "InitWorld_A",
+  ""
+ ],
+ "DispatchTail_60": [
+  "GetCommandFromSub_A",
+  "Waits for a command word from the sub CPU ($A12020) (Sierra tag GetCommandFromSub)."
+ ],
+ "DispatchTail_61": [
+  "Set1MFlag_A",
+  "Writes the word-RAM 1M flag word to the sub CPU comm port (Sierra tag Set1MFlag)."
+ ],
+ "DispatchTail_62": [
+  "LongDivU",
+  "Unsigned 32-bit divide stub (divu.l d1,d0)."
+ ],
+ "DispatchTail_63": [
+  "LongModU",
+  "Unsigned 32-bit remainder stub."
+ ],
+ "Set1MFlag_1": [
+  "LongDivU_B",
+  "Second copy of LongDivU."
+ ],
+ "Set1MFlag_2": [
+  "LongModU_B",
+  "Second copy of LongModU."
+ ],
+ "DispatchTailSub2": [
+  "ReadSubCommWord",
+  "Handshakes with the sub CPU on $A1200E/F and reads the comm word $A12020."
+ ],
+ "DispatchTail_65": [
+  "SubCommHandshake",
+  "Two-phase flag handshake with the sub CPU."
+ ],
+ "DispatchTail_66": [
+  "WaitWordRamMode2M",
+  "Spins while the word-RAM mode bit is 1M."
+ ],
+ "DispatchTailSub5": [
+  "WaitDmnaClear",
+  "Spins while the word-RAM DMNA bit is set."
+ ],
+ "DispatchTail_67": [
+  "GiveWordRamToSub",
+  "Sets DMNA and waits until the sub CPU has taken word RAM."
+ ],
+ "DispatchTailSub6": [
+  "VdpSetVramWriteAddr",
+  "Sets the VDP command for a VRAM write at d0."
+ ],
+ "DispatchTailSub8": [
+  "VdpSetCramWriteAddr",
+  "Sets the VDP command for a CRAM write at d0."
+ ],
+ "DispatchTailSub9": [
+  "ClearVram",
+  "Writes zeros over all 64 KB of VRAM."
+ ],
+ "DispatchTailSub10": [
+  "PollControllers",
+  "Reads both pads into $FF4F84/$FF4F85 and updates the edge state."
+ ],
+ "DispatchTailSub11": [
+  "UpdatePad1",
+  "Decodes pad 1 and computes the newly pressed buttons."
+ ],
+ "DispatchTailSub12": [
+  "UpdatePad2",
+  "Decodes pad 2 and computes the newly pressed buttons."
+ ],
+ "DispatchTail_68": [
+  "DecodePadBits",
+  "Inverts the raw pad byte and splits it into direction and button bits."
+ ],
+ "DispatchTailSub16": [
+  "DrawTextToPlane_B",
+  "Second copy of DrawTextToPlane."
+ ],
+ "DispatchTailSub18": [
+  "DrawTextBuffer_B",
+  "Second copy of DrawTextBuffer."
+ ],
+ "Set1MFlag_26": [
+  "Z80RequestBus",
+  "Requests the Z80 bus and waits for it."
+ ],
+ "Set1MFlag_27": [
+  "Z80ReleaseBus",
+  "Gives the Z80 bus back."
+ ],
+ "Set1MFlag_28": [
+  "PrgRamReadBegin",
+  "Prepares reading from sub-CPU PRG RAM when the address is at or above $80000."
+ ],
+ "Set1MFlag_29": [
+  "PrgRamReadWait",
+  "Waits until the PRG-RAM read window is ready."
+ ],
+ "Set1MFlag_30": [
+  "PrgRamMapAddr",
+  "Maps a0 into the PRG-RAM window address."
+ ],
+ "Set1MFlag_12": [
+  "Z80ReadStatus",
+  "Reads the Z80 driver status byte at $A00024."
+ ],
+ "Set1MFlag_13": [
+  "Z80PlayIfLoaded",
+  "Looks up d0 in the loaded-sound bitmap and starts it or queues a load."
+ ],
+ "Set1MFlag_14": [
+  "Z80QueueCommand",
+  "Appends command d0 to the Z80 driver command queue."
+ ],
+ "Set1MFlag_15": [
+  "Z80LoadPending",
+  "Loads the pending sound blocks into the Z80 driver."
+ ],
+ "Set1MFlagSub5": [
+  "Z80LoadBlock",
+  "Copies a sound block into Z80 RAM, checking the free space."
+ ],
+ "Set1MFlag_16": [
+  "SndSlotsReset",
+  "Marks all 32 sound slots as empty."
+ ],
+ "Set1MFlag_17": [
+  "SndSlotFind",
+  "Looks for the sound slot whose id matches d0."
+ ],
+ "Set1MFlag_18": [
+  "SndSlotAdd",
+  "Stores d0 in the next free sound slot."
+ ],
+ "Set1MFlag_20": [
+  "Z80StartStream",
+  "Starts a sound stream from the table at $A00072."
+ ],
+ "Set1MFlag_21": [
+  "SndFindSource",
+  "Finds the sound source for the request in d0/d1 in the list at 4 sources."
+ ]
+}

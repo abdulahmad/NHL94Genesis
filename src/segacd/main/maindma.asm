@@ -6,7 +6,8 @@
 
 LinkedCall	lea.l	LFF1912(pc),a0
 	clr.l	(a0)
-LinkedCall_1	movem.l	d0-d1/a0,-(sp)
+; Walks a command list at a2 and loads tile data for each entry (uses the $FF12B0 helper).
+ProcessTileCmdList	movem.l	d0-d1/a0,-(sp)
 	movea.l	a2,a0
 	move.w	d4,d1
 	asl.w	#$5,d1
@@ -17,22 +18,23 @@ LinkedCall_1	movem.l	d0-d1/a0,-(sp)
 	asl.w	#$4,d0
 	pea.l	$FF12B0.l
 	tst.l	$FF2912.l
-	beq.w	LinkedCall_4
+	beq.w	CopyToVdpLocked
 	movea.l	$FF2912.l,a1
-	bra.w	LinkedCall_2
+	bra.w	LoadTilesLocked
 .lFF02A6	andi.w	#$7FFF,d0
 	add.w	d0,d4
-	bsr.w	DispatchTail_3
+	bsr.w	PackGlyphBits
 .lFF02B0	movem.l	(sp)+,d0-d1/a0
 	rts
-LinkedCall_2	move.w	sr,-(sp)
+; Interrupts off, VDP busy flag set, then loads d1 blocks from a0.
+LoadTilesLocked	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d4/a0-a2,-(sp)
 	exg.l	d0,d1
 	movea.l	a0,a2
-	bsr.w	LinkedCall_7
+	bsr.w	VdpSetWriteAddr
 	subq.w	#$1,d1
 .lFF02D8	moveq	#$3,d0
 	move.w	(a2)+,d2
@@ -55,7 +57,8 @@ LinkedCall_2	move.w	sr,-(sp)
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,sr
 	rts
-LinkedCall_3	movem.l	d0-d1/a0-a1,-(sp)
+; Expands tile data from a3 into 32-byte tiles at a1 (d3 selects the format).
+ExpandTileData	movem.l	d0-d1/a0-a1,-(sp)
 	move.w	d1,d0
 	bne.w	.lFF0324
 	move.w	#$100,d0
@@ -97,25 +100,26 @@ LinkedCall_3	movem.l	d0-d1/a0-a1,-(sp)
 	tst.l	$FF2912.l
 	beq.w	.lFF039C
 	movea.l	$FF2912.l,a1
-	bsr.w	LinkedCall_2
+	bsr.w	LoadTilesLocked
 	bra.w	.lFF03A4
-.lFF039C	bsr.w	LinkedCall_4
+.lFF039C	bsr.w	CopyToVdpLocked
 	bra.w	.lFF03A4
 .lFF03A4	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	moveq	#$0,d0
-	bsr.w	LinkedCall_7
+	bsr.w	VdpSetWriteAddr
 	move.w	#$3FFF,d0
 	clr.l	d1
 .lFF03C4	move.l	d1,(a0)
 	dbra	d0,.lFF03C4
 	move.w	(sp)+,$23C6E8.l
 	rts
-LinkedCall_4	move.w	$23C6E8.l,-(sp)
+; CopyToVdp with the VDP busy flag set.
+CopyToVdpLocked	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
-	bsr.w	LinkedCall_5
+	bsr.w	CopyToVdp
 	move.w	(sp)+,$23C6E8.l
 	rts
 	move.w	$23C6E8.l,-(sp)
@@ -128,7 +132,8 @@ LinkedCall_4	move.w	$23C6E8.l,-(sp)
 	move.w	(a1)+,d1
 	movea.l	(a1)+,a0
 	adda.l	#$180000,a0
-LinkedCall_5	movem.l	d2-d3/a1,-(sp)
+; Copies d0 words from a0 to the VDP data port; splits the copy at a 64 KB boundary.
+CopyToVdp	movem.l	d2-d3/a1,-(sp)
 	move.w	d0,d2
 	add.w	d2,d2
 	add.w	a0,d2
@@ -185,7 +190,7 @@ LinkedCall_5	movem.l	d2-d3/a1,-(sp)
 	move.w	#$2700,sr
 	move.w	$FF2910.l,(a1)
 	move.w	$FF290E.l,(a1)
-	bsr.w	LinkedCall_6
+	bsr.w	WaitVdpDmaDone
 	move.w	#$8164,(a1)
 	cmpa.l	#$200000,a0
 	blt.w	.lFF04FC
