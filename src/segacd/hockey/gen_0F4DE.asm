@@ -258,9 +258,9 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	move.w	d0,-(sp)
 	subi.w	#$18,d4
 	tst.w	$17468.l
-	beq.s	*+10
+	beq.s	.lF9E6
 	movea.l	$47DA8.l,a2
-	bra.s	*+8
+	bra.s	.lF9EC
 .lF9E6	movea.l	$47D90.l,a2
 .lF9EC	adda.w	#$8,a2
 	jsr	(DecompressGraphicsPlain).l

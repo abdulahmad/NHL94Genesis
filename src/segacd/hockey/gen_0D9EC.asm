@@ -1,15 +1,15 @@
 ScoutParaOffset
 	cmpi.w	#$1A,d0
-	bne.s	*+44
+	bne.s	.lDA1C
 	move.w	#$EA,d0
 	cmpi.w	#$1A,(HomeTeam).l
-	bge.s	*+10
+	bge.s	.lDA08
 	add.w	(HomeTeam).l,d0
-	bra.s	*+22
+	bra.s	.lDA1C
 .lDA08	cmpi.w	#$1A,(VisTeam).l
-	bge.s	*+8
+	bge.s	.lDA18
 	addi.w	#$1A,d0
-	bra.s	*+6
+	bra.s	.lDA1C
 .lDA18	addi.w	#$1B,d0
 .lDA1C	movea.l	(ScoutingReportText).l,a1
 	movea.l	a1,a2

@@ -9,9 +9,9 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l1CB8C
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l1CB90
 .l1CB8C	move.w	#$0,-(a6)
 .l1CB90	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -253,9 +253,9 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l1D15A
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l1D162
 .l1D15A	bclr	#$5,$FF800F.l
 .l1D162	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -309,9 +309,9 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l1D7FA
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l1D7FE
 .l1D7FA	move.w	#$0,-(a6)
 .l1D7FE	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -375,9 +375,9 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l1D934
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l1D93C
 .l1D934	bclr	#$5,$FF800F.l
 .l1D93C	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
@@ -392,9 +392,9 @@ DecompressGraphicsPlain						;Clear remapTablePtr, fall into DecompressGraphics
 L1D95E	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l1D976
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l1D97A
 .l1D976	move.w	#$0,-(a6)
 .l1D97A	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -422,9 +422,9 @@ L1D95E	move.l	a6,-(sp)
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l1D9E4
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l1D9EC
 .l1D9E4	bclr	#$5,$FF800F.l
 .l1D9EC	move.l	a6,$19360.l
 	movea.l	(sp)+,a6

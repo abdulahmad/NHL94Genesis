@@ -2,13 +2,13 @@ Sub_2F2F0
 	tst.w	$18BF8.l
 	bne.w	.l14310
 .l142FA	btst	#$1,$17F6A.l
-	beq.s	*+8
+	beq.s	.l1430A
 	jmp	(ReadJoy2).l
 .l1430A	jmp	(ReadJoy1).l
 .l14310	tst.w	$17F94.l
 	beq.w	.l142FA
 	cmpi.w	#$3,$17F94.l
-	bne.s	*+8
+	bne.s	.l1432A
 	jmp	$3752C.l
 .l1432A	jmp	$3754A.l
 	move.w	#$F0,$1AD56.l

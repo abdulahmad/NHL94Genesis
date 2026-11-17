@@ -16,9 +16,9 @@
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l7488
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l748C
 .l7488	move.w	#$0,-(a6)
 .l748C	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -49,9 +49,9 @@
 .l7508	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l751E
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l7526
 .l751E	bclr	#$5,$FF800F.l
 .l7526	move.l	a6,$19360.l
 	movea.l	(sp)+,a6

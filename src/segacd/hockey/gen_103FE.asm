@@ -233,9 +233,9 @@ Sub_2B60E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
-	beq.s	*+8
+	beq.s	.l10850
 	move.w	#$1,-(a6)
-	bra.s	*+6
+	bra.s	.l10854
 .l10850	move.w	#$0,-(a6)
 .l10854	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
@@ -244,9 +244,9 @@ Sub_2B60E
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
-	beq.s	*+12
+	beq.s	.l10880
 	bset	#$5,$FF800F.l
-	bra.s	*+10
+	bra.s	.l10888
 .l10880	bclr	#$5,$FF800F.l
 .l10888	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
