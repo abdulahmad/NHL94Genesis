@@ -28,7 +28,7 @@
 	subq.l	#$1,d1
 .l74A6	move.b	(a0)+,(a1)+
 	dbra	d1,.l74A6
-	dc.w	$4A79,$0001,$93BA
+	tst.w	$193BA.l
 	bmi.w	.l7508
 	jsr	$2242A.l
 	move.l	d0,$1A2DC.l
@@ -45,7 +45,7 @@
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
 	bcc.w	.l7508
-.l7500	dc.w	$33FC,$FFFF,$0001,$93BA
+.l7500	move.w	#$FFFF,$193BA.l
 .l7508	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
@@ -68,7 +68,7 @@ L753C	movem.l	d0-d1/a0-a1,-(sp)
 	asl.w	#$2,d1
 	ext.l	d1
 	add.l	d1,d0
-	dc.w	$223C,$0000,$0004
+	move.l	#$4,d1
 	btst	#$6,(sflags6).l
 	beq.w	.l7576
 	jsr	$2246C.l
@@ -87,7 +87,7 @@ L7596	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$B60,d0
-	dc.w	$223C,$0000,$0010
+	move.l	#$10,d1
 	btst	#$6,(sflags6).l
 	beq.w	.l75C0
 	jsr	$2246C.l
@@ -104,7 +104,7 @@ L75E0	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$D20,d0
-	dc.w	$223C,$0000,$0010
+	move.l	#$10,d1
 	btst	#$6,(sflags6).l
 	beq.w	.l760A
 	jsr	$2246C.l
@@ -123,9 +123,9 @@ ReadNameLog						;Read the user name log from save RAM at NameLogBase to namelog
 	bclr	#$6,(sflags6).l
 NameLogIO						;A user record block: read or write (sflags6 bit 6)
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$223C,$0000,$0080
-	dc.w	$203C,$0000,$0DA0
-	dc.w	$207C,$0001,$A2FC
+	move.l	#$80,d1
+	move.l	#$DA0,d0
+	movea.l	#$1A2FC,a0
 	btst	#$6,(sflags6).l
 	beq.w	.l7662
 	jsr	$2246C.l
@@ -140,7 +140,7 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 puckvzadj						;set puckvz for a top shelf shot from the distance to the goal line ($108)
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	bpl.w	.l76B8
 	neg.w	d0
 .l76B8	subi.w	#$108,d0
@@ -148,12 +148,12 @@ puckvzadj						;set puckvz for a top shelf shot from the distance to the goal li
 	neg.w	d0
 .l76C2	swap	d0
 	andi.l	#$FFFF0000,d0
-	dc.w	$3239,$0001,$7BAA
+	move.w	$17BAA.l,d1
 	beq.w	.l7734
 	bpl.w	.l76DA
 	neg.w	d1
 .l76DA	move.w	#$11,d2
-	dc.w	$4A79,$0001,$8C20
+	tst.w	$18C20.l
 	beq.w	.l76EC
 	move.w	#$16,d2
 .l76EC	divu.w	d1,d0
@@ -177,7 +177,7 @@ puckvzadj						;set puckvz for a top shelf shot from the distance to the goal li
 	tst.w	d1
 	bpl.w	.l772E
 	move.w	#$7FFF,d1
-.l772E	dc.w	$33C1,$0001,$7BAC
+.l772E	move.w	d1,$17BAC.l
 .l7734	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy
@@ -185,32 +185,32 @@ OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puck
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$C,d0
-	dc.w	$3239,$0001,$937A
+	move.w	$1937A.l,d1
 	mulu.w	d1,d0
 	swap	d0
 	andi.l	#$FFFF0000,d0
 	jsr	(Sroot).l
-	dc.w	$33C0,$0001,$7BAC
+	move.w	d0,$17BAC.l
 	ext.l	d0
 	move.w	#$3,d4
 	divu.w	d4,d0
 	clr.l	d1
-	dc.w	$3239,$0001,$9376
-	dc.w	$9279,$0001,$7B80
+	move.w	$19376.l,d1
+	sub.w	$17B80.l,d1
 	swap	d1
 	tst.w	d0
 	bne.w	.l7780
 	move.w	#$1,d0
 .l7780	divs.w	d0,d1
-	dc.w	$33C1,$0001,$7BA8
+	move.w	d1,$17BA8.l
 	clr.l	d1
-	dc.w	$3239,$0001,$9378
-	dc.w	$9279,$0001,$7B94
+	move.w	$19378.l,d1
+	sub.w	$17B94.l,d1
 	swap	d1
 	divs.w	d0,d1
-	dc.w	$33C1,$0001,$7BAA
-	dc.w	$267C,$0001,$7B80
-	dc.w	$3039,$0001,$7BAC
+	move.w	d1,$17BAA.l
+	movea.l	#$17B80,a3
+	move.w	$17BAC.l,d0
 	jsr	(puckflip).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -229,7 +229,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	bne.w	.l77E6
 	neg.w	d0
 .l77E6	bset	#$2,(sflags6).l
-	dc.w	$207C,$0002,$28C6
+	movea.l	#$228C6,a0
 	cmpi.w	#$58,d0
 	blt.w	.l780A
 	movea.l	#$228E6,a0
@@ -265,7 +265,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	move.w	#$A,d0
 	jsr	(randomd0).l
 	add.w	d0,d2
-	dc.w	$33C1,$0001,$9376
+	move.w	d1,$19376.l
 	tst.w	$34(a3)
 	beq.w	.l78BA
 	sub.w	$0(a3),d1
@@ -273,12 +273,12 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	subi.w	#$3C,d1
 	bpl.w	.l78BA
 	neg.w	d1
-	dc.w	$D379,$0001,$9376
+	add.w	d1,$19376.l
 	bra.w	.l78BA
 .l78AC	addi.w	#$3C,d1
 	bmi.w	.l78BA
-	dc.w	$9379,$0001,$9376
-.l78BA	dc.w	$33C2,$0001,$9378
+	sub.w	d1,$19376.l
+.l78BA	move.w	d2,$19378.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
@@ -290,7 +290,7 @@ assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take 
 PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3 shoots at, else
 	
 	movem.w	d0-d1,-(sp)
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
 	bne.w	.l7CBA
 	neg.w	d0
@@ -314,7 +314,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	
 	
 	
-	dc.w	$33FC,$0004,$0001,$7E2C
+	move.w	#$4,$17E2C.l
 	jsr	(doshot).l
 	movem.l	d0/a0,-(sp)
 	movea.l	#tmstruct,a0
@@ -328,10 +328,10 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	move.w	d0,$18(a0)
 	bset	#$7,$17F7C.l
 	addi.w	#$96,(Crowdlevel).l
-	dc.w	$0679,$000A,$0001,$7CD8
+	addi.w	#$A,$17CD8.l
 	addi.w	#$1,$35E(a0)
 	movem.l	(sp)+,d0/a0
-	dc.w	$08F9,$0000,$0001,$7EC6
+	bset	#$0,$17EC6.l
 	bset	#$1,$63(a3)
 	bset	#$1,(sflags6).l
 	rts
@@ -358,24 +358,24 @@ CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d
 	rts
 Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away nibble of
 									;PadControlBits34 (unless PadControlBits is -1)
-	dc.w	$0C79,$FFFF,$0001,$7DC8
+	cmpi.w	#$FFFF,$17DC8.l
 	beq.w	.l7E36
 	movem.l	d0-d2,-(sp)
 	move.w	#$1,d0		;1 = home side code
 	btst	#$6,$62(a3)		;away?
 	beq.w	.l7E02
 	move.w	#$2,d0
-.l7E02	dc.w	$B079,$0001,$7FAA
+.l7E02	cmp.w	$17FAA.l,d0
 	beq.w	.l7E18
 	move.w	#$F,d1		;not pad 3: keep the low nibble, write the high
 	move.w	#$4,d0		;shift 4: the high nibble
 	bra.w	.l7E20
 .l7E18	move.w	#$F0,d1		;keep the high nibble
 	move.w	#$0,d0		;no shift: the low nibble
-.l7E20	dc.w	$C379,$0001,$7DD6
+.l7E20	and.w	d1,$17DD6.l
 	move.w	$52(a3),d1
 	asl.w	d0,d1
-	dc.w	$8379,$0001,$7DD6
+	or.w	d1,$17DD6.l
 	movem.l	(sp)+,d0-d2
 .l7E36	rts
 LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (ReadCrowdRecord
@@ -390,7 +390,7 @@ LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (Rea
 	andi.w	#$FF,d0
 	bra.w	.l7E64
 .none	move.w	#$50,d0
-.l7E64	dc.w	$33C0,$0001,$7F8E
+.l7E64	move.w	d0,$17F8E.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 7) from
@@ -405,45 +405,45 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	bne.w	.l7EBC
 	btst	#$7,$17F74.l
 	bne.w	.l7EF2
-	dc.w	$4A79,$0001,$7F82
+	tst.w	$17F82.l
 	beq.w	.l7EBE
-	dc.w	$0479,$0001,$0001,$7F82
+	subi.w	#$1,$17F82.l
 	bpl.w	.ex1
-	dc.w	$4279,$0001,$7F82
+	clr.w	$17F82.l
 .l7EBC	rts
-.l7EBE	dc.w	$3039,$0001,$7F8E
-	dc.w	$33C0,$0001,$7F90
-	dc.w	$0479,$000B,$0001,$7F90
+.l7EBE	move.w	$17F8E.l,d0
+	move.w	d0,$17F90.l
+	subi.w	#$B,$17F90.l
 	subi.w	#$49,d0
 	muls.w	d0,d0
 	asr.l	#$2,d0
 	addi.w	#$6,d0
-	dc.w	$B079,$0001,$7CD8
+	cmp.w	$17CD8.l,d0
 	bgt.w	.ex1
 	bset	#$7,$17F74.l
 	rts
-.l7EF2	dc.w	$3039,$0001,$7F90
+.l7EF2	move.w	$17F90.l,d0
 	subi.w	#$41,d0
 	muls.w	d0,d0
 	asr.l	#$2,d0
-	dc.w	$B079,$0001,$7CD8
+	cmp.w	$17CD8.l,d0
 	blt.w	.l7F12
 	bclr	#$7,$17F74.l
-.l7F12	dc.w	$9F79,$0001,$7F84
+.l7F12	sub.w	d7,$17F84.l
 	bpl.w	.ex1
-	dc.w	$33FC,$0014,$0001,$7F84
+	move.w	#$14,$17F84.l
 	addi.w	#$1,$17F86.l
-	dc.w	$3039,$0001,$7CD8
+	move.w	$17CD8.l,d0
 	ext.l	d0
 	asl.w	#$2,d0
 	jsr	(Sroot).l
 	addi.w	#$41,d0
-	dc.w	$33C0,$0001,$7F8C
-	dc.w	$B079,$0001,$7F92
+	move.w	d0,$17F8C.l
+	cmp.w	$17F92.l,d0
 	ble.w	.l7F56
-	dc.w	$33C0,$0001,$7F92
-.l7F56	dc.w	$3039,$0001,$7F8C
-	dc.w	$B079,$0001,$7F8E
+	move.w	d0,$17F92.l
+.l7F56	move.w	$17F8C.l,d0
+	cmp.w	$17F8E.l,d0
 	blt.w	.stack
 	bra.w	.stack
 .stack	movem.l	d0-d7/a0-a6,-(sp)
@@ -472,9 +472,9 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	
 	bclr	#$4,$64(a3)
 	move.w	#$88,d4
-	dc.w	$9879,$0001,$7CF4
+	sub.w	$17CF4.l,d4
 	move.w	#$12A,d5
-	dc.w	$9A79,$0001,$7CF6
+	sub.w	$17CF6.l,d5
 	movem.w	d2-d5,-(sp)
 	neg.w	d4
 	neg.w	d5
@@ -565,7 +565,7 @@ Clamp0to100						;unused: clamp d3 to 0 ... 100
 AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3, limited to 0
 	
 	movem.l	d0-d2/a1,-(sp)
-	dc.w	$3239,$0001,$7E64
+	move.w	$17E64.l,d1
 	movea.l	#tmstruct,a1
 	btst	#$6,$62(a3)
 	beq.w	.attribmath
@@ -595,46 +595,46 @@ NextHomeHotPlayer						;d1 = the next home hot player (homehotidx index into the
 	
 	
 	movem.l	d0/a0,-(sp)
-	dc.w	$207C,$0001,$7EAE
-	dc.w	$3039,$0001,$7EA6
+	movea.l	#$17EAE,a0
+	move.w	$17EA6.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
-	dc.w	$0C79,$0000,$0001,$7EA6
+	cmpi.w	#$0,$17EA6.l
 	bge.w	.x
-	dc.w	$0679,$0001,$0001,$7EA6
+	addi.w	#$1,$17EA6.l
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
 NextAwayHotPlayer						;The same for the away team (awayhotplayer, awayhotidx), a1 = awtmstruct.
 	
 	movem.l	d0/a0,-(sp)
-	dc.w	$207C,$0001,$7EAC
-	dc.w	$3039,$0001,$7EA4
+	movea.l	#$17EAC,a0
+	move.w	$17EA4.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
-	dc.w	$0C79,$0000,$0001,$7EA4
+	cmpi.w	#$0,$17EA4.l
 	bge.w	.x
-	dc.w	$0679,$0001,$0001,$7EA4
+	addi.w	#$1,$17EA4.l
 .x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
 	dc.w	$4E75
 BuildHotColdLists						;Build the hot / cold player lists of both teams (SortHotColdStarters,
 	
-	dc.w	$4279,$0001,$7EA4
-	dc.w	$4279,$0001,$7EA6
+	clr.w	$17EA4.l
+	clr.w	$17EA6.l
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a0
 	bsr.w	SortHotColdStarters
-	dc.w	$207C,$0001,$7EAE
+	movea.l	#$17EAE,a0
 	bsr.w	CopyHottestPlayer
-	dc.w	$207C,$0001,$7EB2
+	movea.l	#$17EB2,a0
 	bsr.w	CopyColdestPlayer
 	movea.l	#awtmstruct,a0
 	bsr.w	SortHotColdStarters
-	dc.w	$207C,$0001,$7EAC
+	movea.l	#$17EAC,a0
 	bsr.w	CopyHottestPlayer
-	dc.w	$207C,$0001,$7EB0
+	movea.l	#$17EB0,a0
 	bsr.w	CopyColdestPlayer
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -687,7 +687,7 @@ SortHotColdStarters						;Sum the hot / cold values of the 6 starters of team a0
 NextHomeColdPlayer						;d1 = the next home cold player (homecoldidx, homecoldplayer), a1 =
 	
 	movem.l	d0/a0,-(sp)
-	dc.w	$207C,$0001,$7EB2
+	movea.l	#$17EB2,a0
 	move.w	$17EAA.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
@@ -701,7 +701,7 @@ NextAwayColdPlayer						;The same for the away team (awaycoldidx, awaycoldplayer
 	
 	
 	movem.l	d0/a0,-(sp)
-	dc.w	$207C,$0001,$7EB0
+	movea.l	#$17EB0,a0
 	move.w	$17EA8.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
@@ -736,12 +736,12 @@ CopyColdestPlayer						;Copy the coldest player (TempBuffer+10) to the list at a
 	movem.l	d1-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a0
 	bsr.w	GetHotColdTotal
-	dc.w	$33C1,$0001,$7E62
+	move.w	d1,$17E62.l
 	movea.l	#awtmstruct,a0
 	bsr.w	GetHotColdTotal
-	dc.w	$33C1,$0001,$7E64
-	dc.w	$3239,$0001,$7E62
-	dc.w	$3439,$0001,$7E64
+	move.w	d1,$17E64.l
+	move.w	$17E62.l,d1
+	move.w	$17E64.l,d2
 	sub.w	d1,d2
 	move.w	#$0,(awayhotter).l
 	tst.w	d2

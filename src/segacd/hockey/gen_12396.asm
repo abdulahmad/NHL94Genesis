@@ -37,7 +37,7 @@ Sub_2D396
 	move.w	d0,d1
 	subi.w	#$1,d1
 	movea.l	#$2D4CA,a5
-	dc.w	$267C,$000B,$BD30
+	movea.l	#$BBD30,a3
 	move.l	#$1020304,(a3)
 	move.w	(SelectedPlayerIdx).l,d0
 	subi.w	#$1,d0
@@ -145,7 +145,7 @@ ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes 
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,$5E,$50,$65,$72,$5E,$5E,$54,$69,$6D,$65,$5E,$5E,$54,$6D,$5E,$5E,$47,$6F,$61,$6C,$2F,$41,$73,$73,$69,$73,$74,$5E,$5E,$5E,$5E,$5E,$5E,$5E,$5E,$50,$2F,$53,$5E,$5E,$F9,$00,$00
 	clr.l	d0
-	dc.w	$3039,$0001,$80F0
+	move.w	$180F0.l,d0
 	divu.w	#$6,d0		;goals
 	asl.w	#$5,d0		;32 pixels per entry
 	move.w	d0,(VertLineScrolling).l		;start at the end
@@ -326,7 +326,7 @@ PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 byt
 	dc.w	$0034
 	dc.b	$F8,$06,$03,$00,$08,$F9,$01,$5E,$50,$65,$72,$5E,$5E,$54,$69,$6D,$65,$5E,$5E,$54,$6D,$5E,$5E,$50,$6C,$61,$79,$65,$72,$2F,$50,$65,$6E,$61,$6C,$74,$79,$5E,$5E,$5E,$5E,$6D,$69,$6E,$5E,$5E,$5E,$F9,$00,$00
 	clr.l	d0
-	dc.w	$3039,$0001,$825A
+	move.w	$1825A.l,d0
 	lsr.w	#$2,d0		;/4 bytes per entry = number of penalties
 	mulu.w	#$18,d0		;24 pixels per entry
 	move.w	d0,(VertLineScrolling).l		;start at the end
@@ -468,7 +468,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	jsr	(print).l
 	move.b	$2(a0,d3.w),d0
 	andi.w	#$7F,d0
-	dc.w	$267C,$0004,$165C
+	movea.l	#$4165C,a3
 	adda.w	(a3,d0.w),a3
 	clr.w	d0
 	move.b	$1(a3),d0		;penalty minutes
@@ -511,7 +511,7 @@ PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of 
 	movem.l	a2,-(sp)
 	jsr	(ReadTeamStats).l
 	movea.l	#$18AA6,a0
-	dc.w	$3039,$0001,$8AA0
+	move.w	$18AA0.l,d0
 	move.b	(a0,d0.w),d0		;his team
 	movea.l	#tmstruct,a2
 	cmp.w	$2A(a2),d0		;is it home?
@@ -682,7 +682,7 @@ L130D8	jsr	(printsmallz).l
 	add.w	(scoutcolumn).l,d0
 	jsr	(Sub_3CEBE).l
 	clr.w	(printfontset).l
-	dc.w	$267C,$000B,$BD30
+	movea.l	#$BBD30,a3
 	clr.l	d6
 	tst.w	(scoutcolumn).l
 	bpl.w	.l1318A
@@ -740,7 +740,7 @@ L130D8	jsr	(printsmallz).l
 	bra.w	L12FFA
 DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, or for
 									;goalies saves, shots and save %
-	dc.w	$287C,$000B,$BD30
+	movea.l	#$BBD30,a4
 	adda.w	d3,a4
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0

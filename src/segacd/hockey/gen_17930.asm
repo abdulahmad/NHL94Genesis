@@ -1,5 +1,5 @@
 Sub_32930
-	dc.w	$33F9,$0001,$7B80,$0001,$AD58
+	move.w	$17B80.l,$1AD58.l
 	btst	#$0,$17F72.l
 	beq.w	.l179E8
 	btst	#$1,$63(a3)
@@ -17,7 +17,7 @@ Sub_32930
 	bsr.w	sfx
 	bra.w	.l179E8
 .l17990	movem.w	d0-d1,-(sp)
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	move.w	$14(a3),d1
 	eor.w	d1,d0
 	movem.w	(sp)+,d0-d1
@@ -111,7 +111,7 @@ Sub_32930
 	bne.w	.l17B4C
 	moveq	#$1D,d0
 	bra.w	Sub_362D8
-.l17B4C	dc.w	$3039,$0001,$7B94
+.l17B4C	move.w	$17B94.l,d0
 	move.w	$14(a3),d1
 	eor.w	d0,d1
 	bpl.w	.l17B72
@@ -148,19 +148,19 @@ Sub_32930
 	andi.w	#$3,d0
 	bne.w	.l17D12
 	moveq	#$5,d0
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	btst	#$6,$62(a3)
 	bne.w	.l17C16
 	adda.w	#$300,a0
 .l17C16	btst	#$2,$63(a0)
 	bne.w	.l17C54
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	sub.w	$14(a0),d1
 	cmpi.w	#$1C,d1
 	bgt.w	.l17C54
 	cmpi.w	#$FFE4,d1
 	blt.w	.l17C54
-	dc.w	$3239,$0001,$7B80
+	move.w	$17B80.l,d1
 	sub.w	$0(a0),d1
 	cmpi.w	#$19,d1
 	bgt.w	.l17C54
@@ -175,13 +175,13 @@ Sub_32930
 	bne.w	.l17D12
 	tst.w	$17BE0.l
 	bpl.w	.l17D12
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
 	cmpi.w	#$14,d0
 	bgt.w	.l17D12
 	cmpi.w	#$FFEC,d0
 	blt.w	.l17D12
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	cmpi.w	#$108,d1
 	bgt.w	.l17D12
 	cmpi.w	#$FEF8,d1
@@ -192,10 +192,10 @@ Sub_32930
 	cmpi.w	#$FFE2,d1
 	blt.w	.l17D12
 	movem.w	d0-d1,-(sp)
-	dc.w	$3039,$0001,$7BA8
+	move.w	$17BA8.l,d0
 	bpl.w	.l17CD2
 	neg.w	d0
-.l17CD2	dc.w	$3239,$0001,$7BAA
+.l17CD2	move.w	$17BAA.l,d1
 	bpl.w	.l17CDE
 	neg.w	d1
 .l17CDE	add.w	d1,d0
@@ -237,37 +237,37 @@ Sub_32930
 	cmp.w	$17BE0.l,d0
 	beq.w	.l17DAC
 	move.l	a0,-(sp)
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	move.w	$17BE0.l,d0
 	asl.w	#$7,d0
 	adda.w	d0,a0
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a0),d0
 	asr.w	#$1,d0
 	add.w	$0(a0),d0
 	move.w	d0,$1AD58.l
 	movea.l	(sp)+,a0
 .l17DAC	move.w	$1AD58.l,d0
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	bsr.w	ClampYPosition
 	bsr.w	vtoa
 	bsr.w	AdjustFacingDirection
-	dc.w	$3039,$0001,$80E6
+	move.w	$180E6.l,d0
 	andi.w	#$7,d0
 	asl.w	#$4,d0
 	addi.w	#$A0,d0
-	dc.w	$0C79,$00DB,$0001,$7B94
+	cmpi.w	#$DB,$17B94.l
 	bgt.w	.l17DEC
-	dc.w	$0C79,$FF25,$0001,$7B94
+	cmpi.w	#$FF25,$17B94.l
 	bgt.w	.l17DF0
 .l17DEC	subi.w	#$40,d0
 .l17DF0	move.w	d0,d1
-	dc.w	$C1F9,$0001,$7BA8
+	muls.w	$17BA8.l,d0
 	swap	d0
 	add.w	$1AD58.l,d0
-	dc.w	$C3F9,$0001,$7BAA
+	muls.w	$17BAA.l,d1
 	swap	d1
-	dc.w	$D279,$0001,$7B94
+	add.w	$17B94.l,d1
 	bsr.w	ClampYPosition
 	movem.w	d0-d1,-(sp)
 	muls.w	d0,d0
@@ -298,9 +298,9 @@ Sub_32930
 	bne.w	.l17EC0
 	btst	#$3,$17F6A.l
 	beq.w	.l17EC0
-	dc.w	$0C79,$00D0,$0001,$7B94
+	cmpi.w	#$D0,$17B94.l
 	bgt.w	.l17E9C
-	dc.w	$0C79,$FF30,$0001,$7B94
+	cmpi.w	#$FF30,$17B94.l
 	blt.w	.l17E9C
 	bra.w	.l17EC0
 .l17E9C	cmpi.w	#$14,$0(a3)
@@ -318,17 +318,17 @@ Sub_32930
 	blt.w	.l17F94
 	cmpi.w	#$C,$2(a0)
 	bhi.w	.l17F0C
-.l17EE4	dc.w	$0C79,$0108,$0001,$7B94
+.l17EE4	cmpi.w	#$108,$17B94.l
 	bgt.w	.l17F0C
-	dc.w	$0C79,$FEF8,$0001,$7B94
+	cmpi.w	#$FEF8,$17B94.l
 	blt.w	.l17F0C
 	bset	#$1,$63(a3)
 	bne.w	.l17F0C
 	jsr	$330AC.l
 .l17F0C	move.w	(a0),d0
-	dc.w	$0C79,$00FC,$0001,$7B94
+	cmpi.w	#$FC,$17B94.l
 	bgt.w	.l17F26
-	dc.w	$0C79,$FF04,$0001,$7B94
+	cmpi.w	#$FF04,$17B94.l
 	bgt.w	.l17F34
 .l17F26	moveq	#$18,d0
 	tst.w	$1AD58.l
@@ -376,19 +376,19 @@ Sub_32930
 	blt.w	.l17F34
 	cmpi.l	#$9C4,$2C(a2)
 	blt.w	.l17F34
-	dc.w	$0C79,$00E0,$0001,$7B94
+	cmpi.w	#$E0,$17B94.l
 	bgt.w	.l17FF0
-	dc.w	$0C79,$FF20,$0001,$7B94
+	cmpi.w	#$FF20,$17B94.l
 	bgt.w	.l17F34
-.l17FF0	dc.w	$4A79,$0001,$7BAA
+.l17FF0	tst.w	$17BAA.l
 	btst	#$7,$62(a3)
 	beq.w	.l18004
 	eori.b	#$8,ccr
 .l18004	bmi.w	.l17F34
-	dc.w	$3039,$0001,$7BA8
+	move.w	$17BA8.l,d0
 	bpl.w	.l18014
 	neg.w	d0
-.l18014	dc.w	$3239,$0001,$7BAA
+.l18014	move.w	$17BAA.l,d1
 	bpl.w	.l18020
 	neg.w	d1
 .l18020	cmp.w	d0,d1
@@ -445,7 +445,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	eori.w	#$1,d0
 .l180D6	cmpi.w	#$8,$17B98.l
 	bgt.w	.l180F2
-	dc.w	$0C79,$0800,$0001,$7BAC
+	cmpi.w	#$800,$17BAC.l
 	bgt.w	.l180F2
 	bra.w	.l18120
 .l180F2	movem.l	d0,-(sp)
@@ -517,7 +517,7 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	move.w	#$1AA,d1
 .l18202	bsr.w	SetSPA
 	addi.w	#$96,(Crowdlevel).l
-	dc.w	$0679,$000A,$0001,$7CD8
+	addi.w	#$A,$17CD8.l
 	asr.w	$28(a3)
 	asr.w	$28(a3)
 	asr.w	$2A(a3)
@@ -546,7 +546,7 @@ assgoalietopuck						;goalie skates out to a loose puck (inserted by
 	move.b	d0,$40(a3)		;reload timer = defensive rating / 4
 	tst.w	$17BE0.l
 	bpl.w	assexit		;someone has the puck: stay
-	dc.w	$4A79,$0001,$7BAA
+	tst.w	$17BAA.l
 	btst	#$7,$62(a3)
 	beq.w	.dir
 	eori.b	#$8,ccr		;flip N for the other goal end
@@ -574,7 +574,7 @@ breakaway						;puck carrier a3 on a breakaway: beep on a new assignment and che
 	beq.w	.c0		;jump if home
 	movea.l	#awtmstruct,a2		;move Away Team Struct into a2
 .c0	addi.w	#$1,$35A(a2)		;add one to breakaway attempt
-	dc.w	$0679,$0014,$0001,$7CD8
+	addi.w	#$14,$17CD8.l
 	addi.w	#$C8,(Crowdlevel).l		;add to Crowdlevel
 	movem.l	(sp)+,a2
 .nna	movem.w	d1,-(sp)		;push d1 on stack
@@ -692,7 +692,7 @@ asspuckc						;player a3 is puck handler
 	beq.w	.5
 	movea.l	#awtmstruct,a2
 .5	addi.w	#$1,$35A(a2)
-	dc.w	$0679,$0014,$0001,$7CD8
+	addi.w	#$14,$17CD8.l
 	addi.w	#$C8,(Crowdlevel).l
 	movem.l	(sp)+,a2
 .6	clr.w	$40(a3)
@@ -737,9 +737,9 @@ asspuckc						;player a3 is puck handler
 	btst	#$6,$62(a3)
 	beq.w	.l18616
 	move.w	#$2,d0
-.l18616	dc.w	$B079,$0001,$7FA6
+.l18616	cmp.w	$17FA6.l,d0
 	beq.w	.shot
-	dc.w	$B079,$0001,$7FA8
+	cmp.w	$17FA8.l,d0
 	beq.w	.shot
 	btst	#$1,$17475.l
 	bne.w	.pass
@@ -763,7 +763,7 @@ asspuckc						;player a3 is puck handler
 	btst	#$0,$17F78.l
 	beq.w	.15
 .path	jsr	$2A7B6.l
-	dc.w	$0C39,$0080,$0001,$A8B8
+	cmpi.b	#$80,$1A8B8.l
 	beq.w	Sub_337C8
 .15	btst	#$7,$62(a3)		;pfgoal - 0 for bottom 1 for top
 	bne.w	.l186AE
@@ -808,7 +808,7 @@ chk4lc						;see if computer should call line change
 Sub_337F2
 	btst	#$4,$17F7A.l
 	bne.w	.l188B4
-	dc.w	$3039,$0001,$7B94
+	move.w	$17B94.l,d0
 	btst	#$7,$62(a3)
 	bne.w	.l18810
 	neg.w	d0

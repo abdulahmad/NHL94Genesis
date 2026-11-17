@@ -5,14 +5,14 @@ Sub_24348
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l
 	move.w	#$0,$18D30.l
-	dc.w	$33FC,$B400,$0001,$8D32
+	move.w	#$B400,$18D32.l
 	move.w	#$B800,$18D3C.l
 	move.w	#$5,$18D3E.l
-	dc.w	$33FC,$C000,$0001,$8D38
+	move.w	#$C000,$18D38.l
 	move.w	#$6,(Map2col).l
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$6,(Map1col).l
-	dc.w	$203C,$0000,$0000
+	move.l	#$0,d0
 	jsr	(setVram).l
 	jsr	(orjoy).l
 	jsr	$24866.l
@@ -31,9 +31,9 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	
 	move.l	#$5460,d6
 .l952A	move.w	(ScoutSubStatus).l,d1
-	dc.w	$9279,$0001,$7476
+	sub.w	$17476.l,d1
 	beq.w	.l952A
-	dc.w	$33F9,$0001,$7474,$0001,$7476
+	move.w	(ScoutSubStatus).l,$17476.l
 	bclr	#$5,$19390.l
 	jsr	$24894.l
 	jsr	(ReadJoy1).l
@@ -53,7 +53,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	btst	#$5,d1
 	beq.w	.l965E
 	bset	#$5,$19390.l
-.l95A6	dc.w	$4A79,$0001,$8BF8
+.l95A6	tst.w	$18BF8.l
 	beq.w	.4
 	jsr	$3752C.l
 	jsr	(ProcessInputWithRepeat).l
@@ -73,11 +73,11 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	beq.w	.5
 	btst	#$7,$19390.l
 	bne.w	.6
-	dc.w	$33F9,$0001,$938E,$0001,$938A
+	move.w	$1938E.l,$1938A.l
 	bsr.w	DrawVisBlock
 .5	btst	#$7,$19390.l
 	beq.w	.6
-	dc.w	$33F9,$0001,$938C,$0001,$938A
+	move.w	$1938C.l,$1938A.l
 	bsr.w	DrawHomeBlock
 .6	cmpi.l	#$4650,d6
 	bgt.w	.l9654
@@ -89,7 +89,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 .l965A	dbra	d6,.l952A
 .l965E	rts
 Sub_24660
-	dc.w	$4279,$0001,$8C16
+	clr.w	$18C16.l
 .l9666	btst	#$7,$FF800E.l
 	bne.b	.l9666
 	move.w	#$1B,$FF8020.l
@@ -114,14 +114,14 @@ Sub_24660
 .l96F4	btst	#$6,$FF800E.l
 	bne.b	.l96F4
 	bclr	#$7,$FF800F.l
-	dc.w	$4279,$0001,$8BFA
+	clr.w	$18BFA.l
 	clr.w	(OptNOP).l
-	dc.w	$4279,$0001,$8C0A
-	dc.w	$33FC,$0001,$0001,$8C08
+	clr.w	$18C0A.l
+	move.w	#$1,$18C08.l
 Sub_24720
 	move.w	$18C04.l,-(sp)
-	dc.w	$33D7,$0001,$8C0C
-	dc.w	$33DF,$0001,$8C0E
+	move.w	(sp),$18C0C.l
+	move.w	(sp)+,$18C0E.l
 	jsr	(UpdatePlayoffLevel).l
 .l9738	btst	#$7,$FF800E.l
 	bne.b	.l9738
@@ -147,15 +147,15 @@ Sub_24720
 .l97C6	btst	#$6,$FF800E.l
 	bne.b	.l97C6
 	bclr	#$7,$FF800F.l
-	dc.w	$33F9,$0001,$8C0A,$0001,$8C22
-	dc.w	$0C79,$0002,$0001,$8C0A
+	move.w	$18C0A.l,$18C22.l
+	cmpi.w	#$2,$18C0A.l
 	bne.w	.l97FC
-	dc.w	$4279,$0001,$8C0A
+	clr.w	$18C0A.l
 	bset	#$4,$17F7A.l
-.l97FC	dc.w	$33F9,$0001,$8BFA,$0001,$8C24
-	dc.w	$0C79,$0004,$0001,$8BFA
+.l97FC	move.w	$18BFA.l,$18C24.l
+	cmpi.w	#$4,$18BFA.l
 	bne.w	.l9828
-	dc.w	$33FC,$0000,$0001,$8BFA
+	move.w	#$0,$18BFA.l
 	bset	#$0,$17F78.l
 	jsr	(ClearShootout).l
 .l9828	jmp	(MakeTree).l
@@ -174,7 +174,7 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	dc.w	$33C4,$0001,$939C
+	move.w	d4,$1939C.l
 	movea.l	$47D48.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
@@ -270,7 +270,7 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	btst	#$2,$19390.l
 	bne.w	.l9A4E
 	move.w	(vispicchars).l,d4
-.l9A4E	dc.w	$3639,$0001,$938A
+.l9A4E	move.w	$1938A.l,d3
 	asl.w	#$2,d3
 	movea.l	(TeamLogoBitmaps).l,a0
 	movea.l	(a0,d3.w),a0
@@ -303,10 +303,10 @@ DrawTeamLogo						;Draw the logo of team logoteam at printx, y 6, 6 x 6, palette
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 TeamLogoBitmapsEnd						;end of TeamLogoBitmaps (size check below)
-	dc.w	$3839,$0001,$9398
+	move.w	$19398.l,d4
 	move.w	#$1C,(printx).l
 	bra.w	DrawLogoBox
-L9AE8	dc.w	$3839,$0001,$9398
+L9AE8	move.w	$19398.l,d4
 	move.w	#$18,(printx).l
 	bra.w	DrawLogoBox
 Sub_24AFA
@@ -363,8 +363,8 @@ PlayerCardTimer						;Player cards, called each frame from ReadSetupPads in the 
 	bclr	#$2,$19390.l		;clear setupcardflags bits 2 and 3
 	bclr	#$3,$19390.l
 	bchg	#$1,$19390.l		;the next card goes on the other side
-	dc.w	$50F9,$0001,$938C
-	dc.w	$50F9,$0001,$938E
+	st.b	$1938C.l
+	st.b	$1938E.l
 	bclr	#$6,$19390.l
 	bclr	#$7,$19390.l
 	jsr	(PlayerCardScreen).l

@@ -92,11 +92,11 @@ Sub_2E728
 	bclr	#$0,(disflags).l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	dc.w	$3039,$0001,$8D32
+	move.w	$18D32.l,d0
 	jsr	(Sub_3871E).l
 .l13754	btst	#$7,$FF800E.l
 	bne.b	.l13754
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l13778	btst	#$6,$FF800E.l
@@ -135,7 +135,7 @@ Sub_2E728
 	jsr	(Sub_3871E).l
 .l13850	btst	#$7,$FF800E.l
 	bne.b	.l13850
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l13874	btst	#$6,$FF800E.l
@@ -172,7 +172,7 @@ Sub_2E980
 	jsr	(Sub_3871E).l
 .l139A0	btst	#$7,$FF800E.l
 	bne.b	.l139A0
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l139C4	btst	#$6,$FF800E.l
@@ -214,7 +214,7 @@ Sub_2E980
 	bpl.w	.l13A9E
 	move.w	(sp)+,(disflags).l
 	bset	#$1,(disflags).l
-	dc.w	$3839,$0001,$8D48
+	move.w	$18D48.l,d4
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
@@ -223,7 +223,7 @@ Sub_2E980
 	addq.l	#$8,a2
 .l13AD8	jsr	(DecompressGraphicsPlain).l
 	jsr	$2A9D0.l
-	dc.w	$3839,$0001,$8D42
+	move.w	$18D42.l,d4
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l

@@ -282,7 +282,7 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	or.w	d3,(waitxpad).l
 	tst.w	d1
 	bne.w	rtss2
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.1
 	bsr.w	L1C52C
 	or.w	d3,(waitxpad).l
@@ -308,30 +308,30 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 .nz	moveq	#$1,d7
 	jsr	(updatecrowdf).l
 	jsr	(RunArenaAnim).l
-	dc.w	$4279,$0001,$7F94
+	clr.w	$17F94.l
 	bclr	#$1,$17F6A.l
 	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	dc.w	$4279,$0001,$7F94
+	clr.w	$17F94.l
 	bset	#$1,$17F6A.l
 	bsr.w	ReadJoy2
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.vid
 	bclr	#$1,$17F6A.l
-	dc.w	$33FC,$0003,$0001,$7F94
+	move.w	#$3,$17F94.l
 	bsr.w	L1C52C
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	beq.w	.vid
 	bset	#$1,$17F6A.l
-	dc.w	$33FC,$0004,$0001,$7F94
+	move.w	#$4,$17F94.l
 	bsr.w	L1C54A
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
@@ -364,7 +364,7 @@ waitjoy						;wait for either joystick input. Return d1 = new button presses. it
 	beq.w	waitjoy
 	rts
 orjoy						;return d1 = new button presses from either joystick
-	dc.w	$4A79,$0001,$8BF8
+	tst.w	$18BF8.l
 	bne.w	.4way
 	bsr.w	ReadJoy1
 	move.w	d1,-(sp)
@@ -413,7 +413,7 @@ ProcessInputWithRepeat						;nodiag, then key repeat on d1-d3
 ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return d0 =
 	
 	
-	dc.w	$1039,$0001,$7E46
+	move.b	$17E46.l,d0
 	bsr.w	L1C568
 	move.w	$17E3E.l,d2
 	move.w	d1,$17E3E.l
@@ -422,7 +422,7 @@ ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return 
 	and.w	d2,d1		;d1 = changed and now down = new presses
 	rts
 ReadJoy2						;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
-	dc.w	$1039,$0001,$7E47
+	move.b	$17E47.l,d0
 	bsr.w	L1C568
 	move.w	$17E40.l,d2
 	move.w	d1,$17E40.l
@@ -430,7 +430,7 @@ ReadJoy2						;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C52C	dc.w	$1039,$0001,$7E48
+L1C52C	move.b	$17E48.l,d0
 	bsr.w	L1C568
 	move.w	$17E42.l,d2
 	move.w	d1,$17E42.l
@@ -438,7 +438,7 @@ L1C52C	dc.w	$1039,$0001,$7E48
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C54A	dc.w	$1039,$0001,$7E49
+L1C54A	move.b	$17E49.l,d0
 	bsr.w	L1C568
 	move.w	$17E44.l,d2
 	move.w	d1,$17E44.l

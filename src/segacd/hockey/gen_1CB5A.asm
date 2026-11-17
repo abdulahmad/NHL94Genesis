@@ -117,7 +117,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	bne.b	.l1CDF0
 	bclr	#$7,$FF800F.l
 	move.w	#$8400,d0
-	dc.w	$1039,$0001,$8D38
+	move.b	$18D38.l,d0
 	lsr.b	#$5,d0
 .l1CE0E	btst	#$7,$FF800E.l
 	bne.b	.l1CE0E
@@ -148,7 +148,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	bne.b	.l1CEA4
 	bclr	#$7,$FF800F.l
 	move.w	#$8500,d0
-	dc.w	$1039,$0001,$8D32
+	move.b	$18D32.l,d0
 	lsr.b	#$1,d0
 .l1CEC2	btst	#$7,$FF800E.l
 	bne.b	.l1CEC2
@@ -239,7 +239,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	bclr	#$7,$FF800F.l
 .l1D0EE	btst	#$7,$FF800E.l
 	bne.b	.l1D0EE
-	dc.w	$23FC,$0000,$0000,$00FF,$8022
+	move.l	#$0,$FF8022.l
 	move.w	#$E,$FF8020.l
 	bset	#$6,$FF800F.l
 .l1D112	btst	#$6,$FF800E.l

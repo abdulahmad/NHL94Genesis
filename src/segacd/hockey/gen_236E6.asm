@@ -116,8 +116,8 @@ find3d						;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 
 	neg.w	d0
 	subi.w	#$C5,d1
 	bra.w	.l23896
-.l2388A	dc.w	$9079,$0001,$7CEE
-	dc.w	$9279,$0001,$7CEA
+.l2388A	sub.w	$17CEE.l,d0
+	sub.w	$17CEA.l,d1
 .l23896	cmpi.w	#$90,d0
 	bgt.w	.l238C8
 	cmpi.w	#$FF70,d0
@@ -159,9 +159,9 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	rts
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$1,(disflags).l
-	dc.w	$33FC,$C000,$0001,$8D38
+	move.w	#$C000,$18D38.l
 	move.w	#$6,(Map2col).l
-	dc.w	$33FC,$DC00,$0001,$8D32
+	move.w	#$DC00,$18D32.l
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$6,(Map1col).l
 	move.w	#$F000,$18D3C.l
@@ -172,16 +172,16 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	bclr	#$0,$17F6A.l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	dc.w	$4279,$0001,$7CEE
-	dc.w	$4279,$0001,$7CEA
-	dc.w	$33FC,$07D0,$0001,$7CEC
+	clr.w	$17CEE.l
+	clr.w	$17CEA.l
+	move.w	#$7D0,$17CEC.l
 	st.b	$17CE2.l
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
 	bsr.w	Sub_37AA2
 	clr.w	d4
-	dc.w	$33C4,$0001,$8D48
+	move.w	d4,$18D48.l
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	btst	#$4,$17F72.l
@@ -190,24 +190,24 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	addq.l	#$8,a2
 .l239D4	bsr.w	DecompressGraphicsPlain
 	jsr	$2A9D0.l
-	dc.w	$33C4,$0001,$8D50
+	move.w	d4,$18D50.l
 	bsr.w	Sub_3EC78
-	dc.w	$33C4,$0001,$8D46
+	move.w	d4,$18D46.l
 	movea.l	$47D40.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
-	dc.w	$33C4,$0001,$8D4A
+	move.w	d4,$18D4A.l
 	movea.l	$47D2C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
-	dc.w	$33C4,$0001,$A54E
+	move.w	d4,$1A54E.l
 	addi.w	#$32,d4
 	move.w	d4,$18D54.l
 	bsr.w	Sub_3ED9A
 	move.w	d4,$18C1C.l
 	bsr.w	setupIceRinkPal
 	bsr.w	Sub_393FA
-	dc.w	$33C4,$0001,$8D42
+	move.w	d4,$18D42.l
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
@@ -233,31 +233,31 @@ setupice_highlight
 	bclr	#$0,$17F6A.l
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	dc.w	$4279,$0001,$7CEE
-	dc.w	$4279,$0001,$7CEA
-	dc.w	$33FC,$07D0,$0001,$7CEC
+	clr.w	$17CEE.l
+	clr.w	$17CEA.l
+	move.w	#$7D0,$17CEC.l
 	st.b	$17CE2.l
 	move.w	$18D54.l,d4
 	bsr.w	Sub_3ED9A
 	bsr.w	setupIceRinkPal
 	btst	#$1,$17F68.l
 	beq.w	.l23BA6
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	moveq	#$B,d0
 .l23B98	bchg	#$7,$62(a3)
 	adda.w	#$80,a3
 	dbra	d0,.l23B98
 .l23BA6	bsr.w	Sub_3F24C
-	dc.w	$33FC,$FFFF,$0001,$7DC8
-	dc.w	$33FC,$FFFF,$0001,$7DD6
+	move.w	#$FFFF,$17DC8.l
+	move.w	#$FFFF,$17DD6.l
 	clr.l	$17DCA.l
 	clr.l	$17DCE.l
 	clr.l	$17DD2.l
-	dc.w	$50F9,$0001,$7F9E
-	dc.w	$50F9,$0001,$7FA0
+	st.b	$17F9E.l
+	st.b	$17FA0.l
 	bsr.w	Sub_3EC78
 	movea.l	#$18D6A,a5
-	dc.w	$2C7C,$000B,$BD30
+	movea.l	#$BBD30,a6
 	moveq	#$1,d6
 	movea.l	#$17D04,a3
 	clr.w	d0
@@ -292,14 +292,14 @@ setupIceRinkPal
 	dbra	d0,.l23C70
 	rts
 Sub_3EC78
-	dc.w	$3839,$0001,$8D50
+	move.w	$18D50.l,d4
 	movea.l	$47D4C.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
 	dc.w	$7123,$4567,$89AB,$CDEF,$4E75,$3839,$0001,$8D46
 	dc.w	$2479,$0004,$7D40,$508A,$6000,$9CB4,$3839,$0001
 	dc.w	$8D4A,$2479,$0004,$7D2C,$508A,$6000,$9CA2
-	dc.w	$3839,$0001,$8D56
+	move.w	$18D56.l,d4
 	movea.l	$47D20.l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
@@ -310,7 +310,7 @@ Sub_3EC78
 setupTeamBlocksMap						;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C and copy the home
 	
 	
-	dc.w	$33C4,$0001,$8D52
+	move.w	d4,$18D52.l
 	addi.w	#$2C,d4
 	movea.l	#$17FB2,a1
 	movea.l	$47D44.l,a0
@@ -319,16 +319,16 @@ setupTeamBlocksMap						;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C
 	adda.l	$4(a0),a0
 	move.l	a0,-(sp)
 	move.w	(HomeTeam).l,d0
-	dc.w	$3239,$0001,$8D52
+	move.w	$18D52.l,d1
 	asl.w	#$5,d1
 	bsr.w	CopyTeamBlockMapData
 	movea.l	(sp)+,a0
 	move.w	(VisTeam).l,d0
-	dc.w	$3239,$0001,$8D52
+	move.w	$18D52.l,d1
 	addi.w	#$16,d1
 	asl.w	#$5,d1
 	bsr.w	CopyTeamBlockMapData
-	dc.w	$3839,$0001,$8D52
+	move.w	$18D52.l,d4
 	addi.w	#$2C,d4
 	rts
 CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile set to vram at d1 by
@@ -347,7 +347,7 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	move.w	(sp)+,d1
 	move.w	(a0)+,d2
 	andi.w	#$7FF,d2
-	dc.w	$D479,$0001,$8D52
+	add.w	$18D52.l,d2
 	addi.w	#$2C,d2
 	asl.w	#$5,d2
 	bsr.w	DoDMA_nd2
@@ -355,7 +355,7 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	dbra	d3,.row
 	rts
 Sub_3ED9A
-	dc.w	$247C,$0003,$EE08
+	movea.l	#$3EE08,a2
 	movea.l	#$17DD8,a3
 	moveq	#$3,d0
 .l23DA8	move.w	#$FFFF,$8(a3)
@@ -369,7 +369,7 @@ Sub_3ED9A
 	dbra	d0,.l23DA8
 	movea.l	#$3EE30,a2
 	movea.l	#$17D04,a3
-	dc.w	$203C,$0000,$0006
+	move.l	#$6,d0
 .l23DDE	st.b	$8(a3)
 	move.w	(a2)+,$0(a3)
 	move.w	(a2)+,$14(a3)
@@ -398,7 +398,7 @@ Sub_3EE84
 	clr.w	d6
 	movea.l	#$17CC0,a1
 	dc.w	$45FA,$0070
-	dc.w	$267C,$0001,$7480
+	movea.l	#$17480,a3
 	movea.l	#$17CA0,a4
 .l23E9C	moveq	#$1F,d0
 	movea.l	a3,a0
@@ -437,7 +437,7 @@ Sub_3F03E
 	movem.l	d0-d4/a0-a2,-(sp)
 	movea.l	#$17CA0,a2
 	movea.l	#$17C80,a1
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	move.w	#$F,d3
 .l24058	move.w	$14(a0),d4
 	btst	#$7,$17F6A.l
@@ -502,8 +502,8 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	move.w	#$19F,d0
 	movea.l	#$18856,a1
 	movea.l	#$184F0,a0
-	dc.w	$247C,$0001,$A574
-	dc.w	$267C,$0001,$A714
+	movea.l	#$1A574,a2
+	movea.l	#$1A714,a3
 .l2414A	move.b	(a0)+,(a2)+
 	move.b	(a1)+,(a3)+
 	dbra	d0,.l2414A
@@ -520,8 +520,8 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	move.w	#$19F,d0
 	movea.l	#$18856,a1
 	movea.l	#$184F0,a0
-	dc.w	$247C,$0001,$A574
-	dc.w	$267C,$0001,$A714
+	movea.l	#$1A574,a2
+	movea.l	#$1A714,a3
 .l24198	move.b	(a2)+,(a0)+
 	move.b	(a3)+,(a1)+
 	dbra	d0,.l24198
@@ -535,7 +535,7 @@ setteams						;Use hometeam/visteam to set team structures (InitTeamStructure fo
 	movem.l	d0/a0-a2,-(sp)
 	movea.l	#tmstruct,a2
 	move.w	(HomeTeam).l,d0
-	dc.w	$257C,$0001,$7480,$0022
+	move.l	#$17480,$22(a2)
 	bsr.w	.l241F6
 	movea.l	#awtmstruct,a2
 	move.w	(VisTeam).l,d0
@@ -549,7 +549,7 @@ setteams						;Use hometeam/visteam to set team structures (InitTeamStructure fo
 	move.l	(a0,d0.w),$1E(a2)
 CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team data line
 	
-	dc.w	$4A79,$0001,$8C0A
+	tst.w	$18C0A.l
 	beq.w	.0
 	movea.l	$1E(a2),a0
 	adda.w	$6(a0),a0
@@ -593,7 +593,7 @@ Sub_3F24C
 GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsScreen
 	
 	bsr.w	EncodePW
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	beq.w	.po
 	bclr	#$1,$17F6A.l
 	jsr	(PlayoffStatsScreen).l
@@ -627,16 +627,16 @@ Sub_3F33C
 	move.w	#$0,$3FC0A.l
 	bsr.w	Sub_3FC0C
 .l24350	bclr	#$5,$FF800F.l
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	beq.w	rtss2
 	move.l	#VBlank_Playoff,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$1,(disflags).l
 	move.w	#$0,$18D30.l
-	dc.w	$33FC,$BC00,$0001,$8D32
+	move.w	#$BC00,$18D32.l
 	move.w	#$B000,$18D3C.l
 	move.w	#$6,$18D3E.l
-	dc.w	$33FC,$C000,$0001,$8D38
+	move.w	#$C000,$18D38.l
 	move.w	#$7,(Map2col).l
 	move.w	#$E000,(VmMAP1).l
 	move.w	#$7,(Map1col).l
@@ -644,7 +644,7 @@ Sub_3F33C
 	bsr.w	setVram
 	bsr.w	printz
 	String	CC_Font1,$0,$0
-	dc.w	$203C,$0000,$0080
+	move.l	#$80,d0
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
@@ -658,7 +658,7 @@ Sub_3F33C
 	bsr.w	AddSmallFont
 	movea.l	$47D50.l,a2
 	addq.l	#$8,a2
-	dc.w	$33C4,$0001,$8D56
+	move.w	d4,$18D56.l
 	bsr.w	DecompressGraphicsPlain
 	bsr.w	printz
 	String	CC_Font2Pal3,$0,$0
@@ -684,10 +684,10 @@ Sub_3F33C
 	dbra	d0,.l2444A
 	move.w	#$860,$BBCDC.l
 	move.w	#$860,$BBCFC.l
-	dc.w	$33C4,$0001,$8D46
+	move.w	d4,$18D46.l
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$104,$17CE8.l
-	dc.w	$33FC,$00A0,$0001,$7CE6
+	move.w	#$A0,$17CE6.l
 	movea.l	#$C00004,a0
 .l2448C	btst	#$7,$FF800E.l
 	bne.b	.l2448C
@@ -703,7 +703,7 @@ Sub_3F33C
 	bclr	#$7,$FF800F.l
 	movea.l	#$18AA6,a1
 	movea.l	#$41ADE,a0
-	dc.w	$3039,$0001,$8A9E
+	move.w	$18A9E.l,d0
 	asl.w	#$1,d0
 	adda.w	(a0,d0.w),a0
 	clr.w	d4
@@ -728,7 +728,7 @@ Sub_3F33C
 	dbra	d4,.l2451E
 	bsr.w	printz
 	String	CC_Font1Pal1,$0,$0
-	dc.w	$0C79,$0007,$0001,$8A9C
+	cmpi.w	#$7,$18A9C.l
 	beq.w	.l24576
 	clr.w	d4
 	move.b	(a0)+,d4
@@ -760,7 +760,7 @@ PlayoffScreen_scrup						;Move the tree one step (PlayerScrollCtr) and stop on a
 	move.w	(PlayerScrollCtr).l,d0
 	beq.w	rtss2
 	add.w	(scoutcolumn).l,d0
-	dc.w	$3239,$0001,$8A9E
+	move.w	$18A9E.l,d1
 	cmpi.w	#$3,d1
 	bls.w	.lim
 	moveq	#$3,d1
@@ -771,14 +771,14 @@ PlayoffScreen_scrup						;Move the tree one step (PlayerScrollCtr) and stop on a
 	cmp.w	d1,d0
 	blt.w	rtss2
 	move.w	d0,(scoutcolumn).l
-	dc.w	$4279,$0001,$7CE4
+	clr.w	$17CE4.l
 	move.w	d0,d1
 	addi.w	#$100,d1
 	cmpi.w	#$40,d1
 	blt.w	.nox
 	cmpi.w	#$200,d1
 	bgt.w	.nox
-	dc.w	$33C1,$0001,$7CE4
+	move.w	d1,$17CE4.l
 .nox	ext.l	d0
 	divs.w	#$70,d0
 	swap	d0

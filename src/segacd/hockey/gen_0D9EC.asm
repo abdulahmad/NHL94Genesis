@@ -74,7 +74,7 @@ PrintMatchupRating						;Print the team rating of team a0 (GetTeamRating: the Te
 PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	move.l	a1,-(sp)
 	move.w	(printx).l,-(sp)
-	dc.w	$227C,$0002,$8B22
+	movea.l	#$28B22,a1
 	jsr	(printsmall).l
 	move.w	(sp)+,(printx).l
 	movea.l	(sp)+,a1
@@ -242,7 +242,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bra.w	.lDF8C
 .matchup	move.w	(matchup).l,d0
 	subi.w	#$1,d0
-	dc.w	$227C,$0002,$8F8E
+	movea.l	#$28F8E,a1
 	bra.w	.lDE62
 .lDE60	adda.w	(a1),a1
 .lDE62	dbra	d0,.lDE60
@@ -340,7 +340,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	movea.l	$1E(a0),a0
 	adda.w	$6(a0),a0
 	move.w	(matchup).l,d0
-	dc.w	$227C,$0002,$9050
+	movea.l	#$29050,a1
 	move.b	(a1,d0.w),d0
 	ext.w	d0
 	move.w	d0,(matchupslot).l
@@ -373,12 +373,12 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	move.w	#$5,(advframe).l
 .0	move.w	(advframe).l,d1
 	asl.w	#$2,d1
-	dc.w	$227C,$0002,$90FE
+	movea.l	#$290FE,a1
 	move.w	(homerating).l,d0
 	cmp.w	(visrating).l,d0
 	bgt.w	.1
 	beq.w	.2
-	dc.w	$227C,$0002,$9116
+	movea.l	#$29116,a1
 .1	movea.l	(a1,d1.w),a1
 	bra.w	.3
 .2	movea.l	#EvenAdvTxt,a1
@@ -442,10 +442,10 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	adda.w	(a1),a1
 	cmpi.w	#$2,(a1)
 	bne.w	.lE194
-	dc.w	$227C,$0002,$919A
+	movea.l	#$2919A,a1
 	cmpa.l	#$1834C,a2
 	beq.w	.lE194
-	dc.w	$227C,$0002,$91A0
+	movea.l	#$291A0,a1
 .lE194	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname
@@ -472,11 +472,11 @@ ScoutStub						;An empty routine
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$2,$17F6C.l
 	jsr	(freezewindow).l
-	dc.w	$33FC,$0060,$0001,$AD72
-	dc.w	$267C,$0001,$7480
+	move.w	#$60,$1AD72.l
+	movea.l	#$17480,a3
 	move.w	#$0,d0
-	dc.w	$3439,$0001,$A416
-	dc.w	$B479,$0001,$A418
+	move.w	$1A416.l,d2
+	cmp.w	$1A418.l,d2
 	bgt.w	.lE206
 	move.w	#$6,d0
 .lE206	asl.w	#$7,d0
@@ -488,10 +488,10 @@ ScoutStub						;An empty routine
 	jsr	(Sub_3D770).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
-	dc.w	$4A79,$0001,$7CEA
+	tst.w	$17CEA.l
 	bmi.w	.lE238
 	move.w	#$FF10,d0
-.lE238	dc.w	$D079,$0001,$7CEA
+.lE238	add.w	$17CEA.l,d0
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
@@ -537,15 +537,15 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$1A414,a0
-	dc.w	$203C,$0000,$0012
+	move.l	#$12,d0
 .lE312	clr.w	(a0)+
 	dbra	d0,.lE312
 	movea.l	#tmstruct,a0
 	move.w	#$365,d0
 .lE322	clr.w	(a0)+
 	dbra	d0,.lE322
-	dc.w	$207C,$0001,$8022
-	dc.w	$203C,$0000,$0024
+	movea.l	#$18022,a0
+	move.l	#$24,d0
 .lE334	clr.w	(a0)+
 	dbra	d0,.lE334
 	clr.w	$17F70.l
@@ -561,9 +561,9 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 									;at most) for the pieces inside the view (Hpos / Vpos). Not in a reverse
 									;angle replay (sflags4 bit 4), sflags2 bit 3 or sflags bit 7. Called from
 									;setvideo
-	dc.w	$4A79,$0001,$A556
+	tst.w	$1A556.l
 	bmi.w	Sub_2948C
-	dc.w	$4AB9,$0001,$A55C
+	tst.l	$1A55C.l
 	beq.w	Sub_2948C		;not loaded: none
 	btst	#$4,$17F72.l		;check if reverse angle replay
 	bne.w	Sub_2948C
@@ -571,11 +571,11 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	bne.w	Sub_2948C		;replay: none
 	btst	#$7,$17F6A.l
 	bne.w	Sub_2948C		;horizontal mode: none
-	dc.w	$2279,$0001,$A55C
+	movea.l	$1A55C.l,a1
 	adda.l	$4(a1),a1
-	dc.w	$3839,$0001,$7CEE
-	dc.w	$3A39,$0001,$7CEA
-	dc.w	$3039,$0001,$A550
+	move.w	$17CEE.l,d4
+	move.w	$17CEA.l,d5
+	move.w	$1A550.l,d0
 	bra.w	Sub_293DC
 	dc.w	$0242,$000F,$0C42,$0003,$6300,$0004,$7403,$6000
 	dc.w	$000A,$3003,$D042,$6100,$0008,$51CA,$FFF6,$4E75
@@ -621,7 +621,7 @@ Sub_293DC
 	move.w	$6(a0),d5
 	andi.w	#$F800,d5
 	add.w	$4(a0),d5
-	dc.w	$DA79,$0001,$A54E
+	add.w	$1A54E.l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
 	addi.w	#$70,d5
@@ -640,7 +640,7 @@ PrintPlayerNameRight						;Print the name of player d0 of team a2 (FormatPlayerN
 									;two not counted), then the icon of HotColdIcon. Called from
 									;PrintMatchupRatings
 	movem.l	d0-d7/a0-a6,-(sp)
-	dc.w	$33C0,$0001,$AD8A
+	move.w	d0,$1AD8A.l
 	move.l	a2,-(sp)
 	jsr	(FormatPlayerName).l
 	movea.l	a1,a0

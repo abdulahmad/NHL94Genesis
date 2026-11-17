@@ -4,19 +4,19 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	
 	tst.w	(OptNOP).l
 	beq.w	rtss2
-	dc.w	$4A79,$0001,$8BFA
+	tst.w	$18BFA.l
 	beq.w	rtss2
-	dc.w	$0C79,$0004,$0001,$8BFA
+	cmpi.w	#$4,$18BFA.l
 	beq.w	rtss2
-	dc.w	$33FC,$0001,$0001,$8BFA
+	move.w	#$1,$18BFA.l
 	move.w	#$1,$18C24.l
 	bsr.w	ResolveGames
 	bsr.w	MakeTree
-	dc.w	$0C79,$0004,$0001,$8A9E
+	cmpi.w	#$4,$18A9E.l
 	beq.w	.l256D4
-	dc.w	$4A79,$0001,$8A98
+	tst.w	$18A98.l
 	bmi.w	.l256D4
-	dc.w	$267C,$0001,$8C38
+	movea.l	#$18C38,a3
 	bsr.w	WritePassBits
 	jsr	$2A5C8.l
 	btst	#$2,$17F6E.l
@@ -24,35 +24,35 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	movea.l	#$18D26,a3
 	bsr.w	Sub_4057C
 	bra.w	MakeTree
-.l256D4	dc.w	$267C,$0001,$8C38
+.l256D4	movea.l	#$18C38,a3
 	bsr.w	ClrPassBits
 	jsr	$2A5C8.l
-	dc.w	$33FC,$0002,$0001,$8BFA
+	move.w	#$2,$18BFA.l
 	move.w	#$2,$18C24.l
-	dc.w	$0C79,$0007,$0001,$8A9C
+	cmpi.w	#$7,$18A9C.l
 	beq.w	rtss2
-	dc.w	$33FC,$0003,$0001,$8BFA
+	move.w	#$3,$18BFA.l
 	move.w	#$3,$18C24.l
 	rts
 WritePassBits						;Transfer the game variables to the bits at a3 (pojoy range 8). Called
 	
 	bsr.w	ClrPassBits
-	dc.w	$3039,$0001,$8A9A
+	move.w	$18A9A.l,d0
 	moveq	#$20,d1
 	bsr.w	PushBits
-	dc.w	$3039,$0001,$8A9C
+	move.w	$18A9C.l,d0
 	moveq	#$8,d1
 	bsr.w	PushBits
-	dc.w	$3039,$0001,$8A9E
+	move.w	$18A9E.l,d0
 	moveq	#$4,d1
 	bsr.w	PushBits
-	dc.w	$3039,$0001,$8AA0
+	move.w	$18AA0.l,d0
 	moveq	#$10,d1
 	bsr.w	PushBits
-	dc.w	$3039,$0001,$8AA2
+	move.w	$18AA2.l,d0
 	moveq	#$8,d1
 	bsr.w	PushBits
-	dc.w	$3039,$0001,$8AA4
+	move.w	$18AA4.l,d0
 	move.w	#$4000,d1
 	bsr.w	PushBits
 	moveq	#$5,d1
@@ -128,7 +128,7 @@ GetShifter						;Returns d1 = number of games - 1, d2 = first bit of WinBits
 	move.l	d0,-(sp)
 	moveq	#-16,d2
 	moveq	#$10,d1
-	dc.w	$3039,$0001,$8A9E
+	move.w	$18A9E.l,d0
 .l25828	add.w	d1,d2
 	lsr.w	#$1,d1
 	dbra	d0,.l25828
@@ -139,11 +139,11 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	
 	
 	
-	dc.w	$0C79,$0001,$0001,$8BFA
+	cmpi.w	#$1,$18BFA.l
 	blt.w	rtss2
 	bsr.w	ReadTeamStats
 	movea.l	#$18AA6,a0
-	dc.w	$3439,$0001,$8AA0
+	move.w	$18AA0.l,d2
 	move.b	(a0,d2.w),d2
 	movea.l	#tmstruct,a2
 	cmp.w	$2A(a2),d2
@@ -216,17 +216,17 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 	dbra	d0,.loop
 	rts
 ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
-	dc.w	$3039,$0001,$8A98
+	move.w	$18A98.l,d0
 	mulu.w	#$10,d0
 	movea.l	#$18A18,a0
-	dc.w	$31B9,$0001,$8358,$000A
-	dc.w	$31B9,$0001,$86BE,$000C
+	move.w	$18358.l,$A(a0,d0.w)
+	move.w	$186BE.l,$C(a0,d0.w)
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
-	dc.w	$0C79,$0007,$0001,$8A9C
+	cmpi.w	#$7,$18A9C.l
 	beq.w	.notbos
 .loop	cmpi.w	#$4,$4(a0)
 	beq.w	.b1
@@ -243,10 +243,10 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 .win	addi.w	#$1,$4(a0,d3.w)
 .b1	suba.w	#$10,a0
 	dbra	d1,.loop
-	dc.w	$0679,$0001,$0001,$8A9C
-	dc.w	$0C79,$0007,$0001,$8A9C
+	addi.w	#$1,$18A9C.l
+	cmpi.w	#$7,$18A9C.l
 	beq.w	.l25A62
-	dc.w	$3039,$0001,$8A98
+	move.w	$18A98.l,d0
 	mulu.w	#$10,d0
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
@@ -254,14 +254,14 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.l259E4
 	cmpi.w	#$4,$6(a0)
 	bne.w	rtss2
-.l259E4	dc.w	$0C79,$0003,$0001,$8A9E
+.l259E4	cmpi.w	#$3,$18A9E.l
 	bge.w	.l25A62
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
-.l25A00	dc.w	$B279,$0001,$8A98
+.l25A00	cmp.w	$18A98.l,d1
 	beq.w	.crn
 	cmpi.w	#$4,$4(a0)
 	beq.w	.crn
@@ -280,7 +280,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	movea.l	#$18D26,a3
 	bsr.w	WritePassBits
 	bset	#$2,$17F6E.l
-.l25A62	dc.w	$4279,$0001,$8A9C
+.l25A62	clr.w	$18A9C.l
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
@@ -297,10 +297,10 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
-	dc.w	$C379,$0001,$8AA4
+	and.w	d1,$18AA4.l
 	asl.w	d2,d3
-	dc.w	$8779,$0001,$8AA4
-	dc.w	$0679,$0001,$0001,$8A9E
+	or.w	d3,$18AA4.l
+	addi.w	#$1,$18A9E.l
 	rts
 .notbos	clr.w	d3
 .loop3	move.w	$A(a0),d0
@@ -315,10 +315,10 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
-	dc.w	$C379,$0001,$8AA4
+	and.w	d1,$18AA4.l
 	asl.w	d2,d3
-	dc.w	$8779,$0001,$8AA4
-	dc.w	$0679,$0001,$0001,$8A9E
+	or.w	d3,$18AA4.l
+	addi.w	#$1,$18A9E.l
 	rts
 ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA while RefPen is
 	
@@ -326,7 +326,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	
 	
 	
-	dc.w	$0C79,$0040,$0001,$806E
+	cmpi.w	#$40,$1806E.l
 	bgt.w	rtss2
 	bset	#$7,$17F68.l
 	bne.w	rtss2
@@ -351,7 +351,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	moveq	#$5B,d1
 	moveq	#$6,d2
 	moveq	#$4,d3
-	dc.w	$3839,$0001,$8D48
+	move.w	$18D48.l,d4
 	clr.w	d5
 	jsr	(dobitmap).l
 	bsr.w	CalcStarScores
@@ -368,8 +368,8 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	move.w	#$3,(printx).l
 	jsr	(print).l
 	dbra	d2,.loop
-	dc.w	$3039,$0001,$8358
-	dc.w	$9079,$0001,$86BE
+	move.w	$18358.l,d0
+	sub.w	$186BE.l,d0
 	ble.w	.nosong		;home didn't win
 	move.w	#$F,-(sp)		;home team won (sound effect)
 	jsr	(sfx).l
@@ -417,8 +417,8 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	bne.w	.x
 	tst.w	d3
 	beq.w	.x
-	dc.w	$207C,$0001,$80EC
-	dc.w	$D0F9,$0001,$80F0
+	movea.l	#$180EC,a0
+	adda.w	$180F0.l,a0
 	clr.w	d0
 	btst	#$7,$2(a0)
 	beq.w	.slot
@@ -521,14 +521,14 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	jsr	(Framer).l
 	dc.w	$43FA,$00A8
 	jsr	(printbig).l
-	dc.w	$3039,$0001,$9368
+	move.w	$19368.l,d0
 	asl.w	#$7,d0
-	dc.w	$247C,$0001,$7480
+	movea.l	#$17480,a2
 	adda.w	d0,a2
 	clr.w	d0
 	move.b	$66(a2),d0
 	movea.l	#tmstruct,a2
-	dc.w	$4A79,$0001,$9366
+	tst.w	$19366.l
 	beq.w	.l25E70
 	movea.l	#awtmstruct,a2
 .l25E70	bsr.w	FormatPlayerNumInitial
@@ -536,8 +536,8 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$7
 	movem.l	a1/a3,-(sp)
-	dc.w	$3039,$0001,$9372
-	dc.w	$227C,$0004,$165C
+	move.w	$19372.l,d0
+	movea.l	#$4165C,a1
 	adda.w	(a1,d0.w),a1
 	lea.l	$2(a1),a1
 	jsr	(print).l
@@ -546,7 +546,7 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	String	' by',CC_Font1Pri,$4,$8
 	move.w	$19370.l,d0
 	movea.l	#awtmstruct,a2
-	dc.w	$4A79,$0001,$9366
+	tst.w	$19366.l
 	beq.w	.l25ED2
 	movea.l	#tmstruct,a2
 .l25ED2	jsr	(FormatPlayerNumInitial).l
@@ -573,8 +573,8 @@ Sub_40EFA
 	jsr	(lcfound_close).l
 	adda.w	#$366,a2
 	jsr	(lcfound_close).l
-	dc.w	$287C,$0001,$80EC
-	dc.w	$D8F9,$0001,$80F0
+	movea.l	#$180EC,a4
+	adda.w	$180F0.l,a4
 	jsr	(printz).l
 	String	CC_Font1Pri,$B,$2
 	moveq	#$13,d0
@@ -673,7 +673,7 @@ GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols 
 	
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
-	dc.w	$3039,$0001,$80EE
+	move.w	$180EE.l,d0
 	bpl.w	.0
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
@@ -700,7 +700,7 @@ Sub_4112E
 GetPlayerNumInitial
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
-	dc.w	$3039,$0001,$80EE
+	move.w	$180EE.l,d0
 	bpl.w	.l26188
 	andi.w	#$FF,d0
 	adda.w	#$366,a2

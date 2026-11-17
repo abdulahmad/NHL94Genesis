@@ -26,8 +26,8 @@ assgoaliectrl						;joypad controlled goalie control: a3 = goalie; a goalie not 
 	move.w	#$8,d0		;clock stoppage due to goalie out of range
 	jsr	(AddPenalty2).l
 	move.w	(sp)+,d0
-.l1780C	dc.w	$9079,$0001,$7CEE
-	dc.w	$9279,$0001,$7CEA
+.l1780C	sub.w	$17CEE.l,d0
+	sub.w	$17CEA.l,d1
 	bclr	#$2,$64(a3)		;clear goalie control bit?
 	cmpi.w	#$74,d0		;compare $74 to Xpos diff
 	blt.w	.0		;branch if less than

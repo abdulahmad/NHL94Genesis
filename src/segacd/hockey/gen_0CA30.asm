@@ -5,16 +5,16 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 	jmp	$3F2BE.l
 .0	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	StartShootoutPath
-	dc.w	$33F9,$0001,$A436,$0001,$9366
-	dc.w	$33FC,$000B,$0001,$936A
-	dc.w	$207C,$0001,$A41C
-	dc.w	$4A79,$0001,$A436
+	move.w	$1A436.l,$19366.l
+	move.w	#$B,$1936A.l
+	movea.l	#$1A41C,a0
+	tst.w	$1A436.l
 	beq.w	.lCA7A
-	dc.w	$33FC,$0005,$0001,$936A
-	dc.w	$207C,$0001,$A42A
-.lCA7A	dc.w	$3039,$0001,$A428
+	move.w	#$5,$1936A.l
+	movea.l	#$1A42A,a0
+.lCA7A	move.w	$1A428.l,d0
 	add.w	d0,d0
-	dc.w	$33F0,$0000,$0001,$936C
+	move.w	(a0,d0.w),$1936C.l
 	bclr	#$2,$17BE2.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -25,29 +25,29 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	beq.w	.lCAD6
 	cmpi.w	#$5,$1A41A.l
 	blt.w	.lCAD6
-	dc.w	$3039,$0001,$A416
-	dc.w	$B079,$0001,$A418
+	move.w	$1A416.l,d0
+	cmp.w	$1A418.l,d0
 	beq.w	.lCAD6
 	bset	#$3,$17F78.l
 	jsr	$291CE.l
 	bra.w	.x
-.lCAD6	dc.w	$0A79,$0001,$0001,$A436
+.lCAD6	eori.w	#$1,$1A436.l
 	bne.w	.x
-	dc.w	$0679,$0001,$0001,$A428
-	dc.w	$0C79,$0005,$0001,$A428
+	addi.w	#$1,$1A428.l
+	cmpi.w	#$5,$1A428.l
 	blt.w	.1
-	dc.w	$4279,$0001,$A428
+	clr.w	$1A428.l
 .1	addi.w	#$1,$1A41A.l
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away team as the
 	
-	dc.w	$207C,$0001,$A428
+	movea.l	#$1A428,a0
 	move.w	(HomeTeam).l,d0
-	dc.w	$4A79,$0001,$A436
+	tst.w	$1A436.l
 	beq.w	.0
 	move.w	(VisTeam).l,d0
-	dc.w	$207C,$0001,$A436
+	movea.l	#$1A436,a0
 .0	movea.l	#TeamList,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
@@ -70,8 +70,8 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	String	CC_Font1Pri,$2,$E,'SHOOTOUT WON BY'
 	addi.w	#$2,(printy).l
 	move.w	(HomeTeam).l,d1
-	dc.w	$3039,$0001,$A416
-	dc.w	$B079,$0001,$A418
+	move.w	$1A416.l,d0
+	cmp.w	$1A418.l,d0
 	bgt.w	.0
 	move.w	(VisTeam).l,d1
 .0	asl.w	#$2,d1
@@ -128,10 +128,10 @@ ShootersLoop						;Shootout shooters: the input loop
 LCC80	jmp	(Sub_2E980).l
 ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	#$C000,d7
-	dc.w	$207C,$0001,$A41C
+	movea.l	#$1A41C,a0
 	cmpa.l	#$1834C,a2
 	beq.w	.0
-	dc.w	$207C,$0001,$A42A
+	movea.l	#$1A42A,a0
 .0	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a0,d0.w),d6
@@ -148,7 +148,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 .1	move.w	d0,(screentimer).l
 	clr.w	(PlayerScrollCtr).l
 	clr.w	(VertLineScrolling).l
-	dc.w	$207C,$000B,$BD30
+	movea.l	#$BBD30,a0
 	clr.w	d2
 .loop	move.b	d1,(a0,d2.w)
 	cmp.w	d1,d6
@@ -209,15 +209,15 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	d0,(PlayerScrollCtr).l
 .9	bsr.w	PrintShooterList
 	bra.w	.loop2
-.lCE0E	dc.w	$267C,$000B,$BD30
+.lCE0E	movea.l	#$BBD30,a3
 	adda.w	(VertLineScrolling).l,a3
 	clr.w	d0
 	move.b	(a3),d0
 	move.w	(TestList).l,d2
-	dc.w	$207C,$0001,$A41C
+	movea.l	#$1A41C,a0
 	cmpa.l	#$1834C,a2
 	beq.w	.11
-	dc.w	$207C,$0001,$A42A
+	movea.l	#$1A42A,a0
 .11	asl.w	#$1,d2
 	move.w	d0,(a0,d2.w)
 	bra.w	LCC1E
@@ -245,7 +245,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	movea.l	#$27F3E,a1
 .4	jsr	(print).l
 	move.l	(a1),d4
-	dc.w	$267C,$000B,$BD30
+	movea.l	#$BBD30,a3
 	move.w	(PlayerScrollCtr).l,d2
 	move.w	(screentimer).l,d1
 	sub.w	d2,d1
@@ -357,10 +357,10 @@ Sub_280D6
 	jsr	(Framer).l
 	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC,$8,CC_Font2,$6
-	dc.w	$227C,$0001,$A41C
+	movea.l	#$1A41C,a1
 	cmpa.l	#$1834C,a2
 	beq.w	.lD114
-	dc.w	$227C,$0001,$A42A
+	movea.l	#$1A42A,a1
 .lD114	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a1,d0.w),d0
@@ -376,10 +376,10 @@ Sub_2813E
 	jsr	(printsmallz).l
 	String	CC_Font3,$6,$FC,$E,CC_Font2,$6
 	move.w	#$0,d1
-	dc.w	$207C,$0001,$A41C
+	movea.l	#$1A41C,a0
 	cmpa.l	#$1834C,a2
 	beq.w	.lD16A
-	dc.w	$207C,$0001,$A42A
+	movea.l	#$1A42A,a0
 .lD16A	move.w	d1,d0
 	asl.w	#$1,d0
 	move.w	(a0,d0.w),d0
@@ -435,7 +435,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	tst.b	$9(a0)
 	beq.w	.lD27E
 	movea.l	#ThreeStars,a3
-	dc.w	$227C,$0002,$828C
+	movea.l	#$2828C,a1
 	move.l	a3,-(sp)
 	jsr	(CopyString).l		;copy the String at a1 to a3: 'by '
 	movea.l	(sp)+,a3
@@ -445,7 +445,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	bset	#$7,(sflags6).l
 	bsr.w	AppendUserName
 	jsr	(appstring).l
-	dc.w	$227C,$0002,$8292
+	movea.l	#$28292,a1
 	jsr	(appstring).l
 	movea.l	a3,a1		;a1 = 'by <name> '
 	bra.w	.lD284
@@ -695,7 +695,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$F,d7
 	jsr	$6044.w
 	move.w	#$0,(ScoutLastPara).l
-.lD6A0	dc.w	$207C,$0000,$0000
+.lD6A0	movea.l	#$0,a0
 	move.w	#$9,d0
 	move.w	#$10,d7
 	jsr	$6044.w

@@ -100,7 +100,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	$193A4.l,(printx).l		;text inside the frame
 	move.w	$193A6.l,(printy).l
 	move.w	#$0,(printa).l
-	dc.w	$33FC,$0000,$0001,$8D5E
+	move.w	#$0,$18D5E.l
 	move.w	(HomeTeam).l,d0
 	btst	#$1,$19390.l		;which side?
 	beq.w	.9
@@ -133,7 +133,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movea.l	#mesarea,a1
 	move.w	$193A8.l,d0
 	move.w	$19396.l,d1
-	dc.w	$4A79,$0001,$93BA
+	tst.w	$193BA.l
 	bmi.w	.fade
 	jsr	$25760.l
 	cmpi.w	#$2,(a1)		;PrintRecordValue left an empty string: no records to show
@@ -146,7 +146,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movea.l	#mesarea,a1
 	move.w	$193A8.l,d0
 	move.w	$19396.l,d1
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	jsr	(PrintRecordHolder).l
 	move.w	$193A4.l,(printx).l
 	cmpi.w	#$2,(a1)		;no record holder: skip the line
@@ -158,7 +158,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 .11	movea.l	#mesarea,a1
 	move.w	$193A8.l,d0
 	move.w	$19396.l,d1
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	jsr	(PrintRecordVs).l
 	move.w	$193A4.l,(printx).l		;left edge of the text
 	addi.w	#$1,(printy).l
@@ -173,10 +173,10 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movem.l	d0-d7,-(sp)
 	move.w	$0(a2),d2
 	move.w	$14(a2),d3
-	dc.w	$33EA,$004A,$0001,$7CF4
-	dc.w	$0679,$0017,$0001,$7CF4
-	dc.w	$33EA,$004C,$0001,$7CF6
-	dc.w	$0679,$0017,$0001,$7CF6
+	move.w	$4A(a2),$17CF4.l
+	addi.w	#$17,$17CF4.l
+	move.w	$4C(a2),$17CF6.l
+	addi.w	#$17,$17CF6.l
 	movem.l	a0-a6,-(sp)
 	exg.l	a2,a3
 	jsr	(checkcornercoll).l
@@ -188,7 +188,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	tst.w	$17BE0.l
 	bmi.w	.lA05E
 	movem.l	d0/a0,-(sp)
-	dc.w	$207C,$0001,$7480
+	movea.l	#$17480,a0
 	move.w	$17BE0.l,d0
 	asl.w	#$7,d0
 	adda.w	d0,a0
@@ -220,12 +220,12 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	#$2,(a1)
 	bra.w	.lA7E8
 .lA78E	movea.l	#TempBuffer,a1
-	dc.w	$33C0,$0001,$7E64
+	move.w	d0,$17E64.l
 	bsr.w	AppendNumber
 	movea.l	(sp),a3
 	movea.l	#TempBuffer,a1
 	jsr	(appstring).l
-	dc.w	$3039,$0001,$7E64
+	move.w	$17E64.l,d0
 	movea.l	#$25808,a1
 	cmpi.w	#$1,d0
 	bne.w	.lA7C6
@@ -306,7 +306,7 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	move.w	d0,d5
 	move.w	d1,d4
 	ext.l	d0
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	bsr.w	Sub_22534		;his save record into M68K_RAM
 	move.b	(a0),d0		;byte 0 = the record value
 	ext.w	d0
@@ -375,9 +375,9 @@ AppendRecordHolder						;Append the user name of the record holder (byte 1 of re
 	move.w	(sp)+,d1
 	ext.l	d1
 	ext.l	d0
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	bsr.w	Sub_22534
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$1(a0),d2
 	ext.w	d2
@@ -396,9 +396,9 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	move.w	(sp)+,d1
 	ext.l	d1
 	ext.l	d0
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	bsr.w	Sub_22534
-	dc.w	$207C,$0000,$C45C
+	movea.l	#$C45C,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$3(a0),d2
 	ext.w	d2
@@ -406,7 +406,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	bset	#$7,(sflags6).l		;record name list
 	bsr.w	AppendUserName
 	movea.l	a1,a3
-	dc.w	$227C,$0002,$5A4A
+	movea.l	#$25A4A,a1
 	jsr	(appstring).l
 	movem.l	(sp)+,d0/a1
 	move.b	$2(a0),d0

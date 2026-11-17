@@ -33,8 +33,8 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 	move.w	$28(a3),d0
 	or.w	$2A(a3),d0
 	bne.w	.ex
-	dc.w	$3039,$0001,$7B80
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B80.l,d0
+	move.w	$17B94.l,d1
 	btst	#$0,$17BE3.l
 	beq.w	.nf
 	move.w	$17EDC.l,d0
@@ -132,14 +132,14 @@ L1B0D8	clr.w	$17EEA.l
 	rts
 skatetopuckinit						;d0/d1 = puck x/y plus half the high byte of its
 	
-	dc.w	$1039,$0001,$7BA8
+	move.b	$17BA8.l,d0
 	asr.b	#$1,d0
 	ext.w	d0
-	dc.w	$D079,$0001,$7B80
-	dc.w	$1239,$0001,$7BAA
+	add.w	$17B80.l,d0
+	move.b	$17BAA.l,d1
 	asr.b	#$1,d1
 	ext.w	d1
-	dc.w	$D279,$0001,$7B94
+	add.w	$17B94.l,d1
 	rts
 skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	bsr.w	skatetopuckinit
@@ -164,15 +164,15 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	move.b	d0,$43(a3)
 	tst.w	$34(a3)
 	beq.w	.ex
-	dc.w	$3039,$0001,$7BA8
-	dc.w	$3239,$0001,$7BAA
+	move.w	$17BA8.l,d0
+	move.w	$17BAA.l,d1
 	bsr.w	vtoa
 	eori.w	#$4,d0
 	cmp.w	$54(a3),d0
 	beq.w	.ex
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	sub.w	$14(a3),d1
 	movem.w	d0-d1,-(sp)
 	bsr.w	vtoa
@@ -301,12 +301,12 @@ doplayeracc
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
 	beq.w	.l1B4F4
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
 	move.w	$14(a3),d3
-	dc.w	$1239,$0001,$7BAA
+	move.b	$17BAA.l,d1
 	ext.w	d1
-	dc.w	$D279,$0001,$7B94
+	add.w	$17B94.l,d1
 	sub.w	d3,d1
 	btst	#$7,$62(a3)
 	bne.w	.l1B462
@@ -355,7 +355,7 @@ doplayeracc
 	move.w	$54(a3),d2
 	sub.w	d2,d0
 	andi.w	#$7,d0
-	dc.w	$207C,$0003,$6594
+	movea.l	#$36594,a0
 	asl.w	#$1,d0
 	tst.w	(a0,d0.w)
 	beq.w	noturn0
@@ -419,9 +419,9 @@ L1B5A4	btst	#$3,$62(a3)
 	cmpi.w	#$106,$14(a3)
 	bgt.w	.normalgoalie
 .facepuck	movem.w	d0-d1,-(sp)
-	dc.w	$3039,$0001,$7B80
+	move.w	$17B80.l,d0
 	sub.w	$0(a3),d0
-	dc.w	$3239,$0001,$7B94
+	move.w	$17B94.l,d1
 	sub.w	$14(a3),d1
 	cmpi.w	#$10,d0
 	bgt.w	.usevtoa
@@ -678,7 +678,7 @@ playeracc
 	bhi.w	.l1BA04
 	move.w	d0,$28(a3)
 	move.w	d1,$2A(a3)
-.l1BA04	dc.w	$4A79,$0001,$8C0A
+.l1BA04	tst.w	$18C0A.l
 	bne.w	rtss2
 .l1BA0E	btst	#$7,$FF800E.l
 	bne.b	.l1BA0E
