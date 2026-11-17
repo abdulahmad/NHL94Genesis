@@ -1,5 +1,6 @@
 	dc.b	$89,'FilmClose',$00,$00	; .FilmClose..
-Wait_24	dc.w	$4E56,$0000
+; C function SwapMeg (Sierra C name tag follows it).
+SwapMeg	dc.w	$4E56,$0000
 .l478C	movea.l	#$FF8010,a0
 	tst.w	$2(a0)
 	bne.b	.l478C
@@ -8,36 +9,36 @@ Wait_24	dc.w	$4E56,$0000
 	dc.w	$4E75
 	dc.b	$87,'SwapMeg',$00,$00	; .SwapMeg..
 DrawText	dc.w	$4E56,$0000
-DrawTextSub1	movem.l	d7/a4,-(sp)
+	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
 	moveq	#$1,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	moveq	#$3C,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	addq.w	#$8,sp
 	dc.w	$600C
 .l47CE	ext.w	d7
 	ext.l	d7
 	move.l	d7,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	addq.w	#$4,sp
 .l47DA	move.b	(a4)+,d7
 	bne.b	.l47CE
 	moveq	#$3E,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	moveq	#$1,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	addq.w	#$8,sp
 	movem.l	-$8(a6),d7/a4
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$88,'DrawText',$00,$00,$00	; .DrawText...
 NumStr	dc.w	$4E56,$FFF0
-NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
+	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
 	lea.l	-$10(a6),a4
 	move.l	$8(a6),d6
@@ -68,7 +69,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	dc.w	$4E75
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	dc.w	$4E56,$0000
-HexStrSub1	movem.l	d3-d7/a4,-(sp)
+	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
 	move.l	$8(a6),d5
 	movea.l	$10(a6),a4
@@ -101,8 +102,8 @@ HexStrSub1	movem.l	d3-d7/a4,-(sp)
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
-HexStr_1	dc.w	$4E56,$FED8
-aprint	movem.l	d4-d7/a3-a4,-(sp)
+aprint	dc.w	$4E56,$FED8
+	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
 	lea.l	-$108(a6),a3
 	lea.l	$8(a6),a0
@@ -201,8 +202,8 @@ aprint	movem.l	d4-d7/a3-a4,-(sp)
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
-aprint_1	dc.w	$4E56,$0000
-ffree	movem.l	a3-a4,-(sp)
+ffree	dc.w	$4E56,$0000
+	movem.l	a3-a4,-(sp)
 	movea.l	$8(a6),a3
 	movea.l	a3,a4
 	lea.l	-$10(a4),a4
@@ -216,14 +217,14 @@ ffree	movem.l	a3-a4,-(sp)
 	dc.w	$670E
 .l4A1E	move.l	a4,-(sp)
 	pea.l	.l25DAE(pc)
-	jsr	HexStr_1(pc)
+	jsr	aprint(pc)
 	addq.w	#$8,sp
 	dc.w	$6050
 .l4A2C	tst.w	$2(a4)
 	dc.w	$660E
 	move.l	a4,-(sp)
 	pea.l	.l25D8E(pc)
-	jsr	HexStr_1(pc)
+	jsr	aprint(pc)
 	addq.w	#$8,sp
 	dc.w	$603C
 .l4A40	tst.l	$4(a4)
@@ -251,7 +252,7 @@ ffree	movem.l	a3-a4,-(sp)
 .l25DAE	dc.b	'Tried to ffree a'	; Tried to ffree a
 	dc.b	' bad block: %x',$00,$00	;  bad block: %x..
 findSmallestBlock	dc.w	$4E56,$0000
-findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
+	movem.l	d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
 	lea.l	RestoreBios_85(pc),a0
 	movea.l	$8(a0),a4
@@ -281,8 +282,8 @@ findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	dc.w	$4E75
 	dc.b	$91,'findSmallestBlo'	; .findSmallestBlo
 	dc.b	$63,$6B,$00,$00	; ck..
-findSmallestBlock_1	dc.w	$4E56,$0000
-MaxFree	movem.l	d6-d7/a4,-(sp)
+MaxFree	dc.w	$4E56,$0000
+	movem.l	d6-d7/a4,-(sp)
 	lea.l	RestoreBios_85(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#-1,d6
@@ -305,8 +306,8 @@ MaxFree	movem.l	d6-d7/a4,-(sp)
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$87,'MaxFree',$00,$00	; .MaxFree..
-MaxFree_1	dc.w	$4E56,$0000
-mmalloc	movem.l	d6-d7/a3-a4,-(sp)
+mmalloc	dc.w	$4E56,$0000
+	movem.l	d6-d7/a3-a4,-(sp)
 	move.l	$8(a6),d7
 	move.l	d7,d0
 	addq.l	#$7,d0
@@ -355,7 +356,7 @@ mmalloc	movem.l	d6-d7/a3-a4,-(sp)
 	dc.w	$4E75
 	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	dc.w	$4E56,$0000
-InitHeapSub1	movem.l	a3-a4,-(sp)
+	movem.l	a3-a4,-(sp)
 	lea.l	RestoreBios_85(pc),a0
 	movea.l	$8(a0),a3
 	lea.l	RestoreBios_85(pc),a0
@@ -381,11 +382,12 @@ InitHeapSub2	move.b	#$48,(a3)
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$88,'InitHeap',$00,$00,$00	; .InitHeap...
-InitHeap_1	dc.w	$4E56,$0000
+; C function InitWorld (Sierra C name tag follows it).
+InitWorld	dc.w	$4E56,$0000
 	move.l	d7,-(sp)
 	clr.w	$FF8020.l
 	pea.l	.l26052(pc)
-	jsr	HexStr_1(pc)
+	jsr	aprint(pc)
 	lea.l	RestoreBios_85(pc),a0
 	moveq	#$F,d7
 	and.l	$8(a0),d7
@@ -393,7 +395,7 @@ InitHeap_1	dc.w	$4E56,$0000
 	addq.w	#$4,sp
 	dc.w	$670A
 	pea.l	.l26046(pc)
-	jsr	HexStr_1(pc)
+	jsr	aprint(pc)
 	addq.w	#$4,sp
 .l4CB2	lea.l	RestoreBios_85(pc),a0
 	move.l	$8(a0),d0
@@ -413,11 +415,11 @@ InitHeap_1	dc.w	$4E56,$0000
 	lea.l	RestoreBios_85(pc),a0
 	move.l	$8(a0),-(sp)
 	pea.l	.l26036(pc)
-	jsr	HexStr_1(pc)
+	jsr	aprint(pc)
 	lea.l	RestoreBios_85(pc),a0
 	move.l	$C(a0),-(sp)
 	pea.l	.l26026(pc)
-	jsr	HexStr_1(pc)
+	jsr	aprint(pc)
 	lea.l	RestoreBios_85(pc),a0
 	tst.l	$C(a0)
 	lea.l	$10(sp),sp
@@ -437,7 +439,8 @@ GetTicks	dc.w	$4E56,$0000
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$88,'GetTicks',$00,$00,$00	; .GetTicks...
-GetTicks_1	dc.w	$4E56,$0000
+; C function WaitIODone (Sierra C name tag follows it).
+WaitIODone	dc.w	$4E56,$0000
 .l4D82	lea.l	RestoreBios_85(pc),a0
 	tst.l	$10(a0)
 	bne.b	.l4D82

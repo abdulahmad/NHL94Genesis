@@ -1,18 +1,19 @@
 	dc.b	$8A,'InitEngine',$00,$00,$00	; .InitEngine...
-CopyData_3	dc.w	$4E56,$0000
+; C function DisposeEngine (Sierra C name tag follows it).
+DisposeEngine	dc.w	$4E56,$0000
 	move.l	a4,-(sp)
 	movea.l	$8(a6),a4
 	tst.l	(a4)
 	dc.w	$6708
 	move.l	(a4),-(sp)
-	jsr	aprint_1(pc)
+	jsr	ffree(pc)
 	addq.w	#$4,sp
 .l4EE4	movea.l	-$4(a6),a4
 	unlk	a6
 	dc.w	$4E75
 	dc.b	$8D,'DisposeEngine',$00,$00	; .DisposeEngine..
 GetSectDst	dc.w	$4E56,$0000
-GetSectDstSub1	movem.l	d7/a4,-(sp)
+	movem.l	d7/a4,-(sp)
 	lea.l	RestoreBios_85(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
@@ -34,7 +35,7 @@ GetSectDstSub1	movem.l	d7/a4,-(sp)
 	dc.w	$4E75
 	dc.b	$8A,'GetSectDst',$00,$00,$00	; .GetSectDst...
 PeekSectDst	dc.w	$4E56,$0000
-PeekSectDstSub1	movem.l	d7/a4,-(sp)
+	movem.l	d7/a4,-(sp)
 	lea.l	RestoreBios_85(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7

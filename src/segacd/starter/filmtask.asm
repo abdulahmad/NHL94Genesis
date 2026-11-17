@@ -4,7 +4,8 @@
 
 
 
-Wait_10	link	a6,#$FFFC
+; C function FilmTask (Sierra C name tag follows it).
+FilmTask	link	a6,#$FFFC
 	movem.l	d7/a3-a4,-(sp)
 	move.l	#$C0000,-$4(a6)
 	lea.l	RestoreBios_85(pc),a0
@@ -108,10 +109,10 @@ Wait_19	pea.l	$258.w
 	cmp.l	d0,d7
 	addq.w	#$8,sp
 	bgt.b	Wait_18
-	jsr	Wait_24(pc)
+	jsr	SwapMeg(pc)
 	moveq	#$2,d0
 	move.l	d0,-(sp)
-	jsr	GetTicks_2(pc)
+	jsr	SendCommandToMain(pc)
 	addq.w	#$4,sp
 Wait_20	move.l	$4(a3),-(sp)
 	move.l	(a3),d0

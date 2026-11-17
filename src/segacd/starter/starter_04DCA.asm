@@ -1,7 +1,7 @@
 	dc.b	$91,'SendCommandToMa'	; .SendCommandToMa
 	dc.b	$69,$6E,$00,$00	; in..
 CopyData	dc.w	$4E56,$0000
-CopyDataSub1	movem.l	d4-d7,-(sp)
+	movem.l	d4-d7,-(sp)
 	move.l	$C(a6),d4
 	move.l	$8(a6),d5
 	move.l	$10(a6),d6

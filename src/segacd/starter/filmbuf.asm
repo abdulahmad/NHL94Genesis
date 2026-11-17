@@ -4,10 +4,11 @@
 
 
 
-CopyData_2	link	a6,#$0
+; C function InitEngine (Sierra C name tag follows it).
+InitEngine	link	a6,#$0
 	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
-	jsr	findSmallestBlock_1(pc)
+	jsr	MaxFree(pc)
 	move.l	d0,d7
 	cmpi.l	#$14000,d7
 	bge.b	.l26144
@@ -34,7 +35,7 @@ CopyData_2	link	a6,#$0
 	dc.w	$D0BC
 	dc.l	$00004000
 	move.l	d0,-(sp)
-	jsr	MaxFree_1(pc)
+	jsr	mmalloc(pc)
 	move.l	d0,(a4)
 	addq.w	#$4,sp
 	bne.b	.l26190

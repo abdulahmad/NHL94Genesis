@@ -8,14 +8,14 @@ RestoreBiosSub41	movem.l	d0-d7/a0-a6,-(sp)
 	rts
 .l24DAC	btst.b	#$1,$10912.l
 	beq.w	.l3AC6
-	bsr.w	RestoreBios_72
+	bsr.w	ReleaseWordRam
 	bset.b	#$0,$10912.l
 	rts
 .l3AC6	bclr.b	#$0,$10912.l
 	rts
 .l24DD0	btst.b	#$0,$10912.l
 	beq.w	.l3AE0
-	bsr.w	RestoreBios_71
+	bsr.w	TakeWordRam
 .l3AE0	dc.w	$4E75
 	dc.b	$4E,$75	; Nu
 RestoreBios_80	movem.l	d0-d7/a0-a6,-(sp)
@@ -24,11 +24,11 @@ RestoreBiosSub42	movem.l	a1,-(sp)
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$08	; ............. ..
 	dc.b	$00,$00	; ..
 RestoreBiosSub43	movem.l	(sp)+,a1
-	bsr.w	RestoreBios_68
+	bsr.w	SendCmd3
 	move.l	#$4000400,-(sp)
 	jsr	$10540.l
 	move.w	#$1,d0
-	bsr.w	RestoreBios_61
+	bsr.w	WaitCountdown
 	jsr	$1055C.l
 	jsr	$EA76.l
 	bsr.w	RestoreBios_84

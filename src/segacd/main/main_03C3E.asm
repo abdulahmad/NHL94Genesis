@@ -312,7 +312,7 @@ DispatchTail_80	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
 ; Second copy of DrawTextToPlane.
 DrawTextToPlane_B	dc.w	$4E56,$0000
-DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
+	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
 	move.l	$C(a6),d0
@@ -561,7 +561,7 @@ DispatchTail_85	dcb.b	$8,0
 	dc.b	$20,$10,$20,$20,$40,$00,$00,$00,$50,$A0	;  .  @...P.
 	dcb.b	$C,0
 DoDrawTextCommand	dc.w	$4E56,$FF00
-DoDrawTextCommandSub1	movem.l	d6-d7/a4,-(sp)
+	movem.l	d6-d7/a4,-(sp)
 	lea.l	-$100(a6),a4
 	clr.w	d6
 	dc.w	$6018
@@ -586,7 +586,7 @@ DoDrawTextCommandSub1	movem.l	d6-d7/a4,-(sp)
 	dc.b	$91,'DoDrawTextComma'	; .DoDrawTextComma
 	dc.b	$6E,$64,$00,$00	; nd..
 DoMoviePlayBack	dc.w	$4E56,$0000
-DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
+	movem.l	d5-d7/a4,-(sp)
 	movea.l	#$200000,a4
 	move.l	(a4),d5
 	move.l	$4(a4),d6
@@ -673,7 +673,7 @@ drawprint	dc.w	$4E56,$0000
 	dc.w	$4E75
 	dc.b	$89,'drawprint',$00,$00	; .drawprint..
 NumStr	dc.w	$4E56,$FFF0
-NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
+	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
 	lea.l	-$10(a6),a4
 	move.l	$8(a6),d6
@@ -704,7 +704,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	dc.w	$4E75
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	dc.w	$4E56,$0000
-HexStrSub1	movem.l	d3-d7/a4,-(sp)
+	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
 	move.l	$8(a6),d5
 	movea.l	$10(a6),a4
@@ -738,7 +738,7 @@ HexStrSub1	movem.l	d3-d7/a4,-(sp)
 	dc.w	$4E75
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
 aprint	dc.w	$4E56,$FED8
-aprintSub1	movem.l	d4-d7/a3-a4,-(sp)
+	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
 	bra.w	.l55F0
 .l54EC	cmpi.b	#$25,d6
@@ -861,7 +861,7 @@ InitWorld	dc.w	$4E56,$0000
 .lFF5684	dc.b	'MAINCPU is alive'	; MAINCPU is alive
 	dc.b	$00,$00	; ..
 GetCommandFromSub	dc.w	$4E56,$0000
-GetCommandFromSubSub1	movem.l	d7/a3-a4,-(sp)
+	movem.l	d7/a3-a4,-(sp)
 	movea.l	#$A12010,a3
 	movea.l	#$A12020,a4
 .l56AA	move.w	(a4),d7

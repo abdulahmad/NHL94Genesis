@@ -101,7 +101,7 @@ RestoreBios_2	dc.w	$103A,$0F1A
 	bset	d0,d2
 	move.b	d2,(a0)
 	move.b	d2,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	bra.w	RestoreBios_3
 .l1690	dc.w	$343A,$0F2E
 	lea.l	RestoreBios_29(pc),a0
@@ -154,7 +154,7 @@ RestoreBios_2	dc.w	$103A,$0F1A
 	bset	d0,d1
 	move.b	d1,$FF0011.l
 	move.b	d1,(a0)
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	bra.w	RestoreBios_3
 .l174C	lea.l	RestoreBios_30(pc),a1
 	dc.w	$303A,$0E6E
@@ -207,9 +207,9 @@ RestoreBiosSub2	sub.b	$1(a0,d1.w),d2
 	lsr.w	#$8,d2
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d2,$FF0001.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 RestoreBios_3	lea.l	RestoreBios_34(pc),a0
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
@@ -299,10 +299,10 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	dc.w	$323A,$0CA6
 	bset	d1,d0
 	move.b	d0,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	dc.w	$207A,$0C94
 	clr.w	d0
 	move.b	$2(a0),d0
@@ -311,7 +311,7 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	move.w	(a1,d0.w),d1
 	lsr.w	#$8,d1
 	move.b	d1,$FF000D.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	$5(a0),d1
 	lsl.w	#$8,d1
 	move.b	$6(a0),d1
@@ -321,10 +321,10 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	dc.w	$6004
 .l196A	add.w	(a1,d0.w),d1
 .l196E	move.b	d1,$FF0009.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lsr.w	#$8,d1
 	move.b	d1,$FF000B.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	bsr.w	.l22E28
 	bsr.w	RestoreBios_8
 .l198C	bsr.w	RestoreBios_7
@@ -333,7 +333,7 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	move.b	(a0),d1
 	bclr	d0,d1
 	move.b	d1,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d1,(a0)
 .l19A8	movem.l	(sp)+,d1-d2/a0-a1
 	rts
@@ -404,7 +404,7 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	bset	d1,d0
 	move.b	d0,(a0)
 	move.b	d0,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
 	dc.w	$601E
 .l1A8C	adda.l	#$1,a1
@@ -471,13 +471,13 @@ RestoreBios_4	cmpi.b	#$8F,d0
 .l1B52	dc.w	$303A,$0A6C
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	RestoreBios_27(pc),a0
 	dc.w	$303A,$0A56
 	move.b	(a0,d0.w),d1
 	lsl.w	#$1,d1
 	move.b	d1,$FF0001.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
 	dc.w	$6058
 .l1B80	clr.w	d0
@@ -492,9 +492,9 @@ RestoreBios_4	cmpi.b	#$8F,d0
 	dc.w	$323A,$0A24
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d0,$FF0001.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	RestoreBios_30(pc),a0
 	dc.w	$303A,$0A04
 	move.b	#$0,(a0,d0.w)
@@ -544,7 +544,7 @@ RestoreBios_5	movem.l	d0/a0-a1,-(sp)
 	lea.l	RestoreBios_1(pc),a0
 	move.w	#$0,(a0)
 	move.b	#$80,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	$FF2001.l,a0
 	move.w	#$EB,d0
 .l1C90	move.b	#$80,(a0)
@@ -595,7 +595,7 @@ RestoreBios_6	movem.l	d1-d7/a0,-(sp)
 	move.b	(a0),d0
 	bset	d5,d0
 	move.b	d0,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	RestoreBios_19(pc),a0
 	lsl.w	#$1,d1
 	cmpi.w	#$FFFF,(a0,d1.w)
@@ -609,27 +609,27 @@ RestoreBios_6	movem.l	d1-d7/a0,-(sp)
 	move.w	(a0,d1.w),d0
 	lsr.w	#$8,d0
 	move.b	d0,$FF000D.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	#$0,$FF0009.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	#$0,$FF000B.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d2,$FF0005.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lsr.w	#$8,d2
 	move.b	d2,$FF0007.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d3,$FF0001.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d4,$FF0003.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	RestoreBios_23(pc),a0
 	dc.w	$303A,$080E
 	move.b	(a0),d1
 	bclr	d0,d1
 	move.b	d1,(a0)
 	move.b	d1,$FF0011.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lea.l	RestoreBios_24(pc),a0
 	move.b	#$FF,(a0,d0.w)
 	lea.l	RestoreBios_25(pc),a0
@@ -717,12 +717,12 @@ RestoreBios_7	movem.l	d1-d6/a0-a1,-(sp)
 	dc.w	$303A,$06F0
 	ori.b	#$C0,d0
 	move.b	d0,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d2,$FF0005.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	lsr.w	#$8,d2
 	move.b	d2,$FF0007.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
 	movem.l	(sp)+,d1-d6/a0-a1
 	dc.w	$4E75
@@ -799,9 +799,9 @@ RestoreBios_8	movem.l	d1-d3/a0,-(sp)
 .l205C	dc.w	$323A,$0562
 	ori.b	#$C0,d1
 	move.b	d1,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	move.b	d0,$FF0003.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	clr.w	d0
 .l207A	movem.l	(sp)+,d1-d3/a0
 	rts
@@ -984,7 +984,7 @@ RestoreBiosSub6	cmp.w	d0,d1
 	lsr.w	#$4,d2
 	ori.b	#$80,d2
 	move.b	d2,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	dc.w	$323A,$00AC
 	andi.l	#$FFF,d1
 	lsl.l	#$1,d1
@@ -997,7 +997,7 @@ RestoreBiosSub6	cmp.w	d0,d1
 	dc.w	$6614
 	addi.b	#$1,d2
 	move.b	d2,$FF000F.l
-	bsr.w	RestoreBios_17
+	bsr.w	DelayShort
 	movea.l	#$FF2001,a1
 .l22EE	dbra	d0,.l22C8
 	clr.w	d0
@@ -1031,7 +1031,8 @@ RestoreBiosSub7	movem.l	d2-d3,-(sp)
 	bcs.b	.l2342
 	rts
 RestoreBios_16	rts
-RestoreBios_17	move.l	d0,-(sp)
+; Busy-wait of about 40 loop passes (hardware settling delay).
+DelayShort	move.l	d0,-(sp)
 	move.w	#$28,d0
 .l2358	nop
 	dbra	d0,.l2358
@@ -1097,7 +1098,7 @@ RestoreBiosSub8	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	movea.l	$EC96.l,a0
 	move.l	$10ACC.l,(a0)
-	bsr.w	RestoreBios_70
+	bsr.w	ClearCommRegs
 	move.w	(sp)+,sr
 	rts
 	move.w	#$0,$BC6E8.l
@@ -1107,7 +1108,7 @@ RestoreBiosSub8	move.w	sr,-(sp)
 	bsr.w	GetData_24
 	move.l	#$400,-(sp)
 	bsr.w	GetData_23
-	bsr.w	RestoreBios_79
+	bsr.w	SendCmd5
 	bsr.w	RestoreBios_49
 	bsr.w	RestoreBios_51
 	bsr.w	RestoreBios_80
@@ -1117,7 +1118,7 @@ RestoreBiosSub8	move.w	sr,-(sp)
 	bsr.w	GetData_23
 	bsr.w	.l23C4C
 	bsr.w	RestoreBios_52
-	bsr.w	RestoreBios_63
+	bsr.w	ClearCmdBuffer
 	rts
 .l23C4C	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
@@ -1171,12 +1172,12 @@ RestoreBios_49	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$6100,$08E8
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
-RestoreBiosSub9	bsr.w	RestoreBios_68
+RestoreBiosSub9	bsr.w	SendCmd3
 	moveq	#$1,d4
 	move.w	d4,$10AF0.l
 	movea.l	$109DC.l,a0
 	lea.l	$8(a0),a2
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmd4Args
 	lea.l	$BA850.l,a1
 	adda.l	(a0),a0
 	moveq	#$1F,d0
@@ -1188,7 +1189,7 @@ RestoreBiosSub9	bsr.w	RestoreBios_68
 	clr.w	$10B6E.l
 	lea.l	$DB78.l,a3
 .l2A96	bsr.w	RestoreBios_50
-	bsr.w	RestoreBios_53
+	bsr.w	WaitFrameTick
 	bsr.w	RestoreBios_64
 	moveq	#$0,d1
 	tst.w	d1
@@ -1213,7 +1214,7 @@ RestoreBios_50	movem.l	d0-d6/a0-a2,-(sp)
 	move.l	#$0,-(sp)
 	bsr.w	GetData_19
 	move.w	#$1,d0
-	bsr.w	RestoreBios_61
+	bsr.w	WaitCountdown
 	move.w	#$0,-(sp)
 	move.l	#$0,-(sp)
 	bsr.w	GetData_19
@@ -1241,7 +1242,7 @@ RestoreBios_50	movem.l	d0-d6/a0-a2,-(sp)
 	dc.b	$00,$1E,$00,$00,$00,$1E,$00,$01,$00,$1E,$00,$01,$00,$04,$00,$01	; ................
 	dc.b	$00,$06,$FF,$FF	; ....
 RestoreBios_51	andi.b	#$9C,$BC6E8.l
-	bsr.w	RestoreBios_68
+	bsr.w	SendCmd3
 	move.w	#$1,d4
 	move.w	d4,$10AF0.l
 	dc.w	$6100,$0AB4
@@ -1284,11 +1285,11 @@ RestoreBiosSub11	movea.l	$109D8.l,a2
 	move.w	#$20,$BA8D0.l
 	move.w	#$B4,d7
 .l2C60	bsr.w	.l23F78
-	bsr.w	RestoreBios_53
+	bsr.w	WaitFrameTick
 	bsr.w	RestoreBios_64
 	tst.w	d1
 	dbne	d7,.l2C60
-	bsr.w	RestoreBios_63
+	bsr.w	ClearCmdBuffer
 	rts
 .l23F78	btst.b	#$1,$BC6E8.l
 	bne.w	.l2D20
@@ -1364,7 +1365,7 @@ RestoreBiosSub12	movem.l	d0-d7/a0-a6,-(sp)
 .l2421E	lea.l	$BA450.l,a0
 	move.w	$10B22.l,(a0)
 	moveq	#$1D,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	move.w	#$DF,d0
 	lea.l	$BC368.l,a0
 	moveq	#$7F,d1
@@ -1390,7 +1391,8 @@ RestoreBiosSub12	movem.l	d0-d7/a0-a6,-(sp)
 .l2F9E	move.w	$10B28.l,d0
 	add.w	d0,$10B20.l
 .l242AA	rts
-RestoreBios_53	move.w	d0,-(sp)
+; Waits until the frame counter at $10AE0 changes.
+WaitFrameTick	move.w	d0,-(sp)
 	move.w	$10AE2.l,d0
 .l2FB4	cmp.w	$10AE0.l,d0
 	beq.b	.l2FB4
@@ -1501,24 +1503,27 @@ RestoreBios_60	move.w	d4,(a3)
 	move.w	$4(a0),(a2)
 	movea.l	a4,a0
 	lea.l	$8(a0),a2
-	bsr.w	RestoreBios_62
+	bsr.w	SendCmd4Args
 	rts
-RestoreBios_61	neg.w	d0
+; Stores -d0 in the frame counter and waits until it counts up past zero.
+WaitCountdown	neg.w	d0
 	move.w	d0,$10AE0.l
 .l3120	tst.w	$10AE0.l
 	bmi.b	.l3120
 	rts
-RestoreBios_62	movem.l	d0-d1/a0,-(sp)
+; Puts d4/a2 in the command buffer and sends command 4.
+SendCmd4Args	movem.l	d0-d1/a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.l	d4,(a0)+
 	move.l	a2,(a0)
 	moveq	#$4,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a0
 	move.l	(a0),d4
 	movem.l	(sp)+,d0-d1/a0
 	rts
-RestoreBios_63	movem.l	d0/a0,-(sp)
+; Clears the 32-long command buffer at $BA850.
+ClearCmdBuffer	movem.l	d0/a0,-(sp)
 	lea.l	$BA850.l,a0
 	moveq	#$1F,d0
 .l3158	move.l	(a0),-(sp)
@@ -1540,7 +1545,7 @@ RestoreBios_63	movem.l	d0/a0,-(sp)
 RestoreBios_64	movem.l	d0/d2-d4,-(sp)
 	clr.w	-(sp)
 	moveq	#$3,d4
-.l31A0	bsr.w	RestoreBios_67
+.l31A0	bsr.w	ReadCommRegs
 	bsr.w	RestoreBios_66
 	or.w	d1,(sp)
 	dbra	d4,.l31A0
@@ -1586,7 +1591,8 @@ RestoreBiosSub15	movem.l	a0,-(sp)
 .l323E	move.b	#$F,(a0,d4.w)
 .l3244	movem.l	(sp)+,a0
 	rts
-RestoreBios_67	move.w	$FFFF801C.w,d0
+; Copies the main-CPU comm registers $801C-$801E into the pad/status bytes at $10B14.
+ReadCommRegs	move.w	$FFFF801C.w,d0
 	move.b	d0,$10B15.l
 	lsr.w	#$8,d0
 	move.b	d0,$10B14.l
@@ -1637,9 +1643,10 @@ RestoreBiosSub17	movem.l	d1/a0,-(sp)
 	movem.l	(sp)+,d1/a0
 	dc.w	$4E75
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
-RestoreBios_68	movem.l	d0,-(sp)
+; Sends command 3 to the main CPU.
+SendCmd3	movem.l	d0,-(sp)
 	moveq	#$3,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
 .l24620	movea.l	(sp),a0
@@ -1649,14 +1656,14 @@ RestoreBios_68	movem.l	d0,-(sp)
 	dbra	d0,.l332A
 	move.l	a0,(sp)
 	moveq	#$2,d0
-	bra.w	RestoreBios_69
+	bra.w	SendCmdD0
 RestoreBiosSub18	movem.l	d0/d2-d3/a1,-(sp)
 	lea.l	$BA450.l,a1
 	move.w	d0,(a1)+
 	move.w	d1,(a1)+
 	move.l	a0,(a1)
 	moveq	#$0,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
 RestoreBiosSub19	movem.l	d0/d2-d3/a1,-(sp)
@@ -1665,27 +1672,29 @@ RestoreBiosSub19	movem.l	d0/d2-d3/a1,-(sp)
 	move.w	d1,(a1)+
 	move.l	a0,(a1)
 	moveq	#$1,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/d2-d3/a1
 	rts
-RestoreBios_69	move.w	d0,$FFFF8020.w
+; Sends the command in d0 through the gate-array comm registers and waits for the acknowledge.
+SendCmdD0	move.w	d0,$FFFF8020.w
 	bset.b	#$6,$FFFF800F.w
 .l337A	btst.b	#$6,$FFFF800E.w
 	beq.b	.l337A
 	bclr.b	#$6,$FFFF800F.w
 	move.w	#$0,$FFFF8020.w
 	bclr.b	#$1,$FFFF8024.w
-	bsr.w	RestoreBios_75
-	bsr.w	RestoreBios_72
-	bsr.w	RestoreBios_76
+	bsr.w	CommHandshake0
+	bsr.w	ReleaseWordRam
+	bsr.w	CommHandshake1
 .l33A0	btst.b	#$0,$FFFF8014.w
 	beq.b	.l33A0
 	bset.b	#$1,$FFFF8024.w
-	bsr.w	RestoreBios_77
-	bsr.w	RestoreBios_71
-	bsr.w	RestoreBios_78
+	bsr.w	CommHandshake2
+	bsr.w	TakeWordRam
+	bsr.w	CommHandshake3
 	rts
-RestoreBios_70	move.w	#$0,$FFFF8020.w
+; Clears the sub-CPU communication registers $8020-$802C.
+ClearCommRegs	move.w	#$0,$FFFF8020.w
 	move.w	#$0,$FFFF8022.w
 	move.w	#$0,$FFFF8024.w
 	move.w	#$0,$FFFF8026.w
@@ -1704,13 +1713,15 @@ RestoreBios_70	move.w	#$0,$FFFF8020.w
 	bne.b	.l3406
 	bclr.b	#$7,$FFFF800F.w
 	rts
-RestoreBios_71	btst.b	#$1,$FFFF8003.w
-	beq.b	RestoreBios_71
+; Waits until word RAM is granted to the sub CPU and notes it.
+TakeWordRam	btst.b	#$1,$FFFF8003.w
+	beq.b	TakeWordRam
 	btst.b	#$0,$FFFF8003.w
-	bne.b	RestoreBios_71
+	bne.b	TakeWordRam
 	bset.b	#$1,$10912.l
 	rts
-RestoreBios_72	bset.b	#$0,$FFFF8003.w
+; Returns word RAM to the main CPU.
+ReleaseWordRam	bset.b	#$0,$FFFF8003.w
 	bclr.b	#$1,$10912.l
 	rts
 	lea.l	$10ADA.l,a0
@@ -1753,7 +1764,7 @@ RestoreBiosSub20	movem.l	a0-a1,-(sp)
 	rts
 RestoreBiosSub21	movem.l	d0/a0,-(sp)
 	moveq	#$6,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
 RestoreBiosSub22	movem.l	d0-d3/a0,-(sp)
@@ -1765,7 +1776,7 @@ RestoreBiosSub22	movem.l	d0-d3/a0,-(sp)
 	move.w	$10B0C.l,(a0)+
 	move.w	$10B10.l,(a0)+
 	moveq	#$7,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a0
 	move.w	(a0)+,$10B0A.l
 	move.w	(a0)+,$10B0C.l
@@ -1788,7 +1799,7 @@ RestoreBios_74	movem.l	d0-d3/d5-d6/a0-a3/a6,-(sp)
 	move.w	$10B0C.l,(a6)+
 	move.w	$10B10.l,(a6)+
 	moveq	#$8,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a6
 	move.w	(a6)+,d4
 	move.w	(a6)+,$10B0E.l
@@ -1812,7 +1823,7 @@ RestoreBiosSub23	movem.l	d0/a1-a2,-(sp)
 	dbra	d0,.l35AE
 	move.l	a1,$C(sp)
 	moveq	#$B,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
 	move.w	(a1)+,$10B10.l
@@ -1836,7 +1847,7 @@ RestoreBiosSub24	movem.l	d0-d3/a0/a2-a3,-(sp)
 .l3622	move.w	(a1)+,(a2)+
 	dbra	d0,.l3622
 	moveq	#$C,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a2
 	move.w	(a2)+,$10B0E.l
 	move.w	(a2)+,$10B0A.l
@@ -1862,7 +1873,7 @@ RestoreBiosSub24	movem.l	d0-d3/a0/a2-a3,-(sp)
 .l369C	move.w	(a1)+,(a2)+
 	dbra	d0,.l369C
 	moveq	#$D,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	move.l	a1,$C(sp)
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
@@ -1894,7 +1905,7 @@ RestoreBiosSub26	movem.l	d0/a0-a1,-(sp)
 	cmpa.l	#$10B08,a1
 	blt.b	.l370C
 	moveq	#$E,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
 RestoreBiosSub27	movem.l	a1,-(sp)
@@ -1959,7 +1970,7 @@ RestoreBiosSub28	movem.l	d1-d2/a0-a1,-(sp)
 	rts
 RestoreBiosSub29	movem.l	d0,-(sp)
 	moveq	#$F,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	move.w	$BA450.l,$10BCE.l
 	movem.l	(sp)+,d0
 	rts
@@ -1971,35 +1982,39 @@ RestoreBiosSub30	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	moveq	#$10,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a0
 	move.l	(a0),d4
 	movem.l	(sp)+,d0-d1/a0-a1
 	addq.l	#$8,(sp)
 	rts
-RestoreBios_75	btst.b	#$0,$FFFF8018.w
-	beq.b	RestoreBios_75
+; Sets and clears handshake flag 0 in $8028 after the main CPU answers on $8018.
+CommHandshake0	btst.b	#$0,$FFFF8018.w
+	beq.b	CommHandshake0
 	bset.b	#$0,$FFFF8028.w
 .l3834	btst.b	#$0,$FFFF8018.w
 	bne.b	.l3834
 	bclr.b	#$0,$FFFF8028.w
 	rts
-RestoreBios_76	btst.b	#$1,$FFFF8018.w
-	beq.b	RestoreBios_76
+; Handshake flag 1.
+CommHandshake1	btst.b	#$1,$FFFF8018.w
+	beq.b	CommHandshake1
 	bset.b	#$1,$FFFF8028.w
 .l3852	btst.b	#$1,$FFFF8018.w
 	bne.b	.l3852
 	bclr.b	#$1,$FFFF8028.w
 	rts
-RestoreBios_77	btst.b	#$2,$FFFF8018.w
-	beq.b	RestoreBios_77
+; Handshake flag 2.
+CommHandshake2	btst.b	#$2,$FFFF8018.w
+	beq.b	CommHandshake2
 	bset.b	#$2,$FFFF8028.w
 .l3870	btst.b	#$2,$FFFF8018.w
 	bne.b	.l3870
 	bclr.b	#$2,$FFFF8028.w
 	rts
-RestoreBios_78	btst.b	#$3,$FFFF8018.w
-	beq.b	RestoreBios_78
+; Handshake flag 3.
+CommHandshake3	btst.b	#$3,$FFFF8018.w
+	beq.b	CommHandshake3
 	bset.b	#$3,$FFFF8028.w
 .l388E	btst.b	#$3,$FFFF8018.w
 	bne.b	.l388E
@@ -2014,7 +2029,7 @@ RestoreBiosSub31	movem.l	d0/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	a1,$C(sp)
 	moveq	#$12,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
 RestoreBiosSub32	movem.l	d0/a0-a1,-(sp)
@@ -2024,13 +2039,14 @@ RestoreBiosSub32	movem.l	d0/a0-a1,-(sp)
 	move.l	(a1)+,(a0)+
 	move.l	(a1)+,(a0)+
 	moveq	#$12,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0-a1
 	rts
-RestoreBios_79	lea.l	$BA450.l,a0
+; Sends command 5 with the value from $1094C.
+SendCmd5	lea.l	$BA450.l,a0
 	move.l	$1094C.l,(a0)+
 	moveq	#$5,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	rts
 RestoreBiosSub33	movem.l	d0-d3/a0/a2/a6,-(sp)
 	lea.l	$BA450.l,a2
@@ -2046,7 +2062,7 @@ RestoreBiosSub33	movem.l	d0-d3/a0/a2/a6,-(sp)
 	dbra	d0,.l3924
 	movea.l	a1,a6
 	moveq	#$B,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	lea.l	$BA450.l,a1
 	move.w	(a1)+,$10B0E.l
 	move.w	(a1)+,$10B10.l
@@ -2059,7 +2075,7 @@ RestoreBiosSub34	movem.l	a0,-(sp)
 	lea.l	$BA450.l,a0
 	move.w	d0,(a0)
 	moveq	#$13,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,a0
 	rts
 	bsr.w	.l24C78
@@ -2070,12 +2086,12 @@ RestoreBiosSub34	movem.l	a0,-(sp)
 	rts
 RestoreBiosSub35	movem.l	d0,-(sp)
 	moveq	#$14,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
 RestoreBiosSub36	movem.l	d0,-(sp)
 	moveq	#$15,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
 RestoreBiosSub37	movem.l	d0/a0,-(sp)
@@ -2083,18 +2099,18 @@ RestoreBiosSub37	movem.l	d0/a0,-(sp)
 	move.w	$10B22.l,(a0)+
 	move.w	d0,(a0)+
 	moveq	#$16,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
 RestoreBiosSub38	movem.l	d0/a0,-(sp)
 	move.w	d0,$BA450.l
 	moveq	#$19,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0/a0
 	rts
 	move.l	d0,-(sp)
 	moveq	#$17,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	move.l	(sp)+,d0
 	rts
 RestoreBiosSub39	movem.l	d0-d2/a0,-(sp)
@@ -2103,7 +2119,7 @@ RestoreBiosSub40	move.w	d0,(a0)+
 	move.w	d1,(a0)+
 	move.w	d2,(a0)+
 	moveq	#$18,d0
-	bsr.w	RestoreBios_69
+	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0-d2/a0
 	rts
 .l3A00	bset.b	#$2,$FF8003.l

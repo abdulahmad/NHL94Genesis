@@ -1,5 +1,6 @@
 RestoreBios_105	dc.b	$00,$00,$00,$00	; ....
-RestoreBios_106	lea.l	RestoreBios_105(pc),a0
+; Saves the vector at $5F90 and installs the second handler.
+InstallIrqHook2	lea.l	RestoreBios_105(pc),a0
 	move.l	$5F90.w,(a0)
 	lea.l	RestoreBios_109(pc),a0
 	move.w	sr,-(sp)
@@ -7,7 +8,8 @@ RestoreBios_106	lea.l	RestoreBios_105(pc),a0
 	move.l	a0,$5F90.w
 	move.w	(sp)+,sr
 	rts
-RestoreBios_107	movea.l	RestoreBios_105(pc),a0
+; Restores the vector at $5F90.
+RemoveIrqHook2	movea.l	RestoreBios_105(pc),a0
 	move.w	sr,-(sp)
 	ori.w	#$2700,sr
 	move.l	a0,$5F90.w
@@ -42,7 +44,7 @@ RestoreBios_109	movem.l	d0-d3/a0-a2/a5,-(sp)
 	jsr	$5F22.w
 	move.l	RestoreBios_108(pc),d0
 	andi.l	#$FFFFFF00,d0
-	bsr.w	RestoreBios_112
+	bsr.w	CdMsfBcdToBin
 	move.l	RestoreBios_91(pc),d1
 	cmp.l	d0,d1
 	dc.w	$6676
@@ -95,7 +97,7 @@ RestoreBios_110	lea.l	RestoreBios_89(pc),a1
 	jsr	$5F22.w
 	rts
 RestoreBios_111	dc.w	$4E56,$FFFC
-RestoreBiosSub47	movem.l	d1-d7/a0-a5,-(sp)
+	movem.l	d1-d7/a0-a5,-(sp)
 	movea.l	#$FF8000,a5
 	lea.l	RestoreBios_94(pc),a1
 	clr.l	(a1)
@@ -123,7 +125,8 @@ RestoreBiosSub47	movem.l	d1-d7/a0-a5,-(sp)
 	movem.l	(sp)+,d1-d7/a0-a5
 	unlk	a6
 	rts
-RestoreBiosSub48	move.l	d1,-(sp)
+; Converts the packed BCD byte in d0 to binary.
+BcdToBin	move.l	d1,-(sp)
 	move.b	d0,d1
 	andi.w	#$FF,d1
 	lsr.w	#$4,d1
@@ -132,22 +135,23 @@ RestoreBiosSub48	move.l	d1,-(sp)
 	add.w	d1,d0
 	move.l	(sp)+,d1
 	rts
-RestoreBios_112	movem.l	d1-d2,-(sp)
+; Converts the BCD minute/second/frame bytes of d0 to binary.
+CdMsfBcdToBin	movem.l	d1-d2,-(sp)
 	lsr.l	#$8,d0
 	move.l	d0,d1
-	jsr	RestoreBiosSub48(pc)
+	jsr	BcdToBin(pc)
 	move.b	d0,d2
 	andi.l	#$FF,d2
 	move.l	d1,d0
 	lsr.l	#$8,d0
 	move.l	d0,d1
-	jsr	RestoreBiosSub48(pc)
+	jsr	BcdToBin(pc)
 	andi.l	#$FF,d0
 	mulu.w	#$4B,d0
 	add.l	d0,d2
 	move.l	d1,d0
 	lsr.l	#$8,d0
-	jsr	RestoreBiosSub48(pc)
+	jsr	BcdToBin(pc)
 	andi.l	#$FF,d0
 	mulu.w	#$1194,d0
 	add.l	d0,d2
@@ -155,8 +159,8 @@ RestoreBios_112	movem.l	d1-d2,-(sp)
 	move.l	d2,d0
 	movem.l	(sp)+,d1-d2
 	rts
-RestoreBios_113	dc.w	$4E56,$0000
-Wait	movem.l	d6-d7,-(sp)
+Wait	dc.w	$4E56,$0000
+	movem.l	d6-d7,-(sp)
 	move.l	$8(a6),d6
 	jsr	GetTicks(pc)
 	move.l	d0,d7
