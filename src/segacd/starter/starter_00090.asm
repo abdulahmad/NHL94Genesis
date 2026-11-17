@@ -4,12 +4,13 @@
 	dc.b	$FF,$FF	; ..
 	dcb.b	$72,0
 	dc.b	$4E,$F9,$00,$00,$D8,$5A	; N....Z
-RestoreBiosSub1	bra.w	RestoreBios_2
+; Dispatches the command number in d0 (below $80 by a compare chain, the rest to the high handler).
+SubCommandDispatch	bra.w	RestoreBios_2
 ; Zero-filled work storage (130 bytes).
 Buf82_1	dcb.b	$82,0
 RestoreBios_2	cmpi.b	#$80,d0
 	bcs.b	.l154C
-	bra.w	RestoreBios_6
+	bra.w	SubCommandDispatchHigh
 .l154C	tst.w	d0
 	bne.b	.l1554
 	bra.w	RestoreBios_7
@@ -66,7 +67,7 @@ RestoreBios_2	cmpi.b	#$80,d0
 	cmpi.w	#$0,(a0)
 	beq.b	.l1644
 	move.l	$2(a0),d0
-	bsr.w	RestoreBios_6
+	bsr.w	SubCommandDispatchHigh
 	lea.l	Buf82_1(pc),a0
 	move.w	(a0),d0
 	move.w	#$FFFF,(a0)
@@ -111,7 +112,7 @@ RestoreBios_3	dc.w	$103A,$0F1A
 	clr.w	d1
 	move.b	(a0,d2.w),d1
 	move.w	#$4,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcs.w	RestoreBios_5
 	lea.l	Buf11_1(pc),a1
 	dc.w	$303A,$0F06
@@ -218,7 +219,8 @@ RestoreBios_5	lea.l	Word5(pc),a0
 	bra.w	RestoreBios_3
 .l1806	movem.l	(sp)+,d1-d4/a0-a2
 	rts
-RestoreBios_6	cmpi.b	#$8F,d0
+; Second level for commands $80 and up, by range.
+SubCommandDispatchHigh	cmpi.b	#$8F,d0
 	bgt.b	.l1816
 	bra.w	.l22CAE
 .l1816	cmpi.b	#$9F,d0
@@ -265,7 +267,7 @@ RestoreBios_6	cmpi.b	#$8F,d0
 .l1892	lea.l	Byte4(pc),a0
 	move.w	d1,(a0)
 	move.w	#$0,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcs.w	.l19A8
 	lea.l	Long2(pc),a1
 	move.l	a0,(a1)
@@ -276,7 +278,7 @@ RestoreBios_6	cmpi.b	#$8F,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 	bra.b	.l1892
-.l18C0	bsr.w	RestoreBios_11
+.l18C0	bsr.w	FindKeyIndex
 	bcc.b	.l18CA
 	bra.w	.l19A8
 .l18CA	dc.w	$303A,$0CF4
@@ -327,8 +329,8 @@ RestoreBios_6	cmpi.b	#$8F,d0
 	move.b	d1,$FF000B.l
 	bsr.w	DelayShort
 	bsr.w	.l22E28
-	bsr.w	RestoreBios_10
-.l198C	bsr.w	RestoreBios_9
+	bsr.w	ScaleValueByTables
+.l198C	bsr.w	CalcLevelDelta
 	lea.l	Word3(pc),a0
 	dc.w	$303A,$0C2A
 	move.b	(a0),d1
@@ -357,7 +359,7 @@ RestoreBios_6	cmpi.b	#$8F,d0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 .l19E0	move.w	#$0,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcs.w	.l1AAA
 	cmpi.b	#$7,(a0)
 	bne.b	.l1A02
@@ -392,7 +394,7 @@ RestoreBios_6	cmpi.b	#$8F,d0
 	clr.w	d1
 	move.b	$D(a0),d1
 	move.w	#$4,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcs.b	.l1AAA
 	lea.l	Buf8_8(pc),a1
 	dc.w	$303A,$0B60
@@ -449,7 +451,7 @@ RestoreBios_6	cmpi.b	#$8F,d0
 	lea.l	Buf8_2(pc),a0
 	cmp.b	(a0,d0.w),d2
 	bne.b	.l1B12
-	bsr.w	RestoreBios_9
+	bsr.w	CalcLevelDelta
 .l1B12	lea.l	Word5(pc),a0
 	addi.w	#$1,(a0)
 	cmpi.w	#$8,(a0)
@@ -467,7 +469,7 @@ RestoreBios_6	cmpi.b	#$8F,d0
 	cmpi.b	#$FF,d1
 	beq.b	.l1B52
 	move.w	#$4,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcc.b	.l1B80
 .l1B52	dc.w	$303A,$0A6C
 	ori.b	#$C0,d0
@@ -645,7 +647,8 @@ RestoreBios_8	movem.l	d1-d7/a0,-(sp)
 	move.b	#$FF,(a0,d0.w)
 .l1E00	movem.l	(sp)+,d1-d7/a0
 	rts
-RestoreBios_9	movem.l	d1-d6/a0-a1,-(sp)
+; Sums signed differences between table values and the record at a0.
+CalcLevelDelta	movem.l	d1-d6/a0-a1,-(sp)
 	dc.w	$207A,$07C0
 	clr.w	d0
 	clr.w	d1
@@ -740,7 +743,8 @@ RestoreBios_9	movem.l	d1-d6/a0-a1,-(sp)
 	dc.b	$32,$CC,$35,$D1,$39,$04,$3C,$68,$40,$00,$43,$CE,$47,$D6,$4C,$1C	; 2.5.9.<h@.C.G.L.
 	dc.b	$50,$A3,$55,$6E,$5A,$82,$5F,$E4,$65,$98,$6B,$A3,$72,$09,$78,$D1	; P.UnZ._.e.k.r.x.
 	dc.b	$80,$00	; ..
-RestoreBios_10	movem.l	d1-d3/a0,-(sp)
+; Scales a value through three byte tables and a lookup.
+ScaleValueByTables	movem.l	d1-d3/a0,-(sp)
 	dc.w	$303A,$05FA
 	lea.l	Buf8_2(pc),a0
 	clr.w	d3
@@ -753,7 +757,7 @@ RestoreBios_10	movem.l	d1-d3/a0,-(sp)
 	clr.w	d1
 	move.b	(a0,d3.w),d1
 	move.w	#$0,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcs.w	.l207A
 	clr.w	d1
 	move.b	$B(a0),d1
@@ -806,7 +810,8 @@ RestoreBios_10	movem.l	d1-d3/a0,-(sp)
 	clr.w	d0
 .l207A	movem.l	(sp)+,d1-d3/a0
 	rts
-RestoreBios_11	movem.l	d1-d2/a0,-(sp)
+; Finds the index of the key byte d0 in the 8-entry table and stores it.
+FindKeyIndex	movem.l	d1-d2/a0,-(sp)
 	lea.l	Word6(pc),a0
 	move.w	#$0,(a0)
 	dc.w	$207A,$053E
@@ -859,7 +864,8 @@ RestoreBiosSub5	bhi.b	.l210C
 	ori.b	#$1,ccr
 RestoreBios_13	movem.l	(sp)+,d1-d2/a0
 	rts
-RestoreBios_14	movem.l	d1-d4/a1-a2,-(sp)
+; Looks up the pair (d0,d1) in the table list and returns the word, carry set if absent.
+TableLookupWord	movem.l	d1-d4/a1-a2,-(sp)
 	lea.l	Buf8_1(pc),a1
 	move.w	#$2,d2
 .l212C	cmpi.l	#$FFFFFFFF,(a1)
@@ -945,7 +951,7 @@ RestoreBios_17	movem.l	d1/a0-a1,-(sp)
 	bra.b	.l2274
 .l2228	move.w	(a1),d0
 	move.w	$2(a1),d1
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	bcs.b	.l2270
 	cmpi.w	#$2,(a1)
 	bne.b	.l2268
@@ -1007,7 +1013,7 @@ RestoreBios_18	dc.w	$343A,$00C2
 RestoreBios_19	movem.l	d1-d3/a0,-(sp)
 RestoreBiosSub7	movem.l	d2-d3,-(sp)
 	move.w	#$0,d0
-	bsr.w	RestoreBios_14
+	bsr.w	TableLookupWord
 	movem.l	(sp)+,d2-d3
 	bcs.b	.l233C
 	cmpi.w	#$0,d3
@@ -1133,21 +1139,21 @@ RestoreBiosSub8	move.w	sr,-(sp)
 	rts
 	move.w	#$0,$BC6E8.l
 	bsr.w	.l23C4C
-	bsr.w	RestoreBios_52
-	bsr.w	RestoreBios_78
-	bsr.w	GetData_25
+	bsr.w	LoadBootImages
+	bsr.w	NopReturn
+	bsr.w	CdStopMusic
 	move.l	#$400,-(sp)
-	bsr.w	GetData_24
+	bsr.w	CdSetFader
 	bsr.w	SendCmd5
-	bsr.w	RestoreBios_53
-	bsr.w	RestoreBios_55
-	bsr.w	RestoreBios_86
+	bsr.w	ScreenSetupA
+	bsr.w	ScreenSetupB
+	bsr.w	SendCmdE320Inline
 	move.w	$EC90.l,-(sp)
-	bsr.w	GetData_23
+	bsr.w	CdPlayTrackRepeat
 	move.l	#$4000200,-(sp)
-	bsr.w	GetData_24
+	bsr.w	CdSetFader
 	bsr.w	.l23C4C
-	bsr.w	RestoreBios_56
+	bsr.w	ScreenSetupC
 	bsr.w	ClearCmdBuffer
 	rts
 .l23C4C	movem.l	d0-d7/a0-a6,-(sp)
@@ -1181,25 +1187,27 @@ RestoreBiosSub8	move.w	sr,-(sp)
 	cmpa.l	a2,a1
 	blt.b	.l23CDC
 RestoreBios_51	rts
-RestoreBios_52	movem.l	d0-d7/a0-a6,-(sp)
+; Sends the load commands for the two boot images ($1756C, $DA24).
+LoadBootImages	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
 	move.w	#$2,d0
 	moveq	#$2,d1
-	bsr.w	RestoreBiosSub1
+	bsr.w	SubCommandDispatch
 	lea.l	$1756C.l,a0
 	move.w	#$0,d1
 	move.w	#$5,d0
-	bsr.w	RestoreBiosSub1
+	bsr.w	SubCommandDispatch
 	lea.l	$DA24.l,a0
 	move.w	#$6,d0
-	bsr.w	RestoreBiosSub1
+	bsr.w	SubCommandDispatch
 	bset.b	#$2,$FFFF8024.w
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	dc.b	$00,$02,$00,$00,$FF,$FF	; ......
-RestoreBios_53	movem.l	d0-d7/a0-a6,-(sp)
+; Screen setup with inline palette words.
+ScreenSetupA	movem.l	d0-d7/a0-a6,-(sp)
 	andi.b	#$EF,$BC6E8.l
-	bsr.w	RestoreBios_73
+	bsr.w	SendCmd2Inline
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
 RestoreBiosSub9	bsr.w	SendCmd3
@@ -1218,18 +1226,19 @@ RestoreBiosSub9	bsr.w	SendCmd3
 	move.w	#$A,$10B6C.l
 	clr.w	$10B6E.l
 	lea.l	$DB78.l,a3
-.l2A96	bsr.w	RestoreBios_54
+.l2A96	bsr.w	AnimTick
 	bsr.w	WaitFrameTick
-	bsr.w	RestoreBios_68
+	bsr.w	ReadPadsCombined
 	moveq	#$0,d1
 	tst.w	d1
 	dbne	d6,.l2A96
-	bsr.w	RestoreBios_73
+	bsr.w	SendCmd2Inline
 	dc.b	$00,$00,$FC,$00,$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00	; ............. ..
 	dc.b	$0C,$CC	; ..
 RestoreBiosSub10	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-RestoreBios_54	movem.l	d0-d6/a0-a2,-(sp)
+; Advances the screen animation script by one tick.
+AnimTick	movem.l	d0-d6/a0-a2,-(sp)
 	btst.b	#$1,$BC6E8.l
 	bne.w	.l2B72
 	cmpi.w	#$10,$10B6E.l
@@ -1242,17 +1251,17 @@ RestoreBios_54	movem.l	d0-d6/a0-a2,-(sp)
 	bne.w	.l2B20
 	move.w	#$0,-(sp)
 	move.l	#$0,-(sp)
-	bsr.w	GetData_20
+	bsr.w	SetupSpriteFrame
 	move.w	#$1,d0
 	bsr.w	WaitCountdown
 	move.w	#$0,-(sp)
 	move.l	#$0,-(sp)
-	bsr.w	GetData_20
+	bsr.w	SetupSpriteFrame
 .l2B20	tst.w	-$2(a3)
 	bpl.w	.l2B2A
 	subq.w	#$4,a3
 .l2B2A	addq.w	#$1,$10B6E.l
-	bsr.w	RestoreBios_58
+	bsr.w	SpriteListReset
 	movea.l	$109DC.l,a0
 	move.w	$10B6E.l,d2
 	move.w	$10AF0.l,d4
@@ -1261,21 +1270,22 @@ RestoreBios_54	movem.l	d0-d6/a0-a2,-(sp)
 	cmpi.w	#$3,d2
 	blt.w	.l2B5A
 	move.w	#$88,d1
-.l2B5A	bsr.w	RestoreBios_59
+.l2B5A	bsr.w	SpriteListAddObject
 	subq.w	#$1,d2
 	bne.b	.l2B46
-	bsr.w	RestoreBios_60
-	bsr.w	RestoreBios_61
+	bsr.w	SpriteListFinish
+	bsr.w	SpriteListToVram
 	bset.b	#$1,$BC6E8.l
 .l2B72	movem.l	(sp)+,d0-d6/a0-a2
 	rts
 	dc.b	$00,$1E,$00,$00,$00,$1E,$00,$01,$00,$1E,$00,$01,$00,$04,$00,$01	; ................
 	dc.b	$00,$06,$FF,$FF	; ....
-RestoreBios_55	andi.b	#$9C,$BC6E8.l
+; Screen setup, second variant.
+ScreenSetupB	andi.b	#$9C,$BC6E8.l
 	bsr.w	SendCmd3
 	move.w	#$1,d4
 	move.w	d4,$10AF0.l
-	bsr.w	RestoreBios_80
+	bsr.w	SendStateWithInline
 	dc.b	$00,$08,$F8,$00,$01,$00,$00,$00	; ........
 RestoreBiosSub11	movea.l	$109D8.l,a2
 	lea.l	(a2),a0
@@ -1287,72 +1297,73 @@ RestoreBiosSub11	movea.l	$109D8.l,a2
 	move.w	(a1),d2
 	move.w	$2(a1),d3
 	moveq	#$F,d5
-	bsr.w	RestoreBios_79
+	bsr.w	SaveRegsToCommBuf
 	movea.l	#$107D0,a0
 	movea.l	#$107CC,a1
 	movea.l	#$107CA,a2
 	lea.l	$10AF0.l,a3
 	movea.l	$109E0.l,a4
-	bsr.w	RestoreBios_64
+	bsr.w	QueueAnimCmd
 	movea.l	#$10822,a0
 	movea.l	#$1081E,a1
 	movea.l	#$1081C,a2
 	lea.l	$10AF0.l,a3
 	movea.l	$109E0.l,a4
-	bsr.w	RestoreBios_64
+	bsr.w	QueueAnimCmd
 	movea.l	#$10874,a0
 	movea.l	#$10870,a1
 	movea.l	#$1086E,a2
 	lea.l	$10AF0.l,a3
 	movea.l	$109E0.l,a4
-	bsr.w	RestoreBios_64
+	bsr.w	QueueAnimCmd
 	movea.l	#$108C6,a0
 	movea.l	#$108C2,a1
 	movea.l	#$108C0,a2
 	lea.l	$10AF0.l,a3
 	movea.l	$109E0.l,a4
-	bsr.w	RestoreBios_64
+	bsr.w	QueueAnimCmd
 	move.w	#$20,$BA8D0.l
 	move.w	#$B4,d7
 .l2C60	bsr.w	.l23F78
 	bsr.w	WaitFrameTick
-	bsr.w	RestoreBios_68
+	bsr.w	ReadPadsCombined
 	tst.w	d1
 	dbne	d7,.l2C60
 	bsr.w	ClearCmdBuffer
 	rts
 .l23F78	btst.b	#$1,$BC6E8.l
 	bne.w	.l2D20
-	bsr.w	RestoreBios_58
+	bsr.w	SpriteListReset
 	move.w	$10AF0.l,d4
 	movea.l	#$107CA,a2
 	movea.l	#$107D0,a3
 	movea.l	#$107CC,a4
 	movea.l	$109E0.l,a0
-	bsr.w	RestoreBios_62
+	bsr.w	AnimNextFrame
 	move.w	$10AF0.l,d4
 	movea.l	#$1081C,a2
 	movea.l	#$10822,a3
 	movea.l	#$1081E,a4
 	movea.l	$109E0.l,a0
-	bsr.w	RestoreBios_62
+	bsr.w	AnimNextFrame
 	move.w	$10AF0.l,d4
 	movea.l	#$1086E,a2
 	movea.l	#$10874,a3
 	movea.l	#$10870,a4
 	movea.l	$109E0.l,a0
-	bsr.w	RestoreBios_62
+	bsr.w	AnimNextFrame
 	move.w	$10AF0.l,d4
 	movea.l	#$108C0,a2
 	movea.l	#$108C6,a3
 	movea.l	#$108C2,a4
 	movea.l	$109E0.l,a0
-	bsr.w	RestoreBios_62
-	bsr.w	RestoreBios_60
-	bsr.w	RestoreBios_61
+	bsr.w	AnimNextFrame
+	bsr.w	SpriteListFinish
+	bsr.w	SpriteListToVram
 	bset.b	#$1,$BC6E8.l
 .l2D20	rts
-RestoreBios_56	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9......a.......
+; Screen setup, third variant.
+ScreenSetupC	dc.b	$02,$39,$00,$9C,$00,$0B,$C6,$E8,$61,$00,$05,$F4,$00,$00,$FC,$00	; .9......a.......
 	dc.b	$E0,$00,$C0,$00,$B0,$00,$00,$06,$00,$20,$00,$00,$0C,$CC,$61,$00	; ......... ....a.
 	dc.b	$05,$CE,$61,$00,$0A,$9A,$33,$F9,$00,$01,$0B,$CE,$00,$01,$0B,$2A	; ..a...3........*
 	dc.b	$33,$F9,$00,$01,$0B,$CE,$00,$01,$0B,$2C,$70,$1C,$61,$00,$06,$10	; 3........,p.a...
@@ -1429,11 +1440,13 @@ WaitFrameTick	move.w	d0,-(sp)
 	move.w	$10AE0.l,$10AE2.l
 	move.w	(sp)+,d0
 	rts
-RestoreBios_58	movea.l	#$BA8D2,a5
+; Points the sprite list registers at $BA8D2/$BAF16 and restarts the count.
+SpriteListReset	movea.l	#$BA8D2,a5
 	movea.l	#$BAF16,a6
 	moveq	#$1,d6
 	rts
-RestoreBios_59	cmpi.w	#$50,d6
+; Adds the sprites of one object to the list (max $50).
+SpriteListAddObject	cmpi.w	#$50,d6
 	bgt.w	RestoreBios_51
 RestoreBiosSub13	movem.l	d0-d5/a0,-(sp)
 	adda.l	$4(a0),a0
@@ -1464,7 +1477,8 @@ RestoreBiosSub13	movem.l	d0-d5/a0,-(sp)
 	dbra	d3,.l3002
 .l3034	movem.l	(sp)+,d0-d5/a0
 	rts
-RestoreBios_60	moveq	#-1,d0
+; Terminates the sprite list.
+SpriteListFinish	moveq	#-1,d0
 	add.w	d6,d0
 	bne.w	.l3048
 	moveq	#$1,d0
@@ -1480,7 +1494,8 @@ RestoreBios_60	moveq	#-1,d0
 	move.w	d0,$BB1E6.l
 	move.l	a5,$BAF12.l
 	rts
-RestoreBios_61	movea.l	#$BC6F0,a0
+; Copies the sprite data to the buffer at $BC6F0.
+SpriteListToVram	movea.l	#$BC6F0,a0
 	lea.l	$BA8D2.l,a1
 	move.l	#$80000,d1
 .l3080	cmpa.l	$BAF12.l,a1
@@ -1501,7 +1516,8 @@ RestoreBios_61	movea.l	#$BC6F0,a0
 .l30B0	move.l	a0,$10AC8.l
 	rts
 .l30B8	bra.b	.l30B8
-RestoreBios_62	movea.l	(a4),a1
+; Steps an animation script to its next frame or loop point.
+AnimNextFrame	movea.l	(a4),a1
 	move.w	$2(a1),d2
 	subq.w	#$1,(a2)
 	bpl.w	.l30F2
@@ -1525,9 +1541,10 @@ RestoreBios_62	movea.l	(a4),a1
 	bmi.w	RestoreBios_63
 	move.w	(a3)+,d0
 RestoreBiosSub14	move.w	(a3),d1
-	bsr.w	RestoreBios_59
+	bsr.w	SpriteListAddObject
 RestoreBios_63	rts
-RestoreBios_64	move.w	d4,(a3)
+; Stores the animation state and sends command 4.
+QueueAnimCmd	move.w	d4,(a3)
 	move.l	a0,(a1)
 	addq.l	#$4,(a1)
 	move.w	$4(a0),(a2)
@@ -1572,11 +1589,12 @@ ClearCmdBuffer	movem.l	d0/a0,-(sp)
 	bpl.b	.l3188
 	move.w	(sp)+,$BC6E8.l
 	rts
-RestoreBios_68	movem.l	d0/d2-d4,-(sp)
+; Reads the pads four times and ORs the results.
+ReadPadsCombined	movem.l	d0/d2-d4,-(sp)
 	clr.w	-(sp)
 	moveq	#$3,d4
 .l31A0	bsr.w	ReadCommRegs
-	bsr.w	RestoreBios_70
+	bsr.w	PadAutoRepeat
 	or.w	d1,(sp)
 	dbra	d4,.l31A0
 	move.w	(sp)+,d1
@@ -1606,7 +1624,8 @@ RestoreBios_69	rts
 	rts
 .l3208	move.b	#$F,$10B1D.l
 	rts
-RestoreBios_70	tst.w	d3
+; Auto-repeat counter for held pad directions.
+PadAutoRepeat	tst.w	d3
 	beq.b	RestoreBios_69
 RestoreBiosSub15	movem.l	a0,-(sp)
 	lea.l	$10B1C.l,a0
@@ -1679,7 +1698,8 @@ SendCmd3	movem.l	d0,-(sp)
 	bsr.w	SendCmdD0
 	movem.l	(sp)+,d0
 	rts
-RestoreBios_73	movea.l	(sp),a0
+; Sends command 2 with the nine inline words after the call.
+SendCmd2Inline	movea.l	(sp),a0
 	lea.l	$BA450.l,a1
 	moveq	#$8,d0
 .l332A	move.w	(a0)+,(a1)+
@@ -1759,7 +1779,8 @@ ReleaseWordRam	bset.b	#$0,$FFFF8003.w
 	cmpa.l	#$10BD8,a0
 	blt.b	.l3446
 	rts
-RestoreBios_78	rts
+; Empty routine.
+NopReturn	rts
 	dc.b	$4E,$B9,$00,$00,$E3,$F8	; N.....
 RestoreBiosSub20	movem.l	a0-a1,-(sp)
 	movea.l	$EC96.l,a0
@@ -1813,7 +1834,8 @@ RestoreBiosSub22	movem.l	d0-d3/a0,-(sp)
 	move.w	(a0)+,$10B10.l
 	movem.l	(sp)+,d0-d3/a0
 	rts
-RestoreBios_79	movem.l	d0-d3/d5-d6/a0-a3/a6,-(sp)
+; Stores the registers and pad values in the command buffer.
+SaveRegsToCommBuf	movem.l	d0-d3/d5-d6/a0-a3/a6,-(sp)
 	lea.l	$BA450.l,a6
 	move.l	a0,(a6)+
 	move.l	a1,(a6)+
@@ -1886,7 +1908,8 @@ RestoreBiosSub24	movem.l	d0-d3/a0/a2-a3,-(sp)
 	move.w	(a2),$10B10.l
 	movem.l	(sp)+,d0-d3/a0/a2-a3
 	rts
-RestoreBios_80	movem.l	d0/a1-a2,-(sp)
+; Sends the pad state plus a length-prefixed inline block.
+SendStateWithInline	movem.l	d0/a1-a2,-(sp)
 	movea.l	$C(sp),a1
 	lea.l	$BA450.l,a2
 	move.w	$10B0E.l,(a2)+

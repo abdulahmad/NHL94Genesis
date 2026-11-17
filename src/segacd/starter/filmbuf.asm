@@ -22,7 +22,7 @@ InitEngine	link	a6,#$0
 	dc.w	$90BC
 	dc.l	$00004000
 	move.l	#$800,d1
-	jsr	GetData_15(pc)
+	jsr	LongDivUStub(pc)
 	move.l	d0,d1
 	mulu.w	#$800,d0
 	swap	d1

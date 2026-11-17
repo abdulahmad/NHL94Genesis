@@ -10,7 +10,8 @@
 ; See docs/segacd_film.md.
 
 
-RestoreBios_106	link	a6,#$0
+; Unpacks an 'SM' image (header $534D) into memory.
+LoadSmImage	link	a6,#$0
 	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	$8(a6),a0
 	movea.l	$C(a6),a1

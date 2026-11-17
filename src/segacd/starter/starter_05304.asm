@@ -1,5 +1,6 @@
 	dc.b	$20,$2F,$00,$04,$22,$2F,$00,$08	;  /.."/..
-GetData_14	move.l	d0,-(sp)
+; Unsigned 32-bit multiply.
+LongMulU	move.l	d0,-(sp)
 GetDataSub1	mulu.w	d1,d0
 	movea.l	d0,a0
 GetDataSub2	move.l	d1,d0
@@ -16,12 +17,14 @@ GetDataSub4	swap	d0
 	rts
 	dc.b	$22,$2F,$00,$04	; "/..
 GetDataSub5	move.l	$8(sp),d0
-GetData_15	lea.l	.l2663E(pc),a0
+; Unsigned 32-bit divide stub.
+LongDivUStub	lea.l	.l2663E(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .l2663E	dc.b	$60,$06,$4C,$41,$08,$01,$4E,$75,$4E,$BA,$00,$24,$20,$01,$4E,$75	; `.LA..NuN..$ .Nu
 	dc.b	$22,$2F,$00,$04,$20,$2F,$00,$08	; "/.. /..
-GetData_16	lea.l	.l26662(pc),a0
+; Unsigned 32-bit remainder stub.
+LongModUStub	lea.l	.l26662(pc),a0
 	movea.w	#$2,a1
 	dc.w	$4EF0,$92FE
 .l26662	dc.b	$60,$08,$4C,$41,$08,$01,$C3,'@NuJ',$80,$6B,$14,$4A,$81	; `.LA...@NuJ.k.J.
@@ -51,7 +54,8 @@ GetData_19	move.l	(sp)+,d3
 	move.w	(sp)+,d2
 	rts
 	dc.b	$05,$D2,$00,$00	; ....
-GetData_20	movem.l	d0-d7/a0-a6,-(sp)
+; Loads a sprite frame descriptor from the stack arguments.
+SetupSpriteFrame	movem.l	d0-d7/a0-a6,-(sp)
 	moveq	#$0,d0
 	move.w	$40(sp),d2
 	move.w	$42(sp),d1

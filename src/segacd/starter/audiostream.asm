@@ -16,13 +16,13 @@ AudioPlayPos
 	bne.b	.l263A0
 	moveq	#$0,d0
 	bra.b	.l263C0
-.l263A0	jsr	RestoreBios_110(pc)
+.l263A0	jsr	PcmReadStatus(pc)
 	moveq	#$C,d1
 	asr.l	d1,d0
 	move.l	d0,-$4(a6)
 	move.l	(a4),d0
 	moveq	#$8,d1
-	jsr	GetData_16(pc)
+	jsr	LongModUStub(pc)
 	move.l	-$4(a6),d1
 	cmp.l	d1,d0
 	beq.b	.l263BE
@@ -68,7 +68,7 @@ AudioIdle
 	ble.b	.l2646A
 	move.l	$4(a4),d0
 	moveq	#$8,d1
-	jsr	GetData_16(pc)
+	jsr	LongModUStub(pc)
 	move.l	d0,-(sp)
 	move.l	$8(a4),-(sp)
 	jsr	PcmSetControl(pc)
@@ -179,7 +179,7 @@ AudioTicks
 	move.l	(a4),d1
 	lsl.l	d0,d1
 	move.l	d1,-$4(a6)
-	jsr	RestoreBios_110(pc)
+	jsr	PcmReadStatus(pc)
 	move.l	#$FFF,d1
 	and.l	d0,d1
 	move.l	-$4(a6),d0
@@ -197,12 +197,12 @@ AudioTime
 	jsr	AudioTicks(pc)
 	move.l	d0,d1
 	move.l	$C(a6),d0
-	jsr	GetData_14(pc)
+	jsr	LongMulU(pc)
 	; SNASM rewrites add.l #imm,dn into addi.l. The disc is D0BC.
 	dc.w	$D0BC
 	dc.l	$00001F40
 	move.l	#$3E80,d1
-	jsr	GetData_15(pc)
+	jsr	LongDivUStub(pc)
 	unlk	a6
 	rts
 ; AudioTime

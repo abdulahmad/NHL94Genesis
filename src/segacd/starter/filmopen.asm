@@ -29,7 +29,7 @@ FilmOpen	link	a6,#$FFFC
 	moveq	#$1,d0
 	move.l	d0,-(sp)
 	move.l	d5,-(sp)
-	jsr	RestoreBios_118(pc)
+	jsr	CdBiosReadSequence(pc)
 	jsr	WaitIODone(pc)
 	cmpi.l	#$46494C4D,(a3)
 	lea.l	$C(sp),sp
@@ -46,7 +46,7 @@ FilmOpen	link	a6,#$FFFC
 	dc.w	$D0BC
 	dc.l	$000007FF
 	move.l	#$800,d1
-	jsr	GetData_15(pc)
+	jsr	LongDivUStub(pc)
 	move.l	d0,d6
 	moveq	#$1,d0
 	cmp.l	d6,d0
@@ -75,7 +75,7 @@ FilmOpen	link	a6,#$FFFC
 	move.l	a3,-(sp)
 	move.l	d6,-(sp)
 	move.l	d5,-(sp)
-	jsr	RestoreBios_118(pc)
+	jsr	CdBiosReadSequence(pc)
 	jsr	WaitIODone(pc)
 	lea.l	$14(sp),sp
 .l25714	move.l	$4(a3),$8(a4)

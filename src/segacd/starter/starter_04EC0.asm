@@ -24,7 +24,7 @@ GetSectDst	link	a6,#$0
 	bge.b	.l4F3E
 	move.l	$8(a4),d0
 	move.l	$4(a4),d1
-	jsr	GetData_16(pc)
+	jsr	LongModUStub(pc)
 	move.l	d0,d7
 	add.l	(a4),d7
 	addq.l	#$1,$10(a4)
@@ -46,7 +46,7 @@ PeekSectDst	link	a6,#$0
 	bge.b	.l4F8E
 	move.l	$8(a4),d0
 	move.l	$4(a4),d1
-	jsr	GetData_16(pc)
+	jsr	LongModUStub(pc)
 	move.l	d0,d7
 	add.l	(a4),d7
 .l4F8E	move.l	d7,d0

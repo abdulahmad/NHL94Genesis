@@ -11,7 +11,7 @@ FilmClose	link	a6,#$0
 	lea.l	$40(a0),a4
 	pea.l	$30(a4)
 	jsr	AudioStop(pc)
-	jsr	RestoreBios_117(pc)
+	jsr	CdBiosCall8(pc)
 	pea.l	$18(a4)
 	jsr	DisposeEngine(pc)
 	moveq	#-1,d0

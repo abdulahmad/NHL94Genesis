@@ -72,7 +72,7 @@ Wait_15	move.l	$4(a3),-(sp)
 	add.l	$8(a4),d0
 	move.l	d0,-(sp)
 	pea.l	$18(a4)
-	jsr	GetData_1(pc)
+	jsr	SetBlockEnd(pc)
 	lea.l	$C(sp),sp
 	bra.w	Wait_21
 Wait_16	pea.l	$30(a4)
@@ -94,7 +94,7 @@ Wait_17	move.l	$4(a3),-(sp)
 	bne.b	Wait_20
 	move.l	d7,-(sp)
 	move.l	-$4(a6),-(sp)
-	jsr	RestoreBios_106(pc)
+	jsr	LoadSmImage(pc)
 	move.l	#$7FFFFFFF,d7
 	and.l	$8(a3),d7
 	bra.b	Wait_19
@@ -119,7 +119,7 @@ Wait_20	move.l	$4(a3),-(sp)
 	add.l	$8(a4),d0
 	move.l	d0,-(sp)
 	pea.l	$18(a4)
-	jsr	GetData_1(pc)
+	jsr	SetBlockEnd(pc)
 	lea.l	$C(sp),sp
 Wait_21	movea.l	$10(a4),a0
 	move.l	$40(a4),d0

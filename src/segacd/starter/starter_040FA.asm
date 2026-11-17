@@ -93,12 +93,14 @@ RestoreBios_116	movem.l	d0-d3/a0-a2/a5,-(sp)
 .l422A	lea.l	BufA8_1(pc),a1
 	move.l	#$FFFFFFFF,(a1)
 	bra.b	.l421C
-RestoreBios_117	lea.l	Long4(pc),a1
+; Clears a flag and calls CD BIOS function 8.
+CdBiosCall8	lea.l	Long4(pc),a1
 	clr.l	(a1)
 	move.w	#$8,d0
 	jsr	$5F22.w
 	rts
-RestoreBios_118	link	a6,#$FFFC
+; Runs a CD BIOS read sequence (functions $96...) with a retry count.
+CdBiosReadSequence	link	a6,#$FFFC
 	movem.l	d1-d7/a0-a5,-(sp)
 	movea.l	#$FF8000,a5
 	lea.l	BufA8_1(pc),a1

@@ -911,7 +911,7 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 	bclr.b	#$7,$FF800F.l
 	bset.b	#$5,$FF800F.l
 	bset.b	#$2,$FF8033.l
-	bsr.w	GetData_33
+	bsr.w	GiveWordRam
 .l1BD18	btst.b	#$7,$FF800E.l
 	bne.b	.l1BD18
 	move.w	#$3F,$FF8020.l
@@ -923,7 +923,7 @@ GetDataSub13	movem.l	d0-d2/d7/a0-a1,-(sp)
 .l1BD4C	btst.b	#$6,$FF800E.l
 	bne.b	.l1BD4C
 	bclr.b	#$7,$FF800F.l
-	bsr.w	GetData_32
+	bsr.w	WaitDmnaSet
 	move.l	$B090.l,$6038.w
 .l1BD6A	btst.b	#$7,$FF800E.l
 	bne.b	.l1BD6A
@@ -1031,7 +1031,7 @@ GetDataSub15	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.l	#$EEE,$BBCD2.l
 	move.l	#$4440666,$BBCF2.l
 	move.w	#$E000,d0
-	bsr.w	GetData_29
+	bsr.w	GateArrayVdpAddrCmd
 	move.w	(a0)+,d1
 	move.w	(a0)+,d2
 	movea.l	a0,a2
@@ -1100,7 +1100,7 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	$4(a1),a0
 	jsr	$2790E.l
 	move.w	#$C000,d0
-	bsr.w	GetData_29
+	bsr.w	GateArrayVdpAddrCmd
 	tst.w	$C44C.l
 	bne.w	.l1C280
 	moveq	#$0,d4
@@ -1176,7 +1176,7 @@ GetDataSub16	movem.l	d0-d2/d7/a0-a1,-(sp)
 	lea.l	StrWarningA(pc),a0
 	move.w	#$5B,d0
 	moveq	#$9,d1
-.l1C274	bsr.w	GetData_30
+.l1C274	bsr.w	TilemapCellCmd
 	addi.w	#$28,d0
 	dbra	d1,.l1C274
 .l1C280	bset.b	#$5,$FF800F.l
@@ -1189,7 +1189,7 @@ GetData_28	tst.w	$C44C.l
 .l1C2AC	clr.w	$C446.l
 .l1C2B2	tst.w	$C446.l
 	beq.w	.l1C2B2
-	bsr.w	GetData_31
+	bsr.w	UpdatePadStateSub
 	cmpi.b	#$4,d1
 	beq.w	.l1C2DC
 	cmpi.b	#$8,d1
@@ -1213,7 +1213,7 @@ GetData_28	tst.w	$C44C.l
 	beq.w	.l1C364
 	lea.l	StrFormatting(pc),a0
 	move.w	#$213,d0
-	bsr.w	GetData_30
+	bsr.w	TilemapCellCmd
 	moveq	#$3,d1
 	moveq	#$F,d2
 	move.w	d2,d3
@@ -1223,27 +1223,28 @@ GetData_28	tst.w	$C44C.l
 	beq.w	.l1C348
 	dbra	d2,.l1C342
 	move.w	d3,d2
-	bsr.w	GetData_30
+	bsr.w	TilemapCellCmd
 	addi.w	#$1,d0
 	dbra	d1,.l1C342
 .l1C364	bra.w	.l1C3A4
 .l1C368	move.w	#$C000,d0
-	bsr.w	GetData_29
+	bsr.w	GateArrayVdpAddrCmd
 	move.w	#$B,d1
 	move.w	#$5B,d0
 	lea.l	StrWarningB(pc),a0
-.l1C37C	bsr.w	GetData_30
+.l1C37C	bsr.w	TilemapCellCmd
 	addi.w	#$28,d0
 	dbra	d1,.l1C37C
 .l1C388	clr.w	$C446.l
 .l1C38E	tst.w	$C446.l
 	beq.w	.l1C38E
-	bsr.w	GetData_31
+	bsr.w	UpdatePadStateSub
 	cmpi.b	#$20,d1
 	bne.w	.l1C388
 .l1C3A4	movem.l	(sp)+,d0-d7/a0-a2
 	rts
-GetData_29	movem.l	d0-d2,-(sp)
+; Sends a VDP write address through the gate-array command.
+GateArrayVdpAddrCmd	movem.l	d0-d2,-(sp)
 	move.w	#$0,d1
 	lsr.w	#$5,d1
 	moveq	#$0,d2
@@ -1389,7 +1390,7 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 	move.l	d3,$BBC88.l
 	move.l	d4,$BBC8C.l
 	move.l	d5,$BBC90.l
-	bsr.w	GetData_33
+	bsr.w	GiveWordRam
 .l1C6F4	btst.b	#$4,$FF800E.l
 	bne.b	.l1C6F4
 	move.w	#$1D,$FF8026.l
@@ -1401,7 +1402,7 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 .l1C728	btst.b	#$3,$FF800E.l
 	bne.b	.l1C728
 	bclr.b	#$4,$FF800F.l
-	bsr.w	GetData_32
+	bsr.w	WaitDmnaSet
 .l1C73E	movem.l	(sp)+,d0-d7/a0
 	rts
 .l1C744	movea.l	#$BBCB0,a1
@@ -1434,7 +1435,8 @@ GetDataSub17	movem.l	d0-d7/a0,-(sp)
 	st.b	$C43E.l
 	movem.l	(sp)+,d0-d7/a0
 	rts
-GetData_30	movem.l	d0-d2/a1/a5,-(sp)
+; Turns a cell index into a nametable VDP command (40 columns).
+TilemapCellCmd	movem.l	d0-d2/a1/a5,-(sp)
 	andi.l	#$FFFF,d0
 	divu.w	#$28,d0
 	move.w	d0,d2
@@ -1772,7 +1774,8 @@ GetDataSub20	movem.l	d1/a0,-(sp)
 	movem.l	(sp)+,d1/a0
 	rts
 .l3E24A	dc.b	$00,$01,$02,$01,$04,$05,$06,$06,$08,$09,$0A,$0A,$08,$09,$0A,$00	; ................
-GetData_31	move.b	$2800A.l,d0
+; Reads the pad byte at $2800A and computes newly pressed buttons.
+UpdatePadStateSub	move.b	$2800A.l,d0
 	bsr.w	.l3E2D2
 	move.w	$28002.l,d2
 	move.w	d1,$28002.l
@@ -1817,10 +1820,12 @@ GetData_31	move.b	$2800A.l,d0
 	rts
 	dc.b	$08,$00,$04,$08,$06,$07,$05,$08,$02,$01,$03,$08,$08,$08,$08,$08	; ................
 	dcb.b	$C,0
-GetData_32	btst.b	#$1,$FF8003.l
-	beq.b	GetData_32
+; Spins until DMNA is set.
+WaitDmnaSet	btst.b	#$1,$FF8003.l
+	beq.b	WaitDmnaSet
 	rts
-GetData_33	bset.b	#$0,$FF8003.l
+; Sets the word-RAM request bit and waits for the grant.
+GiveWordRam	bset.b	#$0,$FF8003.l
 .l1D022	btst.b	#$1,$FF8003.l
 	bne.b	.l1D022
 	rts
