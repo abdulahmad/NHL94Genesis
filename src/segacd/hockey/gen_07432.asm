@@ -1,6 +1,6 @@
 	move.w	#$F1F,d1
-L7436	add.b	(a0)+,d0
-	dbra	d1,L7436
+.l7436	add.b	(a0)+,d0
+	dbra	d1,.l7436
 	rts
 	dc.w	$41F9,$0001,$93BC,$303C,$0F1F,$4281,$10C1,$51C8
 	dc.w	$FFFC,$4E75
@@ -8,8 +8,8 @@ L7436	add.b	(a0)+,d0
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-L7460	move.b	(a1)+,(a0)+
-	dbra	d1,L7460
+.l7460	move.b	(a1)+,(a0)+
+	dbra	d1,.l7460
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 	movem.l	d0-d1/a0-a1,-(sp)
@@ -19,24 +19,24 @@ L7460	move.b	(a1)+,(a0)+
 	dc.w	$6706
 	move.w	#$1,-(a6)
 	dc.w	$6004
-L7488	move.w	#$0,-(a6)
-L748C	bclr	#$5,$FF800F.l
+.l7488	move.w	#$0,-(a6)
+.l748C	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movea.l	d0,a1
 	adda.l	#$193BC,a1
 	subq.l	#$1,d1
-L74A6	move.b	(a0)+,(a1)+
-	dbra	d1,L74A6
+.l74A6	move.b	(a0)+,(a1)+
+	dbra	d1,.l74A6
 	dc.w	$4A79,$0001,$93BA
-	bmi.w	L7508
+	bmi.w	.l7508
 	jsr	$2242A.l
 	move.l	d0,$1A2DC.l
 	move.w	#$0,d0
 	lea.l	(ThreeStars).l,a0
 	lea.l	(mesarea).l,a1
 	jsr	$5F16.w
-	bcs.w	L7500
+	bcs.w	.l7500
 	move.w	#$5,d0
 	lea.l	$2240C.l,a0
 	jsr	$5F16.w
@@ -44,16 +44,16 @@ L74A6	move.b	(a0)+,(a1)+
 	lea.l	$2241C.l,a0
 	lea.l	$193BC.l,a1
 	jsr	$5F16.w
-	bcc.w	L7508
-L7500	dc.w	$33FC,$FFFF,$0001,$93BA
-L7508	move.l	a6,-(sp)
+	bcc.w	.l7508
+.l7500	dc.w	$33FC,$FFFF,$0001,$93BA
+.l7508	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	tst.w	(a6)+
 	dc.w	$670A
 	bset	#$5,$FF800F.l
 	dc.w	$6008
-L751E	bclr	#$5,$FF800F.l
-L7526	move.l	a6,$19360.l
+.l751E	bclr	#$5,$FF800F.l
+.l7526	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
@@ -70,16 +70,18 @@ L753C	movem.l	d0-d1/a0-a1,-(sp)
 	add.l	d1,d0
 	dc.w	$223C,$0000,$0004
 	btst	#$6,(sflags6).l
-	beq.w	L7576
+	beq.w	.l7576
 	jsr	$2246C.l
-	bra.w	L757C
-L7576	jsr	$22452.l
-L757C	movem.l	(sp)+,d0-d1/a0-a1
+	bra.w	.l757C
+.l7576	jsr	$22452.l
+.l757C	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 Sub_22582
 	bset	#$6,(sflags6).l
 	bra.w	L753C
-ReadCrowdRecord
+ReadCrowdRecord						;Read the 16 byte crowd record block of team d1 from save RAM
+	
+	
 	bclr	#$6,(sflags6).l
 L7596	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
@@ -87,11 +89,11 @@ L7596	movem.l	d0-d1/a0-a1,-(sp)
 	addi.l	#$B60,d0
 	dc.w	$223C,$0000,$0010
 	btst	#$6,(sflags6).l
-	beq.w	L75C0
+	beq.w	.l75C0
 	jsr	$2246C.l
-	bra.w	L75C6
-L75C0	jsr	$22452.l
-L75C6	movem.l	(sp)+,d0-d1/a0-a1
+	bra.w	.l75C6
+.l75C0	jsr	$22452.l
+.l75C6	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 Sub_225CC
 	bset	#$6,(sflags6).l
@@ -104,11 +106,11 @@ L75E0	movem.l	d0-d1/a0-a1,-(sp)
 	addi.l	#$D20,d0
 	dc.w	$223C,$0000,$0010
 	btst	#$6,(sflags6).l
-	beq.w	L760A
+	beq.w	.l760A
 	jsr	$2246C.l
-	bra.w	L7610
-L760A	jsr	$22452.l
-L7610	movem.l	(sp)+,d0-d1/a0-a1
+	bra.w	.l7610
+.l760A	jsr	$22452.l
+.l7610	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 Sub_22616
 	bset	#$6,(sflags6).l
@@ -116,49 +118,51 @@ Sub_22616
 Sub_22622
 	bset	#$6,(sflags6).l
 	bra.w	NameLogIO
-ReadNameLog
+ReadNameLog						;Read the user name log from save RAM at NameLogBase to namelog. Called
+	
 	bclr	#$6,(sflags6).l
-NameLogIO
+NameLogIO						;A user record block: read or write (sflags6 bit 6)
 	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$223C,$0000,$0080
 	dc.w	$203C,$0000,$0DA0
 	dc.w	$207C,$0001,$A2FC
 	btst	#$6,(sflags6).l
-	beq.w	L7662
+	beq.w	.l7662
 	jsr	$2246C.l
-	bra.w	L7668
-L7662	jsr	$22452.l
-L7668	movem.l	(sp)+,d0-d7/a0-a6
+	bra.w	.l7668
+.l7662	jsr	$22452.l
+.l7668	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
 	dc.w	$00D0,$00EA,$0104,$011E,$0138,$0152,$016C,$0186
 	dc.w	$01A0,$01BA,$01D4,$01EE,$0208,$0222,$023C,$0256
 	dc.w	$0270,$028A,$02A4,$02BE,$02D8
-puckvzadj
+puckvzadj						;set puckvz for a top shelf shot from the distance to the goal line ($108)
+	
 	movem.l	d0-d7/a0-a6,-(sp)
 	dc.w	$3039,$0001,$7B94
-	bpl.w	L76B8
+	bpl.w	.l76B8
 	neg.w	d0
-L76B8	subi.w	#$108,d0
-	bpl.w	L76C2
+.l76B8	subi.w	#$108,d0
+	bpl.w	.l76C2
 	neg.w	d0
-L76C2	swap	d0
+.l76C2	swap	d0
 	andi.l	#$FFFF0000,d0
 	dc.w	$3239,$0001,$7BAA
-	beq.w	L7734
-	bpl.w	L76DA
+	beq.w	.l7734
+	bpl.w	.l76DA
 	neg.w	d1
-L76DA	move.w	#$11,d2
+.l76DA	move.w	#$11,d2
 	dc.w	$4A79,$0001,$8C20
-	beq.w	L76EC
+	beq.w	.l76EC
 	move.w	#$16,d2
-L76EC	divu.w	d1,d0
+.l76EC	divu.w	d1,d0
 	andi.l	#$FFFF,d0
 	divu.w	d2,d0
 	tst.w	d0
-	bne.w	L7700
+	bne.w	.l7700
 	move.w	#$1,d0
-L7700	move.l	#$A0000,d1
+.l7700	move.l	#$A0000,d1
 	move.w	d0,d3
 	mulu.w	d2,d0
 	divu.w	d0,d1
@@ -167,16 +171,18 @@ L7700	move.l	#$A0000,d1
 	add.w	d4,d2
 	mulu.w	d3,d2
 	cmpi.l	#$7FFF,d2
-	blt.w	L7722
+	blt.w	.l7722
 	move.w	#$7FFF,d2
-L7722	add.w	d2,d1
+.l7722	add.w	d2,d1
 	tst.w	d1
-	bpl.w	L772E
+	bpl.w	.l772E
 	move.w	#$7FFF,d1
-L772E	dc.w	$33C1,$0001,$7BAC
-L7734	movem.l	(sp)+,d0-d7/a0-a6
+.l772E	dc.w	$33C1,$0001,$7BAC
+.l7734	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OneTimerPass
+OneTimerPass						;One-timer pass: puckvz = sqrt(12 * onetimerheight), then puckvx / puckvy
+	
+	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$C,d0
 	dc.w	$3239,$0001,$937A
@@ -193,9 +199,9 @@ OneTimerPass
 	dc.w	$9279,$0001,$7B80
 	swap	d1
 	tst.w	d0
-	bne.w	L7780
+	bne.w	.l7780
 	move.w	#$1,d0
-L7780	divs.w	d0,d1
+.l7780	divs.w	d0,d1
 	dc.w	$33C1,$0001,$7BA8
 	clr.l	d1
 	dc.w	$3239,$0001,$9378
@@ -208,49 +214,52 @@ L7780	divs.w	d0,d1
 	dc.w	$4EB9,$0003,$5EF8
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OneTimerTarget
+OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing from
+	
+	
+	
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$2,(sflags6).l
 	tst.w	$34(a3)
-	bne.w	L77D6
+	bne.w	.l77D6
 	movea.l	#$22906,a0
-	bra.w	L780A
-L77D6	move.w	$14(a3),d0
+	bra.w	.l780A
+.l77D6	move.w	$14(a3),d0
 	btst	#$7,$62(a3)
-	bne.w	L77E6
+	bne.w	.l77E6
 	neg.w	d0
-L77E6	bset	#$2,(sflags6).l
+.l77E6	bset	#$2,(sflags6).l
 	dc.w	$207C,$0002,$28C6
 	cmpi.w	#$58,d0
-	blt.w	L780A
+	blt.w	.l780A
 	movea.l	#$228E6,a0
 	bclr	#$2,(sflags6).l
-L780A	move.w	$54(a3),d0
+.l780A	move.w	$54(a3),d0
 	btst	#$7,$62(a3)
-	bne.w	L7820
+	bne.w	.l7820
 	addi.w	#$4,d0
 	andi.w	#$7,d0
-L7820	asl.w	#$2,d0
+.l7820	asl.w	#$2,d0
 	move.w	(a0,d0.w),d1
 	move.w	$2(a0,d0.w),d2
 	cmpa.l	#$228E6,a0
-	bne.w	L785C
+	bne.w	.l785C
 	move.w	$14(a3),d0
-	bpl.w	L783E
+	bpl.w	.l783E
 	neg.w	d0
-L783E	cmpi.w	#$8A,d0
-	blt.w	L785C
+.l783E	cmpi.w	#$8A,d0
+	blt.w	.l785C
 	move.w	$0(a3),d0
-	bpl.w	L7850
+	bpl.w	.l7850
 	neg.w	d0
-L7850	cmpi.w	#$37,d0
-	bgt.w	L785C
+.l7850	cmpi.w	#$37,d0
+	bgt.w	.l785C
 	move.w	#$103,d2
-L785C	btst	#$7,$62(a3)
-	bne.w	L786A
+.l785C	btst	#$7,$62(a3)
+	bne.w	.l786A
 	neg.w	d1
 	neg.w	d2
-L786A	move.w	#$A,d0
+.l786A	move.w	#$A,d0
 	dc.w	$4EB9,$0003,$7050
 	add.w	d0,d1
 	move.w	#$A,d0
@@ -258,30 +267,34 @@ L786A	move.w	#$A,d0
 	add.w	d0,d2
 	dc.w	$33C1,$0001,$9376
 	tst.w	$34(a3)
-	beq.w	L78BA
+	beq.w	.l78BA
 	sub.w	$0(a3),d1
-	bmi.w	L78AC
+	bmi.w	.l78AC
 	subi.w	#$3C,d1
-	bpl.w	L78BA
+	bpl.w	.l78BA
 	neg.w	d1
 	dc.w	$D379,$0001,$9376
-	bra.w	L78BA
-L78AC	addi.w	#$3C,d1
-	bmi.w	L78BA
+	bra.w	.l78BA
+.l78AC	addi.w	#$3C,d1
+	bmi.w	.l78BA
 	dc.w	$9379,$0001,$9376
-L78BA	dc.w	$33C2,$0001,$9378
+.l78BA	dc.w	$33C2,$0001,$9378
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-assonetimer
+assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
+	
+	
+	
 	ori.w	#$C2,$74(a4,d0.w)
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_078CC.bin
-PuckOnAttackHalf
+PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3 shoots at, else
+	
 	movem.w	d0-d1,-(sp)
 	dc.w	$3039,$0001,$7B94
 	btst	#$7,$62(a3)
-	bne.w	L7CBA
+	bne.w	.l7CBA
 	neg.w	d0
-L7CBA	tst.w	d0
+.l7CBA	tst.w	d0
 	bpl.w	Sub_22D1E
 	bra.w	Sub_22D16
 	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B
@@ -297,15 +310,18 @@ Sub_22D1E
 	move.w	#$1,d0
 L7D22	movem.w	(sp)+,d0-d1
 	rts
-onetimershot
+onetimershot						;Do the one-timer shot (doshot), credit the last two passers as the
+	
+	
+	
 	dc.w	$33FC,$0004,$0001,$7E2C
 	dc.w	$4EB9,$0003,$1528
 	movem.l	d0/a0,-(sp)
 	movea.l	#tmstruct,a0
 	btst	#$6,$62(a3)
-	beq.w	L7D4E
+	beq.w	.l7D4E
 	lea.l	$366(a0),a0
-L7D4E	clr.w	d0
+.l7D4E	clr.w	d0
 	move.b	$66(a3),d0
 	move.w	$1A(a0),$1C(a0)
 	move.w	$18(a0),$1A(a0)
@@ -319,7 +335,8 @@ L7D4E	clr.w	d0
 	bset	#$1,$63(a3)
 	bset	#$1,(sflags6).l
 	rts
-CheckOneTimerFacing
+CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d1 are restored at
+	
 	movem.w	d0-d1,-(sp)
 	neg.w	d0
 	addi.w	#$8,d0
@@ -328,68 +345,73 @@ CheckOneTimerFacing
 	add.w	d0,d1
 	andi.w	#$7,d1
 	cmpi.w	#$4,d1
-	bgt.w	L7DCE
+	bgt.w	.l7DCE
 	move.w	$4(a3),d0
 	eori.w	#$FFFF,d0
 	andi.w	#$800,d0
-	bra.w	L7DD6
-L7DCE	move.w	$4(a3),d0
+	bra.w	.l7DD6
+.l7DCE	move.w	$4(a3),d0
 	andi.w	#$800,d0
-L7DD6	movem.w	(sp)+,d0-d1
+.l7DD6	movem.w	(sp)+,d0-d1
 	rts
 	dc.w	$4E75
 	rts
-Set4WayPlayer
+Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away nibble of
+									;PadControlBits34 (unless PadControlBits is -1)
 	dc.w	$0C79,$FFFF,$0001,$7DC8
-	beq.w	L7E36
+	beq.w	.l7E36
 	movem.l	d0-d2,-(sp)
-	move.w	#$1,d0
-	btst	#$6,$62(a3)
-	beq.w	L7E02
+	move.w	#$1,d0		;1 = home side code
+	btst	#$6,$62(a3)		;away?
+	beq.w	.l7E02
 	move.w	#$2,d0
-L7E02	dc.w	$B079,$0001,$7FAA
-	beq.w	L7E18
-	move.w	#$F,d1
-	move.w	#$4,d0
-	bra.w	L7E20
-L7E18	move.w	#$F0,d1
-	move.w	#$0,d0
-L7E20	dc.w	$C379,$0001,$7DD6
+.l7E02	dc.w	$B079,$0001,$7FAA
+	beq.w	.l7E18
+	move.w	#$F,d1		;not pad 3: keep the low nibble, write the high
+	move.w	#$4,d0		;shift 4: the high nibble
+	bra.w	.l7E20
+.l7E18	move.w	#$F0,d1		;keep the high nibble
+	move.w	#$0,d0		;no shift: the low nibble
+.l7E20	dc.w	$C379,$0001,$7DD6
 	move.w	$52(a3),d1
 	asl.w	d0,d1
 	dc.w	$8379,$0001,$7DD6
 	movem.l	(sp)+,d0-d2
-L7E36	rts
-LoadCrowdRec
+.l7E36	rts
+LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (ReadCrowdRecord
+	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(HomeTeam).l,d1
 	ext.l	d1
 	movea.l	#ThreeStars,a0
 	jsr	(ReadCrowdRecord).l
 	move.b	$8(a0),d0
-	beq.w	L7E60
+	beq.w	.none
 	andi.w	#$FF,d0
-	bra.w	L7E64
-L7E60	move.w	#$50,d0
-L7E64	dc.w	$33C0,$0001,$7F8E
+	bra.w	.l7E64
+.none	move.w	#$50,d0
+.l7E64	dc.w	$33C0,$0001,$7F8E
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-Crowd_Noise
+Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 7) from
+	
+	
+	
 	btst	#$7,$17F6A.l
-	bne.w	L7F72
+	bne.w	.ex1
 	btst	#$0,$17F78.l
-	bne.w	L7F72
+	bne.w	.ex1
 	btst	#$0,$17F6E.l
-	bne.w	L7EBC
+	bne.w	.l7EBC
 	btst	#$7,$17F74.l
-	bne.w	L7EF2
+	bne.w	.l7EF2
 	dc.w	$4A79,$0001,$7F82
-	beq.w	L7EBE
+	beq.w	.l7EBE
 	dc.w	$0479,$0001,$0001,$7F82
-	bpl.w	L7F72
+	bpl.w	.ex1
 	dc.w	$4279,$0001,$7F82
-L7EBC	rts
-L7EBE	dc.w	$3039,$0001,$7F8E
+.l7EBC	rts
+.l7EBE	dc.w	$3039,$0001,$7F8E
 	dc.w	$33C0,$0001,$7F90
 	dc.w	$0479,$000B,$0001,$7F90
 	subi.w	#$49,d0
@@ -397,18 +419,18 @@ L7EBE	dc.w	$3039,$0001,$7F8E
 	asr.l	#$2,d0
 	addi.w	#$6,d0
 	dc.w	$B079,$0001,$7CD8
-	bgt.w	L7F72
+	bgt.w	.ex1
 	bset	#$7,$17F74.l
 	rts
-L7EF2	dc.w	$3039,$0001,$7F90
+.l7EF2	dc.w	$3039,$0001,$7F90
 	subi.w	#$41,d0
 	muls.w	d0,d0
 	asr.l	#$2,d0
 	dc.w	$B079,$0001,$7CD8
-	blt.w	L7F12
+	blt.w	.l7F12
 	bclr	#$7,$17F74.l
-L7F12	dc.w	$9F79,$0001,$7F84
-	bpl.w	L7F72
+.l7F12	dc.w	$9F79,$0001,$7F84
+	bpl.w	.ex1
 	dc.w	$33FC,$0014,$0001,$7F84
 	addi.w	#$1,$17F86.l
 	dc.w	$3039,$0001,$7CD8
@@ -418,34 +440,36 @@ L7F12	dc.w	$9F79,$0001,$7F84
 	addi.w	#$41,d0
 	dc.w	$33C0,$0001,$7F8C
 	dc.w	$B079,$0001,$7F92
-	ble.w	L7F56
+	ble.w	.l7F56
 	dc.w	$33C0,$0001,$7F92
-L7F56	dc.w	$3039,$0001,$7F8C
+.l7F56	dc.w	$3039,$0001,$7F8C
 	dc.w	$B079,$0001,$7F8E
-	blt.w	L7F6A
-	bra.w	L7F6A
-L7F6A	movem.l	d0-d7/a0-a6,-(sp)
+	blt.w	.stack
+	bra.w	.stack
+.stack	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
-L7F72	rts
-stopna2
+.ex1	rts
+stopna2						;Slow Xvel and Yvel of a3 toward 0 by $7D0. Called from goalieacc
 	tst.w	$28(a3)
-	bpl.w	L7F8A
+	bpl.w	.xp
 	addi.w	#$7D0,$28(a3)
-	bmi.w	L7F98
+	bmi.w	.y
 	clr.w	$28(a3)
-L7F8A	subi.w	#$7D0,$28(a3)
-	bpl.w	L7F98
+.xp	subi.w	#$7D0,$28(a3)
+	bpl.w	.y
 	clr.w	$28(a3)
-L7F98	tst.w	$2A(a3)
-	bpl.w	L7FAE
+.y	tst.w	$2A(a3)
+	bpl.w	.yp
 	addi.w	#$7D0,$2A(a3)
-	bmi.w	L7FBC
+	bmi.w	.ex
 	clr.w	$2A(a3)
-L7FAE	subi.w	#$7D0,$2A(a3)
-	bpl.w	L7FBC
+.yp	subi.w	#$7D0,$2A(a3)
+	bpl.w	.ex
 	clr.w	$2A(a3)
-L7FBC	rts
-checkcornercoll
+.ex	rts
+checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. Corner circles
+	
+	
 	bclr	#$4,$64(a3)
 	move.w	#$88,d4
 	dc.w	$9879,$0001,$7CF4
@@ -457,23 +481,23 @@ checkcornercoll
 	addi.w	#$40,d4
 	addi.w	#$40,d5
 	cmp.w	d5,d3
-	bgt.w	L8000
+	bgt.w	.ctc
 	cmp.w	d4,d2
-	blt.w	L801A
+	blt.w	.circle
 	neg.w	d4
 	cmp.w	d4,d2
-	bgt.w	L801A
-	bra.w	L804E
-L8000	neg.w	d5
+	bgt.w	.circle
+	bra.w	.exit
+.ctc	neg.w	d5
 	cmp.w	d5,d3
-	blt.w	L804E
+	blt.w	.exit
 	cmp.w	d4,d2
-	blt.w	L801A
+	blt.w	.circle
 	neg.w	d4
 	cmp.w	d4,d2
-	bgt.w	L801A
-	bra.w	L804E
-L801A	sub.w	d4,d2
+	bgt.w	.circle
+	bra.w	.exit
+.circle	sub.w	d4,d2
 	sub.w	d5,d3
 	move.w	d3,d0
 	move.w	d2,d1
@@ -482,7 +506,7 @@ L801A	sub.w	d4,d2
 	muls.w	d2,d2
 	add.l	d2,d3
 	cmpi.l	#$42,d3
-	bls.w	L804E
+	bls.w	.exit
 	exg.l	d0,d3
 	dc.w	$4EB9,$0003,$708E
 	exg.l	d0,d3
@@ -492,32 +516,34 @@ L801A	sub.w	d4,d2
 	ext.l	d1
 	asl.l	#$8,d1
 	divs.w	d3,d1
-	bsr.w	L8088
-L804E	movem.w	(sp)+,d2-d5
+	bsr.w	.l8088
+.exit	movem.w	(sp)+,d2-d5
 	move.w	$4E(a3),d0
 	or.w	$50(a3),d0
-	bne.w	L8086
+	bne.w	.rtss3
 	move.w	#$100,d0
 	clr.w	d1
 	cmp.w	d5,d3
-	bge.w	L8088
+	bge.w	.l8088
 	neg.w	d5
 	neg.w	d0
 	cmp.w	d5,d3
-	ble.w	L8088
+	ble.w	.l8088
 	exg.l	d0,d1
 	cmp.w	d4,d2
-	bge.w	L8088
+	bge.w	.l8088
 	neg.w	d4
 	neg.w	d1
 	cmp.w	d4,d2
-	ble.w	L8088
-L8086	rts
-L8088	jmp	$3B6A2.l
-Create_HotCold_Table
+	ble.w	.l8088
+.rtss3	rts
+.l8088	jmp	$3B6A2.l
+Create_HotCold_Table						;Fill the hot / cold table (tmHotCold) of team struct a0: 16 bytes for
+	
+	
 	movem.l	d0-d7,-(sp)
 	move.w	#$19F,d1
-HotColdLoop
+HotColdLoop						;The Create_HotCold_Table loop
 	move.w	#$9,d0
 	dc.w	$4EB9,$0003,$7044
 	move.l	a0,-(sp)
@@ -527,23 +553,24 @@ HotColdLoop
 	dbra	d1,HotColdLoop
 	movem.l	(sp)+,d0-d7
 	rts
-Clamp0to100
+Clamp0to100						;unused: clamp d3 to 0 ... 100
 	tst.w	d3
-	bpl.w	L80C2
+	bpl.w	.chkmax
 	clr.w	d3
 	rts
-L80C2	cmpi.w	#$64,d3
-	ble.w	L80CE
+.chkmax	cmpi.w	#$64,d3
+	ble.w	.x
 	move.w	#$64,d3
-L80CE	rts
-AttributeCalc
+.x	rts
+AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3, limited to 0
+	
 	movem.l	d0-d2/a1,-(sp)
 	dc.w	$3239,$0001,$7E64
 	movea.l	#tmstruct,a1
 	btst	#$6,$62(a3)
-	beq.w	L80F0
+	beq.w	.attribmath
 	adda.l	#$366,a1
-L80F0	clr.w	d1
+.attribmath	clr.w	d1
 	move.b	$66(a3),d1
 	asl.w	#$4,d1
 	adda.l	#$1A4,a1
@@ -555,41 +582,45 @@ L80F0	clr.w	d1
 	asl.w	#$2,d3
 	add.w	(sp)+,d3
 	add.w	d1,d3
-	bmi.w	L8126
+	bmi.w	.LowerLimit
 	cmpi.w	#$1E,d3
-	blt.w	L8128
+	blt.w	.MaskAttribMathResult
 	move.w	#$1E,d3
-	bra.w	L8128
-L8126	clr.w	d3
-L8128	andi.w	#$FF,d3
+	bra.w	.MaskAttribMathResult
+.LowerLimit	clr.w	d3
+.MaskAttribMathResult	andi.w	#$FF,d3
 	movem.l	(sp)+,d0-d2/a1
 	rts
-NextHomeHotPlayer
+NextHomeHotPlayer						;d1 = the next home hot player (homehotidx index into the list at
+	
+	
 	movem.l	d0/a0,-(sp)
 	dc.w	$207C,$0001,$7EAE
 	dc.w	$3039,$0001,$7EA6
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
 	dc.w	$0C79,$0000,$0001,$7EA6
-	bge.w	L815C
+	bge.w	.x
 	dc.w	$0679,$0001,$0001,$7EA6
-L815C	movem.l	(sp)+,d0/a0
+.x	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
-NextAwayHotPlayer
+NextAwayHotPlayer						;The same for the away team (awayhotplayer, awayhotidx), a1 = awtmstruct.
+	
 	movem.l	d0/a0,-(sp)
 	dc.w	$207C,$0001,$7EAC
 	dc.w	$3039,$0001,$7EA4
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
 	dc.w	$0C79,$0000,$0001,$7EA4
-	bge.w	L8192
+	bge.w	.x
 	dc.w	$0679,$0001,$0001,$7EA4
-L8192	movem.l	(sp)+,d0/a0
+.x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
 	dc.w	$4E75
-BuildHotColdLists
+BuildHotColdLists						;Build the hot / cold player lists of both teams (SortHotColdStarters,
+	
 	dc.w	$4279,$0001,$7EA4
 	dc.w	$4279,$0001,$7EA6
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -607,7 +638,8 @@ BuildHotColdLists
 	bsr.w	CopyColdestPlayer
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-SortHotColdStarters
+SortHotColdStarters						;Sum the hot / cold values of the 6 starters of team a0 into TempBuffer
+	
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
 	adda.l	#$1A4,a2
@@ -615,7 +647,7 @@ SortHotColdStarters
 	adda.w	$6(a0),a0
 	movea.l	#TempBuffer,a1
 	move.w	#$5,d0
-L8210	move.b	(a0)+,d1
+.player	move.b	(a0)+,d1
 	subi.b	#$1,d1
 	move.b	d1,(a1)+
 	ext.w	d1
@@ -623,79 +655,82 @@ L8210	move.b	(a0)+,d1
 	clr.b	(a1)
 	addi.w	#$3,d1
 	move.w	#$3,d7
-L8226	clr.w	d2
+.attrib	clr.w	d2
 	move.b	(a2,d1.w),d2
 	cmpi.b	#$9,d7
-	beq.w	L823E
+	beq.w	.nextattr
 	cmpi.b	#$D,d7
-	beq.w	L823E
+	beq.w	.nextattr
 	add.b	d2,(a1)
-L823E	addi.w	#$1,d1
+.nextattr	addi.w	#$1,d1
 	addi.w	#$1,d7
 	cmpi.b	#$10,d7
-	bne.w	L8226
+	bne.w	.attrib
 	tst.b	(a1)+
-	dbra	d0,L8210
-L8254	movea.l	#TempBuffer,a1
+	dbra	d0,.player
+.sort	movea.l	#TempBuffer,a1
 	clr.w	d1
 	move.w	#$4,d0
-L8260	move.b	$3(a1),d6
+.cmp	move.b	$3(a1),d6
 	cmp.b	$1(a1),d6
-	ble.w	L827C
+	ble.w	.next
 	st.b	d1
 	move.w	$2(a1),d2
 	move.w	$0(a1),$2(a1)
 	move.w	d2,$0(a1)
-L827C	tst.w	(a1)+
-	dbra	d0,L8260
+.next	tst.w	(a1)+
+	dbra	d0,.cmp
 	tst.w	d1
-	bne.w	L8254
+	bne.w	.sort
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-NextHomeColdPlayer
+NextHomeColdPlayer						;d1 = the next home cold player (homecoldidx, homecoldplayer), a1 =
+	
 	movem.l	d0/a0,-(sp)
 	dc.w	$207C,$0001,$7EB2
 	move.w	$17EAA.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
 	cmpi.w	#$0,$17EAA.l
-	bge.w	L82B8
+	bge.w	.x
 	addi.w	#$1,$17EAA.l
-L82B8	movem.l	(sp)+,d0/a0
+.x	movem.l	(sp)+,d0/a0
 	movea.l	#tmstruct,a1
 	rts
-NextAwayColdPlayer
+NextAwayColdPlayer						;The same for the away team (awaycoldidx, awaycoldplayer), a1 =
+	
+	
 	movem.l	d0/a0,-(sp)
 	dc.w	$207C,$0001,$7EB0
 	move.w	$17EA8.l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d1
 	cmpi.w	#$0,$17EA8.l
-	bge.w	L82EE
+	bge.w	.x
 	addi.w	#$1,$17EA8.l
-L82EE	movem.l	(sp)+,d0/a0
+.x	movem.l	(sp)+,d0/a0
 	movea.l	#awtmstruct,a1
 	rts
 	dc.w	$4E75
-CopyHottestPlayer
+CopyHottestPlayer						;Copy the hottest player of TempBuffer to the list at a0
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	#TempBuffer,a1
 	move.w	#$0,d0
-L830A	clr.b	(a0)+
+.copy	clr.b	(a0)+
 	move.b	(a1),d1
 	move.b	d1,(a0)+
 	tst.w	(a1)+
-	dbra	d0,L830A
+	dbra	d0,.copy
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-CopyColdestPlayer
+CopyColdestPlayer						;Copy the coldest player (TempBuffer+10) to the list at a0
 	movem.l	d0/a0-a1,-(sp)
 	movea.l	#$17E7A,a1
 	move.w	#$0,d0
-L832A	clr.b	(a0)+
+.copy	clr.b	(a0)+
 	move.b	(a1),(a0)+
 	tst.w	-(a1)
-	dbra	d0,L832A
+	dbra	d0,.copy
 	movem.l	(sp)+,d0/a0-a1
 	rts
 	movem.l	d1-d7/a0-a6,-(sp)
@@ -710,28 +745,29 @@ L832A	clr.b	(a0)+
 	sub.w	d1,d2
 	move.w	#$0,(awayhotter).l
 	tst.w	d2
-	bmi.w	L8382
+	bmi.w	.l8382
 	move.w	#$1,(awayhotter).l
-L8382	tst.w	d2
-	bpl.w	L838A
+.l8382	tst.w	d2
+	bpl.w	.l838A
 	neg.w	d2
-L838A	move.w	#$FFFF,d0
+.l838A	move.w	#$FFFF,d0
 	cmpi.w	#$5E,d2
-	blt.w	L83A6
+	blt.w	.l83A6
 	move.w	#$22,d0
 	cmpi.w	#$BD,d2
-	blt.w	L83A6
+	blt.w	.l83A6
 	move.w	#$23,d0
-L83A6	movem.l	(sp)+,d1-d7/a0-a6
+.l83A6	movem.l	(sp)+,d1-d7/a0-a6
 	rts
-GetHotColdTotal
+GetHotColdTotal						;d1 = the hot / cold total of the starters of
+	
 	bsr.w	SortHotColdStarters
 	move.w	#$6,d0
 	movea.l	#TempBuffer,a0
 	clr.w	d1
-L83BC	move.b	$1(a0),d2
+.sum	move.b	$1(a0),d2
 	ext.w	d2
 	add.w	d2,d1
 	tst.w	(a0)+
-	dbra	d0,L83BC
+	dbra	d0,.sum
 	rts

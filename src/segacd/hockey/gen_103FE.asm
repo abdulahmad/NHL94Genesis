@@ -1,51 +1,54 @@
-HotColdIcon
+HotColdIcon						;The icon by the name of player iconplayer of team a2 at x iconx, y $19:
+									;HotMap when he is awayhotplayer /
+									;homehotplayer, ColdMap when awaycoldplayer / homecoldplayer, else
+									;clear it (eraser)
 	movem.l	d0/a0-a1,-(sp)
 	dc.w	$207C,$0001,$7EAC
 	move.w	#$2,$1AD8C.l
-	cmpa.l	#$1834C,a2
-	bne.w	L10428
+	cmpa.l	#$1834C,a2		;home team?
+	bne.w	.l10428
 	dc.w	$207C,$0001,$7EAE
-	move.w	#$20,$1AD8C.l
-L10428	move.w	#$0,d0
-L1042C	move.w	(a0)+,d1
+	move.w	#$20,$1AD8C.l		;home: the home lists and column $20
+.l10428	move.w	#$0,d0
+.l1042C	move.w	(a0)+,d1		;1 hot player per team
 	dc.w	$B279,$0001,$AD8A
-	beq.w	L1048E
-	dbra	d0,L1042C
+	beq.w	.l1048E
+	dbra	d0,.l1042C
 	dc.w	$207C,$0001,$7EB0
 	cmpa.l	#$1834C,a2
-	bne.w	L10452
+	bne.w	.l10452
 	dc.w	$207C,$0001,$7EB2
-L10452	move.w	#$0,d0
-L10456	move.w	(a0)+,d1
+.l10452	move.w	#$0,d0
+.l10456	move.w	(a0)+,d1
 	dc.w	$B279,$0001,$AD8A
-	beq.w	L1049E
-	dbra	d0,L10456
+	beq.w	.l1049E
+	dbra	d0,.l10456
 	move.w	$1AD8C.l,(printx).l
 	move.w	#$19,(printy).l
 	move.w	#$8,d0
 	move.w	#$3,d1
-	move.w	#$7FF,d2
+	move.w	#$7FF,d2		;blank char
 	dc.w	$4EB9,$0003,$8C06
-	bra.w	L104DC
-L1048E	move.w	(hoticonchars).l,d4
+	bra.w	.l104DC
+.l1048E	move.w	(hoticonchars).l,d4
 	movea.l	(HotMap).l,a0
-	bra.w	L104AA
-L1049E	move.w	(coldiconchars).l,d4
+	bra.w	.l104AA
+.l1049E	move.w	(coldiconchars).l,d4
 	movea.l	(ColdMap).l,a0
-L104AA	move.w	$1AD8C.l,(printx).l
+.l104AA	move.w	$1AD8C.l,(printx).l
 	move.w	#$19,(printy).l
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
-	adda.l	(a2)+,a1
+	adda.l	(a2)+,a1		;a1 = map data
 	movea.l	#$1B008,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
 	move.w	$2(a1),d3
-	moveq	#$0,d5
+	moveq	#$0,d5		;no palette lines
 	dc.w	$4EB9,$0003,$87E2
-L104DC	movem.l	(sp)+,d0/a0-a1
+.l104DC	movem.l	(sp)+,d0/a0-a1
 	rts
 	btst	#$6,$17F74.l
 	bne.w	Sub_2B600
@@ -64,34 +67,34 @@ L104DC	movem.l	(sp)+,d0/a0-a1
 	dc.w	$207C,$0001,$7480
 	dc.w	$227C,$0001,$7FA6
 	cmpi.w	#$1,(a1,d4.w)
-	beq.w	L10536
+	beq.w	.l10536
 	adda.w	#$300,a0
-L10536	dc.w	$227C,$0001,$7F9E
-L1053C	tst.w	$34(a0)
-	ble.w	L105D6
+.l10536	dc.w	$227C,$0001,$7F9E
+.l1053C	tst.w	$34(a0)
+	ble.w	.l105D6
 	btst	#$2,$63(a0)
-	bne.w	L105D6
+	bne.w	.l105D6
 	movem.w	d1,-(sp)
 	move.w	$52(a0),d1
 	cmp.w	(a1,d4.w),d1
 	movem.w	(sp)+,d1
-	beq.w	L1056C
+	beq.w	.l1056C
 	btst	#$3,$62(a0)
-	bne.w	L105D6
-L1056C	btst	#$2,$17F70.l
-	beq.w	L105A4
+	bne.w	.l105D6
+.l1056C	btst	#$2,$17F70.l
+	beq.w	.l105A4
 	movem.l	d0,-(sp)
 	dc.w	$3039,$0001,$9368
 	cmp.w	$52(a0),d0
 	movem.l	(sp)+,d0
-	beq.w	L105A4
+	beq.w	.l105A4
 	movem.l	d0,-(sp)
 	dc.w	$3039,$0001,$936A
 	cmp.w	$52(a0),d0
 	movem.l	(sp)+,d0
-	bne.w	L105D6
-L105A4	btst	#$5,$62(a0)
-	bne.w	L105D6
+	bne.w	.l105D6
+.l105A4	btst	#$5,$62(a0)
+	bne.w	.l105D6
 	movem.w	(sp),d0-d1
 	sub.w	$0(a0),d0
 	muls.w	d0,d0
@@ -99,14 +102,14 @@ L105A4	btst	#$5,$62(a0)
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmp.l	d5,d0
-	bhi.w	L105D6
+	bhi.w	.l105D6
 	move.w	$52(a0),d1
 	cmp.w	(a1,d3.w),d1
-	beq.w	L105D6
+	beq.w	.l105D6
 	move.l	d0,d5
 	move.w	d1,d6
-L105D6	adda.w	#$80,a0
-	dbra	d2,L1053C
+.l105D6	adda.w	#$80,a0
+	dbra	d2,.l1053C
 	adda.w	#$4,sp
 	pea.l	$2B5FC.l
 	cmp.w	(a1,d4.w),d6
@@ -233,8 +236,8 @@ Sub_2B60E
 	dc.w	$6706
 	move.w	#$1,-(a6)
 	dc.w	$6004
-L10850	move.w	#$0,-(a6)
-L10854	bclr	#$5,$FF800F.l
+.l10850	move.w	#$0,-(a6)
+.l10854	bclr	#$5,$FF800F.l
 	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	jsr	$2B614.l
@@ -244,8 +247,8 @@ L10854	bclr	#$5,$FF800F.l
 	dc.w	$670A
 	bset	#$5,$FF800F.l
 	dc.w	$6008
-L10880	bclr	#$5,$FF800F.l
-L10888	move.l	a6,$19360.l
+.l10880	bclr	#$5,$FF800F.l
+.l10888	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	jsr	$37752.l
 	lea.l	$1746A.l,a0
@@ -253,40 +256,40 @@ L10888	move.l	a6,$19360.l
 	jsr	$5F22.w
 	move.w	#$2,d0
 	jsr	$5F22.w
-L108AC	move.w	#$80,d0
+.l108AC	move.w	#$80,d0
 	jsr	$5F22.w
-	bcs.w	L108AC
-L108B8	move.w	#$81,d0
+	bcs.w	.l108AC
+.l108B8	move.w	#$81,d0
 	jsr	$5F22.w
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
 	cmpi.w	#$0,d2
-	bne.b	L108B8
+	bne.b	.l108B8
 	move.w	#$5,$19364.l
 	move.w	#$13,d0
 	lea.l	$19364.l,a0
 	jsr	$5F22.w
 	dc.w	$4EB9,$0003,$74F0
 	cmpi.b	#$E0,d3
-	bne.w	L108F8
+	bne.w	.l108F8
 	dc.w	$33FC,$0003,$0001,$8C02
-L108F8	clr.b	$17F68.l
+.l108F8	clr.b	$17F68.l
 	dc.w	$0C79,$0001,$0001,$8C08
-	bne.w	L10912
+	bne.w	.l10912
 	bset	#$5,$17F68.l
-L10912	dc.w	$0C79,$0001,$0001,$8BFA
-	ble.w	L10922
-	bsr.w	L10984
-L10922	jsr	(clearTeamStats).l
+.l10912	dc.w	$0C79,$0001,$0001,$8BFA
+	ble.w	.l10922
+	bsr.w	.l10984
+.l10922	jsr	(clearTeamStats).l
 	btst	#$0,$17F78.l
-	beq.w	L10950
+	beq.w	.l10950
 	move.l	a0,-(sp)
 	movea.l	#tmstruct,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	#awtmstruct,a0
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
-L10950	dc.w	$4279,$0001,$80F0
+.l10950	dc.w	$4279,$0001,$80F0
 	dc.w	$4279,$0001,$825A
 	clr.w	$180E4.l
 	dc.w	$4279,$0001,$80EC
@@ -295,29 +298,29 @@ L10950	dc.w	$4279,$0001,$80F0
 	jsr	$3E91C.l
 	jsr	(LoadCrowdRec).l
 	jmp	$35A94.l
-L10984	move.w	#$71,d0
+.l10984	move.w	#$71,d0
 	movea.l	#$18C42,a0
-L1098E	clr.w	(a0)+
-	dbra	d0,L1098E
+.l1098E	clr.w	(a0)+
+	dbra	d0,.l1098E
 	rts
-restoreteams
+restoreteams						;Put both teams' rosters on the bench
 	movea.l	#tmstruct,a2
-	bsr.w	L109A4
+	bsr.w	.r
 	adda.w	#$366,a2
-L109A4	move.w	#$6,$26(a2)
+.r	move.w	#$6,$26(a2)
 	moveq	#$32,d0
-L109AC	move.w	#$FFFE,$68(a2,d0.w)
+.0	move.w	#$FFFE,$68(a2,d0.w)
 	subi.w	#$2,d0
-	bpl.w	L109AC
+	bpl.w	.0
 	rts
-ResetClock
+ResetClock						;set period length and stop clock
 	bsr.w	GetPeriodTime
 	cmpi.w	#$3,$180E4.l
-	blt.w	L109DA
+	blt.w	.l109DA
 	dc.w	$4A79,$0001,$8BFA
-	bne.w	L109DA
+	bne.w	.l109DA
 	move.w	#$258,d0
-L109DA	dc.w	$33C0,$0001,$80E6
+.l109DA	dc.w	$33C0,$0001,$80E6
 	dc.w	$33C0,$0001,$80EA
 	dc.w	$33C0,$0001,$747E
 	asr.w	#$1,d0
@@ -325,7 +328,7 @@ L109DA	dc.w	$33C0,$0001,$80E6
 	dc.w	$9179,$0001,$747E
 	bset	#$0,$17F68.l
 	rts
-GetPeriodTime
+GetPeriodTime						;Return d0 = period length in seconds for the period length option
 	dc.w	$3039,$0001,$8C02
 	asl.w	#$1,d0
 	dc.w	$41FA,$0008
@@ -338,9 +341,9 @@ GetPeriodTime
 	move.w	#$85,d0
 	jsr	$5F22.w
 	cmpi.w	#$3,$180E4.l
-	bne.w	L10A4E
+	bne.w	.l10A4E
 	bset	#$1,$17F7A.l
-L10A4E	dc.w	$50F9,$0001,$A560
+.l10A4E	dc.w	$50F9,$0001,$A560
 	jsr	$47DAC.l
 	jsr	$3E91C.l
 	bsr.w	ResetClock
@@ -356,7 +359,7 @@ L10A4E	dc.w	$50F9,$0001,$A560
 	dc.w	$33FC,$0008,$0001,$936C
 	dc.w	$33FC,$000B,$0001,$936A
 	bra.w	L10AB0
-Gameloop
+Gameloop						;Main loop for game
 	moveq	#$1B,d0
 L10AB0	jsr	(Sub_362E4).l
 	bset	#$2,$17F6C.l
@@ -384,16 +387,16 @@ L10AB0	jsr	(Sub_362E4).l
 	move.w	#$FFFF,$1745C.l
 	move.w	#$0,$17460.l
 	cmpi.w	#$2,$180E4.l
-	bge.w	L10B6C
+	bge.w	.l10B6C
 	bset	#$7,$17F6E.l
-L10B6C	jsr	$37206.l
+.l10B6C	jsr	$37206.l
 	bsr.w	DoGameFrame
 	bsr.w	demoread
 	btst	#$0,$17F6A.l
-	beq.w	L10B6C
+	beq.w	.l10B6C
 	bsr.w	L11074
-	bra.w	L10B6C
-DoGameFrame
+	bra.w	.l10B6C
+DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	move.w	(ScoutSubStatus).l,d7
 	dc.w	$9E79,$0001,$7476
 	beq.w	DoGameFrame
@@ -401,18 +404,18 @@ DoGameFrame
 	bsr.w	periodicevents
 	bsr.w	Sub_2F98A
 	dc.w	$4A79,$0001,$AD6E
-	beq.w	L10BDC
-	bmi.w	L10BDC
+	beq.w	.nosong
+	bmi.w	.nosong
 	dc.w	$0479,$0001,$0001,$AD6E
-	bne.w	L10BDC
+	bne.w	.nosong
 	jsr	$47DB0.l
 	dc.w	$3F39,$0001,$AD70
 	dc.w	$4EB9,$0003,$71D2
-L10BDC	jsr	$25000.l
+.nosong	jsr	$25000.l
 	bsr.w	Sub_300B2
 	bsr.w	updatereplay
 	dc.w	$4EF9,$0003,$DD16
-periodicevents
+periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	dc.w	$4EB9,$0003,$94F2
 	bsr.w	updatecrowdf
 	jsr	(RunArenaAnim).l
@@ -427,69 +430,73 @@ periodicevents
 	bsr.w	UpdateCwdExcite
 	bsr.w	CheckLateGameSong
 	bsr.w	RestoreBenchEnergy
-	bsr.w	L10C44
+	bsr.w	.l10C44
 	dc.w	$4EF9,$0003,$C2D0
-L10C44	subi.w	#$1,$1806A.l
+.l10C44	subi.w	#$1,$1806A.l
 	bne.w	Sub_2F988
 	jmp	$40D50.l
-RestoreBenchEnergy
+RestoreBenchEnergy						;Called once per second. Restore energy for players on the bench
 	dc.w	$4A79,$0001,$8C0A
-	bne.w	L10C98
+	bne.w	.ex
 	movea.l	#tmstruct,a2
-	bsr.w	L10C6E
+	bsr.w	.notinprog
 	lea.l	$366(a2),a2
-L10C6E	moveq	#$32,d0
-L10C70	cmpi.w	#$FFFE,$68(a2,d0.w)
-	bne.w	L10C90
+.notinprog	moveq	#$32,d0
+.b0	cmpi.w	#$FFFE,$68(a2,d0.w)
+	bne.w	.next
 	addi.w	#$9,$34(a2,d0.w)
 	cmpi.w	#$1000,$34(a2,d0.w)
-	blt.w	L10C90
+	blt.w	.next
 	move.w	#$1000,$34(a2,d0.w)
-L10C90	subi.w	#$2,d0
-	bpl.w	L10C70
-L10C98	rts
-CheckLateGameSong
+.next	subi.w	#$2,d0
+	bpl.w	.b0
+.ex	rts
+CheckLateGameSong						;Called once per second. 3rd period: choose and play a song once at the
+	
 	cmpi.w	#$2,$180E4.l
-	bne.w	L10CEC
+	bne.w	.l10CEC
 	btst	#$4,$17F68.l
-	bne.w	L10CEC
+	bne.w	.l10CEC
 	dc.w	$3039,$0001,$80E6
 	dc.w	$B079,$0001,$747E
-	bgt.w	L10CEC
+	bgt.w	.l10CEC
 	dc.w	$50F9,$0001,$747E
 	dc.w	$33F9,$0001,$7FAE,$0001,$A56C
 	dc.w	$33FC,$0005,$0001,$A56E
 	jsr	(ChooseSong).l
 	dc.w	$3F39,$0001,$A56A
 	dc.w	$4EB9,$0003,$71D2
-L10CEC	rts
-UpdateCwdExcite
+.l10CEC	rts
+UpdateCwdExcite						;called once per second. Track peak and running total of crowd excitement,
+	
+	
 	dc.w	$3039,$0001,$7CD8
 	dc.w	$B079,$0001,$7CDA
-	bls.w	L10D04
+	bls.w	.l10D04
 	dc.w	$33C0,$0001,$7CDA
-L10D04	ext.l	d0
+.l10D04	ext.l	d0
 	dc.w	$D1B9,$0001,$7CDE
 	addi.w	#$1,$17CDC.l
 	dc.w	$0479,$0001,$0001,$7CD8
-	bpl.w	L10D26
+	bpl.w	.l10D26
 	dc.w	$4279,$0001,$7CD8
-L10D26	rts
-updatecrowdf
+.l10D26	rts
+updatecrowdf						;this is called every game loop with d7 = elapsed frames this will update
+	
 	cmpi.w	#$15E,(Crowdlevel).l
-	blt.w	L10D3C
+	blt.w	.dec
 	subi.w	#$3,(Crowdlevel).l
-L10D3C	sub.w	d7,(Crowdlevel).l
-	bpl.w	L10D4C
+.dec	sub.w	d7,(Crowdlevel).l
+	bpl.w	.0
 	clr.w	(Crowdlevel).l
-L10D4C	sub.w	d7,(Crowdcnt).l
-	bpl.w	L10DEC
+.0	sub.w	d7,(Crowdcnt).l
+	bpl.w	.cf
 	move.w	(Crowdlevel).l,d0
 	lsr.w	#$1,d0
 	cmpi.w	#$7F,d0
-	bls.w	L10D68
+	bls.w	.1
 	moveq	#$7F,d0
-L10D68	andi.w	#$60,d0
+.1	andi.w	#$60,d0
 	addi.w	#$2,(Crowdstep).l
 	andi.w	#$1E,(Crowdstep).l
 	add.w	(Crowdstep).l,d0
@@ -497,35 +504,35 @@ L10D68	andi.w	#$60,d0
 	move.b	(a0,d0.w),$17CD1.l
 	clr.w	d1
 	move.b	$1(a0,d0.w),d1
-L10D96	btst	#$7,$FF800E.l
-	bne.b	L10D96
+.l10D96	btst	#$7,$FF800E.l
+	bne.b	.l10D96
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-L10DB0	btst	#$6,$FF800E.l
-	beq.b	L10DB0
+.l10DB0	btst	#$6,$FF800E.l
+	beq.b	.l10DB0
 	move.w	$FF8010.l,d2
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L10DD0	btst	#$6,$FF800E.l
-	bne.b	L10DD0
+.l10DD0	btst	#$6,$FF800E.l
+	bne.b	.l10DD0
 	bclr	#$7,$FF800F.l
 	and.w	d1,d2
 	add.w	d2,d1
 	move.w	d1,(Crowdcnt).l
-L10DEC	clr.b	(Crowdframe).l
+.cf	clr.b	(Crowdframe).l
 	cmpi.w	#$118,(Crowdlevel).l
 	bls.w	Sub_2F988
-L10DFE	btst	#$7,$FF800E.l
-	bne.b	L10DFE
+.l10DFE	btst	#$7,$FF800E.l
+	bne.b	.l10DFE
 	move.w	#$1B,$FF8020.l
 	bset	#$6,$FF800F.l
-L10E18	btst	#$6,$FF800E.l
-	beq.b	L10E18
+.l10E18	btst	#$6,$FF800E.l
+	beq.b	.l10E18
 	move.w	$FF8010.l,d0
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L10E38	btst	#$6,$FF800E.l
-	bne.b	L10E38
+.l10E38	btst	#$6,$FF800E.l
+	bne.b	.l10E38
 	bclr	#$7,$FF800F.l
 	andi.w	#$7F,d0
 	cmpi.w	#$13,d0
@@ -534,7 +541,7 @@ L10E38	btst	#$6,$FF800E.l
 	bgt.w	Sub_2F988
 	move.b	d0,(Crowdframe).l
 	rts
-clockcont
+clockcont						;monitor period clock and initiate various clock activated events
 	btst	#$0,$17F68.l
 	bne.w	Sub_2F988
 	dc.w	$4A79,$0001,$80E6
@@ -544,64 +551,64 @@ clockcont
 	move.w	#$4,-(sp)
 	dc.w	$4EB9,$0003,$710C
 	bsr.w	freezewindow
-clockcont_0
+clockcont_0						;End of period. Also entered from puckfaceoff
 	dc.w	$267C,$0001,$7B80
 	dc.w	$203C,$0000,$0018
 	dc.w	$4EB9,$0003,$62D8
 	cmpi.w	#$2,$180E4.l
-	blt.w	L10F98
+	blt.w	.l10F98
 	dc.w	$203C,$0000,$0007
 	dc.w	$267C,$0001,$7480
 	dc.w	$0C79,$0003,$0001,$8A9E
-	bne.w	L10F34
+	bne.w	.l10F34
 	dc.w	$0C79,$0007,$0001,$8A9C
-	beq.w	L10F18
+	beq.w	.l10F18
 	moveq	#$10,d3
 	dc.w	$C6F9,$0001,$8A98
 	movea.l	#$18A18,a0
 	adda.w	d3,a0
 	clr.w	d3
 	btst	#$0,$E(a0)
-	beq.w	L10EFA
+	beq.w	.l10EFA
 	eori.w	#$2,d3
-L10EFA	dc.w	$3239,$0001,$8358
+.l10EFA	dc.w	$3239,$0001,$8358
 	dc.w	$9279,$0001,$86BE
-	bpl.w	L10F0E
+	bpl.w	.ns1
 	eori.w	#$2,d3
-L10F0E	cmpi.w	#$3,$4(a0,d3.w)
-	bne.w	L10F34
-L10F18	dc.w	$203C,$0000,$0008
+.ns1	cmpi.w	#$3,$4(a0,d3.w)
+	bne.w	.l10F34
+.l10F18	dc.w	$203C,$0000,$0008
 	moveq	#$B,d2
-L10F20	bclr	#$3,$62(a3)
+.t0	bclr	#$3,$62(a3)
 	adda.w	#$80,a3
-	dbra	d2,L10F20
+	dbra	d2,.t0
 	dc.w	$267C,$0001,$7480
-L10F34	moveq	#$5,d2
+.l10F34	moveq	#$5,d2
 	dc.w	$3239,$0001,$8358
 	dc.w	$9279,$0001,$86BE
-	beq.w	L10F98
-	bpl.w	L10F4E
+	beq.w	.l10F98
+	bpl.w	.t2
 	adda.w	#$300,a3
-L10F4E	tst.w	$34(a3)
-	ble.w	L10F62
+.t2	tst.w	$34(a3)
+	ble.w	.l10F62
 	dc.w	$4EB9,$0003,$62D8
 	dc.w	$203C,$0000,$0007
-L10F62	adda.w	#$80,a3
-	dbra	d2,L10F4E
-L10F6A	jsr	(ClearPenaltyBuffer).l
+.l10F62	adda.w	#$80,a3
+	dbra	d2,.t2
+.eog	jsr	(ClearPenaltyBuffer).l
 	addi.w	#$3E8,(Crowdlevel).l
 	bset	#$0,$17F68.l
 	bset	#$6,$17F68.l
 	jsr	(ClearPenalties).l
 	move.w	#$4,d0
 	dc.w	$4EF9,$0003,$9456
-L10F98	cmpi.w	#$3,$180E4.l
-	bne.w	L10FAE
+.l10F98	cmpi.w	#$3,$180E4.l
+	bne.w	.l10FAE
 	dc.w	$4A79,$0001,$8BFA
-	beq.w	L10F6A
-L10FAE	move.w	#$2,d0
+	beq.w	.eog
+.l10FAE	move.w	#$2,d0
 	dc.w	$4EF9,$0003,$9456
-demoread
+demoread						;monitor joystick if in demo mode (called every game loop)
 	dc.w	$4A79,$0001,$7FA6
 	bne.w	Sub_2F988
 	dc.w	$4A79,$0001,$7FA8
@@ -622,7 +629,7 @@ demoread
 	jsr	$3754A.l
 	btst	#$7,d1
 	bne.w	Sub_2C060
-EndDemoOnPress
+EndDemoOnPress						;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
 	beq.w	Sub_2F988
 	jmp	$3F2BE.l
@@ -646,8 +653,8 @@ Sub_2C060
 L11074	jsr	(Sub_36D0A).l
 	move.w	d0,-(sp)
 	move.w	(ScoutSubStatus).l,d0
-L11082	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	L11082
+.l11082	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.l11082
 	move.w	(sp)+,d0
 	jsr	$47DAC.l
 	move.w	$17F6A.l,-(sp)
@@ -655,85 +662,85 @@ L11082	cmp.w	(ScoutSubStatus).l,d0
 	movea.l	#$41F50,a0
 	dc.w	$43FA,$0152
 	btst	#$0,$17F78.l
-	beq.w	L110BE
+	beq.w	.l110BE
 	movea.l	#$41EB4,a0
-	bra.w	L110CE
-L110BE	btst	#$2,$32(a2)
-	beq.w	L110CE
+	bra.w	.l110CE
+.l110BE	btst	#$2,$32(a2)
+	beq.w	.l110CE
 	movea.l	#$420DC,a0
-L110CE	bsr.w	Sub_2C2F8
-L110D2	bsr.w	MenuWaitVblank
+.l110CE	bsr.w	Sub_2C2F8
+.l110D2	bsr.w	MenuWaitVblank
 	bsr.w	Sub_2F2F0
 	dc.w	$4EB9,$0003,$E1CE
 	dc.w	$4EB9,$0003,$74BE
 	bsr.w	HandleMenuInput
-	bne.w	L110D2
+	bne.w	.l110D2
 	dc.w	$4EB9,$0003,$6D0A
 	move.w	(sp)+,$17F6A.l
 	btst	#$7,$17F6A.l
-	beq.w	L11116
+	beq.w	.l11116
 	jsr	$3ECB8.l
 	dc.w	$4EB9,$0003,$C40A
-	bra.w	L1111C
-L11116	jsr	(ClrHor).l
-L1111C	movea.l	#$C00000,a0
-L11122	btst	#$7,$FF800E.l
-	bne.b	L11122
+	bra.w	.l1111C
+.l11116	jsr	(ClrHor).l
+.l1111C	movea.l	#$C00000,a0
+.l11122	btst	#$7,$FF800E.l
+	bne.b	.l11122
 	move.w	#$9100,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L11144	btst	#$6,$FF800E.l
-	beq.b	L11144
+.l11144	btst	#$6,$FF800E.l
+	beq.b	.l11144
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L1115E	btst	#$6,$FF800E.l
-	bne.b	L1115E
+.l1115E	btst	#$6,$FF800E.l
+	bne.b	.l1115E
 	bclr	#$7,$FF800F.l
-L11170	btst	#$7,$FF800E.l
-	bne.b	L11170
+.l11170	btst	#$7,$FF800E.l
+	bne.b	.l11170
 	move.w	#$9200,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L11192	btst	#$6,$FF800E.l
-	beq.b	L11192
+.l11192	btst	#$6,$FF800E.l
+	beq.b	.l11192
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L111AC	btst	#$6,$FF800E.l
-	bne.b	L111AC
+.l111AC	btst	#$6,$FF800E.l
+	bne.b	.l111AC
 	bclr	#$7,$FF800F.l
 	bset	#$3,(disflags).l
 	bclr	#$0,$17F6A.l
 	dc.w	$4EB9,$0003,$C48C
 	dc.w	$4EB9,$0003,$DD16
 	move.w	#$18,(palcount).l
-L111E2	tst.w	(palcount).l
-	bpl.w	L111E2
+.l111E2	tst.w	(palcount).l
+	bpl.w	.l111E2
 	dc.w	$33F9,$0001,$7474,$0001,$7476
 	rts
 	movea.l	#$C00000,a0
-L111FE	btst	#$7,$FF800E.l
-	bne.b	L111FE
+.l111FE	btst	#$7,$FF800E.l
+	bne.b	.l111FE
 	move.w	#$9100,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L11220	btst	#$6,$FF800E.l
-	beq.b	L11220
+.l11220	btst	#$6,$FF800E.l
+	beq.b	.l11220
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L1123A	btst	#$6,$FF800E.l
-	bne.b	L1123A
+.l1123A	btst	#$6,$FF800E.l
+	bne.b	.l1123A
 	bclr	#$7,$FF800F.l
-L1124C	btst	#$7,$FF800E.l
-	bne.b	L1124C
+.l1124C	btst	#$7,$FF800E.l
+	bne.b	.l1124C
 	move.w	#$921C,$FF8022.l
 	move.w	#$A,$FF8020.l
 	bset	#$6,$FF800F.l
-L1126E	btst	#$6,$FF800E.l
-	beq.b	L1126E
+.l1126E	btst	#$6,$FF800E.l
+	beq.b	.l1126E
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
-L11288	btst	#$6,$FF800E.l
-	bne.b	L11288
+.l11288	btst	#$6,$FF800E.l
+	bne.b	.l11288
 	bclr	#$7,$FF800F.l
 	dc.w	$4EB9,$0003,$C40A
 	dc.w	$4EB9,$0003,$DD16
@@ -745,22 +752,24 @@ L11288	btst	#$6,$FF800E.l
 	moveq	#$1C,d1
 	move.w	#$7FF,d2
 	dc.w	$4EF9,$0003,$8C06
-seta2
+seta2						;Set a2 to the team struct of the pause joystick also called from
+	
 	movea.l	#tmstruct,a2
 	btst	#$1,$17F6A.l
-	beq.w	L112E6
+	beq.w	.l112E6
 	dc.w	$0C79,$0001,$0001,$7FA8
-	bra.w	L112EE
-L112E6	dc.w	$0C79,$0001,$0001,$7FA6
-L112EE	beq.w	L112F6
+	bra.w	.seta21
+.l112E6	dc.w	$0C79,$0001,$0001,$7FA6
+.seta21	beq.w	.x
 	adda.w	#$366,a2
-L112F6	rts
+.x	rts
 Sub_2C2F8
 	dc.w	$23C8,$0001,$8AD6
 	dc.w	$23C9,$0001,$8ADA
 	clr.w	$18AD2.l
 	clr.w	$18AD4.l
-DrawMenuScreen
+DrawMenuScreen						;Call the draw routine, frame the menu box, print the items and fade in.
+	
 	dc.w	$2079,$0001,$8ADA
 	jsr	(a0)
 	dc.w	$4EB9,$0003,$8D8C
@@ -771,43 +780,47 @@ DrawMenuScreen
 	dc.w	$4EB9,$0003,$8CA0
 	bsr.w	Pausemode_Pmenu
 	move.w	#$18,(palcount).l
-L1133E	tst.w	(palcount).l
-	bpl.w	L1133E
+.l1133E	tst.w	(palcount).l
+	bpl.w	.l1133E
 	rts
-SetMenuPrintX
+SetMenuPrintX						;printx = the left edge of the menu box: 5 in 32 column mode, else 9
 	move.w	#$5,(printx).l
 	btst	#$1,(disflags).l
 	bne.w	Sub_2F988
 	addi.w	#$4,(printx).l
 	rts
-HandleMenuInput
+HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up move the
+	
+	
+	
+	
 	btst	#$7,d1
-	bne.w	L113DE
+	bne.w	.l113DE
 	btst	#$1,d1
-	beq.w	L11384
+	beq.w	.l11384
 	addi.w	#$1,$18AD2.l
 	bra.w	Pausemode_Pmenu
-L11384	btst	#$0,d1
-	beq.w	L11398
+.l11384	btst	#$0,d1
+	beq.w	.l11398
 	subi.w	#$1,$18AD2.l
 	bra.w	Pausemode_Pmenu
-L11398	btst	#$5,d1
-	beq.w	L113DE
+.l11398	btst	#$5,d1
+	beq.w	.l113DE
 	bsr.w	seta2
 	move.w	$18AD2.l,d0
 	dc.w	$2079,$0001,$8AD6
 	adda.w	(a0),a0
 	adda.w	(a0),a0
-	bra.w	L113BC
-L113B8	adda.w	#$4,a0
-L113BC	adda.w	(a0),a0
-	dbra	d0,L113B8
+	bra.w	.l113BC
+.l113B8	adda.w	#$4,a0
+.l113BC	adda.w	(a0),a0
+	dbra	d0,.l113B8
 	movea.l	(a0),a0
 	jsr	(a0)
 	bclr	#$1,$17F74.l
-	bne.w	L113D6
+	bne.w	.l113D6
 	bsr.w	DrawMenuScreen
-L113D6	tst.w	$18AD2.l
+.l113D6	tst.w	$18AD2.l		;item 0 (resume) leaves the menu
 	rts
-L113DE	eori.b	#$4,ccr
+.l113DE	eori.b	#$4,ccr		;invert Z
 	rts

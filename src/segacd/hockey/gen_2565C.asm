@@ -1,4 +1,7 @@
-EncodePW
+EncodePW						;After a playoff game compute winners and save the bits if needed. Returns
+	
+	
+	
 	tst.w	(OptNOP).l
 	beq.w	rtss2
 	dc.w	$4A79,$0001,$8BFA
@@ -10,9 +13,9 @@ EncodePW
 	bsr.w	ResolveGames
 	bsr.w	MakeTree
 	dc.w	$0C79,$0004,$0001,$8A9E
-	beq.w	L256D4
+	beq.w	.l256D4
 	dc.w	$4A79,$0001,$8A98
-	bmi.w	L256D4
+	bmi.w	.l256D4
 	dc.w	$267C,$0001,$8C38
 	bsr.w	WritePassBits
 	jsr	$2A5C8.l
@@ -21,7 +24,7 @@ EncodePW
 	movea.l	#$18D26,a3
 	bsr.w	Sub_4057C
 	bra.w	MakeTree
-L256D4	dc.w	$267C,$0001,$8C38
+.l256D4	dc.w	$267C,$0001,$8C38
 	bsr.w	ClrPassBits
 	jsr	$2A5C8.l
 	dc.w	$33FC,$0002,$0001,$8BFA
@@ -31,7 +34,8 @@ L256D4	dc.w	$267C,$0001,$8C38
 	dc.w	$33FC,$0003,$0001,$8BFA
 	move.w	#$3,$18C24.l
 	rts
-WritePassBits
+WritePassBits						;Transfer the game variables to the bits at a3 (pojoy range 8). Called
+	
 	bsr.w	ClrPassBits
 	dc.w	$3039,$0001,$8A9A
 	moveq	#$20,d1
@@ -54,14 +58,14 @@ WritePassBits
 	moveq	#$5,d1
 	moveq	#$7,d2
 	movea.l	#$18A18,a1
-L2576A	move.w	$4(a1),d0
+.loop	move.w	$4(a1),d0
 	bsr.w	PushBits
 	move.w	$6(a1),d0
 	bsr.w	PushBits
 	adda.w	#$10,a1
-	dbra	d2,L2576A
+	dbra	d2,.loop
 	rts
-PushBits
+PushBits						;bits = bits * d1 + d0. d1 = range 2^1-2^15, d0 = data
 	movem.l	d0-d1,-(sp)
 	exg.l	d0,d1
 	bsr.w	SuperMult
@@ -70,68 +74,71 @@ PushBits
 	bsr.w	SuperAdd
 	movem.l	(sp)+,d0-d1
 	rts
-ClrPassBits
+ClrPassBits						;Clear the 5 words of bits at a3
 	movea.l	a3,a0
 	moveq	#$4,d0
-L257A0	clr.w	(a0)+
-	dbra	d0,L257A0
+.0	clr.w	(a0)+
+	dbra	d0,.0
 	rts
-SuperAdd
+SuperAdd						;1 long (d0.L) added to the 5 words at a3
 	movem.l	d1/a0,-(sp)
 	lea.l	$A(a3),a0
 	moveq	#$3,d1
 	add.l	d0,-(a0)
-	bra.w	L257BC
-L257B8	addi.w	#$1,-(a0)
-L257BC	dbcc	d1,L257B8
+	bra.w	.2
+.1	addi.w	#$1,-(a0)
+.2	dbcc	d1,.1
 	movem.l	(sp)+,d1/a0
 	rts
-SuperMult
+SuperMult						;1 word (d0) multiplied by the 5 words at a3
 	movem.l	d1-d4/a0,-(sp)
 	movea.l	a3,a0
 	moveq	#$4,d4
-L257CE	move.w	(a0),-(sp)
+.0	move.w	(a0),-(sp)
 	clr.w	(a0)+
-	dbra	d4,L257CE
+	dbra	d4,.0
 	moveq	#$4,d4
-L257D8	move.w	d0,d1
+.1	move.w	d0,d1
 	mulu.w	(sp)+,d1
 	lea.l	$2(a3),a0
 	adda.w	d4,a0
 	adda.w	d4,a0
 	move.w	d4,d2
 	add.l	d1,-(a0)
-	bra.w	L257F0
-L257EC	addi.w	#$1,-(a0)
-L257F0	dbcc	d2,L257EC
-	dbra	d4,L257D8
+	bra.w	.3
+.2	addi.w	#$1,-(a0)
+.3	dbcc	d2,.2
+	dbra	d4,.1
 	movem.l	(sp)+,d1-d4/a0
 	rts
-SuperDiv
+SuperDiv						;5 words at a3 divided by 1 word (d0); d0 = remainder on exit
 	movem.l	d1-d2/a0,-(sp)
 	movea.l	a3,a0
 	moveq	#$4,d1
 	clr.l	d2
-L25808	move.w	(a0),d2
+.0	move.w	(a0),d2
 	divu.w	d0,d2
 	move.w	d2,(a0)+
-	dbra	d1,L25808
+	dbra	d1,.0
 	swap	d2
 	move.w	d2,d0
 	movem.l	(sp)+,d1-d2/a0
 	rts
-GetShifter
+GetShifter						;Returns d1 = number of games - 1, d2 = first bit of WinBits
 	move.l	d0,-(sp)
 	moveq	#-16,d2
 	moveq	#$10,d1
 	dc.w	$3039,$0001,$8A9E
-L25828	add.w	d1,d2
+.l25828	add.w	d1,d2
 	lsr.w	#$1,d1
-	dbra	d0,L25828
+	dbra	d0,.l25828
 	subi.w	#$1,d1
 	move.l	(sp)+,d0
 	rts
-AddPlayoffTeamStats
+AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff totals: unpack them
+	
+	
+	
 	dc.w	$0C79,$0001,$0001,$8BFA
 	blt.w	rtss2
 	bsr.w	ReadTeamStats
@@ -140,21 +147,21 @@ AddPlayoffTeamStats
 	move.b	(a0,d2.w),d2
 	movea.l	#tmstruct,a2
 	cmp.w	$2A(a2),d2
-	beq.w	L2586A
+	beq.w	.0
 	adda.w	#$366,a2
-L2586A	adda.w	#$B6,a2
+.0	adda.w	#$B6,a2
 	moveq	#$67,d0
 	movea.l	#$B000,a1
-L25876	clr.w	d1
+.loop	clr.w	d1
 	move.b	(a2)+,d1
 	add.w	d1,(a1)+
-	dbra	d0,L25876
+	dbra	d0,.loop
 	movea.l	#$B000,a0
 	movea.l	#$408DC,a1
 	movea.l	#$18C42,a2
 	moveq	#$67,d0
 	clr.w	d4
-L25896	clr.l	d1
+.loop2	clr.l	d1
 	move.w	(a0)+,d1
 	move.w	d0,d2
 	andi.w	#$3,d2
@@ -163,9 +170,9 @@ L25896	clr.l	d1
 	bset	d2,d3
 	subi.w	#$1,d3
 	cmp.w	d3,d1
-	ble.w	L258B4
+	ble.w	.1
 	move.w	d3,d1
-L258B4	not.l	d3
+.1	not.l	d3
 	move.w	d4,d5
 	andi.w	#$F,d5
 	rol.l	d5,d3
@@ -178,16 +185,17 @@ L258B4	not.l	d3
 	and.l	d3,-$22(a2,d5.w)
 	or.l	d1,-$22(a2,d5.w)
 	add.w	d2,d4
-	dbra	d0,L25896
+	dbra	d0,.loop2
 	rts
 	dc.w	$0C0E,$0A0A
-ReadTeamStats
+ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into statsbuffer
+	
 	movea.l	#$B000,a0
 	movea.l	#$408DC,a1
 	movea.l	#$18C42,a2
 	moveq	#$67,d0
 	clr.w	d4
-L258F6	move.w	d4,d5
+.loop	move.w	d4,d5
 	lsr.w	#$4,d5
 	add.w	d5,d5
 	neg.w	d5
@@ -205,9 +213,9 @@ L258F6	move.w	d4,d5
 	subi.w	#$1,d3
 	and.w	d3,d1
 	move.w	d1,(a0)+
-	dbra	d0,L258F6
+	dbra	d0,.loop
 	rts
-ResolveGames
+ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
 	dc.w	$3039,$0001,$8A98
 	mulu.w	#$10,d0
 	movea.l	#$18A18,a0
@@ -219,73 +227,73 @@ ResolveGames
 	mulu.w	d1,d3
 	adda.w	d3,a0
 	dc.w	$0C79,$0007,$0001,$8A9C
-	beq.w	L25AB6
-L25968	cmpi.w	#$4,$4(a0)
-	beq.w	L259A2
+	beq.w	.notbos
+.loop	cmpi.w	#$4,$4(a0)
+	beq.w	.b1
 	cmpi.w	#$4,$6(a0)
-	beq.w	L259A2
+	beq.w	.b1
 	clr.w	d3
 	btst	#$0,$E(a0)
-	beq.w	L2598C
+	beq.w	.0
 	eori.w	#$2,d3
-L2598C	move.w	$A(a0),d0
+.0	move.w	$A(a0),d0
 	sub.w	$C(a0),d0
-	bpl.w	L2599C
+	bpl.w	.win
 	eori.w	#$2,d3
-L2599C	addi.w	#$1,$4(a0,d3.w)
-L259A2	suba.w	#$10,a0
-	dbra	d1,L25968
+.win	addi.w	#$1,$4(a0,d3.w)
+.b1	suba.w	#$10,a0
+	dbra	d1,.loop
 	dc.w	$0679,$0001,$0001,$8A9C
 	dc.w	$0C79,$0007,$0001,$8A9C
-	beq.w	L25A62
+	beq.w	.l25A62
 	dc.w	$3039,$0001,$8A98
 	mulu.w	#$10,d0
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
 	cmpi.w	#$4,$4(a0)
-	beq.w	L259E4
+	beq.w	.l259E4
 	cmpi.w	#$4,$6(a0)
 	bne.w	rtss2
-L259E4	dc.w	$0C79,$0003,$0001,$8A9E
-	bge.w	L25A62
+.l259E4	dc.w	$0C79,$0003,$0001,$8A9E
+	bge.w	.l25A62
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
-L25A00	dc.w	$B279,$0001,$8A98
-	beq.w	L25A48
+.l25A00	dc.w	$B279,$0001,$8A98
+	beq.w	.crn
 	cmpi.w	#$4,$4(a0)
-	beq.w	L25A48
+	beq.w	.crn
 	cmpi.w	#$4,$6(a0)
-	beq.w	L25A48
+	beq.w	.crn
 	addi.w	#$1,$4(a0)
 	move.l	#$C8,d0
 	jsr	(randomd0).l
 	andi.w	#$1,d0
-	beq.w	L25A00
+	beq.w	.l25A00
 	subi.w	#$1,$4(a0)
 	addi.w	#$1,$6(a0)
-	bra.w	L25A00
-L25A48	suba.w	#$10,a0
-	dbra	d1,L25A00
+	bra.w	.l25A00
+.crn	suba.w	#$10,a0
+	dbra	d1,.l25A00
 	movea.l	#$18D26,a3
 	bsr.w	WritePassBits
 	bset	#$2,$17F6E.l
-L25A62	dc.w	$4279,$0001,$8A9C
+.l25A62	dc.w	$4279,$0001,$8A9C
 	bsr.w	GetShifter
 	movea.l	#$18A18,a0
 	moveq	#$10,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
 	clr.w	d3
-L25A7A	cmpi.w	#$4,$4(a0)
-	beq.w	L25A86
+.loop2	cmpi.w	#$4,$4(a0)
+	beq.w	.2
 	bset	d1,d3
-L25A86	clr.w	$4(a0)
+.2	clr.w	$4(a0)
 	clr.w	$6(a0)
 	suba.w	#$10,a0
-	dbra	d1,L25A7A
+	dbra	d1,.loop2
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
@@ -294,16 +302,16 @@ L25A86	clr.w	$4(a0)
 	dc.w	$8779,$0001,$8AA4
 	dc.w	$0679,$0001,$0001,$8A9E
 	rts
-L25AB6	clr.w	d3
-L25AB8	move.w	$A(a0),d0
+.notbos	clr.w	d3
+.loop3	move.w	$A(a0),d0
 	cmp.w	$C(a0),d0
-	bhi.w	L25AC6
+	bhi.w	.3
 	bset	d1,d3
-L25AC6	btst	#$0,$E(a0)
-	beq.w	L25AD2
+.3	btst	#$0,$E(a0)
+	beq.w	.nb2
 	bchg	d1,d3
-L25AD2	suba.w	#$10,a0
-	dbra	d1,L25AB8
+.nb2	suba.w	#$10,a0
+	dbra	d1,.loop3
 	moveq	#$1,d1
 	asl.w	d2,d1
 	subi.w	#$1,d1
@@ -312,7 +320,12 @@ L25AD2	suba.w	#$10,a0
 	dc.w	$8779,$0001,$8AA4
 	dc.w	$0679,$0001,$0001,$8A9E
 	rts
-ShowThreeStars
+ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA while RefPen is
+	
+	
+	
+	
+	
 	dc.w	$0C79,$0040,$0001,$806E
 	bgt.w	rtss2
 	bset	#$7,$17F68.l
@@ -320,8 +333,8 @@ ShowThreeStars
 	movem.l	d0/a1,-(sp)
 	bset	#$3,(disflags).l
 	move.w	(ScoutSubStatus).l,d0
-L25B24	cmp.w	(ScoutSubStatus).l,d0
-	beq.w	L25B24
+.loop2	cmp.w	(ScoutSubStatus).l,d0
+	beq.w	.loop2
 	movem.l	(sp)+,d0/a1
 	movem.l	d0-d5/a0-a4,-(sp)
 	jsr	(printz).l
@@ -344,7 +357,7 @@ L25B24	cmp.w	(ScoutSubStatus).l,d0
 	bsr.w	CalcStarScores
 	move.w	#$12,(printy).l
 	moveq	#$2,d2
-L25BA0	bsr.w	TakeTopStarScore
+.loop	bsr.w	TakeTopStarScore
 	move.w	#$1A,(printx).l
 	addi.w	#$1,(printy).l
 	movea.l	$1E(a2),a1
@@ -354,36 +367,42 @@ L25BA0	bsr.w	TakeTopStarScore
 	bsr.w	Sub_4112E
 	move.w	#$3,(printx).l
 	jsr	(print).l
-	dbra	d2,L25BA0
+	dbra	d2,.loop
 	dc.w	$3039,$0001,$8358
 	dc.w	$9079,$0001,$86BE
-	ble.w	L25BF4
-	move.w	#$F,-(sp)
+	ble.w	.nosong		;home didn't win
+	move.w	#$F,-(sp)		;home team won (sound effect)
 	jsr	(sfx).l
-L25BF4	movem.l	(sp)+,d0-d5/a0-a4
+.nosong	movem.l	(sp)+,d0-d5/a0-a4
 	rts
-TakeTopStarScore
+TakeTopStarScore						;Take the highest of the 52 star scores at ThreeStars and clear it.
+	
+	
 	movem.l	d1-d2/a1/a4,-(sp)
 	movea.l	#ThreeStars,a4
 	clr.l	d0
 	moveq	#$33,d2
-L25C08	cmp.l	(a4)+,d0
-	bge.w	L25C14
+.find	cmp.l	(a4)+,d0
+	bge.w	.l25C14
 	lea.l	-$4(a4),a1
 	move.l	(a1),d0
-L25C14	dbra	d2,L25C08
+.l25C14	dbra	d2,.find
 	clr.l	(a1)
 	move.l	a1,d0
 	subi.l	#$BC000,d0
 	lsr.w	#$2,d0
 	movea.l	#tmstruct,a2
 	cmpi.w	#$1A,d0
-	blt.w	L25C3A
+	blt.w	.home
 	subi.w	#$1A,d0
 	adda.w	#$366,a2
-L25C3A	movem.l	(sp)+,d1-d2/a1/a4
+.home	movem.l	(sp)+,d1-d2/a1/a4
 	rts
-CalcStarScores
+CalcStarScores						;Star score for every roster slot of both teams to ThreeStars (26 longs
+	
+	
+	
+	
 	movea.l	#ThreeStars,a4
 	jsr	(GetPeriodTime).l
 	move.w	d0,d5
@@ -395,21 +414,26 @@ CalcStarScores
 	lea.l	-$366(a2),a3
 	bsr.w	CalcTeamStarScores
 	cmpi.w	#$3,$180E4.l
-	bne.w	L25CAA
+	bne.w	.x
 	tst.w	d3
-	beq.w	L25CAA
+	beq.w	.x
 	dc.w	$207C,$0001,$80EC
 	dc.w	$D0F9,$0001,$80F0
 	clr.w	d0
 	btst	#$7,$2(a0)
-	beq.w	L25C96
+	beq.w	.slot
 	addi.w	#$1A,d0
-L25C96	add.b	$3(a0),d0
+.slot	add.b	$3(a0),d0
 	asl.w	#$2,d0
 	movea.l	#ThreeStars,a0
-	move.l	#$7FFFFFFF,(a0,d0.w)
-L25CAA	rts
-CalcTeamStarScores
+	move.l	#$7FFFFFFF,(a0,d0.w)		;game winner is the first star
+.x	rts
+CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one long per roster
+	
+	
+	
+	
+	
 	movea.l	a2,a1
 	move.w	$C(a2),d3
 	sub.w	$C(a3),d3
@@ -418,9 +442,9 @@ CalcTeamStarScores
 	jsr	(GetGoalieCount).l
 	neg.w	d0
 	add.w	d4,d0
-L25CC4	move.l	d3,(a4)
+.loop	move.l	d3,(a4)
 	cmp.w	d0,d4
-	bhi.w	L25D06
+	bhi.w	.goalie
 	clr.w	d1
 	move.b	$B6(a2),d1
 	mulu.w	#$2AF8,d1
@@ -433,32 +457,32 @@ L25CC4	move.l	d3,(a4)
 	move.b	$EA(a2),d1
 	mulu.w	#$A,d1
 	tst.w	d3
-	bne.w	L25D00
+	bne.w	.add
 	mulu.w	#$64,d1
 	add.l	d1,(a4)
 	clr.l	d1
 	add.w	$138(a1),d1
-L25D00	add.l	d1,(a4)
-	bra.w	L25D3E
-L25D06	cmp.w	$138(a1),d5
-	bhi.w	L25D3E
+.add	add.l	d1,(a4)
+	bra.w	.next
+.goalie	cmp.w	$138(a1),d5
+	bhi.w	.next
 	clr.w	d1
 	move.b	$B6(a2),d1
 	mulu.w	#$64,d1
 	clr.w	d2
 	move.b	$EA(a2),d2
-	beq.w	L25D3E
+	beq.w	.next
 	divu.w	d2,d1
 	cmpi.w	#$4,d1
-	bhi.w	L25D3E
+	bhi.w	.next
 	addi.l	#$7D00,(a4)
 	tst.w	d1
-	bne.w	L25D3E
+	bne.w	.next
 	addi.l	#$124F8,(a4)
-L25D3E	adda.w	#$2,a1
+.next	adda.w	#$2,a1
 	adda.w	#$1,a2
 	adda.w	#$4,a4
-	dbra	d4,L25CC4
+	dbra	d4,.loop
 	rts
 	movem.l	d0-d2/a0-a4,-(sp)
 	jsr	(printz).l
@@ -467,27 +491,27 @@ L25D3E	adda.w	#$2,a1
 	moveq	#$5,d1
 	jsr	(Framer).l
 	btst	#$5,$17F7A.l
-	bne.w	L25DA4
+	bne.w	.l25DA4
 	jsr	(printz).l
 	dc.w	$0024
 	dc.b	$BF,$0C,$04,$49,$6E,$6A,$75,$72,$79,$20,$74,$6F,$3A,$BF,$0C,$06,$4F,$75,$74,$20,$66,$6F,$72,$20,$70,$65,$72,$69,$6F,$64,$BF,$0C,$05,$00
-	bra.w	L25DCC
-L25DA4	jsr	(printz).l
+	bra.w	.l25DCC
+.l25DA4	jsr	(printz).l
 	dc.w	$0022
 	dc.b	$BF,$0C,$04,$49,$6E,$6A,$75,$72,$79,$20,$74,$6F,$3A,$BF,$0C,$06,$4F,$75,$74,$20,$66,$6F,$72,$20,$67,$61,$6D,$65,$BF,$0C,$05,$00
-L25DCC	bsr.w	Sub_4116C
+.l25DCC	bsr.w	Sub_4116C
 	jsr	(print).l
 	btst	#$0,$17BE3.l
-	beq.w	L25DF6
+	beq.w	.l25DF6
 	jsr	(printz).l
 	String	CC_Font1Pri,$14,$6,'the game'
-L25DF6	movem.l	(sp)+,d0-d2/a0-a4
+.l25DF6	movem.l	(sp)+,d0-d2/a0-a4
 	rts
 	bset	#$7,$17F78.l
 	btst	#$0,$17F78.l
-	beq.w	L25E16
+	beq.w	.l25E16
 	jmp	(ShootoutModeBox).l
-L25E16	movem.l	d0-d2/a0-a4,-(sp)
+.l25E16	movem.l	d0-d2/a0-a4,-(sp)
 	move.w	#$FFFF,d0
 	jsr	(prefmes).l
 	jsr	(printz).l
@@ -505,9 +529,9 @@ L25E16	movem.l	d0-d2/a0-a4,-(sp)
 	move.b	$66(a2),d0
 	movea.l	#tmstruct,a2
 	dc.w	$4A79,$0001,$9366
-	beq.w	L25E70
+	beq.w	.l25E70
 	movea.l	#awtmstruct,a2
-L25E70	bsr.w	FormatPlayerNumInitial
+.l25E70	bsr.w	FormatPlayerNumInitial
 	jsr	(print).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$7
@@ -523,22 +547,29 @@ L25E70	bsr.w	FormatPlayerNumInitial
 	move.w	$19370.l,d0
 	movea.l	#awtmstruct,a2
 	dc.w	$4A79,$0001,$9366
-	beq.w	L25ED2
+	beq.w	.l25ED2
 	movea.l	#tmstruct,a2
-L25ED2	jsr	(FormatPlayerNumInitial).l
+.l25ED2	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-ShowGoalBox
+ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!' ('PP
+	
+	
+	
+									;assists of the last goal entry (FormatPlayerName). Calls CountGoalies,
+									;StartArenaAnim (home hat trick),
+									;PrintPlayerGoals and PrintPlayerAssists; BA_PS_flags bit 2 sets sflags2
+									;bit 2. Called from SetPA
 	dc.w	$0016,$BF04
 	bchg	d1,(a0)
 	dc.w	$454E,$414C,$5459,$2053,$484F,$5421,$BF04,$0500
 Sub_40EFA
 	movem.l	d0-d2/a0-a4,-(sp)
 	btst	#$2,$17F70.l
-	beq.w	L25F12
+	beq.w	.l25F12
 	bset	#$2,$17F6C.l
-L25F12	movea.l	#tmstruct,a2
+.l25F12	movea.l	#tmstruct,a2
 	jsr	(lcfound_close).l
 	adda.w	#$366,a2
 	jsr	(lcfound_close).l
@@ -549,43 +580,43 @@ L25F12	movea.l	#tmstruct,a2
 	moveq	#$13,d0
 	move.w	#$5,d1
 	tst.b	$4(a4)
-	bmi.w	L25F5E
+	bmi.w	.l25F5E
 	addi.w	#$2,d1
 	tst.b	$5(a4)
-	bmi.w	L25F5E
+	bmi.w	.l25F5E
 	addi.w	#$1,d1
-L25F5E	jsr	(Framer).l
+.l25F5E	jsr	(Framer).l
 	jsr	$25D8C.l
 	movea.l	#tmstruct,a2
 	move.w	$193AA.l,$17E98.l
 	btst	#$7,$2(a4)
-	beq.w	L25F92
+	beq.w	.l25F92
 	adda.w	#$366,a2
 	move.w	$193AC.l,$17E98.l
-L25F92	dc.w	$43FA,$0116
+.l25F92	dc.w	$43FA,$0116
 	bclr	#$0,$17F7E.l
-	beq.w	L25FA6
+	beq.w	.l25FA6
 	dc.w	$43FA,$0126
-L25FA6	clr.w	d0
+.l25FA6	clr.w	d0
 	move.b	$3(a4),d0
 	addi.w	#$B6,d0
 	cmpi.b	#$3,(a2,d0.w)
-	bne.w	L25FF0
+	bne.w	.l25FF0
 	movem.w	d1,-(sp)
 	clr.w	d1
 	move.b	$3(a4),d1
 	cmp.w	$17E98.l,d1
 	movem.w	(sp)+,d1
-	blt.w	L25FF0
+	blt.w	.l25FF0
 	adda.w	(a1),a1
 	move.w	d0,-(sp)
 	move.w	$2A(a2),d0
 	cmp.w	(HomeTeam).l,d0
-	bne.w	L25FEE
+	bne.w	.l25FEE
 	move.w	#$0,d0
 	jsr	(StartArenaAnim).l
-L25FEE	move.w	(sp)+,d0
-L25FF0	jsr	(printbig).l
+.l25FEE	move.w	(sp)+,d0
+.l25FF0	jsr	(printbig).l
 	clr.w	d0
 	move.b	$3(a4),d0
 	move.w	d0,-(sp)
@@ -598,13 +629,13 @@ L25FF0	jsr	(printbig).l
 	move.b	$3(a4),d1
 	cmp.w	$17E98.l,d1
 	movem.w	(sp)+,d1
-	blt.w	L26030
+	blt.w	.l26030
 	jsr	$2AA80.l
-L26030	clr.w	d0
+.l26030	clr.w	d0
 	move.b	$4(a4),d0
-	bmi.w	L2609C
+	bmi.w	.l2609C
 	bclr	#$5,$17F72.l
-	bne.w	L2609C
+	bne.w	.l2609C
 	jsr	(printz).l
 	String	CC_Font1Pri,$E,$6,'Assist by:',CC_Font1Pri,$C,$7
 	move.w	d0,-(sp)
@@ -614,7 +645,7 @@ L26030	clr.w	d0
 	jsr	$2AA6A.l
 	clr.w	d0
 	move.b	$5(a4),d0
-	bmi.w	L2609C
+	bmi.w	.l2609C
 	jsr	(printz).l
 	String	CC_Font1Pri,$C,$8
 	move.w	d0,-(sp)
@@ -622,7 +653,7 @@ L26030	clr.w	d0
 	jsr	(print).l
 	move.w	(sp)+,d0
 	jsr	$2AA6A.l
-L2609C	bclr	#$5,$17F72.l
+.l2609C	bclr	#$5,$17F72.l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
 	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
@@ -636,14 +667,17 @@ L2609C	bclr	#$5,$17F72.l
 	moveq	#$8,d1
 	move.l	#$7FF,d2
 	jmp	(eraser).l
-GetPlayerName
+GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols are
+	
+	
+	
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
 	dc.w	$3039,$0001,$80EE
-	bpl.w	L26124
+	bpl.w	.0
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
-L26124	bsr.w	Sub_4112E
+.0	bsr.w	Sub_4112E		;name for d0 of team a2
 	movem.l	(sp)+,d0/a2
 	rts
 Sub_4112E
@@ -667,13 +701,14 @@ Sub_4116C
 	movem.l	d0/a2,-(sp)
 	movea.l	#tmstruct,a2
 	dc.w	$3039,$0001,$80EE
-	bpl.w	L26188
+	bpl.w	.l26188
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
-L26188	bsr.w	FormatPlayerNumInitial
+.l26188	bsr.w	FormatPlayerNumInitial
 	movem.l	(sp)+,d0/a2
 	rts
-FormatPlayerNumInitial
+FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in
+	
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	L26290
 	move.l	a0,-(sp)
@@ -687,15 +722,16 @@ FormatPlayerNumInitial
 	lea.l	-$2(a0,d0.w),a2
 	move.b	(a0)+,(a1)+
 	move.w	#$2E20,(a1)+
-L261BC	cmpi.b	#$20,(a0)+
-	bne.w	L261BC
-L261C4	move.b	(a0)+,(a1)+
+.skip	cmpi.b	#$20,(a0)+
+	bne.w	.skip
+.copy	move.b	(a0)+,(a1)+
 	cmpa.l	a0,a2
-	bne.w	L261C4
+	bne.w	.copy
 	bsr.w	FinalizeTextBuffer
 	movem.l	(sp)+,d0-d3/a0/a2
 	rts
-FormatPlayerName
+FormatPlayerName						;a1 = mesarea string "NN Last" for player d0 of team a2, built in
+	
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	L26290
 	move.l	a0,-(sp)
@@ -707,15 +743,16 @@ FormatPlayerName
 	movea.l	(sp)+,a0
 	move.w	(a0)+,d0
 	lea.l	-$2(a0,d0.w),a2
-L261FA	cmpi.b	#$20,(a0)+
-	bne.w	L261FA
-L26202	move.b	(a0)+,(a1)+
+.skip	cmpi.b	#$20,(a0)+
+	bne.w	.skip
+.copy	move.b	(a0)+,(a1)+
 	cmpa.l	a0,a2
-	bne.w	L26202
+	bne.w	.copy
 	bsr.w	FinalizeTextBuffer
 	movem.l	(sp)+,d0-d3/a0/a2
 	rts
-FormatPlayerNameLast
+FormatPlayerNameLast						;FormatPlayerNameShort without the leading space ("Last", space padded).
+	
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	L26290
 	movea.l	#TextBuffer,a1
@@ -724,46 +761,49 @@ FormatPlayerNameLast
 	bsr.w	L26290
 	movea.l	#TextBuffer,a1
 	move.b	#$20,(a1)+
-FormatLastName
+FormatLastName						;Skip the first name, copy the last name, pad; branched to from
+	
 	move.w	(a0)+,d0
 	lea.l	-$2(a0,d0.w),a2
-L2623E	cmpi.b	#$20,(a0)+
-	bne.w	L2623E
-L26246	move.b	(a0)+,(a1)+
+.loop	cmpi.b	#$20,(a0)+
+	bne.w	.loop
+.loop2	move.b	(a0)+,(a1)+
 	cmpa.l	a0,a2
-	beq.w	L2625C
+	beq.w	.pad
 	tst.b	(a0)
-	bne.w	L26246
-	bra.w	L2625C
-L26258	move.b	#$20,(a1)+
-L2625C	cmpa.l	#$17F00,a1
-	blt.w	L26258
+	bne.w	.loop2
+	bra.w	.pad
+.loop3	move.b	#$20,(a1)+
+.pad	cmpa.l	#$17F00,a1
+	blt.w	.loop3
 	bsr.w	FinalizeTextBuffer
 	movem.l	(sp)+,d0-d3/a0/a2
 	rts
-FinalizeTextBuffer
+FinalizeTextBuffer						;mesarea length word = a1 - mesarea, with a 0 pad byte when odd. Returns
+	
 	move.l	a1,d0
 	subi.l	#$17EF2,d0
 	btst	#$0,d0
-	beq.w	L26286
+	beq.w	.even
 	clr.b	(a1)+
 	addi.w	#$1,d0
-L26286	movea.l	#mesarea,a1
+.even	movea.l	#mesarea,a1
 	move.w	d0,(a1)
 	rts
 L26290	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0
-	bra.w	L262A2
-L2629C	adda.w	(a0),a0
+	bra.w	.l262A2
+.l2629C	adda.w	(a0),a0
 	adda.w	#$8,a0
-L262A2	dbra	d0,L2629C
+.l262A2	dbra	d0,.l2629C
 	rts
-ConvertByteToDigits
+ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digits of bcd byte d0
+	
 	move.w	d0,-(sp)
 	lsr.b	#$4,d0
-	bne.w	L262B4
+	bne.w	.n0
 	move.b	#$F0,d0
-L262B4	addi.b	#$30,d0
+.n0	addi.b	#$30,d0
 	move.b	d0,(a1)+
 	move.w	(sp)+,d0
 	andi.w	#$F,d0
@@ -771,7 +811,9 @@ L262B4	addi.b	#$30,d0
 	move.b	d0,(a1)+
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_262C8.bin
-updatecrowdf_cd0
+updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
+									;excitement. Used by updatecrowdf.
+									;Used by updatecrowdf, indexed by crowd level and Crowdstep
 	movep.w	$20C(a4),d0
 	movep.w	$40C(a4),d1
 	movep.w	$A0C(a4),d2
