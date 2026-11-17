@@ -218,7 +218,46 @@ dodmalist
 	cmpa.l	#$18D6A,a6
 	bgt.w	.loop
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_22C16.bin
+L3DC16	move.w	$18D30.l,d0
+	addi.w	#$2,d0
+	dc.w	$6100,$AB5E
+	btst.b	#$4,$FF800E.l
+	dc.w	$66F6
+	move.w	#$31,$FF8026.l
+	move.w	$17CF0.l,$FF8028.l
+	bset.b	#$3,$FF800F.l
+	btst.b	#$3,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+	btst.b	#$3,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$4,$FF800F.l
+	btst.b	#$4,$FF800E.l
+	dc.w	$66F6
+	move.w	#$30,$FF8026.l
+	move.l	#$40020010,$FF8028.l
+	bset.b	#$3,$FF800F.l
+	btst.b	#$3,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+	btst.b	#$3,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$4,$FF800F.l
+	btst.b	#$4,$FF800E.l
+	dc.w	$66F6
+	move.w	#$31,$FF8026.l
+	move.w	$17CF2.l,$FF8028.l
+	bset.b	#$3,$FF800F.l
+	btst.b	#$3,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+	btst.b	#$3,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$4,$FF800F.l
+	rts
 setvideo
 	movem.l	d0-d7/a0-a6,-(sp)
 .loop	btst	#$0,(disflags).l

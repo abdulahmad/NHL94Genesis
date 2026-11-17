@@ -813,7 +813,111 @@ ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digi
 	addi.b	#$30,d0
 	move.b	d0,(a1)+
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_262C8.bin
+L412C8	bclr.b	#$5,$FF800F.l
+	jsr	$39258.l
+	dc.b	$00,$12,$BD,$00,$00,$41,$64,$64,$72,$65,$73,$73,$20,$45,$72,$72	; .....Address Err
+	dc.b	$6F,$72	; or
+L412E8	move.l	$A(sp),d0
+	move.l	$2(sp),d1
+	bra.w	L4134E
+	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$18	; ........N....X..
+	dc.b	$BD,$00,$00,$49,$6C,$6C,$65,$67,$61,$6C,$20,$49,$6E,$73,$74,$72	; ...Illegal Instr
+	dc.b	$75,$63,$74,$69,$6F,$6E,$20,$2F,$00,$02,$22,$00,$60,$00,$00,$2C	; uction /..".`..,
+	dc.b	$08,$B9,$00,$05,$00,$FF,$80,$0F,$4E,$B9,$00,$03,$92,$58,$00,$16	; ........N....X..
+	dc.b	$BD,$00,$00,$44,$69,$76,$69,$73,$69,$6F,$6E,$20,$62,$79,$20,$7A	; ...Division by z
+	dc.b	$65,$72,$6F,$00,$20,$2F,$00,$02,$22,$00	; ero. /..".
+L4134E	movea.l	#$17EF2,a0
+	move.w	#$18,(a0)+
+	move.b	#$BD,(a0)+
+	move.b	#$0,(a0)+
+	move.b	#$2,(a0)+
+	move.l	d1,-(sp)
+	bsr.w	L4152A
+	move.b	#$BD,(a0)+
+	move.b	#$0,(a0)+
+	move.b	#$4,(a0)+
+	move.l	(sp)+,d0
+	bsr.w	L4152A
+	movea.l	#$17EF2,a1
+	jsr	$3926A.l
+	movea.l	#$C00000,a0
+	btst.b	#$7,$FF800E.l
+	dc.w	$66F6
+	move.w	#$9100,$FF8022.l
+	move.w	#$A,$FF8020.l
+	bset.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$7,$FF800F.l
+	btst.b	#$7,$FF800E.l
+	dc.w	$66F6
+	move.w	#$9206,$FF8022.l
+	move.w	#$A,$FF8020.l
+	bset.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$7,$FF800F.l
+	btst.b	#$7,$FF800E.l
+	dc.w	$66F6
+	move.w	#$8F02,$FF8022.l
+	move.w	#$A,$FF8020.l
+	bset.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$7,$FF800F.l
+	btst.b	#$7,$FF800E.l
+	dc.w	$66F6
+	move.l	#$C0200000,$FF8022.l
+	move.w	#$B,$FF8020.l
+	bset.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$7,$FF800F.l
+	movea.l	$47D18.l,a1
+	adda.l	(a1),a1
+	adda.w	#$20,a1
+	moveq	#$7,d0
+	btst.b	#$7,$FF800E.l
+	dc.w	$66F6
+	move.l	(a1)+,$FF8022.l
+	move.w	#$E,$FF8020.l
+	bset.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$67F6
+	bset.b	#$7,$FF800F.l
+	bclr.b	#$6,$FF800F.l
+	btst.b	#$6,$FF800E.l
+	dc.w	$66F6
+	bclr.b	#$7,$FF800F.l
+	dc.w	$51C8,$FFB2
+	dc.w	$6000,$FFFE
+L4152A	moveq	#$7,d2
+	rol.l	#$4,d0
+	move.w	d0,d1
+	andi.w	#$F,d1
+	addi.w	#$30,d1
+	cmpi.w	#$39,d1
+	ble.w	.l26544
+	addi.w	#$7,d1
+.l26544	move.b	d1,(a0)+
+	dc.w	$51CA,$FFE4
+	rts
 updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
 									;excitement. Used by updatecrowdf.
 									;Used by updatecrowdf, indexed by crowd level and Crowdstep

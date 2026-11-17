@@ -15,6 +15,11 @@ import segcd_flow as F
 import emit_m68k as E
 import segcd_one as S
 
+_asm = S.assemble
+def _assemble(cfg):
+    errs, txt = _asm(cfg)
+    return [e for e in errs if 'odd address' not in e[2]], txt   # a warning: *+N branches inside dc.w code
+S.assemble = _assemble
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 os.chdir(root)
 base = 0x1B000
@@ -43,7 +48,7 @@ decode = {p: F.decode_at(d, p, base) for p in insns}
 # existing labels (global) from the last build listing
 labels = {}
 for l in open('output/obj/hockey .lst', errors='replace').read().replace('\r', '').split('\n'):
-    m = re.match(r'^([0-9A-F]{8}) ((?:[0-9A-F]{2,4} ?)*)\s+([A-Za-z_]\w*):?\t', l)
+    m = re.match(r'^([0-9A-F]{8}) ((?:[0-9A-F]{2,4} ?)*) +([A-Za-z_]\w*):?\t', l)
     if m and m.group(3) not in ('dc', 'dcb'):
         labels.setdefault(int(m.group(1), 16), m.group(3))
 # entries: calls, run starts, jsr/bsr targets inside code
@@ -163,36 +168,32 @@ def gen(k, v):
 inc_of = {}
 for f in glob.glob('src/segacd/hockey/*.asm'):
     for i, l in enumerate(open(f).read().split('\n')):
-        m = re.search(r'incbin\t\.\.\\Extracted\\SegaCD\\HOCKEY\\(hockey_\w+\.bin)', l)
-        if m: inc_of[m.group(1)] = (f, i)
-touched = {}
-newassets = {}
-for k, v in code_assets.items():
+        m = re.search(r'^(\S*)\tincbin\t\.\.\\Extracted\\SegaCD\\HOCKEY\\(hockey_\w+\.bin)', l)
+        if m: inc_of[m.group(2)] = (f, i, m.group(1))
+only = [a for a in sys.argv[1:] if a.startswith('hockey_')]
+done = []; failed = []
+for k, v in list(code_assets.items()):
+    if only and k not in only: continue
+    f, i, olab = inc_of[k]
+    text0 = open(f).read(); assets0 = open(apath).read()
     lines, na = gen(k, v)
-    f, i = inc_of[k]
-    touched.setdefault(f, []).append((i, lines))
-    del assets[k]; newassets.update(na)
-assets.update(newassets)
-for f, ch in touched.items():
-    L = open(f).read().split('\n')
-    for i, lines in sorted(ch, reverse=True):
-        L[i:i + 1] = lines
+    if olab:
+        if lines and lines[0].startswith('\t'): lines.insert(0, olab)
+        elif lines: lines[0] = olab + '\n' + lines[0]
+    L = text0.split('\n'); L[i:i + 1] = lines
     open(f, 'w').write('\n'.join(L))
-json.dump(dict(sorted(assets.items(), key=lambda kv: kv[1]['start'])), open(apath, 'w'), indent=1)
-os.system('node tools/extractAssetsSegaCD.js >/dev/null')
-# fix loop
-incs = [l.split()[1].replace('\\', '/') for l in open('src/segacd/hockey.asm') if l.strip().startswith('include') and 'macros' not in l and l.split()[1].endswith('.asm')]
-parts = []
-for x in incs:
-    nm = os.path.basename(x)[:-4]
-    path = 'src/segacd/hockey/%s.asm' % nm
-    if os.path.exists(path) and path in touched:
-        parts.append((0, 0, 'gen', nm))
-cfg = dict(disc='cdbin/HOCKEY.BIN', base=base, name='hockey', oaq='-')
-ok = S.fixloop(cfg, parts, 'src/segacd/hockey', d)
-print('converged' if ok else 'FAILED')
-if ok:
-    for a, b, kind, nm in parts:
-        p0 = 'src/segacd/hockey/%s.asm' % nm
-        t0 = open(p0).read().split('\n')
-        open(p0, 'w').write('\n'.join(re.sub(r'\t;@[0-9a-f]*\s*$', '', l) for l in t0))
+    a2 = json.load(open(apath)); del a2[k]; a2.update(na)
+    json.dump(dict(sorted(a2.items(), key=lambda kv: kv[1]['start'])), open(apath, 'w'), indent=1)
+    os.system('node tools/extractAssetsSegaCD.js >/dev/null')
+    nm = os.path.basename(f)[:-4]
+    cfg = dict(disc='cdbin/HOCKEY.BIN', base=base, name='hockey', oaq='-')
+    ok = S.fixloop(cfg, [(0, 0, 'gen', nm)], 'src/segacd/hockey', d)
+    if ok:
+        t0 = open(f).read().split('\n')
+        open(f, 'w').write('\n'.join(re.sub(r'\t;@[0-9a-f]*\s*$', '', l) for l in t0))
+        done.append(k)
+    else:
+        open(f, 'w').write(text0); open(apath, 'w').write(assets0)
+        failed.append(k)
+    print('ASSET', k, 'ok' if ok else 'FAILED', flush=True)
+print('done', done); print('failed', failed)

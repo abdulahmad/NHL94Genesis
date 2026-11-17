@@ -292,7 +292,190 @@ assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take 
 	
 	
 	ori.w	#$C2,$74(a4,d0.w)
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_078CC.bin
+	dc.b	$00,$C2,$00,$74,$00,$C2,$00,$74,$00,$C2,$FF,$8C,$00,$C2,$FF,$8C	; ...t...t........
+	dc.b	$00,$C2,$FF,$8C,$00,$C2,$FF,$8C,$00,$C2,$FF,$FB,$00,$AB,$FF,$FB	; ................
+	dc.b	$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB	; ................
+	dc.b	$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$FF,$F7,$00,$32	; ...............2
+	dc.b	$FF,$F7,$00,$32,$FF,$F7,$00,$32,$FF,$F7,$FF,$FB,$FF,$F7,$FF,$CE	; ...2...2........
+	dc.b	$FF,$F7,$FF,$CE,$FF,$F7,$FF,$CE,$FF,$F7,$08,$AB,$00,$01,$00,$62	; ...............b
+	dc.b	$67,$00,$01,$38,$08,$EB,$00,$03,$00,$64,$66,$00,$01,$2E,$08,$B9	; g..8.....df.....
+	dc.b	$00,$00,$00,$01,$7E,$C6,$08,$B9,$00,$05,$00,$01,$7F,$7C,$42,$79	; ....~........|By
+	dc.b	$00,$01,$7E,$C6,$42,$79,$00,$01,$7E,$BE,$50,$F9,$00,$01,$7E,$30	; ..~.By..~.P...~0
+L2295C	movem.l	d0-d7/a0-a6,-(sp)
+	move.w	$52(a3),d0
+	move.w	d0,$17EBC.l
+	btst.b	#$3,$62(a3)
+	bne.w	.l7A40
+	tst.w	$1AD7A.l
+	bmi.w	.l7A40
+	beq.w	.l79E2
+	cmpi.w	#$1,$1AD7C.l
+	bne.w	.l79D8
+	move.w	$17FA8.l,-(sp)
+	move.w	$17FA0.l,-(sp)
+	move.w	$17FAC.l,$17FA8.l
+	move.w	$17FA4.l,$17FA0.l
+	jsr	$312DC.l
+	move.w	$17FA0.l,$17FA4.l
+	move.w	$17FA8.l,$17FAC.l
+	move.w	(sp)+,$17FA0.l
+	move.w	(sp)+,$17FA8.l
+	bra.w	.l7A40
+.l79D8	jsr	$312DC.l
+	bra.w	.l7A40
+.l79E2	tst.w	$1AD7C.l
+	bne.w	.l7A36
+	move.w	$17FA6.l,-(sp)
+	move.w	$17F9E.l,-(sp)
+	move.w	$17FAA.l,$17FA6.l
+	move.w	$17FA2.l,$17F9E.l
+	jsr	$312B8.l
+	move.w	$17F9E.l,$17FA2.l
+	move.w	$17FA6.l,$17FAA.l
+	move.w	(sp)+,$17F9E.l
+	move.w	(sp)+,$17FA6.l
+	bra.w	.l7A40
+.l7A36	jsr	$312B8.l
+	bra.w	.l7A40
+.l7A40	move.w	d0,-(sp)
+	bsr.w	L22C68
+	clr.w	$5A(a3)
+	jsr	$363C0.l
+	bset.b	#$5,$62(a3)
+	bset.b	#$1,$63(a3)
+	move.w	(sp)+,d0
+	movem.l	(sp)+,d0-d7/a0-a6
+	bra.w	.l7C66
+	btst.b	#$0,$17EC6.l
+	bne.w	.l7ACE
+	movem.w	d0-d1,-(sp)
+	move.w	$17B80.l,d0
+	sub.w	$0(a3),d0
+	cmpi.w	#$3C,d0
+	bgt.w	.l7A90
+	cmpi.w	#$FFC4,d0
+	bgt.w	.l7AA4
+.l7A90	move.w	$17BA8.l,d1
+	eor.w	d1,d0
+	bmi.w	.l7AA4
+	movem.w	(sp)+,d0-d1
+	bra.w	.l7AD8
+.l7AA4	move.w	$17B94.l,d0
+	sub.w	$14(a3),d0
+	cmpi.w	#$3C,d0
+	bgt.w	.l7ABE
+	cmpi.w	#$FFC4,d0
+	bgt.w	.l7ACA
+.l7ABE	move.w	$17BAA.l,d1
+	eor.w	d1,d0
+	dc.w	$6A00,$FFD4
+.l7ACA	movem.w	(sp)+,d0-d1
+.l7ACE	tst.w	$17BE0.l
+	bmi.w	.l7AE4
+.l7AD8	bclr.b	#$7,$17F7C.l
+	bra.w	.l7C60
+.l7AE4	btst.b	#$0,$17F68.l
+	bne.w	.l7C60
+	movem.l	d0-d1,-(sp)
+	cmpi.w	#$10,$5A(a3)
+	bge.w	.l7BA8
+	btst.b	#$2,$17EC6.l
+	bne.w	.l7BA8
+	move.w	$0(a3),d0
+	move.w	$17B80.l,d1
+	sub.w	d1,d0
+	bpl.w	.l7B1C
+	neg.w	d0
+.l7B1C	move.w	$14(a3),d1
+	move.w	$17B94.l,d2
+	sub.w	d2,d1
+	bpl.w	.l7B2E
+	neg.w	d1
+.l7B2E	move.w	$17BA8.l,d2
+	beq.w	.l7B3E
+	cmp.w	d0,d1
+	ble.w	.l7B46
+.l7B3E	move.w	$17BAA.l,d2
+	move.w	d1,d0
+.l7B46	swap	d0
+	andi.l	#$FFFF0000,d0
+	tst.w	d2
+	bpl.w	.l7B56
+	neg.w	d2
+.l7B56	move.w	#$11,d1
+	tst.w	$18C20.l
+	beq.w	.l7B68
+	move.w	#$16,d1
+.l7B68	tst.w	d2
+	bne.w	.l7B72
+	move.w	#$1,d2
+.l7B72	divu.w	d2,d0
+	andi.l	#$FFFF,d0
+	divu.w	d1,d0
+	move.w	$5A(a3),d2
+	lsr.w	#$2,d2
+	subi.w	#$6,d2
+	neg.w	d2
+	asl.w	#$2,d2
+	cmp.w	d2,d0
+	bgt.w	.l7B9E
+	neg.w	$5A(a3)
+	addi.w	#$18,$5A(a3)
+	bra.w	.l7C24
+.l7B9E	add.w	d7,$17EBE.l
+	bra.w	.l7BD4
+.l7BA8	bset.b	#$2,$17EC6.l
+	btst.b	#$1,$17EC6.l
+	bne.w	.l7BD4
+	cmpi.w	#$18,$5A(a3)
+	bne.w	.l7BD4
+	addi.w	#$30,$5C(a3)
+	bset.b	#$1,$17EC6.l
+.l7BD4	btst.b	#$1,$17EC6.l
+	beq.w	.l7BFE
+	cmpi.w	#$18,$5A(a3)
+	ble.w	.l7BFE
+	btst.b	#$0,$17EC6.l
+	bne.w	.l7BFE
+	movem.l	(sp)+,d0-d1
+	bra.w	.l7C60
+.l7BFE	btst.b	#$0,$17EC6.l
+	beq.w	.l7C24
+	cmpi.w	#$18,$5A(a3)
+	bne.w	.l7C24
+	cmpi.w	#$1,$5C(a3)
+	ble.w	.l7C24
+	move.w	#$1,$5C(a3)
+.l7C24	btst.b	#$1,$63(a3)
+	bne.w	.l7C36
+	movem.l	(sp)+,d0-d1
+	bra.w	.l7C56
+.l7C36	move.w	$5A(a3),d0
+	movem.l	(sp)+,d0-d1
+	btst.b	#$0,$17EC6.l
+	beq.w	.l7C54
+	bclr.b	#$5,$62(a3)
+	bra.w	.l7C56
+.l7C54	nop
+.l7C56	btst.b	#$1,$63(a3)
+	bne.w	.l7C66
+.l7C60	jsr	$2AF00.l
+.l7C66	rts
+L22C68	move.w	#$7FC,d1
+	movem.w	d0-d1,-(sp)
+	move.w	$0(a3),d0
+	neg.w	d0
+	move.w	#$108,d1
+	btst.b	#$7,$62(a3)
+	bne.w	.l7C86
+	neg.w	d1
+.l7C86	sub.w	$14(a3),d1
+	jsr	$362F8.l
+	jsr	$22D9E.l
+	movem.w	(sp)+,d0-d1
+	beq.w	.l7CA2
+	move.w	#$92E,d1
+.l7CA2	rts
 PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3 shoots at, else
 	
 	movem.w	d0-d1,-(sp)

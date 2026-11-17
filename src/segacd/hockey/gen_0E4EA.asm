@@ -8,7 +8,274 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	adda.w	#$2,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0E508.bin
+L29508	dc.w	$0006,$202E
+	move.l	d0,d0
+	movem.l	d0-d7/a0-a6,-(sp)
+	movem.l	d7/a0,-(sp)
+	movea.l	$47D24.l,a0
+	move.w	#$2,d7
+	jsr	$6044.w
+	movem.l	(sp)+,d7/a0
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	btst.b	#$5,$FF800F.l
+	beq.b	.lE540
+	move.w	#$1,-(a6)
+	bra.b	.lE544
+.lE540	move.w	#$0,-(a6)
+.lE544	bclr.b	#$5,$FF800F.l
+	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	movem.l	d0-d2/d7/a0-a1,-(sp)
+	move.w	#$1,d7
+	move.w	#$4,d0
+	jsr	$6044.w
+	move.l	a0,$47D8C.l
+	movem.l	(sp)+,d0-d2/d7/a0-a1
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	tst.w	(a6)+
+	beq.b	.lE584
+	bset.b	#$5,$FF800F.l
+	bra.b	.lE58C
+.lE584	bclr.b	#$5,$FF800F.l
+.lE58C	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	move.w	#$2,d0
+	jsr	$5F22.w
+	move.w	#$2,d0
+	jsr	$5F22.w
+	move.w	#$80,d0
+	jsr	$5F22.w
+	dc.w	$6500,$FFF6
+	move.w	#$81,d0
+	jsr	$5F22.w
+	move.w	(a0),d2
+	andi.w	#$FF00,d2
+	cmpi.w	#$0,d2
+	dc.w	$66EC
+	move.w	#$5,$19364.l
+	move.w	#$13,d0
+	lea.l	$19364.l,a0
+	jsr	$5F22.w
+	jsr	$376D4.l
+	clr.w	$1A43A.l
+	moveq	#$0,d0
+	moveq	#$1C,d1
+	jsr	$2E728.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
+L295FC	move.w	#$8,d0
+	move.w	#$8,d1
+	jsr	$38CA0.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BE,$01,$13,$00	; ......
+L29616	move.w	#$8,d0
+	move.w	#$8,d1
+	jsr	$38CA0.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
+L29630	movea.l	$47D8C.l,a0
+	move.w	$17FB0.l,d0
+	asl.w	#$2,d0
+	movea.l	(a0,d0.w),a0
+	movea.l	a0,a1
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
+	asl.w	#$3,d0
+	movea.l	#$2AF56,a0
+	subi.w	#$40,d0
+	adda.w	d0,a0
+	adda.l	(a2)+,a1
+	clr.l	d1
+	clr.l	d0
+	moveq	#$6,d2
+	move.w	#$6,d3
+	moveq	#$4,d5
+	jsr	$387E2.l
+	movea.l	#$BBCF0,a0
+	movea.l	#$BBD10,a1
+	move.w	#$7,d0
+	move.l	(a0)+,(a1)+
+	dc.w	$51C8,$FFFC
+	jsr	$38F6E.l
+	dc.b	$00,$06,$8E,$02,$14,$00	; ......
+L2968C	movea.l	$47D8C.l,a0
+	move.w	$17FAE.l,d0
+	asl.w	#$2,d0
+	movea.l	(a0,d0.w),a0
+	movea.l	a0,a1
+	movea.l	a0,a2
+	adda.l	(a2)+,a0
+	asl.w	#$3,d0
+	subi.w	#$40,d0
+	movea.l	#$2AF56,a0
+	adda.w	d0,a0
+	adda.l	(a2)+,a1
+	clr.w	d1
+	clr.w	d0
+	moveq	#$6,d2
+	move.w	#$6,d3
+	moveq	#$4,d5
+	jsr	$387E2.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BD,$04,$01,$00	; ......
+L296D2	moveq	#$20,d0
+	moveq	#$6,d1
+	jsr	$38CA0.l
+	jsr	$39258.l
+	dc.b	$00,$18,$BD,$06,$03,$20,$20,$50,$65,$72,$69,$6F,$64,$20,$53,$74	; .....  Period St
+	dc.b	$61,$74,$73,$20,$20,$BE,$06,$01	; ats  ...
+L296FA	btst.b	#$1,$17F7A.l
+	dc.w	$6700,$004A
+	jsr	$38F6E.l
+	dc.b	$00,$1C,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$1A	; .....1...2...3..
+	dc.b	$09,$4F,$54,$BE,$20,$09,$54,$6F,$74,$61,$6C,$00	; .OT. .Total.
+L29728	jsr	$38F6E.l
+	dc.b	$00,$1C,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$1A	; .....<...<...<..
+	dc.b	$0A,$3C,$3C,$BE,$20,$0A,$3C,$3C,$3C,$3C,$3C,$00	; .<<. .<<<<<.
+L2974A	bra.w	L29786
+	jsr	$38F6E.l
+	dc.b	$00,$16,$BE,$0C,$09,$31,$BE,$11,$09,$32,$BE,$16,$09,$33,$BE,$20	; .....1...2...3. 
+	dc.b	$09,$54,$6F,$74,$61,$6C	; .Total
+L2976A	jsr	$38F6E.l
+	dc.b	$00,$16,$BE,$0C,$0A,$3C,$BE,$11,$0A,$3C,$BE,$16,$0A,$3C,$BE,$20	; .....<...<...<. 
+	dc.b	$0A,$3C,$3C,$3C,$3C,$3C	; .<<<<<
+L29786	bsr.w	L298BA
+	bsr.w	L29904
+	move.w	#$18,$18D62.l
+	jsr	$2EDE2.l
+	btst	#$7,d1
+	bne.w	.lE7F0
+	btst	#$2,d1
+	bne.w	.lE7D4
+	btst	#$3,d1
+	bne.w	.lE7B8
+	dc.w	$6000,$FFE0
+.lE7B8	tst.w	$1A43A.l
+	dc.w	$6600,$FFD6
+	st.b	$1A43A.l
+	bsr.w	L298BA
+	bsr.w	L29904
+	dc.w	$6000,$FFC4
+.lE7D4	tst.w	$1A43A.l
+	dc.w	$6700,$FFBA
+	clr.w	$1A43A.l
+	bsr.w	L298BA
+	bsr.w	L29904
+	dc.w	$6000,$FFA8
+.lE7F0	movem.l	(sp)+,d0-d7/a0-a6
+	movem.l	d7/a0,-(sp)
+	movea.l	$47D8C.l,a0
+	move.w	#$2,d7
+	jsr	$6044.w
+	movem.l	(sp)+,d7/a0
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	btst.b	#$5,$FF800F.l
+	beq.b	.lE822
+	move.w	#$1,-(a6)
+	bra.b	.lE826
+.lE822	move.w	#$0,-(a6)
+.lE826	bclr.b	#$5,$FF800F.l
+	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	movem.l	d0-d2/d7/a0-a1,-(sp)
+	move.w	#$1,d7
+	move.w	#$2,d0
+	jsr	$6044.w
+	move.l	a0,$47D24.l
+	movem.l	(sp)+,d0-d2/d7/a0-a1
+	move.l	a6,-(sp)
+	movea.l	$19360.l,a6
+	tst.w	(a6)+
+	beq.b	.lE866
+	bset.b	#$5,$FF800F.l
+	bra.b	.lE86E
+.lE866	bclr.b	#$5,$FF800F.l
+.lE86E	move.l	a6,$19360.l
+	movea.l	(sp)+,a6
+	move.w	#$2,d0
+	jsr	$5F22.w
+	move.w	#$80,d0
+	jsr	$5F22.w
+	dc.w	$6500,$FFF6
+	move.w	#$81,d0
+	jsr	$5F22.w
+	move.w	(a0),d2
+	andi.w	#$FF00,d2
+	cmpi.w	#$0,d2
+	dc.w	$66EC
+	move.w	#$5,$19364.l
+	move.w	#$13,d0
+	lea.l	$19364.l,a0
+	jsr	$5F22.w
+	jmp	$2E980.l
+L298BA	tst.w	$1A43A.l
+	dc.w	$6700,$0022
+	jsr	$38F6E.l
+	dc.b	$00,$18,$BE,$12,$07,$53,$68,$6F,$74,$73,$BE,$0F,$1A,$5B,$20,$46	; .....Shots...[ F
+	dc.b	$6F,$72,$20,$47,$6F,$61,$6C,$73	; or Goals
+L298E2	rts
+	jsr	$38F6E.l
+	dc.b	$00,$18,$BE,$12,$07,$47,$6F,$61,$6C,$73,$BE,$0F,$1A,$46,$6F,$72	; .....Goals...For
+	dc.b	$20,$53,$68,$6F,$74,$73,$20,$5D	;  Shots ]
+L29902	rts
+L29904	movem.l	d0-d7/a0-a6,-(sp)
+	jsr	$38F6E.l
+	dc.b	$00,$06,$BE,$00,$00,$00	; ......
+L29914	movea.l	#$186B2,a2
+	move.w	#$E,$18D5A.l
+	bsr.w	L2993E
+	movea.l	#$1834C,a2
+	move.w	#$16,$18D5A.l
+	bsr.w	L2993E
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+L2993E	lea.l	$344(a2),a0
+	tst.w	$1A43A.l
+	beq.w	.lE950
+	lea.l	$34C(a2),a0
+.lE950	clr.w	$1A44A.l
+	move.w	#$B,$18D58.l
+	bsr.w	L299F6
+	cmpi.w	#$1,$180E4.l
+	blt.w	.lE9B6
+	move.w	#$10,$18D58.l
+	bsr.w	L299F6
+	cmpi.w	#$2,$180E4.l
+	blt.w	.lE9B6
+	move.w	#$15,$18D58.l
+	bsr.w	L299F6
+	cmpi.w	#$3,$180E4.l
+	blt.w	.lE9B6
+	btst.b	#$1,$17F7A.l
+	beq.w	.lE9B6
+	move.w	#$1A,$18D58.l
+	bsr.w	L299F6
+.lE9B6	move.w	#$21,$18D58.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
+L299CA	subi.w	#$3,$18D58.l
+	move.w	$1A44A.l,d0
+	move.w	#$2,d1
+	cmpi.w	#$64,d0
+	blt.w	.lE9E8
+	move.w	#$3,d1
+.lE9E8	jsr	$3919A.l
+	jsr	$38F80.l
+	rts
+L299F6	move.w	(a0)+,d0
+	add.w	d0,$1A44A.l
+	jsr	$38F6E.l
+	dc.b	$00,$06,$20,$20,$20,$00	; ..   .
+L29A0A	subi.w	#$3,$18D58.l
+	move.w	#$2,d1
+	cmpi.w	#$64,d0
+	blt.w	.lEA22
+	move.w	#$3,d1
+.lEA22	jsr	$3919A.l
+	jmp	$38F80.l
 StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	

@@ -600,6 +600,44 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	movem.l	(sp)+,d0/a0
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_0FF56.bin
+L2B2D6	movem.l	d0/a0-a3,-(sp)
+	move.w	$17F6C.l,-(sp)
+	btst.b	#$1,$17F78.l
+	dc.w	$6600,$00B2
+	movea.l	#$1834C,a2
+	lea.l	$366(a2),a3
+	move.w	$26(a2),d0
+	sub.w	$26(a3),d0
+	dc.w	$6700,$009C
+	bpl.w	.l10322
+	btst.b	#$6,$17F6C.l
+	bne.w	.l1033C
+	bsr.w	L2B392
+	bset.b	#$6,$17F6C.l
+	bra.w	.l1033C
+.l10322	exg.l	a2,a3
+	btst.b	#$6,$17F6C.l
+	beq.w	.l1033C
+	bsr.w	L2B392
+	bclr.b	#$6,$17F6C.l
+.l1033C	bset.b	#$5,$17F6C.l
+	dc.w	$6600,$0056
+	cmpa.l	#$1834C,a3
+	bne.w	.l10376
+	move.w	$17FAE.l,$1A56C.l
+	move.w	#$1,$1A56E.l
+	jsr	$2A478.l
+	bset.b	#$6,$17F7C.l
+	dc.w	$6000,$0028
+.l10376	move.w	$17FAE.l,$1A56C.l
+	move.w	#$4,$1A56E.l
+	jsr	$2A478.l
+	dc.w	$6000,$FFDA
+L2B392	bclr.b	#$5,$17F6C.l
+	rts
+	move.w	(sp)+,$17F6C.l
+	movem.l	(sp)+,d0/a0-a3
+	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
 									;teams' penalty slots (clrTmPdst). Called from clockcont_0
 	movem.l	d0/a0,-(sp)

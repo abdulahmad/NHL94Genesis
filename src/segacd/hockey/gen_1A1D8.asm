@@ -15,7 +15,33 @@
 	dbhi	d1,.loop2
 	move.w	-(a0),$16(a2)
 	bra.w	.loop
-.next5	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
+.next5
+	dc.b	$00,$00,$00,$01,$00,$02,$00,$00,$00,$02,$00,$01,$00,$00,$00,$01	; ................
+	dc.b	$00,$00,$08,$AB,$00,$01,$00,$62,$67,$00,$05,$1E,$08,$B9,$00,$02	; .......bg.......
+	dc.b	$00,$01,$7F,$70,$08,$B9,$00,$05,$00,$01,$7F,$70,$08,$B9,$00,$00	; ...p.......p....
+	dc.b	$00,$01,$7F,$72,$08,$B9,$00,$01,$00,$01,$7F,$72,$08,$B9,$00,$00	; ...r.......r....
+	dc.b	$00,$01,$7F,$7E,$08,$B9,$00,$01,$00,$01,$7F,$7E,$08,$B9,$00,$02	; ...~.......~....
+	dc.b	$00,$01,$7F,$7E	; ...~
+L3526C	movem.l	d0-d7/a0-a6,-(sp)
+	dc.w	$6100,$1A98
+	btst.b	#$0,$18D64.l
+	dc.w	$6600,$FFF6
+	move.w	#$3C,$19374.l
+	tst.w	$17EE2.l
+	bne.w	L352A8
+	tst.w	$17EE4.l
+	bne.w	L352A8
+	move.w	#$FFFF,$1A560.l
+	dc.w	$6000,$000A
+L352A8	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A2A8.bin
+L35750	subi.w	#$1,$40(a3)
+	bpl.w	updatefaceoff
+	jsr	$2A466.l
+	bra.w	Endfaceoff
+	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
+	dc.b	$00,$03,$05,$01,$04,$00,$00,$00,$00,$00,$FF,$06,$FF,$DD,$FF,$CE	; ................
+	dc.b	$00,$23,$FF,$CE,$FF,$CE,$FF,$F6,$00,$00,$FF,$F1,$00,$32,$FF,$F6	; .#...........2..
+	dc.b	$00,$00,$FF,$C4	; ....
 ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer for each human team
 	move.w	#$FFFF,$17F9E.l
 	move.w	#$FFFF,$17FA0.l
@@ -187,7 +213,111 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	beq.w	.next4
 	jmp	$2BA1E.l
 .next4	jmp	(GameOver).l
-	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1AAD4.bin
+L35AD4	btst.b	#$2,$17F70.l
+	beq.w	.l1AAE4
+	bsr.w	UpdatePenaltyShotEnd
+.l1AAE4	bclr.b	#$1,$62(a3)
+	beq.w	.l1AAF8
+	clr.w	$40(a3)
+	move.w	#$78,$42(a3)
+.l1AAF8	movea.l	#$17E36,a1
+	sub.w	d7,$2(a1)
+	sub.w	d7,$6(a1)
+	sub.w	d7,$40(a3)
+	bpl.w	.l1AB18
+	addi.w	#$5,$40(a3)
+	bsr.w	findpc
+.l1AB18	move.w	$17BE0.l,d0
+	bmi.w	.l1AB5E
+	asl.w	#$7,d0
+	movea.l	#$17480,a2
+	adda.w	d0,a2
+	dc.w	$6100,$01FA
+	move.l	a2,-(sp)
+	dc.w	$6100,$082E
+	add.w	$0(a2),d0
+	sub.w	$0(a3),d0
+	asr.w	#$2,d0
+	add.w	d0,$0(a3)
+	add.w	$14(a2),d1
+	sub.w	$14(a3),d1
+	asr.w	#$2,d1
+	add.w	d1,$14(a3)
+	move.w	$28(a2),$28(a3)
+	move.w	$2A(a2),$2A(a3)
+.l1AB5E	bsr.w	PuckIChk
+	bsr.w	L35BC6
+	btst.b	#$0,$17F68.l
+	bne.w	.l1ABAE
+	tst.w	$17BE0.l
+	bpl.w	.l1ABA8
+	move.w	$0(a3),d0
+	cmp.w	$1C(a3),d0
+	bne.w	.l1ABA8
+	move.w	$14(a3),d0
+	cmp.w	$20(a3),d0
+	bne.w	.l1ABA8
+	moveq	#$6,d0
+	subi.w	#$1,$42(a3)
+	bpl.w	.l1ABA4
+	bsr.w	AddPenalty2
+.l1ABA4	bra.w	.l1ABAE
+.l1ABA8	move.w	#$78,$42(a3)
+.l1ABAE	tst.b	$2C(a3)
+	bne.w	L3B882
+	tst.w	$18(a3)
+	bne.w	L3B882
+	bsr.w	puckunflip
+	bra.w	L3B882
+L35BC6	btst.b	#$5,$17F68.l
+	beq.w	rtss2
+	btst.b	#$2,$17F70.l
+	bne.w	rtss2
+	movea.l	#$1834C,a1
+	lea.l	$366(a1),a2
+	bsr.w	ClearOffsidesIfAllPlayers
+	exg.l	a1,a2
+	bsr.w	ClearOffsidesIfAllPlayers
+	move.w	#$54,d0
+	cmp.w	$14(a3),d0
+	bgt.w	.l1AC40
+	cmp.w	$20(a3),d0
+	ble.w	rtss2
+	addi.w	#$A,d0
+	btst.b	#$1,$17F68.l
+	beq.w	.l1AC18
+	exg.l	a1,a2
+.l1AC18	moveq	#$5,d2
+	movea.l	$22(a2),a0
+	tst.w	$34(a0)
+	bmi.w	.l1AC36
+	cmp.w	$14(a0),d0
+	bge.w	.l1AC36
+	bset.b	#$4,$32(a2)
+	rts
+.l1AC36	adda.w	#$80,a0
+	dc.w	$51CA,$FFE2
+	rts
+.l1AC40	neg.w	d0
+	cmp.w	$14(a3),d0
+	blt.w	rtss2
+	cmp.w	$20(a3),d0
+	bge.w	rtss2
+	subi.w	#$A,d0
+	btst.b	#$1,$17F68.l
+	bne.w	.l1AC64
+	exg.l	a1,a2
+.l1AC64	moveq	#$5,d2
+	movea.l	$22(a2),a0
+	tst.w	$34(a0)
+	bmi.w	.l1AC82
+	cmp.w	$14(a0),d0
+	ble.w	.l1AC82
+	bset.b	#$4,$32(a2)
+	rts
+.l1AC82	adda.w	#$80,a0
+	dc.w	$51CA,$FFE2
+	rts
 ClearOffsidesIfAllPlayers						;a2 = team struct: clear the team offsides flag once no skater is past the
 	
 	btst	#$4,$32(a2)
