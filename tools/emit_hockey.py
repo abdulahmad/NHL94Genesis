@@ -17,11 +17,12 @@ import sys
 sys.path.insert(0, __import__("os").path.dirname(__file__))
 import emit_m68k as E
 
-STRING_CALLS = {0x38F6E, 0x38D8C, 0x39258}  # printz, printsmallz, printbigz: an inline String follows
+STRING_CALLS = {0x38F6E, 0x38D8C, 0x39258, 0x39200}  # printz, printsmallz, printbigz: an inline String follows
 REMAP_CALLS = {0x38946}  # DecompressGraphicsWithRemap: an 8 byte remap table follows
 
 
 NM_FILE = {}  # file offset -> routine name, from docs/segacd-handoff/name_map.csv
+LAST_PC = 0
 LABELS = {}   # file offset -> global label name (from label:ADDR=Name items)
 
 
@@ -98,6 +99,12 @@ def emit_code(blob, start, end, names):
             continue
         items.append((pc, "ins", got))
         pc += got.size
+        if got.mnemonic.startswith("bsr") and got.size in (2, 4):
+            t = E.target_of(got)
+            if t is not None and t in {x - 0x1B000 for x in STRING_CALLS}:
+                n = int.from_bytes(blob[pc:pc + 2], "big")
+                items.append((pc, "str", blob[pc:pc + n]))
+                pc += n
         if got.mnemonic.startswith("jsr") and len(got.bytes) == 6:
             a = int.from_bytes(got.bytes[2:], "big")
             if a in STRING_CALLS:
@@ -107,6 +114,8 @@ def emit_code(blob, start, end, names):
             elif a in REMAP_CALLS:
                 items.append((pc, "remap", blob[pc:pc + 8]))
                 pc += 8
+    global LAST_PC
+    LAST_PC = pc
     # labels
     labels = {}
     for a, k, p in items:
@@ -159,18 +168,20 @@ def emit_code(blob, start, end, names):
             if p.mnemonic.startswith("ori.b") and text2.endswith(",d0") and not (len(p.bytes) == 4 and p.bytes[:3] == b"\0\0\0"):
                 out.append(f"{lab}\tdc.l\t${int.from_bytes(bytes(p.bytes),'big'):X}")
             else:
-                out.append(f"{lab}\t{mn}\t{text2}".rstrip())
+                if kind in ("btst", "bclr", "bset", "bchg") and re.search(r",(?!d[0-7]$)", text2.replace(" ", "")):
+                    mn = kind  # a memory operand is a byte access
+                out.append(f"{lab}\t{mn}\t{text2}".rstrip() + "\t;@" + bytes(p.bytes).hex())
         elif k == "dw":
-            out.append(f"{lab}\tdc.w\t${int.from_bytes(p,'big'):04X}")
+            out.append(f"{lab}\tdc.w\t${int.from_bytes(p,'big'):04X}\t;@" + bytes(p).hex())
         elif k == "str":
             pr = render_string(p)
             if pr:
-                out.append(f"{lab}\tString\t" + ",".join(pr))
+                out.append(f"{lab}\tString\t" + ",".join(pr) + "\t;@" + bytes(p).hex())
             else:
-                out.append(f"{lab}\tdc.w\t${int.from_bytes(p[:2],'big'):04X}")
-                out.append("\tdc.b\t" + ",".join("$%02X" % b for b in p[2:]))
+                out.append(f"{lab}\tdc.w\t${int.from_bytes(p[:2],'big'):04X}\t;@" + bytes(p[:2]).hex())
+                out.append("\tdc.b\t" + ",".join("$%02X" % b for b in p[2:]) + "\t;@" + bytes(p[2:]).hex())
         elif k == "remap":
-            out.append(f"{lab}\tdc.l\t${int.from_bytes(p[:4],'big'):08X},${int.from_bytes(p[4:],'big'):08X}\t;remap table")
+            out.append(f"{lab}\tdc.l\t${int.from_bytes(p[:4],'big'):08X},${int.from_bytes(p[4:],'big'):08X}\t;@" + bytes(p).hex())
     return out[2:], ext
 
 
