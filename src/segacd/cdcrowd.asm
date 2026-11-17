@@ -5,6 +5,9 @@
 
 	include	segacd\hockey.inc
 
+;calls begin
+;calls end
+
 	org	$238CE
 
 updatesound							;move the crowd noise volume (asv) toward Crowdlevel

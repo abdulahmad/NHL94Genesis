@@ -92,7 +92,7 @@ compareAt('output/segacd/filmbuf.bin', 'cdbin/STARTER.BIN', 0x4E26, 0x9A);
 compareAt('output/segacd/cdtrack.bin', 'cdbin/HOCKEY.BIN', 0x1C206, 0xCA);
 compareAt('output/segacd/cdcrowd.bin', 'cdbin/HOCKEY.BIN', 0x238CE, 0x4E);
 compareAt('output/segacd/cdstart.bin', 'cdbin/HOCKEY.BIN', 0x24D66, 0x82);
-compareAt('output/segacd/scoutopen.bin', 'cdbin/HOCKEY.BIN', 0xD2B6, 0xE2);
+compareAt('output/segacd/scout94.bin', 'cdbin/HOCKEY.BIN', 0xD1D4, 0xFFA);
 compareAt('output/segacd/scouting.bin', 'cdbin/HOCKEY.BIN', 0x2486C, 0x39E);
 compareAt('output/segacd/playerpic.bin', 'cdbin/PLAYER.BIN', 0x1D54, 0x2BC);
 compareAt('output/segacd/playercareer.bin', 'cdbin/PLAYER.BIN', 0x2010, 0x3C0);

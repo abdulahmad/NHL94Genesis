@@ -106,7 +106,7 @@ Verified bytes are 22,690 of the 410,162 bytes in the four code files (5.5%). `M
 | `src/segacd/cdtrack.asm` | `cdbin/HOCKEY.BIN` `$1C206` | choose a track and `MSCPLAY1` (202) |
 | `src/segacd/cdcrowd.asm` | `cdbin/HOCKEY.BIN` `$238CE` | crowd-volume slew, no PSG write (78) |
 | `src/segacd/cdstart.asm` | `cdbin/HOCKEY.BIN` `$24D66` | CD-DA mode, seek track 4, repeat it (130) |
-| `src/segacd/scoutopen.asm` | `cdbin/HOCKEY.BIN` `$D2B6` | scouting screen open, song `$7A` (226) |
+| `src/segacd/scout94.asm` | `cdbin/HOCKEY.BIN` `$D1D4`..`$E1CE` | scouting report and matchup screen (ScoutCrowdRecord to ScoutStub), 94G names |
 | `src/segacd/scouting.asm` | `cdbin/HOCKEY.BIN` `$2486C` | InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, with the cartridge labels (926) |
 | `src/segacd/scoutload.asm` | `cdbin/HOCKEY.BIN` `$24C12` | scouting file directory load (340) |
 | `src/segacd/playerpic.asm` | `cdbin/PLAYER.BIN` `$1D54` | player photo picker (700) |
@@ -136,7 +136,7 @@ Verified bytes are 22,690 of the 410,162 bytes in the four code files (5.5%). `M
 
 `subboot.asm` is the sub CPU's first instructions, the flag handshake, BIOS function 0 at `$6044`, and `jmp $1B000` into `HOCKEY.BIN`. `subheap.asm` is the Sierra C `EngineIdle` and `GetData` at `$262A8` (the `link a6` the boot jumps to). The function name is the bytes after each `rts`.
 
-The audio slices are the sub CPU's CD-DA calls and the PCM stream. `docs/segacd_audio.md` lists the `_CDBIOS` numbers, the track word at `$1745E`, and the crowd-volume routine whose PSG stores were dropped. `scoutopen.asm` starts the scouting screen on song `$7A`. `scouttext.asm` and `scouttok.asm` type the Ron Barr script. `docs/segacd_announce.md` is that write-up.
+The audio slices are the sub CPU's CD-DA calls and the PCM stream. `docs/segacd_audio.md` lists the `_CDBIOS` numbers, the track word at `$1745E`, and the crowd-volume routine whose PSG stores were dropped. `scout94.asm` starts the scouting screen on song `$7A`. `scouttext.asm` and `scouttok.asm` type the Ron Barr script. `docs/segacd_announce.md` is that write-up.
 
 `playerpic.asm`, `playercareer.asm`, and `playerpage.asm` are the `PLAYER.BIN` overlay: a photo (or a generic `$504`-byte frame), the Regular/Playoff career rows, and the Players/Goalies page with the power-play lines. `docs/segacd_stats.md`.
 

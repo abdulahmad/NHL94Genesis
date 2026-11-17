@@ -1,28 +1,92 @@
 disc_file,disc_addr,name_94g,notes
-HOCKEY.BIN,$10D28,updatecrowdf,hockey94.asm. HVcount reads replaced by main CPU command $1B. crowdanim.asm
-HOCKEY.BIN,$4154C,updatecrowdf_cd0,tables94.asm. Frame table. crowdtable.asm (file $2654C)
-HOCKEY.BIN,$238CE,updatesound,video94.asm. PSG writes dropped, returns the attenuation byte. cdcrowd.asm
-HOCKEY.BIN,$3710C,sfx,middle94.asm. Posts command $26 instead of play_sfx_or_music_track. sfxcd.asm (file $1C10C)
-HOCKEY.BIN,$371D2,song,middle94.asm. Stores a CD track for songs $30-$77. cdrequest.asm (file $1C1D2)
-HOCKEY.BIN,$D2B6,ScoutingReport,scout94.asm. First part only (up to DecompressGraphicsWithRemap). scoutopen.asm
-HOCKEY.BIN,$2486C,InitScoutingDisplay,setup94.asm. scouting.asm
-HOCKEY.BIN,$24872,UpdateScoutingDisplay,setup94.asm. Paragraph offset from scoutparaoff on the disc. scouting.asm
-HOCKEY.BIN,$24BB6,ScrollDisplayUp,setup94.asm. scouting.asm
-HOCKEY.BIN,$2262E,ReadNameLog,call target in scoutopen.asm (not transcribed)
-HOCKEY.BIN,$231A0,BuildHotColdLists,call target in scoutopen.asm (not transcribed)
+HOCKEY.BIN,$2BD28,updatecrowdf,hockey94.asm. HVcount reads replaced by main CPU command $1B. crowdanim.asm
+HOCKEY.BIN,$4154C,updatecrowdf_cd0,tables94.asm. Frame table. crowdtable.asm
+HOCKEY.BIN,$3E8CE,updatesound,video94.asm. PSG writes dropped, returns the attenuation byte. cdcrowd.asm
+HOCKEY.BIN,$3710C,sfx,middle94.asm. Posts command $26 instead of play_sfx_or_music_track. sfxcd.asm
+HOCKEY.BIN,$371D2,song,middle94.asm. Stores a CD track for songs $30-$77. cdrequest.asm
+HOCKEY.BIN,$3F86C,InitScoutingDisplay,setup94.asm. scouting.asm
+HOCKEY.BIN,$3F890,UpdateScoutingDisplay,setup94.asm. Paragraph offset from scoutparaoff on the disc. scouting.asm
+HOCKEY.BIN,$3FBB6,ScrollDisplayUp,setup94.asm. scouting.asm
+HOCKEY.BIN,$282B6,ScoutingReport,scout94.asm. CD speech added. scoutreport.asm
+HOCKEY.BIN,$2262E,ReadNameLog,call target (position in ScoutingReport)
+HOCKEY.BIN,$231A0,BuildHotColdLists,call target (position in ScoutingReport)
 HOCKEY.BIN,$2308E,Create_HotCold_Table,call target; address pair from tools/segacd_relocs.py
-HOCKEY.BIN,$3F11E,clearTeamStats,call target in scoutopen.asm (by position in ScoutingReport)
-HOCKEY.BIN,$37B5A,setVram,call target in scoutopen.asm (by position in ScoutingReport)
-HOCKEY.BIN,$38946,DecompressGraphicsWithRemap,call target in scoutopen.asm (by position in ScoutingReport)
-HOCKEY.BIN,$281D4,ScoutCrowdRecord,call target in scouting.asm (by position in UpdateScoutingDisplay)
-HOCKEY.BIN,$2ADB2,PlayedByHome,call target; address pair from tools/segacd_relocs.py
-HOCKEY.BIN,$2AE5A,PlayedByAway,call target; address pair from tools/segacd_relocs.py
-HOCKEY.BIN,$29164,GetTeamNickname,call target in scouting.asm (by position)
-HOCKEY.BIN,$291AA,GetTeamArena,call target in scouting.asm (by position)
-HOCKEY.BIN,$23132,NextHomeHotPlayer,call target; address pair from tools/segacd_relocs.py
-HOCKEY.BIN,$23168,NextAwayHotPlayer,call target; address pair from tools/segacd_relocs.py
-HOCKEY.BIN,$2328E,NextHomeColdPlayer,call target in scouting.asm (by position)
-HOCKEY.BIN,$232C4,NextAwayColdPlayer,call target in scouting.asm (by position)
-HOCKEY.BIN,$379D6,DoDMA_nd2,call target in scouting.asm (by position in ScrollDisplayUp)
-HOCKEY.BIN,$1DF6E,printz,bsr target in scouting.asm; the jsr copy is $38F6E (address pair)
-HOCKEY.BIN,$1DF80,print,bsr target in scouting.asm; the jsr copy is $38F80 (address pair)
+HOCKEY.BIN,$3F11E,clearTeamStats,call target (position in ScoutingReport)
+HOCKEY.BIN,$37B5A,setVram,call target (position in ScoutingReport)
+HOCKEY.BIN,$38946,DecompressGraphicsWithRemap,call target (position in ScoutingReport)
+HOCKEY.BIN,$38958,DecompressGraphicsPlain,call target (position in ScoutingReport)
+HOCKEY.BIN,$393E8,AddSmallFont,call target (position in ScoutingReport)
+HOCKEY.BIN,$387E2,dobitmap,call target; address pair
+HOCKEY.BIN,$38CA0,Framer,call target; address pair
+HOCKEY.BIN,$38F6E,printz,call target; address pair (file $1DF6E is the same routine)
+HOCKEY.BIN,$38F80,print,call target; address pair
+HOCKEY.BIN,$39258,printbigz,call target (position in ScoutingReport)
+HOCKEY.BIN,$372D0,waitx,call target (position in ScoutingReport)
+HOCKEY.BIN,$374F0,ReadJoy1,call target; address pair
+HOCKEY.BIN,$3750E,ReadJoy2,call target (follows ReadJoy1 in waitx)
+HOCKEY.BIN,$37652,CompareHotColdTotals,call target (position in ScoutingReport)
+HOCKEY.BIN,$3DB90,vb2,vblank routine (position in ScoutingReport)
+HOCKEY.BIN,$281D4,ScoutCrowdRecord,call target (position in UpdateScoutingDisplay)
+HOCKEY.BIN,$2ADB2,PlayedByHome,call target; address pair
+HOCKEY.BIN,$2AE5A,PlayedByAway,call target; address pair
+HOCKEY.BIN,$29164,GetTeamNickname,call target (position in UpdateScoutingDisplay)
+HOCKEY.BIN,$291AA,GetTeamArena,call target (position in UpdateScoutingDisplay)
+HOCKEY.BIN,$23132,NextHomeHotPlayer,call target; address pair
+HOCKEY.BIN,$23168,NextAwayHotPlayer,call target; address pair
+HOCKEY.BIN,$2328E,NextHomeColdPlayer,call target (position in UpdateScoutingDisplay)
+HOCKEY.BIN,$232C4,NextAwayColdPlayer,call target (position in UpdateScoutingDisplay)
+HOCKEY.BIN,$379D6,DoDMA_nd2,call target (position in ScrollDisplayUp)
+HOCKEY.BIN,$6044,SDKCall,SDK entry, function number in d7 (docs/segacd_audio.md). Not in the cartridge
+HOCKEY.BIN,$5F22,_CDBIOS,Sega CD BIOS entry. Not in the cartridge
+HOCKEY.BIN,$28214,ScoutCrowdRecordBy,scout94.asm, unused
+HOCKEY.BIN,$2828A,ScoutEmptyTxt,scout94.asm
+HOCKEY.BIN,$2828C,ScoutByTxt,scout94.asm
+HOCKEY.BIN,$28292,ScoutSpaceTxt,scout94.asm
+HOCKEY.BIN,$28296,GetTeamCity,scout94.asm, unused
+HOCKEY.BIN,$289EC,ScoutParaOffset,disc only: byte offset of paragraph d0 in the script (cartridge skips lines)
+HOCKEY.BIN,$28A54,PageMatchup,scout94.asm
+HOCKEY.BIN,$28B22,TwoSpacesTxt,scout94.asm
+HOCKEY.BIN,$28B26,ScoutRatingText,scout94.asm
+HOCKEY.BIN,$28BB0,DrawMatchupPictures,scout94.asm
+HOCKEY.BIN,$28D5E,PrintMatchupRatings,scout94.asm
+HOCKEY.BIN,$28F8E,MatchupPosNames,scout94.asm
+HOCKEY.BIN,$28FFA,GetMatchupPlayers,scout94.asm
+HOCKEY.BIN,$29050,MatchupLineSlots,scout94.asm
+HOCKEY.BIN,$29058,RestartAdvantageMarks,scout94.asm
+HOCKEY.BIN,$29066,PrintAdvantageMarks,scout94.asm
+HOCKEY.BIN,$290FE,HomeAdvMarks,scout94.asm
+HOCKEY.BIN,$2912E,HomeAdv0Txt,scout94.asm
+HOCKEY.BIN,$2919A,HomeTxt,scout94.asm
+HOCKEY.BIN,$291A0,VisitorsTxt,scout94.asm
+HOCKEY.BIN,$291C4,ScoutStub,scout94.asm
+HOCKEY.BIN,$2258E,ReadCrowdRecord,call target; address pair
+HOCKEY.BIN,$25818,CopyString,call target; address pair
+HOCKEY.BIN,$2582E,AppendNumber,call target; address pair
+HOCKEY.BIN,$39208,appstring,call target; address pair
+HOCKEY.BIN,$29116,VisAdvMarks,scout94.asm
+HOCKEY.BIN,$29134,HomeAdv1Txt,scout94.asm
+HOCKEY.BIN,$2913A,HomeAdv2Txt,scout94.asm
+HOCKEY.BIN,$29140,HomeAdv3Txt,scout94.asm
+HOCKEY.BIN,$29146,VisAdv0Txt,scout94.asm
+HOCKEY.BIN,$2914C,VisAdv1Txt,scout94.asm
+HOCKEY.BIN,$29152,VisAdv2Txt,scout94.asm
+HOCKEY.BIN,$29158,VisAdv3Txt,scout94.asm
+HOCKEY.BIN,$2915E,EvenAdvTxt,scout94.asm
+HOCKEY.BIN,$28AE0,PrintMatchupRating,scout94.asm
+HOCKEY.BIN,$28B04,PrintTwoSpaces,scout94.asm
+HOCKEY.BIN,$28CA8,DrawMatchupPicture,scout94.asm
+HOCKEY.BIN,$28CDC,DrawMatchupLogo,scout94.asm
+HOCKEY.BIN,$28D02,DrawMatchupBitmap,scout94.asm
+HOCKEY.BIN,$28D50,GetTeamLogo,scout94.asm
+HOCKEY.BIN,$29024,GetMatchupPlayer,scout94.asm
+HOCKEY.BIN,$25DE8,AppendUserName,call target (position in ScoutCrowdRecordBy)
+HOCKEY.BIN,$2610C,CalcAttrib,call target; address pair
+HOCKEY.BIN,$2948E,PrintPlayerNameRight,call target (position in PrintMatchupRatings)
+HOCKEY.BIN,$2A024,GetTeamRating,call target (position in PrintMatchupRating)
+HOCKEY.BIN,$2A902,UnpackPicture,call target (position in DrawMatchupPicture)
+HOCKEY.BIN,$2AE82,AttribAdjust,call target; address pair
+HOCKEY.BIN,$26276,DrawPlayerPicture,call target (position in DrawMatchupPictures)
+HOCKEY.BIN,$38C06,eraser,call target (position in DrawMatchupBitmap)
+HOCKEY.BIN,$3919A,PushNumberWidth,call target; address pair
+HOCKEY.BIN,$38D9E,printsmall,call target; address pair
+HOCKEY.BIN,$38D8C,printsmallz,call target; address pair

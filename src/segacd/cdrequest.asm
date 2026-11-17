@@ -7,6 +7,9 @@
 
 	include	segacd\hockey.inc
 
+;calls begin
+;calls end
+
 	org	$1C1D2
 
 song								;play song number. One word passed on stack

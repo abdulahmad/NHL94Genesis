@@ -6,6 +6,9 @@
 
 	include	segacd\hockey.inc
 
+;calls begin
+;calls end
+
 	org	$1C10C
 
 sfx									;play sound effect number. One word passed on stack

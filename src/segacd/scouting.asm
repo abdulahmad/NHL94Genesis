@@ -7,6 +7,21 @@
 
 	include	segacd\hockey.inc
 
+;calls begin
+DoDMA_nd2	equ	$379D6
+GetTeamArena	equ	$291AA
+GetTeamNickname	equ	$29164
+NextAwayColdPlayer	equ	$232C4
+NextAwayHotPlayer	equ	$23168
+NextHomeColdPlayer	equ	$2328E
+NextHomeHotPlayer	equ	$23132
+PlayedByAway	equ	$2AE5A
+PlayedByHome	equ	$2ADB2
+ScoutCrowdRecord	equ	$281D4
+print	equ	$38F80
+printz	equ	$38F6E
+;calls end
+
 	org	$2486C
 
 InitScoutingDisplay					;start the text player: VertLineScrolling = -1, PlayerScrollCtr = -1, clear
@@ -128,7 +143,7 @@ UpdateScoutingDisplay				;text player for ScoutingReport: prints the script word
 	cmpi.w	#$1D,d0
 	ble.w	.8
 	bsr.w	ScrollDisplayUp
-.8	bsr.w	printz
+.8	bsr.w	printz-LOAD
 	; printz string: length word, then CC_Font1 ($FF), x=9, y=4
 	dc.w	$0006
 	dc.b	$FF,$09,$04,$00
@@ -136,7 +151,7 @@ UpdateScoutingDisplay				;text player for ScoutingReport: prints the script word
 	add.w	d0,(printx).l
 	move.w	(VertLineScrolling).l,d0
 	add.w	d0,(printy).l
-	bsr.w	print
+	bsr.w	print-LOAD
 	add.w	d1,(scoutcolumn).l
 	rts
 .9									;a2 = $40, crowd record

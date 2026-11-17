@@ -21,3 +21,7 @@
 
 ## Parked units
 (none)
+
+## Round 2: HOCKEY.BIN scouting module (scout94.asm)
+
+`src/segacd/scout94.asm` (`HOCKEY.BIN` `$D1D4`, 4090 bytes) replaces scoutopen.asm. It is generated from the cartridge source by `tools/emit_hockey.py` and `tools/hockey_align.py` (94G names, local labels and comments carried over), then annotated by hand where the disc differs (CD speech, `SDKCall`, `_CDBIOS`). `tools/segacd_calls.py` writes each fragment's routine equates from `name_map.csv`. The disc team struct has the goalie word at `$28`; the cartridge `tmgoalie` is `$26`.
