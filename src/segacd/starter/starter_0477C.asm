@@ -9,7 +9,7 @@ SwapMeg	link	a6,#$0
 	rts
 	dc.b	$87,'SwapMeg',$00,$00	; .SwapMeg..
 DrawText	link	a6,#$0
-DrawTextSub1	movem.l	d7/a4,-(sp)
+	movem.l	d7/a4,-(sp)
 	movea.l	$8(a6),a4
 	moveq	#$1,d0
 	move.l	d0,-(sp)
@@ -38,7 +38,7 @@ DrawTextSub1	movem.l	d7/a4,-(sp)
 	rts
 	dc.b	$88,'DrawText',$00,$00,$00	; .DrawText...
 NumStr	link	a6,#$FFF0
-NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
+	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
 	lea.l	-$10(a6),a4
 	move.l	$8(a6),d6
@@ -69,7 +69,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	rts
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	link	a6,#$0
-HexStrSub1	movem.l	d3-d7/a4,-(sp)
+	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
 	move.l	$8(a6),d5
 	movea.l	$10(a6),a4
@@ -103,9 +103,8 @@ HexStrSub1	movem.l	d3-d7/a4,-(sp)
 	rts
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
 ; C function aprint (Sierra C name tag follows it).
-; C function aprint (Sierra C name tag follows it).
-aprint_3	link	a6,#$FED8
-aprint	movem.l	d4-d7/a3-a4,-(sp)
+aprint	link	a6,#$FED8
+	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
 	lea.l	-$108(a6),a3
 	lea.l	$8(a6),a0
@@ -205,9 +204,8 @@ aprint	movem.l	d4-d7/a3-a4,-(sp)
 	rts
 	dc.b	$86,'aprint',$00,$00,$00	; .aprint...
 ; C function ffree (Sierra C name tag follows it).
-; C function ffree (Sierra C name tag follows it).
-ffree_3	link	a6,#$0
-ffree	movem.l	a3-a4,-(sp)
+ffree	link	a6,#$0
+	movem.l	a3-a4,-(sp)
 	movea.l	$8(a6),a3
 	movea.l	a3,a4
 	lea.l	-$10(a4),a4
@@ -221,14 +219,14 @@ ffree	movem.l	a3-a4,-(sp)
 	beq.b	.l4A2C
 .l4A1E	move.l	a4,-(sp)
 	pea.l	.l25DAE(pc)
-	jsr	aprint_3(pc)
+	jsr	aprint(pc)
 	addq.w	#$8,sp
 	bra.b	.l4A7C
 .l4A2C	tst.w	$2(a4)
 	bne.b	.l4A40
 	move.l	a4,-(sp)
 	pea.l	.l25D8E(pc)
-	jsr	aprint_3(pc)
+	jsr	aprint(pc)
 	addq.w	#$8,sp
 	bra.b	.l4A7C
 .l4A40	tst.l	$4(a4)
@@ -256,7 +254,7 @@ ffree	movem.l	a3-a4,-(sp)
 .l25DAE	dc.b	'Tried to ffree a'	; Tried to ffree a
 	dc.b	' bad block: %x',$00,$00	;  bad block: %x..
 findSmallestBlock	link	a6,#$0
-findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
+	movem.l	d5-d7/a3-a4,-(sp)
 	move.l	$8(a6),d5
 	lea.l	RestoreBios_91(pc),a0
 	movea.l	$8(a0),a4
@@ -287,9 +285,8 @@ findSmallestBlockSub1	movem.l	d5-d7/a3-a4,-(sp)
 	dc.b	$91,'findSmallestBlo'	; .findSmallestBlo
 	dc.b	$63,$6B,$00,$00	; ck..
 ; C function MaxFree (Sierra C name tag follows it).
-; C function MaxFree (Sierra C name tag follows it).
-MaxFree_3	link	a6,#$0
-MaxFree	movem.l	d6-d7/a4,-(sp)
+MaxFree	link	a6,#$0
+	movem.l	d6-d7/a4,-(sp)
 	lea.l	RestoreBios_91(pc),a0
 	movea.l	$8(a0),a4
 	moveq	#-1,d6
@@ -313,9 +310,8 @@ MaxFree	movem.l	d6-d7/a4,-(sp)
 	rts
 	dc.b	$87,'MaxFree',$00,$00	; .MaxFree..
 ; C function mmalloc (Sierra C name tag follows it).
-; C function mmalloc (Sierra C name tag follows it).
-mmalloc_3	link	a6,#$0
-mmalloc	movem.l	d6-d7/a3-a4,-(sp)
+mmalloc	link	a6,#$0
+	movem.l	d6-d7/a3-a4,-(sp)
 	move.l	$8(a6),d7
 	move.l	d7,d0
 	addq.l	#$7,d0
@@ -364,7 +360,7 @@ mmalloc	movem.l	d6-d7/a3-a4,-(sp)
 	rts
 	dc.b	$87,'mmalloc',$00,$00	; .mmalloc..
 InitHeap	link	a6,#$0
-InitHeapSub1	movem.l	a3-a4,-(sp)
+	movem.l	a3-a4,-(sp)
 	lea.l	RestoreBios_91(pc),a0
 	movea.l	$8(a0),a3
 	lea.l	RestoreBios_91(pc),a0
@@ -395,7 +391,7 @@ InitWorld	link	a6,#$0
 	move.l	d7,-(sp)
 	clr.w	$FF8020.l
 	pea.l	.l26052(pc)
-	jsr	aprint_3(pc)
+	jsr	aprint(pc)
 	lea.l	RestoreBios_91(pc),a0
 	moveq	#$F,d7
 	and.l	$8(a0),d7
@@ -403,7 +399,7 @@ InitWorld	link	a6,#$0
 	addq.w	#$4,sp
 	beq.b	.l4CB2
 	pea.l	.l26046(pc)
-	jsr	aprint_3(pc)
+	jsr	aprint(pc)
 	addq.w	#$4,sp
 .l4CB2	lea.l	RestoreBios_91(pc),a0
 	move.l	$8(a0),d0
@@ -423,11 +419,11 @@ InitWorld	link	a6,#$0
 	lea.l	RestoreBios_91(pc),a0
 	move.l	$8(a0),-(sp)
 	pea.l	.l26036(pc)
-	jsr	aprint_3(pc)
+	jsr	aprint(pc)
 	lea.l	RestoreBios_91(pc),a0
 	move.l	$C(a0),-(sp)
 	pea.l	.l26026(pc)
-	jsr	aprint_3(pc)
+	jsr	aprint(pc)
 	lea.l	RestoreBios_91(pc),a0
 	tst.l	$C(a0)
 	lea.l	$10(sp),sp

@@ -17,7 +17,7 @@ FilmClose	link	a6,#$0
 	moveq	#-1,d0
 	move.l	d0,$40(a4)
 	move.l	$14(a4),-(sp)
-	jsr	ffree_3(pc)
+	jsr	ffree(pc)
 	moveq	#$3,d0
 	move.l	d0,-(sp)
 	jsr	SendCommandToMain(pc)

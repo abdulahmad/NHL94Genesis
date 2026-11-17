@@ -126,7 +126,7 @@ AudioSilence
 	cmp.l	(a3),d0
 	bne.b	.l2653C
 	pea.l	$1000.w
-	jsr	mmalloc_3(pc)
+	jsr	mmalloc(pc)
 	movea.l	d0,a4
 	moveq	#$0,d7
 	move.l	#$400,d3
@@ -150,7 +150,7 @@ AudioSilence
 	cmp.l	d7,d0
 	bgt.b	.l26518
 	move.l	a4,-(sp)
-	jsr	ffree_3(pc)
+	jsr	ffree(pc)
 	jsr	PcmStartChannel0(pc)
 	moveq	#$0,d0
 	move.l	d0,(a3)

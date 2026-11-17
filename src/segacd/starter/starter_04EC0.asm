@@ -6,14 +6,14 @@ DisposeEngine	link	a6,#$0
 	tst.l	(a4)
 	beq.b	.l4EE4
 	move.l	(a4),-(sp)
-	jsr	ffree_3(pc)
+	jsr	ffree(pc)
 	addq.w	#$4,sp
 .l4EE4	movea.l	-$4(a6),a4
 	unlk	a6
 	rts
 	dc.b	$8D,'DisposeEngine',$00,$00	; .DisposeEngine..
 GetSectDst	link	a6,#$0
-GetSectDstSub1	movem.l	d7/a4,-(sp)
+	movem.l	d7/a4,-(sp)
 	lea.l	RestoreBios_91(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7
@@ -35,7 +35,7 @@ GetSectDstSub1	movem.l	d7/a4,-(sp)
 	rts
 	dc.b	$8A,'GetSectDst',$00,$00,$00	; .GetSectDst...
 PeekSectDst	link	a6,#$0
-PeekSectDstSub1	movem.l	d7/a4,-(sp)
+	movem.l	d7/a4,-(sp)
 	lea.l	RestoreBios_91(pc),a0
 	movea.l	$1C(a0),a4
 	moveq	#$0,d7

@@ -53,14 +53,14 @@ ClearVram	move.l	#$40000000,$C00004.l
 	adda.l	d0,a0
 	move.w	(a0),d2
 	move.w	#$4,d0
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 .l3E58	rts
 	move.w	sr,-(sp)
 	move.w	#$2700,sr
 	move.w	#$2,d0
 	move.w	$A12022.l,d1
 	move.w	#$100,d4
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 	move.w	(sp)+,sr
 	rts
 	dc.b	$00,$00,$00,$6B,$00,$6A,$00,$75,$00,$7C,$00,$73,$00,$74,$30,$3C	; ...k.j.u.|.s.t0<
@@ -320,7 +320,7 @@ Buf5EC_1	dcb.b	$5EC,0
 .lFF4918	dcb.b	$414,0
 ; Second copy of DrawTextToPlane.
 DrawTextToPlane_B	link	a6,#$0
-DispatchTailSub17	movem.l	d0-d7/a0-a5,-(sp)
+	movem.l	d0-d7/a0-a5,-(sp)
 	movea.l	#$C00000,a0
 	movea.l	#$E000,a2
 	move.l	$C(a6),d0
@@ -455,7 +455,7 @@ DispatchTail_85	dbra	d5,DispatchTailSub20
 	mulu.w	d7,d2
 	lsl.l	#$4,d2
 	move.l	a4,d0
-	bsr.b	DispatchTail_87
+	bsr.b	VdpDmaSetup
 	bra.b	DispatchTail_86
 	move.l	a4,d0
 	lsl.l	#$2,d0
@@ -483,7 +483,8 @@ DispatchTail_86	lea.l	Word1(pc),a2
 	movea.l	(sp)+,a0
 	lea.l	$10(sp),sp
 	jmp	(a0)
-DispatchTail_87	move.l	a1,d1
+; Writes the VDP DMA length and source registers ($93-$97) for a transfer from a1, size d2.
+VdpDmaSetup	move.l	a1,d1
 	addq.w	#$2,d1
 	lsr.l	#$1,d1
 	move.w	#$8F02,$4(a0)
@@ -570,7 +571,7 @@ Buf8_2	dcb.b	$8,0
 	dc.b	$20,$10,$20,$20,$40,$00,$00,$00,$50,$A0	;  .  @...P.
 	dcb.b	$C,0
 DoDrawTextCommand	link	a6,#$FF00
-DoDrawTextCommandSub1	movem.l	d6-d7/a4,-(sp)
+	movem.l	d6-d7/a4,-(sp)
 	lea.l	-$100(a6),a4
 	clr.w	d6
 	bra.b	.l5292
@@ -595,7 +596,7 @@ DoDrawTextCommandSub1	movem.l	d6-d7/a4,-(sp)
 	dc.b	$91,'DoDrawTextComma'	; .DoDrawTextComma
 	dc.b	$6E,$64,$00,$00	; nd..
 DoMoviePlayBack	link	a6,#$0
-DoMoviePlayBackSub1	movem.l	d5-d7/a4,-(sp)
+	movem.l	d5-d7/a4,-(sp)
 	movea.l	#$200000,a4
 	move.l	(a4),d5
 	move.l	$4(a4),d6
@@ -682,7 +683,7 @@ drawprint	link	a6,#$0
 	rts
 	dc.b	$89,'drawprint',$00,$00	; .drawprint..
 NumStr	link	a6,#$FFF0
-NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
+	movem.l	d6-d7/a3-a4,-(sp)
 	movea.l	$10(a6),a3
 	lea.l	-$10(a6),a4
 	move.l	$8(a6),d6
@@ -713,7 +714,7 @@ NumStrSub1	movem.l	d6-d7/a3-a4,-(sp)
 	rts
 	dc.b	$86,'NumStr',$00,$00,$00	; .NumStr...
 HexStr	link	a6,#$0
-HexStrSub1	movem.l	d3-d7/a4,-(sp)
+	movem.l	d3-d7/a4,-(sp)
 	move.w	$E(a6),d4
 	move.l	$8(a6),d5
 	movea.l	$10(a6),a4
@@ -747,7 +748,7 @@ HexStrSub1	movem.l	d3-d7/a4,-(sp)
 	rts
 	dc.b	$86,'HexStr',$00,$00,$00	; .HexStr...
 aprint	link	a6,#$FED8
-aprintSub1	movem.l	d4-d7/a3-a4,-(sp)
+	movem.l	d4-d7/a3-a4,-(sp)
 	lea.l	-$128(a6),a4
 	bra.w	.l55F0
 .l54EC	cmpi.b	#$25,d6
@@ -870,7 +871,7 @@ InitWorld	link	a6,#$0
 .lFF5684	dc.b	'MAINCPU is alive'	; MAINCPU is alive
 	dc.b	$00,$00	; ..
 GetCommandFromSub	link	a6,#$0
-GetCommandFromSubSub1	movem.l	d7/a3-a4,-(sp)
+	movem.l	d7/a3-a4,-(sp)
 	movea.l	#$A12010,a3
 	movea.l	#$A12020,a4
 .l56AA	move.w	(a4),d7
@@ -934,21 +935,21 @@ Set1MFlagSub1	lea.l	$FF481C.l,a0
 	lea.l	$FF6E0C.l,a0
 	move.w	#$184F,d1
 	movea.l	$A12022.l,a1
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 	lea.l	$FF963C.l,a0
 	move.w	#$0,d1
 	move.w	#$6,d0
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 	lea.l	$FFA0C6.l,a0
 	move.w	#$7,d0
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 	jsr	$FF67E8.l
 	rts
 	move.w	#$0,d0
 	lea.l	$FF6E0C.l,a0
 	move.w	#$184F,d1
 	movea.l	$A12022.l,a1
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 	jsr	$FF67E8.l
 	rts
 	move.w	#$0,$A11200.l
@@ -971,7 +972,8 @@ Set1MFlagSub1	lea.l	$FF481C.l,a0
 	move.b	#$40,$A1000B.l
 .l590C	move.w	#$100,$A11200.l
 	rts
-Set1MFlagSub2	lea.l	$FF485E.l,a0
+; Stores the address $FF485E in the vector at $FFFD08.
+SetTextVector	lea.l	$FF485E.l,a0
 	move.l	a0,$FFFD08.l
 	rts
 	lea.l	$FF4854.l,a0
@@ -990,7 +992,7 @@ Set1MFlagSub2	lea.l	$FF485E.l,a0
 	move.w	#$2,d0
 	move.w	$A12028.l,d1
 	move.w	#$100,d4
-	bsr.w	Set1MFlag_6
+	bsr.w	Z80CommandSwitch
 	move.w	(sp)+,sr
 	rts
 	dc.b	$13,$F9,$00,$A1,$20,$28,$00,$A1,$00,$03,$4E,$75,$13,$F9,$00,$A1	; .... (....Nu....
@@ -1000,7 +1002,8 @@ Set1MFlagSub2	lea.l	$FF485E.l,a0
 	dc.b	$27,$00,$20,$7C,$00,$C0,$00,$00,$23,$FC,$00,$00,$00,$20,$00,$C0	; .. |....#.... ..
 	dc.b	$00,$04,$20,$3C,$00,$00,$00,$3F,$43,$F9,$00,$FF,$6D,$04,$32,$D0	; .. <...?C...m.2.
 	dc.b	$51,$C8,$FF,$FC,$46,$DF,$4E,$75	; Q...F.Nu
-Set1MFlagSub3	tst.w	$FF6D84.l
+; Sets the flag at $FF6D84 to 1 if it is clear.
+SetFlagOnce	tst.w	$FF6D84.l
 	bne.w	.lFF59F8
 	move.w	#$1,$FF6D84.l
 	rts
@@ -1046,7 +1049,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	moveq	#$0,d4
 	move.w	#$C000,d4
 .l5A94	move.l	d4,d0
-	bsr.w	Set1MFlag_3
+	bsr.w	VdpSetWriteAddrD0
 .l5A9A	move.w	(a2)+,d6
 	add.w	d5,d6
 	move.w	d6,(a0)
@@ -1057,7 +1060,7 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 	move.w	#$18,$FF6D8A.l
 .l5AB4	tst.w	$FF6D8A.l
 	bpl.w	.l5AB4
-	bsr.w	Set1MFlagSub2
+	bsr.w	SetTextVector
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 .lFF5AC8	lea.l	Set1MFlag_4(pc),a0
@@ -1069,7 +1072,8 @@ Set1MFlagSub3	tst.w	$FF6D84.l
 .l5AE8	move.w	#$0,(a1)
 	dbra	d0,.l5AE8
 	rts
-Set1MFlag_3	movea.l	#$C00000,a0
+; Second copy of VdpSetWriteAddr (sets the VRAM write command from d0).
+VdpSetWriteAddrD0	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	ori.w	#$4000,d0
@@ -1186,7 +1190,7 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	beq.w	.l5C80
 	moveq	#$0,d0
 	move.w	d6,d0
-	bsr.w	Set1MFlag_3
+	bsr.w	VdpSetWriteAddrD0
 	move.l	d5,(a0)
 .l5C80	movem.l	(sp)+,d2-d7/a1-a2
 	rts
@@ -1200,7 +1204,7 @@ Set1MFlagSub4	movem.l	d2-d7/a1-a2,-(sp)
 	movea.l	#$200000,a0
 	move.l	a0,$FF6D86.l
 	move.w	#$1,$FF6D84.l
-	bsr.w	Set1MFlagSub3
+	bsr.w	SetFlagOnce
 	lea.l	RunSubCommand(pc),a1
 	movea.l	#$205BC8,a0
 	move.l	#$C5A,d0
@@ -1226,7 +1230,8 @@ Buf80_2	dcb.b	$80,0
 	dc.b	$FF	; .
 	dcb.b	$200,0
 	dc.b	$FF,$FE,$03,$00,$C0,$00,$00	; .......
-Set1MFlag_6	tst.w	d0
+; Jumps to the handler for the command number in d0.
+Z80CommandSwitch	tst.w	d0
 	bne.b	.l7664
 	bra.w	Set1MFlag_7
 .l7664	opt	oaq-

@@ -2,7 +2,7 @@ Set1MFlag_8	movem.l	d0-d7/a0-a6,-(sp)
 	lea.l	Word3(pc),a0
 	cmpi.w	#$1234,(a0)
 	bne.w	.l7A2A
-	bsr.w	Set1MFlag_19
+	bsr.w	SndSlotsTick
 	bsr.w	Z80StartStream
 	lea.l	Buf6_1(pc),a0
 	move.w	#$0,(a0)
@@ -606,7 +606,8 @@ SndSlotAdd	movem.l	d0-d1/a0,-(sp)
 	opt	osq+
 	movem.l	(sp)+,d0-d1/a0
 	rts
-Set1MFlag_19	movem.l	d0-d1/a0-a2,-(sp)
+; Counts down every active sound slot and starts the ones that reach zero.
+SndSlotsTick	movem.l	d0-d1/a0-a2,-(sp)
 	lea.l	Word3(pc),a2
 	cmpi.w	#$0,$122(a2)
 	beq.b	.l7F2A
