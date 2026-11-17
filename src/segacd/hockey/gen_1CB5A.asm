@@ -5,7 +5,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 .l1CB62	move.w	d0,(a0)+		;fill the 64 target colors with d0
 	dbra	d1,.l1CB62
 	move.w	#$18,(palcount).l
-	bsr.w	Sub_36D66
+	bsr.w	forceblack2Sub1
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -31,7 +31,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	bne.b	.l1CBEA
 	bclr	#$7,$FF800F.l
 	clr.w	d0
-	bsr.w	Sub_3871E
+	bsr.w	setVramSub1
 	clr.l	d1
 .l1CC04	btst	#$7,$FF800E.l
 	bne.b	.l1CC04
@@ -261,7 +261,7 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 	movea.l	(sp)+,a6
 	rts
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1D16C.bin
-Sub_3871E
+setVramSub1
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -281,7 +281,7 @@ Sub_3871E
 	bne.b	.l1D76C
 	bclr	#$7,$FF800F.l
 	rts
-Sub_38780
+setVramSub2
 	movea.l	#$C00000,a0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
@@ -384,12 +384,12 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	rts
 DecompressGraphicsWithRemap						;DecompressGraphics, then return 8 bytes past the call (remap table)
 	move.l	(sp),$18AE4.l
-	bsr.w	L1D95E
+	bsr.w	DecompressGraphicsPlain_1
 	addi.l	#$8,(sp)
 	rts
 DecompressGraphicsPlain						;Clear remapTablePtr, fall into DecompressGraphics
 	clr.l	$18AE4.l
-L1D95E	move.l	a6,-(sp)
+DecompressGraphicsPlain_1	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
 	beq.s	.l1D976
@@ -414,7 +414,7 @@ L1D95E	move.l	a6,-(sp)
 	tst.l	$18AE4.l
 	beq.w	DoDMApro
 	movea.l	$18AE4.l,a1
-	bra.w	Sub_36C14
+	bra.w	WeightedRandomSelectSub1
 .l1D9C0	andi.w	#$7FFF,d0
 	add.w	d0,d4
 	bsr.w	DecompressBytecode
@@ -434,7 +434,7 @@ DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer
 	movea.l	#ThreeStars,a1
 	movea.l	#ThreeStars,a3
 	movea.l	#$18AE4,a4
-	movea.l	#Sub_36C14,a5
+	movea.l	#WeightedRandomSelectSub1,a5
 	movea.l	#DoDMApro,a6
 	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	d1,d3

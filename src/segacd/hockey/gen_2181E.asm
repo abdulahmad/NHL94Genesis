@@ -156,19 +156,19 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	movea.l	#$42250,a0
 .2	bset	#$0,$17F6A.l
 	movea.l	#$2C1F8,a1
-	jsr	(Sub_2C2F8).l
+	jsr	(seta2Sub1).l
 	bsr.w	GetShifter
 	move.w	d1,$18ADE.l
 	bset	#$5,$FF800F.l
 .l21AAE	tst.w	$18ADE.l
 	bmi.w	.doh
-	bsr.w	Sub_3CD00
+	bsr.w	NewTickerSub2
 	bsr.w	NewTicker3
 	move.w	#$96,d0
 	bsr.w	waitxsr
 	btst	#$7,d1
 	bne.w	.clrh
-	bsr.w	Sub_3CE8C
+	bsr.w	NewTicker3Sub1
 	move.w	#$3C,d0
 	bsr.w	waitxsr
 	btst	#$7,d1
@@ -292,16 +292,16 @@ NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3
 	ori.b	#$1E,-(a4)
 	dc.w	$0008,$0016,$0025,$001F,$000A,$0013,$0026,$001F
 	dc.w	$000C,$000F,$0026,$0020,$000F
-Sub_3CCF2
+NewTickerSub1
 	moveq	#-1,d3
 	cmpi.w	#$1E0,$180E6.l
 	bgt.w	rtss2
-Sub_3CD00
+NewTickerSub2
 	move.w	$18ADE.l,d3
 	bmi.w	rtss2
 	subi.w	#$1,$18ADE.l
 	cmp.w	$18A98.l,d3
-	beq.w	Sub_3CD00
+	beq.w	NewTickerSub2
 CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next ticker game if a
 	
 	moveq	#$10,d0
@@ -309,9 +309,9 @@ CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next
 	movea.l	#$18A18,a0
 	adda.w	d0,a0
 	btst	#$1,$E(a0)
-	bne.w	Sub_3CD00
+	bne.w	NewTickerSub2
 	btst	#$2,$E(a0)
-	bne.w	Sub_3CD00
+	bne.w	NewTickerSub2
 	rts
 NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if d3 is
 	
@@ -333,11 +333,11 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	bne.w	.l21DA6
 	clr.w	d0
 .l21DA6	dc.w	$43FA,$0094
-	bsr.w	Sub_3CEBE
+	bsr.w	SetTickerAreaPositionSub1
 	move.w	$8(a0),d0
 	subi.w	#$1,d0
 	movea.l	#$41A34,a1
-	bsr.w	Sub_3CEC6
+	bsr.w	SetTickerAreaPositionSub2
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	neg.w	d0
@@ -372,7 +372,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	dc.b	'Qualifier',$00,$00,$0E,'Quar'
 	dc.b	'terfinal',$00,$18,'Stanle'
 	dc.b	'y Cup Semifinal',$00
-Sub_3CE8C
+NewTicker3Sub1
 	bsr.w	SetTickerAreaPosition
 	move.w	#$7FF,d2
 	bra.w	eraser
@@ -388,10 +388,10 @@ SetTickerAreaPosition						;Set printx/printy/printm for the ticker box (x 3, y 
 .1	moveq	#$1A,d0
 	moveq	#$5,d1
 	rts
-Sub_3CEBE
-	bsr.w	Sub_3CEC6
+SetTickerAreaPositionSub1
+	bsr.w	SetTickerAreaPositionSub2
 	bra.w	printsmall
-Sub_3CEC6
+SetTickerAreaPositionSub2
 	bra.w	.l21ECC
 .l21ECA	adda.w	(a1),a1
 .l21ECC	dbra	d0,.l21ECA
@@ -525,7 +525,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	clr.w	$2A(a1)
 	adda.w	#$80,a1
 	dbra	d0,.l22164
-	bsr.w	Sub_3F03E
+	bsr.w	SprSortSub1
 	move.w	#$18,(palcount).l
 	move.w	(ScoutSubStatus).l,$17476.l
 	move.w	#$B4,-(sp)
@@ -573,7 +573,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	adda.w	#$80,a0
 	dbra	d0,.l22282
 	bsr.w	.l223D8
-	bsr.w	Sub_3F24C
+	bsr.w	CopyTeamLinesSub1
 	bsr.w	SetHor
 	bsr.w	setvideo
 	jsr	$2C1F8.l
@@ -594,7 +594,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bsr.w	waitxsr
 	btst	#$7,d1
 	bne.w	.l22304
-	bsr.w	Sub_3CE8C
+	bsr.w	NewTicker3Sub1
 	move.w	#$3C,d0
 	bsr.w	waitxsr
 	btst	#$7,d1
@@ -807,7 +807,7 @@ SetupPenaltyShot						;Penalty shot set up for team a2 (called from puckpenshot)
 	add.w	d3,d3
 	move.w	#$FFFF,$68(a2,d3.w)
 	lsr.w	#$1,d3
-	bsr.w	Sub_3D770
+	bsr.w	setplayerSub1
 .l22652	st.b	$61(a3)
 	st.b	$60(a3)
 	adda.w	#$80,a3
@@ -835,13 +835,13 @@ forcepldata						;no skating on/off: force players to correct data (for faceoffs
 	cmpi.w	#$4,$34(a3)
 	bne.w	.l226B6
 	moveq	#$11,d0
-	bsr.w	Sub_362D8
+	bsr.w	assexitSub1
 .l226B6	clr.w	d3		;d3 = requested player number
 	move.b	$61(a3),d3		;next sort object
 	add.w	d3,d3		;add d3 to itself
 	move.w	#$FFFF,$68(a2,d3.w)		;move -1 into tmpdst
 	lsr.w	#$1,d3		;divide d3 by 2
-	bsr.w	Sub_3D770
+	bsr.w	setplayerSub1
 .l226CA	st.b	$61(a3)		;set newpnum to FF
 	st.b	$60(a3)		;set newpos to FF
 	adda.l	#$80,a3		;move to next sortobj (player struct)

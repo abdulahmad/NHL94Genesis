@@ -65,13 +65,13 @@ PrintNameCursor						;Name entry: the " < " cursor
 	String	CC_Font1Pri,$4,$13
 	add.w	d4,(printx).l
 	tst.w	$1A566.l
-	beq.w	LBBD4
+	beq.w	PrintNameCursor_1
 	jsr	(printz).l
 	String	' < '
-LBBD4	rts
+PrintNameCursor_1	rts
 PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, cursoron)
 	tst.w	$1A566.l
-	beq.w	LBBD4
+	beq.w	PrintNameCursor_1
 	movea.l	#ThreeStars,a1
 	move.w	#$4,(a1)
 	move.b	#$0,$3(a1)
@@ -102,14 +102,14 @@ PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 	bcs.s	*+116
 	movea.l	$6577(a6),a0
 	movea.l	$616D(a6),a0
-	bcs.s	Sub_26C80
+	bcs.s	PrintNameLogSub1
 	move.l	d0,d0
 	dc.w	$0018,$BF02
 	dc.b	$10,'Select or repla'
 	dc.w	$6365,$3A00,$48E7,$FFFE,$3F39,$0001,$A38A,$3F39
 	dc.w	$0001,$A38C,$4EB9,$0003,$8F6E,$0006,$BF05,$0800
 	move.w	#$6,d7
-Sub_26C80
+PrintNameLogSub1
 	move.w	#$1,$1A38C.l
 	movea.l	#TempBuffer,a1
 .lBC8E	bsr.w	GetLogName
@@ -246,7 +246,7 @@ StoreUserName						;Name entry: store the name in save RAM
 	move.b	#$0,d1
 .2	move.b	d1,(a0)+
 	dbra	d4,.loop2
-	bsr.w	Sub_22622
+	bsr.w	ReadCrowdRecordSub4
 	jsr	$26F06.l
 .lBED4	movea.l	#$18BF4,a5
 	tst.w	$1A390.l
@@ -374,7 +374,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	
 	move.w	#$0,d0
 	move.w	#$1A,d1
-	jsr	(Sub_2E728).l
+	jsr	(CrowdMeterScreenSub1).l
 	jsr	(printz).l
 	String	CC_Font2Pri,$1,$1
 	movea.l	$47D80.l,a0
@@ -420,13 +420,13 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	bsr.w	ReadTeamRecords
 	bsr.w	CalcWinPercents
 	bsr.w	PrintRecordTitles
-	bsr.w	Sub_27398
+	bsr.w	PrintRecordTitlesSub1
 .loop	jsr	(MenuWaitVblank).l
-	jsr	(Sub_2F2F0).l
+	jsr	(GetPlayerCountSub1).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d3
 	beq.w	.lC1E2
-	jmp	(Sub_2E980).l
+	jmp	(CrowdMeterScreenSub2).l
 .lC1E2	tst.w	$17E62.l
 	bne.w	.right
 	btst	#$6,d3
@@ -435,7 +435,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	beq.w	.right
 	bsr.w	ClearWinRecords
 	bsr.w	CalcWinPercents
-	bsr.w	Sub_27398
+	bsr.w	PrintRecordTitlesSub1
 	bra.w	.loop
 .right	btst	#$3,d1
 	beq.w	.left
@@ -458,8 +458,8 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	dc.w	$4E75		;N
 PrintRecordPage
 	tst.w	$17E62.l
-	beq.w	Sub_27398
-	bra.w	Sub_274FA
+	beq.w	PrintRecordTitlesSub1
+	bra.w	ClearRecordAreaSub1
 PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRecTitles,
 	
 	movea.l	#$272A2,a1
@@ -487,7 +487,7 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 	dc.b	' MUST WIN TO QUA'
 	dc.b	'LIFY    ',$FD,$10,$FC,$1A,'[ Mo'
 	dc.b	're  ',$F9,$00
-Sub_27398
+PrintRecordTitlesSub1
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$A,CC_SetFont,$0
@@ -564,7 +564,7 @@ ClearRecordArea						;Record Holders: erase the record rows ($28 x $12), keeping
 	move.w	(sp)+,(printx).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-Sub_274FA
+ClearRecordAreaSub1
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$A,CC_SetFont,$0

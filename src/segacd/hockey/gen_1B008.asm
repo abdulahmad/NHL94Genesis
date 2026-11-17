@@ -3,7 +3,7 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 	sub.b	d7,$42(a3)
 	bpl.w	.ex
 	addi.b	#$C,$42(a3)
-	bsr.w	L1B0D8
+	bsr.w	avdgoal
 	movem.w	d0-d1,-(sp)
 	move.w	$28(a3),d0
 	asr.w	#$8,d0
@@ -54,7 +54,7 @@ skateto						;a0 = extra routine for collision avoidance, d0/d1 = x/y cord to sk
 .ex	clr.w	d0
 	move.b	$43(a3),d0
 	bra.w	doplayeracc
-L1B0D8	clr.w	$17EEA.l
+avdgoal	clr.w	$17EEA.l
 	clr.w	$17EEC.l
 	tst.w	$34(a3)
 	beq.w	rtss2
@@ -146,10 +146,10 @@ skatetopuck						;player a3 should skate to puck. d7 = elapse frames
 	sub.b	d7,$42(a3)
 	bpl.w	.ex
 	addi.b	#$A,$42(a3)
-	bsr.w	L1B0D8
+	bsr.w	avdgoal
 	movem.w	d0-d1,-(sp)
 	move.l	a3,-(sp)
-	bsr.w	Sub_36362
+	bsr.w	GetHotSub1
 	neg.b	d0
 	neg.b	d1
 	sub.b	$28(a3),d0
@@ -193,7 +193,7 @@ assexit
 	andi.w	#$7,$36(a3)
 	bset	#$1,$62(a3)
 	rts
-Sub_362D8
+assexitSub1
 	subi.w	#$1,$36(a3)
 	andi.w	#$7,$36(a3)
 assreplace
@@ -243,7 +243,7 @@ GetHot						;push long address of structure to get hot spot from. Hot spot x/y
 	dc.w	$0206,$0206
 	btst	d0,d7
 	btst	d1,d5
-Sub_36362
+GetHotSub1
 	movem.l	a0-a1,-(sp)
 	movea.l	$C(sp),a0
 	clr.w	d0
@@ -280,7 +280,7 @@ SetSPA
 	rts
 doplayeracc
 	tst.w	$34(a3)
-	beq.w	L1B5A4
+	beq.w	goalieacc_1
 	move.w	#$50C,d1
 	btst	#$4,$62(a3)
 	beq.w	.l1B3F0
@@ -390,7 +390,7 @@ doplayeracc
 	bset	#$1,$63(a3)
 .l1B586	bsr.w	SetSPA
 	cmpi.w	#$2,d3
-	bhi.w	L1B86A
+	bhi.w	noturn_1
 	rts
 goalieacc						;goalie gets acc. in direction d0. Turns facedir one step toward d0
 	ori.b	#$10,d0
@@ -398,7 +398,7 @@ goalieacc						;goalie gets acc. in direction d0. Turns facedir one step toward 
 	dc.l	$FFF0
 	dc.w	$FFF0
 	dc.w	$FFF0
-L1B5A4	btst	#$3,$62(a3)
+goalieacc_1	btst	#$3,$62(a3)
 	beq.w	.normalgoalie
 	movem.w	d0,-(sp)
 	move.w	$17BE0.l,d0
@@ -569,9 +569,9 @@ noturn						;reverse the acc. direction when skating backwards, then falls into
 	bne.w	.l1B85C
 	move.w	#$53E,d1
 .l1B85C	btst	#$1,$63(a3)
-	bne.w	L1B86A
+	bne.w	noturn_1
 	bsr.w	SetSPA
-L1B86A	btst	#$4,$62(a3)
+noturn_1	btst	#$4,$62(a3)
 	beq.w	playeracc
 	eori.w	#$4,d2		;opposite direction
 playeracc
@@ -717,18 +717,18 @@ MaxSpeed						;max speed values for each rating level 0-$F: ((n+20)*275)^2 (92 u
 	dc.w	$049D,$A400,$04E8,$A5A9,$0535,$F624,$0585,$9571
 dostop
 	cmpi.w	#$1000,$28(a3)
-	bgt.w	Sub_36B1A
+	bgt.w	dostopSub1
 	cmpi.w	#$F000,$28(a3)
-	blt.w	Sub_36B1A
+	blt.w	dostopSub1
 	cmpi.w	#$1000,$2A(a3)
-	bgt.w	Sub_36B1A
+	bgt.w	dostopSub1
 	cmpi.w	#$F000,$2A(a3)
-	blt.w	Sub_36B1A
+	blt.w	dostopSub1
 	tst.w	$34(a3)
 	bne.w	stopna
 	jmp	(stopna2).l
 	dc.w	$6000,$002C
-Sub_36B1A
+dostopSub1
 	move.w	#$50C,d1
 	btst	#$4,$62(a3)
 	bne.w	.l1BB32
@@ -793,7 +793,7 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 	lsr.w	#$1,d0		;word offset -> index
 	movem.l	(sp)+,d1/a1
 	rts
-Sub_36C14
+WeightedRandomSelectSub1
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -809,7 +809,7 @@ Sub_36C14
 	movem.l	d0-d4/a0-a2,-(sp)
 	exg.l	d0,d1
 	movea.l	a0,a2
-	bsr.w	Sub_3871E
+	bsr.w	setVramSub1
 	subi.w	#$1,d1
 .l1BC5E	moveq	#$3,d0
 	move.w	(a2)+,d2
@@ -859,7 +859,7 @@ forceblack
 	clr.l	(a0)+
 	dbra	d0,.l1BD16
 	move.w	#$18,(palcount).l
-	bsr.w	Sub_36D66
+	bsr.w	forceblack2Sub1
 	moveq	#$1F,d0
 .l1BD2C	move.l	(sp)+,-(a0)
 	dbra	d0,.l1BD2C
@@ -873,13 +873,13 @@ forceblack2
 	clr.l	(a0)+
 	dbra	d0,.l1BD44
 	move.w	#$64,(palcount).l
-	bsr.w	Sub_36D66
+	bsr.w	forceblack2Sub1
 	moveq	#$1F,d0
 .l1BD5A	move.l	(sp)+,-(a0)
 	dbra	d0,.l1BD5A
 	movem.l	(sp)+,d0/a0
 	rts
-Sub_36D66
+forceblack2Sub1
 	move.l	(VBint).l,-(sp)
 	move.w	(disflags).l,-(sp)
 	bclr	#$2,(disflags).l

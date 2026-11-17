@@ -85,10 +85,10 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	
 	btst	#$0,$17F78.l
-	beq.w	LCC80
+	beq.w	ShootersExit
 	moveq	#$0,d0
 	moveq	#$1C,d1
-	jsr	(Sub_2E728).l
+	jsr	(CrowdMeterScreenSub1).l
 	clr.w	(scoutcolumn).l
 	clr.w	(PlayerScrollCtr).l
 	jsr	(printsmallz).l
@@ -99,17 +99,17 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	bsr.w	ResetShooterScroll
-	bsr.w	Sub_28046
+	bsr.w	ResetShooterScrollSub1
 	move.w	#$0,(TestList).l
-LCC1E	bsr.w	Sub_27F9C
-	bsr.w	Sub_2813E
-	bsr.w	Sub_280D6
+ShootoutShooters_1	bsr.w	ShootersSelectSub1
+	bsr.w	ResetShooterScrollSub3
+	bsr.w	ResetShooterScrollSub2
 ShootersLoop						;Shootout shooters: the input loop
 	jsr	(MenuWaitVblank).l
-	jsr	(Sub_2F2F0).l
+	jsr	(GetPlayerCountSub1).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
-	bne.w	LCC80
+	bne.w	ShootersExit
 	move.w	#$1,d0
 	btst	#$1,d1
 	bne.w	ShootersMove
@@ -125,7 +125,7 @@ ShootersLoop						;Shootout shooters: the input loop
 	btst	#$5,d1
 	bne.w	ShooterSelectList
 	bra.w	ShootersLoop
-LCC80	jmp	(Sub_2E980).l
+ShootersExit	jmp	(CrowdMeterScreenSub2).l
 ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	#$C000,d7
 	movea.l	#$1A41C,a0
@@ -173,10 +173,10 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	clr.w	d0
 	bra.w	.scroll
 .loop2	jsr	(MenuWaitVblank).l
-	jsr	(Sub_2F2F0).l
+	jsr	(GetPlayerCountSub1).l
 	jsr	(ProcessInputWithRepeat).l
 	btst	#$7,d1
-	bne.w	LCC1E
+	bne.w	ShootoutShooters_1
 	btst	#$5,d1
 	bne.w	.lCE0E
 	moveq	#$1,d0
@@ -220,7 +220,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	movea.l	#$1A42A,a0
 .11	asl.w	#$1,d2
 	move.w	d0,(a0,d2.w)
-	bra.w	LCC1E
+	bra.w	ShootoutShooters_1
 PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
@@ -271,7 +271,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 ShootersPick
 	cmp.w	(TestList).l,d0
 	beq.w	ShootersLoop
-	bra.w	LCF8A
+	bra.w	ShootersSelect_1
 ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 ... 4 (not
 	
 	cmpi.w	#$5,(TestList).l
@@ -279,17 +279,17 @@ ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 
 	add.w	(TestList).l,d0
 	bmi.w	ShootersSelect
 	cmpi.w	#$5,d0
-	blt.w	LCF8A
+	blt.w	ShootersSelect_1
 	clr.w	d0
-	bra.w	LCF8A
+	bra.w	ShootersSelect_1
 ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the player box,
 	
 	move.w	#$4,d0
-LCF8A	move.w	d0,(TestList).l
-	bsr.w	Sub_2813E
-	bsr.w	Sub_280D6
+ShootersSelect_1	move.w	d0,(TestList).l
+	bsr.w	ResetShooterScrollSub3
+	bsr.w	ResetShooterScrollSub2
 	bra.w	ShootersLoop		;back to the input loop
-Sub_27F9C
+ShootersSelectSub1
 	bsr.w	ClearShooterScreen
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
@@ -316,7 +316,7 @@ Sub_27F9C
 	cmpa.l	#$1834C,a2
 	beq.w	.lD018
 	move.w	#$2C,d0
-.lD018	jmp	(Sub_2C59E).l
+.lD018	jmp	(PutTeamBlockSub1).l
 ClearShooterScreen						;Shootout shooters: erase the screen
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
@@ -328,7 +328,7 @@ ResetShooterScroll
 	clr.w	$BBD0A.l
 	clr.w	$BBD2A.l
 	rts
-Sub_28046
+ResetShooterScrollSub1
 	jsr	(printsmallz).l
 	dc.w	$0008
 	dc.b	$FF,$02,$FD,$00,$FC,$0A
@@ -349,7 +349,7 @@ Sub_28046
 	jsr	(printsmallz).l
 	String	CC_Font3,$1A,$FC,$C,'Goalie'
 	rts
-Sub_280D6
+ResetShooterScrollSub2
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$8,$7,CC_SetFont,$1
 	moveq	#$18,d0
@@ -364,14 +364,14 @@ Sub_280D6
 .lD114	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a1,d0.w),d0
-	jsr	(Sub_4112E).l
+	jsr	(GetPlayerNameSub1).l
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
 	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	rts
-Sub_2813E
+ResetShooterScrollSub3
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_Font3,$6,$FC,$E,CC_Font2,$6

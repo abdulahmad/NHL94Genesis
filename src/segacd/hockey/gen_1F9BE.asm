@@ -48,7 +48,7 @@ FallDown
 	cmp.w	$32(a2),d0
 	ble.w	.l1FAC0
 	move.b	#$3C,$5F(a2)
-	bra.w	Sub_3AD94
+	bra.w	FallDownSub3
 .l1FAC0	tst.w	$34(a3)
 	beq.w	.l1FB08
 	movea.l	#tmstruct,a0
@@ -71,10 +71,10 @@ FallDown
 	sub.w	$14(a2),d1
 	bsr.w	vtoa
 	tst.w	$34(a2)
-	beq.w	Sub_3AD4A
+	beq.w	FallDownSub1
 	jsr	$24FB4.l
 	btst	#$4,$64(a2)
-	beq.w	Sub_3AD4A
+	beq.w	FallDownSub1
 	movem.l	d1-d4,-(sp)
 	move.w	$28(a2),d1
 	bpl.w	.l1FB48
@@ -109,7 +109,7 @@ FallDown
 	bmi.w	.l1FBB6
 	bra.w	.l1FBBE
 .l1FBB6	movem.l	(sp)+,d1-d4
-	bra.w	Sub_3AD4A
+	bra.w	FallDownSub1
 .l1FBBE	movem.l	(sp)+,d1-d4
 	bra.w	.l1FBC6
 .l1FBC6	cmpi.w	#$10C,$14(a2)
@@ -120,7 +120,7 @@ FallDown
 	bgt.w	.l1FBF2
 	cmpi.w	#$FF98,$0(a2)
 	blt.w	.l1FBF2
-	bra.w	Sub_3AD4A
+	bra.w	FallDownSub1
 .l1FBF2	cmpi.w	#$B,$52(a3)
 	bgt.w	.l1FC2E
 	addi.w	#$A,$17CD8.l
@@ -192,28 +192,28 @@ FallDown
 	bset	#$5,$64(a2)
 	bset	#$0,$62(a2)
 	movem.l	(sp)+,d0/a0
-	bra.w	Sub_3AD66
+	bra.w	FallDownSub2
 	dc.w	$1776,$1776,$17E8,$17E8,$185A,$185A,$18CC,$18CC
-Sub_3AD4A
+FallDownSub1
 	move.w	#$DD8,d1
 	sub.w	$54(a2),d0
 	addi.w	#$1,d0
 	andi.w	#$7,d0
 	cmpi.w	#$2,d0
-	bls.w	Sub_3AD94
+	bls.w	FallDownSub3
 	move.w	#$D26,d1
-Sub_3AD66
+FallDownSub2
 	move.w	$54(a2),d0
 	andi.w	#$3,d0
-	bne.w	Sub_3AD94
+	bne.w	FallDownSub3
 	cmpi.b	#$14,$75(a3)
-	blt.w	Sub_3AD94
+	blt.w	FallDownSub3
 	cmpi.w	#$B,$52(a3)
-	bgt.w	Sub_3AD94
+	bgt.w	FallDownSub3
 	btst	#$5,$64(a2)
-	bne.w	Sub_3AD94
+	bne.w	FallDownSub3
 	move.w	#$136A,d1
-Sub_3AD94
+FallDownSub3
 	exg.l	a2,a3
 	bset	#$5,$62(a3)
 	bsr.w	SetSPA
@@ -370,7 +370,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	ext.l	d1
 	asl.l	#$8,d1
 	divs.w	d3,d1
-	bsr.w	L206A2
+	bsr.w	wallcollb
 .2	movem.w	(sp)+,d2-d5
 	move.w	$4E(a3),d0		;wallcos: already hit
 	or.w	$50(a3),d0
@@ -378,23 +378,23 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	move.w	#$100,d0		;now check side walls
 	clr.w	d1
 	cmp.w	d5,d3
-	bge.w	L206A2
+	bge.w	wallcollb
 	neg.w	d5
 	neg.w	d0
 	cmp.w	d5,d3
-	ble.w	L206A2
+	ble.w	wallcollb
 	exg.l	d0,d1
 	cmp.w	d4,d2
-	bge.w	L206A2
+	bge.w	wallcollb
 	neg.w	d4
 	neg.w	d1
 	cmp.w	d4,d2
-	ble.w	L206A2
+	ble.w	wallcollb
 	rts
 .l2001C	cmpi.w	#$D,$18(a3)
 	bgt.w	rtss2
 	cmpi.w	#$E,$52(a3)
-	bne.w	L20538
+	bne.w	checkgoalp
 	sub.w	$0(a2),d2
 	moveq	#$10,d4
 	add.w	$17CF4.l,d4
@@ -675,7 +675,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	bclr	#$3,$64(a3)
 	beq.w	.l2050E
 	jsr	(EndOneTimer).l
-.l2050E	bsr.w	Sub_362D8
+.l2050E	bsr.w	assexitSub1
 .l20512	adda.w	#$80,a3
 	dbra	d3,.l204E6
 	movea.l	(sp)+,a3
@@ -688,7 +688,7 @@ GetPeriodTimeRemaining
 	or.w	$180EA.l,d0
 	sub.w	$180E6.l,d0
 	rts
-L20538	btst	#$5,$63(a3)
+checkgoalp	btst	#$5,$63(a3)
 	bne.w	rtss2
 	cmpi.w	#$A,$18(a3)
 	bgt.w	rtss2
@@ -776,7 +776,7 @@ L20538	btst	#$5,$63(a3)
 	bne.w	rtss2
 	moveq	#$8,d0
 	bra.w	AddPenalty2
-L206A2	cmpi.w	#$E,$52(a3)
+wallcollb	cmpi.w	#$E,$52(a3)
 	bne.w	wallcoll
 	cmpi.w	#$1D,$18(a3)
 	bgt.w	.l20714

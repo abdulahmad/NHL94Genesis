@@ -22,7 +22,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	btst	#$2,$17F6E.l
 	beq.w	rtss2
 	movea.l	#$18D26,a3
-	bsr.w	Sub_4057C
+	bsr.w	InitializeGameStructuresSub2
 	bra.w	MakeTree
 .l256D4	movea.l	#$18C38,a3
 	bsr.w	ClrPassBits
@@ -364,7 +364,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	jsr	(print).l
-	bsr.w	Sub_4112E
+	bsr.w	GetPlayerNameSub1
 	move.w	#$3,(printx).l
 	jsr	(print).l
 	dbra	d2,.loop
@@ -564,7 +564,7 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 	dc.w	$0016,$BF04
 	bchg	d1,(a0)
 	dc.b	'ENALTY SHOT!',$BF,$04,$05,$00
-Sub_40EFA
+ShowGoalBoxSub1
 	movem.l	d0-d2/a0-a4,-(sp)
 	btst	#$2,$17F70.l
 	beq.w	.l25F12
@@ -677,12 +677,12 @@ GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols 
 	bpl.w	.0
 	andi.w	#$FF,d0
 	adda.w	#$366,a2
-.0	bsr.w	Sub_4112E		;name for d0 of team a2
+.0	bsr.w	GetPlayerNameSub1		;name for d0 of team a2
 	movem.l	(sp)+,d0/a2
 	rts
-Sub_4112E
+GetPlayerNameSub1
 	movem.l	d0-d3/a0/a2-a3,-(sp)
-	bsr.w	L26290
+	bsr.w	FinalizeTextBuffer_1
 	move.l	a0,-(sp)
 	movea.l	#mesarea,a3
 	move.w	#$4,(a3)
@@ -690,7 +690,7 @@ Sub_4112E
 	adda.w	(a0),a0
 	move.b	(a0),d0
 	bsr.w	ConvertByteToDigits
-	jsr	(Sub_39200).l
+	jsr	(PushNumberWidthSub1).l
 	String	' '
 	movea.l	(sp)+,a1
 	jsr	(appstring).l
@@ -710,7 +710,7 @@ GetPlayerNumInitial
 FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in
 	
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	L26290
+	bsr.w	FinalizeTextBuffer_1
 	move.l	a0,-(sp)
 	movea.l	#TextBuffer,a1
 	adda.w	(a0),a0
@@ -733,7 +733,7 @@ FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of t
 FormatPlayerName						;a1 = mesarea string "NN Last" for player d0 of team a2, built in
 	
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	L26290
+	bsr.w	FinalizeTextBuffer_1
 	move.l	a0,-(sp)
 	movea.l	#TextBuffer,a1
 	adda.w	(a0),a0
@@ -754,11 +754,11 @@ FormatPlayerName						;a1 = mesarea string "NN Last" for player d0 of team a2, b
 FormatPlayerNameLast						;FormatPlayerNameShort without the leading space ("Last", space padded).
 	
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	L26290
+	bsr.w	FinalizeTextBuffer_1
 	movea.l	#TextBuffer,a1
 	bra.w	FormatLastName
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	L26290
+	bsr.w	FinalizeTextBuffer_1
 	movea.l	#TextBuffer,a1
 	move.b	#$20,(a1)+
 FormatLastName						;Skip the first name, copy the last name, pad; branched to from
@@ -790,7 +790,7 @@ FinalizeTextBuffer						;mesarea length word = a1 - mesarea, with a 0 pad byte w
 .even	movea.l	#mesarea,a1
 	move.w	d0,(a1)
 	rts
-L26290	movea.l	$1E(a2),a0
+FinalizeTextBuffer_1	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0
 	bra.w	.l262A2
 .l2629C	adda.w	(a0),a0

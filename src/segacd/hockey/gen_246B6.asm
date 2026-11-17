@@ -73,7 +73,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 	move.w	$18D32.l,d1
 	jsr	$378D2.l
 	move.w	$18D30.l,d0
-	bsr.w	Sub_38780
+	bsr.w	setVramSub2
 	move.w	#$FEA0,d0
 	add.w	(scoutcolumn).l,d0
 .l247D4	btst	#$4,$FF800E.l		;graphics not allowed?
@@ -88,7 +88,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .l2480E	btst	#$3,$FF800E.l
 	bne.b	.l2480E
 	bclr	#$4,$FF800F.l
-.l24820	jsr	(Sub_36DF6).l
+.l24820	jsr	(forceblack2Sub2).l
 .l24826	addq.w	#$1,(ScoutSubStatus).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -314,7 +314,7 @@ ScrollDisplayUp						;Next text line for UpdateScoutingDisplay: VertLineScrollin
 	movem.l	(sp)+,d0-d3
 	rts
 	dc.w	$0000
-Sub_3FC0C
+ScrollDisplayUpSub1
 	jsr	$37598.l
 	tst.w	$3FC0A.l
 	beq.s	.l24C20
@@ -407,7 +407,7 @@ Sub_3FC0C
 EASportsScreen						;Called from Begin. Show the EA Sports screen until a button, or $50 x 4
 									;frames (about 5 s)
 	move.w	#$1,$3FC0A.l
-	bsr.w	Sub_3FC0C
+	bsr.w	ScrollDisplayUpSub1
 	move.l	#vb2,(VBint).l
 	bclr	#$1,(disflags).l
 	move.w	#$5,$18D3E.l
@@ -564,7 +564,7 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 	dc.w	$0001
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#$18C38,a3
-	bsr.w	Sub_4057C
+	bsr.w	InitializeGameStructuresSub2
 	move.w	$18A9E.l,d0
 	or.w	$18A9C.l,d0
 	beq.w	.l251BE
@@ -687,11 +687,11 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	clr.w	$17FAA.l
 	clr.w	$17FAC.l
 	tst.w	$18C16.l
-	beq.w	Sub_4050C
+	beq.w	FigureJoySub2
 	tst.w	$18BFA.l
-	beq.w	Sub_404B6		;regular season
+	beq.w	FigureJoySub1		;regular season
 	btst	#$0,$17F78.l
-	bne.w	Sub_404B6
+	bne.w	FigureJoySub1
 	bsr.w	GetShifter		;d1 = last game
 	movea.l	#$18AA6,a0
 	move.w	$18AA0.l,d2
@@ -708,7 +708,7 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	beq.w	.l25398
 	suba.w	#$10,a1		;previous game
 	dbra	d1,.f0
-	bra.w	Sub_40510
+	bra.w	FigureJoySub3
 .l25398	moveq	#$4,d0
 	tst.w	$18BF8.l
 	beq.w	.l253A8
@@ -731,7 +731,7 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 .l253FE	move.w	(a0,d0.w),$17FA6.l
 	move.w	$2(a0,d0.w),$17FA8.l
 	tst.w	$18BF8.l
-	beq.w	Sub_40510
+	beq.w	FigureJoySub3
 	cmpi.w	#$4,d0		;layout 1?
 	beq.w	.l2542C		;pojoy 1: cont3team / cont4team = cont1team / cont2team
 	cmpi.w	#$18,d0		;layout 6?
@@ -739,21 +739,21 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	bra.w	.2
 .l2542C	move.w	$17FA6.l,$17FAA.l
 	move.w	$17FA8.l,$17FAC.l
-	bra.w	Sub_40510
+	bra.w	FigureJoySub3
 .2	cmpi.w	#$8,d0		;layout 2?
 	beq.w	.l25458		;pojoy 2: cont3team = cont1team, cont4team 0
 	cmpi.w	#$1C,d0		;layout 7?
 	beq.w	.l25458
-	bra.w	Sub_40510
+	bra.w	FigureJoySub3
 .l25458	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
-	bra.w	Sub_40510
+	bra.w	FigureJoySub3
 	dc.w	$0001,$0000,$0001,$0001,$0001,$0002,$0002,$0001
 	dc.w	$0002,$0000,$0002,$0002,$0002,$0001,$0001,$0002
 	dc.w	$0001,$0000,$0001,$0002,$0001,$0002,$0001,$0001
 	dc.w	$0001,$0002,$0002,$0000,$0002,$0001,$0002,$0001
 	dc.w	$0002,$0002,$0002,$0001
-Sub_404B6
+FigureJoySub1
 	move.w	(OptNOP).l,d0
 	asl.w	#$2,d0
 	dc.w	$41FA,$0056
@@ -763,14 +763,14 @@ Sub_404B6
 	bne.w	.l254F0
 	move.w	$17FA6.l,$17FAA.l
 	move.w	#$0,$17FAC.l
-	bra.w	Sub_4050C
+	bra.w	FigureJoySub2
 .l254F0	cmpi.w	#$18,d0
-	bne.w	Sub_4050C
+	bne.w	FigureJoySub2
 	move.w	$17FA6.l,$17FAA.l
 	move.w	$17FA8.l,$17FAC.l
-Sub_4050C
-	bsr.w	Sub_40532
-Sub_40510
+FigureJoySub2
+	bsr.w	InitializeGameStructuresSub1
+FigureJoySub3
 	movem.l	(sp)+,d0-d3/a0-a1
 	rts
 InitializeGameStructures						;Random team pairs for all 8 gstruct games, none of them HomeTeam or
@@ -782,7 +782,7 @@ InitializeGameStructures						;Random team pairs for all 8 gstruct games, none o
 	ori.b	#$2,d1
 	ori.b	#$2,d1
 	ori.b	#$2,d1
-Sub_40532
+InitializeGameStructuresSub1
 	st.b	$18A98.l
 	clr.l	d3
 	move.w	(HomeTeam).l,d1
@@ -803,7 +803,7 @@ Sub_40532
 	bset	d0,d3
 	bne.w	.l2556C
 	rts
-Sub_4057C
+InitializeGameStructuresSub2
 	moveq	#$4,d0
 	lea.l	$A(a3),a0
 .l25582	move.w	-(a0),-(sp)

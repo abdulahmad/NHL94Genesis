@@ -1,4 +1,4 @@
-Sub_36DF6
+forceblack2Sub2
 	tst.w	(palcount).l
 	bmi.w	rtss2
 	cmpi.w	#$64,(palcount).l
@@ -284,11 +284,11 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	bne.w	rtss2
 	tst.w	$18BF8.l
 	beq.w	.1
-	bsr.w	L1C52C
+	bsr.w	ReadJoy3
 	or.w	d3,(waitxpad).l
 	tst.w	d1
 	bne.w	rtss2
-	bsr.w	L1C54A
+	bsr.w	ReadJoy4
 	or.w	d3,(waitxpad).l
 	tst.w	d1
 	bne.w	rtss2
@@ -324,7 +324,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	beq.w	.vid
 	bclr	#$1,$17F6A.l
 	move.w	#$3,$17F94.l
-	bsr.w	L1C52C
+	bsr.w	ReadJoy3
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
@@ -332,7 +332,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	beq.w	.vid
 	bset	#$1,$17F6A.l
 	move.w	#$4,$17F94.l
-	bsr.w	L1C54A
+	bsr.w	ReadJoy4
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	beq.w	.vid
@@ -375,9 +375,9 @@ orjoy						;return d1 = new button presses from either joystick
 	move.w	d1,-(sp)
 	bsr.w	ReadJoy2
 	move.w	d1,-(sp)
-	bsr.w	L1C52C
+	bsr.w	ReadJoy3
 	move.w	d1,-(sp)
-	bsr.w	L1C54A
+	bsr.w	ReadJoy4
 	or.w	(sp)+,d1
 	or.w	(sp)+,d1
 	or.w	(sp)+,d1
@@ -414,7 +414,7 @@ ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return 
 	
 	
 	move.b	$17E46.l,d0
-	bsr.w	L1C568
+	bsr.w	ReadJoy
 	move.w	$17E3E.l,d2
 	move.w	d1,$17E3E.l
 	move.w	d1,d3
@@ -423,30 +423,30 @@ ReadJoy1						;read controller 1 from the byte ReadPads left in PadRaw1. Return 
 	rts
 ReadJoy2						;read controller 2 from PadRaw2 (same as ReadJoy1 with lj2)
 	move.b	$17E47.l,d0
-	bsr.w	L1C568
+	bsr.w	ReadJoy
 	move.w	$17E40.l,d2
 	move.w	d1,$17E40.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C52C	move.b	$17E48.l,d0
-	bsr.w	L1C568
+ReadJoy3	move.b	$17E48.l,d0
+	bsr.w	ReadJoy
 	move.w	$17E42.l,d2
 	move.w	d1,$17E42.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C54A	move.b	$17E49.l,d0
-	bsr.w	L1C568
+ReadJoy4	move.b	$17E49.l,d0
+	bsr.w	ReadJoy
 	move.w	$17E44.l,d2
 	move.w	d1,$17E44.l
 	move.w	d1,d3
 	eor.w	d1,d2
 	and.w	d2,d1
 	rts
-L1C568	not.b	d0
+ReadJoy	not.b	d0
 	clr.w	d1
 	move.b	d0,d1
 	move.w	d1,-(sp)
@@ -576,10 +576,10 @@ CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal
 DoDMApro
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	bsr.w	Sub_3777C
+	bsr.w	DoDMAproSub1
 	move.w	(sp)+,(disflags).l
 	rts
-Sub_3777C
+DoDMAproSub1
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l
@@ -755,7 +755,7 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 .l1CA98	move.l	a6,$19360.l
 	movea.l	(sp)+,a6
 	rts
-Sub_37AA2
+DoDMA_nd2Sub1
 	move.l	a6,-(sp)
 	movea.l	$19360.l,a6
 	btst	#$5,$FF800F.l

@@ -536,7 +536,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	movea.l	#TempBuffer,a3
 	jsr	(appstring).l
 	movea.l	#TempBuffer,a3
-	jsr	(Sub_39200).l
+	jsr	(PushNumberWidthSub1).l
 	String	')'
 	movea.l	#TempBuffer,a1
 PlayedByExit
@@ -550,9 +550,9 @@ PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDispl
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	move.w	$18BF6.l,d0
 	bra.w	PlayedByText
-	bra.w	Sub_2AE78
+	bra.w	PlayedByAwaySub1
 	dc.w	$08B9,$0001,$0001,$7F7C,$6000,$000A
-Sub_2AE78
+PlayedByAwaySub1
 	bset	#$1,$17F7C.l
 	rts
 AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from AttribRating,

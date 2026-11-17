@@ -179,7 +179,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
 	move.w	#$7FF,d2
-	bsr.w	Sub_37AA2
+	bsr.w	DoDMA_nd2Sub1
 	clr.w	d4
 	move.w	d4,$18D48.l
 	movea.l	$47D18.l,a2
@@ -191,7 +191,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 .l239D4	bsr.w	DecompressGraphicsPlain
 	jsr	$2A9D0.l
 	move.w	d4,$18D50.l
-	bsr.w	Sub_3EC78
+	bsr.w	setupIceRinkPalSub1
 	move.w	d4,$18D46.l
 	movea.l	$47D40.l,a2
 	addq.l	#$8,a2
@@ -203,10 +203,10 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	move.w	d4,$1A54E.l
 	addi.w	#$32,d4
 	move.w	d4,$18D54.l
-	bsr.w	Sub_3ED9A
+	bsr.w	CopyTeamBlockMapDataSub1
 	move.w	d4,$18C1C.l
 	bsr.w	setupIceRinkPal
-	bsr.w	Sub_393FA
+	bsr.w	AddSmallFontSub1
 	move.w	d4,$18D42.l
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
@@ -238,7 +238,7 @@ setupice_highlight
 	move.w	#$7D0,$17CEC.l
 	st.b	$17CE2.l
 	move.w	$18D54.l,d4
-	bsr.w	Sub_3ED9A
+	bsr.w	CopyTeamBlockMapDataSub1
 	bsr.w	setupIceRinkPal
 	btst	#$1,$17F68.l
 	beq.w	.l23BA6
@@ -247,7 +247,7 @@ setupice_highlight
 .l23B98	bchg	#$7,$62(a3)
 	adda.w	#$80,a3
 	dbra	d0,.l23B98
-.l23BA6	bsr.w	Sub_3F24C
+.l23BA6	bsr.w	CopyTeamLinesSub1
 	move.w	#$FFFF,$17DC8.l
 	move.w	#$FFFF,$17DD6.l
 	clr.l	$17DCA.l
@@ -255,7 +255,7 @@ setupice_highlight
 	clr.l	$17DD2.l
 	st.b	$17F9E.l
 	st.b	$17FA0.l
-	bsr.w	Sub_3EC78
+	bsr.w	setupIceRinkPalSub1
 	movea.l	#$18D6A,a5
 	movea.l	#$BBD30,a6
 	moveq	#$1,d6
@@ -291,7 +291,7 @@ setupIceRinkPal
 .l23C70	move.l	(a0)+,(a1)+
 	dbra	d0,.l23C70
 	rts
-Sub_3EC78
+setupIceRinkPalSub1
 	move.w	$18D50.l,d4
 	movea.l	$47D4C.l,a2
 	addq.l	#$8,a2
@@ -354,7 +354,7 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	addi.w	#$20,d1
 	dbra	d3,.row
 	rts
-Sub_3ED9A
+CopyTeamBlockMapDataSub1
 	movea.l	#$3EE08,a2
 	movea.l	#$17DD8,a3
 	moveq	#$3,d0
@@ -380,7 +380,7 @@ Sub_3ED9A
 	add.w	(a2)+,d4
 	adda.w	#$1C,a3
 	dbra	d0,.l23DDE
-	bra.w	Sub_3EE84
+	bra.w	defaultsprites_0Sub1
 defaultsprites_0						;objects which are tied to screen scrolling and have velocity: the 16
 	
 	
@@ -394,7 +394,7 @@ defaultsprites_0						;objects which are tied to screen scrolling and have veloc
 	dc.w	$0000,$0000,$FFFF,$034C,$0000,$0007,$0000,$0000
 	dc.w	$FFFF,$034D,$0000,$0007,$0000,$0000,$FFFF,$0161
 	dc.w	$0000,$0005
-Sub_3EE84
+defaultsprites_0Sub1
 	clr.w	d6
 	movea.l	#$17CC0,a1
 	dc.w	$45FA,$0070
@@ -428,12 +428,12 @@ Sub_3EE84
 	addq.w	#$1,d6
 	cmpi.w	#$10,d6
 	bne.w	.l23E9C
-	bra.w	Sub_3F03E
+	bra.w	SprSortSub1
 SprSort						;sort objects in struct SortObj and set corresponding tables for keeping
 	
 	bclr	d0,d0
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_23F00.bin
-Sub_3F03E
+SprSortSub1
 	movem.l	d0-d4/a0-a2,-(sp)
 	movea.l	#$17CA0,a2
 	movea.l	#$17C80,a1
@@ -569,7 +569,7 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 .copy	move.l	(a0)+,(a1)+
 	dbra	d0,.copy
 	rts
-Sub_3F24C
+CopyTeamLinesSub1
 	clr.w	d1
 	cmpi.w	#$13,(VisTeam).l
 	beq.w	.l2426A
@@ -597,14 +597,14 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	beq.w	.po
 	bclr	#$1,$17F6A.l
 	jsr	(PlayoffStatsScreen).l
-.po	bsr.w	Sub_3F33C
+.po	bsr.w	GameOverSub2
 	tst.w	$191CE.l
 	bne.s	.l242D2
 	move.w	#$1,$3FC0A.l
-	bsr.w	Sub_3FC0C
-.l242D2	bra.w	Sub_3F2DC
+	bsr.w	ScrollDisplayUpSub1
+.l242D2	bra.w	GameOverSub1
 	jsr	$48208.l
-Sub_3F2DC
+GameOverSub1
 	jsr	$48208.l
 	bclr	#$5,$FF800F.l
 	movea.l	#$C458,sp
@@ -616,16 +616,16 @@ Sub_3F2DC
 	bset	#$5,$FF800F.l
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
-	bsr.w	Sub_3F33C
+	bsr.w	GameOverSub2
 	btst	#$0,$17F78.l
 	bne.w	.l24336
 	jsr	(ScoutingReport).l
 .l24336	jmp	$2B7F8.l
-Sub_3F33C
+GameOverSub2
 	tst.w	$191CE.l
 	bne.s	.l24350
 	move.w	#$0,$3FC0A.l
-	bsr.w	Sub_3FC0C
+	bsr.w	ScrollDisplayUpSub1
 .l24350	bclr	#$5,$FF800F.l
 	tst.w	$18BFA.l
 	beq.w	rtss2
@@ -654,7 +654,7 @@ Sub_3F33C
 	moveq	#$2,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	bsr.w	Sub_3940C
+	bsr.w	AddSmallFontSub2
 	bsr.w	AddSmallFont
 	movea.l	$47D50.l,a2
 	addq.l	#$8,a2

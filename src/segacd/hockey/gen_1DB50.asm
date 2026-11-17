@@ -61,7 +61,7 @@ xyVmMap						;use printx/y/m to set vram address. Returns a0 = Vdata.
 	add.w	d1,d0
 	asl.w	#$1,d0
 	add.w	(a0),d0
-	bsr.w	Sub_3871E
+	bsr.w	setVramSub1
 	movem.l	(sp)+,d0-d2
 	rts
 eraser						;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = char word
@@ -341,7 +341,7 @@ FormatAndPrintTime						;d0 bits 14-15 = period, bits 0-13 = seconds
 	clr.w	d0
 	rol.l	#$2,d0
 	movea.l	#$390E4,a1
-	bsr.w	Sub_3CEBE
+	bsr.w	SetTickerAreaPositionSub1
 	addi.w	#$2,(printx).l
 	swap	d0
 	lsr.w	#$2,d0
@@ -442,7 +442,7 @@ PushNumberWidth						;right-justified number
 	move.w	d0,(a1)
 	movem.l	(sp)+,d0-d3
 	rts
-Sub_39200
+PushNumberWidthSub1
 	movea.l	(sp)+,a1
 	bsr.w	appstring
 	jmp	(a1)
@@ -567,7 +567,7 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	add.w	d4,d0
 	asl.w	#$1,d0
 	add.w	(a0),d0
-	bsr.w	Sub_3871E
+	bsr.w	setVramSub1
 .l1E396	btst	#$7,$FF800E.l
 	bne.b	.l1E396
 	move.w	d3,$FF8022.l
@@ -588,12 +588,12 @@ AddSmallFont						;transfer smallfont.map tiles to vram. d4 = char to start tile
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-Sub_393FA
+AddSmallFontSub1
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
 	move.w	d4,(framercset).l
 	bra.w	DecompressGraphicsPlain
-Sub_3940C
+AddSmallFontSub2
 	moveq	#$2,d4
 	movea.l	$47D44.l,a2
 	addq.l	#$8,a2
@@ -706,12 +706,12 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	movea.l	$47D20.l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
-	bsr.w	Sub_3CCF2
+	bsr.w	NewTickerSub1
 	bsr.w	NewTicker3
 	st.b	$17BE0.l
 	movea.l	#$17B80,a3
 	moveq	#$1A,d0
-	bsr.w	Sub_362D8
+	bsr.w	assexitSub1
 	move.w	#$1C20,$40(a3)
 	st.b	$18070.l
 	clr.w	$1806E.l

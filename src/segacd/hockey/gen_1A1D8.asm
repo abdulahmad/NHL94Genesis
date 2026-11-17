@@ -1,4 +1,4 @@
-Sub_351D8
+CompLineSub2
 	moveq	#$2,d1
 	dc.w	$41FA,$003C
 	cmpi.w	#$2,$180E4.l
@@ -14,7 +14,7 @@ Sub_351D8
 	cmpi.w	#$C00,d0
 	dbhi	d1,.l1A202
 	move.w	-(a0),$16(a2)
-	bra.w	Sub_35154
+	bra.w	CompLineSub1
 	incbin	..\Extracted\SegaCD\HOCKEY\hockey_1A218.bin
 ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer for each human team
 	move.w	#$FFFF,$17F9E.l
@@ -22,11 +22,11 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	tst.w	$17FA6.l
 	beq.w	.l1A7B8
 	clr.w	d4
-	bsr.w	Sub_312A4
+	bsr.w	passtoSub1
 .l1A7B8	tst.w	$17FA8.l
 	beq.w	.l1A7C8
 	moveq	#$2,d4
-	bsr.w	Sub_312A4
+	bsr.w	passtoSub1
 .l1A7C8	tst.w	$17FAA.l
 	beq.w	.l1A818
 	move.w	$17FA6.l,-(sp)
@@ -34,7 +34,7 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	move.w	$17F9E.l,-(sp)
 	move.w	#$FFFF,$17F9E.l
 	clr.w	d4
-	jsr	(Sub_312A4).l
+	jsr	(passtoSub1).l
 	move.w	$17F9E.l,$17FA2.l
 	move.w	$17FA6.l,$17FAA.l
 	move.w	(sp)+,$17F9E.l
@@ -46,7 +46,7 @@ ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer fo
 	move.w	$17FA0.l,-(sp)
 	move.w	#$FFFF,$17FA0.l
 	move.w	#$2,d4
-	jsr	(Sub_312A4).l
+	jsr	(passtoSub1).l
 	move.w	$17FA0.l,$17FA4.l
 	move.w	$17FA8.l,$17FAC.l
 	move.w	(sp)+,$17FA0.l
@@ -83,7 +83,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	movea.l	#$BBD30,a0
 	move.w	$17F66.l,d0
 	move.w	$18D32.l,d1
-	jsr	(Sub_3777C).l
+	jsr	(DoDMAproSub1).l
 	move.w	#$2F,-(sp)
 	bsr.w	sfx
 	bclr	#$0,$17F6C.l

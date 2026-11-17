@@ -1,4 +1,4 @@
-Sub_2F2F0
+GetPlayerCountSub1
 	tst.w	$18BF8.l
 	bne.w	.l14310
 .l142FA	btst	#$1,$17F6A.l
@@ -45,9 +45,9 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	movea.l	#$173B0,a4
 .l14410	suba.w	#$62,a4
 	cmpa.l	$17470.l,a4
-	bne.w	L145BC
+	bne.w	RestoreReplayFrame_1
 	adda.w	#$62,a4
-.end	bsr.w	L145BC
+.end	bsr.w	RestoreReplayFrame_1
 	clr.w	d7
 	rts
 adda4						;Step forward 1 frame. First handles a reverse
@@ -81,7 +81,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 	adda.l	#$80,a0
 	move.w	#$1,$8(a0)
 	movem.l	(sp)+,a0
-	bsr.w	L145A8
+	bsr.w	RestoreReplayFrame
 	btst	#$5,$17F6A.l
 	beq.w	.0
 .0	jsr	$2F330.l
@@ -91,7 +91,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 	btst	#$2,$17F6C.l
 	beq.w	adda42
 	movem.l	a4,-(sp)
-	bsr.w	L14520
+	bsr.w	adda42_1
 	cmpa.l	$17470.l,a4
 	movem.l	(sp)+,a4
 	beq.w	updatereplayExit
@@ -99,13 +99,13 @@ adda42						;adda4 without the sf2drec look-ahead: stop at the record point, els
 	
 	cmpa.l	$17470.l,a4
 	beq.w	updatereplayExit
-	bsr.w	L145BC
-L14520	adda.w	#$62,a4
+	bsr.w	RestoreReplayFrame_1
+adda42_1	adda.w	#$62,a4
 	cmpa.l	#$173B0,a4
 	bne.w	updatereplayExit
 	movea.l	#$C45C,a4
 	rts
-L14536	movem.l	d0-d2,-(sp)
+UpdateCameraPos	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
 	btst	#$7,$17F72.l
 	beq.w	.l1454C
@@ -132,10 +132,10 @@ L14536	movem.l	d0-d2,-(sp)
 .l1459C	move.w	d1,$17CEA.l
 	movem.l	(sp)+,d0-d2
 	rts
-L145A8	btst	#$4,$17F72.l
-	beq.w	L145BC
+RestoreReplayFrame	btst	#$4,$17F72.l
+	beq.w	RestoreReplayFrame_1
 	bset	#$7,$17F72.l
-L145BC	movem.l	d0-d2/a0/a6,-(sp)
+RestoreReplayFrame_1	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	#$4761C,a6
 	movea.l	a4,a0
 	moveq	#$F,d1
@@ -264,7 +264,7 @@ L145BC	movem.l	d0-d2/a0/a6,-(sp)
 	asl.w	#$7,d0
 	movea.l	#$17480,a3
 	adda.w	d0,a3
-.l147BA	bsr.w	L14536
+.l147BA	bsr.w	UpdateCameraPos
 	bra.w	.l147EC
 .l147C2	move.w	(a0)+,$17CEE.l
 	move.w	(a0)+,$17CEA.l

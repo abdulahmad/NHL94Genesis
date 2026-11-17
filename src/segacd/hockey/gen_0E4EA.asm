@@ -15,7 +15,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	moveq	#$9,d0
 	moveq	#$1A,d1
-	jsr	(Sub_2E728).l
+	jsr	(CrowdMeterScreenSub1).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
@@ -24,10 +24,10 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Game  Statistics',CC_Font3Pri,$7,$1
 	move.w	#$2C,d0
-	jsr	(Sub_2C59E).l
+	jsr	(PutTeamBlockSub1).l
 	addi.w	#$4,(printx).l
 	clr.w	d0
-	jsr	(Sub_2C59E).l
+	jsr	(PutTeamBlockSub1).l
 	clr.w	(scoutcolumn).l
 	clr.w	(VertLineScrolling).l
 	clr.w	(PlayerScrollCtr).l
@@ -36,12 +36,12 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bne.w	.0
 	move.w	#$30,(matchupvis).l
 .0	bsr.w	DisplayStats
-	bsr.w	LEC3E
+	bsr.w	StatScrollRowEnd_2
 .loop	jsr	(MenuWaitVblank).l
-	jsr	(Sub_2F2F0).l
+	jsr	(GetPlayerCountSub1).l
 	btst	#$7,d3
 	beq.w	.1
-	jmp	(Sub_2E980).l
+	jmp	(CrowdMeterScreenSub2).l
 .1	jsr	(nodiag).l
 	move.w	#$FFFE,d0
 	btst	#$0,d3
@@ -51,7 +51,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	beq.w	.3
 .2	move.w	d0,(PlayerScrollCtr).l
 .3	bsr.w	.scroll
-	bsr.w	LEC3E
+	bsr.w	StatScrollRowEnd_2
 	bra.w	.loop
 .scroll	move.w	(PlayerScrollCtr).l,d0
 	beq.w	rtsStatTables
@@ -65,16 +65,16 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bne.w	.5
 	clr.w	(PlayerScrollCtr).l
 .5	andi.w	#$F,d1
-	bne.w	LEB5E
+	bne.w	StatsReport_1
 	move.w	d0,-(sp)
 	cmpi.w	#$E,d0
 	bne.w	.6
-	bsr.w	LEC20
+	bsr.w	StatScrollRow
 .6	move.w	(sp)+,d0
 	cmpi.w	#$2,d0
-	bne.w	LEB5E
-	bsr.w	LEC2C
-LEB5E	move.w	(disflags).l,-(sp)
+	bne.w	StatsReport_1
+	bsr.w	StatScrollRowEnd
+StatsReport_1	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
 .lEB72	btst	#$7,$FF800E.l
@@ -105,15 +105,15 @@ LEB5E	move.w	(disflags).l,-(sp)
 	bclr	#$7,$FF800F.l
 	move.w	(sp)+,(disflags).l
 	rts
-LEC20	move.w	(VertLineScrolling).l,d3
+StatScrollRow	move.w	(VertLineScrolling).l,d3
 	lsr.w	#$4,d3
-	bra.w	LEC3C
-LEC2C	move.w	(VertLineScrolling).l,d3
+	bra.w	StatScrollRowEnd_1
+StatScrollRowEnd	move.w	(VertLineScrolling).l,d3
 	lsr.w	#$4,d3
 	addi.w	#$6,d3
-	bra.w	LEC3C
-LEC3C	rts
-LEC3E	movem.l	d0-d7/a0-a6,-(sp)
+	bra.w	StatScrollRowEnd_1
+StatScrollRowEnd_1	rts
+StatScrollRowEnd_2	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetFont,$1
 	tst.w	(VertLineScrolling).l
@@ -142,12 +142,12 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$7
 	move.w	#$2C,d0
-	jsr	(Sub_2C59E).l
+	jsr	(PutTeamBlockSub1).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$1A,$7
 	moveq	#$0,d0
-	jsr	(Sub_2C59E).l
-	bsr.w	LEB5E
+	jsr	(PutTeamBlockSub1).l
+	bsr.w	StatsReport_1
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$E,d6
@@ -190,7 +190,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	divu.w	d1,d0
 .0	jsr	(PushNumber).l
 	jsr	(appstring).l
-	jsr	(Sub_39200).l
+	jsr	(PushNumberWidthSub1).l
 	String	'%'
 	bra.w	.6
 .1	move.w	(a0),d0
@@ -208,14 +208,14 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 .4	jsr	(appstring).l
 	move.w	$2(a0),d0
 	bmi.w	.6
-	jsr	(Sub_39200).l
+	jsr	(PushNumberWidthSub1).l
 	String	'/'
 	move.w	(a2,d0.w),d0
 	jsr	(PushNumber).l
 	jsr	(appstring).l
 	cmpi.w	#$14,(a0)
 	bne.w	.6
-	jsr	(Sub_39200).l
+	jsr	(PushNumberWidthSub1).l
 	String	' ('
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
@@ -226,7 +226,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	divu.w	d1,d0
 .5	jsr	(PushNumber).l
 	jsr	(appstring).l
-	jsr	(Sub_39200).l
+	jsr	(PushNumberWidthSub1).l
 	String	'%)'
 .6	movea.l	a3,a1
 	move.w	(a1),d0

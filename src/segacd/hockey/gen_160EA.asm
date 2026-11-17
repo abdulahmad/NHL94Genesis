@@ -36,10 +36,10 @@ passto						;pass the puck to player a0: a3 = passer
 	asr.w	#$2,d5
 	exg.l	a0,a3
 	moveq	#$13,d0
-	bsr.w	Sub_362D8
+	bsr.w	assexitSub1
 	exg.l	a0,a3
 	move.l	a0,-(sp)
-	bsr.w	Sub_36362
+	bsr.w	GetHotSub1
 	add.w	$0(a0),d0
 	sub.w	$17B80.l,d0
 	add.w	$14(a0),d1
@@ -120,7 +120,7 @@ passto						;pass the puck to player a0: a3 = passer
 	divs.w	d2,d1
 	move.w	d1,$17BAA.l
 	rts
-Sub_312A4
+passtoSub1
 	jmp	$2B4E2.l
 Sweepcheck						;start sweep check on player a3
 	bset	#$5,$62(a3)
@@ -231,14 +231,14 @@ ShotMode						;shot input
 	andi.w	#$7,d0		;pass the first 3 bits of d0
 	move.w	d0,$17E2C.l
 .l16468	cmpi.w	#$10,$5A(a3)
-	bge.w	L167B6
+	bge.w	doshot_1
 	add.w	d7,$17E2E.l
 	cmpi.b	#$14,$6C(a3)		;6C = shot speed
 	bge.w	.checkcbut
 	cmpi.w	#$8,$5A(a3)		;SPANum
 	bgt.w	.chganim
 .checkcbut	btst	#$5,d2		;5 = #cbut
-	beq.w	L167B6		;button hasnt changed so continue windup
+	beq.w	doshot_1		;button hasnt changed so continue windup
 .chganim	neg.w	$5A(a3)		;end windup and swing through
 	addi.w	#$1C,$5A(a3)		;Add to SPANum
 	rts
@@ -278,7 +278,7 @@ doshot						;stick is at puck so launch puck toward goal
 	btst	#$1,$64(a3)		;check if player on breakaway
 	beq.w	.cont
 	bset	#$4,$17F78.l		;set if breakaway
-.cont	bsr.w	Sub_317DC
+.cont	bsr.w	shotdiradjSub1
 	move.w	#$5,-(sp)		;#SFXshotwiff - sound effect
 	move.w	$52(a3),$17E28.l
 	bclr	#$3,$17F6A.l		;#sfssdir - shot direction mode
@@ -430,7 +430,7 @@ doshot						;stick is at puck so launch puck toward goal
 	jsr	(puckvzadj).l		;adjust puckvz for top shelf shot
 .ex	bsr.w	sfx		;play the shot sound
 	movem.l	(sp)+,d0-d7/a0-a3
-L167B6	rts
+doshot_1	rts
 shotdiradj						;If the opposing goalie
 									;covers the middle of the net, set passdir 2 or 6 to shoot at the open
 									;side, else 0. Skipped for computer players (pfjoycon clear)
@@ -443,7 +443,7 @@ shotdiradj						;If the opposing goalie
 	dc.l	$FFF0
 	dc.w	$0006,$FFF0
 	dc.w	$000C,$0000,$0006
-Sub_317DC
+shotdiradjSub1
 	btst	#$3,$64(a3)
 	bne.w	.l167F0
 	btst	#$3,$62(a3)
@@ -527,27 +527,27 @@ setpads						;Put SCnum of a3 in the d4 nibble of PadControlBits ; d4 = -2 puck
 	asl.w	d0,d1
 	or.w	d1,$17DC8.l
 	movem.l	(sp)+,d0-d1
-L16904	rts
+setpads_1	rts
 check4bench
 	btst	#$2,$17F70.l
-	bne.w	L16904
+	bne.w	setpads_1
 	btst	#$3,$62(a3)
-	bne.w	L16904
+	bne.w	setpads_1
 	btst	#$4,$63(a3)
-	bne.w	L16904
+	bne.w	setpads_1
 	tst.b	$60(a3)
 	bpl.w	.l16936
 	tst.b	$61(a3)
-	bmi.w	L16904
+	bmi.w	setpads_1
 .l16936	move.b	$61(a3),d0
 	cmp.b	$66(a3),d0
 	beq.w	.l16972
 	move.w	$36(a3),d0
 	cmpi.b	#$B,$38(a3,d0.w)
-	beq.w	L16904
+	beq.w	setpads_1
 	move.w	$52(a3),d0
 	cmp.w	$17BE0.l,d0
-	beq.w	L16904
+	beq.w	setpads_1
 	adda.w	#$4,sp
 	bset	#$2,$63(a3)
 	clr.w	$40(a3)
@@ -603,7 +603,7 @@ assepen						;player a3 should exit penalty area
 	bset	#$5,$62(a3)
 	move.w	#$FAC,d1
 	bsr.w	SetSPA
-	jmp	(Sub_3F03E).l
+	jmp	(SprSortSub1).l
 .nna	move.w	#$4,$54(a3)
 	st.b	$61(a3)
 	st.b	$60(a3)
@@ -638,13 +638,13 @@ assgoaliebreakwait						;asstab entry. In a shootout or penalty shot park the id
 .exit	rts
 assfaceoff						;players do nothing until faceoff is over
 	btst	#$5,$62(a3)
-	bne.w	L16E14
+	bne.w	assfaceoff_1
 	btst	#$0,$17F6C.l
 	beq.w	assexit
-L16E14	rts
+assfaceoff_1	rts
 assfaceoffpl						;Face off player
 	btst	#$5,$62(a3)
-	bne.w	L16E14
+	bne.w	assfaceoff_1
 	btst	#$0,$17F6C.l
 	beq.w	.exit
 	bclr	#$1,$62(a3)
