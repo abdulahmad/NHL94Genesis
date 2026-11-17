@@ -1,18 +1,7 @@
 ; MAIN.BIN $12C0-$183F ($FF12C0-$FF183F). Emitted by tools/emit_m68k.py.
 ; VDP writes and word-RAM copies. Stops on the rts before the zero pad.
 
-X_FF017E	equ	$FF017E
-X_FF0418	equ	$FF0418
-X_FF0172	equ	$FF0172
-X_FF010A	equ	$FF010A
-X_FF0130	equ	$FF0130
-X_FF0F9E	equ	$FF0F9E
-X_FF01A4	equ	$FF01A4
-X_FF0F78	equ	$FF0F78
-X_FF10BE	equ	$FF10BE
-X_FF077C	equ	$FF077C
 
-	org	$FF12C0
 
 	lea.l	$23A450.l,a1
 	move.w	(a1),d2
@@ -28,16 +17,16 @@ X_FF077C	equ	$FF077C
 	move.w	#$8B00,$4(a0)
 	move.w	#$921C,$4(a0)
 	bclr.b	#$4,$23C6E8.l
-	bsr.w	X_FF077C
+	bsr.w	LFF077C
 	rts
 	move.w	#$800,d0
 	move.w	$FF2852.l,d1
 	move.w	#$7FF,d2
-	bsr.w	X_FF10BE
+	bsr.w	LFF10BE
 	move.w	#$1000,d0
 	move.w	$FF2856.l,d1
 	move.w	#$7FF,d2
-	bsr.w	X_FF10BE
+	bsr.w	LFF10BE
 	rts
 	lea.l	$23A450.l,a1
 	move.w	(a1)+,$FF2A24.l
@@ -79,21 +68,21 @@ X_FF077C	equ	$FF077C
 	bset.b	#$0,$A12014.l
 LFF1438	btst.b	#$1,$A12024.l
 	beq.b	LFF1438
-	bsr.w	X_FF0F78
-	bsr.w	X_FF01A4
-	bsr.w	X_FF0F9E
+	bsr.w	DispatchAfter
+	bsr.w	GiveWordRAM
+	bsr.w	DispatchTail
 	move.w	(sp)+,sr
 	move.w	#$8004,$C00004.l
-	bsr.w	X_FF0130
+	bsr.w	ClearMainComm
 	lea.l	$FF2E00.l,a0
 	move.l	#$FF283A,-(sp)
 	jsr	(a0)
 	addq.l	#$4,sp
 	move.l	#$FF24E4,$FFFFFD08.w
-	bsr.w	X_FF0130
-	bsr.w	X_FF010A
-	bsr.w	X_FF0172
-	bsr.w	X_FF01A4
+	bsr.w	ClearMainComm
+	bsr.w	SyncFlag7
+	bsr.w	WaitModeBit2
+	bsr.w	GiveWordRAM
 	move.w	#$8164,$C00004.l
 	addq.l	#$8,sp
 	jmp	$FF103A.l
@@ -145,14 +134,14 @@ LFF157E	bclr.b	#$6,$23C6E8.l
 	lea.l	$23C368.l,a0
 	move.w	#$1C0,d0
 	move.w	$FF284E.l,d1
-	bra.w	X_FF0418
+	bra.w	LFF0418
 LFF159E	bclr.b	#$5,$23C6E8.l
 	beq.w	LFF1698
 	lea.l	$23B1E8.l,a0
 	move.w	#$8C0,d0
 	move.w	$FF2862.l,d1
 	asl.w	#$5,d1
-	bra.w	X_FF0418
+	bra.w	LFF0418
 LFF15C0	btst.b	#$3,$A12024.l
 	bne.w	LFF1602
 	lea.l	$A10003.l,a0
@@ -280,19 +269,19 @@ LFF1782	move.l	(a1)+,(a0)
 	rts
 LFF179A	btst.b	#$1,$FF2A16.l
 	beq.w	LFF17B4
-	bsr.w	X_FF017E
+	bsr.w	WaitWordRAM
 	bset.b	#$0,$FF2A16.l
 	rts
 LFF17B4	bclr.b	#$0,$FF2A16.l
 	rts
 LFF17BE	btst.b	#$0,$FF2A16.l
 	beq.w	LFF17CE
-	bsr.w	X_FF01A4
+	bsr.w	GiveWordRAM
 LFF17CE	rts
 LFF17D0	lea.l	$23AF16.l,a0
 	move.w	$23B1E6.l,d0
 	move.w	$FF2850.l,d1
-	bsr.w	X_FF0418
+	bsr.w	LFF0418
 	movea.l	$23AF12.l,a6
 	adda.l	#$180000,a6
 	btst.b	#$0,$23C6EA.l
@@ -304,7 +293,7 @@ LFF180A	movea.l	(a5)+,a0
 	move.w	(a5)+,d0
 	move.w	(a5)+,d1
 	adda.l	#$180000,a0
-	bsr.w	X_FF0418
+	bsr.w	LFF0418
 	cmpa.l	a6,a5
 	bcs.b	LFF180A
 	rts
@@ -312,9 +301,10 @@ LFF1820	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
 	adda.l	#$180000,a0
-	bsr.w	X_FF0418
+	bsr.w	LFF0418
 LFF1830	cmpa.l	#$23A8D2,a6
 	bne.b	LFF1820
 	rts
 	bsr.w	LFF15C0
 	rts
+

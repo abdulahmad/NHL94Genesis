@@ -66,15 +66,7 @@ function compareAt(builtRel, discRel, discOff, length) {
   console.log(name + ' MATCH  ' + n + ' bytes');
 }
 
-compare('output/segacd/maincd.bin', 'cdbin/MAIN.BIN', 0x272);
-compareAt('output/segacd/maindma.bin', 'cdbin/MAIN.BIN', 0x272, 0x28E);
-compareAt('output/segacd/maincont.bin', 'cdbin/MAIN.BIN', 0x500, 0x7B8);
-compareAt('output/segacd/mainblit.bin', 'cdbin/MAIN.BIN', 0xCB8, 0x608);
-compareAt('output/segacd/mainvdp.bin', 'cdbin/MAIN.BIN', 0x12C0, 0x580);
-compareAt('output/segacd/mainpad.bin', 'cdbin/MAIN.BIN', 0x1840, 0x650);
-compareAt('output/segacd/maindisp.bin', 'cdbin/MAIN.BIN', 0x1E90, 0xE9A);
-compareAt('output/segacd/mainfont.bin', 'cdbin/MAIN.BIN', 0x2D2A, 0x300);
-compareAt('output/segacd/maintext.bin', 'cdbin/MAIN.BIN', 0x302A, 0x48E);
+compareAt('output/segacd/main.bin', 'cdbin/MAIN.BIN', 0x0, 0xEC00);
 compare('output/segacd/subboot.bin', 'cdbin/STARTER.BIN', 0x90);
 compareAt('output/segacd/subheap.bin', 'cdbin/STARTER.BIN', 0x4FA8, 0xC0);
 compareAt('output/segacd/pcmclear.bin', 'cdbin/STARTER.BIN', 0x3A0C, 0x6A);
@@ -93,5 +85,3 @@ compareAt('output/segacd/filmopen.bin', 'cdbin/STARTER.BIN', 0x4336, 0x202);
 compareAt('output/segacd/filmsm.bin', 'cdbin/STARTER.BIN', 0x3EAA, 0x126);
 compareAt('output/segacd/filmtask.bin', 'cdbin/STARTER.BIN', 0x458C, 0x1A2);
 compareAt('output/segacd/filmclose.bin', 'cdbin/STARTER.BIN', 0x473A, 0x42);
-compareAt('output/segacd/z80load.bin', 'cdbin/MAIN.BIN', 0x76C8, 0xF0);
-compareAt('output/segacd/hwread.bin', 'cdbin/MAIN.BIN', 0x3B3C, 0x102);

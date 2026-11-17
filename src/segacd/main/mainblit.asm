@@ -1,13 +1,7 @@
 ; MAIN.BIN $CB8-$12BF ($FF0CB8-$FF12BF). Emitted by tools/emit_m68k.py.
 ; Byte-stream decoder and gate-array flag handshakes. 16-long table at $FF1280.
 
-X_FF0316	equ	$FF0316
-X_FF051C	equ	$FF051C
-X_FF0278	equ	$FF0278
-X_FF0B42	equ	$FF0B42
-X_FF06B6	equ	$FF06B6
 
-	org	$FF0CB8
 
 	bsr.w	LFF0CE2
 	bsr.w	LFF0CCC
@@ -20,7 +14,7 @@ LFF0CCC	move.b	(a1)+,d0
 	asl.w	#$2,d0
 	subq.w	#$4,d0
 	move.w	d0,$FF2DB8.l
-	bra.w	X_FF06B6
+	bra.w	LFF06B6
 LFF0CE2	move.b	(a1)+,d2
 	andi.w	#$7,d2
 	subq.w	#$1,d3
@@ -31,22 +25,22 @@ LFF0CF4	clr.w	d0
 	move.b	(a1)+,d0
 	subq.w	#$1,d3
 	move.w	d0,$FF2DB2.l
-	bra.w	X_FF06B6
+	bra.w	LFF06B6
 LFF0D04	clr.w	d0
 	move.b	(a1)+,d0
 	subq.w	#$1,d3
 	move.w	d0,$FF2DB4.l
-	bra.w	X_FF06B6
+	bra.w	LFF06B6
 	move.b	(a1)+,d0
 	ext.w	d0
 	subq.w	#$1,d3
 	add.w	d0,$FF2DB2.l
-	bra.w	X_FF06B6
+	bra.w	LFF06B6
 	move.b	(a1)+,d0
 	ext.w	d0
 	subq.w	#$1,d3
 	add.w	d0,$FF2DB4.l
-	bra.w	X_FF06B6
+	bra.w	LFF06B6
 LFF0D34	clr.w	d0
 	move.b	(a1)+,d0
 	subq.w	#$1,d3
@@ -63,7 +57,7 @@ LFF0D34	clr.w	d0
 	move.w	(a2)+,$FF287C.l
 	move.w	(a2)+,$FF287E.l
 	movea.l	a2,a1
-	bsr.w	X_FF0B42
+	bsr.w	LFF0B42
 	lea.l	$23A450.l,a2
 	move.w	$FF2DB6.l,(a2)+
 	move.w	$FF2DB2.l,(a2)+
@@ -73,7 +67,7 @@ LFF0D34	clr.w	d0
 	rts
 	move.l	a1,-(sp)
 	movea.l	$4(sp),a1
-	bsr.w	X_FF0B42
+	bsr.w	LFF0B42
 	move.l	a1,$4(sp)
 	movea.l	(sp)+,a1
 	rts
@@ -86,7 +80,7 @@ LFF0D34	clr.w	d0
 	move.w	(a1)+,$FF287A.l
 	move.w	(a1)+,$FF287C.l
 	move.w	(a1)+,$FF287E.l
-	bsr.w	X_FF0B42
+	bsr.w	LFF0B42
 	lea.l	$23A450.l,a1
 	move.w	$FF2DB6.l,(a1)+
 	move.w	$FF2DB2.l,(a1)+
@@ -108,7 +102,7 @@ LFF0E24	move.w	(a0)+,(a1)+
 	move.w	(a0)+,$FF2DB8.l
 	adda.l	#$180000,a1
 	bset.b	#$4,$23C6E8.l
-	bsr.w	X_FF06B6
+	bsr.w	LFF06B6
 	neg.w	d1
 	addq.w	#$3,d1
 	moveq	#$2,d2
@@ -129,7 +123,7 @@ LFF0E70	add.w	$FF286C.l,d0
 	movea.l	(a0)+,a2
 	move.l	a0,$FF2912.l
 	adda.l	#$180000,a2
-	bsr.w	X_FF0278
+	bsr.w	LFF0278
 	lea.l	$23A450.l,a0
 	move.l	d4,(a0)
 	rts
@@ -149,7 +143,7 @@ LFF0E70	add.w	$FF286C.l,d0
 	move.w	d4,(a5)+
 	move.w	$FF2DB4.l,(a5)
 	rts
-LFF0EFA	bsr.w	X_FF06B6
+LFF0EFA	bsr.w	LFF06B6
 	addq.w	#$1,$FF2DB4.l
 	bsr.w	LFF0F22
 	addq.w	#$2,d4
@@ -165,28 +159,28 @@ LFF0F22	move.w	(a1,d4.w),d3
 	add.w	d2,d3
 	move.w	d3,(a0)
 	rts
-	bset.b	#$0,$A12018.l
+DispatchPrep	bset.b	#$0,$A12018.l
 LFF0F34	btst.b	#$0,$A12028.l
 	beq.b	LFF0F34
 	bclr.b	#$0,$A12018.l
 LFF0F46	btst.b	#$0,$A12028.l
 	bne.b	LFF0F46
 	rts
-	bset.b	#$1,$A12018.l
+DispatchBody	bset.b	#$1,$A12018.l
 LFF0F5A	btst.b	#$1,$A12028.l
 	beq.b	LFF0F5A
 	bclr.b	#$1,$A12018.l
 LFF0F6C	btst.b	#$1,$A12028.l
 	bne.b	LFF0F6C
 	rts
-	bset.b	#$2,$A12018.l
+DispatchAfter	bset.b	#$2,$A12018.l
 LFF0F80	btst.b	#$2,$A12028.l
 	beq.b	LFF0F80
 	bclr.b	#$2,$A12018.l
 LFF0F92	btst.b	#$2,$A12028.l
 	bne.b	LFF0F92
 	rts
-	bset.b	#$3,$A12018.l
+DispatchTail	bset.b	#$3,$A12018.l
 LFF0FA6	btst.b	#$3,$A12028.l
 	beq.b	LFF0FA6
 	bclr.b	#$3,$A12018.l
@@ -261,13 +255,13 @@ LFF103E	movem.l	d0-d3/a1,-(sp)
 	move.l	d0,$FF290E.l
 	move.w	$FF290E.l,(a1)
 	move.w	$FF2910.l,(a1)
-	bsr.w	X_FF051C
+	bsr.w	LFF051C
 	move.w	#$8164,(a1)
 	move.w	#$8F02,(a1)
 	move.w	(sp)+,$23C6E8.l
 	movem.l	(sp)+,d0-d3/a1
 	rts
-	movem.l	d3/a1,-(sp)
+LFF10BE	movem.l	d3/a1,-(sp)
 	movea.l	#$C00000,a1
 	andi.l	#$FFFF,d1
 	asl.l	#$2,d1
@@ -289,7 +283,7 @@ LFF10E6	move.l	d3,$FF290E.l
 	lea.l	$23A450.l,a1
 	bsr.w	LFF0FD6
 	rts
-	movem.l	d0-d3/a0-a2,-(sp)
+LFF110E	movem.l	d0-d3/a0-a2,-(sp)
 	move.w	d1,d3
 	clr.w	d1
 	clr.w	d2
@@ -306,7 +300,7 @@ LFF111E	move.b	(a0)+,d0
 LFF113C	move.b	(a0)+,(a1,d1.w)
 	addq.b	#$1,d1
 	bne.w	LFF114A
-	bsr.w	X_FF0316
+	bsr.w	LFF0316
 LFF114A	dbra	d0,LFF113C
 	rts
 	move.b	-$1(a0),d0
@@ -314,7 +308,7 @@ LFF114A	dbra	d0,LFF113C
 LFF1158	clr.b	(a1,d1.w)
 	addq.b	#$1,d1
 	bne.w	LFF1166
-	bsr.w	X_FF0316
+	bsr.w	LFF0316
 LFF1166	dbra	d0,LFF1158
 	rts
 	move.b	-$1(a0),d0
@@ -324,7 +318,7 @@ LFF1166	dbra	d0,LFF1158
 LFF1178	move.b	d2,(a1,d1.w)
 	addq.b	#$1,d1
 	bne.w	LFF1186
-	bsr.w	X_FF0316
+	bsr.w	LFF0316
 LFF1186	dbra	d0,LFF1178
 	rts
 	move.b	-$1(a0),d0
@@ -340,7 +334,7 @@ LFF11A6	move.b	(a1,d2.w),(a1,d1.w)
 	addq.b	#$1,d2
 	addq.b	#$1,d1
 	bne.w	LFF11B8
-	bsr.w	X_FF0316
+	bsr.w	LFF0316
 LFF11B8	dbra	d0,LFF11A6
 	rts
 	move.b	-$1(a0),d0
@@ -391,7 +385,7 @@ LFF1234	move.b	(a1,d2.w),(a1,d1.w)
 	subq.b	#$1,d2
 	addq.b	#$1,d1
 	bne.w	LFF1246
-	bsr.w	X_FF0316
+	bsr.w	LFF0316
 LFF1246	dbra	d0,LFF1234
 	rts
 	move.b	-$1(a0),d0
@@ -399,7 +393,7 @@ LFF1246	dbra	d0,LFF1234
 	addq.w	#$2,d0
 	move.b	(a0)+,d2
 	bne.b	LFF1230
-	bsr.w	X_FF0316
+	bsr.w	LFF0316
 	addq.l	#$4,sp
 	movem.l	(sp)+,d0-d3/a0-a2
 	rts
@@ -429,3 +423,4 @@ LFF1246	dbra	d0,LFF1234
 	dc.l	$FF221A
 	dc.l	$FF224C
 	dc.l	$FF2266
+

@@ -1,11 +1,7 @@
 ; MAIN.BIN $500-$CB7 ($FF0500-$FF0CB7). Emitted by tools/emit_m68k.py.
 ; Rest of the DMA routine, the $23A450 copy, and a 9-long table at $FF0C94.
 
-X_FF0272	equ	$FF0272
-X_FF110E	equ	$FF110E
-X_FF10BE	equ	$FF10BE
 
-	org	$FF0500
 
 	bge.w	LFF0514
 	ori.w	#$4000,d3
@@ -152,7 +148,7 @@ LFF0768	clr.w	(a0)+
 	move.b	#$1,$FF2A18.l
 	movem.l	(sp)+,d0/a0
 	rts
-	bset.b	#$4,$23C6E8.l
+LFF077C	bset.b	#$4,$23C6E8.l
 	andi.b	#$9C,$23C6E8.l
 	move.w	$FF284E.l,d0
 	bsr.w	LFF069C
@@ -184,7 +180,7 @@ LFF079C	move.l	d1,(a0)
 	move.w	(a0)+,d0
 	move.w	(a0)+,d1
 	move.w	(a0)+,d2
-	bsr.w	X_FF10BE
+	bsr.w	LFF10BE
 	rts
 LFF080A	move.w	$FF2DB4.l,-(sp)
 	move.w	$23C6E8.l,-(sp)
@@ -231,7 +227,7 @@ LFF08A8	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	moveq	#$1,d1
 	lea.l	$FF2A1A.l,a3
-	bsr.w	X_FF110E
+	bsr.w	LFF110E
 	clr.w	d1
 	move.b	$FF2A18.l,d1
 	add.w	d1,d4
@@ -272,7 +268,7 @@ LFF0936	move.w	$4(a1,d0.w),d3
 	addq.w	#$1,$FF2DB4.l
 	addq.w	#$1,d6
 	dbra	d2,LFF0922
-	bsr.w	X_FF0272
+	bsr.w	LinkedCall
 	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
 	move.w	(sp)+,$23C6E8.l
 	move.w	(sp)+,$FF2DB4.l
@@ -395,7 +391,7 @@ LFF0AD8	dbra	d3,LFF0A5E
 	move.w	$FF2DB2.l,(a1)+
 	move.w	$FF2DB4.l,(a1)
 	rts
-	move.w	$23C6E8.l,-(sp)
+LFF0B42	move.w	$23C6E8.l,-(sp)
 	bset.b	#$4,$23C6E8.l
 	movem.l	d0-d3/a0/a2-a3,-(sp)
 	lea.l	$FF287A.l,a3
@@ -493,3 +489,4 @@ LFF0C58	movem.l	d1/a0,-(sp)
 	dc.l	$FF1D24
 	dc.l	$FF1D34
 	dc.l	$FF1CB8
+

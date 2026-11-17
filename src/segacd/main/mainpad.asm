@@ -2,7 +2,6 @@
 ; in front of the display init. The $01 at $FF188D is the only nonzero byte
 ; in the first 1404 bytes.
 
-	org	$FF1840
 
 	dcb.b	$4D,0
 	dc.b	$01						; .
@@ -12,5 +11,6 @@
 	dc.b	$3C,$00,$02,$04,$06,$08,$0A,$0C,$0E,$F0,$11,$13,$15,$17,$19,$1B	; <...............
 	dc.b	$1D,$1F,$21,$23,$25,$27,$29,$2B,$2D,$2F,$31	; ..!#%')+-/1
 	dcb.b	$9,0
-	dc.b	$60,$00,$00,$8E			; `...
-	dcb.b	$8C,0
+LFF1E00	dc.b	$60,$00,$00,$8E			; `...
+LFF1E04	dcb.b	$8C,0
+
