@@ -5517,7 +5517,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	bra.w	assreplace
 ; Data that follows Endfaceoff (strings, small tables)
 EndfaceoffData	dc.w	$0008,$1000,$0810
-	include	segacd\hockey\periodover94.asm
+	include	segacd\hockey\periodover94cd.asm
 ClearOffsidesIfAllPlayers						;a2 = team struct: clear the team offsides flag once no skater is past the
 	
 	btst	#$4,$32(a2)

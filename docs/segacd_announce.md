@@ -38,7 +38,7 @@ And in goal tonight, [ for { and ] for }.
 
 The later chunks are picture and tile blocks, not PCM. The credit line `Announcer:` / `Ron Barr` is in `STARTER.BIN` at file `$1B032`, in the credits text, next to `Player Ratings:` and `Player Card Photos:`.
 
-`scouting.asm` (`$2486C`, formerly `scouttext.asm` and `scouttok.asm`) is `InitScoutingDisplay`, the word typer (`UpdateScoutingDisplay`) and `ScrollDisplayUp`, written with the cartridge's own local labels (`.9` to `.30`) and variable names from `src/segacd/hockey.inc`.
+`scouting.asm` (`$2486C`, formerly `scouttext.asm` and `scouttok.asm`) is `InitScoutingDisplay`, the word typer (`UpdateScoutingDisplay`) and `ScrollDisplayUp`, written with the cartridge's own local labels (`.9` to `.30`) and variable names from `src/segacd/ram94cd.asm`.
 
 | Disc | Cartridge role |
 | --- | --- |

@@ -1,5 +1,5 @@
 // Reads the licensed text out of the Sega CD HOCKEY.BIN team data: the player names and the team nicknames, in the
-// order of src/segacd/hockey/teamdata.asm (records sorted by address). Used by extractAssetsSegaCD.js (writes
+// order of src/segacd/hockey/teamdata94cd.asm (records sorted by address). Used by extractAssetsSegaCD.js (writes
 // Extracted/SegaCD/HOCKEY/PlayerNames.txt and TeamNicknames.txt) and by the names step of build.js --segacd.
 const NUM_TEAMS = 28;
 function teamNames(disc) {
