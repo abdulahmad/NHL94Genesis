@@ -15,7 +15,7 @@ for l in open(CART, errors='replace').read().replace('\r', '').split('\n'):
     m = re.match(r'^([0-9A-F]{8}) (?:[0-9A-F]{2,4} ?)*[+ ]+([A-Za-z_]\w*):?(?:\t|$)', l)
     if m: caddr.setdefault(m.group(2), int(m.group(1), 16))
 csrc = {}
-for f in glob.glob('src/*94.asm'):
+for f in glob.glob('src/**/*94.asm', recursive=True):
     L = open(f, encoding='latin1').read().split('\n')
     for i, t in enumerate(L):
         m = re.match(r'^([A-Za-z_]\w*)(?=[\s:]|$)', t)

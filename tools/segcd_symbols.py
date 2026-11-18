@@ -59,7 +59,7 @@ def scan(files):
             if op in ('include', 'incbin', 'equ', 'set', 'org', 'even', 'section', 'string') or op.startswith('dc.'): continue
             out[cur].append((f, i, op, SPLIT.split(p[1].replace(' ', '')) if len(p) > 1 else [], p[1] if len(p) > 1 else ''))
     return out
-cart = scan(glob.glob(os.path.join(root, 'src/*94.asm')))
+cart = scan(glob.glob(os.path.join(root, 'src/**/*94.asm'), recursive=True))
 disc = scan(glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')))
 votes = collections.defaultdict(collections.Counter)   # symbol -> Counter(disc value)
 cand = []                                              # (file, line, old operand text, index, symbol, kind)
