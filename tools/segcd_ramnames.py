@@ -35,7 +35,7 @@ def scan(files):
             out[cur].append((op, SPLIT.split(p[1].replace(' ', '')) if len(p) > 1 else []))
     return out
 
-cart = scan(glob.glob(os.path.join(root, 'src/*94.asm')))
+cart = scan(glob.glob(os.path.join(root, 'src/**/*94.asm'), recursive=True))
 disc = scan(glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')))
 RAWD = re.compile(r'^(#?)\(?\$([0-9A-Fa-f]{4,5})\)?\.l$|^(#)\$([0-9A-Fa-f]{5})$')
 # disc operand like ($17F6C).l or $17F6C.l or #$17F6C

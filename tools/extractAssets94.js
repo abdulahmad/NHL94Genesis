@@ -431,7 +431,7 @@ const assets = [
     { name: 'Hot.map.jim', folder: 'NHL94/Graphics', start: 0x000F5AF6, end: 0x000F5D1C }, // unk_F5AF6
     { name: 'Cold.map.jim', folder: 'NHL94/Graphics', start: 0x000F5D1C, end: 0x000F600E }, // unk_F5D1C
     { name: 'revframetbl.bin', folder: 'NHL94/Graphics', start: 0x000F600E, end: 0x000F66EE }, // revframetbl
-    // NHL 94 matchup / player card palettes, src/cards94.asm TeamPalettes ($F8BF4): two 16 color palettes per team in TeamList order.
+    // NHL 94 matchup / player card palettes, src/front/cards94.asm TeamPalettes ($F8BF4): two 16 color palettes per team in TeamList order.
     // A is the matchup logo palette (the TeamLogoPalettes entry, except BOS, FLA, HFD, SJ), B is the other side (A with colors 1-2 and 3-4 swapped).
     { name: 'MatchupPalANHA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8BF4, end: 0x000F8C14 }, // ANH matchup logo
     { name: 'MatchupPalANHB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F8C14, end: 0x000F8C34 }, // ANH other side
@@ -489,7 +489,7 @@ const assets = [
     { name: 'MatchupPalASEB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F9294, end: 0x000F92B4 }, // ASE other side
     { name: 'MatchupPalASWA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F92B4, end: 0x000F92D4 }, // ASW matchup logo
     { name: 'MatchupPalASWB.pal', folder: 'NHL94/Graphics/Pals', start: 0x000F92D4, end: 0x000F92F4 }, // ASW other side
-    // src/logos94.asm TeamLogoPalettes ($FF462): the 4 team logo palettes that differ from MatchupPal<team>A.pal; the other 24 incbin that file.
+    // src/front/logos94.asm TeamLogoPalettes ($FF462): the 4 team logo palettes that differ from MatchupPal<team>A.pal; the other 24 incbin that file.
     { name: 'TeamLogoPalBOS.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF482, end: 0x000FF4A2 }, // BOS team logo
     { name: 'TeamLogoPalFLA.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF562, end: 0x000FF582 }, // FLA team logo
     { name: 'TeamLogoPalHFD.pal', folder: 'NHL94/Graphics/Pals', start: 0x000FF582, end: 0x000FF5A2 }, // HFD team logo
@@ -621,7 +621,7 @@ async function extractAssets(romPath, options = {}) {
             console.log(`Extracted ${lines.length} names to ${path.join(baseDir, file)}`);
         }
 
-        // The New York full names (NewYorkITxt / NewYorkRTxt in src/optsetup94.asm): each is a String in the ROM (a length word, then 'New York ' and
+        // The New York full names (NewYorkITxt / NewYorkRTxt in src/front/optsetup94.asm): each is a String in the ROM (a length word, then 'New York ' and
         // a licensed nickname). Written as asm for optsetup94.asm to include.
         for (const [file, start, end] of [['NewYorkIName.asm', 0xF7CB2, 0xF7CC6], ['NewYorkRName.asm', 0xF7CC6, 0xF7CD8]]) {
             if (romData.readUInt16BE(start) !== end - start) throw new Error(`${file}: no String at $${start.toString(16).toUpperCase()}`);

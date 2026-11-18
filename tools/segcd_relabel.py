@@ -27,7 +27,7 @@ def scan(f):
         out[-1][1].append((op,lab))
     return L,out
 cart={}
-for f in glob.glob('src/*94.asm'):
+for f in glob.glob('src/**/*94.asm', recursive=True):
     for r,items,i in scan(f)[1]: cart.setdefault(r,items)
 tot=0;changed=0
 for f in sorted(glob.glob('src/segacd/hockey/*.asm')):

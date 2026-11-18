@@ -1,7 +1,7 @@
 // playerCards.js: which player has which player card picture, read from the source (no ROM needed).
 // playerCards() -> one entry per Player row of src/teamdata94.asm, in file order (the order of the ids P001 ...):
 //   { team: 'BOS', slot: 17, card: 'Card002' or null }
-// A team's FeaturedPictures list (src/cards94.asm) pairs a picture (CardNNN, or a generic NoPic one) with a roster index; the roster
+// A team's FeaturedPictures list (src/front/cards94.asm) pairs a picture (CardNNN, or a generic NoPic one) with a roster index; the roster
 // index is the position of the Player row inside its team record. All-Star players share the card of their club player.
 const fs = require('fs');
 const path = require('path');
@@ -22,7 +22,7 @@ function playerCards() {
     }
     const pics = {};                                          // abbreviation -> { roster index: card }
     let list = null, pic = null;
-    for (const l of read('cards94.asm')) {
+    for (const l of read('front/cards94.asm')) {
         const h = /^\.(\w+)\s+;\w+ featured pictures/.exec(l);
         if (h) { list = pics[h[1]] = {}; pic = null; continue; }
         if (!list) continue;

@@ -15,38 +15,38 @@
 	include	ram94.asm				;ports, structure offsets and RAM map (rs), after frames94 like
 									;93 so Stack is the reset vector value until ram94 redefines
 									;it. Equates only
-	include	hockey94.asm			; $0076B2 game loop, pause
-	include	menu94.asm				; $007E36 menu core
-	include	stats94.asm				;$0080D4 scores, line editor, roster, scoring and penalty summaries,
+	include	engine\hockey94.asm			; $0076B2 game loop, pause
+	include	front\menu94.asm				; $007E36 menu core
+	include	front\stats94.asm				;$0080D4 scores, line editor, roster, scoring and penalty summaries,
 									;player stats, crowd meter, goalie select
-	include	replay94.asm			; $009FD0 replay
-	include	logic94.asm				; $00A9D6 player update, input, assignments
-	include	middle94.asm			; $010E88 shared helpers, decompress, print
-	include	penalty94.asm			; $011F2C penalties
-	include	scoreboard94.asm		; $012A7C power play graphic, rink mode, scoreboard, ticker, highlights
-	include	collide94.asm			; $0138AC puck, players, walls, fights, goals
-	include	video94.asm				; $015D9A vblank, clock, crowd, rink scroll
-	include	setup94.asm				; $0169FA ice setup, attract, menus, playoff data
+	include	engine\replay94.asm			; $009FD0 replay
+	include	engine\logic94.asm				; $00A9D6 player update, input, assignments
+	include	engine\middle94.asm			; $010E88 shared helpers, decompress, print
+	include	engine\penalty94.asm			; $011F2C penalties
+	include	engine\scoreboard94.asm		; $012A7C power play graphic, rink mode, scoreboard, ticker, highlights
+	include	engine\collide94.asm			; $0138AC puck, players, walls, fights, goals
+	include	engine\video94.asm				; $015D9A vblank, clock, crowd, rink scroll
+	include	engine\setup94.asm				; $0169FA ice setup, attract, menus, playoff data
 	include	tables94.asm			; $018CFC crowd frames, asstab, penalties, playoff tree, menus
 	include	sram94.asm				; $01A050 save data
 	include	sound\sound94.asm		; $01A264 sound driver, then the sound data
 	include	graphics94.asm			; $04B5C0 graphics and scouting text
-	include	onetimer94.asm			; $0F66EE  NEW in 94: one-timer
-	include	fourway94.asm			; $0F6D5E  NEW in 94: four-player adaptor
-	include	crowd94.asm				; $0F6E8A  NEW in 94: crowd meter and hot / cold players
-	include	optsetup94.asm			; $0F739E expanded: game setup and options
-	include	cards94.asm				; $0F87D2  NEW in 94: player cards and matchup palettes
-	include	records94.asm			; $0FB018  NEW in 94: name entry and record holders
-	include	shootout94.asm			; $0FC320  NEW in 94: shootout
-	include	scout94.asm				; $0FCB9A  NEW in 94: matchups and scouting report
-	include	period94.asm			; $0FD618  NEW in 94: period stats, game statistics, Manual Goalie
-	include	arena94.asm				; $0FE2C8  NEW in 94: arena / faceoff animations and organ song pick
-	include	shootoutpath94.asm		; $0FE660  NEW in 94: saved lines and shootout skate paths
+	include	engine\onetimer94.asm			; $0F66EE  NEW in 94: one-timer
+	include	engine\fourway94.asm			; $0F6D5E  NEW in 94: four-player adaptor
+	include	front\crowd94.asm				; $0F6E8A  NEW in 94: crowd meter and hot / cold players
+	include	front\optsetup94.asm			; $0F739E expanded: game setup and options
+	include	front\cards94.asm				; $0F87D2  NEW in 94: player cards and matchup palettes
+	include	front\records94.asm			; $0FB018  NEW in 94: name entry and record holders
+	include	front\shootout94.asm			; $0FC320  NEW in 94: shootout
+	include	front\scout94.asm				; $0FCB9A  NEW in 94: matchups and scouting report
+	include	engine\period94.asm			; $0FD618  NEW in 94: period stats, game statistics, Manual Goalie
+	include	front\arena94.asm				; $0FE2C8  NEW in 94: arena / faceoff animations and organ song pick
+	include	engine\shootoutpath94.asm		; $0FE660  NEW in 94: saved lines and shootout skate paths
 	include	ui94.asm				; $0FE98A  NEW in 94: unpack, rink gfx, HiScore, played-by
 	include	helpers94.asm			; $0FEF66  NEW in 94: leftover helpers before the title
-	include	title94.asm				; $0FF042  NEW in 94: title screen and credits
-	include	logos94.asm				; $0FF462  NEW in 94: team logo palettes, LeadSong, hot/cold icon
-	include	chgplayer94.asm			; $0FF9A8  NEW in 94: chgplayer and far thunks
+	include	front\title94.asm				; $0FF042  NEW in 94: title screen and credits
+	include	front\logos94.asm				; $0FF462  NEW in 94: team logo palettes, LeadSong, hot/cold icon
+	include	engine\chgplayer94.asm			; $0FF9A8  NEW in 94: chgplayer and far thunks
 	include	checksum94.asm			; $0FFAC0 checksum
 	dcb.b	$100000-*,$FF			;fill the retail 1MB image. Includes for a larger ROM go after this line;
 									;tools/fixrom.js pads the image and sets the header ROM end

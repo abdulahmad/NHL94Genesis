@@ -29,7 +29,7 @@ def scan(files):
                 if n[1:] and not l.startswith(' ') and l[0] != '\t' and l[0] != '.' and False: pass
                 R[cur].append(n)
     return R
-c = scan(glob.glob(os.path.join(root, 'src/*94.asm'))); d = scan(glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')))
+c = scan(glob.glob(os.path.join(root, 'src/**/*94.asm'), recursive=True)); d = scan(glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')))
 same = [r for r in c if r in d and len(c[r]) >= 2 and c[r] == d[r]]
 diff = [r for r in c if r in d and len(c[r]) >= 2 and c[r] != d[r]]
 ni = sum(len(c[r]) for r in same)
@@ -60,7 +60,7 @@ if '--report' in sys.argv:
                 x = re.match(r'^([A-Za-z_]\w*)', l)
                 if x and l[0] not in ' \t;': m.setdefault(x.group(1), os.path.basename(f))
         return m
-    cf, df = fl(glob.glob(os.path.join(root, 'src/*94.asm'))), fl(glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')))
+    cf, df = fl(glob.glob(os.path.join(root, 'src/**/*94.asm'), recursive=True)), fl(glob.glob(os.path.join(root, 'src/segacd/hockey/*.asm')))
     rows = []
     for r in sorted(c):
         if r not in d or len(c[r]) < 2: continue

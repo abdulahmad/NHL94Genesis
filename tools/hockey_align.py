@@ -7,7 +7,7 @@ disc instruction gets the cartridge line's comment, and a disc label (Lxxxx) on 
 aligned instruction takes the cartridge local label (.0 .1 .loop ...). Routine header
 comments are copied. Anything the cartridge does not have (CD code) is left alone.
 
-  python3 tools/hockey_align.py src/scout94.asm src/segacd/scout94.asm
+  python3 tools/hockey_align.py src/front/scout94.asm src/segacd/scout94.asm
 """
 import difflib
 import re
