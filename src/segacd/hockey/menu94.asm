@@ -6,7 +6,7 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 	String	CC_Font2,$4,$FC,$C
 	bsr.w	SetMenuPrintX
 	moveq	#$16,d0
-	moveq	#6,d1
+	moveq	#$6,d1
 	jsr	(Framer).l
 	bsr.w	Pausemode_Pmenu
 	move.w	#$18,(palcount).l
@@ -14,8 +14,8 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 	bpl.w	.loop
 	rts
 SetMenuPrintX						;printx = the left edge of the menu box: 5 in 32 column mode, else 9
-	move.w	#5,(printx).l
-	btst	#df32c,(disflags).l
+	move.w	#$5,(printx).l
+	btst	#$1,(disflags).l
 	bne.w	updatereplayExit
 	addi.w	#$4,(printx).l
 	rts
@@ -24,17 +24,17 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	
 	
 	
-	btst	#sbut,d1
+	btst	#$7,d1
 	bne.w	.next5
-	btst	#dbut,d1
+	btst	#$1,d1
 	beq.w	.up
 	addi.w	#$1,(menuitem).l
 	bra.w	Pausemode_Pmenu
-.up	btst	#ubut,d1
+.up	btst	#$0,d1
 	beq.w	.sel
 	subi.w	#$1,(menuitem).l
 	bra.w	Pausemode_Pmenu
-.sel	btst	#cbut,d1
+.sel	btst	#$5,d1
 	beq.w	.next5
 	bsr.w	seta2
 	move.w	(menuitem).l,d0
@@ -47,7 +47,7 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	dbra	d0,.3
 	movea.l	(a0),a0
 	jsr	(a0)
-	bclr	#1,(sflags5).l
+	bclr	#$1,(sflags5).l
 	bne.w	.noredraw
 	bsr.w	DrawMenuScreen
 .noredraw	tst.w	(menuitem).l		;item 0 (resume) leaves the menu
@@ -70,7 +70,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	bra.w	.2
 .next	adda.w	(a0),a0		;advance to the next item entry
 	adda.w	#$4,a0
-	tst.w	strtext(a0)		;negative: the last item
+	tst.w	$2(a0)		;negative: the last item
 .2	dbmi	d0,.next		;stop after d0 items or at the last item
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,(menuitem).l		;no item below the last
@@ -96,7 +96,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 .skip	adda.w	(a1),a1
 	adda.w	#$4,a1
 .next5	dbra	d0,.skip
-	moveq	#3,d1		;4 rows
+	moveq	#$3,d1		;4 rows
 	move.w	#$C,(printy).l
 	bsr.w	SetMenuPrintX
 	move.w	(MenuScrollTop).l,d0
@@ -120,7 +120,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	jsr	(PrintMenuItem).l
 	addi.w	#$1,d0
 	adda.w	#$4,a1
-	tst.w	strtext(a1)		;negative: the last item
+	tst.w	$2(a1)		;negative: the last item
 	dbmi	d1,.row
 	bmi.w	.x
 	bsr.w	SetMenuPrintX
@@ -132,11 +132,11 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 									;(.manual) when the pause team word is 0, else Auto Goalie (.auto):
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
 									;Pausemode_Pmenu
-	cmpi.b	#$78,2(a1)		;first char 'x'
+	cmpi.b	#$78,$2(a1)		;first char 'x'
 	bne.w	.plain
 	move.l	a1,-(sp)
 	movea.l	#$2C576,a1
-	btst	#sfpj,(sflags).l
+	btst	#$1,(sflags).l
 	beq.w	.homegoalie
 	tst.w	(goaliemode2).l
 	bra.w	.chkgoalie

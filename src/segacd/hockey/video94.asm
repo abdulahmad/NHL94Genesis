@@ -1,7 +1,7 @@
 vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: falls
 									;into IRQ7
 	movem.l	d0-d7/a0-a6,-(sp)
-	btst	#dfng,(disflags).l
+	btst	#$2,(disflags).l
 	bne.w	.nograph
 	bsr.w	ForceBlackStep
 .nograph	addq.w	#$1,(ScoutSubStatus).l
@@ -77,12 +77,12 @@ DmaListWait	move.w	(VSCRLPM).l,d0
 	rts
 setvideo
 	movem.l	d0-d7/a0-a6,-(sp)
-.p	btst	#dfok,(disflags).l
+.p	btst	#$0,(disflags).l
 	bne.w	.p
 	movea.l	#DMAList,a5
 	bsr.w	updatescroll
 	movea.l	#$BBD30,a6
-	moveq	#1,d6
+	moveq	#$1,d6
 	bsr.w	checkfo
 	bsr.w	checksso
 	bsr.w	setsortcords
@@ -97,56 +97,56 @@ setvideo
 	bne.w	.n
 	clr.l	(a6)+
 	clr.l	(a6)+
-.n	clr.b	satLink-satLen(a6)
+.n	clr.b	-$5(a6)
 	move.l	a6,d0
 	subi.l	#$BBD30,d0
-	lsr.w	#1,d0
+	lsr.w	#$1,d0
 	move.w	d0,(Sattsize).l
 	move.l	a5,(DMAlistend).l
 	move.l	a5,$1AD96.l
-	bset	#dfok,(disflags).l
+	bset	#$0,(disflags).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on the dma list
 									;(a5) when vertical scrolling needs new rows. Called from setvideo. Takes
 									;the rows from Rinktilelist, or RevRinkTilelist in a reverse angle replay
 									;(sflags4 bit 4)
-	btst	#sfhor,(sflags).l		;sfhor
+	btst	#$7,(sflags).l		;sfhor
 	bne.w	rtss2
-	moveq	#-$40,d0		;-192+128 (#$FFFFFFC0)
+	moveq	#-64,d0		;-192+128 (#$FFFFFFC0)
 	sub.w	(Hpos).l,d0
 	move.w	(Vpos).l,d1
 	move.w	d0,(Hscroll).l
 	move.w	d1,(Vscroll).l
 	neg.w	(Vscroll).l
 	move.w	(Oldrow).l,d4
-	asr.w	#3,d1
+	asr.w	#$3,d1
 	move.w	d1,(Oldrow).l
 	moveq	#$1F,d3		;max lines to update
 	cmp.w	d4,d1
 	beq.w	rtss2		;same row as last frame
 	movea.l	$47D18.l,a0
-	btst	#4,(sflags4).l		;reverse angle replay
+	btst	#$4,(sflags4).l		;reverse angle replay
 	beq.w	.0
 	movea.l	$47D64.l,a0
-.0	adda.l	jimdata(a0),a0		;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
+.0	adda.l	$4(a0),a0		;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
 	blt.w	.su0		;row went up
 .sd	move.w	d1,d0		;scrolling down: queue map rows, one per pass (d3 = max rows)
 	neg.w	d0
 	addi.w	#$1E,d0
 	andi.w	#$1F,d0
-	asl.w	#7,d0		;chars per row screen format
+	asl.w	#$7,d0		;chars per row screen format
 	add.w	(VmMAP2).l,d0
-	move.w	d0,6(a5)		;vram address
+	move.w	d0,$6(a5)		;vram address
 	move.w	#$1E,d0		;60-30
 	sub.w	d1,d0
-	move.w	(a0),4(a5)		;words = one map row
+	move.w	(a0),$4(a5)		;words = one map row
 	mulu.w	(a0),d0
 	add.w	d0,d0
 	lea.l	$4(a0,d0.w),a1
 	move.l	a1,(a5)		;source = map row
 	adda.w	#$8,a5
-	subq.w	#1,d1
+	subq.w	#$1,d1
 	cmp.w	d4,d1
 	dbeq	d3,.sd
 	rts
@@ -154,44 +154,44 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	neg.w	d0
 	addi.w	#$1D,d0
 	andi.w	#$1F,d0
-	asl.w	#7,d0
+	asl.w	#$7,d0
 	add.w	(VmMAP2).l,d0
-	move.w	d0,6(a5)
+	move.w	d0,$6(a5)
 	move.w	#$3D,d0
 	sub.w	d1,d0
-	move.w	(a0),4(a5)
+	move.w	(a0),$4(a5)
 	mulu.w	(a0),d0
 	add.w	d0,d0
 	lea.l	$4(a0,d0.w),a1
 	move.l	a1,(a5)
 	adda.w	#$8,a5
-	addq.w	#1,d1
+	addq.w	#$1,d1
 	cmp.w	d4,d1
 	dbeq	d3,.su0
 	rts
 showref						;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link counter.
 									;Called from setvideo
-	bclr	#sf2refref,(sflags2).l		;sf2refref
+	bclr	#$1,(sflags2).l		;sf2refref
 	beq.w	rtss2
 	movea.l	#RefRamMap,a0
 	movea.l	#VmMAP1,a1
-	move.w	2(a1),d2
-	moveq	#2,d0		;refy: Xpos on ice screen
-	btst	#sfhor,(sflags).l
+	move.w	$2(a1),d2
+	moveq	#$2,d0		;refy: Xpos on ice screen
+	btst	#$7,(sflags).l
 	beq.w	.1
 	moveq	#$F,d0		;Ypos on scoreboard screen
 .1	asl.w	d2,d0		;row * map row size
-	moveq	#2,d1
+	moveq	#$2,d1
 	asl.w	d2,d1		;d1 = vram step of 2 map rows
 	addi.w	#$2,d0		;refx
-	btst	#sfhor,(sflags).l
+	btst	#$7,(sflags).l
 	beq.w	.2
 	addi.w	#$B,d0
-.2	asl.w	#1,d0		;cells to bytes
+.2	asl.w	#$1,d0		;cells to bytes
 	add.w	(a1),d0		;d0 = vram address of the ref block in map 1
-	moveq	#7,d2		;refheight-1
+	moveq	#$7,d2		;refheight-1
 .0	move.l	a0,(a5)+
-	move.w	#7,(a5)+
+	move.w	#$7,(a5)+
 	move.w	d0,(a5)+
 	adda.w	#$E,a0		;refwidth*2
 	add.w	d1,d0
@@ -199,49 +199,49 @@ showref						;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link cou
 	rts
 checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, word
 									;flags. Called from setvideo
-	btst	#sfpz,(sflags).l		;sfpz
+	btst	#$0,(sflags).l		;sfpz
 	bne.w	rtss2
-	btst	#dffaceoff,(disflags).l		;face off flag
+	btst	#$4,(disflags).l		;face off flag
 	beq.w	rtss2
 	movea.l	#fofdata2,a3
-	moveq	#2,d0
+	moveq	#$2,d0
 .loop	move.w	(a3),d4
 	bmi.w	.next
 	beq.w	.next
 	movea.l	$47D30.l,a2
-	adda.l	jimdata(a2),a2
+	adda.l	$4(a2),a2
 	add.w	d4,d4
-	move.w	2(a2,d4.w),d5
+	move.w	$2(a2,d4.w),d5
 	sub.w	(a2,d4.w),d5
-	lsr.w	#3,d5
+	lsr.w	#$3,d5
 	subi.w	#$1,d5
 	adda.w	(a2,d4.w),a2
-.loop2	move.w	seY(a2),d2
+.loop2	move.w	$2(a2),d2
 	addi.w	#$80,d2
 	add.w	(fodropy).l,d2
 	move.w	d2,(a6)
 	move.w	(a2),d2
-	btst	#3,foattr(a3)		;x flip
+	btst	#$3,$2(a3)		;x flip
 	beq.w	.0
-	move.b	seSize(a2),d2
+	move.b	$7(a2),d2
 	andi.w	#$C,d2
 	addi.w	#$4,d2
-	asl.w	#1,d2
+	asl.w	#$1,d2
 	neg.w	d2
 	sub.w	(a2),d2
 .0	addi.w	#$80,d2
 	add.w	(fodropx).l,d2
-	move.w	d2,satX(a6)
-	move.b	seSize(a2),satSize(a6)
-	move.b	d6,satLink(a6)
-	move.w	seAttr(a2),d2
+	move.w	d2,$6(a6)
+	move.b	$7(a2),$2(a6)
+	move.b	d6,$3(a6)
+	move.w	$6(a2),d2
 	andi.w	#$F800,d2
-	or.w	seTile(a2),d2
-	move.w	foattr(a3),d1
+	or.w	$4(a2),d2
+	move.w	$2(a3),d1
 	andi.w	#$F800,d1
 	eor.w	d1,d2
 	add.w	(faceoffvrcset).l,d2
-	move.w	d2,satTile(a6)
+	move.w	d2,$4(a6)
 	addi.w	#$1,d6
 	adda.w	#$8,a6
 	adda.w	#$8,a2
@@ -255,19 +255,19 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	move.w	(Zamx).l,d0
 	bmi.w	rtss2		;no zamboni
 	movea.l	$47D34.l,a0
-	lsr.w	#2,d0
+	lsr.w	#$2,d0
 	move.w	#$12A,d1		;y (92 128+200)
-	moveq	#1,d2		;frame
+	moveq	#$1,d2		;frame
 	move.w	(ExtraChars).l,d3
 	bsr.w	SetSframe
 	move.w	d0,d2
-	lsr.w	#1,d2
+	lsr.w	#$1,d2
 	ext.l	d2
-	divu.w	#3,d2
+	divu.w	#$3,d2
 	swap	d2
 	addi.w	#$2,d2		;frame 2 + (x/2 mod 3)
 	bsr.w	SetSframe
-	moveq	#5,d2
+	moveq	#$5,d2
 	move.w	(HmGoals).l,d4
 	cmp.w	(AwGoals).l,d4
 	bls.w	SetSframe		;home not ahead: frame 5
@@ -275,7 +275,7 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 	subi.w	#$DA,d2
 	bpl.w	.pos
 	clr.w	d2		;x below $DA: first entry
-.pos	lsr.w	#2,d2		;(x-$DA)/4
+.pos	lsr.w	#$2,d2		;(x-$DA)/4
 	add.w	d2,d2		;word index
 	cmpi.w	#$1A,d2
 	blt.w	.next
@@ -290,20 +290,20 @@ SetSframe
 	cmpi.w	#$40,d6
 	bge.w	rtss2
 	movem.l	d0-d5/a0,-(sp)
-	adda.l	jimdata(a0),a0
+	adda.l	$4(a0),a0
 	add.w	d2,d2
-	move.w	2(a0,d2.w),d4
+	move.w	$2(a0,d2.w),d4
 	sub.w	(a0,d2.w),d4
-	lsr.w	#3,d4
+	lsr.w	#$3,d4
 	subi.w	#$1,d4
 	adda.w	(a0,d2.w),a0
-.loop	move.w	seY(a0),(a6)
+.loop	move.w	$2(a0),(a6)
 	add.w	d1,(a6)+
-	move.b	seSize(a0),(a6)+
+	move.b	$7(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	seAttr(a0),d2
+	move.w	$6(a0),d2
 	andi.w	#$F800,d2
-	add.w	seTile(a0),d2
+	add.w	$4(a0),d2
 	add.w	d3,d2
 	move.w	d2,(a6)+
 	move.w	(a0),(a6)
@@ -318,22 +318,22 @@ SetSframe
 showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the two
 									;Crowdframe frames. a5 = dma list, a6 = sprite table, d6 = link counter.
 									;No crowd in a reverse angle replay. Called from setvideo
-	btst	#4,(sflags4).l		;check if reverse angle replay
+	btst	#$4,(sflags4).l		;check if reverse angle replay
 	bne.w	.x		;branch if so
 	movea.l	$47D2C.l,a1
-	adda.l	jimdata(a1),a1		;a1 = frame offset table
+	adda.l	$4(a1),a1		;a1 = frame offset table
 	move.w	(Hpos).l,d4
 	move.w	(Vpos).l,d5
-	btst	#sfhor,(sflags).l
+	btst	#$7,(sflags).l
 	beq.w	.v
-	moveq	#-$40,d4		;(#$FFFFFFC0)
+	moveq	#-64,d4		;(#$FFFFFFC0)
 	move.l	#$100,d5
 .v	clr.w	d0		;d4/d5 = x/y of the view
 	move.b	(PBnum).l,d2
 	moveq	#$1A,d3
 	bsr.w	.pb
 	move.b	(PBnum).l,d2
-	lsr.w	#4,d2		;high nibble
+	lsr.w	#$4,d2		;high nibble
 	moveq	#$1D,d3		;frames 29+ (high nibble)
 	bsr.w	.pb
 	move.b	(Crowdframe).l,d0
@@ -343,7 +343,7 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 .pb	andi.w	#$F,d2		;d2 = count, d3 = first frame
 	cmpi.w	#$3,d2
 	bls.w	.pb0
-	moveq	#3,d2		;max 3
+	moveq	#$3,d2		;max 3
 .pb0	bra.w	.next
 .pbt	move.w	d3,d0		;frame = first frame + counter
 	add.w	d2,d0
@@ -352,7 +352,7 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	rts
 .sc	ext.w	d0
 	beq.w	rtss2
-	btst	#sfhor,(sflags).l
+	btst	#$7,(sflags).l
 	beq.w	.chk
 	addi.w	#$1F,d0		;horizontal frames are 31 later
 .chk	cmpi.w	#$40,d6		;MaxSprites
@@ -360,9 +360,9 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	movem.l	d0-d5,-(sp)
 	add.w	d0,d0
 	movea.l	a1,a0
-	move.w	2(a0,d0.w),d1
+	move.w	$2(a0,d0.w),d1
 	sub.w	(a0,d0.w),d1
-	lsr.w	#3,d1
+	lsr.w	#$3,d1
 	subi.w	#$1,d1
 	move.w	d1,-(sp)		;number of sprites in frame
 	adda.w	(a0,d0.w),a0
@@ -377,23 +377,23 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	subi.w	#$80,d2		;112+16
 	addi.w	#$70,d3		;112
 	move.w	(sp)+,d4
-.loop	cmp.w	seY(a0),d2		;per sprite: skip it if outside the window d0-d3
+.loop	cmp.w	$2(a0),d2		;per sprite: skip it if outside the window d0-d3
 	bgt.w	.next2
-	cmp.w	seY(a0),d3
+	cmp.w	$2(a0),d3
 	blt.w	.next2
 	cmp.w	(a0),d0
 	bgt.w	.next2
 	cmp.w	(a0),d1
 	blt.w	.next2
-	move.w	seY(a0),d5
+	move.w	$2(a0),d5
 	addi.w	#$70,d5		;128-16
 	sub.w	d2,d5
 	move.w	d5,(a6)+
-	move.b	seSize(a0),(a6)+
+	move.b	$7(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	seAttr(a0),d5
+	move.w	$6(a0),d5
 	andi.w	#$F800,d5
-	add.w	seTile(a0),d5
+	add.w	$4(a0),d5
 	add.w	(crowdvrcset).l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
@@ -412,9 +412,9 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 									;a shootout, gmode2 bit 0). On the vertical rink (.3) it goes in the dma
 									;list, only when dfclock is set; with gmode2 bit 1 (penalty shot /
 									;shootout) shootoutclock is shown instead of gameclock. a5 = dma list
-	btst	#sfhor,(sflags).l		;sfhor
+	btst	#$7,(sflags).l		;sfhor
 	beq.w	showclockVertical
-	btst	#0,(gmode2).l		;shootout
+	btst	#$0,(gmode2).l		;shootout
 	bne.w	.x
 	move.l	a1,-(sp)
 	jsr	(printz).l
@@ -524,14 +524,14 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 									;counter. Returns on the horizontal rink. Includes the pads 3 and 4
 									;(Joy3Struct / Joy4Struct when cont3team / cont4team). Falls into .ca for
 									;the last one
-	btst	#sfhor,(sflags).l
+	btst	#$7,(sflags).l
 	bne.w	rtss2
 	movea.l	#Joy1Struct,a0
 	movea.l	#sso,a3
 	move.w	#$180,d3		;frame numbers are 6 higher than 92
 	bsr.w	.ca
-	adda.w	#ffosize,a0		;next pad object
-	adda.w	#ssosize,a3		;ssosize
+	adda.w	#$1C,a0		;next pad object
+	adda.w	#$14,a3		;ssosize
 	move.w	#$183,d3
 	bsr.w	.ca
 	tst.w	(cont3team).l
@@ -545,15 +545,15 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	movea.l	#Joy4Struct,a0
 	adda.w	#$14,a3
 	move.w	#$349,d3
-.ca	tst.w	Zpos(a0)
+.ca	tst.w	$18(a0)
 	bmi.w	rtss2		;not on the ice
 	st.b	$6(a3)
 	move.w	$0(a0),d0
-	btst	#0,(gmode2).l
+	btst	#$0,(gmode2).l
 	bne.w	.0
-	btst	#sf2replay,(sflags2).l
+	btst	#$3,(sflags2).l
 	bne.w	.0
-	btst	#2,(BA_PS_flags).l
+	btst	#$2,(BA_PS_flags).l
 	beq.w	.7
 .0	move.w	d0,-(sp)
 	tst.w	d0
@@ -564,8 +564,8 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	move.w	(sp)+,d0
 	rts
 .6	move.w	(sp)+,d0
-.7	move.w	Ypos(a0),d1
-	btst	#sfhor,(sflags).l
+.7	move.w	$14(a0),d1
+	btst	#$7,(sflags).l
 	beq.w	.nhor
 	exg.l	d0,d1		;horizontal view: swap axes
 	neg.w	d0
@@ -576,36 +576,36 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 .hord	clr.w	d2
 	cmpi.w	#$74,d0		;.xoff = 116
 	blt.w	.8
-	bset	#3,d2
+	bset	#$3,d2
 .8	cmpi.w	#$FF8C,d0		;-.xoff
 	bgt.w	.1
-	bset	#2,d2
+	bset	#$2,d2
 .1	cmpi.w	#$64,d1		;.yoff = 100
 	blt.w	.9
-	bset	#0,d2
+	bset	#$0,d2
 .9	cmpi.w	#$FF9C,d1		;-.yoff
 	bgt.w	.3
-	bset	#1,d2
+	bset	#$1,d2
 .3	tst.w	d2
 	beq.w	rtss2
 	movea.l	#$37588,a1
 	move.b	(a1,d2.w),d2
-	asl.w	#3,d2
+	asl.w	#$3,d2
 	movea.l	#$3E4D4,a1
 	move.w	(a1,d2.w),d4
 	beq.w	.4
 	move.w	d4,d0
 .4	addi.w	#$100,d0		;128+128
 	move.w	d0,$0(a3)		;Xcord
-	move.w	2(a1,d2.w),d4		;y spot, 0 = keep player y
+	move.w	$2(a1,d2.w),d4		;y spot, 0 = keep player y
 	beq.w	.5
 	move.w	d4,d1
 .5	neg.w	d1		;y up is negative on screen
 	addi.w	#$F0,d1		;112+128
-	move.w	d1,2(a3)		;Ycord
-	add.w	4(a1,d2.w),d3
-	move.w	d3,frame(a3)
-	move.w	6(a1,d2.w),attribute(a3)		;flip bits
+	move.w	d1,$2(a3)		;Ycord
+	add.w	$4(a1,d2.w),d3
+	move.w	d3,$6(a3)
+	move.w	$6(a1,d2.w),$4(a3)		;flip bits
 	bra.w	addframe2
 ; Data that follows checksso (strings, small tables)
 checkssoData	dc.w	$0000,$0064,$0000,$0000,$0074,$0064,$0001,$0000		;x spot, y spot, frame add, attribute per direction
@@ -618,7 +618,7 @@ setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOli
 	move.w	#$F,d0		;sortobj-1 (15 dec)
 .top	clr.w	d1
 	move.b	(a4)+,d1		;move next sortcord into d1
-	asl.w	#6,d1		;mult by 64
+	asl.w	#$6,d1		;mult by 64
 	movea.l	#SortCords,a3
 	adda.w	d1,a3
 	bsr.w	addframe
@@ -627,16 +627,16 @@ setsortcords						;setup sort cord graphics: addframe for the 16 objects in OOli
 setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), moving
 									;each by its x offset. Called from setvideo
 	bsr.w	uppads
-	move.w	#6,d0		;ffo obj -1
+	move.w	#$6,d0		;ffo obj -1
 	movea.l	#pads,a3		;move start of struct into a3
 .top	movea.l	a6,a0		;per object: a0 = first sprite this object writes
 	bsr.w	addframe
 	cmpa.l	a6,a0
 	beq.w	.next		;no sprites added
-	move.w	2(a3),d1		;x offset (set by QueuePadLabel)
-	add.w	d1,6(a0)		;sprite 1 x
+	move.w	$2(a3),d1		;x offset (set by QueuePadLabel)
+	add.w	d1,$6(a0)		;sprite 1 x
 	add.w	d1,$E(a0)
-.next	adda.w	#ffosize,a3		;move to next struct
+.next	adda.w	#$1C,a3		;move to next struct
 	dbra	d0,.top
 	rts
 uppads						;update the gloves object and the 6 pad objects, and queue new pad labels
@@ -649,13 +649,13 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 	beq.w	.0		;branch if 0
 	move.b	$17E33.l,d1
 	ext.w	d0
-	asl.w	#2,d0
+	asl.w	#$2,d0
 	move.w	d0,$0(a0)		;move d0 into Xpos
 	ext.w	d1
-	asl.w	#2,d1
-	move.w	d1,Ypos(a0)		;move d1 into Ypos
-	clr.w	Zpos(a0)		;clear Zpos
-.0	move.w	#5,d4
+	asl.w	#$2,d1
+	move.w	d1,$14(a0)		;move d1 into Ypos
+	clr.w	$18(a0)		;clear Zpos
+.0	move.w	#$5,d4
 	movea.l	#pads,a0
 	movea.l	#padcont,a1		;last label code per pad
 	movea.l	#SortCords,a2
@@ -663,7 +663,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 .loop	cmpi.w	#$1,d4
 	bne.w	.nibble
 	move.w	(PadControlBits34).l,d3
-	lsr.w	#4,d3
+	lsr.w	#$4,d3
 	bra.w	.nibble		;to the next instruction
 .nibble	move.w	d3,d0		;per pad: d3 holds the remaining nibbles
 	andi.w	#$F,d0		;this pad's nibble: player number, $E or $F
@@ -673,19 +673,19 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 	st.b	$18(a0)		;hidden
 	cmpi.w	#$F,d0
 	beq.w	.next		;$F: pad hidden, label unchanged
-	asl.w	#7,d0
+	asl.w	#$7,d0
 	move.w	(a2,d0.w),$0(a0)
-	move.w	Ypos(a2,d0.w),Ypos(a0)
-	clr.w	Zpos(a0)		;shown
-	move.b	position+1(a2,d0.w),d1		;label code = position << 8 | rostnum
-	asl.w	#8,d1
-	move.b	rostnum(a2,d0.w),d1
+	move.w	$14(a2,d0.w),$14(a0)
+	clr.w	$18(a0)		;shown
+	move.b	$35(a2,d0.w),d1		;label code = position << 8 | rostnum
+	asl.w	#$8,d1
+	move.b	$6F(a2,d0.w),d1
 .chg	cmp.w	(a1),d1		;new label code vs the last one for this pad
 	beq.w	.next		;same label as last time
 	move.w	d1,(a1)
 	bsr.w	QueuePadLabel
-.next	lsr.w	#4,d3
-	adda.w	#ffosize,a0
+.next	lsr.w	#$4,d3
+	adda.w	#$1C,a0
 	adda.w	#$2,a1
 	dbra	d4,.loop
 	rts
@@ -696,9 +696,9 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;last char
 ; Table of 2 words after QueuePadLabel, 4 bytes: $49FA,$0098 ...
 	dc.w	$49FA,$0098
-	clr.w	2(a0)		;x offset (setffo adds it to the sprites)
+	clr.w	$2(a0)		;x offset (setffo adds it to the sprites)
 	move.w	d1,d2
-	lsr.w	#4,d2
+	lsr.w	#$4,d2
 	andi.w	#$F,d2
 	bne.w	.hi
 	move.w	#$FFF0,d2		;' '-'0': blank leading zero
@@ -712,32 +712,32 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 	bne.w	.lo
 	move.w	#$FFF0,d2		;$F: blank
 .lo	addi.w	#$30,d2		;'0' (ones digit of the label, or blank)
-	moveq	#1,d0		;char slot 1
+	moveq	#$1,d0		;char slot 1
 	bsr.w	uppads_pd
 	move.w	d1,d2
-	btst	#7,(sflags7).l
+	btst	#$7,(sflags7).l
 	beq.w	.0
 	clr.w	d2
-.0	lsr.w	#8,d2
-	andi.w	#7,d2
+.0	lsr.w	#$8,d2
+	andi.w	#$7,d2
 	bne.w	.1
 	addi.w	#$4,$2(a0)
 .1	move.b	(a4,d2.w),d2
-	moveq	#2,d0
+	moveq	#$2,d0
 uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii
 									;char, d0 = char slot, a0 = object (VRchar), a5 = dma list
 	movea.l	(SmallFontMap).l,a3
-	adda.l	jimdata(a3),a3
+	adda.l	$4(a3),a3
 	add.w	d2,d2
-	move.w	mapwords(a3,d2.w),d2
+	move.w	$4(a3,d2.w),d2
 	andi.w	#$7FF,d2
-	asl.w	#5,d2		;32 bytes per tile
+	asl.w	#$5,d2		;32 bytes per tile
 	movea.l	(SmallFontMap).l,a3
 	lea.l	$A(a3,d2.w),a3		;tile data
 	move.l	a3,(a5)+
 	move.w	#$10,(a5)+		;words to transfer
-	add.w	VRchar(a0),d0
-	asl.w	#5,d0
+	add.w	$12(a0),d0
+	asl.w	#$5,d0
 	move.w	d0,(a5)+		;vram destination
 	rts
 ; Text of uppads_pd (1 row).
@@ -745,8 +745,8 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 addframe
 	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
-	move.w	Ypos(a3),d1
-	move.w	Zpos(a3),d2
+	move.w	$14(a3),d1
+	move.w	$18(a3),d2
 	bmi.w	.exit
 	bsr.w	find3d
 	cmpi.w	#$4E20,d1
@@ -756,39 +756,39 @@ addframe
 	rts
 
 addframe2
-	move.w	attribute(a3),-(sp)
+	move.w	$4(a3),-(sp)
 	movem.l	d0-d5/a0-a2,-(sp)
-	move.w	frame(a3),d4
+	move.w	$6(a3),d4
 	bmi.w	.exit
 	beq.w	.exit
 	andi.w	#$F800,d4
-	eor.w	d4,attribute(a3)
-	move.w	frame(a3),d4
+	eor.w	d4,$4(a3)
+	move.w	$6(a3),d4
 	andi.w	#$7FF,d4
 	movea.l	$47D24.l,a2
-	adda.l	jimdata(a2),a2
+	adda.l	$4(a2),a2
 	add.w	d4,d4
-	cmp.w	2(a2),d4
+	cmp.w	$2(a2),d4
 	bge.w	.exit
-	move.w	2(a2,d4.w),d5
+	move.w	$2(a2,d4.w),d5
 	sub.w	(a2,d4.w),d5
-	lsr.w	#3,d5
+	lsr.w	#$3,d5
 	subi.w	#$1,d5
 	adda.w	(a2,d4.w),a2
 	clr.w	d3
 	clr.w	d4
 .sloop	move.w	d0,-(sp)
-	move.w	frame(a3),d0
+	move.w	$6(a3),d0
 	andi.w	#$7FF,d0
-	cmp.w	oldframe(a3),d0
+	cmp.w	$8(a3),d0
 	beq.w	.noref
 	tst.w	d5
 	bne.w	.nn
-	move.w	d0,oldframe(a3)
+	move.w	d0,$8(a3)
 .nn	movem.w	d0-d4,-(sp)
-	move.w	seTile(a2),d2
+	move.w	$4(a2),d2
 	clr.w	d4
-	move.b	seSize(a2),d4
+	move.b	$7(a2),d4
 	movea.l	#sizetab,a0
 	move.b	(a0,d4.w),d4
 	cmp.w	$8(sp),d4
@@ -807,67 +807,67 @@ addframe2
 	movem.w	(sp)+,d0-d1
 	adda.w	#$6,sp
 	movem.w	d0-d4,-(sp)
-	add.w	VRchar(a3),d3
+	add.w	$12(a3),d3
 	ext.l	d2
-	asl.l	#5,d2
+	asl.l	#$5,d2
 	add.l	$47D24.l,d2
 	addi.l	#$A,d2
-	asl.w	#4,d4
-	asl.w	#5,d3
+	asl.w	#$4,d4
+	asl.w	#$5,d3
 	move.l	d2,(a5)+
 	move.w	d4,(a5)+
 	move.w	d3,(a5)+
 	movem.w	(sp)+,d0-d4
-.dup	move.b	d3,VRoffs(a3,d5.w)
+.dup	move.b	d3,$A(a3,d5.w)
 .noref	move.w	(sp)+,d0
 	movem.w	d0-d2,-(sp)
-	move.w	seY(a2),d2
-	btst	#4,attribute(a3)
+	move.w	$2(a2),d2
+	btst	#$4,$4(a3)
 	beq.w	.noyflip
-	move.b	seSize(a2),d2
-	andi.w	#3,d2
+	move.b	$7(a2),d2
+	andi.w	#$3,d2
 	addi.w	#$1,d2
-	asl.w	#3,d2
+	asl.w	#$3,d2
 	neg.w	d2
-	sub.w	seY(a2),d2
+	sub.w	$2(a2),d2
 .noyflip	add.w	d2,d1
 	move.w	d1,(a6)
 	move.w	(a2),d2
-	btst	#3,attribute(a3)
+	btst	#$3,$4(a3)
 	beq.w	.noxflip
-	move.b	seSize(a2),d2
+	move.b	$7(a2),d2
 	andi.w	#$C,d2
 	addi.w	#$4,d2
-	asl.w	#1,d2
+	asl.w	#$1,d2
 	neg.w	d2
 	sub.w	(a2),d2
 .noxflip	add.w	d2,d0
-	move.w	d0,satX(a6)
-	move.b	seSize(a2),satSize(a6)
-	move.b	d6,satLink(a6)
-	move.w	seAttr(a2),d2
-	move.w	attribute(a3),d0
+	move.w	d0,$6(a6)
+	move.b	$7(a2),$2(a6)
+	move.b	d6,$3(a6)
+	move.w	$6(a2),d2
+	move.w	$4(a3),d0
 	eor.w	d0,d2
 	andi.w	#$F800,d2
-	btst	#0,attribute+1(a3)
+	btst	#$0,$5(a3)
 	beq.w	.nospec
 	btst	#$E,d2
 	beq.w	.nospec
 	bset	#$D,d2
-.nospec	or.b	VRoffs(a3,d5.w),d2
-	add.w	VRchar(a3),d2
-	move.w	d2,satTile(a6)
+.nospec	or.b	$A(a3,d5.w),d2
+	add.w	$12(a3),d2
+	move.w	d2,$4(a6)
 	movem.w	(sp)+,d0-d2
 	addi.w	#$1,d6
 	adda.w	#$8,a6
 	adda.w	#$8,a2
 	dbra	d5,.sloop
 .exit	movem.l	(sp)+,d0-d5/a0-a2
-	move.w	(sp)+,attribute(a3)
+	move.w	(sp)+,$4(a3)
 	rts
 find3d						;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 =
 									;xscreen, d1 = yscreen, or d1 = $4E20 when off screen
-	btst	#sfhor,(sflags).l
+	btst	#$7,(sflags).l
 	beq.w	.nhor
 	exg.l	d0,d1
 	neg.w	d0
@@ -881,7 +881,7 @@ find3d						;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 
 	blt.w	.offscr
 	addi.w	#$100,d0		;128+128
 	add.w	d2,d1
-	asr.w	#1,d2
+	asr.w	#$1,d2
 	add.w	d2,d1		;y + 1.5 * height
 	cmpi.w	#$90,d1		;112+32
 	bgt.w	.offscr
@@ -895,7 +895,7 @@ find3d						;input: d0 = xfield, d1 = yfield, d2 = height off field. Output: d0 
 updatesound						;move the crowd noise volume (psg noise channel, asv) toward Crowdlevel.
 									;Called from periodicevents
 	move.w	(Crowdlevel).l,d0
-	asl.w	#3,d0
+	asl.w	#$3,d0
 	addi.w	#$400,d0
 	cmpi.w	#$EFF,d0
 	bls.w	.ip

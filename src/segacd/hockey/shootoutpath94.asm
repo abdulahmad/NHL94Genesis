@@ -49,14 +49,14 @@ ReadLineDataBackupWrite
 ClearWinRecords
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
-	move.w	#7,d7
-.loop	clr.b	urwins(a0)
-	clr.b	urwins+1(a0)
-	clr.b	urgames(a0)
-	clr.b	urgames+1(a0)
+	move.w	#$7,d7
+.loop	clr.b	$8(a0)
+	clr.b	$9(a0)
+	clr.b	$A(a0)
+	clr.b	$B(a0)
 	adda.w	#$10,a0
 	dbra	d7,.loop
-	move.l	#TeamRecBase,d0
+	move.l	#$D20,d0
 	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
 	jsr	(BackupRamWrite).l
@@ -67,7 +67,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(sopathdir).l,d0
-	btst	#pfgoal,pflags(a3)
+	btst	#$7,$62(a3)
 	bne.w	.0
 	movea.l	#$2A674,a0
 	add.w	d0,d0
@@ -82,12 +82,12 @@ StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) 
 	
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-.loop	move.w	#7,d0
+.loop	move.w	#$7,d0
 	jsr	(randomd0).l
 	cmpi.w	#$6,d0
 	bgt.w	.loop
 	move.w	d0,(sopath).l
-	bclr	#3,(sflags7).l
+	bclr	#$3,(sflags7).l
 	move.w	#$FFFF,(sopathpoint).l
 	clr.w	(sopathx).l
 	bsr.w	NextPathPoint
@@ -108,22 +108,22 @@ NextPathPoint
 	beq.w	.x
 	addi.w	#$1,(sopathpoint).l
 	move.w	(sopathpoint).l,d0
-	asl.w	#2,d0
+	asl.w	#$2,d0
 	movea.l	#$2A6C2,a0
 	move.w	(sopath).l,d1
-	asl.w	#2,d1
+	asl.w	#$2,d1
 	movea.l	(a0,d1.w),a0
 	move.w	(a0,d0.w),(sopathx).l
-	btst	#0,handed(a3)
+	btst	#$0,$76(a3)
 	beq.w	.0
 	neg.w	(sopathx).l
-.0	move.w	2(a0,d0.w),(sopathy).l
-	cmpi.b	#$80,4(a0,d0.w)
+.0	move.w	$2(a0,d0.w),(sopathy).l
+	cmpi.b	#$80,$4(a0,d0.w)
 	bne.w	.x
-	bset	#3,(sflags7).l
+	bset	#$3,(sflags7).l
 	clr.w	(sopathend).l
 	move.b	$5(a0,d0.w),$1A8BF.l
-	move.w	6(a0,d0.w),(sopathdir).l
+	move.w	$6(a0,d0.w),(sopathdir).l
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Shootout path: steps the shooter to the next path point.

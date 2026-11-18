@@ -3,18 +3,18 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a
 									;tied playoff game plays on. Falls into PeriodOver_sp
 	addi.w	#$1,(gsp).l		;period number
-	bchg	#gmdir,(gmode).l		;flip the attack direction
-	cmpi.w	#3,(gsp).l		;period 3 or later?
+	bchg	#$1,(gmode).l		;flip the attack direction
+	cmpi.w	#$3,(gsp).l		;period 3 or later?
 	blt.w	.0
 	beq.w	.1		;period 3 just ended
-	move.w	#3,(gsp).l		;overtime done: stay at 3
+	move.w	#$3,(gsp).l		;overtime done: stay at 3
 	tst.w	(OptPlayMode).l
 	bne.w	.1
-	move.w	#4,(gsp).l
+	move.w	#$4,(gsp).l
 .1	move.w	(HmGoals).l,d0
 	sub.w	(AwGoals).l,d0
 	beq.w	.0		;tied: play overtime
-	move.w	#4,(gsp).l		;game over
+	move.w	#$4,(gsp).l		;game over
 .0	bsr.w	forceblack
 ; End of period: resets the clock, scores, then runs the intermission.
 PeriodOverIntermission

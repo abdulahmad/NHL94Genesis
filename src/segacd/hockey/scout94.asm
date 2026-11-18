@@ -11,7 +11,7 @@ ScoutCrowdRecord						;The text player's '@' (UpdateScoutingDisplay): return a1 
 	movea.l	(sp)+,a0
 	movea.l	#TempBuffer,a1
 	clr.w	d0
-	move.b	crpeak(a0),d0		;crowd record
+	move.b	$8(a0),d0		;crowd record
 	bne.w	.0
 	move.b	#$50,d0		;none saved: 80 dB
 .0	move.l	a1,-(sp)
@@ -29,7 +29,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	move.l	a0,-(sp)
 	jsr	(ReadCrowdRecord).l		;read the HomeTeam record
 	movea.l	(sp)+,a0
-	tst.b	crpeakuser(a0)
+	tst.b	$9(a0)
 	beq.w	.0
 	movea.l	#ThreeStars,a3
 	movea.l	#$2828C,a1
@@ -37,9 +37,9 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	jsr	(CopyString).l		;copy the String at a1 to a3: 'by '
 	movea.l	(sp)+,a3
 	clr.w	d2
-	move.b	crpeakuser(a0),d2
+	move.b	$9(a0),d2
 	movea.l	#TempBuffer,a1
-	bset	#7,(sflags6).l
+	bset	#$7,(sflags6).l
 	bsr.w	AppendUserName
 	jsr	(appstring).l
 	movea.l	#$28292,a1
@@ -62,7 +62,7 @@ GetTeamCity						;unused: return a1 = the city String of team byte tmATOP(a0) (T
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	clr.w	d2
 	move.b	$A(a0),d2
-	asl.w	#2,d2
+	asl.w	#$2,d2
 	movea.l	#TeamList,a1
 	movea.l	(a1,d2.w),a1
 	adda.w	$4(a1),a1
@@ -92,7 +92,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(ReadNameLog).l		;read the $80 byte SRAM name list at NameLogBase to namelog
 	jsr	(BuildHotColdLists).l		;hot / cold players for the text
 	clr.w	(advframe).l		;advantage mark frame
-	move.w	#SngScouting,-(sp)		;song $7A
+	move.w	#$7A,-(sp)		;song $7A
 	jsr	(song).l
 	move.l	#vb2,(VBint).l
 	jsr	(clearTeamStats).l
@@ -103,12 +103,12 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
 	jsr	(BuildHotColdLists).l		;again with the new tables
-	bclr	#df32c,(disflags).l		;40 cell mode
-	move.w	#6,(Map1col).l
-	move.w	#6,(Map2col).l
-	move.w	#0,d0		;fade to color
+	bclr	#$1,(disflags).l		;40 cell mode
+	move.w	#$6,(Map1col).l
+	move.w	#$6,(Map2col).l
+	move.w	#$0,d0		;fade to color
 	jsr	(setVram).l
-	move.w	#2,d4		;vram chars from 2
+	move.w	#$2,d4		;vram chars from 2
 	move.w	d4,(homepicchars).l		;home picture chars (6 x 6)
 	addi.w	#$24,d4
 	move.w	d4,(vispicchars).l
@@ -143,27 +143,27 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	d1
 	moveq	#$28,d2		;40 x 28 background
 	moveq	#$1C,d3
-	moveq	#3,d5		;color fam 1-2
+	moveq	#$3,d5		;color fam 1-2
 	jsr	(dobitmap).l
 	jsr	(printbigz).l
 	String	CC_Font1Pal2,$C,$D,'MATCHUPS'
-	move.w	#0,(printfontset).l
+	move.w	#$0,(printfontset).l
 	jsr	(printz).l
 	String	CC_Font1,$10,$11,'ADVANTAGE:'
 	jsr	(printz).l
 	String	CC_Font2Pal2,$6,$3
 	moveq	#$21,d0		;33 x 9 text box frame
-	moveq	#9,d1
+	moveq	#$9,d1
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font2Pal2,$1,$E		;(and dropped a word)
-	move.w	#8,d0		;8 x 8 frame: visitors picture
-	move.w	#8,d1
+	move.w	#$8,d0		;8 x 8 frame: visitors picture
+	move.w	#$8,d1
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font2Pal2,$1F,$E		;(and dropped a word)
-	move.w	#8,d0		;8 x 8 frame: home picture
-	move.w	#8,d1
+	move.w	#$8,d0		;8 x 8 frame: home picture
+	move.w	#$8,d1
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font1,$1,$1
@@ -175,7 +175,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	mapheight(a1),d3
+	move.w	$2(a1),d3
 	moveq	#$C,d5		;color fam 3-4
 	jsr	(dobitmap).l
 	movea.l	(HotMap).l,a2
@@ -404,7 +404,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 .next6	move.l	#vb2,(VBint).l
 	jsr	(SubCmd2DSend).l
 	bset	#$5,$FF800F.l
-.top	moveq	#0,d0
+.top	moveq	#$0,d0
 	jsr	(waitx).l
 	btst	#$1,$1AD77.l
 	beq.s	.next7
@@ -416,21 +416,21 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bpl.w	.2		;not run out
 	move.w	#$10E,(matchuptimer).l		;restart
 .2	bsr.w	PrintAdvantageMarks
-	btst	#sbut,d1		;Start?
+	btst	#$7,d1		;Start?
 	bne.w	.next17
 	cmpi.w	#$10E,(matchuptimer).l
 	beq.w	.next9		;timer ran out: next matchup
-	btst	#cbut,d1		;C?
+	btst	#$5,d1		;C?
 	beq.w	.4
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
 .next9	dc.w	$6100,$0764		; bsr.w X_29058
-	move.w	#1,d0
+	move.w	#$1,d0
 	tst.w	(ScoutLastPara).l
 	beq.s	.next10
 	bsr.w	PageMatchup
 .next10	bra.w	.6
-.4	btst	#abut,d1		;A?
+.4	btst	#$6,d1		;A?
 	beq.w	.5
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
@@ -440,7 +440,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bsr.w	PageMatchup
 .next12	bra.w	.6
 .5	clr.w	(asv).l		;normal text speed
-	btst	#dbut,d1		;down?
+	btst	#$1,d1		;down?
 	beq.w	.6
 	st.b	(asv).l		;down: type the rest without delays
 .6	btst	#$1,$1AD77.l		;down held (waitx pad bits)
@@ -512,7 +512,7 @@ PageMatchup						;Page the matchup by d0 (+1 / -1, 0-6 wrapping), restart the pa
 	blt.w	.1
 	clr.w	d0
 	bra.w	.1
-.0	move.w	#6,d0
+.0	move.w	#$6,d0
 .1	move.w	d0,(matchup).l
 	bsr.w	GetMatchupPlayers
 	bsr.w	DrawMatchupPictures
@@ -542,7 +542,7 @@ PrintMatchupRating						;Print the team rating of team a0 (GetTeamRating: the Te
 	bsr.w	GetTeamRating
 	movea.l	(sp)+,a2
 	move.l	d0,-(sp)
-	move.w	#2,d1
+	move.w	#$2,d1
 	jsr	(PushNumberWidth).l
 	jsr	(printsmall).l
 	move.l	(sp)+,d0
@@ -579,10 +579,10 @@ DrawMatchupPictures						;Draw the matchup's 6 x 6 pictures, visitors at x 2, ho
 	bne.w	.0
 	move.w	(VisTeam).l,d3
 	bsr.w	GetTeamLogo
-	move.w	#2,(printx).l
+	move.w	#$2,(printx).l
 	move.w	#$F,(printy).l
 	move.w	(vispicchars).l,d4
-	move.w	#4,d5
+	move.w	#$4,d5
 	move.w	#$6000,(printa).l
 	bsr.w	DrawMatchupLogo
 	move.w	(HomeTeam).l,d3
@@ -590,19 +590,19 @@ DrawMatchupPictures						;Draw the matchup's 6 x 6 pictures, visitors at x 2, ho
 	move.w	#$20,(printx).l
 	move.w	#$F,(printy).l
 	move.w	(homepicchars).l,d4
-	move.w	#0,(printa).l
-	move.w	#2,d5
+	move.w	#$0,(printa).l
+	move.w	#$2,d5
 	bsr.w	DrawMatchupLogo
 	move.w	#$64,(palcount).l
 	bra.w	.x
 .0	move.w	(VisTeam).l,d1
 	move.w	(matchupvis).l,d0
 	jsr	(DrawPlayerPicture).l
-	move.w	#2,(printx).l
+	move.w	#$2,(printx).l
 	move.w	#$F,(printy).l
 	move.w	(vispicchars).l,d4
-	move.w	#2,d5
-	move.w	#0,(printa).l
+	move.w	#$2,d5
+	move.w	#$0,(printa).l
 	bsr.w	DrawMatchupPicture
 	move.w	(HomeTeam).l,d1
 	move.w	(matchuphome).l,d0
@@ -610,8 +610,8 @@ DrawMatchupPictures						;Draw the matchup's 6 x 6 pictures, visitors at x 2, ho
 	move.w	#$20,(printx).l
 	move.w	#$F,(printy).l
 	move.w	(homepicchars).l,d4
-	move.w	#0,d5
-	move.w	#0,(printa).l
+	move.w	#$0,d5
+	move.w	#$0,(printa).l
 	bsr.w	DrawMatchupPicture
 	move.w	#$64,(palcount).l
 .x	movem.l	(sp)+,d0-d7/a0-a6
@@ -627,7 +627,7 @@ DrawMatchupPicture						;Draw player picture a0 at printx / printy with the Pict
 	tst.l	(a2)
 	bne.w	.0
 	movea.l	#PicturePalette,a1
-	adda.l	jimdata(a1),a1
+	adda.l	$4(a1),a1
 	tst.l	(a2)+
 	bra.w	.1
 .0	adda.l	(a2)+,a1
@@ -639,7 +639,7 @@ DrawMatchupLogo						;Draw team logo a0 at printx / printy, palette TeamLogoPale
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
-	asl.w	#3,d3
+	asl.w	#$3,d3
 	cmpi.w	#$4,d5
 	beq.w	.0
 	subi.w	#$20,d3
@@ -650,24 +650,24 @@ DrawMatchupLogo						;Draw team logo a0 at printx / printy, palette TeamLogoPale
 	adda.l	(a2)+,a1
 DrawMatchupBitmap						;6 x 6 dobitmap, then erase the 8 x 3 name area at y $19 on that side (x 2
 	
-	move.w	#6,d3
-	move.w	#6,d2
+	move.w	#$6,d3
+	move.w	#$6,d2
 	clr.w	d0
 	clr.w	d1
 	jsr	(dobitmap).l
 	cmpi.w	#$14,(printx).l
 	bgt.w	.0
-	move.w	#2,(printx).l
+	move.w	#$2,(printx).l
 	bra.w	.1
 .0	move.w	#$20,(printx).l
 .1	move.w	#$19,(printy).l
-	move.w	#8,d0
-	move.w	#3,d1
+	move.w	#$8,d0
+	move.w	#$3,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
 	rts
 GetTeamLogo						;Return a0 = the logo bitmap of team d3 (TeamLogoBitmaps table)
-	asl.w	#2,d3
+	asl.w	#$2,d3
 	movea.l	(TeamLogoBitmaps).l,a0
 	movea.l	(a0,d3.w),a0
 	rts
@@ -684,9 +684,9 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$1,$16,$16,CC_SetFont,$1
 	lea.l	ScoutRatingText(pc),a1
-	move.w	#0,d7
+	move.w	#$0,d7
 .loop	move.w	(a1),d0
-	asr.w	#1,d0
+	asr.w	#$1,d0
 	neg.w	d0
 	addi.w	#$16,d0
 	move.w	d0,(printx).l
@@ -694,7 +694,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	beq.w	.0
 	adda.w	(a1),a1
 	bra.w	.1
-.0	move.w	#2,(printfontset).l
+.0	move.w	#$2,(printfontset).l
 	move.w	(printy).l,-(sp)
 	subi.w	#$3,(printy).l
 	jsr	(printsmall).l
@@ -702,7 +702,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 .1	addi.w	#$1,d7
 	tst.w	(a1)
 	bpl.w	.loop
-	move.w	#2,(printfontset).l
+	move.w	#$2,(printfontset).l
 	jsr	(printz).l
 	String	CC_Font1,$0,$17,'                                        '
 	jsr	(printz).l
@@ -711,7 +711,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	movea.l	#awtmstruct,a2
 	bsr.w	PrintMatchupRating
 	move.w	d0,(homerating).l
-	move.w	#2,(printfontset).l
+	move.w	#$2,(printfontset).l
 	jsr	(printz).l
 	String	CC_Font1,$4,$16
 	exg.l	a0,a2
@@ -728,7 +728,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	String	CC_SetMapAndPosition,$0,$1,$D,$13,CC_SetFont,$1
 	jsr	(printsmall).l
 	move.w	#$16,(printy).l
-	move.w	#2,(printfontset).l
+	move.w	#$2,(printfontset).l
 	movea.l	#tmstruct,a2
 	move.l	(PAttribOverallMask).l,d4
 	tst.w	(matchupslot).l
@@ -744,7 +744,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	mulu.w	#$64,d0
 	divu.w	d1,d0
 	bsr.w	AttribAdjust
-	move.w	#2,d1
+	move.w	#$2,d1
 	move.w	d0,(homerating).l
 	jsr	(PushNumberWidth).l
 	jsr	(printz).l
@@ -765,7 +765,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	divu.w	d1,d0
 	bsr.w	AttribAdjust
 	move.w	d0,(visrating).l
-	move.w	#2,d1		;2 digits
+	move.w	#$2,d1		;2 digits
 	jsr	(PushNumberWidth).l
 	jsr	(printz).l
 	String	CC_Font1,$4,$16
@@ -800,7 +800,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	
 	
 	
-	movea.l	tmdata(a0),a0
+	movea.l	$1E(a0),a0
 	adda.w	$6(a0),a0
 	move.w	(matchup).l,d0
 	movea.l	#$29050,a1
@@ -828,15 +828,15 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	addi.w	#$1,(advcount).l
-	cmpi.w	#7,(advcount).l
+	cmpi.w	#$7,(advcount).l
 	blt.w	.0
 	clr.w	(advcount).l
 	addi.w	#$1,(advframe).l
-	cmpi.w	#6,(advframe).l
+	cmpi.w	#$6,(advframe).l
 	blt.w	.0
-	move.w	#5,(advframe).l
+	move.w	#$5,(advframe).l
 .0	move.w	(advframe).l,d1
-	asl.w	#2,d1
+	asl.w	#$2,d1
 	movea.l	#$290FE,a1
 	move.w	(homerating).l,d0
 	cmp.w	(visrating).l,d0
@@ -846,11 +846,11 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 .1	movea.l	(a1,d1.w),a1
 	bra.w	.3
 .2	movea.l	#EvenAdvTxt,a1
-.3	move.w	#2,(printfontset).l
+.3	move.w	#$2,(printfontset).l
 	jsr	(printz).l
 	String	CC_Font1,$13,$16
 	jsr	(printsmall).l
-	move.w	#0,(printfontset).l
+	move.w	#$0,(printfontset).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 HomeAdvMarks						;Home advantage marks, by advframe (0-5)
@@ -911,11 +911,11 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
-	movea.l	tmdata(a1),a1
+	movea.l	$1E(a1),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1
-	cmpi.w	#2,(a1)
+	cmpi.w	#$2,(a1)
 	bne.w	.x
 	movea.l	#$2919A,a1
 	cmpa.l	#tmstruct,a2
@@ -935,7 +935,7 @@ GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): r
 	
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
-	movea.l	tmdata(a1),a1
+	movea.l	$1E(a1),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1

@@ -6,52 +6,52 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	movea.l	#picturebits,a1
 	move.w	(a2)+,d0
 	move.w	d0,(a0)+
-	asl.w	#3,d0
+	asl.w	#$3,d0
 	subi.w	#$1,d0
 .loop	clr.l	(a0)
 	clr.l	(a1)
 	move.b	(a2)+,(a1)
-	move.b	(a2)+,1(a1)
-	move.b	(a2)+,2(a1)
-	move.l	#0,-(sp)
+	move.b	(a2)+,$1(a1)
+	move.b	(a2)+,$2(a1)
+	move.l	#$0,-(sp)
 	move.l	(a1),d2
 	andi.l	#$E0000000,d2
-	lsr.l	#1,d2
+	lsr.l	#$1,d2
 	addi.l	#$50000000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$1C000000,d2
-	lsr.l	#2,d2
+	lsr.l	#$2,d2
 	addi.l	#$5000000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$3800000,d2
-	lsr.l	#3,d2
+	lsr.l	#$3,d2
 	addi.l	#$500000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$700000,d2
-	lsr.l	#4,d2
+	lsr.l	#$4,d2
 	addi.l	#$50000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$E0000,d2
-	lsr.l	#5,d2
+	lsr.l	#$5,d2
 	addi.l	#$5000,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$1C000,d2
-	lsr.l	#6,d2
+	lsr.l	#$6,d2
 	addi.l	#$500,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$3800,d2
-	lsr.l	#7,d2
+	lsr.l	#$7,d2
 	addi.l	#$50,d2
 	or.l	d2,(sp)
 	move.l	(a1),d2
 	andi.l	#$700,d2
-	move.w	#8,d5
+	move.w	#$8,d5
 	lsr.l	d5,d2
 	addi.l	#$5,d2
 	or.l	d2,(sp)
@@ -118,13 +118,13 @@ PrintParenNumber						;PrintPlayerAssists / PrintPlayerGoals: the number (1 to 3
 	
 	move.b	(a2,d0.w),d0
 	ext.w	d0
-	move.w	#1,d1
+	move.w	#$1,d1
 	cmpi.w	#$9,d0
 	ble.w	.0
-	move.w	#2,d1
+	move.w	#$2,d1
 	cmpi.w	#$63,d0
 	ble.w	.0
-	move.w	#3,d1
+	move.w	#$3,d1
 .0	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
@@ -157,10 +157,10 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	cmpi.w	#$FFAA,(FallXPos).l
 	bgt.w	.2
 .1	move.w	#$116,d0
-.2	sub.w	Ypos(a3),d0
+.2	sub.w	$14(a3),d0
 	bmi.w	.x
-	asr.w	#1,d0
-	add.w	d0,Ypos(a3)
+	asr.w	#$1,d0
+	add.w	d0,$14(a3)
 	bra.w	.x
 .3	move.w	#$FEDC,d0
 	cmpi.w	#$56,(FallXPos).l
@@ -168,41 +168,41 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	cmpi.w	#$FFAA,(FallXPos).l
 	bgt.w	.5
 .4	move.w	#$FEEA,d0
-.5	sub.w	Ypos(a3),d0
+.5	sub.w	$14(a3),d0
 	bpl.w	.x
-	asr.w	#1,d0
-	add.w	d0,Ypos(a3)
+	asr.w	#$1,d0
+	add.w	d0,$14(a3)
 	bra.w	.x
 .6	move.w	#$82,d0
-	btst	#3,attribute(a3)
+	btst	#$3,$4(a3)
 	beq.w	.7
 	move.w	#$FF7E,d0
 .7	sub.w	$0(a3),d0
-	asr.w	#1,d0
+	asr.w	#$1,d0
 	add.w	d0,$0(a3)
 	bra.w	.x
 .8	move.w	#$88,d0
-	btst	#3,attribute(a3)
+	btst	#$3,$4(a3)
 	beq.w	.9
 	move.w	#$FF78,d0
 .9	sub.w	$0(a3),d0
-	asr.w	#1,d0
+	asr.w	#$1,d0
 	add.w	d0,$0(a3)
 	bra.w	.x
 .10	move.w	#$FF7E,d0
-	btst	#3,attribute(a3)
+	btst	#$3,$4(a3)
 	beq.w	.11
 	move.w	#$82,d0
 .11	sub.w	$0(a3),d0
-	asr.w	#1,d0
+	asr.w	#$1,d0
 	add.w	d0,$0(a3)
 	bra.w	.x
 .12	move.w	#$FF78,d0
-	btst	#3,attribute(a3)
+	btst	#$3,$4(a3)
 	beq.w	.13
 	move.w	#$88,d0
 .13	sub.w	$0(a3),d0
-	asr.w	#1,d0
+	asr.w	#$1,d0
 	add.w	d0,$0(a3)
 .x	rts
 GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd record (crpeak)
@@ -214,7 +214,7 @@ GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd re
 	movea.l	#ThreeStars,a0
 .loop	jsr	(ReadCrowdRecord).l
 	clr.w	d2
-	move.b	crpeak(a0),d2
+	move.b	$8(a0),d2
 	bne.w	.0
 	move.w	#$50,d2
 .0	cmp.w	d7,d2
@@ -226,8 +226,8 @@ GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd re
 	rts
 getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
 	clr.w	d0
-	move.b	fighting(a2),d0
-	lsr.w	#2,d0
+	move.b	$74(a2),d0
+	lsr.w	#$2,d0
 	rts
 ; Return point of getFgtbyte.
 GetFgtByteReturn
@@ -239,14 +239,14 @@ RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 whe
 	movea.l	#$2AC8E,a0
 	move.w	#$64,d0
 	jsr	(randomd0).l
-	andi.w	#7,d0
+	andi.w	#$7,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
 	cmpi.w	#$FFC0,(fox).l
 	bgt.w	.x
 	cmpi.w	#$C0,(foy).l
 	bgt.w	.x
-	move.w	#6,d0
+	move.w	#$6,d0
 .x	movem.l	(sp)+,a0
 	rts
 ; Data that follows RandomFaceoffAnim (strings, small tables)
@@ -271,22 +271,22 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	
 	
 	movea.l	#$BBD30,a6
-	moveq	#1,d6
+	moveq	#$1,d6
 	movea.l	$47D94.l,a0
 	move.w	(energybarchars).l,d3
 	ori.w	#$8000,d3
 	move.w	(playoffspritex).l,d0
 	move.w	(playoffspritey).l,d1
-	move.w	#1,d2
+	move.w	#$1,d2
 	jsr	(SetSframe).l
 	cmpa.l	#$BBD30,a6
 	bne.w	.0
 	clr.l	(a6)+
 	clr.l	(a6)+
-.0	clr.b	satLink-satLen(a6)
+.0	clr.b	-$5(a6)
 	move.l	a6,d0
 	subi.l	#$BBD30,d0
-	lsr.w	#1,d0
+	lsr.w	#$1,d0
 	move.w	d0,(Sattsize).l
 	rts
 GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of tmstruct.
@@ -320,10 +320,10 @@ TerminateLogName						;Unreferenced. The GetLogName String at lognametext, ended
 	movea.l	#lognametext,a1
 	bsr.w	GetLogName
 	move.w	(namelength).l,d0
-	move.b	#0,(a1,d0.w)
+	move.b	#$0,(a1,d0.w)
 	addi.w	#$1,d0
 	andi.w	#$FFFE,d0
-	move.w	d0,-2(a1)
+	move.w	d0,-$2(a1)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name), or an
@@ -337,7 +337,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	move.w	d0,(namelogsel).l
 	bsr.w	GetLogName
 	adda.w	(namelength).l,a1
-	move.b	#0,(a1)
+	move.b	#$0,(a1)
 	addi.w	#$1,(namelength).l
 	andi.w	#$FFFE,(namelength).l
 	addi.w	#$2,(namelength).l

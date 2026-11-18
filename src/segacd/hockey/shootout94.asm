@@ -24,11 +24,11 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(printz).l
 	String	' vs.',CC_Font1Pri,$4,$7
 	move.w	(BA_Goalie_SCnum).l,d0
-	asl.w	#7,d0
+	asl.w	#$7,d0
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	pnum(a2),d0		;goalie roster index
+	move.b	$66(a2),d0		;goalie roster index
 	movea.l	#awtmstruct,a2
 	tst.w	(BA_Team).l
 	beq.w	.1
@@ -38,30 +38,30 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$9
 	movea.l	#tmstruct,a1
-	movea.l	tmdata(a1),a1
+	movea.l	$1E(a1),a1
 	adda.w	$4(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).l
 	move.w	(homeshootgoals).l,d0
-	move.w	#3,d1
+	move.w	#$3,d1
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$A
 	movea.l	#awtmstruct,a1
-	movea.l	tmdata(a1),a1
+	movea.l	$1E(a1),a1
 	adda.w	$4(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).l
 	move.w	(awayshootgoals).l,d0
-	move.w	#3,d1
+	move.w	#$3,d1
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$C,'Round'
 	move.l	d0,d0
 	move.w	(shootoutround).l,d0
-	move.w	#2,d1
+	move.w	#$2,d1
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -75,21 +75,21 @@ ClearShootout						;Clear the player structs (SortCords) and the shootout state.
 .loop	clr.w	(a0)+
 	dbra	d0,.loop
 	clr.w	(shootoutdelay).l
-	move.w	#1,(shootoutround).l
-	bclr	#3,(gmode2).l
+	move.w	#$1,(shootoutround).l
+	bclr	#$3,(gmode2).l
 	clr.w	(homeshootgoals).l
 	clr.w	(awayshootgoals).l
 	clr.w	(homeshootnum).l
 	clr.w	(shootoutteam).l
 	bsr.w	InitShooters
-	move.w	#1,(shootoutteam).l
+	move.w	#$1,(shootoutteam).l
 	bsr.w	InitShooters
 	clr.w	(shootoutteam).l
 	rts
 
 NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartShootoutPath),
 	
-	btst	#3,(gmode2).l
+	btst	#$3,(gmode2).l
 	beq.w	.0
 	jmp	(GameOverCheckScroll).l
 .0	movem.l	d0-d7/a0-a6,-(sp)
@@ -99,7 +99,7 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 	movea.l	#homeshooters,a0
 	tst.w	(shootoutteam).l
 	beq.w	.1
-	move.w	#5,(BA_Goalie_SCnum).l
+	move.w	#$5,(BA_Goalie_SCnum).l
 	movea.l	#awayshooters,a0
 .1	move.w	(homeshootnum).l,d0
 	add.w	d0,d0
@@ -112,18 +112,18 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$0,$1A437.l
 	beq.w	.switch
-	cmpi.w	#5,(shootoutround).l
+	cmpi.w	#$5,(shootoutround).l
 	blt.w	.switch
 	move.w	(homeshootgoals).l,d0
 	cmp.w	(awayshootgoals).l,d0
 	beq.w	.switch
-	bset	#3,(gmode2).l
+	bset	#$3,(gmode2).l
 	jsr	(ScoutStubSetup).l
 	bra.w	.x
-.switch	eori.w	#1,(shootoutteam).l
+.switch	eori.w	#$1,(shootoutteam).l
 	bne.w	.x
 	addi.w	#$1,(homeshootnum).l
-	cmpi.w	#5,(homeshootnum).l
+	cmpi.w	#$5,(homeshootnum).l
 	blt.w	.1
 	clr.w	(homeshootnum).l
 .1	addi.w	#$1,(shootoutround).l
@@ -138,10 +138,10 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 	move.w	(VisTeam).l,d0
 	movea.l	#shootoutteam,a0
 .0	movea.l	#TeamList,a1
-	asl.w	#2,d0
+	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
 	adda.w	$6(a1),a1
-	move.w	#5,d0
+	move.w	#$5,d0
 .loop	clr.w	d1
 	move.b	(a1)+,d1
 	subi.w	#$1,d1
@@ -152,7 +152,7 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printz).l
 	String	CC_Font1Pri,$1,$D
-	move.w	#6,d1
+	move.w	#$6,d1
 	move.w	#$1E,d0
 	jsr	(Framer).l
 	jsr	(printbigz).l
@@ -163,19 +163,19 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 	cmp.w	(awayshootgoals).l,d0
 	bgt.w	.0
 	move.w	(VisTeam).l,d1
-.0	asl.w	#2,d1
+.0	asl.w	#$2,d1
 	movea.l	#TeamList,a1
 	movea.l	(a1,d1.w),a1
 	adda.w	$4(a1),a1
-	move.w	#2,(printx).l
+	move.w	#$2,(printx).l
 	jsr	(printbig).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	
-	btst	#0,(gmode2).l
+	btst	#$0,(gmode2).l
 	beq.w	ShootersExit
-	moveq	#0,d0
+	moveq	#$0,d0
 	moveq	#$1C,d1
 	jsr	(CrowdMeterFadeIn).l
 	clr.w	(scoutcolumn).l
@@ -190,7 +190,7 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	jsr	(eraser).l
 	bsr.w	ResetShooterScroll
 	bsr.w	ShooterScreenTitles
-	move.w	#0,(TestList).l
+	move.w	#$0,(TestList).l
 ; Redraws the shooter selection screen: list, rows and frame
 ShootoutShootersRedraw	bsr.w	ShootersSelectDraw
 	bsr.w	ShooterScreenRows
@@ -199,21 +199,21 @@ ShootersLoop						;Shootout shooters: the input loop
 	jsr	(MenuWaitVblank).l
 	jsr	(ReadActiveJoypad).l
 	jsr	(ProcessInputWithRepeat).l
-	btst	#7,d1
+	btst	#$7,d1
 	bne.w	ShootersExit
-	move.w	#1,d0
-	btst	#1,d1
+	move.w	#$1,d0
+	btst	#$1,d1
 	bne.w	ShootersMove
 	move.w	#$FFFF,d0
-	btst	#0,d1
+	btst	#$0,d1
 	bne.w	ShootersMove
-	move.w	#0,d0
-	btst	#2,d1
+	move.w	#$0,d0
+	btst	#$2,d1
 	bne.w	ShootersPick
-	move.w	#5,d0
-	btst	#3,d1
+	move.w	#$5,d0
+	btst	#$3,d1
 	bne.w	ShootersPick
-	btst	#5,d1
+	btst	#$5,d1
 	bne.w	ShooterSelectList
 	bra.w	ShootersLoop
 ShootersExit	jmp	(StatsScreenFadeIn).l
@@ -224,14 +224,14 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	beq.w	.0
 	movea.l	#awayshooters,a0
 .0	move.w	(TestList).l,d0
-	asl.w	#1,d0
+	asl.w	#$1,d0
 	move.w	(a0,d0.w),d6
 	jsr	(GetGoalieCount).l
 	move.w	d0,d1
 	jsr	(GetPlayerCount).l
 	sub.w	d1,d0
 	subi.w	#$1,d0
-	cmpi.w	#5,(TestList).l
+	cmpi.w	#$5,(TestList).l
 	bne.w	.1
 	move.w	d1,d0
 	subi.w	#$1,d0
@@ -252,12 +252,12 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$0,$3,$1,$0
 	move.w	#$12,d0
-	move.w	#3,d1
+	move.w	#$3,d1
 	jsr	(Framer).l
 	jsr	(printsmallz).l
 	String	CC_Font3,$15,$FC
 	move.w	#$12,d0
-	move.w	#3,d1
+	move.w	#$3,d1
 	jsr	(Framer).l
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$2,$1,'{Select Player}'
@@ -266,19 +266,19 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 .loop2	jsr	(MenuWaitVblank).l
 	jsr	(ReadActiveJoypad).l
 	jsr	(ProcessInputWithRepeat).l
-	btst	#7,d1
+	btst	#$7,d1
 	bne.w	ShootoutShootersRedraw
-	btst	#5,d1
+	btst	#$5,d1
 	bne.w	.next
-	moveq	#1,d0
-	btst	#1,d1
+	moveq	#$1,d0
+	btst	#$1,d1
 	bne.w	.scroll
-	btst	#3,d1
+	btst	#$3,d1
 	bne.w	.page
 	moveq	#-1,d0
-	btst	#0,d1
+	btst	#$0,d1
 	bne.w	.scroll
-	btst	#2,d1
+	btst	#$2,d1
 	bne.w	.page
 	bra.w	.loop2
 .page	add.w	(scoutcolumn).l,d0
@@ -309,14 +309,14 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	cmpa.l	#tmstruct,a2
 	beq.w	.11
 	movea.l	#awayshooters,a0
-.11	asl.w	#1,d2
+.11	asl.w	#$1,d2
 	move.w	d0,(a0,d2.w)
 	bra.w	ShootoutShootersRedraw
 PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib)
 	jsr	(printz).l
 	String	CC_Font2Pri,$16,$1
 .loop	movea.l	#PAttribOverall,a1
-	cmpi.w	#5,(TestList).l
+	cmpi.w	#$5,(TestList).l
 	bne.w	.0
 	movea.l	#GAttribOverall,a1
 .0	move.w	(scoutcolumn).l,d0
@@ -342,8 +342,8 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	sub.w	d2,d1
 	cmpi.w	#$5,d1
 	bls.w	.5
-	moveq	#5,d1
-.5	move.w	#2,(printy).l
+	moveq	#$5,d1
+.5	move.w	#$2,(printy).l
 .loop3	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0020
@@ -367,7 +367,7 @@ ShootersPick
 	bra.w	ShootersSelectRedraw
 ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 ... 4 (not
 	
-	cmpi.w	#5,(TestList).l
+	cmpi.w	#$5,(TestList).l
 	beq.w	ShootersLoop
 	add.w	(TestList).l,d0
 	bmi.w	ShootersSelect
