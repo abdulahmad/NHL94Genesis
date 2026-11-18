@@ -44,7 +44,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	(VisTeam).l,(logoteam).l
 	bsr.w	DrawVisBlock
 	move.w	#$18,(palcount).l
-	bclr	#$2,(disflags).l		;dfng: fade in graphics now
+	bclr	#dfng,(disflags).l		;dfng: fade in graphics now
 .loop
 	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.0
@@ -55,9 +55,9 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	tst.w	d1
 	bne.w	.1
 	bra.w	SetupPadsSyncRead
-.1	btst	#$7,d1
+.1	btst	#sbut,d1
 	bne.w	SetupPadsPlayoffLevelRead
-	btst	#$1,d1
+	btst	#dbut,d1
 	beq.w	.9
 	tst.w	(OptNOP).l
 	bne.w	.2
@@ -94,7 +94,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 .8	bsr.w	MoveMenuFrame
 	bsr.w	FixModeOptions
 	bra.w	.loop
-.9	btst	#$0,d1
+.9	btst	#ubut,d1
 	beq.w	.15
 	tst.w	(OptNOP).l
 	bne.w	.10
@@ -803,7 +803,7 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 	jsr	(ProcessInputWithRepeat).l
 	tst.w	d1
 	beq.w	.1
-	btst	#$5,d1
+	btst	#cbut,d1
 	beq.w	.x
 	btst	#$5,d2
 	beq.w	.0

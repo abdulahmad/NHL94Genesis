@@ -113,7 +113,7 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 									;the 8 of RandomSongs at random when 0; $FFFF with gmode bit 4. Called
 									;from StartPer, checkgoal, puckshootout and LeadSong
 	movem.l	d0-d1/a0-a1,-(sp)
-	btst	#$4,(gmode).l		;highlight reel?
+	btst	#gmhl,(gmode).l		;highlight reel?
 	beq.w	.0		;not the highlight reel: pick a song
 	move.w	#$FFFF,d1		;highlights: no song
 	bra.w	.1

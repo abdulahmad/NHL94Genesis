@@ -5,7 +5,7 @@ LoadCrowdRec						;CrowdRecord = the arena record of HomeTeam from save RAM (Rea
 	ext.l	d1
 	movea.l	#ThreeStars,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	$8(a0),d0
+	move.b	crpeak(a0),d0
 	beq.w	.none
 	andi.w	#$FF,d0
 	bra.w	.ex
@@ -17,11 +17,11 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	
 	
 	
-	btst	#$7,(sflags).l
+	btst	#sfhor,(sflags).l
 	bne.w	.ex1
 	btst	#$0,(gmode2).l
 	bne.w	.ex1
-	btst	#$0,(sflags3).l
+	btst	#sf3llcs,(sflags3).l
 	bne.w	.ex2
 	btst	#$7,(sflags5).l
 	bne.w	.chkoff
@@ -70,28 +70,28 @@ Crowd_Noise						;The crowd meter each frame: crowd noise on / off (sflags5 bit 
 	movem.l	(sp)+,d0-d7/a0-a6
 .ex1	rts
 stopna2						;Slow Xvel and Yvel of a3 toward 0 by $7D0. Called from goalieacc
-	tst.w	$28(a3)
+	tst.w	Xvel(a3)
 	bpl.w	.xp
-	addi.w	#$7D0,$28(a3)
+	addi.w	#$7D0,Xvel(a3)
 	bmi.w	.y
-	clr.w	$28(a3)
-.xp	subi.w	#$7D0,$28(a3)
+	clr.w	Xvel(a3)
+.xp	subi.w	#$7D0,Xvel(a3)
 	bpl.w	.y
-	clr.w	$28(a3)
-.y	tst.w	$2A(a3)
+	clr.w	Xvel(a3)
+.y	tst.w	Yvel(a3)
 	bpl.w	.yp
-	addi.w	#$7D0,$2A(a3)
+	addi.w	#$7D0,Yvel(a3)
 	bmi.w	.ex
-	clr.w	$2A(a3)
-.yp	subi.w	#$7D0,$2A(a3)
+	clr.w	Yvel(a3)
+.yp	subi.w	#$7D0,Yvel(a3)
 	bpl.w	.ex
-	clr.w	$2A(a3)
+	clr.w	Yvel(a3)
 .ex	rts
 checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. Corner circles
 	
 	
-	bclr	#$4,$64(a3)
-	move.w	#$88,d4
+	bclr	#pf3wall,pflags3(a3)
+	move.w	#Sideline,d4
 	sub.w	(wcradiusx).l,d4
 	move.w	#$12A,d5
 	sub.w	(wcradiusy).l,d5
@@ -138,8 +138,8 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	divs.w	d3,d1
 	bsr.w	.next
 .exit	movem.w	(sp)+,d2-d5
-	move.w	$4E(a3),d0
-	or.w	$50(a3),d0
+	move.w	Wallcos(a3),d0
+	or.w	Wallsin(a3),d0
 	bne.w	.rtss3
 	move.w	#$100,d0
 	clr.w	d1
@@ -167,7 +167,7 @@ HotColdLoop						;The Create_HotCold_Table loop
 	move.w	#$9,d0
 	jsr	(randomd0s).l
 	move.l	a0,-(sp)
-	adda.l	#$1A4,a0
+	adda.l	#tmHotCold,a0
 	move.b	d0,(a0,d1.w)
 	movea.l	(sp)+,a0
 	dbra	d1,HotColdLoop
@@ -187,13 +187,13 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	movem.l	d0-d2/a1,-(sp)
 	move.w	(TempWord2).l,d1
 	movea.l	#tmstruct,a1
-	btst	#$6,$62(a3)
+	btst	#pfteam,$62(a3)
 	beq.w	.attribmath
-	adda.l	#$366,a1
+	adda.l	#tmsize,a1
 .attribmath	clr.w	d1
-	move.b	$66(a3),d1
+	move.b	pnum(a3),d1
 	asl.w	#$4,d1
-	adda.l	#$1A4,a1
+	adda.l	#tmHotCold,a1
 	move.b	(a1,d1.w),d1
 	ext.w	d1
 	ext.l	d1
@@ -262,8 +262,8 @@ SortHotColdStarters						;Sum the hot / cold values of the 6 starters of team a0
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	a0,a2
-	adda.l	#$1A4,a2
-	movea.l	$1E(a0),a0
+	adda.l	#tmHotCold,a2
+	movea.l	tmdata(a0),a0
 	adda.w	$6(a0),a0
 	movea.l	#TempBuffer,a1
 	move.w	#$5,d0

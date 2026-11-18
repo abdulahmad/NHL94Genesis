@@ -11,7 +11,7 @@ ScoutCrowdRecord						;The text player's '@' (UpdateScoutingDisplay): return a1 
 	movea.l	(sp)+,a0
 	movea.l	#TempBuffer,a1
 	clr.w	d0
-	move.b	$8(a0),d0		;crowd record
+	move.b	crpeak(a0),d0		;crowd record
 	bne.w	.0
 	move.b	#$50,d0		;none saved: 80 dB
 .0	move.l	a1,-(sp)
@@ -29,7 +29,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	move.l	a0,-(sp)
 	jsr	(ReadCrowdRecord).l		;read the HomeTeam record
 	movea.l	(sp)+,a0
-	tst.b	$9(a0)
+	tst.b	crpeakuser(a0)
 	beq.w	.0
 	movea.l	#ThreeStars,a3
 	movea.l	#$2828C,a1
@@ -37,7 +37,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	jsr	(CopyString).l		;copy the String at a1 to a3: 'by '
 	movea.l	(sp)+,a3
 	clr.w	d2
-	move.b	$9(a0),d2
+	move.b	crpeakuser(a0),d2
 	movea.l	#TempBuffer,a1
 	bset	#$7,(sflags6).l
 	bsr.w	AppendUserName
@@ -103,7 +103,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	(Create_HotCold_Table).l
 	movea.l	(sp)+,a0
 	jsr	(BuildHotColdLists).l		;again with the new tables
-	bclr	#$1,(disflags).l		;40 cell mode
+	bclr	#df32c,(disflags).l		;40 cell mode
 	move.w	#$6,(Map1col).l
 	move.w	#$6,(Map2col).l
 	move.w	#$0,d0		;fade to color
@@ -175,7 +175,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$C,d5		;color fam 3-4
 	jsr	(dobitmap).l
 	movea.l	(HotMap).l,a2
@@ -416,11 +416,11 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bpl.w	.2		;not run out
 	move.w	#$10E,(matchuptimer).l		;restart
 .2	bsr.w	PrintAdvantageMarks
-	btst	#$7,d1		;Start?
+	btst	#sbut,d1		;Start?
 	bne.w	.next17
 	cmpi.w	#$10E,(matchuptimer).l
 	beq.w	.next9		;timer ran out: next matchup
-	btst	#$5,d1		;C?
+	btst	#cbut,d1		;C?
 	beq.w	.4
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
@@ -440,7 +440,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bsr.w	PageMatchup
 .next12	bra.w	.6
 .5	clr.w	(asv).l		;normal text speed
-	btst	#$1,d1		;down?
+	btst	#dbut,d1		;down?
 	beq.w	.6
 	st.b	(asv).l		;down: type the rest without delays
 .6	btst	#$1,$1AD77.l		;down held (waitx pad bits)
@@ -627,7 +627,7 @@ DrawMatchupPicture						;Draw player picture a0 at printx / printy with the Pict
 	tst.l	(a2)
 	bne.w	.0
 	movea.l	#PicturePalette,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	tst.l	(a2)+
 	bra.w	.1
 .0	adda.l	(a2)+,a1
@@ -800,7 +800,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	
 	
 	
-	movea.l	$1E(a0),a0
+	movea.l	tmdata(a0),a0
 	adda.w	$6(a0),a0
 	move.w	(matchup).l,d0
 	movea.l	#$29050,a1
@@ -911,7 +911,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1
@@ -935,7 +935,7 @@ GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): r
 	
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1

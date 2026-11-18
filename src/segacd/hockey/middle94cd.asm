@@ -479,20 +479,20 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	jsr	(updatecrowdf).l
 	jsr	(RunArenaAnim).l
 	clr.w	(pausepad).l
-	bclr	#$1,(sflags).l
+	bclr	#sfpj,(sflags).l
 	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
 	clr.w	(pausepad).l
-	bset	#$1,(sflags).l
+	bset	#sfpj,(sflags).l
 	bsr.w	ReadJoy2
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
 	tst.w	(FourWayPlay).l
 	beq.w	.vid
-	bclr	#$1,(sflags).l
+	bclr	#sfpj,(sflags).l
 	move.w	#$3,(pausepad).l
 	bsr.w	ReadJoy3
 	bsr.w	ProcessInputWithRepeat
@@ -500,7 +500,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bne.w	.key
 	tst.w	(FourWayPlay).l
 	beq.w	.vid
-	bset	#$1,(sflags).l
+	bset	#sfpj,(sflags).l
 	move.w	#$4,(pausepad).l
 	bsr.w	ReadJoy4
 	bsr.w	ProcessInputWithRepeat
@@ -761,7 +761,7 @@ ClearVramViaSetVram
 	rts
 DoDMApro
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	bsr.w	DoDMAProQueue
 	move.w	(sp)+,(disflags).l
 	rts
@@ -916,7 +916,7 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	move.l	d0,$BBC88.l
 	move.l	d1,$BBC8C.l
 	move.l	d2,$BBC90.l
@@ -1550,7 +1550,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	movea.l	(sp)+,a6
 	move.w	(printy).l,-(sp)
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)		;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6
 	movea.l	#$BBCB0,a3		;a3 = target palette, a0 = palette data

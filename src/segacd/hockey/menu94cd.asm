@@ -15,7 +15,7 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 	rts
 SetMenuPrintX						;printx = the left edge of the menu box: 5 in 32 column mode, else 9
 	move.w	#$5,(printx).l
-	btst	#$1,(disflags).l
+	btst	#df32c,(disflags).l
 	bne.w	updatereplayExit
 	addi.w	#$4,(printx).l
 	rts
@@ -24,17 +24,17 @@ HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up mov
 	
 	
 	
-	btst	#$7,d1
+	btst	#sbut,d1
 	bne.w	.next5
-	btst	#$1,d1
+	btst	#dbut,d1
 	beq.w	.up
 	addi.w	#$1,(menuitem).l
 	bra.w	Pausemode_Pmenu
-.up	btst	#$0,d1
+.up	btst	#ubut,d1
 	beq.w	.sel
 	subi.w	#$1,(menuitem).l
 	bra.w	Pausemode_Pmenu
-.sel	btst	#$5,d1
+.sel	btst	#cbut,d1
 	beq.w	.next5
 	bsr.w	seta2
 	move.w	(menuitem).l,d0
@@ -70,7 +70,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	bra.w	.2
 .next	adda.w	(a0),a0		;advance to the next item entry
 	adda.w	#$4,a0
-	tst.w	$2(a0)		;negative: the last item
+	tst.w	strtext(a0)		;negative: the last item
 .2	dbmi	d0,.next		;stop after d0 items or at the last item
 	addi.w	#$1,d0		;d0 = items left unwalked (-1 if all walked), +1 = overshoot
 	sub.w	d0,(menuitem).l		;no item below the last
@@ -120,7 +120,7 @@ Pausemode_Pmenu						;Clamp the selection, scroll the 4 rows shown and print the
 	jsr	(PrintMenuItem).l
 	addi.w	#$1,d0
 	adda.w	#$4,a1
-	tst.w	$2(a1)		;negative: the last item
+	tst.w	strtext(a1)		;negative: the last item
 	dbmi	d1,.row
 	bmi.w	.x
 	bsr.w	SetMenuPrintX
@@ -136,7 +136,7 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	bne.w	.plain
 	move.l	a1,-(sp)
 	movea.l	#$2C576,a1
-	btst	#$1,(sflags).l
+	btst	#sfpj,(sflags).l
 	beq.w	.homegoalie
 	tst.w	(goaliemode2).l
 	bra.w	.chkgoalie

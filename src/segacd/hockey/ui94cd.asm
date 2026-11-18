@@ -138,17 +138,17 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	
 	
 	
-	cmpi.w	#$193E,$58(a3)
+	cmpi.w	#$193E,SPA(a3)
 	beq.w	.12
-	cmpi.w	#$1A00,$58(a3)
+	cmpi.w	#$1A00,SPA(a3)
 	beq.w	.8
-	cmpi.w	#$18CC,$58(a3)
+	cmpi.w	#$18CC,SPA(a3)
 	beq.w	.10
-	cmpi.w	#$17E8,$58(a3)
+	cmpi.w	#$17E8,SPA(a3)
 	beq.w	.6
-	cmpi.w	#$1776,$58(a3)
+	cmpi.w	#$1776,SPA(a3)
 	beq.w	.0
-	cmpi.w	#$185A,$58(a3)
+	cmpi.w	#$185A,SPA(a3)
 	beq.w	.3
 	bra.w	.x
 .0	move.w	#$124,d0
@@ -157,10 +157,10 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	cmpi.w	#$FFAA,(FallXPos).l
 	bgt.w	.2
 .1	move.w	#$116,d0
-.2	sub.w	$14(a3),d0
+.2	sub.w	Ypos(a3),d0
 	bmi.w	.x
 	asr.w	#$1,d0
-	add.w	d0,$14(a3)
+	add.w	d0,Ypos(a3)
 	bra.w	.x
 .3	move.w	#$FEDC,d0
 	cmpi.w	#$56,(FallXPos).l
@@ -168,13 +168,13 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	cmpi.w	#$FFAA,(FallXPos).l
 	bgt.w	.5
 .4	move.w	#$FEEA,d0
-.5	sub.w	$14(a3),d0
+.5	sub.w	Ypos(a3),d0
 	bpl.w	.x
 	asr.w	#$1,d0
-	add.w	d0,$14(a3)
+	add.w	d0,Ypos(a3)
 	bra.w	.x
 .6	move.w	#$82,d0
-	btst	#$3,$4(a3)
+	btst	#$3,attribute(a3)
 	beq.w	.7
 	move.w	#$FF7E,d0
 .7	sub.w	$0(a3),d0
@@ -182,7 +182,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	add.w	d0,$0(a3)
 	bra.w	.x
 .8	move.w	#$88,d0
-	btst	#$3,$4(a3)
+	btst	#$3,attribute(a3)
 	beq.w	.9
 	move.w	#$FF78,d0
 .9	sub.w	$0(a3),d0
@@ -190,7 +190,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	add.w	d0,$0(a3)
 	bra.w	.x
 .10	move.w	#$FF7E,d0
-	btst	#$3,$4(a3)
+	btst	#$3,attribute(a3)
 	beq.w	.11
 	move.w	#$82,d0
 .11	sub.w	$0(a3),d0
@@ -198,7 +198,7 @@ PlaceBoardFall						;A player falling into the boards (SPAboardfront ... SPAbenc
 	add.w	d0,$0(a3)
 	bra.w	.x
 .12	move.w	#$FF78,d0
-	btst	#$3,$4(a3)
+	btst	#$3,attribute(a3)
 	beq.w	.13
 	move.w	#$88,d0
 .13	sub.w	$0(a3),d0
@@ -214,7 +214,7 @@ GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd re
 	movea.l	#ThreeStars,a0
 .loop	jsr	(ReadCrowdRecord).l
 	clr.w	d2
-	move.b	$8(a0),d2
+	move.b	crpeak(a0),d2
 	bne.w	.0
 	move.w	#$50,d2
 .0	cmp.w	d7,d2
@@ -226,7 +226,7 @@ GetLeagueCrowdRecord						;d0 = the team (of NumTeams) with the highest crowd re
 	rts
 getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
 	clr.w	d0
-	move.b	$74(a2),d0
+	move.b	fighting(a2),d0
 	lsr.w	#$2,d0
 	rts
 ; Return point of getFgtbyte.
@@ -258,12 +258,12 @@ CheckScoreLeader						;Compare tmap (players on ice) of tmstruct / awtmstruct an
 	movem.l	d0-d2/a0-a2,-(sp)
 	movea.l	#tmstruct,a0
 	movea.l	#awtmstruct,a1
-	move.w	$26(a0),d0
-	sub.w	$26(a1),d0
+	move.w	tmap(a0),d0
+	sub.w	tmap(a1),d0
 	beq.w	.x
 	bpl.w	.0
 	exg.l	a0,a1
-.0	cmpi.w	#$13,$2A(a0)
+.0	cmpi.w	#$13,tmteam(a0)
 	bne.w	.x
 .x	movem.l	(sp)+,d0-d2/a0-a2
 	rts
@@ -292,7 +292,7 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 GetTeamStruct						;a2 = tmstruct, or awtmstruct when team d2 is not tmteam of tmstruct.
 	
 	movea.l	#tmstruct,a2
-	cmp.w	$2A(a2),d2
+	cmp.w	tmteam(a2),d2
 	beq.w	.x
 	movea.l	#awtmstruct,a2
 .x	rts

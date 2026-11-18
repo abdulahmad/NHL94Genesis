@@ -17,7 +17,7 @@ eraser						;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = char 
 	
 	movem.l	d0-d2/a0,-(sp)
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.w	d0-d1,-(sp)
 .1	bsr.w	xyVmMap
 	move.w	(sp),d0
@@ -48,12 +48,12 @@ Framer						;frame and fill (uses framer.map graphics and assums tiles are alrea
 	
 	movem.l	d0-d4/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.w	d0-d1,-(sp)
 	move.w	(printa).l,d2
 	add.w	(framercset).l,d2
 	movea.l	(FramerMap).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	adda.w	#$4,a1
 	clr.w	d4
 	bsr.w	.tbline
@@ -105,7 +105,7 @@ printsmallz						;String macro follows the call
 printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup font
 	
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d3/a0/a2-a3,-(sp)
 	movea.l	#smallfontchars,a3
 	btst	#$3,(sflags6).l
@@ -136,8 +136,8 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	btst	#$3,(sflags6).l
 	beq.w	.4
 	movea.l	$47D70.l,a2
-.4	adda.l	$4(a2),a2
-	move.w	$4(a2,d0.w),d0
+.4	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
 	move.w	(printfontset).l,d1
 	add.w	(a3,d1.w),d0
 .p	add.w	d2,d0
@@ -229,7 +229,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	
 	
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d3/a0/a2,-(sp)
 	bsr.w	xyVmMap
 	move.w	(printa).l,d2
@@ -270,8 +270,8 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	btst	#$3,(sflags6).l
 	beq.w	.2
 	movea.l	$47D70.l,a2
-.2	adda.l	$4(a2),a2
-	move.w	$4(a2,d0.w),d0
+.2	adda.l	jimdata(a2),a2
+	move.w	mapwords(a2,d0.w),d0
 	btst	#$3,(sflags6).l
 	beq.w	.3
 	add.w	(setupfontchars).l,d0
@@ -448,7 +448,7 @@ printbig						;same as print, only use bigfont.map graphics. a1 = string macro, 
 	
 	
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	movem.l	d0-d7/a0/a2,-(sp)
 	move.w	(printx).l,d4
 	move.w	(printy).l,d5
@@ -505,13 +505,13 @@ PrintBigChar						;print big font char d0 (ascii) through bfasciicon
 	clr.w	d2
 .0	asl.w	#$1,d1
 	movea.l	(BigFontMap).l,a0
-	adda.l	$4(a0),a0
-.loop	move.w	$4(a0,d1.w),d3
+	adda.l	jimdata(a0),a0
+.loop	move.w	mapwords(a0,d1.w),d3
 	bsr.w	PutBigTile
 	move.w	(a0),d7
 	asl.w	#$1,d7
 	add.w	d7,d1
-	move.w	$4(a0,d1.w),d3
+	move.w	mapwords(a0,d1.w),d3
 	sub.w	d7,d1
 	addq.w	#$1,d5
 	bsr.w	PutBigTile

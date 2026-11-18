@@ -744,10 +744,10 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	movea.l	#winties,a6
 	movea.l	#wingames,a5
 	move.w	#$7,d7
-.loop	move.b	$8(a0),d0
+.loop	move.b	urwins(a0),d0
 	lsl.w	#$8,d0
 	move.b	$9(a0),d0
-	move.b	$A(a0),d1
+	move.b	urgames(a0),d1
 	lsl.w	#$8,d1
 	move.b	$B(a0),d1
 	move.w	d1,(a5)+
@@ -815,7 +815,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	rts
 ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.l	#$D20,d0
+	move.l	#TeamRecBase,d0
 	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
 	jsr	(BackupRamRead).l
@@ -844,8 +844,8 @@ ReadTeamRecords						;Record Holders: read the records (ReadSRAM)
 	move.b	(a0,d2.w),d3
 	btst	#$6,(sflags6).l
 	beq.w	.1
-	move.b	$4(a0,d1.w),d0
-	move.b	$4(a0,d2.w),d3
+	move.b	ursaves(a0,d1.w),d0
+	move.b	ursaves(a0,d2.w),d3
 .1	cmp.b	d3,d0
 	bge.w	.next
 	move.b	(a1),d0
