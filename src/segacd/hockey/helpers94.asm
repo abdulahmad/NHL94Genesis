@@ -2,7 +2,7 @@ AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from Attr
 	
 	cmpi.w	#$32,d0
 	bge.w	.exit
-	asr.w	#1,d0
+	asr.w	#$1,d0
 	addi.w	#$19,d0
 .exit	rts
 	movem.w	d0-d1,-(sp)
@@ -27,7 +27,7 @@ ReadGoaliePulled						;Z clear when the team of a3 pulled its goalie ($26 of the
 	
 	movem.l	a1,-(sp)
 	movea.l	#tmstruct,a1
-	btst	#pfteam,pflags(a3)
+	btst	#$6,$62(a3)
 	beq.w	.chkgoalie
 	movea.l	#awtmstruct,a1
 .chkgoalie	tst.w	$28(a1)
@@ -37,20 +37,20 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	
 	
 	movem.l	d0/a0,-(sp)
-	bclr	#pf3onetimer,pflags3(a3)
-	bclr	#pfalock,pflags(a3)
-	bclr	#pf2aip,pflags2(a3)
+	bclr	#$3,$64(a3)
+	bclr	#$5,$62(a3)
+	bclr	#$1,$63(a3)
 	clr.w	(onetimerflags).l
 	st.b	(onetimerplayer).l
 	move.w	d1,-(sp)
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
-	tst.w	position(a3)
+	tst.w	$34(a3)
 	bpl.w	.0
 	jsr	(assexit).l
 	bra.w	.1
 .0	jsr	(Setplass).l
-.1	clr.w	SPAnum(a3)
+.1	clr.w	$5A(a3)
 	st.b	$5C(a3)
 	move.w	(sp)+,d1
 	movem.l	(sp)+,d0/a0

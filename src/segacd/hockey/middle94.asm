@@ -5,10 +5,10 @@ UnpackNibbles						;a0 = packed data, d0 = count: unpack 4-bit values into words
 	clr.w	d2		;d2 bit 0 = which nibble is next
 	bra.w	.next2
 .loop	move.b	(a0)+,d1		;next nibble (one count per pass)
-	bchg	#0,d2		;toggle high/low nibble
+	bchg	#$0,d2		;toggle high/low nibble
 	bne.w	.lo		;low nibble?
 	suba.w	#$1,a0		;high nibble: read the same byte again next time
-	lsr.w	#4,d1		;high nibble down
+	lsr.w	#$4,d1		;high nibble down
 .lo	andi.w	#$F,d1
 	move.w	d1,(a1)+
 .next2	dbra	d0,.loop
@@ -28,7 +28,7 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 	bpl.w	.findloop
 	suba.l	#nibblebuffer,a1
 	move.w	a1,d0
-	lsr.w	#1,d0		;word offset -> index
+	lsr.w	#$1,d0		;word offset -> index
 	movem.l	(sp)+,d1/a1
 	rts
 ; Pushes the vram write flag on the gate array queue
@@ -262,7 +262,7 @@ ForceBlackStepCram
 	rts
 randomd0s
 	move.w	d0,-(sp)
-	asl.w	#1,d0
+	asl.w	#$1,d0
 	bsr.w	randomd0
 	sub.w	(sp)+,d0
 	rts
@@ -278,12 +278,12 @@ randomd0						;d0 = range. Return random number in d0 (0 <= d0 < range)
 	swap	d0
 	add.w	d1,d0
 	swap	d0
-	addq.l	#1,d0
+	addq.l	#$1,d0
 	move.l	d0,(seed).l
-	asr.l	#8,d0
+	asr.l	#$8,d0
 	mulu.w	$2(sp),d0
 	swap	d0
-	addq.w	#4,sp
+	addq.w	#$4,sp
 	movem.l	(sp)+,d1-d2
 	rts
 Sroot						;Square Root, this returns (d0.L)^.5 in d0. Large values use a binary
@@ -294,36 +294,36 @@ Sroot						;Square Root, this returns (d0.L)^.5 in d0. Large values use a binary
 	bhi.w	.m2
 	move.l	d1,-(sp)
 	moveq	#-1,d1
-.0	addq.w	#2,d1
+.0	addq.w	#$2,d1
 	sub.w	d1,d0
 	bcc.w	.0
-	lsr.w	#1,d1
+	lsr.w	#$1,d1
 	move.w	d1,d0
 	move.l	(sp)+,d1
 	rts
 .m2	movem.l	d1-d4,-(sp)
-	moveq	#9,d3
+	moveq	#$9,d3
 	move.w	#$8000,d1
 	cmpi.l	#$F00000,d0
 	bhi.w	.big
 	move.l	d0,d1
-	lsr.l	#8,d1
+	lsr.l	#$8,d1
 	addi.w	#$2,d1
 .top	move.w	d1,d2
 	move.l	d0,d1
 	divu.w	d2,d1
 	add.w	d2,d1
-	lsr.w	#1,d1
+	lsr.w	#$1,d1
 	cmp.w	d1,d2
 	dbeq	d3,.top
 .done	move.w	d1,d0
 	movem.l	(sp)+,d1-d4
 	rts
-.big	moveq	#0,d1
+.big	moveq	#$0,d1
 	moveq	#-1,d2
 .bs	move.w	d1,d3
 	add.w	d2,d3
-	roxr.w	#1,d3
+	roxr.w	#$1,d3
 	cmp.w	d3,d1
 	beq.w	.done
 	move.w	d3,d4
@@ -353,7 +353,7 @@ sfx						;play sound effect number. One word passed on stack
 	bclr	#$7,$FF800F.l
 .none	movem.l	(sp)+,d0
 	move.l	(sp),$2(sp)
-	addq.w	#2,sp
+	addq.w	#$2,sp
 	rts
 ; Sends a command word to the sub CPU through the gate array (disc only)
 GateArrayCommandSend	move.l	d0,-(sp)
@@ -386,7 +386,7 @@ song						;play song number. One word passed on stack
 	move.w	d0,$1745E.l
 .none	movem.l	(sp)+,d0
 	move.l	(sp),$2(sp)
-	addq.w	#2,sp
+	addq.w	#$2,sp
 	rts
 ; Checks the CD (BIOS calls $80/$81) before a song starts.
 SongCdCheck
@@ -475,33 +475,33 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 .wait	cmpi.w	#$708,(Zamx).l
 	bhi.w	.nz
 	addi.w	#$1,(Zamx).l
-.nz	moveq	#1,d7
+.nz	moveq	#$1,d7
 	jsr	(updatecrowdf).l
 	jsr	(RunArenaAnim).l
 	clr.w	(pausepad).l
-	bclr	#sfpj,(sflags).l
+	bclr	#$1,(sflags).l
 	bsr.w	ReadJoy1
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
 	clr.w	(pausepad).l
-	bset	#sfpj,(sflags).l
+	bset	#$1,(sflags).l
 	bsr.w	ReadJoy2
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
 	tst.w	(FourWayPlay).l
 	beq.w	.vid
-	bclr	#sfpj,(sflags).l
-	move.w	#3,(pausepad).l
+	bclr	#$1,(sflags).l
+	move.w	#$3,(pausepad).l
 	bsr.w	ReadJoy3
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	bne.w	.key
 	tst.w	(FourWayPlay).l
 	beq.w	.vid
-	bset	#sfpj,(sflags).l
-	move.w	#4,(pausepad).l
+	bset	#$1,(sflags).l
+	move.w	#$4,(pausepad).l
 	bsr.w	ReadJoy4
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
@@ -509,12 +509,12 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 .key	move.w	(ScoutSubStatus).l,d0
 	cmpi.w	#$FF88,d0
 	blt.w	.menu
-	moveq	#$FFFFFF88,d0
+	moveq	#-120,d0
 .menu	movem.w	d0,-(sp)
 	jsr	(HandleMenuInput).l
 	bne.w	.resume
 	adda.w	#$2,sp
-	bset	#7,d1
+	bset	#$7,d1
 	bra.w	.ex
 .resume	move.w	(sp)+,(ScoutSubStatus).l
 .vid	bsr.w	setvideo
@@ -555,7 +555,7 @@ orjoy						;return d1 = new button presses from either joystick
 nodiag						;eliminate diagonal direction presses: if held directions (d3 bits 0-3)
 	
 	movem.l	d0/d4-d5,-(sp)
-	moveq	#3,d4
+	moveq	#$3,d4
 	move.w	d3,d0
 	andi.w	#$F,d0
 	beq.w	.ok
@@ -575,7 +575,7 @@ ProcessInputWithRepeat						;nodiag, then key repeat on d1-d3
 	bne.w	.chg
 	subi.w	#$1,(repeatdelayframes).l
 	bpl.w	rtss2
-	move.w	#4,(repeatdelayframes).l
+	move.w	#$4,(repeatdelayframes).l
 	move.w	d3,d1
 	rts
 .chg	move.w	#$F,(repeatdelayframes).l
@@ -761,7 +761,7 @@ ClearVramViaSetVram
 	rts
 DoDMApro
 	move.w	(disflags).l,-(sp)
-	bset	#dfng,(disflags).l
+	bset	#$2,(disflags).l
 	bsr.w	DoDMAProQueue
 	move.w	(sp)+,(disflags).l
 	rts
@@ -916,7 +916,7 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
-	bset	#dfng,(disflags).l
+	bset	#$2,(disflags).l
 	move.l	d0,$BBC88.l
 	move.l	d1,$BBC8C.l
 	move.l	d2,$BBC90.l
@@ -1550,7 +1550,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	movea.l	(sp)+,a6
 	move.w	(printy).l,-(sp)
 	move.w	(disflags).l,-(sp)
-	bset	#dfng,(disflags).l
+	bset	#$2,(disflags).l
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)		;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6
 	movea.l	#$BBCB0,a3		;a3 = target palette, a0 = palette data
@@ -1560,7 +1560,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 .02	adda.l	#$20,a0		;next line
 	adda.l	#$20,a3		;next line
 .00	moveq	#$1F,d0
-	lsr.w	#1,d5		;d5 bit n = copy palette line n; stop when no bits left
+	lsr.w	#$1,d5		;d5 bit n = copy palette line n; stop when no bits left
 	bcs.w	.01
 	bne.w	.02
 	move.w	(printa).l,d5		;d5 = tile attribute bits (priority/palette/flip) from printa
@@ -1571,12 +1571,12 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	move.w	d6,d0
 	mulu.w	(a1),d0
 	add.w	$2(sp),d0
-	asl.w	#1,d0		;d0 = byte offset of the first map word wanted
+	asl.w	#$1,d0		;d0 = byte offset of the first map word wanted
 	move.w	$A(sp),d1
 	subi.w	#$1,d1
 	move.w	d1,(ThreeStars).l		;map word (map data starts 4 bytes in)
 	lea.l	$BC002.l,a0
-.loop1	move.w	4(a1,d0.w),d3
+.loop1	move.w	$4(a1,d0.w),d3
 	add.w	d4,d3		;add the start char
 	eor.w	d5,d3		;xor the attribute bits
 	move.w	d3,(a0)+		;write the name table entry
@@ -1598,7 +1598,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	addi.w	#$1,(printy).l
 	addi.w	#$1,d6
 	dbra	d2,.loop2
-	btst	#0,(sflags6).l
+	btst	#$0,(sflags6).l
 	bne.w	.0
 	jsr	(DecompressGraphicsPlain).l
 .0	movem.l	(sp)+,d0-d3/d5-d6/a0-a3
