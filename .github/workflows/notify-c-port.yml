@@ -1,0 +1,21 @@
+# When this disassembly changes on its main branch, ask the C port built from it to run its smoke test (project files smoke-test/plan.md).
+# Needs the PORTS_TOKEN secret (may dispatch workflows in NHL94Genesis-C-Port); skipped without it.
+name: notify-c-port
+on:
+  push:
+    branches: []
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      PORTS_TOKEN: ${{ secrets.PORTS_TOKEN }}
+    steps:
+      - name: dispatch
+        if: env.PORTS_TOKEN != ''
+        run: |
+          curl -sS -X POST -H "Authorization: Bearer $PORTS_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository_owner }}/NHL94Genesis-C-Port/dispatches" \
+            -d '{"event_type":"disasm-changed","client_payload":{"sha":"${{ github.sha }}"}}'
+      - name: no token
+        if: env.PORTS_TOKEN == ''
+        run: echo "PORTS_TOKEN not set, NHL94Genesis-C-Port not notified"
