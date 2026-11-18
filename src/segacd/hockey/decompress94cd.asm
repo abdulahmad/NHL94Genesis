@@ -65,9 +65,22 @@ DecompressBytecode						;Unpack a0 into the 256 byte ring buffer at decompbuffer
 	jsr	(a2,d0.w)
 	bra.b	.loop
 DecompressOpcodeTable						;DecompressBytecode handler offsets, one per opcode high nibble
-; Ascending offset table of 16 words after DecompressOpcodeTable ($0020,$0020,$003C,$0058 ...).
-	dc.w	$0020,$0020,$003C,$0058,$0078,$0078,$0078,$0078
-	dc.w	$00AA,$00B8,$00D2,$00EC,$0106,$0106,$0138,$0158
+	dc.w	Opcode_CopyLiteral-DecompressOpcodeTable		;0
+	dc.w	Opcode_CopyLiteral-DecompressOpcodeTable		;1
+	dc.w	Opcode_ClearBytes-DecompressOpcodeTable		;2
+	dc.w	Opcode_FillBytes-DecompressOpcodeTable		;3
+	dc.w	Opcode_CopyBackwardShort-DecompressOpcodeTable		;4
+	dc.w	Opcode_CopyBackwardShort-DecompressOpcodeTable		;5
+	dc.w	Opcode_CopyBackwardShort-DecompressOpcodeTable		;6
+	dc.w	Opcode_CopyBackwardShort-DecompressOpcodeTable		;7
+	dc.w	Opcode_CopyBackwardMedium-DecompressOpcodeTable		;8
+	dc.w	Opcode_CopyBackwardLong-DecompressOpcodeTable		;9
+	dc.w	Opcode_CopyBackwardExtended1-DecompressOpcodeTable		;A
+	dc.w	Opcode_CopyBackwardExtended2-DecompressOpcodeTable		;B
+	dc.w	Opcode_CopyBackwardReverseShort-DecompressOpcodeTable		;C
+	dc.w	Opcode_CopyBackwardReverseShort-DecompressOpcodeTable		;D
+	dc.w	Opcode_CopyBackwardReverseMedium-DecompressOpcodeTable		;E
+	dc.w	Opcode_CopyBackwardReverseLong-DecompressOpcodeTable		;F
 Opcode_CopyLiteral						;opcodes 0-1, copy (low 5 bits)+1 bytes from the data
 	move.b	-$1(a0),d0
 	andi.w	#$1F,d0
@@ -121,15 +134,47 @@ Opcode_CopyBackwardMedium						;opcode 8
 	addq.w	#$2,d0
 	move.b	(a0)+,d2
 	bra.b	CopyBackwardRun
-; Table of 50 words after Opcode_CopyBackwardMedium, 100 bytes: $1010,$E300,$1028,$FFFF,$E310,$0240 ...
-	dc.w	$1010,$E300,$1028,$FFFF,$E310,$0240,$001F,$5440
-	dc.w	$1418,$0242,$007F,$5242,$60BC,$1028,$FFFF,$E140
-	dc.w	$1010,$EC48,$0240,$003F,$5440,$1418,$0242,$003F
-	dc.w	$5242,$60A2,$1028,$FFFF,$E140,$1010,$EA48,$0240
-	dc.w	$007F,$5440,$1418,$0242,$001F,$5242,$6088,$1028
-	dc.w	$FFFF,$0240,$0003,$5240,$1428,$FFFF,$E44A,$0242
-	dc.w	$0007,$5242
-
+Opcode_CopyBackwardLong						;opcode 9
+	move.b	(a0),d0
+	asl.b	#$1,d0		;x = bit 7 of the next byte
+	move.b	-$1(a0),d0		;step back to the opcode byte just read
+	roxl.b	#$1,d0
+	andi.w	#$1F,d0
+	addq.w	#$2,d0
+	move.b	(a0)+,d2
+	andi.w	#$7F,d2
+	addq.w	#$1,d2
+	bra.b	CopyBackwardRun
+Opcode_CopyBackwardExtended1						;opcode A
+	move.b	-$1(a0),d0		;step back to the opcode byte just read
+	asl.w	#$8,d0
+	move.b	(a0),d0
+	lsr.w	#$6,d0
+	andi.w	#$3F,d0
+	addq.w	#$2,d0
+	move.b	(a0)+,d2
+	andi.w	#$3F,d2
+	addq.w	#$1,d2
+	bra.b	CopyBackwardRun
+Opcode_CopyBackwardExtended2						;opcode B
+	move.b	-$1(a0),d0		;step back to the opcode byte just read
+	asl.w	#$8,d0
+	move.b	(a0),d0
+	lsr.w	#$5,d0
+	andi.w	#$7F,d0
+	addq.w	#$2,d0
+	move.b	(a0)+,d2
+	andi.w	#$1F,d2
+	addq.w	#$1,d2
+	bra.b	CopyBackwardRun
+Opcode_CopyBackwardReverseShort						;opcodes C-D, copy backwards through the source
+	move.b	-$1(a0),d0		;step back to the opcode byte just read
+	andi.w	#$3,d0
+	addq.w	#$1,d0
+	move.b	-$1(a0),d2		;step back to the opcode byte just read
+	lsr.w	#$2,d2
+	andi.w	#$7,d2
+	addq.w	#$1,d2
 CopyBackwardReverseRun						;shared reverse copy loop
 	neg.b	d2
 	add.b	d1,d2

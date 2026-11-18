@@ -411,6 +411,7 @@ ScoutingReportText	equ	$47CFC		;pointer to the loaded Ron Barr script (the cartr
 tmdata		equ	$1E			;team data address, as the cartridge
 tmgoalie	equ	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
 pldsize		equ	8
+tmboxlist	equ	$9C			;penalty box list of roster players (bytes, negative ends): tmpdst + 2 * 26 roster slots
 BigFontMap	equ	$47D38			;pointer to the big font graphics (a loaded file here)
 ScoutSavedSP	equ	$47D00			;disc only: the caller's stack
 ScoutSpeechTable	equ	$47DA4		;disc only: 8 byte entries by paragraph, {CD position, length} of the speech clip
@@ -440,6 +441,8 @@ CC_Font3Pal3	equ	$CD
 CC_Font1Pri	equ	$BF
 CC_Font2Pri	equ	$BE
 CC_Font3Pri	equ	$BD
+CC_SetAttribute	equ	$FE			;palette/priority (printa)
+CC_ListEnd	equ	$FF			;ends a menu item list
 CC_Font2Pal2Pri	equ	$9E
 CC_Font1Pal3Pri	equ	$8F
 CC_Font2Pal3Pri	equ	$8E

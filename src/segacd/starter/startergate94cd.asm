@@ -596,16 +596,23 @@ TilemapPut	movem.l	d2-d3/a1-a2,-(sp)
 	beq.w	.ex
 	move.w	#$1,$C446.l
 	bset.b	#$2,$FF800F.l
-	move.l	#$27A9E,-(sp)
+	move.l	#GateIrqAfterHook,-(sp)
 	move.l	$C432.l,-(sp)
 	rts
-; Code kept as bytes after TilemapPut (the 84 bytes are decoded in the row comments).
-	dc.b	$4E,$B9,$00,$02,$7B,$38,$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6		; jsr $27b38.l / btst.b #$4, $ff800e.l / bne.b *-8
-	dc.b	$33,$FC,$00,$2F,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF,$80,$0F		; move.w #$2f, $ff8026.l / bset.b #$3, $ff800f.l
-	dc.b	$08,$39,$00,$03,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04,$00,$FF		; btst.b #$3, $ff800e.l / beq.b *-8 / bset.b #$4, $ff800f.l
-	dc.b	$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03,$00,$FF		; bclr.b #$3, $ff800f.l / btst.b #$3, $ff800e.l
-	dc.b	$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F,$08,$B9,$00,$02		; bne.b *-8 / bclr.b #$4, $ff800f.l / bclr.b #$2, $ff800f.l
-	dc.b	$00,$FF,$80,$0F
+GateIrqAfterHook = *			;the hook called through $C432 returns here (a name that keeps the local labels)
+	jsr	(WriteSubCommBytes).l
+.hs1	btst.b	#$4,$FF800E.l
+	bne.b	.hs1
+	move.w	#$2F,$FF8026.l
+	bset.b	#$3,$FF800F.l
+.hs2	btst.b	#$3,$FF800E.l
+	beq.b	.hs2
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.hs3	btst.b	#$3,$FF800E.l
+	bne.b	.hs3
+	bclr.b	#$4,$FF800F.l
+	bclr.b	#$2,$FF800F.l
 .ex	rts
 ; Table of 8 bytes after TilemapPut, 8 bytes: $2F,$0D,$40,$E7,$46,$FC ...
 	dc.b	$2F,$0D,$40,$E7,$46,$FC,$27,$00	; /.@.F...
@@ -674,12 +681,19 @@ WriteSubCommBytes	movem.l	d1/a0,-(sp)
 	bne.b	.loop9
 	bclr.b	#$4,$FF800F.l
 	bra.w	.next
-; Code kept as bytes after WriteSubCommBytes (the 78 bytes are decoded in the row comments).
-	dc.b	$08,$39,$00,$04,$00,$FF,$80,$0E,$66,$F6,$13,$FC,$00,$3C,$00,$FF		; btst.b #$4, $ff800e.l / bne.b *-8 / move.b #$3c, $ff8028.l
-	dc.b	$80,$28,$33,$FC,$00,$35,$00,$FF,$80,$26,$08,$F9,$00,$03,$00,$FF		; move.w #$35, $ff8026.l / bset.b #$3, $ff800f.l
-	dc.b	$80,$0F,$08,$39,$00,$04,$00,$FF,$80,$0E,$67,$F6,$08,$F9,$00,$04		; btst.b #$4, $ff800e.l / beq.b *-8 / bset.b #$4, $ff800f.l
-	dc.b	$00,$FF,$80,$0F,$08,$B9,$00,$03,$00,$FF,$80,$0F,$08,$39,$00,$03		; bclr.b #$3, $ff800f.l / btst.b #$3, $ff800e.l
-	dc.b	$00,$FF,$80,$0E,$66,$F6,$08,$B9,$00,$04,$00,$FF,$80,$0F		; bne.b *-8 / bclr.b #$4, $ff800f.l
+; Handshake with the sub CPU: wait for the gate array, send the byte, then toggle the request bits.
+.hs1	btst.b	#$4,$FF800E.l
+	bne.b	.hs1
+	move.b	#$3C,$FF8028.l
+	move.w	#$35,$FF8026.l
+	bset.b	#$3,$FF800F.l
+.hs2	btst.b	#$4,$FF800E.l
+	beq.b	.hs2
+	bset.b	#$4,$FF800F.l
+	bclr.b	#$3,$FF800F.l
+.hs3	btst.b	#$3,$FF800E.l
+	bne.b	.hs3
+	bclr.b	#$4,$FF800F.l
 .next	movem.l	d1/a0,-(sp)
 	bra.w	.next4
 .next2	movem.l	d1/a0,-(sp)
