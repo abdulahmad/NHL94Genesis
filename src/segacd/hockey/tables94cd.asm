@@ -483,8 +483,8 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	String	'x Manual Goalie   '
 	dc.w	$0002,$A092		; ori.b #$92,d2
 	dc.w	$0004,$FF00		; ori.b #$0,d4
-	dc.w	$0004,$FE05		; ori.b #$5,d4
-	dc.w	$0004,$FE04		; ori.b #$4,d4
+PauseText2	String	CC_SetAttribute,$5		;Pause menu item list without Timeout (PauseMode); the cartridge PauseText2
+	String	CC_SetAttribute,$4
 	String	'   Resume Game    '
 	dc.w	$0003,$C000		; ori.b #$0,d3
 	String	'  Instant Replay  '

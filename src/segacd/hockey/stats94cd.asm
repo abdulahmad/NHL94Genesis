@@ -1938,28 +1938,75 @@ StatsScreenFadeInClear
 	jsr	(IceRinkRemapGfxF).l
 	jsr	(setupIceRinkPal).l
 	jmp	(CopyTeamLinesCheckTeam).l
-; Code kept as bytes after StatsScreenFadeIn (the 336 bytes are decoded in the row comments).
-	dc.b	$04,$79,$00,$01,$00,$01,$8A,$D2,$04,$79,$00,$01,$00,$01,$8A,$D4		; subi.w #$1, $18ad2.l / subi.w #$1, $18ad4.l
-	dc.b	$23,$FC,$00,$04,$20,$DC,$00,$01,$8A,$D6,$08,$EA,$00,$02,$00,$32		; move.l #$420dc, $18ad6.l / bset.b #$2, $32(a2)
-	dc.b	$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$05,$0C,$00,$70,$16,$72,$06		; jsr $38f6e.l / ori.b #$5, d6 / cmpi.b #$16, d0 / moveq #$6, d1
-	dc.b	$4E,$B9,$00,$03,$8C,$A0,$4E,$B9,$00,$03,$8F,$6E,$00,$10,$BD,$0C		; jsr $38ca0.l / jsr $38f6e.l / ori.b #$c, (a0)
-	dc.b	$0E,$54,$69,$6D,$65,$6F,$75,$74,$BD,$11,$0F,$00,$22,$6A,$00,$1E		; bvs.b *+111 / bcs.b *+113 / eor.b d6, (a1) / btst.l d7, d0 / movea.l $1e(a2), a1
-	dc.b	$D2,$E9,$00,$04,$30,$11,$E2,$48,$91,$79,$00,$01,$8D,$58,$4E,$B9		; adda.w $4(a1), a1 / move.w (a1), d0 / lsr.w #$1, d0 / sub.w d0, $18d58.l / jsr $38f80.l
-	dc.b	$00,$03,$8F,$80,$24,$7C,$00,$01,$83,$4C,$4E,$B9,$00,$03,$C9,$B6		; movea.l #$1834c, a2 / jsr $3c9b6.l
-	dc.b	$D5,$FC,$00,$00,$03,$66,$4E,$B9,$00,$03,$C9,$B6,$70,$78,$4E,$F9		; adda.l #$366, a2 / jsr $3c9b6.l / moveq #$78, d0 / jmp $372d0.l
-	dc.b	$00,$03,$72,$D0,$3F,$39,$00,$01,$8A,$D2,$3F,$39,$00,$01,$8A,$D4		; move.w $18ad2.l, -(a7) / move.w $18ad4.l, -(a7)
-	dc.b	$61,$00,$01,$A4,$33,$C0,$00,$01,$8A,$D4,$4E,$B9,$00,$03,$8F,$6E		; bsr.w *+422 / move.w d0, $18ad4.l / jsr $38f6e.l
-	dc.b	$00,$06,$BD,$04,$0C,$00,$70,$18,$72,$03,$D2,$79,$00,$01,$8A,$D4		; ori.b #$4, d6 / cmpi.b #$18, d0 / moveq #$3, d1 / add.w $18ad4.l, d1
-	dc.b	$4E,$B9,$00,$03,$8C,$A0,$30,$2A,$00,$28,$6A,$00,$00,$04,$70,$FF		; jsr $38ca0.l / move.w $28(a2), d0 / bpl.w *+6 / moveq #$ff, d0
-	dc.b	$06,$40,$00,$01,$33,$C0,$00,$01,$8A,$D2,$61,$00,$00,$84,$61,$00		; addi.w #$1, d0 / move.w d0, $18ad2.l / bsr.w *+134 / bsr.w *+490
-	dc.b	$01,$E8,$08,$01,$00,$07,$66,$00,$00,$48,$08,$01,$00,$05,$66,$00		; btst.b #$7, d1 / bne.w *+74 / btst.b #$5, d1 / bne.w *+66
-	dc.b	$00,$40,$08,$01,$00,$01,$67,$00,$00,$1A,$30,$39,$00,$01,$8A,$D2		; btst.b #$1, d1 / beq.w *+28 / move.w $18ad2.l, d0
-	dc.b	$52,$40,$B0,$79,$00,$01,$8A,$D4,$6E,$00,$FF,$D0,$33,$C0,$00,$01		; addq.w #$1, d0 / cmp.w $18ad4.l, d0 / bgt.w *-46 / move.w d0, $18ad2.l
-	dc.b	$8A,$D2,$08,$01,$00,$00,$67,$00,$FF,$C2,$04,$79,$00,$01,$00,$01		; btst.b #$0, d1 / beq.w *-60 / subi.w #$1, $18ad2.l
-	dc.b	$8A,$D2,$6A,$00,$FF,$B6,$42,$79,$00,$01,$8A,$D2,$60,$00,$FF,$AC		; bpl.w *-72 / clr.w $18ad2.l / bra.w *-82
-	dc.b	$30,$39,$00,$01,$8A,$D2,$04,$40,$00,$01,$6A,$00,$00,$0C,$0C,$6A		; move.w $18ad2.l, d0 / subi.w #$1, d0 / bpl.w *+14 / cmpi.w #$ffff, $28(a2)
-	dc.b	$FF,$FF,$00,$28,$6D,$00,$00,$0C,$35,$40,$00,$28,$4E,$B9,$00,$03		; blt.w *+14 / move.w d0, $28(a2) / jsr $3d426.l
-	dc.b	$D4,$26,$33,$DF,$00,$01,$8A,$D4,$33,$DF,$00,$01,$8A,$D2,$4E,$75		; move.w (a7)+, $18ad4.l / move.w (a7)+, $18ad2.l / rts
+; Pause menu "Timeout" for team a2 (cartridge TimeoutMenu): switch the menu to PauseText2, show the team name, rest both teams, wait $78 frames
+TimeoutMenu	subi.w	#$1,(menuitem).l
+	subi.w	#$1,(MenuScrollTop).l
+	move.l	#PauseText2,(menulist).l		;pause menu without Timeout
+	bset.b	#$2,tmflags(a2)
+	jsr	(printz).l
+	String	CC_Font3Pri,$5,$C
+	moveq	#$16,d0		;frame 22 wide, 6 high
+	moveq	#$6,d1
+	jsr	(Framer).l
+	jsr	(printz).l
+	String	CC_Font3Pri,$C,$E,'Timeout',CC_Font3Pri,$11,$F
+	movea.l	tmdata(a2),a1		;team name, centred
+	adda.w	$4(a1),a1
+	move.w	(a1),d0
+	lsr.w	#$1,d0
+	sub.w	d0,(printx).l
+	jsr	(print).l
+	movea.l	#tmstruct,a2
+	jsr	(RestoreTeamEnergy).l
+	adda.l	#tmsize,a2
+	jsr	(RestoreTeamEnergy).l
+	moveq	#$78,d0
+	jmp	(waitx).l
+; Pause menu "Change Goalie" (cartridge Pausemode_go): pick team a2's goalie (or no goalie) from a list with up / down, C or start; sets tmgoalie and calls setpersonel
+Pausemode_go	move.w	(menuitem).l,-(sp)		;save the menu state
+	move.w	(MenuScrollTop).l,-(sp)
+	bsr.w	GetGoalieCount
+	move.w	d0,(MenuScrollTop).l
+	jsr	(printz).l
+	String	CC_Font3Pri,$4,$C
+	moveq	#$18,d0
+	moveq	#$3,d1
+	add.w	(MenuScrollTop).l,d1		;plus a row per goalie
+	jsr	(Framer).l
+	move.w	tmgoalie(a2),d0
+	bpl.w	.0
+	moveq	#-1,d0
+.0	addi.w	#$1,d0		;row of the current goalie (0 = goalie pulled)
+	move.w	d0,(menuitem).l
+.loop	bsr.w	StatsRowsInit
+	bsr.w	FrameWaitStep		;wait for a press
+	btst	#$7,d1
+	bne.w	.done		;Start confirms
+	btst	#$5,d1
+	bne.w	.done
+	btst	#$1,d1
+	beq.w	.up
+	move.w	(menuitem).l,d0
+	addq.w	#$1,d0
+	cmp.w	(MenuScrollTop).l,d0		;past the last?
+	bgt.w	.loop
+	move.w	d0,(menuitem).l
+.up	btst	#$0,d1		;up pressed: move the selection up
+	beq.w	.loop
+	subi.w	#$1,(menuitem).l
+	bpl.w	.loop
+	clr.w	(menuitem).l		;stop at the first row
+	bra.w	.loop
+.done	move.w	(menuitem).l,d0
+	subi.w	#$1,d0		;goalie number
+	bpl.w	.set
+	cmpi.w	#$FFFF,tmgoalie(a2)		;already pulled?
+	blt.w	.x		;yes: nothing to do
+.set	move.w	d0,tmgoalie(a2)		;a goalie row: put him in
+	jsr	(setpersonel).l
+.x	move.w	(sp)+,(MenuScrollTop).l
+	move.w	(sp)+,(menuitem).l
+	rts
 ; Stats rows: starts at row $D
 StatsRowsInit	move.w	#$D,(printy).l
 	move.w	(MenuScrollTop).l,d1

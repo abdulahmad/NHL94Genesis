@@ -229,13 +229,30 @@ USBoard						;Update score board, including the players in the penalty box and t
 	bsr.w	printscores1
 	bsr.w	printz
 	String	CC_Font2Pri,$14,$8
-; Instruction bytes inside USBoard that the assembler would encode differently, kept as words (6 rows).
-	dc.w	$247C,$0001,$834C,$6100,$001C,$6100,$C8E2,$0006
-	dc.w	$BE05,$0800,$247C,$0001,$86B2,$6100,$0008,$4CDF
-	dc.w	$0FFF,$4E75,$41EA,$009C,$4240,$1018,$6B00,$0014
-	dc.w	$0832,$0006,$0068,$6600,$FFF0,$6100,$0024,$6000
-	dc.w	$FFE8,$41EA,$009C,$4240,$1018,$6B00,$F934,$0832
-	dc.w	$0006,$0068,$6700,$FFF0,$6100,$0006,$6000,$FFE8
+	movea.l	#tmstruct,a2		;home team
+	bsr.w	.dispen
+	bsr.w	printz
+	String	CC_Font2Pri,$5,$8
+	movea.l	#awtmstruct,a2		;visitors
+	bsr.w	.dispen
+	movem.l	(sp)+,d0-d7/a0-a3
+	rts
+.dispen	lea	tmboxlist(a2),a0		;penalty box list of team a2: the players without a coincidental penalty first, then those with one
+.l1	clr.w	d0		;pass 1: players with bit 14 (coincidental) clear
+	move.b	(a0)+,d0
+	bmi.w	.p2		;end of list
+	btst	#$6,tmpdst(a2,d0.w)		;coincidental (tmpdst high byte bit 6)
+	bne.w	.l1
+	bsr.w	pplpen
+	bra.w	.l1
+.p2	lea	tmboxlist(a2),a0		;d0 negative
+.l2	clr.w	d0
+	move.b	(a0)+,d0
+	bmi.w	rtss2
+	btst	#$6,tmpdst(a2,d0.w)
+	beq.w	.l2
+	bsr.w	pplpen
+	bra.w	.l2
 pplpen						;print one penalty box line: player number and time remaining. a2 = team,
 	
 	

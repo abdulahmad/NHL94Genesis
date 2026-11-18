@@ -344,13 +344,28 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 .cont	tst.w	d0
 	bpl.w	.plus
 	bra.w	.minus
-; Code kept as words after PuckOnAttackHalf (the 82 bytes are decoded in the row comments).
-	dc.w	$3039,$0001,$7E2C,$0640,$0004,$0240,$0007,$322B		; move.w $17e2c.l, d0 / addi.w #$4, d0 / andi.w #$7, d0 / move.w $54(a3), d1
-	dc.w	$0054,$B240,$6000,$0044,$6700,$0040,$0641,$0001		; cmp.w d0, d1 / bra.w *+70 / beq.w *+66 / addi.w #$1, d1
-	dc.w	$0241,$0007,$B240,$6700,$0032,$0641,$0001,$0241		; andi.w #$7, d1 / cmp.w d0, d1 / beq.w *+52 / addi.w #$1, d1 / andi.w #$7, d1
-	dc.w	$0007,$B240,$6700,$0024,$0441,$0003,$0241,$0007		; cmp.w d0, d1 / beq.w *+38 / subi.w #$3, d1 / andi.w #$7, d1
-	dc.w	$B240,$6700,$0016,$0441,$0001,$0241,$0007,$6700		; cmp.w d0, d1 / beq.w *+24 / subi.w #$1, d1 / andi.w #$7, d1 / beq.w *+12
-	dc.w	$000A
+	move.w	(passdir).l,d0			;code never used from here up to .minus (the disc keeps addi / subi here)
+	addi.w	#$4,d0
+	andi.w	#$7,d0
+	move.w	facedir(a3),d1
+	cmp.w	d0,d1
+	bra.w	.plus
+	beq.w	.plus
+	addi.w	#$1,d1
+	andi.w	#$7,d1
+	cmp.w	d0,d1
+	beq.w	.plus
+	addi.w	#$1,d1
+	andi.w	#$7,d1
+	cmp.w	d0,d1
+	beq.w	.plus
+	subi.w	#$3,d1
+	andi.w	#$7,d1
+	cmp.w	d0,d1
+	beq.w	.plus
+	subi.w	#$1,d1
+	andi.w	#$7,d1
+	beq.w	.plus
 .minus
 	move.w	#$0,d0
 	bra.w	.ex
