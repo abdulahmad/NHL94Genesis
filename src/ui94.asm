@@ -297,7 +297,7 @@ DrawPlayoffSprite					;The StanleyCupSprite sprite at playoffspritex / playoffsp
 	lsr.w	#1,d0
 	move.w	d0,(Sattsize).w
 	rts
-HiScoreScreen						;vb2, the bitmap and MarkLesserMap, then wait up to $50 * 4 frames or a
+HiScoreScreen						;vb2, the bitmap and HiScoreImg, then wait up to $50 * 4 frames or a
 									;button (waitx). Called from Begin (attract mode)
 	move.l	#vb2,(VBint).w			;plain vblank
 	bclr	#df32c,(disflags).w		;40 cell mode
@@ -332,7 +332,7 @@ HiScoreScreen						;vb2, the bitmap and MarkLesserMap, then wait up to $50 * 4 f
 	jsr	(dobitmap).l
 	jsr	(printz).l					;map at the picture
 	String	CC_Font2Pri,$10,$10
-	movea.l	#MarkLesserMap,a2		;then the high score picture
+	movea.l	#HiScoreImg,a2		;then the high score picture
 	movea.l	a2,a0
 	movea.l	a2,a1
 	adda.l	(a2)+,a0
