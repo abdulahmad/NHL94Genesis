@@ -3,7 +3,7 @@
 name: notify-c-port
 on:
   push:
-    branches: []
+    branches: [main]
 jobs:
   notify:
     runs-on: ubuntu-latest
