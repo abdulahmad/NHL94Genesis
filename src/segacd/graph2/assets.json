@@ -1,0 +1,758 @@
+{
+ "Graph2Directory.bin": {
+  "start": 0,
+  "size": 92
+ },
+ "ScoutingReportText.bin": {
+  "start": 92,
+  "size": 61370
+ },
+ "TeamLogoANH.map.jim": {
+  "start": 61574,
+  "size": 1174
+ },
+ "TeamLogoBOS.map.jim": {
+  "start": 62748,
+  "size": 854
+ },
+ "TeamLogoBUF.map.jim": {
+  "start": 63602,
+  "size": 854
+ },
+ "TeamLogoCGY.map.jim": {
+  "start": 64456,
+  "size": 1174
+ },
+ "TeamLogoCHI.map.jim": {
+  "start": 65630,
+  "size": 1078
+ },
+ "TeamLogoDET.map.jim": {
+  "start": 66708,
+  "size": 854
+ },
+ "TeamLogoEDM.map.jim": {
+  "start": 67562,
+  "size": 1014
+ },
+ "TeamLogoHFD.map.jim": {
+  "start": 69814,
+  "size": 662
+ },
+ "TeamLogoNYI.map.jim": {
+  "start": 70476,
+  "size": 1110
+ },
+ "TeamLogoLA.map.jim": {
+  "start": 71586,
+  "size": 886
+ },
+ "TeamLogoDAL.map.jim": {
+  "start": 72472,
+  "size": 726
+ },
+ "TeamLogoMTL.map.jim": {
+  "start": 73198,
+  "size": 886
+ },
+ "TeamLogoNJ.map.jim": {
+  "start": 74084,
+  "size": 1206
+ },
+ "TeamLogoNYR.map.jim": {
+  "start": 75290,
+  "size": 1238
+ },
+ "TeamLogoPHI.map.jim": {
+  "start": 77510,
+  "size": 950
+ },
+ "TeamLogoPIT.map.jim": {
+  "start": 78460,
+  "size": 886
+ },
+ "TeamLogoQUE.map.jim": {
+  "start": 79346,
+  "size": 854
+ },
+ "TeamLogoSJ.map.jim": {
+  "start": 80200,
+  "size": 1078
+ },
+ "TeamLogoSTL.map.jim": {
+  "start": 81278,
+  "size": 982
+ },
+ "TeamLogoTB.map.jim": {
+  "start": 82260,
+  "size": 1046
+ },
+ "TeamLogoTOR.map.jim": {
+  "start": 83306,
+  "size": 854
+ },
+ "TeamLogoVAN.map.jim": {
+  "start": 84160,
+  "size": 1046
+ },
+ "TeamLogoWSH.map.jim": {
+  "start": 85206,
+  "size": 630
+ },
+ "TeamLogoWPG.map.jim": {
+  "start": 85836,
+  "size": 1142
+ },
+ "PicturePalette.bin": {
+  "start": 90724,
+  "size": 1078
+ },
+ "NoPicSkater1.map.jim": {
+  "start": 91802,
+  "size": 874
+ },
+ "NoPicSkater2.map.jim": {
+  "start": 92676,
+  "size": 874
+ },
+ "NoPicGoalie1.map.jim": {
+  "start": 93550,
+  "size": 874
+ },
+ "NoPicGoalie2.map.jim": {
+  "start": 94424,
+  "size": 874
+ },
+ "Card001.map.jim": {
+  "start": 95298,
+  "size": 874
+ },
+ "Card002.map.jim": {
+  "start": 96172,
+  "size": 874
+ },
+ "Card003.map.jim": {
+  "start": 97046,
+  "size": 874
+ },
+ "Card004.map.jim": {
+  "start": 97920,
+  "size": 874
+ },
+ "Card005.map.jim": {
+  "start": 98794,
+  "size": 874
+ },
+ "Card006.map.jim": {
+  "start": 99668,
+  "size": 874
+ },
+ "Card007.map.jim": {
+  "start": 100542,
+  "size": 874
+ },
+ "Card008.map.jim": {
+  "start": 101416,
+  "size": 874
+ },
+ "Card009.map.jim": {
+  "start": 102290,
+  "size": 874
+ },
+ "Card010.map.jim": {
+  "start": 103164,
+  "size": 874
+ },
+ "Card011.map.jim": {
+  "start": 104038,
+  "size": 874
+ },
+ "Card012.map.jim": {
+  "start": 104912,
+  "size": 874
+ },
+ "Card013.map.jim": {
+  "start": 105786,
+  "size": 874
+ },
+ "Card014.map.jim": {
+  "start": 106660,
+  "size": 874
+ },
+ "Card015.map.jim": {
+  "start": 107534,
+  "size": 874
+ },
+ "Card016.map.jim": {
+  "start": 108408,
+  "size": 874
+ },
+ "Card017.map.jim": {
+  "start": 109282,
+  "size": 874
+ },
+ "Card018.map.jim": {
+  "start": 110156,
+  "size": 874
+ },
+ "Card019.map.jim": {
+  "start": 111030,
+  "size": 874
+ },
+ "Card020.map.jim": {
+  "start": 111904,
+  "size": 874
+ },
+ "Card021.map.jim": {
+  "start": 112778,
+  "size": 874
+ },
+ "Card022.map.jim": {
+  "start": 113652,
+  "size": 874
+ },
+ "Card023.map.jim": {
+  "start": 114526,
+  "size": 874
+ },
+ "Card024.map.jim": {
+  "start": 115400,
+  "size": 874
+ },
+ "Card025.map.jim": {
+  "start": 116274,
+  "size": 874
+ },
+ "Card026.map.jim": {
+  "start": 117148,
+  "size": 874
+ },
+ "Card027.map.jim": {
+  "start": 118022,
+  "size": 874
+ },
+ "Card028.map.jim": {
+  "start": 118896,
+  "size": 874
+ },
+ "Card029.map.jim": {
+  "start": 119770,
+  "size": 874
+ },
+ "Card030.map.jim": {
+  "start": 120644,
+  "size": 874
+ },
+ "Card031.map.jim": {
+  "start": 121518,
+  "size": 874
+ },
+ "Card032.map.jim": {
+  "start": 122392,
+  "size": 874
+ },
+ "Card033.map.jim": {
+  "start": 123266,
+  "size": 874
+ },
+ "Card034.map.jim": {
+  "start": 124140,
+  "size": 874
+ },
+ "Card035.map.jim": {
+  "start": 125014,
+  "size": 1030
+ },
+ "Card036.map.jim": {
+  "start": 126044,
+  "size": 874
+ },
+ "Card037.map.jim": {
+  "start": 126918,
+  "size": 874
+ },
+ "Card038.map.jim": {
+  "start": 127792,
+  "size": 874
+ },
+ "Card039.map.jim": {
+  "start": 128666,
+  "size": 874
+ },
+ "Card040.map.jim": {
+  "start": 129540,
+  "size": 874
+ },
+ "Card042.map.jim": {
+  "start": 131288,
+  "size": 874
+ },
+ "Card043.map.jim": {
+  "start": 132162,
+  "size": 874
+ },
+ "Card044.map.jim": {
+  "start": 133036,
+  "size": 874
+ },
+ "Card045.map.jim": {
+  "start": 133910,
+  "size": 874
+ },
+ "Card046.map.jim": {
+  "start": 134784,
+  "size": 874
+ },
+ "Card047.map.jim": {
+  "start": 135658,
+  "size": 874
+ },
+ "Card048.map.jim": {
+  "start": 136532,
+  "size": 1030
+ },
+ "Card049.map.jim": {
+  "start": 137562,
+  "size": 1006
+ },
+ "Card050.map.jim": {
+  "start": 138568,
+  "size": 874
+ },
+ "Card051.map.jim": {
+  "start": 139442,
+  "size": 874
+ },
+ "Card052.map.jim": {
+  "start": 140316,
+  "size": 874
+ },
+ "Card053.map.jim": {
+  "start": 141190,
+  "size": 874
+ },
+ "Card054.map.jim": {
+  "start": 142064,
+  "size": 874
+ },
+ "Card056.map.jim": {
+  "start": 143812,
+  "size": 874
+ },
+ "Card057.map.jim": {
+  "start": 144686,
+  "size": 874
+ },
+ "Card058.map.jim": {
+  "start": 145560,
+  "size": 874
+ },
+ "Card059.map.jim": {
+  "start": 146434,
+  "size": 874
+ },
+ "Card060.map.jim": {
+  "start": 147308,
+  "size": 874
+ },
+ "Card061.map.jim": {
+  "start": 148182,
+  "size": 874
+ },
+ "Card063.map.jim": {
+  "start": 149930,
+  "size": 982
+ },
+ "Card064.map.jim": {
+  "start": 150912,
+  "size": 874
+ },
+ "Card065.map.jim": {
+  "start": 151786,
+  "size": 874
+ },
+ "Card066.map.jim": {
+  "start": 152660,
+  "size": 874
+ },
+ "Card068.map.jim": {
+  "start": 154408,
+  "size": 874
+ },
+ "Card069.map.jim": {
+  "start": 155282,
+  "size": 874
+ },
+ "Card070.map.jim": {
+  "start": 156156,
+  "size": 874
+ },
+ "Card071.map.jim": {
+  "start": 157030,
+  "size": 874
+ },
+ "Card072.map.jim": {
+  "start": 157904,
+  "size": 874
+ },
+ "Card075.map.jim": {
+  "start": 159652,
+  "size": 874
+ },
+ "Card076.map.jim": {
+  "start": 160526,
+  "size": 874
+ },
+ "Card077.map.jim": {
+  "start": 161400,
+  "size": 874
+ },
+ "Card078.map.jim": {
+  "start": 162274,
+  "size": 874
+ },
+ "Card079.map.jim": {
+  "start": 163148,
+  "size": 982
+ },
+ "Card081.map.jim": {
+  "start": 165004,
+  "size": 874
+ },
+ "Card082.map.jim": {
+  "start": 165878,
+  "size": 874
+ },
+ "Card083.map.jim": {
+  "start": 166752,
+  "size": 874
+ },
+ "Card084.map.jim": {
+  "start": 167626,
+  "size": 874
+ },
+ "Card085.map.jim": {
+  "start": 168500,
+  "size": 874
+ },
+ "Card086.map.jim": {
+  "start": 169374,
+  "size": 874
+ },
+ "Card087.map.jim": {
+  "start": 170248,
+  "size": 874
+ },
+ "Card088.map.jim": {
+  "start": 171122,
+  "size": 874
+ },
+ "Card089.map.jim": {
+  "start": 171996,
+  "size": 874
+ },
+ "Card090.map.jim": {
+  "start": 172870,
+  "size": 874
+ },
+ "Card091.map.jim": {
+  "start": 173744,
+  "size": 874
+ },
+ "Card092.map.jim": {
+  "start": 174618,
+  "size": 874
+ },
+ "Card093.map.jim": {
+  "start": 175492,
+  "size": 874
+ },
+ "Card094.map.jim": {
+  "start": 176366,
+  "size": 874
+ },
+ "Card095.map.jim": {
+  "start": 177240,
+  "size": 874
+ },
+ "Card096.map.jim": {
+  "start": 178114,
+  "size": 874
+ },
+ "Card097.map.jim": {
+  "start": 178988,
+  "size": 982
+ },
+ "Card100.map.jim": {
+  "start": 181718,
+  "size": 874
+ },
+ "Card101.map.jim": {
+  "start": 182592,
+  "size": 874
+ },
+ "Card102.map.jim": {
+  "start": 183466,
+  "size": 874
+ },
+ "Card103.map.jim": {
+  "start": 184340,
+  "size": 874
+ },
+ "Card105.map.jim": {
+  "start": 186088,
+  "size": 874
+ },
+ "Card106.map.jim": {
+  "start": 186962,
+  "size": 874
+ },
+ "Card107.map.jim": {
+  "start": 187836,
+  "size": 874
+ },
+ "Card108.map.jim": {
+  "start": 188710,
+  "size": 874
+ },
+ "Card109.map.jim": {
+  "start": 189584,
+  "size": 874
+ },
+ "Card110.map.jim": {
+  "start": 190458,
+  "size": 874
+ },
+ "Card111.map.jim": {
+  "start": 191332,
+  "size": 874
+ },
+ "Card112.map.jim": {
+  "start": 192206,
+  "size": 874
+ },
+ "Card113.map.jim": {
+  "start": 193080,
+  "size": 874
+ },
+ "Card114.map.jim": {
+  "start": 193954,
+  "size": 874
+ },
+ "Card116.map.jim": {
+  "start": 195702,
+  "size": 874
+ },
+ "Card117.map.jim": {
+  "start": 196576,
+  "size": 874
+ },
+ "Card118.map.jim": {
+  "start": 197450,
+  "size": 874
+ },
+ "Card119.map.jim": {
+  "start": 198324,
+  "size": 874
+ },
+ "Card120.map.jim": {
+  "start": 199198,
+  "size": 874
+ },
+ "Card121.map.jim": {
+  "start": 200072,
+  "size": 874
+ },
+ "Card123.map.jim": {
+  "start": 201820,
+  "size": 874
+ },
+ "Card125.map.jim": {
+  "start": 203568,
+  "size": 874
+ },
+ "Card126.map.jim": {
+  "start": 204442,
+  "size": 1030
+ },
+ "Card127.map.jim": {
+  "start": 205472,
+  "size": 874
+ },
+ "Card128.map.jim": {
+  "start": 206346,
+  "size": 874
+ },
+ "Card129.map.jim": {
+  "start": 207220,
+  "size": 874
+ },
+ "Card130.map.jim": {
+  "start": 208094,
+  "size": 874
+ },
+ "Card131.map.jim": {
+  "start": 208968,
+  "size": 874
+ },
+ "Card132.map.jim": {
+  "start": 209842,
+  "size": 874
+ },
+ "Card133.map.jim": {
+  "start": 210716,
+  "size": 874
+ },
+ "Card134.map.jim": {
+  "start": 211590,
+  "size": 874
+ },
+ "Card135.map.jim": {
+  "start": 212464,
+  "size": 874
+ },
+ "Card139.map.jim": {
+  "start": 215960,
+  "size": 874
+ },
+ "Card140.map.jim": {
+  "start": 216834,
+  "size": 874
+ },
+ "Card142.map.jim": {
+  "start": 218582,
+  "size": 874
+ },
+ "Card143.map.jim": {
+  "start": 219456,
+  "size": 1054
+ },
+ "Card144.map.jim": {
+  "start": 220510,
+  "size": 874
+ },
+ "SmallFont.map.jim": {
+  "start": 230344,
+  "size": 3278
+ },
+ "Hot.map.jim": {
+  "start": 233622,
+  "size": 550
+ },
+ "Cold.map.jim": {
+  "start": 234172,
+  "size": 754
+ },
+ "Arrows.map.jim": {
+  "start": 234926,
+  "size": 604
+ },
+ "BigFont94.map.jim": {
+  "start": 235530,
+  "size": 4674
+ },
+ "Framer.map.jim": {
+  "start": 240204,
+  "size": 120
+ },
+ "RonBarr.map.jim": {
+  "start": 240324,
+  "size": 1496
+ },
+ "SmallFont94.map.jim": {
+  "start": 241820,
+  "size": 3406
+ },
+ "EASportsBG.map.jim": {
+  "start": 245226,
+  "size": 3418
+ },
+ "GameSetupBkgd2.map.jim": {
+  "start": 250070,
+  "size": 448
+ },
+ "GameSetupLogoBorder.map.jim": {
+  "start": 267540,
+  "size": 462
+ },
+ "TeamBlocks94.map.jim": {
+  "start": 268002,
+  "size": 14110
+ },
+ "IceRink94.map.jim": {
+  "start": 286944,
+  "size": 25518
+ },
+ "GameSetUp94-1.map.jim": {
+  "start": 312462,
+  "size": 10062
+ },
+ "GameSetupBkgd1.map.jim": {
+  "start": 322524,
+  "size": 1418
+ },
+ "GameSetUp94-2.map.jim": {
+  "start": 323942,
+  "size": 1390
+ },
+ "EnergyBar.map.jim": {
+  "start": 354528,
+  "size": 244
+ },
+ "Crowd.anim": {
+  "start": 354772,
+  "size": 11610
+ },
+ "EASports.map.jim": {
+  "start": 371056,
+  "size": 272
+ },
+ "Zam.anim": {
+  "start": 371328,
+  "size": 4334
+ },
+ "FaceOff.anim": {
+  "start": 375662,
+  "size": 4212
+ },
+ "Refs.map.jim": {
+  "start": 379874,
+  "size": 2908
+ },
+ "Refs2.map.jim": {
+  "start": 382782,
+  "size": 3862
+ },
+ "Scores.map.jim": {
+  "start": 403786,
+  "size": 998
+ },
+ "FaceOff.map.jim": {
+  "start": 404784,
+  "size": 1124
+ },
+ "IceRink94Reverse.map.jim": {
+  "start": 411000,
+  "size": 25454
+ },
+ "ReplayOptions.map.jim": {
+  "start": 436454,
+  "size": 2926
+ },
+ "IceRinkHor.map.jim": {
+  "start": 439380,
+  "size": 8718
+ },
+ "NHLLogo.map.jim": {
+  "start": 451504,
+  "size": 1110
+ },
+ "Spritetiles.bin": {
+  "start": 456714,
+  "size": 264352
+ },
+ "frameSprData.bin": {
+  "start": 721066,
+  "size": 23972
+ }
+}
