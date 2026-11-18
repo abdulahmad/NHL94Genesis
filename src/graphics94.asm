@@ -145,89 +145,89 @@ LogoBoxMap							;the logo box (DrawLogoBox, LogoBoxRight)
 	incbin	..\Extracted\NHL94\Graphics\GameSetupLogoBorder.map.jim
 	even
 ;LogoBoxMap+8: the tiles (setoptions, BuildCardPlayerList)
-logoANH								;the ANH logo, team 0 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoANA.map.jim
+TeamLogoANH								;the ANH logo, team 0 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoANH.map.jim
 	even
-logoBOS								;the BOS logo, team 1 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoBOS.map.jim
+TeamLogoBOS								;the BOS logo, team 1 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoBOS.map.jim
 	even
-logoBUF								;the BUF logo, team 2 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoBUF.map.jim
+TeamLogoBUF								;the BUF logo, team 2 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoBUF.map.jim
 	even
-logoCGY								;the CGY logo, team 3 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoCGY.map.jim
+TeamLogoCGY								;the CGY logo, team 3 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoCGY.map.jim
 	even
-logoCHI								;the CHI logo, team 4 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoCHI.map.jim
+TeamLogoCHI								;the CHI logo, team 4 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoCHI.map.jim
 	even
-logoDET								;the DET logo, team 6 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoDET.map.jim
+TeamLogoDET								;the DET logo, team 6 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoDET.map.jim
 	even
-logoEDM								;the EDM logo, team 7 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoEDM.map.jim
+TeamLogoEDM								;the EDM logo, team 7 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoEDM.map.jim
 	even
-logoFLA								;the FLA logo, team 8 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoFLA.map.jim
+TeamLogoFLA								;the FLA logo, team 8 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoFLA.map.jim
 	even
-logoHFD								;the HFD logo, team 9 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoHFD.map.jim
+TeamLogoHFD								;the HFD logo, team 9 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoHFD.map.jim
 	even
-logoNYI								;the NYI logo, team 13 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoNYI.map.jim
+TeamLogoNYI								;the NYI logo, team 13 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoNYI.map.jim
 	even
-logoLA								;the LA logo, team 10 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoLA.map.jim
+TeamLogoLA								;the LA logo, team 10 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoLA.map.jim
 	even
-logoDAL								;the DAL logo, team 5 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoDAL.map.jim
+TeamLogoDAL								;the DAL logo, team 5 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoDAL.map.jim
 	even
-logoMTL								;the MTL logo, team 11 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoMTL.map.jim
+TeamLogoMTL								;the MTL logo, team 11 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoMTL.map.jim
 	even
-logoNJ								;the NJ logo, team 12 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoNJ.map.jim
+TeamLogoNJ								;the NJ logo, team 12 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoNJ.map.jim
 	even
-logoNYR								;the NYR logo, team 14 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoNYR.map.jim
+TeamLogoNYR								;the NYR logo, team 14 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoNYR.map.jim
 	even
-logoOTW								;the OTW logo, team 15 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoOTW.map.jim
+TeamLogoOTW								;the OTW logo, team 15 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoOTW.map.jim
 	even
-logoPHI								;the PHI logo, team 16 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoPHI.map.jim
+TeamLogoPHI								;the PHI logo, team 16 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoPHI.map.jim
 	even
-logoPIT								;the PIT logo, team 17 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoPIT.map.jim
+TeamLogoPIT								;the PIT logo, team 17 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoPIT.map.jim
 	even
-logoQUE								;the QUE logo, team 18 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoQUE.map.jim
+TeamLogoQUE								;the QUE logo, team 18 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoQUE.map.jim
 	even
-logoSJ								;the SJ logo, team 19 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoSJ.map.jim
+TeamLogoSJ								;the SJ logo, team 19 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoSJ.map.jim
 	even
-logoSTL								;the STL logo, team 20 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoSTL.map.jim
+TeamLogoSTL								;the STL logo, team 20 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoSTL.map.jim
 	even
-logoTB								;the TB logo, team 21 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoTB.map.jim
+TeamLogoTB								;the TB logo, team 21 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoTB.map.jim
 	even
-logoTOR								;the TOR logo, team 22 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoTOR.map.jim
+TeamLogoTOR								;the TOR logo, team 22 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoTOR.map.jim
 	even
-logoVAN								;the VAN logo, team 23 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoVAN.map.jim
+TeamLogoVAN								;the VAN logo, team 23 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoVAN.map.jim
 	even
-logoWSH								;the WSH logo, team 24 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoWSH.map.jim
+TeamLogoWSH								;the WSH logo, team 24 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoWSH.map.jim
 	even
-logoWPG								;the WPG logo, team 25 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoWPG.map.jim
+TeamLogoWPG								;the WPG logo, team 25 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoWPG.map.jim
 	even
-logoASE								;the ASE logo, team 26 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoASE.map.jim
+TeamLogoASE								;the ASE logo, team 26 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoASE.map.jim
 	even
-logoASW								;the ASW logo, team 27 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
-	incbin	..\Extracted\NHL94\Graphics\logoASW.map.jim
+TeamLogoASW								;the ASW logo, team 27 in TeamLogoBitmaps (DrawTeamLogo, GetTeamLogo)
+	incbin	..\Extracted\NHL94\Graphics\TeamLogoASW.map.jim
 	even
 PicturePalette						;the player picture palette, and the picture of a player with none
 									;(DrawMatchupPicture, PlayerCardScreen)
@@ -701,8 +701,8 @@ NHLPALogoMap						;read in the high ROM near NoNameTxt and by SkipOtherUserName
 StanleyCupSprite					;PlayoffScreen and DrawPlayoffSprite
 	incbin	..\Extracted\NHL94\Graphics\StanleyCup.anim
 	even
-MarkLesserMap						;HiScoreScreen (high ROM)
-	incbin	..\Extracted\NHL94\Graphics\MarkLesser.map.jim
+HiScoreImg						;HiScoreScreen (high ROM)
+	incbin	..\Extracted\NHL94\Graphics\HiScoreImg.map.jim
 	even
 HotMap								;read by HotColdIcon (high ROM)
 	incbin	..\Extracted\NHL94\Graphics\Hot.map.jim

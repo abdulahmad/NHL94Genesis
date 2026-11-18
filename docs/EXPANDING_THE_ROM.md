@@ -53,7 +53,7 @@ The stock game has 28 teams in TeamList order. The first 26 (`ANH` through `WPG`
 | --- | --- | --- |
 | Team number | `src/ram94.asm` | The next number before `ASE`. Renumber `ASE` and `ASW`. |
 | Team record | `TeamList` in `src/teamdata94.asm` | One `dc.l` to a record like `Anaheim`: player list, home and visitor palettes, city and nickname strings, eight lines, scouting bytes and scoring odds. |
-| Logo bitmap | `TeamLogoBitmaps` in `src/optsetup94.asm` | One `dc.l` to a logo in `src/graphics94.asm` (`logoANH` and the rest, each an `incbin` of a `.map.jim`). |
+| Logo bitmap | `TeamLogoBitmaps` in `src/optsetup94.asm` | One `dc.l` to a logo in `src/graphics94.asm` (`TeamLogoANH` and the rest, each an `incbin` of a `.map.jim`). |
 | Logo palette | `TeamLogoPalettes` in `src/logos94.asm` | 16 colors. Most teams reuse their matchup palette; BOS, FLA, HFD and SJ have their own. |
 | Matchup palettes | `TeamPalettes` in `src/cards94.asm` | Two palettes of 16 colors. A is the matchup logo palette. B is A with colors 1-2 and 3-4 swapped. |
 | Featured pictures | `FeaturedPictures` in `src/cards94.asm` | One pointer, then that team's list of picture and roster index, ending in 0. |

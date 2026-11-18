@@ -245,34 +245,34 @@ const assets = [
     { name: 'GameSetupBkgd1.map.jim', folder: 'NHL94/Graphics', start: 0x000BEFB8, end: 0x000BF542 }, // unk_BEFB8
     { name: 'GameSetupBkgd2.map.jim', folder: 'NHL94/Graphics', start: 0x000BF542, end: 0x000BF702 }, // unk_BF542
     { name: 'GameSetupLogoBorder.map.jim', folder: 'NHL94/Graphics', start: 0x000BF702, end: 0x000BF8D0 }, // unk_BF702
-    { name: 'logoANA.map.jim', folder: 'NHL94/Graphics', start: 0x000BF8D0, end: 0x000BFD66 }, // logoANH
-    { name: 'logoBOS.map.jim', folder: 'NHL94/Graphics', start: 0x000BFD66, end: 0x000C00BC }, // logoBOS
-    { name: 'logoBUF.map.jim', folder: 'NHL94/Graphics', start: 0x000C00BC, end: 0x000C0412 }, // logoBUF
-    { name: 'logoCGY.map.jim', folder: 'NHL94/Graphics', start: 0x000C0412, end: 0x000C08A8 }, // logoCGY
-    { name: 'logoCHI.map.jim', folder: 'NHL94/Graphics', start: 0x000C08A8, end: 0x000C0CDE }, // logoCHI
-    { name: 'logoDET.map.jim', folder: 'NHL94/Graphics', start: 0x000C0CDE, end: 0x000C1034 }, // logoDET
-    { name: 'logoEDM.map.jim', folder: 'NHL94/Graphics', start: 0x000C1034, end: 0x000C142A }, // logoEDM
-    { name: 'logoFLA.map.jim', folder: 'NHL94/Graphics', start: 0x000C142A, end: 0x000C1900 }, // logoFLA
-    { name: 'logoHFD.map.jim', folder: 'NHL94/Graphics', start: 0x000C1900, end: 0x000C1B96 }, // logoHFD
-    { name: 'logoNYI.map.jim', folder: 'NHL94/Graphics', start: 0x000C1B96, end: 0x000C1FEC }, // logoNYI
-    { name: 'logoLA.map.jim', folder: 'NHL94/Graphics', start: 0x000C1FEC, end: 0x000C2362 }, // logoLA
-    { name: 'logoDAL.map.jim', folder: 'NHL94/Graphics', start: 0x000C2362, end: 0x000C2638 }, // logoDAL
-    { name: 'logoMTL.map.jim', folder: 'NHL94/Graphics', start: 0x000C2638, end: 0x000C29AE }, // logoMTL
-    { name: 'logoNJ.map.jim', folder: 'NHL94/Graphics', start: 0x000C29AE, end: 0x000C2E64 }, // logoNJ
-    { name: 'logoNYR.map.jim', folder: 'NHL94/Graphics', start: 0x000C2E64, end: 0x000C333A }, // logoNYR
-    { name: 'logoOTW.map.jim', folder: 'NHL94/Graphics', start: 0x000C333A, end: 0x000C3750 }, // logoOTW
-    { name: 'logoPHI.map.jim', folder: 'NHL94/Graphics', start: 0x000C3750, end: 0x000C3B06 }, // logoPHI
-    { name: 'logoPIT.map.jim', folder: 'NHL94/Graphics', start: 0x000C3B06, end: 0x000C3E7C }, // logoPIT
-    { name: 'logoQUE.map.jim', folder: 'NHL94/Graphics', start: 0x000C3E7C, end: 0x000C41D2 }, // logoQUE
-    { name: 'logoSJ.map.jim', folder: 'NHL94/Graphics', start: 0x000C41D2, end: 0x000C4608 }, // logoSJ
-    { name: 'logoSTL.map.jim', folder: 'NHL94/Graphics', start: 0x000C4608, end: 0x000C49DE }, // logoSTL
-    { name: 'logoTB.map.jim', folder: 'NHL94/Graphics', start: 0x000C49DE, end: 0x000C4DF4 }, // logoTB
-    { name: 'logoTOR.map.jim', folder: 'NHL94/Graphics', start: 0x000C4DF4, end: 0x000C514A }, // logoTOR
-    { name: 'logoVAN.map.jim', folder: 'NHL94/Graphics', start: 0x000C514A, end: 0x000C5560 }, // logoVAN
-    { name: 'logoWSH.map.jim', folder: 'NHL94/Graphics', start: 0x000C5560, end: 0x000C57D6 }, // logoWSH
-    { name: 'logoWPG.map.jim', folder: 'NHL94/Graphics', start: 0x000C57D6, end: 0x000C5C4C }, // logoWPG
-    { name: 'logoASE.map.jim', folder: 'NHL94/Graphics', start: 0x000C5C4C, end: 0x000C6022 }, // logoASE
-    { name: 'logoASW.map.jim', folder: 'NHL94/Graphics', start: 0x000C6022, end: 0x000C63F8 }, // logoASW
+    { name: 'TeamLogoANH.map.jim', folder: 'NHL94/Graphics', start: 0x000BF8D0, end: 0x000BFD66 }, // TeamLogoANH
+    { name: 'TeamLogoBOS.map.jim', folder: 'NHL94/Graphics', start: 0x000BFD66, end: 0x000C00BC }, // TeamLogoBOS
+    { name: 'TeamLogoBUF.map.jim', folder: 'NHL94/Graphics', start: 0x000C00BC, end: 0x000C0412 }, // TeamLogoBUF
+    { name: 'TeamLogoCGY.map.jim', folder: 'NHL94/Graphics', start: 0x000C0412, end: 0x000C08A8 }, // TeamLogoCGY
+    { name: 'TeamLogoCHI.map.jim', folder: 'NHL94/Graphics', start: 0x000C08A8, end: 0x000C0CDE }, // TeamLogoCHI
+    { name: 'TeamLogoDET.map.jim', folder: 'NHL94/Graphics', start: 0x000C0CDE, end: 0x000C1034 }, // TeamLogoDET
+    { name: 'TeamLogoEDM.map.jim', folder: 'NHL94/Graphics', start: 0x000C1034, end: 0x000C142A }, // TeamLogoEDM
+    { name: 'TeamLogoFLA.map.jim', folder: 'NHL94/Graphics', start: 0x000C142A, end: 0x000C1900 }, // TeamLogoFLA
+    { name: 'TeamLogoHFD.map.jim', folder: 'NHL94/Graphics', start: 0x000C1900, end: 0x000C1B96 }, // TeamLogoHFD
+    { name: 'TeamLogoNYI.map.jim', folder: 'NHL94/Graphics', start: 0x000C1B96, end: 0x000C1FEC }, // TeamLogoNYI
+    { name: 'TeamLogoLA.map.jim', folder: 'NHL94/Graphics', start: 0x000C1FEC, end: 0x000C2362 }, // TeamLogoLA
+    { name: 'TeamLogoDAL.map.jim', folder: 'NHL94/Graphics', start: 0x000C2362, end: 0x000C2638 }, // TeamLogoDAL
+    { name: 'TeamLogoMTL.map.jim', folder: 'NHL94/Graphics', start: 0x000C2638, end: 0x000C29AE }, // TeamLogoMTL
+    { name: 'TeamLogoNJ.map.jim', folder: 'NHL94/Graphics', start: 0x000C29AE, end: 0x000C2E64 }, // TeamLogoNJ
+    { name: 'TeamLogoNYR.map.jim', folder: 'NHL94/Graphics', start: 0x000C2E64, end: 0x000C333A }, // TeamLogoNYR
+    { name: 'TeamLogoOTW.map.jim', folder: 'NHL94/Graphics', start: 0x000C333A, end: 0x000C3750 }, // TeamLogoOTW
+    { name: 'TeamLogoPHI.map.jim', folder: 'NHL94/Graphics', start: 0x000C3750, end: 0x000C3B06 }, // TeamLogoPHI
+    { name: 'TeamLogoPIT.map.jim', folder: 'NHL94/Graphics', start: 0x000C3B06, end: 0x000C3E7C }, // TeamLogoPIT
+    { name: 'TeamLogoQUE.map.jim', folder: 'NHL94/Graphics', start: 0x000C3E7C, end: 0x000C41D2 }, // TeamLogoQUE
+    { name: 'TeamLogoSJ.map.jim', folder: 'NHL94/Graphics', start: 0x000C41D2, end: 0x000C4608 }, // TeamLogoSJ
+    { name: 'TeamLogoSTL.map.jim', folder: 'NHL94/Graphics', start: 0x000C4608, end: 0x000C49DE }, // TeamLogoSTL
+    { name: 'TeamLogoTB.map.jim', folder: 'NHL94/Graphics', start: 0x000C49DE, end: 0x000C4DF4 }, // TeamLogoTB
+    { name: 'TeamLogoTOR.map.jim', folder: 'NHL94/Graphics', start: 0x000C4DF4, end: 0x000C514A }, // TeamLogoTOR
+    { name: 'TeamLogoVAN.map.jim', folder: 'NHL94/Graphics', start: 0x000C514A, end: 0x000C5560 }, // TeamLogoVAN
+    { name: 'TeamLogoWSH.map.jim', folder: 'NHL94/Graphics', start: 0x000C5560, end: 0x000C57D6 }, // TeamLogoWSH
+    { name: 'TeamLogoWPG.map.jim', folder: 'NHL94/Graphics', start: 0x000C57D6, end: 0x000C5C4C }, // TeamLogoWPG
+    { name: 'TeamLogoASE.map.jim', folder: 'NHL94/Graphics', start: 0x000C5C4C, end: 0x000C6022 }, // TeamLogoASE
+    { name: 'TeamLogoASW.map.jim', folder: 'NHL94/Graphics', start: 0x000C6022, end: 0x000C63F8 }, // TeamLogoASW
     { name: 'PicturePalette.bin', folder: 'NHL94/Graphics', start: 0x000C63F8, end: 0x000C682E }, // unk_C63F8
     { name: 'NoPicSkater1.map.jim', folder: 'NHL94/Graphics', start: 0x000C682E, end: 0x000C6B98 }, // unk_C682E
     { name: 'NoPicSkater2.map.jim', folder: 'NHL94/Graphics', start: 0x000C6B98, end: 0x000C6F02 }, // unk_C6B98
@@ -427,7 +427,7 @@ const assets = [
     { name: 'NHLLogo.map.jim', folder: 'NHL94/Graphics', start: 0x000E9A80, end: 0x000E9ED6 }, // unk_E9A80
     { name: 'NHLPALogo.map.jim', folder: 'NHL94/Graphics', start: 0x000E9ED6, end: 0x000F3098 }, // unk_E9ED6
     { name: 'StanleyCup.anim', folder: 'NHL94/Graphics', start: 0x000F3098, end: 0x000F5338 }, // unk_F3098
-    { name: 'MarkLesser.map.jim', folder: 'NHL94/Graphics', start: 0x000F5338, end: 0x000F5AF6 }, // HiScoreImg
+    { name: 'HiScoreImg.map.jim', folder: 'NHL94/Graphics', start: 0x000F5338, end: 0x000F5AF6 }, // HiScoreImg
     { name: 'Hot.map.jim', folder: 'NHL94/Graphics', start: 0x000F5AF6, end: 0x000F5D1C }, // unk_F5AF6
     { name: 'Cold.map.jim', folder: 'NHL94/Graphics', start: 0x000F5D1C, end: 0x000F600E }, // unk_F5D1C
     { name: 'revframetbl.bin', folder: 'NHL94/Graphics', start: 0x000F600E, end: 0x000F66EE }, // revframetbl
