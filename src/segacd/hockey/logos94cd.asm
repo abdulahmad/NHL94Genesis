@@ -255,7 +255,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$0,d5		;no palette lines
 	jsr	(dobitmap).l
 .x	movem.l	(sp)+,d0/a0-a1

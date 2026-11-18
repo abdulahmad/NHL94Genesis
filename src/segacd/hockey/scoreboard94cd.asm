@@ -11,21 +11,21 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	bne.w	rtss2
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a3
-	move.w	$26(a2),d0
-	sub.w	$26(a3),d0
+	move.w	tmap(a2),d0
+	sub.w	tmap(a3),d0
 	beq.w	.clrpwrplay
 	bpl.w	.t0
-	btst	#$6,(sflags2).l
+	btst	#sf2pwrtm,(sflags2).l
 	bne.w	.upp
 	bsr.w	.clrpwrplay
-	bset	#$6,(sflags2).l
+	bset	#sf2pwrtm,(sflags2).l
 	bra.w	.upp
 .t0	exg.l	a2,a3
-	btst	#$6,(sflags2).l
+	btst	#sf2pwrtm,(sflags2).l
 	beq.w	.upp
 	bsr.w	.clrpwrplay
-	bclr	#$6,(sflags2).l
-.upp	bset	#$5,(sflags2).l
+	bclr	#sf2pwrtm,(sflags2).l
+.upp	bset	#sf2pwrplay,(sflags2).l
 	bne.w	.uppt
 	addi.w	#$1,$4(a3)
 	cmpa.l	#tmstruct,a3
@@ -39,7 +39,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	bsr.w	GetLowestPen
 	bsr.w	PushTime
 	bsr.w	print
-	movea.l	$1E(a3),a0
+	movea.l	tmdata(a3),a0
 	movea.l	#mesarea,a3
 	move.w	#$2,(a3)
 	bsr.w	PushNumberWidthString
@@ -50,13 +50,13 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	bsr.w	appstring
 	movea.l	a3,a1
 	bra.w	print
-.clrpwrplay	bclr	#$5,(sflags2).l
+.clrpwrplay	bclr	#sf2pwrplay,(sflags2).l
 	beq.w	rtss2
 	bra.w	EASNLogo
 ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktiles and
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	bclr	#$7,(sflags).l
+	bclr	#sfhor,(sflags).l
 	move.w	#$3E8,(Oldrow).l
 	move.w	(rinkvrcset).l,d4
 	movea.l	$47D18.l,a2
@@ -64,7 +64,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	jsr	(DecompressGraphicsPlain).l
 	jsr	(UnpackPictureSelectGfx).l
 	bsr.w	SprSort
-	btst	#$0,(sflags).l
+	btst	#sfpz,(sflags).l
 	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1,$0,$0
@@ -77,8 +77,8 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	rts
 SetHor						;switch graphics to horizontal ice rink graphics mode
 	movem.l	d0-d7/a0-a6,-(sp)
-	bset	#$7,(sflags).l
-.p	btst	#$0,(disflags).l
+	bset	#sfhor,(sflags).l
+.p	btst	#dfok,(disflags).l
 	bne.w	.p
 	clr.w	(Hscroll).l
 	clr.w	(Vscroll).l
@@ -86,7 +86,7 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bsr.w	printz
 	String	CC_Font2,$0,$0
 	movea.l	$47D6C.l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	$47D6C.l,a2
 	addq.l	#$8,a2
 	clr.w	d0
@@ -97,7 +97,7 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	moveq	#$0,d5
 	bsr.w	dobitmap
 	bsr.w	USBoard
-	btst	#$0,(sflags).l
+	btst	#sfpz,(sflags).l
 	bne.w	.ex
 	move.w	#$800,d0
 	move.w	(VmMAP1).l,d1
@@ -113,7 +113,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	
 	
 	movem.l	d0-d2/a0-a3,-(sp)
-	btst	#$7,(sflags).l
+	btst	#sfhor,(sflags).l
 	bne.w	.sbscreen
 	bclr	#$7,(sflags5).l
 	beq.w	.0
@@ -123,7 +123,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	moveq	#$9,d0
 	moveq	#$5,d1
 	bsr.w	Framer
-	bset	#$3,(disflags).l
+	bset	#dfclock,(disflags).l
 	bsr.w	printz
 	String	CC_Font1Pri,$1,$18
 	move.w	(gsp).l,d0
@@ -134,7 +134,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	movea.l	#PerLabels2,a1
 .1	bsr.w	PrintTickerEntry
 	bsr.w	EASNLogo
-	btst	#$0,(sflags3).l
+	btst	#sf3llcs,(sflags3).l
 	bne.w	.ex
 	bsr.w	printz
 	String	CC_Font1Pri,$17,$17
@@ -147,7 +147,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	bsr.w	printscores1_ps
 	bsr.w	printz
 	String	CC_Font1Pri,$18,$18
-	adda.w	#$366,a2
+	adda.w	#tmsize,a2
 	bsr.w	printscores1_ps
 .ex	movem.l	(sp)+,d0-d2/a0-a3
 	rts
@@ -170,18 +170,18 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	bsr.w	PrintTeamLogoAndScore
 	bsr.w	printz
 	String	CC_Font2Pri,$8,$2
-	adda.w	#$366,a2		;tmsize
+	adda.w	#tmsize,a2		;tmsize
 	moveq	#$2C,d0
 	bsr.w	PrintTeamLogoAndScore
 	bra.w	.ex
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 	
-	movea.l	$1E(a2),a1
+	movea.l	tmdata(a2),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	bsr.w	print
 	move.w	#$1C,(printx).l
-	move.w	$C(a2),d0
+	move.w	tmscore(a2),d0
 	moveq	#$2,d1
 	bsr.w	PushNumberWidth
 	bra.w	print		;print the score and return
@@ -194,7 +194,7 @@ PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5
 	jsr	(PutTeamBlockDraw).l
 	move.w	(sp)+,(printx).l
 	addi.w	#$2,(printy).l
-	move.w	$C(a2),d0
+	move.w	tmscore(a2),d0
 	cmpi.w	#$A,d0
 	bge.w	.0
 	bra.w	.1
@@ -208,24 +208,24 @@ PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5
 	bra.w	printbig
 EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if no power
 	
-	btst	#$5,(sflags2).l
+	btst	#sf2pwrplay,(sflags2).l
 	bne.w	rtss2
 	bsr.w	printz
 	String	CC_Font1Pri,$1,$19
 	movea.l	$47D4C.l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#$1B008,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	move.w	(EASNcset).l,d4
 	clr.w	d5
 	bra.w	dobitmap
 USBoard						;Update score board, including the players in the penalty box and their
 	
 	movem.l	d0-d7/a0-a3,-(sp)
-	bset	#$3,(disflags).l
+	bset	#dfclock,(disflags).l
 	bsr.w	printscores1
 	bsr.w	printz
 	String	CC_Font2Pri,$14,$8
@@ -241,9 +241,9 @@ pplpen						;print one penalty box line: player number and time remaining. a2 = 
 	
 	cmpi.w	#$A,(printy).l
 	bhi.w	rtss2
-	move.w	$68(a2,d0.w),d2
+	move.w	tmpdst(a2,d0.w),d2
 	andi.w	#$7FF,d2
-	movea.l	$1E(a2),a1
+	movea.l	tmdata(a2),a1
 	adda.w	$0(a1),a1
 	lsr.w	#$1,d0
 .find	adda.w	(a1),a1
@@ -278,7 +278,7 @@ linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitma
 	sub.w	d0,d1
 	clr.w	d0
 	movea.l	$47D40.l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#$1B008,a2
 	move.w	(a1),d2
 	moveq	#$1,d3
@@ -296,7 +296,7 @@ getlinee						;d0 = line number, a2 = team struct. Return d0 = energy level of t
 	clr.l	d0
 	clr.w	d1
 	movea.l	#priolist,a0
-	move.w	$26(a2),d4
+	move.w	tmap(a2),d4
 	bra.w	.next
 .loop	clr.w	d5
 	move.b	(a0,d4.w),d5
@@ -316,12 +316,12 @@ AvgCline						;Return d0 = average energy of current line on team a2
 	clr.w	d1
 	moveq	#$5,d2
 	movea.l	$22(a2),a0
-.loop	tst.w	$34(a0)
+.loop	tst.w	position(a0)
 	ble.w	.next
 	clr.w	d3
-	move.b	$66(a0),d3
+	move.b	pnum(a0),d3
 	add.w	d3,d3
-	add.w	$34(a2,d3.w),d0
+	add.w	tmpde(a2,d3.w),d0
 	addi.w	#$1,d1
 .next	adda.w	#$80,a0
 	dbra	d2,.loop
@@ -336,11 +336,11 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	
 	
 	
-	btst	#$0,(gmode).l
+	btst	#gmclock,(gmode).l
 	bne.w	rtss2
-	btst	#$4,(gmode).l
+	btst	#gmhl,(gmode).l
 	bne.w	rtss2
-	bclr	#$4,(sflags2).l
+	bclr	#sf2shot,(sflags2).l
 	bne.w	.Cwdupdate
 	btst	#$0,(sflags4).l
 	beq.w	rtss2
@@ -353,39 +353,39 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	movea.l	#ChkCnt,a4
 	adda.w	(ScoreSumbytes).l,a4
 	movea.l	#tmstruct,a2
-	btst	#$7,$2(a4)
+	btst	#$7,ssflags(a4)
 	beq.w	.pllookup
-	adda.w	#$366,a2
+	adda.w	#tmsize,a2
 .pllookup	clr.w	d0
-	move.b	$3(a4),d0
+	move.b	ssscorer(a4),d0
 	movea.l	(sp)+,a4
 	movea.l	$22(a2),a2
 	move.w	#$5,d1
-.findplayer	cmp.b	$66(a2),d0
+.findplayer	cmp.b	pnum(a2),d0
 	beq.w	.foundplayer
 	adda.w	#$80,a2
 	dbra	d1,.findplayer
 	bra.w	.ex
-.foundplayer	move.w	$52(a2),d0
+.foundplayer	move.w	SCnum(a2),d0
 	bra.w	.addShot
 .Cwdupdate	movem.l	d0-d1/a1-a3,-(sp)
 	addi.w	#$64,(Crowdlevel).l
 	addi.w	#$A,(CwdExciteLvl).l
 	move.w	(shotplayer).l,d0
-.addShot	asl.w	#$7,d0
+.addShot	asl.w	#scsize,d0
 	movea.l	#SortCords,a3
 	adda.w	d0,a3
 	bsr.w	ChkShotStatSwapStructs
 	addi.w	#$1,$0(a2)
-	btst	#$5,(sflags2).l
+	btst	#sf2pwrplay,(sflags2).l
 	beq.w	.2
-	btst	#$6,(sflags2).l
+	btst	#sf2pwrtm,(sflags2).l
 	bne.w	.1
-	btst	#$6,$62(a3)
+	btst	#pfteam,$62(a3)
 	bne.w	.2
 .PPshot	addi.w	#$1,$356(a2)
 	bra.w	.2
-.1	btst	#$6,$62(a3)
+.1	btst	#pfteam,$62(a3)
 	bne.w	.PPshot
 .2	move.l	a2,-(sp)
 	move.w	(gsp).l,d0
@@ -394,12 +394,12 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	addi.w	#$1,$34C(a2)
 	movea.l	(sp)+,a2
 	clr.w	d0
-	move.b	$66(a3),d0
-	addi.w	#$EA,d0
+	move.b	pnum(a3),d0
+	addi.w	#tmpshots,d0
 	addi.b	#$1,(a2,d0.w)
-	move.w	$28(a1),d0
+	move.w	tmgoalie(a1),d0
 	bmi.w	.ex
-	addi.w	#$EA,d0
+	addi.w	#tmpshots,d0
 	addi.b	#$1,(a1,d0.w)
 .ex	movem.l	(sp)+,d0-d1/a1-a3
 	rts
@@ -420,27 +420,27 @@ SetupTeamForIntermission						;Reset the bench, then for each team refill energy
 	bsr.w	.r
 	exg.l	a2,a3
 .r	bsr.w	reenergizeteam
-	clr.w	$16(a3)
+	clr.w	tmline(a3)
 	tst.w	(OptLine).l
 	bne.w	rtss2
-	move.w	$26(a3),d0
-	sub.w	$26(a2),d0
+	move.w	tmap(a3),d0
+	sub.w	tmap(a2),d0
 	beq.w	rtss2
-	move.w	#$3,$16(a3)
+	move.w	#$3,tmline(a3)
 	tst.w	d0
 	bpl.w	rtss2
-	move.w	#$5,$16(a3)		;PK1
+	move.w	#$5,tmline(a3)		;PK1
 	rts
 RestoreTeamEnergy						;a2 = team: max energy (tmpde $1000) for every player. The skip needs
 	
 	
 	moveq	#$32,d0
-.loop	cmpi.w	#$FFFD,$68(a2,d0.w)
+.loop	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
 	bne.w	.0
-	cmpi.w	#$FFFC,$68(a2,d0.w)
+	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	bne.w	.0
 	bra.w	.1
-.0	move.w	#$1000,$34(a2,d0.w)
+.0	move.w	#$1000,tmpde(a2,d0.w)
 .1	subi.w	#$2,d0
 	bpl.w	.loop
 	rts
@@ -449,12 +449,12 @@ reenergizeteam						;Set all players to max energy on team a2 except those at tm
 	
 	
 	moveq	#$32,d0
-.loop	cmpi.w	#$FFFC,$68(a2,d0.w)
+.loop	cmpi.w	#$FFFC,tmpdst(a2,d0.w)
 	beq.w	.nb
-	move.w	#$1000,$34(a2,d0.w)
-	cmpi.w	#$FFFD,$68(a2,d0.w)
+	move.w	#$1000,tmpde(a2,d0.w)
+	cmpi.w	#$FFFD,tmpdst(a2,d0.w)
 	bne.w	.nb
-	move.w	#$FFFE,$68(a2,d0.w)
+	move.w	#$FFFE,tmpdst(a2,d0.w)
 .nb	subi.w	#$2,d0
 	bpl.w	.loop
 	rts
@@ -489,7 +489,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	btst	#$0,(gmode2).l
 	beq.w	.2
 	movea.l	#$42250,a0
-.2	bset	#$0,(sflags).l
+.2	bset	#sfpz,(sflags).l
 	movea.l	#$2C1F8,a1
 	jsr	(SetMenuScreenHandler).l
 	bsr.w	GetShifter
@@ -501,16 +501,16 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	bsr.w	NewTicker3
 	move.w	#$96,d0
 	bsr.w	waitxsr
-	btst	#$7,d1
+	btst	#sbut,d1
 	bne.w	.clrh
 	bsr.w	NewTickerErase
 	move.w	#$3C,d0
 	bsr.w	waitxsr
 	btst	#$7,d1
 	beq.w	.top
-.clrh	bset	#$3,(sflags3).l
+.clrh	bset	#sf3sbut,(sflags3).l
 .doh	bsr.w	DoHiLights
-	bclr	#$3,(sflags3).l
+	bclr	#sf3sbut,(sflags3).l
 	bne.w	.clrz
 .wait	move.w	#$1E0,d0
 	bsr.w	waitxsr
@@ -531,64 +531,64 @@ InitScores						;initialize other games scores/period in playoffs. Called from S
 	bgt.w	rtss2
 	bsr.w	GetShifter
 	movea.l	#gstruct,a0
-	moveq	#$10,d0
+	moveq	#gssize,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
 .top	cmp.w	(gamenum).l,d1
 	beq.w	.next2
-	btst	#$2,$E(a0)
+	btst	#gsfso,gsflags(a0)
 	bne.w	.next2
-	clr.w	$8(a0)
+	clr.w	gsper(a0)
 	moveq	#$3,d0
 	bsr.w	randomd0
 	bra.w	.next
 .0	bsr.w	SetScore
 .next	dbra	d0,.0
-.next2	suba.w	#$10,a0
+.next2	suba.w	#gssize,a0
 	dbra	d1,.top
 	rts
 UpdateScores						;update ticker score values. Called from PeriodOver
 	bsr.w	GetShifter
 	move.w	d1,(TickerNum).l
 	movea.l	#gstruct,a0
-	moveq	#$10,d0
+	moveq	#gssize,d0
 	mulu.w	d1,d0
 	adda.w	d0,a0
 .top	cmp.w	(gamenum).l,d1
 	beq.w	.next
-	bclr	#$1,$E(a0)
-	btst	#$2,$E(a0)
+	bclr	#gsfhl,gsflags(a0)
+	btst	#gsfso,gsflags(a0)
 	bne.w	.next
 	bsr.w	SetScore
-.next	suba.w	#$10,a0
+.next	suba.w	#gssize,a0
 	dbra	d1,.top
 	rts
 SetScore						;add to score for game in a0. After period 3 a game within one goal goes
 	
-	cmpi.w	#$4,$8(a0)
+	cmpi.w	#$4,gsper(a0)
 	bge.w	rtss2
 	movem.l	d0-d1/a0-a1,-(sp)
-	cmpi.w	#$3,$8(a0)
+	cmpi.w	#$3,gsper(a0)
 	bne.w	.o
-	move.w	#$5,$8(a0)
-	move.w	$A(a0),d0
-	sub.w	$C(a0),d0
+	move.w	#$5,gsper(a0)
+	move.w	gss1(a0),d0
+	sub.w	gss2(a0),d0
 	cmpi.w	#$1,d0
 	bgt.w	.ex
 	cmpi.w	#$FFFF,d0
 	blt.w	.ex
-	move.w	#$3,$8(a0)
-	bset	#$1,$E(a0)
+	move.w	#$3,gsper(a0)
+	bset	#gsfhl,gsflags(a0)
 	bra.w	.ex
 .o	addi.w	#$1,$8(a0)
 	move.w	$0(a0),d0
-	move.w	$2(a0),d1
+	move.w	gst2(a0),d1
 	bsr.w	.getscore
-	add.w	d0,$A(a0)
-	move.w	$2(a0),d0
+	add.w	d0,gss1(a0)
+	move.w	gst2(a0),d0
 	move.w	$0(a0),d1
 	bsr.w	.getscore
-	add.w	d0,$C(a0)
+	add.w	d0,gss2(a0)
 .ex	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 .getscore	asl.w	#$2,d0
@@ -643,13 +643,13 @@ NewTickerNext
 	beq.w	NewTickerNext
 CheckGameTickerStatus						;d3 = game. Return a0 = its gstruct; skip to the next ticker game if a
 	
-	moveq	#$10,d0
+	moveq	#gssize,d0
 	mulu.w	d3,d0
 	movea.l	#gstruct,a0
 	adda.w	d0,a0
-	btst	#$1,$E(a0)
+	btst	#gsfhl,gsflags(a0)
 	bne.w	NewTickerNext
-	btst	#$2,$E(a0)
+	btst	#gsfso,gsflags(a0)
 	bne.w	NewTickerNext
 	rts
 NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if d3 is
@@ -673,7 +673,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	clr.w	d0
 .next	lea.l	.next2(pc),a1
 	bsr.w	PrintTickerEntry
-	move.w	$8(a0),d0
+	move.w	gsper(a0),d0
 	subi.w	#$1,d0
 	movea.l	#PerLabels,a1
 	bsr.w	SkipListEntries
@@ -685,11 +685,11 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	move.w	d0,(printx).l
 	bsr.w	print
 	move.w	#$8000,(printa).l
-	move.w	$2(a0),d0
-	move.w	$C(a0),d1
+	move.w	gst2(a0),d0
+	move.w	gss2(a0),d1
 	bsr.w	.tn
 	move.w	$0(a0),d0
-	move.w	$A(a0),d1
+	move.w	gss1(a0),d1
 	bsr.w	.tn
 	adda.w	#$2,sp
 	rts
@@ -722,7 +722,7 @@ SetTickerAreaPosition						;Set printx/printy/printm for the ticker box (x 3, y 
 	
 	bsr.w	printz
 	String	CC_Font3Pri,$3,$17
-	btst	#$0,(sflags).l
+	btst	#sfpz,(sflags).l
 	bne.w	.1
 	bsr.w	printz
 	String	CC_Font1Pri,$3,$17
@@ -742,16 +742,16 @@ SkipListEntries
 DoHiLights						;Hilites logic: search for hilite game and show
 	
 	bsr.w	GetShifter
-	moveq	#$10,d3
+	moveq	#gssize,d3
 	mulu.w	d1,d3
 	movea.l	#gstruct,a0
 	adda.w	d3,a0
-.top	btst	#$2,$E(a0)
+.top	btst	#gsfso,gsflags(a0)
 	bne.w	.next
-	bclr	#$1,$E(a0)
+	bclr	#gsfhl,gsflags(a0)
 	beq.w	.next
 	bsr.w	.next2
-.next	suba.w	#$10,a0
+.next	suba.w	#gssize,a0
 	dbra	d1,.top
 	rts
 .next2	movem.l	d0-d7/a0-a6,-(sp)

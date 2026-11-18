@@ -81,12 +81,12 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$2,(sflags6).l
-	tst.w	$34(a3)
+	tst.w	position(a3)
 	bne.w	.skater
 	movea.l	#$22906,a0
 	bra.w	.facing
-.skater	move.w	$14(a3),d0
-	btst	#$7,$62(a3)
+.skater	move.w	Ypos(a3),d0
+	btst	#pfgoal,$62(a3)
 	bne.w	.near
 	neg.w	d0
 .near	bset	#$2,(sflags6).l
@@ -95,8 +95,8 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	blt.w	.facing
 	movea.l	#$228E6,a0
 	bclr	#$2,(sflags6).l
-.facing	move.w	$54(a3),d0
-	btst	#$7,$62(a3)
+.facing	move.w	facedir(a3),d0
+	btst	#pfgoal,$62(a3)
 	bne.w	.offset
 	addi.w	#$4,d0
 	andi.w	#$7,d0
@@ -105,7 +105,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	move.w	$2(a0,d0.w),d2
 	cmpa.l	#$228E6,a0
 	bne.w	.side
-	move.w	$14(a3),d0
+	move.w	Ypos(a3),d0
 	bpl.w	.next5
 	neg.w	d0
 .next5	cmpi.w	#$8A,d0
@@ -116,7 +116,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 .next6	cmpi.w	#$37,d0
 	bgt.w	.side
 	move.w	#$103,d2
-.side	btst	#$7,$62(a3)
+.side	btst	#pfgoal,$62(a3)
 	bne.w	.rand
 	neg.w	d1
 	neg.w	d2
@@ -127,7 +127,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	jsr	(randomd0).l
 	add.w	d0,d2
 	move.w	d1,(onetimertargetx).l
-	tst.w	$34(a3)
+	tst.w	position(a3)
 	beq.w	.sety
 	sub.w	$0(a3),d1
 	bmi.w	.left
@@ -338,7 +338,7 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 	
 	movem.w	d0-d1,-(sp)
 	move.w	(pucky).l,d0
-	btst	#$7,$62(a3)
+	btst	#pfgoal,$62(a3)
 	bne.w	.cont
 	neg.w	d0
 .cont	tst.w	d0
@@ -366,14 +366,14 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	jsr	(doshot).l
 	movem.l	d0/a0,-(sp)
 	movea.l	#tmstruct,a0
-	btst	#$6,$62(a3)
+	btst	#pfteam,$62(a3)
 	beq.w	.home
 	lea.l	$366(a0),a0
 .home	clr.w	d0
-	move.b	$66(a3),d0
-	move.w	$1A(a0),$1C(a0)
-	move.w	$18(a0),$1A(a0)
-	move.w	d0,$18(a0)
+	move.b	pnum(a3),d0
+	move.w	tmtouch2(a0),tmtouch3(a0)
+	move.w	tmtouch1(a0),tmtouch2(a0)
+	move.w	d0,tmtouch1(a0)
 	bset	#$7,(sflags8).l
 	addi.w	#$96,(Crowdlevel).l
 	addi.w	#$A,(CwdExciteLvl).l
@@ -389,16 +389,16 @@ CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d
 	neg.w	d0
 	addi.w	#$8,d0
 	andi.w	#$7,d0
-	move.w	$54(a3),d1
+	move.w	facedir(a3),d1
 	add.w	d0,d1
 	andi.w	#$7,d1
 	cmpi.w	#$4,d1
 	bgt.w	.g0
-	move.w	$4(a3),d0
+	move.w	attribute(a3),d0
 	eori.w	#$FFFF,d0
 	andi.w	#$800,d0
 	bra.w	.ex
-.g0	move.w	$4(a3),d0
+.g0	move.w	attribute(a3),d0
 	andi.w	#$800,d0
 .ex	movem.w	(sp)+,d0-d1
 	rts

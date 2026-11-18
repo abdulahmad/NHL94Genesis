@@ -100,7 +100,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	tst.l	(a2)		;no map: the PicturePalette one
 	bne.w	.6
 	movea.l	#PicturePalette,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	tst.l	(a2)+		;skip the map offset
 	bra.w	.7
 .6	adda.l	(a2)+,a1
@@ -184,7 +184,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movea.l	#mesarea,a1
 	move.w	(cardteamnum).l,d0
 	move.w	(cardroster).l,d1
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	jsr	(PrintRecordHolder).l
 	move.w	(cardprintx).l,(printx).l
 	cmpi.w	#$2,(a1)		;no record holder: skip the line
@@ -196,7 +196,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 .11	movea.l	#mesarea,a1
 	move.w	(cardteamnum).l,d0
 	move.w	(cardroster).l,d1
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	jsr	(PrintRecordVs).l
 	move.w	(cardprintx).l,(printx).l		;left edge of the text
 	addi.w	#$1,(printy).l
@@ -635,7 +635,7 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	move.w	d0,d5
 	move.w	d1,d4
 	ext.l	d0
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	bsr.w	SPAlistClearFlag6		;his save record into M68K_RAM
 	move.b	(a0),d0		;byte 0 = the record value
 	ext.w	d0
@@ -706,9 +706,9 @@ AppendRecordHolder						;Append the user name of the record holder (byte 1 of re
 	move.w	(sp)+,d1
 	ext.l	d1
 	ext.l	d0
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	bsr.w	SPAlistClearFlag6
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$1(a0),d2
 	ext.w	d2
@@ -727,9 +727,9 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	move.w	(sp)+,d1
 	ext.l	d1
 	ext.l	d0
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	bsr.w	SPAlistClearFlag6
-	movea.l	#$C45C,a0
+	movea.l	#M68K_RAM,a0
 	movem.l	(sp)+,d0-d7/a1-a6
 .0	move.b	$3(a0),d2
 	ext.w	d2
@@ -1152,7 +1152,7 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 .1	cmp.l	(GAttribOverallMask).l,d4
 	bne.w	.11
 	movea.l	#$26256,a6
-.11	movea.l	$1E(a2),a0
+.11	movea.l	tmdata(a2),a0
 	lea.l	$1A4(a2),a4
 	clr.l	d1
 	move.w	d0,d1

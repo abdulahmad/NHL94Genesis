@@ -2,29 +2,29 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 									;PositionBoxes (PositionBoxesTop when bit 7 of
 									;pflags(a3), the top net)
 	movem.l	d0-d7/a0,-(sp)
-	move.w	$34(a3),d7
+	move.w	position(a3),d7
 	subi.w	#$1,d7		;position 1 is entry 0
 	movea.l	#$292E2,a0
-	btst	#$7,$62(a3)		;which net?
+	btst	#pfgoal,$62(a3)		;which net?
 	beq.w	.0
 	movea.l	#$292F2,a0
 .0	add.w	d7,d7		;word per position
 	move.w	(a0,d7.w),d0		;X min of the box
-	cmp.w	$44(a3),d0
+	cmp.w	temp3(a3),d0
 	blt.w	.1
-	move.w	d0,$44(a3)		;clamp to the left
+	move.w	d0,temp3(a3)		;clamp to the left
 .1	move.w	$2(a0,d7.w),d0		;X max of the box
-	cmp.w	$44(a3),d0
+	cmp.w	temp3(a3),d0
 	bgt.w	.2
-	move.w	d0,$44(a3)		;clamp to the right
+	move.w	d0,temp3(a3)		;clamp to the right
 .2	move.w	$4(a0,d7.w),d0		;Y min of the box
-	cmp.w	$46(a3),d0
+	cmp.w	temp4(a3),d0
 	blt.w	.3
-	move.w	d0,$46(a3)		;clamp to the bottom
+	move.w	d0,temp4(a3)		;clamp to the bottom
 .3	move.w	$6(a0,d7.w),d0		;Y max of the box
-	cmp.w	$46(a3),d0
+	cmp.w	temp4(a3),d0
 	bgt.w	.x
-	move.w	d0,$46(a3)		;clamp to the top
+	move.w	d0,temp4(a3)		;clamp to the top
 .x	movem.l	(sp)+,d0-d7/a0
 	rts
 ; Position limits
@@ -65,12 +65,12 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	beq.w	AddArenaAnimSpriteExit		;not loaded: none
 	btst	#$4,(sflags4).l		;check if reverse angle replay
 	bne.w	AddArenaAnimSpriteExit
-	btst	#$3,(sflags2).l
+	btst	#sf2replay,(sflags2).l
 	bne.w	AddArenaAnimSpriteExit		;replay: none
-	btst	#$7,(sflags).l
+	btst	#sfhor,(sflags).l
 	bne.w	AddArenaAnimSpriteExit		;horizontal mode: none
 	movea.l	(arenaspritelist).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	(Hpos).l,d4
 	move.w	(Vpos).l,d5
 	move.w	(arenaframe).l,d0
@@ -110,23 +110,23 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 	subi.w	#$80,d2
 	addi.w	#$70,d3
 	move.w	(sp)+,d4
-.loop2	cmp.w	$2(a0),d2
+.loop2	cmp.w	seY(a0),d2
 	bgt.w	.next4
-	cmp.w	$2(a0),d3
+	cmp.w	seY(a0),d3
 	blt.w	.next4
 	cmp.w	(a0),d0
 	bgt.w	.next4
 	cmp.w	(a0),d1
 	blt.w	.next4
-	move.w	$2(a0),d5
+	move.w	seY(a0),d5
 	addi.w	#$70,d5
 	sub.w	d2,d5
 	move.w	d5,(a6)+
-	move.b	$7(a0),(a6)+
+	move.b	seSize(a0),(a6)+
 	move.b	d6,(a6)+
-	move.w	$6(a0),d5
+	move.w	seAttr(a0),d5
 	andi.w	#$F800,d5
-	add.w	$4(a0),d5
+	add.w	seTile(a0),d5
 	add.w	(arenaanimchars).l,d5
 	move.w	d5,(a6)+
 	move.w	(a0),d5
@@ -646,7 +646,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	#$2,(a3)
 	cmpi.w	#$FFFF,(a0)
 	bne.w	.1
-	move.w	#$C,d0
+	move.w	#tmscore,d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
 	move.w	#$0,d1
@@ -782,10 +782,10 @@ rtsStatTables
 updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for the team
 	
 	
-	btst	#$5,(sflags2).l
+	btst	#sf2pwrplay,(sflags2).l
 	beq.w	.x
 	movea.l	#tmstruct,a2
-	btst	#$6,(sflags2).l
+	btst	#sf2pwrtm,(sflags2).l
 	beq.w	.0
 	movea.l	#awtmstruct,a2
 .0	addi.w	#$1,$354(a2)		;one more second of power play time
@@ -793,7 +793,7 @@ updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for th
 GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 	
 	movem.l	d1-d7/a0-a6,-(sp)
-	move.w	$2A(a2),d0
+	move.w	tmteam(a2),d0
 	movea.l	#$2A040,a0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
@@ -808,7 +808,7 @@ ShortenMsgTimer						;Cap msgtimer at 2, unless a second pad is on (cont2team) a
 	movem.l	d0,-(sp)
 	tst.w	(cont2team).l
 	beq.w	.0
-	move.w	$52(a3),d0
+	move.w	SCnum(a3),d0
 	cmp.w	(puckc).l,d0
 	bne.w	.x
 .0	cmpi.w	#$2,(msgtimer).l
@@ -831,7 +831,7 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	bne.w	.0
 	eori.w	#$1,(goaliemode2).l
 	bra.w	.g1
-.0	btst	#$1,(sflags).l
+.0	btst	#sfpj,(sflags).l
 	beq.w	.g1
 	eori.w	#$1,(goaliemode2).l
 	bra.w	.chkso
@@ -840,7 +840,7 @@ ManualGoalieMenu						;"x Manual Goalie" menu item (menu lists; PrintMenuItem pr
 	bne.w	.so
 	btst	#$2,(BA_PS_flags).l
 	beq.w	.x
-.so	btst	#$1,(sflags).l
+.so	btst	#sfpj,(sflags).l
 	bne.w	.p2
 	cmpi.w	#$2,(OptNOP).l
 	bne.w	.4

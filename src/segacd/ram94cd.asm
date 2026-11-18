@@ -444,3 +444,177 @@ CC_Font2Pal2Pri	equ	$9E
 CC_Font1Pal3Pri	equ	$8F
 CC_Font2Pal3Pri	equ	$8E
 CC_Font3Pal3Pri	equ	$8D
+
+; --- constants of the cartridge that the disc code uses, with the disc's values (the disc team struct differs: tmgoalie is $28) ---
+dfok	equ	$0			;graphics are ready for transfer
+sfpz	equ	$0			;pause mode
+sf3llcs	equ	$0			;lower line change sel.
+gmclock	equ	$0			;game clock is stopped
+pf3oside	equ	$0			;offsides
+pfdoff	equ	$0			;bit0-deceleration off
+pf2fight	equ	$0			;player is fighting (93; 94 has no fights)
+sf2faceoff	equ	$0			;face off in progress
+tmflcc	equ	$0			;tmflags: line change on
+ifcgl	equ	$0			;iflags: crossed goalline
+ubut	equ	$0			;up
+gsftf	equ	$0			;teams are flipped
+sf2refref	equ	$1			;ref needs refresh
+sfpj	equ	$1			;pause cont (0 for cont 1)
+pf3break	equ	$1			;on a breakaway
+gmdir	equ	$1			;0 = home team goes up
+pfna	equ	$1			;bit1-new assignment
+ifdir	equ	$1			;iflags: 1=must cross top line
+dbut	equ	$1			;down
+gsfhl	equ	$1			;hilite requested
+df32c	equ	$1			;32 column mode on
+pbscnum	equ	$1			;byte: SCnum of the player
+dfng	equ	$2			;don't int graphics
+seY	equ	$2			;word: y, signed
+foattr	equ	$2			;word: attribute (bit 11 x flip)
+satSize	equ	$2			;byte: size code
+sf2drec	equ	$2			;disable replay record
+sfspdir	equ	$2			;set pass dir mode
+pf2unav	equ	$2			;player is unavailable (going to/from bench/penalty). 92 bit 4
+pfnc	equ	$2			;bit2-no collision mode
+pf3gctrl	equ	$2			;goalie control
+SngFaceoff	equ	$2			;face off tune, once per period; also the shootout song
+pldlegspd	equ	$2			;high nibble speed legspd, low nibble offense aioff (so)
+ifok	equ	$2			;iflags: icing
+pcframes	equ	$2			;word: frames
+mapheight	equ	$2			;word: height in tiles
+gsfso	equ	$2			;series over
+gst2	equ	$2			;team 2
+ssflags	equ	$2			;byte: 2 + skater difference (goal type); bit 7 = away team scored
+pspen	equ	$2			;byte: penalty (Penaltylist offset); bit 7 = away team
+strtext	equ	$2			;String: start of the text after its length word
+sf3alttree	equ	$2			;alt. tree
+gmpen	equ	$2			;penalty has been called
+satLink	equ	$3			;byte: next sprite (0 ends the list)
+sf2replay	equ	$3			;replay in progress
+pf3onetimer	equ	$3			;doing a one-timer
+dfclock	equ	$3			;clock needs update
+pf2lcm	equ	$3			;line change mode. 92 bit 5
+pfjoycon	equ	$3			;is player joystick controlled
+sfssdir	equ	$3			;set shot dir mode
+gmpendel	equ	$3			;delayed penalty has been called
+pldaidef	equ	$3			;high nibble defense aidef, low nibble shot power shotspd (dp)
+tmflast	equ	$3			;next touch overwrites the last touch only.
+ssscorer	equ	$3			;byte: scorer
+srforwards	equ	$3			;high nibble: forward count (GetForwardCount); low nibble not read
+sf3sbut	equ	$3			;flag for start button
+jimdata	equ	$4			;long: offset of the map (.map.jim) or the frame table (.anim)
+dffaceoff	equ	$4			;face off sprites on (92 tested sf2faceoff).
+seTile	equ	$4			;word: tile, from the set's first tile
+satTile	equ	$4			;word: priority, palette, flips, tile
+attribute	equ	$4			;frame attribute switch bits
+mapwords	equ	$4			;the map words
+pf3wall	equ	$4			;wall collision
+sfwrap	equ	$4			;replay has wrapped around
+gmhl	equ	$4			;hilight mode
+ursaves	equ	$4			;most saves in a game
+sf2shot	equ	$4			;shot was taken
+pf2pen	equ	$4			;player has caused a penalty. 92 bit 6
+sf3fo	equ	$4			;face off just ended (set by the drop): the next puck pickup wins it, with
+tmfoside	equ	$4			;team is offsides (92 flagged the player with pf3oside)
+gspotwins	equ	$4			;play off top team (on tree) wins (for best of 7)
+pfalock	equ	$5			;lock out until anim is done
+pf3fall	equ	$5			;falling down
+cbut	equ	$5			;c button
+pf2npc	equ	$5			;no player collision. 92 bit 7
+sf2pwrplay	equ	$5			;power play in progress
+gmoffs	equ	$5			;offsides on
+pldstick	equ	$5			;high nibble stickhandling stickhand, low nibble shot accuracy (ga)
+satX	equ	$6			;word: x + 128
+seAttr	equ	$6			;word: priority, palette, vflip, hflip (bits 15-11), size code (low byte)
+frame	equ	$6			;alice frame number
+pfteam	equ	$6			;0-home(sprite0-5)/1-visitors(sprite6-11)
+sf3icetime	equ	$6			;set once a second by updatepentime: each player on the ice adds 1 to its
+sfslock	equ	$6			;scroll lock to xc1/yc1
+sf2pwrtm	equ	$6			;0 for team 1 in power play
+plpos	equ	$6			;PlList: 6 wanted roster players, then their positions
+gspobwins	equ	$6			;play off bottom team (on tree) wins (for best of 7)
+sfhor	equ	$7			;screen is in horizontal mode
+seSize	equ	$7			;byte: VDP size code (low byte of seAttr)
+pfgoal	equ	$7			;0=bottom, 1=top (to shoot at)
+sbut	equ	$7			;start button
+scsize	equ	$7			;2 to this power indicates ram needed for each sortobj
+sf2offsig	equ	$7			;offsides little ref on
+oldframe	equ	$8			;last frame
+crpeak	equ	$8			;loudest crowd (home games)
+urwins	equ	$8			;word, high byte first: wins
+gsper	equ	$8			;period
+crpeakuser	equ	$9			;peak crowd record: user
+VRoffs	equ	$A			;offsets to find each sprites start char. (max of 6 sprites / frame)
+urgames	equ	$A			;word, high byte first: games (stops at 9000)
+gss1	equ	$A			;team 1 score
+tmscore	equ	$C			;score
+gss2	equ	$C			;team 2 score
+puckscnum	equ	$E			;puck is sort obj number 14
+gsflags	equ	$E			;flags
+gssize	equ	$10			;bytes per game structure
+VRchar	equ	$12			;vram char for graphic
+Ypos	equ	$14			;y position
+tmline	equ	$16			;current line
+Zpos	equ	$18			;height above the ice
+tmtouch1	equ	$18			;last touch (team/pnum word): the scorer
+jps	equ	$18			;jiffys per second
+tmtouch2	equ	$1A			;second last touch (first assist)
+RosterSlots	equ	$1A			;roster slots per team
+ffosize	equ	$1C			;field objects tied to icerink scrolling (pads), OldXpos bytes each (92G)
+tmtouch3	equ	$1C			;third last touch (second assist)
+OldXpos	equ	$1C			;x position before the last move
+OldYpos	equ	$20			;y position before the last move
+tmap	equ	$26			;active players on ice 4-6
+Xvel	equ	$28			;x velocity
+Yvel	equ	$2A			;y velocity
+tmteam	equ	$2A			;team number (TeamList index) of this team struct
+Zvel	equ	$2C			;z velocity (vertical)
+tmnear	equ	$2C			;long: nearest skater's distance^2 to the puck (assnearest)
+impactp	equ	$2E			;last player to cause impact
+tmflags	equ	$32			;flags
+impact	equ	$32			;impact value
+position	equ	$34			;player's position (0=goalie,1=l.def,2=r.def,3=l.wing,4=center,5=r.wing)
+tmpde	equ	$34			;energy level of each roster player
+assnum	equ	$36			;index to current assignment
+asslist	equ	$38			;list of assignments in order of execution
+temp1	equ	$40			;scratch word; its meaning depends on the assignment (timers, targets)
+temp2	equ	$42			;scratch word (see temp1)
+temp3	equ	$44			;scratch word (see temp1)
+temp4	equ	$46			;scratch word (see temp1)
+temp5	equ	$48			;scratch word (see temp1)
+Wallcos	equ	$4E			;cos of angle of last collision
+Wallsin	equ	$50			;sin of angle of last collision
+SCnum	equ	$52			;index number for this struct
+facedir	equ	$54			;direction of facing
+SPA	equ	$58			;animation (SPA offset)
+SPAnum	equ	$5A			;index into animation
+SPAcnt	equ	$5C			;count down to next frame of animation
+nopuck	equ	$5E			;no puck coll until zero
+nopuckb	equ	$5F			;second count down (low byte of nopuck)
+newpos	equ	$60			;requested next position of this player
+newpnum	equ	$61			;requested next player (from roster) for this player
+replaysize	equ	$62			;bytes per replay frame (92G/93G name; 92G 84)
+pflags3	equ	$64			;player flags 3 (92: not used)
+glitch	equ	$65			;counter to eliminate quick frame changes (de-glitch graphics)
+pnum	equ	$66			;player's team location number 0-22
+weight	equ	$67			;player weight (collision oomph and checking)
+tmpdst	equ	$68			;-2=bench/-1=ice/0+=penalty box
+legstr	equ	$68			;leg strength (checking power)
+aidef	equ	$6B			;defensive rating (CPU defense)
+shotspd	equ	$6C			;shot speed
+shotacc	equ	$6D			;player rating: shot accuracy
+passacc	equ	$6E			;pass accuracy
+rostnum	equ	$6F			;roster number of the player
+stickhand	equ	$71			;player rating: stickhandling
+endurance	equ	$72			;player rating: endurance
+fighting	equ	$74			;fighting (Fgt; from the Chk/Hnd byte, always even)
+handed	equ	$76			;bit0 set is left handed
+Sideline	equ	$88			;distance from center to side boards
+tmgoals	equ	$B6			;goals per roster player (goalies: goals against), bytes
+horoff	equ	$C5
+tmpshots	equ	$EA			;shots per roster player (goalies: shots against), bytes
+tmpice	equ	$138			;frames on ice per roster player (words)
+tmHotCold	equ	$1A4			;hot / cold table: 16 bytes per roster player (26 x 16 bytes), each
+tmsize	equ	$366			;93 $1A2: 94 adds tmHotCold and the stats from tmPerGoals
+TeamRecBase	equ	$D20			;offset of the team records
+M68K_RAM	equ	$C45C			;start of the 68000 work RAM, the same as replaystart

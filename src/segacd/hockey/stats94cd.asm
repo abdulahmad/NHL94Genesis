@@ -13,11 +13,11 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	String	CC_Font3Pri,$E,$3,'Scores',CC_Font3Pri,$B,$1
 	movea.l	$47D58.l,a1
 	lea.l	$8(a1),a2
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	clr.w	d5
 	jsr	(dobitmap).l
 	jsr	(printsmallz).l
@@ -100,22 +100,22 @@ ScoresScrollBlitSetup	move.w	(disflags).l,-(sp)
 	rts
 DisplayGameInfo	cmp.w	(gamenum).l,d3
 	beq.w	updatereplayExit
-	moveq	#$10,d0
+	moveq	#gssize,d0
 	mulu.w	d3,d0
 	movea.l	#gstruct,a0
 	adda.w	d0,a0
-	btst	#$1,$E(a0)
+	btst	#gsfhl,gsflags(a0)
 	bne.w	updatereplayExit
-	btst	#$2,$E(a0)
+	btst	#gsfso,gsflags(a0)
 	bne.w	updatereplayExit
-	move.w	$2(a0),d0
-	move.w	$C(a0),d1
+	move.w	gst2(a0),d0
+	move.w	gss2(a0),d1
 	bsr.w	PrintGameInfo
 	addi.w	#$1,(printy).l
 	move.w	$0(a0),d0
-	move.w	$A(a0),d1
+	move.w	gss1(a0),d1
 	bsr.w	PrintGameInfo
-	move.w	$8(a0),d0
+	move.w	gsper(a0),d0
 	subi.w	#$1,d0
 	movea.l	#PerLabels,a1
 	move.w	#$1C,(printx).l
@@ -441,12 +441,12 @@ DrawTeamScreen						;Line editor background: bitmap (EASportsBGMap), frame, "Lin
 	jsr	(printz).l
 	String	CC_Font3,$0,$0
 	movea.l	(EASportsBGMap).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#$1B008,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$1,d4
 	moveq	#$0,d5
 	jsr	(dobitmap).l
@@ -505,7 +505,7 @@ LineEditorExit
 	movea.l	#$3C000,a1
 	movea.l	#LineEditorMenuText,a0
 	movea.l	#databuffer,a3
-	move.w	$2A(a2),d0
+	move.w	tmteam(a2),d0
 	addi.w	#$1,d0
 	cmp.b	(a3),d0
 	beq.w	.0
@@ -583,7 +583,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	
 	movem.l	d0-d4/a0-a3,-(sp)
 	movea.l	#databuffer,a0
-	move.w	$2A(a2),d0
+	move.w	tmteam(a2),d0
 	addi.w	#$1,d0
 	move.b	d0,(a0)+
 	lea.l	$16C(a2),a1
@@ -624,7 +624,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	moveq	#$17,d1
 	bsr.w	CrowdMeterFadeIn
 	moveq	#$1,d0
-	add.w	$16(a2),d0
+	add.w	tmline(a2),d0
 	move.w	d0,(SelectedPlayerIdx).l
 	clr.w	(scoutcolumn).l
 .redraw	jsr	(printz).l
@@ -874,7 +874,7 @@ GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks
 	dc.w	$2043,$2020		; move.l -(a0), d0
 AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	add.w	d0,d0
-	move.w	$34(a2,d0.w),d0		;his energy
+	move.w	tmpde(a2,d0.w),d0		;his energy
 	ext.l	d0
 	divu.w	#$28,d0
 	cmpi.w	#$64,d0		;over 100?
@@ -1054,21 +1054,21 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#$1,(printx).l
 	jsr	(FormatAndPrintTime).l
 	movea.l	#tmstruct,a2
-	btst	#$7,$2(a0,d3.w)
+	btst	#$7,ssflags(a0,d3.w)
 	beq.w	.0
-	adda.w	#$366,a2
-.0	movea.l	$1E(a2),a1		;team data -> team name string
+	adda.w	#tmsize,a2
+.0	movea.l	tmdata(a2),a1		;team data -> team name string
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).l
 	jsr	(print).l
 	move.w	#$23,(printx).l
 	dc.w	$43FA,$0060		; lea.l X_2DA34(pc),a1
-	move.b	$2(a0,d3.w),d0
+	move.b	ssflags(a0,d3.w),d0
 	andi.w	#$7F,d0
 	jsr	(PrintTickerEntry).l
 	move.w	#$10,(printx).l
-	move.b	$3(a0,d3.w),d0
+	move.b	ssscorer(a0,d3.w),d0
 	bsr.w	PrintScorerName		;print him
 	move.w	#$E000,(printa).l
 	move.w	#$12,(printx).l
@@ -1241,15 +1241,15 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	move.w	#$1,(printx).l
 	jsr	(FormatAndPrintTime).l
 	movea.l	#tmstruct,a2
-	btst	#$7,$2(a0,d3.w)		;away penalty?
+	btst	#$7,pspen(a0,d3.w)		;away penalty?
 	beq.w	.0
-	adda.w	#$366,a2
-.0	movea.l	$1E(a2),a1		;team data -> team name string
+	adda.w	#tmsize,a2
+.0	movea.l	tmdata(a2),a1		;team data -> team name string
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).l
 	jsr	(print).l
-	move.b	$2(a0,d3.w),d0
+	move.b	pspen(a0,d3.w),d0
 	andi.w	#$7F,d0
 	movea.l	#Penaltylist,a3
 	adda.w	(a3,d0.w),a3
@@ -1299,9 +1299,9 @@ PlayoffStatsScreen						;"Playoff Stats": the playoff totals (ReadTeamStats) of 
 	move.w	(potreeteam).l,d0
 	move.b	(a0,d0.w),d0		;his team
 	movea.l	#tmstruct,a2
-	cmp.w	$2A(a2),d0		;is it home?
+	cmp.w	tmteam(a2),d0		;is it home?
 	beq.w	.0
-	adda.w	#$366,a2
+	adda.w	#tmsize,a2
 .0	moveq	#$1,d7		;playoff mode: stats come from the playoff RAM tables
 	bsr.w	PlayerStatsList
 	movem.l	(sp)+,a2
@@ -2012,7 +2012,7 @@ StatsRowsNext	addi.w	#$1,(printy).l
 	rts
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
 	movem.l	d1/a0,-(sp)
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	$A(a0),a0
 	move.w	(a0),d1		;word with one nibble per goalie slot
 	clr.w	d0
@@ -2027,25 +2027,25 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 	movem.l	a0,-(sp)
 	bsr.w	GetGoalieCount
 	move.w	d0,-(sp)
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	$8(a0),a0
-	move.b	$3(a0),d0
+	move.b	srforwards(a0),d0
 	lsr.w	#$4,d0		;high nibble
 	add.w	(sp)+,d0
 	movem.l	(sp)+,a0
 	rts
 GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
 	movem.l	a0,-(sp)
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	$8(a0),a0
-	move.b	$3(a0),d0
+	move.b	srforwards(a0),d0
 	lsr.w	#$4,d0		;high nibble = forward count
 	andi.w	#$F,d0		;forward count
 	movem.l	(sp)+,a0
 	rts
 GetPlayerCount
 	movem.l	a0,-(sp)
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	$0(a0),a0
 	clr.w	d0
 .loop	addi.w	#$1,d0

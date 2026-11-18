@@ -1,10 +1,10 @@
 restoreteams						;Put both teams' rosters on the bench
 	movea.l	#tmstruct,a2
 	bsr.w	.r
-	adda.w	#$366,a2
-.r	move.w	#$6,$26(a2)
+	adda.w	#tmsize,a2
+.r	move.w	#$6,tmap(a2)
 	moveq	#$32,d0
-.0	move.w	#$FFFE,$68(a2,d0.w)
+.0	move.w	#$FFFE,tmpdst(a2,d0.w)
 	subi.w	#$2,d0
 	bpl.w	.0
 	rts
@@ -21,7 +21,7 @@ ResetClock						;set period length and stop clock
 	asr.w	#$1,d0
 	jsr	(randomd0).l
 	sub.w	d0,(periodendtime).l
-	bset	#$0,(gmode).l
+	bset	#gmclock,(gmode).l
 	rts
 GetPeriodTime						;Return d0 = period length in seconds for the period length option
 	move.w	(Optperlen).l,d0
@@ -121,11 +121,11 @@ periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jsr	(RunArenaAnim).l
 	jsr	(updatesound).l
 	bsr.w	clockcont
-	btst	#$7,(sflags).l
+	btst	#sfhor,(sflags).l
 	bne.w	updatereplayExit
 	sub.w	d7,(lldisp).l
 	bpl.w	updatereplayExit
-	addi.w	#$18,(lldisp).l
+	addi.w	#jps,(lldisp).l
 	jsr	(ChkGoalies).l
 	bsr.w	UpdateCwdExcite
 	bsr.w	CheckLateGameSong
@@ -142,12 +142,12 @@ RestoreBenchEnergy						;Called once per second. Restore energy for players on t
 	bsr.w	.notinprog
 	lea.l	$366(a2),a2
 .notinprog	moveq	#$32,d0
-.b0	cmpi.w	#$FFFE,$68(a2,d0.w)
+.b0	cmpi.w	#$FFFE,tmpdst(a2,d0.w)
 	bne.w	.next
-	addi.w	#$9,$34(a2,d0.w)
-	cmpi.w	#$1000,$34(a2,d0.w)
+	addi.w	#$9,tmpde(a2,d0.w)
+	cmpi.w	#$1000,tmpde(a2,d0.w)
 	blt.w	.next
-	move.w	#$1000,$34(a2,d0.w)
+	move.w	#$1000,tmpde(a2,d0.w)
 .next	subi.w	#$2,d0
 	bpl.w	.b0
 .ex	rts
@@ -155,7 +155,7 @@ CheckLateGameSong						;Called once per second. 3rd period: choose and play a so
 	
 	cmpi.w	#$2,(gsp).l
 	bne.w	.x
-	btst	#$4,(gmode).l
+	btst	#gmhl,(gmode).l
 	bne.w	.x
 	move.w	(gameclock).l,d0
 	cmp.w	(periodendtime).l,d0
@@ -242,11 +242,11 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	move.b	d0,(Crowdframe).l
 	rts
 clockcont						;monitor period clock and initiate various clock activated events
-	btst	#$0,(gmode).l
+	btst	#gmclock,(gmode).l
 	bne.w	updatereplayExit
 	tst.w	(gameclock).l
 	bne.w	updatereplayExit
-	bset	#$3,(disflags).l
+	bset	#dfclock,(disflags).l
 	jsr	(HockeyRtsStubB).l
 	move.w	#$4,-(sp)
 	jsr	(sfx).l
@@ -315,7 +315,7 @@ demoread						;monitor joystick if in demo mode (called every game loop)
 	tst.w	(cont2team).l
 	bne.w	updatereplayExit
 	jsr	(ReadJoy1).l
-	btst	#$7,d1
+	btst	#sbut,d1
 	bne.w	EndDemoExitMode0Off
 	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy2).l
@@ -371,7 +371,7 @@ Pausemode	jsr	(forceblack).l
 	beq.w	.chk2
 	movea.l	#$41EB4,a0
 	bra.w	.0
-.chk2	btst	#$2,$32(a2)
+.chk2	btst	#$2,tmflags(a2)
 	beq.w	.0
 	movea.l	#$420DC,a0
 .0	bsr.w	SetMenuScreenHandler
@@ -383,7 +383,7 @@ Pausemode	jsr	(forceblack).l
 	bne.w	.loop
 	jsr	(forceblack).l
 	move.w	(sp)+,(sflags).l
-	btst	#$7,(sflags).l
+	btst	#sfhor,(sflags).l
 	beq.w	.clr
 	jsr	(IceRinkRemapGfxA).l
 	jsr	(SetHor).l
@@ -414,8 +414,8 @@ Pausemode	jsr	(forceblack).l
 .loop8	btst	#$6,$FF800E.l
 	bne.b	.loop8
 	bclr	#$7,$FF800F.l
-	bset	#$3,(disflags).l
-	bclr	#$0,(sflags).l
+	bset	#dfclock,(disflags).l
+	bclr	#sfpz,(sflags).l
 	jsr	(printscores1).l
 	jsr	(setvideo).l
 	move.w	#$18,(palcount).l
@@ -464,13 +464,13 @@ PausemodeVdpFill
 seta2						;Set a2 to the team struct of the pause joystick also called from
 	
 	movea.l	#tmstruct,a2
-	btst	#$1,(sflags).l
+	btst	#sfpj,(sflags).l
 	beq.w	.seta20
 	cmpi.w	#$1,(cont2team).l
 	bra.w	.seta21
 .seta20	cmpi.w	#$1,(cont1team).l
 .seta21	beq.w	.x
-	adda.w	#$366,a2
+	adda.w	#tmsize,a2
 .x	rts
 ; Stores the menu handler pointers and clears the cursor.
 SetMenuScreenHandler

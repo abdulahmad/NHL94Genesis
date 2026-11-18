@@ -28,7 +28,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	$66(a2),d0		;goalie roster index
+	move.b	pnum(a2),d0		;goalie roster index
 	movea.l	#awtmstruct,a2
 	tst.w	(BA_Team).l
 	beq.w	.1
@@ -38,7 +38,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$9
 	movea.l	#tmstruct,a1
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	$4(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).l
@@ -49,7 +49,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	jsr	(printz).l
 	String	CC_Font1Pri,$4,$A
 	movea.l	#awtmstruct,a1
-	movea.l	$1E(a1),a1
+	movea.l	tmdata(a1),a1
 	adda.w	$4(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).l
@@ -104,7 +104,7 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 .1	move.w	(homeshootnum).l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),(BA_Skater_Offset).l
-	bclr	#$2,$17BE2.l
+	bclr	#pfnc,$17BE2.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 CountShootoutGoals						;Shootout: count the goals and end it when one team cannot catch up

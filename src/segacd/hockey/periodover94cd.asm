@@ -3,7 +3,7 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 									;overtime (gsp 3), else the game is over (gsp 4); after overtime only a
 									;tied playoff game plays on. Falls into PeriodOver_sp
 	addi.w	#$1,(gsp).l		;period number
-	bchg	#$1,(gmode).l		;flip the attack direction
+	bchg	#gmdir,(gmode).l		;flip the attack direction
 	cmpi.w	#$3,(gsp).l		;period 3 or later?
 	blt.w	.0
 	beq.w	.1		;period 3 just ended

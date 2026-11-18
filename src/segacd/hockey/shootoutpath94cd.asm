@@ -50,13 +50,13 @@ ClearWinRecords
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#ThreeStars,a0
 	move.w	#$7,d7
-.loop	clr.b	$8(a0)
+.loop	clr.b	urwins(a0)
 	clr.b	$9(a0)
-	clr.b	$A(a0)
+	clr.b	urgames(a0)
 	clr.b	$B(a0)
 	adda.w	#$10,a0
 	dbra	d7,.loop
-	move.l	#$D20,d0
+	move.l	#TeamRecBase,d0
 	move.l	#$80,d1
 	movea.l	#ThreeStars,a0
 	jsr	(BackupRamWrite).l
@@ -67,7 +67,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(sopathdir).l,d0
-	btst	#$7,$62(a3)
+	btst	#pfgoal,$62(a3)
 	bne.w	.0
 	movea.l	#$2A674,a0
 	add.w	d0,d0
@@ -114,7 +114,7 @@ NextPathPoint
 	asl.w	#$2,d1
 	movea.l	(a0,d1.w),a0
 	move.w	(a0,d0.w),(sopathx).l
-	btst	#$0,$76(a3)
+	btst	#$0,handed(a3)
 	beq.w	.0
 	neg.w	(sopathx).l
 .0	move.w	$2(a0,d0.w),(sopathy).l

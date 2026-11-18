@@ -1,9 +1,9 @@
 setupice_highlight
 	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(forceblack).l
-	bclr	#$0,(sflags).l
+	bclr	#sfpz,(sflags).l
 	move.w	(disflags).l,-(sp)
-	bset	#$2,(disflags).l
+	bset	#dfng,(disflags).l
 	clr.w	(Hpos).l
 	clr.w	(Vpos).l
 	move.w	#$7D0,(Oldrow).l
@@ -11,11 +11,11 @@ setupice_highlight
 	move.w	(spritechars).l,d4
 	bsr.w	CopyTeamBlockMapDataFill
 	bsr.w	setupIceRinkPal
-	btst	#$1,(gmode).l
+	btst	#gmdir,(gmode).l
 	beq.w	.gok
 	movea.l	#SortCords,a3
 	moveq	#$B,d0
-.loop	bchg	#$7,$62(a3)
+.loop	bchg	#pfgoal,$62(a3)
 	adda.w	#$80,a3
 	dbra	d0,.loop
 .gok	bsr.w	CopyTeamLinesCheckTeam
@@ -34,23 +34,23 @@ setupice_highlight
 	clr.w	d0
 	clr.w	d1
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
-	adda.w	#$1C,a3
+	adda.w	#ffosize,a3
 	bsr.w	addframe2
 	move.l	a5,(DMAlistend).l
 	bsr.w	dodmalist
 	move.w	#$1C,(palcount).l
 	move.w	(sp)+,(disflags).l
 	move.l	#SetupIceVBlankHandler,(VBint).l
-	bclr	#$0,(disflags).l
-	bclr	#$2,(disflags).l
+	bclr	#dfok,(disflags).l
+	bclr	#dfng,(disflags).l
 	bset	#$5,$FF800F.l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -116,7 +116,7 @@ setupTeamBlocksMap						;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C
 	movea.l	$47D44.l,a0
 	lea.l	$8(a0),a2
 	bsr.w	DecompressGraphicsPlain
-	adda.l	$4(a0),a0
+	adda.l	jimdata(a0),a0
 	move.l	a0,-(sp)
 	move.w	(HomeTeam).l,d0
 	move.w	(basetileoffset).l,d1
@@ -402,8 +402,8 @@ SprSort						;sort objects in struct SortObj and set corresponding tables for ke
 	movea.l	#Ylist,a1
 	movea.l	#SortCords,a0
 	move.w	#$F,d3
-.loop0	move.w	$14(a0),d4
-	btst	#$7,(sflags).l
+.loop0	move.w	Ypos(a0),d4
+	btst	#sfhor,(sflags).l
 	beq.w	.101
 	move.w	$0(a0),d4
 .101	move.w	d4,(a1)+
@@ -441,16 +441,16 @@ resetplstuff
 	bsr.w	.top
 	movem.l	(sp)+,d0-d2/a0-a3
 	rts
-.top	bclr	#$4,$32(a2)
+.top	bclr	#tmfoside,tmflags(a2)
 	moveq	#$5,d2
 	movea.l	$22(a2),a3
 .loop	clr.b	$63(a3)
-	tst.w	$34(a3)
+	tst.w	position(a3)
 	bmi.w	.next
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
-	clr.w	$32(a3)
-	clr.b	$5E(a3)
+	clr.w	impact(a3)
+	clr.b	nopuck(a3)
 	andi.b	#$C2,$62(a3)
 .next	adda.w	#$80,a3
 	dbra	d2,.loop
@@ -514,7 +514,7 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 	
 	tst.w	(OptLine).l
 	beq.w	.0
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	$6(a0),a0
 	lea.l	$16C(a2),a1
 	move.l	(a0)+,(a1)+
@@ -525,7 +525,7 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 	dbra	d0,.loop
 	rts
 .0	moveq	#$D,d0
-	movea.l	$1E(a2),a0
+	movea.l	tmdata(a2),a0
 	adda.w	$6(a0),a0
 	adda.w	#$8,a0
 	lea.l	$16C(a2),a1
@@ -559,7 +559,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 	bsr.w	EncodePW
 	tst.w	(OptPlayMode).l
 	beq.w	.po
-	bclr	#$1,(sflags).l
+	bclr	#sfpj,(sflags).l
 	jsr	(PlayoffStatsScreen).l
 .po	bsr.w	GameOverCleanup
 ; Game over: scrolls the display up once, then falls into the clean-up.
@@ -774,11 +774,11 @@ waitxc1						;Each time palcount runs out, eor the color
 PlayoffScreen_doscores						;Print best of 7 wins "t-b" for game struct a2 at printx/printy
 	movea.l	#mesarea,a1
 	move.w	#$6,(a1)+
-	move.w	$4(a2),d0
+	move.w	gspotwins(a2),d0
 	addi.w	#$30,d0
 	move.b	d0,(a1)+
 	move.b	#$2D,(a1)+
-	move.w	$6(a2),d0
+	move.w	gspobwins(a2),d0
 	addi.w	#$30,d0
 	move.b	d0,(a1)+
 	clr.b	(a1)+
@@ -789,7 +789,7 @@ PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) a
 	movea.l	$47D50.l,a0		;a0 = arrows map
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = arrow frames
-	adda.l	$4(a1),a1		;a1 = map data
+	adda.l	jimdata(a1),a1		;a1 = map data
 	movea.l	#$1B008,a2
 	clr.w	d1
 	moveq	#$2,d2
@@ -811,7 +811,7 @@ PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (
 	bne.w	.nohi
 	move.w	#$6000,(printa).l
 .nohi	movea.l	$47D44.l,a1		;a1 = map header of the team blocks
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#$1B008,a2
 	clr.w	d0
 	move.w	(a1),d2
@@ -825,7 +825,7 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 									;$FEA0+DispAttribCtr to the hscroll, cramfade. Always Vcount+1,
 									;p_music_vblank, rte
 	movem.l	d0-d7/a0-a6,-(sp)
-	btst	#$2,(disflags).l
+	btst	#dfng,(disflags).l
 	bne.w	.nograph
 	movea.l	#$BBD30,a0
 	move.w	(Sattsize).l,d0
@@ -1023,14 +1023,14 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	tst.w	(awayhotter).l		;away team hotter?
 	beq.w	.21
 	movea.l	#awtmstruct,a1
-.21	movea.l	$1E(a1),a1
+.21	movea.l	tmdata(a1),a1
 	adda.w	$4(a1),a1
 	bra.w	.append
 .22	movea.l	#awtmstruct,a1
 	bra.w	.24
 .23	movea.l	#tmstruct,a1
-.24	move.w	$28(a1),d1
-.roster	movea.l	$1E(a1),a1
+.24	move.w	tmgoalie(a1),d1
+.roster	movea.l	tmdata(a1),a1
 	adda.w	$0(a1),a1
 	bra.w	.next5
 .loop5	adda.w	(a1),a1
@@ -1173,7 +1173,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
 	move.l	#vb2,(VBint).l
-	bclr	#$1,(disflags).l
+	bclr	#df32c,(disflags).l
 	move.w	#$5,(Map3col).l
 	move.w	#$A000,(VmMAP2).l
 	move.w	#$7,(Map2col).l
@@ -1278,7 +1278,7 @@ DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	movea.l	$47D48.l,a0
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = tile data
-	adda.l	$4(a1),a1		;a1 = map data
+	adda.l	jimdata(a1),a1		;a1 = map data
 	movea.l	#$1B008,a2
 	move.w	(a1),d2
 	moveq	#$2,d3
@@ -1290,7 +1290,7 @@ dotb						;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
 	movea.l	$47D44.l,a0
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = tile data
-	adda.l	$4(a1),a1		;a1 = map data
+	adda.l	jimdata(a1),a1		;a1 = map data
 	movea.l	#$1B008,a2		;tile data: word 0 at $310 = no tiles
 	move.w	(a1),d2
 	moveq	#$2,d3
@@ -1312,7 +1312,7 @@ ClearRosterName						;unreferenced. Set the print position, then erase 12 x 2 at
 PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (gamelevel <= 2,
 									;line changes on) a value from the team's .godds
 	movem.l	d0/a0,-(sp)
-	clr.w	$28(a2)
+	clr.w	tmgoalie(a2)
 	bsr.w	FigureJoy		;sets cont1team / cont2team
 	cmpa.l	#tmstruct,a2
 	seq.b	d0		;home: d0 = -1
@@ -1335,7 +1335,7 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 	moveq	#$4,d0		;4 goalie weights
 	jsr	(UnpackNibbles).l
 	jsr	(WeightedRandomSelect).l
-.set	move.w	d0,$28(a2)		;store the pick (0 = first goalie)
+.set	move.w	d0,tmgoalie(a2)		;store the pick (0 = first goalie)
 .x	movem.l	(sp)+,d0/a0
 	rts
 ; Vertical interrupt handler of the menu screens
@@ -1447,12 +1447,12 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	adda.w	d2,a0
 	adda.w	d2,a0		;(2 bytes a game)
 	movea.l	#gstruct,a1
-.loop	clr.w	$A(a1)		;gstruct: gss1
-	clr.w	$C(a1)
-	clr.w	$8(a1)
-	bclr	#$1,$E(a1)		;hilite requested
+.loop	clr.w	gss1(a1)		;gstruct: gss1
+	clr.w	gss2(a1)
+	clr.w	gsper(a1)
+	bclr	#gsfhl,gsflags(a1)		;hilite requested
 	bsr.w	.sett
-	adda.w	#$10,a1
+	adda.w	#gssize,a1
 	dbra	d1,.loop
 	bsr.w	FigureJoy		;assign the pads
 .nogames	movem.l	(sp)+,d0-d4/a0-a3
@@ -1463,11 +1463,11 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	beq.w	.1
 	cmpi.w	#$5,(bosgames).l
 	beq.w	.1		;tree order
-	bset	#$0,$E(a1)		;teams are flipped
+	bset	#gsftf,gsflags(a1)		;teams are flipped
 	move.b	(a0)+,$3(a1)
 	move.b	(a0)+,$1(a1)
 	rts
-.1	bclr	#$0,$E(a1)		;gsftf: teams not flipped
+.1	bclr	#gsftf,gsflags(a1)		;gsftf: teams not flipped
 	move.b	(a0)+,$1(a1)
 	move.b	(a0)+,$3(a1)
 	rts
@@ -1494,16 +1494,16 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	move.w	(potreeteam).l,d2
 	move.b	(a0,d2.w),d2
 	movea.l	#gstruct,a1
-	moveq	#$10,d4
+	moveq	#gssize,d4
 	mulu.w	d1,d4		;times the last game
 	adda.w	d4,a1		;a1 = last game
 	st.b	(gamenum).l
 	clr.w	d0
 .f0	cmp.w	$0(a1),d2		;first team?
 	beq.w	.it1
-	cmp.w	$2(a1),d2		;second team?
+	cmp.w	gst2(a1),d2		;second team?
 	beq.w	.it2
-	suba.w	#$10,a1		;previous game
+	suba.w	#gssize,a1		;previous game
 	dbra	d1,.f0
 	bra.w	.ex
 .it2	moveq	#$4,d0
@@ -1511,15 +1511,15 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	beq.w	.it22
 	move.w	#$5,d0
 .it22	move.w	$0(a1),(Opt2team).l
-	move.w	$2(a1),(Opt1team).l
+	move.w	gst2(a1),(Opt1team).l
 	bra.w	.itx
 .it1	clr.w	d0
-	move.w	$2(a1),(Opt2team).l
+	move.w	gst2(a1),(Opt2team).l
 	move.w	$0(a1),(Opt1team).l
 .itx	add.w	(pojoy).l,d0
 	move.w	d1,(gamenum).l
 	move.w	$0(a1),(HomeTeam).l
-	move.w	$2(a1),(VisTeam).l
+	move.w	gst2(a1),(VisTeam).l
 	asl.w	#$2,d0		;4 bytes an entry
 	lea.l	.pojoylist(pc),a0
 	tst.w	(FourWayPlay).l
@@ -1680,7 +1680,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	movea.l	#passbits,a3
 	bsr.w	WritePassBits
 	jsr	(ReadLineDataBackupWrite).l
-	btst	#$2,(sflags3).l
+	btst	#sf3alttree,(sflags3).l
 	beq.w	rtss2
 	movea.l	#$18D26,a3
 	bsr.w	InitPlayerSlots
@@ -1719,11 +1719,11 @@ WritePassBits						;Transfer the game variables to the bits at a3 (pojoy range 8
 	moveq	#$5,d1
 	moveq	#$7,d2
 	movea.l	#gstruct,a1
-.loop	move.w	$4(a1),d0
+.loop	move.w	gspotwins(a1),d0
 	bsr.w	PushBits
-	move.w	$6(a1),d0
+	move.w	gspobwins(a1),d0
 	bsr.w	PushBits
-	adda.w	#$10,a1
+	adda.w	#gssize,a1
 	dbra	d2,.loop
 	rts
 PushBits						;bits = bits * d1 + d0. d1 = range 2^1-2^15, d0 = data
@@ -1807,10 +1807,10 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	move.w	(potreeteam).l,d2
 	move.b	(a0,d2.w),d2
 	movea.l	#tmstruct,a2
-	cmp.w	$2A(a2),d2
+	cmp.w	tmteam(a2),d2
 	beq.w	.0
-	adda.w	#$366,a2
-.0	adda.w	#$B6,a2
+	adda.w	#tmsize,a2
+.0	adda.w	#tmgoals,a2
 	moveq	#$67,d0
 	movea.l	#$B000,a1
 .loop	clr.w	d1
@@ -1879,55 +1879,55 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 	rts
 ResolveGames						;Compute winners and losers for playoff matchups. Called from EncodePW
 	move.w	(gamenum).l,d0
-	mulu.w	#$10,d0
+	mulu.w	#gssize,d0
 	movea.l	#gstruct,a0
-	move.w	(HmGoals).l,$A(a0,d0.w)
-	move.w	(AwGoals).l,$C(a0,d0.w)
+	move.w	(HmGoals).l,gss1(a0,d0.w)
+	move.w	(AwGoals).l,gss2(a0,d0.w)
 	bsr.w	GetShifter
 	movea.l	#gstruct,a0
-	moveq	#$10,d3
+	moveq	#gssize,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
 	cmpi.w	#$7,(bosgames).l
 	beq.w	.notbos
-.loop	cmpi.w	#$4,$4(a0)
+.loop	cmpi.w	#$4,gspotwins(a0)
 	beq.w	.b1
-	cmpi.w	#$4,$6(a0)
+	cmpi.w	#$4,gspobwins(a0)
 	beq.w	.b1
 	clr.w	d3
-	btst	#$0,$E(a0)
+	btst	#gsftf,gsflags(a0)
 	beq.w	.0
 	eori.w	#$2,d3
-.0	move.w	$A(a0),d0
-	sub.w	$C(a0),d0
+.0	move.w	gss1(a0),d0
+	sub.w	gss2(a0),d0
 	bpl.w	.win
 	eori.w	#$2,d3
 .win	addi.w	#$1,$4(a0,d3.w)
-.b1	suba.w	#$10,a0
+.b1	suba.w	#gssize,a0
 	dbra	d1,.loop
 	addi.w	#$1,(bosgames).l
 	cmpi.w	#$7,(bosgames).l
 	beq.w	.nextround
 	move.w	(gamenum).l,d0
-	mulu.w	#$10,d0
+	mulu.w	#gssize,d0
 	movea.l	#gstruct,a0
 	adda.w	d0,a0
-	cmpi.w	#$4,$4(a0)
+	cmpi.w	#$4,gspotwins(a0)
 	beq.w	.cround
-	cmpi.w	#$4,$6(a0)
+	cmpi.w	#$4,gspobwins(a0)
 	bne.w	rtss2
 .cround	cmpi.w	#$3,(gamelevel).l
 	bge.w	.nextround
 	bsr.w	GetShifter
 	movea.l	#gstruct,a0
-	moveq	#$10,d3
+	moveq	#gssize,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
 .cr0	cmp.w	(gamenum).l,d1
 	beq.w	.crn
-	cmpi.w	#$4,$4(a0)
+	cmpi.w	#$4,gspotwins(a0)
 	beq.w	.crn
-	cmpi.w	#$4,$6(a0)
+	cmpi.w	#$4,gspobwins(a0)
 	beq.w	.crn
 	addi.w	#$1,$4(a0)
 	move.l	#$C8,d0
@@ -1937,24 +1937,24 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	subi.w	#$1,$4(a0)
 	addi.w	#$1,$6(a0)
 	bra.w	.cr0
-.crn	suba.w	#$10,a0
+.crn	suba.w	#gssize,a0
 	dbra	d1,.cr0
 	movea.l	#$18D26,a3
 	bsr.w	WritePassBits
-	bset	#$2,(sflags3).l
+	bset	#sf3alttree,(sflags3).l
 .nextround	clr.w	(bosgames).l
 	bsr.w	GetShifter
 	movea.l	#gstruct,a0
-	moveq	#$10,d3
+	moveq	#gssize,d3
 	mulu.w	d1,d3
 	adda.w	d3,a0
 	clr.w	d3
-.loop2	cmpi.w	#$4,$4(a0)
+.loop2	cmpi.w	#$4,gspotwins(a0)
 	beq.w	.2
 	bset	d1,d3
-.2	clr.w	$4(a0)
-	clr.w	$6(a0)
-	suba.w	#$10,a0
+.2	clr.w	gspotwins(a0)
+	clr.w	gspobwins(a0)
+	suba.w	#gssize,a0
 	dbra	d1,.loop2
 	moveq	#$1,d1
 	asl.w	d2,d1
@@ -1965,14 +1965,14 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	addi.w	#$1,(gamelevel).l
 	rts
 .notbos	clr.w	d3
-.loop3	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+.loop3	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	bhi.w	.3
 	bset	d1,d3
-.3	btst	#$0,$E(a0)
+.3	btst	#gsftf,gsflags(a0)
 	beq.w	.nb2
 	bchg	d1,d3
-.nb2	suba.w	#$10,a0
+.nb2	suba.w	#gssize,a0
 	dbra	d1,.loop3
 	moveq	#$1,d1
 	asl.w	d2,d1
@@ -1993,7 +1993,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bset	#$7,(gmode).l
 	bne.w	rtss2
 	movem.l	d0/a1,-(sp)
-	bset	#$3,(disflags).l
+	bset	#dfclock,(disflags).l
 	move.w	(ScoutSubStatus).l,d0
 .loop2	cmp.w	(ScoutSubStatus).l,d0
 	beq.w	.loop2
@@ -2008,7 +2008,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	String	CC_Font1Pri,$9,$10,'Stars of the Game',CC_Font1Pri,$3,$F
 	movea.l	$47D18.l,a1
 	movea.l	#$1B008,a2
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	moveq	#$D,d0
 	moveq	#$5B,d1
 	moveq	#$6,d2
@@ -2022,7 +2022,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 .loop	bsr.w	TakeTopStarScore
 	move.w	#$1A,(printx).l
 	addi.w	#$1,(printy).l
-	movea.l	$1E(a2),a1
+	movea.l	tmdata(a2),a1
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	jsr	(print).l
@@ -2056,8 +2056,8 @@ TakeTopStarScore						;Take the highest of the 52 star scores at ThreeStars and 
 	movea.l	#tmstruct,a2
 	cmpi.w	#$1A,d0
 	blt.w	.home
-	subi.w	#$1A,d0
-	adda.w	#$366,a2
+	subi.w	#RosterSlots,d0
+	adda.w	#tmsize,a2
 .home	movem.l	(sp)+,d1-d2/a1/a4
 	rts
 CalcStarScores						;Star score for every roster slot of both teams to ThreeStars (26 longs
@@ -2082,10 +2082,10 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	movea.l	#ChkCnt,a0
 	adda.w	(ScoreSumbytes).l,a0
 	clr.w	d0
-	btst	#$7,$2(a0)
+	btst	#$7,ssflags(a0)
 	beq.w	.slot
-	addi.w	#$1A,d0
-.slot	add.b	$3(a0),d0
+	addi.w	#RosterSlots,d0
+.slot	add.b	ssscorer(a0),d0
 	asl.w	#$2,d0
 	movea.l	#ThreeStars,a0
 	move.l	#$7FFFFFFF,(a0,d0.w)		;game winner is the first star
@@ -2097,8 +2097,8 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	
 	
 	movea.l	a2,a1
-	move.w	$C(a2),d3
-	sub.w	$C(a3),d3
+	move.w	tmscore(a2),d3
+	sub.w	tmscore(a3),d3
 	ext.l	d3
 	moveq	#$19,d4
 	jsr	(GetGoalieCount).l
@@ -2108,7 +2108,7 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	cmp.w	d0,d4
 	bhi.w	.goalie
 	clr.w	d1
-	move.b	$B6(a2),d1
+	move.b	tmgoals(a2),d1
 	mulu.w	#$2AF8,d1
 	add.l	d1,(a4)
 	clr.w	d1
@@ -2116,23 +2116,23 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	mulu.w	#$2774,d1
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	$EA(a2),d1
+	move.b	tmpshots(a2),d1
 	mulu.w	#$A,d1
 	tst.w	d3
 	bne.w	.add
 	mulu.w	#$64,d1
 	add.l	d1,(a4)
 	clr.l	d1
-	add.w	$138(a1),d1
+	add.w	tmpice(a1),d1
 .add	add.l	d1,(a4)
 	bra.w	.next
-.goalie	cmp.w	$138(a1),d5
+.goalie	cmp.w	tmpice(a1),d5
 	bhi.w	.next
 	clr.w	d1
-	move.b	$B6(a2),d1
+	move.b	tmgoals(a2),d1
 	mulu.w	#$64,d1
 	clr.w	d2
-	move.b	$EA(a2),d2
+	move.b	tmpshots(a2),d2
 	beq.w	.next
 	divu.w	d2,d1
 	cmpi.w	#$4,d1
@@ -2351,7 +2351,7 @@ GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols 
 	move.w	(TempPlOffset).l,d0
 	bpl.w	.0
 	andi.w	#$FF,d0
-	adda.w	#$366,a2
+	adda.w	#tmsize,a2
 .0	bsr.w	GetPlayerNameBuild		;name for d0 of team a2
 	movem.l	(sp)+,d0/a2
 	rts
@@ -2379,7 +2379,7 @@ GetPlayerNumInitial
 	move.w	(TempPlOffset).l,d0
 	bpl.w	.get
 	andi.w	#$FF,d0
-	adda.w	#$366,a2
+	adda.w	#tmsize,a2
 .get	bsr.w	FormatPlayerNumInitial
 	movem.l	(sp)+,d0/a2
 	rts
