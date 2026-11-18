@@ -37,9 +37,8 @@ StrGoalieCareerHeaders	dc.b	'Season',$00,'Club',$00,$4C,$65,$61,$00	; Season.Clu
 	dc.b	$69,$6E,$73,$00,$47,$61,$00,$53,$6F,$00,$41,$76,$67,$00,$00	; ins.Ga.So.Avg..
 ; Picture tile data, single frame (page A).
 PicTilesStillA	incbin	..\Extracted\SegaCD\PLAYER\PicTilesStillA.bin
-; Picture tile data, animation frames (page A).
+; Picture tile data, animation frames (page A): seven frames of $504 bytes.
 PicTilesFramesA	incbin	..\Extracted\SegaCD\PLAYER\PicTilesFramesA.bin
-.next	incbin	..\Extracted\SegaCD\PLAYER\player_06044.bin
 ; Picture tile data, single frame (page B).
 PicTilesStillB	incbin	..\Extracted\SegaCD\PLAYER\PicTilesStillB.bin
 ; Picture tile data, three animation frames (page B), $504 bytes each.

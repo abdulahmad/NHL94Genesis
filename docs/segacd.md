@@ -149,3 +149,7 @@ The audio slices are the sub CPU's CD-DA calls and the PCM stream. `docs/segacd_
 `z80load.asm` copies a `$C3 $00` block to the Z80. `hwread.asm` is the main CPU's one-line port readers, including the HV counter copy into `$A12010`.
 
 `tools/emit_m68k.py` writes a slice as SNASM (`moveq #-1` instead of `moveq #$FF`, unsized `btst` to a data register, `$FFFFFD08.w` instead of `$FD08.w`). `tools/segacd_relocs.py` is the six-instruction matcher that prints the cartridge-to-disc address pairs. Both are Sega CD helpers only; the cartridge build does not use them.
+
+## GRAPH2.BIN assets
+
+`GRAPH2.BIN` is not assembled, but `src/segacd/graph2/assets.json` (made by `tools/segcd_graph2_assets.py`, extracted by `tools/extractAssetsSegaCD.js` into `Extracted/SegaCD/GRAPH2/`) names 189 pieces, 629,126 of its 3,051,520 bytes: the 23-long offset directory (`Graph2Directory.bin`), the script text (`ScoutingReportText.bin`, chunk 0) and 187 pieces that are byte for byte cartridge assets and carry the cartridge name (team logos, player cards, NoPic pictures, fonts, rink, refs, crowd/Zamboni/faceoff animations, `Spritetiles.bin`, `frameSprData.bin`). The block from `$B5E4E` to the end (about 2.3 MB, starts `08 05 12 34 56 78`) is not identified: it is not 4bpp tile data and matches no cartridge asset, so it has no name yet. `GTABLE.BIN` (512 longs) is not decoded either.

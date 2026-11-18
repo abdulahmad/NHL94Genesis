@@ -1,3 +1,4 @@
+// GRAPH2.BIN is not assembled: its list (src/segacd/graph2/assets.json, tools/segcd_graph2_assets.py) names the pieces that are cartridge assets.
 // Extracts the disc assets that the Sega CD sources incbin into Extracted/SegaCD/<FILE>/, the way
 // extractAssets94.js does for the cartridge. Each disc file lists its assets in
 // src/segacd/<dir>/assets.json ({name: {start, size}}).
@@ -5,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const { teamNames } = require('./segcdTeamNames');
-const files = [['hockey', 'HOCKEY'], ['main', 'MAIN'], ['player', 'PLAYER'], ['starter', 'STARTER']];
+const files = [['hockey', 'HOCKEY'], ['main', 'MAIN'], ['player', 'PLAYER'], ['starter', 'STARTER'], ['graph2', 'GRAPH2']];
 for (const [src, bin] of files) {
     const listPath = path.join(root, 'src', 'segacd', src, 'assets.json');
     if (!fs.existsSync(listPath)) continue;

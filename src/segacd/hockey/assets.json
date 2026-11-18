@@ -25,19 +25,7 @@
  },
  "NHLPALogoMapDisc.bin": {
   "start": 167400,
-  "size": 2164
- },
- "hockey_2965C.bin": {
-  "start": 169564,
-  "size": 4096
- },
- "hockey_2A65C.bin": {
-  "start": 173660,
-  "size": 4096
- },
- "hockey_2B65C.bin": {
-  "start": 177756,
-  "size": 4096
+  "size": 14452
  },
  "TileNumberTables.bin": {
   "start": 181852,
