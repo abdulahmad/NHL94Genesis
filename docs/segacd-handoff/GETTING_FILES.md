@@ -7,9 +7,7 @@ Fork `abdulahmad/NHL94Genesis` and clone your fork.
 Needed: `MAIN.BIN`, `STARTER.BIN`, `HOCKEY.BIN`, `PLAYER.BIN`, `GRAPH2.BIN`, `GTABLE.BIN`.
 Place them in `NHL94Genesis/cdbin/` (the folder is gitignored; never commit them to the fork).
 
-**Easiest:** copy them from `segacd-disc/` in this repo: `mkdir cdbin && cp segacd-disc/*.BIN cdbin/`. `cdbin/` is the only place the build reads, and it is gitignored.
-
-**If `segacd-disc/` is ever missing, or from your own NHL '94 Sega CD disc:** take them from your own NHL '94 Sega CD disc:
+The disc files are not in the repo. `cdbin/` is the only place the build reads, and it is gitignored. Take them from your own NHL '94 Sega CD disc:
 - The disc has a data track (track 1, ISO 9660). Open the `.bin/.cue` image with 7-Zip (`7z x image.bin`), or mount it, or on Linux `bchunk` then `7z x`. Copy the six files out of the root.
 - Check sizes: MAIN 60,416; STARTER 120,248; HOCKEY 184,842; PLAYER 44,656; GRAPH2 3,051,520; GTABLE 2,048 bytes. A different size means a different disc release; say so in HANDOFF.md before going on.
 

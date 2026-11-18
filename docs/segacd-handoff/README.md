@@ -4,7 +4,7 @@ Goal: a byte-matching disassembly of the Sega CD disc code, written so it reads 
 Same idea as the cartridge repos, with one difference: the check is the disc files, not the cartridge ROM.
 
 ## Where things are
-Everything you need is in `abdulahmad/NHL94Genesis` (fork it): the work (`src/segacd/*.asm`, `tools/segacd.json`, `tools/verifySegacd.js`, `tools/emit_m68k.py`, `tools/segacd_relocs.py`), the write-ups `docs/segacd*.md`, these handoff docs (`docs/segacd-handoff/`), and the six disc files in `segacd-disc/` (kept here for convenience; copy them to `cdbin/` to build).
+Everything you need is in `abdulahmad/NHL94Genesis` (fork it): the work (`src/segacd/*.asm`, `tools/segacd.json`, `tools/verifySegacd.js`, `tools/emit_m68k.py`, `tools/segacd_relocs.py`), the write-ups `docs/segacd*.md`, these handoff docs (`docs/segacd-handoff/`). The six disc files are not in the repo: copy them from your own disc to `cdbin/` (see GETTING_FILES.md).
 
 The cartridge disassembly is finished and its build must keep passing (`tools/verify_all.sh -q` ends in `ALL MATCH`).
 Ignore the cartridge "Now" block in its `docs/HANDOFF.md`; Sega CD progress is tracked in [HANDOFF.md](HANDOFF.md) here.
