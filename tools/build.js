@@ -191,7 +191,7 @@ if (args.includes('--segacd')) {
     fs.mkdirSync(OBJ, { recursive: true });
     fs.mkdirSync(CD, { recursive: true });
     require('child_process').execFileSync('node', [path.join(__dirname, 'extractAssetsSegaCD.js')], { stdio: 'ignore' });
-    // names: src/segacd/hockey/teamdata.asm holds placeholders instead of the licensed player names and team
+    // names: src/segacd/hockey/teamdata94cd.asm holds placeholders instead of the licensed player names and team
     // nicknames (like src/teamdata94.asm); the extractor wrote the real ones from the disc. Copy with each placeholder
     // replaced, hockey.asm includes the copy. A name has the length of its placeholder (the Player macro writes the row length).
     {
@@ -199,7 +199,7 @@ if (args.includes('--segacd')) {
         const rd = (f) => { const l = fs.readFileSync(path.join(ROOT, 'Extracted', 'SegaCD', 'HOCKEY', f), 'latin1').split('\n'); if (l[l.length - 1] === '') l.pop(); return l; };
         const players = rd('PlayerNames.txt'), nicks = rd('TeamNicknames.txt');
         let p = 0;
-        const srcT = path.join(ROOT, 'src', 'segacd', 'hockey', 'teamdata.asm');
+        const srcT = path.join(ROOT, 'src', 'segacd', 'hockey', 'teamdata94cd.asm');
         const outT = fs.readFileSync(srcT, 'latin1')
             .replace(/^([ \t]*Player[ \t]+')((?:[^']|'')*)(')/gm, (m, a, ph, z) => {
                 const real = players[p++];

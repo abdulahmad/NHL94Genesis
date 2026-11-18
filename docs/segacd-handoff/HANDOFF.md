@@ -3,9 +3,9 @@
 ## Now
 - Unit: none in progress.
 - Last check: 2026-11-17, `npm run build:segacd` (Linux, wine): MATCH 40 fragments, 0 errors (scouttext and scouttok merged into scouting.asm). `build:retail` MATCH.
-- 2026-11-17 alignment review: the HOCKEY.BIN fragments that are cartridge routines now read like the cartridge source: 94G names, local labels, RAM names from `src/segacd/hockey.inc`, `name_map.csv` filled. Done: updatecrowdf, updatesound, sfx, song, InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, ScoutingReport (first part). Not cartridge code (SDK, disc loader, CD-DA): left with disc labels (L1xxxx).
+- 2026-11-17 alignment review: the HOCKEY.BIN fragments that are cartridge routines now read like the cartridge source: 94G names, local labels, RAM names from `src/segacd/ram94cd.asm`, `name_map.csv` filled. Done: updatecrowdf, updatesound, sfx, song, InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, ScoutingReport (first part). Not cartridge code (SDK, disc loader, CD-DA): left with disc labels (L1xxxx).
 - Finding: the disc team struct has the goalie word at `$28`, the cartridge `tmgoalie` is `$26`. Say so in 94G if that is wrong there.
-- Next: PLAN.md step 1, the rest of ScoutingReport and the other HOCKEY routines, using `hockey.inc` names; step 0 coverage script still open.
+- Next: PLAN.md step 1, the rest of ScoutingReport and the other HOCKEY routines, using `ram94cd.asm` names; step 0 coverage script still open.
 - Open questions: the `$37xxx`-`$39xxx` image (PLAN.md step 2).
 
 ## Status 2026-11-17 (rounds 5-6)
@@ -79,3 +79,4 @@ About 550 cartridge routines are paired by instruction shape (routines the CD ch
 
 - Round 10 (2026-11-17): disc local labels follow the cartridge (`tools/segcd_relabel.py`); raw RAM addresses in HOCKEY became cartridge variable names (`tools/segcd_ramnames.py`, optional `--lst=` the cartridge listing, `output/obj/nhl94 .lst` after `node tools/build.js retail`); asset files are named after their labels (`tools/segcd_assetnames.py`); STARTER's 26 KB of unreferenced pixel data is one asset, `StarterUnusedData` (it was disassembled into fake DispTableA-F code).
 - Round 11 (2026-11-17): `tools/segcd_shared.py --report` writes cart_vs_disc.md (which routines are the same as their cartridge twin). A shared equates94.asm and symbolic operand rewrites (PR #277) were tried and reverted at Abdul's request: the cartridge and the disc keep separate equates.
+- Round 12 (2026-11-18, Abdul): the disc's RAM names live in `src/segacd/ram94cd.asm` (was hockey.inc), laid out like ram94.asm: the cartridge's variables in ram94.asm order with its comments, then the disc-only variables by address. Every file under src/segacd/<prog>/ now ends in `94cd.asm` (`arena94cd.asm`, `mainsubcomm94cd.asm`); the four top files (hockey.asm, main.asm, player.asm, starter.asm) keep their names. The generator scripts that still name old file stems (tools/segcd_layout.py, segcd_split.py, the layout.json plans) need the new stems if they are run again.

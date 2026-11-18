@@ -2,11 +2,11 @@
 
 	org	$0
 
-	include	segacd\player\playerscreen.asm
-	include	segacd\player\playerpic.asm
-	include	segacd\player\playercareer.asm
-	include	segacd\player\playerpage.asm
-	include	segacd\player\playerblit.asm
-	include	segacd\player\playervblank.asm
-	include	segacd\player\playertext.asm
-	include	segacd\player\playerdata.asm
+	include	segacd\player\playerscreen94cd.asm
+	include	segacd\player\playerpic94cd.asm
+	include	segacd\player\playercareer94cd.asm
+	include	segacd\player\playerpage94cd.asm
+	include	segacd\player\playerblit94cd.asm
+	include	segacd\player\playervblank94cd.asm
+	include	segacd\player\playertext94cd.asm
+	include	segacd\player\playerdata94cd.asm

@@ -5,7 +5,7 @@ For every routine the disc shares with the cartridge it aligns the two instructi
 operand is a raw address ($17F6C.l) and the cartridge operand at the same place is a variable name, that is one
 vote. A name is accepted when every vote for an address agrees and there are at least --min of them.
   python3 tools/segcd_ramnames.py [REPO]            report
-  python3 tools/segcd_ramnames.py [REPO] --apply    add the equates to src/segacd/hockey.inc, rewrite the sources
+  python3 tools/segcd_ramnames.py [REPO] --apply    add the equates to src/segacd/ram94cd.asm, rewrite the sources
 Check with `node tools/build.js --segacd` (MATCH) before committing."""
 import re, glob, os, sys, difflib, collections
 root = next((a for a in sys.argv[1:] if not a.startswith('--')), '.')
@@ -64,14 +64,14 @@ ok = {}
 for addr, cn in votes.items():
     if len(cn) == 1 and sum(cn.values()) >= MIN and 0x17000 <= addr < 0x20000 and next(iter(cn)) not in LABELS:
         ok[addr] = next(iter(cn))
-# addresses that hockey.inc already names get that name wherever they are still written raw
-_inc = open(os.path.join(root, 'src/segacd/hockey.inc'), encoding='latin-1').read()
+# addresses that ram94cd.asm already names get that name wherever they are still written raw
+_inc = open(os.path.join(root, 'src/segacd/ram94cd.asm'), encoding='latin-1').read()
 _eq = collections.defaultdict(list)
 for _m in re.finditer(r'^(\w+)\s+equ\s+\$([0-9A-F]{5})\b', _inc, re.M): _eq[int(_m.group(2), 16)].append(_m.group(1))
 for _a, _n in _eq.items():
     if len(_n) == 1 and 0x17000 <= _a < 0x20000 and _a not in ok: ok[_a] = _n[0]
 # --lst PATH (the cartridge listing, output/obj/nhl94 .lst after `node tools/build.js retail`): the disc's RAM is the
-# cartridge's moved by a different amount per block of variables. An address between two names that hockey.inc
+# cartridge's moved by a different amount per block of variables. An address between two names that ram94cd.asm
 # already has, both moved by the same amount, is the cartridge variable at (address - amount).
 _lst = next((a[6:] for a in sys.argv if a.startswith('--lst=')), None)
 if _lst:
@@ -100,7 +100,7 @@ print(f'{len(votes)} addresses with votes, {len(ok)} agreed (>= {MIN} votes), {l
 if not APPLY:
     for a, n in sorted(ok.items()): print(f'  ${a:X} {n}')
     sys.exit(0)
-inc = os.path.join(root, 'src/segacd/hockey.inc')
+inc = os.path.join(root, 'src/segacd/ram94cd.asm')
 have = set(re.findall(r'^(\w+)\s+equ', open(inc, encoding='latin-1').read(), re.M))
 cm = {}
 for l in open(os.path.join(root, 'src/ram94.asm'), encoding='latin-1'):

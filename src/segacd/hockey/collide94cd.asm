@@ -2110,7 +2110,7 @@ setpde
 	clr.w	d0
 .0	move.w	d0,$34(a2,d1.w)
 	rts
-	include	segacd\hockey\scoreboard94.asm
+	include	segacd\hockey\scoreboard94cd.asm
 setpersonel
 	movem.l	d0-d5/a0-a4,-(sp)
 	movea.l	$22(a2),a3
