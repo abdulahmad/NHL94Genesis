@@ -762,5 +762,341 @@
  "GoalieLoadingScreen.bin": {
   "start": 930760,
   "size": 12648
+ },
+ "TeamDetailsANH.map.jim": {
+  "start": 2076684,
+  "size": 12616
+ },
+ "TeamDetailsNoPhotoANH.map.jim": {
+  "start": 2089300,
+  "size": 8392
+ },
+ "TeamVideoFrameANH.map.jim": {
+  "start": 2097692,
+  "size": 10376
+ },
+ "TeamDetailsBOS.map.jim": {
+  "start": 2109452,
+  "size": 11912
+ },
+ "TeamDetailsNoPhotoBOS.map.jim": {
+  "start": 2121364,
+  "size": 7592
+ },
+ "TeamVideoFrameBOS.map.jim": {
+  "start": 2128956,
+  "size": 9608
+ },
+ "TeamDetailsBUF.map.jim": {
+  "start": 2140172,
+  "size": 12584
+ },
+ "TeamDetailsNoPhotoBUF.map.jim": {
+  "start": 2152756,
+  "size": 8584
+ },
+ "TeamVideoFrameBUF.map.jim": {
+  "start": 2161340,
+  "size": 10952
+ },
+ "TeamDetailsCGY.map.jim": {
+  "start": 2172940,
+  "size": 12616
+ },
+ "TeamDetailsNoPhotoCGY.map.jim": {
+  "start": 2185556,
+  "size": 8968
+ },
+ "TeamVideoFrameCGY.map.jim": {
+  "start": 2194524,
+  "size": 10312
+ },
+ "TeamDetailsCHI.map.jim": {
+  "start": 2205708,
+  "size": 12680
+ },
+ "TeamDetailsNoPhotoCHI.map.jim": {
+  "start": 2218388,
+  "size": 8648
+ },
+ "TeamVideoFrameCHI.map.jim": {
+  "start": 2227036,
+  "size": 10472
+ },
+ "TeamDetailsDAL.map.jim": {
+  "start": 2238476,
+  "size": 10760
+ },
+ "TeamDetailsNoPhotoDAL.map.jim": {
+  "start": 2249236,
+  "size": 6504
+ },
+ "TeamVideoFrameDAL.map.jim": {
+  "start": 2255740,
+  "size": 7080
+ },
+ "TeamDetailsDET.map.jim": {
+  "start": 2263052,
+  "size": 12264
+ },
+ "TeamDetailsNoPhotoDET.map.jim": {
+  "start": 2275316,
+  "size": 8168
+ },
+ "TeamVideoFrameDET.map.jim": {
+  "start": 2283484,
+  "size": 9640
+ },
+ "TeamDetailsEDM.map.jim": {
+  "start": 2293772,
+  "size": 12104
+ },
+ "TeamDetailsNoPhotoEDM.map.jim": {
+  "start": 2305876,
+  "size": 8488
+ },
+ "TeamVideoFrameEDM.map.jim": {
+  "start": 2314364,
+  "size": 10408
+ },
+ "TeamDetailsFLA.map.jim": {
+  "start": 2326540,
+  "size": 11976
+ },
+ "TeamDetailsNoPhotoFLA.map.jim": {
+  "start": 2338516,
+  "size": 7688
+ },
+ "TeamVideoFrameFLA.map.jim": {
+  "start": 2346204,
+  "size": 9288
+ },
+ "TeamDetailsHFD.map.jim": {
+  "start": 2357260,
+  "size": 12520
+ },
+ "TeamDetailsNoPhotoHFD.map.jim": {
+  "start": 2369780,
+  "size": 8040
+ },
+ "TeamVideoFrameHFD.map.jim": {
+  "start": 2377820,
+  "size": 9288
+ },
+ "TeamDetailsLA.map.jim": {
+  "start": 2387980,
+  "size": 12296
+ },
+ "TeamDetailsNoPhotoLA.map.jim": {
+  "start": 2400276,
+  "size": 8584
+ },
+ "TeamVideoFrameLA.map.jim": {
+  "start": 2408860,
+  "size": 10408
+ },
+ "TeamDetailsMTL.map.jim": {
+  "start": 2420748,
+  "size": 12712
+ },
+ "TeamDetailsNoPhotoMTL.map.jim": {
+  "start": 2433460,
+  "size": 8712
+ },
+ "TeamVideoFrameMTL.map.jim": {
+  "start": 2442172,
+  "size": 10472
+ },
+ "TeamDetailsNJ.map.jim": {
+  "start": 2453516,
+  "size": 12840
+ },
+ "TeamDetailsNoPhotoNJ.map.jim": {
+  "start": 2466356,
+  "size": 8424
+ },
+ "TeamVideoFrameNJ.map.jim": {
+  "start": 2474780,
+  "size": 10696
+ },
+ "TeamDetailsNYI.map.jim": {
+  "start": 2486284,
+  "size": 12904
+ },
+ "TeamDetailsNoPhotoNYI.map.jim": {
+  "start": 2499188,
+  "size": 8648
+ },
+ "TeamVideoFrameNYI.map.jim": {
+  "start": 2507836,
+  "size": 10984
+ },
+ "TeamDetailsNYR.map.jim": {
+  "start": 2519052,
+  "size": 13000
+ },
+ "TeamDetailsNoPhotoNYR.map.jim": {
+  "start": 2532052,
+  "size": 9288
+ },
+ "TeamVideoFrameNYR.map.jim": {
+  "start": 2541340,
+  "size": 11208
+ },
+ "TeamDetailsOTW.map.jim": {
+  "start": 2553868,
+  "size": 12200
+ },
+ "TeamDetailsNoPhotoOTW.map.jim": {
+  "start": 2566068,
+  "size": 7592
+ },
+ "TeamVideoFrameOTW.map.jim": {
+  "start": 2573660,
+  "size": 8264
+ },
+ "TeamDetailsPHI.map.jim": {
+  "start": 2582540,
+  "size": 12840
+ },
+ "TeamDetailsNoPhotoPHI.map.jim": {
+  "start": 2595380,
+  "size": 8584
+ },
+ "TeamVideoFramePHI.map.jim": {
+  "start": 2603964,
+  "size": 10440
+ },
+ "TeamDetailsPIT.map.jim": {
+  "start": 2615308,
+  "size": 12584
+ },
+ "TeamDetailsNoPhotoPIT.map.jim": {
+  "start": 2627892,
+  "size": 8488
+ },
+ "TeamVideoFramePIT.map.jim": {
+  "start": 2636380,
+  "size": 10056
+ },
+ "TeamDetailsQUE.map.jim": {
+  "start": 2648076,
+  "size": 12264
+ },
+ "TeamDetailsNoPhotoQUE.map.jim": {
+  "start": 2660340,
+  "size": 8200
+ },
+ "TeamVideoFrameQUE.map.jim": {
+  "start": 2668540,
+  "size": 9704
+ },
+ "TeamDetailsSJ.map.jim": {
+  "start": 2678796,
+  "size": 12264
+ },
+ "TeamDetailsNoPhotoSJ.map.jim": {
+  "start": 2691060,
+  "size": 7912
+ },
+ "TeamVideoFrameSJ.map.jim": {
+  "start": 2698972,
+  "size": 9832
+ },
+ "TeamDetailsSTL.map.jim": {
+  "start": 2709516,
+  "size": 11912
+ },
+ "TeamDetailsNoPhotoSTL.map.jim": {
+  "start": 2721428,
+  "size": 7816
+ },
+ "TeamVideoFrameSTL.map.jim": {
+  "start": 2729244,
+  "size": 8456
+ },
+ "TeamDetailsTB.map.jim": {
+  "start": 2738188,
+  "size": 12808
+ },
+ "TeamDetailsNoPhotoTB.map.jim": {
+  "start": 2750996,
+  "size": 8552
+ },
+ "TeamVideoFrameTB.map.jim": {
+  "start": 2759548,
+  "size": 10920
+ },
+ "TeamDetailsTOR.map.jim": {
+  "start": 2770956,
+  "size": 12744
+ },
+ "TeamDetailsNoPhotoTOR.map.jim": {
+  "start": 2783700,
+  "size": 8584
+ },
+ "TeamVideoFrameTOR.map.jim": {
+  "start": 2792284,
+  "size": 10568
+ },
+ "TeamDetailsVAN.map.jim": {
+  "start": 2803724,
+  "size": 13064
+ },
+ "TeamDetailsNoPhotoVAN.map.jim": {
+  "start": 2816788,
+  "size": 8648
+ },
+ "TeamVideoFrameVAN.map.jim": {
+  "start": 2825436,
+  "size": 10824
+ },
+ "TeamDetailsWSH.map.jim": {
+  "start": 2836492,
+  "size": 12136
+ },
+ "TeamDetailsNoPhotoWSH.map.jim": {
+  "start": 2848628,
+  "size": 8392
+ },
+ "TeamVideoFrameWSH.map.jim": {
+  "start": 2857020,
+  "size": 9896
+ },
+ "TeamDetailsWPG.map.jim": {
+  "start": 2867212,
+  "size": 11368
+ },
+ "TeamDetailsNoPhotoWPG.map.jim": {
+  "start": 2878580,
+  "size": 7880
+ },
+ "TeamVideoFrameWPG.map.jim": {
+  "start": 2886460,
+  "size": 9832
+ },
+ "TeamDetailsASE.map.jim": {
+  "start": 2897932,
+  "size": 11752
+ },
+ "TeamDetailsNoPhotoASE.map.jim": {
+  "start": 2909684,
+  "size": 7784
+ },
+ "TeamVideoFrameASE.map.jim": {
+  "start": 2917468,
+  "size": 9864
+ },
+ "TeamDetailsASW.map.jim": {
+  "start": 2928652,
+  "size": 11400
+ },
+ "TeamDetailsNoPhotoASW.map.jim": {
+  "start": 2940052,
+  "size": 7368
+ },
+ "TeamVideoFrameASW.map.jim": {
+  "start": 2947420,
+  "size": 9544
  }
 }
