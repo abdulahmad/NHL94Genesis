@@ -1,6 +1,6 @@
 ; Sends the sub CPU load commands 5 and 6 for the boot screens (a0 = $1756C, then $DA24; $1756C is the end
-; of the last boot picture range, file $C56C + $B000). The pictures are in StarterUnusedData (see the
-; comment there).
+; of the last boot picture range, file $C56C + $B000). The pictures are TitleCredits, BootFont, HighScoreProductions and
+; EaLogoSheetA/B in starterdata94cd.asm.
 LoadBootImages	movem.l	d0-d7/a0-a6,-(sp)
 	bclr.b	#$2,$FFFF8024.w
 	move.w	#$2,d0

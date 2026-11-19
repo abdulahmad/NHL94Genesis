@@ -16,3 +16,4 @@
 ## Learned
 - 2026-11-17 labels: a fragment that is a cartridge routine uses the 94G global label and `.n` local labels (SNASM `/o l.`). A label that is also an `equ` in `src/segacd/ram94cd.asm` clashes, so routines defined in a fragment are not equated there. Fragments of one routine are merged into one file so local labels work. (scouting.asm)
 - 2026-11-17 names: call-target names come from `tools/segacd_relocs.py` pairs or from the position in the 94G routine; the position is checked by the build, because every name is only an `equ` or a label and the bytes must still MATCH.
+- 2026-11-19 data labels: cut an unreferenced data block where code copies or sends ranges of it (the loop in starterbios94cd.asm), not where the bytes look like a length word. A guessed 'directory record' (PcmBankDirectoryA/B) sat inside a sprite sheet. (STARTER $BC62-$C56C)
