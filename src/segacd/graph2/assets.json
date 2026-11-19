@@ -754,5 +754,13 @@
  "frameSprData.bin": {
   "start": 721066,
   "size": 23972
+ },
+ "GoalieLicenseScreen.bin": {
+  "start": 907264,
+  "size": 23496
+ },
+ "GoalieLoadingScreen.bin": {
+  "start": 930760,
+  "size": 12648
  }
 }
