@@ -1,8 +1,18 @@
-; STARTER.BIN file $556E-$BC63 (runtime $2686E-$2CF63), 26358 bytes: unreferenced 4bpp-looking pixel data (mostly nibble values
-;   1, 2, 3 and B) with long zero fill, left over between the film player and the PCM sound bank. No routine reads it by
-;   label; earlier disassembly runs turned it into instructions (DispTableA-F ...), which is why it used to be listed as
-;   code. startergate.asm only writes bytes in the area as work variables ($2800A, $2800B) and reads a few words at
-;   $282B4, which is the same kind of data.
+; STARTER.BIN file $556E-$BC63 (runtime $2686E-$2CF63), 26358 bytes. The boot screen pictures live here,
+;   not unused data: the copy loop in starterbios94cd.asm (`.next`, before LoadBootImages) copies five
+;   ranges of the sub CPU image (file address + $B000) to word RAM at $80000 and stores a pointer to each
+;   ($10984, $1094C, $109D8, $109DC, $109E0). The pictures are in .map.jim form (palette offset, map
+;   offset, tile count with bit 15 = packed, tiles, 4 CRAM lines, map).
+;     file $5BD8-$A246  TitleCredits          40 by 28 tiles: NHL HOCKEY '94 title with credits
+;     file $A246-$A942  BootFont              32 by 4 tiles: the font the boot screens draw their text with
+;     file $A942-$BC62  HighScoreProductions  40 by 28 tiles: the High Score Productions logo and PRESENTS
+;   The next two ranges ($BC62-$C402 and $C402-$C56C, sprite sheets with a frame table: the EA logo
+;   animation that ScreenSetupA plays) start inside the bytes labelled PcmBankDirectoryA below. File
+;   $556E-$5BD8 (1,642 bytes) is not a picture. Studio (lib/games.js, cdImages) lists the pictures.
+;   startergate.asm only writes bytes in the area as work variables ($2800A, $2800B) and reads a few words
+;   at $282B4. Earlier disassembly runs turned the area into instructions (DispTableA-F ...), which is why
+;   it used to be listed as code. Splitting it into one asset per picture and renaming the label needs the
+;   Windows build to check the bytes, so only the comment is corrected here.
 StarterUnusedData
 	incbin	..\Extracted\SegaCD\STARTER\StarterUnusedData.bin
 
