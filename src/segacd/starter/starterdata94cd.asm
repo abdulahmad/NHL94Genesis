@@ -1,33 +1,37 @@
-; STARTER.BIN file $556E-$BC63 (runtime $2686E-$2CF63), 26358 bytes. The boot screen pictures live here,
-;   not unused data: the copy loop in starterbios94cd.asm (`.next`, before LoadBootImages) copies five
-;   ranges of the sub CPU image (file address + $B000) to word RAM at $80000 and stores a pointer to each
-;   ($10984, $1094C, $109D8, $109DC, $109E0). The pictures are in .map.jim form (palette offset, map
-;   offset, tile count with bit 15 = packed, tiles, 4 CRAM lines, map).
-;     file $5BD8-$A246  TitleCredits          40 by 28 tiles: NHL HOCKEY '94 title with credits
-;     file $A246-$A942  BootFont              32 by 4 tiles: the font the boot screens draw their text with
-;     file $A942-$BC62  HighScoreProductions  40 by 28 tiles: the High Score Productions logo and PRESENTS
-;   The next two ranges ($BC62-$C402 and $C402-$C56C, sprite sheets with a frame table: the EA logo
-;   animation that ScreenSetupA plays) start inside the bytes labelled PcmBankDirectoryA below. File
-;   $556E-$5BD8 (1,642 bytes) is not a picture. Studio (lib/games.js, cdImages) lists the pictures.
-;   startergate.asm only writes bytes in the area as work variables ($2800A, $2800B) and reads a few words
-;   at $282B4. Earlier disassembly runs turned the area into instructions (DispTableA-F ...), which is why
-;   it used to be listed as code. Splitting it into one asset per picture and renaming the label needs the
-;   Windows build to check the bytes, so only the comment is corrected here.
-StarterUnusedData
-	incbin	..\Extracted\SegaCD\STARTER\StarterUnusedData.bin
-
-; PCM sound bank at the end of STARTER.BIN: two directory records (a 4-byte length word, then the table), then the
-; unsigned 8-bit samples. Loaded into the PCM chip by SubCmdLoadWave.
-; Directory record 1: length word $05D4, then $5D4 bytes of wave / instrument parameters.
-PcmBankDirectoryA
-	incbin	..\Extracted\SegaCD\STARTER\PcmBankDirectoryA.bin
-; Directory record 2: length word $066E, then $66E bytes of wave parameters.
-PcmBankDirectoryB
-	incbin	..\Extracted\SegaCD\STARTER\PcmBankDirectoryB.bin
-; Sample data: unsigned 8-bit PCM waves (smooth byte sequences), played by the PCM chip.
+; STARTER.BIN file $556E-$C8AD (runtime $2686E-$2DBAD), 29,504 bytes: the boot screen art, one asset per picture. The copy
+;   loop in starterbios94cd.asm (`.next`, before LoadBootImages) copies five ranges of the sub CPU image (file address +
+;   $B000) to word RAM at $80000 and stores a pointer to each ($10984, $1094C, $109D8, $109DC, $109E0); nothing else
+;   reads the bytes. The three pictures are in .map.jim form (palette offset, map offset, tile count with bit 15 =
+;   packed, tiles, 4 CRAM lines, map); the two sheets are sprite sheets with a frame table. startergate.asm only writes
+;   bytes in the area as work variables ($2800A, $2800B) and reads a few words at $282B4. Earlier disassembly runs
+;   turned the area into instructions (DispTableA-F ...), which is why it used to be listed as code.
+; File $556E-$5BD8 (1,642 bytes) is not a picture and no range above covers it.
+StarterBootGapA
+	incbin	..\Extracted\SegaCD\STARTER\StarterBootGapA.bin
+; File $5BD8-$A246: 40 by 28 tiles, the NHL HOCKEY '94 title with the credits (range 1, pointer $10984).
+TitleCredits
+	incbin	..\Extracted\SegaCD\STARTER\TitleCredits.map.jim
+; File $A246-$A942: 32 by 4 tiles, the font the boot screens draw their text with (range 2, pointer $1094C).
+BootFont
+	incbin	..\Extracted\SegaCD\STARTER\BootFont.map.jim
+; File $A942-$BC62: 40 by 28 tiles, the High Score Productions logo and PRESENTS (range 3, pointer $109D8).
+HighScoreProductions
+	incbin	..\Extracted\SegaCD\STARTER\HighScoreProductions.map.jim
+; File $BC62-$C402: sprite sheet with a frame table, the EA logo animation that ScreenSetupA plays (range 4, pointer
+; $109DC). Its first two bytes are the last two bytes the old 'unused data' asset held.
+EaLogoSheetA
+	incbin	..\Extracted\SegaCD\STARTER\EaLogoSheetA.bin
+; File $C402-$C56C: second sprite sheet, same layout (range 5, pointer $109E0; ends at $1756C, which LoadBootImages sends).
+EaLogoSheetB
+	incbin	..\Extracted\SegaCD\STARTER\EaLogoSheetB.bin
+; File $C56C-$C8AE (834 bytes), outside the five ranges. It starts $00,$01,$02,$00,$E9,$9C and then runs smooth, like the
+; samples after it, so it is probably the head of the PCM sample data (this was also called PcmBankDirectoryA/B).
+StarterAfterEaLogo
+	incbin	..\Extracted\SegaCD\STARTER\StarterAfterEaLogo.bin
+; PCM sample data at the end of the sound bank: unsigned 8-bit waves (smooth byte sequences), played by the PCM chip.
+; Loaded into the PCM chip by SubCmdLoadWave.
 PcmSampleData
-	incbin	..\Extracted\SegaCD\STARTER\PcmSampleData.bin
-; From here to the end of the file is an overlay: the file keeps it at $3CFA0, the program runs it at $26CA0 (file
+	incbin	..\Extracted\SegaCD\STARTER\PcmSampleData.bin; From here to the end of the file is an overlay: the file keeps it at $3CFA0, the program runs it at $26CA0 (file
 ; address minus $16300) on top of the bytes that the stale low copies below hold. `obj` assembles it for its run address,
 ; so calls and pointers into it use the labels.
 	obj	$26CA0

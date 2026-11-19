@@ -1,15 +1,31 @@
 {
- "StarterUnusedData.bin": {
+ "StarterBootGapA.bin": {
   "start": 21870,
-  "size": 26358
+  "size": 1642
  },
- "PcmBankDirectoryA.bin": {
-  "start": 48228,
-  "size": 1496
+ "TitleCredits.map.jim": {
+  "start": 23512,
+  "size": 18030
  },
- "PcmBankDirectoryB.bin": {
-  "start": 49724,
-  "size": 1650
+ "BootFont.map.jim": {
+  "start": 41542,
+  "size": 1788
+ },
+ "HighScoreProductions.map.jim": {
+  "start": 43330,
+  "size": 4896
+ },
+ "EaLogoSheetA.bin": {
+  "start": 48226,
+  "size": 1952
+ },
+ "EaLogoSheetB.bin": {
+  "start": 50178,
+  "size": 362
+ },
+ "StarterAfterEaLogo.bin": {
+  "start": 50540,
+  "size": 834
  },
  "PcmSampleData.bin": {
   "start": 51374,
