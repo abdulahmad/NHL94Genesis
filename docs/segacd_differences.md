@@ -25,6 +25,8 @@ The acceleration term is `$40 - weight/4 + legstr`, plus the "crowd meter boost"
 
 Inferred effect: after the halving, every player's acceleration term is 1 unit higher on the Sega CD. Goalies take the same path (the +4 comes before the goalie doubling of `legstr` + `$10`). The top-speed code that follows (+2, capped at `$1E`) is unchanged.
 
+Size (arithmetic from the code; not measured in play). `setplayer` stores `weight` as the weight nibble × 8 (`src/engine/collide94.asm` 2888-2891) and `legstr` as `AttributeCalc` of the leg nibble (5 × nibble plus hot/cold ÷ 3, clamped to 0-`$1E`; `src/front/crowd94.asm` 211). So the skater term before halving is `64 - 2 × weight nibble + legstr + boost`, which is 36 to 96 on the cartridge. After the halving it is 18 to 48 on the cartridge and 19 to 49 on the Sega CD, about 2% (light, quick skaters) to 6% (heavy, slow skaters) more acceleration. For goalies, with the extra `legstr` + `$10`, the halved term is 26 to 71 on the cartridge, so about 1.4% to 3.8% more.
+
 ### 2. A checked player bounces off the corners much more easily (bytes verified; effect inferred)
 
 | | Cartridge | Sega CD |
@@ -153,7 +155,68 @@ From `docs/segacd.md` and the area write-ups:
 - `PLAYER.BIN`: career stats, the team page with the power-play lines, and player photos (`docs/segacd_stats.md`).
 - The crowd frame driver is unchanged, but the crowd-volume PSG writes are dropped (`docs/segacd_crowd.md`).
 - Graphics come from the `GRAPH2.BIN` archive.
-- HFD and OTW team palettes differ.
+- HFD and OTW team palettes differ (below).
+
+### HFD and OTW team palettes (verified)
+
+Each team record has two 16-colour palettes, home then visitor. `setplayercolors` (`src/engine/setup94.asm` 718) copies the home team's home palette into palette line 2 and the visiting team's visitor palette into line 3. Only one half changed for each team. Colours are Genesis `0BGR` words.
+
+| Team, palette | Index | Cartridge | Sega CD |
+| --- | --- | --- | --- |
+| HFD home | 9 | `$042` (dark green) | `$264` (lighter green) |
+| OTW visitor | 4 | `$002` (dark red) | `$200` (dark blue) |
+| OTW visitor | 5 | `$004` (red) | `$200` (dark blue) |
+| OTW visitor | 8 | `$028` (dark orange) | `$006` (dark red) |
+| OTW visitor | 10 | `$002` (dark red) | `$000` (black) |
+| OTW visitor | 11 | `$222` (dark grey) | `$000` (black) |
+| OTW visitor | 12 | `$444` (grey) | `$000` (black) |
+
+HFD visitor and OTW home are the same in both. The cartridge palettes are at ROM `$1B50` (HFD, `src/teamdata94.asm` 617-618) and `$3060` (OTW, 1059-1060). The Sega CD ones are at `HOCKEY.BIN` file offsets `$17CA` and `$2BC6` (runtime `$1C7CA` and `$1DBC6`).
+
+![HFD home and OTW visitor palettes, cartridge vs Sega CD, on sprite frame 194](images/segacd_hfd_otw_palettes.svg)
+
+The example is sprite frame 194: the second celebrate frame for facing direction 4, toward the camera, arms and stick up (`SPFcelebrate` = 185, two frames per direction, `src/frames94.asm` 18 and `SPAcelebrate` at 1178). It was decoded from the cartridge's `frameSprData` (`$9E724`) and `Spritetiles` (`$5DE84`) the way `addframe2` (`src/engine/video94.asm` 863) draws it. Every changed index above is used by pixels in that frame. The image shows each 3-bit colour level scaled to 0-255, so the shades are approximate. HFD's green stripes are lighter on the Sega CD. The OTW visitor uniform goes from grey with dark-red pants to black with dark-blue pants.
+
+## Main CPU, pads, the 4-way adaptor and frame timing
+
+The game runs on the sub CPU. The main CPU (`MAIN.BIN`) runs the SDK shell and does every VDP, pad port and Z80 access for it. `MAIN.BIN` runtime addresses below are the file offset + `$FF1000` (the command table at file `$371C` is the runtime table at `$FF471C`).
+
+### How a frame reaches the game (verified code)
+
+- Sub command `$2D` (`MAIN.BIN` `$FF6916`) points the main CPU's vblank vector (`$FFFD08`) at `$FF485E`. That is `SubCommAck` (`src/segacd/main/mainsubcomm94cd.asm` 190). The sub side sends it from `SubCmd2DSend` (`src/segacd/hockey/cdhockey94cd.asm` 2), which also points the sub CPU's vblank hook (`$6038`) at `VBlankSubCpuHook` (`$22018`, same file, line 17).
+- Every main vblank, `SubCommAck` sets main flag bit 5 and raises the sub CPU's level 2 interrupt (`bset #0,$A12000`). It then polls for the sub's answer (sub flag bit 2), about 77 polls in two loops. With an answer, it runs the sub's requests from `$A12026` through the table at `$FF471C`, one at a time, until command `$2F` (`$FF6932`) clears `$FF6CFA`. It ends in `rte`. With no answer, it clears bit 5 and returns, and nothing is serviced that vblank.
+- `VBlankSubCpuHook` checks main flag bit 5, answers with bit 2, and calls the game's vblank code through `VBint` (`$18D66`, the cartridge's `VBint` pointer). It then calls `ReadJoyData`, sends command `$2F`, and adds 1 to a counter at `$17460`. That counter is cleared at game start (`hockey94cd.asm` 88) and never read.
+- The game-play vblank routine is the cartridge's `VBlank` (`src/engine/video94.asm` 5; cartridge `$15D9A`, disc `$3DAB8`). It does the same work: sprite DMA when `dfok` is set, `cramfade`, the game clock jiffy, `Vcount + 1`. It does not call `p_music_vblank` (the pads are read by the hook instead, and music is CD audio), and it ends in `rts`. Its VDP writes and DMA are sub→main commands (for example `$30` and `$31` in `DmaListWait`, `src/segacd/hockey/video94cd.asm` 38), each a full four-step flag handshake instead of one bus write.
+- `DoGameFrame` is the same on both (`src/engine/hockey94.asm` 171; cartridge `$794E`, disc `$2BB8E`). It waits for `Vcount` to change, sets `d7` to the vblanks since the last game frame, and the movement code scales by `d7` (for example `muls.w d7` in `playeracc`). That is the game's only frame-skip handling, and it is the same on both.
+
+### Frame timing and slowdown (inferred; not measured)
+
+- The game clock and `Vcount` tick only in a vblank the sub CPU actually got. If the sub does not answer `SubCommAck`'s polls, that vblank is lost to the game: no sprite DMA, no clock jiffy, no `Vcount` step. Then the game clock and game speed run slower than real time. The cartridge's `VBlank` is an ordinary interrupt and cannot be skipped that way.
+- When a game frame takes more than one vblank, both versions step movement by `d7`. So the CD would show fewer screen updates but the same game-time speed, unless vblanks are lost as above.
+- Each VDP write, DMA and pad access in the vblank now costs a sub↔main handshake. So the vblank work takes longer on the CD than on the cartridge. Whether that causes visible slowdown in a real game was not measured.
+- No emulator measurement was taken. That needs a Sega CD BIOS and a full disc image (with the CD-DA tracks). Neither was available for this check.
+
+### Pads (verified)
+
+- **Cartridge**: `p_music_vblank` (`src/sound/sound94.asm` 383) calls `ReadJoyData` (258; ROM `$1A370`) every vblank. It requests the Z80 bus (with `ResetZ80Bus` if it is not granted) and reads each pad with TH low, then high, two `nop`s apart (`ReadPad3Button`, 348). It maps the direction nibble through `PadDirTable` (373) and stores `PadRaw1`-`PadRaw4`.
+- **Sega CD**: `ReadJoyData` is on the sub CPU (`src/segacd/hockey/graphics94cd.asm` 31; `$47DB2`), called from `VBlankSubCpuHook`. Each port access is a main-CPU command:
+
+  | Command | Main handler | Does |
+  | --- | --- | --- |
+  | `$35` | `$FF6988` | write port 2 data (`$A10005`) |
+  | `$36` | `$FF697C` | write port 1 data (`$A10003`) |
+  | `$37` | `$FF6994` | read port 1 into `$A12018` |
+  | `$38` | `$FF69A0` | read port 2 into `$A12018` |
+
+  The handlers are in `src/segacd/main/maincmd94cd.asm` 517-523. Each pad is read as on the cartridge: write 0 (TH low), read, write `$40` (TH high), read. Port 1 uses `$36`/`$37` and port 2 uses `$35`/`$38`. The direction table (`.next9`, line 220) has the same 16 values as `PadDirTable`, and the button packing is the same (line 206). The Z80 bus request and `ResetZ80Bus` are gone (the main CPU owns the Z80 on the CD). The TH settle time is a command round trip instead of two `nop`s. The bytes stored in `PadRaw1`-`PadRaw4`, and everything that reads them (`ReadJoy1`-`ReadJoy4`, `ReadJoy` and `jdtab` (`src/engine/middle94.asm` 483-539), and `doinput` (`src/engine/logic94.asm` 517)), are the same apart from item 3 above.
+- `MAIN.BIN` also has its own pad poller, `PollControllers` (`src/segacd/main/mainctrl94cd.asm` 43; `$FF4E8E`), with the same TH sequence and a copy of the direction remap. Its only caller (`$FF4F88`) runs only while sub flag bit 0 is set, and sets main flag bit 1 when the combined new presses are exactly Start (`$80`). It does not write the game's `PadRaw` bytes. What the sub uses that Start flag for (probably skipping a film or loading screen) was not traced.
+
+### 4-way adaptor (verified)
+
+- **`Detect4WayPlay`** (`src/engine/fourway94.asm` 4; cartridge `$F6D5E`, called from `src/engine/hockey94.asm` 27): on the CD, the same port sequence runs on the main CPU as command `$2B` (`$FF68AA`, `src/segacd/main/maincmd94cd.asm` 474-492). It holds the Z80 reset, sets port 1 control `$40` and port 2 control `$43`, writes `$7C` to port 2 twice with control `$7F`, and tests port 1 lines 0-1. It returns 1 or 0 in `$A12010` instead of writing `FourWayPlay`, and puts port 2 back to `$40` when no adaptor is found. The sub stores the reply in `FourWayPlay` (`$18BF8`) at `$221A8` (`cdhockey94cd.asm` 84-88).
+- **Reading through the adaptor**: the cartridge's `ReadPad4Way1`-`4` select pads with `$0C`, `$1C`, `$2C`, `$3C` on port 2 and read port 1. The CD's `ReadJoyData` sends the same four values with command `$35` and reads with `$36`/`$37`, without the Z80 bus request.
+- **`ReadJoySwapPad1`-`4`** (unused in the cartridge, `fourway94.asm` 28-52) are not on the disc. None of the 13 disc callers of `ReadJoy1` (`$374F0`) has their save/restore shape, and the disc RAM map (`src/segacd/ram94cd.asm`) has no `pad4waysave` words.
+- **`Set4WayPlayer`** (unused in both) is still on the disc (`src/segacd/hockey/fourway94cd.asm` 1).
 
 ## Verified the same
 
@@ -189,7 +252,6 @@ The comparison scripts are not in the repo. `tools/segacd_relocs.py` gives the c
 
 ## Not covered
 
-- The main CPU side (`MAIN.BIN`), including how it reads the pads and hands the reads to the game. Only the sub-CPU game code was compared.
-- The 4-way adaptor and pad-swap routines in `src/engine/fourway94.asm` were not compared.
-- Frame timing and slowdown. The disc game runs on the sub CPU and talks to the VDP through the main CPU, so frame pacing may differ. It was not measured.
-- The size of the agility change (1) and the corner change (2) in real games. Both effects are read from the code.
+- **Measured timing**: frame timing and slowdown were analysed from the code only (see above). No emulator or hardware measurement was taken, because that needs a Sega CD BIOS and a full disc image.
+- **In-game effect sizes**: the agility change (1) is sized from the code's arithmetic. How it feels in play, and how often the corner change (2) fires, were not measured.
+- **Main CPU code outside the game's I/O path**: the rest of `MAIN.BIN` (the film player, scouting report and SDK menu code) was read only where it serves the game's vblank, pads and 4-way detection. The Start-press flag from `$FF4F88` was not traced to its use on the sub CPU.
