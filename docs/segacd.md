@@ -4,6 +4,8 @@ The disc is the cartridge game, linked again for the two Sega CD 68000s, with a 
 
 The six disc files used here live in `cdbin/` locally (`MAIN.BIN`, `STARTER.BIN`, `HOCKEY.BIN`, `PLAYER.BIN`, `GRAPH2.BIN`, `GTABLE.BIN`). They are not in the repo and nothing in the build makes them: copy them from the data track (ISO 9660 file system) of your own NHL '94 Sega CD disc into `cdbin/` (gitignored). Without them, `npm run build:segacd` still assembles the fragments, then stops at the verify step and names each missing file.
 
+What the disc changed in gameplay, rosters and everything else, compared with the cartridge routine by routine, is [`docs/segacd_differences.md`](segacd_differences.md).
+
 ## What each file is
 
 | File | CPU | What it is |
