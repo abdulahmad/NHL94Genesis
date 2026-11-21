@@ -9,7 +9,7 @@ Each item is marked:
 
 Cartridge source references are to this repo (`src/`). Disc source references are to the transcribed disc code in `src/segacd/hockey/` where it exists. Cartridge addresses are ROM addresses. Disc addresses are `HOCKEY.BIN` runtime addresses (file offset + `$1B000`).
 
-Player names in this repo are placeholders (`P051` and so on, see `src/teamdata94.asm`), so this page names players by placeholder and roster number. The real names come from your own ROM when you build.
+Players are named as the retail team data spells them (the ROM shortens some long names, for example `John Vanbiesbrk`), with their cartridge roster number (`#n`, 1-based, the numbers `.ls` uses). The source in `src/teamdata94.asm` has placeholders for the names; the roster numbers match it.
 
 ## Gameplay differences
 
@@ -51,7 +51,7 @@ Inferred effect: on the cartridge, a checked player gets the corner bounce only 
 
 ### 4. Rosters, lines and goalie counts (verified)
 
-Both builds have the same 28 teams (26 NHL teams and the two All-Star teams). Florida and Anaheim are byte-identical. The disc drops 31 player records from 20 teams. 28 of them are players the cartridge also lists on Florida or Anaheim, so the cartridge has them twice. The other three (DAL #7, NYI #16, TOR #3) are not on any other team.
+Both builds have the same 28 teams (26 NHL teams and the two All-Star teams). Florida and Anaheim are byte-identical. The disc drops 31 player records from 20 teams. 28 of them are players the cartridge also lists on Florida or Anaheim, so the cartridge has them twice. The other three (Bobby Smith, DAL #7; Dan Marois, NYI #16; Rick Wamsley, TOR #3) are not on any other team.
 
 Every remaining player's record (name and all ratings) is byte-identical. The team `.sr` bytes 0-2 (simulated scoring odds, power play / penalty kill and home/visitor bonuses) are the same on all teams.
 
@@ -59,26 +59,26 @@ Removed players (cartridge roster number; G, F or D from the team's goalie and f
 
 | Team | Removed |
 | --- | --- |
-| BOS | P072 #22 D |
-| BUF | P091 #16 F |
-| CGY | P106 #6 F, P124 #24 D |
-| CHI | P136 #11 F |
-| EDM | P177 #2 G, P191 #16 F |
-| HFD | P205 #5 F, P224 #24 D |
-| LA | P235 #10 F |
-| DAL | P257 #7 F |
-| MTL | P299 #24 D |
-| NJ | P322 #22 D |
-| NYI | P327 #2 G, P340 #15 F, P341 #16 F |
-| NYR | P351 #1 G, P361 #11 F, P375 #25 D |
-| PHI | P412 #12 F, P424 #24 D |
-| PIT | P434 #9 F |
-| QUE | P458 #8 F, P461 #11 F |
-| SJ | P484 #9 F, P497 #22 D |
-| STL | P502 #2 G, P510 #10 F |
-| TB | P536 #11 F |
-| TOR | P553 #3 G |
-| VAN | P580 #5 F |
+| BOS | Gord Murphy #22 D |
+| BUF | Bob Corkum #16 F |
+| CGY | Brian Skrudland #6 F, Alexnder Godynyuk #24 D |
+| CHI | Stu Grimson #11 F |
+| EDM | Ron Tugnutt #2 G, Scott Mellanby #16 F |
+| HFD | Terry Yake #5 F, Randy Ladouceur #24 D |
+| LA | Lonnie Loach #10 F |
+| DAL | Bobby Smith #7 F |
+| MTL | Sean Hill #24 D |
+| NJ | Alexei Kasatonov #22 D |
+| NYI | Mark Fitzpatrik #2 G, Tom Fitzgerald #15 F, Dan Marois #16 F |
+| NYR | John Vanbiesbrk #1 G, Steven King #11 F, Joe Cirella #25 D |
+| PHI | Andrei Lomakin #12 F, Gord Hynes #24 D |
+| PIT | Troy Loney #9 F |
+| QUE | Mike Hough #8 F, Bill Lindsay #11 F |
+| SJ | Robin Bawa #9 F, David Williams #22 D |
+| STL | Guy Hebert #2 G, Dave Lowry #10 F |
+| TB | Randy Gilhen #11 F |
+| TOR | Rick Wamsley #3 G |
+| VAN | Anatoli Semenov #5 F |
 
 Unchanged: ASE, ASW, DET, OTW, WPG, WSH, FLA, ANH.
 
@@ -94,27 +94,27 @@ Unchanged: ASE, ASW, DET, OTW, WPG, WSH, FLA, ANH.
 
 The weights themselves are read only by `PickStartingGoalie` (`src/engine/setup94.asm` 1482), which nothing calls in the cartridge. The starting goalie is the G slot in the lines.
 
-**Forward counts.** The high nibble of `.sr` byte 3 is the forward count (`srforwards`, `src/ram94.asm` 232; `GetForwardCount`, `src/front/stats94.asm` 2144, used by the line editor and player cards). It drops by the number of forwards removed. TOR also drops 14 → 13 with no forward removed: its cartridge #17 (P567) falls in the defense group on the disc, and the disc lines play him on defense. The low nibble is not read by the code. It changes on most teams, including OTW, whose roster is unchanged.
+**Forward counts.** The high nibble of `.sr` byte 3 is the forward count (`srforwards`, `src/ram94.asm` 232; `GetForwardCount`, `src/front/stats94.asm` 2144, used by the line editor and player cards). It drops by the number of forwards removed. TOR also drops 14 → 13 with no forward removed: its cartridge #17 (Ken Baumgartnr) falls in the defense group on the disc, and the disc lines play him on defense. The low nibble is not read by the code. It changes on most teams, including OTW, whose roster is unchanged.
 
 **Lines.** `.ls` (8 lines × G, LD, RD, LW, C, RW, extra attacker) was renumbered for the shorter rosters. These are the slots whose player differs, compared by player, not by number:
 
 | Team | Line slot changes (cartridge → Sega CD) |
 | --- | --- |
-| BOS | Chk LD P072→P073, RD P073→P074; PP2 LD P072→P073; PK1 LD P069→P068, RD P068→P069 (swapped) |
-| EDM | Sc2 RW P191→P192; PP2 RW P191→P192 |
-| HFD | NLC XA P205→P206; Sc1 XA P205→P207; Sc2 LD P224→P222, C P205→P207; PP2 C P205→P206, RW P206→P207; PK1 LD P224→P221 |
-| LA | Chk LW P235→P236 |
-| DAL | PP1 LW P261↔RW P262 (swapped) |
-| NJ | Sc2 RD P322→P324 |
-| NYI | NLC XA P335→P336; Chk RW P340→P339; PK1 XA P340→P339; PK2 C P340→P339 |
-| NYR | G P351→P352 in all 8 lines; Chk RD P375→P374; PK2 RD P375→P372 |
-| PHI | Sc1 XA P405→P408; Sc2 LW P412→P408 |
-| PIT | Sc2 LW P434→P435 |
-| QUE | Sc2 LW P458→P459; PP2 C P464↔RW P466 (swapped) |
-| SJ | PP2 C P480↔RW P481 (swapped) |
-| STL | NLC LD P517↔RD P518 (swapped); Sc2 LW P510→P507; PK1 RW P510→P509; PK2 LW P510→P509 |
-| TOR | Every line except NLC has new D pairs: Sc1 P571/P567, Sc2 P573/P572, Chk P568/P569, PP1 P568/P567, PP2 P569/P571, PK1 P568/P573, PK2 P571/P567 |
-| VAN | Sc1 XA P580→P581; Sc2 C P580→P581; PP1 LW P588↔RW P589 (swapped); PK1 C P580→P583; PK2 RW P588→P583, XA P580→P588 |
+| BOS | Chk LD Gord Murphy (#22)→Gordie Roberts (#23), RD Gordie Roberts (#23)→Glen Feathrston (#24); PP2 LD Gord Murphy (#22)→Gordie Roberts (#23); PK1 LD Don Sweeney (#19)→Ray Bourque (#18), RD Ray Bourque (#18)→Don Sweeney (#19) (swapped) |
+| EDM | Sc2 RW Scott Mellanby (#16)→Steven Rice (#17); PP2 RW Scott Mellanby (#16)→Steven Rice (#17) |
+| HFD | NLC XA Terry Yake (#5)→Mikael Nylander (#6); Sc1 XA Terry Yake (#5)→Robert Kron (#7); Sc2 LD Randy Ladouceur (#24)→Dan Keczmer (#22), C Terry Yake (#5)→Robert Kron (#7); PP2 C Terry Yake (#5)→Mikael Nylander (#6), RW Mikael Nylander (#6)→Robert Kron (#7); PK1 LD Randy Ladouceur (#24)→Adam Burt (#21) |
+| LA | Chk LW Lonnie Loach (#10)→Pat Conacher (#11) |
+| DAL | PP1 LW Russ Courtnall (#11)↔RW Ulf Dahlen (#12) (swapped) |
+| NJ | Sc2 RD Alexei Kasatonov (#22)→Tommy Albelin (#24) |
+| NYI | NLC XA Derek King (#10)→Dave Volek (#11); Chk RW Tom Fitzgerald (#15)→Brad Dalgarno (#14); PK1 XA Tom Fitzgerald (#15)→Brad Dalgarno (#14); PK2 C Tom Fitzgerald (#15)→Brad Dalgarno (#14) |
+| NYR | G John Vanbiesbrk (#1)→Mike Richter (#2) in all 8 lines; Chk RD Joe Cirella (#25)→Jay Wells (#24); PK2 RD Joe Cirella (#25)→Kevin Lowe (#22) |
+| PHI | Sc1 XA Rod BrindAmour (#5)→Keith Acton (#8); Sc2 LW Andrei Lomakin (#12)→Keith Acton (#8) |
+| PIT | Sc2 LW Troy Loney (#9)→Jeff Daniels (#10) |
+| QUE | Sc2 LW Mike Hough (#8)→Gino Cavallini (#9); PP2 C Mats Sundin (#14)↔RW Andrei Kovalenko (#16) (swapped) |
+| SJ | PP2 C Rob Gaudreau (#5)↔RW Dean Evason (#6) (swapped) |
+| STL | NLC LD Jeff Brown (#17)↔RD Garth Butcher (#18) (swapped); Sc2 LW Dave Lowry (#10)→Bob Bassen (#7); PK1 RW Dave Lowry (#10)→Igor Korolev (#9); PK2 LW Dave Lowry (#10)→Igor Korolev (#9) |
+| TOR | Every line except NLC has new D pairs: Sc1 Drake Berehowsky (#21)/Ken Baumgartnr (#17), Sc2 Bob Rouse (#23)/Jamie Macoun (#22), Chk Todd Gill (#18)/Dave Ellett (#19), PP1 Todd Gill (#18)/Ken Baumgartnr (#17), PP2 Dave Ellett (#19)/Drake Berehowsky (#21), PK1 Todd Gill (#18)/Bob Rouse (#23), PK2 Drake Berehowsky (#21)/Ken Baumgartnr (#17) |
+| VAN | Sc1 XA Anatoli Semenov (#5)→Tom Fergus (#6); Sc2 C Anatoli Semenov (#5)→Tom Fergus (#6); PP1 LW Pavel Bure (#13)↔RW Trevor Linden (#14) (swapped); PK1 C Anatoli Semenov (#5)→Murray Craven (#8); PK2 RW Pavel Bure (#13)→Murray Craven (#8), XA Anatoli Semenov (#5)→Pavel Bure (#13) |
 
 The other teams that lost players (BUF, CGY, CHI, MTL, TB) had them in no line, so their lines name the same players. The team palettes differ for HFD and OTW (visual only, see the non-gameplay section).
 
