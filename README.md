@@ -77,7 +77,7 @@ The feature and patch branches (season mode, MSU-MD music, performance overlay, 
 
 ## Sega CD
 
-`npm run build:segacd` (`node tools/build.js --segacd`) assembles the 41 transcribed CD fragments in `src/segacd/` into `output/segacd/` and compares them to the six disc files in `cdbin/` (copied from your own Sega CD disc; not in the repo, see `docs/segacd.md`), on Windows or Linux with wine. It does not change the cartridge build. What the disc changed, and how far the disassembly goes, is `docs/segacd.md`.
+`npm run build:segacd` (`node tools/build.js --segacd`) assembles the 41 transcribed CD fragments in `src/segacd/` into `output/segacd/` and compares them to the six disc files in `cdbin/` (copied from your own Sega CD disc; not in the repo, see `docs/segacd.md`), on Windows or Linux with wine. It does not change the cartridge build. What the disc changed, and how far the disassembly goes, is `docs/segacd.md`. How the disc's gameplay, rosters and lines differ from the cartridge is `docs/segacd_differences.md`.
 
 ## Build steps explained
 
