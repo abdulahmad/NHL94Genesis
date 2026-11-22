@@ -15,7 +15,7 @@ setupice_highlight
 	beq.w	.gok
 	movea.l	#SortCords,a3
 	moveq	#$B,d0
-.loop	bchg	#pfgoal,$62(a3)
+.loop	bchg	#pfgoal,pflags(a3)
 	adda.w	#$80,a3
 	dbra	d0,.loop
 .gok	bsr.w	CopyTeamLinesCheckTeam
@@ -459,12 +459,12 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	
 	
 	
-	move.w	$18374.l,-(sp)
-	move.w	$186DA.l,-(sp)
+	move.w	(tmstruct+tmgoalie).l,-(sp)
+	move.w	(awtmstruct+tmgoalie).l,-(sp)
 	movem.l	a1-a3,-(sp)
 	move.w	#$19F,d0
-	movea.l	#$18856,a1
-	movea.l	#$184F0,a0
+	movea.l	#awtmstruct+tmHotCold,a1
+	movea.l	#tmstruct+tmHotCold,a0
 	movea.l	#homehotcoldsave,a2
 	movea.l	#awayhotcoldsave,a3
 .loop	move.b	(a0)+,(a2)+
@@ -481,18 +481,18 @@ clearTeamStats						;clear both team structs (2 x tmsize) but keep each hot / co
 	dbra	d0,.loop3
 	movem.l	a1-a3,-(sp)
 	move.w	#$19F,d0
-	movea.l	#$18856,a1
-	movea.l	#$184F0,a0
+	movea.l	#awtmstruct+tmHotCold,a1
+	movea.l	#tmstruct+tmHotCold,a0
 	movea.l	#homehotcoldsave,a2
 	movea.l	#awayhotcoldsave,a3
 .loop4	move.b	(a2)+,(a0)+
 	move.b	(a3)+,(a1)+
 	dbra	d0,.loop4
 	movem.l	(sp)+,a1-a3
-	move.w	(sp)+,$186DA.l
-	move.w	(sp)+,$18374.l
-	st.b	$183E8.l
-	st.b	$1874E.l
+	move.w	(sp)+,(awtmstruct+tmgoalie).l
+	move.w	(sp)+,(tmstruct+tmgoalie).l
+	st.b	(tmstruct+tmpdst+$34).l
+	st.b	(awtmstruct+tmpdst+$34).l
 setteams						;Use hometeam/visteam to set team structures (InitTeamStructure for each).
 	
 	movem.l	d0/a0-a2,-(sp)
@@ -502,7 +502,7 @@ setteams						;Use hometeam/visteam to set team structures (InitTeamStructure fo
 	bsr.w	.next
 	movea.l	#awtmstruct,a2
 	move.w	(VisTeam).l,d0
-	move.l	#$17780,$22(a2)
+	move.l	#SortCords+(6*SCstruct),tmsort(a2)
 	bsr.w	.next
 	movem.l	(sp)+,d0/a0-a2
 	rts
@@ -540,7 +540,7 @@ CopyTeamLinesCheckTeam
 	cmpi.w	#$13,(HomeTeam).l
 	beq.w	.next
 	bra.w	.next2
-.next	move.w	#$860,$BBCDC.l
+.next	move.w	#$860,(palfadenew+$2C).l
 .next2	movea.l	#tmstruct,a0
 	bsr.w	.next3
 	moveq	#$20,d1
@@ -548,7 +548,7 @@ CopyTeamLinesCheckTeam
 .next3	movea.l	$1E(a0),a2
 	adda.w	$2(a2),a2
 	adda.w	d1,a2
-	movea.l	#$BBCF0,a1
+	movea.l	#palfadenew+$40,a1
 	adda.w	d1,a1
 	moveq	#$7,d0
 .loop	move.l	(a2)+,(a1)+
@@ -564,7 +564,7 @@ GameOver						;EncodePW (save the password), then in playoff mode PlayoffStatsSc
 .po	bsr.w	GameOverCleanup
 ; Game over: scrolls the display up once, then falls into the clean-up.
 GameOverCheckScroll
-	tst.w	$191CE.l
+	tst.w	(LogoDataLoaded).l
 	bne.s	.next
 	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
@@ -576,9 +576,9 @@ Opening2
 	jsr	(TitleScreen).l
 	bclr	#$5,$FF800F.l
 	movea.l	#$C458,sp
-	movea.l	#$1745C,a0
+	movea.l	#varstart,a0
 .loop	clr.l	(a0)+
-	cmpa.l	#$18BF0,a0
+	cmpa.l	#varend,a0
 	blt.w	.loop
 	move.l	#vb2,(VBint).l
 	bset	#$5,$FF800F.l
@@ -592,7 +592,7 @@ Opening3
 .next3	jmp	(HotColdIconExitReset).l
 ; Resets scroll state and clears the display request.
 GameOverCleanup
-	tst.w	$191CE.l
+	tst.w	(LogoDataLoaded).l
 	bne.s	.next
 	move.w	#$0,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
@@ -648,16 +648,16 @@ PlayoffScreen
 	lea.l	$8(a1),a2
 	adda.l	(a1),a1
 	moveq	#$7,d0
-	movea.l	#$BBCF0,a0
+	movea.l	#palfadenew+$40,a0
 .loop	move.l	-$40(a0),$20(a0)
 	move.l	(a1)+,-$40(a0)
 	move.l	-$20(a0),(a0)+
 	dbra	d0,.loop
-	move.w	#$860,$BBCDC.l
-	move.w	#$860,$BBCFC.l
+	move.w	#$860,(palfadenew+$2C).l
+	move.w	#$860,(palfadenew+$4C).l
 	move.w	d4,(energybarchars).l
 	bsr.w	DecompressGraphicsPlain
-	move.w	#$104,$17CE8.l
+	move.w	#$104,(logoslide).l
 	move.w	#$A0,(playoffspritey).l
 	movea.l	#$C00004,a0
 .loop2	btst	#$7,$FF800E.l
@@ -767,7 +767,7 @@ waitxc1						;Each time palcount runs out, eor the color
 									;for the next vblank
 	tst.w	(palcount).l
 	bpl.w	.wait		;palcount still counting
-	eori.w	#$EE,$BBCF2.l		;blink the color
+	eori.w	#$EE,(palfadenew+$42).l		;blink the color
 	move.w	#$18,(palcount).l		;restart the count
 .wait	move.w	(Vcount).l,d0		;wait until the vblank handler bumps Vcount
 	cmp.w	(OldVcount).l,d0
@@ -1147,7 +1147,7 @@ ScrollDisplayUpCall
 	bclr	#$5,$FF800F.l
 	jsr	(RelocatePointerTableDisc).l
 	jsr	(RelocateLogoBitmaps).l
-	st.b	$191CE.l
+	st.b	(LogoDataLoaded).l
 	moveq	#$0,d0
 	tst.w	ScrollDisplayUpData.l
 	beq.s	.next2
@@ -1396,7 +1396,7 @@ NewPO
 .loop	addi.w	#$1,d0
 	andi.w	#$1F,d0
 	asl.w	#$4,d0
-	movea.l	#$1FFDA,a0
+	movea.l	#playoffseats,a0
 	adda.w	d0,a0
 	lsr.w	#$4,d0
 	moveq	#$F,d1
@@ -1429,7 +1429,7 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	move.w	(postarts).l,d1
 	asl.w	#$4,d1		;16 bytes a tree
 	movea.l	#potree,a0
-	movea.l	#$1FFDA,a1
+	movea.l	#playoffseats,a1
 	adda.w	d1,a1
 	move.l	(a1),(a0)		;first round: 16 teams from the tree
 	move.l	$4(a1),$4(a0)
@@ -1614,7 +1614,7 @@ ReadPassBits
 .loop	move.w	-(a0),-(sp)
 	dbra	d0,.loop
 	moveq	#$7,d2
-	movea.l	#$18A88,a1
+	movea.l	#gstruct+(7*$10),a1
 .loop2	bclr	#$2,$E(a1)
 	moveq	#$5,d0
 	bsr.w	SuperDiv
@@ -1686,7 +1686,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	jsr	(ReadLineDataBackupWrite).l
 	btst	#sf3alttree,(sflags3).l
 	beq.w	rtss2
-	movea.l	#$18D26,a3
+	movea.l	#tpassbits,a3
 	bsr.w	ReadPassBits
 	bra.w	MakeTree
 .next	movea.l	#passbits,a3
@@ -1943,7 +1943,7 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	bra.w	.cr0
 .crn	suba.w	#gssize,a0
 	dbra	d1,.cr0
-	movea.l	#$18D26,a3
+	movea.l	#tpassbits,a3
 	bsr.w	WritePassBits
 	bset	#sf3alttree,(sflags3).l
 .nextround	clr.w	(bosgames).l
@@ -2055,7 +2055,7 @@ TakeTopStarScore						;Take the highest of the 52 star scores at ThreeStars and 
 .next	dbra	d2,.find
 	clr.l	(a1)
 	move.l	a1,d0
-	subi.l	#$BC000,d0
+	subi.l	#starscores,d0
 	lsr.w	#$2,d0
 	movea.l	#tmstruct,a2
 	cmpi.w	#$1A,d0
@@ -2456,7 +2456,7 @@ FormatLastName						;Skip the first name, copy the last name, pad; branched to f
 	bne.w	.loop2
 	bra.w	.pad
 .loop3	move.b	#$20,(a1)+
-.pad	cmpa.l	#$17F00,a1
+.pad	cmpa.l	#TextBuffer+12,a1
 	blt.w	.loop3
 	bsr.w	FinalizeTextBuffer
 	movem.l	(sp)+,d0-d3/a0/a2

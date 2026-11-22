@@ -446,7 +446,7 @@ HotColdIconExitReset
 	clr.l	(awaypresses).l
 	clr.l	(homedirpresses).l
 	clr.l	(awaydirpresses).l
-	clr.w	$191CE.l
+	clr.w	(LogoDataLoaded).l
 	jsr	(ScoutingReportTextLoad).l
 	jsr	(SubCmd3DSend).l
 	move.l	a6,-(sp)
@@ -470,7 +470,7 @@ HotColdIconExitReset
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jsr	(ClearVramViaSetVram).l
-	lea.l	$1746A.l,a0
+	lea.l	(CdBiosParam).l,a0
 	move.w	#$10,d0
 	jsr	$5F22.w
 	move.w	#$2,d0

@@ -67,7 +67,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(sopathdir).l,d0
-	btst	#pfgoal,$62(a3)
+	btst	#pfgoal,pflags(a3)
 	bne.w	.0
 	movea.l	#$2A674,a0
 	add.w	d0,d0

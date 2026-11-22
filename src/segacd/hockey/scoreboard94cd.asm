@@ -398,11 +398,11 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	beq.w	.2
 	btst	#sf2pwrtm,(sflags2).l
 	bne.w	.1
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	bne.w	.2
 .PPshot	addi.w	#$1,$356(a2)
 	bra.w	.2
-.1	btst	#pfteam,$62(a3)
+.1	btst	#pfteam,pflags(a3)
 	bne.w	.PPshot
 .2	move.l	a2,-(sp)
 	move.w	(gsp).l,d0
@@ -798,8 +798,8 @@ StartHL2	btst	#$3,(sflags3).l
 	move.w	$0(a0),(HomeTeam).l
 	move.w	$2(a0),(VisTeam).l
 	move.l	a0,-(sp)
-	clr.w	$18374.l
-	clr.w	$186DA.l
+	clr.w	(tmstruct+tmgoalie).l
+	clr.w	(awtmstruct+tmgoalie).l
 	jsr	(clearTeamStats).l
 	jsr	(restoreteams).l
 	st.b	(c1playernum).l
@@ -831,9 +831,9 @@ StartHL2	btst	#$3,(sflags3).l
 	st.b	(puckcross6).l
 	jsr	(p_turnoff).l
 	bsr.w	setupice_highlight
-	move.w	#$1,$17468.l
+	move.w	#$1,(AltTeamGfxFlag).l
 	bsr.w	ClrHor
-	move.w	#$0,$17468.l
+	move.w	#$0,(AltTeamGfxFlag).l
 	movea.l	#$C00000,a0
 .loop2	btst	#$7,$FF800E.l
 	bne.b	.loop2

@@ -473,8 +473,8 @@ ClearLineEditorTop						;Erase 40 x 10 at the top of map 2
 	jmp	(eraser).l
 ; Clears two marker words.
 ClearLineEditorMarks
-	clr.w	$BBD0A.l
-	clr.w	$BBD2A.l
+	clr.w	(palfadenew+$5A).l
+	clr.w	(palfadenew+$7A).l
 	rts
 ; Data that follows ClearLineEditorTop (strings, small tables)
 ClearLineEditorTopData	dc.w	$0010,$000C,$0004
@@ -798,7 +798,7 @@ PlayerListDrawSelected
 	move.l	(a1),d4
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$2,$0,$0,CC_SetFont,$0
-	btst	#$0,$1A455.l
+	btst	#$0,(SelectedPlayerIdx+1).l
 	beq.w	.next3
 	addi.w	#$10,(printy).l
 .next3	move.w	(printy).l,-(sp)
@@ -1519,7 +1519,7 @@ StatsListDrawHeader	jsr	(printsmallz).l
 .loop5	st.b	(a3,d0.w)
 	dbra	d0,.loop5
 	move.l	a3,d0
-	subi.l	#$BBD36,d0
+	subi.l	#Satt+6,d0
 	bpl.w	.next4
 	clr.w	d0
 .next4	asl.w	#$4,d0
@@ -1552,7 +1552,7 @@ DrawStatsRow						;Stats screen row d3 of Satt: rank, name, then the 5 columns, 
 	subi.w	#$1,(printy).l		;eraser moved printy down one row; back to the row rank (2 digits) at x 1
 	move.w	#$1,(printx).l
 	move.l	a4,d0
-	subi.l	#$BBD2F,d0		;rank (1-based)
+	subi.l	#Satt-1,d0		;rank (1-based)
 	moveq	#$2,d1		;2 digits
 	move.w	#$E000,(printa).l
 	jsr	(PushNumberWidth).l
@@ -1629,9 +1629,8 @@ GetStatColumn						;d2 = stat column d1 for player d0. Goalies only have PIM (bt
 	cmp.w	d2,d0		;goalie?
 	bge.w	ReadStatColumn		;skater: read the column as is
 	clr.w	d2		;goalie: columns 1 and 2 (A, Pts) show column 1 (assists), the rest 0
-; Instruction bytes inside GetStatColumn that the assembler would encode differently, kept as words (2 rows).
-	dc.w	$033C,$0006,$6700
-	dc.w	$15E8
+	btst	d1,#$6
+	beq.w	rtss8
 GetStatColumn_1A						;d2 = stat column d1 for player d0. d7 = 0: the team struct byte arrays
 									;(StatColumnOffsets); d7 = 1: the playoff tables (GetStatsValue)
 	moveq	#$1,d1
@@ -1735,7 +1734,7 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	bmi.w	CrowdMeterScreenExit
 	move.w	(HomeTeam).l,d1
 	ext.l	d1
-	movea.l	#$BC000,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
 	move.b	$8(a0),d0
 	bne.w	.next
@@ -1756,7 +1755,7 @@ CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(GetLeagueCrowdRecord).l
 	move.w	d0,d1
 	ext.l	d1
-	movea.l	#$BC000,a0
+	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
 	move.b	$8(a0),d0
 	bne.w	.next2
@@ -2053,7 +2052,7 @@ StatsRowGoalieName	movea.l	$1E(a2),a1
 	move.b	(a1),d2
 	andi.b	#$F,d2
 	addi.b	#$30,d2
-	move.b	d2,$17EF5.l
+	move.b	d2,(TextBuffer+1).l
 	movea.l	#mesarea,a1
 	move.w	#$4,(a1)
 	move.w	#$5,(printx).l
@@ -2161,9 +2160,9 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	clr.w	(replayicontimer).l
 	jsr	(ControllerTextClear).l
 .next	movem.l	d0/a3,-(sp)
-	movea.l	#$17A80,a3
+	movea.l	#SortCords+(12*SCstruct),a3
 	move.w	#$1,$8(a3)
-	movea.l	#$17B00,a3
+	movea.l	#SortCords+(13*SCstruct),a3
 	move.w	#$1,$8(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#$1,d7

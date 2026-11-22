@@ -63,7 +63,7 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 LoadHomeTeamGfx
 	move.w	d0,-(sp)
 	subi.w	#$18,d4
-	tst.w	$17468.l
+	tst.w	(AltTeamGfxFlag).l
 	beq.s	.next
 	movea.l	$47DA8.l,a2
 	bra.s	.next2

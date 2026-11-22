@@ -4,7 +4,7 @@ Set4WayPlayer						;unused: put player a3's number (SCnum) in the home or away n
 	beq.w	.x
 	movem.l	d0-d2,-(sp)
 	move.w	#$1,d0		;1 = home side code
-	btst	#pfteam,$62(a3)		;away?
+	btst	#pfteam,pflags(a3)		;away?
 	beq.w	.chkpad3
 	move.w	#$2,d0
 .chkpad3	cmp.w	(cont3team).l,d0

@@ -23,7 +23,7 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 	blt.w	.next2
 	addi.w	#$C8,(Crowdlevel).l
 	move.w	#$C,-(sp)
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	beq.w	.song
 	addi.w	#$14,(CwdExciteLvl).l
 	move.w	#$B,(sp)
@@ -40,7 +40,7 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 	tst.b	$1(a0)
 	beq.w	.noplayer
 	bmi.w	.noplayer
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	bne.w	.away
 	bset	#$1,(DelayedPen).l
 	bra.w	.setpenflag
@@ -252,7 +252,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	clr.w	d0
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	beq.w	.next4
 	bset	#$7,-$1(a4)
 	move.w	#$8000,d0
@@ -408,7 +408,7 @@ Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spo
 	asl.w	#scsize,d1
 	adda.w	d1,a3
 	move.w	#$258,d1
-	btst	#pfgoal,$62(a3)
+	btst	#pfgoal,pflags(a3)
 	movea.l	(sp)+,a3
 	beq.w	.noticing
 	neg.w	d1
@@ -664,8 +664,8 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	bset	#$0,(DelayedPen).l
 	addi.w	#$1,$26(a1)
 	addi.w	#$1,$2(a2)
-	bset	#tmflcc,$1837E.l		;home tmflags: tmflcc
-	bset	#tmflcc,$186E4.l		;visitors tmflags: tmflcc
+	bset	#tmflcc,(tmstruct+tmflags).l		;home tmflags: tmflcc
+	bset	#tmflcc,(awtmstruct+tmflags).l		;visitors tmflags: tmflcc
 .ex	movem.l	(sp)+,d0-d2/a0
 	rts
 ClearPenaltyBuffer						;Clear PenBuf. Called from clockcont and PenGoalStuff
@@ -774,8 +774,8 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 	lsr.w	#$1,d3
 	move.w	tmap(a2),d1
 	addi.w	#$1,$26(a2)
-	bset	#tmflcc,$1837E.l
-	bset	#tmflcc,$186E4.l
+	bset	#tmflcc,(tmstruct+tmflags).l
+	bset	#tmflcc,(awtmstruct+tmflags).l
 	movea.l	#priolist,a0
 	tst.w	tmgoalie(a2)
 	bpl.w	.1

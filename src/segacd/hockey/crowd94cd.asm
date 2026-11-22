@@ -187,7 +187,7 @@ AttributeCalc						;Attribute d3 of player a3 * 5 plus his hot / cold value / 3,
 	movem.l	d0-d2/a1,-(sp)
 	move.w	(TempWord2).l,d1
 	movea.l	#tmstruct,a1
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	beq.w	.attribmath
 	adda.l	#tmsize,a1
 .attribmath	clr.w	d1

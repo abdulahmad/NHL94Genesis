@@ -5,7 +5,7 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	move.w	position(a3),d7
 	subi.w	#$1,d7		;position 1 is entry 0
 	movea.l	#$292E2,a0
-	btst	#pfgoal,$62(a3)		;which net?
+	btst	#pfgoal,pflags(a3)		;which net?
 	beq.w	.0
 	movea.l	#$292F2,a0
 .0	add.w	d7,d7		;word per position
@@ -269,8 +269,8 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	move.w	#$6,d3
 	moveq	#$4,d5
 	jsr	(dobitmap).l
-	movea.l	#$BBCF0,a0
-	movea.l	#$BBD10,a1
+	movea.l	#palfadenew+$40,a0
+	movea.l	#palfadenew+$60,a1
 	move.w	#$7,d0
 .loop3	move.l	(a0)+,(a1)+
 	dbra	d0,.loop3

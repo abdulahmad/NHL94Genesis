@@ -104,7 +104,7 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 .1	move.w	(homeshootnum).l,d0
 	add.w	d0,d0
 	move.w	(a0,d0.w),(BA_Skater_Offset).l
-	bclr	#pfnc,$17BE2.l
+	bclr	#pfnc,(SortCords+(puckscnum*SCstruct)+pflags).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 CountShootoutGoals						;Shootout: count the goals and end it when one team cannot catch up
@@ -420,8 +420,8 @@ ClearShooterScreen						;Shootout shooters: erase the screen
 	move.w	#$7FF,d2
 	jmp	(eraser).l
 ResetShooterScroll
-	clr.w	$BBD0A.l
-	clr.w	$BBD2A.l
+	clr.w	(palfadenew+$5A).l
+	clr.w	(palfadenew+$7A).l
 	rts
 ; Prints the shooter screen heading.
 ShooterScreenTitles

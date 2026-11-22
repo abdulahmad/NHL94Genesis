@@ -316,7 +316,7 @@ FormatAndPrintTime						;d0 bits 14-15 = period, bits 0-13 = seconds
 PeriodLabelTable	dc.w	$0004,$2031,$0004,$2032,$0004,$2033,$0004,$4F54
 PushTime						;convert d0 into string format of minutes:seconds. Return a1 = string.
 	
-	movea.l	#$17F10,a1
+	movea.l	#mesarea+30,a1
 	move.l	d0,-(sp)
 	move.l	a1,-(sp)
 	ext.l	d0
@@ -378,7 +378,7 @@ PushNumber						;convert d0 into string format of base 10 number, no leading zer
 	rts
 PushNumberWidth						;right-justified number
 	movem.l	d0-d3,-(sp)
-	movea.l	#$17F58,a1
+	movea.l	#PushWidthBuf+2,a1
 	moveq	#$1,d2
 	sub.w	d2,d1
 	bra.w	.next

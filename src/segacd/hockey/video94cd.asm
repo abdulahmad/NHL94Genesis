@@ -103,7 +103,7 @@ setvideo
 	lsr.w	#$1,d0
 	move.w	d0,(Sattsize).l
 	move.l	a5,(DMAlistend).l
-	move.l	a5,$1AD96.l
+	move.l	a5,(DMAlistendCopy).l
 	bset	#dfok,(disflags).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -468,7 +468,7 @@ showclockVertical
 	bne.w	rtss2
 	cmpi.w	#$4,(gsp).l
 	beq.w	rtss2
-	movea.l	#$17EDA,a0
+	movea.l	#clockram+6,a0
 	movea.l	(SmallFontMap).l,a1
 	adda.l	$4(a1),a1
 	move.w	$78(a1),d0

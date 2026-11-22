@@ -77,7 +77,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 									;list. A / C page the matchups (the page also turns by itself about every
 									;$10E frames), down types fast, start leaves
 	move.l	sp,(ScoutSavedSP).l
-	movea.l	#$1745C,sp
+	movea.l	#varstart,sp
 	movea.l	(ScoutSpeechTable).l,a0
 	movea.l	#$C458,a1
 	move.w	#$DAC,d0

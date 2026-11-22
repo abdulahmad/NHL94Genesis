@@ -57,6 +57,7 @@ SumCwdExciteLvl	equ	$17CDE			;crowd level running total.
 Zamx	equ	$17CE2			;zamboni x cord
 playoffspritex	equ	$17CE4			;logo sprite x (title / playoff screens).
 playoffspritey	equ	$17CE6			;logo sprite y.
+clampcounter	equ	$17CE8			;credits page wait counter (how long the first page stays)
 DMAList	equ	$18D6A			;dma transfer list
 DMAlistend	equ	$191CA			;end of the DMA list: where the next entry is written
 Vpos	equ	$17CEA			;ice rink vertical position
@@ -385,12 +386,19 @@ iconx	equ	$1AD8C			;icon x position
 scoutwait	equ	$1AD8E			;scouting report wait
 replaydelay	equ	$1AD92			;replay delay
 outputbuffer	equ	$18C42			;work buffer, also the shot data kept between games
+tpassbits	equ	$18D26			;temporary storage of passbits
 PALflag	equ	$1AD94			;nonzero on a PAL console
 
 ; --- variables only the disc has, by address ---
 replayend	equ	$173B0			;end of the replay frames (replaysize bytes each)
+varstart	equ	$1745C			;start of variable space: Opening2 clears from here to varend, the boot code to BootClearEnd
+CdSongPending	equ	$1745C			;disc only: song sets 1 when a CD track is wanted; SongCdCheck starts it and sets 0; set to -1 after the game start-up song is sent
+CdSongTrack	equ	$1745E			;disc only: CD track for the song (song number - $29, or 2), passed to the CD player in CdCommandArg
+SubVblankCount	equ	$17460			;disc only: VBlankSubCpuHook adds 1 each vblank it serves; cleared when the game starts its song
 scoutparaoff	equ	$17462			;disc only: byte offset of the next paragraph, replaces the cartridge's line skip
 ScoutLastPara	equ	$17466			;disc only: set when the last paragraph ($21) is reached
+AltTeamGfxFlag	equ	$17468			;disc only: 1 while the scoreboard calls ClrHor; makes LoadHomeTeamGfx use the graphics at $47DA8 instead of $47D90
+CdBiosParam	equ	$1746A			;disc only: parameter passed in a0 to CD BIOS call $10 (logos94cd)
 puckx	equ	$17B80			;puck x position in its sort object (93G)
 pucky	equ	$17B94			;puck y position
 puckz	equ	$17B98			;puck height above the ice
@@ -407,11 +415,15 @@ HomeTeamRosterPtr	equ	$1836A			;tmstruct+tmdata
 AwGoals	equ	$186BE			;away score
 AwayTeamRosterPtr	equ	$186D0			;awtmstruct+tmdata
 MenuScrollTop	equ	$18AD4			;first visible row of a scrolling menu (menuitem - 3 when the selection moves past the bottom row)
+LogoDataLoaded	equ	$191CE			;disc only: set after the pointer table and logo bitmaps are loaded and relocated, cleared before the scouting report text is loaded; GameOverCheckScroll tests it
 DiscDmaListPtr	equ	$19360			;pointer to the end of the disc dma/command word list; entries are pushed with -(a6), see DoDMAProQueue
 CdCommandArg	equ	$19364			;word argument buffer passed in a0 to the sub CPU call $5F22
 scoutcolumn	equ	$1A44E			;cartridge $D5AC (DispAttribCtr)
+DMAlistendCopy	equ	$1AD96			;disc only: DumpSprites stores the DMA list end here as well as in DMAlistend (not read in HOCKEY.BIN)
+BootClearEnd	equ	$1AD9A			;disc only: end of the RAM the boot code clears from varstart
 LOAD	equ	$1B000			;HOCKEY.BIN runtime address = file offset + LOAD. A bsr or bra to a name
 
+GateRequestBlock	equ	$BBC88			;disc only: words the main CPU reads for a request raised with RaiseGateRequest (for a VDP DMA: register words $8154/$8F02, length $93/$94, source $95-$97, then the VDP command long at +$16)
 ; --- other names the disc code uses: structure offsets, cartridge routines and data at their cartridge addresses, disc files ---
 ScoutingReportText	equ	$47CFC		;pointer to the loaded Ron Barr script (the cartridge has it inline)
 tmdata		equ	$1E			;team data address, as the cartridge
@@ -466,6 +478,7 @@ pfdoff	equ	$0			;bit0-deceleration off
 pf2fight	equ	$0			;player is fighting (93; 94 has no fights)
 sf2faceoff	equ	$0			;face off in progress
 tmflcc	equ	$0			;tmflags: line change on
+tmflcm	equ	$1			;tmflags: team is in line change mode
 ifcgl	equ	$0			;iflags: crossed goalline
 ubut	equ	$0			;up
 gsftf	equ	$0			;teams are flipped
@@ -575,6 +588,7 @@ ffosize	equ	$1C			;field objects tied to icerink scrolling (pads), OldXpos bytes
 tmtouch3	equ	$1C			;third last touch (second assist)
 OldXpos	equ	$1C			;x position before the last move
 OldYpos	equ	$20			;y position before the last move
+tmsort	equ	$22			;team struct: first sort object of the team (a long on the disc, a word on the cartridge)
 tmap	equ	$26			;active players on ice 4-6
 Xvel	equ	$28			;x velocity
 Yvel	equ	$2A			;y velocity
@@ -605,6 +619,7 @@ nopuckb	equ	$5F			;second count down (low byte of nopuck)
 newpos	equ	$60			;requested next position of this player
 newpnum	equ	$61			;requested next player (from roster) for this player
 replaysize	equ	$62			;bytes per replay frame (92G/93G name; 92G 84)
+pflags	equ	$62			;player flags (pf bits)
 pflags3	equ	$64			;player flags 3 (92: not used)
 glitch	equ	$65			;counter to eliminate quick frame changes (de-glitch graphics)
 pnum	equ	$66			;player's team location number 0-22
@@ -620,6 +635,7 @@ stickhand	equ	$71			;player rating: stickhandling
 endurance	equ	$72			;player rating: endurance
 fighting	equ	$74			;fighting (Fgt; from the Chk/Hnd byte, always even)
 handed	equ	$76			;bit0 set is left handed
+SCstruct	equ	$80			;bytes per sort object
 Sideline	equ	$88			;distance from center to side boards
 tmgoals	equ	$B6			;goals per roster player (goalies: goals against), bytes
 horoff	equ	$C5
@@ -629,3 +645,11 @@ tmHotCold	equ	$1A4			;hot / cold table: 16 bytes per roster player (26 x 16 byte
 tmsize	equ	$366			;93 $1A2: 94 adds tmHotCold and the stats from tmPerGoals
 TeamRecBase	equ	$D20			;offset of the team records
 M68K_RAM	equ	$C45C			;start of the 68000 work RAM, the same as replaystart
+; --- names the cartridge defines from other names ---
+GoalieStruct	equ	SortCords-SCstruct	;the sort object before SortCords: GoalieStruct+SCstruct is player 0
+logoslide	equ	clampcounter		;reused: title / playoff screen page time (credits wait)
+varend	equ	nibblebuffer+8		;end of the variables cleared by Opening2
+starscores	equ	ThreeStars		;the 52 star score longs (CalcStarScores)
+recordbuf	equ	ThreeStars		;record read buffer (ReadCrowdRecord)
+rosxoff	equ	OldXpos			;game setup: player sprite x offset from Xpos (optsetup94)
+BackupRamSum	equ	BackupRamImage+$F20	;disc only: BackupRamChecksum of the image, the long after it
