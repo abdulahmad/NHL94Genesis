@@ -5,6 +5,7 @@ AttribAdjust						;An attribute under $32 becomes d0 / 2 + $19. Called from Attr
 	asr.w	#$1,d0
 	addi.w	#$19,d0
 .exit	rts
+PuckComingToward
 	movem.w	d0-d1,-(sp)
 	move.w	(puckx).l,d0
 	sub.w	$0(a3),d0
