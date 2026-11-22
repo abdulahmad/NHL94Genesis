@@ -142,12 +142,12 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 .sety	move.w	d2,(onetimertargety).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-assonetimer						;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
+OneTimerNearTbl						;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
 	
 	
 	
 	ori.w	#$C2,$74(a4,d0.w)
-; Instruction bytes inside assonetimer that the assembler would encode differently, kept as words (9 rows).
+; Instruction bytes inside OneTimerNearTbl that the assembler would encode differently, kept as words (9 rows).
 	dc.b	$00,$C2,$00,$74,$00,$C2,$00,$74,$00,$C2,$FF,$8C,$00,$C2,$FF,$8C	; ...t...t........
 	dc.b	$00,$C2,$FF,$8C,$00,$C2,$FF,$8C,$00,$C2,$FF,$FB,$00,$AB,$FF,$FB	; ................
 	dc.b	$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB	; ................
@@ -195,7 +195,7 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 .next3	jsr	(setc1player).l
 	bra.w	.next4
 .next4	move.w	d0,-(sp)
-	bsr.w	PlayerPositionToScreen
+	bsr.w	setonetimeranim
 	clr.w	$5A(a3)
 	jsr	(SetSPA).l
 	bset.b	#$5,$62(a3)
@@ -319,7 +319,7 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 .next27	jsr	(EndOneTimer).l
 .ex	rts
 ; Turns the position of the object in a3 into screen coordinates and draws its marker
-PlayerPositionToScreen	move.w	#$7FC,d1
+setonetimeranim	move.w	#$7FC,d1
 	movem.w	d0-d1,-(sp)
 	move.w	$0(a3),d0
 	neg.w	d0

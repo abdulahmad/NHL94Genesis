@@ -53,9 +53,9 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 PenaltyManager						;called periodically. d7 = elapsed time since last call
 	bsr.w	updatepentime
 	bsr.w	checkfornewpen
-	bsr.w	.next
+	bsr.w	chkprogress
 	bra.w	UpdatePA
-.next	btst	#$2,(BA_PS_flags).l
+chkprogress	btst	#$2,(BA_PS_flags).l
 	beq.w	.next4
 	btst	#$7,(BA_PS_flags).l
 	bne.w	.next3
@@ -77,7 +77,7 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	jsr	(eraser).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	bra.w	.ex
-.next3	jsr	(CalcTeamStarScoresShootout).l
+.next3	jsr	(PenaltyShotBox).l
 	bclr	#$7,(BA_PS_flags).l
 .ex	rts
 .next4	btst	#$2,(gmode).l
@@ -98,9 +98,9 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	beq.w	.loop
 	bmi.w	.loop
 	bset	#$2,(sflags2).l
-	move.w	(ScoutSubStatus).l,-(sp)
+	move.w	(Vcount).l,-(sp)
 	bsr.w	forceblack
-	move.w	(sp)+,(ScoutSubStatus).l
+	move.w	(sp)+,(Vcount).l
 	bsr.w	SetHor
 	move.w	(ExtraChars).l,d4
 	movea.l	$47D20.l,a2
@@ -111,7 +111,7 @@ PenaltyManager						;called periodically. d7 = elapsed time since last call
 	st.b	(puckc).l
 	movea.l	#puckx,a3
 	moveq	#$1A,d0
-	bsr.w	AssistListPush
+	bsr.w	assinsert
 	move.w	#$1C20,$40(a3)
 	st.b	(RefStep).l
 	clr.w	(RefCnt).l
@@ -182,13 +182,13 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 	beq.w	.0
 	move.w	#$1,(BA_Team).l
 .0	move.w	#$0,(BA_Skater_Offset).l
-	move.b	pnum(a1,d3.w),$1936D.l
+	move.b	pnum(a1,d3.w),(BA_Skater_Offset+1).l
 	move.w	d1,(BA_Goalie_SCnum).l
 	asl.w	#scsize,d1
 	move.w	#$0,(BA_Goalie_Offset).l
-	move.b	pnum(a1,d1.w),$1936F.l
+	move.b	pnum(a1,d1.w),(BA_Goalie_Offset+1).l
 	move.w	#$0,(BA_Checker_Offset).l
-	move.b	pnum(a3),$19371.l
+	move.b	pnum(a3),(BA_Checker_Offset+1).l
 .end	movem.l	(sp)+,d1-d3/a1
 	rts
 .noPen	move.w	#$FFFF,d1		;N set: no penalty shot
@@ -439,7 +439,7 @@ Stop4Pen						;a0 = penaltylist penalty +2. Stop the clock, set the face off spo
 	bsr.w	limitfo
 .skipfo	clr.w	(PenCntDwn).l
 	bset	#gmpen,(gmode).l
-	jsr	(HockeyRtsStubB).l
+	jsr	(stop_current_song).l
 	move.w	#$3,-(sp)
 	bsr.w	sfx
 	move.w	#$A,d0		;whistle (92 used $26)
@@ -506,7 +506,7 @@ SetPA
 	bsr.w	prefmes
 	cmpi.w	#$E,d0
 	bne.w	.2
-	bsr.w	ShowGoalBoxDraw
+	bsr.w	ShowGoalBox
 .2	btst	#$0,(gmode2).l
 	beq.w	.0
 	btst	#$3,(gmode2).l
@@ -660,7 +660,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	btst	#$6,tmpdst(a1,d2.w)
 	bne.w	.0
 	clr.w	tmpdst(a1,d2.w)
-	bsr.w	ShiftListDown
+	bsr.w	RemovePlayerFromList
 	bset	#$0,(DelayedPen).l
 	addi.w	#$1,$26(a1)
 	addi.w	#$1,$2(a2)
@@ -707,7 +707,7 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	move.w	d0,(a1)+
 	subi.w	#$1,$68(a2,d0.w)
 	bne.w	.cont
-	bsr.w	ShiftListDown
+	bsr.w	RemovePlayerFromList
 .cont	bra.w	.next
 .done	move.w	(mesarea).l,d0
 	cmpi.w	#$1,d1
@@ -732,15 +732,15 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	btst	#$3,tmpdst(a2,d0.w)
 	beq.w	.next
 	btst	#$4,tmpdst(a2,d0.w)
-	bne.w	RemovePlayerFromList
+	bne.w	updatepentime_ut_2
 	move.w	#$1000,tmpdst(a2,d0.w)
-	bra.w	ShiftListDown
-RemovePlayerFromList						;Remove the entry before a0 from a penalty box list by shifting the rest
+	bra.w	RemovePlayerFromList
+updatepentime_ut_2						;Remove the entry before a0 from a penalty box list by shifting the rest
 	
 	
 	clr.w	$68(a2,d0.w)
 ; Shifts the byte list down by one entry.
-ShiftListDown	moveq	#-1,d2
+RemovePlayerFromList	moveq	#-1,d2
 .shift	addi.w	#$1,d2
 	move.b	(a0,d2.w),-$1(a0,d2.w)
 	bpl.w	.shift
@@ -783,7 +783,7 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 .1	clr.w	position(a3)
 	move.b	(a0,d1.w),$35(a3)
 	bsr.w	Setplass
-	bsr.w	SetPlayerSide
+	bsr.w	setplayer
 	bset	#pf2unav,$63(a3)
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
