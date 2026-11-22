@@ -39,7 +39,7 @@ adda4						;Step forward 1 frame. First handles a reverse
 .loop2	jsr	(MenuWaitVblank).l
 	dbra	d0,.loop2
 	movem.l	a0,-(sp)
-	movea.l	#$17A80,a0
+	movea.l	#SortCords+(12*SCstruct),a0
 	move.w	#$1,oldframe(a0)
 	adda.l	#$80,a0
 	move.w	#$1,oldframe(a0)
@@ -201,7 +201,7 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	move.w	d0,(puckz).l
 	move.b	(a0)+,d0
 	ext.w	d0
-	move.w	d0,$17C18.l
+	move.w	d0,(SortCords+((puckscnum+1)*SCstruct)+Zpos).l
 	move.b	(a0)+,d0
 	ext.w	d0
 	move.w	d0,(lastsfx).l
@@ -320,7 +320,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	adda.l	#$80,a3
 	dbra	d2,.loop
 	move.b	(puckz+1).l,(a0)+
-	move.b	$17C19.l,(a0)+
+	move.b	(SortCords+((puckscnum+1)*SCstruct)+Zpos+1).l,(a0)+
 	move.b	(lastsfx+1).l,(a0)+
 	bset	#$7,(lastsfx+1).l
 	move.b	d7,(a0)+
