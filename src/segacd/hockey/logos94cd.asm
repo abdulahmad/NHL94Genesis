@@ -143,48 +143,48 @@ TeamLogoPalettes					;Team logo palettes, 16 colors per team. Used by PeriodStat
 	dc.w	$0888,$0466,$0444,$022C
 	dc.w	$0008,$0400,$0800,$0C00
 ; Compares the goalie of both team structs and updates the swap flags in $17F6C
-GoalieSwapCheck	movem.l	d0/a0-a3,-(sp)
+TeamLogoPalettesEnd	movem.l	d0/a0-a3,-(sp)
 	move.w	(sflags2).l,-(sp)
 	btst.b	#$1,(gmode2).l
-	bne.w	GoalieSwapCheckRestore
+	bne.w	LeadSongExit
 	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a3
 	move.w	$26(a2),d0
 	sub.w	$26(a3),d0
-	beq.w	GoalieSwapCheckRestore
+	beq.w	LeadSongExit
 	bpl.w	.next
 	btst.b	#$6,(sflags2).l
 	bne.w	.next2
-	bsr.w	GoalieSwapCheckEnd
+	bsr.w	ClearLeadSong
 	bset.b	#$6,(sflags2).l
 	bra.w	.next2
 .next	exg.l	a2,a3
 	btst.b	#$6,(sflags2).l
 	beq.w	.next2
-	bsr.w	GoalieSwapCheckEnd
+	bsr.w	ClearLeadSong
 	bclr.b	#$6,(sflags2).l
 .next2	bset.b	#$5,(sflags2).l
-	bne.w	GoalieSwapCheckRestore
+	bne.w	LeadSongExit
 	cmpa.l	#tmstruct,a3
 	bne.w	.next3
 	move.w	(HomeTeam).l,(HmTeam).l
 	move.w	#$1,(SongIndex).l
 	jsr	(ChooseSong).l
 .loop	bset.b	#$6,(sflags8).l
-	bra.w	GoalieSwapCheckRestore
+	bra.w	LeadSongExit
 .next3	move.w	(HomeTeam).l,(HmTeam).l
 	move.w	#$4,(SongIndex).l
 	jsr	(ChooseSong).l
 	bra.w	.loop
 ; Clears flag 5 of $17F6C, restores the flags and returns
-GoalieSwapCheckEnd	bclr.b	#$5,(sflags2).l
+ClearLeadSong	bclr.b	#$5,(sflags2).l
 	rts
-; Restores the flags and registers of GoalieSwapCheck
-GoalieSwapCheckRestore	move.w	(sp)+,(sflags2).l
+; Restores the flags and registers of TeamLogoPalettesEnd
+LeadSongExit	move.w	(sp)+,(sflags2).l
 	movem.l	(sp)+,d0/a0-a3
 	rts
 ClearPenalties						;Clear the penalties: PBnum, Penaltytimer, PenCntDwn, PenBuf and both
-									;teams' penalty slots (clrTmPdst). Called from clockcontAssists
+									;teams' penalty slots (clrTmPdst). Called from clockcont_0
 	movem.l	d0/a0,-(sp)
 	clr.w	(PBnum).l
 	clr.w	(Penaltytimer).l
@@ -251,7 +251,7 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
 	adda.l	(a2)+,a1		;a1 = map data
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
@@ -261,9 +261,9 @@ HotColdIcon						;The icon by the name of player iconplayer of team a2 at x icon
 .x	movem.l	(sp)+,d0/a0-a1
 	rts
 ; Hot/cold icon: draws the icon at the puck position.
-HotColdIconDraw
+chgplayer
 	btst	#$6,(sflags5).l
-	bne.w	HotColdIconExit
+	bne.w	rtsChgplayer
 	movem.l	d0-d6/a0-a1,-(sp)
 	move.w	(puckvx).l,d0
 	asr.w	#$8,d0
@@ -325,22 +325,22 @@ HotColdIconDraw
 	adda.w	#$4,sp
 	pea.l	$2B5FC.l
 	cmp.w	(a1,d4.w),d6
-	beq.w	HotColdIconExitSweepcheck
+	beq.w	swpchk
 	move.w	d6,d0
 	tst.w	d4
-	beq.w	HotColdIconExitSetC1
-	bra.w	HotColdIconExitSetC2
+	beq.w	j_setc1player
+	bra.w	j_setc2player
 	movem.l	(sp)+,d0-d6/a0-a1
-HotColdIconExit
+rtsChgplayer
 	rts
 ; Stub: jumps to Sweepcheck
-HotColdIconExitSweepcheck
+swpchk
 	jmp	(Sweepcheck).l
 ; Stub: jumps to setc1player
-HotColdIconExitSetC1
+j_setc1player
 	jmp	(setc1player).l
 ; Stub: jumps to setc2player
-HotColdIconExitSetC2
+j_setc2player
 	jmp	(setc2player).l
 ; Loads the graphics block for the hot/cold icon.
 HotColdIconExitSetC2Load
@@ -498,7 +498,7 @@ HotColdIconExitReset
 	bset	#$5,(gmode).l
 .next6	cmpi.w	#$1,(OptPlayMode).l
 	ble.w	.next7
-	bsr.w	.next9
+	bsr.w	ClearShotData
 .next7	jsr	(clearTeamStats).l
 	btst	#$0,(gmode2).l
 	beq.w	.next8
@@ -514,11 +514,11 @@ HotColdIconExitReset
 	clr.w	(ChkCnt).l
 	bsr.w	restoreteams
 	jsr	(InitScores).l
-	jsr	(UpdateSoundVdpSetup).l
+	jsr	(setupice).l
 	jsr	(LoadCrowdRec).l
 	jmp	(PeriodOverIntermission).l
-.next9	move.w	#$71,d0
-	movea.l	#$18C42,a0
+ClearShotData	move.w	#$71,d0
+	movea.l	#outputbuffer,a0
 .loop3	clr.w	(a0)+
 	dbra	d0,.loop3
 	rts
