@@ -60,7 +60,7 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Picks the picture graphics for the current side and decompresses them.
-UnpackPictureSelectGfx
+LoadHomeTeamGfx
 	move.w	d0,-(sp)
 	subi.w	#$18,d4
 	tst.w	$17468.l
@@ -230,7 +230,7 @@ getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
 	lsr.w	#$2,d0
 	rts
 ; Return point of getFgtbyte.
-GetFgtByteReturn
+chkFgtBit1
 	btst	#$1,$74(a2)
 	rts
 RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 when fox <= -$40 and
@@ -250,7 +250,7 @@ RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 whe
 .x	movem.l	(sp)+,a0
 	rts
 ; Data that follows RandomFaceoffAnim (strings, small tables)
-RandomFaceoffAnimData	dc.w	$0003,$0005,$0003,$0001,$0005,$0002,$0003,$0003
+FaceoffAnims	dc.w	$0003,$0005,$0003,$0001,$0005,$0002,$0003,$0003
 	dc.w	$FFFF
 CheckScoreLeader						;Compare tmap (players on ice) of tmstruct / awtmstruct and test tmteam of
 	
@@ -270,7 +270,7 @@ CheckScoreLeader						;Compare tmap (players on ice) of tmstruct / awtmstruct an
 DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffspritey in Satt,
 	
 	
-	movea.l	#$BBD30,a6
+	movea.l	#Satt,a6
 	moveq	#$1,d6
 	movea.l	$47D94.l,a0
 	move.w	(energybarchars).l,d3
@@ -279,13 +279,13 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	move.w	(playoffspritey).l,d1
 	move.w	#$1,d2
 	jsr	(SetSframe).l
-	cmpa.l	#$BBD30,a6
+	cmpa.l	#Satt,a6
 	bne.w	.0
 	clr.l	(a6)+
 	clr.l	(a6)+
 .0	clr.b	-$5(a6)
 	move.l	a6,d0
-	subi.l	#$BBD30,d0
+	subi.l	#Satt,d0
 	lsr.w	#$1,d0
 	move.w	d0,(Sattsize).l
 	rts
@@ -333,7 +333,7 @@ PlayedByHome						;a1 = String "(played by NAME)" for homeuser (GetLogName name)
 PlayedByText						;PlayedByHome / PlayedByAway body
 	tst.w	d0
 	beq.w	PlayedByNone
-	movea.l	#$1A37E,a1
+	movea.l	#nameentrybuf+2,a1
 	move.w	d0,(namelogsel).l
 	bsr.w	GetLogName
 	adda.w	(namelength).l,a1
@@ -351,7 +351,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	movea.l	#TempBuffer,a3
 	jsr	(appstring).l
 	movea.l	#TempBuffer,a3
-	jsr	(PushNumberWidthString).l
+	jsr	(appendz).l
 	String	')'
 	movea.l	#TempBuffer,a1
 PlayedByExit

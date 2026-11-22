@@ -110,7 +110,7 @@ NextShooter						;Shootout: the next shooter (BA_Team, BA_Goalie_SCnum, StartSho
 CountShootoutGoals						;Shootout: count the goals and end it when one team cannot catch up
 	
 	movem.l	d0-d7/a0-a6,-(sp)
-	btst	#$0,$1A437.l
+	btst	#$0,(shootoutteam+1).l
 	beq.w	.switch
 	cmpi.w	#$5,(shootoutround).l
 	blt.w	.switch
@@ -118,7 +118,7 @@ CountShootoutGoals						;Shootout: count the goals and end it when one team cann
 	cmp.w	(awayshootgoals).l,d0
 	beq.w	.switch
 	bset	#$3,(gmode2).l
-	jsr	(ScoutStubSetup).l
+	jsr	(EndShootout).l
 	bra.w	.x
 .switch	eori.w	#$1,(shootoutteam).l
 	bne.w	.x
@@ -177,7 +177,7 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	beq.w	ShootersExit
 	moveq	#$0,d0
 	moveq	#$1C,d1
-	jsr	(CrowdMeterFadeIn).l
+	jsr	(SetupScreen).l
 	clr.w	(scoutcolumn).l
 	clr.w	(PlayerScrollCtr).l
 	jsr	(printsmallz).l
@@ -192,7 +192,7 @@ ShootoutShooters						;Shootout shooters menu item (menu lists): pick
 	bsr.w	ShooterScreenTitles
 	move.w	#$0,(TestList).l
 ; Redraws the shooter selection screen: list, rows and frame
-ShootoutShootersRedraw	bsr.w	ShootersSelectDraw
+ShootoutShootersRedraw	bsr.w	ShootersBackground
 	bsr.w	ShooterScreenRows
 	bsr.w	ShooterScreenFrame
 ShootersLoop						;Shootout shooters: the input loop
@@ -239,7 +239,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 .1	move.w	d0,(screentimer).l
 	clr.w	(PlayerScrollCtr).l
 	clr.w	(VertLineScrolling).l
-	movea.l	#$BBD30,a0
+	movea.l	#Satt,a0
 	clr.w	d2
 .loop	move.b	d1,(a0,d2.w)
 	cmp.w	d1,d6
@@ -300,7 +300,7 @@ ShooterSelectList						;Shootout shooters: "{Select Player}" list
 	move.w	d0,(PlayerScrollCtr).l
 .9	bsr.w	PrintShooterList
 	bra.w	.loop2
-.next	movea.l	#$BBD30,a3
+.next	movea.l	#Satt,a3
 	adda.w	(VertLineScrolling).l,a3
 	clr.w	d0
 	move.b	(a3),d0
@@ -336,7 +336,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	movea.l	#$27F3E,a1
 .4	jsr	(print).l
 	move.l	(a1),d4
-	movea.l	#$BBD30,a3
+	movea.l	#Satt,a3
 	move.w	(PlayerScrollCtr).l,d2
 	move.w	(screentimer).l,d1
 	sub.w	d2,d1
@@ -358,40 +358,40 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	dbra	d1,.loop3
 	rts
 ; Data that follows PrintShooterList (strings, small tables)
-PrintShooterListData	dc.b	$00,$12,'    Overall   '
+ShooterOverallTxt	dc.b	$00,$12,'    Overall   '
 	dc.b	' ]',$1F,':',$00,$0A,$00,$12,'    Over'
 	dc.b	'all    ]',$1B,$0F,$00,$0A
 ShootersPick
 	cmp.w	(TestList).l,d0
 	beq.w	ShootersLoop
-	bra.w	ShootersSelectRedraw
+	bra.w	ShootersSelect
 ShootersMove						;Shootout shooters: move the slot cursor by d0, wrapping in 0 ... 4 (not
 	
 	cmpi.w	#$5,(TestList).l
 	beq.w	ShootersLoop
 	add.w	(TestList).l,d0
-	bmi.w	ShootersSelect
+	bmi.w	ShootersMove_0
 	cmpi.w	#$5,d0
-	blt.w	ShootersSelectRedraw
+	blt.w	ShootersSelect
 	clr.w	d0
-	bra.w	ShootersSelectRedraw
-ShootersSelect						;Shootout shooters: TestList = d0, redraw the names and the player box,
+	bra.w	ShootersSelect
+ShootersMove_0						;Shootout shooters: TestList = d0, redraw the names and the player box,
 	
 	move.w	#$4,d0
 ; Stores the chosen shooter and redraws the rows and frame
-ShootersSelectRedraw	move.w	d0,(TestList).l
+ShootersSelect	move.w	d0,(TestList).l
 	bsr.w	ShooterScreenRows
 	bsr.w	ShooterScreenFrame
 	bra.w	ShootersLoop		;back to the input loop
 ; Clears the shooter screen and draws its backdrop.
-ShootersSelectDraw
+ShootersBackground
 	bsr.w	ClearShooterScreen
 	movem.l	d0-d5/a0-a2,-(sp)
 	jsr	(printz).l
 	String	CC_Font3,$0,$0
 	movea.l	(EASportsBGMap).l,a1
 	adda.l	$4(a1),a1
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
@@ -411,7 +411,7 @@ ShootersSelectDraw
 	cmpa.l	#tmstruct,a2
 	beq.w	.next
 	move.w	#$2C,d0
-.next	jmp	(PutTeamBlockDraw).l
+.next	jmp	(PutTeamBlock).l
 ClearShooterScreen						;Shootout shooters: erase the screen
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
@@ -462,7 +462,7 @@ ShooterScreenFrame
 .next	move.w	(TestList).l,d0
 	asl.w	#$1,d0
 	move.w	(a1,d0.w),d0
-	jsr	(GetPlayerNameBuild).l
+	jsr	(getname).l
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
@@ -482,7 +482,7 @@ ShooterScreenRows
 .loop	move.w	d1,d0
 	asl.w	#$1,d0
 	move.w	(a0,d0.w),d0
-	jsr	(FormatLastNameStart).l
+	jsr	(FormatPlayerNameShort).l
 	move.w	(printx).l,-(sp)
 	cmp.w	(TestList).l,d1
 	bne.w	.next
