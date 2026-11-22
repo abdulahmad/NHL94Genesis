@@ -86,7 +86,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	movea.l	#$22906,a0
 	bra.w	.facing
 .skater	move.w	Ypos(a3),d0
-	btst	#pfgoal,$62(a3)
+	btst	#pfgoal,pflags(a3)
 	bne.w	.near
 	neg.w	d0
 .near	bset	#$2,(sflags6).l
@@ -96,7 +96,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	movea.l	#$228E6,a0
 	bclr	#$2,(sflags6).l
 .facing	move.w	facedir(a3),d0
-	btst	#pfgoal,$62(a3)
+	btst	#pfgoal,pflags(a3)
 	bne.w	.offset
 	addi.w	#$4,d0
 	andi.w	#$7,d0
@@ -116,7 +116,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 .next6	cmpi.w	#$37,d0
 	bgt.w	.side
 	move.w	#$103,d2
-.side	btst	#pfgoal,$62(a3)
+.side	btst	#pfgoal,pflags(a3)
 	bne.w	.rand
 	neg.w	d1
 	neg.w	d2
@@ -338,7 +338,7 @@ PuckOnAttackHalf						;d0 = 1 when the puck is on the half of the goal player a3
 	
 	movem.w	d0-d1,-(sp)
 	move.w	(pucky).l,d0
-	btst	#pfgoal,$62(a3)
+	btst	#pfgoal,pflags(a3)
 	bne.w	.cont
 	neg.w	d0
 .cont	tst.w	d0
@@ -381,7 +381,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	jsr	(doshot).l
 	movem.l	d0/a0,-(sp)
 	movea.l	#tmstruct,a0
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	beq.w	.home
 	lea.l	$366(a0),a0
 .home	clr.w	d0

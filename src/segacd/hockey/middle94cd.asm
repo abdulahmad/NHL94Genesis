@@ -172,9 +172,9 @@ cramfade
 	asl.w	d0,d5
 	move.w	d5,d4
 	not.w	d4
-	move.l	d3,$BBC88.l
-	move.l	d4,$BBC8C.l
-	move.l	d5,$BBC90.l
+	move.l	d3,(GateRequestBlock).l
+	move.l	d4,(GateRequestBlock+4).l
+	move.l	d5,(GateRequestBlock+8).l
 	jsr	(RaiseGateRequest).l
 .loop	btst	#$4,$FF800E.l
 	bne.b	.loop
@@ -269,7 +269,7 @@ randomd0s
 	rts
 randomd0						;d0 = range. Return random number in d0 (0 <= d0 < range)
 	movem.l	d0-d2,-(sp)
-	move.w	$18C1A.l,d0
+	move.w	(seed+2).l,d0
 	move.w	d0,d1
 	move.w	(seed).l,d2
 	mulu.w	#$E62D,d0
@@ -384,9 +384,9 @@ song						;play song number. One word passed on stack
 	blt.w	.none
 	cmpi.w	#$78,d0
 	bge.w	.none
-	move.w	#$1,$1745C.l
+	move.w	#$1,(CdSongPending).l
 	subi.w	#$29,d0
-	move.w	d0,$1745E.l
+	move.w	d0,(CdSongTrack).l
 .none	movem.l	(sp)+,d0
 	move.l	(sp),$2(sp)
 	addq.w	#$2,sp
@@ -403,7 +403,7 @@ SongCdCheck
 	andi.w	#$FF00,d2
 	cmpi.w	#$500,d2
 	bne.s	.next
-	move.w	#$2,$1745E.l
+	move.w	#$2,(CdSongTrack).l
 	bra.s	.next4
 .next	cmpi.w	#$100,d2
 	bne.s	.next2
@@ -414,21 +414,21 @@ SongCdCheck
 	beq.s	.next2
 	cmpi.b	#$7,$7(a0)
 	bge.s	.next2
-	move.w	#$2,$1745E.l
+	move.w	#$2,(CdSongTrack).l
 	bra.s	.next4
 .next2	cmpi.w	#$0,d2
 	bne.s	.next3
 	bra.w	.next4
-.next3	tst.w	$1745C.l
+.next3	tst.w	(CdSongPending).l
 	ble.s	.next7
-.next4	move.w	#$0,$1745C.l
-	move.w	$1745E.l,(CdCommandArg).l
-	cmpi.w	#$2,$1745E.l
+.next4	move.w	#$0,(CdSongPending).l
+	move.w	(CdSongTrack).l,(CdCommandArg).l
+	cmpi.w	#$2,(CdSongTrack).l
 	bne.s	.next5
 	move.w	#$300,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
-	move.w	$1745E.l,(CdCommandArg).l
+	move.w	(CdSongTrack).l,(CdCommandArg).l
 	bra.s	.next6
 .next5	move.w	#$400,d1
 	move.w	#$85,d0
@@ -790,39 +790,39 @@ DoDMAProQueue
 	dbra	d3,.loop
 	lea.l	(ThreeStars).l,a0
 .next3	lea.l	$C00004.l,a1
-	move.l	(a0),$BBC96.l
-	move.l	d1,$BBC9A.l
+	move.l	(a0),(GateRequestBlock+$E).l
+	move.l	d1,(GateRequestBlock+$12).l
 	adda.l	#$180002,a0
-	move.w	#$8154,$BBC88.l
-	move.w	#$8F02,$BBC8A.l
+	move.w	#$8154,(GateRequestBlock).l
+	move.w	#$8F02,(GateRequestBlock+2).l
 	move.w	#$9300,d2
 	move.b	d0,d2
-	move.w	d2,$BBC8C.l
+	move.w	d2,(GateRequestBlock+4).l
 	move.w	#$9400,d2
 	lsr.w	#$8,d0
 	move.b	d0,d2
-	move.w	d2,$BBC8E.l
+	move.w	d2,(GateRequestBlock+6).l
 	move.l	a0,d0
 	lsr.l	#$1,d0
 	move.w	#$9500,d2
 	move.b	d0,d2
-	move.w	d2,$BBC90.l
+	move.w	d2,(GateRequestBlock+8).l
 	lsr.l	#$8,d0
 	move.w	#$9600,d2
 	move.b	d0,d2
-	move.w	d2,$BBC92.l
+	move.w	d2,(GateRequestBlock+$A).l
 	lsr.l	#$8,d0
 	andi.b	#$7F,d0
 	move.w	#$9700,d2
 	move.b	d0,d2
-	move.w	d2,$BBC94.l
+	move.w	d2,(GateRequestBlock+$C).l
 	clr.l	d0
 	move.w	d1,d0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	move.l	d0,d3
 	ori.l	#$804000,d0
-	move.l	d0,$BBC9E.l
+	move.l	d0,(GateRequestBlock+$16).l
 	jsr	(RaiseGateRequest).l
 .loop2	btst	#$7,$FF800E.l
 	bne.b	.loop2
@@ -859,39 +859,39 @@ DmaCopyFromWordRam
 	dbra	d3,.loop5
 	lea.l	(ThreeStars).l,a0
 .next6	lea.l	$C00004.l,a1
-	move.l	(a0),$BBC96.l
-	move.l	d1,$BBC9A.l
+	move.l	(a0),(GateRequestBlock+$E).l
+	move.l	d1,(GateRequestBlock+$12).l
 	adda.l	#$180002,a0
-	move.w	#$8154,$BBC88.l
-	move.w	#$8F02,$BBC8A.l
+	move.w	#$8154,(GateRequestBlock).l
+	move.w	#$8F02,(GateRequestBlock+2).l
 	move.w	#$9300,d2
 	move.b	d0,d2
-	move.w	d2,$BBC8C.l
+	move.w	d2,(GateRequestBlock+4).l
 	move.w	#$9400,d2
 	lsr.w	#$8,d0
 	move.b	d0,d2
-	move.w	d2,$BBC8E.l
+	move.w	d2,(GateRequestBlock+6).l
 	move.l	a0,d0
 	lsr.l	#$1,d0
 	move.w	#$9500,d2
 	move.b	d0,d2
-	move.w	d2,$BBC90.l
+	move.w	d2,(GateRequestBlock+8).l
 	lsr.l	#$8,d0
 	move.w	#$9600,d2
 	move.b	d0,d2
-	move.w	d2,$BBC92.l
+	move.w	d2,(GateRequestBlock+$A).l
 	lsr.l	#$8,d0
 	andi.b	#$7F,d0
 	move.w	#$9700,d2
 	move.b	d0,d2
-	move.w	d2,$BBC94.l
+	move.w	d2,(GateRequestBlock+$C).l
 	clr.l	d0
 	move.w	d1,d0
 	asl.l	#$2,d0
 	lsr.w	#$2,d0
 	move.l	d0,d3
 	ori.l	#$804000,d0
-	move.l	d0,$BBC9E.l
+	move.l	d0,(GateRequestBlock+$16).l
 	jsr	(RaiseGateRequest).l
 .loop6	btst	#$4,$FF800E.l
 	bne.b	.loop6
@@ -920,9 +920,9 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset	#dfng,(disflags).l
-	move.l	d0,$BBC88.l
-	move.l	d1,$BBC8C.l
-	move.l	d2,$BBC90.l
+	move.l	d0,(GateRequestBlock).l
+	move.l	d1,(GateRequestBlock+4).l
+	move.l	d2,(GateRequestBlock+8).l
 	jsr	(RaiseGateRequest).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -959,9 +959,9 @@ DoDMANd2Queue
 .next2	bclr	#$5,$FF800F.l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
-	move.l	d0,$BBC88.l
-	move.l	d1,$BBC8C.l
-	move.l	d2,$BBC90.l
+	move.l	d0,(GateRequestBlock).l
+	move.l	d1,(GateRequestBlock+4).l
+	move.l	d2,(GateRequestBlock+8).l
 	jsr	(RaiseGateRequest).l
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
@@ -1577,9 +1577,9 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	asl.w	#$1,d0		;d0 = byte offset of the first map word wanted
 	move.w	$A(sp),d1
 	subi.w	#$1,d1
-	move.w	d1,(ThreeStars).l		;map word (map data starts 4 bytes in)
-	lea.l	$BC002.l,a0
-.loop1	move.w	$4(a1,d0.w),d3
+	move.w	d1,(ThreeStars).l		;disc: word count - 1, then the map words from ThreeStars+2, for the main CPU (command $21)
+	lea.l	(ThreeStars+2).l,a0
+.loop1	move.w	$4(a1,d0.w),d3		;map word (map data starts 4 bytes in)
 	add.w	d4,d3		;add the start char
 	eor.w	d5,d3		;xor the attribute bits
 	move.w	d3,(a0)+		;write the name table entry
