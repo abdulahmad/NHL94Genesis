@@ -5,7 +5,7 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	addi.w	#$1,(gsp).l		;period number
 	bchg	#gmdir,(gmode).l		;flip the attack direction
 	cmpi.w	#$3,(gsp).l		;period 3 or later?
-	blt.w	.0
+	blt.w	PeriodOver_sp
 	beq.w	.1		;period 3 just ended
 	move.w	#$3,(gsp).l		;overtime done: stay at 3
 	tst.w	(OptPlayMode).l
@@ -13,9 +13,9 @@ PeriodOver						;what to do if period over. Branched to from puckfaceoff when th
 	move.w	#$4,(gsp).l
 .1	move.w	(HmGoals).l,d0
 	sub.w	(AwGoals).l,d0
-	beq.w	.0		;tied: play overtime
+	beq.w	PeriodOver_sp		;tied: play overtime
 	move.w	#$4,(gsp).l		;game over
-.0	bsr.w	forceblack
+PeriodOver_sp	bsr.w	forceblack
 ; End of period: resets the clock, scores, then runs the intermission.
 PeriodOverIntermission
 	jsr	(ResetClock).l
@@ -31,7 +31,7 @@ PeriodOverIntermission
 	jmp	(GetPeriodTimeSetup).l
 .next4	jmp	(GameOver).l
 ; Period over: ends a penalty shot first
-PeriodOverPenaltyShot	btst.b	#$2,(BA_PS_flags).l
+pucknorm	btst.b	#$2,(BA_PS_flags).l
 	beq.w	.next
 	bsr.w	UpdatePenaltyShotEnd
 .next	bclr.b	#$1,$62(a3)
@@ -52,7 +52,7 @@ PeriodOverPenaltyShot	btst.b	#$2,(BA_PS_flags).l
 	adda.w	d0,a2
 	bsr.w	a2touchpuck
 	move.l	a2,-(sp)
-	bsr.w	GetHotCount
+	bsr.w	GetHot
 	add.w	$0(a2),d0
 	sub.w	$0(a3),d0
 	asr.w	#$2,d0
@@ -64,7 +64,7 @@ PeriodOverPenaltyShot	btst.b	#$2,(BA_PS_flags).l
 	move.w	$28(a2),$28(a3)
 	move.w	$2A(a2),$2A(a3)
 .next4	bsr.w	PuckIChk
-	bsr.w	PeriodOverSwitch
+	bsr.w	ChkOffsides
 	btst.b	#$0,(gmode).l
 	bne.w	.next7
 	tst.w	(puckc).l
@@ -82,13 +82,13 @@ PeriodOverPenaltyShot	btst.b	#$2,(BA_PS_flags).l
 .next5	bra.w	.next7
 .next6	move.w	#$78,$42(a3)
 .next7	tst.b	$2C(a3)
-	bne.w	PuckCollisionLimits
+	bne.w	checkpuckcoll
 	tst.w	$18(a3)
-	bne.w	PuckCollisionLimits
+	bne.w	checkpuckcoll
 	bsr.w	puckunflip
-	bra.w	PuckCollisionLimits
+	bra.w	checkpuckcoll
 ; Period over: switches the teams
-PeriodOverSwitch	btst.b	#$5,(gmode).l
+ChkOffsides	btst.b	#$5,(gmode).l
 	beq.w	rtss2
 	btst.b	#$2,(BA_PS_flags).l
 	bne.w	rtss2

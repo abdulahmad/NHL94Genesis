@@ -76,7 +76,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Data that follows PSandSOpassdir (strings, small tables)
-PSandSOpassdirData	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
+passdirlist	dc.w	$0000,$0007,$0006,$0005,$0004,$0003,$0002,$0001
 	dc.w	$0008
 StartShootoutPath						;Shootout: pick one of the 7 skate paths (ShootoutPaths) at random
 	
@@ -122,12 +122,12 @@ NextPathPoint
 	bne.w	.x
 	bset	#$3,(sflags7).l
 	clr.w	(sopathend).l
-	move.b	$5(a0,d0.w),$1A8BF.l
+	move.b	$5(a0,d0.w),(sopathend+1).l
 	move.w	$6(a0,d0.w),(sopathdir).l
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Shootout path: steps the shooter to the next path point.
-NextPathPointStep
+SkatePath
 	movem.l	d2-d7/a0-a6,-(sp)
 	cmpi.b	#$80,(sopathx).l
 	beq.w	.next11
@@ -165,7 +165,7 @@ NextPathPointStep
 .next11	movem.l	(sp)+,d2-d7/a0-a6
 	rts
 ; Shootout path: checks the current point before moving on.
-NextPathPointCheck
+ShootoutShootCheck
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$1,(gmode2).l
 	beq.w	.next17

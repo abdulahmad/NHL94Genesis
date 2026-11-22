@@ -3,13 +3,13 @@ vb2						;Vblank used for palfades only, no dmas (VBint target). No rte here: fa
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).l
 	bne.w	.nograph
-	bsr.w	ForceBlackStep
-.nograph	addq.w	#$1,(ScoutSubStatus).l
+	bsr.w	cramfade
+.nograph	addq.w	#$1,(Vcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Vertical interrupt: runs the dma list
 VBlankDmaList	bsr.w	DmaListWait
-	movea.l	#$BBD30,a0
+	movea.l	#Satt,a0
 	move.w	(Sattsize).l,d0
 	move.w	(VSPRITES).l,d1
 	dc.w	$6100,$9D0A		; bsr.w X_378D2
@@ -81,7 +81,7 @@ setvideo
 	bne.w	.p
 	movea.l	#DMAList,a5
 	bsr.w	updatescroll
-	movea.l	#$BBD30,a6
+	movea.l	#Satt,a6
 	moveq	#$1,d6
 	bsr.w	checkfo
 	bsr.w	checksso
@@ -93,13 +93,13 @@ setvideo
 	bsr.w	showcrowd
 	bsr.w	showref
 	jsr	(Crowd_Noise).l
-	cmpa.l	#$BBD30,a6
+	cmpa.l	#Satt,a6
 	bne.w	.n
 	clr.l	(a6)+
 	clr.l	(a6)+
 .n	clr.b	-$5(a6)
 	move.l	a6,d0
-	subi.l	#$BBD30,d0
+	subi.l	#Satt,d0
 	lsr.w	#$1,d0
 	move.w	d0,(Sattsize).l
 	move.l	a5,(DMAlistend).l
@@ -338,7 +338,7 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 	bsr.w	.pb
 	move.b	(Crowdframe).l,d0
 	bsr.w	.sc
-	move.b	$17CD1.l,d0
+	move.b	(Crowdframe+1).l,d0
 	bra.w	.sc
 .pb	andi.w	#$F,d2		;d2 = count, d3 = first frame
 	cmpi.w	#$3,d2
@@ -647,7 +647,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 	st.b	$18(a0)		;set Zpos
 	move.b	(glovecords).l,d0
 	beq.w	.0		;branch if 0
-	move.b	$17E33.l,d1
+	move.b	(glovecords+1).l,d1
 	ext.w	d0
 	asl.w	#$2,d0
 	move.w	d0,$0(a0)		;move d0 into Xpos
@@ -915,7 +915,7 @@ updatesound						;move the crowd noise volume (psg noise channel, asv) toward Cr
 	ori.b	#$F0,d0
 	rts
 ; Sets the VDP planes and scroll for the sound update screen.
-UpdateSoundVdpSetup
+setupice
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$1,(disflags).l
 	move.w	#$C000,(VmMAP2).l
@@ -948,7 +948,7 @@ UpdateSoundVdpSetup
 	movea.l	$47D64.l,a2
 	addq.l	#$8,a2
 .next4	bsr.w	DecompressGraphicsPlain
-	jsr	(UnpackPictureSelectGfx).l
+	jsr	(LoadHomeTeamGfx).l
 	move.w	d4,(EASNcset).l
 	bsr.w	SetupIceRinkPalRemap
 	move.w	d4,(energybarchars).l
@@ -962,7 +962,7 @@ UpdateSoundVdpSetup
 	move.w	d4,(arenaanimchars).l
 	addi.w	#$32,d4
 	move.w	d4,(spritechars).l
-	bsr.w	CopyTeamBlockMapDataFill
+	bsr.w	defaultsprites
 	move.w	d4,(dmaram).l
 	bsr.w	setupIceRinkPal
 	bsr.w	AddSmallFontFramer

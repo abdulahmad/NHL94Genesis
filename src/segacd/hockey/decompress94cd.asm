@@ -16,6 +16,7 @@ DecompressGraphicsQueue	move.l	a6,-(sp)
 .next2	bclr	#$5,$FF800F.l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
+DecompressGraphics
 	movem.l	d0-d1/a0-a6,-(sp)
 	moveq	#$0,d0
 	moveq	#$0,d1

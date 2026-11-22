@@ -8,9 +8,9 @@ suba4						;a4 = current replay frame. Back up 1 frame and set video parameters 
 	movea.l	#replayend,a4
 .1	suba.w	#replaysize,a4
 	cmpa.l	(recbpr).l,a4
-	bne.w	RestoreReplayFrameCopy
+	bne.w	RestoreReplayFrame
 	adda.w	#replaysize,a4
-.end	bsr.w	RestoreReplayFrameCopy
+.end	bsr.w	RestoreReplayFrame
 	clr.w	d7
 	rts
 adda4						;Step forward 1 frame. First handles a reverse
@@ -44,29 +44,29 @@ adda4						;Step forward 1 frame. First handles a reverse
 	adda.l	#$80,a0
 	move.w	#$1,oldframe(a0)
 	movem.l	(sp)+,a0
-	bsr.w	RestoreReplayFrame
+	bsr.w	RevReplayAdj
 	btst	#$5,(sflags).l
 	beq.w	.0
-.0	jsr	(ReadActiveJoypadPrint).l
+.0	jsr	(ShowReplayIcon).l
 	move.w	#$64,(palcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 .1	clr.w	d7
 	btst	#sf2drec,(sflags2).l
 	beq.w	adda42
 	movem.l	a4,-(sp)
-	bsr.w	NextReplayEntry
+	bsr.w	adda43
 	cmpa.l	(recbpr).l,a4
 	movem.l	(sp)+,a4
-	beq.w	updatereplayExit
+	beq.w	rtss8
 adda42						;adda4 without the sf2drec look-ahead: stop at the record point, else show
 	
 	cmpa.l	(recbpr).l,a4
-	beq.w	updatereplayExit
-	bsr.w	RestoreReplayFrameCopy
+	beq.w	rtss8
+	bsr.w	RestoreReplayFrame
 ; Advances the replay pointer by $62 and wraps at the end of the buffer.
-NextReplayEntry	adda.w	#$62,a4
+adda43	adda.w	#$62,a4
 	cmpa.l	#replayend,a4
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	movea.l	#$C45C,a4
 	rts
 UpdateCameraPos	movem.l	d0-d2,-(sp)
@@ -96,11 +96,11 @@ UpdateCameraPos	movem.l	d0-d2,-(sp)
 .3	move.w	d1,(Vpos).l
 	movem.l	(sp)+,d0-d2
 	rts
-RestoreReplayFrame	btst	#$4,(sflags4).l
-	beq.w	RestoreReplayFrameCopy
+RevReplayAdj	btst	#$4,(sflags4).l
+	beq.w	RestoreReplayFrame
 	bset	#$7,(sflags4).l
 ; Copies the saved replay sprite state back.
-RestoreReplayFrameCopy	movem.l	d0-d2/a0/a6,-(sp)
+RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	#$4761C,a6
 	movea.l	a4,a0
 	moveq	#$F,d1
@@ -261,7 +261,7 @@ ClampReplayView						;Clamp Hpos to -$3C..$3C and Vpos to -$C8..$100
 	rts
 updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	btst	#gmhl,(gmode).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	btst	#sf2drec,(sflags2).l
 	beq.w	.0
 	tst.w	(replaydelay).l
@@ -319,10 +319,10 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	or.b	d0,(a0)+
 	adda.l	#$80,a3
 	dbra	d2,.loop
-	move.b	$17B99.l,(a0)+
+	move.b	(puckz+1).l,(a0)+
 	move.b	$17C19.l,(a0)+
-	move.b	$17F65.l,(a0)+
-	bset	#$7,$17F65.l
+	move.b	(lastsfx+1).l,(a0)+
+	bset	#$7,(lastsfx+1).l
 	move.b	d7,(a0)+
 	move.w	(PadControlBits).l,(a0)+
 	move.w	(Crowdframe).l,(a0)+
@@ -335,5 +335,5 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	move.w	(sp)+,d0
 	move.w	(Hpos).l,(a0)+
 	move.w	(Vpos).l,(a0)+
-updatereplayExit
+rtss8
 	rts

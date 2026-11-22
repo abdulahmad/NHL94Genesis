@@ -136,7 +136,7 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	ext.l	d1
 	asl.l	#$8,d1
 	divs.w	d3,d1
-	bsr.w	.next
+	bsr.w	cornercollb
 .exit	movem.w	(sp)+,d2-d5
 	move.w	Wallcos(a3),d0
 	or.w	Wallsin(a3),d0
@@ -144,20 +144,20 @@ checkcornercoll						;210 = blue line to the end of the rink, corner radius 64. 
 	move.w	#$100,d0
 	clr.w	d1
 	cmp.w	d5,d3
-	bge.w	.next
+	bge.w	cornercollb
 	neg.w	d5
 	neg.w	d0
 	cmp.w	d5,d3
-	ble.w	.next
+	ble.w	cornercollb
 	exg.l	d0,d1
 	cmp.w	d4,d2
-	bge.w	.next
+	bge.w	cornercollb
 	neg.w	d4
 	neg.w	d1
 	cmp.w	d4,d2
-	ble.w	.next
+	ble.w	cornercollb
 .rtss3	rts
-.next	jmp	(wallcollb).l
+cornercollb	jmp	(wallcollb).l
 Create_HotCold_Table						;Fill the hot / cold table (tmHotCold) of team struct a0: 16 bytes for
 	
 	
@@ -345,7 +345,7 @@ CopyHottestPlayer						;Copy the hottest player of TempBuffer to the list at a0
 	rts
 CopyColdestPlayer						;Copy the coldest player (TempBuffer+10) to the list at a0
 	movem.l	d0/a0-a1,-(sp)
-	movea.l	#$17E7A,a1
+	movea.l	#TempBuffer+10,a1
 	move.w	#$0,d0
 .copy	clr.b	(a0)+
 	move.b	(a1),(a0)+
@@ -353,6 +353,7 @@ CopyColdestPlayer						;Copy the coldest player (TempBuffer+10) to the list at a
 	dbra	d0,.copy
 	movem.l	(sp)+,d0/a0-a1
 	rts
+CompareHotColdTotals
 	movem.l	d1-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a0
 	bsr.w	GetHotColdTotal

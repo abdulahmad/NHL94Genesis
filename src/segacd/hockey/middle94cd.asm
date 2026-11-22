@@ -43,6 +43,7 @@ QueueVramWriteFlag
 .next2	bclr	#$5,$FF800F.l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
+remap
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movem.l	d0-d4/a0-a2,-(sp)
@@ -92,7 +93,7 @@ QueueVramWriteFlag
 	rts
 forceblack
 	movem.l	d0/a0,-(sp)
-	movea.l	#$BBCB0,a0
+	movea.l	#palfadenew,a0
 	moveq	#$1F,d0
 .0	move.l	(a0),-(sp)
 	clr.l	(a0)+
@@ -106,7 +107,7 @@ forceblack
 	rts
 forceblack2
 	movem.l	d0/a0,-(sp)
-	movea.l	#$BBCB0,a0
+	movea.l	#palfadenew,a0
 	moveq	#$1F,d0
 .loop	move.l	(a0),-(sp)
 	clr.l	(a0)+
@@ -151,7 +152,7 @@ ForceBlackBegin
 	rts
 
 ; One fade countdown step.
-ForceBlackStep
+cramfade
 	tst.w	(palcount).l
 	bmi.w	rtss2
 	cmpi.w	#$64,(palcount).l
@@ -191,7 +192,7 @@ ForceBlackStep
 .next	movem.l	d0/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	movea.l	#$BBCB0,a1
+	movea.l	#palfadenew,a1
 	movea.l	#$C00000,a0
 .loop4	btst	#$4,$FF800E.l
 	bne.b	.loop4
@@ -224,11 +225,11 @@ ForceBlackStep
 	movem.l	(sp)+,d0/a0-a1
 	rts
 ; Sets colour RAM to black through the gate array.
-ForceBlackStepCram
+CopyPaletteToCRAM
 	movem.l	d0/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	movea.l	#$BBCB0,a1
+	movea.l	#palfadenew,a1
 	movea.l	#$C00000,a0
 .loop10	btst	#$7,$FF800E.l
 	bne.b	.loop10
@@ -355,8 +356,10 @@ sfx						;play sound effect number. One word passed on stack
 	move.l	(sp),$2(sp)
 	addq.w	#$2,sp
 	rts
-; Sends a command word to the sub CPU through the gate array (disc only)
-GateArrayCommandSend	move.l	d0,-(sp)
+; disc only: sfx for code that runs inside the vblank. Sends the sound number (one word on the stack)
+; to the main CPU as vblank command $34, which runs the same Z80 sound call as sfx's command $26.
+; Unlike sfx it does not skip negative numbers or set lastsfx.
+sfx_vblank	move.l	d0,-(sp)
 	move.w	$8(sp),d0
 	move.w	d0,$FF8028.l
 .loop	btst.b	#$4,$FF800E.l
@@ -443,7 +446,7 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	
 	clr.w	(waitxpad).l
 	neg.w	d0
-	move.w	d0,(ScoutSubStatus).l
+	move.w	d0,(Vcount).l
 .wait	bsr.w	ReadJoy1
 	or.w	d3,(waitxpad).l
 	tst.w	d1
@@ -462,8 +465,8 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 	or.w	d3,(waitxpad).l
 	tst.w	d1
 	bne.w	rtss2
-.1	move.w	(ScoutSubStatus).l,d0
-.0	cmp.w	(ScoutSubStatus).l,d0
+.1	move.w	(Vcount).l,d0
+.0	cmp.w	(Vcount).l,d0
 	beq.w	.0
 	tst.w	d0
 	bmi.w	.wait		;still counting up to zero
@@ -471,7 +474,7 @@ waitx						;wait d0 vblanks or until input from either joystick. Return joystick
 waitxsr						;Wait d0 vblanks while the zamboni crosses
 	movem.l	d4-d7/a0-a3,-(sp)
 	neg.w	d0
-	move.w	d0,(ScoutSubStatus).l
+	move.w	d0,(Vcount).l
 .wait	cmpi.w	#$708,(Zamx).l
 	bhi.w	.nz
 	addi.w	#$1,(Zamx).l
@@ -506,7 +509,7 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	bsr.w	ProcessInputWithRepeat
 	tst.w	d1
 	beq.w	.vid
-.key	move.w	(ScoutSubStatus).l,d0
+.key	move.w	(Vcount).l,d0
 	cmpi.w	#$FF88,d0
 	blt.w	.menu
 	moveq	#-120,d0
@@ -516,10 +519,10 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	adda.w	#$2,sp
 	bset	#$7,d1
 	bra.w	.ex
-.resume	move.w	(sp)+,(ScoutSubStatus).l
+.resume	move.w	(sp)+,(Vcount).l
 .vid	bsr.w	setvideo
-	move.w	(ScoutSubStatus).l,d0
-.0	cmp.w	(ScoutSubStatus).l,d0
+	move.w	(Vcount).l,d0
+.0	cmp.w	(Vcount).l,d0
 	beq.w	.0
 	tst.w	d0
 	bmi.w	.wait
@@ -527,8 +530,8 @@ waitxsr						;Wait d0 vblanks while the zamboni crosses
 	rts
 waitjoy						;wait for either joystick input. Return d1 = new button presses. it as
 	
-	move.w	(ScoutSubStatus).l,d0
-.0	cmp.w	(ScoutSubStatus).l,d0
+	move.w	(Vcount).l,d0
+.0	cmp.w	(Vcount).l,d0
 	beq.w	.0
 	bsr.w	orjoy
 	beq.w	waitjoy
@@ -686,7 +689,7 @@ RelocatePointerTableWordRam
 	bne.w	.loop5
 	movem.l	(sp)+,d0-d1/a0
 	rts
-CompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal into TempWord1 /
+ScoutCompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotColdTotal into TempWord1 /
 									;TempWord2): awayhotter = 1 when the away total is
 									;higher; d0 = -1, $22 or $23 by the difference (ScoutingReport text
 									;"Lately ... has been playing (extremely) well")
@@ -985,7 +988,7 @@ DoDMANd2Queue
 
 setVram						;initialize all necesary video parameters based on my variables. d0 =
 									;color to fade to. Falls into setVram_0
-	movea.l	#$BBCB0,a0
+	movea.l	#palfadenew,a0
 	moveq	#$3F,d1
 .0	move.w	d0,(a0)+		;fill the 64 target colors with d0
 	dbra	d1,.0
@@ -1553,7 +1556,7 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	bset	#dfng,(disflags).l
 	movem.l	d0-d3/d5-d6/a0-a3,-(sp)		;2(sp) start x, $A(sp) width x, $E(sp) width y (low words of d0, d2, d3)
 	move.w	d1,d6
-	movea.l	#$BBCB0,a3		;a3 = target palette, a0 = palette data
+	movea.l	#palfadenew,a3		;a3 = target palette, a0 = palette data
 	bra.w	.00
 .01	move.b	(a0,d0.w),(a3,d0.w)		;copy the color
 	dbra	d0,.01

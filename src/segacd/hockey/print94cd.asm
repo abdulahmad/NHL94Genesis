@@ -172,43 +172,46 @@ ControlCode_SetMapAndPositionData	dc.w	$0003,$C000
 	dc.w	$0003,$8F4A
 	dc.w	$0003,$8F5C
 	dc.w	$0003,$8ED6
-	bsr.w	.next2
-	bsr.w	.next
-	bsr.w	.next3
-	bra.w	.next4
-.next	move.b	(a1)+,d0
+	bsr.w	ControlCode_SetAttribute
+	bsr.w	ControlCode_SetMap
+	bsr.w	ControlCode_SetX
+	bra.w	ControlCode_SetY
+ControlCode_SetMap	move.b	(a1)+,d0
 	subi.w	#$1,d3
 	andi.w	#$3,d0
 	asl.w	#$2,d0
 	subi.w	#$4,d0
 	move.w	d0,(printm).l
 	bra.w	xyVmMap
-.next2	move.b	(a1)+,d2
+ControlCode_SetAttribute	move.b	(a1)+,d2
 	andi.w	#$7,d2
 	subi.w	#$1,d3
 	ror.w	#$3,d2
 	move.w	d2,(printa).l
 	rts
-.next3	clr.w	d0
+ControlCode_SetX	clr.w	d0
 	move.b	(a1)+,d0
 	subi.w	#$1,d3
 	move.w	d0,(printx).l
 	bra.w	xyVmMap
-.next4	clr.w	d0
+ControlCode_SetY	clr.w	d0
 	move.b	(a1)+,d0
 	subi.w	#$1,d3
 	move.w	d0,(printy).l
 	bra.w	xyVmMap
+ControlCode_AddX
 	move.b	(a1)+,d0
 	ext.w	d0
 	subi.w	#$1,d3
 	add.w	d0,(printx).l
 	bra.w	xyVmMap
+ControlCode_AddY
 	move.b	(a1)+,d0
 	ext.w	d0
 	subi.w	#$1,d3
 	add.w	d0,(printy).l
 	bra.w	xyVmMap
+ControlCode_SetFont
 	clr.w	d0
 	move.b	(a1)+,d0
 	subi.w	#$1,d3
@@ -303,14 +306,14 @@ FormatAndPrintTime						;d0 bits 14-15 = period, bits 0-13 = seconds
 	clr.w	d0
 	rol.l	#$2,d0
 	movea.l	#$390E4,a1
-	bsr.w	PrintTickerEntry
+	bsr.w	Fprintsmall
 	addi.w	#$2,(printx).l
 	swap	d0
 	lsr.w	#$2,d0
 	bsr.w	PushTime
 	bra.w	print
 ; Data that follows FormatAndPrintTime (strings, small tables)
-FormatAndPrintTimeData	dc.w	$0004,$2031,$0004,$2032,$0004,$2033,$0004,$4F54
+PeriodLabelTable	dc.w	$0004,$2031,$0004,$2032,$0004,$2033,$0004,$4F54
 PushTime						;convert d0 into string format of minutes:seconds. Return a1 = string.
 	
 	movea.l	#$17F10,a1
@@ -406,7 +409,7 @@ PushNumberWidth						;right-justified number
 	movem.l	(sp)+,d0-d3
 	rts
 ; Appends the number string, then returns through a1.
-PushNumberWidthString
+appendz
 	movea.l	(sp)+,a1
 	bsr.w	appstring
 	jmp	(a1)
@@ -559,7 +562,7 @@ AddSmallFontFramer
 	move.w	d4,(framercset).l
 	bra.w	DecompressGraphicsPlain
 ; Loads the small font from the second map.
-AddSmallFontAlt
+AddTeamBlock
 	moveq	#$2,d4
 	movea.l	$47D44.l,a2
 	addq.l	#$8,a2

@@ -106,19 +106,19 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 .6	adda.l	(a2)+,a1
 .7	bsr.w	UnpackPicture
 	movea.l	#picturebuf,a2
-	move.w	(ScoutSubStatus).l,d3		;current frame
-.loop	cmp.w	(ScoutSubStatus).l,d3
+	move.w	(Vcount).l,d3		;current frame
+.loop	cmp.w	(Vcount).l,d3
 	beq.w	.loop
 	move.w	#$6,d3
 	move.w	#$6,d2
 	clr.w	d0
 	clr.w	d1
-	move.l	$BBCD2.l,-(sp)		;keep palette colors $22-$29: dobitmap overwrites them
-	move.l	$BBCD6.l,-(sp)
+	move.l	(palfadenew+$22).l,-(sp)		;keep palette colors $22-$29: dobitmap overwrites them
+	move.l	(palfadenew+$26).l,-(sp)
 	move.w	#$2,d5
 	jsr	(dobitmap).l
-	move.l	(sp)+,$BBCD6.l
-	move.l	(sp)+,$BBCD2.l
+	move.l	(sp)+,(palfadenew+$26).l
+	move.l	(sp)+,(palfadenew+$22).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$0,$0		;(the routine here)
 	move.w	#$6000,(printa).l
@@ -173,7 +173,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	(cardroster).l,d1
 	tst.w	(ValidSRAM).l
 	bmi.w	.fade
-	jsr	(UpdateRecordsCopyName).l
+	jsr	(PrintRecordValue).l
 	cmpi.w	#$2,(a1)		;PrintRecordValue left an empty string: no records to show
 	beq.w	.fade
 	move.w	(cardprintx).l,(printx).l		;left edge of the text
@@ -207,7 +207,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Player card screen: draws the portrait when the slot is in use.
-PlayerCardDrawPortrait
+wallcollduringcheck
 	tst.w	$34(a2)
 	beq.w	.ex
 	movem.l	d0-d7,-(sp)
@@ -225,7 +225,7 @@ PlayerCardDrawPortrait
 	movem.l	(sp)+,d0-d7
 .ex	rts
 ; Player card screen: draws the stat block of the selected player.
-PlayerCardDrawStats
+setSlotBit
 	bclr	#$5,(sflags6).l
 	tst.w	(puckc).l
 	bmi.w	.ex2
@@ -533,7 +533,7 @@ TeamPalettes						;Matchup and player card palettes: 56 of 16 colors, two per te
 	dc.w	$0464,$0244,$0222,$004E
 	dc.w	$000A,$0022,$0AAA,$0000
 ; Copies a record holder name and fetches the record value.
-UpdateRecordsCopyName
+PrintRecordValue
 	movem.l	d0-d7/a1-a6,-(sp)
 	move.l	a1,-(sp)
 	movea.l	a1,a3
@@ -677,7 +677,7 @@ PrintRecordHolder						;Record holder line: RecByTxt ("by") then the holder's us
 .x	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 ; Data that follows PrintRecordHolder (strings, small tables)
-PrintRecordHolderData	dc.w	$0006,$6279,$2000
+RecByTxt	dc.w	$0006,$6279,$2000
 PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opponent team
 									;(AppendRecordVs)
 	movem.l	d0-d7/a1-a6,-(sp)
@@ -694,7 +694,7 @@ PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opp
 	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 ; Data that follows PrintRecordVs (strings, small tables)
-PrintRecordVsData	dc.b	$00,$06,'vs. '
+RecVsTxt	dc.b	$00,$06,'vs. '
 AppendRecordHolder						;Append the user name of the record holder (byte 1 of record a0, or read
 									;record d0 / d1 when a0 is 0) to a1 (AppendUserName)
 	movem.l	d0-d7/a1-a2,-(sp)
@@ -745,34 +745,34 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 
-UpdateRecords						;With save RAM (ValidSRAM) and user records on (OptUserRec 0), update the
+RecSpaceTxt						;With save RAM (ValidSRAM) and user records on (OptUserRec 0), update the
 	
 	
 	
 ; Data that follows UpdateRecords (strings, small tables)
 UpdateRecordsData	dc.w	$0004,$2000
 ; Starts the record update: skipped when records are off or a game is in progress.
-UpdateRecordsStart
+UpdateRecords
 	tst.w	(ValidSRAM).l
 	bmi.w	.ex
 	tst.w	(OptUserRec).l
 	bne.w	.ex
 	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	UpdateRecordsGoalieCounts
-	bsr.w	UpdateRecordsPlayerCounts
+	bsr.w	CountGoalies
+	bsr.w	CountPlayers
 	move.w	(HomeTeam).l,d1
 	ext.l	d1
 	movea.l	#ThreeStars,a0
 	movea.l	#tmstruct,a2
 	move.w	(homegoalies).l,d5
 	move.w	(VisTeam).l,d6
-	bsr.w	.next12
+	bsr.w	UpdatePlayerRecords
 	move.w	(VisTeam).l,d1
 	ext.l	d1
 	movea.l	#awtmstruct,a2
 	move.w	(awaygoalies).l,d5
 	move.w	(HomeTeam).l,d6
-	bsr.w	.next12
+	bsr.w	UpdatePlayerRecords
 	clr.w	d7
 	movea.l	#tmstruct,a1
 	move.w	(homeuser).l,d4
@@ -782,7 +782,7 @@ UpdateRecordsStart
 	move.w	(homegoalies).l,d6
 	ext.l	d1
 	movea.l	#ThreeStars,a0
-	bsr.w	.next6
+	bsr.w	UpdateCrowdRecord
 	movea.l	#awtmstruct,a1
 	move.w	(awayuser).l,d4
 	move.w	(homeuser).l,d5
@@ -791,7 +791,7 @@ UpdateRecordsStart
 	move.w	(awaygoalies).l,d6
 	ext.l	d1
 	movea.l	#ThreeStars,a0
-	bsr.w	.next6
+	bsr.w	UpdateCrowdRecord
 	movea.l	#ThreeStars,a0
 	move.w	(homeuser).l,d1
 	ext.l	d1
@@ -800,7 +800,7 @@ UpdateRecordsStart
 	move.w	(VisTeam).l,d4
 	movea.l	#tmstruct,a1
 	movea.l	#awtmstruct,a2
-	bsr.w	.next
+	bsr.w	UpdateTeamRecord
 	movea.l	#ThreeStars,a0
 	move.w	(awayuser).l,d1
 	ext.l	d1
@@ -809,11 +809,11 @@ UpdateRecordsStart
 	move.w	(HomeTeam).l,d4
 	movea.l	#awtmstruct,a1
 	movea.l	#tmstruct,a2
-	bsr.w	.next
+	bsr.w	UpdateTeamRecord
 	movem.l	(sp)+,d0-d7/a0-a6
 .ex	rts
-.next	movem.l	d0-d7/a0-a6,-(sp)
-	bsr.w	ReadCrowdRecordBClearFlag6
+UpdateTeamRecord	movem.l	d0-d7/a0-a6,-(sp)
+	bsr.w	ReadTeamRecord
 	st.b	d7
 	movem.w	d0,-(sp)
 	clr.w	d0
@@ -871,10 +871,10 @@ UpdateRecordsStart
 	move.b	d3,$5(a0)
 	move.b	d4,$6(a0)
 	move.b	d2,$7(a0)
-.next5	bsr.w	ReadCrowdRecordBSetFlag6
+.next5	bsr.w	WriteTeamRecord
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.next6	movem.l	d0-d7/a0-a6,-(sp)
+UpdateCrowdRecord	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	ReadCrowdRecord
 	move.w	$C(a1),d3
 	cmp.b	$0(a0),d3
@@ -917,10 +917,10 @@ UpdateRecordsStart
 	move.b	d2,$A(a0)
 .next10	tst.w	d7
 	beq.w	.next11
-	bsr.w	ReadCrowdRecordASetFlag6
+	bsr.w	WriteCrowdRecord
 .next11	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-.next12	clr.l	d0
+UpdatePlayerRecords	clr.l	d0
 	move.w	#$19,d2
 .loop2	bsr.w	SPAlistClearFlag6
 	cmp.w	d5,d0
@@ -940,19 +940,19 @@ UpdateRecordsStart
 	cmp.b	d3,d4
 	ble.w	.next16
 	move.b	d4,$0(a0)
-	move.b	$18BF5.l,$1(a0)
-	move.b	$18BF7.l,$3(a0)
+	move.b	(homeuser+1).l,$1(a0)
+	move.b	(awayuser+1).l,$3(a0)
 	cmpa.l	#tmstruct,a2
 	beq.w	.next15
-	move.b	$18BF7.l,$1(a0)
-	move.b	$18BF5.l,$3(a0)
+	move.b	(awayuser+1).l,$1(a0)
+	move.b	(homeuser+1).l,$3(a0)
 .next15	move.b	d6,$2(a0)
-	bsr.w	SPAlistSetFlag6
+	bsr.w	WritePlayerRecord
 .next16	addi.w	#$1,d0
 	dbra	d2,.loop2
 	rts
 ; Stores the goalie counts of both teams
-UpdateRecordsGoalieCounts	movem.l	d0-d7/a0-a6,-(sp)
+CountGoalies	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetGoalieCount).l
 	move.w	d0,(homegoalies).l
@@ -962,7 +962,7 @@ UpdateRecordsGoalieCounts	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Stores the player counts of both teams
-UpdateRecordsPlayerCounts	movem.l	d0-d7/a0-a6,-(sp)
+CountPlayers	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#tmstruct,a2
 	jsr	(GetPlayerCount).l
 	move.w	d0,(homeplayers).l
@@ -1234,9 +1234,9 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 .4	movea.l	(sp)+,a6
 	rts
 ; Rating weight table
-CalcAttribFirstTable	dc.w	$0202,$0202,$0406,$0204,$0204,$0606,$0402,$0202
+OvrPlayerWgtList	dc.w	$0202,$0202,$0406,$0204,$0204,$0606,$0402,$0202
 ; Rating weight table
-CalcAttribSecondTable	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
+OvrGoalWgtList	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
 ; Rating weight table
 CalcAttribThirdTable	dc.w	$0202,$0202,$0202,$0202,$0202,$0202,$0202,$0202
 DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, Card<player>)
@@ -1299,11 +1299,11 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 	movem.l	(sp)+,a3
 	rts
 ; Sets up the menu vblank handler and display flags for the name screens.
-TrimSpacesMenuSetup
+NameEntryScreen
 	movem.l	d0-d7/a0-a6,-(sp)
 	bclr	#$5,$FF800F.l
 	move.w	#$2,d4
-	move.l	#MenuVBlankHandler,(VBint).l
+	move.l	#VBlank_SetOptions,(VBint).l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l
@@ -1355,7 +1355,7 @@ TrimSpacesMenuSetup
 	moveq	#$1C,d3
 	moveq	#$D,d5
 	jsr	(dobitmap).l
-	jsr	(ForceBlackStepCram).l
+	jsr	(CopyPaletteToCRAM).l
 	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
 	move.w	d4,(logobox1chars).l
@@ -1465,8 +1465,8 @@ NameEntryPrompt	bsr.w	GetNameLength
 	bsr.w	PrintNameField
 	bsr.w	PrintNamePrompt
 .next	bsr.w	MoveLogArrows
-.loop	move.w	(ScoutSubStatus).l,d0
-.loop2	cmp.w	(ScoutSubStatus).l,d0
+.loop	move.w	(Vcount).l,d0
+.loop2	cmp.w	(Vcount).l,d0
 	beq.w	.loop2
 	movem.w	d1,-(sp)
 	move.w	(cont1team).l,d1

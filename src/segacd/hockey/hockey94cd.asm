@@ -38,12 +38,13 @@ GetPeriodTimeSetup
 	move.w	#$8400,d1
 	move.w	#$85,d0
 	jsr	$5F22.w
+StartPer
 	cmpi.w	#$3,(gsp).l
 	bne.w	.next2
 	bset	#$1,(sflags7).l
 .next2	st.b	(faceoffanim).l
-	jsr	(HockeyRtsStubA).l
-	jsr	(UpdateSoundVdpSetup).l
+	jsr	(p_turnoff).l
+	jsr	(setupice).l
 	bsr.w	ResetClock
 ; Inline data read by ResetClock from the return address (1 row).
 	dc.w	$0079,$F000,$0001,$7DC8
@@ -53,12 +54,12 @@ GetPeriodTimeSetup
 	clr.w	(fox).l
 	clr.w	(foy).l
 	btst	#$0,(gmode2).l
-	beq.w	Gameloop
+	beq.w	StartPer_fo
 	move.w	#$1E,d0
 	move.w	#$8,(BA_Skater_Offset).l
 	move.w	#$B,(BA_Goalie_SCnum).l
 	bra.w	GameloopStart
-Gameloop						;Main loop for game
+StartPer_fo						;Main loop for game
 	moveq	#$1B,d0
 ; Start of the game loop: replaces the assist, sets the flags and the frame vector
 GameloopStart	jsr	(assreplace).l
@@ -66,7 +67,7 @@ GameloopStart	jsr	(assreplace).l
 	bclr	#$4,(sflags).l
 	move.w	#$FFFF,(lastsfx).l
 	move.l	#$C45C,(recbpr).l
-	move.w	(ScoutSubStatus).l,(OldVcount).l
+	move.w	(Vcount).l,(OldVcount).l
 	bsr.w	DoGameFrame
 	move.w	#$FFFF,(palcount).l
 	bsr.w	DoGameFrame
@@ -90,6 +91,7 @@ GameloopStart	jsr	(assreplace).l
 	bge.w	.loop
 	bset	#$7,(sflags3).l
 .loop	jsr	(SongCdCheck).l
+; Gameloop (the cartridge label for the code below; a comment here because the disc code reaches across this point with local labels)
 	bsr.w	DoGameFrame
 	bsr.w	demoread
 	btst	#$0,(sflags).l
@@ -97,10 +99,10 @@ GameloopStart	jsr	(assreplace).l
 	bsr.w	Pausemode
 	bra.w	.loop
 DoGameFrame						;wait for at least one vblank, then run one frame of game logic
-	move.w	(ScoutSubStatus).l,d7
+	move.w	(Vcount).l,d7
 	sub.w	(OldVcount).l,d7
 	beq.w	DoGameFrame
-	move.w	(ScoutSubStatus).l,(OldVcount).l
+	move.w	(Vcount).l,(OldVcount).l
 	bsr.w	periodicevents
 	bsr.w	updateplayers
 	tst.w	(songdelay).l
@@ -108,10 +110,10 @@ DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	bmi.w	.nosong
 	subi.w	#$1,(songdelay).l
 	bne.w	.nosong
-	jsr	(HockeyRtsStubB).l
+	jsr	(stop_current_song).l
 	move.w	(delayedsong).l,-(sp)
 	jsr	(song).l
-.nosong	jsr	(PlayerCardDrawStats).l
+.nosong	jsr	(setSlotBit).l
 	bsr.w	checkwindow
 	bsr.w	updatereplay
 	jmp	(setvideo).l
@@ -122,19 +124,19 @@ periodicevents						;Called every time thru game loop with d7 = elapsed frames
 	jsr	(updatesound).l
 	bsr.w	clockcont
 	btst	#sfhor,(sflags).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	sub.w	d7,(lldisp).l
-	bpl.w	updatereplayExit
+	bpl.w	rtss8
 	addi.w	#jps,(lldisp).l
 	jsr	(ChkGoalies).l
 	bsr.w	UpdateCwdExcite
 	bsr.w	CheckLateGameSong
 	bsr.w	RestoreBenchEnergy
-	bsr.w	.next
+	bsr.w	CheckInjury
 	jmp	(updatepwrplay).l
-.next	subi.w	#$1,(InjCntDown).l
-	bne.w	updatereplayExit
-	jmp	(CalcTeamStarScoresPrint).l
+CheckInjury	subi.w	#$1,(InjCntDown).l
+	bne.w	rtss8
+	jmp	(ShowInjuryBox).l
 RestoreBenchEnergy						;Called once per second. Restore energy for players on the bench
 	tst.w	(OptLine).l
 	bne.w	.ex
@@ -201,7 +203,7 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	andi.w	#$1E,(Crowdstep).l
 	add.w	(Crowdstep).l,d0
 	movea.l	#$4154C,a0
-	move.b	(a0,d0.w),$17CD1.l
+	move.b	(a0,d0.w),(Crowdframe+1).l
 	clr.w	d1
 	move.b	$1(a0,d0.w),d1
 .loop	btst	#$7,$FF800E.l
@@ -221,7 +223,7 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	move.w	d1,(Crowdcnt).l
 .cf	clr.b	(Crowdframe).l
 	cmpi.w	#$118,(Crowdlevel).l
-	bls.w	updatereplayExit
+	bls.w	rtss8
 .loop4	btst	#$7,$FF800E.l
 	bne.b	.loop4
 	move.w	#$1B,$FF8020.l
@@ -236,26 +238,26 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	bclr	#$7,$FF800F.l
 	andi.w	#$7F,d0
 	cmpi.w	#$13,d0
-	blt.w	updatereplayExit
+	blt.w	rtss8
 	cmpi.w	#$19,d0
-	bgt.w	updatereplayExit
+	bgt.w	rtss8
 	move.b	d0,(Crowdframe).l
 	rts
 clockcont						;monitor period clock and initiate various clock activated events
 	btst	#gmclock,(gmode).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	tst.w	(gameclock).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	bset	#dfclock,(disflags).l
-	jsr	(HockeyRtsStubB).l
+	jsr	(stop_current_song).l
 	move.w	#$4,-(sp)
 	jsr	(sfx).l
 	bsr.w	freezewindow
 ; clockcont: pushes the assist list and carries on
-clockcontAssists						;End of period. Also entered from puckfaceoff
+clockcont_0						;End of period. Also entered from puckfaceoff
 	movea.l	#puckx,a3
 	move.l	#$18,d0
-	jsr	(AssistListPush).l
+	jsr	(assinsert).l
 	cmpi.w	#$2,(gsp).l
 	blt.w	.next5
 	move.l	#$7,d0
@@ -292,7 +294,7 @@ clockcontAssists						;End of period. Also entered from puckfaceoff
 	adda.w	#$300,a3
 .t2	tst.w	$34(a3)
 	ble.w	.next4
-	jsr	(AssistListPush).l
+	jsr	(assinsert).l
 	move.l	#$7,d0
 .next4	adda.w	#$80,a3
 	dbra	d2,.t2
@@ -311,58 +313,58 @@ clockcontAssists						;End of period. Also entered from puckfaceoff
 	jmp	(AddPenalty2).l
 demoread						;monitor joystick if in demo mode (called every game loop)
 	tst.w	(cont1team).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	tst.w	(cont2team).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	jsr	(ReadJoy1).l
 	btst	#sbut,d1
-	bne.w	EndDemoExitMode0Off
+	bne.w	startpause1
 	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy2).l
 	btst	#$7,d1
-	bne.w	EndDemoExitMode0On
+	bne.w	startpause2
 	tst.w	(FourWayPlay).l
 	beq.w	EndDemoOnPress
 	jsr	(ReadJoy3).l
 	btst	#$7,d1
-	bne.w	EndDemoExitMode3Off
+	bne.w	startpause3
 	bsr.w	EndDemoOnPress
 	jsr	(ReadJoy4).l
 	btst	#$7,d1
-	bne.w	EndDemoExitMode4On
+	bne.w	startpause4
 EndDemoOnPress						;Any button on the pad just read (d1) ends the demo
 	tst.w	d1
-	beq.w	updatereplayExit
+	beq.w	rtss8
 	jmp	(GameOverCheckScroll).l
 ; Demo end code 0, flag 1 cleared
-EndDemoExitMode0Off
+startpause1
 	clr.w	(pausepad).l
 	bclr	#$1,(sflags).l
-	bra.w	EndDemoExitFinish
+	bra.w	startpause
 ; Demo end code 0, flag 1 set
-EndDemoExitMode0On
+startpause2
 	clr.w	(pausepad).l
 	bset	#$1,(sflags).l
 ; Sets the demo end flag and returns
-EndDemoExitFinish	bset	#$0,(sflags).l
+startpause	bset	#$0,(sflags).l
 	rts
 ; Demo end code 3, flag 1 cleared
-EndDemoExitMode3Off
+startpause3
 	move.w	#$3,(pausepad).l
 	bclr	#$1,(sflags).l
-	bra.w	EndDemoExitFinish
+	bra.w	startpause
 ; Demo end code 4, flag 1 set
-EndDemoExitMode4On
+startpause4
 	move.w	#$4,(pausepad).l
 	bset	#$1,(sflags).l
-	bra.w	EndDemoExitFinish
+	bra.w	startpause
 Pausemode	jsr	(forceblack).l
 	move.w	d0,-(sp)
-	move.w	(ScoutSubStatus).l,d0
-.vb	cmp.w	(ScoutSubStatus).l,d0
+	move.w	(Vcount).l,d0
+.vb	cmp.w	(Vcount).l,d0
 	beq.w	.vb
 	move.w	(sp)+,d0
-	jsr	(HockeyRtsStubA).l
+	jsr	(p_turnoff).l
 	move.w	(sflags).l,-(sp)
 	bsr.w	seta2
 	movea.l	#$41F50,a0
@@ -374,7 +376,7 @@ Pausemode	jsr	(forceblack).l
 .chk2	btst	#$2,tmflags(a2)
 	beq.w	.0
 	movea.l	#$420DC,a0
-.0	bsr.w	SetMenuScreenHandler
+.0	bsr.w	Pausemode_top
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad
 	jsr	(showclock).l
@@ -421,7 +423,7 @@ Pausemode	jsr	(forceblack).l
 	move.w	#$18,(palcount).l
 .wait	tst.w	(palcount).l
 	bpl.w	.wait
-	move.w	(ScoutSubStatus).l,(OldVcount).l
+	move.w	(Vcount).l,(OldVcount).l
 	rts
 ; Pause mode: fills VDP memory through the gate array
 PausemodeVdpFill
@@ -452,7 +454,7 @@ PausemodeVdpFill
 	bclr	#$7,$FF800F.l
 	jsr	(SetHor).l
 	jsr	(setvideo).l
-	jsr	(HockeyRtsStubC).l
+	jsr	(KillCrowd).l
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
 	dc.w	$0008
@@ -473,7 +475,7 @@ seta2						;Set a2 to the team struct of the pause joystick also called from
 	adda.w	#tmsize,a2
 .x	rts
 ; Stores the menu handler pointers and clears the cursor.
-SetMenuScreenHandler
+Pausemode_top
 	move.l	a0,(menulist).l
 	move.l	a1,(menudraw).l
 	clr.w	(menuitem).l

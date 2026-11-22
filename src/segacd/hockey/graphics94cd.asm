@@ -21,12 +21,12 @@ NHLPALogoMapDisc					;disc only: graphics after Card001 (through the end of $2C6
 TileNumberTables					;disc only: tables of VDP tile numbers (word rows of consecutive numbers), then the pointer
 									;slots the file loader fills ($47CFC and up: ScoutingReportText, BigFontMap ...)
 	incbin	..\Extracted\SegaCD\HOCKEY\TileNumberTables.bin
-; Bare rts used as a call target.
-HockeyRtsStubA
+; Disc stub for the cartridge's p_turnoff (sound driver off): only rts, the main CPU runs the sound.
+p_turnoff
 	rts
 	rts
-; Bare rts used as a call target.
-HockeyRtsStubB
+; Disc stub for the cartridge's stop_current_song: only rts, the music is CD audio.
+stop_current_song
 	rts
 ReadJoyData
 	movem.l	d1/a0,-(sp)
@@ -218,6 +218,7 @@ ReadJoyData
 	rts
 ; Table of 8 words after ReadJoyData, 16 bytes: $0001,$0201,$0405,$0606,$0809,$0A0A ...
 .next9	dc.w	$0001,$0201,$0405,$0606,$0809,$0A0A,$0809,$0A00
-; Bare rts used as a call target.
-HockeyRtsStubC
+; Disc stub for the cartridge's KillCrowd and TitleScreen: only rts.
+KillCrowd
+TitleScreen
 	rts

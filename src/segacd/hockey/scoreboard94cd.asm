@@ -42,7 +42,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	movea.l	tmdata(a3),a0
 	movea.l	#mesarea,a3
 	move.w	#$2,(a3)
-	bsr.w	PushNumberWidthString
+	bsr.w	appendz
 	String	CC_Font1Pri,$1,$19
 	adda.w	$4(a0),a0
 	adda.w	(a0),a0
@@ -62,7 +62,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	movea.l	$47D18.l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
-	jsr	(UnpackPictureSelectGfx).l
+	jsr	(LoadHomeTeamGfx).l
 	bsr.w	SprSort
 	btst	#sfpz,(sflags).l
 	bne.w	.ex
@@ -132,7 +132,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	beq.w	.1
 	move.w	#$4,d0
 	movea.l	#PerLabels2,a1
-.1	bsr.w	PrintTickerEntry
+.1	bsr.w	Fprintsmall
 	bsr.w	EASNLogo
 	btst	#sf3llcs,(sflags3).l
 	bne.w	.ex
@@ -158,7 +158,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 	beq.w	.2
 	move.w	#$4,d0
 .2	movea.l	#PerLabels2,a1
-	bsr.w	SkipListEntries
+	bsr.w	AdvanceStringPtr
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
@@ -191,7 +191,7 @@ PrintTeamLogoAndScore						;Draw the team logo map (PutTeamBlock, d0 = offset) 5
 	
 	move.w	(printx).l,-(sp)
 	subi.w	#$5,(printx).l
-	jsr	(PutTeamBlockDraw).l
+	jsr	(PutTeamBlock).l
 	move.w	(sp)+,(printx).l
 	addi.w	#$2,(printy).l
 	move.w	tmscore(a2),d0
@@ -214,7 +214,7 @@ EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if 
 	String	CC_Font1Pri,$1,$19
 	movea.l	$47D4C.l,a1
 	adda.l	jimdata(a1),a1
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
@@ -296,7 +296,7 @@ linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitma
 	clr.w	d0
 	movea.l	$47D40.l,a1
 	adda.l	jimdata(a1),a1
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	move.w	(a1),d2
 	moveq	#$1,d3
 	move.w	(energybarchars).l,d4
@@ -392,7 +392,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 .addShot	asl.w	#scsize,d0
 	movea.l	#SortCords,a3
 	adda.w	d0,a3
-	bsr.w	ChkShotStatSwapStructs
+	bsr.w	loadTeamStruct
 	addi.w	#$1,$0(a2)
 	btst	#sf2pwrplay,(sflags2).l
 	beq.w	.2
@@ -421,7 +421,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 .ex	movem.l	(sp)+,d0-d1/a1-a3
 	rts
 ; Picks the shooting team struct and swaps it for the other side when needed
-ChkShotStatSwapStructs
+loadTeamStruct
 .next3	movea.l	#tmstruct,a2
 	lea.l	$366(a2),a1
 	btst	#$6,$62(a3)
@@ -484,7 +484,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	cmpi.w	#$4,(gsp).l
 	bne.w	.1
 	move.w	#$0,(gameclock).l
-	jsr	(UpdateRecordsStart).l
+	jsr	(UpdateRecords).l
 .1	bsr.w	SetupTeamForIntermission
 	moveq	#$F,d0
 	movea.l	#SortCords,a0
@@ -508,7 +508,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	movea.l	#$42250,a0
 .2	bset	#sfpz,(sflags).l
 	movea.l	#$2C1F8,a1
-	jsr	(SetMenuScreenHandler).l
+	jsr	(Pausemode_top).l
 	bsr.w	GetShifter
 	move.w	d1,(TickerNum).l
 	bset	#$5,$FF800F.l
@@ -615,9 +615,9 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.b	(a1),d0
 	andi.w	#$70,d0
 	lsr.w	#$1,d0
-	lea.l	NewTicker(pc),a1
+	lea.l	sctab(pc),a1
 	move.l	(a1,d0.w),(nibblebuffer).l
-	move.l	$4(a1,d0.w),$18BEC.l
+	move.l	$4(a1,d0.w),(nibblebuffer+4).l
 	asl.w	#$2,d1
 	movea.l	#TeamList,a1
 	movea.l	(a1,d1.w),a1
@@ -625,14 +625,14 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.b	(a1),d0
 	andi.w	#$7,d0
 	asl.w	#$3,d0
-	lea.l	NewTicker(pc),a1
+	lea.l	sctab(pc),a1
 	move.l	(a1,d0.w),d1
 	add.l	d1,(nibblebuffer).l
 	move.l	$4(a1,d0.w),d1
-	add.l	d1,$18BEC.l
+	add.l	d1,(nibblebuffer+4).l
 	moveq	#$4,d0
 	bra.w	WeightedRandomSelect
-NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3 = -1 if
+sctab						;show the next ticker score once the clock is at 8:00 or less. d3 = -1 if
 	
 	ori.b	#$1E,$17(a3)
 	ori.b	#$27,d4
@@ -643,7 +643,7 @@ NewTicker						;show the next ticker score once the clock is at 8:00 or less. d3
 	ori.b	#$1E,-(a2)
 	ori.b	#$1A,d6
 	ori.b	#$1E,-(a4)
-; Instruction bytes inside NewTicker that the assembler would encode differently, kept as words (2 rows).
+; Instruction bytes inside sctab that the assembler would encode differently, kept as words (2 rows).
 	dc.w	$0008,$0016,$0025,$001F,$000A,$0013,$0026,$001F
 	dc.w	$000C,$000F,$0026,$0020,$000F
 ; Skips when the ticker timer is above $1E0.
@@ -689,11 +689,11 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	bne.w	.next
 	clr.w	d0
 .next	lea.l	.next2(pc),a1
-	bsr.w	PrintTickerEntry
+	bsr.w	Fprintsmall
 	move.w	gsper(a0),d0
 	subi.w	#$1,d0
 	movea.l	#PerLabels,a1
-	bsr.w	SkipListEntries
+	bsr.w	AdvanceStringPtr
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	neg.w	d0
@@ -747,11 +747,11 @@ SetTickerAreaPosition						;Set printx/printy/printm for the ticker box (x 3, y 
 	moveq	#$5,d1
 	rts
 ; Skips to the entry and prints it small.
-PrintTickerEntry
-	bsr.w	SkipListEntries
+Fprintsmall
+	bsr.w	AdvanceStringPtr
 	bra.w	printsmall
 ; Skips d0 offset-linked entries starting at a1.
-SkipListEntries
+AdvanceStringPtr
 	bra.w	.next
 .loop	adda.w	(a1),a1
 .next	dbra	d0,.loop
@@ -767,12 +767,12 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	bne.w	.next
 	bclr	#gsfhl,gsflags(a0)
 	beq.w	.next
-	bsr.w	.next2
+	bsr.w	StartHL
 .next	suba.w	#gssize,a0
 	dbra	d1,.top
 	rts
-.next2	movem.l	d0-d7/a0-a6,-(sp)
-.loop	btst	#$3,(sflags3).l
+StartHL	movem.l	d0-d7/a0-a6,-(sp)
+StartHL2	btst	#$3,(sflags3).l
 	bne.w	.next9
 	bsr.w	.next13
 	move.w	d1,d3
@@ -816,7 +816,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	move.w	$A(a0),(HmGoals).l
 	move.w	$C(a0),(AwGoals).l
 	move.b	#$10,(gmode).l
-	btst	#$0,$180E5.l
+	btst	#$0,(gsp+1).l
 	beq.w	.next3
 	bset	#$1,(gmode).l
 .next3	clr.b	(sflags).l
@@ -827,9 +827,9 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	clr.w	(glovecords).l
 	clr.b	(iflags).l
 	st.b	(RefCnt).l
-	st.b	$17E38.l
-	st.b	$17E3C.l
-	jsr	(HockeyRtsStubA).l
+	st.b	(puckcross2).l
+	st.b	(puckcross6).l
+	jsr	(p_turnoff).l
 	bsr.w	setupice_highlight
 	move.w	#$1,$17468.l
 	bsr.w	ClrHor
@@ -887,7 +887,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	dbra	d0,.loop8
 	bsr.w	SprSort
 	move.w	#$18,(palcount).l
-	move.w	(ScoutSubStatus).l,(OldVcount).l
+	move.w	(Vcount).l,(OldVcount).l
 	move.w	#$B4,-(sp)
 .loop9	jsr	(DoGameFrame).l
 	btst	#$0,(gmode).l
@@ -921,8 +921,8 @@ DoHiLights						;Hilites logic: search for hilite game and show
 .next7	adda.w	#$2,sp
 	movea.l	(sp)+,a0
 	movem.l	d1/a0,-(sp)
-	jsr	(HockeyRtsStubC).l
-	jsr	(HockeyRtsStubA).l
+	jsr	(KillCrowd).l
+	jsr	(p_turnoff).l
 	movem.l	(sp)+,d1/a0
 	move.w	(HmGoals).l,$A(a0)
 	move.w	(AwGoals).l,$C(a0)
@@ -945,7 +945,7 @@ DoHiLights						;Hilites logic: search for hilite game and show
 	move.w	#$4,$8(a0)
 	move.w	$A(a0),d0
 	cmp.w	$C(a0),d0
-	beq.w	.loop
+	beq.w	StartHL2
 	move.w	#$5,$8(a0)
 	move.w	d1,d3
 	bsr.w	CheckGameTickerStatus

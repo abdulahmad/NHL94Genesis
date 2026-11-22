@@ -16,7 +16,7 @@ DrawMenuScreen						;Call the draw routine, frame the menu box, print the items 
 SetMenuPrintX						;printx = the left edge of the menu box: 5 in 32 column mode, else 9
 	move.w	#$5,(printx).l
 	btst	#df32c,(disflags).l
-	bne.w	updatereplayExit
+	bne.w	rtss8
 	addi.w	#$4,(printx).l
 	rts
 HandleMenuInput						;Act on the pad bits d1 for the current menu: down / up move the
@@ -149,7 +149,7 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	bra.w	.x
 .plain	jsr	(printsmall).l
 .x	rts
-PutTeamBlock						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
+PrintMenuItem_manual						;Copy 2 rows of 11 map words from TeamBlockMap+d0 to printx / printy, then
 									;printx += 11.
 									;Saves d0-d2/a0-a1. Called from PrintTeamLogoAndScore and the stats code
 ; "Manual Goalie" String
@@ -159,7 +159,7 @@ PutTeamBlockManualGoalieText	dc.w	$0014,$2020
 PutTeamBlockAutoGoalieText	dc.b	$00,$14,'   Auto Goalie'
 	dc.w	$2020,$2020
 ; Draws a team block with display flags set.
-PutTeamBlockDraw
+PutTeamBlock
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
@@ -193,8 +193,8 @@ MenuWaitVblank						;wait till Vcount changes, then resync Vcount. Saves d0. Rea
 	move.w	d0,-(sp)
 	move.w	(OldVcount).l,d0
 	move.w	(OldVcount).l,d0
-.wait	cmp.w	(ScoutSubStatus).l,d0
+.wait	cmp.w	(Vcount).l,d0
 	beq.w	.wait
-	move.w	(OldVcount).l,(ScoutSubStatus).l
+	move.w	(OldVcount).l,(Vcount).l
 	move.w	(sp)+,d0
 	rts
