@@ -281,7 +281,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	clr.w	(asv).l
 	move.w	#$7FFF,(screentimer).l		;frames left on the screen
 	move.l	#$8CA0,(scoutwait).l		;then 36000 more when OptNOP is not 0
-	jsr	(CompareHotColdTotals).l
+	jsr	(ScoutCompareHotColdTotals).l
 .loop3	btst	#$7,$FF800E.l
 	bne.b	.loop3
 	move.w	#$3C,$FF8020.l
@@ -335,7 +335,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	d3,d5
 	jsr	(ReadJoy2).l
 	or.w	d3,d5
-	btst	#$1,$1AD77.l
+	btst	#$1,(waitxpad+1).l
 	bne.w	.next6
 	move.l	(sp)+,d1
 .loop7	btst	#$7,$FF800E.l
@@ -406,7 +406,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bset	#$5,$FF800F.l
 .top	moveq	#$0,d0
 	jsr	(waitx).l
-	btst	#$1,$1AD77.l
+	btst	#$1,(waitxpad+1).l
 	beq.s	.next7
 	movea.l	#$FFFFFFFF,a0
 	move.w	#$9,d0
@@ -443,7 +443,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	btst	#dbut,d1		;down?
 	beq.w	.6
 	st.b	(asv).l		;down: type the rest without delays
-.6	btst	#$1,$1AD77.l		;down held (waitx pad bits)
+.6	btst	#$1,(waitxpad+1).l		;down held (waitx pad bits)
 	beq.w	.upd
 	st.b	(asv).l
 .upd	jsr	(UpdateScoutingDisplay).l
@@ -516,8 +516,8 @@ PageMatchup						;Page the matchup by d0 (+1 / -1, 0-6 wrapping), restart the pa
 .1	move.w	d0,(matchup).l
 	bsr.w	GetMatchupPlayers
 	bsr.w	DrawMatchupPictures
-	move.w	(ScoutSubStatus).l,d0
-.loop	cmp.w	(ScoutSubStatus).l,d0
+	move.w	(Vcount).l,d0
+.loop	cmp.w	(Vcount).l,d0
 	beq.b	.loop
 .loop2	btst	#$7,$FF800E.l
 	bne.b	.loop2
@@ -947,7 +947,7 @@ ScoutStub						;An empty routine
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Scouting screen set-up: freezes the window and clears the pick state.
-ScoutStubSetup
+EndShootout
 	movem.l	d0-d7/a0-a6,-(sp)
 	bset	#$2,(sflags2).l
 	jsr	(freezewindow).l
@@ -964,7 +964,7 @@ ScoutStubSetup
 	move.w	#$6,d3
 	bra.w	.next3
 .loop	movem.w	d2-d3,-(sp)
-	jsr	(SetPlayerSide).l
+	jsr	(setplayer).l
 	move.w	#$2,$34(a3)
 	move.w	#$F0,d0
 	tst.w	(Vpos).l
@@ -974,7 +974,7 @@ ScoutStubSetup
 	move.w	d0,$14(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
-	jsr	(AssistListPush).l
+	jsr	(assinsert).l
 	bclr	#$5,$62(a3)
 	bclr	#$1,$63(a3)
 	bclr	#$2,$62(a3)

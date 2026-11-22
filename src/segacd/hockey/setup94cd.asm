@@ -9,7 +9,7 @@ setupice_highlight
 	move.w	#$7D0,(Oldrow).l
 	st.b	(Zamx).l
 	move.w	(spritechars).l,d4
-	bsr.w	CopyTeamBlockMapDataFill
+	bsr.w	defaultsprites
 	bsr.w	setupIceRinkPal
 	btst	#gmdir,(gmode).l
 	beq.w	.gok
@@ -22,13 +22,13 @@ setupice_highlight
 	move.w	#$FFFF,(PadControlBits).l
 	move.w	#$FFFF,(PadControlBits34).l
 	clr.l	(padcont).l
-	clr.l	$17DCE.l
-	clr.l	$17DD2.l
+	clr.l	(padcont+4).l
+	clr.l	(padcont+8).l
 	st.b	(c1playernum).l
 	st.b	(c2playernum).l
 	bsr.w	SetupIceRinkPalRemap
 	movea.l	#DMAList,a5
-	movea.l	#$BBD30,a6
+	movea.l	#Satt,a6
 	moveq	#$1,d6
 	movea.l	#pads,a3
 	clr.w	d0
@@ -48,7 +48,7 @@ setupice_highlight
 	bsr.w	dodmalist
 	move.w	#$1C,(palcount).l
 	move.w	(sp)+,(disflags).l
-	move.l	#SetupIceVBlankHandler,(VBint).l
+	move.l	#VBlank,(VBint).l
 	bclr	#dfok,(disflags).l
 	bclr	#dfng,(disflags).l
 	bset	#$5,$FF800F.l
@@ -58,7 +58,7 @@ setupIceRinkPal
 	movea.l	$47D18.l,a0
 	adda.l	(a0),a0
 	moveq	#$F,d0
-	movea.l	#$BBCB0,a1
+	movea.l	#palfadenew,a1
 .ipal	move.l	(a0)+,(a1)+
 	dbra	d0,.ipal
 	rts
@@ -155,7 +155,7 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	dbra	d3,.row
 	rts
 ; Fills the four map entries from the table at $3EE08.
-CopyTeamBlockMapDataFill
+defaultsprites
 	movea.l	#$3EE08,a2
 	movea.l	#sso,a3
 	moveq	#$3,d0
@@ -181,7 +181,7 @@ CopyTeamBlockMapDataFill
 	add.w	(a2)+,d4
 	adda.w	#$1C,a3
 	dbra	d0,.loop2
-	bra.w	SortObjectsInit
+	bra.w	defaultsprites_0
 ; Start of defaultsprites
 defaultspritesStart						;objects which are tied to screen scrolling and have velocity: the 16
 	
@@ -199,7 +199,7 @@ defaultspritesData	dc.w	$0000,$0000,$FFFF,$0188,$0000,$0007,$0000,$0000
 	dc.w	$FFFF,$034D,$0000,$0007,$0000,$0000,$FFFF,$0161
 	dc.w	$0000,$0005
 ; Sets up the 16 sort objects from .list
-SortObjectsInit
+defaultsprites_0
 	clr.w	d6
 	movea.l	#OOlist,a1
 	lea	.list(pc),a2
@@ -568,12 +568,12 @@ GameOverCheckScroll
 	bne.s	.next
 	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
-.next	bra.w	GameOverRtsCall
+.next	bra.w	Opening2
 ; Entered by jumping from the game over screen set-up: calls the rts stub, then continues in the clean-up
-GameOverCallTail
-	jsr	(HockeyRtsStubC).l
-GameOverRtsCall
-	jsr	(HockeyRtsStubC).l
+Opening
+	jsr	(KillCrowd).l
+Opening2
+	jsr	(TitleScreen).l
 	bclr	#$5,$FF800F.l
 	movea.l	#$C458,sp
 	movea.l	#$1745C,a0
@@ -584,6 +584,7 @@ GameOverRtsCall
 	bset	#$5,$FF800F.l
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
+Opening3
 	bsr.w	GameOverCleanup
 	btst	#$0,(gmode2).l
 	bne.w	.next3
@@ -596,9 +597,10 @@ GameOverCleanup
 	move.w	#$0,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
 .next	bclr	#$5,$FF800F.l
+PlayoffScreen
 	tst.w	(OptPlayMode).l
 	beq.w	rtss2
-	move.l	#VBlank_Playoff,(VBint).l
+	move.l	#VBlank_TitleScreen,(VBint).l
 	bset	#$5,$FF800F.l
 	bclr	#$1,(disflags).l
 	move.w	#$0,(VSCRLPM).l
@@ -623,7 +625,7 @@ GameOverCleanup
 	moveq	#$2,d1
 	move.w	#$7FF,d2
 	bsr.w	eraser
-	bsr.w	AddSmallFontAlt
+	bsr.w	AddTeamBlock
 	bsr.w	AddSmallFont
 	movea.l	$47D50.l,a2
 	addq.l	#$8,a2
@@ -679,8 +681,8 @@ GameOverCleanup
 	move.b	(a0)+,d4
 .loop5	bsr.w	printz
 	String	CC_Font1,$0,$0
-	move.b	(a0)+,$18D59.l
-	move.b	(a0)+,$18D5B.l
+	move.b	(a0)+,(printx+1).l
+	move.b	(a0)+,(printy+1).l
 	clr.w	d1
 	move.b	(a1)+,d1
 	add.w	d1,d1
@@ -690,7 +692,7 @@ GameOverCleanup
 	move.b	(a0)+,d4
 .loop6	bsr.w	printz
 	String	CC_Font1,$0,$2
-	move.b	(a0)+,$18D59.l
+	move.b	(a0)+,(printx+1).l
 	clr.w	d0
 	move.b	(a0)+,d0
 	bsr.w	PlayoffScreen_doarrow
@@ -703,8 +705,8 @@ GameOverCleanup
 	move.b	(a0)+,d4
 	bmi.w	.next2
 	movea.l	#gstruct,a2
-.loop7	move.b	(a0)+,$18D59.l
-	move.b	(a0)+,$18D5B.l
+.loop7	move.b	(a0)+,(printx+1).l
+	move.b	(a0)+,(printy+1).l
 	bsr.w	PlayoffScreen_doscores
 	adda.w	#$10,a2
 	dbra	d4,.loop7
@@ -756,6 +758,7 @@ PlayoffScreen_scrup						;Move the tree one step (PlayerScrollCtr) and stop on a
 	bne.w	rtss2
 	clr.w	(PlayerScrollCtr).l
 	rts
+PlayoffScreen_exit
 	adda.w	#$4,sp
 	rts	
 
@@ -766,7 +769,7 @@ waitxc1						;Each time palcount runs out, eor the color
 	bpl.w	.wait		;palcount still counting
 	eori.w	#$EE,$BBCF2.l		;blink the color
 	move.w	#$18,(palcount).l		;restart the count
-.wait	move.w	(ScoutSubStatus).l,d0		;wait until the vblank handler bumps Vcount
+.wait	move.w	(Vcount).l,d0		;wait until the vblank handler bumps Vcount
 	cmp.w	(OldVcount).l,d0
 	beq.w	.wait
 	move.w	d0,(OldVcount).l
@@ -790,7 +793,7 @@ PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) a
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = arrow frames
 	adda.l	jimdata(a1),a1		;a1 = map data
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	clr.w	d1
 	moveq	#$2,d2
 	moveq	#$17,d3
@@ -812,7 +815,7 @@ PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (
 	move.w	#$6000,(printa).l
 .nohi	movea.l	$47D44.l,a1		;a1 = map header of the team blocks
 	adda.l	jimdata(a1),a1
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	clr.w	d0
 	move.w	(a1),d2
 	moveq	#$2,d3
@@ -821,13 +824,13 @@ PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (
 	bsr.w	dobitmap
 	movem.l	(sp)+,d0-d7/a0-a3
 	rts
-VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite table, write
+VBlank_TitleScreen						;the PlayoffScreen vblank handler (VBint): dma the sprite table, write
 									;$FEA0+DispAttribCtr to the hscroll, cramfade. Always Vcount+1,
 									;p_music_vblank, rte
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#dfng,(disflags).l
 	bne.w	.nograph
-	movea.l	#$BBD30,a0
+	movea.l	#Satt,a0
 	move.w	(Sattsize).l,d0
 	beq.w	.next
 	clr.w	(Sattsize).l
@@ -849,11 +852,11 @@ VBlank_Playoff						;the PlayoffScreen vblank handler (VBint): dma the sprite ta
 .loop3	btst	#$3,$FF800E.l
 	bne.b	.loop3
 	bclr	#$4,$FF800F.l
-.next	jsr	(ForceBlackStep).l
-.nograph	addq.w	#$1,(ScoutSubStatus).l
+.next	jsr	(cramfade).l
+.nograph	addq.w	#$1,(Vcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-; Text of VBlank_Playoff (4 rows).
+; Text of VBlank_TitleScreen (4 rows).
 	dc.b	$00,$0A,'Playoffs',$00,$10,'Quar'
 	dc.b	'terfinals',$00,$00,$0C,'Semi'
 	dc.b	'finals',$00,$08,'Finals',$00,$0C
@@ -1172,6 +1175,7 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 									;frames (about 5 s)
 	move.w	#$1,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
+HiScoreScreen
 	move.l	#vb2,(VBint).l
 	bclr	#df32c,(disflags).l
 	move.w	#$5,(Map3col).l
@@ -1182,11 +1186,11 @@ EASportsScreen						;Called from Begin. Show the EA Sports screen until a button
 	move.w	#$F000,(VmMAP3).l
 	move.w	#$F800,(VSPRITES).l
 	move.w	#$FC00,(VSCRLPM).l
-	movea.l	#$BBCB0,a0
+	movea.l	#palfadenew,a0
 	moveq	#$1F,d1		;32 longs: all 64 colours black
 .clr	clr.l	(a0)+
 	dbra	d1,.clr
-	jsr	(ForceBlackStepCram).l
+	jsr	(CopyPaletteToCRAM).l
 	jsr	(SetVramStackPush).l
 	rts
 ; EA Sports screen: waits for the sub CPU reply, then switches the vblank vector
@@ -1195,7 +1199,7 @@ EASportsScreenCheck	jsr	(ReadJoy1).l
 	bne.w	rtss2
 	bset.b	#$5,$FF800F.l
 	move.l	#$3DB90,(VBint).l
-	jsr	(HockeyRtsStubA).l
+	jsr	(p_turnoff).l
 	jsr	(forceblack).l
 	move.w	#$18,(palcount).l
 	bsr.w	printsmallz
@@ -1204,8 +1208,8 @@ EASportsScreenCheck	jsr	(ReadJoy1).l
 	dc.b	$6E,$64	; nd
 ; EA Sports screen: frame wait loop
 EASportsScreenWait	moveq	#$14,d6
-.loop	move.w	(ScoutSubStatus).l,d0
-.loop2	cmp.w	(ScoutSubStatus).l,d0
+.loop	move.w	(Vcount).l,d0
+.loop2	cmp.w	(Vcount).l,d0
 	beq.w	.loop2
 	jsr	(ReadJoy1).l
 	jsr	(ProcessInputWithRepeat).l
@@ -1255,7 +1259,7 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 	move.w	d1,d0
 	asl.w	#$6,d0		;64 bytes per team
 	movea.l	#TeamPalettes,a0
-	move.l	$26(a0,d0.w),$BBCD6.l		;B palette colors into palette 1
+	move.l	$26(a0,d0.w),(palfadenew+$26).l		;B palette colors into palette 1
 	move.w	(teambitmapchars).l,d4
 	bsr.w	DrawTeamBitmap
 	bsr.w	printz
@@ -1264,8 +1268,8 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 	move.w	d1,d0
 	asl.w	#$6,d0		;64 bytes per team
 	movea.l	#TeamPalettes,a0
-	move.l	$2(a0,d0.w),$BBCD2.l		;A palette colors into palette 1
-	move.w	#$EEE,$BBCDA.l		;colour 5 white
+	move.l	$2(a0,d0.w),(palfadenew+$22).l		;A palette colors into palette 1
+	move.w	#$EEE,(palfadenew+$2A).l		;colour 5 white
 	move.w	#$2,d4		;first bitmap char
 	bsr.w	DrawTeamBitmap		;draw the home team
 	bsr.w	setteams		;set up the team structs
@@ -1279,7 +1283,7 @@ DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = tile data
 	adda.l	jimdata(a1),a1		;a1 = map data
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	move.w	(a1),d2
 	moveq	#$2,d3
 	moveq	#$0,d5
@@ -1291,7 +1295,7 @@ dotb						;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = tile data
 	adda.l	jimdata(a1),a1		;a1 = map data
-	movea.l	#$1B008,a2		;tile data: word 0 at $310 = no tiles
+	movea.l	#null,a2		;tile data: word 0 at $310 = no tiles
 	move.w	(a1),d2
 	moveq	#$2,d3
 	moveq	#$2,d4
@@ -1339,7 +1343,7 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 .x	movem.l	(sp)+,d0/a0
 	rts
 ; Vertical interrupt handler of the menu screens
-MenuVBlankHandler	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
+VBlank_SetOptions	dc.w	$48E7,$FFFE,$0839,$0002,$0001,$8D64,$6600,$0018
 	dc.w	$08B9,$0000,$0001,$8D64,$6700,$0006,$6100,$DAC6
 	dc.w	$4EB9,$0003,$6DF6,$5279,$0001,$7474,$4CDF,$7FFF
 	rts
@@ -1356,10 +1360,10 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 DefaultMenusData	dc.w	$0000,$0001,$000B,$000A,$0001,$0000,$0001,$0000
 	dc.w	$0001
 ; Default menus: sets the player slots and builds the menu tree.
-DefaultMenusInit
+ContinuePlayoffs
 	movem.l	d0-d7/a0-a3,-(sp)
 	movea.l	#passbits,a3
-	bsr.w	InitPlayerSlots
+	bsr.w	ReadPassBits
 	move.w	(gamelevel).l,d0
 	or.w	(bosgames).l,d0
 	beq.w	.next5
@@ -1386,7 +1390,7 @@ DefaultMenusInit
 .next5	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 ; Picks a random slot (0-$1F) and walks the table until a free one.
-DefaultMenusRandomPick
+NewPO
 	moveq	#$20,d0
 	jsr	(randomd0).l
 .loop	addi.w	#$1,d0
@@ -1555,7 +1559,7 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 .fjnpo
 	move.w	(OptNOP).l,d0
 	asl.w	#$2,d0
-	lea.l	InitializeGameStructures(pc),a0
+	lea.l	FigureJoy_noplist(pc),a0
 	move.w	(a0,d0.w),(cont1team).l
 	move.w	$2(a0,d0.w),(cont2team).l
 	cmpi.w	#$14,d0
@@ -1568,11 +1572,11 @@ FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 fo
 	move.w	(cont1team).l,(cont3team).l
 	move.w	(cont2team).l,(cont4team).l
 .init
-	bsr.w	InitTeamMask
+	bsr.w	InitializeGameStructures
 .ex
 	movem.l	(sp)+,d0-d3/a0-a1
 	rts
-InitializeGameStructures						;Random team pairs for all 8 gstruct games, none of them HomeTeam or
+FigureJoy_noplist						;Random team pairs for all 8 gstruct games, none of them HomeTeam or
 									;VisTeam. Called from FigureJoy
 	ori.b	#$0,d0
 	ori.b	#$0,d1
@@ -1582,7 +1586,7 @@ InitializeGameStructures						;Random team pairs for all 8 gstruct games, none o
 	ori.b	#$2,d1
 	ori.b	#$2,d1
 ; Builds the mask of the two playing teams.
-InitTeamMask
+InitializeGameStructures
 	st.b	(gamenum).l
 	clr.l	d3
 	move.w	(HomeTeam).l,d1
@@ -1591,20 +1595,20 @@ InitTeamMask
 	bset	d1,d3
 	movea.l	#gstruct,a1
 	moveq	#$7,d2
-.loop	bsr.w	.loop2
+.loop	bsr.w	GetRandomUnusedTeam
 	move.w	d0,$0(a1)
-	bsr.w	.loop2
+	bsr.w	GetRandomUnusedTeam
 	move.w	d0,$2(a1)
 	adda.w	#$10,a1
 	dbra	d2,.loop
 	rts
-.loop2	moveq	#$1A,d0
+GetRandomUnusedTeam	moveq	#$1A,d0
 	jsr	(randomd0).l
 	bset	d0,d3
-	bne.w	.loop2
+	bne.w	GetRandomUnusedTeam
 	rts
 ; Initialises the player slot structures.
-InitPlayerSlots
+ReadPassBits
 	moveq	#$4,d0
 	lea.l	$A(a3),a0
 .loop	move.w	-(a0),-(sp)
@@ -1683,7 +1687,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	btst	#sf3alttree,(sflags3).l
 	beq.w	rtss2
 	movea.l	#$18D26,a3
-	bsr.w	InitPlayerSlots
+	bsr.w	ReadPassBits
 	bra.w	MakeTree
 .next	movea.l	#passbits,a3
 	bsr.w	ClrPassBits
@@ -1819,7 +1823,7 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	dbra	d0,.loop
 	movea.l	#$B000,a0
 	movea.l	#$408DC,a1
-	movea.l	#$18C42,a2
+	movea.l	#outputbuffer,a2
 	moveq	#$67,d0
 	clr.w	d4
 .loop2	clr.l	d1
@@ -1854,7 +1858,7 @@ ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into 
 	
 	movea.l	#$B000,a0
 	movea.l	#$408DC,a1
-	movea.l	#$18C42,a2
+	movea.l	#outputbuffer,a2
 	moveq	#$67,d0
 	clr.w	d4
 .loop	move.w	d4,d5
@@ -1994,8 +1998,8 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	bne.w	rtss2
 	movem.l	d0/a1,-(sp)
 	bset	#dfclock,(disflags).l
-	move.w	(ScoutSubStatus).l,d0
-.loop2	cmp.w	(ScoutSubStatus).l,d0
+	move.w	(Vcount).l,d0
+.loop2	cmp.w	(Vcount).l,d0
 	beq.w	.loop2
 	movem.l	(sp)+,d0/a1
 	movem.l	d0-d5/a0-a4,-(sp)
@@ -2007,7 +2011,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	jsr	(printz).l
 	String	CC_Font1Pri,$9,$10,'Stars of the Game',CC_Font1Pri,$3,$F
 	movea.l	$47D18.l,a1
-	movea.l	#$1B008,a2
+	movea.l	#null,a2
 	adda.l	jimdata(a1),a1
 	moveq	#$D,d0
 	moveq	#$5B,d1
@@ -2026,7 +2030,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	adda.w	$4(a1),a1
 	adda.w	(a1),a1
 	jsr	(print).l
-	bsr.w	GetPlayerNameBuild
+	bsr.w	getname
 	move.w	#$3,(printx).l
 	jsr	(print).l
 	dbra	d2,.loop
@@ -2147,7 +2151,7 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	dbra	d4,.loop
 	rts
 ; Prints the star score line.
-CalcTeamStarScoresPrint
+ShowInjuryBox
 	movem.l	d0-d2/a0-a4,-(sp)
 	jsr	(printz).l
 	String	CC_Font1Pri,$B,$3
@@ -2174,7 +2178,7 @@ CalcTeamStarScoresPrint
 .next4	movem.l	(sp)+,d0-d2/a0-a4
 	rts
 ; Enters the shootout box or prints the star score message.
-CalcTeamStarScoresShootout
+PenaltyShotBox
 	bset	#$7,(gmode2).l
 	btst	#$0,(gmode2).l
 	beq.w	.next5
@@ -2187,7 +2191,7 @@ CalcTeamStarScoresShootout
 	moveq	#$1B,d0
 	moveq	#$8,d1
 	jsr	(Framer).l
-	lea.l	ShowGoalBox(pc),a1
+	lea.l	PenShotBigTxt_6(pc),a1
 	jsr	(printbig).l
 	move.w	(BA_Sktr_SCnum).l,d0
 	asl.w	#$7,d0
@@ -2221,7 +2225,7 @@ CalcTeamStarScoresShootout
 	jsr	(print).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!' ('PP
+PenShotBigTxt_6						;Goal box. Closes both line change boxes, then printbig 'GOAL!' ('PP
 	
 	
 	
@@ -2229,13 +2233,13 @@ ShowGoalBox						;Goal box. Closes both line change boxes, then printbig 'GOAL!'
 									;StartArenaAnim (home hat trick),
 									;PrintPlayerGoals and PrintPlayerAssists; BA_PS_flags bit 2 sets sflags2
 									;bit 2. Called from SetPA
-; Table of 2 words after ShowGoalBox, 4 bytes: $0016,$BF04 ...
+; Table of 2 words after PenShotBigTxt_6, 4 bytes: $0016,$BF04 ...
 	dc.w	$0016,$BF04
 	bchg	d1,(a0)
-; Text of ShowGoalBox (1 row).
+; Text of PenShotBigTxt_6 (1 row).
 	dc.b	'ENALTY SHOT!',$BF,$04,$05,$00
 ; Draws the goal box after the flag checks.
-ShowGoalBoxDraw
+ShowGoalBox
 	movem.l	d0-d2/a0-a4,-(sp)
 	btst	#$2,(BA_PS_flags).l
 	beq.w	.next
@@ -2257,7 +2261,7 @@ ShowGoalBoxDraw
 	bmi.w	.next2
 	addi.w	#$1,d1
 .next2	jsr	(Framer).l
-	jsr	(UpdateRecordsGoalieCounts).l
+	jsr	(CountGoalies).l
 	movea.l	#tmstruct,a2
 	move.w	(homegoalies).l,(scorergoalies).l
 	btst	#$7,$2(a4)
@@ -2327,15 +2331,15 @@ ShowGoalBoxDraw
 .next8	bclr	#$5,(sflags4).l
 	movem.l	(sp)+,d0-d2/a0-a4
 	rts
-; Table of 24 words after ShowGoalBoxDraw, 32 bytes: $000E,$BF0F,$0347,$4F41,$4C21,$BF0C ...
+; Table of 24 words after ShowGoalBox, 32 bytes: $000E,$BF0F,$0347,$4F41,$4C21,$BF0C ...
 .next9	dc.w	$000E,$BF0F,$0347,$4F41,$4C21,$BF0C,$0500,$0012
 	dc.b	$BF,$0C,$03,'HAT TRICK!',$BF,$0C,$05
-; Table of 25 words after ShowGoalBoxDraw, 34 bytes: $0010,$BF0D,$0350,$5020,$474F,$414C ...
+; Table of 25 words after ShowGoalBox, 34 bytes: $0010,$BF0D,$0350,$5020,$474F,$414C ...
 .next10	dc.w	$0010,$BF0D,$0350,$5020,$474F,$414C,$21BF,$0C05
 	dc.b	$00,$12,$BF,$0C,$03,'HAT TRICK!',$BF
 	dc.w	$0C05
 ; Prints a banner line in font 1.
-PrintBannerFont1
+box
 	jsr	(printz).l
 	String	CC_Font1,$B,$2
 	moveq	#$13,d0
@@ -2352,13 +2356,13 @@ GetPlayerName						;but that is the same symbol as getplayername (SNASM symbols 
 	bpl.w	.0
 	andi.w	#$FF,d0
 	adda.w	#tmsize,a2
-.0	bsr.w	GetPlayerNameBuild		;name for d0 of team a2
+.0	bsr.w	getname		;name for d0 of team a2
 	movem.l	(sp)+,d0/a2
 	rts
 ; Builds the name text in the message area.
-GetPlayerNameBuild
+getname
 	movem.l	d0-d3/a0/a2-a3,-(sp)
-	bsr.w	SkipTextEntries
+	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.l	#mesarea,a3
 	move.w	#$4,(a3)
@@ -2366,7 +2370,7 @@ GetPlayerNameBuild
 	adda.w	(a0),a0
 	move.b	(a0),d0
 	bsr.w	ConvertByteToDigits
-	jsr	(PushNumberWidthString).l
+	jsr	(appendz).l
 	String	' '
 	movea.l	(sp)+,a1
 	jsr	(appstring).l
@@ -2386,7 +2390,7 @@ GetPlayerNumInitial
 FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of team a2, built in
 	
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	SkipTextEntries
+	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.l	#TextBuffer,a1
 	adda.w	(a0),a0
@@ -2409,7 +2413,7 @@ FormatPlayerNumInitial						;a1 = mesarea string "NN F. Last" for player d0 of t
 FormatPlayerName						;a1 = mesarea string "NN Last" for player d0 of team a2, built in
 	
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	SkipTextEntries
+	bsr.w	GetPlayerNamePointer
 	move.l	a0,-(sp)
 	movea.l	#TextBuffer,a1
 	adda.w	(a0),a0
@@ -2430,13 +2434,13 @@ FormatPlayerName						;a1 = mesarea string "NN Last" for player d0 of team a2, b
 FormatPlayerNameLast						;FormatPlayerNameShort without the leading space ("Last", space padded).
 	
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	SkipTextEntries
+	bsr.w	GetPlayerNamePointer
 	movea.l	#TextBuffer,a1
 	bra.w	FormatLastName
 ; Formats a last name into the text buffer.
-FormatLastNameStart
+FormatPlayerNameShort
 	movem.l	d0-d3/a0/a2,-(sp)
-	bsr.w	SkipTextEntries
+	bsr.w	GetPlayerNamePointer
 	movea.l	#TextBuffer,a1
 	move.b	#$20,(a1)+
 FormatLastName						;Skip the first name, copy the last name, pad; branched to from
@@ -2469,7 +2473,7 @@ FinalizeTextBuffer						;mesarea length word = a1 - mesarea, with a 0 pad byte w
 	move.w	d0,(a1)
 	rts
 ; Skips d0 entries of an offset-linked text list.
-SkipTextEntries	movea.l	$1E(a2),a0
+GetPlayerNamePointer	movea.l	$1E(a2),a0
 	adda.w	$0(a0),a0
 	bra.w	.next
 .loop	adda.w	(a0),a0
@@ -2497,22 +2501,22 @@ AddressErrorScreen	bclr.b	#$5,$FF800F.l
 	dc.b	$6F,$72	; or
 	move.l	$A(sp),d0
 	move.l	$2(sp),d1
-	bra.w	ErrorScreenPrint
+	bra.w	crash
 ; Illegal instruction vector: prints the error and the registers (cartridge Illinst)
 IllegalInstructionScreen	bclr.b	#$5,$FF800F.l
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$0,$0,'Illegal Instruction'
 	move.l	$2(sp),d0
 	move.l	d0,d1
-	bra.w	ErrorScreenPrint
-; Divide by zero vector: prints the error and the registers, falls into ErrorScreenPrint (cartridge ZeroDiv)
-DivideByZeroScreen	bclr.b	#$5,$FF800F.l
+	bra.w	crash
+; Divide by zero vector: prints the error and the registers, falls into crash (cartridge ZeroDiv)
+ZeroDiv	bclr.b	#$5,$FF800F.l
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$0,$0,'Division by zero'
 	move.l	$2(sp),d0
 	move.l	d0,d1
 ; Error screen: prints a long as hex
-ErrorScreenPrint	movea.l	#mesarea,a0
+crash	movea.l	#mesarea,a0
 	move.w	#$18,(a0)+
 	move.b	#$BD,(a0)+
 	move.b	#$0,(a0)+
