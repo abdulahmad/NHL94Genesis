@@ -80,13 +80,13 @@ GameloopStart	jsr	(assreplace).l
 	jsr	(ChooseSong).l
 	move.w	(SongNum).l,-(sp)
 	jsr	(song).l
-	move.w	$1745E.l,(CdCommandArg).l
+	move.w	(CdSongTrack).l,(CdCommandArg).l
 	movea.l	$FF8000.l,a5
 	move.w	#$12,d0
 	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
-	move.w	#$FFFF,$1745C.l
-	move.w	#$0,$17460.l
+	move.w	#$FFFF,(CdSongPending).l
+	move.w	#$0,(SubVblankCount).l
 	cmpi.w	#$2,(gsp).l
 	bge.w	.loop
 	bset	#$7,(sflags3).l

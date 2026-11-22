@@ -28,7 +28,7 @@ ReadGoaliePulled						;Z clear when the team of a3 pulled its goalie ($26 of the
 	
 	movem.l	a1,-(sp)
 	movea.l	#tmstruct,a1
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	beq.w	.chkgoalie
 	movea.l	#awtmstruct,a1
 .chkgoalie	tst.w	tmgoalie(a1)
@@ -39,7 +39,7 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	
 	movem.l	d0/a0,-(sp)
 	bclr	#pf3onetimer,pflags3(a3)
-	bclr	#pfalock,$62(a3)
+	bclr	#pfalock,pflags(a3)
 	bclr	#$1,$63(a3)
 	clr.w	(onetimerflags).l
 	st.b	(onetimerplayer).l
