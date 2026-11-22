@@ -7,7 +7,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	move.w	#$7,d1
 	move.w	#$7FF,d2		;blank char
 	jsr	(eraser).l
-	bchg	#$0,$1A567.l
+	bchg	#$0,(cursoron+1).l
 	bne.w	.1
 	jsr	(printz).l
 	String	CC_Font1Pri,$19,$11
@@ -133,14 +133,14 @@ PrintNameCursor						;Name entry: the " < " cursor
 	String	CC_Font1Pri,$4,$13
 	add.w	d4,(printx).l
 	tst.w	(cursoron).l
-	beq.w	PrintNameCursorExit
+	beq.w	rtsNameCursor
 	jsr	(printz).l
 	String	' < '
 ; Return of PrintNameCursor
-PrintNameCursorExit	rts
+rtsNameCursor	rts
 PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, cursoron)
 	tst.w	(cursoron).l
-	beq.w	PrintNameCursorExit
+	beq.w	rtsNameCursor
 	movea.l	#ThreeStars,a1
 	move.w	#$4,(a1)
 	move.b	#$0,$3(a1)
@@ -163,13 +163,13 @@ LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a r
 	moveq	#$3,d0
 	moveq	#$3,d1
 	rts
-PrintNameLog						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
+EnterNameTxt						;Name entry: the "Name Log" list (PrintNameField, GetLogName)
 PrintNameLogEnterText				;the prompt String of the name entry screen (length word, map and position codes, text)
 ; Text bytes after PrintNameLogEnterText: ".....  Enter new name: ." (24 bytes).
 	dc.w	$0018
 	dc.b	$BF,$02,$10,'  Enter new name: ',$00
-PrintNameLogSelectText				;the prompt String of the Name Log list
-; Text bytes after PrintNameLogSelectText: ".....Select or replace:." (24 bytes).
+SelectNameTxt				;the prompt String of the Name Log list
+; Text bytes after SelectNameTxt: ".....Select or replace:." (24 bytes).
 	dc.w	$0018
 	dc.b	$BF,$02,$10,'Select or replace:',$00
 PrintNameLogList					;draw the Name Log list screen: prompt, then the log names
@@ -322,7 +322,7 @@ StoreUserName						;Name entry: store the name in save RAM
 .2	move.b	d1,(a0)+
 	dbra	d4,.loop2
 	bsr.w	WriteNameLog
-	jsr	(StoreUserNameSearch).l
+	jsr	(WriteNameRecord).l
 .3	movea.l	#homeuser,a5
 	tst.w	(nameentryvis).l
 	beq.w	.4
@@ -334,7 +334,7 @@ StoreUserName						;Name entry: store the name in save RAM
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Searches the stored names ($2D7 entries) for the entered user name.
-StoreUserNameSearch
+WriteNameRecord
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$2D7,d7
 	move.l	#$0,d0
@@ -418,7 +418,7 @@ UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEnt
 	beq.w	.0
 	move.w	(cont1team).l,(nameentryvis).l
 	subi.w	#$1,(nameentryvis).l
-	jsr	(TrimSpacesMenuSetup).l
+	jsr	(NameEntryScreen).l
 .0	tst.w	(cont2team).l
 	beq.w	.x
 	movem.w	d0,-(sp)
@@ -428,7 +428,7 @@ UserNameEntry						;With user records on (OptUserRec 0): the name entry (NameEnt
 	beq.w	.x
 	move.w	(cont2team).l,(nameentryvis).l
 	subi.w	#$1,(nameentryvis).l
-	jsr	(TrimSpacesMenuSetup).l
+	jsr	(NameEntryScreen).l
 .x	rts
 SkipOtherUserName						;Name entry: step the selection namelogsel past the name the other pad
 	
@@ -451,7 +451,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	
 	move.w	#$0,d0
 	move.w	#$1A,d1
-	jsr	(CrowdMeterFadeIn).l
+	jsr	(SetupScreen).l
 	jsr	(printz).l
 	String	CC_Font2Pri,$1,$1
 	movea.l	$47D80.l,a0
@@ -551,7 +551,7 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 .0	jsr	(printsmall).l
 	rts
 ; Data that follows PrintRecordTitles (strings, small tables)
-PrintRecordTitlesData	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
+WinRecTitles	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
 	dc.b	'%   Win-Loss-Tie'
 	dc.b	$FD,$04,$FC,$19,'Use A+C to c'
 	dc.b	'lear ALL win rec'

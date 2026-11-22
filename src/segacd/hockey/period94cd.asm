@@ -32,7 +32,7 @@ ClampPositionBoxFirstLimits	dc.w	$FFB5,$0000,$0000,$0108,$0000,$004B,$0000,$0108
 ; Position limits
 ClampPositionBoxSecondLimits	dc.w	$FFB5,$0000,$FEF8,$0000,$0000,$004B,$FEF8,$0000
 ; Clears the position box state and the team struct area.
-ClampPositionBoxClear
+ClearGameStats
 	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#shootoutstate,a0
 	move.l	#$12,d0
@@ -181,7 +181,7 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts
 ; "Period Stats" screen: loads the team logos from the disc and draws the shots / goals table
-PeriodStatsScreen	dc.w	$0006,$202E
+SkipNameNumber_1A	dc.w	$0006,$202E
 	move.l	d0,d0
 	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	d7/a0,-(sp)
@@ -235,7 +235,7 @@ PeriodStatsScreen	dc.w	$0006,$202E
 	clr.w	(matchup).l
 	moveq	#$0,d0
 	moveq	#$1C,d1
-	jsr	(CrowdMeterFadeIn).l
+	jsr	(SetupScreen).l
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$BE,$01,$0B,$00	; ......
@@ -329,7 +329,7 @@ PeriodStatsHeader	jsr	(printz).l
 PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	bsr.w	PeriodStatsTeamRows
 	move.w	#$18,(palcount).l
-.loop	jsr	(FrameWaitStep).l
+.loop	jsr	(Pausemode_rjoy).l
 	btst	#$7,d1
 	bne.w	.next3
 	btst	#$2,d1
@@ -477,7 +477,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	
 	moveq	#$9,d0
 	moveq	#$1A,d1
-	jsr	(CrowdMeterFadeIn).l
+	jsr	(SetupScreen).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$4,$1
 	moveq	#$20,d0
@@ -486,10 +486,10 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$6,$4,'Game  Statistics',CC_Font3Pri,$7,$1
 	move.w	#$2C,d0
-	jsr	(PutTeamBlockDraw).l
+	jsr	(PutTeamBlock).l
 	addi.w	#$4,(printx).l
 	clr.w	d0
-	jsr	(PutTeamBlockDraw).l
+	jsr	(PutTeamBlock).l
 	clr.w	(scoutcolumn).l
 	clr.w	(VertLineScrolling).l
 	clr.w	(PlayerScrollCtr).l
@@ -498,7 +498,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	bne.w	.0
 	move.w	#$30,(matchupvis).l
 .0	bsr.w	DisplayStats
-	bsr.w	StatScrollHeader
+	bsr.w	PrintStatScrollArrows
 .loop	jsr	(MenuWaitVblank).l
 	jsr	(ReadActiveJoypad).l
 	btst	#$7,d3
@@ -513,7 +513,7 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 	beq.w	.3
 .2	move.w	d0,(PlayerScrollCtr).l
 .3	bsr.w	.scroll
-	bsr.w	StatScrollHeader
+	bsr.w	PrintStatScrollArrows
 	bra.w	.loop
 .scroll	move.w	(PlayerScrollCtr).l,d0
 	beq.w	rtsStatTables
@@ -578,7 +578,7 @@ StatScrollRowEnd	move.w	(VertLineScrolling).l,d3
 ; Return of StatScrollRowEnd
 StatScrollRowExit	rts
 ; Prints the stats scroll header.
-StatScrollHeader	movem.l	d0-d7/a0-a6,-(sp)
+PrintStatScrollArrows	movem.l	d0-d7/a0-a6,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetFont,$1
 	tst.w	(VertLineScrolling).l
@@ -607,11 +607,11 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	jsr	(printz).l
 	String	CC_Font3Pri,$2,$7
 	move.w	#$2C,d0
-	jsr	(PutTeamBlockDraw).l
+	jsr	(PutTeamBlock).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$1A,$7
 	moveq	#$0,d0
-	jsr	(PutTeamBlockDraw).l
+	jsr	(PutTeamBlock).l
 	bsr.w	StatsReportBlitSetup
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
@@ -655,7 +655,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	divu.w	d1,d0
 .0	jsr	(PushNumber).l
 	jsr	(appstring).l
-	jsr	(PushNumberWidthString).l
+	jsr	(appendz).l
 	String	'%'
 	bra.w	.6
 .1	move.w	(a0),d0
@@ -673,14 +673,14 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 .4	jsr	(appstring).l
 	move.w	$2(a0),d0
 	bmi.w	.6
-	jsr	(PushNumberWidthString).l
+	jsr	(appendz).l
 	String	'/'
 	move.w	(a2,d0.w),d0
 	jsr	(PushNumber).l
 	jsr	(appstring).l
 	cmpi.w	#$14,(a0)
 	bne.w	.6
-	jsr	(PushNumberWidthString).l
+	jsr	(appendz).l
 	String	' ('
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
@@ -691,7 +691,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	divu.w	d1,d0
 .5	jsr	(PushNumber).l
 	jsr	(appstring).l
-	jsr	(PushNumberWidthString).l
+	jsr	(appendz).l
 	String	'%)'
 .6	movea.l	a3,a1
 	move.w	(a1),d0
