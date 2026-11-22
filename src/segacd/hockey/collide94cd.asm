@@ -7,7 +7,7 @@ checkcoll						;d2 = new x coord, d3 = new y coord, a3 = struct of object. Check
 	btst	#sfhor,(sflags).l		;check if in horiz mode
 	beq.w	.nhor1		;branch if not horizontal
 	exg.l	d2,d3
-.nhor1	btst	#pfnc,$62(a3)		;check if in no collision mode
+.nhor1	btst	#pfnc,pflags(a3)		;check if in no collision mode
 	bne.w	.ex		;branch if no collision
 	movem.l	d0-d7,-(sp)
 	move.w	$0(a3),d2		;Xpos
@@ -113,7 +113,7 @@ checkcx						;d4 = obj. # * 2 for possible collision so check x range and distan
 	asl.w	#$6,d4
 	movea.l	#SortCords,a2
 	adda.w	d4,a2		;add d4 to a2. a2 now address of SCStruct-1
-	btst	#pfnc,$62(a2)		;test pfnc pflags = no collision mode
+	btst	#pfnc,pflags(a2)		;test pfnc pflags = no collision mode
 	bne.w	.exit		;object has no collision mode on
 	btst	#pf2npc,$63(a2)		;pf2npc(pflags2) = another no collision mode
 	bne.w	.exit		;exit if no collision mode on
@@ -277,17 +277,17 @@ checkint						;check for interference penalty. player a2 interferes with a3 or
 	tst.w	position(a2)
 	bne.w	rtss2		;double check to make sure player is goalie
 	move.w	#$1,d0		;set d0 to team1 value
-	btst	#pfteam,$62(a3)		;check if home or away
+	btst	#pfteam,pflags(a3)		;check if home or away
 	beq.w	.control		;jump if home (team1)
 	move.w	#$2,d0		;set d0 to team2 value
 .control	cmp.w	(cont1team).l,d0
 	beq.w	.playercont
 	cmp.w	(cont2team).l,d0
 	bne.w	.checky		;branch if controlled by CPU
-.playercont	btst	#pfjoycon,$62(a3)		;pfjoycon - check if player controlled
+.playercont	btst	#pfjoycon,pflags(a3)		;pfjoycon - check if player controlled
 	beq.w	rtss2		;exit if not player controlled
 .checky	move.w	Ypos(a2),d0
-	btst	#pfgoal,$62(a2)		;pfgoal - 0 shooting bottom, 1 shooting top
+	btst	#pfgoal,pflags(a2)		;pfgoal - 0 shooting bottom, 1 shooting top
 	beq.w	.next6
 	neg.w	d0		;negative d0 if shooting bottom
 .next6	cmpi.w	#$EF,d0		;compare to Ypos. Looks like it compares to both ends of crease
@@ -476,7 +476,7 @@ checkagr
 .next7	move.w	#$7F,d0
 .ex	rts
 holdcheck
-	btst	#pfalock,$62(a3)
+	btst	#pfalock,pflags(a3)
 	bne.w	rtss2
 	tst.w	position(a3)
 	beq.w	rtss2
@@ -506,11 +506,11 @@ holdcheck
 	asr.w	#$1,d0
 	move.w	d0,Yvel(a3)
 	move.w	d0,Yvel(a2)
-	bset	#pfalock,$62(a3)
+	bset	#pfalock,pflags(a3)
 	move.w	#$CF4,d1
 	bsr.w	SetSPA
 	exg.l	a2,a3
-	bset	#pfalock,$62(a3)
+	bset	#pfalock,pflags(a3)
 	move.w	#$CC2,d1
 	cmpi.w	#$C90,SPA(a3)
 	beq.w	.setanimation
@@ -531,7 +531,7 @@ holdcheck
 	st.b	(collflag).l
 	rts
 Bcheck
-	btst	#pfalock,$62(a3)
+	btst	#pfalock,pflags(a3)
 	bne.w	rtss2
 	tst.w	position(a3)
 	beq.w	rtss2
@@ -539,7 +539,7 @@ Bcheck
 	bne.w	rtss2
 	tst.w	(OptPen).l
 	bne.w	.checkdir
-	btst	#pfjoycon,$62(a2)
+	btst	#pfjoycon,pflags(a2)
 	beq.w	.checkdir
 	moveq	#$20,d0
 	add.b	$75(a2),d0
@@ -628,7 +628,7 @@ FallDown
 .cont2	tst.w	position(a3)
 	beq.w	.chkpos
 	movea.l	#tmstruct,a0
-	btst	#pfteam,$62(a3)
+	btst	#pfteam,pflags(a3)
 	beq.w	.next3
 	adda.w	#tmsize,a0
 .next3	addi.w	#$1,$10(a0)
@@ -766,7 +766,7 @@ FallDown
 .6	clr.w	Xvel(a2)
 	clr.w	Yvel(a2)
 	bset	#pf3fall,pflags3(a2)
-	bset	#pfdoff,$62(a2)
+	bset	#pfdoff,pflags(a2)
 	movem.l	(sp)+,d0/a0
 	bra.w	FallDownCheckStage
 ; Data that follows FallDown (strings, small tables)
@@ -867,7 +867,7 @@ setInjuryType						;determines if injury will be for period or game. a2 = player
 	bset	#sfslock,(sflags).l		;set sfslock (scroll lock)
 	clr.w	d1
 	movea.l	#tmstruct,a0		;move Home team Struct to a0
-	btst	#pfteam,$62(a2)		;check if player home or away
+	btst	#pfteam,pflags(a2)		;check if player home or away
 	beq.w	.0
 	move.w	#$8000,d1		;move $8000 into d1
 	adda.w	#tmsize,a0		;add $364 to a0 (Away Team Struct start)
@@ -917,7 +917,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	neg.w	d4
 	cmp.w	d4,d2
 	bgt.w	.1
-	movea.l	#$17B00,a2
+	movea.l	#SortCords+(13*SCstruct),a2
 	bsr.w	checkgoal
 	bra.w	.2
 .0	neg.w	d5
@@ -928,7 +928,7 @@ checkwallcoll						;d2/d3 = x/y to test, a3 = object, wcradiusx/wcradiusy = radi
 	neg.w	d4
 	cmp.w	d4,d2
 	bgt.w	.1
-	movea.l	#$17A80,a2
+	movea.l	#SortCords+(12*SCstruct),a2
 	bsr.w	checkgoal
 	bra.w	.2
 .1	sub.w	d4,d2		;corner circle: d2/d3 = offset from the circle centre
@@ -1381,7 +1381,7 @@ wallcollb	cmpi.w	#puckscnum,SCnum(a3)
 	addi.w	#$258,(Crowdlevel).l
 	addi.w	#$F,(CwdExciteLvl).l
 .0	bset	#sfslock,(sflags).l
-	bset	#pfnc,$62(a3)
+	bset	#pfnc,pflags(a3)
 	tst.w	Ypos(a3)
 	bpl.w	.1
 	ori.w	#$8000,attribute(a3)
@@ -1637,7 +1637,7 @@ PuckCollisionTable	move.l	a0,-(sp)
 .next5	move.w	(a0,d0.w),(ChkBodyG).l
 	movea.l	#$3BA64,a0
 	clr.l	(ChkBodySqG).l
-	move.w	(a0,d0.w),$17EB8.l
+	move.w	(a0,d0.w),(ChkBodySqG+2).l
 	move.w	(ChkBodyG).l,(NegChkBodyG).l
 	neg.w	(NegChkBodyG).l
 	btst.b	#$1,(sflags6).l
@@ -1709,7 +1709,7 @@ puckstick						;puck collides with stick. a2 = player who collided, a3 = puck, d
 	bne.w	.0		;branch if not goalie
 	btst	#gmhl,(gmode).l
 	bne.w	rtss2		;exit if so (goalie always lets the shot in)
-.0	bclr	#pfdoff,$62(a2)
+.0	bclr	#pfdoff,pflags(a2)
 	move.w	(puckc).l,d1		;move puckc into d1
 	bmi.w	.nosteal		;branch if no puck carrier
 	asl.w	#$7,d1
@@ -1818,7 +1818,7 @@ puckglue						;part of puckstick that puckgoalie also branches to. Player a2 tak
 	move.w	d0,(puckc).l		;move d0 into puckc
 	movea.l	#tmstruct,a0		;Move Home Stats struct into a0
 	lea.l	$366(a0),a1
-	btst	#pfteam,$62(a2)		;check if player is home or away
+	btst	#pfteam,pflags(a2)		;check if player is home or away
 	bne.w	.next
 	exg.l	a0,a1
 .next	st.b	$1A(a0)		;FF into assist 1
@@ -1927,7 +1927,7 @@ puckbody						;puck hits player a2. a3 = puck, d0 = distance^2 (from checkpuckco
 	cmpi.w	#$C,Zpos(a3)
 	bgt.w	FallDown
 	rts
-.1	bset	#pfalock,$62(a2)
+.1	bset	#pfalock,pflags(a2)
 	bne.w	rtss2
 	move.w	#$10D0,d1
 	exg.l	a2,a3
@@ -2096,7 +2096,7 @@ makepde						;pass d0 as value to be scaled by player a0's energy level (full en
 getpde						;get player a3's energy level into d0. Return a2 = his team struct, d1 =
 									;pnum*2
 	movea.l	#tmstruct,a2
-	btst	#pfteam,$62(a3)		;#pfteam - home or away
+	btst	#pfteam,pflags(a3)		;#pfteam - home or away
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0	move.b	pnum(a3),d1

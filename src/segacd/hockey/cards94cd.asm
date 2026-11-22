@@ -1375,7 +1375,7 @@ NameEntryScreen
 	tst.w	(nameentryvis).l
 	beq.w	.next
 	move.w	(VisTeam).l,d0
-.next	movea.l	#$1B00C,a1
+.next	movea.l	#TeamList,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
 	adda.w	$4(a1),a1

@@ -33,12 +33,12 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	bne.s	.loop3
 	bclr.b	#$4,$FF800F.l
 	bclr.b	#$2,$FF800F.l
-	addq.w	#$1,$17460.l
+	addq.w	#$1,(SubVblankCount).l
 .ex	rts
 	movea.l	#$C458,sp
-	movea.l	#$1745C,a0
+	movea.l	#varstart,a0
 .loop4	clr.l	(a0)+
-	cmpa.l	#$1AD9A,a0
+	cmpa.l	#BootClearEnd,a0
 	blt.w	.loop4
 	move.w	#$C,d7
 	jsr	$6044.w
@@ -226,7 +226,7 @@ BackupRamWrite
 	tst.w	(ValidSRAM).l
 	bmi.w	.next4
 	jsr	(BackupRamChecksum).l
-	move.l	d0,$1A2DC.l
+	move.l	d0,(BackupRamSum).l
 	move.w	#$0,d0
 	lea.l	(ThreeStars).l,a0
 	lea.l	(mesarea).l,a1
