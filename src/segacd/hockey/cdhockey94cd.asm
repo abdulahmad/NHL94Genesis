@@ -1,6 +1,6 @@
 ; Sets the sub-CPU vector and sends gate array command $2D (wait for idle, start, wait for ack).
 SubCmd2DSend
-	move.l	#$22018,$6038.w
+	move.l	#VBlankSubCpuHook,$6038.w
 .loop	btst	#$7,$FF800E.l
 	bne.b	.loop
 	move.w	#$2D,$FF8020.l
@@ -17,10 +17,10 @@ SubCmd2DSend
 VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	beq.w	.ex
 	bset.b	#$2,$FF800F.l
-	move.l	#$2203A,-(sp)
+	move.l	#.vbdone,-(sp)		;VBint returns to .vbdone
 	move.l	(VBint).l,-(sp)
 	rts
-	jsr	(ReadJoyData).l
+.vbdone	jsr	(ReadJoyData).l
 .loop	btst.b	#$4,$FF800E.l
 	bne.s	.loop
 	move.w	#$2F,$FF8026.l
@@ -53,12 +53,12 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	bcs.b	.next
 	move.w	#$3,d0
 	lea.l	BackupRamName.l,a0
-	lea.l	$193BC.l,a1
+	lea.l	(BackupRamImage).l,a1
 	jsr	$5F16.w
 	bra.b	.next2
 .next	move.w	#$FFFF,(ValidSRAM).l
 .next2	move.l	#DiscDmaListPtr,(DiscDmaListPtr).l
-	clr.w	$1AD94.l
+	clr.w	(PALflag).l
 .loop5	btst.b	#$7,$FF800E.l
 	bne.s	.loop5
 	movem.l	a0,-(sp)
@@ -78,7 +78,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	andi.w	#$1,d0
 	move.w	d0,(PalMode).l
 	beq.w	.loop8
-	bset.b	#$0,$1AD94.l
+	bset.b	#$0,(PALflag).l
 .loop8	btst.b	#$7,$FF800E.l
 	bne.b	.loop8
 	move.w	#$2B,$FF8020.l
@@ -101,7 +101,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.w	(OptLine).l,(TmpOptLine2).l
 	move.w	(OptPlayMode).l,(TempOptPlayMode).l
 	jsr	(orjoy).l
-	jmp	(GameOverCallTail).l
+	jmp	(Opening).l
 .loop11	btst.b	#$7,$FF800E.l
 	bne.s	.loop11
 .loop12	btst.b	#$6,$FF800E.l
@@ -180,7 +180,7 @@ BackupRamNameSize				;disc only: the same name, then the word $003D: the file si
 	dc.b	'NHLHOCKEY94',0,0,$3D
 ; Adds up the $F20 bytes of the backup RAM image at $193BC.
 BackupRamChecksum
-	lea.l	$193BC.l,a0
+	lea.l	(BackupRamImage).l,a0
 	moveq	#$0,d0
 
 	move.w	#$F1F,d1
@@ -189,7 +189,7 @@ BackupRamChecksum
 	rts
 ; Clears the $F20-byte backup RAM image at $193BC.
 BackupRamClear
-	lea.l	$193BC.l,a0
+	lea.l	(BackupRamImage).l,a0
 	move.w	#$F1F,d0
 	clr.l	d1
 .loop2	move.b	d1,(a0)+
@@ -199,7 +199,7 @@ BackupRamClear
 BackupRamRead
 	movem.l	d0-d1/a0-a1,-(sp)
 	movea.l	d0,a1
-	adda.l	#$193BC,a1
+	adda.l	#BackupRamImage,a1
 	subq.l	#$1,d1
 .loop3	move.b	(a1)+,(a0)+
 	dbra	d1,.loop3
@@ -219,7 +219,7 @@ BackupRamWrite
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movea.l	d0,a1
-	adda.l	#$193BC,a1
+	adda.l	#BackupRamImage,a1
 	subq.l	#$1,d1
 .loop4	move.b	(a0)+,(a1)+
 	dbra	d1,.loop4
@@ -237,7 +237,7 @@ BackupRamWrite
 	jsr	$5F16.w
 	move.w	#$4,d0
 	lea.l	BackupRamNameSize.l,a0
-	lea.l	$193BC.l,a1
+	lea.l	(BackupRamImage).l,a1
 	jsr	$5F16.w
 	bcc.w	.next4
 .next3	move.w	#$FFFF,(ValidSRAM).l
@@ -252,10 +252,10 @@ BackupRamWrite
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-; Entry that clears sflags6 bit 6, then runs SPAlistDraw.
+; Entry that clears sflags6 bit 6, then runs PlayerRecordIO.
 SPAlistClearFlag6
 	bclr	#$6,(sflags6).l
-SPAlistDraw	movem.l	d0-d1/a0-a1,-(sp)
+PlayerRecordIO	movem.l	d0-d1/a0-a1,-(sp)
 	asl.l	#$2,d0
 	addi.l	#$0,d0
 	movea.l	#$2266E,a1
@@ -272,16 +272,16 @@ SPAlistDraw	movem.l	d0-d1/a0-a1,-(sp)
 .next	jsr	(BackupRamRead).l
 .next2	movem.l	(sp)+,d0-d1/a0-a1
 	rts
-; Entry that sets sflags6 bit 6, then runs SPAlistDraw.
-SPAlistSetFlag6
+; Entry that sets sflags6 bit 6, then runs PlayerRecordIO.
+WritePlayerRecord
 	bset	#$6,(sflags6).l
-	bra.w	SPAlistDraw
+	bra.w	PlayerRecordIO
 ReadCrowdRecord						;Read the 16 byte crowd record block of team d1 from save RAM
 	
 	
 	bclr	#$6,(sflags6).l
 ; Moves one 16 byte crowd record between RAM and backup RAM (flag 6 of sflags6 picks the direction)
-CrowdRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
+CrowdRecordIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$B60,d0
@@ -294,14 +294,14 @@ CrowdRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 .next2	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 ; Sets the flag and reads a crowd record (variant A).
-ReadCrowdRecordASetFlag6
+WriteCrowdRecord
 	bset	#$6,(sflags6).l
-	bra.w	CrowdRecordBackupIO
+	bra.w	CrowdRecordIO
 ; Clears the flag and reads a crowd record (variant B).
-ReadCrowdRecordBClearFlag6
+ReadTeamRecord
 	bclr	#$6,(sflags6).l
 ; Moves one 16 byte team record between RAM and backup RAM (flag 6 of sflags6 picks the direction)
-TeamRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
+TeamRecordIO	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	d1,d0
 	asl.w	#$4,d0
 	addi.l	#$D20,d0
@@ -314,9 +314,9 @@ TeamRecordBackupIO	movem.l	d0-d1/a0-a1,-(sp)
 .next2	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 ; Sets the flag and reads a crowd record (variant B).
-ReadCrowdRecordBSetFlag6
+WriteTeamRecord
 	bset	#$6,(sflags6).l
-	bra.w	TeamRecordBackupIO
+	bra.w	TeamRecordIO
 ; Sets the flag and runs NameLogIO (write); ReadNameLog clears it (read).
 WriteNameLog
 	bset	#$6,(sflags6).l
@@ -337,7 +337,7 @@ NameLogIO						;A user record block: read or write (sflags6 bit 6)
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Data that follows NameLogIO (strings, small tables)
-NameLogIOData	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
+PlayerRecordOffsets	dc.w	$0000,$001A,$0034,$004E,$0068,$0082,$009C,$00B6
 	dc.w	$00D0,$00EA,$0104,$011E,$0138,$0152,$016C,$0186
 	dc.w	$01A0,$01BA,$01D4,$01EE,$0208,$0222,$023C,$0256
 	dc.w	$0270,$028A,$02A4,$02BE,$02D8

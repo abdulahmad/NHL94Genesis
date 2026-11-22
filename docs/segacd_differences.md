@@ -203,11 +203,11 @@ With the 4-way adaptor, both builds end with the same `pojoy` and `OptNOP`. With
 
 ### `ClearShotData` overrun fix (verified)
 
-`StartGame` calls `ClearShotData` when `OptPlayMode` is 2 or more (`src/engine/hockey94.asm` 53-55). The disc does the same; the transcription has the routine as the local label `.next9` in `src/segacd/hockey/logos94cd.asm` (call at 501, body at 520).
+`StartGame` calls `ClearShotData` when `OptPlayMode` is 2 or more (`src/engine/hockey94.asm` 53-55). The disc does the same; the transcription has the routine as `ClearShotData` in `src/segacd/hockey/logos94cd.asm` (call at 501, body at 520).
 
 ```asm
 ; cartridge (src/engine/hockey94.asm 75)     ; Sega CD (logos94cd.asm 520)
-ClearShotData                                .next9  move.w  #$71,d0
+ClearShotData                                ClearShotData  move.w  #$71,d0
     move.w  #$E3,d0                                  movea.l #outputbuffer,a0
     movea.w #(outputbuffer-M68K_RAM),a0      .loop3  clr.w   (a0)+
 .0  clr.w   (a0)+                                    dbra    d0,.loop3
@@ -215,7 +215,7 @@ ClearShotData                                .next9  move.w  #$71,d0
     rts
 ```
 
-(The disc line loads the disc's `outputbuffer` address. The transcription writes it as a number, the same one the disc uses where the cartridge's `setup94.asm` 2105 and 2142 use `outputbuffer`, at `setup94cd.asm` 1822 and 1857.)
+(The disc line loads the disc's `outputbuffer` address, the same one the disc uses where the cartridge's `setup94.asm` 2105 and 2142 use `outputbuffer`, at `setup94cd.asm` 1826 and 1861.)
 
 - `dbf` runs count + 1 times. So the cartridge clears `$E4` = 228 words and the disc clears `$72` = 114 words.
 - The cartridge RAM map (`src/ram94.asm` 840-848) has `outputbuffer` (113 words), then `marker` (1), then `tpassbits` (5). After those come the FM driver's state: `music_needs_z80_update` (1 word), `Z80_command_buffer` + `per_channel_attenuation_table` (12 bytes), `per_channel_frequency_table` (7 words), `per_channel_patch_table` (4 words) and `fm_voice_usage_table` (256 words).
@@ -249,7 +249,7 @@ On the cartridge, game code reads the VDP's HV counter (`HVcount` = `$C00008`, `
 
 On the main CPU, command `$1B` is the one-line handler `move.w $C00008,$A12010` (`src/segacd/main/hwread94cd.asm`; `$1C` is the byte form, `move.b`). It is reached through the main command table described below.
 
-- **Count (verified):** `HOCKEY.BIN` has 21 `$1B` requests and 2 `$1C` requests. The two `$1C` are the cartridge's two `move.b (HVcount)` in `CCStart` (`collide94.asm` 432, 443). The disc transcription in `src/segacd/hockey/logic94cd.asm` shows 9 of the 10 `logic94.asm` sites; the second one in `asspuckc` is in the binary (verified by instruction alignment) but not written as a `$1B` request in the transcription. The cartridge has 25 `HVcount` reads. The 23 in game, scoreboard, crowd and options code map one-for-one. The two in `src/front/title94.asm` 8-9 (the title screen's random seed) were not found in `HOCKEY.BIN`.
+- **Count (verified):** `HOCKEY.BIN` has 21 `$1B` requests and 2 `$1C` requests. The two `$1C` are the cartridge's two `move.b (HVcount)` in `CCStart` (`collide94.asm` 432, 443). The disc transcription in `src/segacd/hockey/logic94cd.asm` shows all 10 `logic94.asm` sites. The second one in `asspuckc` is in the cartridge's `.chkdir` (the opponent check `skateto` calls), which the transcription used to hold as a block of `dc.w` words; it is now written out as code. The cartridge has 25 `HVcount` reads. The 23 in game, scoreboard, crowd and options code map one-for-one. The two in `src/front/title94.asm` 8-9 (the title screen's random seed) were not found in `HOCKEY.BIN`.
 - **Callers:** `asswingo`, `asscentero`, `checkanim`, `asspuckc` (twice), `chk4lc`, `chk4shot`, `check4check`, `Endfaceoff`, `playeracc` (`logic94.asm`); `FallDown`, `CheckBump`, `puckgoalie` and the two byte reads in `CCStart` (`collide94.asm`); `updatecrowdf` (twice) in `hockey94.asm`; two in `scoreboard94.asm`; and the four seed reads in `optsetup94.asm`.
 - **Inferred:** the value is the beam position when the main CPU runs the handler, a few microseconds after the request. The sub CPU also runs on its own clock, not in step with the VDP. So the same situation gives different random bits than on the cartridge, though each read is still "some beam position". The logic around each read is unchanged. `randomd0` / `randomd0s` (`src/engine/middle94.asm` 199-207) don't read the HV counter and are unchanged.
 
@@ -374,18 +374,18 @@ In order:
 3. The hook calls `ReadJoyData`, whose port accesses are also channel B commands.
 4. The hook sends `$2F`. Its handler (`$FF6932`) clears `$FF6CFA`, and `SubCommAck` returns with `rte`.
 
-The game-play vblank routine is the cartridge's `VBlank` (`src/engine/video94.asm` 5), with two changes. The transcription calls it `VBlankMainHandler` (`src/segacd/hockey/collide94cd.asm` 2540).
+The game-play vblank routine is the cartridge's `VBlank` (`src/engine/video94.asm` 5), with two changes. The transcription labels it `VBlank` (`src/segacd/hockey/collide94cd.asm` 2538), with the older name `VBlankMainHandler` kept on the same address.
 
 ```asm
 ; cartridge VBlank, end                  ; Sega CD, end
-.c  addq.w  #1,(Vcount).w                .loop  addq.w  #$1,(ScoutSubStatus).l
+.c  addq.w  #1,(Vcount).w                .loop  addq.w  #$1,(Vcount).l
     jsr     (p_music_vblank).l                  movem.l (sp)+,d0-d7/a0-a6
     movem.l (sp)+,d0-d7/a0-a6                   rts
     rte
 ```
 
 - There is no `p_music_vblank`: the hook reads the pads, and the music is CD audio. It ends in `rts`, because the hook called it.
-- `$17474`, written as `ScoutSubStatus` in `src/segacd/ram94cd.asm` 388, is the disc's `Vcount`: `DoGameFrame` on the disc reads it (`move.w $17474,d7`) where the cartridge reads `Vcount`. The rest of the routine matches: `DumpSprites` (scroll, sprite table and DMA list) when `dfok` is set, `cramfade`, and the game clock or shootout clock jiffy (`$AAA` = `jiffy` with `jps` = 24). At 60 seconds the disc pushes sound id 2 and calls the routine the transcription names `GateArrayCommandSend`, where the cartridge calls `sfx` with `SFXbeep2` (= 2).
+- `$17474` is the disc's `Vcount` (`src/segacd/ram94cd.asm`; earlier versions of the transcription called it `ScoutSubStatus`): `DoGameFrame` on the disc reads it where the cartridge reads `Vcount`. The rest of the routine matches: `DumpSprites` (scroll, sprite table and DMA list) when `dfok` is set, `cramfade`, and the game clock or shootout clock jiffy (`$AAA` = `jiffy` with `jps` = 24). At 60 seconds the disc pushes sound id 2 and calls `sfx_vblank` (`src/segacd/hockey/middle94cd.asm`), where the cartridge calls `sfx` with `SFXbeep2` (= 2). `sfx_vblank` is a disc-only version of `sfx` for use inside the vblank: it sends the number as channel B command `$34`, whose main-CPU handler is the same Z80 sound call as `sfx`'s command `$26`, and it skips `sfx`'s negative-number check and `lastsfx` store.
 
 `DoGameFrame` is the same on both (`src/engine/hockey94.asm` 171):
 
@@ -567,4 +567,5 @@ The comparison scripts are not in the repo. `tools/segacd_relocs.py` gives the c
 - **Main CPU code outside the game's I/O path**: the rest of `MAIN.BIN` (the film player, scouting report and SDK menu code) was read only where it serves the game's vblank, pads and 4-way detection. The Start-press flag from `$FF4F88` was not traced to its use on the sub CPU.
 - **Sub-CPU interrupt path and masking**: the BIOS path from the sub CPU's level 2 interrupt to the `$6038` hook, and when the sub CPU has interrupts masked, are not in this repo and were not checked. So how often a vblank is missed is unknown.
 - **Title-screen seed**: the cartridge's two `HVcount` reads in `src/front/title94.asm` 8-9 were not found in `HOCKEY.BIN`. Where (or whether) the Sega CD seeds the random numbers at the title screen was not traced.
+- **Transcription naming**: the `HOCKEY.BIN` transcription now uses the cartridge's routine, local and RAM names wherever the code was matched to the cartridge. Still not aligned: cartridge labels that fall inside `dc` data or in the middle of an instruction run the transcription keeps as words; disc routines that start with extra Sega CD set-up code before the cartridge-matching part (the label stays on the disc's entry point); five cartridge labels left as comments because the disc code branches across them with local labels (`Gameloop`, `asswingd`, `asswingo`, `asscenterd`, `asscentero`); the team data; the gate-array registers (`$FF80xx`), which have no cartridge equivalent; and about 70 RAM addresses still written as numbers, which are disc-only or could not be paired with a cartridge name.
 - **`ClearShotData` side effect**: whether wiping the FM driver's tables on the cartridge is ever audible was not checked.
