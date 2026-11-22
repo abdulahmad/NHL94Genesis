@@ -780,8 +780,8 @@ setoptions
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$03,$41,$45,$67,$89,$AB,$CD,$EF	; .AEg....
 	jsr	(defaultsprites_0).l
-	move.w	#$28,$1749C.l
-	move.w	#$28,$1779C.l
+	move.w	#$28,(SortCords+rosxoff).l
+	move.w	#$28,(SortCords+(6*SCstruct)+rosxoff).l
 	st.b	(tmstruct).l
 	st.b	(awtmstruct).l
 	rts
@@ -872,7 +872,7 @@ SetupDemo
 	bset	#$6,$FF800F.l
 .loop5	btst	#$6,$FF800E.l
 	beq.b	.loop5
-	move.w	$FF8010.l,$18C1A.l
+	move.w	$FF8010.l,(seed+2).l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
 .loop6	btst	#$6,$FF800E.l
@@ -906,7 +906,7 @@ SetupPadsPlayoffLevelRead
 	bset	#$6,$FF800F.l
 .loop5	btst	#$6,$FF800E.l
 	beq.b	.loop5
-	move.w	$FF8010.l,$18C1A.l
+	move.w	$FF8010.l,(seed+2).l
 	bset	#$7,$FF800F.l
 	bclr	#$6,$FF800F.l
 .loop6	btst	#$6,$FF800E.l
