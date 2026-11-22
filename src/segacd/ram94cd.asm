@@ -36,6 +36,7 @@ fodropx	equ	$1746C			;face off drop spot x/y
 fodropy	equ	$1746E			;face off drop spot y (see fodropx)
 recbpr	equ	$17470			;replay record buffer pointer: the frame being recorded
 VBint	equ	$18D66			;address of vblank interupt code
+Vcount	equ	$17474			;counter for vblank (the disc vblank routines add 1 to it, DoGameFrame reads it)
 OldVcount	equ	$17476			;Vcount at the last game frame: the frame loop waits d7 frames from it
 repeatdelayframes	equ	$17478			;frames until the menu cursor repeats (first delay $F, then 4)
 asv	equ	$1747A			;analog sound volume (crowd noise)
@@ -85,6 +86,8 @@ passdir	equ	$17E2C			;direction for pass/shot
 passspeed	equ	$17E2E			;speed of pass/shot
 passReceiverPlayerNum	equ	$17E30			;SCnum of the intended receiver of the last pass, -1 = none (94 had
 glovecords	equ	$17E32			;cordinates of glove/sticks (fighting)
+puckcross2	equ	$17E38			;puckcross top entry frames
+puckcross6	equ	$17E3C			;puckcross bottom entry frames
 threat	equ	$17E34			;direction of threat on puck handler
 puckcross	equ	$17E36			;xcord / frames, top entry then bottom (93G rs.w 4)
 lj1	equ	$17E3E			;used in joystick debounce
@@ -255,6 +258,7 @@ TempOptPlayMode	equ	$18C24			;temporary option: play mode
 databuffer	equ	$18C26			;scratch data buffer
 passbits	equ	$18C38			;playoff password bits (94 had pwddatabuffer)
 BA_Team	equ	$19366			;breakaway / penalty shot / shootout: which team (with BA_PS_flags)
+BackupRamImage	equ	$193BC			;disc only: the $F20-byte backup RAM image
 BA_Sktr_SCnum	equ	$19368			;SCnum of the breakaway / penalty-shot / shootout skater
 BA_Goalie_SCnum	equ	$1936A			;SCnum of that play's goalie
 BA_Skater_Offset	equ	$1936C			;that skater's team position offset
@@ -380,18 +384,20 @@ iconplayer	equ	$1AD8A			;icon player
 iconx	equ	$1AD8C			;icon x position
 scoutwait	equ	$1AD8E			;scouting report wait
 replaydelay	equ	$1AD92			;replay delay
+outputbuffer	equ	$18C42			;work buffer, also the shot data kept between games
+PALflag	equ	$1AD94			;nonzero on a PAL console
 
 ; --- variables only the disc has, by address ---
 replayend	equ	$173B0			;end of the replay frames (replaysize bytes each)
 scoutparaoff	equ	$17462			;disc only: byte offset of the next paragraph, replaces the cartridge's line skip
 ScoutLastPara	equ	$17466			;disc only: set when the last paragraph ($21) is reached
-ScoutSubStatus	equ	$17474			;disc only: word the sub CPU sets when the speech clip is done
 puckx	equ	$17B80			;puck x position in its sort object (93G)
 pucky	equ	$17B94			;puck y position
 puckz	equ	$17B98			;puck height above the ice
 puckvx	equ	$17BA8			;puck x velocity
 puckvy	equ	$17BAA			;puck y velocity
 puckvz	equ	$17BAC			;puck z velocity
+puckx_nopuck	equ	$17BDE			;puck object nopuck word
 puckc	equ	$17BE0			;puck carrier (93G: the newpos slot of the puck object)
 puck_pflags2	equ	$17BE3			;puck object pflags2
 PlayerSwitchDelay	equ	$17E57			;frames before the controlled player may switch again, set to $11 when a switch happens
@@ -424,6 +430,8 @@ RonBarrMap	equ	$47D54
 ScoutCDArg	equ	$47D60			;disc only: argument block for _CDBIOS function $18
 SDKCall		equ	$6044			;disc only: SDK entry, function number in d7
 _CDBIOS		equ	$5F22			;disc only: Sega CD BIOS entry
+palfadenew	equ	$BBCB0			;palettes to fade into (+$20 the title palette, +$40 palettes 2-3)
+Satt	equ	$BBD30			;sprite attribute table (for dma transfer)
 teamrecbuf	equ	$BC0C8			;SRAM team record buffer
 ThreeStars	equ	$BC000
 TeamLogoBitmaps	equ	$47D8C			;pointer, a loaded file here
