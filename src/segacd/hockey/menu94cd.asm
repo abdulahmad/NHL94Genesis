@@ -163,7 +163,7 @@ PutTeamBlock
 	movem.l	d0-d2/a0-a1,-(sp)
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-	movea.l	#Teamblocksmap,a1
+	movea.l	#TeamBlockMap,a1
 	adda.w	d0,a1
 	moveq	#$1,d2
 .loop	jsr	(xyVmMap).l

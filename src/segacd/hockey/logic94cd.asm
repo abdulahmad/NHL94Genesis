@@ -4629,7 +4629,7 @@ puckpenshot	bclr.b	#$1,$62(a3)
 	move.w	#$258,(Crowdlevel).l
 	addi.w	#$14,(CwdExciteLvl).l
 .next	move.w	(ExtraChars).l,d4
-	movea.l	$47D1C.l,a2
+	movea.l	(RefsMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	bset.b	#$3,(disflags).l
@@ -5328,11 +5328,11 @@ CompLineScreenLimit	cmpi.w	#$258,(Crowdlevel).l
 	movea.l	(sp)+,a3
 	bsr.w	ResetAndSelectPlayers
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D14.l,a2
+	movea.l	(FaceOffMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(faceoffvrcset).l
-	movea.l	$47D30.l,a2
+	movea.l	(FaceOffSprites).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$FFFF,(arenaanim).l
@@ -5359,7 +5359,7 @@ FaceoffSongPick	moveq	#$36,d0
 	asr.w	#$3,d0
 	move.w	d0,(printy).l
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D14.l,a0
+	movea.l	(FaceOffMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -5522,7 +5522,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	bclr	#sf2faceoff,(sflags2).l
 	move.w	#$3C,(holdreset).l
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D1C.l,a2
+	movea.l	(RefsMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	bclr	#sf2drec,(sflags2).l
@@ -6057,7 +6057,7 @@ GetHot
 	clr.w	d1
 	tst.w	$6(a0)
 	ble.w	.next3
-	movea.l	$47D28.l,a1
+	movea.l	(HotList).l,a1
 	subq.l	#$2,a1
 	move.w	$6(a0),d0
 	add.w	d0,d0

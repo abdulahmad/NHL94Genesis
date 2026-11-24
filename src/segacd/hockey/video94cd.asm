@@ -125,10 +125,10 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	moveq	#$1F,d3		;max lines to update
 	cmp.w	d4,d1
 	beq.w	rtss2		;same row as last frame
-	movea.l	$47D18.l,a0
+	movea.l	(Rinktilelist).l,a0
 	btst	#$4,(sflags4).l		;reverse angle replay
 	beq.w	.0
-	movea.l	$47D64.l,a0
+	movea.l	(RevRinkTilelist).l,a0
 .0	adda.l	jimdata(a0),a0		;a0 = map header: (a0) = chars per row, data at 4(a0) (the move / adda
 	blt.w	.su0		;row went up
 .sd	move.w	d1,d0		;scrolling down: queue map rows, one per pass (d3 = max rows)
@@ -208,7 +208,7 @@ checkfo						;check for face off sprites. 3 entries of fofdata2: word frame, wor
 .loop	move.w	(a3),d4
 	bmi.w	.next
 	beq.w	.next
-	movea.l	$47D30.l,a2
+	movea.l	(FaceOffSprites).l,a2
 	adda.l	jimdata(a2),a2
 	add.w	d4,d4
 	move.w	$2(a2,d4.w),d5
@@ -254,7 +254,7 @@ showzam						;zamboni. a5 = dma list, a6 = sprite table, d6 = link counter. Draw
 									;frame. Called from setvideo
 	move.w	(Zamx).l,d0
 	bmi.w	rtss2		;no zamboni
-	movea.l	$47D34.l,a0
+	movea.l	(ZamSprites).l,a0
 	lsr.w	#$2,d0
 	move.w	#$12A,d1		;y (92 128+200)
 	moveq	#$1,d2		;frame
@@ -320,7 +320,7 @@ showcrowd						;draw crowd sprites: up to 3 frames per PBnum nibble, then the tw
 									;No crowd in a reverse angle replay. Called from setvideo
 	btst	#$4,(sflags4).l		;check if reverse angle replay
 	bne.w	.x		;branch if so
-	movea.l	$47D2C.l,a1
+	movea.l	(CrowdSprites).l,a1
 	adda.l	jimdata(a1),a1		;a1 = frame offset table
 	move.w	(Hpos).l,d4
 	move.w	(Vpos).l,d5
@@ -764,7 +764,7 @@ addframe2
 	eor.w	d4,attribute(a3)
 	move.w	frame(a3),d4
 	andi.w	#$7FF,d4
-	movea.l	$47D24.l,a2
+	movea.l	(Sprites).l,a2
 	adda.l	jimdata(a2),a2
 	add.w	d4,d4
 	cmp.w	$2(a2),d4
@@ -809,7 +809,7 @@ addframe2
 	add.w	VRchar(a3),d3
 	ext.l	d2
 	asl.l	#$5,d2
-	add.l	$47D24.l,d2
+	add.l	(Sprites).l,d2
 	addi.l	#$A,d2
 	asl.w	#$4,d4
 	asl.w	#$5,d3
@@ -940,22 +940,22 @@ setupice
 	bsr.w	DoDMANd2Queue
 	clr.w	d4
 	move.w	d4,(rinkvrcset).l
-	movea.l	$47D18.l,a2
+	movea.l	(Rinktilelist).l,a2
 	addq.l	#$8,a2
 	btst	#$4,(sflags4).l
 	beq.w	.next4
-	movea.l	$47D64.l,a2
+	movea.l	(RevRinkTilelist).l,a2
 	addq.l	#$8,a2
 .next4	bsr.w	DecompressGraphicsPlain
 	jsr	(LoadHomeTeamGfx).l
 	move.w	d4,(EASNcset).l
-	bsr.w	SetupIceRinkPalRemap
+	bsr.w	setupEASportsMap
 	move.w	d4,(energybarchars).l
-	movea.l	$47D40.l,a2
+	movea.l	(EnergyBarMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	d4,(crowdvrcset).l
-	movea.l	$47D2C.l,a2
+	movea.l	(CrowdSprites).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	d4,(arenaanimchars).l

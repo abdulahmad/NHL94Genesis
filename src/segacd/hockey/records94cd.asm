@@ -445,7 +445,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	jsr	(SetupScreen).l
 	jsr	(printz).l
 	String	CC_Font2Pri,$1,$1
-	movea.l	$47D80.l,a0
+	movea.l	(NHLLogoMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -458,7 +458,7 @@ RecordHoldersScreen						;"Record Holders" menu item (menu lists): the save RAM 
 	jsr	(dobitmap).l
 	jsr	(printz).l
 	String	CC_Font2Pri,$21,$1
-	movea.l	$47D84.l,a0
+	movea.l	(NHLPALogoMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0

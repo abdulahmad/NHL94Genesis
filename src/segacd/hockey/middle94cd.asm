@@ -657,7 +657,7 @@ ScoutingReportTextClear
 ; Adds the disc load base to every pointer of the table at $47D88.
 RelocatePointerTableDisc
 	movem.l	d0-d1/a0,-(sp)
-	movea.l	$47D88.l,a0
+	movea.l	(FeaturedPictures).l,a0
 	move.l	a0,d1
 	moveq	#$1B,d0
 .loop2	add.l	d1,(a0)+
@@ -676,7 +676,7 @@ RelocatePointerTableWordRam
 	movem.l	d0-d1/a0,-(sp)
 	movea.l	#$80000,a0
 	move.l	a0,d1
-	sub.l	$47D88.l,d1
+	sub.l	(FeaturedPictures).l,d1
 	moveq	#$1B,d0
 .loop4	add.l	d1,(a0)+
 	dbra	d0,.loop4
@@ -694,12 +694,12 @@ ScoutCompareHotColdTotals						;Compare the teams' hot / cold totals (GetHotCold
 									;higher; d0 = -1, $22 or $23 by the difference (ScoutingReport text
 									;"Lately ... has been playing (extremely) well")
 	movem.l	d0-d3/a0-a4,-(sp)
-	movea.l	$47D88.l,a0
+	movea.l	(FeaturedPictures).l,a0
 	movea.l	#$80000,a1
 	move.w	#$88B8,d0
 .loop	move.l	(a0)+,(a1)+
 	dbra	d0,.loop
-	movea.l	$47D88.l,a0
+	movea.l	(FeaturedPictures).l,a0
 	jsr	(RelocatePointerTableWordRam).l
 	movea.l	a0,a1
 	adda.l	#$7D0,a1

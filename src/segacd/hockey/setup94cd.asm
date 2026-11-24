@@ -26,7 +26,7 @@ setupice_highlight
 	clr.l	(padcont+8).l
 	st.b	(c1playernum).l
 	st.b	(c2playernum).l
-	bsr.w	SetupIceRinkPalRemap
+	bsr.w	setupEASportsMap
 	movea.l	#DMAList,a5
 	movea.l	#Satt,a6
 	moveq	#$1,d6
@@ -55,56 +55,55 @@ setupice_highlight
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 setupIceRinkPal
-	movea.l	$47D18.l,a0
+	movea.l	(Rinktilelist).l,a0
 	adda.l	(a0),a0
 	moveq	#$F,d0
 	movea.l	#palfadenew,a1
 .ipal	move.l	(a0)+,(a1)+
 	dbra	d0,.ipal
 	rts
-; Decompresses the rink palette with remap.
-SetupIceRinkPalRemap
+; Decompress the easn logo tiles (EASportsMap+8) to vram at EASNcset.
+setupEASportsMap
 	move.w	(EASNcset).l,d4
-	movea.l	$47D4C.l,a2
+	movea.l	(EASportsMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
-; Inline data read by DecompressGraphicsWithRemap from the return address (the remap table, 4 words).
-	dc.w	$7123,$4567,$89AB,$CDEF
+	dc.l	$71234567,$89ABCDEF		;remap table
 	rts
-; Decompresses the fifth ice rink graphics set with the remap.
-IceRinkRemapGfxE
+; Reload the energy bar tiles (EnergyBarMap+8) at energybarchars.
+ReloadEnergyBarTiles
 	move.w	(energybarchars).l,d4
-	movea.l	$47D40.l,a2
+	movea.l	(EnergyBarMap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-; Decompresses the sixth ice rink graphics set with the remap.
-IceRinkRemapGfxF
+; Reload the crowd tiles (CrowdSprites+8) at crowdvrcset.
+ReloadCrowdTiles
 	move.w	(crowdvrcset).l,d4
-	movea.l	$47D2C.l,a2
+	movea.l	(CrowdSprites).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-; Decompresses the first ice rink graphics set with the remap.
-IceRinkRemapGfxA
+; Reload the horizontal ref tiles (RefMap2+8) at ExtraChars.
+ReloadRefHorTiles
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D20.l,a2
+	movea.l	(RefMap2).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-; Decompresses the second ice rink graphics set with the remap.
-IceRinkRemapGfxB
+; Reload the ref tiles (RefsMap+8) at ExtraChars.
+ReloadRefTiles
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D1C.l,a2
+	movea.l	(RefsMap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-; Decompresses the third ice rink graphics set with the remap.
-IceRinkRemapGfxC
+; Reload the face off tiles (FaceOffSprites+8) at faceoffvrcset.
+ReloadFaceOffTiles
 	move.w	(faceoffvrcset).l,d4
-	movea.l	$47D30.l,a2
+	movea.l	(FaceOffSprites).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
-; Decompresses the fourth ice rink graphics set with the remap.
-IceRinkRemapGfxD
+; Reload the FaceOffMap+8 tiles at ExtraChars.
+ReloadFaceOffMap
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D14.l,a2
+	movea.l	(FaceOffMap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain
 setupTeamBlocksMap						;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C and copy the home
@@ -112,9 +111,9 @@ setupTeamBlocksMap						;Load the TeamBlocks map tiles (Teamblocksmap) at d4+$2C
 	
 	move.w	d4,(basetileoffset).l
 	addi.w	#$2C,d4
-	movea.l	#Teamblocksmap,a1
-	movea.l	$47D44.l,a0
-	lea.l	$8(a0),a2
+	movea.l	#TeamBlockMap,a1		;map word buffer for CopyTeamBlockMapData
+	movea.l	(Teamblocksmap).l,a0
+	lea.l	jimtilecount(a0),a2
 	bsr.w	DecompressGraphicsPlain
 	adda.l	jimdata(a0),a0
 	move.l	a0,-(sp)
@@ -627,7 +626,7 @@ PlayoffScreen
 	bsr.w	eraser
 	bsr.w	AddTeamBlock
 	bsr.w	AddSmallFont
-	movea.l	$47D50.l,a2
+	movea.l	(Arrowsmap).l,a2
 	addq.l	#$8,a2
 	move.w	d4,(ExtraChars).l
 	bsr.w	DecompressGraphicsPlain
@@ -644,7 +643,7 @@ PlayoffScreen
 	move.w	$2(a1),d3
 	moveq	#$3,d5
 	bsr.w	dobitmap
-	movea.l	$47D94.l,a1
+	movea.l	(StanleyCupSprite).l,a1
 	lea.l	$8(a1),a2
 	adda.l	(a1),a1
 	moveq	#$7,d0
@@ -814,7 +813,7 @@ PlayoffScreen_doscores						;Print best of 7 wins "t-b" for game struct a2 at pr
 	bra.w	print
 PlayoffScreen_doarrow						;Draw tree arrow d0 from the arrows map (Arrowsmap) at printx/printy
 	movem.l	d0-d7/a0-a3,-(sp)
-	movea.l	$47D50.l,a0		;a0 = arrows map
+	movea.l	(Arrowsmap).l,a0		;a0 = arrows map
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = arrow frames
 	adda.l	jimdata(a1),a1		;a1 = map data
@@ -838,7 +837,7 @@ PlayoffScreen_doteam						;Draw team block d1 (team*2) from the TeamBlocks map (
 	cmp.b	d0,d1		;this block?
 	bne.w	.nohi
 	move.w	#$6000,(printa).l
-.nohi	movea.l	$47D44.l,a1		;a1 = map header of the team blocks
+.nohi	movea.l	(Teamblocksmap).l,a1		;a1 = map header of the team blocks
 	adda.l	jimdata(a1),a1
 	movea.l	#null,a2
 	clr.w	d0
@@ -1128,8 +1127,8 @@ ScrollDisplayUpCall
 	add.l	d0,(ScoutingReportText).l
 	move.l	(a0)+,(TeamLogoBitmaps).l
 	add.l	d0,(TeamLogoBitmaps).l
-	move.l	(a0)+,$47D88.l
-	add.l	d0,$47D88.l
+	move.l	(a0)+,(FeaturedPictures).l
+	add.l	d0,(FeaturedPictures).l
 	move.l	(a0)+,(ScoutSpeechTable).l
 	add.l	d0,(ScoutSpeechTable).l
 	move.l	(a0)+,(SmallFontMap).l
@@ -1138,38 +1137,38 @@ ScrollDisplayUpCall
 	add.l	d0,(HotMap).l
 	move.l	(a0)+,(ColdMap).l
 	add.l	d0,(ColdMap).l
-	move.l	(a0)+,$47D50.l
-	add.l	d0,$47D50.l
+	move.l	(a0)+,(Arrowsmap).l
+	add.l	d0,(Arrowsmap).l
 	move.l	(a0)+,(BigFontMap).l
 	add.l	d0,(BigFontMap).l
 	move.l	(a0)+,(FramerMap).l
 	add.l	d0,(FramerMap).l
 	move.l	(a0)+,(RonBarrMap).l
 	add.l	d0,(RonBarrMap).l
-	move.l	(a0)+,$47D70.l
-	add.l	d0,$47D70.l
+	move.l	(a0)+,(PrintFont2Map).l
+	add.l	d0,(PrintFont2Map).l
 	move.l	(a0)+,(EASportsBGMap).l
 	add.l	d0,(EASportsBGMap).l
-	move.l	(a0)+,$47D08.l
-	add.l	d0,$47D08.l
-	move.l	(a0)+,$47D78.l
-	add.l	d0,$47D78.l
-	move.l	(a0)+,$47D44.l
-	add.l	d0,$47D44.l
-	move.l	(a0)+,$47D7C.l
-	add.l	d0,$47D7C.l
-	move.l	(a0)+,$47D48.l
-	add.l	d0,$47D48.l
-	move.l	(a0)+,$47D94.l
-	add.l	d0,$47D94.l
-	move.l	(a0)+,$47D18.l
-	add.l	d0,$47D18.l
-	move.l	(a0)+,(ScoutSavedSP).l
-	add.l	d0,(ScoutSavedSP).l
-	move.l	(a0)+,$47D74.l
-	add.l	d0,$47D74.l
-	move.l	(a0)+,$47D04.l
-	add.l	d0,$47D04.l
+	move.l	(a0)+,(LoaderSlotUnread).l
+	add.l	d0,(LoaderSlotUnread).l
+	move.l	(a0)+,(SetupFramerMap).l
+	add.l	d0,(SetupFramerMap).l
+	move.l	(a0)+,(Teamblocksmap).l
+	add.l	d0,(Teamblocksmap).l
+	move.l	(a0)+,(LogoBoxMap).l
+	add.l	d0,(LogoBoxMap).l
+	move.l	(a0)+,(TeamBitmaps).l
+	add.l	d0,(TeamBitmaps).l
+	move.l	(a0)+,(StanleyCupSprite).l
+	add.l	d0,(StanleyCupSprite).l
+	move.l	(a0)+,(Rinktilelist).l
+	add.l	d0,(Rinktilelist).l
+	move.l	(a0)+,(GameSetUpMap).l
+	add.l	d0,(GameSetUpMap).l
+	move.l	(a0)+,(SetupMenuMap).l
+	add.l	d0,(SetupMenuMap).l
+	move.l	(a0)+,(GameSetUpMap2).l
+	add.l	d0,(GameSetUpMap2).l
 	bclr	#$5,(GA_COMFLAGS+1).l
 	jsr	(RelocatePointerTableDisc).l
 	jsr	(RelocateLogoBitmaps).l
@@ -1305,7 +1304,7 @@ TeamIcons						;draw the visitor and home team bitmaps and set colors.
 DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 	clr.w	d0
 	asl.w	#$1,d1
-	movea.l	$47D48.l,a0
+	movea.l	(TeamBitmaps).l,a0
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = tile data
 	adda.l	jimdata(a1),a1		;a1 = map data
@@ -1317,7 +1316,7 @@ DrawTeamBitmap						;dobitmap entry d1 of TeamBitmaps (d4 from the caller)
 dotb						;unreferenced. Like DrawTeamBitmap with Teamblocksmap, d4 = 2, d5 = 2
 	clr.w	d0
 	asl.w	#$1,d1
-	movea.l	$47D44.l,a0
+	movea.l	(Teamblocksmap).l,a0
 	movea.l	a0,a1		;a1 = map header
 	adda.l	(a0),a0		;a0 = tile data
 	adda.l	jimdata(a1),a1		;a1 = map data
@@ -2036,7 +2035,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font1Pri,$9,$10,'Stars of the Game',CC_Font1Pri,$3,$F
-	movea.l	$47D18.l,a1
+	movea.l	(Rinktilelist).l,a1
 	movea.l	#null,a2
 	adda.l	jimdata(a1),a1
 	moveq	#$D,d0
@@ -2605,7 +2604,7 @@ crash	movea.l	#mesarea,a0
 .loop12	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop12
 	bclr.b	#$7,(GA_COMFLAGS+1).l
-	movea.l	$47D18.l,a1
+	movea.l	(Rinktilelist).l,a1
 	adda.l	(a1),a1
 	adda.w	#$20,a1
 	moveq	#$7,d0

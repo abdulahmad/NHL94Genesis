@@ -351,9 +351,9 @@ HotColdIconExitSetC2Load
 	move.w	#$1,d7
 	move.w	#$60,d0
 	jsr	$6044.w
-	move.l	a0,$47DA0.l
+	move.l	a0,(FileLoadDirectory).l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
-	movea.l	$47DA0.l,a1
+	movea.l	(FileLoadDirectory).l,a1
 	lea.l	FileLoadOrder.l,a2
 	lea.l	FileLoadTable.l,a3
 	move.w	#$8,d7
@@ -369,54 +369,54 @@ HotColdIconExitSetC2Load
 	move.l	a0,d0
 	move.l	(a0)+,(SmallFontMap).l
 	add.l	d0,(SmallFontMap).l
-	move.l	(a0)+,$47D18.l
-	add.l	d0,$47D18.l
-	move.l	(a0)+,$47D40.l
-	add.l	d0,$47D40.l
-	move.l	(a0)+,$47D2C.l
-	add.l	d0,$47D2C.l
+	move.l	(a0)+,(Rinktilelist).l
+	add.l	d0,(Rinktilelist).l
+	move.l	(a0)+,(EnergyBarMap).l
+	add.l	d0,(EnergyBarMap).l
+	move.l	(a0)+,(CrowdSprites).l
+	add.l	d0,(CrowdSprites).l
 	move.l	(a0)+,(BigFontMap).l
 	add.l	d0,(BigFontMap).l
-	move.l	(a0)+,$47D4C.l
-	add.l	d0,$47D4C.l
-	move.l	(a0)+,$47D34.l
-	add.l	d0,$47D34.l
-	move.l	(a0)+,$47D30.l
-	add.l	d0,$47D30.l
-	move.l	(a0)+,$47D1C.l
-	add.l	d0,$47D1C.l
-	move.l	(a0)+,$47D20.l
-	add.l	d0,$47D20.l
-	move.l	(a0)+,$47D44.l
-	add.l	d0,$47D44.l
+	move.l	(a0)+,(EASportsMap).l
+	add.l	d0,(EASportsMap).l
+	move.l	(a0)+,(ZamSprites).l
+	add.l	d0,(ZamSprites).l
+	move.l	(a0)+,(FaceOffSprites).l
+	add.l	d0,(FaceOffSprites).l
+	move.l	(a0)+,(RefsMap).l
+	add.l	d0,(RefsMap).l
+	move.l	(a0)+,(RefMap2).l
+	add.l	d0,(RefMap2).l
+	move.l	(a0)+,(Teamblocksmap).l
+	add.l	d0,(Teamblocksmap).l
 	move.l	(a0)+,(FramerMap).l
 	add.l	d0,(FramerMap).l
-	move.l	(a0)+,$47D58.l
-	add.l	d0,$47D58.l
-	move.l	(a0)+,$47D14.l
-	add.l	d0,$47D14.l
-	move.l	(a0)+,$47D28.l
-	add.l	d0,$47D28.l
+	move.l	(a0)+,(ScoresMap).l
+	add.l	d0,(ScoresMap).l
+	move.l	(a0)+,(FaceOffMap).l
+	add.l	d0,(FaceOffMap).l
+	move.l	(a0)+,(HotList).l
+	add.l	d0,(HotList).l
 	move.l	(a0)+,(EASportsBGMap).l
 	add.l	d0,(EASportsBGMap).l
-	move.l	(a0)+,$47D64.l
-	add.l	d0,$47D64.l
-	move.l	(a0)+,$47D68.l
-	add.l	d0,$47D68.l
-	move.l	(a0)+,$47D6C.l
-	add.l	d0,$47D6C.l
-	move.l	(a0)+,$47D70.l
-	add.l	d0,$47D70.l
-	move.l	(a0)+,$47D80.l
-	add.l	d0,$47D80.l
-	move.l	(a0)+,$47D84.l
-	add.l	d0,$47D84.l
+	move.l	(a0)+,(RevRinkTilelist).l
+	add.l	d0,(RevRinkTilelist).l
+	move.l	(a0)+,(ReplayMap).l
+	add.l	d0,(ReplayMap).l
+	move.l	(a0)+,(IceRinkHorMap).l
+	add.l	d0,(IceRinkHorMap).l
+	move.l	(a0)+,(PrintFont2Map).l
+	add.l	d0,(PrintFont2Map).l
+	move.l	(a0)+,(NHLLogoMap).l
+	add.l	d0,(NHLLogoMap).l
+	move.l	(a0)+,(NHLPALogoMap).l
+	add.l	d0,(NHLPALogoMap).l
 	move.l	(a0)+,(HotMap).l
 	add.l	d0,(HotMap).l
 	move.l	(a0)+,(ColdMap).l
 	add.l	d0,(ColdMap).l
-	move.l	(a0)+,$47DA8.l
-	add.l	d0,$47DA8.l
+	move.l	(a0)+,(AltTeamGfxMap).l
+	add.l	d0,(AltTeamGfxMap).l
 	lea.l	(TeamGfxListEnd).l,a2
 	move.w	(HomeTeam).l,d0
 	asl.w	#$2,d0
@@ -425,13 +425,13 @@ HotColdIconExitSetC2Load
 	move.w	#$1,d7
 	move.w	a2,d0
 	jsr	$6044.w
-	move.l	a0,$47D90.l
+	move.l	a0,(TeamGfxMap).l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	movem.l	d0-d2/d7/a0-a1,-(sp)
 	move.w	#$1,d7
 	move.w	#$2,d0
 	jsr	$6044.w
-	move.l	a0,$47D24.l
+	move.l	a0,(Sprites).l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	move.w	#$2,d0
 	jsr	$5F22.w

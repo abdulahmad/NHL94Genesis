@@ -409,7 +409,7 @@ puckx_nopuck	equ	$17BDE			;puck object nopuck word
 puckc	equ	$17BE0			;puck carrier (93G: the newpos slot of the puck object)
 puck_pflags2	equ	$17BE3			;puck object pflags2
 PlayerSwitchDelay	equ	$17E57			;frames before the controlled player may switch again, set to $11 when a switch happens
-Teamblocksmap	equ	$17FB2
+TeamBlockMap	equ	$17FB2			;map word buffer for CopyTeamBlockMapData and PutTeamBlock
 HmGoals	equ	$18358			;home score
 HomeTeamRosterPtr	equ	$1836A			;tmstruct+tmdata
 AwGoals	equ	$186BE			;away score
@@ -530,6 +530,7 @@ ssscorer	equ	$3			;byte: scorer
 srforwards	equ	$3			;high nibble: forward count (GetForwardCount); low nibble not read
 sf3sbut	equ	$3			;flag for start button
 jimdata	equ	$4			;long: offset of the map (.map.jim) or the frame table (.anim)
+jimtilecount	equ	$8			;word: tile count (bit 15 packed); the tiles follow (jimtiles)
 dffaceoff	equ	$4			;face off sprites on (92 tested sf2faceoff).
 seTile	equ	$4			;word: tile, from the set's first tile
 satTile	equ	$4			;word: priority, palette, flips, tile
@@ -694,3 +695,38 @@ GA_COMSTAT1	equ	GA_BASE+$22		;communication status 1: its argument
 GA_COMSTAT3	equ	GA_BASE+$26		;communication status 3
 GA_COMSTAT4	equ	GA_BASE+$28		;communication status 4
 GA_INTMASK	equ	GA_BASE+$32		;interrupt mask control (the low byte holds the mask bits)
+; --- file loader pointer slots: each long points at a file the loader placed in memory, and holds the address the
+; cartridge has as a label. Named after the cartridge asset the matching cartridge instruction uses (for example
+; movea.l (RefsMap).l,a2 / addq.l #8,a2 here is movea.l #RefsMap+8,a2 there) ---
+GameSetUpMap	equ	$47D00			;reused by ScoutingReport as ScoutSavedSP
+GameSetUpMap2	equ	$47D04
+LoaderSlotUnread	equ	$47D08			;disc only: loaded and relocated by the set-up loader, never read
+FaceOffMap	equ	$47D14
+Rinktilelist	equ	$47D18			;Rinktiles on the cartridge is Rinktilelist+8
+RefsMap	equ	$47D1C
+RefMap2	equ	$47D20
+Sprites	equ	$47D24
+HotList	equ	$47D28
+CrowdSprites	equ	$47D2C
+FaceOffSprites	equ	$47D30
+ZamSprites	equ	$47D34
+EnergyBarMap	equ	$47D40
+Teamblocksmap	equ	$47D44
+TeamBitmaps	equ	$47D48
+EASportsMap	equ	$47D4C
+Arrowsmap	equ	$47D50
+ScoresMap	equ	$47D58
+RevRinkTilelist	equ	$47D64
+ReplayMap	equ	$47D68
+IceRinkHorMap	equ	$47D6C			;IceRinkHorTiles on the cartridge is IceRinkHorMap+8
+PrintFont2Map	equ	$47D70
+SetupMenuMap	equ	$47D74
+SetupFramerMap	equ	$47D78
+LogoBoxMap	equ	$47D7C
+NHLLogoMap	equ	$47D80
+NHLPALogoMap	equ	$47D84
+FeaturedPictures	equ	$47D88
+TeamGfxMap	equ	$47D90			;disc only: the team graphics LoadHomeTeamGfx loads (the cartridge picks from TeamGfxList)
+StanleyCupSprite	equ	$47D94
+FileLoadDirectory	equ	$47DA0			;disc only: the file directory the loader reads ($6044 d7 = 1, d0 = $60)
+AltTeamGfxMap	equ	$47DA8			;disc only: the graphics LoadHomeTeamGfx uses while AltTeamGfxFlag is set

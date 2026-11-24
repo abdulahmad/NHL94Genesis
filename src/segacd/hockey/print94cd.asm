@@ -135,7 +135,7 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	movea.l	(SmallFontMap).l,a2
 	btst	#$3,(sflags6).l
 	beq.w	.4
-	movea.l	$47D70.l,a2
+	movea.l	(PrintFont2Map).l,a2
 .4	adda.l	jimdata(a2),a2
 	move.w	mapwords(a2,d0.w),d0
 	move.w	(printfontset).l,d1
@@ -272,7 +272,7 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	movea.l	(SmallFontMap).l,a2
 	btst	#$3,(sflags6).l
 	beq.w	.2
-	movea.l	$47D70.l,a2
+	movea.l	(PrintFont2Map).l,a2
 .2	adda.l	jimdata(a2),a2
 	move.w	mapwords(a2,d0.w),d0
 	btst	#$3,(sflags6).l
@@ -564,6 +564,6 @@ AddSmallFontFramer
 ; Loads the small font from the second map.
 AddTeamBlock
 	moveq	#$2,d4
-	movea.l	$47D44.l,a2
+	movea.l	(Teamblocksmap).l,a2
 	addq.l	#$8,a2
 	bra.w	DecompressGraphicsPlain

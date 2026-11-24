@@ -185,7 +185,7 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	move.l	d0,d0
 	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	d7/a0,-(sp)
-	movea.l	$47D24.l,a0
+	movea.l	(Sprites).l,a0
 	move.w	#$2,d7
 	jsr	$6044.w
 	movem.l	(sp)+,d7/a0
@@ -203,7 +203,7 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	move.w	#$1,d7
 	move.w	#$4,d0
 	jsr	$6044.w
-	move.l	a0,$47D8C.l
+	move.l	a0,(TeamLogoBitmaps).l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
@@ -251,7 +251,7 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$9E,$02,$0C,$00	; ......
-	movea.l	$47D8C.l,a0
+	movea.l	(TeamLogoBitmaps).l,a0
 	move.w	(VisTeam).l,d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0
@@ -277,7 +277,7 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$8E,$02,$14,$00	; ......
-	movea.l	$47D8C.l,a0
+	movea.l	(TeamLogoBitmaps).l,a0
 	move.w	(HomeTeam).l,d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0
@@ -351,7 +351,7 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	bra.w	.loop
 .next3	movem.l	(sp)+,d0-d7/a0-a6
 	movem.l	d7/a0,-(sp)
-	movea.l	$47D8C.l,a0
+	movea.l	(TeamLogoBitmaps).l,a0
 	move.w	#$2,d7
 	jsr	$6044.w
 	movem.l	(sp)+,d7/a0
@@ -369,7 +369,7 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	move.w	#$1,d7
 	move.w	#$2,d0
 	jsr	$6044.w
-	move.l	a0,$47D24.l
+	move.l	a0,(Sprites).l
 	movem.l	(sp)+,d0-d2/d7/a0-a1
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6

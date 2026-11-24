@@ -267,7 +267,7 @@ MoveMenuFrame						;Move the menu frame by d0 (+2 / -2 lines). Shows 6 of the 9 
 .5	bsr.w	.next7		;printx $10, printy $E, 23 x 13
 	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(setupmenuchars).l,d4
-	movea.l	$47D74.l,a0		;menu background: redraw that part (sflags6 bit 0) over the old frame
+	movea.l	(SetupMenuMap).l,a0		;menu background: redraw that part (sflags6 bit 0) over the old frame
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -711,19 +711,19 @@ setoptions
 	jsr	(orjoy).l
 	jsr	(LoadSetupTiles).l
 	move.w	d4,(framercset).l
-	movea.l	$47D78.l,a2
+	movea.l	(SetupFramerMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$03567564,$89ABCDEF
 	move.w	d4,(smallfontchars).l
-	movea.l	$47D3C.l,a2
+	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
 	dc.b	$0F,$C0,$45,$67,$89,$AB,$CD,$EF	; ..Eg....
 	move.w	d4,(setupfontchars).l
-	movea.l	$47D70.l,a2
+	movea.l	(PrintFont2Map).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
@@ -738,7 +738,7 @@ setoptions
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
-	movea.l	$47D00.l,a0
+	movea.l	(GameSetUpMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -754,7 +754,7 @@ setoptions
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$00,$00,$00	; ......
-	movea.l	$47D04.l,a0
+	movea.l	(GameSetUpMap2).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -769,7 +769,7 @@ setoptions
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FF,$01,$0E,$00	; ......
 	move.w	d4,(setupmenuchars).l
-	movea.l	$47D74.l,a0
+	movea.l	(SetupMenuMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -783,11 +783,11 @@ setoptions
 	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
 	move.w	d4,(logobox1chars).l
-	movea.l	$47D7C.l,a2
+	movea.l	(LogoBoxMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(logobox2chars).l
-	movea.l	$47D7C.l,a2
+	movea.l	(LogoBoxMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
@@ -951,11 +951,11 @@ CheckNOPUnused						;unreferenced. Tests OptNOP for 0, 5, 6, 9 and $A and return
 ; Decompresses the plain and the remapped team graphics pair.
 LoadSetupTiles
 	moveq	#$2,d4
-	movea.l	$47D48.l,a2
+	movea.l	(TeamBitmaps).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(teambitmapchars).l
-	movea.l	$47D48.l,a2
+	movea.l	(TeamBitmaps).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
@@ -1106,7 +1106,7 @@ DrawLogoBox						;Draw the LogoBoxMap box at printx, y 5 (sflags6 bit 0 set). Br
 	
 	clr.w	(printa).l
 	move.w	#$5,(printy).l
-	movea.l	$47D7C.l,a0
+	movea.l	(LogoBoxMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
