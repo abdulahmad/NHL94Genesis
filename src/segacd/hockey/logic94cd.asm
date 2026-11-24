@@ -1111,8 +1111,8 @@ lcfound
 	tst.w	d0
 	bpl.w	.next
 	jmp	(FaceoffInputReturn).l
-.next	bclr	#$3,pflags2(a3)
-	bset	#$3,pflags(a3)
+.next	bclr	#$3,$63(a3)
+	bset	#$3,$62(a3)
 	jsr	(loadTeamStruct).l
 	bclr	#$1,tmflags(a2)
 	move.w	d0,tmline(a2)
@@ -1874,7 +1874,7 @@ check4bench
 	cmp.w	(puckc).l,d0
 	beq.w	rtss3
 	adda.w	#$4,sp
-	bset	#pf2unav,pflags2(a3)
+	bset	#pf2unav,$63(a3)
 	clr.w	temp1(a3)
 	moveq	#$B,d0
 	bra.w	assreplace
@@ -1917,14 +1917,14 @@ assbench	btst.b	#$5,pflags(a3)
 	sub.w	d7,temp1(a3)
 	bpl.w	BenchWalkTarget
 	addi.w	#$8,$40(a3)
-	move.w	Ypos(a3),d0
-	sub.w	temp4(a3),d0
+	move.w	$14(a3),d0
+	sub.w	$46(a3),d0
 	cmpi.w	#$28,d0
 	bgt.w	BenchWalkTarget
 	cmpi.w	#$FFD8,d0
 	blt.w	BenchWalkTarget
 	move.w	$0(a3),d0
-	sub.w	temp3(a3),d0
+	sub.w	$44(a3),d0
 	cmpi.w	#$20,d0
 	bgt.w	BenchWalkTarget
 	move.w	#$50C,d1
@@ -1995,7 +1995,7 @@ asseben
 	bmi.w	.next
 	addi.w	#$1,d0
 .next	muls.w	#$E,d0
-	move.w	d0,Ypos(a3)
+	move.w	d0,$14(a3)
 	move.w	#$88,$0(a3)
 	neg.w	$0(a3)
 	move.w	#$2,facedir(a3)
@@ -2044,7 +2044,7 @@ asspenalty
 	cmpi.w	#$FFF4,d0
 	blt.w	.next8
 	move.w	$0(a3),d0
-	sub.w	temp3(a3),d0
+	sub.w	$44(a3),d0
 	cmpi.w	#$FFE8,d0
 	blt.w	.next8
 	sub.w	d7,temp1(a3)
@@ -2310,7 +2310,7 @@ assdefo
 	move.w	(puckc).l,d1
 	bmi.w	.next5
 	subi.w	#$6,d1
-	move.w	SCnum(a3),d2
+	move.w	$52(a3),d2
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bmi.w	assreplace
@@ -2374,7 +2374,7 @@ assdefd
 	beq.w	.next13
 	moveq	#$1,d0
 	subi.w	#$6,d1
-	move.w	SCnum(a3),d2
+	move.w	$52(a3),d2
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bpl.w	assreplace
@@ -2471,7 +2471,7 @@ asswingd							;player a3 is wing on defense
 	bmi.w	.next25
 	moveq	#$4,d0
 	subi.w	#$6,d1
-	move.w	SCnum(a3),d2
+	move.w	$52(a3),d2
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bpl.w	assreplace
@@ -2538,7 +2538,7 @@ asswingo							;player a3 is wing on offense
 	move.w	(puckc).l,d1
 	bmi.w	.next34
 	subi.w	#$6,d1
-	move.w	SCnum(a3),d2
+	move.w	$52(a3),d2
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bmi.w	assreplace
@@ -2562,7 +2562,7 @@ asswingo							;player a3 is wing on offense
 	cmpi.w	#$108,d3
 	blt.w	.next36
 	addi.w	#$8,d2
-.next36	cmp.w	temp5(a3),d2
+.next36	cmp.w	$48(a3),d2
 	bne.w	.next37
 .loop4	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop4
@@ -2630,7 +2630,7 @@ asscenterd							;player a3 is center on defense
 	bmi.w	.next5
 	moveq	#$6,d0
 	subi.w	#$6,d1
-	move.w	SCnum(a3),d2
+	move.w	$52(a3),d2
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bpl.w	assreplace
@@ -2675,7 +2675,7 @@ asscentero							;player a3 is center on offense
 	bmi.w	.next11
 	moveq	#$5,d0
 	subi.w	#$6,d1
-	move.w	SCnum(a3),d2
+	move.w	$52(a3),d2
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bmi.w	assreplace
@@ -2695,7 +2695,7 @@ asscentero							;player a3 is center on offense
 	cmpi.w	#$108,d0
 	blt.w	.next13
 	addi.w	#$8,d2
-.next13	cmp.w	temp5(a3),d2
+.next13	cmp.w	$48(a3),d2
 	bne.w	.next14
 .loop2	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop2
@@ -3007,7 +3007,7 @@ checkanim
 	bgt.w	.next23
 	cmpi.w	#$FEF8,d1
 	blt.w	.next23
-	sub.w	Ypos(a3),d1
+	sub.w	$14(a3),d1
 	cmpi.w	#$1E,d1
 	bgt.w	.next23
 	cmpi.w	#$FFE2,d1
@@ -5750,7 +5750,7 @@ puckflip						;start puck spinning. a3 = puck, d0 bit 0 = flip. Called from chec
 	move.w	#$46A,d1
 	bra.w	SetSPA
 puckshadow
-	cmpi.w	#$18A,frame(a3)
+	cmpi.w	#$18A,$6(a3)
 	bne.w	.next2
 	move.w	-$80(a3),$0(a3)
 	move.w	-$6C(a3),Ypos(a3)
@@ -6017,7 +6017,7 @@ assexit
 ; Pushes a player on the assist ring buffer ($36 index).
 assinsert
 	subi.w	#$1,$36(a3)
-	andi.w	#$7,assnum(a3)
+	andi.w	#$7,$36(a3)
 assreplace
 	move.l	d1,-(sp)
 	move.w	assnum(a3),d1
@@ -6236,7 +6236,7 @@ goalieacc	btst	#$3,pflags(a3)
 	move.w	(puckx).l,d0
 	sub.w	$0(a3),d0
 	move.w	(pucky).l,d1
-	sub.w	Ypos(a3),d1
+	sub.w	$14(a3),d1
 	cmpi.w	#$10,d0
 	bgt.w	.usevtoa
 	cmpi.w	#$FFF0,d0
