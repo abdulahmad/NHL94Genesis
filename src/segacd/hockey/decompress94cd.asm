@@ -28,7 +28,7 @@ DecompressGraphics
 	bmi.w	.next3
 	add.w	d0,d4
 	asl.w	#$4,d0
-	pea.l	$389CA.l
+	pea.l	(.next4).l
 	tst.l	(remapTablePtr).l
 	beq.w	DoDMApro
 	movea.l	(remapTablePtr).l,a1
