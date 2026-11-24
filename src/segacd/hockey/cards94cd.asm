@@ -1009,67 +1009,67 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$9,d7
 	jsr	$6044.w
 	movea.l	#$AFF60,a0
-.loop	btst.b	#$7,$FF800E.l
+.loop	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop
-	move.l	#$0,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop2	btst.b	#$6,$FF800E.l
+	move.l	#$0,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop2
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop3	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop3
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.l	#$3FFF,d0
-.loop4	btst.b	#$7,$FF800E.l
+.loop4	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop4
-	move.w	#$16,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop5	btst.b	#$6,$FF800E.l
+	move.w	#$16,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop5	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop5
-	move.l	$FF8010.l,(a0)+
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop6	btst.b	#$6,$FF800E.l
+	move.l	(GA_COMCMD0).l,(a0)+
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop6	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop6
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	dbra	d0,.loop4
 	move.l	#$27,d0
-.loop7	btst.b	#$7,$FF800E.l
+.loop7	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop7
-	move.l	#$10,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop8	btst.b	#$6,$FF800E.l
+	move.l	#$10,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop8	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop8
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop9	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop9	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop9
-	bclr.b	#$7,$FF800F.l
-.loop10	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop10	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop10
-	move.w	#$15,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop11	btst.b	#$6,$FF800E.l
+	move.w	#$15,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop11	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop11
-	move.w	$FF8010.l,(a0)+
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop12	btst.b	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,(a0)+
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop12	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop12
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	dbra	d0,.loop10
 	jsr	(forceblack).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst.b	#$5,$FF800F.l
+	btst.b	#$5,(GA_COMFLAGS+1).l
 	beq.b	.next
 	move.w	#$1,-(a6)
 	bra.b	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr.b	#$5,$FF800F.l
+.next2	bclr.b	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(Opt1team).l,d0
@@ -1100,25 +1100,25 @@ LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	movea.l	#$AFF60,a0
 	jsr	(DoDMApro).l
 	jsr	(SetVramQueueFlag).l
-.loop15	btst.b	#$7,$FF800E.l
+.loop15	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop15
-	move.w	#$27,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop16	btst.b	#$6,$FF800E.l
+	move.w	#$27,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop16	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop16
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop17	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop17	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop17
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next3
-	bset.b	#$5,$FF800F.l
+	bset.b	#$5,(GA_COMFLAGS+1).l
 	bra.b	.next4
-.next3	bclr.b	#$5,$FF800F.l
+.next3	bclr.b	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jmp	(StatsScreenFadeIn).l
@@ -1301,7 +1301,7 @@ TrimSpaces						;Trim the trailing spaces of String a2 and pad it to an even len
 ; Sets up the menu vblank handler and display flags for the name screens.
 NameEntryScreen
 	movem.l	d0-d7/a0-a6,-(sp)
-	bclr	#$5,$FF800F.l
+	bclr	#$5,(GA_COMFLAGS+1).l
 	move.w	#$2,d4
 	move.l	#VBlank_SetOptions,(VBint).l
 	bclr	#$0,(disflags).l
@@ -1317,7 +1317,7 @@ NameEntryScreen
 	move.w	#$6,(Map1col).l
 	move.w	#$0,d0
 	jsr	(setVram).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	jsr	(orjoy).l
 	move.w	d4,(framercset).l
 	movea.l	(FramerMap).l,a2

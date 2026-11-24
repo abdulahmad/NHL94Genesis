@@ -191,12 +191,12 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	movem.l	(sp)+,d7/a0
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst.b	#$5,$FF800F.l
+	btst.b	#$5,(GA_COMFLAGS+1).l
 	beq.b	.next
 	move.w	#$1,-(a6)
 	bra.b	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr.b	#$5,$FF800F.l
+.next2	bclr.b	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -209,9 +209,9 @@ SkipNameNumber_1A	dc.w	$0006,$202E
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next3
-	bset.b	#$5,$FF800F.l
+	bset.b	#$5,(GA_COMFLAGS+1).l
 	bra.b	.next4
-.next3	bclr.b	#$5,$FF800F.l
+.next3	bclr.b	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	#$2,d0
@@ -357,12 +357,12 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	movem.l	(sp)+,d7/a0
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst.b	#$5,$FF800F.l
+	btst.b	#$5,(GA_COMFLAGS+1).l
 	beq.b	.next4
 	move.w	#$1,-(a6)
 	bra.b	.next5
 .next4	move.w	#$0,-(a6)
-.next5	bclr.b	#$5,$FF800F.l
+.next5	bclr.b	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d0-d2/d7/a0-a1,-(sp)
@@ -375,9 +375,9 @@ PeriodStatsLoop	bsr.w	PeriodStatsTitleShots
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next6
-	bset.b	#$5,$FF800F.l
+	bset.b	#$5,(GA_COMFLAGS+1).l
 	bra.b	.next7
-.next6	bclr.b	#$5,$FF800F.l
+.next6	bclr.b	#$5,(GA_COMFLAGS+1).l
 .next7	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	#$2,d0
@@ -540,32 +540,32 @@ StatsReport						;"Game Statistics" menu item (menu lists): both
 StatsReportBlitSetup	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$40020010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$40020010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$FFB0,d0
 	add.w	(VertLineScrolling).l,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	rts
 StatScrollRow	move.w	(VertLineScrolling).l,d3

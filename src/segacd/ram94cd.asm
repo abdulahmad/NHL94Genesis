@@ -679,3 +679,18 @@ tmOneTimers	equ	$35E			;one-timers (cartridge $35C)
 tmOneTimerGoals	equ	$360			;one-timer goals (cartridge $35E)
 tmPenShots	equ	$362			;penalty shots (cartridge $360)
 tmPenShotGoals	equ	$364			;penalty shot goals (cartridge $362)
+; --- Sega CD gate array, sub CPU side ($FF8000). Disc only: the cartridge has no equivalent. The names follow the
+; register names of the Sega CD hardware manual: reset / LED, memory mode, communication flags, communication
+; command 0-7 (written by the main CPU, read here) and communication status 0-7 (written here, read by the main
+; CPU), interrupt mask ---
+GA_BASE	equ	$FF8000			;base of the sub CPU gate array registers
+GA_RESET	equ	GA_BASE+$0		;reset / LED
+GA_MEMMODE	equ	GA_BASE+$2		;memory mode (word RAM); the low byte holds RET (bit 0) and DMNA (bit 1)
+GA_COMFLAGS	equ	GA_BASE+$E		;communication flags: the main CPU's byte; GA_COMFLAGS+1 is this CPU's byte
+GA_COMCMD0	equ	GA_BASE+$10		;communication command 0 (from the main CPU)
+GA_COMCMD4	equ	GA_BASE+$18		;communication command 4
+GA_COMSTAT0	equ	GA_BASE+$20		;communication status 0 (to the main CPU): the command
+GA_COMSTAT1	equ	GA_BASE+$22		;communication status 1: its argument
+GA_COMSTAT3	equ	GA_BASE+$26		;communication status 3
+GA_COMSTAT4	equ	GA_BASE+$28		;communication status 4
+GA_INTMASK	equ	GA_BASE+$32		;interrupt mask control (the low byte holds the mask bits)

@@ -694,7 +694,7 @@ OptionNames	dc.b	$00,$10,'Play Mode    ',$00
 ; Installs the options-screen vblank handler and display flags.
 setoptions
 	move.l	#VBlank_SetOptions,(VBint).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bclr	#$0,(disflags).l
 	bset	#$2,(disflags).l
 	bclr	#$1,(disflags).l
@@ -867,30 +867,30 @@ ReadSetupPads						;wait up to $5460 frames (6 minutes) for a press on any pad (
 ; Sub CPU handshake that reads the pads for the setup screen
 SetupDemo
 	clr.w	(demoflag).l
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,(seed).l
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,(seed).l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
-.loop4	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	move.w	$FF8010.l,(seed+2).l
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,(seed+2).l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	clr.w	(OptPlayMode).l
 	clr.w	(OptNOP).l
 	clr.w	(OptLine).l
@@ -901,30 +901,30 @@ SetupPadsPlayoffLevelRead
 	move.w	(sp),(goaliemode1).l
 	move.w	(sp)+,(goaliemode2).l
 	jsr	(UpdatePlayoffLevel).l
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,(seed).l
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,(seed).l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
-.loop4	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	move.w	$FF8010.l,(seed+2).l
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,(seed+2).l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(OptLine).l,(TmpOptLine2).l
 	cmpi.w	#$2,(OptLine).l
 	bne.w	.next

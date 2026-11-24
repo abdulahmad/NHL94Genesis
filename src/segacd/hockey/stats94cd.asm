@@ -70,32 +70,32 @@ UpdateScoresScroll						;Called every frame by ShowScores: add PlayerScrollCtr t
 UpdateVertScrollReg	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$40020010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$40020010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$FFD0,d0
 	add.w	(VertLineScrolling).l,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	rts
 DisplayGameInfo	cmp.w	(gamenum).l,d3
@@ -722,32 +722,32 @@ UpdatePlayerListScroll
 .next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$40020010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$40020010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$FF90,d0
 	add.w	(VertLineScrolling).l,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	rts
 ; Clears the player list scroll counter
@@ -1024,32 +1024,32 @@ UpdateScoringScroll	move.w	(VertLineScrolling).l,d1
 .next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$40020010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$40020010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	moveq	#-80,d0
 	add.w	(VertLineScrolling).l,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	rts
 DrawScoringRowUp	move.l	d0,-(sp)
@@ -1214,32 +1214,32 @@ UpdatePenaltyScroll	move.w	(VertLineScrolling).l,d1
 .next3	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$40020010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$40020010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$FFB0,d0
 	add.w	(VertLineScrolling).l,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	rts
 DisplayPenaltyLineUp	move.l	d0,-(sp)
@@ -1450,32 +1450,32 @@ UpdateStatsListScroll						;Stats screen per frame: scroll 0 ... SelectedPlayerI
 SetStatsListScrollReg	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
 	movea.l	#$C00000,a0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$40020010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$40020010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$FF98,d0
 	add.w	(VertLineScrolling).l,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	rts
 ; Draws the first visible stats row.
@@ -1849,57 +1849,57 @@ SetupScreen
 	bset	#$2,(disflags).l
 	move.w	(VSPRITES).l,d0
 	jsr	(SetVramWriteAddr1).l
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$0,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$0,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
-.loop4	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	#$8C81,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	#$8C81,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$6,(Map3col).l
-.loop7	btst	#$7,$FF800E.l
+.loop7	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop7
-	move.w	#$8D00,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop8	btst	#$6,$FF800E.l
+	move.w	#$8D00,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop8	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop8
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop9	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop9	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop9
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	clr.w	d0
 	jsr	(SetVramWriteAddr1).l
-.loop10	btst	#$7,$FF800E.l
+.loop10	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop10
-	move.l	#$0,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop11	btst	#$6,$FF800E.l
+	move.l	#$0,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop11	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop11
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop12	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop12	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop12
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	bclr	#$1,(disflags).l
 	move.w	(framercset).l,d4
@@ -1960,45 +1960,45 @@ StatsScreenFadeInClear
 	bset	#$2,(disflags).l
 	move.w	(VSCRLPM).l,d0
 	jsr	(SetVramWriteAddr1).l
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	#$0,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	#$0,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8D00,d0
 	move.b	(VSCRLPM).l,d0
 	lsr.b	#$2,d0
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
-.loop7	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop7	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop7
-	move.w	#$8C00,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop8	btst	#$6,$FF800E.l
+	move.w	#$8C00,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop8	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop8
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop9	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop9	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop9
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$5,(Map3col).l
 .loop10	tst.w	(palcount).l
 	bpl.w	.loop10

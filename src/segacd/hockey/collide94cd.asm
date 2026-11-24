@@ -374,18 +374,18 @@ CCStart	cmpi.w	#$C90,$58(a2)
 	bhi.w	rtss2
 	btst	#$4,(gmode).l
 	bne.w	rtss2
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1C,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1C,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.b	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.b	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$2,d0
 	addi.w	#$16,d0
 	jsr	(PenShotChk).l
@@ -395,18 +395,18 @@ CCStart	cmpi.w	#$C90,$58(a2)
 	bhi.w	.next6
 	btst	#$4,(gmode).l
 	bne.w	.next6
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	#$1C,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	#$1C,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	move.b	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.b	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$2,d0
 	addi.w	#$1A,d0
 	bsr.w	PenShotChk
@@ -607,18 +607,18 @@ FallDown
 	blt.w	.cont2
 	tst.b	nopuckb(a2)
 	bne.w	.cont2
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$F,d0
 	addi.w	#$10,d0
 	cmp.w	impact(a2),d0
@@ -1312,18 +1312,18 @@ checkgoalp	btst	#pf2npc,$63(a3)
 .exit	movem.w	(sp)+,d2-d3
 	rts
 .next2	movem.l	d0-d1,-(sp)
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$1F,d0
 	bne.w	.next3
 	move.w	(pucky).l,d0
@@ -1950,18 +1950,18 @@ puckgoalie	btst.b	#$4,(gmode).l
 	move.w	d0,d1
 	andi.w	#$3,d1
 	bne.w	.next2
-.loop	btst.b	#$7,$FF800E.l
+.loop	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop
-	move.w	#$1B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop2	btst.b	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop2
-	move.w	$FF8010.l,d0
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop3	btst.b	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop3
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 .next2	andi.w	#$4,d0
 	lsr.w	#$2,d0
 	eori.w	#$1,d0

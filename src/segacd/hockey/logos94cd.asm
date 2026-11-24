@@ -440,7 +440,7 @@ HotColdIconExitSetC2Load
 HotColdIconExitReset
 	move.w	#$2,d0
 	jsr	$5F22.w
-	bclr	#$5,$FF800F.l
+	bclr	#$5,(GA_COMFLAGS+1).l
 	st.b	(arenaanim).l
 	clr.l	(homepresses).l
 	clr.l	(awaypresses).l
@@ -451,12 +451,12 @@ HotColdIconExitReset
 	jsr	(SubCmd3DSend).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jsr	(HotColdIconExitSetC2Load).l
@@ -464,9 +464,9 @@ HotColdIconExitReset
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next4
-.next3	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	jsr	(ClearVramViaSetVram).l

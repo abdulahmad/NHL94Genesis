@@ -511,7 +511,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	jsr	(Pausemode_top).l
 	bsr.w	GetShifter
 	move.w	d1,(TickerNum).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 .top	tst.w	(TickerNum).l
 	bmi.w	.doh
 	bsr.w	NewTickerNext
@@ -835,30 +835,30 @@ StartHL2	btst	#$3,(sflags3).l
 	bsr.w	ClrHor
 	move.w	#$0,(AltTeamGfxFlag).l
 	movea.l	#$C00000,a0
-.loop2	btst	#$7,$FF800E.l
+.loop2	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop2
-	move.w	#$9100,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	#$9100,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop3
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop4
-	bclr	#$7,$FF800F.l
-.loop5	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop5	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop5
-	move.w	#$9200,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.w	#$9200,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop6
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop7	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop7	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop7
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(ExtraChars).l,d4
 	movea.l	$47D1C.l,a2
 	addq.l	#$8,a2
@@ -902,18 +902,18 @@ StartHL2	btst	#$3,(sflags3).l
 .next6	move.w	(HmGoals).l,d0
 	cmp.w	(AwGoals).l,d0
 	bne.w	.next7
-.loop10	btst	#$7,$FF800E.l
+.loop10	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop10
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop11	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop11	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop11
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop12	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop12	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop12
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$1,d0
 	add.w	d0,(HmGoals).l
 	eori.w	#$1,d0
@@ -978,18 +978,18 @@ StartHL2	btst	#$3,(sflags3).l
 .next11	move.w	$A(a0),d0
 	cmp.w	$C(a0),d0
 	bne.w	.next12
-.loop16	btst	#$7,$FF800E.l
+.loop16	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop16
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop17	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop17	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop17
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop18	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop18	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop18
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$1,d0
 	add.w	d0,$A(a0)
 	eori.w	#$1,d0

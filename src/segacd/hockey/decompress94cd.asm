@@ -8,12 +8,12 @@ DecompressGraphicsPlain						;Clear remapTablePtr, fall into DecompressGraphics
 ; Queues the decompress command in the list at $19360.
 DecompressGraphicsQueue	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 DecompressGraphics
@@ -41,9 +41,9 @@ DecompressGraphics
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next5
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next6
-.next5	bclr	#$5,$FF800F.l
+.next5	bclr	#$5,(GA_COMFLAGS+1).l
 .next6	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts

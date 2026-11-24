@@ -33,7 +33,7 @@ GetPeriodTime						;Return d0 = period length in seconds for the period length o
 .timetab	dc.w	$012C,$0258,$04B0,$001E
 ; Period time screen set-up: sets the palette count and the gate command.
 GetPeriodTimeSetup
-	bclr	#$5,$FF800F.l
+	bclr	#$5,(GA_COMFLAGS+1).l
 	move.w	#$FFFF,(palcount).l
 	move.w	#$8400,d1
 	move.w	#$85,d0
@@ -80,7 +80,7 @@ GameloopStart	jsr	(assreplace).l
 	move.w	(SongNum).l,-(sp)
 	jsr	(song).l
 	move.w	(CdSongTrack).l,(CdCommandArg).l
-	movea.l	$FF8000.l,a5
+	movea.l	(GA_RESET).l,a5
 	move.w	#$12,d0
 	lea.l	(CdCommandArg).l,a0
 	jsr	$5F22.w
@@ -205,36 +205,36 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	move.b	(a0,d0.w),(Crowdframe+1).l
 	clr.w	d1
 	move.b	$1(a0,d0.w),d1
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d2
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	and.w	d1,d2
 	add.w	d2,d1
 	move.w	d1,(Crowdcnt).l
 .cf	clr.b	(Crowdframe).l
 	cmpi.w	#$118,(Crowdlevel).l
 	bls.w	rtss8
-.loop4	btst	#$7,$FF800E.l
+.loop4	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop5
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$7F,d0
 	cmpi.w	#$13,d0
 	blt.w	rtss8
@@ -391,30 +391,30 @@ Pausemode	jsr	(forceblack).l
 	bra.w	.hor
 .clr	jsr	(ClrHor).l
 .hor	movea.l	#$C00000,a0
-.loop3	btst	#$7,$FF800E.l
+.loop3	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop3
-	move.w	#$9100,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	move.w	#$9100,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop4
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop5
-	bclr	#$7,$FF800F.l
-.loop6	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop6	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop6
-	move.w	#$9200,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop7	btst	#$6,$FF800E.l
+	move.w	#$9200,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop7	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop7
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop8	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop8	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop8
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	bset	#dfclock,(disflags).l
 	bclr	#sfpz,(sflags).l
 	jsr	(printscores1).l
@@ -427,30 +427,30 @@ Pausemode	jsr	(forceblack).l
 ; Pause mode: fills VDP memory through the gate array
 PausemodeVdpFill
 .next5	movea.l	#$C00000,a0
-.loop10	btst	#$7,$FF800E.l
+.loop10	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop10
-	move.w	#$9100,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop11	btst	#$6,$FF800E.l
+	move.w	#$9100,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop11	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop11
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop12	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop12	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop12
-	bclr	#$7,$FF800F.l
-.loop13	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop13	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop13
-	move.w	#$921C,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop14	btst	#$6,$FF800E.l
+	move.w	#$921C,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop14	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop14
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop15	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop15	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop15
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	jsr	(SetHor).l
 	jsr	(setvideo).l
 	jsr	(KillCrowd).l

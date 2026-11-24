@@ -35,12 +35,12 @@ WeightedRandomSelect						;d0 = number of word weights at nibblebuffer:
 QueueVramWriteFlag
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 remap
@@ -66,18 +66,18 @@ remap
 	ror.w	#$4,d3
 	ror.w	#$4,d2
 	dbra	d0,.loop2
-.loop3	btst	#$7,$FF800E.l
+.loop3	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop3
-	move.w	d3,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	move.w	d3,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop4
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop5
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	dbra	d1,.loop
 	movem.l	(sp)+,d0-d4/a0-a2
 	move.w	(sp)+,(disflags).l
@@ -85,9 +85,9 @@ remap
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next4
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next5
-.next4	bclr	#$5,$FF800F.l
+.next4	bclr	#$5,(GA_COMFLAGS+1).l
 .next5	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
@@ -127,24 +127,24 @@ ForceBlackBegin
 	move.l	#vb2,(VBint).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 .loop	tst.w	(palcount).l
 	bpl.w	.loop
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next4
-.next3	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(sp)+,(disflags).l
@@ -176,17 +176,17 @@ cramfade
 	move.l	d4,(GateRequestBlock+4).l
 	move.l	d5,(GateRequestBlock+8).l
 	jsr	(RaiseGateRequest).l
-.loop	btst	#$4,$FF800E.l
+.loop	btst	#$4,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1D,$FF8026.l
-	bset	#$3,$FF800F.l
-.loop2	btst	#$3,$FF800E.l
+	move.w	#$1D,(GA_COMSTAT3).l
+	bset	#$3,(GA_COMFLAGS+1).l
+.loop2	btst	#$3,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$4,$FF800F.l
-	bclr	#$3,$FF800F.l
-.loop3	btst	#$3,$FF800E.l
+	bset	#$4,(GA_COMFLAGS+1).l
+	bclr	#$3,(GA_COMFLAGS+1).l
+.loop3	btst	#$3,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$4,$FF800F.l
+	bclr	#$4,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
 	rts
 .next	movem.l	d0/a0-a1,-(sp)
@@ -194,31 +194,31 @@ cramfade
 	bset	#$2,(disflags).l
 	movea.l	#palfadenew,a1
 	movea.l	#$C00000,a0
-.loop4	btst	#$4,$FF800E.l
+.loop4	btst	#$4,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	#$30,$FF8026.l
-	move.l	#$C0000000,$FF8028.l
-	bset	#$3,$FF800F.l
-.loop5	btst	#$3,$FF800E.l
+	move.w	#$30,(GA_COMSTAT3).l
+	move.l	#$C0000000,(GA_COMSTAT4).l
+	bset	#$3,(GA_COMFLAGS+1).l
+.loop5	btst	#$3,(GA_COMFLAGS).l
 	beq.b	.loop5
-	bset	#$4,$FF800F.l
-	bclr	#$3,$FF800F.l
-.loop6	btst	#$3,$FF800E.l
+	bset	#$4,(GA_COMFLAGS+1).l
+	bclr	#$3,(GA_COMFLAGS+1).l
+.loop6	btst	#$3,(GA_COMFLAGS).l
 	bne.b	.loop6
-	bclr	#$4,$FF800F.l
+	bclr	#$4,(GA_COMFLAGS+1).l
 	moveq	#$1F,d0
-.loop7	btst	#$4,$FF800E.l
+.loop7	btst	#$4,(GA_COMFLAGS).l
 	bne.b	.loop7
-	move.w	#$33,$FF8026.l
-	move.l	(a1)+,$FF8028.l
-	bset	#$3,$FF800F.l
-.loop8	btst	#$3,$FF800E.l
+	move.w	#$33,(GA_COMSTAT3).l
+	move.l	(a1)+,(GA_COMSTAT4).l
+	bset	#$3,(GA_COMFLAGS+1).l
+.loop8	btst	#$3,(GA_COMFLAGS).l
 	beq.b	.loop8
-	bset	#$4,$FF800F.l
-	bclr	#$3,$FF800F.l
-.loop9	btst	#$3,$FF800E.l
+	bset	#$4,(GA_COMFLAGS+1).l
+	bclr	#$3,(GA_COMFLAGS+1).l
+.loop9	btst	#$3,(GA_COMFLAGS).l
 	bne.b	.loop9
-	bclr	#$4,$FF800F.l
+	bclr	#$4,(GA_COMFLAGS+1).l
 	dbra	d0,.loop7
 	st.b	(palcount).l
 	move.w	(sp)+,(disflags).l
@@ -231,31 +231,31 @@ CopyPaletteToCRAM
 	bset	#$2,(disflags).l
 	movea.l	#palfadenew,a1
 	movea.l	#$C00000,a0
-.loop10	btst	#$7,$FF800E.l
+.loop10	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop10
-	move.l	#$C0000000,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop11	btst	#$6,$FF800E.l
+	move.l	#$C0000000,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop11	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop11
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop12	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop12	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop12
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	moveq	#$1F,d0
-.loop13	btst	#$7,$FF800E.l
+.loop13	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop13
-	move.l	(a1)+,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop14	btst	#$6,$FF800E.l
+	move.l	(a1)+,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop14	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop14
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop15	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop15	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop15
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	dbra	d0,.loop13
 	st.b	(palcount).l
 	move.w	(sp)+,(disflags).l
@@ -340,18 +340,18 @@ sfx						;play sound effect number. One word passed on stack
 	move.w	$8(sp),d0
 	bmi.w	.none
 	move.w	d0,(lastsfx).l
-	move.w	d0,$FF8022.l
-.loop	btst	#$7,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$26,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$26,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 .none	movem.l	(sp)+,d0
 	move.l	(sp),$2(sp)
 	addq.w	#$2,sp
@@ -361,18 +361,18 @@ sfx						;play sound effect number. One word passed on stack
 ; Unlike sfx it does not skip negative numbers or set lastsfx.
 sfx_vblank	move.l	d0,-(sp)
 	move.w	$8(sp),d0
-	move.w	d0,$FF8028.l
-.loop	btst.b	#$4,$FF800E.l
+	move.w	d0,(GA_COMSTAT4).l
+.loop	btst.b	#$4,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$34,$FF8026.l
-	bset.b	#$3,$FF800F.l
-.loop2	btst.b	#$3,$FF800E.l
+	move.w	#$34,(GA_COMSTAT3).l
+	bset.b	#$3,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$3,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset.b	#$4,$FF800F.l
-	bclr.b	#$3,$FF800F.l
-.loop3	btst.b	#$3,$FF800E.l
+	bset.b	#$4,(GA_COMFLAGS+1).l
+	bclr.b	#$3,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$3,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr.b	#$4,$FF800F.l
+	bclr.b	#$4,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,d0
 	move.l	(sp),$2(sp)
 	addq.w	#$2,sp
@@ -740,19 +740,19 @@ RelocateLogoBitmaps
 ; Sends gate array command $3D.
 SubCmd3DSend
 	movem.l	d0-d7/a0-a2,-(sp)
-	bclr	#$5,$FF800F.l
-.loop5	btst	#$7,$FF800E.l
+	bclr	#$5,(GA_COMFLAGS+1).l
+.loop5	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop5
-	move.w	#$3D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.w	#$3D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop6
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop7	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop7	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop7
-	bclr	#$7,$FF800F.l
-	bset	#$5,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+	bset	#$5,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,d0-d7/a0-a2
 	rts
 ; Clears VRAM from address 0 via setVram.
@@ -772,12 +772,12 @@ DoDMApro
 DoDMAProQueue
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	d2-d3/a1-a2,-(sp)
@@ -824,25 +824,25 @@ DoDMAProQueue
 	ori.l	#$804000,d0
 	move.l	d0,(GateRequestBlock+$16).l
 	jsr	(RaiseGateRequest).l
-.loop2	btst	#$7,$FF800E.l
+.loop2	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop2
-	move.w	#$8,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	#$8,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop3
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop4
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next4
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next5
-.next4	bclr	#$5,$FF800F.l
+.next4	bclr	#$5,(GA_COMFLAGS+1).l
 .next5	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d2-d3/a1-a2
@@ -893,29 +893,29 @@ DmaCopyFromWordRam
 	ori.l	#$804000,d0
 	move.l	d0,(GateRequestBlock+$16).l
 	jsr	(RaiseGateRequest).l
-.loop6	btst	#$4,$FF800E.l
+.loop6	btst	#$4,(GA_COMFLAGS).l
 	bne.b	.loop6
-	move.w	#$32,$FF8026.l
-	bset	#$3,$FF800F.l
-.loop7	btst	#$3,$FF800E.l
+	move.w	#$32,(GA_COMSTAT3).l
+	bset	#$3,(GA_COMFLAGS+1).l
+.loop7	btst	#$3,(GA_COMFLAGS).l
 	beq.b	.loop7
-	bset	#$4,$FF800F.l
-	bclr	#$3,$FF800F.l
-.loop8	btst	#$3,$FF800E.l
+	bset	#$4,(GA_COMFLAGS+1).l
+	bclr	#$3,(GA_COMFLAGS+1).l
+.loop8	btst	#$3,(GA_COMFLAGS).l
 	bne.b	.loop8
-	bclr	#$4,$FF800F.l
+	bclr	#$4,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
 	movem.l	(sp)+,d2-d3/a1-a2
 	rts
 DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
@@ -924,26 +924,26 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 	move.l	d1,(GateRequestBlock+4).l
 	move.l	d2,(GateRequestBlock+8).l
 	jsr	(RaiseGateRequest).l
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next4
-.next3	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
@@ -951,37 +951,37 @@ DoDMA_nd2						;vram to vram copy by dma, protected from vblank
 DoDMANd2Queue
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.l	d0,(GateRequestBlock).l
 	move.l	d1,(GateRequestBlock+4).l
 	move.l	d2,(GateRequestBlock+8).l
 	jsr	(RaiseGateRequest).l
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1F,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1F,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next4
-.next3	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
@@ -998,283 +998,283 @@ setVram						;initialize all necesary video parameters based on my variables. d0
 SetVramStackPush
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset	#$2,(disflags).l
-.loop2	btst	#$7,$FF800E.l
+.loop2	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop2
-	move.w	#$8F02,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	#$8F02,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop3
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop4
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	clr.w	d0
 	bsr.w	SetVramWriteAddr1
 	clr.l	d1
-.loop5	btst	#$7,$FF800E.l
+.loop5	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop5
-	move.w	#$20,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop6	btst	#$6,$FF800E.l
+	move.w	#$20,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop6
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop7	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop7	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop7
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8C00,d0
 	btst	#$1,(disflags).l
 	bne.w	.loop8
 	ori.w	#$81,d0
-.loop8	btst	#$7,$FF800E.l
+.loop8	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop8
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop9	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop9	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop9
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop10	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop10	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop10
-	bclr	#$7,$FF800F.l
-.loop11	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop11	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop11
-	move.w	#$8014,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop12	btst	#$6,$FF800E.l
+	move.w	#$8014,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop12	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop12
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop13	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop13	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop13
-	bclr	#$7,$FF800F.l
-.loop14	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop14	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop14
-	move.w	#$8164,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop15	btst	#$6,$FF800E.l
+	move.w	#$8164,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop15	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop15
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop16	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop16	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop16
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$9001,d0
 	cmpi.w	#$6,(Map1col).l
 	beq.w	.loop17
 	move.w	#$9003,d0
-.loop17	btst	#$7,$FF800E.l
+.loop17	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop17
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop18	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop18	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop18
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop19	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop19	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop19
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8200,d0
 	move.b	(VmMAP1).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$38,d0
-.loop20	btst	#$7,$FF800E.l
+.loop20	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop20
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop21	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop21	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop21
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop22	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop22	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop22
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8400,d0
 	move.b	(VmMAP2).l,d0
 	lsr.b	#$5,d0
-.loop23	btst	#$7,$FF800E.l
+.loop23	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop23
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop24	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop24	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop24
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop25	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop25	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop25
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8300,d0
 	move.b	(VmMAP3).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$3E,d0
-.loop26	btst	#$7,$FF800E.l
+.loop26	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop26
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop27	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop27	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop27
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop28	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop28	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop28
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8500,d0
 	move.b	(VSPRITES).l,d0
 	lsr.b	#$1,d0
-.loop29	btst	#$7,$FF800E.l
+.loop29	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop29
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop30	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop30	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop30
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop31	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop31	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop31
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8D00,d0
 	move.b	(VSCRLPM).l,d0
 	lsr.b	#$2,d0
-.loop32	btst	#$7,$FF800E.l
+.loop32	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop32
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop33	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop33	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop33
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop34	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop34	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop34
-	bclr	#$7,$FF800F.l
-.loop35	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop35	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop35
-	move.w	#$9100,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop36	btst	#$6,$FF800E.l
+	move.w	#$9100,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop36	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop36
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop37	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop37	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop37
-	bclr	#$7,$FF800F.l
-.loop38	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop38	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop38
-	move.w	#$9200,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop39	btst	#$6,$FF800E.l
+	move.w	#$9200,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop39	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop39
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop40	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop40	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop40
-	bclr	#$7,$FF800F.l
-.loop41	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop41	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop41
-	move.w	#$8700,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop42	btst	#$6,$FF800E.l
+	move.w	#$8700,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop42	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop42
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop43	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop43	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop43
-	bclr	#$7,$FF800F.l
-.loop44	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop44	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop44
-	move.w	#$8B00,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop45	btst	#$6,$FF800E.l
+	move.w	#$8B00,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop45	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop45
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop46	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop46	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop46
-	bclr	#$7,$FF800F.l
-.loop47	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop47	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop47
-	move.l	#$40000010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop48	btst	#$6,$FF800E.l
+	move.l	#$40000010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop48	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop48
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop49	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop49	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop49
-	bclr	#$7,$FF800F.l
-.loop50	btst	#$7,$FF800E.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+.loop50	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop50
-	move.l	#$0,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop51	btst	#$6,$FF800E.l
+	move.l	#$0,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop51	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop51
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop52	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop52	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop52
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next3
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next4
-.next3	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
 ; Pushes the flag on the queue for setVram
 SetVramQueueFlag	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst.b	#$5,$FF800F.l
+	btst.b	#$5,(GA_COMFLAGS+1).l
 	beq.b	.next
 	move.w	#$1,-(a6)
 	bra.b	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr.b	#$5,$FF800F.l
+.next2	bclr.b	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(disflags).l,-(sp)
 	bset.b	#$2,(disflags).l
-.loop	btst.b	#$7,$FF800E.l
+.loop	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop
-	move.w	#$8F02,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop2	btst.b	#$6,$FF800E.l
+	move.w	#$8F02,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop2
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop3	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop3
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	clr.w	d0
 	bsr.w	SetVramWriteAddr1
 	clr.l	d1
@@ -1282,215 +1282,215 @@ SetVramQueueFlag	move.l	a6,-(sp)
 	btst.b	#$1,(disflags).l
 	bne.w	.loop4
 	ori.w	#$81,d0
-.loop4	btst.b	#$7,$FF800E.l
+.loop4	btst.b	#$7,(GA_COMFLAGS).l
 	bne.b	.loop4
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop5	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop5	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop5
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop6	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop6	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop6
-	bclr.b	#$7,$FF800F.l
-.loop7	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop7	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop7
-	move.w	#$8014,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop8	btst.b	#$6,$FF800E.l
+	move.w	#$8014,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop8	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop8
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop9	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop9	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop9
-	bclr.b	#$7,$FF800F.l
-.loop10	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop10	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop10
-	move.w	#$8164,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop11	btst.b	#$6,$FF800E.l
+	move.w	#$8164,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop11	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop11
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop12	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop12	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop12
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$9001,d0
 	cmpi.w	#$6,(Map1col).l
 	beq.w	.loop13
 	move.w	#$9003,d0
-.loop13	btst.b	#$7,$FF800E.l
+.loop13	btst.b	#$7,(GA_COMFLAGS).l
 	bne.b	.loop13
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop14	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop14	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop14
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop15	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop15	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop15
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8200,d0
 	move.b	(VmMAP1).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$38,d0
-.loop16	btst.b	#$7,$FF800E.l
+.loop16	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop16
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop17	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop17	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop17
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop18	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop18	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop18
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8400,d0
 	move.b	(VmMAP2).l,d0
 	lsr.b	#$5,d0
-.loop19	btst.b	#$7,$FF800E.l
+.loop19	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop19
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop20	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop20	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop20
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop21	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop21	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop21
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8300,d0
 	move.b	(VmMAP3).l,d0
 	lsr.b	#$2,d0
 	andi.b	#$3E,d0
-.loop22	btst.b	#$7,$FF800E.l
+.loop22	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop22
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop23	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop23	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop23
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop24	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop24	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop24
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8500,d0
 	move.b	(VSPRITES).l,d0
 	lsr.b	#$1,d0
-.loop25	btst.b	#$7,$FF800E.l
+.loop25	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop25
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop26	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop26	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop26
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop27	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop27	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop27
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$8D00,d0
 	move.b	(VSCRLPM).l,d0
 	lsr.b	#$2,d0
-.loop28	btst.b	#$7,$FF800E.l
+.loop28	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop28
-	move.w	d0,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop29	btst.b	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop29	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop29
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop30	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop30	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop30
-	bclr.b	#$7,$FF800F.l
-.loop31	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop31	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop31
-	move.w	#$9100,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop32	btst.b	#$6,$FF800E.l
+	move.w	#$9100,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop32	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop32
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop33	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop33	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop33
-	bclr.b	#$7,$FF800F.l
-.loop34	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop34	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop34
-	move.w	#$9200,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop35	btst.b	#$6,$FF800E.l
+	move.w	#$9200,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop35	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop35
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop36	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop36	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop36
-	bclr.b	#$7,$FF800F.l
-.loop37	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop37	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop37
-	move.w	#$8700,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop38	btst.b	#$6,$FF800E.l
+	move.w	#$8700,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop38	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop38
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop39	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop39	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop39
-	bclr.b	#$7,$FF800F.l
-.loop40	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop40	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop40
-	move.w	#$8B00,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop41	btst.b	#$6,$FF800E.l
+	move.w	#$8B00,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop41	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop41
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop42	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop42	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop42
-	bclr.b	#$7,$FF800F.l
-.loop43	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop43	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop43
-	move.l	#$40000010,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop44	btst.b	#$6,$FF800E.l
+	move.l	#$40000010,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop44	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop44
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop45	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop45	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop45
-	bclr.b	#$7,$FF800F.l
-.loop46	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop46	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop46
-	move.l	#$0,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop47	btst.b	#$6,$FF800E.l
+	move.l	#$0,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop47	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop47
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop48	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop48	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop48
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	(sp)+,(disflags).l
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.b	.next3
-	bset.b	#$5,$FF800F.l
+	bset.b	#$5,(GA_COMFLAGS+1).l
 	bra.b	.next4
-.next3	bclr.b	#$5,$FF800F.l
+.next3	bclr.b	#$5,(GA_COMFLAGS+1).l
 .next4	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
@@ -1502,18 +1502,18 @@ SetVramWriteAddr1
 	ori.w	#$4000,d0
 	swap	d0
 	andi.w	#$3,d0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.l	d0,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.l	d0,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	rts
 ; Second copy of SetVramWriteAddr1.
 SetVramWriteAddr2
@@ -1523,18 +1523,18 @@ SetVramWriteAddr2
 	ori.w	#$4000,d0
 	swap	d0
 	andi.w	#$3,d0
-.loop	btst	#$4,$FF800E.l
+.loop	btst	#$4,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$30,$FF8026.l
-	move.l	d0,$FF8028.l
-	bset	#$3,$FF800F.l
-.loop2	btst	#$3,$FF800E.l
+	move.w	#$30,(GA_COMSTAT3).l
+	move.l	d0,(GA_COMSTAT4).l
+	bset	#$3,(GA_COMFLAGS+1).l
+.loop2	btst	#$3,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$4,$FF800F.l
-	bclr	#$3,$FF800F.l
-.loop3	btst	#$3,$FF800E.l
+	bset	#$4,(GA_COMFLAGS+1).l
+	bclr	#$3,(GA_COMFLAGS+1).l
+.loop3	btst	#$3,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$4,$FF800F.l
+	bclr	#$4,(GA_COMFLAGS+1).l
 	rts
 dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, a1 =
 									;map, a2 = tiles (DecompressGraphics data), d0 = start x, d1 = start y, d2
@@ -1543,12 +1543,12 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 									;DecompressGraphics (returns d4 = end char)
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	move.w	(printy).l,-(sp)
@@ -1585,19 +1585,19 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	move.w	d3,(a0)+		;write the name table entry
 	addi.w	#$2,d0
 	dbra	d1,.loop1
-.loop5	btst	#$7,$FF800E.l
+.loop5	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop5
-	move.w	#$21,$FF8020.l
+	move.w	#$21,(GA_COMSTAT0).l
 	jsr	(RaiseGateRequest).l
-	bset	#$6,$FF800F.l
+	bset	#$6,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
-.loop6	btst	#$6,$FF800E.l
+.loop6	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop6
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop7	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop7	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop7
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	addi.w	#$1,(printy).l
 	addi.w	#$1,d6
 	dbra	d2,.loop2
@@ -1611,9 +1611,9 @@ dobitmap						;transfer palette data/map data/tiles data to vram. a0 = palette, 
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next5
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next6
-.next5	bclr	#$5,$FF800F.l
+.next5	bclr	#$5,(GA_COMFLAGS+1).l
 .next6	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	rts
