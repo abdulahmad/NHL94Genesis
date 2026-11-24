@@ -65,9 +65,9 @@ LoadHomeTeamGfx
 	subi.w	#$18,d4
 	tst.w	(AltTeamGfxFlag).l
 	beq.s	.next
-	movea.l	$47DA8.l,a2
+	movea.l	(AltTeamGfxMap).l,a2
 	bra.s	.next2
-.next	movea.l	$47D90.l,a2
+.next	movea.l	(TeamGfxMap).l,a2
 .next2	adda.w	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	move.w	(sp)+,d0
@@ -272,7 +272,7 @@ DrawPlayoffSprite						;The StanleyCupSprite sprite at playoffspritex / playoffs
 	
 	movea.l	#Satt,a6
 	moveq	#$1,d6
-	movea.l	$47D94.l,a0
+	movea.l	(StanleyCupSprite).l,a0
 	move.w	(energybarchars).l,d3
 	ori.w	#$8000,d3
 	move.w	(playoffspritex).l,d0
