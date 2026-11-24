@@ -10,7 +10,7 @@ RunArenaAnim						;Run the arena animation arenaanim (negative: none): the first
 	bne.w	.run
 	move.w	(arenaanim).l,d0
 	asl.w	#$3,d0
-	movea.l	#$2A26C,a0
+	movea.l	#ArenaAnims,a0
 	move.l	(a0,d0.w),(arenaframelist).l
 	move.l	$4(a0,d0.w),(arenaspritelist).l
 	movea.l	$4(a0,d0.w),a2
@@ -47,7 +47,7 @@ NextArenaFrame						;Read frame arenaframeidx of the list: arenaframe = frame, a
 	bsr.w	EndArenaAnim		;$FE: end the animation
 .x	rts
 ; Table of 64 bytes after NextArenaFrame, 64 bytes: $00,$02,$A3,$E4,$00,$04 ...
-	dc.b	$00,$02,$A3,$E4,$00,$04,$3A,$7E,$00,$02,$A3,$98,$00,$04,$42,$A2
+ArenaAnims	dc.b	$00,$02,$A3,$E4,$00,$04,$3A,$7E,$00,$02,$A3,$98,$00,$04,$42,$A2
 	dc.b	$00,$02,$A3,$BE,$00,$04,$42,$A2,$00,$02,$A3,$86,$00,$04,$4F,$A8
 	dc.b	$00,$02,$A3,$30,$00,$04,$5A,$16,$00,$02,$A3,$00,$00,$04,$5A,$16
 	dc.b	$00,$02,$A2,$EA,$00,$04,$69,$42,$00,$02,$A2,$AC,$00,$04,$69,$42

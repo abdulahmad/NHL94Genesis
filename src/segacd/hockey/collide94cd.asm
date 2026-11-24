@@ -1606,14 +1606,15 @@ PuckCollisionExit
 PuckCollisionReturn	movem.l	(sp)+,d0-d7/a0-a3
 	rts
 ; Table of 80 bytes after PuckCollisionReturn, 80 bytes: $00,$0C,$00,$0C,$00,$0D ...
-	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
+checkpuckcoll_cbg	dc.b	$00,$0C,$00,$0C,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D,$00,$0D	; ................
 	dc.b	$00,$0D,$00,$0D,$00,$0E,$00,$0E,$00,$0E,$00,$0E,$00,$0F,$00,$0F	; ................
-	dc.b	$00,$0F,$00,$0F,$00,$0F,$00,$0F,$00,$90,$00,$90,$00,$A9,$00,$A9	; ................
+	dc.b	$0,$F,$0,$F,$0,$F,$0,$F
+checkpuckcoll_cbgsq	dc.b	$0,$90,$0,$90,$0,$A9,$0,$A9
 	dc.b	$00,$A9,$00,$A9,$00,$A9,$00,$A9,$00,$A9,$00,$A9,$00,$C4,$00,$C4	; ................
 	dc.b	$00,$C4,$00,$C4,$00,$E1,$00,$E1,$00,$E1,$00,$E1,$00,$E1,$00,$E1	; ................
 ; Puck collision: table lookup
 PuckCollisionTable	move.l	a0,-(sp)
-	movea.l	#$3BA3C,a0
+	movea.l	#checkpuckcoll_cbg,a0
 	clr.w	d0
 	move.b	$68(a2),d0
 	btst.b	#$1,(sflags8).l
@@ -1635,7 +1636,7 @@ PuckCollisionTable	move.l	a0,-(sp)
 	blt.w	.next5
 	move.w	#$1E,d0
 .next5	move.w	(a0,d0.w),(ChkBodyG).l
-	movea.l	#$3BA64,a0
+	movea.l	#checkpuckcoll_cbgsq,a0
 	clr.l	(ChkBodySqG).l
 	move.w	(a0,d0.w),(ChkBodySqG+2).l
 	move.w	(ChkBodyG).l,(NegChkBodyG).l
