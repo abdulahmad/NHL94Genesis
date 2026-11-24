@@ -39,7 +39,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	String	CC_Font1Pri,$4,$9
 	movea.l	#tmstruct,a1
 	movea.l	tmdata(a1),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).l
 	move.w	(homeshootgoals).l,d0
@@ -50,7 +50,7 @@ ShootoutModeBox						;Shootout "SHOOTOUT MODE" box: the shooter " vs." the goali
 	String	CC_Font1Pri,$4,$A
 	movea.l	#awtmstruct,a1
 	movea.l	tmdata(a1),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	jsr	(print).l
 	move.w	#$15,(printx).l
 	move.w	(awayshootgoals).l,d0
@@ -140,7 +140,7 @@ InitShooters						;Shootout: the 6 starters of the home (shootoutteam 0) or away
 .0	movea.l	#TeamList,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
-	adda.w	$6(a1),a1
+	adda.w	LineSets(a1),a1
 	move.w	#$5,d0
 .loop	clr.w	d1
 	move.b	(a1)+,d1
@@ -166,7 +166,7 @@ ShootoutWonBy						;Shootout: "SHOOTOUT WON BY" (printbig). Called from SetPA
 .0	asl.w	#$2,d1
 	movea.l	#TeamList,a1
 	movea.l	(a1,d1.w),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	#$2,(printx).l
 	jsr	(printbig).l
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -391,12 +391,12 @@ ShootersBackground
 	jsr	(printz).l
 	String	CC_Font3,$0,$0
 	movea.l	(EASportsBGMap).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#null,a2
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$1,d4
 	moveq	#$0,d5
 	jsr	(dobitmap).l

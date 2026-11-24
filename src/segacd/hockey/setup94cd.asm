@@ -158,12 +158,12 @@ defaultsprites
 	movea.l	#defaultspritesStart,a2
 	movea.l	#sso,a3
 	moveq	#$3,d0
-.loop	move.w	#$FFFF,$8(a3)
-	move.w	(a2)+,$0(a3)
-	move.w	(a2)+,$2(a3)
-	move.w	(a2)+,$6(a3)
-	move.w	(a2)+,$4(a3)
-	move.w	d4,$12(a3)
+.loop	move.w	#$FFFF,oldframe(a3)
+	move.w	(a2)+,Xcord(a3)
+	move.w	(a2)+,Ycord(a3)
+	move.w	(a2)+,frame(a3)
+	move.w	(a2)+,attribute(a3)
+	move.w	d4,VRchar(a3)
 	add.w	(a2)+,d4
 	adda.w	#$14,a3
 	dbra	d0,.loop
@@ -172,11 +172,11 @@ defaultsprites
 	move.l	#$6,d0
 .loop2	st.b	$8(a3)
 	move.w	(a2)+,$0(a3)
-	move.w	(a2)+,$14(a3)
-	move.w	(a2)+,$18(a3)
-	move.w	(a2)+,$6(a3)
-	move.w	(a2)+,$4(a3)
-	move.w	d4,$12(a3)
+	move.w	(a2)+,Ypos(a3)
+	move.w	(a2)+,Zpos(a3)
+	move.w	(a2)+,frame(a3)
+	move.w	(a2)+,attribute(a3)
+	move.w	d4,VRchar(a3)
 	add.w	(a2)+,d4
 	adda.w	#$1C,a3
 	dbra	d0,.loop2
@@ -208,22 +208,22 @@ defaultsprites_0
 	movea.l	a3,a0
 .loop2	clr.l	(a0)+
 	dbra	d0,.loop2
-	move.w	d6,$52(a3)
-	st.b	$8(a3)
-	st.b	$66(a3)
+	move.w	d6,SCnum(a3)
+	st.b	oldframe(a3)
+	st.b	pnum(a3)
 	move.w	(a2)+,$0(a3)
-	move.w	(a2)+,$14(a3)
-	move.w	(a2)+,$18(a3)
-	move.w	(a2)+,$6(a3)
-	move.w	(a2)+,$4(a3)
-	move.w	d4,$12(a3)
+	move.w	(a2)+,Ypos(a3)
+	move.w	(a2)+,Zpos(a3)
+	move.w	(a2)+,frame(a3)
+	move.w	(a2)+,attribute(a3)
+	move.w	d4,VRchar(a3)
 	add.w	(a2)+,d4
-	move.w	(a2)+,$4A(a3)
-	move.w	(a2)+,$4C(a3)
+	move.w	(a2)+,radiusx(a3)
+	move.w	(a2)+,radiusy(a3)
 	adda.w	#$1,a2
 	move.b	(a2)+,$38(a3)
 	adda.w	#$1,a2
-	move.b	(a2)+,$62(a3)
+	move.b	(a2)+,pflags(a3)
 	adda.w	#$80,a3
 	asl.w	#$1,d6
 	move.b	d6,(a1)+
@@ -442,15 +442,15 @@ resetplstuff
 	rts
 .top	bclr	#tmfoside,tmflags(a2)
 	moveq	#$5,d2
-	movea.l	$22(a2),a3
-.loop	clr.b	$63(a3)
+	movea.l	tmsort(a2),a3
+.loop	clr.b	pflags2(a3)
 	tst.w	position(a3)
 	bmi.w	.next
 	move.w	#$50C,d1
 	jsr	(SetSPA).l
 	clr.w	impact(a3)
 	clr.b	nopuck(a3)
-	andi.b	#$C2,$62(a3)
+	andi.b	#$C2,pflags(a3)
 .next	adda.w	#$80,a3
 	dbra	d2,.loop
 	rts
@@ -497,7 +497,7 @@ setteams						;Use hometeam/visteam to set team structures (InitTeamStructure fo
 	movem.l	d0/a0-a2,-(sp)
 	movea.l	#tmstruct,a2
 	move.w	(HomeTeam).l,d0
-	move.l	#SortCords,$22(a2)
+	move.l	#SortCords,tmsort(a2)
 	bsr.w	.next
 	movea.l	#awtmstruct,a2
 	move.w	(VisTeam).l,d0
@@ -514,8 +514,8 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 	tst.w	(OptLine).l
 	beq.w	.0
 	movea.l	tmdata(a2),a0
-	adda.w	$6(a0),a0
-	lea.l	$16C(a2),a1
+	adda.w	LineSets(a0),a0
+	lea.l	tmlines(a2),a1
 	move.l	(a0)+,(a1)+
 	move.l	(a0)+,(a1)+
 	adda.w	#$8,a0
@@ -525,9 +525,9 @@ CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team 
 	rts
 .0	moveq	#$D,d0
 	movea.l	tmdata(a2),a0
-	adda.w	$6(a0),a0
+	adda.w	LineSets(a0),a0
 	adda.w	#$8,a0
-	lea.l	$16C(a2),a1
+	lea.l	tmlines(a2),a1
 .copy	move.l	(a0)+,(a1)+
 	dbra	d0,.copy
 	rts
@@ -640,11 +640,11 @@ PlayoffScreen
 	clr.w	d0
 	clr.w	d1
 	move.w	(a1),d2
-	move.w	$2(a1),d3
+	move.w	mapheight(a1),d3
 	moveq	#$3,d5
 	bsr.w	dobitmap
 	movea.l	(StanleyCupSprite).l,a1
-	lea.l	$8(a1),a2
+	lea.l	jimtilecount(a1),a2
 	adda.l	(a1),a1
 	moveq	#$7,d0
 	movea.l	#palfadenew+$40,a0
@@ -1052,7 +1052,7 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 	beq.w	.21
 	movea.l	#awtmstruct,a1
 .21	movea.l	tmdata(a1),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	bra.w	.append
 .22	movea.l	#awtmstruct,a1
 	bra.w	.24
@@ -1066,12 +1066,12 @@ UpdateScoutingDisplay						;Text player for ScoutingReport: prints the ScoutingR
 .next5	dbra	d1,.loop5
 	bra.w	.append		;a1 = player name
 .27	movea.l	(AwayTeamRosterPtr).l,a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	bra.w	.append
 .28	movea.l	(AwayTeamRosterPtr).l,a1
 	bra.w	.30
 .29	movea.l	(HomeTeamRosterPtr).l,a1
-.30	adda.w	$4(a1),a1
+.30	adda.w	Teamname(a1),a1
 .append	addi.w	#$1,(PlayerScrollCtr).l		;go on after the special character
 	add.w	(a1),d0		;column + string length - 1
 	subi.w	#$1,d0
@@ -1442,8 +1442,8 @@ NewPO
 	clr.w	(bosgames).l
 	moveq	#$7,d0
 	movea.l	#gstruct,a0
-.loop3	clr.w	$4(a0)
-	clr.w	$6(a0)
+.loop3	clr.w	gspotwins(a0)
+	clr.w	gspobwins(a0)
 	adda.w	#$10,a0
 	dbra	d0,.loop3
 MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, clear the
@@ -1623,7 +1623,7 @@ InitializeGameStructures
 .loop	bsr.w	GetRandomUnusedTeam
 	move.w	d0,$0(a1)
 	bsr.w	GetRandomUnusedTeam
-	move.w	d0,$2(a1)
+	move.w	d0,gst2(a1)
 	adda.w	#$10,a1
 	dbra	d2,.loop
 	rts
@@ -1640,19 +1640,19 @@ ReadPassBits
 	dbra	d0,.loop
 	moveq	#$7,d2
 	movea.l	#gstruct+(7*$10),a1
-.loop2	bclr	#$2,$E(a1)
+.loop2	bclr	#$2,gsflags(a1)
 	moveq	#$5,d0
 	bsr.w	SuperDiv
-	move.w	d0,$6(a1)
+	move.w	d0,gspobwins(a1)
 	cmpi.w	#$4,d0
 	bne.w	.next
-	bset	#$2,$E(a1)
+	bset	#$2,gsflags(a1)
 .next	moveq	#$5,d0
 	bsr.w	SuperDiv
-	move.w	d0,$4(a1)
+	move.w	d0,gspotwins(a1)
 	cmpi.w	#$4,d0
 	bne.w	.next2
-	bset	#$2,$E(a1)
+	bset	#$2,gsflags(a1)
 .next2	suba.w	#$10,a1
 	dbra	d2,.loop2
 	move.w	#$4000,d0
@@ -2052,7 +2052,7 @@ ShowThreeStars						;End of game Stars of the Game box. Called from UpdatePA whi
 	move.w	#$1A,(printx).l
 	addi.w	#$1,(printy).l
 	movea.l	tmdata(a2),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	jsr	(print).l
 	bsr.w	getname
@@ -2099,7 +2099,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	move.w	d0,d5
 	add.w	d2,d5
 	movea.l	#tmstruct,a2
-	lea.l	$366(a2),a3
+	lea.l	tmsize(a2),a3
 	bsr.w	CalcTeamStarScores
 	movea.l	a3,a2
 	lea.l	-$366(a2),a3
@@ -2141,7 +2141,7 @@ CalcTeamStarScores						;Star scores of team a2 (a3 = other team) to (a4)+, one 
 	mulu.w	#$2AF8,d1
 	add.l	d1,(a4)
 	clr.w	d1
-	move.b	$D0(a2),d1
+	move.b	tmassists(a2),d1
 	mulu.w	#$2774,d1
 	add.l	d1,(a4)
 	clr.w	d1
@@ -2223,7 +2223,7 @@ PenaltyShotBox
 	movea.l	#SortCords,a2
 	adda.w	d0,a2
 	clr.w	d0
-	move.b	$66(a2),d0
+	move.b	pnum(a2),d0
 	movea.l	#tmstruct,a2
 	tst.w	(BA_Team).l
 	beq.w	.next6
@@ -2279,7 +2279,7 @@ ShowGoalBox
 	String	CC_Font1Pri,$B,$2
 	moveq	#$13,d0
 	move.w	#$5,d1
-	tst.b	$4(a4)
+	tst.b	ssassist1(a4)
 	bmi.w	.next2
 	addi.w	#$2,d1
 	tst.b	$5(a4)
@@ -2289,7 +2289,7 @@ ShowGoalBox
 	jsr	(CountGoalies).l
 	movea.l	#tmstruct,a2
 	move.w	(homegoalies).l,(scorergoalies).l
-	btst	#$7,$2(a4)
+	btst	#$7,ssflags(a4)
 	beq.w	.next3
 	adda.w	#$366,a2
 	move.w	(awaygoalies).l,(scorergoalies).l
@@ -2298,19 +2298,19 @@ ShowGoalBox
 	beq.w	.next4
 	lea.l	.next10(pc),a1
 .next4	clr.w	d0
-	move.b	$3(a4),d0
+	move.b	ssscorer(a4),d0
 	addi.w	#$B6,d0
 	cmpi.b	#$3,(a2,d0.w)
 	bne.w	.next6
 	movem.w	d1,-(sp)
 	clr.w	d1
-	move.b	$3(a4),d1
+	move.b	ssscorer(a4),d1
 	cmp.w	(scorergoalies).l,d1
 	movem.w	(sp)+,d1
 	blt.w	.next6
 	adda.w	(a1),a1
 	move.w	d0,-(sp)
-	move.w	$2A(a2),d0
+	move.w	tmteam(a2),d0
 	cmp.w	(HomeTeam).l,d0
 	bne.w	.next5
 	move.w	#$0,d0
@@ -2318,7 +2318,7 @@ ShowGoalBox
 .next5	move.w	(sp)+,d0
 .next6	jsr	(printbig).l
 	clr.w	d0
-	move.b	$3(a4),d0
+	move.b	ssscorer(a4),d0
 	move.w	d0,-(sp)
 	move.w	#$C,(printx).l
 	bsr.w	FormatPlayerName
@@ -2326,13 +2326,13 @@ ShowGoalBox
 	move.w	(sp)+,d0
 	movem.w	d1,-(sp)
 	clr.w	d1
-	move.b	$3(a4),d1
+	move.b	ssscorer(a4),d1
 	cmp.w	(scorergoalies).l,d1
 	movem.w	(sp)+,d1
 	blt.w	.next7
 	jsr	(TeamGfxListEndPrintB).l
 .next7	clr.w	d0
-	move.b	$4(a4),d0
+	move.b	ssassist1(a4),d0
 	bmi.w	.next8
 	bclr	#$5,(sflags4).l
 	bne.w	.next8
@@ -2344,7 +2344,7 @@ ShowGoalBox
 	move.w	(sp)+,d0
 	jsr	(TeamGfxListEndPrintA).l
 	clr.w	d0
-	move.b	$5(a4),d0
+	move.b	ssassist2(a4),d0
 	bmi.w	.next8
 	jsr	(printz).l
 	String	CC_Font1Pri,$C,$8

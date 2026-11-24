@@ -12,7 +12,7 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$E,$3,'Scores',CC_Font3Pri,$B,$1
 	movea.l	(ScoresMap).l,a1
-	lea.l	$8(a1),a2
+	lea.l	jimtilecount(a1),a2
 	adda.l	jimdata(a1),a1
 	clr.w	d0
 	clr.w	d1
@@ -126,7 +126,7 @@ PrintGameInfo						;Print team d0's name (TeamList) at x 6 and score d1 (2 digit
 	movea.l	#TeamList,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	#$6,(printx).l
 	jsr	(print).l
 	move.w	#$18,(printx).l
@@ -392,7 +392,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	addi.w	#$1,d4
 	move.w	$2(a0),(printy).l
 	move.w	$4(a0),d3
-	lea.l	$16C(a2),a3
+	lea.l	tmlines(a2),a3
 .slot	move.w	(a0),(printx).l
 	jsr	(printsmallz).l
 ; Inline data read by printsmallz from the return address (2 rows).
@@ -532,7 +532,7 @@ LineEditorExit
 SetLineSlot						;Put player d0 (1 based) in line slot d2 of team a2; if he is already in
 	
 	movem.l	d0-d2/a0-a1,-(sp)
-	lea.l	$16C(a2),a0
+	lea.l	tmlines(a2),a0
 	move.w	d2,d1
 	andi.w	#$FFF8,d1
 	lea.l	(a0,d1.w),a1
@@ -585,7 +585,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	move.w	tmteam(a2),d0
 	addi.w	#$1,d0
 	move.b	d0,(a0)+
-	lea.l	$16C(a2),a1
+	lea.l	tmlines(a2),a1
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
 	bsr.w	GetForwardCount
@@ -688,7 +688,7 @@ TeamRosterScreen						;"Team Roster" screen for team a2: pages of players (Displ
 	move.w	d0,(scoutcolumn).l
 	bsr.w	PlayerListDrawSelected
 	bra.w	.scroll
-.team	lea.l	$366(a2),a2
+.team	lea.l	tmsize(a2),a2
 	cmpa.l	#awtmstruct,a2
 	beq.w	.redraw
 	movea.l	#tmstruct,a2		;away -> back to home
@@ -1098,7 +1098,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0	movea.l	tmdata(a2),a1		;team data -> team name string
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).l
 	jsr	(print).l
@@ -1112,10 +1112,10 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	bsr.w	PrintScorerName		;print him
 	move.w	#$E000,(printa).l
 	move.w	#$12,(printx).l
-	move.b	$4(a0,d3.w),d0
+	move.b	ssassist1(a0,d3.w),d0
 	bsr.w	PrintScorerName
 	move.w	#$12,(printx).l
-	move.b	$5(a0,d3.w),d0		;second assist, falls into PrintScorerName
+	move.b	ssassist2(a0,d3.w),d0		;second assist, falls into PrintScorerName
 PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	ext.w	d0
 	bmi.w	.next
@@ -1288,7 +1288,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	beq.w	.0
 	adda.w	#tmsize,a2
 .0	movea.l	tmdata(a2),a1		;team data -> team name string
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	move.w	#$C,(printx).l
 	jsr	(print).l
@@ -1303,7 +1303,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	jsr	(print).l
 	move.w	#$10,(printx).l
 	clr.w	d0
-	move.b	$3(a0,d3.w),d0
+	move.b	psplayer(a0,d3.w),d0
 	jsr	(FormatPlayerNumInitial).l
 	jsr	(print).l
 	addi.w	#$1,(printy).l
@@ -1417,7 +1417,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	bra.w	.scroll
 .switch	tst.w	d7		;No team switch in playoff stats
 	bne.w	.scroll
-	lea.l	$366(a2),a2
+	lea.l	tmsize(a2),a2
 	cmpa.l	#awtmstruct,a2		;was the home team?
 	beq.w	.redraw		;was home, now away
 	movea.l	#tmstruct,a2		;was away, back to home
@@ -2039,7 +2039,7 @@ TimeoutMenu	subi.w	#$1,(menuitem).l
 	jsr	(printz).l
 	String	CC_Font3Pri,$C,$E,'Timeout',CC_Font3Pri,$11,$F
 	movea.l	tmdata(a2),a1		;team name, centred
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	(a1),d0
 	lsr.w	#$1,d0
 	sub.w	d0,(printx).l
@@ -2148,7 +2148,7 @@ StatsRowsNext	addi.w	#$1,(printy).l
 GetGoalieCount						;d0 = goalies on team a2 (nibbles in a team data word)
 	movem.l	d1/a0,-(sp)
 	movea.l	tmdata(a2),a0
-	adda.w	$A(a0),a0
+	adda.w	GoalieOdds(a0),a0
 	move.w	(a0),d1		;word with one nibble per goalie slot
 	clr.w	d0
 .count	addi.w	#$1,d0		;count nibbles by shifting 4 bits out until the word is 0
@@ -2163,7 +2163,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 	bsr.w	GetGoalieCount
 	move.w	d0,-(sp)
 	movea.l	tmdata(a2),a0
-	adda.w	$8(a0),a0
+	adda.w	ScoutReport(a0),a0
 	move.b	srforwards(a0),d0
 	lsr.w	#$4,d0		;high nibble
 	add.w	(sp)+,d0
@@ -2172,7 +2172,7 @@ GetDefenseStart						;d0 = goalies + forwards of team a2 (GetGoalieCount + GetFo
 GetForwardCount						;d0 = forwards on team a2 (high nibble of team data byte 3 at +8)
 	movem.l	a0,-(sp)
 	movea.l	tmdata(a2),a0
-	adda.w	$8(a0),a0
+	adda.w	ScoutReport(a0),a0
 	move.b	srforwards(a0),d0
 	lsr.w	#$4,d0		;high nibble = forward count
 	andi.w	#$F,d0		;forward count
@@ -2244,9 +2244,9 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	jsr	(ControllerTextClear).l
 .next	movem.l	d0/a3,-(sp)
 	movea.l	#SortCords+(12*SCstruct),a3
-	move.w	#$1,$8(a3)
+	move.w	#$1,oldframe(a3)
 	movea.l	#SortCords+(13*SCstruct),a3
-	move.w	#$1,$8(a3)
+	move.w	#$1,oldframe(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#$1,d7
 	bsr.w	ReadActiveJoypad
@@ -2268,13 +2268,13 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	bgt.w	.next4
 	move.w	#$0,$0(a5)
 	bra.w	.next4
-.next4	cmpi.w	#$FED0,$14(a5)
+.next4	cmpi.w	#$FED0,Ypos(a5)
 	bgt.w	.next5
-	move.w	#$0,$14(a5)
+	move.w	#$0,Ypos(a5)
 .next5	bset.b	#$5,(sflags).l
 	bne.w	.next6
 	move.w	(Hpos).l,$0(a5)
-	move.w	(Vpos).l,$14(a5)
+	move.w	(Vpos).l,Ypos(a5)
 .next6	move.w	d0,d5
 	andi.w	#$7,d5
 	eori.w	#$4,d5
@@ -2282,17 +2282,17 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	st.b	d3
 	bclr.b	#$5,(sflags3).l
 	beq.w	.next7
-	move.w	$16(a5),d3
+	move.w	camtrack(a5),d3
 .next7	move.w	$0(a5),d0
-	move.w	$14(a5),d1
+	move.w	Ypos(a5),d1
 	moveq	#$B,d2
 	move.l	#$100,d4
 	movem.w	d0-d1,-(sp)
-.loop	cmp.w	$52(a1),d3
+.loop	cmp.w	SCnum(a1),d3
 	beq.w	.next8
 	movem.w	(sp),d0-d1
 	sub.w	$0(a1),d0
-	sub.w	$14(a1),d1
+	sub.w	Ypos(a1),d1
 	jsr	(vtoa).l
 	btst	#$3,d0
 	bne.w	.next8
@@ -2303,7 +2303,7 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	bhi.w	.next8
 	movem.w	(sp),d0-d1
 	sub.w	$0(a1),d0
-	sub.w	$14(a1),d1
+	sub.w	Ypos(a1),d1
 	muls.w	d0,d0
 	muls.w	d1,d1
 	add.l	d1,d0
@@ -2312,14 +2312,14 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	cmp.l	d4,d0
 	bhi.w	.next8
 	move.l	d0,d4
-	move.w	$52(a1),$16(a5)
+	move.w	SCnum(a1),camtrack(a5)
 	bset.b	#$5,(sflags3).l
 .next8	adda.l	#$80,a1
 	dbra	d2,.loop
 	adda.w	#$4,sp
 	btst.b	#$5,(sflags3).l
 	beq.w	.next9
-	move.w	$16(a5),d0
+	move.w	camtrack(a5),d0
 	asl.w	#$7,d0
 	movea.l	#SortCords,a3
 	adda.w	d0,a3
@@ -2345,9 +2345,9 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	bgt.w	.next11
 	cmpi.w	#$FEDA,d1
 	blt.w	.next11
-	move.w	d1,$14(a5)
+	move.w	d1,Ypos(a5)
 .next11	movea.l	a5,a3
-	clr.w	$18(a5)
+	clr.w	camidle(a5)
 	andi.w	#$FFF,(PadControlBits).l
 	ori.w	#$E000,(PadControlBits).l
 	bsr.w	UpdateCameraPos
@@ -2357,7 +2357,7 @@ WaitFramesD7	move.w	(Vcount).l,d0
 DirectionStepTable	dc.b	$00,$00,$00,$02,$00,$02,$00,$02,$00,$02,$00,$00,$00,$02,$FF,$FE	; ................
 	dc.b	$00,$00,$FF,$FE,$FF,$FE,$FF,$FE,$FF,$FE,$00,$00,$FF,$FE,$00,$02	; ................
 ; Checks the direction buttons after a wait
-DirectionPressCheck	st.b	$18(a5)
+DirectionPressCheck	st.b	camidle(a5)
 	btst	#$5,d1
 	beq.w	.next
 	btst.b	#$0,(sflags5).l
