@@ -87,16 +87,16 @@ GameloopStart	jsr	(assreplace).l
 	move.w	#$FFFF,(CdSongPending).l
 	move.w	#$0,(SubVblankCount).l
 	cmpi.w	#$2,(gsp).l
-	bge.w	.loop
-	bset	#$7,(sflags3).l
-.loop	jsr	(SongCdCheck).l
-; Gameloop (the cartridge label for the code below; a comment here because the disc code reaches across this point with local labels)
+	bge.w	Gameloop
+	bset	#sf3fosong,(sflags3).l		;set for periods 1 and 2 only
+Gameloop							;Main loop for game. The disc adds the SongCdCheck call at the top of the loop
+	jsr	(SongCdCheck).l
 	bsr.w	DoGameFrame
-	bsr.w	demoread
-	btst	#$0,(sflags).l
-	beq.w	.loop
+	bsr.w	demoread		;check if demo mode
+	btst	#sfpz,(sflags).l
+	beq.w	Gameloop		;the cartridge uses beq.s
 	bsr.w	Pausemode
-	bra.w	.loop
+	bra.w	Gameloop		;the cartridge uses bra.s
 DoGameFrame						;wait for at least one vblank, then run one frame of game logic
 	move.w	(Vcount).l,d7
 	sub.w	(OldVcount).l,d7
