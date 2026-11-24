@@ -7,7 +7,7 @@ AddPenalty						;add penalty d0 (Penaltylist offset) for player a3. Ignored whil
 	beq.w	AddPenalty2
 	tst.w	(OptPen).l
 	beq.w	rtss2
-	btst	#$2,$63(a3)
+	btst	#$2,pflags2(a3)
 	bne.w	rtss2
 	btst	#gmoffs,(gmode).l
 	bne.w	AddPenalty2
@@ -45,7 +45,7 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 	bset	#$1,(DelayedPen).l
 	bra.w	.setpenflag
 .away	bset	#$2,(DelayedPen).l
-.setpenflag	bset	#pf2pen,$63(a3)
+.setpenflag	bset	#pf2pen,pflags2(a3)
 	beq.w	.noplayer
 	clr.w	(a1)
 .noplayer	movem.l	(sp)+,d1/a0-a1
@@ -112,7 +112,7 @@ chkprogress	btst	#$2,(BA_PS_flags).l
 	movea.l	#puckx,a3
 	moveq	#$1A,d0
 	bsr.w	assinsert
-	move.w	#$1C20,$40(a3)
+	move.w	#$1C20,temp1(a3)
 	st.b	(RefStep).l
 	clr.w	(RefCnt).l
 	bsr.w	UpdatePA
@@ -178,7 +178,7 @@ getBAplayerInfo						;d0 = SCnum (0-5 home team, 6-11 away team) of the player o
 	move.w	d0,d3
 	asl.w	#scsize,d3
 	move.w	#$0,(BA_Team).l
-	btst	#pfteam,$62(a1,d3.w)
+	btst	#pfteam,pflags(a1,d3.w)
 	beq.w	.0
 	move.w	#$1,(BA_Team).l
 .0	move.w	#$0,(BA_Skater_Offset).l
@@ -251,14 +251,14 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	adda.w	d1,a3
 	clr.w	d0
 	movea.l	#tmstruct,a2
-	lea.l	$366(a2),a1
+	lea.l	tmsize(a2),a1
 	btst	#pfteam,pflags(a3)
 	beq.w	.next4
 	bset	#$7,-$1(a4)
 	move.w	#$8000,d0
 	exg.l	a1,a2
 .next4	addi.w	#$1,$6(a2)
-	add.w	d2,$8(a2)
+	add.w	d2,tmPenmin(a2)
 	move.b	pnum(a3),d0
 	move.b	d0,(a4)
 	move.w	d0,(TempPlOffset).l
@@ -289,7 +289,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bset	#$6,tmpdst(a1,d1.w)
 	bset	#$6,tmpdst(a2,d0.w)
 .nocoin	movem.l	a0,-(sp)
-	lea.l	$9C(a2),a0
+	lea.l	tmboxlist(a2),a0
 	moveq	#$18,d1
 .pl	tst.b	(a0)+
 	dbmi	d1,.pl
@@ -460,7 +460,7 @@ limitfo						;limit face off to 5-20 feet from walls of rink.
 	asl.w	#scsize,d0
 	movea.l	#SortCords,a1
 	move.w	#$58,d1
-	btst	#pfgoal,$62(a1,d0.w)
+	btst	#pfgoal,pflags(a1,d0.w)
 	bne.w	.0
 	neg.w	d1
 	cmp.w	(foy).l,d1
@@ -653,7 +653,7 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 .1	move.w	tmap(a2),d2
 	cmp.w	tmap(a1),d2
 	ble.w	.ex
-	lea.l	$9C(a1),a0
+	lea.l	tmboxlist(a1),a0
 .0	clr.w	d2
 	move.b	(a0)+,d2
 	bmi.w	.ex
@@ -693,7 +693,7 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 	
 	
 	
-	lea.l	$9C(a2),a0
+	lea.l	tmboxlist(a2),a0
 	movea.l	#mesarea,a1
 	moveq	#$2,d1
 	moveq	#$2,d3
@@ -738,7 +738,7 @@ updatepentime_ut						;a2 = team. Walks the penalty box list (tmboxlist): the fi
 updatepentime_ut_2						;Remove the entry before a0 from a penalty box list by shifting the rest
 	
 	
-	clr.w	$68(a2,d0.w)
+	clr.w	tmpdst(a2,d0.w)
 ; Shifts the byte list down by one entry.
 RemovePlayerFromList	moveq	#-1,d2
 .shift	addi.w	#$1,d2
@@ -765,7 +765,7 @@ chkatop						;attack time of possession stat update. Called once a second from
 releasepl						;player's penalty time is up so let him out (if appropriate). a2 = team,
 	
 	movem.l	d0-d3/a0-a3,-(sp)
-	movea.l	$22(a2),a3
+	movea.l	tmsort(a2),a3
 	suba.w	#$80,a3
 .0	adda.w	#$80,a3
 	tst.w	position(a3)
@@ -784,14 +784,14 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 	move.b	(a0,d1.w),$35(a3)
 	bsr.w	Setplass
 	bsr.w	setplayer
-	bset	#pf2unav,$63(a3)
+	bset	#pf2unav,pflags2(a3)
 	movem.l	(sp)+,d0-d3/a0-a3
 	rts
 GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0 = power
 	
 	clr.w	d0
 	clr.w	d3
-	lea.l	$9C(a2),a0
+	lea.l	tmboxlist(a2),a0
 .getstatus	clr.w	d2
 	move.b	(a0)+,d2
 	bmi.w	.endoflist
@@ -805,7 +805,7 @@ GetLowestPen						;a2 = shorthanded team, a3 = team on the power play. Return d0
 .endoflist	cmpi.w	#$6,tmap(a3)
 	beq.w	rtss2
 	sub.w	d3,d0
-	lea.l	$9C(a3),a0
+	lea.l	tmboxlist(a3),a0
 	clr.w	d2
 .getstatusopp	move.b	(a0)+,d2
 	bmi.w	rtss2

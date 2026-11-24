@@ -282,40 +282,40 @@ chgplayer
 	beq.w	.next7
 	adda.w	#$300,a0
 .next7	movea.l	#c1playernum,a1
-.loop3	tst.w	$34(a0)
+.loop3	tst.w	position(a0)
 	ble.w	.next10
-	btst	#$2,$63(a0)
+	btst	#$2,pflags2(a0)
 	bne.w	.next10
 	movem.w	d1,-(sp)
-	move.w	$52(a0),d1
+	move.w	SCnum(a0),d1
 	cmp.w	(a1,d4.w),d1
 	movem.w	(sp)+,d1
 	beq.w	.next8
-	btst	#$3,$62(a0)
+	btst	#$3,pflags(a0)
 	bne.w	.next10
 .next8	btst	#$2,(BA_PS_flags).l
 	beq.w	.next9
 	movem.l	d0,-(sp)
 	move.w	(BA_Sktr_SCnum).l,d0
-	cmp.w	$52(a0),d0
+	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	beq.w	.next9
 	movem.l	d0,-(sp)
 	move.w	(BA_Goalie_SCnum).l,d0
-	cmp.w	$52(a0),d0
+	cmp.w	SCnum(a0),d0
 	movem.l	(sp)+,d0
 	bne.w	.next10
-.next9	btst	#$5,$62(a0)
+.next9	btst	#$5,pflags(a0)
 	bne.w	.next10
 	movem.w	(sp),d0-d1
 	sub.w	$0(a0),d0
 	muls.w	d0,d0
-	sub.w	$14(a0),d1
+	sub.w	Ypos(a0),d1
 	muls.w	d1,d1
 	add.l	d1,d0
 	cmp.l	d5,d0
 	bhi.w	.next10
-	move.w	$52(a0),d1
+	move.w	SCnum(a0),d1
 	cmp.w	(a1,d3.w),d1
 	beq.w	.next10
 	move.l	d0,d5
