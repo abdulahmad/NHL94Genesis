@@ -208,14 +208,14 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	rts
 ; Player card screen: draws the portrait when the slot is in use.
 wallcollduringcheck
-	tst.w	$34(a2)
+	tst.w	position(a2)
 	beq.w	.ex
 	movem.l	d0-d7,-(sp)
 	move.w	$0(a2),d2
-	move.w	$14(a2),d3
-	move.w	$4A(a2),(wcradiusx).l
+	move.w	Ypos(a2),d3
+	move.w	radiusx(a2),(wcradiusx).l
 	addi.w	#$17,(wcradiusx).l
-	move.w	$4C(a2),(wcradiusy).l
+	move.w	radiusy(a2),(wcradiusy).l
 	addi.w	#$17,(wcradiusy).l
 	movem.l	a0-a6,-(sp)
 	exg.l	a2,a3
@@ -234,8 +234,8 @@ setSlotBit
 	move.w	(puckc).l,d0
 	asl.w	#$7,d0
 	adda.w	d0,a0
-	move.w	$14(a0),d0
-	btst	#$7,$62(a0)
+	move.w	Ypos(a0),d0
+	btst	#$7,pflags(a0)
 	bne.w	.next2
 	neg.w	d0
 .next2	cmpi.w	#$58,d0
@@ -646,7 +646,7 @@ GetRecordValue						;d0 = record d0 of player d1 of team d0 from save RAM (ReadP
 	movea.l	#TeamList,a5
 	asl.w	#$2,d4
 	movea.l	(a5,d4.w),a5
-	adda.w	$A(a5),a5		;the goalie nibbles in GoalieOdds give the goalie count
+	adda.w	GoalieOdds(a5),a5		;the goalie nibbles in GoalieOdds give the goalie count
 	move.w	(a5),d1
 	movem.w	d0,-(sp)
 	clr.w	d0
@@ -821,7 +821,7 @@ UpdateTeamRecord	movem.l	d0-d7/a0-a6,-(sp)
 	st.b	d7
 	movem.w	d0,-(sp)
 	clr.w	d0
-	move.b	$A(a0),d0
+	move.b	urgames(a0),d0
 	lsl.w	#$8,d0
 	move.b	$B(a0),d0
 	cmpi.w	#$2328,d0
@@ -829,52 +829,52 @@ UpdateTeamRecord	movem.l	d0-d7/a0-a6,-(sp)
 	addi.w	#$1,d0
 	move.b	d0,$B(a0)
 	lsr.w	#$8,d0
-	move.b	d0,$A(a0)
-	move.w	$C(a1),d0
-	cmp.w	$C(a2),d0
+	move.b	d0,urgames(a0)
+	move.w	tmscore(a1),d0
+	cmp.w	tmscore(a2),d0
 	bgt.w	.next2
 	blt.w	.next3
 	clr.w	d0
-	move.b	$C(a0),d0
+	move.b	urties(a0),d0
 	lsl.w	#$8,d0
 	move.b	$D(a0),d0
 	addi.w	#$1,d0
 	move.b	d0,$D(a0)
 	lsr.w	#$8,d0
-	move.b	d0,$C(a0)
+	move.b	d0,urties(a0)
 	bra.w	.next3
 .next2	clr.w	d0
-	move.b	$8(a0),d0
+	move.b	urwins(a0),d0
 	lsl.w	#$8,d0
 	move.b	$9(a0),d0
 	addi.w	#$1,d0
 	move.b	d0,$9(a0)
 	lsr.w	#$8,d0
-	move.b	d0,$8(a0)
+	move.b	d0,urwins(a0)
 .next3	movem.w	(sp)+,d0
 	movem.w	d0,-(sp)
-	move.w	$C(a1),d0
-	cmp.w	$C(a2),d0
+	move.w	tmscore(a1),d0
+	cmp.w	tmscore(a2),d0
 	movem.w	(sp)+,d0
 	ble.w	.next5
-	move.w	$C(a1),d5
+	move.w	tmscore(a1),d5
 	cmp.b	$0(a0),d5
 	ble.w	.next4
 	st.b	d7
 	move.b	d5,$0(a0)
-	move.b	d3,$1(a0)
-	move.b	d4,$2(a0)
-	move.b	d2,$3(a0)
-.next4	move.w	$C(a2),d5
+	move.b	d3,urgoalsteam(a0)
+	move.b	d4,urgoalsopp(a0)
+	move.b	d2,urgoalsoppuser(a0)
+.next4	move.w	tmscore(a2),d5
 	move.w	$0(a2),d6
 	sub.w	d5,d6
-	cmp.b	$4(a0),d6
+	cmp.b	ursaves(a0),d6
 	ble.w	.next5
 	st.b	d7
-	move.b	d6,$4(a0)
-	move.b	d3,$5(a0)
-	move.b	d4,$6(a0)
-	move.b	d2,$7(a0)
+	move.b	d6,ursaves(a0)
+	move.b	d3,ursavesteam(a0)
+	move.b	d4,ursavesopp(a0)
+	move.b	d2,ursavesoppuser(a0)
 .next5	bsr.w	WriteTeamRecord
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -884,9 +884,9 @@ UpdateCrowdRecord	movem.l	d0-d7/a0-a6,-(sp)
 	cmp.b	$0(a0),d3
 	ble.w	.next7
 	move.b	d3,$0(a0)
-	move.b	d4,$1(a0)
-	move.b	d5,$3(a0)
-	move.b	d2,$2(a0)
+	move.b	d4,crgoalsuser(a0)
+	move.b	d5,crgoalsoppuser(a0)
+	move.b	d2,crgoalsopp(a0)
 	st.b	d7
 .next7	subi.w	#$1,d6
 	clr.w	d3
@@ -900,25 +900,25 @@ UpdateCrowdRecord	movem.l	d0-d7/a0-a6,-(sp)
 	bge.w	.next8
 	move.b	(TempWord1).l,d3
 .next8	dbra	d6,.loop
-	cmp.b	$4(a0),d3
+	cmp.b	crsaves(a0),d3
 	ble.w	.next9
 	st.b	d7
-	move.b	d3,$4(a0)
-	move.b	d4,$5(a0)
-	move.b	d5,$7(a0)
-	move.b	d2,$6(a0)
+	move.b	d3,crsaves(a0)
+	move.b	d4,crsavesuser(a0)
+	move.b	d5,crsavesoppuser(a0)
+	move.b	d2,crsavesopp(a0)
 .next9	cmp.w	(HomeTeam).l,d1
 	bne.w	.next10
-	move.b	$8(a0),d3
+	move.b	crpeak(a0),d3
 	andi.w	#$FF,d3
 	cmp.w	(CrowdPeak).l,d3
 	bge.w	.next10
 	move.w	(CrowdPeak).l,d3
 	st.b	d7
-	move.b	d3,$8(a0)
-	move.b	d4,$9(a0)
-	move.b	d5,$B(a0)
-	move.b	d2,$A(a0)
+	move.b	d3,crpeak(a0)
+	move.b	d4,crpeakuser(a0)
+	move.b	d5,crpeakoppuser(a0)
+	move.b	d2,crpeakopp(a0)
 .next10	tst.w	d7
 	beq.w	.next11
 	bsr.w	WriteCrowdRecord
@@ -944,13 +944,13 @@ UpdatePlayerRecords	clr.l	d0
 	cmp.b	d3,d4
 	ble.w	.next16
 	move.b	d4,$0(a0)
-	move.b	(homeuser+1).l,$1(a0)
-	move.b	(awayuser+1).l,$3(a0)
+	move.b	(homeuser+1).l,pruser(a0)
+	move.b	(awayuser+1).l,proppuser(a0)
 	cmpa.l	#tmstruct,a2
 	beq.w	.next15
-	move.b	(awayuser+1).l,$1(a0)
-	move.b	(homeuser+1).l,$3(a0)
-.next15	move.b	d6,$2(a0)
+	move.b	(awayuser+1).l,pruser(a0)
+	move.b	(homeuser+1).l,proppuser(a0)
+.next15	move.b	d6,propp(a0)
 	bsr.w	WritePlayerRecord
 .next16	addi.w	#$1,d0
 	dbra	d2,.loop2
@@ -1133,7 +1133,7 @@ AppendTeamName						;Append the city name of team d0 (TeamList block Strings) to
 	asl.w	#$2,d0
 	movea.l	#TeamList,a0
 	movea.l	(a0,d0.w),a0
-	move.w	$4(a0),d0
+	move.w	Teamname(a0),d0
 	ext.l	d0
 	adda.l	d0,a0
 	adda.w	(a0),a0
@@ -1157,7 +1157,7 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	bne.w	.11
 	movea.l	#OvrGoalWgtList,a6
 .11	movea.l	tmdata(a2),a0
-	lea.l	$1A4(a2),a4
+	lea.l	tmHotCold(a2),a4
 	clr.l	d1
 	move.w	d0,d1
 	asl.w	#$4,d1
@@ -1270,7 +1270,7 @@ DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, 
 	adda.w	#$8,a6
 .next	dbra	d6,.loop2
 	adda.w	(a6),a6
-	adda.w	$A(a0),a0
+	adda.w	GoalieOdds(a0),a0
 	move.w	(a0),d1
 	clr.w	d3
 .loop3	addi.w	#$1,d3

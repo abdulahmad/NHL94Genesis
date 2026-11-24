@@ -166,9 +166,9 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	clr.w	(onetimerclock).l
 	st	(passReceiverPlayerNum).l
 	movem.l	d0-d7/a0-a6,-(sp)
-	move.w	$52(a3),d0
+	move.w	SCnum(a3),d0
 	move.w	d0,(onetimerplayer).l
-	btst.b	#$3,$62(a3)
+	btst.b	#$3,pflags(a3)
 	bne.w	.next4
 	tst.w	(inputjoy).l
 	bmi.w	.next4
@@ -203,10 +203,10 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bra.w	.next4
 .next4	move.w	d0,-(sp)
 	bsr.w	setonetimeranim
-	clr.w	$5A(a3)
+	clr.w	SPAnum(a3)
 	jsr	(SetSPA).l
-	bset.b	#$5,$62(a3)
-	bset.b	#$1,$63(a3)
+	bset.b	#$5,pflags(a3)
+	bset.b	#$1,pflags2(a3)
 	move.w	(sp)+,d0
 	movem.l	(sp)+,d0-d7/a0-a6
 	bra.w	.ex
@@ -225,7 +225,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .loop	movem.w	(sp)+,d0-d1
 	bra.w	.next10
 .next6	move.w	(pucky).l,d0
-	sub.w	$14(a3),d0
+	sub.w	Ypos(a3),d0
 	cmpi.w	#$3C,d0
 	bgt.w	.next7
 	cmpi.w	#$FFC4,d0
@@ -241,7 +241,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .next11	btst.b	#$0,(gmode).l
 	bne.w	.next27
 	movem.l	d0-d1,-(sp)
-	cmpi.w	#$10,$5A(a3)
+	cmpi.w	#$10,SPAnum(a3)
 	bge.w	.next20
 	btst.b	#$2,(onetimerflags).l
 	bne.w	.next20
@@ -250,7 +250,7 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	sub.w	d1,d0
 	bpl.w	.next12
 	neg.w	d0
-.next12	move.w	$14(a3),d1
+.next12	move.w	Ypos(a3),d1
 	move.w	(pucky).l,d2
 	sub.w	d2,d1
 	bpl.w	.next13
@@ -276,28 +276,28 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 .next18	divu.w	d2,d0
 	andi.l	#$FFFF,d0
 	divu.w	d1,d0
-	move.w	$5A(a3),d2
+	move.w	SPAnum(a3),d2
 	lsr.w	#$2,d2
 	subi.w	#$6,d2
 	neg.w	d2
 	asl.w	#$2,d2
 	cmp.w	d2,d0
 	bgt.w	.next19
-	neg.w	$5A(a3)
-	addi.w	#$18,$5A(a3)
+	neg.w	SPAnum(a3)
+	addi.w	#$18,SPAnum(a3)
 	bra.w	.next23
 .next19	add.w	d7,(onetimerclock).l
 	bra.w	.next21
 .next20	bset.b	#$2,(onetimerflags).l
 	btst.b	#$1,(onetimerflags).l
 	bne.w	.next21
-	cmpi.w	#$18,$5A(a3)
+	cmpi.w	#$18,SPAnum(a3)
 	bne.w	.next21
-	addi.w	#$30,$5C(a3)
+	addi.w	#$30,SPAcnt(a3)
 	bset.b	#$1,(onetimerflags).l
 .next21	btst.b	#$1,(onetimerflags).l
 	beq.w	.next22
-	cmpi.w	#$18,$5A(a3)
+	cmpi.w	#$18,SPAnum(a3)
 	ble.w	.next22
 	btst.b	#$0,(onetimerflags).l
 	bne.w	.next22
@@ -305,23 +305,23 @@ assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take
 	bra.w	.next27
 .next22	btst.b	#$0,(onetimerflags).l
 	beq.w	.next23
-	cmpi.w	#$18,$5A(a3)
+	cmpi.w	#$18,SPAnum(a3)
 	bne.w	.next23
-	cmpi.w	#$1,$5C(a3)
+	cmpi.w	#$1,SPAcnt(a3)
 	ble.w	.next23
-	move.w	#$1,$5C(a3)
-.next23	btst.b	#$1,$63(a3)
+	move.w	#$1,SPAcnt(a3)
+.next23	btst.b	#$1,pflags2(a3)
 	bne.w	.next24
 	movem.l	(sp)+,d0-d1
 	bra.w	.next26
-.next24	move.w	$5A(a3),d0
+.next24	move.w	SPAnum(a3),d0
 	movem.l	(sp)+,d0-d1
 	btst.b	#$0,(onetimerflags).l
 	beq.w	.next25
-	bclr.b	#$5,$62(a3)
+	bclr.b	#$5,pflags(a3)
 	bra.w	.next26
 .next25	nop
-.next26	btst.b	#$1,$63(a3)
+.next26	btst.b	#$1,pflags2(a3)
 	bne.w	.ex
 .next27	jsr	(EndOneTimer).l
 .ex	rts
@@ -331,10 +331,10 @@ setonetimeranim	move.w	#$7FC,d1
 	move.w	$0(a3),d0
 	neg.w	d0
 	move.w	#$108,d1
-	btst.b	#$7,$62(a3)
+	btst.b	#$7,pflags(a3)
 	bne.w	.next
 	neg.w	d1
-.next	sub.w	$14(a3),d1
+.next	sub.w	Ypos(a3),d1
 	jsr	(vtoa).l
 	jsr	(CheckOneTimerFacing).l
 	movem.w	(sp)+,d0-d1
@@ -390,7 +390,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	movea.l	#tmstruct,a0
 	btst	#pfteam,pflags(a3)
 	beq.w	.home
-	lea.l	$366(a0),a0
+	lea.l	tmsize(a0),a0
 .home	clr.w	d0
 	move.b	pnum(a3),d0
 	move.w	tmtouch2(a0),tmtouch3(a0)
@@ -402,7 +402,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	addi.w	#$1,$35E(a0)
 	movem.l	(sp)+,d0/a0
 	bset	#$0,(onetimerflags).l
-	bset	#$1,$63(a3)
+	bset	#$1,pflags2(a3)
 	bset	#$1,(sflags6).l
 	rts
 CheckOneTimerFacing						;called from setonetimeranim. it does nothing, d0 and d1 are restored at

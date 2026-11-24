@@ -415,7 +415,7 @@ appendz
 	jmp	(a1)
 appstring						;append string a1 to string a3
 	movem.l	d0/a0,-(sp)
-	lea.l	$2(a3),a0
+	lea.l	strtext(a3),a0
 	move.w	(a3),d0
 	subi.w	#$3,d0
 	bmi.w	.1

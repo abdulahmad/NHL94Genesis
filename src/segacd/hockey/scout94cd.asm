@@ -65,7 +65,7 @@ GetTeamCity						;unused: return a1 = the city String of team byte tmATOP(a0) (T
 	asl.w	#$2,d2
 	movea.l	#TeamList,a1
 	movea.l	(a1,d2.w),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ron Barr
@@ -800,7 +800,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	
 	
 	movea.l	tmdata(a0),a0
-	adda.w	$6(a0),a0
+	adda.w	LineSets(a0),a0
 	move.w	(matchup).l,d0
 	movea.l	#MatchupLineSlots,a1
 	move.b	(a1,d0.w),d0
@@ -870,7 +870,7 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
 	movea.l	tmdata(a1),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1
 	cmpi.w	#$2,(a1)
@@ -894,7 +894,7 @@ GetTeamArena						;The text player's '^' (a2 = tmstruct) and ';' (awtmstruct): r
 	movem.l	d0/a0/a2,-(sp)
 	movea.l	a2,a1
 	movea.l	tmdata(a1),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1
 	adda.w	(a1),a1
@@ -923,19 +923,19 @@ EndShootout
 	bra.w	.next3
 .loop	movem.w	d2-d3,-(sp)
 	jsr	(setplayer).l
-	move.w	#$2,$34(a3)
+	move.w	#$2,position(a3)
 	move.w	#$F0,d0
 	tst.w	(Vpos).l
 	bmi.w	.next2
 	move.w	#$FF10,d0
 .next2	add.w	(Vpos).l,d0
-	move.w	d0,$14(a3)
+	move.w	d0,Ypos(a3)
 	move.w	#$0,$0(a3)
 	move.w	#$7,d0
 	jsr	(assinsert).l
-	bclr	#$5,$62(a3)
-	bclr	#$1,$63(a3)
-	bclr	#$2,$62(a3)
+	bclr	#$5,pflags(a3)
+	bclr	#$1,pflags2(a3)
+	bclr	#$2,pflags(a3)
 	movem.w	(sp)+,d2-d3
 .next3	adda.l	#$80,a3
 	dbra	d2,.loop

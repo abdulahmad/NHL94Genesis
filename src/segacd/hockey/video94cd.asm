@@ -143,7 +143,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	move.w	(a0),$4(a5)		;words = one map row
 	mulu.w	(a0),d0
 	add.w	d0,d0
-	lea.l	$4(a0,d0.w),a1
+	lea.l	mapwords(a0,d0.w),a1
 	move.l	a1,(a5)		;source = map row
 	adda.w	#$8,a5
 	subq.w	#$1,d1
@@ -162,7 +162,7 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	move.w	(a0),$4(a5)
 	mulu.w	(a0),d0
 	add.w	d0,d0
-	lea.l	$4(a0,d0.w),a1
+	lea.l	mapwords(a0,d0.w),a1
 	move.l	a1,(a5)
 	adda.w	#$8,a5
 	addq.w	#$1,d1
@@ -470,7 +470,7 @@ showclockVertical
 	beq.w	rtss2
 	movea.l	#clockram+6,a0
 	movea.l	(SmallFontMap).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	move.w	$78(a1),d0
 	add.w	(smallfontchars).l,d0
 	ori.w	#$8000,d0
@@ -547,7 +547,7 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	move.w	#$349,d3
 .ca	tst.w	Zpos(a0)
 	bmi.w	rtss2		;not on the ice
-	st.b	$6(a3)
+	st.b	frame(a3)
 	move.w	$0(a0),d0
 	btst	#$0,(gmode2).l
 	bne.w	.0
@@ -644,7 +644,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 									;come from the PadControlBits / PadControlBits34 nibbles ($E = no change,
 									;$F = none)
 	movea.l	#glovestruct,a0		;pads+(4*ffosize): gloves
-	st.b	$18(a0)		;set Zpos
+	st.b	Zpos(a0)		;set Zpos
 	move.b	(glovecords).l,d0
 	beq.w	.0		;branch if 0
 	move.b	(glovecords+1).l,d1
@@ -732,7 +732,7 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 	andi.w	#$7FF,d2
 	asl.w	#$5,d2		;32 bytes per tile
 	movea.l	(SmallFontMap).l,a3
-	lea.l	$A(a3,d2.w),a3		;tile data
+	lea.l	jimtiles(a3,d2.w),a3		;tile data
 	move.l	a3,(a5)+
 	move.w	#$10,(a5)+		;words to transfer
 	add.w	VRchar(a0),d0

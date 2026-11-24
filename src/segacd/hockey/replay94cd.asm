@@ -126,7 +126,7 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	cmpi.w	#$0,d1
 	bne.w	.next4
 	addi.w	#$2,d2
-.next4	move.w	d2,$14(a3)
+.next4	move.w	d2,Ypos(a3)
 	move.w	(a0),d2
 	asr.w	#$4,d2
 	andi.w	#$3FF,d2
@@ -147,22 +147,22 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 .next6	move.w	(a0),d2
 	asr.w	#$4,d2
 	andi.w	#$3FF,d2
-.next7	move.w	d2,$6(a3)
+.next7	move.w	d2,frame(a3)
 	cmpi.w	#$28D,d2
 	blt.w	.next8
 	cmpi.w	#$292,d2
 	bge.w	.next8
 	btst	#$4,(sflags4).l
 	beq.w	.next8
-	move.w	#$190,$14(a3)
+	move.w	#$190,Ypos(a3)
 .next8	move.w	(a0),d2
 	asr.w	#$3,d2
 	andi.w	#$1800,d2
-	andi.w	#$E7FF,$4(a3)
-	or.w	d2,$4(a3)
+	andi.w	#$E7FF,attribute(a3)
+	or.w	d2,attribute(a3)
 	btst	#$4,(sflags4).l
 	beq.w	.next9
-	move.w	$6(a3),d2
+	move.w	frame(a3),d2
 	cmpi.w	#$162,d2
 	blt.w	.next9
 	cmpi.w	#$179,d2
@@ -173,27 +173,27 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	dbra	d1,.loop
 	moveq	#$5,d2
 	movea.l	#SortCords,a3
-.loop2	move.b	(a0)+,$6F(a3)
+.loop2	move.b	(a0)+,rostnum(a3)
 	move.b	(a0),d0
 	andi.w	#$F,d0
 	cmpi.w	#$F,d0
 	bne.w	.next10
 	moveq	#-1,d0
-.next10	move.w	d0,$34(a3)
+.next10	move.w	d0,position(a3)
 	adda.l	#$80,a3
 	move.b	(a0)+,d0
 	lsr.b	#$4,d0
-	move.b	d0,$6F(a3)
+	move.b	d0,rostnum(a3)
 	move.b	(a0),d0
 	asl.b	#$4,d0
-	or.b	d0,$6F(a3)
+	or.b	d0,rostnum(a3)
 	move.b	(a0)+,d0
 	lsr.b	#$4,d0
 	andi.w	#$F,d0
 	cmpi.w	#$F,d0
 	bne.w	.next11
 	moveq	#-1,d0
-.next11	move.w	d0,$34(a3)
+.next11	move.w	d0,position(a3)
 	adda.l	#$80,a3
 	dbra	d2,.loop2
 	move.b	(a0)+,d0
@@ -224,8 +224,8 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	a5,a3
 	btst	#$5,(sflags3).l
 	beq.w	.next12
-	clr.w	$18(a5)
-	move.w	$16(a5),d0
+	clr.w	camidle(a5)
+	move.w	camtrack(a5),d0
 	asl.w	#$7,d0
 	movea.l	#SortCords,a3
 	adda.w	d0,a3

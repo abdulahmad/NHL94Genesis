@@ -108,27 +108,27 @@ SkatePath
 	beq.w	.next11
 	move.w	(sopathx).l,d0
 	move.w	(sopathy).l,d1
-	btst	#$7,$62(a3)
+	btst	#$7,pflags(a3)
 	bne.w	.next3
 	neg.w	d0
 	neg.w	d1
 .next3	sub.w	$0(a3),d0
 	bpl.w	.next4
 	neg.w	d0
-.next4	tst.w	$28(a3)
+.next4	tst.w	Xvel(a3)
 	bne.w	.next5
-	tst.w	$2A(a3)
+	tst.w	Yvel(a3)
 	bne.w	.next5
 	cmpi.w	#$12,d0
 	ble.w	.next6
 .next5	cmpi.w	#$A,d0
 	bgt.w	.next10
-.next6	sub.w	$14(a3),d1
+.next6	sub.w	Ypos(a3),d1
 	bpl.w	.next7
 	neg.w	d1
-.next7	tst.w	$28(a3)
+.next7	tst.w	Xvel(a3)
 	bne.w	.next8
-	tst.w	$2A(a3)
+	tst.w	Yvel(a3)
 	bne.w	.next8
 	cmpi.w	#$12,d1
 	ble.w	.next9
@@ -144,7 +144,7 @@ ShootoutShootCheck
 	movem.l	d0-d7/a0-a6,-(sp)
 	btst	#$1,(gmode2).l
 	beq.w	.next17
-	move.w	$52(a3),d0
+	move.w	SCnum(a3),d0
 	cmp.w	(puckc).l,d0
 	bne.w	.next17
 	cmpi.w	#$3,(shootoutclock).l
@@ -162,14 +162,14 @@ ShootoutShootCheck
 	bra.w	.next17
 .next12	move.w	(sopathx).l,d0
 	move.w	(sopathy).l,d1
-	btst	#$7,$62(a3)
+	btst	#$7,pflags(a3)
 	bne.w	.next13
 	neg.w	d0
 	neg.w	d1
 .next13	sub.w	$0(a3),d0
 	bpl.w	.next14
 	neg.w	d0
-.next14	sub.w	$14(a3),d1
+.next14	sub.w	Ypos(a3),d1
 	bpl.w	.next15
 	neg.w	d1
 .next15	cmp.w	(sopathend).l,d0
