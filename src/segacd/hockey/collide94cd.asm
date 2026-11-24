@@ -1508,7 +1508,7 @@ checkpuckcoll	cmpi.w	#$190,Ypos(a3)
 	clr.w	d4
 	move.b	$1(a1,d1.w),d4
 	move.w	(a2,d4.w),d5
-	sub.w	$14(a3),d5
+	sub.w	Ypos(a3),d5
 	cmpi.w	#$16,d5
 	bgt.w	.next3
 	bsr.w	PuckCollisionCheck
