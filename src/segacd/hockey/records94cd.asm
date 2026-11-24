@@ -335,13 +335,13 @@ WriteNameRecord
 	move.w	(namelogsel).l,d6
 .loop3	clr.w	d5
 	jsr	(BackupRamRead).l
-	cmp.b	$1(a0),d6
+	cmp.b	pruser(a0),d6
 	bne.w	.next5
-	clr.b	$1(a0)
+	clr.b	pruser(a0)
 	st.b	d5
-.next5	cmp.b	$3(a0),d6
+.next5	cmp.b	proppuser(a0),d6
 	bne.w	.next6
-	clr.b	$3(a0)
+	clr.b	proppuser(a0)
 	st.b	d5
 .next6	tst.w	d5
 	beq.w	.next7
@@ -355,29 +355,29 @@ WriteNameRecord
 	move.w	(namelogsel).l,d6
 .loop4	clr.w	d5
 	jsr	(BackupRamRead).l
-	cmp.b	$1(a0),d6
+	cmp.b	crgoalsuser(a0),d6
 	bne.w	.next8
-	clr.b	$1(a0)
+	clr.b	crgoalsuser(a0)
 	st.b	d5
-.next8	cmp.b	$3(a0),d6
+.next8	cmp.b	crgoalsoppuser(a0),d6
 	bne.w	.next9
-	clr.b	$3(a0)
+	clr.b	crgoalsoppuser(a0)
 	st.b	d5
-.next9	cmp.b	$5(a0),d6
+.next9	cmp.b	crsavesuser(a0),d6
 	bne.w	.next10
-	clr.b	$5(a0)
+	clr.b	crsavesuser(a0)
 	st.b	d5
-.next10	cmp.b	$7(a0),d6
+.next10	cmp.b	crsavesoppuser(a0),d6
 	bne.w	.next11
-	clr.b	$7(a0)
+	clr.b	crsavesoppuser(a0)
 	st.b	d5
-.next11	cmp.b	$9(a0),d6
+.next11	cmp.b	crpeakuser(a0),d6
 	bne.w	.next12
-	clr.b	$9(a0)
+	clr.b	crpeakuser(a0)
 	st.b	d5
-.next12	cmp.b	$B(a0),d6
+.next12	cmp.b	crpeakoppuser(a0),d6
 	bne.w	.next13
-	clr.b	$B(a0)
+	clr.b	crpeakoppuser(a0)
 	st.b	d5
 .next13	tst.w	d5
 	beq.w	.next14
@@ -754,7 +754,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 .0	mulu.w	#$64,d0
 	divu.w	d1,d0
 .1	move.b	d0,(a1)+
-	move.b	$C(a0),(a6)+
+	move.b	urties(a0),(a6)+
 	move.b	$D(a0),(a6)+
 	adda.w	#$10,a0
 	dbra	d7,.loop

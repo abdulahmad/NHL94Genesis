@@ -632,7 +632,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	movea.l	#tmstruct,a2
 	bsr.w	PrintStatValue
 	move.w	#$9,(printx).l
-	lea.l	$366(a2),a2
+	lea.l	tmsize(a2),a2
 	bsr.w	PrintStatValue
 	lea.l	$4(a0),a1
 	addi.w	#$2,(printy).l		;2 map rows per table row
