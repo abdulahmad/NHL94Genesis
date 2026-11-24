@@ -823,11 +823,11 @@ UpdateTeamRecord	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d0
 	move.b	urgames(a0),d0
 	lsl.w	#$8,d0
-	move.b	$B(a0),d0
+	move.b	urgames+1(a0),d0
 	cmpi.w	#$2328,d0
 	bge.w	.next3
 	addi.w	#$1,d0
-	move.b	d0,$B(a0)
+	move.b	d0,urgames+1(a0)
 	lsr.w	#$8,d0
 	move.b	d0,urgames(a0)
 	move.w	tmscore(a1),d0
@@ -837,18 +837,18 @@ UpdateTeamRecord	movem.l	d0-d7/a0-a6,-(sp)
 	clr.w	d0
 	move.b	urties(a0),d0
 	lsl.w	#$8,d0
-	move.b	$D(a0),d0
+	move.b	urties+1(a0),d0
 	addi.w	#$1,d0
-	move.b	d0,$D(a0)
+	move.b	d0,urties+1(a0)
 	lsr.w	#$8,d0
 	move.b	d0,urties(a0)
 	bra.w	.next3
 .next2	clr.w	d0
 	move.b	urwins(a0),d0
 	lsl.w	#$8,d0
-	move.b	$9(a0),d0
+	move.b	urwins+1(a0),d0
 	addi.w	#$1,d0
-	move.b	d0,$9(a0)
+	move.b	d0,urwins+1(a0)
 	lsr.w	#$8,d0
 	move.b	d0,urwins(a0)
 .next3	movem.w	(sp)+,d0

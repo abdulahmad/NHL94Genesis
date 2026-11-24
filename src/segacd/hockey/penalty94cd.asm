@@ -33,7 +33,7 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 .0	tst.w	(a1)+
 	dbeq	d1,.0
 	bne.w	.noplayer
-	move.b	$53(a3),-(a1)
+	move.b	SCnum+1(a3),-(a1)
 	move.b	d0,-(a1)
 	movea.l	#Penaltylist,a0
 	adda.w	(a0,d0.w),a0
@@ -257,7 +257,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	bset	#$7,-$1(a4)
 	move.w	#$8000,d0
 	exg.l	a1,a2
-.next4	addi.w	#$1,$6(a2)
+.next4	addi.w	#$1,tmPenalties(a2)
 	add.w	d2,tmPenmin(a2)
 	move.b	pnum(a3),d0
 	move.b	d0,(a4)
@@ -662,8 +662,8 @@ PenGoalStuff						;do this stuff after a goal. a1 = scored on team, a2 = scoring
 	clr.w	tmpdst(a1,d2.w)
 	bsr.w	RemovePlayerFromList
 	bset	#$0,(DelayedPen).l
-	addi.w	#$1,$26(a1)
-	addi.w	#$1,$2(a2)
+	addi.w	#$1,tmap(a1)
+	addi.w	#$1,tmPwrGoals(a2)
 	bset	#tmflcc,(tmstruct+tmflags).l		;home tmflags: tmflcc
 	bset	#tmflcc,(awtmstruct+tmflags).l		;visitors tmflags: tmflcc
 .ex	movem.l	(sp)+,d0-d2/a0
@@ -773,7 +773,7 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 	move.w	d0,d3
 	lsr.w	#$1,d3
 	move.w	tmap(a2),d1
-	addi.w	#$1,$26(a2)
+	addi.w	#$1,tmap(a2)
 	bset	#tmflcc,(tmstruct+tmflags).l
 	bset	#tmflcc,(awtmstruct+tmflags).l
 	movea.l	#priolist,a0
@@ -781,7 +781,7 @@ releasepl						;player's penalty time is up so let him out (if appropriate). a2 
 	bpl.w	.1
 	adda.w	#$1,a0
 .1	clr.w	position(a3)
-	move.b	(a0,d1.w),$35(a3)
+	move.b	(a0,d1.w),position+1(a3)
 	bsr.w	Setplass
 	bsr.w	setplayer
 	bset	#pf2unav,pflags2(a3)

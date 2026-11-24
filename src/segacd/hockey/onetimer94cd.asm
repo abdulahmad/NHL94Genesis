@@ -399,7 +399,7 @@ onetimershot						;Do the one-timer shot (doshot), credit the last two passers a
 	bset	#$7,(sflags8).l
 	addi.w	#$96,(Crowdlevel).l
 	addi.w	#$A,(CwdExciteLvl).l
-	addi.w	#$1,$35E(a0)
+	addi.w	#$1,tmOneTimers(a0)
 	movem.l	(sp)+,d0/a0
 	bset	#$0,(onetimerflags).l
 	bset	#$1,pflags2(a3)
