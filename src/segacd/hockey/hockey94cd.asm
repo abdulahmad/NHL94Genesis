@@ -141,7 +141,7 @@ RestoreBenchEnergy						;Called once per second. Restore energy for players on t
 	bne.w	.ex
 	movea.l	#tmstruct,a2
 	bsr.w	.notinprog
-	lea.l	$366(a2),a2
+	lea.l	tmsize(a2),a2
 .notinprog	moveq	#$32,d0
 .b0	cmpi.w	#$FFFE,tmpdst(a2,d0.w)
 	bne.w	.next
@@ -270,18 +270,18 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	movea.l	#gstruct,a0
 	adda.w	d3,a0
 	clr.w	d3
-	btst	#$0,$E(a0)
+	btst	#$0,gsflags(a0)
 	beq.w	.next
 	eori.w	#$2,d3
 .next	move.w	(HmGoals).l,d1
 	sub.w	(AwGoals).l,d1
 	bpl.w	.ns1
 	eori.w	#$2,d3
-.ns1	cmpi.w	#$3,$4(a0,d3.w)
+.ns1	cmpi.w	#$3,gspotwins(a0,d3.w)
 	bne.w	.next3
 .next2	move.l	#$8,d0
 	moveq	#$B,d2
-.t0	bclr	#$3,$62(a3)
+.t0	bclr	#$3,pflags(a3)
 	adda.w	#$80,a3
 	dbra	d2,.t0
 	movea.l	#SortCords,a3
@@ -291,7 +291,7 @@ clockcont_0						;End of period. Also entered from puckfaceoff
 	beq.w	.next5
 	bpl.w	.t2
 	adda.w	#$300,a3
-.t2	tst.w	$34(a3)
+.t2	tst.w	position(a3)
 	ble.w	.next4
 	jsr	(assinsert).l
 	move.l	#$7,d0

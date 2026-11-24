@@ -16,7 +16,7 @@ PuckComingToward
 	andi.w	#$8000,d0
 	beq.w	.next
 	move.w	(pucky).l,d0
-	sub.w	$14(a3),d0
+	sub.w	Ypos(a3),d0
 	cmpi.w	#$1E,d0
 	bgt.w	.next
 	move.w	(puckvy).l,d1
@@ -40,7 +40,7 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	movem.l	d0/a0,-(sp)
 	bclr	#pf3onetimer,pflags3(a3)
 	bclr	#pfalock,pflags(a3)
-	bclr	#$1,$63(a3)
+	bclr	#$1,pflags2(a3)
 	clr.w	(onetimerflags).l
 	st.b	(onetimerplayer).l
 	move.w	d1,-(sp)
@@ -52,7 +52,7 @@ EndOneTimer						;End a one-timer for a3: bits cleared, onetimerplayer = -1, Set
 	bra.w	.1
 .0	jsr	(Setplass).l
 .1	clr.w	SPAnum(a3)
-	st.b	$5C(a3)
+	st.b	SPAcnt(a3)
 	move.w	(sp)+,d1
 	movem.l	(sp)+,d0/a0
 	rts
