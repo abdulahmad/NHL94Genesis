@@ -11,7 +11,7 @@ NameLetterGrid						;Name entry: the letter grid ("D-Pad to a letter.", "C to se
 	bne.w	.1
 	jsr	(printz).l
 	String	CC_Font1Pri,$19,$11
-	movea.l	#$26DD0,a0		;print the 5 rows of 6 letters
+	movea.l	#LetterGrid,a0		;print the 5 rows of 6 letters
 	moveq	#$4,d0		;5 rows
 .loop	moveq	#$5,d1		;6 letters
 	movea.l	#mesarea,a1
@@ -94,10 +94,10 @@ PrintNamePrompt						;Name entry: "Enter new name:" for an empty name log slot n
 	move.w	(namelogsel).l,d0
 	mulu.w	#$C,d0
 	movea.l	#namelog,a0
-	movea.l	#$26C30,a1
+	movea.l	#EnterNameTxt,a1
 	tst.b	(a0,d0.w)
 	beq.w	.0
-	movea.l	#$26C48,a1
+	movea.l	#SelectNameTxt,a1
 .0	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -111,13 +111,13 @@ SyncLetterCursor						;Name entry: the letter grid cursor d5 = the grid index of
 	clr.w	d5
 	bra.w	.x
 .0	move.w	d0,d5
-	movea.l	#$26DD0,a0
+	movea.l	#LetterGrid,a0
 	move.b	(a0,d5.w),(nameentrybuf).l
 .x	movem.l	(sp)+,d0-d4/a0-a6
 	rts
 FindLetter						;d0 = index of letter d0 in LetterGrid, $1E when not found
 	movem.l	d1-d3/a0-a6,-(sp)
-	movea.l	#$26DD0,a0
+	movea.l	#LetterGrid,a0
 	move.b	d0,d1
 	clr.w	d0
 	move.w	#$1E,d3
@@ -144,7 +144,7 @@ PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, curso
 	movea.l	#ThreeStars,a1
 	move.w	#$4,(a1)
 	move.b	#$0,$3(a1)
-	movea.l	#$26DD0,a0
+	movea.l	#LetterGrid,a0
 	move.b	(a0,d5.w),d0
 	move.b	d0,$2(a1)
 	jmp	(print).l
@@ -202,7 +202,7 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	beq.w	.x
 	movea.l	#$26D4A,a1
 	bsr.w	.next
-	movea.l	#$26D42,a1
+	movea.l	#MoveLogArrowsData,a1
 	bsr.w	.next
 .x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -256,18 +256,9 @@ PrintNameField						;Name entry: print the 12 character name field from a1, '-' 
 	jsr	(print).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-; Data that follows PrintNameField (strings, small tables)
-PrintNameFieldTexts	dc.b	'ABCDEFGHIJKLMNOP'
+LetterGrid	dc.b	'ABCDEFGHIJKLMNOP'		;Name entry data: the 5 rows of 6 letters
+	dc.b	'QRSTUVWXYZ.12 -',$0
 NameEntryFramer						;Framer with the name entry frame tiles (nameframechars as framercset)
-	subq.w	#$8,(a2)
-	subq.w	#$1,(a4)
-	subq.w	#$2,(a6)
-	subq.w	#$3,(a0)+
-	subq.w	#$4,(a2)+
-	dc.w	$2E31,$3220		; move.l $20(a1,d3.w),d7
-	move.l	d0,-(a6)
-; Runs the framer with the name entry framer setting.
-NameEntryFramerRun
 	move.w	(framercset).l,-(sp)
 	move.w	(nameframechars).l,(framercset).l
 	jsr	(Framer).l
@@ -541,7 +532,7 @@ PrintRecordPage
 	bra.w	ClearRecordAreaRows
 PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRecTitles,
 	
-	movea.l	#$272A2,a1
+	movea.l	#WinRecTitles,a1
 	tst.w	(TempWord1).l
 	beq.w	.0
 	movea.l	#$27346,a1
@@ -623,7 +614,7 @@ PrintRecordTitlesBody
 	jsr	(PushNumberWidth).l
 	move.w	(sp)+,d0
 	bra.w	.next2
-.next	movea.l	#$27630,a1
+.next	movea.l	#ClearRecordAreaData,a1
 .next2	jsr	(printsmall).l
 	addi.w	#$2,(printy).l
 	dbra	d7,.loop
@@ -705,7 +696,7 @@ ClearRecordAreaRows
 .next8	andi.w	#$FF,d0
 	bsr.w	AppendTeamName
 	bra.w	.next10
-.next9	movea.l	#$27630,a1
+.next9	movea.l	#ClearRecordAreaData,a1
 .next10	jsr	(printsmall).l
 	addi.w	#$2,(printy).l
 	dbra	d7,.loop

@@ -507,7 +507,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	beq.w	.2
 	movea.l	#$42250,a0
 .2	bset	#sfpz,(sflags).l
-	movea.l	#$2C1F8,a1
+	movea.l	#PausemodeVdpFill,a1
 	jsr	(Pausemode_top).l
 	bsr.w	GetShifter
 	move.w	d1,(TickerNum).l
@@ -872,7 +872,7 @@ StartHL2	btst	#$3,(sflags3).l
 	bsr.w	.next10
 	bsr.w	resetplstuff
 	moveq	#$B,d0
-	movea.l	#$3D3F6,a0
+	movea.l	#DoHiLightsData,a0
 	movea.l	#SortCords,a1
 .loop8	move.w	$34(a1),d1
 	btst	#$7,$62(a1)
