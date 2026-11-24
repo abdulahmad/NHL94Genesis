@@ -4,10 +4,10 @@ ClampPositionBox						;Unreferenced. Clamp temp3 / temp4(a3) to the box for posi
 	movem.l	d0-d7/a0,-(sp)
 	move.w	position(a3),d7
 	subi.w	#$1,d7		;position 1 is entry 0
-	movea.l	#$292E2,a0
+	movea.l	#ClampPositionBoxFirstLimits,a0
 	btst	#pfgoal,pflags(a3)		;which net?
 	beq.w	.0
-	movea.l	#$292F2,a0
+	movea.l	#ClampPositionBoxSecondLimits,a0
 .0	add.w	d7,d7		;word per position
 	move.w	(a0,d7.w),d0		;X min of the box
 	cmp.w	temp3(a3),d0
@@ -82,7 +82,7 @@ AddArenaAnimSprite						;Add the frame arenaframe of the arena animation (sprite
 .0	bra.w	.next2
 .loop	move.w	d3,d0
 	add.w	d2,d0
-	dc.w	$6100,$0008		; bsr.w X_293DC
+	bsr.w	.spr
 .next2	dbra	d2,.loop
 	rts	
 .spr
@@ -616,11 +616,11 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	jsr	(printz).l
 	String	CC_Font2Pri,$0,$0
 	moveq	#$E,d6
-	dc.w	$43FA,$015A		; lea.l X_29E56(pc),a1
+	lea	TeamStatTextTbl(pc),a1
 	tst.w	(OptPen).l
 	bne.w	.row
 	move.w	#$A,d6
-	dc.w	$43FA,$0236		; lea.l X_29F44(pc),a1
+	lea	TeamStatTextTblNoPen(pc),a1
 .row	move.w	(a1),d0
 	lsr.w	#$1,d0
 	neg.w	d0
@@ -703,80 +703,59 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 TeamStatTextTbl						;Label, then the team struct stat offset and the second offset ($FFFF
 									;none). 15 rows
 	String	'Score'
-; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$0C,$FF,$FF
+	dc.w	tmscore,$FFFF
 	String	'Shots'
-; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$00,$FF,$FF
+	dc.w	tmshots,$FFFF
 	String	'Shooting Pct'
-	dc.w	$FFFF		; dc.w $FFFF
-	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	$FFFF,$FFFF
 	String	'Power Play'
-	dc.w	$0002,$0004		; ori.b #$4,d2
+	dc.w	tmPwrGoals,tmPwrPlays
 	String	'PP Minutes'
-	dc.w	$0354		; bchg.b d1,(a4)
-	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	tmPwrPlayTime,$FFFF
 	String	'PP Shots'
-	dc.w	$0356		; bchg.b d1,(a6)
-	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	tmPPShots,$FFFF
 	String	'SH Goals'
-	dc.w	$0358		; bchg.b d1,(a0)+
-	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	tmSHGoals,$FFFF
 	String	'Breakaways'
-	dc.w	$035C		; bchg.b d1,(a4)+
-	dc.w	$035A		; bchg.b d1,(a2)+
+	dc.w	tmBreakawayGoals,tmBreakaways
 	String	'One-Timers'
-	dc.w	$0360		; bchg.b d1,-(a0)
-	dc.w	$035E		; bchg.b d1,(a6)+
+	dc.w	tmOneTimerGoals,tmOneTimers
 	String	'Penalty Shots'
-	dc.w	$0364		; bchg.b d1,-(a4)
-	dc.w	$0362		; bchg.b d1,-(a2)
+	dc.w	tmPenShotGoals,tmPenShots
 	String	'Faceoffs Won'
-; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$0E,$FF,$FF
+	dc.w	tmfowon,$FFFF
 	String	'Body Checks'
-	dc.w	$0010,$FFFF		; ori.b #$FF,(a0)
+	dc.w	tmchecks,$FFFF
 	String	'Penalties'
-	dc.w	$0006,$0008		; ori.b #$8,d6
+	dc.w	tmPenalties,tmPenmin
 	String	'Attack Zone'
-; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$0A,$FF,$FF
+	dc.w	tmATOP,$FFFF
 	String	'Passing'
-; Instruction bytes inside TeamStatTextTbl that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$14,$00,$12
+	dc.w	tmpasscomp,tmpasses
 TeamStatTextTblNoPen				;The rows without the power play ones, used when penalties are off. 11
 									;rows
 	String	'Score'
-; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$0C,$FF,$FF
+	dc.w	tmscore,$FFFF
 	String	'Shots'
-; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$00,$FF,$FF
+	dc.w	tmshots,$FFFF
 	String	'Shooting Pct'
-	dc.w	$FFFF		; dc.w $FFFF
-	dc.w	$FFFF		; dc.w $FFFF
+	dc.w	$FFFF,$FFFF
 	String	'Breakaways'
-	dc.w	$035C		; bchg.b d1,(a4)+
-	dc.w	$035A		; bchg.b d1,(a2)+
+	dc.w	tmBreakawayGoals,tmBreakaways
 	String	'One-Timers'
-	dc.w	$0360		; bchg.b d1,-(a0)
-	dc.w	$035E		; bchg.b d1,(a6)+
+	dc.w	tmOneTimerGoals,tmOneTimers
 	String	'Penalty Shots'
-	dc.w	$0364		; bchg.b d1,-(a4)
-	dc.w	$0362		; bchg.b d1,-(a2)
+	dc.w	tmPenShotGoals,tmPenShots
 	String	'Faceoffs Won'
-; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$0E,$FF,$FF
+	dc.w	tmfowon,$FFFF
 	String	'Body Checks'
-	dc.w	$0010,$FFFF		; ori.b #$FF,(a0)
+	dc.w	tmchecks,$FFFF
 	String	'Penalties'
-	dc.w	$0006,$0008		; ori.b #$8,d6
+	dc.w	tmPenalties,tmPenmin
 	String	'Attack Zone'
-; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$0A,$FF,$FF
+	dc.w	tmATOP,$FFFF
 	String	'Passing'
-; Instruction bytes inside TeamStatTextTblNoPen that the assembler would encode differently, kept as words (1 row).
-	dc.b	$00,$14,$00,$12
+	dc.w	tmpasscomp,tmpasses
 rtsStatTables
 	rts
 updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for the team
@@ -788,13 +767,13 @@ updatePPTeamTime						;One more second of power play time (tmPwrPlayTime) for th
 	btst	#sf2pwrtm,(sflags2).l
 	beq.w	.0
 	movea.l	#awtmstruct,a2
-.0	addi.w	#$1,$354(a2)		;one more second of power play time
+.0	addi.w	#$1,tmPwrPlayTime(a2)		;one more second of power play time
 .x	rts
 GetTeamRating						;d0 = the TeamRatings byte of team tmteam(a2). Called from PrintTeamRating
 	
 	movem.l	d1-d7/a0-a6,-(sp)
 	move.w	tmteam(a2),d0
-	movea.l	#$2A040,a0
+	movea.l	#GetTeamRatingTexts,a0
 	clr.w	d1
 	move.b	(a0,d0.w),d1
 	move.w	d1,d0

@@ -3,7 +3,7 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 									;change the option (ChangeOption) and redraw (FixModeOptions), start
 									;begins the game (SetupStart), and $5460 frames without a press start a
 									;demo (SetupDemo).
-	jsr	(ReadLineDataBackupRead).l
+	jsr	(ReadLineData).l
 	movea.l	#passbits,a3
 	jsr	(ReadPassBits).l
 	move.w	(TmpOptLine2).l,(OptLine).l
@@ -390,7 +390,7 @@ ChangeOption
 	move.w	(TmpOptPen).l,(OptPen).l
 	move.w	(TmpOptLine).l,(OptLine).l
 .next3	movea.l	#OptPlayMode,a2
-	movea.l	#$23A68,a3
+	movea.l	#FixModeOptionsData,a3
 	tst.w	(FourWayPlay).l
 	beq.w	.3
 	movea.l	#$23A7A,a3
@@ -567,7 +567,7 @@ PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more l
 	move.w	#$F,(printy).l
 	tst.w	(setupfirstline).l
 	beq.w	.1
-	movea.l	#$23E14,a1
+	movea.l	#ScrollUpTxt,a1
 .1	move.w	#$2,(printx).l
 	jmp	(print).l
 ; Data that follows PrintScrollMarks (strings, small tables)
@@ -592,7 +592,7 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 	bra.w	.1		;print
 .0	cmpi.w	#$D,d3		;NYI?
 	bne.w	.1
-	movea.l	#$23E7A,a1		;full name
+	movea.l	#PrintOptTeamNameData,a1		;full name
 .1	jmp	(print).l
 ; Data that follows PrintOptTeamName (strings, small tables)
 PrintOptTeamNameData	dc.b	$00,$14,'New York Islan'
@@ -658,7 +658,7 @@ PrintOptionNames						;Print the option names from OptionNames at x 3, 2 rows ap
 									;GameSetUp and FixModeOptions
 	movem.l	d0-d1,-(sp)
 	bset	#$3,(sflags6).l		;print all
-	movea.l	#$242B4,a1
+	movea.l	#OptionNames,a1
 	move.w	#$F,d0
 	move.w	(setupfirstline).l,d1
 	add.w	d1,d1		;2 rows a line

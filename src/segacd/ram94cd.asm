@@ -624,6 +624,7 @@ newpos	equ	$60			;requested next position of this player
 newpnum	equ	$61			;requested next player (from roster) for this player
 replaysize	equ	$62			;bytes per replay frame (92G/93G name; 92G 84)
 pflags	equ	$62			;player flags (pf bits)
+pflags2	equ	$63			;player flags, second byte (pf2 bits)
 pflags3	equ	$64			;player flags 3 (92: not used)
 glitch	equ	$65			;counter to eliminate quick frame changes (de-glitch graphics)
 pnum	equ	$66			;player's team location number 0-22
@@ -657,3 +658,24 @@ starscores	equ	ThreeStars		;the 52 star score longs (CalcStarScores)
 recordbuf	equ	ThreeStars		;record read buffer (ReadCrowdRecord)
 rosxoff	equ	OldXpos			;game setup: player sprite x offset from Xpos (optsetup94)
 BackupRamSum	equ	BackupRamImage+$F20	;disc only: BackupRamChecksum of the image, the long after it
+; --- team struct stat fields, with the offsets the disc's TeamStatTextTbl uses (cartridge names). The fields
+; from tmPwrPlayTime on are 2 higher than on the cartridge, the same as tmgoalie and tmsize ---
+tmshots	equ	$0			;shots
+tmPwrGoals	equ	$2			;power play goals
+tmPwrPlays	equ	$4			;power plays
+tmPenalties	equ	$6			;penalties
+tmPenmin	equ	$8			;penalty minutes
+tmATOP	equ	$A			;attack zone time
+tmfowon	equ	$E			;faceoffs won
+tmchecks	equ	$10			;body checks
+tmpasses	equ	$12			;passes tried
+tmpasscomp	equ	$14			;passes completed
+tmPwrPlayTime	equ	$354			;power play time (cartridge $352)
+tmPPShots	equ	$356			;power play shots (cartridge $354)
+tmSHGoals	equ	$358			;short handed goals (cartridge $356)
+tmBreakaways	equ	$35A			;breakaways (cartridge $358)
+tmBreakawayGoals	equ	$35C			;breakaway goals (cartridge $35A)
+tmOneTimers	equ	$35E			;one-timers (cartridge $35C)
+tmOneTimerGoals	equ	$360			;one-timer goals (cartridge $35E)
+tmPenShots	equ	$362			;penalty shots (cartridge $360)
+tmPenShotGoals	equ	$364			;penalty shot goals (cartridge $362)

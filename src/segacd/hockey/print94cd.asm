@@ -121,7 +121,7 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	bgt.w	.nocom
 	neg.w	d0
 	asl.w	#$2,d0
-	movea.l	#$38EB2,a2
+	movea.l	#ControlCode_SetMapAndPosition,a2
 	movea.l	(a2,d0.w),a2
 	jsr	(a2)
 	bra.w	.loop4
@@ -305,7 +305,7 @@ FormatAndPrintTime						;d0 bits 14-15 = period, bits 0-13 = seconds
 	swap	d0
 	clr.w	d0
 	rol.l	#$2,d0
-	movea.l	#$390E4,a1
+	movea.l	#PeriodLabelTable,a1
 	bsr.w	Fprintsmall
 	addi.w	#$2,(printx).l
 	swap	d0

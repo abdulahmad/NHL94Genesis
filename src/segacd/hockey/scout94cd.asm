@@ -42,7 +42,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	bset	#$7,(sflags6).l
 	bsr.w	AppendUserName
 	jsr	(appstring).l
-	movea.l	#$28292,a1
+	movea.l	#ScoutSpaceTxt,a1
 	jsr	(appstring).l
 	movea.l	a3,a1		;a1 = 'by <name> '
 	bra.w	.x
@@ -117,9 +117,8 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	movea.l	(BigFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
-; Inline data read by DecompressGraphicsWithRemap from the return address (2 rows).
-	dc.l	$05431567,$79ABCDEF
-	dc.w	$4EB9,$0003,$93E8		;remap table
+	dc.l	$05431567,$79ABCDEF		;remap table read by DecompressGraphicsWithRemap
+	jsr	(AddSmallFont).l
 	move.w	d4,(smallfont2chars).l		;framer tiles (as AddFramer), remapped
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
@@ -424,7 +423,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.w	.4
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-.next9	dc.w	$6100,$0764		; bsr.w X_29058
+.next9	bsr.w	RestartAdvantageMarks
 	move.w	#$1,d0
 	tst.w	(ScoutLastPara).l
 	beq.s	.next10
@@ -434,7 +433,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	beq.w	.5
 	move.w	#$7FFF,(screentimer).l		;restart the screen timer
 	move.l	#$8CA0,(scoutwait).l
-	dc.w	$6100,$0732		; bsr.w X_29058
+	bsr.w	RestartAdvantageMarks
 	tst.w	(ScoutLastPara).l
 	beq.s	.next12
 	bsr.w	PageMatchup
@@ -550,7 +549,7 @@ PrintMatchupRating						;Print the team rating of team a0 (GetTeamRating: the Te
 PrintTwoSpaces						;Print 2 spaces at printx / printy and keep printx
 	move.l	a1,-(sp)
 	move.w	(printx).l,-(sp)
-	movea.l	#$28B22,a1
+	movea.l	#TwoSpacesTxt,a1
 	jsr	(printsmall).l
 	move.w	(sp)+,(printx).l
 	movea.l	(sp)+,a1
@@ -720,7 +719,7 @@ PrintMatchupRatings						;Print the matchup ratings. Matchup 0: 'Overall' at y $
 	bra.w	.x
 .matchup	move.w	(matchup).l,d0
 	subi.w	#$1,d0
-	movea.l	#$28F8E,a1
+	movea.l	#MatchupPosNames,a1
 	bra.w	.next
 .loop2	adda.w	(a1),a1
 .next	dbra	d0,.loop2
@@ -803,7 +802,7 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	movea.l	tmdata(a0),a0
 	adda.w	$6(a0),a0
 	move.w	(matchup).l,d0
-	movea.l	#$29050,a1
+	movea.l	#MatchupLineSlots,a1
 	move.b	(a1,d0.w),d0
 	ext.w	d0
 	move.w	d0,(matchupslot).l
@@ -812,14 +811,12 @@ GetMatchupPlayer						;Return d0 = the roster index of team a0's player for matc
 	subi.w	#$1,d0		;player numbers start at 1
 	rts
 MatchupLineSlots						;Line slot by matchup 0-6 (0 for the teams, then 4 center, 3 left forward,
-	
-	
-; Data that follows MatchupLineSlots (strings, small tables)
-MatchupLineSlotsData	dc.w	$0004,$0305
-	dc.w	$0102
-	dc.l	$4279
-	dc.w	$0001,$A448
-	clr.w	(advframe).l
+									;5 right forward, 1 left defense, 2 right defense,
+									;0 goalie), and a pad byte
+	dc.b	$0,$4,$3,$5,$1,$2,$0,$0
+RestartAdvantageMarks						;Restart the advantage marks (PrintAdvantageMarks)
+	clr.w	(advcount).l
+	clr.w	(advframe).l		;first frame
 	rts
 PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advantage marks at x $13,
 	
@@ -837,12 +834,12 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	move.w	#$5,(advframe).l
 .0	move.w	(advframe).l,d1
 	asl.w	#$2,d1
-	movea.l	#$290FE,a1
+	movea.l	#HomeAdvMarks,a1
 	move.w	(homerating).l,d0
 	cmp.w	(visrating).l,d0
 	bgt.w	.1
 	beq.w	.2
-	movea.l	#$29116,a1
+	movea.l	#VisAdvMarks,a1
 .1	movea.l	(a1,d1.w),a1
 	bra.w	.3
 .2	movea.l	#EvenAdvTxt,a1
@@ -854,57 +851,18 @@ PrintAdvantageMarks						;Called every frame by ScoutingReport. Print the advant
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 HomeAdvMarks						;Home advantage marks, by advframe (0-5)
-; Data that follows HomeAdvMarks (strings, small tables)
-HomeAdvMarksData	dc.w	$0002,$912E
-	dc.w	$0002,$9134
-	dc.w	$0002,$913A
-	dc.w	$0002,$9140
-	dc.w	$0002,$9140
-	dc.w	$0002,$9140
-VisAdvMarks						;Visitors advantage marks
-; Data that follows VisAdvMarks (strings, small tables)
-VisAdvMarksData	dc.w	$0002,$9146
-	dc.w	$0002,$914C
-	dc.w	$0002,$9152
-	dc.w	$0002,$9158
-	dc.w	$0002,$9158
-	dc.w	$0002,$9158
-HomeAdv0Txt						;home advantage marks: none
-; Table of 2 words after HomeAdv0Txt, 4 bytes: $0006,$2020 ...
-	dc.w	$0006,$2020
-	move.l	d0,d0
-HomeAdv1Txt						;home advantage: one mark
-; Table of 2 words after HomeAdv1Txt, 4 bytes: $0006,$5D20 ...
-	dc.w	$0006,$5D20
-	move.l	d0,d0
-HomeAdv2Txt						;home advantage: two marks
-; Table of 2 words after HomeAdv2Txt, 4 bytes: $0006,$5D5D ...
-	dc.w	$0006,$5D5D
-	move.l	d0,d0
-HomeAdv3Txt						;home advantage: three marks
-; Table of 2 words after HomeAdv3Txt, 4 bytes: $0006,$5D5D ...
-	dc.w	$0006,$5D5D
-	subq.b	#$6,d0
-VisAdv0Txt						;visitors advantage marks: none
-; Table of 2 words after VisAdv0Txt, 4 bytes: $0006,$2020 ...
-	dc.w	$0006,$2020
-	move.l	d0,d0
-VisAdv1Txt						;visitors advantage: one mark
-; Table of 2 words after VisAdv1Txt, 4 bytes: $0006,$2020 ...
-	dc.w	$0006,$2020
-	subq.b	#$5,d0
-VisAdv2Txt						;visitors advantage: two marks
-; Table of 2 words after VisAdv2Txt, 4 bytes: $0006,$205B ...
-	dc.w	$0006,$205B
-	subq.b	#$5,d0
-VisAdv3Txt						;visitors advantage: three marks
-; Table of 2 words after VisAdv3Txt, 4 bytes: $0006,$5B5B ...
-	dc.w	$0006,$5B5B
-	subq.b	#$5,d0
-EvenAdvTxt						;Even teams
-; Table of 2 words after EvenAdvTxt, 4 bytes: $0006,$2020 ...
-	dc.w	$0006,$2020
-	move.l	d0,d0
+	dc.l	HomeAdv0Txt,HomeAdv1Txt,HomeAdv2Txt,HomeAdv3Txt,HomeAdv3Txt,HomeAdv3Txt
+VisAdvMarks							;Visitors advantage marks
+	dc.l	VisAdv0Txt,VisAdv1Txt,VisAdv2Txt,VisAdv3Txt,VisAdv3Txt,VisAdv3Txt
+HomeAdv0Txt	String	'   '			;home advantage marks: none
+HomeAdv1Txt	String	']  '			;home advantage: one mark
+HomeAdv2Txt	String	']] '			;home advantage: two marks
+HomeAdv3Txt	String	']]]'			;home advantage: three marks
+VisAdv0Txt	String	'   '			;visitors advantage marks: none
+VisAdv1Txt	String	'  ['			;visitors advantage: one mark
+VisAdv2Txt	String	' [['			;visitors advantage: two marks
+VisAdv3Txt	String	'[[['			;visitors advantage: three marks
+EvenAdvTxt	String	'   '			;Even teams
 GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct): return a1 =
 	
 	
@@ -917,10 +875,10 @@ GetTeamNickname						;The text player's '=' (a2 = tmstruct) and '*' (awtmstruct)
 	adda.w	(a1),a1
 	cmpi.w	#$2,(a1)
 	bne.w	.x
-	movea.l	#$2919A,a1
+	movea.l	#HomeTxt,a1
 	cmpa.l	#tmstruct,a2
 	beq.w	.x
-	movea.l	#$291A0,a1
+	movea.l	#VisitorsTxt,a1
 .x	movem.l	(sp)+,d0/a0/a2
 	rts
 HomeTxt						;name used when the home team has no nickname

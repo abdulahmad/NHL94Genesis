@@ -156,7 +156,7 @@ CopyTeamBlockMapData						;Copy one team's 22 block chars from the loaded tile s
 	rts
 ; Fills the four map entries from the table at $3EE08.
 defaultsprites
-	movea.l	#$3EE08,a2
+	movea.l	#defaultspritesStart,a2
 	movea.l	#sso,a3
 	moveq	#$3,d0
 .loop	move.w	#$FFFF,$8(a3)
@@ -168,7 +168,7 @@ defaultsprites
 	add.w	(a2)+,d4
 	adda.w	#$14,a3
 	dbra	d0,.loop
-	movea.l	#$3EE30,a2
+	movea.l	#defaultspritesData,a2
 	movea.l	#pads,a3
 	move.l	#$6,d0
 .loop2	st.b	$8(a3)
@@ -1224,7 +1224,7 @@ EASportsScreenCheck	jsr	(ReadJoy1).l
 	cmpi.b	#$E0,d3
 	bne.w	rtss2
 	bset.b	#$5,$FF800F.l
-	move.l	#$3DB90,(VBint).l
+	move.l	#vb2,(VBint).l
 	jsr	(p_turnoff).l
 	jsr	(forceblack).l
 	move.w	#$18,(palcount).l
@@ -1377,7 +1377,7 @@ DefaultMenus						;Set the default menu choices for the beginning of the game: t
 									;words from defmenuoptions (93 had 7). Called once from Begin
 	st.b	(demoflag).l
 	movea.l	#OptPlayMode,a0
-	movea.l	#$40120,a1		;Start of Menu Options in RAM
+	movea.l	#DefaultMenusData,a1		;Start of Menu Options in RAM
 	move.w	#$8,d0
 .loop	move.w	(a1)+,(a0)+		;9 options
 	dbra	d0,.loop
@@ -1709,7 +1709,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	bmi.w	.next
 	movea.l	#passbits,a3
 	bsr.w	WritePassBits
-	jsr	(ReadLineDataBackupWrite).l
+	jsr	(WriteLineData).l
 	btst	#sf3alttree,(sflags3).l
 	beq.w	rtss2
 	movea.l	#tpassbits,a3
@@ -1717,7 +1717,7 @@ EncodePW						;After a playoff game compute winners and save the bits if needed.
 	bra.w	MakeTree
 .next	movea.l	#passbits,a3
 	bsr.w	ClrPassBits
-	jsr	(ReadLineDataBackupWrite).l
+	jsr	(WriteLineData).l
 	move.w	#$2,(OptPlayMode).l
 	move.w	#$2,(TempOptPlayMode).l
 	cmpi.w	#$7,(bosgames).l
@@ -1848,7 +1848,7 @@ AddPlayoffTeamStats						;Add the po team's game stats to its packed playoff tot
 	add.w	d1,(a1)+
 	dbra	d0,.loop
 	movea.l	#$B000,a0
-	movea.l	#$408DC,a1
+	movea.l	#AddPlayoffTeamStatsData,a1
 	movea.l	#outputbuffer,a2
 	moveq	#$67,d0
 	clr.w	d4
@@ -1883,7 +1883,7 @@ AddPlayoffTeamStatsData	dc.w	$0C0E,$0A0A
 ReadTeamStats						;Unpack the $68 playoff stat totals from the bit stream into statsbuffer
 	
 	movea.l	#$B000,a0
-	movea.l	#$408DC,a1
+	movea.l	#AddPlayoffTeamStatsData,a1
 	movea.l	#outputbuffer,a2
 	moveq	#$67,d0
 	clr.w	d4

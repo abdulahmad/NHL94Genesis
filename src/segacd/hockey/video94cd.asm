@@ -12,14 +12,14 @@ VBlankDmaList	bsr.w	DmaListWait
 	movea.l	#Satt,a0
 	move.w	(Sattsize).l,d0
 	move.w	(VSPRITES).l,d1
-	dc.w	$6100,$9D0A		; bsr.w X_378D2
+	bsr.w	DmaCopyFromWordRam
 	movea.l	(DMAlistend).l,a6
 	cmpa.l	#DMAList,a6
 	beq.w	rtss2
 .loop	move.w	-(a6),d1
 	move.w	-(a6),d0
 	movea.l	-(a6),a0
-	dc.w	$6100,$9CF0		; bsr.w X_378D2
+	bsr.w	DmaCopyFromWordRam
 	cmpa.l	#DMAList,a6
 	bgt.w	.loop
 	rts	
@@ -451,7 +451,7 @@ showclock						;put the game clock on screen. Called from setvideo and PauseMode
 .x	rts
 ; Prints one clock digit from the digit table.
 ShowClockPrintDigit
-	movea.l	#$3E274,a1
+	movea.l	#showclockData,a1
 	asl.w	#$2,d0
 	adda.w	d0,a1
 	jsr	(print).l
@@ -588,10 +588,10 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	bset	#$1,d2
 .3	tst.w	d2
 	beq.w	rtss2
-	movea.l	#$37588,a1
+	movea.l	#ReadJoyDataTable,a1
 	move.b	(a1,d2.w),d2
 	asl.w	#$3,d2
-	movea.l	#$3E4D4,a1
+	movea.l	#checkssoData,a1
 	move.w	(a1,d2.w),d4
 	beq.w	.4
 	move.w	d4,d0
@@ -694,8 +694,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;(none while sflags7 bit 7 is set).
 									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
-; Table of 2 words after QueuePadLabel, 4 bytes: $49FA,$0098 ...
-	dc.w	$49FA,$0098
+	lea	ButtonLabelCharTable(pc),a4
 	clr.w	$2(a0)		;x offset (setffo adds it to the sprites)
 	move.w	d1,d2
 	lsr.w	#$4,d2
@@ -740,8 +739,8 @@ uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2
 	asl.w	#$5,d0
 	move.w	d0,(a5)+		;vram destination
 	rts
-; Text of uppads_pd (1 row).
-	dc.b	' DDLCRX',$00
+ButtonLabelCharTable				;Third label character by bits 10-8 of the label code
+	dc.b	' DDLCRX',$0		;pad byte ($FF on the cartridge)
 addframe
 	movem.l	d0-d2,-(sp)
 	move.w	$0(a3),d0
@@ -970,20 +969,52 @@ setupice
 	movea.l	(SmallFontMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsWithRemap
-; Inline data read by DecompressGraphicsWithRemap from the return address (16 rows).
-	dc.w	$4343,$4567,$89AB,$CDEF,$33C4,$0001,$8D40,$2479
-	dc.w	$0004,$7D38,$508A,$6100,$9EEE,$7123,$4567,$89AB
-	dc.w	$CDEF,$6100,$029C,$33C4,$0001,$8D56,$0839,$0001
-	dc.w	$0001,$7F68,$6700,$0018,$267C,$0001,$7480,$700B
-	dc.w	$086B,$0007,$0062,$D6FC,$0080,$51C8,$FFF4,$6100
-	dc.w	$07BC,$33FC,$FFFF,$0001,$7DC8,$33FC,$FFFF,$0001
-	dc.w	$7DD6,$42B9,$0001,$7DCA,$42B9,$0001,$7DCE,$42B9
-	dc.w	$0001,$7DD2,$50F9,$0001,$7F9E,$50F9,$0001,$7FA0
-	dc.w	$2A7C,$0001,$8D6A,$2C7C,$000B,$BD30,$7C01,$267C
-	dc.w	$0001,$7D04,$4240,$4241,$6100,$FC0C,$D6FC,$001C
-	dc.w	$6100,$FC04,$D6FC,$001C,$6100,$FBFC,$D6FC,$001C
-	dc.w	$6100,$FBF4,$D6FC,$001C,$6100,$FBEC,$D6FC,$001C
-	dc.w	$6100,$FBE4,$23CD,$0001,$91CA,$6100,$F0E4,$33DF
-	dc.w	$0001,$8D64,$23FC,$0003,$DAB8,$0001,$8D66,$08B9
-	dc.w	$0000,$0001,$8D64,$08B9,$0002,$0001,$8D64,$08F9
-	dc.w	$0005,$00FF,$800F,$4CDF,$7FFF,$4E75
+	dc.l	$43434567,$89ABCDEF		;remap table
+	move.w	d4,(BigFontchars).l		;1st vram char for Bigfont tiles
+	movea.l	(BigFontMap).l,a2
+	addq.l	#$8,a2
+	bsr.w	DecompressGraphicsWithRemap
+	dc.l	$71234567,$89ABCDEF		;remap table
+	bsr.w	setupTeamBlocksMap		;team blocks for both teams
+	move.w	d4,(ExtraChars).l		;char space for extra graphics
+	btst	#gmdir,(gmode).l		;gmdir: flip pfgoal for the 12 players
+	beq.w	.gok
+	movea.l	#SortCords,a3
+	moveq	#$B,d0
+.flip	bchg	#pfgoal,pflags(a3)		;flip each player's goal
+	adda.w	#SCstruct,a3
+	dbra	d0,.flip
+.gok	bsr.w	CopyTeamLinesCheckTeam		;cartridge: setplayercolors
+	move.w	#$FFFF,(PadControlBits).l		;no pad assignments
+	move.w	#$FFFF,(PadControlBits34).l		;pads 3 and 4 off
+	clr.l	(padcont).l
+	clr.l	(padcont+4).l
+	clr.l	(padcont+8).l
+	st	(c1playernum).l		;no player for pad 1
+	st	(c2playernum).l		;no player for pad 2
+	movea.l	#DMAList,a5		;dump pad sprites so numbers
+	movea.l	#Satt,a6		;aren't written over later.
+	moveq	#$1,d6		;1 frame
+	movea.l	#pads,a3
+	clr.w	d0
+	clr.w	d1
+	bsr.w	addframe2		;pads1 addframe
+	adda.w	#ffosize,a3
+	bsr.w	addframe2		;pads2 addframe
+	adda.w	#ffosize,a3
+	bsr.w	addframe2		;pads3 addframe
+	adda.w	#ffosize,a3
+	bsr.w	addframe2		;center ice logo addframe
+	adda.w	#ffosize,a3
+	bsr.w	addframe2		;stick/gloves addframe?
+	adda.w	#ffosize,a3
+	bsr.w	addframe2
+	move.l	a5,(DMAlistend).l		;end of the DMA list
+	bsr.w	dodmalist
+	move.w	(sp)+,(disflags).l
+	move.l	#VBlank,(VBint).l
+	bclr	#dfok,(disflags).l		;graphics not ready
+	bclr	#dfng,(disflags).l
+	bset	#$5,$FF800F.l		;cartridge: move #$2300,sr (interrupts on)
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts

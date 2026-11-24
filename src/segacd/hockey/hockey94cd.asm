@@ -46,8 +46,7 @@ StartPer
 	jsr	(p_turnoff).l
 	jsr	(setupice).l
 	bsr.w	ResetClock
-; Inline data read by ResetClock from the return address (1 row).
-	dc.w	$0079,$F000,$0001,$7DC8
+	ori.w	#$F000,(PadControlBits).l
 	st.b	(c1playernum).l
 	st.b	(c2playernum).l
 	movea.l	#puckx,a3
@@ -202,7 +201,7 @@ updatecrowdf						;this is called every game loop with d7 = elapsed frames this 
 	addi.w	#$2,(Crowdstep).l
 	andi.w	#$1E,(Crowdstep).l
 	add.w	(Crowdstep).l,d0
-	movea.l	#$4154C,a0
+	movea.l	#updatecrowdf_cd0,a0
 	move.b	(a0,d0.w),(Crowdframe+1).l
 	clr.w	d1
 	move.b	$1(a0,d0.w),d1
@@ -375,7 +374,7 @@ Pausemode	jsr	(forceblack).l
 	bra.w	.0
 .chk2	btst	#$2,tmflags(a2)
 	beq.w	.0
-	movea.l	#$420DC,a0
+	movea.l	#PauseText2,a0
 .0	bsr.w	Pausemode_top
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad
