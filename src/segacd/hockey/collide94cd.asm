@@ -631,11 +631,11 @@ FallDown
 	btst	#pfteam,pflags(a3)
 	beq.w	.next3
 	adda.w	#tmsize,a0
-.next3	addi.w	#$1,$10(a0)
+.next3	addi.w	#$1,tmchecks(a0)
 	clr.w	d0
 	move.b	pnum(a3),d0
 	adda.w	d0,a0
-	addi.b	#$1,$11E(a0)
+	addi.b	#$1,pchecks(a0)
 	addi.w	#$1,(ChkCnt).l
 	tst.b	fighting(a3)
 	bne.w	.chkpos
@@ -1130,22 +1130,22 @@ Goal	btst	#$2,(BA_PS_flags).l
 .next20	btst	#$1,(gmode).l
 	beq.w	.next21
 	exg.l	a1,a2
-.next21	addi.w	#$1,$C(a2)
+.next21	addi.w	#$1,tmscore(a2)
 	btst	#$5,(sflags4).l
 	beq.w	.next22
 	btst	#$0,(gmode2).l
 	bne.w	.next22
-	addi.w	#$1,$364(a2)
+	addi.w	#$1,tmPenShotGoals(a2)
 .next22	bclr	#$4,(gmode2).l
 	beq.w	.next23
-	addi.w	#$1,$35C(a2)
+	addi.w	#$1,tmBreakawayGoals(a2)
 .next23	btst	#$5,(sflags2).l
 	beq.w	.next25
 	btst	#$6,(sflags2).l
 	bne.w	.next24
 	cmpa.l	#awtmstruct,a2
 	bne.w	.next25
-.loop2	addi.w	#$1,$358(a2)
+.loop2	addi.w	#$1,tmSHGoals(a2)
 	bra.w	.next25
 .next24	cmpa.l	#tmstruct,a2
 	beq.w	.loop2
@@ -1153,11 +1153,11 @@ Goal	btst	#$2,(BA_PS_flags).l
 	move.w	(gsp).l,d0
 	add.w	d0,d0
 	adda.w	d0,a2
-	addi.w	#$1,$344(a2)
+	addi.w	#$1,tmPerGoals(a2)
 	movem.l	(sp)+,d0/a2
 	bclr	#$7,(sflags8).l
 	beq.w	.next26
-	addi.w	#$1,$360(a2)
+	addi.w	#$1,tmOneTimerGoals(a2)
 .next26	cmpa.l	#tmstruct,a2
 	bne.w	.next27
 	move.w	(HomeTeam).l,(HmTeam).l
@@ -1327,13 +1327,13 @@ checkgoalp	btst	#pf2npc,pflags2(a3)
 	andi.w	#$1F,d0
 	bne.w	.next3
 	move.w	(pucky).l,d0
-	sub.w	$14(a2),d0
+	sub.w	Ypos(a2),d0
 	cmpi.w	#$28,d0
 	bgt.w	.next3
 	cmpi.w	#$FFD8,d0
 	blt.w	.next3
-	move.w	$28(a3),d0
-	move.w	$2A(a3),d1
+	move.w	Xvel(a3),d0
+	move.w	Yvel(a3),d1
 	cmpi.w	#$2000,d0
 	bgt.w	.next4
 	cmpi.w	#$E000,d0
@@ -1347,10 +1347,10 @@ checkgoalp	btst	#pf2npc,pflags2(a3)
 .next4	adda.w	#$C,sp
 	asr.w	#$2,d0
 	asr.w	#$2,d1
-	move.w	d0,$28(a2)
-	move.w	d1,$2A(a2)
-	clr.w	$28(a3)
-	clr.w	$2A(a3)
+	move.w	d0,Xvel(a2)
+	move.w	d1,Yvel(a2)
+	clr.w	Xvel(a3)
+	clr.w	Yvel(a3)
 	bset	#$6,(sflags).l
 	btst	#$0,(gmode).l
 	bne.w	rtss2
@@ -1385,7 +1385,7 @@ wallcollb	cmpi.w	#puckscnum,SCnum(a3)
 	tst.w	Ypos(a3)
 	bpl.w	.1
 	ori.w	#$8000,attribute(a3)
-.1	clr.w	$86(a3)
+.1	clr.w	frame+SCstruct(a3)
 	btst	#gmclock,(gmode).l
 	bne.w	rtss2
 	move.l	a3,-(sp)
@@ -1827,7 +1827,7 @@ puckglue						;part of puckstick that puckgoalie also branches to. Player a2 tak
 	bset	#tmflast,tmflags(a0)		;set a flag (not sure what)
 	bclr	#sf3fo,(sflags3).l		;clear flag (not sure what, might have to do with faceoff)
 	beq.w	.snd		;branch if it was cleared already
-	addi.w	#$1,$E(a1)		;add 1 to faceoff won
+	addi.w	#$1,tmfowon(a1)		;add 1 to faceoff won
 	addi.w	#$C8,(Crowdlevel).l
 	move.w	#$C,(sp)		;move C to stack
 	cmpa.l	#tmstruct,a1		;compare if a1 is home
@@ -1838,7 +1838,7 @@ puckglue						;part of puckstick that puckgoalie also branches to. Player a2 tak
 	move.w	SCnum(a2),d0		;move SCnum into d0
 	cmp.w	(passReceiverPlayerNum).l,d0
 	bne.w	.next3
-	addi.w	#$1,$14(a1)
+	addi.w	#$1,tmpasscomp(a1)
 .next3	st.b	(passReceiverPlayerNum).l
 	bclr	#sfspdir,(sflags).l		;clear pass dir mode
 	bclr	#sfssdir,(sflags).l		;clear shot dir mode

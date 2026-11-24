@@ -602,7 +602,7 @@ checksso						;do graphics for sso structure: arrows for the players when they a
 	move.w	d4,d1
 .5	neg.w	d1		;y up is negative on screen
 	addi.w	#$F0,d1		;112+128
-	move.w	d1,$2(a3)		;Ycord
+	move.w	d1,Ycord(a3)		;Ycord
 	add.w	$4(a1,d2.w),d3
 	move.w	d3,frame(a3)
 	move.w	$6(a1,d2.w),attribute(a3)		;flip bits
@@ -848,7 +848,7 @@ addframe2
 	move.w	attribute(a3),d0
 	eor.w	d0,d2
 	andi.w	#$F800,d2
-	btst	#$0,$5(a3)
+	btst	#$0,attribute+1(a3)
 	beq.w	.nospec
 	btst	#$E,d2
 	beq.w	.nospec

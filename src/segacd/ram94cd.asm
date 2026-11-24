@@ -430,6 +430,9 @@ tmdata		equ	$1E			;team data address, as the cartridge
 tmgoalie	equ	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
 tmlcchoice	equ	$30			;line change box row chosen (0-2): $30 on the disc, $2E on the cartridge
 tmlines	equ	$16C			;line sets copied from the team data (LineSets), 7 lines x 8 bytes: $16C on the disc, $16A on the cartridge
+pchecks	equ	$11E			;checks per roster player (bytes): $11E on the disc, $11C on the cartridge
+tmPerGoals	equ	$344			;goals by period (word per period, 4 with overtime): $344 on the disc, $342 on the cartridge
+tmPerShots	equ	$34C			;shots by period (word per period, 4 with overtime): $34C on the disc, $34A on the cartridge
 pldsize		equ	8
 tmboxlist	equ	$9C			;penalty box list of roster players (bytes, negative ends): tmpdst + 2 * 26 roster slots
 BigFontMap	equ	$47D38			;pointer to the big font graphics (a loaded file here)
@@ -515,6 +518,7 @@ pcframes	equ	$2			;word: frames
 pcsize	equ	$4			;size of a puck cross entry in bytes
 mapheight	equ	$2			;word: height in tiles
 gsfso	equ	$2			;series over
+gst1	equ	$0			;team 1
 gst2	equ	$2			;team 2
 ssflags	equ	$2			;byte: 2 + skater difference (goal type); bit 7 = away team scored
 pspen	equ	$2			;byte: penalty (Penaltylist offset); bit 7 = away team

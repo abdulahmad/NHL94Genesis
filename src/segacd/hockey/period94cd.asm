@@ -424,10 +424,10 @@ PeriodStatsTeamRows	movem.l	d0-d7/a0-a6,-(sp)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Period stats: one row, a0 = the period counts of a team
-PeriodStatsPeriodRow	lea.l	$344(a2),a0
+PeriodStatsPeriodRow	lea.l	tmPerGoals(a2),a0
 	tst.w	(matchup).l
 	beq.w	.next
-	lea.l	$34C(a2),a0
+	lea.l	tmPerShots(a2),a0
 .next	clr.w	(matchuptimer).l
 	move.w	#$B,(printx).l
 	bsr.w	PeriodStatsPrintTotal

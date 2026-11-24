@@ -27,7 +27,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	bclr	#sf2pwrtm,(sflags2).l
 .upp	bset	#sf2pwrplay,(sflags2).l
 	bne.w	.uppt
-	addi.w	#$1,$4(a3)
+	addi.w	#$1,tmPwrPlays(a3)
 	cmpa.l	#tmstruct,a3
 	bne.w	.away
 .home	bra.w	.uppt
@@ -400,7 +400,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	bne.w	.1
 	btst	#pfteam,pflags(a3)
 	bne.w	.2
-.PPshot	addi.w	#$1,$356(a2)
+.PPshot	addi.w	#$1,tmPPShots(a2)
 	bra.w	.2
 .1	btst	#pfteam,pflags(a3)
 	bne.w	.PPshot
@@ -408,7 +408,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 	move.w	(gsp).l,d0
 	add.w	d0,d0
 	adda.w	d0,a2
-	addi.w	#$1,$34C(a2)
+	addi.w	#$1,tmPerShots(a2)
 	movea.l	(sp)+,a2
 	clr.w	d0
 	move.b	pnum(a3),d0
@@ -597,7 +597,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	move.w	#$3,gsper(a0)
 	bset	#gsfhl,gsflags(a0)
 	bra.w	.ex
-.o	addi.w	#$1,$8(a0)
+.o	addi.w	#$1,gsper(a0)
 	move.w	$0(a0),d0
 	move.w	gst2(a0),d1
 	bsr.w	.getscore

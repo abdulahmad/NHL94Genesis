@@ -148,9 +148,9 @@ TeamLogoPalettesEnd	movem.l	d0/a0-a3,-(sp)
 	btst.b	#$1,(gmode2).l
 	bne.w	LeadSongExit
 	movea.l	#tmstruct,a2
-	lea.l	$366(a2),a3
-	move.w	$26(a2),d0
-	sub.w	$26(a3),d0
+	lea.l	tmsize(a2),a3
+	move.w	tmap(a2),d0
+	sub.w	tmap(a3),d0
 	beq.w	LeadSongExit
 	bpl.w	.next
 	btst.b	#$6,(sflags2).l
