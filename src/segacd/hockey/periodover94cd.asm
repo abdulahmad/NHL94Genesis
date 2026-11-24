@@ -40,7 +40,7 @@ pucknorm	btst.b	#$2,(BA_PS_flags).l
 	move.w	#$78,temp2(a3)
 .next2	movea.l	#puckcross,a1
 	sub.w	d7,pcframes(a1)
-	sub.w	d7,$6(a1)
+	sub.w	d7,pcsize+pcframes(a1)
 	sub.w	d7,temp1(a3)
 	bpl.w	.next3
 	addi.w	#$5,$40(a3)

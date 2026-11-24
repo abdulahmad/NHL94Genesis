@@ -170,7 +170,7 @@ defaultsprites
 	movea.l	#defaultspritesData,a2
 	movea.l	#pads,a3
 	move.l	#$6,d0
-.loop2	st.b	$8(a3)
+.loop2	st.b	oldframe(a3)
 	move.w	(a2)+,$0(a3)
 	move.w	(a2)+,Ypos(a3)
 	move.w	(a2)+,Zpos(a3)
@@ -221,7 +221,7 @@ defaultsprites_0
 	move.w	(a2)+,radiusx(a3)
 	move.w	(a2)+,radiusy(a3)
 	adda.w	#$1,a2
-	move.b	(a2)+,$38(a3)
+	move.b	(a2)+,asslist(a3)
 	adda.w	#$1,a2
 	move.b	(a2)+,pflags(a3)
 	adda.w	#$80,a3
@@ -1360,7 +1360,7 @@ PickStartingGoalie						;unreferenced. tmgoalie = 0 if a pad has team a2, else (
 	move.w	$0(a2),d0
 	asl.w	#$2,d0
 	movea.l	(a0,d0.w),a0		;team block
-	adda.w	$A(a0),a0		;GoalieOdds offset: a0 = .godds
+	adda.w	GoalieOdds(a0),a0		;GoalieOdds offset: a0 = .godds
 	moveq	#$4,d0		;4 goalie weights
 	jsr	(UnpackNibbles).l
 	jsr	(WeightedRandomSelect).l
@@ -2102,7 +2102,7 @@ CalcStarScores						;Star score for every roster slot of both teams to ThreeStar
 	lea.l	tmsize(a2),a3
 	bsr.w	CalcTeamStarScores
 	movea.l	a3,a2
-	lea.l	-$366(a2),a3
+	lea.l	-tmsize(a2),a3
 	bsr.w	CalcTeamStarScores
 	cmpi.w	#$3,(gsp).l
 	bne.w	.x
@@ -2282,7 +2282,7 @@ ShowGoalBox
 	tst.b	ssassist1(a4)
 	bmi.w	.next2
 	addi.w	#$2,d1
-	tst.b	$5(a4)
+	tst.b	ssassist2(a4)
 	bmi.w	.next2
 	addi.w	#$1,d1
 .next2	jsr	(Framer).l
@@ -2498,7 +2498,7 @@ FinalizeTextBuffer						;mesarea length word = a1 - mesarea, with a 0 pad byte w
 	move.w	d0,(a1)
 	rts
 ; Skips d0 entries of an offset-linked text list.
-GetPlayerNamePointer	movea.l	$1E(a2),a0
+GetPlayerNamePointer	movea.l	tmdata(a2),a0
 	adda.w	$0(a0),a0
 	bra.w	.next
 .loop	adda.w	(a0),a0
