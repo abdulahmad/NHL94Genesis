@@ -1,11 +1,8 @@
-updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
-									;excitement. Used by updatecrowdf.
-									;Used by updatecrowdf, indexed by crowd level and Crowdstep
-	movep.w	$20C(a4),d0
-	movep.w	$40C(a4),d1
-	movep.w	$A0C(a4),d2
-	movep.w	$80C(a4),d4
-; Instruction bytes inside updatecrowdf_cd0 that the assembler would encode differently, kept as words (1 row).
+updatecrowdf_cd0					;$fftt = frame/time for various levels of crowd
+									;excitement. Data, not code: updatecrowdf reads byte 0 (frame) and
+									;byte 1 (time) of the word at crowd level * 32 + Crowdstep (16 words
+									;per level). Same rows as the cartridge's
+	dc.w	$010c,$020c,$030c,$040c,$050c,$0a0c,$090c,$080c
 	dc.w	$060c,$070c,$080c,$090c,$0a0c,$050c,$040c,$030c
 
 ; Table of 16 words after updatecrowdf_cd0, 32 bytes: $0107,$0207,$0307,$0407,$0507,$0B07 ...

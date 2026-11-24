@@ -412,7 +412,13 @@ CCStart	cmpi.w	#$C90,SPA(a2)
 	bsr.w	PenShotChk
 	bsr.w	AddPenalty
 .next6	bra.w	FallDown
-checkinglist						;use Agression attribute and RNG to determine if there will be a penalty.
+checkinglist						;Check anim by direction from a3 to a2, SPA offsets
+									;Data, not code: the check code above reads word (direction 0-7) * 2
+									;as the SPA offset for SetSPA. Same values as the cartridge's
+									;SPAshoulderchkl, SPAshoulderchkr, SPAhipchkr x3, SPAhipchkl x2,
+									;SPAshoulderchkl; the disc has no SPA equates, so they stay numbers
+	dc.w	$0B96,$0BC8,$0C2C,$0C2C,$0C2C,$0BFA,$0BFA,$0B96
+checkagr							;use Agression attribute and RNG to determine if there will be a penalty.
 									;a3 = checking player, a2 = player being checked. d0 =
 									;randomd0(((40 - Agr) / 2) * 13), doubled for a joystick player, halved
 									;within $28 of the puck in x and y.
@@ -420,13 +426,6 @@ checkinglist						;use Agression attribute and RNG to determine if there will be
 									;distance in y from the goal line; and d0 = $7F (no penalty) while the
 									;other team has a delayed penalty (DelayedPen). The callers call a penalty
 									;when d0 is small. Called from CCStart, holdcheck and Bcheck
-	bclr	d5,(a6)
-	movep.l	d5,$C2C(a0)
-; Instruction bytes inside checkinglist that the assembler would encode differently, kept as words (2 rows).
-	dc.w	$0C2C,$0C2C,$0BFA
-	dc.w	$0BFA,$0B96
-; Scales the aggression value from $73.
-checkagr
 	move.w	#$28,d0
 	sub.b	aggress(a3),d0
 	lsr.b	#$1,d0
