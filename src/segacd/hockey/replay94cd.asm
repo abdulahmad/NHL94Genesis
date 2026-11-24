@@ -105,7 +105,7 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	movea.l	a4,a0
 	moveq	#$F,d1
 	movea.l	#SortCords,a3
-.loop	move.w	$2(a0),d2
+.loop	move.w	$2(a0),d2		;x: bits 0-9 of word 1 of the packed long (92G, 93G: 2)
 	andi.w	#$3FF,d2
 	btst	#$9,d2
 	beq.w	.next
@@ -281,7 +281,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 .top	clr.l	(a0)
 	move.w	$0(a3),d1
 	andi.w	#$3FF,d1
-	move.w	d1,$2(a0)
+	move.w	d1,$2(a0)		;x into bits 0-9 of word 1 (y spans both words)
 	clr.l	d1
 	move.w	Ypos(a3),d1
 	asl.w	#$6,d1

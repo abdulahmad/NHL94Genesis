@@ -447,6 +447,7 @@ RonBarrMap	equ	$47D54
 ScoutCDArg	equ	$47D60			;disc only: argument block for _CDBIOS function $18
 SDKCall		equ	$6044			;disc only: SDK entry, function number in d7
 _CDBIOS		equ	$5F22			;disc only: Sega CD BIOS entry
+CdStatTrack	equ	$7				;disc only: byte 7 of the CDBSTAT status table ($81), the CD track playing (SongCdCheck)
 palfadenew	equ	$BBCB0			;palettes to fade into (+$20 the title palette, +$40 palettes 2-3)
 Satt	equ	$BBD30			;sprite attribute table (for dma transfer)
 teamrecbuf	equ	$BC0C8			;SRAM team record buffer
@@ -797,3 +798,39 @@ spodds	equ	$70			; player rating: shoot / pass odds
 aggress	equ	$73			;aggression (Agr; goalie: glove left)
 GGSleft	equ	aggress			;goalie glove save left (92 name; 92 put it on stickhand)
 checking	equ	$75			;checking (Chk)
+; --- record and pair offsets named in the cartridge and the disc together (cartridge names and offsets) ---
+hcsum	equ	$1			;hot / cold pair in TempBuffer (SortHotColdStarters): byte, the starter's sum
+hcsize	equ	$2			; size of a hot / cold pair in bytes
+scoloff2	equ	$2			;StatColumnOffsets entry: second array offset ($FFFF none)
+fpplayer	equ	$4			;FeaturedPictures entry: word, roster index of the pictured player
+fpsize	equ	$6			; size of a FeaturedPictures entry in bytes
+satLen	equ	$8			; size of a sprite attribute table entry in bytes
+; --- team numbers (TeamList order), as ram94.asm: the playoffseats rows in teamdata94cd.asm use them ---
+ANH	equ	$0			;team number: Mighty Ducks of Anaheim
+BOS	equ	$1			;team number: Boston
+BUF	equ	$2			;team number: Buffalo
+CGY	equ	$3			;team number: Calgary
+CHI	equ	$4			;team number: Chicago
+DAL	equ	$5			;team number: Dallas
+DET	equ	$6			;team number: Detroit
+EDM	equ	$7			;team number: Edmonton
+FLA	equ	$8			;team number: Florida
+HFD	equ	$9			;team number: Hartford
+LA	equ	$A			;team number: Los Angeles
+MTL	equ	$B			;team number: Montreal
+NJ	equ	$C			;team number: New Jersey
+NYI	equ	$D			;team number: NY Islanders
+NYR	equ	$E			;team number: NY Rangers
+OTW	equ	$F			;team number: Ottawa
+PHI	equ	$10			;team number: Philadelphia
+PIT	equ	$11			;team number: Pittsburgh
+QUE	equ	$12			;team number: Quebec
+SJ	equ	$13			;team number: San Jose
+STL	equ	$14			;team number: St. Louis
+TB	equ	$15			;team number: Tampa Bay
+TOR	equ	$16			;team number: Toronto
+VAN	equ	$17			;team number: Vancouver
+WSH	equ	$18			;team number: Washington
+WPG	equ	$19			;team number: Winnipeg
+ASE	equ	$1A			;team number: East all star team
+ASW	equ	$1B			;team number: West all star team

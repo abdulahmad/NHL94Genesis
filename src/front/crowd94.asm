@@ -331,12 +331,12 @@ SortHotColdStarters					;Sum the hot / cold values of the 6 starters of team a0 
 	clr.w	d1
 	move.w	#4,d0					;5 compares
 .cmp								;compare a pair with the next
-	move.b	3(a1),d6				;next sum
-	cmp.b	1(a1),d6				;above this one?
+	move.b	hcsize+hcsum(a1),d6		;next sum
+	cmp.b	hcsum(a1),d6			;above this one?
 	ble.w	.next					;in order: no swap
 	st	d1							;swapped: d1 set, sort again
-	move.w	2(a1),d2				;swap the pairs
-	move.w	(a1),2(a1)
+	move.w	hcsize(a1),d2			;swap the pairs
+	move.w	(a1),hcsize(a1)
 	move.w	d2,(a1)
 .next								;next pair
 	tst.w	(a1)+
@@ -438,7 +438,7 @@ GetHotColdTotal						;d1 = the hot / cold total of the starters of
 	movea.l	#TempBuffer,a0
 	clr.w	d1
 .sum								;add the sum byte of each pair
-	move.b	1(a0),d2				;sum byte
+	move.b	hcsum(a0),d2			;sum byte
 	ext.w	d2
 	add.w	d2,d1
 	tst.w	(a0)+

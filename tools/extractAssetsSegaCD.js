@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
-const { teamNames } = require('./segcdTeamNames');
+const { teamNames, teamPalettes } = require('./segcdTeamNames');
 const files = [['hockey', 'HOCKEY'], ['main', 'MAIN'], ['player', 'PLAYER'], ['starter', 'STARTER'], ['graph2', 'GRAPH2']];
 for (const [src, bin] of files) {
     const listPath = path.join(root, 'src', 'segacd', src, 'assets.json');
@@ -22,6 +22,12 @@ for (const [src, bin] of files) {
         const t = teamNames(disc);
         fs.writeFileSync(path.join(dir, 'PlayerNames.txt'), Buffer.concat(t.players.flatMap((b) => [b, Buffer.from('\n')])));
         fs.writeFileSync(path.join(dir, 'TeamNicknames.txt'), Buffer.concat(t.nicks.flatMap((b) => [b, Buffer.from('\n')])));
+        // the team palettes, which teamdata94cd.asm incbins like the cartridge's Extracted/NHL94/Graphics/Pals files
+        fs.mkdirSync(path.join(dir, 'Pals'), { recursive: true });
+        for (const pal of teamPalettes(disc)) {
+            fs.writeFileSync(path.join(dir, 'Pals', pal.abbr + 'h.pal'), pal.home);
+            fs.writeFileSync(path.join(dir, 'Pals', pal.abbr + 'v.pal'), pal.visitor);
+        }
     }
     console.log(`extracted ${Object.keys(list).length} ${bin}.BIN assets`);
 }

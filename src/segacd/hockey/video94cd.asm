@@ -471,7 +471,7 @@ showclockVertical
 	movea.l	#clockram+6,a0
 	movea.l	(SmallFontMap).l,a1
 	adda.l	jimdata(a1),a1
-	move.w	$78(a1),d0
+	move.w	mapwords+':'*2(a1),d0	;the map word of ':'
 	add.w	(smallfontchars).l,d0
 	ori.w	#$8000,d0
 	move.w	d0,(clockram).l
@@ -634,8 +634,8 @@ setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), mov
 	cmpa.l	a6,a0
 	beq.w	.next		;no sprites added
 	move.w	padxoff(a3),d1			;x offset (set by QueuePadLabel)
-	add.w	d1,$6(a0)		;sprite 1 x
-	add.w	d1,$E(a0)
+	add.w	d1,satX(a0)		;sprite 1 x
+	add.w	d1,satLen+satX(a0)	;sprite 2 x
 .next	adda.w	#ffosize,a3		;move to next struct
 	dbra	d0,.top
 	rts
@@ -767,7 +767,7 @@ addframe2
 	movea.l	(Sprites).l,a2
 	adda.l	jimdata(a2),a2
 	add.w	d4,d4
-	cmp.w	$2(a2),d4
+	cmp.w	$2(a2),d4		;entry 1 of the offset table bounds the frame number
 	bge.w	.exit
 	move.w	$2(a2,d4.w),d5
 	sub.w	(a2,d4.w),d5

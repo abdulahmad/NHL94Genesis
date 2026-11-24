@@ -537,7 +537,7 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	movea.w	#(clockram+6-M68K_RAM),a0	;end of the 5 word clock buffer; written backward
 	movea.l	#SmallFontMap,a1
 	adda.l	jimdata(a1),a1
-	move.w	$78(a1),d0				;4+(':'*2)
+	move.w	mapwords+':'*2(a1),d0	;the map word of ':'
 	add.w	(smallfontchars).w,d0
 	ori.w	#$8000,d0
 	move.w	d0,(clockram).w			;colon
@@ -727,8 +727,8 @@ setffo								;draw the 7 objects tied to icerink scrolling (gloves and pads), m
 	cmpa.w	a6,a0
 	beq.w	.next					;no sprites added
 	move.w	padxoff(a3),d1			;x offset (set by QueuePadLabel)
-	add.w	d1,6(a0)				;sprite 1 x
-	add.w	d1,$E(a0)
+	add.w	d1,satX(a0)				;sprite 1 x
+	add.w	d1,satLen+satX(a0)		;sprite 2 x
 .next								;next object
 	adda.w	#ffosize,a3				;move to next struct
 	dbf	d0,.top
@@ -875,7 +875,7 @@ addframe2							;d0/d1 = x/y coord on screen, a3 = object, a5 = dma trans, a6 = 
 	movea.l	#Sprites,a2				;sprite frame list
 	adda.l	jimdata(a2),a2			;add long word at offset 4 to a2 address. a2 now
 	add.w	d4,d4					;add d4 to itself
-	cmp.w	2(a2),d4				;compare the word at 2(a2) to d4
+	cmp.w	2(a2),d4				;entry 1 of the offset table bounds the frame number
 	bge.w	.exit					;branch if greater than or equal
 	move.w	2(a2,d4.w),d5			;move data at 2+a2+d4 into d5
 	sub.w	0(a2,d4.w),d5			;sub data at a2+d4 from d5

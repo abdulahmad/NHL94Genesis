@@ -1636,10 +1636,10 @@ MakeTree							;Make the playoff tree (potree) from playoffseats and WinBits, cl
 	movea.l	#playoffseats,a1
 	adda.w	d1,a1
 	move.l	(a1),(a0)				;first round: 16 teams from the tree
-	move.l	4(a1),4(a0)
+	move.l	4(a1),4(a0)				;bytes 4-15 of the 16 team row, a long at a time
 	move.l	8(a1),8(a0)
 	move.l	$C(a1),$C(a0)
-	lea	$10(a0),a1					;a1 = next round
+	lea	PlayoffRowTeams(a0),a1		;a1 = next round
 	moveq	#$E,d2					;15 winners
 	move.w	(WinBits).w,d0
 .0									;each winner
@@ -1872,7 +1872,7 @@ ReadPassBits						;Translate the saved bits at a3 (5 words) to the playoff varia
 									;and without FourWayPlay pojoy 1 / 2 become 4. Called from
 									;ContinuePlayoffs and EncodePW and GameSetUp
 	moveq	#4,d0
-	lea	$A(a3),a0					;end of the words
+	lea	5*2(a3),a0					;end of the words
 .save								;keep the 5 bit words
 	move.w	-(a0),-(sp)				;SuperDiv destroys the bits
 	dbf	d0,.save					;loop
@@ -2016,7 +2016,7 @@ ClrPassBits							;Clear the 5 words of bits at a3
 	rts
 SuperAdd							;1 long (d0.L) added to the 5 words at a3
 	movem.l	d1/a0,-(sp)
-	lea	$A(a3),a0					;end of the words
+	lea	5*2(a3),a0					;end of the words
 	moveq	#3,d1
 	add.l	d0,-(a0)				;add to the lowest long
 	bra.w	.2
@@ -2038,7 +2038,7 @@ SuperMult							;1 word (d0) multiplied by the 5 words at a3
 .1									;multiply each stacked word
 	move.w	d0,d1					;multiply a stacked word by d0, add into the buffer
 	mulu.w	(sp)+,d1				;times the stacked word
-	lea	2(a3),a0					;its place in the buffer
+	lea	2(a3),a0					;one word in (93G too); + 2 * d4 below = just past word d4
 	adda.w	d4,a0
 	adda.w	d4,a0
 	move.w	d4,d2
@@ -2700,7 +2700,7 @@ getname								;gets player number and name, appends to string: a1 = mesarea "NN
 	move.l	a0,-(sp)				;push a0 (address to start of player name) to stack
 	movea.w	#(mesarea-M68K_RAM),a3	;move mesarea to a3 address
 	move.w	#4,(a3)					;move 4 into a3 address location
-	lea	2(a3),a1					;move long address at a3+2 into a1
+	lea	strtext(a3),a1				;a1 = the text after the length word
 	adda.w	(a0),a0					;add data at a0 (player name length) to a0
 	move.b	(a0),d0					;move a0 data (jersey #) to d0
 	bsr.w	ConvertByteToDigits		;convert JNo to ascii

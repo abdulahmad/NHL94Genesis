@@ -2580,7 +2580,7 @@ SetPlList							;create PlList of players who we want on the ice now. a2 = team 
 									;the whole roster
 	movea.w	#(PlList-M68K_RAM),a4
 	clr.l	(a4)					;goalie present: use the position priority list from the start
-	clr.w	4(a4)
+	clr.w	plpos-2(a4)				;and the last 2 of the 6 player slots
 	movea.l	#priolist,a0
 	tst.w	tmgoalie(a2)
 	bpl.w	.gin					;branch if theres a goalie

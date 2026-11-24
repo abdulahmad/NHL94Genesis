@@ -856,7 +856,7 @@ doinput_cbut						;C button (bit 5): hold / release handling for a3, then doinpu
 .near								;target within 30 pixels: no scaling
 	add.w	d3,d1
 	move.w	d1,d2
-	cmpi.w	#$22,2(a0)
+	cmpi.w	#$22,2(a0)				;no branch reads these compares; a0 is not set here
 	cmpi.w	#$18,(a0)
 	cmpi.w	#$FFE8,(a0)
 	cmpi.w	#$C,2(a0)
@@ -1151,7 +1151,7 @@ SetLCmode2							;a2 = team struct. Draw the line change box
 .pr									;print the row
 	movea.w	#(mesarea-M68K_RAM),a1	;a1 = message area; row letter string
 	move.l	#$44120,(a1)			;String length 4, 'A '
-	add.b	d4,2(a1)				;'A'-'C'
+	add.b	d4,strtext(a1)			;'A'-'C'
 	bsr.w	print
 	move.w	d0,-(sp)
 	movea.l	#linelist,a1
@@ -3675,13 +3675,13 @@ checkanim							;Goalie animation check; assgoaliectrl branches here too
 	bne.w	.18
 	bra.w	.save
 .18									;crossing point near enough: try a save
-	cmpi.w	#$22,2(a0)
+	cmpi.w	#$22,pcframes(a0)
 	bhi.w	.de5
 	cmpi.w	#$18,(a0)
 	bgt.w	.22
 	cmpi.w	#$FFE8,(a0)
 	blt.w	.22
-	cmpi.w	#$C,2(a0)
+	cmpi.w	#$C,pcframes(a0)
 	bhi.w	.20
 .save								;puck inside the goal lines: save attempt (once, pf2aip)
 	cmpi.w	#$108,(pucky).w
@@ -3853,7 +3853,7 @@ goaliesave							;pick the goalie save for a puck crossing the goal line: a0 = p
 	bra.w	.done
 .low								;low save (entry +4) unless the puck is close
 	addq.w	#4,d0
-	cmpi.w	#8,2(a0)
+	cmpi.w	#8,pcframes(a0)			;a0 = puckcross entry: frames until the puck crosses
 	bls.w	.9
 	cmpi.w	#2,facedir(a3)
 	beq.w	.done

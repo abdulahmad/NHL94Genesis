@@ -291,12 +291,12 @@ SortHotColdStarters						;Sum the hot / cold values of the 6 starters of team a0
 .sort	movea.l	#TempBuffer,a1
 	clr.w	d1
 	move.w	#$4,d0
-.cmp	move.b	$3(a1),d6
-	cmp.b	$1(a1),d6
+.cmp	move.b	hcsize+hcsum(a1),d6
+	cmp.b	hcsum(a1),d6
 	ble.w	.next
 	st.b	d1
-	move.w	$2(a1),d2
-	move.w	$0(a1),$2(a1)
+	move.w	hcsize(a1),d2
+	move.w	$0(a1),hcsize(a1)
 	move.w	d2,$0(a1)
 .next	tst.w	(a1)+
 	dbra	d0,.cmp
@@ -386,7 +386,7 @@ GetHotColdTotal						;d1 = the hot / cold total of the starters of
 	move.w	#$6,d0
 	movea.l	#TempBuffer,a0
 	clr.w	d1
-.sum	move.b	$1(a0),d2
+.sum	move.b	hcsum(a0),d2
 	ext.w	d2
 	add.w	d2,d1
 	tst.w	(a0)+

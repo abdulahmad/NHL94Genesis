@@ -743,7 +743,7 @@ doinput_cbut	btst	#$5,d1
 	divs.w	d2,d1
 .next8	add.w	d3,d1
 	move.w	d1,d2
-	cmpi.w	#$22,$2(a0)
+	cmpi.w	#$22,$2(a0)		;no branch reads these compares; a0 is not set here
 	cmpi.w	#$18,(a0)
 	cmpi.w	#$FFE8,(a0)
 	cmpi.w	#$C,$2(a0)
@@ -1006,7 +1006,7 @@ SetLCmode2
 	move.w	tmline(a2),d0
 .next3	movea.l	#mesarea,a1
 	move.l	#$44120,(a1)		;String length 4, 'A ' (a constant, not an address)
-	add.b	d4,$2(a1)
+	add.b	d4,strtext(a1)
 	jsr	(print).l
 	move.w	d0,-(sp)
 	movea.l	#linelist,a1
@@ -3131,13 +3131,13 @@ checkanim
 	btst	#$1,(gameclock+1).l
 	bne.w	.next34
 	bra.w	.next35
-.next34	cmpi.w	#$22,$2(a0)
+.next34	cmpi.w	#$22,pcframes(a0)
 	bhi.w	.loop5
 	cmpi.w	#$18,(a0)
 	bgt.w	.next40
 	cmpi.w	#$FFE8,(a0)
 	blt.w	.next40
-	cmpi.w	#$C,$2(a0)
+	cmpi.w	#$C,pcframes(a0)
 	bhi.w	.next36
 .next35	cmpi.w	#$108,(pucky).l
 	bgt.w	.next36
@@ -3287,7 +3287,7 @@ goaliesave
 .next3	movem.l	(sp)+,d0
 	bra.w	.next13
 .next4	addi.w	#$4,d0
-	cmpi.w	#$8,$2(a0)
+	cmpi.w	#$8,pcframes(a0)
 	bls.w	.next10
 	cmpi.w	#$2,facedir(a3)
 	beq.w	.next13

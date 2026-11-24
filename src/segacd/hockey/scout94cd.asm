@@ -57,8 +57,8 @@ ScoutByTxt	dc.w	6							;the String 'by ' of the next label
 ScoutSpaceTxt						;space after the name
 ; Data that follows ScoutSpaceTxt (strings, small tables)
 ScoutSpaceTxtData	dc.w	$0004,$2000
-GetTeamCity						;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
-									;Teamname offset)
+GetTeamCity						;unused: return a1 = the city String of team byte $A(a0) (TeamList,
+									;Teamname offset). No caller sets a0, so its struct is not known
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	clr.w	d2
 	move.b	$A(a0),d2

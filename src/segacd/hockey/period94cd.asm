@@ -176,7 +176,7 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	jsr	(FormatPlayerNumInitial).l
 	move.w	(a1),d0
 	subi.w	#$2,d0
-	move.w	d0,$2(a1)
+	move.w	d0,strtext(a1)
 	adda.w	#$2,a1
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts

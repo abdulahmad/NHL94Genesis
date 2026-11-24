@@ -1457,10 +1457,10 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	movea.l	#playoffseats,a1
 	adda.w	d1,a1
 	move.l	(a1),(a0)		;first round: 16 teams from the tree
-	move.l	$4(a1),$4(a0)
+	move.l	$4(a1),$4(a0)		;bytes 4-15 of the 16 team row, a long at a time
 	move.l	$8(a1),$8(a0)
 	move.l	$C(a1),$C(a0)
-	lea.l	$10(a0),a1		;a1 = next round
+	lea.l	PlayoffRowTeams(a0),a1		;a1 = next round
 	moveq	#$E,d2		;15 winners
 	move.w	(WinBits).l,d0
 .0	move.w	d0,d1		;d1 = lowest WinBits bit: pick the pair member
@@ -1635,7 +1635,7 @@ GetRandomUnusedTeam	moveq	#$1A,d0
 ; Initialises the player slot structures.
 ReadPassBits
 	moveq	#$4,d0
-	lea.l	$A(a3),a0
+	lea.l	5*2(a3),a0
 .loop	move.w	-(a0),-(sp)
 	dbra	d0,.loop
 	moveq	#$7,d2
@@ -1772,7 +1772,7 @@ ClrPassBits						;Clear the 5 words of bits at a3
 	rts
 SuperAdd						;1 long (d0.L) added to the 5 words at a3
 	movem.l	d1/a0,-(sp)
-	lea.l	$A(a3),a0
+	lea.l	5*2(a3),a0
 	moveq	#$3,d1
 	add.l	d0,-(a0)
 	bra.w	.2
@@ -1790,7 +1790,7 @@ SuperMult						;1 word (d0) multiplied by the 5 words at a3
 	moveq	#$4,d4
 .1	move.w	d0,d1
 	mulu.w	(sp)+,d1
-	lea.l	$2(a3),a0
+	lea.l	$2(a3),a0		;one word in (93G too); + 2 * d4 below = just past word d4
 	adda.w	d4,a0
 	adda.w	d4,a0
 	move.w	d4,d2
@@ -2391,7 +2391,7 @@ getname
 	move.l	a0,-(sp)
 	movea.l	#mesarea,a3
 	move.w	#$4,(a3)
-	lea.l	$2(a3),a1
+	lea.l	strtext(a3),a1
 	adda.w	(a0),a0
 	move.b	(a0),d0
 	bsr.w	ConvertByteToDigits

@@ -467,7 +467,7 @@ RestoreReplayFrame					;a4 = current replay frame address to convert into normal
 	moveq	#$F,d1					;16 objects to convert (12 players/2 nets/puck/puck shadow)
 	movea.w	#(SortCords-M68K_RAM),a3
 .top								;each of the 16 objects
-	move.w	2(a0),d2				;loop over the 16 objects: x from word 1
+	move.w	2(a0),d2				;x: bits 0-9 of word 1 of the packed long (92G, 93G: 2)
 	andi.w	#$3FF,d2
 	btst	#9,d2					;negative?
 	beq.w	.chkrevx
@@ -667,7 +667,7 @@ updatereplay						;called every frame to save replay events, d7 = elapsed frames
 	clr.l	(a0)					;loop over the 16 objects: pack x, y, frame, flip bits
 	move.w	(a3),d1					;Xpos
 	andi.w	#$3FF,d1
-	move.w	d1,2(a0)
+	move.w	d1,2(a0)				;x into bits 0-9 of word 1 (y spans both words)
 	clr.l	d1
 	move.w	Ypos(a3),d1
 	asl.w	#6,d1
