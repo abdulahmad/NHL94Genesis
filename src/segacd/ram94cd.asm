@@ -428,6 +428,8 @@ GateRequestBlock	equ	$BBC88			;disc only: words the main CPU reads for a request
 ScoutingReportText	equ	$47CFC		;pointer to the loaded Ron Barr script (the cartridge has it inline)
 tmdata		equ	$1E			;team data address, as the cartridge
 tmgoalie	equ	$28			;goalie 1/2/none: $28 on the disc, $26 on the cartridge
+tmlcchoice	equ	$30			;line change box row chosen (0-2): $30 on the disc, $2E on the cartridge
+tmlines	equ	$16C			;line sets copied from the team data (LineSets), 7 lines x 8 bytes: $16C on the disc, $16A on the cartridge
 pldsize		equ	8
 tmboxlist	equ	$9C			;penalty box list of roster players (bytes, negative ends): tmpdst + 2 * 26 roster slots
 BigFontMap	equ	$47D38			;pointer to the big font graphics (a loaded file here)
@@ -645,6 +647,8 @@ handed	equ	$76			;bit0 set is left handed
 SCstruct	equ	$80			;bytes per sort object
 Sideline	equ	$88			;distance from center to side boards
 tmgoals	equ	$B6			;goals per roster player (goalies: goals against), bytes
+maxros	equ	26			;roster slots per team in the team structure
+tmassists	equ	tmgoals+maxros		;assists per roster player (bytes)
 horoff	equ	$C5
 tmpshots	equ	$EA			;shots per roster player (goalies: shots against), bytes
 tmpice	equ	$138			;frames on ice per roster player (words)
@@ -731,3 +735,49 @@ TeamGfxMap	equ	$47D90			;disc only: the team graphics LoadHomeTeamGfx loads (the
 StanleyCupSprite	equ	$47D94
 FileLoadDirectory	equ	$47DA0			;disc only: the file directory the loader reads ($6044 d7 = 1, d0 = $60)
 AltTeamGfxMap	equ	$47DA8			;disc only: the graphics LoadHomeTeamGfx uses while AltTeamGfxFlag is set
+; --- struct fields the HOCKEY.BIN transcription now writes by name (cartridge names and offsets, matched instruction
+; by instruction against the cartridge routine of the same name) ---
+Xcord	equ	$0			;x and y words at the start of an sso object
+crgoalsuser	equ	$1			;the user playing the team
+pldweight	equ	$1			;high nibble weight, low nibble leg power legstr (wl)
+pruser	equ	$1			;the user playing his team
+srpppk	equ	$1			;high nibble penalty kill deficit, low nibble power play bonus
+urgoalsteam	equ	$1			;the user's team in that game
+Ycord	equ	$2			; y word of an sso object
+crgoalsopp	equ	$2			;opponent team
+propp	equ	$2			;opponent team
+srhomeaway	equ	$2			;high nibble home bonus, low nibble visitor bonus (negated)
+urgoalsopp	equ	$2			;opponent team
+crgoalsoppuser	equ	$3			;opponent user
+proppuser	equ	$3			;opponent user
+psplayer	equ	$3			;byte: penalized player
+urgoalsoppuser	equ	$3			;opponent user
+crsaves	equ	$4			;most saves by one of its goalies
+pldcheck	equ	$4			;high nibble checking, bit 0 hand (1 = right in 94 data;
+ssassist1	equ	$4			;byte: first assist ($FF none)
+crsavesuser	equ	$5			; career record saves: user
+ssassist2	equ	$5			;byte: second assist ($FF none)
+ursavesteam	equ	$5			; most saves in a game: the user's team
+crsavesopp	equ	$6			; career record saves: opponent team
+pldendur	equ	$6			;high nibble endurance, low nibble shoot / pass odds spodds (ey)
+ursavesopp	equ	$6			; most saves in a game: opponent team
+crsavesoppuser	equ	$7			; career record saves: opponent user
+pldpass	equ	$7			;high nibble passing passacc, low nibble aggression aggress (tm)
+ursavesoppuser	equ	$7			; most saves in a game: opponent user
+crpeakopp	equ	$A			; peak crowd record: opponent team
+jimtiles	equ	$A			;header size: the tile data starts here
+crpeakoppuser	equ	$B			; peak crowd record: opponent user
+urties	equ	$C			;word, high byte first: ties
+SPAattr	equ	$10			;SPA table: attribute word after the 8 direction offsets (bit 0 = loop)
+camtrack	equ	$16			;SCnum of the object tracked in replay
+camidle	equ	$18			;$FF while the replay d-pad is idle, cleared on scroll/track (never read)
+OldZpos	equ	$24			; height before the last move
+limpact	equ	$30			;last impact value
+radiusx	equ	$4A			;width of this graphic
+radiusy	equ	$4C			;height of this graphic
+legspd	equ	$69			; leg speed (skating speed)
+aioff	equ	$6A			; offensive rating (CPU offense)
+spodds	equ	$70			; player rating: shoot / pass odds
+aggress	equ	$73			;aggression (Agr; goalie: glove left)
+GGSleft	equ	aggress			;goalie glove save left (92 name; 92 put it on stickhand)
+checking	equ	$75			;checking (Chk)
