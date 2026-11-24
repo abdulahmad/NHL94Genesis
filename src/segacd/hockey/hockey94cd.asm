@@ -386,7 +386,7 @@ Pausemode	jsr	(forceblack).l
 	move.w	(sp)+,(sflags).l
 	btst	#sfhor,(sflags).l
 	beq.w	.clr
-	jsr	(IceRinkRemapGfxA).l
+	jsr	(ReloadRefHorTiles).l
 	jsr	(SetHor).l
 	bra.w	.hor
 .clr	jsr	(ClrHor).l

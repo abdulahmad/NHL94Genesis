@@ -88,7 +88,7 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	move.w	(featuredplayer).l,d3
 	mulu.w	#$6,d3		;6 bytes per entry: picture.l + roster index.w
 	asl.w	#$2,d0		;team number * 4 to index the list of team lists
-	movea.l	$47D88.l,a0		;pictures of each team: picture.l, roster index.w entries
+	movea.l	(FeaturedPictures).l,a0		;pictures of each team: picture.l, roster index.w entries
 	movea.l	(a0,d0.w),a0		;this team's list
 	move.w	$4(a0,d3.w),(cardroster).l
 	movea.l	(a0,d3.w),a0		;the picture
@@ -1241,7 +1241,7 @@ OvrGoalWgtList	dc.w	$0202,$0202,$0202,$0202,$0909,$0202,$0902,$0202
 CalcAttribThirdTable	dc.w	$0202,$0202,$0202,$0202,$0202,$0202,$0202,$0202
 DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, Card<player>)
 	movem.l	d0-d7/a1-a6,-(sp)
-	movea.l	$47D88.l,a0
+	movea.l	(FeaturedPictures).l,a0
 	move.w	d1,d2
 	asl.w	#$2,d2
 	movea.l	(a0,d2.w),a0
@@ -1326,7 +1326,7 @@ NameEntryScreen
 ; Inline data read by DecompressGraphicsWithRemap from the return address (1 row).
 	dc.l	$91234567,$89ABCDEF
 	move.w	d4,(nameframechars).l
-	movea.l	$47D10.l,a2
+	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
@@ -1344,7 +1344,7 @@ NameEntryScreen
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$06,$FE,$00,$00,$00	; ......
-	movea.l	$47D0C.l,a0
+	movea.l	(EASportsBGMap).l,a0
 	movea.l	a0,a1
 	movea.l	a0,a2
 	adda.l	(a2)+,a0
@@ -1359,11 +1359,11 @@ NameEntryScreen
 	move.w	d4,(homepicchars).l
 	addi.w	#$24,d4
 	move.w	d4,(logobox1chars).l
-	movea.l	$47D7C.l,a2
+	movea.l	(LogoBoxMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	move.w	d4,(BigFontchars).l
-	movea.l	$47D38.l,a2
+	movea.l	(BigFontMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
 ; Inline data read by $38946 from the return address (1 row).
@@ -1398,7 +1398,7 @@ NameEntryScreen
 	beq.w	.next2
 	move.w	(VisTeam).l,d3
 .next2	asl.w	#$2,d3
-	movea.l	$47D8C.l,a0
+	movea.l	(TeamLogoBitmaps).l,a0
 	movea.l	(a0,d3.w),a0
 	movea.l	a0,a1
 	movea.l	a0,a2
