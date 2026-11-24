@@ -2446,7 +2446,7 @@ assdefd
 	bsr.w	skateto
 	bra.w	check4check
 rtss21	rts
-; asswingd (the cartridge label for the code below; a comment here because the disc code reaches across this point with local labels)
+asswingd							;player a3 is wing on defense
 	btst.b	#$5,$62(a3)
 	bne.w	rtss21
 	btst.b	#$0,(gmode).l
@@ -2512,7 +2512,7 @@ rtss21	rts
 	bmi.w	skateto
 	move.w	(puckx).l,d0
 	bra.w	skateto
-; asswingo (the cartridge label for the code below; a comment here because the disc code reaches across this point with local labels)
+asswingo							;player a3 is wing on offense
 	btst.b	#$5,$62(a3)
 	bne.w	rtss21
 	btst.b	#$0,(gmode).l
@@ -2603,15 +2603,16 @@ AssistTargetFlip	move.w	$44(a3),d0
 	neg.w	d1
 .next2	lea.l	EvadePC(pc),a0
 	bra.w	skateto
-.loop	rts
-; asscenterd (the cartridge label for the code below; a comment here because the disc code reaches across this point with local labels)
+rtss11								;shared rts for the early exits nearby
+	rts
+asscenterd							;player a3 is center on defense
 	btst.b	#$5,$62(a3)
-	bne.w	.loop
+	bne.w	rtss11
 	btst.b	#$0,(gmode).l
 	bne.w	donothing
 	bsr.w	check4bench
 	btst.b	#$3,$62(a3)
-	bne.w	.loop
+	bne.w	rtss11
 	bclr.b	#$1,$62(a3)
 	beq.w	.next3
 	clr.w	$40(a3)
@@ -2648,14 +2649,14 @@ AssistTargetFlip	move.w	$44(a3),d0
 	neg.w	d1
 .next8	lea.l	$32574.l,a0
 	bra.w	skateto
-; asscentero (the cartridge label for the code below; a comment here because the disc code reaches across this point with local labels)
+asscentero							;player a3 is center on offense
 	btst.b	#$5,$62(a3)
-	bne.w	.loop
+	bne.w	rtss11
 	btst.b	#$0,(gmode).l
 	bne.w	donothing
 	bsr.w	check4bench
 	btst.b	#$3,$62(a3)
-	bne.w	.loop
+	bne.w	rtss11
 	bclr.b	#$1,$62(a3)
 	beq.w	.next9
 	st.b	$48(a3)

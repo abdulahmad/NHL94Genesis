@@ -562,6 +562,7 @@ sf2pwrtm	equ	$6			;0 for team 1 in power play
 plpos	equ	$6			;PlList: 6 wanted roster players, then their positions
 gspobwins	equ	$6			;play off bottom team (on tree) wins (for best of 7)
 sfhor	equ	$7			;screen is in horizontal mode
+sf3fosong	equ	$7			;sflags3: set for periods 1 and 2, play the face off tune once at the first face off
 seSize	equ	$7			;byte: VDP size code (low byte of seAttr)
 pfgoal	equ	$7			;0=bottom, 1=top (to shoot at)
 sbut	equ	$7			;start button
