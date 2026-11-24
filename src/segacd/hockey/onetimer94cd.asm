@@ -90,7 +90,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	bne.w	.near
 	neg.w	d0
 .near	bset	#$2,(sflags6).l
-	movea.l	#$228C6,a0
+	movea.l	#OneTimerNearTbl,a0
 	cmpi.w	#$58,d0
 	blt.w	.facing
 	movea.l	#$228E6,a0
