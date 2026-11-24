@@ -85,70 +85,70 @@ Verified bytes are 22,690 of the 410,162 bytes in the four code files (5.5%). `M
 
 | Source | Compared to | Bytes |
 | --- | --- | --- |
-| `src/segacd/maincd.asm` | `cdbin/MAIN.BIN` | `$FF0000`-`$FF0271` (626) |
-| `src/segacd/maindma.asm` | `cdbin/MAIN.BIN` `$272` | `$FF0272`-`$FF04FF` (654) |
-| `src/segacd/maincont.asm` | `cdbin/MAIN.BIN` `$500` | `$FF0500`-`$FF0CB7` (1,976) |
-| `src/segacd/mainblit.asm` | `cdbin/MAIN.BIN` `$CB8` | `$FF0CB8`-`$FF12BF` (1,544) |
-| `src/segacd/mainvdp.asm` | `cdbin/MAIN.BIN` `$12C0` | `$FF12C0`-`$FF183F` (1,408) |
-| `src/segacd/mainpad.asm` | `cdbin/MAIN.BIN` `$1840` | `$FF1840`-`$FF1E8F` (1,616) |
-| `src/segacd/maindisp.asm` | `cdbin/MAIN.BIN` `$1E90` | `$FF1E90`-`$FF2D29` (3,738) |
-| `src/segacd/mainfont.asm` | `cdbin/MAIN.BIN` `$2D2A` | `$FF2D2A`-`$FF3029` (768) |
-| `src/segacd/maintext.asm` | `cdbin/MAIN.BIN` `$302A` | `$FF302A`-`$FF34B7` (1,166) |
-| `src/segacd/subboot.asm` | `cdbin/STARTER.BIN` | first `$90` bytes (144) |
-| `src/segacd/subheap.asm` | `cdbin/STARTER.BIN` `$4FA8` | `EngineIdle` and `GetData` (192) |
-| `src/segacd/pcmclear.asm` | `cdbin/STARTER.BIN` `$3A0C` | PCM channel wipe (106) |
-| `src/segacd/cdcwait.asm` | `cdbin/STARTER.BIN` `$3A76` | `CDBCHK` spin (20) |
-| `src/segacd/pcmchip.asm` | `cdbin/STARTER.BIN` `$3FD0` | PCM init, start, stop, address, bank load (298) |
-| `src/segacd/audiostream.asm` | `cdbin/STARTER.BIN` `$508C` | `AudioPlayPos` through `AudioBusy` (632) |
-| `src/segacd/cdfade.asm` | `cdbin/STARTER.BIN` `$54F6` | seek/repeat, fader ramp, stop (120) |
-| `src/segacd/cdrequest.asm` | `cdbin/HOCKEY.BIN` `$1C1D2` | `song` at runtime `$371D2` (52) |
-| `src/segacd/sfxcd.asm` | `cdbin/HOCKEY.BIN` `$1C10C` | `sfx`, command `$26` (104) |
-| `src/segacd/gate34.asm` | `cdbin/HOCKEY.BIN` `$1C174` | command `$34` (94) |
-| `src/segacd/songplay.asm` | `cdbin/HOCKEY.BIN` `$10B1E` | `song` then one `MSCPLAY1` (58) |
-| `src/segacd/cdtrack.asm` | `cdbin/HOCKEY.BIN` `$1C206` | choose a track and `MSCPLAY1` (202) |
-| `src/segacd/cdcrowd.asm` | `cdbin/HOCKEY.BIN` `$238CE` | crowd-volume slew, no PSG write (78) |
-| `src/segacd/cdstart.asm` | `cdbin/HOCKEY.BIN` `$24D66` | CD-DA mode, seek track 4, repeat it (130) |
-| `src/segacd/scout94.asm` | `cdbin/HOCKEY.BIN` `$D1D4`..`$E1CE` | scouting report and matchup screen (ScoutCrowdRecord to ScoutStub), 94G names |
-| `src/segacd/scouting.asm` | `cdbin/HOCKEY.BIN` `$2486C` | InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, with the cartridge labels (926) |
-| `src/segacd/scoutload.asm` | `cdbin/HOCKEY.BIN` `$24C12` | scouting file directory load (340) |
-| `src/segacd/playerpic.asm` | `cdbin/PLAYER.BIN` `$1D54` | player photo picker (700) |
-| `src/segacd/playercareer.asm` | `cdbin/PLAYER.BIN` `$2010` | career-stat rows (960) |
-| `src/segacd/playerpage.asm` | `cdbin/PLAYER.BIN` `$23D0` | team stat page (1,100) |
-| `src/segacd/crowdanim.asm` | `cdbin/HOCKEY.BIN` `$10D28` | crowd frame driver (318) |
-| `src/segacd/crowdtable.asm` | `cdbin/HOCKEY.BIN` `$2654C` | crowd frame table, same as cartridge `updatecrowdf_cd0` (128) |
-| `src/segacd/filmrun.asm` | `cdbin/STARTER.BIN` `$3D94` | movie open/task/close switch (278) |
-| `src/segacd/filmcmd.asm` | `cdbin/STARTER.BIN` `$4D9E` | post a movie command (44) |
-| `src/segacd/filmbuf.asm` | `cdbin/STARTER.BIN` `$4E26` | film buffer allocator (154) |
-| `src/segacd/filmopen.asm` | `cdbin/STARTER.BIN` `$4336` | `FilmOpen` (514) |
-| `src/segacd/filmsm.asm` | `cdbin/STARTER.BIN` `$3EAA` | `SM` chunk copy (294) |
-| `src/segacd/filmtask.asm` | `cdbin/STARTER.BIN` `$458C` | `FilmTask` (418) |
-| `src/segacd/filmclose.asm` | `cdbin/STARTER.BIN` `$473A` | `FilmClose` (66) |
-| `src/segacd/z80load.asm` | `cdbin/MAIN.BIN` `$76C8` | Z80 loader (240) |
-| `src/segacd/hwread.asm` | `cdbin/MAIN.BIN` `$3B3C` | VDP, joypad, and HV readers (258) |
+| `src/segacd/main/maincd94cd.asm` | `cdbin/MAIN.BIN` | `$FF0000`-`$FF0271` (626) |
+| `src/segacd/main/maindma94cd.asm` | `cdbin/MAIN.BIN` `$272` | `$FF0272`-`$FF04FF` (654) |
+| `src/segacd/main/maincont94cd.asm` | `cdbin/MAIN.BIN` `$500` | `$FF0500`-`$FF0CB7` (1,976) |
+| `src/segacd/main/mainblit94cd.asm` | `cdbin/MAIN.BIN` `$CB8` | `$FF0CB8`-`$FF12BF` (1,544) |
+| `src/segacd/main/mainvdp94cd.asm` | `cdbin/MAIN.BIN` `$12C0` | `$FF12C0`-`$FF183F` (1,408) |
+| `src/segacd/main/mainpad94cd.asm` | `cdbin/MAIN.BIN` `$1840` | `$FF1840`-`$FF1E8F` (1,616) |
+| `src/segacd/main/maindisp94cd.asm` | `cdbin/MAIN.BIN` `$1E90` | `$FF1E90`-`$FF2D29` (3,738) |
+| `src/segacd/main/mainfont94cd.asm` | `cdbin/MAIN.BIN` `$2D2A` | `$FF2D2A`-`$FF3029` (768) |
+| `src/segacd/main/maintext94cd.asm` | `cdbin/MAIN.BIN` `$302A` | `$FF302A`-`$FF34B7` (1,166) |
+| `src/segacd/starter/subboot94cd.asm` | `cdbin/STARTER.BIN` | first `$90` bytes (144) |
+| `src/segacd/starter/subheap94cd.asm` | `cdbin/STARTER.BIN` `$4FA8` | `EngineIdle` and `GetData` (192) |
+| `src/segacd/starter/pcmclear94cd.asm` | `cdbin/STARTER.BIN` `$3A0C` | PCM channel wipe (106) |
+| `src/segacd/starter/cdcwait94cd.asm` | `cdbin/STARTER.BIN` `$3A76` | `CDBCHK` spin (20) |
+| `src/segacd/starter/pcmchip94cd.asm` | `cdbin/STARTER.BIN` `$3FD0` | PCM init, start, stop, address, bank load (298) |
+| `src/segacd/starter/audiostream94cd.asm` | `cdbin/STARTER.BIN` `$508C` | `AudioPlayPos` through `AudioBusy` (632) |
+| `src/segacd/starter/cdfade94cd.asm` | `cdbin/STARTER.BIN` `$54F6` | seek/repeat, fader ramp, stop (120) |
+| `src/segacd/hockey/middle94cd.asm` | `cdbin/HOCKEY.BIN` `$1C1D2` | `song` at runtime `$371D2` (52) |
+| `src/segacd/hockey/middle94cd.asm` | `cdbin/HOCKEY.BIN` `$1C10C` | `sfx`, command `$26` (104) |
+| `src/segacd/hockey/middle94cd.asm` | `cdbin/HOCKEY.BIN` `$1C174` | command `$34` (94) |
+| `src/segacd/hockey/hockey94cd.asm` | `cdbin/HOCKEY.BIN` `$10B1E` | `song` then one `MSCPLAY1` (58) |
+| `src/segacd/hockey/middle94cd.asm` | `cdbin/HOCKEY.BIN` `$1C206` | choose a track and `MSCPLAY1` (202) |
+| `src/segacd/hockey/video94cd.asm` | `cdbin/HOCKEY.BIN` `$238CE` | crowd-volume slew, no PSG write (78) |
+| `src/segacd/hockey/setup94cd.asm` | `cdbin/HOCKEY.BIN` `$24D66` | CD-DA mode, seek track 4, repeat it (130) |
+| `src/segacd/hockey/scout94cd.asm` | `cdbin/HOCKEY.BIN` `$D1D4`..`$E1CE` | scouting report and matchup screen (ScoutCrowdRecord to ScoutStub), 94G names |
+| `src/segacd/hockey/setup94cd.asm` | `cdbin/HOCKEY.BIN` `$2486C` | InitScoutingDisplay, UpdateScoutingDisplay, ScrollDisplayUp, with the cartridge labels (926) |
+| `src/segacd/hockey/setup94cd.asm` | `cdbin/HOCKEY.BIN` `$24C12` | scouting file directory load (340) |
+| `src/segacd/player/playerpic94cd.asm` | `cdbin/PLAYER.BIN` `$1D54` | player photo picker (700) |
+| `src/segacd/player/playercareer94cd.asm` | `cdbin/PLAYER.BIN` `$2010` | career-stat rows (960) |
+| `src/segacd/player/playerpage94cd.asm` | `cdbin/PLAYER.BIN` `$23D0` | team stat page (1,100) |
+| `src/segacd/hockey/hockey94cd.asm` | `cdbin/HOCKEY.BIN` `$10D28` | crowd frame driver (318) |
+| `src/segacd/hockey/tables94cd.asm` | `cdbin/HOCKEY.BIN` `$2654C` | crowd frame table, same as cartridge `updatecrowdf_cd0` (128) |
+| `src/segacd/starter/filmrun94cd.asm` | `cdbin/STARTER.BIN` `$3D94` | movie open/task/close switch (278) |
+| `src/segacd/starter/filmcmd94cd.asm` | `cdbin/STARTER.BIN` `$4D9E` | post a movie command (44) |
+| `src/segacd/starter/filmbuf94cd.asm` | `cdbin/STARTER.BIN` `$4E26` | film buffer allocator (154) |
+| `src/segacd/starter/filmopen94cd.asm` | `cdbin/STARTER.BIN` `$4336` | `FilmOpen` (514) |
+| `src/segacd/starter/filmsm94cd.asm` | `cdbin/STARTER.BIN` `$3EAA` | `SM` chunk copy (294) |
+| `src/segacd/starter/filmtask94cd.asm` | `cdbin/STARTER.BIN` `$458C` | `FilmTask` (418) |
+| `src/segacd/starter/filmclose94cd.asm` | `cdbin/STARTER.BIN` `$473A` | `FilmClose` (66) |
+| `src/segacd/main/z80load94cd.asm` | `cdbin/MAIN.BIN` `$76C8` | Z80 loader (240) |
+| `src/segacd/main/hwread94cd.asm` | `cdbin/MAIN.BIN` `$3B3C` | VDP, joypad, and HV readers (258) |
 
-`maincd.asm` is the main CPU command loop: read `$A12020` when sub flag bit 6 is set, dispatch through the long table at `$FF01BE`, and put the VBlank vector at `$FD08` back when the command finishes. Past the handshake it clears the eight command words, waits on memory-mode bit 2, and hands word RAM back and forth (DMNA / RET in `$A12003`). Two commands add `$180000` to a sub CPU pointer so the main CPU sees the same word RAM (`$080000` there, `$200000` here).
+`src/segacd/main/maincd94cd.asm` is the main CPU command loop: read `$A12020` when sub flag bit 6 is set, dispatch through the long table at `$FF01BE`, and put the VBlank vector at `$FD08` back when the command finishes. Past the handshake it clears the eight command words, waits on memory-mode bit 2, and hands word RAM back and forth (DMNA / RET in `$A12003`). Two commands add `$180000` to a sub CPU pointer so the main CPU sees the same word RAM (`$080000` there, `$200000` here).
 
-`maindma.asm` is the word-RAM blit that command path calls. It expands nibbles, writes the VDP at `$C00000`, and sets up DMA. A source in `$200000`-`$240000` is adjusted by two when the address is odd. The slice ends on `cmpa.w #0,a0`, and `maincont.asm` is the rest of that routine: the VBlank-status spin at `$FF051C`, a copy of the `$23A450` block into `$FF284E`, VDP fills, and the helpers that add `$180000` to a pointer. A 9-long table sits at `$FF0C94`.
+`src/segacd/main/maindma94cd.asm` is the word-RAM blit that command path calls. It expands nibbles, writes the VDP at `$C00000`, and sets up DMA. A source in `$200000`-`$240000` is adjusted by two when the address is odd. The slice ends on `cmpa.w #0,a0`, and `src/segacd/main/maincont94cd.asm` is the rest of that routine: the VBlank-status spin at `$FF051C`, a copy of the `$23A450` block into `$FF284E`, VDP fills, and the helpers that add `$180000` to a pointer. A 9-long table sits at `$FF0C94`.
 
-`mainblit.asm` reads a byte stream into `$FF2DB2`-`$FF2DBA` and shakes the gate-array flag bits at `$A12018` / `$A12028`. It ends with the 16-long handler table at `$FF1280`. `mainvdp.asm` is those handlers and the routines next to them: VDP data and register writes, waits on `$A12024`, and copies that add `$180000` before calling the DMA helper at `$FF0418`. The file stops on the `rts` at `$FF183E`.
+`src/segacd/main/mainblit94cd.asm` reads a byte stream into `$FF2DB2`-`$FF2DBA` and shakes the gate-array flag bits at `$A12018` / `$A12028`. It ends with the 16-long handler table at `$FF1280`. `src/segacd/main/mainvdp94cd.asm` is those handlers and the routines next to them: VDP data and register writes, waits on `$A12024`, and copies that add `$180000` before calling the DMA helper at `$FF0418`. The file stops on the `rts` at `$FF183E`.
 
-`mainpad.asm` is the zero fill after that `rts` and the byte table at `$FF1DBC`. `maindisp.asm` saves the VBlank vector at `$FD08`, points it at `$FF1F8C`, and calls `MAINCODE`. When that returns it waits on a flag and puts the old vector back, then programs the VDP and copies tiles. `mainfont.asm` is the font bitmap that follows the `rts` at `$FF2D28`.
+`src/segacd/main/mainpad94cd.asm` is the zero fill after that `rts` and the byte table at `$FF1DBC`. `src/segacd/main/maindisp94cd.asm` saves the VBlank vector at `$FD08`, points it at `$FF1F8C`, and calls `MAINCODE`. When that returns it waits on a flag and puts the old vector back, then programs the VDP and copies tiles. `src/segacd/main/mainfont94cd.asm` is the font bitmap that follows the `rts` at `$FF2D28`.
 
-`maintext.asm` is the Sierra C handlers those calls land in: `DoDrawTextCommand`, `DoMoviePlayBack`, `MAINCODE`, `ReDraw`, `drawprint`, `NumStr`, `HexStr`, `aprint`, `InitWorld`, `GetCommandFromSub`, and `Set1MFlag`. Each `rts` is followed by the function name (a tag byte, then the ASCII). `InitWorld` prints `MAINCPU is alive`. The same eleven names occur again later in the file, `$2240` bytes on.
+`src/segacd/main/maintext94cd.asm` is the Sierra C handlers those calls land in: `DoDrawTextCommand`, `DoMoviePlayBack`, `MAINCODE`, `ReDraw`, `drawprint`, `NumStr`, `HexStr`, `aprint`, `InitWorld`, `GetCommandFromSub`, and `Set1MFlag`. Each `rts` is followed by the function name (a tag byte, then the ASCII). `InitWorld` prints `MAINCPU is alive`. The same eleven names occur again later in the file, `$2240` bytes on.
 
-`subboot.asm` is the sub CPU's first instructions, the flag handshake, BIOS function 0 at `$6044`, and `jmp $1B000` into `HOCKEY.BIN`. `subheap.asm` is the Sierra C `EngineIdle` and `GetData` at `$262A8` (the `link a6` the boot jumps to). The function name is the bytes after each `rts`.
+`src/segacd/starter/subboot94cd.asm` is the sub CPU's first instructions, the flag handshake, BIOS function 0 at `$6044`, and `jmp $1B000` into `HOCKEY.BIN`. `src/segacd/starter/subheap94cd.asm` is the Sierra C `EngineIdle` and `GetData` at `$262A8` (the `link a6` the boot jumps to). The function name is the bytes after each `rts`.
 
-The audio slices are the sub CPU's CD-DA calls and the PCM stream. `docs/segacd_audio.md` lists the `_CDBIOS` numbers, the track word at `$1745E`, and the crowd-volume routine whose PSG stores were dropped. `scout94.asm` starts the scouting screen on song `$7A`. `scouttext.asm` and `scouttok.asm` type the Ron Barr script. `docs/segacd_announce.md` is that write-up.
+The audio slices are the sub CPU's CD-DA calls and the PCM stream. `docs/segacd_audio.md` lists the `_CDBIOS` numbers, the track word at `$1745E`, and the crowd-volume routine whose PSG stores were dropped. `src/segacd/hockey/scout94cd.asm` starts the scouting screen on song `$7A`. The scouting text player in `src/segacd/hockey/setup94cd.asm` types the Ron Barr script. `docs/segacd_announce.md` is that write-up.
 
-`playerpic.asm`, `playercareer.asm`, and `playerpage.asm` are the `PLAYER.BIN` overlay: a photo (or a generic `$504`-byte frame), the Regular/Playoff career rows, and the Players/Goalies page with the power-play lines. `docs/segacd_stats.md`.
+`src/segacd/player/playerpic94cd.asm`, `src/segacd/player/playercareer94cd.asm`, and `src/segacd/player/playerpage94cd.asm` are the `PLAYER.BIN` overlay: a photo (or a generic `$504`-byte frame), the Regular/Playoff career rows, and the Players/Goalies page with the power-play lines. `docs/segacd_stats.md`.
 
-`crowdanim.asm` is the cartridge crowd-frame driver. The frame table in `crowdtable.asm` matches `updatecrowdf_cd0` with nothing added. The HV counter reads became command `$1B` and a word from `$FF8010`. `docs/segacd_crowd.md`.
+`src/segacd/hockey/hockey94cd.asm` is the cartridge crowd-frame driver. The frame table in `src/segacd/hockey/tables94cd.asm` matches `updatecrowdf_cd0` with nothing added. The HV counter reads became command `$1B` and a word from `$FF8010`. `docs/segacd_crowd.md`.
 
-`filmrun.asm` chooses `FilmOpen`, `FilmTask`, or `FilmClose`. `filmcmd.asm` posts that choice to the main CPU, where `DoMoviePlayBack` blits command `2`. `filmbuf.asm` allocates the buffer. `filmopen.asm`, `filmsm.asm`, `filmtask.asm`, and `filmclose.asm` are the `FILM` / `SM` player. `docs/segacd_film.md`.
+`src/segacd/starter/filmrun94cd.asm` chooses `FilmOpen`, `FilmTask`, or `FilmClose`. `src/segacd/starter/filmcmd94cd.asm` posts that choice to the main CPU, where `DoMoviePlayBack` blits command `2`. `src/segacd/starter/filmbuf94cd.asm` allocates the buffer. `src/segacd/starter/filmopen94cd.asm`, `src/segacd/starter/filmsm94cd.asm`, `src/segacd/starter/filmtask94cd.asm`, and `src/segacd/starter/filmclose94cd.asm` are the `FILM` / `SM` player. `docs/segacd_film.md`.
 
-`cdrequest.asm` is `song` at runtime `$371D2`. `sfxcd.asm` is `sfx` at `$3710C`. `songplay.asm` is the one call that then `MSCPLAY1`s the track. `docs/segacd_song.md`.
+`song` (runtime `$371D2`) and `sfx` (`$3710C`) are in `src/segacd/hockey/middle94cd.asm`. The game start in `src/segacd/hockey/hockey94cd.asm` has the one call that then `MSCPLAY1`s the track. `docs/segacd_song.md`.
 
-`z80load.asm` copies a `$C3 $00` block to the Z80. `hwread.asm` is the main CPU's one-line port readers, including the HV counter copy into `$A12010`.
+`src/segacd/main/z80load94cd.asm` copies a `$C3 $00` block to the Z80. `src/segacd/main/hwread94cd.asm` is the main CPU's one-line port readers, including the HV counter copy into `$A12010`.
 
 `tools/emit_m68k.py` writes a slice as SNASM (`moveq #-1` instead of `moveq #$FF`, unsized `btst` to a data register, `$FFFFFD08.w` instead of `$FD08.w`). `tools/segacd_relocs.py` is the six-instruction matcher that prints the cartridge-to-disc address pairs. Both are Sega CD helpers only; the cartridge build does not use them.
 

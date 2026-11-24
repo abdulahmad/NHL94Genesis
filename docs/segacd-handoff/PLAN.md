@@ -12,7 +12,7 @@ HOCKEY.BIN has the same shape as the cartridge (656 `rts`, 328 `movem.l`) and th
 1. Run `tools/segacd_relocs.py` on the cartridge and `HOCKEY.BIN` to get the cartridge-to-disc address pairs (variables like `$B028` to `$18D58`, calls like `$11A48` to `$38D9E`).
 2. Try to make the transcription mechanical: take a cartridge routine, rewrite its absolute addresses through the pairs, assemble with `/o oz-`, compare against the matching disc range. A routine that matches this way needs only a fragment line and a name. A routine that differs shows exactly what the CD changed (sub CPU comm flag, CD audio, film calls), and those are the interesting ones to write up.
 3. Work from the start of the file: the team data block ($7C onward) matches the cartridge for 733 bytes and then splits (disc has "Eastern division" where the cartridge has "Madison Square Garden"). Then the game screens ("Play Mode", "Line Editor", "SHOOTOUT MODE"), then gameplay.
-4. Cover HOCKEY.BIN segment by segment, using the cartridge's own segment list and file layout (`tools/segments.json`, `src/`), so each disc segment sits next to its 94G twin and carries its 94G names. Keep `NHL94-SCD/docs/name_map.csv` (disc file, address, 94G name).
+4. Cover HOCKEY.BIN segment by segment, using the cartridge's own segment list and file layout (the include list in `src/nhl94.asm`, `src/`), so each disc segment sits next to its 94G twin and carries its 94G names. Keep `docs/name_map.csv` (disc file, address, 94G name).
 Measure: matched bytes of HOCKEY.BIN. A sensible first target is 25%.
 
 ## Step 2: the `$37xxx`-`$39xxx` question (time-box one day)
