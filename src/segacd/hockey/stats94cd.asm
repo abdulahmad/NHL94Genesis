@@ -1684,7 +1684,7 @@ ReadStatColumn
 	add.w	d0,d1
 	clr.l	d2
 	move.b	(a2,d1.l),d2
-	move.w	$2(a1),d1
+	move.w	scoloff2(a1),d1
 	bmi.w	rtss8
 	add.w	d0,d1
 	clr.w	d3

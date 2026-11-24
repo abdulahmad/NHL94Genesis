@@ -2165,7 +2165,7 @@ SetPlList						;create PlList of players who we want on the ice now. a2 = team s
 									;the whole roster
 	movea.l	#PlList,a4
 	clr.l	(a4)		;goalie present: use the position priority list from the start
-	clr.w	$4(a4)
+	clr.w	plpos-2(a4)
 	movea.l	#priolist,a0
 	tst.w	tmgoalie(a2)
 	bpl.w	.next		;branch if theres a goalie

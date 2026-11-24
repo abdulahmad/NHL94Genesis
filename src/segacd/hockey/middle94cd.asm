@@ -397,7 +397,7 @@ SongCdCheck
 	move.w	#$80,d0
 	jsr	$5F22.w
 	bcs.w	.next7
-	move.w	#$81,d0
+	move.w	#$81,d0		;CDBSTAT: a0 = the BIOS status table
 	jsr	$5F22.w
 	move.w	(a0),d2
 	andi.w	#$FF00,d2
@@ -407,12 +407,12 @@ SongCdCheck
 	bra.s	.next4
 .next	cmpi.w	#$100,d2
 	bne.s	.next2
-	move.b	$7(a0),d0
+	move.b	CdStatTrack(a0),d0		;the CD track playing
 	cmpi.b	#$FF,d0
 	beq.s	.next2
 	cmpi.b	#$2,d0
 	beq.s	.next2
-	cmpi.b	#$7,$7(a0)
+	cmpi.b	#$7,CdStatTrack(a0)
 	bge.s	.next2
 	move.w	#$2,(CdSongTrack).l
 	bra.s	.next4

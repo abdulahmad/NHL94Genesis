@@ -154,14 +154,14 @@ PlayerCardScreen						;Draw a player card on one side. setupcardflags bit 1 set:
 	adda.w	#$8,a2
 .next	dbra	d0,.loop2
 	movea.l	#mesarea,a3
-	lea.l	$2(a3),a1		;text after the header
+	lea.l	strtext(a3),a1		;text after the header
 	move.w	#$6,(a3)		;string header: 6 = print mode
 	move.l	a2,-(sp)		;keep the player record
 	adda.w	(a2),a2
 	move.b	(a2),d0
 	ext.w	d0
 	jsr	(ConvertByteToDigits).l
-	move.w	#$2000,$4(a3)
+	move.w	#$2000,strtext+2(a3)	;space and 0 after the 2 digits
 	movea.l	(sp)+,a1
 	jsr	(appstring).l
 	movea.l	a3,a1
@@ -714,7 +714,7 @@ AppendRecordHolder						;Append the user name of the record holder (byte 1 of re
 	bsr.w	SPAlistClearFlag6
 	movea.l	#M68K_RAM,a0
 	movem.l	(sp)+,d0-d7/a1-a6
-.0	move.b	$1(a0),d2
+.0	move.b	pruser(a0),d2
 	ext.w	d2
 	bset	#$7,(sflags6).l		;bit 7 of sflags6: AppendUserName uses the record name list
 	bsr.w	AppendUserName
@@ -735,7 +735,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	bsr.w	SPAlistClearFlag6
 	movea.l	#M68K_RAM,a0
 	movem.l	(sp)+,d0-d7/a1-a6
-.0	move.b	$3(a0),d2
+.0	move.b	proppuser(a0),d2
 	ext.w	d2
 	movem.l	d0/a1,-(sp)
 	bset	#$7,(sflags6).l		;record name list
@@ -744,7 +744,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	movea.l	#RecSpaceTxt,a1
 	jsr	(appstring).l
 	movem.l	(sp)+,d0/a1
-	move.b	$2(a0),d0
+	move.b	propp(a0),d0
 	jsr	(AppendTeamName).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -880,7 +880,7 @@ UpdateTeamRecord	movem.l	d0-d7/a0-a6,-(sp)
 	rts
 UpdateCrowdRecord	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	ReadCrowdRecord
-	move.w	$C(a1),d3
+	move.w	tmscore(a1),d3
 	cmp.b	$0(a0),d3
 	ble.w	.next7
 	move.b	d3,$0(a0)
@@ -989,7 +989,7 @@ AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, s
 .loop	move.b	(a0,d3.w),d1
 	bne.w	.0
 	move.b	#$20,d1
-.0	move.b	d1,$2(a1)
+.0	move.b	d1,strtext(a1)
 	tst.b	(a1)+
 	addi.w	#$1,d3
 	dbra	d0,.loop
@@ -1251,11 +1251,11 @@ DrawPlayerPicture						;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, 
 	movea.l	(a0,d2.w),a0
 	move.w	#$FFFF,d2
 	bra.w	.1
-.loop	cmp.w	$4(a0),d0
+.loop	cmp.w	fpplayer(a0),d0
 	bne.w	.0
 	movea.l	(a0),a0
 	bra.w	.x
-.0	adda.l	#$6,a0
+.0	adda.l	#fpsize,a0
 .1	addi.w	#$1,d2
 	tst.l	(a0)
 	bne.w	.loop

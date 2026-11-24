@@ -11,7 +11,7 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 .loop	clr.l	(a0)
 	clr.l	(a1)
 	move.b	(a2)+,(a1)
-	move.b	(a2)+,$1(a1)
+	move.b	(a2)+,$1(a1)		;bytes 1 and 2 of the picturebits long, read whole below
 	move.b	(a2)+,$2(a1)
 	move.l	#$0,-(sp)
 	move.l	(a1),d2
@@ -309,9 +309,9 @@ GetTeamStructCount
 .next	addi.l	#$1,(a0)
 	cmpi.w	#$8,d1
 	beq.w	.next2
-	cmp.w	$54(a3),d1
+	cmp.w	facedir(a3),d1		;a3 = the player doinput handles
 	beq.w	.next2
-	addi.l	#$1,$4(a0)
+	addi.l	#$1,homedirpresses-homepresses(a0)	;the matching direction press count
 .next2	movem.l	(sp)+,d1/a0
 	rts
 TerminateLogName						;Unreferenced. The GetLogName String at lognametext, ended with 0 at

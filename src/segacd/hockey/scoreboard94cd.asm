@@ -794,7 +794,7 @@ StartHL2	btst	#$3,(sflags3).l
 	st.b	(Zamx).l
 	clr.w	(CwdExciteLvl).l
 	move.w	$0(a0),(HomeTeam).l
-	move.w	$2(a0),(VisTeam).l
+	move.w	gst2(a0),(VisTeam).l
 	move.l	a0,-(sp)
 	clr.w	(tmstruct+tmgoalie).l
 	clr.w	(awtmstruct+tmgoalie).l
