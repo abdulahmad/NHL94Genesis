@@ -231,7 +231,7 @@ getFgtbyte						;d0 = fighting byte of a2 / 4. Called from setInjuryType
 	rts
 ; Return point of getFgtbyte.
 chkFgtBit1
-	btst	#$1,$74(a2)
+	btst	#$1,fighting(a2)
 	rts
 RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 when fox <= -$40 and
 	

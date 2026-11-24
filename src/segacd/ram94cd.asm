@@ -499,7 +499,9 @@ df32c	equ	$1			;32 column mode on
 pbscnum	equ	$1			;byte: SCnum of the player
 dfng	equ	$2			;don't int graphics
 seY	equ	$2			;word: y, signed
+foframe	equ	$0			;word: frame (faceoff sprite entry)
 foattr	equ	$2			;word: attribute (bit 11 x flip)
+fosize	equ	$4			;size of a faceoff sprite entry in bytes
 satSize	equ	$2			;byte: size code
 sf2drec	equ	$2			;disable replay record
 sfspdir	equ	$2			;set pass dir mode
@@ -510,6 +512,7 @@ SngFaceoff	equ	$2			;face off tune, once per period; also the shootout song
 pldlegspd	equ	$2			;high nibble speed legspd, low nibble offense aioff (so)
 ifok	equ	$2			;iflags: icing
 pcframes	equ	$2			;word: frames
+pcsize	equ	$4			;size of a puck cross entry in bytes
 mapheight	equ	$2			;word: height in tiles
 gsfso	equ	$2			;series over
 gst2	equ	$2			;team 2

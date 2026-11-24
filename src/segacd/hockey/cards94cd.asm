@@ -1382,7 +1382,7 @@ NameEntryScreen
 .next	movea.l	#TeamList,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	move.w	(a1),d0
 	subi.w	#$2,d0
 	lsr.w	#$1,d0

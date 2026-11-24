@@ -670,7 +670,7 @@ uppads						;update the gloves object and the 6 pad objects, and queue new pad l
 	move.w	#$F,d1		;label code for $E
 	cmpi.w	#$E,d0
 	beq.w	.chg		;$E: leave the pad position alone
-	st.b	$18(a0)		;hidden
+	st.b	Zpos(a0)		;hidden
 	cmpi.w	#$F,d0
 	beq.w	.next		;$F: pad hidden, label unchanged
 	asl.w	#$7,d0

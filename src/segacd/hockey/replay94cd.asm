@@ -134,11 +134,11 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	beq.w	.next7
 	asl.w	#$1,d2
 	move.w	(a6,d2.w),d2
-	cmpi.w	#$F,$52(a3)
+	cmpi.w	#$F,SCnum(a3)
 	bne.w	.next5
 	cmpi.w	#$18A,d2
 	beq.w	.next5
-	move.w	#$FC00,$14(a3)
+	move.w	#$FC00,Ypos(a3)
 .next5	cmpi.w	#$1,d2
 	blt.w	.next6
 	cmpi.w	#$34E,d2
@@ -167,7 +167,7 @@ RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
 	blt.w	.next9
 	cmpi.w	#$179,d2
 	bge.w	.next9
-	bchg	#$3,$4(a3)
+	bchg	#$3,attribute(a3)
 .next9	adda.w	#$4,a0
 	adda.l	#$80,a3
 	dbra	d1,.loop

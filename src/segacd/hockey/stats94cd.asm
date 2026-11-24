@@ -2118,7 +2118,7 @@ StatsRowNoGoalie	tst.w	d0
 	dc.b	$00,$0C,$6E,$6F,$20,$67,$6F,$61,$6C,$69,$65,$00	; ..no goalie.
 	bra.w	StatsRowsNext
 ; Stats rows: finds the goalie name
-StatsRowGoalieName	movea.l	$1E(a2),a1
+StatsRowGoalieName	movea.l	tmdata(a2),a1
 	adda.w	$0(a1),a1
 	move.w	d0,d2
 	subi.w	#$1,d2
@@ -2340,7 +2340,7 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	blt.w	.next10
 	move.w	d0,$0(a5)
 .next10	move.w	$2(a0,d5.w),d1
-	add.w	$14(a5),d1
+	add.w	Ypos(a5),d1
 	cmpi.w	#$126,d1
 	bgt.w	.next11
 	cmpi.w	#$FEDA,d1
@@ -2481,7 +2481,7 @@ ShowReplayIcon
 	btst	#$4,(sflags4).l
 	beq.w	.next4
 	movea.l	(RevRinkTilelist).l,a1
-.next4	adda.l	$4(a1),a1
+.next4	adda.l	jimdata(a1),a1
 	movea.l	#null,a2
 	jmp	(dobitmap).l
 ; Clears the controller text on the pad screen: prints an empty string and erases the 8x4 text box.
@@ -2504,7 +2504,7 @@ ShowReplayBanner
 	move.w	(ExtraChars).l,d4
 	move.w	#$0,d5
 	movea.l	(ReplayMap).l,a1
-	adda.l	$4(a1),a1
+	adda.l	jimdata(a1),a1
 	movea.l	#null,a2
 	jmp	(dobitmap).l
 ; Erases the controller picture (16x11 tiles) from the pad screen.
