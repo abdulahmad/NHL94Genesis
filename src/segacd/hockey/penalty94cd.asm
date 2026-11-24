@@ -103,7 +103,7 @@ chkprogress	btst	#$2,(BA_PS_flags).l
 	move.w	(sp)+,(Vcount).l
 	bsr.w	SetHor
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D20.l,a2
+	movea.l	(RefMap2).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	bsr.w	NewTickerCheckBusy
@@ -557,10 +557,10 @@ PushRef						;tell vblank what to display. d0 = ref frame, $40 clears the window
 	cmpi.w	#$40,d0
 	beq.w	.clearit
 	mulu.w	#$70,d0
-	movea.l	$47D1C.l,a0
+	movea.l	(RefsMap).l,a0
 	btst	#sfhor,(sflags).l
 	beq.w	.m1
-	movea.l	$47D20.l,a0
+	movea.l	(RefMap2).l,a0
 .m1	adda.l	jimdata(a0),a0
 	adda.w	#$4,a0
 	adda.w	d0,a0
