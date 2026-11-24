@@ -505,10 +505,10 @@ setteams						;Use hometeam/visteam to set team structures (InitTeamStructure fo
 	bsr.w	.next
 	movem.l	(sp)+,d0/a0-a2
 	rts
-.next	move.w	d0,$2A(a2)
+.next	move.w	d0,tmteam(a2)
 	movea.l	#TeamList,a0
 	asl.w	#$2,d0
-	move.l	(a0,d0.w),$1E(a2)
+	move.l	(a0,d0.w),tmdata(a2)
 CopyTeamLines						;'Set Original lines' (line editor exit menu): copy the team data line
 	
 	tst.w	(OptLine).l
@@ -544,8 +544,8 @@ CopyTeamLinesCheckTeam
 	bsr.w	.next3
 	moveq	#$20,d1
 	adda.w	#$366,a0
-.next3	movea.l	$1E(a0),a2
-	adda.w	$2(a2),a2
+.next3	movea.l	tmdata(a0),a2
+	adda.w	Palettedata(a2),a2
 	adda.w	d1,a2
 	movea.l	#palfadenew+$40,a1
 	adda.w	d1,a1
@@ -1493,12 +1493,12 @@ MakeTree						;Make the playoff tree (potree) from playoffseats and WinBits, cle
 	cmpi.w	#$5,(bosgames).l
 	beq.w	.1		;tree order
 	bset	#gsftf,gsflags(a1)		;teams are flipped
-	move.b	(a0)+,$3(a1)
-	move.b	(a0)+,$1(a1)
+	move.b	(a0)+,gst2+1(a1)
+	move.b	(a0)+,gst1+1(a1)
 	rts
 .1	bclr	#gsftf,gsflags(a1)		;gsftf: teams not flipped
-	move.b	(a0)+,$1(a1)
-	move.b	(a0)+,$3(a1)
+	move.b	(a0)+,gst1+1(a1)
+	move.b	(a0)+,gst2+1(a1)
 	rts
 FigureJoy						;Set contteams appropriately: cont1team ... cont4team (3 and 4 for
 									;FourWayPlay). In the playoffs (not Shootout, gmode2 bit 0) find this
@@ -1958,13 +1958,13 @@ ResolveGames						;Compute winners and losers for playoff matchups. Called from 
 	beq.w	.crn
 	cmpi.w	#$4,gspobwins(a0)
 	beq.w	.crn
-	addi.w	#$1,$4(a0)
+	addi.w	#$1,gspotwins(a0)
 	move.l	#$C8,d0
 	jsr	(randomd0).l
 	andi.w	#$1,d0
 	beq.w	.cr0
-	subi.w	#$1,$4(a0)
-	addi.w	#$1,$6(a0)
+	subi.w	#$1,gspotwins(a0)
+	addi.w	#$1,gspobwins(a0)
 	bra.w	.cr0
 .crn	suba.w	#gssize,a0
 	dbra	d1,.cr0
