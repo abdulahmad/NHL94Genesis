@@ -26,9 +26,9 @@ ClearWinRecords
 	movea.l	#ThreeStars,a0
 	move.w	#$7,d7
 .loop	clr.b	urwins(a0)
-	clr.b	$9(a0)
+	clr.b	urwins+1(a0)
 	clr.b	urgames(a0)
-	clr.b	$B(a0)
+	clr.b	urgames+1(a0)
 	adda.w	#$10,a0
 	dbra	d7,.loop
 	move.l	#TeamRecBase,d0

@@ -815,7 +815,7 @@ PlayerListDrawSelected
 	subi.w	#$1,d0
 	bmi.w	.loop3
 	asl.w	#$3,d0
-	lea.l	$16C(a2),a3
+	lea.l	tmlines(a2),a3
 	lea.l	$1(a3,d0.w),a3
 	movea.l	#PlayerPositionText,a5
 	moveq	#$4,d1
@@ -1536,7 +1536,7 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	bsr.w	GetStatColumn
 .next2	ext.l	d2
 	asl.l	#$8,d2
-	movea.l	$1E(a2),a1
+	movea.l	tmdata(a2),a1
 	adda.w	$0(a1),a1
 	move.w	d0,d1
 	suba.w	#$8,a1
