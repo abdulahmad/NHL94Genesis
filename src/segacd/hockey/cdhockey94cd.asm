@@ -1,38 +1,38 @@
 ; Sets the sub-CPU vector and sends gate array command $2D (wait for idle, start, wait for ack).
 SubCmd2DSend
 	move.l	#VBlankSubCpuHook,$6038.w
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$2D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$2D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	rts
 ; disc only: vertical interrupt entry; hands the frame to the sub CPU through the gate array flags, then runs the game vblank (VBint)
-VBlankSubCpuHook	btst.b	#$5,$FF800E.l
+VBlankSubCpuHook	btst.b	#$5,(GA_COMFLAGS).l
 	beq.w	.ex
-	bset.b	#$2,$FF800F.l
+	bset.b	#$2,(GA_COMFLAGS+1).l
 	move.l	#.vbdone,-(sp)		;VBint returns to .vbdone
 	move.l	(VBint).l,-(sp)
 	rts
 .vbdone	jsr	(ReadJoyData).l
-.loop	btst.b	#$4,$FF800E.l
+.loop	btst.b	#$4,(GA_COMFLAGS).l
 	bne.s	.loop
-	move.w	#$2F,$FF8026.l
-	bset.b	#$3,$FF800F.l
-.loop2	btst.b	#$3,$FF800E.l
+	move.w	#$2F,(GA_COMSTAT3).l
+	bset.b	#$3,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$3,(GA_COMFLAGS).l
 	beq.s	.loop2
-	bset.b	#$4,$FF800F.l
-	bclr.b	#$3,$FF800F.l
-.loop3	btst.b	#$3,$FF800E.l
+	bset.b	#$4,(GA_COMFLAGS+1).l
+	bclr.b	#$3,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$3,(GA_COMFLAGS).l
 	bne.s	.loop3
-	bclr.b	#$4,$FF800F.l
-	bclr.b	#$2,$FF800F.l
+	bclr.b	#$4,(GA_COMFLAGS+1).l
+	bclr.b	#$2,(GA_COMFLAGS+1).l
 	addq.w	#$1,(SubVblankCount).l
 .ex	rts
 	movea.l	#$C458,sp
@@ -59,38 +59,38 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 .next	move.w	#$FFFF,(ValidSRAM).l
 .next2	move.l	#DiscDmaListPtr,(DiscDmaListPtr).l
 	clr.w	(PALflag).l
-.loop5	btst.b	#$7,$FF800E.l
+.loop5	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop5
 	movem.l	a0,-(sp)
 	lea.l	$C00004.l,a0
-	move.l	a0,$FF8022.l
-	move.w	#$18,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop6	btst.b	#$6,$FF800E.l
+	move.l	a0,(GA_COMSTAT1).l
+	move.w	#$18,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop6	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop6
-	move.w	$FF8010.l,d0
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop7	btst.b	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop7	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop7
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,a0
 	andi.w	#$1,d0
 	move.w	d0,(PalMode).l
 	beq.w	.loop8
 	bset.b	#$0,(PALflag).l
-.loop8	btst.b	#$7,$FF800E.l
+.loop8	btst.b	#$7,(GA_COMFLAGS).l
 	bne.b	.loop8
-	move.w	#$2B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop9	btst.b	#$6,$FF800E.l
+	move.w	#$2B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop9	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop9
-	move.w	$FF8010.l,(FourWayPlay).l
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop10	btst.b	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,(FourWayPlay).l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop10	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop10
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	move.w	#$FFFF,(PadControlBits34).l
 	jsr	(SubCmd2DSend).l
 	move.w	#$3,d7
@@ -102,42 +102,42 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.w	(OptPlayMode).l,(TempOptPlayMode).l
 	jsr	(orjoy).l
 	jmp	(Opening).l
-.loop11	btst.b	#$7,$FF800E.l
+.loop11	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop11
-.loop12	btst.b	#$6,$FF800E.l
+.loop12	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop12
-	bset.b	#$6,$FF800F.l
-	bset.b	#$7,$FF800F.l
-.loop13	btst.b	#$6,$FF800E.l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+.loop13	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop13
-	bclr.b	#$6,$FF800F.l
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	rts
-.loop14	bclr.b	#$2,$FF8003.l
+.loop14	bclr.b	#$2,(GA_MEMMODE+1).l
 	bne.s	.loop14
 	rts
 ; Waits until the sub-CPU acknowledges (gate array bit 1 of $FF8003 set)
 WaitGateAck
-.loop15	btst	#$1,$FF8003.l
+.loop15	btst	#$1,(GA_MEMMODE+1).l
 	beq.b	.loop15
 	rts
-.loop16	btst.b	#$7,$FF800E.l
+.loop16	btst.b	#$7,(GA_COMFLAGS).l
 	bne.b	.loop16
-	move.w	#$7,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop17	btst.b	#$6,$FF800E.l
+	move.w	#$7,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop17	btst.b	#$6,(GA_COMFLAGS).l
 	beq.b	.loop17
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop18	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop18	btst.b	#$6,(GA_COMFLAGS).l
 	bne.b	.loop18
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	jsr	(WaitGateAck).l
 	rts	
 ; Raises gate array request bit 0 of $FF8003 and waits for the acknowledge to clear.
 RaiseGateRequest
-	bset	#$0,$FF8003.l
-.loop19	btst	#$1,$FF8003.l
+	bset	#$0,(GA_MEMMODE+1).l
+.loop19	btst	#$1,(GA_MEMMODE+1).l
 	bne.b	.loop19
 	rts
 ; Calls the CD BIOS function $80 until it succeeds.
@@ -210,12 +210,12 @@ BackupRamWrite
 	movem.l	d0-d1/a0-a1,-(sp)
 	move.l	a6,-(sp)
 	movea.l	(DiscDmaListPtr).l,a6
-	btst	#$5,$FF800F.l
+	btst	#$5,(GA_COMFLAGS+1).l
 	beq.s	.next
 	move.w	#$1,-(a6)
 	bra.s	.next2
 .next	move.w	#$0,-(a6)
-.next2	bclr	#$5,$FF800F.l
+.next2	bclr	#$5,(GA_COMFLAGS+1).l
 	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movea.l	d0,a1
@@ -245,9 +245,9 @@ BackupRamWrite
 	movea.l	(DiscDmaListPtr).l,a6
 	tst.w	(a6)+
 	beq.s	.next5
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bra.s	.next6
-.next5	bclr	#$5,$FF800F.l
+.next5	bclr	#$5,(GA_COMFLAGS+1).l
 .next6	move.l	a6,(DiscDmaListPtr).l
 	movea.l	(sp)+,a6
 	movem.l	(sp)+,d0-d1/a0-a1
