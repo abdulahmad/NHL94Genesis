@@ -447,6 +447,9 @@ Satt	equ	$BBD30			;sprite attribute table (for dma transfer)
 teamrecbuf	equ	$BC0C8			;SRAM team record buffer
 ThreeStars	equ	$BC000
 TeamLogoBitmaps	equ	$47D8C			;pointer, a loaded file here
+CC_SetX	equ	$FD			;-3: printx
+CC_AddX	equ	$FB			;-5: add signed byte to printx
+CC_AddY	equ	$FA			;-6: add signed byte to printy
 CC_SetFont	equ	$F9
 CC_SetMapAndPosition	equ	$F8
 CC_Font1	equ	$FF
@@ -577,6 +580,7 @@ puckscnum	equ	$E			;puck is sort obj number 14
 gsflags	equ	$E			;flags
 gssize	equ	$10			;bytes per game structure
 VRchar	equ	$12			;vram char for graphic
+Xpos	equ	$0			;x position (the first word of a sort object)
 Ypos	equ	$14			;y position
 tmline	equ	$16			;current line
 Zpos	equ	$18			;height above the ice

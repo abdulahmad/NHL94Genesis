@@ -712,19 +712,44 @@ PlayoffScreen
 	dbra	d4,.loop7
 .next2	bsr.w	printsmallz
 	String	CC_SetMapAndPosition,$1,$1,$41,$1A
-; Instruction bytes inside GameOverCleanup that the assembler would encode differently, kept as words (12 rows).
-	dc.w	$43FA,$02AE,$3039,$0001,$8A9E,$6100,$D938,$3011
-	dc.w	$E248,$9179,$0001,$8D58,$6100,$9802,$4A79,$0001
-	dc.w	$8A9E,$6700,$0020,$6100,$99C4,$001A,$CD0A,$0150
-	dc.b	'ress [ or ] to p'
-	dc.w	$6167,$6500,$33FC,$0018,$0001,$8D62,$3F3C,$0079
-	dc.w	$4EB9,$0003,$71D2,$4240,$4244,$33FC,$FFFF,$0001
-	dc.w	$A452,$33FC,$0001,$0001,$A44E,$6100,$0052,$6100
-	dc.w	$00C4,$207C,$0003,$C000,$4EB9,$0002,$ACD2,$6100
-	dc.w	$0006,$6000,$FFEA,$4EB9,$0003,$74F0,$3F03,$4EB9
-	dc.w	$0003,$750E,$865F,$0803,$0007,$6600,$0092,$0803
-	dc.w	$0003,$6700,$000A,$33FC,$FFFE,$0001,$A452,$0803
-	dc.w	$0002,$6700,$000A,$33FC,$0002,$0001,$A452
+	lea	PlayoffScreenText(pc),a1		;round titles
+	move.w	(gamelevel).l,d0
+	bsr.w	AdvanceStringPtr		;a1 = string d0
+	move.w	(a1),d0
+	lsr.w	#$1,d0
+	sub.w	d0,(printx).l
+	bsr.w	printsmall
+	tst.w	(gamelevel).l		;first round?
+	beq.w	.nopage		;one page only
+	bsr.w	printz		;map 3 (palette 3)
+	String	CC_Font3Pal3,$A,$1,'Press [ or ] to page',$0
+.nopage	move.w	#$18,(palcount).l
+	move.w	#$79,-(sp)		;end of period song (cartridge SngEOP)
+	jsr	(song).l
+	clr.w	d0		;fade to color 0
+	clr.w	d4
+	move.w	#$FFFF,(PlayerScrollCtr).l		;scroll step (RAM shared with the stats screens)
+	move.w	#$1,(scoutcolumn).l		;scroll position (cartridge playoffscroll)
+	bsr.w	PlayoffScreen_scrup
+.input	bsr.w	waitxc1
+	movea.l	#rtss2,a0
+	jsr	(DrawPlayoffSprite).l		;draw the playoff sprite
+	bsr.w	PlayoffScreen_jin		;page / exit input
+	bra.w	.input
+PlayoffScreen_jin						;Read both pads: start leaves PlayoffScreen, right/left set the scroll
+									;step, then falls into PlayoffScreen_scrup
+	jsr	(ReadJoy1).l
+	move.w	d3,-(sp)
+	jsr	(ReadJoy2).l
+	or.w	(sp)+,d3		;either pad
+	btst	#$7,d3		;start?
+	bne.w	PlayoffScreen_exit		;yes: leave the screen
+	btst	#$3,d3		;right?
+	beq.w	.nr
+	move.w	#$FFFE,(PlayerScrollCtr).l
+.nr	btst	#$2,d3		;left?
+	beq.w	PlayoffScreen_scrup
+	move.w	#$2,(PlayerScrollCtr).l
 PlayoffScreen_scrup						;Move the tree one step (PlayerScrollCtr) and stop on a page boundary
 	
 	
@@ -856,11 +881,12 @@ VBlank_TitleScreen						;the PlayoffScreen vblank handler (VBint): dma the sprit
 .nograph	addq.w	#$1,(Vcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-; Text of VBlank_TitleScreen (4 rows).
-	dc.b	$00,$0A,'Playoffs',$00,$10,'Quar'
-	dc.b	'terfinals',$00,$00,$0C,'Semi'
-	dc.b	'finals',$00,$08,'Finals',$00,$0C
-	dc.b	'Champions',$00
+PlayoffScreenText						;Round titles by gamelevel, printed with printsmall
+	String	'Playoffs'
+	String	'Quarterfinals'
+	String	'Semifinals'
+	String	'Finals'
+	String	'Champions'
 InitScoutingDisplay						;Start the text player UpdateScoutingDisplay: VertLineScrolling = -1,
 									;PlayerScrollCtr = -1, clear SelectedPlayerIdx / ScoutingReportTimer;
 									;return a0 =
