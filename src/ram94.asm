@@ -148,14 +148,14 @@ seY equ 2							;word: y, signed
 seTile equ 4						;word: tile, from the set's first tile
 seAttr equ 6						;word: priority, palette, vflip, hflip (bits 15-11), size code (low byte)
 seSize equ 7						;byte: VDP size code (low byte of seAttr)
-seLen equ 8							; size of a scoring event entry in bytes
+seLen equ 8							; size of an .anim sprite entry in bytes
 ; VDP sprite attribute table entry (Satt, 8 bytes)
 satY equ 0							;word: y + 128
 satSize equ 2						;byte: size code
 satLink equ 3						;byte: next sprite (0 ends the list)
 satTile equ 4						;word: priority, palette, flips, tile
 satX equ 6							;word: x + 128
-satLen equ 8						; size of a scoring attempt entry in bytes
+satLen equ 8						; size of a sprite attribute table entry in bytes
 ; ScoreSum entry (6 bytes per goal)
 sstime equ 0						;word: period / time of the goal
 ssflags equ 2						;byte: 2 + skater difference (goal type); bit 7 = away team scored
@@ -196,6 +196,14 @@ lipslots equ 4						;word: slot count - 1
 ; TeamStatTextTbl entry, after the label String: two team struct offsets
 tsoff2 equ 2						;word: second offset ($FFFF none)
 tssize equ 4						;bytes of the two offset words (the next label follows)
+; StatColumnOffsets entry (ReadStatColumn): two team struct byte array offsets
+scoloff2 equ 2						;word: second array offset ($FFFF none)
+; FeaturedPictures list entry (DrawPlayerPicture): picture long, then the roster index
+fpplayer equ 4						;word: roster index of the pictured player
+fpsize equ 6						; size of a FeaturedPictures entry in bytes
+; hot / cold pairs SortHotColdStarters builds in TempBuffer: roster slot byte, then the sum
+hcsum equ 1							;byte: the starter's hot / cold sum
+hcsize equ 2						; size of a pair in bytes
 ; .pld player ratings: 8 bytes after each player's name String (92 setplayer field names; the
 ; teamdata94.asm legend letters in brackets; goalies use the low nibbles for saves)
 pldnum equ 0						;byte: jersey number, 2 BCD digits (un) -> rostnum

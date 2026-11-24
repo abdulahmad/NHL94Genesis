@@ -16,7 +16,7 @@ UnpackPicture						;Unpack a picture a2: count.w, then 3 bytes per row of 8 pixe
 	clr.l	(a0)
 	clr.l	(a1)
 	move.b	(a2)+,(a1)
-	move.b	(a2)+,1(a1)
+	move.b	(a2)+,1(a1)				;bytes 1 and 2 of the picturebits long, read whole below
 	move.b	(a2)+,2(a1)
 	move.l	#0,-(sp)				;build the 8 pixels of 4 bits each, + 5 for the card palette
 	move.l	(a1),d2

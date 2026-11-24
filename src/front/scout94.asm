@@ -58,8 +58,8 @@ ScoutCrowdRecordBy					;unused: return a1 = 'by <name> ' for the home team's cro
 ScoutEmptyTxt	String	''			;empty String: no name number in the crowd record
 ScoutByTxt	String	'by '			;start of the "by <name> " String
 ScoutSpaceTxt	String	' '			;space after the name
-GetTeamCity							;unused: return a1 = the city String of team byte tmATOP(a0) (TeamList,
-									;Teamname offset)
+GetTeamCity							;unused: return a1 = the city String of team byte $A(a0) (TeamList,
+									;Teamname offset). No caller sets a0, so its struct is not known
 	movem.l	d0-d7/a0/a2-a6,-(sp)
 	clr.w	d2
 	move.b	$A(a0),d2

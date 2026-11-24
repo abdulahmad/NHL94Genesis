@@ -174,14 +174,14 @@ PlayerCardScreen					;Draw a player card on one side. setupcardflags bit 1 set: 
 .10									;loop until the featured player is reached
 	dbf	d0,.loop2
 	movea.l	#mesarea,a3
-	lea	2(a3),a1					;text after the header
+	lea	strtext(a3),a1				;text after the header
 	move.w	#6,(a3)					;string header: 6 = print mode
 	move.l	a2,-(sp)				;keep the player record
 	adda.w	(a2),a2
 	move.b	(a2),d0
 	ext.w	d0
 	jsr	(ConvertByteToDigits).l		;uniform number as digits
-	move.w	#$2000,4(a3)
+	move.w	#$2000,strtext+2(a3)	;space and 0 after the 2 digits
 	movea.l	(sp)+,a1
 	jsr	(appstring).l				;then a space and the name
 	movea.l	a3,a1
@@ -1095,7 +1095,7 @@ AppendRecordHolder					;Append the user name of the record holder (byte 1 of rec
 	movea.l	#M68K_RAM,a0			;a0 = the record
 	movem.l	(sp)+,d0-d7/a1-a6
 .0									;record ready (passed in, or read into M68K_RAM): byte 1 = holder
-	move.b	1(a0),d2
+	move.b	pruser(a0),d2
 	ext.w	d2
 	bset	#7,(sflags6).w			;bit 7 of sflags6: AppendUserName uses the record name list
 	bsr.w	AppendUserName
@@ -1117,7 +1117,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	movea.l	#M68K_RAM,a0			;a0 = the record
 	movem.l	(sp)+,d0-d7/a1-a6
 .0									;record ready (passed in, or read into M68K_RAM): byte 3 = the user
-	move.b	3(a0),d2
+	move.b	proppuser(a0),d2
 	ext.w	d2
 	movem.l	d0/a1,-(sp)
 	bset	#7,(sflags6).w			;record name list
@@ -1126,7 +1126,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	movea.l	#RecSpaceTxt,a1
 	jsr	(appstring).l
 	movem.l	(sp)+,d0/a1
-	move.b	2(a0),d0				;byte 2 = the opponent team
+	move.b	propp(a0),d0			;the opponent team
 	jsr	(AppendTeamName).l			;append the team name
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
@@ -1382,7 +1382,7 @@ UpdateTeamRecord					;After a game: add the game to team record block d1 (games,
 UpdateCrowdRecord					;Update the crowd records (ReadCrowdRecord, WriteCrowdRecord)
 	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	ReadCrowdRecord			;crowd record block to a0
-	move.w	$C(a1),d3				;team goals of this game
+	move.w	tmscore(a1),d3			;team goals of this game (a1 = tmstruct / awtmstruct)
 	cmp.b	(a0),d3					;more goals than the record: new crowd goals record
 	ble.w	.0
 	move.b	d3,(a0)
@@ -1509,7 +1509,7 @@ AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, s
 	bne.w	.0
 	move.b	#$20,d1
 .0									;name byte ready (a 0 became a space)
-	move.b	d1,2(a1)				;after the length word
+	move.b	d1,strtext(a1)			;after the length word
 	tst.b	(a1)+
 	addq.w	#1,d3					;next name byte
 	dbf	d0,.loop					;loop
@@ -2563,12 +2563,12 @@ DrawPlayerPicture					;Draw the player picture (NoPicSkater1 ... NoPicGoalie2, C
 	move.w	#$FFFF,d2				;d2 = entry counter
 	bra.w	.1
 .loop								;this team's featured list: look for player d0
-	cmp.w	4(a0),d0
+	cmp.w	fpplayer(a0),d0
 	bne.w	.0						;not him: next entry
 	movea.l	(a0),a0					;his picture
 	bra.w	.x
 .0									;not this entry: skip picture.l + index.w
-	addq.l	#6,a0
+	addq.l	#fpsize,a0
 .1									;stop at the 0 that ends the list
 	addq.w	#1,d2
 	tst.l	(a0)

@@ -463,10 +463,10 @@ PrintCurLetter						;Name entry: print grid letter d5 (with the cursor on, curso
 	beq.s	rtsNameCursor
 	movea.l	#ThreeStars,a1
 	move.w	#4,(a1)					;String of 1 letter (length 4)
-	move.b	#0,3(a1)
+	move.b	#0,strtext+1(a1)
 	movea.l	#LetterGrid,a0
 	move.b	0(a0,d5.w),d0			;the letter
-	move.b	d0,2(a1)
+	move.b	d0,strtext(a1)
 	jmp	print
 LetterGridPos						;Name entry: printx / printy of grid letter d5 (6 letters a row, 2 cells
 									;apart); d0 / d1 = 3 x 3 box
@@ -1309,10 +1309,10 @@ PrintRecordName						;Record Holders: print a value (AppendUserName)
 	addi.w	#$30,d7
 	movea.l	#mesarea,a1
 	move.w	#6,(a1)
-	move.b	d7,2(a1)				;row digit
-	move.b	#$2E,3(a1)
-	move.b	#$20,4(a1)
-	move.b	#0,5(a1)
+	move.b	d7,strtext(a1)			;row digit
+	move.b	#$2E,strtext+1(a1)
+	move.b	#$20,strtext+2(a1)
+	move.b	#0,strtext+3(a1)
 	jsr	(printsmall).l				;print it
 	move.w	(sp)+,d7
 	move.b	-1(a0),d2				;user number of this row

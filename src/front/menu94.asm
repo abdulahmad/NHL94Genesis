@@ -153,7 +153,7 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 									;(.manual) when the pause team word is 0, else Auto Goalie (.auto):
 									;goaliemode2 with sflags bit 1 (sfpj) set, else goaliemode1. Called from
 									;Pausemode_Pmenu
-	cmpi.b	#$78,2(a1)				;first char 'x'
+	cmpi.b	#$78,strtext(a1)		;first char 'x'
 	bne.w	.plain
 	move.l	a1,-(sp)
 	movea.l	#.manual,a1

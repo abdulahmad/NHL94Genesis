@@ -237,7 +237,7 @@ SkipNameNumber						;Unreferenced. A1 = the FormatPlayerNumInitial String withou
 	jsr	(FormatPlayerNumInitial).l
 	move.w	(a1),d0
 	subq.w	#2,d0
-	move.w	d0,2(a1)				;2 characters shorter
+	move.w	d0,strtext(a1)			;2 characters shorter: the new length word over the first 2
 	addq.w	#2,a1					;length word moved up
 	movem.l	(sp)+,d0-d7/a0/a2-a3
 	rts

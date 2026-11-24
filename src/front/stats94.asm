@@ -1713,7 +1713,7 @@ ReadStatColumn						;d2 = stat column d1 for player d0. d7 = 0: the team struct 
 	add.w	d0,d1
 	clr.w	d2
 	move.b	0(a2,d1.w),d2			;d2 = first value
-	move.w	2(a1),d1				;second array offset
+	move.w	scoloff2(a1),d1			;second array offset
 	bmi.w	rtss8
 	add.w	d0,d1
 	clr.w	d3
