@@ -632,20 +632,18 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	add.l	d1,(nibblebuffer+4).l
 	moveq	#$4,d0
 	bra.w	WeightedRandomSelect
-sctab						;show the next ticker score once the clock is at 8:00 or less. d3 = -1 if
-	
-	ori.b	#$1E,$17(a3)
-	ori.b	#$27,d4
-	ori.b	#$18,-(a0)
-	ori.b	#$23,d5
-	ori.b	#$1A,-(a1)
-	ori.b	#$1E,d6
-	ori.b	#$1E,-(a2)
-	ori.b	#$1A,d6
-	ori.b	#$1E,-(a4)
-; Instruction bytes inside sctab that the assembler would encode differently, kept as words (2 rows).
-	dc.w	$0008,$0016,$0025,$001F,$000A,$0013,$0026,$001F
-	dc.w	$000C,$000F,$0026,$0020,$000F
+sctab								;weights for 0, 1, 2, 3 goals, 8 rows (92 had 4 percent bytes per row)
+									;Data, not code: the code above reads row (a1)&7 as two longs
+									;(sctab(pc) + 8 * row) into nibblebuffer for WeightedRandomSelect.
+									;Same table as the cartridge's
+	dc.w	$2B,$1E,$17,4
+	dc.w	$27,$20,$18,5
+	dc.w	$23,$21,$1A,6
+	dc.w	$1E,$22,$1E,6
+	dc.w	$1A,$24,$1E,8
+	dc.w	$16,$25,$1F,$A
+	dc.w	$13,$26,$1F,$C
+	dc.w	$F,$26,$20,$F
 ; Skips when the ticker timer is above $1E0.
 NewTickerCheckBusy
 	moveq	#-1,d3
