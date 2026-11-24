@@ -2541,7 +2541,7 @@ PenaltyShotBox						;Penalty shot box, called from chkprogress. Sets gmode2 bit 
 	move.w	(pspenalty).w,d0
 	movea.l	#Penaltylist,a1
 	adda.w	0(a1,d0.w),a1			;this penalty's data
-	lea	2(a1),a1
+	lea	penname(a1),a1
 	bsr.w	print
 	movem.l	(sp)+,a1/a3
 	bsr.w	printz

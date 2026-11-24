@@ -181,6 +181,21 @@ foattr equ 2						;word: attribute (bit 11 x flip)
 fosize equ 4						; size of a faceoff sprite entry in bytes
 ; PlList: 6 wanted roster players, then their positions
 plpos equ 6							; PlList: 6 wanted roster players, then their positions
+; Penaltylist record (word $ttmm, then the name String; 92 format comment: tt slow down time in
+; half seconds, mm penalty minutes)
+penmins equ 1						;byte: penalty minutes
+penname equ 2						;the penalty name String
+; pad objects (pads)
+padxoff equ 2						;word: label x offset (QueuePadLabel sets it, setffo adds it)
+; DMAList entry: source long, then (93S names)
+dmalen equ 4						;word: length in words
+dmavram equ 6						;word: vram address
+; LineIconPosTable entry: x, y, slot count - 1
+lipy equ 2							;word: y
+lipslots equ 4						;word: slot count - 1
+; TeamStatTextTbl entry, after the label String: two team struct offsets
+tsoff2 equ 2						;word: second offset ($FFFF none)
+tssize equ 4						;bytes of the two offset words (the next label follows)
 ; .pld player ratings: 8 bytes after each player's name String (92 setplayer field names; the
 ; teamdata94.asm legend letters in brackets; goalies use the low nibbles for saves)
 pldnum equ 0						;byte: jersey number, 2 BCD digits (un) -> rostnum

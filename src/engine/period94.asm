@@ -586,7 +586,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	move.w	#9,(printx).w
 	lea	tmsize(a2),a2
 	bsr.w	PrintStatValue			;away team value, centred at x 9
-	lea	4(a0),a1
+	lea	tssize(a0),a1
 	addq.w	#2,(printy).w			;2 map rows per table row
 	dbf	d6,.row						;next row
 	rts
@@ -628,7 +628,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	bsr.w	.8
 .4									;print the label
 	jsr	(appstring).l
-	move.w	2(a0),d0				;second offset
+	move.w	tsoff2(a0),d0			;second offset
 	bmi.w	.6
 	jsr	(appendz).l
 	String	'/'
@@ -642,7 +642,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
-	move.w	2(a0),d1
+	move.w	tsoff2(a0),d1
 	move.w	(a2,d1.w),d1
 	beq.w	.5
 	divu.w	d1,d0

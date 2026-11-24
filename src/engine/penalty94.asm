@@ -44,7 +44,7 @@ AddPenalty2							;forced penalties like face off and game over. d0 = penalty nu
 	move.b	d0,-(a1)				;and the penalty number (first byte)
 	movea.l	#Penaltylist,a0
 	adda.w	0(a0,d0.w),a0
-	tst.b	1(a0)					;penalty minutes
+	tst.b	penmins(a0)				;penalty minutes
 	beq.w	.noplayer
 	bmi.w	.noplayer				;negative minutes too
 	btst	#pfteam,pflags(a3)		;pfteam. DelayedPen bit 1 home, bit 2 away
@@ -114,7 +114,7 @@ chkprogress							;control progress of ref and game control thru penalty events.
 	move.b	-2(a0),d0				;step back: penalty byte of the entry just read
 	movea.l	#Penaltylist,a1
 	adda.w	0(a1,d0.w),a1
-	tst.b	1(a1)					;penalty minutes
+	tst.b	penmins(a1)				;penalty minutes
 	beq.s	.find
 	bmi.s	.find					;negative minutes too
 	bset	#sf2drec,(sflags2).w	;sf2drec: switch to horizontal mode for player to enter penalty box
@@ -261,7 +261,7 @@ InProgress							;ref in progress-- update graphics and stats and penalty inform
 	adda.w	0(a1,d0.w),a1
 	bclr	#5,(sflags5).w			;bit 5 = this penalty is 5 minutes
 	clr.w	d2
-	move.b	1(a1),d2				;penalty minutes
+	move.b	penmins(a1),d2			;penalty minutes
 	beq.w	.sa2					;no player involved
 	bmi.w	.sa2					;negative minutes too
 	cmp.b	#5,d2
@@ -402,7 +402,7 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	move.b	-2(a0),d0				;step back: penalty byte of the entry just read
 	movea.l	#Penaltylist,a1
 	adda.w	0(a1,d0.w),a1
-	tst.b	1(a1)					;time for penalty
+	tst.b	penmins(a1)				;time for penalty
 	beq.w	.callit					;no minutes (whistle, goal, icing ...): stop play now penalty with
 									;minutes: puckc and the player number are both compared as (number - 6),
 									;so the sign tells the team; different teams (or a loose puck) = delayed
