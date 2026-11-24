@@ -724,7 +724,7 @@ FallDown
 	bra.w	.getchkanim
 .playerbelowbottomgoalline	move.w	#$4,d0
 .getchkanim	add.w	d0,d0
-	movea.l	#$3AD3A,a0
+	movea.l	#FallDownData,a0
 	move.w	(a0,d0.w),d1
 	move.w	Ypos(a2),(FallYPos).l
 	move.w	$0(a2),(FallXPos).l
@@ -1971,7 +1971,7 @@ puckgoalie	btst.b	#$4,(gmode).l
 	move.w	(a0,d2.w),d0
 	moveq	#$F,d1
 	add.b	(a2,d0.w),d1
-	dc.w	$41FA,$01A4		; lea.l X_3C246(pc),a0
+	lea	deflect(pc),a0		;cartridge .list2: the disc points both leas at deflect's code (see docs)
 	btst.b	#$3,$4(a2)
 	beq.w	.next3
 	eori.w	#$2,d2
@@ -1980,7 +1980,7 @@ puckgoalie	btst.b	#$4,(gmode).l
 	cmpi.w	#$233,d0
 	blt.w	.next4
 	move.w	#$292,(sp)
-	dc.w	$41FA,$017E		; lea.l X_3C246(pc),a0
+	lea	deflect(pc),a0		;cartridge .list3
 .next4	sub.w	(sp)+,d0
 	move.b	(a0,d0.w),d0
 	lsr.w	d2,d0

@@ -1,7 +1,7 @@
 updateplayers
 	btst	#sfhor,(sflags).l
 	bne.w	.checkcrowd
-	dc.w	$0079,$000F,$0001,$7DC8		; ori.w #$F,$17DC8.l
+	ori.w	#$F,(PadControlBits).l
 	cmpi.w	#$5,(puckz).l
 	bgt.w	.gt
 .clrcnt	clr.w	(PuckZCntr).l
@@ -1142,7 +1142,7 @@ burst						;cbut press check/speed. Also entered from check4check burst costs en
 	move.w	d0,d1		;energy = speed increase (check violence)
 	move.w	facedir(a3),d2		;facedir
 	asl.w	#$2,d2
-	movea.l	#$36B8E,a0
+	movea.l	#dirtab,a0
 	muls.w	(a0,d2.w),d0
 	muls.w	$2(a0,d2.w),d1
 	add.w	d0,Xvel(a3)		;add to X Vel
@@ -1268,7 +1268,7 @@ dopass						;pass the puck in passdir, to the best teammate there if any
 	bra.w	.exit
 .nopp	move.w	(passdir).l,d0
 	asl.w	#$2,d0
-	movea.l	#$36B8E,a0
+	movea.l	#dirtab,a0
 	move.w	$2(a0,d0.w),d1		;y inc
 	muls.w	(passspeed).l,d1
 	move.l	#$A,d2
@@ -1913,7 +1913,7 @@ assbench	btst.b	#$5,$62(a3)
 	clr.w	$40(a3)
 .next2	move.b	$61(a3),d0
 	cmp.b	$66(a3),d0
-	beq.w	BenchFlagBits
+	beq.w	BenchSamePlayer
 	sub.w	d7,$40(a3)
 	bpl.w	BenchWalkTarget
 	addi.w	#$8,$40(a3)
@@ -1970,12 +1970,12 @@ BenchWalkTarget	btst.b	#$2,$62(a3)
 	bne.w	check4benchExit
 	move.w	$44(a3),d0
 	move.w	$46(a3),d1
-	movea.l	#$33C6E,a0
+	movea.l	#EvadePC,a0
 	bra.w	skateto
-; Inline bit and byte data used by the bench code
-BenchFlagBits	dc.b	$08,$AB,$00,$02,$00,$63	; .....c
-; Copies $60 to $34 and starts the animation
-BenchSetAnimation	move.b	$60(a3),d0
+BenchSamePlayer						;same player: just take the new position, no bench trip (cartridge assbench .nobench)
+	bclr	#pf2unav,pflags2(a3)
+BenchSetAnimation						;position = newpos; clear newpos and newpnum (cartridge .nobench2)
+	move.b	$60(a3),d0
 	ext.w	d0
 	move.w	d0,$34(a3)
 	jsr	(Setplass).l
@@ -2077,7 +2077,7 @@ asspenalty
 	bra.w	assreplace
 .next8	move.w	$44(a3),d0
 	move.w	$46(a3),d1
-	movea.l	#$31AB6,a0
+	movea.l	#check4benchExit,a0
 	bra.w	skateto
 ; Bench: checks the controlled player
 BenchControlledCheck	btst.b	#$3,$62(a3)
@@ -2241,7 +2241,7 @@ assscore
 	bpl.w	.next3
 	neg.w	$44(a3)
 .next3	move.w	(Vpos).l,$46(a3)
-.next4	movea.l	#$31AB6,a0
+.next4	movea.l	#check4benchExit,a0
 	move.w	$44(a3),d0
 	move.w	$46(a3),d1
 	btst.b	#$0,(gmode2).l
@@ -2313,7 +2313,7 @@ assdefo
 	subi.w	#$6,d2
 	eor.w	d2,d1
 	bmi.w	assreplace
-.next5	dc.w	$41FA,$1BCE		; lea.l X_33C6E(pc),a0
+.next5	lea	EvadePC(pc),a0
 	moveq	#$50,d0
 	cmpi.w	#$2,$34(a3)
 	beq.w	.next6
@@ -2442,7 +2442,7 @@ assdefd
 	clr.w	$44(a3)
 .next22	move.w	$44(a3),d0
 	move.w	$46(a3),d1
-	movea.l	#$33C6E,a0
+	movea.l	#EvadePC,a0
 	bsr.w	skateto
 	bra.w	check4check
 rtss21	rts
@@ -3238,17 +3238,19 @@ AdjustFacingDirection						;Turn facedir one step toward direction d0
 	subi.w	#$1,d0		;d0 = +1/-1
 	btst	#pfjoycon,pflags(a3)		;pfjoycon
 	bne.w	.add
-	dc.w	$033C,$0042,$6700		; btst.l d1,#$426700
-	dc.w	$0022,$D240		; ori.b #$40,-(a2)
-	btst	#$7,$62(a3)
-	dc.w	$6600,$000A		; bne.w .l18094
-	dc.w	$033C,$0083,$6000		; btst.l d1,#$836000
-	dc.w	$0006,$033C		; ori.b #$3C,d6
-	dc.w	$0038,$6700,$0008		; ori.b #$0,$8.w
+	btst	d1,#$42		;facing 1 or 6
+	beq.w	.add		;no: plain single step
+	add.w	d0,d1		;step once and test the new facing
+	btst	#pfgoal,pflags(a3)
+	bne.w	.dn
+	btst	d1,#$83		;0, 1 or 7
+	bra.w	.t
+.dn	btst	d1,#$38		;3, 4 or 5
+.t	beq.w	.set		;new facing not in the mask: keep the step
 	neg.w	d0		;in the mask: undo it and turn the other way instead
 	add.w	d0,d1
 .add	add.w	d0,d1		;apply the step
-	andi.w	#$7,d1		;wrap to 0-7
+.set	andi.w	#$7,d1		;wrap to 0-7
 	move.w	d1,facedir(a3)		;facedir
 	rts
 ; Computes the facing step from the position difference.
@@ -5530,7 +5532,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	bset	#sf3fo,(sflags3).l
 	move.w	(fodir1).l,d3
 	move.w	#$800,d4
-	movea.l	#$35A38,a0
+	movea.l	#EndfaceoffData,a0
 	movea.l	#fofdata2,a1
 	moveq	#$10,d2
 	move.w	(a1),d1
@@ -5572,7 +5574,7 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	bmi.w	.nj2
 	eori.w	#$4,d0
 .nj2	asl.w	#$2,d0
-	movea.l	#$36B8E,a0
+	movea.l	#dirtab,a0
 	move.w	(a0,d0.w),d1
 	asl.w	#$5,d1
 	move.w	d1,Xvel(a3)
@@ -6045,15 +6047,8 @@ vtoa						;d0/d1 are x/y distances which are converted into direction 0-7 and
 .nodir	moveq	#$8,d0
 	movem.l	(sp)+,d2/a0
 	rts
-vtoa_dt						;push long address of structure to get hot spot from. Hot spot x/y
-	
-	btst	d0,d7
-; Instruction bytes inside vtoa_dt that the assembler would encode differently, kept as words (3 rows).
-	dc.w	$0305
-	dc.l	$404
-	dc.w	$0206,$0206
-	btst	d0,d7
-	btst	d1,d5
+vtoa_dt						;vtoa: direction 0-7 for the 4 bit sign / slope index (cartridge vtoa .dt)
+	dc.b	$1,$7,$3,$5,$0,$0,$4,$4,$2,$6,$2,$6,$1,$7,$3,$5
 ; Counts the hot entries of a record.
 GetHot
 	movem.l	a0-a1,-(sp)
@@ -6167,7 +6162,7 @@ doplayeracc
 	move.w	facedir(a3),d2
 	sub.w	d2,d0
 	andi.w	#$7,d0
-	movea.l	#$36594,a0
+	movea.l	#doplayeracc_ftab,a0
 	asl.w	#$1,d0
 	tst.w	(a0,d0.w)
 	beq.w	noturn0
@@ -6204,13 +6199,8 @@ doplayeracc
 	cmpi.w	#$2,d3
 	bhi.w	noturn
 	rts
-doplayeracc_ftab						;goalie gets acc. in direction d0. Turns facedir one step toward d0
-	ori.b	#$10,d0
-; Instruction bytes inside doplayeracc_ftab that the assembler would encode differently, kept as words (4 rows).
-	dc.w	$0010,$0010
-	dc.l	$FFF0
-	dc.w	$FFF0
-	dc.w	$FFF0
+doplayeracc_ftab						;doplayeracc: turn rate sign by wanted - facing (0-7), 0 = no turn (cartridge .ftab)
+	dc.w	$0,$10,$10,$10,$0,$FFF0,$FFF0,$FFF0
 ; goalieacc: the controlled goalie case
 goalieacc	btst	#$3,$62(a3)
 	beq.w	.normalgoalie

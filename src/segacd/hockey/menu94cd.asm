@@ -135,14 +135,14 @@ PrintMenuItem						;Print menu item a1 and step a1 past it. An item whose text s
 	cmpi.b	#$78,$2(a1)		;first char 'x'
 	bne.w	.plain
 	move.l	a1,-(sp)
-	movea.l	#$2C576,a1
+	movea.l	#PrintMenuItem_manual,a1
 	btst	#sfpj,(sflags).l
 	beq.w	.homegoalie
 	tst.w	(goaliemode2).l
 	bra.w	.chkgoalie
 .homegoalie	tst.w	(goaliemode1).l
 .chkgoalie	beq.w	.print
-	movea.l	#$2C58A,a1
+	movea.l	#PutTeamBlockAutoGoalieText,a1
 .print	jsr	(printsmall).l
 	movea.l	(sp)+,a1
 	adda.w	(a1),a1		;skip the 'x' item text
