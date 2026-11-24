@@ -850,29 +850,58 @@ CheckPlayerListScrollData	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
 GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
 	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
-	dc.w	$487A,$0030		; pea.l X_2D5A0(pc)
+	pea	.x(pc)		;handlers return here
 	jsr	(getname).l
 	jsr	(print).l
 	move.w	#$1E,(printx).l
 	cmpi.w	#$2,d4		;status or energy column?
-	bls.w	.next
+	bls.w	.jump
 	jsr	(CalcAttrib).l
 	swap	d4
-.next	dc.w	$41FA,$000E		; lea.l X_2D5A6(pc),a0
+.jump	lea	attribjmp(pc),a0		;column handler for d4
 	adda.w	(a0,d4.w),a0
 	jmp	(a0)
-; Code kept as words after GetNameandAttrib (the 164 bytes are decoded in the row comments).
-	dc.w	$4CDF,$331F,$4E75,$000C,$009E,$00E8,$010E,$00B8		; movem.l (a7)+, d0-d4/a0-a1/a4-a5 / rts / ori.l #$e8010e, (a6)+ / ori.l #$c0d040, $3032.w
-	dc.w	$00C0,$D040,$3032,$0068,$6A00,$001E,$4640,$0C40		; ori.w #$6a00, $1e(a0) / not.w d0 / cmpi.w #$3, d0
-	dc.w	$0003,$6300,$000A,$7001,$6000,$0004,$7003,$43FA		; bls.w *+12 / moveq #$1, d0 / bra.w *+6 / moveq #$3, d0 / lea.l $100070(pc), a1
-	dc.w	$0040,$4EF9,$0003,$CEBE,$0800,$000C,$6600,$FFEE		; jmp $3cebe.l / btst.b #$c, d0 / bne.w *-16
-	dc.w	$0479,$0001,$0001,$8D58,$3200,$0240,$0FFF,$4EB9		; subi.w #$1, $18d58.l / move.w d0, d1 / andi.w #$fff, d0 / jsr $390f4.l
-	dc.w	$0003,$90F4,$4EB9,$0003,$8F80,$7004,$0881,$000E		; jsr $38f80.l / moveq #$4, d0 / bclr.b #$e, d1
-	dc.w	$6700,$0004,$7005,$43FA,$0008,$4EF9,$0003,$CEBE		; beq.w *+6 / moveq #$5, d0 / lea.l $100070(pc), a1 / jmp $3cebe.l
-	dc.b	$00,$0A,'Ice     ',$00,$0A,'Benc'		; bcs.b *+34 / move.l -(a0), d0 / move.l -(a0), d0 / clr.w -(a5) / bgt.b *+101
-	dc.b	'h   ',$00,$0A,'Injury P',$00,$0A		; bvc.b *+34 / move.l -(a0), d0 / bpl.b *+119 / moveq #$79, d1 / movea.l (a0), a0
-	dc.b	'Injury G',$00,$06,'    ',$00,$06		; bpl.b *+119 / moveq #$79, d1 / movea.l d7, a0 / ori.b #$20, d6 / move.l -(a0), d0 / ori.b #$43, d6
-	dc.w	$2043,$2020		; move.l -(a0), d0
+.x	movem.l	(sp)+,d0-d4/a0-a1/a4-a5		;exit: restore the registers
+	rts
+attribjmp							;GetNameandAttrib column handlers, offsets from attribjmp
+	dc.w	AttribStatus-attribjmp
+	dc.w	AttribEnergy-attribjmp
+	dc.w	AttribHanded-attribjmp
+	dc.w	AttribWeight-attribjmp
+	dc.w	AttribFighting-attribjmp
+	dc.w	AttribRating-attribjmp
+AttribStatus						;Player d0's tmpdst word: Ice, Bench, injured, or penalty time
+	add.w	d0,d0
+	move.w	tmpdst(a2,d0.w),d0		;his status
+	bpl.w	.pen		;positive: serving a penalty
+	not.w	d0
+	cmpi.w	#$3,d0		;valid?
+	bls.w	.st
+	moveq	#$1,d0		;anything else shown as Bench
+	bra.w	.st
+.inj	moveq	#$3,d0		;injured: status 3
+.st	lea	StatusTextTbl(pc),a1		;print the status text
+	jmp	(Fprintsmall).l
+.pen	btst	#$C,d0		;penalty time, or injured goalie (bit $C)
+	bne.w	.inj
+	subi.w	#$1,(printx).l
+	move.w	d0,d1
+	andi.w	#$FFF,d0		;penalty time
+	jsr	(PushTime).l
+	jsr	(print).l
+	moveq	#$4,d0		;string 4 = blank padding
+	bclr	#$E,d1		;bit $E: prints C
+	beq.w	.t
+	moveq	#$5,d0		;string 5 = ' C  '
+.t	lea	StatusTextTbl(pc),a1
+	jmp	(Fprintsmall).l
+StatusTextTbl						;AttribStatus Strings
+	String	'Ice     '
+	String	'Bench   '
+	String	'Injury P'
+	String	'Injury G'
+	String	'    '
+	String	' C  '
 AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	add.w	d0,d0
 	move.w	tmpde(a2,d0.w),d0		;his energy
@@ -882,29 +911,36 @@ AttribEnergy						;Energy: tmpde(a2) word / 40, at most 100 (AttribPrintPct)
 	ble.w	AttribPrintPct
 	moveq	#$64,d0
 	bra.w	AttribPrintPct		;print it
-; Table of 10 words after AttribEnergy, 20 bytes: $0240,$000E,$0441,$0001,$C0FC,$0064 ...
-AttribFighting
-	dc.w	$0240,$000E,$0441,$0001,$C0FC,$0064,$80C1,$4EB9
-	dc.w	$0002,$AE82
-AttribPrintPct
+AttribFighting						;Bit 0 of the nibble is the handedness: drop it, then a rating out of d1 - 1
+	andi.w	#$E,d0
+	subi.w	#$1,d1
+AttribRating						;d0 * 100 / d1, adjusted (AttribAdjust); falls into AttribPrintPct
+	mulu.w	#$64,d0
+	divu.w	d1,d0
+	jsr	(AttribAdjust).l
+AttribPrintPct						;Print d0 4 wide, then 4 blanks
 	moveq	#$4,d1
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
 	String	'    '
 	rts
-; Table of 10 words after AttribPrintPct, 20 bytes: $0240,$0001,$0A40,$0001,$43FA,$0008 ...
-AttribHanded
-	dc.w	$0240,$0001,$0A40,$0001,$43FA,$0008,$4EF9,$0003
-	dc.w	$CEBE,$000A
+AttribHanded						;Bit 0 of the sum: Righty / Lefty (HandedTextTbl)
+	andi.w	#$1,d0
+	eori.w	#$1,d0		;0 Righty, 1 Lefty
+	lea	HandedTextTbl(pc),a1
+	jmp	(Fprintsmall).l
+HandedTextTbl						;AttribHanded Strings
+	String	'Righty  '
+	String	'Lefty   '
 AttribWeight						;Weight: 140 + 8 * rating lb
-	addq.w	#$1,$6768(a1)
-	moveq	#$79,d2
-	move.l	-(a0),d0
-; Text of AttribWeight (3 rows).
-	dc.b	$00,$0A,'Lefty   ',$E7,'@',$06,'@',$00,$8C
-	dc.w	$4EB9,$0003,$915E,$4EB9,$0003,$8F80,$4EB9,$0003
-	dc.b	$8F,'n',$00,$08,' lb  ',$00,'Nu'
+	asl.w	#$3,d0
+	addi.w	#$8C,d0		;add 140 lbs (minimum weight)
+	jsr	(PushNumber).l
+	jsr	(print).l
+	jsr	(printz).l
+	String	' lb  '
+	rts
 ScoringSummaryScreen						;"Scoring Summary": one 4 row entry per goal (6 bytes each from ScoreSum),
 									;scrolled with up / down, start exits. Menu item handler
 	moveq	#$A,d0		;SetupScreen d0/d1: row offset / height
@@ -1344,7 +1380,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	moveq	#$2C,d0
 .home	bsr.w	PutTeamBlock		;draw the team block, then the list
 	bsr.w	StatsListDrawHeader
-	bsr.w	StatColumnHeader
+	bsr.w	DrawStatsListArrows
 .loop	bsr.w	MenuWaitVblank
 	bsr.w	ReadActiveJoypad		;d1 = new presses, d3 = held
 	btst	#$7,d3
@@ -1374,7 +1410,7 @@ PlayerStatsList						;Stats screen for team a2, d7 = 0 game / 1 playoff: the col
 	bgt.w	.scroll
 	move.w	d0,(scoutcolumn).l
 	bsr.w	StatsListDrawHeader
-	bsr.w	StatColumnHeader
+	bsr.w	DrawStatsListArrows
 	bra.w	.scroll
 .switch	tst.w	d7		;No team switch in playoff stats
 	bne.w	.scroll
@@ -1395,7 +1431,7 @@ UpdateStatsListScroll						;Stats screen per frame: scroll 0 ... SelectedPlayerI
 	move.w	d0,(VertLineScrolling).l
 	andi.w	#$F,d0		;pixels into the current 16 pixel row
 	bne.w	.0
-	bsr.w	StatColumnHeader		;landed on a row boundary: refresh arrows and stop scrolling
+	bsr.w	DrawStatsListArrows		;landed on a row boundary: refresh arrows and stop scrolling
 	clr.w	(PlayerScrollCtr).l
 .0	andi.w	#$F,d1		;old position within its row
 	bne.w	SetStatsListScrollReg
@@ -1688,8 +1724,7 @@ ReadStatColumnData	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
 	dc.b	'   ]',$00,$16,'[  Shots O'
 	dc.b	'n Goal   ]',$00,$16,'[ Pe'
 	dc.b	'nalty Minutes   '
-; Prints the stat column header.
-StatColumnHeader
+DrawStatsListArrows					;Stats screen up / down arrows (ScrollArrowTbl2). Saves d0-d1/a1
 	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$4,$3,$2,$B,CC_SetFont,$1
@@ -1703,80 +1738,94 @@ StatColumnHeader
 	neg.b	d1
 	add.b	d1,d0
 	add.b	d1,d0
-	lea.l	.next(pc),a1
+	lea	ScrollArrowTbl2(pc),a1
 	jsr	(Fprintsmall).l
 	movem.l	(sp)+,d0-d1/a1
 	rts
-; Table of 1 word after StatColumnHeader, 2 bytes: $000A ...
-.next	dc.w	$000A
+ScrollArrowTbl2						;None, up, down, both
+	String	' ',CC_AddX,$FF,CC_AddY,$C,' ',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$C,' ',CC_SetFont
+	String	' ',CC_AddX,$FF,CC_AddY,$C,'}',CC_SetFont
+	String	'{',CC_AddX,$FF,CC_AddY,$C,'}',CC_SetFont
 CrowdMeterScreen						;"Crowd Meter": current, average and peak level (PrintCrowdMeter), plus
 									;the arena and league records; start exits. Menu item handler
-; Code kept as words after CrowdMeterScreen (the 250 bytes are decoded in the row comments).
-	dc.w	$20FB,$FFFA,$0C20,$F900,$000A		; move.l ([$c30f902], $a), (a0)+
-	dc.b	$7B,$FB,$FF,$FA,$0C,$20,$F9,$00,$00,$0A,$20,$FB,$FF,$FA,$0C,$7D		; dc.w $fffa / cmpi.b #$0, -(a0) / move.l ([$c8df916], $a), (a0)+
-	dc.b	$F9,$00,$00,$0A,$7B,$FB,$FF,$FA,$0C,$7D,$F9,$00,$70,$09,$72,$1C		; dc.w $fffa / dc.w $f900 / moveq #$9, d0 / moveq #$1c, d1
-	dc.b	$61,$00,$01,$CC,$4E,$B9,$00,$03,$8F,$6E,$00,$06,$BD,$06,$01,$00		; bsr.w *+462 / jsr $38f6e.l / ori.b #$6, d6 / btst.l d0, d0
-	dc.b	$70,$1C,$72,$06,$4E,$B9,$00,$03,$8C,$A0,$4E,$B9,$00,$03,$92,$58		; moveq #$1c, d0 / moveq #$6, d1 / jsr $38ca0.l / jsr $39258.l
-	dc.b	$00,$14,$BD,$09,$04,$43,$72,$6F,$77,$64,$20,$20,$4D,$65,$74,$65		; ori.b #$9, (a4) / subi.w #$726f, d3 / move.l -(a0), d0 / moveq #$65, d2
-	dc.b	$72,$BD,$07,$01,$70,$2C,$61,$00,$E0,$0C,$06,$79,$00,$04,$00,$01		; moveq #$bd, d1 / btst.l d3, d1 / moveq #$2c, d0 / bsr.w *-8178 / addi.w #$4, $18d58.l
-	dc.b	$8D,$58,$42,$40,$61,$00,$DF,$FE,$61,$00,$00,$12,$61,$00,$08,$3A		; clr.w d0 / bsr.w *-8192 / bsr.w *+20 / bsr.w *+2108
-	dc.b	$08,$01,$00,$07,$66,$00,$03,$D0,$60,$00,$FF,$F2,$4E,$B9,$00,$03		; btst.b #$7, d1 / bne.w *+978 / bra.w *-12 / jsr $38d8c.l
-	dc.b	$8D,$8C,$00,$16,$F8,$04,$02,$04,$0C,$43,$75,$72,$72,$65,$6E,$74		; ori.b #$4, (a6) / andi.b #$43, d4 / moveq #$65, d1 / bgt.b *+118
-	dc.b	$20,$4C,$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$D8,$61,$00		; movea.l a4, a0 / bcs.b *+120 / bcs.b *+110 / dc.w $fd1c / move.w $17cd8.l, d0 / bsr.w *+294
-	dc.b	$01,$24,$4E,$B9,$00,$03,$8D,$8C,$00,$16,$FD,$04,$FA,$02,$41,$76		; jsr $38d8c.l / ori.b #$4, (a6) / dc.w $fa02
-	dc.b	$65,$72,$61,$67,$65,$20,$4C,$65,$76,$65,$6C,$FD,$1C,$00,$20,$39		; bcs.b *+116 / bsr.b *+105 / bcs.b *+34 / moveq #$65, d3 / bge.b *-1 / move.b d0, d6 / move.l $17cde.l, d0
-	dc.b	$00,$01,$7C,$DE,$80,$F9,$00,$01,$7C,$DC,$61,$00,$00,$F8,$4E,$B9		; divu.w $17cdc.l, d0 / bsr.w *+250 / jsr $38d8c.l
-	dc.b	$00,$03,$8D,$8C,$00,$12,$FD,$04,$FA,$02,$50,$65,$61,$6B,$20,$4C		; ori.b #$4, (a2) / dc.w $fa02 / addq.w #$8, -(a5) / bsr.b *+109 / movea.l a4, a0
-	dc.b	$65,$76,$65,$6C,$FD,$1C,$30,$39,$00,$01,$7C,$DA,$61,$00,$00,$D6		; bcs.b *+120 / bcs.b *+110 / dc.w $fd1c / move.w $17cda.l, d0 / bsr.w *+216
-; Crowd meter: reads the crowd record and prints the level
-CrowdMeterScreenDraw	movem.l	d0-d7/a0-a6,-(sp)
+	moveq	#$9,d0		;bitmap row 9
+	moveq	#$1C,d1
+	bsr.w	SetupScreen		;set up the screen
+	jsr	(printz).l
+	String	CC_Font3Pri,$6,$1
+	moveq	#$1C,d0		;frame 28 wide, 6 high
+	moveq	#$6,d1
+	jsr	(Framer).l
+	jsr	(printbigz).l
+	String	CC_Font3Pri,$9,$4,'Crowd  Meter',CC_Font3Pri,$7,$1
+	moveq	#$2C,d0		;away team block
+	bsr.w	PutTeamBlock
+	addi.w	#$4,(printx).l		;4 columns right
+	clr.w	d0
+	bsr.w	PutTeamBlock
+	bsr.w	PrintCrowdMeter		;the three level rows
+.loop	bsr.w	Pausemode_rjoy		;wait for a new button press
+	btst	#$7,d1		;start?
+	bne.w	StatsScreenFadeIn
+	bra.w	.loop
+PrintCrowdMeter						;Crowd meter rows: CwdExciteLvl, the average (SumCwdExciteLvl /
+									;NumCwdExciteLvl) and MaxCwdExciteLvl in dB (PrintCrowdDB). With save RAM
+									;(ValidSRAM) the arena record of HomeTeam and the league record
+	jsr	(printsmallz).l
+	String	CC_SetMapAndPosition,$4,$2,$4,$C,'Current Level',CC_SetX,$1C
+	move.w	(CwdExciteLvl).l,d0		;current level
+	bsr.w	PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
+	jsr	(printsmallz).l
+	String	CC_SetX,$4,CC_AddY,$2,'Average Level',CC_SetX,$1C
+	move.l	(SumCwdExciteLvl).l,d0		;sum of the levels
+	divu.w	(NumCwdExciteLvl).l,d0
+	bsr.w	PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
+	jsr	(printsmallz).l
+	String	CC_SetX,$4,CC_AddY,$2,'Peak Level',CC_SetX,$1C
+	move.w	(MaxCwdExciteLvl).l,d0		;peak level
+	bsr.w	PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
+	movem.l	d0-d7/a0-a6,-(sp)
 	tst.w	(ValidSRAM).l
-	bmi.w	CrowdMeterScreenExit
+	bmi.w	.x		;no save RAM
 	move.w	(HomeTeam).l,d1
 	ext.l	d1
 	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	$8(a0),d0
-	bne.w	.next
-	move.b	#$50,d0
-.next	andi.w	#$FF,d0
+	move.b	crpeak(a0),d0
+	bne.w	.gotarena
+	move.b	#$50,d0		;none: $50
+.gotarena	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	(printsmallz).l
-; Inline data read by $38D8C from the return address (2 rows).
-	dc.b	$00,$14,$FD,$04,$FA,$02,$41,$72,$65,$6E,$61,$20,$52,$65,$63,$6F	; ......Arena Reco
-	dc.b	$72,$64,$FD,$1C	; rd..
+	String	CC_SetX,$4,CC_AddY,$2,'Arena Record',CC_SetX,$1C
 	move.w	(sp)+,d0
 	move.w	#$3,d1
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
-; Inline data read by $38F6E from the return address (1 row).
-	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
+	String	' dB'
 	jsr	(GetLeagueCrowdRecord).l
 	move.w	d0,d1
 	ext.l	d1
 	movea.l	#recordbuf,a0
 	jsr	(ReadCrowdRecord).l
-	move.b	$8(a0),d0
-	bne.w	.next2
-	move.w	#$50,d0
-.next2	andi.w	#$FF,d0
+	move.b	crpeak(a0),d0
+	bne.w	.gotleague
+	move.w	#$50,d0		;none: $50
+.gotleague	andi.w	#$FF,d0
 	move.w	d0,-(sp)
 	jsr	(printsmallz).l
-; Inline data read by $38D8C from the return address (2 rows).
-	dc.b	$00,$16,$FD,$04,$FA,$02,$4C,$65,$61,$67,$75,$65,$20,$52,$65,$63	; ......League Rec
-	dc.b	$6F,$72,$64,$FD,$1C,$00	; ord...
+	String	CC_SetX,$4,CC_AddY,$2,'League Record',CC_SetX,$1C
 	move.w	(sp)+,d0
 	move.w	#$3,d1
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
-; Inline data read by $38F6E from the return address (1 row).
-	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
-; Crowd meter: restores the registers and returns
-CrowdMeterScreenExit	movem.l	(sp)+,d0-d7/a0-a6
+	String	' dB'
+.x	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-PrintCrowdDB
+PrintCrowdDB						;Print crowd level d0 as sqrt(d0 * 4) + 65 " dB"
 	ext.l	d0
 	asl.w	#$2,d0
 	jsr	(Sroot).l
@@ -1785,8 +1834,7 @@ PrintCrowdDB
 	jsr	(PushNumberWidth).l
 	jsr	(print).l
 	jsr	(printz).l
-; Inline data read by $38F6E from the return address (1 row).
-	dc.b	$00,$06,$20,$64,$42,$00	; .. dB.
+	String	' dB'
 	rts
 ; Forces black and sets display flags for the crowd meter screen.
 SetupScreen
