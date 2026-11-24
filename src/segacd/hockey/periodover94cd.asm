@@ -43,7 +43,7 @@ pucknorm	btst.b	#$2,(BA_PS_flags).l
 	sub.w	d7,pcsize+pcframes(a1)
 	sub.w	d7,temp1(a3)
 	bpl.w	.next3
-	addi.w	#$5,$40(a3)
+	addi.w	#$5,temp1(a3)
 	bsr.w	findpc
 .next3	move.w	(puckc).l,d0
 	bmi.w	.next4
@@ -76,7 +76,7 @@ pucknorm	btst.b	#$2,(BA_PS_flags).l
 	cmp.w	OldYpos(a3),d0
 	bne.w	.next6
 	moveq	#$6,d0
-	subi.w	#$1,$42(a3)
+	subi.w	#$1,temp2(a3)
 	bpl.w	.next5
 	bsr.w	AddPenalty2
 .next5	bra.w	.next7

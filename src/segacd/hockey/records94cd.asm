@@ -742,10 +742,10 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	move.w	#$7,d7
 .loop	move.b	urwins(a0),d0
 	lsl.w	#$8,d0
-	move.b	$9(a0),d0
+	move.b	urwins+1(a0),d0
 	move.b	urgames(a0),d1
 	lsl.w	#$8,d1
-	move.b	$B(a0),d1
+	move.b	urgames+1(a0),d1
 	move.w	d1,(a5)+
 	tst.w	d1
 	bne.w	.0
@@ -755,7 +755,7 @@ CalcWinPercents						;Record Holders: for the 8 user record blocks at recordbuf,
 	divu.w	d1,d0
 .1	move.b	d0,(a1)+
 	move.b	urties(a0),(a6)+
-	move.b	$D(a0),(a6)+
+	move.b	urties+1(a0),(a6)+
 	adda.w	#$10,a0
 	dbra	d7,.loop
 	movea.l	#winsort,a1
