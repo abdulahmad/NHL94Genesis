@@ -569,6 +569,15 @@ sf3icetime	equ	$6			;set once a second by updatepentime: each player on the ice 
 sfslock	equ	$6			;scroll lock to xc1/yc1
 sf2pwrtm	equ	$6			;0 for team 1 in power play
 plpos	equ	$6			;PlList: 6 wanted roster players, then their positions
+penmins	equ	$1						;Penaltylist record (word $ttmm: tt slow down time, mm minutes): minutes
+penname	equ	$2						;Penaltylist record: the penalty name String
+padxoff	equ	$2						;pad objects: label x offset (QueuePadLabel sets it, setffo adds it)
+dmalen	equ	$4						;DMAList entry (source long, then words; 93S names): length
+dmavram	equ	$6						;DMAList entry: vram address
+lipy	equ	$2						;LineIconPosTable entry (x, y, slot count - 1): y
+lipslots	equ	$4					;LineIconPosTable entry: slot count - 1
+tsoff2	equ	$2						;TeamStatTextTbl entry, after its label: second offset ($FFFF none)
+tssize	equ	$4						;TeamStatTextTbl entry: size of its two offset words
 gspobwins	equ	$6			;play off bottom team (on tree) wins (for best of 7)
 sfhor	equ	$7			;screen is in horizontal mode
 sf3fosong	equ	$7			;sflags3: set for periods 1 and 2, play the face off tune once at the first face off

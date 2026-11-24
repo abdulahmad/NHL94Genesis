@@ -163,10 +163,10 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	andi.w	#$1F,d0
 	asl.w	#7,d0					;chars per row screen format
 	add.w	(VmMAP2).w,d0
-	move.w	d0,6(a5)				;vram address
+	move.w	d0,dmavram(a5)			;vram address
 	move.w	#$1E,d0					;60-30
 	sub.w	d1,d0
-	move.w	(a0),4(a5)				;words = one map row
+	move.w	(a0),dmalen(a5)			;words = one map row
 	mulu.w	(a0),d0
 	add.w	d0,d0
 	lea	mapwords(a0,d0.w),a1
@@ -183,10 +183,10 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	andi.w	#$1F,d0
 	asl.w	#7,d0
 	add.w	(VmMAP2).w,d0
-	move.w	d0,6(a5)
+	move.w	d0,dmavram(a5)
 	move.w	#$3D,d0
 	sub.w	d1,d0
-	move.w	(a0),4(a5)
+	move.w	(a0),dmalen(a5)
 	mulu.w	(a0),d0
 	add.w	d0,d0
 	lea	mapwords(a0,d0.w),a1
@@ -202,7 +202,7 @@ showref								;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link c
 	beq.w	rtss2
 	movea.w	#(RefRamMap-M68K_RAM),a0
 	movea.w	#(VmMAP1-M68K_RAM),a1
-	move.w	2(a1),d2
+	move.w	Map1col-VmMAP1(a1),d2
 	moveq	#2,d0					;refy: Xpos on ice screen
 	btst	#sfhor,(sflags).w
 	beq.w	.1
@@ -572,7 +572,7 @@ showclock							;put the game clock on screen. Called from setvideo and PauseMod
 	moveq	#5,d0					;clock y (93 used 4)
 	moveq	#$D,d2					;.clockx2 = 13
 .cv									;map position set
-	move.w	2(a1),d1				;map width shift (d0 = y, d2 = x of the clock)
+	move.w	Map1col-VmMAP1(a1),d1	;map width shift (d0 = y, d2 = x of the clock)
 	asl.w	d1,d0
 	add.w	d2,d0
 	asl.w	#1,d0
@@ -726,7 +726,7 @@ setffo								;draw the 7 objects tied to icerink scrolling (gloves and pads), m
 	bsr.w	addframe
 	cmpa.w	a6,a0
 	beq.w	.next					;no sprites added
-	move.w	2(a3),d1				;x offset (set by QueuePadLabel)
+	move.w	padxoff(a3),d1			;x offset (set by QueuePadLabel)
 	add.w	d1,6(a0)				;sprite 1 x
 	add.w	d1,$E(a0)
 .next								;next object
@@ -794,13 +794,13 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
 	lea	ButtonLabelCharTable(pc),a4
-	clr.w	2(a0)					;x offset (setffo adds it to the sprites)
+	clr.w	padxoff(a0)				;x offset (setffo adds it to the sprites)
 	move.w	d1,d2
 	lsr.w	#4,d2
 	andi.w	#$F,d2
 	bne.w	.hi
 	move.w	#$FFF0,d2				;' '-'0': blank leading zero
-	subq.w	#4,2(a0)
+	subq.w	#4,padxoff(a0)
 .hi									;tens digit (or blank)
 	addi.w	#$30,d2					;'0' (tens digit of the label, or blank)
 	clr.w	d0						;char slot 0
@@ -822,7 +822,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 	lsr.w	#8,d2
 	andi.w	#7,d2
 	bne.w	.1
-	addq.w	#4,2(a0)
+	addq.w	#4,padxoff(a0)
 .1									;position character
 	move.b	0(a4,d2.w),d2
 	moveq	#2,d0
