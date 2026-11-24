@@ -51,7 +51,7 @@ setupice_highlight
 	move.l	#VBlank,(VBint).l
 	bclr	#dfok,(disflags).l
 	bclr	#dfng,(disflags).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 setupIceRinkPal
@@ -574,14 +574,14 @@ Opening
 	jsr	(KillCrowd).l
 Opening2
 	jsr	(TitleScreen).l
-	bclr	#$5,$FF800F.l
+	bclr	#$5,(GA_COMFLAGS+1).l
 	movea.l	#$C458,sp
 	movea.l	#varstart,a0
 .loop	clr.l	(a0)+
 	cmpa.l	#varend,a0
 	blt.w	.loop
 	move.l	#vb2,(VBint).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	jsr	(GameSetUp).l
 	jsr	(UserNameEntry).l
 Opening3
@@ -596,12 +596,12 @@ GameOverCleanup
 	bne.s	.next
 	move.w	#$0,ScrollDisplayUpData.l
 	bsr.w	ScrollDisplayUpCall
-.next	bclr	#$5,$FF800F.l
+.next	bclr	#$5,(GA_COMFLAGS+1).l
 PlayoffScreen
 	tst.w	(OptPlayMode).l
 	beq.w	rtss2
 	move.l	#VBlank_TitleScreen,(VBint).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 	bclr	#$1,(disflags).l
 	move.w	#$0,(VSCRLPM).l
 	move.w	#$BC00,(VSPRITES).l
@@ -660,18 +660,18 @@ PlayoffScreen
 	move.w	#$104,(logoslide).l
 	move.w	#$A0,(playoffspritey).l
 	movea.l	#$C00004,a0
-.loop2	btst	#$7,$FF800E.l
+.loop2	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop2
-	move.w	#$9202,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	#$9202,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop3
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop4
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	movea.l	#potree,a1
 	movea.l	#PlayoffScreen_setup,a0
 	move.w	(gamelevel).l,d0
@@ -865,18 +865,18 @@ VBlank_TitleScreen						;the PlayoffScreen vblank handler (VBint): dma the sprit
 	bsr.w	SetVramWriteAddr2
 	move.w	#$FEA0,d0
 	add.w	(scoutcolumn).l,d0
-.loop	btst	#$4,$FF800E.l		;graphics not allowed?
+.loop	btst	#$4,(GA_COMFLAGS).l		;graphics not allowed?
 	bne.b	.loop
-	move.w	#$31,$FF8026.l		;sprite attribute table
-	move.w	d0,$FF8028.l		;size of the table
-	bset	#$3,$FF800F.l
-.loop2	btst	#$3,$FF800E.l
+	move.w	#$31,(GA_COMSTAT3).l		;sprite attribute table
+	move.w	d0,(GA_COMSTAT4).l		;size of the table
+	bset	#$3,(GA_COMFLAGS+1).l
+.loop2	btst	#$3,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$4,$FF800F.l
-	bclr	#$3,$FF800F.l
-.loop3	btst	#$3,$FF800E.l
+	bset	#$4,(GA_COMFLAGS+1).l
+	bclr	#$3,(GA_COMFLAGS+1).l
+.loop3	btst	#$3,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$4,$FF800F.l
+	bclr	#$4,(GA_COMFLAGS+1).l
 .next	jsr	(cramfade).l
 .nograph	addq.w	#$1,(Vcount).l
 	movem.l	(sp)+,d0-d7/a0-a6
@@ -1170,7 +1170,7 @@ ScrollDisplayUpCall
 	add.l	d0,$47D74.l
 	move.l	(a0)+,$47D04.l
 	add.l	d0,$47D04.l
-	bclr	#$5,$FF800F.l
+	bclr	#$5,(GA_COMFLAGS+1).l
 	jsr	(RelocatePointerTableDisc).l
 	jsr	(RelocateLogoBitmaps).l
 	st.b	(LogoDataLoaded).l
@@ -1223,7 +1223,7 @@ HiScoreScreen
 EASportsScreenCheck	jsr	(ReadJoy1).l
 	cmpi.b	#$E0,d3
 	bne.w	rtss2
-	bset.b	#$5,$FF800F.l
+	bset.b	#$5,(GA_COMFLAGS+1).l
 	move.l	#vb2,(VBint).l
 	jsr	(p_turnoff).l
 	jsr	(forceblack).l
@@ -2520,7 +2520,7 @@ ConvertByteToDigits						;converts decimal number in d0 to ascii: two ascii digi
 	move.b	d0,(a1)+
 	rts
 ; Address error screen: prints the error and the registers
-AddressErrorScreen	bclr.b	#$5,$FF800F.l
+AddressErrorScreen	bclr.b	#$5,(GA_COMFLAGS+1).l
 	jsr	(printbigz).l
 ; Inline data read by $39258 from the return address (2 rows).
 	dc.b	$00,$12,$BD,$00,$00,$41,$64,$64,$72,$65,$73,$73,$20,$45,$72,$72	; .....Address Err
@@ -2529,14 +2529,14 @@ AddressErrorScreen	bclr.b	#$5,$FF800F.l
 	move.l	$2(sp),d1
 	bra.w	crash
 ; Illegal instruction vector: prints the error and the registers (cartridge Illinst)
-IllegalInstructionScreen	bclr.b	#$5,$FF800F.l
+IllegalInstructionScreen	bclr.b	#$5,(GA_COMFLAGS+1).l
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$0,$0,'Illegal Instruction'
 	move.l	$2(sp),d0
 	move.l	d0,d1
 	bra.w	crash
 ; Divide by zero vector: prints the error and the registers, falls into crash (cartridge ZeroDiv)
-ZeroDiv	bclr.b	#$5,$FF800F.l
+ZeroDiv	bclr.b	#$5,(GA_COMFLAGS+1).l
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$0,$0,'Division by zero'
 	move.l	$2(sp),d0
@@ -2557,70 +2557,70 @@ crash	movea.l	#mesarea,a0
 	movea.l	#mesarea,a1
 	jsr	(printbig).l
 	movea.l	#$C00000,a0
-.loop	btst.b	#$7,$FF800E.l
+.loop	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop
-	move.w	#$9100,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop2	btst.b	#$6,$FF800E.l
+	move.w	#$9100,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop2
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop3	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop3
-	bclr.b	#$7,$FF800F.l
-.loop4	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop4	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop4
-	move.w	#$9206,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop5	btst.b	#$6,$FF800E.l
+	move.w	#$9206,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop5	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop5
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop6	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop6	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop6
-	bclr.b	#$7,$FF800F.l
-.loop7	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop7	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop7
-	move.w	#$8F02,$FF8022.l
-	move.w	#$A,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop8	btst.b	#$6,$FF800E.l
+	move.w	#$8F02,(GA_COMSTAT1).l
+	move.w	#$A,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop8	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop8
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop9	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop9	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop9
-	bclr.b	#$7,$FF800F.l
-.loop10	btst.b	#$7,$FF800E.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
+.loop10	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop10
-	move.l	#$C0200000,$FF8022.l
-	move.w	#$B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop11	btst.b	#$6,$FF800E.l
+	move.l	#$C0200000,(GA_COMSTAT1).l
+	move.w	#$B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop11	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop11
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop12	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop12	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop12
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	movea.l	$47D18.l,a1
 	adda.l	(a1),a1
 	adda.w	#$20,a1
 	moveq	#$7,d0
-.loop13	btst.b	#$7,$FF800E.l
+.loop13	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop13
-	move.l	(a1)+,$FF8022.l
-	move.w	#$E,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop14	btst.b	#$6,$FF800E.l
+	move.l	(a1)+,(GA_COMSTAT1).l
+	move.w	#$E,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop14	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop14
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop15	btst.b	#$6,$FF800E.l
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop15	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop15
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	dbra	d0,.loop13
 .next	bra.w	.next
 ; Prints d0 as 8 hex digits

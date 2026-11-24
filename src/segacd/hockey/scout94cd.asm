@@ -196,7 +196,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	bsr.w	PrintAdvantageMarks
 	move.w	#$18,(palcount).l
 	move.l	#vb2,(VBint).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 .loop2	tst.w	(palcount).l
 	bpl.w	.loop2
 	jsr	(InitScoutingDisplay).l
@@ -281,18 +281,18 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	#$7FFF,(screentimer).l		;frames left on the screen
 	move.l	#$8CA0,(scoutwait).l		;then 36000 more when OptNOP is not 0
 	jsr	(ScoutCompareHotColdTotals).l
-.loop3	btst	#$7,$FF800E.l
+.loop3	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop3
-	move.w	#$3C,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	move.w	#$3C,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop4
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop5	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop5	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop5
-	bclr	#$7,$FF800F.l
-	bclr	#$5,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
+	bclr	#$5,(GA_COMFLAGS+1).l
 	move.w	#$F,d7
 	jsr	$6044.w
 	move.w	#$0,(ScoutLastPara).l
@@ -316,9 +316,9 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	move.w	d1,(a0,d0.w)
 	move.l	d1,-(sp)
 	move.w	#$1,d0
-	bclr	#$3,$FF8033.l
+	bclr	#$3,(GA_INTMASK+1).l
 	bsr.w	PageMatchup
-	bset	#$3,$FF8033.l
+	bset	#$3,(GA_INTMASK+1).l
 	move.w	#$3,(advframe).l
 	move.w	#$0,(advcount).l
 	bsr.w	PrintAdvantageMarks
@@ -337,19 +337,19 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	btst	#$1,(waitxpad+1).l
 	bne.w	.next6
 	move.l	(sp)+,d1
-.loop7	btst	#$7,$FF800E.l
+.loop7	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop7
-	move.w	#$2E,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop8	btst	#$6,$FF800E.l
+	move.w	#$2E,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop8	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop8
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop9	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop9	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop9
-	bclr	#$7,$FF800F.l
-	bset	#$5,$FF800F.l
-	movea.l	#$FF8000,a5
+	bclr	#$7,(GA_COMFLAGS+1).l
+	bset	#$5,(GA_COMFLAGS+1).l
+	movea.l	#GA_BASE,a5
 	move.l	d1,d3
 	asl.w	#$3,d1
 	movea.l	(ScoutSpeechTable).l,a0
@@ -379,7 +379,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	lea.l	(ScoutCDArg).l,a0
 	move.w	#$18,d0
 	jsr	$5F22.w
-.next3	bclr	#$5,$FF800F.l
+.next3	bclr	#$5,(GA_COMFLAGS+1).l
 	move.w	#$6,d7
 	jsr	$6044.w
 	cmpi.w	#$5A,d3
@@ -402,7 +402,7 @@ ScoutingReport						;pregame MATCHUPS screen, called from Opening2. Draws the Ro
 	jsr	$6044.w
 .next6	move.l	#vb2,(VBint).l
 	jsr	(SubCmd2DSend).l
-	bset	#$5,$FF800F.l
+	bset	#$5,(GA_COMFLAGS+1).l
 .top	moveq	#$0,d0
 	jsr	(waitx).l
 	btst	#$1,(waitxpad+1).l
@@ -518,17 +518,17 @@ PageMatchup						;Page the matchup by d0 (+1 / -1, 0-6 wrapping), restart the pa
 	move.w	(Vcount).l,d0
 .loop	cmp.w	(Vcount).l,d0
 	beq.b	.loop
-.loop2	btst	#$7,$FF800E.l
+.loop2	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop2
-	move.w	#$3C,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	#$3C,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop3
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop4
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	bsr.w	PrintMatchupRatings
 	rts
 PrintMatchupRating						;Print the team rating of team a0 (GetTeamRating: the TeamRatings byte for

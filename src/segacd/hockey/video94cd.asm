@@ -38,42 +38,42 @@ dodmalist
 DmaListWait	move.w	(VSCRLPM).l,d0
 	addi.w	#$2,d0
 	bsr.w	SetVramWriteAddr2
-.loop	btst.b	#$4,$FF800E.l
+.loop	btst.b	#$4,(GA_COMFLAGS).l
 	bne.s	.loop
-	move.w	#$31,$FF8026.l
-	move.w	(Hscroll).l,$FF8028.l
-	bset.b	#$3,$FF800F.l
-.loop2	btst.b	#$3,$FF800E.l
+	move.w	#$31,(GA_COMSTAT3).l
+	move.w	(Hscroll).l,(GA_COMSTAT4).l
+	bset.b	#$3,(GA_COMFLAGS+1).l
+.loop2	btst.b	#$3,(GA_COMFLAGS).l
 	beq.s	.loop2
-	bset.b	#$4,$FF800F.l
-	bclr.b	#$3,$FF800F.l
-.loop3	btst.b	#$3,$FF800E.l
+	bset.b	#$4,(GA_COMFLAGS+1).l
+	bclr.b	#$3,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$3,(GA_COMFLAGS).l
 	bne.s	.loop3
-	bclr.b	#$4,$FF800F.l
-.loop4	btst.b	#$4,$FF800E.l
+	bclr.b	#$4,(GA_COMFLAGS+1).l
+.loop4	btst.b	#$4,(GA_COMFLAGS).l
 	bne.s	.loop4
-	move.w	#$30,$FF8026.l
-	move.l	#$40020010,$FF8028.l
-	bset.b	#$3,$FF800F.l
-.loop5	btst.b	#$3,$FF800E.l
+	move.w	#$30,(GA_COMSTAT3).l
+	move.l	#$40020010,(GA_COMSTAT4).l
+	bset.b	#$3,(GA_COMFLAGS+1).l
+.loop5	btst.b	#$3,(GA_COMFLAGS).l
 	beq.s	.loop5
-	bset.b	#$4,$FF800F.l
-	bclr.b	#$3,$FF800F.l
-.loop6	btst.b	#$3,$FF800E.l
+	bset.b	#$4,(GA_COMFLAGS+1).l
+	bclr.b	#$3,(GA_COMFLAGS+1).l
+.loop6	btst.b	#$3,(GA_COMFLAGS).l
 	bne.s	.loop6
-	bclr.b	#$4,$FF800F.l
-.loop7	btst.b	#$4,$FF800E.l
+	bclr.b	#$4,(GA_COMFLAGS+1).l
+.loop7	btst.b	#$4,(GA_COMFLAGS).l
 	bne.s	.loop7
-	move.w	#$31,$FF8026.l
-	move.w	(Vscroll).l,$FF8028.l
-	bset.b	#$3,$FF800F.l
-.loop8	btst.b	#$3,$FF800E.l
+	move.w	#$31,(GA_COMSTAT3).l
+	move.w	(Vscroll).l,(GA_COMSTAT4).l
+	bset.b	#$3,(GA_COMFLAGS+1).l
+.loop8	btst.b	#$3,(GA_COMFLAGS).l
 	beq.s	.loop8
-	bset.b	#$4,$FF800F.l
-	bclr.b	#$3,$FF800F.l
-.loop9	btst.b	#$3,$FF800E.l
+	bset.b	#$4,(GA_COMFLAGS+1).l
+	bclr.b	#$3,(GA_COMFLAGS+1).l
+.loop9	btst.b	#$3,(GA_COMFLAGS).l
 	bne.s	.loop9
-	bclr.b	#$4,$FF800F.l
+	bclr.b	#$4,(GA_COMFLAGS+1).l
 	rts
 setvideo
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -1015,6 +1015,6 @@ setupice
 	move.l	#VBlank,(VBint).l
 	bclr	#dfok,(disflags).l		;graphics not ready
 	bclr	#dfng,(disflags).l
-	bset	#$5,$FF800F.l		;cartridge: move #$2300,sr (interrupts on)
+	bset	#$5,(GA_COMFLAGS+1).l		;cartridge: move #$2300,sr (interrupts on)
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
