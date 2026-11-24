@@ -2563,18 +2563,18 @@ rtss21	rts
 	addi.w	#$8,d2
 .next36	cmp.w	$48(a3),d2
 	bne.w	.next37
-.loop4	btst.b	#$7,$FF800E.l
+.loop4	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop4
-	move.w	#$1B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop5	btst.b	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop5	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop5
-	move.w	$FF8010.l,d0
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop6	btst.b	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop6	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop6
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$7F,d0
 	bne.w	AssistTargetFlip
 .next37	move.w	d2,$48(a3)
@@ -2695,18 +2695,18 @@ AssistTargetFlip	move.w	$44(a3),d0
 	addi.w	#$8,d2
 .next13	cmp.w	$48(a3),d2
 	bne.w	.next14
-.loop2	btst.b	#$7,$FF800E.l
+.loop2	btst.b	#$7,(GA_COMFLAGS).l
 	bne.s	.loop2
-	move.w	#$1B,$FF8020.l
-	bset.b	#$6,$FF800F.l
-.loop3	btst.b	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset.b	#$6,(GA_COMFLAGS+1).l
+.loop3	btst.b	#$6,(GA_COMFLAGS).l
 	beq.s	.loop3
-	move.w	$FF8010.l,d0
-	bset.b	#$7,$FF800F.l
-	bclr.b	#$6,$FF800F.l
-.loop4	btst.b	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset.b	#$7,(GA_COMFLAGS+1).l
+	bclr.b	#$6,(GA_COMFLAGS+1).l
+.loop4	btst.b	#$6,(GA_COMFLAGS).l
 	bne.s	.loop4
-	bclr.b	#$7,$FF800F.l
+	bclr.b	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$7F,d0
 	bne.w	AssistTargetFlipGoalie
 .next14	move.w	d2,$48(a3)
@@ -2952,18 +2952,18 @@ checkanim
 .next18	st.b	$46(a3)
 	cmpi.w	#$5A,$48(a3)
 	bgt.w	.next23
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$3,d0
 	bne.w	.next23
 	moveq	#$5,d0
@@ -3522,18 +3522,18 @@ asspuckc						;player a3 is puck handler
 	movem.l	(sp)+,a2
 .6	clr.w	temp1(a3)
 	move.w	#$8,temp2(a3)
-.rloop	btst	#$7,$FF800E.l
+.rloop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.rloop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.rloop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.rloop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.rloop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.rloop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.rloop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.rloop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$3,d0
 	move.w	d0,temp3(a3)
 .7	sub.b	d7,temp1(a3)
@@ -3642,18 +3642,18 @@ asspuckc						;player a3 is puck handler
 	eori.w	#$4,d1
 	cmp.w	d0,d1
 	bne.w	.next
-.rnd	btst	#$7,$FF800E.l			;random number from the sub CPU (command $1B), where the cartridge reads HVcount
+.rnd	btst	#$7,(GA_COMFLAGS).l			;random number from the sub CPU (command $1B), where the cartridge reads HVcount
 	bne.b	.rnd
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.rnd2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.rnd2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.rnd2
-	move.w	$FF8010.l,d1
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.rnd3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d1
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.rnd3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.rnd3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$1,d1
 	add.w	d1,d0
 	andi.w	#$7,d0
@@ -3676,18 +3676,18 @@ chk4lc
 	bmi.w	check4benchExit
 	cmpi.w	#$58,d0
 	bgt.w	check4benchExit
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$3,d0
 	bne.w	check4benchExit
 	btst	#$3,$63(a3)
@@ -3728,18 +3728,18 @@ CheckPuckHolder2
 	bne.w	CheckPuckHolder2Random
 	tst.w	(threat).l
 	beq.w	CheckPuckHolder2Random
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$3,d0
 	bne.w	CheckPuckHolder2Random
 	move.w	#$58,d0
@@ -4337,18 +4337,18 @@ check4check	tst.w	$34(a3)		;check if goalie
 	bne.w	.next		;branch if not facing in that direction
 	btst	#$5,(sflags6).l		;check if puckc in slot
 	bne.w	Acheck		;branch if in slot
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$3,d0		;pass first 2 bits
 	bne.w	burst		;throw check
 	bra.w	Acheck		;1 in 4: hold or hook on a0
@@ -5193,7 +5193,7 @@ CompLineScreen	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$FFFF,(faceoffanim).l
 	bra.w	CompLineScreenLimit
 ; Clears flag 5 of the gate array flags
-CompLineScreenFlag	bclr.b	#$5,$FF800F.l
+CompLineScreenFlag	bclr.b	#$5,(GA_COMFLAGS+1).l
 ; Limits the line change timer to $258
 CompLineScreenLimit	cmpi.w	#$258,(Crowdlevel).l
 	bls.w	.next
@@ -5436,7 +5436,7 @@ FaceoffRandomDelay	move.w	#$78,d0
 	move.w	(SongNum).l,-(sp)
 	bsr.w	song
 .next5	move.w	#$18,(palcount).l
-	bset.b	#$5,$FF800F.l
+	bset.b	#$5,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
 ; Counts the faceoff timer down and ends the faceoff
@@ -5552,18 +5552,18 @@ Endfaceoff						;drop the puck: pick the faceoff winner and send the puck off
 	btst	#$3,d0
 	bne.w	.nojoy
 	andi.w	#$7,d0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d1
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d1
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$3,d1
 	bne.w	.nj2
 .nojoy	moveq	#$5,d0
@@ -6485,18 +6485,18 @@ playeracc
 	move.w	d1,Yvel(a3)
 .sube	tst.w	(OptLine).l
 	bne.w	rtss2
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	#$1B,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	#$1B,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	move.w	$FF8010.l,d0
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(GA_COMCMD0).l,d0
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$7F,d0
 	bne.w	rtss2
 	bsr.w	getpde

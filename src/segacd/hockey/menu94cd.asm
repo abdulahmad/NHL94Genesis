@@ -168,18 +168,18 @@ PutTeamBlock
 	moveq	#$1,d2
 .loop	jsr	(xyVmMap).l
 	moveq	#$A,d1
-.loop2	btst	#$7,$FF800E.l
+.loop2	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop2
-	move.w	(a1)+,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	move.w	(a1)+,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop3
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop4	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop4	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop4
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	dbra	d1,.loop2
 	addi.w	#$1,(printy).l
 	dbra	d2,.loop
