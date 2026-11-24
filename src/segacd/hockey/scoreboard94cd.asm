@@ -10,7 +10,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	btst	#$1,(gmode2).l
 	bne.w	rtss2
 	movea.l	#tmstruct,a2
-	lea.l	$366(a2),a3
+	lea.l	tmsize(a2),a3
 	move.w	tmap(a2),d0
 	sub.w	tmap(a3),d0
 	beq.w	.clrpwrplay
@@ -44,7 +44,7 @@ updatepwrplay						;show graphic and time remaining for power plays. Nothing whe
 	move.w	#$2,(a3)
 	bsr.w	appendz
 	String	CC_Font1Pri,$1,$19
-	adda.w	$4(a0),a0
+	adda.w	Teamname(a0),a0
 	adda.w	(a0),a0
 	movea.l	a0,a1
 	bsr.w	appstring
@@ -177,7 +177,7 @@ printscores1						;Draw scoreboard. Vertical rink: period box and the score box 
 printscores1_ps						;Print the team name of team a2 at printx/printy, then its score as 2
 	
 	movea.l	tmdata(a2),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	adda.w	(a1),a1
 	bsr.w	print
 	move.w	#$1C,(printx).l
@@ -307,7 +307,7 @@ linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitma
 	rts
 getlinee						;d0 = line number, a2 = team struct. Return d0 = energy level of this line
 	movem.l	d1-d5/a0-a3,-(sp)
-	lea.l	$16C(a2),a1
+	lea.l	tmlines(a2),a1
 	asl.w	#$3,d0
 	adda.w	d0,a1
 	clr.l	d0
@@ -332,7 +332,7 @@ AvgCline						;Return d0 = average energy of current line on team a2
 	clr.l	d0
 	clr.w	d1
 	moveq	#$5,d2
-	movea.l	$22(a2),a0
+	movea.l	tmsort(a2),a0
 .loop	tst.w	position(a0)
 	ble.w	.next
 	clr.w	d3
@@ -376,7 +376,7 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 .pllookup	clr.w	d0
 	move.b	ssscorer(a4),d0
 	movea.l	(sp)+,a4
-	movea.l	$22(a2),a2
+	movea.l	tmsort(a2),a2
 	move.w	#$5,d1
 .findplayer	cmp.b	pnum(a2),d0
 	beq.w	.foundplayer
@@ -423,8 +423,8 @@ ChkShotStat						;determine if shot taken, add to appropriate stats: crowd, team
 ; Picks the shooting team struct and swaps it for the other side when needed
 loadTeamStruct
 .next3	movea.l	#tmstruct,a2
-	lea.l	$366(a2),a1
-	btst	#$6,$62(a3)
+	lea.l	tmsize(a2),a1
+	btst	#$6,pflags(a3)
 	beq.w	rtss2
 	exg.l	a1,a2
 	rts
@@ -433,7 +433,7 @@ SetupTeamForIntermission						;Reset the bench, then for each team refill energy
 	
 	bsr.w	ResetBench
 	movea.l	#tmstruct,a2
-	lea.l	$366(a2),a3
+	lea.l	tmsize(a2),a3
 	bsr.w	.r
 	exg.l	a2,a3
 .r	bsr.w	reenergizeteam
@@ -611,7 +611,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 .getscore	asl.w	#$2,d0
 	movea.l	#TeamList,a1
 	movea.l	(a1,d0.w),a1
-	adda.w	$8(a1),a1
+	adda.w	ScoutReport(a1),a1
 	move.b	(a1),d0
 	andi.w	#$70,d0
 	lsr.w	#$1,d0
@@ -621,7 +621,7 @@ SetScore						;add to score for game in a0. After period 3 a game within one goa
 	asl.w	#$2,d1
 	movea.l	#TeamList,a1
 	movea.l	(a1,d1.w),a1
-	adda.w	$8(a1),a1
+	adda.w	ScoutReport(a1),a1
 	move.b	(a1),d0
 	andi.w	#$7,d0
 	asl.w	#$3,d0
@@ -715,7 +715,7 @@ NewTicker3						;Display ticker score for game d3 (a0 = gstruct entry), skip if 
 	movea.l	#TeamList,a1
 	asl.w	#$2,d0
 	movea.l	(a1,d0.w),a1
-	adda.w	$4(a1),a1
+	adda.w	Teamname(a1),a1
 	bsr.w	print
 	move.w	$4(sp),(printx).l
 	addi.w	#$15,(printx).l
@@ -811,10 +811,10 @@ StartHL2	btst	#$3,(sflags3).l
 	addi.w	#$3C,d0
 	move.w	d0,(gameclock).l
 	movea.l	(sp),a0
-	move.w	$8(a0),(gsp).l
+	move.w	gsper(a0),(gsp).l
 	subi.w	#$1,(gsp).l
-	move.w	$A(a0),(HmGoals).l
-	move.w	$C(a0),(AwGoals).l
+	move.w	gss1(a0),(HmGoals).l
+	move.w	gss2(a0),(AwGoals).l
 	move.b	#$10,(gmode).l
 	btst	#$0,(gsp+1).l
 	beq.w	.next3
@@ -874,15 +874,15 @@ StartHL2	btst	#$3,(sflags3).l
 	moveq	#$B,d0
 	movea.l	#DoHiLightsData,a0
 	movea.l	#SortCords,a1
-.loop8	move.w	$34(a1),d1
-	btst	#$7,$62(a1)
+.loop8	move.w	position(a1),d1
+	btst	#$7,pflags(a1)
 	bne.w	.next4
 	addi.w	#$6,d1
 .next4	asl.w	#$2,d1
 	move.w	(a0,d1.w),$0(a1)
-	move.w	$2(a0,d1.w),$14(a1)
-	clr.w	$28(a1)
-	clr.w	$2A(a1)
+	move.w	$2(a0,d1.w),Ypos(a1)
+	clr.w	Xvel(a1)
+	clr.w	Yvel(a1)
 	adda.w	#$80,a1
 	dbra	d0,.loop8
 	bsr.w	SprSort
@@ -924,8 +924,8 @@ StartHL2	btst	#$3,(sflags3).l
 	jsr	(KillCrowd).l
 	jsr	(p_turnoff).l
 	movem.l	(sp)+,d1/a0
-	move.w	(HmGoals).l,$A(a0)
-	move.w	(AwGoals).l,$C(a0)
+	move.w	(HmGoals).l,gss1(a0)
+	move.w	(AwGoals).l,gss2(a0)
 	bsr.w	forceblack
 	moveq	#$F,d0
 	movea.l	#SortCords,a0
@@ -942,11 +942,11 @@ StartHL2	btst	#$3,(sflags3).l
 	move.w	#$79,-(sp)
 	bsr.w	song
 	movem.l	(sp),d0-d7/a0-a6
-	move.w	#$4,$8(a0)
-	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+	move.w	#$4,gsper(a0)
+	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	beq.w	StartHL2
-	move.w	#$5,$8(a0)
+	move.w	#$5,gsper(a0)
 	move.w	d1,d3
 	bsr.w	CheckGameTickerStatus
 	bsr.w	NewTicker3
@@ -970,13 +970,13 @@ StartHL2	btst	#$3,(sflags3).l
 .next10	jsr	(reenergizeteam).l
 	bsr.w	setpersonel
 	bsr.w	forcepldata
-	st.b	$18(a2)
+	st.b	tmtouch1(a2)
 	bclr	#$7,(sflags8).l
-	st.b	$1A(a2)
-	st.b	$1C(a2)
+	st.b	tmtouch2(a2)
+	st.b	tmtouch3(a2)
 	rts
-.next11	move.w	$A(a0),d0
-	cmp.w	$C(a0),d0
+.next11	move.w	gss1(a0),d0
+	cmp.w	gss2(a0),d0
 	bne.w	.next12
 .loop16	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop16
@@ -991,10 +991,10 @@ StartHL2	btst	#$3,(sflags3).l
 	bne.b	.loop18
 	bclr	#$7,(GA_COMFLAGS+1).l
 	andi.w	#$1,d0
-	add.w	d0,$A(a0)
+	add.w	d0,gss1(a0)
 	eori.w	#$1,d0
-	add.w	d0,$C(a0)
-.next12	move.w	#$5,$8(a0)
+	add.w	d0,gss2(a0)
+.next12	move.w	#$5,gsper(a0)
 	rts
 .next13	move.w	#$557,d0
 	movea.l	#gmode,a1

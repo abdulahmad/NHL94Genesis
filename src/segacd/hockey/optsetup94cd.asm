@@ -588,7 +588,7 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 	asl.w	#$2,d3
 	movea.l	(a1,d3.w),a1
 	lsr.w	#$2,d3
-	adda.w	Teamname(a1),a1
+	adda.w	$4(a1),a1
 	cmpi.w	#$E,d3		;NYR?
 	bne.w	.0
 	movea.l	#NewYorkRTxt,a1		;full name
