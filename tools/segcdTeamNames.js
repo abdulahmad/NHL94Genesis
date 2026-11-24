@@ -26,4 +26,21 @@ function teamNames(disc) {
     }
     return { players, nicks };
 }
-module.exports = { teamNames };
+// The home and visitor palettes (16 words each, at the Palettedata offset) of every team record, named by the record's
+// abbreviation string: [{ abbr, home, visitor }] in TeamList order. extractAssetsSegaCD.js writes them to
+// Extracted/SegaCD/HOCKEY/Pals/<abbr>h.pal and <abbr>v.pal, which teamdata94cd.asm incbins (the cartridge's Pals files).
+function teamPalettes(disc) {
+    const out = [];
+    for (let i = 0; i < NUM_TEAMS; i++) {
+        const p = disc.readUInt32BE(0x0C + 4 * i) - 0x1B000;
+        const pad = p + disc.readUInt16BE(p + 2);
+        let q = p + disc.readUInt16BE(p + 4);
+        q += disc.readUInt16BE(q);           // past the city String
+        const ln = disc.readUInt16BE(q);
+        let ab = disc.subarray(q + 2, q + ln);
+        if (ab.length && ab[ab.length - 1] === 0) ab = ab.subarray(0, ab.length - 1);
+        out.push({ abbr: ab.toString('latin1'), home: disc.subarray(pad, pad + 32), visitor: disc.subarray(pad + 32, pad + 64) });
+    }
+    return out;
+}
+module.exports = { teamNames, teamPalettes };
