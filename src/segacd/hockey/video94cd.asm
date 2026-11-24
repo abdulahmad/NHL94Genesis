@@ -137,10 +137,10 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	andi.w	#$1F,d0
 	asl.w	#$7,d0		;chars per row screen format
 	add.w	(VmMAP2).l,d0
-	move.w	d0,$6(a5)		;vram address
+	move.w	d0,dmavram(a5)			;vram address
 	move.w	#$1E,d0		;60-30
 	sub.w	d1,d0
-	move.w	(a0),$4(a5)		;words = one map row
+	move.w	(a0),dmalen(a5)			;words = one map row
 	mulu.w	(a0),d0
 	add.w	d0,d0
 	lea.l	mapwords(a0,d0.w),a1
@@ -156,10 +156,10 @@ updatescroll						;Using hpos and vpos set scroll cords; queue rink map rows on 
 	andi.w	#$1F,d0
 	asl.w	#$7,d0
 	add.w	(VmMAP2).l,d0
-	move.w	d0,$6(a5)
+	move.w	d0,dmavram(a5)
 	move.w	#$3D,d0
 	sub.w	d1,d0
-	move.w	(a0),$4(a5)
+	move.w	(a0),dmalen(a5)
 	mulu.w	(a0),d0
 	add.w	d0,d0
 	lea.l	mapwords(a0,d0.w),a1
@@ -175,7 +175,7 @@ showref						;draw ref graphics. a5 = dma list, a6 = sprite table, d6 = link cou
 	beq.w	rtss2
 	movea.l	#RefRamMap,a0
 	movea.l	#VmMAP1,a1
-	move.w	$2(a1),d2
+	move.w	Map1col-VmMAP1(a1),d2
 	moveq	#$2,d0		;refy: Xpos on ice screen
 	btst	#sfhor,(sflags).l
 	beq.w	.1
@@ -503,7 +503,7 @@ showclockVertical
 	movea.l	#VmMAP2,a1
 	moveq	#$5,d0
 	moveq	#$D,d2
-.next3	move.w	$2(a1),d1
+.next3	move.w	Map1col-VmMAP1(a1),d1
 	asl.w	d1,d0
 	add.w	d2,d0
 	asl.w	#$1,d0
@@ -633,7 +633,7 @@ setffo						;draw the 7 objects tied to icerink scrolling (gloves and pads), mov
 	bsr.w	addframe
 	cmpa.l	a6,a0
 	beq.w	.next		;no sprites added
-	move.w	$2(a3),d1		;x offset (set by QueuePadLabel)
+	move.w	padxoff(a3),d1			;x offset (set by QueuePadLabel)
 	add.w	d1,$6(a0)		;sprite 1 x
 	add.w	d1,$E(a0)
 .next	adda.w	#ffosize,a3		;move to next struct
@@ -695,13 +695,13 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 									;a0 = pad object, a5 = dma list. Falls into uppads_pd for the
 									;last char
 	lea	ButtonLabelCharTable(pc),a4
-	clr.w	$2(a0)		;x offset (setffo adds it to the sprites)
+	clr.w	padxoff(a0)				;x offset (setffo adds it to the sprites)
 	move.w	d1,d2
 	lsr.w	#$4,d2
 	andi.w	#$F,d2
 	bne.w	.hi
 	move.w	#$FFF0,d2		;' '-'0': blank leading zero
-	subi.w	#$4,$2(a0)
+	subi.w	#$4,padxoff(a0)
 .hi	addi.w	#$30,d2		;'0' (tens digit of the label, or blank)
 	clr.w	d0		;char slot 0
 	bsr.w	uppads_pd
@@ -720,7 +720,7 @@ QueuePadLabel						;Queue the 3 character label of a pad object. d1 = label code
 .0	lsr.w	#$8,d2
 	andi.w	#$7,d2
 	bne.w	.1
-	addi.w	#$4,$2(a0)
+	addi.w	#$4,padxoff(a0)
 .1	move.b	(a4,d2.w),d2
 	moveq	#$2,d0
 uppads_pd						;Dma one small font tile (SmallFontMap) to the object's chars. d2 = ascii

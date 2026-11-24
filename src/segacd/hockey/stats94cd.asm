@@ -379,7 +379,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	beq.w	.0
 	suba.w	#$6,a0
 .0	move.w	(a0),(printx).l
-	move.w	$2(a0),(printy).l
+	move.w	lipy(a0),(printy).l
 	move.w	d5,d0
 	movea.l	#linelist,a1
 	move.w	#$8000,(printa).l
@@ -390,8 +390,8 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	move.w	d5,d4
 	asl.w	#$3,d4
 	addi.w	#$1,d4
-	move.w	$2(a0),(printy).l
-	move.w	$4(a0),d3
+	move.w	lipy(a0),(printy).l
+	move.w	lipslots(a0),d3
 	lea.l	tmlines(a2),a3
 .slot	move.w	(a0),(printx).l
 	jsr	(printsmallz).l
@@ -422,7 +422,7 @@ DrawLineIconErase
 	moveq	#$12,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-	move.w	(LineIconPosTable+2).l,(printy).l
+	move.w	(LineIconPosTable+lipy).l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	(OptLine).l
 	beq.w	.next
@@ -1297,7 +1297,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	movea.l	#Penaltylist,a3
 	adda.w	(a3,d0.w),a3
 	clr.w	d0
-	move.b	$1(a3),d0		;penalty minutes
+	move.b	penmins(a3),d0			;penalty minutes
 	jsr	(PushNumber).l
 	move.w	#$23,(printx).l
 	jsr	(print).l
@@ -1309,7 +1309,7 @@ DisplayPenaltyEntry						;Print PenSum entry d3: time, team (bit 7 of byte 2 = a
 	addi.w	#$1,(printy).l
 	move.w	#$13,(printx).l
 	move.w	#$E000,(printa).l
-	lea.l	$2(a3),a1		;penalty name string
+	lea.l	penname(a3),a1			;penalty name string
 	jmp	(print).l
 ; Prints the penalty entry header.
 PenaltyEntryHeader
