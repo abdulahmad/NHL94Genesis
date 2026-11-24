@@ -118,8 +118,8 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	move.w	#$FFFF,d1		;highlights: no song
 	bra.w	.1
 .0	bclr	#$6,(sflags8).l		;clear sflags8 bit 6
-	movea.l	#$2A4DC,a0
-	movea.l	#$2A584,a1
+	movea.l	#TeamSongs,a0		;team song table
+	movea.l	#RandomSongs,a1		;random song table
 	move.w	(HmTeam).l,d0
 	mulu.w	#$6,d0
 	add.w	(SongIndex).l,d0
@@ -134,5 +134,34 @@ ChooseSong						;SongNum = byte SongIndex of the 6 song bytes of team HmTeam, or
 	movem.l	(sp)+,d0-d1/a0-a1
 	rts
 TeamSongs						;ChooseSong: 6 songs per team (TeamList order), 0 = random (RandomSongs)
-; Data that follows TeamSongs (strings, small tables)
-TeamSongsData	dc.w	$7775
+									;(28 teams; the disc numbers its songs differently from the cartridge)
+	dc.b	$77,$75,$76,$0,$5A,$0
+	dc.b	$31,$32,$30,$0,$5A,$31
+	dc.b	$34,$33,$33,$34,$5A,$0
+	dc.b	$35,$37,$35,$37,$36,$36
+	dc.b	$38,$3A,$39,$38,$5A,$65
+	dc.b	$4A,$4B,$4B,$0,$5A,$0
+	dc.b	$3B,$3C,$3D,$0,$5A,$3C
+	dc.b	$3E,$3F,$3F,$0,$5A,$0
+	dc.b	$77,$75,$76,$0,$5A,$0
+	dc.b	$40,$42,$41,$42,$5A,$40
+	dc.b	$43,$43,$45,$44,$5A,$46
+	dc.b	$4F,$4E,$4F,$4D,$5A,$4C
+	dc.b	$50,$51,$50,$0,$5A,$52
+	dc.b	$47,$48,$47,$49,$5A,$49
+	dc.b	$54,$55,$53,$0,$5A,$0
+	dc.b	$77,$75,$76,$0,$5A,$0
+	dc.b	$56,$57,$56,$58,$0,$58
+	dc.b	$59,$5B,$59,$5C,$5A,$5C
+	dc.b	$5D,$5E,$5D,$0,$5A,$5E
+	dc.b	$5F,$60,$61,$63,$64,$65
+	dc.b	$67,$68,$68,$67,$5A,$69
+	dc.b	$6A,$6B,$6B,$0,$5A,$0
+	dc.b	$6C,$6C,$6D,$0,$5A,$0
+	dc.b	$6E,$6F,$70,$0,$5A,$0
+	dc.b	$71,$73,$71,$0,$5A,$74
+	dc.b	$77,$75,$76,$0,$5A,$0
+	dc.b	$54,$55,$53,$0,$5A,$0
+	dc.b	$54,$55,$53,$0,$5A,$0
+RandomSongs						;ChooseSong: the 8 songs for a random pick
+	dc.b	$34,$40,$42,$49,$58,$5C,$65,$66

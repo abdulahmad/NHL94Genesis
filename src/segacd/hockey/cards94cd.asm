@@ -537,7 +537,7 @@ PrintRecordValue
 	movem.l	d0-d7/a1-a6,-(sp)
 	move.l	a1,-(sp)
 	movea.l	a1,a3
-	movea.l	#$257EE,a1
+	movea.l	#PlayerCardScreenData,a1
 	movem.l	d0-d1,-(sp)
 	bsr.w	CopyString
 	movem.l	(sp)+,d0-d1
@@ -662,7 +662,7 @@ PrintRecordHolder						;Record holder line: RecByTxt ("by") then the holder's us
 	movem.l	d0-d7/a1-a6,-(sp)
 	move.l	a1,-(sp)		;keep the output start
 	movea.l	a1,a3
-	movea.l	#$2595C,a1
+	movea.l	#RecByTxt,a1
 	movem.l	d0-d1,-(sp)		;save team and player
 	bsr.w	CopyString
 	movem.l	(sp)+,d0-d1
@@ -683,7 +683,7 @@ PrintRecordVs						;Record line: RecVsTxt ("vs.") then the user name and the opp
 	movem.l	d0-d7/a1-a6,-(sp)
 	move.l	a1,-(sp)		;keep the output start
 	movea.l	a1,a3
-	movea.l	#$25994,a1
+	movea.l	#RecVsTxt,a1
 	movem.l	d0-d1,-(sp)		;save team and player
 	bsr.w	CopyString
 	movem.l	(sp)+,d0-d1
@@ -737,7 +737,7 @@ AppendRecordVs						;Append the user name (byte 3 of record a0), a space and the
 	bset	#$7,(sflags6).l		;record name list
 	bsr.w	AppendUserName
 	movea.l	a1,a3
-	movea.l	#$25A4A,a1
+	movea.l	#RecSpaceTxt,a1
 	jsr	(appstring).l
 	movem.l	(sp)+,d0/a1
 	move.b	$2(a0),d0
@@ -1145,13 +1145,13 @@ CalcAttrib						;The overall rating of player d0: his attributes weighted by
 	move.l	a6,-(sp)
 	clr.w	(OvrDivisor).l
 	clr.w	(OvrDividend).l
-	movea.l	#$26266,a6
+	movea.l	#CalcAttribThirdTable,a6
 	cmp.l	(PAttribOverallMask).l,d4
 	bne.w	.1
-	movea.l	#$26246,a6
+	movea.l	#OvrPlayerWgtList,a6
 .1	cmp.l	(GAttribOverallMask).l,d4
 	bne.w	.11
-	movea.l	#$26256,a6
+	movea.l	#OvrGoalWgtList,a6
 .11	movea.l	tmdata(a2),a0
 	lea.l	$1A4(a2),a4
 	clr.l	d1
@@ -1431,8 +1431,7 @@ NameEntryScreen
 	bsr.w	SkipOtherUserName
 	movea.l	#nameentrybuf,a1
 	bsr.w	GetLogName
-; Inline data read by GetLogName from the return address (1 row).
-	dc.w	$6100,$06AC
+	bsr.w	PrintNameLogList
 	jsr	(printz).l
 ; Inline data read by $38F6E from the return address (1 row).
 	dc.b	$00,$0E,$BF,$07,$06,$4E,$61,$6D,$65,$20,$4C,$6F,$67,$00	; .....Name Log.
@@ -1444,7 +1443,7 @@ NameEntryScreen
 	bsr.w	LetterGridPos
 	move.w	(printx).l,-(sp)
 	move.w	(printy).l,-(sp)
-	jsr	(NameEntryFramerRun).l
+	jsr	(NameEntryFramer).l
 	move.w	(sp)+,(printy).l
 	addi.w	#$1,(printy).l
 	move.w	(sp)+,(printx).l
@@ -1593,14 +1592,14 @@ NameEntryApplyRow	add.w	d5,d0
 	move.w	(printy).l,-(sp)
 	tst.w	(cursoron).l
 	beq.w	.next
-	jsr	(NameEntryFramerRun).l
+	jsr	(NameEntryFramer).l
 .next	move.w	(sp)+,(printy).l
 	addi.w	#$1,(printy).l
 	move.w	(sp)+,(printx).l
 	addi.w	#$1,(printx).l
 	bsr.w	PrintCurLetter
 	movea.l	#nameentrybuf,a0
-	movea.l	#$26DD0,a1
+	movea.l	#LetterGrid,a1
 	move.b	(a1,d5.w),d0
 	move.b	d0,(a0,d4.w)
 	bra.w	NameEntryPrompt

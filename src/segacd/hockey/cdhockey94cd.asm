@@ -96,7 +96,7 @@ VBlankSubCpuHook	btst.b	#$5,$FF800E.l
 	move.w	#$3,d7
 	jsr	$6044.w
 	jsr	(EASportsScreen).l
-	jsr	(ReadLineDataBackupRead).l
+	jsr	(ReadLineData).l
 	jsr	(DefaultMenus).l
 	move.w	(OptLine).l,(TmpOptLine2).l
 	move.w	(OptPlayMode).l,(TempOptPlayMode).l
@@ -258,7 +258,7 @@ SPAlistClearFlag6
 PlayerRecordIO	movem.l	d0-d1/a0-a1,-(sp)
 	asl.l	#$2,d0
 	addi.l	#$0,d0
-	movea.l	#$2266E,a1
+	movea.l	#PlayerRecordOffsets,a1
 	add.w	d1,d1
 	move.w	(a1,d1.w),d1
 	asl.w	#$2,d1
