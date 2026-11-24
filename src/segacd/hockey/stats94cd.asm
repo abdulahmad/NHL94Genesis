@@ -11,7 +11,7 @@ ShowScores						;"Scores" screen: the other games of the night in gstruct over t
 	jsr	(Framer).l
 	jsr	(printbigz).l
 	String	CC_Font3Pri,$E,$3,'Scores',CC_Font3Pri,$B,$1
-	movea.l	$47D58.l,a1
+	movea.l	(ScoresMap).l,a1
 	lea.l	$8(a1),a2
 	adda.l	jimdata(a1),a1
 	clr.w	d0
@@ -2005,11 +2005,11 @@ StatsScreenFadeInClear
 	move.w	(sp)+,(disflags).l
 	bset	#$1,(disflags).l
 	move.w	(rinkvrcset).l,d4
-	movea.l	$47D18.l,a2
+	movea.l	(Rinktilelist).l,a2
 	addq.l	#$8,a2
 	btst	#$4,(sflags4).l
 	beq.w	.next
-	movea.l	$47D64.l,a2
+	movea.l	(RevRinkTilelist).l,a2
 	addq.l	#$8,a2
 .next	jsr	(DecompressGraphicsPlain).l
 	jsr	(LoadHomeTeamGfx).l
@@ -2021,9 +2021,9 @@ StatsScreenFadeInClear
 	dc.l	$43434567,$89ABCDEF
 	move.w	(framercset).l,d4
 	jsr	(AddSmallFontFramer).l
-	jsr	(SetupIceRinkPalRemap).l
-	jsr	(IceRinkRemapGfxE).l
-	jsr	(IceRinkRemapGfxF).l
+	jsr	(setupEASportsMap).l
+	jsr	(ReloadEnergyBarTiles).l
+	jsr	(ReloadCrowdTiles).l
 	jsr	(setupIceRinkPal).l
 	jmp	(CopyTeamLinesCheckTeam).l
 ; Pause menu "Timeout" for team a2 (cartridge TimeoutMenu): switch the menu to PauseText2, show the team name, rest both teams, wait $78 frames
@@ -2211,7 +2211,7 @@ ReplayMode
 	move.w	#$7FF,d2
 	jsr	(DoDMANd2Queue).l
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D68.l,a2
+	movea.l	(ReplayMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	(ShowReplayIcon).l
@@ -2439,14 +2439,14 @@ DirectionPressCheck	st.b	$18(a5)
 	bclr.b	#$3,(sflags2).l
 	move.w	(sp)+,(disflags).l
 	jsr	(StatsScreenFadeInClear).l
-	jsr	(SetupIceRinkPalRemap).l
-	jsr	(IceRinkRemapGfxE).l
-	jsr	(IceRinkRemapGfxF).l
-	jsr	(IceRinkRemapGfxB).l
+	jsr	(setupEASportsMap).l
+	jsr	(ReloadEnergyBarTiles).l
+	jsr	(ReloadCrowdTiles).l
+	jsr	(ReloadRefTiles).l
 	btst.b	#$4,(disflags).l
 	beq.w	.next10
-	jsr	(IceRinkRemapGfxD).l
-	jsr	(IceRinkRemapGfxC).l
+	jsr	(ReloadFaceOffMap).l
+	jsr	(ReloadFaceOffTiles).l
 .next10	jsr	(SetHor).l
 	jsr	(setvideo).l
 	move.w	#$18,(palcount).l
@@ -2477,10 +2477,10 @@ ShowReplayIcon
 	moveq	#$4,d3
 	move.w	(rinkvrcset).l,d4
 	move.w	#$0,d5
-	movea.l	$47D18.l,a1
+	movea.l	(Rinktilelist).l,a1
 	btst	#$4,(sflags4).l
 	beq.w	.next4
-	movea.l	$47D64.l,a1
+	movea.l	(RevRinkTilelist).l,a1
 .next4	adda.l	$4(a1),a1
 	movea.l	#null,a2
 	jmp	(dobitmap).l
@@ -2503,7 +2503,7 @@ ShowReplayBanner
 	moveq	#$B,d3
 	move.w	(ExtraChars).l,d4
 	move.w	#$0,d5
-	movea.l	$47D68.l,a1
+	movea.l	(ReplayMap).l,a1
 	adda.l	$4(a1),a1
 	movea.l	#null,a2
 	jmp	(dobitmap).l

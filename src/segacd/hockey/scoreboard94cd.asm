@@ -59,7 +59,7 @@ ClrHor						;revert the graphics back to vertical ice rink mode. Reloads Rinktil
 	bclr	#sfhor,(sflags).l
 	move.w	#$3E8,(Oldrow).l
 	move.w	(rinkvrcset).l,d4
-	movea.l	$47D18.l,a2
+	movea.l	(Rinktilelist).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsPlain).l
 	jsr	(LoadHomeTeamGfx).l
@@ -85,9 +85,9 @@ SetHor						;switch graphics to horizontal ice rink graphics mode
 	bsr.w	SprSort
 	bsr.w	printz
 	String	CC_Font2,$0,$0
-	movea.l	$47D6C.l,a1
+	movea.l	(IceRinkHorMap).l,a1
 	adda.l	jimdata(a1),a1
-	movea.l	$47D6C.l,a2
+	movea.l	(IceRinkHorMap).l,a2
 	addq.l	#$8,a2
 	clr.w	d0
 	move.w	#$0,d1
@@ -212,7 +212,7 @@ EASNLogo						;Draw the EASN logo map at x 1, y $19 on the vertical ice rink if 
 	bne.w	rtss2
 	bsr.w	printz
 	String	CC_Font1Pri,$1,$19
-	movea.l	$47D4C.l,a1
+	movea.l	(EASportsMap).l,a1
 	adda.l	jimdata(a1),a1
 	movea.l	#null,a2
 	clr.w	d0
@@ -294,7 +294,7 @@ linebar						;Draw the energy bar of line d0 for team a2 at printx/printy (bitma
 .ok	moveq	#$F,d1
 	sub.w	d0,d1
 	clr.w	d0
-	movea.l	$47D40.l,a1
+	movea.l	(EnergyBarMap).l,a1
 	adda.l	jimdata(a1),a1
 	movea.l	#null,a2
 	move.w	(a1),d2
@@ -492,7 +492,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	adda.w	#$80,a0
 	dbra	d0,.clr
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D34.l,a2
+	movea.l	(ZamSprites).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	move.w	#$140,(Zamx).l
@@ -860,7 +860,7 @@ StartHL2	btst	#$3,(sflags3).l
 	bne.b	.loop7
 	bclr	#$7,(GA_COMFLAGS+1).l
 	move.w	(ExtraChars).l,d4
-	movea.l	$47D1C.l,a2
+	movea.l	(RefsMap).l,a2
 	addq.l	#$8,a2
 	bsr.w	DecompressGraphicsPlain
 	clr.w	(Vpos).l
