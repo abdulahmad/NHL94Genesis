@@ -200,7 +200,7 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 	move.w	(namelogsel).l,d0
 	cmp.w	(namelogarrows).l,d0
 	beq.w	.x
-	movea.l	#$26D4A,a1
+	movea.l	#LogArrowsClrTxt,a1
 	bsr.w	.next
 	movea.l	#MoveLogArrowsData,a1
 	bsr.w	.next
@@ -222,7 +222,8 @@ MoveLogArrows						;Name entry: when the name log selection namelogsel changed, 
 .next2	move.w	(namelogsel).l,(namelogarrows).l
 	rts
 ; Data that follows MoveLogArrows (strings, small tables)
-MoveLogArrowsData	dc.w	$0004,$5D00,$0004,$5B00,$0004,$2000,$0004,$2000
+MoveLogArrowsData	dc.w	$0004,$5D00,$0004,$5B00
+LogArrowsClrTxt	dc.w	$0004,$2000,$0004,$2000
 GetNameLength						;namelength = length of the name being entered
 	
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -535,10 +536,10 @@ PrintRecordTitles						;Record Holders: the record titles (WinRecTitles, GoalRec
 	movea.l	#WinRecTitles,a1
 	tst.w	(TempWord1).l
 	beq.w	.0
-	movea.l	#$27346,a1
+	movea.l	#SaveRecTitles,a1
 	cmpi.w	#$2,(TempWord1).l
 	beq.w	.0
-	movea.l	#$272F4,a1
+	movea.l	#GoalRecTitles,a1
 .0	jsr	(printsmall).l
 	rts
 ; Data that follows PrintRecordTitles (strings, small tables)
@@ -547,12 +548,14 @@ WinRecTitles	dc.w	$0052,$F806,$0310,$08F9,$0120,$2020,$5769,$6E20
 	dc.b	$FD,$04,$FC,$19,'Use A+C to c'
 	dc.b	'lear ALL win rec'
 	dc.b	'ords',$FD,$10,$FC,$1A,'  More ]'
-	dc.w	$F900,$0052,$F806,$0312,$08F9,$0147,$6F61,$6C73
+	dc.w	$F900
+GoalRecTitles	dc.w	$0052,$F806,$0312,$08F9,$0147,$6F61,$6C73
 	dc.b	'         Teams  '
 	dc.b	'  ',$FD,$04,$FC,$19,'    TEAM M'
 	dc.b	'UST WIN TO QUALI'
 	dc.b	'FY    ',$FD,$10,$FC,$1A,'[ More'
-	dc.w	$205D,$F900,$0052,$F806,$0312,$08F9,$0153,$6176
+	dc.w	$205D,$F900
+SaveRecTitles	dc.w	$0052,$F806,$0312,$08F9,$0153,$6176
 	dc.b	'es         Teams'
 	dc.b	'    ',$FD,$04,$FC,$19,'    TEAM'
 	dc.b	' MUST WIN TO QUA'
@@ -671,7 +674,7 @@ ClearRecordAreaRows
 	jsr	(printsmall).l
 	move.w	(sp)+,d0
 	move.w	#$19,(printx).l
-	movea.l	#$27658,a1
+	movea.l	#RecordByTxt,a1
 	movea.l	#mesarea,a3
 	bsr.w	CopyString
 	move.w	d0,-(sp)
@@ -683,7 +686,7 @@ ClearRecordAreaRows
 .next6	andi.w	#$FF,d0
 	movea.l	#mesarea,a1
 	bsr.w	AppendTeamName
-	movea.l	#$2765E,a1
+	movea.l	#RecordVsTxt,a1
 	movea.l	#mesarea,a3
 	jsr	(appstring).l
 	movea.l	#mesarea,a1
@@ -705,7 +708,9 @@ ClearRecordAreaRows
 ; Data that follows ClearRecordArea (strings, small tables)
 ClearRecordAreaData	dc.b	$00,'(              '
 	dc.b	'                '
-	dc.b	'        ',$00,$06,'by ',$00,$00,$08
+	dc.b	'        '
+RecordByTxt	dc.b	$0,$6,'by ',$0
+RecordVsTxt	dc.b	$0,$8
 	dc.b	' vs. ',$00
 PrintRecordName
 	move.w	d7,-(sp)

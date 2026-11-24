@@ -83,7 +83,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	bclr	#$2,(sflags6).l
 	tst.w	position(a3)
 	bne.w	.skater
-	movea.l	#$22906,a0
+	movea.l	#OneTimerGoalieTbl,a0
 	bra.w	.facing
 .skater	move.w	Ypos(a3),d0
 	btst	#pfgoal,pflags(a3)
@@ -93,7 +93,7 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 	movea.l	#OneTimerNearTbl,a0
 	cmpi.w	#$58,d0
 	blt.w	.facing
-	movea.l	#$228E6,a0
+	movea.l	#OneTimerFarTbl,a0
 	bclr	#$2,(sflags6).l
 .facing	move.w	facedir(a3),d0
 	btst	#pfgoal,pflags(a3)
@@ -142,23 +142,30 @@ OneTimerTarget						;One-timer pass target for receiver a3: an offset by facing 
 .sety	move.w	d2,(onetimertargety).l
 	movem.l	(sp)+,d0-d7/a0-a6
 	rts
-OneTimerNearTbl						;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
-	
-	
-	
-	ori.w	#$C2,$74(a4,d0.w)
-; Instruction bytes inside OneTimerNearTbl that the assembler would encode differently, kept as words (9 rows).
-	dc.b	$00,$C2,$00,$74,$00,$C2,$00,$74,$00,$C2,$FF,$8C,$00,$C2,$FF,$8C	; ...t...t........
-	dc.b	$00,$C2,$FF,$8C,$00,$C2,$FF,$8C,$00,$C2,$FF,$FB,$00,$AB,$FF,$FB	; ................
-	dc.b	$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB	; ................
-	dc.b	$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$00,$AB,$FF,$FB,$FF,$F7,$00,$32	; ...............2
-	dc.b	$FF,$F7,$00,$32,$FF,$F7,$00,$32,$FF,$F7,$FF,$FB,$FF,$F7,$FF,$CE	; ...2...2........
-	dc.b	$FF,$F7,$FF,$CE,$FF,$F7,$FF,$CE,$FF,$F7,$08,$AB,$00,$01,$00,$62	; ...............b
-	dc.b	$67,$00,$01,$38,$08,$EB,$00,$03,$00,$64,$66,$00,$01,$2E,$08,$B9	; g..8.....df.....
-	dc.b	$00,$00,$00,$01,$7E,$C6,$08,$B9,$00,$05,$00,$01,$7F,$7C,$42,$79	; ....~........|By
-	dc.b	$00,$01,$7E,$C6,$42,$79,$00,$01,$7E,$BE,$50,$F9,$00,$01,$7E,$30	; ..~.By..~.P...~0
-; Per-player control update for the object in a3 (player number $52, flags $62)
-PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
+OneTimerNearTbl						;OneTimerTarget target offsets (x, y) by facing, receiver near the goal
+	dc.w	$74,$C2,$74,$C2,$74,$C2,$74,$C2
+	dc.w	$FF8C,$C2,$FF8C,$C2,$FF8C,$C2,$FF8C,$C2
+OneTimerFarTbl						;OneTimerTarget target offsets (x, y) by facing, receiver far from the
+									;goal
+	dc.w	$FFFB,$AB,$FFFB,$AB,$FFFB,$AB,$FFFB,$AB
+	dc.w	$FFFB,$AB,$FFFB,$AB,$FFFB,$AB,$FFFB,$AB
+OneTimerGoalieTbl					;OneTimerTarget target offsets (x, y) by facing, goalie
+	dc.w	$FFFB,$FFF7,$32,$FFF7,$32,$FFF7,$32,$FFF7
+	dc.w	$FFFB,$FFF7,$FFCE,$FFF7,$FFCE,$FFF7,$FFCE,$FFF7
+assonetimer							;Assignment $23 (asstab), player a3 shooting a one-timer: take control of
+									;him (setc1player / setc2player, also for pads 3 and 4), start the
+									;animation (setonetimeranim), then shoot when the puck arrives
+									;(EndOneTimer)
+	bclr	#pfna,pflags(a3)		;pfna - clear new assignment
+	beq.w	.checkxpos				;branch if not new assignment
+	bset	#pf3onetimer,pflags3(a3)	;set one timer bit
+	bne.w	.checkxpos				;branch if already set
+	bclr	#$0,(onetimerflags).l
+	bclr	#$5,(sflags8).l
+	clr.w	(onetimerflags).l
+	clr.w	(onetimerclock).l
+	st	(passReceiverPlayerNum).l
+	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	$52(a3),d0
 	move.w	d0,(onetimerplayer).l
 	btst.b	#$3,$62(a3)
@@ -203,7 +210,7 @@ PlayerControlUpdate	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	(sp)+,d0
 	movem.l	(sp)+,d0-d7/a0-a6
 	bra.w	.ex
-	btst.b	#$0,(onetimerflags).l
+.checkxpos	btst.b	#$0,(onetimerflags).l
 	bne.w	.next9
 	movem.w	d0-d1,-(sp)
 	move.w	(puckx).l,d0

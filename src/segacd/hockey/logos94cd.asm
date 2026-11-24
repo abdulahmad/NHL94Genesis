@@ -323,14 +323,14 @@ chgplayer
 .next10	adda.w	#$80,a0
 	dbra	d2,.loop3
 	adda.w	#$4,sp
-	pea.l	$2B5FC.l
+	pea	(.ex).l
 	cmp.w	(a1,d4.w),d6
 	beq.w	swpchk
 	move.w	d6,d0
 	tst.w	d4
 	beq.w	j_setc1player
 	bra.w	j_setc2player
-	movem.l	(sp)+,d0-d6/a0-a1
+.ex	movem.l	(sp)+,d0-d6/a0-a1		;exit: restore the registers
 rtsChgplayer
 	rts
 ; Stub: jumps to Sweepcheck
