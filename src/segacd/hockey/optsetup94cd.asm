@@ -167,15 +167,28 @@ GameSetUp						;Game setup screen, called from PeriodOver. Builds the screen
 	move.w	(HomeTeam).l,(logoteam).l
 .23	tst.w	(sp)+
 	bra.w	.fix
-; Code kept as words after GameSetUp (the 118 bytes are decoded in the row comments).
-	dc.w	$301F,$B079,$0001,$7FB0,$6700,$006C,$33F9,$0001		; move.w (a7)+, d0 / cmp.w $17fb0.l, d0 / beq.w *+110 / move.w $17fb0.l, $1938a.l
-	dc.w	$7FB0,$0001,$938A,$48A7,$8000,$3039,$0001,$7FB0		; movem.w d0, -(a7) / move.w $17fb0.l, d0
-	dc.w	$B079,$0001,$7FB0,$4C9F,$0001,$6700,$0010,$33F9		; cmp.w $17fb0.l, d0 / movem.w (a7)+, d0 / beq.w *+18 / move.w $17fb0.l, $1938e.l
-	dc.w	$0001,$7FB0,$0001,$938E,$6100,$1274,$48A7,$8000		; bsr.w *+4726 / movem.w d0, -(a7)
-	dc.w	$3039,$0001,$938C,$B079,$0001,$7FAE,$4C9F,$0001		; move.w $1938c.l, d0 / cmp.w $17fae.l, d0 / movem.w (a7)+, d0
-	dc.w	$6700,$0024,$33F9,$0001,$7FAE,$0001,$938C,$33F9		; beq.w *+38 / move.w $17fae.l, $1938c.l / move.w $17fae.l, $1938a.l
-	dc.w	$0001,$7FAE,$0001,$938A,$6100,$11E0,$33F9,$0001		; bsr.w *+4578 / move.w $17fb0.l, $1938a.l
-	dc.w	$7FB0,$0001,$938A
+;An older copy of the team-block refresh above, left after the bra.w and not reached (nothing branches here):
+;it compares VisTeam with itself, so the visitor block is redrawn only when the team changed through .23.
+	move.w	(sp)+,d0
+	cmp.w	(VisTeam).l,d0
+	beq.w	.fix
+	move.w	(VisTeam).l,(logoteam).l
+	movem.w	d0,-(sp)
+	move.w	(VisTeam).l,d0
+	cmp.w	(VisTeam).l,d0
+	movem.w	(sp)+,d0
+	beq.w	.24
+	move.w	(VisTeam).l,(setupvis).l
+	bsr.w	DrawVisBlock
+.24	movem.w	d0,-(sp)
+	move.w	(setuphome).l,d0
+	cmp.w	(HomeTeam).l,d0
+	movem.w	(sp)+,d0
+	beq.w	.fix
+	move.w	(HomeTeam).l,(setuphome).l
+	move.w	(HomeTeam).l,(logoteam).l
+	bsr.w	DrawHomeBlock
+	move.w	(VisTeam).l,(logoteam).l
 .fix
 	bsr.w	FixModeOptions
 	bra.w	.loop
