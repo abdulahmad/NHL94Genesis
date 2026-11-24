@@ -505,7 +505,7 @@ Intermission						;end of period junk (zamboni/stats). Opens the pause menu scre
 	movea.l	(a0,d0.w),a0
 	btst	#$0,(gmode2).l
 	beq.w	.2
-	movea.l	#$42250,a0
+	movea.l	#ShootoutIntermissionMenu,a0
 .2	bset	#sfpz,(sflags).l
 	movea.l	#PausemodeVdpFill,a1
 	jsr	(Pausemode_top).l

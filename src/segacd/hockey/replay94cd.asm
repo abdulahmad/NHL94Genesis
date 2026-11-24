@@ -101,7 +101,7 @@ RevReplayAdj	btst	#$4,(sflags4).l
 	bset	#$7,(sflags4).l
 ; Copies the saved replay sprite state back.
 RestoreReplayFrame	movem.l	d0-d2/a0/a6,-(sp)
-	movea.l	#$4761C,a6
+	movea.l	#revframetbl,a6		;reverse frame table
 	movea.l	a4,a0
 	moveq	#$F,d1
 	movea.l	#SortCords,a3
