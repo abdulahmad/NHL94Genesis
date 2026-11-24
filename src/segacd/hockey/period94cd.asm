@@ -634,7 +634,7 @@ DisplayStats						;Team logos (PutTeamBlock), then each
 	move.w	#$9,(printx).l
 	lea.l	tmsize(a2),a2
 	bsr.w	PrintStatValue
-	lea.l	$4(a0),a1
+	lea.l	tssize(a0),a1
 	addi.w	#$2,(printy).l		;2 map rows per table row
 	dbra	d6,.row
 	rts
@@ -671,7 +671,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	bne.w	.4
 	bsr.w	.8
 .4	jsr	(appstring).l
-	move.w	$2(a0),d0
+	move.w	tsoff2(a0),d0
 	bmi.w	.6
 	jsr	(appendz).l
 	String	'/'
@@ -685,7 +685,7 @@ PrintStatValue						;Print TeamStatTextTbl entry a0 for team a2 centred at print
 	move.w	(a0),d0
 	move.w	(a2,d0.w),d0
 	mulu.w	#$64,d0
-	move.w	$2(a0),d1
+	move.w	tsoff2(a0),d1
 	move.w	(a2,d1.w),d1
 	beq.w	.5
 	divu.w	d1,d0

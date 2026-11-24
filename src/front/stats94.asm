@@ -399,7 +399,7 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	subq.w	#6,a0					;OptLine set: use the entry before
 .0									;position table chosen
 	move.w	(a0),(printx).w			;x, y of the entry
-	move.w	2(a0),(printy).w
+	move.w	lipy(a0),(printy).w
 	move.w	d5,d0					;line name string index
 	movea.l	#linelist,a1
 	move.w	#$8000,(printa).w		;priority
@@ -410,8 +410,8 @@ DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its p
 	move.w	d5,d4
 	asl.w	#3,d4					;8 slots per line
 	addq.w	#1,d4					;slots are 1-5 (LD RD LW C RW)
-	move.w	2(a0),(printy).w
-	move.w	4(a0),d3				;slot count - 1
+	move.w	lipy(a0),(printy).w
+	move.w	lipslots(a0),d3			;slot count - 1
 	lea	tmlines(a2),a3
 .slot								;each slot of the line
 	move.w	(a0),(printx).w
@@ -441,7 +441,7 @@ ClearLineArea						;Line editor: erase the line area and print the
 	moveq	#$12,d1
 	move.w	#$7FF,d2				;blank char
 	jsr	(eraser).l
-	move.w	(LineIconPosTable+2).l,(printy).l
+	move.w	(LineIconPosTable+lipy).l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	(OptLine).w				;OptLine set?
 	beq.w	.0
@@ -1320,7 +1320,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	movea.l	#Penaltylist,a3
 	adda.w	0(a3,d0.w),a3
 	clr.w	d0
-	move.b	1(a3),d0				;penalty minutes
+	move.b	penmins(a3),d0			;penalty minutes
 	jsr	(PushNumber).l
 	move.w	#$23,(printx).w
 	jsr	(print).l
@@ -1332,7 +1332,7 @@ DisplayPenaltyEntry					;Print PenSum entry d3: time, team (bit 7 of byte 2 = aw
 	addq.w	#1,(printy).w
 	move.w	#$13,(printx).w
 	move.w	#$E000,(printa).w
-	lea	2(a3),a1					;penalty name string
+	lea	penname(a3),a1				;penalty name string
 	jmp	(print).l
 DrawScrollArrowsPenalty				;Summary screen up / down arrows (ScrollArrowTbl). Saves d0-d1/a1. Also
 									;used by UpdateScoringScroll

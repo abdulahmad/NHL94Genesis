@@ -2236,7 +2236,7 @@ PenaltyShotBox
 	move.w	(pspenalty).l,d0
 	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
-	lea.l	$2(a1),a1
+	lea.l	penname(a1),a1
 	jsr	(print).l
 	movem.l	(sp)+,a1/a3
 	jsr	(printz).l

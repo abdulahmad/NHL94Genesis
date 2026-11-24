@@ -9,7 +9,7 @@ xyVmMap								;use printx/y/m to set vram address. Returns a0 = Vdata.
 	move.w	(printy).w,d1
 	movea.l	#VmMAP1,a0
 	adda.w	(printm).w,a0
-	move.w	2(a0),d2
+	move.w	Map1col-VmMAP1(a0),d2
 	asl.w	d2,d1					;y * map width
 	add.w	d1,d0
 	asl.w	#1,d0					;2 bytes a cell
@@ -574,7 +574,7 @@ PutBigTile							;write one big font tile to the map at printx / printy
 	move.w	d5,d0
 	movea.l	#VmMAP1,a0
 	adda.w	(printm).w,a0
-	move.w	2(a0),d1
+	move.w	Map1col-VmMAP1(a0),d1
 	asl.w	d1,d0					;y * map width
 	add.w	d4,d0
 	asl.w	#1,d0					;2 bytes a cell
