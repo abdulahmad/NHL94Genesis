@@ -333,8 +333,8 @@ PrintAttribHeader						;Line editor player list: the column header of attribute 
 	rts
 DrawLineIcons						;Line editor: draw the line icons for the cursor's line (LineIconGroups
 	
-	moveq	#$6,d5
-	dc.w	$41FA,$008F		; lea.l X_2CCB7(pc),a0
+	moveq	#$6,d5		;7 lines
+	lea	LineIconGroups(pc),a0
 	move.w	(TestList).l,d0
 	lsr.w	#$3,d0
 	adda.w	d0,a0
@@ -366,11 +366,9 @@ DrawLineIcons						;Line editor: draw the line icons for the cursor's line (Line
 	jsr	(printsmall).l
 	clr.w	(printfontset).l
 	rts
-	btst	d0,d7
-	btst	d3,d7
-	move.b	(a0)+,d4
-; Instruction bytes inside DrawLineIcons that the assembler would encode differently, kept as words (1 row).
-	dc.w	$6060
+	dc.b	$1		;the entry before LineIconGroups (read with OptLine set)
+LineIconGroups						;Per line: bit mask of the lines drawn together
+	dc.b	$7,$7,$7,$18,$18,$60,$60
 DrawLineIcon						;Line editor: draw line d5 (its name from linelist, then its player slots)
 	
 	moveq	#$6,d0
@@ -503,7 +501,7 @@ LineEditorExit
 	move.l	(menuitem).l,-(sp)
 	move.l	(menulist).l,-(sp)
 	move.l	(menudraw).l,-(sp)
-	movea.l	#$3C000,a1
+	movea.l	#rtss2,a1
 	movea.l	#LineEditorMenuText,a0
 	movea.l	#databuffer,a3
 	move.w	tmteam(a2),d0
@@ -556,7 +554,7 @@ DecodeTeamLines						;Load team a2's lines from databuffer: byte 0 = team + 1, t
 	move.w	d0,d1
 	bsr.w	GetForwardCount
 	move.w	d0,d3
-	movea.l	#$2D0B2,a3
+	movea.l	#AttributeOffsetTbl,a3
 	clr.w	d4
 	clr.w	d2
 .next	move.b	(a3),d2
@@ -591,7 +589,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
 	bsr.w	GetForwardCount
-	movea.l	#$2D0B2,a3
+	movea.l	#AttributeOffsetTbl,a3
 	clr.w	d4
 	clr.w	d2
 .next	move.b	(a3)+,d2
@@ -610,7 +608,7 @@ EncodeTeamLines						;Reverse of DecodeTeamLines: pack team a2's lines into data
 .hi	asl.b	#$4,d3
 	or.b	d3,(a0)+
 	bra.w	.next
-.done	jsr	(ReadLineDataBackupWrite).l
+.done	jsr	(WriteLineData).l
 	movem.l	(sp)+,d0-d4/a0-a3
 	rts
 AttributeOffsetTbl						;Line slots saved in databuffer ($FF ends)
@@ -776,7 +774,7 @@ PlayerListDrawSelected
 	jsr	(printsmallz).l
 	String	CC_SetMapAndPosition,$7,$3,$2,$9,CC_SetFont,$1
 	move.w	(SelectedPlayerIdx).l,d0
-	dc.w	$43FA,$012C		; lea.l X_2D4DA(pc),a1
+	lea	PlayerStatMenuTxt(pc),a1
 	jsr	(AdvanceStringPtr).l
 	jsr	(printsmall).l
 	jsr	(printsmallz).l
@@ -810,7 +808,7 @@ PlayerListDrawSelected
 	bsr.w	GetGoalieCount
 	move.w	d0,d1
 	subi.w	#$1,d1
-	movea.l	#$2D4CA,a5
+	movea.l	#GoalieRowText,a5
 	movea.l	#Satt,a3
 	move.l	#$1020304,(a3)
 	move.w	(SelectedPlayerIdx).l,d0
@@ -836,17 +834,20 @@ PlayerListDrawSelected
 	addi.w	#$2,(printy).l
 	dbra	d1,.loop3
 	rts
-; Data that follows CheckPlayerListScroll (strings, small tables)
-CheckPlayerListScrollData	dc.w	$0004,$4700,$0004,$4700,$0004,$4700,$0004,$4700
-	dc.b	$00,$12,'    Goalies   '
-	dc.b	' }',$00,$12,'{  Scoring  '
-	dc.b	'1  }',$00,$12,'{  Scoring'
-	dc.b	'  2  }',$00,$12,'{   Chec'
-	dc.b	'king   }',$00,$12,'{ Powe'
-	dc.b	'r Play 1 }',$00,$12,'{ Po'
-	dc.b	'wer Play 2 }',$00,$12,'{P'
-	dc.b	'enalty Kill 1}',$00,$12
-	dc.b	'{Penalty Kill 2 '
+GoalieRowText						;Position text for the goalie rows
+	String	'G'
+	String	'G'
+	String	'G'
+	String	'G'
+PlayerStatMenuTxt					;Roster page titles; { } are the left / right arrows
+	String	'    Goalies    }'
+	String	'{  Scoring  1  }'
+	String	'{  Scoring  2  }'
+	String	'{   Checking   }'
+	String	'{ Power Play 1 }'
+	String	'{ Power Play 2 }'
+	String	'{Penalty Kill 1}'
+	String	'{Penalty Kill 2 '
 GetNameandAttrib						;Print player d0's name, then at x $1E the column d4 picks (attribjmp;
 									;above 2 a rating through CalcAttrib, high ROM). Saves d0-d4/a0-a1/a4-a5
 	movem.l	d0-d4/a0-a1/a4-a5,-(sp)
@@ -1102,7 +1103,7 @@ DrawScoringRow						;Print ScoreSum entry d3: time, team (bit 7 of byte 2 = away
 	move.w	#$C,(printx).l
 	jsr	(print).l
 	move.w	#$23,(printx).l
-	dc.w	$43FA,$0060		; lea.l X_2DA34(pc),a1
+	lea	GoalTypeTbl(pc),a1
 	move.b	ssflags(a0,d3.w),d0
 	andi.w	#$7F,d0
 	jsr	(Fprintsmall).l
@@ -1122,10 +1123,12 @@ PrintScorerName						;Print player d0 (byte, negative = none) and go down a row
 	jsr	(print).l
 .next	addi.w	#$1,(printy).l
 	rts
-; Table of 16 words after PrintScorerName, 24 bytes: $0006,$5348,$3200,$0004,$5348,$0004 ...
-GoalTypeTbl
-	dc.w	$0006,$5348,$3200,$0004,$5348,$0004,$2000,$0004
-	dc.b	'PP',$00,$06,'PP2',$00
+GoalTypeTbl							;ScoreSum byte 2 & $7F: SH2, SH, even, PP, PP2
+	String	'SH2'
+	String	'SH'
+	String	' '
+	String	'PP'
+	String	'PP2'
 PenaltySummaryScreen						;"Penalty Summary": one 3 row entry per penalty (4 bytes each from PenSum,
 									;PenSumLength bytes), scrolled as ScoringSummaryScreen. Menu item handler
 	moveq	#$A,d0		;bitmap row $A
@@ -1486,9 +1489,8 @@ DrawStatsRowDown	move.w	(VertLineScrolling).l,d3
 	bra.w	DrawStatsRow
 ; Prints the 'Player' column header.
 StatsListDrawHeader	jsr	(printsmallz).l
-	dc.w	$0012
-	dc.b	$F8,$06,$03,$04,$0B,$F9,$01,'Player',$FB,$07,$00
-	dc.w	$43FA,$0344
+	String	CC_SetMapAndPosition,$6,$3,$4,$B,CC_SetFont,$1,'Player',CC_AddX,$7
+	lea	StatColumnHeaders(pc),a1
 	moveq	#$5,d3
 	tst.w	(scoutcolumn).l
 	bmi.w	.loop
@@ -1509,7 +1511,7 @@ StatsListDrawHeader	jsr	(printsmallz).l
 	jsr	(Framer).l
 	jsr	(printz).l
 	String	CC_Font3Pal3Pri,$A,$8
-	dc.w	$43FA,$0314		; lea.l X_2E46A(pc),a1
+	lea	StatSortTitles(pc),a1
 	moveq	#$1,d0
 	add.w	(scoutcolumn).l,d0
 	jsr	(Fprintsmall).l
@@ -1674,7 +1676,7 @@ GetStatColumn_1A						;d2 = stat column d1 for player d0. d7 = 0: the team struc
 ReadStatColumn
 	tst.w	d7
 	bne.w	.next
-	dc.w	$43FA,$0076		; lea.l X_2E422(pc),a1
+	lea	StatColumnOffsets(pc),a1
 	asl.w	#$2,d1
 	adda.w	d1,a1
 	clr.l	d1
@@ -1697,7 +1699,7 @@ ReadStatColumn
 	bsr.w	GetStatsValue
 	lsr.w	#$1,d0
 	rts
-GetStatsValue	movea.l	#$2E40E,a1
+GetStatsValue	movea.l	#StatsOffsetTbl2,a1
 	tst.w	(a1,d1.w)
 	beq.w	rtss8
 	movea.w	(a1,d1.w),a1
@@ -1708,22 +1710,24 @@ GetStatsValue	movea.l	#$2E40E,a1
 	move.l	(sp)+,d7
 	add.w	(a1,d0.w),d2
 	rts
-; Data that follows ReadStatColumn (strings, small tables)
-ReadStatColumnData	dc.w	$B000,$0000,$B034,$0000,$B000,$B034,$B068,$0000
-	dc.w	$B09C,$0000,$00B6,$FFFF,$00D0,$FFFF,$00B6,$00D0
-	dc.w	$00EA,$FFFF,$0104,$FFFF,$0016,$5361,$7665,$7320
-	dc.b	'Shots Save %  ',$00,$06
-	dc.b	'   G',$00,$06,'   A',$00,$06,' Pts'
-	dc.b	$00,$06,' SOG',$00,$06,' PIM'
-	dc.b	$00,$16,'  '
-	dc.b	'  Goalie Saves  '
-	dc.b	' ]',$00,$16,'[      Goals'
-	dc.b	'       ]',$00,$16,'[     '
-	dc.b	'Assists      ]',$00,$16
-	dc.b	'[      Points   '
-	dc.b	'   ]',$00,$16,'[  Shots O'
-	dc.b	'n Goal   ]',$00,$16,'[ Pe'
-	dc.b	'nalty Minutes   '
+StatsOffsetTbl2						;Playoff stat tables per column (G, A, G+A, SOG, PIM), read as movea.w (GetStatsValue)
+	dc.w	$B000,$0,$B034,$0,$B000,$B034,$B068,$0,$B09C,$0
+StatColumnOffsets					;Team struct byte arrays per column, same order (each 2 above the cartridge's)
+	dc.w	tmgoals,$FFFF,$D0,$FFFF,tmgoals,$D0,tmpshots,$FFFF,$104,$FFFF
+StatColumnHeaders					;Stats screen column headers (goalie header, then 5 columns)
+	String	'Saves Shots Save %  '
+	String	'   G'
+	String	'   A'
+	String	' Pts'
+	String	' SOG'
+	String	' PIM'
+StatSortTitles						;the lea in DrawStatsList. Sort column titles
+	String	'    Goalie Saves   ]'
+	String	'[      Goals       ]'
+	String	'[     Assists      ]'
+	String	'[      Points      ]'
+	String	'[  Shots On Goal   ]'
+	String	'[ Penalty Minutes   '
 DrawStatsListArrows					;Stats screen up / down arrows (ScrollArrowTbl2). Saves d0-d1/a1
 	movem.l	d0-d1/a1,-(sp)
 	jsr	(printsmallz).l
@@ -1902,20 +1906,51 @@ SetupScreen
 	movea.l	(FramerMap).l,a2
 	addq.l	#$8,a2
 	jsr	(DecompressGraphicsWithRemap).l
-; Inline data read by DecompressGraphicsWithRemap from the return address (13 rows).
-	dc.l	$91234567,$89ABCDEF
-	dc.w	$3839,$0001,$8D42,$4EB9,$0003,$93E8,$4EB9,$0003
-	dc.w	$8F6E,$0006,$BD00,$0000,$2279,$0004,$7D0C,$D3E9
-	dc.w	$0004,$247C,$0001,$B008,$4240,$4241,$3411,$3629
-	dc.w	$0002,$7801,$7A00,$4EB9,$0003,$87E2,$4EB9,$0003
-	dc.w	$8F6E,$0006,$FD00,$0000,$4CD7,$0403,$D179,$0001
-	dc.w	$8D5A,$2079,$0004,$7D0C,$2248,$2448,$D1DA,$D3DA
-	dc.w	$3601,$9640,$3200,$4240,$7428,$7A0D,$4EB9,$0003
-	dc.w	$87E2,$33C4,$0001,$8D44,$2479,$0004,$7D3C,$508A
-	dc.w	$4EB9,$0003,$8946,$D123,$4567,$89AB,$CDEF,$4EB9
-	dc.w	$0003,$8F6E,$0006,$FE00,$0000,$7040,$7220,$343C
-	dc.w	$07FF,$4EB9,$0003,$8C06,$33FC,$0018,$0001,$8D62
-	dc.w	$4CDF,$0403,$4E75
+	dc.l	$91234567,$89ABCDEF		;remap table
+	move.w	(smallfontchars).l,d4
+	jsr	(AddSmallFont).l
+	jsr	(printz).l
+	String	CC_Font3Pri,$0,$0
+	movea.l	(EASportsBGMap).l,a1
+	adda.l	jimdata(a1),a1
+	movea.l	#null,a2
+	clr.w	d0		;start x/y 0 in the map
+	clr.w	d1
+	move.w	(a1),d2
+	move.w	mapheight(a1),d3
+	moveq	#$1,d4
+	moveq	#$0,d5		;no palette lines
+	jsr	(dobitmap).l
+	jsr	(printz).l
+	String	CC_Font3,$0,$0
+	movem.l	(sp),d0-d1/a2
+	add.w	d0,(printy).l
+	movea.l	(EASportsBGMap).l,a0
+	movea.l	a0,a1		;a1 = map header
+	movea.l	a0,a2
+	adda.l	(a2)+,a0		;a0 = tile data
+	adda.l	(a2)+,a1		;a1 = map data
+	move.w	d1,d3
+	sub.w	d0,d3		;height = last row - first row
+	move.w	d0,d1		;start y = first row
+	clr.w	d0
+	moveq	#$28,d2
+	moveq	#$D,d5		;copy palette lines 0, 2 and 3
+	jsr	(dobitmap).l
+	move.w	d4,(smallfont2chars).l		;second small font chars
+	movea.l	(SmallFontMap).l,a2
+	addq.l	#$8,a2
+	jsr	(DecompressGraphicsWithRemap).l
+	dc.l	$D1234567,$89ABCDEF		;remap table
+	jsr	(printz).l
+	String	CC_Font2,$0,$0
+	moveq	#$40,d0
+	moveq	#$20,d1
+	move.w	#$7FF,d2		;blank char
+	jsr	(eraser).l
+	move.w	#$18,(palcount).l
+	movem.l	(sp)+,d0-d1/a2
+	rts
 ; Black out, set the display flags and fade a stats screen in
 StatsScreenFadeIn
 	jsr	(forceblack).l
@@ -2159,7 +2194,7 @@ GetPlayerCount
 Pausemode_rjoy	move.w	(Vcount).l,d1
 .loop	cmp.w	(Vcount).l,d1
 	beq.w	.loop
-	dc.w	$6100,$04FC		; bsr.w X_2F2F0
+	bsr.w	ReadActiveJoypad
 	jsr	(nodiag).l
 	tst.b	d1
 	beq.w	Pausemode_rjoy
@@ -2214,7 +2249,7 @@ WaitFramesD7	move.w	(Vcount).l,d0
 	move.w	#$1,$8(a3)
 	movem.l	(sp)+,d0/a3
 	moveq	#$1,d7
-	dc.w	$6100,$03E0		; bsr.w X_2F2F0
+	bsr.w	ReadActiveJoypad
 	btst.b	#$0,(sflags5).l
 	beq.w	.next2
 	andi.w	#$FFF0,d0

@@ -1,29 +1,5 @@
-ReadLineData						;Read the $100 bytes at save RAM LineDataBase to databuffer; sflags bit 4
-	
-	
-	moveq	#$0,d3
-	addq.b	#$5,d0
-	move.w	(a2,d3.w),-(a0)
-	dc.w	$5A31,$3433		; addq.b #$5,$33(a1,d3.w)
-	dc.w	$3334,$5A00		; move.w (a4,d5.l * 2),-(a1)
-	dc.w	$3537,$3537,$3636,$383A,$3938,$5A65		; move.w ([$3636383A,sp],d3.w * 4,$39385A65),-(a2)
-	dc.w	$4A4B		; dc.w $4A4B
-	dc.w	$4B00		; dc.w $4B00
-	addq.b	#$5,d0
-	move.w	#$3D00,-(a5)
-; Text of ReadLineData (8 rows).
-	dc.b	'Z<>??',$00,'Z',$00,'wuv',$00,'Z',$00,'@B'
-	dc.b	'ABZ@CCEDZFONOMZL'
-	dc.b	'PQP',$00,'ZRGHGIZITUS',$00
-	dc.b	'Z',$00,'wuv',$00,'Z',$00,'VWVX',$00,'XY['
-	dc.b	'Y',$5C,'Z',$5C,']^]',$00,'Z^_`acde'
-	dc.b	'ghhgZijkk',$00,'Z',$00,'llm',$00
-	dc.b	'Z',$00,'nop',$00,'Z',$00,'qsq',$00,'Ztwu'
-	dc.b	'v',$00,'Z',$00,'TUS',$00,'Z',$00,'TUS',$00,'Z',$00
-; Data that follows ReadLineData (strings, small tables)
-ReadLineDataTexts	dc.b	'4@BIX',$5C,'ef'
-; Reads the line data from the backup RAM image into the line buffer.
-ReadLineDataBackupRead
+ReadLineData						;Read the $100 bytes of line data from backup RAM to databuffer; sflags bit 4
+									;cleared, lastsfx = -1
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
@@ -34,8 +10,7 @@ ReadLineDataBackupRead
 	move.l	#$C45C,(recbpr).l
 	movem.l	(sp)+,d0-d1/a0
 	rts
-; Writes the line buffer into the backup RAM image.
-ReadLineDataBackupWrite
+WriteLineData						;Write databuffer back to the line data in backup RAM
 	movem.l	d0-d1/a0,-(sp)
 	move.l	#$100,d1
 	move.l	#$E20,d0
@@ -69,7 +44,7 @@ PSandSOpassdir						;Penalty shot / shootout: passdir = sopathdir (the end of th
 	move.w	(sopathdir).l,d0
 	btst	#pfgoal,pflags(a3)
 	bne.w	.0
-	movea.l	#$2A674,a0
+	movea.l	#passdirlist,a0
 	add.w	d0,d0
 	move.w	(a0,d0.w),d0
 .0	move.w	d0,(passdir).l
@@ -109,7 +84,7 @@ NextPathPoint
 	addi.w	#$1,(sopathpoint).l
 	move.w	(sopathpoint).l,d0
 	asl.w	#$2,d0
-	movea.l	#$2A6C2,a0
+	movea.l	#StartShootoutPathData,a0
 	move.w	(sopath).l,d1
 	asl.w	#$2,d1
 	movea.l	(a0,d1.w),a0

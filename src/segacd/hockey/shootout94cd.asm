@@ -330,7 +330,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	bra.w	.loop
 .found	cmpa.l	#PAttribOverall,a1
 	bne.w	.3
-	movea.l	#$27F28,a1
+	movea.l	#ShooterOverallTxt,a1
 .3	cmpa.l	#GAttribOverall,a1
 	bne.w	.4
 	movea.l	#$27F3E,a1

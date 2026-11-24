@@ -236,7 +236,7 @@ chkFgtBit1
 RandomFaceoffAnim						;d0 = a random faceoff animation from FaceoffAnims, 6 when fox <= -$40 and
 	
 	movem.l	a0,-(sp)
-	movea.l	#$2AC8E,a0
+	movea.l	#FaceoffAnims,a0
 	move.w	#$64,d0
 	jsr	(randomd0).l
 	andi.w	#$7,d0
@@ -345,7 +345,7 @@ PlayedByText						;PlayedByHome / PlayedByAway body
 	movea.l	#nameentrybuf,a1
 	move.l	a1,-(sp)
 	movea.l	#TempBuffer,a3
-	movea.l	#$2AE40,a1
+	movea.l	#PlayedByExitData,a1
 	bsr.w	CopyString
 	movea.l	(sp)+,a1
 	movea.l	#TempBuffer,a3
@@ -370,7 +370,7 @@ PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDispl
 PlayedByAwayClearFlag
 	bra.w	.next
 	bclr.b	#$1,(sflags8).l
-	dc.w	$6000,$000A		; bra.w X_2AE80
+	bra.w	.x
 .next
 	bset	#$1,(sflags8).l
-	rts
+.x	rts
