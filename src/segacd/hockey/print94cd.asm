@@ -22,18 +22,18 @@ eraser						;fill rectangle with char. d0/d1 = x/y size of rectangle, d2 = char 
 .1	bsr.w	xyVmMap
 	move.w	(sp),d0
 	subi.w	#$1,d0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	d2,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	d2,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	dbra	d0,.loop
 	addi.w	#$1,(printy).l
 	andi.w	#$1F,(printy).l
@@ -82,18 +82,18 @@ Framer						;frame and fill (uses framer.map graphics and assums tiles are alrea
 	rts
 .setter	move.w	(a1,d4.w),d3
 	add.w	d2,d3
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	d3,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	d3,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	rts
 printsmallz						;String macro follows the call
 	move.l	a1,-(sp)
@@ -141,18 +141,18 @@ printsmall						;Print string macro a1 at printx/y/m with printa; uses the setup
 	move.w	(printfontset).l,d1
 	add.w	(a3,d1.w),d0
 .p	add.w	d2,d0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	addi.w	#$1,(printx).l
 .loop4	dbra	d3,.0
 	movem.l	(sp)+,d0-d3/a0/a2-a3
@@ -281,18 +281,18 @@ print						;a1 = string macro, printx/y = x/y cordinate on map for printing, pri
 	bra.w	.p
 .3	add.w	(smallfontchars).l,d0
 .p	add.w	d2,d0
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	d0,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	d0,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	addi.w	#$1,(printx).l
 .loop4	dbra	d3,.0
 	movem.l	(sp)+,d0-d3/a0/a2
@@ -535,18 +535,18 @@ PutBigTile						;write one big font tile to the map at printx / printy
 	asl.w	#$1,d0
 	add.w	(a0),d0
 	bsr.w	SetVramWriteAddr1
-.loop	btst	#$7,$FF800E.l
+.loop	btst	#$7,(GA_COMFLAGS).l
 	bne.b	.loop
-	move.w	d3,$FF8022.l
-	move.w	#$D,$FF8020.l
-	bset	#$6,$FF800F.l
-.loop2	btst	#$6,$FF800E.l
+	move.w	d3,(GA_COMSTAT1).l
+	move.w	#$D,(GA_COMSTAT0).l
+	bset	#$6,(GA_COMFLAGS+1).l
+.loop2	btst	#$6,(GA_COMFLAGS).l
 	beq.b	.loop2
-	bset	#$7,$FF800F.l
-	bclr	#$6,$FF800F.l
-.loop3	btst	#$6,$FF800E.l
+	bset	#$7,(GA_COMFLAGS+1).l
+	bclr	#$6,(GA_COMFLAGS+1).l
+.loop3	btst	#$6,(GA_COMFLAGS).l
 	bne.b	.loop3
-	bclr	#$7,$FF800F.l
+	bclr	#$7,(GA_COMFLAGS+1).l
 	movem.l	(sp)+,d1/a0
 	rts
 AddSmallFont						;transfer smallfont.map tiles to vram. d4 = char to start tiles at, return
