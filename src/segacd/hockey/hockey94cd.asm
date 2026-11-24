@@ -366,11 +366,11 @@ Pausemode	jsr	(forceblack).l
 	jsr	(p_turnoff).l
 	move.w	(sflags).l,-(sp)
 	bsr.w	seta2
-	movea.l	#$41F50,a0
+	movea.l	#Pausemode_mlist,a0
 	lea.l	PausemodeVdpFill(pc),a1
 	btst	#$0,(gmode2).l
 	beq.w	.chk2
-	movea.l	#$41EB4,a0
+	movea.l	#PauseMenuItems,a0
 	bra.w	.0
 .chk2	btst	#$2,tmflags(a2)
 	beq.w	.0

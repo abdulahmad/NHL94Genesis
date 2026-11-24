@@ -362,7 +362,8 @@ FixModeOptions						;Fix the options a mode does not allow, then print them: Sho
 	rts
 ; Data that follows FixModeOptions (strings, small tables)
 FixModeOptionsData	dc.w	$0005,$0008,$001C,$001C,$0003,$0002,$0002,$0003
-	dc.w	$0003,$0005,$000C,$001C,$001C,$0003,$0002,$0002
+	dc.w	$0003
+OptionLimits4Way	dc.w	$0005,$000C,$001C,$001C,$0003,$0002,$0002
 	dc.w	$0003,$0003
 ChangeOption
 	tst.w	d7
@@ -393,7 +394,7 @@ ChangeOption
 	movea.l	#FixModeOptionsData,a3
 	tst.w	(FourWayPlay).l
 	beq.w	.3
-	movea.l	#$23A7A,a3
+	movea.l	#OptionLimits4Way,a3
 .3	clr.w	d5
 	move.w	(a3,d7.w),d4
 	move.w	(a2,d7.w),d3
@@ -540,7 +541,7 @@ PrintOptionValue						;print the value of option d7 at x $11 on its line (past r
 	bne.w	.0
 	cmpi.w	#$4,(OptPlayMode).l
 	bne.w	.0
-	movea.l	#$23EB6,a1
+	movea.l	#NATxt,a1
 	jmp	(print).l
 .0	tst.w	(FourWayPlay).l
 	beq.w	.loop
@@ -555,15 +556,15 @@ PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more l
 									;(first line < 3), '{' at row $F when lines are above (first line > 0),
 									;else a space
 	move.w	#$19,(printy).l
-	movea.l	#$23E1C,a1
+	movea.l	#ScrollClearTxt,a1
 	cmpi.w	#$3,(setupfirstline).l
 	beq.w	.0
 	cmpi.w	#$4,(OptPlayMode).l
 	beq.w	.0
-	movea.l	#$23E18,a1
+	movea.l	#ScrollDownTxt,a1
 .0	move.w	#$2,(printx).l
 	jsr	(print).l
-	movea.l	#$23E1C,a1
+	movea.l	#ScrollClearTxt,a1
 	move.w	#$F,(printy).l
 	tst.w	(setupfirstline).l
 	beq.w	.1
@@ -571,12 +572,14 @@ PrintScrollMarks						;Print the scroll marks at x 2: '}' at row $19 when more l
 .1	move.w	#$2,(printx).l
 	jmp	(print).l
 ; Data that follows PrintScrollMarks (strings, small tables)
-ScrollUpTxt	dc.w	$0004,$7B00,$0004,$7D00,$0004,$2000
+ScrollUpTxt	dc.w	$0004,$7B00
+ScrollDownTxt	dc.w	$0004,$7D00
+ScrollClearTxt	dc.w	$0004,$2000
 PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full name of the
 									;two New York teams, $D / $E).
 									;PrintOptionValue
 	move.w	(printx).l,-(sp)
-	movea.l	#$23EA0,a1
+	movea.l	#BlankValueTxt,a1
 	jsr	(print).l
 	move.w	(sp)+,(printx).l
 	movea.l	#OptPlayMode,a1
@@ -588,7 +591,7 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 	adda.w	$4(a1),a1
 	cmpi.w	#$E,d3		;NYR?
 	bne.w	.0
-	movea.l	#$23E8E,a1		;full name
+	movea.l	#NewYorkRTxt,a1		;full name
 	bra.w	.1		;print
 .0	cmpi.w	#$D,d3		;NYI?
 	bne.w	.1
@@ -596,9 +599,12 @@ PrintOptTeamName						;Print team name d3 of option d7 (TeamList city; the full 
 .1	jmp	(print).l
 ; Data that follows PrintOptTeamName (strings, small tables)
 PrintOptTeamNameData	dc.b	$00,$14,'New York Islan'
-	dc.b	'ders',$00,$12,'New York R'
-	dc.b	'angers',$00,$16,'        '
-	dc.b	'            ',$00,$16,'N/'
+	dc.b	'ders'
+NewYorkRTxt	dc.b	$0,$12,'New York R'
+	dc.b	'angers'
+BlankValueTxt	dc.b	$0,$16,'        '
+	dc.b	'            '
+NATxt	dc.b	$0,$16,'N/'
 	dc.b	'A               '
 	dc.w	$2020
 OptionValueOffsets					;Offsets of each option's value Strings. Team 1 / 2 are not read

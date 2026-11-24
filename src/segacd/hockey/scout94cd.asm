@@ -32,7 +32,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 	tst.b	crpeakuser(a0)
 	beq.w	.0
 	movea.l	#ThreeStars,a3
-	movea.l	#$2828C,a1
+	movea.l	#ScoutByTxt,a1
 	move.l	a3,-(sp)
 	jsr	(CopyString).l		;copy the String at a1 to a3: 'by '
 	movea.l	(sp)+,a3
@@ -52,7 +52,7 @@ ScoutCrowdRecordBy						;unused: return a1 = 'by <name> ' for the home team's cr
 ScoutEmptyTxt						;empty String: no name number in the crowd record
 ; Ascending offset table of 6 words after ScoutEmptyTxt ($0002,$0006 ...).
 	dc.w	2
-	dc.w	6							;the String 'by ' of the next label
+ScoutByTxt	dc.w	6							;the String 'by ' of the next label
 	dc.b	'by ',$00
 ScoutSpaceTxt						;space after the name
 ; Data that follows ScoutSpaceTxt (strings, small tables)

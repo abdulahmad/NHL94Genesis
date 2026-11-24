@@ -279,7 +279,7 @@ updateplayers
 	clr.w	d1
 	move.b	asslist(a3,d0.w),d1
 	asl.w	#$2,d1
-	movea.l	#$415CC,a0
+	movea.l	#asstab,a0
 	movea.l	(a0,d1.w),a0
 	jsr	(loadTeamStruct).l
 	jsr	(a0)
@@ -1005,7 +1005,7 @@ SetLCmode2
 	bne.w	.next4
 	move.w	tmline(a2),d0
 .next3	movea.l	#mesarea,a1
-	move.l	#$44120,(a1)
+	move.l	#$44120,(a1)		;String length 4, 'A ' (a constant, not an address)
 	add.b	d4,$2(a1)
 	jsr	(print).l
 	move.w	d0,-(sp)
@@ -2196,9 +2196,10 @@ assfaceoffpl						;Face off player
 	bra.w	SetSPA
 .exit	move.b	#$14,nopuck(a3)
 	bra.w	assexit
-	rts	
-assfight
-	rts	
+assfight							;rts only: there is no fighting
+	rts
+assfwatch							;rts only: there is no fighting
+	rts
 
 donothing
 	btst	#pfalock,pflags(a3)
@@ -2506,7 +2507,7 @@ asswingd							;player a3 is wing on defense
 	cmp.w	(pucky).l,d2
 	bgt.w	.next31
 .next30	move.w	d2,d1
-.next31	lea.l	$322B0.l,a0
+.next31	lea.l	(rtss21).l,a0		;the cartridge uses lea rtss21(pc),a0
 	move.w	(puckx).l,d2
 	eor.w	d0,d2
 	bmi.w	skateto
@@ -2647,7 +2648,7 @@ asscenterd							;player a3 is center on defense
 .next7	btst.b	#$7,$62(a3)
 	bne.w	.next8
 	neg.w	d1
-.next8	lea.l	$32574.l,a0
+.next8	lea.l	(rtss11).l,a0		;the cartridge uses lea rtss11(pc),a0
 	bra.w	skateto
 asscentero							;player a3 is center on offense
 	btst.b	#$5,$62(a3)
@@ -4255,11 +4256,11 @@ assnearest	bclr	#$2,(sflags5).l
 .spdlimit	cmpi.b	#$1E,$69(a3)		;check speed limit
 	ble.w	.cont
 	move.b	#$1E,$69(a3)		;limit legspd to $1E (30 decimal)
-.cont	lea.l	$341EE.l,a0
+.cont	lea.l	(.exit).l,a0		;the cartridge uses lea rtss2(pc),a0
 	bsr.w	skateto
 	move.b	(TempLegSpd).l,$69(a3)		;move original legpsd back into player
 	bra.w	.chkslot
-.noslot	lea.l	$341EE.l,a0
+.noslot	lea.l	(.exit).l,a0		;the cartridge uses lea rtss2(pc),a0
 	bsr.w	skateto
 .chkslot	btst	#$5,(sflags6).l
 	beq.w	.chkcont
@@ -5174,13 +5175,20 @@ CompLine						;find good line for comp to switch to. a2 = team, a1 = other team.
 	move.w	-(a0),tmline(a2)
 	bra.w	.ex
 .next5
-; Table of 84 bytes after CompLine, 84 bytes: $00,$00,$00,$01,$00,$02 ...
-	dc.b	$00,$00,$00,$01,$00,$02,$00,$00,$00,$02,$00,$01,$00,$00,$00,$01	; ................
-	dc.b	$00,$00,$08,$AB,$00,$01,$00,$62,$67,$00,$05,$1E,$08,$B9,$00,$02	; .......bg.......
-	dc.b	$00,$01,$7F,$70,$08,$B9,$00,$05,$00,$01,$7F,$70,$08,$B9,$00,$00	; ...p.......p....
-	dc.b	$00,$01,$7F,$72,$08,$B9,$00,$01,$00,$01,$7F,$72,$08,$B9,$00,$00	; ...r.......r....
-	dc.b	$00,$01,$7F,$7E,$08,$B9,$00,$01,$00,$01,$7F,$7E,$08,$B9,$00,$02	; ...~.......~....
-	dc.b	$00,$01,$7F,$7E	; ...~
+	dc.w	$0000,$0001,$0002,$0000,$0002,$0001,$0000,$0001,$0000
+puckfaceoff2						;face off control logic and general setup for action a3 = the puck. First
+									;call sets the whole face off up (players, puck, scoreboard box, map);
+									;later calls count temp1 down to the drop (updatefaceoff / Endfaceoff).
+									;The disc-only labels below (CompLineScreen to FaceoffSongPick) are inside it
+	bclr	#pfna,pflags(a3)		;new assignment? (clears the flag)
+	beq.w	FaceoffTimerStep		;not first time thru (the cartridge's .nna)
+	bclr	#$2,(BA_PS_flags).l
+	bclr	#$5,(BA_PS_flags).l
+	bclr	#$0,(sflags4).l
+	bclr	#$1,(sflags4).l
+	bclr	#$0,(DelayedPen).l
+	bclr	#$1,(DelayedPen).l
+	bclr	#$2,(DelayedPen).l
 ; Line change screen: fades out and sets the timer
 CompLineScreen	movem.l	d0-d7/a0-a6,-(sp)
 	bsr.w	forceblack
@@ -5283,11 +5291,11 @@ CompLineScreenLimit	cmpi.w	#$258,(Crowdlevel).l
 .next5	neg.w	d4
 	addi.w	#$6,d4
 	asl.w	#$3,d4
-	movea.l	#$35764,a1
+	movea.l	#puckfaceoff2_apl,a1
 	adda.w	d4,a1
 	move.b	(a1,d1.w),d4
 	asl.w	#$2,d4
-	movea.l	#$3577C,a1
+	movea.l	#puckfaceoff2_ptab,a1
 	move.w	(a1,d4.w),d0
 	move.w	$2(a1,d4.w),d1
 	btst.b	#$7,$62(a3)
@@ -5446,8 +5454,9 @@ FaceoffTimerStep	subi.w	#$1,$40(a3)
 	jsr	(EndArenaAnim).l
 	bra.w	Endfaceoff
 ; Table of 52 bytes after FaceoffTimerStep, 52 bytes: $00,$01,$02,$03,$04,$05 ...
-	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
-	dc.b	$00,$03,$05,$01,$04,$00,$00,$00,$00,$00,$FF,$06,$FF,$DD,$FF,$CE	; ................
+puckfaceoff2_apl	dc.b	$00,$01,$02,$03,$04,$05,$06,$00,$00,$01,$05,$03,$04,$02,$00,$00	; ................
+	dc.b	$0,$3,$5,$1,$4,$0,$0,$0
+puckfaceoff2_ptab	dc.b	$0,$0,$FF,$6,$FF,$DD,$FF,$CE
 	dc.b	$00,$23,$FF,$CE,$FF,$CE,$FF,$F6,$00,$00,$FF,$F1,$00,$32,$FF,$F6	; .#...........2..
 	dc.b	$00,$00,$FF,$C4	; ....
 ResetAndSelectPlayers						;c1playernum / c2playernum = -1, then changeplayer for each human team

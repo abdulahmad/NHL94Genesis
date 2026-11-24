@@ -333,7 +333,7 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	movea.l	#ShooterOverallTxt,a1
 .3	cmpa.l	#GAttribOverall,a1
 	bne.w	.4
-	movea.l	#$27F3E,a1
+	movea.l	#ShooterOverallTxt2,a1
 .4	jsr	(print).l
 	move.l	(a1),d4
 	movea.l	#Satt,a3
@@ -359,7 +359,8 @@ PrintShooterList						;Shootout shooters: the player list rows (getNameandAttrib
 	rts
 ; Data that follows PrintShooterList (strings, small tables)
 ShooterOverallTxt	dc.b	$00,$12,'    Overall   '
-	dc.b	' ]',$1F,':',$00,$0A,$00,$12,'    Over'
+	dc.b	' ]',$1F,':',$0,$A
+ShooterOverallTxt2	dc.b	$0,$12,'    Over'
 	dc.b	'all    ]',$1B,$0F,$00,$0A
 ShootersPick
 	cmp.w	(TestList).l,d0

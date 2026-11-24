@@ -422,7 +422,7 @@ DrawLineIconErase
 	moveq	#$12,d1
 	move.w	#$7FF,d2
 	jsr	(eraser).l
-	move.w	$2CE96.l,(printy).l
+	move.w	(LineIconPosTable+2).l,(printy).l
 	move.w	(LineIconPosTable).l,(printx).l
 	tst.w	(OptLine).l
 	beq.w	.next

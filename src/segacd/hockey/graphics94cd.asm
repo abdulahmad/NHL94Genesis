@@ -16,7 +16,10 @@ Card001								;Player card 1 (FeaturedPictures BOS 0)
 	incbin	..\Extracted\SegaCD\HOCKEY\Card001.bin
 NHLPALogoMapDisc					;disc only: graphics after Card001 (through the end of $2C65C). From its start on, it is the
 									;cartridge's NHLPALogoMap data from byte $780 to $49B4, then more map data
-	incbin	..\Extracted\SegaCD\HOCKEY\NHLPALogoMapDisc.bin
+	incbin	..\Extracted\SegaCD\HOCKEY\NHLPALogoMapDisc.bin,0,$3834
+revframetbl							;the replay frame table (RestoreReplayFrame). Its first $44 bytes are the same as
+									;the cartridge's revframetbl; the rest differs, and it runs on into TileNumberTables
+	incbin	..\Extracted\SegaCD\HOCKEY\NHLPALogoMapDisc.bin,$3834,$40
 
 TileNumberTables					;disc only: tables of VDP tile numbers (word rows of consecutive numbers), then the pointer
 									;slots the file loader fills ($47CFC and up: ScoutingReportText, BigFontMap ...)

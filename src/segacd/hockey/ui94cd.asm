@@ -358,9 +358,10 @@ PlayedByExit
 	movem.l	(sp)+,d0-d7/a0/a2-a6
 	rts
 ; Data that follows PlayedByExit (strings, small tables)
-PlayedByExitData	dc.b	$00,$0E,'(played by ',$00,$00,$02
+PlayedByExitData	dc.b	$0,$E,'(played by ',$0
+PlayedByEmptyTxt	dc.b	$0,$2
 PlayedByNone
-	movea.l	#$2AE4E,a1
+	movea.l	#PlayedByEmptyTxt,a1
 	bra.w	PlayedByExit
 PlayedByAway						;As PlayedByHome for awayuser. Called from UpdateScoutingDisplay
 	movem.l	d0-d7/a0/a2-a6,-(sp)

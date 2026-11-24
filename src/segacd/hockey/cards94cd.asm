@@ -554,24 +554,28 @@ PrintRecordValue
 	movea.l	#TempBuffer,a1
 	jsr	(appstring).l
 	move.w	(TempWord2).l,d0
-	movea.l	#$25808,a1
+	movea.l	#RecSavesTxt,a1
 	cmpi.w	#$1,d0
 	bne.w	.next2
-	movea.l	#$25810,a1
+	movea.l	#RecSaveTxt,a1
 .next2	tst.w	d1
 	bne.w	.next3
-	movea.l	#$257F8,a1
+	movea.l	#RecGoalsTxt,a1
 	cmpi.w	#$1,d0
 	bne.w	.next3
-	movea.l	#$25800,a1
+	movea.l	#RecGoalTxt,a1
 .next3	movea.l	(sp)+,a3
 	jsr	(appstring).l
 .next4	movem.l	(sp)+,d0-d7/a1-a6
 	rts
 ; Data that follows PlayerCardScreen (strings, small tables)
-PlayerCardScreenData	dc.b	$00,$0A,'Record ',$00,$00,$08,' goa'
-	dc.b	'ls',$00,$08,' goal',$00,$00,$08,' sav'
-	dc.b	'es',$00,$08,' save',$00
+PlayerCardScreenData	dc.b	$0,$A,'Record ',$0
+RecGoalsTxt	dc.b	$0,$8,' goa'
+	dc.b	'ls'
+RecGoalTxt	dc.b	$0,$8,' goal',$0
+RecSavesTxt	dc.b	$0,$8,' sav'
+	dc.b	'es'
+RecSaveTxt	dc.b	$0,$8,' save',$0
 CopyString						;Copy String a1 (length word first) to a3
 	movem.l	d0,-(sp)
 	move.w	(a1),d0		;the length word counts the header too
@@ -996,14 +1000,14 @@ AppendUserName						;Append user name d2 (12 bytes of the name log at namelog, s
 .1	bra.w	.x
 .2	movea.l	a1,a3
 	move.l	a3,-(sp)
-	movea.l	#$25E54,a1
+	movea.l	#NoNameTxt,a1
 	jsr	(CopyString).l
 	movea.l	(sp)+,a2
 	bsr.w	TrimSpaces
 .x	movem.l	(sp)+,d0-d3/a0-a3
 	rts
 ; Table of 2 bytes after AppendUserName, 2 bytes: $00,$02 ...
-	dc.b	$00,$02	; ..
+NoNameTxt	dc.b	$00,$02	; ..
 ; Loads the records from the disc (loader command 9) and copies them to RAM
 LoadRecordsFromDisc	movem.l	d0-d7/a0-a6,-(sp)
 	move.w	#$9,d7

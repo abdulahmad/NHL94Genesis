@@ -19,16 +19,50 @@ updatecrowdf_cd0						;$fftt = frame/time for various levels of crowd
 ; Table of 160 words after updatecrowdf_cd0, 176 bytes: $0E03,$0F03,$1003,$1103,$1203,$0B03 ...
 	dc.w	$0e03,$0f03,$1003,$1103,$1203,$0b03,$0c03,$0d03
 	dc.w	$1203,$1103,$1003,$0f03,$0e03,$0d03,$0c03,$0b03
-	dc.b	$00,$03,$C0,$00,$00,$03,$1F,$F2,$00,$03,$20,$E6,$00,$03,$22,$B2
-	dc.b	$00,$03,$23,$D2,$00,$03,$25,$76,$00,$03,$26,$36,$00,$03,$1F,$2A
-	dc.b	$00,$03,$1E,$CC,$00,$03,$1B,$28,$00,$03,$1D,$0A,$00,$03,$19,$AC
-	dc.b	$00,$03,$1B,$A0,$00,$03,$1C,$E2,$00,$03,$29,$26,$00,$03,$32,$3C
-	dc.b	$00,$03,$34,$46,$00,$03,$3E,$06,$00,$03,$44,$3C,$00,$03,$43,$30
-	dc.b	$00,$03,$1E,$AE,$00,$03,$1E,$B0,$00,$03,$1D,$FE,$00,$03,$1E,$16
-	dc.b	$00,$03,$5A,$D4,$00,$03,$5F,$12,$00,$03,$5E,$CE,$00,$03,$4C,$C6
-	dc.b	$00,$03,$52,$2A,$00,$03,$27,$BE,$00,$03,$44,$72,$00,$03,$47,$BA
-	dc.b	$00,$03,$1D,$9E,$00,$03,$34,$18,$00,$03,$3D,$DC,$00,$02,$29,$26
+asstab								;jump table of all the player logic assignments. There is no "do nothing"
+									;entry, so assignment numbers from assscore on are one lower than in 92.
+									;Entries $1D-$23 are new in 94. Used by updateplayers
+	dc.l	rtss2		;anull: entry 0: empty assignment (rtss2)
 
+	dc.l	assdefo		;adefo: entry 1: defensive player on offense (assdefo)
+	dc.l	assdefd		;adefd: entry 2: defensive player on defense
+	dc.l	asswingd		;awingd: entry 3: winger on defense
+	dc.l	asswingo		;awingo: entry 4: winger on offense
+	dc.l	asscenterd		;acenterd: entry 5: center on defense
+	dc.l	asscentero		;acentero: entry 6: center on offense
+
+	dc.l	assscore		;ascore: celebrating a goal
+	dc.l	assstanley		;astanley: skating with the Stanley Cup overhead
+	dc.l	asseben		;aeben: exit the bench area
+	dc.l	assepen		;aepen: exit the penalty area
+	dc.l	assbench		;abench: go to the bench
+	dc.l	asspenalty		;apenalty: go to the penalty box
+	dc.l	assdopen		;adopen: add the player to the penalty box
+
+	dc.l	assgoalie		;agoalie: goalie logic
+	dc.l	assgoalietopuck		;agoalietopuck: goalie skates out to a loose puck
+	dc.l	asspuckc		;apuckc: puck handler
+	dc.l	assnearest		;anearest: player nearest the puck without it
+	dc.l	assshoot		;ashoot: computer shooting
+	dc.l	asspassrec		;apassrec: catching a pass
+	dc.l	assfight		;afight: fighting
+	dc.l	assfwatch		;afwatch: watching a fight
+	dc.l	assfaceoff		;afaceoff: wait until the faceoff is over
+	dc.l	assfaceoffpl		;afaceoffpl: players taking part in the faceoff
+
+	dc.l	pucknorm		;pnorm: puck object: normal movement (pucknorm)
+	dc.l	puckshadow		;pshad: puck object: puck shadow
+	dc.l	puckunflip		;pnothing: puck object: just slides along
+	dc.l	puckfaceoff		;pfaceoff: puck object: faceoff start
+	dc.l	puckfaceoff2		;pfaceoff2: puck object: faceoff control and setup
+
+	dc.l	assgoaliectrl		;agoaliectrl: joystick goalie
+	dc.l	puckshootout		;pshootout: puck object: shootout
+	dc.l	puckpenshot		;ppenshot: puck object: penalty shot
+	dc.l	assgoaliebreakwait		;agoaliebreakwait: goalie waits for a breakaway
+	dc.l	chkpuckc		;achkpuckc: breakaway carrier check, then asspuckc
+	dc.l	assbreakaway		;abreakaway: breakaway
+	dc.l	assonetimer		;aonetimer: one-timer shot
 
 Penaltylist							;Penalty number = word offset into this table. Entries $2E-$3C are the
 									;penalty shot additions (the penalty shot
@@ -433,7 +467,7 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	String	'[    Weight     '
 	dc.w	$2000		; move.l d0,d0
 	dc.w	$0006,$FFFF		; ori.b #$FF,d6
-	dc.w	$0004,$FE05		; ori.b #$5,d4
+PauseMenuItems	dc.w	$0004,$FE05		; ori.b #$5,d4
 	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'   Resume Game    '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -448,7 +482,7 @@ GAttribOverallMask	dc.w	$130f,$a	;goalie Overall: attribute weight bits and colu
 	String	'x Manual Goalie   '
 	dc.w	$0002,$A092		; ori.b #$92,d2
 	dc.w	$0004,$FF00		; ori.b #$0,d4
-	dc.w	$0004,$FE05		; ori.b #$5,d4
+Pausemode_mlist	dc.w	$0004,$FE05		; ori.b #$5,d4
 	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'   Resume Game    '
 	dc.w	$0003,$C000		; ori.b #$0,d3
@@ -516,7 +550,7 @@ PauseText2	String	CC_SetAttribute,$5		;Pause menu item list without Timeout (Pau
 	String	'x Manual Goalie   '
 	dc.w	$0002,$A092		; ori.b #$92,d2
 	dc.w	$0004,$FF00		; ori.b #$0,d4
-	dc.w	$0004,$FE05		; ori.b #$5,d4
+ShootoutIntermissionMenu	dc.w	$0004,$FE05		; ori.b #$5,d4
 	dc.w	$0004,$FE04		; ori.b #$4,d4
 	String	'  Start Shootout  '
 	dc.w	$0003,$C000		; ori.b #$0,d3
