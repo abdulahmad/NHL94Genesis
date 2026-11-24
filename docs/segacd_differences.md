@@ -1,29 +1,59 @@
 # NHL 94: cartridge vs Sega CD differences
 
-This page lists every difference found between the retail cartridge game and the Sega CD game code (`HOCKEY.BIN`), in gameplay first, then everything else. The short answer: the Sega CD plays the same game. Skating, puck physics, AI assignments, shooting, goalies, checking, penalties, line changes, period lengths and overtime are the same code. Three small code changes touch play, and the rosters drop 31 players with the lines rebuilt around them.
+For each part of the game: is the Sega CD game (`HOCKEY.BIN`) the same as the retail cartridge, and if not, how it
+differs. Under each answer is the code that shows it in both builds. The short answer: the Sega CD plays the same game.
+Skating, puck physics, AI assignments, shooting, goalies, checking, penalties, line changes, period lengths and
+overtime are the same code. Three small code changes touch play, and the rosters drop 31 players with the lines rebuilt
+around them.
 
-Each item is marked:
-
-- **Verified**: the instructions or bytes were compared directly in both builds.
-- **Inferred**: what the verified change does in a game, read from the code but not measured in play.
+Every difference here was compared instruction by instruction, or byte by byte, in both builds. What a change does in a
+game is read from the code, not measured in play; the sections say so where it matters.
 
 Cartridge source references are to this repo (`src/`). Disc source references are to the transcribed disc code in `src/segacd/hockey/` where it exists. Cartridge addresses are ROM addresses. Disc addresses are `HOCKEY.BIN` runtime addresses (file offset + `$1B000`).
 
 Players are named as the retail team data spells them (the ROM shortens some long names, for example `John Vanbiesbrk`), with their cartridge roster number (`#n`, 1-based, the numbers `.ls` uses). The source in `src/teamdata94.asm` has placeholders for the names; the roster numbers match it.
 
+## At a glance
+
+"Same" means the same code or data in both builds, apart from address relocation, the RAM layout shift and the CD
+hardware glue. "CD only" means the cartridge has nothing like it.
+
+| Part of the game | Sega CD vs cartridge | Section |
+|---|---|---|
+| Skating, puck physics, shooting, goalies, AI | Same | Same in both builds |
+| Penalties, faceoffs, clock, period lengths, overtime | Same | Same in both builds |
+| Skater and goalie acceleration | Different (slightly faster) | 1 |
+| Corner bounce on a checked player | Different (much more often) | 2 |
+| Pad during the penalty-shot box | Different (pad ignored) | 3 |
+| Rosters and lines | Different (31 players fewer) | 4 |
+| Goalie and forward counts | Different (5 teams) | 4 |
+| Playoff password pad layout | Different (minor) | 5 |
+| 4 Way Play, manual goalie, penalty shots, shootout, one-timers | Same | Box features |
+| Florida and Anaheim | Same (byte-identical) | 4 |
+| Random numbers | Same logic, different values | Changed code |
+| Saved user records | Same idea (backup RAM, not a battery) | Box features |
+| Music and sound | Different (CD-DA and PCM) | Non-gameplay |
+| Scouting report | Different (Ron Barr voice and script) | Non-gameplay |
+| FMV, player stats and photos | CD only | Non-gameplay |
+| HFD and OTW palettes | Different | Non-gameplay |
+| Pads, the 4-way adaptor, frame timing | Same result, read through the main CPU | Main CPU |
+
 ## Gameplay differences
 
-### 1. Skaters accelerate slightly faster on the Sega CD (verified; effect inferred)
+### 1. Skater acceleration: different, slightly faster on the Sega CD
+
+- **Cartridge:** `playeracc` adds a +2 "crowd meter boost" to every player's acceleration term.
+- **Sega CD: different.** The same routine adds +2 twice (+4). Everything else in it is the same.
 
 | | Cartridge | Sega CD |
 | --- | --- | --- |
-| Routine | `playeracc`, `src/engine/logic94.asm` 7489, `.incagl` at 7517-7518 | `playeracc`, `src/segacd/hockey/logic94cd.asm` 6319, lines 6344-6345 |
+| Routine | `playeracc`, `src/engine/logic94.asm` 7489, `.incagl` at 7517-7518 | `playeracc`, `src/segacd/hockey/logic94cd.asm` 6392, lines 6417-6418 |
 | Address | `$10C08`-`$10C16` | `$368C0`-`$368D4` |
 | Code | `addq.b #2,d2` once | `addi.b #2,d2` twice (+4) |
 
 The acceleration term is `$40 - weight/4 + legstr`, plus the "crowd meter boost", then halved (`asr.w #1,d2`) and multiplied into the stick direction. The boost is gated on `sflags8` bit 1 or `sflags7` bit 6. `SetSflags8Bit1` (`src/helpers94.asm` 5) always sets `sflags8` bit 1, and `updateplayers` calls it every update (`src/engine/logic94.asm` 37; disc `$2AE68`, called from `$2FA14`). So the boost applies to every skater on both teams, all the time.
 
-Inferred effect: after the halving, every player's acceleration term is 1 unit higher on the Sega CD. Goalies take the same path (the +4 comes before the goalie doubling of `legstr` + `$10`). The top-speed code that follows (+2, capped at `$1E`) is unchanged.
+In a game (read from the code): after the halving, every player's acceleration term is 1 unit higher on the Sega CD. Goalies take the same path (the +4 comes before the goalie doubling of `legstr` + `$10`). The top-speed code that follows (+2, capped at `$1E`) is unchanged.
 
 The code, cartridge (`src/engine/logic94.asm` 7507-7525):
 
@@ -51,7 +81,7 @@ The code, cartridge (`src/engine/logic94.asm` 7507-7525):
     muls.w  d2,d1
 ```
 
-Sega CD (`src/segacd/hockey/logic94cd.asm` 6334-6352). It is the same apart from the boost:
+Sega CD (`src/segacd/hockey/logic94cd.asm` 6407-6425). It is the same apart from the boost:
 
 ```asm
     btst    #$1,(sflags8).l
@@ -65,9 +95,9 @@ Sega CD (`src/segacd/hockey/logic94cd.asm` 6334-6352). It is the same apart from
 
 After this, both builds do `asr.l #5` on `d0`/`d1` and then `muls.w d7` (frames elapsed), so the acceleration added this frame is proportional to the halved term.
 
-How the size is worked out (verified arithmetic; the feel in play is inferred):
+How the size is worked out (the arithmetic is from the code; the feel in play wasn't measured):
 
-1. `setplayer` (`src/engine/collide94.asm` 2888-2896) reads the player's weight/leg byte (`pldweight`, `src/ram94.asm` 187). `weight` = weight nibble × 8. `legstr` = `AttributeCalc` of the leg nibble (`src/front/crowd94.asm` 211): 5 × nibble plus the hot/cold value ÷ 3, clamped to 0-`$1E` (30).
+1. `setplayer` (`src/engine/collide94.asm` 2888-2896) reads the player's weight/leg byte (`pldweight`, `src/ram94.asm` 202). `weight` = weight nibble × 8. `legstr` = `AttributeCalc` of the leg nibble (`src/front/crowd94.asm` 211): 5 × nibble plus the hot/cold value ÷ 3, clamped to 0-`$1E` (30).
 2. `playeracc`: `weight/4` is 2 × the weight nibble, so the term is `64 - 2W + legstr`, where W is the weight nibble.
 3. Boost: +2 on the cartridge, +4 on the Sega CD, for every player (see above).
 4. Goalies only (`position` = 0): + `legstr` + 16.
@@ -84,7 +114,11 @@ So the gain is `1 / (cartridge halved term)`:
 
 The retail-roster rows use the cartridge team data with hot/cold = 0. In that data the weight nibble runs 3-14 for skaters and the leg nibble 0-6, so `legstr` is 0-30. The extremes are Jay Caufield (PIT, weight 14, legs 1: 21 → 22, +4.8%) and Wayne Gretzky (LA, weight 4, legs 6: 44 → 45, +2.3%). For goalies they are Ken Wregget (PIT, 43 → 44) and Patrick Roy (MTL, 65 → 66). A hot or cold streak moves `legstr` by the hot/cold value ÷ 3 and shifts these slightly. Heavy, low-agility players gain the most in relative terms.
 
-### 2. A checked player bounces off the corners much more easily (bytes verified; effect inferred)
+### 2. Corner bounce on a checked player: different, much more often on the Sega CD
+
+- **Cartridge:** `checkcornercoll` gives the corner bounce only past the corner's curve (radius 64).
+- **Sega CD: different.** The same compare uses a radius of about 8, so the bounce fires almost anywhere in a corner
+  zone.
 
 | | Cartridge | Sega CD |
 | --- | --- | --- |
@@ -94,9 +128,12 @@ The retail-roster rows use the cartridge team data with hot/cold = 0. In that da
 
 `checkcornercoll` tests the distance squared from the corner circle's centre. At or under the threshold (`bls .exit`) there is no corner hit. The only caller is `wallcollduringcheck` (`src/front/cards94.asm` 232-245; disc call at `$24FEE`, `src/segacd/hockey/cards94cd.asm` 222). That routine runs for a skater being body-checked near the boards, with his box grown by `$17`.
 
-Inferred effect: on the cartridge, a checked player gets the corner bounce only when he is pushed past the curve of the corner. On the Sega CD, he gets it almost anywhere in a corner zone. `$42` looks like a typo for the radius. The normal skater/wall collision in `wallcoll` keeps `$1000` in both (`src/engine/collide94.asm` 1057; disc `src/segacd/hockey/collide94cd.asm` 942).
+In a game (read from the code): on the cartridge, a checked player gets the corner bounce only when he is pushed past the curve of the corner. On the Sega CD, he gets it almost anywhere in a corner zone. `$42` looks like a typo for the radius. The normal skater/wall collision in `wallcoll` keeps `$1000` in both (`src/engine/collide94.asm` 1057; disc `src/segacd/hockey/collide94cd.asm` 942).
 
-### 3. Pad input during the penalty-shot box (verified)
+### 3. Pad input during the penalty-shot box: different
+
+- **Cartridge:** the pad still moves the player while the PENALTY SHOT box is up.
+- **Sega CD: different.** A is ignored during the box, and a d-pad press only shortens the box.
 
 | | Cartridge | Sega CD |
 | --- | --- | --- |
@@ -108,13 +145,17 @@ Inferred effect: on the cartridge, a checked player gets the corner bounce only 
 - Cartridge: while the bit is set, a d-pad press calls `ShortenMsgTimer` (`src/engine/period94.asm` 753). The pad input then goes on to the player as normal.
 - Sega CD: while the bit is set, bit 6 (the A button) is cleared in `d0`-`d3`. If the d-pad is pressed, it calls `ShortenMsgTimer` and then forces `d0 = 8` (no direction) and `d1 = d2 = d3 = 0`. The pad does nothing else during the box.
 
-### 4. Rosters, lines and goalie counts (verified)
+### 4. Rosters, lines and goalie counts: different
+
+- **Cartridge:** 28 teams; 28 players are listed twice, on their old team and on Florida or Anaheim.
+- **Sega CD: different.** The same 28 teams, 31 players fewer, with goalie counts, forward counts and lines rebuilt.
 
 Both builds have the same 28 teams (26 NHL teams and the two All-Star teams). Florida and Anaheim are byte-identical. The disc drops 31 player records from 20 teams. 28 of them are players the cartridge also lists on Florida or Anaheim, so the cartridge has them twice. The other three (Bobby Smith, DAL #7; Dan Marois, NYI #16; Rick Wamsley, TOR #3) are not on any other team.
 
 Every remaining player's record (name and all ratings) is byte-identical. The team `.sr` bytes 0-2 (simulated scoring odds, power play / penalty kill and home/visitor bonuses) are the same on all teams.
 
-Removed players (cartridge roster number; G, F or D from the team's goalie and forward counts):
+Removed players (cartridge roster number; G, F or D from the team's goalie and forward counts). Unchanged: ASE, ASW,
+DET, OTW, WPG, WSH, FLA, ANH.
 
 | Team | Removed |
 | --- | --- |
@@ -139,8 +180,6 @@ Removed players (cartridge roster number; G, F or D from the team's goalie and f
 | TOR | Rick Wamsley #3 G |
 | VAN | Anatoli Semenov #5 F |
 
-Unchanged: ASE, ASW, DET, OTW, WPG, WSH, FLA, ANH.
-
 **Goalie counts.** `.godds` is one nibble per goalie, and `GetGoalieCount` (`src/front/stats94.asm` 2117) counts the nibbles. The changes are:
 
 | Team | Cartridge | Sega CD | Goalies |
@@ -153,7 +192,7 @@ Unchanged: ASE, ASW, DET, OTW, WPG, WSH, FLA, ANH.
 
 The weights themselves are read only by `PickStartingGoalie` (`src/engine/setup94.asm` 1482), which nothing calls in the cartridge. The starting goalie is the G slot in the lines.
 
-**Forward counts.** The high nibble of `.sr` byte 3 is the forward count (`srforwards`, `src/ram94.asm` 232; `GetForwardCount`, `src/front/stats94.asm` 2144, used by the line editor and player cards). It drops by the number of forwards removed. TOR also drops 14 → 13 with no forward removed: its cartridge #17 (Ken Baumgartnr) falls in the defense group on the disc, and the disc lines play him on defense. The low nibble is not read by the code. It changes on most teams, including OTW, whose roster is unchanged.
+**Forward counts.** The high nibble of `.sr` byte 3 is the forward count (`srforwards`, `src/ram94.asm` 247; `GetForwardCount`, `src/front/stats94.asm` 2144, used by the line editor and player cards). It drops by the number of forwards removed. TOR also drops 14 → 13 with no forward removed: its cartridge #17 (Ken Baumgartnr) falls in the defense group on the disc, and the disc lines play him on defense. The low nibble is not read by the code. It changes on most teams, including OTW, whose roster is unchanged.
 
 **Lines.** `.ls` (8 lines × G, LD, RD, LW, C, RW, extra attacker) was renumbered for the shorter rosters. These are the slots whose player differs, compared by player, not by number:
 
@@ -177,20 +216,23 @@ The weights themselves are read only by `PickStartingGoalie` (`src/engine/setup9
 
 The other teams that lost players (BUF, CGY, CHI, MTL, TB) had them in no line, so their lines name the same players. The team palettes differ for HFD and OTW (visual only, see the non-gameplay section).
 
-### 5. Playoff password: pad layout decoding (verified; minor)
+### 5. Playoff password pad layout: different (minor)
+
+- **Cartridge and Sega CD: different.** They decode the pad layout in a playoff password differently without the 4-way
+  adaptor, so a continued playoff can hand the pads to different teams.
 
 | | Cartridge | Sega CD |
 | --- | --- | --- |
-| `ReadPassBits` remap | `src/engine/setup94.asm` 1905-1912, `$180A6`-`$180C8`: without the 4-way adaptor, `pojoy` 1 or 2 becomes 4 | `src/segacd/hockey/setup94cd.asm` 1635-1643, `$405EA`-`$40620`: only with the adaptor, 1 becomes 3 and 2 becomes 4 |
-| `ContinuePlayoffs` | `src/engine/setup94.asm` 1575, `$17CD8`: `blt` (subtract 2 when `pojoy` ≥ 2) | `src/segacd/hockey/setup94cd.asm` 1374, `$40176`: `ble` (subtract 2 when `pojoy` > 2) |
+| `ReadPassBits` remap | `src/engine/setup94.asm` 1905-1912, `$180A6`-`$180C8`: without the 4-way adaptor, `pojoy` 1 or 2 becomes 4 | `src/segacd/hockey/setup94cd.asm` 1664-1672, `$405EA`-`$40620`: only with the adaptor, 1 becomes 3 and 2 becomes 4 |
+| `ContinuePlayoffs` | `src/engine/setup94.asm` 1575, `$17CD8`: `blt` (subtract 2 when `pojoy` ≥ 2) | `src/segacd/hockey/setup94cd.asm` 1403, `$40176`: `ble` (subtract 2 when `pojoy` > 2) |
 
-With the 4-way adaptor, both builds end with the same `pojoy` and `OptNOP`. Without it, a password with pad layout 1 or 2 restores a different `pojoy` (1 or 2 on the disc, 4 on the cartridge). For layout 1, `OptNOP` also comes out different: 6 on the disc, 5 on the cartridge. Inferred effect: which pads control which team in a continued playoff can differ. Nothing in play itself changes.
+With the 4-way adaptor, both builds end with the same `pojoy` and `OptNOP`. Without it, a password with pad layout 1 or 2 restores a different `pojoy` (1 or 2 on the disc, 4 on the cartridge). For layout 1, `OptNOP` also comes out different: 6 on the disc, 5 on the cartridge. In a game (read from the code): which pads control which team in a continued playoff can differ. Nothing in play itself changes.
 
-## Changed code with no gameplay effect
+## Changed code with no gameplay effect: different code, same play
 
-- **`ClearShotData`** (`src/engine/hockey94.asm` 75, verified): the cartridge clears `$E4` words from `outputbuffer`, a 113-word buffer, so it runs on into the FM driver's tables. The disc clears `$72` words. The overrun is fixed. Details below.
-- **`puckgoalie` save tables** (`src/engine/collide94.asm` 2229; `lea .list2` 2265, `lea .list3` 2275, tables 2370 and 2446; verified bytes, inferred effect): on the disc both `lea`s point at `$3C246` inside `deflect`'s code (`$3C0A0` and `$3C0C6`; `src/segacd/hockey/collide94cd.asm` 1974 and 1983), and the tables are not on the disc. The value read from them is overwritten before use in both builds (`a2touchpuck` clears `d0`, and so do `.bounceoff` / `.chkanim`), so the result does not change.
-- **Random numbers** (verified code; inferred values): every read of the VDP HV counter for random bits goes through main-CPU command `$1B` (or `$1C` for a byte). The logic is the same, but the values differ in practice. Details below.
+- **`ClearShotData`** (`src/engine/hockey94.asm` 75): the cartridge clears `$E4` words from `outputbuffer`, a 113-word buffer, so it runs on into the FM driver's tables. The disc clears `$72` words. The overrun is fixed. Details below.
+- **`puckgoalie` save tables** (`src/engine/collide94.asm` 2229; `lea .list2` 2265, `lea .list3` 2275, tables 2370 and 2446; the bytes compared, the effect read from the code): on the disc both `lea`s point at `$3C246` inside `deflect`'s code (`$3C0A0` and `$3C0C6`; `src/segacd/hockey/collide94cd.asm` 1974 and 1983), and the tables are not on the disc. The value read from them is overwritten before use in both builds (`a2touchpuck` clears `d0`, and so do `.bounceoff` / `.chkanim`), so the result does not change.
+- **Random numbers** (the code compared; the values read from it): every read of the VDP HV counter for random bits goes through main-CPU command `$1B` (or `$1C` for a byte). The logic is the same, but the values differ in practice. Details below.
 - **Sound ids**: the "ding" `sfx` id is `1` (`SFXbeep1`) → `2` in `assnearest`, `asspuckc` and `breakaway`. `dopass` stores its `sfx` value with `move` instead of `addi`.
 - **Music**: `puckfaceoff` and `Goal` call `song` directly instead of queuing a song through `sflags8` bit 4 and the cartridge song queue.
 - **`GetDefenseStart`** (`src/front/stats94.asm` 2130): a redundant `andi #$F` is dropped.
@@ -201,7 +243,7 @@ With the 4-way adaptor, both builds end with the same `pojoy` and `OptNOP`. With
 - **Hardware glue**: VDP writes, DMA, palette fades and bitmaps go through sub→main gate commands. `move #$2700,sr` became `bclr #5,$FF800F`. The vblank handler ends in `rts` instead of `rte`. `waitx` uses `or` instead of `move`. `LineEditorExit` has a different wait loop. `UpdateScoutingDisplay` is rewritten for the CD scouting report.
 - **RAM layout**: the team struct is 2 bytes longer (`$364` → `$366`). Field `$22` became a long, so every team field from `$24` up is 2 bytes further on (for example `$1A2` → `$1A4`). Every use was checked to be the same field.
 
-### `ClearShotData` overrun fix (verified)
+### `ClearShotData` overrun fix
 
 `StartGame` calls `ClearShotData` when `OptPlayMode` is 2 or more (`src/engine/hockey94.asm` 53-55). The disc does the same; the transcription has the routine as `ClearShotData` in `src/segacd/hockey/logos94cd.asm` (call at 501, body at 520).
 
@@ -215,14 +257,14 @@ ClearShotData                                ClearShotData  move.w  #$71,d0
     rts
 ```
 
-(The disc line loads the disc's `outputbuffer` address, the same one the disc uses where the cartridge's `setup94.asm` 2105 and 2142 use `outputbuffer`, at `setup94cd.asm` 1826 and 1861.)
+(The disc line loads the disc's `outputbuffer` address, the same one the disc uses where the cartridge's `setup94.asm` 2105 and 2142 use `outputbuffer`, at `setup94cd.asm` 1851 and 1886.)
 
 - `dbf` runs count + 1 times. So the cartridge clears `$E4` = 228 words and the disc clears `$72` = 114 words.
 - The cartridge RAM map (`src/ram94.asm` 840-848) has `outputbuffer` (113 words), then `marker` (1), then `tpassbits` (5). After those come the FM driver's state: `music_needs_z80_update` (1 word), `Z80_command_buffer` + `per_channel_attenuation_table` (12 bytes), `per_channel_frequency_table` (7 words), `per_channel_patch_table` (4 words) and `fm_voice_usage_table` (256 words).
 - So the cartridge clears `tpassbits`, all of those FM tables, and the first 91 words of `fm_voice_usage_table` (arithmetic from the RAM map). The disc stops at `marker`, the end of the saved block.
-- Inferred: on the cartridge, a new game that clears the shot buffer also wipes `tpassbits` (temporary password bits) and the sound driver's per-channel state. Whether that is ever audible was not checked. The Sega CD's music comes from CD audio, so those tables don't drive its music.
+- Read from the code: on the cartridge, a new game that clears the shot buffer also wipes `tpassbits` (temporary password bits) and the sound driver's per-channel state. Whether that is ever audible was not checked. The Sega CD's music comes from CD audio, so those tables don't drive its music.
 
-### Random bits from the beam counter: main-CPU command `$1B` (verified code; values inferred)
+### Random bits from the beam counter: main-CPU command `$1B`
 
 On the cartridge, game code reads the VDP's HV counter (`HVcount` = `$C00008`, `src/ram94.asm` 72) directly whenever it wants a random bit. The sub CPU can't reach the VDP, so on the Sega CD each read is a request to the main CPU.
 
@@ -249,9 +291,9 @@ On the cartridge, game code reads the VDP's HV counter (`HVcount` = `$C00008`, `
 
 On the main CPU, command `$1B` is the one-line handler `move.w $C00008,$A12010` (`src/segacd/main/hwread94cd.asm`; `$1C` is the byte form, `move.b`). It is reached through the main command table described below.
 
-- **Count (verified):** `HOCKEY.BIN` has 21 `$1B` requests and 2 `$1C` requests. The two `$1C` are the cartridge's two `move.b (HVcount)` in `CCStart` (`collide94.asm` 432, 443). The disc transcription in `src/segacd/hockey/logic94cd.asm` shows all 10 `logic94.asm` sites. The second one in `asspuckc` is in the cartridge's `.chkdir` (the opponent check `skateto` calls), which the transcription used to hold as a block of `dc.w` words; it is now written out as code. The cartridge has 25 `HVcount` reads. The 23 in game, scoreboard, crowd and options code map one-for-one. The two in `src/front/title94.asm` 8-9 (the title screen's random seed) were not found in `HOCKEY.BIN`.
+- **Count:** `HOCKEY.BIN` has 21 `$1B` requests and 2 `$1C` requests. The two `$1C` are the cartridge's two `move.b (HVcount)` in `CCStart` (`collide94.asm` 432, 443). The disc transcription in `src/segacd/hockey/logic94cd.asm` shows all 10 `logic94.asm` sites. The second one in `asspuckc` is in the cartridge's `.chkdir` (the opponent check `skateto` calls), which the transcription used to hold as a block of `dc.w` words; it is now written out as code. The cartridge has 25 `HVcount` reads. The 23 in game, scoreboard, crowd and options code map one-for-one. The two in `src/front/title94.asm` 8-9 (the title screen's random seed) were not found in `HOCKEY.BIN`.
 - **Callers:** `asswingo`, `asscentero`, `checkanim`, `asspuckc` (twice), `chk4lc`, `chk4shot`, `check4check`, `Endfaceoff`, `playeracc` (`logic94.asm`); `FallDown`, `CheckBump`, `puckgoalie` and the two byte reads in `CCStart` (`collide94.asm`); `updatecrowdf` (twice) in `hockey94.asm`; two in `scoreboard94.asm`; and the four seed reads in `optsetup94.asm`.
-- **Inferred:** the value is the beam position when the main CPU runs the handler, a few microseconds after the request. The sub CPU also runs on its own clock, not in step with the VDP. So the same situation gives different random bits than on the cartridge, though each read is still "some beam position". The logic around each read is unchanged. `randomd0` / `randomd0s` (`src/engine/middle94.asm` 199-207) don't read the HV counter and are unchanged.
+- **Read from the code:** the value is the beam position when the main CPU runs the handler, a few microseconds after the request. The sub CPU also runs on its own clock, not in step with the VDP. So the same situation gives different random bits than on the cartridge, though each read is still "some beam position". The logic around each read is unchanged. `randomd0` / `randomd0s` (`src/engine/middle94.asm` 199-207) don't read the HV counter and are unchanged.
 
 ## Non-gameplay differences
 
@@ -266,9 +308,11 @@ From `docs/segacd.md` and the area write-ups:
 - Graphics come from the `GRAPH2.BIN` archive.
 - HFD and OTW team palettes differ (below).
 
-### HFD and OTW team palettes (verified)
+### HFD and OTW team palettes: different
 
 Each team record has two 16-colour palettes, home then visitor. `setplayercolors` (`src/engine/setup94.asm` 718) copies the home team's home palette into palette line 2 and the visiting team's visitor palette into line 3. Only one half changed for each team. Colours are Genesis `0BGR` words.
+
+HFD visitor and OTW home are the same in both. The cartridge palettes are at ROM `$1B50` (HFD, `src/teamdata94.asm` 617-618) and `$3060` (OTW, 1059-1060). The Sega CD ones are at `HOCKEY.BIN` file offsets `$17CA` and `$2BC6` (runtime `$1C7CA` and `$1DBC6`).
 
 | Team, palette | Index | Cartridge | Sega CD |
 | --- | --- | --- | --- |
@@ -280,30 +324,38 @@ Each team record has two 16-colour palettes, home then visitor. `setplayercolors
 | OTW visitor | 11 | `$222` (dark grey) | `$000` (black) |
 | OTW visitor | 12 | `$444` (grey) | `$000` (black) |
 
-HFD visitor and OTW home are the same in both. The cartridge palettes are at ROM `$1B50` (HFD, `src/teamdata94.asm` 617-618) and `$3060` (OTW, 1059-1060). The Sega CD ones are at `HOCKEY.BIN` file offsets `$17CA` and `$2BC6` (runtime `$1C7CA` and `$1DBC6`).
 
 ![HFD home and OTW visitor palettes, cartridge vs Sega CD, on sprite frame 194](images/segacd_hfd_otw_palettes.svg)
 
 The example is sprite frame 194: the second celebrate frame for facing direction 4, toward the camera, arms and stick up (`SPFcelebrate` = 185, two frames per direction, `src/frames94.asm` 18 and `SPAcelebrate` at 1178). It was decoded from the cartridge's `frameSprData` (`$9E724`) and `Spritetiles` (`$5DE84`) the way `addframe2` (`src/engine/video94.asm` 863) draws it. Every changed index above is used by pixels in that frame. The image shows each 3-bit colour level scaled to 0-255, so the shades are approximate. HFD's green stripes are lighter on the Sega CD. The OTW visitor uniform goes from grey with dark-red pants to black with dark-blue pants.
 
-## What the box says
+## Box features
 
-The back of the Sega CD box (from Abdul's transcription) compared with the code. Box text is marketing, so it is quoted
-as "the box says". Where the box and the code disagree, the code wins.
+What the code has for each line on the back of the Sega CD box:
 
-| The box says | Code | Status |
-| --- | --- | --- |
-| "digitized speech by Ron Barr" | The Ron Barr scouting report has voice clips and a typed script (`docs/segacd_announce.md`) | Matches |
-| "100+ full-motion video clips of NHL stars" | There is an FMV player (`FILM` / `SM`, `docs/segacd_film.md`), and `GRAPH2.BIN` has a `TeamVideoFrame<T>` page, the frame the team clips play in, for each of the 28 teams (`docs/segacd.md`). The clips still can't be counted from what's in the repo: the `FILM` data isn't in the six disc files here (`filmrun` plays whatever buffer its caller passes), and the code that picks a clip, which would hold the list, isn't decoded. Counting needs the disc's file directory or that clip table | Open |
-| "CD sound effects", "real organ music (San Jose Sharks organ)" | CD-DA tracks and a PCM stream replace the cartridge song player (`docs/segacd_audio.md`, `docs/segacd_song.md`). Whether the organ tracks were recorded on the San Jose organ can't be told from the code | Partly checked |
-| Same Genesis features: 4 Way Play, Goalie Control, Penalty Shots and Shootout, One-Timers, expansion teams; 1-4 players | All on the disc: the 4-way adaptor (above), the manual-goalie menu (`menu94cd.asm`), the penalty-shot box (above), `shootout94cd.asm`, `onetimer94cd.asm`, and Florida and Anaheim byte-identical to the cartridge | Matches |
-| (not on the box) Saved records | The cartridge box advertises battery-backed records for "you and 6 friends" (`sram94.asm`, `cards94.asm` `UpdateRecords`). The disc keeps them in the Sega CD backup RAM instead: `BackupRamMountVerify` (`src/segacd/starter/starterdata94cd.asm`) mounts it with `BRMINIT` and checks the save file, and the game works on a `$F20`-byte image (`BackupRamImage`, `ValidSRAM` in `src/segacd/ram94cd.asm`) | In the code, not on the box |
+- **"Digitized speech by Ron Barr":** yes. The Ron Barr scouting report has voice clips and a typed script
+  (`docs/segacd_announce.md`).
+- **"100+ full-motion video clips of NHL stars":** there is an FMV player (`FILM` / `SM`, `docs/segacd_film.md`), and
+  `GRAPH2.BIN` has a `TeamVideoFrame<T>` page, the frame the team clips play in, for each of the 28 teams
+  (`docs/segacd.md`). The number of clips: not confirmed in code. The `FILM` data isn't in the six disc files here
+  (`filmrun` plays whatever buffer its caller passes), and the code that picks a clip, which would hold the list, isn't
+  decoded. Counting needs the disc's file directory or that clip table.
+- **"CD sound effects", "real organ music (San Jose Sharks organ)":** CD-DA tracks and a PCM stream replace the
+  cartridge song player (`docs/segacd_audio.md`, `docs/segacd_song.md`). Whether the organ tracks were recorded on the
+  San Jose organ can't be told from the code.
+- **The same Genesis features: 4 Way Play, Goalie Control, Penalty Shots and Shootout, One-Timers, expansion teams;
+  1-4 players:** all on the disc: the 4-way adaptor (below), the manual-goalie menu (`menu94cd.asm`), the penalty-shot
+  box (above), `shootout94cd.asm`, `onetimer94cd.asm`, and Florida and Anaheim byte-identical to the cartridge.
+- **Saved records (not on the Sega CD box):** the cartridge box advertises battery-backed records for "you and 6
+  friends" (`sram94.asm`, `cards94.asm` `UpdateRecords`). The disc keeps them in the Sega CD backup RAM instead:
+  `BackupRamMountVerify` (`src/segacd/starter/starterdata94cd.asm`) mounts it with `BRMINIT` and checks the save file,
+  and the game works on a `$F20`-byte image (`BackupRamImage`, `ValidSRAM` in `src/segacd/ram94cd.asm`).
 
 ## Main CPU, pads, the 4-way adaptor and frame timing
 
 On the Sega CD the game runs on the sub CPU, and the sub CPU has no bus access to the VDP, the pad ports or the Z80. The main CPU (`MAIN.BIN`) does all of that for it on request. `MAIN.BIN` runtime addresses below are the file offset + `$FF1000`; for example, the command table at file `$371C` is the runtime table at `$FF471C`.
 
-### How the sub CPU asks the main CPU for I/O (verified)
+### How the sub CPU asks the main CPU for I/O
 
 The two CPUs talk through the gate array's communication registers. The sub CPU sees them at `$FF800E`-`$FF802F`, the main CPU at `$A1200E`-`$A1202F`:
 
@@ -331,7 +383,7 @@ There are two request channels. Both look the command up in the same table at `$
 
 Every port or VDP access that was one bus cycle on the cartridge is now a full handshake like this.
 
-### How a frame reaches the game (verified code)
+### How a frame reaches the game
 
 Set-up:
 
@@ -414,7 +466,7 @@ DoGameFrame
 
 Movement scales by `d7` (for example `muls.w d7,d0` in `playeracc`). That is the game's only frame-skip handling, and it is the same on both builds.
 
-### What a missed vblank skips (verified code; effect inferred)
+### What a missed vblank skips
 
 If the sub CPU has not set bit 2 within the two polling loops (`$33` + `$1A` polls), `SubCommAck` clears main bit 5 and returns without serving anything. If the hook then runs late, it sees bit 5 clear and exits at once. For that vblank:
 
@@ -425,20 +477,21 @@ If the sub CPU has not set bit 2 within the two polling loops (`$33` + `$1A` pol
 
 The cartridge's `VBlank` is a plain interrupt and can't be skipped like this.
 
-Inferred, not measured: a lost vblank makes both game time and the game clock fall behind real time. The movement scaling can't make up for it, because `Vcount` never counted that vblank. It happens only if the sub CPU doesn't take its level 2 interrupt and answer within about 77 polls, for example while its interrupts are masked. When the sub's interrupts are masked (BIOS or CD calls) was not traced. The disc code replaced the cartridge's `move #$2700,sr` (mask all interrupts) with `bclr #5,$FF800F`, so the game itself no longer masks interrupts at those points. How often a miss happens in play is unknown.
+Read from the code, not measured: a lost vblank makes both game time and the game clock fall behind real time. The movement scaling can't make up for it, because `Vcount` never counted that vblank. It happens only if the sub CPU doesn't take its level 2 interrupt and answer within about 77 polls, for example while its interrupts are masked. When the sub's interrupts are masked (BIOS or CD calls) was not traced. The disc code replaced the cartridge's `move #$2700,sr` (mask all interrupts) with `bclr #5,$FF800F`, so the game itself no longer masks interrupts at those points. How often a miss happens in play is unknown.
 
-One more case (inferred from the flag logic): the sub may take the vblank just as `SubCommAck` gives up. Its first channel B command then waits. The next `SubCommAck` finds sub bit 2 still set and serves it, so that frame's work is late by a vblank rather than lost.
+One more case (read from the flag logic): the sub may take the vblank just as `SubCommAck` gives up. Its first channel B command then waits. The next `SubCommAck` finds sub bit 2 still set and serves it, so that frame's work is late by a vblank rather than lost.
 
 The extra handshakes make each vblank's work longer than on the cartridge. Whether that shows as slowdown in a real game was not measured. That needs a Sega CD BIOS and a full disc image, and neither was available for this check.
 
-### Pads (verified)
+### Pads: same result, different path
 
-Step by step, one pad (pad 1, no adaptor):
+Step by step, one pad (pad 1, no adaptor). Pad 2 is the same on port 2: the cartridge's `ReadPad2` uses
+`IO_CT2_DATA`, the Sega CD uses commands `$35` (write `$A10005`) and `$38` (read `$A10005`).
 
 | Step | Cartridge | Sega CD |
 | --- | --- | --- |
 | Called from | `p_music_vblank` (`src/sound/sound94.asm` 383), every vblank | `VBlankSubCpuHook`, every vblank the sub gets |
-| Routine | `ReadJoyData` (258) → `ReadPad1` → `ReadPadA0` → `ReadPad3Button` | `ReadJoyData` (`src/segacd/hockey/graphics94cd.asm` 31) → `.next5`/`.next6` |
+| Routine | `ReadJoyData` (258) → `ReadPad1` → `ReadPadA0` → `ReadPad3Button` | `ReadJoyData` (`src/segacd/hockey/graphics94cd.asm` 34) → `.next5`/`.next6` |
 | Z80 bus | request `IO_Z80BUS`, `$64` tries, `ResetZ80Bus` if not granted | none (the main CPU owns the Z80) |
 | TH low | `move.b #0,(a0)` on port 1 data, then two `nop`s | command `$36`, argument 0: main writes `$A10003` |
 | Read 1 | `move.b (a0),d0` (Start, A) | command `$37`: main reads `$A10003` into `$A12018`; sub reads `$FF8018` |
@@ -447,8 +500,6 @@ Step by step, one pad (pad 1, no adaptor):
 | Release | clear `IO_Z80BUS` | none |
 | Packing | `asl.b #2,d0`; `andi #$C0`; `andi #$3F`; `or`; `not`; direction nibble through `PadDirTable` (373) | the same instructions (line 206); table `.next9` (line 220) |
 | Store | `PadRaw1` | `PadRaw1` |
-
-Pad 2 is the same on port 2: the cartridge's `ReadPad2` uses `IO_CT2_DATA`, the Sega CD uses commands `$35` (write `$A10005`) and `$38` (read `$A10005`).
 
 The cartridge's `ReadPad3Button` and the Sega CD's version of the same steps:
 
@@ -502,11 +553,11 @@ The main CPU handlers (`src/segacd/main/maincmd94cd.asm` 517-523):
     rts
 ```
 
-- **Same (verified):** pad order, the TH low/high order, the bit packing, and the direction table (`0,1,2,1,4,5,6,6,8,9,A,A,8,9,A,0`, which cancels opposite directions). So `PadRaw1`-`PadRaw4` hold the same bytes for the same buttons. Everything that reads them is unchanged apart from gameplay item 3: `ReadJoy1`-`ReadJoy4`, `ReadJoy`, `jdtab` (`src/engine/middle94.asm` 483-539) and `doinput` (`src/engine/logic94.asm` 517).
-- **Different (verified):** the TH settle time is now a full handshake instead of two `nop`s, and pads are only read on vblanks the sub CPU gets. There is no Z80 bus request.
-- **`MAIN.BIN`'s own poller (verified):** `PollControllers` (`src/segacd/main/mainctrl94cd.asm` 43) reads both ports directly. It has the same TH sequence and its own copy of the direction table, and stores into `$FF4F84`/`$FF4F85`. Its only caller (`$FF4F88`) does nothing unless sub flag bit 0 is set. It then clears main bit 1, polls, ORs the two pads' new presses, and sets main bit 1 if the result is exactly `$80` (Start alone). It never writes the game's `PadRaw` bytes. Where the sub uses that Start flag (probably to skip a film or loading screen) was not traced.
+- **Same:** pad order, the TH low/high order, the bit packing, and the direction table (`0,1,2,1,4,5,6,6,8,9,A,A,8,9,A,0`, which cancels opposite directions). So `PadRaw1`-`PadRaw4` hold the same bytes for the same buttons. Everything that reads them is unchanged apart from gameplay item 3: `ReadJoy1`-`ReadJoy4`, `ReadJoy`, `jdtab` (`src/engine/middle94.asm` 483-539) and `doinput` (`src/engine/logic94.asm` 517).
+- **Different:** the TH settle time is now a full handshake instead of two `nop`s, and pads are only read on vblanks the sub CPU gets. There is no Z80 bus request.
+- **`MAIN.BIN`'s own poller:** `PollControllers` (`src/segacd/main/mainctrl94cd.asm` 43) reads both ports directly. It has the same TH sequence and its own copy of the direction table, and stores into `$FF4F84`/`$FF4F85`. Its only caller (`$FF4F88`) does nothing unless sub flag bit 0 is set. It then clears main bit 1, polls, ORs the two pads' new presses, and sets main bit 1 if the result is exactly `$80` (Start alone). It never writes the game's `PadRaw` bytes. Where the sub uses that Start flag (probably to skip a film or loading screen) was not traced.
 
-### 4-way adaptor (verified)
+### 4-way adaptor: same detection, different path
 
 Detection, step by step. The cartridge does it in `Begin` (`jsr (Detect4WayPlay)`, `src/engine/hockey94.asm` 27). The Sega CD's start-up code does it after `VBlankSubCpuHook` (`src/segacd/hockey/cdhockey94cd.asm` 82-95).
 
@@ -541,7 +592,7 @@ Dropped and kept:
 - `ReadJoySwapPad1`-`4` (`src/engine/fourway94.asm` 28-52; nothing in the cartridge calls them) are not on the disc. None of the 13 disc callers of `ReadJoy1` has their save/swap shape, and the disc RAM map (`src/segacd/ram94cd.asm`) has no `pad4waysave` words.
 - `Set4WayPlayer` (also uncalled) is still on the disc (`src/segacd/hockey/fourway94cd.asm` 1).
 
-## Verified the same
+## Same in both builds
 
 These are the same in both builds, or differ only by address relocation, the RAM layout shift, or the CD hardware glue:
 
