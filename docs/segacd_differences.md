@@ -286,6 +286,19 @@ HFD visitor and OTW home are the same in both. The cartridge palettes are at ROM
 
 The example is sprite frame 194: the second celebrate frame for facing direction 4, toward the camera, arms and stick up (`SPFcelebrate` = 185, two frames per direction, `src/frames94.asm` 18 and `SPAcelebrate` at 1178). It was decoded from the cartridge's `frameSprData` (`$9E724`) and `Spritetiles` (`$5DE84`) the way `addframe2` (`src/engine/video94.asm` 863) draws it. Every changed index above is used by pixels in that frame. The image shows each 3-bit colour level scaled to 0-255, so the shades are approximate. HFD's green stripes are lighter on the Sega CD. The OTW visitor uniform goes from grey with dark-red pants to black with dark-blue pants.
 
+## What the box says
+
+The back of the Sega CD box (from Abdul's transcription) compared with the code. Box text is marketing, so it is quoted
+as "the box says". Where the box and the code disagree, the code wins.
+
+| The box says | Code | Status |
+| --- | --- | --- |
+| "digitized speech by Ron Barr" | The Ron Barr scouting report has voice clips and a typed script (`docs/segacd_announce.md`) | Matches |
+| "100+ full-motion video clips of NHL stars" | There is an FMV player (`FILM` / `SM`, `docs/segacd_film.md`). The clips weren't counted | Not counted |
+| "CD sound effects", "real organ music (San Jose Sharks organ)" | CD-DA tracks and a PCM stream replace the cartridge song player (`docs/segacd_audio.md`, `docs/segacd_song.md`). Whether the organ tracks were recorded on the San Jose organ can't be told from the code | Partly checked |
+| Same Genesis features: 4 Way Play, Goalie Control, Penalty Shots and Shootout, One-Timers, expansion teams; 1-4 players | All on the disc: the 4-way adaptor (above), the manual-goalie menu (`menu94cd.asm`), the penalty-shot box (above), `shootout94cd.asm`, `onetimer94cd.asm`, and Florida and Anaheim byte-identical to the cartridge | Matches |
+| (not on the box) Saved records | The cartridge box advertises battery-backed records for "you and 6 friends" (`sram94.asm`, `cards94.asm` `UpdateRecords`). The disc keeps them in the Sega CD backup RAM instead: `BackupRamMountVerify` (`src/segacd/starter/starterdata94cd.asm`) mounts it with `BRMINIT` and checks the save file, and the game works on a `$F20`-byte image (`BackupRamImage`, `ValidSRAM` in `src/segacd/ram94cd.asm`) | In the code, not on the box |
+
 ## Main CPU, pads, the 4-way adaptor and frame timing
 
 On the Sega CD the game runs on the sub CPU, and the sub CPU has no bus access to the VDP, the pad ports or the Z80. The main CPU (`MAIN.BIN`) does all of that for it on request. `MAIN.BIN` runtime addresses below are the file offset + `$FF1000`; for example, the command table at file `$371C` is the runtime table at `$FF471C`.
