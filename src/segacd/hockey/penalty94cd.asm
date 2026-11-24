@@ -37,7 +37,7 @@ AddPenalty2						;forced penalties like face off and game over. d0 = penalty num
 	move.b	d0,-(a1)
 	movea.l	#Penaltylist,a0
 	adda.w	(a0,d0.w),a0
-	tst.b	$1(a0)
+	tst.b	penmins(a0)
 	beq.w	.noplayer
 	bmi.w	.noplayer
 	btst	#pfteam,pflags(a3)
@@ -94,7 +94,7 @@ chkprogress	btst	#$2,(BA_PS_flags).l
 	move.b	-$2(a0),d0
 	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
-	tst.b	$1(a1)
+	tst.b	penmins(a1)
 	beq.w	.loop
 	bmi.w	.loop
 	bset	#$2,(sflags2).l
@@ -229,7 +229,7 @@ InProgress						;ref in progress-- update graphics and stats and penalty informa
 	adda.w	(a1,d0.w),a1
 	bclr	#$5,(sflags5).l
 	clr.w	d2
-	move.b	$1(a1),d2
+	move.b	penmins(a1),d2
 	beq.w	.sa2
 	bmi.w	.sa2
 	cmpi.b	#$5,d2
@@ -355,7 +355,7 @@ checkfornewpen						;look for new penalty (entered thru addpenalty(2)). Stops pl
 	move.b	-$2(a0),d0
 	movea.l	#Penaltylist,a1
 	adda.w	(a1,d0.w),a1
-	tst.b	$1(a1)
+	tst.b	penmins(a1)
 	beq.w	.callit
 	move.w	(puckc).l,d0
 	bmi.w	.dc
