@@ -4,7 +4,7 @@
 
 ## Photo
 
-`playerpic.asm` (`$1D54`) picks a picture, copies it into the buffer at `$BC000`, and asks the main CPU to DMA it.
+`src/segacd/player/playerpic94cd.asm` (`$1D54`) picks a picture, copies it into the buffer at `$BC000`, and asks the main CPU to DMA it.
 
 The home/away flag is `$18(a6)`. It selects one of two pointer tables (`$1C(a6)` / `$48(a6)`, or `$20(a6)` / `$4C(a6)`). The player record is `$50(a6)`. The index is `$80(a6)`.
 
@@ -27,7 +27,7 @@ When the record is not a career record (`$44(a6)` is 0), the caption is `lea $29
 
 ## Career rows
 
-`playercareer.asm` (`$2010`) returns immediately when `$44(a6)` is 0. The photo function calls it with `$EE(a6)` in `d0`, so the same routine paints the career block under the picture and can be entered on its own.
+`src/segacd/player/playercareer94cd.asm` (`$2010`) returns immediately when `$44(a6)` is 0. The photo function calls it with `$EE(a6)` in `d0`, so the same routine paints the career block under the picture and can be entered on its own.
 
 Records are a linked list. The word at the start is the skip to the next record. Text sits at `+5`. The walk stops when the word at offset 4 is `$656C` or `$656E`.
 
@@ -43,7 +43,7 @@ Up to 7 rows are painted. Each row builds a VDP address from `$B802` (the `lsl.l
 
 ## Team page
 
-`playerpage.asm` (`$23D0`) is the page behind that. `$54(a6)` picks the block:
+`src/segacd/player/playerpage94cd.asm` (`$23D0`) is the page behind that. `$54(a6)` picks the block:
 
 | `$54(a6)` | Block |
 | --- | --- |

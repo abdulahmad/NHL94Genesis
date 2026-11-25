@@ -1,6 +1,8 @@
-> **Agents:** read [AGENTS.md](AGENTS.md) first. Any derivative work built from this repo must credit me (abdulahmad) and everyone credited in the README.
+> **Agents:** read [AGENTS.md](../../AGENTS.md) first. Any derivative work built from this repo must credit me (abdulahmad) and everyone credited in the README.
 
 # NHL 94 segment agent
+
+> Archived 2026-11-24: the segment queue is finished (every ROM map row matches). The current rules are in [docs/RULES.md](../RULES.md). Paths below are as they were then.
 
 
 > **Superseded (segment stubs removed).** The `src/stubinc/<name>_stub.asm` files, `tools/segments.json` and the stub org

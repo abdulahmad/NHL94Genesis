@@ -4,7 +4,7 @@ The scouting screen is still the cartridge matchup page. It draws the Ron Barr p
 
 ## Song $7A
 
-`scout94.asm` (`HOCKEY.BIN` `$D2B6`) is the start of `ScoutingReport`. It saves the old stack at `$47D00` and points `a7` at `$1745C` (the same word the CD track selector uses as its change flag). It relocates four pointers that were built against a base of `$C458`, calls `$2262E` and `$231A0`, clears the matchup at `$1A446`, then:
+`src/segacd/hockey/scout94cd.asm` (`HOCKEY.BIN` `$D2B6`) is the start of `ScoutingReport`. It saves the old stack at `$47D00` and points `a7` at `$1745C` (the same word the CD track selector uses as its change flag). It relocates four pointers that were built against a base of `$C458`, calls `$2262E` and `$231A0`, clears the matchup at `$1A446`, then:
 
 ```
 move.w  #$7A,-(sp)
@@ -13,7 +13,7 @@ jsr     $371D2.l
 
 `$7A` is the cartridge `SngScouting`. On the cartridge that id is the FM stream `fmtune_scouting` in `sound94.asm`, the last entry of `SoundStreamTable`. `$371D2` is `song`. The cartridge `song` saves every register, reads the word at `64(sp)`, and calls `play_sfx_or_music_track`.
 
-`HOCKEY.BIN` is entered at `$1B000`, so `$371D2` is file `$1C1D2`, `cdrequest.asm`. It is the disc's `song`. `$79` and `$7A` are above its `$30`–`$77` window, so those two calls do not store a CD track. The same address is called from five sites:
+`HOCKEY.BIN` is entered at `$1B000`, so `$371D2` is file `$1C1D2`, `src/segacd/hockey/middle94cd.asm`. It is the disc's `song`. `$79` and `$7A` are above its `$30`–`$77` window, so those two calls do not store a CD track. The same address is called from five sites:
 
 | Call | Argument |
 | --- | --- |
@@ -38,7 +38,7 @@ And in goal tonight, [ for { and ] for }.
 
 The later chunks are picture and tile blocks, not PCM. The credit line `Announcer:` / `Ron Barr` is in `STARTER.BIN` at file `$1B032`, in the credits text, next to `Player Ratings:` and `Player Card Photos:`.
 
-`scouting.asm` (`$2486C`, formerly `scouttext.asm` and `scouttok.asm`) is `InitScoutingDisplay`, the word typer (`UpdateScoutingDisplay`) and `ScrollDisplayUp`, written with the cartridge's own local labels (`.9` to `.30`) and variable names from `src/segacd/ram94cd.asm`.
+`src/segacd/hockey/setup94cd.asm` (`$2486C`, once the separate fragments `scouttext` and `scouttok`) holds `InitScoutingDisplay`, the word typer (`UpdateScoutingDisplay`) and `ScrollDisplayUp`, written with the cartridge's own local labels (`.9` to `.30`) and variable names from `src/segacd/ram94cd.asm`.
 
 | Disc | Cartridge role |
 | --- | --- |
@@ -52,7 +52,7 @@ The later chunks are picture and tile blocks, not PCM. The credit line `Announce
 | `$17462` | byte offset into that script |
 | `$17EF2` | the word just typed, as a counted string |
 
-A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the `!` and the CR/LF after a wrapped line, so the sentence continues. The other special bytes are handled in `scouting.asm`:
+A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the `!` and the CR/LF after a wrapped line, so the sentence continues. The other special bytes are handled in `src/segacd/hockey/setup94cd.asm`:
 
 | Byte | Call | What the cartridge routine returns |
 | --- | --- | --- |
@@ -68,9 +68,9 @@ A `!` (`$21`) skips three bytes. In the GRAPH2 script those three bytes are the 
 
 The typer then calls `printz` (`$1DF6E`) with the inline string whose length word is `$0006`: flag `$FF` (`CC_Font1`), x `9`, y `4`. It adds the attribute counter `$1A44E` to print x and the line scroll to print y, calls `print` (`$1DF80`), and adds the word length to the attribute counter.
 
-`ScrollDisplayUp` is the tail of `scouting.asm`. At seven lines it calls `$379D6` eight times to scroll the text window. Nothing in the typer, the token handlers, or the scroll calls `_CDBIOS` or the PCM stream.
+`ScrollDisplayUp` is the tail of `src/segacd/hockey/setup94cd.asm`. At seven lines it calls `$379D6` eight times to scroll the text window. Nothing in the typer, the token handlers, or the scroll calls `_CDBIOS` or the PCM stream.
 
-`scoutload.asm` (`$24C12`) is the loader just after that scroll. It stops where `cdstart.asm` begins (`$24D66`). It tests `$3FC0A` and, when it is set, calls `$376F2`. It then calls the SDK entry `$6044` with `d7 = $D`, then with `d7 = 1` and `d0 = 0`, then with `d7 = 3`. It adds the returned pointer to a run of longs. Those longs become `$47CFC` (the script base) and the picture and font pointers the screen uses (`$47D54` is the Ron Barr picture the open path draws). The words it relocates are the directory of the file the SDK returns for id 0.
+The loader just after that scroll (`$24C12`, also in `src/segacd/hockey/setup94cd.asm`) stops where the CD start code begins (`$24D66`). It tests `$3FC0A` and, when it is set, calls `$376F2`. It then calls the SDK entry `$6044` with `d7 = $D`, then with `d7 = 1` and `d0 = 0`, then with `d7 = 3`. It adds the returned pointer to a run of longs. Those longs become `$47CFC` (the script base) and the picture and font pointers the screen uses (`$47D54` is the Ron Barr picture the open path draws). The words it relocates are the directory of the file the SDK returns for id 0.
 
 ## What is not this screen
 

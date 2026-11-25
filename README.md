@@ -33,7 +33,7 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 
 ## Segment queue
 
-`src/nhl94.asm` is the top level and the include list, in ROM order. Gameplay and in-game files are in `src/engine/`, the menus and screens outside a game in `src/front/`; the glue (main, ram, frames, graphics, tables, sram, teamdata, checksum, helpers, ui) stays in `src/`. There is no per-folder include list: the files of each group are not next to each other in the ROM, so `nhl94.asm` includes them one by one. `SEGMENT_AGENT.md` is the rule file. Placeholder files are comments only.
+`src/nhl94.asm` is the top level and the include list, in ROM order. Gameplay and in-game files are in `src/engine/`, the menus and screens outside a game in `src/front/`; the glue (main, ram, frames, graphics, tables, sram, teamdata, checksum, helpers, ui) stays in `src/`. There is no per-folder include list: the files of each group are not next to each other in the ROM, so `nhl94.asm` includes them one by one. `docs/RULES.md` holds the rules (the finished segment queue is in `docs/archive/SEGMENT_AGENT.md`). Placeholder files are comments only.
 
 94-only files that 93 did not have:
 
@@ -41,6 +41,8 @@ Style source for a segment is the matching file in [NHLPA93Genesis](https://gith
 - `sram94.asm` starts at `InitSaveRAM`
 
 ## Build
+
+`npm run build:retail` builds and verifies the ROM; Linux needs wine and wine32 (`tools/build.js` runs the assembler under wine), Windows runs it directly. Add `--verbose` for each step's full output. `tools/verify_all.sh -q` builds the full ROM and every segment and must end in `ALL MATCH` before every commit.
 
 Segment checks use `npm run seg -- <name>` (`tools/build.js --seg <name>`, or `--all`): the full ROM is built, then the segment's
 address range (from the build listing) is compared with `nhl94retail.bin`.
@@ -81,7 +83,7 @@ The feature and patch branches (season mode, MSU-MD music, performance overlay, 
 
 ## Build steps explained
 
-`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), names (the NHLPA player names and NHL team nicknames are placeholders in `src/teamdata94.asm`; the real ones are extracted from your ROM to `Extracted/PlayerNames.txt` and `Extracted/TeamNicknames.txt`, and this step assembles a copy in `output/obj/` with them put back (the two New York full names in `src/front/optsetup94.asm` are `include`s of asm the extractor generates in `Extracted/NHL94/Text/`); a name must keep the length of its placeholder), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). Details in `START_HERE.md`.
+`tools/build.js` prints one line per step with a short note under it: prebuild (check the ROM, extract assets), z80 (asm80 builds the Z80 sound driver from `src/sound/z80_snd_drv93.asm` and checks it against the ROM), names (the NHLPA player names and NHL team nicknames are placeholders in `src/teamdata94.asm`; the real ones are extracted from your ROM to `Extracted/PlayerNames.txt` and `Extracted/TeamNicknames.txt`, and this step assembles a copy in `output/obj/` with them put back (the two New York full names in `src/front/optsetup94.asm` are `include`s of asm the extractor generates in `Extracted/NHL94/Text/`); a name must keep the length of its placeholder), assemble (SNASM68k), fixopcodes (patch the encodings SNASM picks differently from EA's assembler), fixrom (ROM size, header end, checksum) and verify (byte-for-byte against retail). A failing step prints `FAILED`, the relevant log lines (`output/obj/Build_nhl94.log` for the assembler) and `BUILD FAILED at <step>`, and exits 1.
 
 ## AI assistance
 
